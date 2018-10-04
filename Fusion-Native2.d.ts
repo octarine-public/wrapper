@@ -223,13 +223,12 @@ interface TrackingProjectile {
 
 interface QAngle {
 	readonly type_name: string
+	readonly Length: number
+	readonly LengthSqr: number
+	readonly IsZero: boolean
 	pitch: number
 	yaw: number
 	roll: number
-
-	Length(): number
-	LengthSqr(): number
-	IsZero(): boolean
 }
 
 /// GLOBAL OBJECTS
@@ -489,6 +488,7 @@ declare function PrepareUnitOrders(obj: {
 	Queue: boolean,
 	ShowEffects: boolean
 }): void
+declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
 
 /// AUTOMATICALLY GENERATED
 
@@ -11497,6 +11497,20 @@ interface C_DOTA_Ability_Leshrac_Diabolic_Edict extends C_DOTABaseAbility {
 
 interface C_DOTA_BaseNPC extends C_NextBotCombaCharacter {
 	readonly type_name: string
+	readonly m_bIsHero: boolean
+	readonly m_bIsTower: boolean
+	readonly m_bIsConsideredHero: boolean
+	readonly m_bIsBuilding: boolean
+	readonly m_bIsFort: boolean
+	readonly m_bIsBarracks: boolean
+	readonly m_bIsCreep: boolean
+	readonly m_bIsCourier: boolean
+	readonly m_bIsShop: boolean
+	readonly m_bIsLaneCreep: boolean
+	readonly m_bIsShrine: boolean
+	readonly m_bIsWard: boolean
+	readonly m_bIsRoshan: boolean
+	readonly m_bIsTechiesRemoteMine: boolean
 	readonly m_bIsPhantom: boolean
 	readonly m_iUnitType: number
 	readonly m_bSelectionRingVisible: boolean
