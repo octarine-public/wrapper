@@ -10579,6 +10579,9 @@ interface C_GameEntity extends CEntityInstance {
 
 interface C_BaseEntity extends C_GameEntity {
 	readonly type_name: string
+	readonly m_bIsValid: boolean
+	readonly m_iID: number
+	readonly m_vecForward: Vector
 	readonly m_CBodyComponent: CBodyComponent
 	readonly m_NetworkTransmitComponent: CNetworkTransmitComponent
 	readonly m_pDummyPhysicsComponent: CPhysicsComponent
@@ -10664,13 +10667,18 @@ interface C_BaseEntity extends C_GameEntity {
 	readonly m_bAnimTimeChanged: boolean
 	readonly m_bSimulationTimeChanged: boolean
 	readonly m_bIsBlurred: boolean
+
+	IsInRange(ent: C_BaseEntity, range: number): boolean
+	IsEnemy(ent: C_BaseEntity): boolean
+	DistTo(ent: C_BaseEntity): number
+	InFront(dist: number): Vector
+	FindRotationAngle(vec: Vector): number
 }
 
 interface C_DOTABaseAbility extends C_BaseEntity {
-	GetSpecialValue(special_name: string, level?: number): number
-
 	readonly type_name: string
-	readonly m_iszAbilityName: string
+	readonly m_sAbilityName: string
+	readonly m_fCastPoint: number
 	readonly m_bAltCastState: boolean
 	readonly m_iEnemyLevel: number
 	readonly m_iMaxLevel: number
@@ -10700,6 +10708,9 @@ interface C_DOTABaseAbility extends C_BaseEntity {
 	readonly m_bStolen: boolean
 	readonly m_bReplicated: boolean
 	readonly m_flLastCastClickTime: number
+
+	GetSpecialValue(special_name: string, level?: number): number
+	IsManaEnough(owner: C_DOTA_BaseNPC): boolean
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_2 extends C_DOTABaseAbility {
@@ -11511,6 +11522,28 @@ interface C_DOTA_BaseNPC extends C_NextBotCombaCharacter {
 	readonly m_bIsWard: boolean
 	readonly m_bIsRoshan: boolean
 	readonly m_bIsTechiesRemoteMine: boolean
+	readonly m_bIsStunned: boolean
+	readonly m_bIsInvisible: boolean
+	readonly m_bIsInvulnerable: boolean
+	readonly m_bIsAttackImmune: boolean
+	readonly m_bIsMagicImmune: boolean
+	readonly m_bIsInFadeTime: boolean
+	readonly m_bIsDeniable: boolean
+	readonly m_bIsVisible: boolean
+	readonly m_bIsVisibleForEnemies: boolean
+	readonly m_bIsTrueSightedForEnemies: boolean
+	readonly m_bIsControllableByAnyPlayer: boolean
+	readonly m_bHasAttackCapability: boolean
+	readonly m_bHasMoveCapability: boolean
+	readonly m_bIsRangedAttacker: boolean
+	readonly m_fAttackSpeed: number
+	readonly m_fIncreasedAttackSpeed: number
+	readonly m_fSecondsPerAttack: number
+	readonly m_fAttackSpeedValue: number
+	readonly m_fIdealSpeed: number
+	readonly m_fAttackRange: number
+	readonly m_fEffectiveInvisibilityLevel: number
+	readonly m_fMagicMultiplier: number
 	readonly m_bIsPhantom: boolean
 	readonly m_iUnitType: number
 	readonly m_bSelectionRingVisible: boolean
@@ -11656,6 +11689,27 @@ interface C_DOTA_BaseNPC extends C_NextBotCombaCharacter {
 	readonly m_bShouldDrawParticlesWhileHidden: boolean
 	readonly m_bIsClientThinkPending: boolean
 	readonly m_bActivityModifiersDirty: boolean
+
+	/**
+	 * @param flag_num must be 0 < flag_num < 64
+	 */
+	IsUnitStateFlagSet(flag_num: number): boolean
+	GetAbilityByName(name: string): C_DOTABaseAbility
+	GetAbility(slot: number): C_DOTABaseAbility
+	GetItemByName(name: string): C_DOTA_Item
+	GetItemByNameInBackpack(name: string): C_DOTA_Item
+	GetItemInSlot(slot: number): C_DOTA_Item
+	GetBuffByName(name: string): CDOTA_Buff
+
+	AbsorbedDamage(damage_type: DAMAGE_TYPES): number
+	WillIgnore(damage_type: DAMAGE_TYPES): boolean
+	CalculateDamage(damage: number, damage_type: DAMAGE_TYPES): number
+	CalculateDamageByHand(from: C_DOTA_BaseNPC_Hero): number
+
+	IsVisibleForEnemies(m_iTaggedAsVisibleByTeam: number): boolean
+	IsControllableByPlayer(playerID: number): boolean
+	HasAttackCapability(capability: DOTAUnitAttackCapability_t): boolean
+	HasMoveCapability(capability: DOTAUnitAttackCapability_t): boolean
 }
 
 interface C_DOTA_Ability_Nevermore_Shadowraze extends C_DOTABaseAbility {
@@ -11710,6 +11764,7 @@ interface C_DOTA_Ability_Elder_Titan_NaturalOrder_Spirit extends C_DOTABaseAbili
 
 interface C_DOTA_BaseNPC_Hero extends C_DOTA_BaseNPC_Additive {
 	readonly type_name: string
+	readonly m_bIsIllusion: boolean
 	readonly m_iCurrentXP: number
 	readonly m_iAbilityPoints: number
 	readonly m_flRespawnTime: number
@@ -13237,6 +13292,7 @@ interface C_DOTA_DisplacementVisibility extends C_BaseEntity {
 
 interface C_DOTA_Unit_Hero_Meepo extends C_DOTA_BaseNPC_Hero {
 	readonly type_name: string
+	readonly m_bIsClone: boolean
 	readonly m_nWhichMeepo: number
 }
 
