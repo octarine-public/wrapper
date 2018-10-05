@@ -467,9 +467,11 @@ declare interface Particles {
 
 // must be called only in onDraw!
 declare interface Renderer {
-	Circle(x: number, y: number, radius: number, r: number, g: number, b: number): void
+	FilledCircle(x: number, y: number, radius: number, r: number, g: number, b: number): void
+	OutlinedCircle(x: number, y: number, radius: number, r: number, g: number, b: number): void
 	Line(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number): void
-	Rect(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number): void
+	FilledRect(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number): void
+	OutlinedRect(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number): void
 	Text(x: number, y: number, text: string, r: number, g: number, b: number): void
 }
 
