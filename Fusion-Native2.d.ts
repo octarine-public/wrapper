@@ -491,6 +491,8 @@ declare function PrepareUnitOrders(obj: {
 	ShowEffects: boolean
 }): void
 declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
+declare function GetWindowSize(): Vector2D
+declare function WorldToScreen(pos: Vector): Vector2D
 
 /// AUTOMATICALLY GENERATED
 
