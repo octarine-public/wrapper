@@ -467,6 +467,8 @@ declare interface Particles {
 
 // must be called only in onDraw!
 declare interface Renderer {
+	readonly WindowSize: Vector2D
+	
 	FilledCircle(x: number, y: number, radius: number, r: number, g: number, b: number): void
 	OutlinedCircle(x: number, y: number, radius: number, r: number, g: number, b: number): void
 	Line(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number): void
@@ -491,7 +493,6 @@ declare function PrepareUnitOrders(obj: {
 	ShowEffects: boolean
 }): void
 declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
-declare function GetWindowSize(): Vector2D
 declare function WorldToScreen(pos: Vector): Vector2D
 
 /// AUTOMATICALLY GENERATED
