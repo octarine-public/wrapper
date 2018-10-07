@@ -469,12 +469,53 @@ declare interface Particles {
 declare interface Renderer {
 	readonly WindowSize: Vector2D
 	
-	FilledCircle(x: number, y: number, radius: number, r: number, g: number, b: number): void
-	OutlinedCircle(x: number, y: number, radius: number, r: number, g: number, b: number): void
-	Line(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number): void
-	FilledRect(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number): void
-	OutlinedRect(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number): void
-	Text(x: number, y: number, text: string, r: number, g: number, b: number): void
+	/**
+	 * Allowed non-passable element groups:
+	 * [r, g, b]
+	 * [a]
+	 */
+	FilledCircle(x: number, y: number, radius: number, r?: number, g?: number, b?: number, a?: number): void
+	/**
+	 * Allowed non-passable element groups:
+	 * [r, g, b]
+	 * [a]
+	 */
+	OutlinedCircle(x: number, y: number, radius: number, r?: number, g?: number, b?: number, a?: number): void
+	/**
+	 * Allowed non-passable element groups:
+	 * [r, g, b]
+	 * [a]
+	 */
+	Line(baseX: number, baseY: number, baseW: number, baseH: number, r?: number, g?: number, b?: number, a?: number): void
+	/**
+	 * Allowed non-passable element groups:
+	 * [r, g, b]
+	 * [a]
+	 */
+	FilledRect(baseX: number, baseY: number, baseW: number, baseH: number, r?: number, g?: number, b?: number, a?: number): void
+	/**
+	 * Allowed non-passable element groups:
+	 * [r, g, b]
+	 * [a]
+	 */
+	OutlinedRect(baseX: number, baseY: number, baseW: number, baseH: number, r?: number, g?: number, b?: number, a?: number): void
+	/**
+	 * @param path start it with "~/" (without double-quotes) to load image from "%loader_path%/scripts_files/path"
+	 * @param path also must end with "_c" (without double-quotes), if that's vtex_c
+	 * VPK isn't supported yet.
+	 * Allowed non-passable element groups:
+	 * [baseW, baseH] (or you can use -1 as one/both of those values to leave them auto)
+	 * [r, g, b]
+	 * [a]
+	 */
+	Image(path: string, baseX: number, baseY: number, baseW?: number, baseH?: number, r?: number, g?: number, b?: number, a?: number): void
+	/**
+	 * Allowed non-passable element groups:
+	 * [r, g, b]
+	 * [a]
+	 */
+	Text(x: number, y: number, text: string, r?: number, g?: number, b?: number, a?: number): void
+	WorldToScreen(pos: Vector): Vector2D
 }
 
 /// GLOBAL FUNCTIONS
@@ -493,7 +534,6 @@ declare function PrepareUnitOrders(obj: {
 	ShowEffects: boolean
 }): void
 declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
-declare function WorldToScreen(pos: Vector): Vector2D
 
 /// AUTOMATICALLY GENERATED
 
@@ -11711,7 +11751,6 @@ interface C_DOTA_BaseNPC extends C_NextBotCombaCharacter {
 	CalculateDamage(damage: number, damage_type: DAMAGE_TYPES): number
 	CalculateDamageByHand(from: C_DOTA_BaseNPC_Hero): number
 
-	IsVisibleForEnemies(m_iTaggedAsVisibleByTeam: number): boolean
 	IsControllableByPlayer(playerID: number): boolean
 	HasAttackCapability(capability: DOTAUnitAttackCapability_t): boolean
 	HasMoveCapability(capability: DOTAUnitAttackCapability_t): boolean
