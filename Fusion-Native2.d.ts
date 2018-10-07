@@ -248,6 +248,10 @@ interface QAngle {
 }
 
 /// GLOBAL OBJECTS
+declare var LocalDOTAPlayer: C_DOTAPlayer
+declare var GameRules: C_DOTAGamerules
+declare var PlayerResource: C_DOTA_PlayerResource
+
 declare var ConVars: ConVars
 declare var Entities: Entities
 declare var Events: Events
@@ -275,7 +279,7 @@ declare class Color {
 	/**
 	 * Default alpha: 255
 	 */
-	constructor(r: number?, g: number?, b: number?, a?: number)
+	constructor(r?: number, g?: number, b?: number, a?: number)
 }
 
 declare interface ConVars {
@@ -4196,7 +4200,7 @@ interface CLocalNPCObstructionsCache {
 	readonly type_name: string
 	readonly m_nLastUpdatedTick: number
 	readonly m_flRadius: number
-	readonly m_hCachedNPCs: CDOTA_BaseNPC[]
+	readonly m_hCachedNPCs: C_DOTA_BaseNPC[]
 }
 
 interface IDamageHandler {
@@ -9167,7 +9171,7 @@ interface DOTASpecialAbility_t {
 
 interface sSpiritDef {
 	readonly type_name: string
-	readonly pSpirit: CDOTA_BaseNPC
+	readonly pSpirit: C_DOTA_BaseNPC
 	readonly nSpiritFXIndex: number
 	readonly nSpiritState: number
 }
@@ -10040,7 +10044,7 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_bAllDraftRadiantFirst: boolean
 	readonly m_bAllowOverrideVPK: boolean
 	readonly m_nARDMHeroesRemaining: number[]
-	readonly m_hGlobalPetList: CDOTA_BaseNPC_Pet[]
+	readonly m_hGlobalPetList: C_DOTA_BaseNPC_Pet[]
 	readonly m_vecHeroPickRecord: HeroPickRecord_t[]
 	readonly m_vecHeroDeathRecord: HeroDeathRecord_t[]
 	readonly m_BadResultPositionTriggers: C_BaseEntity[]
@@ -10071,12 +10075,12 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_hWards: C_BaseEntity[]
 	readonly m_hGameEvents: C_BaseEntity
 	readonly m_Towers: C_BaseEntity[]
-	readonly m_TeamTowers: CDOTA_BaseNPC_Tower[]
+	readonly m_TeamTowers: C_DOTA_BaseNPC_Tower[]
 	readonly m_TeamTowerPositions: Vector[]
 	readonly m_TeamTowerLevels: number[]
 	readonly m_TeamTowerLanes: number[]
-	readonly m_TeamBarracks: CDOTA_BaseNPC_Building[]
-	readonly m_TeamShrines: CDOTA_BaseNPC_Building[]
+	readonly m_TeamBarracks: C_DOTA_BaseNPC_Building[]
+	readonly m_TeamShrines: C_DOTA_BaseNPC_Building[]
 	readonly m_TempDayTimer: CountdownTimer
 	readonly m_TempNightTimer: CountdownTimer
 	readonly m_NightstalkerNightTimer: CountdownTimer
@@ -10432,7 +10436,7 @@ interface C_OP_SetPerChildControlPoint extends CParticleFunctionOperator {
 interface CDOTA_ActionRunner {
 	readonly type_name: string
 	readonly m_pEventContext: CModifierParams
-	readonly m_pCaster: CDOTA_BaseNPC
+	readonly m_pCaster: C_DOTA_BaseNPC
 }
 
 interface C_OP_MaintainSequentialPath extends CParticleFunctionOperator {
