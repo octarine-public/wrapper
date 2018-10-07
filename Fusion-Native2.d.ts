@@ -1,5 +1,21 @@
 /// ENUMS
 
+declare const enum FontFlags_t {
+	NONE = 0,
+	ITALIC = 1 << 0,
+	UNDERLINE = 1 << 1,
+	STRIKEOUT = 1 << 2,
+	SYMBOL = 1 << 3,
+	ANTIALIAS = 1 << 4,
+	GAUSSIANBLUR = 1 << 5,
+	ROTARY = 1 << 6,
+	DROPSHADOW = 1 << 7,
+	ADDITIVE = 1 << 8,
+	OUTLINE = 1 << 9,
+	CUSTOM = 1 << 10, // custom generated font - never fall back to asian compatibility mode
+	BITMAP = 1 << 11 // compiled bitmap font - no fallbacks
+}
+
 declare const enum dotaunitorder_t {
 	DOTA_UNIT_ORDER_NONE = 0,
 	DOTA_UNIT_ORDER_MOVE_TO_POSITION = 1,
@@ -473,30 +489,40 @@ declare interface Renderer {
 	 * Allowed non-passable element groups:
 	 * [r, g, b]
 	 * [a]
+	 * NodeJS-like decl:
+	 * FilledCircle(x: number, y: number, radius: number[, r?: number, g?: number, b?: number][, a?: number]): void
 	 */
 	FilledCircle(x: number, y: number, radius: number, r?: number, g?: number, b?: number, a?: number): void
 	/**
 	 * Allowed non-passable element groups:
 	 * [r, g, b]
 	 * [a]
+	 * NodeJS-like decl:
+	 * OutlinedCircle(x: number, y: number, radius: number[, r?: number, g?: number, b?: number][, a?: number]): void
 	 */
 	OutlinedCircle(x: number, y: number, radius: number, r?: number, g?: number, b?: number, a?: number): void
 	/**
 	 * Allowed non-passable element groups:
 	 * [r, g, b]
 	 * [a]
+	 * NodeJS-like decl:
+	 * Line(baseX: number, baseY: number, baseW: number, baseH: number[, r?: number, g?: number, b?: number][, a?: number]): void
 	 */
 	Line(baseX: number, baseY: number, baseW: number, baseH: number, r?: number, g?: number, b?: number, a?: number): void
 	/**
 	 * Allowed non-passable element groups:
 	 * [r, g, b]
 	 * [a]
+	 * NodeJS-like decl:
+	 * FilledRect(baseX: number, baseY: number, baseW: number, baseH: number[, r?: number, g?: number, b?: number][, a?: number]): void
 	 */
 	FilledRect(baseX: number, baseY: number, baseW: number, baseH: number, r?: number, g?: number, b?: number, a?: number): void
 	/**
 	 * Allowed non-passable element groups:
 	 * [r, g, b]
 	 * [a]
+	 * NodeJS-like decl:
+	 * OutlinedRect(baseX: number, baseY: number, baseW: number, baseH: number[, r?: number, g?: number, b?: number][, a?: number]): void
 	 */
 	OutlinedRect(baseX: number, baseY: number, baseW: number, baseH: number, r?: number, g?: number, b?: number, a?: number): void
 	/**
@@ -507,14 +533,26 @@ declare interface Renderer {
 	 * [baseW, baseH] (or you can use -1 as one/both of those values to leave them auto)
 	 * [r, g, b]
 	 * [a]
+	 * NodeJS-like decl:
+	 * Image(path: string, baseX: number, baseY: number[, baseW?: number, baseH?: number][, r?: number, g?: number, b?: number][, a?: number]): void
 	 */
 	Image(path: string, baseX: number, baseY: number, baseW?: number, baseH?: number, r?: number, g?: number, b?: number, a?: number): void
 	/**
+	 * @param font_name default: "Calibri"
+	 * @param font_size default: 12
+	 * @param font_weight default: 150
+	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
+	 * @param flags default: FontFlags_t.OUTLINE
 	 * Allowed non-passable element groups:
 	 * [r, g, b]
 	 * [a]
+	 * [font_name, font_size]
+	 * [font_weight]
+	 * [flags]
+	 * NodeJS-like decl:
+	 * Text(x: number, y: number, text: string[, r?: number, g?: number, b?: number][, a?: number][, font_name?: string, uint8_t font_size][, uint16_t font_weight][, int flags]): void
 	 */
-	Text(x: number, y: number, text: string, r?: number, g?: number, b?: number, a?: number): void
+	Text(x: number, y: number, text: string, r?: number, g?: number, b?: number, a?: number, font_name?: string, font_size?: number, font_weight?: number, flags?: number): void
 	WorldToScreen(pos: Vector): Vector2D
 }
 
