@@ -248,8 +248,16 @@ interface QAngle {
 }
 
 /// GLOBAL OBJECTS
+declare var ConVars: ConVars
+declare var Entities: Entities
+declare var Events: Events
+declare var Menu: Menu
+declare var Minimap: Minimap
+declare var Projectiles: Projectiles
+declare var Particles: Particles
+declare var Renderer: Renderer
 
-declare interface Color {
+declare class Color {
 	readonly type_name: string
 	r: number
 	g: number
@@ -296,7 +304,7 @@ declare interface Minimap {
 	SendLine(x: number, y: number, initial: boolean): void
 }
 
-declare interface Vector {
+declare class Vector {
 	readonly type_name: string
 	/**
 	 * Those numbers can also be accessed thru vec[0], vec[1], vec[2]
@@ -399,7 +407,7 @@ declare interface Vector {
 	Cross(vOther: Vector): Vector
 }
 
-declare interface Vector2D {
+declare class Vector2D {
 	readonly type_name: string
 	/**
 	 * Those numbers can also be accessed thru vec[0], vec[1]
@@ -960,7 +968,7 @@ interface PermModelInfo_t {
 	readonly m_flMass: number
 	readonly m_vEyePosition: Vector
 	readonly m_flMaxEyeDeflection: number
-stringstring}
+}
 
 interface EventModInitialized_t {
 	readonly type_name: string
@@ -1763,7 +1771,7 @@ interface CSubtractAnimNode extends CAnimNodeBase {
 
 interface HitBoxSet_t {
 	readonly type_name: string
-stringstring}
+}
 
 interface InfoForResourceTypeCPhysAggregateData {
 	readonly type_name: string
@@ -2369,7 +2377,7 @@ interface CSosGroupActionSchema {
 
 interface MaterialResourceData_t {
 	readonly type_name: string
-stringstring}
+}
 
 interface CNetworkedSequenceOperation {
 	readonly type_name: string
@@ -5202,7 +5210,7 @@ interface C_EconItemView extends IEconItemInterface {
 
 interface VSoundStack_t {
 	readonly type_name: string
-stringstring}
+}
 
 interface InfoForResourceTypeCPanoramaStyle {
 	readonly type_name: string
@@ -6629,7 +6637,7 @@ interface C_OP_TwistAroundAxis extends CParticleFunctionForce {
 
 interface VSoundEvent_t {
 	readonly type_name: string
-stringstringstring}
+}
 
 interface RnHalfEdge_t {
 	readonly type_name: string
