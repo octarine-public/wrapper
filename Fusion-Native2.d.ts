@@ -11799,7 +11799,7 @@ interface C_DOTA_BaseNPC extends C_NextBotCombaCharacter {
 
 	IsControllableByPlayer(playerID: number): boolean
 	HasAttackCapability(capability: DOTAUnitAttackCapability_t): boolean
-	HasMoveCapability(capability: DOTAUnitAttackCapability_t): boolean
+	HasMoveCapability(capability: DOTAUnitMoveCapability_t): boolean
 }
 
 interface C_DOTA_Ability_Nevermore_Shadowraze extends C_DOTABaseAbility {
