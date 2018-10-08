@@ -797,7 +797,7 @@ interface PhysFeModelDesc_t {
 	readonly m_nRopeCount: number
 	readonly m_nTriCount1: number
 	readonly m_nTriCount2: number
-	readonly m_nReservednumber: number
+	readonly m_nReservedUint8: number
 	readonly m_nExtraPressureIterations: number
 	readonly m_nExtraGoalIterations: number
 	readonly m_nExtraIterations: number
@@ -848,7 +848,6 @@ interface C_INIT_DistanceToCPInit extends CParticleFunctionInitializer {
 	readonly m_flOutputMax: number
 	readonly m_nStartCP: number
 	readonly m_bLOS: boolean
-	readonly m_CollisionGroupName: string[]
 	readonly m_flMaxTraceLength: number
 	readonly m_flLOSScale: number
 	readonly m_bScaleInitialRange: boolean
@@ -993,7 +992,7 @@ interface CAnimMotorList {
 
 interface MaterialGroup_t {
 	readonly type_name: string
-string}
+}
 
 interface IContextualQuery {
 	readonly type_name: string
@@ -1257,7 +1256,6 @@ interface C_OP_MoveToHitbox extends CParticleFunctionOperator {
 	readonly m_flLifeTimeLerpStart: number
 	readonly m_flLifeTimeLerpEnd: number
 	readonly m_flPrevPosScale: number
-	readonly m_HitboxSetName: string[]
 	readonly m_bUseBones: boolean
 }
 
@@ -1304,7 +1302,6 @@ interface CParticleFunctionRenderer extends CParticleFunction {
 interface C_OP_SetControlPointPositionToTimeOfDayValue extends CParticleFunctionPreEmission {
 	readonly type_name: string
 	readonly m_nControlPointNumber: number
-	readonly m_pszTimeOfDayParameter: string[]
 	readonly m_vecDefaultValue: Vector
 }
 
@@ -1489,7 +1486,7 @@ interface CEntityClass {
 
 interface MorphData_t {
 	readonly type_name: string
-string}
+}
 
 interface CVPhysXSurfacePropertiesList {
 	readonly type_name: string
@@ -1508,8 +1505,6 @@ interface MorphSetData_t {
 	readonly type_name: string
 	readonly m_nWidth: number
 	readonly m_nHeight: number
-	readonly m_nLookupType: number
-	readonly m_nEncodingType: number
 }
 
 interface C_OP_BasicMovement extends CParticleFunctionOperator {
@@ -1525,7 +1520,7 @@ interface C_OP_BasicMovement extends CParticleFunctionOperator {
 
 interface FlexDesc_t {
 	readonly type_name: string
-string}
+}
 
 interface C_VerticalMotionController {
 	readonly type_name: string
@@ -1643,7 +1638,7 @@ interface VPhysXAggregateData_t {
 	readonly type_name: string
 	readonly m_nFlags: number
 	readonly m_nRefCounter: number
-string}
+}
 
 interface C_INIT_ModelCull extends CParticleFunctionInitializer {
 	readonly type_name: string
@@ -1651,7 +1646,6 @@ interface C_INIT_ModelCull extends CParticleFunctionInitializer {
 	readonly m_bBoundBox: boolean
 	readonly m_bCullOutside: boolean
 	readonly m_bUseBones: boolean
-	readonly m_HitboxSetName: string[]
 }
 
 interface CAnimInputDamping {
@@ -1709,7 +1703,6 @@ interface C_OP_DistanceBetweenCPsToCP extends CParticleFunctionPreEmission {
 	readonly m_flMaxTraceLength: number
 	readonly m_flLOSScale: number
 	readonly m_bLOS: boolean
-	readonly m_CollisionGroupName: string[]
 }
 
 interface CPiecewiseCurveSchemaWrapper {
@@ -2068,7 +2061,6 @@ interface C_OP_SetCPOrientationToGroundNormal extends CParticleFunctionOperator 
 	readonly m_flMaxTraceLength: number
 	readonly m_flTolerance: number
 	readonly m_flTraceOffset: number
-	readonly m_CollisionGroupName: string[]
 	readonly m_nInputCP: number
 	readonly m_nOutputCP: number
 	readonly m_bIncludeWater: boolean
@@ -2196,7 +2188,6 @@ interface CProjectedTextureBase {
 	readonly m_flPlaneOffset: number
 	readonly m_flColorTransitionTime: number
 	readonly m_flAmbient: number
-	readonly m_SpotlightTextureName: string[]
 	readonly m_nSpotlightTextureFrame: number
 	readonly m_nShadowQuality: number
 	readonly m_flNearZ: number
@@ -2293,12 +2284,9 @@ interface InfoForResourceTypeMorphSetData_t {
 
 interface sControlGroupElem {
 	readonly type_name: string
-	readonly m_UnitName: string[]
-	readonly m_UnitLabel: string[]
 	readonly m_unUnitLabelIndex: number
 	readonly m_hEntity: C_BaseEntity
 	readonly m_bIsIllusion: boolean
-	readonly m_IllusionLabel: string[]
 }
 
 interface C_INIT_GlobalScale extends CParticleFunctionInitializer {
@@ -2352,7 +2340,6 @@ interface C_OP_MovementPlaceOnGround extends CParticleFunctionOperator {
 	readonly m_flTolerance: number
 	readonly m_flTraceOffset: number
 	readonly m_flLerpRate: number
-	readonly m_CollisionGroupName: string[]
 	readonly m_nRefCP1: number
 	readonly m_nRefCP2: number
 	readonly m_nLerpCP: number
@@ -2421,29 +2408,8 @@ interface TextureDesc_t {
 interface CDOTAGameManager {
 	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
-	readonly m_pkvHeroes: KeyValues
-	readonly m_pkvUnits: KeyValues
-	readonly m_pkvAbilities: KeyValues
 	readonly m_bCustomGame: boolean
 	readonly m_bEventGame: boolean
-	readonly m_szAddOnGame: string[]
-	readonly m_szAddOnMap: string[]
-	readonly m_pkvAddOnHeroes: KeyValues
-	readonly m_pkvAddOnUnits: KeyValues
-	readonly m_pkvAddOnAbilities: KeyValues
-	readonly m_pTutorialLessonKeyValues: KeyValues
-	readonly m_pTutorialTipKeyValues: KeyValues
-	readonly m_pDivisionKeyValues: KeyValues
-	readonly m_pMatchGroupsKeyValues: KeyValues
-	readonly m_pEmoticonsKeyValues: KeyValues
-	readonly m_pPortraitsLightPreselects: KeyValues
-	readonly m_pAnimationStatues: KeyValues
-	readonly m_pAddonInfoKeyValues: KeyValues
-	readonly m_pBotScriptsDedicatedServer: KeyValues
-	readonly m_pkvWardPlacementLocations: KeyValues
-	readonly m_pRegionKeyValues: KeyValues
-	readonly m_pCountryKeyValues: KeyValues
-	readonly m_pSurveyQuestionData: KeyValues
 	readonly m_nNumLoadingPlayers: number
 	readonly m_iDefeatedParticle: number
 	readonly m_StableHeroAvailable: boolean[]
@@ -2484,7 +2450,6 @@ interface FeWeightedNode_t {
 
 interface SchemaMetaModifyAdd_t {
 	readonly type_name: string
-	readonly m_pTagValue: void
 }
 
 interface CNetworkTransmitComponent {
@@ -2564,7 +2529,7 @@ interface C_OP_RadiusDecay extends CParticleFunctionOperator {
 interface C_INIT_RemapNamedModelElementToScalar extends CParticleFunctionInitializer {
 	readonly type_name: string
 	readonly m_names: string[]
-	readonly m_values: float32[]
+	readonly m_values: number[]
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bModelFromRenderer: boolean
 }
@@ -2685,7 +2650,6 @@ interface C_OP_RenderSound extends CParticleFunctionRenderer {
 	readonly m_flVolumeScale: number
 	readonly m_nChannel: number
 	readonly m_nCPReference: number
-	readonly m_pszSoundName: string[]
 }
 
 interface C_OP_RemapCPtoVector extends CParticleFunctionOperator {
@@ -2720,7 +2684,6 @@ interface C_INIT_RtEnvCull extends CParticleFunctionInitializer {
 	readonly m_bUseVelocity: boolean
 	readonly m_bCullOnMiss: boolean
 	readonly m_bLifeAdjust: boolean
-	readonly m_RtEnvName: string[]
 }
 
 interface FeWorldCollisionParams_t {
@@ -2774,8 +2737,6 @@ interface CBaseRendererSource2 extends CParticleFunctionRenderer {
 	readonly m_flRefractAmount: number
 	readonly m_nRefractBlurRadius: number
 	readonly m_nRefractBlurType: number
-	readonly m_stencilTestID: string[]
-	readonly m_stencilWriteID: string[]
 	readonly m_bWriteStencilOnDepthPass: boolean
 	readonly m_bWriteStencilOnDepthFail: boolean
 	readonly m_bReverseZBuffering: boolean
@@ -2822,7 +2783,7 @@ interface SheetFrameImage_t {
 
 interface MaterialParam_t {
 	readonly type_name: string
-string}
+}
 
 interface OnDiskBufferData_t {
 	readonly type_name: string
@@ -2959,7 +2920,7 @@ interface C_DOTASpectatorGraphManager {
 	readonly m_rgRadiantWinChance: number[]
 	readonly m_TeamStatsUpdateTimer: CountdownTimer
 	readonly m_HeroInventorySnapshotTimer: CountdownTimer
-	readonly m_vecPlayerSnapshots: sPlayerSnapshot[]
+	readonly m_vecPlayerSnapshots: sPlayerSnapshot[][]
 	readonly m_unDataChangedCount: number
 }
 
@@ -2974,7 +2935,7 @@ interface CHorizontalMotionController {
 
 interface SeqResourceBoneMaskList_t {
 	readonly type_name: string
-string}
+}
 
 interface PostProcessingVignetteParameters_t {
 	readonly type_name: string
@@ -2988,7 +2949,7 @@ interface PostProcessingVignetteParameters_t {
 
 interface CDOTAMusicProbabilityEntry {
 	readonly type_name: string
-	readonly m_flProbabilityElements: float32[]
+	readonly m_flProbabilityElements: number[]
 	readonly m_flProbability: number
 }
 
@@ -3043,7 +3004,6 @@ interface DOTAAbilityData_t {
 	readonly m_pszKeyOverride: string
 	readonly m_pszItemRecipeName: string
 	readonly m_pszLinkedAbility: string
-	readonly m_pKVData: KeyValues
 	readonly m_iAbilityID: number
 	readonly m_iAbilityType: number
 	readonly m_iAbilityBehavior: number
@@ -3059,12 +3019,12 @@ interface DOTAAbilityData_t {
 	readonly m_iMaxLevel: number
 	readonly m_iItemBaseLevel: number
 	readonly m_iItemCost: number
-	readonly m_iItemInitialstringges: number
+	readonly m_iItemInitialCharges: number
 	readonly m_iItemStockMax: number
 	readonly m_fItemStockTime: number
-	readonly m_pItemShopTagKeys: number
 	readonly m_nRecipeResultAbilityID: number
 	readonly m_vecItemCombinesInto: number[]
+	readonly m_vecRecipeComponents: number[][]
 	readonly m_ItemQuality: number
 	readonly m_flModifierValue: number
 	readonly m_flModifierValueBonus: number
@@ -3108,7 +3068,6 @@ interface DOTAAbilityData_t {
 
 interface CSpeechBubbleInfo {
 	readonly type_name: string
-	readonly m_LocalizationStr: string[]
 	readonly m_hNPC: C_BaseEntity
 	readonly m_flDuration: number
 	readonly m_unOffsetX: number
@@ -3122,7 +3081,6 @@ interface C_OP_ModelCull extends CParticleFunctionOperator {
 	readonly m_bBoundBox: boolean
 	readonly m_bCullOutside: boolean
 	readonly m_bUseBones: boolean
-	readonly m_HitboxSetName: string[]
 }
 
 interface CPathParameters {
@@ -3410,14 +3368,14 @@ interface AnimResourceIKRule_t {
 	readonly contact: number
 	readonly drop: number
 	readonly top: number
-string}
+}
 
 interface CAnimGraphNetworkedVariables {
 	readonly type_name: string
-	readonly m_BoolVariables: bool[]
+	readonly m_BoolVariables: boolean[]
 	readonly m_ByteVariables: number[]
 	readonly m_IntVariables: number[]
-	readonly m_FloatVariables: float32[]
+	readonly m_FloatVariables: number[]
 	readonly m_VectorVariables: Vector[]
 }
 
@@ -3528,7 +3486,6 @@ interface Dop26_t {
 
 interface CGameRules {
 	readonly type_name: string
-	readonly m_szQuestName: string[]
 	readonly m_nQuestPhase: number
 }
 
@@ -3618,7 +3575,6 @@ interface VPhysXDiskShapeHeader_t {
 
 interface FourCovMatrices3 {
 	readonly type_name: string
-	readonly m_vDiag: FourVectors
 }
 
 interface C_OP_RemapNamedModelElementEndCap extends CParticleFunctionOperator {
@@ -3631,7 +3587,6 @@ interface C_OP_RemapNamedModelElementEndCap extends CParticleFunctionOperator {
 
 interface FeFitMatrix_t {
 	readonly type_name: string
-	readonly bone: CTransform
 	readonly vCenter: Vector
 	readonly nEnd: number
 	readonly nNode: number
@@ -3662,7 +3617,6 @@ interface CDeferredLightBase {
 	readonly m_flStartFalloff: number
 	readonly m_flDistanceFalloff: number
 	readonly m_nFlags: number
-	readonly m_ProjectedTextureName: string[]
 }
 
 interface C_OP_SetControlPointToHMD extends CParticleFunctionPreEmission {
@@ -3748,7 +3702,6 @@ interface C_INIT_SetHitboxToModel extends CParticleFunctionInitializer {
 	readonly m_vecDirectionBias: Vector
 	readonly m_bMaintainHitbox: boolean
 	readonly m_bUseBones: boolean
-	readonly m_HitboxSetName: string[]
 }
 
 interface EntClassComponentOverride_t {
@@ -3838,7 +3791,6 @@ interface C_OP_ConnectParentParticleToNearest extends CParticleFunctionOperator 
 interface CParameterValue {
 	readonly type_name: string
 	readonly m_id: AnimParamID
-	readonly m_value: CAnimVariant
 }
 
 interface EntOutput_t {
@@ -3886,7 +3838,7 @@ interface CDOTA_TeamCommander {
 	readonly m_AvoidanceGrid: number[]
 	readonly m_fNextPotentialLocationTick: number[]
 	readonly m_iPotentialLocationBuffer: number[]
-	readonly m_PotentialLocationGrid: number[]
+	readonly m_PotentialLocationGrid: number[][]
 	readonly m_hRoamingUnit: C_BaseEntity
 	readonly m_RoamTargetLane: number
 	readonly m_fRuneDibsDesire: number[]
@@ -3903,8 +3855,8 @@ interface CDOTA_TeamCommander {
 	readonly m_fFarmLaneDesire: number[]
 	readonly m_iLastSeenRoshanHealth: number
 	readonly m_fRoshanDesire: number
-	readonly m_hProposedPushUnits: C_BaseEntity[]
-	readonly m_hProposedDefendUnits: C_BaseEntity[]
+	readonly m_hProposedPushUnits: C_BaseEntity[][]
+	readonly m_hProposedDefendUnits: C_BaseEntity[][]
 	readonly m_hProposedRoamUnits: C_BaseEntity[]
 	readonly m_hProposedRoshanUnits: C_BaseEntity[]
 	readonly m_fRoamDesire: number
@@ -3982,7 +3934,6 @@ interface C_INIT_InitialVelocityFromHitbox extends CParticleFunctionInitializer 
 	readonly m_flVelocityMin: number
 	readonly m_flVelocityMax: number
 	readonly m_nControlPointNumber: number
-	readonly m_HitboxSetName: string[]
 	readonly m_bUseBones: boolean
 }
 
@@ -4002,7 +3953,6 @@ interface TextureHeader_t extends TextureDesc_t {
 	readonly type_name: string
 	readonly m_nMultisampleType: number
 	readonly m_nFlags: number
-	readonly m_Reflectivity: Vector4D
 	readonly m_nSheetSize: number
 	readonly m_fallbackTextureBits: number[]
 	readonly m_nPicmip0Res: number
@@ -4076,7 +4026,6 @@ interface ModelSkeletonData_t {
 
 interface handposepair_t {
 	readonly type_name: string
-	readonly m_matHandPoseOffset: matrix3x4_t[]
 	readonly m_vExtentOrigin: Vector[]
 	readonly m_flHandPoseParams: number[]
 	readonly m_poseSequenceName: string
@@ -4178,7 +4127,6 @@ interface C_INIT_LifespanFromVelocity extends CParticleFunctionInitializer {
 	readonly m_flMaxTraceLength: number
 	readonly m_flTraceTolerance: number
 	readonly m_nMaxPlanes: number
-	readonly m_CollisionGroupName: string[]
 	readonly m_bIncludeWater: boolean
 }
 
@@ -4192,7 +4140,6 @@ interface CDOTA_ReconnectInfo {
 	readonly type_name: string
 	readonly m_playerSteamId: number
 	readonly m_iTeam: number
-	readonly m_iUnitControlled: C_BaseEntity
 	readonly m_bWantsRandomHero: boolean
 }
 
@@ -4200,7 +4147,7 @@ interface CLocalNPCObstructionsCache {
 	readonly type_name: string
 	readonly m_nLastUpdatedTick: number
 	readonly m_flRadius: number
-	readonly m_hCachedNPCs: C_DOTA_BaseNPC[]
+	readonly m_hCachedNPCs: C_BaseEntity[]
 }
 
 interface IDamageHandler {
@@ -4256,7 +4203,6 @@ interface C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_flCreepMinimapIconScale: number
 	readonly m_bCreepSpawningEnabled: boolean
 	readonly m_flRuneMinimapIconScale: number
-	readonly m_CustomVictoryMessage: string[]
 	readonly m_flCustomGameEndDelay: number
 	readonly m_flCustomGameSetupAutoLaunchDelay: number
 	readonly m_flCustomGameSetupTimeout: number
@@ -4380,7 +4326,6 @@ interface C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_nAbilityDraftAdvanceSteps: number
 	readonly m_nAbilityDraftPhase: number
 	readonly m_nAbilityDraftHeroesChosen: number[]
-	readonly m_vecARDMHeroes: KeyValues[]
 	readonly m_nARDMHeroesPrecached: number
 	readonly m_fLastARDMPrecache: number
 	readonly m_nAllDraftPhase: number
@@ -4392,11 +4337,10 @@ interface C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_vecPlayerMMR: number[]
 	readonly m_lobbyType: number
 	readonly m_lobbyLeagueID: number
-	readonly m_lobbyGameName: string[]
 	readonly m_vecHeroStatueLiked: CHeroStatueLiked[]
 	readonly m_CustomGameTeamMaxPlayers: number[]
 	readonly m_iMutations: number[]
-	readonly m_vecIngameEvents: C_IngameEvent_Base[]
+	readonly m_vecIngameEvents: C_BaseEntity[]
 	readonly m_nPrimaryIngameEventIndex: number
 	readonly m_hObsoleteIngameEvent: C_BaseEntity
 	readonly m_NeutralSpawnBoxes: AABB_t[]
@@ -4408,7 +4352,6 @@ interface CEntityIOOutput {
 
 interface CPlayerInfo extends IBotController, IPlayerInfo {
 	readonly type_name: string
-	readonly m_pParent: CBasePlayer
 }
 
 interface ViewLockData_t {
@@ -4451,12 +4394,9 @@ interface PlayerResourceBroadcasterData_t {
 interface CInteractionManager {
 	readonly type_name: string
 	readonly m_nActiveInteraction: number
-	readonly m_matHoldTransform: matrix3x4_t
 	readonly m_hSelf: C_BaseEntity
 	readonly m_hPlayer: C_BaseEntity
 	readonly m_hInteractionTarget: C_BaseEntity
-	readonly m_mInteractionTransformInit: matrix3x4_t
-	readonly m_mInteractionTransformTarget: matrix3x4_t
 	readonly m_flInteractionLerp: number
 	readonly m_bSelfInteractionRequirementMet: boolean[]
 	readonly m_bInteractionsDisabled: boolean[]
@@ -4516,7 +4456,6 @@ interface FeBoxRigid_t {
 	readonly vSize: Vector
 	readonly flStickiness: number
 	readonly flReserved: number[]
-	readonly tmFrame: matrix3x4a_t
 }
 
 interface TimedEvent {
@@ -4547,6 +4486,7 @@ interface FeSimdNodeBase_t {
 	readonly nNodeY0: number[]
 	readonly nNodeY1: number[]
 	readonly nDummy: number[]
+	readonly qAdjust: FourQuaternions
 }
 
 interface VelocitySampler {
@@ -4571,7 +4511,6 @@ interface AnimationResourceData_t {
 
 interface PermModelExtPart_t {
 	readonly type_name: string
-	readonly m_Transform: CTransform
 	readonly m_nParent: number
 }
 
@@ -4607,7 +4546,6 @@ interface SequenceFloatParam_t {
 
 interface CHeadLookParams {
 	readonly type_name: string
-	readonly m_LookPriority: number
 	readonly m_flLookDuration: number
 	readonly m_pReplyWhenAimed: INextBotReply
 	readonly m_pReasonStr: string
@@ -4627,7 +4565,6 @@ interface CFlashlightEffect {
 	readonly m_flLinearAtten: number
 	readonly m_bCastsShadows: boolean
 	readonly m_flCurrentPullBackDist: number
-	readonly m_textureName: string[]
 }
 
 interface CLookAtAnimNode extends CAnimNodeBase {
@@ -4828,7 +4765,6 @@ interface RenderSkeletonBone_t {
 	readonly type_name: string
 	readonly m_boneName: string
 	readonly m_parentName: string
-	readonly m_invBindPose: matrix3x4_t
 	readonly m_bbox: SkeletonBoneBounds_t
 	readonly m_flSphereRadius: number
 }
@@ -4956,14 +4892,11 @@ interface C_TeamplayRoundBasedRules extends C_TeamplayRules {
 
 interface CEconItemView extends IEconItemInterface {
 	readonly type_name: string
-	readonly m_iItemDefinitionIndex: item_definition_index_t
 	readonly m_iEntityQuality: number
 	readonly m_iEntityLevel: number
-	readonly m_iItemID: itemid_t
 	readonly m_iAccountID: number
 	readonly m_iInventoryPosition: number
 	readonly m_bInitialized: boolean
-	readonly m_nOverrideStyle: style_index_t
 	readonly m_bIsStoreItem: boolean
 	readonly m_bIsTradeItem: boolean
 	readonly m_bHasComputedAttachedParticles: boolean
@@ -4992,8 +4925,6 @@ interface AnimationRetargetElementData_t {
 	readonly m_nChainIndex: number
 	readonly m_nChainInvIndex: number
 	readonly m_nBoneIndex: number
-	readonly m_transform: matrix3x4_t
-	readonly m_invTransform: matrix3x4_t
 	readonly m_flDistance: number
 	readonly m_vecMin: Vector
 	readonly m_vecMax: Vector
@@ -5109,7 +5040,6 @@ interface SchemaFieldMetadataOverrideData_t {
 
 interface ViewSmoothingData_t {
 	readonly type_name: string
-	readonly pVehicle: CBaseAnimating
 	readonly bClampEyeAngles: boolean
 	readonly flPitchCurveZero: number
 	readonly flPitchCurveLinear: number
@@ -5193,14 +5123,11 @@ interface SchemaClassInfoData_t {
 
 interface C_EconItemView extends IEconItemInterface {
 	readonly type_name: string
-	readonly m_iItemDefinitionIndex: item_definition_index_t
 	readonly m_iEntityQuality: number
 	readonly m_iEntityLevel: number
-	readonly m_iItemID: itemid_t
 	readonly m_iAccountID: number
 	readonly m_iInventoryPosition: number
 	readonly m_bInitialized: boolean
-	readonly m_nOverrideStyle: style_index_t
 	readonly m_bIsStoreItem: boolean
 	readonly m_bIsTradeItem: boolean
 	readonly m_bHasComputedAttachedParticles: boolean
@@ -5234,7 +5161,6 @@ interface C_OP_DistanceToCP extends CParticleFunctionOperator {
 	readonly m_flOutputMax: number
 	readonly m_nStartCP: number
 	readonly m_bLOS: boolean
-	readonly m_CollisionGroupName: string[]
 	readonly m_flMaxTraceLength: number
 	readonly m_flLOSScale: number
 	readonly m_bScaleInitialRange: boolean
@@ -5271,7 +5197,6 @@ interface SceneObjectData_t {
 	readonly m_vMinBounds: Vector
 	readonly m_vMaxBounds: Vector
 	readonly m_translucencyType: number
-	readonly m_vTintColor: Vector4D
 }
 
 interface C_OP_MovementMaintainOffset extends CParticleFunctionOperator {
@@ -5475,25 +5400,20 @@ interface IVehicle {
 interface CRR_Response {
 	readonly type_name: string
 	readonly m_Type: number
-	readonly m_szResponseName: string[]
-	readonly m_szMatchingRule: string[]
 	readonly m_Params: ResponseParams
 	readonly m_fMatchScore: number
 	readonly m_szSpeakerContext: string
 	readonly m_szWorldContext: string
 	readonly m_Followup: ResponseFollowup
-	readonly m_pchCriteriaNames: CUtlSymbol[]
 	readonly m_pchCriteriaValues: string[]
 }
 
 interface AnimationSnapshotBase_t {
 	readonly type_name: string
 	readonly m_flRealTime: number
-	readonly m_rootToWorld: matrix3x4a_t
 	readonly m_bBonesInWorldSpace: boolean
 	readonly m_boneSetupMask: number[]
-	readonly m_boneTransforms: matrix3x4a_t[]
-	readonly m_flexControllers: float32[]
+	readonly m_flexControllers: number[]
 	readonly m_SnapshotType: number
 	readonly m_bHasDecodeDump: boolean
 	readonly m_DecodeDump: AnimationDecodeDebugDumpElement_t
@@ -5628,7 +5548,7 @@ interface C_OP_SetCPOrientationToDirection extends CParticleFunctionOperator {
 
 interface CSceneObjectExtraData_t {
 	readonly type_name: string
-	readonly m_flExtraShaderData: float32[]
+	readonly m_flExtraShaderData: number[]
 	readonly m_nCurrentMeshGroupMask: number
 	readonly m_vLightingOrigin: Vector
 	readonly m_flDepthSortBias: number
@@ -5664,8 +5584,6 @@ interface CClientAlphaProperty extends IClientAlphaProperty {
 
 interface C_OP_SetControlPointsToModelParticles extends CParticleFunctionOperator {
 	readonly type_name: string
-	readonly m_HitboxSetName: string[]
-	readonly m_AttachmentName: string[]
 	readonly m_nFirstControlPoint: number
 	readonly m_nNumControlPoints: number
 	readonly m_nFirstSourcePoint: number
@@ -5682,7 +5600,6 @@ interface C_OP_GlobalLight extends CParticleFunctionOperator {
 
 interface CSceneObject {
 	readonly type_name: string
-	readonly m_pDesc: ISceneObjectDesc
 	readonly m_pRefData: CSceneObjectReference_t
 	readonly m_flStartFadeDistanceSquared: number
 	readonly m_flFarCullDistanceSquared: number
@@ -5695,7 +5612,6 @@ interface CSceneObject {
 	readonly m_nID: number
 	readonly m_nNumTransformBlocks: number
 	readonly m_nObjectClass: number
-	readonly m_transform: matrix3x4a_t
 	readonly m_pPVS: CPVSData
 	readonly m_nOriginalRenderableFlags: number
 	readonly m_nRenderableFlags: number
@@ -5704,33 +5620,11 @@ interface CSceneObject {
 interface C_DOTAGameManager {
 	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
-	readonly m_pkvHeroes: KeyValues
-	readonly m_pkvUnits: KeyValues
-	readonly m_pkvAbilities: KeyValues
 	readonly m_bCustomGame: boolean
 	readonly m_bEventGame: boolean
-	readonly m_szAddOnGame: string[]
-	readonly m_szAddOnMap: string[]
-	readonly m_pkvAddOnHeroes: KeyValues
-	readonly m_pkvAddOnUnits: KeyValues
-	readonly m_pkvAddOnAbilities: KeyValues
-	readonly m_pTutorialLessonKeyValues: KeyValues
-	readonly m_pTutorialTipKeyValues: KeyValues
-	readonly m_pDivisionKeyValues: KeyValues
-	readonly m_pMatchGroupsKeyValues: KeyValues
-	readonly m_pEmoticonsKeyValues: KeyValues
-	readonly m_pPortraitsLightPreselects: KeyValues
-	readonly m_pAnimationStatues: KeyValues
-	readonly m_pAddonInfoKeyValues: KeyValues
-	readonly m_pBotScriptsDedicatedServer: KeyValues
-	readonly m_pkvWardPlacementLocations: KeyValues
-	readonly m_pRegionKeyValues: KeyValues
-	readonly m_pCountryKeyValues: KeyValues
-	readonly m_pSurveyQuestionData: KeyValues
 	readonly m_nNumLoadingPlayers: number
 	readonly m_iDefeatedParticle: number
 	readonly m_bLoadedPortraits: boolean[]
-	readonly m_pControlGroupsKeyValues: KeyValues
 	readonly m_StableHeroAvailable: boolean[]
 	readonly m_CurrentHeroAvailable: boolean[]
 	readonly m_CulledHeroes: boolean[]
@@ -5855,7 +5749,6 @@ interface AnimResourceDataChannel_t {
 
 interface C_INIT_InitialRepulsionVelocity extends CParticleFunctionInitializer {
 	readonly type_name: string
-	readonly m_CollisionGroupName: string[]
 	readonly m_vecOutputMin: Vector
 	readonly m_vecOutputMax: Vector
 	readonly m_nControlPointNumber: number
@@ -5989,7 +5882,6 @@ interface C_INIT_CreateOnModel extends CParticleFunctionInitializer {
 	readonly m_flBoneVelocity: number
 	readonly m_flMaxBoneVelocity: number
 	readonly m_vecDirectionBias: Vector
-	readonly m_HitboxSetName: string[]
 	readonly m_bLocalCoords: boolean
 	readonly m_bUseBones: boolean
 }
@@ -6026,7 +5918,6 @@ interface CRecipientFilter extends IRecipientFilter {
 	readonly type_name: string
 	readonly m_nBufType: number
 	readonly m_bInitMessage: boolean
-	readonly m_Recipients: C_BaseEntity[]
 	readonly m_bUsingPredictionRules: boolean
 	readonly m_bIgnorePredictionCull: boolean
 }
@@ -6067,7 +5958,6 @@ interface CTeamplayRules extends CMultiplayRules {
 	readonly m_DisableDeathMessages: boolean
 	readonly m_DisableDeathPenalty: boolean
 	readonly m_teamLimit: boolean
-	readonly m_szTeamList: string[]
 	readonly m_bSwitchTeams: boolean
 	readonly m_bScrambleTeams: boolean
 }
@@ -6089,7 +5979,6 @@ interface FeQuad_t {
 	readonly type_name: string
 	readonly nNode: number[]
 	readonly flSlack: number
-	readonly vShape: Vector4D[]
 }
 
 interface dota_minimap_boundary extends CEmptyEntityInstance {
@@ -6160,9 +6049,7 @@ interface CSoundParameters {
 	readonly count: number
 	readonly soundname: string
 	readonly delay_msec: number
-	readonly m_pOperatorsKV: KeyValues
 	readonly m_nRandomSeed: number
-	readonly gameData: KeyValues
 }
 
 interface C_OP_NormalLock extends CParticleFunctionOperator {
@@ -6256,7 +6143,6 @@ interface CLightInfoBase {
 	readonly m_flSkyboxAngularFogMaxStart: number
 	readonly m_flSkyboxAngularFogMinStart: number
 	readonly m_flSkyboxAngularFogMinEnd: number
-	readonly m_vAngularParams: Vector4D
 	readonly m_vHeightFogColor: Color[]
 	readonly m_flFogMaxZ: number
 	readonly m_flFogDensity: number[]
@@ -6293,7 +6179,6 @@ interface CLightInfoBase {
 	readonly m_flLightning_duration_max: number
 	readonly m_flLightning_fluctuation_min: number
 	readonly m_flLightning_fluctuation_max: number
-	readonly m_pszLightningSound: string[]
 	readonly m_flNextLightningStartTime: number
 	readonly m_flNextLightningEndTime: number
 	readonly m_flLightningFluctuationTimeStart: number
@@ -6333,7 +6218,6 @@ interface RnHull_t {
 	readonly m_vCentroid: Vector
 	readonly m_flMaxAngularRadius: number
 	readonly m_vOrthographicAreas: Vector
-	readonly m_MassProperties: matrix3x4_t
 	readonly m_flVolume: number
 	readonly m_flMaxMotionRadius: number
 	readonly m_flMinMotionThickness: number
@@ -6468,7 +6352,6 @@ interface C_DOTA_CombatLogQueryProgress {
 	readonly m_nQueryID: number
 	readonly m_nQueryRank: number
 	readonly m_nMultiQueryID: number
-	readonly m_szRankIdentifier: string[]
 }
 
 interface CStopwatchBase extends CSimpleSimTimer {
@@ -6519,10 +6402,12 @@ interface CCompressorGroup {
 	readonly m_nTotalElementCount: number
 	readonly m_szChannelClass: string[]
 	readonly m_szVariableName: string[]
-	readonly m_nType: fieldtype_t[]
+	readonly m_nType: number[]
 	readonly m_nFlags: number[]
 	readonly m_szGrouping: string[]
 	readonly m_nCompressorIndex: number[]
+	readonly m_szElementNames: string[][]
+	readonly m_nElementUniqueID: number[][]
 	readonly m_nElementMask: number[]
 }
 
@@ -6551,9 +6436,6 @@ interface C_OP_ExternalWindForce extends CParticleFunctionForce {
 
 interface CAnimReplayFrame {
 	readonly type_name: string
-	readonly m_instanceData: CUtlBinaryBlock
-	readonly m_poseRecipeInstanceData: CUtlBinaryBlock
-	readonly m_localToWorldTransform: CTransform
 	readonly m_waypoints: CAnimReplayWayPoint[]
 	readonly m_timeStamp: number
 }
@@ -6566,7 +6448,6 @@ interface CChoreoAnimNode extends CAnimNodeBase {
 interface CCopyRecipientFilter extends IRecipientFilter {
 	readonly type_name: string
 	readonly m_Flags: number
-	readonly m_Recipients: C_BaseEntity[]
 }
 
 interface CRandSimTimer extends CSimpleSimTimer {
@@ -6667,14 +6548,13 @@ interface CVRHandAttachmentInput {
 	readonly m_flTrackpadAnalogValueY: number
 	readonly m_flJoystickAnalogValueX: number
 	readonly m_flJoystickAnalogValueY: number
-	readonly m_pHand: CPropVRHand
 }
 
 interface CPlayerLocalData {
 	readonly type_name: string
 	readonly m_NetworkVar_PathIndex: ChangeAccessorFieldPathIndex_t
-	readonly m_stringeaBits: number[]
-	readonly m_stringeaPortalBits: number[]
+	readonly m_chAreaBits: number[]
+	readonly m_chAreaPortalBits: number[]
 	readonly m_nStepside: number
 	readonly m_nOldButtons: number
 	readonly m_iHideHUD: number
@@ -6797,9 +6677,6 @@ interface EventClientProcessGameInput_t {
 
 interface VsInputSignatureElement_t {
 	readonly type_name: string
-	readonly m_pName: string[]
-	readonly m_pSemantic: string[]
-	readonly m_pD3DSemanticName: string[]
 	readonly m_nD3DSemanticIndex: number
 }
 
@@ -6850,10 +6727,8 @@ interface C_OP_SetCPOrientationToPointAtCP extends CParticleFunctionPreEmission 
 interface SceneObject_t {
 	readonly type_name: string
 	readonly m_nObjectID: number
-	readonly m_vTransform: Vector4D[]
 	readonly m_flFadeStartDistance: number
 	readonly m_flFadeEndDistance: number
-	readonly m_vTintColor: Vector4D
 	readonly m_nObjectTypeFlags: number
 	readonly m_vLightingOrigin: Vector
 	readonly m_nLightGroup: number
@@ -6964,7 +6839,6 @@ interface CDOTA_Bot {
 	readonly m_fRequestedBlinkStart: number
 	readonly m_fRequestedBlinkExpire: number
 	readonly m_hMinions: C_BaseEntity[]
-	readonly m_Build: CDOTABaseAbility[]
 	readonly m_fModeDesires: number[]
 	readonly m_iPreviousBotModeType: number
 	readonly m_fPendingActionExecuteTime: number
@@ -6980,9 +6854,6 @@ interface VirtualVolumeTexData_t {
 	readonly type_name: string
 	readonly m_vBoundsMin: Vector
 	readonly m_vBoundsMax: Vector
-	readonly m_vPlaneX: Vector4D
-	readonly m_vPlaneY: Vector4D
-	readonly m_vPlaneZ: Vector4D
 	readonly m_vPlaneEndDistancesXYZ: Vector
 	readonly m_nVirtualResX: number
 	readonly m_nVirtualResY: number
@@ -7043,7 +6914,6 @@ interface CHeroStatueLiked {
 
 interface CEffectScriptElement {
 	readonly type_name: string
-	readonly m_szEffectName: string[]
 	readonly m_bTrailActive: boolean
 	readonly m_pSprite: C_BaseEntity
 	readonly m_iType: number
@@ -7052,8 +6922,6 @@ interface CEffectScriptElement {
 	readonly m_iG: number
 	readonly m_iB: number
 	readonly m_iA: number
-	readonly m_szAttachment: string[]
-	readonly m_szMaterial: string[]
 	readonly m_flScale: number
 	readonly m_flFadeTime: number
 	readonly m_flTextureRes: number
@@ -7244,7 +7112,6 @@ interface EventClientSendInput_t {
 
 interface C_SpeechBubbleInfo {
 	readonly type_name: string
-	readonly m_LocalizationStr: string[]
 	readonly m_hNPC: C_BaseEntity
 	readonly m_flDuration: number
 	readonly m_unOffsetX: number
@@ -7459,8 +7326,6 @@ interface SeqResourceMultiFetch_t {
 interface CRMSG_Entity_Info {
 	readonly type_name: string
 	readonly m_nEHandle: number
-	readonly m_pEntityName: string[]
-	readonly m_pEntityClass: string[]
 }
 
 interface CDOTASpectatorGraphManager {
@@ -7484,7 +7349,7 @@ interface CDOTASpectatorGraphManager {
 	readonly m_rgRadiantWinChance: number[]
 	readonly m_TeamStatsUpdateTimer: CountdownTimer
 	readonly m_HeroInventorySnapshotTimer: CountdownTimer
-	readonly m_vecPlayerSnapshots: sPlayerSnapshot[]
+	readonly m_vecPlayerSnapshots: sPlayerSnapshot[][]
 	readonly m_event_dota_player_killed: number
 	readonly m_event_server_pre_shutdown: number
 	readonly m_event_dota_player_pick_hero: number
@@ -7612,7 +7477,7 @@ interface SeqResourceS1SeqDesc_t {
 	readonly m_fetch: SeqResourceMultiFetch_t
 	readonly m_nLocalWeightlist: number
 	readonly m_transition: SeqResourceTransition_t
-string}
+}
 
 interface CRCMD_SetProfileMode {
 	readonly type_name: string
@@ -7621,13 +7486,10 @@ interface CRCMD_SetProfileMode {
 
 interface CUnitOrders {
 	readonly type_name: string
-	readonly m_nUnits: C_BaseEntity[]
 	readonly m_vPosition: Vector
 	readonly m_nIssuerPlayerIndex: number
 	readonly m_nOrderSequenceNumber: number
 	readonly m_nOrderType: number
-	readonly m_nTargetIndex: C_BaseEntity
-	readonly m_nAbilityIndex: C_BaseEntity
 	readonly m_bQueue: boolean
 }
 
@@ -7637,7 +7499,6 @@ interface InfoForResourceTypeVMapResourceData_t {
 
 interface SimpleConstraintSoundProfile {
 	readonly type_name: string
-	readonly eKeypoints: number
 	readonly m_keyPoints: number[]
 	readonly m_reversalSoundThresholds: number[]
 }
@@ -7703,7 +7564,7 @@ interface AnimationSnapshot_t extends AnimationSnapshotBase_t {
 interface VPhysXCollisionAttributes_t {
 	readonly type_name: string
 	readonly m_CollisionGroup: number
-string}
+}
 
 interface C_OP_OscillateScalar extends CParticleFunctionOperator {
 	readonly type_name: string
@@ -7842,7 +7703,6 @@ interface CSceneObjectData {
 	readonly m_vMinBounds: Vector
 	readonly m_vMaxBounds: Vector
 	readonly m_drawCalls: CMaterialDrawDescriptor[]
-	readonly m_vTintColor: Vector4D
 }
 
 interface FeTreeChildren_t {
@@ -7871,8 +7731,6 @@ interface C_INIT_RandomVectorComponent extends CParticleFunctionInitializer {
 
 interface CSceneObjectReference_t {
 	readonly type_name: string
-	readonly m_vecAABBMins: VectorAligned
-	readonly m_vecAABBMaxes: VectorAligned
 	readonly m_nRenderableFlags: number
 	readonly m_pObject: CSceneObject
 }
@@ -7896,11 +7754,10 @@ interface CBlendAnimNode extends CAnimNodeBase {
 
 interface AnimResourceIKChain_t {
 	readonly type_name: string
-string}
+}
 
 interface SlideMaterialList_t {
 	readonly type_name: string
-	readonly szSlideKeyword: string[]
 	readonly iSlideIndex: number[]
 }
 
@@ -7959,7 +7816,6 @@ interface CHintMessageQueue {
 	readonly type_name: string
 	readonly m_tmMessageEnd: number
 	readonly m_messages: CHintMessage[]
-	readonly m_pPlayer: CBasePlayer
 }
 
 interface C_BaseAnimatingController extends CSkeletonAnimationController {
@@ -7995,7 +7851,6 @@ interface CSoundPatch {
 	readonly m_iszSoundScriptName: string
 	readonly m_hEnt: C_BaseEntity
 	readonly m_entityChannel: number
-	readonly m_soundEntityIndex: C_BaseEntity
 	readonly m_soundOrigin: Vector
 	readonly m_flags: number
 	readonly m_baseFlags: number
@@ -8008,7 +7863,6 @@ interface CSoundPatch {
 interface CParameterAnimCondition extends CAnimStateConditionBase {
 	readonly type_name: string
 	readonly m_paramID: AnimParamID
-	readonly m_comparisonValue: CAnimVariant
 }
 
 interface CAnimState {
@@ -8071,7 +7925,6 @@ interface CRMSG_Manifest_New {
 	readonly type_name: string
 	readonly m_nManifestIndex: number
 	readonly m_nTimeUS: number
-	readonly m_pManifestDebugName: string[]
 }
 
 interface CSchemaClassInfo extends SchemaClassInfoData_t {
@@ -8111,7 +7964,6 @@ interface EventClientProcessInput_t {
 interface CFeNamedJiggleBone {
 	readonly type_name: string
 	readonly m_strParentBone: string
-	readonly m_transform: CTransform
 	readonly m_nJiggleParent: number
 	readonly m_jiggleBone: CFeJiggleBone
 }
@@ -8221,7 +8073,6 @@ interface CEnvWindShared {
 	readonly m_bGusting: boolean
 	readonly m_flWindAngleVariation: number
 	readonly m_flWindSpeedVariation: number
-	readonly m_iEntIndex: C_BaseEntity
 }
 
 interface CRMSG_Resource_Event {
@@ -8256,7 +8107,6 @@ interface C_INIT_PositionPlaceOnGround extends CParticleFunctionInitializer {
 	readonly type_name: string
 	readonly m_flOffset: number
 	readonly m_flMaxTraceLength: number
-	readonly m_CollisionGroupName: string[]
 	readonly m_bKill: boolean
 	readonly m_bIncludeWater: boolean
 	readonly m_bSetNormal: boolean
@@ -8291,7 +8141,6 @@ interface CAnnouncerDescriptor {
 	readonly type_name: string
 	readonly m_Replacement: string
 	readonly m_bUseDefaultAnnouncer: boolean
-	readonly m_nAnnouncerItemDef: item_definition_index_t
 	readonly m_pAnnouncerItem: CEconItemView
 	readonly m_bItemOwnedByLocalPlayer: boolean
 }
@@ -8299,8 +8148,8 @@ interface CAnnouncerDescriptor {
 interface C_PlayerLocalData {
 	readonly type_name: string
 	readonly m_NetworkVar_PathIndex: ChangeAccessorFieldPathIndex_t
-	readonly m_stringeaBits: number[]
-	readonly m_stringeaPortalBits: number[]
+	readonly m_chAreaBits: number[]
+	readonly m_chAreaPortalBits: number[]
 	readonly m_nStepside: number
 	readonly m_nOldButtons: number
 	readonly m_flFOVRate: number
@@ -8510,7 +8359,6 @@ interface CTwoBoneIKAnimNode extends CAnimNodeBase {
 
 interface MaterialParamVector_t extends MaterialParam_t {
 	readonly type_name: string
-	readonly m_value: Vector4D
 }
 
 interface C_OP_RenderFogSprites extends C_OP_RenderSprites {
@@ -8569,7 +8417,6 @@ interface C_CEnvWindShared {
 	readonly m_bGusting: boolean
 	readonly m_flWindAngleVariation: number
 	readonly m_flWindSpeedVariation: number
-	readonly m_iEntIndex: C_BaseEntity
 }
 
 interface CCommentarySystem {
@@ -8583,7 +8430,6 @@ interface CCommentarySystem {
 	readonly m_iTeleportStage: number
 	readonly m_bCheatState: boolean
 	readonly m_bIsFirstSpawnGroupToLoad: boolean
-	readonly m_pkvSavedModifications: KeyValues
 	readonly m_hSpawnedEntities: C_BaseEntity[]
 	readonly m_hCurrentNode: C_BaseEntity
 	readonly m_hActiveCommentaryNode: C_BaseEntity
@@ -8637,19 +8483,9 @@ interface CSchemaSystemInternalRegistration {
 	readonly type_name: string
 	readonly m_Vector2D: Vector2D
 	readonly m_Vector: Vector
-	readonly m_VectorAligned: VectorAligned
 	readonly m_QAngle: QAngle
-	readonly m_RadianEuler: RadianEuler
-	readonly m_DegreeEuler: DegreeEuler
-	readonly m_matrix3x4_t: matrix3x4_t
-	readonly m_matrix3x4a_t: matrix3x4a_t
 	readonly m_Color: Color
-	readonly m_Vector4D: Vector4D
-	readonly m_CTransform: CTransform
-	readonly m_pKeyValues: KeyValues
-	readonly m_CUtlBinaryBlock: CUtlBinaryBlock
-	readonly m_string: string
-	readonly m_CUtlSymbol: CUtlSymbol
+	readonly m_CUtlString: string
 	readonly m_ClassIntrospectionHandle_t: CSchemaClassInfo
 	readonly m_EnumIntrospectionHandle_t: CSchemaEnumInfo
 }
@@ -8682,8 +8518,6 @@ interface CRandStopwatch extends CStopwatchBase {
 
 interface C_OP_RenderModels extends CParticleFunctionRenderer {
 	readonly type_name: string
-	readonly m_ActivityName: string[]
-	readonly m_EconSlotName: string[]
 	readonly m_ModelList: ModelReference_t[]
 	readonly m_bIgnoreNormal: boolean
 	readonly m_bOrientZ: boolean
@@ -8703,7 +8537,6 @@ interface C_OP_RenderModels extends CParticleFunctionRenderer {
 	readonly m_bSuppressTint: boolean
 	readonly m_bUseRawMeshGroup: boolean
 	readonly m_bDisableShadows: boolean
-	readonly m_szRenderAttribute: string[]
 }
 
 interface SosEditItemInfo_t {
@@ -8740,7 +8573,6 @@ interface FeFitInfluence_t {
 
 interface CGameSceneNode {
 	readonly type_name: string
-	readonly m_mNodeToWorld: matrix3x4a_t
 	readonly m_pOwner: CEntityInstance
 	readonly m_pParent: CGameSceneNode
 	readonly m_pChild: CGameSceneNode
@@ -8788,7 +8620,6 @@ interface C_INIT_RandomYaw extends CGeneralRandomRotation {
 interface FeSimdQuad_t {
 	readonly type_name: string
 	readonly nNode: number[]
-	readonly vShape: FourVectors[]
 }
 
 interface C_SingleplayRules extends C_GameRules {
@@ -8811,7 +8642,6 @@ interface CBaseServerVehicle extends IServerVehicle {
 	readonly type_name: string
 	readonly m_PassengerInfo: CPassengerInfo[]
 	readonly m_PassengerRoles: CPassengerRole[]
-	readonly m_pVehicle: C_BaseEntity
 	readonly m_nNPCButtons: number
 	readonly m_nPrevNPCButtons: number
 	readonly m_flTurnDegrees: number
@@ -8821,7 +8651,6 @@ interface CBaseServerVehicle extends IServerVehicle {
 	readonly m_vecCurrentExitEndPoint: Vector
 	readonly m_savedViewOffset: Vector
 	readonly m_hExitBlocker: C_BaseEntity
-	readonly m_chPreviousTextureType: string
 	readonly m_vehicleSounds: vehiclesounds_t
 	readonly m_flVehicleVolume: number
 	readonly m_iSoundGear: number
@@ -8850,7 +8679,6 @@ interface C_OP_WorldTraceConstraint extends CParticleFunctionConstraint {
 	readonly m_bDecayBounce: boolean
 	readonly m_bKillonContact: boolean
 	readonly m_bConfirmCollision: boolean
-	readonly m_CollisionGroupName: string[]
 	readonly m_bBrushOnly: boolean
 }
 
@@ -9067,7 +8895,6 @@ interface C_OP_LockToBone extends CParticleFunctionOperator {
 	readonly m_flLifeTimeFadeEnd: number
 	readonly m_flJumpThreshold: number
 	readonly m_flPrevPosScale: number
-	readonly m_HitboxSetName: string[]
 	readonly m_bRigid: boolean
 	readonly m_bUseBones: boolean
 }
@@ -9089,12 +8916,10 @@ interface CEntityIdentity {
 	readonly m_pNext: CEntityIdentity
 	readonly m_pPrevByClass: CEntityIdentity
 	readonly m_pNextByClass: CEntityIdentity
-	readonly m_pId: V_uuid_t
 }
 
 interface WorldEnvironmentMap_t {
 	readonly type_name: string
-	readonly m_matLocalToWorld: matrix3x4_t
 	readonly m_bSkyRelight: boolean
 	readonly m_flInfluenceRadius: number
 	readonly m_BoxProjection: AABB_t
@@ -9171,7 +8996,6 @@ interface DOTASpecialAbility_t {
 
 interface sSpiritDef {
 	readonly type_name: string
-	readonly pSpirit: C_DOTA_BaseNPC
 	readonly nSpiritFXIndex: number
 	readonly nSpiritState: number
 }
@@ -9195,11 +9019,9 @@ interface CNewParticleEffect extends IParticleEffect {
 	readonly m_bShouldSimulateDuringGamePaused: boolean
 	readonly m_bShouldCheckFoW: boolean
 	readonly m_vSortOrigin: Vector
-	readonly m_hOwner: PARTICLE_EHANDLE__
 	readonly m_pOwningParticleProperty: CParticleProperty
 	readonly m_LastMin: Vector
 	readonly m_LastMax: Vector
-	readonly m_nSplitScreenUser: CSplitScreenSlot
 	readonly m_vecAggregationCenter: Vector
 	readonly m_RefCount: number
 }
@@ -9271,7 +9093,7 @@ interface SeqResourceCmdSeqDesc_t {
 
 interface MaterialParamString_t extends MaterialParam_t {
 	readonly type_name: string
-string}
+}
 
 interface CHitBoxSetList {
 	readonly type_name: string
@@ -9289,7 +9111,6 @@ interface InfoForResourceTypeCPostProcessingResource {
 
 interface SchemaStaticFieldData_t {
 	readonly type_name: string
-	readonly m_pInstance: void
 	readonly m_Metadata: SchemaMetadataSetData_t
 }
 
@@ -9308,14 +9129,12 @@ interface C_INIT_CreateWithinBox extends CParticleFunctionInitializer {
 
 interface InfoOverlayData_t {
 	readonly type_name: string
-	readonly m_transform: matrix3x4_t
 	readonly m_flWidth: number
 	readonly m_flHeight: number
 	readonly m_flDepth: number
 	readonly m_vUVStart: Vector2D
 	readonly m_vUVEnd: Vector2D
 	readonly m_nRenderOrder: number
-	readonly m_vTintColor: Vector4D
 	readonly m_nSequenceOverride: number
 }
 
@@ -9347,7 +9166,6 @@ interface C_INIT_RemapCPtoVector extends CParticleFunctionInitializer {
 
 interface C_INIT_RandomModelSequence extends CParticleFunctionInitializer {
 	readonly type_name: string
-	readonly m_ActivityName: string[]
 }
 
 interface CVoxelVisibility {
@@ -9432,7 +9250,6 @@ interface C_OP_RemapCPtoVelocity extends CParticleFunctionOperator {
 
 interface IrradVolume_t {
 	readonly type_name: string
-	readonly m_transform: VMatrix
 	readonly m_flFadeMinDist: number
 	readonly m_flFadeMaxDist: number
 	readonly m_vMinBounds: Vector
@@ -9440,7 +9257,6 @@ interface IrradVolume_t {
 	readonly m_nFlags: number
 	readonly m_nSortKey: number
 	readonly m_nPlanes: number
-	readonly m_planes: Vector4D[]
 }
 
 interface CBlendNodeChild {
@@ -9474,7 +9290,6 @@ interface C_OP_RenderTrails extends CBaseTrailRenderer {
 	readonly m_flLengthScale: number
 	readonly m_flRadiusTaper: number
 	readonly m_flLengthFadeInTime: number
-	readonly m_vEndTrailTintFactor: Vector4D
 	readonly m_flForwardShift: number
 	readonly m_bFlipUVBasedOnPitchYaw: boolean
 	readonly m_bUseTopology: boolean
@@ -9515,7 +9330,6 @@ interface C_OP_DistanceBetweenCPs extends CParticleFunctionOperator {
 	readonly m_flOutputMax: number
 	readonly m_flMaxTraceLength: number
 	readonly m_flLOSScale: number
-	readonly m_CollisionGroupName: string[]
 	readonly m_bLOS: boolean
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bScaleCurrent: boolean
@@ -9594,7 +9408,6 @@ interface CDOTA_CombatLogQueryProgress {
 	readonly m_nQueryID: number
 	readonly m_nQueryRank: number
 	readonly m_nMultiQueryID: number
-	readonly m_szRankIdentifier: string[]
 }
 
 interface sSpiritInfo {
@@ -9625,7 +9438,6 @@ interface AttachmentData_t {
 interface CRMSG_Resource_NewId {
 	readonly type_name: string
 	readonly m_nResourceId: number
-	readonly m_ResourceName: string[]
 	readonly m_nTimeUS: number
 }
 
@@ -9695,7 +9507,7 @@ interface NodeData_t {
 	readonly m_vMinBounds: Vector
 	readonly m_vMaxBounds: Vector
 	readonly m_flMinimumDistance: number
-string}
+}
 
 interface CSpeedScaleAnimNode extends CAnimNodeBase {
 	readonly type_name: string
@@ -9834,7 +9646,6 @@ interface C_OP_SetControlPointToImpactPoint extends CParticleFunctionPreEmission
 	readonly m_flTraceLength: number
 	readonly m_flOffset: number
 	readonly m_vecTraceDir: Vector
-	readonly m_CollisionGroupName: string[]
 	readonly m_bSetToEndpoint: boolean
 }
 
@@ -9908,7 +9719,6 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_flCreepMinimapIconScale: number
 	readonly m_bCreepSpawningEnabled: boolean
 	readonly m_flRuneMinimapIconScale: number
-	readonly m_CustomVictoryMessage: string[]
 	readonly m_flCustomGameEndDelay: number
 	readonly m_flCustomGameSetupAutoLaunchDelay: number
 	readonly m_flCustomGameSetupTimeout: number
@@ -10016,8 +9826,6 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_fUnpauseRawTime: number
 	readonly m_fUnpauseCurTime: number
 	readonly m_bGameTimeFrozen: boolean
-	readonly m_pKVEventMatchMetadata: KeyValues
-	readonly m_pKVEventSignout: KeyValues
 	readonly m_nCustomGameFowTeamCount: number
 	readonly m_bUseAlternateABRules: boolean
 	readonly m_bLobbyIsAssociatedWithGame: boolean
@@ -10037,22 +9845,21 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_nAbilityDraftAdvanceSteps: number
 	readonly m_nAbilityDraftPhase: number
 	readonly m_nAbilityDraftHeroesChosen: number[]
-	readonly m_vecARDMHeroes: KeyValues[]
 	readonly m_nARDMHeroesPrecached: number
 	readonly m_fLastARDMPrecache: number
 	readonly m_nAllDraftPhase: number
 	readonly m_bAllDraftRadiantFirst: boolean
 	readonly m_bAllowOverrideVPK: boolean
 	readonly m_nARDMHeroesRemaining: number[]
-	readonly m_hGlobalPetList: C_DOTA_BaseNPC_Pet[]
+	readonly m_hGlobalPetList: C_BaseEntity[]
 	readonly m_vecHeroPickRecord: HeroPickRecord_t[]
 	readonly m_vecHeroDeathRecord: HeroDeathRecord_t[]
 	readonly m_BadResultPositionTriggers: C_BaseEntity[]
 	readonly m_RoshanPositionTriggers: C_BaseEntity[]
 	readonly m_hRuneSpawners: C_BaseEntity[]
 	readonly m_hBountyRuneSpawners: C_BaseEntity[]
-	readonly m_hNeutralSpawners: C_BaseEntity[]
-	readonly m_hAncientSpawners: C_BaseEntity[]
+	readonly m_hNeutralSpawners: C_BaseEntity[][]
+	readonly m_hAncientSpawners: C_BaseEntity[][]
 	readonly m_iPreviousRune1: number
 	readonly m_iPreviousRune2: number
 	readonly m_iAllStarMatchReady: number
@@ -10075,12 +9882,12 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_hWards: C_BaseEntity[]
 	readonly m_hGameEvents: C_BaseEntity
 	readonly m_Towers: C_BaseEntity[]
-	readonly m_TeamTowers: C_DOTA_BaseNPC_Tower[]
-	readonly m_TeamTowerPositions: Vector[]
-	readonly m_TeamTowerLevels: number[]
-	readonly m_TeamTowerLanes: number[]
-	readonly m_TeamBarracks: C_DOTA_BaseNPC_Building[]
-	readonly m_TeamShrines: C_DOTA_BaseNPC_Building[]
+	readonly m_TeamTowers: C_BaseEntity[][]
+	readonly m_TeamTowerPositions: Vector[][]
+	readonly m_TeamTowerLevels: number[][]
+	readonly m_TeamTowerLanes: number[][]
+	readonly m_TeamBarracks: C_BaseEntity[][]
+	readonly m_TeamShrines: C_BaseEntity[][]
 	readonly m_TempDayTimer: CountdownTimer
 	readonly m_TempNightTimer: CountdownTimer
 	readonly m_NightstalkerNightTimer: CountdownTimer
@@ -10095,7 +9902,7 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_pszLastUsedAbility: string[]
 	readonly m_pszLastUsedActiveAbility: string[]
 	readonly m_reconnectinfos: CDOTA_ReconnectInfo[]
-	readonly m_hEnemyCreepsInBase: C_BaseEntity[]
+	readonly m_hEnemyCreepsInBase: C_BaseEntity[][]
 	readonly m_bTeamHasAbandonedPlayer: boolean[]
 	readonly m_bLobbyHasLeaverDetected: boolean
 	readonly m_bGameIsForcedSafeToLeave: boolean
@@ -10120,11 +9927,10 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_dotaMapSpawnGroup: number
 	readonly m_lobbyType: number
 	readonly m_lobbyLeagueID: number
-	readonly m_lobbyGameName: string[]
 	readonly m_vecHeroStatueLiked: CHeroStatueLiked[]
 	readonly m_CustomGameTeamMaxPlayers: number[]
 	readonly m_iMutations: number[]
-	readonly m_vecIngameEvents: CIngameEvent_Base[]
+	readonly m_vecIngameEvents: C_BaseEntity[]
 	readonly m_nPrimaryIngameEventIndex: number
 	readonly m_NeutralSpawnBoxes: AABB_t[]
 	readonly m_flLastItemSuggestionRequestTime: number[]
@@ -10153,7 +9959,6 @@ interface C_OP_ConstrainDistanceToPath extends CParticleFunctionConstraint {
 
 interface EntComponentInfo_t {
 	readonly type_name: string
-	readonly m_id: V_uuid_t
 	readonly m_pName: string
 	readonly m_pCPPClassname: string
 	readonly m_pNetworkDataReferencedDescription: string
@@ -10392,11 +10197,10 @@ interface C_INIT_CreateGrid extends CParticleFunctionInitializer {
 
 interface AnimResourceMorphDifference_t {
 	readonly type_name: string
-string}
+}
 
 interface FeSimdFitMatrices_t {
 	readonly type_name: string
-	readonly vCenter: FourVectors
 	readonly nEnd: number[]
 	readonly nCtrl: number[]
 	readonly AqqInv: FourCovMatrices3
@@ -10436,7 +10240,6 @@ interface C_OP_SetPerChildControlPoint extends CParticleFunctionOperator {
 interface CDOTA_ActionRunner {
 	readonly type_name: string
 	readonly m_pEventContext: CModifierParams
-	readonly m_pCaster: C_DOTA_BaseNPC
 }
 
 interface C_OP_MaintainSequentialPath extends CParticleFunctionOperator {
@@ -10585,7 +10388,6 @@ interface C_INIT_SetHitboxToClosest extends CParticleFunctionInitializer {
 	readonly m_nControlPointNumber: number
 	readonly m_nDesiredHitbox: number
 	readonly m_flHitBoxScale: number
-	readonly m_HitboxSetName: string[]
 	readonly m_bUseBones: boolean
 }
 
@@ -10598,7 +10400,6 @@ interface C_INIT_CreateOnModelAtHeight extends CParticleFunctionInitializer {
 	readonly m_bUseWaterHeight: boolean
 	readonly m_flDesiredHeight: number
 	readonly m_flHitBoxScale: number
-	readonly m_HitboxSetName: string[]
 }
 
 interface C_INIT_RingWave extends CParticleFunctionInitializer {
@@ -10624,8 +10425,6 @@ interface VPhysXJoint_t {
 	readonly m_nBody1: number
 	readonly m_nBody2: number
 	readonly m_nFlags: number
-	readonly m_Frame1: CTransform
-	readonly m_Frame2: CTransform
 	readonly m_bEnableCollision: boolean
 	readonly m_bEnableLinearLimit: boolean
 	readonly m_LinearLimit: VPhysXRange_t
@@ -10745,10 +10544,9 @@ interface C_BaseEntity extends C_GameEntity {
 	readonly m_bIsValidIKAttachment: boolean
 	readonly m_bPredictable: boolean
 	readonly m_bRenderWithViewModels: boolean
-	readonly m_nSplitUserPlayerPredictionSlot: CSplitScreenSlot
 	readonly m_hOldMoveParent: C_BaseEntity
 	readonly m_Particles: CParticleProperty
-	readonly m_vecPredictedScriptFloats: float32[]
+	readonly m_vecPredictedScriptFloats: number[]
 	readonly m_vecPredictedScriptFloatIDs: number[]
 	readonly m_nNextScriptVarRecordID: number
 	readonly m_vecAngVelocity: QAngle
@@ -10824,16 +10622,16 @@ interface C_DOTA_Item extends C_DOTABaseAbility {
 	readonly m_bSellable: boolean
 	readonly m_bInitiallySellable: boolean
 	readonly m_bForceUnsellable: boolean
-	readonly m_bRequiresstringges: boolean
-	readonly m_bDisplaystringges: boolean
-	readonly m_bHidestringges: boolean
+	readonly m_bRequiresCharges: boolean
+	readonly m_bDisplayCharges: boolean
+	readonly m_bHideCharges: boolean
 	readonly m_bKillable: boolean
 	readonly m_bDisassemblable: boolean
 	readonly m_bAlertable: boolean
-	readonly m_iInitialstringges: number
+	readonly m_iInitialCharges: number
 	readonly m_bCastOnPickup: boolean
-	readonly m_iCurrentstringges: number
-	readonly m_iSecondarystringges: number
+	readonly m_iCurrentCharges: number
+	readonly m_iSecondaryCharges: number
 	readonly m_bCombineLocked: boolean
 	readonly m_flPurchaseTime: number
 	readonly m_flAssembledTime: number
@@ -10843,7 +10641,7 @@ interface C_DOTA_Item extends C_DOTABaseAbility {
 	readonly m_flEnableTime: number
 	readonly m_bDisplayOwnership: boolean
 	readonly m_hOldOwnerEntity: C_BaseEntity
-	readonly m_iOldstringges: number
+	readonly m_iOldCharges: number
 	readonly m_iPlayerOwnerID: number
 	readonly m_vecPreGameTransferPlayerIDs: number[]
 }
@@ -11028,7 +10826,7 @@ interface C_DOTA_Ability_Invoker_Empty1 extends C_DOTABaseAbility {
 interface C_BaseFlex extends C_BaseAnimatingOverlay {
 	readonly type_name: string
 	readonly m_viewtarget: Vector
-	readonly m_flexWeight: float32[]
+	readonly m_flexWeight: number[]
 	readonly m_blinktoggle: boolean
 	readonly m_nLastFlexUpdateFrameCount: number
 	readonly m_CachedViewTarget: Vector
@@ -11066,13 +10864,12 @@ interface C_BaseCombatCharacter extends C_BaseFlex {
 	readonly type_name: string
 	readonly m_flNextAttack: number
 	readonly m_iAmmo: number[]
-	readonly m_hMyWeapons: C_BaseCombatWeapon[]
+	readonly m_hMyWeapons: C_BaseEntity[]
 	readonly m_hActiveWeapon: C_BaseEntity
-	readonly m_hMyWearables: C_EconWearable[]
+	readonly m_hMyWearables: C_BaseEntity[]
 	readonly m_bloodColor: number
 	readonly m_leftFootAttachment: number
 	readonly m_rightFootAttachment: number
-	readonly m_nWaterWakeMode: number
 	readonly m_flWaterWorldZ: number
 	readonly m_flWaterNextTraceTime: number
 	readonly m_flFieldOfView: number
@@ -11199,8 +10996,8 @@ interface C_DOTA_Item_Recipe_NullTalisman extends C_DOTA_Item {
 
 interface C_DOTA_Ability_Bloodseeker_Rupture extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly max_stringges_scepter: number
-	readonly stringge_restore_time_scepter: number
+	readonly max_charges_scepter: number
+	readonly charge_restore_time_scepter: number
 }
 
 interface C_DOTA_Ability_Axe_BerserkersCall extends C_DOTABaseAbility {
@@ -11232,7 +11029,7 @@ interface C_DOTA_Ability_Special_Bonus_MP_1000 extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
-interface C_NextBotCombaCharacter extends C_BaseCombatCharacter {
+interface C_NextBotCombatCharacter extends C_BaseCombatCharacter {
 	readonly type_name: string
 	readonly m_shadowTimer: CountdownTimer
 	readonly m_shadowType: number
@@ -11344,8 +11141,6 @@ interface C_DOTA_Ability_Special_Bonus_Attack_Damage_150 extends C_DOTABaseAbili
 
 interface C_PointCamera extends C_BaseEntity {
 	readonly type_name: string
-	readonly m_bIsValid: boolean
-	readonly m_iID: number
 	readonly m_FOV: number
 	readonly m_Resolution: number
 	readonly m_bFogEnable: boolean
@@ -11529,21 +11324,6 @@ interface C_DOTA_Item_DataDriven extends C_DOTA_Item {
 	readonly m_fAnimationPlaybackRate: number
 	readonly m_fAOERadius: number
 	readonly m_CastAnimation: number
-	readonly m_ModifierKVDescriptions: KeyValues[]
-	readonly m_pOnChannelFinishKV: KeyValues
-	readonly m_pOnChannelSucceededKV: KeyValues
-	readonly m_pOnChannelInterruptedKV: KeyValues
-	readonly m_pOnOwnerSpawnedKV: KeyValues
-	readonly m_pOnOwnerDiedKV: KeyValues
-	readonly m_pOnProjectileHitUnitKV: KeyValues
-	readonly m_pOnProjectileFinishKV: KeyValues
-	readonly m_pOnSpellStartKV: KeyValues
-	readonly m_pOnAbilityPhaseStartKV: KeyValues
-	readonly m_pOnToggleOnKV: KeyValues
-	readonly m_pOnToggleOffKV: KeyValues
-	readonly m_pOnEquipKV: KeyValues
-	readonly m_pOnUnequipKV: KeyValues
-	readonly m_pOnCreatedKV: KeyValues
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Underlord_4 extends C_DOTABaseAbility {
@@ -11601,7 +11381,7 @@ interface C_DOTA_Ability_Leshrac_Diabolic_Edict extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
-interface C_DOTA_BaseNPC extends C_NextBotCombaCharacter {
+interface C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly type_name: string
 	readonly m_bIsHero: boolean
 	readonly m_bIsTower: boolean
@@ -11673,7 +11453,7 @@ interface C_DOTA_BaseNPC extends C_NextBotCombaCharacter {
 	readonly m_flMana: number
 	readonly m_flMaxMana: number
 	readonly m_flManaThinkRegen: number
-	readonly m_iBKBstringgesUsed: number
+	readonly m_iBKBChargesUsed: number
 	readonly m_iBotDebugData: number
 	readonly m_bIsIllusion: boolean
 	readonly m_bHasClientSeenIllusionModifier: boolean
@@ -11772,38 +11552,15 @@ interface C_DOTA_BaseNPC extends C_NextBotCombaCharacter {
 	readonly m_NetworkSequenceIndex: number
 	readonly m_bShouldDoFlyHeightVisual: boolean
 	readonly m_flStartSequenceCycle: number
-	readonly m_ActivityModifiers: CUtlSymbol[]
 	readonly m_hBackgroundSceneEnt: C_BaseEntity
 	readonly m_hSpeakingSceneEnt: C_BaseEntity
-	readonly m_hOldWearables: C_EconWearable[]
-	readonly m_CustomHealthLabel: string[]
+	readonly m_hOldWearables: C_BaseEntity[]
 	readonly m_CustomHealthLabelColor: Color
-	readonly m_nWearableDefIndex: item_definition_index_t
 	readonly m_gibTintColor: Color
 	readonly m_bForceMaterialCombine: boolean
 	readonly m_bShouldDrawParticlesWhileHidden: boolean
 	readonly m_bIsClientThinkPending: boolean
 	readonly m_bActivityModifiersDirty: boolean
-
-	/**
-	 * @param flag_num must be 0 < flag_num < 64
-	 */
-	IsUnitStateFlagSet(flag_num: number): boolean
-	GetAbilityByName(name: string): C_DOTABaseAbility
-	GetAbility(slot: number): C_DOTABaseAbility
-	GetItemByName(name: string): C_DOTA_Item
-	GetItemByNameInBackpack(name: string): C_DOTA_Item
-	GetItemInSlot(slot: number): C_DOTA_Item
-	GetBuffByName(name: string): CDOTA_Buff
-
-	AbsorbedDamage(damage_type: DAMAGE_TYPES): number
-	WillIgnore(damage_type: DAMAGE_TYPES): boolean
-	CalculateDamage(damage: number, damage_type: DAMAGE_TYPES): number
-	CalculateDamageByHand(from: C_DOTA_BaseNPC_Hero): number
-
-	IsControllableByPlayer(playerID: number): boolean
-	HasAttackCapability(capability: DOTAUnitAttackCapability_t): boolean
-	HasMoveCapability(capability: DOTAUnitMoveCapability_t): boolean
 }
 
 interface C_DOTA_Ability_Nevermore_Shadowraze extends C_DOTABaseAbility {
@@ -12151,7 +11908,6 @@ interface C_IngameEvent_Base extends C_BaseEntity {
 	readonly m_QueryIDForProgress: number[]
 	readonly m_SubChallenges: CDOTASubChallengeInfo[]
 	readonly m_CompendiumCoinWager: number[]
-	readonly m_CompendiumTokenWagerItemID: itemid_t[]
 	readonly m_CompendiumTokenWagerAmount: number[]
 	readonly m_CompendiumCoinWagerResults: number[]
 	readonly m_CompendiumRankWagers: number[]
@@ -12250,7 +12006,7 @@ interface C_LightGlow extends C_BaseModelEntity {
 	readonly m_nOuterMaxDist: number
 	readonly m_flGlowProxySize: number
 	readonly m_flHDRColorScale: number
-	readonly m_Glow: C_LightGlowOverlay
+	//readonly m_Glow: C_LightGlowOverlay
 }
 
 interface CDOTA_Item_Recipe_DragonLance extends C_DOTA_Item {
@@ -12326,13 +12082,11 @@ interface C_DOTA_Ability_Nian_Tail_Swipe extends C_DOTA_Ability_Animation_Attack
 
 interface C_DotaSubquestBase extends C_BaseEntity {
 	readonly type_name: string
-	readonly m_pszSubquestText: string[]
 	readonly m_bHidden: boolean
 	readonly m_bCompleted: boolean
 	readonly m_bShowProgressBar: boolean
 	readonly m_nProgressBarHueShift: number
 	readonly m_pnTextReplaceValuesCDotaSubquestBase: number[]
-	readonly m_pszTextReplaceString: string[]
 	readonly m_nTextReplaceValueVersion: number
 	readonly m_bWasCompleted: boolean
 }
@@ -12447,7 +12201,6 @@ interface C_DOTA_Ability_Special_Bonus_MP_125 extends C_DOTABaseAbility {
 interface C_EconEntity extends C_BaseFlex, IHasAttributes {
 	readonly type_name: string
 	readonly m_flFlexDelayTime: number
-	readonly m_flFlexDelayedWeight: float32
 	readonly m_AttributeManager: CAttributeContainer
 	readonly m_bClientside: boolean
 	readonly m_nDisableMode: number
@@ -12458,7 +12211,6 @@ interface C_EconEntity extends C_BaseFlex, IHasAttributes {
 	readonly m_bAttachmentDirty: boolean
 	readonly m_nUnloadedModelIndex: number
 	readonly m_iNumOwnerValidationRetries: number
-	readonly m_iOldStyle: style_index_t
 	readonly m_hOldProvidee: C_BaseEntity
 }
 
@@ -12552,7 +12304,7 @@ interface CDOTA_Item_SentryWard extends C_DOTA_Item {
 interface C_DOTA_Item_TranquilBoots extends C_DOTA_Item {
 	readonly type_name: string
 	readonly break_count: number
-	readonly m_DamageList: float32[]
+	readonly m_DamageList: number[]
 }
 
 interface CDOTA_Ability_Nyx_Assassin_Unburrow extends C_DOTABaseAbility {
@@ -12606,7 +12358,6 @@ interface C_DOTA_BaseNPC_Building extends C_DOTA_BaseNPC {
 	readonly m_iHeroStatueStatusEffectIndex: number
 	readonly m_bHeroStatue: boolean
 	readonly m_bBattleCup: boolean
-	readonly m_HeroStatueInscription: string[]
 	readonly m_iHeroStatueOwnerPlayerID: number
 	readonly m_ParticleTintColor: Color
 }
@@ -12697,10 +12448,9 @@ interface C_DOTA_Ability_Special_Bonus_Unique_Techies_4 extends C_DOTABaseAbilit
 
 interface C_Team extends C_BaseEntity {
 	readonly type_name: string
-	readonly m_aPlayers: C_BasePlayer[]
+	readonly m_aPlayers: C_BaseEntity[]
 	readonly m_iScore: number
 	readonly m_iRoundsWon: number
-	readonly m_szTeamname: string[]
 	readonly m_iDeaths: number
 	readonly m_iPing: number
 	readonly m_iPacketloss: number
@@ -13091,7 +12841,6 @@ interface C_PointClientUIWorldPanel extends C_BaseClientUIEntity {
 	readonly m_bForceRecreateNextUpdate: boolean
 	readonly m_bMoveViewToPlayerNextThink: boolean
 	readonly m_bCheckCSSClasses: boolean
-	readonly m_matAnchorDelta: matrix3x4_t
 	readonly m_pOffScreenIndicator: CPointOffScreenIndicatorUi
 	readonly m_bIgnoreInput: boolean
 	readonly m_bFollowPlayerAcrossTeleport: boolean
@@ -13219,7 +12968,6 @@ interface C_BaseTeamObjectiveResource extends C_BaseEntity {
 	readonly m_iTeamInZone: number[]
 	readonly m_bBlocked: boolean[]
 	readonly m_iOwner: number[]
-	readonly m_pszCapLayoutInHUD: string[]
 	readonly m_flCapTimeLeft: number[]
 	readonly m_flCapLastThinkTime: number[]
 	readonly m_bWarnedOnFinalCap: boolean[]
@@ -13238,7 +12986,6 @@ interface C_DOTATeam extends C_Team {
 	readonly m_bTeamComplete: boolean
 	readonly m_bTeamIsHomeTeam: boolean
 	readonly m_CustomHealthbarColor: Color
-	readonly m_szTag: string[]
 }
 
 interface C_ButtonTimed extends C_BaseButton {
@@ -13307,8 +13054,8 @@ interface C_DOTA_Ability_Luna_LucentBeam extends C_DOTABaseAbility {
 
 interface C_DOTA_Ability_Sniper_Shrapnel extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly stringge_restore_time: number
-	readonly max_stringges: number
+	readonly charge_restore_time: number
+	readonly max_charges: number
 }
 
 interface C_DOTA_Item_Lua extends C_DOTA_Item {
@@ -13956,7 +13703,6 @@ interface C_EnvProjectedTexture extends C_ModelPointEntity, CProjectedTextureBas
 
 interface C_DOTA_Ability_Visage_SummonFamiliars extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly szUnitName: string[]
 	readonly m_hExistingUnits: C_BaseEntity[]
 }
 
@@ -14051,7 +13797,6 @@ interface C_DOTA_BaseNPC_RotatableBuilding extends C_DOTA_BaseNPC {
 	readonly m_iHeroStatueStatusEffectIndex: number
 	readonly m_bHeroStatue: boolean
 	readonly m_bBattleCup: boolean
-	readonly m_HeroStatueInscription: string[]
 	readonly m_iHeroStatueOwnerPlayerID: number
 	readonly m_ParticleTintColor: Color
 }
@@ -14193,8 +13938,8 @@ interface C_DOTA_PlayerResource extends C_BaseEntity {
 	readonly m_bDirtySelection: boolean
 	readonly m_bHasWorldTreesChanged: boolean
 	readonly m_bSwapWillingness: boolean[]
-	readonly m_hTeamCouriers: C_DOTA_Unit_Courier[]
-	readonly m_hPlayerCouriers: C_DOTA_Unit_Courier[]
+	readonly m_hTeamCouriers: C_BaseEntity[][]
+	readonly m_hPlayerCouriers: C_BaseEntity[][]
 	readonly m_vecOnstageHomeTeams: number[]
 	readonly m_pPlayerIDToOnstageSlot: PlayerSeatAssignment_t[]
 	readonly m_vecOnstagePlayerSeats: PlayerSeatAssignment_t[]
@@ -14436,7 +14181,7 @@ interface C_DOTA_Ability_Furion_Teleportation extends C_DOTABaseAbility {
 	readonly m_nFXIndexEndTeam: number
 }
 
-interface C_DOTA_Ability_Nianstringge extends C_DOTABaseAbility, C_HorizontalMotionController {
+interface C_DOTA_Ability_NianCharge extends C_DOTABaseAbility, C_HorizontalMotionController {
 	readonly type_name: string
 }
 
@@ -14634,7 +14379,6 @@ interface C_DOTA_Ability_ChaosKnight_Reality_Rift extends C_DOTABaseAbility {
 interface C_DOTA_Unit_LoopingSound extends C_DOTA_BaseNPC_Additive {
 	readonly type_name: string
 	readonly m_nPrevLoopingSoundParity: number
-	readonly m_pszNetworkedSoundLoop: string[]
 	readonly m_nLoopingSoundParity: number
 }
 
@@ -14713,7 +14457,7 @@ interface C_SceneEntity extends C_PointEntity {
 	readonly m_nSceneStringIndex: number
 	readonly m_bClientOnly: boolean
 	readonly m_hOwner: C_BaseEntity
-	readonly m_hActorList: C_BaseFlex[]
+	readonly m_hActorList: C_BaseEntity[]
 	readonly m_bWasPlaying: boolean
 	readonly m_flCurrentTime: number
 }
@@ -15302,7 +15046,6 @@ interface C_DOTA_Item_Recipe_Arcane_Ring extends C_DOTA_Item {
 
 interface CDOTA_Ability_Winter_Wyvern_Arctic_Burn extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly m_BurnedTargets: C_BaseEntity[]
 }
 
 interface C_DOTA_Unit_Hero_LoneDruid extends C_DOTA_BaseNPC_Hero {
@@ -15311,8 +15054,8 @@ interface C_DOTA_Unit_Hero_LoneDruid extends C_DOTA_BaseNPC_Hero {
 
 interface C_DOTA_Ability_Shadow_Demon_Demonic_Purge extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly max_stringges: number
-	readonly stringge_restore_time: number
+	readonly max_charges: number
+	readonly charge_restore_time: number
 }
 
 interface C_DOTA_Ability_Brewmaster_PermanentImmolation extends C_DOTABaseAbility {
@@ -15483,8 +15226,8 @@ interface C_PostProcessingVolume extends C_BaseTrigger {
 
 interface C_DOTA_Ability_EarthSpirit_StoneCaller extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly max_stringges: number
-	readonly stringge_restore_time: number
+	readonly max_charges: number
+	readonly charge_restore_time: number
 }
 
 interface C_DOTA_Unit_Hero_Bristleback extends C_DOTA_BaseNPC_Hero {
@@ -15526,7 +15269,6 @@ interface C_DOTA_PortraitEntity extends C_DOTA_BaseNPC {
 	readonly m_PortraitActivity: number
 	readonly m_nMouthFX: number
 	readonly m_nMouthControlPoint: number
-	readonly m_CustomActivityModifiers: CUtlSymbol[]
 	readonly m_bIsSimulationActive: boolean
 	readonly m_bNeedsModelInit: boolean
 	readonly m_bNeedsPortraitRefresh: boolean
@@ -15826,7 +15568,7 @@ interface C_PlayerResource extends C_BaseEntity {
 	readonly m_bConnected: boolean[]
 	readonly m_iTeam: number[]
 	readonly m_bAlive: boolean[]
-	readonly m_iHealth: number[]
+	//readonly m_iHealth: number[]
 	readonly m_bIsFakePlayer: boolean[]
 	readonly m_nEventPlayerInfo: number
 }
@@ -15974,8 +15716,8 @@ interface C_DOTA_Ability_Morphling_Morph extends C_DOTABaseAbility {
 
 interface C_DOTA_Ability_Bloodseeker_Bloodrage extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly max_stringges: number
-	readonly stringge_restore_time: number
+	readonly max_charges: number
+	readonly charge_restore_time: number
 }
 
 interface C_DotaSubquestEntityDeath extends C_DotaSubquestBase {
@@ -16033,7 +15775,7 @@ interface C_DOTA_Ability_Pangolier_HeartPiercer extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
-interface C_DOTA_Ability_Wisp_Overstringge extends C_DOTABaseAbility {
+interface C_DOTA_Ability_Wisp_Overcharge extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -16334,7 +16076,6 @@ interface C_DOTA_Ability_Special_Bonus_MP_150 extends C_DOTABaseAbility {
 
 interface C_ParticleSystem extends C_BaseModelEntity {
 	readonly type_name: string
-	readonly m_szSnapshotFileName: string[]
 	readonly m_bActive: boolean
 	readonly m_nStopType: number
 	readonly m_flStartTime: number
@@ -16374,9 +16115,6 @@ interface C_DOTA_Ability_Special_Bonus_Strength_40 extends C_DOTABaseAbility {
 
 interface C_MaterialModifyControl extends C_BaseEntity {
 	readonly type_name: string
-	readonly m_szMaterialName: string[]
-	readonly m_szMaterialVar: string[]
-	readonly m_szMaterialVarValue: string[]
 	readonly m_bHasNewAnimationCommands: boolean
 	readonly m_iFrameStart: number
 	readonly m_iFrameEnd: number
@@ -16685,7 +16423,6 @@ interface C_ColorCorrection extends C_BaseEntity {
 	readonly m_flFadeOutDuration: number
 	readonly m_flMaxWeight: number
 	readonly m_flCurWeight: number
-	readonly m_netlookupFilename: string[]
 	readonly m_bEnabled: boolean
 	readonly m_bMaster: boolean
 	readonly m_bClientSide: boolean
@@ -16737,8 +16474,6 @@ interface CDOTA_Ability_Generic_Hidden extends C_DOTABaseAbility {
 interface C_AI_BaseNPC extends C_BaseCombatCharacter {
 	readonly type_name: string
 	readonly m_flTempRagdollTransitionTime: number
-	readonly m_RagdollTransform: matrix3x4a_t[]
-	readonly m_TransitionTransform: matrix3x4a_t[]
 	readonly m_NPCState: number
 	readonly m_flTimePingEffect: number
 	readonly m_iDeathFrame: number
@@ -16809,9 +16544,7 @@ interface C_DynamicPropClientFadeOut extends C_DynamicProp {
 
 interface C_PropVRTrackedObject extends C_BaseAnimating {
 	readonly type_name: string
-	readonly m_mClientTransform: matrix3x4_t
 	readonly m_vClientScale: Vector
-	readonly m_vecRenderModelComponentTransforms: matrix3x4a_t[]
 	readonly m_bIsTracking: boolean
 	readonly m_vTrackedPosition: Vector
 	readonly m_qTrackedAngles: QAngle
@@ -17409,7 +17142,6 @@ interface C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_2 extends C_DOTABase
 
 interface C_PointClientUIWorldTextPanel extends C_PointClientUIWorldPanel {
 	readonly type_name: string
-	readonly m_messageText: string[]
 }
 
 interface C_DOTA_Ability_Invoker_ColdSnap extends CDOTA_Ability_Invoker_InvokedBase {
@@ -17667,7 +17399,6 @@ interface C_DOTA_Ability_EmberSpirit_SearingChains extends C_DOTABaseAbility {
 
 interface C_DOTA_Ability_Rubick_SpellSteal extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly m_ActivityModifier: string[]
 	readonly m_fStolenCastPoint: number
 	readonly m_hStealTarget: C_BaseEntity
 	readonly m_hStealAbility: C_BaseEntity
@@ -17980,7 +17711,6 @@ interface C_ColorCorrectionVolume extends C_BaseTrigger {
 	readonly m_MaxWeight: number
 	readonly m_FadeDuration: number
 	readonly m_Weight: number
-	readonly m_lookupFilename: string[]
 }
 
 interface C_DOTA_Ability_Courier_GoToSecretShop extends C_DOTABaseAbility {
@@ -18143,9 +17873,9 @@ interface C_DOTA_Unit_Hero_Brewmaster extends C_DOTA_BaseNPC_Hero {
 	readonly type_name: string
 }
 
-interface C_DOTA_Ability_SpiritBreaker_stringgeOfDarkness extends C_DOTABaseAbility, C_HorizontalMotionController {
+interface C_DOTA_Ability_SpiritBreaker_ChargeOfDarkness extends C_DOTABaseAbility, C_HorizontalMotionController {
 	readonly type_name: string
-	readonly m_vstringgeStartPos: Vector
+	readonly m_vChargeStartPos: Vector
 }
 
 interface C_DOTA_BaseNPC_Venomancer_PlagueWard extends C_DOTA_BaseNPC_Additive {
@@ -18234,7 +17964,7 @@ interface C_DOTA_Item_AbyssalBlade extends C_DOTA_Item {
 interface C_DOTA_Ability_EmberSpirit_FireRemnant extends C_DOTABaseAbility {
 	readonly type_name: string
 	readonly m_vRemnantData: RemnantData_t[]
-	readonly max_stringges: number
+	readonly max_charges: number
 }
 
 interface C_DOTA_Ability_Disruptor_Thunder_Strike extends C_DOTABaseAbility {
@@ -18357,7 +18087,7 @@ interface C_PropVRHand extends C_PropVRTrackedObject {
 	readonly type_name: string
 	readonly m_hActiveHandAttachment: C_BaseEntity
 	readonly m_hHMDAvatar: C_BaseEntity
-	readonly m_hAttachments: C_BaseVRHandAttachment[]
+	readonly m_hAttachments: C_BaseEntity[]
 	readonly m_bInitialized: boolean
 	readonly m_bIsInView: boolean
 	readonly m_nHandID: number
@@ -18379,9 +18109,7 @@ interface C_PropVRHand extends C_PropVRTrackedObject {
 	readonly m_flHapticPulseTime: number
 	readonly m_nHapticPulseInterval: number
 	readonly m_InteractionMgr: CInteractionManager
-	readonly m_matUseTransform: matrix3x4_t
 	readonly m_nAttachUseIndex: number
-	readonly m_matHoldTransform: matrix3x4_t
 	readonly m_nAttachHoldIndex: number
 	readonly m_LiteralHandType: number
 }
@@ -18405,7 +18133,6 @@ interface C_DOTA_Unit_Earth_Spirit_Stone extends C_DOTA_BaseNPC {
 
 interface C_DOTA_Ability_Lycan_SummonWolves extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly szUnitName: string[]
 	readonly wolf_index: number
 	readonly wolf_duration: number
 	readonly m_hExistingUnits: C_BaseEntity[]
@@ -18605,8 +18332,6 @@ interface C_DotaTutorialNetworker extends C_BaseEntity {
 	readonly m_TargetEntity: C_BaseEntity
 	readonly m_SpeechBubbles: C_SpeechBubbleInfo[]
 	readonly m_nLocationID: number
-	readonly m_GuideStr: string[]
-	readonly m_QuickBuyStr: string[]
 	readonly m_nPreTutorialState: number
 	readonly m_nPreUIState: number
 	readonly m_nPreShopState: number
@@ -18662,7 +18387,7 @@ interface C_DOTA_Ability_Special_Bonus_Attack_Speed_30 extends C_DOTABaseAbility
 interface C_FuncLadder extends C_BaseModelEntity {
 	readonly type_name: string
 	readonly m_vecLadderDir: Vector
-	readonly m_Dismounts: C_InfoLadderDismount[]
+	readonly m_Dismounts: C_BaseEntity[]
 	readonly m_vecLocalTop: Vector
 	readonly m_vecPlayerMountPositionTop: Vector
 	readonly m_vecPlayerMountPositionBottom: Vector
@@ -18783,7 +18508,6 @@ interface C_PortraitHero extends C_DOTA_BaseNPC {
 	readonly type_name: string
 	readonly m_nHeroID: number
 	readonly m_actQueuedActivity: number
-	readonly m_szQueuedActivityModifier: string[]
 }
 
 interface C_DOTA_Item_Headdress extends C_DOTA_Item {
@@ -18897,7 +18621,6 @@ interface C_DOTA_Ability_Special_Bonus_Unique_Slark_2 extends C_DOTABaseAbility 
 interface C_SlideshowDisplay extends C_BaseEntity {
 	readonly type_name: string
 	readonly m_bEnabled: boolean
-	readonly m_szDisplayText: string[]
 	readonly m_szSlideshowDirectory: string
 	readonly m_fMinSlideTime: number
 	readonly m_fMaxSlideTime: number
@@ -19077,9 +18800,7 @@ interface C_DOTA_Ability_Special_Bonus_MP_Regen_175 extends C_DOTABaseAbility {
 
 interface C_PointHintUIHighlightModel extends C_BaseAnimating {
 	readonly type_name: string
-	readonly m_vecRenderModelComponentTransforms: matrix3x4a_t[]
 	readonly m_nTrackedDeviceIndex: number
-	readonly m_matLocalHighlight: matrix3x4_t
 }
 
 interface C_DOTA_Item_Soul_Ring extends C_DOTA_Item {
@@ -19269,8 +18990,8 @@ interface C_DOTA_Ability_WitchDoctor_ParalyzingCask extends C_DOTABaseAbility {
 
 interface C_DOTA_Ability_Mirana_Leap extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly stringge_restore_time: number
-	readonly max_stringges: number
+	readonly charge_restore_time: number
+	readonly max_charges: number
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Zeus extends C_DOTABaseAbility {
@@ -20169,7 +19890,6 @@ interface C_BasePlayer extends C_BaseCombatCharacter {
 	readonly m_flStepSoundTime: number
 	readonly m_surfaceFriction: number
 	readonly m_vecLadderNormal: Vector
-	readonly m_szAnimExtension: string[]
 	readonly m_nOldTickBase: number
 	readonly m_iBonusProgress: number
 	readonly m_iBonusChallenge: number
@@ -20231,12 +19951,9 @@ interface C_BasePlayer extends C_BaseCombatCharacter {
 	readonly m_vecPredictionError: Vector
 	readonly m_flPredictionErrorTime: number
 	readonly m_vecPreviouslyPredictedOrigin: Vector
-	readonly m_szLastPlaceName: string[]
-	readonly m_chTextureType: string
 	readonly m_bSentFreezeFrame: boolean
 	readonly m_flFreezeZOffset: number
-	readonly m_hSplitScreenPlayers: C_BasePlayer[]
-	readonly m_nSplitScreenSlot: CSplitScreenSlot
+	readonly m_hSplitScreenPlayers: C_BaseEntity[]
 	readonly m_hSplitOwner: C_BaseEntity
 	readonly m_bIsLocalPlayer: boolean
 	readonly m_movementCollisionNormal: Vector
@@ -20318,8 +20035,8 @@ interface C_DOTA_Ability_Pangolier_GyroshellStop extends C_DOTABaseAbility {
 interface C_DOTA_Ability_Broodmother_SpinWeb extends C_DOTABaseAbility {
 	readonly type_name: string
 	readonly m_hWebs: C_BaseEntity[]
-	readonly stringge_restore_time: number
-	readonly max_stringges: number
+	readonly charge_restore_time: number
+	readonly max_charges: number
 }
 
 interface C_DOTA_Ability_Warlock_Golem_Permanent_Immolation extends C_DOTABaseAbility {
@@ -20536,8 +20253,8 @@ interface CDOTA_Ability_DeathProphet_SpiritSiphon extends C_DOTABaseAbility {
 	readonly m_vStartPos: Vector
 	readonly m_iArrowProjectile: number
 	readonly m_nFXIndex: number
-	readonly stringge_restore_time: number
-	readonly max_stringges: number
+	readonly charge_restore_time: number
+	readonly max_charges: number
 }
 
 interface C_DOTA_Ability_Slardar_Amplify_Damage extends C_DOTABaseAbility {
@@ -20904,7 +20621,6 @@ interface C_RagdollManager extends C_BaseEntity {
 interface C_DOTAPlayer extends C_BasePlayer {
 	readonly type_name: string
 	readonly m_iMinimapMove: number
-	readonly m_pClickBehaviorKeys: KeyValues
 	readonly m_nRareLineClickCount: number
 	readonly m_nRareLinesPlayed: number
 	readonly m_flCenterTime: number
@@ -20936,7 +20652,6 @@ interface C_DOTAPlayer extends C_BasePlayer {
 	readonly m_unitorders: CUnitOrders[]
 	readonly m_nOutgoingOrderSequenceNumber: number
 	readonly m_nServerOrderSequenceNumber: number
-	readonly m_nSelectedUnits: C_BaseEntity[]
 	readonly m_nWaypoints: number[]
 	readonly m_iActions: number
 	readonly m_hQueryUnit: C_BaseEntity
@@ -20967,7 +20682,6 @@ interface C_DOTAPlayer extends C_BasePlayer {
 	readonly m_iShopViewMode: number
 	readonly m_iStatsDropdownCategory: number
 	readonly m_iStatsDropdownSort: number
-	readonly m_szShopString: string[]
 	readonly m_vecClientQuickBuyState: ClientQuickBuyItemState[]
 	readonly m_bInShowCaseMode: boolean
 	readonly m_flCameraZoomAmount: number
@@ -20981,8 +20695,7 @@ interface C_DOTAPlayer extends C_BasePlayer {
 	readonly m_bRequestedInventory: boolean
 	readonly m_flMusicOperatorVals: number[]
 	readonly m_iMusicOperatorVals: number[]
-	readonly m_ControlGroups: sControlGroupElem[]
-	readonly m_pkvControlGroupKV: KeyValues
+	readonly m_ControlGroups: sControlGroupElem[][]
 }
 
 interface C_DOTA_Ability_TemplarAssassin_PsionicTrap extends C_DOTABaseAbility {
@@ -21025,8 +20738,8 @@ interface C_DOTA_Ability_Obsidian_Destroyer_AstralImprisonment extends C_DOTABas
 	readonly type_name: string
 	readonly steal_duration: number
 	readonly m_hImprisonedUnit: C_BaseEntity
-	readonly max_stringges_scepter: number
-	readonly stringge_restore_time_scepter: number
+	readonly max_charges_scepter: number
+	readonly charge_restore_time_scepter: number
 }
 
 interface C_DOTA_Ability_Clinkz_Strafe extends C_DOTABaseAbility {
@@ -21115,7 +20828,6 @@ interface C_PlayerCosmeticPropClientside extends C_DynamicPropClientside {
 	readonly type_name: string
 	readonly m_iPlayerNum: number
 	readonly m_iCosmeticType: number
-	readonly m_szProxyTextureName: string[]
 	readonly m_bGeneratedShowcaseProps: boolean
 	readonly m_vecShowcaseProps: C_PlayerCosmeticPropClientside[]
 	readonly m_pShowcaseItem: C_EconItemView
@@ -21739,8 +21451,6 @@ interface C_DOTA_Item_Rune extends C_BaseAnimating {
 
 interface C_DOTAAmbientCreatureParticleZone extends C_FuncBrush {
 	readonly type_name: string
-	readonly m_szModelName: string[]
-	readonly m_szAreaName: string[]
 }
 
 interface C_DOTA_Hero_Recorder extends C_BaseEntity {
@@ -21756,8 +21466,7 @@ interface C_DOTA_Hero_Recorder extends C_BaseEntity {
 	readonly m_nRecordedFrames: number
 	readonly m_flHeroAdvanceTime: number
 	readonly m_flStartTime: number
-	readonly m_flCycles: float32[]
-	readonly m_pBatchFiles: string[]
+	readonly m_flCycles: number[]
 }
 
 interface C_DOTA_Item_Aether_Lens extends C_DOTA_Item {
@@ -21884,8 +21593,6 @@ interface C_DOTA_Ability_Special_Bonus_Unique_Omniknight_1 extends C_DOTABaseAbi
 interface C_PointWorldText extends C_ModelPointEntity {
 	readonly type_name: string
 	readonly m_bForceRecreateNextUpdate: boolean
-	readonly m_messageText: string[]
-	readonly m_FontName: string[]
 	readonly m_bEnabled: boolean
 	readonly m_bFullbright: boolean
 	readonly m_flWorldUnitsPerPx: number
@@ -22021,7 +21728,7 @@ interface C_DOTA_Item_Recipe_MagicWand extends C_DOTA_Item {
 interface C_DOTA_Item_TranquilBoots2 extends C_DOTA_Item {
 	readonly type_name: string
 	readonly break_count: number
-	readonly m_DamageList: float32[]
+	readonly m_DamageList: number[]
 }
 
 interface C_DOTA_Ability_MonkeyKing_TreeDance extends C_DOTABaseAbility {
@@ -22091,17 +21798,13 @@ interface C_DotaSubquestPlayerStat extends C_DotaSubquestBase {
 
 interface C_DotaQuest extends C_BaseEntity {
 	readonly type_name: string
-	readonly m_pszQuestTitle: string[]
-	readonly m_pszQuestText: string[]
 	readonly m_nQuestType: number
 	readonly m_hSubquests: C_BaseEntity[]
 	readonly m_bHidden: boolean
 	readonly m_bCompleted: boolean
 	readonly m_bWinIfCompleted: boolean
 	readonly m_bLoseIfCompleted: boolean
-	readonly m_pszGameEndText: string[]
 	readonly m_pnTextReplaceValuesCDotaQuest: number[]
-	readonly m_pszTextReplaceString: string[]
 	readonly m_nTextReplaceValueVersion: number
 	readonly m_bWasCompleted: boolean
 }
@@ -22266,21 +21969,6 @@ interface C_DOTA_Ability_DataDriven extends C_DOTABaseAbility {
 	readonly m_bCastFilterRejectCaster: boolean
 	readonly m_fAOERadius: number
 	readonly m_CastAnimation: number
-	readonly m_ModifierKVDescriptions: KeyValues[]
-	readonly m_pOnChannelFinishKV: KeyValues
-	readonly m_pOnChannelSucceededKV: KeyValues
-	readonly m_pOnChannelInterruptedKV: KeyValues
-	readonly m_pOnOwnerSpawnedKV: KeyValues
-	readonly m_pOnOwnerDiedKV: KeyValues
-	readonly m_pOnUpgradeKV: KeyValues
-	readonly m_pOnProjectileHitUnitKV: KeyValues
-	readonly m_pOnProjectileFinishKV: KeyValues
-	readonly m_pOnSpellStartKV: KeyValues
-	readonly m_pOnAbilityPhaseStartKV: KeyValues
-	readonly m_pOnAbilityPhaseInterruptedKV: KeyValues
-	readonly m_pOnToggleOnKV: KeyValues
-	readonly m_pOnToggleOffKV: KeyValues
-	readonly m_pOnCreatedKV: KeyValues
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Enchantress_1 extends C_DOTABaseAbility {
@@ -23060,6 +22748,7 @@ declare const enum Hull_t {
 	NUM_HULLS = 9,
 	HULL_NONE = 10
 }
+
 declare const enum AnimationProcessingType_t {
 	ANIMATION_PROCESSING_SERVER_SIMULATION = 0,
 	ANIMATION_PROCESSING_CLIENT_SIMULATION = 1,
@@ -23068,6 +22757,7 @@ declare const enum AnimationProcessingType_t {
 	ANIMATION_PROCESSING_CLIENT_RENDER = 4,
 	ANIMATION_PROCESSING_MAX = 5
 }
+
 declare const enum RenderPrimitiveType_t {
 	RENDER_PRIM_POINTS = 0,
 	RENDER_PRIM_LINES = 1,
@@ -23115,6 +22805,7 @@ declare const enum RenderPrimitiveType_t {
 	RENDER_PRIM_COMPUTE_SHADER = 43,
 	RENDER_PRIM_TYPE_COUNT = 44
 }
+
 declare const enum LuaModifierType {
 	LUA_MODIFIER_MOTION_NONE = 0,
 	LUA_MODIFIER_MOTION_HORIZONTAL = 1,
@@ -23122,6 +22813,7 @@ declare const enum LuaModifierType {
 	LUA_MODIFIER_MOTION_BOTH = 3,
 	LUA_MODIFIER_INVALID = 4
 }
+
 declare const enum ObjectTypeFlags_t {
 	OBJECT_TYPE_IMAGE_LOD = 1,
 	OBJECT_TYPE_GEOMETRY_LOD = 2,
@@ -23134,6 +22826,7 @@ declare const enum ObjectTypeFlags_t {
 	OBJECT_TYPE_NO_SUN_SHADOWS = 256,
 	OBJECT_TYPE_EXCLUDE_FROM_IMPOSTORS = 512
 }
+
 declare const enum DOTAMusicStatus_t {
 	DOTA_MUSIC_STATUS_NONE = 0,
 	DOTA_MUSIC_STATUS_EXPLORATION = 1,
@@ -23142,6 +22835,7 @@ declare const enum DOTAMusicStatus_t {
 	DOTA_MUSIC_STATUS_DEAD = 4,
 	DOTA_MUSIC_STATUS_LAST = 5
 }
+
 declare const enum DOTA_RUNES {
 	DOTA_RUNE_INVALID = -1,
 	DOTA_RUNE_DOUBLEDAMAGE = 0,
@@ -23153,6 +22847,7 @@ declare const enum DOTA_RUNES {
 	DOTA_RUNE_ARCANE = 6,
 	DOTA_RUNE_COUNT = 7
 }
+
 declare const enum MoveCollide_t {
 	MOVECOLLIDE_DEFAULT = 0,
 	MOVECOLLIDE_FLY_BOUNCE = 1,
@@ -23161,6 +22856,7 @@ declare const enum MoveCollide_t {
 	MOVECOLLIDE_COUNT = 4,
 	MOVECOLLIDE_MAX_BITS = 3
 }
+
 declare const enum ItemQuality_t {
 	DOTA_ITEM_QUALITY_CONSUMABLE = 0,
 	DOTA_ITEM_QUALITY_PLAIN = 1,
@@ -23171,6 +22867,7 @@ declare const enum ItemQuality_t {
 	DOTA_ITEM_QUALITY_SECRET_SHOP = 6,
 	NUM_ITEM_QUALITY_LEVELS = 7
 }
+
 declare const enum SteamUGCQuery {
 	RankedByVote = 0,
 	RankedByPublicationDate = 1,
@@ -23192,21 +22889,25 @@ declare const enum SteamUGCQuery {
 	RankedByPlaytimeSessionsTrend = 17,
 	RankedByLifetimePlaytimeSessions = 18
 }
+
 declare const enum PlayerConnectedState {
 	PlayerConnected = 0,
 	PlayerDisconnecting = 1,
 	PlayerDisconnected = 2
 }
+
 declare const enum JointMotion_t {
 	JOINT_MOTION_FREE = 0,
 	JOINT_MOTION_LOCKED = 1,
 	JOINT_MOTION_COUNT = 2
 }
+
 declare const enum OrderQueueBehavior_t {
 	DOTA_ORDER_QUEUE_DEFAULT = 0,
 	DOTA_ORDER_QUEUE_NEVER = 1,
 	DOTA_ORDER_QUEUE_ALWAYS = 2
 }
+
 declare const enum RenderFx_t {
 	kRenderFxNone = 0,
 	kRenderFxPulseSlow = 1,
@@ -23229,6 +22930,7 @@ declare const enum RenderFx_t {
 	kRenderFxGlowShell = 18,
 	kRenderFxMax = 19
 }
+
 declare const enum GameActivity_t {
 	ACT_DOTA_IDLE = 1500,
 	ACT_DOTA_IDLE_RARE = 1501,
@@ -23323,8 +23025,8 @@ declare const enum GameActivity_t {
 	ACT_DOTA_CAST_DEAFENING_BLAST = 1590,
 	ACT_DOTA_VICTORY = 1591,
 	ACT_DOTA_DEFEAT = 1592,
-	ACT_DOTA_SPIRIT_BREAKER_stringGE_POSE = 1593,
-	ACT_DOTA_SPIRIT_BREAKER_stringGE_END = 1594,
+	ACT_DOTA_SPIRIT_BREAKER_CHARGE_POSE = 1593,
+	ACT_DOTA_SPIRIT_BREAKER_CHARGE_END = 1594,
 	ACT_DOTA_TELEPORT = 1595,
 	ACT_DOTA_TELEPORT_END = 1596,
 	ACT_DOTA_CAST_REFRACTION = 1597,
@@ -23462,6 +23164,7 @@ declare const enum GameActivity_t {
 	ACT_DOTA_GS_SOUL_CHAIN = 1729,
 	ACT_DOTA_GS_INK_CREATURE = 1730
 }
+
 declare const enum TOGGLE_STATE {
 	TS_AT_TOP = 0,
 	TS_AT_BOTTOM = 1,
@@ -23472,6 +23175,7 @@ declare const enum TOGGLE_STATE {
 	DOOR_OPENING = 2,
 	DOOR_CLOSING = 3
 }
+
 declare const enum Attributes {
 	DOTA_ATTRIBUTE_STRENGTH = 0,
 	DOTA_ATTRIBUTE_AGILITY = 1,
@@ -23479,17 +23183,20 @@ declare const enum Attributes {
 	DOTA_ATTRIBUTE_MAX = 3,
 	DOTA_ATTRIBUTE_INVALID = -1
 }
+
 declare const enum SpeechPriorityType {
 	SPEECH_PRIORITY_LOW = 0,
 	SPEECH_PRIORITY_NORMAL = 1,
 	SPEECH_PRIORITY_MANUAL = 2,
 	SPEECH_PRIORITY_UNINTERRUPTABLE = 3
 }
+
 declare const enum PointWorldTextJustifyVertical_t {
 	POINT_WORLD_TEXT_JUSTIFY_VERTICAL_BOTTOM = 0,
 	POINT_WORLD_TEXT_JUSTIFY_VERTICAL_CENTER = 1,
 	POINT_WORLD_TEXT_JUSTIFY_VERTICAL_TOP = 2
 }
+
 declare const enum PortraitScale_t {
 	PORTRAIT_SCALE_INVALID = -1,
 	PORTRAIT_SCALE_LOADOUT = 0,
@@ -23497,6 +23204,7 @@ declare const enum PortraitScale_t {
 	PORTRAIT_SCALE_WORLD = 2,
 	PORTRAIT_SCALE_SPECTATOR_LOADOUT = 3
 }
+
 declare const enum DOTA_UNIT_TARGET_TEAM {
 	DOTA_UNIT_TARGET_TEAM_NONE = 0,
 	DOTA_UNIT_TARGET_TEAM_FRIENDLY = 1,
@@ -23504,11 +23212,13 @@ declare const enum DOTA_UNIT_TARGET_TEAM {
 	DOTA_UNIT_TARGET_TEAM_CUSTOM = 4,
 	DOTA_UNIT_TARGET_TEAM_BOTH = 3
 }
+
 declare const enum PointTemplateOwnerSpawnGroupType_t {
 	INSERT_INTO_POINT_TEMPLATE_SPAWN_GROUP = 0,
 	INSERT_INTO_CURRENTLY_ACTIVE_SPAWN_GROUP = 1,
 	INSERT_INTO_NEWLY_CREATED_SPAWN_GROUP = 2
 }
+
 declare const enum ObstructionRelationshipClass_t {
 	DOTA_OBSTRUCTION_RELATIONSHIP_NONE = 0,
 	DOTA_OBSTRUCTION_RELATIONSHIP_BUILDING = 1,
@@ -23516,6 +23226,7 @@ declare const enum ObstructionRelationshipClass_t {
 	DOTA_OBSTRUCTION_RELATIONSHIP_NPC = 3,
 	DOTA_OBSTRUCTION_RELATIONSHIP_LAST = 4
 }
+
 declare const enum NavDirType {
 	NORTH = 0,
 	EAST = 1,
@@ -23523,6 +23234,7 @@ declare const enum NavDirType {
 	WEST = 3,
 	NUM_DIRECTIONS = 4
 }
+
 declare const enum CLICK_BEHAVIORS {
 	DOTA_CLICK_BEHAVIOR_NONE = 0,
 	DOTA_CLICK_BEHAVIOR_MOVE = 1,
@@ -23538,6 +23250,7 @@ declare const enum CLICK_BEHAVIORS {
 	DOTA_CLICK_BEHAVIOR_RADAR = 11,
 	DOTA_CLICK_BEHAVIOR_LAST = 12
 }
+
 declare const enum sound_states {
 	SS_NONE = 0,
 	SS_SHUTDOWN = 1,
@@ -23561,6 +23274,7 @@ declare const enum sound_states {
 	SS_REVERSE = 19,
 	SS_NUM_STATES = 20
 }
+
 declare const enum SurroundingBoundsType_t {
 	USE_OBB_COLLISION_BOUNDS = 0,
 	USE_BEST_COLLISION_BOUNDS = 1,
@@ -23572,6 +23286,7 @@ declare const enum SurroundingBoundsType_t {
 	USE_ROTATION_EXPANDED_SEQUENCE_BOUNDS = 7,
 	SURROUNDING_TYPE_BIT_COUNT = 3
 }
+
 declare const enum RenderMultisampleType_t {
 	RENDER_MULTISAMPLE_INVALID = -1,
 	RENDER_MULTISAMPLE_NONE = 0,
@@ -23582,15 +23297,18 @@ declare const enum RenderMultisampleType_t {
 	RENDER_MULTISAMPLE_16X = 5,
 	RENDER_MULTISAMPLE_TYPE_COUNT = 6
 }
+
 declare const enum ParticleLightTypeChoiceList_t {
 	PARTICLE_LIGHT_TYPE_POINT = 0,
 	PARTICLE_LIGHT_TYPE_SPOT = 1
 }
+
 declare const enum WorldTextPanelOrientation_t {
 	WORLDTEXT_ORIENTATION_DEFAULT = 0,
 	WORLDTEXT_ORIENTATION_FACEUSER = 1,
 	WORLDTEXT_ORIENTATION_FACEUSER_UPRIGHT = 2
 }
+
 declare const enum DotaCustomUIType_t {
 	DOTA_CUSTOM_UI_TYPE_HUD = 0,
 	DOTA_CUSTOM_UI_TYPE_HERO_SELECTION = 1,
@@ -23602,6 +23320,7 @@ declare const enum DotaCustomUIType_t {
 	DOTA_CUSTOM_UI_TYPE_COUNT = 7,
 	DOTA_CUSTOM_UI_TYPE_INVALID = -1
 }
+
 declare const enum TextureSpecificationFlags_t {
 	TSPEC_FLAGS = 0,
 	TSPEC_RENDER_TARGET = 1,
@@ -23624,15 +23343,18 @@ declare const enum TextureSpecificationFlags_t {
 	TSPEC_INPUT_ATTACHMENT = 131072,
 	TSPEC_CUBE_CAN_SAMPLE_AS_ARRAY = 262144
 }
+
 declare const enum EShareAbility {
 	ITEM_FULLY_SHAREABLE = 0,
 	ITEM_PARTIALLY_SHAREABLE = 1,
 	ITEM_NOT_SHAREABLE = 2
 }
+
 declare const enum ShatterSurface_t {
 	SHATTERSURFACE_GLASS = 0,
 	SHATTERSURFACE_TILE = 1
 }
+
 declare const enum vote_create_failed_t {
 	VOTE_FAILED_GENERIC = 0,
 	VOTE_FAILED_TRANSITIONING_PLAYERS = 1,
@@ -23650,6 +23372,7 @@ declare const enum vote_create_failed_t {
 	VOTE_FAILED_SCRAMBLE_IN_PROGRESS = 13,
 	VOTE_FAILED_SPECTATOR = 14
 }
+
 declare const enum EDOTA_ModifyGold_Reason {
 	DOTA_ModifyGold_Unspecified = 0,
 	DOTA_ModifyGold_Death = 1,
@@ -23669,6 +23392,7 @@ declare const enum EDOTA_ModifyGold_Reason {
 	DOTA_ModifyGold_CourierKill = 15,
 	DOTA_ModifyGold_SharedGold = 16
 }
+
 declare const enum DOTASlotType_t {
 	DOTA_LOADOUT_TYPE_INVALID = -1,
 	DOTA_LOADOUT_TYPE_WEAPON = 0,
@@ -23722,12 +23446,14 @@ declare const enum DOTASlotType_t {
 	DOTA_LOADOUT_TYPE_NONE = 46,
 	DOTA_LOADOUT_TYPE_COUNT = 47
 }
+
 declare const enum PlayerUltimateStateOrTime_t {
 	PLAYER_ULTIMATE_STATE_READY = 0,
 	PLAYER_ULTIMATE_STATE_NO_MANA = -1,
 	PLAYER_ULTIMATE_STATE_NOT_LEVELED = -2,
 	PLAYER_ULTIMATE_STATE_HIDDEN = -3
 }
+
 declare const enum DOTA_HOLDOUT_WALL_TYPE {
 	DOTA_HOLDOUT_WALL_NONE = 0,
 	DOTA_HOLDOUT_WALL_PHYSICAL = 1,
@@ -23735,6 +23461,7 @@ declare const enum DOTA_HOLDOUT_WALL_TYPE {
 	DOTA_HOLDOUT_WALL_ICE = 3,
 	DOTA_HOLDOUT_WALL_COUNT = 4
 }
+
 declare const enum ConstraintType_t {
 	CONSTRAINT_TYPE_INVALID = 0,
 	CONSTRAINT_TYPE_HELPER_BONE = 1,
@@ -23752,6 +23479,7 @@ declare const enum ConstraintType_t {
 	CONSTRAINT_TYPE_POSE_SPACE_BONE = 13,
 	CONSTRAINT_TYPE_MAX = 14
 }
+
 declare const enum Materials {
 	matGlass = 0,
 	matWood = 1,
@@ -23766,21 +23494,25 @@ declare const enum Materials {
 	matNone = 10,
 	matLastMaterial = 11
 }
+
 declare const enum LayoutPositionType_e {
 	LAYOUTPOSITIONTYPE_VIEWPORT_RELATIVE = 0,
 	LAYOUTPOSITIONTYPE_FRACTIONAL = 1,
 	LAYOUTPOSITIONTYPE_NONE = 2
 }
+
 declare const enum HeroPickType {
 	HERO_PICK = 0,
 	HERO_BAN = 1
 }
+
 declare const enum JointAxis_t {
 	JOINT_AXIS_X = 0,
 	JOINT_AXIS_Y = 1,
 	JOINT_AXIS_Z = 2,
 	JOINT_AXIS_COUNT = 3
 }
+
 declare const enum RMSG_EventType_t {
 	RMSG_EVENT_INVALID = -1,
 	RMSG_SYSTEM_FRAME_BOUNDARY = 0,
@@ -23818,10 +23550,12 @@ declare const enum RMSG_EventType_t {
 	RMSG_UNUSED_8 = 32,
 	RMSG_EVENT_COUNT = 33
 }
+
 declare const enum AimMatrixBlendMode {
 	AimMatrixBlendMode_Additive = 0,
 	AimMatrixBlendMode_BoneMask = 1
 }
+
 declare const enum modifierstate {
 	MODIFIER_STATE_ROOTED = 0,
 	MODIFIER_STATE_DISARMED = 1,
@@ -23862,14 +23596,17 @@ declare const enum modifierstate {
 	MODIFIER_STATE_IGNORING_MOVE_AND_ATTACK_ORDERS = 36,
 	MODIFIER_STATE_LAST = 37
 }
+
 declare const enum BlurFilterType_t {
 	BLURFILTER_GAUSSIAN = 0,
 	BLURFILTER_BOX = 1
 }
+
 declare const enum AnimVRHand_t {
 	AnimVRHand_Left = 0,
 	AnimVRHand_Right = 1
 }
+
 declare const enum MeshDrawPrimitiveFlags_t {
 	MESH_DRAW_FLAGS_NONE = 0,
 	MESH_DRAW_FLAGS_USE_SHADOW_FAST_PATH = 1,
@@ -23882,6 +23619,7 @@ declare const enum MeshDrawPrimitiveFlags_t {
 	MESH_DRAW_FLAGS_DRAW_LAST = 128,
 	MESH_DRAW_FLAGS_HAS_LIGHTING_BASIS = 256
 }
+
 declare const enum ParticleFloatType_t {
 	PF_TYPE_INVALID = -1,
 	PF_TYPE_LITERAL = 0,
@@ -23894,19 +23632,23 @@ declare const enum ParticleFloatType_t {
 	PF_TYPE_PARTICLE_SPEED = 7,
 	PF_TYPE_COUNT = 8
 }
+
 declare const enum EconEntityParticleDisableMode_t {
 	ECON_ENTITY_PARTICLES_ENABLED = 0,
 	ECON_ENTITY_PARTICLES_DISABLED = 1,
 	ECON_ENTITY_PARTICLES_DISABLED_BUT_PLAY_ENDCAPS_TO_STOP = 2
 }
+
 declare const enum ShopItemViewMode_t {
 	SHOP_VIEW_MODE_LIST = 0,
 	SHOP_VIEW_MODE_GRID = 1
 }
+
 declare const enum IrradVolumeFlags_t {
 	IRRADVOLUME_FLAGS_NONE = 0,
 	IRRADVOLUME_FLAG_AUTO_GENERATED = 1
 }
+
 declare const enum ParticleFloatMapType_t {
 	PF_MAP_TYPE_INVALID = -1,
 	PF_MAP_TYPE_DIRECT = 0,
@@ -23915,6 +23657,7 @@ declare const enum ParticleFloatMapType_t {
 	PF_MAP_TYPE_CURVE = 3,
 	PF_MAP_TYPE_COUNT = 4
 }
+
 declare const enum BeamType_t {
 	BEAM_INVALID = 0,
 	BEAM_POINTS = 1,
@@ -23924,6 +23667,7 @@ declare const enum BeamType_t {
 	BEAM_SPLINE = 5,
 	BEAM_LASER = 6
 }
+
 declare const enum subquest_player_stat_types_t {
 	SUBQUEST_PLAYER_STAT_GOLD = 0,
 	SUBQUEST_PLAYER_STAT_LEVEL = 1,
@@ -23931,6 +23675,7 @@ declare const enum subquest_player_stat_types_t {
 	SUBQUEST_PLAYER_STAT_DENIES = 3,
 	SUBQUEST_NUM_PLAYER_STATS = 4
 }
+
 declare const enum SequenceCombineMode_t {
 	SEQUENCE_COMBINE_MODE_USE_SEQUENCE_0 = 0,
 	SEQUENCE_COMBINE_MODE_USE_SEQUENCE_1 = 1,
@@ -23946,6 +23691,7 @@ declare const enum SequenceCombineMode_t {
 	SEQUENCE_COMBINE_MODE_REPLICATE_COLOR_0 = 11,
 	SEQUENCE_COMBINE_MODE_REPLICATE_COLOR_1 = 12
 }
+
 declare const enum LightType_t {
 	MATERIAL_LIGHT_DISABLE = 0,
 	MATERIAL_LIGHT_POINT = 1,
@@ -23954,12 +23700,14 @@ declare const enum LightType_t {
 	MATERIAL_LIGHT_ORTHO = 4,
 	MATERIAL_LIGHT_ENVIRONMENT_PROBE = 5
 }
+
 declare const enum ValueRemapperOutputType_t {
 	OutputType_AnimationCycle = 0,
 	OutputType_RotationX = 1,
 	OutputType_RotationY = 2,
 	OutputType_RotationZ = 3
 }
+
 declare const enum WorldTextAttachmentType_t {
 	ATTACHED_NONE = 0,
 	ATTACHED_PRIMARY_HAND = 1,
@@ -23969,6 +23717,7 @@ declare const enum WorldTextAttachmentType_t {
 	ATTACHED_ENTITY_LARGE = 5,
 	ATTACHED_HAND_SPECIFIED_IN_EVENT = 6
 }
+
 declare const enum DOTA_ABILITY_BEHAVIOR {
 	DOTA_ABILITY_BEHAVIOR_NONE = 0,
 	DOTA_ABILITY_BEHAVIOR_HIDDEN = 1,
@@ -24006,6 +23755,7 @@ declare const enum DOTA_ABILITY_BEHAVIOR {
 	DOTA_ABILITY_BEHAVIOR_CAN_SELF_CAST = 4294967296,
 	DOTA_ABILITY_BEHAVIOR_SHOW_IN_GUIDES = 8589934592
 }
+
 declare const enum DAMAGE_TYPES {
 	DAMAGE_TYPE_NONE = 0,
 	DAMAGE_TYPE_PHYSICAL = 1,
@@ -24014,10 +23764,12 @@ declare const enum DAMAGE_TYPES {
 	DAMAGE_TYPE_HP_REMOVAL = 8,
 	DAMAGE_TYPE_ALL = 7
 }
+
 declare const enum SosGroupType_t {
 	SOS_GROUPTYPE_DYNAMIC = 0,
 	SOS_GROUPTYPE_STATIC = 1
 }
+
 declare const enum AnimParamButton_t {
 	ANIMPARAM_BUTTON_NONE = 0,
 	ANIMPARAM_BUTTON_DPAD_UP = 1,
@@ -24033,11 +23785,13 @@ declare const enum AnimParamButton_t {
 	ANIMPARAM_BUTTON_LTRIGGER = 11,
 	ANIMPARAM_BUTTON_RTRIGGER = 12
 }
+
 declare const enum BloomBlendMode_t {
 	BLOOM_BLEND_ADD = 0,
 	BLOOM_BLEND_SCREEN = 1,
 	BLOOM_BLEND_BLUR = 2
 }
+
 declare const enum PrecipitationType_t {
 	PRECIPITATION_TYPE_RAIN = 0,
 	PRECIPITATION_TYPE_SNOW = 1,
@@ -24053,6 +23807,7 @@ declare const enum PrecipitationType_t {
 	PRECIPITATION_TYPE_DUSTMOTES = 11,
 	NUM_PRECIPITATION_TYPES = 12
 }
+
 declare const enum DOTAModifierAttribute_t {
 	MODIFIER_ATTRIBUTE_NONE = 0,
 	MODIFIER_ATTRIBUTE_PERMANENT = 1,
@@ -24060,28 +23815,33 @@ declare const enum DOTAModifierAttribute_t {
 	MODIFIER_ATTRIBUTE_IGNORE_INVULNERABLE = 4,
 	MODIFIER_ATTRIBUTE_AURA_PRIORITY = 8
 }
+
 declare const enum PerformanceMode_t {
 	PM_NORMAL = 0,
 	PM_NO_GIBS = 1,
 	PM_FULL_GIBS = 2,
 	PM_REDUCED_GIBS = 3
 }
+
 declare const enum ChoiceMethod {
 	WeightedRandom = 0,
 	WeightedRandomNoRepeat = 1,
 	Iterate = 2,
 	IterateRandom = 3
 }
+
 declare const enum PathStatusOptions {
 	PathStatus_HasPath = 0,
 	PathStatus_WaypointIsGoal = 1,
 	PathStatus_GoalHasChanged = 2
 }
+
 declare const enum BrushSolidities_e {
 	BRUSHSOLID_TOGGLE = 0,
 	BRUSHSOLID_NEVER = 1,
 	BRUSHSOLID_ALWAYS = 2
 }
+
 declare const enum Detail2Combo_t {
 	DETAIL_2_COMBO_UNINITIALIZED = -1,
 	DETAIL_2_COMBO_OFF = 0,
@@ -24091,15 +23851,18 @@ declare const enum Detail2Combo_t {
 	DETAIL_2_COMBO_MUL = 4,
 	DETAIL_2_COMBO_CROSSFADE = 5
 }
+
 declare const enum AttachmentInfluenceFlags_t {
 	ATTACHMENT_INFLUENCE_FLAGS_NONE = 0,
 	ATTACHMENT_INFLUENCE_FLAGS_ROOT_TRANSFORM = 1
 }
+
 declare const enum ScreenEffectType_t {
 	SCREENEFFECT_EP2_ADVISOR_STUN = 0,
 	SCREENEFFECT_EP1_INTRO = 1,
 	SCREENEFFECT_EP2_GROGGY = 2
 }
+
 declare const enum IGE_AssassinationState {
 	ASSASSINMINIGAMESTATE_NotActive = 0,
 	ASSASSINMINIGAMESTATE_AwaitingInitialization = 1,
@@ -24107,10 +23870,12 @@ declare const enum IGE_AssassinationState {
 	ASSASSINMINIGAMESTATE_ContractFilled = 3,
 	ASSASSINMINIGAMESTATE_ContractDenied = 4
 }
+
 declare const enum ValueRemapperInputType_t {
 	InputType_PlayerShootPosition = 0,
 	InputType_PlayerShootPositionAroundAxis = 1
 }
+
 declare const enum BaseActivity_t {
 	ACT_RESET = 0,
 	ACT_IDLE = 1,
@@ -25100,33 +24865,39 @@ declare const enum BaseActivity_t {
 	ACT_VR_PISTOL_LOW_KICK = 985,
 	ACT_VR_PISTOL_BURST_ATTACK = 986
 }
+
 declare const enum ThreeState_t {
 	TRS_FALSE = 0,
 	TRS_TRUE = 1,
 	TRS_NONE = 2
 }
+
 declare const enum TrainOrientationType_t {
 	TrainOrientation_Fixed = 0,
 	TrainOrientation_AtPathTracks = 1,
 	TrainOrientation_LinearBlend = 2,
 	TrainOrientation_EaseInEaseOut = 3
 }
+
 declare const enum explosion_t {
 	EXPLOSION_DEFAULT = 0,
 	EXPLOSION_GRENADE = 1,
 	EXPLOSION_MOLOTOV = 2,
 	EXPLOSION_FIREWORKS = 3
 }
+
 declare const enum ValueRemapperMomentumType_t {
 	MomentumType_None = 0,
 	MomentumType_Friction = 1,
 	MomentumType_SpringTowardSnapValue = 2,
 	MomentumType_SpringAwayFromSnapValue = 3
 }
+
 declare const enum ValueRemapperHapticsType_t {
 	HaticsType_Default = 0,
 	HaticsType_None = 1
 }
+
 declare const enum quest_hud_types_t {
 	QUEST_HUD_TYPE_DEFAULT = 0,
 	QUEST_HUD_TYPE_GOLD = 1,
@@ -25134,14 +24905,17 @@ declare const enum quest_hud_types_t {
 	QUEST_HUD_TYPE_DEFEND = 3,
 	QUEST_NUM_HUD_TYPES = 4
 }
+
 declare const enum DamageCategory_t {
 	DOTA_DAMAGE_CATEGORY_SPELL = 0,
 	DOTA_DAMAGE_CATEGORY_ATTACK = 1
 }
+
 declare const enum AnimNodeNetworkMode {
 	ServerAuthoritative = 0,
 	ClientSimulate = 1
 }
+
 declare const enum SteamUGCMatchingUGCType {
 	Items = 0,
 	Items_Mtx = 1,
@@ -25158,21 +24932,25 @@ declare const enum SteamUGCMatchingUGCType {
 	GameManagedItems = 12,
 	All = -1
 }
+
 declare const enum navproperties_t {
 	NAV_IGNORE = 1
 }
+
 declare const enum GlobalIlluminationMethod_t {
 	GLOBAL_ILLUMINATION_NONE = 0,
 	GLOBAL_ILLUMINATION_BAKE = 1,
 	GLOBAL_ILLUMINATION_AMBIENT_OCCLUSION = 2,
 	GLOBAL_ILLUMINATION_REALTIME_RADIOSITY = 3
 }
+
 declare const enum RenderMeshFlexControllerRemapType_t {
 	FLEXCONTROLLER_REMAP_PASSTHRU = 0,
 	FLEXCONTROLLER_REMAP_2WAY = 1,
 	FLEXCONTROLLER_REMAP_NWAY = 2,
 	FLEXCONTROLLER_REMAP_EYELID = 3
 }
+
 declare const enum RMSG_SubEventType_t {
 	RMSG_SUB_EVENT_INVALID = -1,
 	RMSG_SUB_EVENT_INSTANT = 0,
@@ -25180,11 +24958,13 @@ declare const enum RMSG_SubEventType_t {
 	RMSG_SUB_EVENT_END_SPAN = 2,
 	RMSG_SUB_EVENT_COUNT = 3
 }
+
 declare const enum Explosions {
 	expRandom = 0,
 	expDirected = 1,
 	expUsePrecise = 2
 }
+
 declare const enum DOTAProjectileAttachment_t {
 	DOTA_PROJECTILE_ATTACHMENT_NONE = 0,
 	DOTA_PROJECTILE_ATTACHMENT_ATTACK_1 = 1,
@@ -25194,17 +24974,20 @@ declare const enum DOTAProjectileAttachment_t {
 	DOTA_PROJECTILE_ATTACHMENT_ATTACK_4 = 5,
 	DOTA_PROJECTILE_ATTACHMENT_LAST = 6
 }
+
 declare const enum ChoiceChangeMethod {
 	OnReset = 0,
 	OnCycleEnd = 1,
 	OnResetOrCycleEnd = 2
 }
+
 declare const enum PropDoorRotatingSpawnPos_t {
 	DOOR_SPAWN_CLOSED = 0,
 	DOOR_SPAWN_OPEN_FORWARD = 1,
 	DOOR_SPAWN_OPEN_BACK = 2,
 	DOOR_SPAWN_AJAR = 3
 }
+
 declare const enum Touch_t {
 	touch_none = 0,
 	touch_player_only = 1,
@@ -25212,6 +24995,7 @@ declare const enum Touch_t {
 	touch_player_or_npc = 3,
 	touch_player_or_npc_or_physicsprop = 4
 }
+
 declare const enum DOTAInventoryFlags_t {
 	DOTA_INVENTORY_ALLOW_NONE = 0,
 	DOTA_INVENTORY_ALLOW_MAIN = 1,
@@ -25221,6 +25005,7 @@ declare const enum DOTAInventoryFlags_t {
 	DOTA_INVENTORY_LIMIT_DROP_ON_GROUND = 16,
 	DOTA_INVENTORY_ALL_ACCESS = 3
 }
+
 declare const enum DotaDefaultUIElement_t {
 	DOTA_DEFAULT_UI_INVALID = -1,
 	DOTA_DEFAULT_UI_TOP_TIMEOFDAY = 0,
@@ -25252,11 +25037,13 @@ declare const enum DotaDefaultUIElement_t {
 	DOTA_DEFAULT_UI_TOP_BAR = 26,
 	DOTA_DEFAULT_UI_ELEMENT_COUNT = 27
 }
+
 declare const enum MeshTranslucencyType_t {
 	MESH_TRANSLUCENCY_FULLY_OPAQUE = 0,
 	MESH_TRANSLUCENCY_PARTIALLY_ALPHA_BLENDED = 1,
 	MESH_TRANSLUCENCY_FULLY_ALPHA_BLENDED = 2
 }
+
 declare const enum SignonState_t {
 	SIGNONSTATE_NONE = 0,
 	SIGNONSTATE_CHALLENGE = 1,
@@ -25267,6 +25054,7 @@ declare const enum SignonState_t {
 	SIGNONSTATE_FULL = 6,
 	SIGNONSTATE_CHANGELEVEL = 7
 }
+
 declare const enum WeaponTexture_t {
 	WEAPON_TEXTURE_ICON_ACTIVE = 0,
 	WEAPON_TEXTURE_ICON_INACTIVE = 1,
@@ -25278,15 +25066,18 @@ declare const enum WeaponTexture_t {
 	WEAPON_TEXTURE_ICON_ZOOMED_AUTOAIM = 7,
 	WEAPON_TEXTURE_ICON_SMALL = 8
 }
+
 declare const enum EDOTASpecialBonusOperation {
 	SPECIAL_BONUS_ADD = 0,
 	SPECIAL_BONUS_MULTIPLY = 1,
 	SPECIAL_BONUS_SUBTRACT = 2
 }
+
 declare const enum DOTAAbilitySpeakTrigger_t {
 	DOTA_ABILITY_SPEAK_START_ACTION_PHASE = 0,
 	DOTA_ABILITY_SPEAK_CAST = 1
 }
+
 declare const enum HierarchyType_t {
 	HIERARCHY_NONE = 0,
 	HIERARCHY_BONE_MERGE = 1,
@@ -25295,11 +25086,13 @@ declare const enum HierarchyType_t {
 	HIERARCHY_BONE = 4,
 	HIERARCHY_TYPE_COUNT = 5
 }
+
 declare const enum BoneMaskBlendSpace {
 	BlendSpace_Parent = 0,
 	BlendSpace_Model = 1,
 	BlendSpace_Model_RotationOnly = 2
 }
+
 declare const enum quest_text_replace_values_t {
 	QUEST_TEXT_REPLACE_VALUE_CURRENT_VALUE = 0,
 	QUEST_TEXT_REPLACE_VALUE_TARGET_VALUE = 1,
@@ -25307,11 +25100,13 @@ declare const enum quest_text_replace_values_t {
 	QUEST_TEXT_REPLACE_VALUE_REWARD = 3,
 	QUEST_NUM_TEXT_REPLACE_VALUES = 4
 }
+
 declare const enum modifierremove {
 	DOTA_BUFF_REMOVE_ALL = 0,
 	DOTA_BUFF_REMOVE_ENEMY = 1,
 	DOTA_BUFF_REMOVE_ALLY = 2
 }
+
 declare const enum DoorState_t {
 	DOOR_STATE_CLOSED = 0,
 	DOOR_STATE_OPENING = 1,
@@ -25319,6 +25114,7 @@ declare const enum DoorState_t {
 	DOOR_STATE_CLOSING = 3,
 	DOOR_STATE_AJAR = 4
 }
+
 declare const enum AnimVectorSource {
 	MoveDirection = 0,
 	FacingDirection = 1,
@@ -25334,11 +25130,13 @@ declare const enum AnimVectorSource {
 	GoalPosition = 11,
 	GoalFacingDirection = 12
 }
+
 declare const enum fieldtype_t {
 	FIELD_VOID = 0,
 	FIELD_FLOAT32 = 1,
 	FIELD_STRING = 2,
 	FIELD_VECTOR = 3,
+	FIELD_QUATERNION = 4,
 	FIELD_INT32 = 5,
 	FIELD_BOOLEAN = 6,
 	FIELD_INT16 = 7,
@@ -25365,11 +25163,14 @@ declare const enum fieldtype_t {
 	FIELD_RESOURCE = 28,
 	FIELD_TYPEUNKNOWN = 29,
 	FIELD_CSTRING = 30,
+	FIELD_HSCRIPT = 31,
 	FIELD_VARIANT = 32,
 	FIELD_UINT64 = 33,
 	FIELD_FLOAT64 = 34,
 	FIELD_POSITIVEINTEGER_OR_NULL = 35,
+	FIELD_HSCRIPT_NEW_INSTANCE = 36,
 	FIELD_UINT32 = 37,
+	FIELD_UTLSTRINGTOKEN = 38,
 	FIELD_QANGLE = 39,
 	FIELD_NETWORK_ORIGIN_CELL_QUANTIZED_VECTOR = 40,
 	FIELD_HMATERIAL = 41,
@@ -25378,6 +25179,8 @@ declare const enum fieldtype_t {
 	FIELD_NETWORK_QUANTIZED_FLOAT = 44,
 	FIELD_DIRECTION_VECTOR_WORLDSPACE = 45,
 	FIELD_QANGLE_WORLDSPACE = 46,
+	FIELD_QUATERNION_WORLDSPACE = 47,
+	FIELD_HSCRIPT_LIGHTBINDING = 48,
 	FIELD_V8_VALUE = 49,
 	FIELD_V8_OBJECT = 50,
 	FIELD_V8_ARRAY = 51,
@@ -25393,18 +25196,21 @@ declare const enum fieldtype_t {
 	FIELD_HPOSTPROCESSING = 61,
 	FIELD_TYPECOUNT = 62
 }
+
 declare const enum PlayerOrderIssuer_t {
 	DOTA_ORDER_ISSUER_SELECTED_UNITS = 0,
 	DOTA_ORDER_ISSUER_CURRENT_UNIT_ONLY = 1,
 	DOTA_ORDER_ISSUER_HERO_ONLY = 2,
 	DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY = 3
 }
+
 declare const enum SPELL_DISPELLABLE_TYPES {
 	SPELL_DISPELLABLE_NONE = 0,
 	SPELL_DISPELLABLE_YES_STRONG = 1,
 	SPELL_DISPELLABLE_YES = 2,
 	SPELL_DISPELLABLE_NO = 3
 }
+
 declare const enum DOTAMinimapEvent_t {
 	DOTA_MINIMAP_EVENT_ANCIENT_UNDER_ATTACK = 2,
 	DOTA_MINIMAP_EVENT_BASE_UNDER_ATTACK = 4,
@@ -25420,11 +25226,13 @@ declare const enum DOTAMinimapEvent_t {
 	DOTA_MINIMAP_EVENT_RADAR = 4096,
 	DOTA_MINIMAP_EVENT_RADAR_TARGET = 8192
 }
+
 declare const enum LessonPanelLayoutFileTypes_t {
 	LAYOUT_HAND_DEFAULT = 0,
 	LAYOUT_WORLD_DEFAULT = 1,
 	LAYOUT_CUSTOM = 2
 }
+
 declare const enum EntityIOTargetType_t {
 	ENTITY_IO_TARGET_INVALID = -1,
 	ENTITY_IO_TARGET_CLASSNAME = 0,
@@ -25436,6 +25244,7 @@ declare const enum EntityIOTargetType_t {
 	ENTITY_IO_TARGET_EHANDLE = 6,
 	ENTITY_IO_TARGET_ENTITYNAME_OR_CLASSNAME = 7
 }
+
 declare const enum PetCoopStates_t {
 	COOP_IGNORE = 0,
 	COOPTELEPORT_START_PERFORMING = 1,
@@ -25444,6 +25253,7 @@ declare const enum PetCoopStates_t {
 	COOP_WARD_OBSERVER = 4,
 	COOP_WARD_SENTRY = 5
 }
+
 declare const enum gender_t {
 	GENDER_NONE = 0,
 	GENDER_MALE = 1,
@@ -25467,6 +25277,7 @@ declare const enum gender_t {
 	GENDER_BRIDE = 19,
 	GENDER_LAST = 20
 }
+
 declare const enum SteamUniverse {
 	Invalid = 0,
 	Internal = 3,
@@ -25474,10 +25285,12 @@ declare const enum SteamUniverse {
 	Beta = 2,
 	Public = 1
 }
+
 declare const enum DOTACustomHeroPickRulesPhase_t {
 	PHASE_Ban = 0,
 	PHASE_Pick = 1
 }
+
 declare const enum DOTA_HOLDOUT_TOWER_TYPE {
 	DOTA_HOLDOUT_TOWER_NONE = 0,
 	DOTA_HOLDOUT_TOWER_LIGHTFAST = 1,
@@ -25485,10 +25298,12 @@ declare const enum DOTA_HOLDOUT_TOWER_TYPE {
 	DOTA_HOLDOUT_TOWER_REDUCESPEED = 3,
 	DOTA_HOLDOUT_TOWER_COUNT = 4
 }
+
 declare const enum PointWorldTextReorientMode_t {
 	POINT_WORLD_TEXT_REORIENT_NONE = 0,
 	POINT_WORLD_TEXT_REORIENT_AROUND_UP = 1
 }
+
 declare const enum DOTA_PURGE_FLAGS {
 	DOTA_PURGE_FLAG_NONE = 0,
 	DOTA_PURGE_FLAG_REMOVE_BUFFS = 2,
@@ -25497,10 +25312,12 @@ declare const enum DOTA_PURGE_FLAGS {
 	DOTA_PURGE_FLAG_REMOVE_EXCEPTIONS = 16,
 	DOTA_PURGE_FLAG_REMOVE_THIS_FRAME_ONLY = 32
 }
+
 declare const enum SosActionSortType_t {
 	SOS_SORTTYPE_HIGHEST = 0,
 	SOS_SORTTYPE_LOWEST = 1
 }
+
 declare const enum NPC_STATE {
 	NPC_STATE_INVALID = -1,
 	NPC_STATE_NONE = 0,
@@ -25512,10 +25329,12 @@ declare const enum NPC_STATE {
 	NPC_STATE_PRONE = 6,
 	NPC_STATE_DEAD = 7
 }
+
 declare const enum AnimVRHandMotionRange_t {
 	MotionRange_WithController = 0,
 	MotionRange_WithoutController = 1
 }
+
 declare const enum ResourceStructFlags_t {
 	STRUCT_HAS_VTABLE = 1,
 	STRUCT_TREE_REQUIRES_SCATTER = 2,
@@ -25525,11 +25344,13 @@ declare const enum ResourceStructFlags_t {
 	STRUCT_TREE_REQUIRES_UNUSED = 32,
 	STRUCT_FLAGS_MAX = 32
 }
+
 declare const enum WorldTextPanelHorizontalAlign_t {
 	WORLDTEXT_HORIZONTAL_ALIGN_LEFT = 0,
 	WORLDTEXT_HORIZONTAL_ALIGN_CENTER = 1,
 	WORLDTEXT_HORIZONTAL_ALIGN_RIGHT = 2
 }
+
 declare const enum DOTA_UNIT_TARGET_TYPE {
 	DOTA_UNIT_TARGET_NONE = 0,
 	DOTA_UNIT_TARGET_HERO = 1,
@@ -25542,11 +25363,13 @@ declare const enum DOTA_UNIT_TARGET_TYPE {
 	DOTA_UNIT_TARGET_BASIC = 18,
 	DOTA_UNIT_TARGET_ALL = 55
 }
+
 declare const enum PetGroundType_t {
 	PET_GROUND_NONE = 0,
 	PET_GROUND_GRID = 1,
 	PET_GROUND_PLANE = 2
 }
+
 declare const enum PortraitDisplayMode_t {
 	PORTRAIT_DISPLAY_MODE_INVALID = -1,
 	PORTRAIT_DISPLAY_MODE_LOADOUT = 0,
@@ -25554,12 +25377,14 @@ declare const enum PortraitDisplayMode_t {
 	PORTRAIT_DISPLAY_MODE_LOADOUT_SMALL = 2,
 	PORTRAIT_DISPLAY_MODE_TREASURE_SMALL = 3
 }
+
 declare const enum eLogicalHandType {
 	LOGICAL_HAND_TYPE_UNKNOWN = -1,
 	LOGICAL_HAND_TYPE_PRIMARY_HAND = 0,
 	LOGICAL_HAND_TYPE_OFF_HAND = 1,
 	LOGICAL_HAND_TYPE_COUNT = 2
 }
+
 declare const enum InputLayoutVariation_t {
 	INPUT_LAYOUT_VARIATION_DEFAULT = 0,
 	INPUT_LAYOUT_VARIATION_STREAM1_MAT3X4 = 1,
@@ -25568,21 +25393,25 @@ declare const enum InputLayoutVariation_t {
 	INPUT_LAYOUT_VARIATION_STREAM1_INSTANCEID_MORPH_VERT_ID = 4,
 	INPUT_LAYOUT_VARIATION_MAX = 5
 }
+
 declare const enum BlendKeyType {
 	BlendKey_UserValue = 0,
 	BlendKey_Velocity = 1,
 	BlendKey_Distance = 2,
 	BlendKey_RemainingDistance = 3
 }
+
 declare const enum VertJustification_e {
 	VERT_JUSTIFICATION_TOP = 0,
 	VERT_JUSTIFICATION_CENTER = 1,
 	VERT_JUSTIFICATION_BOTTOM = 2,
 	VERT_JUSTIFICATION_NONE = 3
 }
+
 declare const enum TakeHealthOptions_t {
 	TH_IGNORE_MAX_HITPOINTS = 1
 }
+
 declare const enum MoveType_t {
 	MOVETYPE_NONE = 0,
 	MOVETYPE_ISOMETRIC = 1,
@@ -25599,6 +25428,7 @@ declare const enum MoveType_t {
 	MOVETYPE_LAST = 11,
 	MOVETYPE_MAX_BITS = 4
 }
+
 declare const enum LatchDirtyPermission_t {
 	LATCH_DIRTY_DISALLOW = 0,
 	LATCH_DIRTY_SERVER_CONTROLLED = 1,
@@ -25607,6 +25437,7 @@ declare const enum LatchDirtyPermission_t {
 	LATCH_DIRTY_FRAMESIMULATE = 4,
 	LATCH_DIRTY_PARTICLE_SIMULATE = 5
 }
+
 declare const enum AbilityLearnResult_t {
 	ABILITY_CAN_BE_UPGRADED = 0,
 	ABILITY_CANNOT_BE_UPGRADED_NOT_UPGRADABLE = 1,
@@ -25614,6 +25445,7 @@ declare const enum AbilityLearnResult_t {
 	ABILITY_CANNOT_BE_UPGRADED_REQUIRES_LEVEL = 3,
 	ABILITY_NOT_LEARNABLE = 4
 }
+
 declare const enum PostProcessParameterNames_t {
 	PPPN_FADE_TIME = 0,
 	PPPN_LOCAL_CONTRAST_STRENGTH = 1,
@@ -25629,12 +25461,14 @@ declare const enum PostProcessParameterNames_t {
 	PPPN_TOP_VIGNETTE_STRENGTH = 11,
 	POST_PROCESS_PARAMETER_COUNT = 12
 }
+
 declare const enum HorizJustification_e {
 	HORIZ_JUSTIFICATION_LEFT = 0,
 	HORIZ_JUSTIFICATION_CENTER = 1,
 	HORIZ_JUSTIFICATION_RIGHT = 2,
 	HORIZ_JUSTIFICATION_NONE = 3
 }
+
 declare const enum DOTAPortraitEnvironmentType_t {
 	DOTA_PORTRAIT_ENVIRONMENT_INVALID = -1,
 	DOTA_PORTRAIT_ENVIRONMENT_DEFAULT = 0,
@@ -25646,10 +25480,12 @@ declare const enum DOTAPortraitEnvironmentType_t {
 	DOTA_PORTRAIT_ENVIRONMENT_FULL_BODY_RIGHT_SIDE = 6,
 	DOTA_PORTRAIT_ENVIRONMENT_TYPE_COUNT = 7
 }
+
 declare const enum PointTemplateClientOnlyEntityBehavior_t {
 	CREATE_FOR_CURRENTLY_CONNECTED_CLIENTS_ONLY = 0,
 	CREATE_FOR_CLIENTS_WHO_CONNECT_LATER = 1
 }
+
 declare const enum DOTADamageFlag_t {
 	DOTA_DAMAGE_FLAG_NONE = 0,
 	DOTA_DAMAGE_FLAG_IGNORES_MAGIC_ARMOR = 1,
@@ -25666,6 +25502,7 @@ declare const enum DOTADamageFlag_t {
 	DOTA_DAMAGE_FLAG_DONT_DISPLAY_DAMAGE_IF_SOURCE_HIDDEN = 2048,
 	DOTA_DAMAGE_FLAG_NO_SPELL_LIFESTEAL = 4096
 }
+
 declare const enum TimelineCompression_t {
 	TIMELINE_COMPRESSION_SUM = 0,
 	TIMELINE_COMPRESSION_COUNT_PER_INTERVAL = 1,
@@ -25673,20 +25510,24 @@ declare const enum TimelineCompression_t {
 	TIMELINE_COMPRESSION_AVERAGE_BLEND = 3,
 	TIMELINE_COMPRESSION_TOTAL = 4
 }
+
 declare const enum ERoshanSpawnPhase {
 	ROSHAN_SPAWN_PHASE_ALIVE = 0,
 	ROSHAN_SPAWN_PHASE_BASE_TIMER = 1,
 	ROSHAN_SPAWN_PHASE_VISIBLE_TIMER = 2
 }
+
 declare const enum attributeprovidertypes_t {
 	PROVIDER_GENERIC = 0,
 	PROVIDER_WEAPON = 1
 }
+
 declare const enum DOTAUnitMoveCapability_t {
 	DOTA_UNIT_CAP_MOVE_NONE = 0,
 	DOTA_UNIT_CAP_MOVE_GROUND = 1,
 	DOTA_UNIT_CAP_MOVE_FLY = 2
 }
+
 declare const enum DOTA_MOTION_CONTROLLER_PRIORITY {
 	DOTA_MOTION_CONTROLLER_PRIORITY_LOWEST = 0,
 	DOTA_MOTION_CONTROLLER_PRIORITY_LOW = 1,
@@ -25694,6 +25535,7 @@ declare const enum DOTA_MOTION_CONTROLLER_PRIORITY {
 	DOTA_MOTION_CONTROLLER_PRIORITY_HIGH = 3,
 	DOTA_MOTION_CONTROLLER_PRIORITY_HIGHEST = 4
 }
+
 declare const enum DOTAUnitAttackCapability_t {
 	DOTA_UNIT_CAP_NO_ATTACK = 0,
 	DOTA_UNIT_CAP_MELEE_ATTACK = 1,
@@ -25701,6 +25543,7 @@ declare const enum DOTAUnitAttackCapability_t {
 	DOTA_UNIT_CAP_RANGED_ATTACK_DIRECTIONAL = 4,
 	DOTA_UNIT_ATTACK_CAPABILITY_BIT_COUNT = 3
 }
+
 declare const enum attackfail {
 	DOTA_ATTACK_RECORD_FAIL_NO = 0,
 	DOTA_ATTACK_RECORD_FAIL_TERRAIN_MISS = 1,
@@ -25711,6 +25554,7 @@ declare const enum attackfail {
 	DOTA_ATTACK_RECORD_CANNOT_FAIL = 6,
 	DOTA_ATTACK_RECORD_FAIL_BLOCKED_BY_OBSTRUCTION = 7
 }
+
 declare const enum ControlValue {
 	ControlValue_MoveHeading = 0,
 	ControlValue_MoveSpeed = 1,
@@ -25742,6 +25586,7 @@ declare const enum ControlValue {
 	ControlValue_Count = 27,
 	ControlValue_Invalid = 255
 }
+
 declare const enum NavAttributeEnum {
 	NAV_MESH_CROUCH = 1,
 	NAV_MESH_JUMP = 2,
@@ -25753,6 +25598,7 @@ declare const enum NavAttributeEnum {
 	NAV_MESH_OBSTACLE_TOP = 16384,
 	NAV_MESH_CLIFF = 32768
 }
+
 declare const enum RenderBufferFlags_t {
 	RENDER_BUFFER_USAGE_VERTEX_BUFFER = 1,
 	RENDER_BUFFER_USAGE_INDEX_BUFFER = 2,
@@ -25763,6 +25609,7 @@ declare const enum RenderBufferFlags_t {
 	RENDER_BUFFER_APPEND_CONSUME_BUFFER = 64,
 	RENDER_BUFFER_UAV_COUNTER = 128
 }
+
 declare const enum DOTA_UNIT_TARGET_FLAGS {
 	DOTA_UNIT_TARGET_FLAG_NONE = 0,
 	DOTA_UNIT_TARGET_FLAG_RANGED_ONLY = 2,
@@ -25787,11 +25634,13 @@ declare const enum DOTA_UNIT_TARGET_FLAGS {
 	DOTA_UNIT_TARGET_FLAG_PREFER_ENEMIES = 1048576,
 	DOTA_UNIT_TARGET_FLAG_RESPECT_OBSTRUCTIONS = 2097152
 }
+
 declare const enum TRAIN_CODE {
 	TRAIN_SAFE = 0,
 	TRAIN_BLOCKING = 1,
 	TRAIN_FOLLOWING = 2
 }
+
 declare const enum SosEditItemType_t {
 	SOS_EDIT_ITEM_TYPE_SOUNDEVENTS = 0,
 	SOS_EDIT_ITEM_TYPE_SOUNDEVENT = 1,
@@ -25800,6 +25649,7 @@ declare const enum SosEditItemType_t {
 	SOS_EDIT_ITEM_TYPE_OPERATOR = 4,
 	SOS_EDIT_ITEM_TYPE_FIELD = 5
 }
+
 declare const enum DOTAScriptInventorySlot_t {
 	DOTA_ITEM_SLOT_1 = 0,
 	DOTA_ITEM_SLOT_2 = 1,
@@ -25817,26 +25667,31 @@ declare const enum DOTAScriptInventorySlot_t {
 	DOTA_STASH_SLOT_5 = 13,
 	DOTA_STASH_SLOT_6 = 14
 }
+
 declare const enum filter_t {
 	FILTER_AND = 0,
 	FILTER_OR = 1
 }
+
 declare const enum subquest_text_replace_values_t {
 	SUBQUEST_TEXT_REPLACE_VALUE_CURRENT_VALUE = 0,
 	SUBQUEST_TEXT_REPLACE_VALUE_TARGET_VALUE = 1,
 	SUBQUEST_NUM_TEXT_REPLACE_VALUES = 2
 }
+
 declare const enum SosActionStopType_t {
 	SOS_STOPTYPE_NONE = 0,
 	SOS_STOPTYPE_TIME = 1,
 	SOS_STOPTYPE_OPVAR = 2
 }
+
 declare const enum ModelBoneFlexComponent_t {
 	MODEL_BONE_FLEX_INVALID = -1,
 	MODEL_BONE_FLEX_TX = 0,
 	MODEL_BONE_FLEX_TY = 1,
 	MODEL_BONE_FLEX_TZ = 2
 }
+
 declare const enum ParticleAttachment_t {
 	PATTACH_INVALID = -1,
 	PATTACH_ABSORIGIN = 0,
@@ -25855,6 +25710,7 @@ declare const enum ParticleAttachment_t {
 	PATTACH_CENTER_FOLLOW = 13,
 	MAX_PATTACH_TYPES = 14
 }
+
 declare const enum WeaponProficiency_t {
 	WEAPON_PROFICIENCY_POOR = 0,
 	WEAPON_PROFICIENCY_AVERAGE = 1,
@@ -25862,6 +25718,7 @@ declare const enum WeaponProficiency_t {
 	WEAPON_PROFICIENCY_VERY_GOOD = 3,
 	WEAPON_PROFICIENCY_PERFECT = 4
 }
+
 declare const enum CourierState_t {
 	COURIER_STATE_INIT = -1,
 	COURIER_STATE_IDLE = 0,
@@ -25872,6 +25729,7 @@ declare const enum CourierState_t {
 	COURIER_STATE_DEAD = 5,
 	COURIER_NUM_STATES = 6
 }
+
 declare const enum HandSkeletonBone {
 	eBone_Root = 0,
 	eBone_Wrist = 1,
@@ -25906,14 +25764,17 @@ declare const enum HandSkeletonBone {
 	eBone_Aux_PinkyFinger = 30,
 	eBone_Count = 31
 }
+
 declare const enum FuncDoorSpawnPos_t {
 	FUNC_DOOR_SPAWN_CLOSED = 0,
 	FUNC_DOOR_SPAWN_OPEN = 1
 }
+
 declare const enum DOTA_ITEM_STATE {
 	DOTA_ITEM_NEEDS_EQUIPPED = 0,
 	DOTA_ITEM_READY = 1
 }
+
 declare const enum SolidType_t {
 	SOLID_NONE = 0,
 	SOLID_BSP = 1,
@@ -25924,6 +25785,7 @@ declare const enum SolidType_t {
 	SOLID_CAPSULE = 7,
 	SOLID_LAST = 8
 }
+
 declare const enum CubeMapFace_t {
 	CUBEMAP_FACE_POSITIVE_X = 0,
 	CUBEMAP_FACE_NEGATIVE_X = 1,
@@ -25932,6 +25794,7 @@ declare const enum CubeMapFace_t {
 	CUBEMAP_FACE_POSITIVE_Z = 4,
 	CUBEMAP_FACE_NEGATIVE_Z = 5
 }
+
 declare const enum DOTAKeybindCommand_t {
 	DOTA_KEYBIND_NONE = 0,
 	DOTA_KEYBIND_FIRST = 1,
@@ -26157,6 +26020,7 @@ declare const enum DOTAKeybindCommand_t {
 	DOTA_KEYBIND_DOTA_ALT = 220,
 	DOTA_KEYBIND_COUNT = 221
 }
+
 declare const enum modifierpriority {
 	MODIFIER_PRIORITY_LOW = 0,
 	MODIFIER_PRIORITY_NORMAL = 1,
@@ -26164,6 +26028,7 @@ declare const enum modifierpriority {
 	MODIFIER_PRIORITY_ULTRA = 3,
 	MODIFIER_PRIORITY_SUPER_ULTRA = 4
 }
+
 declare const enum ParticleOrientationChoiceList_t {
 	PARTICLE_ORIENTATION_SCREEN_ALIGNED = 0,
 	PARTICLE_ORIENTATION_SCREEN_Z_ALIGNED = 1,
@@ -26172,6 +26037,7 @@ declare const enum ParticleOrientationChoiceList_t {
 	PARTICLE_ORIENTATION_SCREENALIGN_TO_PARTICLE_NORMAL = 4,
 	PARTICLE_ORIENTATION_FULL_3AXIS_ROTATION = 5
 }
+
 declare const enum DOTA_SHOP_TYPE {
 	DOTA_SHOP_HOME = 0,
 	DOTA_SHOP_SIDE = 1,
@@ -26182,19 +26048,23 @@ declare const enum DOTA_SHOP_TYPE {
 	DOTA_SHOP_CUSTOM = 6,
 	DOTA_SHOP_NONE = 7
 }
+
 declare const enum EntityDisolveType_t {
 	ENTITY_DISSOLVE_NORMAL = 0,
 	ENTITY_DISSOLVE_ELECTRICAL = 1,
 	ENTITY_DISSOLVE_ELECTRICAL_LIGHT = 2,
 	ENTITY_DISSOLVE_CORE = 3
 }
+
 declare const enum LightSourceShape_t {
 	LIGHT_SOURCE_SHAPE_SPHERE = 0
 }
+
 declare const enum ShadowType_t {
 	SHADOWS_NONE = 0,
 	SHADOWS_SIMPLE = 1
 }
+
 declare const enum DOTASpeechType_t {
 	DOTA_SPEECH_USER_INVALID = 0,
 	DOTA_SPEECH_USER_SINGLE = 1,
@@ -26207,6 +26077,7 @@ declare const enum DOTASpeechType_t {
 	DOTA_SPEECH_SPECTATOR = 8,
 	DOTA_SPEECH_RECIPIENT_TYPE_MAX = 9
 }
+
 declare const enum Class_T {
 	CLASS_NONE = 0,
 	CLASS_PLAYER = 1,
@@ -26214,11 +26085,13 @@ declare const enum Class_T {
 	CLASS_BULLSEYE = 3,
 	LAST_SHARED_ENTITY_CLASS = 4
 }
+
 declare const enum TrainVelocityType_t {
 	TrainVelocity_Instantaneous = 0,
 	TrainVelocity_LinearBlend = 1,
 	TrainVelocity_EaseInEaseOut = 2
 }
+
 declare const enum Disposition_t {
 	D_ER = 0,
 	D_HT = 1,
@@ -26231,11 +26104,13 @@ declare const enum Disposition_t {
 	D_LIKE = 3,
 	D_NEUTRAL = 4
 }
+
 declare const enum TrackOrientationType_t {
 	TrackOrientation_Fixed = 0,
 	TrackOrientation_FacePath = 1,
 	TrackOrientation_FacePathAngles = 2
 }
+
 declare const enum ParticleTopology_t {
 	PARTICLE_TOPOLOGY_POINTS = 0,
 	PARTICLE_TOPOLOGY_LINES = 1,
@@ -26243,6 +26118,7 @@ declare const enum ParticleTopology_t {
 	PARTICLE_TOPOLOGY_QUADS = 3,
 	PARTICLE_TOPOLOGY_CUBES = 4
 }
+
 declare const enum DOTA_HeroPickState {
 	DOTA_HEROPICK_STATE_NONE = 0,
 	DOTA_HEROPICK_STATE_AP_SELECT = 1,
@@ -26305,6 +26181,7 @@ declare const enum DOTA_HeroPickState {
 	DOTA_HEROPICK_STATE_CUSTOM_PICK_RULES = 58,
 	DOTA_HEROPICK_STATE_COUNT = 59
 }
+
 declare const enum AttributeDerivedStats {
 	DOTA_ATTRIBUTE_STRENGTH_DAMAGE = 0,
 	DOTA_ATTRIBUTE_STRENGTH_HP = 1,
@@ -26321,17 +26198,20 @@ declare const enum AttributeDerivedStats {
 	DOTA_ATTRIBUTE_INTELLIGENCE_SPELL_AMP_PERCENT = 12,
 	DOTA_ATTRIBUTE_INTELLIGENCE_MAGIC_RESISTANCE_PERCENT = 13
 }
+
 declare const enum DampingSpeedFunction {
 	NoDamping = 0,
 	Constant = 1,
 	Spring = 2
 }
+
 declare const enum EDOTA_ModifyXP_Reason {
 	DOTA_ModifyXP_Unspecified = 0,
 	DOTA_ModifyXP_HeroKill = 1,
 	DOTA_ModifyXP_CreepKill = 2,
 	DOTA_ModifyXP_RoshanKill = 3
 }
+
 declare const enum RenderMode_t {
 	kRenderNormal = 0,
 	kRenderTransColor = 1,
@@ -26347,18 +26227,21 @@ declare const enum RenderMode_t {
 	kRenderDevVisualizer = 11,
 	kRenderModeCount = 12
 }
+
 declare const enum BeamClipStyle_t {
 	kNOCLIP = 0,
 	kGEOCLIP = 1,
 	kMODELCLIP = 2,
 	kBEAMCLIPSTYLE_NUMBITS = 2
 }
+
 declare const enum MaterialModifyMode_t {
 	MATERIAL_MODIFY_MODE_NONE = 0,
 	MATERIAL_MODIFY_MODE_SETVAR = 1,
 	MATERIAL_MODIFY_MODE_ANIM_SEQUENCE = 2,
 	MATERIAL_MODIFY_MODE_FLOAT_LERP = 3
 }
+
 declare const enum soundlevel_t {
 	SNDLVL_NONE = 0,
 	SNDLVL_20dB = 20,
@@ -26391,6 +26274,7 @@ declare const enum soundlevel_t {
 	SNDLVL_150dB = 150,
 	SNDLVL_180dB = 180
 }
+
 declare const enum AnimationSnapshotType_t {
 	ANIMATION_SNAPSHOT_SERVER_SIMULATION = 0,
 	ANIMATION_SNAPSHOT_CLIENT_SIMULATION = 1,
@@ -26400,10 +26284,12 @@ declare const enum AnimationSnapshotType_t {
 	ANIMATION_SNAPSHOT_FINAL_COMPOSITE = 5,
 	ANIMATION_SNAPSHOT_MAX = 6
 }
+
 declare const enum ValueRemapperRatchetType_t {
 	RatchetType_Absolute = 0,
 	RatchetType_EachEngage = 1
 }
+
 declare const enum gamerules_roundstate_t {
 	GR_STATE_INIT = 0,
 	GR_STATE_PREGAME = 1,
@@ -26416,6 +26302,7 @@ declare const enum gamerules_roundstate_t {
 	GR_STATE_GAME_OVER = 8,
 	GR_NUM_ROUND_STATES = 9
 }
+
 declare const enum SchemaClassFlags_t {
 	SCHEMA_CLASS_HAS_VIRTUAL_MEMBERS = 1,
 	SCHEMA_CLASS_IS_ABSTRACT = 2,
@@ -26426,6 +26313,7 @@ declare const enum SchemaClassFlags_t {
 	SCHEMA_CLASS_TEMP_HACK_HAS_DESTRUCTOR_LIKE_METHODS = 64,
 	SCHEMA_CLASS_IS_NOSCHEMA_CLASS = 128
 }
+
 declare const enum ParticleColorBlendMode_t {
 	PARTICLEBLEND_DEFAULT = 0,
 	PARTICLEBLEND_OVERLAY = 1,
@@ -26433,11 +26321,13 @@ declare const enum ParticleColorBlendMode_t {
 	PARTICLEBLEND_LIGHTEN = 3,
 	PARTICLEBLEND_MULTIPLY = 4
 }
+
 declare const enum PropDoorRotatingOpenDirection_e {
 	DOOR_ROTATING_OPEN_BOTH_WAYS = 0,
 	DOOR_ROTATING_OPEN_FORWARD = 1,
 	DOOR_ROTATING_OPEN_BACKWARD = 2
 }
+
 declare const enum eEconItemOrigin {
 	kEconItemOrigin_Invalid = -1,
 	kEconItemOrigin_Drop = 0,
@@ -26479,6 +26369,7 @@ declare const enum eEconItemOrigin {
 	kEconItemOrigin_SeasonalItemGrant = 36,
 	kEconItemOrigin_Max = 37
 }
+
 declare const enum DOTALimits_t {
 	DOTA_MAX_PLAYERS = 64,
 	DOTA_MAX_TEAM = 24,
@@ -26489,6 +26380,7 @@ declare const enum DOTALimits_t {
 	DOTA_DEFAULT_MAX_TEAM = 5,
 	DOTA_DEFAULT_MAX_TEAM_PLAYERS = 10
 }
+
 declare const enum interactions_t {
 	INTERACTION_NONE = -1,
 	INTERACTION_CLIP_TO_ENERGYGUN = 0,
@@ -26500,6 +26392,7 @@ declare const enum interactions_t {
 	INTERACTION_CLIP_TO_RAPIDFIRE = 6,
 	NUM_HAND_INTERACTIONS = 7
 }
+
 declare const enum SeqResourceCmdEnum {
 	SEQ_CMD_Nop = 0,
 	SEQ_CMD_LinearDelta = 1,
@@ -26519,6 +26412,7 @@ declare const enum SeqResourceCmdEnum {
 	SEQ_CMD_ReverseSequence = 15,
 	SEQ_CMD_Transform = 16
 }
+
 declare const enum LifeState_t {
 	LIFE_ALIVE = 0,
 	LIFE_DYING = 1,
@@ -26526,29 +26420,35 @@ declare const enum LifeState_t {
 	LIFE_RESPAWNABLE = 3,
 	LIFE_RESPAWNING = 4
 }
+
 declare const enum voxel_vis_compression_t {
 	VOXVIS_COMPRESS_RAW = 0,
 	VOXVIS_COMPRESS_RLE = 1
 }
+
 declare const enum DamageOptions_t {
 	DAMAGE_NO = 0,
 	DAMAGE_EVENTS_ONLY = 1,
 	DAMAGE_YES = 2
 }
+
 declare const enum PortraitSoundMode_t {
 	PORTRAIT_SOUND_MODE_INVALID = -1,
 	PORTRAIT_SOUND_MODE_NO_SOUNDS = 0,
 	PORTRAIT_SOUND_MODE_ONLY_TAUNT_SOUNDS = 1,
 	PORTRAIT_SOUND_MODE_ALL_SOUNDS = 2
 }
+
 declare const enum EntityLumpFlags_t {
 	ENTITY_LUMP_NONE = 0
 }
+
 declare const enum EntFinderMethod_t {
 	ENT_FIND_METHOD_NEAREST = 0,
 	ENT_FIND_METHOD_FARTHEST = 1,
 	ENT_FIND_METHOD_RANDOM = 2
 }
+
 declare const enum DOTA_SHOP_CATEGORY {
 	DOTA_SHOP_CATEGORY_NONE = -1,
 	DOTA_SHOP_CATEGORY_CONSUMABLES = 0,
@@ -26568,12 +26468,14 @@ declare const enum DOTA_SHOP_CATEGORY {
 	DOTA_SHOP_CATEGORY_SEARCH_RESULTS = 14,
 	NUM_SHOP_CATEGORIES = 15
 }
+
 declare const enum eLiteralHandType {
 	LITERAL_HAND_TYPE_UNKNOWN = -1,
 	LITERAL_HAND_TYPE_RIGHT = 0,
 	LITERAL_HAND_TYPE_LEFT = 1,
 	LITERAL_HAND_TYPE_COUNT = 2
 }
+
 declare const enum WeaponSound_t {
 	WEAPON_SOUND_EMPTY = 0,
 	WEAPON_SOUND_SINGLE = 1,
@@ -26593,11 +26495,13 @@ declare const enum WeaponSound_t {
 	WEAPON_SOUND_FAST_RELOAD = 15,
 	WEAPON_SOUND_NUM_TYPES = 16
 }
+
 declare const enum WeaponState_t {
 	WEAPON_NOT_CARRIED = 0,
 	WEAPON_IS_CARRIED_BY_PLAYER = 1,
 	WEAPON_IS_ACTIVE = 2
 }
+
 declare const enum UnitFilterResult {
 	UF_SUCCESS = 0,
 	UF_FAIL_FRIENDLY = 1,
@@ -26629,11 +26533,13 @@ declare const enum UnitFilterResult {
 	UF_FAIL_NIGHTMARED = 27,
 	UF_FAIL_OBSTRUCTED = 28
 }
+
 declare const enum doorCheck_e {
 	DOOR_CHECK_FORWARD = 0,
 	DOOR_CHECK_BACKWARD = 1,
 	DOOR_CHECK_FULL = 2
 }
+
 declare const enum SPELL_IMMUNITY_TYPES {
 	SPELL_IMMUNITY_NONE = 0,
 	SPELL_IMMUNITY_ALLIES_YES = 1,
@@ -26641,11 +26547,13 @@ declare const enum SPELL_IMMUNITY_TYPES {
 	SPELL_IMMUNITY_ENEMIES_YES = 3,
 	SPELL_IMMUNITY_ENEMIES_NO = 4
 }
+
 declare const enum RenderSlotType_t {
 	RENDER_SLOT_INVALID = -1,
 	RENDER_SLOT_PER_VERTEX = 0,
 	RENDER_SLOT_PER_INSTANCE = 1
 }
+
 declare const enum AnimValueSource {
 	MoveHeading = 0,
 	MoveSpeed = 1,
@@ -26669,6 +26577,7 @@ declare const enum AnimValueSource {
 	RootMotionTurnSpeed = 19,
 	MoveHeadingRelativeToLookHeading = 20
 }
+
 declare const enum modifierfunction {
 	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE = 0,
 	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_PROC = 1,
@@ -26865,6 +26774,7 @@ declare const enum modifierfunction {
 	MODIFIER_FUNCTION_LAST = 192,
 	MODIFIER_FUNCTION_INVALID = 255
 }
+
 declare const enum DOTATeam_t {
 	DOTA_TEAM_FIRST = 2,
 	DOTA_TEAM_GOODGUYS = 2,
@@ -26884,37 +26794,44 @@ declare const enum DOTATeam_t {
 	DOTA_TEAM_CUSTOM_MAX = 13,
 	DOTA_TEAM_CUSTOM_COUNT = 8
 }
+
 declare const enum CreatureAbilityType {
 	CREATURE_ABILITY_OFFENSIVE = 0,
 	CREATURE_ABILITY_DEFENSIVE = 1,
 	CREATURE_ABILITY_ESCAPE = 2
 }
+
 declare const enum SeqResourcePoseSettingEnum {
 	SEQ_POSE_CONSTANT = 0,
 	SEQ_POSE_ROTATION = 1,
 	SEQ_POSE_POSITION = 2,
 	SEQ_POSE_VELOCITY = 3
 }
+
 declare const enum EntityDormancyType_t {
 	ENTITY_NOT_DORMANT = 0,
 	ENTITY_DORMANT = 1,
 	ENTITY_SUSPENDED = 2
 }
+
 declare const enum StartupBehavior_t {
 	UNIT_STARTUP_BEHAVIOR_DEFAULT = 0,
 	UNIT_STARTUP_BEHAVIOR_TAUNT = 1
 }
+
 declare const enum BinaryNodeTiming {
 	UseChild1 = 0,
 	UseChild2 = 1,
 	SyncChildren = 2
 }
+
 declare const enum ResetCycleOption {
 	Beginning = 0,
 	SameCycleAsSource = 1,
 	InverseSourceCycle = 2,
 	FixedValue = 3
 }
+
 declare const enum DOTA_LANE {
 	DOTA_LANE_NONE = 0,
 	DOTA_LANE_TOP = 1,
@@ -26922,6 +26839,7 @@ declare const enum DOTA_LANE {
 	DOTA_LANE_BOTTOM = 3,
 	DOTA_LANE_MAX = 4
 }
+
 declare const enum DOTAHUDVisibility_t {
 	DOTA_HUD_VISIBILITY_INVALID = -1,
 	DOTA_HUD_VISIBILITY_TOP_TIMEOFDAY = 0,
@@ -26953,16 +26871,19 @@ declare const enum DOTAHUDVisibility_t {
 	DOTA_HUD_VISIBILITY_TOP_BAR = 26,
 	DOTA_HUD_VISIBILITY_COUNT = 27
 }
+
 declare const enum ABILITY_TYPES {
 	ABILITY_TYPE_BASIC = 0,
 	ABILITY_TYPE_ULTIMATE = 1,
 	ABILITY_TYPE_ATTRIBUTES = 2,
 	ABILITY_TYPE_HIDDEN = 3
 }
+
 declare const enum ActionType_t {
 	SOS_ACTION_NONE = 0,
 	SOS_ACTION_LIMITER = 1
 }
+
 declare const enum FootFallTagFoot_t {
 	FOOT1 = 0,
 	FOOT2 = 1,
@@ -26973,12 +26894,14 @@ declare const enum FootFallTagFoot_t {
 	FOOT7 = 6,
 	FOOT8 = 7
 }
+
 declare const enum BundleType_t {
 	BUNDLE_TYPE_NONE = 0,
 	BUNDLE_TYPE_POSITION_SPEED = 1,
 	BUNDLE_TYPE_NORMAL_WRINKLE = 2,
 	BUNDLE_TYPE_COUNT = 3
 }
+
 declare const enum ShakeCommand_t {
 	SHAKE_START = 0,
 	SHAKE_STOP = 1,
@@ -26987,6 +26910,7 @@ declare const enum ShakeCommand_t {
 	SHAKE_START_RUMBLEONLY = 4,
 	SHAKE_START_NORUMBLE = 5
 }
+
 declare const enum PoseController_FModType_t {
 	POSECONTROLLER_FMODTYPE_NONE = 0,
 	POSECONTROLLER_FMODTYPE_SINE = 1,
@@ -26996,19 +26920,23 @@ declare const enum PoseController_FModType_t {
 	POSECONTROLLER_FMODTYPE_NOISE = 5,
 	POSECONTROLLER_FMODTYPE_TOTAL = 6
 }
+
 declare const enum WorldTextPanelVerticalAlign_t {
 	WORLDTEXT_VERTICAL_ALIGN_TOP = 0,
 	WORLDTEXT_VERTICAL_ALIGN_CENTER = 1,
 	WORLDTEXT_VERTICAL_ALIGN_BOTTOM = 2
 }
+
 declare const enum NetChannelBufType_t {
 	BUF_DEFAULT = -1,
 	BUF_UNRELIABLE = 0,
 	BUF_RELIABLE = 1,
 	BUF_VOICE = 2
 }
+
 declare const enum PointWorldTextJustifyHorizontal_t {
 	POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_LEFT = 0,
 	POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_CENTER = 1,
 	POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_RIGHT = 2
 }
+
