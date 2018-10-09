@@ -11411,6 +11411,7 @@ interface C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_bHasAttackCapability: boolean
 	readonly m_bHasMoveCapability: boolean
 	readonly m_bIsRangedAttacker: boolean
+	readonly m_bHasScepter: boolean
 	readonly m_fAttackSpeed: number
 	readonly m_fIncreasedAttackSpeed: number
 	readonly m_fSecondsPerAttack: number
