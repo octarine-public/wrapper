@@ -7187,14 +7187,14 @@ interface CNetworkViewOffsetVector {
 
 interface CGlowProperty {
 	readonly type_name: string
-	readonly m_fGlowColor: Vector
-	readonly m_iGlowTeam: number
-	readonly m_iGlowType: number
-	readonly m_nGlowRange: number
-	readonly m_nGlowRangeMin: number
-	readonly m_glowColorOverride: Color
-	readonly m_bFlashing: boolean
-	readonly m_bGlowing: boolean
+	m_fGlowColor: Vector
+	m_iGlowTeam: number
+	m_iGlowType: number
+	m_nGlowRange: number
+	m_nGlowRangeMin: number
+	m_glowColorOverride: Color
+	m_bFlashing: boolean
+	m_bGlowing: boolean
 }
 
 interface C_OP_RemapDistanceToLineSegmentToScalar extends C_OP_RemapDistanceToLineSegmentBase {
