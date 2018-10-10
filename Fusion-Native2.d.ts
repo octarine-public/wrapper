@@ -300,7 +300,14 @@ declare interface Events {
 }
 
 declare interface Menu {
-	AddEntryEz(entry_name: string, obj: any): void
+	AddEntryEz(entry_name: string, obj: /*{
+		name: string,
+		hint?: string,
+		min?: number, // specify this for sliders
+		max?: number, // specify this for sliders
+		value?: number | boolean,
+		type: "slider_int" | "slider_float" | "boolean" | "toggle" | "keybind"
+	}*/any): void
 }
 
 declare interface Minimap {
@@ -577,13 +584,22 @@ declare function IsInGame(): boolean
 declare function GetLevelName(): string
 declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: {
-	Position: Vector,
-	Ability: C_BaseEntity,
-	Unit: C_BaseEntity,
-	Queue: boolean,
-	ShowEffects: boolean
+	Position?: Vector,
+	Ability?: C_BaseEntity,
+	Unit?: C_BaseEntity,
+	Queue?: boolean,
+	ShowEffects?: boolean
 }): void
 declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
+/**
+ * @param time time in milliseconds
+ * @returns timeout ID that can be used in cancelTimeout
+ */
+declare function setTimeout(time: number, func: () => void): number
+/**
+ * @param timeout_id that were returned by setTimeout
+ */
+declare function cancelTimeout(timeout_id: number): void
 
 /// AUTOMATICALLY GENERATED
 
