@@ -196,7 +196,7 @@ interface CUnitOrder {
 	readonly position: Vector
 	readonly unit: C_DOTA_BaseNPC
 	readonly target: C_BaseEntity
-	readonly ability: C_BaseEntity
+	readonly ability: C_DOTABaseAbility
 }
 
 interface CUserCmd {
@@ -584,6 +584,8 @@ declare function IsInGame(): boolean
 declare function GetLevelName(): string
 declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: {
+	OrderType: dotaunitorder_t,
+	Target?: C_BaseEntity,
 	Position?: Vector,
 	Ability?: C_BaseEntity,
 	Unit?: C_BaseEntity,
@@ -10490,6 +10492,7 @@ interface C_GameEntity extends CEntityInstance {
 interface C_BaseEntity extends C_GameEntity {
 	readonly type_name: string
 	readonly m_bIsValid: boolean
+	readonly m_bIsAlive: boolean
 	readonly m_iID: number
 	readonly m_vecForward: Vector
 	readonly m_CBodyComponent: CBodyComponent
