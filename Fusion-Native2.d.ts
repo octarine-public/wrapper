@@ -11578,6 +11578,21 @@ interface C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_bShouldDrawParticlesWhileHidden: boolean
 	readonly m_bIsClientThinkPending: boolean
 	readonly m_bActivityModifiersDirty: boolean
+
+	GetAbilityByName(abil_name: string): C_DOTABaseAbility
+	GetAbility(abil_slot: number): C_DOTABaseAbility
+	GetItemByName(item_name: string): C_DOTA_Item
+	GetItemByNameInBackpack(item_name: string): C_DOTA_Item
+	GetItemInSlot(item_slot: number): C_DOTA_Item
+	GetBuffByName(buff_name: string): CDOTA_Buff
+	AbsorbedDamage(damage_type: DAMAGE_TYPES): number
+	WillIgnore(damage_type: DAMAGE_TYPES): boolean
+	CalculateDamage(damage: number, damage_type: DAMAGE_TYPES): number
+	CalculateDamageByHand(from: C_DOTA_BaseNPC): number
+	IsControllableByPlayer(player_id: number): boolean
+	HasAttackCapability(attack_capatability: DOTAUnitAttackCapability_t): boolean
+	HasMoveCapability(move_capatability: DOTAUnitMoveCapability_t): boolean
+	IsUnitStateFlagSet(flag: number): boolean
 }
 
 interface C_DOTA_Ability_Nevermore_Shadowraze extends C_DOTABaseAbility {
