@@ -307,7 +307,7 @@ declare interface Menu {
 		max?: number, // specify this for sliders
 		value?: number | boolean,
 		type: "slider_int" | "slider_float" | "boolean" | "toggle" | "keybind"
-	}*/any): void
+	}*/any, callback: (name: string, value: any) => void): void
 }
 
 declare interface Minimap {
