@@ -190,6 +190,7 @@ declare const enum PingType_t {
 
 interface CUnitOrder {
 	readonly type_name: string
+	readonly from_script: boolean
 	readonly order_type: dotaunitorder_t
 	readonly queue: boolean
 	readonly issuer: PlayerOrderIssuer_t
@@ -581,6 +582,7 @@ declare function SendToConsole(command: string): void
 declare function readFile(path: string): string
 declare function sleep(ms: number): void
 declare function IsInGame(): boolean
+declare function IsPaused(): boolean
 declare function GetLevelName(): string
 declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: {
@@ -10591,6 +10593,7 @@ interface C_DOTABaseAbility extends C_BaseEntity {
 	readonly type_name: string
 	readonly m_sAbilityName: string
 	readonly m_fCastPoint: number
+	readonly m_fChannelTime: number
 	readonly m_bAltCastState: boolean
 	readonly m_iEnemyLevel: number
 	readonly m_iMaxLevel: number
