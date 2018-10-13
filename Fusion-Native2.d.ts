@@ -20690,6 +20690,7 @@ interface C_DOTAPlayer extends C_BasePlayer {
 	readonly m_unitorders: CUnitOrders[]
 	readonly m_nOutgoingOrderSequenceNumber: number
 	readonly m_nServerOrderSequenceNumber: number
+	readonly m_nSelectedUnits: C_BaseEntity[]
 	readonly m_nWaypoints: number[]
 	readonly m_iActions: number
 	readonly m_hQueryUnit: C_BaseEntity
