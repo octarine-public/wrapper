@@ -59,13 +59,15 @@ function RemoveMine(rmine: C_DOTA_BaseNPC) {
 }
 
 function ExplodeMine(rmine: C_DOTA_BaseNPC) {
-	SelectUnit(rmine, false)
-	PrepareUnitOrders({
-		OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
-		Ability: rmine.GetAbilityByName("techies_remote_mines_self_detonate"),
-		Unit: rmine,
-		Queue: false
-	})
+	if (rmine.m_bIsValid) {
+		SelectUnit(rmine, false)
+		PrepareUnitOrders({
+			OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
+			Ability: rmine.GetAbilityByName("techies_remote_mines_self_detonate"),
+			Unit: rmine,
+			Queue: false
+		})
+	}
 	RemoveMine(rmine)
 }
 

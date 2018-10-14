@@ -41,13 +41,15 @@ function RemoveMine(rmine) {
         rmines.splice(rmines.indexOf(ar[0]), 1);
 }
 function ExplodeMine(rmine) {
-    SelectUnit(rmine, false);
-    PrepareUnitOrders({
-        OrderType: 8 /* DOTA_UNIT_ORDER_CAST_NO_TARGET */,
-        Ability: rmine.GetAbilityByName("techies_remote_mines_self_detonate"),
-        Unit: rmine,
-        Queue: false
-    });
+    if (rmine.m_bIsValid) {
+        SelectUnit(rmine, false);
+        PrepareUnitOrders({
+            OrderType: 8 /* DOTA_UNIT_ORDER_CAST_NO_TARGET */,
+            Ability: rmine.GetAbilityByName("techies_remote_mines_self_detonate"),
+            Unit: rmine,
+            Queue: false
+        });
+    }
     RemoveMine(rmine);
 }
 function TryDagon(techies, ent, damage = 0, damage_type = 0 /* DAMAGE_TYPE_NONE */) {
@@ -107,7 +109,8 @@ function OnUpdate() {
             if (mine.m_bIsVisibleForEnemies && cur_time > invis_time)
                 ExplodeMine(mine);
     rmines.filter(([rmine]) => rmine.m_iHealth !== rmine.m_iMaxHealth).forEach(([rmine]) => ExplodeMine(rmine));
-    heroes.filter(ent => ent.m_bIsAlive
+    heroes.filter(ent =>
+		ent.m_bIsAlive
         && ent.m_bIsVisible
         && ent.m_fMagicMultiplier !== 0
         && NoTarget.indexOf(ent) === -1).forEach(ent => {
@@ -217,6 +220,8 @@ Events.RegisterCallback("onPrepareUnitOrders", (args) => {
     return true;
 });
 Events.RegisterCallback("onNPCCreated", (npc) => {
+	if (LocalDOTAPlayer === undefined)
+		return;
     if (npc.m_bIsHero && npc.IsEnemy(LocalDOTAPlayer)) {
         if (!npc.m_bIsIllusion && npc.m_hReplicatingOtherHeroModel === undefined)
             heroes.push(npc);

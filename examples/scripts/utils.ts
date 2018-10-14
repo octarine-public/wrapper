@@ -38,9 +38,11 @@ var loaded = false
 export function ensureUtilsLoaded() {
 	if (!loaded) {
 		function OnNPCSpawned(npc: C_DOTA_BaseNPC) {
-			if (LocalDOTAPlayer === undefined) return
 			if (npc.m_iszUnitName === undefined) {
-				setTimeout(50, () => OnNPCSpawned(npc))
+				setTimeout(50, () => {
+					if (npc.m_bIsValid)
+						OnNPCSpawned(npc)
+				})
 				return
 			}
 			Events.FireCallback("onNPCCreated", npc)
