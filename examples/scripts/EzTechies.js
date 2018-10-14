@@ -18,7 +18,9 @@
  * along with Fusion.  If not, see <http://www.gnu.org/licenses/>.
  */
 /// <reference path="../Fusion-Native2.d.ts" />
-var rmine_trigger_radius = 425, rmine_blow_delay = .25, forcestaff_units = 600;
+import { GetItemByRegexp, ensureUtilsLoaded } from "./utils";
+ensureUtilsLoaded();
+const rmine_trigger_radius = 425, rmine_blow_delay = .25, forcestaff_units = 600;
 var config = {
     enabled: true,
     explode_seen_mines: true,
@@ -27,11 +29,16 @@ var config = {
     use_prediction: false,
     auto_stack: true,
     auto_stack_range: 300
-}, NoTarget = [], particles = [], rmines = [], techies;
+}, NoTarget = [], particles = [], rmines = [], heroes = [], techies;
 function CreateRange(ent, range) {
-    var par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", 1 /* PATTACH_ABSORIGIN_FOLLOW */, ent);
+    const par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", 1 /* PATTACH_ABSORIGIN_FOLLOW */, ent);
     Particles.SetControlPoint(par, 1, new Vector(range, 0, 0));
     return par;
+}
+function RemoveMine(rmine) {
+    const ar = rmines.filter(([rmine2]) => rmine2 === rmine);
+    if (ar.length === 1)
+        rmines.splice(rmines.indexOf(ar[0]), 1);
 }
 function ExplodeMine(rmine) {
     SelectUnit(rmine, false);
@@ -41,20 +48,9 @@ function ExplodeMine(rmine) {
         Unit: rmine,
         Queue: false
     });
+    RemoveMine(rmine);
 }
-function GetItemByRegexp(ent, regex) {
-    var found;
-    for (var i = 0; i < 6; i++) {
-        var item = ent.GetItemInSlot(i);
-        if (item !== undefined && regex.test(item.m_sAbilityName)) {
-            return item;
-        }
-    }
-    return undefined;
-}
-function TryDagon(techies, ent, damage, damage_type) {
-    if (damage === void 0) { damage = 0; }
-    if (damage_type === void 0) { damage_type = 0 /* DAMAGE_TYPE_NONE */; }
+function TryDagon(techies, ent, damage = 0, damage_type = 0 /* DAMAGE_TYPE_NONE */) {
     var Dagon = GetItemByRegexp(techies, /item_dagon/), TargetHP = ent.m_iHealth + Math.min(ent.m_flHealthThinkRegen * rmine_blow_delay, ent.m_iMaxHealth - ent.m_iHealth);
     if (Dagon)
         if (Dagon.m_fCooldown === 0 && TargetHP < ent.CalculateDamage(Dagon.GetSpecialValue("damage"), 2 /* DAMAGE_TYPE_MAGICAL */) + ent.CalculateDamage(damage, damage_type) && techies.IsInRange(ent, Dagon.m_iCastRange)) {
@@ -72,11 +68,7 @@ function TryDagon(techies, ent, damage, damage_type) {
 }
 function CallMines(techies, ent, callback, explosionCallback) {
     var TargetHP = ent.m_iHealth + Math.min(ent.m_flHealthThinkRegen * rmine_blow_delay, ent.m_iMaxHealth - ent.m_iHealth), cur_time = GameRules.m_fGameTime, RMinesToBlow = [], RMinesDmg = 0;
-    rmines.filter(function (_a) {
-        var rmine = _a[0], dmg = _a[1], setup_time = _a[2];
-        return cur_time > setup_time && callback(techies, ent, rmine);
-    }).every(function (_a) {
-        var rmine = _a[0], dmg = _a[1];
+    rmines.filter(([rmine, dmg, setup_time]) => cur_time > setup_time && callback(techies, ent, rmine)).every(([rmine, dmg]) => {
         RMinesToBlow.push(rmine);
         RMinesDmg += dmg;
         var theres = ent.CalculateDamage(RMinesDmg, 2 /* DAMAGE_TYPE_MAGICAL */);
@@ -89,8 +81,7 @@ function CallMines(techies, ent, callback, explosionCallback) {
             return !TryDagon(techies, ent, RMinesDmg, 2 /* DAMAGE_TYPE_MAGICAL */);
     });
 }
-function NeedToTriggerMine(rmine, ent, forcestaff) {
-    if (forcestaff === void 0) { forcestaff = false; }
+function NeedToTriggerMine(rmine, ent, forcestaff = false) {
     var TriggerRadius = rmine_trigger_radius;
     if (config.safe_mode)
         TriggerRadius -= ent.m_fIdealSpeed * (rmine_blow_delay / 30);
@@ -101,49 +92,36 @@ function NeedToTriggerMine(rmine, ent, forcestaff) {
             : rmine.IsInRange(ent, TriggerRadius);
 }
 function OnUpdate() {
-    if (!config.enabled || techies === undefined)
+    if (!config.enabled || techies === undefined || IsPaused())
         return;
     var cur_time = GameRules.m_fGameTime;
-    rmines = rmines.filter(function (_a) {
-        var rmine = _a[0];
-        return rmine.m_bIsAlive;
-    });
+    rmines = rmines.filter(([rmine]) => rmine.m_bIsAlive);
     if (config.explode_expiring_mines) {
-        var rmineTimeout = 595; // 600 is mine duration
-        for (var _i = 0, rmines_1 = rmines; _i < rmines_1.length; _i++) {
-            var mine_data = rmines_1[_i];
-            if (cur_time > mine_data[2] + rmineTimeout)
-                ExplodeMine(mine_data[0]);
-        }
+        const rmineTimeout = 595; // 600 is mine duration
+        for (let [mine, dmg, setup_time] of rmines)
+            if (cur_time > setup_time + rmineTimeout)
+                ExplodeMine(mine);
     }
-    rmines.filter(function (_a) {
-        var rmine = _a[0];
-        return rmine.m_iHealth !== rmine.m_iMaxHealth;
-    }).forEach(function (_a) {
-        var rmine = _a[0];
-        return ExplodeMine(rmine);
-    });
-    Entities.GetAllEntities().filter(function (ent) {
-        return ent.m_bIsDOTANPC
-            && ent.IsEnemy(LocalDOTAPlayer)
-            && ent.m_bIsAlive
-            && ent.m_bIsHero
-            && !ent.m_bIsIllusion
-            && ent.m_hReplicatingOtherHeroModel === undefined
-            && ent.m_fMagicMultiplier !== 0
-            && NoTarget.indexOf(ent.m_iID) === -1;
-    }).forEach(function (ent) {
+    if (config.explode_seen_mines)
+        for (let [mine, dmg, setup_time, invis_time] of rmines)
+            if (mine.m_bIsVisibleForEnemies && cur_time > invis_time)
+                ExplodeMine(mine);
+    rmines.filter(([rmine]) => rmine.m_iHealth !== rmine.m_iMaxHealth).forEach(([rmine]) => ExplodeMine(rmine));
+    heroes.filter(ent => ent.m_bIsAlive
+        && ent.m_bIsVisible
+        && ent.m_fMagicMultiplier !== 0
+        && NoTarget.indexOf(ent) === -1).forEach(ent => {
         var callbackCalled = false;
-        CallMines(techies, ent, function (techies, ent, rmine) { return NeedToTriggerMine(rmine, ent); }, function (techies, ent, RMinesToBlow) {
+        CallMines(techies, ent, (techies, ent, rmine) => NeedToTriggerMine(rmine, ent), (techies, ent, RMinesToBlow) => {
             callbackCalled = true;
-            RMinesToBlow.forEach(function (rmine) { return ExplodeMine(rmine); }, false);
-            NoTarget.push(ent.m_iID);
-            setTimeout(rmine_blow_delay / 30 * 1000, function () { return NoTarget.splice(NoTarget.indexOf(ent.m_iID), 1); });
+            RMinesToBlow.forEach(rmine => ExplodeMine(rmine), false);
+            NoTarget.push(ent);
+            setTimeout((rmine_blow_delay + 0.2) * 1000, () => NoTarget.splice(NoTarget.indexOf(ent), 1));
         });
         var force = techies.GetItemByName("item_force_staff");
         if (!callbackCalled && force !== undefined && techies.m_bIsAlive && force.m_fCooldown === 0
             && techies.IsInRange(ent, force.m_iCastRange))
-            CallMines(techies, ent, function (techies, ent, rmine) { return NeedToTriggerMine(rmine, ent, true); }, function (techies, ent) {
+            CallMines(techies, ent, (techies, ent, rmine) => NeedToTriggerMine(rmine, ent, true), (techies, ent) => {
                 SelectUnit(techies, false);
                 PrepareUnitOrders({
                     OrderType: 6 /* DOTA_UNIT_ORDER_CAST_TARGET */,
@@ -167,18 +145,48 @@ function CreateParticleFor(npc) {
             break;
     }
 }
+function RegisterMine(npc) {
+    const ar = rmines.filter(([rmine2]) => rmine2 === npc);
+    if (ar.length !== 0) {
+        console.log(`Tried to register existing mine ${npc.m_iID}`);
+        return;
+    }
+    const Ulti = techies !== undefined ? techies.GetAbilityByName("techies_remote_mines") : undefined;
+    rmines.push([
+        npc,
+        Ulti ?
+            Ulti.GetSpecialValue("damage" + (techies.m_bHasScepter ? "_scepter" : ""))
+            : 0,
+        GameRules.m_fGameTime + (Ulti ? Ulti.m_fCastPoint : 0) + 0.1,
+        GameRules.m_fGameTime + (Ulti ? Ulti.GetSpecialValue("activation_time") + Ulti.m_fCastPoint : 0) + 0.2
+    ]);
+}
 Events.RegisterCallback("onUpdate", OnUpdate);
-Events.RegisterCallback("onGameStarted", function () {
+Events.RegisterCallback("onGameStarted", () => {
     var local_ent = LocalDOTAPlayer.m_hAssignedHero;
     if (local_ent.m_iHeroID === 105 /* npc_dota_hero_techies */)
         techies = local_ent;
+    Entities.GetAllEntities().filter(ent => ent.m_bIsDOTANPC).forEach(ent => CreateParticleFor(ent));
+    heroes = Entities.GetAllEntities().filter(ent => ent.m_bIsDOTANPC
+        && ent.IsEnemy(LocalDOTAPlayer)
+        && ent.m_bIsHero
+        && !ent.m_bIsIllusion
+        && ent.m_hReplicatingOtherHeroModel === undefined);
+    Entities.GetAllEntities()
+        .filter(ent => !ent.IsEnemy(LocalDOTAPlayer)
+        && ent.m_bIsDOTANPC
+        && ent.m_bIsTechiesRemoteMine)
+        .forEach(ent => RegisterMine(ent));
 });
-Events.RegisterCallback("onGameEnded", function () {
+Events.RegisterCallback("onGameEnded", () => {
     rmines = [];
+    particles.forEach(particle => Particles.Destroy(particle, true));
     particles = [];
     NoTarget = [];
+    heroes = [];
+    techies = undefined;
 });
-Events.RegisterCallback("onPrepareUnitOrders", function (args) {
+Events.RegisterCallback("onPrepareUnitOrders", (args) => {
     if (!config.auto_stack)
         return true;
     if (args.order_type !== 5 /* DOTA_UNIT_ORDER_CAST_POSITION */
@@ -188,7 +196,7 @@ Events.RegisterCallback("onPrepareUnitOrders", function (args) {
         return true;
     var ents = args.position.GetEntitiesInRange(config.auto_stack_range);
     var mine_pos;
-    if (ents.some(function (ent) {
+    if (ents.some(ent => {
         var is_mine = ent.m_bIsDOTANPC && ent.m_bIsTechiesRemoteMine && ent.m_bIsAlive;
         if (is_mine)
             mine_pos = ent.m_vecNetworkOrigin;
@@ -208,52 +216,32 @@ Events.RegisterCallback("onPrepareUnitOrders", function (args) {
     }
     return true;
 });
-Events.RegisterCallback("onTeamVisibilityChanged", function (ent) {
-    if (!config.enabled || !config.explode_expiring_mines || techies === undefined)
+Events.RegisterCallback("onNPCCreated", (npc) => {
+    if (npc.m_bIsHero && npc.IsEnemy(LocalDOTAPlayer)) {
+        if (!npc.m_bIsIllusion && npc.m_hReplicatingOtherHeroModel === undefined)
+            heroes.push(npc);
         return;
-    if (ent.IsEnemy(LocalDOTAPlayer) || !ent.m_bIsDOTANPC || !ent.m_bIsTechiesRemoteMine)
+    }
+    if (npc.IsEnemy(LocalDOTAPlayer))
         return;
-    var npc = ent;
-    var ar = rmines.filter(function (_a) {
-        var rmine2 = _a[0];
-        return rmine2 === npc;
-    });
-    if (ar.length !== 1 || !npc.m_bIsVisibleForEnemies || ar[0][2] < GameRules.m_fGameTime)
-        return;
-    ExplodeMine(npc);
+    CreateParticleFor(npc);
+    if (npc.m_bIsTechiesRemoteMine)
+        RegisterMine(npc);
 });
-Events.RegisterCallback("onEntityCreated", function (ent) {
-    if (ent.m_bIsDOTANPC)
-        setTimeout(200, function () {
-            var npc = ent;
-            if (LocalDOTAPlayer === undefined || npc === undefined || ent.IsEnemy(LocalDOTAPlayer) || !npc.m_bIsValid)
-                return;
-            CreateParticleFor(npc);
-            if (npc.m_bIsTechiesRemoteMine) {
-                var Ulti = techies !== undefined ? techies.GetAbilityByName("techies_remote_mines") : undefined;
-                rmines.push([
-                    npc,
-                    Ulti ?
-                        Ulti.GetSpecialValue("damage" + (techies.m_bHasScepter ? "_scepter" : ""))
-                        : 0,
-                    GameRules.m_fGameTime + Ulti.m_fCastPoint
-                ]);
-            }
-        });
-});
-Events.RegisterCallback("onEntityDestroyed", function (ent) {
-    if (!ent.m_bIsDOTANPC || !ent.m_bIsTechiesRemoteMine)
+Events.RegisterCallback("onEntityDestroyed", (ent) => {
+    if (!ent.m_bIsDOTANPC)
         return;
-    var rmine = ent;
-    if (particles[rmine.m_iID] !== undefined)
-        Particles.Destroy(particles[rmine.m_iID], true);
-    {
-        var ar = rmines.filter(function (_a) {
-            var rmine2 = _a[0];
-            return rmine2 === rmine;
-        });
-        if (ar.length === 1)
-            rmines.splice(rmines.indexOf(ar[0]), 1);
+    let npc = ent;
+    if (npc.m_bIsTechiesRemoteMine) {
+        let rmine = ent;
+        if (particles[rmine.m_iID] !== undefined)
+            Particles.Destroy(particles[rmine.m_iID], true);
+        RemoveMine(rmine);
+    }
+    if (npc.m_bIsHero) {
+        let hero = ent;
+        if (heroes.indexOf(hero) !== -1)
+            heroes.splice(heroes.indexOf(hero), 1);
     }
 });
 Menu.AddEntryEz("EzTechies", {
@@ -293,15 +281,15 @@ Menu.AddEntryEz("EzTechies", {
     auto_stack_range: {
         name: "Autostack range:",
         hint: "Range where autostack will try to find other mines",
-        value: config.auto_stack_range,
         min: 50,
+        value: config.auto_stack_range,
         max: 1000,
         type: "slider_float"
     }
-}, function (name, value) {
+}, (name, value) => {
     config[name] = value;
     if (name === "safe_mode") {
-        for (var ent_id in particles) {
+        for (let ent_id in particles) {
             Particles.Destroy(particles[ent_id], true);
             CreateParticleFor(Entities.GetByID(parseInt(ent_id)));
         }

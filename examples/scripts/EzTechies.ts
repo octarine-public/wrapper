@@ -19,6 +19,10 @@
  */
 /// <reference path="../Fusion-Native2.d.ts" />
 
+import { GetItemByRegexp, ensureUtilsLoaded } from "./utils"
+
+ensureUtilsLoaded()
+
 const rmine_trigger_radius = 425,
 	rmine_blow_delay = .25,
 	forcestaff_units = 600
@@ -31,15 +35,27 @@ var config = {
 		auto_stack: true,
 		auto_stack_range: 300
 	},
-	NoTarget: number[] = [],
+	NoTarget: C_BaseEntity[] = [],
 	particles: number[] = [],
-	rmines: [/* mine */C_DOTA_NPC_TechiesMines, /* dmg */number, /* will setup after m_fGameTime */number][] = [],
+	rmines: [
+		/* mine */C_DOTA_NPC_TechiesMines,
+		/* dmg */number,
+		/* will setup after m_fGameTime */number,
+		/* will become invis after m_fGameTime */number
+	][] = [],
+	heroes: C_DOTA_BaseNPC_Hero[] = [],
 	techies: C_DOTA_Unit_Hero_Techies
 
 function CreateRange(ent: C_BaseEntity, range: number): number {
 	const par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
 	Particles.SetControlPoint(par, 1, new Vector(range, 0, 0))
 	return par
+}
+
+function RemoveMine(rmine: C_DOTA_BaseNPC) {
+	const ar = rmines.filter(([rmine2]) => rmine2 === rmine)
+	if(ar.length === 1)
+		rmines.splice(rmines.indexOf(ar[0]), 1)
 }
 
 function ExplodeMine(rmine: C_DOTA_BaseNPC) {
@@ -50,17 +66,7 @@ function ExplodeMine(rmine: C_DOTA_BaseNPC) {
 		Unit: rmine,
 		Queue: false
 	})
-}
-
-function GetItemByRegexp(ent: C_DOTA_BaseNPC, regex: RegExp): C_DOTA_Item {
-	var found
-	for (let i = 0; i < 6; i++) {
-		let item = ent.GetItemInSlot(i)
-		if(item !== undefined && regex.test((<C_DOTA_Item>item).m_sAbilityName)) {
-			return item
-		}
-	}
-	return undefined
+	RemoveMine(rmine)
 }
 
 function TryDagon(techies: C_DOTA_Unit_Hero_Techies, ent: C_DOTA_BaseNPC, damage: number = 0, damage_type: number = DAMAGE_TYPES.DAMAGE_TYPE_NONE): boolean {
@@ -118,26 +124,26 @@ function NeedToTriggerMine(rmine: C_DOTA_BaseNPC, ent: C_DOTA_BaseNPC, forcestaf
 }
 
 function OnUpdate() {
-	if (!config.enabled || techies === undefined) return
+	if (!config.enabled || techies === undefined || IsPaused()) return
 	var cur_time = GameRules.m_fGameTime
 	rmines = rmines.filter(([rmine]) => rmine.m_bIsAlive)
 	if(config.explode_expiring_mines) {
 		const rmineTimeout = 595 // 600 is mine duration
-		for (let mine_data of rmines)
-			if (cur_time > mine_data[2] + rmineTimeout)
-				ExplodeMine(mine_data[0])
+		for (let [mine, dmg, setup_time] of rmines)
+			if (cur_time > setup_time + rmineTimeout)
+				ExplodeMine(mine)
 	}
+	if(config.explode_seen_mines)
+		for (let [mine, dmg, setup_time, invis_time] of rmines)
+			if (mine.m_bIsVisibleForEnemies && cur_time > invis_time)
+				ExplodeMine(mine)
 	rmines.filter(([rmine]) => rmine.m_iHealth !== rmine.m_iMaxHealth).forEach(([rmine]) => ExplodeMine(rmine))
-	Entities.GetAllEntities().filter(ent =>
-		ent.m_bIsDOTANPC
-		&& ent.IsEnemy(LocalDOTAPlayer)
-		&& ent.m_bIsAlive
-		&& (<C_DOTA_BaseNPC>ent).m_bIsHero
-		&& !(<C_DOTA_BaseNPC>ent).m_bIsIllusion
-		&& (<C_DOTA_BaseNPC_Hero>ent).m_hReplicatingOtherHeroModel === undefined
-		&& (<C_DOTA_BaseNPC>ent).m_fMagicMultiplier !== 0
-		&& NoTarget.indexOf(ent.m_iID) === -1
-	).forEach((ent: C_DOTA_BaseNPC_Hero) => {
+	heroes.filter(ent =>
+		ent.m_bIsAlive
+		&& ent.m_bIsVisible
+		&& ent.m_fMagicMultiplier !== 0
+		&& NoTarget.indexOf(ent) === -1
+	).forEach(ent => {
 		var callbackCalled = false
 		CallMines (
 			techies, ent,
@@ -145,8 +151,8 @@ function OnUpdate() {
 			(techies, ent, RMinesToBlow) => {
 				callbackCalled = true
 				RMinesToBlow.forEach(rmine => ExplodeMine(rmine), false)
-				NoTarget.push(ent.m_iID)
-				setTimeout(rmine_blow_delay / 30 * 1000, () => NoTarget.splice(NoTarget.indexOf(ent.m_iID), 1))
+				NoTarget.push(ent)
+				setTimeout((rmine_blow_delay + 0.2) * 1000, () => NoTarget.splice(NoTarget.indexOf(ent), 1))
 			}
 		)
 
@@ -186,16 +192,51 @@ function CreateParticleFor(npc: C_DOTA_BaseNPC) {
 	}
 }
 
+function RegisterMine(npc: C_DOTA_BaseNPC) {
+	const ar = rmines.filter(([rmine2]) => rmine2 === npc)
+	if (ar.length !== 0) {
+		console.log(`Tried to register existing mine ${npc.m_iID}`)
+		return
+	}
+	const Ulti = techies !== undefined ? techies.GetAbilityByName("techies_remote_mines") : undefined
+	rmines.push ([
+		<C_DOTA_NPC_TechiesMines>npc,
+		Ulti ?
+			Ulti.GetSpecialValue("damage" + (techies.m_bHasScepter ? "_scepter" : ""))
+			: 0,
+		GameRules.m_fGameTime + (Ulti ? Ulti.m_fCastPoint : 0) + 0.1,
+		GameRules.m_fGameTime + (Ulti ? Ulti.GetSpecialValue("activation_time") + Ulti.m_fCastPoint : 0) + 0.2
+	])
+}
+
 Events.RegisterCallback("onUpdate", OnUpdate)
 Events.RegisterCallback("onGameStarted", () => {
 	var local_ent = LocalDOTAPlayer.m_hAssignedHero
 	if ((<C_DOTA_BaseNPC_Hero>local_ent).m_iHeroID === HeroID_t.npc_dota_hero_techies)
 		techies = <C_DOTA_Unit_Hero_Techies>local_ent
+	Entities.GetAllEntities().filter(ent => ent.m_bIsDOTANPC).forEach(ent => CreateParticleFor(<C_DOTA_BaseNPC>ent))
+	heroes = <C_DOTA_BaseNPC_Hero[]>Entities.GetAllEntities().filter(ent =>
+		ent.m_bIsDOTANPC
+		&& ent.IsEnemy(LocalDOTAPlayer)
+		&& (<C_DOTA_BaseNPC>ent).m_bIsHero
+		&& !(<C_DOTA_BaseNPC>ent).m_bIsIllusion
+		&& (<C_DOTA_BaseNPC_Hero>ent).m_hReplicatingOtherHeroModel === undefined
+	)
+	Entities.GetAllEntities()
+		.filter(ent =>
+			!ent.IsEnemy(LocalDOTAPlayer)
+			&& ent.m_bIsDOTANPC
+			&& (<C_DOTA_BaseNPC>ent).m_bIsTechiesRemoteMine
+		)
+		.forEach(ent => RegisterMine(<C_DOTA_BaseNPC>ent))
 })
 Events.RegisterCallback("onGameEnded", () => {
 	rmines = []
+	particles.forEach(particle => Particles.Destroy(particle, true))
 	particles = []
 	NoTarget = []
+	heroes = []
+	techies = undefined
 })
 Events.RegisterCallback("onPrepareUnitOrders", (args: CUnitOrder) => {
 	if (!config.auto_stack)
@@ -229,44 +270,32 @@ Events.RegisterCallback("onPrepareUnitOrders", (args: CUnitOrder) => {
 	}
 	return true
 })
-Events.RegisterCallback("onTeamVisibilityChanged", (ent: C_BaseEntity) => {
-	if (!config.enabled || !config.explode_expiring_mines || techies === undefined) return
-	if (ent.IsEnemy(LocalDOTAPlayer) || !ent.m_bIsDOTANPC || !(<C_DOTA_BaseNPC>ent).m_bIsTechiesRemoteMine)
+Events.RegisterCallback("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+	if (npc.m_bIsHero && npc.IsEnemy(LocalDOTAPlayer)) {
+		if (!npc.m_bIsIllusion && (<C_DOTA_BaseNPC_Hero>npc).m_hReplicatingOtherHeroModel === undefined)
+			heroes.push(<C_DOTA_BaseNPC_Hero>npc)
 		return
-	var npc = <C_DOTA_BaseNPC>ent
-	const ar = rmines.filter(([rmine2]) => rmine2 === npc)
-	if (ar.length !== 1 || !npc.m_bIsVisibleForEnemies || ar[0][2] < GameRules.m_fGameTime)
+	}
+	if (npc.IsEnemy(LocalDOTAPlayer))
 		return
-	ExplodeMine(npc)
-})
-Events.RegisterCallback("onEntityCreated", (ent: C_BaseEntity) => {
-	if (ent.m_bIsDOTANPC)
-		setTimeout(200, () => {
-			var npc = (<C_DOTA_BaseNPC>ent)
-			if (LocalDOTAPlayer === undefined || npc === undefined || ent.IsEnemy(LocalDOTAPlayer) || !npc.m_bIsValid) return
-			CreateParticleFor(npc)
-			if(npc.m_bIsTechiesRemoteMine) {
-				const Ulti = techies !== undefined ? techies.GetAbilityByName("techies_remote_mines") : undefined
-				rmines.push ([
-					<C_DOTA_NPC_TechiesMines>npc,
-					Ulti ?
-						Ulti.GetSpecialValue("damage" + (techies.m_bHasScepter ? "_scepter" : ""))
-						: 0,
-					GameRules.m_fGameTime + Ulti.m_fCastPoint
-				])
-			}
-		})
+	CreateParticleFor(npc)
+	if(npc.m_bIsTechiesRemoteMine)
+		RegisterMine(npc)
 })
 Events.RegisterCallback("onEntityDestroyed", (ent: C_BaseEntity) => {
-	if (!ent.m_bIsDOTANPC || !(<C_DOTA_BaseNPC>ent).m_bIsTechiesRemoteMine)
+	if (!ent.m_bIsDOTANPC)
 		return
-	var rmine = <C_DOTA_NPC_TechiesMines>ent
-	if (particles[rmine.m_iID] !== undefined)
-		Particles.Destroy(particles[rmine.m_iID], true)
-	{
-		const ar = rmines.filter(([rmine2]) => rmine2 === rmine)
-		if(ar.length === 1)
-			rmines.splice(rmines.indexOf(ar[0]), 1)
+	let npc = <C_DOTA_BaseNPC>ent
+	if (npc.m_bIsTechiesRemoteMine) {
+		let rmine = <C_DOTA_NPC_TechiesMines>ent
+		if (particles[rmine.m_iID] !== undefined)
+			Particles.Destroy(particles[rmine.m_iID], true)
+		RemoveMine(rmine)
+	}
+	if (npc.m_bIsHero) {
+		let hero = <C_DOTA_BaseNPC_Hero>ent
+		if (heroes.indexOf(hero) !== -1)
+			heroes.splice(heroes.indexOf(hero), 1)
 	}
 })
 
@@ -307,8 +336,8 @@ Menu.AddEntryEz("EzTechies", {
 	auto_stack_range: {
 		name: "Autostack range:",
 		hint: "Range where autostack will try to find other mines",
-		value: config.auto_stack_range,
 		min: 50,
+		value: config.auto_stack_range,
 		max: 1000,
 		type: "slider_float"
 	}
