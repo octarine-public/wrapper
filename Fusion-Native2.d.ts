@@ -596,14 +596,23 @@ declare function PrepareUnitOrders(obj: {
 }): void
 declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
 /**
- * @param time time in milliseconds
- * @returns timeout ID that can be used in cancelTimeout
+ * @param time in milliseconds
+ * @returns timeout ID that can be used in clearTimeout
  */
 declare function setTimeout(time: number, func: () => void): number
 /**
  * @param timeout_id that were returned by setTimeout
  */
-declare function cancelTimeout(timeout_id: number): void
+declare function clearTimeout(timeout_id: number): void
+/**
+ * @param time in milliseconds
+ * @returns interval ID that can be used in clearInterval
+ */
+declare function setInterval(time: number, func: () => void): number
+/**
+ * @param interval_id that were returned by setInterval
+ */
+declare function clearInterval(timeout_id: number): void
 
 /// AUTOMATICALLY GENERATED
 
