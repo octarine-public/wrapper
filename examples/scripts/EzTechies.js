@@ -49,6 +49,7 @@ function ExplodeMine(rmine) {
             Unit: rmine,
             Queue: false
         });
+		SelectUnit(techies, false)
     }
     RemoveMine(rmine);
 }

@@ -67,6 +67,7 @@ function ExplodeMine(rmine: C_DOTA_BaseNPC) {
 			Unit: rmine,
 			Queue: false
 		})
+		SelectUnit(techies, false)
 	}
 	RemoveMine(rmine)
 }
