@@ -18,8 +18,9 @@
  * along with Fusion.  If not, see <http://www.gnu.org/licenses/>.
  */
 /// <reference path="../Fusion-Native2.d.ts" />
-import { orderBy, ensureUtilsLoaded } from "./utils";
-ensureUtilsLoaded();
+import * as Utils from "./Utils";
+import * as Orders from "./Orders";
+Utils.ensureLoaded();
 var config = {
     block_sensitivity: 500,
     block_delay: 0.01
@@ -44,16 +45,11 @@ Events.RegisterCallback("onUpdate", () => {
     if (tower.length > 0 && tower[0].m_iszUnitName === "npc_dota_badguys_tower2_mid") {
         if (need_select)
             SelectUnit(MyEnt, false);
-        PrepareUnitOrders({
-            OrderType: 1 /* DOTA_UNIT_ORDER_MOVE_TO_POSITION */,
-            Position: creepsMovePosition,
-            Unit: MyEnt,
-            Queue: false
-        });
+        Orders.MoveToPos(MyEnt, creepsMovePosition, false);
         return;
     }
     var flag = true;
-    orderBy(creeps, creep => creep.DistTo(MyEnt)).every(creep => {
+    Utils.orderBy(creeps, creep => creep.DistTo(MyEnt)).every(creep => {
         if (!creep.m_bIsMoving && !creep.IsInRange(MyEnt, 50))
             return true;
         var creepDistance = creepsMovePosition.DistTo(creep.m_vecNetworkOrigin) + 50, heroDistance = creepsMovePosition.DistTo(MyEnt.m_vecNetworkOrigin), creepAngle = creep.FindRotationAngle(MyEnt.m_vecNetworkOrigin);
@@ -69,36 +65,16 @@ Events.RegisterCallback("onUpdate", () => {
             return true;
         if (need_select)
             SelectUnit(MyEnt, false);
-        PrepareUnitOrders({
-            OrderType: 1 /* DOTA_UNIT_ORDER_MOVE_TO_POSITION */,
-            Position: movePosition,
-            Unit: MyEnt,
-            Queue: false
-        });
+        Orders.MoveToPos(MyEnt, movePosition, false);
         flag = false;
         return false;
     });
     if (!flag)
         return;
-    if (MyEnt.m_bIsMoving) {
-        if (need_select)
-            SelectUnit(MyEnt, false);
-        PrepareUnitOrders({
-            OrderType: 21 /* DOTA_UNIT_ORDER_STOP */,
-            Unit: MyEnt,
-            Queue: false
-        });
-    }
-    else if (MyEnt.FindRotationAngle(creepsMovePosition) > 1.5) {
-        if (need_select)
-            SelectUnit(MyEnt, false);
-        PrepareUnitOrders({
-            OrderType: 1 /* DOTA_UNIT_ORDER_MOVE_TO_POSITION */,
-            Position: MyEnt.m_vecNetworkOrigin.ExtendVector(creepsMovePosition, 10),
-            Unit: MyEnt,
-            Queue: false
-        });
-    }
+    if (MyEnt.m_bIsMoving)
+        Orders.EntStop(MyEnt, false);
+    else if (MyEnt.FindRotationAngle(creepsMovePosition) > 1.5)
+        Orders.MoveToPos(MyEnt, MyEnt.m_vecNetworkOrigin.ExtendVector(creepsMovePosition, 10), false);
 });
 Events.RegisterCallback("onNPCCreated", (npc) => {
     if (npc.m_bIsLaneCreep && !npc.IsEnemy(LocalDOTAPlayer))

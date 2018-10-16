@@ -23,7 +23,7 @@ export function GetItemByRegexp(ent: C_DOTA_BaseNPC, regex: RegExp): C_DOTA_Item
 	var found
 	for (let i = 0; i < 6; i++) {
 		let item = ent.GetItemInSlot(i)
-		if(item !== undefined && regex.test((<C_DOTA_Item>item).m_sAbilityName)) {
+		if(item !== undefined && regex.test((<C_DOTA_Item>item).m_pAbilityData.m_pszAbilityName)) {
 			return item
 		}
 	}
@@ -34,8 +34,49 @@ export function orderBy<T>(ar: T[], cb: (obj: T) => any): T[] {
 	return ar.sort((a, b) => cb(a) - cb(b))
 }
 
+/**
+ * @param time in seconds
+ * @returns health of this entity after given amount of time
+ */
+export function HealthAfter(ent: C_DOTA_BaseNPC, time: number): number {
+	var curHP = ent.m_iHealth,
+		maxHP = ent.m_iMaxHealth
+	return curHP + Math.min(ent.m_flHealthThinkRegen * time, maxHP - curHP)
+}
+
+export function GetDamage(ent: C_DOTA_BaseNPC): number { return ent.m_iDamageMin + ent.m_iDamageBonus }
+
+export function VelocityWaypoint(ent: C_DOTA_BaseNPC, time: number, movespeed: number = ent.m_fIdealSpeed): Vector {
+	return ent.InFront(movespeed * time)
+}
+
+export function HasLinkenAtTime(ent: C_DOTA_BaseNPC, time: number = 0): boolean {
+	if (!ent.m_bIsHero)
+		return false
+	var sphere = ent.GetItemByName("item_sphere")
+
+	return (
+		sphere !== undefined &&
+		sphere.m_fCooldown - time <= 0
+	) || (
+		ent.GetBuffByName("modifier_item_sphere_target") !== undefined
+		&& ent.GetBuffByName("modifier_item_sphere_target").m_flDieTime - GameRules.m_fGameTime - time <= 0
+	)
+}
+
+export function SelectGroup(group: C_BaseEntity[], first: boolean = false): void {
+	group.filter(ent => ent !== undefined).forEach(ent => {
+		SelectUnit(ent, !first)
+		first = false
+	})
+}
+
+export function IsFlagSet(base: bigint, flag: bigint) {
+	return (base & flag) > 0
+}
+
 var loaded = false
-export function ensureUtilsLoaded() {
+export function ensureLoaded() {
 	if (!loaded) {
 		function OnNPCSpawned(npc: C_DOTA_BaseNPC) {
 			if (npc.m_iszUnitName === undefined) {

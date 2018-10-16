@@ -214,7 +214,7 @@ interface CUserCmd {
 	shop_type: number
 	spectator_stats_category_id: number
 	spectator_stats_sort_method: number
-	arrow_flags: number // BigInt
+	arrow_flags: bigint
 	vec_under_cursor: Vector
 	camera_angles: Vector
 	some_ent1: C_BaseEntity
@@ -699,7 +699,7 @@ interface CBaseAchievement {
 	readonly m_bAchieved: boolean
 	readonly m_iCount: number
 	readonly m_iProgressShown: number
-	readonly m_iComponentBits: number
+	readonly m_iComponentBits: bigint
 	readonly m_nUserSlot: number
 	readonly m_iDisplayOrder: number
 	readonly m_bShowOnHUD: boolean
@@ -774,8 +774,8 @@ interface C_OP_PlaneCull extends CParticleFunctionOperator {
 
 interface SceneViewId_t {
 	readonly type_name: string
-	readonly m_nViewId: number
-	readonly m_nFrameCount: number
+	readonly m_nViewId: bigint
+	readonly m_nFrameCount: bigint
 }
 
 interface CAnimStateConditionBase {
@@ -1375,7 +1375,7 @@ interface CRMSG_Entity_Event {
 	readonly m_nEvent: number
 	readonly m_nSubEvent: number
 	readonly m_nFrameNumber: number
-	readonly m_nTimeUS: number
+	readonly m_nTimeUS: bigint
 }
 
 interface CNetworkOriginCellCoordQuantizedVector {
@@ -1978,7 +1978,7 @@ interface InfoForResourceTypeProcessingGraph_t {
 
 interface SchemaEnumeratorInfoData_t {
 	readonly type_name: string
-	readonly m_nValue: number
+	readonly m_nValue: bigint
 	readonly m_Metadata: SchemaMetadataSetData_t
 }
 
@@ -2383,7 +2383,7 @@ interface CSSDSMsg_LayerBase {
 	readonly m_viewId: SceneViewId_t
 	readonly m_ViewName: string
 	readonly m_nLayerIndex: number
-	readonly m_nLayerId: number
+	readonly m_nLayerId: bigint
 	readonly m_LayerName: string
 	readonly m_displayText: string
 }
@@ -2582,7 +2582,7 @@ interface CRMSG_Manifest_Event {
 	readonly m_nManifestIndex: number
 	readonly m_nEvent: number
 	readonly m_nSubEvent: number
-	readonly m_nTimeUS: number
+	readonly m_nTimeUS: bigint
 }
 
 interface C_MultiplayRules extends C_GameRules {
@@ -3035,7 +3035,7 @@ interface DOTAAbilityData_t {
 	readonly m_pszLinkedAbility: string
 	readonly m_iAbilityID: number
 	readonly m_iAbilityType: number
-	readonly m_iAbilityBehavior: number
+	readonly m_iAbilityBehavior: bigint
 	readonly m_iAbilityTargetTeam: number
 	readonly m_iAbilityTargetType: number
 	readonly m_iAbilityTargetFlags: number
@@ -3853,7 +3853,7 @@ interface CDOTA_TeamCommander {
 	readonly type_name: string
 	readonly m_nLastUnitsCollectTick: number
 	readonly m_LaneFrontUpdate: CountdownTimer
-	readonly m_ulBotScriptUGC: number
+	readonly m_ulBotScriptUGC: bigint
 	readonly m_rtBotScriptUpdated: number
 	readonly m_AvoidanceGridTimer: CountdownTimer
 	readonly m_EnemyVisibilityGridTimer: CountdownTimer
@@ -4167,8 +4167,9 @@ interface CSSDSMsg_ViewRender {
 
 interface CDOTA_ReconnectInfo {
 	readonly type_name: string
-	readonly m_playerSteamId: number
+	readonly m_playerSteamId: bigint
 	readonly m_iTeam: number
+	readonly m_iUnitControlled: C_BaseEntity
 	readonly m_bWantsRandomHero: boolean
 }
 
@@ -4222,7 +4223,7 @@ interface C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_hGameModeEntity: C_BaseEntity
 	readonly m_hCustomHeroPickRulesEntity: C_BaseEntity
 	readonly m_flHeroPickStateTransitionTime: number
-	readonly m_iPlayerIDsInControl: number
+	readonly m_iPlayerIDsInControl: bigint
 	readonly m_bSameHeroSelectionEnabled: boolean
 	readonly m_bUseCustomHeroXPValue: boolean
 	readonly m_bUseBaseGoldBountyOnHeroes: boolean
@@ -4249,7 +4250,7 @@ interface C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_nGGTeam: number
 	readonly m_flGGEndsAtTime: number
 	readonly m_bWhiteListEnabled: boolean
-	readonly m_bItemWhiteList: number[]
+	readonly m_bItemWhiteList: bigint[]
 	readonly m_nLastHitUIMode: number
 	readonly m_bHUDTimerTutorialMode: boolean
 	readonly m_HeroPickMiscTimer: CountdownTimer
@@ -4304,11 +4305,11 @@ interface C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_flNextAllDraftGoldThink: number
 	readonly m_flTimeEnteredState: number
 	readonly m_unRiverAccountID: number
-	readonly m_ulRiverItemID: number
+	readonly m_ulRiverItemID: bigint
 	readonly m_vecItemStockInfo: CDOTA_ItemStockInfo[]
 	readonly m_AssassinMiniGameNetData: DOTA_AssassinMinigameNetworkState
 	readonly m_nGameWinner: number
-	readonly m_unMatchID64: number
+	readonly m_unMatchID64: bigint
 	readonly m_bMatchSignoutComplete: boolean
 	readonly m_hSideShop1: C_BaseEntity
 	readonly m_hSideShop2: C_BaseEntity
@@ -4547,9 +4548,9 @@ interface CRMSG_System_Event {
 	readonly type_name: string
 	readonly m_nEvent: number
 	readonly m_nSubEvent: number
-	readonly m_nTimeUS: number
+	readonly m_nTimeUS: bigint
 	readonly m_nFrameNumber: number
-	readonly m_nObjectId: number
+	readonly m_nObjectId: bigint
 }
 
 interface SeqResourceTransition_t {
@@ -4716,7 +4717,7 @@ interface EventPostDataUpdate_t {
 interface CModelState {
 	readonly type_name: string
 	readonly m_ModelName: string
-	readonly m_MeshGroupMask: number
+	readonly m_MeshGroupMask: bigint
 	readonly m_nIdealMotionType: number
 	readonly m_nForceLOD: number
 	readonly m_bIsJiggleBonesEnabled: boolean
@@ -5135,7 +5136,7 @@ interface CEntityComponent {
 interface PermModelData_t {
 	readonly type_name: string
 	readonly m_modelInfo: PermModelInfo_t
-	readonly m_nDefaultMeshGroupMask: number
+	readonly m_nDefaultMeshGroupMask: bigint
 	readonly m_modelSkeleton: ModelSkeletonData_t
 }
 
@@ -5578,7 +5579,7 @@ interface C_OP_SetCPOrientationToDirection extends CParticleFunctionOperator {
 interface CSceneObjectExtraData_t {
 	readonly type_name: string
 	readonly m_flExtraShaderData: number[]
-	readonly m_nCurrentMeshGroupMask: number
+	readonly m_nCurrentMeshGroupMask: bigint
 	readonly m_vLightingOrigin: Vector
 	readonly m_flDepthSortBias: number
 	readonly m_nVisibleToPlayer: number[]
@@ -5642,8 +5643,8 @@ interface CSceneObject {
 	readonly m_nNumTransformBlocks: number
 	readonly m_nObjectClass: number
 	readonly m_pPVS: CPVSData
-	readonly m_nOriginalRenderableFlags: number
-	readonly m_nRenderableFlags: number
+	readonly m_nOriginalRenderableFlags: bigint
+	readonly m_nRenderableFlags: bigint
 }
 
 interface C_DOTAGameManager {
@@ -5947,6 +5948,7 @@ interface CRecipientFilter extends IRecipientFilter {
 	readonly type_name: string
 	readonly m_nBufType: number
 	readonly m_bInitMessage: boolean
+	readonly m_Recipients: C_BaseEntity[]
 	readonly m_bUsingPredictionRules: boolean
 	readonly m_bIgnorePredictionCull: boolean
 }
@@ -6088,7 +6090,7 @@ interface C_OP_NormalLock extends CParticleFunctionOperator {
 
 interface CSSDSEndFrameViewInfo {
 	readonly type_name: string
-	readonly m_nViewId: number
+	readonly m_nViewId: bigint
 	readonly m_ViewName: string
 }
 
@@ -6390,9 +6392,9 @@ interface CStopwatchBase extends CSimpleSimTimer {
 
 interface VPhysicsCollisionAttribute_t {
 	readonly type_name: string
-	readonly m_nInteractsAs: number
-	readonly m_nInteractsWith: number
-	readonly m_nInteractsExclude: number
+	readonly m_nInteractsAs: bigint
+	readonly m_nInteractsWith: bigint
+	readonly m_nInteractsExclude: bigint
 	readonly m_nEntityId: number
 	readonly m_nHierarchyId: number
 	readonly m_nCollisionGroup: number
@@ -6442,7 +6444,7 @@ interface CCompressorGroup {
 
 interface CRenderBufferBinding {
 	readonly type_name: string
-	readonly m_hBuffer: number
+	readonly m_hBuffer: bigint
 	readonly m_nBindOffsetBytes: number
 }
 
@@ -6477,6 +6479,7 @@ interface CChoreoAnimNode extends CAnimNodeBase {
 interface CCopyRecipientFilter extends IRecipientFilter {
 	readonly type_name: string
 	readonly m_Flags: number
+	readonly m_Recipients: C_BaseEntity[]
 }
 
 interface CRandSimTimer extends CSimpleSimTimer {
@@ -6563,9 +6566,9 @@ interface RnHalfEdge_t {
 
 interface CVRHandAttachmentInput {
 	readonly type_name: string
-	readonly m_nButtons: number
-	readonly m_afButtonPressed: number
-	readonly m_afButtonReleased: number
+	readonly m_nButtons: bigint
+	readonly m_afButtonPressed: bigint
+	readonly m_afButtonReleased: bigint
 	readonly m_flTriggerAnalogValue: number
 	readonly m_flGripAnalogValue: number
 	readonly m_flFinger0: number
@@ -6769,7 +6772,7 @@ interface SceneObject_t {
 interface CSSDSMsg_ViewTarget {
 	readonly type_name: string
 	readonly m_Name: string
-	readonly m_TextureId: number
+	readonly m_TextureId: bigint
 	readonly m_nWidth: number
 	readonly m_nHeight: number
 	readonly m_nRequestedWidth: number
@@ -6887,7 +6890,7 @@ interface VirtualVolumeTexData_t {
 	readonly m_nVirtualResX: number
 	readonly m_nVirtualResY: number
 	readonly m_nVirtualResZ: number
-	readonly m_nPageDataTotalSize: number
+	readonly m_nPageDataTotalSize: bigint
 }
 
 interface RnSphereDesc_t extends RnShapeDesc_t {
@@ -7195,7 +7198,7 @@ interface CBaseAnimatingController extends CSkeletonAnimationController {
 
 interface RenderBufferBinding_t {
 	readonly type_name: string
-	readonly m_hBuffer: number
+	readonly m_hBuffer: bigint
 	readonly m_nBindOffsetBytes: number
 }
 
@@ -7515,10 +7518,13 @@ interface CRCMD_SetProfileMode {
 
 interface CUnitOrders {
 	readonly type_name: string
+	readonly m_nUnits: C_BaseEntity[]
 	readonly m_vPosition: Vector
 	readonly m_nIssuerPlayerIndex: number
 	readonly m_nOrderSequenceNumber: number
 	readonly m_nOrderType: number
+	readonly m_nTargetIndex: C_BaseEntity
+	readonly m_nAbilityIndex: C_BaseEntity
 	readonly m_bQueue: boolean
 }
 
@@ -7760,7 +7766,7 @@ interface C_INIT_RandomVectorComponent extends CParticleFunctionInitializer {
 
 interface CSceneObjectReference_t {
 	readonly type_name: string
-	readonly m_nRenderableFlags: number
+	readonly m_nRenderableFlags: bigint
 	readonly m_pObject: CSceneObject
 }
 
@@ -7880,6 +7886,7 @@ interface CSoundPatch {
 	readonly m_iszSoundScriptName: string
 	readonly m_hEnt: C_BaseEntity
 	readonly m_entityChannel: number
+	readonly m_soundEntityIndex: C_BaseEntity
 	readonly m_soundOrigin: Vector
 	readonly m_flags: number
 	readonly m_baseFlags: number
@@ -7953,7 +7960,7 @@ interface FeSoftParent_t {
 interface CRMSG_Manifest_New {
 	readonly type_name: string
 	readonly m_nManifestIndex: number
-	readonly m_nTimeUS: number
+	readonly m_nTimeUS: bigint
 }
 
 interface CSchemaClassInfo extends SchemaClassInfoData_t {
@@ -8013,7 +8020,7 @@ interface PlayerResourcePlayerData_t {
 	readonly m_iBroadcasterChannelSlot: number
 	readonly m_bIsBroadcasterChannelCameraman: boolean
 	readonly m_iConnectionState: number
-	readonly m_iPlayerSteamID: number
+	readonly m_iPlayerSteamID: bigint
 	readonly m_eCoachTeam: number
 	readonly m_eLiveSpectatorTeam: number
 	readonly m_bIsPlusSubscriber: boolean
@@ -8102,14 +8109,15 @@ interface CEnvWindShared {
 	readonly m_bGusting: boolean
 	readonly m_flWindAngleVariation: number
 	readonly m_flWindSpeedVariation: number
+	readonly m_iEntIndex: C_BaseEntity
 }
 
 interface CRMSG_Resource_Event {
 	readonly type_name: string
-	readonly m_nResourceId: number
+	readonly m_nResourceId: bigint
 	readonly m_nEvent: number
 	readonly m_nSubEvent: number
-	readonly m_nTimeUS: number
+	readonly m_nTimeUS: bigint
 	readonly m_nManifestIndex: number
 }
 
@@ -8256,7 +8264,7 @@ interface C_OP_TimeVaryingForce extends CParticleFunctionForce {
 interface ConceptHistory_t {
 	readonly type_name: string
 	readonly timeSpoken: number
-	readonly m_response: CRR_Response
+	readonly m_response: number
 }
 
 interface C_OP_RemapModelVolumetoCP extends CParticleFunctionPreEmission {
@@ -8446,6 +8454,7 @@ interface C_CEnvWindShared {
 	readonly m_bGusting: boolean
 	readonly m_flWindAngleVariation: number
 	readonly m_flWindSpeedVariation: number
+	readonly m_iEntIndex: C_BaseEntity
 }
 
 interface CCommentarySystem {
@@ -8783,8 +8792,8 @@ interface InfoForResourceTypeCModel {
 
 interface CRMSG_Resource_ExtReference {
 	readonly type_name: string
-	readonly m_nReferencerResourceId: number
-	readonly m_nReferredToResourceId: number
+	readonly m_nReferencerResourceId: bigint
+	readonly m_nReferredToResourceId: bigint
 	readonly m_nManifestIndex: number
 }
 
@@ -9466,8 +9475,8 @@ interface AttachmentData_t {
 
 interface CRMSG_Resource_NewId {
 	readonly type_name: string
-	readonly m_nResourceId: number
-	readonly m_nTimeUS: number
+	readonly m_nResourceId: bigint
+	readonly m_nTimeUS: bigint
 }
 
 interface PRTMatrixData_t {
@@ -9477,30 +9486,30 @@ interface PRTMatrixData_t {
 	readonly m_nTextureWidth: number
 	readonly m_nTextureHeight: number
 	readonly m_nTextureDepth: number
-	readonly m_nPrimaryRelightDataOffset: number
-	readonly m_nPrimaryRelightDataSize: number
-	readonly m_nPrimaryRelightDataSizeUncompressed: number
-	readonly m_nSecondaryRelightDataOffset: number
-	readonly m_nSecondaryRelightDataSize: number
-	readonly m_nSecondaryRelightDataSizeUncompressed: number
-	readonly m_nPrimarySkyRelightDataOffset: number
-	readonly m_nPrimarySkyRelightDataSize: number
-	readonly m_nPrimarySkyRelightDataSizeUncompressed: number
-	readonly m_nSecondarySkyRelightDataOffset: number
-	readonly m_nSecondarySkyRelightDataSize: number
-	readonly m_nSecondarySkyRelightDataSizeUncompressed: number
-	readonly m_nTransmitterPositionsOffset: number
-	readonly m_nTransmitterPositionsSize: number
-	readonly m_nTransmitterPositionsSizeUncompressed: number
-	readonly m_nReceiverPositionsOffset: number
-	readonly m_nReceiverPositionsSize: number
-	readonly m_nReceiverPositionsSizeUncompressed: number
-	readonly m_nTransmitterMaterialsOffset: number
-	readonly m_nTransmitterMaterialsSize: number
-	readonly m_nTransmitterMaterialsSizeUncompressed: number
-	readonly m_nReceiverIndicesOffset: number
-	readonly m_nReceiverIndicesSize: number
-	readonly m_nReceiverIndicesSizeUncompressed: number
+	readonly m_nPrimaryRelightDataOffset: bigint
+	readonly m_nPrimaryRelightDataSize: bigint
+	readonly m_nPrimaryRelightDataSizeUncompressed: bigint
+	readonly m_nSecondaryRelightDataOffset: bigint
+	readonly m_nSecondaryRelightDataSize: bigint
+	readonly m_nSecondaryRelightDataSizeUncompressed: bigint
+	readonly m_nPrimarySkyRelightDataOffset: bigint
+	readonly m_nPrimarySkyRelightDataSize: bigint
+	readonly m_nPrimarySkyRelightDataSizeUncompressed: bigint
+	readonly m_nSecondarySkyRelightDataOffset: bigint
+	readonly m_nSecondarySkyRelightDataSize: bigint
+	readonly m_nSecondarySkyRelightDataSizeUncompressed: bigint
+	readonly m_nTransmitterPositionsOffset: bigint
+	readonly m_nTransmitterPositionsSize: bigint
+	readonly m_nTransmitterPositionsSizeUncompressed: bigint
+	readonly m_nReceiverPositionsOffset: bigint
+	readonly m_nReceiverPositionsSize: bigint
+	readonly m_nReceiverPositionsSizeUncompressed: bigint
+	readonly m_nTransmitterMaterialsOffset: bigint
+	readonly m_nTransmitterMaterialsSize: bigint
+	readonly m_nTransmitterMaterialsSizeUncompressed: bigint
+	readonly m_nReceiverIndicesOffset: bigint
+	readonly m_nReceiverIndicesSize: bigint
+	readonly m_nReceiverIndicesSizeUncompressed: bigint
 }
 
 interface CPVSData {
@@ -9738,7 +9747,7 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_hGameModeEntity: C_BaseEntity
 	readonly m_hCustomHeroPickRulesEntity: C_BaseEntity
 	readonly m_flHeroPickStateTransitionTime: number
-	readonly m_iPlayerIDsInControl: number
+	readonly m_iPlayerIDsInControl: bigint
 	readonly m_bSameHeroSelectionEnabled: boolean
 	readonly m_bUseCustomHeroXPValue: boolean
 	readonly m_bUseBaseGoldBountyOnHeroes: boolean
@@ -9765,7 +9774,7 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_nGGTeam: number
 	readonly m_flGGEndsAtTime: number
 	readonly m_bWhiteListEnabled: boolean
-	readonly m_bItemWhiteList: number[]
+	readonly m_bItemWhiteList: bigint[]
 	readonly m_nLastHitUIMode: number
 	readonly m_bHUDTimerTutorialMode: boolean
 	readonly m_HeroPickMiscTimer: CountdownTimer
@@ -9822,11 +9831,11 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_flNextAllDraftGoldThink: number
 	readonly m_flTimeEnteredState: number
 	readonly m_unRiverAccountID: number
-	readonly m_ulRiverItemID: number
+	readonly m_ulRiverItemID: bigint
 	readonly m_vecItemStockInfo: CDOTA_ItemStockInfo[]
 	readonly m_AssassinMiniGameNetData: DOTA_AssassinMinigameNetworkState
 	readonly m_nGameWinner: number
-	readonly m_unMatchID64: number
+	readonly m_unMatchID64: bigint
 	readonly m_bMatchSignoutComplete: boolean
 	readonly m_hSideShop1: C_BaseEntity
 	readonly m_hSideShop2: C_BaseEntity
@@ -10600,9 +10609,11 @@ interface C_BaseEntity extends C_GameEntity {
 
 interface C_DOTABaseAbility extends C_BaseEntity {
 	readonly type_name: string
-	readonly m_sAbilityName: string
+	readonly m_pAbilityData: DOTAAbilityData_t
 	readonly m_fCastPoint: number
 	readonly m_fChannelTime: number
+	readonly m_iAbilityDamage: number
+	readonly m_bIsHidden: boolean
 	readonly m_bAltCastState: boolean
 	readonly m_iEnemyLevel: number
 	readonly m_iMaxLevel: number
@@ -11468,7 +11479,7 @@ interface C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_bCanBeDominated: boolean
 	readonly m_bHasUpgradeableAbilities: boolean
 	readonly m_flHealthThinkRegen: number
-	readonly m_iIsControllableByPlayer64: number
+	readonly m_iIsControllableByPlayer64: bigint
 	readonly m_nHealthBarOffsetOverride: number
 	readonly m_bCanRespawn: boolean
 	readonly m_iAttackRange: number
@@ -11520,8 +11531,8 @@ interface C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_iTaggedAsVisibleByTeam: number
 	readonly m_ModifierManager: CDOTA_ModifierManager
 	readonly m_Inventory: C_DOTA_UnitInventory
-	readonly m_nUnitState64: number
-	readonly m_nUnitDebuffState: number
+	readonly m_nUnitState64: bigint
+	readonly m_nUnitDebuffState: bigint
 	readonly m_bHasInventory: boolean
 	readonly m_iAcquisitionRange: number
 	readonly m_FoWViewID: number
@@ -11529,7 +11540,7 @@ interface C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_iPrevLifeState: number
 	readonly m_iPrevTeam: number
 	readonly m_bPrevProvidesVision: boolean
-	readonly m_nPrevControllableMask: number
+	readonly m_nPrevControllableMask: bigint
 	readonly m_TagTime: CountdownTimer
 	readonly m_ClickedTime: CountdownTimer
 	readonly m_IdleRunTransitionTimer: CountdownTimer
@@ -11568,7 +11579,7 @@ interface C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_pLastWeatherEffectName: string
 	readonly m_VoiceBackgroundSoundTimer: CountdownTimer
 	readonly m_bIsWaitingToSpawn: boolean
-	readonly m_nTotalDamageTaken: number
+	readonly m_nTotalDamageTaken: bigint
 	readonly m_flManaRegen: number
 	readonly m_flHealthRegen: number
 	readonly m_bIsMoving: boolean
@@ -11662,7 +11673,6 @@ interface C_DOTA_Ability_Elder_Titan_NaturalOrder_Spirit extends C_DOTABaseAbili
 
 interface C_DOTA_BaseNPC_Hero extends C_DOTA_BaseNPC_Additive {
 	readonly type_name: string
-	readonly m_bIsIllusion: boolean
 	readonly m_iCurrentXP: number
 	readonly m_iAbilityPoints: number
 	readonly m_flRespawnTime: number
@@ -13027,9 +13037,9 @@ interface C_DOTATeam extends C_Team {
 	readonly m_iTowerKills: number
 	readonly m_iBarracksKills: number
 	readonly m_unTournamentTeamID: number
-	readonly m_ulTeamLogo: number
-	readonly m_ulTeamBaseLogo: number
-	readonly m_ulTeamBannerLogo: number
+	readonly m_ulTeamLogo: bigint
+	readonly m_ulTeamBaseLogo: bigint
+	readonly m_ulTeamBannerLogo: bigint
 	readonly m_bTeamComplete: boolean
 	readonly m_bTeamIsHomeTeam: boolean
 	readonly m_CustomHealthbarColor: Color
@@ -13180,7 +13190,6 @@ interface C_DOTA_DisplacementVisibility extends C_BaseEntity {
 
 interface C_DOTA_Unit_Hero_Meepo extends C_DOTA_BaseNPC_Hero {
 	readonly type_name: string
-	readonly m_bIsClone: boolean
 	readonly m_nWhichMeepo: number
 }
 
@@ -13554,7 +13563,7 @@ interface C_DOTA_Ability_Special_Bonus_Cast_Range_350 extends C_DOTABaseAbility 
 interface C_DOTA_DataNonSpectator extends C_BaseEntity {
 	readonly type_name: string
 	readonly m_vecDataTeam: DataTeamPlayer_t[]
-	readonly m_bWorldTreeState: number[]
+	readonly m_bWorldTreeState: bigint[]
 	readonly m_vDesiredWardPlacement: Vector2D[]
 	readonly m_nEnemyStartingPosition: number[]
 	readonly m_nTotalEventPoints: number
@@ -13992,7 +14001,7 @@ interface C_DOTA_PlayerResource extends C_BaseEntity {
 	readonly m_vecOnstagePlayerSeats: PlayerSeatAssignment_t[]
 	readonly m_nEventNPCReplaced: number
 	readonly m_nEventPlayerInfo: number
-	readonly m_bWorldTreeStateCached: number[]
+	readonly m_bWorldTreeStateCached: bigint[]
 }
 
 interface C_DOTA_Item_Physical extends C_BaseAnimating {
@@ -14377,7 +14386,7 @@ interface PlayerResourcePlayerTeamData_t {
 	readonly m_UnitShareMasks: number
 	readonly m_iTeamSlot: number
 	readonly m_iBattleCupWinStreak: number
-	readonly m_iBattleCupWinDate: number
+	readonly m_iBattleCupWinDate: bigint
 	readonly m_iBattleCupSkillLevel: number
 	readonly m_iBattleCupTeamID: number
 	readonly m_iBattleCupTournamentID: number
@@ -15093,6 +15102,7 @@ interface C_DOTA_Item_Recipe_Arcane_Ring extends C_DOTA_Item {
 
 interface CDOTA_Ability_Winter_Wyvern_Arctic_Burn extends C_DOTABaseAbility {
 	readonly type_name: string
+	readonly m_BurnedTargets: C_BaseEntity[]
 }
 
 interface C_DOTA_Unit_Hero_LoneDruid extends C_DOTA_BaseNPC_Hero {
@@ -19925,10 +19935,10 @@ interface C_BasePlayer extends C_BaseCombatCharacter {
 	readonly m_pl: C_PlayerState
 	readonly m_iFOV: number
 	readonly m_iFOVStart: number
-	readonly m_afButtonLast: number
-	readonly m_afButtonPressed: number
-	readonly m_afButtonReleased: number
-	readonly m_nButtons: number
+	readonly m_afButtonLast: bigint
+	readonly m_afButtonPressed: bigint
+	readonly m_afButtonReleased: bigint
+	readonly m_nButtons: bigint
 	readonly m_nImpulse: number
 	readonly m_flPhysics: number
 	readonly m_flFOVTime: number
@@ -19950,8 +19960,8 @@ interface C_BasePlayer extends C_BaseCombatCharacter {
 	readonly m_VRControllerType: number
 	readonly m_fOnTarget: boolean
 	readonly m_iDefaultFOV: number
-	readonly m_afButtonDisabled: number
-	readonly m_afButtonForced: number
+	readonly m_afButtonDisabled: bigint
+	readonly m_afButtonForced: bigint
 	readonly m_hViewEntity: C_BaseEntity
 	readonly m_hConstraintEntity: C_BaseEntity
 	readonly m_vecConstraintCenter: Vector
@@ -20012,7 +20022,7 @@ interface C_BasePlayer extends C_BaseCombatCharacter {
 	readonly m_hColorCorrectionCtrl: C_BaseEntity
 	readonly m_PlayerFog: C_fogplayerparams_t
 	readonly m_vecElevatorFixup: Vector
-	readonly m_nUnHoldableButtons: number
+	readonly m_nUnHoldableButtons: bigint
 }
 
 interface C_DOTA_Ability_Magnataur_Skewer extends C_DOTABaseAbility {

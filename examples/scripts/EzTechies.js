@@ -18,8 +18,9 @@
  * along with Fusion.  If not, see <http://www.gnu.org/licenses/>.
  */
 /// <reference path="../Fusion-Native2.d.ts" />
-import { GetItemByRegexp, ensureUtilsLoaded } from "./utils";
-ensureUtilsLoaded();
+import * as Utils from "./Utils";
+import * as Orders from "./Orders";
+Utils.ensureLoaded();
 const rmine_trigger_radius = 425, rmine_blow_delay = .25, forcestaff_units = 600;
 var config = {
     enabled: true,
@@ -41,36 +42,21 @@ function RemoveMine(rmine) {
         rmines.splice(rmines.indexOf(ar[0]), 1);
 }
 function ExplodeMine(rmine) {
-    if (rmine.m_bIsValid) {
-        SelectUnit(rmine, false);
-        PrepareUnitOrders({
-            OrderType: 8 /* DOTA_UNIT_ORDER_CAST_NO_TARGET */,
-            Ability: rmine.GetAbilityByName("techies_remote_mines_self_detonate"),
-            Unit: rmine,
-            Queue: false
-        });
-		SelectUnit(techies, false)
-    }
+    if (rmine.m_bIsValid)
+        Orders.CastNoTarget(rmine, rmine.GetAbilityByName("techies_remote_mines_self_detonate"), false);
     RemoveMine(rmine);
 }
 function TryDagon(techies, ent, damage = 0, damage_type = 0 /* DAMAGE_TYPE_NONE */) {
-    var Dagon = GetItemByRegexp(techies, /item_dagon/), TargetHP = ent.m_iHealth + Math.min(ent.m_flHealthThinkRegen * rmine_blow_delay, ent.m_iMaxHealth - ent.m_iHealth);
+    var Dagon = Utils.GetItemByRegexp(techies, /item_dagon/), TargetHP = Utils.HealthAfter(ent, rmine_blow_delay);
     if (Dagon)
         if (Dagon.m_fCooldown === 0 && TargetHP < ent.CalculateDamage(Dagon.GetSpecialValue("damage"), 2 /* DAMAGE_TYPE_MAGICAL */) + ent.CalculateDamage(damage, damage_type) && techies.IsInRange(ent, Dagon.m_iCastRange)) {
-            SelectUnit(techies, false);
-            PrepareUnitOrders({
-                OrderType: 6 /* DOTA_UNIT_ORDER_CAST_TARGET */,
-                Ability: Dagon,
-                Target: ent,
-                Unit: techies,
-                Queue: false
-            });
+            Orders.CastTarget(techies, Dagon, ent, false);
             return true;
         }
     return false;
 }
 function CallMines(techies, ent, callback, explosionCallback) {
-    var TargetHP = ent.m_iHealth + Math.min(ent.m_flHealthThinkRegen * rmine_blow_delay, ent.m_iMaxHealth - ent.m_iHealth), cur_time = GameRules.m_fGameTime, RMinesToBlow = [], RMinesDmg = 0;
+    var TargetHP = Utils.HealthAfter(ent, rmine_blow_delay), cur_time = GameRules.m_fGameTime, RMinesToBlow = [], RMinesDmg = 0;
     rmines.filter(([rmine, dmg, setup_time]) => cur_time > setup_time && callback(techies, ent, rmine)).every(([rmine, dmg]) => {
         RMinesToBlow.push(rmine);
         RMinesDmg += dmg;
@@ -110,8 +96,7 @@ function OnUpdate() {
             if (mine.m_bIsVisibleForEnemies && cur_time > invis_time)
                 ExplodeMine(mine);
     rmines.filter(([rmine]) => rmine.m_iHealth !== rmine.m_iMaxHealth).forEach(([rmine]) => ExplodeMine(rmine));
-    heroes.filter(ent =>
-		ent.m_bIsAlive
+    heroes.filter(ent => ent.m_bIsAlive
         && ent.m_bIsVisible
         && ent.m_fMagicMultiplier !== 0
         && NoTarget.indexOf(ent) === -1).forEach(ent => {
@@ -125,16 +110,7 @@ function OnUpdate() {
         var force = techies.GetItemByName("item_force_staff");
         if (!callbackCalled && force !== undefined && techies.m_bIsAlive && force.m_fCooldown === 0
             && techies.IsInRange(ent, force.m_iCastRange))
-            CallMines(techies, ent, (techies, ent, rmine) => NeedToTriggerMine(rmine, ent, true), (techies, ent) => {
-                SelectUnit(techies, false);
-                PrepareUnitOrders({
-                    OrderType: 6 /* DOTA_UNIT_ORDER_CAST_TARGET */,
-                    Ability: force,
-                    Target: ent,
-                    Unit: techies,
-                    Queue: false
-                });
-            });
+            CallMines(techies, ent, (techies, ent, rmine) => NeedToTriggerMine(rmine, ent, true), (techies, ent) => Orders.CastTarget(techies, force, ent, false));
     });
 }
 function CreateParticleFor(npc) {
@@ -196,7 +172,7 @@ Events.RegisterCallback("onPrepareUnitOrders", (args) => {
     if (args.order_type !== 5 /* DOTA_UNIT_ORDER_CAST_POSITION */
         || args.position === undefined
         || args.ability === undefined
-        || args.ability.m_sAbilityName !== "techies_remote_mines")
+        || args.ability.m_pAbilityData.m_pszAbilityName !== "techies_remote_mines")
         return true;
     var ents = args.position.GetEntitiesInRange(config.auto_stack_range);
     var mine_pos;
@@ -208,21 +184,12 @@ Events.RegisterCallback("onPrepareUnitOrders", (args) => {
     })) {
         if (mine_pos === args.position)
             return true;
-        PrepareUnitOrders({
-            OrderType: 5 /* DOTA_UNIT_ORDER_CAST_POSITION */,
-            Ability: args.ability,
-            Unit: args.unit,
-            Position: mine_pos,
-            Queue: args.queue,
-            ShowEffects: true
-        });
+        Orders.CastPosition(args.unit, args.ability, mine_pos, args.queue);
         return false;
     }
     return true;
 });
 Events.RegisterCallback("onNPCCreated", (npc) => {
-	if (LocalDOTAPlayer === undefined)
-		return;
     if (npc.m_bIsHero && npc.IsEnemy(LocalDOTAPlayer)) {
         if (!npc.m_bIsIllusion && npc.m_hReplicatingOtherHeroModel === undefined)
             heroes.push(npc);

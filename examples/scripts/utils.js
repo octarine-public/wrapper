@@ -22,7 +22,7 @@ export function GetItemByRegexp(ent, regex) {
     var found;
     for (let i = 0; i < 6; i++) {
         let item = ent.GetItemInSlot(i);
-        if (item !== undefined && regex.test(item.m_sAbilityName)) {
+        if (item !== undefined && regex.test(item.m_pAbilityData.m_pszAbilityName)) {
             return item;
         }
     }
@@ -31,15 +31,44 @@ export function GetItemByRegexp(ent, regex) {
 export function orderBy(ar, cb) {
     return ar.sort((a, b) => cb(a) - cb(b));
 }
+/**
+ * @param time in seconds
+ * @returns health of this entity after given amount of time
+ */
+export function HealthAfter(ent, time) {
+    var curHP = ent.m_iHealth, maxHP = ent.m_iMaxHealth;
+    return curHP + Math.min(ent.m_flHealthThinkRegen * time, maxHP - curHP);
+}
+export function GetDamage(ent) { return ent.m_iDamageMin + ent.m_iDamageBonus; }
+export function VelocityWaypoint(ent, time, movespeed = ent.m_fIdealSpeed) {
+    return ent.InFront(movespeed * time);
+}
+export function HasLinkenAtTime(ent, time = 0) {
+    if (!ent.m_bIsHero)
+        return false;
+    var sphere = ent.GetItemByName("item_sphere");
+    return (sphere !== undefined &&
+        sphere.m_fCooldown - time <= 0) || (ent.GetBuffByName("modifier_item_sphere_target") !== undefined
+        && ent.GetBuffByName("modifier_item_sphere_target").m_flDieTime - GameRules.m_fGameTime - time <= 0);
+}
+export function SelectGroup(group, first = false) {
+    group.filter(ent => ent !== undefined).forEach(ent => {
+        SelectUnit(ent, !first);
+        first = false;
+    });
+}
+export function IsFlagSet(base, flag) {
+    return (base & flag) > 0;
+}
 var loaded = false;
-export function ensureUtilsLoaded() {
+export function ensureLoaded() {
     if (!loaded) {
         function OnNPCSpawned(npc) {
             if (npc.m_iszUnitName === undefined) {
-				setTimeout(50, () => {
-					if (npc.m_bIsValid)
-						OnNPCSpawned(npc)
-				})
+                setTimeout(50, () => {
+                    if (npc.m_bIsValid)
+                        OnNPCSpawned(npc);
+                });
                 return;
             }
             Events.FireCallback("onNPCCreated", npc);

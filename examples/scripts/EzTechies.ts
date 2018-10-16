@@ -19,9 +19,10 @@
  */
 /// <reference path="../Fusion-Native2.d.ts" />
 
-import { GetItemByRegexp, ensureUtilsLoaded } from "./utils"
+import * as Utils from "./Utils"
+import * as Orders from "./Orders"
 
-ensureUtilsLoaded()
+Utils.ensureLoaded()
 
 const rmine_trigger_radius = 425,
 	rmine_blow_delay = .25,
@@ -59,32 +60,17 @@ function RemoveMine(rmine: C_DOTA_BaseNPC) {
 }
 
 function ExplodeMine(rmine: C_DOTA_BaseNPC) {
-	if (rmine.m_bIsValid) {
-		SelectUnit(rmine, false)
-		PrepareUnitOrders({
-			OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
-			Ability: rmine.GetAbilityByName("techies_remote_mines_self_detonate"),
-			Unit: rmine,
-			Queue: false
-		})
-		SelectUnit(techies, false)
-	}
+	if (rmine.m_bIsValid)
+		Orders.CastNoTarget(rmine, rmine.GetAbilityByName("techies_remote_mines_self_detonate"), false)
 	RemoveMine(rmine)
 }
 
 function TryDagon(techies: C_DOTA_Unit_Hero_Techies, ent: C_DOTA_BaseNPC, damage: number = 0, damage_type: number = DAMAGE_TYPES.DAMAGE_TYPE_NONE): boolean {
-	var Dagon = GetItemByRegexp(techies, /item_dagon/),
-		TargetHP = ent.m_iHealth + Math.min(ent.m_flHealthThinkRegen * rmine_blow_delay, ent.m_iMaxHealth - ent.m_iHealth)
+	var Dagon = Utils.GetItemByRegexp(techies, /item_dagon/),
+		TargetHP = Utils.HealthAfter(ent, rmine_blow_delay)
 	if(Dagon)
 		if(Dagon.m_fCooldown === 0 && TargetHP < ent.CalculateDamage(Dagon.GetSpecialValue("damage"), DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL) + ent.CalculateDamage(damage, damage_type) && techies.IsInRange(ent, Dagon.m_iCastRange)) {
-			SelectUnit(techies, false)
-			PrepareUnitOrders({
-				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET,
-				Ability: Dagon,
-				Target: ent,
-				Unit: techies,
-				Queue: false
-			})
+			Orders.CastTarget(techies, Dagon, ent, false)
 			return true
 		}
 
@@ -97,7 +83,7 @@ function CallMines (
 	callback: (techies: C_DOTA_Unit_Hero_Techies, ent: C_DOTA_BaseNPC, rmine: C_DOTA_NPC_TechiesMines) => boolean,
 	explosionCallback: (techies: C_DOTA_Unit_Hero_Techies, ent: C_DOTA_BaseNPC, RMinesToBlow: C_DOTA_NPC_TechiesMines[], RMinesDmg: number) => void
 ): void {
-	var TargetHP = ent.m_iHealth + Math.min(ent.m_flHealthThinkRegen * rmine_blow_delay, ent.m_iMaxHealth - ent.m_iHealth),
+	var TargetHP = Utils.HealthAfter(ent, rmine_blow_delay),
 		cur_time = GameRules.m_fGameTime,
 		RMinesToBlow = [],
 		RMinesDmg = 0
@@ -168,16 +154,7 @@ function OnUpdate() {
 			CallMines (
 				techies, ent,
 				(techies, ent, rmine) => NeedToTriggerMine(rmine, ent, true),
-				(techies, ent) => {
-					SelectUnit(techies, false)
-					PrepareUnitOrders({
-						OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET,
-						Ability: force,
-						Target: ent,
-						Unit: techies,
-						Queue: false
-					})
-				}
+				(techies, ent) => Orders.CastTarget(techies, force, ent, false)
 			)
 	})
 }
@@ -248,7 +225,7 @@ Events.RegisterCallback("onPrepareUnitOrders", (args: CUnitOrder) => {
 		args.order_type !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION
 		|| args.position === undefined
 		|| args.ability === undefined
-		|| args.ability.m_sAbilityName !== "techies_remote_mines"
+		|| args.ability.m_pAbilityData.m_pszAbilityName !== "techies_remote_mines"
 	)
 		return true
 	var ents = args.position.GetEntitiesInRange(config.auto_stack_range)
@@ -261,14 +238,7 @@ Events.RegisterCallback("onPrepareUnitOrders", (args: CUnitOrder) => {
 	})) {
 		if(mine_pos === args.position)
 			return true
-		PrepareUnitOrders({
-			OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION,
-			Ability: args.ability,
-			Unit: args.unit,
-			Position: mine_pos,
-			Queue: args.queue,
-			ShowEffects: true
-		})
+		Orders.CastPosition(args.unit, args.ability, mine_pos, args.queue)
 		return false
 	}
 	return true
