@@ -244,6 +244,8 @@ Events.RegisterCallback("onPrepareUnitOrders", (args: CUnitOrder) => {
 	return true
 })
 Events.RegisterCallback("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+	if (LocalDOTAPlayer === undefined)
+		return
 	if (npc.m_bIsHero && npc.IsEnemy(LocalDOTAPlayer)) {
 		if ((<C_DOTA_BaseNPC_Hero>npc).m_hReplicatingOtherHeroModel === undefined || (<C_DOTA_Unit_Hero_Meepo>npc).m_bIsClone)
 			heroes.push(<C_DOTA_BaseNPC_Hero>npc)

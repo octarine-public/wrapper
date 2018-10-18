@@ -190,6 +190,8 @@ Events.RegisterCallback("onPrepareUnitOrders", (args) => {
     return true;
 });
 Events.RegisterCallback("onNPCCreated", (npc) => {
+	if (LocalDOTAPlayer === undefined)
+		return
     if (npc.m_bIsHero && npc.IsEnemy(LocalDOTAPlayer)) {
         if (npc.m_hReplicatingOtherHeroModel === undefined || npc.m_bIsClone)
             heroes.push(npc);
