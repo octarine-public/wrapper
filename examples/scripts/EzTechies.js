@@ -151,7 +151,7 @@ Events.RegisterCallback("onGameStarted", () => {
         && ent.IsEnemy(LocalDOTAPlayer)
         && ent.m_bIsHero
         && !ent.m_bIsIllusion
-        && ent.m_hReplicatingOtherHeroModel === undefined);
+        && (ent.m_hReplicatingOtherHeroModel === undefined || ent.m_bIsClone));
     Entities.GetAllEntities()
         .filter(ent => !ent.IsEnemy(LocalDOTAPlayer)
         && ent.m_bIsDOTANPC
@@ -191,7 +191,7 @@ Events.RegisterCallback("onPrepareUnitOrders", (args) => {
 });
 Events.RegisterCallback("onNPCCreated", (npc) => {
     if (npc.m_bIsHero && npc.IsEnemy(LocalDOTAPlayer)) {
-        if (!npc.m_bIsIllusion && npc.m_hReplicatingOtherHeroModel === undefined)
+        if (npc.m_hReplicatingOtherHeroModel === undefined || npc.m_bIsClone)
             heroes.push(npc);
         return;
     }

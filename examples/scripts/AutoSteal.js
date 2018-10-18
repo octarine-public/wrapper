@@ -475,7 +475,7 @@ Events.RegisterCallback("onNPCCreated", (npc) => {
         && (npc.m_bIsCreep
             || (npc.m_bIsHero
                 && !npc.m_bIsIllusion
-                && npc.m_hReplicatingOtherHeroModel === undefined)))
+                && (npc.m_hReplicatingOtherHeroModel === undefined || npc.m_bIsClone))))
         possible_targets.push(npc);
 });
 Events.RegisterCallback("onEntityDestroyed", (ent) => {
@@ -486,7 +486,7 @@ Events.RegisterCallback("onEntityDestroyed", (ent) => {
         && (ent.m_bIsCreep
             || (ent.m_bIsHero
                 && !ent.m_bIsIllusion
-                && ent.m_hReplicatingOtherHeroModel === undefined)))
+                && (ent.m_hReplicatingOtherHeroModel === undefined || ent.m_bIsClone))))
         possible_targets.splice(possible_targets.indexOf(ent), 1);
 });
 Events.RegisterCallback("onGameEnded", () => {
