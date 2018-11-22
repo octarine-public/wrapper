@@ -190,7 +190,6 @@ declare const enum PingType_t {
 
 interface CUnitOrder {
 	readonly type_name: string
-	readonly from_script: boolean
 	readonly order_type: dotaunitorder_t
 	readonly queue: boolean
 	readonly issuer: PlayerOrderIssuer_t
@@ -198,6 +197,7 @@ interface CUnitOrder {
 	readonly unit: C_DOTA_BaseNPC
 	readonly target: C_BaseEntity
 	readonly ability: C_DOTABaseAbility
+	readonly show_effects: boolean
 }
 
 interface CUserCmd {
@@ -294,10 +294,9 @@ declare interface Entities {
 }
 
 declare interface Events {
-	RegisterCallbackName(name: string): void
 	RegisterCallback(name: string, callback: Function): void
 	UnregisterCallback(name: string, callback_id: number): void
-	FireCallback(name: string, ...args): void
+	FireEvent(name: string, ...args): void
 }
 
 declare interface Menu {
