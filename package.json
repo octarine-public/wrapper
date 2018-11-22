@@ -1,0 +1,12 @@
+{
+	"name": "fusion-native2-scripts",
+	"version": "1.0.0",
+	"description": "Fusion Native 2: Scripts",
+	"devDependencies": {
+		"typescript": "next"
+	},
+	"scripts": {
+		"watch": "tsc --watch"
+	},
+	"author": "moofMonkey"
+}

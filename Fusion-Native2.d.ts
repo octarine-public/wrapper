@@ -930,6 +930,10 @@ interface LightDesc_t {
 	readonly m_bUsesIndexedBakedLighting: boolean
 }
 
+interface CPiecewiseCurveSchemaWrapper {
+	readonly type_name: string
+}
+
 interface RnFace_t {
 	readonly type_name: string
 	readonly m_nEdge: number
@@ -1050,6 +1054,8 @@ interface CParticleVisibilityInputs {
 	readonly m_flDistanceInputMax: number
 	readonly m_flDotInputMin: number
 	readonly m_flDotInputMax: number
+	readonly m_bDotCPAngles: boolean
+	readonly m_bDotCameraAngles: boolean
 	readonly m_flNoPixelVisibilityFallback: number
 	readonly m_nCPin: number
 	readonly m_bRightEye: boolean
@@ -1119,6 +1125,7 @@ interface C_INIT_RemapInitialCPDirectionToRotation extends CParticleFunctionInit
 	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_flOffsetRot: number
+	readonly m_nComponent: number
 }
 
 interface InfoForResourceTypeIParticleSnapshot {
@@ -1333,13 +1340,23 @@ interface C_OP_SetControlPointPositionToTimeOfDayValue extends CParticleFunction
 	readonly m_vecDefaultValue: Vector
 }
 
-interface C_OP_SetChildControlPoints extends CParticleFunctionOperator {
+interface CParticleFloatInput {
 	readonly type_name: string
-	readonly m_nChildGroupID: number
-	readonly m_nFirstControlPoint: number
-	readonly m_nNumControlPoints: number
-	readonly m_nFirstSourcePoint: number
-	readonly m_bSetOrientation: boolean
+	readonly m_nType: number
+	readonly m_nMapType: number
+	readonly m_flLiteralValue: number
+	readonly m_nControlPoint: number
+	readonly m_nVectorComponent: number
+	readonly m_flRandomMin: number
+	readonly m_flRandomMax: number
+	readonly m_flMultFactor: number
+	readonly m_flInput0: number
+	readonly m_flInput1: number
+	readonly m_flOutput0: number
+	readonly m_flOutput1: number
+	readonly m_nBiasType: number
+	readonly m_flBiasParameter: number
+	readonly m_Curve: CPiecewiseCurveSchemaWrapper
 }
 
 interface C_INIT_InheritFromParentParticles extends CParticleFunctionInitializer {
@@ -1460,6 +1477,13 @@ interface EventAdvanceTick_t extends EventSimulate_t {
 	readonly m_nCurrentTick: number
 	readonly m_nTotalTicksThisFrame: number
 	readonly m_nTotalTicks: number
+}
+
+interface C_OP_RemapControlPointOrientationToRotation extends CParticleFunctionOperator {
+	readonly type_name: string
+	readonly m_nCP: number
+	readonly m_flOffsetRot: number
+	readonly m_nComponent: number
 }
 
 interface C_OP_Cull extends CParticleFunctionOperator {
@@ -1620,6 +1644,10 @@ interface C_OP_OscillateScalarSimple extends CParticleFunctionOperator {
 	readonly m_flOscAdd: number
 }
 
+interface CPerParticleFloatInput extends CParticleFloatInput {
+	readonly type_name: string
+}
+
 interface C_INIT_InitSkinnedPositionFromCPSnapshot extends CParticleFunctionInitializer {
 	readonly type_name: string
 	readonly m_nSnapshotControlPointNumber: number
@@ -1733,8 +1761,10 @@ interface C_OP_DistanceBetweenCPsToCP extends CParticleFunctionPreEmission {
 	readonly m_bLOS: boolean
 }
 
-interface CPiecewiseCurveSchemaWrapper {
+interface C_OP_SetFloat extends CParticleFunctionOperator {
 	readonly type_name: string
+	readonly m_InputValue: CPerParticleFloatInput
+	readonly m_bScaleInitialValue: boolean
 }
 
 interface C_OP_ContinuousEmitter extends CParticleFunctionEmitter {
@@ -2722,19 +2752,8 @@ interface FeWorldCollisionParams_t {
 	readonly nListEnd: number
 }
 
-interface CParticleFloatInput {
+interface CParticleCollectionFloatInput extends CParticleFloatInput {
 	readonly type_name: string
-	readonly m_nType: number
-	readonly m_nMapType: number
-	readonly m_flLiteralValue: number
-	readonly m_nControlPoint: number
-	readonly m_nVectorComponent: number
-	readonly m_flMultFactor: number
-	readonly m_flInput0: number
-	readonly m_flInput1: number
-	readonly m_flOutput0: number
-	readonly m_flOutput1: number
-	readonly m_Curve: CPiecewiseCurveSchemaWrapper
 }
 
 interface CBaseRendererSource2 extends CParticleFunctionRenderer {
@@ -2757,6 +2776,7 @@ interface CBaseRendererSource2 extends CParticleFunctionRenderer {
 	readonly m_flSequence1AlphaWeight: number
 	readonly m_flAddSelfAmount: number
 	readonly m_bAdditive: boolean
+	readonly m_bAdditiveAlpha: boolean
 	readonly m_bMod2X: boolean
 	readonly m_bLightenMode: boolean
 	readonly m_bMaxLuminanceBlendingSequence0: boolean
@@ -2769,7 +2789,7 @@ interface CBaseRendererSource2 extends CParticleFunctionRenderer {
 	readonly m_bWriteStencilOnDepthFail: boolean
 	readonly m_bReverseZBuffering: boolean
 	readonly m_bDisableZBuffering: boolean
-	readonly m_bParticleFeathering: boolean
+	readonly m_nFeatheringMode: number
 	readonly m_flFeatheringMinDist: number
 	readonly m_flFeatheringMaxDist: number
 	readonly m_flOverbrightFactor: number
@@ -3032,6 +3052,8 @@ interface DOTAAbilityData_t {
 	readonly m_pszKeyOverride: string
 	readonly m_pszItemRecipeName: string
 	readonly m_pszLinkedAbility: string
+	readonly m_castActivity: number
+	readonly m_castActivityGestureSlot: number
 	readonly m_iAbilityID: number
 	readonly m_iAbilityType: number
 	readonly m_iAbilityBehavior: bigint
@@ -3092,6 +3114,7 @@ interface DOTAAbilityData_t {
 	readonly m_bItemRequiresCustomShop: boolean
 	readonly m_bShouldBeSuggested: boolean
 	readonly m_bShouldBeInitiallySuggested: boolean
+	readonly m_bHasCastAnimation: boolean
 }
 
 interface CSpeechBubbleInfo {
@@ -3603,6 +3626,14 @@ interface VPhysXDiskShapeHeader_t {
 
 interface FourCovMatrices3 {
 	readonly type_name: string
+}
+
+interface C_OP_RepeatedTriggerChildGroup extends CParticleFunctionPreEmission {
+	readonly type_name: string
+	readonly m_nChildGroupID: number
+	readonly m_flClusterRefireTime: CParticleCollectionFloatInput
+	readonly m_flClusterSize: CParticleCollectionFloatInput
+	readonly m_flClusterCooldown: CParticleCollectionFloatInput
 }
 
 interface C_OP_RemapNamedModelElementEndCap extends CParticleFunctionOperator {
@@ -4272,6 +4303,7 @@ interface C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_nDireSeriesWins: number
 	readonly m_vecAvailableHerosPerPlayerID: CHeroesPerPlayer[]
 	readonly m_vecLockedHerosByPlayerID: CHeroesPerPlayer[]
+	readonly m_vecDisabledRandomHerosByPlayerID: CHeroesPerPlayer[]
 	readonly m_CustomGameForceSelectHero: number[]
 	readonly m_flGoldTime: number
 	readonly m_flXPTime: number
@@ -4777,6 +4809,20 @@ interface C_OP_RenderBlobs extends CParticleFunctionRenderer {
 	readonly m_nScaleCP: number
 }
 
+interface C_INIT_CreateOnGrid extends CParticleFunctionInitializer {
+	readonly type_name: string
+	readonly m_nXCount: CParticleCollectionFloatInput
+	readonly m_nYCount: CParticleCollectionFloatInput
+	readonly m_nZCount: CParticleCollectionFloatInput
+	readonly m_nXSpacing: CParticleCollectionFloatInput
+	readonly m_nYSpacing: CParticleCollectionFloatInput
+	readonly m_nZSpacing: CParticleCollectionFloatInput
+	readonly m_nControlPointNumber: number
+	readonly m_bLocalSpace: boolean
+	readonly m_bCenter: boolean
+	readonly m_bHollow: boolean
+}
+
 interface CIKLockAnimNode extends CAnimNodeBase {
 	readonly type_name: string
 	readonly m_childID: AnimNodeID
@@ -5097,6 +5143,11 @@ interface IClientAlphaProperty {
 	readonly type_name: string
 }
 
+interface C_INIT_InitFloat extends CParticleFunctionInitializer {
+	readonly type_name: string
+	readonly m_InputValue: CPerParticleFloatInput
+}
+
 interface C_OP_RenderTreeShake extends CParticleFunctionRenderer {
 	readonly type_name: string
 	readonly m_flPeakStrength: number
@@ -5195,6 +5246,7 @@ interface C_OP_DistanceToCP extends CParticleFunctionOperator {
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bScaleCurrent: boolean
 	readonly m_bActiveRange: boolean
+	readonly m_bAdditive: boolean
 }
 
 interface C_OP_PercentageBetweenCPLerpCPs extends CParticleFunctionOperator {
@@ -5379,6 +5431,7 @@ interface InfoForResourceTypeAnimationGroupResourceData_t {
 interface C_OP_RemapAverageScalarValuetoCP extends CParticleFunctionPreEmission {
 	readonly type_name: string
 	readonly m_nOutControlPointNumber: number
+	readonly m_nOutVectorField: number
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
@@ -5665,6 +5718,17 @@ interface ResponseContext_t {
 	readonly m_iszName: string
 	readonly m_iszValue: string
 	readonly m_fExpirationTime: number
+}
+
+interface C_OP_SetPerChildControlPointFromAttribute extends CParticleFunctionOperator {
+	readonly type_name: string
+	readonly m_nChildGroupID: number
+	readonly m_nFirstControlPoint: number
+	readonly m_nNumControlPoints: number
+	readonly m_nParticleIncrement: number
+	readonly m_nFirstSourcePoint: number
+	readonly m_bNumBasedOnParticleCount: boolean
+	readonly m_nCPField: number
 }
 
 interface C_OP_RemapScalar extends CParticleFunctionOperator {
@@ -6112,6 +6176,12 @@ interface CTimeline extends IntervalTimer {
 	readonly m_bStopped: boolean
 }
 
+interface C_OP_RenderTonemapController extends CParticleFunctionRenderer {
+	readonly type_name: string
+	readonly m_flTonemapLevel: number
+	readonly m_flTonemapWeight: number
+}
+
 interface C_OP_TurbulenceForce extends CParticleFunctionForce {
 	readonly type_name: string
 	readonly m_flNoiseCoordScale0: number
@@ -6278,6 +6348,7 @@ interface CModifierParams {
 	readonly nTooltipParam: number
 	readonly bIgnoreInvis: boolean
 	readonly bNoCooldown: boolean
+	readonly bIgnoreArmor: boolean
 	readonly bReincarnate: boolean
 	readonly bDoNotConsume: boolean
 	readonly fDistance: number
@@ -6417,6 +6488,17 @@ interface C_OP_RemapDistanceToLineSegmentToVector extends C_OP_RemapDistanceToLi
 	readonly type_name: string
 	readonly m_vMinOutputValue: Vector
 	readonly m_vMaxOutputValue: Vector
+}
+
+interface C_OP_RemapParticleCountToScalar extends CParticleFunctionOperator {
+	readonly type_name: string
+	readonly m_nInputMin: CParticleCollectionFloatInput
+	readonly m_nInputMax: CParticleCollectionFloatInput
+	readonly m_flOutputMin: CParticleCollectionFloatInput
+	readonly m_flOutputMax: CParticleCollectionFloatInput
+	readonly m_bActiveRange: boolean
+	readonly m_bScaleInitialRange: boolean
+	readonly m_bScaleCurrent: boolean
 }
 
 interface CParticleAnimTag extends CAnimTagBase {
@@ -6627,6 +6709,12 @@ interface CSceneEventInfo {
 	readonly m_flNext: number
 	readonly m_bClientSide: boolean
 	readonly m_bShouldRemove: boolean
+}
+
+interface C_OP_LerpToInitialPosition extends CParticleFunctionOperator {
+	readonly type_name: string
+	readonly m_nControlPointNumber: number
+	readonly m_flInterpolation: CPerParticleFloatInput
 }
 
 interface C_OP_ClampVector extends CParticleFunctionOperator {
@@ -7386,9 +7474,13 @@ interface CDOTASpectatorGraphManager {
 	readonly m_event_dota_player_pick_hero: number
 }
 
-interface C_OP_SetFloat extends CParticleFunctionOperator {
+interface C_OP_SetChildControlPoints extends CParticleFunctionOperator {
 	readonly type_name: string
-	readonly m_InputValue: CParticleFloatInput
+	readonly m_nChildGroupID: number
+	readonly m_nFirstControlPoint: number
+	readonly m_nNumControlPoints: number
+	readonly m_nFirstSourcePoint: CParticleCollectionFloatInput
+	readonly m_bSetOrientation: boolean
 }
 
 interface C_OP_DistanceCull extends CParticleFunctionOperator {
@@ -7657,15 +7749,12 @@ interface ragdoll_t {
 interface C_OP_AttractToControlPoint extends CParticleFunctionForce {
 	readonly type_name: string
 	readonly m_vecComponentScale: Vector
-	readonly m_fForceAmount: number
+	readonly m_fForceAmount: CPerParticleFloatInput
 	readonly m_fFalloffPower: number
 	readonly m_nControlPointNumber: number
-	readonly m_nScaleCP: number
-	readonly m_nScaleCPField: number
 	readonly m_bScaleLocal: boolean
-	readonly m_bRemapPullForceToLife: boolean
-	readonly m_fForceAmountMin: number
-	readonly m_fLifespanScaleExp: number
+	readonly m_fForceAmountMin: CPerParticleFloatInput
+	readonly m_bApplyMinForce: boolean
 }
 
 interface C_INIT_CreateInEpitrochoid extends CParticleFunctionInitializer {
@@ -7747,6 +7836,16 @@ interface FeTreeChildren_t {
 interface CNavVolumeSphericalShell extends CNavVolumeSphere {
 	readonly type_name: string
 	readonly m_flRadiusInner: number
+}
+
+interface C_INIT_PositionWarpScalar extends CParticleFunctionInitializer {
+	readonly type_name: string
+	readonly m_vecWarpMin: Vector
+	readonly m_vecWarpMax: Vector
+	readonly m_InputValue: CPerParticleFloatInput
+	readonly m_flPrevPosScale: number
+	readonly m_nScaleControlPointNumber: number
+	readonly m_nControlPointNumber: number
 }
 
 interface C_INIT_RandomRadius extends CParticleFunctionInitializer {
@@ -7964,6 +8063,12 @@ interface CRMSG_Manifest_New {
 
 interface CSchemaClassInfo extends SchemaClassInfoData_t {
 	readonly type_name: string
+}
+
+interface MaterialVariable_t {
+	readonly type_name: string
+	readonly m_strVariable: string
+	readonly m_flScale: number
 }
 
 interface C_OP_RemapBoundingVolumetoCP extends CParticleFunctionPreEmission {
@@ -8250,6 +8355,7 @@ interface C_OP_RenderSprites extends CBaseRendererSource2 {
 	readonly m_bUseYawWithNormalAligned: boolean
 	readonly m_bNormalMap: boolean
 	readonly m_flBumpStrength: number
+	readonly m_flRadiusScale: number
 }
 
 interface C_OP_TimeVaryingForce extends CParticleFunctionForce {
@@ -8574,6 +8680,7 @@ interface C_OP_RenderModels extends CParticleFunctionRenderer {
 	readonly m_bSuppressTint: boolean
 	readonly m_bUseRawMeshGroup: boolean
 	readonly m_bDisableShadows: boolean
+	readonly m_MaterialVars: MaterialVariable_t[]
 }
 
 interface SosEditItemInfo_t {
@@ -8988,12 +9095,14 @@ interface CDOTA_AttackRecord {
 	readonly m_bDirectionalRangedAttack: boolean
 	readonly m_bFakeAttack: boolean
 	readonly m_bNeverMiss: boolean
+	readonly m_bLethalAttack: boolean
 	readonly m_bTriggeredAttack: boolean
 	readonly m_bNoCooldown: boolean
 	readonly m_bProcessProcs: boolean
 	readonly m_bUseProjectile: boolean
 	readonly m_bUseCastAttackOrb: boolean
 	readonly m_bAutoCastAttack: boolean
+	readonly m_bIgnoreArmor: boolean
 	readonly m_bIgnoreObstructions: boolean
 	readonly m_nBashSource: number
 	readonly m_flAttackHeight: number
@@ -9330,6 +9439,15 @@ interface C_OP_RenderTrails extends CBaseTrailRenderer {
 	readonly m_flForwardShift: number
 	readonly m_bFlipUVBasedOnPitchYaw: boolean
 	readonly m_bUseTopology: boolean
+}
+
+interface C_OP_SetFromCPSnapshot extends CParticleFunctionOperator {
+	readonly type_name: string
+	readonly m_nControlPointNumber: number
+	readonly m_nLocalSpaceCP: number
+	readonly m_bRandom: boolean
+	readonly m_bReverse: boolean
+	readonly m_nRandomSeed: number
 }
 
 interface World_t {
@@ -9798,6 +9916,7 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_nDireSeriesWins: number
 	readonly m_vecAvailableHerosPerPlayerID: CHeroesPerPlayer[]
 	readonly m_vecLockedHerosByPlayerID: CHeroesPerPlayer[]
+	readonly m_vecDisabledRandomHerosByPlayerID: CHeroesPerPlayer[]
 	readonly m_CustomGameForceSelectHero: number[]
 	readonly m_flGoldTime: number
 	readonly m_flXPTime: number
@@ -10034,6 +10153,12 @@ interface C_INIT_CreateAlongPath extends CParticleFunctionInitializer {
 	readonly m_bSaveOffset: boolean
 }
 
+interface C_OP_PlayEndCapWhenFinished extends CParticleFunctionPreEmission {
+	readonly type_name: string
+	readonly m_bFireOnEmissionEnd: boolean
+	readonly m_bIncludeChildren: boolean
+}
+
 interface CAudioAnimTag extends CAnimTagBase {
 	readonly type_name: string
 	readonly m_clipName: string
@@ -10133,6 +10258,7 @@ interface C_OP_MaintainEmitter extends CParticleFunctionEmitter {
 	readonly m_nScaleControlPointField: number
 	readonly m_flEmissionRate: number
 	readonly m_nSnapshotControlPoint: number
+	readonly m_bEmitInstantaneously: boolean
 }
 
 interface SeqResourceCmdLayer_t {
@@ -10261,6 +10387,7 @@ interface C_OP_RemapDotProductToScalar extends CParticleFunctionOperator {
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bScaleCurrent: boolean
 	readonly m_bActiveRange: boolean
+	readonly m_bUseParticleNormal: boolean
 }
 
 interface C_OP_SetPerChildControlPoint extends CParticleFunctionOperator {
@@ -10773,6 +10900,10 @@ interface C_DOTA_Ability_Special_Bonus_Agility_14 extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_Special_Bonus_Cleave_130 extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface CHitboxComponent extends CEntityComponent {
 	readonly type_name: string
 }
@@ -10818,6 +10949,10 @@ interface C_BaseAnimating extends C_BaseModelEntity {
 	readonly m_nOldMuzzleFlashParity: number
 	readonly m_iEjectBrassAttachment: number
 	readonly m_bSuppressAnimEventSounds: boolean
+}
+
+interface C_DOTA_Ability_LoneDruid_SpiritBear_Defender extends C_DOTABaseAbility {
+	readonly type_name: string
 }
 
 interface C_DOTA_Ability_PhantomAssassin_Blur extends C_DOTABaseAbility {
@@ -10963,7 +11098,6 @@ interface C_DOTA_Ability_EarthSpirit_BoulderSmash extends C_DOTABaseAbility {
 	readonly rock_search_aoe: number
 	readonly unit_distance: number
 	readonly rock_distance: number
-	readonly stun_duration: number
 	readonly m_nProjectileID: number
 	readonly m_hCursorTarget: C_BaseEntity
 	readonly m_bUsedStone: boolean
@@ -12030,14 +12164,14 @@ interface C_DOTABaseGameMode extends C_BaseEntity {
 	readonly m_sCustomTerrainWeatherEffect: string
 	readonly m_flStrengthDamage: number
 	readonly m_flStrengthHP: number
-	readonly m_flStrengthHPRegenPercent: number
+	readonly m_flStrengthHPRegen: number
 	readonly m_flAgilityDamage: number
 	readonly m_flAgilityArmor: number
 	readonly m_flAgilityAttackSpeed: number
 	readonly m_flAgilityMovementSpeedPercent: number
 	readonly m_flIntelligenceDamage: number
 	readonly m_flIntelligenceMana: number
-	readonly m_flIntelligenceManaRegenPercent: number
+	readonly m_flIntelligenceManaRegen: number
 	readonly m_flIntelligenceSpellAmpPercent: number
 	readonly m_flStrengthMagicResistancePercent: number
 	readonly m_flDraftingHeroPickSelectTimeOverride: number
@@ -12418,6 +12552,10 @@ interface C_DOTA_BaseNPC_Building extends C_DOTA_BaseNPC {
 	readonly m_ParticleTintColor: Color
 }
 
+interface C_DOTA_Item_Recipe_Yasha_And_Kaya extends C_DOTA_Item {
+	readonly type_name: string
+}
+
 interface C_DOTA_Item_Recipe_OrchidMalevolence extends C_DOTA_Item {
 	readonly type_name: string
 }
@@ -12708,6 +12846,10 @@ interface C_DOTA_Ability_Special_Bonus_Attack_Range_200 extends C_DOTABaseAbilit
 	readonly type_name: string
 }
 
+interface CDOTA_Item_Kaya_And_Sange extends C_DOTA_Item {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_Batrider_Firefly extends C_DOTABaseAbility {
 	readonly type_name: string
 }
@@ -12917,6 +13059,10 @@ interface C_PointClientUIWorldPanel extends C_BaseClientUIEntity {
 	readonly m_bUseOffScreenIndicator: boolean
 	readonly m_bExcludeFromSaveGames: boolean
 	readonly m_bGrabbable: boolean
+}
+
+interface C_DOTA_Item_Crown extends C_DOTA_Item {
+	readonly type_name: string
 }
 
 interface C_DOTA_Item_Recipe_Spirit_Vessel extends C_DOTA_Item {
@@ -13189,6 +13335,7 @@ interface C_DOTA_DisplacementVisibility extends C_BaseEntity {
 
 interface C_DOTA_Unit_Hero_Meepo extends C_DOTA_BaseNPC_Hero {
 	readonly type_name: string
+	readonly m_bIsClone: boolean
 	readonly m_nWhichMeepo: number
 }
 
@@ -13355,16 +13502,6 @@ interface C_DOTA_Ability_MonkeyKing_Transform extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
-interface C_DOTA_Ability_KeeperOfTheLight_SpiritFormIlluminate extends C_DOTABaseAbility {
-	readonly type_name: string
-	readonly m_hThinker: C_BaseEntity
-	readonly max_channel_time: number
-	readonly damage_per_second: number
-	readonly m_fPower: number
-	readonly m_fStartTime: number
-	readonly m_nFXIndex: number
-}
-
 interface C_DOTA_Ability_Treant_Overgrowth extends C_DOTABaseAbility {
 	readonly type_name: string
 }
@@ -13396,6 +13533,7 @@ interface C_DOTA_Ability_Shredder_WhirlingDeath extends C_DOTABaseAbility {
 	readonly whirling_damage: number
 	readonly whirling_tick: number
 	readonly duration: number
+	readonly tree_damage_scale: number
 }
 
 interface C_DOTA_Ability_Medusa_ManaShield extends C_DOTABaseAbility {
@@ -13543,6 +13681,10 @@ interface C_DOTA_Unit_Hero_FacelessVoid extends C_DOTA_BaseNPC_Hero {
 }
 
 interface C_DOTA_Ability_Morphling_AdaptiveStrike_Agi extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
+interface C_DOTA_Item_RingOfTarrasque extends C_DOTA_Item {
 	readonly type_name: string
 }
 
@@ -13830,6 +13972,10 @@ interface C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_3 extends C_DOTABaseA
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_4 extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander extends C_DOTABaseAbility {
 	readonly type_name: string
 }
@@ -13886,6 +14032,11 @@ interface C_DOTA_Unit_Hero_ChaosKnight extends C_DOTA_BaseNPC_Hero {
 
 interface C_DOTA_Ability_DarkSeer_WallOfReplica extends C_DOTABaseAbility {
 	readonly type_name: string
+	readonly m_bIsBasePointSet: boolean
+	readonly m_bIsMidQuickcast: boolean
+	readonly m_vBasePoint: Vector
+	readonly m_nFXTarget: number
+	readonly width: number
 }
 
 interface C_DOTA_Ability_GnollAssassin_EnvenomedWeapon extends C_DOTABaseAbility {
@@ -14449,6 +14600,10 @@ interface C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_3 extends C_DOTABa
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_4 extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_2 extends C_DOTABaseAbility {
 	readonly type_name: string
 }
@@ -14617,10 +14772,6 @@ interface C_DOTA_Ability_Special_Bonus_Attack_Speed_100 extends C_DOTABaseAbilit
 }
 
 interface C_DOTA_Item_BladeOfAlacrity extends C_DOTA_Item {
-	readonly type_name: string
-}
-
-interface C_DOTA_Ability_KeeperOfTheLight_SpiritFormIlluminateEnd extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -14879,6 +15030,10 @@ interface CLogicalEntity extends C_BaseEntity {
 	readonly type_name: string
 }
 
+interface CDOTA_Item_Recipe_Kaya_And_Sange extends C_DOTA_Item {
+	readonly type_name: string
+}
+
 interface C_DOTA_Item_Black_King_Bar extends C_DOTA_Item {
 	readonly type_name: string
 }
@@ -14991,6 +15146,10 @@ interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_30 extends C_DOTABaseAbi
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_Special_Bonus_Cleave_40 extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Item_Flask extends C_DOTA_Item {
 	readonly type_name: string
 }
@@ -15023,6 +15182,14 @@ interface C_DOTA_Ability_Special_Bonus_Unique_Treant_3 extends C_DOTABaseAbility
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_2 extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Special_Bonus_Unique_Abaddon_5 extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Special_Bonus_50_Crit_40 extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -15219,10 +15386,6 @@ interface CDOTA_Ability_Tusk_IceShards_Stop extends C_DOTABaseAbility {
 }
 
 interface C_DOTA_DeathProphet_Exorcism_Spirit extends C_BaseAnimating {
-	readonly type_name: string
-}
-
-interface CDOTA_Ability_Beastmaster_CallOfTheWild extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -15495,6 +15658,10 @@ interface CDOTA_Ability_Special_Bonus_Unique_Grimstroke_4 extends C_DOTABaseAbil
 	readonly type_name: string
 }
 
+interface CDOTA_Ability_Tusk_Tag_Team extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_Ogre_Magi_Unrefined_Fireblast extends C_DOTA_Ability_Ogre_Magi_Fireblast {
 	readonly type_name: string
 	readonly m_nMostRecentMulticastCount: number
@@ -15575,6 +15742,10 @@ interface C_DOTA_Ability_Special_Bonus_Unique_Bounty_Hunter extends C_DOTABaseAb
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Warlock_2 extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_7 extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -15756,10 +15927,19 @@ interface C_DOTA_Unit_Hero_Weaver extends C_DOTA_BaseNPC_Hero {
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_Omniknight_Pacify extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_ShadowShaman_Shackles extends C_DOTABaseAbility {
 	readonly type_name: string
 	readonly m_hShackleTarget: C_BaseEntity
 	readonly nShackleFXIndex: number
+}
+
+interface C_DOTA_Ability_Lich_Sinister_Gaze extends C_DOTABaseAbility {
+	readonly type_name: string
+	readonly m_hShackleTarget: C_BaseEntity
 }
 
 interface C_DOTA_Ability_Morphling_Morph_Agi extends C_DOTABaseAbility {
@@ -15950,6 +16130,10 @@ interface CDOTA_Item_Recipe_Nullifier extends C_DOTA_Item {
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_Beastmaster_CallOfTheWild_Hawk extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_BlackDragon_SplashAttack extends C_DOTABaseAbility {
 	readonly type_name: string
 }
@@ -16076,6 +16260,7 @@ interface C_DOTA_Ability_EmberSpirit_Activate_FireRemnant extends C_DOTABaseAbil
 	readonly m_ProjectileAngles: QAngle
 	readonly m_hRemnantToKill: C_BaseEntity
 	readonly m_bProjectileStarted: boolean
+	readonly hAlreadyHitList: C_BaseEntity[]
 }
 
 interface C_DOTA_Ability_Bristleback_ViscousNasalGoo extends C_DOTABaseAbility {
@@ -16366,6 +16551,7 @@ interface C_DOTA_Ability_Legion_Commander_PressTheAttack extends C_DOTABaseAbili
 interface C_DOTA_Ability_Magnataur_Shockwave extends C_DOTABaseAbility {
 	readonly type_name: string
 	readonly m_nFXIndex: number
+	readonly hAlreadyHitList: C_BaseEntity[]
 }
 
 interface C_DOTA_Unit_Hero_Jakiro extends C_DOTA_BaseNPC_Hero {
@@ -16545,6 +16731,10 @@ interface C_AI_BaseNPC extends C_BaseCombatCharacter {
 	readonly m_nFootstepType: number
 }
 
+interface C_DOTA_Item_Yasha_And_Kaya extends C_DOTA_Item {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_ChaosKnight_Phantasm extends C_DOTABaseAbility {
 	readonly type_name: string
 	readonly m_hIllusions: C_BaseEntity[]
@@ -16623,6 +16813,10 @@ interface C_DOTA_Ability_DoomBringer_Empty1 extends C_DOTABaseAbility {
 }
 
 interface C_DOTA_Ability_Batrider_FlamingLasso extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Huskar_Inner_Fire extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -16797,6 +16991,11 @@ interface C_DOTA_Ability_Tusk_Launch_Snowball extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_LoneDruid_SpiritLink extends C_DOTABaseAbility {
+	readonly type_name: string
+	readonly duration: number
+}
+
 interface C_DOTA_Ability_Lycan_Shapeshift extends C_DOTABaseAbility {
 	readonly type_name: string
 }
@@ -16806,6 +17005,10 @@ interface C_DOTA_Ability_Viper_CorrosiveSkin extends C_DOTABaseAbility {
 }
 
 interface C_DOTA_Ability_Earthshaker_Fissure extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Special_Bonus_Unique_Abaddon_4 extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -17118,6 +17321,10 @@ interface C_DOTA_Unit_Hero_Oracle extends C_DOTA_BaseNPC_Hero {
 }
 
 interface C_DOTA_Ability_Obsidian_Destroyer_ArcaneOrb extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Lich_DarkSorcery extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -17618,11 +17825,6 @@ interface C_DOTA_Ability_Holdout_CullingBlade extends C_DOTA_Ability_Axe_Culling
 	readonly type_name: string
 }
 
-interface CDOTA_Ability_AncientApparition_ChillingTouch extends C_DOTABaseAbility {
-	readonly type_name: string
-	readonly radius: number
-}
-
 interface C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_2 extends C_DOTABaseAbility {
 	readonly type_name: string
 }
@@ -17807,6 +18009,10 @@ interface C_DOTA_Ability_Batrider_StickyNapalm extends C_DOTABaseAbility {
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
+interface CDOTA_Ability_Special_Bonus_Attack_Base_Damage_30 extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -18304,6 +18510,10 @@ interface CDOTA_Ability_Techies_Minefield_Sign extends C_DOTABaseAbility {
 	readonly aura_radius: number
 }
 
+interface C_DOTA_BaseNPC_Clinkz_Skeleton_Army extends C_DOTA_BaseNPC {
+	readonly type_name: string
+}
+
 interface C_DOTA_Unit_Hero_QueenOfPain extends C_DOTA_BaseNPC_Hero {
 	readonly type_name: string
 }
@@ -18465,6 +18675,10 @@ interface C_DOTA_Ability_DrowRanger_WaveOfSilence extends C_DOTABaseAbility {
 	readonly silence_duration: number
 	readonly knockback_distance_max: number
 	readonly m_nHeroesHit: number
+}
+
+interface C_DOTA_Item_Recipe_Holy_Locket extends C_DOTA_Item {
+	readonly type_name: string
 }
 
 interface CDOTA_Item_Hurricane_Pike extends C_DOTA_Item {
@@ -18874,10 +19088,13 @@ interface C_DOTA_Unit_Hero_Terrorblade extends C_DOTA_BaseNPC_Hero {
 	readonly m_nArcanaColor: number
 }
 
+interface C_DOTA_Ability_Meepo_Ransack extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_VengefulSpirit_Nether_Swap extends C_DOTABaseAbility {
 	readonly type_name: string
 	readonly m_nFXIndex: number
-	readonly m_hScepterIllusion: C_BaseEntity
 }
 
 interface C_DOTA_Unit_Hero_AntiMage extends C_DOTA_BaseNPC_Hero {
@@ -18974,10 +19191,6 @@ interface C_DOTA_Ability_Special_Bonus_Strength_30 extends C_DOTABaseAbility {
 }
 
 interface C_DOTA_Ability_Shredder_ReturnChakramAlias_shredder_return_chakram_2 extends C_DOTA_Ability_Shredder_ReturnChakram {
-	readonly type_name: string
-}
-
-interface C_DOTA_Ability_KeeperOfTheLight_SpiritForm extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -19226,6 +19439,10 @@ interface C_DOTA_Item_Recipe_Sange extends C_DOTA_Item {
 }
 
 interface C_DOTA_Item_Recipe_Perseverance extends C_DOTA_Item {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Brewmaster_CinderBrew extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -19753,6 +19970,10 @@ interface C_DOTA_Item_Recipe_InvisibilityEdge extends C_DOTA_Item {
 }
 
 interface C_DOTA_Item_Butterfly extends C_DOTA_Item {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Dazzle_Bad_Juju extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -20399,6 +20620,10 @@ interface C_DOTA_Unit_Brewmaster_PrimalStorm extends C_DOTA_BaseNPC_Creep {
 	readonly m_nFXStormAmbient2: number
 }
 
+interface C_DOTA_Ability_Chen_DivineFavor extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Unit_Hero_Warlock extends C_DOTA_BaseNPC_Hero {
 	readonly type_name: string
 }
@@ -20474,6 +20699,10 @@ interface C_DOTAMutationGameMode extends C_DOTABaseGameMode {
 	readonly type_name: string
 }
 
+interface C_DOTA_BaseNPC_Promo extends C_DOTA_BaseNPC_Building {
+	readonly type_name: string
+}
+
 interface C_DOTA_Item_Recipe_Skadi extends C_DOTA_Item {
 	readonly type_name: string
 }
@@ -20484,6 +20713,15 @@ interface C_DOTA_Ability_LoneDruid_SpiritBear_Return extends C_DOTABaseAbility {
 
 interface C_DOTA_Ability_Weaver_GeminateAttack extends C_DOTABaseAbility {
 	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Clinkz_Burning_Army extends C_DOTABaseAbility {
+	readonly type_name: string
+	readonly m_bIsBasePointSet: boolean
+	readonly m_bIsMidQuickcast: boolean
+	readonly m_vBasePoint: Vector
+	readonly m_nFXTarget: number
+	readonly range: number
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_7 extends C_DOTABaseAbility {
@@ -20574,6 +20812,10 @@ interface C_DOTA_Item_Nullifier extends C_DOTA_Item {
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_SpiritBreaker_Bulldoze extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_DoomBringer_Doom extends C_DOTABaseAbility {
 	readonly type_name: string
 }
@@ -20607,10 +20849,6 @@ interface C_DOTA_Ability_Visage_SoulAssumption extends C_DOTABaseAbility {
 	readonly m_fDamage: number
 	readonly m_nFXIndex: number
 	readonly m_iForcedStacks: number
-}
-
-interface C_DOTA_Ability_Lich_DarkRitual extends C_DOTABaseAbility {
-	readonly type_name: string
 }
 
 interface C_DOTA_Ability_Morphling_AdaptiveStrike_Str extends C_DOTABaseAbility {
@@ -20793,7 +21031,6 @@ interface C_EnvSky extends C_BaseModelEntity {
 
 interface C_DOTA_Ability_Obsidian_Destroyer_AstralImprisonment extends C_DOTABaseAbility {
 	readonly type_name: string
-	readonly steal_duration: number
 	readonly m_hImprisonedUnit: C_BaseEntity
 	readonly max_charges_scepter: number
 	readonly charge_restore_time_scepter: number
@@ -20839,6 +21076,10 @@ interface CDOTA_Ability_Life_Stealer_Empty1 extends C_DOTABaseAbility {
 interface C_DOTA_Ability_QueenOfPain_ShadowStrike extends C_DOTABaseAbility {
 	readonly type_name: string
 	readonly projectile_speed: Vector
+}
+
+interface C_DOTA_Ability_AncientApparition_ChillingTouch extends C_DOTABaseAbility {
+	readonly type_name: string
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Kunkka_5 extends C_DOTABaseAbility {
@@ -20947,6 +21188,10 @@ interface C_DOTA_Item_Recipe_PowerTreads extends C_DOTA_Item {
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_Pangolier_LuckyShot extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_Undying_SoulRip extends C_DOTABaseAbility {
 	readonly type_name: string
 	readonly damage_per_unit: number
@@ -20986,6 +21231,8 @@ interface C_DOTA_Ability_Special_Bonus_Movement_Speed_65 extends C_DOTABaseAbili
 
 interface C_DOTA_Item_GemOfTrueSight extends C_DOTA_Item {
 	readonly type_name: string
+	readonly m_iTempViewer: number
+	readonly m_iTeam: number
 }
 
 interface C_DOTA_Item_Gauntlets extends C_DOTA_Item {
@@ -20997,6 +21244,10 @@ interface C_DOTA_Unit_Hero_Medusa extends C_DOTA_BaseNPC_Hero {
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Treant_2 extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Special_Bonus_Attack_Base_Damage_45 extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -21368,6 +21619,10 @@ interface C_DOTA_Ability_Special_Bonus_Unique_Razor_4 extends C_DOTABaseAbility 
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_Special_Bonus_Unique_Lich_4 extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light extends C_DOTABaseAbility {
 	readonly type_name: string
 }
@@ -21484,6 +21739,10 @@ interface C_DOTA_Ability_Wisp_Tether_Break extends C_DOTABaseAbility {
 }
 
 interface CDOTA_Ability_Beastmaster_InnerBeast extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
+interface CDOTA_Ability_Lich_FrostAura extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -21635,11 +21894,19 @@ interface C_DynamicPropAlias_prop_dynamic_override extends C_DynamicProp {
 	readonly type_name: string
 }
 
+interface C_DOTA_Ability_Rubick_Arcane_Supremacy extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_DOTA_Ability_Life_Stealer_Rage extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
 interface C_DOTA_Unit_Hero_TemplarAssassin extends C_DOTA_BaseNPC_Hero {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Lich_FrostShield extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -21762,6 +22029,10 @@ interface C_DOTA_BaseNPC_ShadowShaman_SerpentWard extends C_DOTA_BaseNPC_Additiv
 	readonly m_iPoseParameterAim: number
 }
 
+interface C_DOTA_Ability_AntiMage_Counterspell extends C_DOTABaseAbility {
+	readonly type_name: string
+}
+
 interface C_IngameEvent_TI6 extends C_IngameEvent_Base {
 	readonly type_name: string
 }
@@ -21838,6 +22109,10 @@ interface C_BasePropDoor extends C_DynamicProp {
 	readonly m_bLocked: boolean
 	readonly m_isRescueDoor: boolean
 	readonly m_hMaster: C_BaseEntity
+}
+
+interface C_DOTA_Unit_IngisFatuus extends C_DOTA_BaseNPC_Additive {
+	readonly type_name: string
 }
 
 interface C_DOTA_Ability_Tidehunter_KrakenShell extends C_DOTABaseAbility {
@@ -22013,6 +22288,11 @@ interface C_DOTA_Ability_Terrorblade_Sunder extends C_DOTABaseAbility {
 
 interface C_DOTA_Ability_Lycan_FeralImpulse extends C_DOTABaseAbility {
 	readonly type_name: string
+}
+
+interface C_DOTA_Ability_Obsidian_Destroyer_Equilibrium extends C_DOTABaseAbility {
+	readonly type_name: string
+	readonly m_iProjectile: number
 }
 
 interface C_DOTA_Unit_Nian extends C_DOTA_BaseNPC_Creature {
@@ -22218,6 +22498,10 @@ interface C_EnvDeferredLightClientOnly extends C_EnvDeferredLight {
 }
 
 interface C_DOTA_Item_OgreAxe extends C_DOTA_Item {
+	readonly type_name: string
+}
+
+interface CDOTA_Ability_Beastmaster_CallOfTheWild_Boar extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -22431,6 +22715,10 @@ interface C_DOTA_Unit_Hero_Tinker extends C_DOTA_BaseNPC_Hero {
 	readonly type_name: string
 }
 
+interface C_DOTA_Item_Holy_Locket extends C_DOTA_Item {
+	readonly type_name: string
+}
+
 interface C_DOTA_Item_Recipe_PoorMansShield extends C_DOTA_Item {
 	readonly type_name: string
 }
@@ -22614,6 +22902,7 @@ interface C_DOTA_Unit_Hero_Sniper extends C_DOTA_BaseNPC_Hero {
 
 interface C_DOTA_Ability_VengefulSpirit_Command_Aura extends C_DOTABaseAbility {
 	readonly type_name: string
+	readonly m_hScepterIllusion: C_BaseEntity
 }
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Enigma_2 extends C_DOTABaseAbility {
@@ -22651,6 +22940,10 @@ interface C_FireFromAboveSprite extends C_Sprite {
 }
 
 interface CDOTA_Item_RiverPainter6 extends C_DOTA_Item_RiverPainter {
+	readonly type_name: string
+}
+
+interface C_DOTA_Ability_KeeperOfTheLight_Will_O_Wisp extends C_DOTABaseAbility {
 	readonly type_name: string
 }
 
@@ -22963,6 +23256,21 @@ declare const enum OrderQueueBehavior_t {
 	DOTA_ORDER_QUEUE_DEFAULT = 0,
 	DOTA_ORDER_QUEUE_NEVER = 1,
 	DOTA_ORDER_QUEUE_ALWAYS = 2
+}
+
+declare const enum DotaGestureSlot_t {
+	GESTURE_SLOT_NONE = -1,
+	GESTURE_SLOT_ATTACK = 0,
+	GESTURE_SLOT_ABILITY = 1,
+	GESTURE_SLOT_OVERRIDE = 2,
+	GESTURE_SLOT_CUSTOM = 3,
+	GESTURE_SLOT_CUSTOM2 = 4,
+	GESTURE_SLOT_CUSTOM3 = 5,
+	GESTURE_SLOT_CONSTANT = 6,
+	GESTURE_SLOT_TAUNT = 7,
+	GESTURE_SLOT_ABSOLUTE = 8,
+	GESTURE_SLOT_COUNT = 9,
+	GESTURE_SLOT_STOLEN_ABILITY_BIT = 128
 }
 
 declare const enum RenderFx_t {
@@ -23357,7 +23665,8 @@ declare const enum RenderMultisampleType_t {
 
 declare const enum ParticleLightTypeChoiceList_t {
 	PARTICLE_LIGHT_TYPE_POINT = 0,
-	PARTICLE_LIGHT_TYPE_SPOT = 1
+	PARTICLE_LIGHT_TYPE_SPOT = 1,
+	PARTICLE_LIGHT_TYPE_FX = 2
 }
 
 declare const enum WorldTextPanelOrientation_t {
@@ -23635,23 +23944,26 @@ declare const enum modifierstate {
 	MODIFIER_STATE_FROZEN = 18,
 	MODIFIER_STATE_COMMAND_RESTRICTED = 19,
 	MODIFIER_STATE_NOT_ON_MINIMAP = 20,
-	MODIFIER_STATE_NOT_ON_MINIMAP_FOR_ENEMIES = 21,
-	MODIFIER_STATE_LOW_ATTACK_PRIORITY = 22,
-	MODIFIER_STATE_NO_HEALTH_BAR = 23,
-	MODIFIER_STATE_FLYING = 24,
-	MODIFIER_STATE_NO_UNIT_COLLISION = 25,
-	MODIFIER_STATE_NO_TEAM_MOVE_TO = 26,
-	MODIFIER_STATE_NO_TEAM_SELECT = 27,
-	MODIFIER_STATE_PASSIVES_DISABLED = 28,
-	MODIFIER_STATE_DOMINATED = 29,
-	MODIFIER_STATE_BLIND = 30,
-	MODIFIER_STATE_OUT_OF_GAME = 31,
-	MODIFIER_STATE_FAKE_ALLY = 32,
-	MODIFIER_STATE_FLYING_FOR_PATHING_PURPOSES_ONLY = 33,
-	MODIFIER_STATE_TRUESIGHT_IMMUNE = 34,
-	MODIFIER_STATE_UNTARGETABLE = 35,
-	MODIFIER_STATE_IGNORING_MOVE_AND_ATTACK_ORDERS = 36,
-	MODIFIER_STATE_LAST = 37
+	MODIFIER_STATE_LOW_ATTACK_PRIORITY = 21,
+	MODIFIER_STATE_NO_HEALTH_BAR = 22,
+	MODIFIER_STATE_FLYING = 23,
+	MODIFIER_STATE_NO_UNIT_COLLISION = 24,
+	MODIFIER_STATE_NO_TEAM_MOVE_TO = 25,
+	MODIFIER_STATE_NO_TEAM_SELECT = 26,
+	MODIFIER_STATE_PASSIVES_DISABLED = 27,
+	MODIFIER_STATE_DOMINATED = 28,
+	MODIFIER_STATE_BLIND = 29,
+	MODIFIER_STATE_OUT_OF_GAME = 30,
+	MODIFIER_STATE_FAKE_ALLY = 31,
+	MODIFIER_STATE_FLYING_FOR_PATHING_PURPOSES_ONLY = 32,
+	MODIFIER_STATE_TRUESIGHT_IMMUNE = 33,
+	MODIFIER_STATE_UNTARGETABLE = 34,
+	MODIFIER_STATE_IGNORING_MOVE_AND_ATTACK_ORDERS = 35,
+	MODIFIER_STATE_ALLOW_PATHING_TROUGH_TREES = 36,
+	MODIFIER_STATE_NOT_ON_MINIMAP_FOR_ENEMIES = 37,
+	MODIFIER_STATE_UNSLOWABLE = 38,
+	MODIFIER_STATE_TETHERED = 39,
+	MODIFIER_STATE_LAST = 40
 }
 
 declare const enum BlurFilterType_t {
@@ -23680,14 +23992,16 @@ declare const enum MeshDrawPrimitiveFlags_t {
 declare const enum ParticleFloatType_t {
 	PF_TYPE_INVALID = -1,
 	PF_TYPE_LITERAL = 0,
-	PF_TYPE_PARTICLE_AGE = 1,
-	PF_TYPE_PARTICLE_AGE_NORMALIZED = 2,
+	PF_TYPE_RANDOM_UNIFORM = 1,
+	PF_TYPE_RANDOM_BIASED = 2,
 	PF_TYPE_COLLECTION_AGE = 3,
 	PF_TYPE_CONTROL_POINT_COMPONENT = 4,
-	PF_TYPE_PARTICLE_FLOAT = 5,
-	PF_TYPE_PARTICLE_VECTOR_COMPONENT = 6,
-	PF_TYPE_PARTICLE_SPEED = 7,
-	PF_TYPE_COUNT = 8
+	PF_TYPE_PARTICLE_AGE = 5,
+	PF_TYPE_PARTICLE_AGE_NORMALIZED = 6,
+	PF_TYPE_PARTICLE_FLOAT = 7,
+	PF_TYPE_PARTICLE_VECTOR_COMPONENT = 8,
+	PF_TYPE_PARTICLE_SPEED = 9,
+	PF_TYPE_COUNT = 10
 }
 
 declare const enum EconEntityParticleDisableMode_t {
@@ -23711,8 +24025,9 @@ declare const enum ParticleFloatMapType_t {
 	PF_MAP_TYPE_DIRECT = 0,
 	PF_MAP_TYPE_MULT = 1,
 	PF_MAP_TYPE_REMAP = 2,
-	PF_MAP_TYPE_CURVE = 3,
-	PF_MAP_TYPE_COUNT = 4
+	PF_MAP_TYPE_REMAP_BIASED = 3,
+	PF_MAP_TYPE_CURVE = 4,
+	PF_MAP_TYPE_COUNT = 5
 }
 
 declare const enum BeamType_t {
@@ -25557,7 +25872,8 @@ declare const enum DOTADamageFlag_t {
 	DOTA_DAMAGE_FLAG_NO_DAMAGE_MULTIPLIERS = 512,
 	DOTA_DAMAGE_FLAG_NO_SPELL_AMPLIFICATION = 1024,
 	DOTA_DAMAGE_FLAG_DONT_DISPLAY_DAMAGE_IF_SOURCE_HIDDEN = 2048,
-	DOTA_DAMAGE_FLAG_NO_SPELL_LIFESTEAL = 4096
+	DOTA_DAMAGE_FLAG_NO_SPELL_LIFESTEAL = 4096,
+	DOTA_DAMAGE_FLAG_PROPERTY_FIRE = 8192
 }
 
 declare const enum TimelineCompression_t {
@@ -25942,140 +26258,144 @@ declare const enum DOTAKeybindCommand_t {
 	DOTA_KEYBIND_INVENTORY4 = 85,
 	DOTA_KEYBIND_INVENTORY5 = 86,
 	DOTA_KEYBIND_INVENTORY6 = 87,
-	DOTA_KEYBIND_INVENTORY1_QUICKCAST = 88,
-	DOTA_KEYBIND_INVENTORY2_QUICKCAST = 89,
-	DOTA_KEYBIND_INVENTORY3_QUICKCAST = 90,
-	DOTA_KEYBIND_INVENTORY4_QUICKCAST = 91,
-	DOTA_KEYBIND_INVENTORY5_QUICKCAST = 92,
-	DOTA_KEYBIND_INVENTORY6_QUICKCAST = 93,
-	DOTA_KEYBIND_INVENTORY1_AUTOCAST = 94,
-	DOTA_KEYBIND_INVENTORY2_AUTOCAST = 95,
-	DOTA_KEYBIND_INVENTORY3_AUTOCAST = 96,
-	DOTA_KEYBIND_INVENTORY4_AUTOCAST = 97,
-	DOTA_KEYBIND_INVENTORY5_AUTOCAST = 98,
-	DOTA_KEYBIND_INVENTORY6_AUTOCAST = 99,
-	DOTA_KEYBIND_INVENTORY1_QUICKAUTOCAST = 100,
-	DOTA_KEYBIND_INVENTORY2_QUICKAUTOCAST = 101,
-	DOTA_KEYBIND_INVENTORY3_QUICKAUTOCAST = 102,
-	DOTA_KEYBIND_INVENTORY4_QUICKAUTOCAST = 103,
-	DOTA_KEYBIND_INVENTORY5_QUICKAUTOCAST = 104,
-	DOTA_KEYBIND_INVENTORY6_QUICKAUTOCAST = 105,
-	DOTA_KEYBIND_CONTROL_GROUP1 = 106,
-	DOTA_KEYBIND_CONTROL_GROUP2 = 107,
-	DOTA_KEYBIND_CONTROL_GROUP3 = 108,
-	DOTA_KEYBIND_CONTROL_GROUP4 = 109,
-	DOTA_KEYBIND_CONTROL_GROUP5 = 110,
-	DOTA_KEYBIND_CONTROL_GROUP6 = 111,
-	DOTA_KEYBIND_CONTROL_GROUP7 = 112,
-	DOTA_KEYBIND_CONTROL_GROUP8 = 113,
-	DOTA_KEYBIND_CONTROL_GROUP9 = 114,
-	DOTA_KEYBIND_CONTROL_GROUP10 = 115,
-	DOTA_KEYBIND_CONTROL_GROUPCYCLE = 116,
-	DOTA_KEYBIND_SHOP_TOGGLE = 117,
-	DOTA_KEYBIND_SCOREBOARD_TOGGLE = 118,
-	DOTA_KEYBIND_SCREENSHOT = 119,
-	DOTA_KEYBIND_ESCAPE = 120,
-	DOTA_KEYBIND_CONSOLE = 121,
-	DOTA_KEYBIND_DEATH_SUMMARY = 122,
-	DOTA_KEYBIND_LEARN_ABILITIES = 123,
-	DOTA_KEYBIND_LEARN_STATS = 124,
-	DOTA_KEYBIND_ACTIVATE_GLYPH = 125,
-	DOTA_KEYBIND_ACTIVATE_RADAR = 126,
-	DOTA_KEYBIND_PURCHASE_QUICKBUY = 127,
-	DOTA_KEYBIND_PURCHASE_STICKY = 128,
-	DOTA_KEYBIND_GRAB_STASH_ITEMS = 129,
-	DOTA_KEYBIND_TOGGLE_AUTOATTACK = 130,
-	DOTA_KEYBIND_USE_ACTION_ITEM = 131,
-	DOTA_KEYBIND_TAUNT = 132,
-	DOTA_KEYBIND_SHOP_CONSUMABLES = 133,
-	DOTA_KEYBIND_SHOP_ATTRIBUTES = 134,
-	DOTA_KEYBIND_SHOP_ARMAMENTS = 135,
-	DOTA_KEYBIND_SHOP_ARCANE = 136,
-	DOTA_KEYBIND_SHOP_BASICS = 137,
-	DOTA_KEYBIND_SHOP_SUPPORT = 138,
-	DOTA_KEYBIND_SHOP_CASTER = 139,
-	DOTA_KEYBIND_SHOP_WEAPONS = 140,
-	DOTA_KEYBIND_SHOP_ARMOR = 141,
-	DOTA_KEYBIND_SHOP_ARTIFACTS = 142,
-	DOTA_KEYBIND_SHOP_SIDE_PAGE_1 = 143,
-	DOTA_KEYBIND_SHOP_SIDE_PAGE_2 = 144,
-	DOTA_KEYBIND_SHOP_SECRET = 145,
-	DOTA_KEYBIND_SHOP_SEARCHBOX = 146,
-	DOTA_KEYBIND_SHOP_SLOT_1 = 147,
-	DOTA_KEYBIND_SHOP_SLOT_2 = 148,
-	DOTA_KEYBIND_SHOP_SLOT_3 = 149,
-	DOTA_KEYBIND_SHOP_SLOT_4 = 150,
-	DOTA_KEYBIND_SHOP_SLOT_5 = 151,
-	DOTA_KEYBIND_SHOP_SLOT_6 = 152,
-	DOTA_KEYBIND_SHOP_SLOT_7 = 153,
-	DOTA_KEYBIND_SHOP_SLOT_8 = 154,
-	DOTA_KEYBIND_SHOP_SLOT_9 = 155,
-	DOTA_KEYBIND_SHOP_SLOT_10 = 156,
-	DOTA_KEYBIND_SHOP_SLOT_11 = 157,
-	DOTA_KEYBIND_SHOP_SLOT_12 = 158,
-	DOTA_KEYBIND_SHOP_SLOT_13 = 159,
-	DOTA_KEYBIND_SHOP_SLOT_14 = 160,
-	DOTA_KEYBIND_SPEC_CAMERA_UP = 161,
-	DOTA_KEYBIND_SPEC_CAMERA_DOWN = 162,
-	DOTA_KEYBIND_SPEC_CAMERA_LEFT = 163,
-	DOTA_KEYBIND_SPEC_CAMERA_RIGHT = 164,
-	DOTA_KEYBIND_SPEC_CAMERA_GRIP = 165,
-	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_1 = 166,
-	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_2 = 167,
-	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_3 = 168,
-	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_4 = 169,
-	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_5 = 170,
-	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_6 = 171,
-	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_7 = 172,
-	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_8 = 173,
-	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_9 = 174,
-	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_10 = 175,
-	DOTA_KEYBIND_SPEC_UNIT_SELECT = 176,
-	DOTA_KEYBIND_SPEC_HERO_SELECT = 177,
-	DOTA_KEYBIND_SPEC_PAUSE = 178,
-	DOTA_KEYBIND_SPEC_CHAT = 179,
-	DOTA_KEYBIND_SPEC_SCOREBOARD = 180,
-	DOTA_KEYBIND_SPEC_INCREASE_REPLAY_SPEED = 181,
-	DOTA_KEYBIND_SPEC_DECREASE_REPLAY_SPEED = 182,
-	DOTA_KEYBIND_SPEC_STATS_HARVEST = 183,
-	DOTA_KEYBIND_SPEC_STATS_ITEM = 184,
-	DOTA_KEYBIND_SPEC_STATS_GOLD = 185,
-	DOTA_KEYBIND_SPEC_STATS_XP = 186,
-	DOTA_KEYBIND_SPEC_STATS_FANTASY = 187,
-	DOTA_KEYBIND_SPEC_STATS_WINCHANCE = 188,
-	DOTA_KEYBIND_SPEC_FOW_TOGGLEBOTH = 189,
-	DOTA_KEYBIND_SPEC_FOW_TOGGLERADIENT = 190,
-	DOTA_KEYBIND_SPEC_FOW_TOGGLEDIRE = 191,
-	DOTA_KEYBIND_SPEC_OPEN_BROADCASTER_MENU = 192,
-	DOTA_KEYBIND_SPEC_DROPDOWN_KDA = 193,
-	DOTA_KEYBIND_SPEC_DROPDOWN_LASTHITS_DENIES = 194,
-	DOTA_KEYBIND_SPEC_DROPDOWN_LEVEL = 195,
-	DOTA_KEYBIND_SPEC_DROPDOWN_XP_PER_MIN = 196,
-	DOTA_KEYBIND_SPEC_DROPDOWN_GOLD = 197,
-	DOTA_KEYBIND_SPEC_DROPDOWN_TOTALGOLD = 198,
-	DOTA_KEYBIND_SPEC_DROPDOWN_GOLD_PER_MIN = 199,
-	DOTA_KEYBIND_SPEC_DROPDOWN_BUYBACK = 200,
-	DOTA_KEYBIND_SPEC_DROPDOWN_NETWORTH = 201,
-	DOTA_KEYBIND_SPEC_DROPDOWN_FANTASY = 202,
-	DOTA_KEYBIND_SPEC_DROPDOWN_SORT = 203,
-	DOTA_KEYBIND_SPEC_DROPDOWN_CLOSE = 204,
-	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_1 = 205,
-	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_2 = 206,
-	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_3 = 207,
-	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_4 = 208,
-	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_5 = 209,
-	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_6 = 210,
-	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_7 = 211,
-	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_8 = 212,
-	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_9 = 213,
-	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_10 = 214,
-	DOTA_KEYBIND_SPEC_COACH_VIEWTOGGLE = 215,
-	DOTA_KEYBIND_INSPECTHEROINWORLD = 216,
-	DOTA_KEYBIND_CAMERA_ZOOM_IN = 217,
-	DOTA_KEYBIND_CAMERA_ZOOM_OUT = 218,
-	DOTA_KEYBIND_CONTROL_GROUPCYCLEPREV = 219,
-	DOTA_KEYBIND_DOTA_ALT = 220,
-	DOTA_KEYBIND_COUNT = 221
+	DOTA_KEYBIND_INVENTORYTP = 88,
+	DOTA_KEYBIND_INVENTORY1_QUICKCAST = 89,
+	DOTA_KEYBIND_INVENTORY2_QUICKCAST = 90,
+	DOTA_KEYBIND_INVENTORY3_QUICKCAST = 91,
+	DOTA_KEYBIND_INVENTORY4_QUICKCAST = 92,
+	DOTA_KEYBIND_INVENTORY5_QUICKCAST = 93,
+	DOTA_KEYBIND_INVENTORY6_QUICKCAST = 94,
+	DOTA_KEYBIND_INVENTORYTP_QUICKCAST = 95,
+	DOTA_KEYBIND_INVENTORY1_AUTOCAST = 96,
+	DOTA_KEYBIND_INVENTORY2_AUTOCAST = 97,
+	DOTA_KEYBIND_INVENTORY3_AUTOCAST = 98,
+	DOTA_KEYBIND_INVENTORY4_AUTOCAST = 99,
+	DOTA_KEYBIND_INVENTORY5_AUTOCAST = 100,
+	DOTA_KEYBIND_INVENTORY6_AUTOCAST = 101,
+	DOTA_KEYBIND_INVENTORYTP_AUTOCAST = 102,
+	DOTA_KEYBIND_INVENTORY1_QUICKAUTOCAST = 103,
+	DOTA_KEYBIND_INVENTORY2_QUICKAUTOCAST = 104,
+	DOTA_KEYBIND_INVENTORY3_QUICKAUTOCAST = 105,
+	DOTA_KEYBIND_INVENTORY4_QUICKAUTOCAST = 106,
+	DOTA_KEYBIND_INVENTORY5_QUICKAUTOCAST = 107,
+	DOTA_KEYBIND_INVENTORY6_QUICKAUTOCAST = 108,
+	DOTA_KEYBIND_INVENTORYTP_QUICKAUTOCAST = 109,
+	DOTA_KEYBIND_CONTROL_GROUP1 = 110,
+	DOTA_KEYBIND_CONTROL_GROUP2 = 111,
+	DOTA_KEYBIND_CONTROL_GROUP3 = 112,
+	DOTA_KEYBIND_CONTROL_GROUP4 = 113,
+	DOTA_KEYBIND_CONTROL_GROUP5 = 114,
+	DOTA_KEYBIND_CONTROL_GROUP6 = 115,
+	DOTA_KEYBIND_CONTROL_GROUP7 = 116,
+	DOTA_KEYBIND_CONTROL_GROUP8 = 117,
+	DOTA_KEYBIND_CONTROL_GROUP9 = 118,
+	DOTA_KEYBIND_CONTROL_GROUP10 = 119,
+	DOTA_KEYBIND_CONTROL_GROUPCYCLE = 120,
+	DOTA_KEYBIND_SHOP_TOGGLE = 121,
+	DOTA_KEYBIND_SCOREBOARD_TOGGLE = 122,
+	DOTA_KEYBIND_SCREENSHOT = 123,
+	DOTA_KEYBIND_ESCAPE = 124,
+	DOTA_KEYBIND_CONSOLE = 125,
+	DOTA_KEYBIND_DEATH_SUMMARY = 126,
+	DOTA_KEYBIND_LEARN_ABILITIES = 127,
+	DOTA_KEYBIND_LEARN_STATS = 128,
+	DOTA_KEYBIND_ACTIVATE_GLYPH = 129,
+	DOTA_KEYBIND_ACTIVATE_RADAR = 130,
+	DOTA_KEYBIND_PURCHASE_QUICKBUY = 131,
+	DOTA_KEYBIND_PURCHASE_STICKY = 132,
+	DOTA_KEYBIND_GRAB_STASH_ITEMS = 133,
+	DOTA_KEYBIND_TOGGLE_AUTOATTACK = 134,
+	DOTA_KEYBIND_USE_ACTION_ITEM = 135,
+	DOTA_KEYBIND_TAUNT = 136,
+	DOTA_KEYBIND_SHOP_CONSUMABLES = 137,
+	DOTA_KEYBIND_SHOP_ATTRIBUTES = 138,
+	DOTA_KEYBIND_SHOP_ARMAMENTS = 139,
+	DOTA_KEYBIND_SHOP_ARCANE = 140,
+	DOTA_KEYBIND_SHOP_BASICS = 141,
+	DOTA_KEYBIND_SHOP_SUPPORT = 142,
+	DOTA_KEYBIND_SHOP_CASTER = 143,
+	DOTA_KEYBIND_SHOP_WEAPONS = 144,
+	DOTA_KEYBIND_SHOP_ARMOR = 145,
+	DOTA_KEYBIND_SHOP_ARTIFACTS = 146,
+	DOTA_KEYBIND_SHOP_SIDE_PAGE_1 = 147,
+	DOTA_KEYBIND_SHOP_SIDE_PAGE_2 = 148,
+	DOTA_KEYBIND_SHOP_SECRET = 149,
+	DOTA_KEYBIND_SHOP_SEARCHBOX = 150,
+	DOTA_KEYBIND_SHOP_SLOT_1 = 151,
+	DOTA_KEYBIND_SHOP_SLOT_2 = 152,
+	DOTA_KEYBIND_SHOP_SLOT_3 = 153,
+	DOTA_KEYBIND_SHOP_SLOT_4 = 154,
+	DOTA_KEYBIND_SHOP_SLOT_5 = 155,
+	DOTA_KEYBIND_SHOP_SLOT_6 = 156,
+	DOTA_KEYBIND_SHOP_SLOT_7 = 157,
+	DOTA_KEYBIND_SHOP_SLOT_8 = 158,
+	DOTA_KEYBIND_SHOP_SLOT_9 = 159,
+	DOTA_KEYBIND_SHOP_SLOT_10 = 160,
+	DOTA_KEYBIND_SHOP_SLOT_11 = 161,
+	DOTA_KEYBIND_SHOP_SLOT_12 = 162,
+	DOTA_KEYBIND_SHOP_SLOT_13 = 163,
+	DOTA_KEYBIND_SHOP_SLOT_14 = 164,
+	DOTA_KEYBIND_SPEC_CAMERA_UP = 165,
+	DOTA_KEYBIND_SPEC_CAMERA_DOWN = 166,
+	DOTA_KEYBIND_SPEC_CAMERA_LEFT = 167,
+	DOTA_KEYBIND_SPEC_CAMERA_RIGHT = 168,
+	DOTA_KEYBIND_SPEC_CAMERA_GRIP = 169,
+	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_1 = 170,
+	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_2 = 171,
+	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_3 = 172,
+	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_4 = 173,
+	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_5 = 174,
+	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_6 = 175,
+	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_7 = 176,
+	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_8 = 177,
+	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_9 = 178,
+	DOTA_KEYBIND_SPEC_CAMERA_SAVED_POSITION_10 = 179,
+	DOTA_KEYBIND_SPEC_UNIT_SELECT = 180,
+	DOTA_KEYBIND_SPEC_HERO_SELECT = 181,
+	DOTA_KEYBIND_SPEC_PAUSE = 182,
+	DOTA_KEYBIND_SPEC_CHAT = 183,
+	DOTA_KEYBIND_SPEC_SCOREBOARD = 184,
+	DOTA_KEYBIND_SPEC_INCREASE_REPLAY_SPEED = 185,
+	DOTA_KEYBIND_SPEC_DECREASE_REPLAY_SPEED = 186,
+	DOTA_KEYBIND_SPEC_STATS_HARVEST = 187,
+	DOTA_KEYBIND_SPEC_STATS_ITEM = 188,
+	DOTA_KEYBIND_SPEC_STATS_GOLD = 189,
+	DOTA_KEYBIND_SPEC_STATS_XP = 190,
+	DOTA_KEYBIND_SPEC_STATS_FANTASY = 191,
+	DOTA_KEYBIND_SPEC_STATS_WINCHANCE = 192,
+	DOTA_KEYBIND_SPEC_FOW_TOGGLEBOTH = 193,
+	DOTA_KEYBIND_SPEC_FOW_TOGGLERADIENT = 194,
+	DOTA_KEYBIND_SPEC_FOW_TOGGLEDIRE = 195,
+	DOTA_KEYBIND_SPEC_OPEN_BROADCASTER_MENU = 196,
+	DOTA_KEYBIND_SPEC_DROPDOWN_KDA = 197,
+	DOTA_KEYBIND_SPEC_DROPDOWN_LASTHITS_DENIES = 198,
+	DOTA_KEYBIND_SPEC_DROPDOWN_LEVEL = 199,
+	DOTA_KEYBIND_SPEC_DROPDOWN_XP_PER_MIN = 200,
+	DOTA_KEYBIND_SPEC_DROPDOWN_GOLD = 201,
+	DOTA_KEYBIND_SPEC_DROPDOWN_TOTALGOLD = 202,
+	DOTA_KEYBIND_SPEC_DROPDOWN_GOLD_PER_MIN = 203,
+	DOTA_KEYBIND_SPEC_DROPDOWN_BUYBACK = 204,
+	DOTA_KEYBIND_SPEC_DROPDOWN_NETWORTH = 205,
+	DOTA_KEYBIND_SPEC_DROPDOWN_FANTASY = 206,
+	DOTA_KEYBIND_SPEC_DROPDOWN_SORT = 207,
+	DOTA_KEYBIND_SPEC_DROPDOWN_CLOSE = 208,
+	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_1 = 209,
+	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_2 = 210,
+	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_3 = 211,
+	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_4 = 212,
+	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_5 = 213,
+	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_6 = 214,
+	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_7 = 215,
+	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_8 = 216,
+	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_9 = 217,
+	DOTA_KEYBIND_SPEC_FOCUS_PLAYER_10 = 218,
+	DOTA_KEYBIND_SPEC_COACH_VIEWTOGGLE = 219,
+	DOTA_KEYBIND_INSPECTHEROINWORLD = 220,
+	DOTA_KEYBIND_CAMERA_ZOOM_IN = 221,
+	DOTA_KEYBIND_CAMERA_ZOOM_OUT = 222,
+	DOTA_KEYBIND_CONTROL_GROUPCYCLEPREV = 223,
+	DOTA_KEYBIND_DOTA_ALT = 224,
+	DOTA_KEYBIND_COUNT = 225
 }
 
 declare const enum modifierpriority {
@@ -26242,7 +26562,7 @@ declare const enum DOTA_HeroPickState {
 declare const enum AttributeDerivedStats {
 	DOTA_ATTRIBUTE_STRENGTH_DAMAGE = 0,
 	DOTA_ATTRIBUTE_STRENGTH_HP = 1,
-	DOTA_ATTRIBUTE_STRENGTH_HP_REGEN_PERCENT = 2,
+	DOTA_ATTRIBUTE_STRENGTH_HP_REGEN = 2,
 	DOTA_ATTRIBUTE_STRENGTH_STATUS_RESISTANCE_PERCENT = 3,
 	DOTA_ATTRIBUTE_STRENGTH_MAGIC_RESISTANCE_PERCENT = 4,
 	DOTA_ATTRIBUTE_AGILITY_DAMAGE = 5,
@@ -26251,7 +26571,7 @@ declare const enum AttributeDerivedStats {
 	DOTA_ATTRIBUTE_AGILITY_MOVE_SPEED_PERCENT = 8,
 	DOTA_ATTRIBUTE_INTELLIGENCE_DAMAGE = 9,
 	DOTA_ATTRIBUTE_INTELLIGENCE_MANA = 10,
-	DOTA_ATTRIBUTE_INTELLIGENCE_MANA_REGEN_PERCENT = 11,
+	DOTA_ATTRIBUTE_INTELLIGENCE_MANA_REGEN = 11,
 	DOTA_ATTRIBUTE_INTELLIGENCE_SPELL_AMP_PERCENT = 12,
 	DOTA_ATTRIBUTE_INTELLIGENCE_MAGIC_RESISTANCE_PERCENT = 13
 }
@@ -26605,6 +26925,20 @@ declare const enum SPELL_IMMUNITY_TYPES {
 	SPELL_IMMUNITY_ENEMIES_NO = 4
 }
 
+declare const enum ParticleFloatBiasType_t {
+	PF_BIAS_TYPE_INVALID = -1,
+	PF_BIAS_TYPE_STANDARD = 0,
+	PF_BIAS_TYPE_GAIN = 1,
+	PF_BIAS_TYPE_EXPONENTIAL = 2,
+	PF_BIAS_TYPE_COUNT = 3
+}
+
+declare const enum ParticleDepthFeatheringMode_t {
+	PARTICLE_DEPTH_FEATHERING_OFF = 0,
+	PARTICLE_DEPTH_FEATHERING_ON_OPTIONAL = 1,
+	PARTICLE_DEPTH_FEATHERING_ON_REQUIRED = 2
+}
+
 declare const enum RenderSlotType_t {
 	RENDER_SLOT_INVALID = -1,
 	RENDER_SLOT_PER_VERTEX = 0,
@@ -26637,198 +26971,206 @@ declare const enum AnimValueSource {
 
 declare const enum modifierfunction {
 	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE = 0,
-	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_PROC = 1,
-	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_POST_CRIT = 2,
-	MODIFIER_PROPERTY_BASEATTACK_BONUSDAMAGE = 3,
-	MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_PHYSICAL = 4,
-	MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_MAGICAL = 5,
-	MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_PURE = 6,
-	MODIFIER_PROPERTY_PROCATTACK_FEEDBACK = 7,
-	MODIFIER_PROPERTY_OVERRIDE_ATTACK_DAMAGE = 8,
-	MODIFIER_PROPERTY_PRE_ATTACK = 9,
-	MODIFIER_PROPERTY_INVISIBILITY_LEVEL = 10,
-	MODIFIER_PROPERTY_PERSISTENT_INVISIBILITY = 11,
-	MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT = 12,
-	MODIFIER_PROPERTY_MOVESPEED_BASE_OVERRIDE = 13,
-	MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE = 14,
-	MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE_UNIQUE = 15,
-	MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE_UNIQUE_2 = 16,
-	MODIFIER_PROPERTY_MOVESPEED_BONUS_UNIQUE = 17,
-	MODIFIER_PROPERTY_MOVESPEED_BONUS_UNIQUE_2 = 18,
-	MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE = 19,
-	MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE_MIN = 20,
-	MODIFIER_PROPERTY_MOVESPEED_LIMIT = 21,
-	MODIFIER_PROPERTY_MOVESPEED_MAX = 22,
-	MODIFIER_PROPERTY_ATTACKSPEED_BASE_OVERRIDE = 23,
-	MODIFIER_PROPERTY_FIXED_ATTACK_RATE = 24,
-	MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT = 25,
-	MODIFIER_PROPERTY_COOLDOWN_REDUCTION_CONSTANT = 26,
-	MODIFIER_PROPERTY_BASE_ATTACK_TIME_CONSTANT = 27,
-	MODIFIER_PROPERTY_ATTACK_POINT_CONSTANT = 28,
-	MODIFIER_PROPERTY_DAMAGEOUTGOING_PERCENTAGE = 29,
-	MODIFIER_PROPERTY_DAMAGEOUTGOING_PERCENTAGE_ILLUSION = 30,
-	MODIFIER_PROPERTY_TOTALDAMAGEOUTGOING_PERCENTAGE = 31,
-	MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE = 32,
-	MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE_UNIQUE = 33,
-	MODIFIER_PROPERTY_HP_REGEN_AMPLIFY_PERCENTAGE = 34,
-	MODIFIER_PROPERTY_MP_REGEN_AMPLIFY_PERCENTAGE = 35,
-	MODIFIER_PROPERTY_MAGICDAMAGEOUTGOING_PERCENTAGE = 36,
-	MODIFIER_PROPERTY_BASEDAMAGEOUTGOING_PERCENTAGE = 37,
-	MODIFIER_PROPERTY_BASEDAMAGEOUTGOING_PERCENTAGE_UNIQUE = 38,
-	MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE = 39,
-	MODIFIER_PROPERTY_INCOMING_PHYSICAL_DAMAGE_PERCENTAGE = 40,
-	MODIFIER_PROPERTY_INCOMING_PHYSICAL_DAMAGE_CONSTANT = 41,
-	MODIFIER_PROPERTY_INCOMING_SPELL_DAMAGE_CONSTANT = 42,
-	MODIFIER_PROPERTY_EVASION_CONSTANT = 43,
-	MODIFIER_PROPERTY_NEGATIVE_EVASION_CONSTANT = 44,
-	MODIFIER_PROPERTY_STATUS_RESISTANCE = 45,
-	MODIFIER_PROPERTY_STATUS_RESISTANCE_STACKING = 46,
-	MODIFIER_PROPERTY_AVOID_DAMAGE = 47,
-	MODIFIER_PROPERTY_AVOID_SPELL = 48,
-	MODIFIER_PROPERTY_MISS_PERCENTAGE = 49,
-	MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS = 50,
-	MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_UNIQUE = 51,
-	MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_UNIQUE_ACTIVE = 52,
-	MODIFIER_PROPERTY_IGNORE_PHYSICAL_ARMOR = 53,
-	MODIFIER_PROPERTY_MAGICAL_RESISTANCE_DIRECT_MODIFICATION = 54,
-	MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS = 55,
-	MODIFIER_PROPERTY_MAGICAL_RESISTANCE_DECREPIFY_UNIQUE = 56,
-	MODIFIER_PROPERTY_BASE_MANA_REGEN = 57,
-	MODIFIER_PROPERTY_MANA_REGEN_CONSTANT = 58,
-	MODIFIER_PROPERTY_MANA_REGEN_CONSTANT_UNIQUE = 59,
-	MODIFIER_PROPERTY_MANA_REGEN_TOTAL_PERCENTAGE = 60,
-	MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT = 61,
-	MODIFIER_PROPERTY_HEALTH_REGEN_PERCENTAGE = 62,
-	MODIFIER_PROPERTY_HEALTH_REGEN_PERCENTAGE_UNIQUE = 63,
-	MODIFIER_PROPERTY_HEALTH_BONUS = 64,
-	MODIFIER_PROPERTY_MANA_BONUS = 65,
-	MODIFIER_PROPERTY_EXTRA_STRENGTH_BONUS = 66,
-	MODIFIER_PROPERTY_EXTRA_HEALTH_BONUS = 67,
-	MODIFIER_PROPERTY_EXTRA_MANA_BONUS = 68,
-	MODIFIER_PROPERTY_EXTRA_HEALTH_PERCENTAGE = 69,
-	MODIFIER_PROPERTY_STATS_STRENGTH_BONUS = 70,
-	MODIFIER_PROPERTY_STATS_AGILITY_BONUS = 71,
-	MODIFIER_PROPERTY_STATS_INTELLECT_BONUS = 72,
-	MODIFIER_PROPERTY_CAST_RANGE_BONUS = 73,
-	MODIFIER_PROPERTY_CAST_RANGE_BONUS_TARGET = 74,
-	MODIFIER_PROPERTY_CAST_RANGE_BONUS_STACKING = 75,
-	MODIFIER_PROPERTY_ATTACK_RANGE_BASE_OVERRIDE = 76,
-	MODIFIER_PROPERTY_ATTACK_RANGE_BONUS = 77,
-	MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_UNIQUE = 78,
-	MODIFIER_PROPERTY_MAX_ATTACK_RANGE = 79,
-	MODIFIER_PROPERTY_PROJECTILE_SPEED_BONUS = 80,
-	MODIFIER_PROPERTY_PROJECTILE_NAME = 81,
-	MODIFIER_PROPERTY_REINCARNATION = 82,
-	MODIFIER_PROPERTY_RESPAWNTIME = 83,
-	MODIFIER_PROPERTY_RESPAWNTIME_PERCENTAGE = 84,
-	MODIFIER_PROPERTY_RESPAWNTIME_STACKING = 85,
-	MODIFIER_PROPERTY_COOLDOWN_PERCENTAGE = 86,
-	MODIFIER_PROPERTY_COOLDOWN_PERCENTAGE_STACKING = 87,
-	MODIFIER_PROPERTY_CASTTIME_PERCENTAGE = 88,
-	MODIFIER_PROPERTY_MANACOST_PERCENTAGE = 89,
-	MODIFIER_PROPERTY_MANACOST_PERCENTAGE_STACKING = 90,
-	MODIFIER_PROPERTY_DEATHGOLDCOST = 91,
-	MODIFIER_PROPERTY_EXP_RATE_BOOST = 92,
-	MODIFIER_PROPERTY_PREATTACK_CRITICALSTRIKE = 93,
-	MODIFIER_PROPERTY_PREATTACK_TARGET_CRITICALSTRIKE = 94,
-	MODIFIER_PROPERTY_MAGICAL_CONSTANT_BLOCK = 95,
-	MODIFIER_PROPERTY_PHYSICAL_CONSTANT_BLOCK = 96,
-	MODIFIER_PROPERTY_PHYSICAL_CONSTANT_BLOCK_SPECIAL = 97,
-	MODIFIER_PROPERTY_TOTAL_CONSTANT_BLOCK_UNAVOIDABLE_PRE_ARMOR = 98,
-	MODIFIER_PROPERTY_TOTAL_CONSTANT_BLOCK = 99,
-	MODIFIER_PROPERTY_OVERRIDE_ANIMATION = 100,
-	MODIFIER_PROPERTY_OVERRIDE_ANIMATION_WEIGHT = 101,
-	MODIFIER_PROPERTY_OVERRIDE_ANIMATION_RATE = 102,
-	MODIFIER_PROPERTY_ABSORB_SPELL = 103,
-	MODIFIER_PROPERTY_REFLECT_SPELL = 104,
-	MODIFIER_PROPERTY_DISABLE_AUTOATTACK = 105,
-	MODIFIER_PROPERTY_BONUS_DAY_VISION = 106,
-	MODIFIER_PROPERTY_BONUS_NIGHT_VISION = 107,
-	MODIFIER_PROPERTY_BONUS_NIGHT_VISION_UNIQUE = 108,
-	MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE = 109,
-	MODIFIER_PROPERTY_FIXED_DAY_VISION = 110,
-	MODIFIER_PROPERTY_FIXED_NIGHT_VISION = 111,
-	MODIFIER_PROPERTY_MIN_HEALTH = 112,
-	MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PHYSICAL = 113,
-	MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_MAGICAL = 114,
-	MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PURE = 115,
-	MODIFIER_PROPERTY_IS_ILLUSION = 116,
-	MODIFIER_PROPERTY_ILLUSION_LABEL = 117,
-	MODIFIER_PROPERTY_SUPER_ILLUSION = 118,
-	MODIFIER_PROPERTY_SUPER_ILLUSION_WITH_ULTIMATE = 119,
-	MODIFIER_PROPERTY_TURN_RATE_PERCENTAGE = 120,
-	MODIFIER_PROPERTY_TURN_RATE_OVERRIDE = 121,
-	MODIFIER_PROPERTY_DISABLE_HEALING = 122,
-	MODIFIER_PROPERTY_ALWAYS_ALLOW_ATTACK = 123,
-	MODIFIER_PROPERTY_OVERRIDE_ATTACK_MAGICAL = 124,
-	MODIFIER_PROPERTY_UNIT_STATS_NEEDS_REFRESH = 125,
-	MODIFIER_PROPERTY_BOUNTY_CREEP_MULTIPLIER = 126,
-	MODIFIER_PROPERTY_BOUNTY_OTHER_MULTIPLIER = 127,
-	MODIFIER_PROPERTY_UNIT_DISALLOW_UPGRADING = 128,
-	MODIFIER_PROPERTY_DODGE_PROJECTILE = 129,
-	MODIFIER_EVENT_ON_SPELL_TARGET_READY = 130,
-	MODIFIER_EVENT_ON_ATTACK_RECORD = 131,
-	MODIFIER_EVENT_ON_ATTACK_START = 132,
-	MODIFIER_EVENT_ON_ATTACK = 133,
-	MODIFIER_EVENT_ON_ATTACK_LANDED = 134,
-	MODIFIER_EVENT_ON_ATTACK_FAIL = 135,
-	MODIFIER_EVENT_ON_ATTACK_ALLIED = 136,
-	MODIFIER_EVENT_ON_PROJECTILE_DODGE = 137,
-	MODIFIER_EVENT_ON_ORDER = 138,
-	MODIFIER_EVENT_ON_UNIT_MOVED = 139,
-	MODIFIER_EVENT_ON_ABILITY_START = 140,
-	MODIFIER_EVENT_ON_ABILITY_EXECUTED = 141,
-	MODIFIER_EVENT_ON_ABILITY_FULLY_CAST = 142,
-	MODIFIER_EVENT_ON_BREAK_INVISIBILITY = 143,
-	MODIFIER_EVENT_ON_ABILITY_END_CHANNEL = 144,
-	MODIFIER_EVENT_ON_PROCESS_UPGRADE = 145,
-	MODIFIER_EVENT_ON_REFRESH = 146,
-	MODIFIER_EVENT_ON_TAKEDAMAGE = 147,
-	MODIFIER_EVENT_ON_STATE_CHANGED = 148,
-	MODIFIER_EVENT_ON_ORB_EFFECT = 149,
-	MODIFIER_EVENT_ON_ATTACKED = 150,
-	MODIFIER_EVENT_ON_DEATH = 151,
-	MODIFIER_EVENT_ON_RESPAWN = 152,
-	MODIFIER_EVENT_ON_SPENT_MANA = 153,
-	MODIFIER_EVENT_ON_TELEPORTING = 154,
-	MODIFIER_EVENT_ON_TELEPORTED = 155,
-	MODIFIER_EVENT_ON_SET_LOCATION = 156,
-	MODIFIER_EVENT_ON_HEALTH_GAINED = 157,
-	MODIFIER_EVENT_ON_MANA_GAINED = 158,
-	MODIFIER_EVENT_ON_TAKEDAMAGE_KILLCREDIT = 159,
-	MODIFIER_EVENT_ON_HERO_KILLED = 160,
-	MODIFIER_EVENT_ON_HEAL_RECEIVED = 161,
-	MODIFIER_EVENT_ON_BUILDING_KILLED = 162,
-	MODIFIER_EVENT_ON_MODEL_CHANGED = 163,
-	MODIFIER_EVENT_ON_MODIFIER_ADDED = 164,
-	MODIFIER_PROPERTY_TOOLTIP = 165,
-	MODIFIER_PROPERTY_MODEL_CHANGE = 166,
-	MODIFIER_PROPERTY_MODEL_SCALE = 167,
-	MODIFIER_PROPERTY_IS_SCEPTER = 168,
-	MODIFIER_PROPERTY_TRANSLATE_ACTIVITY_MODIFIERS = 169,
-	MODIFIER_PROPERTY_TRANSLATE_ATTACK_SOUND = 170,
-	MODIFIER_PROPERTY_LIFETIME_FRACTION = 171,
-	MODIFIER_PROPERTY_PROVIDES_FOW_POSITION = 172,
-	MODIFIER_PROPERTY_SPELLS_REQUIRE_HP = 173,
-	MODIFIER_PROPERTY_FORCE_DRAW_MINIMAP = 174,
-	MODIFIER_PROPERTY_DISABLE_TURNING = 175,
-	MODIFIER_PROPERTY_IGNORE_CAST_ANGLE = 176,
-	MODIFIER_PROPERTY_CHANGE_ABILITY_VALUE = 177,
-	MODIFIER_PROPERTY_ABILITY_LAYOUT = 178,
-	MODIFIER_EVENT_ON_DOMINATED = 179,
-	MODIFIER_PROPERTY_TEMPEST_DOUBLE = 180,
-	MODIFIER_PROPERTY_PRESERVE_PARTICLES_ON_MODEL_CHANGE = 181,
-	MODIFIER_EVENT_ON_ATTACK_FINISHED = 182,
-	MODIFIER_PROPERTY_IGNORE_COOLDOWN = 183,
-	MODIFIER_PROPERTY_CAN_ATTACK_TREES = 184,
-	MODIFIER_PROPERTY_VISUAL_Z_DELTA = 185,
-	MODIFIER_PROPERTY_INCOMING_DAMAGE_ILLUSION = 186,
-	MODIFIER_PROPERTY_DONT_GIVE_VISION_OF_ATTACKER = 187,
-	MODIFIER_PROPERTY_TOOLTIP2 = 188,
-	MODIFIER_EVENT_ON_ATTACK_RECORD_DESTROY = 189,
-	MODIFIER_EVENT_ON_PROJECTILE_OBSTRUCTION_HIT = 190,
-	MODIFIER_PROPERTY_SUPPRESS_TELEPORT = 191,
-	MODIFIER_FUNCTION_LAST = 192,
+	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_TARGET = 1,
+	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_PROC = 2,
+	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_POST_CRIT = 3,
+	MODIFIER_PROPERTY_BASEATTACK_BONUSDAMAGE = 4,
+	MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_PHYSICAL = 5,
+	MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_MAGICAL = 6,
+	MODIFIER_PROPERTY_PROCATTACK_BONUS_DAMAGE_PURE = 7,
+	MODIFIER_PROPERTY_PROCATTACK_FEEDBACK = 8,
+	MODIFIER_PROPERTY_OVERRIDE_ATTACK_DAMAGE = 9,
+	MODIFIER_PROPERTY_PRE_ATTACK = 10,
+	MODIFIER_PROPERTY_INVISIBILITY_LEVEL = 11,
+	MODIFIER_PROPERTY_INVISIBILITY_ATTACK_BEHAVIOR_EXCEPTION = 12,
+	MODIFIER_PROPERTY_PERSISTENT_INVISIBILITY = 13,
+	MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT = 14,
+	MODIFIER_PROPERTY_MOVESPEED_BASE_OVERRIDE = 15,
+	MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE = 16,
+	MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE_UNIQUE = 17,
+	MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE_UNIQUE_2 = 18,
+	MODIFIER_PROPERTY_MOVESPEED_BONUS_UNIQUE = 19,
+	MODIFIER_PROPERTY_MOVESPEED_BONUS_UNIQUE_2 = 20,
+	MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE = 21,
+	MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE_MIN = 22,
+	MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE_MAX = 23,
+	MODIFIER_PROPERTY_IGNORE_MOVESPEED_LIMIT = 24,
+	MODIFIER_PROPERTY_MOVESPEED_LIMIT = 25,
+	MODIFIER_PROPERTY_ATTACKSPEED_BASE_OVERRIDE = 26,
+	MODIFIER_PROPERTY_FIXED_ATTACK_RATE = 27,
+	MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT = 28,
+	MODIFIER_PROPERTY_COOLDOWN_REDUCTION_CONSTANT = 29,
+	MODIFIER_PROPERTY_BASE_ATTACK_TIME_CONSTANT = 30,
+	MODIFIER_PROPERTY_ATTACK_POINT_CONSTANT = 31,
+	MODIFIER_PROPERTY_DAMAGEOUTGOING_PERCENTAGE = 32,
+	MODIFIER_PROPERTY_DAMAGEOUTGOING_PERCENTAGE_ILLUSION = 33,
+	MODIFIER_PROPERTY_TOTALDAMAGEOUTGOING_PERCENTAGE = 34,
+	MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE = 35,
+	MODIFIER_PROPERTY_SPELL_AMPLIFY_PERCENTAGE_UNIQUE = 36,
+	MODIFIER_PROPERTY_HP_REGEN_AMPLIFY_PERCENTAGE_SOURCE = 37,
+	MODIFIER_PROPERTY_HP_REGEN_AMPLIFY_PERCENTAGE = 38,
+	MODIFIER_PROPERTY_MP_REGEN_AMPLIFY_PERCENTAGE = 39,
+	MODIFIER_PROPERTY_MP_RESTORE_AMPLIFY_PERCENTAGE = 40,
+	MODIFIER_PROPERTY_BASEDAMAGEOUTGOING_PERCENTAGE = 41,
+	MODIFIER_PROPERTY_BASEDAMAGEOUTGOING_PERCENTAGE_UNIQUE = 42,
+	MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE = 43,
+	MODIFIER_PROPERTY_INCOMING_PHYSICAL_DAMAGE_PERCENTAGE = 44,
+	MODIFIER_PROPERTY_INCOMING_PHYSICAL_DAMAGE_CONSTANT = 45,
+	MODIFIER_PROPERTY_INCOMING_SPELL_DAMAGE_CONSTANT = 46,
+	MODIFIER_PROPERTY_EVASION_CONSTANT = 47,
+	MODIFIER_PROPERTY_NEGATIVE_EVASION_CONSTANT = 48,
+	MODIFIER_PROPERTY_STATUS_RESISTANCE = 49,
+	MODIFIER_PROPERTY_STATUS_RESISTANCE_STACKING = 50,
+	MODIFIER_PROPERTY_STATUS_RESISTANCE_CASTER = 51,
+	MODIFIER_PROPERTY_AVOID_DAMAGE = 52,
+	MODIFIER_PROPERTY_AVOID_SPELL = 53,
+	MODIFIER_PROPERTY_MISS_PERCENTAGE = 54,
+	MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS = 55,
+	MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_UNIQUE = 56,
+	MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS_UNIQUE_ACTIVE = 57,
+	MODIFIER_PROPERTY_IGNORE_PHYSICAL_ARMOR = 58,
+	MODIFIER_PROPERTY_MAGICAL_RESISTANCE_DIRECT_MODIFICATION = 59,
+	MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS = 60,
+	MODIFIER_PROPERTY_MAGICAL_RESISTANCE_DECREPIFY_UNIQUE = 61,
+	MODIFIER_PROPERTY_BASE_MANA_REGEN = 62,
+	MODIFIER_PROPERTY_MANA_REGEN_CONSTANT = 63,
+	MODIFIER_PROPERTY_MANA_REGEN_CONSTANT_UNIQUE = 64,
+	MODIFIER_PROPERTY_MANA_REGEN_TOTAL_PERCENTAGE = 65,
+	MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT = 66,
+	MODIFIER_PROPERTY_HEALTH_REGEN_PERCENTAGE = 67,
+	MODIFIER_PROPERTY_HEALTH_REGEN_PERCENTAGE_UNIQUE = 68,
+	MODIFIER_PROPERTY_HEALTH_BONUS = 69,
+	MODIFIER_PROPERTY_MANA_BONUS = 70,
+	MODIFIER_PROPERTY_EXTRA_STRENGTH_BONUS = 71,
+	MODIFIER_PROPERTY_EXTRA_HEALTH_BONUS = 72,
+	MODIFIER_PROPERTY_EXTRA_MANA_BONUS = 73,
+	MODIFIER_PROPERTY_EXTRA_HEALTH_PERCENTAGE = 74,
+	MODIFIER_PROPERTY_STATS_STRENGTH_BONUS = 75,
+	MODIFIER_PROPERTY_STATS_AGILITY_BONUS = 76,
+	MODIFIER_PROPERTY_STATS_INTELLECT_BONUS = 77,
+	MODIFIER_PROPERTY_CAST_RANGE_BONUS = 78,
+	MODIFIER_PROPERTY_CAST_RANGE_BONUS_TARGET = 79,
+	MODIFIER_PROPERTY_CAST_RANGE_BONUS_STACKING = 80,
+	MODIFIER_PROPERTY_ATTACK_RANGE_BASE_OVERRIDE = 81,
+	MODIFIER_PROPERTY_ATTACK_RANGE_BONUS = 82,
+	MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_UNIQUE = 83,
+	MODIFIER_PROPERTY_ATTACK_RANGE_BONUS_PERCENTAGE = 84,
+	MODIFIER_PROPERTY_MAX_ATTACK_RANGE = 85,
+	MODIFIER_PROPERTY_PROJECTILE_SPEED_BONUS = 86,
+	MODIFIER_PROPERTY_PROJECTILE_NAME = 87,
+	MODIFIER_PROPERTY_REINCARNATION = 88,
+	MODIFIER_PROPERTY_RESPAWNTIME = 89,
+	MODIFIER_PROPERTY_RESPAWNTIME_PERCENTAGE = 90,
+	MODIFIER_PROPERTY_RESPAWNTIME_STACKING = 91,
+	MODIFIER_PROPERTY_COOLDOWN_PERCENTAGE = 92,
+	MODIFIER_PROPERTY_COOLDOWN_PERCENTAGE_STACKING = 93,
+	MODIFIER_PROPERTY_CASTTIME_PERCENTAGE = 94,
+	MODIFIER_PROPERTY_MANACOST_PERCENTAGE = 95,
+	MODIFIER_PROPERTY_MANACOST_PERCENTAGE_STACKING = 96,
+	MODIFIER_PROPERTY_DEATHGOLDCOST = 97,
+	MODIFIER_PROPERTY_EXP_RATE_BOOST = 98,
+	MODIFIER_PROPERTY_PREATTACK_CRITICALSTRIKE = 99,
+	MODIFIER_PROPERTY_PREATTACK_TARGET_CRITICALSTRIKE = 100,
+	MODIFIER_PROPERTY_MAGICAL_CONSTANT_BLOCK = 101,
+	MODIFIER_PROPERTY_PHYSICAL_CONSTANT_BLOCK = 102,
+	MODIFIER_PROPERTY_PHYSICAL_CONSTANT_BLOCK_SPECIAL = 103,
+	MODIFIER_PROPERTY_TOTAL_CONSTANT_BLOCK_UNAVOIDABLE_PRE_ARMOR = 104,
+	MODIFIER_PROPERTY_TOTAL_CONSTANT_BLOCK = 105,
+	MODIFIER_PROPERTY_OVERRIDE_ANIMATION = 106,
+	MODIFIER_PROPERTY_OVERRIDE_ANIMATION_WEIGHT = 107,
+	MODIFIER_PROPERTY_OVERRIDE_ANIMATION_RATE = 108,
+	MODIFIER_PROPERTY_ABSORB_SPELL = 109,
+	MODIFIER_PROPERTY_REFLECT_SPELL = 110,
+	MODIFIER_PROPERTY_DISABLE_AUTOATTACK = 111,
+	MODIFIER_PROPERTY_BONUS_DAY_VISION = 112,
+	MODIFIER_PROPERTY_BONUS_NIGHT_VISION = 113,
+	MODIFIER_PROPERTY_BONUS_NIGHT_VISION_UNIQUE = 114,
+	MODIFIER_PROPERTY_BONUS_VISION_PERCENTAGE = 115,
+	MODIFIER_PROPERTY_FIXED_DAY_VISION = 116,
+	MODIFIER_PROPERTY_FIXED_NIGHT_VISION = 117,
+	MODIFIER_PROPERTY_MIN_HEALTH = 118,
+	MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PHYSICAL = 119,
+	MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_MAGICAL = 120,
+	MODIFIER_PROPERTY_ABSOLUTE_NO_DAMAGE_PURE = 121,
+	MODIFIER_PROPERTY_IS_ILLUSION = 122,
+	MODIFIER_PROPERTY_ILLUSION_LABEL = 123,
+	MODIFIER_PROPERTY_SUPER_ILLUSION = 124,
+	MODIFIER_PROPERTY_SUPER_ILLUSION_WITH_ULTIMATE = 125,
+	MODIFIER_PROPERTY_TURN_RATE_PERCENTAGE = 126,
+	MODIFIER_PROPERTY_TURN_RATE_OVERRIDE = 127,
+	MODIFIER_PROPERTY_DISABLE_HEALING = 128,
+	MODIFIER_PROPERTY_ALWAYS_ALLOW_ATTACK = 129,
+	MODIFIER_PROPERTY_OVERRIDE_ATTACK_MAGICAL = 130,
+	MODIFIER_PROPERTY_UNIT_STATS_NEEDS_REFRESH = 131,
+	MODIFIER_PROPERTY_BOUNTY_CREEP_MULTIPLIER = 132,
+	MODIFIER_PROPERTY_BOUNTY_OTHER_MULTIPLIER = 133,
+	MODIFIER_PROPERTY_UNIT_DISALLOW_UPGRADING = 134,
+	MODIFIER_PROPERTY_DODGE_PROJECTILE = 135,
+	MODIFIER_EVENT_ON_SPELL_TARGET_READY = 136,
+	MODIFIER_EVENT_ON_ATTACK_RECORD = 137,
+	MODIFIER_EVENT_ON_ATTACK_START = 138,
+	MODIFIER_EVENT_ON_ATTACK = 139,
+	MODIFIER_EVENT_ON_ATTACK_LANDED = 140,
+	MODIFIER_EVENT_ON_ATTACK_FAIL = 141,
+	MODIFIER_EVENT_ON_ATTACK_ALLIED = 142,
+	MODIFIER_EVENT_ON_PROJECTILE_DODGE = 143,
+	MODIFIER_EVENT_ON_ORDER = 144,
+	MODIFIER_EVENT_ON_UNIT_MOVED = 145,
+	MODIFIER_EVENT_ON_ABILITY_START = 146,
+	MODIFIER_EVENT_ON_ABILITY_EXECUTED = 147,
+	MODIFIER_EVENT_ON_ABILITY_FULLY_CAST = 148,
+	MODIFIER_EVENT_ON_BREAK_INVISIBILITY = 149,
+	MODIFIER_EVENT_ON_ABILITY_END_CHANNEL = 150,
+	MODIFIER_EVENT_ON_PROCESS_UPGRADE = 151,
+	MODIFIER_EVENT_ON_REFRESH = 152,
+	MODIFIER_EVENT_ON_TAKEDAMAGE = 153,
+	MODIFIER_EVENT_ON_STATE_CHANGED = 154,
+	MODIFIER_EVENT_ON_ORB_EFFECT = 155,
+	MODIFIER_EVENT_ON_PROCESS_CLEAVE = 156,
+	MODIFIER_EVENT_ON_DAMAGE_CALCULATED = 157,
+	MODIFIER_EVENT_ON_ATTACKED = 158,
+	MODIFIER_EVENT_ON_DEATH = 159,
+	MODIFIER_EVENT_ON_RESPAWN = 160,
+	MODIFIER_EVENT_ON_SPENT_MANA = 161,
+	MODIFIER_EVENT_ON_TELEPORTING = 162,
+	MODIFIER_EVENT_ON_TELEPORTED = 163,
+	MODIFIER_EVENT_ON_SET_LOCATION = 164,
+	MODIFIER_EVENT_ON_HEALTH_GAINED = 165,
+	MODIFIER_EVENT_ON_MANA_GAINED = 166,
+	MODIFIER_EVENT_ON_TAKEDAMAGE_KILLCREDIT = 167,
+	MODIFIER_EVENT_ON_HERO_KILLED = 168,
+	MODIFIER_EVENT_ON_HEAL_RECEIVED = 169,
+	MODIFIER_EVENT_ON_BUILDING_KILLED = 170,
+	MODIFIER_EVENT_ON_MODEL_CHANGED = 171,
+	MODIFIER_EVENT_ON_MODIFIER_ADDED = 172,
+	MODIFIER_PROPERTY_TOOLTIP = 173,
+	MODIFIER_PROPERTY_MODEL_CHANGE = 174,
+	MODIFIER_PROPERTY_MODEL_SCALE = 175,
+	MODIFIER_PROPERTY_IS_SCEPTER = 176,
+	MODIFIER_PROPERTY_TRANSLATE_ACTIVITY_MODIFIERS = 177,
+	MODIFIER_PROPERTY_TRANSLATE_ATTACK_SOUND = 178,
+	MODIFIER_PROPERTY_LIFETIME_FRACTION = 179,
+	MODIFIER_PROPERTY_PROVIDES_FOW_POSITION = 180,
+	MODIFIER_PROPERTY_SPELLS_REQUIRE_HP = 181,
+	MODIFIER_PROPERTY_FORCE_DRAW_MINIMAP = 182,
+	MODIFIER_PROPERTY_DISABLE_TURNING = 183,
+	MODIFIER_PROPERTY_IGNORE_CAST_ANGLE = 184,
+	MODIFIER_PROPERTY_CHANGE_ABILITY_VALUE = 185,
+	MODIFIER_PROPERTY_ABILITY_LAYOUT = 186,
+	MODIFIER_EVENT_ON_DOMINATED = 187,
+	MODIFIER_PROPERTY_TEMPEST_DOUBLE = 188,
+	MODIFIER_PROPERTY_PRESERVE_PARTICLES_ON_MODEL_CHANGE = 189,
+	MODIFIER_EVENT_ON_ATTACK_FINISHED = 190,
+	MODIFIER_PROPERTY_IGNORE_COOLDOWN = 191,
+	MODIFIER_PROPERTY_CAN_ATTACK_TREES = 192,
+	MODIFIER_PROPERTY_VISUAL_Z_DELTA = 193,
+	MODIFIER_PROPERTY_INCOMING_DAMAGE_ILLUSION = 194,
+	MODIFIER_PROPERTY_DONT_GIVE_VISION_OF_ATTACKER = 195,
+	MODIFIER_PROPERTY_TOOLTIP2 = 196,
+	MODIFIER_EVENT_ON_ATTACK_RECORD_DESTROY = 197,
+	MODIFIER_EVENT_ON_PROJECTILE_OBSTRUCTION_HIT = 198,
+	MODIFIER_PROPERTY_SUPPRESS_TELEPORT = 199,
+	MODIFIER_FUNCTION_LAST = 200,
 	MODIFIER_FUNCTION_INVALID = 255
 }
 
