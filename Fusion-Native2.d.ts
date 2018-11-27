@@ -598,20 +598,20 @@ declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
  * @param time in milliseconds
  * @returns timeout ID that can be used in clearTimeout
  */
-declare function setTimeout(time: number, func: () => void): number
+declare function setTimeout(time: number, func: (id: BigInt) => void): BigInt
 /**
  * @param timeout_id that were returned by setTimeout
  */
-declare function clearTimeout(timeout_id: number): void
+declare function clearTimeout(timeout_id: BigInt): void
 /**
  * @param time in milliseconds
  * @returns interval ID that can be used in clearInterval
  */
-declare function setInterval(time: number, func: () => void): number
+declare function setInterval(time: number, func: (id: BigInt) => void): BigInt
 /**
  * @param interval_id that were returned by setInterval
  */
-declare function clearInterval(timeout_id: number): void
+declare function clearInterval(timeout_id: BigInt): void
 
 /// AUTOMATICALLY GENERATED
 
