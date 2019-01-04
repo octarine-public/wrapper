@@ -300,14 +300,14 @@ declare interface Events {
 }
 
 declare interface Menu {
-	AddEntryEz(entry_name: string, obj: /*{
+	AddEntryEz(entry_name: string, obj: { [internal_name: string]: {
 		name: string,
 		hint?: string,
 		min?: number, // specify this for sliders
 		max?: number, // specify this for sliders
 		value?: number | boolean,
 		type: "slider_int" | "slider_float" | "boolean" | "toggle" | "keybind"
-	}*/any, callback: (name: string, value: any) => void): void
+	}}, callback: (internal_name: string, value: any) => void): void
 }
 
 declare interface Minimap {
