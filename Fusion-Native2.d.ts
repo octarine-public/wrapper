@@ -296,7 +296,7 @@ declare interface Entities {
 declare interface Events {
 	RegisterCallback(name: string, callback: Function): void
 	UnregisterCallback(name: string, callback_id: number): void
-	FireEvent(name: string, ...args): void
+	FireEvent(name: string, ...args: any): void
 }
 
 declare interface Menu {

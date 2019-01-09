@@ -1,11 +1,15 @@
 {
 	"compilerOptions": {
 		"target": "esnext",
-		"module": "es6",
-        "experimentalDecorators": true,
+		"module": "esnext",
 		"baseUrl": "src",
+		// Don't emit; allow Babel to transform files.
+		"noEmit": true,
+		// Enable strictest settings like strictNullChecks & noImplicitAny.
+		"strict": true,
 	},
 	"include": [
+		"Fusion-Native2.d.ts",
 		"scripts/**/*.ts"
 	],
 	"compileOnSave": true,
