@@ -1,5 +1,10 @@
 /// ENUMS
 
+declare const enum Flow_t {
+	IN = 0,
+	OUT = 1
+}
+
 declare const enum FontFlags_t {
 	NONE = 0,
 	ITALIC = 1 << 0,
@@ -594,6 +599,8 @@ declare function PrepareUnitOrders(obj: {
 	ShowEffects?: boolean
 }): void
 declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
+declare function GetLatency(flow: Flow_t): number
+declare function GetAvgLatency(flow: Flow_t): number
 /**
  * @param time in milliseconds
  * @returns timeout ID that can be used in clearTimeout
