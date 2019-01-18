@@ -330,6 +330,21 @@ declare class Vector {
 	y: number
 	/** You can set (affecting on x, z, y) and get this value */
 	Angle: number
+		/**
+	 * @returns length of this vector
+	 */
+	readonly Length: number
+	/**
+	 * @returns Math.sqr(this.Length()), but faster
+	 */
+	readonly LengthSqr: number
+	readonly LengthRecipFast: number
+	/**
+	 * @returns are all components of this vector are 0?
+	 */
+	readonly IsZero: boolean
+	readonly Length2D: number
+	readonly Length2DSqr: number
 
 	constructor()
 	constructor(vec: Vector)
@@ -361,19 +376,6 @@ declare class Vector {
 	 * Negates this vector (equiv to x = -x, z = -z, y = -y)
 	 */
 	Negate(): void
-	/**
-	 * @returns length of this vector
-	 */
-	Length(): number
-	/**
-	 * @returns Math.sqr(this.Length()), but faster
-	 */
-	LengthSqr(): number
-	LengthRecipFast(): number
-	/**
-	 * @returns are all components of this vector are 0?
-	 */
-	IsZero(): boolean
 	NormalizeInPlace(): number
 	IsLengthGreaterThan(val: number): boolean
 	IsLengthLessThan(val: number): boolean
@@ -418,8 +420,6 @@ declare class Vector {
 	DistTo(vec: Vector): number
 	MulAdd(a: Vector, b: Vector, scalar: number): void
 	Dot(vOther: Vector): number
-	Length2D(): number
-	Length2DSqr(): number
 	Cross(vOther: Vector): Vector
 }
 
@@ -635,7 +635,6 @@ interface CGlowProperty {
 }
 
 interface CParticleFloatInput {
-	readonly type_name: string
 	readonly m_nType: number
 	readonly m_nMapType: number
 	readonly m_flLiteralValue: number
@@ -653,13 +652,13 @@ interface CParticleFloatInput {
 	readonly m_flBiasParameter: number
 	readonly m_Curve: CPiecewiseCurveSchemaWrapper
 }
+declare var CParticleFloatInput: CParticleFloatInput;
 
 interface CParticleCollectionFloatInput extends CParticleFloatInput {
-	readonly type_name: string
 }
+declare var CParticleCollectionFloatInput: CParticleCollectionFloatInput;
 
 interface CParticleFunction {
-	readonly type_name: string
 	readonly m_flOpStartFadeInTime: number
 	readonly m_flOpEndFadeInTime: number
 	readonly m_flOpStartFadeOutTime: number
@@ -677,9 +676,9 @@ interface CParticleFunction {
 	readonly m_flOpStrength: CParticleCollectionFloatInput
 	readonly m_Notes: string
 }
+declare var CParticleFunction: CParticleFunction;
 
 interface CDOTA_BuffParticle {
-	readonly type_name: string
 	readonly m_iIndex: number
 	readonly m_iPriority: number
 	readonly m_bDestroyImmediatly: boolean
@@ -687,9 +686,9 @@ interface CDOTA_BuffParticle {
 	readonly m_bHeroEffect: boolean
 	readonly m_bOverheadEffectOffset: boolean
 }
+declare var CDOTA_BuffParticle: CDOTA_BuffParticle;
 
 interface CDOTA_PlayerChallengeInfo {
-	readonly type_name: string
 	readonly nType: number
 	readonly nQuestID: number
 	readonly nQuestChallengeID: number
@@ -706,9 +705,9 @@ interface CDOTA_PlayerChallengeInfo {
 	readonly nCompleted: number
 	readonly nRank: number
 }
+declare var CDOTA_PlayerChallengeInfo: CDOTA_PlayerChallengeInfo;
 
 interface CBaseAchievement {
-	readonly type_name: string
 	readonly m_pszName: string
 	readonly m_iAchievementID: number
 	readonly m_iFlags: number
@@ -738,9 +737,9 @@ interface CBaseAchievement {
 	readonly m_bShowOnHUD: boolean
 	readonly m_iAssetAwardID: number
 }
+declare var CBaseAchievement: CBaseAchievement;
 
 interface fogparams_t {
-	readonly type_name: string
 	readonly dirPrimary: Vector
 	readonly colorPrimary: Color
 	readonly colorSecondary: Color
@@ -764,23 +763,23 @@ interface fogparams_t {
 	readonly m_bNoReflectionFog: boolean
 	readonly m_bPadding: boolean
 }
+declare var fogparams_t: fogparams_t;
 
 interface CParticleFunctionOperator extends CParticleFunction {
-	readonly type_name: string
 }
+declare var CParticleFunctionOperator: CParticleFunctionOperator;
 
 interface CSpinUpdateBase extends CParticleFunctionOperator {
-	readonly type_name: string
 }
+declare var CSpinUpdateBase: CSpinUpdateBase;
 
 interface CBaseAnimMotor {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_bDefault: boolean
 }
+declare var CBaseAnimMotor: CBaseAnimMotor;
 
 interface ParticleControlPointDriver_t {
-	readonly type_name: string
 	readonly m_iControlPoint: number
 	readonly m_iAttachType: number
 	readonly m_attachmentName: string
@@ -788,33 +787,33 @@ interface ParticleControlPointDriver_t {
 	readonly m_angOffset: QAngle
 	readonly m_entityName: string
 }
+declare var ParticleControlPointDriver_t: ParticleControlPointDriver_t;
 
 interface C_OP_PlaneCull extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nPlaneControlPoint: number
 	readonly m_vecPlaneDirection: Vector
 	readonly m_flPlaneOffset: number
 }
+declare var C_OP_PlaneCull: C_OP_PlaneCull;
 
 interface SceneViewId_t {
-	readonly type_name: string
 	readonly m_nViewId: bigint
 	readonly m_nFrameCount: bigint
 }
+declare var SceneViewId_t: SceneViewId_t;
 
 interface CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_comparisonOp: number
 }
+declare var CAnimStateConditionBase: CAnimStateConditionBase;
 
 interface CRenderSkeleton {
-	readonly type_name: string
 	readonly m_boneParents: number[]
 	readonly m_nBoneWeightCount: number
 }
+declare var CRenderSkeleton: CRenderSkeleton;
 
 interface CPhysSurfacePropertiesSoundNames {
-	readonly type_name: string
 	readonly m_impactSoft: string
 	readonly m_impactHard: string
 	readonly m_scrapeSmooth: string
@@ -824,9 +823,9 @@ interface CPhysSurfacePropertiesSoundNames {
 	readonly m_break: string
 	readonly m_strain: string
 }
+declare var CPhysSurfacePropertiesSoundNames: CPhysSurfacePropertiesSoundNames;
 
 interface PhysFeModelDesc_t {
-	readonly type_name: string
 	readonly m_nStaticNodeFlags: number
 	readonly m_nDynamicNodeFlags: number
 	readonly m_flLocalForce: number
@@ -873,31 +872,31 @@ interface PhysFeModelDesc_t {
 	readonly m_nRodVelocitySmoothIterations: number
 	readonly m_nQuadVelocitySmoothIterations: number
 }
+declare var PhysFeModelDesc_t: PhysFeModelDesc_t;
 
 interface RnCapsule_t {
-	readonly type_name: string
 	readonly m_vCenter: Vector[]
 	readonly m_flRadius: number
 }
+declare var RnCapsule_t: RnCapsule_t;
 
 interface PostProcessParameters_t {
-	readonly type_name: string
 	readonly m_flParameters: number[]
 }
+declare var PostProcessParameters_t: PostProcessParameters_t;
 
 interface C_OP_MovementLoopInsideSphere extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_flDistance: number
 	readonly m_vecScale: Vector
 }
+declare var C_OP_MovementLoopInsideSphere: C_OP_MovementLoopInsideSphere;
 
 interface CParticleFunctionInitializer extends CParticleFunction {
-	readonly type_name: string
 }
+declare var CParticleFunctionInitializer: CParticleFunctionInitializer;
 
 interface C_OP_RemapCPVisibilityToScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_bScaleInitialRange: boolean
 	readonly m_nControlPoint: number
 	readonly m_flInputMin: number
@@ -906,9 +905,9 @@ interface C_OP_RemapCPVisibilityToScalar extends CParticleFunctionOperator {
 	readonly m_flOutputMax: number
 	readonly m_flRadius: number
 }
+declare var C_OP_RemapCPVisibilityToScalar: C_OP_RemapCPVisibilityToScalar;
 
 interface LightDesc_t {
-	readonly type_name: string
 	readonly m_Type: number
 	readonly m_Color: Vector
 	readonly m_BounceColor: Vector
@@ -941,76 +940,76 @@ interface LightDesc_t {
 	readonly m_nFogLightingMode: number
 	readonly m_bUsesIndexedBakedLighting: boolean
 }
+declare var LightDesc_t: LightDesc_t;
 
 interface CPerParticleFloatInput extends CParticleFloatInput {
-	readonly type_name: string
 }
+declare var CPerParticleFloatInput: CPerParticleFloatInput;
 
 interface RnFace_t {
-	readonly type_name: string
 	readonly m_nEdge: number
 }
+declare var RnFace_t: RnFace_t;
 
 interface EngineLoopState_t {
-	readonly type_name: string
 	readonly m_nPlatWindowWidth: number
 	readonly m_nPlatWindowHeight: number
 	readonly m_nRenderWidth: number
 	readonly m_nRenderHeight: number
 }
+declare var EngineLoopState_t: EngineLoopState_t;
 
 interface ChangeAccessorFieldPathIndex_t {
-	readonly type_name: string
 	readonly m_Value: number
 }
+declare var ChangeAccessorFieldPathIndex_t: ChangeAccessorFieldPathIndex_t;
 
 interface CEconItemAttribute {
-	readonly type_name: string
 	readonly m_iAttributeDefinitionIndex: number
 	readonly m_flValue: number
 }
+declare var CEconItemAttribute: CEconItemAttribute;
 
 interface CFingerBone {
-	readonly type_name: string
 	readonly m_boneName: string
 	readonly m_hingeAxis: Vector
 	readonly m_flMinAngle: number
 	readonly m_flMaxAngle: number
 }
+declare var CFingerBone: CFingerBone;
 
 interface EventSimulate_t {
-	readonly type_name: string
 	readonly m_LoopState: EngineLoopState_t
 	readonly m_bFirstTick: boolean
 	readonly m_bLastTick: boolean
 }
+declare var EventSimulate_t: EventSimulate_t;
 
 interface C_INIT_RandomNamedModelElement extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_names: string[]
 	readonly m_bShuffle: boolean
 	readonly m_bLinear: boolean
 	readonly m_bModelFromRenderer: boolean
 }
+declare var C_INIT_RandomNamedModelElement: C_INIT_RandomNamedModelElement;
 
 interface SeqResourceIKLock_t {
-	readonly type_name: string
 	readonly m_nLocalBone: number
 	readonly m_flPosWeight: number
 	readonly m_flAngleWeight: number
 }
+declare var SeqResourceIKLock_t: SeqResourceIKLock_t;
 
 interface AnimResourceAnimDesc_t_Flag_t {
-	readonly type_name: string
 	readonly m_bLooping: boolean
 	readonly m_bAllZeros: boolean
 	readonly m_bHidden: boolean
 	readonly m_bDelta: boolean
 	readonly m_bLegacyWorldspace: boolean
 }
+declare var AnimResourceAnimDesc_t_Flag_t: AnimResourceAnimDesc_t_Flag_t;
 
 interface PermModelInfo_t {
-	readonly type_name: string
 	readonly m_nFlags: number
 	readonly m_vHullMin: Vector
 	readonly m_vHullMax: Vector
@@ -1020,43 +1019,43 @@ interface PermModelInfo_t {
 	readonly m_vEyePosition: Vector
 	readonly m_flMaxEyeDeflection: number
 }
+declare var PermModelInfo_t: PermModelInfo_t;
 
 interface EventModInitialized_t {
-	readonly type_name: string
 }
+declare var EventModInitialized_t: EventModInitialized_t;
 
 interface C_INIT_VelocityFromCP extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPoint: number
 	readonly m_nControlPointCompare: number
 	readonly m_nControlPointLocal: number
 	readonly m_flVelocityScale: number
 	readonly m_bDirectionOnly: boolean
 }
+declare var C_INIT_VelocityFromCP: C_INIT_VelocityFromCP;
 
 interface CAnimMotorList {
-	readonly type_name: string
 }
+declare var CAnimMotorList: CAnimMotorList;
 
 interface MaterialGroup_t {
-	readonly type_name: string
 }
+declare var MaterialGroup_t: MaterialGroup_t;
 
 interface IContextualQuery {
-	readonly type_name: string
 }
+declare var IContextualQuery: IContextualQuery;
 
 interface CAI_Expresser {
-	readonly type_name: string
 	readonly m_flStopTalkTime: number
 	readonly m_flStopTalkTimeWithoutDelay: number
 	readonly m_flBlockedTalkTime: number
 	readonly m_voicePitch: number
 	readonly m_flLastTimeAcceptedSpeak: number
 }
+declare var CAI_Expresser: CAI_Expresser;
 
 interface CParticleVisibilityInputs {
-	readonly type_name: string
 	readonly m_flCameraBias: number
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
@@ -1076,9 +1075,9 @@ interface CParticleVisibilityInputs {
 	readonly m_nCPin: number
 	readonly m_bRightEye: boolean
 }
+declare var CParticleVisibilityInputs: CParticleVisibilityInputs;
 
 interface VPhysXConstraintParams_t {
-	readonly type_name: string
 	readonly m_nType: number
 	readonly m_nTranslateMotion: number
 	readonly m_nRotateMotion: number
@@ -1124,36 +1123,36 @@ interface VPhysXConstraintParams_t {
 	readonly m_projectionLinearTolerance: number
 	readonly m_projectionAngularTolerance: number
 }
+declare var VPhysXConstraintParams_t: VPhysXConstraintParams_t;
 
 interface EventServerPollNetworking_t extends EventSimulate_t {
-	readonly type_name: string
 }
+declare var EventServerPollNetworking_t: EventServerPollNetworking_t;
 
 interface C_OP_DecayMaintainCount extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nParticlesToMaintain: number
 	readonly m_nScaleControlPoint: number
 	readonly m_nScaleControlPointField: number
 	readonly m_flDecayDelay: number
 }
+declare var C_OP_DecayMaintainCount: C_OP_DecayMaintainCount;
 
 interface C_INIT_RemapInitialCPDirectionToRotation extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_flOffsetRot: number
 	readonly m_nComponent: number
 }
+declare var C_INIT_RemapInitialCPDirectionToRotation: C_INIT_RemapInitialCPDirectionToRotation;
 
 interface InfoForResourceTypeIParticleSnapshot {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeIParticleSnapshot: InfoForResourceTypeIParticleSnapshot;
 
 interface CParticleFunctionPreEmission extends CParticleFunctionOperator {
-	readonly type_name: string
 }
+declare var CParticleFunctionPreEmission: CParticleFunctionPreEmission;
 
 interface C_OP_PercentageBetweenCPsVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_vecOutputMin: Vector
@@ -1165,38 +1164,38 @@ interface C_OP_PercentageBetweenCPsVector extends CParticleFunctionOperator {
 	readonly m_bActiveRange: boolean
 	readonly m_bRadialCheck: boolean
 }
+declare var C_OP_PercentageBetweenCPsVector: C_OP_PercentageBetweenCPsVector;
 
 interface FeKelagerBend2_t {
-	readonly type_name: string
 	readonly flWeight: number[]
 	readonly flHeight0: number
 	readonly nNode: number[]
 	readonly nReserved: number
 }
+declare var FeKelagerBend2_t: FeKelagerBend2_t;
 
 interface InfoForResourceTypeCVMixListResource {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCVMixListResource: InfoForResourceTypeCVMixListResource;
 
 interface constraint_axislimit_t {
-	readonly type_name: string
 	readonly flMinRotation: number
 	readonly flMaxRotation: number
 	readonly flMotorTargetAngSpeed: number
 	readonly flMotorMaxTorque: number
 }
+declare var constraint_axislimit_t: constraint_axislimit_t;
 
 interface C_OP_VectorNoise extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_vecOutputMin: Vector
 	readonly m_vecOutputMax: Vector
 	readonly m_bAdditive: boolean
 	readonly m_bOffset: boolean
 	readonly m_flNoiseAnimationTimeScale: number
 }
+declare var C_OP_VectorNoise: C_OP_VectorNoise;
 
 interface C_INIT_InitialSequenceFromModel extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
@@ -1204,43 +1203,43 @@ interface C_INIT_InitialSequenceFromModel extends CParticleFunctionInitializer {
 	readonly m_flOutputMax: number
 	readonly m_bScaleInitialRange: boolean
 }
+declare var C_INIT_InitialSequenceFromModel: C_INIT_InitialSequenceFromModel;
 
 interface AnimNodeID {
-	readonly type_name: string
 	readonly m_id: number
 }
+declare var AnimNodeID: AnimNodeID;
 
 interface C_OP_Orient2DRelToCP extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flRotOffset: number
 	readonly m_flSpinStrength: number
 	readonly m_nCP: number
 }
+declare var C_OP_Orient2DRelToCP: C_OP_Orient2DRelToCP;
 
 interface C_OP_InheritFromParentParticles extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flScale: number
 	readonly m_nIncrement: number
 	readonly m_bRandomDistribution: boolean
 }
+declare var C_OP_InheritFromParentParticles: C_OP_InheritFromParentParticles;
 
 interface CGeneralSpin extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nSpinRateDegrees: number
 	readonly m_nSpinRateMinDegrees: number
 	readonly m_fSpinRateStopTime: number
 }
+declare var CGeneralSpin: CGeneralSpin;
 
 interface CAnimNodeBase {
-	readonly type_name: string
 	readonly m_sName: string
 	readonly m_vecPosition: Vector2D
 	readonly m_nNodeID: AnimNodeID
 	readonly m_networkMode: number
 }
+declare var CAnimNodeBase: CAnimNodeBase;
 
 interface CFeJiggleBone {
-	readonly type_name: string
 	readonly m_nFlags: number
 	readonly m_flLength: number
 	readonly m_flTipMass: number
@@ -1276,213 +1275,213 @@ interface CFeJiggleBone {
 	readonly m_vPoint0: Vector
 	readonly m_vPoint1: Vector
 }
+declare var CFeJiggleBone: CFeJiggleBone;
 
 interface CGlowSprite {
-	readonly type_name: string
 	readonly m_vColor: Vector
 	readonly m_flHorzSize: number
 	readonly m_flVertSize: number
 }
+declare var CGlowSprite: CGlowSprite;
 
 interface CNavVolume {
-	readonly type_name: string
 }
+declare var CNavVolume: CNavVolume;
 
 interface CNetworkVarChainer {
-	readonly type_name: string
 	readonly m_PathIndex: ChangeAccessorFieldPathIndex_t
 }
+declare var CNetworkVarChainer: CNetworkVarChainer;
 
 interface C_OP_MoveToHitbox extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_flLifeTimeLerpStart: number
 	readonly m_flLifeTimeLerpEnd: number
 	readonly m_flPrevPosScale: number
 	readonly m_bUseBones: boolean
 }
+declare var C_OP_MoveToHitbox: C_OP_MoveToHitbox;
 
 interface EventProfileStorageAvailable_t {
-	readonly type_name: string
 	readonly m_nSplitScreenSlot: number
 }
+declare var EventProfileStorageAvailable_t: EventProfileStorageAvailable_t;
 
 interface C_OP_RemapCPVelocityToVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPoint: number
 	readonly m_flScale: number
 	readonly m_bNormalize: boolean
 }
+declare var C_OP_RemapCPVelocityToVector: C_OP_RemapCPVelocityToVector;
 
 interface CAnimTagManager {
-	readonly type_name: string
 }
+declare var CAnimTagManager: CAnimTagManager;
 
 interface CGameSceneNodeHandle {
-	readonly type_name: string
 	readonly m_hOwner: C_BaseEntity
 }
+declare var CGameSceneNodeHandle: CGameSceneNodeHandle;
 
 interface CountdownTimer {
-	readonly type_name: string
 	readonly m_duration: number
 	readonly m_timestamp: number
 	readonly m_bUseGlobalsTime: boolean
 }
+declare var CountdownTimer: CountdownTimer;
 
 interface PurchasedItem_t {
-	readonly type_name: string
 	readonly nItemID: number
 	readonly flPurchaseTime: number
 }
+declare var PurchasedItem_t: PurchasedItem_t;
 
 interface CParticleFunctionRenderer extends CParticleFunction {
-	readonly type_name: string
 	readonly VisibilityInputs: CParticleVisibilityInputs
 	readonly m_bCannotBeRefracted: boolean
 }
+declare var CParticleFunctionRenderer: CParticleFunctionRenderer;
 
 interface C_OP_SetControlPointPositionToTimeOfDayValue extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_vecDefaultValue: Vector
 }
+declare var C_OP_SetControlPointPositionToTimeOfDayValue: C_OP_SetControlPointPositionToTimeOfDayValue;
 
 interface C_OP_SetChildControlPoints extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nChildGroupID: number
 	readonly m_nFirstControlPoint: number
 	readonly m_nNumControlPoints: number
 	readonly m_nFirstSourcePoint: CParticleCollectionFloatInput
 	readonly m_bSetOrientation: boolean
 }
+declare var C_OP_SetChildControlPoints: C_OP_SetChildControlPoints;
 
 interface C_INIT_InheritFromParentParticles extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flScale: number
 	readonly m_nIncrement: number
 	readonly m_bRandomDistribution: boolean
 	readonly m_nRandomSeed: number
 }
+declare var C_INIT_InheritFromParentParticles: C_INIT_InheritFromParentParticles;
 
 interface CLookHeadingCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_comparisonValue: number
 }
+declare var CLookHeadingCondition: CLookHeadingCondition;
 
 interface CSequenceTransitioner {
-	readonly type_name: string
 	readonly m_bIsInSimulation: boolean
 	readonly m_flSimOrRenderTime: number
 	readonly m_flInterpolatedTime: number
 }
+declare var CSequenceTransitioner: CSequenceTransitioner;
 
 interface CObstructionObject {
-	readonly type_name: string
 	readonly m_nObstructionProperties: number
 }
+declare var CObstructionObject: CObstructionObject;
 
 interface CNetworkOriginCellCoordQuantizedVector {
-	readonly type_name: string
 	readonly m_cellX: number
 	readonly m_cellY: number
 	readonly m_cellZ: number
 	readonly m_nOutsideWorld: number
 }
+declare var CNetworkOriginCellCoordQuantizedVector: CNetworkOriginCellCoordQuantizedVector;
 
 interface C_INIT_CreateFromParentParticles extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flVelocityScale: number
 	readonly m_flIncrement: number
 	readonly m_bRandomDistribution: boolean
 	readonly m_nRandomSeed: number
 	readonly m_bSubFrame: boolean
 }
+declare var C_INIT_CreateFromParentParticles: C_INIT_CreateFromParentParticles;
 
 interface FeSimdRodConstraint_t {
-	readonly type_name: string
 	readonly nNode: number[]
 }
+declare var FeSimdRodConstraint_t: FeSimdRodConstraint_t;
 
 interface C_OP_RenderStatusEffect extends CParticleFunctionRenderer {
-	readonly type_name: string
 }
+declare var C_OP_RenderStatusEffect: C_OP_RenderStatusEffect;
 
 interface C_INIT_InitFromCPSnapshot extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_nLocalSpaceCP: number
 	readonly m_bRandom: boolean
 	readonly m_bReverse: boolean
 	readonly m_nRandomSeed: number
 }
+declare var C_INIT_InitFromCPSnapshot: C_INIT_InitFromCPSnapshot;
 
 interface C_INIT_PositionOffsetToCP extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumberStart: number
 	readonly m_nControlPointNumberEnd: number
 	readonly m_bLocalCoords: boolean
 }
+declare var C_INIT_PositionOffsetToCP: C_INIT_PositionOffsetToCP;
 
 interface CSSDSMsg_EndFrame {
-	readonly type_name: string
 }
+declare var CSSDSMsg_EndFrame: CSSDSMsg_EndFrame;
 
 interface AnimParamID {
-	readonly type_name: string
 	readonly m_id: number
 }
+declare var AnimParamID: AnimParamID;
 
 interface SkeletonBoneBounds_t {
-	readonly type_name: string
 	readonly m_vecCenter: Vector
 	readonly m_vecSize: Vector
 }
+declare var SkeletonBoneBounds_t: SkeletonBoneBounds_t;
 
 interface InfoForResourceTypeCVirtualVolumeTexture {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCVirtualVolumeTexture: InfoForResourceTypeCVirtualVolumeTexture;
 
 interface CConstantForceController {
-	readonly type_name: string
 	readonly m_linear: Vector
 	readonly m_angular: Vector
 	readonly m_linearSave: Vector
 	readonly m_angularSave: Vector
 }
+declare var CConstantForceController: CConstantForceController;
 
 interface INextBotEventResponder {
-	readonly type_name: string
 }
+declare var INextBotEventResponder: INextBotEventResponder;
 
 interface CBoneConstraintBase {
-	readonly type_name: string
 }
+declare var CBoneConstraintBase: CBoneConstraintBase;
 
 interface EventAdvanceTick_t extends EventSimulate_t {
-	readonly type_name: string
 	readonly m_nCurrentTick: number
 	readonly m_nTotalTicksThisFrame: number
 	readonly m_nTotalTicks: number
 }
+declare var EventAdvanceTick_t: EventAdvanceTick_t;
 
 interface C_OP_RemapControlPointOrientationToRotation extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_flOffsetRot: number
 	readonly m_nComponent: number
 }
+declare var C_OP_RemapControlPointOrientationToRotation: C_OP_RemapControlPointOrientationToRotation;
 
 interface C_OP_Cull extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flCullPerc: number
 	readonly m_flCullStart: number
 	readonly m_flCullEnd: number
 	readonly m_flCullExp: number
 }
+declare var C_OP_Cull: C_OP_Cull;
 
 interface C_INIT_AgeNoise extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_bAbsVal: boolean
 	readonly m_bAbsValInv: boolean
 	readonly m_flOffset: number
@@ -1492,9 +1491,9 @@ interface C_INIT_AgeNoise extends CParticleFunctionInitializer {
 	readonly m_flNoiseScaleLoc: number
 	readonly m_vecOffsetLoc: Vector
 }
+declare var C_INIT_AgeNoise: C_INIT_AgeNoise;
 
 interface SeqResourceSeqDesc_t_Flag_t {
-	readonly type_name: string
 	readonly m_bLooping: boolean
 	readonly m_bSnap: boolean
 	readonly m_bAutoplay: boolean
@@ -1506,9 +1505,9 @@ interface SeqResourceSeqDesc_t_Flag_t {
 	readonly m_bLegacyCyclepose: boolean
 	readonly m_bLegacyRealtime: boolean
 }
+declare var SeqResourceSeqDesc_t_Flag_t: SeqResourceSeqDesc_t_Flag_t;
 
 interface CEntityClass {
-	readonly type_name: string
 	readonly m_pInputs: EntInput_t
 	readonly m_nInputCount: number
 	readonly m_pOutputs: EntOutput_t
@@ -1522,32 +1521,32 @@ interface CEntityClass {
 	readonly m_requiredEHandle: C_BaseEntity
 	readonly m_pNextClass: CEntityClass
 }
+declare var CEntityClass: CEntityClass;
 
 interface MorphData_t {
-	readonly type_name: string
 }
+declare var MorphData_t: MorphData_t;
 
 interface CVPhysXSurfacePropertiesList {
-	readonly type_name: string
 	readonly m_surfacePropertiesList: CPhysSurfaceProperties[]
 }
+declare var CVPhysXSurfacePropertiesList: CVPhysXSurfacePropertiesList;
 
 interface CParticleFunctionEmitter extends CParticleFunction {
-	readonly type_name: string
 }
+declare var CParticleFunctionEmitter: CParticleFunctionEmitter;
 
 interface CParticleFunctionConstraint extends CParticleFunction {
-	readonly type_name: string
 }
+declare var CParticleFunctionConstraint: CParticleFunctionConstraint;
 
 interface MorphSetData_t {
-	readonly type_name: string
 	readonly m_nWidth: number
 	readonly m_nHeight: number
 }
+declare var MorphSetData_t: MorphSetData_t;
 
 interface C_OP_BasicMovement extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_Gravity: Vector
 	readonly m_fDrag: number
 	readonly m_nMaxConstraintPasses: number
@@ -1556,29 +1555,29 @@ interface C_OP_BasicMovement extends CParticleFunctionOperator {
 	readonly m_bLockLLCorner: boolean
 	readonly m_bLockLRCorner: boolean
 }
+declare var C_OP_BasicMovement: C_OP_BasicMovement;
 
 interface FlexDesc_t {
-	readonly type_name: string
 }
+declare var FlexDesc_t: FlexDesc_t;
 
 interface C_VerticalMotionController {
-	readonly type_name: string
 }
+declare var C_VerticalMotionController: C_VerticalMotionController;
 
 interface DOTA_AssassinMinigameNetworkState {
-	readonly type_name: string
 	readonly nAssassinState: number
 	readonly nVictimHeroID: number
 }
+declare var DOTA_AssassinMinigameNetworkState: DOTA_AssassinMinigameNetworkState;
 
 interface thinkfunc_t {
-	readonly type_name: string
 	readonly m_nNextThinkTick: number
 	readonly m_nLastThinkTick: number
 }
+declare var thinkfunc_t: thinkfunc_t;
 
 interface FileWeaponInfo_t {
-	readonly type_name: string
 	readonly m_bParsedScript: boolean
 	readonly m_bLoadedHudElements: boolean
 	readonly m_szClassName: string
@@ -1608,9 +1607,9 @@ interface FileWeaponInfo_t {
 	readonly m_iAmmoType: number
 	readonly m_iAmmo2Type: number
 }
+declare var FileWeaponInfo_t: FileWeaponInfo_t;
 
 interface C_OP_RenderProjected extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_bProjectCharacter: boolean
 	readonly m_bProjectWorld: boolean
 	readonly m_bProjectWater: boolean
@@ -1620,22 +1619,22 @@ interface C_OP_RenderProjected extends CParticleFunctionRenderer {
 	readonly m_flMaxProjectionDepth: number
 	readonly m_flAnimationTimeScale: number
 }
+declare var C_OP_RenderProjected: C_OP_RenderProjected;
 
 interface C_OP_OscillateScalarSimple extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_Rate: number
 	readonly m_Frequency: number
 	readonly m_flOscMult: number
 	readonly m_flOscAdd: number
 }
+declare var C_OP_OscillateScalarSimple: C_OP_OscillateScalarSimple;
 
 interface C_INIT_InitFloat extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_InputValue: CPerParticleFloatInput
 }
+declare var C_INIT_InitFloat: C_INIT_InitFloat;
 
 interface C_INIT_InitSkinnedPositionFromCPSnapshot extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nSnapshotControlPointNumber: number
 	readonly m_nControlPointNumber: number
 	readonly m_bRandom: boolean
@@ -1651,24 +1650,24 @@ interface C_INIT_InitSkinnedPositionFromCPSnapshot extends CParticleFunctionInit
 	readonly m_flBoneVelocity: number
 	readonly m_flBoneVelocityMax: number
 }
+declare var C_INIT_InitSkinnedPositionFromCPSnapshot: C_INIT_InitSkinnedPositionFromCPSnapshot;
 
 interface C_OP_SpringConstraint extends CParticleFunctionConstraint {
-	readonly type_name: string
 	readonly m_flRestLengthU: number
 	readonly m_flRestLengthV: number
 	readonly m_flMinDistance: number
 	readonly m_flMaxDistance: number
 	readonly m_flAdjustmentScale: number
 }
+declare var C_OP_SpringConstraint: C_OP_SpringConstraint;
 
 interface RnShapeDesc_t {
-	readonly type_name: string
 	readonly m_nCollisionAttributeIndex: number
 	readonly m_nSurfacePropertyIndex: number
 }
+declare var RnShapeDesc_t: RnShapeDesc_t;
 
 interface CAnimParameterBase {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_id: AnimParamID
 	readonly m_previewButton: number
@@ -1676,40 +1675,40 @@ interface CAnimParameterBase {
 	readonly m_bUseMostRecentValue: boolean
 	readonly m_bAutoReset: boolean
 }
+declare var CAnimParameterBase: CAnimParameterBase;
 
 interface VPhysXAggregateData_t {
-	readonly type_name: string
 	readonly m_nFlags: number
 	readonly m_nRefCounter: number
 }
+declare var VPhysXAggregateData_t: VPhysXAggregateData_t;
 
 interface C_INIT_ModelCull extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_bBoundBox: boolean
 	readonly m_bCullOutside: boolean
 	readonly m_bUseBones: boolean
 }
+declare var C_INIT_ModelCull: C_INIT_ModelCull;
 
 interface CAnimInputDamping {
-	readonly type_name: string
 	readonly m_speedFunction: number
 	readonly m_fSpeedScale: number
 	readonly m_fMinSpeed: number
 	readonly m_fMaxTension: number
 }
+declare var CAnimInputDamping: CAnimInputDamping;
 
 interface CEntityClassInfo {
-	readonly type_name: string
 	readonly m_pszClassname: string
 	readonly m_pszCPPClassname: string
 	readonly m_pszDescription: string
 	readonly m_pClass: CEntityClass
 	readonly m_pBaseClassInfo: CEntityClassInfo
 }
+declare var CEntityClassInfo: CEntityClassInfo;
 
 interface fogplayerparams_t {
-	readonly type_name: string
 	readonly m_hCtrl: C_BaseEntity
 	readonly m_flTransitionTime: number
 	readonly m_OldColor: Color
@@ -1725,9 +1724,9 @@ interface fogplayerparams_t {
 	readonly m_flNewHDRColorScale: number
 	readonly m_flNewFarZ: number
 }
+declare var fogplayerparams_t: fogplayerparams_t;
 
 interface C_OP_DistanceBetweenCPsToCP extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nStartCP: number
 	readonly m_nEndCP: number
 	readonly m_nOutputCP: number
@@ -1740,21 +1739,21 @@ interface C_OP_DistanceBetweenCPsToCP extends CParticleFunctionPreEmission {
 	readonly m_flLOSScale: number
 	readonly m_bLOS: boolean
 }
+declare var C_OP_DistanceBetweenCPsToCP: C_OP_DistanceBetweenCPsToCP;
 
 interface C_OP_SetFloat extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_InputValue: CPerParticleFloatInput
 	readonly m_bScaleInitialValue: boolean
 }
+declare var C_OP_SetFloat: C_OP_SetFloat;
 
 interface CBlend2DItem {
-	readonly type_name: string
 	readonly m_sequenceName: string
 	readonly m_blendValue: Vector2D
 }
+declare var CBlend2DItem: CBlend2DItem;
 
 interface C_OP_ContinuousEmitter extends CParticleFunctionEmitter {
-	readonly type_name: string
 	readonly m_flEmissionDuration: number
 	readonly m_flStartTime: number
 	readonly m_flEmitRate: number
@@ -1765,16 +1764,16 @@ interface C_OP_ContinuousEmitter extends CParticleFunctionEmitter {
 	readonly m_flScalePerParentParticle: number
 	readonly m_bInitFromKilledParentParticles: boolean
 }
+declare var C_OP_ContinuousEmitter: C_OP_ContinuousEmitter;
 
 interface C_INIT_RandomAlpha extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nAlphaMin: number
 	readonly m_nAlphaMax: number
 	readonly m_flAlphaRandExponent: number
 }
+declare var C_INIT_RandomAlpha: C_INIT_RandomAlpha;
 
 interface CEffectData {
-	readonly type_name: string
 	readonly m_vOrigin: Vector
 	readonly m_vStart: Vector
 	readonly m_vNormal: Vector
@@ -1792,16 +1791,16 @@ interface CEffectData {
 	readonly m_nAttachmentIndex: number
 	readonly m_iEffectName: number
 }
+declare var CEffectData: CEffectData;
 
 interface CDOTA_AbilityDraftAbilityState {
-	readonly type_name: string
 	readonly m_nAbilityID: number
 	readonly m_unPlayerID: number
 	readonly m_unAbilityPlayerSlot: number
 }
+declare var CDOTA_AbilityDraftAbilityState: CDOTA_AbilityDraftAbilityState;
 
 interface CSubtractAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_baseChildID: AnimNodeID
 	readonly m_subtractChildID: AnimNodeID
 	readonly m_timingBehavior: number
@@ -1810,17 +1809,17 @@ interface CSubtractAnimNode extends CAnimNodeBase {
 	readonly m_bResetSubtract: boolean
 	readonly m_bApplyChannelsSeparately: boolean
 }
+declare var CSubtractAnimNode: CSubtractAnimNode;
 
 interface HitBoxSet_t {
-	readonly type_name: string
 }
+declare var HitBoxSet_t: HitBoxSet_t;
 
 interface InfoForResourceTypeCPhysAggregateData {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCPhysAggregateData: InfoForResourceTypeCPhysAggregateData;
 
 interface C_OP_NoiseEmitter extends CParticleFunctionEmitter {
-	readonly type_name: string
 	readonly m_flEmissionDuration: number
 	readonly m_flStartTime: number
 	readonly m_flEmissionScale: number
@@ -1837,23 +1836,23 @@ interface C_OP_NoiseEmitter extends CParticleFunctionEmitter {
 	readonly m_vecOffsetLoc: Vector
 	readonly m_flWorldTimeScale: number
 }
+declare var C_OP_NoiseEmitter: C_OP_NoiseEmitter;
 
 interface AnimTagID {
-	readonly type_name: string
 	readonly m_id: number
 }
+declare var AnimTagID: AnimTagID;
 
 interface sky3dparams_t {
-	readonly type_name: string
 	readonly scale: number
 	readonly origin: Vector
 	readonly bClip3DSkyBoxNearToWorldFar: boolean
 	readonly flClip3DSkyBoxNearToWorldFarOffset: number
 	readonly fog: fogparams_t
 }
+declare var sky3dparams_t: sky3dparams_t;
 
 interface JiggleData {
-	readonly type_name: string
 	readonly bone: number
 	readonly id: number
 	readonly lastUpdate: number
@@ -1865,19 +1864,19 @@ interface JiggleData {
 	readonly tipVel: Vector
 	readonly tipAccel: Vector
 }
+declare var JiggleData: JiggleData;
 
 interface RnSphere_t {
-	readonly type_name: string
 	readonly m_vCenter: Vector
 	readonly m_flRadius: number
 }
+declare var RnSphere_t: RnSphere_t;
 
 interface PhysSoftbodyDesc_t {
-	readonly type_name: string
 }
+declare var PhysSoftbodyDesc_t: PhysSoftbodyDesc_t;
 
 interface CDOTA_Buff {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_class: string
 	readonly m_szModifierAura: string
@@ -1911,9 +1910,9 @@ interface CDOTA_Buff {
 	readonly m_flThinkTimeAccumulator: number
 	readonly m_hAuraUnits: C_BaseEntity[]
 }
+declare var CDOTA_Buff: CDOTA_Buff;
 
 interface C_OP_RemapNamedModelElementOnceTimed extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_inNames: string[]
 	readonly m_outNames: string[]
 	readonly m_fallbackNames: string[]
@@ -1921,9 +1920,9 @@ interface C_OP_RemapNamedModelElementOnceTimed extends CParticleFunctionOperator
 	readonly m_bProportional: boolean
 	readonly m_flRemapTime: number
 }
+declare var C_OP_RemapNamedModelElementOnceTimed: C_OP_RemapNamedModelElementOnceTimed;
 
 interface C_INIT_RemapParticleCountToScalar extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nInputMin: number
 	readonly m_nInputMax: number
 	readonly m_nScaleControlPoint: number
@@ -1936,25 +1935,25 @@ interface C_INIT_RemapParticleCountToScalar extends CParticleFunctionInitializer
 	readonly m_bWrap: boolean
 	readonly m_flRemapBias: number
 }
+declare var C_INIT_RemapParticleCountToScalar: C_INIT_RemapParticleCountToScalar;
 
 interface VMapResourceData_t {
-	readonly type_name: string
 }
+declare var VMapResourceData_t: VMapResourceData_t;
 
 interface FeCtrlSoftOffset_t {
-	readonly type_name: string
 	readonly nCtrlParent: number
 	readonly nCtrlChild: number
 	readonly vOffset: Vector
 	readonly flAlpha: number
 }
+declare var FeCtrlSoftOffset_t: FeCtrlSoftOffset_t;
 
 interface IBotController {
-	readonly type_name: string
 }
+declare var IBotController: IBotController;
 
 interface vehicle_controlparams_t {
-	readonly type_name: string
 	readonly throttle: number
 	readonly steering: number
 	readonly brake: number
@@ -1966,50 +1965,50 @@ interface vehicle_controlparams_t {
 	readonly bHasBrakePedal: boolean
 	readonly bAnalogSteering: boolean
 }
+declare var vehicle_controlparams_t: vehicle_controlparams_t;
 
 interface C_OP_SetControlPointToHand extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nCP1: number
 	readonly m_nHand: number
 	readonly m_vecCP1Pos: Vector
 	readonly m_bOrientToHand: boolean
 }
+declare var C_OP_SetControlPointToHand: C_OP_SetControlPointToHand;
 
 interface VSoundEventScript_t {
-	readonly type_name: string
 }
+declare var VSoundEventScript_t: VSoundEventScript_t;
 
 interface MorphRectData_t {
-	readonly type_name: string
 	readonly m_nXLeftDst: number
 	readonly m_nYTopDst: number
 	readonly m_flUWidthSrc: number
 	readonly m_flVHeightSrc: number
 }
+declare var MorphRectData_t: MorphRectData_t;
 
 interface InfoForResourceTypeProcessingGraph_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeProcessingGraph_t: InfoForResourceTypeProcessingGraph_t;
 
 interface DamageShareEvent_t {
-	readonly type_name: string
 	readonly m_flOriginalDamage: number
 	readonly m_flTakenDamage: number
 	readonly m_nPlayerID: number
 }
+declare var DamageShareEvent_t: DamageShareEvent_t;
 
 interface CSimpleSimTimer {
-	readonly type_name: string
 	readonly m_next: number
 }
+declare var CSimpleSimTimer: CSimpleSimTimer;
 
 interface C_INIT_RandomYawFlip extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flPercent: number
 }
+declare var C_INIT_RandomYawFlip: C_INIT_RandomYawFlip;
 
 interface C_OP_RenderCables extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_flTextureSize: number
 	readonly m_nMinTesselation: number
 	readonly m_nMaxTesselation: number
@@ -2017,35 +2016,35 @@ interface C_OP_RenderCables extends CParticleFunctionRenderer {
 	readonly m_flTextureScrollRate: number
 	readonly m_flNormalMapScrollRate: number
 }
+declare var C_OP_RenderCables: C_OP_RenderCables;
 
 interface C_INIT_Orient2DRelToCP extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_flRotOffset: number
 }
+declare var C_INIT_Orient2DRelToCP: C_INIT_Orient2DRelToCP;
 
 interface InfoForResourceTypeCLightTree {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCLightTree: InfoForResourceTypeCLightTree;
 
 interface C_GameRules {
-	readonly type_name: string
 }
+declare var C_GameRules: C_GameRules;
 
 interface EventClientPostSimulate_t extends EventSimulate_t {
-	readonly type_name: string
 }
+declare var EventClientPostSimulate_t: EventClientPostSimulate_t;
 
 interface InfoForResourceTypeCVSoundEventScriptList {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCVSoundEventScriptList: InfoForResourceTypeCVSoundEventScriptList;
 
 interface InfoForResourceTypeCTextureBase {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCTextureBase: InfoForResourceTypeCTextureBase;
 
 interface PostProcessingTonemapParameters_t {
-	readonly type_name: string
 	readonly m_flExposureBias: number
 	readonly m_flShoulderStrength: number
 	readonly m_flLinearStrength: number
@@ -2055,24 +2054,24 @@ interface PostProcessingTonemapParameters_t {
 	readonly m_flToeDenom: number
 	readonly m_flWhitePoint: number
 }
+declare var PostProcessingTonemapParameters_t: PostProcessingTonemapParameters_t;
 
 interface FlexController_t {
-	readonly type_name: string
 	readonly localToGlobal: number
 	readonly min: number
 	readonly max: number
 }
+declare var FlexController_t: FlexController_t;
 
 interface ModelBoneFlexDriverControl_t {
-	readonly type_name: string
 	readonly m_nBoneComponent: number
 	readonly m_flexControllerToken: number
 	readonly m_flMin: number
 	readonly m_flMax: number
 }
+declare var ModelBoneFlexDriverControl_t: ModelBoneFlexDriverControl_t;
 
 interface FeNodeBase_t {
-	readonly type_name: string
 	readonly nNode: number
 	readonly nDummy: number[]
 	readonly nNodeX0: number
@@ -2080,13 +2079,13 @@ interface FeNodeBase_t {
 	readonly nNodeY0: number
 	readonly nNodeY1: number
 }
+declare var FeNodeBase_t: FeNodeBase_t;
 
 interface IRagdoll {
-	readonly type_name: string
 }
+declare var IRagdoll: IRagdoll;
 
 interface C_OP_CycleScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flStartValue: number
 	readonly m_flEndValue: number
 	readonly m_flCycleTime: number
@@ -2096,9 +2095,9 @@ interface C_OP_CycleScalar extends CParticleFunctionOperator {
 	readonly m_nCPFieldMin: number
 	readonly m_nCPFieldMax: number
 }
+declare var C_OP_CycleScalar: C_OP_CycleScalar;
 
 interface C_OP_SetCPOrientationToGroundNormal extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInterpRate: number
 	readonly m_flMaxTraceLength: number
 	readonly m_flTolerance: number
@@ -2107,9 +2106,9 @@ interface C_OP_SetCPOrientationToGroundNormal extends CParticleFunctionOperator 
 	readonly m_nOutputCP: number
 	readonly m_bIncludeWater: boolean
 }
+declare var C_OP_SetCPOrientationToGroundNormal: C_OP_SetCPOrientationToGroundNormal;
 
 interface C_OP_SequenceFromModel extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
@@ -2118,24 +2117,24 @@ interface C_OP_SequenceFromModel extends CParticleFunctionOperator {
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bScaleCurrent: boolean
 }
+declare var C_OP_SequenceFromModel: C_OP_SequenceFromModel;
 
 interface CBasePathAnimMotor extends CBaseAnimMotor {
-	readonly type_name: string
 	readonly m_bLockToPath: boolean
 }
+declare var CBasePathAnimMotor: CBasePathAnimMotor;
 
 interface CResponseCriteriaSet {
-	readonly type_name: string
 	readonly m_nNumPrefixedContexts: number
 	readonly m_bOverrideOnAppend: boolean
 }
+declare var CResponseCriteriaSet: CResponseCriteriaSet;
 
 interface IParticleEffect {
-	readonly type_name: string
 }
+declare var IParticleEffect: IParticleEffect;
 
 interface C_OP_RemapCPVisibilityToVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_bScaleInitialRange: boolean
 	readonly m_nControlPoint: number
 	readonly m_flInputMin: number
@@ -2144,34 +2143,34 @@ interface C_OP_RemapCPVisibilityToVector extends CParticleFunctionOperator {
 	readonly m_vecOutputMax: Vector
 	readonly m_flRadius: number
 }
+declare var C_OP_RemapCPVisibilityToVector: C_OP_RemapCPVisibilityToVector;
 
 interface C_OP_RemapCPOrientationToYaw extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_flRotOffset: number
 	readonly m_flSpinStrength: number
 }
+declare var C_OP_RemapCPOrientationToYaw: C_OP_RemapCPOrientationToYaw;
 
 interface C_INIT_RemapParticleCountToNamedModelElementScalar extends C_INIT_RemapParticleCountToScalar {
-	readonly type_name: string
 	readonly m_outputMinName: string
 	readonly m_outputMaxName: string
 	readonly m_bModelFromRenderer: boolean
 }
+declare var C_INIT_RemapParticleCountToNamedModelElementScalar: C_INIT_RemapParticleCountToNamedModelElementScalar;
 
 interface CCycleControlAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_valueSource: number
 	readonly m_param: AnimParamID
 }
+declare var CCycleControlAnimNode: CCycleControlAnimNode;
 
 interface C_DOTA_Modifier_Lua extends CDOTA_Buff {
-	readonly type_name: string
 }
+declare var C_DOTA_Modifier_Lua: C_DOTA_Modifier_Lua;
 
 interface sAcquireHistory {
-	readonly type_name: string
 	readonly m_nAbilityID: number
 	readonly m_nLevel: number
 	readonly m_nGold: number
@@ -2181,34 +2180,34 @@ interface sAcquireHistory {
 	readonly m_vecItemList: number[]
 	readonly m_vecTalentSkilledList: number[]
 }
+declare var sAcquireHistory: sAcquireHistory;
 
 interface sBounceInfo {
-	readonly type_name: string
 	readonly iAttackIndex: number
 	readonly iBounceCount: number
 	readonly hAlreadyHitList: C_BaseEntity[]
 }
+declare var sBounceInfo: sBounceInfo;
 
 interface AnimStateID {
-	readonly type_name: string
 	readonly m_id: number
 }
+declare var AnimStateID: AnimStateID;
 
 interface VBitmapFontDiskData_t {
-	readonly type_name: string
 }
+declare var VBitmapFontDiskData_t: VBitmapFontDiskData_t;
 
 interface FeAxialEdgeBend_t {
-	readonly type_name: string
 	readonly te: number
 	readonly tv: number
 	readonly flDist: number
 	readonly flWeight: number[]
 	readonly nNode: number[]
 }
+declare var FeAxialEdgeBend_t: FeAxialEdgeBend_t;
 
 interface CProjectedTextureBase {
-	readonly type_name: string
 	readonly m_hTargetEntity: C_BaseEntity
 	readonly m_bState: boolean
 	readonly m_bAlwaysUpdate: boolean
@@ -2239,9 +2238,9 @@ interface CProjectedTextureBase {
 	readonly m_flRotation: number
 	readonly m_bFlipHorizontal: boolean
 }
+declare var CProjectedTextureBase: CProjectedTextureBase;
 
 interface C_OP_RemapCPtoCP extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nInputControlPoint: number
 	readonly m_nOutputControlPoint: number
 	readonly m_nInputField: number
@@ -2251,54 +2250,54 @@ interface C_OP_RemapCPtoCP extends CParticleFunctionPreEmission {
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 }
+declare var C_OP_RemapCPtoCP: C_OP_RemapCPtoCP;
 
 interface C_OP_LerpScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flOutput: number
 	readonly m_flStartTime: number
 	readonly m_flEndTime: number
 }
+declare var C_OP_LerpScalar: C_OP_LerpScalar;
 
 interface AnimResourceAnimEvent_t {
-	readonly type_name: string
 	readonly m_nFrame: number
 	readonly m_flCycle: number
 }
+declare var AnimResourceAnimEvent_t: AnimResourceAnimEvent_t;
 
 interface FlexRule_t {
-	readonly type_name: string
 	readonly m_nFlex: number
 }
+declare var FlexRule_t: FlexRule_t;
 
 interface FourQuaternions {
-	readonly type_name: string
 }
+declare var FourQuaternions: FourQuaternions;
 
 interface VSoundStackScript_t {
-	readonly type_name: string
 }
+declare var VSoundStackScript_t: VSoundStackScript_t;
 
 interface CBlendCurve {
-	readonly type_name: string
 	readonly m_vControlPoint1: Vector2D
 	readonly m_vControlPoint2: Vector2D
 }
+declare var CBlendCurve: CBlendCurve;
 
 interface CSkeletalInputAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_motionRange: number
 }
+declare var CSkeletalInputAnimNode: CSkeletalInputAnimNode;
 
 interface SkeletonBoneBbox_t {
-	readonly type_name: string
 	readonly m_vecCenter: Vector
 	readonly m_pad0: number
 	readonly m_vecSize: Vector
 	readonly m_pad1: number
 }
+declare var SkeletonBoneBbox_t: SkeletonBoneBbox_t;
 
 interface RenderInputLayoutField_t {
-	readonly type_name: string
 	readonly m_pSemanticName: number[]
 	readonly m_nSemanticIndex: number
 	readonly m_Format: number
@@ -2307,9 +2306,9 @@ interface RenderInputLayoutField_t {
 	readonly m_nSlotType: number
 	readonly m_nInstanceStepRate: number
 }
+declare var RenderInputLayoutField_t: RenderInputLayoutField_t;
 
 interface CAttributeManager {
-	readonly type_name: string
 	readonly m_Providers: C_BaseEntity[]
 	readonly m_Receivers: C_BaseEntity[]
 	readonly m_iReapplyProvisionParity: number
@@ -2317,26 +2316,26 @@ interface CAttributeManager {
 	readonly m_bPreventLoopback: boolean
 	readonly m_ProviderType: number
 }
+declare var CAttributeManager: CAttributeManager;
 
 interface Extent {
-	readonly type_name: string
 	readonly lo: Vector
 	readonly hi: Vector
 }
+declare var Extent: Extent;
 
 interface InfoForResourceTypeMorphSetData_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeMorphSetData_t: InfoForResourceTypeMorphSetData_t;
 
 interface sControlGroupElem {
-	readonly type_name: string
 	readonly m_unUnitLabelIndex: number
 	readonly m_hEntity: C_BaseEntity
 	readonly m_bIsIllusion: boolean
 }
+declare var sControlGroupElem: sControlGroupElem;
 
 interface C_INIT_GlobalScale extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flScale: number
 	readonly m_nScaleControlPointNumber: number
 	readonly m_nControlPointNumber: number
@@ -2344,15 +2343,15 @@ interface C_INIT_GlobalScale extends CParticleFunctionInitializer {
 	readonly m_bScalePosition: boolean
 	readonly m_bScaleVelocity: boolean
 }
+declare var C_INIT_GlobalScale: C_INIT_GlobalScale;
 
 interface AABB_t {
-	readonly type_name: string
 	readonly m_vMinBounds: Vector
 	readonly m_vMaxBounds: Vector
 }
+declare var AABB_t: AABB_t;
 
 interface CDOTA_ItemStockInfo {
-	readonly type_name: string
 	readonly iTeamNumber: number
 	readonly nItemAbilityID: number
 	readonly fStockDuration: number
@@ -2362,15 +2361,15 @@ interface CDOTA_ItemStockInfo {
 	readonly fInitialStockDuration: number
 	readonly iPlayerNumber: number
 }
+declare var CDOTA_ItemStockInfo: CDOTA_ItemStockInfo;
 
 interface C_INIT_RandomVector extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecMin: Vector
 	readonly m_vecMax: Vector
 }
+declare var C_INIT_RandomVector: C_INIT_RandomVector;
 
 interface AnimationDecodeDebugDumpElement_t {
-	readonly type_name: string
 	readonly m_nEntityIndex: number
 	readonly m_modelName: string
 	readonly m_poseParams: string[]
@@ -2378,9 +2377,9 @@ interface AnimationDecodeDebugDumpElement_t {
 	readonly m_internalOps: string[]
 	readonly m_decodedAnims: string[]
 }
+declare var AnimationDecodeDebugDumpElement_t: AnimationDecodeDebugDumpElement_t;
 
 interface C_OP_MovementPlaceOnGround extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flOffset: number
 	readonly m_flMaxTraceLength: number
 	readonly m_flTolerance: number
@@ -2394,9 +2393,9 @@ interface C_OP_MovementPlaceOnGround extends CParticleFunctionOperator {
 	readonly m_bSetNormal: boolean
 	readonly m_bScaleOffset: boolean
 }
+declare var C_OP_MovementPlaceOnGround: C_OP_MovementPlaceOnGround;
 
 interface CSSDSMsg_LayerBase {
-	readonly type_name: string
 	readonly m_viewId: SceneViewId_t
 	readonly m_ViewName: string
 	readonly m_nLayerIndex: number
@@ -2404,20 +2403,20 @@ interface CSSDSMsg_LayerBase {
 	readonly m_LayerName: string
 	readonly m_displayText: string
 }
+declare var CSSDSMsg_LayerBase: CSSDSMsg_LayerBase;
 
 interface CSosGroupActionSchema {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_actionType: number
 	readonly m_actionInstanceType: number
 }
+declare var CSosGroupActionSchema: CSosGroupActionSchema;
 
 interface MaterialResourceData_t {
-	readonly type_name: string
 }
+declare var MaterialResourceData_t: MaterialResourceData_t;
 
 interface CNetworkedSequenceOperation {
-	readonly type_name: string
 	readonly m_flPrevCycle: number
 	readonly m_flCycle: number
 	readonly m_bSequenceChangeNetworked: boolean
@@ -2425,9 +2424,9 @@ interface CNetworkedSequenceOperation {
 	readonly m_flPrevCycleFromDiscontinuity: number
 	readonly m_flPrevCycleForAnimEventDetection: number
 }
+declare var CNetworkedSequenceOperation: CNetworkedSequenceOperation;
 
 interface C_OP_ConstrainDistance extends CParticleFunctionConstraint {
-	readonly type_name: string
 	readonly m_fMinDistance: number
 	readonly m_fMaxDistance: number
 	readonly m_nControlPointNumber: number
@@ -2435,14 +2434,14 @@ interface C_OP_ConstrainDistance extends CParticleFunctionConstraint {
 	readonly m_CenterOffset: Vector
 	readonly m_bGlobalCenter: boolean
 }
+declare var C_OP_ConstrainDistance: C_OP_ConstrainDistance;
 
 interface BaseSceneObjectOverride_t {
-	readonly type_name: string
 	readonly m_nSceneObjectIndex: number
 }
+declare var BaseSceneObjectOverride_t: BaseSceneObjectOverride_t;
 
 interface TextureDesc_t {
-	readonly type_name: string
 	readonly m_nWidth: number
 	readonly m_nHeight: number
 	readonly m_nDepth: number
@@ -2450,9 +2449,9 @@ interface TextureDesc_t {
 	readonly m_nNumMipLevels: number
 	readonly m_nPicmip0Res: number
 }
+declare var TextureDesc_t: TextureDesc_t;
 
 interface CDOTAGameManager {
-	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
 	readonly m_bCustomGame: boolean
 	readonly m_bEventGame: boolean
@@ -2463,61 +2462,61 @@ interface CDOTAGameManager {
 	readonly m_CulledHeroes: boolean[]
 	readonly m_BonusHeroes: boolean[]
 }
+declare var CDOTAGameManager: CDOTAGameManager;
 
 interface C_OP_Noise extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 	readonly m_bAdditive: boolean
 	readonly m_flNoiseAnimationTimeScale: number
 }
+declare var C_OP_Noise: C_OP_Noise;
 
 interface C_INIT_NormalOffset extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_OffsetMin: Vector
 	readonly m_OffsetMax: Vector
 	readonly m_nControlPointNumber: number
 	readonly m_bLocalCoords: boolean
 	readonly m_bNormalize: boolean
 }
+declare var C_INIT_NormalOffset: C_INIT_NormalOffset;
 
 interface CSosGroupActionLimitSchema extends CSosGroupActionSchema {
-	readonly type_name: string
 	readonly m_nMaxCount: number
 	readonly m_nStopType: number
 	readonly m_nSortType: number
 }
+declare var CSosGroupActionLimitSchema: CSosGroupActionLimitSchema;
 
 interface FeWeightedNode_t {
-	readonly type_name: string
 	readonly nNode: number
 	readonly nWeight: number
 }
+declare var FeWeightedNode_t: FeWeightedNode_t;
 
 interface CNetworkTransmitComponent {
-	readonly type_name: string
 	readonly m_nTransmitStateOwnedCounter: number
 }
+declare var CNetworkTransmitComponent: CNetworkTransmitComponent;
 
 interface C_OP_MovementRigidAttachToCP extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_nScaleControlPoint: number
 	readonly m_nScaleCPField: number
 	readonly m_bOffsetLocal: boolean
 }
+declare var C_OP_MovementRigidAttachToCP: C_OP_MovementRigidAttachToCP;
 
 interface LightTreeResourceData_t {
-	readonly type_name: string
 }
+declare var LightTreeResourceData_t: LightTreeResourceData_t;
 
 interface RnTriangle_t {
-	readonly type_name: string
 	readonly m_nIndex: number[]
 }
+declare var RnTriangle_t: RnTriangle_t;
 
 interface C_OP_RemapScalarOnceTimed extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_bProportional: boolean
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
@@ -2525,9 +2524,9 @@ interface C_OP_RemapScalarOnceTimed extends CParticleFunctionOperator {
 	readonly m_flOutputMax: number
 	readonly m_flRemapTime: number
 }
+declare var C_OP_RemapScalarOnceTimed: C_OP_RemapScalarOnceTimed;
 
 interface C_OP_InstantaneousEmitter extends CParticleFunctionEmitter {
-	readonly type_name: string
 	readonly m_nParticlesToEmit: number
 	readonly m_nMinParticlesToEmit: number
 	readonly m_flStartTime: number
@@ -2538,15 +2537,15 @@ interface C_OP_InstantaneousEmitter extends CParticleFunctionEmitter {
 	readonly m_nScaleControlPointField: number
 	readonly m_nSnapshotControlPoint: number
 }
+declare var C_OP_InstantaneousEmitter: C_OP_InstantaneousEmitter;
 
 interface C_INIT_MakeShapes extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flMinSize: number
 	readonly m_flMaxSize: number
 }
+declare var C_INIT_MakeShapes: C_INIT_MakeShapes;
 
 interface PerInstanceBakedLightingParamsOverride_t extends BaseSceneObjectOverride_t {
-	readonly type_name: string
 	readonly m_nSubSceneObject: number
 	readonly m_nDrawCallIndex: number
 	readonly m_bHasBakedLightingFromVertexStream: boolean
@@ -2555,76 +2554,76 @@ interface PerInstanceBakedLightingParamsOverride_t extends BaseSceneObjectOverri
 	readonly m_bHasPerInstanceBakedLightingData: boolean
 	readonly m_nPerVertexLightingOffsetInVertices: number
 }
+declare var PerInstanceBakedLightingParamsOverride_t: PerInstanceBakedLightingParamsOverride_t;
 
 interface CIntAnimParameter extends CAnimParameterBase {
-	readonly type_name: string
 	readonly m_defaultValue: number
 	readonly m_minValue: number
 	readonly m_maxValue: number
 }
+declare var CIntAnimParameter: CIntAnimParameter;
 
 interface C_OP_RadiusDecay extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flMinRadius: number
 }
+declare var C_OP_RadiusDecay: C_OP_RadiusDecay;
 
 interface C_INIT_RemapNamedModelElementToScalar extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_names: string[]
 	readonly m_values: number[]
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bModelFromRenderer: boolean
 }
+declare var C_INIT_RemapNamedModelElementToScalar: C_INIT_RemapNamedModelElementToScalar;
 
 interface CDirectPlaybackAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_bFinishEarly: boolean
 	readonly m_bResetOnFinish: boolean
 }
+declare var CDirectPlaybackAnimNode: CDirectPlaybackAnimNode;
 
 interface FeAnimStrayRadius_t {
-	readonly type_name: string
 	readonly nNode: number[]
 	readonly flMaxDist: number
 	readonly flRelaxationFactor: number
 }
+declare var FeAnimStrayRadius_t: FeAnimStrayRadius_t;
 
 interface C_MultiplayRules extends C_GameRules {
-	readonly type_name: string
 }
+declare var C_MultiplayRules: C_MultiplayRules;
 
 interface ModelReference_t {
-	readonly type_name: string
 	readonly m_flRelativeProbabilityOfSpawn: number
 }
+declare var ModelReference_t: ModelReference_t;
 
 interface C_OP_LockToPointList extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_bPlaceAlongPath: boolean
 	readonly m_bClosedLoop: boolean
 	readonly m_nNumPointsAlongPath: number
 }
+declare var C_OP_LockToPointList: C_OP_LockToPointList;
 
 interface RnCapsuleDesc_t extends RnShapeDesc_t {
-	readonly type_name: string
 	readonly m_Capsule: RnCapsule_t
 }
+declare var RnCapsuleDesc_t: RnCapsuleDesc_t;
 
 interface CAnimGraphDebugReplay {
-	readonly type_name: string
 	readonly m_pAnimGraph: CAnimationGraph
 	readonly m_startIndex: number
 	readonly m_writeIndex: number
 	readonly m_frameCount: number
 }
+declare var CAnimGraphDebugReplay: CAnimGraphDebugReplay;
 
 interface InfoForResourceTypeWorldEnvironmentMaps_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeWorldEnvironmentMaps_t: InfoForResourceTypeWorldEnvironmentMaps_t;
 
 interface C_fogplayerparams_t {
-	readonly type_name: string
 	readonly m_hCtrl: C_BaseEntity
 	readonly m_flTransitionTime: number
 	readonly m_OldColor: Color
@@ -2640,28 +2639,28 @@ interface C_fogplayerparams_t {
 	readonly m_flNewHDRColorScale: number
 	readonly m_flNewFarZ: number
 }
+declare var C_fogplayerparams_t: C_fogplayerparams_t;
 
 interface CreatureStateData_t {
-	readonly type_name: string
 	readonly pszName: string
 	readonly flAggression: number
 	readonly flAvoidance: number
 	readonly flSupport: number
 	readonly flRoamDistance: number
 }
+declare var CreatureStateData_t: CreatureStateData_t;
 
 interface CAnimTagBase {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_tagID: AnimTagID
 }
+declare var CAnimTagBase: CAnimTagBase;
 
 interface InfoForResourceTypeCDOTAPatchNotesList {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCDOTAPatchNotesList: InfoForResourceTypeCDOTAPatchNotesList;
 
 interface C_OP_SetRandomControlPointPosition extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_bUseWorldLocation: boolean
 	readonly m_bOrient: boolean
 	readonly m_nCP1: number
@@ -2670,15 +2669,15 @@ interface C_OP_SetRandomControlPointPosition extends CParticleFunctionPreEmissio
 	readonly m_vecCPMinPos: Vector
 	readonly m_vecCPMaxPos: Vector
 }
+declare var C_OP_SetRandomControlPointPosition: C_OP_SetRandomControlPointPosition;
 
 interface ParticlePreviewBodyGroup_t {
-	readonly type_name: string
 	readonly m_bodyGroupName: string
 	readonly m_nValue: number
 }
+declare var ParticlePreviewBodyGroup_t: ParticlePreviewBodyGroup_t;
 
 interface C_OP_RenderSound extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_flDurationScale: number
 	readonly m_flSndLvlScale: number
 	readonly m_flPitchScale: number
@@ -2686,9 +2685,9 @@ interface C_OP_RenderSound extends CParticleFunctionRenderer {
 	readonly m_nChannel: number
 	readonly m_nCPReference: number
 }
+declare var C_OP_RenderSound: C_OP_RenderSound;
 
 interface C_OP_RemapCPtoVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCPInput: number
 	readonly m_nLocalSpaceCP: number
 	readonly m_vInputMin: Vector
@@ -2703,38 +2702,38 @@ interface C_OP_RemapCPtoVector extends CParticleFunctionOperator {
 	readonly m_bOffset: boolean
 	readonly m_bAccelerate: boolean
 }
+declare var C_OP_RemapCPtoVector: C_OP_RemapCPtoVector;
 
 interface C_OP_RemapScalarEndCap extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 }
+declare var C_OP_RemapScalarEndCap: C_OP_RemapScalarEndCap;
 
 interface C_INIT_RtEnvCull extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecTestDir: Vector
 	readonly m_vecTestNormal: Vector
 	readonly m_bUseVelocity: boolean
 	readonly m_bCullOnMiss: boolean
 	readonly m_bLifeAdjust: boolean
 }
+declare var C_INIT_RtEnvCull: C_INIT_RtEnvCull;
 
 interface FeWorldCollisionParams_t {
-	readonly type_name: string
 	readonly flWorldFriction: number
 	readonly flGroundFriction: number
 	readonly nListBegin: number
 	readonly nListEnd: number
 }
+declare var FeWorldCollisionParams_t: FeWorldCollisionParams_t;
 
 interface CPiecewiseCurveSchemaWrapper {
-	readonly type_name: string
 }
+declare var CPiecewiseCurveSchemaWrapper: CPiecewiseCurveSchemaWrapper;
 
 interface CBaseRendererSource2 extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_flAnimationRate: number
 	readonly m_bFitCycleToLifetime: boolean
 	readonly m_bAnimateInFPS: boolean
@@ -2778,50 +2777,50 @@ interface CBaseRendererSource2 extends CParticleFunctionRenderer {
 	readonly m_nFirstSequenceOffsetForRightEye: number
 	readonly m_nHSVShiftControlPoint: number
 }
+declare var CBaseRendererSource2: CBaseRendererSource2;
 
 interface EventClientAdvanceTick_t extends EventAdvanceTick_t {
-	readonly type_name: string
 }
+declare var EventClientAdvanceTick_t: EventClientAdvanceTick_t;
 
 interface FeBandBendLimit_t {
-	readonly type_name: string
 	readonly flDistMin: number
 	readonly flDistMax: number
 	readonly nNode: number[]
 }
+declare var FeBandBendLimit_t: FeBandBendLimit_t;
 
 interface C_OP_SpinYaw extends CGeneralSpin {
-	readonly type_name: string
 }
+declare var C_OP_SpinYaw: C_OP_SpinYaw;
 
 interface MaterialOverride_t extends BaseSceneObjectOverride_t {
-	readonly type_name: string
 	readonly m_nSubSceneObject: number
 	readonly m_nDrawCallIndex: number
 }
+declare var MaterialOverride_t: MaterialOverride_t;
 
 interface SheetFrameImage_t {
-	readonly type_name: string
 	readonly uvCropped: Vector2D[]
 	readonly uvUncropped: Vector2D[]
 }
+declare var SheetFrameImage_t: SheetFrameImage_t;
 
 interface MaterialParam_t {
-	readonly type_name: string
 }
+declare var MaterialParam_t: MaterialParam_t;
 
 interface OnDiskBufferData_t {
-	readonly type_name: string
 	readonly m_nElementCount: number
 	readonly m_nElementSizeInBytes: number
 }
+declare var OnDiskBufferData_t: OnDiskBufferData_t;
 
 interface InfoForResourceTypeCResourceManifestInternal {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCResourceManifestInternal: InfoForResourceTypeCResourceManifestInternal;
 
 interface C_OP_ClothMovement extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_Gravity: Vector
 	readonly m_fDrag: number
 	readonly m_bTriangulate: boolean
@@ -2840,32 +2839,32 @@ interface C_OP_ClothMovement extends CParticleFunctionOperator {
 	readonly m_bLockRColumn: boolean
 	readonly m_nIterations: number
 }
+declare var C_OP_ClothMovement: C_OP_ClothMovement;
 
 interface C_OP_RemapVectortoCP extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nOutControlPointNumber: number
 	readonly m_nParticleNumber: number
 }
+declare var C_OP_RemapVectortoCP: C_OP_RemapVectortoCP;
 
 interface C_OP_RemapVisibilityScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 	readonly m_flRadiusScale: number
 }
+declare var C_OP_RemapVisibilityScalar: C_OP_RemapVisibilityScalar;
 
 interface WorldEnvironmentMaps_t {
-	readonly type_name: string
 }
+declare var WorldEnvironmentMaps_t: WorldEnvironmentMaps_t;
 
 interface Sheet_t {
-	readonly type_name: string
 }
+declare var Sheet_t: Sheet_t;
 
 interface C_OP_OscillateVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_RateMin: Vector
 	readonly m_RateMax: Vector
 	readonly m_FrequencyMin: Vector
@@ -2880,52 +2879,52 @@ interface C_OP_OscillateVector extends CParticleFunctionOperator {
 	readonly m_flOscMult: number
 	readonly m_flOscAdd: number
 }
+declare var C_OP_OscillateVector: C_OP_OscillateVector;
 
 interface CViewAngleKeyFrame {
-	readonly type_name: string
 	readonly m_vecAngles: QAngle
 	readonly m_flTime: number
 	readonly m_iFlags: number
 }
+declare var CViewAngleKeyFrame: CViewAngleKeyFrame;
 
 interface CDOTA_Modifier_Lua extends CDOTA_Buff {
-	readonly type_name: string
 }
+declare var CDOTA_Modifier_Lua: CDOTA_Modifier_Lua;
 
 interface C_OP_EndCapTimedDecay extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flDecayTime: number
 }
+declare var C_OP_EndCapTimedDecay: C_OP_EndCapTimedDecay;
 
 interface CFollowAttachmentAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_boneName: string
 	readonly m_attachmentName: string
 	readonly m_bMatchTranslation: boolean
 	readonly m_bMatchRotation: boolean
 }
+declare var CFollowAttachmentAnimNode: CFollowAttachmentAnimNode;
 
 interface CRootAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 }
+declare var CRootAnimNode: CRootAnimNode;
 
 interface C_TeamplayRules extends C_MultiplayRules {
-	readonly type_name: string
 }
+declare var C_TeamplayRules: C_TeamplayRules;
 
 interface C_OP_RenderScreenShake extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_flDurationScale: number
 	readonly m_flRadiusScale: number
 	readonly m_flFrequencyScale: number
 	readonly m_flAmplitudeScale: number
 	readonly m_nFilterCP: number
 }
+declare var C_OP_RenderScreenShake: C_OP_RenderScreenShake;
 
 interface C_DOTASpectatorGraphManager {
-	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
 	readonly m_nPlayerDataCount: number
 	readonly m_SendTeamStatsTimer: CountdownTimer
@@ -2947,22 +2946,22 @@ interface C_DOTASpectatorGraphManager {
 	readonly m_HeroInventorySnapshotTimer: CountdownTimer
 	readonly m_unDataChangedCount: number
 }
+declare var C_DOTASpectatorGraphManager: C_DOTASpectatorGraphManager;
 
 interface magnetted_objects_t {
-	readonly type_name: string
 	readonly hEntity: C_BaseEntity
 }
+declare var magnetted_objects_t: magnetted_objects_t;
 
 interface CHorizontalMotionController {
-	readonly type_name: string
 }
+declare var CHorizontalMotionController: CHorizontalMotionController;
 
 interface SeqResourceBoneMaskList_t {
-	readonly type_name: string
 }
+declare var SeqResourceBoneMaskList_t: SeqResourceBoneMaskList_t;
 
 interface PostProcessingVignetteParameters_t {
-	readonly type_name: string
 	readonly m_flVignetteStrength: number
 	readonly m_vCenter: Vector2D
 	readonly m_flRadius: number
@@ -2970,19 +2969,19 @@ interface PostProcessingVignetteParameters_t {
 	readonly m_flFeather: number
 	readonly m_vColorTint: Vector
 }
+declare var PostProcessingVignetteParameters_t: PostProcessingVignetteParameters_t;
 
 interface CDOTAMusicProbabilityEntry {
-	readonly type_name: string
 	readonly m_flProbabilityElements: number[]
 	readonly m_flProbability: number
 }
+declare var CDOTAMusicProbabilityEntry: CDOTAMusicProbabilityEntry;
 
 interface CNetworkVelocityVector {
-	readonly type_name: string
 }
+declare var CNetworkVelocityVector: CNetworkVelocityVector;
 
 interface C_OP_DifferencePreviousParticle extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
@@ -2991,35 +2990,35 @@ interface C_OP_DifferencePreviousParticle extends CParticleFunctionOperator {
 	readonly m_bActiveRange: boolean
 	readonly m_bSetPreviousParticle: boolean
 }
+declare var C_OP_DifferencePreviousParticle: C_OP_DifferencePreviousParticle;
 
 interface CPathStatusCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_optionToCheck: number
 	readonly m_bComparisonValue: boolean
 }
+declare var CPathStatusCondition: CPathStatusCondition;
 
 interface CBaseConstraint extends CBoneConstraintBase {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_vUpVector: Vector
 }
+declare var CBaseConstraint: CBaseConstraint;
 
 interface BaseConstraint_t {
-	readonly type_name: string
 	readonly m_nConstraintType: number
 	readonly m_vUpVector: Vector
 	readonly m_nTargetUpBoneHash: number
 	readonly m_nUpType: number
 	readonly m_bInverse: boolean
 }
+declare var BaseConstraint_t: BaseConstraint_t;
 
 interface CNavVolumeVector extends CNavVolume {
-	readonly type_name: string
 	readonly m_bHasBeenPreFiltered: boolean
 }
+declare var CNavVolumeVector: CNavVolumeVector;
 
 interface DOTAAbilityData_t {
-	readonly type_name: string
 	readonly m_pszAbilityName: string
 	readonly m_pszTextureName: string
 	readonly m_pszSharedCooldownName: string
@@ -3067,7 +3066,7 @@ interface DOTAAbilityData_t {
 	readonly m_bIsItem: boolean
 	readonly m_bItemIsRecipe: boolean
 	readonly m_bItemIsRecipeGenerated: boolean
-	readonly m_bItemRequiresSecretShop: boolean
+	readonly m_bItemAvailableAtSecretShop: boolean
 	readonly m_bItemAvailableAtGlobalShop: boolean
 	readonly m_bItemAvailableAtSideShop: boolean
 	readonly m_bItemAvailableAtCustomShop: boolean
@@ -3089,26 +3088,26 @@ interface DOTAAbilityData_t {
 	readonly m_bShouldBeInitiallySuggested: boolean
 	readonly m_bHasCastAnimation: boolean
 }
+declare var DOTAAbilityData_t: DOTAAbilityData_t;
 
 interface CSpeechBubbleInfo {
-	readonly type_name: string
 	readonly m_hNPC: C_BaseEntity
 	readonly m_flDuration: number
 	readonly m_unOffsetX: number
 	readonly m_unOffsetY: number
 	readonly m_unCount: number
 }
+declare var CSpeechBubbleInfo: CSpeechBubbleInfo;
 
 interface C_OP_ModelCull extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_bBoundBox: boolean
 	readonly m_bCullOutside: boolean
 	readonly m_bUseBones: boolean
 }
+declare var C_OP_ModelCull: C_OP_ModelCull;
 
 interface CPathParameters {
-	readonly type_name: string
 	readonly m_nStartControlPointNumber: number
 	readonly m_nEndControlPointNumber: number
 	readonly m_nBulgeControl: number
@@ -3118,13 +3117,13 @@ interface CPathParameters {
 	readonly m_vMidPointOffset: Vector
 	readonly m_vEndOffset: Vector
 }
+declare var CPathParameters: CPathParameters;
 
 interface CEmptyEntityInstance {
-	readonly type_name: string
 }
+declare var CEmptyEntityInstance: CEmptyEntityInstance;
 
 interface CAttachment {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_influenceNames: string[]
 	readonly m_vInfluenceOffsets: Vector[]
@@ -3132,63 +3131,63 @@ interface CAttachment {
 	readonly m_bInfluenceRootTransform: boolean[]
 	readonly m_nInfluences: number
 }
+declare var CAttachment: CAttachment;
 
 interface CNavVolumeSphere extends CNavVolume {
-	readonly type_name: string
 	readonly m_vCenter: Vector
 	readonly m_flRadius: number
 }
+declare var CNavVolumeSphere: CNavVolumeSphere;
 
 interface ResponseParams {
-	readonly type_name: string
 	readonly odds: number
 	readonly flags: number
 	readonly soundlevel: number
 	readonly m_pFollowup: ResponseFollowup
 }
+declare var ResponseParams: ResponseParams;
 
 interface C_OP_SetControlPointFieldToWater extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nSourceCP: number
 	readonly m_nDestCP: number
 	readonly m_nCPField: number
 }
+declare var C_OP_SetControlPointFieldToWater: C_OP_SetControlPointFieldToWater;
 
 interface C_INIT_PositionOffset extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_OffsetMin: Vector
 	readonly m_OffsetMax: Vector
 	readonly m_nControlPointNumber: number
 	readonly m_bLocalCoords: boolean
 	readonly m_bProportional: boolean
 }
+declare var C_INIT_PositionOffset: C_INIT_PositionOffset;
 
 interface CPhysSurfacePropertiesPhysics {
-	readonly type_name: string
 	readonly m_friction: number
 	readonly m_elasticity: number
 	readonly m_density: number
 	readonly m_thickness: number
 	readonly m_dampening: number
 }
+declare var CPhysSurfacePropertiesPhysics: CPhysSurfacePropertiesPhysics;
 
 interface EventClientPostOutput_t {
-	readonly type_name: string
 	readonly m_LoopState: EngineLoopState_t
 	readonly m_flRenderTime: number
 	readonly m_flRenderFrameTime: number
 	readonly m_flRenderFrameTimeUnbounded: number
 }
+declare var EventClientPostOutput_t: EventClientPostOutput_t;
 
 interface NianDamageTaken_t {
-	readonly type_name: string
 	readonly nDamage: number
 	readonly nPlayerID: number
 	readonly vPos: Vector
 }
+declare var NianDamageTaken_t: NianDamageTaken_t;
 
 interface C_INIT_CreateSpiralSphere extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_nOverrideCP: number
 	readonly m_nDensity: number
@@ -3197,49 +3196,49 @@ interface C_INIT_CreateSpiralSphere extends CParticleFunctionInitializer {
 	readonly m_flInitialSpeedMax: number
 	readonly m_bUseParticleCount: boolean
 }
+declare var C_INIT_CreateSpiralSphere: C_INIT_CreateSpiralSphere;
 
 interface RnMesh_t {
-	readonly type_name: string
 	readonly m_vMin: Vector
 	readonly m_vMax: Vector
 	readonly m_vOrthographicAreas: Vector
 }
+declare var RnMesh_t: RnMesh_t;
 
 interface CAimConstraint extends CBaseConstraint {
-	readonly type_name: string
 	readonly m_nUpType: number
 }
+declare var CAimConstraint: CAimConstraint;
 
 interface FeNodeIntegrator_t {
-	readonly type_name: string
 	readonly flPointDamping: number
 	readonly flAnimationForceAttraction: number
 	readonly flAnimationVertexAttraction: number
 	readonly flGravity: number
 }
+declare var FeNodeIntegrator_t: FeNodeIntegrator_t;
 
 interface InGamePredictionData_t {
-	readonly type_name: string
 	readonly m_nID: number
 	readonly m_nValue: number
 	readonly m_nRawValue: number
 	readonly m_nValueState: number
 	readonly m_bValueIsMask: boolean
 }
+declare var InGamePredictionData_t: InGamePredictionData_t;
 
 interface sGlaiveInfo {
-	readonly type_name: string
 	readonly iAttackIndex: number
 	readonly iBounceCount: number
 	readonly hAlreadyHitList: C_BaseEntity[]
 }
+declare var sGlaiveInfo: sGlaiveInfo;
 
 interface CParticleFunctionForce extends CParticleFunction {
-	readonly type_name: string
 }
+declare var CParticleFunctionForce: CParticleFunctionForce;
 
 interface C_INIT_InitialVelocityNoise extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecAbsVal: Vector
 	readonly m_vecAbsValInv: Vector
 	readonly m_vecOffsetLoc: Vector
@@ -3252,27 +3251,27 @@ interface C_INIT_InitialVelocityNoise extends CParticleFunctionInitializer {
 	readonly m_bLocalSpace: boolean
 	readonly m_bIgnoreDt: boolean
 }
+declare var C_INIT_InitialVelocityNoise: C_INIT_InitialVelocityNoise;
 
 interface FlexOp_t {
-	readonly type_name: string
 	readonly m_OpCode: number
 	readonly m_Data: number
 }
+declare var FlexOp_t: FlexOp_t;
 
 interface IntervalTimer {
-	readonly type_name: string
 	readonly m_timestamp: number
 }
+declare var IntervalTimer: IntervalTimer;
 
 interface ControlPointReference_t {
-	readonly type_name: string
 	readonly m_controlPointNameString: number
 	readonly m_vOffsetFromControlPoint: Vector
 	readonly m_bOffsetInLocalSpace: boolean
 }
+declare var ControlPointReference_t: ControlPointReference_t;
 
 interface C_OP_RestartAfterDuration extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flDurationMin: number
 	readonly m_flDurationMax: number
 	readonly m_nCP: number
@@ -3280,13 +3279,13 @@ interface C_OP_RestartAfterDuration extends CParticleFunctionOperator {
 	readonly m_nChildGroupID: number
 	readonly m_bOnlyChildren: boolean
 }
+declare var C_OP_RestartAfterDuration: C_OP_RestartAfterDuration;
 
 interface C_OP_SpinUpdate extends CSpinUpdateBase {
-	readonly type_name: string
 }
+declare var C_OP_SpinUpdate: C_OP_SpinUpdate;
 
 interface CAnimStateTransition {
-	readonly type_name: string
 	readonly m_blendDuration: number
 	readonly m_destState: AnimStateID
 	readonly m_bReset: boolean
@@ -3294,24 +3293,24 @@ interface CAnimStateTransition {
 	readonly m_flFixedCycleValue: number
 	readonly m_blendCurve: CBlendCurve
 }
+declare var CAnimStateTransition: CAnimStateTransition;
 
 interface CovMatrix3 {
-	readonly type_name: string
 	readonly m_vDiag: Vector
 	readonly m_flXY: number
 	readonly m_flXZ: number
 	readonly m_flYZ: number
 }
+declare var CovMatrix3: CovMatrix3;
 
 interface FeFollowNode_t {
-	readonly type_name: string
 	readonly nParentNode: number
 	readonly nChildNode: number
 	readonly flWeight: number
 }
+declare var FeFollowNode_t: FeFollowNode_t;
 
 interface HandInfo_t {
-	readonly type_name: string
 	readonly m_vPosition: Vector
 	readonly m_Angles: QAngle
 	readonly m_vVelocity: Vector
@@ -3336,19 +3335,19 @@ interface HandInfo_t {
 	readonly m_flJoystickAnalogValueX: number
 	readonly m_flJoystickAnalogValueY: number
 }
+declare var HandInfo_t: HandInfo_t;
 
 interface INextBotComponent extends INextBotEventResponder {
-	readonly type_name: string
 	readonly m_lastUpdateTime: number
 	readonly m_curInterval: number
 }
+declare var INextBotComponent: INextBotComponent;
 
 interface IPlayerInfo {
-	readonly type_name: string
 }
+declare var IPlayerInfo: IPlayerInfo;
 
 interface CreatureAbilityData_t {
-	readonly type_name: string
 	readonly hAbility: C_BaseEntity
 	readonly bIsDamage: boolean
 	readonly bIsDebuff: boolean
@@ -3369,16 +3368,16 @@ interface CreatureAbilityData_t {
 	readonly nMinimumRange: number
 	readonly nAbilityType: number
 }
+declare var CreatureAbilityData_t: CreatureAbilityData_t;
 
 interface RnSoftbodyCapsule_t {
-	readonly type_name: string
 	readonly m_vCenter: Vector[]
 	readonly m_flRadius: number
 	readonly m_nParticle: number[]
 }
+declare var RnSoftbodyCapsule_t: RnSoftbodyCapsule_t;
 
 interface AnimResourceIKRule_t {
-	readonly type_name: string
 	readonly index: number
 	readonly type: number
 	readonly chain: number
@@ -3397,79 +3396,79 @@ interface AnimResourceIKRule_t {
 	readonly drop: number
 	readonly top: number
 }
+declare var AnimResourceIKRule_t: AnimResourceIKRule_t;
 
 interface IEconItemInterface {
-	readonly type_name: string
 }
+declare var IEconItemInterface: IEconItemInterface;
 
 interface CAttributeList {
-	readonly type_name: string
 	readonly m_pManager: CAttributeManager
 }
+declare var CAttributeList: CAttributeList;
 
 interface C_OP_Callback extends CParticleFunctionRenderer {
-	readonly type_name: string
 }
+declare var C_OP_Callback: C_OP_Callback;
 
 interface C_INIT_RandomSecondSequence extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nSequenceMin: number
 	readonly m_nSequenceMax: number
 }
+declare var C_INIT_RandomSecondSequence: C_INIT_RandomSecondSequence;
 
 interface C_INIT_RandomSequence extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nSequenceMin: number
 	readonly m_nSequenceMax: number
 	readonly m_bShuffle: boolean
 	readonly m_bLinear: boolean
 }
+declare var C_INIT_RandomSequence: C_INIT_RandomSequence;
 
 interface CGeneralRandomRotation extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flDegreesMin: number
 	readonly m_flDegreesMax: number
 	readonly m_flDegrees: number
 	readonly m_flRotationRandExponent: number
 	readonly m_bRandomlyFlipDirection: boolean
 }
+declare var CGeneralRandomRotation: CGeneralRandomRotation;
 
 interface RnPlane_t {
-	readonly type_name: string
 	readonly m_vNormal: Vector
 	readonly m_flOffset: number
 }
+declare var RnPlane_t: RnPlane_t;
 
 interface InfoForResourceTypeCWorldNode {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCWorldNode: InfoForResourceTypeCWorldNode;
 
 interface CSkeletonAnimationController {
-	readonly type_name: string
 	readonly m_pSkeletonInstance: CSkeletonInstance
 }
+declare var CSkeletonAnimationController: CSkeletonAnimationController;
 
 interface C_OP_RenderFlattenGrass extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_flFlattenStrength: number
 	readonly m_flRadiusScale: number
 }
+declare var C_OP_RenderFlattenGrass: C_OP_RenderFlattenGrass;
 
 interface C_INIT_RandomScalar extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flMin: number
 	readonly m_flMax: number
 	readonly m_flExponent: number
 }
+declare var C_INIT_RandomScalar: C_INIT_RandomScalar;
 
 interface C_INIT_SetRigidAttachment extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_bLocalSpace: boolean
 }
+declare var C_INIT_SetRigidAttachment: C_INIT_SetRigidAttachment;
 
 interface CMorphConstraint extends CBaseConstraint {
-	readonly type_name: string
 	readonly m_bCacheAttempted: boolean
 	readonly m_bCacheOk: boolean
 	readonly m_sTargetMorph: string
@@ -3477,9 +3476,9 @@ interface CMorphConstraint extends CBaseConstraint {
 	readonly m_flMin: number
 	readonly m_flMax: number
 }
+declare var CMorphConstraint: CMorphConstraint;
 
 interface C_OP_RampScalarSpline extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_RateMin: number
 	readonly m_RateMax: number
 	readonly m_flStartTime_min: number
@@ -3490,35 +3489,35 @@ interface C_OP_RampScalarSpline extends CParticleFunctionOperator {
 	readonly m_bProportionalOp: boolean
 	readonly m_bEaseOut: boolean
 }
+declare var C_OP_RampScalarSpline: C_OP_RampScalarSpline;
 
 interface C_OP_ReinitializeScalarEndCap extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 }
+declare var C_OP_ReinitializeScalarEndCap: C_OP_ReinitializeScalarEndCap;
 
 interface Dop26_t {
-	readonly type_name: string
 	readonly m_flSupport: number[]
 }
+declare var Dop26_t: Dop26_t;
 
 interface CGameRules {
-	readonly type_name: string
 	readonly m_nQuestPhase: number
 }
+declare var CGameRules: CGameRules;
 
 interface C_OP_CalculateNormalsForGrid extends CParticleFunctionOperator {
-	readonly type_name: string
 }
+declare var C_OP_CalculateNormalsForGrid: C_OP_CalculateNormalsForGrid;
 
 interface cache_ragdoll_t {
-	readonly type_name: string
 	readonly solidCount: number
 	readonly constraintCount: number
 }
+declare var cache_ragdoll_t: cache_ragdoll_t;
 
 interface dynpitchvol_base_t {
-	readonly type_name: string
 	readonly preset: number
 	readonly pitchrun: number
 	readonly pitchstart: number
@@ -3545,9 +3544,9 @@ interface dynpitchvol_base_t {
 	readonly lfofrac: number
 	readonly lfomult: number
 }
+declare var dynpitchvol_base_t: dynpitchvol_base_t;
 
 interface C_OP_FadeOut extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flFadeOutTimeMin: number
 	readonly m_flFadeOutTimeMax: number
 	readonly m_flFadeOutTimeExp: number
@@ -3555,16 +3554,16 @@ interface C_OP_FadeOut extends CParticleFunctionOperator {
 	readonly m_bProportional: boolean
 	readonly m_bEaseInAndOut: boolean
 }
+declare var C_OP_FadeOut: C_OP_FadeOut;
 
 interface C_PlayerState {
-	readonly type_name: string
 	readonly deadflag: boolean
 	readonly hltv: boolean
 	readonly v_angle: QAngle
 }
+declare var C_PlayerState: C_PlayerState;
 
 interface C_INIT_RemapScalarToVector extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_vecOutputMin: Vector
@@ -3576,52 +3575,52 @@ interface C_INIT_RemapScalarToVector extends CParticleFunctionInitializer {
 	readonly m_bLocalCoords: boolean
 	readonly m_flRemapBias: number
 }
+declare var C_INIT_RemapScalarToVector: C_INIT_RemapScalarToVector;
 
 interface C_OP_ConstrainDistanceToUserSpecifiedPath extends CParticleFunctionConstraint {
-	readonly type_name: string
 	readonly m_fMinDistance: number
 	readonly m_flMaxDistance: number
 	readonly m_flTimeScale: number
 	readonly m_bLoopedPath: boolean
 }
+declare var C_OP_ConstrainDistanceToUserSpecifiedPath: C_OP_ConstrainDistanceToUserSpecifiedPath;
 
 interface VPhysXDiskShapeHeader_t {
-	readonly type_name: string
 	readonly m_nType: number
 	readonly m_nCollisionAttribute: number
 }
+declare var VPhysXDiskShapeHeader_t: VPhysXDiskShapeHeader_t;
 
 interface FourCovMatrices3 {
-	readonly type_name: string
 }
+declare var FourCovMatrices3: FourCovMatrices3;
 
 interface C_OP_RepeatedTriggerChildGroup extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nChildGroupID: number
 	readonly m_flClusterRefireTime: CParticleCollectionFloatInput
 	readonly m_flClusterSize: CParticleCollectionFloatInput
 	readonly m_flClusterCooldown: CParticleCollectionFloatInput
 }
+declare var C_OP_RepeatedTriggerChildGroup: C_OP_RepeatedTriggerChildGroup;
 
 interface C_OP_RemapNamedModelElementEndCap extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_inNames: string[]
 	readonly m_outNames: string[]
 	readonly m_fallbackNames: string[]
 	readonly m_bModelFromRenderer: boolean
 }
+declare var C_OP_RemapNamedModelElementEndCap: C_OP_RemapNamedModelElementEndCap;
 
 interface FeFitMatrix_t {
-	readonly type_name: string
 	readonly vCenter: Vector
 	readonly nEnd: number
 	readonly nNode: number
 	readonly nCtrl: number
 	readonly nBeginDynamic: number
 }
+declare var FeFitMatrix_t: FeFitMatrix_t;
 
 interface C_OP_RenderDeferredLight extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_bUseAlphaTestWindow: boolean
 	readonly m_bUseTexture: boolean
 	readonly m_flRadiusScale: number
@@ -3632,9 +3631,9 @@ interface C_OP_RenderDeferredLight extends CParticleFunctionRenderer {
 	readonly m_flSpotFoV: number
 	readonly m_ColorScale: Color
 }
+declare var C_OP_RenderDeferredLight: C_OP_RenderDeferredLight;
 
 interface CDeferredLightBase {
-	readonly type_name: string
 	readonly m_LightColor: Color
 	readonly m_flIntensity: number
 	readonly m_flLightSize: number
@@ -3644,31 +3643,31 @@ interface CDeferredLightBase {
 	readonly m_flDistanceFalloff: number
 	readonly m_nFlags: number
 }
+declare var CDeferredLightBase: CDeferredLightBase;
 
 interface C_OP_SetControlPointToHMD extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nCP1: number
 	readonly m_vecCP1Pos: Vector
 	readonly m_bOrientToHMD: boolean
 }
+declare var C_OP_SetControlPointToHMD: C_OP_SetControlPointToHMD;
 
 interface C_OP_LerpEndCapScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flOutput: number
 	readonly m_flLerpTime: number
 }
+declare var C_OP_LerpEndCapScalar: C_OP_LerpEndCapScalar;
 
 interface C_OP_SpringForce extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_flRestLengthU: number
 	readonly m_flRestLengthV: number
 	readonly m_flSpringConstant: number
 	readonly m_flDampingConstant: number
 	readonly m_bStiff: boolean
 }
+declare var C_OP_SpringForce: C_OP_SpringForce;
 
 interface C_OP_ForceBasedOnDistanceToPlane extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_flMinDist: number
 	readonly m_vecForceAtMinDist: Vector
 	readonly m_flMaxDist: number
@@ -3677,48 +3676,48 @@ interface C_OP_ForceBasedOnDistanceToPlane extends CParticleFunctionForce {
 	readonly m_nControlPointNumber: number
 	readonly m_flExponent: number
 }
+declare var C_OP_ForceBasedOnDistanceToPlane: C_OP_ForceBasedOnDistanceToPlane;
 
 interface CPathAnimMotor extends CBasePathAnimMotor {
-	readonly type_name: string
 }
+declare var CPathAnimMotor: CPathAnimMotor;
 
 interface CConstraintTarget {
-	readonly type_name: string
 	readonly m_nBoneHash: number
 	readonly m_flWeight: number
 	readonly m_vOffset: Vector
 	readonly m_bIsAttachment: boolean
 	readonly m_sName: string
 }
+declare var CConstraintTarget: CConstraintTarget;
 
 interface CPassengerSeat {
-	readonly type_name: string
 	readonly m_strSeatName: string
 	readonly m_nAttachmentID: number
 }
+declare var CPassengerSeat: CPassengerSeat;
 
 interface C_OP_RemapNamedModelSequenceOnceTimed extends C_OP_RemapNamedModelElementOnceTimed {
-	readonly type_name: string
 }
+declare var C_OP_RemapNamedModelSequenceOnceTimed: C_OP_RemapNamedModelSequenceOnceTimed;
 
 interface C_OP_ExternalGenericForce extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_flStrength: number
 	readonly m_flCurlStrength: number
 	readonly m_flLinearStrength: number
 	readonly m_flRadialStrength: number
 	readonly m_flRotationStrength: number
 }
+declare var C_OP_ExternalGenericForce: C_OP_ExternalGenericForce;
 
 interface C_INIT_RandomLifeTime extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_fLifetimeMin: number
 	readonly m_fLifetimeMax: number
 	readonly m_fLifetimeRandExponent: number
 }
+declare var C_INIT_RandomLifeTime: C_INIT_RandomLifeTime;
 
 interface C_INIT_SetHitboxToModel extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_nForceInModel: number
 	readonly m_nDesiredHitbox: number
@@ -3727,29 +3726,29 @@ interface C_INIT_SetHitboxToModel extends CParticleFunctionInitializer {
 	readonly m_bMaintainHitbox: boolean
 	readonly m_bUseBones: boolean
 }
+declare var C_INIT_SetHitboxToModel: C_INIT_SetHitboxToModel;
 
 interface EntClassComponentOverride_t {
-	readonly type_name: string
 	readonly pszBaseComponent: string
 	readonly pszOverrideComponent: string
 }
+declare var EntClassComponentOverride_t: EntClassComponentOverride_t;
 
 interface HeroDeathRecord_t {
-	readonly type_name: string
 	readonly nKillerPlayerID: number
 	readonly nVictimPlayerID: number
 	readonly fTime: number
 	readonly fTimeRespawn: number
 }
+declare var HeroDeathRecord_t: HeroDeathRecord_t;
 
 interface C_INIT_OffsetVectorToVector extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecOutputMin: Vector
 	readonly m_vecOutputMax: Vector
 }
+declare var C_INIT_OffsetVectorToVector: C_INIT_OffsetVectorToVector;
 
 interface C_INIT_PositionWarp extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecWarpMin: Vector
 	readonly m_vecWarpMax: Vector
 	readonly m_nScaleControlPointNumber: number
@@ -3761,9 +3760,9 @@ interface C_INIT_PositionWarp extends CParticleFunctionInitializer {
 	readonly m_bInvertWarp: boolean
 	readonly m_bUseCount: boolean
 }
+declare var C_INIT_PositionWarp: C_INIT_PositionWarp;
 
 interface CLeanMatrixAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_sequenceName: string
 	readonly m_flMaxValue: number
 	readonly m_blendSource: number
@@ -3772,18 +3771,18 @@ interface CLeanMatrixAnimNode extends CAnimNodeBase {
 	readonly m_horizontalAxisDirection: Vector
 	readonly m_damping: CAnimInputDamping
 }
+declare var CLeanMatrixAnimNode: CLeanMatrixAnimNode;
 
 interface CAnimStateList {
-	readonly type_name: string
 	readonly m_states: CAnimState[]
 }
+declare var CAnimStateList: CAnimStateList;
 
 interface IRecipientFilter {
-	readonly type_name: string
 }
+declare var IRecipientFilter: IRecipientFilter;
 
 interface C_INIT_CreateSequentialPath extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_fMaxDistance: number
 	readonly m_flNumToAssign: number
 	readonly m_bLoop: boolean
@@ -3791,42 +3790,42 @@ interface C_INIT_CreateSequentialPath extends CParticleFunctionInitializer {
 	readonly m_bSaveOffset: boolean
 	readonly m_PathParams: CPathParameters
 }
+declare var C_INIT_CreateSequentialPath: C_INIT_CreateSequentialPath;
 
 interface PermEntityLumpData_t {
-	readonly type_name: string
 	readonly m_flags: number
 }
+declare var PermEntityLumpData_t: PermEntityLumpData_t;
 
 interface C_OP_StopAfterCPDuration extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_flDuration: number
 	readonly m_nCP: number
 	readonly m_nCPField: number
 	readonly m_bDestroyImmediately: boolean
 	readonly m_bPlayEndCap: boolean
 }
+declare var C_OP_StopAfterCPDuration: C_OP_StopAfterCPDuration;
 
 interface C_OP_ConnectParentParticleToNearest extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nFirstControlPoint: number
 	readonly m_nSecondControlPoint: number
 }
+declare var C_OP_ConnectParentParticleToNearest: C_OP_ConnectParentParticleToNearest;
 
 interface CParameterValue {
-	readonly type_name: string
 	readonly m_id: AnimParamID
 }
+declare var CParameterValue: CParameterValue;
 
 interface EntOutput_t {
-	readonly type_name: string
 }
+declare var EntOutput_t: EntOutput_t;
 
 interface CParentConstraint extends CBaseConstraint {
-	readonly type_name: string
 }
+declare var CParentConstraint: CParentConstraint;
 
 interface CGlowOverlay {
-	readonly type_name: string
 	readonly m_vPos: Vector
 	readonly m_bDirectional: boolean
 	readonly m_vDirection: Vector
@@ -3843,9 +3842,9 @@ interface CGlowOverlay {
 	readonly m_ListIndex: number
 	readonly m_queryHandle: number
 }
+declare var CGlowOverlay: CGlowOverlay;
 
 interface CDOTA_TeamCommander {
-	readonly type_name: string
 	readonly m_nLastUnitsCollectTick: number
 	readonly m_LaneFrontUpdate: CountdownTimer
 	readonly m_ulBotScriptUGC: bigint
@@ -3921,80 +3920,80 @@ interface CDOTA_TeamCommander {
 	readonly m_fExecutionTime: number[]
 	readonly m_iCurExecutionTime: number
 }
+declare var CDOTA_TeamCommander: CDOTA_TeamCommander;
 
 interface ClientQuickBuyItemState {
-	readonly type_name: string
 	readonly nItemType: number
 	readonly bPurchasable: boolean
 }
+declare var ClientQuickBuyItemState: ClientQuickBuyItemState;
 
 interface C_OP_RampScalarLinearSimple extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_Rate: number
 	readonly m_flStartTime: number
 	readonly m_flEndTime: number
 }
+declare var C_OP_RampScalarLinearSimple: C_OP_RampScalarLinearSimple;
 
 interface C_OP_LerpEndCapVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_vecOutput: Vector
 	readonly m_flLerpTime: number
 }
+declare var C_OP_LerpEndCapVector: C_OP_LerpEndCapVector;
 
 interface CSoundEnvelope {
-	readonly type_name: string
 	readonly m_current: number
 	readonly m_target: number
 	readonly m_rate: number
 	readonly m_forceupdate: boolean
 }
+declare var CSoundEnvelope: CSoundEnvelope;
 
 interface CNetworkOriginQuantizedVector {
-	readonly type_name: string
 }
+declare var CNetworkOriginQuantizedVector: CNetworkOriginQuantizedVector;
 
 interface C_INIT_InitialVelocityFromHitbox extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flVelocityMin: number
 	readonly m_flVelocityMax: number
 	readonly m_nControlPointNumber: number
 	readonly m_bUseBones: boolean
 }
+declare var C_INIT_InitialVelocityFromHitbox: C_INIT_InitialVelocityFromHitbox;
 
 interface RnNode_t {
-	readonly type_name: string
 	readonly m_vMin: Vector
 	readonly m_nChildren: number
 	readonly m_vMax: Vector
 	readonly m_nTriangleOffset: number
 }
+declare var RnNode_t: RnNode_t;
 
 interface CVariantDefaultAllocator {
-	readonly type_name: string
 }
+declare var CVariantDefaultAllocator: CVariantDefaultAllocator;
 
 interface TextureHeader_t extends TextureDesc_t {
-	readonly type_name: string
 	readonly m_nMultisampleType: number
 	readonly m_nFlags: number
 	readonly m_nSheetSize: number
 	readonly m_fallbackTextureBits: number[]
 	readonly m_nPicmip0Res: number
 }
+declare var TextureHeader_t: TextureHeader_t;
 
 interface FeEdgeDesc_t {
-	readonly type_name: string
 	readonly nEdge: number[]
 	readonly nSide: number[]
 	readonly nVirtElem: number[]
 }
+declare var FeEdgeDesc_t: FeEdgeDesc_t;
 
 interface InfoForResourceTypeWorldLighting_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeWorldLighting_t: InfoForResourceTypeWorldLighting_t;
 
 interface C_INIT_RemapScalar extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
@@ -4005,18 +4004,18 @@ interface C_INIT_RemapScalar extends CParticleFunctionInitializer {
 	readonly m_bActiveRange: boolean
 	readonly m_flRemapBias: number
 }
+declare var C_INIT_RemapScalar: C_INIT_RemapScalar;
 
 interface CStateMachineAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 }
+declare var CStateMachineAnimNode: CStateMachineAnimNode;
 
 interface MaterialParamInt_t extends MaterialParam_t {
-	readonly type_name: string
 	readonly m_nValue: number
 }
+declare var MaterialParamInt_t: MaterialParamInt_t;
 
 interface TransitioningLayer_t {
-	readonly type_name: string
 	readonly m_op: CNetworkedSequenceOperation
 	readonly m_flStartAnimTime: number
 	readonly m_flStartWeight: number
@@ -4025,55 +4024,55 @@ interface TransitioningLayer_t {
 	readonly m_flPlaybackRate: number
 	readonly m_flFadeOutDuration: number
 }
+declare var TransitioningLayer_t: TransitioningLayer_t;
 
 interface C_OP_RemapDistanceToLineSegmentBase extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCP0: number
 	readonly m_nCP1: number
 	readonly m_flMinInputValue: number
 	readonly m_flMaxInputValue: number
 	readonly m_bInfiniteLine: boolean
 }
+declare var C_OP_RemapDistanceToLineSegmentBase: C_OP_RemapDistanceToLineSegmentBase;
 
 interface C_OP_RotateVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_vecRotAxisMin: Vector
 	readonly m_vecRotAxisMax: Vector
 	readonly m_flRotRateMin: number
 	readonly m_flRotRateMax: number
 	readonly m_bNormalize: boolean
 }
+declare var C_OP_RotateVector: C_OP_RotateVector;
 
 interface ModelSkeletonData_t {
-	readonly type_name: string
 }
+declare var ModelSkeletonData_t: ModelSkeletonData_t;
 
 interface handposepair_t {
-	readonly type_name: string
 	readonly m_vExtentOrigin: Vector[]
 	readonly m_flHandPoseParams: number[]
 	readonly m_poseSequenceName: string
 	readonly m_nUseRange: number
 	readonly m_bHasExtent: boolean
 }
+declare var handposepair_t: handposepair_t;
 
 interface CAI_MoveMonitor {
-	readonly type_name: string
 	readonly m_vMark: Vector
 	readonly m_flMarkTolerance: number
 }
+declare var CAI_MoveMonitor: CAI_MoveMonitor;
 
 interface C_INIT_InitFromParentKilled extends CParticleFunctionInitializer {
-	readonly type_name: string
 }
+declare var C_INIT_InitFromParentKilled: C_INIT_InitFromParentKilled;
 
 interface AnimResourceUser_t {
-	readonly type_name: string
 	readonly m_nType: number
 }
+declare var AnimResourceUser_t: AnimResourceUser_t;
 
 interface AnimResourceMovement_t {
-	readonly type_name: string
 	readonly endframe: number
 	readonly motionflags: number
 	readonly v0: number
@@ -4082,25 +4081,25 @@ interface AnimResourceMovement_t {
 	readonly vector: Vector
 	readonly position: Vector
 }
+declare var AnimResourceMovement_t: AnimResourceMovement_t;
 
 interface FeCtrlOffset_t {
-	readonly type_name: string
 	readonly nCtrlParent: number
 	readonly nCtrlChild: number
 	readonly vOffset: Vector
 }
+declare var FeCtrlOffset_t: FeCtrlOffset_t;
 
 interface FeTri_t {
-	readonly type_name: string
 	readonly nNode: number[]
 	readonly w1: number
 	readonly w2: number
 	readonly v1x: number
 	readonly v2: Vector2D
 }
+declare var FeTri_t: FeTri_t;
 
 interface CAnimationLayer {
-	readonly type_name: string
 	readonly m_op: CNetworkedSequenceOperation
 	readonly m_nOrder: number
 	readonly m_bLooping: boolean
@@ -4116,9 +4115,9 @@ interface CAnimationLayer {
 	readonly m_flLastEventCycle: number
 	readonly m_flLastAccess: number
 }
+declare var CAnimationLayer: CAnimationLayer;
 
 interface CBaseTrailRenderer extends CBaseRendererSource2 {
-	readonly type_name: string
 	readonly m_nOrientationType: number
 	readonly m_nOrientationControlPoint: number
 	readonly m_flMinSize: number
@@ -4133,9 +4132,9 @@ interface CBaseTrailRenderer extends CBaseRendererSource2 {
 	readonly m_flFinalTextureOffsetU: number
 	readonly m_flFinalTextureOffsetV: number
 }
+declare var CBaseTrailRenderer: CBaseTrailRenderer;
 
 interface C_OP_UpdateLightSource extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_vColorTint: Color
 	readonly m_flBrightnessScale: number
 	readonly m_flRadiusScale: number
@@ -4143,15 +4142,15 @@ interface C_OP_UpdateLightSource extends CParticleFunctionOperator {
 	readonly m_flMaximumLightingRadius: number
 	readonly m_flPositionDampingConstant: number
 }
+declare var C_OP_UpdateLightSource: C_OP_UpdateLightSource;
 
 interface C_OP_InheritFromPeerSystem extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nIncrement: number
 	readonly m_nGroupID: number
 }
+declare var C_OP_InheritFromPeerSystem: C_OP_InheritFromPeerSystem;
 
 interface C_INIT_LifespanFromVelocity extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecComponentScale: Vector
 	readonly m_flTraceOffset: number
 	readonly m_flMaxTraceLength: number
@@ -4159,41 +4158,41 @@ interface C_INIT_LifespanFromVelocity extends CParticleFunctionInitializer {
 	readonly m_nMaxPlanes: number
 	readonly m_bIncludeWater: boolean
 }
+declare var C_INIT_LifespanFromVelocity: C_INIT_LifespanFromVelocity;
 
 interface CSSDSMsg_ViewRender {
-	readonly type_name: string
 	readonly m_viewId: SceneViewId_t
 	readonly m_ViewName: string
 }
+declare var CSSDSMsg_ViewRender: CSSDSMsg_ViewRender;
 
 interface CDOTA_ReconnectInfo {
-	readonly type_name: string
 	readonly m_playerSteamId: bigint
 	readonly m_iTeam: number
 	readonly m_iUnitControlled: C_BaseEntity
 	readonly m_bWantsRandomHero: boolean
 }
+declare var CDOTA_ReconnectInfo: CDOTA_ReconnectInfo;
 
 interface CLocalNPCObstructionsCache {
-	readonly type_name: string
 	readonly m_nLastUpdatedTick: number
 	readonly m_flRadius: number
 	readonly m_hCachedNPCs: C_BaseEntity[]
 }
+declare var CLocalNPCObstructionsCache: CLocalNPCObstructionsCache;
 
 interface IDamageHandler {
-	readonly type_name: string
 }
+declare var IDamageHandler: IDamageHandler;
 
 interface FeFitWeight_t {
-	readonly type_name: string
 	readonly flWeight: number
 	readonly nNode: number
 	readonly nDummy: number
 }
+declare var FeFitWeight_t: FeFitWeight_t;
 
 interface C_DOTAGamerules extends C_TeamplayRules {
-	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
 	readonly m_iMiscHeroPickCounter: number
 	readonly m_hEndGameCinematicEntity: C_BaseEntity
@@ -4372,25 +4371,25 @@ interface C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_nPrimaryIngameEventIndex: number
 	readonly m_hObsoleteIngameEvent: C_BaseEntity
 }
+declare var C_DOTAGamerules: C_DOTAGamerules;
 
 interface CEntityIOOutput {
-	readonly type_name: string
 }
+declare var CEntityIOOutput: CEntityIOOutput;
 
 interface CPlayerInfo extends IBotController, IPlayerInfo {
-	readonly type_name: string
 }
+declare var CPlayerInfo: CPlayerInfo;
 
 interface ViewLockData_t {
-	readonly type_name: string
 	readonly flLockInterval: number
 	readonly bLocked: boolean
 	readonly flUnlockTime: number
 	readonly flUnlockBlendInterval: number
 }
+declare var ViewLockData_t: ViewLockData_t;
 
 interface C_INIT_CreateWithinSphere extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_fRadiusMin: number
 	readonly m_fRadiusMax: number
 	readonly m_vecDistanceBias: Vector
@@ -4406,20 +4405,20 @@ interface C_INIT_CreateWithinSphere extends CParticleFunctionInitializer {
 	readonly m_LocalCoordinateSystemSpeedMin: Vector
 	readonly m_LocalCoordinateSystemSpeedMax: Vector
 }
+declare var C_INIT_CreateWithinSphere: C_INIT_CreateWithinSphere;
 
 interface CPointConstraint extends CBaseConstraint {
-	readonly type_name: string
 }
+declare var CPointConstraint: CPointConstraint;
 
 interface PlayerResourceBroadcasterData_t {
-	readonly type_name: string
 	readonly m_iszBroadcasterChannelDescription: string
 	readonly m_iszBroadcasterChannelCountryCode: string
 	readonly m_iszBroadcasterChannelLanguageCode: string
 }
+declare var PlayerResourceBroadcasterData_t: PlayerResourceBroadcasterData_t;
 
 interface CInteractionManager {
-	readonly type_name: string
 	readonly m_nActiveInteraction: number
 	readonly m_hSelf: C_BaseEntity
 	readonly m_hPlayer: C_BaseEntity
@@ -4429,17 +4428,17 @@ interface CInteractionManager {
 	readonly m_bInteractionsDisabled: boolean[]
 	readonly m_bAllInteractionsDisabled: boolean
 }
+declare var CInteractionManager: CInteractionManager;
 
 interface C_INIT_SequenceFromCP extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_bKillUnused: boolean
 	readonly m_bRadiusScale: boolean
 	readonly m_nCP: number
 	readonly m_vecOffset: Vector
 }
+declare var C_INIT_SequenceFromCP: C_INIT_SequenceFromCP;
 
 interface CBoneMaskAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_weightListName: string
 	readonly m_child1ID: AnimNodeID
 	readonly m_child2ID: AnimNodeID
@@ -4453,9 +4452,9 @@ interface CBoneMaskAnimNode extends CAnimNodeBase {
 	readonly m_bResetChild1: boolean
 	readonly m_bResetChild2: boolean
 }
+declare var CBoneMaskAnimNode: CBoneMaskAnimNode;
 
 interface AnimResourceIKRuleStallFrame_t {
-	readonly type_name: string
 	readonly chain: number
 	readonly slot: number
 	readonly start: number
@@ -4463,39 +4462,39 @@ interface AnimResourceIKRuleStallFrame_t {
 	readonly tail: number
 	readonly end: number
 }
+declare var AnimResourceIKRuleStallFrame_t: AnimResourceIKRuleStallFrame_t;
 
 interface EventServerAdvanceTick_t extends EventAdvanceTick_t {
-	readonly type_name: string
 }
+declare var EventServerAdvanceTick_t: EventServerAdvanceTick_t;
 
 interface EventSimpleLoopFrameUpdate_t {
-	readonly type_name: string
 	readonly m_LoopState: EngineLoopState_t
 	readonly m_flRealTime: number
 	readonly m_flFrameTime: number
 }
+declare var EventSimpleLoopFrameUpdate_t: EventSimpleLoopFrameUpdate_t;
 
 interface FeBoxRigid_t {
-	readonly type_name: string
 	readonly nNode: number
 	readonly nCollisionMask: number
 	readonly vSize: Vector
 	readonly flStickiness: number
 	readonly flReserved: number[]
 }
+declare var FeBoxRigid_t: FeBoxRigid_t;
 
 interface TimedEvent {
-	readonly type_name: string
 	readonly m_TimeBetweenEvents: number
 	readonly m_fNextEvent: number
 }
+declare var TimedEvent: TimedEvent;
 
 interface C_INIT_RandomNamedModelMeshGroup extends C_INIT_RandomNamedModelElement {
-	readonly type_name: string
 }
+declare var C_INIT_RandomNamedModelMeshGroup: C_INIT_RandomNamedModelMeshGroup;
 
 interface CPhysSurfacePropertiesAudio {
-	readonly type_name: string
 	readonly m_reflectivity: number
 	readonly m_hardnessFactor: number
 	readonly m_roughnessFactor: number
@@ -4503,9 +4502,9 @@ interface CPhysSurfacePropertiesAudio {
 	readonly m_hardThreshold: number
 	readonly m_hardVelocityThreshold: number
 }
+declare var CPhysSurfacePropertiesAudio: CPhysSurfacePropertiesAudio;
 
 interface FeSimdNodeBase_t {
-	readonly type_name: string
 	readonly nNode: number[]
 	readonly nNodeX0: number[]
 	readonly nNodeX1: number[]
@@ -4514,40 +4513,40 @@ interface FeSimdNodeBase_t {
 	readonly nDummy: number[]
 	readonly qAdjust: FourQuaternions
 }
+declare var FeSimdNodeBase_t: FeSimdNodeBase_t;
 
 interface VelocitySampler {
-	readonly type_name: string
 	readonly m_prevSample: Vector
 	readonly m_fPrevSampleTime: number
 	readonly m_fIdealSampleRate: number
 }
+declare var VelocitySampler: VelocitySampler;
 
 interface CNavVolumeCalculatedVector extends CNavVolume {
-	readonly type_name: string
 }
+declare var CNavVolumeCalculatedVector: CNavVolumeCalculatedVector;
 
 interface C_OP_RemapNamedModelBodyPartOnceTimed extends C_OP_RemapNamedModelElementOnceTimed {
-	readonly type_name: string
 }
+declare var C_OP_RemapNamedModelBodyPartOnceTimed: C_OP_RemapNamedModelBodyPartOnceTimed;
 
 interface AnimationResourceData_t {
-	readonly type_name: string
 	readonly m_nMaxUniqueFrameIndex: number
 }
+declare var AnimationResourceData_t: AnimationResourceData_t;
 
 interface PermModelExtPart_t {
-	readonly type_name: string
 	readonly m_nParent: number
 }
+declare var PermModelExtPart_t: PermModelExtPart_t;
 
 interface SeqResourceTransition_t {
-	readonly type_name: string
 	readonly m_flFadeInTime: number
 	readonly m_flFadeOutTime: number
 }
+declare var SeqResourceTransition_t: SeqResourceTransition_t;
 
 interface SheetSequence_t {
-	readonly type_name: string
 	readonly m_nId: number
 	readonly m_bClamp: boolean
 	readonly m_bAlphaCrop: boolean
@@ -4555,23 +4554,23 @@ interface SheetSequence_t {
 	readonly m_bNoAlpha: boolean
 	readonly m_flTotalTime: number
 }
+declare var SheetSequence_t: SheetSequence_t;
 
 interface SequenceFloatParam_t {
-	readonly type_name: string
 	readonly m_value: number
 }
+declare var SequenceFloatParam_t: SequenceFloatParam_t;
 
 interface CHeadLookParams {
-	readonly type_name: string
 	readonly m_flLookDuration: number
 	readonly m_pReplyWhenAimed: INextBotReply
 	readonly m_pReasonStr: string
 	readonly m_bWaitForSteady: boolean
 	readonly m_flEaseInTime: number
 }
+declare var CHeadLookParams: CHeadLookParams;
 
 interface CFlashlightEffect {
-	readonly type_name: string
 	readonly m_bIsOn: boolean
 	readonly m_bMuzzleFlashEnabled: boolean
 	readonly m_flMuzzleFlashBrightness: number
@@ -4583,9 +4582,9 @@ interface CFlashlightEffect {
 	readonly m_bCastsShadows: boolean
 	readonly m_flCurrentPullBackDist: number
 }
+declare var CFlashlightEffect: CFlashlightEffect;
 
 interface CLookAtAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_target: number
 	readonly m_param: AnimParamID
@@ -4601,9 +4600,9 @@ interface CLookAtAnimNode extends CAnimNodeBase {
 	readonly m_flHysteresisOuterAngle: number
 	readonly m_damping: CAnimInputDamping
 }
+declare var CLookAtAnimNode: CLookAtAnimNode;
 
 interface EventSetTime_t {
-	readonly type_name: string
 	readonly m_LoopState: EngineLoopState_t
 	readonly m_nClientOutputFrames: number
 	readonly m_flRealTime: number
@@ -4613,30 +4612,30 @@ interface EventSetTime_t {
 	readonly m_flRenderFrameTimeUnscaled: number
 	readonly m_flTickRemainder: number
 }
+declare var EventSetTime_t: EventSetTime_t;
 
 interface FeSphereRigid_t {
-	readonly type_name: string
 	readonly nNode: number
 	readonly nCollisionMask: number
 	readonly vCenter: Vector
 	readonly flRadius: number
 	readonly flStickiness: number
 }
+declare var FeSphereRigid_t: FeSphereRigid_t;
 
 interface InfoForResourceTypeCVPhysXSurfacePropertiesList {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCVPhysXSurfacePropertiesList: InfoForResourceTypeCVPhysXSurfacePropertiesList;
 
 interface SeqResourceSynthAnimDesc_t {
-	readonly type_name: string
 	readonly m_flags: SeqResourceSeqDesc_t_Flag_t
 	readonly m_transition: SeqResourceTransition_t
 	readonly m_nLocalBaseReference: number
 	readonly m_nLocalBoneMask: number
 }
+declare var SeqResourceSynthAnimDesc_t: SeqResourceSynthAnimDesc_t;
 
 interface OldFeEdge_t {
-	readonly type_name: string
 	readonly m_flK: number[]
 	readonly invA: number
 	readonly t: number
@@ -4650,60 +4649,60 @@ interface OldFeEdge_t {
 	readonly flAxialModelWeights: number[]
 	readonly m_nNode: number[]
 }
+declare var OldFeEdge_t: OldFeEdge_t;
 
 interface constraint_breakableparams_t {
-	readonly type_name: string
 	readonly strength: number
 	readonly forceLimit: number
 	readonly torqueLimit: number
 	readonly bodyMassScale: number[]
 	readonly isActive: boolean
 }
+declare var constraint_breakableparams_t: constraint_breakableparams_t;
 
 interface IIntention extends INextBotComponent, IContextualQuery {
-	readonly type_name: string
 }
+declare var IIntention: IIntention;
 
 interface C_OP_MaxVelocity extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flMaxVelocity: number
 	readonly m_nOverrideCP: number
 	readonly m_nOverrideCPField: number
 }
+declare var C_OP_MaxVelocity: C_OP_MaxVelocity;
 
 interface C_OP_OscillateVectorSimple extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_Rate: Vector
 	readonly m_Frequency: Vector
 	readonly m_flOscMult: number
 	readonly m_flOscAdd: number
 	readonly m_bOffset: boolean
 }
+declare var C_OP_OscillateVectorSimple: C_OP_OscillateVectorSimple;
 
 interface CLookPitchCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_comparisonValue: number
 }
+declare var CLookPitchCondition: CLookPitchCondition;
 
 interface EventSplitScreenStateChanged_t {
-	readonly type_name: string
 }
+declare var EventSplitScreenStateChanged_t: EventSplitScreenStateChanged_t;
 
 interface CPhysicsComponent {
-	readonly type_name: string
 }
+declare var CPhysicsComponent: CPhysicsComponent;
 
 interface MaterialParamBuffer_t extends MaterialParam_t {
-	readonly type_name: string
 }
+declare var MaterialParamBuffer_t: MaterialParamBuffer_t;
 
 interface EventPostDataUpdate_t {
-	readonly type_name: string
 	readonly m_nCount: number
 }
+declare var EventPostDataUpdate_t: EventPostDataUpdate_t;
 
 interface CModelState {
-	readonly type_name: string
 	readonly m_ModelName: string
 	readonly m_MeshGroupMask: bigint
 	readonly m_nIdealMotionType: number
@@ -4711,9 +4710,9 @@ interface CModelState {
 	readonly m_bIsJiggleBonesEnabled: boolean
 	readonly m_nClothUpdateFlags: number
 }
+declare var CModelState: CModelState;
 
 interface CTakeDamageInfo {
-	readonly type_name: string
 	readonly m_vecDamageForce: Vector
 	readonly m_vecDamagePosition: Vector
 	readonly m_vecReportedPosition: Vector
@@ -4738,35 +4737,35 @@ interface CTakeDamageInfo {
 	readonly m_bAllowFriendlyFire: boolean
 	readonly m_bCanBeBlocked: boolean
 }
+declare var CTakeDamageInfo: CTakeDamageInfo;
 
 interface C_OP_VelocityMatchingForce extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flDirScale: number
 	readonly m_flSpdScale: number
 	readonly m_nCPBroadcast: number
 }
+declare var C_OP_VelocityMatchingForce: C_OP_VelocityMatchingForce;
 
 interface CSSDSMsg_ViewTargetList {
-	readonly type_name: string
 	readonly m_viewId: SceneViewId_t
 	readonly m_ViewName: string
 }
+declare var CSSDSMsg_ViewTargetList: CSSDSMsg_ViewTargetList;
 
 interface FeSimdAnimStrayRadius_t {
-	readonly type_name: string
 	readonly nNode: number[]
 }
+declare var FeSimdAnimStrayRadius_t: FeSimdAnimStrayRadius_t;
 
 interface C_OP_RenderBlobs extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_cubeWidth: number
 	readonly m_cutoffRadius: number
 	readonly m_renderRadius: number
 	readonly m_nScaleCP: number
 }
+declare var C_OP_RenderBlobs: C_OP_RenderBlobs;
 
 interface C_INIT_CreateOnGrid extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nXCount: CParticleCollectionFloatInput
 	readonly m_nYCount: CParticleCollectionFloatInput
 	readonly m_nZCount: CParticleCollectionFloatInput
@@ -4778,31 +4777,31 @@ interface C_INIT_CreateOnGrid extends CParticleFunctionInitializer {
 	readonly m_bCenter: boolean
 	readonly m_bHollow: boolean
 }
+declare var C_INIT_CreateOnGrid: C_INIT_CreateOnGrid;
 
 interface AnimationDecodeDebugDump_t {
-	readonly type_name: string
 	readonly m_processingType: number
 }
+declare var AnimationDecodeDebugDump_t: AnimationDecodeDebugDump_t;
 
 interface RenderSkeletonBone_t {
-	readonly type_name: string
 	readonly m_boneName: string
 	readonly m_parentName: string
 	readonly m_bbox: SkeletonBoneBounds_t
 	readonly m_flSphereRadius: number
 }
+declare var RenderSkeletonBone_t: RenderSkeletonBone_t;
 
 interface FeSpringIntegrator_t {
-	readonly type_name: string
 	readonly nNode: number[]
 	readonly flSpringRestLength: number
 	readonly flSpringConstant: number
 	readonly flSpringDamping: number
 	readonly flNodeWeight0: number
 }
+declare var FeSpringIntegrator_t: FeSpringIntegrator_t;
 
 interface ResponseFollowup {
-	readonly type_name: string
 	readonly followup_concept: string
 	readonly followup_contexts: string
 	readonly followup_delay: number
@@ -4812,9 +4811,9 @@ interface ResponseFollowup {
 	readonly followup_entityiodelay: number
 	readonly bFired: boolean
 }
+declare var ResponseFollowup: ResponseFollowup;
 
 interface CDotaEntityFilterFlags {
-	readonly type_name: string
 	readonly m_bInvertFilter: boolean
 	readonly m_bEveryUnit: boolean
 	readonly m_nTeamNumber: number
@@ -4830,9 +4829,9 @@ interface CDotaEntityFilterFlags {
 	readonly m_bIsCreep: boolean
 	readonly m_bIsLaneCreep: boolean
 }
+declare var CDotaEntityFilterFlags: CDotaEntityFilterFlags;
 
 interface C_OP_ControlpointLight extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flScale: number
 	readonly m_nControlPoint1: number
 	readonly m_nControlPoint2: number
@@ -4867,25 +4866,25 @@ interface C_OP_ControlpointLight extends CParticleFunctionOperator {
 	readonly m_bClampLowerRange: boolean
 	readonly m_bClampUpperRange: boolean
 }
+declare var C_OP_ControlpointLight: C_OP_ControlpointLight;
 
 interface CEntityComponentHelper {
-	readonly type_name: string
 	readonly m_flags: number
 	readonly m_pInfo: EntComponentInfo_t
 	readonly m_nPriority: number
 	readonly m_pNext: CEntityComponentHelper
 }
+declare var CEntityComponentHelper: CEntityComponentHelper;
 
 interface FeCollisionPlane_t {
-	readonly type_name: string
 	readonly nCtrlParent: number
 	readonly nChildNode: number
 	readonly m_Plane: RnPlane_t
 	readonly flStickiness: number
 }
+declare var FeCollisionPlane_t: FeCollisionPlane_t;
 
 interface C_TeamplayRoundBasedRules extends C_TeamplayRules {
-	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
 	readonly m_flLastRoundStateChangeTime: number
 	readonly m_bOldInWaitingForPlayers: boolean
@@ -4912,9 +4911,9 @@ interface C_TeamplayRoundBasedRules extends C_TeamplayRules {
 	readonly m_flStopWatchTotalTime: number
 	readonly m_iLastCapPointChanged: number
 }
+declare var C_TeamplayRoundBasedRules: C_TeamplayRoundBasedRules;
 
 interface CEconItemView extends IEconItemInterface {
-	readonly type_name: string
 	readonly m_iEntityQuality: number
 	readonly m_iEntityLevel: number
 	readonly m_iAccountID: number
@@ -4930,18 +4929,18 @@ interface CEconItemView extends IEconItemInterface {
 	readonly m_pszGrayedOutReason: string
 	readonly m_AttributeList: CAttributeList
 }
+declare var CEconItemView: CEconItemView;
 
 interface CVerticalMotionController {
-	readonly type_name: string
 }
+declare var CVerticalMotionController: CVerticalMotionController;
 
 interface CMultiplayRules extends CGameRules {
-	readonly type_name: string
 	readonly m_flIntermissionEndTime: number
 }
+declare var CMultiplayRules: CMultiplayRules;
 
 interface AnimationRetargetElementData_t {
-	readonly type_name: string
 	readonly m_nElementType: number
 	readonly m_nGroupType: number
 	readonly m_nChainType: number
@@ -4953,9 +4952,9 @@ interface AnimationRetargetElementData_t {
 	readonly m_vecMax: Vector
 	readonly m_flMass: number
 }
+declare var AnimationRetargetElementData_t: AnimationRetargetElementData_t;
 
 interface CFourWheelVehiclePhysics {
-	readonly type_name: string
 	readonly m_pOuter: C_BaseEntity
 	readonly m_pOuterServerVehicle: CFourWheelServerVehicle
 	readonly m_controls: vehicle_controlparams_t
@@ -4988,16 +4987,16 @@ interface CFourWheelVehiclePhysics {
 	readonly m_bLastBoost: boolean
 	readonly m_bLastSkid: boolean
 }
+declare var CFourWheelVehiclePhysics: CFourWheelVehiclePhysics;
 
 interface C_OP_SetControlPointToPlayer extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nCP1: number
 	readonly m_vecCP1Pos: Vector
 	readonly m_bOrientToEyes: boolean
 }
+declare var C_OP_SetControlPointToPlayer: C_OP_SetControlPointToPlayer;
 
 interface C_OP_RampScalarLinear extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_RateMin: number
 	readonly m_RateMax: number
 	readonly m_flStartTime_min: number
@@ -5006,9 +5005,9 @@ interface C_OP_RampScalarLinear extends CParticleFunctionOperator {
 	readonly m_flEndTime_max: number
 	readonly m_bProportionalOp: boolean
 }
+declare var C_OP_RampScalarLinear: C_OP_RampScalarLinear;
 
 interface C_OP_FadeAndKillForTracers extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flStartFadeInTime: number
 	readonly m_flEndFadeInTime: number
 	readonly m_flStartFadeOutTime: number
@@ -5016,22 +5015,22 @@ interface C_OP_FadeAndKillForTracers extends CParticleFunctionOperator {
 	readonly m_flStartAlpha: number
 	readonly m_flEndAlpha: number
 }
+declare var C_OP_FadeAndKillForTracers: C_OP_FadeAndKillForTracers;
 
 interface C_OP_CodeDrivenEmitter extends CParticleFunctionEmitter {
-	readonly type_name: string
 }
+declare var C_OP_CodeDrivenEmitter: C_OP_CodeDrivenEmitter;
 
 interface C_INIT_RemapNamedModelSequenceToScalar extends C_INIT_RemapNamedModelElementToScalar {
-	readonly type_name: string
 }
+declare var C_INIT_RemapNamedModelSequenceToScalar: C_INIT_RemapNamedModelSequenceToScalar;
 
 interface C_INIT_RemapQAnglesToRotation extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nCP: number
 }
+declare var C_INIT_RemapQAnglesToRotation: C_INIT_RemapQAnglesToRotation;
 
 interface C_INIT_ChaoticAttractor extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flAParm: number
 	readonly m_flBParm: number
 	readonly m_flCParm: number
@@ -5042,22 +5041,22 @@ interface C_INIT_ChaoticAttractor extends CParticleFunctionInitializer {
 	readonly m_nBaseCP: number
 	readonly m_bUniformSpeed: boolean
 }
+declare var C_INIT_ChaoticAttractor: C_INIT_ChaoticAttractor;
 
 interface EventClientPreSimulate_t extends EventSimulate_t {
-	readonly type_name: string
 }
+declare var EventClientPreSimulate_t: EventClientPreSimulate_t;
 
 interface EventClientSceneSystemThreadStateChange_t {
-	readonly type_name: string
 	readonly m_bThreadsActive: boolean
 }
+declare var EventClientSceneSystemThreadStateChange_t: EventClientSceneSystemThreadStateChange_t;
 
 interface CJiggleBones {
-	readonly type_name: string
 }
+declare var CJiggleBones: CJiggleBones;
 
 interface ViewSmoothingData_t {
-	readonly type_name: string
 	readonly bClampEyeAngles: boolean
 	readonly flPitchCurveZero: number
 	readonly flPitchCurveLinear: number
@@ -5076,14 +5075,14 @@ interface ViewSmoothingData_t {
 	readonly vecAngleDiffSaved: QAngle
 	readonly vecAngleDiffMin: QAngle
 }
+declare var ViewSmoothingData_t: ViewSmoothingData_t;
 
 interface AnimationKeyResourceData_t {
-	readonly type_name: string
 	readonly m_nChannelElements: number
 }
+declare var AnimationKeyResourceData_t: AnimationKeyResourceData_t;
 
 interface CBlend2DAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_blendSourceX: number
 	readonly m_paramX: AnimParamID
 	readonly m_blendSourceY: number
@@ -5094,13 +5093,13 @@ interface CBlend2DAnimNode extends CAnimNodeBase {
 	readonly m_playbackSpeed: number
 	readonly m_damping: CAnimInputDamping
 }
+declare var CBlend2DAnimNode: CBlend2DAnimNode;
 
 interface IClientAlphaProperty {
-	readonly type_name: string
 }
+declare var IClientAlphaProperty: IClientAlphaProperty;
 
 interface C_INIT_DistanceToCPInit extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
@@ -5114,9 +5113,9 @@ interface C_INIT_DistanceToCPInit extends CParticleFunctionInitializer {
 	readonly m_vecDistanceScale: Vector
 	readonly m_flRemapBias: number
 }
+declare var C_INIT_DistanceToCPInit: C_INIT_DistanceToCPInit;
 
 interface C_OP_RenderTreeShake extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_flPeakStrength: number
 	readonly m_flRadius: number
 	readonly m_flShakeDuration: number
@@ -5126,35 +5125,35 @@ interface C_OP_RenderTreeShake extends CParticleFunctionRenderer {
 	readonly m_flControlPointOrientationAmount: number
 	readonly m_nControlPointForLinearDirection: number
 }
+declare var C_OP_RenderTreeShake: C_OP_RenderTreeShake;
 
 interface C_OP_RemapVelocityToVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flScale: number
 	readonly m_bNormalize: boolean
 }
+declare var C_OP_RemapVelocityToVector: C_OP_RemapVelocityToVector;
 
 interface MaterialParamFloat_t extends MaterialParam_t {
-	readonly type_name: string
 	readonly m_flValue: number
 }
+declare var MaterialParamFloat_t: MaterialParamFloat_t;
 
 interface CEntityComponent {
-	readonly type_name: string
 }
+declare var CEntityComponent: CEntityComponent;
 
 interface PermModelData_t {
-	readonly type_name: string
 	readonly m_modelInfo: number
 	readonly m_nDefaultMeshGroupMask: bigint
 	readonly m_modelSkeleton: number
 }
+declare var PermModelData_t: PermModelData_t;
 
 interface EventServerSimulate_t extends EventSimulate_t {
-	readonly type_name: string
 }
+declare var EventServerSimulate_t: EventServerSimulate_t;
 
 interface C_EconItemView extends IEconItemInterface {
-	readonly type_name: string
 	readonly m_iEntityQuality: number
 	readonly m_iEntityLevel: number
 	readonly m_iAccountID: number
@@ -5170,29 +5169,29 @@ interface C_EconItemView extends IEconItemInterface {
 	readonly m_pszGrayedOutReason: string
 	readonly m_AttributeList: CAttributeList
 }
+declare var C_EconItemView: C_EconItemView;
 
 interface VSoundStack_t {
-	readonly type_name: string
 }
+declare var VSoundStack_t: VSoundStack_t;
 
 interface CVrSkeletalInputSettings {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_eHand: number
 }
+declare var CVrSkeletalInputSettings: CVrSkeletalInputSettings;
 
 interface InfoForResourceTypeCPanoramaStyle {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCPanoramaStyle: InfoForResourceTypeCPanoramaStyle;
 
 interface C_OP_OrientTo2dDirection extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flRotOffset: number
 	readonly m_flSpinStrength: number
 }
+declare var C_OP_OrientTo2dDirection: C_OP_OrientTo2dDirection;
 
 interface C_OP_DistanceToCP extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
@@ -5206,9 +5205,9 @@ interface C_OP_DistanceToCP extends CParticleFunctionOperator {
 	readonly m_bActiveRange: boolean
 	readonly m_bAdditive: boolean
 }
+declare var C_OP_DistanceToCP: C_OP_DistanceToCP;
 
 interface C_OP_PercentageBetweenCPLerpCPs extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_nStartCP: number
@@ -5222,60 +5221,60 @@ interface C_OP_PercentageBetweenCPLerpCPs extends CParticleFunctionOperator {
 	readonly m_bActiveRange: boolean
 	readonly m_bRadialCheck: boolean
 }
+declare var C_OP_PercentageBetweenCPLerpCPs: C_OP_PercentageBetweenCPLerpCPs;
 
 interface AnimResourceLocalHierarchy_t {
-	readonly type_name: string
 	readonly m_nStartFrame: number
 	readonly m_nPeakFrame: number
 	readonly m_nTailFrame: number
 	readonly m_nEndFrame: number
 }
+declare var AnimResourceLocalHierarchy_t: AnimResourceLocalHierarchy_t;
 
 interface SceneObjectData_t {
-	readonly type_name: string
 	readonly m_vMinBounds: Vector
 	readonly m_vMaxBounds: Vector
 	readonly m_translucencyType: number
 }
+declare var SceneObjectData_t: SceneObjectData_t;
 
 interface C_OP_MovementMaintainOffset extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_vecOffset: Vector
 	readonly m_nCP: number
 	readonly m_bRadiusScale: boolean
 }
+declare var C_OP_MovementMaintainOffset: C_OP_MovementMaintainOffset;
 
 interface C_OP_SnapshotRigidSkinToBones extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_bTransformNormals: boolean
 	readonly m_nControlPointNumber: number
 }
+declare var C_OP_SnapshotRigidSkinToBones: C_OP_SnapshotRigidSkinToBones;
 
 interface C_OP_BoxConstraint extends CParticleFunctionConstraint {
-	readonly type_name: string
 	readonly m_vecMin: Vector
 	readonly m_vecMax: Vector
 	readonly m_nCP: number
 }
+declare var C_OP_BoxConstraint: C_OP_BoxConstraint;
 
 interface AnimResourceSequenceParams_t {
-	readonly type_name: string
 	readonly m_flFadeInTime: number
 	readonly m_flFadeOutTime: number
 }
+declare var AnimResourceSequenceParams_t: AnimResourceSequenceParams_t;
 
 interface AnimResourceDecoder_t {
-	readonly type_name: string
 	readonly m_nVersion: number
 	readonly m_nType: number
 }
+declare var AnimResourceDecoder_t: AnimResourceDecoder_t;
 
 interface InfoForResourceTypeCPanoramaDynamicImages {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCPanoramaDynamicImages: InfoForResourceTypeCPanoramaDynamicImages;
 
 interface sPlayerSnapshot {
-	readonly type_name: string
 	readonly m_nItemAbilityID: number[]
 	readonly m_fGameTime: number
 	readonly unKills: number
@@ -5283,9 +5282,9 @@ interface sPlayerSnapshot {
 	readonly unAssists: number
 	readonly unLevel: number
 }
+declare var sPlayerSnapshot: sPlayerSnapshot;
 
 interface TimedHeroStats_t {
-	readonly type_name: string
 	readonly m_nTime: number
 	readonly m_nKills: number
 	readonly m_nDeaths: number
@@ -5294,30 +5293,30 @@ interface TimedHeroStats_t {
 	readonly m_nLastHits: number
 	readonly m_nDenies: number
 }
+declare var TimedHeroStats_t: TimedHeroStats_t;
 
 interface audioparams_t {
-	readonly type_name: string
 	readonly localSound: Vector[]
 	readonly soundscapeIndex: number
 	readonly localBits: number
 	readonly soundscapeEntityListIndex: number
 }
+declare var audioparams_t: audioparams_t;
 
 interface C_OP_SetControlPointFromObjectScale extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nCPInput: number
 	readonly m_nCPOutput: number
 }
+declare var C_OP_SetControlPointFromObjectScale: C_OP_SetControlPointFromObjectScale;
 
 interface AnimResourceFrameSegment_t {
-	readonly type_name: string
 	readonly m_nUniqueFrameIndex: number
 	readonly m_nLocalElementMasks: number
 	readonly m_nLocalChannel: number
 }
+declare var AnimResourceFrameSegment_t: AnimResourceFrameSegment_t;
 
 interface WorldBuilderParams_t {
-	readonly type_name: string
 	readonly m_nSizeBytesPerVoxel: number
 	readonly m_flMinDrawVolumeSize: number
 	readonly m_flMinDistToCamera: number
@@ -5338,60 +5337,60 @@ interface WorldBuilderParams_t {
 	readonly m_bBuildBakedLighting: boolean
 	readonly m_padding: number[]
 }
+declare var WorldBuilderParams_t: WorldBuilderParams_t;
 
 interface VPhysXDiskMesh2_t extends VPhysXDiskShapeHeader_t {
-	readonly type_name: string
 	readonly m_flSkinWidth: number
 	readonly m_flMaxVelocity: number
 	readonly m_nReserved2: number[]
 }
+declare var VPhysXDiskMesh2_t: VPhysXDiskMesh2_t;
 
 interface C_OP_RemapNamedModelMeshGroupOnceTimed extends C_OP_RemapNamedModelElementOnceTimed {
-	readonly type_name: string
 }
+declare var C_OP_RemapNamedModelMeshGroupOnceTimed: C_OP_RemapNamedModelMeshGroupOnceTimed;
 
 interface C_OP_FadeIn extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flFadeInTimeMin: number
 	readonly m_flFadeInTimeMax: number
 	readonly m_flFadeInTimeExp: number
 	readonly m_bProportional: boolean
 }
+declare var C_OP_FadeIn: C_OP_FadeIn;
 
 interface AnimResourceBoneDifference_t {
-	readonly type_name: string
 	readonly m_posError: Vector
 	readonly m_bHasRotation: boolean
 	readonly m_bHasMovement: boolean
 }
+declare var AnimResourceBoneDifference_t: AnimResourceBoneDifference_t;
 
 interface COrientConstraint extends CBaseConstraint {
-	readonly type_name: string
 }
+declare var COrientConstraint: COrientConstraint;
 
 interface FourVectors2D {
-	readonly type_name: string
 }
+declare var FourVectors2D: FourVectors2D;
 
 interface InfoForResourceTypeCChoreoSceneFileData {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCChoreoSceneFileData: InfoForResourceTypeCChoreoSceneFileData;
 
 interface FeRodConstraint_t {
-	readonly type_name: string
 	readonly nNode: number[]
 	readonly flMaxDist: number
 	readonly flMinDist: number
 	readonly flWeight0: number
 	readonly flRelaxationFactor: number
 }
+declare var FeRodConstraint_t: FeRodConstraint_t;
 
 interface InfoForResourceTypeAnimationGroupResourceData_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeAnimationGroupResourceData_t: InfoForResourceTypeAnimationGroupResourceData_t;
 
 interface C_OP_RemapAverageScalarValuetoCP extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nOutControlPointNumber: number
 	readonly m_nOutVectorField: number
 	readonly m_flInputMin: number
@@ -5399,24 +5398,24 @@ interface C_OP_RemapAverageScalarValuetoCP extends CParticleFunctionPreEmission 
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 }
+declare var C_OP_RemapAverageScalarValuetoCP: C_OP_RemapAverageScalarValuetoCP;
 
 interface C_INIT_AddVectorToVector extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecScale: Vector
 	readonly m_vOffsetMin: Vector
 	readonly m_vOffsetMax: Vector
 }
+declare var C_INIT_AddVectorToVector: C_INIT_AddVectorToVector;
 
 interface CSosGroupBranchPattern {
-	readonly type_name: string
 	readonly m_bMatchEventName: boolean
 	readonly m_bMatchEventSubString: boolean
 	readonly m_bMatchEntIndex: boolean
 	readonly m_bMatchOpvar: boolean
 }
+declare var CSosGroupBranchPattern: CSosGroupBranchPattern;
 
 interface C_OP_RemapSpeed extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
@@ -5425,18 +5424,18 @@ interface C_OP_RemapSpeed extends CParticleFunctionOperator {
 	readonly m_bScaleCurrent: boolean
 	readonly m_bIgnoreDelta: boolean
 }
+declare var C_OP_RemapSpeed: C_OP_RemapSpeed;
 
 interface CTaskStatusAnimTag extends CAnimTagBase {
-	readonly type_name: string
 	readonly m_identifierString: string
 }
+declare var CTaskStatusAnimTag: CTaskStatusAnimTag;
 
 interface IVehicle {
-	readonly type_name: string
 }
+declare var IVehicle: IVehicle;
 
 interface CRR_Response {
-	readonly type_name: string
 	readonly m_Type: number
 	readonly m_Params: ResponseParams
 	readonly m_fMatchScore: number
@@ -5445,9 +5444,9 @@ interface CRR_Response {
 	readonly m_Followup: ResponseFollowup
 	readonly m_pchCriteriaValues: string[]
 }
+declare var CRR_Response: CRR_Response;
 
 interface AnimationSnapshotBase_t {
-	readonly type_name: string
 	readonly m_flRealTime: number
 	readonly m_bBonesInWorldSpace: boolean
 	readonly m_boneSetupMask: number[]
@@ -5456,23 +5455,23 @@ interface AnimationSnapshotBase_t {
 	readonly m_bHasDecodeDump: boolean
 	readonly m_DecodeDump: AnimationDecodeDebugDumpElement_t
 }
+declare var AnimationSnapshotBase_t: AnimationSnapshotBase_t;
 
 interface MaterialParamTexture_t extends MaterialParam_t {
-	readonly type_name: string
 }
+declare var MaterialParamTexture_t: MaterialParamTexture_t;
 
 interface CTiltTwistConstraint extends CBaseConstraint {
-	readonly type_name: string
 	readonly m_nTargetAxis: number
 	readonly m_nSlaveAxis: number
 }
+declare var CTiltTwistConstraint: CTiltTwistConstraint;
 
 interface InfoForResourceTypeCPanoramaScript {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCPanoramaScript: InfoForResourceTypeCPanoramaScript;
 
 interface CGlobalLightBase {
-	readonly type_name: string
 	readonly m_bSpotLight: boolean
 	readonly m_SpotLightOrigin: Vector
 	readonly m_SpotLightAngles: QAngle
@@ -5519,18 +5518,18 @@ interface CGlobalLightBase {
 	readonly m_fSmoothedAmount: number
 	readonly m_fSlowSmoothedAmount: number
 }
+declare var CGlobalLightBase: CGlobalLightBase;
 
 interface CPassengerInfo {
-	readonly type_name: string
 	readonly m_nRole: number
 	readonly m_nSeat: number
 	readonly m_strRoleName: string
 	readonly m_strSeatName: string
 	readonly m_hPassenger: C_BaseEntity
 }
+declare var CPassengerInfo: CPassengerInfo;
 
 interface AIHullFlags_t {
-	readonly type_name: string
 	readonly m_bHull_Human: boolean
 	readonly m_bHull_SmallCentered: boolean
 	readonly m_bHull_WideHuman: boolean
@@ -5541,9 +5540,9 @@ interface AIHullFlags_t {
 	readonly m_bHull_LargeCentered: boolean
 	readonly m_bHull_MediumTall: boolean
 }
+declare var AIHullFlags_t: AIHullFlags_t;
 
 interface C_INIT_RemapSpeedToScalar extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_flStartTime: number
 	readonly m_flEndTime: number
@@ -5554,30 +5553,30 @@ interface C_INIT_RemapSpeedToScalar extends CParticleFunctionInitializer {
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bPerParticle: boolean
 }
+declare var C_INIT_RemapSpeedToScalar: C_INIT_RemapSpeedToScalar;
 
 interface ParticleChildrenInfo_t {
-	readonly type_name: string
 	readonly m_flDelay: number
 	readonly m_bEndCap: boolean
 	readonly m_bDisableChild: boolean
 }
+declare var ParticleChildrenInfo_t: ParticleChildrenInfo_t;
 
 interface C_OP_HSVShiftToCP extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nColorCP: number
 	readonly m_nColorGemEnableCP: number
 	readonly m_nOutputCP: number
 	readonly m_DefaultHSVColor: Color
 }
+declare var C_OP_HSVShiftToCP: C_OP_HSVShiftToCP;
 
 interface C_OP_SetCPOrientationToDirection extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nInputControlPoint: number
 	readonly m_nOutputControlPoint: number
 }
+declare var C_OP_SetCPOrientationToDirection: C_OP_SetCPOrientationToDirection;
 
 interface CSceneObjectExtraData_t {
-	readonly type_name: string
 	readonly m_flExtraShaderData: number[]
 	readonly m_nCurrentMeshGroupMask: bigint
 	readonly m_vLightingOrigin: Vector
@@ -5589,13 +5588,13 @@ interface CSceneObjectExtraData_t {
 	readonly m_nCubeMapPrecomputedHandshake: number
 	readonly m_nLightProbeVolumePrecomputedHandshake: number
 }
+declare var CSceneObjectExtraData_t: CSceneObjectExtraData_t;
 
 interface CActivityValueList {
-	readonly type_name: string
 }
+declare var CActivityValueList: CActivityValueList;
 
 interface CClientAlphaProperty extends IClientAlphaProperty {
-	readonly type_name: string
 	readonly m_nRenderFX: number
 	readonly m_nRenderMode: number
 	readonly m_bAlphaOverride: boolean
@@ -5611,25 +5610,25 @@ interface CClientAlphaProperty extends IClientAlphaProperty {
 	readonly m_flRenderFxStartTime: number
 	readonly m_flRenderFxDuration: number
 }
+declare var CClientAlphaProperty: CClientAlphaProperty;
 
 interface C_OP_SetControlPointsToModelParticles extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nFirstControlPoint: number
 	readonly m_nNumControlPoints: number
 	readonly m_nFirstSourcePoint: number
 	readonly m_bSkin: boolean
 	readonly m_bAttachment: boolean
 }
+declare var C_OP_SetControlPointsToModelParticles: C_OP_SetControlPointsToModelParticles;
 
 interface C_OP_GlobalLight extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flScale: number
 	readonly m_bClampLowerRange: boolean
 	readonly m_bClampUpperRange: boolean
 }
+declare var C_OP_GlobalLight: C_OP_GlobalLight;
 
 interface CSceneObject {
-	readonly type_name: string
 	readonly m_pRefData: CSceneObjectReference_t
 	readonly m_flStartFadeDistanceSquared: number
 	readonly m_flFarCullDistanceSquared: number
@@ -5646,9 +5645,9 @@ interface CSceneObject {
 	readonly m_nOriginalRenderableFlags: bigint
 	readonly m_nRenderableFlags: bigint
 }
+declare var CSceneObject: CSceneObject;
 
 interface C_DOTAGameManager {
-	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
 	readonly m_bCustomGame: boolean
 	readonly m_bEventGame: boolean
@@ -5660,16 +5659,16 @@ interface C_DOTAGameManager {
 	readonly m_CulledHeroes: boolean[]
 	readonly m_BonusHeroes: boolean[]
 }
+declare var C_DOTAGameManager: C_DOTAGameManager;
 
 interface ResponseContext_t {
-	readonly type_name: string
 	readonly m_iszName: string
 	readonly m_iszValue: string
 	readonly m_fExpirationTime: number
 }
+declare var ResponseContext_t: ResponseContext_t;
 
 interface C_OP_SetPerChildControlPointFromAttribute extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nChildGroupID: number
 	readonly m_nFirstControlPoint: number
 	readonly m_nNumControlPoints: number
@@ -5678,21 +5677,21 @@ interface C_OP_SetPerChildControlPointFromAttribute extends CParticleFunctionOpe
 	readonly m_bNumBasedOnParticleCount: boolean
 	readonly m_nCPField: number
 }
+declare var C_OP_SetPerChildControlPointFromAttribute: C_OP_SetPerChildControlPointFromAttribute;
 
 interface C_OP_RemapScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 }
+declare var C_OP_RemapScalar: C_OP_RemapScalar;
 
 interface C_INIT_RemapParticleCountToNamedModelMeshGroupScalar extends C_INIT_RemapParticleCountToNamedModelElementScalar {
-	readonly type_name: string
 }
+declare var C_INIT_RemapParticleCountToNamedModelMeshGroupScalar: C_INIT_RemapParticleCountToNamedModelMeshGroupScalar;
 
 interface CHitReactAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_triggerParam: AnimParamID
 	readonly m_hitBoneParam: AnimParamID
@@ -5717,9 +5716,9 @@ interface CHitReactAnimNode extends CAnimNodeBase {
 	readonly m_flHipDipDelay: number
 	readonly m_bResetBase: boolean
 }
+declare var CHitReactAnimNode: CHitReactAnimNode;
 
 interface TonemapParameters_t {
-	readonly type_name: string
 	readonly m_flAutoExposureMin: number
 	readonly m_flAutoExposureMax: number
 	readonly m_flExposureCompensationScalar: number
@@ -5731,68 +5730,68 @@ interface TonemapParameters_t {
 	readonly m_flRate: number
 	readonly m_flAccelerateExposureDown: number
 }
+declare var TonemapParameters_t: TonemapParameters_t;
 
 interface C_OP_SetParentControlPointsToChildCP extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nChildGroupID: number
 	readonly m_nChildControlPoint: number
 	readonly m_nNumControlPoints: number
 	readonly m_nFirstSourcePoint: number
 	readonly m_bSetOrientation: boolean
 }
+declare var C_OP_SetParentControlPointsToChildCP: C_OP_SetParentControlPointsToChildCP;
 
 interface AnimationRetargetData_t {
-	readonly type_name: string
 	readonly m_bEnableRetarget: number
 	readonly m_nRetargetStyle: number
 }
+declare var AnimationRetargetData_t: AnimationRetargetData_t;
 
 interface EventClientPollNetworking_t {
-	readonly type_name: string
 	readonly m_nTickCount: number
 }
+declare var EventClientPollNetworking_t: EventClientPollNetworking_t;
 
 interface C_OP_LagCompensation extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nDesiredVelocityCP: number
 	readonly m_nLatencyCP: number
 	readonly m_nLatencyCPField: number
 	readonly m_nDesiredVelocityCPField: number
 }
+declare var C_OP_LagCompensation: C_OP_LagCompensation;
 
 interface C_OP_ReadFromNeighboringParticle extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nIncrement: number
 	readonly m_DistanceCheck: CPerParticleFloatInput
 	readonly m_flInterpolation: CPerParticleFloatInput
 }
+declare var C_OP_ReadFromNeighboringParticle: C_OP_ReadFromNeighboringParticle;
 
 interface CMoveHeadingCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_comparisonValue: number
 }
+declare var CMoveHeadingCondition: CMoveHeadingCondition;
 
 interface prevent_interaction_t {
-	readonly type_name: string
 	readonly m_hEntity: C_BaseEntity
 	readonly m_flUntilTime: number
 }
+declare var prevent_interaction_t: prevent_interaction_t;
 
 interface C_OP_SetToCP extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_vecOffset: Vector
 	readonly m_bOffsetLocal: boolean
 }
+declare var C_OP_SetToCP: C_OP_SetToCP;
 
 interface WeaponSoundData_t {
-	readonly type_name: string
 	readonly m_Type: number
 	readonly m_Sound: string
 }
+declare var WeaponSoundData_t: WeaponSoundData_t;
 
 interface C_OP_SetControlPointOrientation extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_bUseWorldLocation: boolean
 	readonly m_bRandomize: boolean
 	readonly m_bSetOnce: boolean
@@ -5801,14 +5800,14 @@ interface C_OP_SetControlPointOrientation extends CParticleFunctionPreEmission {
 	readonly m_vecRotation: QAngle
 	readonly m_vecRotationB: QAngle
 }
+declare var C_OP_SetControlPointOrientation: C_OP_SetControlPointOrientation;
 
 interface C_OP_NormalizeVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flScale: number
 }
+declare var C_OP_NormalizeVector: C_OP_NormalizeVector;
 
 interface CDampedPathAnimMotor extends CBasePathAnimMotor {
-	readonly type_name: string
 	readonly m_flAnticipationTime: number
 	readonly m_anticipationPosParam: AnimParamID
 	readonly m_anticipationHeadingParam: AnimParamID
@@ -5816,15 +5815,15 @@ interface CDampedPathAnimMotor extends CBasePathAnimMotor {
 	readonly m_flMinSpringTension: number
 	readonly m_flMaxSpringTension: number
 }
+declare var CDampedPathAnimMotor: CDampedPathAnimMotor;
 
 interface AnimResourceDataChannel_t {
-	readonly type_name: string
 	readonly m_nFlags: number
 	readonly m_nType: number
 }
+declare var AnimResourceDataChannel_t: AnimResourceDataChannel_t;
 
 interface C_INIT_InitialRepulsionVelocity extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecOutputMin: Vector
 	readonly m_vecOutputMax: Vector
 	readonly m_nControlPointNumber: number
@@ -5837,9 +5836,9 @@ interface C_INIT_InitialRepulsionVelocity extends CParticleFunctionInitializer {
 	readonly m_nChildCP: number
 	readonly m_nChildGroupID: number
 }
+declare var C_INIT_InitialRepulsionVelocity: C_INIT_InitialRepulsionVelocity;
 
 interface SeqResourceMultiFetch_t_Flag_t {
-	readonly type_name: string
 	readonly m_bRealtime: boolean
 	readonly m_bCylepose: boolean
 	readonly m_b0D: boolean
@@ -5847,43 +5846,43 @@ interface SeqResourceMultiFetch_t_Flag_t {
 	readonly m_b2D: boolean
 	readonly m_b2D_TRI: boolean
 }
+declare var SeqResourceMultiFetch_t_Flag_t: SeqResourceMultiFetch_t_Flag_t;
 
 interface EventClientPauseSimulate_t extends EventSimulate_t {
-	readonly type_name: string
 }
+declare var EventClientPauseSimulate_t: EventClientPauseSimulate_t;
 
 interface CFireOverlay extends CGlowOverlay {
-	readonly type_name: string
 	readonly m_pOwner: C_FireSmoke
 	readonly m_vBaseColors: Vector[]
 	readonly m_flScale: number
 	readonly m_nGUID: number
 }
+declare var CFireOverlay: CFireOverlay;
 
 interface CThrustController {
-	readonly type_name: string
 	readonly m_thrustVector: Vector
 	readonly m_torqueVector: Vector
 	readonly m_thrust: number
 }
+declare var CThrustController: CThrustController;
 
 interface C_OP_RemapControlPointDirectionToVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flScale: number
 	readonly m_nControlPointNumber: number
 }
+declare var C_OP_RemapControlPointDirectionToVector: C_OP_RemapControlPointDirectionToVector;
 
 interface C_INIT_RemapInitialDirectionToCPToVector extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_flScale: number
 	readonly m_flOffsetRot: number
 	readonly m_vecOffsetAxis: Vector
 	readonly m_bNormalize: boolean
 }
+declare var C_INIT_RemapInitialDirectionToCPToVector: C_INIT_RemapInitialDirectionToCPToVector;
 
 interface CPhysSurfaceProperties {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_nameHash: number
 	readonly m_baseNameHash: number
@@ -5893,22 +5892,22 @@ interface CPhysSurfaceProperties {
 	readonly m_audioSounds: CPhysSurfacePropertiesSoundNames
 	readonly m_audioParams: CPhysSurfacePropertiesAudio
 }
+declare var CPhysSurfaceProperties: CPhysSurfaceProperties;
 
 interface FeTaperedCapsuleRigid_t {
-	readonly type_name: string
 	readonly nNode: number
 	readonly nCollisionMask: number
 	readonly vCenter: Vector[]
 	readonly flRadius: number[]
 	readonly flStickiness: number
 }
+declare var FeTaperedCapsuleRigid_t: FeTaperedCapsuleRigid_t;
 
 interface CDOTA_Modifier_Lua_Vertical_Motion extends CDOTA_Modifier_Lua, CVerticalMotionController {
-	readonly type_name: string
 }
+declare var CDOTA_Modifier_Lua_Vertical_Motion: CDOTA_Modifier_Lua_Vertical_Motion;
 
 interface CTurnHelperAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_facingTarget: number
 	readonly m_turnStartTime: number
@@ -5918,38 +5917,38 @@ interface CTurnHelperAnimNode extends CAnimNodeBase {
 	readonly m_bUseManualTurnOffset: boolean
 	readonly m_manualTurnOffset: number
 }
+declare var CTurnHelperAnimNode: CTurnHelperAnimNode;
 
 interface CActivityValues {
-	readonly type_name: string
 	readonly m_activityName: string
 }
+declare var CActivityValues: CActivityValues;
 
 interface PermRenderMeshData_t {
-	readonly type_name: string
 }
+declare var PermRenderMeshData_t: PermRenderMeshData_t;
 
 interface ConstraintSlave_t {
-	readonly type_name: string
 	readonly m_nBoneHash: number
 	readonly m_flWeight: number
 	readonly m_vBasePosition: Vector
 }
+declare var ConstraintSlave_t: ConstraintSlave_t;
 
 interface C_OP_SetCPtoVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCPInput: number
 }
+declare var C_OP_SetCPtoVector: C_OP_SetCPtoVector;
 
 interface C_OP_MovementRotateParticleAroundAxis extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_vecRotAxis: Vector
 	readonly m_flRotRate: number
 	readonly m_nCP: number
 	readonly m_bLocalSpace: boolean
 }
+declare var C_OP_MovementRotateParticleAroundAxis: C_OP_MovementRotateParticleAroundAxis;
 
 interface C_INIT_CreateOnModel extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_nForceInModel: number
 	readonly m_nDesiredHitbox: number
@@ -5961,21 +5960,21 @@ interface C_INIT_CreateOnModel extends CParticleFunctionInitializer {
 	readonly m_bLocalCoords: boolean
 	readonly m_bUseBones: boolean
 }
+declare var C_INIT_CreateOnModel: C_INIT_CreateOnModel;
 
 interface CSolveIKChainAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_IkChains: string[]
 }
+declare var CSolveIKChainAnimNode: CSolveIKChainAnimNode;
 
 interface AnimationRetargetChainData_t {
-	readonly type_name: string
 	readonly m_nGroupType: number
 	readonly m_nChainType: number
 }
+declare var AnimationRetargetChainData_t: AnimationRetargetChainData_t;
 
 interface CHitBox {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_sSurfaceProperty: string
 	readonly m_sBoneName: string
@@ -5989,116 +5988,116 @@ interface CHitBox {
 	readonly m_bVisible: boolean
 	readonly m_bSelected: boolean
 }
+declare var CHitBox: CHitBox;
 
 interface CRecipientFilter extends IRecipientFilter {
-	readonly type_name: string
 	readonly m_nBufType: number
 	readonly m_bInitMessage: boolean
 	readonly m_Recipients: C_BaseEntity[]
 	readonly m_bUsingPredictionRules: boolean
 	readonly m_bIgnorePredictionCull: boolean
 }
+declare var CRecipientFilter: CRecipientFilter;
 
 interface InfoForResourceTypeAnimationResourceData_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeAnimationResourceData_t: InfoForResourceTypeAnimationResourceData_t;
 
 interface ClusteredDistributionParams_t {
-	readonly type_name: string
 	readonly m_flClusterCoverageFraction: number
 	readonly m_flClusterArea: number
 }
+declare var ClusteredDistributionParams_t: ClusteredDistributionParams_t;
 
 interface C_OP_RampScalarSplineSimple extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_Rate: number
 	readonly m_flStartTime: number
 	readonly m_flEndTime: number
 	readonly m_bEaseOut: boolean
 }
+declare var C_OP_RampScalarSplineSimple: C_OP_RampScalarSplineSimple;
 
 interface C_EconItemAttribute {
-	readonly type_name: string
 	readonly m_iAttributeDefinitionIndex: number
 	readonly m_flValue: number
 }
+declare var C_EconItemAttribute: C_EconItemAttribute;
 
 interface C_CHintMessageQueue {
-	readonly type_name: string
 	readonly m_tmMessageEnd: number
 	readonly m_messages: CHintMessage[]
 	readonly m_pPlayer: C_BasePlayer
 }
+declare var C_CHintMessageQueue: C_CHintMessageQueue;
 
 interface CTeamplayRules extends CMultiplayRules {
-	readonly type_name: string
 	readonly m_DisableDeathMessages: boolean
 	readonly m_DisableDeathPenalty: boolean
 	readonly m_teamLimit: boolean
 	readonly m_bSwitchTeams: boolean
 	readonly m_bScrambleTeams: boolean
 }
+declare var CTeamplayRules: CTeamplayRules;
 
 interface AnimResourceFrameBlockAnim_t {
-	readonly type_name: string
 	readonly m_nStartFrame: number
 	readonly m_nEndFrame: number
 }
+declare var AnimResourceFrameBlockAnim_t: AnimResourceFrameBlockAnim_t;
 
 interface RenderSkeletonData_t {
-	readonly type_name: string
 	readonly m_nBoneCount: number
 	readonly m_nBoneWeightCount: number
 	readonly m_nFlags: number
 }
+declare var RenderSkeletonData_t: RenderSkeletonData_t;
 
 interface FeQuad_t {
-	readonly type_name: string
 	readonly nNode: number[]
 	readonly flSlack: number
 }
+declare var FeQuad_t: FeQuad_t;
 
 interface dota_minimap_boundary extends CEmptyEntityInstance {
-	readonly type_name: string
 }
+declare var dota_minimap_boundary: dota_minimap_boundary;
 
 interface vehicle_gear_t {
-	readonly type_name: string
 	readonly flMinSpeed: number
 	readonly flMaxSpeed: number
 	readonly flSpeedApproachFactor: number
 }
+declare var vehicle_gear_t: vehicle_gear_t;
 
 interface C_INIT_VelocityFromNormal extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_fSpeedMin: number
 	readonly m_fSpeedMax: number
 	readonly m_bIgnoreDt: boolean
 }
+declare var C_INIT_VelocityFromNormal: C_INIT_VelocityFromNormal;
 
 interface CSosGroupMatchPattern extends CSosGroupBranchPattern {
-	readonly type_name: string
 	readonly m_matchSoundEventName: string
 	readonly m_matchSoundEventSubString: string
 	readonly m_flEntIndex: number
 	readonly m_flOpvar: number
 }
+declare var CSosGroupMatchPattern: CSosGroupMatchPattern;
 
 interface InfoForResourceTypeCDotaItemDefinitionResource {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCDotaItemDefinitionResource: InfoForResourceTypeCDotaItemDefinitionResource;
 
 interface C_OP_SetControlPointsToParticle extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nChildGroupID: number
 	readonly m_nFirstControlPoint: number
 	readonly m_nNumControlPoints: number
 	readonly m_nFirstSourcePoint: number
 	readonly m_bSetOrientation: boolean
 }
+declare var C_OP_SetControlPointsToParticle: C_OP_SetControlPointsToParticle;
 
 interface CSound {
-	readonly type_name: string
 	readonly m_hOwner: C_BaseEntity
 	readonly m_hTarget: C_BaseEntity
 	readonly m_iVolume: number
@@ -6112,9 +6111,9 @@ interface CSound {
 	readonly m_vecOrigin: Vector
 	readonly m_bHasOwner: boolean
 }
+declare var CSound: CSound;
 
 interface CSoundParameters {
-	readonly type_name: string
 	readonly channel: number
 	readonly volume: number
 	readonly pitch: number
@@ -6128,24 +6127,24 @@ interface CSoundParameters {
 	readonly delay_msec: number
 	readonly m_nRandomSeed: number
 }
+declare var CSoundParameters: CSoundParameters;
 
 interface C_OP_NormalLock extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 }
+declare var C_OP_NormalLock: C_OP_NormalLock;
 
 interface CSSDSEndFrameViewInfo {
-	readonly type_name: string
 	readonly m_nViewId: bigint
 	readonly m_ViewName: string
 }
+declare var CSSDSEndFrameViewInfo: CSSDSEndFrameViewInfo;
 
 interface CDOTA_Modifier_Lua_Horizontal_Motion extends CDOTA_Modifier_Lua, CHorizontalMotionController {
-	readonly type_name: string
 }
+declare var CDOTA_Modifier_Lua_Horizontal_Motion: CDOTA_Modifier_Lua_Horizontal_Motion;
 
 interface CTimeline extends IntervalTimer {
-	readonly type_name: string
 	readonly m_flValues: number[]
 	readonly m_nValueCounts: number[]
 	readonly m_nBucketCount: number
@@ -6154,15 +6153,15 @@ interface CTimeline extends IntervalTimer {
 	readonly m_nCompressionType: number
 	readonly m_bStopped: boolean
 }
+declare var CTimeline: CTimeline;
 
 interface C_OP_RenderTonemapController extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_flTonemapLevel: number
 	readonly m_flTonemapWeight: number
 }
+declare var C_OP_RenderTonemapController: C_OP_RenderTonemapController;
 
 interface C_OP_TurbulenceForce extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_flNoiseCoordScale0: number
 	readonly m_flNoiseCoordScale1: number
 	readonly m_flNoiseCoordScale2: number
@@ -6172,13 +6171,13 @@ interface C_OP_TurbulenceForce extends CParticleFunctionForce {
 	readonly m_vecNoiseAmount2: Vector
 	readonly m_vecNoiseAmount3: Vector
 }
+declare var C_OP_TurbulenceForce: C_OP_TurbulenceForce;
 
 interface InfoForResourceTypeVSound_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeVSound_t: InfoForResourceTypeVSound_t;
 
 interface CLightInfoBase {
-	readonly type_name: string
 	readonly m_origin2D: Vector2D
 	readonly m_Color: Color[]
 	readonly m_LightScale: number[]
@@ -6271,29 +6270,29 @@ interface CLightInfoBase {
 	readonly m_flLightningAngle: number
 	readonly m_flLightningEventPercentage: number
 }
+declare var CLightInfoBase: CLightInfoBase;
 
 interface HeroPickRecord_t {
-	readonly type_name: string
 	readonly eType: number
 	readonly nHeroID: number
 	readonly nTeam: number
 }
+declare var HeroPickRecord_t: HeroPickRecord_t;
 
 interface IParticleSystemDefinition {
-	readonly type_name: string
 }
+declare var IParticleSystemDefinition: IParticleSystemDefinition;
 
 interface C_OP_RenderPoints extends CParticleFunctionRenderer {
-	readonly type_name: string
 }
+declare var C_OP_RenderPoints: C_OP_RenderPoints;
 
 interface C_OP_ScreenForceFromPlayerView extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_flAccel: number
 }
+declare var C_OP_ScreenForceFromPlayerView: C_OP_ScreenForceFromPlayerView;
 
 interface RnHull_t {
-	readonly type_name: string
 	readonly m_vCentroid: Vector
 	readonly m_flMaxAngularRadius: number
 	readonly m_vOrthographicAreas: Vector
@@ -6303,22 +6302,22 @@ interface RnHull_t {
 	readonly m_Bounds: AABB_t
 	readonly m_nFlags: number
 }
+declare var RnHull_t: RnHull_t;
 
 interface EventClientFrameSimulate_t {
-	readonly type_name: string
 	readonly m_LoopState: EngineLoopState_t
 	readonly m_flRealTime: number
 	readonly m_flFrameTime: number
 }
+declare var EventClientFrameSimulate_t: EventClientFrameSimulate_t;
 
 interface C_CommandContext {
-	readonly type_name: string
 	readonly needsprocessing: boolean
 	readonly command_number: number
 }
+declare var C_CommandContext: C_CommandContext;
 
 interface CModifierParams {
-	readonly type_name: string
 	readonly ability: C_BaseEntity
 	readonly fDamage: number
 	readonly fOriginalDamage: number
@@ -6361,9 +6360,9 @@ interface CModifierParams {
 	readonly hunit: C_BaseEntity
 	readonly pAddedBuff: CDOTA_Buff
 }
+declare var CModifierParams: CModifierParams;
 
 interface CDOTASubChallengeInfo {
-	readonly type_name: string
 	readonly nType: number
 	readonly nTier: number
 	readonly nSlotID: number
@@ -6376,9 +6375,9 @@ interface CDOTASubChallengeInfo {
 	readonly nRequiredHero: number
 	readonly nCompleted: number
 }
+declare var CDOTASubChallengeInfo: CDOTASubChallengeInfo;
 
 interface C_INIT_MoveBetweenPoints extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flSpeedMin: number
 	readonly m_flSpeedMax: number
 	readonly m_flEndSpread: number
@@ -6387,9 +6386,9 @@ interface C_INIT_MoveBetweenPoints extends CParticleFunctionInitializer {
 	readonly m_nEndControlPointNumber: number
 	readonly m_bTrailBias: boolean
 }
+declare var C_INIT_MoveBetweenPoints: C_INIT_MoveBetweenPoints;
 
 interface AnimResourceAnimDesc_t {
-	readonly type_name: string
 	readonly m_flags: AnimResourceAnimDesc_t_Flag_t
 	readonly fps: number
 	readonly framestalltime: number
@@ -6397,29 +6396,29 @@ interface AnimResourceAnimDesc_t {
 	readonly m_vecRootMax: Vector
 	readonly m_sequenceParams: AnimResourceSequenceParams_t
 }
+declare var AnimResourceAnimDesc_t: AnimResourceAnimDesc_t;
 
 interface ConstraintTarget_t {
-	readonly type_name: string
 	readonly m_nBoneHash: number
 	readonly m_flWeight: number
 	readonly m_vOffset: Vector
 	readonly m_bIsAttachment: boolean
 }
+declare var ConstraintTarget_t: ConstraintTarget_t;
 
 interface dynpitchvol_t extends dynpitchvol_base_t {
-	readonly type_name: string
 }
+declare var dynpitchvol_t: dynpitchvol_t;
 
 interface C_OP_CurlNoiseForce extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_useCurl: boolean
 	readonly m_vecNoiseFreq: Vector
 	readonly m_vecNoiseScale: Vector
 	readonly m_vecOffsetRate: Vector
 }
+declare var C_OP_CurlNoiseForce: C_OP_CurlNoiseForce;
 
 interface C_INIT_RandomColor extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_ColorMin: Color
 	readonly m_ColorMax: Color
 	readonly m_TintMin: Color
@@ -6430,26 +6429,26 @@ interface C_INIT_RandomColor extends CParticleFunctionInitializer {
 	readonly m_nTintBlendMode: number
 	readonly m_flLightAmplification: number
 }
+declare var C_INIT_RandomColor: C_INIT_RandomColor;
 
 interface CAnimParameterList {
-	readonly type_name: string
 }
+declare var CAnimParameterList: CAnimParameterList;
 
 interface C_DOTA_CombatLogQueryProgress {
-	readonly type_name: string
 	readonly m_nPlayerID: number
 	readonly m_nQueryID: number
 	readonly m_nQueryRank: number
 	readonly m_nMultiQueryID: number
 }
+declare var C_DOTA_CombatLogQueryProgress: C_DOTA_CombatLogQueryProgress;
 
 interface CStopwatchBase extends CSimpleSimTimer {
-	readonly type_name: string
 	readonly m_fIsRunning: boolean
 }
+declare var CStopwatchBase: CStopwatchBase;
 
 interface VPhysicsCollisionAttribute_t {
-	readonly type_name: string
 	readonly m_nInteractsAs: bigint
 	readonly m_nInteractsWith: bigint
 	readonly m_nInteractsExclude: bigint
@@ -6458,27 +6457,27 @@ interface VPhysicsCollisionAttribute_t {
 	readonly m_nCollisionGroup: number
 	readonly m_nCollisionFunctionMask: number
 }
+declare var VPhysicsCollisionAttribute_t: VPhysicsCollisionAttribute_t;
 
 interface IBody extends INextBotComponent {
-	readonly type_name: string
 }
+declare var IBody: IBody;
 
 interface CAnimGraphNetworkedVariables {
-	readonly type_name: string
 	readonly m_BoolVariables: boolean[]
 	readonly m_ByteVariables: number[]
 	readonly m_IntVariables: number[]
 	readonly m_FloatVariables: number[]
 }
+declare var CAnimGraphNetworkedVariables: CAnimGraphNetworkedVariables;
 
 interface C_OP_RemapDistanceToLineSegmentToVector extends C_OP_RemapDistanceToLineSegmentBase {
-	readonly type_name: string
 	readonly m_vMinOutputValue: Vector
 	readonly m_vMaxOutputValue: Vector
 }
+declare var C_OP_RemapDistanceToLineSegmentToVector: C_OP_RemapDistanceToLineSegmentToVector;
 
 interface C_OP_RemapParticleCountToScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nInputMin: CParticleCollectionFloatInput
 	readonly m_nInputMax: CParticleCollectionFloatInput
 	readonly m_flOutputMin: CParticleCollectionFloatInput
@@ -6487,17 +6486,17 @@ interface C_OP_RemapParticleCountToScalar extends CParticleFunctionOperator {
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bScaleCurrent: boolean
 }
+declare var C_OP_RemapParticleCountToScalar: C_OP_RemapParticleCountToScalar;
 
 interface CParticleAnimTag extends CAnimTagBase {
-	readonly type_name: string
 	readonly m_particleSystemName: string
 	readonly m_configName: string
 	readonly m_bStopWhenTagEnds: boolean
 	readonly m_bTagEndStopIsInstant: boolean
 }
+declare var CParticleAnimTag: CParticleAnimTag;
 
 interface CCompressorGroup {
-	readonly type_name: string
 	readonly m_nTotalElementCount: number
 	readonly m_szChannelClass: string[]
 	readonly m_szVariableName: string[]
@@ -6509,86 +6508,86 @@ interface CCompressorGroup {
 	readonly m_nElementUniqueID: number[][]
 	readonly m_nElementMask: number[]
 }
+declare var CCompressorGroup: CCompressorGroup;
 
 interface CRenderBufferBinding {
-	readonly type_name: string
 	readonly m_hBuffer: bigint
 	readonly m_nBindOffsetBytes: number
 }
+declare var CRenderBufferBinding: CRenderBufferBinding;
 
 interface CBasePortraitData {
-	readonly type_name: string
 	readonly m_bHasSetupView: boolean
 	readonly m_flRotation: number
 }
+declare var CBasePortraitData: CBasePortraitData;
 
 interface C_OP_AlphaDecay extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flMinAlpha: number
 }
+declare var C_OP_AlphaDecay: C_OP_AlphaDecay;
 
 interface C_OP_ExternalWindForce extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_vecScale: Vector
 }
+declare var C_OP_ExternalWindForce: C_OP_ExternalWindForce;
 
 interface CAnimReplayFrame {
-	readonly type_name: string
 	readonly m_timeStamp: number
 }
+declare var CAnimReplayFrame: CAnimReplayFrame;
 
 interface CChoreoAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 }
+declare var CChoreoAnimNode: CChoreoAnimNode;
 
 interface CCopyRecipientFilter extends IRecipientFilter {
-	readonly type_name: string
 	readonly m_Flags: number
 	readonly m_Recipients: C_BaseEntity[]
 }
+declare var CCopyRecipientFilter: CCopyRecipientFilter;
 
 interface CRandSimTimer extends CSimpleSimTimer {
-	readonly type_name: string
 	readonly m_minInterval: number
 	readonly m_maxInterval: number
 }
+declare var CRandSimTimer: CRandSimTimer;
 
 interface C_OP_RenderText extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_OutlineColor: Color
 	readonly m_DefaultText: string
 }
+declare var C_OP_RenderText: C_OP_RenderText;
 
 interface CChoiceNodeChild {
-	readonly type_name: string
 	readonly m_nodeID: AnimNodeID
 	readonly m_name: string
 	readonly m_weight: number
 }
+declare var CChoiceNodeChild: CChoiceNodeChild;
 
 interface CDOTA_Orb {
-	readonly type_name: string
 	readonly m_hCaster: C_BaseEntity
 	readonly m_hAbility: C_BaseEntity
 }
+declare var CDOTA_Orb: CDOTA_Orb;
 
 interface sSharedCooldownInfo {
-	readonly type_name: string
 	readonly cooldownName: string
 	readonly cooldownLength: number
 	readonly cooldownTime: number
 }
+declare var sSharedCooldownInfo: sSharedCooldownInfo;
 
 interface C_INIT_InheritVelocity extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_flVelocityScale: number
 }
+declare var C_INIT_InheritVelocity: C_INIT_InheritVelocity;
 
 interface CSosSoundEventGroupSchema {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_nType: number
 	readonly m_bIsBlocking: boolean
@@ -6598,41 +6597,41 @@ interface CSosSoundEventGroupSchema {
 	readonly m_branchPattern: CSosGroupBranchPattern
 	readonly m_vActions: CSosGroupActionSchema[]
 }
+declare var CSosSoundEventGroupSchema: CSosSoundEventGroupSchema;
 
 interface BundleData_t {
-	readonly type_name: string
 	readonly m_flULeftSrc: number
 	readonly m_flVTopSrc: number
 }
+declare var BundleData_t: BundleData_t;
 
 interface C_OP_ClampScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 }
+declare var C_OP_ClampScalar: C_OP_ClampScalar;
 
 interface C_OP_TwistAroundAxis extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_fForceAmount: number
 	readonly m_TwistAxis: Vector
 	readonly m_bLocalSpace: boolean
 	readonly m_nControlPointNumber: number
 }
+declare var C_OP_TwistAroundAxis: C_OP_TwistAroundAxis;
 
 interface VSoundEvent_t {
-	readonly type_name: string
 }
+declare var VSoundEvent_t: VSoundEvent_t;
 
 interface RnHalfEdge_t {
-	readonly type_name: string
 	readonly m_nNext: number
 	readonly m_nTwin: number
 	readonly m_nOrigin: number
 	readonly m_nFace: number
 }
+declare var RnHalfEdge_t: RnHalfEdge_t;
 
 interface CVRHandAttachmentInput {
-	readonly type_name: string
 	readonly m_nButtons: bigint
 	readonly m_afButtonPressed: bigint
 	readonly m_afButtonReleased: bigint
@@ -6648,9 +6647,9 @@ interface CVRHandAttachmentInput {
 	readonly m_flJoystickAnalogValueX: number
 	readonly m_flJoystickAnalogValueY: number
 }
+declare var CVRHandAttachmentInput: CVRHandAttachmentInput;
 
 interface CPlayerLocalData {
-	readonly type_name: string
 	readonly m_NetworkVar_PathIndex: ChangeAccessorFieldPathIndex_t
 	readonly m_chAreaBits: number[]
 	readonly m_chAreaPortalBits: number[]
@@ -6677,9 +6676,9 @@ interface CPlayerLocalData {
 	readonly m_audio: audioparams_t
 	readonly m_fog: fogparams_t
 }
+declare var CPlayerLocalData: CPlayerLocalData;
 
 interface CSceneEventInfo {
-	readonly type_name: string
 	readonly m_bStarted: boolean
 	readonly m_iLayer: number
 	readonly m_iPriority: number
@@ -6696,64 +6695,64 @@ interface CSceneEventInfo {
 	readonly m_bClientSide: boolean
 	readonly m_bShouldRemove: boolean
 }
+declare var CSceneEventInfo: CSceneEventInfo;
 
 interface C_OP_LerpToOtherAttribute extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInterpolation: CPerParticleFloatInput
 }
+declare var C_OP_LerpToOtherAttribute: C_OP_LerpToOtherAttribute;
 
 interface C_OP_ClampVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_vecOutputMin: Vector
 	readonly m_vecOutputMax: Vector
 }
+declare var C_OP_ClampVector: C_OP_ClampVector;
 
 interface EventClientProcessNetworking_t {
-	readonly type_name: string
 }
+declare var EventClientProcessNetworking_t: EventClientProcessNetworking_t;
 
 interface PlayerSeatAssignment_t {
-	readonly type_name: string
 	readonly unAccountID: number
 	readonly unSeat: number
 	readonly unReversedSeat: number
 	readonly unTeamID: number
 }
+declare var PlayerSeatAssignment_t: PlayerSeatAssignment_t;
 
 interface InfoForResourceTypeCPanoramaLayout {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCPanoramaLayout: InfoForResourceTypeCPanoramaLayout;
 
 interface C_OP_LockToSavedSequentialPath extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flFadeStart: number
 	readonly m_flFadeEnd: number
 	readonly m_bCPPairs: boolean
 	readonly m_PathParams: CPathParameters
 }
+declare var C_OP_LockToSavedSequentialPath: C_OP_LockToSavedSequentialPath;
 
 interface C_INIT_RemapInitialVisibilityScalar extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 }
+declare var C_INIT_RemapInitialVisibilityScalar: C_INIT_RemapInitialVisibilityScalar;
 
 interface TimedKillEvent_t {
-	readonly type_name: string
 	readonly m_nKillTime: number
 	readonly m_flKillValue: number
 	readonly m_nPlayerID: number
 }
+declare var TimedKillEvent_t: TimedKillEvent_t;
 
 interface CPhysicsShake {
-	readonly type_name: string
 	readonly m_force: Vector
 }
+declare var CPhysicsShake: CPhysicsShake;
 
 interface C_OP_RenderLights extends C_OP_RenderPoints {
-	readonly type_name: string
 	readonly m_flAnimationRate: number
 	readonly m_bFitCycleToLifetime: boolean
 	readonly m_bAnimateInFPS: boolean
@@ -6762,56 +6761,56 @@ interface C_OP_RenderLights extends C_OP_RenderPoints {
 	readonly m_flStartFadeSize: number
 	readonly m_flEndFadeSize: number
 }
+declare var C_OP_RenderLights: C_OP_RenderLights;
 
 interface CTimeCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_comparisonValue: number
 }
+declare var CTimeCondition: CTimeCondition;
 
 interface C_OP_RemapNamedModelSequenceEndCap extends C_OP_RemapNamedModelElementEndCap {
-	readonly type_name: string
 }
+declare var C_OP_RemapNamedModelSequenceEndCap: C_OP_RemapNamedModelSequenceEndCap;
 
 interface EventClientProcessGameInput_t {
-	readonly type_name: string
 	readonly m_LoopState: EngineLoopState_t
 	readonly m_flRealTime: number
 	readonly m_flFrameTime: number
 }
+declare var EventClientProcessGameInput_t: EventClientProcessGameInput_t;
 
 interface VsInputSignatureElement_t {
-	readonly type_name: string
 	readonly m_nD3DSemanticIndex: number
 }
+declare var VsInputSignatureElement_t: VsInputSignatureElement_t;
 
 interface CDOTA_Modifier_Lua_Motion_Both extends CDOTA_Modifier_Lua, CVerticalMotionController, CHorizontalMotionController {
-	readonly type_name: string
 }
+declare var CDOTA_Modifier_Lua_Motion_Both: CDOTA_Modifier_Lua_Motion_Both;
 
 interface C_OP_EnableChildrenFromParentParticleCount extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nChildGroupID: number
 	readonly m_nFirstChild: number
 	readonly m_nNumChildrenToEnable: number
 }
+declare var C_OP_EnableChildrenFromParentParticleCount: C_OP_EnableChildrenFromParentParticleCount;
 
 interface C_INIT_RandomRotationSpeed extends CGeneralRandomRotation {
-	readonly type_name: string
 }
+declare var C_INIT_RandomRotationSpeed: C_INIT_RandomRotationSpeed;
 
 interface VertexPositionColor_t {
-	readonly type_name: string
 	readonly m_vPosition: Vector
 }
+declare var VertexPositionColor_t: VertexPositionColor_t;
 
 interface CFailableAchievement extends CBaseAchievement {
-	readonly type_name: string
 	readonly m_bActivated: boolean
 	readonly m_bFailed: boolean
 }
+declare var CFailableAchievement: CFailableAchievement;
 
 interface C_OP_CalculateVectorAttribute extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_vStartValue: Vector
 	readonly m_flInputScale1: number
 	readonly m_flInputScale2: number
@@ -6821,15 +6820,15 @@ interface C_OP_CalculateVectorAttribute extends CParticleFunctionOperator {
 	readonly m_flControlPointScale2: number
 	readonly m_vFinalOutputScale: Vector
 }
+declare var C_OP_CalculateVectorAttribute: C_OP_CalculateVectorAttribute;
 
 interface C_OP_SetCPOrientationToPointAtCP extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nInputCP: number
 	readonly m_nOutputCP: number
 }
+declare var C_OP_SetCPOrientationToPointAtCP: C_OP_SetCPOrientationToPointAtCP;
 
 interface SceneObject_t {
-	readonly type_name: string
 	readonly m_nObjectID: number
 	readonly m_flFadeStartDistance: number
 	readonly m_flFadeEndDistance: number
@@ -6840,9 +6839,9 @@ interface SceneObject_t {
 	readonly m_nCubeMapPrecomputedHandshake: number
 	readonly m_nLightProbeVolumePrecomputedHandshake: number
 }
+declare var SceneObject_t: SceneObject_t;
 
 interface CSSDSMsg_ViewTarget {
-	readonly type_name: string
 	readonly m_Name: string
 	readonly m_TextureId: bigint
 	readonly m_nWidth: number
@@ -6854,9 +6853,9 @@ interface CSSDSMsg_ViewTarget {
 	readonly m_nMultisampleNumSamples: number
 	readonly m_nFormat: number
 }
+declare var CSSDSMsg_ViewTarget: CSSDSMsg_ViewTarget;
 
 interface PostProcessingBloomParameters_t {
-	readonly type_name: string
 	readonly m_blendMode: number
 	readonly m_flBloomStrength: number
 	readonly m_flScreenBloomStrength: number
@@ -6868,9 +6867,9 @@ interface PostProcessingBloomParameters_t {
 	readonly m_flBlurWeight: number[]
 	readonly m_vBlurTint: Vector[]
 }
+declare var PostProcessingBloomParameters_t: PostProcessingBloomParameters_t;
 
 interface HitBox_t {
-	readonly type_name: string
 	readonly m_nGroupId: number
 	readonly m_nBoneNameHash: number
 	readonly m_cRenderColor: number[]
@@ -6879,9 +6878,9 @@ interface HitBox_t {
 	readonly m_vMaxBounds: Vector
 	readonly m_bVisible: boolean
 }
+declare var HitBox_t: HitBox_t;
 
 interface CDOTA_Bot {
-	readonly type_name: string
 	readonly m_iLifesteal: number
 	readonly m_iBlock: number
 	readonly m_bForceIdle: boolean
@@ -6948,13 +6947,13 @@ interface CDOTA_Bot {
 	readonly m_bPendingActionBypass: boolean
 	readonly m_nForceAbility: number
 }
+declare var CDOTA_Bot: CDOTA_Bot;
 
 interface C_OP_EndCapDecay extends CParticleFunctionOperator {
-	readonly type_name: string
 }
+declare var C_OP_EndCapDecay: C_OP_EndCapDecay;
 
 interface VirtualVolumeTexData_t {
-	readonly type_name: string
 	readonly m_vBoundsMin: Vector
 	readonly m_vBoundsMax: Vector
 	readonly m_vPlaneEndDistancesXYZ: Vector
@@ -6963,25 +6962,25 @@ interface VirtualVolumeTexData_t {
 	readonly m_nVirtualResZ: number
 	readonly m_nPageDataTotalSize: bigint
 }
+declare var VirtualVolumeTexData_t: VirtualVolumeTexData_t;
 
 interface RnSphereDesc_t extends RnShapeDesc_t {
-	readonly type_name: string
 	readonly m_Sphere: RnSphere_t
 }
+declare var RnSphereDesc_t: RnSphereDesc_t;
 
 interface CBoneConstraintPoseSpaceMorph extends CBoneConstraintBase {
-	readonly type_name: string
 	readonly m_sBoneName: string
 	readonly m_sAttachmentName: string
 	readonly m_outputMorph: string[]
 }
+declare var CBoneConstraintPoseSpaceMorph: CBoneConstraintPoseSpaceMorph;
 
 interface InfoForResourceTypeIAnimationGraph {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeIAnimationGraph: InfoForResourceTypeIAnimationGraph;
 
 interface C_INIT_RemapCPtoScalar extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nCPInput: number
 	readonly m_nField: number
 	readonly m_flInputMin: number
@@ -6993,34 +6992,34 @@ interface C_INIT_RemapCPtoScalar extends CParticleFunctionInitializer {
 	readonly m_bScaleInitialRange: boolean
 	readonly m_flRemapBias: number
 }
+declare var C_INIT_RemapCPtoScalar: C_INIT_RemapCPtoScalar;
 
 interface CSSDSMsg_PreLayer extends CSSDSMsg_LayerBase {
-	readonly type_name: string
 }
+declare var CSSDSMsg_PreLayer: CSSDSMsg_PreLayer;
 
 interface IServerVehicle extends IVehicle {
-	readonly type_name: string
 }
+declare var IServerVehicle: IServerVehicle;
 
 interface RnSoftbodyParticle_t {
-	readonly type_name: string
 	readonly m_flMassInv: number
 }
+declare var RnSoftbodyParticle_t: RnSoftbodyParticle_t;
 
 interface CPassengerSeatTransition {
-	readonly type_name: string
 	readonly m_strAnimationName: string
 	readonly m_nPriority: number
 }
+declare var CPassengerSeatTransition: CPassengerSeatTransition;
 
 interface CHeroStatueLiked {
-	readonly type_name: string
 	readonly m_iPlayerIDLiker: number
 	readonly m_iPlayerIDLiked: number
 }
+declare var CHeroStatueLiked: CHeroStatueLiked;
 
 interface CEffectScriptElement {
-	readonly type_name: string
 	readonly m_bTrailActive: boolean
 	readonly m_pSprite: C_BaseEntity
 	readonly m_iType: number
@@ -7035,74 +7034,74 @@ interface CEffectScriptElement {
 	readonly m_bStopFollowOnKill: boolean
 	readonly m_bActive: boolean
 }
+declare var CEffectScriptElement: CEffectScriptElement;
 
 interface EventFrameBoundary_t {
-	readonly type_name: string
 	readonly m_flFrameTime: number
 }
+declare var EventFrameBoundary_t: EventFrameBoundary_t;
 
 interface InfoForResourceTypeCRenderMesh {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCRenderMesh: InfoForResourceTypeCRenderMesh;
 
 interface vehiclesounds_t {
-	readonly type_name: string
 	readonly iszSound: string[]
 	readonly iszStateSounds: string[]
 	readonly minStateTime: number[]
 }
+declare var vehiclesounds_t: vehiclesounds_t;
 
 interface CSimTimer extends CSimpleSimTimer {
-	readonly type_name: string
 	readonly m_interval: number
 }
+declare var CSimTimer: CSimTimer;
 
 interface CHeroesPerPlayer {
-	readonly type_name: string
 	readonly m_vecHeroIDs: number[]
 }
+declare var CHeroesPerPlayer: CHeroesPerPlayer;
 
 interface C_INIT_RemapParticleCountToNamedModelBodyPartScalar extends C_INIT_RemapParticleCountToNamedModelElementScalar {
-	readonly type_name: string
 }
+declare var C_INIT_RemapParticleCountToNamedModelBodyPartScalar: C_INIT_RemapParticleCountToNamedModelBodyPartScalar;
 
 interface BakedLightingInfo_t {
-	readonly type_name: string
 	readonly m_nPerVertexLightingDataPlainRGBMWidth: number
 	readonly m_nPerVertexLightingDataPlainRGBMHeight: number
 	readonly m_nPerVertexLightingDataPlainRGBMDepth: number
 	readonly m_nLightmapVersionNumber: number
 	readonly m_bHasLightmaps: boolean
 }
+declare var BakedLightingInfo_t: BakedLightingInfo_t;
 
 interface BoneOverride_t extends BaseSceneObjectOverride_t {
-	readonly type_name: string
 }
+declare var BoneOverride_t: BoneOverride_t;
 
 interface WeightedSuggestion_t {
-	readonly type_name: string
 	readonly nSuggestion: number
 	readonly fWeight: number
 }
+declare var WeightedSuggestion_t: WeightedSuggestion_t;
 
 interface CAI_ExpresserWithFollowup extends CAI_Expresser {
-	readonly type_name: string
 	readonly m_pPostponedFollowup: ResponseFollowup
 }
+declare var CAI_ExpresserWithFollowup: CAI_ExpresserWithFollowup;
 
 interface EventPostAdvanceTick_t extends EventSimulate_t {
-	readonly type_name: string
 	readonly m_nCurrentTick: number
 	readonly m_nTotalTicksThisFrame: number
 	readonly m_nTotalTicks: number
 }
+declare var EventPostAdvanceTick_t: EventPostAdvanceTick_t;
 
 interface IPhysicsPlayerController {
-	readonly type_name: string
 }
+declare var IPhysicsPlayerController: IPhysicsPlayerController;
 
 interface C_OP_RemapSpeedtoCP extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nInControlPointNumber: number
 	readonly m_nOutControlPointNumber: number
 	readonly m_nField: number
@@ -7112,40 +7111,40 @@ interface C_OP_RemapSpeedtoCP extends CParticleFunctionPreEmission {
 	readonly m_flOutputMax: number
 	readonly m_bUseDeltaV: boolean
 }
+declare var C_OP_RemapSpeedtoCP: C_OP_RemapSpeedtoCP;
 
 interface C_OP_WindForce extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_vForce: Vector
 }
+declare var C_OP_WindForce: C_OP_WindForce;
 
 interface AnimationGroupResourceData_t {
-	readonly type_name: string
 	readonly m_nFlags: number
 	readonly m_decodeKey: AnimationKeyResourceData_t
 	readonly m_retarget: AnimationRetargetData_t
 }
+declare var AnimationGroupResourceData_t: AnimationGroupResourceData_t;
 
 interface EventServerPostAdvanceTick_t extends EventPostAdvanceTick_t {
-	readonly type_name: string
 }
+declare var EventServerPostAdvanceTick_t: EventServerPostAdvanceTick_t;
 
 interface EventClientPreOutput_t {
-	readonly type_name: string
 	readonly m_LoopState: EngineLoopState_t
 	readonly m_flRenderTime: number
 	readonly m_flRenderFrameTime: number
 	readonly m_flRenderFrameTimeUnbounded: number
 }
+declare var EventClientPreOutput_t: EventClientPreOutput_t;
 
 interface C_OP_DampenToCP extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_flRange: number
 	readonly m_flScale: number
 }
+declare var C_OP_DampenToCP: C_OP_DampenToCP;
 
 interface C_OP_PositionLock extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_flStartTime_min: number
 	readonly m_flStartTime_max: number
@@ -7158,20 +7157,20 @@ interface C_OP_PositionLock extends CParticleFunctionOperator {
 	readonly m_flPrevPosScale: number
 	readonly m_bLockRot: boolean
 }
+declare var C_OP_PositionLock: C_OP_PositionLock;
 
 interface RnSoftbodySpring_t {
-	readonly type_name: string
 	readonly m_nParticle: number[]
 	readonly m_flLength: number
 }
+declare var RnSoftbodySpring_t: RnSoftbodySpring_t;
 
 interface RnHullDesc_t extends RnShapeDesc_t {
-	readonly type_name: string
 	readonly m_Hull: RnHull_t
 }
+declare var RnHullDesc_t: RnHullDesc_t;
 
 interface SeqResourceAutoLayerFlag_t {
-	readonly type_name: string
 	readonly m_bPost: boolean
 	readonly m_bSpline: boolean
 	readonly m_bXFade: boolean
@@ -7181,16 +7180,16 @@ interface SeqResourceAutoLayerFlag_t {
 	readonly m_bFetchFrame: boolean
 	readonly m_bSubtract: boolean
 }
+declare var SeqResourceAutoLayerFlag_t: SeqResourceAutoLayerFlag_t;
 
 interface FeNodeReverseOffset_t {
-	readonly type_name: string
 	readonly nBoneCtrl: number
 	readonly nTargetNode: number
 	readonly vOffset: Vector
 }
+declare var FeNodeReverseOffset_t: FeNodeReverseOffset_t;
 
 interface C_OP_RemapCPtoScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCPInput: number
 	readonly m_nField: number
 	readonly m_flInputMin: number
@@ -7203,72 +7202,72 @@ interface C_OP_RemapCPtoScalar extends CParticleFunctionOperator {
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bScaleCurrent: boolean
 }
+declare var C_OP_RemapCPtoScalar: C_OP_RemapCPtoScalar;
 
 interface C_OP_Spin extends CGeneralSpin {
-	readonly type_name: string
 }
+declare var C_OP_Spin: C_OP_Spin;
 
 interface EventClientSendInput_t {
-	readonly type_name: string
 }
+declare var EventClientSendInput_t: EventClientSendInput_t;
 
 interface C_SpeechBubbleInfo {
-	readonly type_name: string
 	readonly m_hNPC: C_BaseEntity
 	readonly m_flDuration: number
 	readonly m_unOffsetX: number
 	readonly m_unOffsetY: number
 	readonly m_unCount: number
 }
+declare var C_SpeechBubbleInfo: C_SpeechBubbleInfo;
 
 interface CDOTA_CreepKillInfo {
-	readonly type_name: string
 	readonly m_flTimeOfDeath: number
 	readonly m_flDeathFlightDuration: number
 	readonly m_vWsKillDirection: Vector
 	readonly m_vWsKillOrigin: Vector
 }
+declare var CDOTA_CreepKillInfo: CDOTA_CreepKillInfo;
 
 interface C_INIT_CreateFromCPs extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nIncrement: number
 	readonly m_nMinCP: number
 	readonly m_nMaxCP: number
 }
+declare var C_INIT_CreateFromCPs: C_INIT_CreateFromCPs;
 
 interface FeCollisionSphere_t {
-	readonly type_name: string
 	readonly nCtrlParent: number
 	readonly nChildNode: number
 	readonly m_flRFactor: number
 	readonly m_vOrigin: Vector
 	readonly flStickiness: number
 }
+declare var FeCollisionSphere_t: FeCollisionSphere_t;
 
 interface CSequenceTransitioner2 {
-	readonly type_name: string
 	readonly m_currentOp: CNetworkedSequenceOperation
 	readonly m_flCurrentPlaybackRate: number
 	readonly m_flCurrentAnimTime: number
 	readonly m_transitioningLayers: TransitioningLayer_t[]
 	readonly m_pOwner: CBaseAnimatingController
 }
+declare var CSequenceTransitioner2: CSequenceTransitioner2;
 
 interface RenderBufferBinding_t {
-	readonly type_name: string
 	readonly m_hBuffer: bigint
 	readonly m_nBindOffsetBytes: number
 }
+declare var RenderBufferBinding_t: RenderBufferBinding_t;
 
 interface EntityIOConnectionData_t {
-	readonly type_name: string
 	readonly m_targetType: number
 	readonly m_flDelay: number
 	readonly m_nTimesToFire: number
 }
+declare var EntityIOConnectionData_t: EntityIOConnectionData_t;
 
 interface CFingerChain {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_tipParentBoneName: string
 	readonly m_vTipOffset: Vector
@@ -7278,27 +7277,27 @@ interface CFingerChain {
 	readonly m_flSplayMaxAngle: number
 	readonly m_flFingerScaleRatio: number
 }
+declare var CFingerChain: CFingerChain;
 
 interface C_HorizontalMotionController {
-	readonly type_name: string
 }
+declare var C_HorizontalMotionController: C_HorizontalMotionController;
 
 interface CNetworkViewOffsetVector {
-	readonly type_name: string
 }
+declare var CNetworkViewOffsetVector: CNetworkViewOffsetVector;
 
 interface C_OP_RemapDistanceToLineSegmentToScalar extends C_OP_RemapDistanceToLineSegmentBase {
-	readonly type_name: string
 	readonly m_flMinOutputValue: number
 	readonly m_flMaxOutputValue: number
 }
+declare var C_OP_RemapDistanceToLineSegmentToScalar: C_OP_RemapDistanceToLineSegmentToScalar;
 
 interface InfoForResourceTypeSequenceGroupResourceData_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeSequenceGroupResourceData_t: InfoForResourceTypeSequenceGroupResourceData_t;
 
 interface hudtextparms_t {
-	readonly type_name: string
 	readonly color1: Color
 	readonly color2: Color
 	readonly effect: number
@@ -7310,15 +7309,15 @@ interface hudtextparms_t {
 	readonly holdTime: number
 	readonly fxTime: number
 }
+declare var hudtextparms_t: hudtextparms_t;
 
 interface C_OP_SetControlPointToCenter extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nCP1: number
 	readonly m_vecCP1Pos: Vector
 }
+declare var C_OP_SetControlPointToCenter: C_OP_SetControlPointToCenter;
 
 interface C_INIT_CreationNoise extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_bAbsVal: boolean
 	readonly m_bAbsValInv: boolean
 	readonly m_flOffset: number
@@ -7329,9 +7328,9 @@ interface C_INIT_CreationNoise extends CParticleFunctionInitializer {
 	readonly m_vecOffsetLoc: Vector
 	readonly m_flWorldTimeScale: number
 }
+declare var C_INIT_CreationNoise: C_INIT_CreationNoise;
 
 interface CAddAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_baseChildID: AnimNodeID
 	readonly m_additiveChildID: AnimNodeID
 	readonly m_timingBehavior: number
@@ -7340,18 +7339,18 @@ interface CAddAnimNode extends CAnimNodeBase {
 	readonly m_bResetAdditive: boolean
 	readonly m_bApplyChannelsSeparately: boolean
 }
+declare var CAddAnimNode: CAddAnimNode;
 
 interface C_DotaTree {
-	readonly type_name: string
 	readonly m_nOccluderIndex: number
 }
+declare var C_DotaTree: C_DotaTree;
 
 interface GameFileWeaponInfo_t extends FileWeaponInfo_t {
-	readonly type_name: string
 }
+declare var GameFileWeaponInfo_t: GameFileWeaponInfo_t;
 
 interface ParticlePreviewState_t {
-	readonly type_name: string
 	readonly m_previewModel: string
 	readonly m_nModSpecificData: number
 	readonly m_groundType: number
@@ -7368,9 +7367,9 @@ interface ParticlePreviewState_t {
 	readonly m_bShouldDrawControlPointAxes: boolean
 	readonly m_bAnimationNonLooping: boolean
 }
+declare var ParticlePreviewState_t: ParticlePreviewState_t;
 
 interface C_OP_SetControlPointPositions extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_bUseWorldLocation: boolean
 	readonly m_bOrient: boolean
 	readonly m_bSetOnce: boolean
@@ -7384,9 +7383,9 @@ interface C_OP_SetControlPointPositions extends CParticleFunctionPreEmission {
 	readonly m_vecCP4Pos: Vector
 	readonly m_nHeadLocation: number
 }
+declare var C_OP_SetControlPointPositions: C_OP_SetControlPointPositions;
 
 interface CWayPointHelperAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_flStartCycle: number
 	readonly m_flEndCycle: number
@@ -7394,18 +7393,18 @@ interface CWayPointHelperAnimNode extends CAnimNodeBase {
 	readonly m_bPreventOvershoot: boolean
 	readonly m_bPreventUndershoot: boolean
 }
+declare var CWayPointHelperAnimNode: CWayPointHelperAnimNode;
 
 interface SeqResourceMultiFetch_t {
-	readonly type_name: string
 	readonly m_flags: SeqResourceMultiFetch_t_Flag_t
 	readonly m_nGroupSize: number[]
 	readonly m_nLocalPose: number[]
 	readonly m_nLocalCyclePoseParameter: number
 	readonly m_bCalculatePoseParameters: boolean
 }
+declare var SeqResourceMultiFetch_t: SeqResourceMultiFetch_t;
 
 interface CDOTASpectatorGraphManager {
-	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
 	readonly m_nPlayerDataCount: number
 	readonly m_SendTeamStatsTimer: CountdownTimer
@@ -7429,32 +7428,32 @@ interface CDOTASpectatorGraphManager {
 	readonly m_event_server_pre_shutdown: number
 	readonly m_event_dota_player_pick_hero: number
 }
+declare var CDOTASpectatorGraphManager: CDOTASpectatorGraphManager;
 
 interface C_OP_LerpToInitialPosition extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_flInterpolation: CPerParticleFloatInput
 }
+declare var C_OP_LerpToInitialPosition: C_OP_LerpToInitialPosition;
 
 interface C_OP_DistanceCull extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPoint: number
 	readonly m_vecPointOffset: Vector
 	readonly m_flDistance: number
 	readonly m_bCullInside: boolean
 }
+declare var C_OP_DistanceCull: C_OP_DistanceCull;
 
 interface C_INIT_VelocityRadialRandom extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_fSpeedMin: number
 	readonly m_fSpeedMax: number
 	readonly m_vecLocalCoordinateSystemSpeedScale: Vector
 	readonly m_bIgnoreDelta: boolean
 }
+declare var C_INIT_VelocityRadialRandom: C_INIT_VelocityRadialRandom;
 
 interface CSelectorAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_selectionSource: number
 	readonly m_boolParamID: AnimParamID
 	readonly m_enumParamID: AnimParamID
@@ -7464,39 +7463,39 @@ interface CSelectorAnimNode extends CAnimNodeBase {
 	readonly m_bSyncCyclesOnChange: boolean
 	readonly m_blendCurve: CBlendCurve
 }
+declare var CSelectorAnimNode: CSelectorAnimNode;
 
 interface FeCtrlOsOffset_t {
-	readonly type_name: string
 	readonly nCtrlParent: number
 	readonly nCtrlChild: number
 }
+declare var FeCtrlOsOffset_t: FeCtrlOsOffset_t;
 
 interface C_CSequenceTransitioner2 {
-	readonly type_name: string
 	readonly m_currentOp: CNetworkedSequenceOperation
 	readonly m_flCurrentPlaybackRate: number
 	readonly m_flCurrentAnimTime: number
 	readonly m_transitioningLayers: TransitioningLayer_t[]
 	readonly m_pOwner: C_BaseAnimatingController
 }
+declare var C_CSequenceTransitioner2: C_CSequenceTransitioner2;
 
 interface ModelBoneFlexDriver_t {
-	readonly type_name: string
 	readonly m_boneNameToken: number
 }
+declare var ModelBoneFlexDriver_t: ModelBoneFlexDriver_t;
 
 interface EventAppShutdown_t {
-	readonly type_name: string
 	readonly m_nDummy0: number
 }
+declare var EventAppShutdown_t: EventAppShutdown_t;
 
 interface FeSimdSpringIntegrator_t {
-	readonly type_name: string
 	readonly nNode: number[]
 }
+declare var FeSimdSpringIntegrator_t: FeSimdSpringIntegrator_t;
 
 interface C_ViewSmoothingData_t {
-	readonly type_name: string
 	readonly pVehicle: C_BaseAnimating
 	readonly bClampEyeAngles: boolean
 	readonly flPitchCurveZero: number
@@ -7516,16 +7515,16 @@ interface C_ViewSmoothingData_t {
 	readonly vecAngleDiffSaved: QAngle
 	readonly vecAngleDiffMin: QAngle
 }
+declare var C_ViewSmoothingData_t: C_ViewSmoothingData_t;
 
 interface CHintMessage {
-	readonly type_name: string
 	readonly m_hintString: string
 	readonly m_args: string[]
 	readonly m_duration: number
 }
+declare var CHintMessage: CHintMessage;
 
 interface WeaponTextureData_t {
-	readonly type_name: string
 	readonly m_Name: string
 	readonly m_Sprite: string
 	readonly m_Font: string
@@ -7535,35 +7534,35 @@ interface WeaponTextureData_t {
 	readonly m_height: number
 	readonly m_FontCharacter: number
 }
+declare var WeaponTextureData_t: WeaponTextureData_t;
 
 interface C_OP_LocalAccelerationForce extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_nScaleCP: number
 	readonly m_vecAccel: Vector
 }
+declare var C_OP_LocalAccelerationForce: C_OP_LocalAccelerationForce;
 
 interface CAnimReplayWayPoint {
-	readonly type_name: string
 	readonly m_vPosition: Vector
 	readonly m_flFacing: number
 }
+declare var CAnimReplayWayPoint: CAnimReplayWayPoint;
 
 interface SeqResourceS1SeqDesc_t {
-	readonly type_name: string
 	readonly m_flags: SeqResourceSeqDesc_t_Flag_t
 	readonly m_fetch: SeqResourceMultiFetch_t
 	readonly m_nLocalWeightlist: number
 	readonly m_transition: SeqResourceTransition_t
 }
+declare var SeqResourceS1SeqDesc_t: SeqResourceS1SeqDesc_t;
 
 interface CRCMD_SetProfileMode {
-	readonly type_name: string
 	readonly m_bEnableProfiling: boolean
 }
+declare var CRCMD_SetProfileMode: CRCMD_SetProfileMode;
 
 interface CUnitOrders {
-	readonly type_name: string
 	readonly m_nUnits: C_BaseEntity[]
 	readonly m_vPosition: Vector
 	readonly m_nIssuerPlayerIndex: number
@@ -7573,60 +7572,60 @@ interface CUnitOrders {
 	readonly m_nAbilityIndex: C_BaseEntity
 	readonly m_bQueue: boolean
 }
+declare var CUnitOrders: CUnitOrders;
 
 interface InfoForResourceTypeVMapResourceData_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeVMapResourceData_t: InfoForResourceTypeVMapResourceData_t;
 
 interface SimpleConstraintSoundProfile {
-	readonly type_name: string
 	readonly m_keyPoints: number[]
 	readonly m_reversalSoundThresholds: number[]
 }
+declare var SimpleConstraintSoundProfile: SimpleConstraintSoundProfile;
 
 interface CPassengerRole {
-	readonly type_name: string
 	readonly m_strName: string
 }
+declare var CPassengerRole: CPassengerRole;
 
 interface CNavVolumeAll extends CNavVolumeVector {
-	readonly type_name: string
 }
+declare var CNavVolumeAll: CNavVolumeAll;
 
 interface C_INIT_RemapNamedModelBodyPartToScalar extends C_INIT_RemapNamedModelElementToScalar {
-	readonly type_name: string
 }
+declare var C_INIT_RemapNamedModelBodyPartToScalar: C_INIT_RemapNamedModelBodyPartToScalar;
 
 interface CEnumAnimParameter extends CAnimParameterBase {
-	readonly type_name: string
 	readonly m_defaultValue: number
 	readonly m_enumOptions: string[]
 }
+declare var CEnumAnimParameter: CEnumAnimParameter;
 
 interface ragdollelement_t {
-	readonly type_name: string
 	readonly originParentSpace: Vector
 	readonly parentIndex: number
 	readonly m_flRadius: number
 }
+declare var ragdollelement_t: ragdollelement_t;
 
 interface C_OP_RampCPLinearRandom extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nOutControlPointNumber: number
 	readonly m_vecRateMin: Vector
 	readonly m_vecRateMax: Vector
 }
+declare var C_OP_RampCPLinearRandom: C_OP_RampCPLinearRandom;
 
 interface CClothSettingsAnimTag extends CAnimTagBase {
-	readonly type_name: string
 	readonly m_flStiffness: number
 	readonly m_flEaseIn: number
 	readonly m_flEaseOut: number
 	readonly m_nVertexSet: string
 }
+declare var CClothSettingsAnimTag: CClothSettingsAnimTag;
 
 interface SeqResourceAutoLayer_t {
-	readonly type_name: string
 	readonly m_nLocalReference: number
 	readonly m_nLocalPose: number
 	readonly m_flags: SeqResourceAutoLayerFlag_t
@@ -7635,20 +7634,20 @@ interface SeqResourceAutoLayer_t {
 	readonly m_tail: number
 	readonly m_end: number
 }
+declare var SeqResourceAutoLayer_t: SeqResourceAutoLayer_t;
 
 interface AnimationSnapshot_t extends AnimationSnapshotBase_t {
-	readonly type_name: string
 	readonly m_nEntIndex: number
 	readonly m_modelName: string
 }
+declare var AnimationSnapshot_t: AnimationSnapshot_t;
 
 interface VPhysXCollisionAttributes_t {
-	readonly type_name: string
 	readonly m_CollisionGroup: number
 }
+declare var VPhysXCollisionAttributes_t: VPhysXCollisionAttributes_t;
 
 interface C_OP_OscillateScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_RateMin: number
 	readonly m_RateMax: number
 	readonly m_FrequencyMin: number
@@ -7662,54 +7661,54 @@ interface C_OP_OscillateScalar extends CParticleFunctionOperator {
 	readonly m_flOscMult: number
 	readonly m_flOscAdd: number
 }
+declare var C_OP_OscillateScalar: C_OP_OscillateScalar;
 
 interface CMultiplayer_Expresser extends CAI_ExpresserWithFollowup {
-	readonly type_name: string
 	readonly m_bAllowMultipleScenes: boolean
 }
+declare var CMultiplayer_Expresser: CMultiplayer_Expresser;
 
 interface VPhysXShapeCompoundHeader2_t extends VPhysXDiskShapeHeader_t {
-	readonly type_name: string
 }
+declare var VPhysXShapeCompoundHeader2_t: VPhysXShapeCompoundHeader2_t;
 
 interface SheetSequenceFrame_t {
-	readonly type_name: string
 	readonly m_flDisplayTime: number
 }
+declare var SheetSequenceFrame_t: SheetSequenceFrame_t;
 
 interface InfoForResourceTypeIParticleSystemDefinition {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeIParticleSystemDefinition: InfoForResourceTypeIParticleSystemDefinition;
 
 interface C_OP_LockToSavedSequentialPathV2 extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flFadeStart: number
 	readonly m_flFadeEnd: number
 	readonly m_bCPPairs: boolean
 	readonly m_PathParams: CPathParameters
 }
+declare var C_OP_LockToSavedSequentialPathV2: C_OP_LockToSavedSequentialPathV2;
 
 interface C_INIT_PointList extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_bPlaceAlongPath: boolean
 	readonly m_bClosedLoop: boolean
 	readonly m_nNumPointsAlongPath: number
 }
+declare var C_INIT_PointList: C_INIT_PointList;
 
 interface C_SunGlowOverlay extends CGlowOverlay {
-	readonly type_name: string
 	readonly m_bModulateByDot: boolean
 }
+declare var C_SunGlowOverlay: C_SunGlowOverlay;
 
 interface ragdoll_t {
-	readonly type_name: string
 	readonly boneIndex: number[]
 	readonly allowStretch: boolean
 	readonly unused: boolean
 }
+declare var ragdoll_t: ragdoll_t;
 
 interface C_OP_AttractToControlPoint extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_vecComponentScale: Vector
 	readonly m_fForceAmount: CPerParticleFloatInput
 	readonly m_fFalloffPower: number
@@ -7718,9 +7717,9 @@ interface C_OP_AttractToControlPoint extends CParticleFunctionForce {
 	readonly m_fForceAmountMin: CPerParticleFloatInput
 	readonly m_bApplyMinForce: boolean
 }
+declare var C_OP_AttractToControlPoint: C_OP_AttractToControlPoint;
 
 interface C_INIT_CreateInEpitrochoid extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nComponent1: number
 	readonly m_nComponent2: number
 	readonly m_nControlPointNumber: number
@@ -7733,35 +7732,35 @@ interface C_INIT_CreateInEpitrochoid extends CParticleFunctionInitializer {
 	readonly m_bUseLocalCoords: boolean
 	readonly m_bOffsetExistingPos: boolean
 }
+declare var C_INIT_CreateInEpitrochoid: C_INIT_CreateInEpitrochoid;
 
 interface CCycleCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_comparisonValue: number
 }
+declare var CCycleCondition: CCycleCondition;
 
 interface CBoneConstraintPoseSpaceBone extends CBaseConstraint {
-	readonly type_name: string
 }
+declare var CBoneConstraintPoseSpaceBone: CBoneConstraintPoseSpaceBone;
 
 interface EventServerPostSimulate_t extends EventSimulate_t {
-	readonly type_name: string
 }
+declare var EventServerPostSimulate_t: EventServerPostSimulate_t;
 
 interface C_INIT_RemapParticleCountToNamedModelSequenceScalar extends C_INIT_RemapParticleCountToNamedModelElementScalar {
-	readonly type_name: string
 }
+declare var C_INIT_RemapParticleCountToNamedModelSequenceScalar: C_INIT_RemapParticleCountToNamedModelSequenceScalar;
 
 interface C_OP_PlanarConstraint extends CParticleFunctionConstraint {
-	readonly type_name: string
 	readonly m_PointOnPlane: Vector
 	readonly m_PlaneNormal: Vector
 	readonly m_nControlPointNumber: number
 	readonly m_bGlobalOrigin: boolean
 	readonly m_bGlobalNormal: boolean
 }
+declare var C_OP_PlanarConstraint: C_OP_PlanarConstraint;
 
 interface C_OP_FadeAndKill extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flStartFadeInTime: number
 	readonly m_flEndFadeInTime: number
 	readonly m_flStartFadeOutTime: number
@@ -7770,9 +7769,9 @@ interface C_OP_FadeAndKill extends CParticleFunctionOperator {
 	readonly m_flEndAlpha: number
 	readonly m_bForcePreserveParticleOrder: boolean
 }
+declare var C_OP_FadeAndKill: C_OP_FadeAndKill;
 
 interface CMoverAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_bApplyMovement: boolean
 	readonly m_bOrientMovement: boolean
@@ -7782,25 +7781,25 @@ interface CMoverAnimNode extends CAnimNodeBase {
 	readonly m_facingTarget: number
 	readonly m_damping: CAnimInputDamping
 }
+declare var CMoverAnimNode: CMoverAnimNode;
 
 interface CSceneObjectData {
-	readonly type_name: string
 	readonly m_vMinBounds: Vector
 	readonly m_vMaxBounds: Vector
 }
+declare var CSceneObjectData: CSceneObjectData;
 
 interface FeTreeChildren_t {
-	readonly type_name: string
 	readonly nChild: number[]
 }
+declare var FeTreeChildren_t: FeTreeChildren_t;
 
 interface CNavVolumeSphericalShell extends CNavVolumeSphere {
-	readonly type_name: string
 	readonly m_flRadiusInner: number
 }
+declare var CNavVolumeSphericalShell: CNavVolumeSphericalShell;
 
 interface C_INIT_PositionWarpScalar extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecWarpMin: Vector
 	readonly m_vecWarpMax: Vector
 	readonly m_InputValue: CPerParticleFloatInput
@@ -7808,34 +7807,34 @@ interface C_INIT_PositionWarpScalar extends CParticleFunctionInitializer {
 	readonly m_nScaleControlPointNumber: number
 	readonly m_nControlPointNumber: number
 }
+declare var C_INIT_PositionWarpScalar: C_INIT_PositionWarpScalar;
 
 interface C_INIT_RandomRadius extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flRadiusMin: number
 	readonly m_flRadiusMax: number
 	readonly m_flRadiusRandExponent: number
 }
+declare var C_INIT_RandomRadius: C_INIT_RandomRadius;
 
 interface C_INIT_RandomVectorComponent extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flMin: number
 	readonly m_flMax: number
 	readonly m_nComponent: number
 }
+declare var C_INIT_RandomVectorComponent: C_INIT_RandomVectorComponent;
 
 interface CSceneObjectReference_t {
-	readonly type_name: string
 	readonly m_nRenderableFlags: bigint
 	readonly m_pObject: CSceneObject
 }
+declare var CSceneObjectReference_t: CSceneObjectReference_t;
 
 interface CPostGraphIKTag extends CAnimTagBase {
-	readonly type_name: string
 	readonly m_flBlendAmount: number
 }
+declare var CPostGraphIKTag: CPostGraphIKTag;
 
 interface CGroundIKSolveAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_IkChains: string[]
 	readonly m_TiltSource: number
@@ -7847,9 +7846,9 @@ interface CGroundIKSolveAnimNode extends CAnimNodeBase {
 	readonly m_bDebugDrawAfter: boolean
 	readonly m_DebugDrawAfterColor: Color
 }
+declare var CGroundIKSolveAnimNode: CGroundIKSolveAnimNode;
 
 interface CBlendAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_blendValueSource: number
 	readonly m_param: AnimParamID
 	readonly m_blendKeyType: number
@@ -7859,29 +7858,29 @@ interface CBlendAnimNode extends CAnimNodeBase {
 	readonly m_bLockWhenWaning: boolean
 	readonly m_damping: CAnimInputDamping
 }
+declare var CBlendAnimNode: CBlendAnimNode;
 
 interface AnimResourceIKChain_t {
-	readonly type_name: string
 }
+declare var AnimResourceIKChain_t: AnimResourceIKChain_t;
 
 interface SlideMaterialList_t {
-	readonly type_name: string
 	readonly iSlideIndex: number[]
 }
+declare var SlideMaterialList_t: SlideMaterialList_t;
 
 interface C_OP_RemapNamedModelBodyPartEndCap extends C_OP_RemapNamedModelElementEndCap {
-	readonly type_name: string
 }
+declare var C_OP_RemapNamedModelBodyPartEndCap: C_OP_RemapNamedModelBodyPartEndCap;
 
 interface C_INIT_RandomAlphaWindowThreshold extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flMin: number
 	readonly m_flMax: number
 	readonly m_flExponent: number
 }
+declare var C_INIT_RandomAlphaWindowThreshold: C_INIT_RandomAlphaWindowThreshold;
 
 interface C_INIT_VelocityRandom extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_fSpeedMin: number
 	readonly m_fSpeedMax: number
@@ -7889,18 +7888,18 @@ interface C_INIT_VelocityRandom extends CParticleFunctionInitializer {
 	readonly m_LocalCoordinateSystemSpeedMax: Vector
 	readonly m_bIgnoreDT: boolean
 }
+declare var C_INIT_VelocityRandom: C_INIT_VelocityRandom;
 
 interface AnimResourceIKTargetInfo_t {
-	readonly type_name: string
 	readonly m_nType: number
 	readonly m_nPosChannel: number
 	readonly m_nPosElement: number
 	readonly m_nQuatChannel: number
 	readonly m_nQuatElement: number
 }
+declare var AnimResourceIKTargetInfo_t: AnimResourceIKTargetInfo_t;
 
 interface CCollisionProperty {
-	readonly type_name: string
 	readonly m_collisionAttribute: VPhysicsCollisionAttribute_t
 	readonly m_vecMins: Vector
 	readonly m_vecMaxs: Vector
@@ -7919,15 +7918,15 @@ interface CCollisionProperty {
 	readonly m_vCapsuleCenter2: Vector
 	readonly m_flCapsuleRadius: number
 }
+declare var CCollisionProperty: CCollisionProperty;
 
 interface CHintMessageQueue {
-	readonly type_name: string
 	readonly m_tmMessageEnd: number
 	readonly m_messages: CHintMessage[]
 }
+declare var CHintMessageQueue: CHintMessageQueue;
 
 interface C_BaseAnimatingController extends CSkeletonAnimationController {
-	readonly type_name: string
 	readonly m_baseLayer: CNetworkedSequenceOperation
 	readonly m_animGraphNetworkedVars: CAnimGraphNetworkedVariables
 	readonly m_bSequenceFinished: boolean
@@ -7949,9 +7948,9 @@ interface C_BaseAnimatingController extends CSkeletonAnimationController {
 	readonly m_SequenceTransitioner: C_CSequenceTransitioner2
 	readonly m_ClientSideAnimationListHandle: number
 }
+declare var C_BaseAnimatingController: C_BaseAnimatingController;
 
 interface CSoundPatch {
-	readonly type_name: string
 	readonly m_pitch: CSoundEnvelope
 	readonly m_volume: CSoundEnvelope
 	readonly m_shutdownTime: number
@@ -7968,14 +7967,14 @@ interface CSoundPatch {
 	readonly m_flCloseCaptionDuration: number
 	readonly m_iszClassName: string
 }
+declare var CSoundPatch: CSoundPatch;
 
 interface CParameterAnimCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_paramID: AnimParamID
 }
+declare var CParameterAnimCondition: CParameterAnimCondition;
 
 interface CAnimState {
-	readonly type_name: string
 	readonly m_tagBehaviors: number[]
 	readonly m_name: string
 	readonly m_childNodeID: AnimNodeID
@@ -7986,65 +7985,65 @@ interface CAnimState {
 	readonly m_bIsPassthrough: boolean
 	readonly m_bIsRootMotionExclusive: boolean
 }
+declare var CAnimState: CAnimState;
 
 interface CChoiceAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_seed: number
 	readonly m_choiceMethod: number
 	readonly m_choiceChangeMethod: number
 	readonly m_blendTime: number
 	readonly m_bResetChosen: boolean
 }
+declare var CChoiceAnimNode: CChoiceAnimNode;
 
 interface C_OP_RemapNamedModelMeshGroupEndCap extends C_OP_RemapNamedModelElementEndCap {
-	readonly type_name: string
 }
+declare var C_OP_RemapNamedModelMeshGroupEndCap: C_OP_RemapNamedModelMeshGroupEndCap;
 
 interface C_INIT_NormalAlignToCP extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 }
+declare var C_INIT_NormalAlignToCP: C_INIT_NormalAlignToCP;
 
 interface WorldLighting_t {
-	readonly type_name: string
 	readonly m_globalIlluminationMethod: number
 }
+declare var WorldLighting_t: WorldLighting_t;
 
 interface CFootFallAnimTag extends CAnimTagBase {
-	readonly type_name: string
 	readonly m_foot: number
 }
+declare var CFootFallAnimTag: CFootFallAnimTag;
 
 interface EventClientOutput_t {
-	readonly type_name: string
 	readonly m_LoopState: EngineLoopState_t
 	readonly m_flRenderTime: number
 	readonly m_flRealTime: number
 }
+declare var EventClientOutput_t: EventClientOutput_t;
 
 interface FeSoftParent_t {
-	readonly type_name: string
 	readonly nParent: number
 	readonly flAlpha: number
 }
+declare var FeSoftParent_t: FeSoftParent_t;
 
 interface MaterialVariable_t {
-	readonly type_name: string
 	readonly m_strVariable: string
 	readonly m_flScale: number
 }
+declare var MaterialVariable_t: MaterialVariable_t;
 
 interface C_OP_RemapBoundingVolumetoCP extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nOutControlPointNumber: number
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 }
+declare var C_OP_RemapBoundingVolumetoCP: C_OP_RemapBoundingVolumetoCP;
 
 interface C_OP_SnapshotSkinToBones extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_bTransformNormals: boolean
 	readonly m_nControlPointNumber: number
 	readonly m_flLifeTimeFadeStart: number
@@ -8052,31 +8051,31 @@ interface C_OP_SnapshotSkinToBones extends CParticleFunctionOperator {
 	readonly m_flJumpThreshold: number
 	readonly m_flPrevPosScale: number
 }
+declare var C_OP_SnapshotSkinToBones: C_OP_SnapshotSkinToBones;
 
 interface C_INIT_RandomNamedModelBodyPart extends C_INIT_RandomNamedModelElement {
-	readonly type_name: string
 }
+declare var C_INIT_RandomNamedModelBodyPart: C_INIT_RandomNamedModelBodyPart;
 
 interface EventClientProcessInput_t {
-	readonly type_name: string
 	readonly m_LoopState: EngineLoopState_t
 	readonly m_flRealTime: number
 	readonly m_flFrameTime: number
 }
+declare var EventClientProcessInput_t: EventClientProcessInput_t;
 
 interface CFeNamedJiggleBone {
-	readonly type_name: string
 	readonly m_strParentBone: string
 	readonly m_nJiggleParent: number
 	readonly m_jiggleBone: CFeJiggleBone
 }
+declare var CFeNamedJiggleBone: CFeNamedJiggleBone;
 
 interface InfoForResourceTypePRTMatrixData_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypePRTMatrixData_t: InfoForResourceTypePRTMatrixData_t;
 
 interface PlayerResourcePlayerData_t {
-	readonly type_name: string
 	readonly m_bIsValid: boolean
 	readonly m_iszPlayerName: string
 	readonly m_iPlayerTeam: number
@@ -8092,9 +8091,9 @@ interface PlayerResourcePlayerData_t {
 	readonly m_eLiveSpectatorTeam: number
 	readonly m_bIsPlusSubscriber: boolean
 }
+declare var PlayerResourcePlayerData_t: PlayerResourcePlayerData_t;
 
 interface C_OP_RenderRopes extends CBaseRendererSource2 {
-	readonly type_name: string
 	readonly m_bEnableFadingAndClamping: boolean
 	readonly m_flMinSize: number
 	readonly m_flMaxSize: number
@@ -8128,24 +8127,24 @@ interface C_OP_RenderRopes extends CBaseRendererSource2 {
 	readonly m_bClosedLoop: boolean
 	readonly m_flDepthBias: number
 }
+declare var C_OP_RenderRopes: C_OP_RenderRopes;
 
 interface C_INIT_RadiusFromCPObject extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPoint: number
 }
+declare var C_INIT_RadiusFromCPObject: C_INIT_RadiusFromCPObject;
 
 interface C_INIT_SequenceLifeTime extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flFramerate: number
 }
+declare var C_INIT_SequenceLifeTime: C_INIT_SequenceLifeTime;
 
 interface CSequenceFinishedAnimTag extends CAnimTagBase {
-	readonly type_name: string
 	readonly m_sequenceName: string
 }
+declare var CSequenceFinishedAnimTag: CSequenceFinishedAnimTag;
 
 interface CEnvWindShared {
-	readonly type_name: string
 	readonly m_flStartTime: number
 	readonly m_iWindSeed: number
 	readonly m_iMinWind: number
@@ -8178,17 +8177,17 @@ interface CEnvWindShared {
 	readonly m_flWindSpeedVariation: number
 	readonly m_iEntIndex: C_BaseEntity
 }
+declare var CEnvWindShared: CEnvWindShared;
 
 interface C_OP_RenderAsModels extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_flModelScale: number
 	readonly m_bFitToModelSize: boolean
 	readonly m_bNonUniformScaling: boolean
 	readonly m_nSizeCullBloat: number
 }
+declare var C_OP_RenderAsModels: C_OP_RenderAsModels;
 
 interface C_OP_InterpolateRadius extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flStartTime: number
 	readonly m_flEndTime: number
 	readonly m_flStartScale: number
@@ -8196,9 +8195,9 @@ interface C_OP_InterpolateRadius extends CParticleFunctionOperator {
 	readonly m_bEaseInAndOut: boolean
 	readonly m_flBias: number
 }
+declare var C_OP_InterpolateRadius: C_OP_InterpolateRadius;
 
 interface C_INIT_PositionPlaceOnGround extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flOffset: number
 	readonly m_flMaxTraceLength: number
 	readonly m_bKill: boolean
@@ -8208,39 +8207,39 @@ interface C_INIT_PositionPlaceOnGround extends CParticleFunctionInitializer {
 	readonly m_bTraceAlongNormal: boolean
 	readonly m_flOffsetByRadiusFactor: number
 }
+declare var C_INIT_PositionPlaceOnGround: C_INIT_PositionPlaceOnGround;
 
 interface AnimResourceIKLink_t {
-	readonly type_name: string
 	readonly bone: number
 	readonly kneeDir: Vector
 }
+declare var AnimResourceIKLink_t: AnimResourceIKLink_t;
 
 interface AnimResourceActivity_t {
-	readonly type_name: string
 	readonly m_nActivity: number
 	readonly m_nFlags: number
 	readonly m_nWeight: number
 }
+declare var AnimResourceActivity_t: AnimResourceActivity_t;
 
 interface AnimResourceUserDifference_t {
-	readonly type_name: string
 	readonly m_nType: number
 }
+declare var AnimResourceUserDifference_t: AnimResourceUserDifference_t;
 
 interface IHandleEntity {
-	readonly type_name: string
 }
+declare var IHandleEntity: IHandleEntity;
 
 interface CAnnouncerDescriptor {
-	readonly type_name: string
 	readonly m_Replacement: string
 	readonly m_bUseDefaultAnnouncer: boolean
 	readonly m_pAnnouncerItem: CEconItemView
 	readonly m_bItemOwnedByLocalPlayer: boolean
 }
+declare var CAnnouncerDescriptor: CAnnouncerDescriptor;
 
 interface C_PlayerLocalData {
-	readonly type_name: string
 	readonly m_NetworkVar_PathIndex: ChangeAccessorFieldPathIndex_t
 	readonly m_chAreaBits: number[]
 	readonly m_chAreaPortalBits: number[]
@@ -8268,13 +8267,13 @@ interface C_PlayerLocalData {
 	readonly m_flLandingTime: number
 	readonly m_vecClientBaseVelocity: Vector
 }
+declare var C_PlayerLocalData: C_PlayerLocalData;
 
 interface C_OP_RenderClothForce extends CParticleFunctionRenderer {
-	readonly type_name: string
 }
+declare var C_OP_RenderClothForce: C_OP_RenderClothForce;
 
 interface C_OP_RenderSprites extends CBaseRendererSource2 {
-	readonly type_name: string
 	readonly m_nSequenceOverride: number
 	readonly m_nOrientationType: number
 	readonly m_nOrientationControlPoint: number
@@ -8310,23 +8309,23 @@ interface C_OP_RenderSprites extends CBaseRendererSource2 {
 	readonly m_flBumpStrength: number
 	readonly m_flRadiusScale: number
 }
+declare var C_OP_RenderSprites: C_OP_RenderSprites;
 
 interface C_OP_TimeVaryingForce extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_flStartLerpTime: number
 	readonly m_StartingForce: Vector
 	readonly m_flEndLerpTime: number
 	readonly m_EndingForce: Vector
 }
+declare var C_OP_TimeVaryingForce: C_OP_TimeVaryingForce;
 
 interface ConceptHistory_t {
-	readonly type_name: string
 	readonly timeSpoken: number
 	readonly m_response: number
 }
+declare var ConceptHistory_t: ConceptHistory_t;
 
 interface C_OP_RemapModelVolumetoCP extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nInControlPointNumber: number
 	readonly m_nOutControlPointNumber: number
 	readonly m_flInputMin: number
@@ -8334,27 +8333,27 @@ interface C_OP_RemapModelVolumetoCP extends CParticleFunctionPreEmission {
 	readonly m_flOutputMin: number
 	readonly m_flOutputMax: number
 }
+declare var C_OP_RemapModelVolumetoCP: C_OP_RemapModelVolumetoCP;
 
 interface C_OP_RemapDirectionToCPToVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_flScale: number
 	readonly m_flOffsetRot: number
 	readonly m_vecOffsetAxis: Vector
 	readonly m_bNormalize: boolean
 }
+declare var C_OP_RemapDirectionToCPToVector: C_OP_RemapDirectionToCPToVector;
 
 interface VPhysics2ShapeDef_t {
-	readonly type_name: string
 }
+declare var VPhysics2ShapeDef_t: VPhysics2ShapeDef_t;
 
 interface CResponseQueue {
-	readonly type_name: string
 	readonly m_ExpresserTargets: CAI_Expresser[]
 }
+declare var CResponseQueue: CResponseQueue;
 
 interface TempViewerInfo_t {
-	readonly type_name: string
 	readonly m_nGridX: number
 	readonly m_nGridY: number
 	readonly m_nRadius: number
@@ -8366,9 +8365,9 @@ interface TempViewerInfo_t {
 	readonly nFoWID: number
 	readonly hOwner: C_BaseEntity
 }
+declare var TempViewerInfo_t: TempViewerInfo_t;
 
 interface CBaseAnimatingController extends CSkeletonAnimationController {
-	readonly type_name: string
 	readonly m_baseLayer: CNetworkedSequenceOperation
 	readonly m_animGraphNetworkedVars: CAnimGraphNetworkedVariables
 	readonly m_bSequenceFinished: boolean
@@ -8387,17 +8386,17 @@ interface CBaseAnimatingController extends CSkeletonAnimationController {
 	readonly m_flIkZAdjustAmount: number
 	readonly m_SequenceTransitioner: CSequenceTransitioner2
 }
+declare var CBaseAnimatingController: CBaseAnimatingController;
 
 interface C_OP_WorldCollideConstraint extends CParticleFunctionConstraint {
-	readonly type_name: string
 }
+declare var C_OP_WorldCollideConstraint: C_OP_WorldCollideConstraint;
 
 interface InfoForResourceTypeCVSoundStackScriptList {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCVSoundStackScriptList: InfoForResourceTypeCVSoundStackScriptList;
 
 interface C_OP_RemapDotProductToCP extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nInputCP1: number
 	readonly m_nInputCP2: number
 	readonly m_nOutputCP: number
@@ -8407,46 +8406,46 @@ interface C_OP_RemapDotProductToCP extends CParticleFunctionPreEmission {
 	readonly m_flOutputMin: CParticleCollectionFloatInput
 	readonly m_flOutputMax: CParticleCollectionFloatInput
 }
+declare var C_OP_RemapDotProductToCP: C_OP_RemapDotProductToCP;
 
 interface C_OP_ColorInterpolate extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_ColorFade: Color
 	readonly m_flFadeStartTime: number
 	readonly m_flFadeEndTime: number
 	readonly m_bEaseInOut: boolean
 }
+declare var C_OP_ColorInterpolate: C_OP_ColorInterpolate;
 
 interface WorldNode_t {
-	readonly type_name: string
 	readonly m_nodeLightingInfo: BakedLightingInfo_t
 }
+declare var WorldNode_t: WorldNode_t;
 
 interface CNeuralNetAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_weightsFile: string
 	readonly m_testInputFile: string
 	readonly m_boneMapFile: string
 	readonly m_sensorRangeFile: string
 }
+declare var CNeuralNetAnimNode: CNeuralNetAnimNode;
 
 interface ItemDropData_t {
-	readonly type_name: string
 	readonly sItemNames: string[]
 	readonly flChance: number
 	readonly nReqLevel: number
 	readonly bMustBeChampion: boolean
 }
+declare var ItemDropData_t: ItemDropData_t;
 
 interface CNetworkedIKContext {
-	readonly type_name: string
 }
+declare var CNetworkedIKContext: CNetworkedIKContext;
 
 interface IParticleCollection {
-	readonly type_name: string
 }
+declare var IParticleCollection: IParticleCollection;
 
 interface C_INIT_CodeDriven extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_bPosition: boolean
 	readonly m_bPrevPosition: boolean
 	readonly m_bRadius: boolean
@@ -8456,65 +8455,65 @@ interface C_INIT_CodeDriven extends CParticleFunctionInitializer {
 	readonly m_bSequence: boolean
 	readonly m_bSequence1: boolean
 }
+declare var C_INIT_CodeDriven: C_INIT_CodeDriven;
 
 interface InfoForResourceTypeWorld_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeWorld_t: InfoForResourceTypeWorld_t;
 
 interface InfoForResourceTypeCEntityLump {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCEntityLump: InfoForResourceTypeCEntityLump;
 
 interface CParticleProperty {
-	readonly type_name: string
 }
+declare var CParticleProperty: CParticleProperty;
 
 interface VertexPositionNormal_t {
-	readonly type_name: string
 	readonly m_vPosition: Vector
 	readonly m_vNormal: Vector
 }
+declare var VertexPositionNormal_t: VertexPositionNormal_t;
 
 interface CTwoBoneIKAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_ikChainName: string
 	readonly m_attachmentName: string
 	readonly m_bMatchTargetOrientation: boolean
 }
+declare var CTwoBoneIKAnimNode: CTwoBoneIKAnimNode;
 
 interface MaterialParamVector_t extends MaterialParam_t {
-	readonly type_name: string
 }
+declare var MaterialParamVector_t: MaterialParamVector_t;
 
 interface C_OP_RenderFogSprites extends C_OP_RenderSprites {
-	readonly type_name: string
 }
+declare var C_OP_RenderFogSprites: C_OP_RenderFogSprites;
 
 interface C_OP_SetSingleControlPointPosition extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_bUseWorldLocation: boolean
 	readonly m_bSetOnce: boolean
 	readonly m_nCP1: number
 	readonly m_vecCP1Pos: Vector
 	readonly m_nHeadLocation: number
 }
+declare var C_OP_SetSingleControlPointPosition: C_OP_SetSingleControlPointPosition;
 
 interface CMoveSpeedCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_comparisonValue: number
 }
+declare var CMoveSpeedCondition: CMoveSpeedCondition;
 
 interface CConstraintSlave {
-	readonly type_name: string
 	readonly m_nBoneHash: number
 	readonly m_flWeight: number
 	readonly m_vBasePosition: Vector
 	readonly m_sName: string
 }
+declare var CConstraintSlave: CConstraintSlave;
 
 interface C_CEnvWindShared {
-	readonly type_name: string
 	readonly m_flStartTime: number
 	readonly m_iWindSeed: number
 	readonly m_iMinWind: number
@@ -8545,9 +8544,9 @@ interface C_CEnvWindShared {
 	readonly m_flWindSpeedVariation: number
 	readonly m_iEntIndex: C_BaseEntity
 }
+declare var C_CEnvWindShared: C_CEnvWindShared;
 
 interface CCommentarySystem {
-	readonly type_name: string
 	readonly m_afPlayersLastButtons: number
 	readonly m_iCommentaryNodeCount: number
 	readonly m_bCommentaryConvarsChanging: boolean
@@ -8562,9 +8561,9 @@ interface CCommentarySystem {
 	readonly m_hActiveCommentaryNode: C_BaseEntity
 	readonly m_hLastCommentaryNode: C_BaseEntity
 }
+declare var CCommentarySystem: CCommentarySystem;
 
 interface CPlayerState {
-	readonly type_name: string
 	readonly deadflag: boolean
 	readonly hltv: boolean
 	readonly v_angle: QAngle
@@ -8574,71 +8573,71 @@ interface CPlayerState {
 	readonly frags: number
 	readonly deaths: number
 }
+declare var CPlayerState: CPlayerState;
 
 interface C_OP_VelocityDecay extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flMinVelocity: number
 }
+declare var C_OP_VelocityDecay: C_OP_VelocityDecay;
 
 interface C_OP_LerpVector extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_vecOutput: Vector
 	readonly m_flStartTime: number
 	readonly m_flEndTime: number
 	readonly m_bScaleInitialRange: boolean
 }
+declare var C_OP_LerpVector: C_OP_LerpVector;
 
 interface C_INIT_RemapCPOrientationToRotations extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_vecRotation: Vector
 	readonly m_bUseQuat: boolean
 	readonly m_bWriteNormal: boolean
 }
+declare var C_INIT_RemapCPOrientationToRotations: C_INIT_RemapCPOrientationToRotations;
 
 interface VPhysXRange_t {
-	readonly type_name: string
 	readonly m_flMin: number
 	readonly m_flMax: number
 }
+declare var VPhysXRange_t: VPhysXRange_t;
 
 interface CSchemaSystemInternalRegistration {
-	readonly type_name: string
 	readonly m_Vector2D: Vector2D
 	readonly m_Vector: Vector
 	readonly m_QAngle: QAngle
 	readonly m_Color: Color
 	readonly m_CUtlString: string
 }
+declare var CSchemaSystemInternalRegistration: CSchemaSystemInternalRegistration;
 
 interface sPendingTreeRemoval {
-	readonly type_name: string
 	readonly nTeam: number
 	readonly nIndex: number
 	readonly fTimestamp: number
 }
+declare var sPendingTreeRemoval: sPendingTreeRemoval;
 
 interface CollisionGroupContext_t {
-	readonly type_name: string
 	readonly m_nCollisionGroupNumber: number
 }
+declare var CollisionGroupContext_t: CollisionGroupContext_t;
 
 interface AnimResourceEncodeDifference_t {
-	readonly type_name: string
 }
+declare var AnimResourceEncodeDifference_t: AnimResourceEncodeDifference_t;
 
 interface InfoForResourceTypeCVoxelVisibility {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCVoxelVisibility: InfoForResourceTypeCVoxelVisibility;
 
 interface CRandStopwatch extends CStopwatchBase {
-	readonly type_name: string
 	readonly m_minInterval: number
 	readonly m_maxInterval: number
 }
+declare var CRandStopwatch: CRandStopwatch;
 
 interface C_OP_RenderModels extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_bIgnoreNormal: boolean
 	readonly m_bOrientZ: boolean
 	readonly m_bScaleAnimationRate: boolean
@@ -8659,41 +8658,41 @@ interface C_OP_RenderModels extends CParticleFunctionRenderer {
 	readonly m_bUseRawMeshGroup: boolean
 	readonly m_bDisableShadows: boolean
 }
+declare var C_OP_RenderModels: C_OP_RenderModels;
 
 interface SosEditItemInfo_t {
-	readonly type_name: string
 	readonly itemType: number
 	readonly itemName: string
 	readonly itemTypeName: string
 	readonly itemKVString: string
 	readonly itemPos: Vector2D
 }
+declare var SosEditItemInfo_t: SosEditItemInfo_t;
 
 interface CFacingHeadingCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_comparisonValue: number
 }
+declare var CFacingHeadingCondition: CFacingHeadingCondition;
 
 interface CAnimNodeList {
-	readonly type_name: string
 	readonly m_nodes: CAnimNodeBase[]
 }
+declare var CAnimNodeList: CAnimNodeList;
 
 interface EventClientPollInput_t {
-	readonly type_name: string
 	readonly m_LoopState: EngineLoopState_t
 	readonly m_flRealTime: number
 }
+declare var EventClientPollInput_t: EventClientPollInput_t;
 
 interface FeFitInfluence_t {
-	readonly type_name: string
 	readonly nVertexNode: number
 	readonly flWeight: number
 	readonly nMatrixNode: number
 }
+declare var FeFitInfluence_t: FeFitInfluence_t;
 
 interface CGameSceneNode {
-	readonly type_name: string
 	readonly m_pOwner: CEntityInstance
 	readonly m_pParent: CGameSceneNode
 	readonly m_pChild: CGameSceneNode
@@ -8723,9 +8722,9 @@ interface CGameSceneNode {
 	readonly m_flZOffset: number
 	readonly m_vRenderOrigin: Vector
 }
+declare var CGameSceneNode: CGameSceneNode;
 
 interface C_OP_ConstantForce extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_nMinCol: number
 	readonly m_nMaxCol: number
 	readonly m_nMinRow: number
@@ -8733,9 +8732,9 @@ interface C_OP_ConstantForce extends CParticleFunctionForce {
 	readonly m_vForce: Vector
 	readonly m_flBlendValue: number
 }
+declare var C_OP_ConstantForce: C_OP_ConstantForce;
 
 interface C_INIT_CreateSequentialPathV2 extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_fMaxDistance: number
 	readonly m_flNumToAssign: number
 	readonly m_bLoop: boolean
@@ -8743,34 +8742,34 @@ interface C_INIT_CreateSequentialPathV2 extends CParticleFunctionInitializer {
 	readonly m_bSaveOffset: boolean
 	readonly m_PathParams: CPathParameters
 }
+declare var C_INIT_CreateSequentialPathV2: C_INIT_CreateSequentialPathV2;
 
 interface C_INIT_RandomYaw extends CGeneralRandomRotation {
-	readonly type_name: string
 }
+declare var C_INIT_RandomYaw: C_INIT_RandomYaw;
 
 interface FeSimdQuad_t {
-	readonly type_name: string
 	readonly nNode: number[]
 }
+declare var FeSimdQuad_t: FeSimdQuad_t;
 
 interface C_SingleplayRules extends C_GameRules {
-	readonly type_name: string
 }
+declare var C_SingleplayRules: C_SingleplayRules;
 
 interface EventClientPostAdvanceTick_t extends EventPostAdvanceTick_t {
-	readonly type_name: string
 }
+declare var EventClientPostAdvanceTick_t: EventClientPostAdvanceTick_t;
 
 interface GameChatLogEntry_t {
-	readonly type_name: string
 	readonly m_nTeam: number
 	readonly m_nPlayerID: number
 	readonly m_sText: string
 	readonly m_unGameTime: number
 }
+declare var GameChatLogEntry_t: GameChatLogEntry_t;
 
 interface CBaseServerVehicle extends IServerVehicle {
-	readonly type_name: string
 	readonly m_nNPCButtons: number
 	readonly m_nPrevNPCButtons: number
 	readonly m_flTurnDegrees: number
@@ -8788,14 +8787,14 @@ interface CBaseServerVehicle extends IServerVehicle {
 	readonly m_soundStateStartTime: number
 	readonly m_lastSpeed: number
 }
+declare var CBaseServerVehicle: CBaseServerVehicle;
 
 interface CStopwatch extends CStopwatchBase {
-	readonly type_name: string
 	readonly m_interval: number
 }
+declare var CStopwatch: CStopwatch;
 
 interface C_OP_WorldTraceConstraint extends CParticleFunctionConstraint {
-	readonly type_name: string
 	readonly m_vecCpOffset: Vector
 	readonly m_nCollisionMode: number
 	readonly m_flBounceAmount: number
@@ -8811,9 +8810,9 @@ interface C_OP_WorldTraceConstraint extends CParticleFunctionConstraint {
 	readonly m_bSetNormal: boolean
 	readonly m_bBrushOnly: boolean
 }
+declare var C_OP_WorldTraceConstraint: C_OP_WorldTraceConstraint;
 
 interface VPhysXBodyPart_t {
-	readonly type_name: string
 	readonly m_nFlags: number
 	readonly m_flMass: number
 	readonly m_rnShape: VPhysics2ShapeDef_t
@@ -8825,9 +8824,9 @@ interface VPhysXBodyPart_t {
 	readonly m_bOverrideMassCenter: boolean
 	readonly m_vMassCenterOverride: Vector
 }
+declare var VPhysXBodyPart_t: VPhysXBodyPart_t;
 
 interface CDecalInfo {
-	readonly type_name: string
 	readonly m_flSpecExp: number
 	readonly m_flAnimationScale: number
 	readonly m_flAnimationLifeSpan: number
@@ -8840,66 +8839,66 @@ interface CDecalInfo {
 	readonly m_pPrev: CDecalInfo
 	readonly m_nDecalMaterialIndex: number
 }
+declare var CDecalInfo: CDecalInfo;
 
 interface CPortraitData extends CBasePortraitData {
-	readonly type_name: string
 	readonly m_RenderList: C_BaseEntity[]
 	readonly m_hHero: C_BaseEntity
 }
+declare var CPortraitData: CPortraitData;
 
 interface INextBotReply {
-	readonly type_name: string
 }
+declare var INextBotReply: INextBotReply;
 
 interface ParticleControlPointConfiguration_t {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_previewState: ParticlePreviewState_t
 }
+declare var ParticleControlPointConfiguration_t: ParticleControlPointConfiguration_t;
 
 interface C_INIT_CreateFromPlaneCache extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecOffsetMin: Vector
 	readonly m_vecOffsetMax: Vector
 	readonly m_bUseNormal: boolean
 }
+declare var C_INIT_CreateFromPlaneCache: C_INIT_CreateFromPlaneCache;
 
 interface SequenceGroupResourceData_t {
-	readonly type_name: string
 	readonly m_nFlags: number
 }
+declare var SequenceGroupResourceData_t: SequenceGroupResourceData_t;
 
 interface SeqResourcePoseParamDesc_t {
-	readonly type_name: string
 	readonly m_flStart: number
 	readonly m_flEnd: number
 	readonly m_flLoop: number
 	readonly m_bLooping: boolean
 }
+declare var SeqResourcePoseParamDesc_t: SeqResourcePoseParamDesc_t;
 
 interface InfoForResourceTypeCModel {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCModel: InfoForResourceTypeCModel;
 
 interface PointDefinition_t {
-	readonly type_name: string
 	readonly m_nControlPoint: number
 	readonly m_bLocalCoords: boolean
 	readonly m_vOffset: Vector
 }
+declare var PointDefinition_t: PointDefinition_t;
 
 interface C_OP_ConstrainLineLength extends CParticleFunctionConstraint {
-	readonly type_name: string
 	readonly m_flMinDistance: number
 	readonly m_flMaxDistance: number
 }
+declare var C_OP_ConstrainLineLength: C_OP_ConstrainLineLength;
 
 interface EntInput_t {
-	readonly type_name: string
 }
+declare var EntInput_t: EntInput_t;
 
 interface CRenderablePortraitData extends CBasePortraitData {
-	readonly type_name: string
 	readonly m_nCurrentHeroID: number
 	readonly m_hCallbackHandler: C_BaseEntity
 	readonly m_bHasHero: boolean
@@ -8908,9 +8907,9 @@ interface CRenderablePortraitData extends CBasePortraitData {
 	readonly m_bUseModelForParticles: boolean
 	readonly m_hPortraitHero: C_BaseEntity
 }
+declare var CRenderablePortraitData: CRenderablePortraitData;
 
 interface C_OP_DriveCPFromGlobalSoundFloat extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nOutputControlPoint: number
 	readonly m_nOutputField: number
 	readonly m_flInputMin: number
@@ -8921,9 +8920,9 @@ interface C_OP_DriveCPFromGlobalSoundFloat extends CParticleFunctionPreEmission 
 	readonly m_OperatorName: string
 	readonly m_FieldName: string
 }
+declare var C_OP_DriveCPFromGlobalSoundFloat: C_OP_DriveCPFromGlobalSoundFloat;
 
 interface ConstraintSoundInfo {
-	readonly type_name: string
 	readonly m_vSampler: VelocitySampler
 	readonly m_soundProfile: number
 	readonly m_forwardAxis: Vector
@@ -8933,24 +8932,24 @@ interface ConstraintSoundInfo {
 	readonly m_bPlayTravelSound: boolean
 	readonly m_bPlayReversalSound: boolean
 }
+declare var ConstraintSoundInfo: ConstraintSoundInfo;
 
 interface IHasAttributes {
-	readonly type_name: string
 }
+declare var IHasAttributes: IHasAttributes;
 
 interface CFinishedCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_bIsFinished: boolean
 }
+declare var CFinishedCondition: CFinishedCondition;
 
 interface RemnantData_t {
-	readonly type_name: string
 	readonly m_hRemnant: C_BaseEntity
 	readonly m_nProjectileHandle: number
 }
+declare var RemnantData_t: RemnantData_t;
 
 interface CParticleSystemDefinition extends IParticleSystemDefinition {
-	readonly type_name: string
 	readonly m_nBehaviorVersion: number
 	readonly m_PreEmissionOperators: CParticleFunctionPreEmission[]
 	readonly m_Emitters: CParticleFunctionEmitter[]
@@ -9003,9 +9002,9 @@ interface CParticleSystemDefinition extends IParticleSystemDefinition {
 	readonly m_flDepthSortBias: number
 	readonly m_bShouldHitboxesFallbackToRenderBounds: boolean
 }
+declare var CParticleSystemDefinition: CParticleSystemDefinition;
 
 interface C_OP_LockToBone extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_flLifeTimeFadeStart: number
 	readonly m_flLifeTimeFadeEnd: number
@@ -9014,13 +9013,13 @@ interface C_OP_LockToBone extends CParticleFunctionOperator {
 	readonly m_bRigid: boolean
 	readonly m_bUseBones: boolean
 }
+declare var C_OP_LockToBone: C_OP_LockToBone;
 
 interface EventClientSimulate_t extends EventSimulate_t {
-	readonly type_name: string
 }
+declare var EventClientSimulate_t: EventClientSimulate_t;
 
 interface CEntityIdentity {
-	readonly type_name: string
 	
 	readonly m_pEntity: C_BaseEntity
 	
@@ -9035,16 +9034,16 @@ interface CEntityIdentity {
 	readonly m_pPrevByClass: CEntityIdentity
 	readonly m_pNextByClass: CEntityIdentity
 }
+declare var CEntityIdentity: CEntityIdentity;
 
 interface WorldEnvironmentMap_t {
-	readonly type_name: string
 	readonly m_bSkyRelight: boolean
 	readonly m_flInfluenceRadius: number
 	readonly m_BoxProjection: AABB_t
 }
+declare var WorldEnvironmentMap_t: WorldEnvironmentMap_t;
 
 interface CDOTA_AttackRecord {
-	readonly type_name: string
 	readonly m_hSource: C_BaseEntity
 	readonly m_hInflictor: C_BaseEntity
 	readonly m_hTarget: C_BaseEntity
@@ -9090,19 +9089,19 @@ interface CDOTA_AttackRecord {
 	readonly m_iszAutoAttackRangedParticle: string
 	readonly m_iCustomFXIndex: number
 }
+declare var CDOTA_AttackRecord: CDOTA_AttackRecord;
 
 interface PointDefinitionWithTimeValues_t extends PointDefinition_t {
-	readonly type_name: string
 	readonly m_flTimeDuration: number
 }
+declare var PointDefinitionWithTimeValues_t: PointDefinitionWithTimeValues_t;
 
 interface CTwistConstraint extends CBaseConstraint {
-	readonly type_name: string
 	readonly m_bInverse: boolean
 }
+declare var CTwistConstraint: CTwistConstraint;
 
 interface DOTASpecialAbility_t {
-	readonly type_name: string
 	readonly m_pszName: string
 	readonly m_pszValue: string
 	readonly m_pszLevelKey: string
@@ -9113,15 +9112,15 @@ interface DOTASpecialAbility_t {
 	readonly m_bSpellDamageField: boolean
 	readonly m_eSpecialBonusOperation: number
 }
+declare var DOTASpecialAbility_t: DOTASpecialAbility_t;
 
 interface sSpiritDef {
-	readonly type_name: string
 	readonly nSpiritFXIndex: number
 	readonly nSpiritState: number
 }
+declare var sSpiritDef: sSpiritDef;
 
 interface CNewParticleEffect extends IParticleEffect {
-	readonly type_name: string
 	readonly m_pNext: CNewParticleEffect
 	readonly m_pPrev: CNewParticleEffect
 	readonly m_pParticles: IParticleCollection
@@ -9145,35 +9144,35 @@ interface CNewParticleEffect extends IParticleEffect {
 	readonly m_vecAggregationCenter: Vector
 	readonly m_RefCount: number
 }
+declare var CNewParticleEffect: CNewParticleEffect;
 
 interface C_INIT_RandomRotation extends CGeneralRandomRotation {
-	readonly type_name: string
 }
+declare var C_INIT_RandomRotation: C_INIT_RandomRotation;
 
 interface CAnimTagSpan {
-	readonly type_name: string
 	readonly m_id: AnimTagID
 	readonly m_fStartCycle: number
 	readonly m_fDuration: number
 }
+declare var CAnimTagSpan: CAnimTagSpan;
 
 interface CFloatAnimParameter extends CAnimParameterBase {
-	readonly type_name: string
 	readonly m_fDefaultValue: number
 	readonly m_fMinValue: number
 	readonly m_fMaxValue: number
 	readonly m_bInterpolate: boolean
 }
+declare var CFloatAnimParameter: CFloatAnimParameter;
 
 interface CFeIndexedJiggleBone {
-	readonly type_name: string
 	readonly m_nNode: number
 	readonly m_nJiggleParent: number
 	readonly m_jiggleBone: CFeJiggleBone
 }
+declare var CFeIndexedJiggleBone: CFeIndexedJiggleBone;
 
 interface RnBlendVertex_t {
-	readonly type_name: string
 	readonly m_nWeight0: number
 	readonly m_nIndex0: number
 	readonly m_nWeight1: number
@@ -9183,9 +9182,9 @@ interface RnBlendVertex_t {
 	readonly m_nFlags: number
 	readonly m_nTargetIndex: number
 }
+declare var RnBlendVertex_t: RnBlendVertex_t;
 
 interface CDirectionalBlendAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_animNamePrefix: string
 	readonly m_blendValueSource: number
 	readonly m_param: AnimParamID
@@ -9194,14 +9193,14 @@ interface CDirectionalBlendAnimNode extends CAnimNodeBase {
 	readonly m_playbackSpeed: number
 	readonly m_damping: CAnimInputDamping
 }
+declare var CDirectionalBlendAnimNode: CDirectionalBlendAnimNode;
 
 interface CBoolAnimParameter extends CAnimParameterBase {
-	readonly type_name: string
 	readonly m_bDefaultValue: boolean
 }
+declare var CBoolAnimParameter: CBoolAnimParameter;
 
 interface SeqResourceCmdSeqDesc_t {
-	readonly type_name: string
 	readonly m_flags: SeqResourceSeqDesc_t_Flag_t
 	readonly m_transition: SeqResourceTransition_t
 	readonly m_nFrameRangeSequence: number
@@ -9210,38 +9209,38 @@ interface SeqResourceCmdSeqDesc_t {
 	readonly m_nSubCycles: number
 	readonly m_numLocalResults: number
 }
+declare var SeqResourceCmdSeqDesc_t: SeqResourceCmdSeqDesc_t;
 
 interface MaterialParamString_t extends MaterialParam_t {
-	readonly type_name: string
 }
+declare var MaterialParamString_t: MaterialParamString_t;
 
 interface CHitBoxSetList {
-	readonly type_name: string
 }
+declare var CHitBoxSetList: CHitBoxSetList;
 
 interface VsInputSignature_t {
-	readonly type_name: string
 }
+declare var VsInputSignature_t: VsInputSignature_t;
 
 interface InfoForResourceTypeCPostProcessingResource {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeCPostProcessingResource: InfoForResourceTypeCPostProcessingResource;
 
 interface C_OP_FadeInSimple extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flFadeInTime: number
 }
+declare var C_OP_FadeInSimple: C_OP_FadeInSimple;
 
 interface C_INIT_CreateWithinBox extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_vecMin: Vector
 	readonly m_vecMax: Vector
 	readonly m_nControlPointNumber: number
 	readonly m_bLocalSpace: boolean
 }
+declare var C_INIT_CreateWithinBox: C_INIT_CreateWithinBox;
 
 interface InfoOverlayData_t {
-	readonly type_name: string
 	readonly m_flWidth: number
 	readonly m_flHeight: number
 	readonly m_flDepth: number
@@ -9250,19 +9249,19 @@ interface InfoOverlayData_t {
 	readonly m_nRenderOrder: number
 	readonly m_nSequenceOverride: number
 }
+declare var InfoOverlayData_t: InfoOverlayData_t;
 
 interface C_OP_RenderScreenVelocityRotate extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_flRotateRateDegrees: number
 	readonly m_flForwardDegrees: number
 }
+declare var C_OP_RenderScreenVelocityRotate: C_OP_RenderScreenVelocityRotate;
 
 interface C_INIT_RandomNamedModelSequence extends C_INIT_RandomNamedModelElement {
-	readonly type_name: string
 }
+declare var C_INIT_RandomNamedModelSequence: C_INIT_RandomNamedModelSequence;
 
 interface C_INIT_RemapCPtoVector extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nCPInput: number
 	readonly m_vInputMin: Vector
 	readonly m_vInputMax: Vector
@@ -9276,13 +9275,13 @@ interface C_INIT_RemapCPtoVector extends CParticleFunctionInitializer {
 	readonly m_nLocalSpaceCP: number
 	readonly m_flRemapBias: number
 }
+declare var C_INIT_RemapCPtoVector: C_INIT_RemapCPtoVector;
 
 interface C_INIT_RandomModelSequence extends CParticleFunctionInitializer {
-	readonly type_name: string
 }
+declare var C_INIT_RandomModelSequence: C_INIT_RandomModelSequence;
 
 interface CVoxelVisibility {
-	readonly type_name: string
 	readonly m_blockOffset: number[]
 	readonly m_vMinBounds: Vector
 	readonly m_vMaxBounds: Vector
@@ -9293,19 +9292,19 @@ interface CVoxelVisibility {
 	readonly m_nTreeSize: number
 	readonly m_nPVSSizeCompressed: number
 }
+declare var CVoxelVisibility: CVoxelVisibility;
 
 interface SelectedEditItemInfo_t {
-	readonly type_name: string
 }
+declare var SelectedEditItemInfo_t: SelectedEditItemInfo_t;
 
 interface CAnimationGraph {
-	readonly type_name: string
 	readonly m_motorList: CAnimMotorList
 	readonly m_rootNodeID: AnimNodeID
 }
+declare var CAnimationGraph: CAnimationGraph;
 
 interface C_LightGlowOverlay extends CGlowOverlay {
-	readonly type_name: string
 	readonly m_vecOrigin: Vector
 	readonly m_vecDirection: Vector
 	readonly m_nMinDist: number
@@ -9314,45 +9313,45 @@ interface C_LightGlowOverlay extends CGlowOverlay {
 	readonly m_bOneSided: boolean
 	readonly m_bModulateByDot: boolean
 }
+declare var C_LightGlowOverlay: C_LightGlowOverlay;
 
 interface sPendingTreeModelChange {
-	readonly type_name: string
 	readonly nTeam: number
 	readonly nIndex: number
 	readonly strModel: string
 	readonly nChangeToken: number
 }
+declare var sPendingTreeModelChange: sPendingTreeModelChange;
 
 interface IControlPointEditorData {
-	readonly type_name: string
 }
+declare var IControlPointEditorData: IControlPointEditorData;
 
 interface CSSDSMsg_PostLayer extends CSSDSMsg_LayerBase {
-	readonly type_name: string
 }
+declare var CSSDSMsg_PostLayer: CSSDSMsg_PostLayer;
 
 interface CSequenceAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_sequenceName: string
 	readonly m_playbackSpeed: number
 	readonly m_bLoop: boolean
 }
+declare var CSequenceAnimNode: CSequenceAnimNode;
 
 interface VPhysXConstraint2_t {
-	readonly type_name: string
 	readonly m_nFlags: number
 	readonly m_nParent: number
 	readonly m_nChild: number
 	readonly m_params: number
 }
+declare var VPhysXConstraint2_t: VPhysXConstraint2_t;
 
 interface CAttributeContainer extends CAttributeManager {
-	readonly type_name: string
 	readonly m_Item: CEconItemView
 }
+declare var CAttributeContainer: CAttributeContainer;
 
 interface C_OP_LockPoints extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nMinCol: number
 	readonly m_nMaxCol: number
 	readonly m_nMinRow: number
@@ -9360,15 +9359,15 @@ interface C_OP_LockPoints extends CParticleFunctionOperator {
 	readonly m_nControlPoint: number
 	readonly m_flBlendValue: number
 }
+declare var C_OP_LockPoints: C_OP_LockPoints;
 
 interface C_OP_RemapCPtoVelocity extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCPInput: number
 	readonly m_bScaleCurrent: boolean
 }
+declare var C_OP_RemapCPtoVelocity: C_OP_RemapCPtoVelocity;
 
 interface IrradVolume_t {
-	readonly type_name: string
 	readonly m_flFadeMinDist: number
 	readonly m_flFadeMaxDist: number
 	readonly m_vMinBounds: Vector
@@ -9377,30 +9376,30 @@ interface IrradVolume_t {
 	readonly m_nSortKey: number
 	readonly m_nPlanes: number
 }
+declare var IrradVolume_t: IrradVolume_t;
 
 interface CBlendNodeChild {
-	readonly type_name: string
 	readonly m_nodeID: AnimNodeID
 	readonly m_name: string
 	readonly m_blendValue: number
 }
+declare var CBlendNodeChild: CBlendNodeChild;
 
 interface EventPreDataUpdate_t {
-	readonly type_name: string
 	readonly m_nEntityIndex: number
 }
+declare var EventPreDataUpdate_t: EventPreDataUpdate_t;
 
 interface Relationship_t {
-	readonly type_name: string
 	readonly entity: C_BaseEntity
 	readonly classType: number
 	readonly faction: number
 	readonly disposition: number
 	readonly priority: number
 }
+declare var Relationship_t: Relationship_t;
 
 interface C_OP_RenderTrails extends CBaseTrailRenderer {
-	readonly type_name: string
 	readonly m_bEnableFadingAndClamping: boolean
 	readonly m_flMaxLength: number
 	readonly m_flMinLength: number
@@ -9413,43 +9412,43 @@ interface C_OP_RenderTrails extends CBaseTrailRenderer {
 	readonly m_bFlipUVBasedOnPitchYaw: boolean
 	readonly m_bUseTopology: boolean
 }
+declare var C_OP_RenderTrails: C_OP_RenderTrails;
 
 interface C_OP_SetFromCPSnapshot extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_nLocalSpaceCP: number
 	readonly m_bRandom: boolean
 	readonly m_bReverse: boolean
 	readonly m_nRandomSeed: number
 }
+declare var C_OP_SetFromCPSnapshot: C_OP_SetFromCPSnapshot;
 
 interface World_t {
-	readonly type_name: string
 	readonly m_builderParams: WorldBuilderParams_t
 	readonly m_worldLightingInfo: BakedLightingInfo_t
 }
+declare var World_t: World_t;
 
 interface CVectorAnimParameter extends CAnimParameterBase {
-	readonly type_name: string
 	readonly m_defaultValue: Vector
 	readonly m_bInterpolate: boolean
 }
+declare var CVectorAnimParameter: CVectorAnimParameter;
 
 interface InfoForResourceTypeVBitmapFontRuntimeData_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeVBitmapFontRuntimeData_t: InfoForResourceTypeVBitmapFontRuntimeData_t;
 
 interface TimedBalanceRecord_t {
-	readonly type_name: string
 	readonly m_nNetWorthDelta: number
 	readonly m_nExperienceDelta: number
 	readonly m_flBalanceMetric: number
 	readonly m_nBonusGoldRadiant: number
 	readonly m_nBonusGoldDire: number
 }
+declare var TimedBalanceRecord_t: TimedBalanceRecord_t;
 
 interface C_OP_DistanceBetweenCPs extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nStartCP: number
 	readonly m_nEndCP: number
 	readonly m_flInputMin: number
@@ -9462,23 +9461,23 @@ interface C_OP_DistanceBetweenCPs extends CParticleFunctionOperator {
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bScaleCurrent: boolean
 }
+declare var C_OP_DistanceBetweenCPs: C_OP_DistanceBetweenCPs;
 
 interface AnimResourceBone_t {
-	readonly type_name: string
 	readonly m_parent: number
 	readonly m_pos: Vector
 	readonly m_flags: number
 }
+declare var AnimResourceBone_t: AnimResourceBone_t;
 
 interface CHitBoxSet {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_nNameHash: number
 	readonly m_SourceFilename: string
 }
+declare var CHitBoxSet: CHitBoxSet;
 
 interface C_INIT_StatusEffect extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nDetail2Combo: number
 	readonly m_flDetail2Rotation: number
 	readonly m_flDetail2Scale: number
@@ -9498,18 +9497,18 @@ interface C_INIT_StatusEffect extends CParticleFunctionInitializer {
 	readonly m_flMetalnessBlendToFull: number
 	readonly m_flSelfIllumBlendToFull: number
 }
+declare var C_INIT_StatusEffect: C_INIT_StatusEffect;
 
 interface CControlValueCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_sourceControlValue: number
 	readonly m_comparisonValueType: number
 	readonly m_comparisonFixedValue: number
 	readonly m_comparisonControlValue: number
 	readonly m_comparisonParamID: AnimParamID
 }
+declare var CControlValueCondition: CControlValueCondition;
 
 interface PostProcessingResource_t {
-	readonly type_name: string
 	readonly m_bHasTonemapParams: boolean
 	readonly m_toneMapParams: PostProcessingTonemapParameters_t
 	readonly m_bHasBloomParams: boolean
@@ -9518,52 +9517,52 @@ interface PostProcessingResource_t {
 	readonly m_vignetteParams: PostProcessingVignetteParameters_t
 	readonly m_nColorCorrectionVolumeDim: number
 }
+declare var PostProcessingResource_t: PostProcessingResource_t;
 
 interface FeSimdTri_t {
-	readonly type_name: string
 	readonly nNode: number[]
 	readonly v2: FourVectors2D
 }
+declare var FeSimdTri_t: FeSimdTri_t;
 
 interface CHeadlightEffect extends CFlashlightEffect {
-	readonly type_name: string
 }
+declare var CHeadlightEffect: CHeadlightEffect;
 
 interface CDOTA_CombatLogQueryProgress {
-	readonly type_name: string
 	readonly m_nPlayerID: number
 	readonly m_nQueryID: number
 	readonly m_nQueryRank: number
 	readonly m_nMultiQueryID: number
 }
+declare var CDOTA_CombatLogQueryProgress: CDOTA_CombatLogQueryProgress;
 
 interface sSpiritInfo {
-	readonly type_name: string
 	readonly vTargetLoc: Vector
 	readonly hTarget: C_BaseEntity
 	readonly bHit: boolean
 	readonly iHealAmount: number
 	readonly nFXAmbientIndex: number
 }
+declare var sSpiritInfo: sSpiritInfo;
 
 interface C_OP_SetControlPointRotation extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_vecRotAxis: Vector
 	readonly m_flRotRate: number
 	readonly m_nCP: number
 	readonly m_nLocalCP: number
 }
+declare var C_OP_SetControlPointRotation: C_OP_SetControlPointRotation;
 
 interface AttachmentData_t {
-	readonly type_name: string
 	readonly m_vInfluenceOffsets: Vector[]
 	readonly m_influenceWeights: number[]
 	readonly m_nFlags: number[]
 	readonly m_nInfluences: number
 }
+declare var AttachmentData_t: AttachmentData_t;
 
 interface PRTMatrixData_t {
-	readonly type_name: string
 	readonly m_nTransmitters: number
 	readonly m_nReceivers: number
 	readonly m_nTextureWidth: number
@@ -9594,20 +9593,20 @@ interface PRTMatrixData_t {
 	readonly m_nReceiverIndicesSize: bigint
 	readonly m_nReceiverIndicesSizeUncompressed: bigint
 }
+declare var PRTMatrixData_t: PRTMatrixData_t;
 
 interface CPVSData {
-	readonly type_name: string
 	readonly m_pNext: CPVSData
 	readonly m_nPVSMasks: number
 	readonly m_nPVSFlags: number
 }
+declare var CPVSData: CPVSData;
 
 interface CSingleplayRules extends CGameRules {
-	readonly type_name: string
 }
+declare var CSingleplayRules: CSingleplayRules;
 
 interface C_OP_PercentageBetweenCPs extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flOutputMin: number
@@ -9619,9 +9618,9 @@ interface C_OP_PercentageBetweenCPs extends CParticleFunctionOperator {
 	readonly m_bActiveRange: boolean
 	readonly m_bRadialCheck: boolean
 }
+declare var C_OP_PercentageBetweenCPs: C_OP_PercentageBetweenCPs;
 
 interface NodeData_t {
-	readonly type_name: string
 	readonly m_Flags: number
 	readonly m_nParent: number
 	readonly m_vOrigin: Vector
@@ -9629,19 +9628,19 @@ interface NodeData_t {
 	readonly m_vMaxBounds: Vector
 	readonly m_flMinimumDistance: number
 }
+declare var NodeData_t: NodeData_t;
 
 interface CSpeedScaleAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_param: AnimParamID
 }
+declare var CSpeedScaleAnimNode: CSpeedScaleAnimNode;
 
 interface CStringAnimTag extends CAnimTagBase {
-	readonly type_name: string
 }
+declare var CStringAnimTag: CStringAnimTag;
 
 interface CMaterialDrawDescriptor {
-	readonly type_name: string
 	readonly m_nPrimitiveType: number
 	readonly m_nBaseVertex: number
 	readonly m_nVertexCount: number
@@ -9653,49 +9652,49 @@ interface CMaterialDrawDescriptor {
 	readonly m_vTintColor: Vector
 	readonly m_indexBuffer: CRenderBufferBinding
 }
+declare var CMaterialDrawDescriptor: CMaterialDrawDescriptor;
 
 interface ExtraVertexStreamOverride_t extends BaseSceneObjectOverride_t {
-	readonly type_name: string
 	readonly m_nSubSceneObject: number
 	readonly m_nDrawCallIndex: number
 	readonly m_nAdditionalMeshDrawPrimitiveFlags: number
 	readonly m_extraBufferBinding: RenderBufferBinding_t
 }
+declare var ExtraVertexStreamOverride_t: ExtraVertexStreamOverride_t;
 
 interface EventServerProcessNetworking_t extends EventSimulate_t {
-	readonly type_name: string
 }
+declare var EventServerProcessNetworking_t: EventServerProcessNetworking_t;
 
 interface CInterpolatedValue {
-	readonly type_name: string
 	readonly m_flStartTime: number
 	readonly m_flEndTime: number
 	readonly m_flStartValue: number
 	readonly m_flEndValue: number
 	readonly m_nInterpType: number
 }
+declare var CInterpolatedValue: CInterpolatedValue;
 
 interface CMotorController {
-	readonly type_name: string
 	readonly m_speed: number
 	readonly m_maxTorque: number
 	readonly m_axis: Vector
 	readonly m_inertiaFactor: number
 }
+declare var CMotorController: CMotorController;
 
 interface CPathHelperAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_flStoppingRadius: number
 	readonly m_flStoppingSpeedScale: number
 }
+declare var CPathHelperAnimNode: CPathHelperAnimNode;
 
 interface CLocomotionBase extends INextBotComponent {
-	readonly type_name: string
 }
+declare var CLocomotionBase: CLocomotionBase;
 
 interface C_OP_RemapParticleCountOnScalarEndCap extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nInputMin: number
 	readonly m_nInputMax: number
 	readonly m_flOutputMin: number
@@ -9704,9 +9703,9 @@ interface C_OP_RemapParticleCountOnScalarEndCap extends CParticleFunctionOperato
 	readonly m_bScaleInitialRange: boolean
 	readonly m_bScaleCurrent: boolean
 }
+declare var C_OP_RemapParticleCountOnScalarEndCap: C_OP_RemapParticleCountOnScalarEndCap;
 
 interface NextBotGroundLocomotion extends CLocomotionBase {
-	readonly type_name: string
 	readonly m_vVelocity: Vector
 	readonly m_vPriorPos: Vector
 	readonly m_vLastValidPos: Vector
@@ -9736,23 +9735,23 @@ interface NextBotGroundLocomotion extends CLocomotionBase {
 	readonly m_actJump: number
 	readonly m_actJumpAcrossGap: number
 }
+declare var NextBotGroundLocomotion: NextBotGroundLocomotion;
 
 interface CNavVolumeMarkupVolume extends CNavVolume {
-	readonly type_name: string
 }
+declare var CNavVolumeMarkupVolume: CNavVolumeMarkupVolume;
 
 interface C_OP_RandomForce extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_MinForce: Vector
 	readonly m_MaxForce: Vector
 }
+declare var C_OP_RandomForce: C_OP_RandomForce;
 
 interface EntityKeyValueData_t {
-	readonly type_name: string
 }
+declare var EntityKeyValueData_t: EntityKeyValueData_t;
 
 interface C_OP_SetControlPointToImpactPoint extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_nCPOut: number
 	readonly m_nCPIn: number
 	readonly m_flUpdateRate: number
@@ -9761,37 +9760,37 @@ interface C_OP_SetControlPointToImpactPoint extends CParticleFunctionPreEmission
 	readonly m_vecTraceDir: Vector
 	readonly m_bSetToEndpoint: boolean
 }
+declare var C_OP_SetControlPointToImpactPoint: C_OP_SetControlPointToImpactPoint;
 
 interface CPostGraphIKChainBlendTag extends CAnimTagBase {
-	readonly type_name: string
 	readonly m_ChainName: string
 	readonly m_flBlendAmountOnEnter: number
 	readonly m_flBlendAmountOnExit: number
 }
+declare var CPostGraphIKChainBlendTag: CPostGraphIKChainBlendTag;
 
 interface CTagCondition extends CAnimStateConditionBase {
-	readonly type_name: string
 	readonly m_tagID: AnimTagID
 	readonly m_comparisonValue: boolean
 }
+declare var CTagCondition: CTagCondition;
 
 interface VPhysXDiskCapsule_t extends VPhysXDiskShapeHeader_t {
-	readonly type_name: string
 	readonly m_vEnds: Vector[]
 	readonly m_flRadius: number
 }
+declare var VPhysXDiskCapsule_t: VPhysXDiskCapsule_t;
 
 interface FeTaperedCapsuleStretch_t {
-	readonly type_name: string
 	readonly nNode: number[]
 	readonly nCollisionMask: number
 	readonly nDummy: number
 	readonly flRadius: number[]
 	readonly flStickiness: number
 }
+declare var FeTaperedCapsuleStretch_t: FeTaperedCapsuleStretch_t;
 
 interface CDOTAGamerules extends CTeamplayRules {
-	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
 	readonly m_iMiscHeroPickCounter: number
 	readonly m_hEndGameCinematicEntity: C_BaseEntity
@@ -10038,20 +10037,20 @@ interface CDOTAGamerules extends CTeamplayRules {
 	readonly m_nPrimaryIngameEventIndex: number
 	readonly m_flLastItemSuggestionRequestTime: number[]
 }
+declare var CDOTAGamerules: CDOTAGamerules;
 
 interface C_OP_RenderGrid extends CParticleFunctionRenderer {
-	readonly type_name: string
 }
+declare var C_OP_RenderGrid: C_OP_RenderGrid;
 
 interface C_INIT_RandomTrailLength extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_flMinLength: number
 	readonly m_flMaxLength: number
 	readonly m_flLengthRandExponent: number
 }
+declare var C_INIT_RandomTrailLength: C_INIT_RandomTrailLength;
 
 interface C_OP_ConstrainDistanceToPath extends CParticleFunctionConstraint {
-	readonly type_name: string
 	readonly m_fMinDistance: number
 	readonly m_flMaxDistance0: number
 	readonly m_flMaxDistanceMid: number
@@ -10059,9 +10058,9 @@ interface C_OP_ConstrainDistanceToPath extends CParticleFunctionConstraint {
 	readonly m_PathParameters: CPathParameters
 	readonly m_flTravelTime: number
 }
+declare var C_OP_ConstrainDistanceToPath: C_OP_ConstrainDistanceToPath;
 
 interface EntComponentInfo_t {
-	readonly type_name: string
 	readonly m_pName: string
 	readonly m_pCPPClassname: string
 	readonly m_pNetworkDataReferencedDescription: string
@@ -10070,22 +10069,22 @@ interface EntComponentInfo_t {
 	readonly m_nFlags: number
 	readonly m_pBaseClassComponentHelper: CEntityComponentHelper
 }
+declare var EntComponentInfo_t: EntComponentInfo_t;
 
 interface CFingerSource {
-	readonly type_name: string
 	readonly m_nFingerIndex: number
 	readonly m_flFingerWeight: number
 }
+declare var CFingerSource: CFingerSource;
 
 interface sLoadoutItem {
-	readonly type_name: string
 	readonly name: string
 	readonly iFlags: number
 	readonly bPurchased: boolean
 }
+declare var sLoadoutItem: sLoadoutItem;
 
 interface CRagdoll extends IRagdoll {
-	readonly type_name: string
 	readonly m_ragdoll: ragdoll_t
 	readonly m_mins: Vector
 	readonly m_maxs: Vector
@@ -10096,43 +10095,43 @@ interface CRagdoll extends IRagdoll {
 	readonly m_flLastOriginChangeTime: number
 	readonly m_flAwakeTime: number
 }
+declare var CRagdoll: CRagdoll;
 
 interface C_INIT_CreateAlongPath extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_fMaxDistance: number
 	readonly m_PathParams: CPathParameters
 	readonly m_bUseRandomCPs: boolean
 	readonly m_vEndOffset: Vector
 	readonly m_bSaveOffset: boolean
 }
+declare var C_INIT_CreateAlongPath: C_INIT_CreateAlongPath;
 
 interface C_OP_PlayEndCapWhenFinished extends CParticleFunctionPreEmission {
-	readonly type_name: string
 	readonly m_bFireOnEmissionEnd: boolean
 	readonly m_bIncludeChildren: boolean
 }
+declare var C_OP_PlayEndCapWhenFinished: C_OP_PlayEndCapWhenFinished;
 
 interface CAudioAnimTag extends CAnimTagBase {
-	readonly type_name: string
 	readonly m_clipName: string
 }
+declare var CAudioAnimTag: CAudioAnimTag;
 
 interface CRenderMesh {
-	readonly type_name: string
 	readonly m_constraints: CBaseConstraint[]
 	readonly m_skeleton: CRenderSkeleton
 }
+declare var CRenderMesh: CRenderMesh;
 
 interface constraint_hingeparams_t {
-	readonly type_name: string
 	readonly worldPosition: Vector
 	readonly worldAxisDirection: Vector
 	readonly hingeAxis: constraint_axislimit_t
 	readonly constraint: constraint_breakableparams_t
 }
+declare var constraint_hingeparams_t: constraint_hingeparams_t;
 
 interface MaterialDrawDescriptor_t {
-	readonly type_name: string
 	readonly m_nBaseVertex: number
 	readonly m_nVertexCount: number
 	readonly m_nStartIndex: number
@@ -10147,13 +10146,13 @@ interface MaterialDrawDescriptor_t {
 	readonly m_hInputLayoutHandle: number[]
 	readonly m_indexBuffer: RenderBufferBinding_t
 }
+declare var MaterialDrawDescriptor_t: MaterialDrawDescriptor_t;
 
 interface C_BaseAnimatingOverlayController extends C_BaseAnimatingController {
-	readonly type_name: string
 }
+declare var C_BaseAnimatingOverlayController: C_BaseAnimatingOverlayController;
 
 interface C_OP_RenderStandardLight extends CParticleFunctionRenderer {
-	readonly type_name: string
 	readonly m_nLightType: number
 	readonly m_Color: Color
 	readonly m_flIntensity: number
@@ -10166,9 +10165,9 @@ interface C_OP_RenderStandardLight extends CParticleFunctionRenderer {
 	readonly m_bRenderSpecular: boolean
 	readonly m_lightCookie: string
 }
+declare var C_OP_RenderStandardLight: C_OP_RenderStandardLight;
 
 interface C_OP_CPOffsetToPercentageBetweenCPs extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flInputMin: number
 	readonly m_flInputMax: number
 	readonly m_flInputBias: number
@@ -10181,25 +10180,25 @@ interface C_OP_CPOffsetToPercentageBetweenCPs extends CParticleFunctionOperator 
 	readonly m_bScaleOffset: boolean
 	readonly m_vecOffset: Vector
 }
+declare var C_OP_CPOffsetToPercentageBetweenCPs: C_OP_CPOffsetToPercentageBetweenCPs;
 
 interface C_OP_ColorInterpolateRandom extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_ColorFadeMin: Color
 	readonly m_ColorFadeMax: Color
 	readonly m_flFadeStartTime: number
 	readonly m_flFadeEndTime: number
 	readonly m_bEaseInOut: boolean
 }
+declare var C_OP_ColorInterpolateRandom: C_OP_ColorInterpolateRandom;
 
 interface C_OP_ParentVortices extends CParticleFunctionForce {
-	readonly type_name: string
 	readonly m_flForceScale: number
 	readonly m_vecTwistAxis: Vector
 	readonly m_bFlipBasedOnYaw: boolean
 }
+declare var C_OP_ParentVortices: C_OP_ParentVortices;
 
 interface C_OP_MaintainEmitter extends CParticleFunctionEmitter {
-	readonly type_name: string
 	readonly m_nParticlesToMaintain: number
 	readonly m_flStartTime: number
 	readonly m_nScaleControlPoint: number
@@ -10208,9 +10207,9 @@ interface C_OP_MaintainEmitter extends CParticleFunctionEmitter {
 	readonly m_nSnapshotControlPoint: number
 	readonly m_bEmitInstantaneously: boolean
 }
+declare var C_OP_MaintainEmitter: C_OP_MaintainEmitter;
 
 interface SeqResourceCmdLayer_t {
-	readonly type_name: string
 	readonly m_cmd: number
 	readonly m_nLocalReference: number
 	readonly m_nLocalBonemask: number
@@ -10221,9 +10220,9 @@ interface SeqResourceCmdLayer_t {
 	readonly m_flVar2: number
 	readonly m_nLineNumber: number
 }
+declare var SeqResourceCmdLayer_t: SeqResourceCmdLayer_t;
 
 interface CSkeletonInstance extends CGameSceneNode {
-	readonly type_name: string
 	readonly m_modelState: CModelState
 	readonly m_bIsRenderingEnabled: boolean
 	readonly m_bIsAnimationEnabled: boolean
@@ -10235,45 +10234,45 @@ interface CSkeletonInstance extends CGameSceneNode {
 	readonly m_flIkMasterBlendValueCache: number
 	readonly m_NetworkedIKContext: CNetworkedIKContext
 }
+declare var CSkeletonInstance: CSkeletonInstance;
 
 interface CFourWheelServerVehicle extends CBaseServerVehicle {
-	readonly type_name: string
 	readonly m_ViewSmoothing: ViewSmoothingData_t
 }
+declare var CFourWheelServerVehicle: CFourWheelServerVehicle;
 
 interface C_OP_RemapCPOrientationToRotations extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCP: number
 	readonly m_vecRotation: Vector
 	readonly m_bUseQuat: boolean
 	readonly m_bWriteNormal: boolean
 }
+declare var C_OP_RemapCPOrientationToRotations: C_OP_RemapCPOrientationToRotations;
 
 interface voxel_vis_cluster_t {
-	readonly type_name: string
 	readonly m_nBlockIndex: number
 	readonly m_nOffsetIntoBlock: number
 }
+declare var voxel_vis_cluster_t: voxel_vis_cluster_t;
 
 interface CSosSoundEventGroupListSchema {
-	readonly type_name: string
 }
+declare var CSosSoundEventGroupListSchema: CSosSoundEventGroupListSchema;
 
 interface SeqResourcePoseSetting_t {
-	readonly type_name: string
 	readonly m_flValue: number
 	readonly m_bX: boolean
 	readonly m_bY: boolean
 	readonly m_bZ: boolean
 	readonly m_eType: number
 }
+declare var SeqResourcePoseSetting_t: SeqResourcePoseSetting_t;
 
 interface InfoForResourceTypeIMaterial2 {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeIMaterial2: InfoForResourceTypeIMaterial2;
 
 interface c_vehicleview_t {
-	readonly type_name: string
 	readonly bClampEyeAngles: boolean
 	readonly flPitchCurveZero: number
 	readonly flPitchCurveLinear: number
@@ -10285,9 +10284,9 @@ interface c_vehicleview_t {
 	readonly flPitchMin: number
 	readonly flPitchMax: number
 }
+declare var c_vehicleview_t: c_vehicleview_t;
 
 interface C_INIT_CreateGrid extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPoint00: number
 	readonly m_vLocalOffset00: Vector
 	readonly m_nControlPoint01: number
@@ -10300,26 +10299,26 @@ interface C_INIT_CreateGrid extends CParticleFunctionInitializer {
 	readonly m_nNumRows: number
 	readonly m_bHorizontalInterleaved: boolean
 }
+declare var C_INIT_CreateGrid: C_INIT_CreateGrid;
 
 interface AnimResourceMorphDifference_t {
-	readonly type_name: string
 }
+declare var AnimResourceMorphDifference_t: AnimResourceMorphDifference_t;
 
 interface FeSimdFitMatrices_t {
-	readonly type_name: string
 	readonly nEnd: number[]
 	readonly nCtrl: number[]
 	readonly AqqInv: FourCovMatrices3
 }
+declare var FeSimdFitMatrices_t: FeSimdFitMatrices_t;
 
 interface CNavVolumeBreadthFirstSearch extends CNavVolumeCalculatedVector {
-	readonly type_name: string
 	readonly m_vStartPos: Vector
 	readonly m_flSearchDist: number
 }
+declare var CNavVolumeBreadthFirstSearch: CNavVolumeBreadthFirstSearch;
 
 interface C_OP_RemapDotProductToScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nInputCP1: number
 	readonly m_nInputCP2: number
 	readonly m_flInputMin: number
@@ -10332,9 +10331,9 @@ interface C_OP_RemapDotProductToScalar extends CParticleFunctionOperator {
 	readonly m_bActiveRange: boolean
 	readonly m_bUseParticleNormal: boolean
 }
+declare var C_OP_RemapDotProductToScalar: C_OP_RemapDotProductToScalar;
 
 interface C_OP_SetPerChildControlPoint extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nChildGroupID: number
 	readonly m_nFirstControlPoint: number
 	readonly m_nNumControlPoints: number
@@ -10343,14 +10342,14 @@ interface C_OP_SetPerChildControlPoint extends CParticleFunctionOperator {
 	readonly m_bSetOrientation: boolean
 	readonly m_bNumBasedOnParticleCount: boolean
 }
+declare var C_OP_SetPerChildControlPoint: C_OP_SetPerChildControlPoint;
 
 interface CDOTA_ActionRunner {
-	readonly type_name: string
 	readonly m_pEventContext: CModifierParams
 }
+declare var CDOTA_ActionRunner: CDOTA_ActionRunner;
 
 interface C_OP_MaintainSequentialPath extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_fMaxDistance: number
 	readonly m_flNumToAssign: number
 	readonly m_flCohesionStrength: number
@@ -10359,14 +10358,14 @@ interface C_OP_MaintainSequentialPath extends CParticleFunctionOperator {
 	readonly m_bUseParticleCount: boolean
 	readonly m_PathParams: CPathParameters
 }
+declare var C_OP_MaintainSequentialPath: C_OP_MaintainSequentialPath;
 
 interface C_OP_RemapVectorComponentToScalar extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nComponent: number
 }
+declare var C_OP_RemapVectorComponentToScalar: C_OP_RemapVectorComponentToScalar;
 
 interface CAimMatrixAnimNode extends CAnimNodeBase {
-	readonly type_name: string
 	readonly m_childID: AnimNodeID
 	readonly m_sequenceName: string
 	readonly m_fAngleIncrement: number
@@ -10379,30 +10378,30 @@ interface CAimMatrixAnimNode extends CAnimNodeBase {
 	readonly m_bLockWhenWaning: boolean
 	readonly m_damping: CAnimInputDamping
 }
+declare var CAimMatrixAnimNode: CAimMatrixAnimNode;
 
 interface InfoForResourceTypeProcessingGraphInstance_t {
-	readonly type_name: string
 }
+declare var InfoForResourceTypeProcessingGraphInstance_t: InfoForResourceTypeProcessingGraphInstance_t;
 
 interface C_CSequenceTransitioner {
-	readonly type_name: string
 	readonly m_bIsInSimulation: boolean
 	readonly m_flSimOrRenderTime: number
 	readonly m_flInterpolatedTime: number
 }
+declare var C_CSequenceTransitioner: C_CSequenceTransitioner;
 
 interface C_OP_Decay extends CParticleFunctionOperator {
-	readonly type_name: string
 }
+declare var C_OP_Decay: C_OP_Decay;
 
 interface CSpotlightTraceCacheEntry {
-	readonly type_name: string
 	readonly m_origin: Vector
 	readonly m_radius: number
 }
+declare var CSpotlightTraceCacheEntry: CSpotlightTraceCacheEntry;
 
 interface PlayerResourcePlayerEventData_t {
-	readonly type_name: string
 	readonly m_iEventID: number
 	readonly m_iEventPoints: number
 	readonly m_iEventPremiumPoints: number
@@ -10416,25 +10415,25 @@ interface PlayerResourcePlayerEventData_t {
 	readonly m_iFavoriteTeam: number
 	readonly m_iFavoriteTeamQuality: number
 }
+declare var PlayerResourcePlayerEventData_t: PlayerResourcePlayerEventData_t;
 
 interface CWristBone {
-	readonly type_name: string
 	readonly m_name: string
 	readonly m_vForwardLS: Vector
 	readonly m_vUpLS: Vector
 	readonly m_vOffset: Vector
 }
+declare var CWristBone: CWristBone;
 
 interface vehicle_crashsound_t {
-	readonly type_name: string
 	readonly flMinSpeed: number
 	readonly flMinDeltaSpeed: number
 	readonly gearLimit: number
 	readonly iszCrashSound: string
 }
+declare var vehicle_crashsound_t: vehicle_crashsound_t;
 
 interface locksound_t {
-	readonly type_name: string
 	readonly sLockedSound: string
 	readonly sLockedSentence: string
 	readonly sUnlockedSound: string
@@ -10446,9 +10445,9 @@ interface locksound_t {
 	readonly bEOFLocked: number
 	readonly bEOFUnlocked: number
 }
+declare var locksound_t: locksound_t;
 
 interface C_INIT_ColorLitPerParticle extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_ColorMin: Color
 	readonly m_ColorMax: Color
 	readonly m_TintMin: Color
@@ -10457,9 +10456,9 @@ interface C_INIT_ColorLitPerParticle extends CParticleFunctionInitializer {
 	readonly m_nTintBlendMode: number
 	readonly m_flLightAmplification: number
 }
+declare var C_INIT_ColorLitPerParticle: C_INIT_ColorLitPerParticle;
 
 interface C_INIT_CreatePhyllotaxis extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_nScaleCP: number
 	readonly m_nComponent: number
@@ -10475,16 +10474,16 @@ interface C_INIT_CreatePhyllotaxis extends CParticleFunctionInitializer {
 	readonly m_bUseWithContEmit: boolean
 	readonly m_bUseOrigRadius: boolean
 }
+declare var C_INIT_CreatePhyllotaxis: C_INIT_CreatePhyllotaxis;
 
 interface AnimResourceEncodedFrames_t {
-	readonly type_name: string
 	readonly m_nFrames: number
 	readonly m_nFramesPerBlock: number
 	readonly m_usageDifferences: AnimResourceEncodeDifference_t
 }
+declare var AnimResourceEncodedFrames_t: AnimResourceEncodedFrames_t;
 
 interface C_OP_TeleportBeam extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_nCPPosition: number
 	readonly m_nCPVelocity: number
 	readonly m_nCPMisc: number
@@ -10497,22 +10496,22 @@ interface C_OP_TeleportBeam extends CParticleFunctionOperator {
 	readonly m_flArcSpeed: number
 	readonly m_flAlpha: number
 }
+declare var C_OP_TeleportBeam: C_OP_TeleportBeam;
 
 interface C_OP_FadeOutSimple extends CParticleFunctionOperator {
-	readonly type_name: string
 	readonly m_flFadeOutTime: number
 }
+declare var C_OP_FadeOutSimple: C_OP_FadeOutSimple;
 
 interface C_INIT_SetHitboxToClosest extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_nDesiredHitbox: number
 	readonly m_flHitBoxScale: number
 	readonly m_bUseBones: boolean
 }
+declare var C_INIT_SetHitboxToClosest: C_INIT_SetHitboxToClosest;
 
 interface C_INIT_CreateOnModelAtHeight extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_bUseBones: boolean
 	readonly m_bForceZ: boolean
 	readonly m_nControlPointNumber: number
@@ -10521,9 +10520,9 @@ interface C_INIT_CreateOnModelAtHeight extends CParticleFunctionInitializer {
 	readonly m_flDesiredHeight: number
 	readonly m_flHitBoxScale: number
 }
+declare var C_INIT_CreateOnModelAtHeight: C_INIT_CreateOnModelAtHeight;
 
 interface C_INIT_RingWave extends CParticleFunctionInitializer {
-	readonly type_name: string
 	readonly m_nControlPointNumber: number
 	readonly m_nOverrideCP: number
 	readonly m_nOverrideCP2: number
@@ -10538,9 +10537,9 @@ interface C_INIT_RingWave extends CParticleFunctionInitializer {
 	readonly m_bEvenDistribution: boolean
 	readonly m_bXYVelocityOnly: boolean
 }
+declare var C_INIT_RingWave: C_INIT_RingWave;
 
 interface VPhysXJoint_t {
-	readonly type_name: string
 	readonly m_nType: number
 	readonly m_nBody1: number
 	readonly m_nBody2: number
@@ -10563,36 +10562,36 @@ interface VPhysXJoint_t {
 	readonly m_flAngularFrequency: number
 	readonly m_flAngularDampingRatio: number
 }
+declare var VPhysXJoint_t: VPhysXJoint_t;
 
 interface CDOTA_Tree extends CObstructionObject {
-	readonly type_name: string
 	readonly m_bStanding: boolean
 	readonly m_bSpecialTree: boolean
 	readonly m_nOccluderIndex: number
 }
+declare var CDOTA_Tree: CDOTA_Tree;
 
 interface C_INIT_RemapNamedModelMeshGroupToScalar extends C_INIT_RemapNamedModelElementToScalar {
-	readonly type_name: string
 }
+declare var C_INIT_RemapNamedModelMeshGroupToScalar: C_INIT_RemapNamedModelMeshGroupToScalar;
 
 interface RnMeshDesc_t extends RnShapeDesc_t {
-	readonly type_name: string
 	readonly m_Mesh: RnMesh_t
 }
+declare var RnMeshDesc_t: RnMeshDesc_t;
 
 interface CEntityInstance extends IHandleEntity {
-	readonly type_name: string
 	readonly m_iszPrivateVScripts: string
 	readonly m_pEntity: CEntityIdentity
 	readonly m_CScriptComponent: CScriptComponent
 }
+declare var CEntityInstance: CEntityInstance;
 
 interface C_GameEntity extends CEntityInstance {
-	readonly type_name: string
 }
+declare var C_GameEntity: C_GameEntity;
 
 interface C_BaseEntity extends C_GameEntity {
-	readonly type_name: string
 	
 	IsInRange(ent: C_BaseEntity, range: number): boolean
 	IsEnemy(ent: C_BaseEntity): boolean
@@ -10688,9 +10687,9 @@ interface C_BaseEntity extends C_GameEntity {
 	readonly m_bSimulationTimeChanged: boolean
 	readonly m_bIsBlurred: boolean
 }
+declare var C_BaseEntity: C_BaseEntity;
 
 interface C_DOTABaseAbility extends C_BaseEntity {
-	readonly type_name: string
 	
 	GetSpecialValue(special_name: string, level?: number): number
 	IsManaEnough(owner: C_DOTA_BaseNPC): boolean
@@ -10732,13 +10731,13 @@ interface C_DOTABaseAbility extends C_BaseEntity {
 	readonly m_nAbilityCurrentCharges: number
 	readonly m_flLastCastClickTime: number
 }
+declare var C_DOTABaseAbility: C_DOTABaseAbility;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_2: C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_2;
 
 interface C_DOTA_Item extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_bCombinable: boolean
 	readonly m_bPermanent: boolean
 	readonly m_bStackable: boolean
@@ -10772,20 +10771,20 @@ interface C_DOTA_Item extends C_DOTABaseAbility {
 	readonly m_iPlayerOwnerID: number
 	readonly m_vecPreGameTransferPlayerIDs: number[]
 }
+declare var C_DOTA_Item: C_DOTA_Item;
 
 interface C_DOTA_Ability_Riki_BlinkStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Riki_BlinkStrike: C_DOTA_Ability_Riki_BlinkStrike;
 
 interface C_DOTA_Ability_Mirana_Arrow extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vStartPos: Vector
 	readonly m_nFXIndex: number
 	readonly hAlreadyHitList: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Mirana_Arrow: C_DOTA_Ability_Mirana_Arrow;
 
 interface CDOTA_Ability_Frostivus2018_Centaur_Stampede extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly duration: number
 	readonly base_damage: number
 	readonly strength_damage: number
@@ -10795,33 +10794,33 @@ interface CDOTA_Ability_Frostivus2018_Centaur_Stampede extends C_DOTABaseAbility
 	readonly armor_duration: number
 	readonly max_armor_stacks: number
 }
+declare var CDOTA_Ability_Frostivus2018_Centaur_Stampede: CDOTA_Ability_Frostivus2018_Centaur_Stampede;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_1: C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Juggernaut_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Juggernaut_3: C_DOTA_Ability_Special_Bonus_Unique_Juggernaut_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lion extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lion: C_DOTA_Ability_Special_Bonus_Unique_Lion;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_6: C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_6;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Range_250 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Range_250: C_DOTA_Ability_Special_Bonus_Attack_Range_250;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_14 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_14: C_DOTA_Ability_Special_Bonus_Intelligence_14;
 
 interface C_BaseModelEntity extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_CRenderComponent: CRenderComponent
 	readonly m_iViewerID: number
 	readonly m_iTeamVisibilityBitmask: number
@@ -10848,71 +10847,71 @@ interface C_BaseModelEntity extends C_BaseEntity {
 	readonly m_ClientOverrideTint: Color
 	readonly m_bUseClientOverrideTint: boolean
 }
+declare var C_BaseModelEntity: C_BaseModelEntity;
 
 interface CDOTA_Item_RefresherOrb_Shard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_RefresherOrb_Shard: CDOTA_Item_RefresherOrb_Shard;
 
 interface C_DOTA_Item_Reaver extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Reaver: C_DOTA_Item_Reaver;
 
 interface C_DOTA_Ability_TemplarAssassin_SelfTrap extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_TemplarAssassin_SelfTrap: C_DOTA_Ability_TemplarAssassin_SelfTrap;
 
 interface C_DOTA_Ability_Frostivus2018_Huskar_Inner_Fire extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Huskar_Inner_Fire: C_DOTA_Ability_Frostivus2018_Huskar_Inner_Fire;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lina_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lina_1: C_DOTA_Ability_Special_Bonus_Unique_Lina_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Terrorblade_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Terrorblade_3: C_DOTA_Ability_Special_Bonus_Unique_Terrorblade_3;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_14 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_14: C_DOTA_Ability_Special_Bonus_Agility_14;
 
 interface C_DOTA_Ability_Special_Bonus_Cleave_130 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cleave_130: C_DOTA_Ability_Special_Bonus_Cleave_130;
 
 interface CHitboxComponent extends CEntityComponent {
-	readonly type_name: string
 }
+declare var CHitboxComponent: CHitboxComponent;
 
 interface CBodyComponent extends CEntityComponent {
-	readonly type_name: string
 	readonly m_pSceneNode: CGameSceneNode
 	readonly __m_pChainEntity: CNetworkVarChainer
 }
+declare var CBodyComponent: CBodyComponent;
 
 interface CDOTA_Item_Recipe_Octarine_Core extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Octarine_Core: CDOTA_Item_Recipe_Octarine_Core;
 
 interface C_DOTA_Item_Quarterstaff extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Quarterstaff: C_DOTA_Item_Quarterstaff;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Leshrac_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Leshrac_4: C_DOTA_Ability_Special_Bonus_Unique_Leshrac_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Spectre extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Spectre: C_DOTA_Ability_Special_Bonus_Unique_Spectre;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_250 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_250: C_DOTA_Ability_Special_Bonus_Cast_Range_250;
 
 interface C_BaseAnimating extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_CHitboxComponent: CHitboxComponent
 	readonly m_vecForce: Vector
 	readonly m_nForceBone: number
@@ -10927,57 +10926,57 @@ interface C_BaseAnimating extends C_BaseModelEntity {
 	readonly m_iEjectBrassAttachment: number
 	readonly m_bSuppressAnimEventSounds: boolean
 }
+declare var C_BaseAnimating: C_BaseAnimating;
 
 interface C_DOTA_Ability_LoneDruid_SpiritBear_Defender extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_LoneDruid_SpiritBear_Defender: C_DOTA_Ability_LoneDruid_SpiritBear_Defender;
 
 interface C_DOTA_Ability_PhantomAssassin_Blur extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_PhantomAssassin_Blur: C_DOTA_Ability_PhantomAssassin_Blur;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lich_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lich_3: C_DOTA_Ability_Special_Bonus_Unique_Lich_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Enchantress_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Enchantress_4: C_DOTA_Ability_Special_Bonus_Unique_Enchantress_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bristleback extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bristleback: C_DOTA_Ability_Special_Bonus_Unique_Bristleback;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Slardar_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Slardar_3: C_DOTA_Ability_Special_Bonus_Unique_Slardar_3;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_80 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_80: C_DOTA_Ability_Special_Bonus_Attack_Speed_80;
 
 interface C_DOTA_Ability_Special_Bonus_HP_700 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_700: C_DOTA_Ability_Special_Bonus_HP_700;
 
 interface C_Guts extends C_BaseAnimating {
-	readonly type_name: string
 }
+declare var C_Guts: C_Guts;
 
 interface C_DOTA_Ability_MonkeyKing_Spring_Early extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_MonkeyKing_Spring_Early: C_DOTA_Ability_MonkeyKing_Spring_Early;
 
 interface C_BaseAnimatingOverlay extends C_BaseAnimating {
-	readonly type_name: string
 }
+declare var C_BaseAnimatingOverlay: C_BaseAnimatingOverlay;
 
 interface C_DOTA_Ability_Invoker_Empty1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_Empty1: C_DOTA_Ability_Invoker_Empty1;
 
 interface C_BaseFlex extends C_BaseAnimatingOverlay {
-	readonly type_name: string
 	readonly m_viewtarget: Vector
 	readonly m_flexWeight: number[]
 	readonly m_blinktoggle: boolean
@@ -10996,25 +10995,25 @@ interface C_BaseFlex extends C_BaseAnimatingOverlay {
 	readonly m_flMinEyeLeftRight: number
 	readonly m_flMaxEyeLeftRight: number
 }
+declare var C_BaseFlex: C_BaseFlex;
 
 interface C_DOTA_Ability_Life_Stealer_Open_Wounds extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Life_Stealer_Open_Wounds: C_DOTA_Ability_Life_Stealer_Open_Wounds;
 
 interface C_DOTA_Ability_Dazzle_Shallow_Grave extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Dazzle_Shallow_Grave: C_DOTA_Ability_Dazzle_Shallow_Grave;
 
 interface C_DOTA_Ability_Nian_Leap extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nian_Leap: C_DOTA_Ability_Nian_Leap;
 
 interface C_DOTA_Ability_ShadowShaman_MassSerpentWard extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_ShadowShaman_MassSerpentWard: C_DOTA_Ability_ShadowShaman_MassSerpentWard;
 
 interface C_BaseCombatCharacter extends C_BaseFlex {
-	readonly type_name: string
 	readonly m_flNextAttack: number
 	readonly m_iAmmo: number[]
 	readonly m_hMyWeapons: C_BaseEntity[]
@@ -11028,47 +11027,47 @@ interface C_BaseCombatCharacter extends C_BaseFlex {
 	readonly m_flFieldOfView: number
 	readonly m_footstepTimer: CountdownTimer
 }
+declare var C_BaseCombatCharacter: C_BaseCombatCharacter;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pangolier_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pangolier_6: C_DOTA_Ability_Special_Bonus_Unique_Pangolier_6;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_1: C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin: C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_4: C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_4;
 
 interface C_DOTA_Ability_Special_Bonus_Corruption_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Corruption_4: C_DOTA_Ability_Special_Bonus_Corruption_4;
 
 interface CBodyComponentSkeletonInstance extends CBodyComponent {
-	readonly type_name: string
 	readonly m_skeletonInstance: CSkeletonInstance
 	readonly __m_pChainEntity: CNetworkVarChainer
 }
+declare var CBodyComponentSkeletonInstance: CBodyComponentSkeletonInstance;
 
 interface C_DOTA_Item_RingOfHealth extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_RingOfHealth: C_DOTA_Item_RingOfHealth;
 
 interface C_DOTA_Ability_Phoenix_Supernova extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Phoenix_Supernova: C_DOTA_Ability_Phoenix_Supernova;
 
 interface C_DOTA_Ability_Phoenix_SunRayStop extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Phoenix_SunRayStop: C_DOTA_Ability_Phoenix_SunRayStop;
 
 interface C_DOTA_Ability_EarthSpirit_BoulderSmash extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly speed: number
 	readonly rock_damage: number
 	readonly radius: number
@@ -11081,88 +11080,88 @@ interface C_DOTA_Ability_EarthSpirit_BoulderSmash extends C_DOTABaseAbility {
 	readonly m_hTarget: C_BaseEntity
 	readonly m_bTargetStone: boolean
 }
+declare var C_DOTA_Ability_EarthSpirit_BoulderSmash: C_DOTA_Ability_EarthSpirit_BoulderSmash;
 
 interface C_DOTA_Ability_Huskar_Inner_Vitality extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Huskar_Inner_Vitality: C_DOTA_Ability_Huskar_Inner_Vitality;
 
 interface C_DOTA_Ability_Necrolyte_Sadist_Stop extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Necrolyte_Sadist_Stop: C_DOTA_Ability_Necrolyte_Sadist_Stop;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Centaur_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Centaur_3: C_DOTA_Ability_Special_Bonus_Unique_Centaur_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_4: C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Axe_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Axe_3: C_DOTA_Ability_Special_Bonus_Unique_Axe_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Undying_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Undying_3: C_DOTA_Ability_Special_Bonus_Unique_Undying_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lifestealer extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lifestealer: C_DOTA_Ability_Special_Bonus_Unique_Lifestealer;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Techies_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Techies_3: C_DOTA_Ability_Special_Bonus_Unique_Techies_3;
 
 interface C_DOTA_Ability_Special_Bonus_MP_250 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_250: C_DOTA_Ability_Special_Bonus_MP_250;
 
 interface C_DOTA_Item_CraniumBasher extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_CraniumBasher: C_DOTA_Item_CraniumBasher;
 
 interface C_DOTA_Ability_Animation_Attack extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly animation_time: number
 }
+declare var C_DOTA_Ability_Animation_Attack: C_DOTA_Ability_Animation_Attack;
 
 interface C_DOTA_Ability_Windrunner_Shackleshot extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly shackle_count: number
 	readonly m_vArrowStartPos: Vector
 	readonly m_hTarget: C_BaseEntity
 }
+declare var C_DOTA_Ability_Windrunner_Shackleshot: C_DOTA_Ability_Windrunner_Shackleshot;
 
 interface C_DOTA_Ability_Frostivus2018_TrollWarlord_BattleTrance extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly trance_duration: number
 }
+declare var C_DOTA_Ability_Frostivus2018_TrollWarlord_BattleTrance: C_DOTA_Ability_Frostivus2018_TrollWarlord_BattleTrance;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Kunkka_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Kunkka_4: C_DOTA_Ability_Special_Bonus_Unique_Kunkka_4;
 
 interface C_DOTA_Ability_Special_Bonus_All_Stats_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_All_Stats_10: C_DOTA_Ability_Special_Bonus_All_Stats_10;
 
 interface C_DOTA_Item_Recipe_NullTalisman extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_NullTalisman: C_DOTA_Item_Recipe_NullTalisman;
 
 interface C_DOTA_Ability_Bloodseeker_Rupture extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly max_charges_scepter: number
 	readonly charge_restore_time_scepter: number
 }
+declare var C_DOTA_Ability_Bloodseeker_Rupture: C_DOTA_Ability_Bloodseeker_Rupture;
 
 interface C_DOTA_Ability_Axe_BerserkersCall extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Axe_BerserkersCall: C_DOTA_Ability_Axe_BerserkersCall;
 
 interface C_DOTA_Ability_Creature_Ice_Breath extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly speed: number
 	readonly projectile_count: number
 	readonly rotation_angle: number
@@ -11173,21 +11172,21 @@ interface C_DOTA_Ability_Creature_Ice_Breath extends C_DOTABaseAbility {
 	readonly m_vecStartRot: Vector
 	readonly m_vecEndRot: Vector
 }
+declare var C_DOTA_Ability_Creature_Ice_Breath: C_DOTA_Ability_Creature_Ice_Breath;
 
 interface C_DOTA_Ability_Corspselord_Revive extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Corspselord_Revive: C_DOTA_Ability_Corspselord_Revive;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Abaddon_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Abaddon_2: C_DOTA_Ability_Special_Bonus_Unique_Abaddon_2;
 
 interface C_DOTA_Ability_Special_Bonus_MP_1000 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_1000: C_DOTA_Ability_Special_Bonus_MP_1000;
 
 interface C_NextBotCombatCharacter extends C_BaseCombatCharacter {
-	readonly type_name: string
 	readonly m_shadowTimer: CountdownTimer
 	readonly m_shadowType: number
 	readonly m_forcedShadowType: number
@@ -11197,61 +11196,61 @@ interface C_NextBotCombatCharacter extends C_BaseCombatCharacter {
 	readonly m_flFrustumDistanceSqr: number
 	readonly m_nLod: number
 }
+declare var C_NextBotCombatCharacter: C_NextBotCombatCharacter;
 
 interface C_DOTA_Item_DemonEdge extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_DemonEdge: C_DOTA_Item_DemonEdge;
 
 interface C_DOTA_Item_Recipe_PhaseBoots extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_PhaseBoots: C_DOTA_Item_Recipe_PhaseBoots;
 
 interface C_DOTA_Ability_Phoenix_SunRayToggleMoveEmpty extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Phoenix_SunRayToggleMoveEmpty: C_DOTA_Ability_Phoenix_SunRayToggleMoveEmpty;
 
 interface C_DOTA_Ability_Seasonal_Summon_Snowman extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Seasonal_Summon_Snowman: C_DOTA_Ability_Seasonal_Summon_Snowman;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Timbersaw extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Timbersaw: C_DOTA_Ability_Special_Bonus_Unique_Timbersaw;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_3: C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Batrider_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Batrider_2: C_DOTA_Ability_Special_Bonus_Unique_Batrider_2;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_140 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_140: C_DOTA_Ability_Special_Bonus_Attack_Speed_140;
 
 interface C_DOTA_LightInfo extends C_BaseEntity, CLightInfoBase {
-	readonly type_name: string
 }
+declare var C_DOTA_LightInfo: C_DOTA_LightInfo;
 
 interface C_BaseClientUIEntity extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_bEnabled: boolean
 	readonly m_DialogXMLName: string
 	readonly m_PanelClassName: string
 	readonly m_PanelID: string
 }
+declare var C_BaseClientUIEntity: C_BaseClientUIEntity;
 
 interface C_DOTA_Item_Ethereal_Blade extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Ethereal_Blade: C_DOTA_Item_Ethereal_Blade;
 
 interface C_DOTA_Ability_Skywrath_Mage_Ancient_Seal extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Skywrath_Mage_Ancient_Seal: C_DOTA_Ability_Skywrath_Mage_Ancient_Seal;
 
 interface CDOTA_ModifierManager {
-	readonly type_name: string
 	
 	readonly m_vecBuffs: CDOTA_Buff[]
 	
@@ -11263,55 +11262,55 @@ interface CDOTA_ModifierManager {
 	readonly m_iBuffIndex: number
 	readonly m_iLockRefCount: number
 }
+declare var CDOTA_ModifierManager: CDOTA_ModifierManager;
 
 interface C_DOTA_Ability_Seasonal_Decorate_Tree extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Seasonal_Decorate_Tree: C_DOTA_Ability_Seasonal_Decorate_Tree;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Warlock_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Warlock_3: C_DOTA_Ability_Special_Bonus_Unique_Warlock_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Alchemist extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Alchemist: C_DOTA_Ability_Special_Bonus_Unique_Alchemist;
 
 interface C_SpotlightEnd extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_flLightScale: number
 	readonly m_Radius: number
 }
+declare var C_SpotlightEnd: C_SpotlightEnd;
 
 interface C_DOTA_Item_Infused_Raindrop extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Infused_Raindrop: C_DOTA_Item_Infused_Raindrop;
 
 interface C_DOTA_Item_Recipe_Ethereal_Blade extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Ethereal_Blade: C_DOTA_Item_Recipe_Ethereal_Blade;
 
 interface C_DOTA_Item_Recipe_OblivionStaff extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_OblivionStaff: C_DOTA_Item_Recipe_OblivionStaff;
 
 interface C_DOTA_Ability_Frostivus2018_Weaver_GeminateAttack extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Weaver_GeminateAttack: C_DOTA_Ability_Frostivus2018_Weaver_GeminateAttack;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet_3: C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet_3;
 
 interface C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_40: C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_40;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_150 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_150: C_DOTA_Ability_Special_Bonus_Attack_Damage_150;
 
 interface C_PointCamera extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_FOV: number
 	readonly m_Resolution: number
 	readonly m_bFogEnable: boolean
@@ -11332,52 +11331,52 @@ interface C_PointCamera extends C_BaseEntity {
 	readonly m_bIsOn: boolean
 	readonly m_pNext: C_PointCamera
 }
+declare var C_PointCamera: C_PointCamera;
 
 interface C_DOTA_Item_Recipe_AeonDisk extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_AeonDisk: C_DOTA_Item_Recipe_AeonDisk;
 
 interface C_DOTA_Item_Recipe_CraniumBasher extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_CraniumBasher: C_DOTA_Item_Recipe_CraniumBasher;
 
 interface C_DOTA_Ability_Rubick_Hidden2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rubick_Hidden2: C_DOTA_Ability_Rubick_Hidden2;
 
 interface C_DOTA_Ability_Ogre_Magi_Fireblast extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nMostRecentMulticastCount: number
 }
+declare var C_DOTA_Ability_Ogre_Magi_Fireblast: C_DOTA_Ability_Ogre_Magi_Fireblast;
 
 interface C_DOTA_Ability_Necrolyte_Heartstopper_Aura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Necrolyte_Heartstopper_Aura: C_DOTA_Ability_Necrolyte_Heartstopper_Aura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Axe extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Axe: C_DOTA_Ability_Special_Bonus_Unique_Axe;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Invoker_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Invoker_4: C_DOTA_Ability_Special_Bonus_Unique_Invoker_4;
 
 interface C_DOTA_Ability_Special_Bonus_Exp_Boost_60 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Exp_Boost_60: C_DOTA_Ability_Special_Bonus_Exp_Boost_60;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_14 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_14: C_DOTA_Ability_Special_Bonus_MP_Regen_14;
 
 interface C_FoWRevealerEntity extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_unViewerTeam: number
 	readonly m_nVisionRange: number
 }
+declare var C_FoWRevealerEntity: C_FoWRevealerEntity;
 
 interface C_FlexCycler extends C_BaseFlex {
-	readonly type_name: string
 	readonly m_flextime: number
 	readonly m_flextarget: number[]
 	readonly m_blinktime: number
@@ -11389,30 +11388,30 @@ interface C_FlexCycler extends C_BaseFlex {
 	readonly m_iszSentence: string
 	readonly m_sentence: number
 }
+declare var C_FlexCycler: C_FlexCycler;
 
 interface C_LightEntity extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_CLightComponent: CLightComponent
 }
+declare var C_LightEntity: C_LightEntity;
 
 interface C_DOTA_Item_Recipe_SangeAndYasha extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_SangeAndYasha: C_DOTA_Item_Recipe_SangeAndYasha;
 
 interface C_DOTA_Item_Recipe_Radiance extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Radiance: C_DOTA_Item_Recipe_Radiance;
 
 interface C_DOTA_Item_Recipe_Bracer extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Bracer: C_DOTA_Item_Recipe_Bracer;
 
 interface C_DOTA_Ability_MonkeyKing_QuadrupleTap extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_MonkeyKing_QuadrupleTap: C_DOTA_Ability_MonkeyKing_QuadrupleTap;
 
 interface C_DOTA_UnitInventory {
-	readonly type_name: string
 	readonly m_hItems: C_BaseEntity[]
 	readonly m_bItemQueried: boolean[]
 	readonly m_iParity: number
@@ -11422,72 +11421,72 @@ interface C_DOTA_UnitInventory {
 	readonly m_hTransientCastItem: C_BaseEntity
 	readonly m_bSendChangedMsg: boolean
 }
+declare var C_DOTA_UnitInventory: C_DOTA_UnitInventory;
 
 interface C_DOTA_Ability_Axe_BattleHunger extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly damage_per_second: number
 }
+declare var C_DOTA_Ability_Axe_BattleHunger: C_DOTA_Ability_Axe_BattleHunger;
 
 interface C_DOTA_Ability_Lua extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lua: C_DOTA_Ability_Lua;
 
 interface C_DOTA_Item_GreaterClarity extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_GreaterClarity: C_DOTA_Item_GreaterClarity;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dazzle_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dazzle_2: C_DOTA_Ability_Special_Bonus_Unique_Dazzle_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_1: C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_1;
 
 interface C_DOTA_Ability_Special_Bonus_HP_300 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_300: C_DOTA_Ability_Special_Bonus_HP_300;
 
 interface C_EnvWind extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_EnvWindShared: C_CEnvWindShared
 }
+declare var C_EnvWind: C_EnvWind;
 
 interface C_DOTA_Item_VitalityBooster extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_VitalityBooster: C_DOTA_Item_VitalityBooster;
 
 interface C_DOTA_Item_BladesOfAttack extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_BladesOfAttack: C_DOTA_Item_BladesOfAttack;
 
 interface C_DOTA_Ability_ArcWarden_TempestDouble extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hDoubles: C_BaseEntity
 }
+declare var C_DOTA_Ability_ArcWarden_TempestDouble: C_DOTA_Ability_ArcWarden_TempestDouble;
 
 interface C_DOTA_Ability_Invoker_AttributeBonus extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_AttributeBonus: C_DOTA_Ability_Invoker_AttributeBonus;
 
 interface C_DOTA_Ability_Gyrocopter_Homing_Missile extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Gyrocopter_Homing_Missile: C_DOTA_Ability_Gyrocopter_Homing_Missile;
 
 interface C_DOTA_Ability_QueenOfPain_Blink extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_QueenOfPain_Blink: C_DOTA_Ability_QueenOfPain_Blink;
 
 interface C_DOTA_Ability_Razor_StaticLink extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iLinkIndex: number
 	readonly m_ViewerTimer: CountdownTimer
 	readonly vision_radius: number
 	readonly vision_duration: number
 }
+declare var C_DOTA_Ability_Razor_StaticLink: C_DOTA_Ability_Razor_StaticLink;
 
 interface C_DOTA_Item_DataDriven extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_bProcsMagicStick: boolean
 	readonly m_bIsSharedWithTeammates: boolean
 	readonly m_bCastFilterRejectCaster: boolean
@@ -11495,64 +11494,64 @@ interface C_DOTA_Item_DataDriven extends C_DOTA_Item {
 	readonly m_fAOERadius: number
 	readonly m_CastAnimation: number
 }
+declare var C_DOTA_Item_DataDriven: C_DOTA_Item_DataDriven;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Underlord_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Underlord_4: C_DOTA_Ability_Special_Bonus_Unique_Underlord_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ursa_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ursa_6: C_DOTA_Ability_Special_Bonus_Unique_Ursa_6;
 
 interface C_DOTAGameManagerProxy extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_pGameManager: C_DOTAGameManager
 }
+declare var C_DOTAGameManagerProxy: C_DOTAGameManagerProxy;
 
 interface C_GameRulesProxy extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_GameRulesProxy: C_GameRulesProxy;
 
 interface C_DOTA_Item_Diffusal_Blade extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Diffusal_Blade: C_DOTA_Item_Diffusal_Blade;
 
 interface C_DOTA_Item_Crimson_Guard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Crimson_Guard: C_DOTA_Item_Crimson_Guard;
 
 interface C_DOTA_Ability_KeeperOfTheLight_BlindingLight extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_KeeperOfTheLight_BlindingLight: C_DOTA_Ability_KeeperOfTheLight_BlindingLight;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_10: C_DOTA_Ability_Special_Bonus_Agility_10;
 
 interface C_DOTA_Item_Tome_Of_Knowledge extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Tome_Of_Knowledge: C_DOTA_Item_Tome_Of_Knowledge;
 
 interface CDOTA_Ability_Techies_RemoteMines extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 	readonly m_hRMine: C_BaseEntity
 }
+declare var CDOTA_Ability_Techies_RemoteMines: CDOTA_Ability_Techies_RemoteMines;
 
 interface C_DOTA_Ability_LoneDruid_SpiritBear_Demolish extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_LoneDruid_SpiritBear_Demolish: C_DOTA_Ability_LoneDruid_SpiritBear_Demolish;
 
 interface C_DOTA_Ability_Spectre_Haunt extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Spectre_Haunt: C_DOTA_Ability_Spectre_Haunt;
 
 interface C_DOTA_Ability_Leshrac_Diabolic_Edict extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Leshrac_Diabolic_Edict: C_DOTA_Ability_Leshrac_Diabolic_Edict;
 
 interface C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
-	readonly type_name: string
 	
 	GetAbilityByName(abil_name: string): C_DOTABaseAbility
 	GetAbility(abil_slot: number): C_DOTABaseAbility
@@ -11751,23 +11750,23 @@ interface C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_bIsClientThinkPending: boolean
 	readonly m_bActivityModifiersDirty: boolean
 }
+declare var C_DOTA_BaseNPC: C_DOTA_BaseNPC;
 
 interface C_DOTA_Ability_Nevermore_Shadowraze extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 	readonly m_nFXIndexB: number
 }
+declare var C_DOTA_Ability_Nevermore_Shadowraze: C_DOTA_Ability_Nevermore_Shadowraze;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lycan_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lycan_5: C_DOTA_Ability_Special_Bonus_Unique_Lycan_5;
 
 interface C_DOTA_Ability_Special_Bonus_Lifesteal_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Lifesteal_20: C_DOTA_Ability_Special_Bonus_Lifesteal_20;
 
 interface C_GenericFlexCycler extends C_FlexCycler {
-	readonly type_name: string
 	readonly m_nTestMode: number
 	readonly m_nTestIndex: number
 	readonly m_poseParameterName: string
@@ -11777,33 +11776,33 @@ interface C_GenericFlexCycler extends C_FlexCycler {
 	readonly m_nBoneOverrideIndex: number
 	readonly m_flLastSimTime: number
 }
+declare var C_GenericFlexCycler: C_GenericFlexCycler;
 
 interface C_DOTA_BaseNPC_Additive extends C_DOTA_BaseNPC {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Additive: C_DOTA_BaseNPC_Additive;
 
 interface CDOTA_Item_Recipe_MeteorHammer extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_MeteorHammer: CDOTA_Item_Recipe_MeteorHammer;
 
 interface C_DOTA_Item_Recipe_Dagon extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Dagon: C_DOTA_Item_Recipe_Dagon;
 
 interface C_DOTA_Item_RobeOfMagi extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_RobeOfMagi: C_DOTA_Item_RobeOfMagi;
 
 interface CDOTA_Ability_Special_Bonus_Unique_Grimstroke_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Special_Bonus_Unique_Grimstroke_3: CDOTA_Ability_Special_Bonus_Unique_Grimstroke_3;
 
 interface C_DOTA_Ability_Elder_Titan_NaturalOrder_Spirit extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Elder_Titan_NaturalOrder_Spirit: C_DOTA_Ability_Elder_Titan_NaturalOrder_Spirit;
 
 interface C_DOTA_BaseNPC_Hero extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_bIsIllusion: boolean
 	readonly m_iCurrentXP: number
 	readonly m_iAbilityPoints: number
@@ -11853,25 +11852,25 @@ interface C_DOTA_BaseNPC_Hero extends C_DOTA_BaseNPC_Additive {
 	readonly m_bResetVisibility: boolean
 	readonly m_bStoredVisibility: boolean
 }
+declare var C_DOTA_BaseNPC_Hero: C_DOTA_BaseNPC_Hero;
 
 interface C_DOTA_Ability_Undying_Tombstone extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vZombies: C_BaseEntity[]
 	readonly hTombstone: C_BaseEntity
 	readonly radius: number
 	readonly duration: number
 }
+declare var C_DOTA_Ability_Undying_Tombstone: C_DOTA_Ability_Undying_Tombstone;
 
 interface C_DOTA_Ability_Meepo_Geostrike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Meepo_Geostrike: C_DOTA_Ability_Meepo_Geostrike;
 
 interface C_DOTA_Ability_Obsidian_Destroyer_SanityEclipse extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Obsidian_Destroyer_SanityEclipse: C_DOTA_Ability_Obsidian_Destroyer_SanityEclipse;
 
 interface C_DOTA_Ability_Nian_Roar extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly base_projectiles: number
 	readonly max_projectiles: number
 	readonly projectile_step: number
@@ -11889,46 +11888,46 @@ interface C_DOTA_Ability_Nian_Roar extends C_DOTABaseAbility {
 	readonly m_flTiming: number
 	readonly m_bScriptRoar: boolean
 }
+declare var C_DOTA_Ability_Nian_Roar: C_DOTA_Ability_Nian_Roar;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_4: C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Juggernaut extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Juggernaut: C_DOTA_Ability_Special_Bonus_Unique_Juggernaut;
 
 interface C_DOTA_Ability_Special_Bonus_Gold_Income_70 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Gold_Income_70: C_DOTA_Ability_Special_Bonus_Gold_Income_70;
 
 interface C_DOTA_Ability_Special_Bonus_Night_Vision_600 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Night_Vision_600: C_DOTA_Ability_Special_Bonus_Night_Vision_600;
 
 interface C_PointEntity extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_PointEntity: C_PointEntity;
 
 interface C_DOTA_Item_DustofAppearance extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_DustofAppearance: C_DOTA_Item_DustofAppearance;
 
 interface C_DOTA_Unit_Hero_Legion_Commander extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_unDuelsWon: number
 }
+declare var C_DOTA_Unit_Hero_Legion_Commander: C_DOTA_Unit_Hero_Legion_Commander;
 
 interface C_DOTA_Ability_TemplarAssassin_Refraction extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_TemplarAssassin_Refraction: C_DOTA_Ability_TemplarAssassin_Refraction;
 
 interface C_DOTA_Ability_Holdout_ScourgeWard extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Holdout_ScourgeWard: C_DOTA_Ability_Holdout_ScourgeWard;
 
 interface C_DOTA_Ability_WitchDoctor_DeathWard extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iDamage: number
 	readonly m_iBounceRadius: number
 	readonly m_iBounces: number
@@ -11938,55 +11937,55 @@ interface C_DOTA_Ability_WitchDoctor_DeathWard extends C_DOTABaseAbility {
 	readonly m_nFXIndex: number
 	readonly m_iAttackIndex: number
 }
+declare var C_DOTA_Ability_WitchDoctor_DeathWard: C_DOTA_Ability_WitchDoctor_DeathWard;
 
 interface C_DOTA_Ability_Razor_PlasmaField extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Razor_PlasmaField: C_DOTA_Ability_Razor_PlasmaField;
 
 interface CDOTA_Ability_AncientApparition_ColdFeet extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_AncientApparition_ColdFeet: CDOTA_Ability_AncientApparition_ColdFeet;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Nyx_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Nyx_2: C_DOTA_Ability_Special_Bonus_Unique_Nyx_2;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Range_150 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Range_150: C_DOTA_Ability_Special_Bonus_Attack_Range_150;
 
 interface C_FuncBrush extends C_BaseModelEntity {
-	readonly type_name: string
 }
+declare var C_FuncBrush: C_FuncBrush;
 
 interface C_DOTA_Item_Veil_Of_Discord extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Veil_Of_Discord: C_DOTA_Item_Veil_Of_Discord;
 
 interface C_DOTA_Ability_Tiny_TossTree extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Tiny_TossTree: C_DOTA_Ability_Tiny_TossTree;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tinker_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tinker_3: C_DOTA_Ability_Special_Bonus_Unique_Tinker_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_7: C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_7;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_100: C_DOTA_Ability_Special_Bonus_Magic_Resistance_100;
 
 interface C_BodyComponentBaseAnimating extends CBodyComponentSkeletonInstance {
-	readonly type_name: string
 	readonly m_animationController: C_BaseAnimatingController
 	readonly __m_pChainEntity: CNetworkVarChainer
 }
+declare var C_BodyComponentBaseAnimating: C_BodyComponentBaseAnimating;
 
 interface C_DOTA_Ability_Oracle_FortunesEnd extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly damage: number
 	readonly radius: number
 	readonly bolt_speed: number
@@ -11998,91 +11997,91 @@ interface C_DOTA_Ability_Oracle_FortunesEnd extends C_DOTABaseAbility {
 	readonly m_hTarget: C_BaseEntity
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_Oracle_FortunesEnd: C_DOTA_Ability_Oracle_FortunesEnd;
 
 interface C_DOTA_Ability_Enchantress_Impetus extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Enchantress_Impetus: C_DOTA_Ability_Enchantress_Impetus;
 
 interface C_DOTA_Unit_TargetDummy extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_flDamageTaken: number
 	readonly m_flLastHit: number
 	readonly m_flStartDamageTime: number
 	readonly m_flLastDamageTime: number
 	readonly m_bIsMoving: boolean
 }
+declare var C_DOTA_Unit_TargetDummy: C_DOTA_Unit_TargetDummy;
 
 interface C_DOTA_Ability_Tornado_Tempest extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Tornado_Tempest: C_DOTA_Ability_Tornado_Tempest;
 
 interface C_DOTA_Ability_CentaurKhan_EnduranceAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_CentaurKhan_EnduranceAura: C_DOTA_Ability_CentaurKhan_EnduranceAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_4: C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Silencer_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Silencer_5: C_DOTA_Ability_Special_Bonus_Unique_Silencer_5;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_400 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_400: C_DOTA_Ability_Special_Bonus_Cast_Range_400;
 
 interface C_DOTA_Item_Recipe_Kaya extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Kaya: C_DOTA_Item_Recipe_Kaya;
 
 interface C_DOTA_Item_ShadowAmulet extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_ShadowAmulet: C_DOTA_Item_ShadowAmulet;
 
 interface CDOTA_NPC_Observer_Ward extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_iDuration: number
 	readonly m_pVisionRangeFX: CNewParticleEffect
 	readonly m_nPreviewViewer: number
 }
+declare var CDOTA_NPC_Observer_Ward: CDOTA_NPC_Observer_Ward;
 
 interface C_DOTA_Item_EnergyBooster extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_EnergyBooster: C_DOTA_Item_EnergyBooster;
 
 interface C_DOTA_Ability_Oracle_PurifyingFlames extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_bTargetIsAlly: boolean
 }
+declare var C_DOTA_Ability_Oracle_PurifyingFlames: C_DOTA_Ability_Oracle_PurifyingFlames;
 
 interface C_DOTA_Unit_Hero_Visage extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Visage: C_DOTA_Unit_Hero_Visage;
 
 interface C_DOTA_Ability_Rubick_FadeBolt extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rubick_FadeBolt: C_DOTA_Ability_Rubick_FadeBolt;
 
 interface C_DOTA_Ability_Lich_FrostArmor extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lich_FrostArmor: C_DOTA_Ability_Lich_FrostArmor;
 
 interface C_DOTA_Unit_Hero_Sven extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Sven: C_DOTA_Unit_Hero_Sven;
 
 interface C_DOTA_Ability_Juggernaut_BladeFury extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly blade_fury_damage: number
 }
+declare var C_DOTA_Ability_Juggernaut_BladeFury: C_DOTA_Ability_Juggernaut_BladeFury;
 
 interface C_DOTA_Ability_Juggernaut_HealingWard extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Juggernaut_HealingWard: C_DOTA_Ability_Juggernaut_HealingWard;
 
 interface C_IngameEvent_Base extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bInitialized: boolean
 	readonly m_CompendiumChallengeEventID: number[]
 	readonly m_CompendiumChallengeSequenceID: number[]
@@ -12105,17 +12104,17 @@ interface C_IngameEvent_Base extends C_BaseEntity {
 	readonly m_PlayerQuestRankCompleted: number[]
 	readonly m_QueryIndexForProgress: number[]
 }
+declare var C_IngameEvent_Base: C_IngameEvent_Base;
 
 interface C_DOTA_Ability_Healing_Campfire extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Healing_Campfire: C_DOTA_Ability_Healing_Campfire;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet_4: C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet_4;
 
 interface C_DOTABaseGameMode extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_nCustomGameForceHeroSelectionId: number
 	readonly m_bAlwaysShowPlayerInventory: boolean
 	readonly m_bGoldSoundDisabled: boolean
@@ -12175,14 +12174,14 @@ interface C_DOTABaseGameMode extends C_BaseEntity {
 	readonly m_bDefaultRuneSpawnLogic: boolean
 	readonly m_nHUDVisibilityBitsPrevious: number
 }
+declare var C_DOTABaseGameMode: C_DOTABaseGameMode;
 
 interface C_PortraitCallbackHandler extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_pOwner: CRenderablePortraitData
 }
+declare var C_PortraitCallbackHandler: C_PortraitCallbackHandler;
 
 interface C_LightGlow extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_nHorizontalSize: number
 	readonly m_nVerticalSize: number
 	readonly m_nMinDist: number
@@ -12190,82 +12189,82 @@ interface C_LightGlow extends C_BaseModelEntity {
 	readonly m_nOuterMaxDist: number
 	readonly m_flGlowProxySize: number
 	readonly m_flHDRColorScale: number
-	//readonly m_Glow: C_LightGlowOverlay // it's actually this iirc, BUT ts won't let us declare this that way
+	readonly m_Glow: C_LightGlowOverlay
 }
+declare var C_LightGlow: C_LightGlow;
 
 interface CDOTA_Item_Recipe_DragonLance extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_DragonLance: CDOTA_Item_Recipe_DragonLance;
 
 interface C_DOTA_Unit_Hero_NightStalker extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_NightStalker: C_DOTA_Unit_Hero_NightStalker;
 
 interface C_DOTA_Ability_Ursa_Overpower extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Ursa_Overpower: C_DOTA_Ability_Ursa_Overpower;
 
 interface C_DOTA_Ability_Morphling_MorphReplicate extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_flOldHealthPct: number
 	readonly m_flOldManaPct: number
 }
+declare var C_DOTA_Ability_Morphling_MorphReplicate: C_DOTA_Ability_Morphling_MorphReplicate;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_2: C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Timbersaw_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Timbersaw_3: C_DOTA_Ability_Special_Bonus_Unique_Timbersaw_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Meepo_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Meepo_4: C_DOTA_Ability_Special_Bonus_Unique_Meepo_4;
 
 interface C_DOTA_Ability_Special_Bonus_Exp_Boost_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Exp_Boost_40: C_DOTA_Ability_Special_Bonus_Exp_Boost_40;
 
 interface C_DOTA_Ability_Special_Bonus_Respawn_Reduction_60 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Respawn_Reduction_60: C_DOTA_Ability_Special_Bonus_Respawn_Reduction_60;
 
 interface C_DOTA_Ability_Special_Bonus_MP_600 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_600: C_DOTA_Ability_Special_Bonus_MP_600;
 
 interface C_DOTA_BaseNPC_Creep extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_flAim: number
 }
+declare var C_DOTA_BaseNPC_Creep: C_DOTA_BaseNPC_Creep;
 
 interface C_DOTA_Item_SangeAndYasha extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_SangeAndYasha: C_DOTA_Item_SangeAndYasha;
 
 interface C_DOTA_Item_UltimateOrb extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_UltimateOrb: C_DOTA_Item_UltimateOrb;
 
 interface C_DOTA_Ability_Nyx_Assassin_Impale extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly width: number
 	readonly duration: number
 	readonly length: number
 	readonly speed: number
 }
+declare var C_DOTA_Ability_Nyx_Assassin_Impale: C_DOTA_Ability_Nyx_Assassin_Impale;
 
 interface C_DOTA_Unit_Hero_Furion extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Furion: C_DOTA_Unit_Hero_Furion;
 
 interface C_DOTA_Ability_Nian_Tail_Swipe extends C_DOTA_Ability_Animation_Attack {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nian_Tail_Swipe: C_DOTA_Ability_Nian_Tail_Swipe;
 
 interface C_DotaSubquestBase extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bHidden: boolean
 	readonly m_bCompleted: boolean
 	readonly m_bShowProgressBar: boolean
@@ -12274,18 +12273,18 @@ interface C_DotaSubquestBase extends C_BaseEntity {
 	readonly m_nTextReplaceValueVersion: number
 	readonly m_bWasCompleted: boolean
 }
+declare var C_DotaSubquestBase: C_DotaSubquestBase;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_20: C_DOTA_Ability_Special_Bonus_Magic_Resistance_20;
 
 interface C_GlobalLight extends C_BaseEntity, CGlobalLightBase {
-	readonly type_name: string
 	readonly m_WindClothForceHandle: number
 }
+declare var C_GlobalLight: C_GlobalLight;
 
 interface C_ClientRagdoll extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_bFadeOut: boolean
 	readonly m_bImportant: boolean
 	readonly m_flEffectTime: number
@@ -12303,89 +12302,89 @@ interface C_ClientRagdoll extends C_BaseAnimating {
 	readonly m_bForceShadowCastType: boolean
 	readonly m_forcedShadowCastType: number
 }
+declare var C_ClientRagdoll: C_ClientRagdoll;
 
 interface C_DOTA_Item_Recipe_Mekansm extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Mekansm: C_DOTA_Item_Recipe_Mekansm;
 
 interface C_DOTA_Ability_Lycan_Howl extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly howl_duration: number
 }
+declare var C_DOTA_Ability_Lycan_Howl: C_DOTA_Ability_Lycan_Howl;
 
 interface C_DOTA_Ability_SpiritBreaker_GreaterBash extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SpiritBreaker_GreaterBash: C_DOTA_Ability_SpiritBreaker_GreaterBash;
 
 interface C_DOTA_Ability_Mirana_MoonlightShadow extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Mirana_MoonlightShadow: C_DOTA_Ability_Mirana_MoonlightShadow;
 
 interface C_DOTA_Ability_KoboldTaskmaster_SpeedAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_KoboldTaskmaster_SpeedAura: C_DOTA_Ability_KoboldTaskmaster_SpeedAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Viper_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Viper_3: C_DOTA_Ability_Special_Bonus_Unique_Viper_3;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_10: C_DOTA_Ability_Special_Bonus_Attack_Damage_10;
 
 interface C_DOTA_BaseNPC_Creature extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 	readonly m_bIsCurrentlyChanneling: boolean
 	readonly m_flChannelCycle: number
 }
+declare var C_DOTA_BaseNPC_Creature: C_DOTA_BaseNPC_Creature;
 
 interface C_DOTA_Item_Recipe_Buckler extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Buckler: C_DOTA_Item_Recipe_Buckler;
 
 interface C_DOTA_Item_Tango_Single extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Tango_Single: C_DOTA_Item_Tango_Single;
 
 interface C_DOTA_Ability_DarkWillow_Terrorize extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_DarkWillow_Terrorize: C_DOTA_Ability_DarkWillow_Terrorize;
 
 interface C_DOTA_Ability_Legion_Commander_OverwhelmingOdds extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Legion_Commander_OverwhelmingOdds: C_DOTA_Ability_Legion_Commander_OverwhelmingOdds;
 
 interface C_DOTA_Ability_Invoker_Wex extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_Wex: C_DOTA_Ability_Invoker_Wex;
 
 interface C_DOTA_Ability_Kunkka_Tidebringer extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Kunkka_Tidebringer: C_DOTA_Ability_Kunkka_Tidebringer;
 
 interface C_DOTA_BaseNPC_Frostivus2018_Snowman extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Frostivus2018_Snowman: C_DOTA_BaseNPC_Frostivus2018_Snowman;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Windranger extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Windranger: C_DOTA_Ability_Special_Bonus_Unique_Windranger;
 
 interface C_DOTA_Ability_Special_Bonus_Exp_Boost_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Exp_Boost_30: C_DOTA_Ability_Special_Bonus_Exp_Boost_30;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_100: C_DOTA_Ability_Special_Bonus_Cast_Range_100;
 
 interface C_DOTA_Ability_Special_Bonus_MP_125 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_125: C_DOTA_Ability_Special_Bonus_MP_125;
 
 interface C_EconEntity extends C_BaseFlex, IHasAttributes {
-	readonly type_name: string
 	readonly m_flFlexDelayTime: number
 	readonly m_AttributeManager: CAttributeContainer
 	readonly m_bClientside: boolean
@@ -12399,143 +12398,143 @@ interface C_EconEntity extends C_BaseFlex, IHasAttributes {
 	readonly m_iNumOwnerValidationRetries: number
 	readonly m_hOldProvidee: C_BaseEntity
 }
+declare var C_EconEntity: C_EconEntity;
 
 interface C_DOTA_Item_Courier extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Courier: C_DOTA_Item_Courier;
 
 interface C_DOTA_Item_Desolator extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Desolator: C_DOTA_Item_Desolator;
 
 interface CDOTA_Ability_Special_Bonus_Unique_Grimstroke_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Special_Bonus_Unique_Grimstroke_2: CDOTA_Ability_Special_Bonus_Unique_Grimstroke_2;
 
 interface C_IngameEvent_TI8 extends C_IngameEvent_Base {
-	readonly type_name: string
 }
+declare var C_IngameEvent_TI8: C_IngameEvent_TI8;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Windranger_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Windranger_5: C_DOTA_Ability_Special_Bonus_Unique_Windranger_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pugna_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pugna_6: C_DOTA_Ability_Special_Bonus_Unique_Pugna_6;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Immunity extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Immunity: C_DOTA_Ability_Special_Bonus_Spell_Immunity;
 
 interface C_DOTA_Ability_Special_Bonus_Mana_Break_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Mana_Break_25: C_DOTA_Ability_Special_Bonus_Mana_Break_25;
 
 interface C_DOTA_Ability_Special_Bonus_Corruption_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Corruption_5: C_DOTA_Ability_Special_Bonus_Corruption_5;
 
 interface CBodyComponentPoint extends CBodyComponent {
-	readonly type_name: string
 	readonly m_sceneNode: CGameSceneNode
 	readonly __m_pChainEntity: CNetworkVarChainer
 }
+declare var CBodyComponentPoint: CBodyComponentPoint;
 
 interface C_DOTA_Item_Iron_Talon extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Iron_Talon: C_DOTA_Item_Iron_Talon;
 
 interface C_DOTA_Item_MysticStaff extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_MysticStaff: C_DOTA_Item_MysticStaff;
 
 interface C_DOTA_Ability_LoneDruid_TrueForm_Druid extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_LoneDruid_TrueForm_Druid: C_DOTA_Ability_LoneDruid_TrueForm_Druid;
 
 interface C_DOTA_Ability_Enchantress_Untouchable extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Enchantress_Untouchable: C_DOTA_Ability_Enchantress_Untouchable;
 
 interface C_DOTA_Ability_FacelessVoid_Chronosphere extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_FacelessVoid_Chronosphere: C_DOTA_Ability_FacelessVoid_Chronosphere;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lycan_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lycan_1: C_DOTA_Ability_Special_Bonus_Unique_Lycan_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Magnus_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Magnus_4: C_DOTA_Ability_Special_Bonus_Unique_Magnus_4;
 
 interface C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_15: C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_15;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_16 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_16: C_DOTA_Ability_Special_Bonus_Intelligence_16;
 
 interface C_DOTA_Item_Ancient_Janggo extends C_DOTA_Item {
-	readonly type_name: string
 	readonly radius: number
 }
+declare var C_DOTA_Item_Ancient_Janggo: C_DOTA_Item_Ancient_Janggo;
 
 interface CDOTA_Item_SentryWard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_SentryWard: CDOTA_Item_SentryWard;
 
 interface C_DOTA_Item_TranquilBoots extends C_DOTA_Item {
-	readonly type_name: string
 	readonly break_count: number
 	readonly m_DamageList: number[]
 }
+declare var C_DOTA_Item_TranquilBoots: C_DOTA_Item_TranquilBoots;
 
 interface CDOTA_Ability_Nyx_Assassin_Unburrow extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Nyx_Assassin_Unburrow: CDOTA_Ability_Nyx_Assassin_Unburrow;
 
 interface CDOTA_Ability_Treant_EyesInTheForest extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Treant_EyesInTheForest: CDOTA_Ability_Treant_EyesInTheForest;
 
 interface C_DOTA_Ability_LoneDruid_SavageRoar extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_LoneDruid_SavageRoar: C_DOTA_Ability_LoneDruid_SavageRoar;
 
 interface C_DOTA_Ability_Chen_TestOfFaith extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Chen_TestOfFaith: C_DOTA_Ability_Chen_TestOfFaith;
 
 interface C_DOTA_Ability_Earthshaker_EchoSlam extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly echo_slam_damage_range: number
 	readonly echo_slam_echo_search_range: number
 	readonly echo_slam_echo_range: number
 	readonly echo_slam_echo_damage: number
 	readonly echo_slam_initial_damage: number
 }
+declare var C_DOTA_Ability_Earthshaker_EchoSlam: C_DOTA_Ability_Earthshaker_EchoSlam;
 
 interface CDOTA_Ability_BigThunderLizard_Wardrums extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_BigThunderLizard_Wardrums: CDOTA_Ability_BigThunderLizard_Wardrums;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Earthshaker extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Earthshaker: C_DOTA_Ability_Special_Bonus_Unique_Earthshaker;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Furion_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Furion_4: C_DOTA_Ability_Special_Bonus_Unique_Furion_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi_2: C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi_2;
 
 interface C_DOTA_BaseNPC_Building extends C_DOTA_BaseNPC {
-	readonly type_name: string
 	readonly m_nAmbientFXIndex: number
 	readonly m_nTPFXIndex: number
 	readonly m_nStatusFXIndex: number
@@ -12547,97 +12546,97 @@ interface C_DOTA_BaseNPC_Building extends C_DOTA_BaseNPC {
 	readonly m_iHeroStatueOwnerPlayerID: number
 	readonly m_ParticleTintColor: Color
 }
+declare var C_DOTA_BaseNPC_Building: C_DOTA_BaseNPC_Building;
 
 interface C_DOTA_Item_Recipe_Yasha_And_Kaya extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Yasha_And_Kaya: C_DOTA_Item_Recipe_Yasha_And_Kaya;
 
 interface C_DOTA_Item_Recipe_OrchidMalevolence extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_OrchidMalevolence: C_DOTA_Item_Recipe_OrchidMalevolence;
 
 interface C_DOTA_Ability_Slark_DarkPact extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Slark_DarkPact: C_DOTA_Ability_Slark_DarkPact;
 
 interface C_DOTA_Ability_Visage_Stone_Form_Self_Cast extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Visage_Stone_Form_Self_Cast: C_DOTA_Ability_Visage_Stone_Form_Self_Cast;
 
 interface C_DOTA_Ability_Jakiro_IcePath extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Jakiro_IcePath: C_DOTA_Ability_Jakiro_IcePath;
 
 interface C_DOTA_Unit_Hero_Huskar extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Huskar: C_DOTA_Unit_Hero_Huskar;
 
 interface C_DOTA_Ability_Venomancer_PlagueWard extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Venomancer_PlagueWard: C_DOTA_Ability_Venomancer_PlagueWard;
 
 interface C_DOTA_Ability_Morphling_Waveform extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Morphling_Waveform: C_DOTA_Ability_Morphling_Waveform;
 
 interface C_DOTA_Ability_Earthshaker_EnchantTotem extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Earthshaker_EnchantTotem: C_DOTA_Ability_Earthshaker_EnchantTotem;
 
 interface CDOTA_Item_Battlefury extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Battlefury: CDOTA_Item_Battlefury;
 
 interface C_DOTA_Unit_Hero_KeeperOfTheLight extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_KeeperOfTheLight: C_DOTA_Unit_Hero_KeeperOfTheLight;
 
 interface CDOTA_Ability_Invoker_InvokedBase extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nQuasLevel: number
 	readonly m_nWexLevel: number
 	readonly m_nExortLevel: number
 }
+declare var CDOTA_Ability_Invoker_InvokedBase: CDOTA_Ability_Invoker_InvokedBase;
 
 interface C_DOTA_Ability_Venomancer_VenomousGale extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly duration: number
 }
+declare var C_DOTA_Ability_Venomancer_VenomousGale: C_DOTA_Ability_Venomancer_VenomousGale;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Visage_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Visage_5: C_DOTA_Ability_Special_Bonus_Unique_Visage_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer: C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Windranger_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Windranger_6: C_DOTA_Ability_Special_Bonus_Unique_Windranger_6;
 
 interface C_DOTA_Ability_Holdout_GladiatorsUnite extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Holdout_GladiatorsUnite: C_DOTA_Ability_Holdout_GladiatorsUnite;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_2: C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pugna_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pugna_5: C_DOTA_Ability_Special_Bonus_Unique_Pugna_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pugna_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pugna_3: C_DOTA_Ability_Special_Bonus_Unique_Pugna_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Techies_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Techies_4: C_DOTA_Ability_Special_Bonus_Unique_Techies_4;
 
 interface C_Team extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_aPlayers: C_BaseEntity[]
 	readonly m_iScore: number
 	readonly m_iRoundsWon: number
@@ -12645,145 +12644,145 @@ interface C_Team extends C_BaseEntity {
 	readonly m_iPing: number
 	readonly m_iPacketloss: number
 }
+declare var C_Team: C_Team;
 
 interface C_DOTA_BaseNPC_Warlock_Golem extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Warlock_Golem: C_DOTA_BaseNPC_Warlock_Golem;
 
 interface C_DOTA_Ability_Courier_Burst extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_Burst: C_DOTA_Ability_Courier_Burst;
 
 interface CDOTA_Ability_MudGolem_HurlBoulder extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_MudGolem_HurlBoulder: CDOTA_Ability_MudGolem_HurlBoulder;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sven_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sven_4: C_DOTA_Ability_Special_Bonus_Unique_Sven_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Alchemist_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Alchemist_4: C_DOTA_Ability_Special_Bonus_Unique_Alchemist_4;
 
 interface C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_25: C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_25;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_12: C_DOTA_Ability_Special_Bonus_Magic_Resistance_12;
 
 interface C_BaseToggle extends C_BaseModelEntity {
-	readonly type_name: string
 }
+declare var C_BaseToggle: C_BaseToggle;
 
 interface C_DOTA_Item_MonkeyKingBar extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_MonkeyKingBar: C_DOTA_Item_MonkeyKingBar;
 
 interface C_DOTA_Ability_MonkeyKing_Spring extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vPos: Vector
 	readonly m_fStartChannelTime: number
 	readonly m_hThinker: C_BaseEntity
 	readonly m_nFxIndex: number
 	readonly m_nRefCount: number
 }
+declare var C_DOTA_Ability_MonkeyKing_Spring: C_DOTA_Ability_MonkeyKing_Spring;
 
 interface C_DOTA_Ability_EarthSpirit_Magnetize extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly cast_radius: number
 	readonly rock_explosion_radius: number
 	readonly damage_duration: number
 }
+declare var C_DOTA_Ability_EarthSpirit_Magnetize: C_DOTA_Ability_EarthSpirit_Magnetize;
 
 interface C_DOTA_Unit_Hero_Shredder extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Shredder: C_DOTA_Unit_Hero_Shredder;
 
 interface C_DOTA_Ability_Venomancer_PoisonNova extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Venomancer_PoisonNova: C_DOTA_Ability_Venomancer_PoisonNova;
 
 interface C_DOTA_Unit_Hero_Venomancer extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Venomancer: C_DOTA_Unit_Hero_Venomancer;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Morphling_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Morphling_5: C_DOTA_Ability_Special_Bonus_Unique_Morphling_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Morphling_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Morphling_1: C_DOTA_Ability_Special_Bonus_Unique_Morphling_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_5: C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Terrorblade_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Terrorblade_2: C_DOTA_Ability_Special_Bonus_Unique_Terrorblade_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Broodmother_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Broodmother_2: C_DOTA_Ability_Special_Bonus_Unique_Broodmother_2;
 
 interface C_DOTA_Ability_Special_Bonus_All_Stats_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_All_Stats_6: C_DOTA_Ability_Special_Bonus_All_Stats_6;
 
 interface C_DOTA_Item_Arcane_Ring extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Arcane_Ring: C_DOTA_Item_Arcane_Ring;
 
 interface C_DOTA_Unit_Hero_Slark extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Slark: C_DOTA_Unit_Hero_Slark;
 
 interface C_DOTA_Ability_KeeperOfTheLight_Recall extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_KeeperOfTheLight_Recall: C_DOTA_Ability_KeeperOfTheLight_Recall;
 
 interface C_DOTA_Ability_Zuus_ThundergodsWrath extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_Zuus_ThundergodsWrath: C_DOTA_Ability_Zuus_ThundergodsWrath;
 
 interface C_DOTA_Ability_Special_Bonus_Evasion_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Evasion_30: C_DOTA_Ability_Special_Bonus_Evasion_30;
 
 interface C_InfoPlayerStartDota extends C_PointEntity {
-	readonly type_name: string
 	readonly m_bDisabled: boolean
 }
+declare var C_InfoPlayerStartDota: C_InfoPlayerStartDota;
 
 interface CDOTA_Item_GlimmerCape extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_GlimmerCape: CDOTA_Item_GlimmerCape;
 
 interface C_DOTA_Item_EmptyBottle extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_iStoredRuneType: number
 	readonly m_fStoredRuneTime: number
 }
+declare var C_DOTA_Item_EmptyBottle: C_DOTA_Item_EmptyBottle;
 
 interface C_DOTA_Unit_Hero_MonkeyKing extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly mb_MonkeyHasArcana: boolean
 	readonly m_nTreeDisguise: number
 	readonly m_nPerchedTree: number
 	readonly m_hTreeDisguiseEnt: C_BaseEntity
 }
+declare var C_DOTA_Unit_Hero_MonkeyKing: C_DOTA_Unit_Hero_MonkeyKing;
 
 interface CDOTA_Ability_AbyssalUnderlord_Cancel_DarkRift extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_AbyssalUnderlord_Cancel_DarkRift: CDOTA_Ability_AbyssalUnderlord_Cancel_DarkRift;
 
 interface C_DOTA_Unit_Hero_Rubick extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_stolenAbilityColorHSV1: Vector
 	readonly m_stolenAbilityColorHSV2: Vector
 	readonly m_stolenAbilityFXColorHSV: Vector
@@ -12796,220 +12795,220 @@ interface C_DOTA_Unit_Hero_Rubick extends C_DOTA_BaseNPC_Hero {
 	readonly m_currAbilityFXColorHSV: Vector
 	readonly m_flStartTime: number
 }
+declare var C_DOTA_Unit_Hero_Rubick: C_DOTA_Unit_Hero_Rubick;
 
 interface CDOTA_Ability_Life_Stealer_Empty3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Life_Stealer_Empty3: CDOTA_Ability_Life_Stealer_Empty3;
 
 interface C_DOTA_Ability_Lion_Impale extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly width: number
 	readonly duration: number
 	readonly speed: number
 	readonly length_buffer: number
 	readonly range: number
 }
+declare var C_DOTA_Ability_Lion_Impale: C_DOTA_Ability_Lion_Impale;
 
 interface C_DOTA_Ability_Tidehunter_Ravage extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hEntsHit: C_BaseEntity[]
 	readonly m_bAwardedKillEater: boolean
 	readonly duration: number
 }
+declare var C_DOTA_Ability_Tidehunter_Ravage: C_DOTA_Ability_Tidehunter_Ravage;
 
 interface C_DOTA_Ability_ForestTrollHighPriest_Heal extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_ForestTrollHighPriest_Heal: C_DOTA_Ability_ForestTrollHighPriest_Heal;
 
 interface C_DOTA_Ability_Neutral_SpellImmunity extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Neutral_SpellImmunity: C_DOTA_Ability_Neutral_SpellImmunity;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Huskar_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Huskar_4: C_DOTA_Ability_Special_Bonus_Unique_Huskar_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phoenix_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phoenix_3: C_DOTA_Ability_Special_Bonus_Unique_Phoenix_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Weaver_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Weaver_4: C_DOTA_Ability_Special_Bonus_Unique_Weaver_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Spirit_Breaker_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Spirit_Breaker_3: C_DOTA_Ability_Special_Bonus_Unique_Spirit_Breaker_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_6: C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_6;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Meepo_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Meepo_2: C_DOTA_Ability_Special_Bonus_Unique_Meepo_2;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Range_200 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Range_200: C_DOTA_Ability_Special_Bonus_Attack_Range_200;
 
 interface CDOTA_Item_Kaya_And_Sange extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Kaya_And_Sange: CDOTA_Item_Kaya_And_Sange;
 
 interface C_DOTA_Ability_Batrider_Firefly extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Batrider_Firefly: C_DOTA_Ability_Batrider_Firefly;
 
 interface C_DOTA_Ability_Rattletrap_PowerCogs extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rattletrap_PowerCogs: C_DOTA_Ability_Rattletrap_PowerCogs;
 
 interface C_DOTA_Ability_TemplarAssassin_Trap extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_TemplarAssassin_Trap: C_DOTA_Ability_TemplarAssassin_Trap;
 
 interface C_DOTA_Ability_Riki_Permanent_Invisibility extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Riki_Permanent_Invisibility: C_DOTA_Ability_Riki_Permanent_Invisibility;
 
 interface CDOTA_Ability_GraniteGolem_Bash extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_GraniteGolem_Bash: CDOTA_Ability_GraniteGolem_Bash;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Slark extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Slark: C_DOTA_Ability_Special_Bonus_Unique_Slark;
 
 interface C_DOTA_Ability_Special_Bonus_Respawn_Reduction_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Respawn_Reduction_20: C_DOTA_Ability_Special_Bonus_Respawn_Reduction_20;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_30: C_DOTA_Ability_Special_Bonus_Intelligence_30;
 
 interface C_DOTA_Item_DivineRapier extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_DivineRapier: C_DOTA_Item_DivineRapier;
 
 interface C_DOTA_Ability_ArcWarden_MagneticField extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_ArcWarden_MagneticField: C_DOTA_Ability_ArcWarden_MagneticField;
 
 interface C_DOTA_NPC_Treant_EyesInTheForest extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 }
+declare var C_DOTA_NPC_Treant_EyesInTheForest: C_DOTA_NPC_Treant_EyesInTheForest;
 
 interface C_DOTA_Unit_Hero_DragonKnight extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_DragonKnight: C_DOTA_Unit_Hero_DragonKnight;
 
 interface C_DOTA_Ability_CrystalMaiden_CrystalNova extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly nova_damage: number
 }
+declare var C_DOTA_Ability_CrystalMaiden_CrystalNova: C_DOTA_Ability_CrystalMaiden_CrystalNova;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_25: C_DOTA_Ability_Special_Bonus_Movement_Speed_25;
 
 interface C_DOTA_Item_Recipe_RefresherOrb extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_RefresherOrb: C_DOTA_Item_Recipe_RefresherOrb;
 
 interface CDOTA_Unit_Hero_ArcWarden extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nTalkFXIndex: number
 	readonly m_nFXDeath: number
 	readonly m_nTempestFX: number
 }
+declare var CDOTA_Unit_Hero_ArcWarden: CDOTA_Unit_Hero_ArcWarden;
 
 interface C_DOTA_Ability_Rattletrap_BatteryAssault extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rattletrap_BatteryAssault: C_DOTA_Ability_Rattletrap_BatteryAssault;
 
 interface C_DOTA_Ability_Dazzle_Poison_Touch extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Dazzle_Poison_Touch: C_DOTA_Ability_Dazzle_Poison_Touch;
 
 interface C_DOTA_Ability_Firework_Mine extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Firework_Mine: C_DOTA_Ability_Firework_Mine;
 
 interface CDOTA_BaseNPC_Frostivus2018_Clinkz_Skeleton_Army extends C_DOTA_BaseNPC {
-	readonly type_name: string
 }
+declare var CDOTA_BaseNPC_Frostivus2018_Clinkz_Skeleton_Army: CDOTA_BaseNPC_Frostivus2018_Clinkz_Skeleton_Army;
 
 interface C_DOTA_Ability_BlueDragonspawnSorcerer_Evasion extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BlueDragonspawnSorcerer_Evasion: C_DOTA_Ability_BlueDragonspawnSorcerer_Evasion;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Puck_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Puck_4: C_DOTA_Ability_Special_Bonus_Unique_Puck_4;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_40: C_DOTA_Ability_Special_Bonus_Movement_Speed_40;
 
 interface C_DOTA_Ability_Special_Bonus_MP_800 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_800: C_DOTA_Ability_Special_Bonus_MP_800;
 
 interface C_DOTA_Item_RuneSpawner extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_nRuneType: number
 	readonly m_flLastSpawnTime: number
 }
+declare var C_DOTA_Item_RuneSpawner: C_DOTA_Item_RuneSpawner;
 
 interface C_BaseButton extends C_BaseToggle {
-	readonly type_name: string
 	readonly m_glowEntity: C_BaseEntity
 	readonly m_usable: boolean
 	readonly m_szDisplayText: string
 }
+declare var C_BaseButton: C_BaseButton;
 
 interface C_DOTA_Item_Recipe_Blade_Mail extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Blade_Mail: C_DOTA_Item_Recipe_Blade_Mail;
 
 interface C_DOTA_Item_MantaStyle extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_MantaStyle: C_DOTA_Item_MantaStyle;
 
 interface C_DOTA_Ability_Lion_ManaDrain extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_Victims: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Lion_ManaDrain: C_DOTA_Ability_Lion_ManaDrain;
 
 interface C_DOTA_Ability_Tiny_Grow extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Tiny_Grow: C_DOTA_Ability_Tiny_Grow;
 
 interface C_DOTA_Ability_Zuus_LightningBolt extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Zuus_LightningBolt: C_DOTA_Ability_Zuus_LightningBolt;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Undying_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Undying_2: C_DOTA_Ability_Special_Bonus_Unique_Undying_2;
 
 interface CDOTA_Ability_Courier_AutoDeliver extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Courier_AutoDeliver: CDOTA_Ability_Courier_AutoDeliver;
 
 interface CInfoParticleTarget extends C_PointEntity {
-	readonly type_name: string
 }
+declare var CInfoParticleTarget: CInfoParticleTarget;
 
 interface C_DOTA_Item_RiverPainter extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_iRiverPaintColor: number
 }
+declare var C_DOTA_Item_RiverPainter: C_DOTA_Item_RiverPainter;
 
 interface C_DOTA_Ability_Pangolier_Swashbuckle extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly m_bIsBasePointSet: boolean
 	readonly m_bIsMidQuickcast: boolean
 	readonly m_vBasePoint: Vector
@@ -13020,33 +13019,33 @@ interface C_DOTA_Ability_Pangolier_Swashbuckle extends C_DOTABaseAbility, C_Hori
 	readonly range: number
 	readonly damage: number
 }
+declare var C_DOTA_Ability_Pangolier_Swashbuckle: C_DOTA_Ability_Pangolier_Swashbuckle;
 
 interface C_DOTA_Ability_Skywrath_Mage_Mystic_Flare extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Skywrath_Mage_Mystic_Flare: C_DOTA_Ability_Skywrath_Mage_Mystic_Flare;
 
 interface C_DOTA_Ability_Lina_LagunaBlade extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lina_LagunaBlade: C_DOTA_Ability_Lina_LagunaBlade;
 
 interface C_DOTA_Ability_Greevil_Miniboss_White_Purification extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_White_Purification: C_DOTA_Ability_Greevil_Miniboss_White_Purification;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sven extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sven: C_DOTA_Ability_Special_Bonus_Unique_Sven;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Warlock_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Warlock_6: C_DOTA_Ability_Special_Bonus_Unique_Warlock_6;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Zeus_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Zeus_2: C_DOTA_Ability_Special_Bonus_Unique_Zeus_2;
 
 interface C_PointClientUIWorldPanel extends C_BaseClientUIEntity {
-	readonly type_name: string
 	readonly m_bForceRecreateNextUpdate: boolean
 	readonly m_bMoveViewToPlayerNextThink: boolean
 	readonly m_bCheckCSSClasses: boolean
@@ -13072,91 +13071,91 @@ interface C_PointClientUIWorldPanel extends C_BaseClientUIEntity {
 	readonly m_bGrabbable: boolean
 	readonly m_bOnlyRenderToTexture: boolean
 }
+declare var C_PointClientUIWorldPanel: C_PointClientUIWorldPanel;
 
 interface C_DOTA_Item_Crown extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Crown: C_DOTA_Item_Crown;
 
 interface C_DOTA_Item_Recipe_Spirit_Vessel extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Spirit_Vessel: C_DOTA_Item_Recipe_Spirit_Vessel;
 
 interface C_DOTA_Item_Recipe_Vanguard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Vanguard: C_DOTA_Item_Recipe_Vanguard;
 
 interface CDOTA_Ability_Centaur_Return extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Centaur_Return: CDOTA_Ability_Centaur_Return;
 
 interface CDOTA_Ability_Life_Stealer_Assimilate extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hLastAssimilation: C_BaseEntity
 }
+declare var CDOTA_Ability_Life_Stealer_Assimilate: CDOTA_Ability_Life_Stealer_Assimilate;
 
 interface CDOTA_Ability_Frostivus2018_Luna_LucentBeam extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly radius: number
 }
+declare var CDOTA_Ability_Frostivus2018_Luna_LucentBeam: CDOTA_Ability_Frostivus2018_Luna_LucentBeam;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Clinkz_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Clinkz_1: C_DOTA_Ability_Special_Bonus_Unique_Clinkz_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Invoker_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Invoker_6: C_DOTA_Ability_Special_Bonus_Unique_Invoker_6;
 
 interface C_DOTA_Ability_Special_Bonus_Cleave_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cleave_25: C_DOTA_Ability_Special_Bonus_Cleave_25;
 
 interface C_DOTA_BaseNPC_Shop extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 	readonly m_ShopType: number
 	readonly m_nShopFX: number
 	readonly m_vShopFXOrigin: Vector
 	readonly m_flLastSpeech: number
 }
+declare var C_DOTA_BaseNPC_Shop: C_DOTA_BaseNPC_Shop;
 
 interface C_Breakable extends C_BaseModelEntity {
-	readonly type_name: string
 }
+declare var C_Breakable: C_Breakable;
 
 interface C_DOTA_Ability_Necronomicon_Archer_AoE extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Necronomicon_Archer_AoE: C_DOTA_Ability_Necronomicon_Archer_AoE;
 
 interface C_DOTA_Item_LesserCritical extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_LesserCritical: C_DOTA_Item_LesserCritical;
 
 interface C_DOTA_Ability_Bristleback_Warpath extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Bristleback_Warpath: C_DOTA_Ability_Bristleback_Warpath;
 
 interface C_DOTA_Ability_EnragedWildkin_ToughnessAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_EnragedWildkin_ToughnessAura: C_DOTA_Ability_EnragedWildkin_ToughnessAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_2: C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Invoker_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Invoker_2: C_DOTA_Ability_Special_Bonus_Unique_Invoker_2;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_15: C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_15;
 
 interface C_DOTA_Ability_Special_Bonus_Evasion_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Evasion_10: C_DOTA_Ability_Special_Bonus_Evasion_10;
 
 interface C_BaseTeamObjectiveResource extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_iTimerToShowInHUD: number
 	readonly m_iStopWatchTimer: number
 	readonly m_iNumControlPoints: number
@@ -13192,9 +13191,9 @@ interface C_BaseTeamObjectiveResource extends C_BaseEntity {
 	readonly m_bWarnedOnFinalCap: boolean[]
 	readonly m_flLastCapWarningTime: number[]
 }
+declare var C_BaseTeamObjectiveResource: C_BaseTeamObjectiveResource;
 
 interface C_DOTATeam extends C_Team {
-	readonly type_name: string
 	readonly m_iHeroKills: number
 	readonly m_iTowerKills: number
 	readonly m_iBarracksKills: number
@@ -13206,27 +13205,27 @@ interface C_DOTATeam extends C_Team {
 	readonly m_bTeamIsHomeTeam: boolean
 	readonly m_CustomHealthbarColor: Color
 }
+declare var C_DOTATeam: C_DOTATeam;
 
 interface C_ButtonTimed extends C_BaseButton {
-	readonly type_name: string
 	readonly m_sUseString: string
 	readonly m_sUseSubString: string
 }
+declare var C_ButtonTimed: C_ButtonTimed;
 
 interface C_DOTA_Unit_Hero_Viper extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Viper: C_DOTA_Unit_Hero_Viper;
 
 interface CDOTA_Item_Recipe_Guardian_Greaves extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Guardian_Greaves: CDOTA_Item_Recipe_Guardian_Greaves;
 
 interface CDOTA_Item_Recipe_Ward_Dispenser extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Ward_Dispenser: CDOTA_Item_Recipe_Ward_Dispenser;
 
 interface C_DOTA_Ability_Invoker_ChaosMeteor extends CDOTA_Ability_Invoker_InvokedBase {
-	readonly type_name: string
 	readonly area_of_effect: number
 	readonly damage_interval: number
 	readonly vision_distance: number
@@ -13235,83 +13234,83 @@ interface C_DOTA_Ability_Invoker_ChaosMeteor extends CDOTA_Ability_Invoker_Invok
 	readonly burn_duration: number
 	readonly burn_dps: number
 }
+declare var C_DOTA_Ability_Invoker_ChaosMeteor: C_DOTA_Ability_Invoker_ChaosMeteor;
 
 interface C_DOTA_Ability_PhantomLancer_Juxtapose extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_PhantomLancer_Juxtapose: C_DOTA_Ability_PhantomLancer_Juxtapose;
 
 interface C_IngameEvent_DotaPlus extends C_IngameEvent_Base {
-	readonly type_name: string
 }
+declare var C_IngameEvent_DotaPlus: C_IngameEvent_DotaPlus;
 
 interface C_DOTASpectatorGraphManagerProxy extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_pGraphManager: C_DOTASpectatorGraphManager
 }
+declare var C_DOTASpectatorGraphManagerProxy: C_DOTASpectatorGraphManagerProxy;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lina_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lina_3: C_DOTA_Ability_Special_Bonus_Unique_Lina_3;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_30: C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_30;
 
 interface C_DOTA_Unit_Hero_Nyx_Assassin extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Nyx_Assassin: C_DOTA_Unit_Hero_Nyx_Assassin;
 
 interface C_DOTA_Unit_Brewmaster_PrimalEarth extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 	readonly m_nFXEarthAmbient1: number
 	readonly m_nFXEarthAmbient2: number
 }
+declare var C_DOTA_Unit_Brewmaster_PrimalEarth: C_DOTA_Unit_Brewmaster_PrimalEarth;
 
 interface C_DOTA_Ability_Luna_LucentBeam extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Luna_LucentBeam: C_DOTA_Ability_Luna_LucentBeam;
 
 interface C_DOTA_Ability_Sniper_Shrapnel extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly charge_restore_time: number
 	readonly max_charges: number
 }
+declare var C_DOTA_Ability_Sniper_Shrapnel: C_DOTA_Ability_Sniper_Shrapnel;
 
 interface C_DOTA_Item_Lua extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Lua: C_DOTA_Item_Lua;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Terrorblade extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Terrorblade: C_DOTA_Ability_Special_Bonus_Unique_Terrorblade;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phantom_Assassin extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phantom_Assassin: C_DOTA_Ability_Special_Bonus_Unique_Phantom_Assassin;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_8: C_DOTA_Ability_Special_Bonus_Magic_Resistance_8;
 
 interface CDOTA_Item_Moonshard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Moonshard: CDOTA_Item_Moonshard;
 
 interface C_DOTA_Item_Soul_Booster extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Soul_Booster: C_DOTA_Item_Soul_Booster;
 
 interface C_DOTA_Item_Recipe_SheepStick extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_SheepStick: C_DOTA_Item_Recipe_SheepStick;
 
 interface C_DOTA_Ability_Wisp_Spirits extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nWispDirection: number
 }
+declare var C_DOTA_Ability_Wisp_Spirits: C_DOTA_Ability_Wisp_Spirits;
 
 interface C_DOTA_Ability_Invoker_Tornado extends CDOTA_Ability_Invoker_InvokedBase {
-	readonly type_name: string
 	readonly vision_distance: number
 	readonly end_vision_duration: number
 	readonly lift_duration: number
@@ -13319,101 +13318,101 @@ interface C_DOTA_Ability_Invoker_Tornado extends CDOTA_Ability_Invoker_InvokedBa
 	readonly quas_damage: number
 	readonly wex_damage: number
 }
+declare var C_DOTA_Ability_Invoker_Tornado: C_DOTA_Ability_Invoker_Tornado;
 
 interface C_DOTA_Ability_NightStalker_Void extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_NightStalker_Void: C_DOTA_Ability_NightStalker_Void;
 
 interface C_DOTA_Ability_AlphaWolf_CriticalStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_AlphaWolf_CriticalStrike: C_DOTA_Ability_AlphaWolf_CriticalStrike;
 
 interface C_DOTA_Ability_Special_Bonus_Gold_Income_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Gold_Income_20: C_DOTA_Ability_Special_Bonus_Gold_Income_20;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_5: C_DOTA_Ability_Special_Bonus_Strength_5;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_20: C_DOTA_Ability_Special_Bonus_Movement_Speed_20;
 
 interface C_DOTA_Ability_Special_Bonus_Cleave_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cleave_15: C_DOTA_Ability_Special_Bonus_Cleave_15;
 
 interface C_DOTA_DisplacementVisibility extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_HiddenDisplacement: number
 }
+declare var C_DOTA_DisplacementVisibility: C_DOTA_DisplacementVisibility;
 
 interface C_DOTA_Unit_Hero_Meepo extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_bIsClone: boolean
 	readonly m_nWhichMeepo: number
 }
+declare var C_DOTA_Unit_Hero_Meepo: C_DOTA_Unit_Hero_Meepo;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Luna_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Luna_2: C_DOTA_Ability_Special_Bonus_Unique_Luna_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_4: C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_4;
 
 interface C_LightOrthoEntity extends C_LightEntity {
-	readonly type_name: string
 }
+declare var C_LightOrthoEntity: C_LightOrthoEntity;
 
 interface C_DOTA_Item_StaffOfWizardry extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_StaffOfWizardry: C_DOTA_Item_StaffOfWizardry;
 
 interface C_DOTA_Item_RingOfProtection extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_RingOfProtection: C_DOTA_Item_RingOfProtection;
 
 interface CDOTA_Ability_Techies_LandMines extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Techies_LandMines: CDOTA_Ability_Techies_LandMines;
 
 interface C_DOTA_Ability_KeeperOfTheLight_IlluminateEnd extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_KeeperOfTheLight_IlluminateEnd: C_DOTA_Ability_KeeperOfTheLight_IlluminateEnd;
 
 interface C_DOTA_Ability_Undying_Decay extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly decay_damage: number
 	readonly radius: number
 	readonly decay_duration: number
 	readonly str_steal: number
 	readonly str_steal_scepter: number
 }
+declare var C_DOTA_Ability_Undying_Decay: C_DOTA_Ability_Undying_Decay;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Doom_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Doom_4: C_DOTA_Ability_Special_Bonus_Unique_Doom_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Night_Stalker_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Night_Stalker_2: C_DOTA_Ability_Special_Bonus_Unique_Night_Stalker_2;
 
 interface C_DOTA_BaseNPC_Trap_Ward extends C_DOTA_BaseNPC_Creature {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Trap_Ward: C_DOTA_BaseNPC_Trap_Ward;
 
 interface C_DOTA_BaseNPC_Barracks extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Barracks: C_DOTA_BaseNPC_Barracks;
 
 interface C_ModelPointEntity extends C_BaseModelEntity {
-	readonly type_name: string
 }
+declare var C_ModelPointEntity: C_ModelPointEntity;
 
 interface C_BeamSpotLight extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_bSpotlightOn: boolean
 	readonly m_bHasDynamicLight: boolean
 	readonly m_bNoFog: boolean
@@ -13429,9 +13428,9 @@ interface C_BeamSpotLight extends C_BaseModelEntity {
 	readonly m_flLightScale: number
 	readonly m_lastTime: number
 }
+declare var C_BeamSpotLight: C_BeamSpotLight;
 
 interface C_TonemapController2 extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_flAutoExposureMin: number
 	readonly m_flAutoExposureMax: number
 	readonly m_flTonemapPercentTarget: number
@@ -13442,39 +13441,39 @@ interface C_TonemapController2 extends C_BaseEntity {
 	readonly m_flBloomStrength: number
 	readonly m_flBloomStartValue: number
 }
+declare var C_TonemapController2: C_TonemapController2;
 
 interface CDOTA_Item_Recipe_ForceStaff extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_ForceStaff: CDOTA_Item_Recipe_ForceStaff;
 
 interface C_DOTA_Ability_Wisp_Spirits_Out extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Wisp_Spirits_Out: C_DOTA_Ability_Wisp_Spirits_Out;
 
 interface C_DOTA_Ability_Viper_ViperStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_Viper_ViperStrike: C_DOTA_Ability_Viper_ViperStrike;
 
 interface C_DOTA_Unit_Hero_Earthshaker extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Earthshaker: C_DOTA_Unit_Hero_Earthshaker;
 
 interface C_DOTA_Unit_Hero_Nevermore extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nFXDeath: number
 }
+declare var C_DOTA_Unit_Hero_Nevermore: C_DOTA_Unit_Hero_Nevermore;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Razor_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Razor_2: C_DOTA_Ability_Special_Bonus_Unique_Razor_2;
 
 interface CDOTA_Unit_Hero_Abaddon extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_Hero_Abaddon: CDOTA_Unit_Hero_Abaddon;
 
 interface C_DOTA_Ability_Shredder_Chakram extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly radius: number
 	readonly speed: number
 	readonly pass_slow_duration: number
@@ -13489,108 +13488,108 @@ interface C_DOTA_Ability_Shredder_Chakram extends C_DOTABaseAbility {
 	readonly m_hThinker: C_BaseEntity
 	readonly m_hReturnHits: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Shredder_Chakram: C_DOTA_Ability_Shredder_Chakram;
 
 interface C_DOTA_Ability_Invoker_SunStrike extends CDOTA_Ability_Invoker_InvokedBase {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_SunStrike: C_DOTA_Ability_Invoker_SunStrike;
 
 interface C_DOTA_Ability_DoomBringer_Empty2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DoomBringer_Empty2: C_DOTA_Ability_DoomBringer_Empty2;
 
 interface C_DOTA_Unit_Hero_Pudge extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Pudge: C_DOTA_Unit_Hero_Pudge;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_60 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_60: C_DOTA_Ability_Special_Bonus_Cast_Range_60;
 
 interface C_DOTA_Item_Spirit_Vessel extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Spirit_Vessel: C_DOTA_Item_Spirit_Vessel;
 
 interface C_DOTA_Item_HelmOfTheDominator extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_HelmOfTheDominator: C_DOTA_Item_HelmOfTheDominator;
 
 interface C_DOTA_Ability_MonkeyKing_Transform extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_MonkeyKing_Transform: C_DOTA_Ability_MonkeyKing_Transform;
 
 interface C_DOTA_Ability_Treant_Overgrowth extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Treant_Overgrowth: C_DOTA_Ability_Treant_Overgrowth;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Necrophos_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Necrophos_4: C_DOTA_Ability_Special_Bonus_Unique_Necrophos_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dazzle_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dazzle_3: C_DOTA_Ability_Special_Bonus_Unique_Dazzle_3;
 
 interface CScriptComponent extends CEntityComponent {
-	readonly type_name: string
 	readonly m_scriptClassName: string
 }
+declare var CScriptComponent: CScriptComponent;
 
 interface C_DOTA_Item_Recipe_Mjollnir extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Mjollnir: C_DOTA_Item_Recipe_Mjollnir;
 
 interface C_DOTA_Item_Radiance extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Radiance: C_DOTA_Item_Radiance;
 
 interface C_DOTA_Ability_Shredder_WhirlingDeath extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly whirling_radius: number
 	readonly whirling_damage: number
 	readonly whirling_tick: number
 	readonly duration: number
 	readonly tree_damage_scale: number
 }
+declare var C_DOTA_Ability_Shredder_WhirlingDeath: C_DOTA_Ability_Shredder_WhirlingDeath;
 
 interface C_DOTA_Ability_Medusa_ManaShield extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Medusa_ManaShield: C_DOTA_Ability_Medusa_ManaShield;
 
 interface C_DOTA_Ability_Lion_FingerOfDeath extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_Lion_FingerOfDeath: C_DOTA_Ability_Lion_FingerOfDeath;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Green_Overgrowth extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Green_Overgrowth: C_DOTA_Ability_Greevil_Miniboss_Green_Overgrowth;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Riki_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Riki_2: C_DOTA_Ability_Special_Bonus_Unique_Riki_2;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_2: C_DOTA_Ability_Special_Bonus_Armor_2;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_60 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_60: C_DOTA_Ability_Special_Bonus_Attack_Speed_60;
 
 interface C_DOTA_Ability_Razor_EyeOfTheStorm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Razor_EyeOfTheStorm: C_DOTA_Ability_Razor_EyeOfTheStorm;
 
 interface C_DOTA_Ability_Special_Bonus_Respawn_Reduction_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Respawn_Reduction_40: C_DOTA_Ability_Special_Bonus_Respawn_Reduction_40;
 
 interface C_DOTA_Ability_Special_Bonus_All_Stats_14 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_All_Stats_14: C_DOTA_Ability_Special_Bonus_All_Stats_14;
 
 interface C_EnvLightProbeVolume extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_vBoxMins: Vector
 	readonly m_vBoxMaxs: Vector
 	readonly m_LightGroups: string
@@ -13600,17 +13599,17 @@ interface C_EnvLightProbeVolume extends C_BaseEntity {
 	readonly m_bStartDisabled: boolean
 	readonly m_bEnabled: boolean
 }
+declare var C_EnvLightProbeVolume: C_EnvLightProbeVolume;
 
 interface C_DOTA_Item_Blade_Mail extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Blade_Mail: C_DOTA_Item_Blade_Mail;
 
 interface C_DOTA_Item_Recipe_AbyssalBlade extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_AbyssalBlade: C_DOTA_Item_Recipe_AbyssalBlade;
 
 interface C_DOTA_Ability_MonkeyKing_FurArmy extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hThinker: C_BaseEntity
 	readonly m_nFXIndex: number
 	readonly num_first_soldiers: number
@@ -13619,9 +13618,9 @@ interface C_DOTA_Ability_MonkeyKing_FurArmy extends C_DOTABaseAbility {
 	readonly m_flNextCreationTime: number
 	readonly m_vecSoldiers: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_MonkeyKing_FurArmy: C_DOTA_Ability_MonkeyKing_FurArmy;
 
 interface C_DOTA_Ability_Medusa_MysticSnake extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly radius: number
 	readonly snake_jumps: number
 	readonly snake_damage: number
@@ -13636,97 +13635,97 @@ interface C_DOTA_Ability_Medusa_MysticSnake extends C_DOTABaseAbility {
 	readonly m_flMana: number
 	readonly m_hHitEntities: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Medusa_MysticSnake: C_DOTA_Ability_Medusa_MysticSnake;
 
 interface C_DOTA_Ability_Nyx_Assassin_SpikedCarapace extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nyx_Assassin_SpikedCarapace: C_DOTA_Ability_Nyx_Assassin_SpikedCarapace;
 
 interface CDOTA_Unit_Hero_Alchemist extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_Hero_Alchemist: CDOTA_Unit_Hero_Alchemist;
 
 interface C_DOTA_Ability_Sven_GreatCleave extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Sven_GreatCleave: C_DOTA_Ability_Sven_GreatCleave;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Doom_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Doom_6: C_DOTA_Ability_Special_Bonus_Unique_Doom_6;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_2: C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Slardar extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Slardar: C_DOTA_Ability_Special_Bonus_Unique_Slardar;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Invoker_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Invoker_7: C_DOTA_Ability_Special_Bonus_Unique_Invoker_7;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_7: C_DOTA_Ability_Special_Bonus_Armor_7;
 
 interface C_DOTA_Ability_Brewmaster_PrimalSplit extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hPrimary: C_BaseEntity
 	readonly m_hSecondary: C_BaseEntity
 	readonly m_hTertiary: C_BaseEntity
 }
+declare var C_DOTA_Ability_Brewmaster_PrimalSplit: C_DOTA_Ability_Brewmaster_PrimalSplit;
 
 interface C_DOTA_Ability_Necronomicon_Warrior_Sight extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Necronomicon_Warrior_Sight: C_DOTA_Ability_Necronomicon_Warrior_Sight;
 
 interface C_DOTA_Ability_Necronomicon_Warrior_ManaBurn extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Necronomicon_Warrior_ManaBurn: C_DOTA_Ability_Necronomicon_Warrior_ManaBurn;
 
 interface C_DOTA_Unit_Hero_Tusk extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Tusk: C_DOTA_Unit_Hero_Tusk;
 
 interface CDOTA_Ability_Alchemist_AcidSpray extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Alchemist_AcidSpray: CDOTA_Ability_Alchemist_AcidSpray;
 
 interface C_DOTA_Unit_Hero_FacelessVoid extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_FacelessVoid: C_DOTA_Unit_Hero_FacelessVoid;
 
 interface C_DOTA_Ability_Morphling_AdaptiveStrike_Agi extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Morphling_AdaptiveStrike_Agi: C_DOTA_Ability_Morphling_AdaptiveStrike_Agi;
 
 interface CDOTA_Ability_Frostivus2018_FacelessVoid_TimeWalk extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly speed: number
 	readonly range: number
 	readonly radius: number
 	readonly damage: number
 }
+declare var CDOTA_Ability_Frostivus2018_FacelessVoid_TimeWalk: CDOTA_Ability_Frostivus2018_FacelessVoid_TimeWalk;
 
 interface C_DOTA_Item_RingOfTarrasque extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_RingOfTarrasque: C_DOTA_Item_RingOfTarrasque;
 
 interface C_DOTA_BaseNPC_Tusk_Sigil extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_angInitialAngles: QAngle
 }
+declare var C_DOTA_BaseNPC_Tusk_Sigil: C_DOTA_BaseNPC_Tusk_Sigil;
 
 interface C_IngameEvent_WM2017 extends C_IngameEvent_Base {
-	readonly type_name: string
 }
+declare var C_IngameEvent_WM2017: C_IngameEvent_WM2017;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_350 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_350: C_DOTA_Ability_Special_Bonus_Cast_Range_350;
 
 interface C_DOTA_DataNonSpectator extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bWorldTreeState: bigint[]
 	readonly m_vDesiredWardPlacement: Vector2D[]
 	readonly m_nEnemyStartingPosition: number[]
@@ -13739,9 +13738,9 @@ interface C_DOTA_DataNonSpectator extends C_BaseEntity {
 	readonly m_bSuggestedLaneRoam: boolean[]
 	readonly m_bSuggestedLaneJungle: boolean[]
 }
+declare var C_DOTA_DataNonSpectator: C_DOTA_DataNonSpectator;
 
 interface C_TeamRoundTimer extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bTimerPaused: boolean
 	readonly m_flTimeRemaining: number
 	readonly m_flTimerEndTime: number
@@ -13773,93 +13772,93 @@ interface C_TeamRoundTimer extends C_BaseEntity {
 	readonly m_nOldTimerLength: number
 	readonly m_nOldTimerState: number
 }
+declare var C_TeamRoundTimer: C_TeamRoundTimer;
 
 interface C_DOTA_Item_Cyclone extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Cyclone: C_DOTA_Item_Cyclone;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_2: C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_2;
 
 interface C_DOTA_Ability_Special_Bonus_Exp_Boost_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Exp_Boost_20: C_DOTA_Ability_Special_Bonus_Exp_Boost_20;
 
 interface C_DOTA_Ability_Special_Bonus_Respawn_Reduction_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Respawn_Reduction_50: C_DOTA_Ability_Special_Bonus_Respawn_Reduction_50;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_90 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_90: C_DOTA_Ability_Special_Bonus_Movement_Speed_90;
 
 interface C_DOTA_Item_Recipe_Diffusal_Blade extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Diffusal_Blade: C_DOTA_Item_Recipe_Diffusal_Blade;
 
 interface C_DOTA_Item_VoidStone extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_VoidStone: C_DOTA_Item_VoidStone;
 
 interface C_DOTA_Ability_DarkWillow_LeyConduit extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DarkWillow_LeyConduit: C_DOTA_Ability_DarkWillow_LeyConduit;
 
 interface C_DOTA_Ability_SkeletonKing_HellfireBlast extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SkeletonKing_HellfireBlast: C_DOTA_Ability_SkeletonKing_HellfireBlast;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Oracle extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Oracle: C_DOTA_Ability_Special_Bonus_Unique_Oracle;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Spectre_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Spectre_2: C_DOTA_Ability_Special_Bonus_Unique_Spectre_2;
 
 interface C_DOTA_Ability_Special_Bonus_HP_225 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_225: C_DOTA_Ability_Special_Bonus_HP_225;
 
 interface C_FoWBlockerEntity extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_FoWBlockerEntity: C_FoWBlockerEntity;
 
 interface C_DOTA_Item_Vanguard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Vanguard: C_DOTA_Item_Vanguard;
 
 interface C_DOTA_Ability_AntiMage_Blink extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_AntiMage_Blink: C_DOTA_Ability_AntiMage_Blink;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Clockwerk_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Clockwerk_4: C_DOTA_Ability_Special_Bonus_Unique_Clockwerk_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bane_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bane_3: C_DOTA_Ability_Special_Bonus_Unique_Bane_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Medusa_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Medusa_3: C_DOTA_Ability_Special_Bonus_Unique_Medusa_3;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Range_300 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Range_300: C_DOTA_Ability_Special_Bonus_Attack_Range_300;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_4: C_DOTA_Ability_Special_Bonus_HP_Regen_4;
 
 interface CDOTA_Ability_FillerAbility extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_FillerAbility: CDOTA_Ability_FillerAbility;
 
 interface DataTeamPlayer_t {
-	readonly type_name: string
 	readonly m_iReliableGold: number
 	readonly m_iUnreliableGold: number
 	readonly m_iStartingPosition: number
@@ -13916,72 +13915,72 @@ interface DataTeamPlayer_t {
 	readonly m_iGoldSpentOnBuybacks: number
 	readonly m_iGoldLostToDeath: number
 }
+declare var DataTeamPlayer_t: DataTeamPlayer_t;
 
 interface C_EnvProjectedTexture extends C_ModelPointEntity, CProjectedTextureBase {
-	readonly type_name: string
 }
+declare var C_EnvProjectedTexture: C_EnvProjectedTexture;
 
 interface C_DOTA_Ability_Visage_SummonFamiliars extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hExistingUnits: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Visage_SummonFamiliars: C_DOTA_Ability_Visage_SummonFamiliars;
 
 interface C_DOTA_PhantomAssassin_Gravestone extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_nVictimPlayerID: number
 }
+declare var C_DOTA_PhantomAssassin_Gravestone: C_DOTA_PhantomAssassin_Gravestone;
 
 interface C_DOTA_Unit_Hero_CrystalMaiden extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_iParticleMouthIndex: number
 	readonly m_iParticleHandRIndex: number
 }
+declare var C_DOTA_Unit_Hero_CrystalMaiden: C_DOTA_Unit_Hero_CrystalMaiden;
 
 interface C_DOTA_Ability_Frostivus2018_DarkWillow_Bedlam extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_DarkWillow_Bedlam: C_DOTA_Ability_Frostivus2018_DarkWillow_Bedlam;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Treant_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Treant_4: C_DOTA_Ability_Special_Bonus_Unique_Treant_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Underlord_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Underlord_3: C_DOTA_Ability_Special_Bonus_Unique_Underlord_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Warlock_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Warlock_5: C_DOTA_Ability_Special_Bonus_Unique_Warlock_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_3: C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_3;
 
 interface CPointOffScreenIndicatorUi extends C_PointClientUIWorldPanel {
-	readonly type_name: string
 	readonly m_bBeenEnabled: boolean
 	readonly m_bHide: boolean
 	readonly m_flSeenTargetTime: number
 	readonly m_pTargetPanel: C_PointClientUIWorldPanel
 }
+declare var CPointOffScreenIndicatorUi: CPointOffScreenIndicatorUi;
 
 interface CBodyComponentBaseModelEntity extends CBodyComponentSkeletonInstance {
-	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
 }
+declare var CBodyComponentBaseModelEntity: CBodyComponentBaseModelEntity;
 
 interface C_DOTA_Ability_TrollWarlord_Whirling_Axes_Melee extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hAxes: C_BaseEntity[]
 	readonly m_nAxeIdx: number
 }
+declare var C_DOTA_Ability_TrollWarlord_Whirling_Axes_Melee: C_DOTA_Ability_TrollWarlord_Whirling_Axes_Melee;
 
 interface C_DOTA_Ability_DrowRanger_FrostArrows extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DrowRanger_FrostArrows: C_DOTA_Ability_DrowRanger_FrostArrows;
 
 interface C_DOTA_Ability_Holdout_Omnislash extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly image_travel_speed: number
 	readonly image_radius: number
 	readonly jugg_travel_speed: number
@@ -13994,29 +13993,29 @@ interface C_DOTA_Ability_Holdout_Omnislash extends C_DOTABaseAbility {
 	readonly m_flRange: number
 	readonly m_hEntities: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Holdout_Omnislash: C_DOTA_Ability_Holdout_Omnislash;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_3: C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_4: C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander: C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_40: C_DOTA_Ability_Special_Bonus_HP_Regen_40;
 
 interface C_DOTA_Ability_Special_Bonus_HP_275 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_275: C_DOTA_Ability_Special_Bonus_HP_275;
 
 interface C_DOTA_BaseNPC_RotatableBuilding extends C_DOTA_BaseNPC {
-	readonly type_name: string
 	readonly m_nAmbientFXIndex: number
 	readonly m_nTPFXIndex: number
 	readonly m_nStatusFXIndex: number
@@ -14028,66 +14027,66 @@ interface C_DOTA_BaseNPC_RotatableBuilding extends C_DOTA_BaseNPC {
 	readonly m_iHeroStatueOwnerPlayerID: number
 	readonly m_ParticleTintColor: Color
 }
+declare var C_DOTA_BaseNPC_RotatableBuilding: C_DOTA_BaseNPC_RotatableBuilding;
 
 interface C_BaseAttributableItem extends C_EconEntity {
-	readonly type_name: string
 }
+declare var C_BaseAttributableItem: C_BaseAttributableItem;
 
 interface C_SkyCamera extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_skyboxData: sky3dparams_t
 	readonly m_bUseAngles: boolean
 	readonly m_pNext: C_SkyCamera
 }
+declare var C_SkyCamera: C_SkyCamera;
 
 interface C_EnvClock extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_hHourHand: C_BaseEntity
 	readonly m_hMinuteHand: C_BaseEntity
 	readonly m_hSecondHand: C_BaseEntity
 	readonly m_flStartGameTime: number
 	readonly m_flStartClockSeconds: number
 }
+declare var C_EnvClock: C_EnvClock;
 
 interface C_DOTA_Item_Recipe_Satanic extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Satanic: C_DOTA_Item_Recipe_Satanic;
 
 interface C_DOTA_Unit_Hero_ChaosKnight extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_ChaosKnight: C_DOTA_Unit_Hero_ChaosKnight;
 
 interface C_DOTA_Ability_DarkSeer_WallOfReplica extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_bIsBasePointSet: boolean
 	readonly m_bIsMidQuickcast: boolean
 	readonly m_vBasePoint: Vector
 	readonly m_nFXTarget: number
 	readonly width: number
 }
+declare var C_DOTA_Ability_DarkSeer_WallOfReplica: C_DOTA_Ability_DarkSeer_WallOfReplica;
 
 interface C_DOTA_Ability_GnollAssassin_EnvenomedWeapon extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_GnollAssassin_EnvenomedWeapon: C_DOTA_Ability_GnollAssassin_EnvenomedWeapon;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sniper_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sniper_1: C_DOTA_Ability_Special_Bonus_Unique_Sniper_1;
 
 interface C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_30: C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_30;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_30: C_DOTA_Ability_Special_Bonus_Armor_30;
 
 interface C_DOTA_Unit_Fountain extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Fountain: C_DOTA_Unit_Fountain;
 
 interface C_EntityDissolve extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_flStartTime: number
 	readonly m_flFadeInStart: number
 	readonly m_flFadeInLength: number
@@ -14102,57 +14101,57 @@ interface C_EntityDissolve extends C_BaseModelEntity {
 	readonly m_bCoreExplode: boolean
 	readonly m_bLinkedToServerEnt: boolean
 }
+declare var C_EntityDissolve: C_EntityDissolve;
 
 interface C_World extends C_BaseModelEntity {
-	readonly type_name: string
 }
+declare var C_World: C_World;
 
 interface C_DOTA_Ability_Legion_Commander_Duel extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Legion_Commander_Duel: C_DOTA_Ability_Legion_Commander_Duel;
 
 interface C_DOTA_Unit_Hero_Omniknight extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Omniknight: C_DOTA_Unit_Hero_Omniknight;
 
 interface C_DOTA_Ability_StormSpirit_Overload extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_StormSpirit_Overload: C_DOTA_Ability_StormSpirit_Overload;
 
 interface C_IngameEvent_FM2016 extends C_IngameEvent_Base {
-	readonly type_name: string
 }
+declare var C_IngameEvent_FM2016: C_IngameEvent_FM2016;
 
 interface C_DOTA_Ability_BigThunderLizard_Slam extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BigThunderLizard_Slam: C_DOTA_Ability_BigThunderLizard_Slam;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Centaur_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Centaur_1: C_DOTA_Ability_Special_Bonus_Unique_Centaur_1;
 
 interface C_DOTA_Ability_Special_Bonus_Lifesteal_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Lifesteal_25: C_DOTA_Ability_Special_Bonus_Lifesteal_25;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Amplify_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Amplify_15: C_DOTA_Ability_Special_Bonus_Spell_Amplify_15;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_35 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_35: C_DOTA_Ability_Special_Bonus_Attack_Damage_35;
 
 interface C_DOTA_Ability_Special_Bonus_All_Stats_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_All_Stats_12: C_DOTA_Ability_Special_Bonus_All_Stats_12;
 
 interface C_DOTA_Ability_Special_Bonus_MP_300 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_300: C_DOTA_Ability_Special_Bonus_MP_300;
 
 interface C_DOTA_PlayerResource extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bWasDataUpdateCreated: boolean
 	readonly m_vecEventsForDisplay: number[]
 	readonly m_nPrimaryEventIndex: number
@@ -14176,16 +14175,16 @@ interface C_DOTA_PlayerResource extends C_BaseEntity {
 	readonly m_nEventNPCReplaced: number
 	readonly m_nEventPlayerInfo: number
 }
+declare var C_DOTA_PlayerResource: C_DOTA_PlayerResource;
 
 interface C_DOTA_Item_Physical extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_hItem: C_BaseEntity
 	readonly m_hOldItem: C_BaseEntity
 	readonly m_bShowingTooltip: boolean
 }
+declare var C_DOTA_Item_Physical: C_DOTA_Item_Physical;
 
 interface CDOTA_Ability_Grimstroke_DarkArtistry extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vCastDir: Vector
 	readonly m_fStartTime: number
 	readonly m_fTotalTime: number
@@ -14204,145 +14203,145 @@ interface CDOTA_Ability_Grimstroke_DarkArtistry extends C_DOTABaseAbility {
 	readonly bonus_damage_per_target: number
 	readonly vision_duration: number
 }
+declare var CDOTA_Ability_Grimstroke_DarkArtistry: CDOTA_Ability_Grimstroke_DarkArtistry;
 
 interface CDOTA_Ability_Winter_Wyvern_Splinter_Blast extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Winter_Wyvern_Splinter_Blast: CDOTA_Ability_Winter_Wyvern_Splinter_Blast;
 
 interface CDOTA_Ability_Techies_StasisTrap extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 	readonly m_hTrap: C_BaseEntity
 }
+declare var CDOTA_Ability_Techies_StasisTrap: CDOTA_Ability_Techies_StasisTrap;
 
 interface C_DOTA_Ability_Huskar_Life_Break extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly m_vProjectileLocation: Vector
 	readonly m_hTarget: C_BaseEntity
 	readonly m_bInterrupted: boolean
 }
+declare var C_DOTA_Ability_Huskar_Life_Break: C_DOTA_Ability_Huskar_Life_Break;
 
 interface C_DOTA_Ability_DragonKnight_DragonBlood extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DragonKnight_DragonBlood: C_DOTA_Ability_DragonKnight_DragonBlood;
 
 interface C_DOTA_Ability_Courier_ReturnStashItems extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_ReturnStashItems: C_DOTA_Ability_Courier_ReturnStashItems;
 
 interface C_DOTA_Ability_Necrolyte_Death_Pulse extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Necrolyte_Death_Pulse: C_DOTA_Ability_Necrolyte_Death_Pulse;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wisp extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wisp: C_DOTA_Ability_Special_Bonus_Unique_Wisp;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_10: C_DOTA_Ability_Special_Bonus_MP_Regen_10;
 
 interface C_DOTA_Item_RuneSpawner_Bounty extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_nRuneType: number
 	readonly m_flLastSpawnTime: number
 }
+declare var C_DOTA_Item_RuneSpawner_Bounty: C_DOTA_Item_RuneSpawner_Bounty;
 
 interface C_BaseTrigger extends C_BaseToggle {
-	readonly type_name: string
 	readonly m_bClientSidePredicted: boolean
 }
+declare var C_BaseTrigger: C_BaseTrigger;
 
 interface C_DOTA_Item_Necronomicon extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_hWarrior: C_BaseEntity
 	readonly m_hArcher: C_BaseEntity
 }
+declare var C_DOTA_Item_Necronomicon: C_DOTA_Item_Necronomicon;
 
 interface C_DOTA_Item_QuellingBlade extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_QuellingBlade: C_DOTA_Item_QuellingBlade;
 
 interface CDOTA_Ability_Grimstroke_SpiritWalk extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly buff_duration: number
 }
+declare var CDOTA_Ability_Grimstroke_SpiritWalk: CDOTA_Ability_Grimstroke_SpiritWalk;
 
 interface C_DOTA_Ability_Gyrocopter_Flak_Cannon extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Gyrocopter_Flak_Cannon: C_DOTA_Ability_Gyrocopter_Flak_Cannon;
 
 interface CDOTA_Ability_Morphling_Hybrid extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Morphling_Hybrid: CDOTA_Ability_Morphling_Hybrid;
 
 interface C_DOTA_Ability_Earthshaker_Aftershock extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Earthshaker_Aftershock: C_DOTA_Ability_Earthshaker_Aftershock;
 
 interface C_DOTA_Ability_AntiMage_ManaVoid extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_AntiMage_ManaVoid: C_DOTA_Ability_AntiMage_ManaVoid;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Omniknight_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Omniknight_4: C_DOTA_Ability_Special_Bonus_Unique_Omniknight_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Earthshaker_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Earthshaker_3: C_DOTA_Ability_Special_Bonus_Unique_Earthshaker_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Invoker_9 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Invoker_9: C_DOTA_Ability_Special_Bonus_Unique_Invoker_9;
 
 interface C_DOTA_Unit_Hero_ShadowShaman extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_ShadowShaman: C_DOTA_Unit_Hero_ShadowShaman;
 
 interface CServerOnlyModelEntity extends C_BaseModelEntity {
-	readonly type_name: string
 }
+declare var CServerOnlyModelEntity: CServerOnlyModelEntity;
 
 interface C_DOTA_Ability_Lycan_SummonWolves_CriticalStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lycan_SummonWolves_CriticalStrike: C_DOTA_Ability_Lycan_SummonWolves_CriticalStrike;
 
 interface CDOTA_Ability_Gyrocopter_Call_Down extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly range_scepter: number
 }
+declare var CDOTA_Ability_Gyrocopter_Call_Down: CDOTA_Ability_Gyrocopter_Call_Down;
 
 interface C_DOTA_Ability_DeathProphet_Silence extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DeathProphet_Silence: C_DOTA_Ability_DeathProphet_Silence;
 
 interface C_DOTA_Ability_Roshan_Devotion extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Roshan_Devotion: C_DOTA_Ability_Roshan_Devotion;
 
 interface C_DOTA_Ability_Courier_TransferItems_ToOtherPlayer extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_TransferItems_ToOtherPlayer: C_DOTA_Ability_Courier_TransferItems_ToOtherPlayer;
 
 interface C_DOTA_Ability_Bloodseeker_Thirst extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Bloodseeker_Thirst: C_DOTA_Ability_Bloodseeker_Thirst;
 
 interface C_DOTA_Unit_Hero_SandKing extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_SandKing: C_DOTA_Unit_Hero_SandKing;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_6: C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_6;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Range_175 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Range_175: C_DOTA_Ability_Special_Bonus_Attack_Range_175;
 
 interface CDOTA_VR_TrackedController extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_nControllerIndex: number
 	readonly m_bAimingTeleport: boolean
 	readonly m_nTeleportBeamFXIndex: number
@@ -14358,180 +14357,180 @@ interface CDOTA_VR_TrackedController extends C_BaseAnimating {
 	readonly m_nFXTeamBannerIndex: number
 	readonly m_nFXteleporterButtonIndex: number
 }
+declare var CDOTA_VR_TrackedController: CDOTA_VR_TrackedController;
 
 interface C_DOTA_BaseNPC_Tower extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 	readonly m_iRangeFX: number
 	readonly m_hTowerAttackTarget: C_BaseEntity
 }
+declare var C_DOTA_BaseNPC_Tower: C_DOTA_BaseNPC_Tower;
 
 interface C_FuncRotating extends C_BaseModelEntity {
-	readonly type_name: string
 }
+declare var C_FuncRotating: C_FuncRotating;
 
 interface C_BaseFire extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_flScale: number
 	readonly m_flStartScale: number
 	readonly m_flScaleTime: number
 	readonly m_nFlags: number
 }
+declare var C_BaseFire: C_BaseFire;
 
 interface C_DOTA_Item_Recipe_RingOfAquila extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_RingOfAquila: C_DOTA_Item_Recipe_RingOfAquila;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Spirit_Breaker_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Spirit_Breaker_1: C_DOTA_Ability_Special_Bonus_Unique_Spirit_Breaker_1;
 
 interface C_DOTA_Ability_Special_Bonus_HP_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_100: C_DOTA_Ability_Special_Bonus_HP_100;
 
 interface C_DOTA_Item_Recipe_Shivas_Guard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Shivas_Guard: C_DOTA_Item_Recipe_Shivas_Guard;
 
 interface C_DOTA_Item_Recipe_WraithBand extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_WraithBand: C_DOTA_Item_Recipe_WraithBand;
 
 interface C_DOTA_Ability_Ogre_Magi_Ignite extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 	readonly m_nMostRecentMulticastCount: number
 }
+declare var C_DOTA_Ability_Ogre_Magi_Ignite: C_DOTA_Ability_Ogre_Magi_Ignite;
 
 interface C_DOTA_Ability_Furion_Teleportation extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndexStart: number
 	readonly m_nFXIndexEnd: number
 	readonly m_nFXIndexEndTeam: number
 }
+declare var C_DOTA_Ability_Furion_Teleportation: C_DOTA_Ability_Furion_Teleportation;
 
 interface C_DOTA_Ability_NianCharge extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_NianCharge: C_DOTA_Ability_NianCharge;
 
 interface C_DOTA_Unit_Hero_Juggernaut extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_unOmniKills: number
 }
+declare var C_DOTA_Unit_Hero_Juggernaut: C_DOTA_Unit_Hero_Juggernaut;
 
 interface C_DOTA_Ability_Bane_NightmareEnd extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Bane_NightmareEnd: C_DOTA_Ability_Bane_NightmareEnd;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Sight extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Sight: C_DOTA_Ability_Greevil_Miniboss_Sight;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tidehunter_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tidehunter_4: C_DOTA_Ability_Special_Bonus_Unique_Tidehunter_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer_2: C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer_2;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_45 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_45: C_DOTA_Ability_Special_Bonus_Attack_Speed_45;
 
 interface C_DOTA_Ability_Special_Bonus_MP_200 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_200: C_DOTA_Ability_Special_Bonus_MP_200;
 
 interface C_WaterBullet extends C_BaseAnimating {
-	readonly type_name: string
 }
+declare var C_WaterBullet: C_WaterBullet;
 
 interface C_DOTA_Item_Yasha extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Yasha: C_DOTA_Item_Yasha;
 
 interface C_DOTA_Item_Recipe_GreaterCritical extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_GreaterCritical: C_DOTA_Item_Recipe_GreaterCritical;
 
 interface C_DOTA_Ability_Techies_Suicide extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_unSuicideKills: number
 }
+declare var C_DOTA_Ability_Techies_Suicide: C_DOTA_Ability_Techies_Suicide;
 
 interface C_DOTA_Ability_Silencer_GlaivesOfWisdom extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Silencer_GlaivesOfWisdom: C_DOTA_Ability_Silencer_GlaivesOfWisdom;
 
 interface C_DOTA_Ability_Rattletrap_Hookshot extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 	readonly m_vProjectileVelocity: Vector
 	readonly m_bRetract: boolean
 }
+declare var C_DOTA_Ability_Rattletrap_Hookshot: C_DOTA_Ability_Rattletrap_Hookshot;
 
 interface C_DOTA_Ability_Frostivus2018_Throw_Snowball extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Throw_Snowball: C_DOTA_Ability_Frostivus2018_Throw_Snowball;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Morphling_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Morphling_2: C_DOTA_Ability_Special_Bonus_Unique_Morphling_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ursa_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ursa_3: C_DOTA_Ability_Special_Bonus_Unique_Ursa_3;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_30: C_DOTA_Ability_Special_Bonus_HP_Regen_30;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_25: C_DOTA_Ability_Special_Bonus_HP_Regen_25;
 
 interface C_DOTA_NeutralSpawner extends C_PointEntity {
-	readonly type_name: string
 	readonly m_Type: number
 }
+declare var C_DOTA_NeutralSpawner: C_DOTA_NeutralSpawner;
 
 interface C_DOTA_Item_MeteorHammer extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 	readonly m_nFXIndexB: number
 }
+declare var C_DOTA_Item_MeteorHammer: C_DOTA_Item_MeteorHammer;
 
 interface CDOTA_Ability_Necronomicon_Archer_Purge extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Necronomicon_Archer_Purge: CDOTA_Ability_Necronomicon_Archer_Purge;
 
 interface C_DOTA_Ability_Alchemist_UnstableConcoction extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Alchemist_UnstableConcoction: C_DOTA_Ability_Alchemist_UnstableConcoction;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Blue_ColdFeet extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Blue_ColdFeet: C_DOTA_Ability_Greevil_Miniboss_Blue_ColdFeet;
 
 interface C_DOTA_Ability_AncientGolem_Rockslide extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_AncientGolem_Rockslide: C_DOTA_Ability_AncientGolem_Rockslide;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bane_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bane_2: C_DOTA_Ability_Special_Bonus_Unique_Bane_2;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_10: C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_10;
 
 interface C_DOTA_Ability_BackdoorProtectionInBase extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BackdoorProtectionInBase: C_DOTA_Ability_BackdoorProtectionInBase;
 
 interface PlayerResourcePlayerTeamData_t {
-	readonly type_name: string
 	readonly m_nSelectedHeroID: number
 	readonly m_iKills: number
 	readonly m_iAssists: number
@@ -14585,106 +14584,106 @@ interface PlayerResourcePlayerTeamData_t {
 	readonly m_iObsoleteRankWagersAvailable: number
 	readonly m_iObsoleteRankWagersMax: number
 }
+declare var PlayerResourcePlayerTeamData_t: PlayerResourcePlayerTeamData_t;
 
 interface CDOTA_Item_ObserverWard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_ObserverWard: CDOTA_Item_ObserverWard;
 
 interface C_DOTA_NPC_Techies_Minefield_Sign extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 }
+declare var C_DOTA_NPC_Techies_Minefield_Sign: C_DOTA_NPC_Techies_Minefield_Sign;
 
 interface CDOTA_Ability_Techies_RemoteMines_SelfDetonate extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Techies_RemoteMines_SelfDetonate: CDOTA_Ability_Techies_RemoteMines_SelfDetonate;
 
 interface C_DOTA_Ability_Ogre_Magi_Multicast extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Ogre_Magi_Multicast: C_DOTA_Ability_Ogre_Magi_Multicast;
 
 interface C_DOTA_Ability_ChaosKnight_Reality_Rift extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_flPercentage: number
 	readonly m_FXIndex: number[]
 }
+declare var C_DOTA_Ability_ChaosKnight_Reality_Rift: C_DOTA_Ability_ChaosKnight_Reality_Rift;
 
 interface C_DOTA_Unit_LoopingSound extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_nPrevLoopingSoundParity: number
 	readonly m_nLoopingSoundParity: number
 }
+declare var C_DOTA_Unit_LoopingSound: C_DOTA_Unit_LoopingSound;
 
 interface C_DOTA_Ability_TemplarAssassin_PsiBlades extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_TemplarAssassin_PsiBlades: C_DOTA_Ability_TemplarAssassin_PsiBlades;
 
 interface C_DOTA_Unit_Hero_Puck extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Puck: C_DOTA_Unit_Hero_Puck;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_3: C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_4: C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_2: C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_2;
 
 interface C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_50: C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_50;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Amplify_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Amplify_3: C_DOTA_Ability_Special_Bonus_Spell_Amplify_3;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_30: C_DOTA_Ability_Special_Bonus_Attack_Damage_30;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_8: C_DOTA_Ability_Special_Bonus_Agility_8;
 
 interface C_DOTA_Item_Flying_Courier extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_fNextThinkTime: number
 }
+declare var C_DOTA_Item_Flying_Courier: C_DOTA_Item_Flying_Courier;
 
 interface C_DOTA_Item_BlinkDagger extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_BlinkDagger: C_DOTA_Item_BlinkDagger;
 
 interface C_DOTA_Unit_Hero_BountyHunter extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_BountyHunter: C_DOTA_Unit_Hero_BountyHunter;
 
 interface C_DOTA_Ability_Windrunner_Windrun extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Windrunner_Windrun: C_DOTA_Ability_Windrunner_Windrun;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_6: C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_6;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lycan_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lycan_3: C_DOTA_Ability_Special_Bonus_Unique_Lycan_3;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_35 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_35: C_DOTA_Ability_Special_Bonus_Attack_Speed_35;
 
 interface C_DOTA_Ability_Special_Bonus_HP_125 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_125: C_DOTA_Ability_Special_Bonus_HP_125;
 
 interface C_SceneEntity extends C_PointEntity {
-	readonly type_name: string
 	readonly m_bIsPlayingBack: boolean
 	readonly m_bPaused: boolean
 	readonly m_bMultiplayer: boolean
@@ -14697,300 +14696,300 @@ interface C_SceneEntity extends C_PointEntity {
 	readonly m_bWasPlaying: boolean
 	readonly m_flCurrentTime: number
 }
+declare var C_SceneEntity: C_SceneEntity;
 
 interface CDOTA_Item_RiverPainter5 extends C_DOTA_Item_RiverPainter {
-	readonly type_name: string
 }
+declare var CDOTA_Item_RiverPainter5: CDOTA_Item_RiverPainter5;
 
 interface C_DOTA_Item_EchoSabre extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_EchoSabre: C_DOTA_Item_EchoSabre;
 
 interface C_DOTA_Ability_SpiritBreaker_EmpoweringHaste extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SpiritBreaker_EmpoweringHaste: C_DOTA_Ability_SpiritBreaker_EmpoweringHaste;
 
 interface C_DOTA_Ability_Weaver_TimeLapse extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nNPCSpawnedID: number
 }
+declare var C_DOTA_Ability_Weaver_TimeLapse: C_DOTA_Ability_Weaver_TimeLapse;
 
 interface C_DOTA_Unit_Hero_Life_Stealer extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_bHadScepter: boolean
 }
+declare var C_DOTA_Unit_Hero_Life_Stealer: C_DOTA_Unit_Hero_Life_Stealer;
 
 interface CDOTA_Unit_Announcer extends C_DOTA_BaseNPC {
-	readonly type_name: string
 	readonly m_currentAnnouncer: CAnnouncerDescriptor
 }
+declare var CDOTA_Unit_Announcer: CDOTA_Unit_Announcer;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_2: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Alchemist_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Alchemist_3: C_DOTA_Ability_Special_Bonus_Unique_Alchemist_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_2: C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_2;
 
 interface C_DOTA_Item_Bloodstone extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Bloodstone: C_DOTA_Item_Bloodstone;
 
 interface C_DOTA_Item_UltimateScepter extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_UltimateScepter: C_DOTA_Item_UltimateScepter;
 
 interface C_DOTA_Ability_Phoenix_SunRayToggleMove extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Phoenix_SunRayToggleMove: C_DOTA_Ability_Phoenix_SunRayToggleMove;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_2: C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_3: C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer_4: C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer_4;
 
 interface C_DOTA_Ability_Special_Bonus_TrueStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_TrueStrike: C_DOTA_Ability_Special_Bonus_TrueStrike;
 
 interface C_DOTA_Unit_Hero_Clinkz extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Clinkz: C_DOTA_Unit_Hero_Clinkz;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Batrider_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Batrider_1: C_DOTA_Ability_Special_Bonus_Unique_Batrider_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phantom_Assassin_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phantom_Assassin_3: C_DOTA_Ability_Special_Bonus_Unique_Phantom_Assassin_3;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_100: C_DOTA_Ability_Special_Bonus_Attack_Damage_100;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_40: C_DOTA_Ability_Special_Bonus_Magic_Resistance_40;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_10: C_DOTA_Ability_Special_Bonus_Armor_10;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_8: C_DOTA_Ability_Special_Bonus_Intelligence_8;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_100: C_DOTA_Ability_Special_Bonus_Attack_Speed_100;
 
 interface C_DOTA_Item_BladeOfAlacrity extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_BladeOfAlacrity: C_DOTA_Item_BladeOfAlacrity;
 
 interface C_DOTA_Ability_Brewmaster_WindWalk extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Brewmaster_WindWalk: C_DOTA_Ability_Brewmaster_WindWalk;
 
 interface C_DOTA_Ability_Pugna_Decrepify extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Pugna_Decrepify: C_DOTA_Ability_Pugna_Decrepify;
 
 interface C_DOTA_BaseNPC_Creep_Talking extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Creep_Talking: C_DOTA_BaseNPC_Creep_Talking;
 
 interface C_DOTA_Item_Recipe_Soul_Booster extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Soul_Booster: C_DOTA_Item_Recipe_Soul_Booster;
 
 interface C_DOTA_Ability_ArcWarden_Flux extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_ArcWarden_Flux: C_DOTA_Ability_ArcWarden_Flux;
 
 interface C_DOTA_Unit_Hero_Techies extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_bLastDeathFromSuicide: boolean
 }
+declare var C_DOTA_Unit_Hero_Techies: C_DOTA_Unit_Hero_Techies;
 
 interface C_DOTA_Ability_Dazzle_Weave extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Dazzle_Weave: C_DOTA_Ability_Dazzle_Weave;
 
 interface C_DOTA_Ability_Zuus_ThundergodsVengeance extends C_DOTA_Ability_Zuus_ThundergodsWrath {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Zuus_ThundergodsVengeance: C_DOTA_Ability_Zuus_ThundergodsVengeance;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_3: C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_3;
 
 interface C_DOTA_Ability_Special_Bonus_Lifesteal_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Lifesteal_30: C_DOTA_Ability_Special_Bonus_Lifesteal_30;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Amplify_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Amplify_25: C_DOTA_Ability_Special_Bonus_Spell_Amplify_25;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_6: C_DOTA_Ability_Special_Bonus_Agility_6;
 
 interface C_DOTA_Ability_Special_Bonus_HP_175 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_175: C_DOTA_Ability_Special_Bonus_HP_175;
 
 interface C_DOTA_Item_Slippers extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Slippers: C_DOTA_Item_Slippers;
 
 interface C_DOTA_Ability_Terrorblade_Metamorphosis extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Terrorblade_Metamorphosis: C_DOTA_Ability_Terrorblade_Metamorphosis;
 
 interface C_DOTA_Ability_Magnataur_ReversePolarity extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 	readonly m_vPullLocation: Vector
 }
+declare var C_DOTA_Ability_Magnataur_ReversePolarity: C_DOTA_Ability_Magnataur_ReversePolarity;
 
 interface C_DOTA_Ability_Brewmaster_Cyclone extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Brewmaster_Cyclone: C_DOTA_Ability_Brewmaster_Cyclone;
 
 interface C_DOTA_Ability_Courier_TakeStashItems extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_TakeStashItems: C_DOTA_Ability_Courier_TakeStashItems;
 
 interface C_DOTA_Unit_Hero_Necrolyte extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Necrolyte: C_DOTA_Unit_Hero_Necrolyte;
 
 interface CDOTA_Ability_Frostivus2018_Clinkz_Strafe extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Frostivus2018_Clinkz_Strafe: CDOTA_Ability_Frostivus2018_Clinkz_Strafe;
 
 interface C_DOTA_Ability_SatyrTrickster_Purge extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SatyrTrickster_Purge: C_DOTA_Ability_SatyrTrickster_Purge;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Razor extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Razor: C_DOTA_Ability_Special_Bonus_Unique_Razor;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Visage_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Visage_2: C_DOTA_Ability_Special_Bonus_Unique_Visage_2;
 
 interface C_DOTA_Ability_Special_Bonus_Respawn_Reduction_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Respawn_Reduction_25: C_DOTA_Ability_Special_Bonus_Respawn_Reduction_25;
 
 interface C_DOTA_Item_Recipe_Assault_Cuirass extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Assault_Cuirass: C_DOTA_Item_Recipe_Assault_Cuirass;
 
 interface C_DOTA_Item_Hyperstone extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Hyperstone: C_DOTA_Item_Hyperstone;
 
 interface C_DOTA_Ability_NagaSiren_RipTide extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_NagaSiren_RipTide: C_DOTA_Ability_NagaSiren_RipTide;
 
 interface C_DOTA_Ability_Omniknight_Purification extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Omniknight_Purification: C_DOTA_Ability_Omniknight_Purification;
 
 interface C_DOTA_Unit_Roshan extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_iLastHealthPercent: number
 	readonly m_nFXIndex: number
 	readonly m_hAttackingHeroes: C_BaseEntity[]
 	readonly m_bGoldenRoshan: boolean
 }
+declare var C_DOTA_Unit_Roshan: C_DOTA_Unit_Roshan;
 
 interface C_DOTA_Ability_WitchDoctor_Maledict extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_WitchDoctor_Maledict: C_DOTA_Ability_WitchDoctor_Maledict;
 
 interface C_DOTA_Ability_Kunkka_Torrent extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Kunkka_Torrent: C_DOTA_Ability_Kunkka_Torrent;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Blue_IceVortex extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly vision_aoe: number
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Blue_IceVortex: C_DOTA_Ability_Greevil_Miniboss_Blue_IceVortex;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight: C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight;
 
 interface C_FuncCombineBarrier extends C_FuncBrush {
-	readonly type_name: string
 	readonly m_nAmbientEffect: number
 	readonly m_EffectName: string
 	readonly m_eBarriersize: number
 	readonly m_eBarrierState: number
 }
+declare var C_FuncCombineBarrier: C_FuncCombineBarrier;
 
 interface C_DOTA_Item_Buckler extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Buckler: C_DOTA_Item_Buckler;
 
 interface C_DOTA_Ability_Medusa_SplitShot extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Medusa_SplitShot: C_DOTA_Ability_Medusa_SplitShot;
 
 interface C_DOTA_Ability_DoomBringer_ScorchedEarth extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DoomBringer_ScorchedEarth: C_DOTA_Ability_DoomBringer_ScorchedEarth;
 
 interface C_DOTA_Ability_WitchDoctor_VoodooRestoration extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_WitchDoctor_VoodooRestoration: C_DOTA_Ability_WitchDoctor_VoodooRestoration;
 
 interface C_DOTA_Ability_Morphling_Morph_Str extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Morphling_Morph_Str: C_DOTA_Ability_Morphling_Morph_Str;
 
 interface C_DOTA_TempTree extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_fExpireTime: number
 	readonly m_vecTreeCircleCenter: Vector
 }
+declare var C_DOTA_TempTree: C_DOTA_TempTree;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Skywrath_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Skywrath_2: C_DOTA_Ability_Special_Bonus_Unique_Skywrath_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Magnus_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Magnus_5: C_DOTA_Ability_Special_Bonus_Unique_Magnus_5;
 
 interface C_DOTA_BinaryObject extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_bActive: boolean
 	readonly m_nBinaryID: number
 }
+declare var C_DOTA_BinaryObject: C_DOTA_BinaryObject;
 
 interface C_Fish extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_pos: Vector
 	readonly m_vel: Vector
 	readonly m_angles: QAngle
@@ -15015,79 +15014,79 @@ interface C_Fish extends C_BaseAnimating {
 	readonly m_errorHistoryCount: number
 	readonly m_averageError: number
 }
+declare var C_Fish: C_Fish;
 
 interface C_DOTA_Unit_Hero_DarkWillow extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_DarkWillow: C_DOTA_Unit_Hero_DarkWillow;
 
 interface CDOTA_Ability_Frostivus2018_Spectre_ActiveDispersion extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nPreviewFX: number
 	readonly duration: number
 }
+declare var CDOTA_Ability_Frostivus2018_Spectre_ActiveDispersion: CDOTA_Ability_Frostivus2018_Spectre_ActiveDispersion;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Nyx_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Nyx_3: C_DOTA_Ability_Special_Bonus_Unique_Nyx_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Techies_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Techies_2: C_DOTA_Ability_Special_Bonus_Unique_Techies_2;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_275 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_275: C_DOTA_Ability_Special_Bonus_Cast_Range_275;
 
 interface C_DOTA_Ability_AttributeBonus extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_AttributeBonus: C_DOTA_Ability_AttributeBonus;
 
 interface C_CaptureCallbackHandler extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_CaptureCallbackHandler: C_CaptureCallbackHandler;
 
 interface C_TestTraceline extends C_BaseModelEntity {
-	readonly type_name: string
 }
+declare var C_TestTraceline: C_TestTraceline;
 
 interface C_DOTA_Item_Recipe_Necronomicon extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Necronomicon: C_DOTA_Item_Recipe_Necronomicon;
 
 interface C_DOTA_Unit_Hero_Pangolier extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Pangolier: C_DOTA_Unit_Hero_Pangolier;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_3: C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_3: C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_3;
 
 interface CBaseAnimatingOverlayController extends CBaseAnimatingController {
-	readonly type_name: string
 }
+declare var CBaseAnimatingOverlayController: CBaseAnimatingOverlayController;
 
 interface CLogicalEntity extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var CLogicalEntity: CLogicalEntity;
 
 interface CDOTA_Item_Recipe_Kaya_And_Sange extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Kaya_And_Sange: CDOTA_Item_Recipe_Kaya_And_Sange;
 
 interface C_DOTA_Item_Black_King_Bar extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Black_King_Bar: C_DOTA_Item_Black_King_Bar;
 
 interface C_DOTA_Ability_DarkSeer_Surge extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DarkSeer_Surge: C_DOTA_Ability_DarkSeer_Surge;
 
 interface C_DOTA_Ability_Kunkka_GhostShip extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly buff_duration: number
 	readonly stun_duration: number
 	readonly ghostship_width: number
@@ -15095,41 +15094,41 @@ interface C_DOTA_Ability_Kunkka_GhostShip extends C_DOTABaseAbility {
 	readonly m_vFinalDestination: Vector
 	readonly m_vStartingPoint: Vector
 }
+declare var C_DOTA_Ability_Kunkka_GhostShip: C_DOTA_Ability_Kunkka_GhostShip;
 
 interface CDOTA_Ability_Frostivus2018_Luna_Eclipse extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Frostivus2018_Luna_Eclipse: CDOTA_Ability_Frostivus2018_Luna_Eclipse;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_DarkWillow_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_DarkWillow_1: C_DOTA_Ability_Special_Bonus_Unique_DarkWillow_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lich_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lich_2: C_DOTA_Ability_Special_Bonus_Unique_Lich_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lich_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lich_1: C_DOTA_Ability_Special_Bonus_Unique_Lich_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_6: C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_6;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Kunkka extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Kunkka: C_DOTA_Ability_Special_Bonus_Unique_Kunkka;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Windranger_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Windranger_2: C_DOTA_Ability_Special_Bonus_Unique_Windranger_2;
 
 interface C_DOTA_Ability_Special_Bonus_All_Stats_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_All_Stats_15: C_DOTA_Ability_Special_Bonus_All_Stats_15;
 
 interface C_RopeKeyframe extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_nLinksTouchingSomething: number
 	readonly m_bApplyWind: boolean
 	readonly m_fPrevLockedPoints: number
@@ -15168,100 +15167,100 @@ interface C_RopeKeyframe extends C_BaseModelEntity {
 	readonly m_bNewDataThisFrame: boolean
 	readonly m_bPhysicsInitted: boolean
 }
+declare var C_RopeKeyframe: C_RopeKeyframe;
 
 interface CBaseProp extends C_BaseAnimating {
-	readonly type_name: string
 }
+declare var CBaseProp: CBaseProp;
 
 interface C_DOTA_Unit_Undying_Tombstone extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Undying_Tombstone: C_DOTA_Unit_Undying_Tombstone;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_1: C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Furion extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Furion: C_DOTA_Ability_Special_Bonus_Unique_Furion;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_2: C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_2;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_30: C_DOTA_Ability_Special_Bonus_Magic_Resistance_30;
 
 interface C_DOTA_Ability_Special_Bonus_Cleave_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cleave_40: C_DOTA_Ability_Special_Bonus_Cleave_40;
 
 interface C_DOTA_Item_Flask extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Flask: C_DOTA_Item_Flask;
 
 interface C_DOTA_Unit_Hero_Ogre_Magi extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Ogre_Magi: C_DOTA_Unit_Hero_Ogre_Magi;
 
 interface C_DOTA_Ability_LoneDruid_SpiritBear extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_bLevelChanged: boolean
 	readonly m_hBear: C_BaseEntity
 	readonly m_hPreBear: C_BaseEntity
 }
+declare var C_DOTA_Ability_LoneDruid_SpiritBear: C_DOTA_Ability_LoneDruid_SpiritBear;
 
 interface C_DOTA_Ability_PhantomAssassin_Stifling_Dagger extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_PhantomAssassin_Stifling_Dagger: C_DOTA_Ability_PhantomAssassin_Stifling_Dagger;
 
 interface C_DOTA_Ability_Sniper_Headshot extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Sniper_Headshot: C_DOTA_Ability_Sniper_Headshot;
 
 interface CDOTA_Ability_ShootFirework extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_ShootFirework: CDOTA_Ability_ShootFirework;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Treant_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Treant_3: C_DOTA_Ability_Special_Bonus_Unique_Treant_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_2: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Abaddon_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Abaddon_5: C_DOTA_Ability_Special_Bonus_Unique_Abaddon_5;
 
 interface C_DOTA_Ability_Special_Bonus_50_Crit_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_50_Crit_40: C_DOTA_Ability_Special_Bonus_50_Crit_40;
 
 interface C_DOTA_Item_Recipe_Ring_Of_Basilius extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Ring_Of_Basilius: C_DOTA_Item_Recipe_Ring_Of_Basilius;
 
 interface C_DOTA_Ability_Brewmaster_DispelMagic extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Brewmaster_DispelMagic: C_DOTA_Ability_Brewmaster_DispelMagic;
 
 interface CDOTA_Ability_Life_Stealer_AssimilateEject extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Life_Stealer_AssimilateEject: CDOTA_Ability_Life_Stealer_AssimilateEject;
 
 interface C_DOTA_Unit_Hero_DrowRanger extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_DrowRanger: C_DOTA_Unit_Hero_DrowRanger;
 
 interface C_IngameEvent_DotaPrime extends C_IngameEvent_Base {
-	readonly type_name: string
 }
+declare var C_IngameEvent_DotaPrime: C_IngameEvent_DotaPrime;
 
 interface C_BreakableProp extends CBaseProp {
-	readonly type_name: string
 	readonly m_OnBreak: CEntityIOOutput
 	readonly m_OnTakeDamage: CEntityIOOutput
 	readonly m_impactEnergyScale: number
@@ -15299,103 +15298,103 @@ interface C_BreakableProp extends CBaseProp {
 	readonly m_noGhostCollision: boolean
 	readonly m_flClothScale: number
 }
+declare var C_BreakableProp: C_BreakableProp;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_120 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_120: C_DOTA_Ability_Special_Bonus_Attack_Speed_120;
 
 interface C_DOTA_BaseNPC_HoldoutTower extends C_DOTA_BaseNPC_Tower {
-	readonly type_name: string
 	readonly m_iTowerType: number
 }
+declare var C_DOTA_BaseNPC_HoldoutTower: C_DOTA_BaseNPC_HoldoutTower;
 
 interface C_DOTA_Item_Recipe_Arcane_Ring extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Arcane_Ring: C_DOTA_Item_Recipe_Arcane_Ring;
 
 interface CDOTA_Ability_Winter_Wyvern_Arctic_Burn extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_BurnedTargets: C_BaseEntity[]
 }
+declare var CDOTA_Ability_Winter_Wyvern_Arctic_Burn: CDOTA_Ability_Winter_Wyvern_Arctic_Burn;
 
 interface C_DOTA_Unit_Hero_LoneDruid extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_LoneDruid: C_DOTA_Unit_Hero_LoneDruid;
 
 interface C_DOTA_Ability_Shadow_Demon_Demonic_Purge extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly max_charges: number
 	readonly charge_restore_time: number
 }
+declare var C_DOTA_Ability_Shadow_Demon_Demonic_Purge: C_DOTA_Ability_Shadow_Demon_Demonic_Purge;
 
 interface C_DOTA_Ability_Brewmaster_PermanentImmolation extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Brewmaster_PermanentImmolation: C_DOTA_Ability_Brewmaster_PermanentImmolation;
 
 interface C_DOTA_Ability_Broodmother_IncapacitatingBite extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Broodmother_IncapacitatingBite: C_DOTA_Ability_Broodmother_IncapacitatingBite;
 
 interface C_DOTA_Ability_VengefulSpirit_Magic_Missile extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_VengefulSpirit_Magic_Missile: C_DOTA_Ability_VengefulSpirit_Magic_Missile;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phoenix_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phoenix_2: C_DOTA_Ability_Special_Bonus_Unique_Phoenix_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Furion_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Furion_2: C_DOTA_Ability_Special_Bonus_Unique_Furion_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phantom_Assassin_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phantom_Assassin_2: C_DOTA_Ability_Special_Bonus_Unique_Phantom_Assassin_2;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_20: C_DOTA_Ability_Special_Bonus_Armor_20;
 
 interface C_DOTA_Item_HandOfMidas extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_HandOfMidas: C_DOTA_Item_HandOfMidas;
 
 interface C_DOTA_Unit_Hero_Windrunner extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nTargetAngle: number
 	readonly m_iPoseParameterAim: number
 }
+declare var C_DOTA_Unit_Hero_Windrunner: C_DOTA_Unit_Hero_Windrunner;
 
 interface C_DOTA_Ability_Tiny_Avalanche extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vTargetLoc: Vector
 }
+declare var C_DOTA_Ability_Tiny_Avalanche: C_DOTA_Ability_Tiny_Avalanche;
 
 interface C_DOTA_Ability_Zuus_Cloud extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Zuus_Cloud: C_DOTA_Ability_Zuus_Cloud;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Yellow_Surge extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Yellow_Surge: C_DOTA_Ability_Greevil_Miniboss_Yellow_Surge;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi_3: C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi_3;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Amplify_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Amplify_10: C_DOTA_Ability_Special_Bonus_Spell_Amplify_10;
 
 interface C_DOTA_Item_Tombstone extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_flTimer: number
 	readonly m_nFXIndex: number
 	readonly m_nFXIndex2: number
 }
+declare var C_DOTA_Item_Tombstone: C_DOTA_Item_Tombstone;
 
 interface C_PortraitWorldUnit extends C_DOTA_BaseNPC {
-	readonly type_name: string
 	readonly m_bSuppressIntroEffects: boolean
 	readonly m_bIsAlternateLoadout: boolean
 	readonly m_bSpawnBackgroundModels: boolean
@@ -15414,78 +15413,78 @@ interface C_PortraitWorldUnit extends C_DOTA_BaseNPC {
 	readonly m_nPortraitParticle: number
 	readonly m_nCourierType: number
 }
+declare var C_PortraitWorldUnit: C_PortraitWorldUnit;
 
 interface C_DOTA_BaseNPC_Creep_Lane extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Creep_Lane: C_DOTA_BaseNPC_Creep_Lane;
 
 interface C_DOTA_BaseNPC_Healer extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 	readonly m_iRangeFX: number
 }
+declare var C_DOTA_BaseNPC_Healer: C_DOTA_BaseNPC_Healer;
 
 interface C_EconWearable extends C_EconEntity {
-	readonly type_name: string
 }
+declare var C_EconWearable: C_EconWearable;
 
 interface CDOTA_Ability_Tusk_IceShards_Stop extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Tusk_IceShards_Stop: CDOTA_Ability_Tusk_IceShards_Stop;
 
 interface C_DOTA_DeathProphet_Exorcism_Spirit extends C_BaseAnimating {
-	readonly type_name: string
 }
+declare var C_DOTA_DeathProphet_Exorcism_Spirit: C_DOTA_DeathProphet_Exorcism_Spirit;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Weaver_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Weaver_5: C_DOTA_Ability_Special_Bonus_Unique_Weaver_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Skywrath_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Skywrath_4: C_DOTA_Ability_Special_Bonus_Unique_Skywrath_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sniper_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sniper_4: C_DOTA_Ability_Special_Bonus_Unique_Sniper_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Disruptor extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Disruptor: C_DOTA_Ability_Special_Bonus_Unique_Disruptor;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_5: C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_5;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_6: C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_6;
 
 interface C_DOTA_Ability_Special_Bonus_Gold_Income_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Gold_Income_40: C_DOTA_Ability_Special_Bonus_Gold_Income_40;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_150 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_150: C_DOTA_Ability_Special_Bonus_MP_Regen_150;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_20: C_DOTA_Ability_Special_Bonus_HP_Regen_20;
 
 interface C_DOTA_Ability_Special_Bonus_HP_150 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_150: C_DOTA_Ability_Special_Bonus_HP_150;
 
 interface C_DOTABaseCustomHeroPickRules extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_DOTABaseCustomHeroPickRules: C_DOTABaseCustomHeroPickRules;
 
 interface C_TriggerCamera extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_TriggerCamera: C_TriggerCamera;
 
 interface C_PostProcessingVolume extends C_BaseTrigger {
-	readonly type_name: string
 	readonly m_flFadeDuration: number
 	readonly m_flMinLogExposure: number
 	readonly m_flMaxLogExposure: number
@@ -15497,48 +15496,48 @@ interface C_PostProcessingVolume extends C_BaseTrigger {
 	readonly m_bMaster: boolean
 	readonly m_bExposureControl: boolean
 }
+declare var C_PostProcessingVolume: C_PostProcessingVolume;
 
 interface C_DOTA_Ability_EarthSpirit_StoneCaller extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly max_charges: number
 	readonly charge_restore_time: number
 }
+declare var C_DOTA_Ability_EarthSpirit_StoneCaller: C_DOTA_Ability_EarthSpirit_StoneCaller;
 
 interface C_DOTA_Unit_Hero_Bristleback extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Bristleback: C_DOTA_Unit_Hero_Bristleback;
 
 interface C_DOTA_Ability_Silencer_GlobalSilence extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Silencer_GlobalSilence: C_DOTA_Ability_Silencer_GlobalSilence;
 
 interface C_DOTA_Ability_Invoker_IceWall extends CDOTA_Ability_Invoker_InvokedBase {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_IceWall: C_DOTA_Ability_Invoker_IceWall;
 
 interface C_DOTA_Ability_Tidehunter_AnchorSmash extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Tidehunter_AnchorSmash: C_DOTA_Ability_Tidehunter_AnchorSmash;
 
 interface CDOTA_Ability_MudGolem_CloakAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_MudGolem_CloakAura: CDOTA_Ability_MudGolem_CloakAura;
 
 interface CDOTA_Ability_BlackDragon_DragonhideAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_BlackDragon_DragonhideAura: CDOTA_Ability_BlackDragon_DragonhideAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pudge_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pudge_4: C_DOTA_Ability_Special_Bonus_Unique_Pudge_4;
 
 interface C_DOTA_Ability_DeathProphet_Exorcism extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_SpiritInfos: sSpiritInfo[]
 }
+declare var C_DOTA_Ability_DeathProphet_Exorcism: C_DOTA_Ability_DeathProphet_Exorcism;
 
 interface C_DOTA_PortraitEntity extends C_DOTA_BaseNPC {
-	readonly type_name: string
 	readonly m_iPortraitParticle: number
 	readonly m_PortraitActivity: number
 	readonly m_nMouthFX: number
@@ -15549,70 +15548,70 @@ interface C_DOTA_PortraitEntity extends C_DOTA_BaseNPC {
 	readonly m_hAppearanceFromNPC: C_BaseEntity
 	readonly m_PetIdleTimer: CountdownTimer
 }
+declare var C_DOTA_PortraitEntity: C_DOTA_PortraitEntity;
 
 interface C_DOTA_Item_Recipe_Black_King_Bar extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Black_King_Bar: C_DOTA_Item_Recipe_Black_King_Bar;
 
 interface C_DOTA_Item_Recipe_BootsOfTravel extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_BootsOfTravel: C_DOTA_Item_Recipe_BootsOfTravel;
 
 interface C_DOTA_DarkWillow_Creature extends C_DOTA_BaseNPC {
-	readonly type_name: string
 }
+declare var C_DOTA_DarkWillow_Creature: C_DOTA_DarkWillow_Creature;
 
 interface C_DOTA_Unit_Hero_EarthSpirit extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_EarthSpirit: C_DOTA_Unit_Hero_EarthSpirit;
 
 interface C_DOTA_Ability_Wisp_Spirits_In extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Wisp_Spirits_In: C_DOTA_Ability_Wisp_Spirits_In;
 
 interface C_DOTA_Ability_NagaSiren_SongOfTheSiren_Cancel extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_NagaSiren_SongOfTheSiren_Cancel: C_DOTA_Ability_NagaSiren_SongOfTheSiren_Cancel;
 
 interface C_DOTA_Ability_Omniknight_Degen_Aura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Omniknight_Degen_Aura: C_DOTA_Ability_Omniknight_Degen_Aura;
 
 interface C_DOTA_Ability_DragonKnight_ElderDragonForm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DragonKnight_ElderDragonForm: C_DOTA_Ability_DragonKnight_ElderDragonForm;
 
 interface C_DOTA_Ability_Nian_Dive extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nian_Dive: C_DOTA_Ability_Nian_Dive;
 
 interface C_DOTA_Ability_Frostivus2018_Puck_DreamCoil extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hThinker: C_BaseEntity
 }
+declare var C_DOTA_Ability_Frostivus2018_Puck_DreamCoil: C_DOTA_Ability_Frostivus2018_Puck_DreamCoil;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_7: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_7;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Silencer_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Silencer_3: C_DOTA_Ability_Special_Bonus_Unique_Silencer_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Techies extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Techies: C_DOTA_Ability_Special_Bonus_Unique_Techies;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Range_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Range_100: C_DOTA_Ability_Special_Bonus_Attack_Range_100;
 
 interface C_EnvDeferredLight extends C_ModelPointEntity, CDeferredLightBase {
-	readonly type_name: string
 }
+declare var C_EnvDeferredLight: C_EnvDeferredLight;
 
 interface C_DynamicProp extends C_BreakableProp {
-	readonly type_name: string
 	readonly m_pOutputAnimBegun: CEntityIOOutput
 	readonly m_pOutputAnimOver: CEntityIOOutput
 	readonly m_pOutputAnimLoopCycleOver: CEntityIOOutput
@@ -15639,54 +15638,54 @@ interface C_DynamicProp extends C_BreakableProp {
 	readonly m_vecCachedRenderMins: Vector
 	readonly m_vecCachedRenderMaxs: Vector
 }
+declare var C_DynamicProp: C_DynamicProp;
 
 interface C_DOTA_Item_RiverPainter2 extends C_DOTA_Item_RiverPainter {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_RiverPainter2: C_DOTA_Item_RiverPainter2;
 
 interface C_DOTA_Ability_Ogre_Magi_Bloodlust extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Ogre_Magi_Bloodlust: C_DOTA_Ability_Ogre_Magi_Bloodlust;
 
 interface C_DOTA_Ability_LoneDruid_Rabid extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly rabid_duration: number
 }
+declare var C_DOTA_Ability_LoneDruid_Rabid: C_DOTA_Ability_LoneDruid_Rabid;
 
 interface C_DOTA_Ability_Invoker_EMP extends CDOTA_Ability_Invoker_InvokedBase {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_EMP: C_DOTA_Ability_Invoker_EMP;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Visage_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Visage_4: C_DOTA_Ability_Special_Bonus_Unique_Visage_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Nevermore_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Nevermore_3: C_DOTA_Ability_Special_Bonus_Unique_Nevermore_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void_4: C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_4: C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_1: C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_1;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_3: C_DOTA_Ability_Special_Bonus_MP_Regen_3;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_250 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_250: C_DOTA_Ability_Special_Bonus_Attack_Speed_250;
 
 interface C_FireSmoke extends C_BaseFire {
-	readonly type_name: string
 	readonly m_nFlameModelIndex: number
 	readonly m_nFlameFromAboveModelIndex: number
 	readonly m_flScaleRegister: number
@@ -15701,47 +15700,47 @@ interface C_FireSmoke extends C_BaseFire {
 	readonly m_tParticleSpawn: TimedEvent
 	readonly m_pFireOverlay: CFireOverlay
 }
+declare var C_FireSmoke: C_FireSmoke;
 
 interface C_DOTA_Item_MaskOfMadness extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_MaskOfMadness: C_DOTA_Item_MaskOfMadness;
 
 interface C_DOTA_Item_RingOfRegeneration extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_RingOfRegeneration: C_DOTA_Item_RingOfRegeneration;
 
 interface C_DOTA_Item_Claymore extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Claymore: C_DOTA_Item_Claymore;
 
 interface CDOTA_Ability_Special_Bonus_Unique_Grimstroke_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Special_Bonus_Unique_Grimstroke_4: CDOTA_Ability_Special_Bonus_Unique_Grimstroke_4;
 
 interface CDOTA_Ability_Tusk_Tag_Team extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Tusk_Tag_Team: CDOTA_Ability_Tusk_Tag_Team;
 
 interface C_DOTA_Ability_Ogre_Magi_Unrefined_Fireblast extends C_DOTA_Ability_Ogre_Magi_Fireblast {
-	readonly type_name: string
 	readonly m_nMostRecentMulticastCount: number
 }
+declare var C_DOTA_Ability_Ogre_Magi_Unrefined_Fireblast: C_DOTA_Ability_Ogre_Magi_Unrefined_Fireblast;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Green_LivingArmor extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Green_LivingArmor: C_DOTA_Ability_Greevil_Miniboss_Green_LivingArmor;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Invoker_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Invoker_5: C_DOTA_Ability_Special_Bonus_Unique_Invoker_5;
 
 interface C_DOTA_MapTree extends C_DOTA_BinaryObject {
-	readonly type_name: string
 	readonly m_bInitialized: boolean
 }
+declare var C_DOTA_MapTree: C_DOTA_MapTree;
 
 interface C_Sprite extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_hAttachedToEntity: C_BaseEntity
 	readonly m_nAttachment: number
 	readonly m_flSpriteFramerate: number
@@ -15765,9 +15764,9 @@ interface C_Sprite extends C_BaseModelEntity {
 	readonly m_nSpriteWidth: number
 	readonly m_nSpriteHeight: number
 }
+declare var C_Sprite: C_Sprite;
 
 interface C_EnvCombinedLightProbeVolume extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_Color: Color
 	readonly m_flBrightness: number
 	readonly m_bCustomCubemapTexture: boolean
@@ -15781,73 +15780,73 @@ interface C_EnvCombinedLightProbeVolume extends C_BaseEntity {
 	readonly m_bStartDisabled: boolean
 	readonly m_bEnabled: boolean
 }
+declare var C_EnvCombinedLightProbeVolume: C_EnvCombinedLightProbeVolume;
 
 interface C_DOTA_Item_Recipe_Dagon4 extends C_DOTA_Item_Recipe_Dagon {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Dagon4: C_DOTA_Item_Recipe_Dagon4;
 
 interface C_DOTA_Ability_Tusk_WalrusPunch extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Tusk_WalrusPunch: C_DOTA_Ability_Tusk_WalrusPunch;
 
 interface C_DOTA_Unit_Hero_Disruptor extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Disruptor: C_DOTA_Unit_Hero_Disruptor;
 
 interface C_DOTA_Ability_Invoker_Exort extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_Exort: C_DOTA_Ability_Invoker_Exort;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bounty_Hunter extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bounty_Hunter: C_DOTA_Ability_Special_Bonus_Unique_Bounty_Hunter;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Warlock_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Warlock_2: C_DOTA_Ability_Special_Bonus_Unique_Warlock_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_7: C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_7;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Leshrac_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Leshrac_1: C_DOTA_Ability_Special_Bonus_Unique_Leshrac_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phoenix_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phoenix_1: C_DOTA_Ability_Special_Bonus_Unique_Phoenix_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Medusa_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Medusa_4: C_DOTA_Ability_Special_Bonus_Unique_Medusa_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_4: C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_4;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Amplify_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Amplify_8: C_DOTA_Ability_Special_Bonus_Spell_Amplify_8;
 
 interface C_DOTA_Ability_Special_Bonus_MP_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_100: C_DOTA_Ability_Special_Bonus_MP_100;
 
 interface C_DOTA_Ability_Special_Bonus_HP_350 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_350: C_DOTA_Ability_Special_Bonus_HP_350;
 
 interface C_DOTA_BaseNPC_Creep_Neutral extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Creep_Neutral: C_DOTA_BaseNPC_Creep_Neutral;
 
 interface C_DOTA_Unit_Hero_SpiritBreaker extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_SpiritBreaker: C_DOTA_Unit_Hero_SpiritBreaker;
 
 interface C_PlayerResource extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_szName: string[]
 	readonly m_Colors: Color[]
 	readonly m_iPing: number[]
@@ -15856,78 +15855,78 @@ interface C_PlayerResource extends C_BaseEntity {
 	readonly m_bConnected: boolean[]
 	readonly m_iTeam: number[]
 	readonly m_bAlive: boolean[]
-	//readonly m_iHealth: number[] // it's actually this iirc, BUT ts won't let us declare this that way
+	readonly m_iHealth: number[]
 	readonly m_bIsFakePlayer: boolean[]
 	readonly m_nEventPlayerInfo: number
 }
+declare var C_PlayerResource: C_PlayerResource;
 
 interface C_DOTA_Item_Recipe_Hood_Of_Defiance extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Hood_Of_Defiance: C_DOTA_Item_Recipe_Hood_Of_Defiance;
 
 interface C_DOTA_Ability_Slark_ShadowDance extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Slark_ShadowDance: C_DOTA_Ability_Slark_ShadowDance;
 
 interface C_DOTA_Ability_Chen_HandOfGod extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Chen_HandOfGod: C_DOTA_Ability_Chen_HandOfGod;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void: C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Luna_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Luna_3: C_DOTA_Ability_Special_Bonus_Unique_Luna_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Riki_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Riki_3: C_DOTA_Ability_Special_Bonus_Unique_Riki_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_1: C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_1;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_125 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_125: C_DOTA_Ability_Special_Bonus_Cast_Range_125;
 
 interface C_GenericFlexCyclerAlias_cycler extends C_GenericFlexCycler {
-	readonly type_name: string
 }
+declare var C_GenericFlexCyclerAlias_cycler: C_GenericFlexCyclerAlias_cycler;
 
 interface CDOTA_Ability_AbyssalUnderlord_Firestorm extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var CDOTA_Ability_AbyssalUnderlord_Firestorm: CDOTA_Ability_AbyssalUnderlord_Firestorm;
 
 interface C_DOTA_Ability_Disruptor_KineticField extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Disruptor_KineticField: C_DOTA_Ability_Disruptor_KineticField;
 
 interface C_DOTA_Ability_Nevermore_Shadowraze2 extends C_DOTA_Ability_Nevermore_Shadowraze {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nevermore_Shadowraze2: C_DOTA_Ability_Nevermore_Shadowraze2;
 
 interface C_DOTA_Ability_Frostivus2018_Huskar_Burning_Spear extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Huskar_Burning_Spear: C_DOTA_Ability_Frostivus2018_Huskar_Burning_Spear;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_8: C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_8;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden: C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden;
 
 interface C_DOTA_DataRadiant extends C_DOTA_DataNonSpectator {
-	readonly type_name: string
 }
+declare var C_DOTA_DataRadiant: C_DOTA_DataRadiant;
 
 interface C_BaseCombatWeapon extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_hOwner: C_BaseEntity
 	readonly m_nViewModelIndex: number
 	readonly m_flNextPrimaryAttack: number
@@ -15975,66 +15974,66 @@ interface C_BaseCombatWeapon extends C_BaseAnimating {
 	readonly m_pWorldModelClone: C_CombatWeaponClone
 	readonly m_iOldState: number
 }
+declare var C_BaseCombatWeapon: C_BaseCombatWeapon;
 
 interface C_DynamicPropAlias_dynamic_prop extends C_DynamicProp {
-	readonly type_name: string
 }
+declare var C_DynamicPropAlias_dynamic_prop: C_DynamicPropAlias_dynamic_prop;
 
 interface CDOTA_Item_Recipe_Diffusal_Blade2 extends C_DOTA_Item_Recipe_Diffusal_Blade {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Diffusal_Blade2: CDOTA_Item_Recipe_Diffusal_Blade2;
 
 interface C_DOTA_Unit_Hero_Spectre extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Spectre: C_DOTA_Unit_Hero_Spectre;
 
 interface C_DOTA_Unit_Hero_Weaver extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Weaver: C_DOTA_Unit_Hero_Weaver;
 
 interface C_DOTA_Ability_Omniknight_Pacify extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Omniknight_Pacify: C_DOTA_Ability_Omniknight_Pacify;
 
 interface C_DOTA_Ability_ShadowShaman_Shackles extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hShackleTarget: C_BaseEntity
 	readonly nShackleFXIndex: number
 }
+declare var C_DOTA_Ability_ShadowShaman_Shackles: C_DOTA_Ability_ShadowShaman_Shackles;
 
 interface C_DOTA_Ability_Lich_Sinister_Gaze extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hShackleTarget: C_BaseEntity
 }
+declare var C_DOTA_Ability_Lich_Sinister_Gaze: C_DOTA_Ability_Lich_Sinister_Gaze;
 
 interface C_DOTA_Ability_Morphling_Morph_Agi extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Morphling_Morph_Agi: C_DOTA_Ability_Morphling_Morph_Agi;
 
 interface C_DOTA_Ability_Morphling_Morph extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Morphling_Morph: C_DOTA_Ability_Morphling_Morph;
 
 interface C_DOTA_Ability_Bloodseeker_Bloodrage extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly max_charges: number
 	readonly charge_restore_time: number
 }
+declare var C_DOTA_Ability_Bloodseeker_Bloodrage: C_DOTA_Ability_Bloodseeker_Bloodrage;
 
 interface C_DotaSubquestEntityDeath extends C_DotaSubquestBase {
-	readonly type_name: string
 }
+declare var C_DotaSubquestEntityDeath: C_DotaSubquestEntityDeath;
 
 interface C_DOTA_Ability_BlueDragonspawnOverseer_Evasion extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BlueDragonspawnOverseer_Evasion: C_DOTA_Ability_BlueDragonspawnOverseer_Evasion;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Earth_Spirit extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Earth_Spirit: C_DOTA_Ability_Special_Bonus_Unique_Earth_Spirit;
 
 interface CLogicRelay extends CLogicalEntity {
-	readonly type_name: string
 	readonly m_OnTrigger: CEntityIOOutput
 	readonly m_OnSpawn: CEntityIOOutput
 	readonly m_bDisabled: boolean
@@ -16043,53 +16042,53 @@ interface CLogicRelay extends CLogicalEntity {
 	readonly m_bFastRetrigger: boolean
 	readonly m_bPassthoughCaller: boolean
 }
+declare var CLogicRelay: CLogicRelay;
 
 interface C_DOTA_Item_AeonDisk extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_AeonDisk: C_DOTA_Item_AeonDisk;
 
 interface CDOTA_Item_Recipe_Hurricane_Pike extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Hurricane_Pike: CDOTA_Item_Recipe_Hurricane_Pike;
 
 interface C_DOTA_Item_Aegis extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Aegis: C_DOTA_Item_Aegis;
 
 interface C_DOTA_Ability_ChaosKnight_Chaos_Bolt extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_ChaosKnight_Chaos_Bolt: C_DOTA_Ability_ChaosKnight_Chaos_Bolt;
 
 interface C_DOTA_Unit_Hero_Batrider extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Batrider: C_DOTA_Unit_Hero_Batrider;
 
 interface CDOTA_Ability_Frostivus2018_Clinkz_SearingArrows extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Frostivus2018_Clinkz_SearingArrows: CDOTA_Ability_Frostivus2018_Clinkz_SearingArrows;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Jakiro_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Jakiro_4: C_DOTA_Ability_Special_Bonus_Unique_Jakiro_4;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_25: C_DOTA_Ability_Special_Bonus_Magic_Resistance_25;
 
 interface C_DOTA_Ability_Pangolier_HeartPiercer extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Pangolier_HeartPiercer: C_DOTA_Ability_Pangolier_HeartPiercer;
 
 interface C_DOTA_Ability_Wisp_Overcharge extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Wisp_Overcharge: C_DOTA_Ability_Wisp_Overcharge;
 
 interface CDOTA_Ability_Alchemist_ChemicalRage extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Alchemist_ChemicalRage: CDOTA_Ability_Alchemist_ChemicalRage;
 
 interface C_DOTA_Ability_VengefulSpirit_WaveOfTerror extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly wave_width: number
 	readonly wave_speed: number
 	readonly m_iProjectile: number
@@ -16098,74 +16097,74 @@ interface C_DOTA_Ability_VengefulSpirit_WaveOfTerror extends C_DOTABaseAbility {
 	readonly m_nNumHeroesHit: number
 	readonly m_ViewerTimer: CountdownTimer
 }
+declare var C_DOTA_Ability_VengefulSpirit_WaveOfTerror: C_DOTA_Ability_VengefulSpirit_WaveOfTerror;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Antimage_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Antimage_4: C_DOTA_Ability_Special_Bonus_Unique_Antimage_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Jakiro_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Jakiro_3: C_DOTA_Ability_Special_Bonus_Unique_Jakiro_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ursa_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ursa_4: C_DOTA_Ability_Special_Bonus_Unique_Ursa_4;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_35 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_35: C_DOTA_Ability_Special_Bonus_HP_Regen_35;
 
 interface C_TonemapController2Alias_env_tonemap_controller2 extends C_TonemapController2 {
-	readonly type_name: string
 }
+declare var C_TonemapController2Alias_env_tonemap_controller2: C_TonemapController2Alias_env_tonemap_controller2;
 
 interface CDOTA_Item_Recipe_Crimson_Guard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Crimson_Guard: CDOTA_Item_Recipe_Crimson_Guard;
 
 interface C_DOTA_Item_Recipe_RodOfAtos extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_RodOfAtos: C_DOTA_Item_Recipe_RodOfAtos;
 
 interface C_CDOTA_Ability_Treant_LeechSeed extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_CDOTA_Ability_Treant_LeechSeed: C_CDOTA_Ability_Treant_LeechSeed;
 
 interface C_DOTA_Ability_Meepo_DividedWeStand extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nWhichDividedWeStand: number
 	readonly m_nNumDividedWeStand: number
 	readonly m_entPrimeDividedWeStand: C_BaseEntity
 	readonly m_entNextDividedWeStand: C_BaseEntity
 }
+declare var C_DOTA_Ability_Meepo_DividedWeStand: C_DOTA_Ability_Meepo_DividedWeStand;
 
 interface CDOTA_Ability_Pudge_Dismember extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hVictim: C_BaseEntity
 }
+declare var CDOTA_Ability_Pudge_Dismember: CDOTA_Ability_Pudge_Dismember;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_2: C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_2;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_9 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_9: C_DOTA_Ability_Special_Bonus_Armor_9;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_25: C_DOTA_Ability_Special_Bonus_Intelligence_25;
 
 interface C_DOTA_Ability_Special_Bonus_All_Stats_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_All_Stats_5: C_DOTA_Ability_Special_Bonus_All_Stats_5;
 
 interface C_DOTA_BaseNPC_HoldoutTower_ReduceSpeed extends C_DOTA_BaseNPC_HoldoutTower {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_HoldoutTower_ReduceSpeed: C_DOTA_BaseNPC_HoldoutTower_ReduceSpeed;
 
 interface C_PropVehicleDriveable extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_hPlayer: C_BaseEntity
 	readonly m_nSpeed: number
 	readonly m_nRPM: number
@@ -16194,135 +16193,135 @@ interface C_PropVehicleDriveable extends C_BaseAnimating {
 	readonly m_hPrevPlayer: C_BaseEntity
 	readonly m_ViewSmoothingData: C_ViewSmoothingData_t
 }
+declare var C_PropVehicleDriveable: C_PropVehicleDriveable;
 
 interface CDOTA_Item_Recipe_Nullifier extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Nullifier: CDOTA_Item_Recipe_Nullifier;
 
 interface C_DOTA_Ability_Beastmaster_CallOfTheWild_Hawk extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Beastmaster_CallOfTheWild_Hawk: C_DOTA_Ability_Beastmaster_CallOfTheWild_Hawk;
 
 interface C_DOTA_Ability_BlackDragon_SplashAttack extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BlackDragon_SplashAttack: C_DOTA_Ability_BlackDragon_SplashAttack;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_3: C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker_2: C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wisp_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wisp_2: C_DOTA_Ability_Special_Bonus_Unique_Wisp_2;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_75 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_75: C_DOTA_Ability_Special_Bonus_Cast_Range_75;
 
 interface C_DOTA_Ability_Special_Bonus_Cleave_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cleave_20: C_DOTA_Ability_Special_Bonus_Cleave_20;
 
 interface CNetworkedIKProceduralTargetContext {
-	readonly type_name: string
 	readonly m_nChainIndex: number
 	readonly m_nRuleIndex: number
 	readonly m_vTargetPosition: Vector
 	readonly m_flWeight: number
 	readonly m_bIsValid: boolean
 }
+declare var CNetworkedIKProceduralTargetContext: CNetworkedIKProceduralTargetContext;
 
 interface CDOTA_Item_Recipe_Solar_Crest extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Solar_Crest: CDOTA_Item_Recipe_Solar_Crest;
 
 interface C_DOTA_Ability_Terrorblade_Reflection extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_Terrorblade_Reflection: C_DOTA_Ability_Terrorblade_Reflection;
 
 interface CDOTA_Ability_Tusk_WalrusKick extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Tusk_WalrusKick: CDOTA_Ability_Tusk_WalrusKick;
 
 interface C_DOTA_Ability_Visage_SummonFamiliars_StoneForm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Visage_SummonFamiliars_StoneForm: C_DOTA_Ability_Visage_SummonFamiliars_StoneForm;
 
 interface C_DOTA_Unit_Hero_Naga_Siren extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Naga_Siren: C_DOTA_Unit_Hero_Naga_Siren;
 
 interface C_DOTA_Unit_Hero_Bane extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Bane: C_DOTA_Unit_Hero_Bane;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_2: C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_2;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_200 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_200: C_DOTA_Ability_Special_Bonus_Cast_Range_200;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_15: C_DOTA_Ability_Special_Bonus_Magic_Resistance_15;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_8: C_DOTA_Ability_Special_Bonus_HP_Regen_8;
 
 interface C_TFWearableItem extends C_EconWearable {
-	readonly type_name: string
 }
+declare var C_TFWearableItem: C_TFWearableItem;
 
 interface C_DOTA_Item_DragonLance extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_DragonLance: C_DOTA_Item_DragonLance;
 
 interface C_DOTA_Ability_BountyHunter_Track extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BountyHunter_Track: C_DOTA_Ability_BountyHunter_Track;
 
 interface C_DOTA_Ability_Clinkz_DeathPact extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Clinkz_DeathPact: C_DOTA_Ability_Clinkz_DeathPact;
 
 interface C_DOTA_Ability_Life_Stealer_Infest extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Life_Stealer_Infest: C_DOTA_Ability_Life_Stealer_Infest;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Rubick_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Rubick_3: C_DOTA_Ability_Special_Bonus_Unique_Rubick_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Venomancer extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Venomancer: C_DOTA_Ability_Special_Bonus_Unique_Venomancer;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_3: C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_3: C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_3;
 
 interface CDOTA_Item_Recipe_Lotus_Orb extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Lotus_Orb: CDOTA_Item_Recipe_Lotus_Orb;
 
 interface C_DOTA_Item_PointBooster extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_PointBooster: C_DOTA_Item_PointBooster;
 
 interface C_DOTA_Ability_EmberSpirit_Activate_FireRemnant extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly m_nProjectileID: number
 	readonly m_vStartLocation: Vector
 	readonly m_vProjectileLocation: Vector
@@ -16331,33 +16330,33 @@ interface C_DOTA_Ability_EmberSpirit_Activate_FireRemnant extends C_DOTABaseAbil
 	readonly m_bProjectileStarted: boolean
 	readonly hAlreadyHitList: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_EmberSpirit_Activate_FireRemnant: C_DOTA_Ability_EmberSpirit_Activate_FireRemnant;
 
 interface C_DOTA_Ability_Bristleback_ViscousNasalGoo extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Bristleback_ViscousNasalGoo: C_DOTA_Ability_Bristleback_ViscousNasalGoo;
 
 interface C_DOTA_Ability_Rubick_Telekinesis extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vStartLocation: Vector
 	readonly m_vLandLocation: Vector
 	readonly m_flStartTime: number
 	readonly m_pTarget: C_DOTA_BaseNPC
 }
+declare var C_DOTA_Ability_Rubick_Telekinesis: C_DOTA_Ability_Rubick_Telekinesis;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bristleback_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bristleback_3: C_DOTA_Ability_Special_Bonus_Unique_Bristleback_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Disruptor_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Disruptor_5: C_DOTA_Ability_Special_Bonus_Unique_Disruptor_5;
 
 interface C_DOTA_Ability_Special_Bonus_30_Crit_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_30_Crit_2: C_DOTA_Ability_Special_Bonus_30_Crit_2;
 
 interface C_DOTA_Unit_Courier extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_bUnitRespawned: boolean
 	readonly m_bPreUpdateFlyingCourier: boolean
 	readonly m_nSoleControllingPlayer: number
@@ -16366,30 +16365,30 @@ interface C_DOTA_Unit_Courier extends C_DOTA_BaseNPC_Additive {
 	readonly m_nCourierState: number
 	readonly m_hCourierStateEntity: C_BaseEntity
 }
+declare var C_DOTA_Unit_Courier: C_DOTA_Unit_Courier;
 
 interface C_DOTA_Ability_Tiny_CraggyExterior extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hStolenTree: C_BaseEntity
 }
+declare var C_DOTA_Ability_Tiny_CraggyExterior: C_DOTA_Ability_Tiny_CraggyExterior;
 
 interface C_DOTA_Ability_Frostivus2018_DarkWillow_ShadowRealm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_DarkWillow_ShadowRealm: C_DOTA_Ability_Frostivus2018_DarkWillow_ShadowRealm;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Chen_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Chen_1: C_DOTA_Ability_Special_Bonus_Unique_Chen_1;
 
 interface C_DOTA_Ability_Special_Bonus_Exp_Boost_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Exp_Boost_10: C_DOTA_Ability_Special_Bonus_Exp_Boost_10;
 
 interface C_DOTA_Ability_Special_Bonus_MP_150 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_150: C_DOTA_Ability_Special_Bonus_MP_150;
 
 interface C_ParticleSystem extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_bActive: boolean
 	readonly m_nStopType: number
 	readonly m_flStartTime: number
@@ -16402,33 +16401,33 @@ interface C_ParticleSystem extends C_BaseModelEntity {
 	readonly m_iszControlPointNames: string[]
 	readonly m_bOldActive: boolean
 }
+declare var C_ParticleSystem: C_ParticleSystem;
 
 interface C_DOTA_Item_Clarity extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Clarity: C_DOTA_Item_Clarity;
 
 interface C_DOTA_Item_Tango extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Tango: C_DOTA_Item_Tango;
 
 interface C_DOTA_Ability_Broodmother_SpawnSpiderlings extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Broodmother_SpawnSpiderlings: C_DOTA_Ability_Broodmother_SpawnSpiderlings;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pudge_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pudge_3: C_DOTA_Ability_Special_Bonus_Unique_Pudge_3;
 
 interface C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_65 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_65: C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_65;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_40: C_DOTA_Ability_Special_Bonus_Strength_40;
 
 interface C_MaterialModifyControl extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bHasNewAnimationCommands: boolean
 	readonly m_iFrameStart: number
 	readonly m_iFrameEnd: number
@@ -16442,39 +16441,39 @@ interface C_MaterialModifyControl extends C_BaseEntity {
 	readonly m_flAnimationStartTime: number
 	readonly m_nModifyMode: number
 }
+declare var C_MaterialModifyControl: C_MaterialModifyControl;
 
 interface C_EnvScreenEffect extends C_PointEntity {
-	readonly type_name: string
 	readonly m_flDuration: number
 	readonly m_nType: number
 }
+declare var C_EnvScreenEffect: C_EnvScreenEffect;
 
 interface C_DOTA_Item_Recipe_UltimateScepter extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_UltimateScepter: C_DOTA_Item_Recipe_UltimateScepter;
 
 interface CDOTA_Ability_Abaddon_Frostmourne extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Abaddon_Frostmourne: CDOTA_Ability_Abaddon_Frostmourne;
 
 interface C_DOTA_Ability_ChaosKnight_Chaos_Strike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_ChaosKnight_Chaos_Strike: C_DOTA_Ability_ChaosKnight_Chaos_Strike;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pudge_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pudge_2: C_DOTA_Ability_Special_Bonus_Unique_Pudge_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Timbersaw_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Timbersaw_2: C_DOTA_Ability_Special_Bonus_Unique_Timbersaw_2;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_50: C_DOTA_Ability_Special_Bonus_HP_Regen_50;
 
 interface C_DevtestHierarchy extends C_DynamicProp {
-	readonly type_name: string
 	readonly m_vRotationAxis: Vector
 	readonly m_flRotationSpeed: number
 	readonly m_nTestMode: number
@@ -16490,75 +16489,75 @@ interface C_DevtestHierarchy extends C_DynamicProp {
 	readonly m_nCurrType: number
 	readonly m_nCurrentModel: number
 }
+declare var C_DevtestHierarchy: C_DevtestHierarchy;
 
 interface C_DOTA_Ability_ArcWarden_SparkWraith extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly duration: number
 	readonly activation_delay: number
 	readonly wraith_vision_duration: number
 	readonly wraith_vision_radius: number
 	readonly spark_damage: number
 }
+declare var C_DOTA_Ability_ArcWarden_SparkWraith: C_DOTA_Ability_ArcWarden_SparkWraith;
 
 interface CDOTA_Ability_Winter_Wyvern_Cold_Embrace extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Winter_Wyvern_Cold_Embrace: CDOTA_Ability_Winter_Wyvern_Cold_Embrace;
 
 interface C_DOTA_Ability_SkeletonKing_Reincarnation extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SkeletonKing_Reincarnation: C_DOTA_Ability_SkeletonKing_Reincarnation;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_3: C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Undying_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Undying_4: C_DOTA_Ability_Special_Bonus_Unique_Undying_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tiny_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tiny_2: C_DOTA_Ability_Special_Bonus_Unique_Tiny_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_3: C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_3;
 
 interface C_DOTA_Item_Recipe_Ancient_Janggo extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Ancient_Janggo: C_DOTA_Item_Recipe_Ancient_Janggo;
 
 interface C_DOTA_Ability_Necronomicon_Warrior_LastWill extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Necronomicon_Warrior_LastWill: C_DOTA_Ability_Necronomicon_Warrior_LastWill;
 
 interface C_DOTA_Unit_Hero_Undying extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Undying: C_DOTA_Unit_Hero_Undying;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Doom_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Doom_3: C_DOTA_Ability_Special_Bonus_Unique_Doom_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tidehunter_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tidehunter_3: C_DOTA_Ability_Special_Bonus_Unique_Tidehunter_3;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_7: C_DOTA_Ability_Special_Bonus_HP_Regen_7;
 
 interface C_DOTAReflectionSkybox extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_pSkySceneObject: CSceneObject
 }
+declare var C_DOTAReflectionSkybox: C_DOTAReflectionSkybox;
 
 interface C_DevtestHierarchy2 extends C_BaseAnimating {
-	readonly type_name: string
 }
+declare var C_DevtestHierarchy2: C_DevtestHierarchy2;
 
 interface C_DOTA_Ability_Tusk_IceShards extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iProjectile: number
 	readonly shard_width: number
 	readonly shard_damage: number
@@ -16570,137 +16569,137 @@ interface C_DOTA_Ability_Tusk_IceShards extends C_DOTABaseAbility {
 	readonly m_vSpawnOrigin: Vector
 	readonly m_vDirection: Vector
 }
+declare var C_DOTA_Ability_Tusk_IceShards: C_DOTA_Ability_Tusk_IceShards;
 
 interface C_DOTA_Unit_Hero_Treant extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Treant: C_DOTA_Unit_Hero_Treant;
 
 interface C_DOTA_Ability_Lycan_SummonWolves_PermanentInvisibility extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lycan_SummonWolves_PermanentInvisibility: C_DOTA_Ability_Lycan_SummonWolves_PermanentInvisibility;
 
 interface C_DOTA_Ability_Chen_HolyPersuasion extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hDominatedUnits: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Chen_HolyPersuasion: C_DOTA_Ability_Chen_HolyPersuasion;
 
 interface C_DOTA_Ability_Lich_ChainFrost extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly jump_range: number
 	readonly jumps: number
 	readonly slow_duration: number
 	readonly vision_radius: number
 	readonly projectile_speed: number
 }
+declare var C_DOTA_Ability_Lich_ChainFrost: C_DOTA_Ability_Lich_ChainFrost;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_1: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Night_Stalker extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Night_Stalker: C_DOTA_Ability_Special_Bonus_Unique_Night_Stalker;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Luna_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Luna_1: C_DOTA_Ability_Special_Bonus_Unique_Luna_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer_3: C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Riki_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Riki_4: C_DOTA_Ability_Special_Bonus_Unique_Riki_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Chen_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Chen_4: C_DOTA_Ability_Special_Bonus_Unique_Chen_4;
 
 interface C_DOTA_Ability_Legion_Commander_PressTheAttack extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Legion_Commander_PressTheAttack: C_DOTA_Ability_Legion_Commander_PressTheAttack;
 
 interface C_DOTA_Ability_Magnataur_Shockwave extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 	readonly hAlreadyHitList: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Magnataur_Shockwave: C_DOTA_Ability_Magnataur_Shockwave;
 
 interface C_DOTA_Unit_Hero_Jakiro extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Jakiro: C_DOTA_Unit_Hero_Jakiro;
 
 interface C_DOTA_Ability_Enchantress_Enchant extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Enchantress_Enchant: C_DOTA_Ability_Enchantress_Enchant;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_3: C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lion_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lion_2: C_DOTA_Ability_Special_Bonus_Unique_Lion_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Monkey_King extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Monkey_King: C_DOTA_Ability_Special_Bonus_Unique_Monkey_King;
 
 interface C_DOTA_Ability_Special_Bonus_Exp_Boost_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Exp_Boost_5: C_DOTA_Ability_Special_Bonus_Exp_Boost_5;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_50: C_DOTA_Ability_Special_Bonus_Cast_Range_50;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_12: C_DOTA_Ability_Special_Bonus_Attack_Damage_12;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_30: C_DOTA_Ability_Special_Bonus_Movement_Speed_30;
 
 interface C_DOTA_Item_PocketTower extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_PocketTower: C_DOTA_Item_PocketTower;
 
 interface C_DOTA_Item_Blight_Stone extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Blight_Stone: C_DOTA_Item_Blight_Stone;
 
 interface C_DOTA_Ability_Invoker_Empty2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_Empty2: C_DOTA_Ability_Invoker_Empty2;
 
 interface C_DOTA_Ability_Spectre_Desolate extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Spectre_Desolate: C_DOTA_Ability_Spectre_Desolate;
 
 interface C_DOTA_Ability_ShadowShaman_EtherShock extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_ShadowShaman_EtherShock: C_DOTA_Ability_ShadowShaman_EtherShock;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lina_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lina_2: C_DOTA_Ability_Special_Bonus_Unique_Lina_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Enchantress_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Enchantress_3: C_DOTA_Ability_Special_Bonus_Unique_Enchantress_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Puck extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Puck: C_DOTA_Ability_Special_Bonus_Unique_Puck;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_45 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_45: C_DOTA_Ability_Special_Bonus_Attack_Damage_45;
 
 interface C_DOTAWorldParticleSystem extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_nType: number
 	readonly m_iClientEffectIndex: number
 	readonly m_szEffectName: string
@@ -16711,26 +16710,26 @@ interface C_DOTAWorldParticleSystem extends C_BaseModelEntity {
 	readonly m_bNightTime: boolean
 	readonly m_bShowInFow: boolean
 }
+declare var C_DOTAWorldParticleSystem: C_DOTAWorldParticleSystem;
 
 interface CDOTA_Ability_Abaddon_BorrowedTime extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Abaddon_BorrowedTime: CDOTA_Ability_Abaddon_BorrowedTime;
 
 interface C_DOTA_Ability_Medusa_StoneGaze extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Medusa_StoneGaze: C_DOTA_Ability_Medusa_StoneGaze;
 
 interface C_DOTA_Ability_Slark_EssenceShift extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Slark_EssenceShift: C_DOTA_Ability_Slark_EssenceShift;
 
 interface C_DOTA_Ability_Kunkka_XMarksTheSpot extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hThinker: C_BaseEntity
 }
+declare var C_DOTA_Ability_Kunkka_XMarksTheSpot: C_DOTA_Ability_Kunkka_XMarksTheSpot;
 
 interface C_ColorCorrection extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_vecOrigin: Vector
 	readonly m_MinFalloff: number
 	readonly m_MaxFalloff: number
@@ -16749,45 +16748,45 @@ interface C_ColorCorrection extends C_BaseEntity {
 	readonly m_flFadeStartTime: number[]
 	readonly m_flFadeDuration: number[]
 }
+declare var C_ColorCorrection: C_ColorCorrection;
 
 interface C_DOTA_Ability_Gyrocopter_Rocket_Barrage extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Gyrocopter_Rocket_Barrage: C_DOTA_Ability_Gyrocopter_Rocket_Barrage;
 
 interface C_DOTA_Ability_QueenOfPain_ScreamOfPain extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_QueenOfPain_ScreamOfPain: C_DOTA_Ability_QueenOfPain_ScreamOfPain;
 
 interface C_DOTA_Item_JumpBoots extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_JumpBoots: C_DOTA_Item_JumpBoots;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bane_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bane_4: C_DOTA_Ability_Special_Bonus_Unique_Bane_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Morphling_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Morphling_3: C_DOTA_Ability_Special_Bonus_Unique_Morphling_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Beastmaster extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Beastmaster: C_DOTA_Ability_Special_Bonus_Unique_Beastmaster;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_250 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_250: C_DOTA_Ability_Special_Bonus_Attack_Damage_250;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_7: C_DOTA_Ability_Special_Bonus_Strength_7;
 
 interface CDOTA_Ability_Generic_Hidden extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Generic_Hidden: CDOTA_Ability_Generic_Hidden;
 
 interface C_AI_BaseNPC extends C_BaseCombatCharacter {
-	readonly type_name: string
 	readonly m_flTempRagdollTransitionTime: number
 	readonly m_NPCState: number
 	readonly m_flTimePingEffect: number
@@ -16803,18 +16802,18 @@ interface C_AI_BaseNPC extends C_BaseCombatCharacter {
 	readonly m_hServerRagdoll: C_BaseEntity
 	readonly m_nFootstepType: number
 }
+declare var C_AI_BaseNPC: C_AI_BaseNPC;
 
 interface C_DOTA_Item_Yasha_And_Kaya extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Yasha_And_Kaya: C_DOTA_Item_Yasha_And_Kaya;
 
 interface C_DOTA_Ability_ChaosKnight_Phantasm extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hIllusions: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_ChaosKnight_Phantasm: C_DOTA_Ability_ChaosKnight_Phantasm;
 
 interface C_DOTA_Ability_Spectre_SpectralDagger extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly dagger_path_duration: number
 	readonly hero_path_duration: number
 	readonly m_fCreateInterval: number
@@ -16823,33 +16822,33 @@ interface C_DOTA_Ability_Spectre_SpectralDagger extends C_DOTABaseAbility {
 	readonly m_hTrackingProjectileHits: C_BaseEntity[]
 	readonly m_hTrackingTarget: C_BaseEntity
 }
+declare var C_DOTA_Ability_Spectre_SpectralDagger: C_DOTA_Ability_Spectre_SpectralDagger;
 
 interface CDOTA_Ability_Life_Stealer_Control extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Life_Stealer_Control: CDOTA_Ability_Life_Stealer_Control;
 
 interface C_DOTA_Item_Vermillion_Robe extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Vermillion_Robe: C_DOTA_Item_Vermillion_Robe;
 
 interface C_DOTA_Ability_Lina_FierySoul extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lina_FierySoul: C_DOTA_Ability_Lina_FierySoul;
 
 interface C_IngameEvent_FV2018 extends C_IngameEvent_Base {
-	readonly type_name: string
 }
+declare var C_IngameEvent_FV2018: C_IngameEvent_FV2018;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Queen_Of_Pain extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Queen_Of_Pain: C_DOTA_Ability_Special_Bonus_Unique_Queen_Of_Pain;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_15: C_DOTA_Ability_Special_Bonus_Armor_15;
 
 interface C_DynamicPropClientFadeOut extends C_DynamicProp {
-	readonly type_name: string
 	readonly m_nFadeOutMode: number
 	readonly m_ShouldBeVisible: boolean
 	readonly m_flAlpha: number
@@ -16864,9 +16863,9 @@ interface C_DynamicPropClientFadeOut extends C_DynamicProp {
 	readonly m_vFadeOrigin: Vector
 	readonly m_vFadeOriginOffset: Vector
 }
+declare var C_DynamicPropClientFadeOut: C_DynamicPropClientFadeOut;
 
 interface C_PropVRTrackedObject extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_vClientScale: Vector
 	readonly m_bIsTracking: boolean
 	readonly m_vTrackedPosition: Vector
@@ -16876,33 +16875,33 @@ interface C_PropVRTrackedObject extends C_BaseAnimating {
 	readonly m_bClientIsAuthoritativeForTransform: boolean
 	readonly m_bIsInContact: boolean
 }
+declare var C_PropVRTrackedObject: C_PropVRTrackedObject;
 
 interface C_DOTA_Item_Pipe extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Pipe: C_DOTA_Item_Pipe;
 
 interface C_DOTA_Ability_Shredder_ReturnChakram extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Shredder_ReturnChakram: C_DOTA_Ability_Shredder_ReturnChakram;
 
 interface C_DOTA_Ability_DoomBringer_Empty1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DoomBringer_Empty1: C_DOTA_Ability_DoomBringer_Empty1;
 
 interface C_DOTA_Ability_Batrider_FlamingLasso extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Batrider_FlamingLasso: C_DOTA_Ability_Batrider_FlamingLasso;
 
 interface C_DOTA_Ability_Huskar_Inner_Fire extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Huskar_Inner_Fire: C_DOTA_Ability_Huskar_Inner_Fire;
 
 interface C_DOTA_Ability_Omniknight_Repel extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Omniknight_Repel: C_DOTA_Ability_Omniknight_Repel;
 
 interface C_DOTA_Ability_Nevermore_Requiem extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly requiem_line_width_start: number
 	readonly requiem_line_width_end: number
 	readonly m_nCachedSouls: number
@@ -16910,239 +16909,239 @@ interface C_DOTA_Ability_Nevermore_Requiem extends C_DOTABaseAbility {
 	readonly m_nKilleater_nLines: number
 	readonly m_vecHeroesReqd: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Nevermore_Requiem: C_DOTA_Ability_Nevermore_Requiem;
 
 interface CDOTA_Unit_Hero_AncientApparition extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_Hero_AncientApparition: CDOTA_Unit_Hero_AncientApparition;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Batrider_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Batrider_3: C_DOTA_Ability_Special_Bonus_Unique_Batrider_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_2: C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_9 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_9: C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_9;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_120 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_120: C_DOTA_Ability_Special_Bonus_Attack_Damage_120;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_6: C_DOTA_Ability_Special_Bonus_Magic_Resistance_6;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_60 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_60: C_DOTA_Ability_Special_Bonus_Movement_Speed_60;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_10: C_DOTA_Ability_Special_Bonus_HP_Regen_10;
 
 interface C_DOTA_Item_NullTalisman extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_NullTalisman: C_DOTA_Item_NullTalisman;
 
 interface CDOTA_Item_RiverPainter4 extends C_DOTA_Item_RiverPainter {
-	readonly type_name: string
 }
+declare var CDOTA_Item_RiverPainter4: CDOTA_Item_RiverPainter4;
 
 interface C_DOTA_Ability_Rubick_Hidden1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rubick_Hidden1: C_DOTA_Ability_Rubick_Hidden1;
 
 interface C_DOTA_Ability_NightStalker_HunterInTheNight extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_NightStalker_HunterInTheNight: C_DOTA_Ability_NightStalker_HunterInTheNight;
 
 interface C_DOTA_Ability_TemplarAssassin_Refraction_Holdout extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_TemplarAssassin_Refraction_Holdout: C_DOTA_Ability_TemplarAssassin_Refraction_Holdout;
 
 interface CDOTA_Item_Recipe_Vermillion_Robe extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Vermillion_Robe: CDOTA_Item_Recipe_Vermillion_Robe;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_5: C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Doom_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Doom_5: C_DOTA_Ability_Special_Bonus_Unique_Doom_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Jakiro_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Jakiro_2: C_DOTA_Ability_Special_Bonus_Unique_Jakiro_2;
 
 interface C_DOTA_Unit_Hero_Shadow_Demon extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Shadow_Demon: C_DOTA_Unit_Hero_Shadow_Demon;
 
 interface C_DOTA_Ability_Courier_GoToSideShop extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_GoToSideShop: C_DOTA_Ability_Courier_GoToSideShop;
 
 interface C_DOTA_Ability_Axe_CullingBlade extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Axe_CullingBlade: C_DOTA_Ability_Axe_CullingBlade;
 
 interface C_DOTA_Ability_Juggernaut_Omnislash extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Juggernaut_Omnislash: C_DOTA_Ability_Juggernaut_Omnislash;
 
 interface C_DOTA_NPC_DataDriven extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 }
+declare var C_DOTA_NPC_DataDriven: C_DOTA_NPC_DataDriven;
 
 interface CDOTA_Ability_Consumable_Hidden extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Consumable_Hidden: CDOTA_Ability_Consumable_Hidden;
 
 interface C_DOTA_Ability_PolarFurbolgUrsaWarrior_ThunderClap extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_PolarFurbolgUrsaWarrior_ThunderClap: C_DOTA_Ability_PolarFurbolgUrsaWarrior_ThunderClap;
 
 interface C_DOTA_Ability_Spawnlord_Master_Freeze extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Spawnlord_Master_Freeze: C_DOTA_Ability_Spawnlord_Master_Freeze;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Puck_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Puck_2: C_DOTA_Ability_Special_Bonus_Unique_Puck_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Queen_Of_Pain_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Queen_Of_Pain_2: C_DOTA_Ability_Special_Bonus_Unique_Queen_Of_Pain_2;
 
 interface C_DOTA_Ability_Special_Bonus_Corruption_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Corruption_3: C_DOTA_Ability_Special_Bonus_Corruption_3;
 
 interface C_ParticlePerformanceMonitor extends C_PointEntity {
-	readonly type_name: string
 	readonly m_bDisplayPerf: boolean
 	readonly m_bMeasurePerf: boolean
 }
+declare var C_ParticlePerformanceMonitor: C_ParticlePerformanceMonitor;
 
 interface C_DOTA_Item_Recipe_Necronomicon_3 extends C_DOTA_Item_Recipe_Necronomicon {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Necronomicon_3: C_DOTA_Item_Recipe_Necronomicon_3;
 
 interface C_DOTA_Item_Recipe_HandOfMidas extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_HandOfMidas: C_DOTA_Item_Recipe_HandOfMidas;
 
 interface C_DOTA_Item_Bracer extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Bracer: C_DOTA_Item_Bracer;
 
 interface C_DOTA_Ability_DarkWillow_ShadowRealm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DarkWillow_ShadowRealm: C_DOTA_Ability_DarkWillow_ShadowRealm;
 
 interface C_DOTA_Ability_Leshrac_Pulse_Nova extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Leshrac_Pulse_Nova: C_DOTA_Ability_Leshrac_Pulse_Nova;
 
 interface C_DOTA_Ability_Puck_DreamCoil extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hThinker: C_BaseEntity
 }
+declare var C_DOTA_Ability_Puck_DreamCoil: C_DOTA_Ability_Puck_DreamCoil;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dazzle_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dazzle_4: C_DOTA_Ability_Special_Bonus_Unique_Dazzle_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sniper_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sniper_2: C_DOTA_Ability_Special_Bonus_Unique_Sniper_2;
 
 interface C_InfoOverlayAccessor extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_iOverlayID: number
 }
+declare var C_InfoOverlayAccessor: C_InfoOverlayAccessor;
 
 interface C_DOTA_Unit_Hero_Lion extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_unFingerPrestigeKills: number
 }
+declare var C_DOTA_Unit_Hero_Lion: C_DOTA_Unit_Hero_Lion;
 
 interface C_DOTA_Ability_Tusk_Launch_Snowball extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Tusk_Launch_Snowball: C_DOTA_Ability_Tusk_Launch_Snowball;
 
 interface C_DOTA_Ability_LoneDruid_SpiritLink extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly duration: number
 }
+declare var C_DOTA_Ability_LoneDruid_SpiritLink: C_DOTA_Ability_LoneDruid_SpiritLink;
 
 interface C_DOTA_Ability_Lycan_Shapeshift extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lycan_Shapeshift: C_DOTA_Ability_Lycan_Shapeshift;
 
 interface C_DOTA_Ability_Viper_CorrosiveSkin extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Viper_CorrosiveSkin: C_DOTA_Ability_Viper_CorrosiveSkin;
 
 interface C_DOTA_Ability_Earthshaker_Fissure extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Earthshaker_Fissure: C_DOTA_Ability_Earthshaker_Fissure;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Abaddon_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Abaddon_4: C_DOTA_Ability_Special_Bonus_Unique_Abaddon_4;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_25: C_DOTA_Ability_Special_Bonus_Agility_25;
 
 interface C_DOTA_Ability_Special_Bonus_Haste extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Haste: C_DOTA_Ability_Special_Bonus_Haste;
 
 interface C_DOTA_Ability_Special_Bonus_Cleave_60 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cleave_60: C_DOTA_Ability_Special_Bonus_Cleave_60;
 
 interface C_DOTA_BaseNPC_Effigy_Statue extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Effigy_Statue: C_DOTA_BaseNPC_Effigy_Statue;
 
 interface C_PointClientUIDialog extends C_BaseClientUIEntity {
-	readonly type_name: string
 	readonly m_hActivator: C_BaseEntity
 	readonly m_bStartEnabled: boolean
 }
+declare var C_PointClientUIDialog: C_PointClientUIDialog;
 
 interface C_BaseDoor extends C_BaseToggle {
-	readonly type_name: string
 	readonly m_bIsUsable: boolean
 }
+declare var C_BaseDoor: C_BaseDoor;
 
 interface C_DOTA_Item_BootsOfTravel extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_nFXOrigin: number
 	readonly m_nFXDestination: number
 	readonly m_hTeleportTarget: C_BaseEntity
 	readonly m_vTeleportLoc: Vector
 	readonly m_bTeleportTargetIsBuilding: boolean
 }
+declare var C_DOTA_Item_BootsOfTravel: C_DOTA_Item_BootsOfTravel;
 
 interface CDOTA_Item_Recipe_BootsOfTravel_2 extends C_DOTA_Item_Recipe_BootsOfTravel {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_BootsOfTravel_2: CDOTA_Item_Recipe_BootsOfTravel_2;
 
 interface C_DOTA_Ability_Tusk_FrozenSigil extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Tusk_FrozenSigil: C_DOTA_Ability_Tusk_FrozenSigil;
 
 interface CDOTA_Ability_Beastmaster_PrimalRoar extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly duration: number
 	readonly slow_duration: number
 	readonly side_damage: number
@@ -17153,107 +17152,107 @@ interface CDOTA_Ability_Beastmaster_PrimalRoar extends C_DOTABaseAbility {
 	readonly damage: number
 	readonly movement_speed_duration: number
 }
+declare var CDOTA_Ability_Beastmaster_PrimalRoar: CDOTA_Ability_Beastmaster_PrimalRoar;
 
 interface C_DOTA_Ability_BigThunderLizard_Frenzy extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BigThunderLizard_Frenzy: C_DOTA_Ability_BigThunderLizard_Frenzy;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lina_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lina_4: C_DOTA_Ability_Special_Bonus_Unique_Lina_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tusk_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tusk_3: C_DOTA_Ability_Special_Bonus_Unique_Tusk_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pugna_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pugna_4: C_DOTA_Ability_Special_Bonus_Unique_Pugna_4;
 
 interface C_DOTA_Ability_Special_Bonus_Gold_Income_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Gold_Income_5: C_DOTA_Ability_Special_Bonus_Gold_Income_5;
 
 interface C_InfoLadderDismount extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_InfoLadderDismount: C_InfoLadderDismount;
 
 interface CDOTA_Ability_AbyssalUnderlord_DarkRift extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly teleport_delay: number
 	readonly m_hTeleportTarget: C_BaseEntity
 }
+declare var CDOTA_Ability_AbyssalUnderlord_DarkRift: CDOTA_Ability_AbyssalUnderlord_DarkRift;
 
 interface C_DOTA_Unit_Broodmother_Spiderling extends C_DOTA_BaseNPC_Creep_Talking {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Broodmother_Spiderling: C_DOTA_Unit_Broodmother_Spiderling;
 
 interface C_DOTA_Unit_Hero_Pugna extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Pugna: C_DOTA_Unit_Hero_Pugna;
 
 interface CDOTA_Ability_CallOfTheWild_Boar_Poison extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_CallOfTheWild_Boar_Poison: CDOTA_Ability_CallOfTheWild_Boar_Poison;
 
 interface C_DOTA_Item_BagOfGold extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_hThinker: C_BaseEntity
 }
+declare var C_DOTA_Item_BagOfGold: C_DOTA_Item_BagOfGold;
 
 interface C_DOTA_Ability_EnragedWildkin_Tornado extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hTornado: C_BaseEntity
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_EnragedWildkin_Tornado: C_DOTA_Ability_EnragedWildkin_Tornado;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Alchemist_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Alchemist_2: C_DOTA_Ability_Special_Bonus_Unique_Alchemist_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Disruptor_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Disruptor_4: C_DOTA_Ability_Special_Bonus_Unique_Disruptor_4;
 
 interface CRenderComponent extends CEntityComponent {
-	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
 	readonly m_bIsRenderingWithViewModels: boolean
 	readonly m_nSplitscreenFlags: number
 	readonly m_bEnableRendering: boolean
 	readonly m_bInterpolationReadyToDraw: boolean
 }
+declare var CRenderComponent: CRenderComponent;
 
 interface C_DOTA_Item_Recipe_Veil_Of_Discord extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Veil_Of_Discord: C_DOTA_Item_Recipe_Veil_Of_Discord;
 
 interface C_DOTA_Unit_Hero_Invoker extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Invoker: C_DOTA_Unit_Hero_Invoker;
 
 interface C_DOTA_Ability_Sven_GodsStrength extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Sven_GodsStrength: C_DOTA_Ability_Sven_GodsStrength;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit: C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Skywrath extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Skywrath: C_DOTA_Ability_Special_Bonus_Unique_Skywrath;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_2: C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_2;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_4: C_DOTA_Ability_Special_Bonus_Armor_4;
 
 interface CLightComponent extends CEntityComponent {
-	readonly type_name: string
 	readonly __m_pChainEntity: CNetworkVarChainer
 	readonly m_Color: Color
 	readonly m_flBrightness: number
@@ -17309,112 +17308,112 @@ interface CLightComponent extends CEntityComponent {
 	readonly m_SkyAmbientBounce: Color
 	readonly m_bUnlitShadows: boolean
 }
+declare var CLightComponent: CLightComponent;
 
 interface C_DOTA_Item_SacredRelic extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_SacredRelic: C_DOTA_Item_SacredRelic;
 
 interface C_DOTA_Ability_Brewmaster_HurlBoulder extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Brewmaster_HurlBoulder: C_DOTA_Ability_Brewmaster_HurlBoulder;
 
 interface CDOTA_Ability_Alchemist_UnstableConcoctionThrow extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_fCookTime: number
 	readonly m_vProjectileLoc: Vector
 }
+declare var CDOTA_Ability_Alchemist_UnstableConcoctionThrow: CDOTA_Ability_Alchemist_UnstableConcoctionThrow;
 
 interface C_DOTA_Ability_NightStalker_Darkness extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_NightStalker_Darkness: C_DOTA_Ability_NightStalker_Darkness;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_3: C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Chaos_Knight extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Chaos_Knight: C_DOTA_Ability_Special_Bonus_Unique_Chaos_Knight;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Viper_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Viper_2: C_DOTA_Ability_Special_Bonus_Unique_Viper_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet_2: C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander_4: C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander_4;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_30: C_DOTA_Ability_Special_Bonus_Agility_30;
 
 interface C_DOTA_BaseNPC_Filler extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Filler: C_DOTA_BaseNPC_Filler;
 
 interface CDOTA_Item_Recipe_Medallion_Of_Courage extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Medallion_Of_Courage: CDOTA_Item_Recipe_Medallion_Of_Courage;
 
 interface C_DOTA_Item_Urn_Of_Shadows extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Urn_Of_Shadows: C_DOTA_Item_Urn_Of_Shadows;
 
 interface C_DOTA_Item_Recipe_Dagon3 extends C_DOTA_Item_Recipe_Dagon {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Dagon3: C_DOTA_Item_Recipe_Dagon3;
 
 interface C_DOTA_Item_PowerTreads extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_iStat: number
 }
+declare var C_DOTA_Item_PowerTreads: C_DOTA_Item_PowerTreads;
 
 interface C_DOTA_Ability_Shadow_Demon_Soul_Catcher extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Shadow_Demon_Soul_Catcher: C_DOTA_Ability_Shadow_Demon_Soul_Catcher;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Weaver_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Weaver_2: C_DOTA_Ability_Special_Bonus_Unique_Weaver_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Broodmother_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Broodmother_3: C_DOTA_Ability_Special_Bonus_Unique_Broodmother_3;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_4: C_DOTA_Ability_Special_Bonus_MP_Regen_4;
 
 interface C_EnvWindClientside extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_EnvWindShared: C_CEnvWindShared
 }
+declare var C_EnvWindClientside: C_EnvWindClientside;
 
 interface C_HandleTest extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_Handle: C_BaseEntity
 	readonly m_bSendHandle: boolean
 }
+declare var C_HandleTest: C_HandleTest;
 
 interface C_DOTA_Unit_Hero_Oracle extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nFXDeath: number
 }
+declare var C_DOTA_Unit_Hero_Oracle: C_DOTA_Unit_Hero_Oracle;
 
 interface C_DOTA_Ability_Obsidian_Destroyer_ArcaneOrb extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Obsidian_Destroyer_ArcaneOrb: C_DOTA_Ability_Obsidian_Destroyer_ArcaneOrb;
 
 interface C_DOTA_Ability_Lich_DarkSorcery extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lich_DarkSorcery: C_DOTA_Ability_Lich_DarkSorcery;
 
 interface C_DOTAWearableItem extends C_EconWearable {
-	readonly type_name: string
 	readonly m_hAdditionalWearable: C_BaseEntity
 	readonly m_bOwnerModelChanged: boolean
 	readonly m_bIsGeneratingEconItem: boolean
@@ -17426,37 +17425,37 @@ interface C_DOTAWearableItem extends C_EconWearable {
 	readonly m_bCombinerMaterialOverrideListChanged: boolean
 	readonly m_bRubickFollower: boolean
 }
+declare var C_DOTAWearableItem: C_DOTAWearableItem;
 
 interface C_DOTA_Ability_Slithereen_Riptide extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Slithereen_Riptide: C_DOTA_Ability_Slithereen_Riptide;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Rubick_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Rubick_2: C_DOTA_Ability_Special_Bonus_Unique_Rubick_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Broodmother_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Broodmother_1: C_DOTA_Ability_Special_Bonus_Unique_Broodmother_1;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Range_400 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Range_400: C_DOTA_Ability_Special_Bonus_Attack_Range_400;
 
 interface C_DOTA_Ability_Special_Bonus_Night_Vision_500 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Night_Vision_500: C_DOTA_Ability_Special_Bonus_Night_Vision_500;
 
 interface C_DOTA_Ability_Special_Bonus_MP_175 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_175: C_DOTA_Ability_Special_Bonus_MP_175;
 
 interface C_DOTA_Item_Mantle extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Mantle: C_DOTA_Item_Mantle;
 
 interface C_DOTA_Ability_Skywrath_Mage_Concussive_Shot extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly speed: number
 	readonly slow_radius: number
 	readonly damage: number
@@ -17464,169 +17463,169 @@ interface C_DOTA_Ability_Skywrath_Mage_Concussive_Shot extends C_DOTABaseAbility
 	readonly slow_duration: number
 	readonly vision_duration: number
 }
+declare var C_DOTA_Ability_Skywrath_Mage_Concussive_Shot: C_DOTA_Ability_Skywrath_Mage_Concussive_Shot;
 
 interface C_DOTA_Ability_Spectre_Dispersion extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Spectre_Dispersion: C_DOTA_Ability_Spectre_Dispersion;
 
 interface C_DOTA_Unit_Hero_Beastmaster extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Beastmaster: C_DOTA_Unit_Hero_Beastmaster;
 
 interface C_DOTA_Ability_Enigma_Malefice extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Enigma_Malefice: C_DOTA_Ability_Enigma_Malefice;
 
 interface C_DOTA_Unit_Hero_Lich extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Lich: C_DOTA_Unit_Hero_Lich;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_7: C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_7;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_2: C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_2;
 
 interface C_PointClientUIWorldTextPanel extends C_PointClientUIWorldPanel {
-	readonly type_name: string
 }
+declare var C_PointClientUIWorldTextPanel: C_PointClientUIWorldTextPanel;
 
 interface C_DOTA_Ability_Invoker_ColdSnap extends CDOTA_Ability_Invoker_InvokedBase {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_ColdSnap: C_DOTA_Ability_Invoker_ColdSnap;
 
 interface C_DOTA_Unit_Hero_Luna extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Luna: C_DOTA_Unit_Hero_Luna;
 
 interface C_DOTA_Ability_PhantomAssassin_PhantomStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_PhantomAssassin_PhantomStrike: C_DOTA_Ability_PhantomAssassin_PhantomStrike;
 
 interface C_DOTA_Ability_Pugna_NetherBlast extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Pugna_NetherBlast: C_DOTA_Ability_Pugna_NetherBlast;
 
 interface C_DOTA_Unit_Hero_Slardar extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Slardar: C_DOTA_Unit_Hero_Slardar;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Kunkka_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Kunkka_2: C_DOTA_Ability_Special_Bonus_Unique_Kunkka_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lycan_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lycan_4: C_DOTA_Ability_Special_Bonus_Unique_Lycan_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Chaos_Knight_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Chaos_Knight_3: C_DOTA_Ability_Special_Bonus_Unique_Chaos_Knight_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Disruptor_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Disruptor_3: C_DOTA_Ability_Special_Bonus_Unique_Disruptor_3;
 
 interface C_DOTA_Ability_Special_Bonus_Exp_Boost_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Exp_Boost_15: C_DOTA_Ability_Special_Bonus_Exp_Boost_15;
 
 interface C_DOTA_Ability_Special_Bonus_Evasion_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Evasion_12: C_DOTA_Ability_Special_Bonus_Evasion_12;
 
 interface C_DOTA_Ability_Special_Bonus_Gold_Income_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Gold_Income_30: C_DOTA_Ability_Special_Bonus_Gold_Income_30;
 
 interface CDOTA_Item_Ward_Dispenser extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Ward_Dispenser: CDOTA_Item_Ward_Dispenser;
 
 interface C_DOTA_Ability_Bear_Empty2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Bear_Empty2: C_DOTA_Ability_Bear_Empty2;
 
 interface C_DOTA_Ability_Warlock_Fatal_Bonds extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Warlock_Fatal_Bonds: C_DOTA_Ability_Warlock_Fatal_Bonds;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_4: C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Rubick extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Rubick: C_DOTA_Ability_Special_Bonus_Unique_Rubick;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Venomancer_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Venomancer_6: C_DOTA_Ability_Special_Bonus_Unique_Venomancer_6;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tusk_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tusk_2: C_DOTA_Ability_Special_Bonus_Unique_Tusk_2;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_8: C_DOTA_Ability_Special_Bonus_Armor_8;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_70 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_70: C_DOTA_Ability_Special_Bonus_Attack_Speed_70;
 
 interface CAmbientCreatures extends C_DOTAWorldParticleSystem {
-	readonly type_name: string
 	readonly m_szAnimationName: string
 }
+declare var CAmbientCreatures: CAmbientCreatures;
 
 interface C_DynamicPropClientside extends C_DynamicProp {
-	readonly type_name: string
 	readonly m_bSetupMaterialProxy: boolean
 	readonly m_bNoInterpolate: boolean
 }
+declare var C_DynamicPropClientside: C_DynamicPropClientside;
 
 interface C_DOTA_Item_ChainMail extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_ChainMail: C_DOTA_Item_ChainMail;
 
 interface C_DOTA_Ability_Meepo_Earthbind extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_Meepo_Earthbind: C_DOTA_Ability_Meepo_Earthbind;
 
 interface C_DOTA_Ability_Brewmaster_SpellImmunity extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Brewmaster_SpellImmunity: C_DOTA_Ability_Brewmaster_SpellImmunity;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Clockwerk extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Clockwerk: C_DOTA_Ability_Special_Bonus_Unique_Clockwerk;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Enchantress_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Enchantress_5: C_DOTA_Ability_Special_Bonus_Unique_Enchantress_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tidehunter extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tidehunter: C_DOTA_Ability_Special_Bonus_Unique_Tidehunter;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_5: C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_5;
 
 interface C_DOTA_Item_Mjollnir extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Mjollnir: C_DOTA_Item_Mjollnir;
 
 interface CDOTA_Ability_Alchemist_GoblinsGreed extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Alchemist_GoblinsGreed: CDOTA_Ability_Alchemist_GoblinsGreed;
 
 interface C_DOTA_Ability_Dazzle_ShadowWave extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iCurJumpCount: number
 	readonly m_vCurTargetLoc: Vector
 	readonly m_hHitEntities: C_BaseEntity[]
@@ -17635,13 +17634,13 @@ interface C_DOTA_Ability_Dazzle_ShadowWave extends C_DOTABaseAbility {
 	readonly damage: number
 	readonly max_targets: number
 }
+declare var C_DOTA_Ability_Dazzle_ShadowWave: C_DOTA_Ability_Dazzle_ShadowWave;
 
 interface C_DOTA_Ability_Warlock_Shadow_Word extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Warlock_Shadow_Word: C_DOTA_Ability_Warlock_Shadow_Word;
 
 interface CDOTA_Ability_Tusk_SnowballMeteor extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly area_of_effect: number
 	readonly damage_interval: number
 	readonly vision_distance: number
@@ -17650,311 +17649,311 @@ interface CDOTA_Ability_Tusk_SnowballMeteor extends C_DOTABaseAbility {
 	readonly burn_duration: number
 	readonly burn_dps: number
 }
+declare var CDOTA_Ability_Tusk_SnowballMeteor: CDOTA_Ability_Tusk_SnowballMeteor;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Centaur_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Centaur_2: C_DOTA_Ability_Special_Bonus_Unique_Centaur_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Silencer extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Silencer: C_DOTA_Ability_Special_Bonus_Unique_Silencer;
 
 interface C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_20: C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_20;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_12: C_DOTA_Ability_Special_Bonus_HP_Regen_12;
 
 interface C_DOTA_Item_Ring_Of_Basilius extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Ring_Of_Basilius: C_DOTA_Item_Ring_Of_Basilius;
 
 interface CDOTA_Ability_AbyssalUnderlord_AtrophyAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_AbyssalUnderlord_AtrophyAura: CDOTA_Ability_AbyssalUnderlord_AtrophyAura;
 
 interface C_DOTA_Ability_EarthSpirit_GeomagneticGrip extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hTarget: C_BaseEntity
 }
+declare var C_DOTA_Ability_EarthSpirit_GeomagneticGrip: C_DOTA_Ability_EarthSpirit_GeomagneticGrip;
 
 interface C_DOTA_Ability_Leshrac_Lightning_Storm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Leshrac_Lightning_Storm: C_DOTA_Ability_Leshrac_Lightning_Storm;
 
 interface C_DOTA_Ability_Venomancer_PoisonSting extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly radius: number
 }
+declare var C_DOTA_Ability_Venomancer_PoisonSting: C_DOTA_Ability_Venomancer_PoisonSting;
 
 interface C_DOTA_Item_Nian_Flag_Trap extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Nian_Flag_Trap: C_DOTA_Item_Nian_Flag_Trap;
 
 interface C_DOTA_Ability_Frostivus2018_Clinkz_WindWalk extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Clinkz_WindWalk: C_DOTA_Ability_Frostivus2018_Clinkz_WindWalk;
 
 interface C_DOTA_BaseNPC_Seasonal_Snowman extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Seasonal_Snowman: C_DOTA_BaseNPC_Seasonal_Snowman;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Alchemist_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Alchemist_5: C_DOTA_Ability_Special_Bonus_Unique_Alchemist_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_1: C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_8: C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_8;
 
 interface C_DOTA_Ability_Special_Bonus_Mana_Break_35 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Mana_Break_35: C_DOTA_Ability_Special_Bonus_Mana_Break_35;
 
 interface C_DOTA_Item_Mekansm extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Mekansm: C_DOTA_Item_Mekansm;
 
 interface C_DOTA_Item_Recipe_LesserCritical extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_LesserCritical: C_DOTA_Item_Recipe_LesserCritical;
 
 interface C_DOTA_Ability_Rubick_Empty1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rubick_Empty1: C_DOTA_Ability_Rubick_Empty1;
 
 interface C_DOTA_Ability_Enchantress_NaturesAttendants extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Enchantress_NaturesAttendants: C_DOTA_Ability_Enchantress_NaturesAttendants;
 
 interface C_DOTA_Ability_Animation_RightClawSwipe extends C_DOTA_Ability_Animation_Attack {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Animation_RightClawSwipe: C_DOTA_Ability_Animation_RightClawSwipe;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_3: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ursa_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ursa_5: C_DOTA_Ability_Special_Bonus_Unique_Ursa_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Spectre_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Spectre_5: C_DOTA_Ability_Special_Bonus_Unique_Spectre_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Slark_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Slark_4: C_DOTA_Ability_Special_Bonus_Unique_Slark_4;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_10: C_DOTA_Ability_Special_Bonus_Magic_Resistance_10;
 
 interface C_DOTA_Item_PoorMansShield extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_PoorMansShield: C_DOTA_Item_PoorMansShield;
 
 interface C_DOTA_Ability_EmberSpirit_SearingChains extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_EmberSpirit_SearingChains: C_DOTA_Ability_EmberSpirit_SearingChains;
 
 interface C_DOTA_Ability_Rubick_SpellSteal extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_fStolenCastPoint: number
 	readonly m_hStealTarget: C_BaseEntity
 	readonly m_hStealAbility: C_BaseEntity
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_Rubick_SpellSteal: C_DOTA_Ability_Rubick_SpellSteal;
 
 interface C_DOTA_Unit_Broodmother_Web extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 	readonly m_vecOrigin: Vector
 }
+declare var C_DOTA_Unit_Broodmother_Web: C_DOTA_Unit_Broodmother_Web;
 
 interface C_DOTA_Ability_Life_Stealer_Consume extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Life_Stealer_Consume: C_DOTA_Ability_Life_Stealer_Consume;
 
 interface C_DOTA_Ability_Slardar_Bash extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Slardar_Bash: C_DOTA_Ability_Slardar_Bash;
 
 interface C_DOTA_Unit_Hero_PhantomLancer extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_PhantomLancer: C_DOTA_Unit_Hero_PhantomLancer;
 
 interface C_DOTA_Ability_SkeletonKing_MortalStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SkeletonKing_MortalStrike: C_DOTA_Ability_SkeletonKing_MortalStrike;
 
 interface CDOTA_Ability_AncientApparition_IceVortex extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly vision_aoe: number
 }
+declare var CDOTA_Ability_AncientApparition_IceVortex: CDOTA_Ability_AncientApparition_IceVortex;
 
 interface C_DOTA_Item_Arcane_Boots extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Arcane_Boots: C_DOTA_Item_Arcane_Boots;
 
 interface C_DOTA_Ability_Wisp_Tether extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly m_hTarget: C_BaseEntity
 	readonly m_vProjectileLocation: Vector
 	readonly m_bProjectileActive: boolean
 	readonly latch_distance: number
 	readonly m_iProjectileIndex: number
 }
+declare var C_DOTA_Ability_Wisp_Tether: C_DOTA_Ability_Wisp_Tether;
 
 interface C_DOTA_Ability_Enigma_MidnightPulse extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Enigma_MidnightPulse: C_DOTA_Ability_Enigma_MidnightPulse;
 
 interface C_DOTA_Ability_Sven_Warcry extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Sven_Warcry: C_DOTA_Ability_Sven_Warcry;
 
 interface C_DOTAFogOfWarTempViewers extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_FoWTempViewerVersion: number
 	readonly m_dota_spectator_fog_of_war_last: number
 }
+declare var C_DOTAFogOfWarTempViewers: C_DOTAFogOfWarTempViewers;
 
 interface CDOTA_Ability_Spawnlord_Master_Stomp extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Spawnlord_Master_Stomp: CDOTA_Ability_Spawnlord_Master_Stomp;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_4: C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_4;
 
 interface C_DOTA_Ability_Special_Bonus_Evasion_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Evasion_15: C_DOTA_Ability_Special_Bonus_Evasion_15;
 
 interface C_DOTA_Ability_Special_Bonus_Respawn_Reduction_45 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Respawn_Reduction_45: C_DOTA_Ability_Special_Bonus_Respawn_Reduction_45;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_6: C_DOTA_Ability_Special_Bonus_Armor_6;
 
 interface CDOTA_Item_Recipe_Silver_Edge extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Silver_Edge: CDOTA_Item_Recipe_Silver_Edge;
 
 interface C_DOTA_Item_Skadi extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Skadi: C_DOTA_Item_Skadi;
 
 interface C_DOTA_Item_Dagon extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Dagon: C_DOTA_Item_Dagon;
 
 interface C_DOTA_Item_GhostScepter extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_GhostScepter: C_DOTA_Item_GhostScepter;
 
 interface C_DOTA_Unit_Hero_Phoenix extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Phoenix: C_DOTA_Unit_Hero_Phoenix;
 
 interface C_DOTA_Ability_Tidehunter_Gush extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly gush_damage: number
 }
+declare var C_DOTA_Ability_Tidehunter_Gush: C_DOTA_Ability_Tidehunter_Gush;
 
 interface C_DotaQuestBase extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_DotaQuestBase: C_DotaQuestBase;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Leshrac_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Leshrac_2: C_DOTA_Ability_Special_Bonus_Unique_Leshrac_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sand_King_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sand_King_2: C_DOTA_Ability_Special_Bonus_Unique_Sand_King_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_3: C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_3;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_15: C_DOTA_Ability_Special_Bonus_HP_Regen_15;
 
 interface C_DOTA_Ability_Disruptor_StaticStorm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Disruptor_StaticStorm: C_DOTA_Ability_Disruptor_StaticStorm;
 
 interface C_DOTA_Ability_Jakiro_DualBreath extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Jakiro_DualBreath: C_DOTA_Ability_Jakiro_DualBreath;
 
 interface C_DOTA_Ability_Omniknight_GuardianAngel extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Omniknight_GuardianAngel: C_DOTA_Ability_Omniknight_GuardianAngel;
 
 interface C_DOTA_Ability_DarkSeer_Vacuum extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vPullLocation: Vector
 }
+declare var C_DOTA_Ability_DarkSeer_Vacuum: C_DOTA_Ability_DarkSeer_Vacuum;
 
 interface C_DOTA_Ability_FacelessVoid_Backtrack extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_FacelessVoid_Backtrack: C_DOTA_Ability_FacelessVoid_Backtrack;
 
 interface C_DOTA_Ability_Roshan_Bash extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Roshan_Bash: C_DOTA_Ability_Roshan_Bash;
 
 interface C_DOTA_Unit_Hero_Enigma extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Enigma: C_DOTA_Unit_Hero_Enigma;
 
 interface C_DOTA_Ability_Lich_FrostNova extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lich_FrostNova: C_DOTA_Ability_Lich_FrostNova;
 
 interface C_DOTA_Ability_Holdout_CullingBlade extends C_DOTA_Ability_Axe_CullingBlade {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Holdout_CullingBlade: C_DOTA_Ability_Holdout_CullingBlade;
 
 interface CDOTA_Ability_AncientApparition_ChillingTouch extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_AncientApparition_ChillingTouch: CDOTA_Ability_AncientApparition_ChillingTouch;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_2: C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_2: C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_2;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Range_75 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Range_75: C_DOTA_Ability_Special_Bonus_Attack_Range_75;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_25: C_DOTA_Ability_Special_Bonus_Strength_25;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_1: C_DOTA_Ability_Special_Bonus_MP_Regen_1;
 
 interface C_Sun extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_Overlay: C_SunGlowOverlay
 	readonly m_GlowOverlay: C_SunGlowOverlay
 	readonly m_vDirection: Vector
@@ -17964,37 +17963,37 @@ interface C_Sun extends C_BaseModelEntity {
 	readonly m_nOverlaySize: number
 	readonly m_flHDRColorScale: number
 }
+declare var C_Sun: C_Sun;
 
 interface C_FuncOccluder extends C_BaseModelEntity {
-	readonly type_name: string
 }
+declare var C_FuncOccluder: C_FuncOccluder;
 
 interface CDOTA_Item_Recipe_Iron_Talon extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Iron_Talon: CDOTA_Item_Recipe_Iron_Talon;
 
 interface CDOTA_Ability_Special_Bonus_Unique_Grimstroke_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Special_Bonus_Unique_Grimstroke_1: CDOTA_Ability_Special_Bonus_Unique_Grimstroke_1;
 
 interface C_DOTA_Ability_Bristleback_QuillSpray extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Bristleback_QuillSpray: C_DOTA_Ability_Bristleback_QuillSpray;
 
 interface C_DOTA_Ability_Slark_Pounce extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Slark_Pounce: C_DOTA_Ability_Slark_Pounce;
 
 interface C_DOTA_Ability_Disruptor_Glimpse extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Disruptor_Glimpse: C_DOTA_Ability_Disruptor_Glimpse;
 
 interface C_DOTA_Ability_Zuus_ArcLightning extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Zuus_ArcLightning: C_DOTA_Ability_Zuus_ArcLightning;
 
 interface C_DOTA_Ability_StormSpirit_BallLightning extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly m_bHasAutoRemnantTalent: boolean
 	readonly m_fAutoRemnantInterval: number
 	readonly ball_lightning_initial_mana_base: number
@@ -18008,67 +18007,67 @@ interface C_DOTA_Ability_StormSpirit_BallLightning extends C_DOTABaseAbility, C_
 	readonly m_fTalentDistanceAccumulator: number
 	readonly scepter_remnant_interval: number
 }
+declare var C_DOTA_Ability_StormSpirit_BallLightning: C_DOTA_Ability_StormSpirit_BallLightning;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Red_Overpower extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Red_Overpower: C_DOTA_Ability_Greevil_Miniboss_Red_Overpower;
 
 interface C_DOTA_Ability_Ghost_FrostAttack extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Ghost_FrostAttack: C_DOTA_Ability_Ghost_FrostAttack;
 
 interface C_DOTA_Ability_CentaurKhan_WarStomp extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_CentaurKhan_WarStomp: C_DOTA_Ability_CentaurKhan_WarStomp;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Invoker_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Invoker_8: C_DOTA_Ability_Special_Bonus_Unique_Invoker_8;
 
 interface C_Gib extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_flTouchDelta: number
 }
+declare var C_Gib: C_Gib;
 
 interface C_DOTA_Ability_DoomBringer_InfernalBlade extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DoomBringer_InfernalBlade: C_DOTA_Ability_DoomBringer_InfernalBlade;
 
 interface C_DOTA_Ability_Spectre_Reality extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Spectre_Reality: C_DOTA_Ability_Spectre_Reality;
 
 interface C_DOTA_Unit_Hero_VengefulSpirit extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_VengefulSpirit: C_DOTA_Unit_Hero_VengefulSpirit;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Black_BrainSap extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Black_BrainSap: C_DOTA_Ability_Greevil_Miniboss_Black_BrainSap;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Huskar_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Huskar_3: C_DOTA_Ability_Special_Bonus_Unique_Huskar_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Kunkka_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Kunkka_3: C_DOTA_Ability_Special_Bonus_Unique_Kunkka_3;
 
 interface C_PrecipitationBlocker extends C_BaseModelEntity {
-	readonly type_name: string
 }
+declare var C_PrecipitationBlocker: C_PrecipitationBlocker;
 
 interface C_PropHMDAvatar extends C_PropVRTrackedObject {
-	readonly type_name: string
 	readonly m_hLiteralControllerSlots: number[]
 	readonly m_hLogicalControllerSlots: number[]
 	readonly m_hVRControllers: C_BaseEntity[]
 	readonly m_hCloseCaption: C_BaseEntity
 	readonly m_bLocalHMDPoseValid: boolean
 }
+declare var C_PropHMDAvatar: C_PropHMDAvatar;
 
 interface C_ColorCorrectionVolume extends C_BaseTrigger {
-	readonly type_name: string
 	readonly m_LastEnterWeight: number
 	readonly m_LastEnterTime: number
 	readonly m_LastExitWeight: number
@@ -18078,172 +18077,172 @@ interface C_ColorCorrectionVolume extends C_BaseTrigger {
 	readonly m_FadeDuration: number
 	readonly m_Weight: number
 }
+declare var C_ColorCorrectionVolume: C_ColorCorrectionVolume;
 
 interface C_DOTA_Ability_Courier_GoToSecretShop extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_GoToSecretShop: C_DOTA_Ability_Courier_GoToSecretShop;
 
 interface C_DOTA_Ability_Lina_DragonSlave extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly dragon_slave_distance: number
 }
+declare var C_DOTA_Ability_Lina_DragonSlave: C_DOTA_Ability_Lina_DragonSlave;
 
 interface C_DOTA_Ability_Razor_UnstableCurrent extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Razor_UnstableCurrent: C_DOTA_Ability_Razor_UnstableCurrent;
 
 interface C_DOTA_Ability_Frostivus2018_Magnataur_Skewer extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly skewer_radius: number
 	readonly skewer_speed: number
 	readonly range: number
 	readonly tree_radius: number
 	readonly m_nTargetsHit: number
 }
+declare var C_DOTA_Ability_Frostivus2018_Magnataur_Skewer: C_DOTA_Ability_Frostivus2018_Magnataur_Skewer;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Mirana_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Mirana_3: C_DOTA_Ability_Special_Bonus_Unique_Mirana_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Chaos_Knight_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Chaos_Knight_2: C_DOTA_Ability_Special_Bonus_Unique_Chaos_Knight_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_2: C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_2;
 
 interface C_DOTA_Item_Vladmir extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Vladmir: C_DOTA_Item_Vladmir;
 
 interface C_DOTA_Item_MithrilHammer extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_MithrilHammer: C_DOTA_Item_MithrilHammer;
 
 interface C_DOTA_Ability_Batrider_StickyNapalm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Batrider_StickyNapalm: C_DOTA_Ability_Batrider_StickyNapalm;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi: C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi;
 
 interface CDOTA_Ability_Special_Bonus_Attack_Base_Damage_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Special_Bonus_Attack_Base_Damage_30: CDOTA_Ability_Special_Bonus_Attack_Base_Damage_30;
 
 interface C_DOTA_Ability_Special_Bonus_HP_400 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_400: C_DOTA_Ability_Special_Bonus_HP_400;
 
 interface CDOTA_Item_BootsOfTravel_2 extends C_DOTA_Item_BootsOfTravel {
-	readonly type_name: string
 }
+declare var CDOTA_Item_BootsOfTravel_2: CDOTA_Item_BootsOfTravel_2;
 
 interface C_DOTA_Ability_BountyHunter_Jinada extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BountyHunter_Jinada: C_DOTA_Ability_BountyHunter_Jinada;
 
 interface C_DOTA_Ability_Pugna_LifeDrain extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hTarget: C_BaseEntity
 }
+declare var C_DOTA_Ability_Pugna_LifeDrain: C_DOTA_Ability_Pugna_LifeDrain;
 
 interface C_DOTA_Ability_Frostivus2018_Festive_Firework extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Festive_Firework: C_DOTA_Ability_Frostivus2018_Festive_Firework;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Skywrath_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Skywrath_5: C_DOTA_Ability_Special_Bonus_Unique_Skywrath_5;
 
 interface C_InfoPlayerStartGoodGuys extends C_InfoPlayerStartDota {
-	readonly type_name: string
 }
+declare var C_InfoPlayerStartGoodGuys: C_InfoPlayerStartGoodGuys;
 
 interface CDOTA_Unit_Hero_Centaur extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_Hero_Centaur: CDOTA_Unit_Hero_Centaur;
 
 interface C_DOTA_Ability_Wisp_Relocate extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndexEndTeam: number
 	readonly m_nFXIndexChannel: number
 	readonly cast_delay: number
 	readonly return_time: number
 }
+declare var C_DOTA_Ability_Wisp_Relocate: C_DOTA_Ability_Wisp_Relocate;
 
 interface C_DOTA_Ability_Roshan_SpellBlock extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Roshan_SpellBlock: C_DOTA_Ability_Roshan_SpellBlock;
 
 interface C_DOTA_Ability_Throw_Coal extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Throw_Coal: C_DOTA_Ability_Throw_Coal;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Mirana_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Mirana_2: C_DOTA_Ability_Special_Bonus_Unique_Mirana_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tiny_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tiny_5: C_DOTA_Ability_Special_Bonus_Unique_Tiny_5;
 
 interface C_DOTA_Ability_Special_Bonus_Gold_Income_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Gold_Income_15: C_DOTA_Ability_Special_Bonus_Gold_Income_15;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_15: C_DOTA_Ability_Special_Bonus_Attack_Damage_15;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_20: C_DOTA_Ability_Special_Bonus_Agility_20;
 
 interface C_DOTA_Ability_Special_Bonus_HP_200 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_200: C_DOTA_Ability_Special_Bonus_HP_200;
 
 interface C_DOTA_Ability_Special_Bonus_Undefined extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Undefined: C_DOTA_Ability_Special_Bonus_Undefined;
 
 interface C_DOTATurboGameMode extends C_DOTABaseGameMode {
-	readonly type_name: string
 }
+declare var C_DOTATurboGameMode: C_DOTATurboGameMode;
 
 interface C_DotaSubquestBuyItems extends C_DotaSubquestBase {
-	readonly type_name: string
 }
+declare var C_DotaSubquestBuyItems: C_DotaSubquestBuyItems;
 
 interface C_DOTA_Ability_Frostivus2018_Decorate_Tree extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Decorate_Tree: C_DOTA_Ability_Frostivus2018_Decorate_Tree;
 
 interface C_DOTA_Ability_Seasonal_Throw_Snowball extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Seasonal_Throw_Snowball: C_DOTA_Ability_Seasonal_Throw_Snowball;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Nevermore_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Nevermore_5: C_DOTA_Ability_Special_Bonus_Unique_Nevermore_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_4: C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Silencer_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Silencer_4: C_DOTA_Ability_Special_Bonus_Unique_Silencer_4;
 
 interface C_DOTA_Ability_Special_Bonus_Mana_Break_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Mana_Break_20: C_DOTA_Ability_Special_Bonus_Mana_Break_20;
 
 interface CDOTA_VR_BodyPart extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_nBodyPart: number
 	readonly m_unAccountID: number
 	readonly m_nHatID: number
@@ -18251,32 +18250,32 @@ interface CDOTA_VR_BodyPart extends C_BaseAnimating {
 	readonly m_nAvatarMap: number
 	readonly m_flLastThinkTime: number
 }
+declare var CDOTA_VR_BodyPart: CDOTA_VR_BodyPart;
 
 interface CDOTA_Item_Lotus_Orb extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Lotus_Orb: CDOTA_Item_Lotus_Orb;
 
 interface C_DOTA_Ability_Rubick_TelekinesisLand extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rubick_TelekinesisLand: C_DOTA_Ability_Rubick_TelekinesisLand;
 
 interface C_DOTA_Unit_Hero_Brewmaster extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Brewmaster: C_DOTA_Unit_Hero_Brewmaster;
 
 interface C_DOTA_Ability_SpiritBreaker_ChargeOfDarkness extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly m_vChargeStartPos: Vector
 }
+declare var C_DOTA_Ability_SpiritBreaker_ChargeOfDarkness: C_DOTA_Ability_SpiritBreaker_ChargeOfDarkness;
 
 interface C_DOTA_BaseNPC_Venomancer_PlagueWard extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_angle: QAngle
 	readonly m_iPoseParameterAim: number
 }
+declare var C_DOTA_BaseNPC_Venomancer_PlagueWard: C_DOTA_BaseNPC_Venomancer_PlagueWard;
 
 interface C_DOTA_Ability_Creature_Fire_Breath extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly speed: number
 	readonly projectile_count: number
 	readonly rotation_angle: number
@@ -18286,107 +18285,107 @@ interface C_DOTA_Ability_Creature_Fire_Breath extends C_DOTABaseAbility {
 	readonly m_vecStartRot: Vector
 	readonly m_vecEndRot: Vector
 }
+declare var C_DOTA_Ability_Creature_Fire_Breath: C_DOTA_Ability_Creature_Fire_Breath;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Spectre_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Spectre_4: C_DOTA_Ability_Special_Bonus_Unique_Spectre_4;
 
 interface C_DOTA_BaseNPC_HallofFame extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 	readonly m_HallofFame: number
 }
+declare var C_DOTA_BaseNPC_HallofFame: C_DOTA_BaseNPC_HallofFame;
 
 interface C_DOTA_BaseNPC_Effigy_BattleCup extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Effigy_BattleCup: C_DOTA_BaseNPC_Effigy_BattleCup;
 
 interface C_DOTA_Item_Kaya extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Kaya: C_DOTA_Item_Kaya;
 
 interface CDOTA_Item_Recipe_GlimmerCape extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_GlimmerCape: CDOTA_Item_Recipe_GlimmerCape;
 
 interface C_DOTA_Item_Recipe_HeavensHalberd extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_HeavensHalberd: C_DOTA_Item_Recipe_HeavensHalberd;
 
 interface C_DOTA_Item_OblivionStaff extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_OblivionStaff: C_DOTA_Item_OblivionStaff;
 
 interface C_DOTA_Item_IronwoodBranch extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_IronwoodBranch: C_DOTA_Item_IronwoodBranch;
 
 interface C_DOTA_Ability_Brewmaster_ThunderClap extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Brewmaster_ThunderClap: C_DOTA_Ability_Brewmaster_ThunderClap;
 
 interface CDOTA_Ability_Life_Stealer_Empty2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Life_Stealer_Empty2: CDOTA_Ability_Life_Stealer_Empty2;
 
 interface C_DOTA_Ability_Juggernaut_BladeDance extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Juggernaut_BladeDance: C_DOTA_Ability_Juggernaut_BladeDance;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Viper_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Viper_4: C_DOTA_Ability_Special_Bonus_Unique_Viper_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_4: C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_4;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Range_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Range_50: C_DOTA_Ability_Special_Bonus_Attack_Range_50;
 
 interface C_DOTA_Item_Recipe_Urn_Of_Shadows extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Urn_Of_Shadows: C_DOTA_Item_Recipe_Urn_Of_Shadows;
 
 interface C_DOTA_Item_AbyssalBlade extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_AbyssalBlade: C_DOTA_Item_AbyssalBlade;
 
 interface C_DOTA_Ability_EmberSpirit_FireRemnant extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly max_charges: number
 }
+declare var C_DOTA_Ability_EmberSpirit_FireRemnant: C_DOTA_Ability_EmberSpirit_FireRemnant;
 
 interface C_DOTA_Ability_Disruptor_Thunder_Strike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Disruptor_Thunder_Strike: C_DOTA_Ability_Disruptor_Thunder_Strike;
 
 interface CDOTA_Ability_Broodmother_SpinWeb_Destroy extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Broodmother_SpinWeb_Destroy: CDOTA_Ability_Broodmother_SpinWeb_Destroy;
 
 interface C_DOTA_Ability_Furion_Sprout extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Furion_Sprout: C_DOTA_Ability_Furion_Sprout;
 
 interface C_DOTA_Ability_Nian_Frenzy extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nian_Frenzy: C_DOTA_Ability_Nian_Frenzy;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_3: C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_3;
 
 interface C_DOTA_Ability_Special_Bonus_Evasion_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Evasion_20: C_DOTA_Ability_Special_Bonus_Evasion_20;
 
 interface C_DOTA_Ability_Special_Bonus_Respawn_Reduction_35 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Respawn_Reduction_35: C_DOTA_Ability_Special_Bonus_Respawn_Reduction_35;
 
 interface C_Func_Dust extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_Color: Color
 	readonly m_SpawnRate: number
 	readonly m_SpeedMax: number
@@ -18398,18 +18397,18 @@ interface C_Func_Dust extends C_BaseModelEntity {
 	readonly m_FallSpeed: number
 	readonly m_DustFlags: number
 }
+declare var C_Func_Dust: C_Func_Dust;
 
 interface C_DOTA_Ability_Phoenix_IcarusDive extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly hp_cost_perc: number
 }
+declare var C_DOTA_Ability_Phoenix_IcarusDive: C_DOTA_Ability_Phoenix_IcarusDive;
 
 interface C_DOTA_Ability_Phoenix_SunRay extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Phoenix_SunRay: C_DOTA_Ability_Phoenix_SunRay;
 
 interface C_DOTA_Ability_EarthSpirit_RollingBoulder extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly radius: number
 	readonly speed: number
 	readonly rock_speed: number
@@ -18426,55 +18425,55 @@ interface C_DOTA_Ability_EarthSpirit_RollingBoulder extends C_DOTABaseAbility, C
 	readonly m_vVel: Vector
 	readonly m_bUsedStone: boolean
 }
+declare var C_DOTA_Ability_EarthSpirit_RollingBoulder: C_DOTA_Ability_EarthSpirit_RollingBoulder;
 
 interface C_DOTA_Ability_Visage_GraveChill extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Visage_GraveChill: C_DOTA_Ability_Visage_GraveChill;
 
 interface C_DOTA_Unit_SpiritBear extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_bShouldRespawn: boolean
 	readonly m_bStolen: boolean
 }
+declare var C_DOTA_Unit_SpiritBear: C_DOTA_Unit_SpiritBear;
 
 interface C_DOTA_Unit_Hero_Lycan extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Lycan: C_DOTA_Unit_Hero_Lycan;
 
 interface C_DOTA_Ability_Riki_TricksOfTheTrade extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Riki_TricksOfTheTrade: C_DOTA_Ability_Riki_TricksOfTheTrade;
 
 interface CDOTA_Ability_MudGolem_RockDestroy extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_MudGolem_RockDestroy: CDOTA_Ability_MudGolem_RockDestroy;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Antimage_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Antimage_3: C_DOTA_Ability_Special_Bonus_Unique_Antimage_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Venomancer_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Venomancer_3: C_DOTA_Ability_Special_Bonus_Unique_Venomancer_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Luna_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Luna_5: C_DOTA_Ability_Special_Bonus_Unique_Luna_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Puck_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Puck_3: C_DOTA_Ability_Special_Bonus_Unique_Puck_3;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Amplify_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Amplify_6: C_DOTA_Ability_Special_Bonus_Spell_Amplify_6;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_15: C_DOTA_Ability_Special_Bonus_Attack_Speed_15;
 
 interface C_PropVRHand extends C_PropVRTrackedObject {
-	readonly type_name: string
 	readonly m_hActiveHandAttachment: C_BaseEntity
 	readonly m_hHMDAvatar: C_BaseEntity
 	readonly m_bVrSkeletonActive: boolean
@@ -18511,183 +18510,183 @@ interface C_PropVRHand extends C_PropVRTrackedObject {
 	readonly m_nAttachHoldIndex: number
 	readonly m_LiteralHandType: number
 }
+declare var C_PropVRHand: C_PropVRHand;
 
 interface CDOTA_Ability_Pudge_MeatHook extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly m_nConsecutiveHits: number
 }
+declare var CDOTA_Ability_Pudge_MeatHook: CDOTA_Ability_Pudge_MeatHook;
 
 interface C_DOTA_Ability_Special_Bonus_Exp_Boost_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Exp_Boost_25: C_DOTA_Ability_Special_Bonus_Exp_Boost_25;
 
 interface C_DOTA_Item_Recipe_Soul_Ring extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Soul_Ring: C_DOTA_Item_Recipe_Soul_Ring;
 
 interface C_DOTA_Unit_Earth_Spirit_Stone extends C_DOTA_BaseNPC {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Earth_Spirit_Stone: C_DOTA_Unit_Earth_Spirit_Stone;
 
 interface C_DOTA_Ability_Lycan_SummonWolves extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly wolf_index: number
 	readonly wolf_duration: number
 	readonly m_hExistingUnits: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Lycan_SummonWolves: C_DOTA_Ability_Lycan_SummonWolves;
 
 interface C_DOTA_Ability_Tinker_Rearm extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vProjectileLocation: Vector
 }
+declare var C_DOTA_Ability_Tinker_Rearm: C_DOTA_Ability_Tinker_Rearm;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Venomancer_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Venomancer_2: C_DOTA_Ability_Special_Bonus_Unique_Venomancer_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bane_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bane_1: C_DOTA_Ability_Special_Bonus_Unique_Bane_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Magnus_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Magnus_3: C_DOTA_Ability_Special_Bonus_Unique_Magnus_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_10: C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_10;
 
 interface C_DOTA_Ability_Special_Bonus_Gold_Income_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Gold_Income_50: C_DOTA_Ability_Special_Bonus_Gold_Income_50;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_175 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_175: C_DOTA_Ability_Special_Bonus_Cast_Range_175;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_55 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_55: C_DOTA_Ability_Special_Bonus_Attack_Damage_55;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_2: C_DOTA_Ability_Special_Bonus_MP_Regen_2;
 
 interface C_DOTA_Ability_Special_Bonus_MP_225 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_225: C_DOTA_Ability_Special_Bonus_MP_225;
 
 interface C_DOTA_Unit_Hero_Beastmaster_Beasts extends C_DOTA_BaseNPC_Creep_Talking {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Beastmaster_Beasts: C_DOTA_Unit_Hero_Beastmaster_Beasts;
 
 interface CDamageComponent extends CEntityComponent {
-	readonly type_name: string
 }
+declare var CDamageComponent: CDamageComponent;
 
 interface C_DOTA_Unit_Hero_EmberSpirit extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_EmberSpirit: C_DOTA_Unit_Hero_EmberSpirit;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Nevermore_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Nevermore_4: C_DOTA_Ability_Special_Bonus_Unique_Nevermore_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tiny extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tiny: C_DOTA_Ability_Special_Bonus_Unique_Tiny;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_2: C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_2;
 
 interface C_DOTA_Ability_Special_Bonus_All_Stats_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_All_Stats_4: C_DOTA_Ability_Special_Bonus_All_Stats_4;
 
 interface C_DOTA_Item_StoutShield extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_StoutShield: C_DOTA_Item_StoutShield;
 
 interface C_DOTA_Ability_Phoenix_FireSpirits extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly hp_cost_perc: number
 }
+declare var C_DOTA_Ability_Phoenix_FireSpirits: C_DOTA_Ability_Phoenix_FireSpirits;
 
 interface C_DOTA_Ability_Luna_Eclipse extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Luna_Eclipse: C_DOTA_Ability_Luna_Eclipse;
 
 interface C_DOTA_Unit_Hero_PhantomAssassin extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nFXDeath: number
 	readonly m_nArcanaLevel: number
 }
+declare var C_DOTA_Unit_Hero_PhantomAssassin: C_DOTA_Unit_Hero_PhantomAssassin;
 
 interface C_DOTA_Ability_Warlock_Golem_Flaming_Fists extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Warlock_Golem_Flaming_Fists: C_DOTA_Ability_Warlock_Golem_Flaming_Fists;
 
 interface C_DOTA_Ability_Courier_ReturnToBase extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_ReturnToBase: C_DOTA_Ability_Courier_ReturnToBase;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Riki_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Riki_1: C_DOTA_Ability_Special_Bonus_Unique_Riki_1;
 
 interface C_DOTA_Ability_Special_Bonus_20_Crit_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_20_Crit_15: C_DOTA_Ability_Special_Bonus_20_Crit_15;
 
 interface CDOTA_Item_SuperBlinkDagger extends C_DOTA_Item_BlinkDagger {
-	readonly type_name: string
 }
+declare var CDOTA_Item_SuperBlinkDagger: CDOTA_Item_SuperBlinkDagger;
 
 interface CDOTA_Ability_Techies_Minefield_Sign extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 	readonly aura_radius: number
 }
+declare var CDOTA_Ability_Techies_Minefield_Sign: CDOTA_Ability_Techies_Minefield_Sign;
 
 interface C_DOTA_BaseNPC_Clinkz_Skeleton_Army extends C_DOTA_BaseNPC {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Clinkz_Skeleton_Army: C_DOTA_BaseNPC_Clinkz_Skeleton_Army;
 
 interface C_DOTA_Unit_Hero_QueenOfPain extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_QueenOfPain: C_DOTA_Unit_Hero_QueenOfPain;
 
 interface C_DOTA_Unit_Hero_Kunkka extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Unit_Hero_Kunkka: C_DOTA_Unit_Hero_Kunkka;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Treant_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Treant_5: C_DOTA_Ability_Special_Bonus_Unique_Treant_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Razor_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Razor_3: C_DOTA_Ability_Special_Bonus_Unique_Razor_3;
 
 interface C_Func_LOD extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_nDisappearMinDist: number
 	readonly m_nDisappearMaxDist: number
 }
+declare var C_Func_LOD: C_Func_LOD;
 
 interface CDOTA_Ability_AbyssalUnderlord_PitOfMalice extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var CDOTA_Ability_AbyssalUnderlord_PitOfMalice: CDOTA_Ability_AbyssalUnderlord_PitOfMalice;
 
 interface C_DOTA_Unit_Hero_Chen extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Chen: C_DOTA_Unit_Hero_Chen;
 
 interface C_DOTA_Ability_Frostivus2018_Rubick_GhostShip extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly buff_duration: number
 	readonly stun_duration: number
 	readonly ghostship_width: number
@@ -18696,49 +18695,49 @@ interface C_DOTA_Ability_Frostivus2018_Rubick_GhostShip extends C_DOTABaseAbilit
 	readonly m_vFinalDestination: Vector
 	readonly m_vStartingPoint: Vector
 }
+declare var C_DOTA_Ability_Frostivus2018_Rubick_GhostShip: C_DOTA_Ability_Frostivus2018_Rubick_GhostShip;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Visage_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Visage_3: C_DOTA_Ability_Special_Bonus_Unique_Visage_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Rubick_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Rubick_5: C_DOTA_Ability_Special_Bonus_Unique_Rubick_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander_2: C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_3: C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_3;
 
 interface C_DOTA_Ability_Special_Bonus_Vision_200 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Vision_200: C_DOTA_Ability_Special_Bonus_Vision_200;
 
 interface C_DOTA_Item_HeavensHalberd extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_HeavensHalberd: C_DOTA_Item_HeavensHalberd;
 
 interface C_DOTA_Ability_Wisp_Empty1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Wisp_Empty1: C_DOTA_Ability_Wisp_Empty1;
 
 interface C_DOTA_Ability_Axe_CounterHelix extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Axe_CounterHelix: C_DOTA_Ability_Axe_CounterHelix;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Clockwerk_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Clockwerk_3: C_DOTA_Ability_Special_Bonus_Unique_Clockwerk_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Morphling_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Morphling_4: C_DOTA_Ability_Special_Bonus_Unique_Morphling_4;
 
 interface C_DotaTutorialNetworker extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_nTutorialState: number
 	readonly m_nTaskProgress: number
 	readonly m_nTaskSteps: number
@@ -18754,58 +18753,58 @@ interface C_DotaTutorialNetworker extends C_BaseEntity {
 	readonly m_vecPrevTargetLocation: Vector
 	readonly m_hPrevTargetEntity: C_BaseEntity
 }
+declare var C_DotaTutorialNetworker: C_DotaTutorialNetworker;
 
 interface C_DOTA_Item_Smoke_Of_Deceit extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Smoke_Of_Deceit: C_DOTA_Item_Smoke_Of_Deceit;
 
 interface C_DOTA_Ability_Shadow_Demon_Shadow_Poison_Release extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Shadow_Demon_Shadow_Poison_Release: C_DOTA_Ability_Shadow_Demon_Shadow_Poison_Release;
 
 interface C_DOTA_Ability_Jakiro_Liquid_Fire extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Jakiro_Liquid_Fire: C_DOTA_Ability_Jakiro_Liquid_Fire;
 
 interface C_DOTA_Ability_Weaver_Shukuchi extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly duration: number
 	readonly radius: number
 	readonly damage: number
 	readonly fade_time: number
 }
+declare var C_DOTA_Ability_Weaver_Shukuchi: C_DOTA_Ability_Weaver_Shukuchi;
 
 interface C_DOTA_Ability_Broodmother_PoisonSting extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Broodmother_PoisonSting: C_DOTA_Ability_Broodmother_PoisonSting;
 
 interface C_DOTA_Ability_Tinker_MarchOfTheMachines extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly splash_radius: number
 }
+declare var C_DOTA_Ability_Tinker_MarchOfTheMachines: C_DOTA_Ability_Tinker_MarchOfTheMachines;
 
 interface C_DOTA_Ability_Frostivus2018_Pangolier_ShieldCrash extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Pangolier_ShieldCrash: C_DOTA_Ability_Frostivus2018_Pangolier_ShieldCrash;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Purple_PlagueWard extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Purple_PlagueWard: C_DOTA_Ability_Greevil_Miniboss_Purple_PlagueWard;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Oracle_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Oracle_4: C_DOTA_Ability_Special_Bonus_Unique_Oracle_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lifestealer_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lifestealer_2: C_DOTA_Ability_Special_Bonus_Unique_Lifestealer_2;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_30: C_DOTA_Ability_Special_Bonus_Attack_Speed_30;
 
 interface C_FuncLadder extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_vecLadderDir: Vector
 	readonly m_Dismounts: C_BaseEntity[]
 	readonly m_vecLocalTop: Vector
@@ -18816,13 +18815,13 @@ interface C_FuncLadder extends C_BaseModelEntity {
 	readonly m_bFakeLadder: boolean
 	readonly m_bHasSlack: boolean
 }
+declare var C_FuncLadder: C_FuncLadder;
 
 interface C_DOTA_BaseNPC_Invoker_Forged_Spirit extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Invoker_Forged_Spirit: C_DOTA_BaseNPC_Invoker_Forged_Spirit;
 
 interface C_DOTA_Ability_DrowRanger_WaveOfSilence extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly wave_width: number
 	readonly wave_speed: number
 	readonly m_iProjectile: number
@@ -18830,17 +18829,17 @@ interface C_DOTA_Ability_DrowRanger_WaveOfSilence extends C_DOTABaseAbility {
 	readonly knockback_distance_max: number
 	readonly m_nHeroesHit: number
 }
+declare var C_DOTA_Ability_DrowRanger_WaveOfSilence: C_DOTA_Ability_DrowRanger_WaveOfSilence;
 
 interface C_DOTA_Item_Recipe_Holy_Locket extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Holy_Locket: C_DOTA_Item_Recipe_Holy_Locket;
 
 interface CDOTA_Item_Hurricane_Pike extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Hurricane_Pike: CDOTA_Item_Hurricane_Pike;
 
 interface C_DOTA_Ability_Tusk_Snowball extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly snowball_windup_radius: number
 	readonly snowball_radius: number
 	readonly snowball_grow_rate: number
@@ -18862,88 +18861,88 @@ interface C_DOTA_Ability_Tusk_Snowball extends C_DOTABaseAbility, C_HorizontalMo
 	readonly m_nContainedValidUnits: number
 	readonly m_bEndingSnowball: boolean
 }
+declare var C_DOTA_Ability_Tusk_Snowball: C_DOTA_Ability_Tusk_Snowball;
 
 interface C_DOTA_Ability_Invoker_DeafeningBlast extends CDOTA_Ability_Invoker_InvokedBase {
-	readonly type_name: string
 	readonly end_vision_duration: number
 	readonly damage: number
 	readonly knockback_duration: number
 	readonly disarm_duration: number
 }
+declare var C_DOTA_Ability_Invoker_DeafeningBlast: C_DOTA_Ability_Invoker_DeafeningBlast;
 
 interface C_DOTA_Ability_FacelessVoid_TimeDilation extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_FacelessVoid_TimeDilation: C_DOTA_Ability_FacelessVoid_TimeDilation;
 
 interface C_IngameEvent_TI7 extends C_IngameEvent_Base {
-	readonly type_name: string
 }
+declare var C_IngameEvent_TI7: C_IngameEvent_TI7;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Centaur_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Centaur_4: C_DOTA_Ability_Special_Bonus_Unique_Centaur_4;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_5: C_DOTA_Ability_Special_Bonus_Magic_Resistance_5;
 
 interface C_DOTA_Ability_Necronomicon_Archer_ManaBurn extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Necronomicon_Archer_ManaBurn: C_DOTA_Ability_Necronomicon_Archer_ManaBurn;
 
 interface C_DOTA_Item_TeleportScroll extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_nFXOrigin: number
 	readonly m_nFXDestination: number
 	readonly m_vDestination: Vector
 	readonly m_iMinDistance: number
 	readonly m_flExtraTeleportTime: number
 }
+declare var C_DOTA_Item_TeleportScroll: C_DOTA_Item_TeleportScroll;
 
 interface C_DOTA_Item_Broadsword extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Broadsword: C_DOTA_Item_Broadsword;
 
 interface C_DOTA_Item_BootsOfElven extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_BootsOfElven: C_DOTA_Item_BootsOfElven;
 
 interface CDOTA_Ability_Viper_Nethertoxin extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Viper_Nethertoxin: CDOTA_Ability_Viper_Nethertoxin;
 
 interface C_DOTA_Ability_Slardar_Slithereen_Crush extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Slardar_Slithereen_Crush: C_DOTA_Ability_Slardar_Slithereen_Crush;
 
 interface C_DOTA_Unit_Hero_Lina extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Lina: C_DOTA_Unit_Hero_Lina;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Doom_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Doom_2: C_DOTA_Ability_Special_Bonus_Unique_Doom_2;
 
 interface C_DOTA_Ability_Special_Bonus_Lifesteal_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Lifesteal_10: C_DOTA_Ability_Special_Bonus_Lifesteal_10;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_12: C_DOTA_Ability_Special_Bonus_Agility_12;
 
 interface C_PortraitHero extends C_DOTA_BaseNPC {
-	readonly type_name: string
 	readonly m_nHeroID: number
 	readonly m_actQueuedActivity: number
 }
+declare var C_PortraitHero: C_PortraitHero;
 
 interface C_DOTA_Item_Headdress extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Headdress: C_DOTA_Item_Headdress;
 
 interface C_EnvVolumetricFogController extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_flScattering: number
 	readonly m_flAnisotropy: number
 	readonly m_flFadeSpeed: number
@@ -18978,78 +18977,78 @@ interface C_EnvVolumetricFogController extends C_BaseEntity {
 	readonly m_nForceRefreshCount: number
 	readonly m_bFirstTime: boolean
 }
+declare var C_EnvVolumetricFogController: C_EnvVolumetricFogController;
 
 interface C_DOTA_Item_Orb_of_Venom extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Orb_of_Venom: C_DOTA_Item_Orb_of_Venom;
 
 interface C_DOTA_Item_Eaglehorn extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Eaglehorn: C_DOTA_Item_Eaglehorn;
 
 interface C_DOTA_Ability_Shadow_Demon_Disruption extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hDisruptedUnit: C_BaseEntity
 }
+declare var C_DOTA_Ability_Shadow_Demon_Disruption: C_DOTA_Ability_Shadow_Demon_Disruption;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Jakiro extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Jakiro: C_DOTA_Ability_Special_Bonus_Unique_Jakiro;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Morphling_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Morphling_7: C_DOTA_Ability_Special_Bonus_Unique_Morphling_7;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_5: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Luna_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Luna_4: C_DOTA_Ability_Special_Bonus_Unique_Luna_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_4: C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tusk_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tusk_4: C_DOTA_Ability_Special_Bonus_Unique_Tusk_4;
 
 interface C_DOTA_Item_Recipe_Necronomicon_2 extends C_DOTA_Item_Recipe_Necronomicon {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Necronomicon_2: C_DOTA_Item_Recipe_Necronomicon_2;
 
 interface C_DOTA_Item_Recipe_TranquilBoots extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_TranquilBoots: C_DOTA_Item_Recipe_TranquilBoots;
 
 interface C_DOTA_Unit_Hero_WitchDoctor extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_WitchDoctor: C_DOTA_Unit_Hero_WitchDoctor;
 
 interface C_DOTA_Ability_CrystalMaiden_FreezingField extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_CrystalMaiden_FreezingField: C_DOTA_Ability_CrystalMaiden_FreezingField;
 
 interface CDOTA_Ability_AncientApparition_IceBlast_Release extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_AncientApparition_IceBlast_Release: CDOTA_Ability_AncientApparition_IceBlast_Release;
 
 interface C_DOTA_Item_UpgradedBarricade extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_UpgradedBarricade: C_DOTA_Item_UpgradedBarricade;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bounty_Hunter_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bounty_Hunter_2: C_DOTA_Ability_Special_Bonus_Unique_Bounty_Hunter_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Slark_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Slark_2: C_DOTA_Ability_Special_Bonus_Unique_Slark_2;
 
 interface C_SlideshowDisplay extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bEnabled: boolean
 	readonly m_szSlideshowDirectory: string
 	readonly m_fMinSlideTime: number
@@ -19063,90 +19062,90 @@ interface C_SlideshowDisplay extends C_BaseEntity {
 	readonly m_iCurrentSlideList: number
 	readonly m_iCurrentSlide: number
 }
+declare var C_SlideshowDisplay: C_SlideshowDisplay;
 
 interface CDOTA_Item_RiverPainter3 extends C_DOTA_Item_RiverPainter {
-	readonly type_name: string
 }
+declare var CDOTA_Item_RiverPainter3: CDOTA_Item_RiverPainter3;
 
 interface C_DOTA_Unit_VisageFamiliar extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 	readonly m_nFXAmbient: number
 }
+declare var C_DOTA_Unit_VisageFamiliar: C_DOTA_Unit_VisageFamiliar;
 
 interface C_DOTA_Ability_Sniper_Assassinate extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hTarget: C_BaseEntity
 	readonly m_iIndex: number
 	readonly scepter_radius: number
 }
+declare var C_DOTA_Ability_Sniper_Assassinate: C_DOTA_Ability_Sniper_Assassinate;
 
 interface C_DOTA_Ability_PhantomLancer_SpiritLance extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hHitEntities: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_PhantomLancer_SpiritLance: C_DOTA_Ability_PhantomLancer_SpiritLance;
 
 interface C_DOTA_Ability_ForestTrollHighPriest_ManaAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_ForestTrollHighPriest_ManaAura: C_DOTA_Ability_ForestTrollHighPriest_ManaAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Treant extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Treant: C_DOTA_Ability_Special_Bonus_Unique_Treant;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bounty_Hunter_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bounty_Hunter_3: C_DOTA_Ability_Special_Bonus_Unique_Bounty_Hunter_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pugna_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pugna_2: C_DOTA_Ability_Special_Bonus_Unique_Pugna_2;
 
 interface C_DOTA_Ability_KeeperOfTheLight_ManaLeak extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_KeeperOfTheLight_ManaLeak: C_DOTA_Ability_KeeperOfTheLight_ManaLeak;
 
 interface C_DOTA_Unit_Hero_Obsidian_Destroyer extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nFXDeath: number
 }
+declare var C_DOTA_Unit_Hero_Obsidian_Destroyer: C_DOTA_Unit_Hero_Obsidian_Destroyer;
 
 interface C_DOTA_Ability_Frostivus2018_Omniknight_Repel extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Omniknight_Repel: C_DOTA_Ability_Frostivus2018_Omniknight_Repel;
 
 interface C_DOTASpecGraphPlayerData extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_rgGoldPerMinute: number[]
 	readonly m_rgXPPerMinute: number[]
 	readonly m_nCreatedByPlayerID: number
 }
+declare var C_DOTASpecGraphPlayerData: C_DOTASpecGraphPlayerData;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Omniknight_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Omniknight_2: C_DOTA_Ability_Special_Bonus_Unique_Omniknight_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_4: C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_4;
 
 interface C_DOTA_Ability_Special_Bonus_20_Bash_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_20_Bash_2: C_DOTA_Ability_Special_Bonus_20_Bash_2;
 
 interface C_DOTA_Ability_Special_Bonus_All_Stats_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_All_Stats_7: C_DOTA_Ability_Special_Bonus_All_Stats_7;
 
 interface C_DOTAMinimapBoundary extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_DOTAMinimapBoundary: C_DOTAMinimapBoundary;
 
 interface C_DOTA_Item_Dagon_Upgraded extends C_DOTA_Item_Dagon {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Dagon_Upgraded: C_DOTA_Item_Dagon_Upgraded;
 
 interface C_DOTA_Ability_Warlock_Upheaval extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vPosition: Vector
 	readonly aoe: number
 	readonly slow_rate: number
@@ -19158,145 +19157,145 @@ interface C_DOTA_Ability_Warlock_Upheaval extends C_DOTABaseAbility {
 	readonly m_SlowTimer: CountdownTimer
 	readonly m_timer: CountdownTimer
 }
+declare var C_DOTA_Ability_Warlock_Upheaval: C_DOTA_Ability_Warlock_Upheaval;
 
 interface C_DOTA_NPC_WitchDoctor_Ward extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_nFXSkullIndex: number
 	readonly m_nTargetType: number
 	readonly m_nTargetFlags: number
 }
+declare var C_DOTA_NPC_WitchDoctor_Ward: C_DOTA_NPC_WitchDoctor_Ward;
 
 interface C_DOTA_Ability_CrystalMaiden_Frostbite extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_CrystalMaiden_Frostbite: C_DOTA_Ability_CrystalMaiden_Frostbite;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Earthshaker_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Earthshaker_2: C_DOTA_Ability_Special_Bonus_Unique_Earthshaker_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet: C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_13 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_13: C_DOTA_Ability_Special_Bonus_Agility_13;
 
 interface C_DOTA_Ability_Shredder_TimberChain extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly chain_radius: number
 	readonly m_nFXIndex: number
 	readonly m_vProjectileVelocity: Vector
 	readonly m_bRetract: boolean
 }
+declare var C_DOTA_Ability_Shredder_TimberChain: C_DOTA_Ability_Shredder_TimberChain;
 
 interface C_DOTA_Wisp_Spirit extends C_DOTA_BaseNPC {
-	readonly type_name: string
 }
+declare var C_DOTA_Wisp_Spirit: C_DOTA_Wisp_Spirit;
 
 interface CDOTA_Ability_Nyx_Assassin_Burrow extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nSpellStartFXIndex: number
 	readonly m_nPhaseStartFXIndex: number
 }
+declare var CDOTA_Ability_Nyx_Assassin_Burrow: CDOTA_Ability_Nyx_Assassin_Burrow;
 
 interface C_DOTA_Unit_Hero_Tiny extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_hTreeWearable: C_BaseEntity
 	readonly m_nFXIndexScepterAmbient: number
 	readonly m_hIllusionOwner: C_BaseEntity
 }
+declare var C_DOTA_Unit_Hero_Tiny: C_DOTA_Unit_Hero_Tiny;
 
 interface C_DOTA_Unit_Hero_SkeletonKing extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nSkeletonWarriors: number
 }
+declare var C_DOTA_Unit_Hero_SkeletonKing: C_DOTA_Unit_Hero_SkeletonKing;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_3: C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_3: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Chen_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Chen_2: C_DOTA_Ability_Special_Bonus_Unique_Chen_2;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_25: C_DOTA_Ability_Special_Bonus_Attack_Damage_25;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_175 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_175: C_DOTA_Ability_Special_Bonus_MP_Regen_175;
 
 interface C_PointHintUIHighlightModel extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_nTrackedDeviceIndex: number
 }
+declare var C_PointHintUIHighlightModel: C_PointHintUIHighlightModel;
 
 interface C_DOTA_Item_Soul_Ring extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Soul_Ring: C_DOTA_Item_Soul_Ring;
 
 interface C_DOTA_Item_RodOfAtos extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_RodOfAtos: C_DOTA_Item_RodOfAtos;
 
 interface C_DOTA_Unit_Hero_Terrorblade extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nFXDeath: number
 	readonly m_szResponseCriteria: string
 	readonly m_nArcanaColor: number
 }
+declare var C_DOTA_Unit_Hero_Terrorblade: C_DOTA_Unit_Hero_Terrorblade;
 
 interface C_DOTA_Ability_Meepo_Ransack extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Meepo_Ransack: C_DOTA_Ability_Meepo_Ransack;
 
 interface C_DOTA_Ability_VengefulSpirit_Nether_Swap extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_VengefulSpirit_Nether_Swap: C_DOTA_Ability_VengefulSpirit_Nether_Swap;
 
 interface C_DOTA_Unit_Hero_AntiMage extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_AntiMage: C_DOTA_Unit_Hero_AntiMage;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Rubick_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Rubick_4: C_DOTA_Ability_Special_Bonus_Unique_Rubick_4;
 
 interface C_DOTA_Item_Recipe_MaskOfMadness extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_MaskOfMadness: C_DOTA_Item_Recipe_MaskOfMadness;
 
 interface C_DOTA_Ability_Shredder_Reactive_Armor extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Shredder_Reactive_Armor: C_DOTA_Ability_Shredder_Reactive_Armor;
 
 interface C_DOTA_Ability_BlackDragon_Fireball extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BlackDragon_Fireball: C_DOTA_Ability_BlackDragon_Fireball;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Amplify_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Amplify_12: C_DOTA_Ability_Special_Bonus_Spell_Amplify_12;
 
 interface C_FireSprite extends C_Sprite {
-	readonly type_name: string
 	readonly m_vecMoveDir: Vector
 	readonly m_bFadeFromAbove: boolean
 }
+declare var C_FireSprite: C_FireSprite;
 
 interface C_DOTA_Ability_LoneDruid_SpiritBear_Entangle extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_LoneDruid_SpiritBear_Entangle: C_DOTA_Ability_LoneDruid_SpiritBear_Entangle;
 
 interface C_DOTA_Ability_Nian_Apocalypse extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly area_of_effect: number
 	readonly m_nfxIndex_roar: number
 	readonly fire_interval: number
@@ -19305,181 +19304,181 @@ interface C_DOTA_Ability_Nian_Apocalypse extends C_DOTABaseAbility {
 	readonly m_ctTimer: CountdownTimer
 	readonly m_flTiming: number
 }
+declare var C_DOTA_Ability_Nian_Apocalypse: C_DOTA_Ability_Nian_Apocalypse;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Clinkz_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Clinkz_3: C_DOTA_Ability_Special_Bonus_Unique_Clinkz_3;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_300 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_300: C_DOTA_Ability_Special_Bonus_Cast_Range_300;
 
 interface C_DOTA_Ability_Special_Bonus_Night_Vision_400 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Night_Vision_400: C_DOTA_Ability_Special_Bonus_Night_Vision_400;
 
 interface C_FuncDistanceOccluder extends C_FuncOccluder {
-	readonly type_name: string
 	readonly m_flFadeStartDist: number
 	readonly m_flFadeEndDist: number
 	readonly m_flTranslucencyLimit: number
 	readonly m_hAttachedOccluder: C_BaseEntity
 }
+declare var C_FuncDistanceOccluder: C_FuncDistanceOccluder;
 
 interface C_DOTA_Item_WraithBand extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_WraithBand: C_DOTA_Item_WraithBand;
 
 interface C_DOTA_Unit_Hero_Magnataur extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Magnataur: C_DOTA_Unit_Hero_Magnataur;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tinker extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tinker: C_DOTA_Ability_Special_Bonus_Unique_Tinker;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wisp_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wisp_3: C_DOTA_Ability_Special_Bonus_Unique_Wisp_3;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_13 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_13: C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_13;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_65 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_65: C_DOTA_Ability_Special_Bonus_Attack_Damage_65;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_30: C_DOTA_Ability_Special_Bonus_Strength_30;
 
 interface C_DOTA_Ability_Shredder_ReturnChakramAlias_shredder_return_chakram_2 extends C_DOTA_Ability_Shredder_ReturnChakram {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Shredder_ReturnChakramAlias_shredder_return_chakram_2: C_DOTA_Ability_Shredder_ReturnChakramAlias_shredder_return_chakram_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_4: C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Slardar_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Slardar_2: C_DOTA_Ability_Special_Bonus_Unique_Slardar_2;
 
 interface C_DOTA_Ability_Special_Bonus_Respawn_Reduction_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Respawn_Reduction_30: C_DOTA_Ability_Special_Bonus_Respawn_Reduction_30;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_50: C_DOTA_Ability_Special_Bonus_Attack_Damage_50;
 
 interface C_DOTA_Ability_Special_Bonus_MP_400 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_400: C_DOTA_Ability_Special_Bonus_MP_400;
 
 interface C_TriggerPlayerMovement extends C_BaseTrigger {
-	readonly type_name: string
 	readonly m_pNext: C_TriggerPlayerMovement
 }
+declare var C_TriggerPlayerMovement: C_TriggerPlayerMovement;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pudge_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pudge_1: C_DOTA_Ability_Special_Bonus_Unique_Pudge_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Clockwerk_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Clockwerk_2: C_DOTA_Ability_Special_Bonus_Unique_Clockwerk_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wisp_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wisp_5: C_DOTA_Ability_Special_Bonus_Unique_Wisp_5;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Amplify_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Amplify_4: C_DOTA_Ability_Special_Bonus_Spell_Amplify_4;
 
 interface C_DOTA_BaseNPC_SDKTower extends C_DOTA_BaseNPC_HoldoutTower {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_SDKTower: C_DOTA_BaseNPC_SDKTower;
 
 interface CDOTA_Item_RiverPainter7 extends C_DOTA_Item_RiverPainter {
-	readonly type_name: string
 }
+declare var CDOTA_Item_RiverPainter7: CDOTA_Item_RiverPainter7;
 
 interface C_DOTA_Item_TalismanOfEvasion extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_TalismanOfEvasion: C_DOTA_Item_TalismanOfEvasion;
 
 interface C_DOTA_Ability_Obsidian_Destroyer_EssenceAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Obsidian_Destroyer_EssenceAura: C_DOTA_Ability_Obsidian_Destroyer_EssenceAura;
 
 interface C_DOTA_Ability_WitchDoctor_ParalyzingCask extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iBounces: number
 	readonly bounces: number
 }
+declare var C_DOTA_Ability_WitchDoctor_ParalyzingCask: C_DOTA_Ability_WitchDoctor_ParalyzingCask;
 
 interface C_DOTA_Ability_Mirana_Leap extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly charge_restore_time: number
 	readonly max_charges: number
 }
+declare var C_DOTA_Ability_Mirana_Leap: C_DOTA_Ability_Mirana_Leap;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Zeus extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Zeus: C_DOTA_Ability_Special_Bonus_Unique_Zeus;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_5: C_DOTA_Ability_Special_Bonus_HP_Regen_5;
 
 interface C_DOTAAbilityDraftGameMode extends C_DOTATurboGameMode {
-	readonly type_name: string
 }
+declare var C_DOTAAbilityDraftGameMode: C_DOTAAbilityDraftGameMode;
 
 interface C_DOTA_PortraitBuilding extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_nAmbientFXIndex: number
 	readonly m_ParticleTintColor: Color
 }
+declare var C_DOTA_PortraitBuilding: C_DOTA_PortraitBuilding;
 
 interface CDOTA_Item_Recipe_EchoSabre extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_EchoSabre: CDOTA_Item_Recipe_EchoSabre;
 
 interface C_DOTA_Item_Recipe_Bloodstone extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Bloodstone: C_DOTA_Item_Recipe_Bloodstone;
 
 interface C_DOTA_Ability_TrollWarlord_BerserkersRage extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iOriginalAttackCapabilities: number
 }
+declare var C_DOTA_Ability_TrollWarlord_BerserkersRage: C_DOTA_Ability_TrollWarlord_BerserkersRage;
 
 interface C_DOTA_Item_ForceBoots extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_ForceBoots: C_DOTA_Item_ForceBoots;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_5: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Huskar extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Huskar: C_DOTA_Ability_Special_Bonus_Unique_Huskar;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Invoker_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Invoker_3: C_DOTA_Ability_Special_Bonus_Unique_Invoker_3;
 
 interface C_DOTA_Ability_Special_Bonus_MP_700 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_700: C_DOTA_Ability_Special_Bonus_MP_700;
 
 interface C_PointClientUIHUD extends C_BaseClientUIEntity {
-	readonly type_name: string
 	readonly m_bCheckCSSClasses: boolean
 	readonly m_bIgnoreInput: boolean
 	readonly m_flWidth: number
@@ -19494,33 +19493,33 @@ interface C_PointClientUIHUD extends C_BaseClientUIEntity {
 	readonly m_bAllowInteractionFromAllSceneWorlds: boolean
 	readonly m_vecCSSClasses: string[]
 }
+declare var C_PointClientUIHUD: C_PointClientUIHUD;
 
 interface C_TeamplayRoundBasedRulesProxy extends C_GameRulesProxy {
-	readonly type_name: string
 	readonly m_pTeamplayRoundBasedRules: C_TeamplayRoundBasedRules
 }
+declare var C_TeamplayRoundBasedRulesProxy: C_TeamplayRoundBasedRulesProxy;
 
 interface C_FuncTrackTrain extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_nLongAxis: number
 	readonly m_flRadius: number
 	readonly m_flLineLength: number
 }
+declare var C_FuncTrackTrain: C_FuncTrackTrain;
 
 interface C_DOTA_Item_OrchidMalevolence extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_OrchidMalevolence: C_DOTA_Item_OrchidMalevolence;
 
 interface CDOTA_Ability_Nyx_Assassin_ManaBurn extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Nyx_Assassin_ManaBurn: CDOTA_Ability_Nyx_Assassin_ManaBurn;
 
 interface C_DOTA_Ability_Silencer_LastWord extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Silencer_LastWord: C_DOTA_Ability_Silencer_LastWord;
 
 interface C_DOTA_Ability_Holdout_Multishot extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vStartPos: Vector
 	readonly m_iArrowProjectile: number
 	readonly m_nFXIndex: number
@@ -19532,56 +19531,56 @@ interface C_DOTA_Ability_Holdout_Multishot extends C_DOTABaseAbility {
 	readonly m_bShouldReduceDamage: boolean
 	readonly m_vHitTargets: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Holdout_Multishot: C_DOTA_Ability_Holdout_Multishot;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Juggernaut_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Juggernaut_2: C_DOTA_Ability_Special_Bonus_Unique_Juggernaut_2;
 
 interface C_DOTA_Ability_Special_Bonus_Gold_Income_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Gold_Income_25: C_DOTA_Ability_Special_Bonus_Gold_Income_25;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_4: C_DOTA_Ability_Special_Bonus_Strength_4;
 
 interface C_DOTA_Ability_Pudge_FleshHeap extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iKills: number
 }
+declare var C_DOTA_Ability_Pudge_FleshHeap: C_DOTA_Ability_Pudge_FleshHeap;
 
 interface C_DOTA_Item_Bloodthorn extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Bloodthorn: C_DOTA_Item_Bloodthorn;
 
 interface C_DOTA_Ability_Invoker_Alacrity extends CDOTA_Ability_Invoker_InvokedBase {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_Alacrity: C_DOTA_Ability_Invoker_Alacrity;
 
 interface C_DOTA_Ability_Furion_ForceOfNature extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Furion_ForceOfNature: C_DOTA_Ability_Furion_ForceOfNature;
 
 interface C_DOTA_RoshanSpawner extends C_PointEntity {
-	readonly type_name: string
 }
+declare var C_DOTA_RoshanSpawner: C_DOTA_RoshanSpawner;
 
 interface C_DOTA_Ability_Pudge_Rot extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly rot_damage: number
 	readonly m_flLastRotTime: number
 }
+declare var C_DOTA_Ability_Pudge_Rot: C_DOTA_Ability_Pudge_Rot;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Huskar_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Huskar_5: C_DOTA_Ability_Special_Bonus_Unique_Huskar_5;
 
 interface CDOTA_Item_Tombstone_Drop extends C_DOTA_Item_Physical {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Tombstone_Drop: CDOTA_Item_Tombstone_Drop;
 
 interface C_PostProcessController extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_fLocalContrastStrength: number
 	readonly m_fLocalContrastEdgeStrength: number
 	readonly m_fVignetteStart: number
@@ -19593,42 +19592,42 @@ interface C_PostProcessController extends C_BaseEntity {
 	readonly m_fFadeTime: number
 	readonly m_bMaster: boolean
 }
+declare var C_PostProcessController: C_PostProcessController;
 
 interface C_DevtestHierarchyChild extends C_DynamicProp {
-	readonly type_name: string
 }
+declare var C_DevtestHierarchyChild: C_DevtestHierarchyChild;
 
 interface C_DOTA_Item_Recipe_Sange extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Sange: C_DOTA_Item_Recipe_Sange;
 
 interface C_DOTA_Item_Recipe_Perseverance extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Perseverance: C_DOTA_Item_Recipe_Perseverance;
 
 interface C_DOTA_Ability_Brewmaster_CinderBrew extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Brewmaster_CinderBrew: C_DOTA_Ability_Brewmaster_CinderBrew;
 
 interface C_DOTA_Unit_Brewmaster_PrimalFire extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 	readonly m_nFXAmbient: number
 }
+declare var C_DOTA_Unit_Brewmaster_PrimalFire: C_DOTA_Unit_Brewmaster_PrimalFire;
 
 interface C_DOTA_Ability_Furion_WrathOfNature extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Furion_WrathOfNature: C_DOTA_Ability_Furion_WrathOfNature;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_400 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_400: C_DOTA_Ability_Special_Bonus_Attack_Damage_400;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_3: C_DOTA_Ability_Special_Bonus_Armor_3;
 
 interface C_ServerRagdoll extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_flBlendWeight: number
 	readonly m_hRagdollSource: C_BaseEntity
 	readonly m_iEyeAttachment: number
@@ -19636,199 +19635,199 @@ interface C_ServerRagdoll extends C_BaseAnimating {
 	readonly m_parentPhysicsBoneIndices: number[]
 	readonly m_worldSpaceBoneComputationOrder: number[]
 }
+declare var C_ServerRagdoll: C_ServerRagdoll;
 
 interface C_DOTA_Item_Recipe_Pipe extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Pipe: C_DOTA_Item_Recipe_Pipe;
 
 interface C_DOTA_Ability_Techies_FocusedDetonate extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Techies_FocusedDetonate: C_DOTA_Ability_Techies_FocusedDetonate;
 
 interface C_DOTA_Ability_Undying_Tombstone_Zombie_DeathStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Undying_Tombstone_Zombie_DeathStrike: C_DOTA_Ability_Undying_Tombstone_Zombie_DeathStrike;
 
 interface C_DOTA_Ability_LoneDruid_TrueForm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_LoneDruid_TrueForm: C_DOTA_Ability_LoneDruid_TrueForm;
 
 interface CDOTA_Ability_CallOfTheWild_Hawk_Invisibility extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_CallOfTheWild_Hawk_Invisibility: CDOTA_Ability_CallOfTheWild_Hawk_Invisibility;
 
 interface C_DOTA_Ability_Necrolyte_ReapersScythe extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Necrolyte_ReapersScythe: C_DOTA_Ability_Necrolyte_ReapersScythe;
 
 interface C_DOTA_Item_BeltOfStrength extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_BeltOfStrength: C_DOTA_Item_BeltOfStrength;
 
 interface C_DOTA_Ability_DeathProphet_Witchcraft extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DeathProphet_Witchcraft: C_DOTA_Ability_DeathProphet_Witchcraft;
 
 interface C_DOTA_Ability_DrowRanger_Marksmanship extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DrowRanger_Marksmanship: C_DOTA_Ability_DrowRanger_Marksmanship;
 
 interface C_DOTA_Ability_Holdout_GodsStrength extends C_DOTA_Ability_Sven_GodsStrength {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Holdout_GodsStrength: C_DOTA_Ability_Holdout_GodsStrength;
 
 interface C_DOTA_Ability_AntiMage_SpellShield extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_AntiMage_SpellShield: C_DOTA_Ability_AntiMage_SpellShield;
 
 interface C_DOTA_Ability_Throw_Snowball extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Throw_Snowball: C_DOTA_Ability_Throw_Snowball;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lycan_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lycan_2: C_DOTA_Ability_Special_Bonus_Unique_Lycan_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Brewmaster extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Brewmaster: C_DOTA_Ability_Special_Bonus_Unique_Brewmaster;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Windranger_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Windranger_4: C_DOTA_Ability_Special_Bonus_Unique_Windranger_4;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_13 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_13: C_DOTA_Ability_Special_Bonus_Intelligence_13;
 
 interface C_DOTA_Item_Perseverance extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Perseverance: C_DOTA_Item_Perseverance;
 
 interface C_DOTA_Ability_Ursa_Fury_Swipes extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Ursa_Fury_Swipes: C_DOTA_Ability_Ursa_Fury_Swipes;
 
 interface C_DOTA_Ability_Windrunner_FocusFire extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Windrunner_FocusFire: C_DOTA_Ability_Windrunner_FocusFire;
 
 interface C_DOTA_Unit_Hero_StormSpirit extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_StormSpirit: C_DOTA_Unit_Hero_StormSpirit;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_2: C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_2: C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_2;
 
 interface C_DOTA_Ability_Special_Bonus_HP_250 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_250: C_DOTA_Ability_Special_Bonus_HP_250;
 
 interface C_DOTA_Ability_Treant_LivingArmor extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Treant_LivingArmor: C_DOTA_Ability_Treant_LivingArmor;
 
 interface C_DOTA_Ability_Animation_LeftClawSwipe extends C_DOTA_Ability_Animation_Attack {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Animation_LeftClawSwipe: C_DOTA_Ability_Animation_LeftClawSwipe;
 
 interface C_DOTA_Ability_Sniper_TakeAim extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Sniper_TakeAim: C_DOTA_Ability_Sniper_TakeAim;
 
 interface CDOTA_Ability_Frostivus2018_Centaur_DoubleEdge extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Frostivus2018_Centaur_DoubleEdge: CDOTA_Ability_Frostivus2018_Centaur_DoubleEdge;
 
 interface CDOTA_Ability_Spawnlord_Master_Bash extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Spawnlord_Master_Bash: CDOTA_Ability_Spawnlord_Master_Bash;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Antimage_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Antimage_2: C_DOTA_Ability_Special_Bonus_Unique_Antimage_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Nyx extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Nyx: C_DOTA_Ability_Special_Bonus_Unique_Nyx;
 
 interface CInfoDynamicShadowHint extends C_PointEntity {
-	readonly type_name: string
 	readonly m_bDisabled: boolean
 	readonly m_flRange: number
 	readonly m_nImportance: number
 	readonly m_hLight: C_BaseEntity
 }
+declare var CInfoDynamicShadowHint: CInfoDynamicShadowHint;
 
 interface CDOTA_Ability_Centaur_Stampede extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly duration: number
 	readonly base_damage: number
 	readonly strength_damage: number
 	readonly slow_duration: number
 	readonly m_hHitEntities: C_BaseEntity[]
 }
+declare var CDOTA_Ability_Centaur_Stampede: CDOTA_Ability_Centaur_Stampede;
 
 interface C_DOTA_Ability_NightStalker_CripplingFear extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_NightStalker_CripplingFear: C_DOTA_Ability_NightStalker_CripplingFear;
 
 interface C_DOTA_Ability_Tinker_Laser extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vProjectileLocation: Vector
 	readonly bBlocked: boolean
 	readonly m_hHitEntities: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Tinker_Laser: C_DOTA_Ability_Tinker_Laser;
 
 interface C_DOTA_Unit_Hero_Bloodseeker extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Bloodseeker: C_DOTA_Unit_Hero_Bloodseeker;
 
 interface C_DOTA_Ability_Nevermore_Shadowraze3 extends C_DOTA_Ability_Nevermore_Shadowraze {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nevermore_Shadowraze3: C_DOTA_Ability_Nevermore_Shadowraze3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Necrophos extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Necrophos: C_DOTA_Ability_Special_Bonus_Unique_Necrophos;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tusk extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tusk: C_DOTA_Ability_Special_Bonus_Unique_Tusk;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_80 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_80: C_DOTA_Ability_Special_Bonus_HP_Regen_80;
 
 interface C_DOTA_Ability_Legion_Commander_MomentOfCourage extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Legion_Commander_MomentOfCourage: C_DOTA_Ability_Legion_Commander_MomentOfCourage;
 
 interface C_DOTA_Ability_Elder_Titan_NaturalOrder extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Elder_Titan_NaturalOrder: C_DOTA_Ability_Elder_Titan_NaturalOrder;
 
 interface C_DOTA_Unit_Undying_Zombie extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 	readonly m_ctRespawn: CountdownTimer
 	readonly m_pTombstone: C_DOTA_BaseNPC
 }
+declare var C_DOTA_Unit_Undying_Zombie: C_DOTA_Unit_Undying_Zombie;
 
 interface C_DOTA_Unit_Hero_DoomBringer extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_DoomBringer: C_DOTA_Unit_Hero_DoomBringer;
 
 interface C_DOTA_Unit_Hero_Ursa extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Ursa: C_DOTA_Unit_Hero_Ursa;
 
 interface C_DOTA_Ability_Windrunner_Powershot extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_fStartTime: number
 	readonly m_fPower: number
 	readonly m_iProjectile: number
@@ -19840,62 +19839,62 @@ interface C_DOTA_Ability_Windrunner_Powershot extends C_DOTABaseAbility {
 	readonly m_nHeroesHit: number
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_Windrunner_Powershot: C_DOTA_Ability_Windrunner_Powershot;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker: C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Broodmother_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Broodmother_4: C_DOTA_Ability_Special_Bonus_Unique_Broodmother_4;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_16 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_16: C_DOTA_Ability_Special_Bonus_Agility_16;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_45 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_45: C_DOTA_Ability_Special_Bonus_Movement_Speed_45;
 
 interface C_DOTA_Item_MagicStick extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_MagicStick: C_DOTA_Item_MagicStick;
 
 interface C_DOTA_Item_HelmOfIronWill extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_HelmOfIronWill: C_DOTA_Item_HelmOfIronWill;
 
 interface C_DOTA_Ability_Oracle_FatesEdict extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_bTargetIsAlly: boolean
 }
+declare var C_DOTA_Ability_Oracle_FatesEdict: C_DOTA_Ability_Oracle_FatesEdict;
 
 interface C_DOTA_Unit_Hero_DeathProphet extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_DeathProphet: C_DOTA_Unit_Hero_DeathProphet;
 
 interface C_DOTA_Ability_Riki_SmokeScreen extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Riki_SmokeScreen: C_DOTA_Ability_Riki_SmokeScreen;
 
 interface C_DOTA_Ability_AlphaWolf_CommandAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_AlphaWolf_CommandAura: C_DOTA_Ability_AlphaWolf_CommandAura;
 
 interface C_DOTA_Ability_Special_Bonus_Day_Vision_400 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Day_Vision_400: C_DOTA_Ability_Special_Bonus_Day_Vision_400;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_80 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_80: C_DOTA_Ability_Special_Bonus_Magic_Resistance_80;
 
 interface C_LightDirectionalEntity extends C_LightEntity {
-	readonly type_name: string
 }
+declare var C_LightDirectionalEntity: C_LightDirectionalEntity;
 
 interface C_EnvCubemap extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bCustomCubemapTexture: boolean
 	readonly m_flInfluenceRadius: number
 	readonly m_vBoxProjectMins: Vector
@@ -19908,126 +19907,126 @@ interface C_EnvCubemap extends C_BaseEntity {
 	readonly m_bStartDisabled: boolean
 	readonly m_bEnabled: boolean
 }
+declare var C_EnvCubemap: C_EnvCubemap;
 
 interface C_DOTA_Item_Recipe_Cyclone extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Cyclone: C_DOTA_Item_Recipe_Cyclone;
 
 interface CDOTA_Item_Recipe_Battlefury extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Battlefury: CDOTA_Item_Recipe_Battlefury;
 
 interface C_DOTA_Item_Javelin extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Javelin: C_DOTA_Item_Javelin;
 
 interface CDOTA_Ability_Abaddon_AphoticShield extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Abaddon_AphoticShield: CDOTA_Ability_Abaddon_AphoticShield;
 
 interface CDOTA_Unit_Hero_Gyrocopter extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_Hero_Gyrocopter: CDOTA_Unit_Hero_Gyrocopter;
 
 interface CDOTA_Ability_Bloodseeker_Bloodbath extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Bloodseeker_Bloodbath: CDOTA_Ability_Bloodseeker_Bloodbath;
 
 interface C_DOTA_Ability_Nevermore_Presence extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nevermore_Presence: C_DOTA_Ability_Nevermore_Presence;
 
 interface C_DOTA_Ability_Special_Bonus_Mana_Break_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Mana_Break_40: C_DOTA_Ability_Special_Bonus_Mana_Break_40;
 
 interface CDOTA_Item_Octarine_Core extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Octarine_Core: CDOTA_Item_Octarine_Core;
 
 interface C_DOTA_Item_Maelstrom extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Maelstrom: C_DOTA_Item_Maelstrom;
 
 interface C_DOTA_Item_Shivas_Guard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Shivas_Guard: C_DOTA_Item_Shivas_Guard;
 
 interface C_DOTA_Ability_Invoker_Quas extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_Quas: C_DOTA_Ability_Invoker_Quas;
 
 interface C_DOTA_Ability_QueenOfPain_SonicWave extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_fStartTime: number
 	readonly m_fTotalTime: number
 	readonly starting_aoe: number
 	readonly final_aoe: number
 }
+declare var C_DOTA_Ability_QueenOfPain_SonicWave: C_DOTA_Ability_QueenOfPain_SonicWave;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Weaver_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Weaver_1: C_DOTA_Ability_Special_Bonus_Unique_Weaver_1;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_75 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_75: C_DOTA_Ability_Special_Bonus_Attack_Damage_75;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_35 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_35: C_DOTA_Ability_Special_Bonus_Movement_Speed_35;
 
 interface C_PortraitWorldPet extends C_DynamicProp {
-	readonly type_name: string
 }
+declare var C_PortraitWorldPet: C_PortraitWorldPet;
 
 interface CDOTA_Item_Medallion_Of_Courage extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Medallion_Of_Courage: CDOTA_Item_Medallion_Of_Courage;
 
 interface CDOTA_Ability_Grimstroke_SoulChain extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly chain_duration: number
 	readonly chain_latch_radius: number
 	readonly creep_duration_pct: number
 }
+declare var CDOTA_Ability_Grimstroke_SoulChain: CDOTA_Ability_Grimstroke_SoulChain;
 
 interface C_DOTA_Ability_Viper_PoisonAttack extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Viper_PoisonAttack: C_DOTA_Ability_Viper_PoisonAttack;
 
 interface C_DOTA_Ability_Pugna_NetherWard extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Pugna_NetherWard: C_DOTA_Ability_Pugna_NetherWard;
 
 interface CDOTA_Ability_Frostivus2018_Centaur_Return extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Frostivus2018_Centaur_Return: CDOTA_Ability_Frostivus2018_Centaur_Return;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Nevermore_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Nevermore_1: C_DOTA_Ability_Special_Bonus_Unique_Nevermore_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_3: C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_5: C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_5;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_40: C_DOTA_Ability_Special_Bonus_Attack_Damage_40;
 
 interface C_DOTACameraBounds extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_vecBoundsMin: Vector
 	readonly m_vecBoundsMax: Vector
 }
+declare var C_DOTACameraBounds: C_DOTACameraBounds;
 
 interface C_EnvDOFController extends C_PointEntity {
-	readonly type_name: string
 	readonly m_bDOFEnabled: boolean
 	readonly m_flNearBlurDepth: number
 	readonly m_flNearFocusDepth: number
@@ -20036,17 +20035,17 @@ interface C_EnvDOFController extends C_PointEntity {
 	readonly m_flNearBlurRadius: number
 	readonly m_flFarBlurRadius: number
 }
+declare var C_EnvDOFController: C_EnvDOFController;
 
 interface C_DOTA_Ability_Brewmaster_DrunkenHaze extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Brewmaster_DrunkenHaze: C_DOTA_Ability_Brewmaster_DrunkenHaze;
 
 interface C_DOTA_Unit_Hero_Rattletrap extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Rattletrap: C_DOTA_Unit_Hero_Rattletrap;
 
 interface C_DOTA_Ability_Nian_Whirlpool extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly pool_count: number
 	readonly min_distance: number
 	readonly max_distance: number
@@ -20055,29 +20054,29 @@ interface C_DOTA_Ability_Nian_Whirlpool extends C_DOTABaseAbility {
 	readonly m_ctTimer: CountdownTimer
 	readonly m_flTiming: number
 }
+declare var C_DOTA_Ability_Nian_Whirlpool: C_DOTA_Ability_Nian_Whirlpool;
 
 interface C_DOTA_Ability_Lion_Voodoo extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lion_Voodoo: C_DOTA_Ability_Lion_Voodoo;
 
 interface C_DOTA_Ability_Lina_LightStrikeArray extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lina_LightStrikeArray: C_DOTA_Ability_Lina_LightStrikeArray;
 
 interface C_DOTA_Unit_ZeusCloud extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_ZeusCloud: C_DOTA_Unit_ZeusCloud;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Antimage extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Antimage: C_DOTA_Ability_Special_Bonus_Unique_Antimage;
 
 interface C_DOTA_Ability_Special_Bonus_All_Stats_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_All_Stats_20: C_DOTA_Ability_Special_Bonus_All_Stats_20;
 
 interface C_PointValueRemapper extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bDisabled: boolean
 	readonly m_bDisabledOld: boolean
 	readonly m_bUpdateOnClient: boolean
@@ -20103,163 +20102,163 @@ interface C_PointValueRemapper extends C_BaseEntity {
 	readonly m_flPreviousValue: number
 	readonly m_flPreviousUpdateTickTime: number
 }
+declare var C_PointValueRemapper: C_PointValueRemapper;
 
 interface CDOTA_Item_Guardian_Greaves extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Guardian_Greaves: CDOTA_Item_Guardian_Greaves;
 
 interface C_DOTA_Ability_ShadowShamanVoodoo extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_ShadowShamanVoodoo: C_DOTA_Ability_ShadowShamanVoodoo;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker_3: C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Chen_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Chen_3: C_DOTA_Ability_Special_Bonus_Unique_Chen_3;
 
 interface C_DOTA_Ability_Special_Bonus_Evasion_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Evasion_25: C_DOTA_Ability_Special_Bonus_Evasion_25;
 
 interface C_EnvCubemapBox extends C_EnvCubemap {
-	readonly type_name: string
 }
+declare var C_EnvCubemapBox: C_EnvCubemapBox;
 
 interface C_DOTA_Ability_Clinkz_WindWalk extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Clinkz_WindWalk: C_DOTA_Ability_Clinkz_WindWalk;
 
 interface C_DOTA_Item_Sphere extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Sphere: C_DOTA_Item_Sphere;
 
 interface C_DOTA_Item_Recipe_InvisibilityEdge extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_InvisibilityEdge: C_DOTA_Item_Recipe_InvisibilityEdge;
 
 interface C_DOTA_Item_Butterfly extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Butterfly: C_DOTA_Item_Butterfly;
 
 interface C_DOTA_Ability_Dazzle_Bad_Juju extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Dazzle_Bad_Juju: C_DOTA_Ability_Dazzle_Bad_Juju;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Magnus extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Magnus: C_DOTA_Ability_Special_Bonus_Unique_Magnus;
 
 interface C_DOTA_Ability_Special_Bonus_Night_Vision_1000 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Night_Vision_1000: C_DOTA_Ability_Special_Bonus_Night_Vision_1000;
 
 interface CDOTA_Item_Recipe_TranquilBoots2 extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_TranquilBoots2: CDOTA_Item_Recipe_TranquilBoots2;
 
 interface CDOTA_Unit_Hero_Grimstroke extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nFXDeath: number
 }
+declare var CDOTA_Unit_Hero_Grimstroke: CDOTA_Unit_Hero_Grimstroke;
 
 interface C_DOTA_Ability_NagaSiren_Ensnare extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_NagaSiren_Ensnare: C_DOTA_Ability_NagaSiren_Ensnare;
 
 interface C_DOTA_Ability_CrystalMaiden_BrillianceAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_CrystalMaiden_BrillianceAura: C_DOTA_Ability_CrystalMaiden_BrillianceAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Treant_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Treant_6: C_DOTA_Ability_Special_Bonus_Unique_Treant_6;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Undying extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Undying: C_DOTA_Ability_Special_Bonus_Unique_Undying;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_6: C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_6;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_251 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_251: C_DOTA_Ability_Special_Bonus_Attack_Damage_251;
 
 interface C_PhysBox extends C_Breakable {
-	readonly type_name: string
 }
+declare var C_PhysBox: C_PhysBox;
 
 interface C_DOTA_Item_Recipe_Armlet extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Armlet: C_DOTA_Item_Recipe_Armlet;
 
 interface C_DOTA_Ability_SkeletonKing_VampiricAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SkeletonKing_VampiricAura: C_DOTA_Ability_SkeletonKing_VampiricAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Mirana_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Mirana_1: C_DOTA_Ability_Special_Bonus_Unique_Mirana_1;
 
 interface C_DOTA_Ability_Special_Bonus_Lifesteal_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Lifesteal_15: C_DOTA_Ability_Special_Bonus_Lifesteal_15;
 
 interface C_PointHMDAnchor extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bDisabled: boolean
 	readonly m_flEnableTime: number
 	readonly m_nPlayerIndex: number
 }
+declare var C_PointHMDAnchor: C_PointHMDAnchor;
 
 interface C_DOTA_Item_SheepStick extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_SheepStick: C_DOTA_Item_SheepStick;
 
 interface C_DOTA_Ability_TrollWarlord_BattleTrance extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly trance_duration: number
 }
+declare var C_DOTA_Ability_TrollWarlord_BattleTrance: C_DOTA_Ability_TrollWarlord_BattleTrance;
 
 interface C_DOTA_Ability_KeeperOfTheLight_ChakraMagic extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_KeeperOfTheLight_ChakraMagic: C_DOTA_Ability_KeeperOfTheLight_ChakraMagic;
 
 interface C_DOTA_Ability_DoomBringer_Devour extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DoomBringer_Devour: C_DOTA_Ability_DoomBringer_Devour;
 
 interface C_DOTA_Ability_Ursa_Enrage extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Ursa_Enrage: C_DOTA_Ability_Ursa_Enrage;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Skywrath_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Skywrath_3: C_DOTA_Ability_Special_Bonus_Unique_Skywrath_3;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_100: C_DOTA_Ability_Special_Bonus_Movement_Speed_100;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_160 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_160: C_DOTA_Ability_Special_Bonus_Attack_Speed_160;
 
 interface TreeModelReplacement_t {
-	readonly type_name: string
 	readonly m_nBinaryObjectID: number
 }
+declare var TreeModelReplacement_t: TreeModelReplacement_t;
 
 interface C_DOTA_Item_BootsOfSpeed extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_BootsOfSpeed: C_DOTA_Item_BootsOfSpeed;
 
 interface CDOTA_Ability_Elder_Titan_EchoStomp extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndexTitan: number
 	readonly m_nFXIndexSpirit: number
 	readonly m_nFXIndexTitanB: number
@@ -20271,46 +20270,46 @@ interface CDOTA_Ability_Elder_Titan_EchoStomp extends C_DOTABaseAbility {
 	readonly m_vecStompedHeroes: C_BaseEntity[]
 	readonly m_bStompedInvisibleHero: boolean
 }
+declare var CDOTA_Ability_Elder_Titan_EchoStomp: CDOTA_Ability_Elder_Titan_EchoStomp;
 
 interface C_DOTA_Ability_NagaSiren_MirrorImage extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hIllusions: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_NagaSiren_MirrorImage: C_DOTA_Ability_NagaSiren_MirrorImage;
 
 interface C_DOTA_Unit_Hero_Silencer extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Silencer: C_DOTA_Unit_Hero_Silencer;
 
 interface C_DOTA_Ability_Weaver_TheSwarm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Weaver_TheSwarm: C_DOTA_Ability_Weaver_TheSwarm;
 
 interface C_DOTA_Ability_BountyHunter_ShurikenToss extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hHitEntities: C_BaseEntity[]
 	readonly m_hHitEntitiesScepter: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_BountyHunter_ShurikenToss: C_DOTA_Ability_BountyHunter_ShurikenToss;
 
 interface C_DOTA_Unit_Hero_DarkSeer extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_DarkSeer: C_DOTA_Unit_Hero_DarkSeer;
 
 interface C_DOTA_Ability_Nian_Waterball extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_ctTimer: CountdownTimer
 	readonly m_hEntities: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Nian_Waterball: C_DOTA_Ability_Nian_Waterball;
 
 interface C_DOTA_Ability_OgreMagi_FrostArmor extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_OgreMagi_FrostArmor: C_DOTA_Ability_OgreMagi_FrostArmor;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_8: C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_8;
 
 interface C_BasePlayer extends C_BaseCombatCharacter {
-	readonly type_name: string
 	readonly m_vecFlashlightOrigin: Vector
 	readonly m_vecFlashlightForward: Vector
 	readonly m_vecFlashlightUp: Vector
@@ -20420,22 +20419,22 @@ interface C_BasePlayer extends C_BaseCombatCharacter {
 	readonly m_vecElevatorFixup: Vector
 	readonly m_nUnHoldableButtons: bigint
 }
+declare var C_BasePlayer: C_BasePlayer;
 
 interface C_DOTA_Ability_Magnataur_Skewer extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly skewer_radius: number
 	readonly skewer_speed: number
 	readonly range: number
 	readonly tree_radius: number
 	readonly m_nTargetsHit: number
 }
+declare var C_DOTA_Ability_Magnataur_Skewer: C_DOTA_Ability_Magnataur_Skewer;
 
 interface C_DOTA_Ability_Wisp_Empty2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Wisp_Empty2: C_DOTA_Ability_Wisp_Empty2;
 
 interface C_DOTA_Ability_KeeperOfTheLight_Illuminate extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_fStartTime: number
 	readonly m_fPower: number
 	readonly m_iProjectile: number
@@ -20445,9 +20444,9 @@ interface C_DOTA_Ability_KeeperOfTheLight_Illuminate extends C_DOTABaseAbility {
 	readonly damage_per_second: number
 	readonly m_bStarted: boolean
 }
+declare var C_DOTA_Ability_KeeperOfTheLight_Illuminate: C_DOTA_Ability_KeeperOfTheLight_Illuminate;
 
 interface C_DOTA_Ability_DeathProphet_CarrionSwarm extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly start_radius: number
 	readonly end_radius: number
 	readonly m_fStartTime: number
@@ -20455,130 +20454,130 @@ interface C_DOTA_Ability_DeathProphet_CarrionSwarm extends C_DOTABaseAbility {
 	readonly m_nProjectileHandle: number
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_DeathProphet_CarrionSwarm: C_DOTA_Ability_DeathProphet_CarrionSwarm;
 
 interface C_DOTA_Ability_Morphling_Replicate extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hTarget: C_BaseEntity
 }
+declare var C_DOTA_Ability_Morphling_Replicate: C_DOTA_Ability_Morphling_Replicate;
 
 interface C_DOTA_Ability_PhantomLancer_PhantomEdge extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_PhantomLancer_PhantomEdge: C_DOTA_Ability_PhantomLancer_PhantomEdge;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phoenix_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phoenix_4: C_DOTA_Ability_Special_Bonus_Unique_Phoenix_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Spectre_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Spectre_3: C_DOTA_Ability_Special_Bonus_Unique_Spectre_3;
 
 interface C_DOTA_Ability_Special_Bonus_Respawn_Reduction_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Respawn_Reduction_15: C_DOTA_Ability_Special_Bonus_Respawn_Reduction_15;
 
 interface C_DOTA_Item_Dagon_Upgraded5 extends C_DOTA_Item_Dagon_Upgraded {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Dagon_Upgraded5: C_DOTA_Item_Dagon_Upgraded5;
 
 interface C_DOTA_Ability_Pangolier_GyroshellStop extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Pangolier_GyroshellStop: C_DOTA_Ability_Pangolier_GyroshellStop;
 
 interface C_DOTA_Ability_Broodmother_SpinWeb extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hWebs: C_BaseEntity[]
 	readonly charge_restore_time: number
 	readonly max_charges: number
 }
+declare var C_DOTA_Ability_Broodmother_SpinWeb: C_DOTA_Ability_Broodmother_SpinWeb;
 
 interface C_DOTA_Ability_Warlock_Golem_Permanent_Immolation extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Warlock_Golem_Permanent_Immolation: C_DOTA_Ability_Warlock_Golem_Permanent_Immolation;
 
 interface C_DOTA_Ability_Puck_WaningRift extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Puck_WaningRift: C_DOTA_Ability_Puck_WaningRift;
 
 interface C_DOTA_Unit_Hero_Morphling extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Morphling: C_DOTA_Unit_Hero_Morphling;
 
 interface C_DOTA_Ability_Nevermore_Shadowraze1 extends C_DOTA_Ability_Nevermore_Shadowraze {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nevermore_Shadowraze1: C_DOTA_Ability_Nevermore_Shadowraze1;
 
 interface C_DOTA_Ability_Frostivus2018_Summon_Snowman extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Summon_Snowman: C_DOTA_Ability_Frostivus2018_Summon_Snowman;
 
 interface C_DOTA_Ability_Zombie_Berserk extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Zombie_Berserk: C_DOTA_Ability_Zombie_Berserk;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Underlord extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Underlord: C_DOTA_Ability_Special_Bonus_Unique_Underlord;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Abaddon_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Abaddon_3: C_DOTA_Ability_Special_Bonus_Unique_Abaddon_3;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_5: C_DOTA_Ability_Special_Bonus_Armor_5;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_6: C_DOTA_Ability_Special_Bonus_MP_Regen_6;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_14 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_14: C_DOTA_Ability_Special_Bonus_HP_Regen_14;
 
 interface C_DOTA_Item_Hood_Of_Defiance extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Hood_Of_Defiance: C_DOTA_Item_Hood_Of_Defiance;
 
 interface C_DOTA_Ability_DarkWillow_BrambleMaze extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DarkWillow_BrambleMaze: C_DOTA_Ability_DarkWillow_BrambleMaze;
 
 interface CDOTA_Unit_Elder_Titan_AncestralSpirit extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_Elder_Titan_AncestralSpirit: CDOTA_Unit_Elder_Titan_AncestralSpirit;
 
 interface C_DOTA_Ability_Luna_MoonGlaive extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iAttackIndex: number
 }
+declare var C_DOTA_Ability_Luna_MoonGlaive: C_DOTA_Ability_Luna_MoonGlaive;
 
 interface C_DOTA_Ability_GiantWolf_CriticalStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_GiantWolf_CriticalStrike: C_DOTA_Ability_GiantWolf_CriticalStrike;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Amplify_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Amplify_5: C_DOTA_Ability_Special_Bonus_Spell_Amplify_5;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_20: C_DOTA_Ability_Special_Bonus_Attack_Damage_20;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_15: C_DOTA_Ability_Special_Bonus_Strength_15;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_15: C_DOTA_Ability_Special_Bonus_Movement_Speed_15;
 
 interface CAdditionalWearable extends C_DynamicProp {
-	readonly type_name: string
 }
+declare var CAdditionalWearable: CAdditionalWearable;
 
 interface C_PropVehicleChoreoGeneric extends C_DynamicProp {
-	readonly type_name: string
 	readonly m_hPlayer: C_BaseEntity
 	readonly m_hPrevPlayer: C_BaseEntity
 	readonly m_bEnterAnimOn: boolean
@@ -20588,26 +20587,26 @@ interface C_PropVehicleChoreoGeneric extends C_DynamicProp {
 	readonly m_ViewSmoothingData: C_ViewSmoothingData_t
 	readonly m_vehicleView: c_vehicleview_t
 }
+declare var C_PropVehicleChoreoGeneric: C_PropVehicleChoreoGeneric;
 
 interface C_DOTA_Ability_Terrorblade_ConjureImage extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Terrorblade_ConjureImage: C_DOTA_Ability_Terrorblade_ConjureImage;
 
 interface C_DOTA_Ability_Special_Bonus_Gold_Income_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Gold_Income_10: C_DOTA_Ability_Special_Bonus_Gold_Income_10;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_75 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_75: C_DOTA_Ability_Special_Bonus_Movement_Speed_75;
 
 interface C_DOTATurboHeroPickRules extends C_DOTABaseCustomHeroPickRules {
-	readonly type_name: string
 	readonly m_Phase: number
 }
+declare var C_DOTATurboHeroPickRules: C_DOTATurboHeroPickRules;
 
 interface C_EnvCubemapFog extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_flEndDistance: number
 	readonly m_flStartDistance: number
 	readonly m_flFogFalloffExponent: number
@@ -20616,155 +20615,155 @@ interface C_EnvCubemapFog extends C_BaseEntity {
 	readonly m_bStartDisabled: boolean
 	readonly m_bFirstTime: boolean
 }
+declare var C_EnvCubemapFog: C_EnvCubemapFog;
 
 interface C_DOTA_Item_Recipe_Sphere extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Sphere: C_DOTA_Item_Recipe_Sphere;
 
 interface C_DOTA_Unit_Hero_Skywrath_Mage extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Skywrath_Mage: C_DOTA_Unit_Hero_Skywrath_Mage;
 
 interface C_DOTA_Ability_Treant_NaturesGuise extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Treant_NaturesGuise: C_DOTA_Ability_Treant_NaturesGuise;
 
 interface C_DOTA_Ability_BountyHunter_WindWalk extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BountyHunter_WindWalk: C_DOTA_Ability_BountyHunter_WindWalk;
 
 interface C_DOTA_Unit_Hero_Beastmaster_Boar extends C_DOTA_Unit_Hero_Beastmaster_Beasts {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Beastmaster_Boar: C_DOTA_Unit_Hero_Beastmaster_Boar;
 
 interface C_DOTA_Ability_Enigma_BlackHole extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Enigma_BlackHole: C_DOTA_Ability_Enigma_BlackHole;
 
 interface C_DOTA_Ability_Holdout_BladeFury extends C_DOTA_Ability_Juggernaut_BladeFury {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Holdout_BladeFury: C_DOTA_Ability_Holdout_BladeFury;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Yellow_IonShell extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Yellow_IonShell: C_DOTA_Ability_Greevil_Miniboss_Yellow_IonShell;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pangolier_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pangolier_3: C_DOTA_Ability_Special_Bonus_Unique_Pangolier_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer: C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker_4: C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_4: C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_3: C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_3;
 
 interface C_DOTA_DataDire extends C_DOTA_DataNonSpectator {
-	readonly type_name: string
 }
+declare var C_DOTA_DataDire: C_DOTA_DataDire;
 
 interface C_DOTA_Item_Recipe_Desolator extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Desolator: C_DOTA_Item_Recipe_Desolator;
 
 interface C_DOTA_Item_Recipe_Dagon2 extends C_DOTA_Item_Recipe_Dagon {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Dagon2: C_DOTA_Item_Recipe_Dagon2;
 
 interface CDOTA_NPC_Observer_Ward_TrueSight extends CDOTA_NPC_Observer_Ward {
-	readonly type_name: string
 	readonly m_iTrueSight: number
 	readonly m_hCasterEntity: C_BaseEntity
 	readonly m_hAbilityEntity: C_BaseEntity
 }
+declare var CDOTA_NPC_Observer_Ward_TrueSight: CDOTA_NPC_Observer_Ward_TrueSight;
 
 interface C_DOTA_Ability_Shredder_ChakramAlias_shredder_chakram_2 extends C_DOTA_Ability_Shredder_Chakram {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Shredder_ChakramAlias_shredder_chakram_2: C_DOTA_Ability_Shredder_ChakramAlias_shredder_chakram_2;
 
 interface C_DOTA_Ability_DragonKnight_DragonTail extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DragonKnight_DragonTail: C_DOTA_Ability_DragonKnight_DragonTail;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Undying_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Undying_5: C_DOTA_Ability_Special_Bonus_Unique_Undying_5;
 
 interface C_DOTA_Item_RingOfAquila extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_RingOfAquila: C_DOTA_Item_RingOfAquila;
 
 interface CDOTA_Ability_DeathProphet_SpiritSiphon extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vStartPos: Vector
 	readonly m_iArrowProjectile: number
 	readonly m_nFXIndex: number
 	readonly charge_restore_time: number
 	readonly max_charges: number
 }
+declare var CDOTA_Ability_DeathProphet_SpiritSiphon: CDOTA_Ability_DeathProphet_SpiritSiphon;
 
 interface C_DOTA_Ability_Slardar_Amplify_Damage extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Slardar_Amplify_Damage: C_DOTA_Ability_Slardar_Amplify_Damage;
 
 interface C_DOTA_Ability_Frostivus2018_Huskar_Life_Break extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly m_vProjectileLocation: Vector
 	readonly m_hTarget: C_BaseEntity
 	readonly m_bInterrupted: boolean
 	readonly max_damage: number
 }
+declare var C_DOTA_Ability_Frostivus2018_Huskar_Life_Break: C_DOTA_Ability_Frostivus2018_Huskar_Life_Break;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Orange_DragonSlave extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Orange_DragonSlave: C_DOTA_Ability_Greevil_Miniboss_Orange_DragonSlave;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Oracle_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Oracle_2: C_DOTA_Ability_Special_Bonus_Unique_Oracle_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_4: C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Clinkz_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Clinkz_2: C_DOTA_Ability_Special_Bonus_Unique_Clinkz_2;
 
 interface C_DOTA_Ability_Special_Bonus_Reincarnation_200 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Reincarnation_200: C_DOTA_Ability_Special_Bonus_Reincarnation_200;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_10: C_DOTA_Ability_Special_Bonus_Attack_Speed_10;
 
 interface C_DOTA_Ability_Special_Bonus_HP_325 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_325: C_DOTA_Ability_Special_Bonus_HP_325;
 
 interface C_SpeechBubbleManager extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_nLastCountInQueue: number[]
 }
+declare var C_SpeechBubbleManager: C_SpeechBubbleManager;
 
 interface C_DOTA_Unit_Hero_Winter_Wyvern extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nFXDeath: number
 }
+declare var C_DOTA_Unit_Hero_Winter_Wyvern: C_DOTA_Unit_Hero_Winter_Wyvern;
 
 interface CDOTA_Ability_Elder_Titan_AncestralSpirit extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly speed: number
 	readonly radius: number
 	readonly buff_duration: number
@@ -20775,151 +20774,151 @@ interface CDOTA_Ability_Elder_Titan_AncestralSpirit extends C_DOTABaseAbility {
 	readonly m_hAncestralSpirit: C_BaseEntity
 	readonly m_nReturnFXIndex: number
 }
+declare var CDOTA_Ability_Elder_Titan_AncestralSpirit: CDOTA_Ability_Elder_Titan_AncestralSpirit;
 
 interface C_DOTA_Ability_Tiny_Toss extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Tiny_Toss: C_DOTA_Ability_Tiny_Toss;
 
 interface C_DOTA_Item_UpgradedMortar extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_UpgradedMortar: C_DOTA_Item_UpgradedMortar;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Venomancer_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Venomancer_5: C_DOTA_Ability_Special_Bonus_Unique_Venomancer_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Spirit_Breaker_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Spirit_Breaker_2: C_DOTA_Ability_Special_Bonus_Unique_Spirit_Breaker_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Medusa_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Medusa_2: C_DOTA_Ability_Special_Bonus_Unique_Medusa_2;
 
 interface C_DOTA_Ability_Special_Bonus_Exp_Boost_35 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Exp_Boost_35: C_DOTA_Ability_Special_Bonus_Exp_Boost_35;
 
 interface C_DOTA_Unit_Brewmaster_PrimalStorm extends C_DOTA_BaseNPC_Creep {
-	readonly type_name: string
 	readonly m_nFXStormAmbient1: number
 	readonly m_nFXStormAmbient2: number
 }
+declare var C_DOTA_Unit_Brewmaster_PrimalStorm: C_DOTA_Unit_Brewmaster_PrimalStorm;
 
 interface C_DOTA_Ability_Chen_DivineFavor extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Chen_DivineFavor: C_DOTA_Ability_Chen_DivineFavor;
 
 interface C_DOTA_Unit_Hero_Warlock extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Warlock: C_DOTA_Unit_Hero_Warlock;
 
 interface C_DOTA_Ability_StormSpirit_ElectricVortex extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_StormSpirit_ElectricVortex: C_DOTA_Ability_StormSpirit_ElectricVortex;
 
 interface C_DOTA_Ability_AntiMage_ManaBreak extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_AntiMage_ManaBreak: C_DOTA_Ability_AntiMage_ManaBreak;
 
 interface C_DotaSubquestAbilityCastCount extends C_DotaSubquestBase {
-	readonly type_name: string
 }
+declare var C_DotaSubquestAbilityCastCount: C_DotaSubquestAbilityCastCount;
 
 interface C_DOTA_Ability_SatyrHellcaller_UnholyAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SatyrHellcaller_UnholyAura: C_DOTA_Ability_SatyrHellcaller_UnholyAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_DarkWillow_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_DarkWillow_2: C_DOTA_Ability_Special_Bonus_Unique_DarkWillow_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Enigma extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Enigma: C_DOTA_Ability_Special_Bonus_Unique_Enigma;
 
 interface C_DOTA_BaseNPC_HoldoutTower_HeavySlow extends C_DOTA_BaseNPC_HoldoutTower {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_HoldoutTower_HeavySlow: C_DOTA_BaseNPC_HoldoutTower_HeavySlow;
 
 interface C_DOTA_Ability_MonkeyKing_Boundless_Strike extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly strike_cast_range: number
 	readonly strike_radius: number
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_MonkeyKing_Boundless_Strike: C_DOTA_Ability_MonkeyKing_Boundless_Strike;
 
 interface C_DOTA_Ability_Skywrath_Mage_Arcane_Bolt extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly bolt_vision: number
 	readonly vision_duration: number
 	readonly m_flDamage: number
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_Skywrath_Mage_Arcane_Bolt: C_DOTA_Ability_Skywrath_Mage_Arcane_Bolt;
 
 interface C_DOTA_Ability_Shadow_Demon_Shadow_Poison extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Shadow_Demon_Shadow_Poison: C_DOTA_Ability_Shadow_Demon_Shadow_Poison;
 
 interface C_DOTA_Ability_Necrolyte_Sadist extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Necrolyte_Sadist: C_DOTA_Ability_Necrolyte_Sadist;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pangolier_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pangolier_2: C_DOTA_Ability_Special_Bonus_Unique_Pangolier_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_4: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren: C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren;
 
 interface C_DOTA_Ability_Special_Bonus_HP_500 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_500: C_DOTA_Ability_Special_Bonus_HP_500;
 
 interface C_DOTAMutationGameMode extends C_DOTABaseGameMode {
-	readonly type_name: string
 }
+declare var C_DOTAMutationGameMode: C_DOTAMutationGameMode;
 
 interface C_DOTA_BaseNPC_Promo extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Promo: C_DOTA_BaseNPC_Promo;
 
 interface C_DOTA_Item_Recipe_Skadi extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Skadi: C_DOTA_Item_Recipe_Skadi;
 
 interface C_DOTA_Ability_LoneDruid_SpiritBear_Return extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_LoneDruid_SpiritBear_Return: C_DOTA_Ability_LoneDruid_SpiritBear_Return;
 
 interface C_DOTA_Ability_Weaver_GeminateAttack extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Weaver_GeminateAttack: C_DOTA_Ability_Weaver_GeminateAttack;
 
 interface C_DOTA_Ability_Clinkz_Burning_Army extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_bIsBasePointSet: boolean
 	readonly m_bIsMidQuickcast: boolean
 	readonly m_vBasePoint: Vector
 	readonly m_nFXTarget: number
 	readonly range: number
 }
+declare var C_DOTA_Ability_Clinkz_Burning_Army: C_DOTA_Ability_Clinkz_Burning_Army;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_7: C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_7;
 
 interface C_DOTA_Ability_Special_Bonus_Cleave_150 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cleave_150: C_DOTA_Ability_Special_Bonus_Cleave_150;
 
 interface CClient_Precipitation extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_nPrecipType: number
 	readonly m_minSpeed: number
 	readonly m_maxSpeed: number
@@ -20941,169 +20940,169 @@ interface CClient_Precipitation extends C_BaseModelEntity {
 	readonly m_bHasSimulatedSinceLastSceneObjectUpdate: boolean
 	readonly m_nAvailableSheetSequencesMaxIndex: number
 }
+declare var CClient_Precipitation: CClient_Precipitation;
 
 interface C_LightSpotEntity extends C_LightEntity {
-	readonly type_name: string
 }
+declare var C_LightSpotEntity: C_LightSpotEntity;
 
 interface C_DOTA_Item_Recipe_Butterfly extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Butterfly: C_DOTA_Item_Recipe_Butterfly;
 
 interface C_DOTA_Ability_DarkWillow_Bedlam extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DarkWillow_Bedlam: C_DOTA_Ability_DarkWillow_Bedlam;
 
 interface C_DOTA_Ability_Puck_PhaseShift extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Puck_PhaseShift: C_DOTA_Ability_Puck_PhaseShift;
 
 interface C_DOTA_Ability_Zuus_StaticField extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Zuus_StaticField: C_DOTA_Ability_Zuus_StaticField;
 
 interface C_DOTA_Ability_Seasonal_Festive_Firework extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Seasonal_Festive_Firework: C_DOTA_Ability_Seasonal_Festive_Firework;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Purple_VenomousGale extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly duration: number
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Purple_VenomousGale: C_DOTA_Ability_Greevil_Miniboss_Purple_VenomousGale;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_3: C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_3;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_100: C_DOTA_Ability_Special_Bonus_Agility_100;
 
 interface C_DOTA_Ability_Special_Bonus_MP_350 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_350: C_DOTA_Ability_Special_Bonus_MP_350;
 
 interface C_DOTA_PortraitBaseModel extends C_BaseAnimating {
-	readonly type_name: string
 }
+declare var C_DOTA_PortraitBaseModel: C_DOTA_PortraitBaseModel;
 
 interface C_DOTA_PortraitTree extends C_BaseAnimating {
-	readonly type_name: string
 }
+declare var C_DOTA_PortraitTree: C_DOTA_PortraitTree;
 
 interface C_PropZipline extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_hPrevZipline: C_BaseEntity
 	readonly m_hNextZipline: C_BaseEntity
 	readonly m_flMaxSpeed: number
 }
+declare var C_PropZipline: C_PropZipline;
 
 interface C_DOTA_Item_Nullifier extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Nullifier: C_DOTA_Item_Nullifier;
 
 interface C_DOTA_Ability_SpiritBreaker_Bulldoze extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SpiritBreaker_Bulldoze: C_DOTA_Ability_SpiritBreaker_Bulldoze;
 
 interface C_DOTA_Ability_DoomBringer_Doom extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DoomBringer_Doom: C_DOTA_Ability_DoomBringer_Doom;
 
 interface C_DOTA_Ability_Courier_GoToSideShop2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_GoToSideShop2: C_DOTA_Ability_Courier_GoToSideShop2;
 
 interface C_DOTA_Unit_Hero_Tidehunter extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Tidehunter: C_DOTA_Unit_Hero_Tidehunter;
 
 interface C_IngameEvent_FM2015 extends C_IngameEvent_Base {
-	readonly type_name: string
 }
+declare var C_IngameEvent_FM2015: C_IngameEvent_FM2015;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Visage_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Visage_6: C_DOTA_Ability_Special_Bonus_Unique_Visage_6;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_10: C_DOTA_Ability_Special_Bonus_Strength_10;
 
 interface C_DOTA_Item_PocketRoshan extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_PocketRoshan: C_DOTA_Item_PocketRoshan;
 
 interface C_DOTA_Ability_Visage_SoulAssumption extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_fDamage: number
 	readonly m_nFXIndex: number
 	readonly m_iForcedStacks: number
 }
+declare var C_DOTA_Ability_Visage_SoulAssumption: C_DOTA_Ability_Visage_SoulAssumption;
 
 interface C_DOTA_Ability_Morphling_AdaptiveStrike_Str extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Morphling_AdaptiveStrike_Str: C_DOTA_Ability_Morphling_AdaptiveStrike_Str;
 
 interface C_IngameEvent_WM2016 extends C_IngameEvent_Base {
-	readonly type_name: string
 }
+declare var C_IngameEvent_WM2016: C_IngameEvent_WM2016;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Enigma_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Enigma_3: C_DOTA_Ability_Special_Bonus_Unique_Enigma_3;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_50: C_DOTA_Ability_Special_Bonus_Movement_Speed_50;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_200 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_200: C_DOTA_Ability_Special_Bonus_Attack_Speed_200;
 
 interface C_DOTA_Item_Recipe_Maelstrom extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Maelstrom: C_DOTA_Item_Recipe_Maelstrom;
 
 interface C_DOTA_Item_Dagon_Upgraded2 extends C_DOTA_Item_Dagon_Upgraded {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Dagon_Upgraded2: C_DOTA_Item_Dagon_Upgraded2;
 
 interface C_DOTA_Item_SobiMask extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_SobiMask: C_DOTA_Item_SobiMask;
 
 interface C_DOTA_Unit_Hero_Beastmaster_Hawk extends C_DOTA_Unit_Hero_Beastmaster_Beasts {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Beastmaster_Hawk: C_DOTA_Unit_Hero_Beastmaster_Hawk;
 
 interface C_DOTA_Ability_Enigma_DemonicConversion extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Enigma_DemonicConversion: C_DOTA_Ability_Enigma_DemonicConversion;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Abaddon extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Abaddon: C_DOTA_Ability_Special_Bonus_Unique_Abaddon;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tusk_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tusk_5: C_DOTA_Ability_Special_Bonus_Unique_Tusk_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Meepo_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Meepo_3: C_DOTA_Ability_Special_Bonus_Unique_Meepo_3;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Block_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Block_15: C_DOTA_Ability_Special_Bonus_Spell_Block_15;
 
 interface C_RagdollManager extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_iCurrentMaxRagdollCount: number
 }
+declare var C_RagdollManager: C_RagdollManager;
 
 interface C_DOTAPlayer extends C_BasePlayer {
-	readonly type_name: string
 	readonly m_iMinimapMove: number
 	readonly m_nRareLineClickCount: number
 	readonly m_nRareLinesPlayed: number
@@ -21179,33 +21178,33 @@ interface C_DOTAPlayer extends C_BasePlayer {
 	readonly m_flMusicOperatorVals: number[]
 	readonly m_iMusicOperatorVals: number[]
 }
+declare var C_DOTAPlayer: C_DOTAPlayer;
 
 interface C_DOTA_Ability_TemplarAssassin_PsionicTrap extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_TemplarAssassin_PsionicTrap: C_DOTA_Ability_TemplarAssassin_PsionicTrap;
 
 interface C_DOTA_Ability_SandKing_SandStorm extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SandKing_SandStorm: C_DOTA_Ability_SandKing_SandStorm;
 
 interface C_DOTA_Ability_DarkTrollWarlord_RaiseDead extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DarkTrollWarlord_RaiseDead: C_DOTA_Ability_DarkTrollWarlord_RaiseDead;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Medusa extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Medusa: C_DOTA_Ability_Special_Bonus_Unique_Medusa;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_5: C_DOTA_Ability_Special_Bonus_Unique_Arc_Warden_5;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_35 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_35: C_DOTA_Ability_Special_Bonus_Intelligence_35;
 
 interface C_EnvSky extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_bStartDisabled: boolean
 	readonly m_vTintColor: Color
 	readonly m_nFogType: number
@@ -21215,291 +21214,291 @@ interface C_EnvSky extends C_BaseModelEntity {
 	readonly m_flFogMaxEnd: number
 	readonly m_bEnabled: boolean
 }
+declare var C_EnvSky: C_EnvSky;
 
 interface C_DOTA_Ability_Obsidian_Destroyer_AstralImprisonment extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hImprisonedUnit: C_BaseEntity
 	readonly max_charges_scepter: number
 	readonly charge_restore_time_scepter: number
 }
+declare var C_DOTA_Ability_Obsidian_Destroyer_AstralImprisonment: C_DOTA_Ability_Obsidian_Destroyer_AstralImprisonment;
 
 interface C_DOTA_Ability_Clinkz_Strafe extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Clinkz_Strafe: C_DOTA_Ability_Clinkz_Strafe;
 
 interface CDOTA_Ability_GraniteGolem_HPAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_GraniteGolem_HPAura: CDOTA_Ability_GraniteGolem_HPAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sven_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sven_3: C_DOTA_Ability_Special_Bonus_Unique_Sven_3;
 
 interface CInfoTarget extends C_PointEntity {
-	readonly type_name: string
 }
+declare var CInfoTarget: CInfoTarget;
 
 interface CDOTA_Item_Solar_Crest extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Solar_Crest: CDOTA_Item_Solar_Crest;
 
 interface C_DOTA_Item_Diffusal_Blade_Level2 extends C_DOTA_Item_Diffusal_Blade {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Diffusal_Blade_Level2: C_DOTA_Item_Diffusal_Blade_Level2;
 
 interface C_DOTA_Ability_Rubick_Empty2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rubick_Empty2: C_DOTA_Ability_Rubick_Empty2;
 
 interface CDOTA_Ability_Meepo_Poof extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXIndex: number
 }
+declare var CDOTA_Ability_Meepo_Poof: CDOTA_Ability_Meepo_Poof;
 
 interface CDOTA_Ability_Life_Stealer_Empty1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Life_Stealer_Empty1: CDOTA_Ability_Life_Stealer_Empty1;
 
 interface C_DOTA_Ability_QueenOfPain_ShadowStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly projectile_speed: Vector
 }
+declare var C_DOTA_Ability_QueenOfPain_ShadowStrike: C_DOTA_Ability_QueenOfPain_ShadowStrike;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Kunkka_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Kunkka_5: C_DOTA_Ability_Special_Bonus_Unique_Kunkka_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander_3: C_DOTA_Ability_Special_Bonus_Unique_Legion_Commander_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Invoker_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Invoker_1: C_DOTA_Ability_Special_Bonus_Unique_Invoker_1;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_6: C_DOTA_Ability_Special_Bonus_HP_Regen_6;
 
 interface C_DOTA_Item_Assault_Cuirass extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Assault_Cuirass: C_DOTA_Item_Assault_Cuirass;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Mirana_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Mirana_4: C_DOTA_Ability_Special_Bonus_Unique_Mirana_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_4: C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_4;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_60 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_60: C_DOTA_Ability_Special_Bonus_Attack_Damage_60;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_10: C_DOTA_Ability_Special_Bonus_Intelligence_10;
 
 interface C_SpriteOriented extends C_Sprite {
-	readonly type_name: string
 }
+declare var C_SpriteOriented: C_SpriteOriented;
 
 interface C_PlayerCosmeticPropClientside extends C_DynamicPropClientside {
-	readonly type_name: string
 	readonly m_iPlayerNum: number
 	readonly m_iCosmeticType: number
 	readonly m_bGeneratedShowcaseProps: boolean
 	readonly m_vecShowcaseProps: C_PlayerCosmeticPropClientside[]
 	readonly m_pShowcaseItem: C_EconItemView
 }
+declare var C_PlayerCosmeticPropClientside: C_PlayerCosmeticPropClientside;
 
 interface C_DOTA_Item_Circlet extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Circlet: C_DOTA_Item_Circlet;
 
 interface C_DOTA_Ability_Roshan_Slam extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Roshan_Slam: C_DOTA_Ability_Roshan_Slam;
 
 interface CDOTA_Ability_Frostivus2018_Clinkz_Burning_Army extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_bIsBasePointSet: boolean
 	readonly m_bIsMidQuickcast: boolean
 	readonly m_vBasePoint: Vector
 	readonly m_nFXTarget: number
 	readonly range: number
 }
+declare var CDOTA_Ability_Frostivus2018_Clinkz_Burning_Army: CDOTA_Ability_Frostivus2018_Clinkz_Burning_Army;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Warlock_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Warlock_4: C_DOTA_Ability_Special_Bonus_Unique_Warlock_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer: C_DOTA_Ability_Special_Bonus_Unique_Phantom_Lancer;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_8: C_DOTA_Ability_Special_Bonus_Strength_8;
 
 interface C_DOTA_Ability_Special_Bonus_MP_500 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_500: C_DOTA_Ability_Special_Bonus_MP_500;
 
 interface C_DOTA_Ability_LoneDruid_SavageRoar_Bear extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_LoneDruid_SavageRoar_Bear: C_DOTA_Ability_LoneDruid_SavageRoar_Bear;
 
 interface C_DOTA_Ability_Invoker_Invoke extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly max_invoked_spells: number
 }
+declare var C_DOTA_Ability_Invoker_Invoke: C_DOTA_Ability_Invoker_Invoke;
 
 interface C_DOTA_Ability_Life_Stealer_Feast extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Life_Stealer_Feast: C_DOTA_Ability_Life_Stealer_Feast;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_20: C_DOTA_Ability_Special_Bonus_Intelligence_20;
 
 interface C_DOTA_BaseNPC_HoldoutTower_LightFast extends C_DOTA_BaseNPC_HoldoutTower {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_HoldoutTower_LightFast: C_DOTA_BaseNPC_HoldoutTower_LightFast;
 
 interface C_DOTA_Item_Necronomicon_Level2 extends C_DOTA_Item_Necronomicon {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Necronomicon_Level2: C_DOTA_Item_Necronomicon_Level2;
 
 interface C_DOTA_Item_Recipe_DivineRapier extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_DivineRapier: C_DOTA_Item_Recipe_DivineRapier;
 
 interface C_DOTA_Item_Recipe_PowerTreads extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_PowerTreads: C_DOTA_Item_Recipe_PowerTreads;
 
 interface C_DOTA_Ability_Pangolier_LuckyShot extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Pangolier_LuckyShot: C_DOTA_Ability_Pangolier_LuckyShot;
 
 interface C_DOTA_Ability_Undying_SoulRip extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly damage_per_unit: number
 	readonly radius: number
 	readonly max_units: number
 	readonly tombstone_heal: number
 }
+declare var C_DOTA_Ability_Undying_SoulRip: C_DOTA_Ability_Undying_SoulRip;
 
 interface C_DOTA_Ability_FacelessVoid_TimeLock extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_FacelessVoid_TimeLock: C_DOTA_Ability_FacelessVoid_TimeLock;
 
 interface C_DOTA_Ability_Bane_BrainSap extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly brain_sap_damage: number
 }
+declare var C_DOTA_Ability_Bane_BrainSap: C_DOTA_Ability_Bane_BrainSap;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Necrophos_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Necrophos_2: C_DOTA_Ability_Special_Bonus_Unique_Necrophos_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Phoenix_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Phoenix_5: C_DOTA_Ability_Special_Bonus_Unique_Phoenix_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Disruptor_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Disruptor_2: C_DOTA_Ability_Special_Bonus_Unique_Disruptor_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_5: C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_5;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_65 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_65: C_DOTA_Ability_Special_Bonus_Movement_Speed_65;
 
 interface C_DOTA_Item_GemOfTrueSight extends C_DOTA_Item {
-	readonly type_name: string
 	readonly m_iTempViewer: number
 	readonly m_iTeam: number
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Item_GemOfTrueSight: C_DOTA_Item_GemOfTrueSight;
 
 interface C_DOTA_Item_Gauntlets extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Gauntlets: C_DOTA_Item_Gauntlets;
 
 interface C_DOTA_Unit_Hero_Medusa extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Medusa: C_DOTA_Unit_Hero_Medusa;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Treant_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Treant_2: C_DOTA_Ability_Special_Bonus_Unique_Treant_2;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Base_Damage_45 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Base_Damage_45: C_DOTA_Ability_Special_Bonus_Attack_Base_Damage_45;
 
 interface C_DOTA_Item_RuneSpawner_Powerup extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_nRuneType: number
 	readonly m_flLastSpawnTime: number
 }
+declare var C_DOTA_Item_RuneSpawner_Powerup: C_DOTA_Item_RuneSpawner_Powerup;
 
 interface C_DOTA_Ability_Abaddon_DeathCoil extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Abaddon_DeathCoil: C_DOTA_Ability_Abaddon_DeathCoil;
 
 interface C_DOTA_Ability_TemplarAssassin_Meld extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_TemplarAssassin_Meld: C_DOTA_Ability_TemplarAssassin_Meld;
 
 interface C_DOTA_Ability_Nian_Sigils extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nian_Sigils: C_DOTA_Ability_Nian_Sigils;
 
 interface C_DOTA_Ability_Nevermore_Necromastery extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nevermore_Necromastery: C_DOTA_Ability_Nevermore_Necromastery;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Underlord_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Underlord_2: C_DOTA_Ability_Special_Bonus_Unique_Underlord_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_4: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Earth_Spirit_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Earth_Spirit_3: C_DOTA_Ability_Special_Bonus_Unique_Earth_Spirit_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Axe_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Axe_2: C_DOTA_Ability_Special_Bonus_Unique_Axe_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void_3: C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_5: C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_5;
 
 interface C_DOTA_Item_Recipe_Arcane_Boots extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Arcane_Boots: C_DOTA_Item_Recipe_Arcane_Boots;
 
 interface CDOTA_Ability_Winter_Wyvern_Winters_Curse extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Winter_Wyvern_Winters_Curse: CDOTA_Ability_Winter_Wyvern_Winters_Curse;
 
 interface C_DOTA_Ability_Holdout_FriendlySkewer extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly skewer_radius: number
 	readonly skewer_speed: number
 	readonly max_targets: number
@@ -21508,21 +21507,21 @@ interface C_DOTA_Ability_Holdout_FriendlySkewer extends C_DOTABaseAbility {
 	readonly affects_creeps: number
 	readonly m_nTargetsHit: number
 }
+declare var C_DOTA_Ability_Holdout_FriendlySkewer: C_DOTA_Ability_Holdout_FriendlySkewer;
 
 interface C_DOTA_Ability_DarkSeer_IonShell extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DarkSeer_IonShell: C_DOTA_Ability_DarkSeer_IonShell;
 
 interface C_DOTA_Ability_Bane_Enfeeble extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Bane_Enfeeble: C_DOTA_Ability_Bane_Enfeeble;
 
 interface C_DOTA_Item_DeathGoldDropped extends C_BaseAnimating {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_DeathGoldDropped: C_DOTA_Item_DeathGoldDropped;
 
 interface C_LocalTempEntity extends C_BaseAnimating {
-	readonly type_name: string
 	readonly flags: number
 	readonly die: number
 	readonly m_flFrameMax: number
@@ -21549,70 +21548,70 @@ interface C_LocalTempEntity extends C_BaseAnimating {
 	readonly m_vecPrevAbsOrigin: Vector
 	readonly m_vecTempEntAcceleration: Vector
 }
+declare var C_LocalTempEntity: C_LocalTempEntity;
 
 interface C_DOTA_Item_Armlet extends C_DOTA_Item {
-	readonly type_name: string
 	readonly toggle_cooldown: number
 }
+declare var C_DOTA_Item_Armlet: C_DOTA_Item_Armlet;
 
 interface C_DOTA_Ability_Courier_Shield extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_Shield: C_DOTA_Ability_Courier_Shield;
 
 interface C_DOTA_Ability_DrowRanger_Silence extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DrowRanger_Silence: C_DOTA_Ability_DrowRanger_Silence;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Nevermore_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Nevermore_2: C_DOTA_Ability_Special_Bonus_Unique_Nevermore_2;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_14 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_14: C_DOTA_Ability_Special_Bonus_Strength_14;
 
 interface C_LightEnvironmentEntity extends C_LightDirectionalEntity {
-	readonly type_name: string
 }
+declare var C_LightEnvironmentEntity: C_LightEnvironmentEntity;
 
 interface C_DOTA_Item_WindLace extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_WindLace: C_DOTA_Item_WindLace;
 
 interface CDOTA_Ability_EarthSpirit_Petrify extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_EarthSpirit_Petrify: CDOTA_Ability_EarthSpirit_Petrify;
 
 interface C_DOTA_Ability_EmberSpirit_SleightOfFist extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vCastLoc: Vector
 	readonly m_nHeroesKilled: number
 	readonly m_hAttackEntities: C_BaseEntity[]
 	readonly m_nFXMarkerIndex: number
 }
+declare var C_DOTA_Ability_EmberSpirit_SleightOfFist: C_DOTA_Ability_EmberSpirit_SleightOfFist;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lion_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lion_4: C_DOTA_Ability_Special_Bonus_Unique_Lion_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sniper_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sniper_3: C_DOTA_Ability_Special_Bonus_Unique_Sniper_3;
 
 interface C_DOTA_Ability_Special_Bonus_Evasion_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Evasion_50: C_DOTA_Ability_Special_Bonus_Evasion_50;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Amplify_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Amplify_20: C_DOTA_Ability_Special_Bonus_Spell_Amplify_20;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_5: C_DOTA_Ability_Special_Bonus_MP_Regen_5;
 
 interface C_DynamicLight extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_Flags: number
 	readonly m_LightStyle: number
 	readonly m_Radius: number
@@ -21621,50 +21620,50 @@ interface C_DynamicLight extends C_BaseModelEntity {
 	readonly m_OuterAngle: number
 	readonly m_SpotRadius: number
 }
+declare var C_DynamicLight: C_DynamicLight;
 
 interface C_DOTA_Item_Satanic extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Satanic: C_DOTA_Item_Satanic;
 
 interface CDOTA_Unit_Grimstroke_InkCreature extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_Grimstroke_InkCreature: CDOTA_Unit_Grimstroke_InkCreature;
 
 interface C_DOTA_Ability_MonkeyKing_UnTransform extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_MonkeyKing_UnTransform: C_DOTA_Ability_MonkeyKing_UnTransform;
 
 interface CDOTA_Ability_Elder_Titan_EarthSplitter extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly crack_width: number
 	readonly crack_distance: number
 	readonly speed: number
 	readonly vision_width: number
 	readonly crack_time: number
 }
+declare var CDOTA_Ability_Elder_Titan_EarthSplitter: CDOTA_Ability_Elder_Titan_EarthSplitter;
 
 interface C_DOTA_Ability_Undying_FleshGolem extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Undying_FleshGolem: C_DOTA_Ability_Undying_FleshGolem;
 
 interface C_DOTA_Ability_Frostivus2018_Omniknight_Degen_Aura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Omniknight_Degen_Aura: C_DOTA_Ability_Frostivus2018_Omniknight_Degen_Aura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pangolier_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pangolier_5: C_DOTA_Ability_Special_Bonus_Unique_Pangolier_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Venomancer_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Venomancer_4: C_DOTA_Ability_Special_Bonus_Unique_Venomancer_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_6: C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_6;
 
 interface C_PropJeep extends C_PropVehicleDriveable {
-	readonly type_name: string
 	readonly m_vecLastEyePos: Vector
 	readonly m_vecLastEyeTarget: Vector
 	readonly m_vecEyeSpeed: Vector
@@ -21674,95 +21673,95 @@ interface C_PropJeep extends C_PropVehicleDriveable {
 	readonly m_pHeadlight: CHeadlightEffect
 	readonly m_bHeadlightIsOn: boolean
 }
+declare var C_PropJeep: C_PropJeep;
 
 interface C_DOTA_Item_Heart extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Heart: C_DOTA_Item_Heart;
 
 interface C_DOTA_Ability_Pangolier_ShieldCrash extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Pangolier_ShieldCrash: C_DOTA_Ability_Pangolier_ShieldCrash;
 
 interface C_DOTA_NPC_TechiesMines extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_iRangeFX: number
 }
+declare var C_DOTA_NPC_TechiesMines: C_DOTA_NPC_TechiesMines;
 
 interface C_DOTA_Ability_SandKing_CausticFinale extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SandKing_CausticFinale: C_DOTA_Ability_SandKing_CausticFinale;
 
 interface C_DOTA_Ability_SatyrHellcaller_Shockwave extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SatyrHellcaller_Shockwave: C_DOTA_Ability_SatyrHellcaller_Shockwave;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_15: C_DOTA_Ability_Special_Bonus_Agility_15;
 
 interface C_DOTA_Ability_Special_Bonus_HP_Regen_16 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_Regen_16: C_DOTA_Ability_Special_Bonus_HP_Regen_16;
 
 interface C_DOTA_Unit_Hero_Broodmother extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Broodmother: C_DOTA_Unit_Hero_Broodmother;
 
 interface C_DOTA_Item_Recipe_HelmOfTheDominator extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_HelmOfTheDominator: C_DOTA_Item_Recipe_HelmOfTheDominator;
 
 interface C_DOTA_Item_RefresherOrb extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_RefresherOrb: C_DOTA_Item_RefresherOrb;
 
 interface C_DOTA_Ability_Silencer_CurseOfTheSilent extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Silencer_CurseOfTheSilent: C_DOTA_Ability_Silencer_CurseOfTheSilent;
 
 interface C_DOTA_Ability_Chen_Penitence extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Chen_Penitence: C_DOTA_Ability_Chen_Penitence;
 
 interface C_DOTA_Ability_Slardar_Sprint extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Slardar_Sprint: C_DOTA_Ability_Slardar_Sprint;
 
 interface C_DOTA_Ability_PhantomLancer_Doppelwalk extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_PhantomLancer_Doppelwalk: C_DOTA_Ability_PhantomLancer_Doppelwalk;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_6: C_DOTA_Ability_Special_Bonus_Intelligence_6;
 
 interface C_EnvDetailController extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_flFadeStartDist: number
 	readonly m_flFadeEndDist: number
 }
+declare var C_EnvDetailController: C_EnvDetailController;
 
 interface CViewAngleAnimation extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_flAnimStartTime: number
 	readonly m_bFinished: boolean
 	readonly m_KeyFrames: CViewAngleKeyFrame[]
 	readonly m_vecBaseAngles: QAngle
 	readonly m_iFlags: number
 }
+declare var CViewAngleAnimation: CViewAngleAnimation;
 
 interface C_DOTA_Ability_SpiritBreaker_NetherStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly cooldown_scepter: number
 	readonly cast_range_scepter: number
 }
+declare var C_DOTA_Ability_SpiritBreaker_NetherStrike: C_DOTA_Ability_SpiritBreaker_NetherStrike;
 
 interface C_DOTA_Unit_Hero_Enchantress extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Enchantress: C_DOTA_Unit_Hero_Enchantress;
 
 interface C_DOTA_Ability_Nian_Hurricane extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly min_distance: number
 	readonly max_distance: number
 	readonly torrent_count: number
@@ -21777,55 +21776,55 @@ interface C_DOTA_Ability_Nian_Hurricane extends C_DOTABaseAbility {
 	readonly m_nFXIndex: number
 	readonly m_nfxIndex_roar: number
 }
+declare var C_DOTA_Ability_Nian_Hurricane: C_DOTA_Ability_Nian_Hurricane;
 
 interface C_DOTA_Ability_Puck_IllusoryOrb extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iProjectile: number
 	readonly m_ViewerTimer: CountdownTimer
 	readonly orb_vision: number
 	readonly vision_duration: number
 }
+declare var C_DOTA_Ability_Puck_IllusoryOrb: C_DOTA_Ability_Puck_IllusoryOrb;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Doom_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Doom_1: C_DOTA_Ability_Special_Bonus_Unique_Doom_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Bristleback_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Bristleback_2: C_DOTA_Ability_Special_Bonus_Unique_Bristleback_2;
 
 interface C_DOTA_Ability_Special_Bonus_Cleave_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cleave_100: C_DOTA_Ability_Special_Bonus_Cleave_100;
 
 interface C_CombatWeaponClone extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_hWeaponParent: C_BaseEntity
 	readonly m_nLastUpdatedWorldModelClone: number
 }
+declare var C_CombatWeaponClone: C_CombatWeaponClone;
 
 interface C_DOTA_Ability_Rubick_NullField extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rubick_NullField: C_DOTA_Ability_Rubick_NullField;
 
 interface CDOTA_Ability_Clinkz_SearingArrows extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Clinkz_SearingArrows: CDOTA_Ability_Clinkz_SearingArrows;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Razor_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Razor_4: C_DOTA_Ability_Special_Bonus_Unique_Razor_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lich_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lich_4: C_DOTA_Ability_Special_Bonus_Unique_Lich_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light: C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light;
 
 interface CPointHintUi extends C_PointClientUIWorldPanel {
-	readonly type_name: string
 	readonly m_attachType: number
 	readonly m_hIconTarget: C_BaseEntity
 	readonly m_szTargetAttachmentName: string
@@ -21841,21 +21840,21 @@ interface CPointHintUi extends C_PointClientUIWorldPanel {
 	readonly m_flFadeInEndTime: number
 	readonly m_flFadeOutEndTime: number
 }
+declare var CPointHintUi: CPointHintUi;
 
 interface C_PhysicsProp extends C_BreakableProp {
-	readonly type_name: string
 	readonly m_bAwake: boolean
 	readonly m_spawnflags: number
 }
+declare var C_PhysicsProp: C_PhysicsProp;
 
 interface C_DOTAPropCustomTexture extends C_DynamicProp {
-	readonly type_name: string
 	readonly m_unTeamID: number
 	readonly m_bSetupMaterialProxy: boolean
 }
+declare var C_DOTAPropCustomTexture: C_DOTAPropCustomTexture;
 
 interface C_DOTA_Ability_TrollWarlord_WhirlingAxes_Ranged extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vStartPos: Vector
 	readonly m_iArrowProjectile: number
 	readonly axe_width: number
@@ -21865,29 +21864,29 @@ interface C_DOTA_Ability_TrollWarlord_WhirlingAxes_Ranged extends C_DOTABaseAbil
 	readonly axe_count: number
 	readonly m_hHitUnits: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_TrollWarlord_WhirlingAxes_Ranged: C_DOTA_Ability_TrollWarlord_WhirlingAxes_Ranged;
 
 interface C_DotaSubquestTutorialEvent extends C_DotaSubquestBase {
-	readonly type_name: string
 }
+declare var C_DotaSubquestTutorialEvent: C_DotaSubquestTutorialEvent;
 
 interface C_DOTA_Ability_Greevil_Miniboss_White_Degen_Aura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_White_Degen_Aura: C_DOTA_Ability_Greevil_Miniboss_White_Degen_Aura;
 
 interface CDOTA_Ability_Spawnlord_Aura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Spawnlord_Aura: CDOTA_Ability_Spawnlord_Aura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Riki_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Riki_5: C_DOTA_Ability_Special_Bonus_Unique_Riki_5;
 
 interface C_DOTA_Ability_Special_Bonus_HP_800 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_800: C_DOTA_Ability_Special_Bonus_HP_800;
 
 interface C_Beam extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_flFrameRate: number
 	readonly m_flHDRColorScale: number
 	readonly m_flFireTime: number
@@ -21911,65 +21910,65 @@ interface C_Beam extends C_BaseModelEntity {
 	readonly m_vecEndPos: Vector
 	readonly m_hEndEntity: C_BaseEntity
 }
+declare var C_Beam: C_Beam;
 
 interface C_ShadowControl extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_shadowDirection: Vector
 	readonly m_shadowColor: Color
 	readonly m_flShadowMaxDist: number
 	readonly m_bDisableShadows: boolean
 	readonly m_bEnableLocalLightShadows: boolean
 }
+declare var C_ShadowControl: C_ShadowControl;
 
 interface C_FuncMoveLinear extends C_BaseToggle {
-	readonly type_name: string
 }
+declare var C_FuncMoveLinear: C_FuncMoveLinear;
 
 interface C_DOTA_Item_Recipe_Heart extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Heart: C_DOTA_Item_Recipe_Heart;
 
 interface C_DOTA_Item_PlateMail extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_PlateMail: C_DOTA_Item_PlateMail;
 
 interface C_DOTA_Ability_Wisp_Tether_Break extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Wisp_Tether_Break: C_DOTA_Ability_Wisp_Tether_Break;
 
 interface CDOTA_Ability_Beastmaster_InnerBeast extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Beastmaster_InnerBeast: CDOTA_Ability_Beastmaster_InnerBeast;
 
 interface CDOTA_Ability_Lich_FrostAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Lich_FrostAura: CDOTA_Ability_Lich_FrostAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Omniknight_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Omniknight_3: C_DOTA_Ability_Special_Bonus_Unique_Omniknight_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Magnus_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Magnus_2: C_DOTA_Ability_Special_Bonus_Unique_Magnus_2;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_3: C_DOTA_Ability_Special_Bonus_Strength_3;
 
 interface C_DOTA_Item_Rune extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_iRuneType: number
 	readonly m_iOldRuneType: number
 	readonly m_bShowingTooltip: boolean
 }
+declare var C_DOTA_Item_Rune: C_DOTA_Item_Rune;
 
 interface C_DOTAAmbientCreatureParticleZone extends C_FuncBrush {
-	readonly type_name: string
 }
+declare var C_DOTAAmbientCreatureParticleZone: C_DOTAAmbientCreatureParticleZone;
 
 interface C_DOTA_Hero_Recorder extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bStartRecording: boolean
 	readonly m_hHero: C_BaseEntity
 	readonly m_hPlayer: C_BaseEntity
@@ -21983,101 +21982,101 @@ interface C_DOTA_Hero_Recorder extends C_BaseEntity {
 	readonly m_flStartTime: number
 	readonly m_flCycles: number[]
 }
+declare var C_DOTA_Hero_Recorder: C_DOTA_Hero_Recorder;
 
 interface C_DOTA_Item_Aether_Lens extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Aether_Lens: C_DOTA_Item_Aether_Lens;
 
 interface C_DOTA_Item_Necronomicon_Level3 extends C_DOTA_Item_Necronomicon {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Necronomicon_Level3: C_DOTA_Item_Necronomicon_Level3;
 
 interface C_DOTA_Item_Sange extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Sange: C_DOTA_Item_Sange;
 
 interface CDOTA_Ability_Grimstroke_InkCreature extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly spawn_time: number
 }
+declare var CDOTA_Ability_Grimstroke_InkCreature: CDOTA_Ability_Grimstroke_InkCreature;
 
 interface C_DOTA_Ability_Broodmother_InsatiableHunger extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Broodmother_InsatiableHunger: C_DOTA_Ability_Broodmother_InsatiableHunger;
 
 interface C_DOTA_Ability_Ursa_Earthshock extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Ursa_Earthshock: C_DOTA_Ability_Ursa_Earthshock;
 
 interface C_DOTA_Ability_Bane_FiendsGrip extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hGripTarget: C_BaseEntity
 	readonly fiend_grip_damage: number
 }
+declare var C_DOTA_Ability_Bane_FiendsGrip: C_DOTA_Ability_Bane_FiendsGrip;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Red_Earthshock extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Red_Earthshock: C_DOTA_Ability_Greevil_Miniboss_Red_Earthshock;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_1: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tinker_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tinker_2: C_DOTA_Ability_Special_Bonus_Unique_Tinker_2;
 
 interface C_DOTA_Ability_Special_Bonus_HP_600 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_HP_600: C_DOTA_Ability_Special_Bonus_HP_600;
 
 interface C_DOTA_Ability_PhantomAssassin_CoupdeGrace extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_PhantomAssassin_CoupdeGrace: C_DOTA_Ability_PhantomAssassin_CoupdeGrace;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_20: C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_20;
 
 interface C_DOTAGamerulesProxy extends C_GameRulesProxy {
-	readonly type_name: string
 	readonly m_pGameRules: C_DOTAGamerules
 }
+declare var C_DOTAGamerulesProxy: C_DOTAGamerulesProxy;
 
 interface C_DOTA_BaseNPC_Creep_Siege extends C_DOTA_BaseNPC_Creep_Lane {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Creep_Siege: C_DOTA_BaseNPC_Creep_Siege;
 
 interface CDOTA_Item_Enchanted_Mango extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Enchanted_Mango: CDOTA_Item_Enchanted_Mango;
 
 interface C_DOTA_Ability_Phoenix_IcarusDiveStop extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Phoenix_IcarusDiveStop: C_DOTA_Ability_Phoenix_IcarusDiveStop;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Enchantress_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Enchantress_2: C_DOTA_Ability_Special_Bonus_Unique_Enchantress_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_1: C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wisp_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wisp_4: C_DOTA_Ability_Special_Bonus_Unique_Wisp_4;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_60 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_60: C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_60;
 
 interface C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_10: C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_10;
 
 interface C_EnvScreenOverlay extends C_PointEntity {
-	readonly type_name: string
 	readonly m_iszOverlayNames: string[]
 	readonly m_flOverlayTimes: number[]
 	readonly m_flStartTime: number
@@ -22088,37 +22087,37 @@ interface C_EnvScreenOverlay extends C_PointEntity {
 	readonly m_iCurrentOverlay: number
 	readonly m_flCurrentOverlayTime: number
 }
+declare var C_EnvScreenOverlay: C_EnvScreenOverlay;
 
 interface C_DynamicPropAlias_prop_dynamic_override extends C_DynamicProp {
-	readonly type_name: string
 }
+declare var C_DynamicPropAlias_prop_dynamic_override: C_DynamicPropAlias_prop_dynamic_override;
 
 interface C_DOTA_Ability_Rubick_Arcane_Supremacy extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rubick_Arcane_Supremacy: C_DOTA_Ability_Rubick_Arcane_Supremacy;
 
 interface C_DOTA_Ability_Life_Stealer_Rage extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Life_Stealer_Rage: C_DOTA_Ability_Life_Stealer_Rage;
 
 interface C_DOTA_Unit_Hero_TemplarAssassin extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_TemplarAssassin: C_DOTA_Unit_Hero_TemplarAssassin;
 
 interface C_DOTA_Ability_Lich_FrostShield extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lich_FrostShield: C_DOTA_Ability_Lich_FrostShield;
 
 interface CDOTA_Ability_Frostivus2018_FacelessVoid_TimeLock extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Frostivus2018_FacelessVoid_TimeLock: CDOTA_Ability_Frostivus2018_FacelessVoid_TimeLock;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Omniknight_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Omniknight_1: C_DOTA_Ability_Special_Bonus_Unique_Omniknight_1;
 
 interface C_PointWorldText extends C_ModelPointEntity {
-	readonly type_name: string
 	readonly m_bForceRecreateNextUpdate: boolean
 	readonly m_bEnabled: boolean
 	readonly m_bFullbright: boolean
@@ -22130,35 +22129,35 @@ interface C_PointWorldText extends C_ModelPointEntity {
 	readonly m_nJustifyVertical: number
 	readonly m_nReorientMode: number
 }
+declare var C_PointWorldText: C_PointWorldText;
 
 interface C_BodyComponentBaseAnimatingOverlay extends CBodyComponentSkeletonInstance {
-	readonly type_name: string
 	readonly m_animationController: C_BaseAnimatingOverlayController
 	readonly __m_pChainEntity: CNetworkVarChainer
 }
+declare var C_BodyComponentBaseAnimatingOverlay: C_BodyComponentBaseAnimatingOverlay;
 
 interface C_DOTA_Unit_Hero_Dazzle extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Dazzle: C_DOTA_Unit_Hero_Dazzle;
 
 interface C_DOTA_Ability_Kunkka_Return extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Kunkka_Return: C_DOTA_Ability_Kunkka_Return;
 
 interface C_DOTA_Ability_DrowRanger_Trueshot extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DrowRanger_Trueshot: C_DOTA_Ability_DrowRanger_Trueshot;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_4: C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_4;
 
 interface C_DOTA_Ability_Special_Bonus_All_Stats_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_All_Stats_8: C_DOTA_Ability_Special_Bonus_All_Stats_8;
 
 interface C_DOTA_Unit_Hero_Wisp extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 	readonly m_nAmbientFXIndex: number
 	readonly m_nStunnedFXIndex: number
 	readonly m_nTalkFXIndex: number
@@ -22168,171 +22167,171 @@ interface C_DOTA_Unit_Hero_Wisp extends C_DOTA_BaseNPC_Hero {
 	readonly m_bDetermineAmbientEffect: boolean
 	readonly m_flPrevHealth: number
 }
+declare var C_DOTA_Unit_Hero_Wisp: C_DOTA_Unit_Hero_Wisp;
 
 interface C_DOTA_Item_Faerie_Fire extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Faerie_Fire: C_DOTA_Item_Faerie_Fire;
 
 interface C_DOTA_Item_MaskOfDeath extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_MaskOfDeath: C_DOTA_Item_MaskOfDeath;
 
 interface C_DOTA_Ability_Pangolier_Gyroshell extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFxIndex: number
 }
+declare var C_DOTA_Ability_Pangolier_Gyroshell: C_DOTA_Ability_Pangolier_Gyroshell;
 
 interface C_DOTA_Ability_Bristleback_Bristleback extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Bristleback_Bristleback: C_DOTA_Ability_Bristleback_Bristleback;
 
 interface C_DOTA_Ability_Luna_LunarBlessing extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Luna_LunarBlessing: C_DOTA_Ability_Luna_LunarBlessing;
 
 interface C_DOTA_Ability_Animation_TailSpin extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly animation_time: number
 }
+declare var C_DOTA_Ability_Animation_TailSpin: C_DOTA_Ability_Animation_TailSpin;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Earth_Spirit_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Earth_Spirit_2: C_DOTA_Ability_Special_Bonus_Unique_Earth_Spirit_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lifestealer_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lifestealer_3: C_DOTA_Ability_Special_Bonus_Unique_Lifestealer_3;
 
 interface C_DOTA_Item_Cheese extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Cheese: C_DOTA_Item_Cheese;
 
 interface CDOTA_Item_ForceStaff extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_ForceStaff: CDOTA_Item_ForceStaff;
 
 interface C_DOTA_Item_GlovesOfHaste extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_GlovesOfHaste: C_DOTA_Item_GlovesOfHaste;
 
 interface C_DOTA_Ability_NagaSiren_SongOfTheSiren extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_NagaSiren_SongOfTheSiren: C_DOTA_Ability_NagaSiren_SongOfTheSiren;
 
 interface C_DOTA_Ability_FacelessVoid_TimeWalk extends C_DOTABaseAbility, C_HorizontalMotionController {
-	readonly type_name: string
 	readonly speed: number
 	readonly range: number
 	readonly radius: number
 }
+declare var C_DOTA_Ability_FacelessVoid_TimeWalk: C_DOTA_Ability_FacelessVoid_TimeWalk;
 
 interface C_DOTA_BaseNPC_ShadowShaman_SerpentWard extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 	readonly m_angle: QAngle
 	readonly m_iPoseParameterAim: number
 }
+declare var C_DOTA_BaseNPC_ShadowShaman_SerpentWard: C_DOTA_BaseNPC_ShadowShaman_SerpentWard;
 
 interface C_DOTA_Ability_AntiMage_Counterspell extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_AntiMage_Counterspell: C_DOTA_Ability_AntiMage_Counterspell;
 
 interface C_IngameEvent_TI6 extends C_IngameEvent_Base {
-	readonly type_name: string
 }
+declare var C_IngameEvent_TI6: C_IngameEvent_TI6;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Orange_LightStrikeArray extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Orange_LightStrikeArray: C_DOTA_Ability_Greevil_Miniboss_Orange_LightStrikeArray;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pangolier_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pangolier_4: C_DOTA_Ability_Special_Bonus_Unique_Pangolier_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_5: C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_5;
 
 interface C_DOTA_Item_Recipe_MagicWand extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_MagicWand: C_DOTA_Item_Recipe_MagicWand;
 
 interface C_DOTA_Item_TranquilBoots2 extends C_DOTA_Item {
-	readonly type_name: string
 	readonly break_count: number
 	readonly m_DamageList: number[]
 }
+declare var C_DOTA_Item_TranquilBoots2: C_DOTA_Item_TranquilBoots2;
 
 interface C_DOTA_Ability_MonkeyKing_TreeDance extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly perched_jump_distance: number
 	readonly ground_jump_distance: number
 }
+declare var C_DOTA_Ability_MonkeyKing_TreeDance: C_DOTA_Ability_MonkeyKing_TreeDance;
 
 interface C_DOTA_Ability_Visage_GravekeepersCloak extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Visage_GravekeepersCloak: C_DOTA_Ability_Visage_GravekeepersCloak;
 
 interface C_DOTA_Ability_Brewmaster_Pulverize extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Brewmaster_Pulverize: C_DOTA_Ability_Brewmaster_Pulverize;
 
 interface C_DOTA_Ability_Sven_StormBolt extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly vision_radius: number
 }
+declare var C_DOTA_Ability_Sven_StormBolt: C_DOTA_Ability_Sven_StormBolt;
 
 interface C_DOTA_Ability_HarpyStorm_ChainLightning extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_HarpyStorm_ChainLightning: C_DOTA_Ability_HarpyStorm_ChainLightning;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord: C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Wisp_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Wisp_6: C_DOTA_Ability_Special_Bonus_Unique_Wisp_6;
 
 interface C_DOTACustomGameHeroPickRules extends C_DOTABaseCustomHeroPickRules {
-	readonly type_name: string
 	readonly m_Phase: number
 	readonly m_nNumBansPerTeam: number
 	readonly m_flEnterTime: number
 	readonly m_nNumHeroesPicked: number
 }
+declare var C_DOTACustomGameHeroPickRules: C_DOTACustomGameHeroPickRules;
 
 interface C_PointEntityAlias_info_target_portrait_root extends C_PointEntity {
-	readonly type_name: string
 }
+declare var C_PointEntityAlias_info_target_portrait_root: C_PointEntityAlias_info_target_portrait_root;
 
 interface C_BasePropDoor extends C_DynamicProp {
-	readonly type_name: string
 	readonly m_eDoorState: number
 	readonly m_modelChanged: boolean
 	readonly m_bLocked: boolean
 	readonly m_isRescueDoor: boolean
 	readonly m_hMaster: C_BaseEntity
 }
+declare var C_BasePropDoor: C_BasePropDoor;
 
 interface C_DOTA_Unit_IngisFatuus extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_IngisFatuus: C_DOTA_Unit_IngisFatuus;
 
 interface C_DOTA_Ability_Tidehunter_KrakenShell extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Tidehunter_KrakenShell: C_DOTA_Ability_Tidehunter_KrakenShell;
 
 interface C_DOTA_Ability_SandKing_Epicenter extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXEpicenterIndex: number
 }
+declare var C_DOTA_Ability_SandKing_Epicenter: C_DOTA_Ability_SandKing_Epicenter;
 
 interface C_DotaSubquestPlayerStat extends C_DotaSubquestBase {
-	readonly type_name: string
 }
+declare var C_DotaSubquestPlayerStat: C_DotaSubquestPlayerStat;
 
 interface C_DotaQuest extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_nQuestType: number
 	readonly m_hSubquests: C_BaseEntity[]
 	readonly m_bHidden: boolean
@@ -22343,41 +22342,41 @@ interface C_DotaQuest extends C_BaseEntity {
 	readonly m_nTextReplaceValueVersion: number
 	readonly m_bWasCompleted: boolean
 }
+declare var C_DotaQuest: C_DotaQuest;
 
 interface C_DOTA_Ability_Frostivus2018_DarkWillow_BrambleMaze extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_DarkWillow_BrambleMaze: C_DOTA_Ability_Frostivus2018_DarkWillow_BrambleMaze;
 
 interface CDOTA_Unit_SpectralTusk_Tombstone extends C_DOTA_BaseNPC_Additive {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_SpectralTusk_Tombstone: CDOTA_Unit_SpectralTusk_Tombstone;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Morphling_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Morphling_6: C_DOTA_Ability_Special_Bonus_Unique_Morphling_6;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ursa_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ursa_2: C_DOTA_Ability_Special_Bonus_Unique_Ursa_2;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_70 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_70: C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_70;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_20: C_DOTA_Ability_Special_Bonus_Strength_20;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_6: C_DOTA_Ability_Special_Bonus_Strength_6;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_50: C_DOTA_Ability_Special_Bonus_Attack_Speed_50;
 
 interface C_ServerRagdollAttached extends C_ServerRagdoll {
-	readonly type_name: string
 	readonly m_boneIndexAttached: number
 	readonly m_ragdollAttachedObjectIndex: number
 	readonly m_attachmentPointBoneSpace: Vector
@@ -22386,29 +22385,29 @@ interface C_ServerRagdollAttached extends C_ServerRagdoll {
 	readonly m_parentTime: number
 	readonly m_bHasParent: boolean
 }
+declare var C_ServerRagdollAttached: C_ServerRagdollAttached;
 
 interface C_DOTA_Ability_EmberSpirit_FlameGuard extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_EmberSpirit_FlameGuard: C_DOTA_Ability_EmberSpirit_FlameGuard;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dazzle_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dazzle_1: C_DOTA_Ability_Special_Bonus_Unique_Dazzle_1;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_12: C_DOTA_Ability_Special_Bonus_Strength_12;
 
 interface C_DOTA_PortraitEntity_FullBody extends C_DOTA_PortraitEntity {
-	readonly type_name: string
 }
+declare var C_DOTA_PortraitEntity_FullBody: C_DOTA_PortraitEntity_FullBody;
 
 interface C_DOTA_Tiny_ScepterTree extends C_DOTAWearableItem {
-	readonly type_name: string
 }
+declare var C_DOTA_Tiny_ScepterTree: C_DOTA_Tiny_ScepterTree;
 
 interface C_PhysPropClientside extends C_BreakableProp {
-	readonly type_name: string
 	readonly m_iPhysicsMode: number
 	readonly m_flTouchDelta: number
 	readonly m_fDeathTime: number
@@ -22433,180 +22432,180 @@ interface C_PhysPropClientside extends C_BreakableProp {
 	readonly m_bIsWalkableSetByPropData: boolean
 	readonly m_nCarryTypeOverride: number
 }
+declare var C_PhysPropClientside: C_PhysPropClientside;
 
 interface C_DOTA_Ability_Bear_Empty1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Bear_Empty1: C_DOTA_Ability_Bear_Empty1;
 
 interface C_DOTA_Ability_Chen_TestOfFaithTeleport extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Chen_TestOfFaithTeleport: C_DOTA_Ability_Chen_TestOfFaithTeleport;
 
 interface C_DOTA_Ability_Courier_TransferItems extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_TransferItems: C_DOTA_Ability_Courier_TransferItems;
 
 interface C_DOTA_Unit_Hero_Zuus extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Zuus: C_DOTA_Unit_Hero_Zuus;
 
 interface C_DOTA_Ability_Greevil_Miniboss_Black_Nightmare extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Greevil_Miniboss_Black_Nightmare: C_DOTA_Ability_Greevil_Miniboss_Black_Nightmare;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ursa extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ursa: C_DOTA_Ability_Special_Bonus_Unique_Ursa;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_1: C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_1;
 
 interface C_FogController extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_fog: fogparams_t
 	readonly m_bUseAngles: boolean
 	readonly m_iChangedVariables: number
 }
+declare var C_FogController: C_FogController;
 
 interface C_DOTA_Item_Recipe_Yasha extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Yasha: C_DOTA_Item_Recipe_Yasha;
 
 interface C_DOTA_Ability_Jakiro_Macropyre extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Jakiro_Macropyre: C_DOTA_Ability_Jakiro_Macropyre;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Pugna_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Pugna_1: C_DOTA_Ability_Special_Bonus_Unique_Pugna_1;
 
 interface C_DOTA_Ability_Special_Bonus_MP_Regen_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_MP_Regen_8: C_DOTA_Ability_Special_Bonus_MP_Regen_8;
 
 interface C_DOTA_Unit_Hero_TrollWarlord extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_TrollWarlord: C_DOTA_Unit_Hero_TrollWarlord;
 
 interface C_DOTA_Item_Recipe_Headdress extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Headdress: C_DOTA_Item_Recipe_Headdress;
 
 interface C_DOTA_Ability_Terrorblade_Sunder extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Terrorblade_Sunder: C_DOTA_Ability_Terrorblade_Sunder;
 
 interface C_DOTA_Ability_Lycan_FeralImpulse extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lycan_FeralImpulse: C_DOTA_Ability_Lycan_FeralImpulse;
 
 interface C_DOTA_Ability_Obsidian_Destroyer_Equilibrium extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iProjectile: number
 }
+declare var C_DOTA_Ability_Obsidian_Destroyer_Equilibrium: C_DOTA_Ability_Obsidian_Destroyer_Equilibrium;
 
 interface C_DOTA_Unit_Nian extends C_DOTA_BaseNPC_Creature {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Nian: C_DOTA_Unit_Nian;
 
 interface C_DOTA_Ability_DataDriven extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_bProcsMagicStick: boolean
 	readonly m_bIsSharedWithTeammates: boolean
 	readonly m_bCastFilterRejectCaster: boolean
 	readonly m_fAOERadius: number
 	readonly m_CastAnimation: number
 }
+declare var C_DOTA_Ability_DataDriven: C_DOTA_Ability_DataDriven;
 
 interface C_DOTA_Ability_Frostivus2018_Omniknight_Purification extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_Omniknight_Purification: C_DOTA_Ability_Frostivus2018_Omniknight_Purification;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Enchantress_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Enchantress_1: C_DOTA_Ability_Special_Bonus_Unique_Enchantress_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void_2: C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Lion_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Lion_3: C_DOTA_Ability_Special_Bonus_Unique_Lion_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Meepo extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Meepo: C_DOTA_Ability_Special_Bonus_Unique_Meepo;
 
 interface C_DOTA_BaseNPC_Fort extends C_DOTA_BaseNPC_Building {
-	readonly type_name: string
 }
+declare var C_DOTA_BaseNPC_Fort: C_DOTA_BaseNPC_Fort;
 
 interface CDOTA_Ability_Elder_Titan_ReturnSpirit extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Elder_Titan_ReturnSpirit: CDOTA_Ability_Elder_Titan_ReturnSpirit;
 
 interface C_DOTA_Ability_Centaur_HoofStomp extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Centaur_HoofStomp: C_DOTA_Ability_Centaur_HoofStomp;
 
 interface C_DOTA_Ability_Batrider_Flamebreak extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iProjectile: number
 }
+declare var C_DOTA_Ability_Batrider_Flamebreak: C_DOTA_Ability_Batrider_Flamebreak;
 
 interface C_DOTA_Ability_Rattletrap_RocketFlare extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vecEnemyHeroesInFog: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Rattletrap_RocketFlare: C_DOTA_Ability_Rattletrap_RocketFlare;
 
 interface C_DOTA_Ability_Frostivus2018_Windrunner_Shackleshot extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly shackle_count: number
 	readonly m_vArrowStartPos: Vector
 	readonly m_hTarget: C_BaseEntity
 	readonly m_hEntitiesAffected: C_BaseEntity[]
 }
+declare var C_DOTA_Ability_Frostivus2018_Windrunner_Shackleshot: C_DOTA_Ability_Frostivus2018_Windrunner_Shackleshot;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Visage_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Visage_1: C_DOTA_Ability_Special_Bonus_Unique_Visage_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_4: C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_2: C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sven_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sven_2: C_DOTA_Ability_Special_Bonus_Unique_Sven_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Weaver_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Weaver_3: C_DOTA_Ability_Special_Bonus_Unique_Weaver_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan: C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Damage_90 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Damage_90: C_DOTA_Ability_Special_Bonus_Attack_Damage_90;
 
 interface CDOTA_Ability_Special_Bonus_Intelligence_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Special_Bonus_Intelligence_7: CDOTA_Ability_Special_Bonus_Intelligence_7;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_25 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_25: C_DOTA_Ability_Special_Bonus_Attack_Speed_25;
 
 interface C_FuncMonitor extends C_FuncBrush {
-	readonly type_name: string
 	readonly m_targetCamera: string
 	readonly m_nResolutionEnum: number
 	readonly m_bRenderShadows: boolean
@@ -22615,9 +22614,9 @@ interface C_FuncMonitor extends C_FuncBrush {
 	readonly m_hTargetCamera: C_BaseEntity
 	readonly m_bEnabled: boolean
 }
+declare var C_FuncMonitor: C_FuncMonitor;
 
 interface CInfoWorldLayer extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_pOutputOnEntitiesSpawned: CEntityIOOutput
 	readonly m_worldName: string
 	readonly m_layerName: string
@@ -22627,33 +22626,33 @@ interface CInfoWorldLayer extends C_BaseEntity {
 	readonly m_hLayerSpawnGroup: number
 	readonly m_bWorldLayerActuallyVisible: boolean
 }
+declare var CInfoWorldLayer: CInfoWorldLayer;
 
 interface C_DOTA_Ability_Nyx_Assassin_Vendetta extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nyx_Assassin_Vendetta: C_DOTA_Ability_Nyx_Assassin_Vendetta;
 
 interface C_DOTA_Ability_Rubick_Hidden3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Rubick_Hidden3: C_DOTA_Ability_Rubick_Hidden3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tiny_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tiny_3: C_DOTA_Ability_Special_Bonus_Unique_Tiny_3;
 
 interface C_DOTA_Ability_Special_Bonus_Armor_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Armor_12: C_DOTA_Ability_Special_Bonus_Armor_12;
 
 interface C_DOTA_Ability_Special_Bonus_Strength_9 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Strength_9: C_DOTA_Ability_Special_Bonus_Strength_9;
 
 interface C_DOTA_Ability_Special_Bonus_Movement_Speed_10 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Movement_Speed_10: C_DOTA_Ability_Special_Bonus_Movement_Speed_10;
 
 interface C_PoseController extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bPoseValueParity: boolean
 	readonly m_fPoseValue: number
 	readonly m_fInterpolationDuration: number
@@ -22670,129 +22669,129 @@ interface C_PoseController extends C_BaseEntity {
 	readonly m_fCurrentFMod: number
 	readonly m_PoseTransitionValue: CInterpolatedValue
 }
+declare var C_PoseController: C_PoseController;
 
 interface C_PointHMDAnchorOverride extends C_PointHMDAnchor {
-	readonly type_name: string
 }
+declare var C_PointHMDAnchorOverride: C_PointHMDAnchorOverride;
 
 interface C_NetTestBaseCombatCharacter extends C_BaseCombatCharacter {
-	readonly type_name: string
 }
+declare var C_NetTestBaseCombatCharacter: C_NetTestBaseCombatCharacter;
 
 interface C_DOTA_Item_PhaseBoots extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_PhaseBoots: C_DOTA_Item_PhaseBoots;
 
 interface CDOTA_Unit_Hero_AbyssalUnderlord extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_Hero_AbyssalUnderlord: CDOTA_Unit_Hero_AbyssalUnderlord;
 
 interface CDOTA_Unit_Hero_Elder_Titan extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_Hero_Elder_Titan: CDOTA_Unit_Hero_Elder_Titan;
 
 interface CDOTA_Ability_Beastmaster_WildAxes extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly axe_damage: number
 }
+declare var CDOTA_Ability_Beastmaster_WildAxes: CDOTA_Ability_Beastmaster_WildAxes;
 
 interface C_DOTA_Ability_Bane_Nightmare extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Bane_Nightmare: C_DOTA_Ability_Bane_Nightmare;
 
 interface C_ViewmodelWeapon extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_worldModel: string
 }
+declare var C_ViewmodelWeapon: C_ViewmodelWeapon;
 
 interface C_PhysMagnet extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_aAttachedObjectsFromServer: number[]
 	readonly m_aAttachedObjects: C_BaseEntity[]
 }
+declare var C_PhysMagnet: C_PhysMagnet;
 
 interface C_FuncConveyor extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_flConveyorSpeed: number
 }
+declare var C_FuncConveyor: C_FuncConveyor;
 
 interface C_EnvDeferredLightClientOnly extends C_EnvDeferredLight {
-	readonly type_name: string
 }
+declare var C_EnvDeferredLightClientOnly: C_EnvDeferredLightClientOnly;
 
 interface C_DOTA_Item_OgreAxe extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_OgreAxe: C_DOTA_Item_OgreAxe;
 
 interface CDOTA_Ability_Beastmaster_CallOfTheWild_Boar extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Beastmaster_CallOfTheWild_Boar: CDOTA_Ability_Beastmaster_CallOfTheWild_Boar;
 
 interface CDOTAInGamePredictionState extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bVotingClosed: boolean
 	readonly m_bAllPredictionsFinished: boolean
 	readonly m_nLeagueID: number
 }
+declare var CDOTAInGamePredictionState: CDOTAInGamePredictionState;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Silencer_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Silencer_2: C_DOTA_Ability_Special_Bonus_Unique_Silencer_2;
 
 interface C_DOTA_Item_InvisibilityEdge extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_InvisibilityEdge: C_DOTA_Item_InvisibilityEdge;
 
 interface C_DOTA_Item_Recipe_MonkeyKingBar extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_MonkeyKingBar: C_DOTA_Item_Recipe_MonkeyKingBar;
 
 interface C_DOTA_Ability_ForgedSpirit_MeltingStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_ForgedSpirit_MeltingStrike: C_DOTA_Ability_ForgedSpirit_MeltingStrike;
 
 interface C_DOTA_Ability_Warlock_RainOfChaos extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Warlock_RainOfChaos: C_DOTA_Ability_Warlock_RainOfChaos;
 
 interface C_DOTA_Unit_Hero_Riki extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Riki: C_DOTA_Unit_Hero_Riki;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Necrophos_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Necrophos_3: C_DOTA_Ability_Special_Bonus_Unique_Necrophos_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Morphling_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Morphling_8: C_DOTA_Ability_Special_Bonus_Unique_Morphling_8;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_4: C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_4;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tiny_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tiny_4: C_DOTA_Ability_Special_Bonus_Unique_Tiny_4;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_50 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_50: C_DOTA_Ability_Special_Bonus_Magic_Resistance_50;
 
 interface C_DOTA_Ability_Special_Bonus_Magic_Resistance_35 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Magic_Resistance_35: C_DOTA_Ability_Special_Bonus_Magic_Resistance_35;
 
 interface C_PortraitWorldCallbackHandler extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_PortraitWorldCallbackHandler: C_PortraitWorldCallbackHandler;
 
 interface C_InfoPlayerStartBadGuys extends C_InfoPlayerStartDota {
-	readonly type_name: string
 }
+declare var C_InfoPlayerStartBadGuys: C_InfoPlayerStartBadGuys;
 
 interface C_BaseViewModel extends C_BaseAnimatingOverlay {
-	readonly type_name: string
 	readonly m_vecLastFacing: Vector
 	readonly m_nViewModelIndex: number
 	readonly m_nAnimationParity: number
@@ -22812,37 +22811,37 @@ interface C_BaseViewModel extends C_BaseAnimatingOverlay {
 	readonly m_oldLayer: number
 	readonly m_oldLayerStartTime: number
 }
+declare var C_BaseViewModel: C_BaseViewModel;
 
 interface CDOTA_Item_Silver_Edge extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Silver_Edge: CDOTA_Item_Silver_Edge;
 
 interface C_DOTA_Item_Recipe_MantaStyle extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_MantaStyle: C_DOTA_Item_Recipe_MantaStyle;
 
 interface C_DOTA_Ability_Nian_Eruption extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nian_Eruption: C_DOTA_Ability_Nian_Eruption;
 
 interface C_DOTA_Ability_Puck_EtherealJaunt extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Puck_EtherealJaunt: C_DOTA_Ability_Puck_EtherealJaunt;
 
 interface C_DOTA_Unit_Hero_Mirana extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Mirana: C_DOTA_Unit_Hero_Mirana;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_5: C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_5;
 
 interface CDOTA_VR_AvatarManagerCallbackHandler extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var CDOTA_VR_AvatarManagerCallbackHandler: CDOTA_VR_AvatarManagerCallbackHandler;
 
 interface C_DOTA_DataSpectator extends C_DOTA_DataNonSpectator {
-	readonly type_name: string
 	readonly m_hPowerupRune_1: C_BaseEntity
 	readonly m_hPowerupRune_2: C_BaseEntity
 	readonly m_hBountyRune_1: C_BaseEntity
@@ -22859,338 +22858,338 @@ interface C_DOTA_DataSpectator extends C_DOTA_DataNonSpectator {
 	readonly m_nRunesActivated: number[]
 	readonly m_nCampsStacked: number[]
 }
+declare var C_DOTA_DataSpectator: C_DOTA_DataSpectator;
 
 interface C_FuncAreaPortalWindow extends C_BaseModelEntity {
-	readonly type_name: string
 	readonly m_flFadeStartDist: number
 	readonly m_flFadeDist: number
 	readonly m_flTranslucencyLimit: number
 }
+declare var C_FuncAreaPortalWindow: C_FuncAreaPortalWindow;
 
 interface CDOTA_Item_Recipe_Aether_Lens extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Aether_Lens: CDOTA_Item_Recipe_Aether_Lens;
 
 interface CDOTA_Ability_Centaur_DoubleEdge extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Centaur_DoubleEdge: CDOTA_Ability_Centaur_DoubleEdge;
 
 interface C_DOTA_Ability_Broodmother_SpawnSpiderite extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Broodmother_SpawnSpiderite: C_DOTA_Ability_Broodmother_SpawnSpiderite;
 
 interface C_DOTA_Ability_Holdout_FierySoul extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Holdout_FierySoul: C_DOTA_Ability_Holdout_FierySoul;
 
 interface C_DOTA_Unit_Hero_Razor extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Razor: C_DOTA_Unit_Hero_Razor;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Treant_7 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Treant_7: C_DOTA_Ability_Special_Bonus_Unique_Treant_7;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Oracle_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Oracle_3: C_DOTA_Ability_Special_Bonus_Unique_Oracle_3;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_20: C_DOTA_Ability_Special_Bonus_Attack_Speed_20;
 
 interface C_DOTA_DataCustomTeam extends C_DOTA_DataNonSpectator {
-	readonly type_name: string
 }
+declare var C_DOTA_DataCustomTeam: C_DOTA_DataCustomTeam;
 
 interface C_DOTA_Item_Recipe_Bloodthorn extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Bloodthorn: C_DOTA_Item_Recipe_Bloodthorn;
 
 interface C_DOTA_Item_Dagon_Upgraded4 extends C_DOTA_Item_Dagon_Upgraded {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Dagon_Upgraded4: C_DOTA_Item_Dagon_Upgraded4;
 
 interface C_DOTA_Ability_Invoker_ForgeSpirit extends CDOTA_Ability_Invoker_InvokedBase {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_ForgeSpirit: C_DOTA_Ability_Invoker_ForgeSpirit;
 
 interface CDOTA_Ability_CallOfTheWild_Boar_PoisonGreater extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_CallOfTheWild_Boar_PoisonGreater: CDOTA_Ability_CallOfTheWild_Boar_PoisonGreater;
 
 interface C_DOTA_Ability_Roshan_InherentBuffs extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Roshan_InherentBuffs: C_DOTA_Ability_Roshan_InherentBuffs;
 
 interface CDOTA_Unit_Announcer_Killing_Spree extends CDOTA_Unit_Announcer {
-	readonly type_name: string
 }
+declare var CDOTA_Unit_Announcer_Killing_Spree: CDOTA_Unit_Announcer_Killing_Spree;
 
 interface C_DOTA_Ability_Tinker_HeatSeekingMissile extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nTargetsKilled: number
 }
+declare var C_DOTA_Ability_Tinker_HeatSeekingMissile: C_DOTA_Ability_Tinker_HeatSeekingMissile;
 
 interface C_DOTA_Unit_Hero_Tinker extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Tinker: C_DOTA_Unit_Hero_Tinker;
 
 interface C_DOTA_Item_Holy_Locket extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Holy_Locket: C_DOTA_Item_Holy_Locket;
 
 interface C_DOTA_Item_Recipe_PoorMansShield extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_PoorMansShield: C_DOTA_Item_Recipe_PoorMansShield;
 
 interface C_DOTA_Ability_Oracle_FalsePromise extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Oracle_FalsePromise: C_DOTA_Ability_Oracle_FalsePromise;
 
 interface C_DOTA_Ability_Magnataur_Empower extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Magnataur_Empower: C_DOTA_Ability_Magnataur_Empower;
 
 interface C_DOTA_Ability_Courier_TakeStashAndTransferItems extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_TakeStashAndTransferItems: C_DOTA_Ability_Courier_TakeStashAndTransferItems;
 
 interface C_DOTA_Ability_SandKing_BurrowStrike extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly burrow_width: number
 	readonly burrow_speed: number
 	readonly burrow_speed_scepter: number
 	readonly burrow_duration: number
 	readonly burrow_anim_time: number
 }
+declare var C_DOTA_Ability_SandKing_BurrowStrike: C_DOTA_Ability_SandKing_BurrowStrike;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sand_King_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sand_King_3: C_DOTA_Ability_Special_Bonus_Unique_Sand_King_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sand_King extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sand_King: C_DOTA_Ability_Special_Bonus_Unique_Sand_King;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Viper_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Viper_1: C_DOTA_Ability_Special_Bonus_Unique_Viper_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_5: C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_5;
 
 interface C_DOTA_Ability_Special_Bonus_Lifesteal_100 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Lifesteal_100: C_DOTA_Ability_Special_Bonus_Lifesteal_100;
 
 interface C_BaseVRHandAttachment extends C_BaseAnimating {
-	readonly type_name: string
 	readonly m_hOldAttachedHand: C_BaseEntity
 	readonly m_OnAttachedToHand: CEntityIOOutput
 	readonly m_OnDetachedFromHand: CEntityIOOutput
 	readonly m_hAttachedHand: C_BaseEntity
 	readonly m_bIsAttached: boolean
 }
+declare var C_BaseVRHandAttachment: C_BaseVRHandAttachment;
 
 interface C_DOTA_Ability_Frostivus2018_TrollWarlord_Fervor extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Frostivus2018_TrollWarlord_Fervor: C_DOTA_Ability_Frostivus2018_TrollWarlord_Fervor;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_6 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_6: C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_6;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Huskar_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Huskar_2: C_DOTA_Ability_Special_Bonus_Unique_Huskar_2;
 
 interface C_DOTA_Ability_Special_Bonus_Cast_Range_150 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cast_Range_150: C_DOTA_Ability_Special_Bonus_Cast_Range_150;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Range_125 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Range_125: C_DOTA_Ability_Special_Bonus_Attack_Range_125;
 
 interface C_EntityFlame extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_hEntAttached: C_BaseEntity
 	readonly m_hOldAttached: C_BaseEntity
 	readonly m_bCheapEffect: boolean
 }
+declare var C_EntityFlame: C_EntityFlame;
 
 interface C_DOTA_Unit_Hero_Leshrac extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Leshrac: C_DOTA_Unit_Hero_Leshrac;
 
 interface C_DOTA_Ability_DragonKnight_BreatheFire extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly start_radius: number
 	readonly end_radius: number
 	readonly m_vStartPos: Vector
 	readonly m_fStartTime: number
 	readonly m_fTotalTime: number
 }
+declare var C_DOTA_Ability_DragonKnight_BreatheFire: C_DOTA_Ability_DragonKnight_BreatheFire;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_1: C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_3: C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_2: C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_2;
 
 interface C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_8 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_8: C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_8;
 
 interface C_TintController extends C_BaseEntity {
-	readonly type_name: string
 }
+declare var C_TintController: C_TintController;
 
 interface C_PhysBoxMultiplayer extends C_PhysBox {
-	readonly type_name: string
 	readonly m_iPhysicsMode: number
 	readonly m_fMass: number
 }
+declare var C_PhysBoxMultiplayer: C_PhysBoxMultiplayer;
 
 interface C_DOTA_Ability_LoneDruid_TrueForm_BattleCry extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly cry_duration: number
 }
+declare var C_DOTA_Ability_LoneDruid_TrueForm_BattleCry: C_DOTA_Ability_LoneDruid_TrueForm_BattleCry;
 
 interface C_DOTA_Ability_Brewmaster_DrunkenBrawler extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_iBrawlActive: number
 	readonly m_bUpdateIcons: boolean
 }
+declare var C_DOTA_Ability_Brewmaster_DrunkenBrawler: C_DOTA_Ability_Brewmaster_DrunkenBrawler;
 
 interface C_DOTA_Ability_Leshrac_Split_Earth extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Leshrac_Split_Earth: C_DOTA_Ability_Leshrac_Split_Earth;
 
 interface CDOTA_Ability_Courier_Morph extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Courier_Morph: CDOTA_Ability_Courier_Morph;
 
 interface C_DOTA_Ability_SatyrSoulstealer_ManaBurn extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_SatyrSoulstealer_ManaBurn: C_DOTA_Ability_SatyrSoulstealer_ManaBurn;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Warlock_1 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Warlock_1: C_DOTA_Ability_Special_Bonus_Unique_Warlock_1;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Windranger_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Windranger_3: C_DOTA_Ability_Special_Bonus_Unique_Windranger_3;
 
 interface C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_12: C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_12;
 
 interface C_DOTA_SimpleObstruction extends C_BaseEntity {
-	readonly type_name: string
 	readonly m_bEnabled: boolean
 	readonly m_bBlockFoW: boolean
 	readonly m_nOccluderIndex: number
 	readonly m_bBlockingGridNav: boolean
 	readonly m_bPrevEnabled: boolean
 }
+declare var C_DOTA_SimpleObstruction: C_DOTA_SimpleObstruction;
 
 interface CDOTA_Item_Recipe_Moonshard extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var CDOTA_Item_Recipe_Moonshard: CDOTA_Item_Recipe_Moonshard;
 
 interface C_DOTA_Ability_Phoenix_LaunchFireSpirit extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly spirit_speed: number
 	readonly duration: number
 	readonly radius: number
 	readonly hp_cost_perc: number
 	readonly m_nFXIndex: number
 }
+declare var C_DOTA_Ability_Phoenix_LaunchFireSpirit: C_DOTA_Ability_Phoenix_LaunchFireSpirit;
 
 interface CDOTA_Ability_Elder_Titan_EchoStomp_Spirit extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var CDOTA_Ability_Elder_Titan_EchoStomp_Spirit: CDOTA_Ability_Elder_Titan_EchoStomp_Spirit;
 
 interface C_DOTA_Unit_Hero_Sniper extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Sniper: C_DOTA_Unit_Hero_Sniper;
 
 interface C_DOTA_Ability_VengefulSpirit_Command_Aura extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_hScepterIllusion: C_BaseEntity
 }
+declare var C_DOTA_Ability_VengefulSpirit_Command_Aura: C_DOTA_Ability_VengefulSpirit_Command_Aura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Enigma_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Enigma_2: C_DOTA_Ability_Special_Bonus_Unique_Enigma_2;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Sand_King_4 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Sand_King_4: C_DOTA_Ability_Special_Bonus_Unique_Sand_King_4;
 
 interface C_DOTA_Ability_Special_Bonus_Agility_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Agility_40: C_DOTA_Ability_Special_Bonus_Agility_40;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_15 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_15: C_DOTA_Ability_Special_Bonus_Intelligence_15;
 
 interface C_DOTA_Ability_Special_Bonus_Cleave_30 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Cleave_30: C_DOTA_Ability_Special_Bonus_Cleave_30;
 
 interface C_DOTASceneEntity extends C_SceneEntity {
-	readonly type_name: string
 	readonly m_nCustomStackIndex: number
 	readonly m_flVolume: number
 }
+declare var C_DOTASceneEntity: C_DOTASceneEntity;
 
 interface C_DOTA_Ability_BackdoorProtection extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BackdoorProtection: C_DOTA_Ability_BackdoorProtection;
 
 interface C_FireFromAboveSprite extends C_Sprite {
-	readonly type_name: string
 }
+declare var C_FireFromAboveSprite: C_FireFromAboveSprite;
 
 interface CDOTA_Item_RiverPainter6 extends C_DOTA_Item_RiverPainter {
-	readonly type_name: string
 }
+declare var CDOTA_Item_RiverPainter6: CDOTA_Item_RiverPainter6;
 
 interface C_DOTA_Ability_KeeperOfTheLight_Will_O_Wisp extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_KeeperOfTheLight_Will_O_Wisp: C_DOTA_Ability_KeeperOfTheLight_Will_O_Wisp;
 
 interface C_DOTA_Beastmaster_Axe extends C_BaseAnimating {
-	readonly type_name: string
 }
+declare var C_DOTA_Beastmaster_Axe: C_DOTA_Beastmaster_Axe;
 
 interface C_DOTA_Ability_Courier_GoToEnemySecretShop extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Courier_GoToEnemySecretShop: C_DOTA_Ability_Courier_GoToEnemySecretShop;
 
 interface C_DOTA_Ability_StormSpirit_StaticRemnant extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_vecCastPos: Vector
 }
+declare var C_DOTA_Ability_StormSpirit_StaticRemnant: C_DOTA_Ability_StormSpirit_StaticRemnant;
 
 interface C_DOTA_Ability_Mirana_Starfall extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Mirana_Starfall: C_DOTA_Ability_Mirana_Starfall;
 
 interface CDOTA_Ability_AncientApparition_IceBlast extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_PathTimer: CountdownTimer
 	readonly m_vTarget: Vector
 	readonly m_vStartPos: Vector
@@ -23205,119 +23204,120 @@ interface CDOTA_Ability_AncientApparition_IceBlast extends C_DOTABaseAbility {
 	readonly target_sight_radius: number
 	readonly m_hFrostbittenEntities: C_BaseEntity[]
 }
+declare var CDOTA_Ability_AncientApparition_IceBlast: CDOTA_Ability_AncientApparition_IceBlast;
 
 interface C_DOTA_Ability_Lesser_NightCrawler_Pounce extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Lesser_NightCrawler_Pounce: C_DOTA_Ability_Lesser_NightCrawler_Pounce;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Tidehunter_2 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Tidehunter_2: C_DOTA_Ability_Special_Bonus_Unique_Tidehunter_2;
 
 interface C_DOTA_Ability_Special_Bonus_Reincarnation_250 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Reincarnation_250: C_DOTA_Ability_Special_Bonus_Reincarnation_250;
 
 interface C_VRHandModelOverride extends C_BaseVRHandAttachment {
-	readonly type_name: string
 }
+declare var C_VRHandModelOverride: C_VRHandModelOverride;
 
 interface C_DOTA_Item_GreaterCritical extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_GreaterCritical: C_DOTA_Item_GreaterCritical;
 
 interface C_DOTA_Ability_TrollWarlord_Fervor extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_TrollWarlord_Fervor: C_DOTA_Ability_TrollWarlord_Fervor;
 
 interface C_DOTA_Ability_Huskar_Burning_Spear extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Huskar_Burning_Spear: C_DOTA_Ability_Huskar_Burning_Spear;
 
 interface C_DOTA_Unit_Hero_Axe extends C_DOTA_BaseNPC_Hero {
-	readonly type_name: string
 }
+declare var C_DOTA_Unit_Hero_Axe: C_DOTA_Unit_Hero_Axe;
 
 interface C_DOTA_Ability_DarkTrollWarlord_Ensnare extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_DarkTrollWarlord_Ensnare: C_DOTA_Ability_DarkTrollWarlord_Ensnare;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Furion_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Furion_3: C_DOTA_Ability_Special_Bonus_Unique_Furion_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Zeus_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Zeus_3: C_DOTA_Ability_Special_Bonus_Unique_Zeus_3;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Slark_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Slark_3: C_DOTA_Ability_Special_Bonus_Unique_Slark_3;
 
 interface C_DOTA_Ability_Special_Bonus_Spell_Block_20 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Spell_Block_20: C_DOTA_Ability_Special_Bonus_Spell_Block_20;
 
 interface C_DOTA_Ability_Special_Bonus_Attack_Speed_40 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Attack_Speed_40: C_DOTA_Ability_Special_Bonus_Attack_Speed_40;
 
 interface C_DOTA_Item_Recipe_Vladmir extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Vladmir: C_DOTA_Item_Recipe_Vladmir;
 
 interface C_DOTA_Item_Dagon_Upgraded3 extends C_DOTA_Item_Dagon_Upgraded {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Dagon_Upgraded3: C_DOTA_Item_Dagon_Upgraded3;
 
 interface C_DOTA_Item_Recipe_Dagon5 extends C_DOTA_Item_Recipe_Dagon {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_Recipe_Dagon5: C_DOTA_Item_Recipe_Dagon5;
 
 interface C_DOTA_Item_MagicWand extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_MagicWand: C_DOTA_Item_MagicWand;
 
 interface C_DOTA_Item_PlaneswalkersCloak extends C_DOTA_Item {
-	readonly type_name: string
 }
+declare var C_DOTA_Item_PlaneswalkersCloak: C_DOTA_Item_PlaneswalkersCloak;
 
 interface C_DOTA_Ability_Invoker_GhostWalk extends CDOTA_Ability_Invoker_InvokedBase {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Invoker_GhostWalk: C_DOTA_Ability_Invoker_GhostWalk;
 
 interface C_DOTA_Ability_Huskar_Berserkers_Blood extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Huskar_Berserkers_Blood: C_DOTA_Ability_Huskar_Berserkers_Blood;
 
 interface C_DOTA_Ability_Nian_GreaterBash extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Nian_GreaterBash: C_DOTA_Ability_Nian_GreaterBash;
 
 interface CDOTA_Ability_Frostivus2018_Tusk_WalrusKick extends C_DOTABaseAbility {
-	readonly type_name: string
 	readonly m_nFXKickIndex: number
 }
+declare var CDOTA_Ability_Frostivus2018_Tusk_WalrusKick: CDOTA_Ability_Frostivus2018_Tusk_WalrusKick;
 
 interface C_DOTA_Ability_BlueDragonspawnOverseer_DevotionAura extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_BlueDragonspawnOverseer_DevotionAura: C_DOTA_Ability_BlueDragonspawnOverseer_DevotionAura;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Antimage_5 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Antimage_5: C_DOTA_Ability_Special_Bonus_Unique_Antimage_5;
 
 interface C_DOTA_Ability_Special_Bonus_Unique_Leshrac_3 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Unique_Leshrac_3: C_DOTA_Ability_Special_Bonus_Unique_Leshrac_3;
 
 interface C_DOTA_Ability_Special_Bonus_Evasion_75 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Evasion_75: C_DOTA_Ability_Special_Bonus_Evasion_75;
 
 interface C_DOTA_Ability_Special_Bonus_Intelligence_12 extends C_DOTABaseAbility {
-	readonly type_name: string
 }
+declare var C_DOTA_Ability_Special_Bonus_Intelligence_12: C_DOTA_Ability_Special_Bonus_Intelligence_12;
 
 declare const enum Hull_t {
 	HULL_HUMAN = 0,
