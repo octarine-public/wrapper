@@ -3,13 +3,15 @@
 	"version": "1.0.0",
 	"description": "Fusion Native 2: Scripts",
 	"devDependencies": {
-		"babel-cli": "next",
-		"babel-preset-typescript": "next",
+		"@babel/core": "latest",
+		"@babel/cli": "latest",
+		"@babel/preset-typescript": "latest",
 		"tslint": "next",
 		"typescript": "next"
 	},
 	"scripts": {
-		"watch": "babel --watch scripts --out-dir scripts",
+		"watch": "babel --watch scripts --extensions \".ts\" --out-dir scripts",
+		"build": "babel scripts --extensions \".ts\" --out-dir scripts",
 		"check-types": "tsc",
 		"lint": "tslint --fix 'scripts/*.ts'"
 	},
