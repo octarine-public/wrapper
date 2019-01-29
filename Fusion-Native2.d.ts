@@ -299,6 +299,20 @@ declare interface Entities {
 }
 
 declare interface Events {
+	RegisterCallback(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC) => void): void
+	RegisterCallback(name: "onGameEnded", callback: () => void): void
+	RegisterCallback(name: "onEntityCreated", callback: (ent: C_BaseEntity, id: number) => void): void
+	RegisterCallback(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): void
+	RegisterCallback(name: "onWndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => boolean): void
+	RegisterCallback(name: "onTick", callback: () => void): void
+	RegisterCallback(name: "onUpdate", callback: () => void): void
+	RegisterCallback(name: "onSendMove", callback: (cmd: CUserCmd) => void): void
+	RegisterCallback(name: "onUnitStateChanged", callback: (npc: C_DOTA_BaseNPC, state: bigint) => void): void
+	RegisterCallback(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): void
+	RegisterCallback(name: "onDraw", callback: () => void): void
+	RegisterCallback(name: "onParticleCreated", callback: (id: number, path: string, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): void
+	RegisterCallback(name: "onParticleUpdated", callback: (id: number, control_point: number, vec: Vector) => void): void
+	RegisterCallback(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => boolean): void
 	RegisterCallback(name: string, callback: Function): void
 	UnregisterCallback(name: string, callback_id: number): void
 	FireEvent(name: string, ...args: any): void
