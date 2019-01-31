@@ -299,7 +299,7 @@ declare interface Entities {
 }
 
 declare interface Events {
-	RegisterCallback(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC) => void): void
+	RegisterCallback(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): void
 	RegisterCallback(name: "onGameEnded", callback: () => void): void
 	RegisterCallback(name: "onEntityCreated", callback: (ent: C_BaseEntity, id: number) => void): void
 	RegisterCallback(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): void
