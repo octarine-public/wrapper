@@ -412,6 +412,10 @@ declare class Vector {
 	 */
 	AngleBetweenTwoFaces(facing: Vector): number
 	/**
+	 * Copies current vector values onto given one
+	 */
+	CopyTo(vec: Vector): void
+	/**
 	 * Extends this vector in the direction of 2nd vector for given distance
 	 * @param vec 2nd vector
 	 * @param dist distance to extend
@@ -488,6 +492,10 @@ declare class Vector2D {
 	 * @returns angle between two vectors
 	 */
 	AngleBetweenTwoVectors(vec: Vector2D): number
+	/**
+	 * Copies current vector values onto given one
+	 */
+	CopyTo(vec: Vector2D): void
 	/**
 	 * Extends this vector in the direction of 2nd vector for given distance
 	 * @param vec 2nd vector
