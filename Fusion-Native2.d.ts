@@ -191,10 +191,22 @@ declare const enum PingType_t {
 	OWN_VISION = 6
 }
 
-/// CLASSES
+/// GLOBAL OBJECTS
+declare var LocalDOTAPlayer: C_DOTAPlayer
+declare var GameRules: C_DOTAGamerules
+declare var PlayerResource: C_DOTA_PlayerResource
+declare var global: any
 
-interface CUnitOrder {
-	readonly type_name: string
+declare var ConVars: ConVars
+declare var Entities: Entities
+declare var Events: Events
+declare var Menu: Menu
+declare var Minimap: Minimap
+declare var Projectiles: Projectiles
+declare var Particles: Particles
+declare var Renderer: Renderer
+
+declare class CUnitOrder {
 	readonly order_type: dotaunitorder_t
 	readonly queue: boolean
 	readonly issuer: PlayerOrderIssuer_t
@@ -205,7 +217,7 @@ interface CUnitOrder {
 	readonly show_effects: boolean
 }
 
-interface CUserCmd {
+declare class CUserCmd {
 	readonly type_name: string
 	arrow_up_down: number
 	arrow_left_right: number
@@ -226,7 +238,7 @@ interface CUserCmd {
 	some_ent2: C_BaseEntity
 }
 
-interface LinearProjectile {
+declare class LinearProjectile {
 	readonly type_name: string
 	readonly m_vecOrigin: Vector
 	readonly m_vecPosition: Vector
@@ -234,7 +246,7 @@ interface LinearProjectile {
 	readonly m_vecAcceleration: Vector
 }
 
-interface TrackingProjectile {
+declare class TrackingProjectile {
 	readonly type_name: string
 	readonly m_hSource: C_DOTA_BaseNPC
 	readonly m_hTarget: C_BaseEntity
@@ -242,30 +254,6 @@ interface TrackingProjectile {
 	readonly m_vecTarget: Vector
 	readonly m_particle: CNewParticleEffect
 }
-
-interface QAngle {
-	readonly type_name: string
-	readonly Length: number
-	readonly LengthSqr: number
-	readonly IsZero: boolean
-	pitch: number
-	yaw: number
-	roll: number
-}
-
-/// GLOBAL OBJECTS
-declare var LocalDOTAPlayer: C_DOTAPlayer
-declare var GameRules: C_DOTAGamerules
-declare var PlayerResource: C_DOTA_PlayerResource
-
-declare var ConVars: ConVars
-declare var Entities: Entities
-declare var Events: Events
-declare var Menu: Menu
-declare var Minimap: Minimap
-declare var Projectiles: Projectiles
-declare var Particles: Particles
-declare var Renderer: Renderer
 
 declare class Color {
 	readonly type_name: string
@@ -318,24 +306,26 @@ declare interface Events {
 	FireEvent(name: string, ...args: any): void
 }
 
-declare interface Menu {
-	AddEntryEz(entry_name: string, obj: { [internal_name: string]: {
-		name: string,
-		hint?: string,
-		min?: number, // specify this for sliders
-		max?: number, // specify this for sliders
-		value?: number | boolean,
-		type: "slider_int" | "slider_float" | "boolean" | "toggle" | "keybind"
-	}}, callback: (internal_name: string, value: any) => void): void
-}
-
 declare interface Minimap {
 	SendPing(location?: Vector, type?: PingType_t, direct_ping?: boolean, target?: C_BaseEntity): void
 	SendLine(x: number, y: number, initial: boolean): void
 }
 
+interface QAngle {
+	readonly Length: number
+	readonly LengthSqr: number
+	readonly IsZero: boolean
+	pitch: number
+	yaw: number
+	roll: number
+	
+	constructor()
+	constructor(angle: QAngle)
+	constructor(val: number)
+	constructor(pitch: number, yaw: number, roll: number)
+}
+
 declare class Vector {
-	readonly type_name: string
 	/**
 	 * Those numbers can also be accessed thru vec[0], vec[1], vec[2]
 	 */
@@ -442,7 +432,6 @@ declare class Vector {
 }
 
 declare class Vector2D {
-	readonly type_name: string
 	/**
 	 * Those numbers can also be accessed thru vec[0], vec[1]
 	 */
@@ -649,7 +638,6 @@ declare function clearInterval(timeout_id: BigInt): void
 /// AUTOMATICALLY GENERATED
 
 declare class CGlowProperty {
-	readonly type_name: string
 	m_fGlowColor: Vector
 	m_iGlowTeam: number
 	m_iGlowType: number
