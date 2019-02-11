@@ -7,7 +7,7 @@ declare class Menu_Base {
 }
 
 declare class Menu_Node extends Menu_Base {
-	readonly entries: Menu_Base[]
+	entries: Menu_Base[]
 	
 	// You must call this method after you're done with editing entries, otherwise no changes will be shown
 	// This method will trigger all available callbacks if there's any settings saved for them
