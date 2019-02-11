@@ -306,6 +306,13 @@ declare interface Events {
 	FireEvent(name: string, ...args: any): void
 }
 
+declare interface GameEvents {
+	FireEventToClient(name: string, player_id: number, obj: any): void // BROKEN
+	FireEventToTeam(name: string, team_num: number, obj: any): void // BROKEN
+	FireEventToAllClients(name: string, obj: any): void
+	FireEventToServer(name: string, obj: any): void
+}
+
 declare interface Minimap {
 	SendPing(location?: Vector, type?: PingType_t, direct_ping?: boolean, target?: C_BaseEntity): void
 	SendLine(x: number, y: number, initial: boolean): void
