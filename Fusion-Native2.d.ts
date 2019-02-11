@@ -200,7 +200,7 @@ declare var global: any
 declare var ConVars: ConVars
 declare var Entities: Entities
 declare var Events: Events
-declare var Menu: Menu
+declare var GameEvents: GameEvents
 declare var Minimap: Minimap
 declare var Projectiles: Projectiles
 declare var Particles: Particles
