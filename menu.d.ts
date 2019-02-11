@@ -40,7 +40,7 @@ declare class Menu_Keybind extends Menu_Base {
 }
 
 declare class Menu_List extends Menu_Base {
-	readonly values: string[]
+	values: string[]
 	selected_id: number
 	
 	// you must call this method after you're done with editing entries,
