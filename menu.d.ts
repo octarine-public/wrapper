@@ -74,3 +74,4 @@ declare class Menu_SliderFloat extends Menu_Base {
 declare interface Menu {
 	AddEntry(entry: Menu_Node): void
 }
+declare var Menu: Menu

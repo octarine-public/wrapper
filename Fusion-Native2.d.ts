@@ -200,7 +200,7 @@ declare var global: any
 declare var ConVars: ConVars
 declare var Entities: Entities
 declare var Events: Events
-declare var Menu: Menu
+declare var GameEvents: GameEvents
 declare var Minimap: Minimap
 declare var Projectiles: Projectiles
 declare var Particles: Particles
@@ -304,6 +304,13 @@ declare interface Events {
 	RegisterCallback(name: string, callback: Function): void
 	UnregisterCallback(name: string, callback_id: number): void
 	FireEvent(name: string, ...args: any): void
+}
+
+declare interface GameEvents {
+	FireEventToClient(name: string, player_id: number, obj: any): void // BROKEN
+	FireEventToTeam(name: string, team_num: number, obj: any): void // BROKEN
+	FireEventToAllClients(name: string, obj: any): void
+	FireEventToServer(name: string, obj: any): void
 }
 
 declare interface Minimap {
