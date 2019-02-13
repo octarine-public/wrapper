@@ -218,7 +218,6 @@ declare class CUnitOrder {
 }
 
 declare class CUserCmd {
-	readonly type_name: string
 	arrow_up_down: number
 	arrow_left_right: number
 	random_seed: number
@@ -239,7 +238,6 @@ declare class CUserCmd {
 }
 
 declare class LinearProjectile {
-	readonly type_name: string
 	readonly m_vecOrigin: Vector
 	readonly m_vecPosition: Vector
 	readonly m_vecVelocity: Vector
@@ -247,7 +245,6 @@ declare class LinearProjectile {
 }
 
 declare class TrackingProjectile {
-	readonly type_name: string
 	readonly m_hSource: C_DOTA_BaseNPC
 	readonly m_hTarget: C_BaseEntity
 	readonly m_vecPosition: Vector
@@ -256,7 +253,6 @@ declare class TrackingProjectile {
 }
 
 declare class Color {
-	readonly type_name: string
 	r: number
 	g: number
 	b: number
