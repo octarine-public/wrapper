@@ -297,6 +297,61 @@ declare interface Events {
 	RegisterCallback(name: "onParticleCreated", callback: (id: number, path: string, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): void
 	RegisterCallback(name: "onParticleUpdated", callback: (id: number, control_point: number, vec: Vector) => void): void
 	RegisterCallback(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => boolean): void
+	RegisterCallback(name: "onLinearProjectileCreated", callback: (
+		proj: LinearProjectile,
+		origin: Vector,
+		velocity: Vector2D,
+		ent: C_BaseEntity,
+		particle: bigint,
+		acceleration: Vector2D,
+		max_speed: number,
+		fow_radius: number,
+		sticky_fow_reveal: boolean,
+		distance: number,
+		colorgemcolor: Color
+	) => void): void
+	RegisterCallback(name: "onLinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): void
+	RegisterCallback(name: "onTrackingProjectileCreated", callback: (
+		proj: TrackingProjectile,
+		hSource: C_DOTA_BaseNPC,
+		hTarget: C_BaseEntity,
+		moveSpeed: number,
+		sourceAttachment: number,
+		particleSystemHandle: bigint,
+		dodgeable: boolean,
+		isAttack: boolean,
+		expireTime: number,
+		maximpacttime: number,
+		colorgemcolor: Color,
+		launch_tick: number,
+		vTargetLoc: Vector
+	) => void): void
+	RegisterCallback(name: "onTrackingProjectileUpdated", callback: (
+		proj: TrackingProjectile,
+		vSourceLoc: Vector,
+		hTarget: C_BaseEntity,
+		moveSpeed: number,
+		particleSystemHandle: bigint,
+		dodgeable: boolean,
+		isAttack: boolean,
+		expireTime: number,
+		vTargetLoc: Vector,
+		colorgemcolor: Color,
+		launch_tick: number
+	) => void): void
+	RegisterCallback(name: "onTrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): void
+	RegisterCallback(name: "onUnitAnimation", callback: (
+		entity: C_DOTA_BaseNPC,
+		sequenceVariant: number,
+		playbackrate: number,
+		castpoint: number,
+		type: number,
+		activity: number
+	) => void): void
+	RegisterCallback(name: "onBuffAdded", callback: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): void
+	RegisterCallback(name: "onBuffRemoved", callback: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): void
+	RegisterCallback(name: "onBuffStackCountChanged", callback: (buff: CDOTA_Buff) => void): void
+
 	RegisterCallback(name: string, callback: Function): void
 	UnregisterCallback(name: string, callback_id: number): void
 	FireEvent(name: string, ...args: any): void
