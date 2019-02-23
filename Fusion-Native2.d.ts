@@ -351,6 +351,7 @@ declare interface Events {
 	RegisterCallback(name: "onBuffAdded", callback: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): void
 	RegisterCallback(name: "onBuffRemoved", callback: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): void
 	RegisterCallback(name: "onBuffStackCountChanged", callback: (buff: CDOTA_Buff) => void): void
+	RegisterCallback(name: "onCustomGameEvent", callback: (event_name: string, obj: any) => void): void
 
 	RegisterCallback(name: string, callback: Function): void
 	UnregisterCallback(name: string, callback_id: number): void
