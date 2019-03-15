@@ -6085,6 +6085,8 @@ declare class C_BaseAnimating extends C_BaseModelEntity {
 }
 
 declare class C_BaseModelEntity extends C_BaseEntity {
+	OnColorChanged(): void
+
 	readonly m_CRenderComponent: CRenderComponent
 	m_iViewerID: number
 	m_iTeamVisibilityBitmask: number
