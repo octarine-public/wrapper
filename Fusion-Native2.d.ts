@@ -341,12 +341,16 @@ declare interface Events {
 	) => void): void
 	RegisterCallback(name: "onTrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): void
 	RegisterCallback(name: "onUnitAnimation", callback: (
-		entity: C_DOTA_BaseNPC,
+		npc: C_DOTA_BaseNPC,
 		sequenceVariant: number,
 		playbackrate: number,
 		castpoint: number,
 		type: number,
 		activity: number
+	) => void): void
+	RegisterCallback(name: "onUnitAnimationEnd", callback: (
+		npc: C_DOTA_BaseNPC,
+		snap: boolean
 	) => void): void
 	RegisterCallback(name: "onBuffAdded", callback: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): void
 	RegisterCallback(name: "onBuffRemoved", callback: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): void
