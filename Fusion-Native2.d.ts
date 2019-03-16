@@ -1,5 +1,18 @@
 /// ENUMS
 
+declare const enum ArmorType {
+	Structure,
+	Hero,
+	Basic
+}
+
+declare const enum AttackDamageType {
+	Hero,
+	Basic,
+	Pierce,
+	Siege
+}
+
 declare const enum Flow_t {
 	IN = 0,
 	OUT = 1
