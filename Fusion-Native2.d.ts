@@ -238,6 +238,8 @@ declare class CUserCmd {
 }
 
 declare class LinearProjectile {
+	readonly m_flWidth: number
+	readonly m_flDistance: number
 	readonly m_vecOrigin: Vector
 	readonly m_vecPosition: Vector
 	readonly m_vecVelocity: Vector
@@ -245,6 +247,11 @@ declare class LinearProjectile {
 }
 
 declare class TrackingProjectile {
+	readonly m_bDodgeable: boolean
+	readonly m_bIsAttack: boolean
+	readonly m_bIsEvaded: boolean
+	readonly m_flExpireTime: number
+	readonly m_iSpeed: number
 	readonly m_hSource: C_DOTA_BaseNPC
 	readonly m_hTarget: C_BaseEntity
 	readonly m_vecPosition: Vector
