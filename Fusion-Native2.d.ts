@@ -257,6 +257,8 @@ declare class LinearProjectile {
 	readonly m_vecPosition: Vector
 	readonly m_vecVelocity: Vector
 	readonly m_vecAcceleration: Vector
+	readonly m_iID: number
+	readonly m_bIsValid: boolean
 }
 
 declare class TrackingProjectile {
@@ -270,6 +272,8 @@ declare class TrackingProjectile {
 	readonly m_vecPosition: Vector
 	readonly m_vecTarget: Vector
 	readonly m_particle: CNewParticleEffect
+	readonly m_iID: number
+	readonly m_bIsValid: boolean
 }
 
 declare class Color {
@@ -333,29 +337,16 @@ declare interface Events {
 	RegisterCallback(name: "onLinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): void
 	RegisterCallback(name: "onTrackingProjectileCreated", callback: (
 		proj: TrackingProjectile,
-		hSource: C_DOTA_BaseNPC,
-		hTarget: C_BaseEntity,
-		moveSpeed: number,
 		sourceAttachment: number,
 		particleSystemHandle: bigint,
-		dodgeable: boolean,
-		isAttack: boolean,
-		expireTime: number,
 		maximpacttime: number,
 		colorgemcolor: Color,
-		launch_tick: number,
-		vTargetLoc: Vector
+		launch_tick: number
 	) => void): void
 	RegisterCallback(name: "onTrackingProjectileUpdated", callback: (
 		proj: TrackingProjectile,
 		vSourceLoc: Vector,
-		hTarget: C_BaseEntity,
-		moveSpeed: number,
 		particleSystemHandle: bigint,
-		dodgeable: boolean,
-		isAttack: boolean,
-		expireTime: number,
-		vTargetLoc: Vector,
 		colorgemcolor: Color,
 		launch_tick: number
 	) => void): void
