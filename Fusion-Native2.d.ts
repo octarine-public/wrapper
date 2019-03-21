@@ -318,7 +318,7 @@ declare interface Events {
 	RegisterCallback(name: "onUnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): void
 	RegisterCallback(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): void
 	RegisterCallback(name: "onDraw", callback: () => void): void
-	RegisterCallback(name: "onParticleCreated", callback: (id: number, path: string, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): void
+	RegisterCallback(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): void
 	RegisterCallback(name: "onParticleUpdated", callback: (id: number, control_point: number, vec: Vector) => void): void
 	RegisterCallback(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => boolean): void
 	RegisterCallback(name: "onLinearProjectileCreated", callback: (
@@ -326,7 +326,8 @@ declare interface Events {
 		origin: Vector,
 		velocity: Vector2D,
 		ent: C_BaseEntity,
-		particle: bigint,
+		path: string,
+		particleSystemHandle: bigint,
 		acceleration: Vector2D,
 		max_speed: number,
 		fow_radius: number,
@@ -338,6 +339,7 @@ declare interface Events {
 	RegisterCallback(name: "onTrackingProjectileCreated", callback: (
 		proj: TrackingProjectile,
 		sourceAttachment: number,
+		path: string,
 		particleSystemHandle: bigint,
 		maximpacttime: number,
 		colorgemcolor: Color,
@@ -346,6 +348,7 @@ declare interface Events {
 	RegisterCallback(name: "onTrackingProjectileUpdated", callback: (
 		proj: TrackingProjectile,
 		vSourceLoc: Vector,
+		path: string,
 		particleSystemHandle: bigint,
 		colorgemcolor: Color,
 		launch_tick: number
