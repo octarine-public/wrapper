@@ -307,21 +307,21 @@ declare interface Entities {
 }
 
 declare interface Events {
-	RegisterCallback(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): void
-	RegisterCallback(name: "onGameEnded", callback: () => void): void
-	RegisterCallback(name: "onEntityCreated", callback: (ent: C_BaseEntity, id: number) => void): void
-	RegisterCallback(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): void
-	RegisterCallback(name: "onWndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => boolean): void
-	RegisterCallback(name: "onTick", callback: () => void): void
-	RegisterCallback(name: "onUpdate", callback: () => void): void
-	RegisterCallback(name: "onSendMove", callback: (cmd: CUserCmd) => void): void
-	RegisterCallback(name: "onUnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): void
-	RegisterCallback(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): void
-	RegisterCallback(name: "onDraw", callback: () => void): void
-	RegisterCallback(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): void
-	RegisterCallback(name: "onParticleUpdated", callback: (id: number, control_point: number, vec: Vector) => void): void
-	RegisterCallback(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => boolean): void
-	RegisterCallback(name: "onLinearProjectileCreated", callback: (
+	addListener(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): bigint
+	addListener(name: "onGameEnded", callback: () => void): bigint
+	addListener(name: "onEntityCreated", callback: (ent: C_BaseEntity, id: number) => void): bigint
+	addListener(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): bigint
+	addListener(name: "onWndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => boolean): bigint
+	addListener(name: "onTick", callback: () => void): bigint
+	addListener(name: "onUpdate", callback: () => void): bigint
+	addListener(name: "onSendMove", callback: (cmd: CUserCmd) => void): bigint
+	addListener(name: "onUnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): bigint
+	addListener(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): bigint
+	addListener(name: "onDraw", callback: () => void): bigint
+	addListener(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): bigint
+	addListener(name: "onParticleUpdated", callback: (id: number, control_point: number, vec: Vector) => void): bigint
+	addListener(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => boolean): bigint
+	addListener(name: "onLinearProjectileCreated", callback: (
 		proj: LinearProjectile,
 		origin: Vector,
 		velocity: Vector2D,
@@ -334,9 +334,9 @@ declare interface Events {
 		sticky_fow_reveal: boolean,
 		distance: number,
 		colorgemcolor: Color
-	) => void): void
-	RegisterCallback(name: "onLinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): void
-	RegisterCallback(name: "onTrackingProjectileCreated", callback: (
+	) => void): bigint
+	addListener(name: "onLinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): bigint
+	addListener(name: "onTrackingProjectileCreated", callback: (
 		proj: TrackingProjectile,
 		sourceAttachment: number,
 		path: string,
@@ -344,36 +344,36 @@ declare interface Events {
 		maximpacttime: number,
 		colorgemcolor: Color,
 		launch_tick: number
-	) => void): void
-	RegisterCallback(name: "onTrackingProjectileUpdated", callback: (
+	) => void): bigint
+	addListener(name: "onTrackingProjectileUpdated", callback: (
 		proj: TrackingProjectile,
 		vSourceLoc: Vector,
 		path: string,
 		particleSystemHandle: bigint,
 		colorgemcolor: Color,
 		launch_tick: number
-	) => void): void
-	RegisterCallback(name: "onTrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): void
-	RegisterCallback(name: "onUnitAnimation", callback: (
+	) => void): bigint
+	addListener(name: "onTrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): bigint
+	addListener(name: "onUnitAnimation", callback: (
 		npc: C_DOTA_BaseNPC,
 		sequenceVariant: number,
 		playbackrate: number,
 		castpoint: number,
 		type: number,
 		activity: number
-	) => void): void
-	RegisterCallback(name: "onUnitAnimationEnd", callback: (
+	) => void): bigint
+	addListener(name: "onUnitAnimationEnd", callback: (
 		npc: C_DOTA_BaseNPC,
 		snap: boolean
-	) => void): void
-	RegisterCallback(name: "onBuffAdded", callback: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): void
-	RegisterCallback(name: "onBuffRemoved", callback: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): void
-	RegisterCallback(name: "onBuffStackCountChanged", callback: (buff: CDOTA_Buff) => void): void
-	RegisterCallback(name: "onCustomGameEvent", callback: (event_name: string, obj: any) => void): void
+	) => void): bigint
+	addListener(name: "onBuffAdded", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): bigint
+	addListener(name: "onBuffRemoved", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): bigint
+	addListener(name: "onBuffStackCountChanged", listener: (buff: CDOTA_Buff) => void): bigint
+	addListener(name: "onCustomGameEvent", listener: (event_name: string, obj: any) => void): bigint
 
-	RegisterCallback(name: string, callback: Function): void
-	UnregisterCallback(name: string, callback_id: number): void
-	FireEvent(name: string, ...args: any): void
+	addListener(name: string, listener: Function): bigint
+	removeListener(name: string, listener_id: bigint): void
+	emit(name: string, ...args: any): void
 }
 
 declare interface GameEvents {
