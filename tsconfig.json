@@ -7,8 +7,8 @@
 		"noEmit": true,
 	},
 	"include": [
-		"d.ts/*.d.ts",
-		"scripts/**/*.ts"
+		"d.ts/**/*.d.ts",
+		"src_ts/**/*.ts"
 	],
 	"compileOnSave": true,
 }
