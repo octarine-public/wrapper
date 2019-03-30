@@ -10,10 +10,10 @@
 		"typescript": "next"
 	},
 	"scripts": {
-		"watch": "babel --watch scripts --extensions \".ts\" --out-dir scripts",
-		"build": "babel scripts --extensions \".ts\" --out-dir scripts",
+		"watch": "babel --watch src_ts --extensions \".ts\" --out-dir scripts",
+		"build": "babel src_ts --extensions \".ts\" --out-dir scripts",
 		"check-types": "tsc",
-		"lint": "tslint --fix 'scripts/*.ts'"
+		"lint": "tslint --fix 'src_ts/*.ts'"
 	},
 	"author": "moofMonkey"
 }

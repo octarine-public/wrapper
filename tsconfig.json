@@ -7,7 +7,7 @@
 		"noEmit": true,
 	},
 	"include": [
-		"Fusion-Native2.d.ts",
+		"d.ts/*.d.ts",
 		"scripts/**/*.ts"
 	],
 	"compileOnSave": true,
