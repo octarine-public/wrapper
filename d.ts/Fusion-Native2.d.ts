@@ -231,8 +231,11 @@ declare class CUnitOrder {
 }
 
 declare class CUserCmd {
-	arrow_up_down: number
-	arrow_left_right: number
+	command_number: number
+	tick_count: number
+	forwardmove: number
+	sidemove: number
+	upmove: number
 	random_seed: number
 	mousex: number
 	mousey: number
@@ -240,14 +243,15 @@ declare class CUserCmd {
 	cameraz: number
 	click_behaviors: number
 	scoreboard_opened: boolean
-	shop_type: number
+	shopmask: number
 	spectator_stats_category_id: number
 	spectator_stats_sort_method: number
-	arrow_flags: bigint
+	buttons: bigint
+	impulse: number
 	vec_under_cursor: Vector
-	camera_angles: Vector
-	some_ent1: C_BaseEntity
-	some_ent2: C_BaseEntity
+	viewangles: Vector
+	weaponselect: C_BaseEntity
+	weaponsubtype: C_BaseEntity
 }
 
 declare class LinearProjectile {
@@ -8716,8 +8720,6 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_bIsLaneCreep: boolean
 	readonly m_bIsShrine: boolean
 	readonly m_bIsWard: boolean
-	readonly m_bIsRoshan: boolean
-	readonly m_bIsTechiesRemoteMine: boolean
 	readonly m_bIsStunned: boolean
 	readonly m_bIsInvisible: boolean
 	readonly m_bIsInvulnerable: boolean
