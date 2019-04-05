@@ -42,8 +42,6 @@ export { MenuManager };
 			
 	TO DO Native:
 
-	- console.log - array remove toString()
-	- exeption: change value on menu before root.Update();
 	- QAngle - add AsVector
 	- remove EffectiveInvisibilityLevel
 	- move Vector to Native API

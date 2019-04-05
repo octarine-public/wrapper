@@ -18,8 +18,8 @@
  * along with Fusion.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as Orders from "./Orders"
-import * as Utils from "./Utils"
+import * as Orders from "Orders"
+import * as Utils from "Utils"
 
 var config: any = {
 	enabled: false,

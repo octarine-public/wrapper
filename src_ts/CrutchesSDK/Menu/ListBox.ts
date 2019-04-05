@@ -52,7 +52,6 @@ export default class ListBox extends Menu_List {
 				
 				var parnt = getTopParent(value);
 				
-				console.log("ListBox: ", parnt);
 				parnt.Update();
 
 				selfParent = value;

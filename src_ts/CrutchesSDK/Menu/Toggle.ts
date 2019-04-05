@@ -65,7 +65,6 @@ export default class Toggle extends Menu_Toggle {
 				
 				var parnt = getTopParent(value);
 
-				console.log("Toggle: ", parnt);
 				parnt.Update();
 				
 				selfParent = value;

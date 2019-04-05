@@ -39,7 +39,6 @@ let sliderFloat = menu.AddSliderFloat("test sliderFloat", 15.3, 5.5, 20.7, "exam
 		console.log("sliderFloat OnValue: ", value, " ", self);
 	})
 
-console.log(sliderFloat.value);
 	
 let keybind = menu.AddKeybind("keybind", "F", "example keybind tips")
 	.OnValue((value, self) => {

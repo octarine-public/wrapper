@@ -53,7 +53,6 @@ export default class ComboBox extends Menu_Combo {
 				
 				var parnt = getTopParent(value);
 
-				console.log("ComboBox: ", parnt);
 				parnt.Update();
 
 				selfParent = value;

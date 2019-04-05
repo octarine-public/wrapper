@@ -50,7 +50,6 @@ export class Slider extends Menu_SliderInt {
 				
 				var parnt = getTopParent(value);
 
-				console.log("Slider: ", parnt);
 				parnt.Update();
 
 				selfParent = value;

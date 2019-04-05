@@ -131,7 +131,6 @@ export default class Keybind extends Menu_Keybind {
 				
 				var parnt = getTopParent(value);
 
-				console.log("Keybind: ", parnt);
 				parnt.Update();
 
 				selfParent = value;

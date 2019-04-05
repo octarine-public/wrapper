@@ -65,7 +65,6 @@ export default class CheckBox extends Menu_Boolean {
 				
 				var parnt = getTopParent(value);
 
-				console.log("CheckBox: ", parnt);
 				parnt.Update();
 
 				selfParent = value;
