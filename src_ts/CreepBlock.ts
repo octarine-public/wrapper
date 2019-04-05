@@ -32,28 +32,28 @@ var config: any = {
 	creeps: C_DOTA_BaseNPC_Creep_Lane[] = [],
 	creepsMovePosition: Vector
 
-Events.addListener("onDraw", () => {
-	if (!IsInGame() || !enabled)
-		return
-	creeps.filter(creep => creep.m_bIsValid).map(creep => creep.m_vecNetworkOrigin).forEach(vec => {
-		let screen_pos = Renderer.WorldToScreen(vec)
-		if (!screen_pos.IsValid())
-			return
-		Renderer.FilledRect(screen_pos.x - 10, screen_pos.z - 10, 20, 20, 255, 0, 0)
-	})
-	creeps.filter(creep => creep.m_bIsValid).map(creep => creep.InFront(300)).forEach(vec => {
-		let screen_pos = Renderer.WorldToScreen(vec)
-		if (!screen_pos.IsValid())
-			return
-		Renderer.FilledRect(screen_pos.x - 10, screen_pos.z - 10, 20, 20, 0, 255, 0)
-	})
-	{
-		let screen_pos = Renderer.WorldToScreen(creepsMovePosition)
-		if (!screen_pos.IsValid())
-			return
-		Renderer.FilledRect(screen_pos.x - 10, screen_pos.z - 10, 20, 20, 0, 0, 255)
-	}
-})
+// Events.addListener("onDraw", () => {
+// 	if (!IsInGame() || !enabled)
+// 		return
+// 	creeps.filter(creep => creep.m_bIsValid).map(creep => creep.m_vecNetworkOrigin).forEach(vec => {
+// 		let screen_pos = Renderer.WorldToScreen(vec)
+// 		if (!screen_pos.IsValid())
+// 			return
+// 		Renderer.FilledRect(screen_pos.x - 10, screen_pos.z - 10, 20, 20, 255, 0, 0)
+// 	})
+// 	creeps.filter(creep => creep.m_bIsValid).map(creep => creep.InFront(300)).forEach(vec => {
+// 		let screen_pos = Renderer.WorldToScreen(vec)
+// 		if (!screen_pos.IsValid())
+// 			return
+// 		Renderer.FilledRect(screen_pos.x - 10, screen_pos.z - 10, 20, 20, 0, 255, 0)
+// 	})
+// 	{
+// 		let screen_pos = Renderer.WorldToScreen(creepsMovePosition)
+// 		if (!screen_pos.IsValid())
+// 			return
+// 		Renderer.FilledRect(screen_pos.x - 10, screen_pos.z - 10, 20, 20, 0, 0, 255)
+// 	}
+// })
 
 Events.addListener("onPrepareUnitOrders", order => !enabled || Utils.GetOrdersWithoutSideEffects().includes(order.order_type))
 Events.addListener("onTick", () => {
