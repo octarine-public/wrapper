@@ -225,7 +225,7 @@ Events.addListener("onPrepareUnitOrders", args => {
 	const ents = args.position.GetEntitiesInRange(config.auto_stack_range)
 	var minePos: Vector = undefined as any // hack for tsc, it's always initialized when used
 	if (ents.some(ent => {
-		const isMine = ent instanceof C_DOTA_BaseNPC && ent.m_bIsTechiesRemoteMine && ent.m_bIsAlive
+		const isMine = ent instanceof C_DOTA_BaseNPC && ent.m_iszUnitName === "npc_dota_techies_remote_mine" && ent.m_bIsAlive
 		if (isMine)
 			minePos = ent.m_vecNetworkOrigin
 		return isMine
@@ -248,13 +248,13 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (npc.IsEnemy(LocalDOTAPlayer))
 		return
 	CreateParticleFor(npc)
-	if (npc.m_bIsTechiesRemoteMine)
+	if (npc.m_iszUnitName === "npc_dota_techies_remote_mine")
 		RegisterMine(npc)
 })
 Events.addListener("onEntityDestroyed", ent => {
 	if (!(ent instanceof C_DOTA_BaseNPC))
 		return
-	if (ent.m_bIsTechiesRemoteMine) {
+	if (ent.m_iszUnitName === "npc_dota_techies_remote_mine") {
 		if (particles[ent.m_iID] !== undefined)
 			Particles.Destroy(particles[ent.m_iID], true)
 		RemoveMine(ent)
