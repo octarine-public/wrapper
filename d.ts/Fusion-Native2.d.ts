@@ -313,6 +313,9 @@ declare interface Entities {
 declare interface Events {
 	addListener(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): bigint
 	addListener(name: "onGameEnded", callback: () => void): bigint
+	/**
+	 * Also, this event emitted about ALL entities that have already been created before reload scripts
+	 */
 	addListener(name: "onEntityCreated", callback: (ent: C_BaseEntity, id: number) => void): bigint
 	addListener(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): bigint
 	addListener(name: "onWndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => boolean): bigint
