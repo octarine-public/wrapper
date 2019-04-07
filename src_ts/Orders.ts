@@ -131,7 +131,7 @@ export function EntStop(ent: C_DOTA_BaseNPC, queue: boolean = true) {
  * @param {bool} queue does order needs to be queued? [uses backswing]
  * @param {PlayerOrderIssuer_t} orderIssuer lookup PlayerOrderIssuer_t enum
  */
-export function PickupItem(ent: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC, queue: boolean = true) {
+export function PickupItem(ent: C_DOTA_BaseNPC, target: C_DOTA_Item_Physical, queue: boolean = true) {
 	PrepareUnitOrders({
 		OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM,
 		Unit: ent,
