@@ -86,8 +86,9 @@ export default class Toggle extends Menu_Toggle {
 		return this;
 	}
 	
-	ChangeValue(value: boolean) {
-		this.value = value;
+	ChangeValue(value: boolean | number): this {
+		this.value = !!value;
+		return this;
 	}
 	ChangeReverse(): this {
 		this.value = !this.value;

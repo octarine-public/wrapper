@@ -1,4 +1,4 @@
-import MenuManager from "../CrutchesSDK/Menu/MenuManager";
+import { MenuManager, CreateRGBTree } from "../CrutchesSDK/Menu/MenuManager";
 import CheckBox from "../CrutchesSDK/Menu/CheckBox";
 
 // ------------------- Main
@@ -7,51 +7,51 @@ let menu = new MenuManager("TestSDK");
 
 let toggle = menu.AddToggle("toggle", false, "example toggle tips")
 	.OnValue((value, self) => {
-		console.log("toggle OnValue: ", value, " ", self);
+		console.log("toggle OnValue:", value, self);
 	})
 	.OnActivate(self => {
-		console.log("toggle OnActivate: ", self);
+		console.log("toggle OnActivate:", self);
 	})
 	.OnDeactivate(self => {
-		console.log("toggle OnDeactivate: ", self);
+		console.log("toggle OnDeactivate:", self);
 	});
 	
 
 let checkbox = menu.AddCheckBox("checkbox", false, "example toggle tips")
 	.OnValue((value, self) => {
-		console.log("toggle OnValue: ", value, " ", self);
+		console.log("toggle OnValue:", value, self);
 	})
 	.OnActivate(self => {
-		console.log("toggle OnActivate: ", self);
+		console.log("toggle OnActivate:", self);
 	})
 	.OnDeactivate(self => {
-		console.log("toggle OnDeactivate: ", self);
+		console.log("toggle OnDeactivate:", self);
 	});
 
 
 let slider = menu.AddSlider("test slider", 15, 5, 20, "example slider tips")
 	.OnValue((value, self) => {
-		console.log("slider OnValue: ", value, " ", self);
+		console.log("slider OnValue:", value, self);
 	});
 
 let sliderFloat = menu.AddSliderFloat("test sliderFloat", 15.3, 5.5, 20.7, "example sliderFloat tips")
 	.OnValue((value, self) => {
-		console.log("sliderFloat OnValue: ", value, " ", self);
+		console.log("sliderFloat OnValue:", value, self);
 	})
 
 	
 let keybind = menu.AddKeybind("keybind", "F", "example keybind tips")
 	.OnValue((value, self) => {
-		console.log("keybind OnValue: ", value, " ", self);
+		console.log("keybind OnValue:", value, self);
 	})
 	.OnExecute((isPressed, self) => {
-		console.log("keybind OnExecute: ", isPressed, " ", self);
+		console.log("keybind OnExecute:", isPressed, self);
 	})
 	.OnPressed(self => {
-		console.log("keybind OnPressed: ", self);
+		console.log("keybind OnPressed:", self);
 	})
 	.OnRelease(self => {
-		console.log("keybind OnRelease: ", self);
+		console.log("keybind OnRelease:", self);
 	});
 
 	
@@ -64,13 +64,13 @@ let items = [
 	
 let comboBox = menu.AddComboBox("test comboBox", items, 2, "example comboBox tips")
 	.OnValue((value, self) => {
-		console.log("comboBox OnValue: ", value, " ", self);
+		console.log("comboBox OnValue:", value, self);
 	});
 
 	
 let listBox = menu.AddListBox("test listbox", items, [false, true, true, false], "example listBox tips")
 	.OnValue((value, self) => {
-		console.log("listBox OnValue: ", value, " ", self);
+		console.log("listBox OnValue:", value, self);
 	});
 
 	
@@ -78,6 +78,11 @@ let tree = menu.AddTree("tree");
 
 let treeToggle = tree.AddToggle("tree toggle");
 
+let rgbTree = CreateRGBTree(menu, "rgb tree", new Vector(0, 255, 0));
+	
+rgbTree.R.OnValue((value, self) => console.log("slider OnValue:", value, self));
+rgbTree.G.OnValue((value, self) => console.log("slider OnValue:", value, self));
+rgbTree.B.OnValue((value, self) => console.log("slider OnValue:", value, self));
 
 /* menu.AddTree("tree");
 menu.AddTree("tree");
@@ -152,8 +157,26 @@ ChangeCheckBoxes(sliderTwo.value);
 
 
 
+let menuTest = menu.AddTree("test tree");
 
+let menuList = menuTest.AddListBox("List of status", [
+	"rune status",
+	"rune keybinds",
+	"items status",
+	"items keybinds"
+], [true, false, true, false]);
+
+/* Events.addListener("onTick", () => {
+	console.log("selected_flags:", menuList.selected_flags);
 	
+	console.log("selected_flags[0]:", menuList.selected_flags[0]);
+	console.log("selected_flags[1]:", menuList.selected_flags[1]);
+	console.log("selected_flags[2]:", menuList.selected_flags[2]);
+	console.log("selected_flags[3]:", menuList.selected_flags[3]);
+});
+ */
+
+
 
 // ------------------------------ 
 

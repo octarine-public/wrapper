@@ -3,7 +3,7 @@ import Entity from "CrutchesSDK/Extensions/Entity"
 import Unit from "CrutchesSDK/Extensions/Unit"
 import Vector_2 from "CrutchesSDK/Extensions/Vector"
 import * as EntityManager from "CrutchesSDK/Managers/EntityManager"
-import MenuManager from "CrutchesSDK/Menu/MenuManager";
+//import * as MenuManager from "CrutchesSDK/Menu/MenuManager";
 //import * as ParticleManager from "CrutchesSDK/Managers/ParticlesManager"
 
 // //export * from "CrutchesSDK/Extensions/Enums";
@@ -12,7 +12,7 @@ import MenuManager from "CrutchesSDK/Menu/MenuManager";
 export { Entity, /*Enums,*/  Vector_2 } // Extensions
 export { EntityManager/*, ParticleManager*/ } // Managers
 
-export { MenuManager };
+export * from "CrutchesSDK/Menu/MenuManager";
 
 
 

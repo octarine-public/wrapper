@@ -74,9 +74,10 @@ export default class ComboBox extends Menu_Combo {
 		return this;
 	}
 
-	ChangeValue(value: number) {
+	ChangeValue(value: number): this {
 		this.selected_id = value;
 		this.Update();
+		return this;
 	}
 	ChangeToDefault(): this {
 		this.selected_id = this.defaultValue;

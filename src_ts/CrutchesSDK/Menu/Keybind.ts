@@ -31,6 +31,9 @@ function RemoveKeyEvent(keybind: Keybind) {
 	
 	IsPressing[key] = undefined;
 
+	if (OnExecute[key] === undefined)
+		return;
+	
 	OnExecute[key] = OnExecute[key].filter(kb => kb !== keybind);
 
 	if (OnExecute[key].length === 0)
@@ -81,7 +84,7 @@ Events.addListener("onWndProc", (msg, wParam) => {
 				if (isPressed)
 					ret = !(onPressedCall && onPressedCall(keybind) === false)
 				else
-					ret = !(onPressedCall && onReleaseCall(keybind) === false)
+					ret = !(onReleaseCall && onReleaseCall(keybind) === false)
 			});
 			
 			return ret;
@@ -157,6 +160,10 @@ export default class Keybind extends Menu_Keybind {
 		this.value = this.defaultValue;
 		return this;
 	}
+	ChangeValue(value: number): this {
+		this.value = value;
+		return this;
+	}
 
 	OnValue(callback: (value: number, self: Keybind) => void): this {
 		this.OnValueCallback = callback;
@@ -167,15 +174,15 @@ export default class Keybind extends Menu_Keybind {
 	get IsPressed() {
 		return IsPressing[this.value];
 	}
-	OnExecute(callback: (isPressed: boolean, self: Keybind) => false | void): this {
+	OnExecute(callback: (isPressed: boolean, self: Keybind) => any): this {
 		this.OnExecuteCallback = callback;
 		return this;
 	}
-	OnPressed(callback: (self: Keybind) => false | void): this {
+	OnPressed(callback: (self: Keybind) => any): this {
 		this.OnPressedCallback = callback;
 		return this;
 	}
-	OnRelease(callback: (self: Keybind) => false | void): this {
+	OnRelease(callback: (self: Keybind) => any): this {
 		this.OnReleaseCallback = callback;
 		return this;
 	}

@@ -40,7 +40,7 @@ export default class Entity {
 	 */
 	IsEnemy(ent?: Entity): boolean {
 		return ent === undefined
-			? this.Team !== LocalDOTAPlayer.m_iTeamNum
+			? (LocalDOTAPlayer === undefined || this.Team !== LocalDOTAPlayer.m_iTeamNum)
 			: this.Team !== ent.Team;
 	}
 

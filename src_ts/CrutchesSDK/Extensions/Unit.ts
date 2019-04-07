@@ -114,7 +114,7 @@ export default class Unit extends Entity {
 	 * IsControllable by LocalPlayer
 	 */
 	get IsControllable(): boolean {
-		return this.ent.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID);
+		return LocalDOTAPlayer !== undefined && this.ent.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID);
 	}
 	get IsDominatable(): boolean {
 		return this.ent.m_bCanBeDominated;

@@ -71,8 +71,9 @@ export class Slider extends Menu_SliderInt {
 		return this;
 	}
 	
-	ChangeValue(value: number) {
+	ChangeValue(value: number): this {
 		this.value = value;
+		return this;
 	}
 	ChangeToDefault(): this {
 		this.value = this.defaultValue;
@@ -126,8 +127,9 @@ export class SliderFloat extends Menu_SliderFloat {
 		return this;
 	}
 
-	ChangeValue(value: number) {
+	ChangeValue(value: number): this {
 		this.value = value;
+		return this;
 	}
 	ChangeToDefault(): this {
 		this.value = this.defaultValue;

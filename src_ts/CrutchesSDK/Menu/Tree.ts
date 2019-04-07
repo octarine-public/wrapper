@@ -40,9 +40,11 @@ export default class Tree extends Menu_Node {
 		return this;
 	}
 
-	AddControl(ctrl: Menu_Base) {
+	AddControl(ctrl: Menu_Base, index?: number) {
 		
-		this.entries.push(ctrl);
+		index !== undefined
+			? this.entries.splice(index, 0, ctrl)
+			: this.entries.push(ctrl);
 
 		getTopParent(this).Update();
 		
@@ -76,22 +78,22 @@ export default class Tree extends Menu_Node {
 		return tree;
 	}
 
-	AddToggle(name: string, defaultValue: boolean = false, hint?: string): Toggle {
+	AddToggle(name: string, defaultValue: boolean | number = false, hint?: string): Toggle {
 
 		name = CheckSameName(name, this);
 		
-		var toggle = new Toggle(this, name, defaultValue, hint);
+		var toggle = new Toggle(this, name, !!defaultValue, hint);
 
 		this.AddControl(toggle);
 
 		return toggle;
 	}
 	
-	AddCheckBox(name: string, defaultValue: boolean = false, hint?: string): CheckBox {
+	AddCheckBox(name: string, defaultValue: boolean | number = false, hint?: string): CheckBox {
 
 		name = CheckSameName(name, this);
 		
-		var checkbox = new CheckBox(this, name, defaultValue, hint);
+		var checkbox = new CheckBox(this, name, !!defaultValue, hint);
 
 		this.AddControl(checkbox);
 

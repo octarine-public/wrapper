@@ -72,9 +72,19 @@ export default class ListBox extends Menu_List {
 		this.hint = text;
 		return this;
 	}
-
-	ChangeValue(value: boolean[]) {
+	
+	get IsZeroSelected(): boolean {
+		return !this.selected_flags.some(x => x === true);
+	}
+	IsInSelected(value: string): boolean {
+		let indexOf = this.values.indexOf(value);
+		
+		return indexOf > -1 && this.selected_flags[indexOf];
+	}
+	
+	ChangeValue(value: boolean[]): this {
 		this.selected_flags = value;
+		return this;
 	}
 	ChangeToDefault(): this {
 		this.selected_flags = this.defaultValue;
