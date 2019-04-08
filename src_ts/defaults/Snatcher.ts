@@ -20,9 +20,14 @@ const stateMain = snatcherMenu.AddToggle("State").OnValue(onStateMain)
 
 const runeMenu = snatcherMenu.AddTree("Rune settings")
 
-const stateRune = runeMenu.AddToggle("Snatch Rune").OnDeactivate(onDiactivateRune),
-	runeToggle = runeMenu.AddKeybind("Rune toogle").OnRelease(() => stateRune.ChangeReverse()),
-	runeHoldKey = runeMenu.AddKeybind("Rune hold key").OnRelease(() => {
+const stateRune = runeMenu.AddToggle("Snatch Rune")
+	.OnDeactivate(onDiactivateRune);
+
+const runeToggle = runeMenu.AddKeybind("Rune toogle")
+	.OnRelease(() => stateRune.ChangeReverse());
+
+const runeHoldKey = runeMenu.AddKeybind("Rune hold key")
+	.OnRelease(() => {
 		if (!stateRune.value)
 			onDiactivateRune()
 	})
@@ -123,32 +128,39 @@ function onCheckEntity(ent: C_BaseEntity) {
 	if (!ent.m_bIsValid)
 		return
 
-	if (ent instanceof C_DOTA_Item_Rune && (stateRune.value || runeHoldKey.IsPressed))
+	if (ent instanceof C_DOTA_Item_Rune && (stateRune.value || runeHoldKey.IsPressed)) {
+		
 		if (!allRunes.includes(ent))
 			allRunes.push(ent)
-
-	if (ent instanceof C_DOTA_Item_Physical && stateItems.value) {
-		let m_hItem = ent.m_hItem,
-			includes = needItems.includes(ent)
-
-		if (m_hItem !== undefined && !includes)
-			if (listOfItems.IsInSelected(m_hItem.m_pAbilityData.m_pszAbilityName))
-				needItems.push(ent)
-		else if (includes)
-			removedIDItem(ent)
 	}
 
-	if (
-		ent instanceof C_DOTA_BaseNPC
-		&& stateControllables.value
-		&& !controllables.includes(ent)
-		&& LocalDOTAPlayer !== undefined
-		&& ent.m_iUnitType !== 0
-		&& !ent.m_bIsIllusion
-		&& !ent.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY)
-		&& ent.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID)
-	)
+	if (ent instanceof C_DOTA_Item_Physical && stateItems.value) {
+		
+		let m_hItem = ent.m_hItem,
+			includes = needItems.includes(ent);
+
+		if (m_hItem !== undefined && !includes) {
+			
+			if (listOfItems.IsInSelected(m_hItem.m_pAbilityData.m_pszAbilityName)) 
+				needItems.push(ent);
+				
+		} else if (includes) {
+			
+			removedIDItem(ent)
+		}
+	}
+
+	if (ent instanceof C_DOTA_BaseNPC && stateControllables.value) {
+		
+		if (LocalDOTAPlayer !== undefined
+			&& ent.m_iUnitType !== 0
+			&& !ent.m_bIsIllusion
+			&& !ent.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY)
+			&& ent.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID)
+			&& !controllables.includes(ent)
+		)
 		controllables.push(ent)
+	}
 }
 
 function onEntityDestroyed(ent: C_BaseEntity, id: number) {
@@ -216,8 +228,10 @@ function snatchRunes() {
 
 		if (stateControllables.value)
 			near = controllables.filter(npc => snatchRuneByUnit(npc, rune)).length > 0
-		else if (LocalDOTAPlayer !== undefined)
-			near = snatchRuneByUnit(LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC, rune)
+		else {
+			if (LocalDOTAPlayer !== undefined)
+				near = snatchRuneByUnit(LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC, rune)
+		}
 
 		if (!near && (drawParticleTake.value || drawParticleKill.value))
 			destroyRuneParticles(rune.m_iID)
@@ -339,9 +353,10 @@ function snatchItems() {
 
 	if (stateControllables.value)
 		controllables.forEach(snatchItemByUnit)
-	else
+	else {
 		if (LocalDOTAPlayer !== undefined)
 			snatchItemByUnit(LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC)
+	}
 }
 
 function snatchItemByUnit(npc: C_DOTA_BaseNPC) {

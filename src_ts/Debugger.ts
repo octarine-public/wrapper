@@ -31,6 +31,10 @@ let localLvl = sv_cheatsMenu.AddKeybind("Local lvl max")
 	.SetToolTip("dota_hero_level 25")
 	.OnRelease(self => SendToConsole(self.hint))
 
+let getRapGod = sv_cheatsMenu.AddKeybind("Get Rap God")
+	.SetToolTip("dota_rap_god")
+	.OnRelease(self => SendToConsole(self.hint));
+	
 let addUnitMenu = debuggerMenu.AddTree("add unit")
 
 addUnitMenu.AddKeybind("Add full Sven")
