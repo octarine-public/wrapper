@@ -18,8 +18,8 @@
  * along with Fusion.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as Utils from "Utils"
 import * as Orders from "Orders"
+import * as Utils from "Utils"
 
 // loop-optimizer: KEEP
 var spots: Vector[] = /*Utils.orderBy(*/[
@@ -29,13 +29,13 @@ var spots: Vector[] = /*Utils.orderBy(*/[
 		new Vector(2546.226563, 41.390625, 384.000000), // calibrated
 		new Vector(-4255.669922, 3469.897461, 256.000000), // calibrated
 		new Vector(-55.859379, -3266.130127, 384.000000), // calibrated
-		new Vector(424.332947, -4665.735352, 396.747070), //calibrated
-		new Vector(-3744.976563, 853.449219, 385.992188), //calibrated
+		new Vector(424.332947, -4665.735352, 396.747070), // calibrated
+		new Vector(-3744.976563, 853.449219, 385.992188), // calibrated
 	],
 	config = {
 		enabled: false,
-		//hotkey_dynamic: 0,
-		visals: false
+		// hotkey_dynamic: 0,
+		visals: false,
 	},
 	is_stacking: boolean = false
 
@@ -55,7 +55,7 @@ Events.addListener("onTick", () => {
 		return
 	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC,
 		torrent = MyEnt.GetAbilityByName("kunkka_torrent")
-	if(torrent === undefined || torrent.m_fCooldown !== 0 || torrent.m_iManaCost > MyEnt.m_flMana)
+	if (torrent === undefined || torrent.m_fCooldown !== 0 || torrent.m_iManaCost > MyEnt.m_flMana)
 		return
 	var cur_time: number = GameRules.m_fGameTime - GameRules.m_flGameStartTime
 	if (cur_time < 60)
@@ -69,7 +69,7 @@ Events.addListener("onTick", () => {
 	if (
 		Math.abs (
 			(cur_time % 60) -
-			(60 - (torrent.m_fCastPoint + torrent.GetSpecialValue("delay") + 0.6)) // it tooks ~0.6sec to raise y coord of creeps
+			(60 - (torrent.m_fCastPoint + torrent.GetSpecialValue("delay") + 0.6)), // it tooks ~0.6sec to raise y coord of creeps
 		) >= 1 / 30
 	)
 		return
@@ -119,12 +119,12 @@ Events.addListener("onPrepareUnitOrders", () => !is_stacking) // cancel orders w
 	root.entries.push(new Menu_Toggle (
 		"State",
 		config.enabled,
-		node => config.enabled = node.value
+		node => config.enabled = node.value,
 	))
 	root.entries.push(new Menu_Toggle (
 		"Draw visuals over stackable spots",
 		config.visals,
-		node => config.visals = node.value
+		node => config.visals = node.value,
 	))
 	/*root.entries.push(new Menu_Keybind (
 		"Dynamic hotkey (reqires spot vision)",

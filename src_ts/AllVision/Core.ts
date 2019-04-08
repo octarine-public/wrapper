@@ -1,7 +1,7 @@
 import Techies from "AllVision/Techies"
 import TreantProtector from "AllVision/TreantProtector"
 var config = {
-	enabled: true
+	enabled: true,
 }
 // Techies()
 TreantProtector()
@@ -10,7 +10,7 @@ TreantProtector()
 	root.entries.push(new Menu_Toggle (
 		"State",
 		config.enabled,
-		node => config.enabled = node.value
+		node => config.enabled = node.value,
 	))
 	/*root.entries.push(new Menu_Boolean (
 		"Kill creeps",

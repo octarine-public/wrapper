@@ -18,12 +18,12 @@
  * along with Fusion.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EComboAction, Combo } from "wrapper/Combo"
 import * as Orders from "Orders"
+import { Combo, EComboAction } from "wrapper/Combo"
 
 var combo = new Combo(),
 	config = {
-		hotkey: 0
+		hotkey: 0,
 	},
 	executing = 0
 
@@ -37,7 +37,7 @@ function GetRealArcWardens(): C_DOTA_BaseNPC[] {
 		&& ent.m_bIsAlive
 		&& ent.m_bIsHero
 		&& !ent.m_bIsIllusion
-		&& ent.GetAbilityByName("arc_warden_tempest_double") !== undefined
+		&& ent.GetAbilityByName("arc_warden_tempest_double") !== undefined,
 	) as C_DOTA_BaseNPC[]
 }
 
@@ -73,7 +73,7 @@ Events.addListener("onWndProc", (message_type, wParam) => {
 		return true
 	if (message_type === 0x100) { // WM_KEYDOWN
 		const MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
-	
+
 		const tempest_double = MyEnt.GetAbilityByName("arc_warden_tempest_double")
 		if (tempest_double.m_fCooldown === 0) {
 			Orders.CastNoTarget(MyEnt, tempest_double, false)
@@ -99,7 +99,7 @@ Events.addListener("onWndProc", (message_type, wParam) => {
 	root.entries.push(new Menu_Keybind (
 		"Hotkey",
 		config.hotkey,
-		node => config.hotkey = node.value
+		node => config.hotkey = node.value,
 	))
 	root.Update()
 	Menu.AddEntry(root)

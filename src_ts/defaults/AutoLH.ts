@@ -3,7 +3,7 @@ import * as Utils from "Utils"
 enum AutoLH_Mode {
 	LASTHIT = 1,
 	DENY,
-	BOTH
+	BOTH,
 }
 
 var attack_anim_point = {
@@ -126,7 +126,7 @@ var attack_anim_point = {
 		npc_dota_hero_dark_willow: 0.3,
 		npc_dota_hero_grimstroke: 0.35,
 		npc_dota_hero_mars: 0.4,
-	},	
+	},
 	config = {
 		hotkey: 0,
 		creep_hp_offset: 0,
@@ -135,7 +135,7 @@ var attack_anim_point = {
 		mode: 0,
 		glow_only: false,
 		glow_enabled: true,
-		glow_finder_range: 1500
+		glow_finder_range: 1500,
 	},
 	enabled = false,
 	block_orders = false,
@@ -191,7 +191,7 @@ Events.addListener("onTick", () => {
 		if ((config.mode & AutoLH_Mode.DENY) && (ent.m_iTeamNum === pl_ent_team) && ent.m_bIsDeniable)
 			return true
 		return false
-	}).map(ent => [ent, ent.m_vecNetworkOrigin.DistTo(pl_ent_pos)]) as [C_DOTA_BaseNPC, number][]).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent, ent, cur_time)), ([creep]) => creep.m_iHealth)
+	}).map(ent => [ent, ent.m_vecNetworkOrigin.DistTo(pl_ent_pos)]) as Array<[C_DOTA_BaseNPC, number]>).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent, ent, cur_time)), ([creep]) => creep.m_iHealth)
 	glow_ents = (config.glow_enabled && config.glow_finder_range !== 0 ? config.glow_finder_range !== -1 ? filtered.filter(([ent, dist]) => dist <= config.glow_finder_range) : filtered : []).map(a => a[0])
 	if (!config.glow_only || block_orders) {
 		let ent_pair = filtered.filter(([ent, dist]) => dist <= (attack_range + ent.m_flHullRadius))[0]
@@ -248,44 +248,44 @@ Events.addListener("onGameEnded", () => {
 		"Hotkey",
 		config.hotkey,
 		"Hotkey is in toggle mode",
-		node => config.hotkey = node.value
+		node => config.hotkey = node.value,
 	))
 	root.entries.push(new Menu_SliderInt (
 		"Creep HP offset",
 		config.creep_hp_offset,
 		-15,
 		15,
-		node => config.creep_hp_offset = node.value
+		node => config.creep_hp_offset = node.value,
 	))
 	root.entries.push(new Menu_SliderFloat (
 		"Melee attack time offset",
 		config.melee_time_offset,
 		-0.2,
 		0.2,
-		node => config.melee_time_offset = node.value
+		node => config.melee_time_offset = node.value,
 	))
 	root.entries.push(new Menu_SliderFloat (
 		"Delay multiplier after attack",
 		-config.delay_multiplier / 1000,
 		-2.5,
 		0,
-		node => config.delay_multiplier = -node.value * 1000
+		node => config.delay_multiplier = -node.value * 1000,
 	))
 	root.entries.push(new Menu_Combo (
 		"Glow mode",
 		[
 			"Enabled",
-			"Disabled"
+			"Disabled",
 		],
 		config.glow_enabled ? 0 : 1,
-		node => config.glow_enabled = node.selected_id === 0
+		node => config.glow_enabled = node.selected_id === 0,
 	))
 	root.entries.push(new Menu_SliderInt (
 		"Glow finder range",
 		config.glow_finder_range,
 		0,
 		1500,
-		node => config.glow_finder_range = node.value
+		node => config.glow_finder_range = node.value,
 	))
 	root.entries.push(new Menu_Combo (
 		"Mode",
@@ -294,7 +294,7 @@ Events.addListener("onGameEnded", () => {
 			"Lasthit",
 			"Deny",
 			"Both",
-			"Show only"
+			"Show only",
 		],
 		0,
 		node => {
@@ -305,7 +305,7 @@ Events.addListener("onGameEnded", () => {
 				config.mode = node.selected_id
 				config.glow_only = false
 			}
-		}
+		},
 	))
 	root.Update()
 	Menu.AddEntry(root)

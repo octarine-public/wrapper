@@ -3,7 +3,7 @@ import * as Utils from "Utils"
 
 var config = {
 		hotkey: 0,
-		hp_threshold: 200
+		hp_threshold: 200,
 	},
 	next_check = 0,
 	enabled = false,
@@ -52,14 +52,14 @@ Events.addListener("onGameEnded", () => {
 		"Hotkey",
 		config.hotkey,
 		"Hotkey is in toggle mode",
-		node => config.hotkey = node.value
+		node => config.hotkey = node.value,
 	))
 	root.entries.push(new Menu_SliderInt (
 		"HP Threshold",
 		config.hp_threshold,
 		10,
 		300,
-		node => config.hp_threshold = node.value
+		node => config.hp_threshold = node.value,
 	))
 	root.Update()
 	Menu.AddEntry(root)

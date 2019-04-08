@@ -2,7 +2,7 @@ import * as Orders from "Orders"
 import * as Utils from "Utils"
 
 var proj2path: string[] = [],
-	proj_list: (TrackingProjectile | LinearProjectile)[] = [],
+	proj_list: Array<TrackingProjectile | LinearProjectile> = [],
 	enabled = false
 
 function DeleteProjectile(proj: TrackingProjectile | LinearProjectile) {

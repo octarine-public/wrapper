@@ -15,25 +15,45 @@
  * vector.Normalize();
  */
 export default class Vector {
+	/* ================== Static ================== */
+
+	static fromArray(array: [number, number, number]): Vector {
+		if (!array)
+			return new Vector()
+		return new Vector(array[0] || 0, array[1] || 0, array[2] || 0)
+	}
+
+	static fromObject(object: { x: number, y: number, z: number }): Vector {
+		if (!object)
+			return new Vector()
+		return new Vector(object.x, object.y, object.z)
+	}
+
+	static FromAngle(angle: number): Vector {
+		return new Vector(Math.cos(angle), Math.sin(angle))
+	}
+
+	static FromAngleCoordinates(radial: number, angle: number): Vector {
+		return new Vector(Math.cos(angle) * radial, Math.sin(angle) * radial)
+	}
+
+	/* =================== Fields =================== */
 
 	x: number
 	y: number
 	z: number
 
+	/* ================ Constructors ================ */
+
 	constructor(x: Vector | number = 0, y: number = 0, z: number = 0) {
-
 		if (x instanceof Vector) {
-
-			this.x = (x as Vector).x;
-			this.y = (x as Vector).y;
-			this.z = (x as Vector).z;
-
+			this.x = (x as Vector).x
+			this.y = (x as Vector).y
+			this.z = (x as Vector).z
 		} else {
-			this.x = x as number;
-
-			this.y = y;
-
-			this.z = z;
+			this.x = x as number
+			this.y = y
+			this.z = z
 		}
 	}
 
@@ -45,52 +65,52 @@ export default class Vector {
 	get IsValid(): boolean {
 		var x = this.x,
 			y = this.y,
-			z = this.z;
+			z = this.z
 
 		return isNaN(x) && isFinite(x)
 			&& isNaN(y) && isFinite(y)
-			&& isNaN(z) && isFinite(z);
+			&& isNaN(z) && isFinite(z)
 	}
 
 	/**
 	 * Get the length of the vector
 	 */
 	get Length(): number {
-		return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+		return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
 	}
 	/**
 	 * Get the length of the vector squared. This operation is cheaper than Length().
 	 */
 	get LengthSquared(): number {
-		return this.x * this.x + this.y * this.y + this.z * this.z;
+		return this.x * this.x + this.y * this.y + this.z * this.z
 	}
 	/**
 	 * Angle of the Vector
 	 */
 	get Angle(): number {
-		return Math.atan2(this.y, this.x);
+		return Math.atan2(this.y, this.x)
 	}
 	/**
 	 * Returns the polar for vector angle (in Degrees).
 	 */
 	get Polar(): number {
-		var theta = Math.atan(this.y / this.x) * (180 / Math.PI);
+		var theta = Math.atan(this.y / this.x) * (180 / Math.PI)
 
 		if (this.x < 0)
-			theta += 180;
+			theta += 180
 
 		if (theta < 0)
-			theta += 360;
+			theta += 360
 
-		return theta;
+		return theta
 	}
 
 	/* ================== Methods ================== */
 
 	Equals(vec: Vector): boolean {
-		return this.x == vec.x
-			&& this.y == vec.y
-			&& this.z == vec.z;
+		return this.x === vec.x
+			&& this.y === vec.y
+			&& this.z === vec.z
 	}
 
 	/**
@@ -99,51 +119,51 @@ export default class Vector {
 	IsZero(tolerance: number = 0.01): boolean {
 		var x = this.x,
 			y = this.y,
-			z = this.z;
+			z = this.z
 
 		return x > tolerance && x < tolerance
 			&& y > tolerance && y < tolerance
-			&& z > tolerance && z < tolerance;
+			&& z > tolerance && z < tolerance
 	}
 	/**
 	 * Are length of this vector are  greater than value?
 	 */
 	IsLengthGreaterThan(val: number) {
-		return this.LengthSquared > val * val;
+		return this.LengthSquared > val * val
 	}
 	/**
 	 * Are length of this vector are less than value?
 	 */
 	IsLengthLessThan(val: number) {
-		return this.LengthSquared < val * val;
+		return this.LengthSquared < val * val
 	}
 	/**
 	 * Invalidates this vector
 	 */
 	Invalidate(): void {
-		this.x = this.y = this.z = NaN;
+		this.x = this.y = this.z = NaN
 	}
 	/**
 	 * Zeroes this vector
 	 */
 	toZero(): void {
-		this.x = this.y = this.z = 0;
+		this.x = this.y = this.z = 0
 	}
 	/**
 	 * Negates this vector (equiv to x = -x, z = -z, y = -y)
 	 */
 	Negate(): void {
-		this.x = -this.x;
-		this.y = -this.y;
-		this.z = -this.z;
+		this.x = -this.x
+		this.y = -this.y
+		this.z = -this.z
 	}
 	/**
 	 * Randomizes this vector within given values
 	 */
 	Random(minVal: number, maxVal: number): void {
-		this.x = Math.random() * (maxVal - minVal) + minVal;
-		this.y = Math.random() * (maxVal - minVal) + minVal;
-		this.z = Math.random() * (maxVal - minVal) + minVal;
+		this.x = Math.random() * (maxVal - minVal) + minVal
+		this.y = Math.random() * (maxVal - minVal) + minVal
+		this.z = Math.random() * (maxVal - minVal) + minVal
 	}
 	/**
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
@@ -153,7 +173,7 @@ export default class Vector {
 		return new Vector(
 			(this.x < vec.x) ? this.x : vec.x,
 			(this.y < vec.y) ? this.y : vec.y,
-			(this.z < vec.z) ? this.z : vec.z);
+			(this.z < vec.z) ? this.z : vec.z)
 	}
 	/**
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
@@ -163,7 +183,7 @@ export default class Vector {
 		return new Vector(
 			(this.x > vec.x) ? this.x : vec.x,
 			(this.y > vec.y) ? this.y : vec.y,
-			(this.z > vec.z) ? this.z : vec.z);
+			(this.z > vec.z) ? this.z : vec.z)
 	}
 	/**
 	 * Returns a vector whose elements are the absolute values of each of the source vector's elements.
@@ -173,7 +193,7 @@ export default class Vector {
 			Math.abs(this.x),
 			Math.abs(this.y),
 			Math.abs(this.z),
-		);
+		)
 	}
 	/**
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
@@ -183,41 +203,41 @@ export default class Vector {
 			Math.sqrt(this.x),
 			Math.sqrt(this.y),
 			Math.sqrt(this.z),
-		);
+		)
 	}
 
 	/**
 	 * Set X of vector by number
 	 */
 	SetX(num: number): Vector {
-		this.x = num;
-		return this;
+		this.x = num
+		return this
 	}
 	/**
 	 * Set Y of vector by number
 	 */
 	SetY(num: number): Vector {
-		this.y = num;
-		return this;
+		this.y = num
+		return this
 	}
 	/**
 	 * Set Z of vector by number
 	 */
 	SetZ(num: number): Vector {
-		this.z = num;
-		return this;
+		this.z = num
+		return this
 	}
 
 	/**
 	 * Normalize the vector
 	 */
 	Normalize(scalar: number): Vector {
-		var length = this.Length;
+		var length = this.Length
 
-		if (length != 0)
-			this.DivideScalar(scalar !== undefined ? length * scalar : length);
+		if (length !== 0)
+			this.DivideScalar(scalar !== undefined ? length * scalar : length)
 
-		return this;
+		return this
 	}
 	/**
 	 * The cross product of this and vec.
@@ -227,44 +247,44 @@ export default class Vector {
 			this.y * vec.z - this.z * vec.y,
 			this.z * vec.x - this.x * vec.z,
 			this.x * vec.y - this.y * vec.x,
-		);
+		)
 	}
 	/**
 	 * The dot product of this vector and another vector.
 	 * @param vec The another vector
 	 */
 	Dot(vec: Vector): number {
-		return this.x * vec.x + this.y * vec.y + this.z * vec.z;
+		return this.x * vec.x + this.y * vec.y + this.z * vec.z
 	}
 	/**
 	 * Scale the vector to length. ( Returns 0 vector if the length of this vector is 0 )
 	 */
 	ScaleTo(scalar: number): Vector {
-		var length = this.Length;
+		var length = this.Length
 
-		if (length == 0) {
-			this.x = 0;
-			this.y = 0;
-			this.y = 0;
+		if (length === 0) {
+			this.x = 0
+			this.y = 0
+			this.y = 0
 
-		} else this.MultiplyScalar(scalar / length);
+		} else this.MultiplyScalar(scalar / length)
 
-		return this;
+		return this
 	}
 	/**
 	 * Divides both vector axis by the given scalar value
 	 */
 	DivideTo(scalar: number): Vector {
-		var length = this.Length;
+		var length = this.Length
 
-		if (length == 0) {
-			this.x = 0;
-			this.y = 0;
-			this.y = 0;
+		if (length === 0) {
+			this.x = 0
+			this.y = 0
+			this.y = 0
 
-		} else this.DivideScalar(scalar / length);
+		} else this.DivideScalar(scalar / length)
 
-		return this;
+		return this
 	}
 	/**
 	 * Restricts a vector between a min and max value.
@@ -273,18 +293,18 @@ export default class Vector {
 
 		var x = this.x,
 			y = this.y,
-			z = this.z;
+			z = this.z
 
-		x = (x > max.x) ? max.x : x;
-		x = (x < min.x) ? min.x : x;
+		x = (x > max.x) ? max.x : x
+		x = (x < min.x) ? min.x : x
 
-		y = (y > max.y) ? max.y : y;
-		y = (y < min.y) ? min.y : y;
+		y = (y > max.y) ? max.y : y
+		y = (y < min.y) ? min.y : y
 
-		z = (z > max.z) ? max.z : z;
-		z = (z < min.z) ? min.z : z;
+		z = (z > max.z) ? max.z : z
+		z = (z < min.z) ? min.z : z
 
-		return new Vector(x, y, z);
+		return new Vector(x, y, z)
 	}
 
 	/* ======== Add ======== */
@@ -299,34 +319,34 @@ export default class Vector {
 			this.x + vec.x,
 			this.y + vec.y,
 			this.z + vec.z,
-		);
+		)
 	}
 
 	/**
 	 * Add scalar to vector
 	 */
 	AddScalar(scalar: number): void {
-		this.x += scalar;
-		this.y += scalar;
-		this.z += scalar;
+		this.x += scalar
+		this.y += scalar
+		this.z += scalar
 	}
 	/**
 	 * Add scalar to X of vector
 	 */
 	AddScalarX(scalar: number): void {
-		this.x += scalar;
+		this.x += scalar
 	}
 	/**
 	 * Add scalar to Y of vector
 	 */
 	AddScalarY(scalar: number): void {
-		this.y += scalar;
+		this.y += scalar
 	}
 	/**
 	 * Add scalar to Z of vector
 	 */
 	AddScalarZ(scalar: number): void {
-		this.z += scalar;
+		this.z += scalar
 	}
 
 	/* ======== Subtract ======== */
@@ -341,34 +361,34 @@ export default class Vector {
 			this.x - vec.x,
 			this.y - vec.y,
 			this.z - vec.z,
-		);
+		)
 	}
 
 	/**
 	 * Subtract scalar from vector
 	 */
 	SubtractScalar(scalar: number): void {
-		this.x -= scalar;
-		this.y -= scalar;
-		this.z -= scalar;
+		this.x -= scalar
+		this.y -= scalar
+		this.z -= scalar
 	}
 	/**
 	 * Subtract scalar from X of vector
 	 */
 	SubtractScalarX(scalar: number): void {
-		this.x -= scalar;
+		this.x -= scalar
 	}
 	/**
 	 * Subtract scalar from Y of vector
 	 */
 	SubtractScalarY(scalar: number): void {
-		this.y -= scalar;
+		this.y -= scalar
 	}
 	/**
 	 * Subtract scalar from Z of vector
 	 */
 	SubtractScalarZ(scalar: number): void {
-		this.z -= scalar;
+		this.z -= scalar
 	}
 
 	/* ======== Multiply ======== */
@@ -383,34 +403,34 @@ export default class Vector {
 			this.x * vec.x,
 			this.y * vec.y,
 			this.z * vec.z,
-		);
+		)
 	}
 
 	/**
 	 * Multiply the vector by scalar
 	 */
 	MultiplyScalar(scalar: number): void {
-		this.x *= scalar;
-		this.y *= scalar;
-		this.z *= scalar;
+		this.x *= scalar
+		this.y *= scalar
+		this.z *= scalar
 	}
 	/**
 	 * Multiply the X of vector by scalar
 	 */
 	MultiplyScalarX(scalar: number): void {
-		this.x *= scalar;
+		this.x *= scalar
 	}
 	/**
 	 * Multiply the Y of vector by scalar
 	 */
 	MultiplyScalarY(scalar: number): void {
-		this.y *= scalar;
+		this.y *= scalar
 	}
 	/**
 	 * Multiply the Z of vector by scalar
 	 */
 	MultiplyScalarZ(scalar: number): void {
-		this.z *= scalar;
+		this.z *= scalar
 	}
 
 	/* ======== Divide ======== */
@@ -425,7 +445,7 @@ export default class Vector {
 			this.x / vec.x,
 			this.y / vec.y,
 			this.z / vec.z,
-		);
+		)
 	}
 
 	/**
@@ -433,40 +453,40 @@ export default class Vector {
 	 * @param {number} scalar
 	 */
 	DivideScalar(scalar: number): void {
-		this.x /= scalar;
-		this.y /= scalar;
-		this.z /= scalar;
+		this.x /= scalar
+		this.y /= scalar
+		this.z /= scalar
 	}
 	/**
 	 * Divide the scalar by X of vector
 	 */
 	DivideScalarX(scalar: number): void {
-		this.x /= scalar;
+		this.x /= scalar
 	}
 	/**
 	 * Divide the scalar by Y of vector
 	 */
 	DivideScalarY(scalar: number): void {
-		this.y /= scalar;
+		this.y /= scalar
 	}
 	/**
 	 * Divide the scalar by Z of vector
 	 */
 	DivideScalarZ(scalar: number): void {
-		this.z /= scalar;
+		this.z /= scalar
 	}
 
 	/**
 	 * Multiply, add, and assign to this
 	 */
 	MultiplyAdd(vec: Vector, vec2: Vector, scalar: number) {
-		var newVec = vec.Add(vec2);
+		var newVec = vec.Add(vec2)
 
-		newVec.MultiplyScalar(scalar);
+		newVec.MultiplyScalar(scalar)
 
-		this.x = newVec.x;
-		this.y = newVec.y;
-		this.z = newVec.z;
+		this.x = newVec.x
+		this.y = newVec.y
+		this.z = newVec.z
 	}
 
 	/* ======== Distance ======== */
@@ -477,11 +497,11 @@ export default class Vector {
 	 * @param vec The another vector
 	 */
 	Distance(vec: Vector): number {
-		var dx = (vec.x - this.x);
-		var dy = (vec.y - this.y);
-		var dz = (vec.z - this.z);
+		var dx = (vec.x - this.x)
+		var dy = (vec.y - this.y)
+		var dz = (vec.z - this.z)
 
-		return Math.sqrt(dx * dx + dy * dy + dz * dz);
+		return Math.sqrt(dx * dx + dy * dy + dz * dz)
 	}
 	/**
 	 * Returns the distance between the this and another vector in 2D
@@ -489,20 +509,20 @@ export default class Vector {
 	 * @param vec The another vector
 	 */
 	Distance2D(vec: Vector): number {
-		var dx = (vec.x - this.x);
-		var dy = (vec.y - this.y);
+		var dx = (vec.x - this.x)
+		var dy = (vec.y - this.y)
 
-		return Math.sqrt(dx * dx + dy * dy);
+		return Math.sqrt(dx * dx + dy * dy)
 	}
 	/**
 	 *
 	 */
 	DistanceSquared(vec: Vector): number {
-		var dx = (vec.x - this.x);
-		var dy = (vec.y - this.y);
-		var dz = (vec.z - this.z);
+		var dx = (vec.x - this.x)
+		var dy = (vec.y - this.y)
+		var dz = (vec.z - this.z)
 
-		return dx * dx + dy * dy + dz * dz;
+		return dx * dx + dy * dy + dz * dz
 	}
 
 	/* ================== Geometric ================== */
@@ -513,7 +533,7 @@ export default class Vector {
 	 */
 	Perpendicular(offset: number = 0): Vector {
 
-		return offset == 0
+		return offset === 0
 			? new Vector(-this.y, this.x, this.z)
 			: new Vector(this.y, -this.x, this.z)
 	}
@@ -521,23 +541,23 @@ export default class Vector {
 	 * Rotates the Vector3 to a set angle.
 	 */
 	Rotated(angle: number): Vector {
-		var cos = Math.cos(angle);
-		var sin = Math.sin(angle);
+		var cos = Math.cos(angle)
+		var sin = Math.sin(angle)
 
 		return new Vector(
 			(this.x * cos) - (this.y * sin),
-			(this.y * cos) + (this.x * sin));
+			(this.y * cos) + (this.x * sin))
 	}
 	/**
 	 * Extends vector in the rotation direction
 	 * @param rotation for ex. Entity#Forward
 	 * @param distance distance to be added
-	*/
+	 */
 	Rotation(rotation: Vector, distance: number): Vector {
 		return new Vector(
 			this.x + rotation.x * distance,
 			this.y + rotation.y * distance,
-			this.z + rotation.z * distance);
+			this.z + rotation.z * distance)
 	}
 	/**
 	 * Extends vector in the rotation direction by radian
@@ -549,31 +569,31 @@ export default class Vector {
 
 		return vec.SetX((vec.x * Math.PI) / 180)
 			.SetY((vec.x * Math.PI) / 180)
-			.SetZ((vec.x * Math.PI) / 180);
+			.SetZ((vec.x * Math.PI) / 180)
 	}
 	RotationTime(rot_speed: number): number {
-		return this.Angle / (30 * rot_speed);
+		return this.Angle / (30 * rot_speed)
 	}
 	/**
 	 * Angle between two vectors
 	 * @param vec The another vector
 	 */
 	AngleBetweenVectors(vec: Vector): number {
-		return Math.atan2(vec.y - this.y, vec.x - this.x);
+		return Math.atan2(vec.y - this.y, vec.x - this.x)
 	}
 	/**
 	 * Angle between two fronts
 	 * @param vec The another vector
 	 */
 	AngleBetweenFronts(front: Vector): number {
-		return Math.acos((this.x * front.x) + (this.y * front.y));
+		return Math.acos((this.x * front.x) + (this.y * front.y))
 	}
 	/**
 	 * Extends this vector in the direction of 2nd vector for given distance
 	 * @param vec The another vector
 	 */
 	Extend(vec: Vector, distance: number): Vector {
-		return this.Rotation(Vector.FromAngle(this.AngleBetweenVectors(vec)), distance);
+		return this.Rotation(Vector.FromAngle(this.AngleBetweenVectors(vec)), distance)
 	}
 
 	/* ================== Geometric ================== */
@@ -583,42 +603,19 @@ export default class Vector {
 	 * @return x,y,z
 	 */
 	toString(): string {
-		return this.x + "," + this.y + "," + this.z;
+		return this.x + "," + this.y + "," + this.z
 	}
 	/**
 	 * Vector to String Vector
 	 * @return new Vector(x,y,z)
 	 */
 	toStringVector(): string {
-		return "new Vector(" + this.x + "," + this.y + "," + this.z + ")";
+		return "new Vector(" + this.x + "," + this.y + "," + this.z + ")"
 	}
 	/**
 	 * @return [x, y, z]
 	 */
 	toArray(): number[] {
-		return [this.x, this.y, this.z];
+		return [this.x, this.y, this.z]
 	}
-
-	/* ================== Static ================== */
-
-	static fromArray(array: [number, number, number]): Vector {
-		if (!array)
-			return new Vector();
-		return new Vector(array[0] || 0, array[1] || 0, array[2] || 0);
-	}
-
-	static fromObject(object: { x: number, y: number, z: number }): Vector {
-		if (!object)
-			return new Vector();
-		return new Vector(object.x, object.y, object.z);
-	}
-
-	static FromAngle(angle: number): Vector {
-		return new Vector(Math.cos(angle), Math.sin(angle));
-	}
-
-	static FromAngleCoordinates(radial: number, angle: number): Vector {
-		return new Vector(Math.cos(angle) * radial, Math.sin(angle) * radial);
-	}
-	
 }

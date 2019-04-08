@@ -40,7 +40,7 @@ Events.addListener("onTick", () => {
 	var fountain = Entities.GetAllEntities().filter(ent =>
 		!ent.IsEnemy(LocalDOTAPlayer)
 		&& ent instanceof C_DOTA_BaseNPC
-		&& ent.m_iszUnitName === "dota_fountain"
+		&& ent.m_iszUnitName === "dota_fountain",
 	)[0]
 	Orders.CastPosition(MyEnt, tp, fountain.m_vecNetworkOrigin, false)
 	setTimeout((waitTime + GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000 + 30, () => doingTP = false)

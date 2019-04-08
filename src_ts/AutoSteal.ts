@@ -24,7 +24,7 @@ import * as Utils from "Utils"
 var config: any = {
 	enabled: false,
 	kill_creeps: true,
-	kill_heroes: true
+	kill_heroes: true,
 }
 
 var abils: Array<{
@@ -33,7 +33,7 @@ var abils: Array<{
 	abilRadiusF?: (abil: C_DOTABaseAbility) => number
 	abilDelayF?: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC) => number
 	abilDamageF?: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC) => number
-	abilCastF?: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC) => void
+	abilCastF?: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC) => void,
 }> = [
 		{
 			abilName: "axe_culling_blade",
@@ -271,7 +271,7 @@ var abils: Array<{
 					abil.GetSpecialValue("max_units"),
 				) * latest_spellamp,
 				DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
-				entFrom
+				entFrom,
 			),
 		},
 		{
@@ -530,7 +530,7 @@ function OnTick(): void {
 			ent.m_bIsAlive &&
 			(!ent.m_bIsCreep || config.kill_creeps) &&
 			(!ent.m_bIsHero || config.kill_heroes) &&
-			NoTarget.indexOf(ent as C_DOTA_BaseNPC) === -1
+			NoTarget.indexOf(ent as C_DOTA_BaseNPC) === -1,
 		)
 	availableAbils.some(abilData => {
 		var abil = (abilData as any).abil as C_DOTABaseAbility, // hack for tsc, always isn't undefined (has !== undefined check in filter)
@@ -569,7 +569,7 @@ function OnTick(): void {
 			} else {
 				NoTarget.push(ent)
 				setTimeout(((abilData.abilDelayF ? abilData.abilDelayF(abil, MyEnt, ent) + abil.m_fCastPoint : 0) + ping) * 1000, () =>
-					NoTarget.splice(NoTarget.indexOf(ent), 1)
+					NoTarget.splice(NoTarget.indexOf(ent), 1),
 				)
 				if (abilData.abilCastF)
 					abilData.abilCastF(abil, MyEnt, ent)
@@ -613,17 +613,17 @@ Events.addListener("onTick", OnTick)
 	root.entries.push(new Menu_Toggle (
 		"State",
 		config.enabled,
-		node => config.enabled = node.value
+		node => config.enabled = node.value,
 	))
 	root.entries.push(new Menu_Boolean (
 		"Kill creeps",
 		config.kill_creeps,
-		node => config.kill_creeps = node.value
+		node => config.kill_creeps = node.value,
 	))
 	root.entries.push(new Menu_Boolean (
 		"Kill heroes",
 		config.kill_heroes,
-		node => config.kill_heroes = node.value
+		node => config.kill_heroes = node.value,
 	))
 	root.Update()
 	Menu.AddEntry(root)

@@ -39,7 +39,7 @@ var config: any = {
 		/* mine */C_DOTA_NPC_TechiesMines,
 		/* dmg */number,
 		/* will setup after m_fGameTime */number,
-		/* will become invis after m_fGameTime */number
+		/* will become invis after m_fGameTime */number,
 	]> = [],
 	heroes: C_DOTA_BaseNPC_Hero[] = [],
 	techies: C_DOTA_Unit_Hero_Techies,
@@ -75,7 +75,7 @@ function TryDagon(ent: C_DOTA_BaseNPC, damage: number = 0, damage_type: number =
 	return false
 }
 
-function CallMines (
+function CallMines(
 	ent: C_DOTA_BaseNPC,
 	callback: (rmine: C_DOTA_NPC_TechiesMines) => boolean,
 	explosionCallback: (RMinesToBlow: C_DOTA_NPC_TechiesMines[], RMinesDmg: number) => void,
@@ -269,17 +269,17 @@ Events.addListener("onEntityDestroyed", ent => {
 	root.entries.push(new Menu_Toggle (
 		"State",
 		config.enabled,
-		node => config.enabled = node.value
+		node => config.enabled = node.value,
 	))
 	root.entries.push(new Menu_Boolean (
 		"Explode seen mines",
 		config.explode_seen_mines,
-		node => config.explode_seen_mines = node.value
+		node => config.explode_seen_mines = node.value,
 	))
 	root.entries.push(new Menu_Boolean (
 		"Explode expiring mines",
 		config.explode_expiring_mines,
-		node => config.explode_expiring_mines = node.value
+		node => config.explode_expiring_mines = node.value,
 	))
 	root.entries.push(new Menu_Boolean (
 		"Safe mode",
@@ -292,18 +292,18 @@ Events.addListener("onEntityDestroyed", ent => {
 				Particles.Destroy(particles[entIDFixed], true)
 				CreateParticleFor(Entities.GetByID(entIDFixed) as C_DOTA_BaseNPC)
 			}
-		}
+		},
 	))
 	root.entries.push(new Menu_Boolean (
 		"Use prediction",
 		config.use_prediction,
-		node => config.use_prediction = node.value
+		node => config.use_prediction = node.value,
 	))
 	root.entries.push(new Menu_Boolean (
 		"Autostack mines",
 		config.auto_stack,
 		"Automatically stacks mines in place",
-		node => config.auto_stack = node.value
+		node => config.auto_stack = node.value,
 	))
 	root.entries.push(new Menu_SliderFloat (
 		"Autostack range",
@@ -311,7 +311,7 @@ Events.addListener("onEntityDestroyed", ent => {
 		50,
 		1000,
 		"Range where autostack will try to find other mines",
-		node => config.auto_stack_range = node.value
+		node => config.auto_stack_range = node.value,
 	))
 	root.Update()
 	Menu.AddEntry(root)

@@ -66,10 +66,10 @@ Events.addListener("onTick", () => {
 	creeps = lane_creeps.filter(creep => creep.m_bIsValid && !creep.m_bIsWaitingToSpawn && creep.m_bIsAlive && MyEnt.IsInRange(creep, 500))
 	if (creeps.length === 0)
 		return
-	var creepsMovePositionSum = creeps.map(creep => creep.InFront(300)).reduce((sum, vec) => [sum[0] + vec.x, sum[1] + vec.y, sum[2] + vec.z], [0,0,0])
+	var creepsMovePositionSum = creeps.map(creep => creep.InFront(300)).reduce((sum, vec) => [sum[0] + vec.x, sum[1] + vec.y, sum[2] + vec.z], [0, 0, 0])
 	creepsMovePosition = new Vector(creepsMovePositionSum[0] / creeps.length, creepsMovePositionSum[1] / creeps.length, creepsMovePositionSum[2] / creeps.length)
 	var tower = towers.filter(ent => MyEnt.IsInRange(ent, 120))
-	
+
 	if (tower.length > 0) {
 		Orders.MoveToPos(MyEnt, creepsMovePosition, false)
 		return
@@ -146,7 +146,7 @@ Events.addListener("onGameEnded", () => {
 		"Hotkey",
 		config.hotkey,
 		"Hotkey is in hold mode",
-		node => config.hotkey = node.value
+		node => config.hotkey = node.value,
 	))
 	root.entries.push(new Menu_SliderFloat (
 		"Block sensitivity",
@@ -154,7 +154,7 @@ Events.addListener("onGameEnded", () => {
 		500,
 		700,
 		"Bigger value will result in smaller block, but with higher success rate",
-		node => config.block_sensitivity = node.value
+		node => config.block_sensitivity = node.value,
 	))
 	root.Update()
 	Menu.AddEntry(root)

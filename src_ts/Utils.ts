@@ -202,9 +202,9 @@ var rotation_speed = {
 		npc_dota_hero_winter_wyvern: 700,
 		npc_dota_hero_arc_warden: 900,
 		npc_dota_hero_dark_willow: 1200,
-		npc_dota_hero_grimstroke: 900
+		npc_dota_hero_grimstroke: 900,
 	},
-	attacks: [number, number, C_DOTA_BaseNPC][] = [],
+	attacks: Array<[number, number, C_DOTA_BaseNPC]> = [],
 	CursorWorldVec = new Vector(),
 	NPCs: C_DOTA_BaseNPC[] = []
 
@@ -215,9 +215,9 @@ export function GetEntitiesInRange(vec: Vector, range: number, onlyEnemies: bool
 			ent instanceof C_DOTA_BaseNPC
 			&& (!onlyEnemies || ent.IsEnemy(localplayer))
 			&& ent.m_bIsAlive
-			&& !(!findInvuln && ent.m_bIsInvulnerable)
+			&& !(!findInvuln && ent.m_bIsInvulnerable),
 		),
-		(ent: C_BaseEntity) => vec.DistTo(ent.m_vecNetworkOrigin)
+		(ent: C_BaseEntity) => vec.DistTo(ent.m_vecNetworkOrigin),
 	) as C_DOTA_BaseNPC[]
 }
 
@@ -303,7 +303,7 @@ export function IsInside(npc: C_DOTA_BaseNPC, vec: Vector, radius: number): bool
 	let direction = npc.m_vecForward,
 		npc_pos = npc.m_vecNetworkOrigin,
 		radius_sqr = radius ** 2
-	for (let i = Math.floor(vec.DistTo(npc_pos) / radius) + 1; i--;)
+	for (let i = Math.floor(vec.DistTo(npc_pos) / radius) + 1; i--; )
 		// if (npc_pos.DistTo(new Vector(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
 		// optimized version, as V8 unable to optimize any native code by inlining
 		if ((((vec.x - direction.x * i * radius - npc_pos.x) ** 2) + ((vec.y - direction.y * i * radius - npc_pos.y) ** 2) + ((vec.z - direction.z * i * radius - npc_pos.z) ** 2)) <= radius_sqr)
@@ -316,11 +316,11 @@ export function GetHealthAfter(ent: C_DOTA_BaseNPC, delay: number, include_proje
 		hpafter = ent.m_iHealth
 	// loop-optimizer: KEEP
 	attacks.forEach((data, attacker_id) => {
-		let attacker = Entities.GetByID(attacker_id) as C_DOTA_BaseNPC,
+		let attacker_it = Entities.GetByID(attacker_id) as C_DOTA_BaseNPC,
 			[end_time, end_time_2, attack_target] = data
-		if (attacker !== attacker && attack_target === ent) {
+		if (attacker_it !== attacker && attack_target === ent) {
 			if ((end_time <= cur_time + delay + melee_time_offset)) {
-				let dmg = ent.CalculateDamageByHand(attacker)
+				let dmg = ent.CalculateDamageByHand(attacker_it)
 				hpafter -= dmg
 				if ((end_time_2 <= cur_time + delay + melee_time_offset))
 					hpafter -= dmg
@@ -346,7 +346,7 @@ export function FindAttackingUnit(npc: C_DOTA_BaseNPC): C_DOTA_BaseNPC {
 		ent.m_vecNetworkOrigin.DistTo(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + ent.m_flHullRadius) &&
 		!ent.m_bIsInvulnerable &&
 		IsInside(npc, ent.m_vecNetworkOrigin, ent.m_flHullRadius) &&
-		(npc.IsEnemy(ent) || (!is_default_creep && ent.m_bIsDeniable))
+		(npc.IsEnemy(ent) || (!is_default_creep && ent.m_bIsDeniable)),
 	), ent => GetAngle(npc, ent.m_vecNetworkOrigin))[0] as C_DOTA_BaseNPC
 }
 
@@ -379,7 +379,7 @@ export function GetOrdersWithoutSideEffects() {
 		dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH,
 		dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE, // Announce?
 		dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH,
-		dotaunitorder_t.DOTA_UNIT_ORDER_RADAR
+		dotaunitorder_t.DOTA_UNIT_ORDER_RADAR,
 	]
 }
 
@@ -412,7 +412,7 @@ Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castp
 		attacks[npc.m_iID] = [
 			GameRules.m_fGameTime + delay,
 			npc.m_bIsCreep ? GameRules.m_fGameTime + delay * 2 + 0.06 : Number.MAX_VALUE,
-			FindAttackingUnit(npc)
+			FindAttackingUnit(npc),
 		]
 	}
 })
@@ -428,7 +428,7 @@ Events.addListener("onUnitAnimationEnd", npc => {
 	attacks[npc.m_iID] = [
 		GameRules.m_fGameTime + delay,
 		GameRules.m_fGameTime + delay * 2 - 0.06,
-		attack_target
+		attack_target,
 	]
 })
 
@@ -438,7 +438,7 @@ Events.addListener("onTick", () => {
 	attacks.forEach((data, attacker_id) => data[2] = FindAttackingUnit(Entities.GetByID(attacker_id) as C_DOTA_BaseNPC))
 
 	// NPC event
-	for (let i = NPCs.length; i--;)
+	for (let i = NPCs.length; i--; )
 		if (!NPCs[i].m_bIsValid)
 			NPCs.splice(i, 1)
 	NPCs.filter(npc => npc.m_iszUnitName !== undefined).forEach(npc => {

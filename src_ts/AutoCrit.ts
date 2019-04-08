@@ -6,8 +6,8 @@ var config = {
 		method: 0,
 	},
 	enabled = false,
-	target = undefined,
-	target_pos = undefined
+	target,
+	target_pos
 
 Events.addListener("onDraw", () => {
 	if (enabled)
@@ -44,6 +44,8 @@ Events.addListener("onPrepareUnitOrders", order => {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
 			enabled = false
 			break
+		default:
+			break
 	}
 	return true
 })
@@ -66,17 +68,17 @@ Events.addListener("onGameEnded", () => enabled = false)
 		"Hotkey",
 		config.hotkey,
 		"Hotkey is in toggle mode",
-		node => config.hotkey = node.value
+		node => config.hotkey = node.value,
 	))
 	root.entries.push(new Menu_Combo (
 		"Method",
 		[
 			"Faster",
-			"Slower"
+			"Slower",
 		],
 		config.method,
 		"Choose slower mode only if ",
-		node => config.method = node.selected_id
+		node => config.method = node.selected_id,
 	))
 	root.Update()
 	Menu.AddEntry(root)

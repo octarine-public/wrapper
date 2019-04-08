@@ -13,7 +13,7 @@
 		"watch": "babel --watch src_ts --extensions \".ts\" --out-dir scripts",
 		"build": "babel src_ts --extensions \".ts\" --out-dir scripts",
 		"check-types": "tsc",
-		"lint": "tslint --fix 'src_ts/*.ts'"
+		"lint": "tslint --fix 'src_ts/**/*.ts'"
 	},
 	"author": "moofMonkey"
 }

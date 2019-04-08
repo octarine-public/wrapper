@@ -1,131 +1,131 @@
-//import * as Enums from "./Enums";
-import Entity from "./Entity";
+// import * as Enums from "./Enums";
+import Entity from "./Entity"
 
 export default class Unit extends Entity {
-	
+
 	ent: C_DOTA_BaseNPC
-	
+
 	constructor(ent: C_BaseEntity) {
-		super(ent);
+		super(ent)
 	}
-	
+
 	get Armor(): number {
-		return this.ent.m_flPhysicalArmorValue;
+		return this.ent.m_flPhysicalArmorValue
 	}
 	get ArmorType(): ArmorType {
-		return this.ent.m_iCombatClassDefend;
+		return this.ent.m_iCombatClassDefend
 	}
 	get AttackCapability(): DOTAUnitAttackCapability_t {
-		return this.ent.m_iAttackCapabilities;
+		return this.ent.m_iAttackCapabilities
 	}
 	get AttackDamageType(): AttackDamageType {
-		return this.ent.m_iCombatClassAttack;
+		return this.ent.m_iCombatClassAttack
 	}
 	get AttackRange(): number {
-		return this.ent.m_fAttackRange;
+		return this.ent.m_fAttackRange
 	}
 	get IncreasedAttackSpeed(): number {
-		return this.ent.m_fIncreasedAttackSpeed;
+		return this.ent.m_fIncreasedAttackSpeed
 	}
 	get SecondsPerAttack(): number {
-		return this.ent.m_fAttacksPerSecond;
+		return this.ent.m_fAttacksPerSecond
 	}
 	get AttacksPerSecond(): number {
 		return 1 / this.ent.m_fAttacksPerSecond
 	}
 	get AvailableShops(): DOTA_SHOP_TYPE /*Enums.ShopFlags*/ {
-		return this.ent.m_iNearShopMask;
+		return this.ent.m_iNearShopMask
 	}
 	// BaseArmor
 	get BaseAttackTime(): number {
-		return this.ent.m_flBaseAttackTime;
+		return this.ent.m_flBaseAttackTime
 	}
 	// BaseHealthRegeneration
 	// BaseManaRegeneration
 	get BaseMoveSpeed(): number {
-		return this.ent.m_iMoveSpeed;
+		return this.ent.m_iMoveSpeed
 	}
 	get BKBChargesUsed(): number {
-		return this.ent.m_iBKBChargesUsed;
+		return this.ent.m_iBKBChargesUsed
 	}
 	get DamageBonus(): number {
-		return this.ent.m_iDamageBonus;
+		return this.ent.m_iDamageBonus
 	}
 	get CollisionPadding(): number {
-		return this.ent.m_flCollisionPadding;
+		return this.ent.m_flCollisionPadding
 	}
 	get DayVision(): number {
-		return this.ent.m_iDayTimeVisionRange;
+		return this.ent.m_iDayTimeVisionRange
 	}
 	get DeathTime(): number {
-		return this.ent.m_flDeathTime;
+		return this.ent.m_flDeathTime
 	}
 	get DebuffState(): bigint {
-		return this.ent.m_nUnitDebuffState;
+		return this.ent.m_nUnitDebuffState
 	}
 	// check
 	get HasArcana(): boolean {
-		return this.ent.m_nArcanaLevel > 0;
+		return this.ent.m_nArcanaLevel > 0
 	}
 	get BaseStatsChanged(): boolean {
-		return this.ent.m_bBaseStatsChanged;
+		return this.ent.m_bBaseStatsChanged
 	}
 	get HasInventory(): boolean {
-		return this.ent.m_bHasInventory;
+		return this.ent.m_bHasInventory
 	}
 	get HasSharedAbilities(): boolean {
-		return this.ent.m_bHasSharedAbilities;
+		return this.ent.m_bHasSharedAbilities
 	}
 	// HasStolenScepter
 	get HasUpgradeableAbilities(): boolean {
-		return this.ent.m_bHasUpgradeableAbilities;
+		return this.ent.m_bHasUpgradeableAbilities
 	}
 	get HealthBarOffset(): number {
-		return this.ent.m_iHealthBarOffset;
+		return this.ent.m_iHealthBarOffset
 	}
 	get HealthBarHighlightColor(): Color {
-		return this.ent.m_iHealthBarHighlightColor;
+		return this.ent.m_iHealthBarHighlightColor
 	}
 	// get HPRegen(): number {
 	// 	return this.ent.m_flHealthThinkRegen;
 	// }
 	get HullRadius(): number {
-		return this.ent.m_flHullRadius;
+		return this.ent.m_flHullRadius
 	}
 	// _Inventory: C_DOTA_UnitInventory
 	get Inventory(): C_DOTA_UnitInventory {
-		
-		if (!this.HasInventory)
-			return;
 
-		return this.ent.m_Inventory;
-		
+		if (!this.HasInventory)
+			return
+
+		return this.ent.m_Inventory
+
 		// return this._Inventory === undefined && this.HasInventory
 		// 	? this._Inventory = new UnitInventory(this.ent)
 		// 	: this._Inventory;
 	}
 	get InvisibleLevel(): number {
-		return this.ent.m_flInvisibilityLevel;
+		return this.ent.m_flInvisibilityLevel
 	}
 	get IsAncient(): boolean {
-		return this.ent.m_bIsAncient;
+		return this.ent.m_bIsAncient
 	}
 	/**
 	 * IsControllable by LocalPlayer
 	 */
 	get IsControllable(): boolean {
-		return LocalDOTAPlayer !== undefined && this.ent.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID);
+		return LocalDOTAPlayer !== undefined && this.ent.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID)
 	}
 	get IsDominatable(): boolean {
-		return this.ent.m_bCanBeDominated;
+		return this.ent.m_bCanBeDominated
 	}
 	get IsIllusion(): boolean {
-		
-		var ent = this.ent;
-		
+
+		var ent = this.ent
+
 		if (ent.m_bIsIllusion)
-			return true;
-		
+			return true
+
 		// if (ent instanceof C_DOTA_Unit_Hero_Meepo)
 		// 	(ent as C_DOTA_Unit_Hero_Meepo).
 	}
@@ -133,72 +133,70 @@ export default class Unit extends Entity {
 	// 	return (this.ent as C_DOTA_Unit_Hero_Meepo).m_bIsClone;
 	// }
 	get IsMelee(): boolean {
-		return this.AttackCapability === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK;
+		return this.AttackCapability === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK
 	}
 	get IsMoving(): boolean {
-		return this.ent.m_bIsMoving;
+		return this.ent.m_bIsMoving
 	}
 	get IsNeutral(): boolean {
-		return this.ent.m_bIsNeutralUnitType;
+		return this.ent.m_bIsNeutralUnitType
 	}
 	get IsPhantom(): boolean {
-		return this.ent.m_bIsPhantom;
+		return this.ent.m_bIsPhantom
 	}
 	get IsRanged(): boolean {
-		return this.AttackCapability === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK;
+		return this.AttackCapability === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK
 	}
 	get IsSpawned(): boolean {
-		return !this.IsWaitingToSpawn;
+		return !this.IsWaitingToSpawn
 	}
 	get IsSummoned(): boolean {
-		return this.ent.m_bIsSummoned;
+		return this.ent.m_bIsSummoned
 	}
 	get IsVisibleForEnemies(): boolean {
-		//return this.IsVisibleForEnemiesNumber & (1 << 14)) != 0;
-		return this.ent.m_bIsVisibleForEnemies;
+		// return this.IsVisibleForEnemiesNumber & (1 << 14)) != 0;
+		return this.ent.m_bIsVisibleForEnemies
 	}
 	get IsVisibleForTeam(): DOTATeam_t {
-		return this.ent.m_iTaggedAsVisibleByTeam;
+		return this.ent.m_iTaggedAsVisibleByTeam
 	}
 	get IsTrueSightedForEnemies(): boolean {
-		return this.ent.m_bIsTrueSightedForEnemies;
+		return this.ent.m_bIsTrueSightedForEnemies
 	}
 	get IsWaitingToSpawn(): boolean {
-		return this.ent.m_bIsWaitingToSpawn;
+		return this.ent.m_bIsWaitingToSpawn
 	}
 	get Level(): number {
 		return this.ent.m_iCurrentLevel
 	}
 	get Mana(): number {
-		return this.ent.m_flMana;
+		return this.ent.m_flMana
 	}
 	// ManaRegen(): number {
 	// 	//return this.ent.manare
 	// }
 	get MaxDamage(): number {
-		return this.ent.m_iDamageMax;
+		return this.ent.m_iDamageMax
 	}
 	get MaxMana(): number {
-		return this.ent.m_flMaxMana;	
+		return this.ent.m_flMaxMana
 	}
 	get MinimapIcon(): string {
-		return this.ent.m_iszMinimapIcon;
+		return this.ent.m_iszMinimapIcon
 	}
 	get MinimapIconSize(): number {
-		return this.ent.m_flMinimapIconSize;
+		return this.ent.m_flMinimapIconSize
 	}
 	get MinDamage(): number {
-		return this.ent.m_iDamageMin;
+		return this.ent.m_iDamageMin
 	}
 	get Modifiers(): CDOTA_ModifierManager {
-		return this.ent.m_ModifierManager;
+		return this.ent.m_ModifierManager
 	}
 	get MoveCapability(): DOTAUnitMoveCapability_t {
-		return this.ent.m_iMoveCapabilities;
+		return this.ent.m_iMoveCapabilities
 	}
 	get IdealSpeed(): number {
-		return this.ent.m_fIdealSpeed;
+		return this.ent.m_fIdealSpeed
 	}
 }
-
-//(LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC).m_iTaggedAsVisibleByTeam;
