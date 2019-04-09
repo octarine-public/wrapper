@@ -110,7 +110,7 @@ function onDiactivateControllables() {
 }
 
 function registerEvents() {
-	registedEvents.onEntityCreated = Events.addListener("onEntityCreated", ent => onCheckEntity)
+	registedEvents.onEntityCreated = Events.addListener("onEntityCreated", onCheckEntity)
 	registedEvents.onEntityDestroyed = Events.addListener("onEntityDestroyed", onEntityDestroyed)
 	registedEvents.onTick = Events.addListener("onTick", onTick)
 	registedEvents.onDraw = Events.addListener("onDraw", onDraw)
