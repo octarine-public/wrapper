@@ -164,14 +164,15 @@ function onCheckEntity(ent: C_BaseEntity) {
 }
 
 function onEntityDestroyed(ent: C_BaseEntity, id: number) {
-	if (removedIDRune(ent as C_DOTA_Item_Rune))
-		return
+	
+	if (ent instanceof C_DOTA_Item_Rune)
+		return removedIDRune(ent as C_DOTA_Item_Rune);
 
-	if (removedIDItem(ent as C_DOTA_Item_Physical))
-		return
+	if (ent instanceof C_DOTA_Item_Physical)
+		return removedIDItem(ent as C_DOTA_Item_Physical);
 
-	if (removedIDControllable(ent as C_DOTA_BaseNPC))
-		return
+	if (ent instanceof C_DOTA_BaseNPC)
+		return removedIDControllable(ent as C_DOTA_BaseNPC);
 }
 
 function onTick() {
@@ -280,29 +281,21 @@ function removedIDRune(ent: C_DOTA_Item_Rune) {
 		allRunes.splice(idRune, 1)
 
 		destroyRuneParticles(ent.m_iID)
-		return true
 	}
-	return false
 }
 
 function removedIDItem(ent: C_DOTA_Item_Physical) {
 	const idItem = needItems.indexOf(ent)
 
-	if (idItem !== -1) {
+	if (idItem !== -1)
 		needItems.splice(idItem, 1)
-		return true
-	}
-	return false
 }
 
 function removedIDControllable(ent: C_DOTA_BaseNPC) {
 	const idNPC = controllables.indexOf(ent)
 
-	if (idNPC !== -1) {
+	if (idNPC !== -1)
 		controllables.splice(idNPC, 1)
-		return true
-	}
-	return false
 }
 
 function createRuneParticle(ent: C_BaseEntity, color: Vector, radius: number) {
