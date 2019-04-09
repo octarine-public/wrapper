@@ -24,7 +24,8 @@
 			"allow-pascal-case",
 			"allow-snake-case",
 			"ban-keywords"
-		]
+		],
+		"member-access": true
 	},
 	"rulesDirectory": [],
 	"linterOptions": {
