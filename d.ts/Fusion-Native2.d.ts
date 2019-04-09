@@ -563,13 +563,13 @@ declare class Vector2D {
 	 * Those numbers can also be accessed thru vec[0], vec[1]
 	 */
 	x: number
-	z: number
+	y: number
 
 	constructor()
 	constructor(vec: Vector)
 	constructor(vec: Vector2D)
 	constructor(val: number)
-	constructor(x: number, z: number)
+	constructor(x: number, y: number)
 
 	/**
 	 * Zeroes this vector

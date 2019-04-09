@@ -203,7 +203,7 @@ function onDraw() {
 
 	Renderer.Text (
 		wSize.x / 100 * statusPosX.value,
-		wSize.z / 100 * statusPosY.value,
+		wSize.y / 100 * statusPosY.value,
 		text,
 	)
 }
