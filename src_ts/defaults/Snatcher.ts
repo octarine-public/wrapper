@@ -157,6 +157,7 @@ function onCheckEntity(ent: C_BaseEntity) {
 			&& !ent.m_bIsIllusion
 			&& !ent.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY)
 			&& ent.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID)
+			&& (ent.m_bIsHero || ent instanceof C_DOTA_Unit_SpiritBear)
 			&& !controllables.includes(ent)
 		)
 		controllables.push(ent)
