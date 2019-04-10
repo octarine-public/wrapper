@@ -234,7 +234,8 @@ declare const enum HeroID_t {
 	npc_dota_hero_monkey_king = 114,
 	npc_dota_hero_pangolier = 120,
 	npc_dota_hero_dark_willow = 119,
-	npc_dota_hero_grimstroke = 121
+	npc_dota_hero_grimstroke = 121,
+	npc_dota_hero_mars = 129
 }
 
 declare const enum PingType_t {
