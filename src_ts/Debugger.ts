@@ -33,8 +33,8 @@ let localLvl = sv_cheatsMenu.AddKeybind("Local lvl max")
 
 let getRapGod = sv_cheatsMenu.AddKeybind("Get Rap God")
 	.SetToolTip("dota_rap_god")
-	.OnRelease(self => SendToConsole(self.hint));
-	
+	.OnRelease(self => SendToConsole(self.hint))
+
 let addUnitMenu = debuggerMenu.AddTree("add unit")
 
 addUnitMenu.AddKeybind("Add full Sven")
@@ -51,16 +51,14 @@ addUnitMenu.AddKeybind("Add creep")
 	.SetToolTip("dota_create_unit npc_dota_creep_badguys_melee enemy")
 	.OnRelease(self => SendToConsole(self.hint))
 
-function WaitInGame() {
-	if (!IsInGame()) {
-		setTimeout(1000, WaitInGame)
-		return
-	}
-
+	
+Events.addListener("onGameStarted", lp => {
+	
 	setConVar(sv_cheats.value, sv_cheats)
 	setConVar(wtf.value, wtf)
-	setConVar(vision.value, vision)
+	
+	if (PlayerResource.m_vecPlayerData.length <= 1)
+		setConVar(vision.value, vision);
+		
 	setConVar(creepsNoSpawn.value, creepsNoSpawn)
-}
-
-WaitInGame()
+});

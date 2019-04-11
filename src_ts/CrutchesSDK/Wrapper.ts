@@ -1,9 +1,9 @@
 import Entity from "CrutchesSDK/Extensions/Entity"
-//import * as Enums from "CrutchesSDK/Extensions/Enums"
+// import * as Enums from "CrutchesSDK/Extensions/Enums"
 import Unit from "CrutchesSDK/Extensions/Unit"
 import Vector_2 from "CrutchesSDK/Extensions/Vector"
-//import * as EntityManager from "CrutchesSDK/Managers/EntityManager"
-//import * as MenuManager from "CrutchesSDK/Menu/MenuManager";
+// import * as EntityManager from "CrutchesSDK/Managers/EntityManager"
+// import * as MenuManager from "CrutchesSDK/Menu/MenuManager";
 // import * as ParticleManager from "CrutchesSDK/Managers/ParticlesManager"
 
 // export * from "CrutchesSDK/Extensions/Enums";
@@ -31,7 +31,9 @@ export * from "CrutchesSDK/Menu/MenuManager";
 
 	TODO Native:
 
+	- C_DOTAPlayer.m_nOutgoingOrderSequenceNumber - hkCreateMove ??
 	- particle list as entity list
+	- particle destroyed
 	- QAngle - add AsVector
 	- remove EffectiveInvisibilityLevel
 	- move Vector to Native API
