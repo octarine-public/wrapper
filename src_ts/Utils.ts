@@ -341,14 +341,12 @@ export function FindAttackingUnit(npc: C_DOTA_BaseNPC): C_DOTA_BaseNPC {
 		return undefined
 	let pos = npc.m_vecNetworkOrigin,
 		is_default_creep = npc.m_bIsCreep && !npc.m_bIsControllableByAnyPlayer
-	return orderBy(Entities.GetAllEntities().filter(ent =>
-		ent !== npc &&
-		ent instanceof C_DOTA_BaseNPC &&
-		ent.m_bIsValid &&
-		ent.m_vecNetworkOrigin.DistTo(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + ent.m_flHullRadius) &&
-		!ent.m_bIsInvulnerable &&
-		IsInside(npc, ent.m_vecNetworkOrigin, ent.m_flHullRadius) &&
-		(npc.IsEnemy(ent) || (!is_default_creep && ent.m_bIsDeniable)),
+	return orderBy(NPCs.filter(npc_ =>
+		npc_ !== npc &&
+		npc_.m_vecNetworkOrigin.DistTo(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + npc_.m_flHullRadius) &&
+		!npc_.m_bIsInvulnerable &&
+		IsInside(npc, npc_.m_vecNetworkOrigin, npc_.m_flHullRadius) &&
+		(npc.IsEnemy(npc_) || (!is_default_creep && npc_.m_bIsDeniable)),
 	), ent => GetAngle(npc, ent.m_vecNetworkOrigin))[0] as C_DOTA_BaseNPC
 }
 
@@ -390,11 +388,6 @@ export function GetCursorWorldVec() {
 }
 
 Events.addListener("onSendMove", cmd => cmd.vec_under_cursor.CopyTo(CursorWorldVec))
-
-Events.addListener("onEntityCreated", ent => {
-	if (ent instanceof C_DOTA_BaseNPC)
-		NPCs.push(ent)
-})
 
 Events.addListener("onEntityCreated", ent => {
 	if (ent instanceof C_DOTA_BaseNPC)
@@ -444,7 +437,7 @@ Events.addListener("onTick", () => {
 	// NPC event
 	for (let i = NPCs.length; i--; )
 		if (!NPCs[i].m_bIsValid)
-			NPCs.splice(i, 1)
+			NPCs.splice(i++, 1)
 	NPCs.filter(npc => npc.m_iszUnitName !== undefined).forEach(npc => {
 		Events.emit("onNPCCreated", npc)
 		NPCs.splice(NPCs.indexOf(npc), 1)
