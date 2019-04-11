@@ -21,7 +21,8 @@ const stateMain = snatcherMenu.AddToggle("State").OnValue(onStateMain)
 const runeMenu = snatcherMenu.AddTree("Rune settings")
 
 const stateRune = runeMenu.AddToggle("Snatch Rune")
-	.OnDeactivate(onDiactivateRune);
+	.OnDeactivate(onDiactivateRune)
+	.OnActivate(getAllEntities);
 
 const runeToggle = runeMenu.AddKeybind("Rune toogle")
 	.OnRelease(() => stateRune.ChangeReverse());
@@ -59,6 +60,7 @@ const itemsMenu = snatcherMenu.AddTree("Items settings")
 
 const stateItems = itemsMenu.AddToggle("Snatch Items")
 	.OnDeactivate(onDiactivateItems)
+	.OnActivate(getAllEntities);
 
 const itemsToggle = itemsMenu.AddKeybind("Items toogle")
 	.OnRelease(() => stateItems.ChangeReverse())
@@ -96,6 +98,11 @@ function onStateMain(state: boolean = stateMain.value) {
 		registerEvents()
 }
 
+function getAllEntities() {
+	// loop-optimizer: POSSIBLE_UNDEFINED
+	Entities.GetAllEntities().forEach(onCheckEntity);
+}
+
 function onDiactivateRune() {
 	destroyRuneAllParticles()
 	allRunes = []
@@ -117,6 +124,8 @@ function registerEvents() {
 	registedEvents.onEntityDestroyed = Events.addListener("onEntityDestroyed", onEntityDestroyed)
 	registedEvents.onTick = Events.addListener("onTick", onTick)
 	registedEvents.onDraw = Events.addListener("onDraw", onDraw)
+	
+	getAllEntities();
 }
 
 function destroyEvents() {
@@ -184,9 +193,6 @@ function onEntityDestroyed(ent: C_BaseEntity, id: number) {
 function onTick() {
 	if (!IsInGame() || IsPaused())
 		return
-
-	// loop-optimizer: POSSIBLE_UNDEFINED
-	Entities.GetAllEntities().forEach(onCheckEntity)
 
 	snatchRunes()
 	snatchItems()
