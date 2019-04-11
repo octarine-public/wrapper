@@ -337,6 +337,8 @@ export function GetHealthAfter(ent: C_DOTA_BaseNPC, delay: number, include_proje
 }
 
 export function FindAttackingUnit(npc: C_DOTA_BaseNPC): C_DOTA_BaseNPC {
+	if (npc === undefined)
+		return undefined
 	let pos = npc.m_vecNetworkOrigin,
 		is_default_creep = npc.m_bIsCreep && !npc.m_bIsControllableByAnyPlayer
 	return orderBy(Entities.GetAllEntities().filter(ent =>
@@ -403,9 +405,9 @@ Events.addListener("onEntityDestroyed", ent => {
 	const id = NPCs.indexOf(ent as C_DOTA_BaseNPC)
 	if (id !== -1)
 		NPCs.splice(id, 1)
-	delete attacks[ent.m_iID]
+	let ent_id = ent.m_iID
 	// loop-optimizer: KEEP
-	attacks = attacks.filter(data => data[2] !== ent)
+	attacks = attacks.filter((data, attacker_id) => attacker_id !== ent_id && data[2] !== ent)
 })
 
 Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
