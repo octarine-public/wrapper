@@ -404,6 +404,8 @@ Events.addListener("onEntityDestroyed", ent => {
 	if (id !== -1)
 		NPCs.splice(id, 1)
 	delete attacks[ent.m_iID]
+	// loop-optimizer: KEEP
+	attacks = attacks.filter(data => data[2] !== ent)
 })
 
 Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {

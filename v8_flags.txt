@@ -1,6 +1,15 @@
+SSE3=1 SSSE3=1 SSE4_1=1 SAHF=1 AVX=1 FMA3=1 BMI1=1 BMI2=0 LZCNT=1 POPCNT=1 ATOM=0
+Synopsis:
+  shell [options] [--shell] [<file>...]
+  d8 [options] [-e <string>] [--shell] [[--module] <file>...]
+
+  -e        execute a string in V8
+  --shell   run an interactive JavaScript shell
+  --module  execute a file as a JavaScript module
+
+Note: the --module option is implicitly enabled for *.mjs files.
+
 Options:
-  --experimental-extras (enable code compiled in via v8_experimental_extra_library_files)
-        type: bool  default: false
   --use-strict (enforce strict mode)
         type: bool  default: false
   --es-staging (enable test-worthy harmony features (for internal use only))
@@ -9,47 +18,49 @@ Options:
         type: bool  default: false
   --harmony-shipping (enable all shipped harmony features)
         type: bool  default: true
-  --harmony-do-expressions (enable "harmony do-expressions" (in progress))
-        type: bool  default: false
   --harmony-class-fields (enable "harmony fields in class literals" (in progress))
         type: bool  default: false
-  --harmony-await-optimization (enable "harmony await taking 1 tick" (in progress))
+  --harmony-private-methods (enable "harmony private methods in class literals" (in progress))
         type: bool  default: false
-  --harmony-locale (enable "Intl.Locale" (in progress))
+  --harmony-regexp-sequence (enable "RegExp Unicode sequence properties" (in progress))
         type: bool  default: false
-  --harmony-intl-list-format (enable "Intl.ListFormat" (in progress))
+  --harmony-weak-refs (enable "harmony weak references" (in progress))
         type: bool  default: false
-  --harmony-public-fields (enable "harmony public fields in class literals")
+  --harmony-intl-bigint (enable "BigInt.prototype.toLocaleString" (in progress))
         type: bool  default: false
-  --harmony-private-fields (enable "harmony private fields in class literals")
+  --harmony-intl-datetime-style (enable "dateStyle timeStyle for DateTimeFormat" (in progress))
         type: bool  default: false
   --harmony-numeric-separator (enable "harmony numeric separator between digits")
         type: bool  default: false
-  --harmony-string-matchall (enable "harmony String.prototype.matchAll")
+  --harmony-intl-segmenter (enable "Intl.Segmenter")
         type: bool  default: false
-  --harmony-static-fields (enable "harmony static fields in class literals")
-        type: bool  default: false
-  --harmony-intl-relative-time-format (enable "Intl.RelativeTimeFormat")
-        type: bool  default: false
-  --harmony-string-trimming (enable "harmony String.prototype.trim{Start,End}")
+  --harmony-namespace-exports (enable "harmony namespace exports (export * as foo from 'bar')")
         type: bool  default: true
   --harmony-sharedarraybuffer (enable "harmony sharedarraybuffer")
         type: bool  default: true
-  --harmony-function-tostring (enable "harmony Function.prototype.toString")
-        type: bool  default: true
   --harmony-import-meta (enable "harmony import.meta property")
-        type: bool  default: true
-  --harmony-bigint (enable "harmony arbitrary precision integers")
         type: bool  default: true
   --harmony-dynamic-import (enable "harmony dynamic import")
         type: bool  default: true
-  --harmony-array-prototype-values (enable "harmony Array.prototype.values")
-        type: bool  default: true
-  --harmony-array-flat (enable "harmony Array.prototype.{flat,flatMap}")
-        type: bool  default: true
-  --harmony-symbol-description (enable "harmony Symbol.prototype.description")
-        type: bool  default: true
   --harmony-global (enable "harmony global")
+        type: bool  default: true
+  --harmony-json-stringify (enable "well-formed JSON.stringify")
+        type: bool  default: true
+  --harmony-public-fields (enable "harmony public instance fields in class literals")
+        type: bool  default: true
+  --harmony-static-fields (enable "harmony static fields in class literals")
+        type: bool  default: true
+  --harmony-string-matchall (enable "harmony String.prototype.matchAll")
+        type: bool  default: true
+  --harmony-object-from-entries (enable "harmony Object.fromEntries()")
+        type: bool  default: true
+  --harmony-await-optimization (enable "harmony await taking 1 tick")
+        type: bool  default: true
+  --harmony-private-fields (enable "harmony private fields in class literals")
+        type: bool  default: true
+  --harmony-hashbang (enable "harmony hashbang syntax")
+        type: bool  default: true
+  --harmony-locale (enable "Intl.Locale")
         type: bool  default: true
   --icu-timezone-data (get information about timezones from ICU)
         type: bool  default: true
@@ -79,10 +90,10 @@ Options:
         type: bool  default: false
   --feedback-normalization (feed back normalization to constructors)
         type: bool  default: false
-  --optimize-for-size (Enables optimizations which favor memory size over execution speed)
-        type: bool  default: false
+  --fast-calls-with-arguments-mismatches (skip arguments adaptor frames when it's provably safe)
+        type: bool  default: true
   --enable-one-shot-optimization (Enable size optimizations for the code that will only be executed once)
-        type: bool  default: false
+        type: bool  default: true
   --unbox-double-arrays (automatically unbox arrays of doubles)
         type: bool  default: true
   --ignition-elide-noneffectful-bytecodes (elide bytecodes which won't have any external effect)
@@ -94,6 +105,8 @@ Options:
   --ignition-share-named-property-feedback (share feedback slots when loading the same named property from the same object)
         type: bool  default: true
   --print-bytecode (print bytecode generated by ignition interpreter)
+        type: bool  default: false
+  --enable-lazy-source-positions (skip generating source positions during initial compile but regenerate when actually required)
         type: bool  default: false
   --print-bytecode-filter (filter for selecting which functions to print bytecode)
         type: string  default: *
@@ -121,9 +134,7 @@ Options:
         type: int  default: 0
   --block-concurrent-recompilation (block queued jobs until released)
         type: bool  default: false
-  --concurrent-compiler-frontend (run optimizing compiler's frontend phases on a separate thread)
-        type: bool  default: false
-  --strict-heap-broker (fail on incomplete serialization)
+  --concurrent-inlining (run optimizing compiler's inlining phase on a separate thread)
         type: bool  default: false
   --trace-heap-broker (trace the heap broker)
         type: bool  default: false
@@ -137,6 +148,8 @@ Options:
         type: bool  default: false
   --turbo-preprocess-ranges (run pre-register allocation heuristics)
         type: bool  default: true
+  --turbo-control-flow-aware-allocation (consider control flow while allocating registers)
+        type: bool  default: false
   --turbo-filter (optimization filter for TurboFan compiler)
         type: string  default: *
   --trace-turbo (trace generated TurboFan IR)
@@ -239,6 +252,8 @@ Options:
         type: bool  default: true
   --turbo-loop-variable (Turbofan loop variable optimization)
         type: bool  default: true
+  --turbo-loop-rotation (Turbofan loop rotation)
+        type: bool  default: true
   --turbo-cf-optimization (optimize control flow in TurboFan)
         type: bool  default: true
   --turbo-escape (enable escape analysis)
@@ -257,11 +272,9 @@ Options:
         type: bool  default: true
   --experimental-inline-promise-constructor (inline the Promise constructor in TurboFan)
         type: bool  default: true
-  --untrusted-code-mitigations (Enable mitigations for executing untrusted code)
-        type: bool  default: true
-  --branch-load-poisoning (Mask loads with branch conditions.)
+  --stress-gc-during-compilation (simulate GC/compiler thread race related to https://crbug.com/v8/8520)
         type: bool  default: false
-  --minimal (simplifies execution model to make porting easier (e.g. always use Ignition, never optimize))
+  --untrusted-code-mitigations (Enable mitigations for executing untrusted code)
         type: bool  default: false
   --expose-wasm (expose wasm interface to JavaScript)
         type: bool  default: true
@@ -283,6 +296,8 @@ Options:
         type: uint  default: 32767
   --wasm-max-table-size (maximum table size of a wasm instance)
         type: uint  default: 10000000
+  --wasm-max-code-space (maximum committed code space for wasm (in MB))
+        type: uint  default: 1024
   --wasm-tier-up (enable wasm baseline compilation and tier up to the optimizing compiler)
         type: bool  default: true
   --trace-wasm-ast-start (start function for wasm AST trace (inclusive))
@@ -323,14 +338,20 @@ Options:
         type: bool  default: false
   --experimental-wasm-anyref (enable prototype anyref opcodes for wasm)
         type: bool  default: false
-  --experimental-wasm-mut-global (enable prototype import/export mutable global support for wasm)
-        type: bool  default: true
+  --experimental-wasm-bigint (enable prototype JS BigInt support for wasm)
+        type: bool  default: false
+  --experimental-wasm-bulk-memory (enable prototype bulk memory opcodes for wasm)
+        type: bool  default: false
+  --experimental-wasm-return-call (enable prototype return call opcodes for wasm)
+        type: bool  default: false
   --wasm-opt (enable wasm optimization)
         type: bool  default: false
   --wasm-no-bounds-checks (disable bounds checks (performance testing only))
         type: bool  default: false
   --wasm-no-stack-checks (disable stack checks (performance testing only))
         type: bool  default: false
+  --wasm-math-intrinsics (intrinsify some Math imports into wasm)
+        type: bool  default: true
   --wasm-shared-engine (shares one wasm engine between all isolates within a process)
         type: bool  default: true
   --wasm-shared-code (shares code underlying a wasm module when it is transferred)
@@ -342,6 +363,8 @@ Options:
   --wasm-fuzzer-gen-test (Generate a test case when running a wasm fuzzer)
         type: bool  default: false
   --print-wasm-code (Print WebAssembly code)
+        type: bool  default: false
+  --print-wasm-stub-code (Print WebAssembly stub code)
         type: bool  default: false
   --wasm-interpret-all (Execute all wasm code in the wasm interpreter)
         type: bool  default: false
@@ -419,8 +442,6 @@ Options:
         type: int  default: 10
   --trace-concurrent-marking (trace concurrent marking)
         type: bool  default: false
-  --black-allocation (use black allocation)
-        type: bool  default: true
   --concurrent-store-buffer (use concurrent store buffer processing)
         type: bool  default: true
   --concurrent-sweeping (use concurrent sweeping)
@@ -444,7 +465,7 @@ Options:
   --trace-zone-stats (trace zone memory usage)
         type: bool  default: false
   --track-retaining-path (enable support for tracking retaining path)
-        type: bool  default: true
+        type: bool  default: false
   --concurrent-array-buffer-freeing (free array buffer allocations on a background thread)
         type: bool  default: true
   --gc-stats (Used by tracing internally to enable gc statistics)
@@ -457,6 +478,8 @@ Options:
         type: bool  default: true
   --memory-reducer (use memory reducer)
         type: bool  default: true
+  --memory-reducer-for-small-heaps (use memory reducer for small heaps)
+        type: bool  default: true
   --heap-growing-percent (specifies heap growing factor as (1 + heap_growing_percent/100))
         type: int  default: 0
   --v8-os-page-size (override OS page size (in KBytes))
@@ -467,6 +490,10 @@ Options:
         type: bool  default: false
   --compact-code-space (Compact code space on full collections)
         type: bool  default: true
+  --flush-bytecode (flush of bytecode when it has not been executed recently)
+        type: bool  default: true
+  --stress-flush-bytecode (stress bytecode flushing)
+        type: bool  default: false
   --use-marking-progress-bar (Use a progress bar to scan large objects in increments when incremental marking is active.)
         type: bool  default: true
   --force-marking-deque-overflows (force overflows of marking deque by reducing it's size to 64 words)
@@ -492,7 +519,9 @@ Options:
   --clear-free-memory (initialize free memory with 0)
         type: bool  default: false
   --young-generation-large-objects (allocates large objects by default in the young generation large object space)
-        type: bool  default: false
+        type: bool  default: true
+  --idle-time-scavenge (Perform scavenges in idle time.)
+        type: bool  default: true
   --debug-code (generate extra code (assertions) for debugging)
         type: bool  default: false
   --code-comments (emit comments in code disassembly; for more readable source positions you should add --no-concurrent_recompilation)
@@ -525,6 +554,8 @@ Options:
         type: string  default: auto
   --partial-constant-pool (enable use of partial constant pools (X64 only))
         type: bool  default: true
+  --enable-source-at-csa-bind (Include source information in the binary at CSA bind locations.)
+        type: bool  default: false
   --enable-armv7 (deprecated (use --arm_arch instead))
         type: maybe_bool  default: unset
   --enable-vfp3 (deprecated (use --arm_arch instead))
@@ -543,8 +574,6 @@ Options:
         type: bool  default: true
   --disable-old-api-accessors (Disable old-style API accessors whose setters trigger through the prototype chain)
         type: bool  default: false
-  --expose-natives-as (expose natives in global object)
-        type: string  default: nullptr
   --expose-free-buffer (expose freeBuffer extension)
         type: bool  default: false
   --expose-gc (expose gc extension)
@@ -567,12 +596,16 @@ Options:
         type: bool  default: false
   --force-slow-path (always take the slow path for builtins)
         type: bool  default: false
+  --test-small-max-function-context-stub-size (enable testing the function context size overflow path by making the maximum size smaller)
+        type: bool  default: false
   --inline-new (use fast inline allocation)
         type: bool  default: true
   --trace (trace function calls)
         type: bool  default: false
   --lazy (use lazy compilation)
         type: bool  default: true
+  --max-lazy (ignore eager compilation hints)
+        type: bool  default: false
   --trace-opt (trace lazy optimization)
         type: bool  default: false
   --trace-opt-verbose (extra verbose compilation tracing)
@@ -585,8 +618,6 @@ Options:
         type: bool  default: false
   --trace-interrupts (trace interrupts when they are handled)
         type: bool  default: false
-  --opt (use adaptive optimizations)
-        type: bool  default: true
   --always-opt (always try to optimize functions)
         type: bool  default: false
   --always-osr (always try to OSR functions)
@@ -599,11 +630,11 @@ Options:
         type: bool  default: true
   --cache-prototype-transitions (cache prototype transitions)
         type: bool  default: true
+  --parallel-compile-tasks (enable parallel compile tasks)
+        type: bool  default: false
   --compiler-dispatcher (enable compiler dispatcher)
         type: bool  default: false
   --trace-compiler-dispatcher (trace compiler dispatcher activity)
-        type: bool  default: false
-  --trace-compiler-dispatcher-jobs (trace progress of individual jobs managed by the compiler dispatcher)
         type: bool  default: false
   --cpu-profiler-sampling-interval (CPU profiler sampling interval in microseconds)
         type: int  default: 1000
@@ -637,12 +668,12 @@ Options:
         type: bool  default: false
   --use-idle-notification (Use idle notification to reduce memory footprint.)
         type: bool  default: true
-  --use-ic (use inline caching)
-        type: bool  default: true
   --trace-ic (trace inline cache state transitions for tools/ic-processor)
         type: bool  default: false
   --ic-stats (inline cache state transitions statistics)
         type: int  default: 0
+  --max-polymorphic-map-count (maximum number of maps to track in POLYMORPHIC state)
+        type: int  default: 4
   --native-code-counters (generate extra code for manipulating stats counters)
         type: bool  default: false
   --thin-strings (Enable ThinString support)
@@ -658,13 +689,9 @@ Options:
   --trace-maps-details (also log map details)
         type: bool  default: true
   --allow-natives-syntax (allow natives syntax)
-        type: bool  default: true
-  --lazy-inner-functions (enable lazy parsing inner functions)
-        type: bool  default: true
-  --aggressive-lazy-inner-functions (even lazier inner function parsing)
         type: bool  default: false
-  --preparser-scope-analysis (perform scope analysis for preparsed inner functions)
-        type: bool  default: true
+  --parse-only (only parse the sources)
+        type: bool  default: false
   --trace-sim (Trace simulator execution)
         type: bool  default: false
   --debug-sim (Enable debugging the simulator)
@@ -683,6 +710,8 @@ Options:
         type: bool  default: false
   --trace-sim-messages (Trace simulator debug messages. Implied by --trace-sim.)
         type: bool  default: false
+  --async-stack-traces (include async stack traces in Error.stack)
+        type: bool  default: true
   --stack-trace-on-illegal (print stack trace when an illegal exception is thrown)
         type: bool  default: false
   --abort-on-uncaught-exception (abort program (dump core) when an uncaught exception is thrown)
@@ -703,18 +732,12 @@ Options:
         type: bool  default: false
   --print-all-exceptions (print exception object and stack trace on each thrown exception)
         type: bool  default: false
+  --detailed-error-stack-trace (includes arguments for each function call in the error stack frames array)
+        type: bool  default: false
   --runtime-call-stats (report runtime call counts and times)
         type: bool  default: false
   --runtime-stats (internal usage only for controlling runtime statistics)
         type: int  default: 0
-  --print-embedded-builtin-candidates (Prints builtins that are not yet embedded but could be.)
-        type: bool  default: false
-  --lazy-deserialization (Deserialize code lazily from the snapshot.)
-        type: bool  default: true
-  --lazy-handler-deserialization (Deserialize bytecode handlers lazily from the snapshot.)
-        type: bool  default: true
-  --trace-lazy-deserialization (Trace lazy deserialization.)
-        type: bool  default: false
   --profile-deserialization (Print the time it takes to deserialize the snapshot.)
         type: bool  default: false
   --serialization-statistics (Collect statistics on serialized objects.)
@@ -724,6 +747,8 @@ Options:
   --regexp-optimization (generate optimized regexp code)
         type: bool  default: true
   --regexp-mode-modifiers (enable inline flags in regexp.)
+        type: bool  default: false
+  --regexp-interpret-all (interpret all regexp code)
         type: bool  default: false
   --testing-bool-flag (testing_bool_flag)
         type: bool  default: true
@@ -760,13 +785,19 @@ Options:
   --use-external-strings (Use external strings for source code)
         type: bool  default: false
   --map-counters (Map counters to a file)
-        type: string  default:
-  --js-arguments (Pass all remaining arguments to the script. Alias for "--".)
-        type: arguments  default:
+        type: string  default: 
   --mock-arraybuffer-allocator (Use a mock ArrayBuffer allocator for testing.)
         type: bool  default: false
   --mock-arraybuffer-allocator-limit (Memory limit for mock ArrayBuffer allocator used to simulate OOM for testing.)
         type: size_t  default: 0
+  --jitless (Disable runtime allocation of executable memory.)
+        type: bool  default: false
+  --opt (use adaptive optimizations)
+        type: bool  default: true
+  --use-ic (use inline caching)
+        type: bool  default: true
+  --optimize-for-size (Enables optimizations which favor memory size over execution speed)
+        type: bool  default: false
   --log (Minimal logging (no API, code, GC, suspect, or handles samples).)
         type: bool  default: false
   --log-all (Log all events to the log file.)
@@ -799,8 +830,6 @@ Options:
         type: bool  default: true
   --ll-prof (Enable low-level linux profiler.)
         type: bool  default: false
-  --interpreted-frames-native-stack (Show interpreted frames on the native stack (useful for external profilers).)
-        type: bool  default: false
   --perf-basic-prof (Enable perf linux profiler (basic support).)
         type: bool  default: false
   --perf-basic-prof-only-functions (Only report function code ranges to perf (i.e. no stubs).)
@@ -827,7 +856,11 @@ Options:
         type: string  default: nullptr
   --print-opt-source (print source code of optimized and inlined functions)
         type: bool  default: false
+  --interpreted-frames-native-stack (Show interpreted frames on the native stack (useful for external profilers).)
+        type: bool  default: false
   --predictable (enable predictable mode)
+        type: bool  default: false
+  --predictable-gc-schedule (Predictable garbage collection schedule. Fixes heap growing, idle, and memory reducing behavior.)
         type: bool  default: false
   --single-threaded (disable the use of background tasks)
         type: bool  default: false
