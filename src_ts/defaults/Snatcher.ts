@@ -109,6 +109,9 @@ function onDiactivateControllables() {
 	controllables = []
 }
 
+Events.addListener("onGameStarted", onStateMain);
+Events.addListener("onGameEnded", onStateMain);
+
 function registerEvents() {
 	registedEvents.onEntityCreated = Events.addListener("onEntityCreated", onCheckEntity)
 	registedEvents.onEntityDestroyed = Events.addListener("onEntityDestroyed", onEntityDestroyed)
@@ -119,8 +122,10 @@ function registerEvents() {
 function destroyEvents() {
 	for (const name in registedEvents) {
 		let listenerID = registedEvents[name]
-		if (listenerID !== undefined)
-			Events.removeListener(name, listenerID)
+		if (listenerID !== undefined) {
+			Events.removeListener(name, listenerID);
+			registedEvents[name] = undefined;
+		}
 	}
 }
 
@@ -376,5 +381,3 @@ function haveFreeSlot(npc: C_DOTA_BaseNPC, item: C_DOTA_Item_Physical) {
 	}
 	return false
 }
-
-onStateMain()
