@@ -300,13 +300,16 @@ export function GetProjectileDelay(source: C_DOTA_BaseNPC, target: C_DOTA_BaseNP
 }
 
 export function IsInside(npc: C_DOTA_BaseNPC, vec: Vector, radius: number): boolean {
-	let direction = npc.m_vecForward,
-		npc_pos = npc.m_vecNetworkOrigin,
+	const direction = npc.m_vecForward,
+		npc_pos = npc.m_vecNetworkOrigin
+	const npc_pos_x = npc_pos.x, npc_pos_y = npc_pos.y, npc_pos_z = npc_pos.z,
+		vec_x = vec.x, vec_y = vec.y, vec_z = vec.z,
+		direction_x = direction.x, direction_y = direction.y, direction_z = direction.z,
 		radius_sqr = radius ** 2
 	for (let i = Math.floor(vec.DistTo(npc_pos) / radius) + 1; i--; )
 		// if (npc_pos.DistTo(new Vector(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
 		// optimized version, as V8 unable to optimize any native code by inlining
-		if ((((vec.x - direction.x * i * radius - npc_pos.x) ** 2) + ((vec.y - direction.y * i * radius - npc_pos.y) ** 2) + ((vec.z - direction.z * i * radius - npc_pos.z) ** 2)) <= radius_sqr)
+		if ((((vec_x - direction_x * i * radius - npc_pos_x) ** 2) + ((vec_y - direction_y * i * radius - npc_pos_y) ** 2) + ((vec_z - direction_z * i * radius - npc_pos_z) ** 2)) <= radius_sqr)
 			return true
 	return false
 }
@@ -415,14 +418,16 @@ Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castp
 })
 
 Events.addListener("onUnitAnimationEnd", npc => {
-	if (attacks[npc.m_iID] === undefined)
+	let id = npc.m_iID
+	if (attacks[id] === undefined)
 		return
-	let [end_time, end_time_2, attack_target] = attacks[npc.m_iID]
-	delete attacks[npc.m_iID]
-	if (attack_target === undefined || !npc.m_bIsCreep || npc.m_bIsControllableByAnyPlayer || !attack_target.m_bIsValid || !attack_target.m_bIsAlive || !attack_target.m_bIsVisible)
+	let [end_time, end_time_2, attack_target] = attacks[id]
+	if (attack_target === undefined || !npc.m_bIsCreep || npc.m_bIsControllableByAnyPlayer || !attack_target.m_bIsValid || !attack_target.m_bIsAlive || !attack_target.m_bIsVisible) {
+		delete attacks[id]
 		return
+	}
 	let delay = (1 / npc.m_fAttacksPerSecond) + 0.06
-	attacks[npc.m_iID] = [
+	attacks[id] = [
 		GameRules.m_fGameTime + delay,
 		GameRules.m_fGameTime + delay * 2 - 0.06,
 		attack_target,
@@ -435,11 +440,13 @@ Events.addListener("onTick", () => {
 	attacks.forEach((data, attacker_id) => data[2] = FindAttackingUnit(Entities.GetByID(attacker_id) as C_DOTA_BaseNPC))
 
 	// NPC event
-	for (let i = NPCs.length; i--; )
-		if (!NPCs[i].m_bIsValid)
+	for (let i = NPCs.length; i--; ) {
+		let npc = NPCs[i]
+		if (!npc.m_bIsValid)
 			NPCs.splice(i++, 1)
-	NPCs.filter(npc => npc.m_iszUnitName !== undefined).forEach(npc => {
-		Events.emit("onNPCCreated", npc)
-		NPCs.splice(NPCs.indexOf(npc), 1)
-	})
+		else if (npc.m_iszUnitName !== undefined) {
+			Events.emit("onNPCCreated", npc)
+			NPCs.splice(i++, 1)
+		}
+	}
 })

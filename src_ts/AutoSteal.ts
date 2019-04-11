@@ -472,6 +472,11 @@ var abils: Array<{
 			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.DistTo(entTo) / abil.GetSpecialValue("burrow_speed" + (entFrom.m_bHasScepter ? "_scepter" : "")),
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 		},
+		{
+			abilName: "centaur_double_edge",
+			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
+			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entTo.CalculateDamage((abil.GetSpecialValue("edge_damage") + [0.6,0.8,1,1.2][abil.m_iLevel] * (entFrom as C_DOTA_BaseNPC_Hero).m_flStrengthTotal) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
+		},
 	],
 	flag: boolean = false,
 	NoTarget: C_DOTA_BaseNPC[] = [],
