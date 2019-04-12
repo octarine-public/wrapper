@@ -462,7 +462,7 @@ declare class Vector {
 	y: number
 	/** You can set (affecting on x, z, y) and get this value */
 	Angle: number
-		/**
+	/**
 	 * @returns length of this vector
 	 */
 	readonly Length: number
@@ -565,6 +565,14 @@ declare class Vector2D {
 	 */
 	x: number
 	y: number
+	/**
+	 * @returns length of this vector
+	 */
+	readonly Length: number
+	/**
+	 * @returns Math.sqr(this.Length()), but faster
+	 */
+	readonly LengthSqr: number
 
 	constructor()
 	constructor(vec: Vector)
@@ -576,14 +584,6 @@ declare class Vector2D {
 	 * Zeroes this vector
 	 */
 	Zero(): void
-	/**
-	 * @returns length of this vector
-	 */
-	Length(): number
-	/**
-	 * @returns Math.sqr(this.Length()), but faster
-	 */
-	LengthSqr(): number
 	/**
 	 * @param vec 2nd vector
 	 * @returns distance between this and 2nd vector

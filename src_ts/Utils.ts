@@ -440,13 +440,16 @@ Events.addListener("onTick", () => {
 	attacks.forEach((data, attacker_id) => data[2] = FindAttackingUnit(Entities.GetByID(attacker_id) as C_DOTA_BaseNPC))
 
 	// NPC event
-	for (let i = NPCs.length; i--; ) {
+	for (let i = 0, end = NPCs.length; i < end; i++) {
 		let npc = NPCs[i]
-		if (!npc.m_bIsValid)
+		if (!npc.m_bIsValid) {
 			NPCs.splice(i++, 1)
+			end--
+		}
 		else if (npc.m_iszUnitName !== undefined) {
 			Events.emit("onNPCCreated", npc)
 			NPCs.splice(i++, 1)
+			end--
 		}
 	}
 })
