@@ -597,7 +597,6 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 			npc.m_bIsCreep
 			|| (
 				npc.m_bIsHero
-				&& !(npc as C_DOTA_BaseNPC_Hero).m_bIsIllusion
 				&& ((npc as C_DOTA_BaseNPC_Hero).m_hReplicatingOtherHeroModel === undefined || (npc as C_DOTA_Unit_Hero_Meepo).m_bIsClone)
 			)
 		)
