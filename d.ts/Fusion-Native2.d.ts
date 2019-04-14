@@ -734,7 +734,7 @@ declare function GetLevelName(): string
 declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: {
 	OrderType: dotaunitorder_t,
-	Target?: C_BaseEntity,
+	Target?: C_BaseEntity | number,
 	Position?: Vector,
 	Ability?: C_BaseEntity,
 	Unit?: C_BaseEntity,

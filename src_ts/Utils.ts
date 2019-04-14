@@ -206,7 +206,8 @@ var rotation_speed = {
 	},
 	attacks: Array<[number, number, C_DOTA_BaseNPC]> = [],
 	CursorWorldVec = new Vector(),
-	NPCs: C_DOTA_BaseNPC[] = []
+	NPCs: C_DOTA_BaseNPC[] = [],
+	melee_end_time_delta = 0.06
 
 export function GetEntitiesInRange(vec: Vector, range: number, onlyEnemies: boolean = false, findInvuln: boolean = false): C_DOTA_BaseNPC[] {
 	var localplayer = LocalDOTAPlayer
@@ -322,12 +323,13 @@ export function GetHealthAfter(ent: C_DOTA_BaseNPC, delay: number, include_proje
 		let attacker_it = Entities.GetByID(attacker_id) as C_DOTA_BaseNPC,
 			[end_time, end_time_2, attack_target] = data
 		if (attacker_it !== attacker && attack_target === ent) {
-			if ((end_time <= cur_time + delay + melee_time_offset)) {
-				let dmg = ent.CalculateDamageByHand(attacker_it)
+			let end_time_delta = end_time - (cur_time + delay + melee_time_offset),
+				dmg = ent.CalculateDamageByHand(attacker_it)
+			if (end_time_delta <= 0 && end_time_delta >= -melee_end_time_delta)
 				hpafter -= dmg
-				if ((end_time_2 <= cur_time + delay + melee_time_offset))
-					hpafter -= dmg
-			}
+			let end_time_2_delta = end_time_2 - (cur_time + delay + melee_time_offset)
+			if (end_time_2_delta <= 0 && end_time_2_delta >= -melee_end_time_delta)
+				hpafter -= dmg
 		}
 	})
 	if (include_projectiles)
@@ -442,6 +444,9 @@ Events.addListener("onGameEnded", () => {
 
 Events.addListener("onTick", () => {
 	// attack sanitizer
+	let time = GameRules.m_fGameTime
+	// loop-optimizer: KEEP
+	attacks = attacks.filter(([end_time, end_time_2, attack_target]) => time - end_time_2 <= melee_end_time_delta)
 	// loop-optimizer: KEEP
 	attacks.forEach((data, attacker_id) => data[2] = FindAttackingUnit(Entities.GetByID(attacker_id) as C_DOTA_BaseNPC))
 
