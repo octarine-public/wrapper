@@ -419,9 +419,10 @@ Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castp
 
 Events.addListener("onUnitAnimationEnd", npc => {
 	let id = npc.m_iID
-	if (attacks[id] === undefined)
+	let found = attacks[id]
+	if (found === undefined)
 		return
-	let [end_time, end_time_2, attack_target] = attacks[id]
+	let [end_time, end_time_2, attack_target] = found
 	if (attack_target === undefined || !npc.m_bIsCreep || npc.m_bIsControllableByAnyPlayer || !attack_target.m_bIsValid || !attack_target.m_bIsAlive || !attack_target.m_bIsVisible) {
 		delete attacks[id]
 		return
@@ -432,6 +433,11 @@ Events.addListener("onUnitAnimationEnd", npc => {
 		GameRules.m_fGameTime + delay * 2 - 0.06,
 		attack_target,
 	]
+})
+
+Events.addListener("onGameEnded", () => {
+	attacks = []
+	NPCs = []
 })
 
 Events.addListener("onTick", () => {
