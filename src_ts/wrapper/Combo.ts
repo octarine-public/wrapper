@@ -92,13 +92,13 @@ export class Combo {
 	]
 	execute(caster: C_DOTA_BaseNPC, callback?: () => void, index: number = 0): void {
 		if (index === 0) {
-		5	// we need only instance from combo start, and as Utils.GetCursorWorldVec is dynamically changed vector - we need new instance of it
-		this.cursor_pos = new Vector(Utils.GetCursorWorldVec())
-		var ents_under_cursor = Utils.GetEntitiesInRange(this.cursor_pos, 1000, false, true) // must be split from another declarations, otherwise loop optimized will fuck up our code
-		var cursor_enemy =  ents_under_cursor.filter(ent => ent.IsEnemy(caster) && (ent instanceof C_DOTA_Unit_Roshan || (ent.m_bIsHero && !ent.m_bIsIllusion))),
-				cursor_ally = ents_under_cursor.filter(ent => !ent.IsEnemy(caster) && ent.m_bIsHero && !ent.m_bIsIllusion)
-		this.cursor_ally = cursor_ally.length > 0 ? this.cursor_ally = cursor_ally[0] : undefined
-		this.cursor_enemy = cursor_enemy.length > 0 ? this.cursor_enemy = cursor_enemy[0] : undefined
+			// we need only instance from combo start, and as Utils.GetCursorWorldVec is dynamically changed vector - we need new instance of it
+			this.cursor_pos = new Vector(Utils.GetCursorWorldVec())
+			var ents_under_cursor = Utils.GetEntitiesInRange(this.cursor_pos, 1000, false, true), // must be split from another declarations, otherwise loop optimized will fuck up our code
+				cursor_enemy =  ents_under_cursor.filter(ent => ent.IsEnemy(caster) && (ent instanceof C_DOTA_Unit_Roshan || (ent instanceof C_DOTA_BaseNPC_Hero && ent.m_hReplicatingOtherHeroModel === undefined))),
+				cursor_ally = ents_under_cursor.filter(ent => !ent.IsEnemy(caster) && ent instanceof C_DOTA_BaseNPC_Hero && ent.m_hReplicatingOtherHeroModel === undefined)
+			this.cursor_ally = cursor_ally.length > 0 ? this.cursor_ally = cursor_ally[0] : undefined
+			this.cursor_enemy = cursor_enemy.length > 0 ? this.cursor_enemy = cursor_enemy[0] : undefined
 		}
 		var [abil, abilName, act, options] = this.getNextAbility(caster, index),
 			delay: number = options.combo_delay
