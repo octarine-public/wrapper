@@ -75,11 +75,11 @@ Events.addListener("onTick", () => {
 		return
 	}
 	var flag = true
-	Utils.orderBy(creeps, creep => creep.DistTo(MyEnt)).every(creep => {
+	Utils.orderBy(creeps, creep => creep.DistTo2D(MyEnt)).every(creep => {
 		if (!creep.m_bIsMoving && !creep.IsInRange(MyEnt, 50))
 			return true
-		var creepDistance = creepsMovePosition.DistTo(creep.m_vecNetworkOrigin) + 50,
-			heroDistance = creepsMovePosition.DistTo(MyEnt.m_vecNetworkOrigin),
+		var creepDistance = creepsMovePosition.DistTo2D(creep.m_vecNetworkOrigin) + 50,
+			heroDistance = creepsMovePosition.DistTo2D(MyEnt.m_vecNetworkOrigin),
 			creepAngle = creep.FindRotationAngle(MyEnt.m_vecNetworkOrigin)
 		if (creepDistance < heroDistance && creepAngle > 2 || creepAngle > 2.5)
 			return true
@@ -87,7 +87,7 @@ Events.addListener("onTick", () => {
 		if (MyEnt.m_fIdealSpeed - creep.m_fIdealSpeed > 50)
 			moveDistance -= (MyEnt.m_fIdealSpeed - creep.m_fIdealSpeed) / 2
 		var movePosition = creep.InFront(Math.max(moveDistance, moveDistance * creepAngle))
-		if (movePosition.DistTo(creepsMovePosition) - 50 > heroDistance)
+		if (movePosition.DistTo2D(creepsMovePosition) - 50 > heroDistance)
 			return true
 		if (creepAngle < 0.2 && MyEnt.m_bIsMoving)
 			return true

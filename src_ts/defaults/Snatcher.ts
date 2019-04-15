@@ -256,7 +256,7 @@ function snatchRuneByUnit(npc: C_DOTA_BaseNPC, rune: C_DOTA_Item_Rune) {
 		return
 
 	if (!npc.m_bIsStunned && !npc.m_bIsWaitingToSpawn) {
-		const distTo = npc.DistTo(rune)
+		const distTo = npc.DistTo2D(rune)
 
 		if (distTo <= takeRadius.value) {
 			PickupRune(npc, rune, false)
@@ -366,8 +366,7 @@ function snatchItems() {
 
 function snatchItemByUnit(npc: C_DOTA_BaseNPC) {
 	needItems.forEach(item => {
-		if (npc.DistTo(item) <= takeRadius.value) {
-
+		if (npc.DistTo2D(item) <= takeRadius.value) {
 			if (!haveFreeSlot(npc, item))
 				return
 

@@ -74,9 +74,9 @@ Events.addListener("onTick", () => {
 	)
 		return
 	var my_vec: Vector = MyEnt.m_vecNetworkOrigin,
-		cast_range: number = torrent.m_iCastRange
+		cast_range: number = Utils.GetCastRange(MyEnt, torrent)
 	// loop-optimizer: KEEP
-	Utils.orderBy(spots.filter(spot => spot.DistTo(my_vec) < cast_range), spot => spot.DistTo(my_vec)).every(spot => {
+	Utils.orderBy(spots.filter(spot => spot.DistTo2D(my_vec) < cast_range), spot => spot.DistTo2D(my_vec)).every(spot => {
 		Orders.CastPosition(MyEnt, torrent, spot, false)
 		is_stacking = true
 		setTimeout(torrent.m_fCastPoint * 1000 + 30, () => is_stacking = false)

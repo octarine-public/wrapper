@@ -554,6 +554,7 @@ declare class Vector {
 	 * @returns distance between this and 2nd vector
 	 */
 	DistTo(vec: Vector): number
+	DistTo2D(vec: Vector): number
 	MulAdd(a: Vector, b: Vector, scalar: number): void
 	Dot(vOther: Vector): number
 	Cross(vOther: Vector): Vector
@@ -5779,6 +5780,7 @@ declare class C_BaseEntity extends C_GameEntity {
 	IsInRange(ent: C_BaseEntity, range: number): boolean
 	IsEnemy(ent: C_BaseEntity): boolean
 	DistTo(ent: C_BaseEntity): number
+	DistTo2D(ent: C_BaseEntity): number
 	InFront(dist: number): Vector
 	FindRotationAngle(vec: Vector): number
 	

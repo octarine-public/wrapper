@@ -125,10 +125,11 @@ export class Combo {
 		}
 
 		// target selection switch
-		var target: C_DOTA_BaseNPC
+		var cast_range = Utils.GetCastRange(caster, abil),
+			target: C_DOTA_BaseNPC
 		switch (act) {
 			case EComboAction.NEARBY_ENEMY_CREEP:
-				var creepsOnCursor = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, abil.m_iCastRange, true, true).filter(ent => ent.m_bIsCreep)
+				var creepsOnCursor = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, true, true).filter(ent => ent.m_bIsCreep)
 				if (creepsOnCursor.length === 0) {
 					act = undefined
 					break
@@ -136,7 +137,7 @@ export class Combo {
 				target = creepsOnCursor[0]
 				break
 			case EComboAction.NEARBY_ENEMY_SIEGE:
-				var creepsOnCursor = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, abil.m_iCastRange, true, true).filter(ent => ent instanceof C_DOTA_BaseNPC_Creep_Siege)
+				var creepsOnCursor = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, true, true).filter(ent => ent instanceof C_DOTA_BaseNPC_Creep_Siege)
 				if (creepsOnCursor.length === 0) {
 					act = undefined
 					break
@@ -144,7 +145,7 @@ export class Combo {
 				target = creepsOnCursor[0]
 				break
 			case EComboAction.NEARBY_ALLY_TOWER:
-				var nearbyAllyTowers = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, abil.m_iCastRange, false, true).filter(ent => !ent.IsEnemy && ent.m_bIsTower)
+				var nearbyAllyTowers = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, false, true).filter(ent => !ent.IsEnemy && ent.m_bIsTower)
 				if (nearbyAllyTowers.length === 0) {
 					act = undefined
 					break
@@ -152,7 +153,7 @@ export class Combo {
 				target = nearbyAllyTowers[0]
 				break
 			case EComboAction.NEARBY_ENEMY_TOWER:
-				var nearbyEnemyTowers = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, abil.m_iCastRange, true, true).filter(ent => ent => ent.IsTower)
+				var nearbyEnemyTowers = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, true, true).filter(ent => ent => ent.IsTower)
 				if (nearbyEnemyTowers.length === 0) {
 					act = undefined
 					break
@@ -160,7 +161,7 @@ export class Combo {
 				target = nearbyEnemyTowers[0]
 				break
 			case EComboAction.NEARBY_ALLY:
-				var nearbyAllies = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, abil.m_iCastRange, false, true).filter(ent => !ent.IsEnemy && ent.m_bIsHero && !ent.m_bIsIllusion)
+				var nearbyAllies = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, false, true).filter(ent => !ent.IsEnemy && ent.m_bIsHero && !ent.m_bIsIllusion)
 				if (nearbyAllies.length === 0) {
 					act = undefined
 					break
@@ -168,7 +169,7 @@ export class Combo {
 				target = nearbyAllies[0]
 				break
 			case EComboAction.NEARBY_ENEMY:
-				var nearbyEnemies = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, abil.m_iCastRange, true, true).filter(ent => ent instanceof C_DOTA_Unit_Roshan || (ent.m_bIsHero && !ent.m_bIsIllusion))
+				var nearbyEnemies = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, true, true).filter(ent => ent instanceof C_DOTA_Unit_Roshan || (ent.m_bIsHero && !ent.m_bIsIllusion))
 				if (nearbyEnemies.length === 0) {
 					act = undefined
 					break
@@ -217,7 +218,7 @@ export class Combo {
 			}
 		} else if (abilName === "move") {
 			Orders.MoveToPos(caster, target.m_vecNetworkOrigin, false)
-			this.nextExecute(caster, callback, delay + (caster.DistTo(target) / caster.m_fIdealSpeed) * 1000, index)
+			this.nextExecute(caster, callback, delay + (caster.DistTo2D(target) / caster.m_fIdealSpeed) * 1000, index)
 			return
 		} else if (abilName === "custom_cast") {
 			this.nextExecute(caster, callback, options.custom_cast(caster, target), index)

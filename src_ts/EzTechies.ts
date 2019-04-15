@@ -67,7 +67,7 @@ function TryDagon(ent: C_DOTA_BaseNPC, damage: number = 0, damage_type: number =
 	var Dagon = Utils.GetItemByRegexp(techies, /item_dagon/),
 		TargetHP = ent.GetHealthAfter(RMineBlowDelay)
 	if (Dagon)
-		if (Dagon.m_fCooldown === 0 && techies.IsInRange(ent, Dagon.m_iCastRange) && TargetHP < ent.CalculateDamage(Dagon.GetSpecialValue("damage") * latest_techies_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies) + ent.CalculateDamage(damage, damage_type, techies)) {
+		if (Dagon.m_fCooldown === 0 && techies.IsInRange(ent, Utils.GetCastRange(techies, Dagon)) && TargetHP < ent.CalculateDamage(Dagon.GetSpecialValue("damage") * latest_techies_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies) + ent.CalculateDamage(damage, damage_type, techies)) {
 			Orders.CastTarget(techies, Dagon, ent, false)
 			return true
 		}
@@ -103,9 +103,9 @@ function NeedToTriggerMine(rmine: C_DOTA_BaseNPC, ent: C_DOTA_BaseNPC, forcestaf
 		TriggerRadius -= ent.m_fIdealSpeed * (RMineBlowDelay / 30)
 
 	return config.use_prediction
-		? ent.InFront(((ent.m_bIsMoving as any) * RMineBlowDelay) + (forcestaff ? ForcestaffUnits : 0)).DistTo(rmine.m_vecNetworkOrigin) <= TriggerRadius
+		? ent.InFront(((ent.m_bIsMoving as any) * RMineBlowDelay) + (forcestaff ? ForcestaffUnits : 0)).DistTo2D(rmine.m_vecNetworkOrigin) <= TriggerRadius
 		: forcestaff
-			? rmine.m_vecNetworkOrigin.DistTo(ent.InFront(ForcestaffUnits)) <= TriggerRadius
+			? rmine.m_vecNetworkOrigin.DistTo2D(ent.InFront(ForcestaffUnits)) <= TriggerRadius
 			: rmine.IsInRange(ent, TriggerRadius)
 }
 
@@ -149,10 +149,9 @@ function onTick() {
 		)
 
 		var force = techies.GetItemByName("item_force_staff")
-
 		if (
 			!callbackCalled && force !== undefined && techies.m_bIsAlive && force.m_fCooldown === 0
-			&& techies.IsInRange(ent, force.m_iCastRange)
+			&& techies.IsInRange(ent, Utils.GetCastRange(techies, force))
 		)
 			CallMines (
 				ent,

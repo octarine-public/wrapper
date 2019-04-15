@@ -539,7 +539,7 @@ function OnTick(): void {
 		)
 	availableAbils.some(abilData => {
 		var abil = (abilData as any).abil as C_DOTABaseAbility, // hack for tsc, always isn't undefined (has !== undefined check in filter)
-			range = abilData.abilRadiusF ? abilData.abilRadiusF(abil) : abil.m_iCastRange
+			range = abilData.abilRadiusF ? abilData.abilRadiusF(abil) : Utils.GetCastRange(MyEnt, abil)
 		if (range > 0)
 			range += 75
 		return targets.some(ent => {
@@ -551,13 +551,13 @@ function OnTick(): void {
 				return false
 			var needBlink = false
 			if (range > 0)
-				if (MyEnt.DistTo(ent) > range)
+				if (MyEnt.DistTo2D(ent) > range)
 					if (
 						!blinkFlag
 						&& blink !== undefined
 						&& blink.m_fCooldown === 0
 						&& ent.m_bIsHero
-						&& MyEnt.DistTo(ent) < range + blink.GetSpecialValue("blink_range")
+						&& MyEnt.DistTo2D(ent) < range + blink.GetSpecialValue("blink_range")
 					)
 						needBlink = true
 					else return false

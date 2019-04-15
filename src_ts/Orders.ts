@@ -180,7 +180,7 @@ export function CastTarget(ent: C_DOTA_BaseNPC, abil: C_DOTABaseAbility, target:
  * @param {Ability | number} abil ability
  * @param {bool} queue does order needs to be queued? [uses backswing]
  */
-export function CastTargetTree(ent: C_DOTA_BaseNPC, abil: C_DOTABaseAbility, target: C_DOTA_BaseNPC, queue: boolean = true) {
+export function CastTargetTree(ent: C_DOTA_BaseNPC, abil: C_DOTABaseAbility, target: C_DOTA_BaseNPC | number, queue: boolean = true) {
 	PrepareUnitOrders({
 		OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE,
 		Unit: ent,

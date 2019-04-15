@@ -218,7 +218,7 @@ export function GetEntitiesInRange(vec: Vector, range: number, onlyEnemies: bool
 			&& ent.m_bIsAlive
 			&& !(!findInvuln && ent.m_bIsInvulnerable),
 		),
-		(ent: C_BaseEntity) => vec.DistTo(ent.m_vecNetworkOrigin),
+		(ent: C_BaseEntity) => vec.DistTo2D(ent.m_vecNetworkOrigin),
 	) as C_DOTA_BaseNPC[]
 }
 
@@ -303,14 +303,14 @@ export function GetProjectileDelay(source: C_DOTA_BaseNPC, target: C_DOTA_BaseNP
 export function IsInside(npc: C_DOTA_BaseNPC, vec: Vector, radius: number): boolean {
 	const direction = npc.m_vecForward,
 		npc_pos = npc.m_vecNetworkOrigin
-	const npc_pos_x = npc_pos.x, npc_pos_y = npc_pos.y, npc_pos_z = npc_pos.z,
-		vec_x = vec.x, vec_y = vec.y, vec_z = vec.z,
-		direction_x = direction.x, direction_y = direction.y, direction_z = direction.z,
+	const npc_pos_x = npc_pos.x, npc_pos_y = npc_pos.y,
+		vec_x = vec.x, vec_y = vec.y,
+		direction_x = direction.x, direction_y = direction.y,
 		radius_sqr = radius ** 2
-	for (let i = Math.floor(vec.DistTo(npc_pos) / radius) + 1; i--; )
-		// if (npc_pos.DistTo(new Vector(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
+	for (let i = Math.floor(vec.DistTo2D(npc_pos) / radius) + 1; i--; )
+		// if (npc_pos.DistTo2D(new Vector(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
 		// optimized version, as V8 unable to optimize any native code by inlining
-		if ((((vec_x - direction_x * i * radius - npc_pos_x) ** 2) + ((vec_y - direction_y * i * radius - npc_pos_y) ** 2) + ((vec_z - direction_z * i * radius - npc_pos_z) ** 2)) <= radius_sqr)
+		if ((((vec_x - direction_x * i * radius - npc_pos_x) ** 2) + ((vec_y - direction_y * i * radius - npc_pos_y) ** 2)) <= radius_sqr)
 			return true
 	return false
 }
@@ -348,7 +348,7 @@ export function FindAttackingUnit(npc: C_DOTA_BaseNPC): C_DOTA_BaseNPC {
 		is_default_creep = npc.m_bIsCreep && !npc.m_bIsControllableByAnyPlayer
 	return orderBy(NPCs.filter(npc_ =>
 		npc_ !== npc &&
-		npc_.m_vecNetworkOrigin.DistTo(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + npc_.m_flHullRadius) &&
+		npc_.m_vecNetworkOrigin.DistTo2D(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + npc_.m_flHullRadius) &&
 		!npc_.m_bIsInvulnerable &&
 		IsInside(npc, npc_.m_vecNetworkOrigin, npc_.m_flHullRadius) &&
 		(npc.IsEnemy(npc_) || (!is_default_creep && npc_.m_bIsDeniable)),
@@ -369,6 +369,52 @@ export function GetRotationTime(npc: C_DOTA_BaseNPC, vec: Vector): number {
 	if (ang > turn_rad) // <= (360-45)deg
 		return 0
 	return 30 * ang / rotation_speed[npc.m_iszUnitName]
+}
+
+export function GetCastRangeBonus(npc: C_DOTA_BaseNPC) {
+	let bonus = 0,
+		lens = npc.GetItemByName("item_aether_lens")
+	if (lens !== undefined)
+		bonus += lens.GetSpecialValue("cast_range_bonus");
+	// loop-optimizer: POSSIBLE_UNDEFINED
+	(npc.m_hAbilities as C_DOTABaseAbility[]).forEach(abil => {
+		if (abil.m_iLevel > 0)
+			return
+		let abil_data = abil.m_pAbilityData
+		if (abil_data !== undefined) {
+			let abil_name = abil_data.m_pszAbilityName
+			if (abil_name !== undefined && abil_name.startsWith("special_bonus_cast_range_"))
+				bonus += abil.GetSpecialValue("value")
+		}
+	})
+	return bonus
+}
+
+export function GetCastRange(npc: C_DOTA_BaseNPC, abil: C_DOTABaseAbility) {
+	let abil_data = abil.m_pAbilityData,
+		cast_range = abil.m_iCastRange
+	if (abil_data !== undefined) {
+		let abil_name = abil_data.m_pszAbilityName,
+			talent: C_DOTABaseAbility
+		switch (abil_name) {
+			case "skywrath_mage_concussive_shot":
+				talent = npc.GetAbilityByName("special_bonus_unique_skywrath_4")
+				if (talent !== undefined && talent.m_iLevel > 0)
+					return Number.MAX_SAFE_INTEGER
+				break
+			case "gyrocopter_call_down":
+				talent = npc.GetAbilityByName("special_bonus_unique_gyrocopter_5")
+				if (talent !== undefined && talent.m_iLevel > 0)
+					return Number.MAX_SAFE_INTEGER
+				break
+			case 'lion_impale':
+				talent = npc.GetAbilityByName("special_bonus_unique_lion_2")
+				if (talent !== undefined && talent.m_iLevel > 0)
+					cast_range += talent.GetSpecialValue('value')
+				break
+		}
+	}
+	return cast_range + GetCastRangeBonus(npc)
 }
 
 export function GetOrdersWithoutSideEffects() {

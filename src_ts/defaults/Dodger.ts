@@ -24,7 +24,7 @@ function TryDodge(pl_ent: C_DOTA_BaseNPC, proj: TrackingProjectile | LinearProje
 	if (proj instanceof TrackingProjectile) {
 		switch (path) {
 			case "particles/units/heroes/hero_alchemist/alchemist_unstable_concoction_projectile.vpcf":
-				if (proj.m_vecTarget.DistTo(pl_ent.m_vecNetworkOrigin) <= 200 + pl_ent.m_flHullRadius)
+				if (proj.m_vecTarget.DistTo2D(pl_ent.m_vecNetworkOrigin) <= 200 + pl_ent.m_flHullRadius)
 					Dodge(pl_ent, proj.m_vecTarget.DistTo(proj.m_vecPosition) / proj.m_iSpeed, proj.m_vecTarget, 200)
 				break
 		}
