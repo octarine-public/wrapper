@@ -417,6 +417,10 @@ export function GetCastRange(npc: C_DOTA_BaseNPC, abil: C_DOTABaseAbility) {
 	return cast_range + GetCastRangeBonus(npc)
 }
 
+export function IntersectArrays<T>(a: Array<T>, b: Array<T>) {
+	return a.some(val1 => b.some(val2 => val1 === val2))
+}
+
 export function GetOrdersWithoutSideEffects() {
 	return [
 		dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,

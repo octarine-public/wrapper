@@ -84,7 +84,7 @@ Events.addListener("onTick", () => {
 	})
 })
 
-Events.addListener("onPrepareUnitOrders", () => !is_stacking) // cancel orders while stacking
+Events.addListener("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !is_stacking) // cancel orders while stacking
 
 /*Events.addListener("onWndProc", (message_type, wParam) => {
 	if (!IsInGame())

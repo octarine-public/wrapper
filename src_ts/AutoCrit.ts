@@ -32,21 +32,22 @@ Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castp
 })
 
 Events.addListener("onPrepareUnitOrders", order => {
-	switch (order.order_type) {
-		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-			target = order.target
-			target_pos = undefined
-			break
-		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
-			target = undefined
-			target_pos = order.position
-			break
-		case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
-			enabled = false
-			break
-		default:
-			break
-	}
+	if (order.unit === LocalDOTAPlayer.m_hAssignedHero)
+		switch (order.order_type) {
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
+				target = order.target
+				target_pos = undefined
+				break
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
+				target = undefined
+				target_pos = order.position
+				break
+			case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
+				enabled = false
+				break
+			default:
+				break
+		}
 	return true
 })
 Events.addListener("onWndProc", (message_type, wParam) => {

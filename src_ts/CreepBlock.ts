@@ -55,7 +55,7 @@ var config: any = {
 // 	}
 // })
 
-Events.addListener("onPrepareUnitOrders", order => !enabled || Utils.GetOrdersWithoutSideEffects().includes(order.order_type))
+Events.addListener("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !enabled || Utils.GetOrdersWithoutSideEffects().includes(order.order_type))
 Events.addListener("onTick", () => {
 	if (!enabled)
 		return

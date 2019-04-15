@@ -493,16 +493,6 @@ function GetAvailableAbils() {
 	)
 }
 
-function Cast(abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo?: C_DOTA_BaseNPC): void {
-	var Behavior = abil.m_pAbilityData.m_iAbilityBehavior
-	if (Utils.IsFlagSet(Behavior, BigInt(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)))
-		Orders.CastNoTarget(entFrom, abil, false)
-	else if (Utils.IsFlagSet(Behavior, BigInt(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) || Behavior === BigInt(0))
-		Orders.CastTarget(entFrom, abil, entTo as C_DOTA_BaseNPC, false)
-	else if (Utils.IsFlagSet(Behavior, BigInt(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)))
-		Orders.CastPosition(entFrom, abil, Utils.VelocityWaypoint(entTo as C_DOTA_BaseNPC, abil.m_fCastPoint), false)
-}
-
 function getDamage(abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number {
 	return entTo.CalculateDamage((abil.m_iAbilityDamage || abil.GetSpecialValue("damage")) * latest_spellamp, abil.m_pAbilityData.m_iAbilityDamageType, entFrom)
 }
@@ -579,7 +569,7 @@ function OnTick(): void {
 				if (abilData.abilCastF)
 					abilData.abilCastF(abil, MyEnt, ent)
 				else
-					Cast(abil, MyEnt, ent)
+					Orders.SmartCast(MyEnt, abil, ent)
 				setTimeout ((abil.m_fCastPoint + ping) * 1000, () => flag = false)
 			}
 
@@ -612,6 +602,7 @@ Events.addListener("onEntityDestroyed", ent => {
 })
 Events.addListener("onGameEnded", () => possibleTargets = [])
 Events.addListener("onTick", OnTick)
+
 {
 	let root = new Menu_Node("AutoSteal")
 	root.entries.push(new Menu_Toggle (

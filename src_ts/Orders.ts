@@ -18,6 +18,8 @@
  * along with Fusion.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as Utils from "Utils"
+
 var debugAnimations = true
 /**
  * @param ent entity that must issue order [can be overriden by orderIssuer]
@@ -244,16 +246,16 @@ export function ToggleAbil(ent: C_DOTA_BaseNPC, abil: C_DOTABaseAbility, queue: 
  * @param {number} slot_id target slot ID
  * @param {bool} queue does order needs to be queued? [uses backswing]
  */
-/*export function MoveItem(ent: C_DOTA_BaseNPC, item: C_DOTA_Item, slot_id: number, queue: boolean) {
+export function MoveItem(ent: C_DOTA_BaseNPC, item: C_DOTA_Item, slot_id: number, queue: boolean) {
 	PrepareUnitOrders({
 		OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM,
 		Unit: ent,
 		Ability: item,
-		TargetIndex: slot_id,
+		Target: slot_id,
 		Queue: queue,
 		ShowEffects: debugAnimations,
 	})
-},*/
+}
 
 /**
  * @param {Entity | number} ent entity that must issue order
@@ -300,3 +302,13 @@ export function ItemLock(ent: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC, queue: boo
 		ShowEffects: debugAnimations,
 	})
 }*/
+
+export function SmartCast(caster: C_DOTA_BaseNPC, abil: C_DOTABaseAbility, target?: C_DOTA_BaseNPC): void {
+	var Behavior = abil.m_pAbilityData.m_iAbilityBehavior
+	if (Utils.IsFlagSet(Behavior, BigInt(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)))
+		CastNoTarget(caster, abil, false)
+	else if (Utils.IsFlagSet(Behavior, BigInt(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) || Behavior === BigInt(0))
+		CastTarget(caster, abil, target, false)
+	else if (Utils.IsFlagSet(Behavior, BigInt(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)))
+		CastPosition(caster, abil, Utils.VelocityWaypoint(target, abil.m_fCastPoint), false)
+}
