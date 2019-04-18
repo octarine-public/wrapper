@@ -108,7 +108,7 @@ var Abils_ = [
 	heroes: C_DOTA_BaseNPC_Hero[] = []
 
 Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
-	if (npc instanceof C_DOTA_BaseNPC_Hero && npc.IsEnemy(LocalDOTAPlayer))
+	if (npc instanceof C_DOTA_BaseNPC_Hero && npc.IsEnemy(LocalDOTAPlayer) && npc.m_hReplicatingOtherHeroModel === undefined)
 		heroes.push(npc)
 })
 
@@ -134,7 +134,7 @@ Events.addListener("onTick", () => {
 Events.addListener("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !disabling)
 
 function Disable(pl_ent: C_DOTA_BaseNPC, hero: C_DOTA_BaseNPC, DisableAr: [string, boolean, boolean?][], Abil?: C_DOTABaseAbility) {
-	let delta = (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT) + Utils.GetRotationTime(pl_ent, hero.m_vecNetworkOrigin)) / 1000 + 0.03
+	let delta = (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT) + Utils.GetRotationTime(pl_ent, hero.m_vecNetworkOrigin)) / 1000 + config.additional_delay
 	if(Abil !== undefined) { // check that it can be disabled
 		let AbilAr: [string, boolean, boolean?]
 		if (
