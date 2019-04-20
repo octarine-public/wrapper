@@ -284,7 +284,7 @@ declare class CUserCmd {
 	mousex: number
 	mousey: number
 	camerax: number
-	cameraz: number
+	cameray: number
 	click_behaviors: number
 	scoreboard_opened: boolean
 	shopmask: number
@@ -293,7 +293,7 @@ declare class CUserCmd {
 	buttons: bigint
 	impulse: number
 	vec_under_cursor: Vector
-	viewangles: Vector
+	viewangles: QAngle
 	weaponselect: C_BaseEntity
 	weaponsubtype: C_BaseEntity
 }
@@ -477,6 +477,10 @@ declare class Vector {
 	readonly IsZero: boolean
 	readonly Length2D: number
 	readonly Length2DSqr: number
+	/**
+	 * @returns is valid this vector? (every value must not be infinity/NaN)
+	 */
+	readonly IsValid: boolean
 
 	constructor()
 	constructor(vec: Vector)
@@ -484,10 +488,6 @@ declare class Vector {
 	constructor(x: number, z: number)
 	constructor(x: number, z: number, y: number)
 
-	/**
-	 * @returns is valid this vector? (every value must not be infinity/NaN)
-	 */
-	IsValid(): boolean
 	/**
 	 * Invalidates this vector
 	 */
@@ -574,6 +574,10 @@ declare class Vector2D {
 	 * @returns Math.sqr(this.Length()), but faster
 	 */
 	readonly LengthSqr: number
+	/**
+	 * @returns is valid this vector? (every value must not be infinity/NaN)
+	 */
+	readonly IsValid: boolean
 
 	constructor()
 	constructor(vec: Vector)
@@ -590,10 +594,6 @@ declare class Vector2D {
 	 * @returns distance between this and 2nd vector
 	 */
 	DistTo(vec: Vector2D): number
-	/**
-	 * @returns is valid this vector? (every value must not be infinity/NaN)
-	 */
-	IsValid(): boolean
 	/**
 	 * Invalidates this vector
 	 */
@@ -729,6 +729,7 @@ declare interface Renderer {
 declare function SendToConsole(command: string): void
 declare function readFile(path: string): string
 declare function sleep(ms: number): void
+declare function usleep(ns: number): void
 declare function IsInGame(): boolean
 declare function IsPaused(): boolean
 declare function GetLevelName(): string

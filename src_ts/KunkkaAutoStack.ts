@@ -44,7 +44,7 @@ Events.addListener("onDraw", () => {
 		return
 	spots.forEach((spot, i) => {
 		let screen_pos = Renderer.WorldToScreen(spot)
-		if (!screen_pos.IsValid())
+		if (!screen_pos.IsValid)
 			return
 		Renderer.FilledRect(screen_pos.x - 25, screen_pos.y - 25, 50, 50, 255, 0, 0)
 		Renderer.Text(screen_pos.x, screen_pos.y, (i + 1).toString(), 0, 255, 0)
