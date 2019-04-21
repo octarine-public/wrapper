@@ -554,6 +554,7 @@ function OnTick(): void {
 			var damage = (abilData.abilDamageF || getDamage)(abil, MyEnt, ent)
 			if (zuus_passive !== undefined)
 				damage += (abil.GetSpecialValue("damage_health_pct") + (zuus_talent !== undefined ? zuus_talent.m_iLevel === 0 ? 0 : zuus_talent.GetSpecialValue("value") : 0)) / 100 * ent.m_iMaxHealth
+			// console.log(damage, Utils.GetHealthAfter(ent, abil.m_fCastPoint, false, MyEnt))
 			if (damage < Utils.GetHealthAfter(ent, abil.m_fCastPoint, false, MyEnt))
 				return false
 
@@ -584,10 +585,10 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (
 		npc.IsEnemy(LocalDOTAPlayer)
 		&& (
-			npc.m_bIsCreep
+			npc instanceof C_DOTA_BaseNPC_Creep
 			|| (
-				npc.m_bIsHero
-				&& ((npc as C_DOTA_BaseNPC_Hero).m_hReplicatingOtherHeroModel === undefined || (npc as C_DOTA_Unit_Hero_Meepo).m_bIsClone)
+				npc instanceof C_DOTA_BaseNPC_Hero
+				&& (npc.m_hReplicatingOtherHeroModel === undefined || (npc instanceof C_DOTA_Unit_Hero_Meepo && npc.m_bIsClone))
 			)
 		)
 	)
