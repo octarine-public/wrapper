@@ -13,7 +13,8 @@ let registedEvents = {
 	allRunesParticles = [],
 	needItems: C_DOTA_Item_Physical[] = [],
 	npcs: C_DOTA_BaseNPC[] = [],
-	picking_up: C_DOTA_Item_Rune[] = []
+	picking_up: C_DOTA_Item_Rune[] = [],
+	controllables: C_DOTA_BaseNPC[] = [];
 
 const snatcherMenu = new MenuManager("Snatcher")
 
@@ -182,9 +183,12 @@ function onTick() {
 		if (!rune.m_bIsValid)
 			delete picking_up[picker]
 	})
-	let controllables = GetControllables()
-	snatchRunes(controllables)
-	snatchItems(controllables)
+	
+	if (stateControllables.value)
+		controllables = GetControllables();
+	
+	snatchRunes()
+	snatchItems()
 }
 
 Events.addListener("onGameEnded", () => picking_up = [])
@@ -223,7 +227,7 @@ function GetControllables() {
 
 // ------- Rune
 
-function snatchRunes(controllables: C_DOTA_BaseNPC[]) {
+function snatchRunes() {
 	if (!stateRune.value && !runeHoldKey.IsPressed)
 		return
 
@@ -345,7 +349,7 @@ function destroyRuneAllParticles() {
 
 // ------- Items
 
-function snatchItems(controllables: C_DOTA_BaseNPC[]) {
+function snatchItems() {
 	if ((!stateItems.value && !itemsHoldKey.IsPressed) || listOfItems.IsZeroSelected)
 		return
 
