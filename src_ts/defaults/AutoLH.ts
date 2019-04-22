@@ -202,7 +202,9 @@ Events.addListener("onTick", () => {
 		block_orders = true
 		let done = false
 		let id = setInterval(30, id => {
-			if (!ent.m_bIsValid || !ent.m_bIsAlive) {
+			if (done)
+				clearInterval(id)
+			else if (!ent.m_bIsValid || !ent.m_bIsAlive) {
 				block_orders = false
 				done = true
 				clearInterval(id)
@@ -212,11 +214,12 @@ Events.addListener("onTick", () => {
 			if (!done)
 				clearInterval(id)
 			block_orders = false
+			done = true
 		})
 	}
 })
 Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
-	if (npc.m_bIsCreep)
+	if (npc instanceof C_DOTA_BaseNPC_Creep)
 		attackable_ents.push(npc)
 })
 Events.addListener("onEntityDestroyed", ent => {
