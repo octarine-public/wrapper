@@ -110,16 +110,10 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 		towers.push(npc as C_DOTA_BaseNPC_Tower)
 })
 Events.addListener("onEntityDestroyed", ent => {
-	{
-		const index = lane_creeps.indexOf(ent as C_DOTA_BaseNPC_Creep)
-		if (index !== -1)
-			lane_creeps.splice(index, 1)
-	}
-	{
-		const index = towers.indexOf(ent as C_DOTA_BaseNPC_Tower)
-		if (index !== -1)
-			towers.splice(index, 1)
-	}
+	if (ent instanceof C_DOTA_BaseNPC_Creep)
+		Utils.arrayRemove(lane_creeps, ent)
+	else if (ent instanceof C_DOTA_BaseNPC_Tower)
+		Utils.arrayRemove(towers, ent)
 })
 Events.addListener("onWndProc", (message_type, wParam) => {
 	if (!IsInGame() || parseInt(wParam as any) !== config.hotkey)

@@ -1,6 +1,6 @@
 import { CreateRGBTree, MenuManager } from "../CrutchesSDK/Wrapper"
 import { PickupItem, PickupRune } from "../Orders"
-import { orderBy } from "../Utils"
+import { orderBy, arrayRemove } from "../Utils"
 
 let registedEvents = {
 		onEntityCreated: undefined,
@@ -11,10 +11,9 @@ let registedEvents = {
 	},
 	allRunes: C_DOTA_Item_Rune[] = [],
 	allRunesParticles = [],
-	needItems: C_DOTA_Item_Physical[] = [],
+	ground_items: C_DOTA_Item_Physical[] = [],
 	npcs: C_DOTA_BaseNPC[] = [],
-	picking_up: C_DOTA_Item_Rune[] = [],
-	controllables: C_DOTA_BaseNPC[] = [];
+	picking_up: C_DOTA_Item_Rune[] = []
 
 const snatcherMenu = new MenuManager("Snatcher")
 
@@ -114,7 +113,7 @@ function onDeactivateRune() {
 }
 
 function onDeactivateItems() {
-	needItems = []
+	ground_items = []
 }
 
 function registerEvents() {
@@ -138,41 +137,28 @@ function destroyEvents() {
 }
 
 function onCheckEntity(ent: C_BaseEntity) {
-	if (ent instanceof C_DOTA_Item_Rune && (stateRune.value || runeHoldKey.IsPressed)) {
-		
-		if (!allRunes.includes(ent))
+	if (ent instanceof C_DOTA_Item_Rune)
+		if (!allRunes.includes(ent)) // dafuq?
 			allRunes.push(ent)
-	}
 
-	if (ent instanceof C_DOTA_Item_Physical && stateItems.value) {
-		
-		let m_hItem = ent.m_hItem,
-			includes = needItems.includes(ent);
-
-		if (m_hItem !== undefined && !includes) {
-			
-			if (listOfItems.IsInSelected(m_hItem.m_pAbilityData.m_pszAbilityName)) 
-				needItems.push(ent);
-				
-		} else if (includes) {
-			
-			removedIDItem(ent)
-		}
-	}
+	if (ent instanceof C_DOTA_Item_Physical)
+		if (!ground_items.includes(ent)) {
+			let m_hItem = ent.m_hItem
+			if (m_hItem !== undefined && listOfItems.IsInSelected(m_hItem.m_pAbilityData.m_pszAbilityName))
+				ground_items.push(ent)
+		} else // dafuq?
+			arrayRemove(ground_items, ent)
 }
 
 Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => npcs.push(npc))
 
-function onEntityDestroyed(ent: C_BaseEntity, id: number) {
-	
+function onEntityDestroyed(ent: C_BaseEntity) {
 	if (ent instanceof C_DOTA_Item_Rune)
-		return removedIDRune(ent as C_DOTA_Item_Rune);
-
-	if (ent instanceof C_DOTA_Item_Physical)
-		return removedIDItem(ent as C_DOTA_Item_Physical);
-
-	if (ent instanceof C_DOTA_BaseNPC)
-		return removedIDControllable(ent as C_DOTA_BaseNPC);
+		removedIDRune(ent as C_DOTA_Item_Rune)
+	else if (ent instanceof C_DOTA_Item_Physical)
+		arrayRemove(ground_items, ent)
+	else if (ent instanceof C_DOTA_BaseNPC)
+		arrayRemove(npcs, ent)
 }
 
 function onTick() {
@@ -184,11 +170,11 @@ function onTick() {
 			delete picking_up[picker]
 	})
 	
-	if (stateControllables.value)
-		controllables = GetControllables();
-	
-	snatchRunes()
-	snatchItems()
+	let controllables: C_DOTA_BaseNPC[] = stateControllables.value
+		? GetControllables()
+		: [LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC]
+	snatchRunes(controllables)
+	snatchItems(controllables)
 }
 
 Events.addListener("onGameEnded", () => picking_up = [])
@@ -227,20 +213,12 @@ function GetControllables() {
 
 // ------- Rune
 
-function snatchRunes() {
+function snatchRunes(controllables: C_DOTA_BaseNPC[]) {
 	if (!stateRune.value && !runeHoldKey.IsPressed)
 		return
 
 	allRunes.forEach(rune => {
-		let near = false
-
-		if (stateControllables.value)
-			near = orderBy(controllables, unit => unit.DistTo(rune)).some(npc => snatchRuneByUnit(npc, rune))
-		else {
-			if (LocalDOTAPlayer !== undefined)
-				near = snatchRuneByUnit(LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC, rune)
-		}
-
+		let near = orderBy(controllables, unit => unit.DistTo(rune)).some(npc => snatchRuneByUnit(npc, rune))
 		if (!near && (drawParticleTake.value || drawParticleKill.value))
 			destroyRuneParticles(rune.m_iID)
 	})
@@ -293,20 +271,6 @@ function removedIDRune(ent: C_DOTA_Item_Rune) {
 	}
 }
 
-function removedIDItem(ent: C_DOTA_Item_Physical) {
-	const idItem = needItems.indexOf(ent)
-
-	if (idItem !== -1)
-		needItems.splice(idItem, 1)
-}
-
-function removedIDControllable(ent: C_DOTA_BaseNPC) {
-	const idNPC = npcs.indexOf(ent)
-
-	if (idNPC !== -1)
-		npcs.splice(idNPC, 1)
-}
-
 function createRuneParticle(ent: C_BaseEntity, color: Vector, radius: number) {
 	const particleID = Particles.Create (
 		"particles/ui_mouseactions/drag_selected_ring.vpcf",
@@ -349,38 +313,27 @@ function destroyRuneAllParticles() {
 
 // ------- Items
 
-function snatchItems() {
+function snatchItems(controllables: C_DOTA_BaseNPC[]) {
 	if ((!stateItems.value && !itemsHoldKey.IsPressed) || listOfItems.IsZeroSelected)
 		return
 
-	if (stateControllables.value)
-		controllables.forEach(snatchItemByUnit)
-	else {
-		if (LocalDOTAPlayer !== undefined)
-			snatchItemByUnit(LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC)
-	}
-}
-
-function snatchItemByUnit(npc: C_DOTA_BaseNPC) {
-	needItems.forEach(item => {
-		if (npc.DistTo2D(item) <= takeRadius.value) {
-			if (!haveFreeSlot(npc, item))
-				return
-
-			PickupItem(npc, item, false)
-			return
-		}
-	})
+	let free_controllables = controllables
+	ground_items.forEach(item => free_controllables.some(npc => {
+		if (npc.DistTo2D(item) > takeRadius.value || !haveFreeSlot(npc, item))
+			return false
+		PickupItem(npc, item, false)
+		free_controllables.slice(free_controllables.indexOf(npc))
+		return true
+	}))
 }
 
 function haveFreeSlot(npc: C_DOTA_BaseNPC, item: C_DOTA_Item_Physical) {
 	let nameItem = item.m_hItem.m_pAbilityData.m_pszAbilityName,
 		checkSlots = nameItem === "item_cheese" ? 9 : 6
 
-	for (var i = checkSlots; i--; ) {
+	for (var i = checkSlots; i--; )
 		if (npc.GetItemInSlot(i) === undefined)
 			return true
-	}
 	return false
 }
 

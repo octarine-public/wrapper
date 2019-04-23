@@ -193,7 +193,7 @@ Events.addListener("onTick", () => {
 		return false
 	}).map(ent => [ent, ent.m_vecNetworkOrigin.DistTo2D(pl_ent_pos)]) as Array<[C_DOTA_BaseNPC, number]>).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent, ent, cur_time)), ([creep]) => creep.m_iHealth)
 	glow_ents = (config.glow_enabled && config.glow_finder_range !== 0 ? config.glow_finder_range !== -1 ? filtered.filter(([ent, dist]) => dist <= config.glow_finder_range) : filtered : []).map(a => a[0])
-	if (!config.glow_only || block_orders) {
+	if (!config.glow_only && !block_orders) {
 		let ent_pair = filtered.filter(([ent, dist]) => dist <= (attack_range + ent.m_flHullRadius))[0]
 		if (ent_pair === undefined)
 			return
@@ -223,9 +223,8 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 		attackable_ents.push(npc)
 })
 Events.addListener("onEntityDestroyed", ent => {
-	const index = attackable_ents.indexOf(ent as C_DOTA_BaseNPC)
-	if (index !== -1)
-		attackable_ents.splice(index, 1)
+	if (ent instanceof C_DOTA_BaseNPC)
+		Utils.arrayRemove(attackable_ents, ent)
 })
 Events.addListener("onPrepareUnitOrders", order => enabled && !config.glow_only ? Utils.GetOrdersWithoutSideEffects().includes(order.order_type) || !block_orders : true)
 Events.addListener("onWndProc", (message_type, wParam) => {

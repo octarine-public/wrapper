@@ -595,11 +595,9 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 		possibleTargets.push(npc)
 })
 Events.addListener("onEntityDestroyed", ent => {
-	if (LocalDOTAPlayer === undefined)
+	if (LocalDOTAPlayer === undefined || !(ent instanceof C_DOTA_BaseNPC))
 		return
-	const index = possibleTargets.indexOf(ent as C_DOTA_BaseNPC)
-	if (index !== -1)
-		possibleTargets.splice(index, 1)
+	Utils.arrayRemove(possibleTargets, ent)
 })
 Events.addListener("onGameEnded", () => possibleTargets = [])
 Events.addListener("onTick", OnTick)

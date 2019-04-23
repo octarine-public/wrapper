@@ -442,6 +442,12 @@ export function GetCursorWorldVec() {
 	return CursorWorldVec
 }
 
+export function arrayRemove<T>(ar: Array<T>, el: T) {
+	const id = ar.indexOf(el)
+	if (id !== -1)
+		ar.splice(id, 1)
+}
+
 Events.addListener("onSendMove", cmd => cmd.vec_under_cursor.CopyTo(CursorWorldVec))
 
 Events.addListener("onEntityCreated", ent => {
@@ -449,11 +455,9 @@ Events.addListener("onEntityCreated", ent => {
 		NPCs.push(ent)
 })
 
-Events.addListener("onEntityDestroyed", ent => {
-	const id = NPCs.indexOf(ent as C_DOTA_BaseNPC)
-	if (id !== -1)
-		NPCs.splice(id, 1)
-	let ent_id = ent.m_iID
+Events.addListener("onEntityDestroyed", (ent, ent_id) => {
+	if (ent instanceof C_DOTA_BaseNPC)
+		arrayRemove(NPCs, ent)
 	// loop-optimizer: KEEP
 	attacks = attacks.filter((data, attacker_id) => attacker_id !== ent_id && data[2] !== ent)
 })

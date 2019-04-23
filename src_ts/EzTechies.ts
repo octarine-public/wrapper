@@ -258,9 +258,8 @@ Events.addListener("onEntityDestroyed", ent => {
 			Particles.Destroy(particles[ent.m_iID], true)
 		RemoveMine(ent)
 	}
-	const index = heroes.indexOf(ent as C_DOTA_BaseNPC_Hero)
-	if (index !== -1)
-		heroes.splice(index, 1)
+	if (ent instanceof C_DOTA_BaseNPC_Hero)
+		Utils.arrayRemove(heroes, ent)
 })
 
 {

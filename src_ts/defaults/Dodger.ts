@@ -6,9 +6,7 @@ var proj2path: string[] = [],
 	enabled = false
 
 function DeleteProjectile(proj: TrackingProjectile | LinearProjectile) {
-	const index = proj_list.indexOf(proj)
-	if (index !== -1)
-		proj_list.splice(index, 1)
+	Utils.arrayRemove(proj_list, proj)
 }
 
 function Dodge(pl_ent: C_DOTA_BaseNPC, delay: number, target_pos: Vector = undefined, aoe: number = 0) {
