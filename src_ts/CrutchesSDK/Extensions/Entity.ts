@@ -116,7 +116,7 @@ export default class Entity {
 
 	// }
 
-	Equals(ent: Entity | Object): boolean {
+	Equals(ent: Entity | object): boolean {
 		if (ent === undefined)
 			return false
 

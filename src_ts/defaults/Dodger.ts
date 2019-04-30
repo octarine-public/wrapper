@@ -9,7 +9,7 @@ function DeleteProjectile(proj: TrackingProjectile | LinearProjectile) {
 	Utils.arrayRemove(proj_list, proj)
 }
 
-function Dodge(pl_ent: C_DOTA_BaseNPC, delay: number, target_pos: Vector = undefined, aoe: number = 0) {
+function Dodge(pl_ent: C_DOTA_BaseNPC, delay: number, target_pos?: Vector, aoe: number = 0) {
 	Orders.CastNoTarget(pl_ent, pl_ent.GetAbility(2))
 }
 
@@ -25,10 +25,11 @@ function TryDodge(pl_ent: C_DOTA_BaseNPC, proj: TrackingProjectile | LinearProje
 				if (proj.m_vecTarget.DistTo2D(pl_ent.m_vecNetworkOrigin) <= 200 + pl_ent.m_flHullRadius)
 					Dodge(pl_ent, proj.m_vecTarget.DistTo(proj.m_vecPosition) / proj.m_iSpeed, proj.m_vecTarget, 200)
 				break
+			default:
+				break
 		}
-	} else if (proj instanceof LinearProjectile) {
+	} else if (proj instanceof LinearProjectile)
 		console.log(path)
-	}
 }
 
 Events.addListener("onTick", () => {

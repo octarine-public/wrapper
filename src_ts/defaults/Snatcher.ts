@@ -1,8 +1,8 @@
 import { CreateRGBTree, MenuManager } from "../CrutchesSDK/Wrapper"
 import { PickupItem, PickupRune } from "../Orders"
-import { orderBy, arrayRemove } from "../Utils"
+import { arrayRemove, orderBy } from "../Utils"
 
-let registedEvents = {
+let registeredEvents = {
 		onEntityCreated: undefined,
 		onEntityDestroyed: undefined,
 		onTick: undefined,
@@ -10,7 +10,7 @@ let registedEvents = {
 		onDraw: undefined,
 	},
 	allRunes: C_DOTA_Item_Rune[] = [],
-	allRunesParticles = [],
+	allRunesParticles: number[][] = [],
 	ground_items: C_DOTA_Item_Physical[] = [],
 	npcs: C_DOTA_BaseNPC[] = [],
 	picking_up: C_DOTA_Item_Rune[] = []
@@ -25,10 +25,10 @@ const runeMenu = snatcherMenu.AddTree("Rune settings")
 
 const stateRune = runeMenu.AddToggle("Snatch Rune")
 	.OnDeactivate(onDeactivateRune)
-	.OnActivate(getAllEntities);
+	.OnActivate(getAllEntities)
 
 const runeToggle = runeMenu.AddKeybind("Rune toogle")
-	.OnRelease(() => stateRune.ChangeReverse());
+	.OnRelease(() => stateRune.ChangeReverse())
 
 const runeHoldKey = runeMenu.AddKeybind("Rune hold key")
 	.OnRelease(() => {
@@ -63,7 +63,7 @@ const itemsMenu = snatcherMenu.AddTree("Items settings")
 
 const stateItems = itemsMenu.AddToggle("Snatch Items")
 	.OnDeactivate(onDeactivateItems)
-	.OnActivate(getAllEntities);
+	.OnActivate(getAllEntities)
 
 const itemsToggle = itemsMenu.AddKeybind("Items toogle")
 	.OnRelease(() => stateItems.ChangeReverse())
@@ -104,7 +104,7 @@ function getAllEntities() {
 	Entities.GetAllEntities().forEach(ent => {
 		if (ent.m_bIsValid)
 			onCheckEntity(ent)
-	});
+	})
 }
 
 function onDeactivateRune() {
@@ -117,23 +117,23 @@ function onDeactivateItems() {
 }
 
 function registerEvents() {
-	registedEvents.onEntityCreated = Events.addListener("onEntityCreated", onCheckEntity)
-	registedEvents.onEntityDestroyed = Events.addListener("onEntityDestroyed", onEntityDestroyed)
-	registedEvents.onTick = Events.addListener("onTick", onTick)
-	registedEvents.onPrepareUnitOrders = Events.addListener("onPrepareUnitOrders", order => picking_up[order.unit.m_iID] === undefined)
-	registedEvents.onDraw = Events.addListener("onDraw", onDraw)
-	
-	getAllEntities();
+	registeredEvents.onEntityCreated = Events.addListener("onEntityCreated", onCheckEntity)
+	registeredEvents.onEntityDestroyed = Events.addListener("onEntityDestroyed", onEntityDestroyed)
+	registeredEvents.onTick = Events.addListener("onTick", onTick)
+	registeredEvents.onPrepareUnitOrders = Events.addListener("onPrepareUnitOrders", order => picking_up[order.unit.m_iID] === undefined)
+	registeredEvents.onDraw = Events.addListener("onDraw", onDraw)
+
+	getAllEntities()
 }
 
 function destroyEvents() {
-	for (const name in registedEvents) {
-		let listenerID = registedEvents[name]
+	Object.keys(registeredEvents).forEach(name => {
+		let listenerID = registeredEvents[name]
 		if (listenerID !== undefined) {
-			Events.removeListener(name, listenerID);
-			registedEvents[name] = undefined;
+			Events.removeListener(name, listenerID)
+			registeredEvents[name] = undefined
 		}
-	}
+	})
 }
 
 function onCheckEntity(ent: C_BaseEntity) {
@@ -169,7 +169,7 @@ function onTick() {
 		if (!rune.m_bIsValid)
 			delete picking_up[picker]
 	})
-	
+
 	let controllables: C_DOTA_BaseNPC[] = stateControllables.value
 		? GetControllables()
 		: [LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC]
@@ -207,7 +207,7 @@ function GetControllables() {
 		(npc instanceof C_DOTA_BaseNPC_Hero || npc instanceof C_DOTA_Unit_SpiritBear)
 		&& !npc.m_bIsIllusion
 		&& !npc.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY)
-		&& npc.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID)
+		&& npc.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID),
 	)
 }
 
@@ -290,8 +290,8 @@ function updateRuneAllParticle() {
 		drawParticleTake_Color.G.value,
 		drawParticleTake_Color.B.value)
 
-	for (var entID in allRunesParticles)
-		Particles.SetControlPoint(allRunesParticles[entID][0], 1, newColor)
+	// loop-optimizaer: KEEP
+	allRunesParticles.forEach(pars => Particles.SetControlPoint(pars[0], 1, newColor))
 }
 
 function destroyRuneParticles(runeID: number | string) {
@@ -305,9 +305,8 @@ function destroyRuneParticles(runeID: number | string) {
 }
 
 function destroyRuneAllParticles() {
-	for (const entID in allRunesParticles)
-		destroyRuneParticles(entID)
-
+	// loop-optimizaer: KEEP
+	allRunesParticles.forEach(particles => particles.forEach(particleID => Particles.Destroy(particleID, true)))
 	allRunesParticles = []
 }
 

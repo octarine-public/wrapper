@@ -1,5 +1,5 @@
-import * as Utils from "Utils"
 import * as Orders from "Orders"
+import * as Utils from "Utils"
 
 var Abils_ = [
 		[ // HexAbils
@@ -77,7 +77,7 @@ var Abils_ = [
 			["item_nullifier", true, true],
 			["item_abyssal_blade", true, true],
 		],
-	].flat(1) as [string, boolean, boolean?][],
+	].flat(1) as Array<[string, boolean, boolean?]>,
 	BuffsDisablers_ = [[ // any _target_ (micro-)stun
 		["lion_voodoo", true, true],
 		["shadow_shaman_voodoo", true, true],
@@ -91,7 +91,7 @@ var Abils_ = [
 		["item_sheepstick", true, true],
 		["item_cyclone", true, true],
 		["item_heavens_halberd", true, true],
-	]].flat(1) as [string, boolean, boolean?][],
+	]].flat(1) as Array<[string, boolean, boolean?]>,
 	DisableBuffs: string[] = [
 		"modifier_teleporting",
 		"modifier_techies_suicide_leap",
@@ -103,8 +103,8 @@ var Abils_ = [
 		additional_delay: 0.03,
 
 	},
-	Abils: [string, boolean, boolean?][] = [],
-	BuffsDisablers: [string, boolean, boolean?][] = [],
+	Abils: Array<[string, boolean, boolean?]> = [],
+	BuffsDisablers: Array<[string, boolean, boolean?]> = [],
 	heroes: C_DOTA_BaseNPC_Hero[] = []
 
 Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
@@ -133,9 +133,9 @@ Events.addListener("onTick", () => {
 
 Events.addListener("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !disabling)
 
-function Disable(pl_ent: C_DOTA_BaseNPC, hero: C_DOTA_BaseNPC, DisableAr: [string, boolean, boolean?][], Abil?: C_DOTABaseAbility) {
+function Disable(pl_ent: C_DOTA_BaseNPC, hero: C_DOTA_BaseNPC, DisableAr: Array<[string, boolean, boolean?]>, Abil?: C_DOTABaseAbility) {
 	let delta = (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT) + Utils.GetRotationTime(pl_ent, hero.m_vecNetworkOrigin)) / 1000 + config.additional_delay
-	if(Abil !== undefined) { // check that it can be disabled
+	if (Abil !== undefined) { // check that it can be disabled
 		let AbilAr: [string, boolean, boolean?]
 		if (
 			!Abil.m_bInAbilityPhase
@@ -158,7 +158,7 @@ function Disable(pl_ent: C_DOTA_BaseNPC, hero: C_DOTA_BaseNPC, DisableAr: [strin
 				&& abil.IsManaEnough(pl_ent)
 				&& (cast_range <= 0 || pl_ent.DistTo2D(hero) <= cast_range + hero.m_flHullRadius * 2)
 		})
-	if(disable_abil === undefined)
+	if (disable_abil === undefined)
 		return false
 
 	Orders.SmartCast(pl_ent, disable_abil, hero)
@@ -168,13 +168,13 @@ function Disable(pl_ent: C_DOTA_BaseNPC, hero: C_DOTA_BaseNPC, DisableAr: [strin
 	return true
 }
 
-function TransformToAvailable(pl_ent: C_DOTA_BaseNPC, abil_arrays: [string, boolean, boolean?][]): [string, boolean, boolean?][] {
+function TransformToAvailable(pl_ent: C_DOTA_BaseNPC, abil_arrays: Array<[string, boolean, boolean?]>): Array<[string, boolean, boolean?]> {
 	let name = pl_ent.m_iszUnitName
-	if(name === "npc_dota_hero_rubick" || name === "npc_dota_hero_morphling")
+	if (name === "npc_dota_hero_rubick" || name === "npc_dota_hero_morphling")
 		return abil_arrays
 	return abil_arrays.filter(abilData =>
 		abilData[0].startsWith("item_")
-		|| pl_ent.GetAbilityByName(abilData[0]) !== undefined
+		|| pl_ent.GetAbilityByName(abilData[0]) !== undefined,
 	)
 }
 

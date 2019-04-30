@@ -57,17 +57,17 @@ export default class Toggle extends Menu_Toggle {
 
 		var selfParent = parent
 		Object.defineProperty(this, "parent", {
-			set: (value: Tree) => {
+			set: (new_value: Tree) => {
 
 				this.Remove()
 
-				value.entries.push(this)
+				new_value.entries.push(this)
 
-				var parnt = getTopParent(value)
+				var parnt = getTopParent(new_value)
 
 				parnt.Update()
 
-				selfParent = value
+				selfParent = new_value
 			},
 			get: () => selfParent,
 			configurable: false,

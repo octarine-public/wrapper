@@ -51,14 +51,13 @@ addUnitMenu.AddKeybind("Add creep")
 	.SetToolTip("dota_create_unit npc_dota_creep_badguys_melee enemy")
 	.OnRelease(self => SendToConsole(self.hint))
 
-	
 Events.addListener("onGameStarted", lp => {
-	
+
 	setConVar(sv_cheats.value, sv_cheats)
 	setConVar(wtf.value, wtf)
-	
+
 	if (PlayerResource.m_vecPlayerData.length <= 1)
-		setConVar(vision.value, vision);
-		
+		setConVar(vision.value, vision)
+
 	setConVar(creepsNoSpawn.value, creepsNoSpawn)
-});
+})

@@ -1,5 +1,5 @@
-import * as Utils from "Utils"
 import * as Orders from "Orders"
+import * as Utils from "Utils"
 
 let mks: C_DOTA_Unit_Hero_MonkeyKing[] = [],
 	techiess: C_DOTA_Unit_Hero_Techies[] = [],
@@ -25,7 +25,7 @@ Events.addListener("onTick", () => {
 		[
 			pl_ent.GetItemByName("item_quelling_blade"),
 			pl_ent.GetItemByName("item_bfury"),
-			pl_ent.GetItemByName("item_tango")
+			pl_ent.GetItemByName("item_tango"),
 		].filter(item => item !== undefined && item.m_fCooldown === 0).some(item => {
 			if (!item.IsManaEnough(pl_ent))
 				return false

@@ -285,11 +285,11 @@ Events.addListener("onEntityDestroyed", ent => {
 		"Reduces explosion radius based on hero speed",
 		node => {
 			config.safe_mode = node.value
-			for (const entID of Object.keys(particles)) {
+			Object.keys(particles).forEach(entID => {
 				const entIDFixed = parseInt(entID)
 				Particles.Destroy(particles[entIDFixed], true)
 				CreateParticleFor(Entities.GetByID(entIDFixed) as C_DOTA_BaseNPC)
-			}
+			})
 		},
 	))
 	root.entries.push(new Menu_Boolean (

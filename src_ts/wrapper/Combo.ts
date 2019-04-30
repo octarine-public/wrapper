@@ -153,7 +153,7 @@ export class Combo {
 				target = nearbyAllyTowers[0]
 				break
 			case EComboAction.NEARBY_ENEMY_TOWER:
-				var nearbyEnemyTowers = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, true, true).filter(ent => ent => ent.IsTower)
+				var nearbyEnemyTowers = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, true, true).filter(ent => ent instanceof C_DOTA_BaseNPC_Tower)
 				if (nearbyEnemyTowers.length === 0) {
 					act = undefined
 					break
@@ -191,8 +191,7 @@ export class Combo {
 			case undefined:
 				break
 			default:
-				console.log(`[Combo] Undefined act ${act}`)
-				break
+				throw "Unknown EComboAction: " + act
 		}
 
 		if (abilName === "linken_breaker") {
@@ -261,6 +260,8 @@ export class Combo {
 				case EComboAction.TOGGLE:
 					Orders.ToggleAbil(caster, abil, false)
 					break
+				default:
+					throw "Unknown EComboAction: " + act
 			}
 		}
 
