@@ -13,6 +13,12 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (npc instanceof C_DOTA_Unit_Hero_Techies)
 		techiess.push(npc)
 })
+Events.addListener("onEntityDestroyed", (npc: C_DOTA_BaseNPC) => {
+	if (npc instanceof C_DOTA_Unit_Hero_MonkeyKing)
+		Utils.arrayRemove(mks, npc)
+	if (npc instanceof C_DOTA_Unit_Hero_Techies)
+		Utils.arrayRemove(techiess, npc)
+})
 
 Events.addListener("onTick", () => {
 	if (!enabled)

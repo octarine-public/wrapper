@@ -103,7 +103,7 @@ var abils: Array<{
 			abilName: "phantom_assassin_stifling_dagger",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP),
 			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.DistTo(entTo) / abil.GetSpecialValue("dagger_speed"),
-			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Utils.CalculateDamage(entTo, abil.GetSpecialValue("base_damage") + ((1 + abil.GetSpecialValue("attack_factor") / 100) * Utils.GetDamage(entFrom)), DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL, entFrom),
+			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Utils.CalculateDamage(entTo, abil.GetSpecialValue("base_damage"), DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL, entFrom) + ((1 + abil.GetSpecialValue("attack_factor") / 100) * Utils.CalculateDamageByHand(entTo, entFrom)),
 		},
 		{
 			abilName: "tinker_laser",

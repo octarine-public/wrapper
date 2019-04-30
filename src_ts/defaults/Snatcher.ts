@@ -101,10 +101,7 @@ function onStateMain(state: boolean = stateMain.value) {
 
 function getAllEntities() {
 	// loop-optimizer: POSSIBLE_UNDEFINED
-	Entities.GetAllEntities().forEach(ent => {
-		if (ent.m_bIsValid)
-			onCheckEntity(ent)
-	})
+	Entities.GetAllEntities().forEach(onCheckEntity)
 }
 
 function onDeactivateRune() {

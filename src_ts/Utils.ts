@@ -450,7 +450,7 @@ export function CalculateDamage(target: C_DOTA_BaseNPC, damage: number, damage_t
 			damage *= 1 - target.m_flMagicalResistanceValue
 			break
 		case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL: {
-			let armor = this.m_flPhysicalArmorValue
+			let armor = target.m_flPhysicalArmorValue
 			damage *= Math.max(Math.min((1 - (0.052 * armor) / (0.9 + 0.048 * armor)), 2), 0)
 			{
 				let damage_type = source === undefined ? AttackDamageType.Basic : source.m_iCombatClassAttack as AttackDamageType,
@@ -516,28 +516,18 @@ export function CalculateDamageByHand(target: C_DOTA_BaseNPC, source: C_DOTA_Bas
 		is_hero = source instanceof C_DOTA_BaseNPC_Hero
 	if (is_enemy) {
 		{
-			let buff = buffs.find(([buff_, name]) => name === "modifier_blight_stone_buff"),
-				item: C_DOTA_Item
-			if (buff === undefined) {
-				let found = items.find(([item_, name]) => name === "item_blight_stone")
-				if (found !== undefined)
-					item = found[0]
-			} else
-				item = buff[0].m_hAbility as C_DOTA_Item
-			if (item !== undefined)
-				armor += item.GetSpecialValue("corruption_armor")
+			if (!buffs.some(([buff_, name]) => name === "modifier_blight_stone_buff")) {
+				let item = items.find(([item_, name]) => name === "item_blight_stone")
+				if (item !== undefined)
+					armor += item[0].GetSpecialValue("corruption_armor")
+			}
 		}
 		{
-			let buff = buffs.find(([buff_, name]) => name === "modifier_desolator_buff"),
-				item: C_DOTA_Item
-			if (buff === undefined) {
-				let found = items.find(([item_, name]) => name === "item_desolator")
-				if (found !== undefined)
-					item = found[0]
-			} else
-				item = buff[0].m_hAbility as C_DOTA_Item
-			if (item !== undefined)
-				armor += item.GetSpecialValue("corruption_armor")
+			if (!buffs.some(([buff_, name]) => name === "modifier_desolator_buff")) {
+				let item = items.find(([item_, name]) => name === "item_desolator")
+				if (item !== undefined)
+					armor += item[0].GetSpecialValue("corruption_armor")
+			}
 		}
 		{
 			let item = items.find(([item_, name]) => name === "item_quelling_blade")

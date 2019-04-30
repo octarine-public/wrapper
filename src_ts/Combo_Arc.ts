@@ -31,8 +31,7 @@ function GetRealArcWardens(): C_DOTA_BaseNPC[] {
 	var localplayer = LocalDOTAPlayer
 	// loop-optimizer: POSSIBLE_UNDEFINED
 	return Entities.GetAllEntities().filter(ent =>
-		ent.m_bIsValid
-		&& ent instanceof C_DOTA_BaseNPC
+		ent instanceof C_DOTA_BaseNPC
 		&& !ent.IsEnemy(localplayer)
 		&& ent.m_bIsAlive
 		&& ent.m_bIsHero
