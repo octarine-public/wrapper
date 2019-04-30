@@ -65,9 +65,9 @@ function ExplodeMine(rmine: C_DOTA_BaseNPC) {
 
 function TryDagon(ent: C_DOTA_BaseNPC, damage: number = 0, damage_type: number = DAMAGE_TYPES.DAMAGE_TYPE_NONE): boolean {
 	var Dagon = Utils.GetItemByRegexp(techies, /item_dagon/),
-		TargetHP = ent.GetHealthAfter(RMineBlowDelay)
+		TargetHP = Utils.GetHealthAfter(ent, RMineBlowDelay)
 	if (Dagon)
-		if (Dagon.m_fCooldown === 0 && techies.IsInRange(ent, Utils.GetCastRange(techies, Dagon)) && TargetHP < ent.CalculateDamage(Dagon.GetSpecialValue("damage") * latest_techies_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies) + ent.CalculateDamage(damage, damage_type, techies)) {
+		if (Dagon.m_fCooldown === 0 && techies.IsInRange(ent, Utils.GetCastRange(techies, Dagon)) && TargetHP < Utils.CalculateDamage(ent, Dagon.GetSpecialValue("damage") * latest_techies_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies) + Utils.CalculateDamage(ent, damage, damage_type, techies)) {
 			Orders.CastTarget(techies, Dagon, ent, false)
 			return true
 		}
@@ -80,7 +80,7 @@ function CallMines(
 	callback: (rmine: C_DOTA_NPC_TechiesMines) => boolean,
 	explosionCallback: (RMinesToBlow: C_DOTA_NPC_TechiesMines[], RMinesDmg: number) => void,
 ): void {
-	var TargetHP = ent.GetHealthAfter(RMineBlowDelay),
+	var TargetHP = Utils.GetHealthAfter(ent, RMineBlowDelay),
 		cur_time = GameRules.m_fGameTime,
 		RMinesToBlow: C_DOTA_NPC_TechiesMines[] = [],
 		RMinesDmg = 0
@@ -88,7 +88,7 @@ function CallMines(
 	rmines.filter(([rmine, dmg, setup_time]) => cur_time > setup_time && callback(rmine)).every(([rmine, dmg]) => {
 		RMinesToBlow.push(rmine)
 		RMinesDmg += dmg
-		var theres = ent.CalculateDamage(RMinesDmg, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies)
+		var theres = Utils.CalculateDamage(ent, RMinesDmg, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies)
 		// console.log("EzTechiesAuto", `There's ${theres}, needed ${TargetHP} for ${ent.m_iszUnitName}`)
 		if (TargetHP < theres) {
 			explosionCallback(RMinesToBlow, RMinesDmg)

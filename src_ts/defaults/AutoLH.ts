@@ -145,7 +145,7 @@ var attack_anim_point = {
 
 function EnoughDamage(sender: C_DOTA_BaseNPC_Hero, target: C_DOTA_BaseNPC, cur_time: number): boolean {
 	let delay = 1 / sender.m_fAttacksPerSecond + Utils.GetProjectileDelay(sender, target) + Utils.GetRotationTime(sender, target.m_vecNetworkOrigin) / 1000
-	return target.CalculateDamageByHand(sender) > Utils.GetHealthAfter(target, delay, false, sender, config.melee_time_offset) - config.creep_hp_offset
+	return Utils.CalculateDamageByHand(target, sender) > Utils.GetHealthAfter(target, delay, false, sender, config.melee_time_offset) - config.creep_hp_offset
 }
 
 Events.addListener("onDraw", () => {
@@ -188,7 +188,7 @@ Events.addListener("onTick", () => {
 			return false
 		if ((config.mode & AutoLH_Mode.LASTHIT) && (ent.m_iTeamNum !== pl_ent_team))
 			return true
-		if ((config.mode & AutoLH_Mode.DENY) && (ent.m_iTeamNum === pl_ent_team) && ent.m_bIsDeniable)
+		if ((config.mode & AutoLH_Mode.DENY) && (ent.m_iTeamNum === pl_ent_team) && Utils.IsDeniable(ent))
 			return true
 		return false
 	}).map(ent => [ent, ent.m_vecNetworkOrigin.DistTo2D(pl_ent_pos)]) as Array<[C_DOTA_BaseNPC, number]>).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent, ent, cur_time)), ([creep]) => creep.m_iHealth)

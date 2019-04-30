@@ -8924,15 +8924,10 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	GetItemByNameInBackpack(item_name: string): C_DOTA_Item
 	GetItemInSlot(item_slot: number): C_DOTA_Item
 	GetBuffByName(buff_name: string): CDOTA_Buff
-	AbsorbedDamage(damage: number, damage_type: DAMAGE_TYPES, from?: C_DOTA_BaseNPC): number
-	WillIgnore(damage_type: DAMAGE_TYPES): boolean
-	CalculateDamage(damage: number, damage_type: DAMAGE_TYPES, from?: C_DOTA_BaseNPC): number
-	CalculateDamageByHand(from: C_DOTA_BaseNPC): number
 	IsControllableByPlayer(player_id: number): boolean
 	HasAttackCapability(attack_capatability: DOTAUnitAttackCapability_t): boolean
 	HasMoveCapability(move_capatability: DOTAUnitMoveCapability_t): boolean
 	IsUnitStateFlagSet(flag: number): boolean
-	GetHealthAfter(time_seconds: number): number
 	
 	readonly m_bIsHero: boolean
 	readonly m_bIsTower: boolean
@@ -8952,7 +8947,6 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_bIsAttackImmune: boolean
 	readonly m_bIsMagicImmune: boolean
 	readonly m_bIsInFadeTime: boolean
-	readonly m_bIsDeniable: boolean
 	readonly m_bIsVisibleForEnemies: boolean
 	readonly m_bIsTrueSightedForEnemies: boolean
 	readonly m_bIsControllableByAnyPlayer: boolean

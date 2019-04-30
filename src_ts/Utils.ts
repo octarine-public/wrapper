@@ -315,16 +315,329 @@ export function IsInside(npc: C_DOTA_BaseNPC, vec: Vector, radius: number): bool
 	return false
 }
 
+const IgnoreBuffs = [
+	[], // DAMAGE_TYPES.DAMAGE_TYPE_NONE = 0
+	[ // DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL = 1
+		"modifier_item_aeon_disk_buff"
+	],
+	[ // DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL = 2
+		"modifier_life_stealer_rage",
+		"modifier_oracle_fates_edict",
+		"modifier_medusa_stone_gaze",
+		"modifier_juggernaut_blade_fury",
+		"modifier_omniknight_repel",
+		"modifier_item_aeon_disk_buff"
+	],
+	[],
+	[], // DAMAGE_TYPES.DAMAGE_TYPE_PURE = 4
+	[],
+	[],
+	[ // DAMAGE_TYPES.DAMAGE_TYPE_ALL = 7
+		"modifier_abaddon_borrowed_time",
+		"modifier_skeleton_king_reincarnation_scepter_active",
+		"modifier_brewmaster_primal_split",
+		"modifier_phoenix_supernova_hiding",
+		"modifier_nyx_assassin_spiked_carapace",
+		"modifier_templar_assassin_refraction_absorb",
+		"modifier_oracle_false_promise",
+		"modifier_dazzle_shallow_grave",
+		"modifier_treant_living_armor",
+		"modifier_item_aegis",
+		"modifier_tusk_snowball_movement",
+		"modifier_eul_cyclone",
+		"modifier_necrolyte_reapers_scythe",
+		"modifier_riki_tricks_of_the_trade_phase",
+		"modifier_ember_spirit_sleight_of_fist_caster_invulnerability",
+		"modifier_puck_phase_shift"
+	],
+	[] // DAMAGE_TYPES.DAMAGE_TYPE_HP_REMOVAL = 8
+]
+IgnoreBuffs.map((ar, i) => { // optimization & beauty trick
+	if (i === DAMAGE_TYPES.DAMAGE_TYPE_NONE || i === DAMAGE_TYPES.DAMAGE_TYPE_ALL)
+		return ar
+	return ar.concat(IgnoreBuffs[DAMAGE_TYPES.DAMAGE_TYPE_ALL])
+})
+
+export function AbsorbedDamage(target: C_DOTA_BaseNPC, dmg: number, damage_type: DAMAGE_TYPES, source?: C_DOTA_BaseNPC): number {
+	target.m_ModifierManager.m_vecBuffs.forEach(buff => {
+		let abil = buff.m_hAbility as C_DOTABaseAbility
+		if (abil === undefined)
+			return
+		let abil_name = abil.m_pAbilityData.m_pszAbilityName
+		if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
+			switch (abil_name) {
+				case "ember_spirit_flame_guard": {
+					let talent = target.GetAbilityByName("special_bonus_unique_ember_spirit_1")
+					if (talent !== undefined && talent.m_iLevel > 0)
+						dmg -= talent.GetSpecialValue("value")
+					dmg -= abil.GetSpecialValue("absorb_amount")
+					return
+				}
+				case "item_pipe":
+				case "item_hood_of_defiance":
+				case "item_infused_raindrop":
+					dmg -= abil.GetSpecialValue("barrier_block")
+					return
+				default:
+					break
+			}
+		switch (abil_name) {
+			case "abaddon_aphotic_shield": {
+				let talent = this.GetAbilityByName("special_bonus_unique_abaddon")
+				if (talent !== undefined && talent.m_iLevel > 0)
+					dmg -= talent.GetSpecialValue("value")
+				dmg -= abil.GetSpecialValue("damage_absorb")
+				return
+			}
+			case "bloodseeker_bloodrage":
+				dmg *= abil.GetSpecialValue("damage_increase_pct") / 100
+				return
+			case "spectre_dispersion":
+				dmg *= 1 - (abil.GetSpecialValue("damage_reflection_pct") / 100)
+				return
+			case "ursa_enrage":
+			case "centaur_stampede":
+				dmg *= 1 - (abil.GetSpecialValue("damage_reduction") / 100)
+				return
+			case "kunkka_ghostship":
+				dmg *= 1 - (abil.GetSpecialValue("ghostship_absorb") / 100)
+				return
+			case "wisp_overcharge":
+				dmg *= 1 + (abil.GetSpecialValue("bonus_damage_pct") / 100)
+				return
+			case "medusa_mana_shield": {
+				let max_absorbed_dmg = this.m_flMana * abil.GetSpecialValue("damage_per_mana"),
+					possible_absorbed = dmg * abil.GetSpecialValue("absorption_tooltip") / 100
+				dmg -= Math.min(max_absorbed_dmg, possible_absorbed)
+				return
+			}
+			case "bristleback_bristleback": {
+				if (source !== undefined) {
+					let rot_angle = target.FindRotationAngle(source.m_vecNetworkOrigin)
+					if (rot_angle > 1.90)
+						dmg *= 1 - abil.GetSpecialValue("back_damage_reduction") / 100
+					else if (rot_angle > 1.20)
+						dmg *= 1 - abil.GetSpecialValue("side_damage_reduction") / 100
+				}
+				return
+			}
+			default:
+				return
+		}
+	})
+	return dmg
+}
+
+export function WillIgnore(target: C_DOTA_BaseNPC, damage_type: DAMAGE_TYPES): boolean {
+	if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_NONE)
+		return true
+	
+	let ignore_buffs = IgnoreBuffs[damage_type]
+	return target.m_ModifierManager.m_vecBuffs.some(buff => {
+		let name = buff.m_name
+		if (name === undefined)
+			return false
+		return ignore_buffs.includes(name)
+	})
+}
+
+export function CalculateDamage(target: C_DOTA_BaseNPC, damage: number, damage_type: DAMAGE_TYPES, source?: C_DOTA_BaseNPC): number {
+	if (damage <= 0 || WillIgnore(target, damage_type))
+		return 0
+	damage = AbsorbedDamage(target, damage, damage_type, source)
+	switch (damage_type) {
+		case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+			damage *= 1 - target.m_flMagicalResistanceValue
+			break
+		case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL: {
+			let armor = this.m_flPhysicalArmorValue;
+			damage *= Math.max(Math.min((1 - (0.052 * armor) / (0.9 + 0.048 * armor)), 2), 0);
+			{
+				let damage_type = source === undefined ? AttackDamageType.Basic : source.m_iCombatClassAttack as AttackDamageType,
+					armor_type = target.m_iCombatClassDefend as ArmorType
+				if (damage_type === AttackDamageType.Hero && armor_type === ArmorType.Structure)
+					damage *= .5
+				else if (damage_type === AttackDamageType.Basic && armor_type === ArmorType.Hero)
+					damage *= .75
+				else if (damage_type === AttackDamageType.Basic && armor_type === ArmorType.Structure)
+					damage *= .7
+				else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Hero)
+					damage *= .5
+				else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Basic)
+					damage *= 1.5
+				else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Structure)
+					damage *= .35
+				else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Hero)
+					damage *= .85
+				else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Structure)
+					damage *= 2.5
+			}
+			break
+		}
+		default:
+			break
+	}
+	return Math.max(damage, 0)
+}
+
+export function CalculateDamageByHand(target: C_DOTA_BaseNPC, source: C_DOTA_BaseNPC): number {
+	if (source.GetBuffByName("modifier_tinker_laser_blind") !== undefined || WillIgnore(target, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL))
+		return 0
+	let mult = 1
+	{
+		let damage_type = source.m_iCombatClassAttack as AttackDamageType,
+			armor_type = target.m_iCombatClassDefend as ArmorType
+		if (damage_type === AttackDamageType.Hero && armor_type === ArmorType.Structure)
+			mult *= .5
+		else if (damage_type === AttackDamageType.Basic && armor_type === ArmorType.Hero)
+			mult *= .75
+		else if (damage_type === AttackDamageType.Basic && armor_type === ArmorType.Structure)
+			mult *= .7
+		else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Hero)
+			mult *= .5
+		else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Basic)
+			mult *= 1.5
+		else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Structure)
+			mult *= .35
+		else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Hero)
+			mult *= .85
+		else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Structure)
+			mult *= 2.5
+	}
+	let damage = source.m_iDamageMin + source.m_iDamageBonus
+	damage = AbsorbedDamage(target, damage, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL)
+	if (damage <= 0)
+		return 0
+	let buffs = target.m_ModifierManager.m_vecBuffs.map(buff => [buff, buff.m_name]) as [CDOTA_Buff, string][],
+		items = (source.m_Inventory.m_hItems.filter(item => item !== undefined) as C_DOTA_Item[]).map(item => [item, item.m_pAbilityData.m_pszAbilityName] )as [C_DOTA_Item, string][],
+		abils = (source.m_hAbilities.filter(abil => abil !== undefined) as C_DOTABaseAbility[]).map(abil => [abil, abil.m_pAbilityData.m_pszAbilityName] )as [C_DOTABaseAbility, string][],
+		armor = target.m_flPhysicalArmorValue,
+		is_enemy = target.IsEnemy(source),
+		is_hero = source instanceof C_DOTA_BaseNPC_Hero
+	if (is_enemy) {
+		{
+			let buff = buffs.find(([buff, name]) => name === "modifier_blight_stone_buff"),
+				item: C_DOTA_Item = undefined
+			if (buff === undefined) {
+				let found = items.find(([item, name]) => name === "item_blight_stone")
+				if (found !== undefined)
+					item = found[0]
+			} else
+				item = buff[0].m_hAbility as C_DOTA_Item
+			if (item !== undefined)
+				armor += item.GetSpecialValue("corruption_armor")
+		}
+		{
+			let buff = buffs.find(([buff, name]) => name === "modifier_desolator_buff"),
+				item: C_DOTA_Item = undefined
+			if (buff === undefined) {
+				let found = items.find(([item, name]) => name === "item_desolator")
+				if (found !== undefined)
+					item = found[0]
+			} else
+				item = buff[0].m_hAbility as C_DOTA_Item
+			if (item !== undefined)
+				armor += item.GetSpecialValue("corruption_armor")
+		}
+		{
+			let item = items.find(([item, name]) => name === "item_quelling_blade")
+			if (item !== undefined)
+				damage += item[0].GetSpecialValue(source.m_bIsRangedAttacker ? "damage_bonus_ranged" : "damage_bonus")
+		}
+		{
+			let item = items.find(([item, name]) => name === "item_bfury")
+			if (item !== undefined)
+				damage += item[0].GetSpecialValue(source.m_bIsRangedAttacker ? "damage_bonus_ranged" : "damage_bonus")
+		}
+		{
+			let abil = abils.find(([item, name]) => name === "clinkz_searing_arrows")
+			if (abil !== undefined && abil[0].m_bAutoCastState && abil[0].IsManaEnough(source))
+				damage += abil[0].GetSpecialValue("damage_bonus")
+		}
+		{
+			let abil = abils.find(([item, name]) => name === "antimage_mana_break")
+			if (abil !== undefined && target.m_flMaxMana > 0)
+				damage += Math.min(target.m_flMana, abil[0].GetSpecialValue("mana_per_hit")) * abil[0].GetSpecialValue("damage_per_burn")
+		}
+		{
+			let abil = abils.find(([item, name]) => name === "ursa_fury_swipes")
+			if (abil !== undefined) {
+				let buff = buffs.find(([buff, name]) => name === "modifier_ursa_fury_swipes_damage_increase")
+				damage += abil[0].GetSpecialValue("damage_per_stack") * (1 + (buff !== undefined ? buff[0].m_iStackCount : 0))
+			}
+		}
+		{
+			let abil = abils.find(([item, name]) => name === "bounty_hunter_jinada")
+			if (abil !== undefined && abil[0].m_fCooldown === 0)
+				damage += abil[0].GetSpecialValue("bonus_damage")
+		}
+	}
+	{
+		let abil = abils.find(([item, name]) => name === "kunkka_tidebringer")
+		if (abil !== undefined && abil[0].m_bAutoCastState && abil[0].m_fCooldown === 0)
+			damage += abil[0].GetSpecialValue("damage_bonus")
+	}
+	{
+		let buff = source.GetBuffByName("modifier_storm_spirit_overload_passive")
+		if (buff !== undefined) {
+			let abil = buff.m_hAbility as C_DOTABaseAbility
+			if (abil !== undefined)
+				damage += abil.m_iAbilityDamage
+		}
+	}
+	{
+		let abil = abils.find(([item, name]) => name === "riki_permanent_invisibility")
+		if (abil != undefined && (source.m_vecForward.AngleBetweenTwoFaces(target.m_vecForward) * 180 / Math.PI) < abil[0].GetSpecialValue("backstab_angle"))
+			damage += abil[0].GetSpecialValue("damage_multiplier") * (source as C_DOTA_BaseNPC_Hero).m_flAgilityTotal;
+	}
+	damage *= 1 - (armor * 0.05) / (1 + Math.abs(armor) * 0.05)
+	if (is_enemy) {
+		{
+			let abil = abils.find(([item, name]) => name === "silencer_glaives_of_wisdom")
+			if (abil != undefined && abil[0].m_bAutoCastState && abil[0].IsManaEnough(source))
+				damage += abil[0].GetSpecialValue("intellect_damage_pct") * (source as C_DOTA_BaseNPC_Hero).m_flIntellectTotal / 100
+		}
+		{
+			let abil = abils.find(([item, name]) => name === "obsidian_destroyer_arcane_orb")
+			if (abil != undefined && abil[0].m_bAutoCastState && abil[0].IsManaEnough(source))
+				damage += abil[0].GetSpecialValue("mana_pool_damage_pct") * (source as C_DOTA_BaseNPC_Hero).m_flMaxMana / 100
+		}
+	}
+	{
+		let abil = abils.find(([item, name]) => name === "spectre_desolate")
+		if (abil != undefined)
+			damage += abil[0].GetSpecialValue("bonus_damage")
+	}
+	{
+		let buff = source.GetBuffByName("modifier_bloodseeker_bloodrage")
+		if (buff != undefined) {
+			let abil = buff.m_hAbility as C_DOTABaseAbility
+			if (abil !== undefined)
+				mult *= 1 + abil.GetSpecialValue("damage_increase_pct") / 100
+		}
+	}
+	{
+		let buff = buffs.find(([buff, name]) => name === "modifier_bloodseeker_bloodrage")
+		if (buff != undefined) {
+			let abil = buff[0].m_hAbility as C_DOTABaseAbility
+			if (abil !== undefined)
+				mult *= 1 + abil.GetSpecialValue("damage_increase_pct") / 100
+		}
+	}
+
+	return Math.max(damage * mult, 0)
+}
+
 export function GetHealthAfter(ent: C_DOTA_BaseNPC, delay: number, include_projectiles: boolean = false, attacker?: C_DOTA_BaseNPC, melee_time_offset: number = 0): number {
 	let cur_time = GameRules.m_fGameTime,
 		hpafter = ent.m_iHealth
 	// loop-optimizer: KEEP
 	attacks.forEach((data, attacker_id) => {
-		let attacker_it = Entities.GetByID(attacker_id) as C_DOTA_BaseNPC,
+		let attacker_ent = Entities.GetByID(attacker_id) as C_DOTA_BaseNPC,
 			[end_time, end_time_2, attack_target] = data
-		if (attacker_it !== attacker && attack_target === ent) {
+		if (attacker_ent !== attacker && attack_target === ent) {
 			let end_time_delta = end_time - (cur_time + delay + melee_time_offset),
-				dmg = ent.CalculateDamageByHand(attacker_it)
+				dmg = CalculateDamageByHand(ent, attacker_ent)
 			if (end_time_delta <= 0 && end_time_delta >= -melee_end_time_delta)
 				hpafter -= dmg
 			let end_time_2_delta = end_time_2 - (cur_time + delay + melee_time_offset)
@@ -336,9 +649,27 @@ export function GetHealthAfter(ent: C_DOTA_BaseNPC, delay: number, include_proje
 		Projectiles.GetAllTracking().forEach(proj => {
 			let source = proj.m_hSource
 			if (proj.m_hTarget === ent && source !== undefined && proj.m_bIsAttack && !proj.m_bIsEvaded && (proj.m_vecPosition.DistTo(proj.m_vecTarget) / proj.m_iSpeed) <= delay)
-				hpafter -= ent.CalculateDamageByHand(source)
+				hpafter -= CalculateDamageByHand(ent, source)
 		})
 	return Math.min(hpafter + ent.m_flHealthThinkRegen * delay, ent.m_iMaxHealth)
+}
+
+export function IsDeniable(target: C_DOTA_BaseNPC): boolean {
+	let hp_percent = target.m_iHealth / target.m_iMaxHealth
+	if (hp_percent > 0.5) // nothing can be denied w/o losing half of max HP, so we'd skip unnecessary checks
+		return false
+	if (target instanceof C_DOTA_BaseNPC_Creep)
+		return hp_percent <= 0.5
+	if (target instanceof C_DOTA_BaseNPC_Tower)
+		return hp_percent <= 0.1
+	
+	if (hp_percent >= 0.25)
+		return false
+	return target.m_ModifierManager.m_vecBuffs.map(buff => buff.m_name).some(name =>
+		name === "modifier_doom_bringer_doom"
+		|| name === "modifier_queenofpain_shadow_strike"
+		|| name === "modifier_venomancer_venomous_gale"
+	)
 }
 
 export function FindAttackingUnit(npc: C_DOTA_BaseNPC): C_DOTA_BaseNPC {
@@ -351,7 +682,7 @@ export function FindAttackingUnit(npc: C_DOTA_BaseNPC): C_DOTA_BaseNPC {
 		npc_.m_vecNetworkOrigin.DistTo2D(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + npc_.m_flHullRadius) &&
 		!npc_.m_bIsInvulnerable &&
 		IsInside(npc, npc_.m_vecNetworkOrigin, npc_.m_flHullRadius) &&
-		(npc.IsEnemy(npc_) || (!is_default_creep && npc_.m_bIsDeniable)),
+		(npc.IsEnemy(npc_) || (!is_default_creep && IsDeniable(npc_))),
 	), ent => GetAngle(npc, ent.m_vecNetworkOrigin))[0] as C_DOTA_BaseNPC
 }
 
