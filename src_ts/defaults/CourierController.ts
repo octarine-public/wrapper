@@ -16,7 +16,7 @@ const TOOLTIP_ONPLAYING = "List of players for blocking courier(s)"
 // --- Menu
 
 // rename me
-const courCtlrMenu = new MenuManager("Courier Controller JS")
+const courCtlrMenu = new MenuManager("Courier Controller")
 
 const stateMain = courCtlrMenu.AddToggle("State")
 	.OnValue(onStateMain)

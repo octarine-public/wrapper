@@ -14,7 +14,7 @@ let allNeutrals: C_DOTA_BaseNPC[] = []
 	/* allPartciles: Array<[number, Vector]> = []; */
 
 // rename me
-const jungleMHMenu = new MenuManager("Jungle MapHack JS");
+const jungleMHMenu = new MenuManager("Jungle MapHack");
 const stateMain = jungleMHMenu.AddToggle("State")
 	.OnValue(onStateMain)
 
