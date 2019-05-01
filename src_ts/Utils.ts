@@ -811,10 +811,7 @@ Events.addListener("onTick", () => {
 	// NPC event
 	for (let i = 0, end = NPCs.length; i < end; i++) {
 		let npc = NPCs[i]
-		if (!npc.m_bIsValid) {
-			NPCs.splice(i++, 1)
-			end--
-		} else if (npc.m_iszUnitName !== undefined) {
+		if (npc.m_iszUnitName !== undefined) {
 			Events.emit("onNPCCreated", npc)
 			NPCs.splice(i++, 1)
 			end--

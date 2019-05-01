@@ -161,11 +161,6 @@ function onEntityDestroyed(ent: C_BaseEntity) {
 function onTick() {
 	if (!IsInGame() || IsPaused())
 		return
-	// loop-optimizer: KEEP
-	picking_up.forEach((rune, picker) => {
-		if (!rune.m_bIsValid)
-			delete picking_up[picker]
-	})
 
 	let controllables: C_DOTA_BaseNPC[] = stateControllables.value
 		? GetControllables()
@@ -258,13 +253,19 @@ function snatchRuneByUnit(npc: C_DOTA_BaseNPC, rune: C_DOTA_Item_Rune) {
 	return true
 }
 
-function removedIDRune(ent: C_DOTA_Item_Rune) {
-	const idRune = allRunes.indexOf(ent)
+function removedIDRune(rune: C_DOTA_Item_Rune) {
+	{
+		let id = picking_up.indexOf(rune)
+		if (id !== -1)
+			delete picking_up[id]
+	}
+
+	const idRune = allRunes.indexOf(rune)
 
 	if (idRune !== -1) {
 		allRunes.splice(idRune, 1)
 
-		destroyRuneParticles(ent.m_iID)
+		destroyRuneParticles(rune.m_iID)
 	}
 }
 

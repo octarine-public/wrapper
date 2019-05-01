@@ -111,6 +111,10 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (npc instanceof C_DOTA_BaseNPC_Hero && npc.IsEnemy(LocalDOTAPlayer) && npc.m_hReplicatingOtherHeroModel === undefined)
 		heroes.push(npc)
 })
+Events.addListener("onEntityDestroyed", ent => {
+	if (ent instanceof C_DOTA_BaseNPC)
+		Utils.arrayRemove(heroes, ent)
+})
 
 function GetAbilArray(abilNameToSearch: string) {
 	return Abils_.find(abilAr => abilAr[0] === abilNameToSearch)
@@ -124,7 +128,7 @@ Events.addListener("onTick", () => {
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
 	if (pl_ent === undefined || pl_ent.m_bIsStunned || !pl_ent.m_bIsAlive || LocalDOTAPlayer.m_hActiveAbility !== undefined || disabling)
 		return
-	let needed_heroes = heroes.filter(hero => hero.m_bIsValid && hero.m_bIsAlive && hero.m_bIsVisible && !flags[hero.m_iID])
+	let needed_heroes = heroes.filter(hero => hero.m_bIsAlive && hero.m_bIsVisible && !flags[hero.m_iID])
 	if (needed_heroes.some(hero => (hero.m_hAbilities as C_DOTABaseAbility[]).some(abil => abil !== undefined && Disable(pl_ent, hero, Abils, abil))))
 		return
 	if (needed_heroes.some(hero => hero.m_ModifierManager.m_vecBuffs.some(buff => DisableBuffs.includes(buff.m_name)) && Disable(pl_ent, hero, BuffsDisablers)))

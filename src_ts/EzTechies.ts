@@ -33,14 +33,17 @@ function CreateRange(ent: C_BaseEntity, range: number): number {
 }
 
 function RemoveMine(rmine: C_DOTA_BaseNPC) {
-	const ar = rmines.filter(([rmine2]) => rmine2 === rmine)
-	if (ar.length === 1)
-		rmines.splice(rmines.indexOf(ar[0]), 1)
+	rmines.some(([rmine2], i) => {
+		if (rmine2 === rmine) {
+			rmines.splice(i, 1)
+			return true
+		}
+		return false
+	})
 }
 
 function ExplodeMine(rmine: C_DOTA_BaseNPC) {
-	if (rmine.m_bIsValid)
-		Orders.CastNoTarget(rmine, rmine.GetAbilityByName("techies_remote_mines_self_detonate"), false)
+	Orders.CastNoTarget(rmine, rmine.GetAbilityByName("techies_remote_mines_self_detonate"), false)
 	RemoveMine(rmine)
 }
 
@@ -161,8 +164,7 @@ function CreateParticleFor(npc: C_DOTA_BaseNPC) {
 }
 
 function RegisterMine(npc: C_DOTA_BaseNPC) {
-	const ar = rmines.filter(([rmine2]) => rmine2 === npc)
-	if (ar.length !== 0) {
+	if (rmines.some(([rmine2]) => rmine2 === npc)) {
 		console.log(`Tried to register existing mine ${npc.m_iID}`)
 		return
 	}
@@ -220,13 +222,12 @@ Events.addListener("onPrepareUnitOrders", args => {
 Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (LocalDOTAPlayer === undefined)
 		return
-	if (npc.m_bIsHero && npc.IsEnemy(LocalDOTAPlayer)) {
-		if ((npc as C_DOTA_BaseNPC_Hero).m_hReplicatingOtherHeroModel === undefined || (npc as C_DOTA_Unit_Hero_Meepo).m_bIsClone)
-			heroes.push(npc as C_DOTA_BaseNPC_Hero)
+	if (npc.IsEnemy(LocalDOTAPlayer)) {
+		if (npc instanceof C_DOTA_BaseNPC_Hero)
+			if (npc.m_hReplicatingOtherHeroModel === undefined || (npc instanceof C_DOTA_Unit_Hero_Meepo && npc.m_bIsClone))
+				heroes.push(npc)
 		return
 	}
-	if (npc.IsEnemy(LocalDOTAPlayer))
-		return
 	CreateParticleFor(npc)
 	if (npc.m_iszUnitName === "npc_dota_techies_remote_mine")
 		RegisterMine(npc)

@@ -51,7 +51,7 @@ function registerEvents() {
 	registeredEvents.onTick = Events.addListener("onTick", onTick);
 	// loop-optimizer: POSSIBLE_UNDEFINED
 	Entities.GetAllEntities().forEach(ent => {
-		if (ent instanceof C_DOTA_BaseNPC && ent.m_bIsValid)
+		if (ent instanceof C_DOTA_BaseNPC)
 			onCheckEntity(ent);
 	})
 }

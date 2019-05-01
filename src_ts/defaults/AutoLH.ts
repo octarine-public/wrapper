@@ -184,7 +184,7 @@ Events.addListener("onTick", () => {
 		attack_range = pl_ent.m_fAttackRange * (pl_ent.m_bIsRangedAttacker ? 1 : 1.5) + pl_ent.m_flHullRadius,
 		max_range = Math.max(attack_range, config.glow_finder_range)
 	let filtered = Utils.orderBy((attackable_ents.filter(ent => {
-		if (!ent.m_bIsValid || !ent.m_bIsAlive || !ent.m_bIsVisible)
+		if (!ent.m_bIsAlive || !ent.m_bIsVisible)
 			return false
 		if ((config.mode & AutoLH_Mode.LASTHIT) && (ent.m_iTeamNum !== pl_ent_team))
 			return true
@@ -222,7 +222,7 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 		attackable_ents.push(npc)
 })
 Events.addListener("onEntityDestroyed", ent => {
-	if (ent instanceof C_DOTA_BaseNPC)
+	if (ent instanceof C_DOTA_BaseNPC_Creep)
 		Utils.arrayRemove(attackable_ents, ent)
 })
 Events.addListener("onPrepareUnitOrders", order => enabled && !config.glow_only ? Utils.GetOrdersWithoutSideEffects().includes(order.order_type) || !block_orders : true)

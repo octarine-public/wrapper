@@ -43,7 +43,7 @@ Events.addListener("onTick", () => {
 	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
 	if (MyEnt === undefined || !MyEnt.m_bIsAlive || IsPaused())
 		return
-	creeps = lane_creeps.filter(creep => creep.m_bIsValid && !creep.m_bIsWaitingToSpawn && creep.m_bIsAlive && MyEnt.IsInRange(creep, 500))
+	creeps = lane_creeps.filter(creep => !creep.m_bIsWaitingToSpawn && creep.m_bIsAlive && MyEnt.IsInRange(creep, 500))
 	if (creeps.length === 0)
 		return
 	var creepsMovePositionSum = creeps.map(creep => creep.InFront(300)).reduce((sum, vec) => [sum[0] + vec.x, sum[1] + vec.y, sum[2] + vec.z], [0, 0, 0])

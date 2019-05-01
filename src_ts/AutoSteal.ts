@@ -500,7 +500,6 @@ function OnTick(): void {
 		zuus_talent = MyEnt.GetAbilityByName("special_bonus_unique_zeus"),
 		blink = MyEnt.GetItemByName("item_blink") || MyEnt.GetAbilityByName("antimage_blink"),
 		targets = possibleTargets.filter(ent =>
-			ent.m_bIsValid &&
 			ent.m_bIsVisible &&
 			!ent.m_bIsWaitingToSpawn &&
 			ent.m_bIsAlive &&
@@ -576,9 +575,8 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 		possibleTargets.push(npc)
 })
 Events.addListener("onEntityDestroyed", ent => {
-	if (LocalDOTAPlayer === undefined || !(ent instanceof C_DOTA_BaseNPC))
-		return
-	Utils.arrayRemove(possibleTargets, ent)
+	if (ent instanceof C_DOTA_BaseNPC)
+		Utils.arrayRemove(possibleTargets, ent)
 })
 Events.addListener("onGameEnded", () => possibleTargets = [])
 Events.addListener("onTick", OnTick)
