@@ -344,25 +344,24 @@ export function AbsorbedDamage(target: C_DOTA_BaseNPC, dmg: number, damage_type:
 		let abil = buff.m_hAbility as C_DOTABaseAbility
 		if (abil === undefined)
 			return
-		let abil_name = abil.m_pAbilityData.m_pszAbilityName
 		if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
-			switch (abil_name) {
-				case "ember_spirit_flame_guard": {
+			switch (buff.m_name) {
+				case "modifier_ember_spirit_flame_guard": {
 					let talent = target.GetAbilityByName("special_bonus_unique_ember_spirit_1")
 					if (talent !== undefined && talent.m_iLevel > 0)
 						dmg -= talent.GetSpecialValue("value")
 					dmg -= abil.GetSpecialValue("absorb_amount")
 					return
 				}
-				case "item_pipe":
-				case "item_hood_of_defiance":
-				case "item_infused_raindrop":
+				case "modifier_item_pipe_barrier":
+				case "modifier_item_hood_of_defiance_barrier":
+				case "modifier_item_infused_raindrop":
 					dmg -= abil.GetSpecialValue("barrier_block")
 					return
 				default:
 					break
 			}
-		switch (abil_name) {
+		switch (abil.m_pAbilityData.m_pszAbilityName) {
 			case "abaddon_aphotic_shield": {
 				let talent = this.GetAbilityByName("special_bonus_unique_abaddon")
 				if (talent !== undefined && talent.m_iLevel > 0)
@@ -426,9 +425,11 @@ export function CalculateDamage(target: C_DOTA_BaseNPC, damage: number, damage_t
 	if (damage <= 0 || WillIgnore(target, damage_type))
 		return 0
 	damage = AbsorbedDamage(target, damage, damage_type, source)
+	if (damage <= 0)
+		return 0
 	switch (damage_type) {
 		case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
-			damage *= 1 - target.m_flMagicalResistanceValue
+			damage *= 1 - target.m_flMagicalResistanceValue / 100
 			break
 		case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL: {
 			let armor = target.m_flPhysicalArmorValue

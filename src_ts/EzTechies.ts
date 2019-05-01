@@ -73,7 +73,7 @@ function CallMines(
 		RMinesToBlow.push(rmine)
 		RMinesDmg += dmg
 		var theres = Utils.CalculateDamage(ent, RMinesDmg, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies)
-		// console.log("EzTechiesAuto", `There's ${theres}, needed ${TargetHP} for ${ent.m_iszUnitName}`)
+		// console.log("EzTechiesAuto", `There's ${theres} (derived from ${RMinesDmg}), needed ${TargetHP} for ${ent.m_iszUnitName}`)
 		if (TargetHP < theres) {
 			explosionCallback(RMinesToBlow, RMinesDmg)
 			return false
@@ -228,20 +228,20 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 				heroes.push(npc)
 		return
 	}
-	CreateParticleFor(npc)
-	if (npc.m_iszUnitName === "npc_dota_techies_remote_mine")
-		RegisterMine(npc)
+	if (npc instanceof C_DOTA_NPC_TechiesMines) {
+		CreateParticleFor(npc)
+		if (npc.m_iszUnitName === "npc_dota_techies_remote_mine")
+			RegisterMine(npc)
+	}
 })
 Events.addListener("onEntityDestroyed", ent => {
-	if (!(ent instanceof C_DOTA_BaseNPC))
-		return
-	if (ent.m_iszUnitName === "npc_dota_techies_remote_mine") {
+	if (ent instanceof C_DOTA_BaseNPC_Hero)
+		Utils.arrayRemove(heroes, ent)
+	else if (ent instanceof C_DOTA_NPC_TechiesMines && ent.m_iszUnitName === "npc_dota_techies_remote_mine") {
 		if (particles[ent.m_iID] !== undefined)
 			Particles.Destroy(particles[ent.m_iID], true)
 		RemoveMine(ent)
 	}
-	if (ent instanceof C_DOTA_BaseNPC_Hero)
-		Utils.arrayRemove(heroes, ent)
 })
 
 {
