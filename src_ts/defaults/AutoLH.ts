@@ -202,19 +202,18 @@ Events.addListener("onTick", () => {
 		block_orders = true
 		let done = false
 		let id = setInterval(30, in_id => {
-			if (done)
-				clearInterval(in_id)
-			else if (!ent.m_bIsValid || !ent.m_bIsAlive) {
+			if (!ent.m_bIsValid || !ent.m_bIsAlive) {
 				block_orders = false
 				done = true
 				clearInterval(in_id)
 			}
 		})
 		setTimeout(1000 / pl_ent.m_fAttacksPerSecond - (attack_anim_point[pl_ent.m_iszUnitName] * config.delay_multiplier), () => {
-			if (!done)
+			if (!done) {
 				clearInterval(id)
-			block_orders = false
-			done = true
+				block_orders = false
+				done = true
+			}
 		})
 	}
 })
