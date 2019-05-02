@@ -370,7 +370,8 @@ declare interface Events {
 	addListener(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): bigint
 	addListener(name: "onDraw", callback: () => void): bigint
 	addListener(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): bigint
-	addListener(name: "onParticleUpdated", callback: (id: number, control_point: number, vec: Vector) => void): bigint
+	addListener(name: "onParticleUpdated", callback: (id: number, control_point: number, position: Vector) => void): bigint
+	addListener(name: "onBloodImpact", callback: (target: C_BaseEntity, scale: number, xnormal: number, ynormal: number) => void): bigint
 	addListener(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => boolean): bigint
 	addListener(name: "onLinearProjectileCreated", callback: (
 		proj: LinearProjectile,
