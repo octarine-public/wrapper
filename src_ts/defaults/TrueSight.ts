@@ -13,7 +13,7 @@ Events.addListener("onEntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC)
 		npcs.some(([npc], i) => {
 			if (npc === ent) {
-				npcs.slice(i, 1)
+				npcs.splice(i, 1)
 				return true
 			}
 			return false

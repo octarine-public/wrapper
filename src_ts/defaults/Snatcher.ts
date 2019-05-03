@@ -319,7 +319,7 @@ function snatchItems(controllables: C_DOTA_BaseNPC[]) {
 		if (npc.DistTo2D(item) > takeRadius.value || !haveFreeSlot(npc, item))
 			return false
 		PickupItem(npc, item, false)
-		free_controllables.slice(free_controllables.indexOf(npc))
+		free_controllables.splice(free_controllables.indexOf(npc))
 		return true
 	}))
 }
