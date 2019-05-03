@@ -26,7 +26,7 @@ Events.addListener("onUpdate", () => {
 Events.addListener("onDraw", () => {
 	if (!enabled || !IsInGame())
 		return
-	var off_x = 0, off_y, manabar_w, manabar_h;
+	var off_x = 0, off_y, manabar_w, manabar_h
 	{ // TODO: multiple aspect ratio support (current: 16:10)
 		var screen_size = Renderer.WindowSize
 		off_x = screen_size.x * -0.03095

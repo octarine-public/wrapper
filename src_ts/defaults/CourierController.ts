@@ -8,7 +8,7 @@ let registeredEvents = {
 }
 
 let allyCourier: C_DOTA_Unit_Courier,
-	allAllyPlayers: AllyPlayer[] = [];
+	allAllyPlayers: AllyPlayer[] = []
 
 const TOOLTIP_NEEDPLAYING = "Your need to playing match"
 const TOOLTIP_ONPLAYING = "List of players for blocking courier(s)"
@@ -44,28 +44,26 @@ const playersBlockList = blockCourMenu.AddListBox("Players for block", [])
 const autoShieldState = courCtlrMenu.AddToggle("Auto Shield")
 	.SetToolTip("Auto use shield to safe")
 
-
 class AllyPlayer {
-	
-	ent: C_DOTAPlayer; 
-	indexInMenu: number;
-	
-	constructor(ent: C_DOTAPlayer) {
-		this.ent = ent;
-		
-		let plToMenu = PlayerResource.m_vecPlayerData[ent.m_iPlayerID].m_iszPlayerName
-			+ ` (${(ent.m_hAssignedHero as C_DOTA_BaseNPC).m_iszUnitName})`;
 
-		this.indexInMenu = playersBlockList.values.push(plToMenu) - 1;
-		
-		courCtlrMenu.Update();
+	ent: C_DOTAPlayer
+	indexInMenu: number
+
+	constructor(ent: C_DOTAPlayer) {
+		this.ent = ent
+
+		let plToMenu = PlayerResource.m_vecPlayerData[ent.m_iPlayerID].m_iszPlayerName
+			+ ` (${(ent.m_hAssignedHero as C_DOTA_BaseNPC).m_iszUnitName})`
+
+		this.indexInMenu = playersBlockList.values.push(plToMenu) - 1
+
+		courCtlrMenu.Update()
 	}
 }
 
-
 let CastCourAbility = (num: number) => allyCourier
 	&& CastNoTarget(allyCourier, allyCourier.GetAbility(num), false)
-	
+
 function onStateMain(state: boolean = stateMain.value) {
 	if (!state)
 		destroyEvents()
@@ -84,8 +82,8 @@ Events.addListener("onGameStarted", lp => {
 
 Events.addListener("onGameEnded", () => {
 
-	onStateMain(false);
-	
+	onStateMain(false)
+
 	allAllyPlayers = []
 
 	playersBlockList.SetToolTip(TOOLTIP_NEEDPLAYING)
@@ -100,13 +98,13 @@ function registerEvents() {
 	registeredEvents.onEntityCreated = Events.addListener("onEntityCreated", onCheckEntity)
 	registeredEvents.onEntityDestroyed = Events.addListener("onEntityDestroyed", onEntityDestroyed)
 	registeredEvents.onUpdate = Events.addListener("onUpdate", onUpdate)
-	
+
 	// loop-optimizer: POSSIBLE_UNDEFINED
 	Entities.GetAllEntities().forEach(onCheckEntity)
 }
 
 function destroyEvents() {
-	
+
 	Object.keys(registeredEvents).forEach(name => {
 		let listenerID = registeredEvents[name]
 		if (listenerID !== undefined) {
@@ -114,21 +112,21 @@ function destroyEvents() {
 			registeredEvents[name] = undefined
 		}
 	})
-	
-	allyCourier = undefined;
+
+	allyCourier = undefined
 }
 
 function onCheckEntity(ent: C_BaseEntity) {
 
 	if (
-		ent instanceof C_DOTAPlayer 
-		&& (LocalDOTAPlayer === undefined 
-			|| (ent.m_iPlayerID !== LocalDOTAPlayer.m_iPlayerID 
+		ent instanceof C_DOTAPlayer
+		&& (LocalDOTAPlayer === undefined
+			|| (ent.m_iPlayerID !== LocalDOTAPlayer.m_iPlayerID
 				&& !ent.IsEnemy(LocalDOTAPlayer)))
 	) {
-		allAllyPlayers.push(new AllyPlayer(ent));
+		allAllyPlayers.push(new AllyPlayer(ent))
 	}
-	
+
 	if (ent instanceof C_DOTA_Unit_Courier) {
 
 		if (allyCourier === undefined)
@@ -156,7 +154,7 @@ function onUpdate() {
 		return
 
 	if (allyCourier === undefined)
-		return;
+		return
 
 	if (autoShieldState.value) {
 
@@ -178,7 +176,7 @@ function onUpdate() {
 
 	}
 	let stateCourEnt = allyCourier.m_hCourierStateEntity as C_DOTA_BaseNPC_Hero,
-		stateCourEnum = allyCourier.m_nCourierState;
+		stateCourEnum = allyCourier.m_nCourierState
 
 	if (checkCourSelf(stateCourEnt, stateCourEnum))
 		return
@@ -205,21 +203,21 @@ function onUpdate() {
 }
 
 function checkCourSelf(stateEnt: C_DOTA_BaseNPC_Hero, state: CourierState_t) {
-	
+
 	if (LocalDOTAPlayer === undefined)
-		return false;
-	
+		return false
+
 	let localHero = LocalDOTAPlayer.m_hAssignedHero,
-		selfState = stateEnt === localHero;
-		
+		selfState = stateEnt === localHero
+
 	switch (state) {
 		case CourierState_t.COURIER_STATE_MOVING: // ?
 		case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
 			if (allyCourier.m_bFlyingCourier)
-				selfState = selfState && (allyCourier.FindRotationAngle(localHero.m_vecNetworkOrigin) < 0.2);
-			break;
+				selfState = selfState && (allyCourier.FindRotationAngle(localHero.m_vecNetworkOrigin) < 0.2)
+			break
 	}
-	return selfState;
+	return selfState
 }
 
 function trySelfDeliver() {
@@ -237,7 +235,7 @@ function trySelfDeliver() {
 			CastCourAbility(4) // courier_transfer_items
 			delivery = true
 		} else if (hasItemsInStash(localEnt)) {
-			CastCourAbility(7);
+			CastCourAbility(7)
 			delivery = true
 		}
 	}
@@ -249,7 +247,7 @@ function hasItemsInInventory(npc: C_DOTA_BaseNPC, OwnerItem: C_DOTA_BaseNPC_Hero
 
 	let items = npc.m_Inventory.m_hItems as C_DOTA_Item[]
 
-	for (let i = 9; i--;) {
+	for (let i = 9; i--; ) {
 
 		let item = items[i]
 
@@ -263,7 +261,7 @@ function hasFreeSlot(npc: C_DOTA_BaseNPC) {
 
 	let items = npc.m_Inventory.m_hItems as C_DOTA_Item[]
 
-	for (let i = 9; i--;) {
+	for (let i = 9; i--; ) {
 		if (items[i] === undefined)
 			return true
 	}

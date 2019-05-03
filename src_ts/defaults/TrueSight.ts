@@ -2,7 +2,7 @@ import * as Utils from "Utils"
 
 var enabled = true,
 	particle = "",
-	npcs: [C_DOTA_BaseNPC, number][] = [],
+	npcs: Array<[C_DOTA_BaseNPC, number]> = [],
 	particles: number[] = []
 
 Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
@@ -45,17 +45,17 @@ Events.addListener("onUpdate", () => {
 		"Particle",
 		[
 			"Sentry ward particle",
-			"Shiva's Guard (DotA 1 effect)"
+			"Shiva's Guard (DotA 1 effect)",
 		],
 		0,
 		node => {
 			particle = [
 				"particles/econ/wards/portal/ward_portal_core/ward_portal_eye_sentry.vpcf",
-				"particles/items_fx/aura_shivas.vpcf"
+				"particles/items_fx/aura_shivas.vpcf",
 			][node.selected_id]
 			particles.forEach(par => Particles.Destroy(par, true))
 			particles = []
-		}
+		},
 	))
 	root.Update()
 	Menu.AddEntry(root)
