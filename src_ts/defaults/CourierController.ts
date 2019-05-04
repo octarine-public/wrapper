@@ -52,8 +52,15 @@ class AllyPlayer {
 	constructor(ent: C_DOTAPlayer) {
 		this.ent = ent
 
-		let plToMenu = PlayerResource.m_vecPlayerData[ent.m_iPlayerID].m_iszPlayerName
-			+ ` (${(ent.m_hAssignedHero as C_DOTA_BaseNPC).m_iszUnitName})`
+		this.UpdateMenu();
+	}
+	
+	UpdateMenu() {
+		if (!this.ent.m_bHeroAssigned)
+			return;
+			
+		let plToMenu = PlayerResource.m_vecPlayerData[this.ent.m_iPlayerID].m_iszPlayerName
+			+ ` (${(this.ent.m_hAssignedHero as C_DOTA_BaseNPC).m_iszUnitName})`
 
 		this.indexInMenu = playersBlockList.values.push(plToMenu) - 1
 
@@ -125,12 +132,24 @@ function onCheckEntity(ent: C_BaseEntity) {
 				&& !ent.IsEnemy(LocalDOTAPlayer)))
 	) {
 		allAllyPlayers.push(new AllyPlayer(ent))
+		return;
 	}
-
+	
 	if (ent instanceof C_DOTA_Unit_Courier) {
 
 		if (allyCourier === undefined)
-			allyCourier = ent
+			allyCourier = ent;
+			
+		return;
+	}
+	
+	if (ent instanceof C_DOTA_BaseNPC 
+		&& ent.m_bIsHero
+		&& ent.m_bIsControllableByAnyPlayer
+	) {
+		let findPlayer = allAllyPlayers.find(player => player.ent.m_hAssignedHero === ent);
+		if (findPlayer)
+			findPlayer.UpdateMenu();
 	}
 }
 
