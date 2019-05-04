@@ -69,7 +69,7 @@ Events.addListener("onGameEnded", () => {
 	latest_plant = undefined
 })
 
-// Events.addListener("onParticleCreated", console.log)
+Events.addListener("onParticleCreated", console.log)
 Events.addListener("onParticleCreated", (id, path, psHandle, attach, target?) => {
 	let mine_name
 
@@ -80,7 +80,7 @@ Events.addListener("onParticleCreated", (id, path, psHandle, attach, target?) =>
 	} else if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)(s_detonate|_explode).vpcf$/.exec(path)) !== null)
 		waiting_explode.push([id, mine_name[1]])
 })
-// Events.addListener("onParticleUpdatedEnt", console.log)
+Events.addListener("onParticleUpdatedEnt", console.log)
 Events.addListener("onParticleUpdatedEnt", (id, control_point, ent, attach, attachment, position) => {
 	if (control_point !== 0 || attach !== ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW)
 		return false
@@ -128,7 +128,7 @@ function CalculateCenter(vecs: Vector[]): Vector {
 	)
 }
 
-// Events.addListener("onParticleUpdated", console.log)
+Events.addListener("onParticleUpdated", console.log)
 Events.addListener("onParticleUpdated", (id: number, control_point: number, position: Vector) => {
 	if (control_point === 1)
 		waiting_spawn.some(([particle_id, mine_name], i) => {
