@@ -31,7 +31,24 @@ export default class Tree extends Menu_Node {
 		else
 			super(name, hint, entries)
 
-		this.parent = parent
+		var selfParent = parent
+		Object.defineProperty(this, "parent", {
+			set: (new_value: Tree) => {
+				
+				if (this.parent !== undefined)
+					this.parent.RemoveControl(this);
+
+				new_value.entries.push(this)
+
+				var parnt = getTopParent(new_value)
+
+				parnt.Update()
+
+				selfParent = new_value
+			},
+			get: () => selfParent,
+			configurable: false,
+		})
 	}
 
 	SetToolTip(text: string) {
