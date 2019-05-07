@@ -242,10 +242,10 @@ function snatchRuneByUnit(npc: C_DOTA_BaseNPC, rune: C_DOTA_Item_Rune) {
 				allRunesParticles[runeID] = []
 
 				if (drawParticleTake.value)
-					createRuneParticle(rune, new Vector(0, 255), takeRadius.value)
+					createRuneParticle(rune, new Vector3(0, 255), takeRadius.value)
 
 				if (drawParticleKill.value)
-					createRuneParticle(rune, new Vector(255, 0), attackRange)
+					createRuneParticle(rune, new Vector3(255, 0), attackRange)
 			}
 
 		}
@@ -269,7 +269,7 @@ function removedIDRune(rune: C_DOTA_Item_Rune) {
 	}
 }
 
-function createRuneParticle(ent: C_BaseEntity, color: Vector, radius: number) {
+function createRuneParticle(ent: C_BaseEntity, color: Vector3, radius: number) {
 	const particleID = Particles.Create (
 		"particles/ui_mouseactions/drag_selected_ring.vpcf",
 		ParticleAttachment_t.PATTACH_ABSORIGIN,
@@ -277,16 +277,17 @@ function createRuneParticle(ent: C_BaseEntity, color: Vector, radius: number) {
 	)
 
 	Particles.SetControlPoint(particleID, 1, color)
-	Particles.SetControlPoint(particleID, 2, new Vector(radius * 1.1, 255))
+	Particles.SetControlPoint(particleID, 2, new Vector3(radius * 1.1, 255))
 
 	allRunesParticles[ent.m_iID].push(particleID)
 }
 
 function updateRuneAllParticle() {
-	let newColor = new Vector(
+	let newColor = new Vector3 (
 		drawParticleTake_Color.R.value,
 		drawParticleTake_Color.G.value,
-		drawParticleTake_Color.B.value)
+		drawParticleTake_Color.B.value
+	)
 
 	// loop-optimizaer: KEEP
 	allRunesParticles.forEach(pars => Particles.SetControlPoint(pars[0], 1, newColor))

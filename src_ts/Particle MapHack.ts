@@ -33,10 +33,10 @@ const phTechiesMineShowTimers = phTechiesMine.AddToggle("Show Timers")
 // --- Variables
 let allNeutrals: C_DOTA_BaseNPC[] = [],
 	allBloodTargets: C_DOTA_BaseNPC[] = [],
-	allTechiesMines: Array<[Vector[], Vector, string]> = [],
+	allTechiesMines: Array<[Vector3[], Vector3, string]> = [],
 	waiting_explode: Array<[number, string]> = [],
 	waiting_spawn: Array<[number, string]> = [],
-	latest_plant: [Vector, string]
+	latest_plant: [Vector3, string]
 
 // --- Methods
 
@@ -112,7 +112,7 @@ Events.on("onUnitAnimationEnd", npc => {
 
 })
 
-function CalculateCenter(vecs: Vector[]): Vector {
+function CalculateCenter(vecs: Vector3[]): Vector3 {
 	let new_center = [0, 0, 0],
 		vec_count = vecs.length
 
@@ -121,7 +121,7 @@ function CalculateCenter(vecs: Vector[]): Vector {
 		new_center[1] += vec.y
 		new_center[2] += vec.z
 	})
-	return new Vector (
+	return new Vector3 (
 		new_center[0] / vec_count,
 		new_center[1] / vec_count,
 		new_center[2] / vec_count,
@@ -129,7 +129,7 @@ function CalculateCenter(vecs: Vector[]): Vector {
 }
 
 Events.on("onParticleUpdated", console.log)
-Events.on("onParticleUpdated", (id: number, control_point: number, position: Vector) => {
+Events.on("onParticleUpdated", (id, control_point, position) => {
 	if (control_point === 1)
 		waiting_spawn.some(([particle_id, mine_name], i) => {
 			if (particle_id !== id)
@@ -153,15 +153,18 @@ Events.on("onParticleUpdated", (id: number, control_point: number, position: Vec
 		waiting_explode.some(([particle_id, mine_name], i) => {
 			if (particle_id !== id)
 				return false
-			allTechiesMines.some(obj => {
+			allTechiesMines.some((obj, i) => {
 				if (obj[2] !== mine_name)
 					return false
 				let mines = obj[0]
-				return mines.some((vec, i) => {
+				return mines.some((vec, j) => {
 					if (vec.Distance(position) !== 0)
 						return false
-					mines.splice(i, 1)
-					obj[1] = CalculateCenter(mines)
+					if (mines.length !== 1) {
+						mines.splice(j, 1)
+						obj[1] = CalculateCenter(mines)
+					} else
+						allTechiesMines.splice(i, 1)
 					return true
 				})
 			})

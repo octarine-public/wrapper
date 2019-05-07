@@ -17,7 +17,7 @@ export class MenuManager extends Tree {
 	}
 }
 
-export function CreateRGBTree(parent: Tree, name: string, color: Vector = new Vector(0, 255, 0), hint?: string) {
+export function CreateRGBTree(parent: Tree, name: string, color: Vector3 = new Vector3(0, 255, 0), hint?: string) {
 
 	let tree = new Tree(undefined, name, hint)
 
@@ -32,7 +32,7 @@ export function CreateRGBTree(parent: Tree, name: string, color: Vector = new Ve
 	}
 }
 
-export function CreateRGBATree(parent: Tree, name: string, color: Vector = new Vector(0, 255, 0), alpha: number = 255, hint?: string) {
+export function CreateRGBATree(parent: Tree, name: string, color: Vector3 = new Vector3(0, 255, 0), alpha: number = 255, hint?: string) {
 
 	let tree = new Tree(undefined, name, hint)
 

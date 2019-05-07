@@ -1,9 +1,9 @@
-declare class Vector {
+declare class Vector3 {
 	/* ================== Static ================== */
-	static fromArray(array: [number, number, number]): Vector
-	static fromObject(object: { x: number, y: number, z?: number }): Vector
-	static FromAngle(angle: number): Vector
-	static FromAngleCoordinates(radial: number, angle: number): Vector
+	static fromArray(array: [number, number, number]): Vector3
+	static fromObject(object: { x: number, y: number, z?: number }): Vector3
+	static FromAngle(angle: number): Vector3
+	static FromAngleCoordinates(radial: number, angle: number): Vector3
 
 	/* =================== Fields =================== */
 	x: number
@@ -12,10 +12,10 @@ declare class Vector {
 
 	/* ================ Constructors ================ */
 	/**
-	 * Create new Vector with x, y, z
+	 * Create new Vector3 with x, y, z
 	 *
 	 * @example
-	 * var vector = new Vector(1, 2, 3)
+	 * var vector = new Vector3(1, 2, 3)
 	 * vector.Normalize();
 	 */
 	constructor(x?: number, y?: number, z?: number)
@@ -35,7 +35,7 @@ declare class Vector {
 	 */
 	readonly Length: number
 	/**
-	 * Angle of the Vector
+	 * Angle of the Vector3
 	 */
 	readonly Angle: number
 	/**
@@ -44,7 +44,7 @@ declare class Vector {
 	readonly Polar: number
 
 	/* ================== Methods ================== */
-	Equals(vec: Vector): boolean
+	Equals(vec: Vector3): boolean
 
 	/**
 	 * Are all components of this vector are 0?
@@ -61,76 +61,76 @@ declare class Vector {
 	/**
 	 * Invalidates this vector
 	 */
-	Invalidate(): Vector
+	Invalidate(): Vector3
 	/**
 	 * Zeroes this vector
 	 */
-	toZero(): Vector
+	toZero(): Vector3
 	/**
 	 * Negates this vector (equiv to x = -x, z = -z, y = -y)
 	 */
-	Negate(): Vector
+	Negate(): Vector3
 	/**
 	 * Randomizes this vector within given values
 	 */
-	Random(minVal: number, maxVal: number): Vector
+	Random(minVal: number, maxVal: number): Vector3
 	/**
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
 	 * @param The another vector
 	 */
-	Min(vec: Vector): Vector
+	Min(vec: Vector3): Vector3
 	/**
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
 	 * @param The another vector
 	 */
-	Max(vec: Vector): Vector
+	Max(vec: Vector3): Vector3
 	/**
 	 * Returns a vector whose elements are the absolute values of each of the source vector's elements.
 	 */
-	Abs(): Vector
+	Abs(): Vector3
 	/**
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
-	SquareRoot(): Vector
+	SquareRoot(): Vector3
 
 	/**
 	 * Set X of vector by number
 	 */
-	SetX(num: number): Vector
+	SetX(num: number): Vector3
 	/**
 	 * Set Y of vector by number
 	 */
-	SetY(num: number): Vector
+	SetY(num: number): Vector3
 	/**
 	 * Set Z of vector by number
 	 */
-	SetZ(num: number): Vector
+	SetZ(num: number): Vector3
 
 	/**
 	 * Normalize the vector
 	 */
-	Normalize(scalar: number): Vector
+	Normalize(scalar: number): Vector3
 	/**
 	 * The cross product of this and vec.
 	 */
-	Cross(vec: Vector): Vector
+	Cross(vec: Vector3): Vector3
 	/**
 	 * The dot product of this vector and another vector.
 	 * @param vec The another vector
 	 */
-	Dot(vec: Vector): number
+	Dot(vec: Vector3): number
 	/**
 	 * Scale the vector to length. ( Returns 0 vector if the length of this vector is 0 )
 	 */
-	ScaleTo(scalar: number): Vector
+	ScaleTo(scalar: number): Vector3
 	/**
 	 * Divides both vector axis by the given scalar value
 	 */
-	DivideTo(scalar: number): Vector
+	DivideTo(scalar: number): Vector3
 	/**
 	 * Restricts a vector between a min and max value.
 	 */
-	Clamp(min: Vector, max: Vector): Vector
+	Clamp(min: Vector3, max: Vector3): Vector3
 
 	/* ======== Add ======== */
 	/**
@@ -138,24 +138,24 @@ declare class Vector {
 	 * @param vec The another vector
 	 * @returns	The summed vector
 	 */
-	Add(vec: Vector): Vector
+	Add(vec: Vector3): Vector3
 
 	/**
 	 * Add scalar to vector
 	 */
-	AddScalar(scalar: number): Vector
+	AddScalar(scalar: number): Vector3
 	/**
 	 * Add scalar to X of vector
 	 */
-	AddScalarX(scalar: number): Vector
+	AddScalarX(scalar: number): Vector3
 	/**
 	 * Add scalar to Y of vector
 	 */
-	AddScalarY(scalar: number): Vector
+	AddScalarY(scalar: number): Vector3
 	/**
 	 * Add scalar to Z of vector
 	 */
-	AddScalarZ(scalar: number): Vector
+	AddScalarZ(scalar: number): Vector3
 
 	/* ======== Subtract ======== */
 	/**
@@ -163,24 +163,24 @@ declare class Vector {
 	 * @param vec The another vector
 	 * @returns The difference vector
 	 */
-	Subtract(vec: Vector): Vector
+	Subtract(vec: Vector3): Vector3
 
 	/**
 	 * Subtract scalar from vector
 	 */
-	SubtractScalar(scalar: number): Vector
+	SubtractScalar(scalar: number): Vector3
 	/**
 	 * Subtract scalar from X of vector
 	 */
-	SubtractScalarX(scalar: number): Vector
+	SubtractScalarX(scalar: number): Vector3
 	/**
 	 * Subtract scalar from Y of vector
 	 */
-	SubtractScalarY(scalar: number): Vector
+	SubtractScalarY(scalar: number): Vector3
 	/**
 	 * Subtract scalar from Z of vector
 	 */
-	SubtractScalarZ(scalar: number): Vector
+	SubtractScalarZ(scalar: number): Vector3
 
 	/* ======== Multiply ======== */
 	/**
@@ -188,24 +188,24 @@ declare class Vector {
 	 * @param vec The another vector
 	 * @return The product vector
 	 */
-	Multiply(vec: Vector): Vector
+	Multiply(vec: Vector3): Vector3
 
 	/**
 	 * Multiply the vector by scalar
 	 */
-	MultiplyScalar(scalar: number): Vector
+	MultiplyScalar(scalar: number): Vector3
 	/**
 	 * Multiply the X of vector by scalar
 	 */
-	MultiplyScalarX(scalar: number): Vector
+	MultiplyScalarX(scalar: number): Vector3
 	/**
 	 * Multiply the Y of vector by scalar
 	 */
-	MultiplyScalarY(scalar: number): Vector
+	MultiplyScalarY(scalar: number): Vector3
 	/**
 	 * Multiply the Z of vector by scalar
 	 */
-	MultiplyScalarZ(scalar: number): Vector
+	MultiplyScalarZ(scalar: number): Vector3
 
 	/* ======== Divide ======== */
 	/**
@@ -213,30 +213,30 @@ declare class Vector {
 	 * @param vec The another vector
 	 * @return The vector resulting from the division
 	 */
-	Divide(vec: Vector): Vector
+	Divide(vec: Vector3): Vector3
 
 	/**
 	 * Divide the scalar by vector
 	 * @param {number} scalar
 	 */
-	DivideScalar(scalar: number): Vector
+	DivideScalar(scalar: number): Vector3
 	/**
 	 * Divide the scalar by X of vector
 	 */
-	DivideScalarX(scalar: number): Vector
+	DivideScalarX(scalar: number): Vector3
 	/**
 	 * Divide the scalar by Y of vector
 	 */
-	DivideScalarY(scalar: number): Vector
+	DivideScalarY(scalar: number): Vector3
 	/**
 	 * Divide the scalar by Z of vector
 	 */
-	DivideScalarZ(scalar: number): Vector
+	DivideScalarZ(scalar: number): Vector3
 
 	/**
 	 * Multiply, add, and assign to this
 	 */
-	MultiplyAdd(vec: Vector, vec2: Vector, scalar: number): Vector
+	MultiplyAdd(vec: Vector3, vec2: Vector3, scalar: number): Vector3
 
 	/* ======== Distance ======== */
 	/**
@@ -244,19 +244,19 @@ declare class Vector {
 	 *
 	 * @param vec The another vector
 	 */
-	DistanceSqr(vec: Vector): number
+	DistanceSqr(vec: Vector3): number
 	/**
 	 * Returns the distance between the this and another vector
 	 *
 	 * @param vec The another vector
 	 */
-	Distance(vec: Vector): number
+	Distance(vec: Vector3): number
 	/**
 	 * Returns the distance between the this and another vector in 2D
 	 *
 	 * @param vec The another vector
 	 */
-    Distance2D(vec: Vector): number
+    Distance2D(vec: Vector3): number
     /**
 	 * @returns all entities in given range of this vector
 	 */
@@ -268,53 +268,53 @@ declare class Vector {
 	 *
 	 * @param {number} offset Axis Offset (0 = X, 1 = Y)
 	 */
-	Perpendicular(is_x?: boolean): Vector
+	Perpendicular(is_x?: boolean): Vector3
 	/**
 	 * Rotates the Vector3 to a set angle.
 	 */
-	Rotated(angle: number): Vector
+	Rotated(angle: number): Vector3
 	/**
 	 * Extends vector in the rotation direction
 	 * @param rotation for ex. Entity#Forward
 	 * @param distance distance to be added
 	 */
-    Rotation(rotation: Vector, distance: number): Vector
+    Rotation(rotation: Vector3, distance: number): Vector3
 	/**
 	 * Extends vector in the rotation direction by radian
 	 * @param rotation for ex. Entity#Forward
 	 * @param distance distance to be added
 	 */
-	RotationRad(rotation: Vector, distance: number): Vector
+	RotationRad(rotation: Vector3, distance: number): Vector3
 	RotationTime(rot_speed: number): number
 	/**
 	 * Angle between two vectors
 	 * @param vec The another vector
 	 */
-	AngleBetweenVectors(vec: Vector): number
+	AngleBetweenVectors(vec: Vector3): number
 	/**
 	 * Angle between two fronts
 	 * @param vec The another vector
 	 */
-	AngleBetweenFaces(front: Vector): number
+	AngleBetweenFaces(front: Vector3): number
     /**
 	 * Extends this vector in the direction of 2nd vector for given distance
 	 * @param vec 2nd vector
 	 * @param distance distance to extend
 	 * @returns extended vector
 	 */
-	Extend(vec: Vector, distance: number): Vector
+	Extend(vec: Vector3, distance: number): Vector3
 	/**
 	 * Returns if the distance to target is lower than range
 	 */
-	IsInRange(vec: Vector, range: number): boolean
+	IsInRange(vec: Vector3, range: number): boolean
 	/**
 	 * Returns true if the point is under the rectangle
 	 */
 	IsUnderRectangle(x: number, y: number, width: number, height: number): boolean
 	/* ================== To ================== */
 	/**
-	 * Vector to String Vector
-	 * @return new Vector(x,y,z)
+	 * Vector3 to String Vector3
+	 * @return new Vector3(x,y,z)
 	 */
 	toString(): string
 	/**
@@ -323,12 +323,12 @@ declare class Vector {
 	toArray(): [number, number, number]
 }
 
-declare class Vector2D {
+declare class Vector2 {
 	/* ================== Static ================== */
-	static fromArray(array: [number, number]): Vector2D
-	static fromObject(object: { x: number, y: number }): Vector2D
-	static FromAngle(angle: number): Vector2D
-	static FromAngleCoordinates(radial: number, angle: number): Vector2D
+	static fromArray(array: [number, number]): Vector2
+	static fromObject(object: { x: number, y: number }): Vector2
+	static FromAngle(angle: number): Vector2
+	static FromAngleCoordinates(radial: number, angle: number): Vector2
 
 	/* =================== Fields =================== */
 	x: number
@@ -336,10 +336,10 @@ declare class Vector2D {
 
 	/* ================ Constructors ================ */
 	/**
-	 * Create new Vector with x, y
+	 * Create new Vector3 with x, y
 	 *
 	 * @example
-	 * var vector = new Vector2D(1, 2)
+	 * var vector = new Vector2(1, 2)
 	 * vector.Normalize();
 	 */
 	constructor(x?: number, y?: number)
@@ -359,7 +359,7 @@ declare class Vector2D {
 	 */
 	readonly Length: number
 	/**
-	 * Angle of the Vector
+	 * Angle of the Vector3
 	 */
 	readonly Angle: number
 	/**
@@ -368,7 +368,7 @@ declare class Vector2D {
 	readonly Polar: number
 
 	/* ================== Methods ================== */
-	Equals(vec: Vector2D): boolean
+	Equals(vec: Vector2): boolean
 
 	/**
 	 * Are all components of this vector are 0?
@@ -385,71 +385,71 @@ declare class Vector2D {
 	/**
 	 * Invalidates this vector
 	 */
-	Invalidate(): Vector2D
+	Invalidate(): Vector2
 	/**
 	 * Zeroes this vector
 	 */
-	toZero(): Vector2D
+	toZero(): Vector2
 	/**
 	 * Negates this vector (equiv to x = -x, z = -z, y = -y)
 	 */
-	Negate(): Vector2D
+	Negate(): Vector2
 	/**
 	 * Randomizes this vector within given values
 	 */
-	Random(minVal: number, maxVal: number): Vector2D
+	Random(minVal: number, maxVal: number): Vector2
 	/**
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
 	 * @param The another vector
 	 */
-	Min(vec: Vector2D): Vector2D
+	Min(vec: Vector2): Vector2
 	/**
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
 	 * @param The another vector
 	 */
-	Max(vec: Vector2D): Vector2D
+	Max(vec: Vector2): Vector2
 	/**
 	 * Returns a vector whose elements are the absolute values of each of the source vector's elements.
 	 */
-	Abs(): Vector2D
+	Abs(): Vector2
 	/**
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
-	SquareRoot(): Vector2D
+	SquareRoot(): Vector2
 	/**
 	 * Set X of vector by number
 	 */
-	SetX(num: number): Vector2D
+	SetX(num: number): Vector2
 	/**
 	 * Set Y of vector by number
 	 */
-	SetY(num: number): Vector2D
+	SetY(num: number): Vector2
 
 	/**
 	 * Normalize the vector
 	 */
-	Normalize(scalar: number): Vector2D
+	Normalize(scalar: number): Vector2
 	/**
 	 * Returns the cross product Z value.
 	 */
-	Cross(vec: Vector2D): number
+	Cross(vec: Vector2): number
 	/**
 	 * The dot product of this vector and another vector.
 	 * @param vec The another vector
 	 */
-	Dot(vec: Vector2D): number
+	Dot(vec: Vector2): number
 	/**
 	 * Scale the vector to length. ( Returns 0 vector if the length of this vector is 0 )
 	 */
-	ScaleTo(scalar: number): Vector2D
+	ScaleTo(scalar: number): Vector2
 	/**
 	 * Divides both vector axis by the given scalar value
 	 */
-	DivideTo(scalar: number): Vector2D
+	DivideTo(scalar: number): Vector2
 	/**
 	 * Restricts a vector between a min and max value.
 	 */
-	Clamp(min: Vector2D, max: Vector2D): Vector2D
+	Clamp(min: Vector2, max: Vector2): Vector2
 
 	/* ======== Add ======== */
 	/**
@@ -457,20 +457,20 @@ declare class Vector2D {
 	 * @param vec The another vector
 	 * @returns	The summed vector
 	 */
-	Add(vec: Vector2D): Vector2D
+	Add(vec: Vector2): Vector2
 
 	/**
 	 * Add scalar to vector
 	 */
-	AddScalar(scalar: number): Vector2D
+	AddScalar(scalar: number): Vector2
 	/**
 	 * Add scalar to X of vector
 	 */
-	AddScalarX(scalar: number): Vector2D
+	AddScalarX(scalar: number): Vector2
 	/**
 	 * Add scalar to Y of vector
 	 */
-	AddScalarY(scalar: number): Vector2D
+	AddScalarY(scalar: number): Vector2
 
 	/* ======== Subtract ======== */
 	/**
@@ -478,20 +478,20 @@ declare class Vector2D {
 	 * @param vec The another vector
 	 * @returns The difference vector
 	 */
-	Subtract(vec: Vector2D): Vector2D
+	Subtract(vec: Vector2): Vector2
 
 	/**
 	 * Subtract scalar from vector
 	 */
-	SubtractScalar(scalar: number): Vector2D
+	SubtractScalar(scalar: number): Vector2
 	/**
 	 * Subtract scalar from X of vector
 	 */
-	SubtractScalarX(scalar: number): Vector2D
+	SubtractScalarX(scalar: number): Vector2
 	/**
 	 * Subtract scalar from Y of vector
 	 */
-	SubtractScalarY(scalar: number): Vector2D
+	SubtractScalarY(scalar: number): Vector2
 
 	/* ======== Multiply ======== */
 	/**
@@ -499,20 +499,20 @@ declare class Vector2D {
 	 * @param vec The another vector
 	 * @return The product vector
 	 */
-	Multiply(vec: Vector2D): Vector2D
+	Multiply(vec: Vector2): Vector2
 
 	/**
 	 * Multiply the vector by scalar
 	 */
-	MultiplyScalar(scalar: number): Vector2D
+	MultiplyScalar(scalar: number): Vector2
 	/**
 	 * Multiply the X of vector by scalar
 	 */
-	MultiplyScalarX(scalar: number): Vector2D
+	MultiplyScalarX(scalar: number): Vector2
 	/**
 	 * Multiply the Y of vector by scalar
 	 */
-	MultiplyScalarY(scalar: number): Vector2D
+	MultiplyScalarY(scalar: number): Vector2
 
 	/* ======== Divide ======== */
 	/**
@@ -520,26 +520,26 @@ declare class Vector2D {
 	 * @param vec The another vector
 	 * @return The vector resulting from the division
 	 */
-	Divide(vec: Vector2D): Vector2D
+	Divide(vec: Vector2): Vector2
 
 	/**
 	 * Divide the scalar by vector
 	 * @param {number} scalar
 	 */
-	DivideScalar(scalar: number): Vector2D
+	DivideScalar(scalar: number): Vector2
 	/**
 	 * Divide the scalar by X of vector
 	 */
-	DivideScalarX(scalar: number): Vector2D
+	DivideScalarX(scalar: number): Vector2
 	/**
 	 * Divide the scalar by Y of vector
 	 */
-	DivideScalarY(scalar: number): Vector2D
+	DivideScalarY(scalar: number): Vector2
 
 	/**
 	 * Multiply, add, and assign to this
 	 */
-	MultiplyAdd(vec: Vector2D, vec2: Vector2D, scalar: number): Vector2D
+	MultiplyAdd(vec: Vector2, vec2: Vector2, scalar: number): Vector2
 
 	/* ======== Distance ======== */
 	/**
@@ -547,70 +547,70 @@ declare class Vector2D {
 	 *
 	 * @param vec The another vector
 	 */
-	DistanceSqr(vec: Vector2D): number
+	DistanceSqr(vec: Vector2): number
 	/**
 	 * Returns the distance between the this and another vector
 	 *
 	 * @param vec The another vector
 	 */
-	Distance(vec: Vector2D): number
+	Distance(vec: Vector2): number
 	/**
 	 * Returns the distance between the this and another vector in 2D
 	 *
 	 * @param vec The another vector
 	 */
-	Distance2D(vec: Vector2D): number
+	Distance2D(vec: Vector2): number
 
 	/* ================== Geometric ================== */
 	/**
 	 *
 	 * @param {number} offset Axis Offset (0 = X, 1 = Y)
 	 */
-	Perpendicular(is_x?: boolean): Vector2D
+	Perpendicular(is_x?: boolean): Vector2
 	/**
 	 * Rotates the Vector3 to a set angle.
 	 */
-	Rotated(angle: number): Vector2D
+	Rotated(angle: number): Vector2
 	/**
 	 * Extends vector in the rotation direction
 	 * @param rotation for ex. Entity#Forward
 	 * @param distance distance to be added
 	 */
-	Rotation(rotation: Vector2D, distance: number): Vector2D
+	Rotation(rotation: Vector2, distance: number): Vector2
 	/**
 	 * Extends vector in the rotation direction by radian
 	 * @param rotation for ex. Entity#Forward
 	 * @param distance distance to be added
 	 */
-	RotationRad(rotation: Vector2D, distance: number): Vector2D
+	RotationRad(rotation: Vector2, distance: number): Vector2
 	RotationTime(rot_speed: number): number
 	/**
 	 * Angle between two vectors
 	 * @param vec The another vector
 	 */
-	AngleBetweenVectors(vec: Vector2D): number
+	AngleBetweenVectors(vec: Vector2): number
 	/**
 	 * Angle between two fronts
 	 * @param vec The another vector
 	 */
-	AngleBetweenFronts(front: Vector2D): number
+	AngleBetweenFronts(front: Vector2): number
 	/**
 	 * Extends this vector in the direction of 2nd vector for given distance
 	 * @param vec The another vector
 	 */
-	Extend(vec: Vector2D, distance: number): Vector2D
+	Extend(vec: Vector2, distance: number): Vector2
 	/**
 	 * Returns if the distance to target is lower than range
 	 */
-	IsInRange(vec: Vector2D, range: number): boolean
+	IsInRange(vec: Vector2, range: number): boolean
 	/**
 	 * Returns true if the point is under the rectangle
 	 */
 	IsUnderRectangle(x: number, y: number, width: number, height: number)
 	/* ================== Geometric ================== */
 	/**
-	 * Vector to String Vector
-	 * @return new Vector(x,y,z)
+	 * Vector3 to String Vector3
+	 * @return new Vector3(x,y,z)
 	 */
 	toString(): string
 	/**
@@ -636,26 +636,26 @@ declare class EventEmitter {
 	public on(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): bigint
 	public on(name: "onDraw", callback: () => void): bigint
 	public on(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): bigint
-	public on(name: "onParticleUpdated", callback: (id: number, control_point: number, position: Vector) => void): bigint
+	public on(name: "onParticleUpdated", callback: (id: number, control_point: number, position: Vector3) => void): bigint
 	public on(name: "onParticleUpdatedEnt", callback: (
 		id: number,
 		control_point: number,
 		ent: C_BaseEntity,
 		attach: ParticleAttachment_t,
 		attachment: number,
-		fallback_position: Vector,
+		fallback_position: Vector3,
 		include_wearables: boolean
 	) => void): bigint
 	public on(name: "onBloodImpact", callback: (target: C_BaseEntity, scale: number, xnormal: number, ynormal: number) => void): bigint
 	public on(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => false | any): bigint
 	public on(name: "onLinearProjectileCreated", callback: (
 		proj: LinearProjectile,
-		origin: Vector,
-		velocity: Vector2D,
+		origin: Vector3,
+		velocity: Vector2,
 		ent: C_BaseEntity,
 		path: string,
 		particleSystemHandle: bigint,
-		acceleration: Vector2D,
+		acceleration: Vector2,
 		max_speed: number,
 		fow_radius: number,
 		sticky_fow_reveal: boolean,
@@ -674,7 +674,7 @@ declare class EventEmitter {
 	) => void): bigint
 	public on(name: "onTrackingProjectileUpdated", callback: (
 		proj: TrackingProjectile,
-		vSourceLoc: Vector,
+		vSourceLoc: Vector3,
 		path: string,
 		particleSystemHandle: bigint,
 		colorgemcolor: Color,

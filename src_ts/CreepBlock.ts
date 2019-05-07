@@ -10,7 +10,7 @@ var config: any = {
 	towers: C_DOTA_BaseNPC_Tower[] = [],
 	enabled = false,
 	creeps: C_DOTA_BaseNPC_Creep_Lane[] = [],
-	creepsMovePosition: Vector
+	creepsMovePosition: Vector3
 
 // Events.on("onDraw", () => {
 // 	if (!IsInGame() || !enabled)
@@ -46,8 +46,7 @@ Events.on("onTick", () => {
 	creeps = lane_creeps.filter(creep => !creep.m_bIsWaitingToSpawn && creep.m_bIsAlive && MyEnt.IsInRange(creep, 500))
 	if (creeps.length === 0)
 		return
-	var creepsMovePositionSum = creeps.map(creep => creep.InFront(300)).reduce((sum, vec) => [sum[0] + vec.x, sum[1] + vec.y, sum[2] + vec.z], [0, 0, 0])
-	creepsMovePosition = new Vector(creepsMovePositionSum[0] / creeps.length, creepsMovePositionSum[1] / creeps.length, creepsMovePositionSum[2] / creeps.length)
+	creepsMovePosition = creeps.map(creep => creep.InFront(300)).reduce((sum, vec) => sum.Add(vec), new Vector3()).DivideScalar(creeps.length)
 	var tower = towers.filter(ent => MyEnt.IsInRange(ent, 120))
 
 	if (tower.length > 0) {

@@ -33,9 +33,8 @@ export * from "CrutchesSDK/Menu/MenuManager";
 	- C_DOTAPlayer.m_nOutgoingOrderSequenceNumber - hkCreateMove ??
 	- particle list as entity list
 	- particle destroyed
-	- QAngle - add AsVector
+	- QAngle - add AsVector3
 	- remove EffectiveInvisibilityLevel
-	- move Vector to Native API
 	- reverse:
 		Global:
 			UnSelectUnit

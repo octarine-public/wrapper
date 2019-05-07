@@ -186,11 +186,11 @@ var rotation_speed = {
 		npc_dota_hero_grimstroke: 900,
 	},
 	attacks: Array<[number, number, C_DOTA_BaseNPC]> = [],
-	CursorWorldVec = new Vector(),
+	CursorWorldVec = new Vector3(),
 	NPCs: C_DOTA_BaseNPC[] = [],
 	melee_end_time_delta = 0.06
 
-export function GetEntitiesInRange(vec: Vector, range: number, onlyEnemies: boolean = false, findInvuln: boolean = false): C_DOTA_BaseNPC[] {
+export function GetEntitiesInRange(vec: Vector3, range: number, onlyEnemies: boolean = false, findInvuln: boolean = false): C_DOTA_BaseNPC[] {
 	var localplayer = LocalDOTAPlayer
 	return orderBy (
 		vec.GetEntitiesInRange(range).filter(ent =>
@@ -243,7 +243,7 @@ export function orderBy<T>(ar: T[], cb: (obj: T) => any): T[] {
 
 export function GetDamage(ent: C_DOTA_BaseNPC): number { return ent.m_iDamageMin + ent.m_iDamageBonus }
 
-export function VelocityWaypoint(ent: C_DOTA_BaseNPC, time: number, movespeed: number = ent.m_bIsMoving ? ent.m_fIdealSpeed : 0): Vector {
+export function VelocityWaypoint(ent: C_DOTA_BaseNPC, time: number, movespeed: number = ent.m_bIsMoving ? ent.m_fIdealSpeed : 0): Vector3 {
 	return ent.InFront(movespeed * time)
 }
 
@@ -281,7 +281,7 @@ export function GetProjectileDelay(source: C_DOTA_BaseNPC, target: C_DOTA_BaseNP
 	return (source.m_vecNetworkOrigin.Distance(target.m_vecNetworkOrigin) - source.m_flHullRadius - target.m_flHullRadius) / proj_speed
 }
 
-export function IsInside(npc: C_DOTA_BaseNPC, vec: Vector, radius: number): boolean {
+export function IsInside(npc: C_DOTA_BaseNPC, vec: Vector3, radius: number): boolean {
 	const direction = npc.m_vecForward,
 		npc_pos = npc.m_vecNetworkOrigin
 	const npc_pos_x = npc_pos.x, npc_pos_y = npc_pos.y,
@@ -289,7 +289,7 @@ export function IsInside(npc: C_DOTA_BaseNPC, vec: Vector, radius: number): bool
 		direction_x = direction.x, direction_y = direction.y,
 		radius_sqr = radius ** 2
 	for (let i = Math.floor(vec.Distance2D(npc_pos) / radius) + 1; i--; )
-		// if (npc_pos.Distance2D(new Vector(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
+		// if (npc_pos.Distance2D(new Vector3(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
 		// optimized version, as V8 unable to optimize any native code by inlining
 		if ((((vec_x - direction_x * i * radius - npc_pos_x) ** 2) + ((vec_y - direction_y * i * radius - npc_pos_y) ** 2)) <= radius_sqr)
 			return true
@@ -658,7 +658,7 @@ export function FindAttackingUnit(npc: C_DOTA_BaseNPC): C_DOTA_BaseNPC {
 	), ent => GetAngle(npc, ent.m_vecNetworkOrigin))[0] as C_DOTA_BaseNPC
 }
 
-export function GetAngle(npc: C_DOTA_BaseNPC, vec: Vector): number {
+export function GetAngle(npc: C_DOTA_BaseNPC, vec: Vector3): number {
 	let npc_pos = npc.m_vecNetworkOrigin,
 		angle = Math.abs(Math.atan2(npc_pos.y - vec.y, npc_pos.x - vec.x) - npc.m_vecForward.Angle)
 	if (angle > Math.PI)
@@ -667,7 +667,7 @@ export function GetAngle(npc: C_DOTA_BaseNPC, vec: Vector): number {
 }
 
 let turn_rad = Math.PI - 0.25
-export function GetRotationTime(npc: C_DOTA_BaseNPC, vec: Vector): number {
+export function GetRotationTime(npc: C_DOTA_BaseNPC, vec: Vector3): number {
 	let ang = GetAngle(npc, vec)
 	if (ang > turn_rad) // <= (360-45)deg
 		return 0

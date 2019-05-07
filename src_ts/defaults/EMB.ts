@@ -36,7 +36,7 @@ Events.on("onDraw", () => {
 	}
 	manabars.forEach(hero => {
 		var hero_pos = hero.m_pGameSceneNode.m_vecAbsOrigin
-		var render_pos = Renderer.WorldToScreen(new Vector(hero_pos.x, hero_pos.y, hero_pos.z + hero.m_iHealthBarOffset))
+		var render_pos = Renderer.WorldToScreen(new Vector3(hero_pos.x, hero_pos.y, hero_pos.z + hero.m_iHealthBarOffset))
 
 		if (!render_pos.IsValid)
 			return

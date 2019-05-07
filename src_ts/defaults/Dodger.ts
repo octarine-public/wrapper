@@ -9,7 +9,7 @@ function DeleteProjectile(proj: TrackingProjectile | LinearProjectile) {
 	Utils.arrayRemove(proj_list, proj)
 }
 
-function Dodge(pl_ent: C_DOTA_BaseNPC, delay: number, target_pos?: Vector, aoe: number = 0) {
+function Dodge(pl_ent: C_DOTA_BaseNPC, delay: number, target_pos?: Vector3, aoe: number = 0) {
 	Orders.CastNoTarget(pl_ent, pl_ent.GetAbility(2))
 }
 

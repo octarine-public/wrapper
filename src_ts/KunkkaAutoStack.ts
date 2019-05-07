@@ -2,15 +2,15 @@ import * as Orders from "Orders"
 import * as Utils from "Utils"
 
 // loop-optimizer: KEEP
-var spots: Vector[] = /*Utils.orderBy(*/[
-		new Vector(4205.449707, -399.444458, 384.000000),
-		new Vector(-2533.218750, -552.533875, 385.125000), // calibrated
-		new Vector(-1865.487549, 4438.296875, 386.390900), // calibrated
-		new Vector(2546.226563, 41.390625, 384.000000), // calibrated
-		new Vector(-4255.669922, 3469.897461, 256.000000), // calibrated
-		new Vector(-55.859379, -3266.130127, 384.000000), // calibrated
-		new Vector(424.332947, -4665.735352, 396.747070), // calibrated
-		new Vector(-3744.976563, 853.449219, 385.992188), // calibrated
+var spots: Vector3[] = /*Utils.orderBy(*/[
+		new Vector3(4205.449707, -399.444458, 384.000000),
+		new Vector3(-2533.218750, -552.533875, 385.125000), // calibrated
+		new Vector3(-1865.487549, 4438.296875, 386.390900), // calibrated
+		new Vector3(2546.226563, 41.390625, 384.000000), // calibrated
+		new Vector3(-4255.669922, 3469.897461, 256.000000), // calibrated
+		new Vector3(-55.859379, -3266.130127, 384.000000), // calibrated
+		new Vector3(424.332947, -4665.735352, 396.747070), // calibrated
+		new Vector3(-3744.976563, 853.449219, 385.992188), // calibrated
 	],
 	config = {
 		enabled: false,
@@ -37,7 +37,7 @@ Events.on("onTick", () => {
 		torrent = MyEnt.GetAbilityByName("kunkka_torrent")
 	if (torrent === undefined || torrent.m_fCooldown !== 0 || torrent.m_iManaCost > MyEnt.m_flMana)
 		return
-	var cur_time: number = GameRules.m_fGameTime - GameRules.m_flGameStartTime
+	var cur_time = GameRules.m_fGameTime - GameRules.m_flGameStartTime
 	if (cur_time < 60)
 		return
 	/*if (
@@ -53,8 +53,8 @@ Events.on("onTick", () => {
 		) >= 1 / 30
 	)
 		return
-	var my_vec: Vector = MyEnt.m_vecNetworkOrigin,
-		cast_range: number = Utils.GetCastRange(MyEnt, torrent)
+	var my_vec = MyEnt.m_vecNetworkOrigin,
+		cast_range = Utils.GetCastRange(MyEnt, torrent)
 	// loop-optimizer: KEEP
 	Utils.orderBy(spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
 		Orders.CastPosition(MyEnt, torrent, spot, false)
@@ -82,7 +82,7 @@ Events.on("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssi
 				//!ent.m_bIsWaitingToSpawn
 			)
 		var ancientsPositionSum = ancients.map(ancient => ancient.m_vecNetworkOrigin).reduce((sum, vec): number[] => sum ? [sum[0] + vec[0], sum[1] + vec[1], sum[2] + vec[2]] : vec),
-			ancientsPosition = new Vector(ancientsPositionSum[0] / ancients.length, ancientsPositionSum[1] / ancients.length, ancientsPositionSum[2] / ancients.length)
+			ancientsPosition = new Vector3(ancientsPositionSum[0] / ancients.length, ancientsPositionSum[1] / ancients.length, ancientsPositionSum[2] / ancients.length)
 			var failed = ancients.some(ancient => ancient.m_vecNetworkOrigin.Distance(ancientsPosition) >= torrent_radius)
 			if (!failed) {
 				console.log(ancientsPosition)

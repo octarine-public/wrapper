@@ -72,7 +72,7 @@ let tree = menu.AddTree("tree")
 
 let treeToggle = tree.AddToggle("tree toggle")
 
-let rgbTree = CreateRGBTree(menu, "rgb tree", new Vector(0, 255, 0))
+let rgbTree = CreateRGBTree(menu, "rgb tree", new Vector3(0, 255, 0))
 
 rgbTree.R.OnValue((value, self) => console.log("slider OnValue:", value, self))
 rgbTree.G.OnValue((value, self) => console.log("slider OnValue:", value, self))

@@ -26,10 +26,8 @@ export default class Entity {
 	get ID(): number {
 		return this.ent.m_iID
 	}
-	// temporary, while Vector not included to Native code
-	get Forward(): Vector {
-		// return this.ent.m_vecForward;
-		return Vector.fromObject(this.ent.m_vecForward)
+	get Forward(): Vector3 {
+		return this.ent.m_vecForward
 	}
 	/**
 	 * @param ent if undefuned => this compare with LocalPlayer
@@ -40,19 +38,19 @@ export default class Entity {
 			: this.Team !== ent.Team
 	}
 
-	IsInRange(ent: Vector | Entity, range: number): boolean {
+	IsInRange(ent: Vector3 | Entity, range: number): boolean {
 		return this.Distance(ent) <= range
 	}
 
-	FindRotationAngle(vec: Vector | Entity): number {
+	FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
-			vec = (vec as Entity).Position
+			vec = vec.Position
 
 		var thisPos = this.Position,
 			angle = Math.abs (
 				Math.atan2 (
-					(vec as Vector).y - thisPos.y,
-					(vec as Vector).x - thisPos.x,
+					vec.y - thisPos.y,
+					vec.x - thisPos.x,
 				) - this.Forward.Angle,
 			)
 
@@ -69,10 +67,8 @@ export default class Entity {
 	get MaxHP(): number {
 		return this.ent.m_iMaxHealth
 	}
-	// temporary, while Vector not included to Native code
-	get Position(): Vector {
-		// return this.ent.m_vecNetworkOrigin;
-		return Vector.fromObject(this.ent.m_vecNetworkOrigin)
+	get Position(): Vector3 {
+		return this.ent.m_vecNetworkOrigin
 	}
 	get Team(): DOTATeam_t {
 		return this.ent.m_iTeamNum
@@ -106,11 +102,11 @@ export default class Entity {
 	// get Name(): string {
 	// 	return this.ent.m_pEntity.m_name;
 	// }
-	// get Rotation(): Vector {
+	// get Rotation(): Vector3 {
 
 	// }
 
-	// get RotationRad(): Vector {
+	// get RotationRad(): Vector3 {
 
 	// }
 
@@ -121,17 +117,15 @@ export default class Entity {
 		return this === (ent as Entity)
 	}
 
-	Distance(ent: Entity | Vector): number {
-		if (ent instanceof Entity)
-			return this.Position.Distance(ent.Position)
-
-		return this.Position.Distance(ent as Vector)
+	Distance(vec: Entity | Vector3): number {
+		if (vec instanceof Entity)
+			vec = vec.Position
+		return this.Position.Distance(vec)
 	}
-	Distance2D(ent: Entity | Vector): number {
-		if (ent instanceof Entity)
-			return this.Position.Distance(ent.Position)
-
-		return this.Position.Distance(ent as Vector)
+	Distance2D(vec: Entity | Vector3): number {
+		if (vec instanceof Entity)
+			vec = vec.Position
+		return this.Position.Distance2D(vec)
 	}
 
 	Select(toToCurrentSelection: boolean = false): boolean {
@@ -149,7 +143,7 @@ export default class Entity {
 		})
 	}
 
-	// OnParticleEffectUpdated(callbackFn: (id: number, control_point: number, vec: Vector) => void): void {
+	// OnParticleEffectUpdated(callbackFn: (id: number, control_point: number, vec: Vector3) => void): void {
 	// 	Events.on("onParticleUpdated", (id, control_point, vec) => {
 	// 		//if (target.m_iID === this.ID)
 	// 			callbackFn.apply(this, arguments);

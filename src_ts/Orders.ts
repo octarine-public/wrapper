@@ -6,7 +6,7 @@ var debugAnimations = true
  * @param vec position
  * @param queue does order needs to be queued? [uses backswing]
  */
-export function MoveToPos(ent: C_DOTA_BaseNPC, vec: Vector, queue: boolean = true) {
+export function MoveToPos(ent: C_DOTA_BaseNPC, vec: Vector3, queue: boolean = true) {
 	PrepareUnitOrders({
 		OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION,
 		Unit: ent,
@@ -18,10 +18,10 @@ export function MoveToPos(ent: C_DOTA_BaseNPC, vec: Vector, queue: boolean = tru
 
 /**
  * @param {Entity | number} ent entity that must issue order [can be overriden by orderIssuer]
- * @param {Vector} vec position
+ * @param {Vector3} vec position
  * @param {bool} queue does order needs to be queued? [uses backswing]
  */
-export function MoveToDirection(ent: C_DOTA_BaseNPC, vec: Vector, queue: boolean = true) {
+export function MoveToDirection(ent: C_DOTA_BaseNPC, vec: Vector3, queue: boolean = true) {
 	PrepareUnitOrders({
 		OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION,
 		Unit: ent,
@@ -33,10 +33,10 @@ export function MoveToDirection(ent: C_DOTA_BaseNPC, vec: Vector, queue: boolean
 
 /**
  * @param {Entity | number} ent entity that must issue order [can be overriden by orderIssuer]
- * @param {Vector} vec position
+ * @param {Vector3} vec position
  * @param {bool} queue does order needs to be queued? [uses backswing]
  */
-export function RotateToPos(ent: C_DOTA_BaseNPC, vec: Vector, queue: boolean = true) {
+export function RotateToPos(ent: C_DOTA_BaseNPC, vec: Vector3, queue: boolean = true) {
 	PrepareUnitOrders({
 		OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION,
 		Unit: ent,
@@ -64,10 +64,10 @@ export function MoveToTarget(ent: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC, queue:
 
 /**
  * @param {Entity | number} ent entity that must issue order [can be overriden by orderIssuer]
- * @param {Vector} vec position
+ * @param {Vector3} vec position
  * @param {bool} queue does order needs to be queued? [uses backswing]
  */
-export function MoveToAttackPos(ent: C_DOTA_BaseNPC, vec: Vector, queue: boolean = true) {
+export function MoveToAttackPos(ent: C_DOTA_BaseNPC, vec: Vector3, queue: boolean = true) {
 	PrepareUnitOrders({
 		OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE,
 		Unit: ent,
@@ -176,10 +176,10 @@ export function CastTargetTree(ent: C_DOTA_BaseNPC, abil: C_DOTABaseAbility, tar
 /**
  * @param {Entity | number} ent entity that must issue order
  * @param {Ability | number} abil ability
- * @param {Vector} vec position
+ * @param {Vector3} vec position
  * @param {bool} queue does order needs to be queued? [uses backswing]
  */
-export function CastPosition(ent: C_DOTA_BaseNPC, abil: C_DOTABaseAbility, vec: Vector, queue: boolean = true) {
+export function CastPosition(ent: C_DOTA_BaseNPC, abil: C_DOTABaseAbility, vec: Vector3, queue: boolean = true) {
 	PrepareUnitOrders({
 		OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION,
 		Unit: ent,
@@ -240,10 +240,10 @@ export function MoveItem(ent: C_DOTA_BaseNPC, item: C_DOTA_Item, slot_id: number
 /**
  * @param {Entity | number} ent entity that must issue order
  * @param {Entity | number} target target item
- * @param {Vector} vec position
+ * @param {Vector3} vec position
  * @param {bool} queue does order needs to be queued? [uses backswing]
  */
-export function DropItem(ent: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC, vec: Vector, queue: boolean) {
+export function DropItem(ent: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC, vec: Vector3, queue: boolean) {
 	PrepareUnitOrders({
 		OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM,
 		Unit: ent,

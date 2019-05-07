@@ -28,7 +28,7 @@ var config: any = {
 
 function CreateRange(ent: C_BaseEntity, range: number): number {
 	const par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
-	Particles.SetControlPoint(par, 1, new Vector(range, 0, 0))
+	Particles.SetControlPoint(par, 1, new Vector3(range, 0, 0))
 	return par
 }
 
@@ -205,7 +205,7 @@ Events.on("onPrepareUnitOrders", args => {
 	)
 		return true
 	const ents = args.position.GetEntitiesInRange(config.auto_stack_range)
-	var minePos: Vector = undefined as any // hack for tsc, it's always initialized when used
+	var minePos: Vector3
 	if (ents.some(ent => {
 		const isMine = ent instanceof C_DOTA_BaseNPC && ent.m_iszUnitName === "npc_dota_techies_remote_mine" && ent.m_bIsAlive
 		if (isMine)

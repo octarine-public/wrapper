@@ -34,7 +34,7 @@ export class Combo {
 	vars: any = {} // available while combo are executing, clearing on end
 	cursor_enemy: C_DOTA_BaseNPC = undefined
 	cursor_ally: C_DOTA_BaseNPC = undefined
-	cursor_pos: Vector = undefined
+	cursor_pos: Vector3 = undefined
 
 	/** @param {EComboAction} act */
 	addAbility(abilName: string | RegExp, act: number | ((caster: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC) => number), options: ComboOptions = {}, index?: number): void {

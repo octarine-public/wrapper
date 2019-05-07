@@ -7,7 +7,7 @@ export default () => {
 		if (ent instanceof C_DOTA_NPC_Treant_EyesInTheForest) {
 			treant_eyes.push(ent)
 			var par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
-			Particles.SetControlPoint(par, 1, new Vector(100, 0, 0))
+			Particles.SetControlPoint(par, 1, new Vector3(100, 0, 0))
 			pars[id] = par
 		}
 	})
