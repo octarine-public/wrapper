@@ -1,3 +1,5 @@
+import Vector from "./Vector";
+
 export default class Vector2D {
 	/* ================== Static ================== */
 	static fromArray(array: [number, number]): Vector2D {
@@ -506,7 +508,18 @@ export default class Vector2D {
 	Extend(vec: Vector2D, distance: number): Vector2D {
 		return this.Rotation(Vector2D.FromAngle(this.AngleBetweenVectors(vec)), distance)
 	}
-
+	/**
+	 * Returns if the distance to target is lower than range
+	 */
+	IsInRange(vec: Vector2D, range: number): boolean {
+		return this.DistanceSqr(vec) < range ** 2;
+	}
+	/**
+	 * Returns true if the point is under the rectangle
+	 */
+	IsUnderRectangle(x: number, y: number, width: number, height: number) {
+		return this.x > x && this.x < (x + width) && this.y > y && this.y < (y + height);
+	}
 	/* ================== Geometric ================== */
 	/**
 	 * Vector to String Vector
@@ -520,5 +533,11 @@ export default class Vector2D {
 	 */
 	toArray(): [number, number] {
 		return [this.x, this.y]
+	}
+	/**
+	 * Vector 3D to Vector 2D
+	 */
+	to3D(): Vector {
+		return new Vector(this.x, this.y);
 	}
 }
