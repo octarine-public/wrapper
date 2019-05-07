@@ -199,7 +199,7 @@ export function GetEntitiesInRange(vec: Vector, range: number, onlyEnemies: bool
 			&& ent.m_bIsAlive
 			&& !(!findInvuln && ent.m_bIsInvulnerable),
 		),
-		(ent: C_BaseEntity) => vec.DistTo2D(ent.m_vecNetworkOrigin),
+		(ent: C_BaseEntity) => vec.Distance2D(ent.m_vecNetworkOrigin),
 	) as C_DOTA_BaseNPC[]
 }
 
@@ -278,7 +278,7 @@ export function GetProjectileDelay(source: C_DOTA_BaseNPC, target: C_DOTA_BaseNP
 	let proj_speed = source instanceof C_DOTA_BaseNPC_Hero ? projectile_speeds[source.m_iszUnitName] : 900
 	if (proj_speed === undefined)
 		return 0
-	return (source.m_vecNetworkOrigin.DistTo(target.m_vecNetworkOrigin) - source.m_flHullRadius - target.m_flHullRadius) / proj_speed
+	return (source.m_vecNetworkOrigin.Distance(target.m_vecNetworkOrigin) - source.m_flHullRadius - target.m_flHullRadius) / proj_speed
 }
 
 export function IsInside(npc: C_DOTA_BaseNPC, vec: Vector, radius: number): boolean {
@@ -288,8 +288,8 @@ export function IsInside(npc: C_DOTA_BaseNPC, vec: Vector, radius: number): bool
 		vec_x = vec.x, vec_y = vec.y,
 		direction_x = direction.x, direction_y = direction.y,
 		radius_sqr = radius ** 2
-	for (let i = Math.floor(vec.DistTo2D(npc_pos) / radius) + 1; i--; )
-		// if (npc_pos.DistTo2D(new Vector(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
+	for (let i = Math.floor(vec.Distance2D(npc_pos) / radius) + 1; i--; )
+		// if (npc_pos.Distance2D(new Vector(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
 		// optimized version, as V8 unable to optimize any native code by inlining
 		if ((((vec_x - direction_x * i * radius - npc_pos_x) ** 2) + ((vec_y - direction_y * i * radius - npc_pos_y) ** 2)) <= radius_sqr)
 			return true
@@ -393,7 +393,7 @@ export function AbsorbedDamage(target: C_DOTA_BaseNPC, dmg: number, damage_type:
 			}
 			case "bristleback_bristleback": {
 				if (source !== undefined) {
-					let rot_angle = target.FindRotationAngle(source.m_vecNetworkOrigin)
+					let rot_angle = source.m_vecNetworkOrigin.FindRotationAngle(target)
 					if (rot_angle > 1.90)
 						dmg *= 1 - abil.GetSpecialValue("back_damage_reduction") / 100
 					else if (rot_angle > 1.20)
@@ -559,7 +559,7 @@ export function CalculateDamageByHand(target: C_DOTA_BaseNPC, source: C_DOTA_Bas
 	}
 	{
 		let abil = abils.find(([item, name]) => name === "riki_permanent_invisibility")
-		if (abil !== undefined && (source.m_vecForward.AngleBetweenTwoFaces(target.m_vecForward) * 180 / Math.PI) < abil[0].GetSpecialValue("backstab_angle"))
+		if (abil !== undefined && (source.m_vecForward.AngleBetweenFaces(target.m_vecForward) * 180 / Math.PI) < abil[0].GetSpecialValue("backstab_angle"))
 			damage += abil[0].GetSpecialValue("damage_multiplier") * (source as C_DOTA_BaseNPC_Hero).m_flAgilityTotal
 	}
 	damage *= 1 - (armor * 0.05) / (1 + Math.abs(armor) * 0.05)
@@ -620,7 +620,7 @@ export function GetHealthAfter(ent: C_DOTA_BaseNPC, delay: number, include_proje
 	if (include_projectiles)
 		Projectiles.GetAllTracking().forEach(proj => {
 			let source = proj.m_hSource
-			if (proj.m_hTarget === ent && source !== undefined && proj.m_bIsAttack && !proj.m_bIsEvaded && (proj.m_vecPosition.DistTo(proj.m_vecTarget) / proj.m_iSpeed) <= delay)
+			if (proj.m_hTarget === ent && source !== undefined && proj.m_bIsAttack && !proj.m_bIsEvaded && (proj.m_vecPosition.Distance(proj.m_vecTarget) / proj.m_iSpeed) <= delay)
 				hpafter -= CalculateDamageByHand(ent, source)
 		})
 	return Math.min(hpafter + ent.m_flHealthThinkRegen * delay, ent.m_iMaxHealth)
@@ -651,7 +651,7 @@ export function FindAttackingUnit(npc: C_DOTA_BaseNPC): C_DOTA_BaseNPC {
 		is_default_creep = npc.m_bIsCreep && !npc.m_bIsControllableByAnyPlayer
 	return orderBy(NPCs.filter(npc_ =>
 		npc_ !== npc &&
-		npc_.m_vecNetworkOrigin.DistTo2D(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + npc_.m_flHullRadius) &&
+		npc_.m_vecNetworkOrigin.Distance2D(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + npc_.m_flHullRadius) &&
 		!npc_.m_bIsInvulnerable &&
 		IsInside(npc, npc_.m_vecNetworkOrigin, npc_.m_flHullRadius) &&
 		(npc.IsEnemy(npc_) || (!is_default_creep && IsDeniable(npc_))),
@@ -753,21 +753,21 @@ export function arrayRemove<T>(ar: T[], el: T) {
 		ar.splice(id, 1)
 }
 
-Events.addListener("onSendMove", cmd => cmd.vec_under_cursor.CopyTo(CursorWorldVec))
+Events.on("onSendMove", cmd => CursorWorldVec = cmd.vec_under_cursor)
 
-Events.addListener("onEntityCreated", ent => {
+Events.on("onEntityCreated", ent => {
 	if (ent instanceof C_DOTA_BaseNPC)
 		NPCs.push(ent)
 })
 
-Events.addListener("onEntityDestroyed", (ent, ent_id) => {
+Events.on("onEntityDestroyed", (ent, ent_id) => {
 	if (ent instanceof C_DOTA_BaseNPC)
 		arrayRemove(NPCs, ent)
 	// loop-optimizer: KEEP
 	attacks = attacks.filter((data, attacker_id) => attacker_id !== ent_id && data[2] !== ent)
 })
 
-Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
+Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 	if (activity === 1503 && !npc.m_bIsRangedAttacker) {
 		let delay = (1 / npc.m_fAttacksPerSecond) - 0.06
 		attacks[npc.m_iID] = [
@@ -778,7 +778,7 @@ Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castp
 	}
 })
 
-Events.addListener("onUnitAnimationEnd", npc => {
+Events.on("onUnitAnimationEnd", npc => {
 	let id = npc.m_iID
 	let found = attacks[id]
 	if (found === undefined)
@@ -796,12 +796,12 @@ Events.addListener("onUnitAnimationEnd", npc => {
 	]
 })
 
-Events.addListener("onGameEnded", () => {
+Events.on("onGameEnded", () => {
 	attacks = []
 	NPCs = []
 })
 
-Events.addListener("onTick", () => {
+Events.on("onTick", () => {
 	// attack sanitizer
 	let time = GameRules.m_fGameTime
 	// loop-optimizer: KEEP
@@ -813,7 +813,7 @@ Events.addListener("onTick", () => {
 	for (let i = 0, end = NPCs.length; i < end; i++) {
 		let npc = NPCs[i]
 		if (npc.m_iszUnitName !== undefined) {
-			Events.emit("onNPCCreated", npc)
+			Events.emit("onNPCCreated", false, npc)
 			NPCs.splice(i++, 1)
 			end--
 		}

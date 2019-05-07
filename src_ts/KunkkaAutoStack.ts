@@ -19,7 +19,7 @@ var spots: Vector[] = /*Utils.orderBy(*/[
 	},
 	is_stacking: boolean = false
 
-Events.addListener("onDraw", () => {
+Events.on("onDraw", () => {
 	if (!IsInGame() || !config.visals)
 		return
 	spots.forEach((spot, i) => {
@@ -30,7 +30,7 @@ Events.addListener("onDraw", () => {
 		Renderer.Text(screen_pos.x, screen_pos.y, (i + 1).toString(), 0, 255, 0)
 	})
 })
-Events.addListener("onTick", () => {
+Events.on("onTick", () => {
 	if (!config.enabled || is_stacking)
 		return
 	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC,
@@ -56,7 +56,7 @@ Events.addListener("onTick", () => {
 	var my_vec: Vector = MyEnt.m_vecNetworkOrigin,
 		cast_range: number = Utils.GetCastRange(MyEnt, torrent)
 	// loop-optimizer: KEEP
-	Utils.orderBy(spots.filter(spot => spot.DistTo2D(my_vec) < cast_range), spot => spot.DistTo2D(my_vec)).every(spot => {
+	Utils.orderBy(spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
 		Orders.CastPosition(MyEnt, torrent, spot, false)
 		is_stacking = true
 		setTimeout(torrent.m_fCastPoint * 1000 + 30, () => is_stacking = false)
@@ -64,9 +64,9 @@ Events.addListener("onTick", () => {
 	})
 })
 
-Events.addListener("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !is_stacking) // cancel orders while stacking
+Events.on("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !is_stacking) // cancel orders while stacking
 
-/*Events.addListener("onWndProc", (message_type, wParam) => {
+/*Events.on("onWndProc", (message_type, wParam) => {
 	if (!IsInGame())
 		return true
 	let key = parseInt(wParam as any)
@@ -83,7 +83,7 @@ Events.addListener("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlaye
 			)
 		var ancientsPositionSum = ancients.map(ancient => ancient.m_vecNetworkOrigin).reduce((sum, vec): number[] => sum ? [sum[0] + vec[0], sum[1] + vec[1], sum[2] + vec[2]] : vec),
 			ancientsPosition = new Vector(ancientsPositionSum[0] / ancients.length, ancientsPositionSum[1] / ancients.length, ancientsPositionSum[2] / ancients.length)
-			var failed = ancients.some(ancient => ancient.m_vecNetworkOrigin.DistTo(ancientsPosition) >= torrent_radius)
+			var failed = ancients.some(ancient => ancient.m_vecNetworkOrigin.Distance(ancientsPosition) >= torrent_radius)
 			if (!failed) {
 				console.log(ancientsPosition)
 				Orders.CastPosition(MyEnt, torrent, ancientsPosition, false)

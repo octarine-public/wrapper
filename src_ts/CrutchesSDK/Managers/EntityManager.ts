@@ -2,7 +2,7 @@
 
 var entitiesCache: Entity[] = [];
 
-Events.addListener("onEntityCreated", (ent, id) => {
+Events.on("onEntityCreated", (ent, id) => {
 	console.log(ent.m_iID);
 	console.log(id);
 
@@ -13,7 +13,7 @@ Events.addListener("onEntityCreated", (ent, id) => {
 	console.log(JSON.stringify(ent, null, "\t"));
 })
 
-Events.addListener("onEntityDestroyed", ent => {
+Events.on("onEntityDestroyed", ent => {
 	console.log(ent);
 
 	const id = entitiesCache.indexOf(new Entity(ent));

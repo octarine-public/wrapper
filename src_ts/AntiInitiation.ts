@@ -107,11 +107,11 @@ var Abils_ = [
 	BuffsDisablers: Array<[string, boolean, boolean?]> = [],
 	heroes: C_DOTA_BaseNPC_Hero[] = []
 
-Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (npc instanceof C_DOTA_BaseNPC_Hero && npc.IsEnemy(LocalDOTAPlayer) && npc.m_hReplicatingOtherHeroModel === undefined)
 		heroes.push(npc)
 })
-Events.addListener("onEntityDestroyed", ent => {
+Events.on("onEntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC)
 		Utils.arrayRemove(heroes, ent)
 })
@@ -122,7 +122,7 @@ function GetAbilArray(abilNameToSearch: string) {
 
 var flags: boolean[] = [],
 	disabling = false
-Events.addListener("onTick", () => {
+Events.on("onTick", () => {
 	if (!config.enabled)
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
@@ -135,7 +135,7 @@ Events.addListener("onTick", () => {
 		return
 })
 
-Events.addListener("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !disabling)
+Events.on("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !disabling)
 
 function Disable(pl_ent: C_DOTA_BaseNPC, hero: C_DOTA_BaseNPC, DisableAr: Array<[string, boolean, boolean?]>, Abil?: C_DOTABaseAbility) {
 	let delta = (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT) + Utils.GetRotationTime(pl_ent, hero.m_vecNetworkOrigin)) / 1000 + config.additional_delay
@@ -160,7 +160,7 @@ function Disable(pl_ent: C_DOTA_BaseNPC, hero: C_DOTA_BaseNPC, DisableAr: Array<
 			return !abil.m_bIsHidden
 				&& abil.m_fCooldown === 0
 				&& abil.IsManaEnough(pl_ent)
-				&& (cast_range <= 0 || pl_ent.DistTo2D(hero) <= cast_range + hero.m_flHullRadius * 2)
+				&& (cast_range <= 0 || pl_ent.Distance2D(hero) <= cast_range + hero.m_flHullRadius * 2)
 		})
 	if (disable_abil === undefined)
 		return false
@@ -182,7 +182,7 @@ function TransformToAvailable(pl_ent: C_DOTA_BaseNPC, abil_arrays: Array<[string
 	)
 }
 
-Events.addListener("onGameStarted", pl_ent => {
+Events.on("onGameStarted", pl_ent => {
 	Abils = TransformToAvailable(pl_ent, Abils_)
 	BuffsDisablers = TransformToAvailable(pl_ent, BuffsDisablers_)
 })

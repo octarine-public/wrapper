@@ -12,7 +12,7 @@ var config: any = {
 	creeps: C_DOTA_BaseNPC_Creep_Lane[] = [],
 	creepsMovePosition: Vector
 
-// Events.addListener("onDraw", () => {
+// Events.on("onDraw", () => {
 // 	if (!IsInGame() || !enabled)
 // 		return
 // 	creeps.filter(creep => creep.m_bIsValid).map(creep => creep.m_vecNetworkOrigin).forEach(vec => {
@@ -35,8 +35,8 @@ var config: any = {
 // 	}
 // })
 
-Events.addListener("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !enabled || Utils.GetOrdersWithoutSideEffects().includes(order.order_type))
-Events.addListener("onTick", () => {
+Events.on("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !enabled || Utils.GetOrdersWithoutSideEffects().includes(order.order_type))
+Events.on("onTick", () => {
 	if (!enabled)
 		return
 	last_time = GameRules.m_fGameTime
@@ -55,19 +55,19 @@ Events.addListener("onTick", () => {
 		return
 	}
 	var flag = true
-	Utils.orderBy(creeps, creep => creep.DistTo2D(MyEnt)).every(creep => {
+	Utils.orderBy(creeps, creep => creep.Distance2D(MyEnt)).every(creep => {
 		if (!creep.m_bIsMoving && !creep.IsInRange(MyEnt, 50))
 			return true
-		var creepDistance = creepsMovePosition.DistTo2D(creep.m_vecNetworkOrigin) + 50,
-			heroDistance = creepsMovePosition.DistTo2D(MyEnt.m_vecNetworkOrigin),
-			creepAngle = creep.FindRotationAngle(MyEnt.m_vecNetworkOrigin)
+		var creepDistance = creepsMovePosition.Distance2D(creep.m_vecNetworkOrigin) + 50,
+			heroDistance = creepsMovePosition.Distance2D(MyEnt.m_vecNetworkOrigin),
+			creepAngle = MyEnt.m_vecNetworkOrigin.FindRotationAngle(creep)
 		if (creepDistance < heroDistance && creepAngle > 2 || creepAngle > 2.5)
 			return true
 		var moveDistance = config.block_sensitivity / MyEnt.m_fIdealSpeed * 100
 		if (MyEnt.m_fIdealSpeed - creep.m_fIdealSpeed > 50)
 			moveDistance -= (MyEnt.m_fIdealSpeed - creep.m_fIdealSpeed) / 2
 		var movePosition = creep.InFront(Math.max(moveDistance, moveDistance * creepAngle))
-		if (movePosition.DistTo2D(creepsMovePosition) - 50 > heroDistance)
+		if (movePosition.Distance2D(creepsMovePosition) - 50 > heroDistance)
 			return true
 		if (creepAngle < 0.2 && MyEnt.m_bIsMoving)
 			return true
@@ -80,22 +80,22 @@ Events.addListener("onTick", () => {
 		return
 	if (MyEnt.m_bIsMoving)
 		Orders.EntStop(MyEnt, false)
-	else if (MyEnt.FindRotationAngle(creepsMovePosition) > 1.5)
-		Orders.MoveToPos(MyEnt, MyEnt.m_vecNetworkOrigin.ExtendVector(creepsMovePosition, 10), false)
+	else if (creepsMovePosition.FindRotationAngle(MyEnt) > 1.5)
+		Orders.MoveToPos(MyEnt, MyEnt.m_vecNetworkOrigin.Extend(creepsMovePosition, 10), false)
 })
-Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (npc.m_bIsLaneCreep && !npc.IsEnemy(LocalDOTAPlayer))
 		lane_creeps.push(npc as C_DOTA_BaseNPC_Creep)
 	if (npc.m_bIsTower && npc.m_iszUnitName === "npc_dota_badguys_tower2_mid")
 		towers.push(npc as C_DOTA_BaseNPC_Tower)
 })
-Events.addListener("onEntityDestroyed", ent => {
+Events.on("onEntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC_Creep)
 		Utils.arrayRemove(lane_creeps, ent)
 	else if (ent instanceof C_DOTA_BaseNPC_Tower)
 		Utils.arrayRemove(towers, ent)
 })
-Events.addListener("onWndProc", (message_type, wParam) => {
+Events.on("onWndProc", (message_type, wParam) => {
 	if (!IsInGame() || parseInt(wParam as any) !== config.hotkey)
 		return true
 	if (message_type === 0x100) { // WM_KEYDOWN
@@ -107,7 +107,7 @@ Events.addListener("onWndProc", (message_type, wParam) => {
 	}
 	return true
 })
-Events.addListener("onGameEnded", () => {
+Events.on("onGameEnded", () => {
 	last_time = Number.MIN_SAFE_INTEGER
 	lane_creeps = []
 	towers = []

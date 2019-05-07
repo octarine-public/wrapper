@@ -59,8 +59,8 @@ function onNPCAdded(ent: C_DOTA_BaseNPC) {
 	}
 }
 
-//Events.addListener("onGameStarted", lp => allNeutrals = []);
-Events.addListener("onGameEnded", () => {
+//Events.on("onGameStarted", lp => allNeutrals = []);
+Events.on("onGameEnded", () => {
 	allNeutrals = []
 	allBloodTargets = []
 	allTechiesMines = []
@@ -69,8 +69,8 @@ Events.addListener("onGameEnded", () => {
 	latest_plant = undefined
 })
 
-Events.addListener("onParticleCreated", console.log)
-Events.addListener("onParticleCreated", (id, path, psHandle, attach, target?) => {
+Events.on("onParticleCreated", console.log)
+Events.on("onParticleCreated", (id, path, psHandle, attach, target?) => {
 	let mine_name
 
 	if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)_plant.vpcf$/.exec(path)) !== null) {
@@ -80,8 +80,8 @@ Events.addListener("onParticleCreated", (id, path, psHandle, attach, target?) =>
 	} else if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)(s_detonate|_explode).vpcf$/.exec(path)) !== null)
 		waiting_explode.push([id, mine_name[1]])
 })
-Events.addListener("onParticleUpdatedEnt", console.log)
-Events.addListener("onParticleUpdatedEnt", (id, control_point, ent, attach, attachment, position) => {
+Events.on("onParticleUpdatedEnt", console.log)
+Events.on("onParticleUpdatedEnt", (id, control_point, ent, attach, attachment, position) => {
 	if (control_point !== 0 || attach !== ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW)
 		return false
 	waiting_explode.some(([particle_id, mine_name], i) => {
@@ -92,7 +92,7 @@ Events.addListener("onParticleUpdatedEnt", (id, control_point, ent, attach, atta
 				return false
 			let mines = obj[0]
 			return mines.some((vec, i) => {
-				if (vec.DistTo(position) !== 0)
+				if (vec.Distance(position) !== 0)
 					return false
 				mines.splice(i, 1)
 				obj[1] = CalculateCenter(mines)
@@ -103,12 +103,12 @@ Events.addListener("onParticleUpdatedEnt", (id, control_point, ent, attach, atta
 		return true
 	})
 })
-// Events.addListener("onUnitAnimation", console.log)
-Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
+// Events.on("onUnitAnimation", console.log)
+Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 
 })
-// Events.addListener("onUnitAnimationEnd", console.log)
-Events.addListener("onUnitAnimationEnd", npc => {
+// Events.on("onUnitAnimationEnd", console.log)
+Events.on("onUnitAnimationEnd", npc => {
 
 })
 
@@ -128,8 +128,8 @@ function CalculateCenter(vecs: Vector[]): Vector {
 	)
 }
 
-Events.addListener("onParticleUpdated", console.log)
-Events.addListener("onParticleUpdated", (id: number, control_point: number, position: Vector) => {
+Events.on("onParticleUpdated", console.log)
+Events.on("onParticleUpdated", (id: number, control_point: number, position: Vector) => {
 	if (control_point === 1)
 		waiting_spawn.some(([particle_id, mine_name], i) => {
 			if (particle_id !== id)
@@ -139,7 +139,7 @@ Events.addListener("onParticleUpdated", (id: number, control_point: number, posi
 					return false
 				let center = obj[1],
 					mines = obj[0]
-				if (center.DistTo(position) > 100)
+				if (center.Distance(position) > 100)
 					return false
 				mines.push(position)
 				obj[1] = CalculateCenter(mines)
@@ -158,7 +158,7 @@ Events.addListener("onParticleUpdated", (id: number, control_point: number, posi
 					return false
 				let mines = obj[0]
 				return mines.some((vec, i) => {
-					if (vec.DistTo(position) !== 0)
+					if (vec.Distance(position) !== 0)
 						return false
 					mines.splice(i, 1)
 					obj[1] = CalculateCenter(mines)
@@ -170,16 +170,16 @@ Events.addListener("onParticleUpdated", (id: number, control_point: number, posi
 		})
 })
 
-Events.addListener("onNPCCreated", onNPCAdded)
+Events.on("onNPCCreated", onNPCAdded)
 
-//Events.addListener("onEntityCreated", console.log);
+//Events.on("onEntityCreated", console.log);
 
-Events.addListener("onEntityDestroyed", (ent: C_BaseEntity) => {
+Events.on("onEntityDestroyed", (ent: C_BaseEntity) => {
 	if (ent instanceof C_DOTA_BaseNPC)
 		arrayRemove(allNeutrals, ent)
 })
 
-Events.addListener("onBloodImpact", (target: C_BaseEntity) => {
+Events.on("onBloodImpact", (target: C_BaseEntity) => {
 	if (!stateMain.value || !phBloodState.value)
 		return
 
@@ -195,7 +195,7 @@ Events.addListener("onBloodImpact", (target: C_BaseEntity) => {
 		arrayRemove(allBloodTargets, target))
 })
 
-Events.addListener("onDraw", () => {
+Events.on("onDraw", () => {
 	if (!stateMain.value)
 		return
 
@@ -273,7 +273,7 @@ Events.addListener("onDraw", () => {
 
 })
 
-Events.addListener("onTick", () => {
+Events.on("onTick", () => {
 	if (!stateMain.value)
 		return
 

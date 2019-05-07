@@ -1,5 +1,3 @@
-import Vector_2 from "./Vector"
-
 /*
 	TODO?
 	Maybe change callback OnParticleEffectAdded | OnTeamVisibilityChanged to emits(events)?
@@ -28,10 +26,10 @@ export default class Entity {
 	get ID(): number {
 		return this.ent.m_iID
 	}
-	// temporary, while Vector_2 not included to Native code
-	get Forward(): Vector_2 {
+	// temporary, while Vector not included to Native code
+	get Forward(): Vector {
 		// return this.ent.m_vecForward;
-		return Vector_2.fromObject(this.ent.m_vecForward)
+		return Vector.fromObject(this.ent.m_vecForward)
 	}
 	/**
 	 * @param ent if undefuned => this compare with LocalPlayer
@@ -42,19 +40,19 @@ export default class Entity {
 			: this.Team !== ent.Team
 	}
 
-	IsInRange(ent: Vector_2 | Entity, range: number): boolean {
+	IsInRange(ent: Vector | Entity, range: number): boolean {
 		return this.Distance(ent) <= range
 	}
 
-	FindRotationAngle(vec: Vector_2 | Entity): number {
+	FindRotationAngle(vec: Vector | Entity): number {
 		if (vec instanceof Entity)
 			vec = (vec as Entity).Position
 
 		var thisPos = this.Position,
 			angle = Math.abs (
 				Math.atan2 (
-					(vec as Vector_2).y - thisPos.y,
-					(vec as Vector_2).x - thisPos.x,
+					(vec as Vector).y - thisPos.y,
+					(vec as Vector).x - thisPos.x,
 				) - this.Forward.Angle,
 			)
 
@@ -71,10 +69,10 @@ export default class Entity {
 	get MaxHP(): number {
 		return this.ent.m_iMaxHealth
 	}
-	// temporary, while Vector_2 not included to Native code
-	get Position(): Vector_2 {
+	// temporary, while Vector not included to Native code
+	get Position(): Vector {
 		// return this.ent.m_vecNetworkOrigin;
-		return Vector_2.fromObject(this.ent.m_vecNetworkOrigin)
+		return Vector.fromObject(this.ent.m_vecNetworkOrigin)
 	}
 	get Team(): DOTATeam_t {
 		return this.ent.m_iTeamNum
@@ -108,11 +106,11 @@ export default class Entity {
 	// get Name(): string {
 	// 	return this.ent.m_pEntity.m_name;
 	// }
-	// get Rotation(): Vector_2 {
+	// get Rotation(): Vector {
 
 	// }
 
-	// get RotationRad(): Vector_2 {
+	// get RotationRad(): Vector {
 
 	// }
 
@@ -123,17 +121,17 @@ export default class Entity {
 		return this === (ent as Entity)
 	}
 
-	Distance(ent: Entity | Vector_2): number {
+	Distance(ent: Entity | Vector): number {
 		if (ent instanceof Entity)
 			return this.Position.Distance(ent.Position)
 
-		return this.Position.Distance(ent as Vector_2)
+		return this.Position.Distance(ent as Vector)
 	}
-	Distance2D(ent: Entity | Vector_2): number {
+	Distance2D(ent: Entity | Vector): number {
 		if (ent instanceof Entity)
 			return this.Position.Distance(ent.Position)
 
-		return this.Position.Distance(ent as Vector_2)
+		return this.Position.Distance(ent as Vector)
 	}
 
 	Select(toToCurrentSelection: boolean = false): boolean {
@@ -145,21 +143,21 @@ export default class Entity {
 	// }
 
 	OnParticleEffectAdded(callbackFn: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity) => void): void {
-		Events.addListener("onParticleCreated", (id, path, particleSystemHandle, attach, target) => {
+		Events.on("onParticleCreated", (id, path, particleSystemHandle, attach, target) => {
 			if (target === this.ent)
 				callbackFn(id, path, particleSystemHandle, attach, this)
 		})
 	}
 
 	// OnParticleEffectUpdated(callbackFn: (id: number, control_point: number, vec: Vector) => void): void {
-	// 	Events.addListener("onParticleUpdated", (id, control_point, vec) => {
+	// 	Events.on("onParticleUpdated", (id, control_point, vec) => {
 	// 		//if (target.m_iID === this.ID)
 	// 			callbackFn.apply(this, arguments);
 	// 	});
 	// }
 
 	OnTeamVisibilityChanged(callbackFn: (npc: C_DOTA_BaseNPC) => void): void {
-		Events.addListener("onTeamVisibilityChanged", npc => {
+		Events.on("onTeamVisibilityChanged", npc => {
 			if (npc === this.ent)
 				callbackFn(npc)
 		})

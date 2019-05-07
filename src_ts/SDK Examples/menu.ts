@@ -154,7 +154,7 @@ let menuList = menuTest.AddListBox("List of status", [
 	"items keybinds",
 ], [true, false, true, false])
 
-/* Events.addListener("onTick", () => {
+/* Events.on("onTick", () => {
 	console.log("selected_flags:", menuList.selected_flags);
 
 	console.log("selected_flags[0]:", menuList.selected_flags[0]);

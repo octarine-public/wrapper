@@ -5,11 +5,11 @@ var enabled = true,
 	npcs: Array<[C_DOTA_BaseNPC, number]> = [],
 	particles: number[] = []
 
-Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (!npc.IsEnemy(LocalDOTAPlayer))
 		npcs.push([npc, npc.m_iID])
 })
-Events.addListener("onEntityDestroyed", ent => {
+Events.on("onEntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC)
 		npcs.some(([npc], i) => {
 			if (npc === ent) {
@@ -19,7 +19,7 @@ Events.addListener("onEntityDestroyed", ent => {
 			return false
 		})
 })
-Events.addListener("onUpdate", () => {
+Events.on("onUpdate", () => {
 	if (!enabled || IsPaused())
 		return
 	npcs.forEach(([npc, id]) => {

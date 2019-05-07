@@ -5,7 +5,7 @@ let mks: C_DOTA_Unit_Hero_MonkeyKing[] = [],
 	techiess: C_DOTA_Unit_Hero_Techies[] = [],
 	enabled = true
 
-Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (npc === LocalDOTAPlayer.m_hAssignedHero)
 		return
 	if (npc instanceof C_DOTA_Unit_Hero_MonkeyKing)
@@ -13,14 +13,14 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (npc instanceof C_DOTA_Unit_Hero_Techies)
 		techiess.push(npc)
 })
-Events.addListener("onEntityDestroyed", (npc: C_DOTA_BaseNPC) => {
+Events.on("onEntityDestroyed", (npc: C_DOTA_BaseNPC) => {
 	if (npc instanceof C_DOTA_Unit_Hero_MonkeyKing)
 		Utils.arrayRemove(mks, npc)
 	if (npc instanceof C_DOTA_Unit_Hero_Techies)
 		Utils.arrayRemove(techiess, npc)
 })
 
-Events.addListener("onTick", () => {
+Events.on("onTick", () => {
 	if (!enabled)
 		return
 	const pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero
@@ -40,7 +40,7 @@ Events.addListener("onTick", () => {
 				if (!mk.m_bIsVisible || !mk.m_bIsAlive)
 					return false
 				let m_nPerchedTree = mk.m_nPerchedTree
-				if (m_nPerchedTree === 4294967295 || mk.DistTo2D(pl_ent) > castrange)
+				if (m_nPerchedTree === 4294967295 || mk.Distance2D(pl_ent) > castrange)
 					return false
 				Orders.CastTargetTree(pl_ent, item, m_nPerchedTree, false)
 				return true
@@ -54,7 +54,7 @@ Events.addListener("onTick", () => {
 		[...mks, ...techiess].some(hero => {
 			if (!hero.m_bIsVisible || !hero.m_bIsAlive)
 				return false
-			if (hero.DistTo2D(pl_ent) > force_castrange)
+			if (hero.Distance2D(pl_ent) > force_castrange)
 				return false
 			if (hero.GetBuffByName("modifier_item_forcestaff_active") !== undefined)
 				return false

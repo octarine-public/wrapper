@@ -8,7 +8,8 @@
 	},
 	"include": [
 		"d.ts/**/*.d.ts",
-		"src_ts/**/*.ts"
+		"src_ts/**/*.ts",
+		"src_bootstrap/**/*.ts"
 	],
 	"compileOnSave": true,
 }

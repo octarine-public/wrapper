@@ -22,8 +22,8 @@ function TryDodge(pl_ent: C_DOTA_BaseNPC, proj: TrackingProjectile | LinearProje
 	if (proj instanceof TrackingProjectile) {
 		switch (path) {
 			case "particles/units/heroes/hero_alchemist/alchemist_unstable_concoction_projectile.vpcf":
-				if (proj.m_vecTarget.DistTo2D(pl_ent.m_vecNetworkOrigin) <= 200 + pl_ent.m_flHullRadius)
-					Dodge(pl_ent, proj.m_vecTarget.DistTo(proj.m_vecPosition) / proj.m_iSpeed, proj.m_vecTarget, 200)
+				if (proj.m_vecTarget.Distance2D(pl_ent.m_vecNetworkOrigin) <= 200 + pl_ent.m_flHullRadius)
+					Dodge(pl_ent, proj.m_vecTarget.Distance(proj.m_vecPosition) / proj.m_iSpeed, proj.m_vecTarget, 200)
 				break
 			default:
 				break
@@ -32,7 +32,7 @@ function TryDodge(pl_ent: C_DOTA_BaseNPC, proj: TrackingProjectile | LinearProje
 		console.log(path)
 }
 
-Events.addListener("onTick", () => {
+Events.on("onTick", () => {
 	if (!enabled || !IsInGame())
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
@@ -41,7 +41,7 @@ Events.addListener("onTick", () => {
 	// loop-optimizer: KEEP
 	proj_list.forEach(proj => TryDodge(pl_ent, proj))
 })
-Events.addListener("onTrackingProjectileCreated", (proj, sourceAttachment, path) => {
+Events.on("onTrackingProjectileCreated", (proj, sourceAttachment, path) => {
 	if (!enabled || !IsInGame())
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
@@ -51,7 +51,7 @@ Events.addListener("onTrackingProjectileCreated", (proj, sourceAttachment, path)
 	proj_list.push(proj)
 	TryDodge(pl_ent, proj)
 })
-Events.addListener("onLinearProjectileCreated", (proj, origin, velocity, ent, path) => {
+Events.on("onLinearProjectileCreated", (proj, origin, velocity, ent, path) => {
 	if (!enabled || !IsInGame())
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
@@ -61,5 +61,5 @@ Events.addListener("onLinearProjectileCreated", (proj, origin, velocity, ent, pa
 	proj_list.push(proj)
 	TryDodge(pl_ent, proj)
 })
-Events.addListener("onTrackingProjectileDestroyed", DeleteProjectile)
-Events.addListener("onLinearProjectileDestroyed", DeleteProjectile)
+Events.on("onTrackingProjectileDestroyed", DeleteProjectile)
+Events.on("onLinearProjectileDestroyed", DeleteProjectile)

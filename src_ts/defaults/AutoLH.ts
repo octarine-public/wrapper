@@ -148,7 +148,7 @@ function EnoughDamage(sender: C_DOTA_BaseNPC_Hero, target: C_DOTA_BaseNPC, cur_t
 	return Utils.CalculateDamageByHand(target, sender) > Utils.GetHealthAfter(target, delay, false, sender, config.melee_time_offset) - config.creep_hp_offset
 }
 
-Events.addListener("onDraw", () => {
+Events.on("onDraw", () => {
 	if (enabled)
 		Renderer.Text(0, 0, "Auto LastHit enabled")
 	else {
@@ -172,7 +172,7 @@ Events.addListener("onDraw", () => {
 	glow_ents_old = glow_ents
 })
 
-Events.addListener("onTick", () => {
+Events.on("onTick", () => {
 	if (!enabled || IsPaused())
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero
@@ -191,7 +191,7 @@ Events.addListener("onTick", () => {
 		if ((config.mode & AutoLH_Mode.DENY) && (ent.m_iTeamNum === pl_ent_team) && Utils.IsDeniable(ent))
 			return true
 		return false
-	}).map(ent => [ent, ent.m_vecNetworkOrigin.DistTo2D(pl_ent_pos)]) as Array<[C_DOTA_BaseNPC, number]>).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent, ent, cur_time)), ([creep]) => creep.m_iHealth)
+	}).map(ent => [ent, ent.m_vecNetworkOrigin.Distance2D(pl_ent_pos)]) as Array<[C_DOTA_BaseNPC, number]>).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent, ent, cur_time)), ([creep]) => creep.m_iHealth)
 	glow_ents = (config.glow_enabled && config.glow_finder_range !== 0 ? config.glow_finder_range !== -1 ? filtered.filter(([ent, dist]) => dist <= config.glow_finder_range) : filtered : []).map(a => a[0])
 	if (!config.glow_only && !block_orders) {
 		let ent_pair = filtered.filter(([ent, dist]) => dist <= (attack_range + ent.m_flHullRadius))[0]
@@ -217,16 +217,16 @@ Events.addListener("onTick", () => {
 		})
 	}
 })
-Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (npc instanceof C_DOTA_BaseNPC_Creep)
 		attackable_ents.push(npc)
 })
-Events.addListener("onEntityDestroyed", ent => {
+Events.on("onEntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC_Creep)
 		Utils.arrayRemove(attackable_ents, ent)
 })
-Events.addListener("onPrepareUnitOrders", order => enabled && !config.glow_only ? Utils.GetOrdersWithoutSideEffects().includes(order.order_type) || !block_orders : true)
-Events.addListener("onWndProc", (message_type, wParam) => {
+Events.on("onPrepareUnitOrders", order => enabled && !config.glow_only ? Utils.GetOrdersWithoutSideEffects().includes(order.order_type) || !block_orders : true)
+Events.on("onWndProc", (message_type, wParam) => {
 	if (!IsInGame() || parseInt(wParam as any) !== config.hotkey)
 		return true
 	if (message_type === 0x100) // WM_KEYDOWN
@@ -238,7 +238,7 @@ Events.addListener("onWndProc", (message_type, wParam) => {
 	}
 	return true
 })
-Events.addListener("onGameEnded", () => {
+Events.on("onGameEnded", () => {
 	enabled = false
 	glow_ents = glow_ents_old = []
 })

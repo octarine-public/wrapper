@@ -47,7 +47,7 @@ combo.addAbility("arc_warden_flux", EComboAction.CURSOR_ENEMY)
 combo.addAbility("item_mask_of_madness", EComboAction.NO_TARGET)
 combo.addAbility("item_hurricane_pike", EComboAction.CURSOR_ENEMY)
 
-Events.addListener("onWndProc", (message_type, wParam) => {
+Events.on("onWndProc", (message_type, wParam) => {
 	if (!IsInGame() || executing !== 0 || parseInt(wParam as any) !== config.hotkey)
 		return true
 	if (message_type === 0x100) { // WM_KEYDOWN

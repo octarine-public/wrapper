@@ -73,8 +73,8 @@ combo.addDelay((caster, target) => {
 combo.addAbility("custom_cast", EComboAction.CURSOR_ENEMY, {
 	custom_cast: (caster, target) => {
 		let meteor = caster.GetAbilityByName("invoker_chaos_meteor"),
-			dist = caster.DistTo2D(target),
-			pos = target.m_vecNetworkOrigin.ExtendVector(caster.m_vecNetworkOrigin, Math.min(dist - 2, meteor.GetSpecialValue("area_of_effect")))
+			dist = caster.Distance2D(target),
+			pos = target.m_vecNetworkOrigin.Extend(caster.m_vecNetworkOrigin, Math.min(dist - 2, meteor.GetSpecialValue("area_of_effect")))
 		combo.vars.meteor_cast_position = pos
 		Orders.CastPosition(caster, meteor, pos, false)
 		return meteor.m_fCastPoint * 1000 + 30
@@ -85,7 +85,7 @@ PrepareSpheres("qqq", "invoker_cold_snap")
 combo.addDelay((caster, target) => {
 	let eul_buff = target.GetBuffByName("modifier_eul_cyclone")
 	if (eul_buff === undefined) return -1
-	let travel_time = combo.vars.travel_time = combo.vars.travel_time || caster.DistTo2D(target) / caster.GetAbilityByName("invoker_deafening_blast").GetSpecialValue("travel_speed")
+	let travel_time = combo.vars.travel_time = combo.vars.travel_time || caster.Distance2D(target) / caster.GetAbilityByName("invoker_deafening_blast").GetSpecialValue("travel_speed")
 	return (eul_buff.m_flDieTime - GameRules.m_fGameTime > travel_time) ? -1 : 0
 })
 combo.addAbility("invoker_deafening_blast", EComboAction.CURSOR_ENEMY)
@@ -106,7 +106,7 @@ Invoke("invoker_alacrity")
 PrepareSpheres("eee") // just for damage
 combo.addAbility("invoker_alacrity", EComboAction.SELF)*/
 
-Events.addListener("onWndProc", (message_type, wParam) => {
+Events.on("onWndProc", (message_type, wParam) => {
 	if (executing || !IsInGame() || parseInt(wParam as any) !== config.hotkey)
 		return true
 	if (message_type === 0x100) { // WM_KEYDOWN

@@ -4,7 +4,7 @@ import * as Utils from "Utils"
 var enabled = false,
 	doingTP = false
 
-Events.addListener("onTick", () => {
+Events.on("onTick", () => {
 	if (!enabled || doingTP || LocalDOTAPlayer.m_hAssignedHero === undefined)
 		return
 	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC

@@ -80,14 +80,14 @@ function onStateMain(state: boolean = stateMain.value) {
 
 // --- Callbacks
 
-Events.addListener("onGameStarted", lp => {
+Events.on("onGameStarted", lp => {
 
 	playersBlockList.SetToolTip(TOOLTIP_ONPLAYING)
 
 	onStateMain()
 })
 
-Events.addListener("onGameEnded", () => {
+Events.on("onGameEnded", () => {
 
 	onStateMain(false)
 
@@ -102,9 +102,9 @@ Events.addListener("onGameEnded", () => {
 // --- Methods
 
 function registerEvents() {
-	registeredEvents.onEntityCreated = Events.addListener("onEntityCreated", onCheckEntity)
-	registeredEvents.onEntityDestroyed = Events.addListener("onEntityDestroyed", onEntityDestroyed)
-	registeredEvents.onUpdate = Events.addListener("onUpdate", onUpdate)
+	registeredEvents.onEntityCreated = Events.on("onEntityCreated", onCheckEntity)
+	registeredEvents.onEntityDestroyed = Events.on("onEntityDestroyed", onEntityDestroyed)
+	registeredEvents.onUpdate = Events.on("onUpdate", onUpdate)
 
 	// loop-optimizer: POSSIBLE_UNDEFINED
 	Entities.GetAllEntities().forEach(onCheckEntity)
@@ -233,7 +233,7 @@ function checkCourSelf(stateEnt: C_DOTA_BaseNPC_Hero, state: CourierState_t) {
 		case CourierState_t.COURIER_STATE_MOVING: // ?
 		case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
 			if (allyCourier.m_bFlyingCourier)
-				selfState = selfState && (allyCourier.FindRotationAngle(localHero.m_vecNetworkOrigin) < 0.2)
+				selfState = selfState && (localHero.m_vecNetworkOrigin.FindRotationAngle(allyCourier) < 0.2)
 			break
 	}
 	return selfState

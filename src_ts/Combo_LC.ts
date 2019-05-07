@@ -23,7 +23,7 @@ combo.addAbility("item_shivas_guard", EComboAction.NO_TARGET)
 combo.addAbility("item_satanic", EComboAction.CURSOR_ENEMY)
 combo.addAbility("legion_commander_duel", EComboAction.CURSOR_ENEMY)
 
-Events.addListener("onWndProc", (message_type, wParam) => {
+Events.on("onWndProc", (message_type, wParam) => {
 	if (executing || !IsInGame() || parseInt(wParam as any) !== hotkey)
 		return true
 	if (message_type === 0x100) { // WM_KEYDOWN

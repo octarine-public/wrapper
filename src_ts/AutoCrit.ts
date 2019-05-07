@@ -9,12 +9,12 @@ var config = {
 	target,
 	target_pos
 
-Events.addListener("onDraw", () => {
+Events.on("onDraw", () => {
 	if (enabled)
 		Renderer.Text(0, 100, "Auto Crit enabled")
 })
 
-Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
+Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 	if (!enabled || !npc.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID))
 		return
 	if (activity === 1503) {
@@ -31,7 +31,7 @@ Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castp
 	}
 })
 
-Events.addListener("onPrepareUnitOrders", order => {
+Events.on("onPrepareUnitOrders", order => {
 	if (order.unit === LocalDOTAPlayer.m_hAssignedHero)
 		switch (order.order_type) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
@@ -50,7 +50,7 @@ Events.addListener("onPrepareUnitOrders", order => {
 		}
 	return true
 })
-Events.addListener("onWndProc", (message_type, wParam) => {
+Events.on("onWndProc", (message_type, wParam) => {
 	if (!IsInGame() || parseInt(wParam as any) !== config.hotkey)
 		return true
 	if (message_type === 0x100) // WM_KEYDOWN
@@ -61,7 +61,7 @@ Events.addListener("onWndProc", (message_type, wParam) => {
 	}
 	return true
 })
-Events.addListener("onGameEnded", () => enabled = false)
+Events.on("onGameEnded", () => enabled = false)
 
 {
 	let root = new Menu_Node("Auto Crit")

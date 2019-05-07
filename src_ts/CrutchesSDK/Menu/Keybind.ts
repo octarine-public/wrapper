@@ -46,7 +46,7 @@ function getTopParent(node: Tree | Keybind): Tree {
 }
 
 // https://www.autoitscript.com/autoit3/docs/appendix/WinMsgCodes.htm
-Events.addListener("onWndProc", (msg, wParam) => {
+Events.on("onWndProc", (msg, wParam) => {
 
 	if (!IsInGame() || wParam === undefined)
 		return true

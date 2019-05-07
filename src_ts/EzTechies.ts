@@ -87,9 +87,9 @@ function NeedToTriggerMine(rmine: C_DOTA_BaseNPC, ent: C_DOTA_BaseNPC, forcestaf
 		TriggerRadius -= ent.m_fIdealSpeed * (RMineBlowDelay / 30)
 
 	return config.use_prediction
-		? ent.InFront(((ent.m_bIsMoving as any) * RMineBlowDelay) + (forcestaff ? ForcestaffUnits : 0)).DistTo2D(rmine.m_vecNetworkOrigin) <= TriggerRadius
+		? ent.InFront(((ent.m_bIsMoving as any) * RMineBlowDelay) + (forcestaff ? ForcestaffUnits : 0)).Distance2D(rmine.m_vecNetworkOrigin) <= TriggerRadius
 		: forcestaff
-			? rmine.m_vecNetworkOrigin.DistTo2D(ent.InFront(ForcestaffUnits)) <= TriggerRadius
+			? rmine.m_vecNetworkOrigin.Distance2D(ent.InFront(ForcestaffUnits)) <= TriggerRadius
 			: rmine.IsInRange(ent, TriggerRadius)
 }
 
@@ -179,12 +179,12 @@ function RegisterMine(npc: C_DOTA_BaseNPC) {
 	])
 }
 
-Events.addListener("onTick", onTick)
-Events.addListener("onGameStarted", pl_ent => {
+Events.on("onTick", onTick)
+Events.on("onGameStarted", pl_ent => {
 	if (pl_ent.m_iHeroID === HeroID_t.npc_dota_hero_techies)
 		techies = pl_ent as C_DOTA_Unit_Hero_Techies
 })
-Events.addListener("onGameEnded", () => {
+Events.on("onGameEnded", () => {
 	rmines = []
 	if (IsInGame())
 		// loop-optimizer: KEEP
@@ -194,7 +194,7 @@ Events.addListener("onGameEnded", () => {
 	heroes = []
 	techies = undefined as any
 })
-Events.addListener("onPrepareUnitOrders", args => {
+Events.on("onPrepareUnitOrders", args => {
 	if (!config.auto_stack)
 		return true
 	if (
@@ -219,7 +219,7 @@ Events.addListener("onPrepareUnitOrders", args => {
 	}
 	return true
 })
-Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (LocalDOTAPlayer === undefined)
 		return
 	if (npc.IsEnemy(LocalDOTAPlayer)) {
@@ -234,7 +234,7 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 			RegisterMine(npc)
 	}
 })
-Events.addListener("onEntityDestroyed", ent => {
+Events.on("onEntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC_Hero)
 		Utils.arrayRemove(heroes, ent)
 	else if (ent instanceof C_DOTA_NPC_TechiesMines && ent.m_iszUnitName === "npc_dota_techies_remote_mine") {

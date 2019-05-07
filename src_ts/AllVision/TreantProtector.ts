@@ -3,7 +3,7 @@ export default () => {
 	var treant_eyes: C_DOTA_NPC_Treant_EyesInTheForest[] = [],
 		pars: number[] = []
 
-	Events.addListener("onEntityCreated", (ent, id) => {
+	Events.on("onEntityCreated", (ent, id) => {
 		if (ent instanceof C_DOTA_NPC_Treant_EyesInTheForest) {
 			treant_eyes.push(ent)
 			var par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
@@ -11,7 +11,7 @@ export default () => {
 			pars[id] = par
 		}
 	})
-	Events.addListener("onEntityDestroyed", (ent, id) => {
+	Events.on("onEntityDestroyed", (ent, id) => {
 		const index = treant_eyes.indexOf(ent as C_DOTA_NPC_Treant_EyesInTheForest)
 		if (index !== -1) {
 			treant_eyes.splice(index, 1)
@@ -19,7 +19,7 @@ export default () => {
 		}
 	})
 
-	Events.addListener("onTick", () => {
+	Events.on("onTick", () => {
 		var local_team_flag = 1 << LocalDOTAPlayer.m_iTeamNum
 		// loop-optimizer: KEEP
 		treant_eyes.forEach((ent, i) => {
@@ -42,7 +42,7 @@ export default () => {
 		})
 	})
 
-	Events.addListener("onGameEnded", () => {
+	Events.on("onGameEnded", () => {
 		treant_eyes = []
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		pars.forEach(par => Particles.Destroy(par, true))

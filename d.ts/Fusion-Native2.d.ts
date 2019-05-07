@@ -256,7 +256,6 @@ declare var global: any
 
 declare var ConVars: ConVars
 declare var Entities: Entities
-declare var Events: Events
 declare var GameEvents: GameEvents
 declare var Minimap: Minimap
 declare var Projectiles: Projectiles
@@ -354,89 +353,6 @@ declare interface Entities {
 	GetByID(ent_id: number): C_BaseEntity
 }
 
-declare interface Events {
-	addListener(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): bigint
-	addListener(name: "onGameEnded", callback: () => void): bigint
-	/**
-	 * Also, this event emitted about ALL entities that have already been created before reload scripts
-	 */
-	addListener(name: "onEntityCreated", callback: (ent: C_BaseEntity, id: number) => void): bigint
-	addListener(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): bigint
-	addListener(name: "onWndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => boolean): bigint
-	addListener(name: "onTick", callback: () => void): bigint
-	addListener(name: "onUpdate", callback: () => void): bigint
-	addListener(name: "onSendMove", callback: (cmd: CUserCmd) => void): bigint
-	addListener(name: "onUnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): bigint
-	addListener(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): bigint
-	addListener(name: "onDraw", callback: () => void): bigint
-	addListener(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): bigint
-	addListener(name: "onParticleUpdated", callback: (id: number, control_point: number, position: Vector) => void): bigint
-	addListener(name: "onParticleUpdatedEnt", callback: (
-		id: number,
-		control_point: number,
-		ent: C_BaseEntity,
-		attach: ParticleAttachment_t,
-		attachment: number,
-		fallback_position: Vector,
-		include_wearables: boolean
-	) => void): bigint
-	addListener(name: "onBloodImpact", callback: (target: C_BaseEntity, scale: number, xnormal: number, ynormal: number) => void): bigint
-	addListener(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => boolean): bigint
-	addListener(name: "onLinearProjectileCreated", callback: (
-		proj: LinearProjectile,
-		origin: Vector,
-		velocity: Vector2D,
-		ent: C_BaseEntity,
-		path: string,
-		particleSystemHandle: bigint,
-		acceleration: Vector2D,
-		max_speed: number,
-		fow_radius: number,
-		sticky_fow_reveal: boolean,
-		distance: number,
-		colorgemcolor: Color
-	) => void): bigint
-	addListener(name: "onLinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): bigint
-	addListener(name: "onTrackingProjectileCreated", callback: (
-		proj: TrackingProjectile,
-		sourceAttachment: number,
-		path: string,
-		particleSystemHandle: bigint,
-		maximpacttime: number,
-		colorgemcolor: Color,
-		launch_tick: number
-	) => void): bigint
-	addListener(name: "onTrackingProjectileUpdated", callback: (
-		proj: TrackingProjectile,
-		vSourceLoc: Vector,
-		path: string,
-		particleSystemHandle: bigint,
-		colorgemcolor: Color,
-		launch_tick: number
-	) => void): bigint
-	addListener(name: "onTrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): bigint
-	addListener(name: "onUnitAnimation", callback: (
-		npc: C_DOTA_BaseNPC,
-		sequenceVariant: number,
-		playbackrate: number,
-		castpoint: number,
-		type: number,
-		activity: number
-	) => void): bigint
-	addListener(name: "onUnitAnimationEnd", callback: (
-		npc: C_DOTA_BaseNPC,
-		snap: boolean
-	) => void): bigint
-	addListener(name: "onBuffAdded", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): bigint
-	addListener(name: "onBuffRemoved", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): bigint
-	addListener(name: "onBuffStackCountChanged", listener: (buff: CDOTA_Buff) => void): bigint
-	addListener(name: "onCustomGameEvent", listener: (event_name: string, obj: any) => void): bigint
-
-	addListener(name: string, listener: Function): bigint
-	removeListener(name: string, listener_id: bigint): void
-	emit(name: string, ...args: any): void
-}
-
 declare interface GameEvents {
 	FireEventToClient(name: string, player_id: number, obj: any): void // BROKEN
 	FireEventToTeam(name: string, team_num: number, obj: any): void // BROKEN
@@ -461,180 +377,6 @@ interface QAngle {
 	constructor(angle: QAngle)
 	constructor(val: number)
 	constructor(pitch: number, yaw: number, roll: number)
-}
-
-declare class Vector {
-	/**
-	 * Those numbers can also be accessed thru vec[0], vec[1], vec[2]
-	 */
-	x: number
-	z: number
-	y: number
-	/** You can set (affecting on x, z, y) and get this value */
-	Angle: number
-	/**
-	 * @returns length of this vector
-	 */
-	readonly Length: number
-	/**
-	 * @returns Math.sqr(this.Length()), but faster
-	 */
-	readonly LengthSqr: number
-	readonly LengthRecipFast: number
-	/**
-	 * @returns are all components of this vector are 0?
-	 */
-	readonly IsZero: boolean
-	readonly Length2D: number
-	readonly Length2DSqr: number
-	/**
-	 * @returns is valid this vector? (every value must not be infinity/NaN)
-	 */
-	readonly IsValid: boolean
-
-	constructor()
-	constructor(vec: Vector)
-	constructor(val: number)
-	constructor(x: number, z: number)
-	constructor(x: number, z: number, y: number)
-
-	/**
-	 * Invalidates this vector
-	 */
-	Invalidate(): void
-	/**
-	 * @returns this vector in representation of Vector2D (equiv to new Vector2D(this.x, this.z))
-	 */
-	AsVector2D(): Vector2D
-	/**
-	 * Randomizes this vector within given values
-	 */
-	Random(minVal: number, maxVal: number): void
-	/**
-	 * Zeroes this vector
-	 */
-	Zero(): void
-	/**
-	 * Negates this vector (equiv to x = -x, z = -z, y = -y)
-	 */
-	Negate(): void
-	NormalizeInPlace(): number
-	IsLengthGreaterThan(val: number): boolean
-	IsLengthLessThan(val: number): boolean
-	WithinAABox(boxmin: Vector, boxmax: Vector): boolean
-	/**
-	 * Extends vector in the rotation direction
-	 * @param rotation for ex. Entity#Forward
-	 * @param dist distance to be added
-	 * @returns extended vector
-	 */
-	VectorRotation(rotation: Vector, dist: number): Vector
-	/**
-	 * @param vec 2nd vector
-	 * @returns angle between two vectors
-	 */
-	AngleBetweenTwoVectors(vec: Vector): number
-	/**
-	 * @param facing 2nd rotation
-	 * @returns angle between two rotations
-	 */
-	AngleBetweenTwoFaces(facing: Vector): number
-	/**
-	 * Copies current vector values onto given one
-	 */
-	CopyTo(vec: Vector): void
-	/**
-	 * Extends this vector in the direction of 2nd vector for given distance
-	 * @param vec 2nd vector
-	 * @param dist distance to extend
-	 * @returns extended vector
-	 */
-	ExtendVector(vec: Vector, dist: number): Vector
-	/**
-	 * @returns all entities in given range of this vector
-	 */
-	GetEntitiesInRange(range: number): C_BaseEntity[]	
-	/**
-	 * @param rot_speed must be taken from npc_heroes MovementTurnRate
-	 * @returns calculates full time that will be taken to rotate to this rotation
-	 */
-	RotationTime(rot_speed: number): number
-	/**
-	 * @param vec 2nd vector
-	 * @returns distance between this and 2nd vector
-	 */
-	DistTo(vec: Vector): number
-	DistTo2D(vec: Vector): number
-	MulAdd(a: Vector, b: Vector, scalar: number): void
-	Dot(vOther: Vector): number
-	Cross(vOther: Vector): Vector
-}
-
-declare class Vector2D {
-	/**
-	 * Those numbers can also be accessed thru vec[0], vec[1]
-	 */
-	x: number
-	y: number
-	/**
-	 * @returns length of this vector
-	 */
-	readonly Length: number
-	/**
-	 * @returns Math.sqr(this.Length()), but faster
-	 */
-	readonly LengthSqr: number
-	/**
-	 * @returns is valid this vector? (every value must not be infinity/NaN)
-	 */
-	readonly IsValid: boolean
-
-	constructor()
-	constructor(vec: Vector)
-	constructor(vec: Vector2D)
-	constructor(val: number)
-	constructor(x: number, y: number)
-
-	/**
-	 * Zeroes this vector
-	 */
-	Zero(): void
-	/**
-	 * @param vec 2nd vector
-	 * @returns distance between this and 2nd vector
-	 */
-	DistTo(vec: Vector2D): number
-	/**
-	 * Invalidates this vector
-	 */
-	Invalidate(): void
-	/**
-	 * Extends vector in the rotation direction
-	 * @param rotation for ex. Entity#Forward
-	 * @param dist distance to be added
-	 * @returns extended vector
-	 */
-	VectorRotation(rotation: Vector2D, dist: number): Vector2D
-	/**
-	 * @param vec 2nd vector
-	 * @returns angle between two vectors
-	 */
-	AngleBetweenTwoVectors(vec: Vector2D): number
-	/**
-	 * Copies current vector values onto given one
-	 */
-	CopyTo(vec: Vector2D): void
-	/**
-	 * Extends this vector in the direction of 2nd vector for given distance
-	 * @param vec 2nd vector
-	 * @param dist distance to extend
-	 * @returns extended vector
-	 */
-	ExtendVector(vec: Vector2D, dist: number): Vector2D
-	/**
-	 * @returns this vector in representation of Vector (equiv to new Vector(this.x, this.z))
-	 */
-	TransformToVector(): Vector
 }
 
 declare interface Projectiles {
@@ -5285,7 +5027,7 @@ declare class AnimResourceFrameSegment_t {
 declare class WorldBuilderParams_t {
 	m_nSizeBytesPerVoxel: number
 	m_flMinDrawVolumeSize: number
-	m_flMinDistToCamera: number
+	m_flMinDistanceCamera: number
 	m_flMinAtlasDist: number
 	m_flMinSimplifiedDist: number
 	m_flHorzFOV: number
@@ -5790,10 +5532,9 @@ declare class C_BaseFire extends C_BaseEntity {
 declare class C_BaseEntity extends C_GameEntity {
 	IsInRange(ent: C_BaseEntity, range: number): boolean
 	IsEnemy(ent: C_BaseEntity): boolean
-	DistTo(ent: C_BaseEntity): number
-	DistTo2D(ent: C_BaseEntity): number
+	Distance(ent: C_BaseEntity): number
+	Distance2D(ent: C_BaseEntity): number
 	InFront(dist: number): Vector
-	FindRotationAngle(vec: Vector): number
 	
 	readonly m_bIsValid: boolean
 	readonly m_bIsVisible: boolean

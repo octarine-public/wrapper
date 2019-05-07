@@ -3,7 +3,7 @@ export default () => {
 	var techies_mines: C_DOTA_NPC_TechiesMines[] = [],
 		pars: number[] = []
 
-	Events.addListener("onEntityCreated", (ent, id) => {
+	Events.on("onEntityCreated", (ent, id) => {
 		if (ent instanceof C_DOTA_NPC_TechiesMines) {
 			techies_mines.push(ent)
 			var par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
@@ -11,7 +11,7 @@ export default () => {
 			pars[id] = par
 		}
 	})
-	Events.addListener("onEntityDestroyed", (ent, id) => {
+	Events.on("onEntityDestroyed", (ent, id) => {
 		const index = techies_mines.indexOf(ent as C_DOTA_NPC_TechiesMines)
 		if (index !== -1) {
 			techies_mines.splice(index, 1)
@@ -19,7 +19,7 @@ export default () => {
 		}
 	})
 
-	Events.addListener("onTick", () => {
+	Events.on("onTick", () => {
 		var local_team_flag = 1 << LocalDOTAPlayer.m_iTeamNum
 		// loop-optimizer: KEEP
 		techies_mines.forEach((ent, i) => {
@@ -42,13 +42,13 @@ export default () => {
 		})
 	})
 
-	Events.addListener("onGameEnded", () => {
+	Events.on("onGameEnded", () => {
 		techies_mines = []
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		pars.forEach(par => Particles.Destroy(par, true))
 		pars = []
 	})
-	Events.addListener("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
+	Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 		if (npc instanceof C_DOTA_Unit_Hero_Techies && activity === 1510) {
 			if (pars[npc.m_iID])
 				Particles.Destroy(pars[npc.m_iID], true)

@@ -9,11 +9,11 @@ var config = {
 	enabled = false,
 	delay = 0.76
 
-Events.addListener("onDraw", () => {
+Events.on("onDraw", () => {
 	if (enabled)
 		Renderer.Text(0, 50, "Auto Armlet enabled")
 })
-Events.addListener("onTick", () => {
+Events.on("onTick", () => {
 	let cur_time = GameRules.m_fGameTime
 	if (!enabled || IsPaused() || cur_time < next_check)
 		return
@@ -30,7 +30,7 @@ Events.addListener("onTick", () => {
 		next_check = cur_time + delay
 	}
 })
-Events.addListener("onWndProc", (message_type, wParam) => {
+Events.on("onWndProc", (message_type, wParam) => {
 	if (!IsInGame() || parseInt(wParam as any) !== config.hotkey)
 		return true
 	if (message_type === 0x100) // WM_KEYDOWN
@@ -41,7 +41,7 @@ Events.addListener("onWndProc", (message_type, wParam) => {
 	}
 	return true
 })
-Events.addListener("onGameEnded", () => {
+Events.on("onGameEnded", () => {
 	enabled = false
 	next_check = 0
 })

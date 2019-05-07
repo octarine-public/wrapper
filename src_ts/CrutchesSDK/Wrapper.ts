@@ -1,14 +1,13 @@
 import Entity from "CrutchesSDK/Extensions/Entity"
 // import * as Enums from "CrutchesSDK/Extensions/Enums"
 import Unit from "CrutchesSDK/Extensions/Unit"
-import Vector_2 from "CrutchesSDK/Extensions/Vector"
 // import * as EntityManager from "CrutchesSDK/Managers/EntityManager"
 // import * as MenuManager from "CrutchesSDK/Menu/MenuManager";
 // import * as ParticleManager from "CrutchesSDK/Managers/ParticlesManager"
 
 // export * from "CrutchesSDK/Extensions/Enums";
 
-export { Entity, /*Enums,*/  Vector_2 } // Extensions
+export { Entity, /*Enums,*/ } // Extensions
 export { /*EntityManager, ParticleManager*/ } // Managers
 
 export * from "CrutchesSDK/Menu/MenuManager";

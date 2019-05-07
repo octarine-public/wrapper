@@ -114,11 +114,11 @@ function onDeactivateItems() {
 }
 
 function registerEvents() {
-	registeredEvents.onEntityCreated = Events.addListener("onEntityCreated", onCheckEntity)
-	registeredEvents.onEntityDestroyed = Events.addListener("onEntityDestroyed", onEntityDestroyed)
-	registeredEvents.onTick = Events.addListener("onTick", onTick)
-	registeredEvents.onPrepareUnitOrders = Events.addListener("onPrepareUnitOrders", order => picking_up[order.unit.m_iID] === undefined)
-	registeredEvents.onDraw = Events.addListener("onDraw", onDraw)
+	registeredEvents.onEntityCreated = Events.on("onEntityCreated", onCheckEntity)
+	registeredEvents.onEntityDestroyed = Events.on("onEntityDestroyed", onEntityDestroyed)
+	registeredEvents.onTick = Events.on("onTick", onTick)
+	registeredEvents.onPrepareUnitOrders = Events.on("onPrepareUnitOrders", order => picking_up[order.unit.m_iID] === undefined)
+	registeredEvents.onDraw = Events.on("onDraw", onDraw)
 
 	getAllEntities()
 }
@@ -147,7 +147,7 @@ function onCheckEntity(ent: C_BaseEntity) {
 			arrayRemove(ground_items, ent)
 }
 
-Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => npcs.push(npc))
+Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => npcs.push(npc))
 
 function onEntityDestroyed(ent: C_BaseEntity) {
 	if (ent instanceof C_DOTA_Item_Rune)
@@ -169,7 +169,7 @@ function onTick() {
 	snatchItems(controllables)
 }
 
-Events.addListener("onGameEnded", () => picking_up = [])
+Events.on("onGameEnded", () => picking_up = [])
 
 function onDraw() {
 	if (!drawStatus.value || !IsInGame())
@@ -210,7 +210,7 @@ function snatchRunes(controllables: C_DOTA_BaseNPC[]) {
 		return
 
 	allRunes.forEach(rune => {
-		let near = orderBy(controllables, unit => unit.DistTo(rune)).some(npc => snatchRuneByUnit(npc, rune))
+		let near = orderBy(controllables, unit => unit.Distance(rune)).some(npc => snatchRuneByUnit(npc, rune))
 		if (!near && (drawParticleTake.value || drawParticleKill.value))
 			destroyRuneParticles(rune.m_iID)
 	})
@@ -222,9 +222,9 @@ function snatchRuneByUnit(npc: C_DOTA_BaseNPC, rune: C_DOTA_Item_Rune) {
 		return false
 
 	if (!npc.m_bIsStunned && !npc.m_bIsWaitingToSpawn) {
-		const distTo = npc.DistTo2D(rune)
+		const Distance = npc.Distance2D(rune)
 
-		if (distTo <= takeRadius.value) {
+		if (Distance <= takeRadius.value) {
 			picking_up[npc_id] = rune
 			PickupRune(npc, rune, false)
 			return false
@@ -232,7 +232,7 @@ function snatchRuneByUnit(npc: C_DOTA_BaseNPC, rune: C_DOTA_Item_Rune) {
 
 		const attackRange = npc.m_fAttackRange
 
-		if (distTo >= Math.max(500, attackRange) * 2)
+		if (Distance >= Math.max(500, attackRange) * 2)
 			return false
 
 		if (drawParticleTake.value || drawParticleKill.value) {
@@ -316,7 +316,7 @@ function snatchItems(controllables: C_DOTA_BaseNPC[]) {
 
 	let free_controllables = controllables
 	ground_items.forEach(item => free_controllables.some(npc => {
-		if (npc.DistTo2D(item) > takeRadius.value || !haveFreeSlot(npc, item))
+		if (npc.Distance2D(item) > takeRadius.value || !haveFreeSlot(npc, item))
 			return false
 		PickupItem(npc, item, false)
 		free_controllables.splice(free_controllables.indexOf(npc))

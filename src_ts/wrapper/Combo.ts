@@ -73,7 +73,7 @@ export class Combo {
 	execute(caster: C_DOTA_BaseNPC, callback?: () => void, index: number = 0): void {
 		if (index === 0) {
 			// we need only instance from combo start, and as Utils.GetCursorWorldVec is dynamically changed vector - we need new instance of it
-			this.cursor_pos = new Vector(Utils.GetCursorWorldVec())
+			this.cursor_pos = Utils.GetCursorWorldVec()
 			var ents_under_cursor = Utils.GetEntitiesInRange(this.cursor_pos, 1000, false, true), // must be split from another declarations, otherwise loop optimized will fuck up our code
 				cursor_enemy =  ents_under_cursor.filter(ent => ent.IsEnemy(caster) && (ent instanceof C_DOTA_Unit_Roshan || (ent instanceof C_DOTA_BaseNPC_Hero && ent.m_hReplicatingOtherHeroModel === undefined))),
 				cursor_ally = ents_under_cursor.filter(ent => !ent.IsEnemy(caster) && ent instanceof C_DOTA_BaseNPC_Hero && ent.m_hReplicatingOtherHeroModel === undefined)
@@ -197,7 +197,7 @@ export class Combo {
 			}
 		} else if (abilName === "move") {
 			Orders.MoveToPos(caster, target.m_vecNetworkOrigin, false)
-			this.nextExecute(caster, callback, delay + (caster.DistTo2D(target) / caster.m_fIdealSpeed) * 1000, index)
+			this.nextExecute(caster, callback, delay + (caster.Distance2D(target) / caster.m_fIdealSpeed) * 1000, index)
 			return
 		} else if (abilName === "custom_cast") {
 			this.nextExecute(caster, callback, options.custom_cast(caster, target), index)

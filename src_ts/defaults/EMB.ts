@@ -4,7 +4,7 @@ var enabled = true,
 	manabars: C_DOTA_BaseNPC_Hero[] = [],
 	heroes: C_DOTA_BaseNPC_Hero[] = []
 
-Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (
 		npc instanceof C_DOTA_BaseNPC_Hero
 		&& npc.IsEnemy(LocalDOTAPlayer)
@@ -13,17 +13,17 @@ Events.addListener("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	)
 		heroes.push(npc)
 })
-Events.addListener("onEntityDestroyed", ent => {
+Events.on("onEntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC_Hero)
 		Utils.arrayRemove(heroes, ent)
 })
 
-Events.addListener("onUpdate", () => {
+Events.on("onUpdate", () => {
 	if (!enabled || IsPaused())
 		return
 	manabars = heroes.filter(npc => npc.m_bIsAlive && npc.m_bIsVisible)
 })
-Events.addListener("onDraw", () => {
+Events.on("onDraw", () => {
 	if (!enabled || !IsInGame())
 		return
 	var off_x = 0, off_y, manabar_w, manabar_h
