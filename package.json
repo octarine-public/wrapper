@@ -3,8 +3,9 @@
 	"version": "1.0.0",
 	"description": "Fusion Native 2: Scripts",
 	"devDependencies": {
-		"@babel/core": "latest",
 		"@babel/cli": "latest",
+		"@babel/core": "latest",
+		"@babel/plugin-syntax-bigint": "latest",
 		"@babel/preset-typescript": "latest",
 		"tslint": "next",
 		"typescript": "next"
