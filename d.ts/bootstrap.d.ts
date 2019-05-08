@@ -621,22 +621,23 @@ declare class Vector2 {
 
 type Listener = (...args: any) => false | any
 declare class EventEmitter {
-	public on(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): bigint
-	public on(name: "onGameEnded", callback: () => void): bigint
+	public on(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): EventEmitter
+	public on(name: "onGameEnded", callback: () => void): EventEmitter
 	/**
-	 * Also, this event emitted about ALL entities that have already been created before reload scripts
+	 * Also, this event emitted about ALL entities that have already been created before reloading scripts
 	 */
-	public on(name: "onEntityCreated", callback: (ent: C_BaseEntity, id: number) => void): bigint
-	public on(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): bigint
-	public on(name: "onWndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): bigint
-	public on(name: "onTick", callback: () => void): bigint
-	public on(name: "onUpdate", callback: () => void): bigint
-	public on(name: "onSendMove", callback: (cmd: CUserCmd) => void): bigint
-	public on(name: "onUnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): bigint
-	public on(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): bigint
-	public on(name: "onDraw", callback: () => void): bigint
-	public on(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): bigint
-	public on(name: "onParticleUpdated", callback: (id: number, control_point: number, position: Vector3) => void): bigint
+	public on(name: "onEntityCreated", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
+	public on(name: "onNPCCreated", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
+	public on(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
+	public on(name: "onWndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
+	public on(name: "onTick", callback: () => void): EventEmitter
+	public on(name: "onUpdate", callback: () => void): EventEmitter
+	public on(name: "onSendMove", callback: (cmd: CUserCmd) => void): EventEmitter
+	public on(name: "onUnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
+	public on(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
+	public on(name: "onDraw", callback: () => void): EventEmitter
+	public on(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): EventEmitter
+	public on(name: "onParticleUpdated", callback: (id: number, control_point: number, position: Vector3) => void): EventEmitter
 	public on(name: "onParticleUpdatedEnt", callback: (
 		id: number,
 		control_point: number,
@@ -645,9 +646,9 @@ declare class EventEmitter {
 		attachment: number,
 		fallback_position: Vector3,
 		include_wearables: boolean
-	) => void): bigint
-	public on(name: "onBloodImpact", callback: (target: C_BaseEntity, scale: number, xnormal: number, ynormal: number) => void): bigint
-	public on(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => false | any): bigint
+	) => void): EventEmitter
+	public on(name: "onBloodImpact", callback: (target: C_BaseEntity, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
+	public on(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
 	public on(name: "onLinearProjectileCreated", callback: (
 		proj: LinearProjectile,
 		origin: Vector3,
@@ -661,8 +662,8 @@ declare class EventEmitter {
 		sticky_fow_reveal: boolean,
 		distance: number,
 		colorgemcolor: Color
-	) => void): bigint
-	public on(name: "onLinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): bigint
+	) => void): EventEmitter
+	public on(name: "onLinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventEmitter
 	public on(name: "onTrackingProjectileCreated", callback: (
 		proj: TrackingProjectile,
 		sourceAttachment: number,
@@ -671,7 +672,7 @@ declare class EventEmitter {
 		maximpacttime: number,
 		colorgemcolor: Color,
 		launch_tick: number
-	) => void): bigint
+	) => void): EventEmitter
 	public on(name: "onTrackingProjectileUpdated", callback: (
 		proj: TrackingProjectile,
 		vSourceLoc: Vector3,
@@ -679,8 +680,8 @@ declare class EventEmitter {
 		particleSystemHandle: bigint,
 		colorgemcolor: Color,
 		launch_tick: number
-	) => void): bigint
-	public on(name: "onTrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): bigint
+	) => void): EventEmitter
+	public on(name: "onTrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
 	public on(name: "onUnitAnimation", callback: (
 		npc: C_DOTA_BaseNPC,
 		sequenceVariant: number,
@@ -688,15 +689,16 @@ declare class EventEmitter {
 		castpoint: number,
 		type: number,
 		activity: number
-	) => void): bigint
+	) => void): EventEmitter
 	public on(name: "onUnitAnimationEnd", callback: (
 		npc: C_DOTA_BaseNPC,
 		snap: boolean
-	) => void): bigint
-	public on(name: "onBuffAdded", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): bigint
-	public on(name: "onBuffRemoved", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): bigint
-	public on(name: "onBuffStackCountChanged", listener: (buff: CDOTA_Buff) => void): bigint
-	public on(name: "onCustomGameEvent", listener: (event_name: string, obj: any) => void): bigint
+	) => void): EventEmitter
+	public on(name: "onBuffAdded", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): EventEmitter
+	public on(name: "onBuffRemoved", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): EventEmitter
+	public on(name: "onBuffStackCountChanged", listener: (buff: CDOTA_Buff) => void): EventEmitter
+	public on(name: "onCustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
+	public on(name: "onNetworkFieldChanged", listener: (object: any, name: string) => void): EventEmitter
 	public on(name: string, listener: Listener): EventEmitter
 	public removeListener(name: string, listener: Listener): EventEmitter
 	public removeAllListeners(): EventEmitter

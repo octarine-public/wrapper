@@ -187,7 +187,6 @@ var rotation_speed = {
 	},
 	attacks: Array<[number, number, C_DOTA_BaseNPC]> = [],
 	CursorWorldVec = new Vector3(),
-	NPCs: C_DOTA_BaseNPC[] = [],
 	melee_end_time_delta = 0.06
 
 export function GetEntitiesInRange(vec: Vector3, range: number, onlyEnemies: boolean = false, findInvuln: boolean = false): C_DOTA_BaseNPC[] {
@@ -649,13 +648,17 @@ export function FindAttackingUnit(npc: C_DOTA_BaseNPC): C_DOTA_BaseNPC {
 		return undefined
 	let pos = npc.m_vecNetworkOrigin,
 		is_default_creep = npc.m_bIsCreep && !npc.m_bIsControllableByAnyPlayer
-	return orderBy(NPCs.filter(npc_ =>
-		npc_ !== npc &&
-		npc_.m_vecNetworkOrigin.Distance2D(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + npc_.m_flHullRadius) &&
-		!npc_.m_bIsInvulnerable &&
-		IsInside(npc, npc_.m_vecNetworkOrigin, npc_.m_flHullRadius) &&
-		(npc.IsEnemy(npc_) || (!is_default_creep && IsDeniable(npc_))),
-	), ent => GetAngle(npc, ent.m_vecNetworkOrigin))[0] as C_DOTA_BaseNPC
+	return orderBy(Entities.GetAllEntities().filter(npc_ => {
+		if (npc_ === npc || !(npc_ instanceof C_DOTA_BaseNPC))
+			return false
+		let npc_pos = npc_.m_vecNetworkOrigin
+		return (
+			npc_pos.Distance2D(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + npc_.m_flHullRadius) &&
+			!npc_.m_bIsInvulnerable &&
+			IsInside(npc, npc_pos, npc_.m_flHullRadius) &&
+			(npc.IsEnemy(npc_) || (!is_default_creep && IsDeniable(npc_)))
+		)
+	}), ent => GetAngle(npc, ent.m_vecNetworkOrigin))[0] as C_DOTA_BaseNPC
 }
 
 export function GetAngle(npc: C_DOTA_BaseNPC, vec: Vector3): number {
@@ -755,14 +758,7 @@ export function arrayRemove<T>(ar: T[], el: T) {
 
 Events.on("onSendMove", cmd => CursorWorldVec = cmd.vec_under_cursor)
 
-Events.on("onEntityCreated", ent => {
-	if (ent instanceof C_DOTA_BaseNPC)
-		NPCs.push(ent)
-})
-
 Events.on("onEntityDestroyed", (ent, ent_id) => {
-	if (ent instanceof C_DOTA_BaseNPC)
-		arrayRemove(NPCs, ent)
 	// loop-optimizer: KEEP
 	attacks = attacks.filter((data, attacker_id) => attacker_id !== ent_id && data[2] !== ent)
 })
@@ -796,10 +792,7 @@ Events.on("onUnitAnimationEnd", npc => {
 	]
 })
 
-Events.on("onGameEnded", () => {
-	attacks = []
-	NPCs = []
-})
+Events.on("onGameEnded", () => attacks = [])
 
 Events.on("onTick", () => {
 	// attack sanitizer
@@ -808,14 +801,4 @@ Events.on("onTick", () => {
 	attacks = attacks.filter(([end_time, end_time_2, attack_target]) => time - end_time_2 <= melee_end_time_delta)
 	// loop-optimizer: KEEP
 	attacks.forEach((data, attacker_id) => data[2] = FindAttackingUnit(Entities.GetByID(attacker_id) as C_DOTA_BaseNPC))
-
-	// NPC event
-	for (let i = 0, end = NPCs.length; i < end; i++) {
-		let npc = NPCs[i]
-		if (npc.m_iszUnitName !== undefined) {
-			Events.emit("onNPCCreated", false, npc)
-			NPCs.splice(i++, 1)
-			end--
-		}
-	}
 })

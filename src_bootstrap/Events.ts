@@ -52,3 +52,27 @@ global.EventEmitter = class EventEmitter {
 const events = new EventEmitter()
 setFireEvent((name, cancellable, ...args) => events.emit(name, cancellable, ...args))
 global.Events = events
+
+var NPCs: C_DOTA_BaseNPC[] = []
+Events.on("onEntityCreated", ent => {
+	if (ent instanceof C_DOTA_BaseNPC && ent.m_iszUnitName !== undefined) {
+		Events.emit("onNPCCreated", false, ent)
+		NPCs.push(ent)
+	}
+})
+Events.on("onEntityDestroyed", ent => {
+	if (!(ent instanceof C_DOTA_BaseNPC))
+		return
+	const id = NPCs.indexOf(ent)
+	if (id !== -1)
+		NPCs.splice(id, 1)
+})
+
+Events.on("onNetworkFieldChanged", (obj, name) => {
+	if (obj === GameRules && name === "m_fGameTime")
+		Events.emit("onTick", false)
+	else if (obj instanceof C_DOTA_BaseNPC && name === "m_iszUnitName" && !NPCs.includes(obj) && obj.m_iszUnitName !== undefined) {
+		Events.emit("onNPCCreated", false, obj)
+		NPCs.push(obj)
+	}
+})
