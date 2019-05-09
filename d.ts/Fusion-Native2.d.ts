@@ -5994,15 +5994,7 @@ declare class C_BaseFire extends C_BaseEntity {
 }
 
 declare class C_BaseEntity extends C_GameEntity {
-	IsInRange(ent: C_BaseEntity, range: number): boolean
-	IsEnemy(ent: C_BaseEntity): boolean
-	Distance(ent: C_BaseEntity): number
-	Distance2D(ent: C_BaseEntity): number
-	InFront(dist: number): Vector3
-	
 	readonly m_bIsValid: boolean
-	readonly m_bIsVisible: boolean
-	readonly m_bIsAlive: boolean
 	readonly m_iID: number
 	readonly m_vecForward: Vector3
 	
@@ -8961,48 +8953,13 @@ declare class sSpiritDef {
 }
 
 declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
-	GetAbilityByName(abil_name: string): C_DOTABaseAbility
-	GetAbility(abil_slot: number): C_DOTABaseAbility
-	GetItemByName(item_name: string): C_DOTA_Item
-	GetItemByNameInBackpack(item_name: string): C_DOTA_Item
-	GetItemInSlot(item_slot: number): C_DOTA_Item
-	GetBuffByName(buff_name: string): CDOTA_Buff
-	IsControllableByPlayer(player_id: number): boolean
-	HasAttackCapability(attack_capatability: DOTAUnitAttackCapability_t): boolean
-	HasMoveCapability(move_capatability: DOTAUnitMoveCapability_t): boolean
-	IsUnitStateFlagSet(flag: number): boolean
-	
-	readonly m_bIsHero: boolean
-	readonly m_bIsTower: boolean
-	readonly m_bIsConsideredHero: boolean
-	readonly m_bIsBuilding: boolean
-	readonly m_bIsFort: boolean
-	readonly m_bIsBarracks: boolean
-	readonly m_bIsCreep: boolean
-	readonly m_bIsCourier: boolean
-	readonly m_bIsShop: boolean
-	readonly m_bIsLaneCreep: boolean
-	readonly m_bIsShrine: boolean
-	readonly m_bIsWard: boolean
-	readonly m_bIsStunned: boolean
-	readonly m_bIsInvisible: boolean
-	readonly m_bIsInvulnerable: boolean
 	readonly m_bIsAttackImmune: boolean
 	readonly m_bIsMagicImmune: boolean
-	readonly m_bIsInFadeTime: boolean
-	readonly m_bIsVisibleForEnemies: boolean
-	readonly m_bIsTrueSightedForEnemies: boolean
-	readonly m_bIsControllableByAnyPlayer: boolean
-	readonly m_bHasAttackCapability: boolean
-	readonly m_bHasMoveCapability: boolean
-	readonly m_bIsRangedAttacker: boolean
-	readonly m_bHasScepter: boolean
 	readonly m_fAttackSpeed: number
 	readonly m_fIncreasedAttackSpeed: number
 	readonly m_fAttacksPerSecond: number
 	readonly m_fIdealSpeed: number
 	readonly m_fAttackRange: number
-	readonly m_fEffectiveInvisibilityLevel: number
 	
 	m_bIsPhantom: boolean
 	m_iUnitType: number
