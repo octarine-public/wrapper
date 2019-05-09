@@ -4,50 +4,55 @@
 */
 
 export default class Entity {
-	ent: C_BaseEntity
-	// __proto__ = C_BaseEntity.prototype
-
+	m_pBaseEntity: C_BaseEntity
+	
 	constructor(ent: C_BaseEntity) {
-		this.ent = ent
+		this.m_pBaseEntity = ent
 	}
 
 	// Redefine
 
 	get IsValid(): boolean {
-		return this.ent.m_bIsValid
+		return this.m_pBaseEntity.m_bIsValid
 	}
 
 	get IsVisible(): boolean {
-		return this.ent.m_bIsVisible
+		//return this.ent.m_bIsVisible
+		let ent = this.m_pBaseEntity.m_pEntity;
+		return ent !== undefined && (ent.m_flags & (1 << 7)) === 0;
 	}
 	get IsAlive(): boolean {
 		return this.LifeState === LifeState_t.LIFE_ALIVE
 	}
 	get ID(): number {
-		return this.ent.m_iID
+		return this.m_pBaseEntity.m_iID
 	}
 	get Forward(): Vector3 {
-		return this.ent.m_vecForward
+		return this.m_pBaseEntity.m_vecForward
+	}
+	IsInRange(ent: Vector3 | Entity, range: number): boolean {
+		return this.Distance(ent) <= range
 	}
 	/**
 	 * @param ent if undefuned => this compare with LocalPlayer
 	 */
 	IsEnemy(ent?: Entity): boolean {
-		return ent === undefined
-			? (LocalDOTAPlayer === undefined || this.Team !== LocalDOTAPlayer.m_iTeamNum)
-			: this.Team !== ent.Team
+		if (ent !== undefined)
+			return this.Team !== ent.Team;
+			
+		let lp = LocalDOTAPlayer;
+		
+		return lp === undefined || lp.m_iTeamNum !== this.Team;
 	}
-
-	IsInRange(ent: Vector3 | Entity, range: number): boolean {
-		return this.Distance(ent) <= range
+	InFront(distance: number): Vector3 {
+		return this.Position.Rotation(this.Forward, distance);
 	}
-
 	FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.Position
 
-		var thisPos = this.Position,
-			angle = Math.abs (
+		let thisPos = this.Position;
+		let angle = Math.abs (
 				Math.atan2 (
 					vec.y - thisPos.y,
 					vec.x - thisPos.x,
@@ -62,37 +67,40 @@ export default class Entity {
 
 	// new
 	get HP(): number {
-		return this.ent.m_iHealth
+		return this.m_pBaseEntity.m_iHealth
 	}
 	get MaxHP(): number {
-		return this.ent.m_iMaxHealth
+		return this.m_pBaseEntity.m_iMaxHealth
 	}
 	get Position(): Vector3 {
-		return this.ent.m_vecNetworkOrigin
+		return this.m_pBaseEntity.m_vecNetworkOrigin
 	}
 	get Team(): DOTATeam_t {
-		return this.ent.m_iTeamNum
+		return this.m_pBaseEntity.m_iTeamNum
 	}
 	/**
 	 * Buffs/debuffs are not taken
 	 */
 	get Speed(): number {
-		return this.ent.m_flSpeed
+		return this.m_pBaseEntity.m_flSpeed
 	}
 	get CreateTime(): number {
-		return this.ent.m_flCreateTime
+		return this.m_pBaseEntity.m_flCreateTime
 	}
 	get IsDormant(): boolean {
 		return !this.IsVisible
 	}
 	get LifeState(): LifeState_t {
-		return this.ent.m_lifeState
+		return this.m_pBaseEntity.m_lifeState
 	}
-	get Owner(): C_BaseEntity {
-		return this.ent.m_hOwnerEntity
+	/**
+	 * need getting from entitymanager
+	 */
+	get Owner(): Entity {
+		return new Entity(this.m_pBaseEntity.m_hOwnerEntity);
 	}
 	get Scale(): number {
-		var gameSceneNode = this.ent.m_pGameSceneNode
+		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
 
 		if (gameSceneNode === undefined)
 			return 1.0
@@ -127,9 +135,25 @@ export default class Entity {
 			vec = vec.Position
 		return this.Position.Distance2D(vec)
 	}
-
-	Select(toToCurrentSelection: boolean = false): boolean {
-		return SelectUnit(this.ent, toToCurrentSelection)
+	DistanceSquared(vec: Entity | Vector3) {
+		if (vec instanceof Entity)
+			vec = vec.Position;
+		return this.Position.DistanceSqr(vec);
+	}
+	FromPolarAngle(delta: number) {
+		return Vector3.FromAngle(this.Forward.Angle + delta);
+	}
+	InFrontFromAngle(delta: number, distance: number) {
+		return this.Position.Add(
+			this.FromPolarAngle(delta).MultiplyScalar(distance)
+		)
+	}
+	AngleBetweenFaces(front: Vector3) {
+		return this.Forward.AngleBetweenFaces(front);
+	}
+	
+	Select(bAddToGroup: boolean = false): boolean {
+		return SelectUnit(this.m_pBaseEntity, bAddToGroup)
 	}
 
 	// AddParticleEffect(name: string): CNewParticleEffect {
@@ -138,7 +162,7 @@ export default class Entity {
 
 	OnParticleEffectAdded(callbackFn: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity) => void): void {
 		Events.on("onParticleCreated", (id, path, particleSystemHandle, attach, target) => {
-			if (target === this.ent)
+			if (target === this.m_pBaseEntity)
 				callbackFn(id, path, particleSystemHandle, attach, this)
 		})
 	}
@@ -152,7 +176,7 @@ export default class Entity {
 
 	OnTeamVisibilityChanged(callbackFn: (npc: C_DOTA_BaseNPC) => void): void {
 		Events.on("onTeamVisibilityChanged", npc => {
-			if (npc === this.ent)
+			if (npc === this.m_pBaseEntity)
 				callbackFn(npc)
 		})
 	}

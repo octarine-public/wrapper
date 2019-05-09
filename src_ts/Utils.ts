@@ -187,8 +187,17 @@ var rotation_speed = {
 	},
 	attacks: Array<[number, number, C_DOTA_BaseNPC]> = [],
 	CursorWorldVec = new Vector3(),
-	melee_end_time_delta = 0.06
-
+	melee_end_time_delta = 0.06,
+	masksBigInt = new Array(64)
+	
+	
+for (let i = 64; i--;)
+	masksBigInt[i] = 1n << BigInt(i)
+	
+export function SplitBigInt(num: bigint): number[] {
+	return masksBigInt.map(mask => Number(num & mask)).filter(num => num !== 0)
+}
+	
 export function GetEntitiesInRange(vec: Vector3, range: number, onlyEnemies: boolean = false, findInvuln: boolean = false): C_DOTA_BaseNPC[] {
 	var localplayer = LocalDOTAPlayer
 	return orderBy (

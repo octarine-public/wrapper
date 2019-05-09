@@ -1,6 +1,6 @@
 import * as Utils from "Utils"
 
-var debugAnimations = true
+var debugAnimations = false
 /**
  * @param ent entity that must issue order [can be overriden by orderIssuer]
  * @param vec position
