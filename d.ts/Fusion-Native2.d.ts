@@ -255,7 +255,6 @@ declare var PlayerResource: C_DOTA_PlayerResource
 declare var global: any
 
 declare var ConVars: ConVars
-declare var Entities: Entities
 declare var GameEvents: GameEvents
 declare var Minimap: Minimap
 declare var Projectiles: Projectiles
@@ -348,14 +347,9 @@ declare interface ConVars {
 	Set(convar_name: string, value:  string | number | boolean): void
 }
 
-declare interface Entities {
-	GetAllEntities(): C_BaseEntity[]
-	GetByID(ent_id: number): C_BaseEntity
-}
-
 declare interface GameEvents {
-	FireEventToClient(name: string, player_id: number, obj: any): void // BROKEN
-	FireEventToTeam(name: string, team_num: number, obj: any): void // BROKEN
+	FireEventToClient(name: string, player_id: number, obj: any): void // BROKEN BY VOLVO
+	FireEventToTeam(name: string, team_num: number, obj: any): void // BROKEN BY VOLVO
 	FireEventToAllClients(name: string, obj: any): void
 	FireEventToServer(name: string, obj: any): void
 }
@@ -483,7 +477,6 @@ declare function readFile(path: string): string
 declare function sleep(ms: number): void
 declare function usleep(ns: number): void
 declare function IsInGame(): boolean
-declare function IsPaused(): boolean
 declare function GetLevelName(): string
 declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: {
@@ -5995,7 +5988,6 @@ declare class C_BaseFire extends C_BaseEntity {
 
 declare class C_BaseEntity extends C_GameEntity {
 	readonly m_bIsValid: boolean
-	readonly m_iID: number
 	readonly m_vecForward: Vector3
 	
 	readonly m_CBodyComponent: CBodyComponent
@@ -10325,13 +10317,11 @@ declare class C_INIT_RemapNamedModelMeshGroupToScalar extends C_INIT_RemapNamedM
 
 declare class C_DOTABaseAbility extends C_BaseEntity {
 	GetSpecialValue(special_name: string, level?: number): number
-	IsManaEnough(owner: C_DOTA_BaseNPC): boolean
 	
 	readonly m_pAbilityData: DOTAAbilityData_t
 	readonly m_fCastPoint: number
-	readonly m_fChannelTime: number
 	readonly m_iAbilityDamage: number
-	readonly m_bIsHidden: boolean
+	readonly m_fAOERadius: number
 	
 	m_bAltCastState: boolean
 	m_iEnemyLevel: number
@@ -11024,9 +11014,6 @@ declare class C_DOTA_Ability_Special_Bonus_Gold_Income_70 extends C_DOTABaseAbil
 declare class C_DOTA_Ability_Special_Bonus_Night_Vision_600 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_BaseNPC_Hero extends C_DOTA_BaseNPC_Additive {
-	readonly m_bIsIllusion: boolean
-	readonly m_fSpellAmplification: number
-	
 	m_iCurrentXP: number
 	m_iAbilityPoints: number
 	m_flRespawnTime: number
@@ -12158,8 +12145,6 @@ declare class C_DOTA_DisplacementVisibility extends C_BaseEntity {
 }
 
 declare class C_DOTA_Unit_Hero_Meepo extends C_DOTA_BaseNPC_Hero {
-	readonly m_bIsClone: boolean
-	
 	m_nWhichMeepo: number
 }
 
