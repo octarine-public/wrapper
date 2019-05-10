@@ -1,20 +1,27 @@
-export let entities: C_BaseEntity[]
-let entity_ids: C_BaseEntity[]
+/// internal declarations
+/// you may use ONLY this ones & default V8 things
+declare var global: any
 
-export function GetEntityID(ent: C_BaseEntity) {
-    return entity_ids.indexOf(ent)
-}
-
-export function GetEntityByID(id: number) {
-    return entity_ids[id]
+/// actual code
+global.Entities = new class Entities {
+	entities: C_BaseEntity[] = []
+	entity_ids: C_BaseEntity[] = []
+	
+	GetEntityID(ent: C_BaseEntity) {
+		return this.entity_ids.indexOf(ent)
+	}
+	
+	GetEntityByID(id: number) {
+		return this.entity_ids[id]
+	}
 }
 
 Events.on("onEntityCreated", (ent, id) => {
-    entities.push(ent)
-    entity_ids[id] = ent
+	Entities.entities.push(ent)
+	Entities.entity_ids[id] = ent
 })
 
 Events.on("onEntityDestroyed", (ent, id) => {
-    entities.splice(entities.indexOf(ent), 1)
-    entity_ids.splice(id, 1)
+	Entities.entities.splice(Entities.entities.indexOf(ent), 1)
+	Entities.entity_ids.splice(id, 1)
 })

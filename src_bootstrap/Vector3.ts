@@ -3,6 +3,7 @@
 declare function setVector3Class(Vector3: object): void;
 declare var global: any
 
+/// actual code
 setVector3Class(global.Vector3 = class Vector3 {
 	/* ================== Static ================== */
 	static fromArray(array: [number, number, number]): Vector3 {
