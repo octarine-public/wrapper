@@ -4,7 +4,7 @@ import * as Utils from "../Utils"
 let allParticles: number[] = []
 let particlePath = "particles/items_fx/aura_shivas.vpcf"
 
-const VBEMenu = new MenuManager("Visible by Enemy")
+const VBEMenu = new MenuManager("Visible By Enemy")
 
 const stateMain = VBEMenu.AddToggle("State", true) // .OnValue(onStateMain)
 
@@ -17,7 +17,8 @@ function Destroy(npcID: number) {
 
 Events.on("onTeamVisibilityChanged", npc => {
 	if (
-		!stateMain.value
+		!IsInGame()
+		|| !stateMain.value
 		|| GameRules.m_bGamePaused
 		|| LocalDOTAPlayer === undefined
 		|| LocalDOTAPlayer.m_iTeamNum !== npc.m_iTeamNum

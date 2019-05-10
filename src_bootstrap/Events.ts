@@ -69,9 +69,8 @@ global.Entities = new (class Entities {
 		return EntitiesIDs
 	}
 	GetEntityID(ent: C_BaseEntity) {
-		return AllEntities.indexOf(ent)
+		return EntitiesIDs.indexOf(ent)
 	}
-
 	GetEntityByID(id: number) {
 		return EntitiesIDs[id]
 	}
@@ -82,18 +81,19 @@ global.Entities = new (class Entities {
 
 Events.on("onEntityCreated", (ent, id) => {
 	AllEntities.push(ent)
-	   EntitiesIDs[id] = ent
+	EntitiesIDs[id] = ent
 
-	   if (ent instanceof C_DOTA_BaseNPC)
+	if (ent instanceof C_DOTA_BaseNPC) {
 		if (ent.m_iszUnitName === undefined)
 			NPCs.push(ent)
 		else
 			Events.emit("onNPCCreated", false, ent)
+	}
 })
 
 Events.on("onEntityDestroyed", (ent, id) => {
 	AllEntities.splice(AllEntities.indexOf(ent), 1)
-	EntitiesIDs.splice(id, 1)
+	delete EntitiesIDs[id]
 
 	if (ent instanceof C_DOTA_BaseNPC) {
 		const NPCs_id = NPCs.indexOf(ent)

@@ -86,7 +86,7 @@ global.Entities = new class Entities {
   }
 
   GetEntityID(ent) {
-    return AllEntities.indexOf(ent);
+    return EntitiesIDs.indexOf(ent);
   }
 
   GetEntityByID(id) {
@@ -124,7 +124,7 @@ Events.on("onEntityCreated", (ent, id) => {
 });
 Events.on("onEntityDestroyed", (ent, id) => {
   AllEntities.splice(AllEntities.indexOf(ent), 1);
-  EntitiesIDs.splice(id, 1);
+  delete EntitiesIDs[id];
 
   if (ent instanceof C_DOTA_BaseNPC) {
     const NPCs_id = NPCs.indexOf(ent);
