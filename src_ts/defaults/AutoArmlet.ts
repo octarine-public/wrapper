@@ -15,12 +15,12 @@ Events.on("onDraw", () => {
 })
 Events.on("onTick", () => {
 	let cur_time = GameRules.m_fGameTime
-	if (!enabled || IsPaused() || cur_time < next_check)
+	if (!enabled || GameRules.m_bGamePaused || cur_time < next_check)
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
-	if (pl_ent === undefined || !pl_ent.m_bIsAlive)
+	if (pl_ent === undefined || !Utils.IsAlive(pl_ent))
 		return
-	let armlet = pl_ent.GetItemByName("item_armlet") as C_DOTA_Item_Armlet
+	let armlet = Utils.GetItemByName(pl_ent, "item_armlet") as C_DOTA_Item_Armlet
 	if (armlet === undefined)
 		return
 	if (Utils.GetHealthAfter(pl_ent, delay, true) < config.hp_threshold) {

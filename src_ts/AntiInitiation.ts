@@ -108,7 +108,7 @@ var Abils_ = [
 	heroes: C_DOTA_BaseNPC_Hero[] = []
 
 Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
-	if (npc instanceof C_DOTA_BaseNPC_Hero && npc.IsEnemy(LocalDOTAPlayer) && npc.m_hReplicatingOtherHeroModel === undefined)
+	if (npc instanceof C_DOTA_BaseNPC_Hero && Utils.IsEnemy(npc, LocalDOTAPlayer) && npc.m_hReplicatingOtherHeroModel === undefined)
 		heroes.push(npc)
 })
 Events.on("onEntityDestroyed", ent => {
@@ -126,9 +126,9 @@ Events.on("onTick", () => {
 	if (!config.enabled)
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
-	if (pl_ent === undefined || pl_ent.m_bIsStunned || !pl_ent.m_bIsAlive || LocalDOTAPlayer.m_hActiveAbility !== undefined || disabling)
+	if (pl_ent === undefined || Utils.IsUnitStateFlagSet(pl_ent, modifierstate.MODIFIER_STATE_STUNNED) || !Utils.IsAlive(pl_ent) || LocalDOTAPlayer.m_hActiveAbility !== undefined || disabling)
 		return
-	let needed_heroes = heroes.filter(hero => hero.m_bIsAlive && hero.m_bIsVisible && !flags[hero.m_iID])
+	let needed_heroes = heroes.filter(hero => Utils.IsAlive(hero) && Utils.IsVisible(hero) && !flags[Entities.GetEntityID(hero)])
 	if (needed_heroes.some(hero => (hero.m_hAbilities as C_DOTABaseAbility[]).some(abil => abil !== undefined && Disable(pl_ent, hero, Abils, abil))))
 		return
 	if (needed_heroes.some(hero => hero.m_ModifierManager.m_vecBuffs.some(buff => DisableBuffs.includes(buff.m_name)) && Disable(pl_ent, hero, BuffsDisablers)))
@@ -151,23 +151,23 @@ function Disable(pl_ent: C_DOTA_BaseNPC, hero: C_DOTA_BaseNPC, DisableAr: Array<
 	}
 
 	let disable_abil = DisableAr.filter(abilAr => abilAr[1]).map(abilAr => {
-			let abil_name = abilAr[0]
-			return abil_name.startsWith("item_") ? pl_ent.GetItemByName(abil_name) : pl_ent.GetAbilityByName(abil_name)
-		}).find(abil => {
-			if (abil === undefined)
-				return false
-			let cast_range = Utils.GetCastRange(pl_ent, abil)
-			return !abil.m_bIsHidden
-				&& abil.m_fCooldown === 0
-				&& abil.IsManaEnough(pl_ent)
-				&& (cast_range <= 0 || pl_ent.Distance2D(hero) <= cast_range + hero.m_flHullRadius * 2)
-		})
+		let abil_name = abilAr[0]
+		return abil_name.startsWith("item_") ? Utils.GetItemByName(pl_ent, abil_name) : Utils.GetAbilityByName(pl_ent, abil_name)
+	}).find(abil => {
+		if (abil === undefined)
+			return false
+		let cast_range = Utils.GetCastRange(pl_ent, abil)
+		return !abil.m_bHidden
+			&& abil.m_fCooldown === 0
+			&& Utils.IsManaEnough(pl_ent, abil)
+			&& (cast_range <= 0 || pl_ent.m_vecNetworkOrigin.Distance2D(hero.m_vecNetworkOrigin) <= cast_range + hero.m_flHullRadius * 2)
+	})
 	if (disable_abil === undefined)
 		return false
 
 	Orders.SmartCast(pl_ent, disable_abil, hero)
-	disabling = flags[hero.m_iID] = true
-	setTimeout(delta, () => disabling = flags[hero.m_iID] = false)
+	disabling = flags[Entities.GetEntityID(hero)] = true
+	setTimeout(delta, () => disabling = flags[Entities.GetEntityID(hero)] = false)
 
 	return true
 }
@@ -178,7 +178,7 @@ function TransformToAvailable(pl_ent: C_DOTA_BaseNPC, abil_arrays: Array<[string
 		return abil_arrays
 	return abil_arrays.filter(abilData =>
 		abilData[0].startsWith("item_")
-		|| pl_ent.GetAbilityByName(abilData[0]) !== undefined,
+		|| Utils.GetAbilityByName(pl_ent, abilData[0]) !== undefined,
 	)
 }
 

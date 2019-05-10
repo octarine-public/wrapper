@@ -10,7 +10,7 @@ function DeleteProjectile(proj: TrackingProjectile | LinearProjectile) {
 }
 
 function Dodge(pl_ent: C_DOTA_BaseNPC, delay: number, target_pos?: Vector3, aoe: number = 0) {
-	Orders.CastNoTarget(pl_ent, pl_ent.GetAbility(2))
+	Orders.CastNoTarget(pl_ent, Utils.GetAbilityBySlot(pl_ent, 2))
 }
 
 function TryDodge(pl_ent: C_DOTA_BaseNPC, proj: TrackingProjectile | LinearProjectile) {
@@ -36,7 +36,7 @@ Events.on("onTick", () => {
 	if (!enabled || !IsInGame())
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
-	if (pl_ent === undefined || !pl_ent.m_bIsValid || pl_ent.m_bIsWaitingToSpawn || pl_ent.m_bIsStunned)
+	if (pl_ent === undefined || !pl_ent.m_bIsValid || pl_ent.m_bIsWaitingToSpawn || Utils.IsUnitStateFlagSet(pl_ent, modifierstate.MODIFIER_STATE_STUNNED))
 		return
 	// loop-optimizer: KEEP
 	proj_list.forEach(proj => TryDodge(pl_ent, proj))
@@ -45,7 +45,7 @@ Events.on("onTrackingProjectileCreated", (proj, sourceAttachment, path) => {
 	if (!enabled || !IsInGame())
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
-	if (pl_ent === undefined || !pl_ent.m_bIsValid || pl_ent.m_bIsWaitingToSpawn || pl_ent.m_bIsStunned)
+	if (pl_ent === undefined || !pl_ent.m_bIsValid || pl_ent.m_bIsWaitingToSpawn || Utils.IsUnitStateFlagSet(pl_ent, modifierstate.MODIFIER_STATE_STUNNED))
 		return
 	proj2path[1024 + proj.m_iID] = path
 	proj_list.push(proj)
@@ -55,7 +55,7 @@ Events.on("onLinearProjectileCreated", (proj, origin, velocity, ent, path) => {
 	if (!enabled || !IsInGame())
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
-	if (pl_ent === undefined || !pl_ent.m_bIsValid || pl_ent.m_bIsWaitingToSpawn || pl_ent.m_bIsStunned)
+	if (pl_ent === undefined || !pl_ent.m_bIsValid || pl_ent.m_bIsWaitingToSpawn || Utils.IsUnitStateFlagSet(pl_ent, modifierstate.MODIFIER_STATE_STUNNED))
 		return
 	proj2path[proj.m_iID] = path
 	proj_list.push(proj)

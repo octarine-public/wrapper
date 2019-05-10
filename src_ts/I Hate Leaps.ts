@@ -24,43 +24,43 @@ Events.on("onTick", () => {
 	if (!enabled)
 		return
 	const pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero
-	if (pl_ent === undefined || pl_ent.m_bIsStunned || !pl_ent.m_bIsAlive || LocalDOTAPlayer.m_hActiveAbility !== undefined)
+	if (pl_ent === undefined || Utils.IsUnitStateFlagSet(pl_ent, modifierstate.MODIFIER_STATE_STUNNED) || !Utils.IsAlive(pl_ent) || LocalDOTAPlayer.m_hActiveAbility !== undefined)
 		return
 	if (mks.length !== 0)
 		// loop-optimizer: FORWARD
 		[
-			pl_ent.GetItemByName("item_quelling_blade"),
-			pl_ent.GetItemByName("item_bfury"),
-			pl_ent.GetItemByName("item_tango"),
+			Utils.GetItemByName(pl_ent, "item_quelling_blade"),
+			Utils.GetItemByName(pl_ent, "item_bfury"),
+			Utils.GetItemByName(pl_ent, "item_tango"),
 		].filter(item => item !== undefined && item.m_fCooldown === 0).some(item => {
-			if (!item.IsManaEnough(pl_ent))
+			if (!Utils.IsManaEnough(pl_ent, item))
 				return false
 			let castrange = Utils.GetCastRange(pl_ent, item)
 			return mks.some(mk => {
-				if (!mk.m_bIsVisible || !mk.m_bIsAlive)
+				if (!Utils.IsVisible(mk) || !Utils.IsAlive(mk))
 					return false
 				let m_nPerchedTree = mk.m_nPerchedTree
-				if (m_nPerchedTree === 4294967295 || mk.Distance2D(pl_ent) > castrange)
+				if (m_nPerchedTree === 4294967295 || mk.m_vecNetworkOrigin.Distance2D(pl_ent.m_vecNetworkOrigin) > castrange)
 					return false
 				Orders.CastTargetTree(pl_ent, item, m_nPerchedTree, false)
 				return true
 			})
 		})
-	let force = pl_ent.GetItemByName("item_force_staff")
+	let force = Utils.GetItemByName(pl_ent, "item_force_staff")
 	if (force !== undefined && force.m_fCooldown === 0) {
-		if (!force.IsManaEnough(pl_ent))
+		if (!Utils.IsManaEnough(pl_ent, force))
 			return false
 		let force_castrange = Utils.GetCastRange(pl_ent, force);
 		[...mks, ...techiess].some(hero => {
-			if (!hero.m_bIsVisible || !hero.m_bIsAlive)
+			if (!Utils.IsVisible(hero) || !Utils.IsAlive(hero))
 				return false
-			if (hero.Distance2D(pl_ent) > force_castrange)
+			if (hero.m_vecNetworkOrigin.Distance2D(pl_ent.m_vecNetworkOrigin) > force_castrange)
 				return false
-			if (hero.GetBuffByName("modifier_item_forcestaff_active") !== undefined)
+			if (Utils.GetBuffByName(hero, "modifier_item_forcestaff_active") !== undefined)
 				return false
-			if (hero instanceof C_DOTA_Unit_Hero_Techies && hero.GetBuffByName("modifier_techies_suicide_leap") === undefined)
+			if (hero instanceof C_DOTA_Unit_Hero_Techies && Utils.GetBuffByName(hero, "modifier_techies_suicide_leap") === undefined)
 				return false
-			if (hero instanceof C_DOTA_Unit_Hero_MonkeyKing && hero.GetBuffByName("modifier_monkey_king_bounce_leap") === undefined)
+			if (hero instanceof C_DOTA_Unit_Hero_MonkeyKing && Utils.GetBuffByName(hero, "modifier_monkey_king_bounce_leap") === undefined)
 				return false
 			Orders.CastTarget(pl_ent, force, hero, false)
 			return true

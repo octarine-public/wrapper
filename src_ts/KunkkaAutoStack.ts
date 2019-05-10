@@ -34,7 +34,7 @@ Events.on("onTick", () => {
 	if (!config.enabled || is_stacking)
 		return
 	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC,
-		torrent = MyEnt.GetAbilityByName("kunkka_torrent")
+		torrent = Utils.GetAbilityByName(MyEnt, "kunkka_torrent")
 	if (torrent === undefined || torrent.m_fCooldown !== 0 || torrent.m_iManaCost > MyEnt.m_flMana)
 		return
 	var cur_time = GameRules.m_fGameTime - GameRules.m_flGameStartTime
@@ -76,9 +76,9 @@ Events.on("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssi
 			torrent_radius = torrent.GetSpecialValue("radius")
 		var ancients = Utils.GetCursorWorldVec().GetEntitiesInRange(1000).filter(ent =>
 				ent instanceof C_DOTA_BaseNPC &&
-				ent.IsEnemy(MyEnt) &&
-				ent.m_bIsCreep &&
-				!ent.m_bIsLaneCreep // &&
+				Utils.IsEnemy(ent, MyEnt) &&
+				Utils.IsCreep(ent) &&
+				!IsLaneCreep(ent) // &&
 				//!ent.m_bIsWaitingToSpawn
 			)
 		var ancientsPositionSum = ancients.map(ancient => ancient.m_vecNetworkOrigin).reduce((sum, vec): number[] => sum ? [sum[0] + vec[0], sum[1] + vec[1], sum[2] + vec[2]] : vec),

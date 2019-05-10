@@ -7,7 +7,7 @@ var enabled = true,
 Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (
 		npc instanceof C_DOTA_BaseNPC_Hero
-		&& npc.IsEnemy(LocalDOTAPlayer)
+		&& Utils.IsEnemy(npc, LocalDOTAPlayer)
 		&& !npc.m_bIsIllusion
 		&& npc.m_hReplicatingOtherHeroModel === undefined
 	)
@@ -19,9 +19,9 @@ Events.on("onEntityDestroyed", ent => {
 })
 
 Events.on("onUpdate", () => {
-	if (!enabled || IsPaused())
+	if (!enabled || GameRules.m_bGamePaused)
 		return
-	manabars = heroes.filter(npc => npc.m_bIsAlive && npc.m_bIsVisible)
+	manabars = heroes.filter(npc => Utils.IsAlive(npc) && Utils.IsVisible(npc))
 })
 Events.on("onDraw", () => {
 	if (!enabled || !IsInGame())

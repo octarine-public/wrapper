@@ -16,6 +16,7 @@ export * from "CrutchesSDK/Menu/MenuManager";
 	TODO:
 
 	- wrapper:
+		C_DOTA_DataNonSpectator -> DataNonSpectator
 		C_DOTA_UnitInventory 	-> Inventory
 		CDOTA_ModifierManager 	-> Modifiers
 
@@ -30,7 +31,7 @@ export * from "CrutchesSDK/Menu/MenuManager";
 
 	TODO Native:
 
-	- C_DOTAPlayer.m_nOutgoingOrderSequenceNumber - hkCreateMove ??
+	- add AbilitySlot (index in slots)
 	- particle list as entity list
 	- particle destroyed
 	- QAngle - add AsVector3

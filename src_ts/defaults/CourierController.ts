@@ -1,3 +1,5 @@
+import * as Utils from "Utils"
+
 import { MenuManager } from "../CrutchesSDK/Wrapper"
 import { CastNoTarget } from "../Orders"
 
@@ -52,13 +54,13 @@ class AllyPlayer {
 	constructor(ent: C_DOTAPlayer) {
 		this.ent = ent
 
-		this.UpdateMenu();
+		this.UpdateMenu()
 	}
-	
+
 	UpdateMenu() {
 		if (!this.ent.m_bHeroAssigned)
-			return;
-			
+			return
+
 		let plToMenu = PlayerResource.m_vecPlayerData[this.ent.m_iPlayerID].m_iszPlayerName
 			+ ` (${(this.ent.m_hAssignedHero as C_DOTA_BaseNPC).m_iszUnitName})`
 
@@ -69,7 +71,7 @@ class AllyPlayer {
 }
 
 let CastCourAbility = (num: number) => allyCourier
-	&& CastNoTarget(allyCourier, allyCourier.GetAbility(num), false)
+	&& CastNoTarget(allyCourier, Utils.GetAbilityBySlot(allyCourier, num), false)
 
 function onStateMain(state: boolean = stateMain.value) {
 	if (!state)
@@ -107,7 +109,7 @@ function registerEvents() {
 	registeredEvents.onUpdate = Events.on("onUpdate", onUpdate)
 
 	// loop-optimizer: POSSIBLE_UNDEFINED
-	Entities.GetAllEntities().forEach(onCheckEntity)
+	Entities.AllEntities.forEach(onCheckEntity)
 }
 
 function destroyEvents() {
@@ -129,27 +131,27 @@ function onCheckEntity(ent: C_BaseEntity) {
 		ent instanceof C_DOTAPlayer
 		&& (LocalDOTAPlayer === undefined
 			|| (ent.m_iPlayerID !== LocalDOTAPlayer.m_iPlayerID
-				&& !ent.IsEnemy(LocalDOTAPlayer)))
+			&& !Utils.IsEnemy(ent, LocalDOTAPlayer)))
 	) {
 		allAllyPlayers.push(new AllyPlayer(ent))
-		return;
+		return
 	}
-	
+
 	if (ent instanceof C_DOTA_Unit_Courier) {
 
 		if (allyCourier === undefined)
-			allyCourier = ent;
-			
-		return;
+			allyCourier = ent
+
+		return
 	}
-	
-	if (ent instanceof C_DOTA_BaseNPC 
-		&& ent.m_bIsHero
-		&& ent.m_bIsControllableByAnyPlayer
+
+	if (ent instanceof C_DOTA_BaseNPC
+		&& Utils.IsHero(ent)
+		&& Utils.IsControllableByAnyPlayer(ent)
 	) {
-		let findPlayer = allAllyPlayers.find(player => player.ent.m_hAssignedHero === ent);
+		let findPlayer = allAllyPlayers.find(player => player.ent.m_hAssignedHero === ent)
 		if (findPlayer)
-			findPlayer.UpdateMenu();
+			findPlayer.UpdateMenu()
 	}
 }
 
@@ -168,7 +170,7 @@ function removedIDCour(ent: C_DOTA_Unit_Courier) {
 function onUpdate() {
 
 	if (!IsInGame()
-		|| IsPaused()
+		|| GameRules.m_bGamePaused
 		|| GameRules.m_iGameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
 		return
 
@@ -178,15 +180,15 @@ function onUpdate() {
 	if (autoShieldState.value) {
 
 		// loop-optimizer: POSSIBLE_UNDEFINED
-		Entities.GetAllEntities().forEach(ent => {
+		Entities.AllEntities.forEach(ent => {
 
 			if (
 				ent instanceof C_DOTA_BaseNPC
-				&& ent.m_bHasAttackCapability
-				&& ent.IsEnemy(allyCourier)
-				&& allyCourier.IsInRange(ent, ent.m_fAttackRange + ent.m_flHullRadius + allyCourier.m_flHullRadius)
+				&& Utils.HasAttackCapability(ent)
+				&& Utils.IsEnemy(ent, allyCourier)
+				&& Utils.IsInRange(allyCourier, ent, ent.m_fAttackRange + ent.m_flHullRadius + allyCourier.m_flHullRadius)
 			) {
-				let shield = allyCourier.GetAbility(5) // "courier_shield"
+				let shield = Utils.GetAbilityBySlot(allyCourier, 5) // "courier_shield"
 
 				if (shield !== undefined && shield.m_iLevel > 0 && shield.m_fCooldown === 0)
 					CastNoTarget(allyCourier, shield, false)
@@ -247,7 +249,7 @@ function trySelfDeliver() {
 	let localEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero,
 		delivery = false
 
-	if (localEnt.m_bIsAlive && hasFreeSlot(localEnt)
+	if (Utils.IsAlive(localEnt) && hasFreeSlot(localEnt)
 		&& hasFreeSlot(allyCourier)) {
 
 		if (hasItemsInInventory(allyCourier, localEnt)) {

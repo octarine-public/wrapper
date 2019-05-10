@@ -1,273 +1,277 @@
 // import * as Enums from "./Enums";
+import { SplitBigInt } from "Utils"
 import Entity from "./Entity"
-import { SplitBigInt } from "Utils";
+import Hero from "./Hero"
 
 // move to Buffs.ts
 export const TrueSightBuffs = [
 	"modifier_truesight",
 	"modifier_item_dustofappearance",
 	"modifier_bloodseeker_thirst_vision",
-	"modifier_bounty_hunter_track"
+	"modifier_bounty_hunter_track",
 ]
 // move to Buffs.ts
 export const ScepterBuffs = [
 	"modifier_item_ultimate_scepter",
 	"modifier_item_ultimate_scepter_consumed",
-	"modifier_wisp_tether_scepter"
+	"modifier_wisp_tether_scepter",
 ]
 
-const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scepter/;
+const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scepter/
 
 export default class Unit extends Entity {
 
 	m_pBaseEntity: C_DOTA_BaseNPC
-	
+
 	// Redefine
 
 	get IsHero(): boolean {
-		return (this.UnitType & 1) === 1;
+		return (this.UnitType & 1) === 1
 	}
 	get IsTower(): boolean {
-		return ((this.UnitType >> 2) & 1) === 1;
+		return ((this.UnitType >> 2) & 1) === 1
 	}
 	get IsConsideredHero(): boolean {
-		return ((this.UnitType >> 3) & 1) === 1;
+		return ((this.UnitType >> 3) & 1) === 1
 	}
 	get IsBuilding(): boolean {
-		return ((this.UnitType >> 4) & 1) === 1;
+		return ((this.UnitType >> 4) & 1) === 1
 	}
 	get IsFort(): boolean {
-		return ((this.UnitType >> 5) & 1) === 1;
+		return ((this.UnitType >> 5) & 1) === 1
 	}
 	get IsBarracks(): boolean {
-		return ((this.UnitType >> 6) & 1) === 1;
+		return ((this.UnitType >> 6) & 1) === 1
 	}
 	get IsCreep(): boolean {
-		return ((this.UnitType >> 7) & 1) === 1;
+		return ((this.UnitType >> 7) & 1) === 1
 	}
 	get IsCourier(): boolean {
-		return ((this.UnitType >> 8) & 1) === 1;
+		return ((this.UnitType >> 8) & 1) === 1
 	}
 	get IsShop(): boolean {
-		return ((this.UnitType >> 9) & 1) === 1;
+		return ((this.UnitType >> 9) & 1) === 1
 	}
 	get IsLaneCreep(): boolean {
-		return ((this.UnitType >> 10) & 1) === 1;
+		return ((this.UnitType >> 10) & 1) === 1
 	}
 	get IsShrine(): boolean {
-		return ((this.UnitType >> 12) & 1) === 1;
+		return ((this.UnitType >> 12) & 1) === 1
 	}
 	get IsWard(): boolean {
-		return ((this.UnitType >> 17) & 1) === 1;
+		return ((this.UnitType >> 17) & 1) === 1
 	}
-	
+
 	get IsRooted(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
 	}
 	get IsDisarmed(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_DISARMED);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_DISARMED)
 	}
 	get IsAttackImmune(): boolean {
-		return this.m_pBaseEntity.m_bIsAttackImmune;
-		//return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ATTACK_IMMUNE);
+		return this.m_pBaseEntity.m_bIsAttackImmune
+		// return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ATTACK_IMMUNE);
 	}
 	get IsSilenced(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SILENCED);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SILENCED)
 	}
 	get IsMuted(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MUTED);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MUTED)
 	}
 	get IsStunned(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_STUNNED);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_STUNNED)
 	}
 	get IsHexed(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_HEXED);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_HEXED)
 	}
 	get IsInvisible(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE)
 	}
 	get IsInvulnerable(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
 	}
 	get IsMagicImmune(): boolean {
-		return this.m_pBaseEntity.m_bIsMagicImmune;
-		//return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE);
+		return this.m_pBaseEntity.m_bIsMagicImmune
+		// return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE);
 	}
-	// 
+	//
 	get IsNoHealthBar(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_HEALTH_BAR);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_HEALTH_BAR)
 	}
-	// 
+	//
 	get IsBlind(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_BLIND);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_BLIND)
 	}
 	//
 	get IsRealUnit(): boolean {
-		return this.UnitType !== 0 && !this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY);
+		return this.UnitType !== 0 && !this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY)
 	}
 	//
 	get IsTrueSightImmune(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_TRUESIGHT_IMMUNE);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_TRUESIGHT_IMMUNE)
 	}
-	
+
 	get IsInFadeTime(): boolean {
-		return this.m_pBaseEntity.m_flInvisibilityLevel > 0;
+		return this.m_pBaseEntity.m_flInvisibilityLevel > 0
 	}
-	
+
 	get IsVisibleForEnemies(): boolean {
-		const valid_teams = ~(1 | (1 << DOTATeam_t.DOTA_TEAM_SPECTATOR) 
-			| (1 << DOTATeam_t.DOTA_TEAM_NEUTRALS) 
+		const valid_teams = ~(1 | (1 << DOTATeam_t.DOTA_TEAM_SPECTATOR)
+			| (1 << DOTATeam_t.DOTA_TEAM_NEUTRALS)
 			| (1 << DOTATeam_t.DOTA_TEAM_NOTEAM)) // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
-		
+
 		let local_team = this.m_pBaseEntity.m_iTeamNum,
-			flags = this.m_pBaseEntity.m_iTaggedAsVisibleByTeam & valid_teams;
-			
-		for (let i = 14; i--;)
-			if (i != local_team && ((flags >> i) & 1))
+			flags = this.m_pBaseEntity.m_iTaggedAsVisibleByTeam & valid_teams
+
+		for (let i = 14; i--; )
+			if (i !== local_team && ((flags >> i) & 1))
 				return true
 		return false
 	}
 	get IsTrueSightedForEnemies(): boolean {
 		return this.m_pBaseEntity.m_ModifierManager.m_vecBuffs.some(buff => {
 			if (buff === undefined || buff.m_bMarkedForDeletion)
-				return false;
-				
-			let name = buff.m_name;
+				return false
+
+			let name = buff.m_name
 			if (name !== undefined)
-				return false;
-				
-			return TrueSightBuffs.some(nameBuff => nameBuff === name);
-		});
+				return false
+
+			return TrueSightBuffs.some(nameBuff => nameBuff === name)
+		})
 	}
 	get IsControllableByAnyPlayer(): boolean {
-		return this.m_pBaseEntity.m_iIsControllableByPlayer64 !== 0n;
+		return this.m_pBaseEntity.m_iIsControllableByPlayer64 !== 0n
 	}
 	get IsRangeAttacker(): boolean {
-		return this.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK);
+		return this.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
 	}
 	get HasScepter(): boolean {
 		if (this.m_pBaseEntity.m_bStolenScepter)
-			return true;
-			
+			return true
+
 		return this.m_pBaseEntity.m_ModifierManager.m_vecBuffs.some(buff => {
 			if (buff === undefined || buff.m_bMarkedForDeletion)
-				return false;
+				return false
 
-			let name = buff.m_name;
+			let name = buff.m_name
 			if (name !== undefined)
-				return false;
-				
-			return ScepterRegExp.test(name);
-		});
+				return false
+
+			return ScepterRegExp.test(name)
+		})
 	}
-	
+
 	/**
 	 * @param flag if not exists => is Melee or Range attack
 	 */
 	HasAttackCapability(flag?: DOTAUnitAttackCapability_t): boolean {
-		let attackCap = this.m_pBaseEntity.m_iAttackCapabilities;
-		
+		let attackCap = this.m_pBaseEntity.m_iAttackCapabilities
+
 		if (flag !== undefined)
-			return (attackCap & flag) === flag;
-		
+			return (attackCap & flag) === flag
+
 		return (attackCap & (
 				DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK |
 				DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
-			) === flag;
+			) === flag
 	}
 	/**
 	 * @param flag if not exists => isn't move NONE
 	 */
 	HasMoveCapabilit(flag: DOTAUnitMoveCapability_t): boolean {
-		let moveCap = this.m_pBaseEntity.m_iMoveCapabilities;
-		
+		let moveCap = this.m_pBaseEntity.m_iMoveCapabilities
+
 		if (flag !== undefined)
-			return (moveCap & flag) === flag;
-			
-		return flag !== DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE;
+			return (moveCap & flag) === flag
+
+		return flag !== DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
 	}
-	
+
 	IsUnitStateFlagSet(flag: modifierstate): boolean {
-		return (((this.m_pBaseEntity.m_nUnitState64 | this.m_pBaseEntity.m_nUnitDebuffState) >> BigInt(flag)) & 1n) === 1n;
+		return (((this.m_pBaseEntity.m_nUnitState64 | this.m_pBaseEntity.m_nUnitDebuffState) >> BigInt(flag)) & 1n) === 1n
 	}
-	
-	GetAbilityByName(name: string): false | C_DOTABaseAbility {
-		let abils = this.m_pBaseEntity.m_hAbilities;
-		
+
+	GetAbilityByName(name: string): C_DOTABaseAbility {
+		let abils = this.m_pBaseEntity.m_hAbilities
+
 		for (let i = 0, len = abils.length; i < len; i++) {
-			let abil = (abils[i] as C_DOTABaseAbility);
-			
+			let abil = (abils[i] as C_DOTABaseAbility)
+
 			if (abil === undefined)
-				continue;
-				
+				continue
+
 			if (abil.m_pAbilityData.m_pszAbilityName === name)
-				return abil;
+				return abil
 		}
-		
-		return false;
+
+		return undefined
 	}
-	GetAbility(numSlot: string): C_DOTABaseAbility {
-		return this.m_pBaseEntity.m_hAbilities[numSlot];
-	} 
-	GetItemByName(name: string, icludeBackpack: boolean = false): false | C_DOTA_Item {
-		
+	GetAbility(numSlot: number): C_DOTABaseAbility {
+		return this.m_pBaseEntity.m_hAbilities[numSlot] as C_DOTABaseAbility
+	}
+	GetItemByName(name: string, icludeBackpack: boolean = false): C_DOTA_Item {
+
 		let items = this.m_pBaseEntity.m_Inventory.m_hItems,
-			len = Math.min(items.length, icludeBackpack ? 9 : 6);
+			len = Math.min(items.length, icludeBackpack ? 9 : 6)
 
 		for (let i = 0; i < len; i++) {
-			let item = items[i] as C_DOTA_Item;
+			let item = items[i] as C_DOTA_Item
 
 			if (item === undefined)
-				continue;
+				continue
 
 			if (item.m_pAbilityData.m_pszAbilityName === name)
-				return item;
+				return item
 		}
 
-		return false;
+		return undefined
 	}
-	GetItemByNameInBackpack(name: string): false | C_DOTA_Item {
-		
+	GetItemByNameInBackpack(name: string): C_DOTA_Item {
+
 		let items = this.m_pBaseEntity.m_Inventory.m_hItems,
-			len = Math.min(items.length, 9);
+			len = Math.min(items.length, 9)
 
 		for (let i = 6; i < len; i++) {
-			let item = items[i] as C_DOTA_Item;
+			let item = items[i] as C_DOTA_Item
 
 			if (item === undefined)
-				continue;
+				continue
 
 			if (item.m_pAbilityData.m_pszAbilityName === name)
-				return item;
+				return item
 		}
 
-		return false;
+		return undefined
 	}
-	GetItemInSlot(numSlot: string): C_DOTA_Item  {
-		return this.m_pBaseEntity.m_Inventory.m_hItems[numSlot];
-	} 
-	GetBuffByName(name: string): false | CDOTA_Buff {
+	GetItemInSlot(numSlot: number): C_DOTA_Item  {
+		return this.m_pBaseEntity.m_Inventory.m_hItems[numSlot] as C_DOTA_Item
+	}
+	GetBuffByName(name: string): CDOTA_Buff {
 
 		let buffs = this.m_pBaseEntity.m_ModifierManager.m_vecBuffs,
-			len = Math.min(buffs.length, 9);
+			len = Math.min(buffs.length, 9)
 
 		for (let i = 6; i < len; i++) {
-			let buff = buffs[i] as CDOTA_Buff;
+			let buff = buffs[i] as CDOTA_Buff
 
 			if (buff === undefined || buff.m_bMarkedForDeletion)
-				continue;
+				continue
 
 			if (buff.m_name === name)
-				return buff;
+				return buff
 		}
 
-		return false;
+		return undefined
+	}
+	GetBuff(num: number): CDOTA_Buff {
+		return this.m_pBaseEntity.m_ModifierManager.m_vecBuffs[num] as CDOTA_Buff
 	}
 	IsControllableByPlayer(playerID: number): boolean {
-		return ((this.m_pBaseEntity.m_iIsControllableByPlayer64 >> BigInt(playerID)) & 1n) === 1n;
+		return ((this.m_pBaseEntity.m_iIsControllableByPlayer64 >> BigInt(playerID)) & 1n) === 1n
 	}
 	// new
-	
+
 	get Armor(): number {
 		return this.m_pBaseEntity.m_flPhysicalArmorValue
 	}
@@ -339,9 +343,9 @@ export default class Unit extends Entity {
 	get HealthBarHighlightColor(): Color {
 		return this.m_pBaseEntity.m_iHealthBarHighlightColor
 	}
-	// get HPRegen(): number {
-	// 	return this.ent.m_flHealthThinkRegen;
-	// }
+	get HPRegen(): number {
+		return this.m_pBaseEntity.m_flHealthThinkRegen
+	}
 	get HullRadius(): number {
 		return this.m_pBaseEntity.m_flHullRadius
 	}
@@ -352,7 +356,7 @@ export default class Unit extends Entity {
 	get Inventory(): C_DOTA_UnitInventory {
 
 		if (!this.HasInventory)
-			return
+			return undefined
 
 		return this.m_pBaseEntity.m_Inventory
 
@@ -455,16 +459,16 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_iszUnitName
 	}
 	get NetworkActivity(): GameActivity_t {
-		return this.m_pBaseEntity.m_NetworkActivity;
+		return this.m_pBaseEntity.m_NetworkActivity
 	}
 	get NightVision(): number {
 		return this.m_pBaseEntity.m_iNightTimeVisionRange
 	}
 	get ProjectileCollisionSize(): number {
-		return this.m_pBaseEntity.m_flProjectileCollisionSize;
+		return this.m_pBaseEntity.m_flProjectileCollisionSize
 	}
 	get RingRadius(): number {
-		return this.m_pBaseEntity.m_flRingRadius;
+		return this.m_pBaseEntity.m_flRingRadius
 	}
 	get RotationDifference(): number {
 		return this.m_pBaseEntity.m_anglediff
@@ -473,15 +477,65 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_fAttacksPerSecond
 	}
 	get TauntCooldown(): number {
-		return this.m_pBaseEntity.m_flTauntCooldown;
+		return this.m_pBaseEntity.m_flTauntCooldown
 	}
 	get TotalDamageTaken(): bigint {
-		return this.m_pBaseEntity.m_nTotalDamageTaken;
+		return this.m_pBaseEntity.m_nTotalDamageTaken
 	}
 	get UnitState(): modifierstate[] {
-		return SplitBigInt(this.m_pBaseEntity.m_nUnitState64);
+		return SplitBigInt(this.m_pBaseEntity.m_nUnitState64)
 	}
 	get UnitType(): number {
 		return this.m_pBaseEntity.m_iUnitType
+	}
+
+	get Abilities(): C_DOTABaseAbility[] {
+		return this.m_pBaseEntity.m_hAbilities as C_DOTABaseAbility[]
+	}
+	get Items(): C_DOTA_Item[] {
+		let inv = this.Inventory
+
+		if (inv === undefined)
+			return undefined
+
+		return inv.m_hItems as C_DOTA_Item[]
+	}
+	SpellAmplification(): number {
+		let spellAmp = 0
+
+		if (this instanceof Hero)
+			spellAmp += this.TotalIntelligence * 0.07 / 100 // https://dota2.gamepedia.com/Intelligence
+
+		let items = this.Items
+
+		if (items !== undefined) {
+
+			for (let i = 0; i < 6; i++) {
+				let item = items[i]
+				if (items === undefined)
+					continue
+				spellAmp += item.GetSpecialValue("spell_amp") / 100
+			}
+		}
+
+		let abils = this.Abilities
+		for (let i = 0, len = abils.length; i < len; i++) {
+			let abil = abils[i]
+
+			if (abil === undefined || abil.m_iLevel)
+				continue
+
+			let abilData = abil.m_pAbilityData
+			if (abilData === undefined)
+				continue
+
+			let abilName = abilData.m_pszAbilityName
+			if (abilName === undefined || !abilName.startsWith("special_bonus_spell_amplify"))
+				continue
+
+			spellAmp += abil.GetSpecialValue("value") / 100
+		}
+
+		return spellAmp
 	}
 }

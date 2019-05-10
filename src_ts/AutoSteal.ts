@@ -39,7 +39,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var arcDamage = abil.GetSpecialValue("arc_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_zeus_2")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_zeus_2")
 				if (talent && talent.m_iLevel > 0)
 					arcDamage += talent.GetSpecialValue("value")
 
@@ -57,20 +57,20 @@ var abils: Array<{
 		{
 			abilName: "sniper_assassinate",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
-			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_bHasScepter ? 0 : Utils.CalculateDamage(entTo, abil.m_iAbilityDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("projectile_speed"),
+			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Utils.HasScepter(entFrom) ? 0 : Utils.CalculateDamage(entTo, abil.m_iAbilityDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{
 			abilName: "visage_soul_assumption",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("bolt_speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("bolt_speed"),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var baseDamage = abil.GetSpecialValue("soul_base_damage"),
 					stackDamage = abil.GetSpecialValue("soul_charge_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_visage_4")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_visage_4")
 				if (talent && talent.m_iLevel > 0)
 					stackDamage += talent.GetSpecialValue("value")
-				var stackBuff = entFrom.GetBuffByName("modifier_visage_soul_assumption"),
+				var stackBuff = Utils.GetBuffByName(entFrom, "modifier_visage_soul_assumption"),
 					stackBuffDamage = stackBuff ? stackBuff.m_iStackCount * stackDamage : 0
 				return Utils.CalculateDamage(entTo, (baseDamage + stackBuffDamage) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -82,7 +82,7 @@ var abils: Array<{
 		{
 			abilName: "phantom_assassin_stifling_dagger",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("dagger_speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("dagger_speed"),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Utils.CalculateDamage(entTo, abil.GetSpecialValue("base_damage"), DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL, entFrom) + ((1 + abil.GetSpecialValue("attack_factor") / 100) * Utils.CalculateDamageByHand(entTo, entFrom)),
 		},
 		{
@@ -90,7 +90,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var laserDamage = abil.GetSpecialValue("laser_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_tinker")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_tinker")
 				if (talent && talent.m_iLevel > 0)
 					laserDamage += talent.GetSpecialValue("value")
 
@@ -108,7 +108,7 @@ var abils: Array<{
 			abilRadiusF: abil => abil.GetSpecialValue("radius") / 2 - 25,
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var damage = abil.GetSpecialValue("damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_puck_4")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_puck_4")
 				if (talent && talent.m_iLevel > 0)
 					damage += talent.GetSpecialValue("value")
 
@@ -134,15 +134,15 @@ var abils: Array<{
 			abilName: "bristleback_quill_spray",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP),
 			abilRadiusF: abil => abil.GetSpecialValue("radius"),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("projectile_speed"),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var baseDamage = abil.GetSpecialValue("quill_base_damage"),
 					stackDamage = abil.GetSpecialValue("quill_stack_damage"),
 					maxDamage = abil.GetSpecialValue("max_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_bristleback_2")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_bristleback_2")
 				if (talent && talent.m_iLevel > 0)
 					stackDamage += talent.GetSpecialValue("value")
-				var stackBuff = entTo.GetBuffByName("modifier_bristleback_quill_spray"),
+				var stackBuff = Utils.GetBuffByName(entTo, "modifier_bristleback_quill_spray"),
 					stackBuffDamage = stackBuff ? stackBuff.m_iStackCount * stackDamage : 0
 				return Utils.CalculateDamage(entTo, Math.min(maxDamage, baseDamage + stackBuffDamage) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL, entFrom)
 			},
@@ -152,7 +152,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var beamDamage = abil.GetSpecialValue("beam_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_luna_1")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_luna_1")
 				if (talent && talent.m_iLevel > 0)
 					beamDamage += talent.GetSpecialValue("value")
 
@@ -164,7 +164,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var maxDamage = abil.GetSpecialValue("max_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_alchemist_2")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_alchemist_2")
 				if (talent && talent.m_iLevel > 0)
 					maxDamage += talent.GetSpecialValue("value")
 
@@ -179,7 +179,7 @@ var abils: Array<{
 					brewTime = abil.GetSpecialValue("brew_time"),
 					brewExplosion = abil.GetSpecialValue("brew_explosion"),
 					minStun = abil.GetSpecialValue("min_stun"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_alchemist_2"),
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_alchemist_2"),
 					modifierName = "modifier_alchemist_unstable_concoction"
 				if (talent && talent.m_iLevel > 0)
 					maxDamage += talent.GetSpecialValue("value")
@@ -202,7 +202,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var targetDamage = abil.GetSpecialValue("target_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_abaddon_2")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_abaddon_2")
 				if (talent && talent.m_iLevel > 0)
 					targetDamage += talent.GetSpecialValue("value")
 
@@ -212,10 +212,10 @@ var abils: Array<{
 		{
 			abilName: "bounty_hunter_shuriken_toss",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("speed"),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var damage = abil.GetSpecialValue("bonus_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_bounty_hunter_2")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_bounty_hunter_2")
 				if (talent && talent.m_iLevel > 0)
 					damage += talent.GetSpecialValue("value")
 
@@ -227,7 +227,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var fireblastDamage = abil.GetSpecialValue("fireblast_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_ogre_magi_2")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_ogre_magi_2")
 				if (talent && talent.m_iLevel > 0)
 					fireblastDamage += talent.GetSpecialValue("value")
 
@@ -247,7 +247,7 @@ var abils: Array<{
 				abil.GetSpecialValue("damage_per_unit")
 				* Math.min (
 					entTo.m_vecNetworkOrigin.GetEntitiesInRange(abil.GetSpecialValue("radius")).filter(ent =>
-						ent instanceof C_DOTA_BaseNPC && (ent.m_bIsCreep || ent.m_bIsHero) && !ent.IsEnemy(entFrom),
+						ent instanceof C_DOTA_BaseNPC && (Utils.IsCreep(ent) || Utils.IsHero(ent)) && !Utils.IsEnemy(ent, entFrom),
 					).length,
 					abil.GetSpecialValue("max_units"),
 				) * latest_spellamp,
@@ -258,7 +258,7 @@ var abils: Array<{
 		{
 			abilName: "queenofpain_scream_of_pain",
 			abilRadiusF: abil => abil.GetSpecialValue("area_of_effect") / 2 - 25,
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("projectile_speed"),
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 		},
 		{
@@ -270,7 +270,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var critMultiplier = abil.GetSpecialValue("crit_multiplier"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_tusk")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_tusk")
 				if (talent && talent.m_iLevel > 0)
 					critMultiplier += talent.GetSpecialValue("value")
 
@@ -282,7 +282,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var edgeDamage = abil.GetSpecialValue("edge_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_centaur_4")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_centaur_4")
 				if (talent && talent.m_iLevel > 0)
 					edgeDamage += talent.GetSpecialValue("value")
 
@@ -307,10 +307,10 @@ var abils: Array<{
 		{
 			abilName: "broodmother_spawn_spiderlings",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("projectile_speed"),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var damage = abil.GetSpecialValue("damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_broodmother_3")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_broodmother_3")
 				if (talent && talent.m_iLevel > 0)
 					damage += talent.GetSpecialValue("value")
 
@@ -322,7 +322,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var damage = abil.GetSpecialValue("nova_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_crystal_maiden_2")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_crystal_maiden_2")
 				if (talent && talent.m_iLevel > 0)
 					damage += talent.GetSpecialValue("value")
 
@@ -334,7 +334,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var damage = abil.GetSpecialValue("damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_shadow_shaman_3")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_shadow_shaman_3")
 				if (talent && talent.m_iLevel > 0)
 					damage += talent.GetSpecialValue("value")
 
@@ -352,7 +352,7 @@ var abils: Array<{
 		},
 		{
 			abilName: "lion_impale",
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("speed"),
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 		},
 		{
@@ -360,9 +360,9 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDelayF: abil => abil.GetSpecialValue("damage_delay"),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
-				var damage = abil.GetSpecialValue("damage" + (entFrom.m_bHasScepter ? "_scepter" : "")),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_lion_3"),
-					buff = entFrom.GetBuffByName("modifier_lion_finger_of_death_kill_counter")
+				var damage = abil.GetSpecialValue("damage" + (Utils.HasScepter(entFrom) ? "_scepter" : "")),
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_lion_3"),
+					buff = Utils.GetBuffByName(entFrom, "modifier_lion_finger_of_death_kill_counter")
 				if (talent && talent.m_iLevel > 0)
 					damage += talent.GetSpecialValue("value")
 				if (buff)
@@ -375,7 +375,7 @@ var abils: Array<{
 			abilName: "lina_laguna_blade",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDelayF: abil => abil.GetSpecialValue("damage_delay"),
-			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Utils.CalculateDamage(entTo, abil.GetSpecialValue("damage") * latest_spellamp, entFrom.m_bHasScepter ? DAMAGE_TYPES.DAMAGE_TYPE_PURE : DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
+			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Utils.CalculateDamage(entTo, abil.GetSpecialValue("damage") * latest_spellamp, Utils.HasScepter(entFrom) ? DAMAGE_TYPES.DAMAGE_TYPE_PURE : DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{
 			abilName: "pudge_dismember",
@@ -393,10 +393,10 @@ var abils: Array<{
 		{
 			abilName: "phantom_lancer_spirit_lance",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("lance_speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("lance_speed"),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				var lanceDamage = abil.GetSpecialValue("lance_damage"),
-					talent = entFrom.GetAbilityByName("special_bonus_unique_phantom_lancer_2")
+					talent = Utils.GetAbilityByName(entFrom, "special_bonus_unique_phantom_lancer_2")
 				if (talent && talent.m_iLevel > 0)
 					lanceDamage += talent.GetSpecialValue("value")
 
@@ -406,12 +406,12 @@ var abils: Array<{
 		{
 			abilName: "skeleton_king_hellfire_blast",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("blast_speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("blast_speed"),
 		},
 		{
 			abilName: "sven_storm_bolt",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("bolt_speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("bolt_speed"),
 		},
 		/*{
 			abilName: "storm_spirit_ball_lightning",
@@ -442,7 +442,7 @@ var abils: Array<{
 		{
 			abilName: "furion_wrath_of_nature",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Utils.CalculateDamage(entTo, abil.GetSpecialValue("damage" + (entFrom.m_bHasScepter ? "_scepter" : "")) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
+			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Utils.CalculateDamage(entTo, abil.GetSpecialValue("damage" + (Utils.HasScepter(entFrom) ? "_scepter" : "")) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{
 			abilName: "beastmaster_primal_roar",
@@ -450,7 +450,7 @@ var abils: Array<{
 		},
 		{
 			abilName: "sandking_burrowstrike",
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("burrow_speed" + (entFrom.m_bHasScepter ? "_scepter" : "")),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("burrow_speed" + (Utils.HasScepter(entFrom) ? "_scepter" : "")),
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 		},
 		{
@@ -461,7 +461,7 @@ var abils: Array<{
 		{ // TODO: improved magresist calculation
 			abilName: "item_ethereal_blade",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("projectile_speed"),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Utils.CalculateDamage(entTo, (abil.GetSpecialValue("blast_damage_base") + abil.GetSpecialValue("blast_agility_multiplier") * (entFrom as C_DOTA_BaseNPC_Hero).m_flAgilityTotal) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		// TODO: mars_gods_rebuke
@@ -477,7 +477,7 @@ function GetAvailableAbils() {
 	return abils.filter (
 		abilData => abilData.abilName instanceof RegExp
 		|| abilData.abilName.startsWith("item_")
-		|| MyEnt.GetAbilityByName(abilData.abilName) !== undefined,
+			|| Utils.GetAbilityByName(MyEnt, abilData.abilName) !== undefined,
 	)
 }
 
@@ -491,27 +491,27 @@ function OnTick(): void {
 
 	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero/*,
 		selectedHero = /^npc_dota_hero_(.*)$/.exec(MyEnt.UnitName)[1]*/
-	if (MyEnt === undefined || MyEnt.m_bIsStunned || !MyEnt.m_bIsAlive || flag || LocalDOTAPlayer.m_hActiveAbility !== undefined/* || (MyEnt.CanBeVisible && selectedHero !== "riki" && selectedHero !== "treant_protector")*/)
+	if (MyEnt === undefined || Utils.IsUnitStateFlagSet(MyEnt, modifierstate.MODIFIER_STATE_STUNNED) || !Utils.IsAlive(MyEnt) || flag || LocalDOTAPlayer.m_hActiveAbility !== undefined/* || (MyEnt.CanBeVisible && selectedHero !== "riki" && selectedHero !== "treant_protector")*/)
 		return
-	latest_spellamp = MyEnt.m_fSpellAmplification / 100
+	latest_spellamp = Utils.SpellAmplification(MyEnt) / 100
 	{
-		let bs_buff = MyEnt.GetBuffByName("modifier_bloodseeker_bloodrage")
+		let bs_buff = Utils.GetBuffByName(MyEnt, "modifier_bloodseeker_bloodrage")
 		if (bs_buff !== undefined)
 			latest_spellamp *= (bs_buff.m_hAbility as C_DOTABaseAbility).GetSpecialValue("damage_increase_pct") / 100
 	}
 	var availableAbils = GetAvailableAbils().filter(abilData => {
-			var abil = (abilData as any).abil = abilData.abilName instanceof RegExp ? Utils.GetItemByRegexp(MyEnt, abilData.abilName) : MyEnt.GetAbilityByName(abilData.abilName) || MyEnt.GetItemByName(abilData.abilName)
-			return abil !== undefined && abil.m_iLevel !== 0 && !abil.m_bIsHidden && abil.m_fCooldown === 0 && abil.IsManaEnough(MyEnt)
+		var abil = (abilData as any).abil = abilData.abilName instanceof RegExp ? Utils.GetItemByRegexp(MyEnt, abilData.abilName) : Utils.GetAbilityByName(MyEnt, abilData.abilName) || Utils.GetItemByName(MyEnt, abilData.abilName)
+		return abil !== undefined && abil.m_iLevel !== 0 && !abil.m_bHidden && abil.m_fCooldown === 0 && Utils.IsManaEnough(MyEnt, abil)
 		}),
-		zuus_passive = MyEnt.GetAbilityByName("zuus_static_field"),
-		zuus_talent = MyEnt.GetAbilityByName("special_bonus_unique_zeus"),
-		blink = MyEnt.GetItemByName("item_blink") || MyEnt.GetAbilityByName("antimage_blink"),
+		zuus_passive = Utils.GetAbilityByName(MyEnt, "zuus_static_field"),
+		zuus_talent = Utils.GetAbilityByName(MyEnt, "special_bonus_unique_zeus"),
+		blink = Utils.GetItemByName(MyEnt, "item_blink") || Utils.GetAbilityByName(MyEnt, "antimage_blink"),
 		targets = possibleTargets.filter(ent =>
-			ent.m_bIsVisible &&
+			Utils.IsVisible(ent) &&
 			!ent.m_bIsWaitingToSpawn &&
-			ent.m_bIsAlive &&
-			(!ent.m_bIsCreep || config.kill_creeps) &&
-			(!ent.m_bIsHero || config.kill_heroes) &&
+			Utils.IsAlive(ent) &&
+			(!Utils.IsCreep(ent) || config.kill_creeps) &&
+			(!Utils.IsHero(ent) || config.kill_heroes) &&
 			NoTarget.indexOf(ent as C_DOTA_BaseNPC) === -1,
 		)
 	availableAbils.some(abilData => {
@@ -522,19 +522,19 @@ function OnTick(): void {
 		return targets.some(ent => {
 			if (
 				Utils.HasLinkenAtTime(ent, abil.m_fCastPoint) ||
-				(ent.m_bIsCreep && !Utils.IsFlagSet(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP))) ||
-				(ent.m_bIsHero && !Utils.IsFlagSet(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO)))
+				(Utils.IsCreep(ent) && !Utils.IsFlagSet(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP))) ||
+				(Utils.IsHero(ent) && !Utils.IsFlagSet(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO)))
 			)
 				return false
 			var needBlink = false
 			if (range > 0)
-				if (MyEnt.Distance2D(ent) > range)
+				if (MyEnt.m_vecNetworkOrigin.Distance2D(ent.m_vecNetworkOrigin) > range)
 					if (
 						!blinkFlag
 						&& blink !== undefined
 						&& blink.m_fCooldown === 0
-						&& ent.m_bIsHero
-						&& MyEnt.Distance2D(ent) < range + blink.GetSpecialValue("blink_range")
+						&& Utils.IsHero(ent)
+						&& MyEnt.m_vecNetworkOrigin.Distance2D(ent.m_vecNetworkOrigin) < range + blink.GetSpecialValue("blink_range")
 					)
 						needBlink = true
 					else return false
@@ -570,12 +570,12 @@ Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (LocalDOTAPlayer === undefined)
 		return
 	if (
-		npc.IsEnemy(LocalDOTAPlayer)
+		Utils.IsEnemy(npc, LocalDOTAPlayer)
 		&& (
 			npc instanceof C_DOTA_BaseNPC_Creep
 			|| (
 				npc instanceof C_DOTA_BaseNPC_Hero
-				&& (npc.m_hReplicatingOtherHeroModel === undefined || (npc instanceof C_DOTA_Unit_Hero_Meepo && npc.m_bIsClone))
+				&& (npc.m_hReplicatingOtherHeroModel === undefined || (npc instanceof C_DOTA_Unit_Hero_Meepo && Utils.IsIllusion(npc)))
 			)
 		)
 	)

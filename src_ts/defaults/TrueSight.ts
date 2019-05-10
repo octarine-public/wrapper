@@ -6,8 +6,8 @@ var enabled = true,
 	particles: number[] = []
 
 Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
-	if (!npc.IsEnemy(LocalDOTAPlayer))
-		npcs.push([npc, npc.m_iID])
+	if (!Utils.IsEnemy(npc, LocalDOTAPlayer))
+		npcs.push([npc, Entities.GetEntityID(npc)])
 })
 Events.on("onEntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC)
@@ -20,11 +20,11 @@ Events.on("onEntityDestroyed", ent => {
 		})
 })
 Events.on("onUpdate", () => {
-	if (!enabled || IsPaused())
+	if (!enabled || GameRules.m_bGamePaused)
 		return
 	npcs.forEach(([npc, id]) => {
-		let is_truesighted = npc.m_bIsTrueSightedForEnemies,
-			alive = npc.m_bIsAlive
+		let is_truesighted = Utils.IsTrueSightedForEnemies(npc),
+			alive = Utils.IsAlive(npc)
 		if (is_truesighted && particles[id] === undefined && alive)
 			particles[id] = Particles.Create(particle, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, npc)
 		else if ((!alive || !is_truesighted) && particles[id] !== undefined) {

@@ -1,4 +1,3 @@
-
 import * as Orders from "./Orders"
 import * as Utils from "./Utils"
 
@@ -43,7 +42,7 @@ function RemoveMine(rmine: C_DOTA_BaseNPC) {
 }
 
 function ExplodeMine(rmine: C_DOTA_BaseNPC) {
-	Orders.CastNoTarget(rmine, rmine.GetAbilityByName("techies_remote_mines_self_detonate"), false)
+	Orders.CastNoTarget(rmine, Utils.GetAbilityByName(rmine, "techies_remote_mines_self_detonate"), false)
 	RemoveMine(rmine)
 }
 
@@ -51,7 +50,7 @@ function TryDagon(ent: C_DOTA_BaseNPC, damage: number = 0, damage_type: number =
 	var Dagon = Utils.GetItemByRegexp(techies, /item_dagon/),
 		TargetHP = Utils.GetHealthAfter(ent, RMineBlowDelay)
 	if (Dagon)
-		if (Dagon.m_fCooldown === 0 && techies.IsInRange(ent, Utils.GetCastRange(techies, Dagon)) && TargetHP < Utils.CalculateDamage(ent, Dagon.GetSpecialValue("damage") * latest_techies_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies) + Utils.CalculateDamage(ent, damage, damage_type, techies)) {
+		if (Dagon.m_fCooldown === 0 && Utils.IsInRange(techies, ent, Utils.GetCastRange(techies, Dagon)) && TargetHP < Utils.CalculateDamage(ent, Dagon.GetSpecialValue("damage") * latest_techies_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies) + Utils.CalculateDamage(ent, damage, damage_type, techies)) {
 			Orders.CastTarget(techies, Dagon, ent, false)
 			return true
 		}
@@ -87,16 +86,16 @@ function NeedToTriggerMine(rmine: C_DOTA_BaseNPC, ent: C_DOTA_BaseNPC, forcestaf
 		TriggerRadius -= ent.m_fIdealSpeed * (RMineBlowDelay / 30)
 
 	return config.use_prediction
-		? ent.InFront(((ent.m_bIsMoving as any) * RMineBlowDelay) + (forcestaff ? ForcestaffUnits : 0)).Distance2D(rmine.m_vecNetworkOrigin) <= TriggerRadius
+		? Utils.InFront(ent, ((ent.m_bIsMoving as any) * RMineBlowDelay) + (forcestaff ? ForcestaffUnits : 0)).Distance2D(rmine.m_vecNetworkOrigin) <= TriggerRadius
 		: forcestaff
-			? rmine.m_vecNetworkOrigin.Distance2D(ent.InFront(ForcestaffUnits)) <= TriggerRadius
-			: rmine.IsInRange(ent, TriggerRadius)
+			? rmine.m_vecNetworkOrigin.Distance2D(Utils.InFront(ent, ForcestaffUnits)) <= TriggerRadius
+			: Utils.IsInRange(rmine, ent, TriggerRadius)
 }
 
 function onTick() {
-	if (!config.enabled || techies === undefined || IsPaused()) return
+	if (!config.enabled || techies === undefined || GameRules.m_bGamePaused) return
 	var cur_time = GameRules.m_fGameTime
-	rmines = rmines.filter(([rmine]) => rmine.m_bIsAlive)
+	rmines = rmines.filter(([rmine]) => Utils.IsAlive(rmine))
 	if (config.explode_expiring_mines) {
 		const rmineTimeout = 595 // 600 is mine duration
 		for (const [mine, dmg, setup_time] of rmines)
@@ -105,18 +104,18 @@ function onTick() {
 	}
 	if (config.explode_seen_mines)
 		for (const [mine, dmg, setup_time, invis_time] of rmines)
-			if (mine.m_bIsVisibleForEnemies && cur_time > invis_time)
+			if (Utils.IsVisibleForEnemies(mine) && cur_time > invis_time)
 				ExplodeMine(mine)
 	rmines.filter(([rmine]) => rmine.m_iHealth !== rmine.m_iMaxHealth).forEach(([rmine]) => ExplodeMine(rmine))
-	latest_techies_spellamp = techies.m_fSpellAmplification / 100
+	latest_techies_spellamp = Utils.SpellAmplification(techies) / 100
 	{
-		let bs_buff = techies.GetBuffByName("modifier_bloodseeker_bloodrage")
+		let bs_buff = Utils.GetBuffByName(techies, "modifier_bloodseeker_bloodrage")
 		if (bs_buff !== undefined)
 			latest_techies_spellamp *= (bs_buff.m_hAbility as C_DOTABaseAbility).GetSpecialValue("damage_increase_pct") / 100
 	}
 	heroes.filter(ent =>
-		ent.m_bIsAlive
-		&& ent.m_bIsVisible
+		Utils.IsAlive(ent)
+		&& Utils.IsVisible(ent)
 		&& !ent.m_bIsMagicImmune
 		&& NoTarget.indexOf(ent) === -1,
 	).forEach(ent => {
@@ -132,10 +131,10 @@ function onTick() {
 			},
 		)
 
-		var force = techies.GetItemByName("item_force_staff")
+		var force = Utils.GetItemByName(techies, "item_force_staff")
 		if (
-			!callbackCalled && force !== undefined && techies.m_bIsAlive && force.m_fCooldown === 0
-			&& techies.IsInRange(ent, Utils.GetCastRange(techies, force))
+			!callbackCalled && force !== undefined && Utils.IsAlive(techies) && force.m_fCooldown === 0
+			&& Utils.IsInRange(techies, ent, Utils.GetCastRange(techies, force))
 		)
 			CallMines (
 				ent,
@@ -156,7 +155,7 @@ function CreateParticleFor(npc: C_DOTA_BaseNPC) {
 					range = RMineTriggerRadius * (config.safe_mode ? 0.85 : 1)
 				case "npc_dota_techies_stasis_trap":
 				case "npc_dota_techies_land_mine":
-					particles[npc.m_iID] = CreateRange(npc, range)
+					particles[Entities.GetEntityID(npc)] = CreateRange(npc, range)
 				default:
 					break
 			}
@@ -165,14 +164,14 @@ function CreateParticleFor(npc: C_DOTA_BaseNPC) {
 
 function RegisterMine(npc: C_DOTA_BaseNPC) {
 	if (rmines.some(([rmine2]) => rmine2 === npc)) {
-		console.log(`Tried to register existing mine ${npc.m_iID}`)
+		console.log(`Tried to register existing mine ${Entities.GetEntityID(npc)}`)
 		return
 	}
-	const Ulti = techies !== undefined ? techies.GetAbilityByName("techies_remote_mines") : undefined
+	const Ulti = techies !== undefined ? Utils.GetAbilityByName(techies, "techies_remote_mines") : undefined
 	rmines.push ([
 		npc as C_DOTA_NPC_TechiesMines,
 		Ulti ?
-			Ulti.GetSpecialValue("damage" + (techies.m_bHasScepter ? "_scepter" : ""))
+			Ulti.GetSpecialValue("damage" + (Utils.HasScepter(techies) ? "_scepter" : ""))
 			: 0,
 		GameRules.m_fGameTime + (Ulti ? Ulti.m_fCastPoint : 0) + 0.1,
 		GameRules.m_fGameTime + (Ulti ? Ulti.GetSpecialValue("activation_time") + Ulti.m_fCastPoint : 0) + 0.3,
@@ -207,7 +206,7 @@ Events.on("onPrepareUnitOrders", args => {
 	const ents = args.position.GetEntitiesInRange(config.auto_stack_range)
 	var minePos: Vector3
 	if (ents.some(ent => {
-		const isMine = ent instanceof C_DOTA_BaseNPC && ent.m_iszUnitName === "npc_dota_techies_remote_mine" && ent.m_bIsAlive
+		const isMine = ent instanceof C_DOTA_BaseNPC && ent.m_iszUnitName === "npc_dota_techies_remote_mine" && Utils.IsAlive(ent)
 		if (isMine)
 			minePos = ent.m_vecNetworkOrigin
 		return isMine
@@ -222,9 +221,9 @@ Events.on("onPrepareUnitOrders", args => {
 Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (LocalDOTAPlayer === undefined)
 		return
-	if (npc.IsEnemy(LocalDOTAPlayer)) {
+	if (Utils.IsEnemy(npc, LocalDOTAPlayer)) {
 		if (npc instanceof C_DOTA_BaseNPC_Hero)
-			if (npc.m_hReplicatingOtherHeroModel === undefined || (npc instanceof C_DOTA_Unit_Hero_Meepo && npc.m_bIsClone))
+			if (npc.m_hReplicatingOtherHeroModel === undefined || (npc instanceof C_DOTA_Unit_Hero_Meepo && Utils.IsIllusion(npc)))
 				heroes.push(npc)
 		return
 	}
@@ -238,8 +237,8 @@ Events.on("onEntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC_Hero)
 		Utils.arrayRemove(heroes, ent)
 	else if (ent instanceof C_DOTA_NPC_TechiesMines && ent.m_iszUnitName === "npc_dota_techies_remote_mine") {
-		if (particles[ent.m_iID] !== undefined)
-			Particles.Destroy(particles[ent.m_iID], true)
+		if (particles[Entities.GetEntityID(ent)] !== undefined)
+			Particles.Destroy(particles[Entities.GetEntityID(ent)], true)
 		RemoveMine(ent)
 	}
 })
@@ -270,7 +269,7 @@ Events.on("onEntityDestroyed", ent => {
 			Object.keys(particles).forEach(entID => {
 				const entIDFixed = parseInt(entID)
 				Particles.Destroy(particles[entIDFixed], true)
-				CreateParticleFor(Entities.GetByID(entIDFixed) as C_DOTA_BaseNPC)
+				CreateParticleFor(Entities.GetEntityByID(entIDFixed) as C_DOTA_BaseNPC)
 			})
 		},
 	))

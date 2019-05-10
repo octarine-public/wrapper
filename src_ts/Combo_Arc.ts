@@ -1,4 +1,5 @@
 import * as Orders from "Orders"
+import * as Utils from "Utils"
 import { Combo, EComboAction } from "wrapper/Combo"
 
 var combo = new Combo(),
@@ -10,13 +11,13 @@ var combo = new Combo(),
 function GetRealArcWardens(): C_DOTA_BaseNPC[] {
 	var localplayer = LocalDOTAPlayer
 	// loop-optimizer: POSSIBLE_UNDEFINED
-	return Entities.GetAllEntities().filter(ent =>
+	return Entities.AllEntities.filter(ent =>
 		ent instanceof C_DOTA_BaseNPC
-		&& !ent.IsEnemy(localplayer)
-		&& ent.m_bIsAlive
-		&& ent.m_bIsHero
+		&& !Utils.IsEnemy(ent, localplayer)
+		&& Utils.IsAlive(ent)
+		&& Utils.IsHero(ent)
 		&& !ent.m_bIsIllusion
-		&& ent.GetAbilityByName("arc_warden_tempest_double") !== undefined,
+		&& Utils.GetAbilityByName(ent, "arc_warden_tempest_double") !== undefined,
 	) as C_DOTA_BaseNPC[]
 }
 
@@ -53,7 +54,7 @@ Events.on("onWndProc", (message_type, wParam) => {
 	if (message_type === 0x100) { // WM_KEYDOWN
 		const MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
 
-		const tempest_double = MyEnt.GetAbilityByName("arc_warden_tempest_double")
+		const tempest_double = Utils.GetAbilityByName(MyEnt, "arc_warden_tempest_double")
 		if (tempest_double.m_fCooldown === 0) {
 			Orders.CastNoTarget(MyEnt, tempest_double, false)
 			setTimeout((tempest_double.m_fCastPoint + GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000 + 30, () => {

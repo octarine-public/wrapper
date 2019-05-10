@@ -1,6 +1,6 @@
 /// internal declarations
 /// you may use ONLY this ones & default V8 things
-declare function setVector2Class(Vector2: object): void;
+declare function setVector2Class(Vector2: object): void
 declare var global: any
 
 /// actual code
@@ -150,7 +150,7 @@ setVector2Class(global.Vector2 = class Vector2 {
 	Min(vec: Vector2): Vector2 {
 		return new Vector2 (
 			Math.min(this.x, vec.x),
-			Math.min(this.y, vec.y)
+			Math.min(this.y, vec.y),
 		)
 	}
 	/**
@@ -160,7 +160,7 @@ setVector2Class(global.Vector2 = class Vector2 {
 	Max(vec: Vector2): Vector2 {
 		return new Vector2 (
 			Math.max(this.x, vec.x),
-			Math.max(this.y, vec.y)
+			Math.max(this.y, vec.y),
 		)
 	}
 	/**
@@ -258,7 +258,7 @@ setVector2Class(global.Vector2 = class Vector2 {
 			max_y = max.y
 		return new Vector2 (
 			Math.min((x > max_x) ? max_x : x, min.x),
-			Math.min((y > max_y) ? max_y : y, min.y)
+			Math.min((y > max_y) ? max_y : y, min.y),
 		)
 	}
 
@@ -459,7 +459,7 @@ setVector2Class(global.Vector2 = class Vector2 {
 
 		return new Vector2 (
 			(this.x * cos) - (this.y * sin),
-			(this.y * cos) + (this.x * sin)
+			(this.y * cos) + (this.x * sin),
 		)
 	}
 	/**
@@ -470,7 +470,7 @@ setVector2Class(global.Vector2 = class Vector2 {
 	Rotation(rotation: Vector2, distance: number): Vector2 {
 		return new Vector2 (
 			this.x + rotation.x * distance,
-			this.y + rotation.y * distance
+			this.y + rotation.y * distance,
 		)
 	}
 	/**
@@ -510,13 +510,13 @@ setVector2Class(global.Vector2 = class Vector2 {
 	 * Returns if the distance to target is lower than range
 	 */
 	IsInRange(vec: Vector2, range: number): boolean {
-		return this.DistanceSqr(vec) < range ** 2;
+		return this.DistanceSqr(vec) < range ** 2
 	}
 	/**
 	 * Returns true if the point is under the rectangle
 	 */
 	IsUnderRectangle(x: number, y: number, width: number, height: number) {
-		return this.x > x && this.x < (x + width) && this.y > y && this.y < (y + height);
+		return this.x > x && this.x < (x + width) && this.y > y && this.y < (y + height)
 	}
 	/* ================== Geometric ================== */
 	/**

@@ -16,7 +16,7 @@
 		"build": "babel src_ts --extensions \".ts\" --out-dir scripts",
 		"build_bootstrap": "babel src_bootstrap --extensions \".ts\" --out-file bootstrap.js",
 		"check-types": "tsc",
-		"lint": "tslint --fix 'src_ts/**/*.ts'"
+		"lint": "tslint --fix 'src_*/**/*.ts'"
 	},
 	"author": "moofMonkey"
 }

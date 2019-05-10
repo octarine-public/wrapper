@@ -1,6 +1,6 @@
 import * as Orders from "Orders"
-import { FindAttackingUnit } from "Utils"
-
+import * as Utils from "Utils"
+//
 var config = {
 		hotkey: 0,
 		method: 0,
@@ -15,11 +15,11 @@ Events.on("onDraw", () => {
 })
 
 Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
-	if (!enabled || !npc.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID))
+	if (!enabled || !Utils.IsControllableByPlayer(npc, LocalDOTAPlayer.m_iPlayerID))
 		return
 	if (activity === 1503) {
 		if (target !== undefined)
-			if (!target.IsEnemy(npc) || (target instanceof C_DOTA_BaseNPC && (target.m_bIsWard || target.m_bIsTower || target.m_bIsShrine)))
+			if (!Utils.IsEnemy(target, npc) || (target instanceof C_DOTA_BaseNPC && (Utils.IsWard(target) || Utils.IsTower(target) || Utils.IsShrine(target))))
 				return
 		Orders.EntStop(npc, false)
 		setTimeout(config.method === 0 ? 1000 / npc.m_fAttacksPerSecond / 3 : Math.max(100, 1000 / npc.m_fAttacksPerSecond) - 100, () => {

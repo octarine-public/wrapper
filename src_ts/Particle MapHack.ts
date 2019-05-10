@@ -1,5 +1,7 @@
+import * as Utils from "Utils"
+
 import { CreateRGBATree, MenuManager } from "CrutchesSDK/Wrapper"
-import { arrayRemove } from "Utils"
+import { arrayRemove, IsVisible } from "Utils"
 
 // --- Menu
 const jungleMHMenu = new MenuManager("Particle MapHack")
@@ -27,7 +29,7 @@ const phBloodSize = phBlood.AddSlider("Font Size", 20, 5, 50)
 const phTechiesMine = particleHackMenu.AddTree("Techies mines")
 const phTechiesMineState = phTechiesMine.AddToggle("State Techies mines", true)
 // need auto parse data by name
-//const phTechiesMineShowRange = phTechiesMine.AddToggle("Show Range");
+// const phTechiesMineShowRange = phTechiesMine.AddToggle("Show Range");
 const phTechiesMineShowTimers = phTechiesMine.AddToggle("Show Timers")
 
 // --- Variables
@@ -42,7 +44,7 @@ let allNeutrals: C_DOTA_BaseNPC[] = [],
 
 stateMain.OnActivate(() => {
 	// loop-optimizer: POSSIBLE_UNDEFINED
-	Entities.GetAllEntities().forEach(ent => {
+	Entities.AllEntities.forEach(ent => {
 		if (ent instanceof C_DOTA_BaseNPC && ent.m_bIsValid) // temp IsValid
 			onNPCAdded(ent)
 	})
@@ -50,8 +52,8 @@ stateMain.OnActivate(() => {
 
 function onNPCAdded(ent: C_DOTA_BaseNPC) {
 	if (
-		ent.m_bIsCreep
-		&& !ent.m_bIsLaneCreep
+		Utils.IsCreep(ent)
+		&& !Utils.IsLaneCreep(ent)
 		&& ent.m_iTeamNum === DOTATeam_t.DOTA_TEAM_NEUTRALS
 		&& ent.m_iszUnitName.startsWith("npc_dota_neutral_")
 	) {
@@ -59,7 +61,7 @@ function onNPCAdded(ent: C_DOTA_BaseNPC) {
 	}
 }
 
-//Events.on("onGameStarted", lp => allNeutrals = []);
+// Events.on("onGameStarted", lp => allNeutrals = []);
 Events.on("onGameEnded", () => {
 	allNeutrals = []
 	allBloodTargets = []
@@ -69,18 +71,18 @@ Events.on("onGameEnded", () => {
 	latest_plant = undefined
 })
 
-Events.on("onParticleCreated", console.log)
+// Events.on("onParticleCreated", console.log)
 Events.on("onParticleCreated", (id, path, psHandle, attach, target?) => {
 	let mine_name
 
 	if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)_plant.vpcf$/.exec(path)) !== null) {
-		if (target !== undefined && LocalDOTAPlayer !== undefined && !target.IsEnemy(LocalDOTAPlayer))
+		if (target !== undefined && LocalDOTAPlayer !== undefined && !Utils.IsEnemy(target, LocalDOTAPlayer))
 			return
 		waiting_spawn.push([id, mine_name[1]])
 	} else if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)(s_detonate|_explode).vpcf$/.exec(path)) !== null)
 		waiting_explode.push([id, mine_name[1]])
 })
-Events.on("onParticleUpdatedEnt", console.log)
+// Events.on("onParticleUpdatedEnt", console.log)
 Events.on("onParticleUpdatedEnt", (id, control_point, ent, attach, attachment, position) => {
 	if (control_point !== 0 || attach !== ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW)
 		return false
@@ -104,13 +106,13 @@ Events.on("onParticleUpdatedEnt", (id, control_point, ent, attach, attachment, p
 	})
 })
 // Events.on("onUnitAnimation", console.log)
-Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
+// Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 
-})
+// })
 // Events.on("onUnitAnimationEnd", console.log)
-Events.on("onUnitAnimationEnd", npc => {
+// Events.on("onUnitAnimationEnd", npc => {
 
-})
+// })
 
 function CalculateCenter(vecs: Vector3[]): Vector3 {
 	let new_center = [0, 0, 0],
@@ -128,7 +130,7 @@ function CalculateCenter(vecs: Vector3[]): Vector3 {
 	)
 }
 
-Events.on("onParticleUpdated", console.log)
+// Events.on("onParticleUpdated", console.log)
 Events.on("onParticleUpdated", (id, control_point, position) => {
 	if (control_point === 1)
 		waiting_spawn.some(([particle_id, mine_name], i) => {
@@ -175,7 +177,7 @@ Events.on("onParticleUpdated", (id, control_point, position) => {
 
 Events.on("onNPCCreated", onNPCAdded)
 
-//Events.on("onEntityCreated", console.log);
+// Events.on("onEntityCreated", console.log);
 
 Events.on("onEntityDestroyed", (ent: C_BaseEntity) => {
 	if (ent instanceof C_DOTA_BaseNPC)
@@ -186,7 +188,7 @@ Events.on("onBloodImpact", (target: C_BaseEntity) => {
 	if (!stateMain.value || !phBloodState.value)
 		return
 
-	if (target === undefined || target.m_bIsVisible)
+	if (target === undefined || IsVisible(target))
 		return
 
 	if (allBloodTargets.includes(target as C_DOTA_BaseNPC))
@@ -208,7 +210,7 @@ Events.on("onDraw", () => {
 
 			let isWaitSpawn = creep.m_bIsWaitingToSpawn
 
-			if ((!isWaitSpawn && creep.m_bIsVisible))
+			if ((!isWaitSpawn && IsVisible(creep)))
 				return
 
 			let wts = Renderer.WorldToScreen(creep.m_vecNetworkOrigin)
@@ -286,5 +288,3 @@ Events.on("onTick", () => {
 			creep.m_bIsValid && creep.m_iTeamNum === DOTATeam_t.DOTA_TEAM_NEUTRALS)
 	}
 })
-
-// [[], []]

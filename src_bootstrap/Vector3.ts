@@ -1,6 +1,6 @@
 /// internal declarations
 /// you may use ONLY this ones & default V8 things
-declare function setVector3Class(Vector3: object): void;
+declare function setVector3Class(Vector3: object): void
 declare var global: any
 
 /// actual code
@@ -160,7 +160,7 @@ setVector3Class(global.Vector3 = class Vector3 {
 		return new Vector3 (
 			Math.min(this.x, vec.x),
 			Math.min(this.y, vec.y),
-			Math.min(this.z, vec.z)
+			Math.min(this.z, vec.z),
 		)
 	}
 	/**
@@ -171,7 +171,7 @@ setVector3Class(global.Vector3 = class Vector3 {
 		return new Vector3 (
 			Math.max(this.x, vec.x),
 			Math.max(this.y, vec.y),
-			Math.max(this.z, vec.z)
+			Math.max(this.z, vec.z),
 		)
 	}
 	/**
@@ -284,7 +284,7 @@ setVector3Class(global.Vector3 = class Vector3 {
 		return new Vector3 (
 			Math.min((x > max_x) ? max_x : x, min.x),
 			Math.min((y > max_y) ? max_y : y, min.y),
-			Math.min((z > max_z) ? max_z : z, min.z)
+			Math.min((z > max_z) ? max_z : z, min.z),
 		)
 	}
 
@@ -501,12 +501,6 @@ setVector3Class(global.Vector3 = class Vector3 {
 	Distance2D(vec: Vector3): number {
 		return Math.sqrt((vec.x - this.x) ** 2 + (vec.y - this.y) ** 2)
 	}
-	/**
-	 * @returns all entities in given range of this vector
-	 */
-	GetEntitiesInRange(range: number): C_BaseEntity[] {
-		return Entities.GetAllEntities().filter(ent => ent.m_vecNetworkOrigin.Distance(this) <= range)
-	}
 
 	/* ================== Geometric ================== */
 	FindRotationAngle(from: C_BaseEntity): number { // TODO: remove this once wrapper estabilish
@@ -534,7 +528,7 @@ setVector3Class(global.Vector3 = class Vector3 {
 
 		return new Vector3 (
 			(this.x * cos) - (this.y * sin),
-			(this.y * cos) + (this.x * sin)
+			(this.y * cos) + (this.x * sin),
 		)
 	}
 	/**
@@ -546,7 +540,7 @@ setVector3Class(global.Vector3 = class Vector3 {
 		return new Vector3 (
 			this.x + rotation.x * distance,
 			this.y + rotation.y * distance,
-			this.z + rotation.z * distance
+			this.z + rotation.z * distance,
 		)
 	}
 	/**
@@ -588,13 +582,13 @@ setVector3Class(global.Vector3 = class Vector3 {
 	 * Returns if the distance to target is lower than range
 	 */
 	IsInRange(vec: Vector3, range: number): boolean {
-		return this.DistanceSqr(vec) < range ** 2;
+		return this.DistanceSqr(vec) < range ** 2
 	}
 	/**
 	 * Returns true if the point is under the rectangle
 	 */
 	IsUnderRectangle(x: number, y: number, width: number, height: number): boolean {
-		return this.x > x && this.x < (x + width) && this.y > y && this.y < (y + height);
+		return this.x > x && this.x < (x + width) && this.y > y && this.y < (y + height)
 	}
 	/* ================== To ================== */
 	/**

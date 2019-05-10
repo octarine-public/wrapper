@@ -1,3 +1,16 @@
+declare class EntityManager {
+	readonly AllEntities: C_BaseEntity[];
+	readonly EntitiesIDs: C_BaseEntity[];
+	
+	GetEntityID(ent: C_BaseEntity): number
+	GetEntityByID(id: number): C_BaseEntity
+	/**
+	 * @returns all entities in given range of this vector
+	 */
+	GetEntitiesInRange(vec: Vector3, range: number): C_BaseEntity[]
+}
+declare var Entities: EntityManager;
+
 declare class Vector3 {
 	/* ================== Static ================== */
 	static fromArray(array: [number, number, number]): Vector3

@@ -64,11 +64,87 @@ global.EventEmitter = class EventEmitter {
   }
 
 };
-const events = new EventEmitter();
+global.Events = new EventEmitter();
 setFireEvent((name, cancellable, ...args) => {
-  return events.emit(name, cancellable, ...args);
+  return Events.emit(name, cancellable, ...args);
 });
-global.Events = events;
+setInterval(1000 / 30, () => {
+  if (IsInGame()) {
+    Events.emit("onTick", false);
+  }
+});
+let AllEntities = [],
+    EntitiesIDs = [],
+    NPCs = [];
+global.Entities = new class Entities {
+  get AllEntities() {
+    return AllEntities;
+  }
+
+  get EntitiesIDs() {
+    return EntitiesIDs;
+  }
+
+  GetEntityID(ent) {
+    return AllEntities.indexOf(ent);
+  }
+
+  GetEntityByID(id) {
+    return EntitiesIDs[id];
+  }
+
+  GetEntitiesInRange(vec, range) {
+    let _a2 = AllEntities;
+
+    let _f2 = ent => {
+      return ent.m_vecNetworkOrigin.Distance(vec) <= range;
+    };
+
+    let _r = [];
+
+    for (let _i2 = _a2.length; _i2--;) {
+      if (_f2(_a2[_i2], _i2, _a2)) {
+        _r.push(_a2[_i2]);
+      }
+    }
+
+    return _r;
+  }
+
+}();
+Events.on("onEntityCreated", (ent, id) => {
+  AllEntities.push(ent);
+  EntitiesIDs[id] = ent;
+
+  if (ent instanceof C_DOTA_BaseNPC) {
+    if (ent.m_iszUnitName === undefined) {
+      NPCs.push(ent);
+    } else Events.emit("onNPCCreated", false, ent);
+  }
+});
+Events.on("onEntityDestroyed", (ent, id) => {
+  AllEntities.splice(AllEntities.indexOf(ent), 1);
+  EntitiesIDs.splice(id, 1);
+
+  if (ent instanceof C_DOTA_BaseNPC) {
+    const NPCs_id = NPCs.indexOf(ent);
+
+    if (NPCs_id !== -1) {
+      NPCs.splice(NPCs_id, 1);
+    }
+  }
+});
+Events.on("onTick", () => {
+  for (let i = 0, end = NPCs.length; i < end; i++) {
+    let npc = NPCs[i];
+
+    if (npc.m_iszUnitName !== undefined) {
+      Events.emit("onNPCCreated", false, npc);
+      NPCs.splice(i--, 1);
+      end--;
+    }
+  }
+});
 setVector2Class(global.Vector2 = class Vector2 {
   static fromArray(array) {
     return new Vector2(array[0] || 0, array[1] || 0);
@@ -689,24 +765,6 @@ setVector3Class(global.Vector3 = class Vector3 {
 
   Distance2D(vec) {
     return Math.sqrt((vec.x - this.x) ** 2 + (vec.y - this.y) ** 2);
-  }
-
-  GetEntitiesInRange(range) {
-    let _a = Entities.GetAllEntities();
-
-    let _f = ent => {
-      return ent.m_vecNetworkOrigin.Distance(this) <= range;
-    };
-
-    let _r = [];
-
-    for (let _i = _a.length; _i--;) {
-      if (_f(_a[_i], _i, _a)) {
-        _r.push(_a[_i]);
-      }
-    }
-
-    return _r;
   }
 
   FindRotationAngle(from) {

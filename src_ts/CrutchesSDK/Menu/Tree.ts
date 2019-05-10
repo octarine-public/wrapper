@@ -34,9 +34,9 @@ export default class Tree extends Menu_Node {
 		var selfParent = parent
 		Object.defineProperty(this, "parent", {
 			set: (new_value: Tree) => {
-				
+
 				if (this.parent !== undefined)
-					this.parent.RemoveControl(this);
+					this.parent.RemoveControl(this)
 
 				new_value.entries.push(this)
 

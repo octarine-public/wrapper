@@ -49,30 +49,76 @@ global.EventEmitter = class EventEmitter {
 	}
 }
 
-const events = new EventEmitter()
-setFireEvent((name, cancellable, ...args) => events.emit(name, cancellable, ...args))
-global.Events = events
+global.Events = new EventEmitter()
 
-var NPCs: C_DOTA_BaseNPC[] = []
-Events.on("onEntityCreated", ent => {
-	if (ent instanceof C_DOTA_BaseNPC && ent.m_iszUnitName !== undefined) {
-		Events.emit("onNPCCreated", false, ent)
-		NPCs.push(ent)
+setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))
+
+setInterval(1000 / 30, () => {
+	if (IsInGame())
+		Events.emit("onTick", false)
+})
+
+let AllEntities: C_BaseEntity[] = [],
+	EntitiesIDs: C_BaseEntity[] = [],
+	NPCs: C_DOTA_BaseNPC[] = []
+global.Entities = new (class Entities {
+	get AllEntities() {
+		return AllEntities
+	}
+	get EntitiesIDs() {
+		return EntitiesIDs
+	}
+	GetEntityID(ent: C_BaseEntity) {
+		return AllEntities.indexOf(ent)
+	}
+
+	GetEntityByID(id: number) {
+		return EntitiesIDs[id]
+	}
+	GetEntitiesInRange(vec: Vector3, range: number): C_BaseEntity[] {
+		return AllEntities.filter(ent => ent.m_vecNetworkOrigin.Distance(vec) <= range)
+	}
+})()
+
+Events.on("onEntityCreated", (ent, id) => {
+	AllEntities.push(ent)
+	   EntitiesIDs[id] = ent
+
+	   if (ent instanceof C_DOTA_BaseNPC)
+		if (ent.m_iszUnitName === undefined)
+			NPCs.push(ent)
+		else
+			Events.emit("onNPCCreated", false, ent)
+})
+
+Events.on("onEntityDestroyed", (ent, id) => {
+	AllEntities.splice(AllEntities.indexOf(ent), 1)
+	EntitiesIDs.splice(id, 1)
+
+	if (ent instanceof C_DOTA_BaseNPC) {
+		const NPCs_id = NPCs.indexOf(ent)
+		if (NPCs_id !== -1)
+			NPCs.splice(NPCs_id, 1)
 	}
 })
-Events.on("onEntityDestroyed", ent => {
-	if (!(ent instanceof C_DOTA_BaseNPC))
-		return
-	const id = NPCs.indexOf(ent)
-	if (id !== -1)
-		NPCs.splice(id, 1)
+
+Events.on("onTick", () => {
+	for (let i = 0, end = NPCs.length; i < end; i++) {
+		let npc = NPCs[i]
+		if (npc.m_iszUnitName !== undefined) {
+			Events.emit("onNPCCreated", false, npc)
+			NPCs.splice(i--, 1)
+			end--
+		}
+	}
 })
 
-Events.on("onNetworkFieldChanged", (obj, name) => {
+//
+/* Events.on("onNetworkFieldChanged", (obj, name) => {
 	if (obj === GameRules && name === "m_fGameTime")
 		Events.emit("onTick", false)
 	else if (obj instanceof C_DOTA_BaseNPC && name === "m_iszUnitName" && !NPCs.includes(obj) && obj.m_iszUnitName !== undefined) {
 		Events.emit("onNPCCreated", false, obj)
 		NPCs.push(obj)
 	}
-})
+}) */

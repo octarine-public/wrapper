@@ -1,3 +1,4 @@
+import * as Utils from "Utils"
 
 export default () => {
 	var treant_eyes: C_DOTA_NPC_Treant_EyesInTheForest[] = [],
@@ -23,7 +24,7 @@ export default () => {
 		var local_team_flag = 1 << LocalDOTAPlayer.m_iTeamNum
 		// loop-optimizer: KEEP
 		treant_eyes.forEach((ent, i) => {
-			if (ent.m_bIsAlive) {
+			if (Utils.IsAlive(ent)) {
 				ent.m_iTaggedAsVisibleByTeam |= local_team_flag
 				// |= 1 << 2 is EF_IN_STAGING_LIST
 				// |= 1 << 4 is EF_DELETE_IN_PROGRESS
@@ -36,8 +37,8 @@ export default () => {
 				ent.m_pEntity.m_flags |= 1 << 7
 				ent.m_pEntity.m_flags &= ~(1 << 3)
 				treant_eyes.splice(i, 1)
-				Particles.Destroy(pars[ent.m_iID], true)
-				delete pars[ent.m_iID]
+				Particles.Destroy(pars[Entities.GetEntityID(ent)], true)
+				delete pars[Entities.GetEntityID(ent)]
 			}
 		})
 	})

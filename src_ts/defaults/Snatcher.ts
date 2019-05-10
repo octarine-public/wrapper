@@ -1,6 +1,6 @@
 import { CreateRGBTree, MenuManager } from "../CrutchesSDK/Wrapper"
 import { PickupItem, PickupRune } from "../Orders"
-import { arrayRemove, orderBy } from "../Utils"
+import * as Utils from "../Utils"
 
 let registeredEvents = {
 		onEntityCreated: undefined,
@@ -101,7 +101,7 @@ function onStateMain(state: boolean = stateMain.value) {
 
 function getAllEntities() {
 	// loop-optimizer: POSSIBLE_UNDEFINED
-	Entities.GetAllEntities().forEach(onCheckEntity)
+	Entities.AllEntities.forEach(onCheckEntity)
 }
 
 function onDeactivateRune() {
@@ -117,7 +117,7 @@ function registerEvents() {
 	registeredEvents.onEntityCreated = Events.on("onEntityCreated", onCheckEntity)
 	registeredEvents.onEntityDestroyed = Events.on("onEntityDestroyed", onEntityDestroyed)
 	registeredEvents.onTick = Events.on("onTick", onTick)
-	registeredEvents.onPrepareUnitOrders = Events.on("onPrepareUnitOrders", order => picking_up[order.unit.m_iID] === undefined)
+	registeredEvents.onPrepareUnitOrders = Events.on("onPrepareUnitOrders", order => picking_up[Entities.GetEntityID(order.unit)] === undefined)
 	registeredEvents.onDraw = Events.on("onDraw", onDraw)
 
 	getAllEntities()
@@ -144,7 +144,7 @@ function onCheckEntity(ent: C_BaseEntity) {
 			if (m_hItem !== undefined && listOfItems.IsInSelected(m_hItem.m_pAbilityData.m_pszAbilityName))
 				ground_items.push(ent)
 		} else // dafuq?
-			arrayRemove(ground_items, ent)
+			Utils.arrayRemove(ground_items, ent)
 }
 
 Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => npcs.push(npc))
@@ -153,13 +153,13 @@ function onEntityDestroyed(ent: C_BaseEntity) {
 	if (ent instanceof C_DOTA_Item_Rune)
 		removedIDRune(ent as C_DOTA_Item_Rune)
 	else if (ent instanceof C_DOTA_Item_Physical)
-		arrayRemove(ground_items, ent)
+		Utils.arrayRemove(ground_items, ent)
 	else if (ent instanceof C_DOTA_BaseNPC)
-		arrayRemove(npcs, ent)
+		Utils.arrayRemove(npcs, ent)
 }
 
 function onTick() {
-	if (!IsInGame() || IsPaused())
+	if (!IsInGame() || GameRules.m_bGamePaused)
 		return
 
 	let controllables: C_DOTA_BaseNPC[] = stateControllables.value
@@ -198,8 +198,8 @@ function GetControllables() {
 	return npcs.filter(npc =>
 		(npc instanceof C_DOTA_BaseNPC_Hero || npc instanceof C_DOTA_Unit_SpiritBear)
 		&& !npc.m_bIsIllusion
-		&& !npc.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY)
-		&& npc.IsControllableByPlayer(LocalDOTAPlayer.m_iPlayerID),
+		&& !Utils.IsUnitStateFlagSet(npc, modifierstate.MODIFIER_STATE_FAKE_ALLY)
+		&& Utils.IsControllableByPlayer(npc, LocalDOTAPlayer.m_iPlayerID),
 	)
 }
 
@@ -210,19 +210,19 @@ function snatchRunes(controllables: C_DOTA_BaseNPC[]) {
 		return
 
 	allRunes.forEach(rune => {
-		let near = orderBy(controllables, unit => unit.Distance(rune)).some(npc => snatchRuneByUnit(npc, rune))
+		let near = Utils.orderBy(controllables, unit => unit.m_vecNetworkOrigin.Distance(rune.m_vecNetworkOrigin)).some(npc => snatchRuneByUnit(npc, rune))
 		if (!near && (drawParticleTake.value || drawParticleKill.value))
-			destroyRuneParticles(rune.m_iID)
+			destroyRuneParticles(Entities.GetEntityID(rune))
 	})
 }
 
 function snatchRuneByUnit(npc: C_DOTA_BaseNPC, rune: C_DOTA_Item_Rune) {
-	let npc_id = npc.m_iID
+	let npc_id = Entities.GetEntityID(npc)
 	if (picking_up[npc_id] !== undefined)
 		return false
 
-	if (!npc.m_bIsStunned && !npc.m_bIsWaitingToSpawn) {
-		const Distance = npc.Distance2D(rune)
+	if (!Utils.IsUnitStateFlagSet(npc, modifierstate.MODIFIER_STATE_STUNNED) && !npc.m_bIsWaitingToSpawn) {
+		const Distance = npc.m_vecNetworkOrigin.Distance2D(rune.m_vecNetworkOrigin)
 
 		if (Distance <= takeRadius.value) {
 			picking_up[npc_id] = rune
@@ -236,7 +236,7 @@ function snatchRuneByUnit(npc: C_DOTA_BaseNPC, rune: C_DOTA_Item_Rune) {
 			return false
 
 		if (drawParticleTake.value || drawParticleKill.value) {
-			const runeID = rune.m_iID
+			const runeID = Entities.GetEntityID(rune)
 
 			if (allRunesParticles[runeID] === undefined) {
 				allRunesParticles[runeID] = []
@@ -265,7 +265,7 @@ function removedIDRune(rune: C_DOTA_Item_Rune) {
 	if (idRune !== -1) {
 		allRunes.splice(idRune, 1)
 
-		destroyRuneParticles(rune.m_iID)
+		destroyRuneParticles(Entities.GetEntityID(rune))
 	}
 }
 
@@ -279,14 +279,14 @@ function createRuneParticle(ent: C_BaseEntity, color: Vector3, radius: number) {
 	Particles.SetControlPoint(particleID, 1, color)
 	Particles.SetControlPoint(particleID, 2, new Vector3(radius * 1.1, 255))
 
-	allRunesParticles[ent.m_iID].push(particleID)
+	allRunesParticles[Entities.GetEntityID(ent)].push(particleID)
 }
 
 function updateRuneAllParticle() {
 	let newColor = new Vector3 (
 		drawParticleTake_Color.R.value,
 		drawParticleTake_Color.G.value,
-		drawParticleTake_Color.B.value
+		drawParticleTake_Color.B.value,
 	)
 
 	// loop-optimizaer: KEEP
@@ -317,7 +317,7 @@ function snatchItems(controllables: C_DOTA_BaseNPC[]) {
 
 	let free_controllables = controllables
 	ground_items.forEach(item => free_controllables.some(npc => {
-		if (npc.Distance2D(item) > takeRadius.value || !haveFreeSlot(npc, item))
+		if (npc.m_vecNetworkOrigin.Distance2D(item.m_vecNetworkOrigin) > takeRadius.value || !haveFreeSlot(npc, item))
 			return false
 		PickupItem(npc, item, false)
 		free_controllables.splice(free_controllables.indexOf(npc))
@@ -329,8 +329,9 @@ function haveFreeSlot(npc: C_DOTA_BaseNPC, item: C_DOTA_Item_Physical) {
 	let nameItem = item.m_hItem.m_pAbilityData.m_pszAbilityName,
 		checkSlots = nameItem === "item_cheese" ? 9 : 6
 
+	// change to GetItemByName(npc, nameItem === "item_cheese") !== undefined;
 	for (var i = checkSlots; i--; )
-		if (npc.GetItemInSlot(i) === undefined)
+		if (Utils.GetItemInSlot(npc, i) === undefined)
 			return true
 	return false
 }

@@ -41,21 +41,21 @@ Events.on("onTick", () => {
 		return
 	last_time = GameRules.m_fGameTime
 	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
-	if (MyEnt === undefined || !MyEnt.m_bIsAlive || IsPaused())
+	if (MyEnt === undefined || !Utils.IsAlive(MyEnt) || GameRules.m_bGamePaused)
 		return
-	creeps = lane_creeps.filter(creep => !creep.m_bIsWaitingToSpawn && creep.m_bIsAlive && MyEnt.IsInRange(creep, 500))
+	creeps = lane_creeps.filter(creep => !creep.m_bIsWaitingToSpawn && Utils.IsAlive(creep) && Utils.IsInRange(MyEnt, creep, 500))
 	if (creeps.length === 0)
 		return
-	creepsMovePosition = creeps.map(creep => creep.InFront(300)).reduce((sum, vec) => sum.Add(vec), new Vector3()).DivideScalar(creeps.length)
-	var tower = towers.filter(ent => MyEnt.IsInRange(ent, 120))
+	creepsMovePosition = creeps.map(creep => Utils.InFront(creep, 300)).reduce((sum, vec) => sum.Add(vec), new Vector3()).DivideScalar(creeps.length)
+	var tower = towers.filter(ent => Utils.IsInRange(MyEnt, ent, 120))
 
 	if (tower.length > 0) {
 		Orders.MoveToPos(MyEnt, creepsMovePosition, false)
 		return
 	}
 	var flag = true
-	Utils.orderBy(creeps, creep => creep.Distance2D(MyEnt)).every(creep => {
-		if (!creep.m_bIsMoving && !creep.IsInRange(MyEnt, 50))
+	Utils.orderBy(creeps, creep => creep.m_vecNetworkOrigin.Distance2D(MyEnt.m_vecNetworkOrigin)).every(creep => {
+		if (!creep.m_bIsMoving && !Utils.IsInRange(creep, MyEnt, 50))
 			return true
 		var creepDistance = creepsMovePosition.Distance2D(creep.m_vecNetworkOrigin) + 50,
 			heroDistance = creepsMovePosition.Distance2D(MyEnt.m_vecNetworkOrigin),
@@ -65,7 +65,7 @@ Events.on("onTick", () => {
 		var moveDistance = config.block_sensitivity / MyEnt.m_fIdealSpeed * 100
 		if (MyEnt.m_fIdealSpeed - creep.m_fIdealSpeed > 50)
 			moveDistance -= (MyEnt.m_fIdealSpeed - creep.m_fIdealSpeed) / 2
-		var movePosition = creep.InFront(Math.max(moveDistance, moveDistance * creepAngle))
+		var movePosition = Utils.InFront(creep, Math.max(moveDistance, moveDistance * creepAngle))
 		if (movePosition.Distance2D(creepsMovePosition) - 50 > heroDistance)
 			return true
 		if (creepAngle < 0.2 && MyEnt.m_bIsMoving)
@@ -83,9 +83,9 @@ Events.on("onTick", () => {
 		Orders.MoveToPos(MyEnt, MyEnt.m_vecNetworkOrigin.Extend(creepsMovePosition, 10), false)
 })
 Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
-	if (npc.m_bIsLaneCreep && !npc.IsEnemy(LocalDOTAPlayer))
+	if (Utils.IsLaneCreep(npc) && !Utils.IsEnemy(npc, LocalDOTAPlayer))
 		lane_creeps.push(npc as C_DOTA_BaseNPC_Creep)
-	if (npc.m_bIsTower && npc.m_iszUnitName === "npc_dota_badguys_tower2_mid")
+	if (Utils.IsTower(npc) && npc.m_iszUnitName === "npc_dota_badguys_tower2_mid")
 		towers.push(npc as C_DOTA_BaseNPC_Tower)
 })
 Events.on("onEntityDestroyed", ent => {

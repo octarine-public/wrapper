@@ -5,7 +5,7 @@
 
 export default class Entity {
 	m_pBaseEntity: C_BaseEntity
-	
+
 	constructor(ent: C_BaseEntity) {
 		this.m_pBaseEntity = ent
 	}
@@ -17,16 +17,15 @@ export default class Entity {
 	}
 
 	get IsVisible(): boolean {
-		//return this.ent.m_bIsVisible
-		let ent = this.m_pBaseEntity.m_pEntity;
-		return ent !== undefined && (ent.m_flags & (1 << 7)) === 0;
+		let ent = this.m_pBaseEntity.m_pEntity
+		return ent !== undefined && (ent.m_flags & (1 << 7)) === 0
 	}
 	get IsAlive(): boolean {
 		return this.LifeState === LifeState_t.LIFE_ALIVE
 	}
-	get ID(): number {
+	/* get ID(): number {
 		return this.m_pBaseEntity.m_iID
-	}
+	} */
 	get Forward(): Vector3 {
 		return this.m_pBaseEntity.m_vecForward
 	}
@@ -38,20 +37,20 @@ export default class Entity {
 	 */
 	IsEnemy(ent?: Entity): boolean {
 		if (ent !== undefined)
-			return this.Team !== ent.Team;
-			
-		let lp = LocalDOTAPlayer;
-		
-		return lp === undefined || lp.m_iTeamNum !== this.Team;
+			return this.Team !== ent.Team
+
+		let lp = LocalDOTAPlayer
+
+		return lp === undefined || lp.m_iTeamNum !== this.Team
 	}
 	InFront(distance: number): Vector3 {
-		return this.Position.Rotation(this.Forward, distance);
+		return this.Position.Rotation(this.Forward, distance)
 	}
 	FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.Position
 
-		let thisPos = this.Position;
+		let thisPos = this.Position
 		let angle = Math.abs (
 				Math.atan2 (
 					vec.y - thisPos.y,
@@ -97,7 +96,7 @@ export default class Entity {
 	 * need getting from entitymanager
 	 */
 	get Owner(): Entity {
-		return new Entity(this.m_pBaseEntity.m_hOwnerEntity);
+		return new Entity(this.m_pBaseEntity.m_hOwnerEntity)
 	}
 	get Scale(): number {
 		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
@@ -137,21 +136,21 @@ export default class Entity {
 	}
 	DistanceSquared(vec: Entity | Vector3) {
 		if (vec instanceof Entity)
-			vec = vec.Position;
-		return this.Position.DistanceSqr(vec);
+			vec = vec.Position
+		return this.Position.DistanceSqr(vec)
 	}
 	FromPolarAngle(delta: number) {
-		return Vector3.FromAngle(this.Forward.Angle + delta);
+		return Vector3.FromAngle(this.Forward.Angle + delta)
 	}
 	InFrontFromAngle(delta: number, distance: number) {
 		return this.Position.Add(
-			this.FromPolarAngle(delta).MultiplyScalar(distance)
+			this.FromPolarAngle(delta).MultiplyScalar(distance),
 		)
 	}
 	AngleBetweenFaces(front: Vector3) {
-		return this.Forward.AngleBetweenFaces(front);
+		return this.Forward.AngleBetweenFaces(front)
 	}
-	
+
 	Select(bAddToGroup: boolean = false): boolean {
 		return SelectUnit(this.m_pBaseEntity, bAddToGroup)
 	}

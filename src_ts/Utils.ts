@@ -189,23 +189,239 @@ var rotation_speed = {
 	CursorWorldVec = new Vector3(),
 	melee_end_time_delta = 0.06,
 	masksBigInt = new Array(64)
-	
-	
+
 for (let i = 64; i--;)
 	masksBigInt[i] = 1n << BigInt(i)
-	
 export function SplitBigInt(num: bigint): number[] {
-	return masksBigInt.map(mask => Number(num & mask)).filter(num => num !== 0)
+	return masksBigInt.map(mask => Number(num & mask)).filter(masked => masked !== 0)
 }
-	
+
+export let IsAlive = (ent: C_BaseEntity) => ent.m_lifeState === LifeState_t.LIFE_ALIVE
+export let IsEnemy = (ent: C_BaseEntity, enemy: C_BaseEntity) => ent.m_iTeamNum !== enemy.m_iTeamNum
+export let IsVisible = (ent: C_BaseEntity) => ent.m_pEntity !== undefined && (ent.m_pEntity.m_flags & (1 << 7)) === 0
+
+export let IsUnitStateFlagSet = (ent: C_DOTA_BaseNPC, flag: modifierstate) =>
+	(((ent.m_nUnitState64 | ent.m_nUnitDebuffState) >> BigInt(flag)) & 1n) === 1n
+
+export let HasAttackCapability = (ent: C_DOTA_BaseNPC, flag?: DOTAUnitAttackCapability_t) => {
+	let attackCap = ent.m_iAttackCapabilities
+
+	if (flag !== undefined)
+		return (attackCap & flag) === flag
+
+	return (attackCap & (
+		DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK |
+		DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
+	) === flag
+}
+
+export let IsVisibleForEnemies = (ent: C_DOTA_BaseNPC) => {
+	const valid_teams = ~(1
+		| (1 << DOTATeam_t.DOTA_TEAM_SPECTATOR)
+		| (1 << DOTATeam_t.DOTA_TEAM_NEUTRALS)
+		| (1 << DOTATeam_t.DOTA_TEAM_NOTEAM)
+	) // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
+
+	let local_team = ent.m_iTeamNum,
+		flags = ent.m_iTaggedAsVisibleByTeam & valid_teams
+
+	for (let i = 14; i--; )
+		if (i !== local_team && ((flags >> i) & 1))
+			return true
+	return false
+}
+
+export let IsTrueSightedForEnemies = (ent: C_DOTA_BaseNPC) => {
+	return ent.m_ModifierManager.m_vecBuffs.some(buff => {
+		if (buff === undefined || buff.m_bMarkedForDeletion)
+			return false
+
+		let name = buff.m_name
+		if (name !== undefined)
+			return false
+
+		return [
+			"modifier_truesight",
+			"modifier_item_dustofappearance",
+			"modifier_bloodseeker_thirst_vision",
+			"modifier_bounty_hunter_track",
+		].some(nameBuff => nameBuff === name)
+	})
+}
+
+export let IsControllableByAnyPlayer = (ent: C_DOTA_BaseNPC) => ent.m_iIsControllableByPlayer64 !== 0n
+
+export let HasScepter = (ent: C_DOTA_BaseNPC) => {
+	if (ent.m_bStolenScepter)
+		return true
+
+	return ent.m_ModifierManager.m_vecBuffs.some(buff => {
+		if (buff === undefined || buff.m_bMarkedForDeletion)
+			return false
+
+		let name = buff.m_name
+		if (name !== undefined)
+			return false
+
+		return /modifier_item_ultimate_scepter|modifier_wisp_tether_scepter/.test(name)
+	})
+}
+
+export function GetAbilityByName(ent: C_DOTA_BaseNPC, name: string): C_DOTABaseAbility {
+	let abils = ent.m_hAbilities
+
+	for (let i = 0, len = abils.length; i < len; i++) {
+		let abil = (abils[i] as C_DOTABaseAbility)
+
+		if (abil === undefined)
+			continue
+
+		if (abil.m_pAbilityData.m_pszAbilityName === name)
+			return abil
+	}
+
+	return undefined
+}
+
+export function GetAbilityBySlot(ent: C_DOTA_BaseNPC, numSlot: number): C_DOTABaseAbility {
+	return ent.m_hAbilities[numSlot] as C_DOTABaseAbility
+}
+
+export function GetItemByName(ent: C_DOTA_BaseNPC, name: string, icludeBackpack: boolean = false): C_DOTA_Item {
+
+	let items = ent.m_Inventory.m_hItems,
+		len = Math.min(items.length, icludeBackpack ? 9 : 6)
+
+	for (let i = 0; i < len; i++) {
+		let item = items[i] as C_DOTA_Item
+
+		if (item === undefined)
+			continue
+
+		if (item.m_pAbilityData.m_pszAbilityName === name)
+			return item
+	}
+
+	return undefined
+}
+
+export function GetItemByNameInBackpack(ent: C_DOTA_BaseNPC, name: string): C_DOTA_Item {
+
+	let items = ent.m_Inventory.m_hItems,
+		len = Math.min(items.length, 9)
+
+	for (let i = 6; i < len; i++) {
+		let item = items[i] as C_DOTA_Item
+
+		if (item === undefined)
+			continue
+
+		if (item.m_pAbilityData.m_pszAbilityName === name)
+			return item
+	}
+
+	return undefined
+}
+
+export function GetItemInSlot(ent: C_DOTA_BaseNPC, numSlot: number): C_DOTA_Item  {
+	return ent.m_Inventory.m_hItems[numSlot] as C_DOTA_Item
+}
+
+export function GetBuffByName(ent: C_DOTA_BaseNPC, name: string): CDOTA_Buff {
+	let buffs = ent.m_ModifierManager.m_vecBuffs,
+		len = Math.min(buffs.length, 9)
+
+	for (let i = 6; i < len; i++) {
+		let buff = buffs[i] as CDOTA_Buff
+
+		if (buff === undefined || buff.m_bMarkedForDeletion)
+			continue
+
+		if (buff.m_name === name)
+			return buff
+	}
+
+	return undefined
+}
+export function IsControllableByPlayer(ent: C_DOTA_BaseNPC, playerID: number): boolean {
+	return ((ent.m_iIsControllableByPlayer64 >> BigInt(playerID)) & 1n) === 1n
+}
+
+export function InFront(ent: C_BaseEntity, distance: number): Vector3 {
+	return ent.m_vecNetworkOrigin.Rotation(ent.m_vecForward, distance)
+}
+
+export let IsHero = (ent: C_DOTA_BaseNPC) => (ent.m_iUnitType & 1) === 1
+export let IsTower = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 2) & 1) === 1
+export let IsConsideredHero = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 3) & 1) === 1
+export let IsBuilding = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 4) & 1) === 1
+export let IsFort = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 5) & 1) === 1
+export let IsBarracks = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 6) & 1) === 1
+export let IsCreep = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 7) & 1) === 1
+export let IsCourier = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 8) & 1) === 1
+export let IsShop = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 9) & 1) === 1
+export let IsLaneCreep = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 10) & 1) === 1
+export let IsShrine = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 12) & 1) === 1
+export let IsWard = (ent: C_DOTA_BaseNPC) => ((ent.m_iUnitType >> 17) & 1) === 1
+
+export function IsManaEnough(ent: C_DOTA_BaseNPC, abil: C_DOTABaseAbility) {
+	return ent.m_flMana >= abil.m_iManaCost
+}
+
+export let IsIllusion = (ent: C_DOTA_BaseNPC_Hero) => ent.m_bIsIllusion || ent.m_hReplicatingOtherHeroModel !== null
+
+export function SpellAmplification(ent: C_DOTA_BaseNPC): number {
+	let spellAmp = 0
+
+	if (ent instanceof C_DOTA_BaseNPC_Hero)
+		spellAmp += ent.m_flIntellectTotal * 0.07 / 100 // https://dota2.gamepedia.com/Intelligence
+
+	if (ent.m_bHasInventory) {
+		let items = ent.m_Inventory.m_hItems as C_DOTA_Item[]
+
+		for (let i = 0; i < 6; i++) {
+			let item = items[i]
+			if (item === undefined)
+				continue
+			spellAmp += item.GetSpecialValue("spell_amp") / 100
+		}
+	}
+
+	let abils = ent.m_hAbilities as C_DOTABaseAbility[]
+	for (let i = 0, len = abils.length; i < len; i++) {
+		let abil = abils[i]
+
+		if (abil === undefined || abil.m_iLevel)
+			continue
+
+		let abilData = abil.m_pAbilityData
+		if (abilData === undefined)
+			continue
+
+		let abilName = abilData.m_pszAbilityName
+		if (abilName === undefined || !abilName.startsWith("special_bonus_spell_amplify"))
+			continue
+
+		spellAmp += abil.GetSpecialValue("value") / 100
+	}
+
+	return spellAmp
+}
+
+export function IsInRange(ent: C_BaseEntity, entTo: C_BaseEntity, range: number): boolean {
+	return ent.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) <= range
+}
+
+// ------------------------------- old utils
+
 export function GetEntitiesInRange(vec: Vector3, range: number, onlyEnemies: boolean = false, findInvuln: boolean = false): C_DOTA_BaseNPC[] {
 	var localplayer = LocalDOTAPlayer
 	return orderBy (
 		vec.GetEntitiesInRange(range).filter(ent =>
 			ent instanceof C_DOTA_BaseNPC
-			&& (!onlyEnemies || ent.IsEnemy(localplayer))
-			&& ent.m_bIsAlive
-			&& !(!findInvuln && ent.m_bIsInvulnerable),
+			&& (!onlyEnemies || IsEnemy(ent, localplayer))
+			&& IsAlive(ent)
+			&& !(!findInvuln && IsUnitStateFlagSet(ent, modifierstate.MODIFIER_STATE_INVULNERABLE)),
 		),
 		(ent: C_BaseEntity) => vec.Distance2D(ent.m_vecNetworkOrigin),
 	) as C_DOTA_BaseNPC[]
@@ -214,7 +430,7 @@ export function GetEntitiesInRange(vec: Vector3, range: number, onlyEnemies: boo
 export function GetItemByRegexp(ent: C_DOTA_BaseNPC, regex: RegExp): C_DOTA_Item {
 	var found
 	for (let i = 0; i < 6; i++) {
-		const item = ent.GetItemInSlot(i)
+		const item = GetItemInSlot(ent, i)
 		if (item === undefined)
 			continue
 		const name = item.m_pAbilityData.m_pszAbilityName
@@ -225,13 +441,13 @@ export function GetItemByRegexp(ent: C_DOTA_BaseNPC, regex: RegExp): C_DOTA_Item
 }
 
 export function GetItem(ent: C_DOTA_BaseNPC, name: string | RegExp): C_DOTA_Item {
-	return name instanceof RegExp ? GetItemByRegexp(ent, name) : ent.GetItemByName(name)
+	return name instanceof RegExp ? GetItemByRegexp(ent, name) : GetItemByName(ent, name)
 }
 
 export function GetAbilityByRegexp(ent: C_DOTA_BaseNPC, regex: RegExp): C_DOTABaseAbility {
 	var found
 	for (let i = 0; i < 24; i++) {
-		const abil = ent.GetAbility(i)
+		const abil = GetAbilityBySlot(ent, i)
 		if (abil === undefined)
 			continue
 		const name = abil.m_pAbilityData.m_pszAbilityName
@@ -242,7 +458,7 @@ export function GetAbilityByRegexp(ent: C_DOTA_BaseNPC, regex: RegExp): C_DOTABa
 }
 
 export function GetAbility(ent: C_DOTA_BaseNPC, name: string | RegExp): C_DOTABaseAbility {
-	return name instanceof RegExp ? GetAbilityByRegexp(ent, name) : ent.GetAbilityByName(name)
+	return name instanceof RegExp ? GetAbilityByRegexp(ent, name) : GetAbilityByName(ent, name)
 }
 
 export function orderBy<T>(ar: T[], cb: (obj: T) => any): T[] {
@@ -252,20 +468,20 @@ export function orderBy<T>(ar: T[], cb: (obj: T) => any): T[] {
 export function GetDamage(ent: C_DOTA_BaseNPC): number { return ent.m_iDamageMin + ent.m_iDamageBonus }
 
 export function VelocityWaypoint(ent: C_DOTA_BaseNPC, time: number, movespeed: number = ent.m_bIsMoving ? ent.m_fIdealSpeed : 0): Vector3 {
-	return ent.InFront(movespeed * time)
+	return InFront(ent, movespeed * time)
 }
 
 export function HasLinkenAtTime(ent: C_DOTA_BaseNPC, time: number = 0): boolean {
-	if (!ent.m_bIsHero)
+	if (!IsHero(ent))
 		return false
-	const sphere = ent.GetItemByName("item_sphere")
+	const sphere = GetItemByName(ent, "item_sphere")
 
 	return (
 		sphere !== undefined &&
 		sphere.m_fCooldown - time <= 0
 	) || (
-		ent.GetBuffByName("modifier_item_sphere_target") !== undefined
-		&& ent.GetBuffByName("modifier_item_sphere_target").m_flDieTime - GameRules.m_fGameTime - time <= 0
+		GetBuffByName(ent, "modifier_item_sphere_target") !== undefined
+		&& GetBuffByName(ent, "modifier_item_sphere_target").m_flDieTime - GameRules.m_fGameTime - time <= 0
 	)
 }
 
@@ -281,7 +497,7 @@ export function IsFlagSet(base: bigint, flag: bigint) {
 }
 
 export function GetProjectileDelay(source: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC) {
-	if (!source.m_bIsRangedAttacker)
+	if (!HasAttackCapability(source, DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK))
 		return 0
 	let proj_speed = source instanceof C_DOTA_BaseNPC_Hero ? projectile_speeds[source.m_iszUnitName] : 900
 	if (proj_speed === undefined)
@@ -355,7 +571,7 @@ export function AbsorbedDamage(target: C_DOTA_BaseNPC, dmg: number, damage_type:
 		if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
 			switch (buff.m_name) {
 				case "modifier_ember_spirit_flame_guard": {
-					let talent = target.GetAbilityByName("special_bonus_unique_ember_spirit_1")
+					let talent = GetAbilityByName(target, "special_bonus_unique_ember_spirit_1")
 					if (talent !== undefined && talent.m_iLevel > 0)
 						dmg -= talent.GetSpecialValue("value")
 					dmg -= abil.GetSpecialValue("absorb_amount")
@@ -371,7 +587,7 @@ export function AbsorbedDamage(target: C_DOTA_BaseNPC, dmg: number, damage_type:
 			}
 		switch (abil.m_pAbilityData.m_pszAbilityName) {
 			case "abaddon_aphotic_shield": {
-				let talent = this.GetAbilityByName("special_bonus_unique_abaddon")
+				let talent = GetAbilityByName(target, "special_bonus_unique_abaddon")
 				if (talent !== undefined && talent.m_iLevel > 0)
 					dmg -= talent.GetSpecialValue("value")
 				dmg -= abil.GetSpecialValue("damage_absorb")
@@ -443,23 +659,23 @@ export function CalculateDamage(target: C_DOTA_BaseNPC, damage: number, damage_t
 			let armor = target.m_flPhysicalArmorValue
 			damage *= Math.max(Math.min((1 - (0.052 * armor) / (0.9 + 0.048 * armor)), 2), 0)
 			{
-				let damage_type = source === undefined ? AttackDamageType.Basic : source.m_iCombatClassAttack as AttackDamageType,
-					armor_type = target.m_iCombatClassDefend as ArmorType
-				if (damage_type === AttackDamageType.Hero && armor_type === ArmorType.Structure)
+				let phys_damage_type = source === undefined ? AttackDamageType.Basic : source.m_iCombatClassAttack as AttackDamageType,
+					phys_armor_type = target.m_iCombatClassDefend as ArmorType
+				if (phys_damage_type === AttackDamageType.Hero && phys_armor_type === ArmorType.Structure)
 					damage *= .5
-				else if (damage_type === AttackDamageType.Basic && armor_type === ArmorType.Hero)
+				else if (phys_damage_type === AttackDamageType.Basic && phys_armor_type === ArmorType.Hero)
 					damage *= .75
-				else if (damage_type === AttackDamageType.Basic && armor_type === ArmorType.Structure)
+				else if (phys_damage_type === AttackDamageType.Basic && phys_armor_type === ArmorType.Structure)
 					damage *= .7
-				else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Hero)
+				else if (phys_damage_type === AttackDamageType.Pierce && phys_armor_type === ArmorType.Hero)
 					damage *= .5
-				else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Basic)
+				else if (phys_damage_type === AttackDamageType.Pierce && phys_armor_type === ArmorType.Basic)
 					damage *= 1.5
-				else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Structure)
+				else if (phys_damage_type === AttackDamageType.Pierce && phys_armor_type === ArmorType.Structure)
 					damage *= .35
-				else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Hero)
+				else if (phys_damage_type === AttackDamageType.Siege && phys_armor_type === ArmorType.Hero)
 					damage *= .85
-				else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Structure)
+				else if (phys_damage_type === AttackDamageType.Siege && phys_armor_type === ArmorType.Structure)
 					damage *= 2.5
 			}
 			break
@@ -471,7 +687,7 @@ export function CalculateDamage(target: C_DOTA_BaseNPC, damage: number, damage_t
 }
 
 export function CalculateDamageByHand(target: C_DOTA_BaseNPC, source: C_DOTA_BaseNPC): number {
-	if (source.GetBuffByName("modifier_tinker_laser_blind") !== undefined || WillIgnore(target, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL))
+	if (GetBuffByName(source, "modifier_tinker_laser_blind") !== undefined || WillIgnore(target, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL))
 		return 0
 	let mult = 1
 	{
@@ -502,7 +718,7 @@ export function CalculateDamageByHand(target: C_DOTA_BaseNPC, source: C_DOTA_Bas
 		items = (source.m_Inventory.m_hItems.filter(item => item !== undefined) as C_DOTA_Item[]).map(item => [item, item.m_pAbilityData.m_pszAbilityName] )as Array<[C_DOTA_Item, string]>,
 		abils = (source.m_hAbilities.filter(abil => abil !== undefined) as C_DOTABaseAbility[]).map(abil => [abil, abil.m_pAbilityData.m_pszAbilityName] )as Array<[C_DOTABaseAbility, string]>,
 		armor = target.m_flPhysicalArmorValue,
-		is_enemy = target.IsEnemy(source),
+		is_enemy = IsEnemy(target, source),
 		is_hero = source instanceof C_DOTA_BaseNPC_Hero
 	if (is_enemy) {
 		{
@@ -522,16 +738,16 @@ export function CalculateDamageByHand(target: C_DOTA_BaseNPC, source: C_DOTA_Bas
 		{
 			let item = items.find(([item_, name]) => name === "item_quelling_blade")
 			if (item !== undefined)
-				damage += item[0].GetSpecialValue(source.m_bIsRangedAttacker ? "damage_bonus_ranged" : "damage_bonus")
+				damage += item[0].GetSpecialValue(HasAttackCapability(source, DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
 		}
 		{
 			let item = items.find(([item_, name]) => name === "item_bfury")
 			if (item !== undefined)
-				damage += item[0].GetSpecialValue(source.m_bIsRangedAttacker ? "damage_bonus_ranged" : "damage_bonus")
+				damage += item[0].GetSpecialValue(HasAttackCapability(source, DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
 		}
 		{
 			let abil = abils.find(([abil_, name]) => name === "clinkz_searing_arrows")
-			if (abil !== undefined && abil[0].m_bAutoCastState && abil[0].IsManaEnough(source))
+			if (abil !== undefined && abil[0].m_bAutoCastState && IsManaEnough(source, abil[0]))
 				damage += abil[0].GetSpecialValue("damage_bonus")
 		}
 		{
@@ -558,7 +774,7 @@ export function CalculateDamageByHand(target: C_DOTA_BaseNPC, source: C_DOTA_Bas
 			damage += abil[0].GetSpecialValue("damage_bonus")
 	}
 	{
-		let buff = source.GetBuffByName("modifier_storm_spirit_overload_passive")
+		let buff = GetBuffByName(source, "modifier_storm_spirit_overload_passive")
 		if (buff !== undefined) {
 			let abil = buff.m_hAbility as C_DOTABaseAbility
 			if (abil !== undefined)
@@ -574,12 +790,12 @@ export function CalculateDamageByHand(target: C_DOTA_BaseNPC, source: C_DOTA_Bas
 	if (is_enemy) {
 		{
 			let abil = abils.find(([item, name]) => name === "silencer_glaives_of_wisdom")
-			if (abil !== undefined && abil[0].m_bAutoCastState && abil[0].IsManaEnough(source))
+			if (abil !== undefined && abil[0].m_bAutoCastState && IsManaEnough(source, abil[0]))
 				damage += abil[0].GetSpecialValue("intellect_damage_pct") * (source as C_DOTA_BaseNPC_Hero).m_flIntellectTotal / 100
 		}
 		{
 			let abil = abils.find(([item, name]) => name === "obsidian_destroyer_arcane_orb")
-			if (abil !== undefined && abil[0].m_bAutoCastState && abil[0].IsManaEnough(source))
+			if (abil !== undefined && abil[0].m_bAutoCastState && IsManaEnough(source, abil[0]))
 				damage += abil[0].GetSpecialValue("mana_pool_damage_pct") * (source as C_DOTA_BaseNPC_Hero).m_flMaxMana / 100
 		}
 	}
@@ -589,7 +805,7 @@ export function CalculateDamageByHand(target: C_DOTA_BaseNPC, source: C_DOTA_Bas
 			damage += abil[0].GetSpecialValue("bonus_damage")
 	}
 	{
-		let buff = source.GetBuffByName("modifier_bloodseeker_bloodrage")
+		let buff = GetBuffByName(source, "modifier_bloodseeker_bloodrage")
 		if (buff !== undefined) {
 			let abil = buff.m_hAbility as C_DOTABaseAbility
 			if (abil !== undefined)
@@ -613,7 +829,7 @@ export function GetHealthAfter(ent: C_DOTA_BaseNPC, delay: number, include_proje
 		hpafter = ent.m_iHealth
 	// loop-optimizer: KEEP
 	attacks.forEach((data, attacker_id) => {
-		let attacker_ent = Entities.GetByID(attacker_id) as C_DOTA_BaseNPC,
+		let attacker_ent = Entities.GetEntityByID(attacker_id) as C_DOTA_BaseNPC,
 			[end_time, end_time_2, attack_target] = data
 		if (attacker_ent !== attacker && attack_target === ent) {
 			let end_time_delta = end_time - (cur_time + delay + melee_time_offset),
@@ -656,16 +872,16 @@ export function FindAttackingUnit(npc: C_DOTA_BaseNPC): C_DOTA_BaseNPC {
 	if (npc === undefined)
 		return undefined
 	let pos = npc.m_vecNetworkOrigin,
-		is_default_creep = npc.m_bIsCreep && !npc.m_bIsControllableByAnyPlayer
-	return orderBy(Entities.GetAllEntities().filter(npc_ => {
+		is_default_creep = IsCreep(npc) && !IsControllableByAnyPlayer(npc)
+	return orderBy(AllEntities.filter(npc_ => {
 		if (npc_ === npc || !(npc_ instanceof C_DOTA_BaseNPC))
 			return false
 		let npc_pos = npc_.m_vecNetworkOrigin
 		return (
 			npc_pos.Distance2D(pos) <= (npc.m_fAttackRange + npc.m_flHullRadius + npc_.m_flHullRadius) &&
-			!npc_.m_bIsInvulnerable &&
+			!IsUnitStateFlagSet(npc, modifierstate.MODIFIER_STATE_INVULNERABLE) &&
 			IsInside(npc, npc_pos, npc_.m_flHullRadius) &&
-			(npc.IsEnemy(npc_) || (!is_default_creep && IsDeniable(npc_)))
+			(IsEnemy(npc, npc_) || (!is_default_creep && IsDeniable(npc_)))
 		)
 	}), ent => GetAngle(npc, ent.m_vecNetworkOrigin))[0] as C_DOTA_BaseNPC
 }
@@ -688,7 +904,7 @@ export function GetRotationTime(npc: C_DOTA_BaseNPC, vec: Vector3): number {
 
 export function GetCastRangeBonus(npc: C_DOTA_BaseNPC) {
 	let bonus = 0,
-		lens = npc.GetItemByName("item_aether_lens")
+		lens = GetItemByName(npc, "item_aether_lens")
 	if (lens !== undefined)
 		bonus += lens.GetSpecialValue("cast_range_bonus");
 	// loop-optimizer: POSSIBLE_UNDEFINED
@@ -713,17 +929,17 @@ export function GetCastRange(npc: C_DOTA_BaseNPC, abil: C_DOTABaseAbility) {
 			talent: C_DOTABaseAbility
 		switch (abil_name) {
 			case "skywrath_mage_concussive_shot":
-				talent = npc.GetAbilityByName("special_bonus_unique_skywrath_4")
+				talent = GetAbilityByName(npc, "special_bonus_unique_skywrath_4")
 				if (talent !== undefined && talent.m_iLevel > 0)
 					return Number.MAX_SAFE_INTEGER
 				break
 			case "gyrocopter_call_down":
-				talent = npc.GetAbilityByName("special_bonus_unique_gyrocopter_5")
+				talent = GetAbilityByName(npc, "special_bonus_unique_gyrocopter_5")
 				if (talent !== undefined && talent.m_iLevel > 0)
 					return Number.MAX_SAFE_INTEGER
 				break
 			case "lion_impale":
-				talent = npc.GetAbilityByName("special_bonus_unique_lion_2")
+				talent = GetAbilityByName(npc, "special_bonus_unique_lion_2")
 				if (talent !== undefined && talent.m_iLevel > 0)
 					cast_range += talent.GetSpecialValue("value")
 				break
@@ -773,23 +989,23 @@ Events.on("onEntityDestroyed", (ent, ent_id) => {
 })
 
 Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
-	if (activity === 1503 && !npc.m_bIsRangedAttacker) {
+	if (activity === 1503 && !HasAttackCapability(npc, DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)) {
 		let delay = (1 / npc.m_fAttacksPerSecond) - 0.06
-		attacks[npc.m_iID] = [
+		attacks[Entities.GetEntityID(npc)] = [
 			GameRules.m_fGameTime + delay,
-			npc.m_bIsCreep ? GameRules.m_fGameTime + delay * 2 + 0.06 : Number.MAX_VALUE,
+			IsCreep(npc) ? GameRules.m_fGameTime + delay * 2 + 0.06 : Number.MAX_VALUE,
 			FindAttackingUnit(npc),
 		]
 	}
 })
 
 Events.on("onUnitAnimationEnd", npc => {
-	let id = npc.m_iID
+	let id = Entities.GetEntityID(npc)
 	let found = attacks[id]
 	if (found === undefined)
 		return
 	let [end_time, end_time_2, attack_target] = found
-	if (attack_target === undefined || !npc.m_bIsCreep || npc.m_bIsControllableByAnyPlayer || !attack_target.m_bIsValid || !attack_target.m_bIsAlive || !attack_target.m_bIsVisible) {
+	if (attack_target === undefined || !IsCreep(npc) || IsControllableByAnyPlayer(npc) || !attack_target.m_bIsValid || !IsAlive(attack_target) || !IsVisible(attack_target)) {
 		delete attacks[id]
 		return
 	}
@@ -809,5 +1025,5 @@ Events.on("onTick", () => {
 	// loop-optimizer: KEEP
 	attacks = attacks.filter(([end_time, end_time_2, attack_target]) => time - end_time_2 <= melee_end_time_delta)
 	// loop-optimizer: KEEP
-	attacks.forEach((data, attacker_id) => data[2] = FindAttackingUnit(Entities.GetByID(attacker_id) as C_DOTA_BaseNPC))
+	attacks.forEach((data, attacker_id) => data[2] = FindAttackingUnit(Entities.GetEntityByID(attacker_id) as C_DOTA_BaseNPC))
 })

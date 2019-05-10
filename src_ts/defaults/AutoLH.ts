@@ -173,18 +173,18 @@ Events.on("onDraw", () => {
 })
 
 Events.on("onTick", () => {
-	if (!enabled || IsPaused())
+	if (!enabled || GameRules.m_bGamePaused)
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero
-	if (pl_ent === undefined || !pl_ent.m_bIsAlive)
+	if (pl_ent === undefined || !Utils.IsAlive(pl_ent))
 		return
 	let cur_time = GameRules.m_fGameTime,
 		pl_ent_pos = pl_ent.m_vecNetworkOrigin,
 		pl_ent_team = pl_ent.m_iTeamNum,
-		attack_range = pl_ent.m_fAttackRange * (pl_ent.m_bIsRangedAttacker ? 1 : 1.5) + pl_ent.m_flHullRadius,
+		attack_range = pl_ent.m_fAttackRange * (Utils.HasAttackCapability(pl_ent, DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? 1 : 1.5) + pl_ent.m_flHullRadius,
 		max_range = Math.max(attack_range, config.glow_finder_range)
 	let filtered = Utils.orderBy((attackable_ents.filter(ent => {
-		if (!ent.m_bIsAlive || !ent.m_bIsVisible)
+		if (!Utils.IsAlive(ent) || !Utils.IsVisible(ent))
 			return false
 		if ((config.mode & AutoLH_Mode.LASTHIT) && (ent.m_iTeamNum !== pl_ent_team))
 			return true
@@ -202,7 +202,7 @@ Events.on("onTick", () => {
 		block_orders = true
 		let done = false
 		let id = setInterval(30, in_id => {
-			if (!ent.m_bIsValid || !ent.m_bIsAlive) {
+			if (!ent.m_bIsValid || !Utils.IsAlive(ent)) {
 				block_orders = false
 				done = true
 				clearInterval(in_id)

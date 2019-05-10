@@ -2,8 +2,8 @@ import * as Orders from "Orders"
 import { Combo, EComboAction } from "wrapper/Combo"
 
 var combo = new Combo(),
-    hotkey: number = 0,
-    executing: boolean = false
+	hotkey: number = 0,
+	executing: boolean = false
 
 combo.addAbility("item_armlet", EComboAction.TOGGLE)
 combo.addAbility("item_buckler", EComboAction.NO_TARGET)
