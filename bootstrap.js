@@ -70,8 +70,8 @@ setFireEvent((name, cancellable, ...args) => {
 });
 
 (function onTick() {
-  setTimeout(1000 / 30, () => {
-    if (IsInGame()) {
+  setTimeout(1000 / 30 + GetLatency(Flow_t.IN), () => {
+    if (IsInGame() && LocalDOTAPlayer !== undefined) {
       Events.emit("onTick", false);
     }
 

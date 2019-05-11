@@ -486,7 +486,7 @@ function getDamage(abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DO
 }
 
 function OnTick(): void {
-	if (!config.enabled || LocalDOTAPlayer === undefined)
+	if (!config.enabled)
 		return
 
 	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero/*,

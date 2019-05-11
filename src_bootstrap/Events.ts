@@ -51,13 +51,13 @@ global.EventEmitter = class EventEmitter {
 
 global.Events = new EventEmitter()
 
-setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))
+setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args));
 
 // temp onTick
-;(function onTick() {
-	setTimeout(1000 / 30, () => {
-		if (IsInGame())
-			Events.emit("onTick", false);
+(function onTick() {
+	setTimeout((1000 / 30) + GetLatency(Flow_t.IN), () => {
+		if (IsInGame() && LocalDOTAPlayer !== undefined)
+			Events.emit("onTick", false)
 		
 		onTick();
 	})

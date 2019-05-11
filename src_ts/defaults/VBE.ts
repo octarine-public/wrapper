@@ -43,9 +43,7 @@ function CheckNpc(npc: C_DOTA_BaseNPC) {
 Events.on("onTeamVisibilityChanged", CheckNpc);
 Events.on("onNPCCreated", CheckNpc);
 
-
 Events.on("onTick", () => {
-
 	let localTeam = LocalDOTAPlayer.m_iTeamNum
 
 	Entities.AllEntities.forEach(ent => {
@@ -57,7 +55,6 @@ Events.on("onTick", () => {
 		}
 	})
 })
-
 
 Events.on("onGameEnded", () => {
 	// loop-optimizer: POSSIBLE_UNDEFINED

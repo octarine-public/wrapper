@@ -21,7 +21,7 @@ Events.on("onEntityDestroyed", (npc: C_DOTA_BaseNPC) => {
 })
 
 Events.on("onTick", () => {
-	if (!enabled || LocalDOTAPlayer === undefined)
+	if (!enabled)
 		return
 	const pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero
 	if (pl_ent === undefined || Utils.IsUnitStateFlagSet(pl_ent, modifierstate.MODIFIER_STATE_STUNNED) || !Utils.IsAlive(pl_ent) || LocalDOTAPlayer.m_hActiveAbility !== undefined)
