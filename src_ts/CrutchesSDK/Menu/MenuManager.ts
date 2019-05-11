@@ -1,6 +1,6 @@
 import Tree from "./Tree"
 
-export class MenuManager extends Tree {
+class MenuManager extends Tree {
 
 	/**
 	 *
@@ -13,8 +13,24 @@ export class MenuManager extends Tree {
 
 		this.Update()
 
-		Menu.AddEntry(this)
+		Menu.AddEntry(this);
 	}
+}
+
+let screepsInMenu: Tree[] = [];
+
+export function MenuFactory(name: string, hint?: string) {
+	
+	let find = screepsInMenu[name] as MenuManager;
+
+	if (find !== undefined)
+		return find;
+	
+	const factory = new MenuManager(name, hint);
+		
+	screepsInMenu[name] = factory;
+	
+	return factory;
 }
 
 export function CreateRGBTree(parent: Tree, name: string, color: Vector3 = new Vector3(0, 255, 0), hint?: string) {

@@ -1,6 +1,6 @@
 import * as Utils from "Utils"
 
-import { MenuManager } from "../CrutchesSDK/Wrapper"
+import { MenuFactory } from "../CrutchesSDK/Wrapper"
 import { CastNoTarget } from "../Orders"
 
 let registeredEvents = {
@@ -18,7 +18,7 @@ const TOOLTIP_ONPLAYING = "List of players for blocking courier(s)"
 // --- Menu
 
 // rename me
-const courCtlrMenu = new MenuManager("Courier Controller")
+const courCtlrMenu = MenuFactory("Courier Controller")
 
 const stateMain = courCtlrMenu.AddToggle("State")
 	.OnValue(onStateMain)

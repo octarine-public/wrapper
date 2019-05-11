@@ -1,9 +1,9 @@
 import CheckBox from "../CrutchesSDK/Menu/CheckBox"
-import { CreateRGBTree, MenuManager } from "../CrutchesSDK/Menu/MenuManager"
+import { CreateRGBTree, MenuFactory } from "../CrutchesSDK/Menu/MenuManager"
 
 // ------------------- Main
 
-let menu = new MenuManager("TestSDK")
+let menu = MenuFactory("TestSDK")
 
 let toggle = menu.AddToggle("toggle", false, "example toggle tips")
 	.OnValue((value, self) => {

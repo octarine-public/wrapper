@@ -6,7 +6,7 @@ let mks: C_DOTA_Unit_Hero_MonkeyKing[] = [],
 	enabled = true
 
 Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
-	if (npc === LocalDOTAPlayer.m_hAssignedHero)
+	if (LocalDOTAPlayer === undefined || npc === LocalDOTAPlayer.m_hAssignedHero)
 		return
 	if (npc instanceof C_DOTA_Unit_Hero_MonkeyKing)
 		mks.push(npc)
@@ -21,7 +21,7 @@ Events.on("onEntityDestroyed", (npc: C_DOTA_BaseNPC) => {
 })
 
 Events.on("onTick", () => {
-	if (!enabled)
+	if (!enabled || LocalDOTAPlayer === undefined)
 		return
 	const pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero
 	if (pl_ent === undefined || Utils.IsUnitStateFlagSet(pl_ent, modifierstate.MODIFIER_STATE_STUNNED) || !Utils.IsAlive(pl_ent) || LocalDOTAPlayer.m_hActiveAbility !== undefined)

@@ -1,10 +1,10 @@
 import * as Utils from "Utils"
 
-import { CreateRGBATree, MenuManager } from "CrutchesSDK/Wrapper"
+import { CreateRGBATree, MenuFactory } from "CrutchesSDK/Wrapper"
 import { arrayRemove, IsVisible } from "Utils"
 
 // --- Menu
-const jungleMHMenu = new MenuManager("Particle MapHack")
+const jungleMHMenu = MenuFactory("Particle MapHack")
 const stateMain = jungleMHMenu.AddToggle("State")
 
 // Camp Informer

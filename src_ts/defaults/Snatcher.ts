@@ -1,4 +1,4 @@
-import { CreateRGBTree, MenuManager } from "../CrutchesSDK/Wrapper"
+import { CreateRGBTree, MenuFactory } from "../CrutchesSDK/Wrapper"
 import { PickupItem, PickupRune } from "../Orders"
 import * as Utils from "../Utils"
 
@@ -15,7 +15,7 @@ let registeredEvents = {
 	npcs: C_DOTA_BaseNPC[] = [],
 	picking_up: C_DOTA_Item_Rune[] = []
 
-const snatcherMenu = new MenuManager("Snatcher")
+const snatcherMenu = MenuFactory("Snatcher")
 
 const stateMain = snatcherMenu.AddToggle("State").OnValue(onStateMain)
 

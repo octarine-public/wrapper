@@ -1,9 +1,9 @@
-import { MenuManager } from "./CrutchesSDK/Wrapper"
+import { MenuFactory } from "./CrutchesSDK/Wrapper"
 
 let setConVar = (value: number | string | boolean, menuBase: Menu_Base) =>
 	ConVars.Set(menuBase.hint, value)
 
-let debuggerMenu = new MenuManager("Debugger")
+let debuggerMenu = MenuFactory("Debugger")
 
 let sv_cheatsMenu = debuggerMenu.AddTree("sv_cheats tree")
 

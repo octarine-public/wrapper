@@ -1,10 +1,10 @@
-import { MenuManager } from "../CrutchesSDK/Wrapper"
+import { MenuFactory } from "../CrutchesSDK/Wrapper"
 import * as Utils from "../Utils"
 
 let allParticles: number[] = []
 let particlePath = "particles/items_fx/aura_shivas.vpcf"
 
-const VBEMenu = new MenuManager("Visible By Enemy")
+const VBEMenu = MenuFactory("Visible By Enemy")
 
 const stateMain = VBEMenu.AddToggle("State", true) // .OnValue(onStateMain)
 
