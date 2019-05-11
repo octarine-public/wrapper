@@ -100,7 +100,6 @@ function onStateMain(state: boolean = stateMain.value) {
 }
 
 function getAllEntities() {
-	// loop-optimizer: POSSIBLE_UNDEFINED
 	Entities.AllEntities.forEach(onCheckEntity)
 }
 

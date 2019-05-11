@@ -16,7 +16,6 @@ Events.on("onTick", () => {
 	if (buff === undefined || tp === undefined || tp.m_fCooldown > 0 || buff.m_flDieTime - GameRules.m_fGameTime - (Math.max(GameRules.m_fGameTime - tp.m_flChannelStartTime, 0) + waitTime) > 1 / 30) return
 	doingTP = true
 	Orders.CastNoTarget(MyEnt, bkb, false)
-	// loop-optimizer: POSSIBLE_UNDEFINED
 	var fountain = Entities.AllEntities.filter(ent =>
 		!Utils.IsEnemy(ent, LocalDOTAPlayer)
 		&& ent instanceof C_DOTA_BaseNPC

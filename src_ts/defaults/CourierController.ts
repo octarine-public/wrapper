@@ -108,7 +108,6 @@ function registerEvents() {
 	registeredEvents.onEntityDestroyed = Events.on("onEntityDestroyed", onEntityDestroyed)
 	registeredEvents.onUpdate = Events.on("onUpdate", onUpdate)
 
-	// loop-optimizer: POSSIBLE_UNDEFINED
 	Entities.AllEntities.forEach(onCheckEntity)
 }
 
@@ -178,8 +177,6 @@ function onUpdate() {
 		return
 
 	if (autoShieldState.value) {
-
-		// loop-optimizer: POSSIBLE_UNDEFINED
 		Entities.AllEntities.forEach(ent => {
 
 			if (

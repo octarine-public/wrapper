@@ -43,7 +43,6 @@ let allNeutrals: C_DOTA_BaseNPC[] = [],
 // --- Methods
 
 stateMain.OnActivate(() => {
-	// loop-optimizer: POSSIBLE_UNDEFINED
 	Entities.AllEntities.forEach(ent => {
 		if (ent instanceof C_DOTA_BaseNPC && ent.m_bIsValid) // temp IsValid
 			onNPCAdded(ent)

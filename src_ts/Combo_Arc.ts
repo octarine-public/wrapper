@@ -10,7 +10,6 @@ var combo = new Combo(),
 
 function GetRealArcWardens(): C_DOTA_BaseNPC[] {
 	var localplayer = LocalDOTAPlayer
-	// loop-optimizer: POSSIBLE_UNDEFINED
 	return Entities.AllEntities.filter(ent =>
 		ent instanceof C_DOTA_BaseNPC
 		&& !Utils.IsEnemy(ent, localplayer)
