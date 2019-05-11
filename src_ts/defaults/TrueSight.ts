@@ -6,7 +6,7 @@ var enabled = true,
 	particles: number[] = []
 
 Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
-	if (!Utils.IsEnemy(npc, LocalDOTAPlayer))
+	if (LocalDOTAPlayer !== undefined && !Utils.IsEnemy(npc, LocalDOTAPlayer))
 		npcs.push([npc, Entities.GetEntityID(npc)])
 })
 Events.on("onEntityDestroyed", ent => {

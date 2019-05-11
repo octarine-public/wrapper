@@ -53,10 +53,15 @@ global.Events = new EventEmitter()
 
 setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))
 
-setInterval(1000 / 30, () => {
-	if (IsInGame())
-		Events.emit("onTick", false)
-})
+// temp onTick
+;(function onTick() {
+	setTimeout(1000 / 30, () => {
+		if (IsInGame())
+			Events.emit("onTick", false);
+		
+		onTick();
+	})
+})();
 
 let AllEntities: C_BaseEntity[] = [],
 	EntitiesIDs: C_BaseEntity[] = [],

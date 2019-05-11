@@ -68,11 +68,17 @@ global.Events = new EventEmitter();
 setFireEvent((name, cancellable, ...args) => {
   return Events.emit(name, cancellable, ...args);
 });
-setInterval(1000 / 30, () => {
-  if (IsInGame()) {
-    Events.emit("onTick", false);
-  }
-});
+
+(function onTick() {
+  setTimeout(1000 / 30, () => {
+    if (IsInGame()) {
+      Events.emit("onTick", false);
+    }
+
+    onTick();
+  });
+})();
+
 let AllEntities = [],
     EntitiesIDs = [],
     NPCs = [];
