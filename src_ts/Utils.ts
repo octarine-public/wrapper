@@ -416,15 +416,15 @@ export function IsInRange(ent: C_BaseEntity, entTo: C_BaseEntity, range: number)
 
 export function GetEntitiesInRange(vec: Vector3, range: number, onlyEnemies: boolean = false, findInvuln: boolean = false): C_DOTA_BaseNPC[] {
 	var localplayer = LocalDOTAPlayer
-	return orderBy (
-		vec.GetEntitiesInRange(range).filter(ent =>
-			ent instanceof C_DOTA_BaseNPC
-			&& (!onlyEnemies || IsEnemy(ent, localplayer))
-			&& IsAlive(ent)
-			&& !(!findInvuln && IsUnitStateFlagSet(ent, modifierstate.MODIFIER_STATE_INVULNERABLE)),
-		),
-		(ent: C_BaseEntity) => vec.Distance2D(ent.m_vecNetworkOrigin),
-	) as C_DOTA_BaseNPC[]
+	
+	let ents = Entities.GetEntitiesInRange(vec, range).filter(ent =>
+		ent instanceof C_DOTA_BaseNPC
+		&& (!onlyEnemies || IsEnemy(ent, localplayer))
+		&& IsAlive(ent)
+		&& !(!findInvuln && IsUnitStateFlagSet(ent, modifierstate.MODIFIER_STATE_INVULNERABLE)),
+	);
+	
+	return orderBy(ents, (ent: C_BaseEntity) => vec.Distance2D(ent.m_vecNetworkOrigin)) as C_DOTA_BaseNPC[]
 }
 
 export function GetItemByRegexp(ent: C_DOTA_BaseNPC, regex: RegExp): C_DOTA_Item {

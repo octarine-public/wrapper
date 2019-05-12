@@ -74,8 +74,10 @@ export class Combo {
 		if (index === 0) {
 			// we need only instance from combo start, and as Utils.GetCursorWorldVec is dynamically changed vector - we need new instance of it
 			this.cursor_pos = Utils.GetCursorWorldVec()
-			var ents_under_cursor = Utils.GetEntitiesInRange(this.cursor_pos, 1000, false, true), // must be split from another declarations, otherwise loop optimized will fuck up our code
-				cursor_enemy = ents_under_cursor.filter(ent => Utils.IsEnemy(ent, caster) && (ent instanceof C_DOTA_Unit_Roshan || (ent instanceof C_DOTA_BaseNPC_Hero && ent.m_hReplicatingOtherHeroModel === undefined))),
+			
+			let ents_under_cursor = Utils.GetEntitiesInRange(this.cursor_pos, 1000, false, true); // must be split from another declarations, otherwise loop optimized will fuck up our code
+			
+			let cursor_enemy = ents_under_cursor.filter(ent => Utils.IsEnemy(ent, caster) && (ent instanceof C_DOTA_Unit_Roshan || (ent instanceof C_DOTA_BaseNPC_Hero && ent.m_hReplicatingOtherHeroModel === undefined))),
 				cursor_ally = ents_under_cursor.filter(ent => !Utils.IsEnemy(ent, caster) && ent instanceof C_DOTA_BaseNPC_Hero && ent.m_hReplicatingOtherHeroModel === undefined)
 			this.cursor_ally = cursor_ally.length > 0 ? this.cursor_ally = cursor_ally[0] : undefined
 			this.cursor_enemy = cursor_enemy.length > 0 ? this.cursor_enemy = cursor_enemy[0] : undefined
@@ -98,8 +100,8 @@ export class Combo {
 			else this.nextExecute(caster, callback, delay, index)
 			return
 		}
-
-		if (!this.tech_names.some(name => abilName === name) && (abil === undefined || abil.m_iLevel === 0 || abil.m_fCooldown !== 0)) {
+		
+		if (/*!this.tech_names.some(name => abilName === name) &&*/ (abil === undefined || abil.m_iLevel === 0 || abil.m_fCooldown !== 0)) {
 			this.nextExecute(caster, callback, delay, index)
 			return
 		}
