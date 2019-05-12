@@ -101,13 +101,14 @@ export class Combo {
 			return
 		}
 		
-		if (/*!this.tech_names.some(name => abilName === name) &&*/ (abil === undefined || abil.m_iLevel === 0 || abil.m_fCooldown !== 0)) {
+		let is_tech = this.tech_names.some(name => abilName === name)
+		if (!is_tech && (abil === undefined || abil.m_iLevel === 0 || abil.m_fCooldown !== 0)) {
 			this.nextExecute(caster, callback, delay, index)
 			return
 		}
 
 		// target selection switch
-		var cast_range = Utils.GetCastRange(caster, abil),
+		var cast_range = !is_tech ? Utils.GetCastRange(caster, abil) : 0,
 			target: C_DOTA_BaseNPC
 		switch (act) {
 			case EComboAction.NEARBY_ENEMY_CREEP:
@@ -177,19 +178,23 @@ export class Combo {
 		}
 
 		if (abilName === "linken_breaker") {
-			if (Utils.HasLinkenAtTime(target) && [
-				"item_force_staff",
-				"item_hurricane_pike",
-				"item_sheepstick",
-				"item_heavens_halberd",
-				"item_diffusal_blade",
-				"item_abyssal_blade",
-				"item_cyclone",
-				/item_(urn_of_shadows|spirit_vessel)/,
-				/item_(solar_crest|medallion_of_courage)/,
-				/item_dagon/,
-				/item_(bloodthorn|orchid)/,
-			].some(item_name => (abil = Utils.GetItem(caster, item_name)) !== undefined)) {
+			if (
+				target !== undefined
+				&& Utils.HasLinkenAtTime(target)
+				&& [
+					"item_force_staff",
+					"item_hurricane_pike",
+					"item_sheepstick",
+					"item_heavens_halberd",
+					"item_diffusal_blade",
+					"item_abyssal_blade",
+					"item_cyclone",
+					/item_(urn_of_shadows|spirit_vessel)/,
+					/item_(solar_crest|medallion_of_courage)/,
+					/item_dagon/,
+					/item_(bloodthorn|orchid)/,
+				].some(item_name => (abil = Utils.GetItem(caster, item_name)) !== undefined)
+			) {
 				Orders.CastTarget(caster, abil, target, false)
 				delay = options.combo_delay
 					? options.combo_delay
@@ -247,13 +252,16 @@ export class Combo {
 			}
 		}
 
-		this.nextExecute(caster, callback, delay, index)
+		setTimeout(1000 / 30, () => this.nextExecute(caster, callback, delay, index))
 	}
 
 	nextExecute(caster: C_DOTA_BaseNPC, callback: (() => void) | undefined, delay: number, index: number): void {
-		if (++index < this.abils.length) // increments variable and checks is index valid
-			setTimeout(delay > 0 ? delay + (GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000 : 0, () => this.execute(caster, callback, index))
-		else {
+		if (++index < this.abils.length) {// increments variable and checks is index valid
+			if (delay > 0)
+				setTimeout(delay + (GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000, () => this.execute(caster, callback, index))
+			else
+				this.execute(caster, callback, index)
+		} else {
 			this.vars = {}
 			if (callback instanceof Function) callback()
 		}

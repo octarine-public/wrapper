@@ -270,10 +270,6 @@ declare class Vector3 {
 	 * @param vec The another vector
 	 */
     Distance2D(vec: Vector3): number
-    /**
-	 * @returns all entities in given range of this vector
-	 */
-	GetEntitiesInRange(range: number): C_BaseEntity[]
 
 	/* ================== Geometric ================== */
 	FindRotationAngle(from: C_BaseEntity): number
