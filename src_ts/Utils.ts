@@ -371,10 +371,10 @@ export function IsManaEnough(ent: C_DOTA_BaseNPC, abil: C_DOTABaseAbility) {
 export let IsIllusion = (ent: C_DOTA_BaseNPC_Hero) => ent.m_bIsIllusion || ent.m_hReplicatingOtherHeroModel !== null
 
 export function SpellAmplification(ent: C_DOTA_BaseNPC): number {
-	let spellAmp = 0
+	let spellAmp = 100
 
 	if (ent instanceof C_DOTA_BaseNPC_Hero)
-		spellAmp += ent.m_flIntellectTotal * 0.07 / 100 // https://dota2.gamepedia.com/Intelligence
+		spellAmp += ent.m_flIntellectTotal * 0.07 // https://dota2.gamepedia.com/Intelligence
 
 	if (ent.m_bHasInventory) {
 		let items = ent.m_Inventory.m_hItems as C_DOTA_Item[]
@@ -383,7 +383,7 @@ export function SpellAmplification(ent: C_DOTA_BaseNPC): number {
 			let item = items[i]
 			if (item === undefined)
 				continue
-			spellAmp += item.GetSpecialValue("spell_amp") / 100
+			spellAmp += item.GetSpecialValue("spell_amp")
 		}
 	}
 
@@ -402,7 +402,7 @@ export function SpellAmplification(ent: C_DOTA_BaseNPC): number {
 		if (abilName === undefined || !abilName.startsWith("special_bonus_spell_amplify"))
 			continue
 
-		spellAmp += abil.GetSpecialValue("value") / 100
+		spellAmp += abil.GetSpecialValue("value")
 	}
 
 	return spellAmp

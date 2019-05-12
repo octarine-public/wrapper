@@ -500,8 +500,8 @@ function OnTick(): void {
 			latest_spellamp *= (bs_buff.m_hAbility as C_DOTABaseAbility).GetSpecialValue("damage_increase_pct") / 100
 	}
 	var availableAbils = GetAvailableAbils().filter(abilData => {
-		var abil = (abilData as any).abil = abilData.abilName instanceof RegExp ? Utils.GetItemByRegexp(MyEnt, abilData.abilName) : Utils.GetAbilityByName(MyEnt, abilData.abilName) || Utils.GetItemByName(MyEnt, abilData.abilName)
-		return abil !== undefined && abil.m_iLevel !== 0 && !abil.m_bHidden && abil.m_fCooldown === 0 && Utils.IsManaEnough(MyEnt, abil)
+			var abil = (abilData as any).abil = abilData.abilName instanceof RegExp ? Utils.GetItemByRegexp(MyEnt, abilData.abilName) : Utils.GetAbilityByName(MyEnt, abilData.abilName) || Utils.GetItemByName(MyEnt, abilData.abilName)
+			return abil !== undefined && abil.m_iLevel !== 0 && !abil.m_bHidden && abil.m_fCooldown === 0 && Utils.IsManaEnough(MyEnt, abil)
 		}),
 		zuus_passive = Utils.GetAbilityByName(MyEnt, "zuus_static_field"),
 		zuus_talent = Utils.GetAbilityByName(MyEnt, "special_bonus_unique_zeus"),
@@ -541,7 +541,7 @@ function OnTick(): void {
 			var damage = (abilData.abilDamageF || getDamage)(abil, MyEnt, ent)
 			if (zuus_passive !== undefined)
 				damage += (abil.GetSpecialValue("damage_health_pct") + (zuus_talent !== undefined ? zuus_talent.m_iLevel === 0 ? 0 : zuus_talent.GetSpecialValue("value") : 0)) / 100 * ent.m_iMaxHealth
-			// console.log(damage, Utils.GetHealthAfter(ent, abil.m_fCastPoint, false, MyEnt))
+			// console.log(damage, Utils.GetHealthAfter(ent, abil.m_fCastPoint, false, MyEnt), latest_spellamp)
 			if (damage < Utils.GetHealthAfter(ent, abil.m_fCastPoint, false, MyEnt))
 				return false
 
@@ -575,7 +575,7 @@ Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 			npc instanceof C_DOTA_BaseNPC_Creep
 			|| (
 				npc instanceof C_DOTA_BaseNPC_Hero
-				&& (npc.m_hReplicatingOtherHeroModel === undefined || (npc instanceof C_DOTA_Unit_Hero_Meepo && Utils.IsIllusion(npc)))
+				&& (npc.m_hReplicatingOtherHeroModel === undefined || (npc instanceof C_DOTA_Unit_Hero_Meepo && npc.m_bIsIllusion))
 			)
 		)
 	)
