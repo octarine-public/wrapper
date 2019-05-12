@@ -4,8 +4,9 @@ import * as Utils from "Utils"
 var config: any = {
 		hotkey: 78,
 		block_sensitivity: 600,
+		skipRange: false
 	},
-	last_time = Number.MIN_SAFE_INTEGER,
+	last_time = 0,
 	lane_creeps: C_DOTA_BaseNPC_Creep[] = [],
 	towers: C_DOTA_BaseNPC_Tower[] = [],
 	enabled = false,
@@ -35,47 +36,63 @@ var config: any = {
 // 	}
 // })
 
-Events.on("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !enabled || Utils.GetOrdersWithoutSideEffects().includes(order.order_type))
+//Events.on("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !enabled || Utils.GetOrdersWithoutSideEffects().includes(order.order_type))
 Events.on("onTick", () => {
 	if (!enabled)
 		return
-	last_time = GameRules.m_fGameTime
+		
+	if (Date.now() < last_time)
+		return;
+		
+	last_time = Date.now() + 50;
+	
 	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
 	if (MyEnt === undefined || !Utils.IsAlive(MyEnt) || GameRules.m_bGamePaused)
 		return
-	creeps = lane_creeps.filter(creep => !creep.m_bIsWaitingToSpawn && Utils.IsAlive(creep) && Utils.IsInRange(MyEnt, creep, 500))
+	creeps = lane_creeps.filter(creep => {
+		if (config.skipRange && Utils.HasAttackCapability(creep, DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK))
+			return false;
+			
+		return !creep.m_bIsWaitingToSpawn && Utils.IsAlive(creep) && Utils.IsInRange(MyEnt, creep, 500)
+	});
+	
 	if (creeps.length === 0)
 		return
-	creepsMovePosition = creeps.map(creep => Utils.InFront(creep, 300)).reduce((sum, vec) => sum.Add(vec), new Vector3()).DivideScalar(creeps.length)
+		
+	creepsMovePosition = creeps
+		.reduce((sum, vec) => sum.Add(Utils.InFront(vec, 300)), new Vector3())
+		.DivideScalar(creeps.length)
+		
 	var tower = towers.filter(ent => Utils.IsInRange(MyEnt, ent, 120))
 
 	if (tower.length > 0) {
 		Orders.MoveToPos(MyEnt, creepsMovePosition, false)
 		return
 	}
-	var flag = true
-	Utils.orderBy(creeps, creep => creep.m_vecNetworkOrigin.Distance2D(MyEnt.m_vecNetworkOrigin)).every(creep => {
+	
+	creeps = Utils.orderBy(creeps, creep => creepsMovePosition.Distance2D(creep.m_vecNetworkOrigin));
+	
+	let stopping = creeps.some(creep => {
 		if (!creep.m_bIsMoving && !Utils.IsInRange(creep, MyEnt, 50))
-			return true
+			return false
 		var creepDistance = creepsMovePosition.Distance2D(creep.m_vecNetworkOrigin) + 50,
 			heroDistance = creepsMovePosition.Distance2D(MyEnt.m_vecNetworkOrigin),
 			creepAngle = MyEnt.m_vecNetworkOrigin.FindRotationAngle(creep)
 		if (creepDistance < heroDistance && creepAngle > 2 || creepAngle > 2.5)
-			return true
+			return false
 		var moveDistance = config.block_sensitivity / MyEnt.m_fIdealSpeed * 100
 		if (MyEnt.m_fIdealSpeed - creep.m_fIdealSpeed > 50)
 			moveDistance -= (MyEnt.m_fIdealSpeed - creep.m_fIdealSpeed) / 2
 		var movePosition = Utils.InFront(creep, Math.max(moveDistance, moveDistance * creepAngle))
 		if (movePosition.Distance2D(creepsMovePosition) - 50 > heroDistance)
-			return true
+			return false
 		if (creepAngle < 0.2 && MyEnt.m_bIsMoving)
-			return true
+			return false
 
 		Orders.MoveToPos(MyEnt, movePosition, false)
-		flag = false
-		return false
+		return true
 	})
-	if (!flag)
+	if (stopping)
 		return
 	if (MyEnt.m_bIsMoving)
 		Orders.EntStop(MyEnt, false)
@@ -128,6 +145,11 @@ Events.on("onGameEnded", () => {
 		700,
 		"Bigger value will result in smaller block, but with higher success rate",
 		node => config.block_sensitivity = node.value,
+	))
+	root.entries.push(new Menu_Toggle(
+		"Skip Range",
+		config.skipRange,
+		node => config.skipRange = node.value,
 	))
 	root.Update()
 	Menu.AddEntry(root)
