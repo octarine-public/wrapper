@@ -236,6 +236,9 @@ Events.on("onDraw", () => {
 
 			allBloodTargets.forEach(target => {
 
+				if (!target.m_bIsValid)
+					return;
+				
 				let pos = target.m_vecNetworkOrigin
 
 				if (pos.IsZero)
