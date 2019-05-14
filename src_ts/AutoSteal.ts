@@ -464,6 +464,18 @@ var abils: Array<{
 			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("projectile_speed"),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Utils.CalculateDamage(entTo, (abil.GetSpecialValue("blast_damage_base") + abil.GetSpecialValue("blast_agility_multiplier") * (entFrom as C_DOTA_BaseNPC_Hero).m_flAgilityTotal) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
+		{
+			abilName: "morphling_adaptive_strike_agi",
+			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => entFrom.m_vecNetworkOrigin.Distance(entTo.m_vecNetworkOrigin) / abil.GetSpecialValue("projectile_speed"),
+			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
+				const base = abil.GetSpecialValue("damage_base"),
+					min_mul = abil.GetSpecialValue("damage_min")
+				const mul = abil.GetSpecialValue("damage_max") - min_mul,
+					agi = (entFrom as C_DOTA_BaseNPC_Hero).m_flAgilityTotal
+				return Utils.CalculateDamage(entTo, base + (min_mul + mul * (agi / (entFrom as C_DOTA_BaseNPC_Hero).m_flStrengthTotal)) * agi * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
+			},
+		}
 		// TODO: mars_gods_rebuke
 	],
 	flag: boolean = false,

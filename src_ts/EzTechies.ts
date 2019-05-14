@@ -203,7 +203,7 @@ Events.on("onPrepareUnitOrders", args => {
 		|| args.ability.m_pAbilityData.m_pszAbilityName !== "techies_remote_mines"
 	)
 		return true
-	const ents = args.position.GetEntitiesInRange(config.auto_stack_range)
+	const ents = Entities.GetEntitiesInRange(args.position, config.auto_stack_range)
 	var minePos: Vector3
 	if (ents.some(ent => {
 		const isMine = ent instanceof C_DOTA_BaseNPC && ent.m_iszUnitName === "npc_dota_techies_remote_mine" && Utils.IsAlive(ent)

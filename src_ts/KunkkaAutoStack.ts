@@ -33,8 +33,10 @@ Events.on("onDraw", () => {
 Events.on("onTick", () => {
 	if (!config.enabled || is_stacking)
 		return
-	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC,
-		torrent = Utils.GetAbilityByName(MyEnt, "kunkka_torrent")
+	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
+	if (MyEnt === undefined)
+		return
+	var torrent = Utils.GetAbilityByName(MyEnt, "kunkka_torrent")
 	if (torrent === undefined || torrent.m_fCooldown !== 0 || torrent.m_iManaCost > MyEnt.m_flMana)
 		return
 	var cur_time = GameRules.m_fGameTime - GameRules.m_flGameStartTime

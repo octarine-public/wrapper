@@ -640,8 +640,7 @@ declare class EventEmitter {
 	public on(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
 	public on(name: "onWndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
 	public on(name: "onTick", callback: () => void): EventEmitter
-	public on(name: "onUpdate", callback: () => void): EventEmitter
-	public on(name: "onSendMove", callback: (cmd: CUserCmd) => void): EventEmitter
+	public on(name: "onUpdate", callback: (cmd: CUserCmd) => void): EventEmitter
 	public on(name: "onUnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
 	public on(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
 	public on(name: "onDraw", callback: () => void): EventEmitter

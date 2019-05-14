@@ -981,7 +981,7 @@ export function arrayRemove<T>(ar: T[], el: T) {
 		ar.splice(id, 1)
 }
 
-Events.on("onSendMove", cmd => CursorWorldVec = cmd.vec_under_cursor)
+Events.on("onUpdate", cmd => CursorWorldVec = cmd.vec_under_cursor)
 
 Events.on("onEntityDestroyed", (ent, ent_id) => {
 	// loop-optimizer: KEEP
