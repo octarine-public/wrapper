@@ -2230,6 +2230,8 @@ declare class CFootLockItem {
 }
 
 declare class CDOTA_Buff {
+	readonly m_bIsValid: boolean
+
 	readonly m_name: string
 	readonly m_class: string
 	readonly m_szModifierAura: string
