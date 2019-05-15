@@ -161,10 +161,6 @@ setVector2Class(global.Vector2 = class Vector2 {
     return new Vector2(array[0] || 0, array[1] || 0);
   }
 
-  static fromObject(object) {
-    return new Vector2(object.x, object.y);
-  }
-
   static FromAngle(angle) {
     return new Vector2(Math.cos(angle), Math.sin(angle));
   }
@@ -474,14 +470,14 @@ setVector2Class(global.Vector2 = class Vector2 {
     return [this.x, this.y];
   }
 
+  toVector3() {
+    return new Vector3(this.x, this.y, 0);
+  }
+
 });
 setVector3Class(global.Vector3 = class Vector3 {
   static fromArray(array) {
     return new Vector3(array[0] || 0, array[1] || 0, array[2] || 0);
-  }
-
-  static fromObject(object) {
-    return new Vector3(object.x, object.y, object.z || 0);
   }
 
   static FromAngle(angle) {
@@ -838,6 +834,10 @@ setVector3Class(global.Vector3 = class Vector3 {
 
   toArray() {
     return [this.x, this.y, this.z];
+  }
+
+  toVector2() {
+    return new Vector2(this.x, this.y);
   }
 
 });

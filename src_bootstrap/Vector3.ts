@@ -10,10 +10,6 @@ setVector3Class(global.Vector3 = class Vector3 {
 		return new Vector3(array[0] || 0, array[1] || 0, array[2] || 0)
 	}
 
-	static fromObject(object: { x: number, y: number, z?: number }): Vector3 {
-		return new Vector3(object.x, object.y, object.z || 0)
-	}
-
 	static FromAngle(angle: number): Vector3 {
 		return new Vector3(Math.cos(angle), Math.sin(angle))
 	}
@@ -603,5 +599,9 @@ setVector3Class(global.Vector3 = class Vector3 {
 	 */
 	toArray(): [number, number, number] {
 		return [this.x, this.y, this.z]
+	}
+
+	toVector2(): Vector2 {
+		return new Vector2(this.x, this.y)
 	}
 })

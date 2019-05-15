@@ -14,7 +14,6 @@ declare var Entities: EntityManager;
 declare class Vector3 {
 	/* ================== Static ================== */
 	static fromArray(array: [number, number, number]): Vector3
-	static fromObject(object: { x: number, y: number, z?: number }): Vector3
 	static FromAngle(angle: number): Vector3
 	static FromAngleCoordinates(radial: number, angle: number): Vector3
 
@@ -330,12 +329,12 @@ declare class Vector3 {
 	 * @return [x, y, z]
 	 */
 	toArray(): [number, number, number]
+	toVector2(): Vector2
 }
 
 declare class Vector2 {
 	/* ================== Static ================== */
 	static fromArray(array: [number, number]): Vector2
-	static fromObject(object: { x: number, y: number }): Vector2
 	static FromAngle(angle: number): Vector2
 	static FromAngleCoordinates(radial: number, angle: number): Vector2
 
@@ -626,6 +625,7 @@ declare class Vector2 {
 	 * @return [x, y, z]
 	 */
 	toArray(): [number, number]
+	toVector3(): Vector3
 }
 
 type Listener = (...args: any) => false | any
