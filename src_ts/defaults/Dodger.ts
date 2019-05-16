@@ -51,7 +51,7 @@ Events.on("onTrackingProjectileCreated", (proj, sourceAttachment, path) => {
 	proj_list.push(proj)
 	TryDodge(pl_ent, proj)
 })
-Events.on("onLinearProjectileCreated", (proj, origin, velocity, ent, path) => {
+Events.on("onLinearProjectileCreated", (proj, ent, path) => {
 	if (!enabled || !IsInGame())
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC

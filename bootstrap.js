@@ -156,7 +156,7 @@ Events.on("onTick", () => {
     }
   }
 });
-setVector2Class(global.Vector2 = class Vector2 {
+global.Vector2 = class Vector2 {
   static fromArray(array) {
     return new Vector2(array[0] || 0, array[1] || 0);
   }
@@ -474,8 +474,8 @@ setVector2Class(global.Vector2 = class Vector2 {
     return new Vector3(this.x, this.y, 0);
   }
 
-});
-setVector3Class(global.Vector3 = class Vector3 {
+};
+global.Vector3 = class Vector3 {
   static fromArray(array) {
     return new Vector3(array[0] || 0, array[1] || 0, array[2] || 0);
   }
@@ -840,4 +840,4 @@ setVector3Class(global.Vector3 = class Vector3 {
     return new Vector2(this.x, this.y);
   }
 
-});
+};

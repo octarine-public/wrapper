@@ -1,10 +1,9 @@
 /// internal declarations
 /// you may use ONLY this ones & default V8 things
-declare function setVector3Class(Vector3: object): void
 declare var global: any
 
 /// actual code
-setVector3Class(global.Vector3 = class Vector3 {
+global.Vector3 = class Vector3 {
 	/* ================== Static ================== */
 	static fromArray(array: [number, number, number]): Vector3 {
 		return new Vector3(array[0] || 0, array[1] || 0, array[2] || 0)
@@ -604,4 +603,4 @@ setVector3Class(global.Vector3 = class Vector3 {
 	toVector2(): Vector2 {
 		return new Vector2(this.x, this.y)
 	}
-})
+}

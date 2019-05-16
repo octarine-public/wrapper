@@ -645,26 +645,22 @@ declare class EventEmitter {
 	public on(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
 	public on(name: "onDraw", callback: () => void): EventEmitter
 	public on(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): EventEmitter
-	public on(name: "onParticleUpdated", callback: (id: number, control_point: number, position: Vector3) => void): EventEmitter
-	public on(name: "onParticleUpdatedEnt", callback: (
+	public on(name: "onParticleUpdated", callback: (id: number, control_point: number) => void): EventEmitter // position: Vector3 at IOBuffer offset 0
+	public on(name: "onParticleUpdatedEnt", callback: ( // fallback_position: Vector3 at IOBuffer offset 0
 		id: number,
 		control_point: number,
 		ent: C_BaseEntity,
 		attach: ParticleAttachment_t,
 		attachment: number,
-		fallback_position: Vector3,
 		include_wearables: boolean
 	) => void): EventEmitter
 	public on(name: "onBloodImpact", callback: (target: C_BaseEntity, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
 	public on(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
 	public on(name: "onLinearProjectileCreated", callback: (
 		proj: LinearProjectile,
-		origin: Vector3,
-		velocity: Vector2,
 		ent: C_BaseEntity,
 		path: string,
 		particleSystemHandle: bigint,
-		acceleration: Vector2,
 		max_speed: number,
 		fow_radius: number,
 		sticky_fow_reveal: boolean,
@@ -681,9 +677,8 @@ declare class EventEmitter {
 		colorgemcolor: Color,
 		launch_tick: number
 	) => void): EventEmitter
-	public on(name: "onTrackingProjectileUpdated", callback: (
+	public on(name: "onTrackingProjectileUpdated", callback: ( // vSourceLoc: Vector3 at IOBuffer offset 0
 		proj: TrackingProjectile,
-		vSourceLoc: Vector3,
 		path: string,
 		particleSystemHandle: bigint,
 		colorgemcolor: Color,
