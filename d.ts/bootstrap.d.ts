@@ -271,7 +271,6 @@ declare class Vector3 {
     Distance2D(vec: Vector3): number
 
 	/* ================== Geometric ================== */
-	FindRotationAngle(from: C_BaseEntity): number
 	/**
 	 *
 	 * @param {number} offset Axis Offset (0 = X, 1 = Y)

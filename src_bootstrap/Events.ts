@@ -85,7 +85,12 @@ global.Entities = new (class Entities {
 		return EntitiesIDs[id]
 	}
 	GetEntitiesInRange(vec: Vector3, range: number): C_BaseEntity[] {
-		return AllEntities.filter(ent => ent.m_vecNetworkOrigin.Distance(vec) <= range)
+		return AllEntities.filter(ent => {
+			let pos = ent.m_vecNetworkOrigin 
+				? new Vector3(IOBuffer[0],IOBuffer[1], IOBuffer[2])
+				: new Vector3();
+			return pos.Distance(vec) <= range
+		})
 	}
 })()
 

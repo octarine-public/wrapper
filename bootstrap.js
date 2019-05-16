@@ -108,7 +108,8 @@ global.Entities = new class Entities {
     let _a2 = AllEntities;
 
     let _f2 = ent => {
-      return ent.m_vecNetworkOrigin.Distance(vec) <= range;
+      let pos = ent.m_vecNetworkOrigin ? new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2]) : new Vector3();
+      return pos.Distance(vec) <= range;
     };
 
     let _r = [];
@@ -772,17 +773,6 @@ global.Vector3 = class Vector3 {
 
   Distance2D(vec) {
     return Math.sqrt((vec.x - this.x) ** 2 + (vec.y - this.y) ** 2);
-  }
-
-  FindRotationAngle(from) {
-    const ent_pos = from.m_vecNetworkOrigin;
-    let angle = Math.abs(Math.atan2(this.y - ent_pos.y, this.x - ent_pos.x) - from.m_vecForward.Angle);
-
-    if (angle > Math.PI) {
-      angle = Math.abs(Math.PI * 2 - angle);
-    }
-
-    return angle;
   }
 
   Perpendicular(is_x = true) {

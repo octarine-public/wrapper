@@ -498,13 +498,6 @@ global.Vector3 = class Vector3 {
 	}
 
 	/* ================== Geometric ================== */
-	FindRotationAngle(from: C_BaseEntity): number { // TODO: remove this once wrapper estabilish
-		const ent_pos = from.m_vecNetworkOrigin
-		let angle = Math.abs(Math.atan2(this.y - ent_pos.y, this.x - ent_pos.x) - from.m_vecForward.Angle)
-		if (angle > Math.PI)
-			angle = Math.abs((Math.PI * 2) - angle)
-		return angle
-	}
 	/**
 	 *
 	 * @param {number} offset Axis Offset (0 = X, 1 = Y)
