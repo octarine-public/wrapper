@@ -1,3 +1,56 @@
+global.Color = class Color {
+  static fromIOBuffer(buffer, offset = 0) {
+    return buffer ? new Color(IOBuffer[offset + 0], IOBuffer[offset + 1], IOBuffer[offset + 2], IOBuffer[offset + 3]) : new Color();
+  }
+
+  constructor(r = 0, g = 0, b = 0, a = 255) {
+    this.SetColor(r, g, b, a);
+  }
+
+  SetColor(r = 0, g = 0, b = 0, a = 255) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a;
+    return this;
+  }
+
+  SetR(r) {
+    this.r = r;
+    return this;
+  }
+
+  SetG(g) {
+    this.g = g;
+    return this;
+  }
+
+  SetB(b) {
+    this.b = b;
+    return this;
+  }
+
+  SetA(a) {
+    this.a = a;
+    return this;
+  }
+
+  toString() {
+    return "Color(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+  }
+
+  toArray() {
+    return [this.r, this.g, this.b, this.a];
+  }
+
+  toIOBuffer(offset = 0) {
+    IOBuffer[offset + 0] = this.r;
+    IOBuffer[offset + 1] = this.g;
+    IOBuffer[offset + 2] = this.b;
+    IOBuffer[offset + 3] = this.a;
+  }
+
+};
 global.EventEmitter = class EventEmitter {
   events = {};
 
@@ -157,7 +210,21 @@ Events.on("onTick", () => {
     }
   }
 });
+global.QAngle = class QAngle extends Vector3 {
+  static fromIOBuffer(buffer, offset = 0) {
+    return buffer ? new QAngle(IOBuffer[offset + 0], IOBuffer[offset + 1], IOBuffer[offset + 2]) : new QAngle();
+  }
+
+  toString() {
+    return "QAngle(" + this.x + "," + this.y + "," + this.z + ")";
+  }
+
+};
 global.Vector2 = class Vector2 {
+  static fromIOBuffer(buffer, offset = 0) {
+    return buffer ? new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1]) : new Vector2();
+  }
+
   static fromArray(array) {
     return new Vector2(array[0] || 0, array[1] || 0);
   }
@@ -171,8 +238,7 @@ global.Vector2 = class Vector2 {
   }
 
   constructor(x = 0, y = 0) {
-    this.x = x;
-    this.y = y;
+    this.SetVector(x, y);
   }
 
   get IsValid() {
@@ -215,7 +281,7 @@ global.Vector2 = class Vector2 {
   IsZero(tolerance = 0.01) {
     var x = this.x,
         y = this.y;
-    return x > tolerance && x < tolerance && y > tolerance && y < tolerance;
+    return x > -tolerance && x < tolerance && y > -tolerance && y < tolerance;
   }
 
   IsLengthGreaterThan(val) {
@@ -262,6 +328,12 @@ global.Vector2 = class Vector2 {
 
   SquareRoot() {
     return new Vector2(Math.sqrt(this.x), Math.sqrt(this.y));
+  }
+
+  SetVector(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
+    return this;
   }
 
   SetX(num) {
@@ -475,8 +547,17 @@ global.Vector2 = class Vector2 {
     return new Vector3(this.x, this.y, 0);
   }
 
+  toIOBuffer(offset = 0) {
+    IOBuffer[offset + 0] = this.x;
+    IOBuffer[offset + 1] = this.y;
+  }
+
 };
 global.Vector3 = class Vector3 {
+  static fromIOBuffer(buffer, offset = 0) {
+    return buffer ? new Vector3(IOBuffer[offset + 0], IOBuffer[offset + 1], IOBuffer[offset + 2]) : new Vector3();
+  }
+
   static fromArray(array) {
     return new Vector3(array[0] || 0, array[1] || 0, array[2] || 0);
   }
@@ -490,9 +571,7 @@ global.Vector3 = class Vector3 {
   }
 
   constructor(x = 0, y = 0, z = 0) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
+    this.SetVector(x, y, z);
   }
 
   get IsValid() {
@@ -537,7 +616,7 @@ global.Vector3 = class Vector3 {
     var x = this.x,
         y = this.y,
         z = this.z;
-    return x > tolerance && x < tolerance && y > tolerance && y < tolerance && z > tolerance && z < tolerance;
+    return x > -tolerance && x < tolerance && y > -tolerance && y < tolerance && z > -tolerance && z < tolerance;
   }
 
   IsLengthGreaterThan(val) {
@@ -586,6 +665,13 @@ global.Vector3 = class Vector3 {
 
   SquareRoot() {
     return new Vector3(Math.sqrt(this.x), Math.sqrt(this.y), Math.sqrt(this.z));
+  }
+
+  SetVector(x = 0, y = 0, z = 0) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    return this;
   }
 
   SetX(num) {
@@ -828,6 +914,12 @@ global.Vector3 = class Vector3 {
 
   toVector2() {
     return new Vector2(this.x, this.y);
+  }
+
+  toIOBuffer(offset = 0) {
+    IOBuffer[offset + 0] = this.x;
+    IOBuffer[offset + 1] = this.y;
+    IOBuffer[offset + 2] = this.z;
   }
 
 };

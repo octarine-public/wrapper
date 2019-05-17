@@ -5,6 +5,11 @@ declare var global: any
 /// actual code
 global.Vector3 = class Vector3 {
 	/* ================== Static ================== */
+	static fromIOBuffer(buffer: boolean, offset: number = 0): Vector3 {
+		return buffer 
+			? new Vector3(IOBuffer[offset + 0], IOBuffer[offset + 1], IOBuffer[offset + 2]) 
+			: new Vector3();
+	}
 	static fromArray(array: [number, number, number]): Vector3 {
 		return new Vector3(array[0] || 0, array[1] || 0, array[2] || 0)
 	}
@@ -31,9 +36,7 @@ global.Vector3 = class Vector3 {
 	 * vector.Normalize();
 	 */
 	constructor(x: number = 0, y: number = 0, z: number = 0) {
-		this.x = x
-		this.y = y
-		this.z = z
+		this.SetVector(x, y, z);
 	}
 
 	/* ================== Getters ================== */
@@ -99,9 +102,9 @@ global.Vector3 = class Vector3 {
 			y = this.y,
 			z = this.z
 
-		return x > tolerance && x < tolerance
-			&& y > tolerance && y < tolerance
-			&& z > tolerance && z < tolerance
+		return x > -tolerance && x < tolerance
+			&& y > -tolerance && y < tolerance
+			&& z > -tolerance && z < tolerance
 	}
 	/**
 	 * Are length of this vector are  greater than value?
@@ -190,6 +193,15 @@ global.Vector3 = class Vector3 {
 		)
 	}
 
+	/**
+	 * Set vector by numbers
+	 */
+	SetVector(x: number = 0, y: number = 0, z: number = 0): Vector3 {
+		this.x = x
+		this.y = y
+		this.z = z
+		return this
+	}
 	/**
 	 * Set X of vector by number
 	 */
@@ -595,5 +607,11 @@ global.Vector3 = class Vector3 {
 
 	toVector2(): Vector2 {
 		return new Vector2(this.x, this.y)
+	}
+	
+	toIOBuffer(offset: number = 0): void {
+		IOBuffer[offset + 0] = this.x;
+		IOBuffer[offset + 1] = this.y;
+		IOBuffer[offset + 2] = this.z;
 	}
 }

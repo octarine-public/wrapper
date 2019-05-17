@@ -1,3 +1,83 @@
+declare class Color {
+	/* ================== Static ================== */
+	static fromIOBuffer(buffer: boolean, offset?: number): Color
+
+	/* =================== Fields =================== */
+	r: number
+	g: number
+	b: number
+	a: number
+
+	/* ================ Constructors ================ */
+	/**
+	 * Create new Color with r, g, b, a
+	 *
+	 * @example
+	 * var color = new Color(1, 2, 3)
+	 */
+	constructor(r?: number , g?: number, b?: number, a?: number)
+
+	/* ================== Getters ================== */
+
+
+	/* ================== Methods ================== */
+	/**
+	 * Set Color by numbers
+	 */
+	SetColor(r?: number, g?: number, b?: number, a?: number): Color
+	/**
+	 * Set R of color by number
+	 */
+	SetR(r: number): Color
+	/**
+	 * Set G of color by number
+	 */
+	SetG(g: number): Color
+	/**
+	 * Set B of color by number
+	 */
+	SetB(b: number): Color
+	/**
+	 * Set A of color by number
+	 */
+	SetA(a: number): Color
+
+	/* ================== To ================== */
+	/**
+	 * Color to String Color
+	 * @return Color(r,g,b,a)
+	 */
+	toString(): string
+	/**
+	 * @return [r, g, b, a]
+	 */
+	toArray(): [number, number, number, number]
+
+	toIOBuffer(offset?: number): void
+}
+
+declare class QAngle extends Vector3 {
+	/* ================== Static ================== */
+	static fromIOBuffer(buffer: boolean, offset?: number): QAngle
+
+	/* ================ Constructors ================ */
+	/**
+	 * Create new QAngle with pitch, yaw, roll
+	 *
+	 * @example
+	 * var QAngle = new QAngle(1, 2, 3)
+	 */
+	constructor(pitch?: number, yaw?: number, roll?: number)
+
+	/* ================== To ================== */
+	/**
+	 * QAngle to String QAngle
+	 * @return QAngle(pitch,yaw,roll,a)
+	 */
+	toString(): string
+}
+
+
 declare class EntityManager {
 	readonly AllEntities: C_BaseEntity[];
 	readonly EntitiesIDs: C_BaseEntity[];
@@ -13,6 +93,7 @@ declare var Entities: EntityManager;
 
 declare class Vector3 {
 	/* ================== Static ================== */
+	static fromIOBuffer(buffer: boolean, offset?: number): Vector3
 	static fromArray(array: [number, number, number]): Vector3
 	static FromAngle(angle: number): Vector3
 	static FromAngleCoordinates(radial: number, angle: number): Vector3
@@ -104,7 +185,10 @@ declare class Vector3 {
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
 	SquareRoot(): Vector3
-
+	/**
+	 * Set vector by numbers
+	 */
+	SetVector(x?: number, y?: number, z?: number): Vector3
 	/**
 	 * Set X of vector by number
 	 */
@@ -329,10 +413,12 @@ declare class Vector3 {
 	 */
 	toArray(): [number, number, number]
 	toVector2(): Vector2
+	toIOBuffer(offset?: number): void
 }
 
 declare class Vector2 {
 	/* ================== Static ================== */
+	static fromIOBuffer(buffer: boolean, offset?: number): Vector2
 	static fromArray(array: [number, number]): Vector2
 	static FromAngle(angle: number): Vector2
 	static FromAngleCoordinates(radial: number, angle: number): Vector2
@@ -423,6 +509,10 @@ declare class Vector2 {
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
 	SquareRoot(): Vector2
+	/**
+	 * Set vector by numbers
+	 */
+	SetVector(x?: number, y?: number): Vector2
 	/**
 	 * Set X of vector by number
 	 */
@@ -613,7 +703,7 @@ declare class Vector2 {
 	/**
 	 * Returns true if the point is under the rectangle
 	 */
-	IsUnderRectangle(x: number, y: number, width: number, height: number)
+	IsUnderRectangle(x: number, y: number, width: number, height: number): boolean
 	/* ================== Geometric ================== */
 	/**
 	 * Vector3 to String Vector3
@@ -625,6 +715,7 @@ declare class Vector2 {
 	 */
 	toArray(): [number, number]
 	toVector3(): Vector3
+	toIOBuffer(offset?: number): void
 }
 
 type Listener = (...args: any) => false | any

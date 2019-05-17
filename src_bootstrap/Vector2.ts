@@ -5,6 +5,11 @@ declare var global: any
 /// actual code
 global.Vector2 = class Vector2 {
 	/* ================== Static ================== */
+	static fromIOBuffer(buffer: boolean, offset: number = 0): Vector2 {
+		return buffer
+			? new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1])
+			: new Vector2();
+	}
 	static fromArray(array: [number, number]): Vector2 {
 		return new Vector2(array[0] || 0, array[1] || 0)
 	}
@@ -30,8 +35,7 @@ global.Vector2 = class Vector2 {
 	 * vector.Normalize();
 	 */
 	constructor(x: number = 0, y: number = 0) {
-		this.x = x
-		this.y = y
+		this.SetVector(x, y);
 	}
 
 	/* ================== Getters ================== */
@@ -93,8 +97,8 @@ global.Vector2 = class Vector2 {
 		var x = this.x,
 			y = this.y
 
-		return x > tolerance && x < tolerance
-			&& y > tolerance && y < tolerance
+		return x > -tolerance && x < tolerance
+			&& y > -tolerance && y < tolerance
 	}
 	/**
 	 * Are length of this vector are  greater than value?
@@ -176,7 +180,14 @@ global.Vector2 = class Vector2 {
 			Math.sqrt(this.y),
 		)
 	}
-
+	/**
+	 * Set vector by numbers
+	 */
+	SetVector(x: number = 0, y: number = 0): Vector2 {
+		this.x = x
+		this.y = y
+		return this
+	}
 	/**
 	 * Set X of vector by number
 	 */
@@ -530,5 +541,10 @@ global.Vector2 = class Vector2 {
 
 	toVector3(): Vector3 {
 		return new Vector3(this.x, this.y, 0)
+	}
+	
+	toIOBuffer(offset: number = 0): void {
+		IOBuffer[offset + 0] = this.x;
+		IOBuffer[offset + 1] = this.y;
 	}
 }
