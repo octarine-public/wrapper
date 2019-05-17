@@ -549,8 +549,7 @@ global.Vector3 = class Vector3 {
 	 * @param distance distance to be added
 	 */
 	RotationRad(rotation: Vector3, distance: number): Vector3 {
-		var vec = this.Rotation(rotation, distance)
-		return vec.MultiplyScalar(Math.PI).DivideScalar(180)
+		return this.Rotation(rotation, distance).DegreesToRadians();
 	}
 	RotationTime(rot_speed: number): number {
 		return this.Angle / (30 * rot_speed)
@@ -589,6 +588,12 @@ global.Vector3 = class Vector3 {
 	 */
 	IsUnderRectangle(x: number, y: number, width: number, height: number): boolean {
 		return this.x > x && this.x < (x + width) && this.y > y && this.y < (y + height)
+	}
+	RadiansToDegrees(): Vector3 {
+		return this.MultiplyScalar(180).DivideScalar(Math.PI);
+	}
+	DegreesToRadians(): Vector3 {
+		return this.MultiplyScalar(Math.PI).DivideScalar(180);
 	}
 	/* ================== To ================== */
 	/**

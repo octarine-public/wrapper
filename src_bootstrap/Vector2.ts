@@ -485,8 +485,7 @@ global.Vector2 = class Vector2 {
 	 * @param distance distance to be added
 	 */
 	RotationRad(rotation: Vector2, distance: number): Vector2 {
-		var vec = this.Rotation(rotation, distance)
-		return vec.MultiplyScalar(Math.PI).DivideScalar(180)
+		return this.Rotation(rotation, distance).DegreesToRadians()
 	}
 	RotationTime(rot_speed: number): number {
 		return this.Angle / (30 * rot_speed)
@@ -523,6 +522,12 @@ global.Vector2 = class Vector2 {
 	 */
 	IsUnderRectangle(x: number, y: number, width: number, height: number) {
 		return this.x > x && this.x < (x + width) && this.y > y && this.y < (y + height)
+	}
+	RadiansToDegrees(): Vector2 {
+		return this.MultiplyScalar(180).DivideScalar(Math.PI);
+	}
+	DegreesToRadians(): Vector2 {
+		return this.MultiplyScalar(Math.PI).DivideScalar(180);
 	}
 	/* ================== Geometric ================== */
 	/**

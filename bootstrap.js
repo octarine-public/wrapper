@@ -535,6 +535,14 @@ global.Vector2 = class Vector2 {
     return this.x > x && this.x < x + width && this.y > y && this.y < y + height;
   }
 
+  RadiansToDegrees() {
+    return this.MultiplyScalar(180).DivideScalar(Math.PI);
+  }
+
+  DegreesToRadians() {
+    return this.MultiplyScalar(Math.PI).DivideScalar(180);
+  }
+
   toString() {
     return "Vector2(" + this.x + "," + this.y + ")";
   }
@@ -876,8 +884,7 @@ global.Vector3 = class Vector3 {
   }
 
   RotationRad(rotation, distance) {
-    var vec = this.Rotation(rotation, distance);
-    return vec.MultiplyScalar(Math.PI).DivideScalar(180);
+    return this.Rotation(rotation, distance).DegreesToRadians();
   }
 
   RotationTime(rot_speed) {
@@ -902,6 +909,14 @@ global.Vector3 = class Vector3 {
 
   IsUnderRectangle(x, y, width, height) {
     return this.x > x && this.x < x + width && this.y > y && this.y < y + height;
+  }
+
+  RadiansToDegrees() {
+    return this.MultiplyScalar(180).DivideScalar(Math.PI);
+  }
+
+  DegreesToRadians() {
+    return this.MultiplyScalar(Math.PI).DivideScalar(180);
   }
 
   toString() {

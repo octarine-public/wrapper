@@ -402,6 +402,8 @@ declare class Vector3 {
 	 * Returns true if the point is under the rectangle
 	 */
 	IsUnderRectangle(x: number, y: number, width: number, height: number): boolean
+	RadiansToDegrees(): Vector3
+	DegreesToRadians(): Vector3
 	/* ================== To ================== */
 	/**
 	 * Vector3 to String Vector3
@@ -704,6 +706,8 @@ declare class Vector2 {
 	 * Returns true if the point is under the rectangle
 	 */
 	IsUnderRectangle(x: number, y: number, width: number, height: number): boolean
+	RadiansToDegrees(): Vector2
+	DegreesToRadians(): Vector2
 	/* ================== Geometric ================== */
 	/**
 	 * Vector3 to String Vector3
