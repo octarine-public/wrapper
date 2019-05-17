@@ -266,7 +266,7 @@ declare class CUnitOrder {
 	readonly order_type: dotaunitorder_t
 	readonly queue: boolean
 	readonly issuer: PlayerOrderIssuer_t
-	readonly position: boolean // returns Vector3 to IOBuffer at offset 0
+	readonly position: boolean // returns Vector3 to IOBuffer offset 0 on get
 	readonly unit: C_DOTA_BaseNPC
 	readonly target: C_BaseEntity
 	readonly ability: C_DOTABaseAbility
@@ -291,8 +291,8 @@ declare class CUserCmd {
 	spectator_stats_sort_method: number
 	buttons: bigint
 	impulse: number
-	vec_under_cursor: boolean // returns Vector3 to IOBuffer at offset 0
-	viewangles: QAngle
+	vec_under_cursor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	viewangles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	weaponselect: C_BaseEntity
 	weaponsubtype: C_BaseEntity
 }
@@ -300,10 +300,10 @@ declare class CUserCmd {
 declare class LinearProjectile {
 	readonly m_flWidth: number
 	readonly m_flDistance: number
-	readonly m_vecOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vecPosition: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vecVelocity: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vecAcceleration: boolean // returns Vector3 to IOBuffer at offset 0
+	readonly m_vecOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get
+	readonly m_vecPosition: boolean // returns Vector3 to IOBuffer offset 0 on get
+	readonly m_vecVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get
+	readonly m_vecAcceleration: boolean // returns Vector3 to IOBuffer offset 0 on get
 	readonly m_iID: number
 	readonly m_bIsValid: boolean
 }
@@ -316,31 +316,11 @@ declare class TrackingProjectile {
 	readonly m_iSpeed: number
 	readonly m_hSource: C_DOTA_BaseNPC
 	readonly m_hTarget: C_BaseEntity
-	readonly m_vecPosition: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vecTarget: boolean // returns Vector3 to IOBuffer at offset 0
+	readonly m_vecPosition: boolean // returns Vector3 to IOBuffer offset 0 on get
+	readonly m_vecTarget: boolean // returns Vector3 to IOBuffer offset 0 on get
 	readonly m_particle: CNewParticleEffect
 	readonly m_iID: number
 	readonly m_bIsValid: boolean
-}
-
-declare class Color {
-	r: number
-	g: number
-	b: number
-	a: number
-
-	/**
-	 * Makes copy of col
-	 */
-	constructor(col: Color)
-	/**
-	 * equiv to r = g = b = val, a = 255
-	 */
-	constructor(val: number)
-	/**
-	 * Default alpha: 255
-	 */
-	constructor(r?: number, g?: number, b?: number, a?: number)
 }
 
 declare interface ConVars {
@@ -358,20 +338,6 @@ declare interface GameEvents {
 declare interface Minimap {
 	SendPing(type?: PingType_t, direct_ping?: boolean, target?: C_BaseEntity): void // pass location: Vector3 at IOBuffer offset 0
 	SendLine(x: number, y: number, initial: boolean): void
-}
-
-interface QAngle {
-	readonly Length: number
-	readonly LengthSqr: number
-	readonly IsZero: boolean
-	pitch: number
-	yaw: number
-	roll: number
-	
-	constructor()
-	constructor(angle: QAngle)
-	constructor(val: number)
-	constructor(pitch: number, yaw: number, roll: number)
 }
 
 declare interface Projectiles {
@@ -394,7 +360,7 @@ declare interface Particles {
 
 // must be called only in onDraw!
 declare interface Renderer {
-	readonly WindowSize: boolean // returns Vector2 to IOBuffer at offset 0
+	readonly WindowSize: boolean // returns Vector2 to IOBuffer offset 0 at get
 	
 	/**
 	 * Allowed non-passable element groups:
@@ -589,11 +555,11 @@ declare class CBaseAchievement {
 }
 
 declare class fogparams_t {
-	dirPrimary: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly colorPrimary: Color
-	readonly colorSecondary: Color
-	readonly colorPrimaryLerpTo: Color
-	readonly colorSecondaryLerpTo: Color
+	dirPrimary: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	colorPrimary: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	colorSecondary: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	colorPrimaryLerpTo: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	colorSecondaryLerpTo: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	start: number
 	end: number
 	farz: number
@@ -647,21 +613,21 @@ declare class ParticleControlPointDriver_t {
 	m_iControlPoint: number
 	m_iAttachType: ParticleAttachment_t
 	readonly m_attachmentName: string
-	m_vecOffset: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_angOffset: QAngle
+	m_vecOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_angOffset: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_entityName: string
 }
 
 declare class FeSphereRigid_t {
 	nNode: number
 	nCollisionMask: number
-	vCenter: boolean // returns Vector3 to IOBuffer at offset 0
+	vCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	flRadius: number
 	flStickiness: number
 }
 
 declare class CDrawCullingData {
-	m_vConeApex: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vConeApex: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_ConeAxis: number[]
 	m_ConeCutoff: number
 }
@@ -681,7 +647,7 @@ declare class CSeqMultiFetchFlag {
 
 declare class C_OP_PlaneCull extends CParticleFunctionOperator {
 	m_nPlaneControlPoint: number
-	m_vecPlaneDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecPlaneDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flPlaneOffset: number
 }
 
@@ -850,7 +816,7 @@ declare class FeAxialEdgeBend_t {
 declare class FeCtrlOffset_t {
 	nCtrlParent: number
 	nCtrlChild: number
-	vOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class FeCtrlOsOffset_t {
@@ -868,7 +834,7 @@ declare class FeCollisionSphere_t {
 	nCtrlParent: number
 	nChildNode: number
 	m_flRFactor: number
-	m_vOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	flStickiness: number
 }
 
@@ -880,7 +846,7 @@ declare class FeCollisionPlane_t {
 }
 
 declare class RnPlane_t {
-	m_vNormal: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flOffset: number
 }
 
@@ -921,7 +887,7 @@ declare class FeTaperedCapsuleStretch_t {
 declare class FeTaperedCapsuleRigid_t {
 	nNode: number
 	nCollisionMask: number
-	readonly vCenter: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly vCenter: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly flRadius: number[]
 	flStickiness: number
 }
@@ -931,7 +897,7 @@ declare class FeTreeChildren_t {
 }
 
 declare class FeFitMatrix_t {
-	vCenter: boolean // returns Vector3 to IOBuffer at offset 0
+	vCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	nEnd: number
 	nNode: number
 	nCtrl: number
@@ -956,7 +922,7 @@ declare class FeFitWeight_t {
 declare class FeNodeReverseOffset_t {
 	nBoneCtrl: number
 	nTargetNode: number
-	vOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class FeAnimStrayRadius_t {
@@ -979,7 +945,7 @@ declare class FeKelagerBend2_t {
 declare class FeCtrlSoftOffset_t {
 	nCtrlParent: number
 	nCtrlChild: number
-	vOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	flAlpha: number
 }
 
@@ -1022,8 +988,8 @@ declare class CFeJiggleBone {
 	m_flBaseForwardFriction: number
 	m_flRadius0: number
 	m_flRadius1: number
-	m_vPoint0: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vPoint1: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPoint0: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vPoint1: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nCollisionMask: number
 }
 
@@ -1032,13 +998,13 @@ declare class FeTri_t {
 	w1: number
 	w2: number
 	v1x: number
-	v2: boolean // returns Vector2 to IOBuffer at offset 0
+	v2: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class FeBoxRigid_t {
 	nNode: number
 	nCollisionMask: number
-	vSize: boolean // returns Vector3 to IOBuffer at offset 0
+	vSize: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	flStickiness: number
 	readonly flReserved: number[]
 }
@@ -1056,7 +1022,7 @@ declare class FeMorphLayerDepr_t {
 	readonly m_Name: string
 	m_nNameHash: number
 	readonly m_Nodes: number[]
-	readonly m_InitPos: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_InitPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 	readonly m_Gravity: number[]
 	readonly m_GoalStrength: number[]
 	readonly m_GoalDamping: number[]
@@ -1092,8 +1058,8 @@ declare class RenderSkeletonBone_t {
 }
 
 declare class SkeletonBoneBounds_t {
-	m_vecCenter: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecSize: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecSize: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CAnimStateConditionBase {
@@ -1101,7 +1067,7 @@ declare class CAnimStateConditionBase {
 }
 
 declare class RnCapsule_t {
-	readonly m_vCenter: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vCenter: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRadius: number
 }
 
@@ -1112,7 +1078,7 @@ declare class PostProcessParameters_t {
 declare class C_OP_MovementLoopInsideSphere extends CParticleFunctionOperator {
 	m_nCP: number
 	m_flDistance: number
-	m_vecScale: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CParticleFunctionInitializer extends CParticleFunction {}
@@ -1147,8 +1113,8 @@ declare class C_OP_RemapCPVisibilityToScalar extends CParticleFunctionOperator {
 
 declare class LightDesc_t {
 	m_Type: LightType_t
-	m_Color: boolean // returns Vector3 to IOBuffer at offset 0
-	m_BounceColor: boolean // returns Vector3 to IOBuffer at offset 0
+	m_Color: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_BounceColor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_Range: number
 	m_Falloff: number
 	m_Attenuation0: number
@@ -1175,7 +1141,7 @@ declare class LightDesc_t {
 	m_flPrecomputedMaxRange: number
 	m_flFogContributionStength: number
 	m_flNearClipPlane: number
-	m_vecUp: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecUp: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nFogLightingMode: number
 	m_bUsesIndexedBakedLighting: boolean
 }
@@ -1204,9 +1170,9 @@ declare class CEconItemAttribute {
 
 declare class CFingerBone {
 	readonly m_boneName: string
-	m_hingeAxis: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vCapsulePos1: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vCapsulePos2: boolean // returns Vector3 to IOBuffer at offset 0
+	m_hingeAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vCapsulePos1: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vCapsulePos2: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMinAngle: number
 	m_flMaxAngle: number
 	m_flRadius: number
@@ -1227,12 +1193,12 @@ declare class C_INIT_RandomNamedModelElement extends CParticleFunctionInitialize
 
 declare class PermModelInfo_t {
 	m_nFlags: number
-	m_vHullMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vHullMax: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vViewMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vViewMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vHullMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vHullMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vViewMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vViewMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMass: number
-	m_vEyePosition: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vEyePosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMaxEyeDeflection: number
 	readonly m_sSurfaceProperty: string
 	readonly m_keyValueText: string
@@ -1291,7 +1257,7 @@ declare class VPhysXConstraintParams_t {
 	m_nTranslateMotion: number
 	m_nRotateMotion: number
 	m_nFlags: number
-	readonly m_anchor: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_anchor: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_maxForce: number
 	m_maxTorque: number
 	m_linearLimitValue: number
@@ -1314,8 +1280,8 @@ declare class VPhysXConstraintParams_t {
 	m_swing2LimitRestitution: number
 	m_swing2LimitSpring: number
 	m_swing2LimitDamping: number
-	m_goalPosition: boolean // returns Vector3 to IOBuffer at offset 0
-	m_goalAngularVelocity: boolean // returns Vector3 to IOBuffer at offset 0
+	m_goalPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_goalAngularVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_driveSpringX: number
 	m_driveSpringY: number
 	m_driveSpringZ: number
@@ -1373,8 +1339,8 @@ declare class CBaseServerVehicle__entryanim_t {
 declare class C_OP_PercentageBetweenCPsVector extends CParticleFunctionOperator {
 	m_flInputMin: number
 	m_flInputMax: number
-	m_vecOutputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOutputMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOutputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nStartCP: number
 	m_nEndCP: number
 	m_bScaleInitialRange: boolean
@@ -1442,8 +1408,8 @@ declare class C_INIT_InitialSequenceFromModel extends CParticleFunctionInitializ
 }
 
 declare class C_OP_VectorNoise extends CParticleFunctionOperator {
-	m_vecOutputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOutputMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOutputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bAdditive: boolean
 	m_bOffset: boolean
 	m_flNoiseAnimationTimeScale: number
@@ -1478,13 +1444,13 @@ declare class CGeneralSpin extends CParticleFunctionOperator {
 
 declare class CAnimNodeBase {
 	readonly m_sName: string
-	m_vecPosition: boolean // returns Vector2 to IOBuffer at offset 0
+	m_vecPosition: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_nNodeID: AnimNodeID
 	m_networkMode: AnimNodeNetworkMode
 }
 
 declare class CGlowSprite {
-	m_vColor: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vColor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flHorzSize: number
 	m_flVertSize: number
 }
@@ -1562,7 +1528,7 @@ declare class PurchasedItem_t {
 declare class C_OP_SetControlPointPositionToTimeOfDayValue extends CParticleFunctionPreEmission {
 	m_nControlPointNumber: number
 	readonly m_pszTimeOfDayParameter: number[]
-	m_vecDefaultValue: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecDefaultValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CParticleFunctionRenderer extends CParticleFunction {
@@ -1674,10 +1640,10 @@ declare class AnimParamID {
 }
 
 declare class CConstantForceController {
-	m_linear: boolean // returns Vector3 to IOBuffer at offset 0
-	m_angular: boolean // returns Vector3 to IOBuffer at offset 0
-	m_linearSave: boolean // returns Vector3 to IOBuffer at offset 0
-	m_angularSave: boolean // returns Vector3 to IOBuffer at offset 0
+	m_linear: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_angular: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_linearSave: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_angularSave: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class INextBotEventResponder {}
@@ -1705,7 +1671,7 @@ declare class C_INIT_AgeNoise extends CParticleFunctionInitializer {
 	m_flAgeMax: number
 	m_flNoiseScale: number
 	m_flNoiseScaleLoc: number
-	m_vecOffsetLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffsetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_OP_RemapControlPointOrientationToRotation extends CParticleFunctionOperator {
@@ -1720,8 +1686,8 @@ declare class CFootDefinition {
 	readonly m_name: string
 	readonly m_ankleBoneName: string
 	readonly m_toeBoneName: string
-	m_vBallOffset: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vHeelOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBallOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vHeelOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flTraceHeight: number
 	m_flTraceRadius: number
 }
@@ -1762,7 +1728,7 @@ declare class CPhysSurfacePropertiesAudio {
 }
 
 declare class CAnimBoneDifference {
-	m_posError: boolean // returns Vector3 to IOBuffer at offset 0
+	m_posError: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bHasRotation: boolean
 	m_bHasMovement: boolean
 }
@@ -1770,8 +1736,8 @@ declare class CAnimBoneDifference {
 declare class CParticleFunctionEmitter extends CParticleFunction {}
 
 declare class C_OP_PlanarConstraint extends CParticleFunctionConstraint {
-	m_PointOnPlane: boolean // returns Vector3 to IOBuffer at offset 0
-	m_PlaneNormal: boolean // returns Vector3 to IOBuffer at offset 0
+	m_PointOnPlane: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_PlaneNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nControlPointNumber: number
 	m_bGlobalOrigin: boolean
 	m_bGlobalNormal: boolean
@@ -1783,7 +1749,7 @@ declare class CEnvWindShared__WindAveEvent_t {
 }
 
 declare class C_OP_BasicMovement extends CParticleFunctionOperator {
-	m_Gravity: boolean // returns Vector3 to IOBuffer at offset 0
+	m_Gravity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fDrag: number
 	m_nMaxConstraintPasses: number
 }
@@ -1868,7 +1834,7 @@ declare class VPhysXBodyPart_t {
 	m_flLinearDamping: number
 	m_flAngularDamping: number
 	m_bOverrideMassCenter: boolean
-	m_vMassCenterOverride: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMassCenterOverride: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class VPhysics2ShapeDef_t {
@@ -1889,7 +1855,7 @@ declare class RnShapeDesc_t {
 }
 
 declare class RnSphere_t {
-	m_vCenter: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRadius: number
 }
 
@@ -1902,13 +1868,13 @@ declare class RnHullDesc_t extends RnShapeDesc_t {
 }
 
 declare class RnHull_t {
-	m_vCentroid: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vCentroid: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMaxAngularRadius: number
-	readonly m_Vertices: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_Vertices: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 	readonly m_Planes: RnPlane_t[]
 	readonly m_Edges: RnHalfEdge_t[]
 	readonly m_Faces: RnFace_t[]
-	m_vOrthographicAreas: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vOrthographicAreas: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flVolume: number
 	m_flMaxMotionRadius: number
 	m_flMinMotionThickness: number
@@ -1924,8 +1890,8 @@ declare class RnHalfEdge_t {
 }
 
 declare class AABB_t {
-	m_vMinBounds: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMaxBounds: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class RnMeshDesc_t extends RnShapeDesc_t {
@@ -1933,19 +1899,19 @@ declare class RnMeshDesc_t extends RnShapeDesc_t {
 }
 
 declare class RnMesh_t {
-	m_vMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_Nodes: RnNode_t[]
-	readonly m_Vertices: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_Vertices: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 	readonly m_Triangles: RnTriangle_t[]
 	readonly m_Materials: number[]
-	m_vOrthographicAreas: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vOrthographicAreas: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class RnNode_t {
-	m_vMin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nChildren: number
-	m_vMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nTriangleOffset: number
 }
 
@@ -1969,14 +1935,14 @@ declare class VPhysXJoint_t {
 	m_bEnableLinearLimit: boolean
 	readonly m_LinearLimit: VPhysXRange_t
 	m_bEnableLinearMotor: boolean
-	m_vLinearTargetVelocity: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vLinearTargetVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMaxForce: number
 	m_bEnableSwingLimit: boolean
 	readonly m_SwingLimit: VPhysXRange_t
 	m_bEnableTwistLimit: boolean
 	readonly m_TwistLimit: VPhysXRange_t
 	m_bEnableAngularMotor: boolean
-	m_vAngularTargetVelocity: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vAngularTargetVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMaxTorque: number
 	m_flLinearFrequency: number
 	m_flLinearDampingRatio: number
@@ -2027,13 +1993,13 @@ declare class CAnimInputDamping {
 declare class fogplayerparams_t {
 	readonly m_hCtrl: C_FogController
 	m_flTransitionTime: number
-	readonly m_OldColor: Color
+	m_OldColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flOldStart: number
 	m_flOldEnd: number
 	m_flOldMaxDensity: number
 	m_flOldHDRColorScale: number
 	m_flOldFarZ: number
-	readonly m_NewColor: Color
+	m_NewColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flNewStart: number
 	m_flNewEnd: number
 	m_flNewMaxDensity: number
@@ -2063,7 +2029,7 @@ declare class C_OP_DistanceBetweenCPsToCP extends CParticleFunctionPreEmission {
 
 declare class CBlend2DItem {
 	readonly m_sequenceName: string
-	m_blendValue: boolean // returns Vector2 to IOBuffer at offset 0
+	m_blendValue: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_INIT_RandomAlpha extends CParticleFunctionInitializer {
@@ -2082,10 +2048,10 @@ declare class C_OP_ContinuousEmitter extends CParticleFunctionEmitter {
 }
 
 declare class CEffectData {
-	m_vOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vStart: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vNormal: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vAngles: QAngle
+	m_vOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vStart: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hEntity: C_BaseEntity
 	readonly m_hOtherEntity: C_BaseEntity
 	m_flScale: number
@@ -2136,7 +2102,7 @@ declare class C_OP_NoiseEmitter extends CParticleFunctionEmitter {
 	m_flOutputMax: number
 	m_flNoiseScale: number
 	m_flWorldNoiseScale: number
-	m_vecOffsetLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffsetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flWorldTimeScale: number
 }
 
@@ -2153,7 +2119,7 @@ declare class CAnimLocalHierarchy {
 
 declare class sky3dparams_t {
 	scale: number
-	origin: boolean // returns Vector3 to IOBuffer at offset 0
+	origin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	bClip3DSkyBoxNearToWorldFar: boolean
 	flClip3DSkyBoxNearToWorldFarOffset: number
 	readonly fog: fogparams_t
@@ -2163,17 +2129,17 @@ declare class JiggleData {
 	bone: number
 	id: number
 	lastUpdate: number
-	basePos: boolean // returns Vector3 to IOBuffer at offset 0
-	baseLastPos: boolean // returns Vector3 to IOBuffer at offset 0
-	baseVel: boolean // returns Vector3 to IOBuffer at offset 0
-	baseAccel: boolean // returns Vector3 to IOBuffer at offset 0
-	tipPos: boolean // returns Vector3 to IOBuffer at offset 0
-	tipVel: boolean // returns Vector3 to IOBuffer at offset 0
-	tipAccel: boolean // returns Vector3 to IOBuffer at offset 0
+	basePos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	baseLastPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	baseVel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	baseAccel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	tipPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	tipVel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	tipAccel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CBoneConstraintPoseSpaceBone__Input_t {
-	m_inputValue: boolean // returns Vector3 to IOBuffer at offset 0
+	m_inputValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class PhysSoftbodyDesc_t {
@@ -2194,7 +2160,7 @@ declare class RnSoftbodySpring_t {
 }
 
 declare class RnSoftbodyCapsule_t {
-	readonly m_vCenter: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vCenter: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRadius: number
 	readonly m_nParticle: number[]
 }
@@ -2231,7 +2197,7 @@ declare class CFootLockItem {
 
 declare class CDOTA_Buff {
 	readonly m_bIsValid: boolean
-
+	
 	readonly m_name: string
 	readonly m_class: string
 	readonly m_szModifierAura: string
@@ -2320,7 +2286,7 @@ declare class vehicle_controlparams_t {
 declare class C_OP_SetControlPointToHand extends CParticleFunctionPreEmission {
 	m_nCP1: number
 	m_nHand: number
-	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bOrientToHand: boolean
 }
 
@@ -2434,8 +2400,8 @@ declare class C_OP_RemapCPVisibilityToVector extends CParticleFunctionOperator {
 	m_nControlPoint: number
 	m_flInputMin: number
 	m_flInputMax: number
-	m_vecOutputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOutputMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOutputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRadius: number
 }
 
@@ -2623,7 +2589,7 @@ declare class CProjectedTextureBase {
 	m_bLightWorld: boolean
 	m_bCameraSpace: boolean
 	m_flBrightnessScale: number
-	readonly m_LightColor: Color
+	m_LightColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flIntensity: number
 	m_flLinearAttenuation: number
 	m_flQuadraticAttenuation: number
@@ -2666,9 +2632,9 @@ declare class VSoundStackScript_t {
 }
 
 declare class SkeletonBoneBbox_t {
-	m_vecCenter: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_pad0: number
-	m_vecSize: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecSize: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_pad1: number
 }
 
@@ -2679,8 +2645,8 @@ declare class CSkeletalInputAnimNode extends CAnimNodeBase {
 }
 
 declare class CBlendCurve {
-	m_vControlPoint1: boolean // returns Vector2 to IOBuffer at offset 0
-	m_vControlPoint2: boolean // returns Vector2 to IOBuffer at offset 0
+	m_vControlPoint1: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vControlPoint2: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class RenderInputLayoutField_t {
@@ -2709,8 +2675,8 @@ declare class CAttributeManager__cached_attribute_float_t {
 }
 
 declare class Extent {
-	lo: boolean // returns Vector3 to IOBuffer at offset 0
-	hi: boolean // returns Vector3 to IOBuffer at offset 0
+	lo: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	hi: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class sControlGroupElem {
@@ -2743,8 +2709,8 @@ declare class CDOTA_ItemStockInfo {
 }
 
 declare class C_INIT_RandomVector extends CParticleFunctionInitializer {
-	m_vecMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class AnimationDecodeDebugDumpElement_t {
@@ -2806,7 +2772,7 @@ declare class C_OP_ConstrainDistance extends CParticleFunctionConstraint {
 	m_fMaxDistance: number
 	m_nControlPointNumber: number
 	m_nScaleCP: number
-	m_CenterOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_CenterOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bGlobalCenter: boolean
 }
 
@@ -2837,8 +2803,8 @@ declare class CDOTAGameManager {
 }
 
 declare class C_INIT_NormalOffset extends CParticleFunctionInitializer {
-	m_OffsetMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_OffsetMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_OffsetMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_OffsetMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nControlPointNumber: number
 	m_bLocalCoords: boolean
 	m_bNormalize: boolean
@@ -2951,7 +2917,7 @@ declare class C_OP_LockToPointList extends CParticleFunctionOperator {
 declare class PointDefinition_t {
 	m_nControlPoint: number
 	m_bLocalCoords: boolean
-	m_vOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class ModelReference_t {
@@ -2975,13 +2941,13 @@ declare class InfoForResourceTypeWorldEnvironmentMaps_t {}
 declare class C_fogplayerparams_t {
 	readonly m_hCtrl: C_FogController
 	m_flTransitionTime: number
-	readonly m_OldColor: Color
+	m_OldColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flOldStart: number
 	m_flOldEnd: number
 	m_flOldMaxDensity: number
 	m_flOldHDRColorScale: number
 	m_flOldFarZ: number
-	readonly m_NewColor: Color
+	m_NewColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flNewStart: number
 	m_flNewEnd: number
 	m_flNewMaxDensity: number
@@ -3010,8 +2976,8 @@ declare class C_OP_SetRandomControlPointPosition extends CParticleFunctionPreEmi
 	m_nCP1: number
 	m_nHeadLocation: number
 	m_flReRandomRate: number
-	m_vecCPMinPos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecCPMaxPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCPMinPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecCPMaxPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_OP_RenderSound extends CParticleFunctionRenderer {
@@ -3030,8 +2996,8 @@ declare class ParticlePreviewBodyGroup_t {
 }
 
 declare class C_INIT_RtEnvCull extends CParticleFunctionInitializer {
-	m_vecTestDir: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecTestNormal: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecTestDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecTestNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bUseVelocity: boolean
 	m_bCullOnMiss: boolean
 	m_bLifeAdjust: boolean
@@ -3048,10 +3014,10 @@ declare class C_OP_RemapScalarEndCap extends CParticleFunctionOperator {
 declare class C_OP_RemapCPtoVector extends CParticleFunctionOperator {
 	m_nCPInput: number
 	m_nLocalSpaceCP: number
-	m_vInputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vInputMax: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vOutputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vOutputMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vInputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vInputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vOutputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartTime: number
 	m_flEndTime: number
 	m_flInterpRate: number
@@ -3065,7 +3031,7 @@ declare class InfoForResourceTypeCSequenceGroupData {}
 
 declare class C_OP_SetControlPointToCenter extends CParticleFunctionPreEmission {
 	m_nCP1: number
-	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CBaseRendererSource2 extends CParticleFunctionRenderer {
@@ -3132,8 +3098,8 @@ declare class MaterialOverride_t extends BaseSceneObjectOverride_t {
 }
 
 declare class SheetFrameImage_t {
-	readonly uvCropped: boolean[] // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly uvUncropped: boolean[] // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly uvCropped: boolean[] // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly uvUncropped: boolean[] // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class MaterialParam_t {
@@ -3166,10 +3132,10 @@ declare class Sheet_t {
 }
 
 declare class C_OP_OscillateVector extends CParticleFunctionOperator {
-	m_RateMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_RateMax: boolean // returns Vector3 to IOBuffer at offset 0
-	m_FrequencyMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_FrequencyMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_RateMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_RateMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_FrequencyMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_FrequencyMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bProportional: boolean
 	m_bProportionalOp: boolean
 	m_bOffset: boolean
@@ -3182,7 +3148,7 @@ declare class C_OP_OscillateVector extends CParticleFunctionOperator {
 }
 
 declare class CViewAngleKeyFrame {
-	readonly m_vecAngles: QAngle
+	m_vecAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flTime: number
 	m_iFlags: number
 }
@@ -3246,20 +3212,20 @@ declare class magnetted_objects_t {
 declare class CHorizontalMotionController {}
 
 declare class HandHistoryInfo_t {
-	m_vVelocity: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vFilteredVelocity: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vFilteredThrowVel: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vPosition: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vFilteredVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vFilteredThrowVel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSampleTime: number
 }
 
 declare class PostProcessingVignetteParameters_t {
 	m_flVignetteStrength: number
-	m_vCenter: boolean // returns Vector2 to IOBuffer at offset 0
+	m_vCenter: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRadius: number
 	m_flRoundness: number
 	m_flFeather: number
-	m_vColorTint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vColorTint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CDOTAMusicProbabilityEntry {
@@ -3282,7 +3248,7 @@ declare class C_OP_DifferencePreviousParticle extends CParticleFunctionOperator 
 
 declare class CBaseConstraint extends CBoneConstraintBase {
 	readonly m_name: string
-	m_vUpVector: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vUpVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_slaves: CConstraintSlave[]
 	readonly m_targets: CConstraintTarget[]
 }
@@ -3290,21 +3256,21 @@ declare class CBaseConstraint extends CBoneConstraintBase {
 declare class CConstraintSlave {
 	m_nBoneHash: number
 	m_flWeight: number
-	m_vBasePosition: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBasePosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_sName: string
 }
 
 declare class CConstraintTarget {
 	m_nBoneHash: number
 	m_flWeight: number
-	m_vOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIsAttachment: boolean
 	readonly m_sName: string
 }
 
 declare class BaseConstraint_t {
 	m_nConstraintType: number
-	m_vUpVector: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vUpVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nTargetUpBoneHash: number
 	m_nUpType: number
 	m_bInverse: boolean
@@ -3426,15 +3392,15 @@ declare class CPathParameters {
 	m_nBulgeControl: number
 	m_flBulge: number
 	m_flMidPoint: number
-	m_vStartPointOffset: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMidPointOffset: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vEndOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartPointOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMidPointOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vEndOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CAttachment {
 	readonly m_name: string
 	readonly m_influenceNames: string[]
-	readonly m_vInfluenceOffsets: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vInfluenceOffsets: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_influenceWeights: number[]
 	readonly m_bInfluenceRootTransform: boolean[]
 	m_nInfluences: number
@@ -3444,7 +3410,7 @@ declare class CAttachment {
 declare class CEmptyEntityInstance {}
 
 declare class CNavVolumeSphere extends CNavVolume {
-	m_vCenter: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRadius: number
 }
 
@@ -3467,8 +3433,8 @@ declare class ResponseFollowup {
 }
 
 declare class C_INIT_PositionOffset extends CParticleFunctionInitializer {
-	m_OffsetMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_OffsetMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_OffsetMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_OffsetMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nControlPointNumber: number
 	m_bLocalCoords: boolean
 	m_bProportional: boolean
@@ -3490,7 +3456,7 @@ declare class EventClientPostOutput_t {
 declare class NianDamageTaken_t {
 	nDamage: number
 	nPlayerID: number
-	vPos: boolean // returns Vector3 to IOBuffer at offset 0
+	vPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_INIT_CreateSpiralSphere extends CParticleFunctionInitializer {
@@ -3522,12 +3488,12 @@ declare class sGlaiveInfo {
 }
 
 declare class C_INIT_InitialVelocityNoise extends CParticleFunctionInitializer {
-	m_vecAbsVal: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecAbsValInv: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOffsetLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecAbsVal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecAbsValInv: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOffsetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flOffset: number
-	m_vecOutputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOutputMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOutputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flNoiseScale: number
 	m_flNoiseScaleLoc: number
 	m_nControlPointNumber: number
@@ -3554,12 +3520,12 @@ declare class C_OP_RestartAfterDuration extends CParticleFunctionOperator {
 
 declare class ControlPointReference_t {
 	m_controlPointNameString: number
-	m_vOffsetFromControlPoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vOffsetFromControlPoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bOffsetInLocalSpace: boolean
 }
 
 declare class CovMatrix3 {
-	m_vDiag: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vDiag: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flXY: number
 	m_flXZ: number
 	m_flYZ: number
@@ -3667,10 +3633,10 @@ declare class CGameSceneNode {
 	readonly m_pNextSibling: CGameSceneNode
 	readonly m_hParent: CGameSceneNodeHandle
 	readonly m_vecOrigin: CNetworkOriginCellCoordQuantizedVector
-	readonly m_angRotation: QAngle
+	m_angRotation: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flScale: number
-	m_vecAbsOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_angAbsRotation: QAngle
+	m_vecAbsOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_angAbsRotation: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flAbsScale: number
 	m_nParentAttachmentOrBone: number
 	m_bDebugAbsOriginChanges: boolean
@@ -3689,7 +3655,7 @@ declare class CGameSceneNode {
 	m_nHierarchyType: number
 	m_nDoNotSetAnimTimeInInvalidatePhysicsCount: number
 	m_flZOffset: number
-	m_vRenderOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vRenderOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CEntityInstance extends IHandleEntity {
@@ -3737,7 +3703,7 @@ declare class CNetworkedIKContext {
 declare class CNetworkedIKProceduralTargetContext {
 	m_nChainIndex: number
 	m_nRuleIndex: number
-	m_vTargetPosition: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vTargetPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flWeight: number
 	m_bIsValid: boolean
 }
@@ -3754,10 +3720,10 @@ declare class C_OP_RenderFlattenGrass extends CParticleFunctionRenderer {
 }
 
 declare class C_INIT_RandomColor extends CParticleFunctionInitializer {
-	readonly m_ColorMin: Color
-	readonly m_ColorMax: Color
-	readonly m_TintMin: Color
-	readonly m_TintMax: Color
+	m_ColorMin: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ColorMax: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_TintMin: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_TintMax: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flTintPerc: number
 	m_flUpdateThreshold: number
 	m_nTintCP: number
@@ -3840,7 +3806,7 @@ declare class C_OP_FadeOut extends CParticleFunctionOperator {
 declare class C_PlayerState {
 	deadflag: boolean
 	hltv: boolean
-	readonly v_angle: QAngle
+	v_angle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_OP_ConstrainDistanceToUserSpecifiedPath extends CParticleFunctionConstraint {
@@ -3858,8 +3824,8 @@ declare class PointDefinitionWithTimeValues_t extends PointDefinition_t {
 declare class C_INIT_RemapScalarToVector extends CParticleFunctionInitializer {
 	m_flInputMin: number
 	m_flInputMax: number
-	m_vecOutputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOutputMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOutputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartTime: number
 	m_flEndTime: number
 	m_bScaleInitialRange: boolean
@@ -3901,15 +3867,15 @@ declare class C_OP_RenderDeferredLight extends CParticleFunctionRenderer {
 	m_flStartFalloff: number
 	m_flDistanceFalloff: number
 	m_flSpotFoV: number
-	readonly m_ColorScale: Color
+	m_ColorScale: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CDeferredLightBase {
-	readonly m_LightColor: Color
+	m_LightColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flIntensity: number
 	m_flLightSize: number
 	m_flSpotFoV: number
-	readonly m_vLightDirection: QAngle
+	m_vLightDirection: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartFalloff: number
 	m_flDistanceFalloff: number
 	m_nFlags: number
@@ -3918,16 +3884,16 @@ declare class CDeferredLightBase {
 
 declare class C_OP_SetControlPointToHMD extends CParticleFunctionPreEmission {
 	m_nCP1: number
-	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bOrientToHMD: boolean
 }
 
 declare class C_OP_ForceBasedOnDistanceToPlane extends CParticleFunctionForce {
 	m_flMinDist: number
-	m_vecForceAtMinDist: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecForceAtMinDist: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMaxDist: number
-	m_vecForceAtMaxDist: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecPlaneNormal: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecForceAtMaxDist: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecPlaneNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nControlPointNumber: number
 	m_flExponent: number
 }
@@ -3962,7 +3928,7 @@ declare class C_INIT_SetHitboxToModel extends CParticleFunctionInitializer {
 	m_nForceInModel: number
 	m_nDesiredHitbox: number
 	m_flHitBoxScale: number
-	m_vecDirectionBias: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecDirectionBias: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bMaintainHitbox: boolean
 	m_bUseBones: boolean
 	readonly m_HitboxSetName: number[]
@@ -3987,18 +3953,18 @@ declare class HeroDeathRecord_t {
 
 declare class NeutralSpawnBoxes_t {
 	readonly neutralSpawnBoxes: AABB_t
-	vSpawnBoxOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	vSpawnBoxOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly strCampName: string
 }
 
 declare class C_INIT_OffsetVectorToVector extends CParticleFunctionInitializer {
-	m_vecOutputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOutputMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOutputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_INIT_PositionWarp extends CParticleFunctionInitializer {
-	m_vecWarpMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecWarpMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecWarpMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecWarpMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nScaleControlPointNumber: number
 	m_nControlPointNumber: number
 	m_nRadiusComponent: number
@@ -4014,8 +3980,8 @@ declare class CLeanMatrixAnimNode extends CAnimNodeBase {
 	m_flMaxValue: number
 	m_blendSource: AnimVectorSource
 	readonly m_param: AnimParamID
-	m_verticalAxisDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	m_horizontalAxisDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	m_verticalAxisDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_horizontalAxisDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_damping: CAnimInputDamping
 }
 
@@ -4029,7 +3995,7 @@ declare class CAnimState {
 	readonly m_name: string
 	readonly m_childNodeID: AnimNodeID
 	readonly m_stateID: AnimStateID
-	m_position: boolean // returns Vector2 to IOBuffer at offset 0
+	m_position: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIsStartState: boolean
 	m_bIsEndtState: boolean
 	m_bIsPassthrough: boolean
@@ -4091,9 +4057,9 @@ declare class CParameterValue {
 declare class EntOutput_t {}
 
 declare class CGlowOverlay {
-	m_vPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bDirectional: boolean
-	m_vDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bInSky: boolean
 	m_skyObstructionScale: number
 	readonly m_Sprites: CGlowSprite[]
@@ -4151,9 +4117,9 @@ declare class CDOTA_TeamCommander {
 	m_fRoamDistanceFactor: number
 	m_fRoamPositionFactor: number
 	readonly m_hRoamTarget: C_BaseEntity
-	m_vRoamTargetLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vRoamTargetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_fHeroSelectionTimes: number[]
-	m_vBaseLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBaseLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_AllUnits: C_BaseEntity[]
 	readonly m_AllAlliedUnits: C_BaseEntity[]
 	readonly m_AllAlliedHeroes: C_BaseEntity[]
@@ -4191,7 +4157,7 @@ declare class ClientQuickBuyItemState {
 }
 
 declare class C_OP_LerpEndCapVector extends CParticleFunctionOperator {
-	m_vecOutput: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOutput: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flLerpTime: number
 }
 
@@ -4275,8 +4241,8 @@ declare class C_OP_RemapDistanceToLineSegmentBase extends CParticleFunctionOpera
 }
 
 declare class C_OP_RotateVector extends CParticleFunctionOperator {
-	m_vecRotAxisMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecRotAxisMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecRotAxisMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecRotAxisMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRotRateMin: number
 	m_flRotRateMax: number
 	m_bNormalize: boolean
@@ -4288,13 +4254,13 @@ declare class ModelSkeletonData_t {
 	readonly m_nParent: number[]
 	readonly m_boneSphere: number[]
 	readonly m_nFlag: number[]
-	readonly m_bonePosParent: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_bonePosParent: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 }
 
 declare class handposepair_t {
-	readonly m_vExtentOrigin: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_vRotationAxisEndpoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_vPivotOrigin: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vExtentOrigin: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_vRotationAxisEndpoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_vPivotOrigin: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_flHandPoseParams: number[]
 	readonly m_poseSequenceName: string
 	m_nUseRange: number
@@ -4306,7 +4272,7 @@ declare class handposepair_t {
 }
 
 declare class CAI_MoveMonitor {
-	m_vMark: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMark: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMarkTolerance: number
 }
 
@@ -4337,7 +4303,7 @@ declare class CBaseTrailRenderer extends CBaseRendererSource2 {
 }
 
 declare class C_INIT_LifespanFromVelocity extends CParticleFunctionInitializer {
-	m_vecComponentScale: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecComponentScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flTraceOffset: number
 	m_flMaxTraceLength: number
 	m_flTraceTolerance: number
@@ -4347,7 +4313,7 @@ declare class C_INIT_LifespanFromVelocity extends CParticleFunctionInitializer {
 }
 
 declare class C_OP_UpdateLightSource extends CParticleFunctionOperator {
-	readonly m_vColorTint: Color
+	m_vColorTint: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flBrightnessScale: number
 	m_flRadiusScale: number
 	m_flMinimumLightingRadius: number
@@ -4529,7 +4495,7 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_fPauseCurTime: number
 	m_fUnpauseRawTime: number
 	m_fUnpauseCurTime: number
-	m_vWeatherWindDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vWeatherWindDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nCustomGameFowTeamCount: number
 	m_bUseAlternateABRules: boolean
 	m_bLobbyIsAssociatedWithGame: boolean
@@ -4595,8 +4561,8 @@ declare class ViewLockData_t {
 declare class C_INIT_CreateWithinSphere extends CParticleFunctionInitializer {
 	m_fRadiusMin: number
 	m_fRadiusMax: number
-	m_vecDistanceBias: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecDistanceBiasAbs: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecDistanceBias: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecDistanceBiasAbs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nControlPointNumber: number
 	m_nScaleCP: number
 	m_fSpeedMin: number
@@ -4605,8 +4571,8 @@ declare class C_INIT_CreateWithinSphere extends CParticleFunctionInitializer {
 	m_bLocalCoords: boolean
 	m_bUseHighestEndCP: boolean
 	m_flEndCPGrowthTime: number
-	m_LocalCoordinateSystemSpeedMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_LocalCoordinateSystemSpeedMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_LocalCoordinateSystemSpeedMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_LocalCoordinateSystemSpeedMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CPointConstraint extends CBaseConstraint {}
@@ -4637,7 +4603,7 @@ declare class C_INIT_SequenceFromCP extends CParticleFunctionInitializer {
 	m_bKillUnused: boolean
 	m_bRadiusScale: boolean
 	m_nCP: number
-	m_vecOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CBoneMaskAnimNode extends CAnimNodeBase {
@@ -4671,7 +4637,7 @@ declare class TimedEvent {
 declare class C_INIT_RandomNamedModelMeshGroup extends C_INIT_RandomNamedModelElement {}
 
 declare class VelocitySampler {
-	m_prevSample: boolean // returns Vector3 to IOBuffer at offset 0
+	m_prevSample: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fPrevSampleTime: number
 	m_fIdealSampleRate: number
 }
@@ -4726,7 +4692,7 @@ declare class CFlashlightEffect {
 	m_bIsOn: boolean
 	m_bMuzzleFlashEnabled: boolean
 	m_flMuzzleFlashBrightness: number
-	m_vecMuzzleFlashOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecMuzzleFlashOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flDT: number
 	m_flFov: number
 	m_flFarZ: number
@@ -4755,8 +4721,8 @@ declare class CAnimRetargetElementData {
 	m_nChainInvIndex: number
 	m_nBoneIndex: number
 	m_flDistance: number
-	m_vecMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMass: number
 }
 
@@ -4835,8 +4801,8 @@ declare class constraint_breakableparams_t {
 declare class IIntention extends INextBotComponent/*, IContextualQuery*/ {}
 
 declare class C_OP_OscillateVectorSimple extends CParticleFunctionOperator {
-	m_Rate: boolean // returns Vector3 to IOBuffer at offset 0
-	m_Frequency: boolean // returns Vector3 to IOBuffer at offset 0
+	m_Rate: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_Frequency: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flOscMult: number
 	m_flOscAdd: number
 	m_bOffset: boolean
@@ -4873,10 +4839,10 @@ declare class EventPostDataUpdate_t {
 }
 
 declare class CTakeDamageInfo {
-	m_vecDamageForce: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecDamagePosition: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecReportedPosition: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecDamageDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecDamageForce: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecDamagePosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecReportedPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecDamageDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hInflictor: C_BaseEntity
 	readonly m_hAttacker: C_BaseEntity
 	readonly m_hWeapon: C_BaseEntity
@@ -4975,10 +4941,10 @@ declare class C_OP_ControlpointLight extends CParticleFunctionOperator {
 	m_nControlPoint2: number
 	m_nControlPoint3: number
 	m_nControlPoint4: number
-	m_vecCPOffset1: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecCPOffset2: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecCPOffset3: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecCPOffset4: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCPOffset1: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecCPOffset2: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecCPOffset3: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecCPOffset4: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_LightFiftyDist1: number
 	m_LightZeroDist1: number
 	m_LightFiftyDist2: number
@@ -4987,10 +4953,10 @@ declare class C_OP_ControlpointLight extends CParticleFunctionOperator {
 	m_LightZeroDist3: number
 	m_LightFiftyDist4: number
 	m_LightZeroDist4: number
-	readonly m_LightColor1: Color
-	readonly m_LightColor2: Color
-	readonly m_LightColor3: Color
-	readonly m_LightColor4: Color
+	m_LightColor1: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_LightColor2: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_LightColor3: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_LightColor4: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bLightType1: boolean
 	m_bLightType2: boolean
 	m_bLightType3: boolean
@@ -5098,8 +5064,8 @@ declare class CFourWheelVehiclePhysics {
 	m_flMaxSpeed: number
 	m_actionSpeed: number
 	m_wheelCount: number
-	readonly m_wheelPosition: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_wheelRotation: QAngle[]
+	readonly m_wheelPosition: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_wheelRotation: boolean[] // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_wheelBaseHeight: number[]
 	readonly m_wheelTotalHeight: number[]
 	readonly m_poseParameters: number[]
@@ -5130,8 +5096,8 @@ declare class CBaseServerVehicle extends IServerVehicle {
 	m_bParsedAnimations: boolean
 	m_bUseLegacyExitChecks: boolean
 	m_iCurrentExitAnim: number
-	m_vecCurrentExitEndPoint: boolean // returns Vector3 to IOBuffer at offset 0
-	m_savedViewOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCurrentExitEndPoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_savedViewOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hExitBlocker: C_BaseEntity
 	m_chPreviousTextureType: number
 	readonly m_vehicleSounds: vehiclesounds_t
@@ -5164,8 +5130,8 @@ declare class CBaseServerVehicle__exitanim_t {
 	bUpright: boolean
 	bEscapeExit: boolean
 	readonly szAnimName: number[]
-	vecExitPointLocal: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly vecExitAnglesLocal: QAngle
+	vecExitPointLocal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	vecExitAnglesLocal: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class vehiclesounds_t {
@@ -5203,15 +5169,15 @@ declare class ViewSmoothingData_t {
 	bWasRunningAnim: boolean
 	flEnterExitStartTime: number
 	flEnterExitDuration: number
-	readonly vecAnglesSaved: QAngle
-	vecOriginSaved: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly vecAngleDiffSaved: QAngle
-	readonly vecAngleDiffMin: QAngle
+	vecAnglesSaved: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	vecOriginSaved: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	vecAngleDiffSaved: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	vecAngleDiffMin: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_OP_SetControlPointToPlayer extends CParticleFunctionPreEmission {
 	m_nCP1: number
-	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bOrientToEyes: boolean
 }
 
@@ -5258,7 +5224,7 @@ declare class CFeMorphLayer {
 	readonly m_Name: string
 	m_nNameHash: number
 	readonly m_Nodes: number[]
-	readonly m_InitPos: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_InitPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 	readonly m_Gravity: number[]
 	readonly m_GoalStrength: number[]
 	readonly m_GoalDamping: number[]
@@ -5304,7 +5270,7 @@ declare class C_INIT_DistanceToCPInit extends CParticleFunctionInitializer {
 	m_flLOSScale: number
 	m_bScaleInitialRange: boolean
 	m_bActiveRange: boolean
-	m_vecDistanceScale: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecDistanceScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRemapBias: number
 }
 
@@ -5379,9 +5345,9 @@ declare class CVrSkeletalInputSettings {
 
 declare class CWristBone {
 	readonly m_name: string
-	m_vForwardLS: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vUpLS: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vForwardLS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vUpLS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CFingerChain {
@@ -5389,9 +5355,9 @@ declare class CFingerChain {
 	readonly m_bones: CFingerBone[]
 	readonly m_name: string
 	readonly m_tipParentBoneName: string
-	m_vTipOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vTipOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_metacarpalBoneName: string
-	m_vSplayHingeAxis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vSplayHingeAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSplayMinAngle: number
 	m_flSplayMaxAngle: number
 	m_flFingerScaleRatio: number
@@ -5441,14 +5407,14 @@ declare class C_OP_PercentageBetweenCPLerpCPs extends CParticleFunctionOperator 
 }
 
 declare class SceneObjectData_t {
-	m_vMinBounds: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMaxBounds: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_translucencyType: MeshTranslucencyType_t
 }
 
 declare class C_OP_BoxConstraint extends CParticleFunctionConstraint {
-	m_vecMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nCP: number
 }
 
@@ -5458,7 +5424,7 @@ declare class C_OP_SnapshotRigidSkinToBones extends CParticleFunctionOperator {
 }
 
 declare class C_OP_MovementMaintainOffset extends CParticleFunctionOperator {
-	m_vecOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nCP: number
 	m_bRadiusScale: boolean
 }
@@ -5485,7 +5451,7 @@ declare class TimedHeroStats_t {
 }
 
 declare class audioparams_t {
-	readonly localSound: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly localSound: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	soundscapeIndex: number
 	localBits: number
 	soundscapeEntityListIndex: number
@@ -5511,7 +5477,7 @@ declare class WorldBuilderParams_t {
 	m_nCompressedAtlasSize: number
 	m_flGutterSize: number
 	m_flUVMapThreshold: number
-	m_vWorldUnitsPerTile: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vWorldUnitsPerTile: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nMaxTexScaleSlots: number
 	m_bWrapInAtlas: boolean
 	m_bBuildBakedLighting: boolean
@@ -5548,9 +5514,9 @@ declare class CBaseAnimatingEasings_t {
 }
 
 declare class C_INIT_AddVectorToVector extends CParticleFunctionInitializer {
-	m_vecScale: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vOffsetMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vOffsetMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vOffsetMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vOffsetMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_OP_RemapAverageScalarValuetoCP extends CParticleFunctionPreEmission {
@@ -5617,21 +5583,21 @@ declare class InfoForResourceTypeCPanoramaScript {}
 
 declare class CGlobalLightBase {
 	m_bSpotLight: boolean
-	m_SpotLightOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_SpotLightAngles: QAngle
-	m_ShadowDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	m_AmbientDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	m_SpecularDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	m_InspectorSpecularDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	m_SpotLightOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_SpotLightAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ShadowDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_AmbientDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_SpecularDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_InspectorSpecularDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSpecularPower: number
 	m_flSpecularIndependence: number
-	readonly m_SpecularColor: Color
+	m_SpecularColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bStartDisabled: boolean
 	m_bEnabled: boolean
-	readonly m_LightColor: Color
-	readonly m_AmbientColor1: Color
-	readonly m_AmbientColor2: Color
-	readonly m_AmbientColor3: Color
+	m_LightColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_AmbientColor1: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_AmbientColor2: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_AmbientColor3: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSunDistance: number
 	m_flFOV: number
 	m_flNearZ: number
@@ -5650,13 +5616,13 @@ declare class CGlobalLightBase {
 	m_flLightScale: number
 	m_flFoWDarkness: number
 	m_bEnableSeparateSkyboxFog: boolean
-	m_vFowColor: boolean // returns Vector3 to IOBuffer at offset 0
-	m_ViewOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_ViewAngles: QAngle
+	m_vFowColor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ViewOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ViewAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flViewFoV: number
-	readonly m_WorldPoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	m_vFogOffsetLayer0: boolean // returns Vector2 to IOBuffer at offset 0
-	m_vFogOffsetLayer1: boolean // returns Vector2 to IOBuffer at offset 0
+	readonly m_WorldPoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vFogOffsetLayer0: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vFogOffsetLayer1: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hEnvWind: C_BaseEntity
 	readonly m_hEnvSky: C_BaseEntity
 	m_fSmoothedAmount: number
@@ -5702,7 +5668,7 @@ declare class C_OP_HSVShiftToCP extends CParticleFunctionPreEmission {
 	m_nColorCP: number
 	m_nColorGemEnableCP: number
 	m_nOutputCP: number
-	readonly m_DefaultHSVColor: Color
+	m_DefaultHSVColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_OP_CylindricalDistanceToCP extends CParticleFunctionOperator {
@@ -5722,7 +5688,7 @@ declare class C_OP_CylindricalDistanceToCP extends CParticleFunctionOperator {
 declare class CSceneObjectExtraData_t {
 	readonly m_flExtraShaderData: number[]
 	m_nCurrentMeshGroupMask: bigint
-	m_vLightingOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vLightingOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flDepthSortBias: number
 	readonly m_nVisibleToPlayer: number[]
 	m_nAlphaFade: number
@@ -5906,7 +5872,7 @@ declare class CMoveHeadingCondition extends CAnimStateConditionBase {
 
 declare class C_OP_SetToCP extends CParticleFunctionOperator {
 	m_nControlPointNumber: number
-	m_vecOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bOffsetLocal: boolean
 }
 
@@ -5927,8 +5893,8 @@ declare class C_OP_SetControlPointOrientation extends CParticleFunctionPreEmissi
 	m_bSetOnce: boolean
 	m_nCP: number
 	m_nHeadLocation: number
-	readonly m_vecRotation: QAngle
-	readonly m_vecRotationB: QAngle
+	m_vecRotation: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecRotationB: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_flInterpolation: CParticleCollectionFloatInput
 }
 
@@ -5943,8 +5909,8 @@ declare class CDampedPathAnimMotor extends CBasePathAnimMotor {
 
 declare class C_INIT_InitialRepulsionVelocity extends CParticleFunctionInitializer {
 	readonly m_CollisionGroupName: number[]
-	m_vecOutputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOutputMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOutputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nControlPointNumber: number
 	m_bPerParticle: boolean
 	m_bTranslate: boolean
@@ -5960,7 +5926,7 @@ declare class EventClientPauseSimulate_t extends EventSimulate_t {}
 
 declare class CFireOverlay extends CGlowOverlay {
 	readonly m_pOwner: C_FireSmoke
-	readonly m_vBaseColors: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vBaseColors: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flScale: number
 	m_nGUID: number
 }
@@ -5990,7 +5956,8 @@ declare class C_BaseFire extends C_BaseEntity {
 
 declare class C_BaseEntity extends C_GameEntity {
 	readonly m_bIsValid: boolean
-	readonly m_vecForward: boolean // returns Vector3 to IOBuffer at offset 0
+	readonly m_iID: number
+	readonly m_vecForward: boolean // returns Vector3 to IOBuffer offset 0 on get
 	
 	readonly m_CBodyComponent: CBodyComponent
 	readonly m_NetworkTransmitComponent: CNetworkTransmitComponent
@@ -6010,8 +5977,8 @@ declare class C_BaseEntity extends C_GameEntity {
 	m_nWaterType: number
 	m_bInterpolateEvenWithNoModel: boolean
 	m_bPredictionEligible: boolean
-	m_vecNetworkOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_angNetworkAngles: QAngle
+	m_vecNetworkOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_angNetworkAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nSimulationTick: number
 	m_iCurrentThinkContext: number
 	readonly m_aThinkFunctions: thinkfunc_t[]
@@ -6031,9 +5998,9 @@ declare class C_BaseEntity extends C_GameEntity {
 	m_spawnflags: number
 	m_nNextThinkTick: number
 	m_fFlags: number
-	m_vecAbsVelocity: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecAbsVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_vecVelocity: CNetworkVelocityVector
-	m_vecBaseVelocity: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecBaseVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hEffectEntity: C_BaseEntity
 	readonly m_hOwnerEntity: C_BaseEntity
 	m_MoveCollide: MoveCollide_t
@@ -6066,7 +6033,7 @@ declare class C_BaseEntity extends C_GameEntity {
 	readonly m_vecPredictedScriptFloats: number[]
 	readonly m_vecPredictedScriptFloatIDs: number[]
 	m_nNextScriptVarRecordID: number
-	readonly m_vecAngVelocity: QAngle
+	m_vecAngVelocity: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flGroundChangeTime: number
 	m_flGravity: number
 	m_DataChangeEventRef: number
@@ -6087,8 +6054,8 @@ declare class CBodyComponent extends CEntityComponent {
 
 declare class CCollisionProperty {
 	readonly m_collisionAttribute: VPhysicsCollisionAttribute_t
-	m_vecMins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecMaxs: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecMins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecMaxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_usSolidFlags: number
 	m_nSolidType: SolidType_t
 	m_triggerBloat: number
@@ -6096,12 +6063,12 @@ declare class CCollisionProperty {
 	m_CollisionGroup: number
 	m_bHitboxEnabled: boolean
 	m_flRadius: number
-	m_vecSpecifiedSurroundingMins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecSpecifiedSurroundingMaxs: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecSurroundingMaxs: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecSurroundingMins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vCapsuleCenter1: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vCapsuleCenter2: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecSpecifiedSurroundingMins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecSpecifiedSurroundingMaxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecSurroundingMaxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecSurroundingMins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vCapsuleCenter1: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vCapsuleCenter2: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flCapsuleRadius: number
 }
 
@@ -6118,8 +6085,8 @@ declare class VPhysicsCollisionAttribute_t {
 declare class CParticleProperty {}
 
 declare class CThrustController {
-	m_thrustVector: boolean // returns Vector3 to IOBuffer at offset 0
-	m_torqueVector: boolean // returns Vector3 to IOBuffer at offset 0
+	m_thrustVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_torqueVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_thrust: number
 }
 
@@ -6127,7 +6094,7 @@ declare class C_INIT_RemapInitialDirectionToCPToVector extends CParticleFunction
 	m_nCP: number
 	m_flScale: number
 	m_flOffsetRot: number
-	m_vecOffsetAxis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffsetAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bNormalize: boolean
 }
 
@@ -6148,11 +6115,11 @@ declare class PermRenderMeshData_t {
 declare class ConstraintSlave_t {
 	m_nBoneHash: number
 	m_flWeight: number
-	m_vBasePosition: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBasePosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CFootTrajectory {
-	m_vPositionOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPositionOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flDirectionOffset: number
 	m_flProgression: number
 }
@@ -6176,7 +6143,7 @@ declare class C_OP_SetCPtoVector extends CParticleFunctionOperator {
 }
 
 declare class C_OP_MovementRotateParticleAroundAxis extends CParticleFunctionOperator {
-	m_vecRotAxis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecRotAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRotRate: number
 	m_nCP: number
 	m_bLocalSpace: boolean
@@ -6190,7 +6157,7 @@ declare class C_INIT_CreateOnModel extends CParticleFunctionInitializer {
 	m_flHitBoxScale: number
 	m_flBoneVelocity: number
 	m_flMaxBoneVelocity: number
-	m_vecDirectionBias: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecDirectionBias: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_HitboxSetName: number[]
 	m_bLocalCoords: boolean
 	m_bUseBones: boolean
@@ -6202,10 +6169,10 @@ declare class CHitBox {
 	readonly m_sBoneName: string
 	m_nBoneNameHash: number
 	m_nGroupId: number
-	readonly m_cRenderColor: Color
+	m_cRenderColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nHitBoxIndex: number
-	m_vMinBounds: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMaxBounds: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bTranslationOnly: boolean
 	m_bVisible: boolean
 	m_bSelected: boolean
@@ -6254,17 +6221,17 @@ declare class CHintMessage {
 }
 
 declare class C_BasePlayer extends C_BaseCombatCharacter {
-	m_vecFlashlightOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecFlashlightForward: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecFlashlightUp: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecFlashlightRight: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecFlashlightOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecFlashlightForward: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecFlashlightUp: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecFlashlightRight: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_currentSCLPacked: number
 	m_bBehindLocalPlayer: boolean
 	m_nBehindLocalPlayerFrame: number
 	readonly m_CurrentFog: fogparams_t
 	readonly m_hOldFogController: C_FogController
 	readonly m_bOverrideFogColor: boolean[]
-	readonly m_OverrideFogColor: Color[]
+	readonly m_OverrideFogColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_bOverrideFogStartEnd: boolean[]
 	readonly m_fOverrideFogStart: number[]
 	readonly m_fOverrideFogEnd: number[]
@@ -6285,7 +6252,7 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_flSwimSoundTime: number
 	m_flStepSoundTime: number
 	m_surfaceFriction: number
-	m_vecLadderNormal: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecLadderNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_szAnimExtension: number[]
 	m_nOldTickBase: number
 	m_iBonusProgress: number
@@ -6304,7 +6271,7 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_afButtonForced: bigint
 	readonly m_hViewEntity: C_BaseEntity
 	readonly m_hConstraintEntity: C_BaseEntity
-	m_vecConstraintCenter: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecConstraintCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flConstraintRadius: number
 	m_flConstraintWidth: number
 	m_flConstraintSpeedFactor: number
@@ -6312,7 +6279,7 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_iObserverMode: number
 	readonly m_hObserverTarget: C_BaseEntity
 	m_flObserverChaseDistance: number
-	m_vecFreezeFrameStart: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecFreezeFrameStart: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flFreezeFrameStartTime: number
 	m_flFreezeFrameDistance: number
 	m_bStartedFreezeFraming: boolean
@@ -6321,16 +6288,16 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	readonly m_hOldVehicle: C_BaseEntity
 	readonly m_hUseEntity: C_BaseEntity
 	readonly m_hHeldEntity: C_BaseEntity
-	m_vecWaterJumpVel: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vecOldViewAngles: QAngle
+	m_vecWaterJumpVel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOldViewAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bWasFrozen: boolean
 	m_nTickBase: number
 	m_nFinalPredictedTick: number
 	readonly m_bFlashlightEnabled: boolean[]
 	m_flOldPlayerZ: number
 	m_flOldPlayerViewOffsetZ: number
-	m_vecVehicleViewOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vecVehicleViewAngles: QAngle
+	m_vecVehicleViewOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecVehicleViewAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flVehicleViewFOV: number
 	m_nVehicleViewSavedFrame: number
 	readonly m_CommandContext: C_CommandContext
@@ -6345,9 +6312,9 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_flAvoidanceDotForward: number
 	m_flAvoidanceDotRight: number
 	m_flLaggedMovementValue: number
-	m_vecPredictionError: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecPredictionError: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flPredictionErrorTime: number
-	m_vecPreviouslyPredictedOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecPreviouslyPredictedOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_szLastPlaceName: number[]
 	m_chTextureType: number
 	m_bSentFreezeFrame: boolean
@@ -6356,15 +6323,15 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_nSplitScreenSlot: number
 	readonly m_hSplitOwner: C_BasePlayer
 	m_bIsLocalPlayer: boolean
-	m_movementCollisionNormal: boolean // returns Vector3 to IOBuffer at offset 0
-	m_groundNormal: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vOldOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_movementCollisionNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_groundNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vOldOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flOldSimulationTime: number
 	readonly m_stuckCharacter: C_BaseCombatCharacter
 	readonly m_hPostProcessCtrl: C_PostProcessController
 	readonly m_hColorCorrectionCtrl: C_ColorCorrection
 	readonly m_PlayerFog: C_fogplayerparams_t
-	m_vecElevatorFixup: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecElevatorFixup: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nUnHoldableButtons: bigint
 }
 
@@ -6384,11 +6351,11 @@ declare class C_BaseCombatCharacter extends C_BaseFlex {
 }
 
 declare class C_BaseFlex extends C_BaseAnimatingOverlay {
-	m_viewtarget: boolean // returns Vector3 to IOBuffer at offset 0
+	m_viewtarget: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_flexWeight: number[]
 	m_blinktoggle: boolean
 	m_nLastFlexUpdateFrameCount: number
-	m_CachedViewTarget: boolean // returns Vector3 to IOBuffer at offset 0
+	m_CachedViewTarget: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iBlink: number
 	m_iMouthAttachment: number
 	m_iEyeAttachment: number
@@ -6407,7 +6374,7 @@ declare class C_BaseAnimatingOverlay extends C_BaseAnimating {}
 
 declare class C_BaseAnimating extends C_BaseModelEntity {
 	readonly m_CHitboxComponent: CHitboxComponent
-	m_vecForce: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecForce: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nForceBone: number
 	m_bShouldAnimateDuringGameplayPause: boolean
 	m_bDontSimulateClientAnimGraph: boolean
@@ -6431,7 +6398,7 @@ declare class C_BaseModelEntity extends C_BaseEntity {
 	m_bVisibilityDirtyFlag: boolean
 	m_nRenderFX: RenderFx_t
 	m_bAllowFadeInView: boolean
-	readonly m_clrRender: Color
+	m_clrRender: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bRenderToCubemaps: boolean
 	readonly m_Collision: CCollisionProperty
 	readonly m_Glow: CGlowProperty
@@ -6442,12 +6409,12 @@ declare class C_BaseModelEntity extends C_BaseEntity {
 	m_flShadowStrength: number
 	m_bHadOverrideEnabledBeforeShadowFade: boolean
 	m_nAddDecal: number
-	m_vDecalPosition: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vDecalForwardAxis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vDecalPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vDecalForwardAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flDecalRadius: number
 	readonly m_vecViewOffset: CNetworkViewOffsetVector
 	readonly m_pClientAlphaProperty: CClientAlphaProperty
-	readonly m_ClientOverrideTint: Color
+	m_ClientOverrideTint: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bUseClientOverrideTint: boolean
 }
 
@@ -6460,12 +6427,12 @@ declare class CRenderComponent extends CEntityComponent {
 }
 
 declare class CGlowProperty {
-	m_fGlowColor: boolean // returns Vector3 to IOBuffer at offset 0
+	m_fGlowColor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iGlowTeam: number
 	m_iGlowType: number
 	m_nGlowRange: number
 	m_nGlowRangeMin: number
-	readonly m_glowColorOverride: Color
+	m_glowColorOverride: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bFlashing: boolean
 	m_bGlowing: boolean
 }
@@ -6509,7 +6476,7 @@ declare class C_PlayerLocalData {
 	readonly m_audio: audioparams_t
 	m_bInLanding: boolean
 	m_flLandingTime: number
-	m_vecClientBaseVelocity: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecClientBaseVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_CommandContext {
@@ -6559,7 +6526,7 @@ declare class C_OP_SetControlPointsToParticle extends CParticleFunctionOperator 
 
 declare class C_OP_PinParticleToCP extends CParticleFunctionOperator {
 	m_nControlPointNumber: number
-	m_vecOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bOffsetLocal: boolean
 	m_nParticleSelection: ParticleSelection_t
 	m_nParticleNumber: number
@@ -6581,7 +6548,7 @@ declare class CSound {
 	m_iNext: number
 	m_bNoExpirationTime: boolean
 	m_ownerChannelIndex: number
-	m_vecOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bHasOwner: boolean
 }
 
@@ -6611,42 +6578,42 @@ declare class C_OP_TurbulenceForce extends CParticleFunctionForce {
 	m_flNoiseCoordScale1: number
 	m_flNoiseCoordScale2: number
 	m_flNoiseCoordScale3: number
-	m_vecNoiseAmount0: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecNoiseAmount1: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecNoiseAmount2: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecNoiseAmount3: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecNoiseAmount0: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecNoiseAmount1: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecNoiseAmount2: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecNoiseAmount3: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class InfoForResourceTypeVSound_t {}
 
 declare class CLightInfoBase {
-	m_origin2D: boolean // returns Vector2 to IOBuffer at offset 0
-	readonly m_Color: Color[]
+	m_origin2D: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_Color: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_LightScale: number[]
-	readonly m_AmbientColor: Color[]
+	readonly m_AmbientColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_AmbientScale: number[]
-	readonly m_ShadowColor: Color[]
-	readonly m_ShadowSecondaryColor: Color[]
+	readonly m_ShadowColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_ShadowSecondaryColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_ShadowScale: number[]
 	readonly m_ShadowGroundScale: number[]
-	readonly m_SpecularColor: Color[]
+	readonly m_SpecularColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_flSpecularPower: number[]
 	readonly m_flSpecularIndependence: number[]
-	readonly m_SpecularDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_InspectorSpecularDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_LightDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_AmbientDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_FogColor: Color[]
+	readonly m_SpecularDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_InspectorSpecularDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_LightDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_AmbientDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_FogColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_FogStart: number[]
 	readonly m_FogEnd: number[]
 	readonly m_HeightFogValue: number[]
-	readonly m_HeightFogColor: Color[]
+	readonly m_HeightFogColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_FoWDarkness: number[]
 	readonly m_FoWColorR: number[]
 	readonly m_FoWColorG: number[]
 	readonly m_FoWColorB: number[]
-	readonly m_InspectorViewFogColor: Color[]
-	readonly m_windAngle: QAngle
+	readonly m_InspectorViewFogColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_windAngle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_flWindAmount: number[]
 	m_flMinWind: number
 	m_flMaxWind: number
@@ -6656,14 +6623,14 @@ declare class CLightInfoBase {
 	m_flMaxGustDelay: number
 	m_flGustDuration: number
 	m_flGustDirChange: number
-	readonly m_skyboxAngle: QAngle[]
-	readonly m_vSkyboxTintColor: Color[]
+	readonly m_skyboxAngle: boolean[] // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_vSkyboxTintColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nSkyboxFogType: number
 	m_flSkyboxAngularFogMaxEnd: number
 	m_flSkyboxAngularFogMaxStart: number
 	m_flSkyboxAngularFogMinStart: number
 	m_flSkyboxAngularFogMinEnd: number
-	readonly m_vHeightFogColor: Color[]
+	readonly m_vHeightFogColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flFogMaxZ: number
 	readonly m_flFogDensity: number[]
 	m_flFogFalloff: number
@@ -6684,7 +6651,7 @@ declare class CLightInfoBase {
 	m_fOuterRadius: number
 	m_flLightning_specular_pow_scale_min: number
 	m_flLightning_specular_pow_scale_max: number
-	readonly m_lightningColor: Color
+	m_lightningColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flLightningIntensityMin: number
 	m_flLightningIntensityMax: number
 	m_flLightningElevation: number
@@ -6770,8 +6737,8 @@ declare class CModifierParams {
 	readonly pOrb2: CDOTA_Orb
 	nCost: number
 	nOrdertype: number
-	vOldLoc: boolean // returns Vector3 to IOBuffer at offset 0
-	vNewLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	vOldLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	vNewLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	bCraniumBasherTested: boolean
 	bMKBTested: boolean
 	bHeartRegenApplied: boolean
@@ -6820,7 +6787,7 @@ declare class C_INIT_MoveBetweenPoints extends CParticleFunctionInitializer {
 declare class ConstraintTarget_t {
 	m_nBoneHash: number
 	m_flWeight: number
-	m_vOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIsAttachment: boolean
 }
 
@@ -6833,9 +6800,9 @@ declare class C_INIT_SetRigidAttachment extends CParticleFunctionInitializer {
 
 declare class C_OP_CurlNoiseForce extends CParticleFunctionForce {
 	m_useCurl: boolean
-	m_vecNoiseFreq: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecNoiseScale: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOffsetRate: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecNoiseFreq: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecNoiseScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOffsetRate: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CAnimParameterList {
@@ -6860,12 +6827,12 @@ declare class CAnimGraphNetworkedVariables {
 	readonly m_ByteVariables: number[]
 	readonly m_IntVariables: number[]
 	readonly m_FloatVariables: number[]
-	readonly m_VectorVariables: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_VectorVariables: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 }
 
 declare class C_OP_RemapDistanceToLineSegmentToVector extends C_OP_RemapDistanceToLineSegmentBase {
-	m_vMinOutputValue: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMaxOutputValue: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMinOutputValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxOutputValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_OP_RemapParticleCountToScalar extends CParticleFunctionOperator {
@@ -6914,7 +6881,7 @@ declare class C_OP_AlphaDecay extends CParticleFunctionOperator {
 
 declare class C_OP_ExternalWindForce extends CParticleFunctionForce {
 	m_nCP: number
-	m_vecScale: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CAnimReplayFrame {
@@ -6923,7 +6890,7 @@ declare class CAnimReplayFrame {
 }
 
 declare class CAnimReplayWayPoint {
-	m_vPosition: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flFacing: number
 }
 
@@ -6942,7 +6909,7 @@ declare class CRandSimTimer extends CSimpleSimTimer {
 }
 
 declare class C_OP_RenderText extends CParticleFunctionRenderer {
-	readonly m_OutlineColor: Color
+	m_OutlineColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_DefaultText: string
 }
 
@@ -6985,9 +6952,9 @@ declare class CFootStride {
 }
 
 declare class CFootCycleDefinition {
-	m_vStancePositionMS: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vStanceDirectionMS: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vToStrideStartPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStancePositionMS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vStanceDirectionMS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vToStrideStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMaxExtent: number
 	readonly m_footLiftCycle: CFootCycle
 	readonly m_footOffCycle: CFootCycle
@@ -7003,7 +6970,7 @@ declare class CFootTrajectories {
 
 declare class C_OP_TwistAroundAxis extends CParticleFunctionForce {
 	m_fForceAmount: number
-	m_TwistAxis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_TwistAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bLocalSpace: boolean
 	m_nControlPointNumber: number
 }
@@ -7041,7 +7008,7 @@ declare class CPlayerLocalData {
 	m_nOldButtons: number
 	m_iHideHUD: number
 	m_flFOVRate: number
-	m_vecOverViewpoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOverViewpoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bDucked: boolean
 	m_bDucking: boolean
 	m_bInDuckJump: boolean
@@ -7084,8 +7051,8 @@ declare class C_OP_LerpToOtherAttribute extends CParticleFunctionOperator {
 }
 
 declare class C_OP_ClampVector extends CParticleFunctionOperator {
-	m_vecOutputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOutputMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOutputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CAnimDataChannelDesc {
@@ -7132,7 +7099,7 @@ declare class TimedKillEvent_t {
 }
 
 declare class CPhysicsShake {
-	m_force: boolean // returns Vector3 to IOBuffer at offset 0
+	m_force: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_OP_RenderLights extends C_OP_RenderPoints {
@@ -7175,7 +7142,7 @@ declare class C_OP_EnableChildrenFromParentParticleCount extends CParticleFuncti
 }
 
 declare class VertexPositionColor_t {
-	m_vPosition: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CFailableAchievement extends CBaseAchievement {
@@ -7184,14 +7151,14 @@ declare class CFailableAchievement extends CBaseAchievement {
 }
 
 declare class C_OP_CalculateVectorAttribute extends CParticleFunctionOperator {
-	m_vStartValue: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flInputScale1: number
 	m_flInputScale2: number
 	readonly m_nControlPointInput1: ControlPointReference_t
 	m_flControlPointScale1: number
 	readonly m_nControlPointInput2: ControlPointReference_t
 	m_flControlPointScale2: number
-	m_vFinalOutputScale: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vFinalOutputScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_OP_SetCPOrientationToPointAtCP extends CParticleFunctionPreEmission {
@@ -7205,7 +7172,7 @@ declare class SceneObject_t {
 	m_flFadeEndDistance: number
 	readonly m_skin: string
 	m_nObjectTypeFlags: ObjectTypeFlags_t
-	m_vLightingOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vLightingOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nLightGroup: number
 	m_nOverlayRenderOrder: number
 	m_nLODOverride: number
@@ -7218,8 +7185,8 @@ declare class HitBox_t {
 	m_nBoneNameHash: number
 	readonly m_cRenderColor: number[]
 	m_nHitBoxIndex: number
-	m_vMinBounds: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMaxBounds: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bVisible: boolean
 }
 
@@ -7233,7 +7200,7 @@ declare class PostProcessingBloomParameters_t {
 	m_flSkyboxBloomStrength: number
 	m_flBloomStartValue: number
 	readonly m_flBlurWeight: number[]
-	readonly m_vBlurTint: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vBlurTint: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CDOTA_Bot {
@@ -7287,13 +7254,13 @@ declare class CDOTA_Bot {
 	m_fLastSeen: number
 	m_nFailedPaths: number
 	readonly m_hTarget: C_BaseEntity
-	m_vTargetLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vTargetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fTargetLastSeen: number
 	readonly m_hTargetLastHitCreep: C_BaseEntity
 	m_bWasInvisible: boolean
 	m_bKnownInvisible: boolean
-	m_vLastSeenLoc: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vRequestedBlinkLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vLastSeenLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vRequestedBlinkLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fRequestedBlinkStart: number
 	m_fRequestedBlinkExpire: number
 	readonly m_hMinions: C_BaseEntity[]
@@ -7313,7 +7280,7 @@ declare class CBoneConstraintPoseSpaceMorph extends CBoneConstraintBase {
 }
 
 declare class CBoneConstraintPoseSpaceMorph__Input_t {
-	m_inputValue: boolean // returns Vector3 to IOBuffer at offset 0
+	m_inputValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_outputWeightList: number[]
 }
 
@@ -7408,12 +7375,12 @@ declare class C_OP_RemapSpeedtoCP extends CParticleFunctionPreEmission {
 
 declare class C_OP_PerParticleForce extends CParticleFunctionForce {
 	readonly m_flForceScale: CPerParticleFloatInput
-	m_vForce: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vForce: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nCP: number
 }
 
 declare class C_OP_WindForce extends CParticleFunctionForce {
-	m_vForce: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vForce: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class FeBuildBoxRigid_t extends FeBoxRigid_t {
@@ -7479,8 +7446,8 @@ declare class C_SpeechBubbleInfo {
 declare class CDOTA_CreepKillInfo {
 	m_flTimeOfDeath: number
 	m_flDeathFlightDuration: number
-	m_vWsKillDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vWsKillOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vWsKillDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vWsKillOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_INIT_CreateFromCPs extends CParticleFunctionInitializer {
@@ -7538,8 +7505,8 @@ declare class C_OP_RemapDistanceToLineSegmentToScalar extends C_OP_RemapDistance
 }
 
 declare class hudtextparms_t {
-	readonly color1: Color
-	readonly color2: Color
+	color1: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	color2: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	effect: number
 	channel: number
 	x: number
@@ -7558,7 +7525,7 @@ declare class C_INIT_CreationNoise extends CParticleFunctionInitializer {
 	m_flOutputMax: number
 	m_flNoiseScale: number
 	m_flNoiseScaleLoc: number
-	m_vecOffsetLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffsetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flWorldTimeScale: number
 }
 
@@ -7586,10 +7553,10 @@ declare class C_OP_SetControlPointPositions extends CParticleFunctionPreEmission
 	m_nCP2: number
 	m_nCP3: number
 	m_nCP4: number
-	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecCP2Pos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecCP3Pos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecCP4Pos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecCP2Pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecCP3Pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecCP4Pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nHeadLocation: number
 }
 
@@ -7651,13 +7618,13 @@ declare class C_INIT_VelocityRadialRandom extends CParticleFunctionInitializer {
 	m_nControlPointNumber: number
 	m_fSpeedMin: number
 	m_fSpeedMax: number
-	m_vecLocalCoordinateSystemSpeedScale: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecLocalCoordinateSystemSpeedScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIgnoreDelta: boolean
 }
 
 declare class C_OP_DistanceCull extends CParticleFunctionOperator {
 	m_nControlPoint: number
-	m_vecPointOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecPointOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flDistance: number
 	m_bCullInside: boolean
 }
@@ -7741,21 +7708,21 @@ declare class C_ViewSmoothingData_t {
 	bWasRunningAnim: boolean
 	flEnterExitStartTime: number
 	flEnterExitDuration: number
-	readonly vecAnglesSaved: QAngle
-	vecOriginSaved: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly vecAngleDiffSaved: QAngle
-	readonly vecAngleDiffMin: QAngle
+	vecAnglesSaved: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	vecOriginSaved: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	vecAngleDiffSaved: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	vecAngleDiffMin: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_OP_LocalAccelerationForce extends CParticleFunctionForce {
 	m_nCP: number
 	m_nScaleCP: number
-	m_vecAccel: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecAccel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CUnitOrders {
 	readonly m_nUnits: C_BaseEntity[]
-	m_vPosition: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nIssuerPlayerIndex: number
 	m_nOrderSequenceNumber: number
 	m_nOrderType: number
@@ -7781,15 +7748,15 @@ declare class CEnumAnimParameter extends CAnimParameterBase {
 }
 
 declare class ragdollelement_t {
-	originParentSpace: boolean // returns Vector3 to IOBuffer at offset 0
+	originParentSpace: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	parentIndex: number
 	m_flRadius: number
 }
 
 declare class C_OP_RampCPLinearRandom extends CParticleFunctionPreEmission {
 	m_nOutControlPointNumber: number
-	m_vecRateMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecRateMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecRateMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecRateMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class AnimationSnapshot_t extends AnimationSnapshotBase_t {
@@ -7864,7 +7831,7 @@ declare class ragdoll_t {
 }
 
 declare class C_OP_AttractToControlPoint extends CParticleFunctionForce {
-	m_vecComponentScale: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecComponentScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_fForceAmount: CPerParticleFloatInput
 	m_fFalloffPower: number
 	m_nControlPointNumber: number
@@ -7916,8 +7883,8 @@ declare class C_OP_FadeAndKill extends CParticleFunctionOperator {
 }
 
 declare class CSceneObjectData {
-	m_vMinBounds: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMaxBounds: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_drawCalls: CMaterialDrawDescriptor[]
 	readonly m_drawCullData: CDrawCullingData[]
 }
@@ -7931,7 +7898,7 @@ declare class CMaterialDrawDescriptor {
 	m_nStartInstance: number
 	m_nInstanceCount: number
 	m_flUvDensity: number
-	m_vTintColor: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vTintColor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_CullDataIndex: number
 	readonly m_indexBuffer: CRenderBufferBinding
 }
@@ -7964,8 +7931,8 @@ declare class C_INIT_RandomVectorComponent extends CParticleFunctionInitializer 
 }
 
 declare class C_INIT_PositionWarpScalar extends CParticleFunctionInitializer {
-	m_vecWarpMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecWarpMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecWarpMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecWarpMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_InputValue: CPerParticleFloatInput
 	m_flPrevPosScale: number
 	m_nScaleControlPointNumber: number
@@ -8000,11 +7967,11 @@ declare class CGroundIKSolveAnimNode extends CAnimNodeBase {
 	m_bEnabled: boolean
 	readonly m_TargetBlendParameter: AnimParamID
 	m_bDebugDrawLockValues: boolean
-	readonly m_DebugDrawLockValuesColor: Color
+	m_DebugDrawLockValuesColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bDebugDrawBefore: boolean
-	readonly m_DebugDrawBeforeColor: Color
+	m_DebugDrawBeforeColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bDebugDrawAfter: boolean
-	readonly m_DebugDrawAfterColor: Color
+	m_DebugDrawAfterColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CPostGraphIKTag extends CAnimTagBase {
@@ -8025,8 +7992,8 @@ declare class C_INIT_VelocityRandom extends CParticleFunctionInitializer {
 	m_nControlPointNumber: number
 	m_fSpeedMin: number
 	m_fSpeedMax: number
-	m_LocalCoordinateSystemSpeedMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_LocalCoordinateSystemSpeedMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_LocalCoordinateSystemSpeedMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_LocalCoordinateSystemSpeedMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIgnoreDT: boolean
 }
 
@@ -8051,7 +8018,7 @@ declare class CSoundPatch {
 	readonly m_iszSoundScriptName: string
 	readonly m_hEnt: C_BaseEntity
 	readonly m_soundEntityIndex: C_BaseEntity
-	m_soundOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_soundOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_isPlaying: number
 	readonly m_Filter: CCopyRecipientFilter
 	m_flCloseCaptionDuration: number
@@ -8152,6 +8119,8 @@ declare class PlayerResourcePlayerData_t {
 	m_eLiveSpectatorTeam: DOTATeam_t
 	m_bIsPlusSubscriber: boolean
 	m_bWasMVPLastGame: boolean
+	readonly m_eAccoladeType: number[]
+	readonly m_unAccoladeData: bigint[]
 }
 
 declare class C_OP_RenderRopes extends CBaseRendererSource2 {
@@ -8213,13 +8182,13 @@ declare class CEnvWindShared {
 	m_flMaxGustDelay: number
 	m_flGustDuration: number
 	m_iGustDirChange: number
-	m_location: boolean // returns Vector3 to IOBuffer at offset 0
+	m_location: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iszGustSound: number
 	m_iWindDir: number
 	m_flWindSpeed: number
-	m_currentWindVector: boolean // returns Vector3 to IOBuffer at offset 0
-	m_CurrentSwayVector: boolean // returns Vector3 to IOBuffer at offset 0
-	m_PrevSwayVector: boolean // returns Vector3 to IOBuffer at offset 0
+	m_currentWindVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_CurrentSwayVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_PrevSwayVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iInitialWindDir: number
 	m_flInitialWindSpeed: number
 	readonly m_OnGustStart: CEntityIOOutput
@@ -8301,7 +8270,7 @@ declare class C_OP_RenderSprites extends CBaseRendererSource2 {
 	m_flEdgeSoftnessStart: number
 	m_flEdgeSoftnessEnd: number
 	m_bOutline: boolean
-	readonly m_OutlineColor: Color
+	m_OutlineColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nOutlineAlpha: number
 	m_flOutlineStart0: number
 	m_flOutlineStart1: number
@@ -8317,9 +8286,9 @@ declare class C_OP_RenderClothForce extends CParticleFunctionRenderer {}
 
 declare class C_OP_TimeVaryingForce extends CParticleFunctionForce {
 	m_flStartLerpTime: number
-	m_StartingForce: boolean // returns Vector3 to IOBuffer at offset 0
+	m_StartingForce: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flEndLerpTime: number
-	m_EndingForce: boolean // returns Vector3 to IOBuffer at offset 0
+	m_EndingForce: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class ConceptHistory_t {
@@ -8331,7 +8300,7 @@ declare class C_OP_RemapDirectionToCPToVector extends CParticleFunctionOperator 
 	m_nCP: number
 	m_flScale: number
 	m_flOffsetRot: number
-	m_vecOffsetAxis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffsetAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bNormalize: boolean
 }
 
@@ -8377,7 +8346,7 @@ declare class C_OP_RemapDotProductToCP extends CParticleFunctionPreEmission {
 }
 
 declare class C_OP_ColorInterpolate extends CParticleFunctionOperator {
-	readonly m_ColorFade: Color
+	m_ColorFade: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flFadeStartTime: number
 	m_flFadeEndTime: number
 	m_bEaseInOut: boolean
@@ -8403,8 +8372,8 @@ declare class InfoOverlayData_t {
 	m_flWidth: number
 	m_flHeight: number
 	m_flDepth: number
-	m_vUVStart: boolean // returns Vector2 to IOBuffer at offset 0
-	m_vUVEnd: boolean // returns Vector2 to IOBuffer at offset 0
+	m_vUVStart: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vUVEnd: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nRenderOrder: number
 	m_nSequenceOverride: number
 }
@@ -8453,8 +8422,8 @@ declare class C_OP_CPVelocityForce extends CParticleFunctionForce {
 }
 
 declare class VertexPositionNormal_t {
-	m_vPosition: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vNormal: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CTwoBoneIKAnimNode extends CAnimNodeBase {
@@ -8476,7 +8445,7 @@ declare class C_OP_SetSingleControlPointPosition extends CParticleFunctionPreEmi
 	m_bUseWorldLocation: boolean
 	m_bSetOnce: boolean
 	m_nCP1: number
-	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nHeadLocation: number
 }
 
@@ -8489,8 +8458,8 @@ declare class CAnimMovement {
 	v0: number
 	v1: number
 	angle: number
-	vector: boolean // returns Vector3 to IOBuffer at offset 0
-	position: boolean // returns Vector3 to IOBuffer at offset 0
+	vector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	position: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CMoveSpeedCondition extends CAnimStateConditionBase {
@@ -8509,13 +8478,13 @@ declare class C_CEnvWindShared {
 	m_flMaxGustDelay: number
 	m_flGustDuration: number
 	m_iGustDirChange: number
-	m_location: boolean // returns Vector3 to IOBuffer at offset 0
+	m_location: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iszGustSound: number
 	m_iWindDir: number
 	m_flWindSpeed: number
-	m_currentWindVector: boolean // returns Vector3 to IOBuffer at offset 0
-	m_CurrentSwayVector: boolean // returns Vector3 to IOBuffer at offset 0
-	m_PrevSwayVector: boolean // returns Vector3 to IOBuffer at offset 0
+	m_currentWindVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_CurrentSwayVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_PrevSwayVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iInitialWindDir: number
 	m_flInitialWindSpeed: number
 	m_flVariationTime: number
@@ -8548,17 +8517,17 @@ declare class CCommentarySystem {
 declare class CPlayerState {
 	deadflag: boolean
 	hltv: boolean
-	readonly v_angle: QAngle
+	v_angle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly netname: string
 	fixangle: number
-	readonly anglechange: QAngle
+	anglechange: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	frags: number
 	deaths: number
 }
 
 declare class C_INIT_RemapCPOrientationToRotations extends CParticleFunctionInitializer {
 	m_nCP: number
-	m_vecRotation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecRotation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bUseQuat: boolean
 	m_bWriteNormal: boolean
 }
@@ -8568,17 +8537,17 @@ declare class C_OP_VelocityDecay extends CParticleFunctionOperator {
 }
 
 declare class C_OP_LerpVector extends CParticleFunctionOperator {
-	m_vecOutput: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOutput: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartTime: number
 	m_flEndTime: number
 	m_bScaleInitialRange: boolean
 }
 
 declare class CSchemaSystemInternalRegistration {
-	m_Vector2D: boolean // returns Vector2 to IOBuffer at offset 0
-	m_Vector: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_QAngle: QAngle
-	readonly m_Color: Color
+	m_Vector2D: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_Vector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_QAngle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_Color: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_CUtlString: string
 }
 
@@ -8608,10 +8577,10 @@ declare class CAnimDesc {
 	readonly m_activityArray: CAnimActivity[]
 	readonly m_hierarchyArray: CAnimLocalHierarchy[]
 	framestalltime: number
-	m_vecRootMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecRootMax: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vecBoneWorldMin: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_vecBoneWorldMax: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	m_vecRootMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecRootMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_vecBoneWorldMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
+	readonly m_vecBoneWorldMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 	readonly m_sequenceParams: CAnimSequenceParams
 }
 
@@ -8655,7 +8624,7 @@ declare class SosEditItemInfo_t {
 	readonly itemName: string
 	readonly itemTypeName: string
 	readonly itemKVString: string
-	itemPos: boolean // returns Vector2 to IOBuffer at offset 0
+	itemPos: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class FeFitInfluence_t {
@@ -8704,7 +8673,7 @@ declare class CStopwatch extends CStopwatchBase {
 }
 
 declare class C_OP_WorldTraceConstraint extends CParticleFunctionConstraint {
-	m_vecCpOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCpOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nCollisionMode: number
 	readonly m_flBounceAmount: CPerParticleFloatInput
 	readonly m_flSlideAmount: CPerParticleFloatInput
@@ -8744,8 +8713,8 @@ declare class CPortraitData extends CBasePortraitData {
 }
 
 declare class C_INIT_CreateFromPlaneCache extends CParticleFunctionInitializer {
-	m_vecOffsetMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOffsetMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffsetMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOffsetMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bUseNormal: boolean
 }
 
@@ -8791,7 +8760,7 @@ declare class C_OP_DriveCPFromGlobalSoundFloat extends CParticleFunctionPreEmiss
 declare class ConstraintSoundInfo {
 	readonly m_vSampler: VelocitySampler
 	readonly m_soundProfile: SimpleConstraintSoundProfile
-	m_forwardAxis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_forwardAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_iszTravelSoundFwd: string
 	readonly m_iszTravelSoundBack: string
 	readonly m_iszReversalSounds: string[]
@@ -8838,8 +8807,8 @@ declare class CParticleSystemDefinition extends IParticleSystemDefinition {
 	m_nFirstMultipleOverride_BackwardCompat: number
 	m_nInitialParticles: number
 	m_nMaxParticles: number
-	m_BoundingBoxMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_BoundingBoxMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_BoundingBoxMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_BoundingBoxMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nSnapshotControlPoint: number
 	readonly m_pszTargetLayerID: string
 	m_nTopology: ParticleTopology_t
@@ -8847,8 +8816,8 @@ declare class CParticleSystemDefinition extends IParticleSystemDefinition {
 	m_flCullFillCost: number
 	m_nCullControlPoint: number
 	m_nFallbackMaxCount: number
-	readonly m_ConstantColor: Color
-	m_ConstantNormal: boolean // returns Vector3 to IOBuffer at offset 0
+	m_ConstantColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ConstantNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flConstantRadius: number
 	m_flConstantRotation: number
 	m_flConstantRotationSpeed: number
@@ -8930,9 +8899,9 @@ declare class CDOTA_AttackRecord {
 	m_flCriticalDamage: number
 	m_flCriticalDisplay: number
 	m_iProjectileSpeed: number
-	m_vForceDirectionOverride: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vTargetLoc: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vBlockLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vForceDirectionOverride: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vTargetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vBlockLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_iszAutoAttackRangedParticle: string
 	readonly m_iCustomFXIndex: ParticleIndex_t
 }
@@ -8979,13 +8948,13 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_iCombatClass: number
 	m_iCombatClassAttack: number
 	m_iCombatClassDefend: number
-	readonly m_colorGemColor: Color
+	m_colorGemColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bHasColorGem: boolean
 	m_iMoveSpeed: number
 	m_flBaseAttackTime: number
 	m_iUnitNameIndex: number
 	m_iHealthBarOffset: number
-	readonly m_iHealthBarHighlightColor: Color
+	m_iHealthBarHighlightColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMana: number
 	m_flMaxMana: number
 	m_flManaThinkRegen: number
@@ -9050,7 +9019,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_flMinimapIconSize: number
 	m_bMinimapDisableTint: boolean
 	m_bMinimapDisableRotation: boolean
-	readonly m_colorHeroGlow: Color
+	m_colorHeroGlow: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iNearShopMask: number
 	m_nPoseParameterTurn: number
 	m_flLean: number
@@ -9062,7 +9031,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_flRangeDisplayDist: number
 	readonly m_szDefaultIdle: string
 	readonly m_damagetimer: CountdownTimer
-	m_vRenderOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vRenderOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fZDelta: number
 	m_flDeathTime: number
 	m_bBaseStatsChanged: boolean
@@ -9084,7 +9053,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_nBaseModelMeshCount: number
 	m_nArcanaLevel: number
 	m_nDefaultArcanaLevel: number
-	readonly m_defaultColorGemColor: Color
+	m_defaultColorGemColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bHasBuiltWearableSpawnList: boolean
 	m_NetworkActivity: number
 	m_PrevNetworkActivity: number
@@ -9095,8 +9064,8 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_hSpeakingSceneEnt: C_BaseEntity
 	readonly m_hOldWearables: C_EconWearable[]
 	readonly m_CustomHealthLabel: number[]
-	readonly m_CustomHealthLabelColor: Color
-	readonly m_gibTintColor: Color
+	m_CustomHealthLabelColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_gibTintColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bForceMaterialCombine: boolean
 	m_bShouldDrawParticlesWhileHidden: boolean
 	m_bIsClientThinkPending: boolean
@@ -9159,13 +9128,13 @@ declare class CNewParticleEffect extends IParticleEffect {
 	readonly m_bDisableAggregation: boolean
 	readonly m_bShouldSimulateDuringGamePaused: boolean
 	readonly m_bShouldCheckFoW: boolean
-	m_vSortOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vSortOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hOwner: PARTICLE_EHANDLE__
 	readonly m_pOwningParticleProperty: CParticleProperty
-	m_LastMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_LastMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_LastMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_LastMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nSplitScreenUser: number
-	m_vecAggregationCenter: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecAggregationCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_RefCount: number
 }
 
@@ -9234,8 +9203,8 @@ declare class C_OP_FadeInSimple extends CParticleFunctionOperator {
 }
 
 declare class C_INIT_CreateWithinBox extends CParticleFunctionInitializer {
-	m_vecMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nControlPointNumber: number
 	m_bLocalSpace: boolean
 }
@@ -9251,10 +9220,10 @@ declare class InfoForResourceTypeCMorphSetData {}
 
 declare class C_INIT_RemapCPtoVector extends CParticleFunctionInitializer {
 	m_nCPInput: number
-	m_vInputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vInputMax: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vOutputMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vOutputMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vInputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vInputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vOutputMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartTime: number
 	m_flEndTime: number
 	m_bScaleInitialRange: boolean
@@ -9271,8 +9240,8 @@ declare class C_INIT_RandomModelSequence extends CParticleFunctionInitializer {
 declare class CVoxelVisibility {
 	readonly m_blockOffset: number[]
 	readonly m_clusters: voxel_vis_cluster_t[]
-	m_vMinBounds: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMaxBounds: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flGridSize: number
 	m_nNodeCount: number
 	m_nRegionCount: number
@@ -9291,8 +9260,8 @@ declare class SelectedEditItemInfo_t {
 }
 
 declare class C_LightGlowOverlay extends CGlowOverlay {
-	m_vecOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nMinDist: number
 	m_nMaxDist: number
 	m_nOuterMaxDist: number
@@ -9319,7 +9288,7 @@ declare class CSequenceAnimNode extends CAnimNodeBase {
 
 declare class CAnimBone {
 	m_parent: number
-	m_pos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flags: number
 }
 
@@ -9344,8 +9313,8 @@ declare class C_OP_LockPoints extends CParticleFunctionOperator {
 declare class IrradVolume_t {
 	m_flFadeMinDist: number
 	m_flFadeMaxDist: number
-	m_vMinBounds: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMaxBounds: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nFlags: IrradVolumeFlags_t
 	m_nSortKey: number
 	m_nPlanes: number
@@ -9401,16 +9370,16 @@ declare class World_t {
 declare class NodeData_t {
 	m_Flags: number
 	m_nParent: number
-	m_vOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMinBounds: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vMaxBounds: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMinimumDistance: number
 	readonly m_ChildNodeIndices: number[]
 	readonly m_worldNodePrefix: string
 }
 
 declare class CVectorAnimParameter extends CAnimParameterBase {
-	m_defaultValue: boolean // returns Vector3 to IOBuffer at offset 0
+	m_defaultValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bInterpolate: boolean
 }
 
@@ -9456,12 +9425,12 @@ declare class C_INIT_StatusEffect extends CParticleFunctionInitializer {
 	m_flDiffuseWarpBlendToFull: number
 	m_flEnvMapIntensity: number
 	m_flAmbientScale: number
-	readonly m_specularColor: Color
+	m_specularColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSpecularScale: number
 	m_flSpecularExponent: number
 	m_flSpecularExponentBlendToFull: number
 	m_flSpecularBlendToFull: number
-	readonly m_rimLightColor: Color
+	m_rimLightColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRimLightScale: number
 	m_flReflectionsTintByBaseBlendToNone: number
 	m_flMetalnessBlendToFull: number
@@ -9497,7 +9466,7 @@ declare class CDOTA_CombatLogQueryProgress {
 }
 
 declare class sSpiritInfo {
-	vTargetLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	vTargetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly hTarget: C_BaseEntity
 	bHit: boolean
 	iHealAmount: number
@@ -9505,14 +9474,14 @@ declare class sSpiritInfo {
 }
 
 declare class C_OP_SetControlPointRotation extends CParticleFunctionPreEmission {
-	m_vecRotAxis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecRotAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRotRate: number
 	m_nCP: number
 	m_nLocalCP: number
 }
 
 declare class AttachmentData_t {
-	readonly m_vInfluenceOffsets: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vInfluenceOffsets: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_influenceWeights: number[]
 	readonly m_nFlags: number[]
 	m_nInfluences: number
@@ -9590,7 +9559,7 @@ declare class CInterpolatedValue {
 declare class CMotorController {
 	m_speed: number
 	m_maxTorque: number
-	m_axis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_axis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_inertiaFactor: number
 }
 
@@ -9613,28 +9582,28 @@ declare class C_OP_RemapParticleCountOnScalarEndCap extends CParticleFunctionOpe
 }
 
 declare class NextBotGroundLocomotion extends CLocomotionBase {
-	m_vVelocity: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vPriorPos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vLastValidPos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vAcceleration: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vPriorPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vLastValidPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vAcceleration: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flDesiredSpeed: number
 	m_flActualSpeed: number
 	m_flMaxRunSpeed: number
 	m_flForwardLean: number
 	m_flSideLean: number
-	readonly m_desiredLean: QAngle
+	m_desiredLean: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIsJumping: boolean
 	m_bIsJumpingAcrossGap: boolean
 	readonly m_hGround: C_BaseEntity
-	m_vGroundNormal: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vGroundSampleLastPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vGroundNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vGroundSampleLastPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIsClimbingUpToLedge: boolean
-	m_vLedgeJumpGoalPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vLedgeJumpGoalPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIsUsingFullFeetTrace: boolean
 	readonly m_inhibitObstacleAvoidanceTimer: CountdownTimer
-	m_vMoveVector: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vMoveVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flMoveYaw: number
-	m_vAccumApproachVectors: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vAccumApproachVectors: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flAccumApproachWeights: number
 	m_bRecomputePostureOnCollision: boolean
 	readonly m_ignorePhysicsPropTimer: CountdownTimer
@@ -9646,8 +9615,8 @@ declare class NextBotGroundLocomotion extends CLocomotionBase {
 declare class CNavVolumeMarkupVolume extends CNavVolume {}
 
 declare class C_OP_RandomForce extends CParticleFunctionForce {
-	m_MinForce: boolean // returns Vector3 to IOBuffer at offset 0
-	m_MaxForce: boolean // returns Vector3 to IOBuffer at offset 0
+	m_MinForce: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_MaxForce: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CAnimationGroup {
@@ -9662,7 +9631,7 @@ declare class C_OP_SetControlPointToImpactPoint extends CParticleFunctionPreEmis
 	m_flUpdateRate: number
 	m_flTraceLength: number
 	m_flOffset: number
-	m_vecTraceDir: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecTraceDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_CollisionGroupName: number[]
 	m_bSetToEndpoint: boolean
 }
@@ -9672,7 +9641,7 @@ declare class FeBuildTaperedCapsuleStretch_t extends FeTaperedCapsuleStretch_t {
 }
 
 declare class VPhysXDiskCapsule_t extends VPhysXDiskShapeHeader_t {
-	readonly m_vEnds: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vEnds: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRadius: number
 }
 
@@ -9838,7 +9807,7 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_fPauseCurTime: number
 	m_fUnpauseRawTime: number
 	m_fUnpauseCurTime: number
-	m_vWeatherWindDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vWeatherWindDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bGameTimeFrozen: boolean
 	m_nCustomGameFowTeamCount: number
 	m_bUseAlternateABRules: boolean
@@ -9897,7 +9866,7 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	readonly m_hGameEvents: C_BaseEntity
 	readonly m_Towers: C_BaseEntity[]
 	readonly m_TeamTowers: C_DOTA_BaseNPC_Tower[][]
-	readonly m_TeamTowerPositions: Vector3[][]
+	readonly m_TeamTowerPositions: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 	readonly m_TeamTowerLevels: number[][]
 	readonly m_TeamTowerLanes: number[][]
 	readonly m_TeamBarracks: C_DOTA_BaseNPC_Building[][]
@@ -9973,12 +9942,12 @@ declare class sLoadoutItem {
 
 declare class CRagdoll extends IRagdoll {
 	readonly m_ragdoll: ragdoll_t
-	m_mins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_maxs: boolean // returns Vector3 to IOBuffer at offset 0
-	m_origin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_mins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_maxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_origin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_lastUpdate: number
 	m_allAsleep: boolean
-	m_vecLastOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecLastOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flLastOriginChangeTime: number
 	m_flAwakeTime: number
 }
@@ -9992,7 +9961,7 @@ declare class C_INIT_CreateAlongPath extends CParticleFunctionInitializer {
 	m_fMaxDistance: number
 	readonly m_PathParams: CPathParameters
 	m_bUseRandomCPs: boolean
-	m_vEndOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vEndOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bSaveOffset: boolean
 }
 
@@ -10005,9 +9974,14 @@ declare class CAudioAnimTag extends CAnimTagBase {
 	readonly m_clipName: string
 }
 
+declare class DOTACavernCrawlMapResult_t {
+	m_nCompletedPathID: number
+	m_nClaimedRoomID: number
+}
+
 declare class constraint_hingeparams_t {
-	worldPosition: boolean // returns Vector3 to IOBuffer at offset 0
-	worldAxisDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	worldPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	worldAxisDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly hingeAxis: constraint_axislimit_t
 	readonly constraint: constraint_breakableparams_t
 }
@@ -10033,8 +10007,8 @@ declare class C_BaseAnimatingOverlayController extends C_BaseAnimatingController
 }
 
 declare class C_OP_ColorInterpolateRandom extends CParticleFunctionOperator {
-	readonly m_ColorFadeMin: Color
-	readonly m_ColorFadeMax: Color
+	m_ColorFadeMin: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ColorFadeMax: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flFadeStartTime: number
 	m_flFadeEndTime: number
 	m_bEaseInOut: boolean
@@ -10052,7 +10026,7 @@ declare class C_OP_MaintainEmitter extends CParticleFunctionEmitter {
 
 declare class C_OP_RenderStandardLight extends CParticleFunctionRenderer {
 	m_nLightType: number
-	readonly m_Color: Color
+	m_Color: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flIntensity: number
 	m_bCastShadows: boolean
 	m_flTheta: number
@@ -10066,7 +10040,7 @@ declare class C_OP_RenderStandardLight extends CParticleFunctionRenderer {
 
 declare class C_OP_ParentVortices extends CParticleFunctionForce {
 	m_flForceScale: number
-	m_vecTwistAxis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecTwistAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bFlipBasedOnYaw: boolean
 }
 
@@ -10081,7 +10055,7 @@ declare class C_OP_CPOffsetToPercentageBetweenCPs extends CParticleFunctionOpera
 	m_nInputCP: number
 	m_bRadialCheck: boolean
 	m_bScaleOffset: boolean
-	m_vecOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CSosGroupActionTimeLimitSchema extends CSosGroupActionSchema {
@@ -10092,7 +10066,7 @@ declare class InfoForResourceTypeCAnimationGroup {}
 
 declare class C_OP_RemapCPOrientationToRotations extends CParticleFunctionOperator {
 	m_nCP: number
-	m_vecRotation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecRotation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bUseQuat: boolean
 	m_bWriteNormal: boolean
 }
@@ -10117,7 +10091,7 @@ declare class c_vehicleview_t {
 }
 
 declare class CNavVolumeBreadthFirstSearch extends CNavVolumeCalculatedVector {
-	m_vStartPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSearchDist: number
 }
 
@@ -10189,7 +10163,7 @@ declare class C_CSequenceTransitioner {
 declare class C_OP_Decay extends CParticleFunctionOperator {}
 
 declare class CSpotlightTraceCacheEntry {
-	m_origin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_origin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_radius: number
 }
 
@@ -10242,10 +10216,10 @@ declare class C_INIT_CreatePhyllotaxis extends CParticleFunctionInitializer {
 }
 
 declare class C_INIT_ColorLitPerParticle extends CParticleFunctionInitializer {
-	readonly m_ColorMin: Color
-	readonly m_ColorMax: Color
-	readonly m_TintMin: Color
-	readonly m_TintMax: Color
+	m_ColorMin: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ColorMax: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_TintMin: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_TintMax: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flTintPerc: number
 	m_nTintBlendMode: ParticleColorBlendMode_t
 	m_flLightAmplification: number
@@ -10266,7 +10240,7 @@ declare class C_OP_TeleportBeam extends CParticleFunctionOperator {
 	m_nCPColor: number
 	m_nCPInvalidColor: number
 	m_nCPExtraArcData: number
-	m_vGravity: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vGravity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flArcMaxDuration: number
 	m_flSegmentBreak: number
 	m_flArcSpeed: number
@@ -10319,11 +10293,14 @@ declare class C_INIT_RemapNamedModelMeshGroupToScalar extends C_INIT_RemapNamedM
 
 declare class C_DOTABaseAbility extends C_BaseEntity {
 	GetSpecialValue(special_name: string, level?: number): number
+	IsManaEnough(owner: C_DOTA_BaseNPC): boolean
 	
 	readonly m_pAbilityData: DOTAAbilityData_t
 	readonly m_fCastPoint: number
-	readonly m_iAbilityDamage: number
+	readonly m_fChannelTime: number
 	readonly m_fAOERadius: number
+	readonly m_iAbilityDamage: number
+	readonly m_bIsHidden: boolean
 	
 	m_bAltCastState: boolean
 	m_iEnemyLevel: number
@@ -10398,7 +10375,7 @@ declare class C_DOTA_Item extends C_DOTABaseAbility {
 declare class C_DOTA_Ability_Riki_BlinkStrike extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Mirana_Arrow extends C_DOTABaseAbility {
-	m_vStartPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_nFXIndex: ParticleIndex_t
 	readonly hAlreadyHitList: C_BaseEntity[]
 }
@@ -10543,7 +10520,7 @@ declare class C_DOTA_Ability_Animation_Attack extends C_DOTABaseAbility {
 
 declare class C_DOTA_Ability_Windrunner_Shackleshot extends C_DOTABaseAbility {
 	shackle_count: number
-	m_vArrowStartPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vArrowStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hTarget: C_BaseEntity
 }
 
@@ -10572,8 +10549,8 @@ declare class C_DOTA_Ability_Creature_Ice_Breath extends C_DOTABaseAbility {
 	radius: number
 	slow_duration: number
 	readonly ctTimer: CountdownTimer
-	m_vecStartRot: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecEndRot: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecStartRot: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecEndRot: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_Corspselord_Revive extends C_DOTABaseAbility {}
@@ -10607,33 +10584,33 @@ declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_140 extends C_DOTABaseAb
 
 declare class C_DOTA_LightInfo extends C_BaseEntity/*, CLightInfoBase*/ {
 	// Low-priority parent definition [CLightInfoBase]
-	m_origin2D: boolean // returns Vector2 to IOBuffer at offset 0
-	readonly m_Color: Color[]
+	m_origin2D: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_Color: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_LightScale: number[]
-	readonly m_AmbientColor: Color[]
+	readonly m_AmbientColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_AmbientScale: number[]
-	readonly m_ShadowColor: Color[]
-	readonly m_ShadowSecondaryColor: Color[]
+	readonly m_ShadowColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_ShadowSecondaryColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_ShadowScale: number[]
 	readonly m_ShadowGroundScale: number[]
-	readonly m_SpecularColor: Color[]
+	readonly m_SpecularColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_flSpecularPower: number[]
 	readonly m_flSpecularIndependence: number[]
-	readonly m_SpecularDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_InspectorSpecularDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_LightDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_AmbientDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_FogColor: Color[]
+	readonly m_SpecularDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_InspectorSpecularDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_LightDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_AmbientDirection: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_FogColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_FogStart: number[]
 	readonly m_FogEnd: number[]
 	readonly m_HeightFogValue: number[]
-	readonly m_HeightFogColor: Color[]
+	readonly m_HeightFogColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_FoWDarkness: number[]
 	readonly m_FoWColorR: number[]
 	readonly m_FoWColorG: number[]
 	readonly m_FoWColorB: number[]
-	readonly m_InspectorViewFogColor: Color[]
-	readonly m_windAngle: QAngle
+	readonly m_InspectorViewFogColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_windAngle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_flWindAmount: number[]
 	m_flMinWind: number
 	m_flMaxWind: number
@@ -10643,14 +10620,14 @@ declare class C_DOTA_LightInfo extends C_BaseEntity/*, CLightInfoBase*/ {
 	m_flMaxGustDelay: number
 	m_flGustDuration: number
 	m_flGustDirChange: number
-	readonly m_skyboxAngle: QAngle[]
-	readonly m_vSkyboxTintColor: Color[]
+	readonly m_skyboxAngle: boolean[] // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_vSkyboxTintColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nSkyboxFogType: number
 	m_flSkyboxAngularFogMaxEnd: number
 	m_flSkyboxAngularFogMaxStart: number
 	m_flSkyboxAngularFogMinStart: number
 	m_flSkyboxAngularFogMinEnd: number
-	readonly m_vHeightFogColor: Color[]
+	readonly m_vHeightFogColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flFogMaxZ: number
 	readonly m_flFogDensity: number[]
 	m_flFogFalloff: number
@@ -10671,7 +10648,7 @@ declare class C_DOTA_LightInfo extends C_BaseEntity/*, CLightInfoBase*/ {
 	m_fOuterRadius: number
 	m_flLightning_specular_pow_scale_min: number
 	m_flLightning_specular_pow_scale_max: number
-	readonly m_lightningColor: Color
+	m_lightningColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flLightningIntensityMin: number
 	m_flLightningIntensityMax: number
 	m_flLightningElevation: number
@@ -10722,7 +10699,7 @@ declare class C_PointCamera extends C_BaseEntity {
 	m_FOV: number
 	m_Resolution: number
 	m_bFogEnable: boolean
-	readonly m_FogColor: Color
+	m_FogColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flFogStart: number
 	m_flFogEnd: number
 	m_flFogMaxDensity: number
@@ -10759,7 +10736,7 @@ declare class C_FlexCycler extends C_BaseFlex {
 	readonly m_flextarget: number[]
 	m_blinktime: number
 	m_looktime: number
-	m_lookTarget: boolean // returns Vector3 to IOBuffer at offset 0
+	m_lookTarget: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_speaktime: number
 	m_istalking: number
 	m_phoneme: number
@@ -10773,7 +10750,7 @@ declare class C_LightEntity extends C_BaseModelEntity {
 
 declare class CLightComponent extends CEntityComponent {
 	readonly __m_pChainEntity: CNetworkVarChainer
-	readonly m_Color: Color
+	m_Color: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flBrightness: number
 	m_flBrightnessMult: number
 	m_flRange: number
@@ -10813,19 +10790,19 @@ declare class CLightComponent extends CEntityComponent {
 	m_flShadowFadeMaxDist: number
 	m_bEnabled: boolean
 	m_bFlicker: boolean
-	m_vPrecomputedBoundsMins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vPrecomputedBoundsMaxs: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPrecomputedBoundsMins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vPrecomputedBoundsMaxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flPrecomputedMaxRange: number
-	m_vPrecomputePosition: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vPrecomputeDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vPrecomputeUp: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPrecomputePosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vPrecomputeDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vPrecomputeUp: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nFogLightingMode: number
 	m_flFogContributionStength: number
 	m_flNearClipPlane: number
-	readonly m_SkyColor: Color
+	m_SkyColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSkyIntensity: number
 	m_bLowerHemisphereIsBlack: boolean
-	readonly m_SkyAmbientBounce: Color
+	m_SkyAmbientBounce: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bUnlitShadows: boolean
 }
 
@@ -11016,6 +10993,9 @@ declare class C_DOTA_Ability_Special_Bonus_Gold_Income_70 extends C_DOTABaseAbil
 declare class C_DOTA_Ability_Special_Bonus_Night_Vision_600 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_BaseNPC_Hero extends C_DOTA_BaseNPC_Additive {
+	readonly m_bIsIllusion: boolean
+	readonly m_fSpellAmplification: number
+	
 	m_iCurrentXP: number
 	m_iAbilityPoints: number
 	m_flRespawnTime: number
@@ -11104,11 +11084,11 @@ declare class C_RopeKeyframe extends C_BaseModelEntity {
 	m_fPrevLockedPoints: number
 	m_iForcePointMoveCounter: number
 	readonly m_bPrevEndPointPos: boolean[]
-	readonly m_vPrevEndPointPos: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vPrevEndPointPos: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flCurScroll: number
 	m_flScrollSpeed: number
 	m_RopeFlags: number
-	readonly m_LightValues: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_LightValues: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nSegments: number
 	readonly m_hStartPoint: C_BaseEntity
 	readonly m_hEndPoint: C_BaseEntity
@@ -11122,15 +11102,15 @@ declare class C_RopeKeyframe extends C_BaseModelEntity {
 	m_nChangeCount: number
 	m_Width: number
 	m_TextureHeight: number
-	m_vecImpulse: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecPreviousImpulse: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecImpulse: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecPreviousImpulse: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flCurrentGustTimer: number
 	m_flCurrentGustLifetime: number
 	m_flTimeToNextGust: number
-	m_vWindDir: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vColorMod: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vCachedEndPointAttachmentPos: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_vCachedEndPointAttachmentAngle: QAngle[]
+	m_vWindDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vColorMod: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_vCachedEndPointAttachmentPos: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_vCachedEndPointAttachmentAngle: boolean[] // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bConstrainBetweenEndpoints: boolean
 	readonly m_bEndPointAttachmentPositionsDirty: boolean
 	readonly m_bEndPointAttachmentAnglesDirty: boolean
@@ -11204,7 +11184,7 @@ declare class C_LightGlow extends C_BaseModelEntity {
 	m_nOuterMaxDist: number
 	m_flGlowProxySize: number
 	m_flHDRColorScale: number
-	// readonly m_Glow: C_LightGlowOverlay // actually it's this, but TS doesn't allow overriding types like C++
+	// readonly m_Glow: C_LightGlowOverlay // actually it's this, as C++ allows us replacing types, but .d.ts doesn't
 }
 
 declare class C_DOTA_Item_Recipe_Kaya extends C_DOTA_Item {}
@@ -11405,21 +11385,21 @@ declare class C_GlobalLight extends C_BaseEntity/*, CGlobalLightBase*/ {
 
 	// Low-priority parent definition [CGlobalLightBase]
 	m_bSpotLight: boolean
-	m_SpotLightOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_SpotLightAngles: QAngle
-	m_ShadowDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	m_AmbientDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	m_SpecularDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	m_InspectorSpecularDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	m_SpotLightOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_SpotLightAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ShadowDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_AmbientDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_SpecularDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_InspectorSpecularDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSpecularPower: number
 	m_flSpecularIndependence: number
-	readonly m_SpecularColor: Color
+	m_SpecularColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bStartDisabled: boolean
 	m_bEnabled: boolean
-	readonly m_LightColor: Color
-	readonly m_AmbientColor1: Color
-	readonly m_AmbientColor2: Color
-	readonly m_AmbientColor3: Color
+	m_LightColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_AmbientColor1: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_AmbientColor2: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_AmbientColor3: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSunDistance: number
 	m_flFOV: number
 	m_flNearZ: number
@@ -11438,13 +11418,13 @@ declare class C_GlobalLight extends C_BaseEntity/*, CGlobalLightBase*/ {
 	m_flLightScale: number
 	m_flFoWDarkness: number
 	m_bEnableSeparateSkyboxFog: boolean
-	m_vFowColor: boolean // returns Vector3 to IOBuffer at offset 0
-	m_ViewOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_ViewAngles: QAngle
+	m_vFowColor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ViewOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ViewAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flViewFoV: number
-	readonly m_WorldPoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	m_vFogOffsetLayer0: boolean // returns Vector2 to IOBuffer at offset 0
-	m_vFogOffsetLayer1: boolean // returns Vector2 to IOBuffer at offset 0
+	readonly m_WorldPoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vFogOffsetLayer0: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vFogOffsetLayer1: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hEnvWind: C_BaseEntity
 	readonly m_hEnvSky: C_BaseEntity
 	m_fSmoothedAmount: number
@@ -11572,14 +11552,14 @@ declare class C_DOTA_BaseNPC_Building extends C_DOTA_BaseNPC {
 	readonly m_nAmbientFXIndex: ParticleIndex_t
 	readonly m_nTPFXIndex: ParticleIndex_t
 	readonly m_nStatusFXIndex: ParticleIndex_t
-	readonly m_angInitialAngles: QAngle
+	m_angInitialAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fHeroStatueCycle: number
 	m_iHeroStatueStatusEffectIndex: number
 	m_bHeroStatue: boolean
 	m_bBattleCup: boolean
 	readonly m_HeroStatueInscription: number[]
 	m_iHeroStatueOwnerPlayerID: number
-	readonly m_ParticleTintColor: Color
+	m_ParticleTintColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Item_Ancient_Janggo extends C_DOTA_Item {
@@ -11698,7 +11678,7 @@ declare class C_DOTA_Unit_Hero_Venomancer extends C_DOTA_BaseNPC_Hero {}
 declare class C_DOTA_Item_MonkeyKingBar extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_MonkeyKing_Spring extends C_DOTABaseAbility {
-	m_vPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fStartChannelTime: number
 	readonly m_hThinker: C_BaseEntity
 	readonly m_nFxIndex: ParticleIndex_t
@@ -11751,16 +11731,16 @@ declare class C_DOTA_Unit_Hero_MonkeyKing extends C_DOTA_BaseNPC_Hero {
 }
 
 declare class C_DOTA_Unit_Hero_Rubick extends C_DOTA_BaseNPC_Hero {
-	m_stolenAbilityColorHSV1: boolean // returns Vector3 to IOBuffer at offset 0
-	m_stolenAbilityColorHSV2: boolean // returns Vector3 to IOBuffer at offset 0
-	m_stolenAbilityFXColorHSV: boolean // returns Vector3 to IOBuffer at offset 0
+	m_stolenAbilityColorHSV1: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_stolenAbilityColorHSV2: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_stolenAbilityFXColorHSV: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bHasInitializedAbilityColors: boolean
-	m_startAbilityColorHSV1: boolean // returns Vector3 to IOBuffer at offset 0
-	m_startAbilityColorHSV2: boolean // returns Vector3 to IOBuffer at offset 0
-	m_startAbilityFXColorHSV: boolean // returns Vector3 to IOBuffer at offset 0
-	m_currAbilityColorHSV1: boolean // returns Vector3 to IOBuffer at offset 0
-	m_currAbilityColorHSV2: boolean // returns Vector3 to IOBuffer at offset 0
-	m_currAbilityFXColorHSV: boolean // returns Vector3 to IOBuffer at offset 0
+	m_startAbilityColorHSV1: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_startAbilityColorHSV2: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_startAbilityFXColorHSV: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_currAbilityColorHSV1: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_currAbilityColorHSV2: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_currAbilityFXColorHSV: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartTime: number
 }
 
@@ -11935,7 +11915,7 @@ declare class C_DOTA_Item_RiverPainter extends C_DOTA_Item {
 declare class C_DOTA_Ability_Pangolier_Swashbuckle extends C_DOTABaseAbility/*, C_HorizontalMotionController*/ {
 	m_bIsBasePointSet: boolean
 	m_bIsMidQuickcast: boolean
-	m_vBasePoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBasePoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_nFXTarget: ParticleIndex_t
 	dash_speed: number
 	start_radius: number
@@ -11959,7 +11939,7 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Zeus_2 extends C_DOTABaseAbili
 declare class C_DOTA_BaseNPC_Shop extends C_DOTA_BaseNPC_Building {
 	m_ShopType: DOTA_SHOP_TYPE
 	readonly m_nShopFX: ParticleIndex_t
-	m_vShopFXOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vShopFXOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flLastSpeech: number
 }
 
@@ -12018,7 +11998,7 @@ declare class C_BaseTeamObjectiveResource extends C_BaseEntity {
 	m_bOldControlPointsReset: boolean
 	m_iUpdateCapHudParity: number
 	m_iOldUpdateCapHudParity: number
-	readonly m_vCPPositions: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vCPPositions: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_bCPIsVisible: boolean[]
 	readonly m_flLazyCapPerc: number[]
 	readonly m_flOldLazyCapPerc: number[]
@@ -12056,7 +12036,7 @@ declare class C_DOTATeam extends C_Team {
 	m_ulTeamBannerLogo: bigint
 	m_bTeamComplete: boolean
 	m_bTeamIsHomeTeam: boolean
-	readonly m_CustomHealthbarColor: Color
+	m_CustomHealthbarColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_szTag: number[]
 }
 
@@ -12147,6 +12127,8 @@ declare class C_DOTA_DisplacementVisibility extends C_BaseEntity {
 }
 
 declare class C_DOTA_Unit_Hero_Meepo extends C_DOTA_BaseNPC_Hero {
+	readonly m_bIsClone: boolean
+	
 	m_nWhichMeepo: number
 }
 
@@ -12185,9 +12167,9 @@ declare class C_BeamSpotLight extends C_BaseModelEntity {
 	m_flHDRColorScale: number
 	m_flRotationSpeed: number
 	m_nRotationAxis: number
-	m_vSpotlightTargetPos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vSpotlightCurrentPos: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vSpotlightAngles: QAngle
+	m_vSpotlightTargetPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vSpotlightCurrentPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vSpotlightAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSpotlightCurLength: number
 	m_flLightScale: number
 	m_lastTime: number
@@ -12242,7 +12224,7 @@ declare class C_DOTA_Ability_Shredder_Chakram extends C_DOTABaseAbility {
 	speed: number
 	pass_slow_duration: number
 	pass_damage: number
-	m_vEndLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vEndLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fZCoord: number
 	m_bIsReturning: boolean
 	readonly m_nFXIndex: ParticleIndex_t
@@ -12298,8 +12280,8 @@ declare class C_DOTA_Ability_Special_Bonus_Armor_2 extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_60 extends C_DOTABaseAbility {}
 
 declare class C_EnvLightProbeVolume extends C_BaseEntity {
-	m_vBoxMins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vBoxMaxs: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBoxMins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vBoxMaxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_LightGroups: string
 	m_bStatic: boolean
 	m_nHandshake: number
@@ -12388,7 +12370,7 @@ declare class CDOTA_Ability_Frostivus2018_FacelessVoid_TimeWalk extends C_DOTABa
 }
 
 declare class C_DOTA_BaseNPC_Tusk_Sigil extends C_DOTA_BaseNPC_Additive {
-	readonly m_angInitialAngles: QAngle
+	m_angInitialAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Item_RingOfTarrasque extends C_DOTA_Item {}
@@ -12401,7 +12383,7 @@ declare class C_DOTA_DataNonSpectator extends C_BaseEntity {
 	readonly m_vecDataTeam: DataTeamPlayer_t[]
 	readonly m_bWorldTreeState: bigint[]
 	readonly m_vecWorldTreeModelReplacements: TreeModelReplacement_t[]
-	readonly m_vDesiredWardPlacement: boolean[] // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vDesiredWardPlacement: boolean[] // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_nEnemyStartingPosition: number[]
 	m_nTotalEventPoints: number
 	m_nCaptainInspectedHeroID: number
@@ -12472,8 +12454,6 @@ declare class DataTeamPlayer_t {
 	m_iGoldSpentOnItems: number
 	m_iGoldSpentOnBuybacks: number
 	m_iGoldLostToDeath: number
-	readonly m_eAccoladeType: number[]
-	readonly m_unAccoladeData: bigint[]
 }
 
 declare class TreeModelReplacement_t {
@@ -12552,7 +12532,7 @@ declare class C_EnvProjectedTexture extends C_ModelPointEntity/*, CProjectedText
 	m_bLightWorld: boolean
 	m_bCameraSpace: boolean
 	m_flBrightnessScale: number
-	readonly m_LightColor: Color
+	m_LightColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flIntensity: number
 	m_flLinearAttenuation: number
 	m_flQuadraticAttenuation: number
@@ -12622,14 +12602,14 @@ declare class C_DOTA_BaseNPC_RotatableBuilding extends C_DOTA_BaseNPC {
 	readonly m_nAmbientFXIndex: ParticleIndex_t
 	readonly m_nTPFXIndex: ParticleIndex_t
 	readonly m_nStatusFXIndex: ParticleIndex_t
-	readonly m_angInitialAngles: QAngle
+	m_angInitialAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fHeroStatueCycle: number
 	m_iHeroStatueStatusEffectIndex: number
 	m_bHeroStatue: boolean
 	m_bBattleCup: boolean
 	readonly m_HeroStatueInscription: number[]
 	m_iHeroStatueOwnerPlayerID: number
-	readonly m_ParticleTintColor: Color
+	m_ParticleTintColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_BaseAttributableItem extends C_EconEntity {}
@@ -12656,9 +12636,9 @@ declare class C_DOTA_Ability_Holdout_Omnislash extends C_DOTABaseAbility {
 	juggcounter: number
 	range: number
 	m_bFirstProjectileFinished: boolean
-	m_vCastDir: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vPos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vJuggStartLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vCastDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vJuggStartLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRange: number
 	readonly m_hEntities: C_BaseEntity[]
 }
@@ -12696,7 +12676,7 @@ declare class C_EntityDissolve extends C_BaseModelEntity {
 	m_flFadeOutLength: number
 	m_flNextSparkTime: number
 	m_nDissolveType: EntityDisolveType_t
-	m_vDissolverOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vDissolverOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nMagnitude: number
 	m_bCoreExplode: boolean
 	m_bLinkedToServerEnt: boolean
@@ -12707,7 +12687,7 @@ declare class C_DOTA_Item_Recipe_Satanic extends C_DOTA_Item {}
 declare class C_DOTA_Ability_DarkSeer_WallOfReplica extends C_DOTABaseAbility {
 	m_bIsBasePointSet: boolean
 	m_bIsMidQuickcast: boolean
-	m_vBasePoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBasePoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_nFXTarget: ParticleIndex_t
 	width: number
 }
@@ -12803,7 +12783,7 @@ declare class PlayerResourcePlayerTeamData_t {
 	m_bBattleBonusActive: boolean
 	m_iBattleBonusRate: number
 	m_iCustomBuybackCost: number
-	readonly m_CustomPlayerColor: Color
+	m_CustomPlayerColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bQualifiesForPAContractReward: boolean
 	m_bHasPredictedVictory: boolean
 	m_UnitShareMasks: number
@@ -12845,11 +12825,11 @@ declare class C_BaseTrigger extends C_BaseToggle {
 }
 
 declare class CDOTA_Ability_Grimstroke_DarkArtistry extends C_DOTABaseAbility {
-	m_vCastDir: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vCastDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fStartTime: number
 	m_fTotalTime: number
 	m_nProjectileID: number
-	m_vProjectileDir: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vProjectileDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_nFXIndex: ParticleIndex_t
 	readonly m_nFXIndexB: ParticleIndex_t
 	m_nTargetsHit: number
@@ -12872,7 +12852,7 @@ declare class CDOTA_Ability_Techies_StasisTrap extends C_DOTABaseAbility {
 }
 
 declare class C_DOTA_Ability_Huskar_Life_Break extends C_DOTABaseAbility/*, C_HorizontalMotionController*/ {
-	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hTarget: C_BaseEntity
 	m_bInterrupted: boolean
 }
@@ -12894,14 +12874,14 @@ declare class C_DOTA_Unit_Hero_ShadowShaman extends C_DOTA_BaseNPC_Hero {}
 declare class C_PointHintUi extends C_PointClientUIWorldPanel {
 	readonly m_pszLessonName: string
 	readonly m_pszCaption: string
-	m_vOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_attachType: WorldTextAttachmentType_t
 	readonly m_hIconTarget: C_BaseEntity
 	readonly m_szTargetAttachmentName: string
 	readonly m_pszCustomLayoutFile: string
 	m_nTrackedDeviceIndex: number
 	readonly m_pszHighlightControllerComponent: string
-	m_vecLocalHighlightPoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecLocalHighlightPoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_pszHighlightOtherEntityName: string
 	m_bUseOffScreenIndicator: boolean
 }
@@ -12939,7 +12919,7 @@ declare class C_DOTA_BaseNPC_Tower extends C_DOTA_BaseNPC_Building {
 	readonly m_iRangeFX: ParticleIndex_t
 	readonly m_hTowerAttackTarget: C_BaseEntity
 	m_iPoseParameterAim: number
-	readonly m_angDefaultCustomTowerAngle: QAngle
+	m_angDefaultCustomTowerAngle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flLastAimYaw: number
 	m_bClientSideCustomTower: boolean
 }
@@ -12952,8 +12932,8 @@ declare class CDOTA_VR_TrackedController extends C_BaseAnimating {
 	readonly m_nInteractBeamFXIndex: ParticleIndex_t
 	m_bVirtualMouseDown: boolean
 	m_bDraggingTerrain: boolean
-	m_vDragControllerStart: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vDragAnchorStart: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vDragControllerStart: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vDragAnchorStart: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bMenuButtonPressed: boolean
 	m_bScaleButtonPressed: boolean
 	readonly m_nFXMenuButtonIndex: ParticleIndex_t
@@ -13040,7 +13020,7 @@ declare class C_DOTA_Ability_Silencer_GlaivesOfWisdom extends C_DOTABaseAbility 
 
 declare class C_DOTA_Ability_Rattletrap_Hookshot extends C_DOTABaseAbility {
 	readonly m_nFXIndex: ParticleIndex_t
-	m_vProjectileVelocity: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vProjectileVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bRetract: boolean
 }
 
@@ -13240,7 +13220,7 @@ declare class C_DOTA_Ability_Terrorblade_Metamorphosis extends C_DOTABaseAbility
 
 declare class C_DOTA_Ability_Magnataur_ReversePolarity extends C_DOTABaseAbility {
 	readonly m_nFXIndex: ParticleIndex_t
-	m_vPullLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPullLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_Brewmaster_Cyclone extends C_DOTABaseAbility {}
@@ -13301,13 +13281,13 @@ declare class C_DOTA_BinaryObject extends C_BaseAnimating {
 
 declare class C_DOTA_TempTree extends C_BaseAnimating {
 	m_fExpireTime: number
-	m_vecTreeCircleCenter: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecTreeCircleCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_Fish extends C_BaseAnimating {
-	m_pos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vel: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_angles: QAngle
+	m_pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_angles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_localLifeState: number
 	m_deathDepth: number
 	m_deathAngle: number
@@ -13315,9 +13295,9 @@ declare class C_Fish extends C_BaseAnimating {
 	readonly m_wiggleTimer: CountdownTimer
 	m_wigglePhase: number
 	m_wiggleRate: number
-	m_actualPos: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_actualAngles: QAngle
-	m_poolOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_actualPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_actualAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_poolOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_waterLevel: number
 	m_gotUpdate: boolean
 	m_x: number
@@ -13420,8 +13400,8 @@ declare class C_DOTA_Ability_Kunkka_GhostShip extends C_DOTABaseAbility {
 	stun_duration: number
 	ghostship_width: number
 	ghostship_width_scepter: number
-	m_vFinalDestination: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vStartingPoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vFinalDestination: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vStartingPoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CDOTA_Ability_Frostivus2018_Luna_Eclipse extends C_DOTABaseAbility {}
@@ -13505,10 +13485,10 @@ declare class C_DynamicProp extends C_BreakableProp {
 	m_iInitialGlowState: number
 	m_nGlowRange: number
 	m_nGlowRangeMin: number
-	readonly m_glowColor: Color
+	m_glowColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iCachedFrameCount: number
-	m_vecCachedRenderMins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecCachedRenderMaxs: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCachedRenderMins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecCachedRenderMaxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Item_Recipe_Ring_Of_Basilius extends C_DOTA_Item {}
@@ -13584,7 +13564,7 @@ declare class C_EconWearable extends C_EconEntity {}
 declare class C_DOTA_Item_HandOfMidas extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_Tiny_Avalanche extends C_DOTABaseAbility {
-	m_vTargetLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vTargetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_Zuus_Cloud extends C_DOTABaseAbility {}
@@ -13658,8 +13638,8 @@ declare class C_DOTA_Unit_Hero_Bristleback extends C_DOTA_BaseNPC_Hero {}
 
 declare class C_EnvVolumetricFogVolume extends C_BaseEntity {
 	m_bActive: boolean
-	m_vBoxMins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vBoxMaxs: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBoxMins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vBoxMaxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bStartDisabled: boolean
 	m_flStrength: number
 	m_nFalloffShape: number
@@ -13697,11 +13677,11 @@ declare class C_DevtestHierarchyChild extends C_DynamicProp {}
 
 declare class C_EnvDeferredLight extends C_ModelPointEntity/*, CDeferredLightBase*/ {
 	// Low-priority parent definition [CDeferredLightBase]
-	readonly m_LightColor: Color
+	m_LightColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flIntensity: number
 	m_flLightSize: number
 	m_flSpotFoV: number
-	readonly m_vLightDirection: QAngle
+	m_vLightDirection: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartFalloff: number
 	m_flDistanceFalloff: number
 	m_nFlags: number
@@ -13788,11 +13768,11 @@ declare class C_Sprite extends C_BaseModelEntity {
 }
 
 declare class C_EnvCombinedLightProbeVolume extends C_BaseEntity {
-	readonly m_Color: Color
+	m_Color: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flBrightness: number
 	m_bCustomCubemapTexture: boolean
-	m_vBoxMins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vBoxMaxs: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBoxMins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vBoxMaxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_LightGroups: string
 	m_bStatic: boolean
 	m_nHandshake: number
@@ -13854,14 +13834,14 @@ declare class C_DOTA_Ability_Special_Bonus_HP_350 extends C_DOTABaseAbility {}
 
 declare class C_PlayerResource extends C_BaseEntity {
 	readonly m_szName: string[]
-	readonly m_Colors: Color[]
+	readonly m_Colors: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_iPing: number[]
 	readonly m_iScore: number[]
 	readonly m_iDeaths: number[]
 	readonly m_bConnected: boolean[]
 	readonly m_iTeam: number[]
 	readonly m_bAlive: boolean[]
-	// readonly m_iHealth: number[] // actually it's this, but TS doesn't allow overriding types like C++
+	// readonly m_iHealth: number[] // actually it's this, as C++ allows us replacing types, but .d.ts doesn't
 	readonly m_bIsFakePlayer: boolean[]
 	m_nEventPlayerInfo: number
 }
@@ -14062,8 +14042,8 @@ declare class C_PropVehicleDriveable extends C_BaseAnimating {
 	m_bEnterAnimOn: boolean
 	m_bExitAnimOn: boolean
 	m_flFOV: number
-	m_vecGunCrosshair: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecEyeExitEndpoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecGunCrosshair: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecEyeExitEndpoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bHasGun: boolean
 	m_bUnableToFire: boolean
 	readonly m_hPrevPlayer: C_BasePlayer
@@ -14165,9 +14145,9 @@ declare class C_DOTA_Item_PointBooster extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_EmberSpirit_Activate_FireRemnant extends C_DOTABaseAbility/*, C_HorizontalMotionController*/ {
 	m_nProjectileID: number
-	m_vStartLocation: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_ProjectileAngles: QAngle
+	m_vStartLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_ProjectileAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hRemnantToKill: C_BaseEntity
 	m_bProjectileStarted: boolean
 	readonly hAlreadyHitList: C_BaseEntity[]
@@ -14176,8 +14156,8 @@ declare class C_DOTA_Ability_EmberSpirit_Activate_FireRemnant extends C_DOTABase
 declare class C_DOTA_Ability_Bristleback_ViscousNasalGoo extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Rubick_Telekinesis extends C_DOTABaseAbility {
-	m_vStartLocation: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vLandLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vLandLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartTime: number
 	readonly m_pTarget: C_DOTA_BaseNPC
 }
@@ -14205,7 +14185,7 @@ declare class C_ParticleSystem extends C_BaseModelEntity {
 	m_bActive: boolean
 	m_nStopType: number
 	m_flStartTime: number
-	readonly m_vServerControlPoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
+	readonly m_vServerControlPoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_iServerControlPointAssignments: number[]
 	readonly m_hControlPointEnts: C_BaseEntity[]
 	m_bNoSave: boolean
@@ -14265,11 +14245,11 @@ declare class C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_65 extends C_DOTAB
 declare class C_DOTA_Ability_Special_Bonus_Strength_40 extends C_DOTABaseAbility {}
 
 declare class C_DevtestHierarchy extends C_DynamicProp {
-	m_vRotationAxis: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vRotationAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRotationSpeed: number
 	m_nTestMode: number
 	readonly m_hChild: C_BaseEntity
-	m_vDynamicAttachOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vDynamicAttachOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nDynamicResetCount: number
 	m_nDynamicDetachCount: number
 	m_bChildIsDynamic: boolean
@@ -14344,8 +14324,8 @@ declare class C_DOTA_Ability_Tusk_IceShards extends C_DOTABaseAbility {
 	shard_duration: number
 	shard_angle_step: number
 	shard_distance: number
-	m_vSpawnOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vDirection: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vSpawnOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_Lycan_SummonWolves_PermanentInvisibility extends C_DOTABaseAbility {}
@@ -14405,7 +14385,7 @@ declare class C_DOTAWorldParticleSystem extends C_BaseModelEntity {
 	readonly m_szEffectName: string
 	readonly m_szTargetName: string
 	readonly m_szControlPoint: string
-	m_vModelScale: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vModelScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nSkinOverride: number
 	m_bDayTime: boolean
 	m_bNightTime: boolean
@@ -14442,7 +14422,7 @@ declare class C_DOTA_Ability_Kunkka_XMarksTheSpot extends C_DOTABaseAbility {
 }
 
 declare class C_ColorCorrection extends C_BaseEntity {
-	m_vecOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_MinFalloff: number
 	m_MaxFalloff: number
 	m_flFadeInDuration: number
@@ -14509,19 +14489,19 @@ declare class C_DynamicPropClientFadeOut extends C_DynamicProp {
 	m_bVisibleAtNight: boolean
 	m_bHiddenInShowcaseView: boolean
 	m_bClothSimDisabled: boolean
-	m_vFadeOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vFadeOriginOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vFadeOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vFadeOriginOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_PropVRTrackedObject extends C_BaseAnimating {
-	m_vClientScale: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vClientScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIsTracking: boolean
-	m_vTrackedPosition: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_qTrackedAngles: QAngle
-	m_vPhysicallyConstrainedPosition: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_qPhysicallyConstrainedAngles: QAngle
-	m_vWeldTransformPosition: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_qWeldTransformAngles: QAngle
+	m_vTrackedPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_qTrackedAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vPhysicallyConstrainedPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_qPhysicallyConstrainedAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vWeldTransformPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_qWeldTransformAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bClientIsAuthoritativeForTransform: boolean
 	m_bIsInContact: boolean
 }
@@ -14703,7 +14683,7 @@ declare class C_DOTA_Item_BootsOfTravel extends C_DOTA_Item {
 	readonly m_nFXOrigin: ParticleIndex_t
 	readonly m_nFXDestination: ParticleIndex_t
 	readonly m_hTeleportTarget: C_BaseEntity
-	m_vTeleportLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vTeleportLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bTeleportTargetIsBuilding: boolean
 }
 
@@ -14781,7 +14761,7 @@ declare class C_DOTA_Ability_Brewmaster_HurlBoulder extends C_DOTABaseAbility {}
 
 declare class CDOTA_Ability_Alchemist_UnstableConcoctionThrow extends C_DOTABaseAbility {
 	m_fCookTime: number
-	m_vProjectileLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vProjectileLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_NightStalker_Darkness extends C_DOTABaseAbility {}
@@ -14968,7 +14948,7 @@ declare class CDOTA_Ability_Alchemist_GoblinsGreed extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Dazzle_ShadowWave extends C_DOTABaseAbility {
 	m_iCurJumpCount: number
-	m_vCurTargetLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vCurTargetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hHitEntities: C_BaseEntity[]
 	bounce_radius: number
 	damage_radius: number
@@ -15046,7 +15026,7 @@ declare class C_DOTA_Ability_Special_Bonus_Magic_Resistance_10 extends C_DOTABas
 
 declare class C_DOTA_Unit_Broodmother_Web extends C_DOTA_BaseNPC_Additive {
 	readonly m_nFXIndex: ParticleIndex_t
-	m_vecOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Unit_Hero_PhantomLancer extends C_DOTA_BaseNPC_Hero {}
@@ -15077,7 +15057,7 @@ declare class C_DOTA_Item_Arcane_Boots extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_Wisp_Tether extends C_DOTABaseAbility/*, C_HorizontalMotionController*/ {
 	readonly m_hTarget: C_BaseEntity
-	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bProjectileActive: boolean
 	latch_distance: number
 	m_iProjectileIndex: number
@@ -15132,8 +15112,8 @@ declare class C_DOTA_Unit_Hero_Enigma extends C_DOTA_BaseNPC_Hero {}
 declare class C_Sun extends C_BaseModelEntity {
 	readonly m_Overlay: C_SunGlowOverlay
 	readonly m_GlowOverlay: C_SunGlowOverlay
-	m_vDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_clrOverlay: Color
+	m_vDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_clrOverlay: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bOn: boolean
 	m_nSize: number
 	m_nOverlaySize: number
@@ -15149,7 +15129,7 @@ declare class C_DOTA_Ability_Jakiro_DualBreath extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Omniknight_GuardianAngel extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_DarkSeer_Vacuum extends C_DOTABaseAbility {
-	m_vPullLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPullLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_FacelessVoid_Backtrack extends C_DOTABaseAbility {}
@@ -15192,8 +15172,8 @@ declare class C_DOTA_Ability_StormSpirit_BallLightning extends C_DOTABaseAbility
 	ball_lightning_travel_cost_base: number
 	ball_lightning_travel_cost_percent: number
 	m_iProjectileID: number
-	m_vStartLocation: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fDistanceAccumulator: number
 	m_fTalentDistanceAccumulator: number
 	scepter_remnant_interval: number
@@ -15352,7 +15332,7 @@ declare class C_DOTA_Ability_Special_Bonus_Mana_Break_20 extends C_DOTABaseAbili
 declare class C_DOTA_Unit_Hero_Brewmaster extends C_DOTA_BaseNPC_Hero {}
 
 declare class C_DOTA_BaseNPC_Venomancer_PlagueWard extends C_DOTA_BaseNPC_Additive {
-	readonly m_angle: QAngle
+	m_angle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iPoseParameterAim: number
 }
 
@@ -15367,7 +15347,7 @@ declare class CDOTA_Item_Lotus_Orb extends C_DOTA_Item {}
 declare class C_DOTA_Ability_Rubick_TelekinesisLand extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_SpiritBreaker_ChargeOfDarkness extends C_DOTABaseAbility/*, C_HorizontalMotionController*/ {
-	m_vChargeStartPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vChargeStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CDOTA_Ability_JungleSpirit_SunRayStop extends C_DOTABaseAbility {}
@@ -15379,8 +15359,8 @@ declare class C_DOTA_Ability_Creature_Fire_Breath extends C_DOTABaseAbility {
 	damage: number
 	radius: number
 	readonly ctTimer: CountdownTimer
-	m_vecStartRot: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecEndRot: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecStartRot: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecEndRot: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Spectre_4 extends C_DOTABaseAbility {}
@@ -15408,7 +15388,7 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_4 extends C_DOTAB
 declare class C_DOTA_Ability_Special_Bonus_Attack_Range_50 extends C_DOTABaseAbility {}
 
 declare class C_Func_Dust extends C_BaseModelEntity {
-	readonly m_Color: Color
+	m_Color: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_SpawnRate: number
 	m_SpeedMax: number
 	m_flSizeMin: number
@@ -15478,8 +15458,8 @@ declare class C_PropVRHand extends C_PropVRTrackedObject {
 	m_flJoystickAnalogValueY: number
 	m_bCanPerformUse: boolean
 	m_bTipTransformInitialized: boolean
-	m_localTipOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_localTipAngles: QAngle
+	m_localTipOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_localTipAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flHapticPulseTime: number
 	m_nHapticPulseInterval: number
 	readonly m_InteractionMgr: CInteractionManager
@@ -15508,10 +15488,10 @@ declare class C_DOTA_Ability_EarthSpirit_RollingBoulder extends C_DOTABaseAbilit
 	readonly m_nFXIndex: ParticleIndex_t
 	m_boulderSetposBool: boolean
 	m_nProjectileID: number
-	m_vStartingLocation: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vDir: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vVel: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartingLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vVel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bUsedStone: boolean
 }
 
@@ -15553,7 +15533,7 @@ declare class C_DOTA_Ability_Lycan_SummonWolves extends C_DOTABaseAbility {
 }
 
 declare class C_DOTA_Ability_Tinker_Rearm extends C_DOTABaseAbility {
-	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Venomancer_2 extends C_DOTABaseAbility {}
@@ -15643,8 +15623,8 @@ declare class C_DOTA_Ability_Frostivus2018_Rubick_GhostShip extends C_DOTABaseAb
 	ghostship_width: number
 	ghostship_speed: number
 	ghostship_distance: number
-	m_vFinalDestination: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vStartingPoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vFinalDestination: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vStartingPoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Visage_3 extends C_DOTABaseAbility {}
@@ -15685,7 +15665,7 @@ declare class C_DotaTutorialNetworker extends C_BaseEntity {
 	m_nTaskSecondsRemianing: number
 	m_nUIState: number
 	m_nShopState: number
-	m_TargetLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_TargetLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_TargetEntity: C_BaseEntity
 	readonly m_SpeechBubbles: C_SpeechBubbleInfo[]
 	m_nLocationID: number
@@ -15694,16 +15674,16 @@ declare class C_DotaTutorialNetworker extends C_BaseEntity {
 	m_nPreTutorialState: number
 	m_nPreUIState: number
 	m_nPreShopState: number
-	m_vecPrevTargetLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecPrevTargetLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hPrevTargetEntity: C_BaseEntity
 }
 
 declare class C_FuncLadder extends C_BaseModelEntity {
-	m_vecLadderDir: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecLadderDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_Dismounts: C_InfoLadderDismount[]
-	m_vecLocalTop: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecPlayerMountPositionTop: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecPlayerMountPositionBottom: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecLocalTop: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecPlayerMountPositionTop: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecPlayerMountPositionBottom: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flAutoRideSpeed: number
 	m_bDisabled: boolean
 	m_bFakeLadder: boolean
@@ -15771,7 +15751,7 @@ declare class C_DOTA_Ability_Tusk_Snowball extends C_DOTABaseAbility/*, C_Horizo
 	bonus_stun: number
 	snowball_speed: number
 	snowball_duration: number
-	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hSnowballedUnits: C_BaseEntity[]
 	readonly m_nFXIndex: ParticleIndex_t
 	readonly ctSnowball: CountdownTimer
@@ -15817,8 +15797,8 @@ declare class C_EnvVolumetricFogController extends C_BaseEntity {
 	m_nIndirectTextureDimX: number
 	m_nIndirectTextureDimY: number
 	m_nIndirectTextureDimZ: number
-	m_vBoxMins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vBoxMaxs: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBoxMins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vBoxMaxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bActive: boolean
 	m_flStartAnisoTime: number
 	m_flStartScatterTime: number
@@ -15832,8 +15812,8 @@ declare class C_EnvVolumetricFogController extends C_BaseEntity {
 	m_bStartDisabled: boolean
 	m_bEnableIndirect: boolean
 	m_nNoiseType: number
-	m_vNoiseMovementDirectionA: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vNoiseMovementDirectionB: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vNoiseMovementDirectionA: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vNoiseMovementDirectionB: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flNoiseScale: number
 	m_flNoiseMovementSpeedA: number
 	m_flNoiseMovementSpeedB: number
@@ -15849,7 +15829,7 @@ declare class C_DOTA_Ability_Necronomicon_Archer_ManaBurn extends C_DOTABaseAbil
 declare class C_DOTA_Item_TeleportScroll extends C_DOTA_Item {
 	readonly m_nFXOrigin: ParticleIndex_t
 	readonly m_nFXDestination: ParticleIndex_t
-	m_vDestination: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vDestination: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iMinDistance: number
 	m_flExtraTeleportTime: number
 }
@@ -15981,7 +15961,7 @@ declare class C_DOTA_NPC_WitchDoctor_Ward extends C_DOTA_BaseNPC_Additive {
 declare class C_DOTA_Item_Dagon_Upgraded extends C_DOTA_Item_Dagon {}
 
 declare class C_DOTA_Ability_Warlock_Upheaval extends C_DOTABaseAbility {
-	m_vPosition: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	aoe: number
 	slow_rate: number
 	slow_rate_duration: number
@@ -16022,7 +16002,7 @@ declare class C_PointHintUIHighlightModel extends C_BaseAnimating {
 declare class C_DOTA_Ability_Shredder_TimberChain extends C_DOTABaseAbility {
 	chain_radius: number
 	readonly m_nFXIndex: ParticleIndex_t
-	m_vProjectileVelocity: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vProjectileVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bRetract: boolean
 }
 
@@ -16062,7 +16042,7 @@ declare class C_DOTA_Ability_VengefulSpirit_Nether_Swap extends C_DOTABaseAbilit
 declare class C_DOTA_Ability_Special_Bonus_Unique_Rubick_4 extends C_DOTABaseAbility {}
 
 declare class C_FireSprite extends C_Sprite {
-	m_vecMoveDir: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecMoveDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bFadeFromAbove: boolean
 }
 
@@ -16137,7 +16117,7 @@ declare class C_DOTA_Ability_Special_Bonus_Spell_Amplify_4 extends C_DOTABaseAbi
 
 declare class C_DOTA_PortraitBuilding extends C_BaseAnimating {
 	readonly m_nAmbientFXIndex: ParticleIndex_t
-	readonly m_ParticleTintColor: Color
+	m_ParticleTintColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CDOTA_Item_RiverPainter7 extends C_DOTA_Item_RiverPainter {}
@@ -16213,7 +16193,7 @@ declare class CDOTA_Ability_Nyx_Assassin_ManaBurn extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Silencer_LastWord extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Holdout_Multishot extends C_DOTABaseAbility {
-	m_vStartPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iArrowProjectile: number
 	m_nFXIndex: number
 	arrow_width: number
@@ -16275,8 +16255,8 @@ declare class C_DOTA_Unit_Brewmaster_PrimalFire extends C_DOTA_BaseNPC_Creep {
 }
 
 declare class C_ServerRagdoll extends C_BaseAnimating {
-	readonly m_ragPos: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 at set
-	readonly m_ragAngles: QAngle[]
+	readonly m_ragPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
+	readonly m_ragAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 	m_flBlendWeight: number
 	readonly m_hRagdollSource: C_BaseEntity
 	m_iEyeAttachment: number
@@ -16379,7 +16359,7 @@ declare class CDOTA_Ability_Centaur_Stampede extends C_DOTABaseAbility {
 declare class C_DOTA_Ability_NightStalker_CripplingFear extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Tinker_Laser extends C_DOTABaseAbility {
-	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	bBlocked: boolean
 	readonly m_hHitEntities: C_BaseEntity[]
 }
@@ -16433,8 +16413,8 @@ declare class C_LightDirectionalEntity extends C_LightEntity {}
 declare class C_EnvCubemap extends C_BaseEntity {
 	m_bCustomCubemapTexture: boolean
 	m_flInfluenceRadius: number
-	m_vBoxProjectMins: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vBoxProjectMaxs: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBoxProjectMins: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vBoxProjectMaxs: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_LightGroups: string
 	m_bStatic: boolean
 	m_nHandshake: number
@@ -16532,8 +16512,8 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_5 extends C_DOTAB
 declare class C_DOTA_Ability_Special_Bonus_Attack_Damage_40 extends C_DOTABaseAbility {}
 
 declare class C_DOTACameraBounds extends C_BaseEntity {
-	m_vecBoundsMin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecBoundsMax: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecBoundsMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecBoundsMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Unit_Hero_Rattletrap extends C_DOTA_BaseNPC_Hero {}
@@ -16566,7 +16546,7 @@ declare class C_PointValueRemapper extends C_BaseEntity {
 	m_bFirstUpdate: boolean
 	m_flPreviousValue: number
 	m_flPreviousUpdateTickTime: number
-	m_vecPreviousTestPoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecPreviousTestPoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_Brewmaster_DrunkenHaze extends C_DOTABaseAbility {}
@@ -16727,7 +16707,7 @@ declare class C_DOTA_Ability_KeeperOfTheLight_Illuminate extends C_DOTABaseAbili
 	m_iProjectile: number
 	readonly m_nFXIndex: ParticleIndex_t
 	readonly m_nFXIndexB: ParticleIndex_t
-	m_vPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	damage_per_second: number
 	m_bStarted: boolean
 }
@@ -16796,7 +16776,7 @@ declare class C_PropVehicleChoreoGeneric extends C_DynamicProp {
 	readonly m_hPrevPlayer: C_BasePlayer
 	m_bEnterAnimOn: boolean
 	m_bExitAnimOn: boolean
-	m_vecEyeExitEndpoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecEyeExitEndpoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flFOV: number
 	readonly m_ViewSmoothingData: C_ViewSmoothingData_t
 	readonly m_vehicleView: c_vehicleview_t
@@ -16888,7 +16868,7 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Undying_5 extends C_DOTABaseAb
 declare class C_DOTA_Item_RingOfAquila extends C_DOTA_Item {}
 
 declare class CDOTA_Ability_DeathProphet_SpiritSiphon extends C_DOTABaseAbility {
-	m_vStartPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iArrowProjectile: number
 	m_nFXIndex: number
 	charge_restore_time: number
@@ -16898,7 +16878,7 @@ declare class CDOTA_Ability_DeathProphet_SpiritSiphon extends C_DOTABaseAbility 
 declare class C_DOTA_Ability_Slardar_Amplify_Damage extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Frostivus2018_Huskar_Life_Break extends C_DOTABaseAbility/*, C_HorizontalMotionController*/ {
-	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hTarget: C_BaseEntity
 	m_bInterrupted: boolean
 	max_damage: number
@@ -17009,7 +16989,7 @@ declare class CClient_Precipitation__AshSplit_t {
 	readonly m_tAshParticleTimer: TimedEvent
 	readonly m_tAshParticleTraceTimer: TimedEvent
 	m_bActiveAshEmitter: boolean
-	m_vAshSpawnOrigin: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vAshSpawnOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iAshCount: number
 }
 
@@ -17022,7 +17002,7 @@ declare class C_DOTA_Ability_Weaver_GeminateAttack extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Clinkz_Burning_Army extends C_DOTABaseAbility {
 	m_bIsBasePointSet: boolean
 	m_bIsMidQuickcast: boolean
-	m_vBasePoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBasePoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_nFXTarget: ParticleIndex_t
 	range: number
 }
@@ -17107,8 +17087,8 @@ declare class C_DOTAPlayer extends C_BasePlayer {
 	m_bUsingCameraMan: boolean
 	m_bUsingAssistedCameraOperator: boolean
 	m_nPlayerAssistFlags: number
-	m_vLatestEvent: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecStartingPosition: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vLatestEvent: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecStartingPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hAssignedHero: C_BaseEntity
 	readonly m_hLastAssignedHero: C_BaseEntity
 	readonly m_hKillCamUnit: C_BaseEntity
@@ -17207,7 +17187,7 @@ declare class C_DOTA_Ability_Special_Bonus_Spell_Block_15 extends C_DOTABaseAbil
 
 declare class C_EnvSky extends C_BaseModelEntity {
 	m_bStartDisabled: boolean
-	readonly m_vTintColor: Color
+	m_vTintColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nFogType: number
 	m_flFogMinStart: number
 	m_flFogMinEnd: number
@@ -17257,7 +17237,7 @@ declare class CDOTA_Ability_Meepo_Poof extends C_DOTABaseAbility {
 declare class CDOTA_Ability_Life_Stealer_Empty1 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_QueenOfPain_ShadowStrike extends C_DOTABaseAbility {
-	projectile_speed: boolean // returns Vector3 to IOBuffer at offset 0
+	projectile_speed: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Kunkka_5 extends C_DOTABaseAbility {}
@@ -17294,7 +17274,7 @@ declare class C_DOTA_Ability_Roshan_Slam extends C_DOTABaseAbility {}
 declare class CDOTA_Ability_Frostivus2018_Clinkz_Burning_Army extends C_DOTABaseAbility {
 	m_bIsBasePointSet: boolean
 	m_bIsMidQuickcast: boolean
-	m_vBasePoint: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vBasePoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_nFXTarget: ParticleIndex_t
 	range: number
 }
@@ -17401,10 +17381,10 @@ declare class C_LocalTempEntity extends C_BaseAnimating {
 	bounceFactor: number
 	hitSound: number
 	priority: number
-	tentOffset: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_vecTempEntAngVelocity: QAngle
+	tentOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecTempEntAngVelocity: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	tempent_renderamt: number
-	m_vecNormal: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSpriteScale: number
 	m_nFlickerFrame: number
 	m_flFrameRate: number
@@ -17413,10 +17393,10 @@ declare class C_LocalTempEntity extends C_BaseAnimating {
 	readonly m_pszParticleEffect: string
 	m_bParticleCollision: boolean
 	m_iLastCollisionFrame: number
-	m_vLastCollisionOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecTempEntVelocity: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecPrevAbsOrigin: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecTempEntAcceleration: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vLastCollisionOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecTempEntVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecPrevAbsOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecTempEntAcceleration: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Item_Recipe_Arcane_Boots extends C_DOTA_Item {}
@@ -17466,7 +17446,7 @@ declare class C_DOTA_Item_WindLace extends C_DOTA_Item {}
 declare class CDOTA_Ability_EarthSpirit_Petrify extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_EmberSpirit_SleightOfFist extends C_DOTABaseAbility {
-	m_vCastLoc: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vCastLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nHeroesKilled: number
 	readonly m_hAttackEntities: C_BaseEntity[]
 	readonly m_nFXMarkerIndex: ParticleIndex_t
@@ -17485,10 +17465,10 @@ declare class C_DOTA_Ability_Special_Bonus_MP_Regen_5 extends C_DOTABaseAbility 
 declare class CDOTA_Unit_Grimstroke_InkCreature extends C_DOTA_BaseNPC {}
 
 declare class C_PropJeep extends C_PropVehicleDriveable {
-	m_vecLastEyePos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecLastEyeTarget: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecEyeSpeed: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecTargetSpeed: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecLastEyePos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecLastEyeTarget: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecEyeSpeed: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecTargetSpeed: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flViewAngleDeltaTime: number
 	m_flJeepFOV: number
 	readonly m_pHeadlight: CHeadlightEffect
@@ -17560,7 +17540,7 @@ declare class CViewAngleAnimation extends C_BaseEntity {
 	m_flAnimStartTime: number
 	m_bFinished: boolean
 	readonly m_KeyFrames: CViewAngleKeyFrame[]
-	readonly m_vecBaseAngles: QAngle
+	m_vecBaseAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iFlags: number
 }
 
@@ -17644,20 +17624,20 @@ declare class C_Beam extends C_BaseModelEntity {
 	m_flFrame: number
 	m_nClipStyle: BeamClipStyle_t
 	m_bTurnedOff: boolean
-	m_vecEndPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecEndPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hEndEntity: C_BaseEntity
 }
 
 declare class C_ShadowControl extends C_BaseEntity {
-	m_shadowDirection: boolean // returns Vector3 to IOBuffer at offset 0
-	readonly m_shadowColor: Color
+	m_shadowDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_shadowColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flShadowMaxDist: number
 	m_bDisableShadows: boolean
 	m_bEnableLocalLightShadows: boolean
 }
 
 declare class C_DOTA_Ability_TrollWarlord_WhirlingAxes_Ranged extends C_DOTABaseAbility {
-	m_vStartPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iArrowProjectile: number
 	axe_width: number
 	axe_speed: number
@@ -17795,7 +17775,7 @@ declare class C_PointWorldText extends C_ModelPointEntity {
 	m_flWorldUnitsPerPx: number
 	m_flFontSize: number
 	m_flDepthOffset: number
-	readonly m_Color: Color
+	m_Color: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nJustifyHorizontal: PointWorldTextJustifyHorizontal_t
 	m_nJustifyVertical: PointWorldTextJustifyVertical_t
 	m_nReorientMode: PointWorldTextReorientMode_t
@@ -17849,7 +17829,7 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Earth_Spirit_2 extends C_DOTAB
 declare class C_DOTA_Ability_Special_Bonus_Unique_Lifestealer_3 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_BaseNPC_ShadowShaman_SerpentWard extends C_DOTA_BaseNPC_Additive {
-	readonly m_angle: QAngle
+	m_angle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iPoseParameterAim: number
 }
 
@@ -17931,9 +17911,9 @@ declare class CDOTA_Unit_SpectralTusk_Tombstone extends C_DOTA_BaseNPC_Additive 
 declare class C_ServerRagdollAttached extends C_ServerRagdoll {
 	m_boneIndexAttached: number
 	m_ragdollAttachedObjectIndex: number
-	m_attachmentPointBoneSpace: boolean // returns Vector3 to IOBuffer at offset 0
-	m_attachmentPointRagdollSpace: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vecOffset: boolean // returns Vector3 to IOBuffer at offset 0
+	m_attachmentPointBoneSpace: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_attachmentPointRagdollSpace: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_parentTime: number
 	m_bHasParent: boolean
 }
@@ -18111,7 +18091,7 @@ declare class C_DOTA_Ability_Rattletrap_RocketFlare extends C_DOTABaseAbility {
 
 declare class C_DOTA_Ability_Frostivus2018_Windrunner_Shackleshot extends C_DOTABaseAbility {
 	shackle_count: number
-	m_vArrowStartPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vArrowStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_hTarget: C_BaseEntity
 	readonly m_hEntitiesAffected: C_BaseEntity[]
 }
@@ -18220,7 +18200,7 @@ declare class C_DOTA_Unit_Hero_Riki extends C_DOTA_BaseNPC_Hero {}
 declare class C_InfoPlayerStartBadGuys extends C_InfoPlayerStartDota {}
 
 declare class C_BaseViewModel extends C_BaseAnimatingOverlay {
-	m_vecLastFacing: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecLastFacing: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nViewModelIndex: number
 	m_nAnimationParity: number
 	m_nLayer: number
@@ -18232,7 +18212,7 @@ declare class C_BaseViewModel extends C_BaseAnimatingOverlay {
 	readonly m_sAnimationPrefix: string
 	readonly m_hWeaponModel: C_ViewmodelWeapon
 	m_iCameraAttachment: number
-	readonly m_vecLastCameraAngles: QAngle
+	m_vecLastCameraAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_previousElapsedDuration: number
 	m_previousCycle: number
 	m_nOldAnimationParity: number
@@ -18397,7 +18377,7 @@ declare class C_PhysBox extends C_Breakable {}
 declare class C_DOTA_Ability_DragonKnight_BreatheFire extends C_DOTABaseAbility {
 	start_radius: number
 	end_radius: number
-	m_vStartPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fStartTime: number
 	m_fTotalTime: number
 }
@@ -18489,16 +18469,16 @@ declare class C_DOTA_Ability_KeeperOfTheLight_Will_O_Wisp extends C_DOTABaseAbil
 declare class C_DOTA_Ability_Courier_GoToEnemySecretShop extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_StormSpirit_StaticRemnant extends C_DOTABaseAbility {
-	m_vecCastPos: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vecCastPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_DOTA_Ability_Mirana_Starfall extends C_DOTABaseAbility {}
 
 declare class CDOTA_Ability_AncientApparition_IceBlast extends C_DOTABaseAbility {
 	readonly m_PathTimer: CountdownTimer
-	m_vTarget: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vStartPos: boolean // returns Vector3 to IOBuffer at offset 0
-	m_vLastTempViewer: boolean // returns Vector3 to IOBuffer at offset 0
+	m_vTarget: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vLastTempViewer: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_iTrackerProjectile: number
 	path_radius: number
 	radius_min: number
@@ -19687,7 +19667,8 @@ declare const enum DOTA_ABILITY_BEHAVIOR {
 	DOTA_ABILITY_BEHAVIOR_LAST_RESORT_POINT = 2147483648,
 	DOTA_ABILITY_BEHAVIOR_CAN_SELF_CAST = 4294967296,
 	DOTA_ABILITY_BEHAVIOR_SHOW_IN_GUIDES = 8589934592,
-	DOTA_ABILITY_BEHAVIOR_UNLOCKED_BY_EFFECT_INDEX = 17179869184
+	DOTA_ABILITY_BEHAVIOR_UNLOCKED_BY_EFFECT_INDEX = 17179869184,
+	DOTA_ABILITY_BEHAVIOR_SUPPRESS_ASSOCIATED_CONSUMABLE = 34359738368
 }
 
 declare const enum DAMAGE_TYPES {
@@ -22884,73 +22865,74 @@ declare const enum modifierfunction {
 	MODIFIER_PROPERTY_BOUNTY_OTHER_MULTIPLIER = 135,
 	MODIFIER_PROPERTY_UNIT_DISALLOW_UPGRADING = 136,
 	MODIFIER_PROPERTY_DODGE_PROJECTILE = 137,
-	MODIFIER_EVENT_ON_SPELL_TARGET_READY = 138,
-	MODIFIER_EVENT_ON_ATTACK_RECORD = 139,
-	MODIFIER_EVENT_ON_ATTACK_START = 140,
-	MODIFIER_EVENT_ON_ATTACK = 141,
-	MODIFIER_EVENT_ON_ATTACK_LANDED = 142,
-	MODIFIER_EVENT_ON_ATTACK_FAIL = 143,
-	MODIFIER_EVENT_ON_ATTACK_ALLIED = 144,
-	MODIFIER_EVENT_ON_PROJECTILE_DODGE = 145,
-	MODIFIER_EVENT_ON_ORDER = 146,
-	MODIFIER_EVENT_ON_UNIT_MOVED = 147,
-	MODIFIER_EVENT_ON_ABILITY_START = 148,
-	MODIFIER_EVENT_ON_ABILITY_EXECUTED = 149,
-	MODIFIER_EVENT_ON_ABILITY_FULLY_CAST = 150,
-	MODIFIER_EVENT_ON_BREAK_INVISIBILITY = 151,
-	MODIFIER_EVENT_ON_ABILITY_END_CHANNEL = 152,
-	MODIFIER_EVENT_ON_PROCESS_UPGRADE = 153,
-	MODIFIER_EVENT_ON_REFRESH = 154,
-	MODIFIER_EVENT_ON_TAKEDAMAGE = 155,
-	MODIFIER_EVENT_ON_STATE_CHANGED = 156,
-	MODIFIER_EVENT_ON_ORB_EFFECT = 157,
-	MODIFIER_EVENT_ON_PROCESS_CLEAVE = 158,
-	MODIFIER_EVENT_ON_DAMAGE_CALCULATED = 159,
-	MODIFIER_EVENT_ON_ATTACKED = 160,
-	MODIFIER_EVENT_ON_DEATH = 161,
-	MODIFIER_EVENT_ON_RESPAWN = 162,
-	MODIFIER_EVENT_ON_SPENT_MANA = 163,
-	MODIFIER_EVENT_ON_TELEPORTING = 164,
-	MODIFIER_EVENT_ON_TELEPORTED = 165,
-	MODIFIER_EVENT_ON_SET_LOCATION = 166,
-	MODIFIER_EVENT_ON_HEALTH_GAINED = 167,
-	MODIFIER_EVENT_ON_MANA_GAINED = 168,
-	MODIFIER_EVENT_ON_TAKEDAMAGE_KILLCREDIT = 169,
-	MODIFIER_EVENT_ON_HERO_KILLED = 170,
-	MODIFIER_EVENT_ON_HEAL_RECEIVED = 171,
-	MODIFIER_EVENT_ON_BUILDING_KILLED = 172,
-	MODIFIER_EVENT_ON_MODEL_CHANGED = 173,
-	MODIFIER_EVENT_ON_MODIFIER_ADDED = 174,
-	MODIFIER_PROPERTY_TOOLTIP = 175,
-	MODIFIER_PROPERTY_MODEL_CHANGE = 176,
-	MODIFIER_PROPERTY_MODEL_SCALE = 177,
-	MODIFIER_PROPERTY_IS_SCEPTER = 178,
-	MODIFIER_PROPERTY_TRANSLATE_ACTIVITY_MODIFIERS = 179,
-	MODIFIER_PROPERTY_TRANSLATE_ATTACK_SOUND = 180,
-	MODIFIER_PROPERTY_LIFETIME_FRACTION = 181,
-	MODIFIER_PROPERTY_PROVIDES_FOW_POSITION = 182,
-	MODIFIER_PROPERTY_SPELLS_REQUIRE_HP = 183,
-	MODIFIER_PROPERTY_FORCE_DRAW_MINIMAP = 184,
-	MODIFIER_PROPERTY_DISABLE_TURNING = 185,
-	MODIFIER_PROPERTY_IGNORE_CAST_ANGLE = 186,
-	MODIFIER_PROPERTY_CHANGE_ABILITY_VALUE = 187,
-	MODIFIER_PROPERTY_ABILITY_LAYOUT = 188,
-	MODIFIER_EVENT_ON_DOMINATED = 189,
-	MODIFIER_PROPERTY_TEMPEST_DOUBLE = 190,
-	MODIFIER_PROPERTY_PRESERVE_PARTICLES_ON_MODEL_CHANGE = 191,
-	MODIFIER_EVENT_ON_ATTACK_FINISHED = 192,
-	MODIFIER_PROPERTY_IGNORE_COOLDOWN = 193,
-	MODIFIER_PROPERTY_CAN_ATTACK_TREES = 194,
-	MODIFIER_PROPERTY_VISUAL_Z_DELTA = 195,
-	MODIFIER_PROPERTY_INCOMING_DAMAGE_ILLUSION = 196,
-	MODIFIER_PROPERTY_DONT_GIVE_VISION_OF_ATTACKER = 197,
-	MODIFIER_PROPERTY_TOOLTIP2 = 198,
-	MODIFIER_EVENT_ON_ATTACK_RECORD_DESTROY = 199,
-	MODIFIER_EVENT_ON_PROJECTILE_OBSTRUCTION_HIT = 200,
-	MODIFIER_PROPERTY_SUPPRESS_TELEPORT = 201,
-	MODIFIER_EVENT_ON_ATTACK_CANCELLED = 202,
-	MODIFIER_PROPERTY_SUPPRESS_CLEAVE = 203,
-	MODIFIER_FUNCTION_LAST = 204,
+	MODIFIER_PROPERTY_TRIGGER_COSMETIC_AND_END_ATTACK = 138,
+	MODIFIER_EVENT_ON_SPELL_TARGET_READY = 139,
+	MODIFIER_EVENT_ON_ATTACK_RECORD = 140,
+	MODIFIER_EVENT_ON_ATTACK_START = 141,
+	MODIFIER_EVENT_ON_ATTACK = 142,
+	MODIFIER_EVENT_ON_ATTACK_LANDED = 143,
+	MODIFIER_EVENT_ON_ATTACK_FAIL = 144,
+	MODIFIER_EVENT_ON_ATTACK_ALLIED = 145,
+	MODIFIER_EVENT_ON_PROJECTILE_DODGE = 146,
+	MODIFIER_EVENT_ON_ORDER = 147,
+	MODIFIER_EVENT_ON_UNIT_MOVED = 148,
+	MODIFIER_EVENT_ON_ABILITY_START = 149,
+	MODIFIER_EVENT_ON_ABILITY_EXECUTED = 150,
+	MODIFIER_EVENT_ON_ABILITY_FULLY_CAST = 151,
+	MODIFIER_EVENT_ON_BREAK_INVISIBILITY = 152,
+	MODIFIER_EVENT_ON_ABILITY_END_CHANNEL = 153,
+	MODIFIER_EVENT_ON_PROCESS_UPGRADE = 154,
+	MODIFIER_EVENT_ON_REFRESH = 155,
+	MODIFIER_EVENT_ON_TAKEDAMAGE = 156,
+	MODIFIER_EVENT_ON_STATE_CHANGED = 157,
+	MODIFIER_EVENT_ON_ORB_EFFECT = 158,
+	MODIFIER_EVENT_ON_PROCESS_CLEAVE = 159,
+	MODIFIER_EVENT_ON_DAMAGE_CALCULATED = 160,
+	MODIFIER_EVENT_ON_ATTACKED = 161,
+	MODIFIER_EVENT_ON_DEATH = 162,
+	MODIFIER_EVENT_ON_RESPAWN = 163,
+	MODIFIER_EVENT_ON_SPENT_MANA = 164,
+	MODIFIER_EVENT_ON_TELEPORTING = 165,
+	MODIFIER_EVENT_ON_TELEPORTED = 166,
+	MODIFIER_EVENT_ON_SET_LOCATION = 167,
+	MODIFIER_EVENT_ON_HEALTH_GAINED = 168,
+	MODIFIER_EVENT_ON_MANA_GAINED = 169,
+	MODIFIER_EVENT_ON_TAKEDAMAGE_KILLCREDIT = 170,
+	MODIFIER_EVENT_ON_HERO_KILLED = 171,
+	MODIFIER_EVENT_ON_HEAL_RECEIVED = 172,
+	MODIFIER_EVENT_ON_BUILDING_KILLED = 173,
+	MODIFIER_EVENT_ON_MODEL_CHANGED = 174,
+	MODIFIER_EVENT_ON_MODIFIER_ADDED = 175,
+	MODIFIER_PROPERTY_TOOLTIP = 176,
+	MODIFIER_PROPERTY_MODEL_CHANGE = 177,
+	MODIFIER_PROPERTY_MODEL_SCALE = 178,
+	MODIFIER_PROPERTY_IS_SCEPTER = 179,
+	MODIFIER_PROPERTY_TRANSLATE_ACTIVITY_MODIFIERS = 180,
+	MODIFIER_PROPERTY_TRANSLATE_ATTACK_SOUND = 181,
+	MODIFIER_PROPERTY_LIFETIME_FRACTION = 182,
+	MODIFIER_PROPERTY_PROVIDES_FOW_POSITION = 183,
+	MODIFIER_PROPERTY_SPELLS_REQUIRE_HP = 184,
+	MODIFIER_PROPERTY_FORCE_DRAW_MINIMAP = 185,
+	MODIFIER_PROPERTY_DISABLE_TURNING = 186,
+	MODIFIER_PROPERTY_IGNORE_CAST_ANGLE = 187,
+	MODIFIER_PROPERTY_CHANGE_ABILITY_VALUE = 188,
+	MODIFIER_PROPERTY_ABILITY_LAYOUT = 189,
+	MODIFIER_EVENT_ON_DOMINATED = 190,
+	MODIFIER_PROPERTY_TEMPEST_DOUBLE = 191,
+	MODIFIER_PROPERTY_PRESERVE_PARTICLES_ON_MODEL_CHANGE = 192,
+	MODIFIER_EVENT_ON_ATTACK_FINISHED = 193,
+	MODIFIER_PROPERTY_IGNORE_COOLDOWN = 194,
+	MODIFIER_PROPERTY_CAN_ATTACK_TREES = 195,
+	MODIFIER_PROPERTY_VISUAL_Z_DELTA = 196,
+	MODIFIER_PROPERTY_INCOMING_DAMAGE_ILLUSION = 197,
+	MODIFIER_PROPERTY_DONT_GIVE_VISION_OF_ATTACKER = 198,
+	MODIFIER_PROPERTY_TOOLTIP2 = 199,
+	MODIFIER_EVENT_ON_ATTACK_RECORD_DESTROY = 200,
+	MODIFIER_EVENT_ON_PROJECTILE_OBSTRUCTION_HIT = 201,
+	MODIFIER_PROPERTY_SUPPRESS_TELEPORT = 202,
+	MODIFIER_EVENT_ON_ATTACK_CANCELLED = 203,
+	MODIFIER_PROPERTY_SUPPRESS_CLEAVE = 204,
+	MODIFIER_FUNCTION_LAST = 205,
 	MODIFIER_FUNCTION_INVALID = 255
 }
 

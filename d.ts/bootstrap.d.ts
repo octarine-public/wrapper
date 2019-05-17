@@ -655,7 +655,7 @@ declare class EventEmitter {
 	) => void): EventEmitter
 	public on(name: "onBloodImpact", callback: (target: C_BaseEntity, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
 	public on(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
-	public on(name: "onLinearProjectileCreated", callback: (
+	public on(name: "onLinearProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0
 		proj: LinearProjectile,
 		ent: C_BaseEntity,
 		path: string,
@@ -663,24 +663,21 @@ declare class EventEmitter {
 		max_speed: number,
 		fow_radius: number,
 		sticky_fow_reveal: boolean,
-		distance: number,
-		colorgemcolor: Color
+		distance: number
 	) => void): EventEmitter
 	public on(name: "onLinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventEmitter
-	public on(name: "onTrackingProjectileCreated", callback: (
+	public on(name: "onTrackingProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0
 		proj: TrackingProjectile,
 		sourceAttachment: number,
 		path: string,
 		particleSystemHandle: bigint,
 		maximpacttime: number,
-		colorgemcolor: Color,
 		launch_tick: number
 	) => void): EventEmitter
-	public on(name: "onTrackingProjectileUpdated", callback: ( // vSourceLoc: Vector3 at IOBuffer offset 0
+	public on(name: "onTrackingProjectileUpdated", callback: ( // vSourceLoc: Vector3 at IOBuffer offset 0, colorgemcolor: Color at IOBuffer offset 3
 		proj: TrackingProjectile,
 		path: string,
 		particleSystemHandle: bigint,
-		colorgemcolor: Color,
 		launch_tick: number
 	) => void): EventEmitter
 	public on(name: "onTrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
