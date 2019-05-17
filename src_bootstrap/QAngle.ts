@@ -14,6 +14,10 @@ global.QAngle = class QAngle extends Vector3 {
 			: new QAngle();
 	}
 
+	get Angle(): number {
+		return this.DegreesToRadians().Angle
+	}
+
 	/* ================ Constructors ================ */
 	/**
 	 * Create new QAngle with pitch, yaw, roll

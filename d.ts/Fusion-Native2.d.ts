@@ -2196,8 +2196,6 @@ declare class CFootLockItem {
 }
 
 declare class CDOTA_Buff {
-	readonly m_bIsValid: boolean
-	
 	readonly m_name: string
 	readonly m_class: string
 	readonly m_szModifierAura: string
@@ -5955,10 +5953,6 @@ declare class C_BaseFire extends C_BaseEntity {
 }
 
 declare class C_BaseEntity extends C_GameEntity {
-	readonly m_bIsValid: boolean
-	readonly m_iID: number
-	readonly m_vecForward: boolean // returns Vector3 to IOBuffer offset 0 on get
-	
 	readonly m_CBodyComponent: CBodyComponent
 	readonly m_NetworkTransmitComponent: CNetworkTransmitComponent
 	readonly m_pDummyPhysicsComponent: CPhysicsComponent
@@ -9084,8 +9078,6 @@ declare class C_NextBotCombatCharacter extends C_BaseCombatCharacter {
 }
 
 declare class CDOTA_ModifierManager {
-	readonly m_vecBuffs: CDOTA_Buff[]
-	
 	readonly m_hModifierParent: C_BaseEntity
 	m_nHasTruesightForTeam: number
 	m_nHasTruesightForTeamValid: number
