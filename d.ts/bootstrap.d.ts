@@ -796,7 +796,7 @@ declare class EventEmitter {
 	public on(name: string, listener: Listener): EventEmitter
 	public removeListener(name: string, listener: Listener): EventEmitter
 	public removeAllListeners(): EventEmitter
-	public emit(name: string, cancellable: boolean, ...args: any[]): boolean
+	public emit(name: string, cancellable?: boolean, ...args: any[]): boolean
 	public once(name: string, listener: Listener): EventEmitter
 }
 declare var Events: EventEmitter
