@@ -27,10 +27,10 @@ global.EventEmitter = class EventEmitter {
 		return this
 	}
 
-	public removeAllListeners(): EventEmitter {
+	/* public removeAllListeners(): EventEmitter {
 		Object.keys(this.events).forEach(name => this.events[name].splice(0))
 		return this
-	}
+	} */
 
 	public emit(name: string, cancellable: boolean = false, ...args: any[]): boolean {
 		let listeners = this.events[name]

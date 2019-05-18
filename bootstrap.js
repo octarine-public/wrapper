@@ -28,21 +28,7 @@ global.EventEmitter = class EventEmitter {
     return this;
   }
 
-  removeAllListeners() {
-    let _a = Object.keys(this.events);
-
-    let _f = name => {
-      return this.events[name].splice(0);
-    };
-
-    for (let _i = _a.length; _i--;) {
-      _f(_a[_i], _i, _a);
-    }
-
-    return this;
-  }
-
-  emit(name, cancellable, ...args) {
+  emit(name, cancellable = false, ...args) {
     let listeners = this.events[name];
 
     if (listeners === undefined) {
