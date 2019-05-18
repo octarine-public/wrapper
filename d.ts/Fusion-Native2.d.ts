@@ -8404,7 +8404,9 @@ declare class C_INIT_CodeDriven extends CParticleFunctionInitializer {
 	m_bSequence1: boolean
 }
 
-declare class IParticleCollection {}
+declare class IParticleCollection {
+	readonly m_iMaxControlPointID: number
+}
 
 declare class InfoForResourceTypeWorld_t {}
 
@@ -10552,6 +10554,8 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Abaddon_2 extends C_DOTABaseAb
 declare class C_DOTA_Ability_Special_Bonus_MP_1000 extends C_DOTABaseAbility {}
 
 declare class C_BaseClientUIEntity extends C_BaseModelEntity {
+	OnColorChanged(): void
+
 	m_bEnabled: boolean
 	readonly m_DialogXMLName: string
 	readonly m_PanelClassName: string
