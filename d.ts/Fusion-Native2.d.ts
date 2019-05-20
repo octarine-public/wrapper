@@ -250,8 +250,6 @@ declare const enum PingType_t {
 
 /// GLOBAL OBJECTS
 declare var LocalDOTAPlayer: C_DOTAPlayer
-declare var GameRules: C_DOTAGamerules
-declare var PlayerResource: C_DOTA_PlayerResource
 declare var IOBuffer: Float32Array // 8 floats in size
 declare var global: any
 
@@ -330,7 +328,6 @@ declare interface ConVars {
 
 declare interface GameEvents {
 	FireEventToClient(name: string, player_id: number, obj: any): void // BROKEN BY VOLVO
-	FireEventToTeam(name: string, team_num: number, obj: any): void // BROKEN BY VOLVO
 	FireEventToAllClients(name: string, obj: any): void
 	FireEventToServer(name: string, obj: any): void
 }
@@ -450,6 +447,7 @@ declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer 
 	OrderType: dotaunitorder_t,
 	Target?: C_BaseEntity | number,
 	Ability?: C_BaseEntity,
+	OrderIssuer?: PlayerOrderIssuer_t,
 	Unit?: C_BaseEntity,
 	Queue?: boolean,
 	ShowEffects?: boolean
