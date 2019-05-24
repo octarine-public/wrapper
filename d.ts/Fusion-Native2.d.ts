@@ -10987,9 +10987,6 @@ declare class C_DOTA_Ability_Special_Bonus_Gold_Income_70 extends C_DOTABaseAbil
 declare class C_DOTA_Ability_Special_Bonus_Night_Vision_600 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_BaseNPC_Hero extends C_DOTA_BaseNPC_Additive {
-	readonly m_bIsIllusion: boolean
-	readonly m_fSpellAmplification: number
-	
 	m_iCurrentXP: number
 	m_iAbilityPoints: number
 	m_flRespawnTime: number
@@ -12121,8 +12118,6 @@ declare class C_DOTA_DisplacementVisibility extends C_BaseEntity {
 }
 
 declare class C_DOTA_Unit_Hero_Meepo extends C_DOTA_BaseNPC_Hero {
-	readonly m_bIsClone: boolean
-	
 	m_nWhichMeepo: number
 }
 
