@@ -312,8 +312,8 @@ declare class TrackingProjectile {
 	readonly m_bIsEvaded: boolean
 	readonly m_flExpireTime: number
 	readonly m_iSpeed: number
-	readonly m_hSource: C_DOTA_BaseNPC
-	readonly m_hTarget: C_BaseEntity
+	readonly m_hSource: C_DOTA_BaseNPC | number
+	readonly m_hTarget: C_BaseEntity | number
 	readonly m_vecPosition: boolean // returns Vector3 to IOBuffer offset 0 on get
 	readonly m_vecTarget: boolean // returns Vector3 to IOBuffer offset 0 on get
 	readonly m_particle: CNewParticleEffect
@@ -2702,6 +2702,7 @@ declare class CDOTA_ItemStockInfo {
 	iMaxCount: number
 	fInitialStockDuration: number
 	iPlayerNumber: number
+	iBonusDelayedStockCount: number
 }
 
 declare class C_INIT_RandomVector extends CParticleFunctionInitializer {
@@ -6382,6 +6383,8 @@ declare class C_BaseAnimating extends C_BaseModelEntity {
 }
 
 declare class C_BaseModelEntity extends C_BaseEntity {
+	OnColorChanged(): void
+	
 	readonly m_CRenderComponent: CRenderComponent
 	m_iViewerID: number
 	m_iTeamVisibilityBitmask: number
@@ -6712,7 +6715,7 @@ declare class CModifierParams {
 	nTooltipParam: number
 	bIgnoreInvis: boolean
 	bNoCooldown: boolean
-	bIgnoreArmor: boolean
+	bIgnoreBaseArmor: boolean
 	bReincarnate: boolean
 	bDoNotConsume: boolean
 	fDistance: number
@@ -6734,6 +6737,7 @@ declare class CModifierParams {
 	bCraniumBasherTested: boolean
 	bMKBTested: boolean
 	bHeartRegenApplied: boolean
+	bBloodstoneRegenApplied: boolean
 	bDiffusalApplied: boolean
 	bChainLightningConsidered: boolean
 	bSuppressDamage: boolean
@@ -8883,7 +8887,7 @@ declare class CDOTA_AttackRecord {
 	readonly m_bUseProjectile: boolean
 	readonly m_bUseCastAttackOrb: boolean
 	readonly m_bAutoCastAttack: boolean
-	readonly m_bIgnoreArmor: boolean
+	readonly m_bIgnoreBaseArmor: boolean
 	readonly m_bIgnoreObstructions: boolean
 	readonly m_bSuppressDamageSounds: boolean
 	readonly m_bSuppressDamageEffects: boolean
@@ -8945,6 +8949,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_colorGemColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bHasColorGem: boolean
 	m_iMoveSpeed: number
+	m_iBaseAttackSpeed: number
 	m_flBaseAttackTime: number
 	m_iUnitNameIndex: number
 	m_iHealthBarOffset: number
@@ -10290,8 +10295,8 @@ declare class C_DOTABaseAbility extends C_BaseEntity {
 	readonly m_pAbilityData: DOTAAbilityData_t
 	readonly m_fCastPoint: number
 	readonly m_fChannelTime: number
-	readonly m_fAOERadius: number
 	readonly m_iAbilityDamage: number
+	readonly m_fAOERadius: number
 	readonly m_bIsHidden: boolean
 	
 	m_bAltCastState: boolean
@@ -10552,8 +10557,6 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Abaddon_2 extends C_DOTABaseAb
 declare class C_DOTA_Ability_Special_Bonus_MP_1000 extends C_DOTABaseAbility {}
 
 declare class C_BaseClientUIEntity extends C_BaseModelEntity {
-	OnColorChanged(): void
-
 	m_bEnabled: boolean
 	readonly m_DialogXMLName: string
 	readonly m_PanelClassName: string
@@ -10850,6 +10853,8 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Dazzle_2 extends C_DOTABaseAbi
 declare class C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_1 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Medusa_5 extends C_DOTABaseAbility {}
+
+declare class C_DOTA_Ability_Special_Bonus_Unique_Windranger_7 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_HP_300 extends C_DOTABaseAbility {}
 
@@ -11200,6 +11205,8 @@ declare class C_DOTA_Ability_Juggernaut_BladeFury extends C_DOTABaseAbility {
 
 declare class C_DOTA_Ability_Juggernaut_HealingWard extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_AntiMage_Blink_Fake extends C_DOTABaseAbility {}
+
 declare class C_IngameEvent_Base extends C_BaseEntity {
 	m_bInitialized: boolean
 	readonly m_CompendiumChallengeEventID: number[]
@@ -11369,6 +11376,8 @@ declare class C_DotaSubquestBase extends C_BaseEntity {
 	m_bWasCompleted: boolean
 }
 
+declare class C_DOTA_Ability_Special_Bonus_Unique_DarkWillow_3 extends C_DOTABaseAbility {}
+
 declare class C_DOTA_Ability_Special_Bonus_Magic_Resistance_20 extends C_DOTABaseAbility {}
 
 declare class C_GlobalLight extends C_BaseEntity/*, CGlobalLightBase*/ {
@@ -11497,11 +11506,15 @@ declare class C_DOTA_Item_Desolator extends C_DOTA_Item {}
 
 declare class CDOTA_Ability_Special_Bonus_Unique_Grimstroke_2 extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_Beastmaster_InnerBeast extends C_DOTABaseAbility {}
+
 declare class C_IngameEvent_TI8 extends C_IngameEvent_Base {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Windranger_5 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Pugna_6 extends C_DOTABaseAbility {}
+
+declare class C_DOTA_Ability_Special_Bonus_Unique_Slardar_4 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Spell_Immunity extends C_DOTABaseAbility {}
 
@@ -11524,6 +11537,8 @@ declare class C_DOTA_Item_Iron_Talon extends C_DOTA_Item {}
 declare class C_DOTA_Item_MysticStaff extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_LoneDruid_TrueForm_Druid extends C_DOTABaseAbility {}
+
+declare class C_DOTA_Ability_Spectre_Haunt_Single extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Enchantress_Untouchable extends C_DOTABaseAbility {}
 
@@ -11707,6 +11722,10 @@ declare class C_InfoPlayerStartDota extends C_PointEntity {
 declare class C_DOTA_Item_Arcane_Ring extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_KeeperOfTheLight_Recall extends C_DOTABaseAbility {}
+
+declare class C_DOTA_Ability_Beastmaster_WildAxes extends C_DOTABaseAbility {
+	axe_damage: number
+}
 
 declare class C_DOTA_Ability_Zuus_ThundergodsWrath extends C_DOTABaseAbility {
 	readonly m_nFXIndex: ParticleIndex_t
@@ -11908,6 +11927,8 @@ declare class C_DOTA_Ability_Pangolier_Swashbuckle extends C_DOTABaseAbility/*, 
 	m_bIsMidQuickcast: boolean
 	m_vBasePoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_nFXTarget: ParticleIndex_t
+	max_charges: number
+	charge_restore_time: number
 	dash_speed: number
 	start_radius: number
 	end_radius: number
@@ -12236,6 +12257,15 @@ declare class C_DOTA_Item_HelmOfTheDominator extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_MonkeyKing_Transform extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_KeeperOfTheLight_SpiritFormIlluminate extends C_DOTABaseAbility {
+	readonly m_hThinker: C_BaseEntity
+	max_channel_time: number
+	damage_per_second: number
+	m_fPower: number
+	m_fStartTime: number
+	readonly m_nFXIndex: ParticleIndex_t
+}
+
 declare class C_DOTA_Ability_Treant_Overgrowth extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Necrophos_4 extends C_DOTABaseAbility {}
@@ -12298,6 +12328,7 @@ declare class C_DOTA_Ability_MonkeyKing_FurArmy extends C_DOTABaseAbility {
 	num_second_soldiers: number
 	m_bCreateMonkeys: boolean
 	m_flNextCreationTime: number
+	m_flScepterTime: number
 	readonly m_vecSoldiers: C_BaseEntity[]
 }
 
@@ -12357,6 +12388,10 @@ declare class CDOTA_Ability_Frostivus2018_FacelessVoid_TimeWalk extends C_DOTABa
 	radius: number
 	damage: number
 }
+
+declare class C_DOTA_Ability_Special_Bonus_Unique_Sniper_6 extends C_DOTABaseAbility {}
+
+declare class C_DOTA_Ability_Special_Bonus_Unique_Windranger_8 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_BaseNPC_Tusk_Sigil extends C_DOTA_BaseNPC_Additive {
 	m_angInitialAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
@@ -13107,7 +13142,10 @@ declare class C_DOTA_Item_Flying_Courier extends C_DOTA_Item {
 
 declare class C_DOTA_Item_BlinkDagger extends C_DOTA_Item {}
 
-declare class C_DOTA_Ability_Windrunner_Windrun extends C_DOTABaseAbility {}
+declare class C_DOTA_Ability_Windrunner_Windrun extends C_DOTABaseAbility {
+	max_charges: number
+	charge_restore_time: number
+}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_6 extends C_DOTABaseAbility {}
 
@@ -13174,6 +13212,8 @@ declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_100 extends C_DOTABaseAb
 declare class C_DOTA_BaseNPC_Creep_Talking extends C_DOTA_BaseNPC_Creep {}
 
 declare class C_DOTA_Item_BladeOfAlacrity extends C_DOTA_Item {}
+
+declare class C_DOTA_Ability_KeeperOfTheLight_SpiritFormIlluminateEnd extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Brewmaster_WindWalk extends C_DOTABaseAbility {}
 
@@ -13410,6 +13450,8 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Windranger_2 extends C_DOTABas
 declare class C_DOTA_Ability_Special_Bonus_All_Stats_15 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Unit_Undying_Tombstone extends C_DOTA_BaseNPC_Additive {}
+
+declare class C_DOTA_Ability_Grimstroke_Scepter extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_1 extends C_DOTABaseAbility {}
 
@@ -13847,6 +13889,8 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Faceless_Void extends C_DOTABa
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Luna_3 extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_Special_Bonus_Unique_Tusk_6 extends C_DOTABaseAbility {}
+
 declare class C_DOTA_Ability_Special_Bonus_Unique_Riki_3 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_1 extends C_DOTABaseAbility {}
@@ -14112,6 +14156,8 @@ declare class C_DOTA_Ability_Special_Bonus_HP_Regen_8 extends C_DOTABaseAbility 
 
 declare class C_DOTA_Item_DragonLance extends C_DOTA_Item {}
 
+declare class C_DOTA_Ability_ArcWarden_Scepter extends C_DOTABaseAbility {}
+
 declare class C_DOTA_Ability_BountyHunter_Track extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Clinkz_DeathPact extends C_DOTABaseAbility {}
@@ -14229,6 +14275,8 @@ declare class C_DOTA_Ability_Broodmother_SpawnSpiderlings extends C_DOTABaseAbil
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Pudge_3 extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_Special_Bonus_Unique_Windranger_9 extends C_DOTABaseAbility {}
+
 declare class C_DOTA_Ability_Special_Bonus_Cooldown_Reduction_65 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Strength_40 extends C_DOTABaseAbility {}
@@ -14289,6 +14337,8 @@ declare class C_DevtestHierarchy2 extends C_BaseAnimating {}
 declare class C_DOTA_Item_Recipe_Ancient_Janggo extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_Necronomicon_Warrior_LastWill extends C_DOTABaseAbility {}
+
+declare class C_DOTA_Item_Recipe_UltimateScepter_2 extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Doom_3 extends C_DOTABaseAbility {}
 
@@ -14856,6 +14906,8 @@ declare class C_DOTA_Ability_Enigma_Malefice extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_7 extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_Special_Bonus_Unique_Terrorblade_4 extends C_DOTABaseAbility {}
+
 declare class C_DOTA_Ability_Special_Bonus_Unique_Troll_Warlord_2 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Unit_Hero_Luna extends C_DOTA_BaseNPC_Hero {}
@@ -15141,6 +15193,8 @@ declare class C_DOTA_Ability_Special_Bonus_Strength_25 extends C_DOTABaseAbility
 
 declare class C_DOTA_Ability_Special_Bonus_MP_Regen_1 extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_Special_Bonus_Cleave_175 extends C_DOTABaseAbility {}
+
 declare class CDOTA_Item_Recipe_Iron_Talon extends C_DOTA_Item {}
 
 declare class CDOTA_Ability_Special_Bonus_Unique_Grimstroke_1 extends C_DOTABaseAbility {}
@@ -15221,6 +15275,8 @@ declare class C_DOTA_Ability_Lina_DragonSlave extends C_DOTABaseAbility {
 }
 
 declare class C_DOTA_Ability_Razor_UnstableCurrent extends C_DOTABaseAbility {}
+
+declare class CDOTA_Ability_AntiMage_Scepter extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Frostivus2018_Magnataur_Skewer extends C_DOTABaseAbility {
 	skewer_radius: number
@@ -15486,6 +15542,10 @@ declare class C_DOTA_Ability_EarthSpirit_RollingBoulder extends C_DOTABaseAbilit
 
 declare class C_DOTA_Ability_Visage_GraveChill extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_TemplarAssassin_Trap_Teleport extends C_DOTABaseAbility {
+	readonly m_hTrap: C_BaseEntity
+}
+
 declare class C_DOTA_Ability_Riki_TricksOfTheTrade extends C_DOTABaseAbility {}
 
 declare class CDOTA_Ability_MudGolem_RockDestroy extends C_DOTABaseAbility {}
@@ -15545,7 +15605,9 @@ declare class C_DOTA_Ability_Special_Bonus_MP_225 extends C_DOTABaseAbility {}
 
 declare class CDamageComponent extends CEntityComponent {}
 
-declare class C_DOTA_Unit_Hero_EmberSpirit extends C_DOTA_BaseNPC_Hero {}
+declare class C_DOTA_Unit_Hero_EmberSpirit extends C_DOTA_BaseNPC_Hero {
+	m_bGainScepterCharges: boolean
+}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Nevermore_4 extends C_DOTABaseAbility {}
 
@@ -15559,6 +15621,8 @@ declare class C_DOTA_Unit_Hero_PhantomAssassin extends C_DOTA_BaseNPC_Hero {
 	readonly m_nFXDeath: ParticleIndex_t
 	m_nArcanaLevel: number
 }
+
+declare class C_DOTA_Item_UltimateScepter_2 extends C_DOTA_Item {}
 
 declare class C_DOTA_Item_StoutShield extends C_DOTA_Item {}
 
@@ -15574,7 +15638,11 @@ declare class C_DOTA_Ability_Courier_ReturnToBase extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Riki_1 extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_Special_Bonus_Unique_Chen_5 extends C_DOTABaseAbility {}
+
 declare class C_DOTA_Ability_Special_Bonus_20_Crit_15 extends C_DOTABaseAbility {}
+
+declare class C_DOTA_Ability_Special_Bonus_MP_Regen_250 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_BaseNPC_Clinkz_Skeleton_Army extends C_DOTA_BaseNPC {}
 
@@ -16585,6 +16653,8 @@ declare class C_DOTA_Item_Butterfly extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_Dazzle_Bad_Juju extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_Tiny_Tree_Channel extends C_DOTABaseAbility {}
+
 declare class C_DOTA_Ability_Special_Bonus_Unique_Magnus extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Night_Vision_1000 extends C_DOTABaseAbility {}
@@ -16732,6 +16802,7 @@ declare class C_DOTA_Ability_Broodmother_SpinWeb extends C_DOTABaseAbility {
 	readonly m_hWebs: C_BaseEntity[]
 	charge_restore_time: number
 	max_charges: number
+	max_charges_scepter: number
 }
 
 declare class C_DOTA_Ability_Warlock_Golem_Permanent_Immolation extends C_DOTABaseAbility {}
@@ -17441,6 +17512,8 @@ declare class C_DOTA_Ability_EmberSpirit_SleightOfFist extends C_DOTABaseAbility
 	readonly m_nFXMarkerIndex: ParticleIndex_t
 }
 
+declare class C_DOTA_Ability_Special_Bonus_Unique_Clinkz_4 extends C_DOTABaseAbility {}
+
 declare class C_DOTA_Ability_Special_Bonus_Unique_Lion_4 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Sniper_3 extends C_DOTABaseAbility {}
@@ -17490,7 +17563,9 @@ declare class C_DOTA_NPC_TechiesMines extends C_DOTA_BaseNPC_Additive {
 	readonly m_iRangeFX: ParticleIndex_t
 }
 
-declare class C_DOTA_Unit_Hero_Broodmother extends C_DOTA_BaseNPC_Hero {}
+declare class C_DOTA_Unit_Hero_Broodmother extends C_DOTA_BaseNPC_Hero {
+	m_bGainScepterCharges: boolean
+}
 
 declare class C_TriggerVolume extends C_BaseModelEntity {}
 
@@ -17662,8 +17737,6 @@ declare class C_DOTA_Item_Recipe_Heart extends C_DOTA_Item {}
 declare class C_DOTA_Item_PlateMail extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_Wisp_Tether_Break extends C_DOTABaseAbility {}
-
-declare class CDOTA_Ability_Beastmaster_InnerBeast extends C_DOTABaseAbility {}
 
 declare class CDOTA_Ability_Lich_FrostAura extends C_DOTABaseAbility {}
 
@@ -18158,10 +18231,6 @@ declare class C_FuncConveyor extends C_BaseModelEntity {
 
 declare class C_DOTA_Item_PhaseBoots extends C_DOTA_Item {}
 
-declare class CDOTA_Ability_Beastmaster_WildAxes extends C_DOTABaseAbility {
-	axe_damage: number
-}
-
 declare class C_DOTA_Ability_Bane_Nightmare extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Clinkz_WindWalk extends C_DOTABaseAbility {}
@@ -18362,6 +18431,8 @@ declare class C_EntityFlame extends C_BaseEntity {
 declare class C_DOTA_Unit_Hero_Leshrac extends C_DOTA_BaseNPC_Hero {}
 
 declare class C_PhysBox extends C_Breakable {}
+
+declare class C_DOTA_Ability_Clinkz_Scepter extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_DragonKnight_BreatheFire extends C_DOTABaseAbility {
 	start_radius: number

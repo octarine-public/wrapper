@@ -29,23 +29,23 @@ declare interface Events extends EventEmitter {
 	on(name: "onTick", callback: () => void): EventEmitter
 	on(name: "onUpdate", callback: (cmd: CUserCmd) => void): EventEmitter
 	on(name: "onUnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
-	on(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
+	on(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC, new_m_iTaggedAsVisibleByTeam: number) => void): EventEmitter
 	on(name: "onDraw", callback: () => void): EventEmitter
-	on(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: C_BaseEntity) => void): EventEmitter
+	on(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target: C_BaseEntity | number) => void): EventEmitter
 	on(name: "onParticleUpdated", callback: (id: number, control_point: number) => void): EventEmitter // position: Vector3 at IOBuffer offset 0
 	on(name: "onParticleUpdatedEnt", callback: ( // fallback_position: Vector3 at IOBuffer offset 0
 		id: number,
 		control_point: number,
-		ent: C_BaseEntity,
+		ent: C_BaseEntity | number,
 		attach: ParticleAttachment_t,
 		attachment: number,
 		include_wearables: boolean
 	) => void): EventEmitter
-	on(name: "onBloodImpact", callback: (target: C_BaseEntity, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
+	on(name: "onBloodImpact", callback: (target: C_BaseEntity | number, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
 	on(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
 	on(name: "onLinearProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0
 		proj: LinearProjectile,
-		ent: C_BaseEntity,
+		ent: C_BaseEntity | number,
 		path: string,
 		particleSystemHandle: bigint,
 		max_speed: number,
