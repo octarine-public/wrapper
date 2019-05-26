@@ -43,12 +43,12 @@ addUnitMenu.AddKeybind("Add full Sven")
 	.OnRelease(() => {
 		SendToConsole("dota_create_unit npc_dota_hero_sven enemy")
 
-		setTimeout(1000, () => {
+		setTimeout(() => {
 			for (var i = 6; i--; )
 				SendToConsole("dota_bot_give_item item_heart")
 
 			SendToConsole("dota_bot_give_level 25")
-		})
+		}, 1000)
 	})
 
 addUnitMenu.AddKeybind("Add creep")

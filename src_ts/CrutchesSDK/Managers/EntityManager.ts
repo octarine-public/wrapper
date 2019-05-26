@@ -88,7 +88,7 @@ export default global.EntityManager = entityManager;
 }); */
 
 Events.on("onEntityCreated", (ent, index) => {
-	//console.log("onEntityCreated", ent, index);
+	console.log("onEntityCreated", ent, index);
 	
 	{ // add globals
 		if (ent instanceof C_DOTA_PlayerResource) {
@@ -121,7 +121,7 @@ Events.on("onEntityCreated", (ent, index) => {
 })
 
 Events.on("onEntityDestroyed", (ent, index) => {
-	//console.log("onEntityDestroyed", ent, index);
+	console.log("onEntityDestroyed", ent, index);
 
 	{ // delete global
 		if (ent instanceof C_DOTA_PlayerResource) {
@@ -149,7 +149,7 @@ Events.on("onEntityDestroyed", (ent, index) => {
 });
 
 (function onUpdate() {
-	setTimeout(0, () => {
+	setTimeout(() => {
 		//console.log(1);
 		try {
 			for (let i = InStage.length; i--;) {
@@ -167,7 +167,7 @@ Events.on("onEntityDestroyed", (ent, index) => {
 		} finally {
 			onUpdate();
 		}
-	})
+	}, 0);
 })();
 
 

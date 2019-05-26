@@ -62,7 +62,7 @@ setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...a
 
 // temp onTick
 (function onTick() {
-	setTimeout(Math.max(1000 / 30, GetLatency(Flow_t.IN)), () => {
+	setTimeout(() => {
 		if (IsInGame() && LocalDOTAPlayer !== undefined)
 			try {
 				Events.emit("onTick", false)
@@ -72,7 +72,7 @@ setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...a
 			}
 		
 		onTick()
-	})
+	}, Math.max(1000 / 30, GetLatency(Flow_t.IN)))
 })();
 
 let AllEntities: C_BaseEntity[] = [],

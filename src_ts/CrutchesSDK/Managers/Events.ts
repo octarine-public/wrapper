@@ -5,6 +5,7 @@ import Vector3 from "../Base/Vector3";
 import EntityManager from "./EntityManager";
 
 import Unit from "../Objects/Base/Unit";
+//import Hero from "../Objects/Base/Hero";
 /* import Entity from "../Objects/Base/Entity";
 import Ability from "../Objects/Base/Ability";
 import Unit from "../Objects/Base/Unit";
@@ -17,7 +18,7 @@ export default EventsSDK;
 
 Events.on("onGameStarted", ent => {
 
-	const entity = EntityManager.GetEntityByNative(ent) as Hero;
+	const entity = EntityManager.GetEntityByNative(ent)// as Hero;
 
 	EventsSDK.emit("onGameStarted", false, entity);
 })
@@ -27,7 +28,7 @@ Events.on("onWndProc", (...args) => EventsSDK.emit("onWndProc", true, ...args));
 
 
 (function onTick() {
-	setTimeout(Math.max(1000 / 30, GetLatency(Flow_t.IN)), () => {
+	setTimeout(() => {
 		try {
 			if (EntityManager.LocalPlayer !== undefined)
 				EventsSDK.emit("onTick")
@@ -36,7 +37,7 @@ Events.on("onWndProc", (...args) => EventsSDK.emit("onWndProc", true, ...args));
 		} finally {
 			onTick();
 		}
-	})
+	}, 1000 / 30)
 })();
 
 // change later
@@ -61,7 +62,7 @@ Events.on("onUnitStateChanged", npc => {
 });
 
 Events.on("onTeamVisibilityChanged", (npc, newTagged) => {
-
+	console.log("onTeamVisibilityChanged", npc, newTagged);
 	const entity = EntityManager.GetEntityByNative(npc, true) as Unit;
 
 	entity.IsVisibleForTeamMask = newTagged;

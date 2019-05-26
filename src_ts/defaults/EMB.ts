@@ -23,7 +23,7 @@ Events.on("onEntityDestroyed", ent => {
 Events.on("onUpdate", () => {
 	if (!stateMain.value || Game.IsPaused)
 		return
-	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible)
+	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible) // IsEnemy temp for fix allies
 })
 Events.on("onDraw", () => {
 	if (!stateMain.value || !IsInGame())

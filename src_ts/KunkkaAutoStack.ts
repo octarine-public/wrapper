@@ -65,7 +65,7 @@ EventsSDK.on("onTick", () => {
 	Utils.orderBy(spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
 		MyEnt.CastPosition(torrent, spot);
 		is_stacking = true
-		setTimeout(torrent.CastPoint * 1000 + 30, () => is_stacking = false)
+		setTimeout(() => is_stacking = false, torrent.CastPoint * 1000 + 30)
 		return false
 	})
 })

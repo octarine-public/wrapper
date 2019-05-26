@@ -196,8 +196,8 @@ EventsSDK.on("onBloodImpact", (target: Entity) => {
 
 	allBloodTargets.push(target as Unit)
 
-	setTimeout(phBloodTimer.value * 1000, () =>
-		Utils.arrayRemove(allBloodTargets, target))
+	setTimeout(() => Utils.arrayRemove(allBloodTargets, target), 
+		phBloodTimer.value * 1000)
 })
 
 EventsSDK.on("onDraw", () => {
