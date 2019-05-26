@@ -346,18 +346,6 @@ declare interface Minimap {
 	SendLine(x: number, y: number, initial: boolean): void
 }
 
-declare interface Projectiles {
-	FirstTracking(): TrackingProjectile
-	NextTracking(prev: TrackingProjectile): TrackingProjectile
-	GetAllTracking(): TrackingProjectile[]
-	TrackingByID(id: number): TrackingProjectile
-	
-	FirstLinear(): LinearProjectile
-	NextLinear(prev: LinearProjectile): LinearProjectile
-	GetAllLinear(): LinearProjectile[]
-	LinearByID(id: number): LinearProjectile
-}
-
 declare interface Particles {
 	Create(path: string, attach: ParticleAttachment_t, ent?: C_BaseEntity): number
 	Destroy(particle_id: number, immediate: boolean): void
