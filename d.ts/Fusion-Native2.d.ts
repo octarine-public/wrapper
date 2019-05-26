@@ -256,7 +256,6 @@ declare var global: any
 declare var ConVars: ConVars
 declare var GameEvents: GameEvents
 declare var Minimap: Minimap
-declare var Projectiles: Projectiles
 declare var Particles: Particles
 declare var Renderer: Renderer
 
