@@ -271,6 +271,15 @@ declare class CUnitOrder {
 	readonly show_effects: boolean
 }
 
+declare class TimeoutData {
+	Destroy(): void
+
+	start_time: bigint
+	wait_time: bigint
+	is_interval: boolean
+	readonly callback: (self: TimeoutData) => void
+}
+
 declare class CUserCmd {
 	command_number: number
 	tick_count: number
@@ -457,22 +466,14 @@ declare function GetLatency(flow: Flow_t): number
 declare function GetAvgLatency(flow: Flow_t): number
 /**
  * @param time in milliseconds
- * @returns timeout ID that can be used in clearTimeout
+ * @returns TimeoutData that can be used to edit/destroy this timeout
  */
-declare function setTimeout(time: number, func: (id: BigInt) => void): BigInt
-/**
- * @param timeout_id that were returned by setTimeout
- */
-declare function clearTimeout(timeout_id: BigInt): void
+declare function setTimeout(func: (self: TimeoutData) => void, time: number): TimeoutData
 /**
  * @param time in milliseconds
- * @returns interval ID that can be used in clearInterval
+ * @returns TimeoutData that can be used to edit/destroy this interval
  */
-declare function setInterval(time: number, func: (id: BigInt) => void): BigInt
-/**
- * @param interval_id that were returned by setInterval
- */
-declare function clearInterval(timeout_id: BigInt): void
+declare function setInterval(func: (self: TimeoutData) => void, time: number): TimeoutData
 
 /// AUTOMATICALLY GENERATED
 

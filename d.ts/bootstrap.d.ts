@@ -23,7 +23,6 @@ declare interface Events extends EventEmitter {
 	 * Also, this event emitted about ALL entities that have already been created before reloading scripts
 	 */
 	on(name: "onEntityCreated", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
-	on(name: "onNPCCreated", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
 	on(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
 	on(name: "onWndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
 	on(name: "onTick", callback: () => void): EventEmitter
