@@ -1,4 +1,4 @@
-import Tree from "./Tree"
+import { Tree } from "./Tree"
 
 function ToggleCallback(toggle: Toggle): void {
 

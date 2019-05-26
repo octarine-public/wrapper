@@ -1,8 +1,12 @@
 import Unit from "./Unit"
+import EntityManager from "../../Managers/EntityManager";
+import Player from "./Player";
 
 export default class Hero extends Unit {
 	m_pBaseEntity: C_DOTA_BaseNPC_Hero
 
+	/* ============ BASE  ============ */
+	
 	get AbilityPoint(): number {
 		return this.m_pBaseEntity.m_iAbilityPoints
 	}
@@ -12,7 +16,7 @@ export default class Hero extends Unit {
 	get CurrentXP(): number {
 		return this.m_pBaseEntity.m_iCurrentXP
 	}
-	get HeroID(): number {
+	get HeroID(): HeroID_t {
 		return this.m_pBaseEntity.m_iHeroID
 	}
 	get Intelligence(): number {
@@ -22,7 +26,7 @@ export default class Hero extends Unit {
 		return this.m_pBaseEntity.m_bBuybackDisabled
 	}
 	get IsIllusion(): boolean {
-		return this.m_pBaseEntity.m_bIsIllusion /*|| this.ReplicateFrom !== null*/
+		return this.ReplicateFrom !== undefined;
 	}
 	get IsReincarnating(): boolean {
 		return this.m_pBaseEntity.m_bReincarnating
@@ -30,24 +34,21 @@ export default class Hero extends Unit {
 	get LastHurtTime(): number {
 		return this.m_pBaseEntity.m_flLastHurtTime
 	}
-	/**
-	 * need getting from entitymanager
-	 */
-	/* get Player(): Player {
-		return //this.m_pBaseEntity.m_iPlayerID;
-	} */
+	get Player(): Player {
+		return EntityManager.GetPlayerByID(this.PlayerID) as Player;
+	}
+	get PlayerID(): number {
+		return this.m_pBaseEntity.m_iPlayerID;
+	}
 	get PrimaryAtribute(): Attributes {
 		return this.m_pBaseEntity.m_iPrimaryAttribute
 	}
 	get RecentDamage(): number {
 		return this.m_pBaseEntity.m_iRecentDamage
 	}
-	/**
-	 * need getting from entitymanager
-	 */
-	/* get ReplicateFrom(): Hero {
-		return this.m_pBaseEntity.m_hReplicatingOtherHeroModel
-	} */
+	get ReplicateFrom(): Hero {
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hReplicatingOtherHeroModel) as Hero;
+	}
 	get RespawnTime(): number {
 		return this.m_pBaseEntity.m_flRespawnTime
 	}
@@ -68,5 +69,11 @@ export default class Hero extends Unit {
 	}
 	get TotalStrength(): number {
 		return this.m_pBaseEntity.m_flStrengthTotal
+	}
+	
+	/* ============ EXTENSIONS ============ */
+	
+	get SpellAmplification(): number {
+		return super.SpellAmplification + this.TotalIntelligence * 0.07 / 100 // https://dota2.gamepedia.com/Intelligence
 	}
 }

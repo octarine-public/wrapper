@@ -1,80 +1,77 @@
-import * as Orders from "Orders"
-import * as Utils from "Utils"
+import { EventsSDK, MenuManager, Unit, EntityManager, Utils } from "./CrutchesSDK/Imports";
 
-let mks: C_DOTA_Unit_Hero_MonkeyKing[] = [],
-	techiess: C_DOTA_Unit_Hero_Techies[] = [],
-	enabled = true
+//import * as Orders from "Orders"
+//import * as Utils from "Utils"
 
-Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
-	if (LocalDOTAPlayer === undefined || npc === LocalDOTAPlayer.m_hAssignedHero)
+const iHateLeapsMenu = MenuManager.MenuFactory("I Hate Leaps");
+const stateMain = iHateLeapsMenu.AddToggle("State", false);
+
+let mks: Unit[] = [],
+	techiess: Unit[] = [];
+
+EventsSDK.on("onEntityCreated", (npc: Unit) => {
+
+	if (EntityManager.LocalHero === npc)
 		return
-	if (npc instanceof C_DOTA_Unit_Hero_MonkeyKing)
+	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_MonkeyKing)
 		mks.push(npc)
-	if (npc instanceof C_DOTA_Unit_Hero_Techies)
+	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Techies)
 		techiess.push(npc)
 })
-Events.on("onEntityDestroyed", (npc: C_DOTA_BaseNPC) => {
-	if (npc instanceof C_DOTA_Unit_Hero_MonkeyKing)
+EventsSDK.on("onEntityDestroyed", (npc: Unit) => {
+	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_MonkeyKing)
 		Utils.arrayRemove(mks, npc)
-	if (npc instanceof C_DOTA_Unit_Hero_Techies)
+	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Techies)
 		Utils.arrayRemove(techiess, npc)
 })
 
-Events.on("onTick", () => {
-	if (!enabled)
+EventsSDK.on("onTick", () => {
+	if (!stateMain.value)
 		return
-	const pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero
-	if (pl_ent === undefined || Utils.IsUnitStateFlagSet(pl_ent, modifierstate.MODIFIER_STATE_STUNNED) || !Utils.IsAlive(pl_ent) || LocalDOTAPlayer.m_hActiveAbility !== undefined)
+	const pl_ent = EntityManager.LocalHero
+	if (pl_ent === undefined || pl_ent.IsStunned || !pl_ent.IsAlive || EntityManager.LocalPlayer.ActiveAbility !== undefined)
 		return
 	if (mks.length !== 0)
 		// loop-optimizer: FORWARD
-		[
-			Utils.GetItemByName(pl_ent, "item_quelling_blade"),
-			Utils.GetItemByName(pl_ent, "item_bfury"),
-			Utils.GetItemByName(pl_ent, "item_tango"),
-		].filter(item => item !== undefined && item.m_fCooldown === 0).some(item => {
-			if (!Utils.IsManaEnough(pl_ent, item))
-				return false
-			let castrange = Utils.GetCastRange(pl_ent, item)
-			return mks.some(mk => {
-				if (!Utils.IsVisible(mk) || !Utils.IsAlive(mk))
+		pl_ent.Inventory.GetItemsByNames(["item_quelling_blade", "item_bfury", "item_tango"])
+			.filter(item => item !== undefined && item.IsCooldownReady)
+			.some(item => {
+				if (!item.CanBeCasted())
 					return false
-				let m_nPerchedTree = mk.m_nPerchedTree
-				if (m_nPerchedTree === 4294967295 || mk.m_vecNetworkOrigin.Distance2D(pl_ent.m_vecNetworkOrigin) > castrange)
-					return false
-				Orders.CastTargetTree(pl_ent, item, m_nPerchedTree, false)
-				return true
+					
+				let castrange = item.CastRange;
+				
+				return mks.some(mk => {
+					if (mk.IsDormant || !mk.IsAlive)
+						return false
+						
+					let m_nPerchedTree = (mk.m_pBaseEntity as C_DOTA_Unit_Hero_MonkeyKing).m_nPerchedTree;
+					if (m_nPerchedTree === 4294967295 || mk.Distance2D(pl_ent) > castrange)
+						return false;
+						
+					pl_ent.CastTargetTree(item, m_nPerchedTree);
+					return true
 			})
 		})
-	let force = Utils.GetItemByName(pl_ent, "item_force_staff")
-	if (force !== undefined && force.m_fCooldown === 0) {
-		if (!Utils.IsManaEnough(pl_ent, force))
+	let force = pl_ent.Inventory.GetItemByName("item_force_staff")
+	if (force !== undefined && force.IsCooldownReady) {
+		if (!force.CanBeCasted())
 			return false
-		let force_castrange = Utils.GetCastRange(pl_ent, force);
+		let force_castrange = force.CastRange;
 		[...mks, ...techiess].some(hero => {
-			if (!Utils.IsVisible(hero) || !Utils.IsAlive(hero))
+			if (hero.IsDormant || !hero.IsAlive)
 				return false
-			if (hero.m_vecNetworkOrigin.Distance2D(pl_ent.m_vecNetworkOrigin) > force_castrange)
+			if (hero.Distance2D(pl_ent) > force_castrange)
 				return false
-			if (Utils.GetBuffByName(hero, "modifier_item_forcestaff_active") !== undefined)
+			if (hero.ModifiersBook.GetBuffByName("modifier_item_forcestaff_active") !== undefined)
 				return false
-			if (hero instanceof C_DOTA_Unit_Hero_Techies && Utils.GetBuffByName(hero, "modifier_techies_suicide_leap") === undefined)
+			if (hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Techies && hero.ModifiersBook.GetBuffByName("modifier_techies_suicide_leap") === undefined)
 				return false
-			if (hero instanceof C_DOTA_Unit_Hero_MonkeyKing && Utils.GetBuffByName(hero, "modifier_monkey_king_bounce_leap") === undefined)
+			if (hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_MonkeyKing && hero.ModifiersBook.GetBuffByName("modifier_monkey_king_bounce_leap") === undefined)
 				return false
-			Orders.CastTarget(pl_ent, force, hero, false)
+			
+			pl_ent.CastTarget(force, hero);
 			return true
 		})
 	}
 })
-
-{
-	let root = new Menu_Node("I Hate Leaps")
-	root.entries.push(new Menu_Toggle (
-		"State",
-		enabled,
-		node => enabled = node.value,
-	))
-	root.Update()
-	Menu.AddEntry(root)
-}

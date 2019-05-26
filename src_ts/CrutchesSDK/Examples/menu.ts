@@ -1,5 +1,6 @@
-import CheckBox from "../CrutchesSDK/Menu/CheckBox"
-import { CreateRGBTree, MenuFactory } from "../CrutchesSDK/Menu/MenuManager"
+import { MenuManager, Color } from "../Imports"
+
+const { CreateRGBTree, MenuFactory } = MenuManager;
 
 // ------------------- Main
 
@@ -72,7 +73,7 @@ let tree = menu.AddTree("tree")
 
 let treeToggle = tree.AddToggle("tree toggle")
 
-let rgbTree = CreateRGBTree(menu, "rgb tree", new Vector3(0, 255, 0))
+let rgbTree = CreateRGBTree(menu, "rgb tree", new Color(0, 255, 0))
 
 rgbTree.R.OnValue((value, self) => console.log("slider OnValue:", value, self))
 rgbTree.G.OnValue((value, self) => console.log("slider OnValue:", value, self))
@@ -133,11 +134,11 @@ let dynamicCB = examples.AddTree("dynamic checkboxes")
 
 let sliderTwo = dynamicCB.AddSlider("count checkboxes", 1, 1, 5)
 
-let checkboxes: CheckBox[] = []
+let checkboxes: MenuManager.MenuControllers.CheckBox[] = []
 function ChangeCheckBoxes(value: number) {
 
 	// loop-optimizer: KEEP
-	dynamicCB.entries = dynamicCB.entries.filter(entry => checkboxes.indexOf(entry as CheckBox) === -1)
+	dynamicCB.entries = dynamicCB.entries.filter(entry => checkboxes.indexOf(entry as MenuManager.MenuControllers.CheckBox) === -1)
 
 	for (let i = 0; i < value; i++)
 		checkboxes.push(dynamicCB.AddCheckBox("checkbox" + (i + 1)))

@@ -5,6 +5,8 @@ import ListBox from "./ListBox"
 import { Slider, SliderFloat } from "./Slider"
 import Toggle from "./Toggle"
 
+export { CheckBox, ComboBox, Keybind, ListBox, Slider, SliderFloat, Toggle }
+
 function CheckSameName(name: string, self: Tree) {
 
 	var same = self.entries
@@ -18,7 +20,7 @@ function getTopParent(node: Tree): Tree {
 	return parent !== undefined ? getTopParent(parent) : node as Tree
 }
 
-export default class Tree extends Menu_Node {
+export class Tree extends Menu_Node {
 
 	parent: Tree
 

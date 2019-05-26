@@ -1,4 +1,6 @@
-import { MenuFactory } from "./CrutchesSDK/Wrapper"
+import { MenuManager, EventsSDK, PlayerResource, EntityManager } from "./CrutchesSDK/Imports";
+
+let { MenuFactory } = MenuManager;
 
 let setConVar = (value: number | string | boolean, menuBase: Menu_Base) =>
 	ConVars.Set(menuBase.hint, value)
@@ -53,13 +55,41 @@ addUnitMenu.AddKeybind("Add creep")
 	.SetToolTip("dota_create_unit npc_dota_creep_badguys_melee enemy")
 	.OnRelease(self => SendToConsole(self.hint))
 
-Events.on("onGameStarted", lp => {
+EventsSDK.on("onGameStarted", lp => {
 
 	setConVar(sv_cheats.value, sv_cheats)
 	setConVar(wtf.value, wtf)
 
-	if (PlayerResource.m_vecPlayerData.length <= 1)
+	if (PlayerResource.AllPlayers.length <= 1)
 		setConVar(vision.value, vision)
 
 	setConVar(creepsNoSpawn.value, creepsNoSpawn)
 })
+/* 
+let particle: number = undefined;
+
+EventsSDK.on("onTick", () => {
+	
+	let hero = EntityManager.LocalHero,
+		inFront = hero.InFront(300);
+	
+	console.log(inFront);
+		
+	if (particle === undefined) {
+		particle = Particles.Create("particles/ui_mouseactions/range_finder_line.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, hero.m_pBaseEntity)
+	}
+	
+	hero.Position.toIOBuffer();
+	Particles.SetControlPoint(particle, 0);
+	
+	hero.Position.toIOBuffer();
+	Particles.SetControlPoint(particle, 1);
+	
+	inFront.toIOBuffer();
+	Particles.SetControlPoint(particle, 2);
+})
+
+EventsSDK.on("onGameEnded", () => {
+	if (particle !== undefined)
+		Particles.Destroy(particle, true);
+}) */

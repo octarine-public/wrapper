@@ -1,5 +1,7 @@
-import * as Orders from "Orders"
-import * as Utils from "Utils"
+import { EventsSDK, Vector3, RendererSDK, EntityManager, Game, Utils } from "./CrutchesSDK/Imports";
+
+/* import * as Orders from "Orders"
+import * as Utils from "Utils" */
 
 // loop-optimizer: KEEP
 var spots: Vector3[] = /*Utils.orderBy(*/[
@@ -19,27 +21,28 @@ var spots: Vector3[] = /*Utils.orderBy(*/[
 	},
 	is_stacking: boolean = false
 
-Events.on("onDraw", () => {
-	if (!IsInGame() || !config.visals)
+EventsSDK.on("onDraw", () => {
+	if (!config.visals || !Game.IsInGame)
 		return
 	spots.forEach((spot, i) => {
-		let screen_pos = Renderer.WorldToScreen(spot)
+		let screen_pos = RendererSDK.WorldToScreen(spot)
 		if (!screen_pos.IsValid)
 			return
 		Renderer.FilledRect(screen_pos.x - 25, screen_pos.y - 25, 50, 50, 255, 0, 0)
 		Renderer.Text(screen_pos.x, screen_pos.y, (i + 1).toString(), 0, 255, 0)
 	})
 })
-Events.on("onTick", () => {
+EventsSDK.on("onTick", () => {
 	if (!config.enabled || is_stacking)
 		return
-	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
+	var MyEnt = EntityManager.LocalHero
 	if (MyEnt === undefined)
 		return
-	var torrent = Utils.GetAbilityByName(MyEnt, "kunkka_torrent")
-	if (torrent === undefined || torrent.m_fCooldown !== 0 || torrent.m_iManaCost > MyEnt.m_flMana)
+	var torrent = MyEnt.AbilitiesBook.GetAbilityByName("kunkka_torrent")
+	if (torrent === undefined || !torrent.CanBeCasted())
 		return
-	var cur_time = GameRules.m_fGameTime - GameRules.m_flGameStartTime
+	
+	var cur_time = Game.GameTime
 	if (cur_time < 60)
 		return
 	/*if (
@@ -51,24 +54,25 @@ Events.on("onTick", () => {
 	if (
 		Math.abs (
 			(cur_time % 60) -
-			(60 - (torrent.m_fCastPoint + torrent.GetSpecialValue("delay") + 0.6)), // it tooks ~0.6sec to raise y coord of creeps
+			(60 - (torrent.CastPoint + torrent.GetSpecialValue("delay") + 0.6)) // it tooks ~0.6sec to raise y coord of creeps
 		) >= 1 / 30
 	)
 		return
-	var my_vec = MyEnt.m_vecNetworkOrigin,
-		cast_range = Utils.GetCastRange(MyEnt, torrent)
+		
+	var my_vec = MyEnt.NetworkPosition,
+		cast_range = torrent.CastRange
 	// loop-optimizer: KEEP
 	Utils.orderBy(spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
-		Orders.CastPosition(MyEnt, torrent, spot, false)
+		MyEnt.CastPosition(torrent, spot);
 		is_stacking = true
-		setTimeout(torrent.m_fCastPoint * 1000 + 30, () => is_stacking = false)
+		setTimeout(torrent.CastPoint * 1000 + 30, () => is_stacking = false)
 		return false
 	})
 })
 
-Events.on("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssignedHero || !is_stacking) // cancel orders while stacking
+EventsSDK.on("onPrepareUnitOrders", order => order.Unit !== EntityManager.LocalHero || !is_stacking) // cancel orders while stacking
 
-/*Events.on("onWndProc", (message_type, wParam) => {
+/*EventsSDK.on("onWndProc", (message_type, wParam) => {
 	if (!IsInGame())
 		return true
 	let key = parseInt(wParam as any)
@@ -97,7 +101,7 @@ Events.on("onPrepareUnitOrders", order => order.unit !== LocalDOTAPlayer.m_hAssi
 })*/
 
 {
-	let root = new Menu_Node("Kuтkka Autostacker")
+	let root = new Menu_Node("Kunkka Autostacker")
 	root.entries.push(new Menu_Toggle (
 		"State",
 		config.enabled,

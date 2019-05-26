@@ -1,4 +1,6 @@
-import Tree from "./Tree"
+import Game from "../Objects/GameResources/GameRules";
+
+import { Tree } from "./Tree";
 
 let IsPressing: boolean[] = [],
 	OnExecute: [Keybind[]] = [[]]
@@ -48,7 +50,7 @@ function getTopParent(node: Tree | Keybind): Tree {
 // https://www.autoitscript.com/autoit3/docs/appendix/WinMsgCodes.htm
 Events.on("onWndProc", (msg, wParam) => {
 
-	if (!IsInGame() || wParam === undefined)
+	if (!Game.IsInGame || wParam === undefined)
 		return true
 
 	if (msg === 0x100 || msg === 0x101) {

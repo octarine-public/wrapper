@@ -1,62 +1,75 @@
-import { MenuFactory } from "../CrutchesSDK/Wrapper"
-import * as Utils from "../Utils"
+import { 
+	MenuManager, 
+	Game, 
+	EntityManager,
+	EventsSDK,
+	Unit
+} from "../CrutchesSDK/Imports"
 
 let allParticles: number[] = []
 let particlePath = "particles/items_fx/aura_shivas.vpcf"
 
-const VBEMenu = MenuFactory("Visible By Enemy")
+const VBEMenu = MenuManager.MenuFactory("Visible By Enemy"),
+	stateMain = VBEMenu.AddToggle("State").OnValue(OnChangeValue),
+	allyState = VBEMenu.AddToggle("Allies state", true).OnValue(OnChangeValue);
 
-const stateMain = VBEMenu.AddToggle("State", true) // .OnValue(onStateMain)
-
-const allyState = VBEMenu.AddToggle("Allies state", true)
-
-function Destroy(npcID: number) {
-	Particles.Destroy(allParticles[npcID], true)
-	allParticles[npcID] = undefined
+function OnChangeValue() {
+	if (!stateMain.value || !allyState.value)
+		DestroyAll();
+	
+	if (stateMain.value)
+		EntityManager.AllEntities.forEach(CheckNpc);
 }
 
-function CheckNpc(npc: C_DOTA_BaseNPC) {
+function DestroyAll() {
+	// loop-optimizer: POSSIBLE_UNDEFINED
+	allParticles.forEach((par, index) => Destroy(index));
+}
+
+function Destroy(npcID: number) {
+	Particles.Destroy(allParticles[npcID], true);
+	delete allParticles[npcID];
+}
+
+function CheckNpc(npc: Unit) {
 	if (
-		!IsInGame()
-		|| !stateMain.value
-		|| GameRules.m_bGamePaused
-		|| LocalDOTAPlayer === undefined
-		|| LocalDOTAPlayer.m_iTeamNum !== npc.m_iTeamNum
+		!stateMain.value
+		|| !(npc instanceof Unit)
+		|| EntityManager.LocalPlayer === undefined
+		|| EntityManager.LocalPlayer.Team !== npc.Team
+		|| Game.IsPaused
 	)
 		return
 		
-	if (!allyState.value && npc !== LocalDOTAPlayer.m_hAssignedHero)
+	if (!allyState.value && npc !== EntityManager.LocalHero)
 		return
 
-	let npcID = Entities.GetEntityID(npc),
-		IsVisibleForEnemies = Utils.IsVisibleForEnemies(npc),
-		IsAlive = Utils.IsAlive(npc);
+	let npcIndex = npc.Index,
+		IsVisibleForEnemies = npc.IsVisibleForEnemies,
+		IsAlive = npc.IsAlive;
 
-	if ((IsVisibleForEnemies && allParticles[npcID] === undefined) && IsAlive)
-		allParticles[npcID] = Particles.Create(particlePath, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, npc)
+	if ((IsVisibleForEnemies && allParticles[npcIndex] === undefined) && IsAlive)
+		allParticles[npcIndex] = Particles.Create(particlePath, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, npc.m_pBaseEntity)
 
-	if ((!IsVisibleForEnemies || !IsAlive) && allParticles[npcID] !== undefined) {
-		Destroy(npcID)
+	if ((!IsVisibleForEnemies || !IsAlive) && allParticles[npcIndex] !== undefined) {
+		Destroy(npcIndex)
 	}
 }
 
-Events.on("onTeamVisibilityChanged", CheckNpc);
-Events.on("onNPCCreated", CheckNpc);
+EventsSDK.on("onTeamVisibilityChanged", CheckNpc);
+EventsSDK.on("onEntityCreated", CheckNpc);
 
-Events.on("onTick", () => {
-	let localTeam = LocalDOTAPlayer.m_iTeamNum
+EventsSDK.on("onTick", () => {
+	let localTeam = EntityManager.LocalPlayer.Team
 
-	Entities.AllEntities.forEach(ent => {
-		if (!ent.m_bIsDOTANPC || ent.m_iTeamNum !== localTeam)
+	EntityManager.AllEntities.forEach(ent => {
+		if (!ent.IsDOTANPC || ent.Team !== localTeam)
 			return
-		let entID = Entities.GetEntityID(ent)
-		if (!Utils.IsAlive(ent) && allParticles[entID] !== undefined) {
-			Destroy(entID)
+
+		if (!ent.IsAlive && allParticles[ent.Index] !== undefined) {
+			Destroy(ent.Index)
 		}
 	})
 })
 
-Events.on("onGameEnded", () => {
-	// loop-optimizer: POSSIBLE_UNDEFINED
-	allParticles.forEach((par, index) => Destroy(index))
-})
+EventsSDK.on("onGameEnded", DestroyAll);

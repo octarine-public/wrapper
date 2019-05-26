@@ -1,57 +1,51 @@
-import * as Utils from "Utils"
+import { MenuManager, RendererSDK, EventsSDK, Hero, Utils, Game, Vector3 } from "../CrutchesSDK/Imports";
 
-var enabled = true,
-	manabars: C_DOTA_BaseNPC_Hero[] = [],
-	heroes: C_DOTA_BaseNPC_Hero[] = []
+var manabars: Hero[] = [],
+	heroes: Hero[] = []
 
-Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+const EMBMenu = MenuManager.MenuFactory("EnemyManaBars"),
+	stateMain = EMBMenu.AddToggle("State")//.OnValue(OnChangeValue);
+
+EventsSDK.on("onEntityCreated", npc => {
 	if (
-		npc instanceof C_DOTA_BaseNPC_Hero
-		&& Utils.IsEnemy(npc, LocalDOTAPlayer)
-		&& !npc.m_bIsIllusion
-		&& npc.m_hReplicatingOtherHeroModel === undefined
+		npc instanceof Hero
+		&& npc.IsEnemy()
+		&& !npc.IsIllusion
+		//&& npc.m_hReplicatingOtherHeroModel === undefined
 	)
 		heroes.push(npc)
 })
 Events.on("onEntityDestroyed", ent => {
-	if (ent instanceof C_DOTA_BaseNPC_Hero)
+	if (ent instanceof Hero)
 		Utils.arrayRemove(heroes, ent)
 })
 
 Events.on("onUpdate", () => {
-	if (!enabled || GameRules.m_bGamePaused)
+	if (!stateMain.value || Game.IsPaused)
 		return
-	manabars = heroes.filter(npc => Utils.IsAlive(npc) && Utils.IsVisible(npc))
+	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible)
 })
 Events.on("onDraw", () => {
-	if (!enabled || !IsInGame())
+	if (!stateMain.value || !IsInGame())
 		return
 	var off_x = 0, off_y, manabar_w, manabar_h
+	
 	{ // TODO: multiple aspect ratio support (current: 16:10)
-		var screen_size = Renderer.WindowSize
+		var screen_size = RendererSDK.WindowSize
 		off_x = screen_size.x * -0.03095
 		off_y = screen_size.y * -0.01715
 		manabar_w = screen_size.x * 0.0583
 		manabar_h = screen_size.y * 0.0067
 	}
+	
 	manabars.forEach(hero => {
-		var hero_pos = hero.m_pGameSceneNode.m_vecAbsOrigin
-		var render_pos = Renderer.WorldToScreen(new Vector3(hero_pos.x, hero_pos.y, hero_pos.z + hero.m_iHealthBarOffset))
+		
+		let wts = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(hero.HealthBarOffset))
 
-		if (!render_pos.IsValid)
+		if (!wts.IsValid)
 			return
-		Renderer.FilledRect(render_pos.x + off_x, render_pos.y + off_y, manabar_w, manabar_h, 0, 0, 0) // black background
-		Renderer.FilledRect(render_pos.x + off_x, render_pos.y + off_y, manabar_w * (hero.m_flMana / hero.m_flMaxMana), manabar_h, 0, 0, 0xFF)
+			
+		Renderer.FilledRect(wts.x + off_x, wts.y + off_y, manabar_w, manabar_h, 0, 0, 0) // black background
+		Renderer.FilledRect(wts.x + off_x, wts.y + off_y, manabar_w * (hero.Mana / hero.MaxMana), manabar_h, 0, 0, 0xFF)
 	})
 })
-
-{
-	let root = new Menu_Node("EnemyManaBars")
-	root.entries.push(new Menu_Toggle (
-		"State",
-		enabled,
-		node => enabled = node.value,
-	))
-	root.Update()
-	Menu.AddEntry(root)
-}

@@ -1,5 +1,5 @@
-import Techies from "AllVision/Techies"
-import TreantProtector from "AllVision/TreantProtector"
+import TreantProtector from "./TreantProtector"
+
 var config = {
 	enabled: true,
 }

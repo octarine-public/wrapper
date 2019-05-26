@@ -1,6 +1,10 @@
-import Tree from "./Tree"
+import { default as Color } from "../Base/Color";
 
-class MenuManager extends Tree {
+import * as MenuControllers from "./Tree"
+
+export { MenuControllers }
+
+class MenuManager extends MenuControllers.Tree {
 
 	/**
 	 *
@@ -17,11 +21,11 @@ class MenuManager extends Tree {
 	}
 }
 
-let screepsInMenu: Tree[] = [];
+let screepsInMenu: { [name: string]: MenuManager } = {};
 
 export function MenuFactory(name: string, hint?: string) {
 	
-	let find = screepsInMenu[name] as MenuManager;
+	let find = screepsInMenu[name];
 
 	if (find !== undefined)
 		return find;
@@ -33,33 +37,33 @@ export function MenuFactory(name: string, hint?: string) {
 	return factory;
 }
 
-export function CreateRGBTree(parent: Tree, name: string, color: Vector3 = new Vector3(0, 255, 0), hint?: string) {
+export function CreateRGBTree(parent: MenuControllers.Tree, name: string, color: Color = new Color(0, 255, 0), hint?: string) {
 
-	let tree = new Tree(undefined, name, hint)
+	let tree = new MenuControllers.Tree(undefined, name, hint)
 
 	if (parent !== undefined)
 		parent.AddControl(tree)
 
 	return {
 		tree,
-		R: tree.AddSlider("Color: R", color.x, 0, 255),
-		G: tree.AddSlider("Color: G", color.y, 0, 255),
-		B: tree.AddSlider("Color: B", color.z, 0, 255),
+		R: tree.AddSlider("Color: R", color.r, 0, 255),
+		G: tree.AddSlider("Color: G", color.g, 0, 255),
+		B: tree.AddSlider("Color: B", color.b, 0, 255),
 	}
 }
 
-export function CreateRGBATree(parent: Tree, name: string, color: Vector3 = new Vector3(0, 255, 0), alpha: number = 255, hint?: string) {
+export function CreateRGBATree(parent: MenuControllers.Tree, name: string, color: Color = new Color(0, 255, 0), hint?: string) {
 
-	let tree = new Tree(undefined, name, hint)
+	let tree = new MenuControllers.Tree(undefined, name, hint)
 
 	if (parent !== undefined)
 		parent.AddControl(tree)
 
 	return {
 		tree,
-		R: tree.AddSlider("Color: R", color.x, 0, 255),
-		G: tree.AddSlider("Color: G", color.y, 0, 255),
-		B: tree.AddSlider("Color: B", color.z, 0, 255),
-		A: tree.AddSlider("Alpha: A", alpha, 0, 255),
+		R: tree.AddSlider("Color: R", color.r, 0, 255),
+		G: tree.AddSlider("Color: G", color.g, 0, 255),
+		B: tree.AddSlider("Color: B", color.b, 0, 255),
+		A: tree.AddSlider("Alpha: A", color.a, 0, 255),
 	}
 }

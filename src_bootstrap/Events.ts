@@ -36,8 +36,15 @@ global.EventEmitter = class EventEmitter {
 		let listeners = this.events[name]
 		if (listeners === undefined)
 			return true
-
-		return !listeners.some(listener => listener.apply(this, args) === false && cancellable)
+		
+		return !listeners.some(listener => {
+			try {
+				return listener.apply(this, args) === false && cancellable
+			} catch (e) {
+				console.log(e.stack)
+				return false
+			}
+		})
 	}
 
 	public once(name: string, listener: Listener): EventEmitter {
@@ -91,7 +98,7 @@ Events.on("onEntityCreated", (ent, id) => {
 	EntitiesIDs[id] = ent
 
 	if (ent instanceof C_DOTA_BaseNPC) {
-		if (ent.m_iszUnitName === undefined)
+		if ((ent.m_pEntity.m_flags & (1 << 2)) !== 0)
 			NPCs.push(ent)
 		else
 			Events.emit("onNPCCreated", false, ent)
@@ -112,7 +119,7 @@ Events.on("onEntityDestroyed", (ent, id) => {
 Events.on("onTick", () => {
 	for (let i = 0, end = NPCs.length; i < end; i++) {
 		let npc = NPCs[i]
-		if (npc.m_iszUnitName !== undefined) {
+		if ((npc.m_pEntity.m_flags & (1 << 2)) === 0) {
 			Events.emit("onNPCCreated", false, npc)
 			NPCs.splice(i--, 1)
 			end--

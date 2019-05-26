@@ -1,49 +1,53 @@
-import * as Utils from "Utils"
+import { EventsSDK, Entity, Unit, Vector3, EntityManager, Utils } from "../CrutchesSDK/Imports";
+
+//import * as Utils from "Utils"
 
 export default () => {
-	var treant_eyes: C_DOTA_NPC_Treant_EyesInTheForest[] = [],
+	var treant_eyes: Unit[] = [],
 		pars: number[] = []
 
-	Events.on("onEntityCreated", (ent, id) => {
-		if (ent instanceof C_DOTA_NPC_Treant_EyesInTheForest) {
+	EventsSDK.on("onEntityCreated", (ent: Entity, id) => {
+		if (ent instanceof Unit && ent.m_pBaseEntity instanceof C_DOTA_NPC_Treant_EyesInTheForest) {
 			treant_eyes.push(ent)
-			var par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
-			Particles.SetControlPoint(par, 1, new Vector3(100, 0, 0))
+			var par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent.m_pBaseEntity)
+			new Vector3(100, 0, 0).toIOBuffer();
+			Particles.SetControlPoint(par, 1);
 			pars[id] = par
 		}
 	})
-	Events.on("onEntityDestroyed", (ent, id) => {
-		const index = treant_eyes.indexOf(ent as C_DOTA_NPC_Treant_EyesInTheForest)
-		if (index !== -1) {
-			treant_eyes.splice(index, 1)
-			delete pars[id]
-		}
+	EventsSDK.on("onEntityDestroyed", (ent, id) => {
+		
+		if (Utils.arrayRemove(treant_eyes, ent))
+			delete pars[id];
 	})
 
-	Events.on("onTick", () => {
-		var local_team_flag = 1 << LocalDOTAPlayer.m_iTeamNum
+	EventsSDK.on("onTick", () => {
+		var local_team_flag = 1 << EntityManager.LocalPlayer.Team;
 		// loop-optimizer: KEEP
 		treant_eyes.forEach((ent, i) => {
-			if (Utils.IsAlive(ent)) {
-				ent.m_iTaggedAsVisibleByTeam |= local_team_flag
+			let pEntity = ent.m_pBaseEntity.m_pEntity;
+			
+			if (ent.IsAlive) {
+				ent.IsVisibleForTeamMask |= local_team_flag
 				// |= 1 << 2 is EF_IN_STAGING_LIST
 				// |= 1 << 4 is EF_DELETE_IN_PROGRESS
 				// 1 << 5 is EF_NODRAW
 				// &= ~(1 << 7) is trigger
 				// 1 << 9 is EF_NODRAW???
-				ent.m_pEntity.m_flags &= ~(1 << 7)
-				ent.m_pEntity.m_flags |= 1 << 3
+				
+				pEntity.m_flags &= ~(1 << 7)
+				pEntity.m_flags |= 1 << 3
 			} else {
-				ent.m_pEntity.m_flags |= 1 << 7
-				ent.m_pEntity.m_flags &= ~(1 << 3)
+				pEntity.m_flags |= 1 << 7
+				pEntity.m_flags &= ~(1 << 3)
 				treant_eyes.splice(i, 1)
-				Particles.Destroy(pars[Entities.GetEntityID(ent)], true)
-				delete pars[Entities.GetEntityID(ent)]
+				Particles.Destroy(pars[ent.Index], true)
+				delete pars[ent.Index]
 			}
 		})
 	})
 
-	Events.on("onGameEnded", () => {
+	EventsSDK.on("onGameEnded", () => {
 		treant_eyes = []
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		pars.forEach(par => Particles.Destroy(par, true))
