@@ -1,4 +1,4 @@
-import { EventsSDK, Entity, Unit, Vector3, EntityManager, Utils } from "../CrutchesSDK/Imports";
+import { EventsSDK, Entity, Unit, Vector3, LocalPlayer, Utils } from "../CrutchesSDK/Imports";
 
 //import * as Utils from "Utils"
 
@@ -22,7 +22,7 @@ export default () => {
 	})
 
 	EventsSDK.on("onTick", () => {
-		var local_team_flag = 1 << EntityManager.LocalPlayer.Team;
+		var local_team_flag = 1 << LocalPlayer.Team;
 		// loop-optimizer: KEEP
 		treant_eyes.forEach((ent, i) => {
 			let pEntity = ent.m_pBaseEntity.m_pEntity;

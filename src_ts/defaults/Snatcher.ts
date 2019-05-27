@@ -2,6 +2,7 @@ import {
 	Utils,
 	MenuManager,
 	EntityManager,
+	LocalPlayer,
 	EventsSDK, 
 	RendererSDK,
 	Game,
@@ -184,7 +185,7 @@ function onTick() {
 
 	let controllables: Unit[] = stateControllables.value
 		? GetControllables()
-		: [EntityManager.LocalHero]
+		: [LocalPlayer.Hero]
 	snatchRunes(controllables)
 	snatchItems(controllables)
 }

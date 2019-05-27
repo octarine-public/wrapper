@@ -2,7 +2,7 @@ import Color from "../../Base/Color";
 import Vector3 from "../../Base/Vector3";
 import { MaskToArrayBigInt, HasBit } from "../../Utils/Utils"
 
-import EntityManager from "../../Managers/EntityManager";
+import { LocalPlayer } from "../../Managers/EntityManager";
 
 import Entity from "./Entity"
 import Player from "./Player";
@@ -19,28 +19,35 @@ import PhysicalItem from "./PhysicalItem";
 import Tree from "./Tree";
 import Rune from "./Rune";
 
-
-const TrueSightBuffs = [
-	"modifier_truesight",
-	"modifier_item_dustofappearance",
-	"modifier_bloodseeker_thirst_vision",
-	"modifier_bounty_hunter_track",
-]
-
-const ScepterBuffs = [
-	"modifier_item_ultimate_scepter",
-	"modifier_item_ultimate_scepter_consumed",
-	"modifier_wisp_tether_scepter",
-]
-
-const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scepter/
-
 export default class Unit extends Entity {
+	
+	/* ================== Static ================== */
+	
+	static IsVisibleForEnemies(unit: Unit, newTagged: number) {
+		const valid_teams = ~(1 | (1 << DOTATeam_t.DOTA_TEAM_SPECTATOR)
+			| (1 << DOTATeam_t.DOTA_TEAM_NEUTRALS)
+			| (1 << DOTATeam_t.DOTA_TEAM_NOTEAM)) // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
+
+		let local_team = unit.Team,
+			flags = newTagged & valid_teams
+
+		for (let i = 14; i--;)
+			if (i !== local_team && ((flags >> i) & 1))
+				return true
+		return false
+	}
+	
+	/* =================== Fields =================== */
 
 	m_pBaseEntity: C_DOTA_BaseNPC
 	private m_Inventory: Inventory
 	private m_AbilitiesBook: AbilitiesBook
 	private m_ModifiersBook: ModifiersBook
+	
+	private m_iTaggedAsVisibleByTeam: number;
+	private m_bIsVisibleForEnemies: boolean = false;
+	private m_bIsTrueSightedForEnemies: boolean = false;
+	private m_bHasScepterModifier: boolean = false;
 	
 	/* ============ BASE  ============ */
 	
@@ -113,6 +120,9 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_bIsMagicImmune
 		// return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE);
 	}
+	get IsDeniable(): boolean {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)
+	}
 	//
 	get IsNoHealthBar(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_HEALTH_BAR)
@@ -133,22 +143,17 @@ export default class Unit extends Entity {
 	get IsInFadeTime(): boolean {
 		return this.m_pBaseEntity.m_flInvisibilityLevel > 0
 	}
-
+	set IsVisibleForEnemies(value: boolean) {
+		this.m_bIsVisibleForEnemies = value;
+	}
 	get IsVisibleForEnemies(): boolean {
-		const valid_teams = ~(1 | (1 << DOTATeam_t.DOTA_TEAM_SPECTATOR)
-			| (1 << DOTATeam_t.DOTA_TEAM_NEUTRALS)
-			| (1 << DOTATeam_t.DOTA_TEAM_NOTEAM)) // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
-
-		let local_team = this.m_pBaseEntity.m_iTeamNum,
-			flags = this.m_pBaseEntity.m_iTaggedAsVisibleByTeam & valid_teams
-
-		for (let i = 14; i--; )
-			if (i !== local_team && ((flags >> i) & 1))
-				return true
-		return false
+		return this.m_bIsVisibleForEnemies;
+	}
+	set IsTrueSightedForEnemies(value: boolean) {
+		this.m_bIsTrueSightedForEnemies = value;
 	}
 	get IsTrueSightedForEnemies(): boolean {
-		return this.Buffs.some(buff => TrueSightBuffs.some(nameBuff => nameBuff === buff.Name))
+		return this.m_bIsTrueSightedForEnemies;
 	}
 	get IsControllableByAnyPlayer(): boolean {
 		return this.m_pBaseEntity.m_iIsControllableByPlayer64 !== 0n
@@ -156,11 +161,14 @@ export default class Unit extends Entity {
 	get IsRangeAttacker(): boolean {
 		return this.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
 	}
+	set HasScepter(value: boolean) {
+		this.m_bHasScepterModifier = value;
+	}
 	get HasScepter(): boolean {
 		if (this.HasStolenScepter)
 			return true
 
-		return this.Buffs.some(buff => ScepterRegExp.test(buff.Name))
+		return this.m_bHasScepterModifier;
 	}
 
 	/**
@@ -291,8 +299,7 @@ export default class Unit extends Entity {
 	 * IsControllable by LocalPlayer
 	 */
 	get IsControllable(): boolean {
-		let lp = EntityManager.LocalPlayer;
-		return lp !== undefined && this.IsControllableByPlayer(lp.ID)
+		return LocalPlayer !== undefined && this.IsControllableByPlayer(LocalPlayer.PlayerID)
 	}
 	get IsDominatable(): boolean {
 		return this.m_pBaseEntity.m_bCanBeDominated
@@ -322,10 +329,10 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_bIsSummoned
 	}
 	set IsVisibleForTeamMask(value: number) {
-		this.m_pBaseEntity.m_iTaggedAsVisibleByTeam = value;
+		this.m_iTaggedAsVisibleByTeam = value;
 	}
 	get IsVisibleForTeamMask(): number {
-		return this.m_pBaseEntity.m_iTaggedAsVisibleByTeam
+		return this.m_iTaggedAsVisibleByTeam
 	}
 	get IsWaitingToSpawn(): boolean {
 		return this.m_pBaseEntity.m_bIsWaitingToSpawn

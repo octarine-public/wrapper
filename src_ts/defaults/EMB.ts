@@ -11,7 +11,6 @@ EventsSDK.on("onEntityCreated", npc => {
 		npc instanceof Hero
 		&& npc.IsEnemy()
 		&& !npc.IsIllusion
-		//&& npc.m_hReplicatingOtherHeroModel === undefined
 	)
 		heroes.push(npc)
 })
@@ -23,7 +22,7 @@ Events.on("onEntityDestroyed", ent => {
 Events.on("onUpdate", () => {
 	if (!stateMain.value || Game.IsPaused)
 		return
-	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible) // IsEnemy temp for fix allies
+	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible)
 })
 Events.on("onDraw", () => {
 	if (!stateMain.value || !IsInGame())

@@ -6,38 +6,23 @@ export default class ModifiersBook {
 
 	private m_Unit: Unit
 	m_hBuffs: CDOTA_Buff[] = []
+	m_Buffs: Modifier[] = [];
 	
 	constructor(ent: Unit) {
 		this.m_Unit = ent;
 	}
 	
 	get Buffs(): Modifier[] {
+		if (!this.m_Unit.IsValid)
+			return [];
 		
-		let buffs: Modifier[] = [];
-
-		if (this.m_Unit.IsValid) {
-			let buffsNative = this.m_hBuffs
-
-			for (let i = 0, len = buffsNative.length; i < len; i++) {
-
-				/* let buffNative = buffsNative[i];
-
-				if (buffNative.m_bMarkedForDeletion)
-					continue */
-
-				let buff = ModifierManager.GetModifierByNative(/* buffNative */buffsNative[i]);
-
-				if (buff !== undefined)
-					buffs.push(buff);
-			}
-		}
-		return buffs;
+		return this.m_Buffs//.filter(buff => !buff.m_pBuff.m_bMarkedForDeletion);
 	}
 	get CountBuffs(): number {
 		if (!this.m_Unit.IsValid)
 			return 0;
 
-		return this.m_hBuffs.length;
+		return this.m_Buffs/* .filter(buff => !buff.m_pBuff.m_bMarkedForDeletion) */.length;
 	}
 	get Owner(): Unit {
 		return this.m_Unit;
@@ -46,45 +31,19 @@ export default class ModifiersBook {
 	GetBuff(num: number): Modifier {
 		if (!this.m_Unit.IsValid)
 			return undefined;
-		return ModifierManager.GetModifierByNative(this.m_hBuffs[num]);
+		return this.m_Buffs[num];
 	}
 	GetBuffByName(name: string): Modifier {
-		if (this.m_Unit.IsValid) {
-			let buffsNative = this.m_hBuffs
-
-			for (let i = 0, len = buffsNative.length; i < len; i++) {
-
-				/* let buffNative = buffsNative[i];
-
-				if (buffNative.m_bMarkedForDeletion)
-					continue */
-
-				let buff = ModifierManager.GetModifierByNative(/* buffNative */buffsNative[i]);
-
-				if (buff !== undefined && buff.Name === name)
-					return buff;
-			}
-		}
-		return undefined;
+		if (!this.m_Unit.IsValid)
+			return undefined;
+		
+		return this.m_Buffs.find(buff => /* !buff.m_pBuff.m_bMarkedForDeletion && */ buff.Name === name);
 	}
 	GetBuffByRegexp(regex: RegExp): Modifier {
-		if (this.m_Unit.IsValid) {
-			let buffsNative = this.m_hBuffs
+		if (!this.m_Unit.IsValid)
+			return undefined;
 
-			for (let i = 0, len = buffsNative.length; i < len; i++) {
-
-				/* let buffNative = buffsNative[i];
-
-				if (buffNative.m_bMarkedForDeletion)
-					continue */
-
-				let buff = ModifierManager.GetModifierByNative(/* buffNative */buffsNative[i]);
-
-				if (buff !== undefined && regex.test(buff.Name))
-					return buff;
-			}
-		}
-		return undefined;
+		return this.m_Buffs.find(buff => /* !buff.m_pBuff.m_bMarkedForDeletion && */ regex.test(buff.Name));
 	}
 	GetAnyBuffByNames(names: string[]): Modifier {
 		let buff: Modifier;

@@ -2,6 +2,7 @@ import {
 	MenuManager, 
 	Game, 
 	EntityManager,
+	LocalPlayer,
 	EventsSDK,
 	Unit
 } from "../CrutchesSDK/Imports"
@@ -35,13 +36,13 @@ function CheckNpc(npc: Unit) {
 	if (
 		!stateMain.value
 		|| !(npc instanceof Unit)
-		|| EntityManager.LocalPlayer === undefined
-		|| EntityManager.LocalPlayer.Team !== npc.Team
+		|| LocalPlayer === undefined
+		||	LocalPlayer.Team !== npc.Team
 		|| Game.IsPaused
 	)
 		return
 		
-	if (!allyState.value && npc !== EntityManager.LocalHero)
+	if (!allyState.value && npc !== LocalPlayer.Hero)
 		return
 
 	let npcIndex = npc.Index,
@@ -60,7 +61,7 @@ EventsSDK.on("onTeamVisibilityChanged", CheckNpc);
 EventsSDK.on("onEntityCreated", CheckNpc);
 
 EventsSDK.on("onTick", () => {
-	let localTeam = EntityManager.LocalPlayer.Team
+	let localTeam = LocalPlayer.Team
 
 	EntityManager.AllEntities.forEach(ent => {
 		if (!ent.IsDOTANPC || ent.Team !== localTeam)

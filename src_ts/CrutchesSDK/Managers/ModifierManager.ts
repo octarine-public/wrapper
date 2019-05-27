@@ -41,45 +41,25 @@ const modifierManager = new ModifierManager();
 
 export default global.ModifierManager = modifierManager;
 
-/* EventsSDK.on("onTick", () => {
-
-	for (let i = tempBuffs.length; i--;) {
-		
-		let entity = EntityManager.GetEntityByNative(tempBuffs[i].m_hParent);
-		
-		if (entity !== undefined) {
-
-			
-			
-			EventsSDK.emit("onEntityCreated", false, entity, id);
-			tempBuffs.splice(i, 1);
-		}
-	}
-}); */
-
 Events.on("onBuffAdded", (npc, buffNative) => {
-	//console.log("onBuffAdded", npc, buffNative, buffNative.m_iIndex);
+	
 	const entity = EntityManager.GetEntityByNative(npc, true) as Unit;
 	
 	if (entity === undefined)
 		throw Error("onBuffAdded. entity undefined. " + npc + " " + buffNative)
 
-	entity.ModifiersBook.m_hBuffs.push(buffNative);
-	
 	const buff = AddToCache(entity, buffNative);
-	
+
 	EventsSDK.emit("onBuffAdded", false, entity, buff);
 })
 
 Events.on("onBuffRemoved", (npc, buffNative) => {
-	//console.log("onBuffRemoved", npc, buffNative, buffNative.m_iIndex);
+
 	const entity = EntityManager.GetEntityByNative(npc, true) as Unit;
 	
 	if (entity === undefined)
 		throw Error("onBuffRemoved. entity undefined. " + npc + " " + buffNative)
 	
-	arrayRemove(entity.ModifiersBook.m_hBuffs, buffNative);
-		
 	const buff = DeleteFromCache(entity, buffNative);
 	
 	if (buff === undefined)
@@ -96,16 +76,31 @@ function AddToCache(unit: Unit, buffNative: CDOTA_Buff) {
 	AllModifiersUnit.push([buff, unit]);
 	AllModifiers.push(buff);
 	
+	unit.ModifiersBook.m_hBuffs.push(buffNative);
+	unit.ModifiersBook.m_Buffs.push(buff);
+	
+	const buffs = unit.ModifiersBook.m_Buffs;
+	unit.IsTrueSightedForEnemies = Modifier.HasTrueSightBuff(buffs);
+	unit.HasScepter = Modifier.HasScepterBuff(buffs);
+	
 	return buff;
 }
 
-function DeleteFromCache(npc: Unit, buffNative: CDOTA_Buff): Modifier {
+function DeleteFromCache(unit: Unit, buffNative: CDOTA_Buff): Modifier {
 	//console.log("onEntityDestroyed", ent, id);
 
 	const buff = findModifierNative(buffNative);
 	
 	arrayRemoveCallBack(AllModifiers, buff => buff.m_pBuff === buffNative);
-	arrayRemoveCallBack(AllModifiersUnit, ([buff, unit]) => buff.m_pBuff === buffNative && unit === npc);
+	arrayRemoveCallBack(AllModifiersUnit, ([buff, unit]) => buff.m_pBuff === buffNative && unit === unit);
+	
+	const buffs = unit.ModifiersBook.m_Buffs;
+	
+	arrayRemove(unit.ModifiersBook.m_hBuffs, buffNative);
+	arrayRemove(buffs, buff);
+	
+	unit.IsTrueSightedForEnemies = Modifier.HasTrueSightBuff(buffs);
+	unit.HasScepter = Modifier.HasScepterBuff(buffs);
 	
 	return buff;
 }

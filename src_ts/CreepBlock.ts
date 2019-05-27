@@ -1,4 +1,4 @@
-import { MenuManager, Game, EventsSDK, EntityManager, Unit, Creep, Tower, Vector3, Utils, Entity } from "./CrutchesSDK/Imports";
+import { MenuManager, Game, EventsSDK, LocalPlayer, Unit, Creep, Tower, Vector3, Utils, Entity } from "./CrutchesSDK/Imports";
 //import * as Orders from "Orders"
 //import * as Utils from "Utils"
 
@@ -45,7 +45,7 @@ EventsSDK.on("onTick", () => {
 		
 	last_time = Date.now() + 30;
 	
-	var MyEnt = EntityManager.LocalHero;
+	var MyEnt = LocalPlayer.Hero;
 	if (MyEnt === undefined || !MyEnt.IsAlive || Game.IsPaused)
 		return
 		

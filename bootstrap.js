@@ -62,7 +62,7 @@ setFireEvent((name, cancellable, ...args) => {
 
 (function onTick() {
   setTimeout(() => {
-    if (IsInGame() && LocalDOTAPlayer !== undefined) {
+    if (IsInGame() && LocalDOTAPlayerID !== -1) {
       try {
         Events.emit("onTick", false);
       } catch (e) {

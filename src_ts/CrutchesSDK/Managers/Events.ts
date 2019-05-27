@@ -2,7 +2,7 @@ import QAngle from "../Base/QAngle";
 import Color from "../Base/Color";
 
 import Vector3 from "../Base/Vector3";
-import EntityManager from "./EntityManager";
+import { default as EntityManager, LocalPlayer } from "./EntityManager";
 
 import Unit from "../Objects/Base/Unit";
 //import Hero from "../Objects/Base/Hero";
@@ -30,14 +30,14 @@ Events.on("onWndProc", (...args) => EventsSDK.emit("onWndProc", true, ...args));
 (function onTick() {
 	setTimeout(() => {
 		try {
-			if (EntityManager.LocalPlayer !== undefined)
+			if (LocalPlayer !== undefined)
 				EventsSDK.emit("onTick")
 		} catch (e) {
 			throw e
 		} finally {
 			onTick();
 		}
-	}, 1000 / 30)
+	}, Math.max(1000 / 30, GetLatency(Flow_t.IN)))
 })();
 
 // change later
@@ -61,14 +61,17 @@ Events.on("onUnitStateChanged", npc => {
 	EventsSDK.emit("onUnitStateChanged", false, entity)
 });
 
+
 Events.on("onTeamVisibilityChanged", (npc, newTagged) => {
-	console.log("onTeamVisibilityChanged", npc, newTagged);
+
 	const entity = EntityManager.GetEntityByNative(npc, true) as Unit;
 
 	entity.IsVisibleForTeamMask = newTagged;
-	
+	entity.IsVisibleForEnemies = Unit.IsVisibleForEnemies(entity, newTagged);
+
 	EventsSDK.emit("onTeamVisibilityChanged", false, entity, newTagged)
 });
+
 
 Events.on("onDraw", () => EventsSDK.emit("onDraw"));
 
@@ -142,4 +145,4 @@ Events.on("onUnitAnimationEnd", (npc, snap) =>
 	EventsSDK.emit("onUnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
 
 Events.on("onCustomGameEvent", (event_name, obj) =>
-	EventsSDK.emit("onCustomGameEvent", false, event_name, obj))
+	EventsSDK.emit("onCustomGameEvent", false, event_name, obj));

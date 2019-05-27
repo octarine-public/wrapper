@@ -237,7 +237,7 @@ EventsSDK.on("onDraw", () => {
 
 			allBloodTargets.forEach(target => {
 
-				if (!target.IsValid)
+				if (!target.IsValid || target.IsVisible)
 					return;
 				
 				let pos = target.Position

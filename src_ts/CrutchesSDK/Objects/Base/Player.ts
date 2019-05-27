@@ -1,6 +1,6 @@
 import Vector3 from "../../Base/Vector3";
 import ExecuteOrder from "../../Native/ExecuteOrder";
-import { default as EntityManager, PlayerResource } from "../../Managers/EntityManager";
+import { default as EntityManager, LocalPlayer, PlayerResource } from "../../Managers/EntityManager";
 import Entity from "./Entity"
 import Hero from "./Hero"
 import Unit from "./Unit";
@@ -74,7 +74,7 @@ export default class Player extends Entity {
 	}
 	// HeroDamage				=> NonSpectator
 	// HeroKillGold				=> NonSpectator
-	get ID(): number {
+	get PlayerID(): number {
 		return this.m_pBaseEntity.m_iPlayerID
 	}
 	// IncomeGold				=> NonSpectator
@@ -118,19 +118,19 @@ export default class Player extends Entity {
 	get Name(): string {
 		return this.m_Name
 			|| this.IsValid && PlayerResource
-			? (this.m_Name = PlayerResource.GetNameByPlayerID(this.ID)) : "";
+			? (this.m_Name = PlayerResource.GetNameByPlayerID(this.PlayerID)) : "";
 	}
 	// NearbyCreepDeathCount	=> NonSpectator
 	// ObserverWardsPlaced		=> NonSpectator
 	get PlayerData(): PlayerResourcePlayerData_t {
 		return this.m_PlayerData
 			|| this.IsValid
-			? (this.m_PlayerData = PlayerResource.GetPlayerDataByPlayerID(this.ID)) : undefined;
+			? (this.m_PlayerData = PlayerResource.GetPlayerDataByPlayerID(this.PlayerID)) : undefined;
 	}
 	get PlayerTeamData(): PlayerResourcePlayerTeamData_t {
 		return this.m_PlayerTeamData
 			|| this.IsValid && PlayerResource
-			? (this.m_PlayerTeamData = PlayerResource.GetPlayerTeamDataByPlayerID(this.ID)) : undefined;
+			? (this.m_PlayerTeamData = PlayerResource.GetPlayerTeamDataByPlayerID(this.PlayerID)) : undefined;
 	}
 	get PlayerSteamID(): bigint {
 		return this.m_PlayerData.m_iPlayerSteamID;
@@ -181,12 +181,8 @@ export default class Player extends Entity {
 	// WardsPurchased			=> NonSpectator
 
 	static get QuickBuyItems(): number[] {
-		let lp = EntityManager.LocalPlayer;
-
-		if (lp === undefined)
-			return [];
-
-		return lp.m_pBaseEntity.m_quickBuyItems;
+		return LocalPlayer !== undefined 
+			? LocalPlayer.m_pBaseEntity.m_quickBuyItems : [];
 	}
 	// StickyItemId ??
 

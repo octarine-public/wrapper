@@ -12,7 +12,35 @@ import Unit from "./Unit";
 // IsValid
 // TextureName
 
+export const TrueSightBuffs = [
+	"modifier_truesight",
+	"modifier_item_dustofappearance",
+	"modifier_bloodseeker_thirst_vision",
+	"modifier_bounty_hunter_track",
+]
+
+export const ScepterBuffs = [
+	"modifier_item_ultimate_scepter",
+	"modifier_item_ultimate_scepter_consumed",
+	"modifier_wisp_tether_scepter",
+]
+
+const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scepter/
+
+
 export default class Modifier {
+	
+	/* ================== Static ================== */
+
+	static HasTrueSightBuff(buffs: Modifier[]) {
+		return buffs.some(buff => TrueSightBuffs.some(nameBuff => nameBuff === buff.Name))
+	}
+	
+	static HasScepterBuff(buffs: Modifier[]) {
+		return buffs.some(buff => ScepterRegExp.test(buff.Name));
+	}
+
+	/* =================== Fields =================== */
 
 	m_pBuff: CDOTA_Buff
 	private owner: Unit

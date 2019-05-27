@@ -140,10 +140,13 @@ declare class ExecuteOrder {
 declare interface EventsSDK extends EventEmitter {
 	on(name: "onGameStarted", callback: (localPlayer: Hero) => void): EventEmitter
 	on(name: "onGameEnded", callback: () => void): EventEmitter
+	on(name: "onLocalPlayerTeamAssigned", callback: (teamNum: DOTATeam_t) => void): EventEmitter
 	/**
 	 * Emitted about ALL entities that have may be in "Staging" and Is NOT Valid flag (NPC and childs, PhysicalItems and etc.)
 	 * 
 	 * Also, this event emitted about ALL entities that have already been created before reloading scripts
+	 * 
+	 * Emitted after LocalPlayer choose team (event: onLocalPlayerTeamAssigned)
 	 * 
 	 * CAREFUL !Use this if you know what you are doing!
 	 */
@@ -152,10 +155,15 @@ declare interface EventsSDK extends EventEmitter {
 	 * Emitted about ALL entities that have Valid flag. This callback is best suited for use.
 	 * 
 	 * Also, this event emitted about ALL entities that have already been created (and valids) before reloading scripts
+	 * 
+	 * Emitted after LocalPlayer choose team (event: onLocalPlayerTeamAssigned)
 	 */
 	on(name: "onEntityCreated", callback: (ent: Entity, index: number) => void): EventEmitter
 	on(name: "onEntityDestroyed", callback: (ent: Entity, index: number) => void): EventEmitter
 	on(name: "onWndProc", callback: (messageType: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
+	/**
+	 * Every ~33ms. Emitted after LocalPlayer has been created
+	 */
 	on(name: "onTick", callback: () => void): EventEmitter
 	on(name: "onUpdate", callback: (cmd: CUserCmd) => void): EventEmitter
 	on(name: "onUnitStateChanged", callback: (npc: Unit) => void): EventEmitter

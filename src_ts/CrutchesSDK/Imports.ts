@@ -24,7 +24,7 @@ export { MenuManager }
 export { Sleeper, GameSleeper } from "./Helpers/Sleeper";
 
 // Managers
-export { default as EntityManager, Game, PlayerResource } from "./Managers/EntityManager";
+export { default as EntityManager, LocalPlayer, Game, PlayerResource } from "./Managers/EntityManager";
 
 export { default as ModifierManager } from "./Managers/ModifierManager";
 export { default as EventsSDK } from "./Managers/Events";

@@ -63,13 +63,13 @@ class PlayerResource extends Entity {
 	GetNameByPlayerID(playerID: number): string {
 		let playerResource = this.m_pBaseEntity;
 		
-		return playerResource !== undefined ? this.m_pBaseEntity.m_iszName[playerID] : undefined;
+		return playerResource !== undefined ? this.m_pBaseEntity.m_iszName[playerID] : "";
 	}
 	GetPlayerByPlayerID(playerID: number): Player {
 		let playerResource = this.m_pBaseEntity;
 		
 		return playerResource !== undefined 
-			? EntityManager.GetEntityByNative(this.m_pBaseEntity.m_playerIDToPlayer[playerID]) as Player
+			? EntityManager.GetEntityByNative(this.m_pBaseEntity.m_playerIDToPlayer[playerID], true) as Player
 			: undefined;
 	}
 	GetPlayerTeamDataByPlayerID(playerID: number): PlayerResourcePlayerTeamData_t {
@@ -91,4 +91,4 @@ class PlayerResource extends Entity {
 	}
 }
 
-export default new PlayerResource();
+export default global.PlayerResource = new PlayerResource();

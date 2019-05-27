@@ -1,14 +1,8 @@
-import { MenuManager, EventsSDK, Player, Courier, Entity, EntityManager, Unit, Hero, Game } from "../CrutchesSDK/Imports";
+import { MenuManager, EventsSDK, Player, Courier, Entity, EntityManager, LocalPlayer, Unit, Hero, Game } from "../CrutchesSDK/Imports";
 
 //import * as Utils from "Utils"
 
 let { MenuFactory } = MenuManager;
-
-let registeredEvents = {
-	onEntityCreated: undefined,
-	onEntityDestroyed: undefined,
-	onUpdate: undefined,
-}
 
 let allyCourier: Courier,
 	allAllyPlayers: AllyPlayer[] = []
@@ -20,8 +14,7 @@ const TOOLTIP_ONPLAYING = "List of players for blocking courier(s)"
 
 const courCtlrMenu = MenuFactory("Courier Controller")
 
-const stateMain = courCtlrMenu.AddToggle("State")
-	.OnValue(onStateMain)
+const stateMain = courCtlrMenu.AddToggle("State");
 
 // deliver
 const deliverMenu = courCtlrMenu.AddTree("Deliver settings")
@@ -70,26 +63,14 @@ class AllyPlayer {
 let CastCourAbility = (num: number) => allyCourier
 	&& allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
 
-function onStateMain(state: boolean = stateMain.value) {
-	if (!state)
-		destroyEvents()
-	else
-		registerEvents()
-}
-
 // --- Callbacks
 
-EventsSDK.on("onGameStarted", lp => {
-
-	playersBlockList.SetToolTip(TOOLTIP_ONPLAYING)
-
-	onStateMain()
-})
+EventsSDK.on("onGameStarted", () => playersBlockList.SetToolTip(TOOLTIP_ONPLAYING))
 
 EventsSDK.on("onGameEnded", () => {
 
-	onStateMain(false)
-
+	allyCourier = undefined
+	
 	allAllyPlayers = []
 
 	playersBlockList.SetToolTip(TOOLTIP_NEEDPLAYING)
@@ -100,34 +81,13 @@ EventsSDK.on("onGameEnded", () => {
 
 // --- Methods
 
-function registerEvents() {
-	registeredEvents.onEntityCreated = EventsSDK.on("onEntityCreated", onCheckEntity)
-	registeredEvents.onEntityDestroyed = EventsSDK.on("onEntityDestroyed", onEntityDestroyed)
-	registeredEvents.onUpdate = EventsSDK.on("onUpdate", onUpdate)
-	// loop-optimizer: FORWARD
-	EntityManager.AllEntities.forEach(onCheckEntity)
-}
+EventsSDK.on("onEntityCreated", (ent: Entity) => {
 
-function destroyEvents() {
-
-	Object.keys(registeredEvents).forEach(name => {
-		let listenerID = registeredEvents[name]
-		if (listenerID !== undefined) {
-			EventsSDK.removeListener(name, listenerID)
-			registeredEvents[name] = undefined
-		}
-	})
-
-	allyCourier = undefined
-}
-
-function onCheckEntity(ent: Entity) {
-	
 	if (
 		ent instanceof Player
-		&& (EntityManager.LocalPlayer === undefined
-			|| (ent.ID !== EntityManager.LocalPlayer.ID
-			&& !ent.IsEnemy()))
+		&& (LocalPlayer === undefined
+			|| (ent.PlayerID !== LocalPlayer.PlayerID
+				&& !ent.IsEnemy()))
 	) {
 		allAllyPlayers.push(new AllyPlayer(ent))
 		return
@@ -142,26 +102,20 @@ function onCheckEntity(ent: Entity) {
 	}
 
 	if (ent instanceof Hero && !ent.IsIllusion) {
-		
+
 		let findPlayer = allAllyPlayers.find(player => player.ent.Hero === ent);
 		if (findPlayer)
 			findPlayer.UpdateMenu()
 	}
-}
+})
 
-function onEntityDestroyed(ent: Entity) {
+EventsSDK.on("onEntityDestroyed", (ent: Entity) => {
 
-	if (ent instanceof Courier)
-		removedIDCour(ent);
-}
-
-function removedIDCour(ent: Courier) {
-
-	if (allyCourier === ent)
+	if (ent instanceof Courier && allyCourier === ent)
 		allyCourier = undefined
-}
+})
 
-function onUpdate() {
+EventsSDK.on("onUpdate", () => {
 
 	if (!Game.IsInGame || Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
 		return
@@ -211,12 +165,13 @@ function onUpdate() {
 
 		default: break
 	}
-}
+})
+
 
 function checkCourSelf(stateEnt: Hero, state: CourierState_t) {
 
 	let localHero = EntityManager.LocalHero
-	
+
 	if (localHero === undefined)
 		return false
 
@@ -239,8 +194,7 @@ function trySelfDeliver() {
 
 	let localEnt = EntityManager.LocalHero,
 		delivery = false;
-	
-		
+
 	if (localEnt !== undefined && localEnt.IsAlive && localEnt.Inventory.HasFreeSlot(0, 9)
 		&& allyCourier.Inventory.HasFreeSlot(0, 9)) {
 		if (allyCourier.Inventory.HasItemByOtherPlayer(localEnt)) {

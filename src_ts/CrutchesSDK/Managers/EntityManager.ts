@@ -1,5 +1,6 @@
 import { arrayRemove, arrayRemoveCallBack } from "../Utils/Utils";
-//import Debug from "../Utils/Debug";
+import * as Debug from "../Utils/Debug";
+
 import EventsSDK from "./Events";
 
 import Vector3 from "../Base/Vector3";
@@ -27,26 +28,20 @@ import Shop from "../Objects/Base/Shop";
 import PlayerResource from "../Objects/GameResources/PlayerResource";
 import Game from "../Objects/GameResources/GameRules";
 
-
 export { PlayerResource, Game }
 
 let AllEntities: Entity[] = [];
 let EntitiesIDs: Entity[] = [];
 let InStage: Entity[] = [];
 
-let LocalDOTAPlayerCache: Player;
+export let LocalPlayer: Player;
 
 class EntityManager {
 	get LocalPlayer(): Player {
-		return LocalDOTAPlayerCache 
-			|| (LocalDOTAPlayerCache = findEntityNative(LocalDOTAPlayer) as Player);
+		return LocalPlayer /* || (LocalDOTAPlayerCache = this.GetPlayerByID(LocalDOTAPlayer, true) as Player); */
 	}
 	get LocalHero(): Hero {
-		let localPlayer = this.LocalPlayer;
-		
-		if (localPlayer === undefined)
-			return undefined;
-		return localPlayer.Hero;
+		return LocalPlayer !== undefined ? LocalPlayer.Hero : undefined;
 	}
 	get AllEntities(): Entity[] {
 		return AllEntities;
@@ -64,7 +59,9 @@ class EntityManager {
 		return findEntityIndex(ent);
 	}
 	GetPlayerByID(playerID: number): Player {
-		return AllEntities.find(entity => entity instanceof Player && entity.ID === playerID) as Player;
+		if (playerID === -1)
+			return undefined;
+		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player;
 	}
 	GetEntityByNative(ent: C_BaseEntity, inStage: boolean = false): Entity {
 		return findEntityNative(ent, inStage);
@@ -87,8 +84,13 @@ export default global.EntityManager = entityManager;
 	LocalPlayer = undefined;
 }); */
 
+Events.on("onLocalPlayerTeamAssigned", teamNum => {
+	//console.log(LocalDOTAPlayerID)
+	LocalPlayer = entityManager.GetPlayerByID(LocalDOTAPlayerID);
+	//console.log(LocalPlayer)
+})
+
 Events.on("onEntityCreated", (ent, index) => {
-	console.log("onEntityCreated", ent, index);
 	
 	{ // add globals
 		if (ent instanceof C_DOTA_PlayerResource) {
@@ -110,18 +112,10 @@ Events.on("onEntityCreated", (ent, index) => {
 
 	const entity = ClassFromNative(ent, index);
 
-	EventsSDK.emit("onEntityPreCreated", false, entity, index);
-	
-	if (!CheckIsInStagingEntity(ent)) {
-		InStage.push(entity);
-		return;
-	}
-	
 	AddToCache(entity);
 })
 
 Events.on("onEntityDestroyed", (ent, index) => {
-	console.log("onEntityDestroyed", ent, index);
 
 	{ // delete global
 		if (ent instanceof C_DOTA_PlayerResource) {
@@ -139,46 +133,57 @@ Events.on("onEntityDestroyed", (ent, index) => {
 			return;
 		}
 		
-		if (ent instanceof C_DOTAPlayer) {
-			if (LocalDOTAPlayerCache !== undefined && LocalDOTAPlayerCache.m_pBaseEntity === ent)
-				LocalDOTAPlayerCache = undefined;
-		}
+		if (ent instanceof C_DOTAPlayer && LocalPlayer !== undefined && LocalPlayer.PlayerID === ent.m_iPlayerID)
+			LocalPlayer = undefined;
 	}
 	
 	DeleteFromCache(ent, index);
 });
 
+
+function CheckIsInStagingEntity(ent: Entity) {
+	return (ent.m_pBaseEntity.m_pEntity.m_flags & (1 << 2)) === 0;
+}
+
 (function onUpdate() {
 	setTimeout(() => {
-		//console.log(1);
-		try {
-			for (let i = InStage.length; i--;) {
 
-				let entity = InStage[i];
-				
-				if (CheckIsInStagingEntity(entity.m_pBaseEntity)) {
-					//console.log("onEntityCreated_Loaded", entity, entity.m_pBaseEntity, entity.Index);
-					InStage.splice(i, 1);
-					AddToCache(entity);
-				}
+		for (let i = InStage.length; i--;) {
+
+			let entity = InStage[i];
+
+			if (CheckIsInStagingEntity(entity)) {
+				InStage.splice(i, 1);
+				AddToCache(entity);
 			}
-		} catch (e) {
-			console.error(e);
-		} finally {
-			onUpdate();
 		}
+		
+		onUpdate();
 	}, 0);
 })();
 
 
 function AddToCache(entity: Entity) {
+	
+	EventsSDK.emit("onEntityPreCreated", false, entity, entity.Index);
+
+	if (!CheckIsInStagingEntity(entity)) {
+		InStage.push(entity);
+		return;
+	}
+	
 	const index = entity.Index;
 
+	if (EntitiesIDs[index] !== undefined)
+		return;
+	
 	entity.IsValid = true;
-
+	
 	EntitiesIDs[index] = entity;
 	AllEntities.push(entity);
 
+	//console.log("onEntityCreated SDK", entity, index);
+	
 	EventsSDK.emit("onEntityCreated", false, entity, index);
 }
 
@@ -195,12 +200,11 @@ function DeleteFromCache(ent: C_BaseEntity, index: number) {
 	
 	arrayRemoveCallBack(AllEntities, npc => npc.m_pBaseEntity === ent);
 	
+	//console.log("onEntityDestroyed SDK", entity, index);
+	
 	EventsSDK.emit("onEntityDestroyed", false, entity, index);
 }
 
-function CheckIsInStagingEntity(ent: C_BaseEntity) {
-	return (ent.m_pEntity.m_flags & (1 << 2)) === 0;
-}
 
 function findEntityIndex(el: Entity): number {
 	if (el === undefined) 
@@ -247,7 +251,7 @@ function findEntitiesNative(ents: C_BaseEntity[], filter?: (value: Entity) => bo
 	
 	return entities;
 }
-
+// EntityManager.AllEntities.filter(entity => entity.m_pBaseEntity instanceof C_DOTAPlayer)[0].PlayerID
 function ClassFromNative(ent: C_BaseEntity, index: number) {
 	
 	if (ent instanceof C_DOTAPlayer)

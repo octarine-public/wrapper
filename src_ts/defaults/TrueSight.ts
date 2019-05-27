@@ -45,7 +45,7 @@ EventsSDK.on("onEntityDestroyed", ent => {
 	if (ent instanceof Unit)
 		Utils.arrayRemove(npcs, ent);
 })
-EventsSDK.on("onUpdate", () => {
+EventsSDK.on("onTick", () => {
 	if (!stateMain.value || Game.IsPaused || !Game.IsInGame)
 		return
 

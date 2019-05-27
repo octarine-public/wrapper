@@ -19,6 +19,7 @@ declare class EventEmitter {
 declare interface Events extends EventEmitter {
 	on(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): EventEmitter
 	on(name: "onGameEnded", callback: () => void): EventEmitter
+	on(name: "onLocalPlayerTeamAssigned", callback: (team_num: number) => void): EventEmitter
 	/**
 	 * Also, this event emitted about ALL entities that have already been created before reloading scripts
 	 */

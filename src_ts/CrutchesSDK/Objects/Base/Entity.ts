@@ -1,7 +1,7 @@
 import { DegreesToRadian } from "../../Utils/Math";
 import QAngle from "../../Base/QAngle";
 import Vector3 from "../../Base/Vector3";
-import EntityManager from "../../Managers/EntityManager";
+import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager";
 
 /*
 m_pEntity.m_flags
@@ -186,7 +186,10 @@ export default class Entity {
 	/**
 	 * @param ent if undefined => this compare with LocalPlayer
 	 */
-	IsEnemy(ent: Entity = EntityManager.LocalPlayer): boolean {
+	IsEnemy(ent: Entity = LocalPlayer): boolean {
+		/* console.log("IsEnemy", ent, ent ? ent.m_pBaseEntity : undefined, LocalDOTAPlayerID);
+		console.log(ent === undefined || ent.Team !== this.Team);
+		console.log(new Error("asdas").stack); */
 		return ent === undefined || ent.Team !== this.Team
 	}
 	

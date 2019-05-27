@@ -1,4 +1,4 @@
-import { EventsSDK, MenuManager, Unit, EntityManager, Utils } from "./CrutchesSDK/Imports";
+import { EventsSDK, MenuManager, Unit, LocalPlayer, Utils } from "./CrutchesSDK/Imports";
 
 //import * as Orders from "Orders"
 //import * as Utils from "Utils"
@@ -11,7 +11,7 @@ let mks: Unit[] = [],
 
 EventsSDK.on("onEntityCreated", (npc: Unit) => {
 
-	if (EntityManager.LocalHero === npc)
+	if (LocalPlayer === undefined || LocalPlayer.Hero === npc)
 		return
 	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_MonkeyKing)
 		mks.push(npc)
@@ -28,8 +28,8 @@ EventsSDK.on("onEntityDestroyed", (npc: Unit) => {
 EventsSDK.on("onTick", () => {
 	if (!stateMain.value)
 		return
-	const pl_ent = EntityManager.LocalHero
-	if (pl_ent === undefined || pl_ent.IsStunned || !pl_ent.IsAlive || EntityManager.LocalPlayer.ActiveAbility !== undefined)
+	const pl_ent = LocalPlayer.Hero;
+	if (pl_ent === undefined || pl_ent.IsStunned || !pl_ent.IsAlive || LocalPlayer.ActiveAbility !== undefined)
 		return
 	if (mks.length !== 0)
 		// loop-optimizer: FORWARD

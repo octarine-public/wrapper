@@ -1,4 +1,4 @@
-import { EventsSDK, Vector3, RendererSDK, EntityManager, Game, Utils } from "./CrutchesSDK/Imports";
+import { EventsSDK, Vector3, RendererSDK, LocalPlayer, Game, Utils } from "./CrutchesSDK/Imports";
 
 /* import * as Orders from "Orders"
 import * as Utils from "Utils" */
@@ -35,7 +35,7 @@ EventsSDK.on("onDraw", () => {
 EventsSDK.on("onTick", () => {
 	if (!config.enabled || is_stacking)
 		return
-	var MyEnt = EntityManager.LocalHero
+	var MyEnt = LocalPlayer.Hero
 	if (MyEnt === undefined)
 		return
 	var torrent = MyEnt.AbilitiesBook.GetAbilityByName("kunkka_torrent")
@@ -70,7 +70,7 @@ EventsSDK.on("onTick", () => {
 	})
 })
 
-EventsSDK.on("onPrepareUnitOrders", order => order.Unit !== EntityManager.LocalHero || !is_stacking) // cancel orders while stacking
+EventsSDK.on("onPrepareUnitOrders", order => order.Unit !== LocalPlayer.Hero || !is_stacking) // cancel orders while stacking
 
 /*EventsSDK.on("onWndProc", (message_type, wParam) => {
 	if (!IsInGame())

@@ -65,31 +65,127 @@ EventsSDK.on("onGameStarted", lp => {
 
 	setConVar(creepsNoSpawn.value, creepsNoSpawn)
 })
-/* 
-let particle: number = undefined;
 
-EventsSDK.on("onTick", () => {
+// ======================= DEBUGGING EVENTS
+
+const debugEventsMenu = debuggerMenu.AddTree("Debugging events", "Debugging native events in console");
+
+const debugEvents = debugEventsMenu.AddToggle("Debugging events");
+const debugDrawEvents = debugEventsMenu.AddToggle("Debug Draw");
+
+const debugEntitiesEvents = debugEventsMenu.AddToggle("Debug Entities");
+const debugBuffsEvents = debugEventsMenu.AddToggle("Debug Buffs");
+
+const debugOtherEvents = debugEventsMenu.AddToggle("Debug Other");
+
+let allEvents: EventEmitter[] = [];
+
+Events.on("onGameStarted", (pl_ent) => {
+	if (!debugEvents.value || !debugOtherEvents.value) return;
 	
-	let hero = EntityManager.LocalHero,
-		inFront = hero.InFront(300);
+	console.log("onGameStarted", pl_ent);
+	if (!(pl_ent instanceof C_DOTA_BaseNPC_Hero))
+		throw Error("onGameStarted. pl_ent is not C_DOTA_BaseNPC_Hero:" + pl_ent)
+});
+Events.on("onGameEnded", () => {
+	if (!debugEvents.value || !debugOtherEvents.value) return;
 	
-	console.log(inFront);
-		
-	if (particle === undefined) {
-		particle = Particles.Create("particles/ui_mouseactions/range_finder_line.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, hero.m_pBaseEntity)
-	}
-	
-	hero.Position.toIOBuffer();
-	Particles.SetControlPoint(particle, 0);
-	
-	hero.Position.toIOBuffer();
-	Particles.SetControlPoint(particle, 1);
-	
-	inFront.toIOBuffer();
-	Particles.SetControlPoint(particle, 2);
+	console.log("onGameEnded");
+});
+Events.on("onLocalPlayerTeamAssigned", teamNum => {
+	if (!debugEvents.value || !debugOtherEvents.value) return;
+
+	console.log("onLocalPlayerTeamAssigned", teamNum);
 })
+Events.on("onEntityCreated", (ent, id) => {
+	if (!debugEvents.value || !debugEntitiesEvents.value) return;
+	
+	console.log("onEntityCreated", ent, id);
+	if (!(ent instanceof C_BaseEntity) || typeof id !== "number")
+		throw Error("onEntityCreated. ent is not C_BaseEntity:" + ent + ", index: " + id)
+});
+Events.on("onEntityDestroyed", (ent, id) => {
+	if (!debugEvents.value || !debugEntitiesEvents.value) return;
+	
+	console.log("onEntityCreated", ent, id);
+	if (!(ent instanceof C_BaseEntity) || typeof id !== "number")
+		throw Error("onEntityDestroyed. ent is not C_BaseEntity:" + ent + ", index: " + id)
+});
+Events.on("onWndProc", (...args) => {
+	if (!debugEvents.value) return;
+});
+Events.on("onUpdate", cmd => {
+	if (!debugEvents.value) return;
+	
+});
+Events.on("onUnitStateChanged", npc => {
+	if (!debugEvents.value || !debugOtherEvents.value) return;
+	
+	console.log("onUnitStateChanged", npc);
+	if (!(npc instanceof C_DOTA_BaseNPC))
+		throw Error("onUnitStateChanged. npc is not C_DOTA_BaseNPC:" + npc)
+});
+Events.on("onTeamVisibilityChanged", (npc, newTagged) => {
+	if (!debugEvents.value || !debugOtherEvents.value) return;
+	
+	console.log("onTeamVisibilityChanged", npc, newTagged);
+	if (!(npc instanceof C_DOTA_BaseNPC) || typeof newTagged !== "number")
+		throw Error("onTeamVisibilityChanged. npc is not C_DOTA_BaseNPC:" + npc + ", newTagged" + newTagged);
+});
+Events.on("onDraw", () => {
+	if (!debugEvents.value || !debugDrawEvents.value) return;
+	
+	console.log("onDraw");
+});
+Events.on("onParticleCreated", (...args) => debugConsole("onParticleCreated", ...args));
+Events.on("onParticleUpdated", (...args) => debugConsole("onParticleUpdated", ...args));
+Events.on("onParticleUpdatedEnt", (...args) => debugConsole("onParticleUpdatedEnt", ...args));
+Events.on("onBloodImpact", (...args) => debugConsole("onBloodImpact", ...args));
+Events.on("onPrepareUnitOrders", order => {
+	if (!debugEvents.value || !debugOtherEvents.value) return;
+	
+	console.log("onPrepareUnitOrders", order);
+	if (!(order instanceof CUnitOrder))
+		throw Error("onPrepareUnitOrders. order is not CUnitOrder:" + order);
+});
+Events.on("onLinearProjectileCreated", (...args) => debugConsole("onLinearProjectileCreated", ...args));
+Events.on("onLinearProjectileDestroyed", proj => debugConsole("onLinearProjectileDestroyed", proj));
+Events.on("onTrackingProjectileCreated", (...args) => debugConsole("onTrackingProjectileCreated", ...args));
+Events.on("onTrackingProjectileUpdated", (...args) => debugConsole("onTrackingProjectileUpdated", ...args));
+Events.on("onTrackingProjectileDestroyed", proj => debugConsole("onTrackingProjectileDestroyed", proj));
+Events.on("onUnitAnimation", (...args) => debugConsole("onUnitAnimation", ...args));
+Events.on("onUnitAnimationEnd", (...args) => debugConsole("onUnitAnimation", ...args));
+Events.on("onBuffAdded", (npc, buff) => {
+	if (!debugEvents.value || !debugBuffsEvents.value) return;
+	
+	console.log("onBuffAdded", npc, buff);
+	
+	if (!(npc instanceof C_DOTA_BaseNPC))
+		throw Error(name + ". npc is not C_DOTA_BaseNPC:" + npc)
 
-EventsSDK.on("onGameEnded", () => {
-	if (particle !== undefined)
-		Particles.Destroy(particle, true);
-}) */
+	if (!(buff instanceof CDOTA_Buff))
+		throw Error(name + ". npc is not CDOTA_Buff:" + buff)
+});
+Events.on("onBuffRemoved", (npc, buff) => {
+	if (!debugEvents.value || !debugBuffsEvents.value) return;
+	
+	console.log("onBuffRemoved", npc, buff);
+	
+	if (!(npc instanceof C_DOTA_BaseNPC))
+		throw Error(name + ". npc is not C_DOTA_BaseNPC:" + npc)
+
+	if (!(buff instanceof CDOTA_Buff))
+		throw Error(name + ". npc is not CDOTA_Buff:" + buff)
+});
+Events.on("onBuffStackCountChanged", buff => {
+	if (!debugEvents.value || !debugBuffsEvents.value) return;
+	
+	console.log("onBuffStackCountChanged", buff);
+	
+	if (!(buff instanceof CDOTA_Buff))
+		throw Error(name + ". npc is not CDOTA_Buff:" + buff)
+});
+Events.on("onCustomGameEvent", (...args) => debugConsole("onCustomGameEvent", ...args));
+
+let debugConsole = (name: string, ...args: any) => 
+	debugEvents.value && debugOtherEvents.value && console.log(name, ...args);
