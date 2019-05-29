@@ -145,23 +145,17 @@ function CheckIsInStagingEntity(ent: Entity) {
 	return (ent.m_pBaseEntity.m_pEntity.m_flags & (1 << 2)) === 0;
 }
 
-(function onUpdate() {
-	setTimeout(() => {
+setInterval(() => {
+	for (let i = InStage.length; i--;) {
 
-		for (let i = InStage.length; i--;) {
+		let entity = InStage[i];
 
-			let entity = InStage[i];
-
-			if (CheckIsInStagingEntity(entity)) {
-				InStage.splice(i, 1);
-				AddToCache(entity);
-			}
+		if (CheckIsInStagingEntity(entity)) {
+			InStage.splice(i, 1);
+			AddToCache(entity);
 		}
-		
-		onUpdate();
-	}, 0);
-})();
-
+	}
+}, 0);
 
 function AddToCache(entity: Entity) {
 	

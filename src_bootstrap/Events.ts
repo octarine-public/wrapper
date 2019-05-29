@@ -61,19 +61,14 @@ global.Events = new EventEmitter()
 setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args));
 
 // temp onTick
-(function onTick() {
-	setTimeout(() => {
+setInterval(() => {
+	try {
 		if (IsInGame() && LocalDOTAPlayerID !== -1)
-			try {
-				Events.emit("onTick", false)
-			} catch(e) {
-				onTick()
-				throw e
-			}
-		
-		onTick()
-	}, Math.max(1000 / 30, GetLatency(Flow_t.IN)))
-})();
+			Events.emit("onTick", false)
+	} catch (e) {
+		throw e
+	}
+}, Math.max(1000 / 30, GetLatency(Flow_t.IN)));
 
 let AllEntities: C_BaseEntity[] = [],
 	EntitiesIDs: C_BaseEntity[] = [],

@@ -27,18 +27,14 @@ Events.on("onGameEnded", () => EventsSDK.emit("onGameEnded"));
 Events.on("onWndProc", (...args) => EventsSDK.emit("onWndProc", true, ...args));
 
 
-(function onTick() {
-	setTimeout(() => {
-		try {
-			if (LocalPlayer !== undefined)
-				EventsSDK.emit("onTick")
-		} catch (e) {
-			throw e
-		} finally {
-			onTick();
-		}
-	}, Math.max(1000 / 30, GetLatency(Flow_t.IN)))
-})();
+setInterval(() => {
+	try {
+		if (LocalPlayer !== undefined)
+			EventsSDK.emit("onTick")
+	} catch (e) {
+		throw e
+	}
+}, Math.max(1000 / 30, GetLatency(Flow_t.IN)));
 
 // change later
 Events.on("onUpdate", cmd => {
