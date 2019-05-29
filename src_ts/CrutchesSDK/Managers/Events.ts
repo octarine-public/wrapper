@@ -74,7 +74,7 @@ Events.on("onTeamVisibilityChanged", (npc, newTagged) => {
 
 
 Events.on("onDraw", () => EventsSDK.emit("onDraw"));
-
+//Events.on("onParticleCreated", (...args) => console.log("onParticleCreated SDK", ...args));
 Events.on("onParticleCreated", (id, path, particleSystemHandle, attach, target) => {
 	
 	EventsSDK.emit("onParticleCreated", false, id, path, particleSystemHandle, attach, 
@@ -115,7 +115,13 @@ Events.on("onPrepareUnitOrders", order => {
 		order.queue,
 		order.show_effects
 	) */
-	return EventsSDK.emit("onPrepareUnitOrders", true, ExecuteOrder.fromNative(order));
+	
+	let ordersSDK = ExecuteOrder.fromNative(order);
+	
+	if (ordersSDK === undefined)
+		return true;
+	
+	return EventsSDK.emit("onPrepareUnitOrders", true, ordersSDK);
 })
 
 Events.on("onLinearProjectileCreated", (proj, ent, path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance) => {

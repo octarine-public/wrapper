@@ -29,13 +29,21 @@ export default class ExecuteOrder {
 	}
 	
 	static fromNative(order: CUnitOrder): ExecuteOrder {
+		
+		let unit = order.unit !== undefined
+			? EntityManager.GetEntityByNative(order.unit) as Unit
+			: EntityManager.LocalHero;
+		
+		if (unit === undefined)
+			return undefined;
+			
 		return new ExecuteOrder(
 			order.order_type,
 			EntityManager.GetEntityByNative(order.target) as Entity,
 			Vector3.fromIOBuffer(order.position !== undefined),
 			EntityManager.GetEntityByNative(order.ability) as Ability,
 			order.issuer,
-			EntityManager.GetEntityByNative(order.unit) as Unit,
+			unit,
 			order.queue,
 			order.show_effects
 		);

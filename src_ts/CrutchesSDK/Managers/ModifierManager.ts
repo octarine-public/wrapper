@@ -5,6 +5,7 @@ import EventsSDK from "./Events";
 import Modifier from "../Objects/Base/Modifier";
 import Unit from "../Objects/Base/Unit";
 import EntityManager from "./EntityManager";
+import Vector3 from "../Base/Vector3";
 
 
 let AllModifiers: Modifier[] = [];
@@ -45,6 +46,9 @@ Events.on("onBuffAdded", (npc, buffNative) => {
 	
 	const entity = EntityManager.GetEntityByNative(npc, true) as Unit;
 	
+	if (npc instanceof TrackingProjectile || npc instanceof LinearProjectile)
+		console.error(npc, "m_iID", npc.m_iID, "m_bIsValid", npc.m_bIsValid, Vector3.fromIOBuffer(npc.m_vecPosition));
+	
 	if (entity === undefined)
 		throw Error("onBuffAdded. entity undefined. " + npc + " " + buffNative)
 
@@ -56,6 +60,9 @@ Events.on("onBuffAdded", (npc, buffNative) => {
 Events.on("onBuffRemoved", (npc, buffNative) => {
 
 	const entity = EntityManager.GetEntityByNative(npc, true) as Unit;
+	
+	if (npc instanceof TrackingProjectile || npc instanceof LinearProjectile)
+		console.error(npc, "m_iID", npc.m_iID, "m_bIsValid", npc.m_bIsValid, Vector3.fromIOBuffer(npc.m_vecPosition));
 	
 	if (entity === undefined)
 		throw Error("onBuffRemoved. entity undefined. " + npc + " " + buffNative)
