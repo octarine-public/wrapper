@@ -264,7 +264,7 @@ declare class CUnitOrder {
 	readonly queue: boolean
 	readonly issuer: PlayerOrderIssuer_t
 	readonly position: boolean // returns Vector3 to IOBuffer offset 0 on get
-	readonly unit: C_DOTA_BaseNPC
+	readonly unit?: C_DOTA_BaseNPC
 	readonly target: C_BaseEntity
 	readonly ability: C_DOTABaseAbility
 	readonly show_effects: boolean
