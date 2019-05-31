@@ -13,7 +13,7 @@ export { default as Color } from "./Base/Color";
 
 // Native
 export { default as RendererSDK } from "./Native/Renderer";
-export { default as ExecuteOrder } from "./Native/ExecuteOrder";
+export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder";
 
 // Menu
 import * as MenuManager from "./Menu/MenuManager";
@@ -40,7 +40,13 @@ import Meepo from "./Objects/Heroes/Meepo";
 
 import Ability from "./Objects/Base/Ability";
 import Item from "./Objects/Base/Item";
-import Modifier from "./Objects/Base/Modifier";
+import {
+	default as Modifier,
+	TRUESIGHT_MODIFIERS,
+	SCEPTER_MODIFIERS,
+	BLOCKING_DAMAGE_MODIFIERS,
+	REFLECTING_DAMAGE_MODIFIERS
+} from "./Objects/Base/Modifier";
 
 import PhysicalItem from "./Objects/Base/PhysicalItem";
 import Rune from "./Objects/Base/Rune";

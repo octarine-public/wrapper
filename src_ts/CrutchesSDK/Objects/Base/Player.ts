@@ -27,7 +27,7 @@ export default class Player extends Entity {
 	private m_Name: string
 	private m_PlayerData: PlayerResourcePlayerData_t
 	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t
-	
+	private m_hAssignedHeroLast: Hero;
 	/**
 	 * Only for LocalPlayer
 	 */
@@ -67,7 +67,12 @@ export default class Player extends Entity {
 	// HasRepicked 				=> PlayerResourcePlayerTeamData_t
 	// Healing					=> NonSpectator
 	get Hero(): Hero {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hAssignedHero) as Hero;
+		let nowHero = this.m_pBaseEntity.m_hAssignedHero;
+		
+		if (this.m_hAssignedHeroLast === undefined || this.m_hAssignedHeroLast.m_pBaseEntity !== nowHero)
+			this.m_hAssignedHeroLast = EntityManager.GetEntityByNative(nowHero) as Hero;
+			
+		return this.m_hAssignedHeroLast
 	}
 	get HeroAssigned(): boolean {
 		return this.Hero !== undefined // this.m_pBaseEntity.m_bHeroAssigned // always false;
@@ -136,8 +141,6 @@ export default class Player extends Entity {
 		return this.m_PlayerData.m_iPlayerSteamID;
 	}
 	get QueryUnit(): Unit {
-		if (!this.m_pBaseEntity.m_bInQuery)
-			return undefined;
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hQueryUnit) as Unit;
 	}
 

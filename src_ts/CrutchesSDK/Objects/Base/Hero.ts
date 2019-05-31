@@ -73,7 +73,10 @@ export default class Hero extends Unit {
 	
 	/* ============ EXTENSIONS ============ */
 	
+	/**
+	 * https://dota2.gamepedia.com/Intelligence
+	 */
 	get SpellAmplification(): number {
-		return super.SpellAmplification + this.TotalIntelligence * 0.07 / 100 // https://dota2.gamepedia.com/Intelligence
+		return super.SpellAmplification + (this.TotalIntelligence * 0.07 / 100)
 	}
 }

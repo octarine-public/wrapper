@@ -6,6 +6,7 @@ import { LocalPlayer } from "../../Managers/EntityManager";
 
 import Entity from "./Entity"
 import Player from "./Player";
+//import Creep from "./Creep";
 
 import Ability from "./Ability";
 import Item from "./Item";
@@ -19,10 +20,16 @@ import PhysicalItem from "./PhysicalItem";
 import Tree from "./Tree";
 import Rune from "./Rune";
 
+
+/* ================================  ================================ */
+/* ================  ================ */
+/* ========  ======== */
+/* ==== ==== */
+
 export default class Unit extends Entity {
-	
-	/* ================== Static ================== */
-	
+
+	/* ================================ Static ================================ */
+
 	static IsVisibleForEnemies(unit: Unit, newTagged: number) {
 		const valid_teams = ~(1 | (1 << DOTATeam_t.DOTA_TEAM_SPECTATOR)
 			| (1 << DOTATeam_t.DOTA_TEAM_NEUTRALS)
@@ -36,21 +43,25 @@ export default class Unit extends Entity {
 				return true
 		return false
 	}
-	
-	/* =================== Fields =================== */
+
+	/* ================================ Fields ================================ */
 
 	m_pBaseEntity: C_DOTA_BaseNPC
 	private m_Inventory: Inventory
 	private m_AbilitiesBook: AbilitiesBook
 	private m_ModifiersBook: ModifiersBook
-	
-	private m_iTaggedAsVisibleByTeam: number;
+
+	private m_iTaggedAsVisibleByTeam: number = 0;
 	private m_bIsVisibleForEnemies: boolean = false;
 	private m_bIsTrueSightedForEnemies: boolean = false;
 	private m_bHasScepterModifier: boolean = false;
-	
-	/* ============ BASE  ============ */
-	
+
+	/* ================================ BASE ================================ */
+
+	/* ================ GETTERS ================ */
+
+	/* ======== UnitType ======== */
+
 	get IsHero(): boolean {
 		return HasBit(this.UnitType, 1);
 	}
@@ -87,6 +98,8 @@ export default class Unit extends Entity {
 	get IsWard(): boolean {
 		return HasBit(this.UnitType, 17)
 	}
+
+	/* ======== modifierstate ======== */
 
 	get IsRooted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
@@ -140,6 +153,8 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_TRUESIGHT_IMMUNE)
 	}
 
+	/* ======== base ======== */
+
 	get IsInFadeTime(): boolean {
 		return this.m_pBaseEntity.m_flInvisibilityLevel > 0
 	}
@@ -170,41 +185,6 @@ export default class Unit extends Entity {
 
 		return this.m_bHasScepterModifier;
 	}
-
-	/**
-	 * @param flag if not exists => is Melee or Range attack
-	 */
-	HasAttackCapability(flag?: DOTAUnitAttackCapability_t): boolean {
-		let attackCap = this.m_pBaseEntity.m_iAttackCapabilities
-
-		if (flag !== undefined)
-			return (attackCap & flag) === flag
-
-		return (attackCap & (
-				DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK |
-				DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
-			) === flag
-	}
-	/**
-	 * @param flag if not exists => isn't move NONE
-	 */
-	HasMoveCapabilit(flag: DOTAUnitMoveCapability_t): boolean {
-		let moveCap = this.m_pBaseEntity.m_iMoveCapabilities
-
-		if (flag !== undefined)
-			return (moveCap & flag) === flag
-
-		return flag !== DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
-	}
-	
-	IsUnitStateFlagSet(flag: modifierstate): boolean {
-		return (((this.m_pBaseEntity.m_nUnitState64 | this.m_pBaseEntity.m_nUnitDebuffState) >> BigInt(flag)) & 1n) === 1n
-	}
-
-	IsControllableByPlayer(playerID: number): boolean {
-		return ((this.m_pBaseEntity.m_iIsControllableByPlayer64 >> BigInt(playerID)) & 1n) === 1n
-	}
-	// new
 
 	get Armor(): number {
 		return this.m_pBaseEntity.m_flPhysicalArmorValue
@@ -239,8 +219,18 @@ export default class Unit extends Entity {
 	get BKBChargesUsed(): number {
 		return this.m_pBaseEntity.m_iBKBChargesUsed
 	}
+	get DamageAverage(): number {
+		return (this.MinDamage + this.MaxDamage) / 2;
+	}
 	get DamageBonus(): number {
 		return this.m_pBaseEntity.m_iDamageBonus
+	}
+	/**
+	 * https://dota2.gamepedia.com/Armor
+	 */
+	get DamageResist(): number {
+		let armor = this.Armor;
+		return (0.052 * armor) / (0.9 + 0.048 * Math.abs(armor));
 	}
 	get CollisionPadding(): number {
 		return this.m_pBaseEntity.m_flCollisionPadding
@@ -288,7 +278,7 @@ export default class Unit extends Entity {
 	get IncreasedAttackSpeed(): number {
 		return this.m_pBaseEntity.m_fIncreasedAttackSpeed
 	}
-	
+
 	get InvisibleLevel(): number {
 		return this.m_pBaseEntity.m_flInvisibilityLevel
 	}
@@ -340,11 +330,14 @@ export default class Unit extends Entity {
 	get Level(): number {
 		return this.m_pBaseEntity.m_iCurrentLevel
 	}
+	get MagicDamageResist(): number {
+		return this.m_pBaseEntity.m_flMagicalResistanceValue;
+	}
 	get Mana(): number {
 		return this.m_pBaseEntity.m_flMana
 	}
 	get ManaRegen(): number {
-	 	return this.m_pBaseEntity.m_flManaRegen;
+		return this.m_pBaseEntity.m_flManaRegen;
 	}
 	get MaxDamage(): number {
 		return this.m_pBaseEntity.m_iDamageMax
@@ -421,44 +414,64 @@ export default class Unit extends Entity {
 	get Buffs(): Modifier[] {
 		return this.ModifiersBook.Buffs;
 	}
-	
-	/* ============ EXTENSIONS ============ */
-	
-	/**
-	 * @param fromCenterToCenter include HullRadiuses
-	 */
-	Distance(vec: Vector3 | Entity | Unit, fromCenterToCenter: boolean = false): number {
-		if (vec instanceof Vector3)
-			return super.Distance(vec)
 
-		return super.Distance(vec) - (fromCenterToCenter ? 0 : this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0))
+	/* ================ METHODS ================ */
+
+	/**
+	 * @param flag if not exists => is Melee or Range attack
+	 */
+	HasAttackCapability(flag?: DOTAUnitAttackCapability_t): boolean {
+		let attackCap = this.m_pBaseEntity.m_iAttackCapabilities
+
+		if (flag !== undefined)
+			return (attackCap & flag) === flag
+
+		return (attackCap & (
+			DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK |
+			DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
+		) === flag
 	}
 	/**
-	 * @param fromCenterToCenter include HullRadiuses
+	 * @param flag if not exists => isn't move NONE
 	 */
-	Distance2D(vec: Vector3 | Entity | Unit, fromCenterToCenter: boolean = false): number {
-		if (vec instanceof Vector3)
-			return super.Distance2D(vec)
+	HasMoveCapabilit(flag: DOTAUnitMoveCapability_t): boolean {
+		let moveCap = this.m_pBaseEntity.m_iMoveCapabilities
 
-		return super.Distance2D(vec) - (fromCenterToCenter ? 0 : this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0))
-	}
-	/**
-	 * @param fromCenterToCenter include HullRadiuses
-	 */
-	DistanceSquared(vec: Vector3 | Entity | Unit, fromCenterToCenter: boolean = false): number {
-		if (vec instanceof Vector3)
-			return super.DistanceSquared(vec)
+		if (flag !== undefined)
+			return (moveCap & flag) === flag
 
-		return super.DistanceSquared(vec) - (fromCenterToCenter ? 0 : this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0))
+		return flag !== DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
 	}
-	
+
+	IsUnitStateFlagSet(flag: modifierstate): boolean {
+		return (((this.m_pBaseEntity.m_nUnitState64 | this.m_pBaseEntity.m_nUnitDebuffState) >> BigInt(flag)) & 1n) === 1n
+	}
+
+	IsControllableByPlayer(playerID: number): boolean {
+		return ((this.m_pBaseEntity.m_iIsControllableByPlayer64 >> BigInt(playerID)) & 1n) === 1n
+	}
+
+	/* ================================ EXTENSIONS ================================ */
+
+	/* ================ GETTERS ================ */
+
+	get IsRotating(): boolean {
+		return this.RotationDifference !== 0;
+	}
+
+	get IsChanneling(): boolean {
+		if (this.HasInventory && this.Items.some(item => item.IsChanneling))
+			return true;
+
+		return this.Spells.some(spell => spell.IsChanneling);
+	}
 	get CastRangeBonus(): number {
 		let castrange = 0;
-		
+
 		let lens = this.Inventory.GetItemByName("item_aether_lens");
 		if (lens !== undefined)
 			castrange += lens.GetSpecialValue("cast_range_bonus");
-			
+
 		this.Spells.forEach(spell => {
 			if (spell.Level > 0 && /special_bonus_cast_range_/.test(spell.Name))
 				castrange += spell.GetSpecialValue("value");
@@ -477,9 +490,85 @@ export default class Unit extends Entity {
 
 		return spellAmp
 	}
-	
+
+	/* ================ METHODS ================ */
+
+	/**
+	 * @param fromCenterToCenter include HullRadiuses
+	 */
+	Distance2D(vec: Vector3 | Entity | Unit, fromCenterToCenter: boolean = false): number {
+		if (vec instanceof Vector3)
+			return super.Distance2D(vec)
+
+		return super.Distance2D(vec) - (fromCenterToCenter ? 0 : this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0))
+	}
+	/**
+	 * 
+	 * @param fromCenterToCenter include HullRadiuses (for Units)
+	 */
+	IsInRange(ent: Vector3 | Entity | Unit, range: number, fromCenterToCenter: boolean = false): boolean {
+		if (fromCenterToCenter === false) {
+			range += this.HullRadius;
+
+			if (ent instanceof Unit)
+				range += ent.HullRadius;
+		}
+		return super.IsInRange(ent, range);
+	}
+
+	AttackDamage(target: Unit, useMinDamage: boolean = false, damageAmplifier: number = 0): number {
+
+		let damage = (useMinDamage ? this.MinDamage : this.DamageAverage) + this.DamageBonus,
+			damageType = this.AttackDamageType,
+			armorType = target.ArmorType,
+			mult = 1;
+
+		if (damageType === AttackDamageType.Hero && armorType === ArmorType.Structure)
+			mult *= .5
+		else if (damageType === AttackDamageType.Basic && armorType === ArmorType.Hero)
+			mult *= .75
+		else if (damageType === AttackDamageType.Basic && armorType === ArmorType.Structure)
+			mult *= .7
+		else if (damageType === AttackDamageType.Pierce && armorType === ArmorType.Hero)
+			mult *= .5
+		else if (damageType === AttackDamageType.Pierce && armorType === ArmorType.Basic)
+			mult *= 1.5
+		else if (damageType === AttackDamageType.Pierce && armorType === ArmorType.Structure)
+			mult *= .35
+		else if (damageType === AttackDamageType.Siege && armorType === ArmorType.Hero)
+			mult *= .85
+		else if (damageType === AttackDamageType.Siege && armorType === ArmorType.Structure)
+			mult *= 2.5
+
+		if (target.IsNeutral || (target.IsCreep && this.IsEnemy(target))) {
+			
+			let isMelee = this.IsMelee,
+				inventory = this.Inventory;
+			
+			let quellingBlade = inventory.GetItemByName("item_quelling_blade");
+			if (quellingBlade !== undefined)
+				damage += quellingBlade.GetSpecialValue(isMelee ? "damage_bonus" : "damage_bonus_ranged");
+			
+			let battleFury = inventory.GetItemByName("item_bfury");
+			if (battleFury != undefined)
+				mult *= battleFury.GetSpecialValue(isMelee ? "quelling_bonus" : "quelling_bonus_ranged") / 100;
+		}
+		
+		mult *= 1 - this.DamageResist;
+		mult *= (1 + damageAmplifier);
+		
+		return damage * mult;
+	}
+
+
+
+
+
+
+	/* ================================ ORDERS ================================ */
+
 	MoveTo(position: Vector3, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, unit: this, position, queue, showEffects});
+		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, unit: this, position, queue, showEffects });
 	}
 	MoveToTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, unit: this, target, queue, showEffects });
@@ -580,20 +669,6 @@ export default class Unit extends Entity {
 	}
 	VectorTargetCanceled(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED, unit: this, position, queue, showEffects });
-	}
-	
-	/**
-	 * 
-	 * @param fromCenterToCenter include HullRadiuses
-	 */
-	IsInRange(ent: Vector3 | Entity, range: number, fromCenterToCenter: boolean = false): boolean {
-		if (fromCenterToCenter === false) {
-			range += this.HullRadius;
-			
-			if (ent instanceof Unit)
-				range += ent.HullRadius;
-		}
-		return super.IsInRange(ent, range);
 	}
 }
 //global.Unit = Unit;

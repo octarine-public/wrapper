@@ -30,6 +30,8 @@ import Game from "../Objects/GameResources/GameRules";
 
 export { PlayerResource, Game }
 
+let queueEntities: Entity[] = []; 
+
 let AllEntities: Entity[] = [];
 let EntitiesIDs: Entity[] = [];
 let InStage: Entity[] = [];
@@ -38,7 +40,7 @@ export let LocalPlayer: Player;
 
 class EntityManager {
 	get LocalPlayer(): Player {
-		return LocalPlayer /* || (LocalDOTAPlayerCache = this.GetPlayerByID(LocalDOTAPlayer, true) as Player); */
+		return LocalPlayer
 	}
 	get LocalHero(): Hero {
 		return LocalPlayer !== undefined ? LocalPlayer.Hero : undefined;
@@ -79,15 +81,9 @@ const entityManager = new EntityManager();
 export default global.EntityManager = entityManager;
 
 
-//Events.on("onGameStarted", () => { });
-/* Events.on("onGameEnded", () => {
-	LocalPlayer = undefined;
-}); */
-
 Events.on("onLocalPlayerTeamAssigned", teamNum => {
-	//console.log(LocalDOTAPlayerID)
-	LocalPlayer = entityManager.GetPlayerByID(LocalDOTAPlayerID);
-	//console.log(LocalPlayer)
+	LocalPlayer = findEntityNative(LocalDOTAPlayer) as Player;
+	useQueueEntities();
 })
 
 Events.on("onEntityCreated", (ent, index) => {
@@ -111,7 +107,12 @@ Events.on("onEntityCreated", (ent, index) => {
 	}
 
 	const entity = ClassFromNative(ent, index);
-
+	
+	if (LocalPlayer === undefined) {
+		queueEntities.push(entity);
+		return;
+	}
+	
 	AddToCache(entity);
 })
 
@@ -133,13 +134,14 @@ Events.on("onEntityDestroyed", (ent, index) => {
 			return;
 		}
 		
-		if (ent instanceof C_DOTAPlayer && LocalPlayer !== undefined && LocalPlayer.PlayerID === ent.m_iPlayerID)
+		if (ent instanceof C_DOTAPlayer && LocalPlayer !== undefined && LocalPlayer.m_pBaseEntity === ent)
 			LocalPlayer = undefined;
 	}
 	
 	DeleteFromCache(ent, index);
 });
 
+/* ================ RUNTIME CACHE ================ */
 
 function CheckIsInStagingEntity(ent: Entity) {
 	return (ent.m_pBaseEntity.m_pEntity.m_flags & (1 << 2)) === 0;
@@ -159,6 +161,8 @@ setInterval(() => {
 
 function AddToCache(entity: Entity) {
 	
+	//console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
+	
 	EventsSDK.emit("onEntityPreCreated", false, entity, entity.Index);
 
 	if (!CheckIsInStagingEntity(entity)) {
@@ -176,12 +180,15 @@ function AddToCache(entity: Entity) {
 	EntitiesIDs[index] = entity;
 	AllEntities.push(entity);
 
-	//console.log("onEntityCreated SDK", entity, index);
+	//console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
 	
 	EventsSDK.emit("onEntityCreated", false, entity, index);
 }
 
 function DeleteFromCache(ent: C_BaseEntity, index: number) {
+	
+	if (arrayRemoveCallBack(queueEntities, npc => npc.m_pBaseEntity === ent))
+		return;
 	
 	if (arrayRemoveCallBack(InStage, npc => npc.m_pBaseEntity === ent))
 		return;
@@ -194,7 +201,7 @@ function DeleteFromCache(ent: C_BaseEntity, index: number) {
 	
 	arrayRemoveCallBack(AllEntities, npc => npc.m_pBaseEntity === ent);
 	
-	//console.log("onEntityDestroyed SDK", entity, index);
+	//console.log("onEntityDestroyed SDK", entity, entity.m_pBaseEntity, index);
 	
 	EventsSDK.emit("onEntityDestroyed", false, entity, index);
 }
@@ -203,8 +210,8 @@ function DeleteFromCache(ent: C_BaseEntity, index: number) {
 function findEntityIndex(el: Entity): number {
 	if (el === undefined) 
 		return -1;
-		
-	return AllEntities.indexOf(el);
+
+	return EntitiesIDs.indexOf(el);
 }
 
 /* function findEntityNativeIndex(el: C_BaseEntity): number {
@@ -218,6 +225,9 @@ function findEntityNative(el: C_BaseEntity, inStage: boolean = false): Entity {
 	if (el === undefined)
 		return undefined;
 
+	if (LocalPlayer === undefined)
+		return queueEntities.find(entity => entity.m_pBaseEntity === el);
+		
 	let entity = AllEntities.find(entity => entity.m_pBaseEntity === el);
 	
 	if (entity !== undefined)
@@ -231,6 +241,11 @@ function findEntitiesNative(ents: C_BaseEntity[], filter?: (value: Entity) => bo
 	let entities: Entity[] = []
 
 	ents.forEach(entNative => {
+		
+		if (LocalPlayer === undefined) {
+			return queueEntities.find(entity => 
+				(entity.m_pBaseEntity === entNative) || !(filter !== undefined && filter(entity) === false))
+		}
 		
 		let entity = AllEntities.find(entity => 
 			(entity.m_pBaseEntity === entNative) || !(filter !== undefined && filter(entity) === false));
@@ -310,4 +325,17 @@ function ClassFromNative(ent: C_BaseEntity, index: number) {
 		return new Tree(ent, index);
 		
 	return new Entity(ent, index);
+}
+
+
+/* ================ QUEUE ================ */
+
+function useQueueEntities() {
+	if (queueEntities.length > 0) {
+		queueEntities.reverse(); // for create entities by ascending index
+		for (var i = queueEntities.length; i--;) {
+			AddToCache(queueEntities[i]);
+			queueEntities.splice(i, 1);
+		}
+	}
 }

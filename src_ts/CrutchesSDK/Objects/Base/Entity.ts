@@ -1,5 +1,6 @@
 import { DegreesToRadian } from "../../Utils/Math";
 import QAngle from "../../Base/QAngle";
+import Vector2 from "../../Base/Vector2";
 import Vector3 from "../../Base/Vector3";
 import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager";
 
@@ -11,16 +12,21 @@ m_pEntity.m_flags
 */
 export default class Entity {
 	
+	/* ================================ Fields ================================ */
+	
 	/* protected */ readonly m_pBaseEntity: C_BaseEntity
-	m_iIndex: number
+	protected m_iIndex: number
 	private m_bIsValid: boolean = false
 	
-	/* ============ BASE  ============ */
+	/* ================================ BASE ================================ */
 	
 	constructor(ent?: C_BaseEntity, id: number = -1) {
 		this.m_pBaseEntity = ent;
 		this.m_iIndex = id;
 	}
+	
+	/* ================ GETTERS ================ */
+
 	get Angles(): QAngle {
 		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
 
@@ -81,6 +87,9 @@ export default class Entity {
 	get NetworkRotationRad(): number {
 		return DegreesToRadian(this.NetworkRotation);
 	}
+	/**
+	 * as Direction
+	 */
 	get Forward(): Vector3 {
 		return Vector3.FromAngle(this.NetworkRotationRad);
 	}
@@ -123,12 +132,16 @@ export default class Entity {
 	get Team(): DOTATeam_t {
 		return this.m_pBaseEntity.m_iTeamNum
 	}
-	
+
+	/* ================ METHODS ================ */
+
 	toString(): string {
 		return this.Name;
 	}
 	
-	/* ============ EXTENSIONS ============ */
+	/* ================================ EXTENSIONS ================================ */
+	
+	/* ================ METHODS ================ */
 	
 	/**
 	 * @param fromCenterToCenter include hullradiuses
@@ -191,6 +204,12 @@ export default class Entity {
 		console.log(ent === undefined || ent.Team !== this.Team);
 		console.log(new Error("asdas").stack); */
 		return ent === undefined || ent.Team !== this.Team
+	}
+	/**
+	 * @param ent Any Entity. If undefined => this compare with LocalPlayer
+	 */
+	IsAlly(ent: Entity = LocalPlayer): boolean {
+		return !this.IsEnemy(ent);
 	}
 	
 	Select(bAddToGroup: boolean = false): boolean {

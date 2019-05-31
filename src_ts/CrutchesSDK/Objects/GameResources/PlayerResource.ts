@@ -5,7 +5,8 @@ import Courier from "../Base/Courier";
 
 class PlayerResource extends Entity {
 	
-	m_pBaseEntity: C_DOTA_PlayerResource
+	public m_pBaseEntity: C_DOTA_PlayerResource
+	public m_iIndex: number
 	
 	get Names(): string[] {
 		let playerResource = this.m_pBaseEntity;

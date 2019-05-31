@@ -146,7 +146,7 @@ declare interface EventsSDK extends EventEmitter {
 	 * 
 	 * Also, this event emitted about ALL entities that have already been created before reloading scripts
 	 * 
-	 * Emitted after LocalPlayer choose team (event: onLocalPlayerTeamAssigned)
+	 * Emitted ONLY after LocalPlayer choose team (event: onLocalPlayerTeamAssigned)
 	 * 
 	 * CAREFUL !Use this if you know what you are doing!
 	 */
@@ -156,7 +156,7 @@ declare interface EventsSDK extends EventEmitter {
 	 * 
 	 * Also, this event emitted about ALL entities that have already been created (and valids) before reloading scripts
 	 * 
-	 * Emitted after LocalPlayer choose team (event: onLocalPlayerTeamAssigned)
+	 * Emitted ONLY after LocalPlayer choose team (event: onLocalPlayerTeamAssigned)
 	 */
 	on(name: "onEntityCreated", callback: (ent: Entity, index: number) => void): EventEmitter
 	on(name: "onEntityDestroyed", callback: (ent: Entity, index: number) => void): EventEmitter

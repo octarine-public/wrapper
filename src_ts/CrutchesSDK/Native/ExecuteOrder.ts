@@ -4,6 +4,22 @@ import Entity from "../Objects/Base/Entity";
 import Unit from "../Objects/Base/Unit";
 import Ability from "../Objects/Base/Ability";
 
+
+export const ORDERS_WITHOUT_SIDE_EFFECTS = [
+	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
+	dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE,
+	dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO,
+	dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM,
+	dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM,
+	dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK,
+	dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM,
+	dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM,
+	dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH,
+	dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE,
+	dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH,
+	dotaunitorder_t.DOTA_UNIT_ORDER_RADAR,
+]
+
 export default class ExecuteOrder {
 
 	static fromObject(order: {

@@ -12,17 +12,28 @@ import Unit from "./Unit";
 // IsValid
 // TextureName
 
-export const TrueSightBuffs = [
+export const TRUESIGHT_MODIFIERS = [
 	"modifier_truesight",
 	"modifier_item_dustofappearance",
 	"modifier_bloodseeker_thirst_vision",
 	"modifier_bounty_hunter_track",
 ]
 
-export const ScepterBuffs = [
+export const SCEPTER_MODIFIERS = [
 	"modifier_item_ultimate_scepter",
 	"modifier_item_ultimate_scepter_consumed",
 	"modifier_wisp_tether_scepter",
+]
+
+export const BLOCKING_DAMAGE_MODIFIERS = [
+	"modifier_nyx_assassin_spiked_carapace",
+	"modifier_item_combo_breaker_buff",
+	"modifier_templar_assassin_refraction_absorb"
+]
+
+export const REFLECTING_DAMAGE_MODIFIERS = [
+	"modifier_nyx_assassin_spiked_carapace", 
+	"modifier_item_blade_mail_reflect"
 ]
 
 const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scepter/
@@ -33,7 +44,7 @@ export default class Modifier {
 	/* ================== Static ================== */
 
 	static HasTrueSightBuff(buffs: Modifier[]) {
-		return buffs.some(buff => TrueSightBuffs.some(nameBuff => nameBuff === buff.Name))
+		return buffs.some(buff => TRUESIGHT_MODIFIERS.some(nameBuff => nameBuff === buff.Name))
 	}
 	
 	static HasScepterBuff(buffs: Modifier[]) {
