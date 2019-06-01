@@ -63,7 +63,7 @@ export default class Unit extends Entity {
 	/* ======== UnitType ======== */
 
 	get IsHero(): boolean {
-		return HasBit(this.UnitType, 1);
+		return HasBit(this.UnitType, 0);
 	}
 	get IsTower(): boolean {
 		return HasBit(this.UnitType, 2)
