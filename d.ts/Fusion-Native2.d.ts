@@ -442,9 +442,9 @@ declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer offset 0
 	OrderType: dotaunitorder_t,
 	Target?: C_BaseEntity | number,
-	Ability?: C_BaseEntity,
+	Ability?: C_BaseEntity | number,
 	OrderIssuer?: PlayerOrderIssuer_t,
-	Unit?: C_BaseEntity,
+	Unit?: C_BaseEntity | number,
 	Queue?: boolean,
 	ShowEffects?: boolean
 }): void
