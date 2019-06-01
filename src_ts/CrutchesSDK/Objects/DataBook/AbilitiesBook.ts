@@ -29,7 +29,7 @@ export default class AbilitiesBook {
 		
 		if (this.m_Unit.IsValid)
 			spells = EntityManager.GetEntitiesByNative(this.m_hAbilities) as Ability[];
-			
+		
 		return spells;
 	}
 	/* get ValidSpells(): Ability[] {

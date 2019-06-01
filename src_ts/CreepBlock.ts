@@ -1,4 +1,4 @@
-import { MenuManager, Game, EventsSDK, LocalPlayer, Unit, Creep, Tower, Vector3, Utils, Entity } from "./CrutchesSDK/Imports";
+import { MenuManager, Game, EventsSDK, LocalPlayer, Creep, Tower, Vector3, Utils } from "./CrutchesSDK/Imports";
 //import * as Orders from "Orders"
 //import * as Utils from "Utils"
 
