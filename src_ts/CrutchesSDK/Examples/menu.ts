@@ -1,12 +1,12 @@
 import { MenuManager, Color } from "../Imports"
 
-const { CreateRGBTree, MenuFactory } = MenuManager;
+import { Menu } from "./CrutchesSDKExamples";
+
+const MenuExamples = Menu.AddTree("Menu Examples")
 
 // ------------------- Main
 
-let menu = MenuFactory("TestSDK")
-
-let toggle = menu.AddToggle("toggle", false, "example toggle tips")
+const toggle = MenuExamples.AddToggle("toggle", false, "example toggle tips")
 	.OnValue((value, self) => {
 		console.log("toggle OnValue:", value, self)
 	})
@@ -17,7 +17,7 @@ let toggle = menu.AddToggle("toggle", false, "example toggle tips")
 		console.log("toggle OnDeactivate:", self)
 	})
 
-let checkbox = menu.AddCheckBox("checkbox", false, "example toggle tips")
+const checkbox = MenuExamples.AddCheckBox("checkbox", false, "example toggle tips")
 	.OnValue((value, self) => {
 		console.log("toggle OnValue:", value, self)
 	})
@@ -28,17 +28,17 @@ let checkbox = menu.AddCheckBox("checkbox", false, "example toggle tips")
 		console.log("toggle OnDeactivate:", self)
 	})
 
-let slider = menu.AddSlider("test slider", 15, 5, 20, "example slider tips")
+const slider = MenuExamples.AddSlider("test slider", 15, 5, 20, "example slider tips")
 	.OnValue((value, self) => {
 		console.log("slider OnValue:", value, self)
 	})
 
-let sliderFloat = menu.AddSliderFloat("test sliderFloat", 15.3, 5.5, 20.7, "example sliderFloat tips")
+const sliderFloat = MenuExamples.AddSliderFloat("test sliderFloat", 15.3, 5.5, 20.7, "example sliderFloat tips")
 	.OnValue((value, self) => {
 		console.log("sliderFloat OnValue:", value, self)
 	})
 
-let keybind = menu.AddKeybind("keybind", "F", "example keybind tips")
+const keybind = MenuExamples.AddKeybind("keybind", "F", "example keybind tips")
 	.OnValue((value, self) => {
 		console.log("keybind OnValue:", value, self)
 	})
@@ -52,54 +52,54 @@ let keybind = menu.AddKeybind("keybind", "F", "example keybind tips")
 		console.log("keybind OnRelease:", self)
 	})
 
-let items = [
+const items = [
 	"item 1",
 	"item 2",
 	"item 3",
 	"item 4",
 ]
 
-let comboBox = menu.AddComboBox("test comboBox", items, 2, "example comboBox tips")
+const comboBox = MenuExamples.AddComboBox("test comboBox", items, 2, "example comboBox tips")
 	.OnValue((value, self) => {
 		console.log("comboBox OnValue:", value, self)
 	})
 
-let listBox = menu.AddListBox("test listbox", items, [false, true, true, false], "example listBox tips")
+const listBox = MenuExamples.AddListBox("test listbox", items, [false, true, true, false], "example listBox tips")
 	.OnValue((value, self) => {
 		console.log("listBox OnValue:", value, self)
 	})
 
-let tree = menu.AddTree("tree")
+const tree = MenuExamples.AddTree("tree")
 
-let treeToggle = tree.AddToggle("tree toggle")
+const treeToggle = tree.AddToggle("tree toggle")
 
-let rgbTree = CreateRGBTree(menu, "rgb tree", new Color(0, 255, 0))
+const rgbTree = MenuManager.CreateRGBTree(MenuExamples, "rgb tree", new Color(0, 255, 0))
 
 rgbTree.R.OnValue((value, self) => console.log("slider OnValue:", value, self))
 rgbTree.G.OnValue((value, self) => console.log("slider OnValue:", value, self))
 rgbTree.B.OnValue((value, self) => console.log("slider OnValue:", value, self))
 
-/* menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
-menu.AddTree("tree");
+/* MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
+MenuExamples.AddTree("tree");
 
  */
 
-/* let tree2 = menu.AddTree("tree2").AddTree("tree3").AddTree("tree4").AddTree("tree5").AddTree("tree6").AddToggle("toggle");
+/* const tree2 = MenuExamples.AddTree("tree2").AddTree("tree3").AddTree("tree4").AddTree("tree5").AddTree("tree6").AddToggle("toggle");
  */
 // ------------------- examples
 
-let examples = menu.AddTree("examples")
+const examples = MenuExamples.AddTree("examples")
 
 /*
 ------------ swap tree (node)
@@ -108,9 +108,9 @@ if true toggleTwo will be located in tree else in root tree
 
 */
 
-let swapTree = examples.AddTree("swap tree (node)")
+const swapTree = examples.AddTree("swap tree (node)")
 
-let swapTree_toggle = swapTree.AddToggle("toggle")
+const swapTree_toggle = swapTree.AddToggle("toggle")
 	.OnValue(value => {
 		console.log("before parent: ", swapTree_toggleTwo.parent.name)
 
@@ -119,9 +119,9 @@ let swapTree_toggle = swapTree.AddToggle("toggle")
 		console.log("after parent: ", swapTree_toggleTwo.parent.name)
 	})
 
-let swapTree_tree = swapTree.AddTree("tree test")
+const swapTree_tree = swapTree.AddTree("tree test")
 
-let swapTree_toggleTwo = (swapTree_toggle.value ? swapTree_tree : swapTree).AddToggle("toggleTwo")
+const swapTree_toggleTwo = (swapTree_toggle.value ? swapTree_tree : swapTree).AddToggle("toggleTwo")
 
 /*
 ------------ dynamic checkboxes
@@ -130,9 +130,9 @@ dynamic count checkboxes by slider
 
 */
 
-let dynamicCB = examples.AddTree("dynamic checkboxes")
+const dynamicCB = examples.AddTree("dynamic checkboxes")
 
-let sliderTwo = dynamicCB.AddSlider("count checkboxes", 1, 1, 5)
+const sliderTwo = dynamicCB.AddSlider("count checkboxes", 1, 1, 5)
 
 let checkboxes: MenuManager.MenuControllers.CheckBox[] = []
 function ChangeCheckBoxes(value: number) {
@@ -146,77 +146,11 @@ function ChangeCheckBoxes(value: number) {
 sliderTwo.OnValueCallback = ChangeCheckBoxes
 ChangeCheckBoxes(sliderTwo.value)
 
-let menuTest = menu.AddTree("test tree")
+const menuTest = MenuExamples.AddTree("test tree")
 
-let menuList = menuTest.AddListBox("List of status", [
+const menuList = menuTest.AddListBox("List of status", [
 	"rune status",
 	"rune keybinds",
 	"items status",
 	"items keybinds",
 ], [true, false, true, false])
-
-/* Events.on("onTick", () => {
-	console.log("selected_flags:", menuList.selected_flags);
-
-	console.log("selected_flags[0]:", menuList.selected_flags[0]);
-	console.log("selected_flags[1]:", menuList.selected_flags[1]);
-	console.log("selected_flags[2]:", menuList.selected_flags[2]);
-	console.log("selected_flags[3]:", menuList.selected_flags[3]);
-});
- */
-
-// ------------------------------
-
-/* let menu = new Menu_Node("test");
-
-let items = [
-	"item 1",
-	"item 2",
-	"item 3",
-	"item 4"
-];
-
-let list = new Menu_List("test listbox", items, [false, true, true, false], "example listBox tips");
-
-list.callback = function (self) {
-	console.log("listBox OnValue: ", self.selected_flags, self);
-}
-
-menu.entries.push(list);
-
-let toggle = new Menu_Toggle("test toggle", false);
-
-toggle.callback = function (self) {
-
-	console.log(1);
-
-	if (self.value) {
-
-		// loop-optimizer: KEEP  // because items reverse
-		menu.entries = menu.entries.filter(ctrlNow => ctrlNow !== toggleTwo);
-
-		treetwo.entries.push(toggleTwo);
-
-	} else {
-
-		// loop-optimizer: KEEP  // because items reverse
-		treetwo.entries = treetwo.entries.filter(ctrlNow => ctrlNow !== toggleTwo);
-
-		menu.entries.push(toggleTwo);
-	}
-
-	menu.Update();
-}
-
-menu.entries.push(toggle);
-
-let treetwo = new Menu_Node("tree two");
-menu.entries.push(treetwo);
-
-let toggleTwo = new Menu_Toggle("test toggleTwo", false);
-
-menu.entries.push(toggleTwo);
-
-menu.Update();
-
-Menu.AddEntry(menu) */

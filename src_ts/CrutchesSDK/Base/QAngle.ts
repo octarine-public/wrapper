@@ -18,11 +18,6 @@ export default class QAngle extends Vector3 {
 		return new QAngle(IOBuffer[bufferOrOffset + 0], IOBuffer[bufferOrOffset + 1], IOBuffer[bufferOrOffset + 2]);
 	}
 
-	/* get Angle(): number {
-		console.log(1);
-		return Vector.CopyFrom(this).Angle // need CopyFrom, because call stack size by QAngle
-	} */
-
 	/* ================ Constructors ================ */
 	/**
 	 * Create new QAngle with pitch, yaw, roll

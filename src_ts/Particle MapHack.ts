@@ -1,7 +1,5 @@
-//import * as Utils from "Utils"
+import { ArrayExtensions, MenuManager, EventsSDK, EntityManager, Entity, Unit, Vector3, Creep, RendererSDK, Debug } from "CrutchesSDK/Imports"
 
-import { Utils, MenuManager, EventsSDK, EntityManager, Entity, Unit, Vector3, Creep, RendererSDK, Debug } from "CrutchesSDK/Imports"
-//import { arrayRemove, IsVisible } from "Utils"
 
 let { MenuFactory, CreateRGBATree } = MenuManager;
 
@@ -54,11 +52,6 @@ function onEntityAdded(ent: Entity) {
 		&& !ent.IsLaneCreep // facepalm
 		&& ent.Team === DOTATeam_t.DOTA_TEAM_NEUTRALS
 	) {
-		if (ent.Name === undefined)
-			Debug.ClassDump(ent, null, 4);
-		
-		// && ent.Name.startsWith("npc_dota_neutral_")
-		
 		allNeutrals.push(ent)
 	}
 }
@@ -117,19 +110,7 @@ EventsSDK.on("onParticleUpdatedEnt", (id, control_point, ent, attach, attachment
 // })
 
 function CalculateCenter(vecs: Vector3[]): Vector3 {
-	let new_center = [0, 0, 0],
-		vec_count = vecs.length
-
-	vecs.forEach(vec => {
-		new_center[0] += vec.x
-		new_center[1] += vec.y
-		new_center[2] += vec.z
-	})
-	return new Vector3 (
-		new_center[0] / vec_count,
-		new_center[1] / vec_count,
-		new_center[2] / vec_count,
-	)
+	return Vector3.GetCenter(vecs)
 }
 
 // EventsSDK.on("onParticleUpdated", console.log)
@@ -181,7 +162,7 @@ EventsSDK.on("onEntityCreated", onEntityAdded)
 
 EventsSDK.on("onEntityDestroyed", (ent: Entity) => {
 	if (ent instanceof Creep)
-		Utils.arrayRemove(allNeutrals, ent)
+		ArrayExtensions.arrayRemove(allNeutrals, ent)
 })
 
 EventsSDK.on("onBloodImpact", (target: Entity) => {
@@ -196,7 +177,7 @@ EventsSDK.on("onBloodImpact", (target: Entity) => {
 
 	allBloodTargets.push(target as Unit)
 
-	setTimeout(() => Utils.arrayRemove(allBloodTargets, target), 
+	setTimeout(() => ArrayExtensions.arrayRemove(allBloodTargets, target), 
 		phBloodTimer.value * 1000)
 })
 

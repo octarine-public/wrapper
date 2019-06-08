@@ -39,7 +39,7 @@ global.EventEmitter = class EventEmitter {
       try {
         return listener.apply(this, args) === false && cancellable;
       } catch (e) {
-        console.log(e.stack);
+        console.log(e.stack || new Error(e).stack);
         return false;
       }
     });
@@ -121,4 +121,7 @@ Events.on("onTick", () => {
       end--;
     }
   }
+});
+Events.on("onTeamVisibilityChanged", (npc, newTagged) => {
+  npc.m_iTaggedAsVisibleByTeam = newTagged;
 });

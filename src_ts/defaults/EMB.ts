@@ -1,10 +1,10 @@
-import { MenuManager, RendererSDK, EventsSDK, Hero, Utils, Game, Vector3 } from "../CrutchesSDK/Imports";
+import { MenuManager, RendererSDK, EventsSDK, Hero, ArrayExtensions, Game } from "../CrutchesSDK/Imports";
 
 var manabars: Hero[] = [],
 	heroes: Hero[] = []
 
 const EMBMenu = MenuManager.MenuFactory("EnemyManaBars"),
-	stateMain = EMBMenu.AddToggle("State")//.OnValue(OnChangeValue);
+	stateMain = EMBMenu.AddToggle("State");
 
 EventsSDK.on("onEntityCreated", npc => {
 	if (
@@ -16,7 +16,7 @@ EventsSDK.on("onEntityCreated", npc => {
 })
 Events.on("onEntityDestroyed", ent => {
 	if (ent instanceof Hero)
-		Utils.arrayRemove(heroes, ent)
+		ArrayExtensions.arrayRemove(heroes, ent)
 })
 
 Events.on("onUpdate", () => {
@@ -25,12 +25,16 @@ Events.on("onUpdate", () => {
 	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible)
 })
 Events.on("onDraw", () => {
-	if (!stateMain.value || !IsInGame())
-		return
-	var off_x = 0, off_y, manabar_w, manabar_h
+	if (!stateMain.value || !Game.IsInGame)
+		return;
+		
+	let off_x: number, 
+		off_y: number, 
+		manabar_w: number, 
+		manabar_h: number;
 	
 	{ // TODO: multiple aspect ratio support (current: 16:10)
-		var screen_size = RendererSDK.WindowSize
+		let screen_size = RendererSDK.WindowSize
 		off_x = screen_size.x * -0.03095
 		off_y = screen_size.y * -0.01715
 		manabar_w = screen_size.x * 0.0583

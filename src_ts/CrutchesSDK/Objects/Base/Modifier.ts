@@ -43,27 +43,27 @@ export default class Modifier {
 	
 	/* ================== Static ================== */
 
-	static HasTrueSightBuff(buffs: Modifier[]) {
+	static HasTrueSightBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => TRUESIGHT_MODIFIERS.some(nameBuff => nameBuff === buff.Name))
 	}
 	
-	static HasScepterBuff(buffs: Modifier[]) {
+	static HasScepterBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => ScepterRegExp.test(buff.Name));
 	}
 
 	/* =================== Fields =================== */
 
-	m_pBuff: CDOTA_Buff
-	private owner: Unit
-	private m_bIsValid: boolean
+	readonly m_pBuff: CDOTA_Buff
+	
+	private m_hOwner: Unit
+	private m_bIsValid: boolean = true
 	private m_Ability: Ability
 	private m_Caster: Entity
 	private m_Parent: Entity
 
 	constructor(buff: CDOTA_Buff, owner: Unit) {
 		this.m_pBuff = buff;
-		this.owner = owner;
-		this.m_bIsValid = true;
+		this.m_hOwner = owner;
 	}
 	
 	get Ability(): Ability {
@@ -104,6 +104,9 @@ export default class Modifier {
 	get ElapsedTime(): number {
 		return Math.max(this.CreationTime - Game.RawGameTime, 0)
 	}
+	get Index(): number {
+		return this.m_pBuff.m_iIndex;
+	}
 	get IsAura(): boolean {
 		return this.m_pBuff.m_bIsAura;
 	}
@@ -111,7 +114,7 @@ export default class Modifier {
 		return this.m_pBuff.m_bPurgedDestroy
 	}
 	set IsValid(value: boolean) {
-		this.IsValid = value;
+		this.m_bIsValid = value;
 	}
 	get IsValid(): boolean {
 		return this.m_bIsValid;
@@ -126,7 +129,7 @@ export default class Modifier {
 		return this.m_pBuff.m_name;
 	}
 	get Owner(): Unit {
-		return this.owner;
+		return this.m_hOwner;
 	}
 	get Parent(): Entity {
 		return this.m_Parent

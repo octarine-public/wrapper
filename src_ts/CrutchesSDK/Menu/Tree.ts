@@ -1,3 +1,5 @@
+import { arrayRemove } from "../Utils/ArrayExtensions";
+
 import CheckBox from "./CheckBox"
 import ComboBox from "./ComboBox"
 import Keybind from "./Keybind"
@@ -71,8 +73,7 @@ export class Tree extends Menu_Node {
 
 	RemoveControl(ctrl: Menu_Base) {
 
-		// loop-optimizer: KEEP  // because items reverse
-		this.entries = this.entries.filter(ctrlNow => ctrlNow !== ctrl)
+		arrayRemove(this.entries, ctrl)
 
 		/*
 		var i = -1;

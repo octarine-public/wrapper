@@ -63,7 +63,7 @@ EventsSDK.on("onGameStarted", lp => {
 	if (PlayerResource.AllPlayers.length <= 1)
 		setConVar(vision.value, vision)
 
-	setConVar(creepsNoSpawn.value, creepsNoSpawn)
+	setConVar(creepsNoSpawn.value, creepsNoSpawn);
 })
 
 // ======================= DEBUGGING EVENTS

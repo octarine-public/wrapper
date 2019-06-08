@@ -1,4 +1,15 @@
 export default class Color {
+	
+	public static readonly Black = new Color(0, 0, 0);
+	public static readonly Red = new Color(255);
+	public static readonly Green = new Color(0, 255);
+	public static readonly Blue = new Color(0, 0, 255);
+	public static readonly Yellow = new Color(255, 255);
+	public static readonly Orange = new Color(255, 128);
+	public static readonly Fuchsia = new Color(255, 0, 255);
+	public static readonly Aqua = new Color(0, 255, 255)
+	public static readonly White = new Color(255, 255, 255);
+	
 	/* ================== Static ================== */
 	static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): Color {
 

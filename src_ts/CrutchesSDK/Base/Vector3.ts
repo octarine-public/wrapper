@@ -20,7 +20,6 @@ export default class Vector3 {
 	static fromArray(array: [number, number, number]): Vector3 {
 		return new Vector3(array[0] || 0, array[1] || 0, array[2] || 0)
 	}
-
 	static FromAngle(angle: number): Vector3 {
 		return new Vector3(Math.cos(angle), Math.sin(angle))
 	}
@@ -32,7 +31,24 @@ export default class Vector3 {
 	static FromPolarCoordinates(radial: number, polar: number): Vector3 {
 		return new Vector3(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
-	
+	static GetCenterCallback<T>(array: T[], callback: (value: T) => Vector3): Vector3 {
+
+		let newVec = new Vector3();
+		
+		array.forEach(vec => newVec.AddForThis(callback(vec)));
+
+		return newVec.DivideScalar(array.length);
+
+	}
+	static GetCenter(array: Vector3[]): Vector3 {
+
+		let newVec = new Vector3();
+
+		array.forEach(vec => newVec.AddForThis(vec));
+
+		return newVec.DivideScalar(array.length);
+
+	}
 	static CopyFrom(vec: Vector3): Vector3 {
 		return new Vector3(vec.x, vec.y, vec.z);
 	}
@@ -124,13 +140,13 @@ export default class Vector3 {
 	 * Are length of this vector are  greater than value?
 	 */
 	IsLengthGreaterThan(val: number): boolean {
-		return this.LengthSqr > val * val
+		return this.LengthSqr > val ** 2
 	}
 	/**
 	 * Are length of this vector are less than value?
 	 */
 	IsLengthLessThan(val: number): boolean {
-		return this.LengthSqr < val * val
+		return this.LengthSqr < val ** 2
 	}
 	/**
 	 * Invalidates this vector
@@ -206,7 +222,28 @@ export default class Vector3 {
 			Math.sqrt(this.z),
 		)
 	}
-
+	/**
+	 * Copy this vector to another vector and return it
+	 * @param vec The another vector
+	 * @returns another vector
+	 */
+	CopyTo(vec: Vector3): Vector3 {
+		vec.x = this.x;
+		vec.y = this.y;
+		vec.z = this.z;
+		return vec;
+	}
+	/**
+	 * Copy fron another vector to this vector and return it
+	 * @param vec The another vector
+	 * @returns this vector
+	 */
+	CopyFrom(vec: Vector3): Vector3 {
+		this.x = vec.x;
+		this.y = vec.y;
+		this.z = vec.z;
+		return this;
+	}
 	/**
 	 * Set vector by numbers
 	 */
@@ -296,24 +333,20 @@ export default class Vector3 {
 	}
 	/**
 	 * Restricts a vector between a min and max value.
+	 * @returns (new Vector3)
 	 */
 	Clamp(min: Vector3, max: Vector3): Vector3 {
-		const { x, y, z } = this,
-			max_x = max.x,
-			max_y = max.y,
-			max_z = max.z
-		return new Vector3 (
-			Math.min((x > max_x) ? max_x : x, min.x),
-			Math.min((y > max_y) ? max_y : y, min.y),
-			Math.min((z > max_z) ? max_z : z, min.z),
-		)
+		return new Vector3(
+			Math.min((this.x > max.x) ? max.x : this.x, min.x),
+			Math.min((this.y > max.y) ? max.y : this.y, min.y),
+			Math.min((this.z > max.z) ? max.z : this.z, min.z))
 	}
 
 	/* ======== Add ======== */
 	/**
 	 * Adds two vectors together
 	 * @param vec The another vector
-	 * @returns	The summed vector
+	 * @returns	The summed vector (new Vector3)
 	 */
 	Add(vec: Vector3): Vector3 {
 		return new Vector3 (
@@ -322,11 +355,33 @@ export default class Vector3 {
 			this.z + vec.z,
 		)
 	}
-
+	/**
+	 * Adds two vectors together
+	 * @param vec The another vector
+	 * @returns	The summed vector (this vector)
+	 */
+	AddForThis(vec: Vector3): Vector3 {
+		this.x += vec.x
+		this.y += vec.y
+		this.z += vec.z
+		return this
+	}
 	/**
 	 * Add scalar to vector
+	 * @returns (new Vector3)
 	 */
 	AddScalar(scalar: number): Vector3 {
+		return new Vector3(
+			this.x + scalar,
+			this.y + scalar,
+			this.z + scalar,
+		)
+	}
+	/**
+	 * Add scalar to vector
+	 * @returns (this Vector3)
+	 */
+	AddScalarForThis(scalar: number): Vector3 {
 		this.x += scalar
 		this.y += scalar
 		this.z += scalar
@@ -358,7 +413,7 @@ export default class Vector3 {
 	/**
 	 * Subtracts the second vector from the first.
 	 * @param vec The another vector
-	 * @returns The difference vector
+	 * @returns The difference vector (new Vector3)
 	 */
 	Subtract(vec: Vector3): Vector3 {
 		return new Vector3 (
@@ -367,15 +422,36 @@ export default class Vector3 {
 			this.z - vec.z,
 		)
 	}
-
+	/**
+	 * Subtracts the second vector from the first.
+	 * @param vec The another vector
+	 * @returns The difference vector (this vector)
+	 */
+	SubtractForThis(vec: Vector3): Vector3 {
+		this.x -= vec.x
+		this.y -= vec.y
+		this.z -= vec.z
+		return this;
+	}
 	/**
 	 * Subtract scalar from vector
+	 * @returns (new Vector3)
 	 */
 	SubtractScalar(scalar: number): Vector3 {
+		return new Vector3(
+			this.x - scalar,
+			this.y - scalar,
+			this.z - scalar)
+	}
+	/**
+	 * Subtract scalar from vector
+	 * @returns (this vector)
+	 */
+	SubtractScalarForThis(scalar: number): Vector3 {
 		this.x -= scalar
 		this.y -= scalar
 		this.z -= scalar
-		return this
+		return this;
 	}
 	/**
 	 * Subtract scalar from X of vector
@@ -403,7 +479,7 @@ export default class Vector3 {
 	/**
 	 * Multiplies two vectors together.
 	 * @param vec The another vector
-	 * @return The product vector
+	 * @return The product vector (new Vector3)
 	 */
 	Multiply(vec: Vector3): Vector3 {
 		return new Vector3 (
@@ -412,15 +488,37 @@ export default class Vector3 {
 			this.z * vec.z,
 		)
 	}
-
+	/**
+	 * Multiplies two vectors together.
+	 * @param vec The another vector
+	 * @return The product vector (this vector)
+	 */
+	MultiplyForThis(vec: Vector3): Vector3 {
+		this.x *= vec.x
+		this.y *= vec.y
+		this.z *= vec.z
+		return this;
+	}
 	/**
 	 * Multiply the vector by scalar
+	 * @return (new Vector3)
 	 */
 	MultiplyScalar(scalar: number): Vector3 {
+		return new Vector3(
+			this.x * scalar,
+			this.y * scalar,
+			this.z * scalar,
+		)
+	}
+	/**
+	 * Multiply the vector by scalar
+	 * @return (this vector)
+	 */
+	MultiplyScalarForThis(scalar: number): Vector3 {
 		this.x *= scalar
 		this.y *= scalar
 		this.z *= scalar
-		return this
+		return this;
 	}
 	/**
 	 * Multiply the X of vector by scalar
@@ -448,7 +546,7 @@ export default class Vector3 {
 	/**
 	 * Divide this vector by another vector
 	 * @param vec The another vector
-	 * @return The vector resulting from the division
+	 * @return The vector resulting from the division (new Vector3)
 	 */
 	Divide(vec: Vector3): Vector3 {
 		return new Vector3 (
@@ -457,12 +555,33 @@ export default class Vector3 {
 			this.z / vec.z,
 		)
 	}
-
+	/**
+	 * Divide this vector by another vector
+	 * @param vec The another vector
+	 * @return The vector resulting from the division (this vector)
+	 */
+	DivideForThis(vec: Vector3): Vector3 {
+		this.x /= vec.x
+		this.y /= vec.y
+		this.z /= vec.z
+		return this;
+	}
 	/**
 	 * Divide the scalar by vector
-	 * @param {number} scalar
+	 * @returns (new Vector3)
 	 */
 	DivideScalar(scalar: number): Vector3 {
+		return new Vector3(
+			this.x / scalar,
+			this.y / scalar,
+			this.z / scalar,
+		)
+	}
+	/**
+	 * Divide the scalar by vector
+	 * @returns (this vector)
+	 */
+	DivideScalarForThis(scalar: number): Vector3 {
 		this.x /= scalar
 		this.y /= scalar
 		this.z /= scalar
@@ -491,12 +610,18 @@ export default class Vector3 {
 	}
 
 	/**
-	 * Multiply, add, and assign to this
+	 * Multiply, add, and assign to this vector
 	 */
-	MultiplyAdd(vec: Vector3, vec2: Vector3, scalar: number): Vector3 {
-		return vec.Add(vec2).MultiplyScalar(scalar)
+	MultiplyAdd(vec2: Vector3, scalar: number): Vector3 {
+		return this.Add(vec2).MultiplyScalar(scalar)
 	}
-
+	/**
+	 * Multiply, add, and assign to this vector and return new vector
+	 */
+	MultiplyAddForThis(vec2: Vector3, scalar: number): Vector3 {
+		return this.AddForThis(vec2).MultiplyScalarForThis(scalar)
+	}
+	
 	/* ======== Distance ======== */
 	/**
 	 * Returns the squared distance between the this and another vector
@@ -504,7 +629,15 @@ export default class Vector3 {
 	 * @param vec The another vector
 	 */
 	DistanceSqr(vec: Vector3): number {
-		return (vec.x - this.x) ** 2 + (vec.y - this.y) ** 2 + (vec.z - this.z) ** 2
+		return (this.x - vec.x) ** 2 + (this.y - vec.y) ** 2 + (this.z - vec.z) ** 2
+	}
+	/**
+	 * Returns the squared distance between the this and another vector
+	 *
+	 * @param vec The another vector
+	 */
+	DistanceSqr2D(vec: Vector3 | Vector2): number {
+		return (this.x - vec.x) ** 2 + (this.y - vec.y) ** 2
 	}
 	/**
 	 * Returns the distance between the this and another vector
@@ -519,8 +652,8 @@ export default class Vector3 {
 	 *
 	 * @param vec The another vector
 	 */
-	Distance2D(vec: Vector3): number {
-		return Math.sqrt((vec.x - this.x) ** 2 + (vec.y - this.y) ** 2)
+	Distance2D(vec: Vector3 | Vector2): number {
+		return Math.sqrt(this.DistanceSqr2D(vec))
 	}
 
 	/* ================== Geometric ================== */
@@ -604,7 +737,7 @@ export default class Vector3 {
 	 * Returns if the distance to target is lower than range
 	 */
 	IsInRange(vec: Vector3, range: number): boolean {
-		return this.DistanceSqr(vec) < range ** 2
+		return this.DistanceSqr(vec) < range * range
 	}
 	/**
 	 * Returns true if the point is under the rectangle

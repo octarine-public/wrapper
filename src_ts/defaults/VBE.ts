@@ -1,13 +1,12 @@
 import { 
 	MenuManager, 
-	Game, 
-	EntityManager,
+	Game,
 	LocalPlayer,
 	EventsSDK,
 	Unit
 } from "../CrutchesSDK/Imports"
 
-let allParticles: number[] = []
+let allUnits = new Map<Unit, number>(); // <Unit, Particle>
 let particlePath = "particles/items_fx/aura_shivas.vpcf"
 
 const VBEMenu = MenuManager.MenuFactory("Visible By Enemy"),
@@ -18,59 +17,62 @@ function OnChangeValue() {
 	if (!stateMain.value || !allyState.value)
 		DestroyAll();
 	
-	if (stateMain.value)
-		EntityManager.AllEntities.forEach(CheckNpc);
-}
-
-function DestroyAll() {
-	// loop-optimizer: POSSIBLE_UNDEFINED
-	allParticles.forEach((par, index) => Destroy(index));
-}
-
-function Destroy(npcID: number) {
-	Particles.Destroy(allParticles[npcID], true);
-	delete allParticles[npcID];
-}
-
-function CheckNpc(npc: Unit) {
-	if (
-		!stateMain.value
-		|| !(npc instanceof Unit)
-		|| LocalPlayer === undefined
-		||	LocalPlayer.Team !== npc.Team
-		|| Game.IsPaused
-	)
-		return
-		
-	if (!allyState.value && npc !== LocalPlayer.Hero)
-		return
-
-	let npcIndex = npc.Index,
-		IsVisibleForEnemies = npc.IsVisibleForEnemies,
-		IsAlive = npc.IsAlive;
-
-	if ((IsVisibleForEnemies && allParticles[npcIndex] === undefined) && IsAlive)
-		allParticles[npcIndex] = Particles.Create(particlePath, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, npc.m_pBaseEntity)
-
-	if ((!IsVisibleForEnemies || !IsAlive) && allParticles[npcIndex] !== undefined) {
-		Destroy(npcIndex)
+	if (stateMain.value) {
+		// loop-optimizer: KEEP	// because this is Map
+		allUnits.forEach((particle, unit) => CheckUnit(unit));
 	}
 }
 
-EventsSDK.on("onTeamVisibilityChanged", CheckNpc);
-EventsSDK.on("onEntityCreated", CheckNpc);
+function DestroyAll() {
+	// loop-optimizer: KEEP	// because this is Map
+	allUnits.forEach(Destroy);
+}
 
-EventsSDK.on("onTick", () => {
-	let localTeam = LocalPlayer.Team
+function Destroy(particleID: number, unit: Unit) {
+	if (particleID === -1)
+		return;
 
-	EntityManager.AllEntities.forEach(ent => {
-		if (!ent.IsDOTANPC || ent.Team !== localTeam)
-			return
-
-		if (!ent.IsAlive && allParticles[ent.Index] !== undefined) {
-			Destroy(ent.Index)
-		}
-	})
-})
+	Particles.Destroy(particleID, true);
+	allUnits.set(unit, -1);
+}
 
 EventsSDK.on("onGameEnded", DestroyAll);
+
+EventsSDK.on("onEntityCreated", ent => {
+	if (ent instanceof Unit && ent.IsAlly())
+		allUnits.set(ent, -1);
+})
+
+EventsSDK.on("onEntityDestroyed", ent => {
+	if (ent instanceof Unit)
+		allUnits.delete(ent);
+})
+
+EventsSDK.on("onTeamVisibilityChanged", CheckUnit);
+
+EventsSDK.on("onTick", () => {
+	if (!stateMain.value || Game.IsPaused)
+		return;
+	// loop-optimizer: KEEP	// because this is Map
+	allUnits.forEach((particle, unit) => !unit.IsAlive && Destroy(particle, unit));
+})
+
+function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsVisibleForEnemies) {
+	if (!stateMain.value || unit.IsEnemy())
+		return
+		
+	if (!allyState.value && unit !== LocalPlayer.Hero)
+		return
+
+	let isAlive = unit.IsAlive,
+		particleID = allUnits.get(unit);
+
+	if (particleID === undefined)
+		return;
+
+	if ((isVisibleForEnemies && particleID === -1) && isAlive)
+		allUnits.set(unit, Particles.Create(particlePath, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit.m_pBaseEntity))
+
+	else if ((!isVisibleForEnemies || !isAlive) && particleID !== -1)
+		Destroy(particleID, unit)
+}

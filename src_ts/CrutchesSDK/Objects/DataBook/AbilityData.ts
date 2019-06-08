@@ -3,8 +3,8 @@ import AbilitySpecialData from "./AbilitySpecialData";
 
 export default class AbilityData {
 	
-	m_pAbilityData: DOTAAbilityData_t
-	m_AbilitySpecialData: AbilitySpecialData
+	readonly m_pAbilityData: DOTAAbilityData_t
+	private m_AbilitySpecialData: AbilitySpecialData
 	
 	constructor(data: DOTAAbilityData_t) {
 		this.m_pAbilityData = data;

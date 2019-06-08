@@ -1,4 +1,4 @@
-import { EventsSDK, MenuManager, Unit, LocalPlayer, Utils } from "./CrutchesSDK/Imports";
+import { EventsSDK, MenuManager, Unit, LocalPlayer, ArrayExtensions } from "./CrutchesSDK/Imports";
 
 //import * as Orders from "Orders"
 //import * as Utils from "Utils"
@@ -20,9 +20,9 @@ EventsSDK.on("onEntityCreated", (npc: Unit) => {
 })
 EventsSDK.on("onEntityDestroyed", (npc: Unit) => {
 	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_MonkeyKing)
-		Utils.arrayRemove(mks, npc)
+		ArrayExtensions.arrayRemove(mks, npc)
 	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Techies)
-		Utils.arrayRemove(techiess, npc)
+		ArrayExtensions.arrayRemove(techiess, npc)
 })
 
 EventsSDK.on("onTick", () => {

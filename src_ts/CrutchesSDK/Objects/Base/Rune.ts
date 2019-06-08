@@ -2,7 +2,7 @@ import Entity from "./Entity";
 
 export default class Rune extends Entity {
 	
-	m_pBaseEntity: C_DOTA_Item_Rune
+	readonly m_pBaseEntity: C_DOTA_Item_Rune
 	
 	get Type(): DOTA_RUNES {
 		return this.m_pBaseEntity.m_iRuneType;

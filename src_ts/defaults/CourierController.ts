@@ -86,8 +86,7 @@ EventsSDK.on("onEntityCreated", (ent: Entity) => {
 	if (
 		ent instanceof Player
 		&& (LocalPlayer === undefined
-			|| (ent.PlayerID !== LocalPlayer.PlayerID
-				&& !ent.IsEnemy()))
+			|| (ent.PlayerID !== LocalPlayer.PlayerID && ent.IsAlly()))
 	) {
 		allAllyPlayers.push(new AllyPlayer(ent))
 		return
@@ -95,7 +94,7 @@ EventsSDK.on("onEntityCreated", (ent: Entity) => {
 
 	if (ent instanceof Courier) {
 
-		if (allyCourier === undefined && !ent.IsEnemy() && ent.IsControllable)
+		if (allyCourier === undefined && ent.IsAlly() && ent.IsControllable)
 			allyCourier = ent
 
 		return
@@ -117,7 +116,7 @@ EventsSDK.on("onEntityDestroyed", (ent: Entity) => {
 
 EventsSDK.on("onUpdate", () => {
 
-	if (!Game.IsInGame || Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
+	if (!Game.IsInGame || !Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
 		return
 
 	if (allyCourier === undefined)
@@ -192,21 +191,21 @@ function trySelfDeliver() {
 	if (!deliverState.value)
 		return false
 
-	let localEnt = EntityManager.LocalHero,
-		delivery = false;
+	let localEnt = EntityManager.LocalHero;
 
-	if (localEnt !== undefined && localEnt.IsAlive && localEnt.Inventory.HasFreeSlot(0, 9)
-		&& allyCourier.Inventory.HasFreeSlot(0, 9)) {
-		if (allyCourier.Inventory.HasItemByOtherPlayer(localEnt)) {
-			CastCourAbility(4) // courier_transfer_items
-			delivery = true
-		} else if (localEnt.Inventory.HasAnyItemStash) {
-			CastCourAbility(7)
-			delivery = true
-		}
+	if (localEnt === undefined || !localEnt.IsAlive || !localEnt.Inventory.HasFreeSlot(0, 9) || !allyCourier.Inventory.HasFreeSlot(0, 9))
+		return false;
+
+	if (allyCourier.Inventory.HasItemByOtherPlayer(localEnt)) {
+		CastCourAbility(4) // courier_transfer_items
+		return true
+	} 
+	else if (localEnt.Inventory.HasAnyItemStash) {
+		CastCourAbility(7) // courier_take_stash_and_transfer_items
+		return true
 	}
 
-	return delivery
+	return false
 }
 
 function IsBlocked(npc: Hero) {

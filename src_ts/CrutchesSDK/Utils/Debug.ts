@@ -5,7 +5,7 @@ export function ClassDump(obj: Object, field?: string | string[], recursiveCount
 function dumpClass(obj: Object, field: string | string[], recursiveCount: number, alreadyCount: number = 1) {
 	let fieledIsArray = field && Array.isArray(field);
 
-	console.log("[info]");
+	//console.log("[info]");
 	
 	for (let name in obj) {
 		if (fieledIsArray && !field.includes(name))

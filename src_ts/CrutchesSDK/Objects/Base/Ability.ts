@@ -7,7 +7,7 @@ import AbilityData from "../DataBook/AbilityData";
 
 export default class Ability extends Entity {
 	
-	m_pBaseEntity: C_DOTABaseAbility
+	/* protected */ readonly m_pBaseEntity: C_DOTABaseAbility
 	private m_AbilityData: AbilityData
 	
 	/* ============ BASE  ============ */
@@ -174,18 +174,7 @@ export default class Ability extends Entity {
 	}
 	
 	UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
-
-		if (checkToggled && this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && !this.IsToggled)
-			return (this.Owner as Unit).CastToggle(this, queue, showEffects);
-		
-		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET))
-			return (this.Owner as Unit).CastNoTarget(this, queue, showEffects);
-		
-		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT))
-			return (this.Owner as Unit).CastPosition(this, target as Vector3, queue, showEffects);
-		
-		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
-			return (this.Owner as Unit).CastTarget(this, target as Entity, showEffects);
+		return (this.Owner as Unit).UseSmartAbility(this, target, checkToggled, queue, showEffects)
 	}
 	UpgradeAbility() {
 		return (this.Owner as Unit).TrainAbility(this);

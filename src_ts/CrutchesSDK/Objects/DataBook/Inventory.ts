@@ -9,13 +9,13 @@ const MAX_ITEMS = 15;
 export default class Inventory {
 	
 	protected m_Unit: Unit
-	m_Inventory: C_DOTA_UnitInventory
+	readonly m_Inventory: C_DOTA_UnitInventory
 	
 	constructor(ent: Unit) {
 		this.m_Unit = ent;
 		this.m_Inventory = ent.m_pBaseEntity.m_Inventory;
 	}
-	
+
 	get Items(): Item[] {
 		return this.GetItems(0, 5);
 	}
@@ -71,7 +71,7 @@ export default class Inventory {
 		if (this.m_Unit.IsValid && start <= MAX_ITEMS && start <= end) {
 			let itemsNative = this.m_Inventory.m_hItems;
 		
-			for (let i = start; i < end + 1; i++) {
+			for (let i = start; i < end; i++) {
 				if (i > MAX_ITEMS)
 					break;
 					
@@ -90,7 +90,7 @@ export default class Inventory {
 		if (this.m_Unit.IsValid && start <= MAX_ITEMS && start <= end) {
 			let itemsNative = this.m_Inventory.m_hItems;
 			
-			for (let i = start; i < end + 1; i++) {
+			for (let i = start; i < end; i++) {
 				if (i > MAX_ITEMS)
 					break;
 
@@ -107,7 +107,7 @@ export default class Inventory {
 		if (this.m_Unit.IsValid && start <= MAX_ITEMS && start <= end) {
 			let itemsNative = this.m_Inventory.m_hItems;
 
-			for (let i = start; i < end + 1; i++) { // for (let i = end + 1; i-- < start;) {
+			for (let i = end + 1; i-- > start;) {
 				if (i > MAX_ITEMS)
 					break;
 
@@ -122,7 +122,7 @@ export default class Inventory {
 		if (this.m_Unit.IsValid && start <= MAX_ITEMS && start <= end) {
 			let itemsNative = this.m_Inventory.m_hItems;
 
-			for (let i = start; i < end + 1; i++) { // for (let i = end + 1; i-- < start;) {
+			for (let i = end + 1; i-- > start;) {
 				if (i > MAX_ITEMS)
 					break;
 
@@ -138,11 +138,9 @@ export default class Inventory {
 			let itemsNative = this.m_Inventory.m_hItems,
 				playerID = player.PlayerID;
 
-			for (let i = 9; i--;) {
+			for (let i = 0; i < 14; i++) {
 				
-				let item = itemsNative[i] as C_DOTA_Item;
-
-				if (item !== undefined && item.m_iPlayerOwnerID === playerID)
+				if (itemsNative[i] !== undefined && (itemsNative[i] as C_DOTA_Item).m_iPlayerOwnerID === playerID)
 					return true;
 			}
 		}

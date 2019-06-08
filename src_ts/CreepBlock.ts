@@ -1,4 +1,4 @@
-import { MenuManager, Game, EventsSDK, LocalPlayer, Creep, Tower, Vector3, Utils } from "./CrutchesSDK/Imports";
+import { MenuManager, Game, EventsSDK, LocalPlayer, Creep, Tower, Vector3, ArrayExtensions } from "./CrutchesSDK/Imports";
 //import * as Orders from "Orders"
 //import * as Utils from "Utils"
 
@@ -70,7 +70,7 @@ EventsSDK.on("onTick", () => {
 		return
 	}
 	
-	creeps = Utils.orderBy(creeps, creep => creep.Distance2D(creepsMovePosition));
+	creeps = ArrayExtensions.orderBy(creeps, creep => creep.Distance2D(creepsMovePosition));
 	
 	let stopping = creeps.some(creep => {
 		if (!creep.IsMoving && !creep.IsInRange(MyEnt, 50))
@@ -114,9 +114,9 @@ EventsSDK.on("onEntityCreated", npc => {
 })
 EventsSDK.on("onEntityDestroyed", ent => {
 	if (ent instanceof Creep)
-		Utils.arrayRemove(lane_creeps, ent)
+		ArrayExtensions.arrayRemove(lane_creeps, ent)
 	else if (ent instanceof Tower)
-		Utils.arrayRemove(towers, ent)
+		ArrayExtensions.arrayRemove(towers, ent)
 })
 //EventsSDK.on("onWndProc", (message_type, wParam) => !Game.IsInGame || parseInt(wParam as any) !== hotkeyState.value)
 EventsSDK.on("onGameEnded", () => {

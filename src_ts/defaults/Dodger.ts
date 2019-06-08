@@ -1,4 +1,4 @@
-import { MenuManager, EventsSDK, Game, Vector3, Unit, Player, EntityManager, Utils } from "../CrutchesSDK/Imports";
+import { MenuManager, EventsSDK, Game, Vector3, Unit, Player, EntityManager, ArrayExtensions } from "../CrutchesSDK/Imports";
 
 // menu 
 /* const DodgerMenu = MenuManager.MenuFactory("Dodger");
@@ -13,7 +13,7 @@ var proj2path: string[] = [],
 	proj_list: Array<TrackingProjectile | LinearProjectile> = [];
 
 function DeleteProjectile(proj: TrackingProjectile | LinearProjectile) {
-	Utils.arrayRemove(proj_list, proj)
+	ArrayExtensions.arrayRemove(proj_list, proj)
 }
 
 function Dodge(pl_ent: Unit, delay: number, target_pos?: Vector3, aoe: number = 0) {

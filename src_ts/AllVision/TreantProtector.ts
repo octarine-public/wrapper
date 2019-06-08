@@ -1,6 +1,4 @@
-import { EventsSDK, Entity, Unit, Vector3, LocalPlayer, Utils } from "../CrutchesSDK/Imports";
-
-//import * as Utils from "Utils"
+import { EventsSDK, Entity, Unit, Vector3, LocalPlayer, ArrayExtensions } from "../CrutchesSDK/Imports";
 
 export default () => {
 	var treant_eyes: Unit[] = [],
@@ -17,7 +15,7 @@ export default () => {
 	})
 	EventsSDK.on("onEntityDestroyed", (ent, id) => {
 		
-		if (Utils.arrayRemove(treant_eyes, ent))
+		if (ArrayExtensions.arrayRemove(treant_eyes, ent))
 			delete pars[id];
 	})
 
@@ -25,8 +23,7 @@ export default () => {
 		var local_team_flag = 1 << LocalPlayer.Team;
 		// loop-optimizer: KEEP
 		treant_eyes.forEach((ent, i) => {
-			let pEntity = ent.m_pBaseEntity.m_pEntity;
-			
+
 			if (ent.IsAlive) {
 				ent.IsVisibleForTeamMask |= local_team_flag
 				// |= 1 << 2 is EF_IN_STAGING_LIST
@@ -35,11 +32,11 @@ export default () => {
 				// &= ~(1 << 7) is trigger
 				// 1 << 9 is EF_NODRAW???
 				
-				pEntity.m_flags &= ~(1 << 7)
-				pEntity.m_flags |= 1 << 3
+				ent.Flags &= ~(1 << 7)
+				ent.Flags |= 1 << 3
 			} else {
-				pEntity.m_flags |= 1 << 7
-				pEntity.m_flags &= ~(1 << 3)
+				ent.Flags |= 1 << 7
+				ent.Flags &= ~(1 << 3)
 				treant_eyes.splice(i, 1)
 				Particles.Destroy(pars[ent.Index], true)
 				delete pars[ent.Index]

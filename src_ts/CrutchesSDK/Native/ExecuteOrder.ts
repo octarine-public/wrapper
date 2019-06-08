@@ -74,6 +74,11 @@ export default class ExecuteOrder {
 	private m_Queue: boolean
 	private m_ShowEffects: boolean
 
+	/**
+	 * Orders by native CUnitOrder
+	 * @param position default: new Vector3(0,0,0)
+	 * @param issuer default: DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY
+	 */
 	constructor(
 		orderType: dotaunitorder_t,
 		target: Entity | number,
@@ -138,7 +143,7 @@ export default class ExecuteOrder {
 		const target = this.m_Target,
 			ability = this.m_Ability,
 			unit = this.m_Unit;
-			
+
 		return {
 			OrderType: this.m_OrderType,
 			Target: target !== undefined ? target.m_pBaseEntity : undefined,
@@ -152,8 +157,33 @@ export default class ExecuteOrder {
 	/**
 	 * Execute order with this fields
 	 */
-	ExecuteOrder(): ExecuteOrder {
+	Execute(): ExecuteOrder {
 		PrepareUnitOrders(this.toNative())
 		return this
+	}
+	
+	toString(): string {
+		return JSON.stringify(this.toObject());
+	}
+	toObject(): {
+		OrderType: dotaunitorder_t,
+		Target: Entity,
+		Position: Vector3,
+		Ability: Ability,
+		OrderIssuer: PlayerOrderIssuer_t
+		Unit: Unit,
+		Queue: boolean,
+		ShowEffects: boolean
+	} {
+		return {
+			OrderType: this.m_OrderType,
+			Target: this.m_Target,
+			Position: this.m_Position,
+			Ability: this.m_Ability,
+			OrderIssuer: this.m_OrderIssuer,
+			Unit: this.m_Unit,
+			Queue: this.m_Queue,
+			ShowEffects: this.m_ShowEffects,
+		}
 	}
 }

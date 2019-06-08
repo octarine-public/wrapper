@@ -1,9 +1,12 @@
+import { DamageAmplifyPerIntelligencePrecent } from "../../Data/GameData";
+
 import Unit from "./Unit"
 import EntityManager from "../../Managers/EntityManager";
 import Player from "./Player";
 
 export default class Hero extends Unit {
-	m_pBaseEntity: C_DOTA_BaseNPC_Hero
+	
+	/* protected */ readonly m_pBaseEntity: C_DOTA_BaseNPC_Hero
 
 	/* ============ BASE  ============ */
 	
@@ -73,10 +76,8 @@ export default class Hero extends Unit {
 	
 	/* ============ EXTENSIONS ============ */
 	
-	/**
-	 * https://dota2.gamepedia.com/Intelligence
-	 */
+	
 	get SpellAmplification(): number {
-		return super.SpellAmplification + (this.TotalIntelligence * 0.07 / 100)
+		return super.SpellAmplification + (this.TotalIntelligence * DamageAmplifyPerIntelligencePrecent / 100)
 	}
 }

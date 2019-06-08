@@ -1,3 +1,5 @@
+import { arrayRemove } from "../Utils/ArrayExtensions";
+
 import Game from "../Objects/GameResources/GameRules";
 
 import { Tree } from "./Tree";
@@ -9,10 +11,10 @@ function KeyBindCallback(keybind: Keybind): void {
 
 	var onValueCall = keybind.OnValueCallback
 
+	AddOrChangeKeyEvent(keybind)
+	
 	if (onValueCall)
 		onValueCall(keybind.value, keybind)
-
-	AddOrChangeKeyEvent(keybind)
 }
 
 function AddOrChangeKeyEvent(keybind: Keybind) {
@@ -36,7 +38,7 @@ function RemoveKeyEvent(keybind: Keybind) {
 	if (OnExecute[key] === undefined)
 		return
 
-	OnExecute[key] = OnExecute[key].filter(kb => kb !== keybind)
+	arrayRemove(OnExecute[key], keybind)
 
 	if (OnExecute[key].length === 0)
 		OnExecute[key] = undefined
@@ -47,51 +49,51 @@ function getTopParent(node: Tree | Keybind): Tree {
 	return parent !== undefined ? getTopParent(parent) : node as Tree
 }
 
-// https://www.autoitscript.com/autoit3/docs/appendix/WinMsgCodes.htm
 Events.on("onWndProc", (msg, wParam) => {
 
 	if (!Game.IsInGame || wParam === undefined)
 		return true
 
-	if (msg === 0x100 || msg === 0x101) {
+	if (msg !== 0x100 && msg !== 0x101)
+		return true;
 
-		let isPressed = (msg === 0x100), // WM_KEYDOWN
-			key = parseInt(wParam as any),
-			onExecute = OnExecute[key]
+	let key = parseInt(wParam as any),
+		onExecute = OnExecute[key]
 
-		if (onExecute !== undefined) {
+	if (onExecute === undefined)
+		return true;
 
-			if (IsPressing[key] === isPressed)
-				return true
+	let isPressed = (msg === 0x100); // WM_KEYDOWN
+		
+	if (IsPressing[key] === isPressed)
+		return true
 
-			IsPressing[key] = isPressed
+	IsPressing[key] = isPressed
 
-			let ret = true
+	let ret = true
 
-			onExecute.forEach(keybind => {
+	onExecute.forEach(keybind => {
 
-				if (keybind.value !== key) {
-					RemoveKeyEvent(keybind)
-					return
-				}
-
-				let onPressedCall = keybind.OnPressedCallback,
-					onReleaseCall = keybind.OnReleaseCallback,
-					onExecuteCall = keybind.OnExecuteCallback
-
-				if (onExecuteCall)
-					ret = !!onExecuteCall(isPressed, keybind)
-
-				if (isPressed)
-					ret = !(onPressedCall && onPressedCall(keybind) === false)
-				else
-					ret = !(onReleaseCall && onReleaseCall(keybind) === false)
-			})
-
-			return ret
+		if (keybind.value !== key) {
+			RemoveKeyEvent(keybind)
+			return
 		}
-	}
-	return true
+
+		const onExecuteCall = keybind.OnExecuteCallback;
+
+		if (onExecuteCall)
+			ret = !!onExecuteCall(isPressed, keybind)
+
+		if (isPressed) {
+			const onPressedCall = keybind.OnPressedCallback	
+			ret = !(onPressedCall && onPressedCall(keybind) === false)
+		} else {
+			const onReleaseCall = keybind.OnReleaseCallback;
+			ret = !(onReleaseCall && onReleaseCall(keybind) === false)
+		}
+	})
+
+	return ret
 })
 
 export default class Keybind extends Menu_Keybind {
@@ -170,18 +172,27 @@ export default class Keybind extends Menu_Keybind {
 		this.OnValueCallback = callback
 		return this
 	}
-
+	
 	get IsPressed() {
 		return IsPressing[this.value]
 	}
+	/**
+	 * Emitted when key is up or down
+	 */
 	OnExecute(callback: (isPressed: boolean, self: Keybind) => any): this {
 		this.OnExecuteCallback = callback
 		return this
 	}
+	/**
+	 * Emitted when key is down
+	 */
 	OnPressed(callback: (self: Keybind) => any): this {
 		this.OnPressedCallback = callback
 		return this
 	}
+	/**
+	 * Emitted when key is up
+	 */
 	OnRelease(callback: (self: Keybind) => any): this {
 		this.OnReleaseCallback = callback
 		return this

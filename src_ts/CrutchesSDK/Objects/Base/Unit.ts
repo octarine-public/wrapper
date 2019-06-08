@@ -1,6 +1,7 @@
 import Color from "../../Base/Color";
+import Vector2 from "../../Base/Vector2";
 import Vector3 from "../../Base/Vector3";
-import { MaskToArrayBigInt, HasBit } from "../../Utils/Utils"
+import { MaskToArrayBigInt, HasBit, HasBitBigInt } from "../../Utils/Utils"
 
 import { LocalPlayer } from "../../Managers/EntityManager";
 
@@ -21,6 +22,7 @@ import Tree from "./Tree";
 import Rune from "./Rune";
 
 
+
 /* ================================  ================================ */
 /* ================  ================ */
 /* ========  ======== */
@@ -30,7 +32,7 @@ export default class Unit extends Entity {
 
 	/* ================================ Static ================================ */
 
-	static IsVisibleForEnemies(unit: Unit, newTagged: number) {
+	static IsVisibleForEnemies(unit: Unit, newTagged: number): boolean {
 		const valid_teams = ~(1 | (1 << DOTATeam_t.DOTA_TEAM_SPECTATOR)
 			| (1 << DOTATeam_t.DOTA_TEAM_NEUTRALS)
 			| (1 << DOTATeam_t.DOTA_TEAM_NOTEAM)) // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
@@ -46,18 +48,17 @@ export default class Unit extends Entity {
 
 	/* ================================ Fields ================================ */
 
-	m_pBaseEntity: C_DOTA_BaseNPC
+	/* protected */ readonly m_pBaseEntity: C_DOTA_BaseNPC
 	private m_Inventory: Inventory
 	private m_AbilitiesBook: AbilitiesBook
 	private m_ModifiersBook: ModifiersBook
 
-	private m_iTaggedAsVisibleByTeam: number = 0;
 	private m_bIsVisibleForEnemies: boolean = false;
 	private m_bIsTrueSightedForEnemies: boolean = false;
 	private m_bHasScepterModifier: boolean = false;
 
 	/* ================================ BASE ================================ */
-
+	
 	/* ================ GETTERS ================ */
 
 	/* ======== UnitType ======== */
@@ -125,6 +126,7 @@ export default class Unit extends Entity {
 	}
 	get IsInvisible(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE)
+			||this.InvisibleLevel > 0.5
 	}
 	get IsInvulnerable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
@@ -241,8 +243,8 @@ export default class Unit extends Entity {
 	get DeathTime(): number {
 		return this.m_pBaseEntity.m_flDeathTime
 	}
-	get DebuffState(): bigint {
-		return this.m_pBaseEntity.m_nUnitDebuffState
+	get DebuffState(): modifierstate[] {
+		return MaskToArrayBigInt(this.m_pBaseEntity.m_nUnitDebuffState)
 	}
 	// check
 	get HasArcana(): boolean {
@@ -319,10 +321,10 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_bIsSummoned
 	}
 	set IsVisibleForTeamMask(value: number) {
-		this.m_iTaggedAsVisibleByTeam = value;
+		this.m_pBaseEntity.m_iTaggedAsVisibleByTeam = value;
 	}
 	get IsVisibleForTeamMask(): number {
-		return this.m_iTaggedAsVisibleByTeam
+		return this.m_pBaseEntity.m_iTaggedAsVisibleByTeam;
 	}
 	get IsWaitingToSpawn(): boolean {
 		return this.m_pBaseEntity.m_bIsWaitingToSpawn
@@ -335,6 +337,9 @@ export default class Unit extends Entity {
 	}
 	get Mana(): number {
 		return this.m_pBaseEntity.m_flMana
+	}
+	get ManaPercent(): number {
+		return Math.floor(this.Mana / this.MaxMana * 100) || 0;
 	}
 	get ManaRegen(): number {
 		return this.m_pBaseEntity.m_flManaRegen;
@@ -424,31 +429,30 @@ export default class Unit extends Entity {
 		let attackCap = this.m_pBaseEntity.m_iAttackCapabilities
 
 		if (flag !== undefined)
-			return (attackCap & flag) === flag
+			return (attackCap & flag) !== 0
 
 		return (attackCap & (
 			DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK |
 			DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
-		) === flag
+		) !== 0
 	}
 	/**
 	 * @param flag if not exists => isn't move NONE
 	 */
-	HasMoveCapabilit(flag: DOTAUnitMoveCapability_t): boolean {
+	HasMoveCapability(flag: DOTAUnitMoveCapability_t): boolean {
 		let moveCap = this.m_pBaseEntity.m_iMoveCapabilities
 
 		if (flag !== undefined)
-			return (moveCap & flag) === flag
+			return (moveCap & flag) !== 0
 
 		return flag !== DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
 	}
 
 	IsUnitStateFlagSet(flag: modifierstate): boolean {
-		return (((this.m_pBaseEntity.m_nUnitState64 | this.m_pBaseEntity.m_nUnitDebuffState) >> BigInt(flag)) & 1n) === 1n
+		return HasBitBigInt((this.m_pBaseEntity.m_nUnitState64 | this.m_pBaseEntity.m_nUnitDebuffState), BigInt(flag))
 	}
-
 	IsControllableByPlayer(playerID: number): boolean {
-		return ((this.m_pBaseEntity.m_iIsControllableByPlayer64 >> BigInt(playerID)) & 1n) === 1n
+		return HasBitBigInt(this.m_pBaseEntity.m_iIsControllableByPlayer64, BigInt(playerID));
 	}
 
 	/* ================================ EXTENSIONS ================================ */
@@ -494,28 +498,29 @@ export default class Unit extends Entity {
 	/* ================ METHODS ================ */
 
 	/**
-	 * @param fromCenterToCenter include HullRadiuses
+	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
-	Distance2D(vec: Vector3 | Entity | Unit, fromCenterToCenter: boolean = false): number {
-		if (vec instanceof Vector3)
+	Distance2D(vec: Vector3 | Vector2 | Entity, fromCenterToCenter: boolean = false): number {
+		if (vec instanceof Vector3 || vec instanceof Vector2)
 			return super.Distance2D(vec)
 
 		return super.Distance2D(vec) - (fromCenterToCenter ? 0 : this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0))
 	}
 	/**
-	 * 
+	 * faster (Distance <= range)
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
-	IsInRange(ent: Vector3 | Entity | Unit, range: number, fromCenterToCenter: boolean = false): boolean {
+	IsInRange(ent: Vector3 | Vector2 | Entity, range: number, fromCenterToCenter: boolean = false): boolean {
 		if (fromCenterToCenter === false) {
-			range += this.HullRadius;
 
+			range += this.HullRadius;
+			
 			if (ent instanceof Unit)
 				range += ent.HullRadius;
 		}
+		
 		return super.IsInRange(ent, range);
 	}
-
 	AttackDamage(target: Unit, useMinDamage: boolean = false, damageAmplifier: number = 0): number {
 
 		let damage = (useMinDamage ? this.MinDamage : this.DamageAverage) + this.DamageBonus,
@@ -559,14 +564,45 @@ export default class Unit extends Entity {
 		
 		return damage * mult;
 	}
+	CanAttack(target?: Unit): boolean {
+		if (!this.IsAlive || this.IsInvulnerable || this.IsDormant || !this.IsSpawned
+			|| this.IsAttackImmune)
+			return false;
 
+		if (target === undefined || !target.IsAlive || target.IsInvulnerable || target.IsDormant || !target.IsSpawned
+			|| target.IsAttackImmune)
+			return false;
 
+		if (target.Team === LocalPlayer.Team) {
 
+			if (target.IsCreep)
+				return target.HPPercent < 0.5;
 
+			if (target.IsHero)
+				return target.IsDeniable && target.HPPercent < 0.25;
 
+			if (target.IsBuilding)
+				return target.HPPercent < 0.1;
+		}
 
+		return true;
+	}
 	/* ================================ ORDERS ================================ */
+	UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
+		
+		if (checkToggled && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && !ability.IsToggled)
+			return this.CastToggle(ability, queue, showEffects);
 
+		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET))
+			return this.CastNoTarget(ability, queue, showEffects);
+
+		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT))
+			return this.CastPosition(ability, target as Vector3, queue, showEffects);
+
+		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
+			return this.CastTarget(ability, target as Entity, showEffects);
+	}
+	
 	MoveTo(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, unit: this, position, queue, showEffects });
 	}
@@ -653,7 +689,7 @@ export default class Unit extends Entity {
 	VectorTargetPosition(ability: Ability, Direction: Vector3, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION, unit: this, ability, position: Direction, queue, showEffects });
 	}
-	CastVectorTargetPosition(ability: Ability, position: Vector3 | Unit, Direction: Vector3, queue?: boolean, showEffects?: boolean) {
+	CastVectorTargetPosition(ability: Ability, position: Vector3 | Unit, Direction: Vector3, queue?: boolean, showEffects?: boolean): void {
 
 		if (position instanceof Unit)
 			position = position.Position;

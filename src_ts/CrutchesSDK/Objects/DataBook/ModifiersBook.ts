@@ -1,11 +1,9 @@
-import ModifierManager from "../../Managers/ModifierManager";
 import Unit from "../Base/Unit";
 import Modifier from "../Base/Modifier";
 
 export default class ModifiersBook {
 
 	private m_Unit: Unit
-	m_hBuffs: CDOTA_Buff[] = []
 	m_Buffs: Modifier[] = [];
 	
 	constructor(ent: Unit) {
@@ -46,11 +44,17 @@ export default class ModifiersBook {
 		return this.m_Buffs.find(buff => /* !buff.m_pBuff.m_bMarkedForDeletion && */ regex.test(buff.Name));
 	}
 	GetAnyBuffByNames(names: string[]): Modifier {
+		if (!this.m_Unit.IsValid)
+			return undefined;
+		
 		let buff: Modifier;
 		names.some(name => (buff = this.GetBuffByName(name)) !== undefined);
 		return buff;
 	}
 	HasAnyBuffByNames(names: string[]): boolean {
+		if (!this.m_Unit.IsValid)
+			return undefined;
+		
 		return names.some(name => this.GetBuffByName(name) !== undefined);
 	}
 }

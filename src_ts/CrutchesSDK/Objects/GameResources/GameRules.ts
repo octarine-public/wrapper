@@ -100,7 +100,7 @@ class Game {
 		let gameRules = this.m_GameRules;
 		
 		if (gameRules === undefined) {
-			console.error("C_DOTAGamerules not initialized")
+			console.error("C_DOTAGamerules not initialized. Please, check on Game.IsConnected or Game.IsInGame")
 			return false;
 		}
 
@@ -152,7 +152,3 @@ class Game {
 }
 
 export default global.Game = new Game();
-
-/* Events.on("onUpdate", cmd => {
-
-}); */

@@ -1,62 +1,91 @@
-import { MenuManager, Utils, EventsSDK, Game, EntityManager, Unit } from "../CrutchesSDK/Imports";
+import { MenuManager, EventsSDK, Game, LocalPlayer, Unit } from "../CrutchesSDK/Imports";
 
 const ParticleStyles = [
 	"particles/econ/wards/portal/ward_portal_core/ward_portal_eye_sentry.vpcf",
 	"particles/items_fx/aura_shivas.vpcf",
 ];
 
-var particle = "",
-	npcs: Unit[] = [],
-	particles: number[] = [];
+var particlePath = "",
+	allUnitsAsMap = new Map<Unit, number>();
+	/* allUnits: Unit[] = [],
+	allParticles: number[] = []; */
 
-const TrueSightMenu = MenuManager.MenuFactory("TrueSight Detector");
-
-const stateMain = TrueSightMenu.AddToggle("State").OnValue(deleteAllParticles);
+const TrueSightMenu = MenuManager.MenuFactory("TrueSight Detector"),
+	stateMain = TrueSightMenu.AddToggle("State").OnValue(() => OnChangeValue()),
+	allyState = TrueSightMenu.AddToggle("Allies state", true).OnValue(() => OnChangeValue())
 
 const particleStylesCombo =TrueSightMenu.AddComboBox("Particle", [
 	"Sentry ward particle",
 	"Shiva's Guard (DotA 1 effect)",
 ]).OnValue(value => {
-	deleteAllParticles();
-	particles = [];
-	
-	particle = ParticleStyles[value];
+	particlePath = ParticleStyles[value];
+	OnChangeValue(true);
 })
 
-particle = ParticleStyles[particleStylesCombo.selected_id];
+function OnChangeValue(destroy: boolean = !stateMain.value || !allyState.value) {
+	if (destroy)
+		DestroyAll();
 
-EventsSDK.on("onGameEnded", deleteAllParticles);
+	if (stateMain.value)
+		// loop-optimizer: KEEP
+		allUnitsAsMap.forEach((particle, unit) => CheckUnit(unit));
+}
 
-function deleteAllParticles() {
+function DestroyAll() {
 	// loop-optimizer: POSSIBLE_UNDEFINED
-	particles.forEach((par, index) => Destroy(index));
+	allUnitsAsMap.forEach(Destroy);
 }
 
-function Destroy(npcID: number) {
-	Particles.Destroy(particles[npcID], true);
-	delete particles[npcID];
+function Destroy(particleID: number, unit: Unit) {
+	if (particleID === -1)
+		return;
+
+	Particles.Destroy(particleID, true);
+	allUnitsAsMap.set(unit, -1);
 }
+
+EventsSDK.on("onGameEnded", DestroyAll);
 
 EventsSDK.on("onEntityCreated", npc => {
-	if (npc instanceof Unit && !npc.IsEnemy())
-		npcs.push(npc);
+	if (npc instanceof Unit && npc.IsAlly())
+		allUnitsAsMap.set(npc, -1);
 })
+
 EventsSDK.on("onEntityDestroyed", ent => {
 	if (ent instanceof Unit)
-		Utils.arrayRemove(npcs, ent);
+		allUnitsAsMap.delete(ent);
 })
+
+EventsSDK.on("onTrueSightedChanged", CheckUnit);
+
 EventsSDK.on("onTick", () => {
-	if (!stateMain.value || Game.IsPaused || !Game.IsInGame)
+	if (!stateMain.value || Game.IsPaused)
 		return
 
-	npcs.forEach(npc => {
-		let index = npc.Index, 
-			is_truesighted = npc.IsTrueSightedForEnemies,
-			alive = npc.IsAlive;
-
-		if (is_truesighted && particles[index] === undefined && alive)
-			particles[index] = Particles.Create(particle, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, npc.m_pBaseEntity)
-		else if ((!alive || !is_truesighted) && particles[index] !== undefined)
-			Destroy(index);
-	})
+	// loop-optimizer: KEEP
+	allUnitsAsMap.forEach((particle, unit) => !unit.IsAlive && Destroy(particle, unit));
 })
+
+function CheckUnit(unit: Unit, isTrueSighted: boolean = unit.IsTrueSightedForEnemies) {
+
+	if (!stateMain.value || unit.IsEnemy())
+		return
+
+	if (!allyState.value && unit !== LocalPlayer.Hero)
+		return
+
+	let isAlive = unit.IsAlive,
+		particleID = allUnitsAsMap.get(unit);
+
+	if (particleID === undefined)
+		return;
+		
+	if ((isTrueSighted && particleID === -1) && isAlive) {
+		allUnitsAsMap.set(unit, Particles.Create(
+			particlePath || (particlePath = ParticleStyles[particleStylesCombo.selected_id]), 
+			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit.m_pBaseEntity))
+	} 
+	else if ((!isTrueSighted || !isAlive) && particleID !== -1) {
+		Destroy(particleID, unit);
+	}
+}

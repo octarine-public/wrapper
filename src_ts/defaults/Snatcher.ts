@@ -1,7 +1,6 @@
 import {
-	Utils,
+	ArrayExtensions,
 	MenuManager,
-	EntityManager,
 	LocalPlayer,
 	EventsSDK, 
 	RendererSDK,
@@ -20,14 +19,7 @@ import {
 
 let { MenuFactory, CreateRGBTree } = MenuManager;
 
-let registeredEvents = {
-		onEntityCreated: undefined,
-		onEntityDestroyed: undefined,
-		onTick: undefined,
-		onPrepareUnitOrders: undefined,
-		onDraw: undefined,
-	},
-	allRunes: Rune[] = [],
+let allRunes: Rune[] = [],
 	allRunesParticles: number[][] = [],
 	ground_items: PhysicalItem[] = [],
 	npcs: Unit[] = [],
@@ -35,24 +27,21 @@ let registeredEvents = {
 
 const snatcherMenu = MenuFactory("Snatcher")
 
-const stateMain = snatcherMenu.AddToggle("State").OnValue(onStateMain)
+const stateMain = snatcherMenu.AddToggle("State")
+	.OnValue(() => {
+		destroyRuneAllParticles()
+		onDeactivateItems()
+	})
 
 // ----- Rune
 
 const runeMenu = snatcherMenu.AddTree("Rune settings")
 
-const stateRune = runeMenu.AddToggle("Snatch Rune")
-	.OnDeactivate(onDeactivateRune)
-	.OnActivate(getAllEntities)
+const stateRune = runeMenu.AddToggle("Snatch Rune").OnDeactivate(destroyRuneAllParticles)
 
-const runeToggle = runeMenu.AddKeybind("Rune toogle")
-	.OnRelease(() => stateRune.ChangeReverse())
+runeMenu.AddKeybind("Rune toogle").OnRelease(() => stateRune.ChangeReverse())
 
-const runeHoldKey = runeMenu.AddKeybind("Rune hold key")
-	.OnRelease(() => {
-		if (!stateRune.value)
-			onDeactivateRune()
-	})
+const runeHoldKey = runeMenu.AddKeybind("Rune hold key").OnRelease(() => !stateRune.value && destroyRuneAllParticles())
 
 // -- Draw particles
 
@@ -79,18 +68,11 @@ const drawParticleKill = drawParticles.AddToggle("Kill rune")
 
 const itemsMenu = snatcherMenu.AddTree("Items settings")
 
-const stateItems = itemsMenu.AddToggle("Snatch Items")
-	.OnDeactivate(onDeactivateItems)
-	.OnActivate(getAllEntities)
+const stateItems = itemsMenu.AddToggle("Snatch Items").OnDeactivate(onDeactivateItems)
 
-const itemsToggle = itemsMenu.AddKeybind("Items toogle")
-	.OnRelease(() => stateItems.ChangeReverse())
+itemsMenu.AddKeybind("Items toogle").OnRelease(() => stateItems.ChangeReverse())
 
-const itemsHoldKey = itemsMenu.AddKeybind("Items hold key")
-	.OnRelease(() => {
-		if (!stateItems.value)
-			onDeactivateItems()
-	})
+const itemsHoldKey = itemsMenu.AddKeybind("Items hold key").OnRelease(() => !stateItems.value && onDeactivateItems());
 
 const takeRadius = snatcherMenu.AddSlider("Pickup radius", 150, 50, 500, "Default range is 150, that one don't require rotating unit to pickup something")
 
@@ -107,93 +89,56 @@ const drawStatus = drawMenu.AddToggle("Draw status"),
 	statusPosX = drawMenu.AddSlider("Position X (%)", 0, 0, 100),
 	statusPosY = drawMenu.AddSlider("Position Y (%)", 75, 0, 100)
 
-function onStateMain(state: boolean = stateMain.value) {
-	if (!state) {
-		destroyEvents()
-
-		onDeactivateRune()
-		onDeactivateItems()
-	} else
-		registerEvents()
-}
-
-function getAllEntities() {
-	EntityManager.AllEntities.forEach(onCheckEntity);
-}
-
-function onDeactivateRune() {
-	destroyRuneAllParticles()
-	allRunes = []
-}
-
 function onDeactivateItems() {
 	ground_items = []
 }
 
-function registerEvents() {
-	registeredEvents.onEntityCreated = EventsSDK.on("onEntityCreated", onCheckEntity)
-	registeredEvents.onEntityDestroyed = EventsSDK.on("onEntityDestroyed", onEntityDestroyed)
-	registeredEvents.onTick = EventsSDK.on("onTick", onTick)
-	registeredEvents.onPrepareUnitOrders = EventsSDK.on("onPrepareUnitOrders", order =>  picking_up[(order.Unit as Unit).Index] === undefined)
-	registeredEvents.onDraw = EventsSDK.on("onDraw", onDraw)
+EventsSDK.on("onGameEnded", () => picking_up = [])
 
-	getAllEntities()
-}
-
-function destroyEvents() {
-	Object.keys(registeredEvents).forEach(name => {
-		let listenerID = registeredEvents[name]
-		if (listenerID !== undefined) {
-			EventsSDK.removeListener(name, listenerID)
-			registeredEvents[name] = undefined
-		}
-	})
-}
-
-function onCheckEntity(ent: Entity) {
+EventsSDK.on("onEntityCreated", ent => {
 
 	if (ent instanceof Rune) {
-		if (!allRunes.includes(ent)) // dafuq?
-			allRunes.push(ent)
+		allRunes.push(ent)
+		return;
 	}
 
 	if (ent instanceof PhysicalItem) {
-		if (!ground_items.includes(ent)) {
-			let m_hItem = ent.Item;
-			if (m_hItem !== undefined && listOfItems.IsInSelected(m_hItem.Name))
-				ground_items.push(ent)
-		} else // dafuq?
-			Utils.arrayRemove(ground_items, ent)
+		let m_hItem = ent.Item;
+		if (m_hItem !== undefined && listOfItems.IsInSelected(m_hItem.Name))
+			ground_items.push(ent)
+
+		return;
 	}
-			
-	if (ent instanceof Unit)
+	
+	if (ent instanceof Unit) {
 		npcs.push(ent)
-}
+		return;
+	}
+});
 
-function onEntityDestroyed(ent: Entity) {
+EventsSDK.on("onEntityDestroyed", ent => {
 	if (ent instanceof Rune)
-		removedIDRune(ent as Rune)
+		removedIDRune(ent)
 	else if (ent instanceof PhysicalItem)
-		Utils.arrayRemove(ground_items, ent)
+		ArrayExtensions.arrayRemove(ground_items, ent)
 	else if (ent instanceof Unit)
-		Utils.arrayRemove(npcs, ent)
-}
+		ArrayExtensions.arrayRemove(npcs, ent)
+})
 
-function onTick() {
-	if (!Game.IsInGame || Game.IsPaused)
+EventsSDK.on("onTick", () => {
+	if (!stateMain.value || Game.IsPaused)
 		return
 
 	let controllables: Unit[] = stateControllables.value
 		? GetControllables()
-		: [LocalPlayer.Hero]
+		: [LocalPlayer.Hero];
+
 	snatchRunes(controllables)
 	snatchItems(controllables)
-}
+})
 
-EventsSDK.on("onGameEnded", () => picking_up = [])
-
-function onDraw() {
-	if (!drawStatus.value || !IsInGame())
+EventsSDK.on("onDraw", () => {
+	if (!drawStatus.value || !Game.IsInGame)
 		return
 
 	let text = ""
@@ -208,12 +153,14 @@ function onDraw() {
 
 	const wSize = RendererSDK.WindowSize
 
-	Renderer.Text (
+	Renderer.Text(
 		wSize.x / 100 * statusPosX.value,
 		wSize.y / 100 * statusPosY.value,
 		text,
 	)
-}
+})
+
+EventsSDK.on("onPrepareUnitOrders", order => picking_up[(order.Unit as Unit).Index] === undefined)
 
 function GetControllables() {
 	return npcs.filter(npc =>
@@ -231,7 +178,7 @@ function snatchRunes(controllables: Unit[]) {
 		return
 
 	allRunes.forEach(rune => {
-		let near = Utils.orderBy(controllables, unit => unit.Distance(rune)).some(npc => snatchRuneByUnit(npc, rune))
+		let near = ArrayExtensions.orderBy(controllables, unit => unit.Distance(rune)).some(npc => snatchRuneByUnit(npc, rune))
 		if (!near && (drawParticleTake.value || drawParticleKill.value))
 			destroyRuneParticles(rune.Index);
 	})
@@ -275,13 +222,10 @@ function snatchRuneByUnit(npc: Unit, rune: Rune) {
 }
 
 function removedIDRune(rune: Rune) {
-	{
-		let id = picking_up.indexOf(rune)
-		if (id !== -1)
-			delete picking_up[id]
-	}
 	
-	if (Utils.arrayRemove(allRunes, rune))
+	ArrayExtensions.arrayRemove(picking_up, rune, true);
+	
+	if (ArrayExtensions.arrayRemove(allRunes, rune))
 		destroyRuneParticles(rune.Index)
 }
 
@@ -323,8 +267,8 @@ function destroyRuneParticles(runeID: number | string) {
 }
 
 function destroyRuneAllParticles() {
+	// loop-optimizer: POSSIBLE_UNDEFINED
 	allRunesParticles.forEach(particles => {
-		// loop-optimizer: POSSIBLE_UNDEFINED
 		particles.forEach(particleID => Particles.Destroy(particleID, true))
 	})
 
@@ -338,20 +282,18 @@ function snatchItems(controllables: Unit[]) {
 		return
 
 	let free_controllables = controllables
-	
+
 	ground_items.forEach(item => {
 		let itemOwner = item.Item.OldOwner,
 			findInventory = item.Name === "item_cheese" ? 9 : 6;
-			
-		free_controllables.some(npc => {
-			if (itemOwner === npc || !npc.IsInRange(item, takeRadius.value) || !npc.Inventory.HasFreeSlot(0, findInventory))
-				return false
-				
+
+		free_controllables.some((npc, index) => {
+			if (itemOwner === npc || !npc.IsAlive || !npc.IsInRange(item, takeRadius.value) || !npc.Inventory.HasFreeSlot(0, findInventory))
+				return false;
+
 			npc.PickupItem(item);
-			free_controllables.splice(free_controllables.indexOf(npc))
+			free_controllables.splice(index, 1);
 			return true
 		})
 	})
 }
-
-onStateMain()

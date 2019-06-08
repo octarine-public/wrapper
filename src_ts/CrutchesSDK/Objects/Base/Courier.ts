@@ -4,7 +4,7 @@ import Hero from "./Hero";
 
 export default class Courier extends Unit {
 	
-	m_pBaseEntity: C_DOTA_Unit_Courier
+	readonly m_pBaseEntity: C_DOTA_Unit_Courier
 	
 	get IsFlying(): boolean {
 		return this.m_pBaseEntity.m_bFlyingCourier;	

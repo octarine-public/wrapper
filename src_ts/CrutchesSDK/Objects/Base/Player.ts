@@ -1,5 +1,5 @@
 import Vector3 from "../../Base/Vector3";
-import ExecuteOrder from "../../Native/ExecuteOrder";
+import { default as ExecuteOrder } from "../../Native/ExecuteOrder";
 import { default as EntityManager, LocalPlayer, PlayerResource } from "../../Managers/EntityManager";
 import Entity from "./Entity"
 import Hero from "./Hero"
@@ -10,20 +10,10 @@ import Item from "./Item";
 import PhysicalItem from "./PhysicalItem";
 import Rune from "./Rune";
 
-// move to enum
-declare const enum ConnectionState {
-	Unknown = 0,
-	NotYetConnected = 1,
-	Connected = 2,
-	Disconnected = 3,
-	Abandoned = 4,
-	Loading = 5,
-	Failed = 6,
-}
 
 export default class Player extends Entity {
 
-	m_pBaseEntity: C_DOTAPlayer
+	/* protected */ readonly m_pBaseEntity: C_DOTAPlayer
 	private m_Name: string
 	private m_PlayerData: PlayerResourcePlayerData_t
 	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t
@@ -198,41 +188,41 @@ export default class Player extends Entity {
 		unit?: Unit,
 		queue?: boolean,
 		showEffects?: boolean
-	}) {
-		return ExecuteOrder.fromObject(order).ExecuteOrder()
+	}): ExecuteOrder {
+		return ExecuteOrder.fromObject(order).Execute()
 	}
 
-	static OrderNone(unit: Unit, queue?: boolean, showEffects?: boolean) {
+	static OrderNone(unit: Unit, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_NONE, unit, queue, showEffects });
 	}
 	/**
 	 * Only for LocalPlayer
 	 */
-	static Buyback(queue?: boolean, showEffects?: boolean) {
-		this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK, queue, showEffects });
+	static Buyback(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK, queue, showEffects });
 	}
 	/**
 	 * Only for LocalPlayer
 	 */
-	static Glyph(queue?: boolean, showEffects?: boolean) {
-		this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, queue, showEffects });
+	static Glyph(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, queue, showEffects });
 	}
 	/**
 	 * Only for LocalPlayer
 	 */
-	static CastRiverPaint(position: Vector3, queue?: boolean, showEffects?: boolean) {
-		this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT, position, queue, showEffects });
+	static CastRiverPaint(position: Vector3, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT, position, queue, showEffects });
 	}
 	/**
 	 * Only for LocalPlayer
 	 */
-	static PreGameAdgustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean) {
-		this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT, target: ItemID, queue, showEffects });
+	static PreGameAdgustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT, target: ItemID, queue, showEffects });
 	}
 	/**
 	 * Only for LocalPlayer
 	 */
-	static Scan(position: Vector3, queue?: boolean, showEffects?: boolean) {
+	static Scan(position: Vector3, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects });
 	}
 }

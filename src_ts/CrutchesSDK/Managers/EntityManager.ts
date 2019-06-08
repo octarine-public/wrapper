@@ -1,5 +1,7 @@
-import { arrayRemove, arrayRemoveCallBack } from "../Utils/Utils";
-import * as Debug from "../Utils/Debug";
+import { arrayRemove } from "../Utils/ArrayExtensions";
+
+//import * as Debug from "../Utils/Debug";
+import Benchmark from "../Utils/BenchMark";
 
 import EventsSDK from "./Events";
 
@@ -18,6 +20,8 @@ import Item from "../Objects/Base/Item";
 import item_bottle from "../Objects/Abilities/Items/item_bottle";
 import item_power_treads from "../Objects/Abilities/Items/item_power_treads";
 
+import { useQueueModifiers } from "./ModifierManager";
+
 import PhysicalItem from "../Objects/Base/PhysicalItem";
 import Rune from "../Objects/Base/Rune";
 import Tree from "../Objects/Base/Tree";
@@ -30,11 +34,13 @@ import Game from "../Objects/GameResources/GameRules";
 
 export { PlayerResource, Game }
 
-let queueEntities: Entity[] = []; 
+//let queueEntities: Entity[] = []; 
+let queueEntitiesAsMap = new Map<C_BaseEntity, Entity>();
 
 let AllEntities: Entity[] = [];
 let EntitiesIDs: Entity[] = [];
-let InStage: Entity[] = [];
+let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>();
+let InStage = new Map<C_BaseEntity, Entity>();
 
 export let LocalPlayer: Player;
 
@@ -46,19 +52,10 @@ class EntityManager {
 		return LocalPlayer !== undefined ? LocalPlayer.Hero : undefined;
 	}
 	get AllEntities(): Entity[] {
-		return AllEntities;
-	}
-	get InStage(): Entity[] {
-		return InStage;
-	}
-	IsValid(ent: Entity): boolean {
-		return AllEntities.includes(ent)
+		return AllEntities.slice();
 	}
 	EntityByIndex(index: number): Entity {
 		return EntitiesIDs[index];
-	}
-	GetEntityIndex(ent: Entity): number {
-		return findEntityIndex(ent);
 	}
 	GetPlayerByID(playerID: number): Player {
 		if (playerID === -1)
@@ -68,11 +65,12 @@ class EntityManager {
 	GetEntityByNative(ent: C_BaseEntity, inStage: boolean = false): Entity {
 		return findEntityNative(ent, inStage);
 	}
-	GetEntitiesByNative(ents: C_BaseEntity[], filter?: (value: Entity) => boolean): Entity[] {
-		return findEntitiesNative(ents, filter);
+	GetEntitiesByNative(ents: C_BaseEntity[], inStage: boolean = false): Entity[] {
+		return findEntitiesNative(ents, inStage);
 	}
-	GetEntitiesInRange(vec: Vector3, range: number): Entity[] {
-		return AllEntities.filter(ent => ent.Position.Distance(vec) <= range)
+	GetEntitiesInRange(vec: Vector3, range: number, filter?: (value: Entity) => boolean): Entity[] {
+		return AllEntities.filter(entity => entity.Position.Distance(vec) <= range 
+			|| !(filter === undefined || filter(entity) === false));
 	}
 }
 
@@ -80,14 +78,16 @@ const entityManager = new EntityManager();
 
 export default global.EntityManager = entityManager;
 
-
 Events.on("onLocalPlayerTeamAssigned", teamNum => {
-	LocalPlayer = findEntityNative(LocalDOTAPlayer) as Player;
+	LocalPlayer = findEntityNative(LocalDOTAPlayer, true) as Player;
+
 	useQueueEntities();
+
+	EventsSDK.emit("onLocalPlayerTeamAssigned", false, teamNum);
 })
 
 Events.on("onEntityCreated", (ent, index) => {
-	
+
 	{ // add globals
 		if (ent instanceof C_DOTA_PlayerResource) {
 			PlayerResource.m_pBaseEntity = ent;
@@ -109,7 +109,7 @@ Events.on("onEntityCreated", (ent, index) => {
 	const entity = ClassFromNative(ent, index);
 	
 	if (LocalPlayer === undefined) {
-		queueEntities.push(entity);
+		queueEntitiesAsMap.set(ent, entity);
 		return;
 	}
 	
@@ -143,124 +143,108 @@ Events.on("onEntityDestroyed", (ent, index) => {
 
 /* ================ RUNTIME CACHE ================ */
 
-function CheckIsInStagingEntity(ent: Entity) {
-	return (ent.m_pBaseEntity.m_pEntity.m_flags & (1 << 2)) === 0;
-}
+let CheckIsInStagingEntity = (ent: C_BaseEntity) => (ent.m_pEntity.m_flags & (1 << 2)) === 0;
 
 setInterval(() => {
-	for (let i = InStage.length; i--;) {
-
-		let entity = InStage[i];
-
-		if (CheckIsInStagingEntity(entity)) {
-			InStage.splice(i, 1);
-			AddToCache(entity);
-		}
-	}
+	
+	if (InStage.size === 0)
+		return;
+	
+	// loop-optimizer: KEEP	// because this is Map
+	InStage.forEach((entity, baseEntity) => {
+		if (!CheckIsInStagingEntity(baseEntity))
+			return;
+			
+		InStage.delete(baseEntity);
+		AddToCache(entity)
+	});
 }, 0);
 
 function AddToCache(entity: Entity) {
 	
 	//console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
-	
 	EventsSDK.emit("onEntityPreCreated", false, entity, entity.Index);
 
-	if (!CheckIsInStagingEntity(entity)) {
-		InStage.push(entity);
+	if (!CheckIsInStagingEntity(entity.m_pBaseEntity)) {
+		InStage.set(entity.m_pBaseEntity, entity);
 		return;
 	}
 	
 	const index = entity.Index;
 
-	if (EntitiesIDs[index] !== undefined)
-		return;
-	
 	entity.IsValid = true;
 	
+	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity);
 	EntitiesIDs[index] = entity;
 	AllEntities.push(entity);
-
-	//console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
 	
+	changeFieldsByEvents(entity as Unit);
+	
+	//console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
 	EventsSDK.emit("onEntityCreated", false, entity, index);
 }
 
-function DeleteFromCache(ent: C_BaseEntity, index: number) {
+function DeleteFromCache(entNative: C_BaseEntity, index: number) {
 	
-	if (arrayRemoveCallBack(queueEntities, npc => npc.m_pBaseEntity === ent))
+	if (queueEntitiesAsMap.delete(entNative) || InStage.delete(entNative))
 		return;
 	
-	if (arrayRemoveCallBack(InStage, npc => npc.m_pBaseEntity === ent))
-		return;
-	
-	const entity = EntitiesIDs[index];
+	const entity = AllEntitiesAsMap.get(entNative); // EntitiesIDs[index]; ???
 
 	entity.IsValid = false;
 	
+	AllEntitiesAsMap.delete(entNative);
 	delete EntitiesIDs[index];
-	
-	arrayRemoveCallBack(AllEntities, npc => npc.m_pBaseEntity === ent);
+	arrayRemove(AllEntities, entity);
 	
 	//console.log("onEntityDestroyed SDK", entity, entity.m_pBaseEntity, index);
-	
 	EventsSDK.emit("onEntityDestroyed", false, entity, index);
 }
 
-
-function findEntityIndex(el: Entity): number {
-	if (el === undefined) 
-		return -1;
-
-	return EntitiesIDs.indexOf(el);
-}
-
-/* function findEntityNativeIndex(el: C_BaseEntity): number {
-	if (el === undefined)
-		return -1;
-
-	return AllEntities.findIndex(entity => entity.m_pBaseEntity === el);
-} */
-
-function findEntityNative(el: C_BaseEntity, inStage: boolean = false): Entity {
-	if (el === undefined)
+function findEntityNative(ent: C_BaseEntity, inStage: boolean = false): Entity {
+	if (ent === undefined)
 		return undefined;
 
-	if (LocalPlayer === undefined)
-		return queueEntities.find(entity => entity.m_pBaseEntity === el);
+	let entityFind = AllEntitiesAsMap.get(ent)
 		
-	let entity = AllEntities.find(entity => entity.m_pBaseEntity === el);
+	if (entityFind !== undefined)
+		return entityFind
 	
-	if (entity !== undefined)
-		return entity
-
-	return inStage ? InStage.find(entity => entity.m_pBaseEntity === el) : undefined
+	if (!inStage)
+		return undefined;
+		
+	entityFind = InStage.get(ent)
+	
+	if (entityFind !== undefined)
+		return entityFind
+			
+	return queueEntitiesAsMap.get(ent);
 }
 
-function findEntitiesNative(ents: C_BaseEntity[], filter?: (value: Entity) => boolean): Entity[] {
+function findEntitiesNative(ents: C_BaseEntity[], inStage: boolean = false): Entity[] {
 	
 	let entities: Entity[] = []
 
+	// loop-optimizer: FORWARD
 	ents.forEach(entNative => {
 		
-		if (LocalPlayer === undefined) {
-			return queueEntities.find(entity => 
-				(entity.m_pBaseEntity === entNative) || !(filter !== undefined && filter(entity) === false))
+		let entityFind = AllEntitiesAsMap.get(entNative)
+
+		if (entityFind === undefined && inStage) {
+			
+			entityFind = InStage.get(entNative)
+
+			if (entityFind === undefined)
+				entityFind = queueEntitiesAsMap.get(entNative);
 		}
-		
-		let entity = AllEntities.find(entity => 
-			(entity.m_pBaseEntity === entNative) || !(filter !== undefined && filter(entity) === false));
-		
-		if (entity === undefined)
-			entity = InStage.find(entity =>
-				(entity.m_pBaseEntity === entNative) || !(filter !== undefined && filter(entity) === false));
-		
-		if (entity !== undefined)
-			entities.push(entity);
+	
+		if (entityFind !== undefined)
+			entities.push(entityFind);
 	})
 	
 	return entities;
 }
-// EntityManager.AllEntities.filter(entity => entity.m_pBaseEntity instanceof C_DOTAPlayer)[0].PlayerID
+
 function ClassFromNative(ent: C_BaseEntity, index: number) {
 	
 	if (ent instanceof C_DOTAPlayer)
@@ -321,21 +305,39 @@ function ClassFromNative(ent: C_BaseEntity, index: number) {
 	if (ent instanceof C_DOTA_MapTree)
 		return new Tree(ent, index);
 		
-	if (ent instanceof C_DOTA_MapTree)
-		return new Tree(ent, index);
-		
 	return new Entity(ent, index);
 }
 
-
-/* ================ QUEUE ================ */
+/* ================ QUEUE CACHE ================ */
 
 function useQueueEntities() {
-	if (queueEntities.length > 0) {
-		queueEntities.reverse(); // for create entities by ascending index
-		for (var i = queueEntities.length; i--;) {
-			AddToCache(queueEntities[i]);
-			queueEntities.splice(i, 1);
-		}
+	if (queueEntitiesAsMap.size === 0)
+		return;
+		
+	// loop-optimizer: KEEP	// because this is Map
+	queueEntitiesAsMap.forEach(entity => {
+		AddToCache(entity);
+
+		if (entity instanceof Unit)
+			useQueueModifiers(entity);
+	});
+		
+	queueEntitiesAsMap.clear();
+}
+
+/* ================ CHANGE FIELDS ================ */
+
+function changeFieldsByEvents(unit: Unit) {
+	if (!(unit instanceof Unit))
+		return;
+		
+	const visibleTagged = unit.IsVisibleForTeamMask;
+
+	if (visibleTagged > 0) {
+		
+		const isVisibleForEnemies = Unit.IsVisibleForEnemies(unit, visibleTagged);
+		unit.IsVisibleForEnemies = isVisibleForEnemies;
+
+		EventsSDK.emit("onTeamVisibilityChanged", false, unit, isVisibleForEnemies, visibleTagged)
 	}
 }

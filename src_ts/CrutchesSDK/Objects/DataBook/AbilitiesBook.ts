@@ -8,11 +8,15 @@ const MAX_SKILLS = 24;
 export default class AbilitiesBook {
 	
 	protected m_Unit: Unit
-	m_hAbilities: C_DOTABaseAbility[]
+	private m_pBaseEntity: C_DOTA_BaseNPC
 
 	constructor(ent: Unit) {
 		this.m_Unit = ent;
-		this.m_hAbilities = ent.m_pBaseEntity.m_hAbilities as C_DOTABaseAbility[];
+		this.m_pBaseEntity = ent.m_pBaseEntity;
+	}
+	
+	get m_hAbilities(): C_DOTABaseAbility[] {
+		return this.m_pBaseEntity.m_hAbilities as C_DOTABaseAbility[];
 	}
 	
 	get CountSpells(): number {
@@ -31,6 +35,20 @@ export default class AbilitiesBook {
 			spells = EntityManager.GetEntitiesByNative(this.m_hAbilities) as Ability[];
 		
 		return spells;
+	}
+	SpellsByOwner(excludeNativeSpells: boolean = false): Ability[] {
+		
+		let owner = this.Owner,
+			abilsNative = this.m_hAbilities;
+		
+		return EntityManager.AllEntities.filter(entity => 
+			entity instanceof Ability
+			&& !(entity.m_pBaseEntity instanceof C_DOTA_Ability_Morphling_Waveform)
+			&& !(entity instanceof Item)
+			&& !entity.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
+			&& entity.Owner === owner
+			&& (!excludeNativeSpells || !abilsNative.includes(entity.m_pBaseEntity))
+		) as Ability[];
 	}
 	/* get ValidSpells(): Ability[] {
 		let spells: Ability[] = [];

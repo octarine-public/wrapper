@@ -15,8 +15,11 @@ export default class Entity {
 	/* ================================ Fields ================================ */
 	
 	/* protected */ readonly m_pBaseEntity: C_BaseEntity
-	protected m_iIndex: number
-	private m_bIsValid: boolean = false
+	protected m_iIndex: number;
+	private m_bIsValid: boolean = false;
+	
+	private m_pEntity: CEntityIdentity
+	private m_hOwnerEntity: Entity
 	
 	/* ================================ BASE ================================ */
 	
@@ -26,7 +29,6 @@ export default class Entity {
 	}
 	
 	/* ================ GETTERS ================ */
-
 	get Angles(): QAngle {
 		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
 
@@ -40,6 +42,9 @@ export default class Entity {
 	}
 	get HP(): number {
 		return this.m_pBaseEntity.m_iHealth
+	}
+	get HPPercent(): number {
+		return Math.floor(this.HP / this.MaxHP * 100) || 0;
 	}
 	get Index(): number {
 		return this.m_iIndex;
@@ -56,15 +61,14 @@ export default class Entity {
 	get IsNPC(): boolean {
 		return this.m_pBaseEntity.m_bIsNPC;
 	}
-	set IsValid(value: boolean) {
-		this.m_bIsValid = value;
-	}
 	get IsValid(): boolean {
 		return this.m_bIsValid;
 	}
+	set IsValid(value: boolean) {
+		this.m_bIsValid = value;
+	}
 	get IsVisible(): boolean {
-		let ent = this.m_pBaseEntity.m_pEntity
-		return ent !== undefined && (ent.m_flags & (1 << 7)) === 0
+		return (this.Flags & (1 << 7)) === 0
 	}
 	get LifeState(): LifeState_t {
 		return this.m_pBaseEntity.m_lifeState
@@ -73,7 +77,9 @@ export default class Entity {
 		return this.m_pBaseEntity.m_iMaxHealth
 	}
 	get Name(): string {
-		return this.m_pBaseEntity.m_pEntity.m_name || "";
+		return this.m_pBaseEntity.m_pEntity.m_name
+			|| this.m_pBaseEntity.m_pEntity.m_designerName
+			|| "";
 	}
 	get NetworkAngles(): QAngle {
 		return QAngle.fromIOBuffer(this.m_pBaseEntity.m_angNetworkAngles)
@@ -91,7 +97,11 @@ export default class Entity {
 	 * as Direction
 	 */
 	get Forward(): Vector3 {
-		return Vector3.FromAngle(this.NetworkRotationRad);
+		return Vector3.FromAngle(this.NetworkRotationRad)
+			.SetZ(this.m_pBaseEntity.m_vecNetworkOrigin ? IOBuffer[2] : 0);
+	}
+	get Forward2D(): Vector2 {
+		return Vector2.FromAngle(this.NetworkRotationRad)
 	}
 	get Owner(): Entity {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity);
@@ -132,6 +142,24 @@ export default class Entity {
 	get Team(): DOTATeam_t {
 		return this.m_pBaseEntity.m_iTeamNum
 	}
+	get Flags(): number {
+		if (this.m_pBaseEntity === undefined)
+			return undefined;
+		
+		if (this.m_pEntity === undefined)
+			this.m_pEntity = this.m_pBaseEntity.m_pEntity;
+		
+		return this.m_pEntity.m_flags;
+	}
+	set Flags(value: number) {
+		if (this.m_pBaseEntity === undefined)
+			return;
+			
+		if (this.m_pEntity === undefined)
+			this.m_pEntity = this.m_pBaseEntity.m_pEntity;
+			
+		this.m_pEntity.m_flags = value;
+	}
 
 	/* ================ METHODS ================ */
 
@@ -144,7 +172,6 @@ export default class Entity {
 	/* ================ METHODS ================ */
 	
 	/**
-	 * @param fromCenterToCenter include hullradiuses
 	 */
 	Distance(vec: Vector3 | Entity): number {
 		if (vec instanceof Vector3)
@@ -153,16 +180,14 @@ export default class Entity {
 		return this.NetworkPosition.Distance(vec.NetworkPosition)
 	}
 	/**
-	 * @param fromCenterToCenter include hullradiuses
 	 */
-	Distance2D(vec: Vector3 | Entity): number {
-		if (vec instanceof Vector3)
+	Distance2D(vec: Vector3 | Vector2 | Entity): number {
+		if (vec instanceof Vector3 || vec instanceof Vector2)
 			return this.NetworkPosition.Distance2D(vec)
 			
 		return this.NetworkPosition.Distance2D(vec.NetworkPosition)
 	}
 	/**
-	 * @param fromCenterToCenter include hullradiuses
 	 */
 	DistanceSquared(vec: Vector3 | Entity): number {
 		if (vec instanceof Vector3)
@@ -170,7 +195,15 @@ export default class Entity {
 			
 		return this.NetworkPosition.DistanceSqr(vec.NetworkPosition)
 	}
-	AngleBetweenFaces(front: Vector3) {
+	/**
+	 */
+	DistanceSquared2D(vec: Vector3 | Vector2 | Entity): number {
+		if (vec instanceof Vector3 || vec instanceof Vector2)
+			return this.NetworkPosition.DistanceSqr2D(vec)
+
+		return this.NetworkPosition.DistanceSqr2D(vec.NetworkPosition)
+	}
+	AngleBetweenFaces(front: Vector3): number {
 		return this.Forward.AngleBetweenFaces(front)
 	}
 	InFront(distance: number): Vector3 {
@@ -193,29 +226,26 @@ export default class Entity {
 
 		return angle
 	}
-	IsInRange(ent: Vector3 | Entity, range: number): boolean {
-		return this.DistanceSquared(ent) < range ** 2
+	/**
+	 * faster (Distance <= range)
+	 */
+	IsInRange(ent: Vector3 | Vector2 | Entity, range: number): boolean {
+		return this.DistanceSquared2D(ent) < range ** 2
 	}
 	/**
 	 * @param ent if undefined => this compare with LocalPlayer
 	 */
 	IsEnemy(ent: Entity = LocalPlayer): boolean {
-		/* console.log("IsEnemy", ent, ent ? ent.m_pBaseEntity : undefined, LocalDOTAPlayerID);
-		console.log(ent === undefined || ent.Team !== this.Team);
-		console.log(new Error("asdas").stack); */
 		return ent === undefined || ent.Team !== this.Team
 	}
 	/**
 	 * @param ent Any Entity. If undefined => this compare with LocalPlayer
 	 */
 	IsAlly(ent: Entity = LocalPlayer): boolean {
-		return !this.IsEnemy(ent);
+		return ent !== undefined && ent.Team === this.Team
 	}
 	
 	Select(bAddToGroup: boolean = false): boolean {
 		return SelectUnit(this.m_pBaseEntity, bAddToGroup)
 	}
 }
-
-//let e=LocalDOTAPlayer,t=Date.now();for(let i=10000000;i--;)e.m_vecForward;console.log(Date.now()-t)
-// Vector3.FromAngle(EntityManager.LocalHero.NetworkAngles.DegreesToRadians().Angle + Math.PI);

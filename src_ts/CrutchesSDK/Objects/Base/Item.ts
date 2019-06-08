@@ -7,7 +7,7 @@ import Unit from "./Unit";
 
 export default class Item extends Ability {
 
-	m_pBaseEntity: C_DOTA_Item
+	readonly m_pBaseEntity: C_DOTA_Item
 
 	get AssembledTime(): number {
 		return this.m_pBaseEntity.m_flAssembledTime;

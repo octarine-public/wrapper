@@ -1,121 +1,127 @@
-import { arrayRemove, arrayRemoveCallBack } from "../Utils/Utils";
+import { arrayRemove } from "../Utils/ArrayExtensions";
+import { addArrayInMap, findArrayInMap, removeArrayInMap } from "../Utils/MapExtensions";
 
 import EventsSDK from "./Events";
 
 import Modifier from "../Objects/Base/Modifier";
 import Unit from "../Objects/Base/Unit";
-import EntityManager from "./EntityManager";
-import Vector3 from "../Base/Vector3";
+import { default as EntityManager, LocalPlayer } from "./EntityManager";
 
-
-let AllModifiers: Modifier[] = [];
-let AllModifiersUnit: Array<[Modifier, Unit]> = [];
-//let inStageEnt: CDOTA_Buff[] = [];
+let queueModifiers = new Map<Unit, Modifier[]>();
+let AllModifiersUnit = new Map<Unit, Modifier[]>();
+let AllModifier = new Map<CDOTA_Buff, Modifier>()
 
 class ModifierManager {
-	
-	IsValid(buff: Modifier) {
-		return AllModifiers.includes(buff);
-	}
 	GetBuffsByUnit(ent: Unit): Modifier[] {
-		
-		let buffs: Modifier[] = [];
+		if (!ent.IsValid)
+			return [];
 
-		if (ent.IsValid) {
-			
-			for (let i = 0, len = AllModifiersUnit.length; i < len; i++) {
-				
-				let [buff, unit] = AllModifiersUnit[i];
-				
-				if (unit === ent /*&& !buff.m_pBuff.m_bMarkedForDeletion*/)
-					buffs.push(buff);
-			}
-		}
-		return buffs;
-	}
-	GetModifierByNative(buff: CDOTA_Buff): Modifier {
-		return findModifierNative(buff);
+		return AllModifiersUnit.get(ent) || [];
 	}
 }
 
-const modifierManager = new ModifierManager();
-
-export default global.ModifierManager = modifierManager;
+export default new ModifierManager();
 
 Events.on("onBuffAdded", (npc, buffNative) => {
+
+	const unit = EntityManager.GetEntityByNative(npc, true) as Unit;
 	
-	const entity = EntityManager.GetEntityByNative(npc, true) as Unit;
-	
-	if (npc instanceof TrackingProjectile || npc instanceof LinearProjectile)
-		console.error(npc, "m_iID", npc.m_iID, "m_bIsValid", npc.m_bIsValid, Vector3.fromIOBuffer(npc.m_vecPosition));
-	
-	if (entity === undefined)
+	if (unit === undefined)
 		throw Error("onBuffAdded. entity undefined. " + npc + " " + buffNative)
 
-	const buff = AddToCache(entity, buffNative);
+	const buff = new Modifier(buffNative, unit);
 
-	EventsSDK.emit("onBuffAdded", false, entity, buff);
+	AllModifier.set(buffNative, buff);
+	
+	if (LocalPlayer === undefined) {
+		addArrayInMap(queueModifiers, unit, buff);
+		return;
+	}
+	
+	addAndEmitModifier(unit, buff);
 })
 
 Events.on("onBuffRemoved", (npc, buffNative) => {
 
-	const entity = EntityManager.GetEntityByNative(npc, true) as Unit;
-	
-	if (npc instanceof TrackingProjectile || npc instanceof LinearProjectile)
-		console.error(npc, "m_iID", npc.m_iID, "m_bIsValid", npc.m_bIsValid, Vector3.fromIOBuffer(npc.m_vecPosition));
-	
-	if (entity === undefined)
-		throw Error("onBuffRemoved. entity undefined. " + npc + " " + buffNative)
-	
-	const buff = DeleteFromCache(entity, buffNative);
+	const buff = AllModifier.get(buffNative);
 	
 	if (buff === undefined)
 		throw Error("onBuffRemoved. buff undefined. " + npc + " " + buffNative)
 	
-	EventsSDK.emit("onBuffRemoved", false, entity, buff);
+	AllModifier.delete(buffNative);
+	
+	const unit = EntityManager.GetEntityByNative(npc, true) as Unit;
+	
+	if (unit === undefined)
+		throw Error("onBuffRemoved. entity undefined. " + npc + " " + buffNative)
+	
+	if (removeArrayInMap(queueModifiers, unit, buff))
+		return;
+
+	DeleteFromCache(unit, buff);
+	
+	changeFieldsByEvents(unit);
+	
+	EventsSDK.emit("onBuffRemoved", false, unit, buff);
 })
 
-function AddToCache(unit: Unit, buffNative: CDOTA_Buff) {
-	//console.log("onEntityCreated", ent, id);
-
-	const buff = new Modifier(buffNative, unit);
-
-	AllModifiersUnit.push([buff, unit]);
-	AllModifiers.push(buff);
+function AddToCache(buff: Modifier, unit: Unit) {
 	
-	unit.ModifiersBook.m_hBuffs.push(buffNative);
+	addArrayInMap(AllModifiersUnit, unit, buff);
+
 	unit.ModifiersBook.m_Buffs.push(buff);
-	
-	const buffs = unit.ModifiersBook.m_Buffs;
-	unit.IsTrueSightedForEnemies = Modifier.HasTrueSightBuff(buffs);
-	unit.HasScepter = Modifier.HasScepterBuff(buffs);
-	
-	return buff;
 }
 
-function DeleteFromCache(unit: Unit, buffNative: CDOTA_Buff): Modifier {
-	//console.log("onEntityDestroyed", ent, id);
+function DeleteFromCache(unit: Unit, buff: Modifier) {
 
-	const buff = findModifierNative(buffNative);
+	buff.IsValid = false;
 	
-	arrayRemoveCallBack(AllModifiers, buff => buff.m_pBuff === buffNative);
-	arrayRemoveCallBack(AllModifiersUnit, ([buff, unit]) => buff.m_pBuff === buffNative && unit === unit);
+	removeArrayInMap(AllModifiersUnit, unit, buff)
 	
-	const buffs = unit.ModifiersBook.m_Buffs;
-	
-	arrayRemove(unit.ModifiersBook.m_hBuffs, buffNative);
-	arrayRemove(buffs, buff);
-	
-	unit.IsTrueSightedForEnemies = Modifier.HasTrueSightBuff(buffs);
-	unit.HasScepter = Modifier.HasScepterBuff(buffs);
-	
-	return buff;
+	arrayRemove(unit.ModifiersBook.m_Buffs, buff);
 }
 
+function addAndEmitModifier(unit: Unit, buff: Modifier) {
+	AddToCache(buff, unit);
 
-function findModifierNative(el: CDOTA_Buff): Modifier {
-	if (el === undefined)
-		return undefined;
+	changeFieldsByEvents(unit);
 
-	return AllModifiers.find(buff => buff.m_pBuff === el);
+	EventsSDK.emit("onBuffAdded", false, unit, buff);
+}
+
+export function useQueueModifiers(owner: Unit) {
+	if (queueModifiers.size === 0)
+		return;
+
+	let buffs = queueModifiers.get(owner);
+
+	if (buffs === undefined)
+		return;
+	// loop-optimizer: KEEP	// because this is Map
+	buffs.forEach(buff => addAndEmitModifier(owner, buff));
+}
+
+function changeFieldsByEvents(unit: Unit) {
+	
+	const buffs = unit.ModifiersBook.m_Buffs;
+
+	{ // IsTrueSightedForEnemies
+		const lastIsTrueSighted = unit.IsTrueSightedForEnemies;
+		const isTrueSighted = Modifier.HasTrueSightBuff(buffs);
+
+		if (isTrueSighted !== lastIsTrueSighted) {
+			unit.IsTrueSightedForEnemies = isTrueSighted;
+			EventsSDK.emit("onTrueSightedChanged", false, unit, isTrueSighted);
+		}
+	}
+	
+	{ // HasScepter
+		const lastHasScepter = unit.HasScepter;
+		const hasScepter = Modifier.HasScepterBuff(buffs);
+
+		if (hasScepter !== lastHasScepter) {
+			unit.HasScepter = hasScepter;
+			EventsSDK.emit("onHasScepterChanged", false, unit, hasScepter);
+		}
+	}
 }

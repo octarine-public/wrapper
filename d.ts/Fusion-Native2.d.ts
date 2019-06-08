@@ -1,5 +1,15 @@
 /// ENUMS
 
+declare const enum ConnectionState {
+	Unknown ,
+	NotYetConnected,
+	Connected,
+	Disconnected,
+	Abandoned,
+	Loading ,
+	Failed,
+}
+
 declare const enum ArmorType {
 	Structure,
 	Hero,
@@ -442,9 +452,9 @@ declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer offset 0
 	OrderType: dotaunitorder_t,
 	Target?: C_BaseEntity | number,
-	Ability?: C_BaseEntity | number,
+	Ability?: C_BaseEntity,
 	OrderIssuer?: PlayerOrderIssuer_t,
-	Unit?: C_BaseEntity | number,
+	Unit?: C_BaseEntity,
 	Queue?: boolean,
 	ShowEffects?: boolean
 }): void
