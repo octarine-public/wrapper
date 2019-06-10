@@ -406,9 +406,8 @@ declare interface Renderer {
 	 */
 	OutlinedRect(baseX: number, baseY: number, baseW: number, baseH: number, r?: number, g?: number, b?: number, a?: number): void
 	/**
-	 * @param path start it with "~/" (without double-quotes) to load image from "%loader_path%/scripts_files/path"
+	 * @param path start it with "~/" (without double-quotes) to load image from "%loader_path%/scripts_files/%path%"
 	 * @param path also must end with "_c" (without double-quotes), if that's vtex_c
-	 * VPK isn't supported yet.
 	 * Allowed non-passable element groups:
 	 * [baseW, baseH] (or you can use -1 as one/both of those values to leave them auto)
 	 * [r, g, b]
@@ -443,7 +442,10 @@ declare interface Renderer {
 /// GLOBAL FUNCTIONS
 
 declare function SendToConsole(command: string): void
-declare function readFile(path: string): string
+/**
+ * @param path start it with "~/" (without double-quotes) to load file from "%loader_path%/scripts_files/%path%"
+ */
+declare function readFile(path: string): ArrayBuffer
 declare function sleep(ms: number): void
 declare function usleep(ns: number): void
 declare function IsInGame(): boolean
