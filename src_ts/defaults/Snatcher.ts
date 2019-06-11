@@ -125,8 +125,8 @@ EventsSDK.on("onEntityDestroyed", ent => {
 		ArrayExtensions.arrayRemove(npcs, ent)
 })
 
-EventsSDK.on("onTick", () => {
-	if (!stateMain.value || Game.IsPaused)
+EventsSDK.on("onUpdate", () => {
+	if (!stateMain.value || !Game.IsInGame || Game.IsPaused)
 		return
 
 	let controllables: Unit[] = stateControllables.value
@@ -192,7 +192,7 @@ function snatchRuneByUnit(npc: Unit, rune: Rune) {
 	if (!npc.IsStunned && !npc.IsWaitingToSpawn) {
 		const Distance = npc.Distance2D(rune)
 
-		if (Distance <= takeRadius.value) {
+		if (Distance <= takeRadius.value && !(npc.IsInvulnerable && Distance > 100)) {
 			picking_up[npc_id] = rune
 			npc.PickupRune(rune);
 			return false
