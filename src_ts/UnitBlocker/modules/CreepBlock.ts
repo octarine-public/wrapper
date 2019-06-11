@@ -1,4 +1,4 @@
-import { ArrayExtensions, Vector3, Unit, Creep, LocalPlayer, GameSleeper, EventsSDK, MathSDK } from "../../CrutchesSDK/Imports";
+import { ArrayExtensions, Vector3, Unit, Creep, LocalPlayer, GameSleeper } from "../../CrutchesSDK/Imports";
 
 import { Menu } from "../menu";
 
@@ -8,6 +8,8 @@ import { Menu as MenuControllables, baseCheckUnit, checkControllable } from "./C
 import { allCreeps, allTowers } from "../base/Listeners";
 
 // --- Menu
+
+let sleeper = new GameSleeper();
 
 const {
 	BaseTree,
@@ -36,16 +38,14 @@ const {
 
 // --- Variables
 
-//let sleeper = new GameSleeper();
-
-
 let turnStateBlock: boolean = false;
 let allParticles: number[] = [];
 
 // --- Methods
 
+Key.OnPressed(() => turnStateBlock = !turnStateBlock)
+
 Key.OnExecute(isPressed => {
-	turnStateBlock = isPressed;
 
 	if (CenterCamera.value && StateUnits.selected_id === 0)
 		SendToConsole((isPressed ? "+" : "-") + "dota_camera_center_on_hero");
@@ -98,7 +98,7 @@ function DrawParticle(unit: Unit, pos: Vector3, range: number) {
 
 export function Update() {
 
-	if (!State.value || LocalPlayer === undefined)
+	if (!State.value)
 		return;
 
 	if ((KeyStyle.selected_id === 1 && !turnStateBlock) ||
@@ -108,21 +108,20 @@ export function Update() {
 	switch (StateUnits.selected_id) {
 		case 0: { // local
 			
-			/* if (sleeper.Sleeping("onTick"))
-				return; */
-			
 			let localHero = LocalPlayer.Hero;
 
-			if (localHero === undefined || !baseCheckUnit(localHero))
+			if (localHero === undefined || sleeper.Sleeping("block" + localHero.Index) || !baseCheckUnit(localHero))
 				return;
 
 			let creeps = GetCreeps(localHero);
 
 			if (creeps.length === 0)
 				return;
+				
+			//DrawParticle(creeps[0], Vector3.GetCenterCallback(creeps, creep => creep.Position), 400);
 			
 			Stopping(localHero, creeps, getMoveDirection(creeps));
-			//sleeper.Sleep(50, "onTick");
+			sleeper.Sleep(50, "block" + localHero.Index);
 			break;
 		}
 		case 1: { // selected
@@ -222,7 +221,7 @@ function GetCreeps(unit?: Unit): Creep[] {
 		if (SkipRange.value && creep.IsRangeAttacker)
 			return false;
 
-		if (unit !== undefined && !creep.IsInRange(unit, 400))
+		if (unit !== undefined && !creep.IsInRange(unit, 500))
 			return false;
 
 		return !creep.IsWaitingToSpawn && creep.IsAlive;
@@ -247,9 +246,9 @@ let getMoveDirection = (creeps: Creep[]) =>
 	Vector3.GetCenterCallback(creeps, creep => creep.InFront(350))
 
 let CheckTowerNear = (unit: Unit): boolean =>
-	allTowers.filter(tower => tower.IsAlive
+	allTowers.some(tower => tower.IsAlive
 		&& tower.Name === "npc_dota_badguys_tower2_mid"
-		&& tower.Distance2D(unit) < 200).length > 0;
+		&& tower.IsInRange(unit, 200));
 
 let SelectedStopping = (): Unit[] =>
 	LocalPlayer.SelectedUnits.filter(ent =>

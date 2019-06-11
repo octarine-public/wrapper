@@ -143,7 +143,13 @@ Events.on("onEntityDestroyed", (ent, index) => {
 
 /* ================ RUNTIME CACHE ================ */
 
-let CheckIsInStagingEntity = (ent: C_BaseEntity) => (ent.m_pEntity.m_flags & (1 << 2)) === 0;
+let CheckIsInStagingEntity = (ent: C_BaseEntity) => {
+	// need find the best way
+	if (ent instanceof C_DOTA_BaseNPC_Additive && ent.m_iUnitType === 0)
+		return false;
+	
+	return (ent.m_pEntity.m_flags & (1 << 2)) === 0;
+};
 
 setInterval(() => {
 	
@@ -154,14 +160,12 @@ setInterval(() => {
 	InStage.forEach((entity, baseEntity) => {
 		if (!CheckIsInStagingEntity(baseEntity))
 			return;
-			
 		InStage.delete(baseEntity);
 		AddToCache(entity)
 	});
 }, 0);
 
 function AddToCache(entity: Entity) {
-	
 	//console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
 	EventsSDK.emit("onEntityPreCreated", false, entity, entity.Index);
 

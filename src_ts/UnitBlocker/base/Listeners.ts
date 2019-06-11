@@ -7,14 +7,12 @@ import { baseCheckUnit } from "../modules/Controllables";
 export let allNPCs: Unit[] = [];
 export let allCreeps: Creep[] = [];
 export let allTowers: Tower[] = [];
-export let MouseCursor: Vector3 = new Vector3();
 
 // --- Methods
-
 EventsSDK.on("onEntityCreated", ent => {
 	
 	if (ent instanceof Creep && ent.IsLaneCreep && ent.IsAlly())
-		allCreeps.push(ent); 
+		allCreeps.push(ent);
 	
 	else if (ent instanceof Tower)
 		allTowers.push(ent);

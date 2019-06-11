@@ -1,11 +1,11 @@
-import { EventsSDK, Game, RendererSDK } from "../CrutchesSDK/Imports";
+import { EventsSDK, Game, RendererSDK, LocalPlayer } from "../CrutchesSDK/Imports";
 
 import { stateMain } from "./menu";
 import * as CreepBlock from "./modules/CreepBlock";
 
 
-EventsSDK.on("onTick", () => {
-	if (!stateMain.value || !Game.IsInGame || Game.IsPaused)
+EventsSDK.on("onUpdate", () => {
+	if (!stateMain.value || !Game.IsInGame || Game.IsPaused || LocalPlayer === undefined)
 		return;
 	
 	CreepBlock.Update();
