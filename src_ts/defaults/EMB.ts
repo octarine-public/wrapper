@@ -1,4 +1,4 @@
-import { MenuManager, RendererSDK, EventsSDK, Hero, ArrayExtensions, Game } from "../CrutchesSDK/Imports";
+import { MenuManager, RendererSDK, EventsSDK, Hero, ArrayExtensions, Game, Vector2, Color } from "../CrutchesSDK/Imports";
 
 var manabars: Hero[] = [],
 	heroes: Hero[] = []
@@ -45,10 +45,14 @@ Events.on("onDraw", () => {
 		
 		let wts = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(hero.HealthBarOffset))
 
+		wts.AddScalarX(off_x).AddScalarY(off_y);
+		
 		if (!wts.IsValid)
 			return
 			
-		Renderer.FilledRect(wts.x + off_x, wts.y + off_y, manabar_w, manabar_h, 0, 0, 0) // black background
-		Renderer.FilledRect(wts.x + off_x, wts.y + off_y, manabar_w * (hero.Mana / hero.MaxMana), manabar_h, 0, 0, 0xFF)
+		let size = new Vector2(manabar_w, manabar_h);
+			
+		RendererSDK.FilledRect(wts, size, Color.Black);
+		RendererSDK.FilledRect(wts, size.MultiplyScalarForThis((hero.Mana / hero.MaxMana)), Color.Blue);
 	})
 })

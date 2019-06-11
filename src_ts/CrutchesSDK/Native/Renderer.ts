@@ -43,9 +43,9 @@ class RendererSDK {
 	 * @param pos world position that needs to be turned to screen position
 	 * @returns screen position, or invalid Vector2 (WorldToScreen(...).IsValid === false)
 	 */
-	WorldToScreen(position: Vector3): Vector3 {
+	WorldToScreen(position: Vector3): Vector2 {
 		position.toIOBuffer()
-		return Vector3.fromIOBuffer(Renderer.WorldToScreen());
+		return Vector2.fromIOBuffer(Renderer.WorldToScreen());
 	}
 	/**
 	 * 
