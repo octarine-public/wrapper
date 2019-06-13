@@ -75,9 +75,16 @@ const treeToggle = tree.AddToggle("tree toggle")
 
 const rgbTree = MenuManager.CreateRGBTree(MenuExamples, "rgb tree", new Color(0, 255, 0))
 
-rgbTree.R.OnValue((value, self) => console.log("slider OnValue:", value, self))
-rgbTree.G.OnValue((value, self) => console.log("slider OnValue:", value, self))
-rgbTree.B.OnValue((value, self) => console.log("slider OnValue:", value, self))
+rgbTree.R.OnValue((value, self) => console.log("slider RGB: R OnValue:", value, self))
+rgbTree.G.OnValue((value, self) => console.log("slider RGB: G OnValue:", value, self))
+rgbTree.B.OnValue((value, self) => console.log("slider RGB: B OnValue:", value, self))
+
+const rgbaTree = MenuManager.CreateRGBATree(MenuExamples, "rgba tree", new Color(0, 255, 0, 150))
+
+rgbaTree.R.OnValue((value, self) => console.log("slider RGBA: R OnValue:", value, self))
+rgbaTree.G.OnValue((value, self) => console.log("slider RGBA: G OnValue:", value, self))
+rgbaTree.B.OnValue((value, self) => console.log("slider RGBA: B OnValue:", value, self))
+rgbaTree.A.OnValue((value, self) => console.log("slider RGBA: A OnValue:", value, self))
 
 /* MenuExamples.AddTree("tree");
 MenuExamples.AddTree("tree");

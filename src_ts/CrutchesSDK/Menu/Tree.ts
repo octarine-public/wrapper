@@ -55,12 +55,19 @@ export class Tree extends Menu_Node {
 		})
 	}
 
+	get IndexInMenu(): number {
+		if (this.parent === undefined)
+			return -1;
+		
+		return this.parent.entries.indexOf(this);
+	}
+	
 	SetToolTip(text: string) {
 		this.hint = text
 		return this
 	}
 
-	AddControl(ctrl: Menu_Base, index?: number) {
+	AddControl(ctrl: Menu_Base, index?: number): Tree {
 
 		index !== undefined
 			? this.entries.splice(index, 0, ctrl)
@@ -70,8 +77,12 @@ export class Tree extends Menu_Node {
 
 		return this
 	}
+	
+	HasControl(ctrl: Menu_Base): boolean {
+		return this.entries.includes(ctrl);
+	}
 
-	RemoveControl(ctrl: Menu_Base) {
+	RemoveControl(ctrl: Menu_Base): Tree {
 
 		arrayRemove(this.entries, ctrl)
 

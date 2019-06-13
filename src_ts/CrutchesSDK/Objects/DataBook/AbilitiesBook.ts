@@ -65,7 +65,9 @@ export default class AbilitiesBook {
 		}
 		return spells;
 	} */
-	
+	SetSpell(slot: number, ability: Ability) {
+		this.m_pBaseEntity.m_hAbilities[slot] = ability.m_pBaseEntity;
+	}
 	GetSpell(slot: number): Ability {
 		if (!this.m_Unit.IsValid || slot > MAX_SKILLS)
 			return undefined;

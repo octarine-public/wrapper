@@ -50,11 +50,11 @@ const drawParticles = runeMenu.AddTree("Draw indicators (particles)")
 const drawParticleTake = drawParticles.AddToggle("Take rune")
 	.OnValue(destroyRuneAllParticles)
 	.OnActivate(self =>
-		drawParticles.AddControl(drawParticleTake_Color.tree, self.parent.entries.indexOf(self) + 1))
+		drawParticles.AddControl(drawParticleTake_Color.tree, self.IndexInMenu + 1))
 	.OnDeactivate(() =>
 		drawParticles.RemoveControl(drawParticleTake_Color.tree))
 
-const drawParticleTake_Color = CreateRGBTree(drawParticleTake.value ? drawParticles : undefined, "indicators color")
+const drawParticleTake_Color = CreateRGBTree(drawParticleTake.value ? drawParticles : undefined, "indicators color");
 
 drawParticleTake_Color.R.OnValue(updateRuneAllParticle)
 drawParticleTake_Color.G.OnValue(updateRuneAllParticle)
@@ -245,14 +245,9 @@ function createRuneParticle(ent: Entity, color: Color, radius: number) {
 }
 
 function updateRuneAllParticle() {
-	let newColor = new Color (
-		drawParticleTake_Color.R.value,
-		drawParticleTake_Color.G.value,
-		drawParticleTake_Color.B.value,
-	)
-
-	// loop-optimizaer: POSSIBLE_UNDEFINED
-	allRunesParticles.forEach(pars => { newColor.toIOBuffer(); Particles.SetControlPoint(pars[0], 1); });
+	drawParticleTake_Color.Color.toIOBuffer();
+	// loop-optimizer: POSSIBLE_UNDEFINED
+	allRunesParticles.forEach(partcl => Particles.SetControlPoint(partcl[0], 1));
 }
 
 function destroyRuneParticles(runeID: number | string) {

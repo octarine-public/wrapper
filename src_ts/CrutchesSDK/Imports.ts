@@ -34,8 +34,6 @@ export {
 	PlayerResource 
 } from "./Managers/EntityManager";
 
-import EntityManager from "./Managers/EntityManager";
-
 export { default as ModifierManager } from "./Managers/ModifierManager";
 export { default as EventsSDK } from "./Managers/Events";
 

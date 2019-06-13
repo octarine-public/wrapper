@@ -32,7 +32,7 @@ function OnChangeValue(destroy: boolean = !stateMain.value || !allyState.value) 
 }
 
 function DestroyAll() {
-	// loop-optimizer: POSSIBLE_UNDEFINED
+	// loop-optimizer: KEEP	// because this is Map
 	allUnitsAsMap.forEach(Destroy);
 }
 

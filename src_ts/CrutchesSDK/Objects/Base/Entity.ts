@@ -98,10 +98,6 @@ export default class Entity {
 	 */
 	get Forward(): Vector3 {
 		return Vector3.FromAngle(this.NetworkRotationRad)
-			.SetZ(this.m_pBaseEntity.m_vecNetworkOrigin ? IOBuffer[2] : 0);
-	}
-	get Forward2D(): Vector2 {
-		return Vector2.FromAngle(this.NetworkRotationRad)
 	}
 	get Owner(): Entity {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity);
@@ -209,28 +205,62 @@ export default class Entity {
 	InFront(distance: number): Vector3 {
 		return this.Position.Rotation(this.Forward, distance)
 	}
+	InFrontFromAngle(angle: number, distance: number): Vector3 {
+		return this.Position.InFrontFromAngle(this.NetworkRotationRad + angle, distance);
+	}
 	FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
-			vec = vec.Position
+			vec = vec.NetworkPosition;
 
-		let thisPos = this.Position
-		let angle = Math.abs(
-			Math.atan2(
-				vec.y - thisPos.y,
-				vec.x - thisPos.x,
-			) - this.NetworkRotationRad,
-		)
-
-		if (angle > Math.PI)
-			angle = Math.abs((Math.PI * 2) - angle)
-
-		return angle
+		return this.NetworkPosition.FindRotationAngle(vec, this.NetworkRotationRad);
 	}
 	/**
 	 * faster (Distance <= range)
 	 */
 	IsInRange(ent: Vector3 | Vector2 | Entity, range: number): boolean {
 		return this.DistanceSquared2D(ent) < range ** 2
+	}
+	Closest(ents: Entity[]): Entity {
+		
+		let thisPos = this.NetworkPosition;
+		
+		let entity: Entity = undefined;
+		let distance = Number.POSITIVE_INFINITY;
+
+		ents.forEach(ent => {
+
+			let tempDist = ent.Distance(thisPos);
+			if (tempDist < distance) {
+				distance = tempDist;
+				entity = ent;
+			}
+		})
+		return entity;
+	}
+	/**
+	 * @example
+	 * unit.ClosestGroup(groups, group => Vector3.GetCenterType(creeps, creep => creep.InFront(200)))
+	 */
+	ClosestGroup(groups: Entity[][], callback: (entity: Entity[]) => Vector3): [Entity[], Vector3] {
+
+		let thisPos = this.NetworkPosition;
+		
+		let entities: Entity[] = [];
+		let vec = new Vector3();
+		let distance = Number.POSITIVE_INFINITY;
+
+		groups.forEach(group => {
+
+			let tempVec = callback(group);
+			let tempDist = thisPos.Distance(tempVec);
+			
+			if (tempDist < distance) {
+				distance = tempDist;
+				entities = group;
+				vec = tempVec;
+			}
+		})
+		return [entities, vec];
 	}
 	/**
 	 * @param ent if undefined => this compare with LocalPlayer

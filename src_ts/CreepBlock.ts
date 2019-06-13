@@ -102,7 +102,7 @@ EventsSDK.on("onTick", () => {
 	if (stopping)
 		return
 	if (MyEnt.IsMoving)
-		MyEnt.UnitStop()
+		MyEnt.OrderStop()
 	else if (MyEnt.FindRotationAngle(creepsMovePosition) > 1.5)
 		MyEnt.MoveTo(MyEnt.Position.Extend(creepsMovePosition, 10))
 })

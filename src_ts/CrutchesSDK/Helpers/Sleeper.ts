@@ -52,16 +52,16 @@ export class GameSleeper extends SleeperBase {
 
 	Sleep(ms: number, id: string, extend: boolean = false): number {
 		if (typeof ms !== "number")
-			return this.setTime(id, Date.now());
+			return this.setTime(id, Game.RawGameTime);
 
-		if (extend && this.updateTime(id, Game.RawGameTime, ms))
+		if (extend && this.updateTime(id, Game.RawGameTime, ms / 1000))
 			return;
 
-		return this.setTime(id, Game.RawGameTime + ms);
+		return this.setTime(id, Game.RawGameTime + ms / 1000);
 	}
 	Sleeping(id: string): boolean {
 		let sleepID = this.SleepDB.get(id);
-		return sleepID !== undefined && Date.now() < sleepID;
+		return sleepID !== undefined && Game.RawGameTime < sleepID;
 	}
 
 	FullReset(): GameSleeper {

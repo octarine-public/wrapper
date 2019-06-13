@@ -1,4 +1,5 @@
 import Vector3 from "../Base/Vector3";
+import Vector2 from "../Base/Vector2";
 import EntityManager from "../Managers/EntityManager";
 import Entity from "../Objects/Base/Entity";
 import Unit from "../Objects/Base/Unit";
@@ -25,7 +26,7 @@ export default class ExecuteOrder {
 	static fromObject(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
-		position?: Vector3,
+		position?: Vector3 | Vector2,
 		ability?: Ability,
 		orderIssuer?: PlayerOrderIssuer_t,
 		unit?: Unit,
@@ -67,7 +68,7 @@ export default class ExecuteOrder {
 
 	private m_OrderType: dotaunitorder_t
 	private m_Target: Entity
-	private m_Position: Vector3
+	private m_Position: Vector3 | Vector2
 	private m_Ability: Ability
 	private m_OrderIssuer: PlayerOrderIssuer_t
 	private m_Unit: Unit
@@ -82,7 +83,7 @@ export default class ExecuteOrder {
 	constructor(
 		orderType: dotaunitorder_t,
 		target: Entity | number,
-		position: Vector3 = new Vector3(),
+		position: Vector3 | Vector2 = new Vector3(),
 		ability: Ability,
 		issuer: PlayerOrderIssuer_t = PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY, 
 		unit: Unit,
@@ -105,7 +106,7 @@ export default class ExecuteOrder {
 	get Target(): Entity {
 		return this.m_Target
 	}
-	get Position(): Vector3 {
+	get Position(): Vector3 | Vector2 {
 		return this.m_Position
 	}
 	get Ability(): Ability {
@@ -168,7 +169,7 @@ export default class ExecuteOrder {
 	toObject(): {
 		OrderType: dotaunitorder_t,
 		Target: Entity,
-		Position: Vector3,
+		Position: Vector3 | Vector2,
 		Ability: Ability,
 		OrderIssuer: PlayerOrderIssuer_t
 		Unit: Unit,

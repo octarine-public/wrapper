@@ -60,6 +60,10 @@ export default class ComboBox extends Menu_Combo {
 			configurable: false,
 		})
 	}
+	
+	get IndexInMenu(): number {
+		return this.parent.entries.indexOf(this);
+	}
 
 	Remove(): void {
 		this.parent.RemoveControl(this)

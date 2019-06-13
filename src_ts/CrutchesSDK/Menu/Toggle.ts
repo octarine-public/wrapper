@@ -73,6 +73,10 @@ export default class Toggle extends Menu_Toggle {
 			configurable: false,
 		})
 	}
+	
+	get IndexInMenu(): number {
+		return this.parent.entries.indexOf(this);
+	}
 
 	Remove(): void {
 		this.parent.RemoveControl(this)

@@ -59,6 +59,10 @@ export class Slider extends Menu_SliderInt {
 		})
 	}
 
+	get IndexInMenu(): number {
+		return this.parent.entries.indexOf(this);
+	}
+	
 	Remove(): void {
 		this.parent.RemoveControl(this)
 	}
@@ -113,6 +117,10 @@ export class SliderFloat extends Menu_SliderFloat {
 			value: () => SliderCallBack(this),
 			writable: false,
 		})
+	}
+	
+	get IndexInMenu(): number {
+		return this.parent.entries.indexOf(this);
 	}
 
 	Remove(): void {

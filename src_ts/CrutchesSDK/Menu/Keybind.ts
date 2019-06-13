@@ -145,6 +145,10 @@ export default class Keybind extends Menu_Keybind {
 			configurable: false,
 		})
 	}
+	
+	get IndexInMenu(): number {
+		return this.parent.entries.indexOf(this);
+	}
 
 	Remove(): void {
 		RemoveKeyEvent(this)

@@ -31,13 +31,13 @@ export default class Vector2 {
 	static FromPolarCoordinates(radial: number, polar: number): Vector2 {
 		return new Vector2(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
-	static GetCenterCallback<T>(array: T[], callback: (value: T) => Vector2): Vector2 {
+	static GetCenterType<T>(array: T[], callback: (value: T) => Vector2): Vector2 {
 
 		let newVec = new Vector2();
 
 		array.forEach(vec => newVec.AddForThis(callback(vec)));
 
-		return newVec.DivideScalar(array.length);
+		return newVec.DivideScalarForThis(array.length);
 
 	}
 	static GetCenter(array: Vector2[]): Vector2 {
@@ -46,7 +46,7 @@ export default class Vector2 {
 
 		array.forEach(vec => newVec.AddForThis(vec));
 
-		return newVec.DivideScalar(array.length);
+		return newVec.DivideScalarForThis(array.length);
 
 	}
 	static CopyFrom(vec: Vector2): Vector2 {
@@ -103,10 +103,12 @@ export default class Vector2 {
 	 * Returns the polar for vector angle (in Degrees).
 	 */
 	get Polar(): number {
-		let x = this.x,
-			theta = Math.atan(this.y / x) * (180 / Math.PI)
+		if (Math.abs(this.x - 0) <= 1e-9)
+			return this.y > 0 ? 90 : this.y < 0 ? 270 : 0;
 
-		if (x < 0)
+		let theta = Math.atan(this.y / this.x) * (180 / Math.PI)
+
+		if (this.x < 0)
 			theta += 180
 
 		if (theta < 0)
@@ -257,7 +259,7 @@ export default class Vector2 {
 	/**
 	 * Normalize the vector
 	 */
-	Normalize(scalar: number): Vector2 {
+	Normalize(scalar?: number): Vector2 {
 		var length = this.Length
 
 		if (length !== 0)
@@ -595,7 +597,7 @@ export default class Vector2 {
 
 		return new Vector2 (
 			(this.x * cos) - (this.y * sin),
-			(this.y * cos) + (this.x * sin),
+			(this.y * cos) + (this.x * sin)
 		)
 	}
 	/**
@@ -615,7 +617,28 @@ export default class Vector2 {
 	 * @param distance distance to be added
 	 */
 	RotationRad(rotation: Vector2, distance: number): Vector2 {
-		return this.Rotation(rotation, distance).DegreesToRadians()
+		return this.Rotation(rotation.DegreesToRadians(), distance)
+	}
+	/**
+	 * Extends vector in the rotation direction by angle
+	 * @param angle for ex. Entity#NetworkRotationRad
+	 * @param distance distance to be added
+	 */
+	InFrontFromAngle(angle: number, distance: number): Vector2 {
+		return this.Rotation(Vector2.FromAngle(angle), distance);
+	}
+	/**
+	 * 
+	 * @param vec The another vector
+	 * @param vecAngleRadian Angle of this vector
+	 */
+	FindRotationAngle(vec: Vector2, vecAngleRadian: number): number {
+		let angle = Math.abs(Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian);
+
+		if (angle > Math.PI)
+			angle = Math.abs((Math.PI * 2) - angle)
+
+		return angle
 	}
 	RotationTime(rot_speed: number): number {
 		return this.Angle / (30 * rot_speed)
@@ -625,7 +648,16 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 */
 	AngleBetweenVectors(vec: Vector2): number {
-		return Math.atan2(vec.y - this.y, vec.x - this.x)
+		var theta = this.Polar - vec.Polar;
+		if (theta < 0) {
+			theta = theta + 360;
+		}
+
+		if (theta > 180) {
+			theta = 360 - theta;
+		}
+
+		return theta;
 	}
 	/**
 	 * Angle between two fronts
@@ -639,13 +671,28 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 */
 	Extend(vec: Vector2, distance: number): Vector2 {
-		return this.Rotation(Vector2.FromAngle(this.AngleBetweenVectors(vec)), distance)
+		return vec.Subtract(this).Normalize().MultiplyScalarForThis(distance).AddForThis(this); // this + (distance * (vec - this).Normalize())
 	}
 	/**
 	 * Returns if the distance to target is lower than range
 	 */
 	IsInRange(vec: Vector2, range: number): boolean {
 		return this.DistanceSqr(vec) < range ** 2
+	}
+	Closest(vecs: Vector2[]): Vector2 {
+
+		let minVec = new Vector2();
+		let distance = Number.POSITIVE_INFINITY;
+
+		vecs.forEach(vec => {
+
+			let tempDist = this.Distance(vec);
+			if (tempDist < distance) {
+				distance = tempDist;
+				minVec = vec;
+			}
+		})
+		return minVec;
 	}
 	/**
 	 * Returns true if the point is under the rectangle

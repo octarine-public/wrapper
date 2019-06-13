@@ -1,14 +1,11 @@
 import Vector3 from "../../Base/Vector3";
+import Vector2 from "../../Base/Vector2";
 import { default as ExecuteOrder } from "../../Native/ExecuteOrder";
 import { default as EntityManager, LocalPlayer, PlayerResource } from "../../Managers/EntityManager";
 import Entity from "./Entity"
 import Hero from "./Hero"
 import Unit from "./Unit";
 import Ability from "./Ability";
-import Tree from "./Tree";
-import Item from "./Item";
-import PhysicalItem from "./PhysicalItem";
-import Rune from "./Rune";
 
 
 export default class Player extends Entity {
@@ -148,7 +145,7 @@ export default class Player extends Entity {
 		let selected: Entity[] = [];
 
 		let selUnits = this.m_pBaseEntity.m_nSelectedUnits;
-		if (selUnits.length > 0) {
+		if (selUnits !== undefined && selUnits.length > 0) {
 			selUnits.forEach(unitNative => {
 				let unit = EntityManager.GetEntityByNative(unitNative);
 				if (unit !== undefined)
@@ -182,7 +179,7 @@ export default class Player extends Entity {
 	static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
-		position?: Vector3,
+		position?: Vector3 | Vector2,
 		ability?: Ability,
 		orderIssuer?: PlayerOrderIssuer_t,
 		unit?: Unit,
@@ -210,7 +207,7 @@ export default class Player extends Entity {
 	/**
 	 * Only for LocalPlayer
 	 */
-	static CastRiverPaint(position: Vector3, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	static CastRiverPaint(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT, position, queue, showEffects });
 	}
 	/**
@@ -222,7 +219,7 @@ export default class Player extends Entity {
 	/**
 	 * Only for LocalPlayer
 	 */
-	static Scan(position: Vector3, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	static Scan(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects });
 	}
 }

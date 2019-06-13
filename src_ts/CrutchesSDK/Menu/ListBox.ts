@@ -60,6 +60,10 @@ export default class ListBox extends Menu_List {
 			configurable: false,
 		})
 	}
+	
+	get IndexInMenu(): number {
+		return this.parent.entries.indexOf(this);
+	}
 
 	Remove(): void {
 		this.parent.RemoveControl(this)
