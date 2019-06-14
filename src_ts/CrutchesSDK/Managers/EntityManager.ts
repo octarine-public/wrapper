@@ -17,8 +17,7 @@ import Meepo from "../Objects/Heroes/Meepo";
 
 import Ability from "../Objects/Base/Ability";
 import Item from "../Objects/Base/Item";
-import item_bottle from "../Objects/Abilities/Items/item_bottle";
-import item_power_treads from "../Objects/Abilities/Items/item_power_treads";
+import ItemToNative from "../Objects/Abilities/Items/ItemToNative";
 
 import { useQueueModifiers } from "./ModifierManager";
 
@@ -283,22 +282,16 @@ function ClassFromNative(ent: C_BaseEntity, index: number) {
 			
 		return new Unit(ent, index);
 	}
-	
-	if (ent instanceof C_DOTABaseAbility) {
-		
-		if (ent instanceof C_DOTA_Item) {
-			
-			if (ent instanceof C_DOTA_Item_EmptyBottle)
-				return new item_bottle(ent, index);
-				
-			if (ent instanceof C_DOTA_Item_PowerTreads)
-				return new item_power_treads(ent, index);
-			
-			return new Item(ent, index);
-		}
-		
-		return new Ability(ent, index);
+
+	if (ent instanceof C_DOTA_Item) {
+		let constructor = ItemToNative[ent.constructor.name];
+		if (constructor !== undefined)
+			return constructor(ent, index);
+		return new Item(ent, index);
 	}
+	
+	if (ent instanceof C_DOTABaseAbility)
+		return new Ability(ent, index);
 	
 	if (ent instanceof C_DOTA_Item_Physical)
 		return new PhysicalItem(ent, index);

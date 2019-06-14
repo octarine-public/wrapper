@@ -5,7 +5,7 @@
 	],
 	"jsRules": {},
 	"rules": {
-		"semicolon": [true, "never"],
+		"semicolon": false,
 		"no-trailing-whitespace": true,
 		"indent": [true, "tabs", 1],
 		"curly": "as-needed",
