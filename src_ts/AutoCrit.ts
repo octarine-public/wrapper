@@ -1,12 +1,11 @@
-import * as Orders from "Orders"
 import * as Utils from "Utils"
-//
+import { EventsSDK, LocalPlayer, Unit, Entity } from "./CrutchesSDK/Imports"
 var config = {
 		hotkey: 0,
 		method: 0,
 	},
 	enabled = false,
-	target,
+	target: Entity,
 	target_pos
 
 Events.on("onDraw", () => {
@@ -14,33 +13,33 @@ Events.on("onDraw", () => {
 		Renderer.Text(0, 100, "Auto Crit enabled")
 })
 
-Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
-	if (!enabled || !Utils.IsControllableByPlayer(npc, LocalDOTAPlayer.m_iPlayerID))
+EventsSDK.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
+	if (!enabled || !npc.IsControllableByPlayer(LocalPlayer.PlayerID))
 		return
 	if (activity === 1503) {
 		if (target !== undefined)
-			if (!Utils.IsEnemy(target, npc) || (target instanceof C_DOTA_BaseNPC && (Utils.IsWard(target) || Utils.IsTower(target) || Utils.IsShrine(target))))
+			if (!target.IsEnemy(npc) || (target instanceof Unit && (target.IsWard || target.IsTower || target.IsShrine)))
 				return
-		Orders.EntStop(npc, false)
-		setTimeout(config.method === 0 ? 1000 / npc.m_fAttacksPerSecond / 3 : Math.max(100, 1000 / npc.m_fAttacksPerSecond) - 100, () => {
+		npc.OrderStop(false)
+		setTimeout(() => {
 			if (target !== undefined)
-				Orders.AttackTarget(npc, target, false)
+				npc.AttackTarget(target, false)
 			else if (target_pos !== undefined)
-				Orders.MoveToAttackPos(npc, target_pos, false)
-		})
+				npc.AttackMove(target_pos, false)
+		}, config.method === 0 ? 1000 / npc.AttacksPerSecond / 3 : Math.max(100, 1000 / npc.AttacksPerSecond) - 100)
 	}
 })
 
-Events.on("onPrepareUnitOrders", order => {
-	if (order.unit === LocalDOTAPlayer.m_hAssignedHero)
-		switch (order.order_type) {
+EventsSDK.on("onPrepareUnitOrders", order => {
+	if (order.Unit === LocalPlayer.Hero)
+		switch (order.OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-				target = order.target
+				target = order.Target
 				target_pos = undefined
 				break
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
 				target = undefined
-				target_pos = order.position
+				target_pos = order.Position
 				break
 			case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
 				enabled = false

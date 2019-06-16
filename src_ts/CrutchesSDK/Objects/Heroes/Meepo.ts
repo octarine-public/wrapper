@@ -1,7 +1,6 @@
 import Hero from "../Base/Hero";
 
 export default class Meepo extends Hero {
-
 	readonly m_pBaseEntity: C_DOTA_Unit_Hero_Meepo
 
 	get WhichMeepo(): number {

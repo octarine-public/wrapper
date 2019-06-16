@@ -11,22 +11,17 @@ import Entity from "../Objects/Base/Entity";
 import Unit from "../Objects/Base/Unit";
 import Hero from "../Objects/Base/Hero";
 import Player from "../Objects/Base/Player";
-import Courier from "../Objects/Base/Courier";
 import Creep from "../Objects/Base/Creep";
-import Meepo from "../Objects/Heroes/Meepo";
 
 import Ability from "../Objects/Base/Ability";
 import Item from "../Objects/Base/Item";
-import ItemToNative from "../Objects/Abilities/Items/ItemToNative";
+import NativeToSDK from "../Objects/NativeToSDK";
 
 import { useQueueModifiers } from "./ModifierManager";
 
 import PhysicalItem from "../Objects/Base/PhysicalItem";
-import Rune from "../Objects/Base/Rune";
-import Tree from "../Objects/Base/Tree";
 import Building from "../Objects/Base/Building";
 import Tower from "../Objects/Base/Tower";
-import Shop from "../Objects/Base/Shop";
 
 import PlayerResource from "../Objects/GameResources/PlayerResource";
 import Game from "../Objects/GameResources/GameRules";
@@ -249,58 +244,35 @@ function findEntitiesNative(ents: C_BaseEntity[], inStage: boolean = false): Ent
 }
 
 function ClassFromNative(ent: C_BaseEntity, index: number) {
-	
-	if (ent instanceof C_DOTAPlayer)
-		return new Player(ent, index);
-
-	if (ent instanceof C_DOTA_BaseNPC) {
-		
-		if (ent instanceof C_DOTA_BaseNPC_Building) {
-			
-			if (ent instanceof C_DOTA_BaseNPC_Tower)
-				return new Tower(ent, index);
-			
-			if (ent instanceof C_DOTA_BaseNPC_Shop)
-				return new Shop(ent, index);
-			
-			return new Building(ent, index);
-		}
-		
-		if (ent instanceof C_DOTA_BaseNPC_Hero) {
-
-			if (ent instanceof C_DOTA_Unit_Hero_Meepo)
-				return new Meepo(ent, index);
-
-			return new Hero(ent, index);
-		}
-		
-		if (ent instanceof C_DOTA_Unit_Courier)
-			return new Courier(ent, index);
-
-		if (ent instanceof C_DOTA_BaseNPC_Creep)
-			return new Creep(ent, index);
-			
-		return new Unit(ent, index);
-	}
-
-	if (ent instanceof C_DOTA_Item) {
-		let constructor = ItemToNative[ent.constructor.name];
+	{
+		let constructor = NativeToSDK[ent.constructor.name];
 		if (constructor !== undefined)
-			return constructor(ent, index);
-		return new Item(ent, index);
+			return new constructor(ent, index);
 	}
+
+	if (ent instanceof C_DOTA_BaseNPC_Tower)
+		return new Tower(ent, index);
+
+	if (ent instanceof C_DOTA_BaseNPC_Building)
+		return new Building(ent, index);
+		
+	if (ent instanceof C_DOTA_BaseNPC_Hero)
+		return new Hero(ent, index);
+
+	if (ent instanceof C_DOTA_BaseNPC_Creep)
+		return new Creep(ent, index);
+	
+	if (ent instanceof C_DOTA_BaseNPC)
+		return new Unit(ent, index);
+
+	if (ent instanceof C_DOTA_Item)
+		return new Item(ent, index);
 	
 	if (ent instanceof C_DOTABaseAbility)
 		return new Ability(ent, index);
 	
 	if (ent instanceof C_DOTA_Item_Physical)
 		return new PhysicalItem(ent, index);
-	
-	if (ent instanceof C_DOTA_Item_Rune)
-		return new Rune(ent, index);
-	
-	if (ent instanceof C_DOTA_MapTree)
-		return new Tree(ent, index);
 		
 	return new Entity(ent, index);
 }
