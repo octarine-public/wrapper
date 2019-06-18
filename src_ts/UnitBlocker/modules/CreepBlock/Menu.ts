@@ -49,5 +49,5 @@ export {
 	DrawState,
 	StatusMouse,
 	StatusAroundUnits,
-	DrawHelpPosition as DrawHeplPosition
+	DrawHelpPosition
 }

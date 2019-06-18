@@ -1,8 +1,10 @@
-import { EventsSDK, Game, RendererSDK, LocalPlayer } from "../CrutchesSDK/Imports";
+import { EventsSDK, Game, RendererSDK, GameSleeper } from "../CrutchesSDK/Imports";
 
 import { stateMain } from "./base/MenuBase";
 import * as DrawParticle from "./base/DrawParticle";
+
 import * as CreepBlock from "./modules/CreepBlock/Block";
+import * as HeroBlock from "./modules/HeroBlock/Block";
 
 EventsSDK.on("onGameStarted", () => {
 	CreepBlock.GameStarted();
@@ -11,13 +13,15 @@ EventsSDK.on("onGameStarted", () => {
 EventsSDK.on("onGameEnded", () => {
 	DrawParticle.GameEnded();
 	CreepBlock.GameEnded();
+	HeroBlock.GameEnded();
 })
 
-EventsSDK.on("onUpdate", () => {
-	if (!stateMain.value || !Game.IsInGame || Game.IsPaused || LocalPlayer === undefined)
+EventsSDK.on("onTick", () => {
+	if (!stateMain.value || !Game.IsInGame || Game.IsPaused)
 		return;
 	
 	CreepBlock.Update();
+	HeroBlock.Update();
 })
 
 EventsSDK.on("onDraw", () => {
@@ -28,7 +32,7 @@ EventsSDK.on("onDraw", () => {
 	
 	textAroundMouse += CreepBlock.Draw() || "";
 		
-	// another
+	textAroundMouse += HeroBlock.Draw() || "";
 
 	if (textAroundMouse === "")
 		return;

@@ -12,8 +12,8 @@ export let allTowers: Tower[] = [];
 // --- Methods
 EventsSDK.on("onEntityCreated", ent => {
 	
-	if (ent instanceof Creep) {
-		if (ent.IsLaneCreep && ent.IsAlly())
+	if (ent instanceof Creep && ent.IsLaneCreep) {
+		if (ent.IsAlly())
 			allCreeps.push(ent);
 	
 	} else if (ent instanceof Tower)

@@ -29,6 +29,12 @@ export default class Entity {
 	}
 	
 	/* ================ GETTERS ================ */
+	private get Entity(): CEntityIdentity {
+		if (!this.IsValid)
+			return undefined;
+		return this.m_pEntity || (this.m_pEntity = this.m_pBaseEntity.m_pEntity);
+	}
+	
 	get Angles(): QAngle {
 		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
 
@@ -77,8 +83,11 @@ export default class Entity {
 		return this.m_pBaseEntity.m_iMaxHealth
 	}
 	get Name(): string {
-		return this.m_pBaseEntity.m_pEntity.m_name
-			|| this.m_pBaseEntity.m_pEntity.m_designerName
+		if (!this.IsValid)
+			return "";
+		
+		return this.Entity.m_designerName
+			|| this.Entity.m_name
 			|| "";
 	}
 	get NetworkAngles(): QAngle {
@@ -100,7 +109,7 @@ export default class Entity {
 		return Vector3.FromAngle(this.NetworkRotationRad)
 	}
 	get Owner(): Entity {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity);
+		return this.m_hOwnerEntity || (this.m_hOwnerEntity = EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true));
 	}
 	get Position(): Vector3 {
 		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
@@ -139,22 +148,14 @@ export default class Entity {
 		return this.m_pBaseEntity.m_iTeamNum
 	}
 	get Flags(): number {
-		if (this.m_pBaseEntity === undefined)
-			return undefined;
-		
-		if (this.m_pEntity === undefined)
-			this.m_pEntity = this.m_pBaseEntity.m_pEntity;
-		
-		return this.m_pEntity.m_flags;
+		if (!this.IsValid)
+			return -1;
+		return this.Entity.m_flags;
 	}
 	set Flags(value: number) {
-		if (this.m_pBaseEntity === undefined)
+		if (!this.IsValid)
 			return;
-			
-		if (this.m_pEntity === undefined)
-			this.m_pEntity = this.m_pBaseEntity.m_pEntity;
-			
-		this.m_pEntity.m_flags = value;
+		this.Entity.m_flags = value;
 	}
 
 	/* ================ METHODS ================ */

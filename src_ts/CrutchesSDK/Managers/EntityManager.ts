@@ -72,14 +72,6 @@ const entityManager = new EntityManager();
 
 export default global.EntityManager = entityManager;
 
-Events.on("onLocalPlayerTeamAssigned", teamNum => {
-	LocalPlayer = findEntityNative(LocalDOTAPlayer, true) as Player;
-
-	useQueueEntities();
-
-	EventsSDK.emit("onLocalPlayerTeamAssigned", false, teamNum);
-})
-
 Events.on("onEntityCreated", (ent, index) => {
 
 	{ // add globals
@@ -147,16 +139,31 @@ let CheckIsInStagingEntity = (ent: C_BaseEntity) => {
 
 setInterval(() => {
 	
-	if (InStage.size === 0)
-		return;
+	if (queueEntitiesAsMap.size > 0) {
+		
+		// loop-optimizer: KEEP	// because this is Map
+		queueEntitiesAsMap.forEach((entity, baseEntity) => {
+			if (!CheckIsInStagingEntity(baseEntity))
+				return;
+
+			if (!(baseEntity instanceof C_DOTAPlayer) || !baseEntity.m_bIsLocalPlayer)
+				return;
+
+			LocalPlayer = entity as Player;
+			useQueueEntities();
+		});
+	}
 	
-	// loop-optimizer: KEEP	// because this is Map
-	InStage.forEach((entity, baseEntity) => {
-		if (!CheckIsInStagingEntity(baseEntity))
-			return;
-		InStage.delete(baseEntity);
-		AddToCache(entity)
-	});
+	if (InStage.size > 0) {
+	
+		// loop-optimizer: KEEP	// because this is Map
+		InStage.forEach((entity, baseEntity) => {
+			if (!CheckIsInStagingEntity(baseEntity))
+				return;
+			InStage.delete(baseEntity);
+			AddToCache(entity)
+		});
+	}
 }, 0);
 
 function AddToCache(entity: Entity) {

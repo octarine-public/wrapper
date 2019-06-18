@@ -2,20 +2,16 @@ import { MenuManager, Vector3, Unit, LocalPlayer, GameSleeper, Entity } from "..
 
 import { allNPCs } from "../base/Listeners";
 
-let sleeper = new GameSleeper();
-
 export let baseCheckUnit = (ent: Unit) =>
 	ent.IsAlive
 	&& !ent.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_NO_ATTACK)
-	&& !ent.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_UNIT_COLLISION)
+	&& !ent.IsNoCollision
 	&& ent.HasMoveCapability(DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_GROUND)
 
-export let checkSleeping = (ent: Unit) => sleeper.Sleeping(ent.Index + "");
-	
 export let checkControllable = (ent: Unit) =>
 	baseCheckUnit(ent) && ent.IsControllable
 	
-export let SelectedStopping = (): Unit[] =>
+export let SelectedStopping = (): Unit[] => 
 	LocalPlayer.SelectedUnits.filter(ent =>
 		ent instanceof Unit && checkControllable(ent)) as Unit[];
 	
@@ -23,18 +19,13 @@ export let Controllables = () => allNPCs.filter(checkControllable);
 
 export let getCenterDirection = (units: Entity[]) =>
 	Vector3.GetCenterType(units, unit => unit.InFront(350))
-	
-export let getCenterPosition = (units: Entity[]) =>
-	Vector3.GetCenterType(units, unit => unit.NetworkPosition)
 
 export let MoveUnit = (unit: Unit, pos: Vector3) => {
 	unit.MoveTo(pos);
-	sleeper.Sleep(45, unit.Index + "");
 }
 	
 export let StopUnit = (unit: Unit) => {
 	unit.OrderStop();
-	sleeper.Sleep(45, unit.Index + "");
 }
 	
 export default function Menu(root: MenuManager.MenuControllers.Tree) {
@@ -43,7 +34,8 @@ export default function Menu(root: MenuManager.MenuControllers.Tree) {
 	
 	const StateUnits = ControllablesTree.AddComboBox("Units", [
 		"Local Hero",
-		"Selected Unit(s)",
+		//"Selected Unit(s)",
+		"Only controllables",
 		"All Controllables"
 	]);
 	
@@ -84,8 +76,5 @@ export default function Menu(root: MenuManager.MenuControllers.Tree) {
 		StateUnits,
 		CenterCamera,
 		CountUnits
-		/* ,
-		SpreadUnits: ControllablesTree.AddToggle("Spread units", true)
-			.SetToolTip("If enabled units will try to form an arc, otherwise they all will run in front of the hero") */
 	}
 }

@@ -78,7 +78,7 @@ export default class Unit extends Entity {
 	get IsFort(): boolean {
 		return HasBit(this.UnitType, 5);
 	}
-	get IsBarracks(): boolean {
+	get IsBarrack(): boolean {
 		return HasBit(this.UnitType, 6)
 	}
 	get IsCreep(): boolean {
@@ -141,6 +141,10 @@ export default class Unit extends Entity {
 	//
 	get IsNoHealthBar(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_HEALTH_BAR)
+	}
+	// 
+	get IsNoCollision(): boolean {
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_UNIT_COLLISION);
 	}
 	//
 	get IsBlind(): boolean {

@@ -29,7 +29,7 @@ export default class Hero extends Unit {
 		return this.m_pBaseEntity.m_bBuybackDisabled
 	}
 	get IsIllusion(): boolean {
-		return this.ReplicateFrom !== undefined;
+		return this.m_pBaseEntity.m_hReplicatingOtherHeroModel !== undefined;
 	}
 	get IsReincarnating(): boolean {
 		return this.m_pBaseEntity.m_bReincarnating
@@ -50,7 +50,7 @@ export default class Hero extends Unit {
 		return this.m_pBaseEntity.m_iRecentDamage
 	}
 	get ReplicateFrom(): Hero {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hReplicatingOtherHeroModel) as Hero;
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hReplicatingOtherHeroModel, true) as Hero;
 	}
 	get RespawnTime(): number {
 		return this.m_pBaseEntity.m_flRespawnTime

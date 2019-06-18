@@ -1,11 +1,10 @@
-import { ArrayExtensions, Vector3, Unit, Creep, LocalPlayer, RendererSDK } from "../../../CrutchesSDK/Imports";
+import { ArrayExtensions, Vector3, Unit, Creep, LocalPlayer, RendererSDK, GameSleeper } from "../../../CrutchesSDK/Imports";
 
 import { allCreeps, allTowers } from "../../base/Listeners";
 
 import { stateMain } from "../../base/MenuBase";
 
 import {
-	checkSleeping,
 	Controllables,
 	baseCheckUnit,
 	SelectedStopping,
@@ -29,20 +28,21 @@ import {
 	DrawState,
 	StatusMouse,
 	StatusAroundUnits,
-	DrawHeplPosition
+	DrawHelpPosition
 } from "./Menu";
 
 import { DrawParticles, RemoveParticles, BestPosition } from "./ParticleHelp";
 
+let sleeper = new GameSleeper();
 
-let Turning = (value: boolean) => value ? DrawParticles() : RemoveParticles();
+let SwitchParticles = (value: boolean) => value ? DrawParticles() : RemoveParticles();
 let turnStateBlock: boolean = false;
 let ControllablesUnitsDraw = new Map<Unit, string>();
 
-State.OnValue(Turning);
-DrawState.OnValue(Turning);
-DrawHeplPosition.OnValue(Turning);
-stateMain.OnValue(Turning);
+State.OnValue(SwitchParticles);
+DrawState.OnValue(SwitchParticles);
+DrawHelpPosition.OnValue(SwitchParticles);
+stateMain.OnValue(SwitchParticles);
 
 CountUnits.OnValue(() => ControllablesUnitsDraw.clear());
 
@@ -76,21 +76,28 @@ export function GameEnded() {
 
 export function Update() {
 
-	if (!State.value)
+	if (!State.value || sleeper.Sleeping("tick"))
 		return;
 
 	if ((KeyStyle.selected_id === 1 && !turnStateBlock) ||
 		(KeyStyle.selected_id === 0 && !Key.IsPressed))
 		return;
 
+	let countUnits = 0;
+		
 	switch (StateUnits.selected_id) {
 		case 0: { // local
 
 			let localHero = LocalPlayer.Hero;
 
-			if (localHero === undefined || checkSleeping(localHero) || !baseCheckUnit(localHero))
+			if (localHero === undefined || !baseCheckUnit(localHero))
 				return;
 
+			let command = ControllablesUnitsDraw.get(localHero);
+
+			if (command === undefined)
+				ControllablesUnitsDraw.set(localHero, "Waiting Creeps");
+				
 			let creeps = GetCreeps(localHero);
 
 			if (creeps.length === 0) {
@@ -102,12 +109,30 @@ export function Update() {
 				return;
 			}
 
-			StoppingAlone(localHero, creeps);
+			Stopping(localHero, creeps);
+			countUnits = 1;
 			break;
 		}
-		case 1: PreparingUnits(SelectedStopping()); break;
-		case 2: PreparingUnits(Controllables()); break;
+		case 1: {
+			
+			let controllables = Controllables();
+			
+			if (controllables.length === 0)
+				return;
+			
+			let localHero = LocalPlayer.Hero;
+
+			if (localHero !== undefined && baseCheckUnit(localHero))
+				ArrayExtensions.arrayRemove(controllables, localHero)
+			
+			countUnits += PreparingUnits(controllables) || 0;
+			break;
+		}
+		//case 1: PreparingUnits(SelectedStopping()); break;
+		case 2: countUnits += PreparingUnits(Controllables()); break;
 	}
+	
+	sleeper.Sleep(countUnits * 20, "tick")
 }
 
 export function Draw(): string {
@@ -119,10 +144,9 @@ export function Draw(): string {
 		return;
 
 	if (StatusAroundUnits.value) {
-		//console.log(ControllablesUnitsDraw.size);
 		// loop-optimizer: KEEP 
 		ControllablesUnitsDraw.forEach((text, unit) => {
-			//console.log(unit, text);
+
 			let wts = RendererSDK.WorldToScreen(unit.Position);
 
 			if (wts.IsValid)
@@ -191,9 +215,6 @@ function PreparingUnits(controllables: Unit[]) {
 
 	controllables.forEach(unit => {
 
-		if (checkSleeping(unit))
-			return;
-		
 		let command = ControllablesUnitsDraw.get(unit);
 
 		if (command === undefined)
@@ -209,7 +230,7 @@ function PreparingUnits(controllables: Unit[]) {
 				return
 			}
 
-			StoppingAlone(unit, group as Creep[], moveDirection);
+			Stopping(unit, group as Creep[], moveDirection);
 
 		} else {
 
@@ -220,49 +241,15 @@ function PreparingUnits(controllables: Unit[]) {
 				if (!unit.IsInRange(moveDirection, 500))
 					return
 
-				StoppingAlone(unit, group, moveDirection);
+				Stopping(unit, group, moveDirection);
 			});
 		}
 	})
+	
+	return controllables.length;
 }
 
-function StoppingMulty(controllables: Unit[], creep: Vector3, angleDirection: number, isMoving: boolean) {
-	//let blockPos = creep.InFront((Sensitivity.value + 10) * 10);
-
-	let unit = controllables[0];
-
-	if (unit === undefined)
-		return;
-
-	//ArrayExtensions.arrayRemove(controllables, unit);
-
-	let angle = creep.FindRotationAngle(unit.Position, angleDirection);
-
-	let blockPos: Vector3;
-	console.log(angle);
-	if (angle > 1.1) {
-
-		let delta = angle * 0.6;
-		//console.log(delta)
-		let vecRight = creep.InFrontFromAngle(angleDirection + delta, Math.max(Sensitivity.value * 10, 150))//moveDirection.InFrontFromAngle(delta, Math.max((Sensitivity.value + 45) * 10, 150))
-
-		let vecLeft = creep.InFrontFromAngle(angleDirection + -delta, Math.max(Sensitivity.value * 10, 150))//moveDirection.InFrontFromAngle(-delta, Math.max((Sensitivity.value + 45) * 10, 150))
-
-		blockPos = unit.Distance(vecRight) < unit.Distance(vecLeft) ? vecRight : vecLeft;
-	}
-	else {
-
-		if (isMoving && angle < 0.3 && unit.IsMoving) {
-			StopUnit(unit);
-			return;
-		}
-
-		blockPos = creep.InFrontFromAngle(angleDirection, Sensitivity.value * 10)
-	}
-	MoveUnit(unit, blockPos)
-}
-
-function StoppingAlone(unit: Unit, creeps: Creep[], moveDirection = getCenterDirection(creeps)) {
+function Stopping(unit: Unit, creeps: Creep[], moveDirection = getCenterDirection(creeps)) {
 
 	if (CheckTowerNear(unit)) {
 		ControllablesUnitsDraw.set(unit, "Less stopping (Tower near)");
@@ -314,139 +301,4 @@ function StoppingAlone(unit: Unit, creeps: Creep[], moveDirection = getCenterDir
 		unit.OrderStop();
 	else if (unit.FindRotationAngle(moveDirection) > 1.5)
 		MoveUnit(unit, unit.Position.Extend(moveDirection, 10));
-
 }
-
-
-/* function Multy() {
-	let isMoving = group[0].IsMoving;
-
-	let moveDirection = getCenterDirection(group),
-		angleDirection = getCenterAngle(group);
-
-	for (let i = countControlls; i--;) {
-
-		let angleForUnit = SpreadUnits.value
-			? Math.ceil(i / 2) * (i % 2 === 0 ? -1 + countControlls * 0.06 : -1 - countControlls * 0.06)
-			: 1
-
-		let blockPos = moveDirection.InFrontFromAngle(angleDirection + angleForUnit, Sensitivity.value * 10);
-
-		let unit = ArrayExtensions.orderBy(controllables, unit => unit.Distance2D(blockPos))
-			.find(unit => unit.IsInRange(blockPos, 1000))
-
-		if (unit === undefined)
-			return;
-
-		ArrayExtensions.arrayRemove(controllables, unit);
-
-		let angle = moveDirection.FindRotationAngle(unit.Position, angleDirection);
-
-		console.log(angle, 1.1 + i * 0.5);
-
-		if (angle > 1.1 + i * 0.5) {
-
-			let delta = angle * 0.6;
-			//console.log(delta)
-			let vecRight = moveDirection.InFrontFromAngle(angleDirection + delta, Math.max(Sensitivity.value * 10, 150))//moveDirection.InFrontFromAngle(delta, Math.max((Sensitivity.value + 45) * 10, 150))
-			DrawParticle(unit, unit.Index, vecRight, 200);
-
-			let vecLeft = moveDirection.InFrontFromAngle(angleDirection + -delta, Math.max(Sensitivity.value * 10, 150))//moveDirection.InFrontFromAngle(-delta, Math.max((Sensitivity.value + 45) * 10, 150))
-			DrawParticle(unit, unit.Index + 1, vecLeft, 200);
-
-			UnitMoveTo(unit, unit.Distance(vecRight) < unit.Distance(vecLeft) ? vecRight : vecLeft);
-			console.log(1);
-			//DrawParticle(unit, blockPos, 200);
-		}
-		else {
-
-			if (isMoving && angle < 0.3 && unit.IsMoving) {
-				StopUnit(unit);
-				return;
-			}
-			else {
-				console.log(3);
-				UnitMoveTo(unit, blockPos)
-			}
-
-			//blockPos = moveDirection.InFrontFromAngle(angleDirection, Sensitivity.value * 10);
-		}
-
-		//UnitMoveTo(unit, blockPos);
-		//StopUnit(unit);
-	}
-} */
-
-/* function Local() {
-	let Me = LocalDOTAPlayer.m_hAssignedHero as Unit;
-
-	let creeps = allCreeps.filter(creep => {
-		if (SkipRange.value && creep.m_bIsRangedAttacker)
-			return false;
-
-		return !creep.m_bIsWaitingToSpawn && creep.m_bIsAlive && Me.IsInRange(creep, 500);
-	});
-
-	let countCreeps = creeps.length;
-	//console.log(countCreeps);
-
-	//MoveToPos(Me, Me.InFront(500), false);
-
-	if (countCreeps === 0)
-		return;
-
-	let moveDirection = creeps
-		.reduce((prev, curr) => prev.Add(curr.InFront(350)), new Vector3())
-		.DivideScalar(countCreeps)
-
-	let towers = allTowers.filter(tower => tower.m_bIsAlive && Me.IsInRange(tower, 200));
-
-	if (towers.length > 0) {
-		console.log("tower near");
-		MoveToPosition(Me, moveDirection);
-		return;
-	}
-
-	creeps = orderBy(creeps, creep => moveDirection.Distance2D(creep.m_vecNetworkOrigin));
-
-	let stopping = creeps.some(creep => {
-
-		if (!creep.m_bIsMoving && !creep.IsInRange(Me, 50))
-			return false;
-
-		let creepDistance = moveDirection.Distance2D(creep.m_vecNetworkOrigin) + 50,
-			heroDistance = moveDirection.Distance2D(Me.m_vecNetworkOrigin),
-			creepAngle = creep.FindRotationAngle(Me.m_vecNetworkOrigin);
-
-		if (creepDistance < heroDistance && creepAngle > 2 || creepAngle > 2.5)
-			return false;
-
-		//console.log("Me.m_fIdealSpeed", Me.m_fIdealSpeed);
-
-		let moveDistance = ((Sensitivity.value + 45) * 10) / Me.m_fIdealSpeed * 100;
-
-		if (Me.m_fIdealSpeed - Me.m_fIdealSpeed > 50)
-			moveDistance -= (Me.m_fIdealSpeed - Me.m_fIdealSpeed) / 2;
-
-		let movePosition = creep.InFront(Math.max(moveDistance, moveDistance * creepAngle));
-
-		if (movePosition.Distance2D(moveDirection) - 50 > heroDistance)
-			return false;
-
-		if (creepAngle < 0.2 && Me.m_bIsMoving)
-			return false;
-
-		MoveToPosition(Me, movePosition);
-
-		return true;
-	});
-
-	if (stopping)
-		return;
-
-	if (Me.m_bIsMoving)
-		EntStop(Me, false)
-	else if (Me.FindRotationAngle(moveDirection) > 1.5)
-		MoveToPosition(Me, Me.m_vecNetworkOrigin.Extend(moveDirection, 10));
-}
- */

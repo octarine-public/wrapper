@@ -2,7 +2,7 @@ import { Vector3, Game, EntityManager, Hero, EventsSDK } from "CrutchesSDK/Impor
 
 import { AddOrUpdateParticle, RemoveParticle } from "../../base/DrawParticle";
 import { stateMain } from "../../base/MenuBase";
-import { State, DrawHeplPosition, DrawState } from "./Menu";
+import { State, DrawHelpPosition, DrawState } from "./Menu";
 
 let lastHero: Hero;
 let particles: string[] = [];
@@ -23,11 +23,11 @@ export const BestPosition = [
 ]
 
 export function DrawParticles() {
-	if (!stateMain.value || !State.value || !DrawState.value || !DrawHeplPosition.value || !Game.IsInGame || EntityManager.LocalHero === undefined)
+	if (!stateMain.value || !State.value || !DrawState.value || !DrawHelpPosition.value || !Game.IsInGame || EntityManager.LocalHero === undefined)
 		return;
 	
 	if (Game.LevelNameShort !== "dota") {
-		console.error("UnitBlock => CreepBlock => ParticleHelp. Particles can't draw because map is not 'DOTA'")
+		//console.error("UnitBlock => CreepBlock => ParticleHelp. Particles can't draw because map is not 'DOTA'")
 		return;
 	}
 		

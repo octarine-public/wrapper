@@ -67,7 +67,7 @@ export default class ExecuteOrder {
 	}
 
 	private m_OrderType: dotaunitorder_t
-	private m_Target: Entity
+	private m_Target: Entity | number
 	private m_Position: Vector3 | Vector2
 	private m_Ability: Ability
 	private m_OrderIssuer: PlayerOrderIssuer_t
@@ -91,7 +91,7 @@ export default class ExecuteOrder {
 		showEffects: boolean = false,
 	) {
 		this.m_OrderType = orderType;
-		this.m_Target = target instanceof Entity ? target : EntityManager.EntityByIndex(target);
+		this.m_Target = target instanceof Entity ? target : target;
 		this.m_Position = position;
 		this.m_Ability = ability;
 		this.m_OrderIssuer = issuer;
@@ -103,7 +103,7 @@ export default class ExecuteOrder {
 	get OrderType(): dotaunitorder_t {
 		return this.m_OrderType
 	}
-	get Target(): Entity {
+	get Target(): Entity | number {
 		return this.m_Target
 	}
 	get Position(): Vector3 | Vector2 {
@@ -130,7 +130,7 @@ export default class ExecuteOrder {
 	 */
 	toNative(): {
 		OrderType: dotaunitorder_t,
-		Target: C_BaseEntity,
+		Target: C_BaseEntity | number,
 		Ability: C_DOTABaseAbility,
 		OrderIssuer: PlayerOrderIssuer_t
 		Unit: C_DOTA_BaseNPC,
@@ -147,7 +147,7 @@ export default class ExecuteOrder {
 
 		return {
 			OrderType: this.m_OrderType,
-			Target: target !== undefined ? target.m_pBaseEntity : undefined,
+			Target: target instanceof Entity ? target.m_pBaseEntity : target,
 			Ability: ability !== undefined ? ability.m_pBaseEntity : undefined,
 			OrderIssuer: this.m_OrderIssuer,
 			Unit: unit !== undefined ? unit.m_pBaseEntity : undefined,
@@ -168,7 +168,7 @@ export default class ExecuteOrder {
 	}
 	toObject(): {
 		OrderType: dotaunitorder_t,
-		Target: Entity,
+		Target: Entity | number,
 		Position: Vector3 | Vector2,
 		Ability: Ability,
 		OrderIssuer: PlayerOrderIssuer_t

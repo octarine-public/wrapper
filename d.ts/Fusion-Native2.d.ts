@@ -259,7 +259,6 @@ declare const enum PingType_t {
 }
 
 /// GLOBAL OBJECTS
-declare var LocalDOTAPlayer: C_DOTAPlayer
 declare var IOBuffer: Float32Array // 8 floats in size
 declare var global: any
 

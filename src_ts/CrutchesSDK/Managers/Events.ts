@@ -20,6 +20,8 @@ Events.on("onGameStarted", ent => EventsSDK.emit("onGameStarted", false, EntityM
 
 Events.on("onGameEnded", () => EventsSDK.emit("onGameEnded"));
 
+Events.on("onLocalPlayerTeamAssigned", teamNum => EventsSDK.emit("onLocalPlayerTeamAssigned", false, teamNum));
+
 Events.on("onWndProc", (...args) => EventsSDK.emit("onWndProc", true, ...args));
 
 setInterval(() => {
@@ -138,7 +140,7 @@ interface EventsSDK extends EventEmitter {
 	 * 
 	 * Also, this event emitted about ALL entities that have already been created before reloading scripts
 	 * 
-	 * Emitted ONLY after LocalPlayer choose team (event: onLocalPlayerTeamAssigned)
+	 * Emitted ONLY after LocalPlayer created
 	 * 
 	 * CAREFUL !Use this if you know what you are doing!
 	 */
@@ -148,7 +150,7 @@ interface EventsSDK extends EventEmitter {
 	 * 
 	 * Also, this event emitted about ALL entities that have already been created (and valids) before reloading scripts
 	 * 
-	 * Emitted ONLY after LocalPlayer choose team (event: onLocalPlayerTeamAssigned)
+	 * Emitted ONLY after LocalPlayer created
 	 */
 	on(name: "onEntityCreated", callback: (ent: Entity, index: number) => void): EventEmitter
 	on(name: "onEntityDestroyed", callback: (ent: Entity, index: number) => void): EventEmitter
