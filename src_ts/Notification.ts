@@ -18,7 +18,7 @@ EventsSDK.on("onParticleCreated", (Id: number, ParticlePath: string, Handle: big
 
 	if (ParticlePath === "particles/neutral_fx/roshan_spawn.vpcf") {
 
-		if (NotificationRoshanStateChat)
+		if (NotificationRoshanStateChat.value)
 			SendToConsole("say_team Roshan has respawned");
 
 		IsAlive = true;
@@ -26,14 +26,14 @@ EventsSDK.on("onParticleCreated", (Id: number, ParticlePath: string, Handle: big
 
 	if (ParticlePath === "particles/neutral_fx/roshan_slam.vpcf") {
 
-		if (NotificationRoshanStateChat)
+		if (NotificationRoshanStateChat.value)
 			SendToConsole("say_team Roshan is under attack");
 		
 	}
 
 	if (ParticlePath === "particles/generic_gameplay/dropped_aegis.vpcf") {
 
-		if (NotificationRoshanStateChat)
+		if (NotificationRoshanStateChat.value)
 			SendToConsole("chatwheel_say 53; chatwheel_say 57;"); // > Roshan and time
 
 		IsAlive = false;
