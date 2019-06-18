@@ -48,8 +48,16 @@ EventsSDK.on("onTick", () => {
 					let m_nPerchedTree = (mk.m_pBaseEntity as C_DOTA_Unit_Hero_MonkeyKing).m_nPerchedTree;
 					if (m_nPerchedTree === 4294967295 || mk.Distance2D(pl_ent) > castrange)
 						return false;
-						
-					pl_ent.CastTargetTree(item, m_nPerchedTree);
+					
+					PrepareUnitOrders ({
+						OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE,
+						Target: m_nPerchedTree,
+						Ability: item.m_pBaseEntity,
+						Queue: false,
+						Unit: pl_ent.m_pBaseEntity,
+						OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+						ShowEffects: false
+					})
 					return true
 			})
 		})

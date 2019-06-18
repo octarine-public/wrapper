@@ -128,7 +128,7 @@ export default class ExecuteOrder {
 	/**
 	 * pass Position: Vector3 at IOBuffer offset 0
 	 */
-	toNative(): { 
+	toNative(): {
 		OrderType: dotaunitorder_t,
 		Target: C_BaseEntity,
 		Ability: C_DOTABaseAbility,
