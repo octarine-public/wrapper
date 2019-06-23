@@ -279,7 +279,7 @@ function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolea
 	return true;
 }
 Events.on("onTick", () => {
-	if (!MenuState.value)
+	if (!MenuState.value || Game.IsPaused)
 		return;
 	const Me = LocalPlayer.Hero
 	if (Me === undefined || !Me.IsAlive || Me.IsIllusion || Me.IsInvulnerable || Me.IsStunned)
