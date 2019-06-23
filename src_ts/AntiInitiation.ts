@@ -256,7 +256,7 @@ function GetRotationTime(npc: Unit, vec: Vector3): number {
 	return 30 * ang / rotation_speed[npc.Name];
 }
 function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolean?]>, Abil?: Ability) {
-	let delta = (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT)) - GetRotationTime(hero, hero.Position) / 1000 + Additionaldelay.value;
+	let delta = (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT)) - GetRotationTime(hero, hero.NetworkPosition) / 1000 + Additionaldelay.value;
 	let AbilAr: [string, boolean, boolean?];
 	if (Abil !== undefined) {
 		if (!Abil.IsInAbilityPhase || Game.GameTime - Abil.ChannelStartTime < Abil.CastPoint - delta || (AbilAr = GetAbilArray(Abil.Name)) === undefined || AbilAr[2])
@@ -271,7 +271,7 @@ function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolea
 		return !abil.IsHidden
 			&& abil.Cooldown === 0
 			&& Me.Mana >= abil.ManaCost
-			&& (abil.CastRange <= 0 || Me.Position.Distance2D(hero.Position) <= abil.CastRange + hero.HullRadius * 2);
+			&& (abil.CastRange <= 0 || Me.NetworkPosition.Distance2D(hero.NetworkPosition) <= abil.CastRange + hero.HullRadius * 2);
 	});
 	if (disable_abil === undefined)
 		return false;

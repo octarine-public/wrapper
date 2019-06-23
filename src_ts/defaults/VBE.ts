@@ -4,7 +4,7 @@ import {
 	LocalPlayer,
 	EventsSDK,
 	Unit
-} from "../wrapper/Imports"
+} from "wrapper/Imports"
 
 let allUnits = new Map<Unit, number>(); // <Unit, Particle>
 let particlePath = "particles/items_fx/aura_shivas.vpcf"

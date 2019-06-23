@@ -1,4 +1,4 @@
-import { MenuManager } from "../../CrutchesSDK/Imports";
+import { MenuManager } from "wrapper/Imports";
 
 export const Menu = MenuManager.MenuFactory("Unit Blocker");
 export const stateMain = Menu.AddToggle("State");

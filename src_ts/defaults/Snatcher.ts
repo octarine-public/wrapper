@@ -12,7 +12,7 @@ import {
 	Hero,
 	Rune,
 	PhysicalItem,
-} from "../wrapper/Imports";
+} from "wrapper/Imports";
 
 //import { PickupItem, PickupRune } from "../Orders"
 //import * as Utils from "../Utils"

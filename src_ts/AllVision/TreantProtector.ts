@@ -1,4 +1,4 @@
-import { EventsSDK, Entity, Unit, Vector3, LocalPlayer, ArrayExtensions } from "../wrapper/Imports";
+import { EventsSDK, Entity, Unit, Vector3, LocalPlayer, ArrayExtensions } from "wrapper/Imports";
 
 export default () => {
 	var treant_eyes: Unit[] = [],

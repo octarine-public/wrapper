@@ -1,4 +1,4 @@
-import { EventsSDK, Unit, Creep, Tower, ArrayExtensions, Hero } from "../../wrapper/Imports";
+import { EventsSDK, Unit, Creep, Tower, ArrayExtensions, Hero } from "wrapper/Imports";
 import { baseCheckUnit } from "../modules/Controllables";
 
 
