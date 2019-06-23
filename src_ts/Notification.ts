@@ -1,4 +1,4 @@
-import { Game, MenuManager, EventsSDK, Entity, RendererSDK, Debug } from "CrutchesSDK/Imports";
+import { Game, MenuManager, EventsSDK, Entity, RendererSDK, Debug } from "wrapper/Imports";
 
 let { MenuFactory } = MenuManager, IsAlive: boolean = false;
 

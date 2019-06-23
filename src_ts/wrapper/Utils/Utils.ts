@@ -1,3 +1,6 @@
+import { Vector3 } from "../Imports";
+import EventsSDK from "../Managers/Events";
+
 let masksBigInt: bigint[] = new Array(64),
 	masksNumber: number[] = new Array(64)
 
@@ -27,3 +30,6 @@ export function HasMask(num: number, mask: number): boolean {
 export function HasMaskBigInt(num: bigint, mask: bigint): boolean {
 	return (num & mask) === mask
 }
+
+export const CursorWorldVec: Vector3 = new Vector3()
+EventsSDK.on("onUpdate", cmd => cmd.VectorUnderCursor.CopyTo(CursorWorldVec))

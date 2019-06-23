@@ -1,4 +1,4 @@
-import { EventsSDK, Game, RendererSDK, GameSleeper } from "../CrutchesSDK/Imports";
+import { EventsSDK, Game, RendererSDK, GameSleeper } from "../wrapper/Imports";
 
 import { stateMain } from "./base/MenuBase";
 import * as DrawParticle from "./base/DrawParticle";

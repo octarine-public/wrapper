@@ -1,4 +1,4 @@
-import { MenuManager, EventsSDK, Game, Vector3, Unit, Player, EntityManager, ArrayExtensions } from "../CrutchesSDK/Imports";
+import { MenuManager, EventsSDK, Game, Vector3, Unit, Player, EntityManager, ArrayExtensions } from "../wrapper/Imports";
 
 // menu 
 /* const DodgerMenu = MenuManager.MenuFactory("Dodger");

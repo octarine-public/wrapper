@@ -1,5 +1,5 @@
-import { EventsSDK, EntityManager, LocalPlayer } from "./CrutchesSDK/Imports"
-import { orderBy } from "CrutchesSDK/Utils/ArrayExtensions"
+import { EventsSDK, EntityManager, LocalPlayer } from "./wrapper/Imports"
+import { orderBy } from "wrapper/Utils/ArrayExtensions"
 import { GetHealthAfter, GetRotationTime } from "Utils"
 
 EventsSDK.on("onTick", () => {

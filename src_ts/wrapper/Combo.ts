@@ -1,5 +1,4 @@
-import * as Orders from "Orders"
-import * as Utils from "Utils"
+import { Vector3, Ability, Unit, Utils, EntityManager, Hero, Tower, Creep } from "./Imports"
 
 var additional_delay = 30
 
@@ -21,23 +20,23 @@ export enum EComboAction {
 interface ComboOptions {
 	// must be in MS
 	combo_delay?: number
-	dynamicDelay?: (abil: C_DOTABaseAbility, caster: C_DOTA_BaseNPC, ent: C_DOTA_BaseNPC) => number
-	castCondition?: (abil: C_DOTABaseAbility, caster: C_DOTA_BaseNPC, ent: C_DOTA_BaseNPC) => boolean
+	dynamicDelay?: (abil: Ability, caster: Unit, ent: Unit) => number
+	castCondition?: (abil: Ability, caster: Unit, ent: Unit) => boolean
 	// must be in MS
-	custom_cast?: (caster: C_DOTA_BaseNPC, ent: C_DOTA_BaseNPC) => /*delay: */number
+	custom_cast?: (caster: Unit, ent: Unit) => /*delay: */number
 }
 
-type AbilDef = [string | RegExp, number | ((caster: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC) => number), ComboOptions]
+type AbilDef = [string | RegExp, number | ((caster: Unit, target: Unit) => number), ComboOptions]
 
 export class Combo {
 	abils: AbilDef[] = []
 	vars: any = {} // available while combo are executing, clearing on end
-	cursor_enemy: C_DOTA_BaseNPC = undefined
-	cursor_ally: C_DOTA_BaseNPC = undefined
+	cursor_enemy: Unit = undefined
+	cursor_ally: Unit = undefined
 	cursor_pos: Vector3 = undefined
 
 	/** @param {EComboAction} act */
-	addAbility(abilName: string | RegExp, act: number | ((caster: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC) => number), options: ComboOptions = {}, index?: number): void {
+	addAbility(abilName: string | RegExp, act: number | ((caster: Unit, target: Unit) => number), options: ComboOptions = {}, index?: number): void {
 		var obj: AbilDef = [abilName, act, options]
 		if (index !== undefined)
 			this.abils.splice(index, 0, obj)
@@ -45,7 +44,7 @@ export class Combo {
 			this.abils.push(obj)
 	}
 
-	addDelay(delay: number | ((caster: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC) => number) = 30, options: ComboOptions = {}) { this.addAbility("delay", delay) }
+	addDelay(delay: number | ((caster: Unit, target: Unit) => number) = 30, options: ComboOptions = {}) { this.addAbility("delay", delay) }
 	/** @param {EComboAction} act */
 	addLinkenBreaker(act: number = EComboAction.CURSOR_ENEMY, options: ComboOptions = {}) { this.addAbility("linken_breaker", act) }
 	/** @param {EComboAction} act */
@@ -60,9 +59,9 @@ export class Combo {
 		}
 	}
 
-	getNextAbility(caster: C_DOTA_BaseNPC, index: number): [C_DOTABaseAbility, string | RegExp, number | number | ((caster: C_DOTA_BaseNPC, target: C_DOTA_BaseNPC) => number), ComboOptions] {
+	getNextAbility(caster: Unit, index: number): [Ability, string | RegExp, number | ((caster: Unit, target: Unit) => number), ComboOptions] {
 		var [abilName, act, options] = this.abils[index]
-		return [Utils.GetAbility(caster, abilName) || Utils.GetItem(caster, abilName), abilName, act, options]
+		return [caster.AbilitiesBook.GetAbilityByName(abilName) || caster.GetItemByName(abilName), abilName, act, options]
 	}
 
 	tech_names = [
@@ -70,15 +69,15 @@ export class Combo {
 		"move",
 		"custom_cast",
 	]
-	execute(caster: C_DOTA_BaseNPC, callback?: () => void, index: number = 0): void {
+	execute(caster: Unit, callback?: () => void, index: number = 0): void {
 		if (index === 0) {
 			// we need only instance from combo start, and as Utils.GetCursorWorldVec is dynamically changed vector - we need new instance of it
-			this.cursor_pos = Utils.GetCursorWorldVec()
+			this.cursor_pos = Utils.CursorWorldVec
 			
-			let ents_under_cursor = Utils.GetEntitiesInRange(this.cursor_pos, 1000, false, true); // must be split from another declarations, otherwise loop optimized will fuck up our code
+			let ents_under_cursor = EntityManager.GetEntitiesInRange(this.cursor_pos, 1000); // must be split from another declarations, otherwise loop optimizer will fuck up our code
 			
-			let cursor_enemy = ents_under_cursor.filter(ent => Utils.IsEnemy(ent, caster) && (ent instanceof C_DOTA_Unit_Roshan || (ent instanceof C_DOTA_BaseNPC_Hero && ent.m_hReplicatingOtherHeroModel === undefined))),
-				cursor_ally = ents_under_cursor.filter(ent => !Utils.IsEnemy(ent, caster) && ent instanceof C_DOTA_BaseNPC_Hero && ent.m_hReplicatingOtherHeroModel === undefined)
+			let cursor_enemy = ents_under_cursor.filter(ent => ent.IsEnemy(caster) && (ent instanceof Roshan || (ent instanceof Hero && ent.m_pBaseEntity.m_hReplicatingOtherHeroModel === undefined))) as Unit[],
+				cursor_ally = ents_under_cursor.filter(ent => !ent.IsEnemy(caster) && ent instanceof Hero && ent.m_pBaseEntity.m_hReplicatingOtherHeroModel === undefined) as Unit[]
 			this.cursor_ally = cursor_ally.length > 0 ? this.cursor_ally = cursor_ally[0] : undefined
 			this.cursor_enemy = cursor_enemy.length > 0 ? this.cursor_enemy = cursor_enemy[0] : undefined
 		}
@@ -86,7 +85,7 @@ export class Combo {
 			delay: number = options.combo_delay
 				? options.combo_delay + additional_delay
 				: abil
-					? abil.m_fCastPoint * 1000 + additional_delay
+					? abil.CastPoint * 1000 + additional_delay
 					: 0
 
 		if (options.castCondition !== undefined && !options.castCondition(abil, caster, target)) {
@@ -96,23 +95,23 @@ export class Combo {
 		if (abilName === "delay") {
 			if (act instanceof Function) delay = act(caster, this.cursor_enemy)
 			else delay = act
-			if (delay === -1) setTimeout(5, () => this.execute(caster, callback, index))
+			if (delay === -1) setTimeout(() => this.execute(caster, callback, index), 5)
 			else this.nextExecute(caster, callback, delay, index)
 			return
 		}
 		
 		let is_tech = this.tech_names.some(name => abilName === name)
-		if (!is_tech && (abil === undefined || abil.m_iLevel === 0 || abil.m_fCooldown !== 0)) {
+		if (!is_tech && (abil === undefined || abil.Level === 0 || abil.Cooldown !== 0)) {
 			this.nextExecute(caster, callback, delay, index)
 			return
 		}
 
 		// target selection switch
-		var cast_range = !is_tech ? Utils.GetCastRange(caster, abil) : 0,
-			target: C_DOTA_BaseNPC
+		var cast_range = !is_tech ? abil.CastRange : 0,
+			target: Unit
 		switch (act) {
 			case EComboAction.NEARBY_ENEMY_CREEP:
-				var creepsOnCursor = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, true, true).filter(ent => Utils.IsCreep(ent))
+				var creepsOnCursor = EntityManager.GetEntitiesInRange(caster.NetworkPosition, cast_range).filter(ent => ent instanceof Creep && ent.IsEnemy(caster)) as Unit[]
 				if (creepsOnCursor.length === 0) {
 					act = undefined
 					break
@@ -120,7 +119,7 @@ export class Combo {
 				target = creepsOnCursor[0]
 				break
 			case EComboAction.NEARBY_ENEMY_SIEGE:
-				var creepsOnCursor = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, true, true).filter(ent => ent instanceof C_DOTA_BaseNPC_Creep_Siege)
+				var creepsOnCursor = EntityManager.GetEntitiesInRange(caster.NetworkPosition, cast_range).filter(ent => ent instanceof Siege && ent.IsEnemy(caster)) as Unit[]
 				if (creepsOnCursor.length === 0) {
 					act = undefined
 					break
@@ -128,7 +127,7 @@ export class Combo {
 				target = creepsOnCursor[0]
 				break
 			case EComboAction.NEARBY_ALLY_TOWER:
-				var nearbyAllyTowers = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, false, true).filter(ent => !Utils.IsEnemy(ent, caster) && Utils.IsTower(ent))
+				var nearbyAllyTowers = EntityManager.GetEntitiesInRange(caster.NetworkPosition, cast_range).filter(ent => ent instanceof Tower && !ent.IsEnemy(caster)) as Unit[]
 				if (nearbyAllyTowers.length === 0) {
 					act = undefined
 					break
@@ -136,7 +135,7 @@ export class Combo {
 				target = nearbyAllyTowers[0]
 				break
 			case EComboAction.NEARBY_ENEMY_TOWER:
-				var nearbyEnemyTowers = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, true, true).filter(ent => ent instanceof C_DOTA_BaseNPC_Tower)
+				var nearbyEnemyTowers = EntityManager.GetEntitiesInRange(caster.NetworkPosition, cast_range).filter(ent => ent instanceof Tower && ent.IsEnemy(caster)) as Unit[]
 				if (nearbyEnemyTowers.length === 0) {
 					act = undefined
 					break
@@ -144,7 +143,7 @@ export class Combo {
 				target = nearbyEnemyTowers[0]
 				break
 			case EComboAction.NEARBY_ALLY:
-				var nearbyAllies = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, false, true).filter(ent => !Utils.IsEnemy(ent, caster) && Utils.IsHero(ent) && !ent.m_bIsIllusion)
+				var nearbyAllies = EntityManager.GetEntitiesInRange(caster.NetworkPosition, cast_range).filter(ent => !ent.IsEnemy(caster) && ent instanceof Hero && !ent.IsIllusion) as Unit[]
 				if (nearbyAllies.length === 0) {
 					act = undefined
 					break
@@ -152,7 +151,7 @@ export class Combo {
 				target = nearbyAllies[0]
 				break
 			case EComboAction.NEARBY_ENEMY:
-				var nearbyEnemies = Utils.GetEntitiesInRange(caster.m_vecNetworkOrigin, cast_range, true, true).filter(ent => ent instanceof C_DOTA_Unit_Roshan || (Utils.IsHero(ent) && !ent.m_bIsIllusion))
+				var nearbyEnemies = EntityManager.GetEntitiesInRange(caster.NetworkPosition, cast_range).filter(ent => ent instanceof Roshan || (ent instanceof Hero && !ent.IsIllusion)) as Unit[]
 				if (nearbyEnemies.length === 0) {
 					act = undefined
 					break
@@ -180,7 +179,7 @@ export class Combo {
 		if (abilName === "linken_breaker") {
 			if (
 				target !== undefined
-				&& Utils.HasLinkenAtTime(target)
+				&& target.HasLinkenAtTime()
 				&& [
 					"item_force_staff",
 					"item_hurricane_pike",
@@ -193,25 +192,25 @@ export class Combo {
 					/item_(solar_crest|medallion_of_courage)/,
 					/item_dagon/,
 					/item_(bloodthorn|orchid)/,
-				].some(item_name => (abil = Utils.GetItem(caster, item_name)) !== undefined)
+				].some(item_name => (abil = caster.GetItemByName(item_name)) !== undefined)
 			) {
-				Orders.CastTarget(caster, abil, target, false)
+				caster.CastTarget(abil, target, false)
 				delay = options.combo_delay
 					? options.combo_delay
 					: abil
-						? abil.m_fCastPoint * 1000 + 30 * 4
+						? abil.CastPoint * 1000 + 30 * 4
 						: 0
 			}
 		} else if (abilName === "move") {
-			Orders.MoveToPos(caster, target.m_vecNetworkOrigin, false)
-			this.nextExecute(caster, callback, delay + (caster.m_vecNetworkOrigin.Distance2D(target.m_vecNetworkOrigin) / caster.m_fIdealSpeed) * 1000, index)
+			caster.MoveTo(target.NetworkPosition, false)
+			this.nextExecute(caster, callback, delay + (caster.Distance2D(target) / caster.IdealSpeed) * 1000, index)
 			return
 		} else if (abilName === "custom_cast") {
 			this.nextExecute(caster, callback, options.custom_cast(caster, target), index)
 			return
 		} else if (act !== undefined) {
 			// cast switch
-			var Behavior = abil.m_pAbilityData.m_iAbilityBehavior
+			var Behavior = abil.AbilityBehavior
 			switch (act) {
 				case EComboAction.NEARBY_ENEMY_CREEP:
 				case EComboAction.NEARBY_ENEMY_SIEGE:
@@ -221,44 +220,44 @@ export class Combo {
 				case EComboAction.NEARBY_ENEMY:
 				case EComboAction.CURSOR_ALLY:
 				case EComboAction.CURSOR_ENEMY:
-					if (Utils.IsFlagSet(Behavior, BigInt(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)))
-						Orders.CastPosition (
-							caster, abil,
+					if (Behavior.includes(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT))
+						caster.CastPosition (
+							abil,
 							options.dynamicDelay
-								? Utils.VelocityWaypoint(target, options.dynamicDelay(abil, caster, target))
-								: target.m_vecNetworkOrigin,
+								? target.VelocityWaypoint(options.dynamicDelay(abil, caster, target))
+								: target.NetworkPosition,
 							false,
 						)
 					else
-						Orders.CastTarget(caster, abil, target, false)
+						caster.CastTarget(abil, target, false)
 					break
 				case EComboAction.CURSOR_POS:
-					Orders.CastPosition(caster, abil, this.cursor_pos, false)
+					caster.CastPosition(abil, this.cursor_pos, false)
 					break
 				case EComboAction.SELF:
-					if (Utils.IsFlagSet(Behavior, BigInt(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)))
-						Orders.CastPosition(caster, abil, caster.m_vecNetworkOrigin, false)
+					if (Behavior.includes(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT))
+						caster.CastPosition(abil, caster.NetworkPosition, false)
 					else
-						Orders.CastTarget(caster, abil, caster, false)
+						caster.CastTarget(abil, caster, false)
 					break
 				case EComboAction.NO_TARGET:
-					Orders.CastNoTarget(caster, abil, false)
+					caster.CastNoTarget(abil, false)
 					break
 				case EComboAction.TOGGLE:
-					Orders.ToggleAbil(caster, abil, false)
+					caster.CastToggle(abil, false)
 					break
 				default:
 					throw "Unknown EComboAction: " + act
 			}
 		}
 
-		setTimeout(1000 / 30, () => this.nextExecute(caster, callback, delay, index))
+		setTimeout(() => this.nextExecute(caster, callback, delay, index), 1000 / 30)
 	}
 
-	nextExecute(caster: C_DOTA_BaseNPC, callback: (() => void) | undefined, delay: number, index: number): void {
+	nextExecute(caster: Unit, callback: (() => void) | undefined, delay: number, index: number): void {
 		if (++index < this.abils.length) {// increments variable and checks is index valid
 			if (delay > 0)
-				setTimeout(delay + (GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000, () => this.execute(caster, callback, index))
+				setTimeout(() => this.execute(caster, callback, index), delay + (GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000)
 			else
 				this.execute(caster, callback, index)
 		} else {

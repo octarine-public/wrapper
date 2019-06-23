@@ -1,6 +1,6 @@
 import { EventsSDK, Vector3, Hero, Entity, Unit } from "../Imports"
 
-import { Menu } from "./CrutchesSDKExamples";
+import { Menu } from "./Examples";
 
 const EventsDebuging = Menu.AddTree("EventsSDK Debugging", "Debugging SDK events in console")
 

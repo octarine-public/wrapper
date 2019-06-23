@@ -1,4 +1,4 @@
-import { MenuManager, RendererSDK, EventsSDK, Hero, ArrayExtensions, Game, Vector2, Color } from "../CrutchesSDK/Imports";
+import { MenuManager, RendererSDK, EventsSDK, Hero, ArrayExtensions, Game, Vector2, Color } from "../wrapper/Imports";
 
 var manabars: Hero[] = [],
 	heroes: Hero[] = []

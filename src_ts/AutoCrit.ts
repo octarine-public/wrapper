@@ -1,5 +1,5 @@
-import * as Utils from "Utils"
-import { EventsSDK, LocalPlayer, Unit, Entity } from "./CrutchesSDK/Imports"
+import { EventsSDK, LocalPlayer, Unit, Entity, EntityManager } from "./wrapper/Imports"
+
 var config = {
 		hotkey: 0,
 		method: 0,
@@ -34,7 +34,7 @@ EventsSDK.on("onPrepareUnitOrders", order => {
 	if (order.Unit === LocalPlayer.Hero)
 		switch (order.OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-				target = order.Target
+				target = order.Target instanceof Entity ? order.Target : EntityManager.EntityByIndex(order.Target)
 				target_pos = undefined
 				break
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:

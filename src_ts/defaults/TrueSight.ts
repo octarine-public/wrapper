@@ -1,4 +1,4 @@
-import { MenuManager, EventsSDK, Game, LocalPlayer, Unit } from "../CrutchesSDK/Imports";
+import { MenuManager, EventsSDK, Game, LocalPlayer, Unit } from "wrapper/Imports";
 
 const ParticleStyles = [
 	"particles/econ/wards/portal/ward_portal_core/ward_portal_eye_sentry.vpcf",

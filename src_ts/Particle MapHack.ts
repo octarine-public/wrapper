@@ -1,4 +1,4 @@
-import { ArrayExtensions, MenuManager, EventsSDK, EntityManager, Entity, Unit, Vector3, Creep, RendererSDK, Debug } from "CrutchesSDK/Imports"
+import { ArrayExtensions, MenuManager, EventsSDK, EntityManager, Entity, Unit, Vector3, Creep, RendererSDK, Debug } from "wrapper/Imports"
 
 
 let { MenuFactory, CreateRGBATree } = MenuManager;

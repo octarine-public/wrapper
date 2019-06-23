@@ -1,4 +1,4 @@
-import { EventsSDK, MenuManager, Unit, LocalPlayer, ArrayExtensions } from "./CrutchesSDK/Imports";
+import { EventsSDK, MenuManager, Unit, LocalPlayer, ArrayExtensions } from "./wrapper/Imports";
 
 //import * as Orders from "Orders"
 //import * as Utils from "Utils"

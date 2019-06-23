@@ -1,4 +1,4 @@
-import { Vector3, Unit } from "../../CrutchesSDK/Imports";
+import { Vector3, Unit } from "../../wrapper/Imports";
 
 let allParticles = new Map<string, number>();
 

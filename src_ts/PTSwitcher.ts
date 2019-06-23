@@ -1,4 +1,4 @@
-import { EventsSDK, MenuManager, Game, LocalPlayer } from "./CrutchesSDK/Imports";
+import { EventsSDK, MenuManager, Game, LocalPlayer } from "./wrapper/Imports";
 
 const PtswitcherMenu = MenuManager.MenuFactory("PT Switcher");
 const state = PtswitcherMenu.AddToggle("State", false);

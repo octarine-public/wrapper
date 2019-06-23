@@ -1,4 +1,4 @@
-import { Vector3, MenuManager, EventsSDK, PlayerResource, EntityManager, LocalPlayer, Hero } from "./CrutchesSDK/Imports";
+import { Vector3, MenuManager, EventsSDK, PlayerResource, EntityManager, LocalPlayer, Hero } from "./wrapper/Imports";
 
 let { MenuFactory } = MenuManager;
 
@@ -25,15 +25,15 @@ let creepsNoSpawn = sv_cheatsMenu.AddToggle("Creeps no spawning")
 	.SetToolTip("dota_creeps_no_spawning")
 	.OnValue(setConVar)
 
-let refresh = sv_cheatsMenu.AddKeybind("Refresh")
+sv_cheatsMenu.AddKeybind("Refresh")
 	.SetToolTip("dota_hero_refresh")
 	.OnRelease(self => SendToConsole(self.hint))
 
-let localLvl = sv_cheatsMenu.AddKeybind("Local lvl max")
+sv_cheatsMenu.AddKeybind("Local lvl max")
 	.SetToolTip("dota_hero_level 25")
 	.OnRelease(self => SendToConsole(self.hint))
 
-let getRapGod = sv_cheatsMenu.AddKeybind("Get Rap God")
+sv_cheatsMenu.AddKeybind("Get Rap God")
 	.SetToolTip("dota_rap_god")
 	.OnRelease(self => SendToConsole(self.hint))
 
@@ -55,15 +55,14 @@ addUnitMenu.AddKeybind("Add creep")
 	.SetToolTip("dota_create_unit npc_dota_creep_badguys_melee enemy")
 	.OnRelease(self => SendToConsole(self.hint))
 
-EventsSDK.on("onGameStarted", lp => {
-
-	setConVar(sv_cheats.value, sv_cheats)
-	setConVar(wtf.value, wtf)
+EventsSDK.on("onGameStarted", () => {
+	ConVars.Set("sv_cheats", ConVars.Get("sv_cheats") || sv_cheats.value)
+	ConVars.Set("dota_ability_debug", wtf.value)
 
 	if (PlayerResource.AllPlayers.length <= 1)
-		setConVar(vision.value, vision)
+		ConVars.Set("dota_all_vision", vision.value)
 
-	setConVar(creepsNoSpawn.value, creepsNoSpawn);
+	ConVars.Set("dota_creeps_no_spawning", creepsNoSpawn.value)
 })
 
 // ======================= DEBUGGING EVENTS
@@ -108,49 +107,24 @@ Events.on("onEntityCreated", (ent, id) => {
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onEntityCreated", ent, id);
-		
-	if (ent instanceof TrackingProjectile || ent instanceof LinearProjectile)
-		console.error(ent, "m_iID", ent.m_iID, "m_bIsValid", ent.m_bIsValid, Vector3.fromIOBuffer(ent.m_vecPosition));
-		
-	if (!(ent instanceof C_BaseEntity) || typeof id !== "number")
-		throw Error("onEntityCreated. ent is not C_BaseEntity:" + ent + ", index: " + id)
 });
 Events.on("onEntityDestroyed", (ent, id) => {
 	if (!debugEvents.value || !debugEntitiesEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onEntityCreated", ent, id);
-		
-	if (ent instanceof TrackingProjectile || ent instanceof LinearProjectile)
-		console.error(ent, "m_iID", ent.m_iID, "m_bIsValid", ent.m_bIsValid, Vector3.fromIOBuffer(ent.m_vecPosition));
-		
-	if (!(ent instanceof C_BaseEntity) || typeof id !== "number")
-		throw Error("onEntityDestroyed. ent is not C_BaseEntity:" + ent + ", index: " + id)
-});
-Events.on("onWndProc", (...args) => {
-	if (!debugEvents.value) return;
-});
-Events.on("onUpdate", cmd => {
-	if (!debugEvents.value) return;
-	
 });
 Events.on("onUnitStateChanged", npc => {
 	if (!debugEvents.value || !debugOtherEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onUnitStateChanged", npc);
-		
-	if (!(npc instanceof C_DOTA_BaseNPC))
-		throw Error("onUnitStateChanged. npc is not C_DOTA_BaseNPC:" + npc)
 });
 Events.on("onTeamVisibilityChanged", (npc, newTagged) => {
 	if (!debugEvents.value || !debugOtherEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onTeamVisibilityChanged", npc, newTagged);
-		
-	if (!(npc instanceof C_DOTA_BaseNPC) || typeof newTagged !== "number")
-		throw Error("onTeamVisibilityChanged. npc is not C_DOTA_BaseNPC:" + npc + ", newTagged" + newTagged);
 });
 Events.on("onDraw", () => {
 	if (!debugEvents.value || !debugDrawEvents.value) return;
@@ -167,9 +141,6 @@ Events.on("onPrepareUnitOrders", order => {
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onPrepareUnitOrders", order);
-		
-	if (!(order instanceof CUnitOrder))
-		throw Error("onPrepareUnitOrders. order is not CUnitOrder:" + order);
 });
 Events.on("onLinearProjectileCreated", (...args) => debugConsole("onLinearProjectileCreated", ...args));
 Events.on("onLinearProjectileDestroyed", proj => debugConsole("onLinearProjectileDestroyed", proj, "m_iID", proj.m_iID, "m_bIsValid", proj.m_bIsValid, proj.m_vecPosition, Vector3.fromIOBuffer(proj.m_vecPosition)));
@@ -183,33 +154,18 @@ Events.on("onBuffAdded", (npc, buff) => {
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onBuffAdded", npc, buff);
-	
-	if (!(npc instanceof C_DOTA_BaseNPC))
-		throw Error(name + ". npc is not C_DOTA_BaseNPC:" + npc)
-
-	if (!(buff instanceof CDOTA_Buff))
-		throw Error(name + ". npc is not CDOTA_Buff:" + buff)
 });
 Events.on("onBuffRemoved", (npc, buff) => {
 	if (!debugEvents.value || !debugBuffsEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onBuffRemoved", npc, buff);
-	
-	if (!(npc instanceof C_DOTA_BaseNPC))
-		throw Error(name + ". npc is not C_DOTA_BaseNPC:" + npc)
-
-	if (!(buff instanceof CDOTA_Buff))
-		throw Error(name + ". npc is not CDOTA_Buff:" + buff)
 });
 Events.on("onBuffStackCountChanged", buff => {
 	if (!debugEvents.value || !debugBuffsEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onBuffStackCountChanged", buff);
-	
-	if (!(buff instanceof CDOTA_Buff))
-		throw Error(name + ". npc is not CDOTA_Buff:" + buff)
 });
 Events.on("onCustomGameEvent", (...args) => debugConsole("onCustomGameEvent", ...args));
 

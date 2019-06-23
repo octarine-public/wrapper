@@ -1,4 +1,4 @@
-import { MenuManager, EventsSDK, Unit, ArrayExtensions, Game, LocalPlayer, Debug } from "./CrutchesSDK/Imports";
+import { MenuManager, EventsSDK, Unit, ArrayExtensions, Game, LocalPlayer, Debug } from "./wrapper/Imports";
 
 const menu = MenuManager.MenuFactory("Mine Destroy");
 const menuState = menu.AddToggle("State");

@@ -1,6 +1,6 @@
 import { MenuManager, Color } from "../Imports"
 
-import { Menu } from "./CrutchesSDKExamples";
+import { Menu } from "./Examples";
 
 const MenuExamples = Menu.AddTree("Menu Examples")
 

@@ -1,4 +1,4 @@
-import { EventsSDK, Vector3, RendererSDK, LocalPlayer, Game, Utils } from "./CrutchesSDK/Imports";
+import { EventsSDK, Vector3, RendererSDK, LocalPlayer, Game, ArrayExtensions } from "./wrapper/Imports"
 
 /* import * as Orders from "Orders"
 import * as Utils from "Utils" */
@@ -62,7 +62,7 @@ EventsSDK.on("onTick", () => {
 	var my_vec = MyEnt.NetworkPosition,
 		cast_range = torrent.CastRange
 	// loop-optimizer: KEEP
-	Utils.orderBy(spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
+	ArrayExtensions.orderBy(spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
 		MyEnt.CastPosition(torrent, spot);
 		is_stacking = true
 		setTimeout(() => is_stacking = false, torrent.CastPoint * 1000 + 30)

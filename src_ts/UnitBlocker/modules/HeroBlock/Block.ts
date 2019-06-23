@@ -1,4 +1,4 @@
-import { ArrayExtensions, Vector3, Unit, LocalPlayer, RendererSDK, Hero, GameSleeper } from "../../../CrutchesSDK/Imports";
+import { ArrayExtensions, Vector3, Unit, LocalPlayer, RendererSDK, Hero, GameSleeper } from "../../../wrapper/Imports";
 
 import { allHeroes } from "../../base/Listeners";
 

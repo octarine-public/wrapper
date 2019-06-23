@@ -416,6 +416,11 @@ export default class Unit extends Entity {
 	get Items(): Item[] {
 		return this.Inventory.Items;
 	}
+
+	GetItemByName(name: string | RegExp): Item {
+		return this.Items.find(item => name instanceof RegExp ? name.test(item.Name) : item.Name === name)
+	}
+
 	get ModifiersBook(): ModifiersBook {
 		return this.m_ModifiersBook
 			|| (this.m_ModifiersBook = new ModifiersBook(this));

@@ -1,4 +1,4 @@
-import { Vector3, Game, EntityManager, Hero, EventsSDK } from "CrutchesSDK/Imports";
+import { Vector3, Game, EntityManager, Hero, EventsSDK } from "wrapper/Imports";
 
 import { AddOrUpdateParticle, RemoveParticle } from "../../base/DrawParticle";
 import { stateMain } from "../../base/MenuBase";

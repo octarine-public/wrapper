@@ -1,4 +1,4 @@
-import { MenuManager, EventsSDK, Player, Courier, Entity, EntityManager, LocalPlayer, Unit, Hero, Game } from "../CrutchesSDK/Imports";
+import { MenuManager, EventsSDK, Player, Courier, Entity, EntityManager, LocalPlayer, Unit, Hero, Game } from "../wrapper/Imports";
 
 //import * as Utils from "Utils"
 

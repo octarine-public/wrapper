@@ -1,4 +1,4 @@
-import { MenuManager, Vector3, Unit, LocalPlayer, GameSleeper, Entity } from "../../CrutchesSDK/Imports";
+import { MenuManager, Vector3, Unit, LocalPlayer, GameSleeper, Entity } from "../../wrapper/Imports";
 
 import { allNPCs } from "../base/Listeners";
 
