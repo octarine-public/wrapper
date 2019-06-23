@@ -25,6 +25,7 @@ import Tower from "../Objects/Base/Tower";
 
 import PlayerResource from "../Objects/GameResources/PlayerResource";
 import Game from "../Objects/GameResources/GameRules";
+import { HasBit } from "../Utils/Utils";
 
 export { PlayerResource, Game }
 
@@ -129,12 +130,12 @@ Events.on("onEntityDestroyed", (ent, index) => {
 
 /* ================ RUNTIME CACHE ================ */
 
-let CheckIsInStagingEntity = (ent: C_BaseEntity) => {
+function CheckIsInStagingEntity(ent: C_BaseEntity) {
 	// need find the best way
 	if (ent instanceof C_DOTA_BaseNPC_Additive && ent.m_iUnitType === 0)
-		return false;
+		return true;
 	
-	return (ent.m_pEntity.m_flags & (1 << 2)) === 0;
+	return HasBit(ent.m_pEntity.m_flags, 2)
 };
 
 setInterval(() => {
@@ -143,7 +144,7 @@ setInterval(() => {
 		
 		// loop-optimizer: KEEP	// because this is Map
 		queueEntitiesAsMap.forEach((entity, baseEntity) => {
-			if (!CheckIsInStagingEntity(baseEntity))
+			if (CheckIsInStagingEntity(baseEntity))
 				return;
 
 			if (!(baseEntity instanceof C_DOTAPlayer) || !baseEntity.m_bIsLocalPlayer)
@@ -158,7 +159,7 @@ setInterval(() => {
 	
 		// loop-optimizer: KEEP	// because this is Map
 		InStage.forEach((entity, baseEntity) => {
-			if (!CheckIsInStagingEntity(baseEntity))
+			if (CheckIsInStagingEntity(baseEntity))
 				return;
 			InStage.delete(baseEntity);
 			AddToCache(entity)
@@ -170,7 +171,7 @@ function AddToCache(entity: Entity) {
 	//console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
 	EventsSDK.emit("onEntityPreCreated", false, entity, entity.Index);
 
-	if (!CheckIsInStagingEntity(entity.m_pBaseEntity)) {
+	if (CheckIsInStagingEntity(entity.m_pBaseEntity)) {
 		InStage.set(entity.m_pBaseEntity, entity);
 		return;
 	}
