@@ -3,7 +3,6 @@ import Item from "./Item";
 import EntityManager from "../../Managers/EntityManager";
 
 export default class PhysicalItem extends Entity {
-	
 	readonly m_pBaseEntity: C_DOTA_Item_Physical
 	
 	get Item(): Item {

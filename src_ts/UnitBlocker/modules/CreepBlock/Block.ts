@@ -7,10 +7,8 @@ import { stateMain } from "../../base/MenuBase";
 import {
 	Controllables,
 	baseCheckUnit,
-	SelectedStopping,
 	getCenterDirection,
-	MoveUnit,
-	StopUnit
+	MoveUnit
 } from "../Controllables";
 
 import {
@@ -75,7 +73,6 @@ export function GameEnded() {
 }
 
 export function Update() {
-
 	if (!State.value || sleeper.Sleeping("tick"))
 		return;
 

@@ -29,7 +29,6 @@ import Rune from "./Rune";
 /* ==== ==== */
 
 export default class Unit extends Entity {
-
 	/* ================================ Static ================================ */
 
 	static IsVisibleForEnemies(unit: Unit, newTagged: number): boolean {
@@ -60,8 +59,6 @@ export default class Unit extends Entity {
 	/* ================================ BASE ================================ */
 	
 	/* ================ GETTERS ================ */
-
-	/* ======== UnitType ======== */
 
 	get IsHero(): boolean {
 		return HasBit(this.UnitType, 0);
@@ -716,4 +713,3 @@ export default class Unit extends Entity {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED, unit: this, position, queue, showEffects });
 	}
 }
-//global.Unit = Unit;

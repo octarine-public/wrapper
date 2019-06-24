@@ -7,7 +7,7 @@ import { State, DrawHelpPosition, DrawState } from "./Menu";
 let lastHero: Hero;
 let particles: string[] = [];
 
-let timeOut: TimeoutData = null;
+let timeout: TimeoutData;
 
 export const BestPosition = [
 	[
@@ -36,7 +36,6 @@ export function DrawParticles() {
 	const teamParticles = BestPosition[lastHero.Team - 2];
 	
 	teamParticles.forEach(vec => {
-		
 		const name = vec.toString();
 		
 		AddOrUpdateParticle(name, lastHero, vec, 100);
@@ -44,13 +43,13 @@ export function DrawParticles() {
 		particles.push(name);
 	});
 	
-	timeOut = setTimeout(RemoveParticles, 5 * 60 * 1000);
+	timeout = setTimeout(RemoveParticles, 5 * 60 * 1000);
 }
 
 export function RemoveParticles() {
-	if (timeOut !== null) {
-		timeOut.Destroy();
-		timeOut = null;
+	if (timeout !== undefined) {
+		timeout.Destroy();
+		timeout = undefined;
 	}
 	
 	if (lastHero === undefined)

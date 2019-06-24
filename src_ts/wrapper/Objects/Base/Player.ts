@@ -9,8 +9,7 @@ import Ability from "./Ability";
 
 
 export default class Player extends Entity {
-
-	/* protected */ readonly m_pBaseEntity: C_DOTAPlayer
+	readonly m_pBaseEntity: C_DOTAPlayer
 	private m_Name: string
 	private m_PlayerData: PlayerResourcePlayerData_t
 	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t

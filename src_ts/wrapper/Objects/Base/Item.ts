@@ -6,7 +6,6 @@ import Player from "./Player";
 import Unit from "./Unit";
 
 export default class Item extends Ability {
-
 	readonly m_pBaseEntity: C_DOTA_Item
 
 	get AssembledTime(): number {

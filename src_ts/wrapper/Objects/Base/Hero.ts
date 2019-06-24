@@ -5,8 +5,11 @@ import EntityManager from "../../Managers/EntityManager";
 import Player from "./Player";
 
 export default class Hero extends Unit {
-	
-	/* protected */ readonly m_pBaseEntity: C_DOTA_BaseNPC_Hero
+	readonly m_pBaseEntity: C_DOTA_BaseNPC_Hero
+
+	get IsHero(): boolean {
+		return true
+	}
 
 	/* ============ BASE  ============ */
 	
@@ -75,7 +78,6 @@ export default class Hero extends Unit {
 	}
 	
 	/* ============ EXTENSIONS ============ */
-	
 	
 	get SpellAmplification(): number {
 		return super.SpellAmplification + (this.TotalIntelligence * DamageAmplifyPerIntelligencePrecent / 100)

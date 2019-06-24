@@ -30,12 +30,7 @@ export default class AbilitiesBook {
 	}
 
 	get Spells(): Ability[] {
-		let spells: Ability[] = [];
-		
-		if (this.m_Unit.IsValid)
-			spells = EntityManager.GetEntitiesByNative(this.m_hAbilities) as Ability[];
-		
-		return spells;
+		return this.m_Unit.IsValid ? EntityManager.GetEntitiesByNative(this.m_hAbilities) as Ability[] : []
 	}
 
 	SpellsByOwner(excludeNativeSpells: boolean = false): Ability[] {

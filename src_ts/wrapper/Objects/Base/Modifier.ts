@@ -38,9 +38,7 @@ export const REFLECTING_DAMAGE_MODIFIERS = [
 
 const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scepter/
 
-
 export default class Modifier {
-	
 	/* ================== Static ================== */
 
 	static HasTrueSightBuff(buffs: Modifier[]): boolean {

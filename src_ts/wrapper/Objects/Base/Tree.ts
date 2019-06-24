@@ -1,7 +1,6 @@
 import Entity from "./Entity";
 
 export default class Tree extends Entity {
-
 	readonly m_pBaseEntity: C_DOTA_MapTree
 
 	get IsAlive(): boolean {
@@ -11,5 +10,3 @@ export default class Tree extends Entity {
 		return this.m_pBaseEntity.m_nBinaryID;
 	}
 }
-
-// CDOTA_Tree

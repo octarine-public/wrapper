@@ -131,10 +131,6 @@ Events.on("onEntityDestroyed", (ent, index) => {
 /* ================ RUNTIME CACHE ================ */
 
 function CheckIsInStagingEntity(ent: C_BaseEntity) {
-	// need find the best way
-	if (ent instanceof C_DOTA_BaseNPC_Additive && ent.m_iUnitType === 0)
-		return true;
-	
 	return HasBit(ent.m_pEntity.m_flags, 2)
 };
 

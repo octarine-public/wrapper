@@ -16,7 +16,6 @@ const GoToBestPosition = BaseTree.AddToggle("Go to the best position", true)
 const SkipRange = BaseTree.AddToggle("Skip range-creeps");
 
 const {
-	ControllablesTree,
 	StateUnits,
 	CenterCamera,
 	CountUnits

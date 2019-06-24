@@ -11,7 +11,6 @@ m_pEntity.m_flags
 1 << 4 is EF_DELETE_IN_PROGRESS
 */
 export default class Entity {
-	
 	/* ================================ Fields ================================ */
 	
 	/* protected */ readonly m_pBaseEntity: C_BaseEntity
