@@ -29,8 +29,10 @@ Events.on("onDraw", () => {
 		return;
 		
 	let off_x: number, 
-		off_y: number, 
-		manabar_w: number, 
+		off_y: number,
+		//off_x_text: number,
+		//off_y_text: number,
+		manabar_w: number,
 		manabar_h: number;
 	
 	{ // TODO: multiple aspect ratio support (current: 16:10)
@@ -40,6 +42,9 @@ Events.on("onDraw", () => {
 			off_y = screen_size.y * -0.01715;
 			manabar_w = screen_size.x * 0.053;
 			manabar_h = screen_size.y * 0.005;
+			//off_x_text = screen_size.x * 0.017;
+			//off_y_text = screen_size.y * -0.003;
+			
 		} else {
 			off_x = screen_size.x * -0.038;
 			off_y = screen_size.y * -0.01715;
@@ -57,7 +62,7 @@ Events.on("onDraw", () => {
 		RendererSDK.FilledRect(wts, size, Color.Black);
 		RendererSDK.FilledRect(wts, size.MultiplyScalarForThis((hero.Mana / hero.MaxMana)), Color.Blue);
 		//let mana: any = Math.round(hero.Mana);
-		//console.log(wts)
-		//RendererSDK.Text(mana, wts)
+		//wts.AddScalarX(off_x_text).AddScalarY(off_y_text);
+		//RendererSDK.Text(mana + "/" + Math.round(hero.MaxMana), wts, Color.White, "Calibri", new Vector2(14, 100))
 	});
 });
