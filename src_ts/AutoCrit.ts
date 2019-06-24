@@ -1,35 +1,26 @@
-import { EventsSDK, LocalPlayer, Unit, Entity, EntityManager } from "./wrapper/Imports"
+import { EventsSDK, LocalPlayer, Unit, Entity, EntityManager, Game } from "./wrapper/Imports"
 
-var config = {
-		hotkey: 0,
-		method: 0,
-	},
+var config = { hotkey: 0,},
 	enabled = false,
 	target: Entity,
-	target_pos
-
+	target_pos,
+	timer: number = 0;
 Events.on("onDraw", () => {
 	if (enabled)
-		Renderer.Text(0, 100, "Auto Crit enabled")
+		Renderer.Text(0, 100, "Auto Crit enabled");
 })
-
 EventsSDK.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 	if (!enabled || !npc.IsControllableByPlayer(LocalPlayer.PlayerID))
 		return
-	if (activity === 1503) {
+	if (activity == 1505) {
+		timer = Game.GameTime + castpoint
+	} else if (activity === 1503) {
 		if (target !== undefined)
 			if (!target.IsEnemy(npc) || (target instanceof Unit && (target.IsWard || target.IsTower || target.IsShrine)))
 				return
-		npc.OrderStop(false)
-		setTimeout(() => {
-			if (target !== undefined)
-				npc.AttackTarget(target, false)
-			else if (target_pos !== undefined)
-				npc.AttackMove(target_pos, false)
-		}, config.method === 0 ? 1000 / npc.AttacksPerSecond / 3 : Math.max(100, 1000 / npc.AttacksPerSecond) - 100)
+		npc.OrderStop(false);
 	}
-})
-
+});
 EventsSDK.on("onPrepareUnitOrders", order => {
 	if (order.Unit === LocalPlayer.Hero)
 		switch (order.OrderType) {
@@ -48,6 +39,100 @@ EventsSDK.on("onPrepareUnitOrders", order => {
 				break
 		}
 	return true
+});
+Events.on("onUpdate", () => {
+	if (!enabled || target === undefined || !target.IsAlive || LocalPlayer.Hero === undefined)
+		return false;
+	let Me = LocalPlayer.Hero;
+	if (timer <= Game.GameTime) {
+		switch (Me.Name) {
+			case "npc_dota_hero_phantom_assassin":
+				if (Me.AttacksPerSecond < 0.29)
+					timer = Game.GameTime + 0.14;
+				else if (Me.AttacksPerSecond < 0.35)
+					timer = Game.GameTime + 0.15;
+				else if (Me.AttacksPerSecond < 0.54)
+					timer = Game.GameTime + 0.17;
+				else if (Me.AttacksPerSecond < 0.71)
+					timer = Game.GameTime + 0.20;
+				else if (Me.AttacksPerSecond < 0.86)
+					timer = Game.GameTime + 0.24;
+				else if (Me.AttacksPerSecond < 1.08)
+					timer = Game.GameTime + 0.27;
+				else if (Me.AttacksPerSecond < 1.24)
+					timer = Game.GameTime + 0.3;
+				Me.AttackTarget(target, false);
+				break;
+			case "npc_dota_hero_skeleton_king":
+				if (Me.AttacksPerSecond < 0.29)
+					timer = Game.GameTime + 0.175;
+				else if (Me.AttacksPerSecond < 0.34)
+					timer = Game.GameTime + 0.2;
+				else if (Me.AttacksPerSecond < 0.54)
+					timer = Game.GameTime + 0.27;
+				else if (Me.AttacksPerSecond < 0.67)
+					timer = Game.GameTime + 0.3;
+				else if (Me.AttacksPerSecond < 0.79)
+					timer = Game.GameTime + 0.32;
+				else if (Me.AttacksPerSecond < 0.87)
+					timer = Game.GameTime + 0.37;
+				else if (Me.AttacksPerSecond < 0.96)
+					timer = Game.GameTime + 0.4;
+				else if (Me.AttacksPerSecond < 1.10)
+					timer = Game.GameTime + 0.44;
+				else if (Me.AttacksPerSecond < 1.20)
+					timer = Game.GameTime + 0.47;
+				else if (Me.AttacksPerSecond < 1.45)
+					timer = Game.GameTime + 0.57;
+				Me.AttackTarget(target, false);
+				break;
+			case "npc_dota_hero_juggernaut":
+				if (Me.AttacksPerSecond < 0.27)
+					timer = Game.GameTime + 0.14;
+				else if (Me.AttacksPerSecond < 0.39)
+					timer = Game.GameTime + 0.17;
+				else if (Me.AttacksPerSecond < 0.48)
+					timer = Game.GameTime + 0.20;
+				else if (Me.AttacksPerSecond < 0.69)
+					timer = Game.GameTime + 0.24;
+				else if (Me.AttacksPerSecond < 0.85)
+					timer = Game.GameTime + 0.27;
+				else if (Me.AttacksPerSecond < 0.97)
+					timer = Game.GameTime + 0.30;
+				else if (Me.AttacksPerSecond < 1.12)
+					timer = Game.GameTime + 0.34;
+				Me.AttackTarget(target, false);
+				break;
+			case "npc_dota_hero_chaos_knight":
+				if (Me.AttacksPerSecond < 0.33)
+					timer = Game.GameTime + 0.17;
+				else if (Me.AttacksPerSecond < 0.38)
+					timer = Game.GameTime + 0.2;
+				else if (Me.AttacksPerSecond < 0.54)
+					timer = Game.GameTime + 0.27;
+				else if (Me.AttacksPerSecond < 0.42)
+					timer = Game.GameTime + 0.21;
+				else if (Me.AttacksPerSecond < 0.48)
+					timer = Game.GameTime + 0.24;
+				else if (Me.AttacksPerSecond < 0.67)
+					timer = Game.GameTime + 0.27;
+				else if (Me.AttacksPerSecond < 0.79)
+					timer = Game.GameTime + 0.31;
+				else if (Me.AttacksPerSecond < 0.87)
+					timer = Game.GameTime + 0.35;
+				else if (Me.AttacksPerSecond < 0.96)
+					timer = Game.GameTime + 0.37;
+				else if (Me.AttacksPerSecond < 1.10)
+					timer = Game.GameTime + 0.41;
+				else if (Me.AttacksPerSecond < 1.28)
+					timer = Game.GameTime + 0.44;
+				else if (Me.AttacksPerSecond < 1.5)
+					timer = Game.GameTime + 0.54;
+				Me.AttackTarget(target, false);
+				break;
+			default: return;
+		}
+	}
 })
 Events.on("onWndProc", (message_type, wParam) => {
 	if (!IsInGame() || parseInt(wParam as any) !== config.hotkey)
@@ -64,22 +149,12 @@ Events.on("onGameEnded", () => enabled = false)
 
 {
 	let root = new Menu_Node("Auto Crit")
-	root.entries.push(new Menu_Keybind (
+	root.entries.push(new Menu_Keybind(
 		"Hotkey",
 		config.hotkey,
 		"Hotkey is in toggle mode",
 		node => config.hotkey = node.value,
-	))
-	root.entries.push(new Menu_Combo (
-		"Method",
-		[
-			"Faster",
-			"Slower",
-		],
-		config.method,
-		"Choose slower mode only if ",
-		node => config.method = node.selected_id,
-	))
+	));
 	root.Update()
 	Menu.AddEntry(root)
 }
