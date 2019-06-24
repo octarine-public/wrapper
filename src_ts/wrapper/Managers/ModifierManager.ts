@@ -46,7 +46,7 @@ Events.on("onBuffRemoved", (npc, buffNative) => {
 	const buff = AllModifier.get(buffNative);
 	
 	if (buff === undefined)
-		throw Error("onBuffRemoved. buff undefined. " + npc + " " + buffNative)
+		return
 	
 	AllModifier.delete(buffNative);
 	
