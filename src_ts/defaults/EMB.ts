@@ -45,6 +45,11 @@ Events.on("onDraw", () => {
 			//off_x_text = screen_size.x * 0.017;
 			//off_y_text = screen_size.y * -0.003;
 			
+		} else if (screen_size.x === 1680 && screen_size.y === 1050) {
+			off_x = screen_size.x * -0.03095
+			off_y = screen_size.y * -0.01715
+			manabar_w = screen_size.x * 0.0583
+			manabar_h = screen_size.y * 0.0067
 		} else {
 			off_x = screen_size.x * -0.038;
 			off_y = screen_size.y * -0.01715;
