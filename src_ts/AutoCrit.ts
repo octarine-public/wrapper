@@ -45,88 +45,89 @@ Events.on("onUpdate", () => {
 		return false;
 	let Me = LocalPlayer.Hero;
 	if (timer <= Game.GameTime) {
+		let AttacksPerSecond = Me.AttacksPerSecond
 		switch (Me.Name) {
 			case "npc_dota_hero_phantom_assassin":
-				if (Me.AttacksPerSecond < 0.29)
+				if (AttacksPerSecond < 0.29)
 					timer = Game.GameTime + 0.14;
-				else if (Me.AttacksPerSecond < 0.35)
+				else if (AttacksPerSecond < 0.35)
 					timer = Game.GameTime + 0.15;
-				else if (Me.AttacksPerSecond < 0.54)
+				else if (AttacksPerSecond < 0.54)
 					timer = Game.GameTime + 0.17;
-				else if (Me.AttacksPerSecond < 0.71)
+				else if (AttacksPerSecond < 0.71)
 					timer = Game.GameTime + 0.20;
-				else if (Me.AttacksPerSecond < 0.86)
+				else if (AttacksPerSecond < 0.86)
 					timer = Game.GameTime + 0.24;
-				else if (Me.AttacksPerSecond < 1.08)
+				else if (AttacksPerSecond < 1.08)
 					timer = Game.GameTime + 0.27;
-				else if (Me.AttacksPerSecond < 1.24)
+				else if (AttacksPerSecond < 1.24)
 					timer = Game.GameTime + 0.3;
 				Me.AttackTarget(target, false);
 				break;
 			case "npc_dota_hero_skeleton_king":
-				if (Me.AttacksPerSecond < 0.29)
+				if (AttacksPerSecond < 0.29)
 					timer = Game.GameTime + 0.175;
-				else if (Me.AttacksPerSecond < 0.34)
+				else if (AttacksPerSecond < 0.34)
 					timer = Game.GameTime + 0.2;
-				else if (Me.AttacksPerSecond < 0.54)
+				else if (AttacksPerSecond < 0.54)
 					timer = Game.GameTime + 0.27;
-				else if (Me.AttacksPerSecond < 0.67)
+				else if (AttacksPerSecond < 0.67)
 					timer = Game.GameTime + 0.3;
-				else if (Me.AttacksPerSecond < 0.79)
+				else if (AttacksPerSecond < 0.79)
 					timer = Game.GameTime + 0.32;
-				else if (Me.AttacksPerSecond < 0.87)
+				else if (AttacksPerSecond < 0.87)
 					timer = Game.GameTime + 0.37;
-				else if (Me.AttacksPerSecond < 0.96)
+				else if (AttacksPerSecond < 0.96)
 					timer = Game.GameTime + 0.4;
-				else if (Me.AttacksPerSecond < 1.10)
+				else if (AttacksPerSecond < 1.10)
 					timer = Game.GameTime + 0.44;
-				else if (Me.AttacksPerSecond < 1.20)
+				else if (AttacksPerSecond < 1.20)
 					timer = Game.GameTime + 0.47;
-				else if (Me.AttacksPerSecond < 1.45)
+				else if (AttacksPerSecond < 1.45)
 					timer = Game.GameTime + 0.57;
 				Me.AttackTarget(target, false);
 				break;
 			case "npc_dota_hero_juggernaut":
-				if (Me.AttacksPerSecond < 0.27)
+				if (AttacksPerSecond < 0.27)
 					timer = Game.GameTime + 0.14;
-				else if (Me.AttacksPerSecond < 0.39)
+				else if (AttacksPerSecond < 0.39)
 					timer = Game.GameTime + 0.17;
-				else if (Me.AttacksPerSecond < 0.48)
+				else if (AttacksPerSecond < 0.48)
 					timer = Game.GameTime + 0.20;
-				else if (Me.AttacksPerSecond < 0.69)
+				else if (AttacksPerSecond < 0.69)
 					timer = Game.GameTime + 0.24;
-				else if (Me.AttacksPerSecond < 0.85)
+				else if (AttacksPerSecond < 0.85)
 					timer = Game.GameTime + 0.27;
-				else if (Me.AttacksPerSecond < 0.97)
+				else if (AttacksPerSecond < 0.97)
 					timer = Game.GameTime + 0.30;
-				else if (Me.AttacksPerSecond < 1.12)
+				else if (AttacksPerSecond < 1.12)
 					timer = Game.GameTime + 0.34;
 				Me.AttackTarget(target, false);
 				break;
 			case "npc_dota_hero_chaos_knight":
-				if (Me.AttacksPerSecond < 0.33)
+				if (AttacksPerSecond < 0.33)
 					timer = Game.GameTime + 0.17;
-				else if (Me.AttacksPerSecond < 0.38)
+				else if (AttacksPerSecond < 0.38)
 					timer = Game.GameTime + 0.2;
-				else if (Me.AttacksPerSecond < 0.54)
+				else if (AttacksPerSecond < 0.54)
 					timer = Game.GameTime + 0.27;
-				else if (Me.AttacksPerSecond < 0.42)
+				else if (AttacksPerSecond < 0.42)
 					timer = Game.GameTime + 0.21;
-				else if (Me.AttacksPerSecond < 0.48)
+				else if (AttacksPerSecond < 0.48)
 					timer = Game.GameTime + 0.24;
-				else if (Me.AttacksPerSecond < 0.67)
+				else if (AttacksPerSecond < 0.67)
 					timer = Game.GameTime + 0.27;
-				else if (Me.AttacksPerSecond < 0.79)
+				else if (AttacksPerSecond < 0.79)
 					timer = Game.GameTime + 0.31;
-				else if (Me.AttacksPerSecond < 0.87)
+				else if (AttacksPerSecond < 0.87)
 					timer = Game.GameTime + 0.35;
-				else if (Me.AttacksPerSecond < 0.96)
+				else if (AttacksPerSecond < 0.96)
 					timer = Game.GameTime + 0.37;
-				else if (Me.AttacksPerSecond < 1.10)
+				else if (AttacksPerSecond < 1.10)
 					timer = Game.GameTime + 0.41;
-				else if (Me.AttacksPerSecond < 1.28)
+				else if (AttacksPerSecond < 1.28)
 					timer = Game.GameTime + 0.44;
-				else if (Me.AttacksPerSecond < 1.5)
+				else if (AttacksPerSecond < 1.5)
 					timer = Game.GameTime + 0.54;
 				Me.AttackTarget(target, false);
 				break;
