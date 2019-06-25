@@ -280,10 +280,10 @@ function snatchItems(controllables: Unit[]) {
 
 	ground_items.forEach(item => {
 		let itemOwner = item.Item.OldOwner,
-			findInventory = item.Name === "item_cheese" ? 9 : 6;
-
+			can_take_backpack = item.Item.Name === "item_cheese";
+		
 		free_controllables.some((npc, index) => {
-			if (itemOwner === npc || !npc.IsAlive || !npc.IsInRange(item, takeRadius.value) || !npc.Inventory.HasFreeSlot(0, findInventory))
+			if (itemOwner === npc || !npc.IsAlive || !npc.IsInRange(item, takeRadius.value) || !(npc.Inventory.HasFreeSlotsInventory || (can_take_backpack && npc.Inventory.HasFreeSlotsBackpack)))
 				return false;
 
 			npc.PickupItem(item);
