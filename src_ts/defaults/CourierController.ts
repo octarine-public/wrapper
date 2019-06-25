@@ -101,7 +101,6 @@ EventsSDK.on("onEntityCreated", (ent: Entity) => {
 	}
 
 	if (ent instanceof Hero && !ent.IsIllusion) {
-
 		let findPlayer = allAllyPlayers.find(player => player.ent.Hero === ent);
 		if (findPlayer)
 			findPlayer.UpdateMenu()
