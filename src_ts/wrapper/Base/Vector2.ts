@@ -2,20 +2,10 @@ import Vector3 from "./Vector3";
 
 export default class Vector2 {
 	/* ================== Static ================== */
-	static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): Vector2 {
-
-		if (bufferOrOffset === undefined)
-			return new Vector2(IOBuffer[0], IOBuffer[1]);
-
-		if (typeof bufferOrOffset === "boolean") {
-
-			if (!bufferOrOffset)
-				return undefined;
-
-			bufferOrOffset = offset;
-		}
-
-		return new Vector2(IOBuffer[bufferOrOffset + 0], IOBuffer[bufferOrOffset + 1]);
+	static fromIOBuffer(buffer: boolean = true, offset: number = 0): Vector2 {
+		if (buffer !== true)
+			return undefined
+		return new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1]);
 	}
 	static fromArray(array: [number, number]): Vector2 {
 		return new Vector2(array[0] || 0, array[1] || 0)
