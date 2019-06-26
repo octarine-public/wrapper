@@ -196,8 +196,7 @@ EventsSDK.on("onDraw", () => {
 
 			let wts = RendererSDK.WorldToScreen(creep.Position)
 
-			if (wts.IsValid) {
-
+			if (wts !== undefined) {
 				let name = creep.Name
 					.replace("npc_dota_neutral_", "")
 					.split("_")
@@ -228,7 +227,7 @@ EventsSDK.on("onDraw", () => {
 
 				let wts = RendererSDK.WorldToScreen(pos)
 
-				if (wts.IsValid) {
+				if (wts !== undefined) {
 					Renderer.Text(wts.x, wts.y, target.Name,
 						phBloodColor.R.value,
 						phBloodColor.G.value,
@@ -245,7 +244,7 @@ EventsSDK.on("onDraw", () => {
 
 				let wts = RendererSDK.WorldToScreen(pos)
 
-				if (wts.IsValid) {
+				if (wts !== undefined) {
 
 					Renderer.Image(`~/other/npc_dota_${name}.png`, wts.x - 64 / 4, wts.y - 87 / 4, 64 / 2, 87 / 2)
 

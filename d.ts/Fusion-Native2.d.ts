@@ -434,7 +434,7 @@ declare interface Renderer {
 	Text(x: number, y: number, text: string, r?: number, g?: number, b?: number, a?: number, font_name?: string, font_size?: number, font_weight?: number, flags?: number): void
 	/**
 	 * @param pos world position that needs to be turned to screen position
-	 * @returns screen position, or invalid Vector2 (WorldToScreen(...).IsValid === false)
+	 * @returns screen position to IOBuffer if return value is true
 	 */
 	WorldToScreen(): boolean // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
 }

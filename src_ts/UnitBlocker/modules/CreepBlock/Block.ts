@@ -146,7 +146,7 @@ export function Draw(): string {
 
 			let wts = RendererSDK.WorldToScreen(unit.Position);
 
-			if (wts.IsValid)
+			if (wts !== undefined)
 				RendererSDK.Text(text, wts);
 		})
 	}

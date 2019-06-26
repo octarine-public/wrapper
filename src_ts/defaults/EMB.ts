@@ -60,9 +60,9 @@ Events.on("onDraw", () => {
 	
 	manabars.forEach(hero => {
 		let wts = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(hero.HealthBarOffset))
-		wts.AddScalarX(off_x).AddScalarY(off_y);
-		if (!wts.IsValid)
+		if (wts === undefined)
 			return;
+		wts.AddScalarX(off_x).AddScalarY(off_y);
 		let size = new Vector2(manabar_w, manabar_h);
 		RendererSDK.FilledRect(wts, size, Color.Black);
 		RendererSDK.FilledRect(wts, size.MultiplyScalarForThis((hero.Mana / hero.MaxMana)), Color.Blue);

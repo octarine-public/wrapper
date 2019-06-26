@@ -10,7 +10,7 @@ export default class Vector2 {
 		if (typeof bufferOrOffset === "boolean") {
 
 			if (!bufferOrOffset)
-				return new Vector2();
+				return undefined;
 
 			bufferOrOffset = offset;
 		}
