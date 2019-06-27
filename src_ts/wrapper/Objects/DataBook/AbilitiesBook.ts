@@ -8,14 +8,12 @@ const MAX_SKILLS = 24;
 export default class AbilitiesBook {
 	protected m_Unit: Unit
 	private m_pBaseEntity: C_DOTA_BaseNPC
+	m_hAbilities: C_DOTABaseAbility[]
 
 	constructor(ent: Unit) {
 		this.m_Unit = ent;
 		this.m_pBaseEntity = ent.m_pBaseEntity;
-	}
-	
-	get m_hAbilities(): C_DOTABaseAbility[] {
-		return this.m_pBaseEntity.m_hAbilities as C_DOTABaseAbility[];
+		this.m_hAbilities = this.m_pBaseEntity.m_hAbilities as C_DOTABaseAbility[]
 	}
 	
 	get CountSpells(): number {
