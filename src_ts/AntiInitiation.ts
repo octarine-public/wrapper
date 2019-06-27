@@ -132,7 +132,7 @@ var Abils_ = [
 		["shadow_shaman_voodoo", true, true],
 	],
 	[ // DisableAbils
-		["axe_berserkers_call", false],
+		["axe_berserkers_call", true],
 		["puck_waning_rift", true],
 		["crystal_maiden_frostbite", true],
 		["skywrath_mage_ancient_seal", true],
@@ -279,9 +279,9 @@ function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolea
 	return true;
 }
 Events.on("onTick", () => {
-	if (!MenuState.value || Game.IsPaused)
+	if (!MenuState.value || Game.IsPaused || LocalPlayer.Hero === undefined)
 		return;
-	const Me = LocalPlayer.Hero
+	const Me = LocalPlayer.Hero;
 	if (Me === undefined || !Me.IsAlive || Me.IsIllusion || Me.IsInvulnerable || Me.IsStunned)
 		return false;
 	let needed_heroes = heroes.filter(hero => hero.IsVisible && hero.IsAlive);
@@ -291,25 +291,22 @@ Events.on("onTick", () => {
 		return;
 });
 EventsSDK.on("onEntityCreated", (npc: Unit) => {
-	if (!MenuState.value)
-		return;
-	if (LocalPlayer === undefined || LocalPlayer.Hero === npc)
+	if (!MenuState.value || LocalPlayer.Hero === undefined || npc === undefined || LocalPlayer.Hero === npc)
 		return;
 	if (!npc.IsValid || !npc.IsHero || !npc.IsEnemy || !npc.IsAlive || npc.IsIllusion || !npc.IsVisible)
 		return;
-	heroes.push(npc)
+	heroes.push(npc);
 });
 EventsSDK.on("onEntityDestroyed", (npc: Unit) => ArrayExtensions.arrayRemove(heroes, npc));
 function TransformToAvailable(abil_arrays: Array<[string, boolean, boolean?]>): Array<[string, boolean, boolean?]> {
-	let Me = LocalPlayer.Hero;
-	if (Me === undefined)
+	if (LocalPlayer.Hero === undefined)
 		return;
-	let name = Me.Name;
+	let Me = LocalPlayer.Hero, name = Me.Name;
 	if (name === "npc_dota_hero_rubick" || name === "npc_dota_hero_morphling")
 		return abil_arrays;
 	return abil_arrays.filter(abilData => abilData[0].startsWith("item_") || GetAbilityByName(Me, abilData[0]) !== undefined);
 }
-Events.on("onGameStarted", Me => {
+Events.on("onGameStarted", (Me: C_DOTA_BaseNPC_Hero) => {
 	if (Me === undefined)
 		return;
 	Abils = TransformToAvailable(Abils_);

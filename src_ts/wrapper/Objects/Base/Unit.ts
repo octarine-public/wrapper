@@ -602,8 +602,12 @@ export default class Unit extends Entity {
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET))
 			return this.CastNoTarget(ability, queue, showEffects);
 
-		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT))
-			return this.CastPosition(ability, target as Vector3, queue, showEffects);
+		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
+			if (target instanceof Entity)
+				target = target.Position;
+
+			return this.CastPosition(ability, target, queue, showEffects);
+		}
 
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
 			return this.CastTarget(ability, target as Entity, showEffects);
