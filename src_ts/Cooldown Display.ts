@@ -1,12 +1,12 @@
 import {
 	ArrayExtensions,
+	Color,
 	EventsSDK,
+	MenuManager,
 	Hero,
 	RendererSDK,
 	Vector2,
 } from "wrapper/Imports"
-import {MenuManager} from "./wrapper/Imports"
-import Color from "./wrapper/Base/Color"
 
 let renderable_heroes: Hero[] = [],
 	heroes: Hero[] = []
@@ -49,9 +49,9 @@ let ignore_abils = [
 	"generic_hidden"
 ]
 EventsSDK.on("onDraw", () => {
+	if (!stateMain.value)
+		return
 	renderable_heroes.forEach(hero => {
-		if (!stateMain.value)
-			return
 		// loop-optimizer: FORWARD
 		let renderable_abils = hero.Spells.filter((abil, i) => {
 			let name = abil.Name
@@ -78,7 +78,7 @@ EventsSDK.on("onDraw", () => {
 				}
 				if (abil.Cooldown) {
 					let s = size.value / 3.5
-					let cd = abil.Cooldown.toFixed(1).toString()
+					let cd = abil.Cooldown
 					if (cd >= 10) {
 						if (cd < 100) {
 							s = size.value / 5
@@ -88,7 +88,14 @@ EventsSDK.on("onDraw", () => {
 						}
 					}
 					RendererSDK.FilledRect(need_pos, new Vector2(size.value, size.value), new Color(0, 0, 0, 150))
-					RendererSDK.Text(cd, need_pos.Add(new Vector2(s, 0)).Add(new Vector2(0, size.value / 2.9)), new Color(255, 255, 255), "Consolas", new Vector2(size.value / 3, 0), FontFlags_t.OUTLINE)
+					RendererSDK.Text (
+						cd.toFixed(1),
+						need_pos.AddScalarX(s).AddScalarY(size.value / 2.9),
+						new Color(255, 255, 255),
+						"Consolas",
+						new Vector2(size.value / 3, 0),
+						FontFlags_t.OUTLINE
+					)
 				}
 				RendererSDK.Text(abil.Level.toString(), need_pos.Add(new Vector2((size.value * (3 / 40)), (size.value * (13 / 20)))), new Color(255, 255, 255), "Consolas", new Vector2(size.value / 3, 0), FontFlags_t.OUTLINE)
 			}
