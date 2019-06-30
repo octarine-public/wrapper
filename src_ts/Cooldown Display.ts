@@ -67,12 +67,14 @@ EventsSDK.on("onDraw", () => {
 				let need_pos = (screen_pos.AddScalarX(size.value * i)).Add(new Vector2(panelx.value, 30 + panely.value)).Subtract(new Vector2(renderable_abils.length * (size.value / 2), 0))
 				RendererSDK.Image("panorama/images/spellicons/" + name + "_png.vtex_c", need_pos, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
 				if (abil.Level == 0) {
+					RendererSDK.FilledRect(need_pos, new Vector2(size.value, size.value), new Color(0, 0, 0, 150))
 					RendererSDK.OutlinedRect(need_pos, new Vector2(size.value, size.value), new Color(255, 0, 0, opacity.value))
 				}
 				else {
 					let r = 0, g = 255, b = 0
 					if (hero.Mana < abil.ManaCost) {
 						r = 0, g = 0, b = 255
+						RendererSDK.FilledRect(need_pos, new Vector2(size.value, size.value), new Color(0, 0, 0, 150))
 					}
 					RendererSDK.OutlinedRect(need_pos, new Vector2(size.value, size.value), new Color(r, g, b, opacity.value))
 				}
@@ -88,7 +90,7 @@ EventsSDK.on("onDraw", () => {
 						}
 					}
 					RendererSDK.FilledRect(need_pos, new Vector2(size.value, size.value), new Color(0, 0, 0, 150))
-					RendererSDK.Text (
+					RendererSDK.Text(
 						cd.toFixed(1),
 						need_pos.AddScalarX(s).AddScalarY(size.value / 2.9),
 						new Color(255, 255, 255),
@@ -97,7 +99,13 @@ EventsSDK.on("onDraw", () => {
 						FontFlags_t.OUTLINE
 					)
 				}
-				RendererSDK.Text(abil.Level.toString(), need_pos.Add(new Vector2((size.value * (3 / 40)), (size.value * (13 / 20)))), new Color(255, 255, 255), "Consolas", new Vector2(size.value / 3, 0), FontFlags_t.OUTLINE)
+				RendererSDK.Text(
+					abil.Level.toString(),
+					need_pos.AddScalarX(size.value * (3 / 40)).AddScalarY(size.value * (13 / 20)),
+					new Color(255, 255, 255, opacity.value),
+					"Consolas",
+					new Vector2(size.value / 3, 0),
+					FontFlags_t.OUTLINE)
 			}
 		}))
 	})
