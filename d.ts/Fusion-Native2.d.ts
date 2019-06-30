@@ -646,6 +646,7 @@ declare class CSeqMultiFetchFlag {
 declare class C_OP_PlaneCull extends CParticleFunctionOperator {
 	m_nPlaneControlPoint: number
 	m_vecPlaneDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_bLocalSpace: boolean
 	m_flPlaneOffset: number
 }
 
@@ -753,6 +754,280 @@ declare class PhysFeModelDesc_t {
 	m_nQuadVelocitySmoothIterations: number
 }
 
+declare class FeNodeBase_t {
+	nNode: number
+	readonly nDummy: number[]
+	nNodeX0: number
+	nNodeX1: number
+	nNodeY0: number
+	nNodeY1: number
+}
+
+declare class FeSimdNodeBase_t {
+	readonly nNode: number[]
+	readonly nNodeX0: number[]
+	readonly nNodeX1: number[]
+	readonly nNodeY0: number[]
+	readonly nNodeY1: number[]
+	readonly nDummy: number[]
+	readonly qAdjust: FourQuaternions
+}
+
+declare class FourQuaternions {
+}
+
+declare class FeQuad_t {
+	readonly nNode: number[]
+	flSlack: number
+}
+
+declare class FeSimdQuad_t {
+	readonly nNode: number[][]
+}
+
+declare class FeSimdTri_t {
+	readonly nNode: number[][]
+	readonly v2: FourVectors2D
+}
+
+declare class FourVectors2D {
+}
+
+declare class FeSimdRodConstraint_t {
+	readonly nNode: number[][]
+}
+
+declare class FeRodConstraint_t {
+	readonly nNode: number[]
+	flMaxDist: number
+	flMinDist: number
+	flWeight0: number
+	flRelaxationFactor: number
+}
+
+declare class FeAxialEdgeBend_t {
+	te: number
+	tv: number
+	flDist: number
+	readonly flWeight: number[]
+	readonly nNode: number[]
+}
+
+declare class FeCtrlOffset_t {
+	nCtrlParent: number
+	nCtrlChild: number
+	vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+}
+
+declare class FeCtrlOsOffset_t {
+	nCtrlParent: number
+	nCtrlChild: number
+}
+
+declare class FeFollowNode_t {
+	nParentNode: number
+	nChildNode: number
+	flWeight: number
+}
+
+declare class FeCollisionSphere_t {
+	nCtrlParent: number
+	nChildNode: number
+	m_flRFactor: number
+	m_vOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	flStickiness: number
+}
+
+declare class FeCollisionPlane_t {
+	nCtrlParent: number
+	nChildNode: number
+	readonly m_Plane: RnPlane_t
+	flStickiness: number
+}
+
+declare class RnPlane_t {
+	m_vNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flOffset: number
+}
+
+declare class FeNodeIntegrator_t {
+	flPointDamping: number
+	flAnimationForceAttraction: number
+	flAnimationVertexAttraction: number
+	flGravity: number
+}
+
+declare class FeSpringIntegrator_t {
+	readonly nNode: number[]
+	flSpringRestLength: number
+	flSpringConstant: number
+	flSpringDamping: number
+	flNodeWeight0: number
+}
+
+declare class FeSimdSpringIntegrator_t {
+	readonly nNode: number[][]
+}
+
+declare class FeWorldCollisionParams_t {
+	flWorldFriction: number
+	flGroundFriction: number
+	nListBegin: number
+	nListEnd: number
+}
+
+declare class FeTaperedCapsuleStretch_t {
+	readonly nNode: number[]
+	nCollisionMask: number
+	nDummy: number
+	readonly flRadius: number[]
+	flStickiness: number
+}
+
+declare class FeTaperedCapsuleRigid_t {
+	nNode: number
+	nCollisionMask: number
+	readonly vCenter: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly flRadius: number[]
+	flStickiness: number
+}
+
+declare class FeTreeChildren_t {
+	readonly nChild: number[]
+}
+
+declare class FeFitMatrix_t {
+	vCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	nEnd: number
+	nNode: number
+	nCtrl: number
+	nBeginDynamic: number
+}
+
+declare class FeSimdFitMatrices_t {
+	readonly nEnd: number[]
+	readonly nCtrl: number[]
+	readonly AqqInv: FourCovMatrices3
+}
+
+declare class FourCovMatrices3 {
+}
+
+declare class FeFitWeight_t {
+	flWeight: number
+	nNode: number
+	nDummy: number
+}
+
+declare class FeNodeReverseOffset_t {
+	nBoneCtrl: number
+	nTargetNode: number
+	vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+}
+
+declare class FeAnimStrayRadius_t {
+	readonly nNode: number[]
+	flMaxDist: number
+	flRelaxationFactor: number
+}
+
+declare class FeSimdAnimStrayRadius_t {
+	readonly nNode: number[][]
+}
+
+declare class FeKelagerBend2_t {
+	readonly flWeight: number[]
+	flHeight0: number
+	readonly nNode: number[]
+	nReserved: number
+}
+
+declare class FeCtrlSoftOffset_t {
+	nCtrlParent: number
+	nCtrlChild: number
+	vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	flAlpha: number
+}
+
+declare class CFeIndexedJiggleBone {
+	m_nNode: number
+	m_nJiggleParent: number
+	readonly m_jiggleBone: CFeJiggleBone
+}
+
+declare class CFeJiggleBone {
+	m_nFlags: number
+	m_flLength: number
+	m_flTipMass: number
+	m_flYawStiffness: number
+	m_flYawDamping: number
+	m_flPitchStiffness: number
+	m_flPitchDamping: number
+	m_flAlongStiffness: number
+	m_flAlongDamping: number
+	m_flAngleLimit: number
+	m_flMinYaw: number
+	m_flMaxYaw: number
+	m_flYawFriction: number
+	m_flYawBounce: number
+	m_flMinPitch: number
+	m_flMaxPitch: number
+	m_flPitchFriction: number
+	m_flPitchBounce: number
+	m_flBaseMass: number
+	m_flBaseStiffness: number
+	m_flBaseDamping: number
+	m_flBaseMinLeft: number
+	m_flBaseMaxLeft: number
+	m_flBaseLeftFriction: number
+	m_flBaseMinUp: number
+	m_flBaseMaxUp: number
+	m_flBaseUpFriction: number
+	m_flBaseMinForward: number
+	m_flBaseMaxForward: number
+	m_flBaseForwardFriction: number
+	m_flRadius0: number
+	m_flRadius1: number
+	m_vPoint0: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vPoint1: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_nCollisionMask: number
+}
+
+declare class FeTri_t {
+	readonly nNode: number[]
+	w1: number
+	w2: number
+	v1x: number
+	v2: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+}
+
+declare class FeBoxRigid_t {
+	nNode: number
+	nCollisionMask: number
+	vSize: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	flStickiness: number
+	readonly flReserved: number[]
+}
+
+declare class FeRigidColliderIndices_t {
+	m_nTaperedCapsuleRigidIndex: number
+	m_nSphereRigidIndex: number
+	m_nBoxRigidIndex: number
+	readonly m_nCollisionSphereIndex: number[]
+	m_nCollisionPlaneIndex: number
+}
+
+declare class FeMorphLayerDepr_t {
+	readonly m_Name: string
+	m_nNameHash: number
+	readonly m_Nodes: number[]
+	readonly m_InitPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
+	readonly m_Gravity: number[]
+	readonly m_GoalStrength: number[]
+	readonly m_GoalDamping: number[]
+	m_nFlags: number
+}
+
 declare class CCycleBase {
 	m_flCycle: number
 }
@@ -772,6 +1047,18 @@ declare class CRenderSkeleton {
 	readonly m_bones: RenderSkeletonBone_t[]
 	readonly m_boneParents: number[]
 	m_nBoneWeightCount: number
+}
+
+declare class RenderSkeletonBone_t {
+	readonly m_boneName: string
+	readonly m_parentName: string
+	readonly m_bbox: SkeletonBoneBounds_t
+	m_flSphereRadius: number
+}
+
+declare class SkeletonBoneBounds_t {
+	m_vecCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecSize: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CAnimStateConditionBase {
@@ -814,7 +1101,7 @@ declare class CSeqSeqDescFlag {
 }
 
 declare class C_OP_RemapCPVisibilityToScalar extends CParticleFunctionOperator {
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_nControlPoint: number
 	m_flInputMin: number
 	m_flInputMax: number
@@ -1019,6 +1306,13 @@ declare class CMorphRectData {
 	readonly m_bundleDatas: CMorphBundleData[]
 }
 
+declare class CMorphBundleData {
+	m_flULeftSrc: number
+	m_flVTopSrc: number
+	readonly m_offsets: number[]
+	readonly m_ranges: number[]
+}
+
 declare class EventServerPollNetworking_t extends EventSimulate_t {}
 
 declare class C_OP_DecayMaintainCount extends CParticleFunctionOperator {
@@ -1048,20 +1342,12 @@ declare class C_OP_PercentageBetweenCPsVector extends CParticleFunctionOperator 
 	m_vecOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nStartCP: number
 	m_nEndCP: number
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bActiveRange: boolean
 	m_bRadialCheck: boolean
 }
 
 declare class CParticleFunctionPreEmission extends CParticleFunctionOperator {}
-
-declare class FeKelagerBend2_t {
-	readonly flWeight: number[]
-	flHeight0: number
-	readonly nNode: number[]
-	nReserved: number
-}
 
 declare class CMorphSetData {
 	m_nWidth: number
@@ -1073,6 +1359,32 @@ declare class CMorphSetData {
 	readonly m_FlexDesc: CFlexDesc[]
 	readonly m_FlexControllers: CFlexController[]
 	readonly m_FlexRules: CFlexRule[]
+}
+
+declare class CMorphData {
+	readonly m_name: string
+	readonly m_morphRectDatas: CMorphRectData[]
+}
+
+declare class CFlexDesc {
+	readonly m_szFacs: string
+}
+
+declare class CFlexController {
+	readonly m_szName: string
+	readonly m_szType: string
+	min: number
+	max: number
+}
+
+declare class CFlexRule {
+	m_nFlex: number
+	readonly m_FlexOps: CFlexOp[]
+}
+
+declare class CFlexOp {
+	m_OpCode: FlexOpCode_t
+	m_Data: number
 }
 
 declare class InfoForResourceTypeCVMixListResource {}
@@ -1090,7 +1402,7 @@ declare class C_INIT_InitialSequenceFromModel extends CParticleFunctionInitializ
 	m_flInputMax: number
 	m_flOutputMin: number
 	m_flOutputMax: number
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class C_OP_VectorNoise extends CParticleFunctionOperator {
@@ -1126,44 +1438,6 @@ declare class CGeneralSpin extends CParticleFunctionOperator {
 	m_nSpinRateDegrees: number
 	m_nSpinRateMinDegrees: number
 	m_fSpinRateStopTime: number
-}
-
-declare class CFeJiggleBone {
-	m_nFlags: number
-	m_flLength: number
-	m_flTipMass: number
-	m_flYawStiffness: number
-	m_flYawDamping: number
-	m_flPitchStiffness: number
-	m_flPitchDamping: number
-	m_flAlongStiffness: number
-	m_flAlongDamping: number
-	m_flAngleLimit: number
-	m_flMinYaw: number
-	m_flMaxYaw: number
-	m_flYawFriction: number
-	m_flYawBounce: number
-	m_flMinPitch: number
-	m_flMaxPitch: number
-	m_flPitchFriction: number
-	m_flPitchBounce: number
-	m_flBaseMass: number
-	m_flBaseStiffness: number
-	m_flBaseDamping: number
-	m_flBaseMinLeft: number
-	m_flBaseMaxLeft: number
-	m_flBaseLeftFriction: number
-	m_flBaseMinUp: number
-	m_flBaseMaxUp: number
-	m_flBaseUpFriction: number
-	m_flBaseMinForward: number
-	m_flBaseMaxForward: number
-	m_flBaseForwardFriction: number
-	m_flRadius0: number
-	m_flRadius1: number
-	m_vPoint0: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vPoint1: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_nCollisionMask: number
 }
 
 declare class CAnimNodeBase {
@@ -1287,6 +1561,32 @@ declare class CSequenceTransitioner {
 	m_flInterpolatedTime: number
 }
 
+declare class CAnimationLayer {
+	readonly m_op: CNetworkedSequenceOperation
+	m_nOrder: number
+	m_bLooping: boolean
+	m_nNewSequenceParity: number
+	m_nFlags: number
+	m_bSequenceFinished: boolean
+	m_flKillRate: number
+	m_flKillDelay: number
+	m_flLayerAnimtime: number
+	m_flLayerFadeOuttime: number
+	m_nActivity: number
+	m_nPriority: number
+	m_flLastEventCycle: number
+	m_flLastAccess: number
+}
+
+declare class CNetworkedSequenceOperation {
+	m_flPrevCycle: number
+	m_flCycle: number
+	m_bSequenceChangeNetworked: boolean
+	m_bDiscontinuity: boolean
+	m_flPrevCycleFromDiscontinuity: number
+	m_flPrevCycleForAnimEventDetection: number
+}
+
 declare class CObstructionObject {
 	m_nObstructionProperties: number
 }
@@ -1304,10 +1604,6 @@ declare class C_INIT_CreateFromParentParticles extends CParticleFunctionInitiali
 	m_bRandomDistribution: boolean
 	m_nRandomSeed: number
 	m_bSubFrame: boolean
-}
-
-declare class FeSimdRodConstraint_t {
-	readonly nNode: number[][]
 }
 
 declare class C_OP_RenderStatusEffect extends CParticleFunctionRenderer {
@@ -1332,9 +1628,9 @@ declare class CSSDSMsg_EndFrame {
 	readonly m_Views: CSSDSEndFrameViewInfo[]
 }
 
-declare class SkeletonBoneBounds_t {
-	m_vecCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vecSize: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+declare class CSSDSEndFrameViewInfo {
+	m_nViewId: bigint
+	readonly m_ViewName: string
 }
 
 declare class AnimParamID {
@@ -1398,6 +1694,35 @@ declare class CFootCycle extends CCycleBase {}
 
 declare class CVPhysXSurfacePropertiesList {
 	readonly m_surfacePropertiesList: CPhysSurfaceProperties[]
+}
+
+declare class CPhysSurfaceProperties {
+	readonly m_name: string
+	m_nameHash: number
+	m_baseNameHash: number
+	m_bHidden: boolean
+	readonly m_description: string
+	readonly m_physics: CPhysSurfacePropertiesPhysics
+	readonly m_audioSounds: CPhysSurfacePropertiesSoundNames
+	readonly m_audioParams: CPhysSurfacePropertiesAudio
+}
+
+declare class CPhysSurfacePropertiesPhysics {
+	m_friction: number
+	m_elasticity: number
+	m_density: number
+	m_thickness: number
+	m_dampening: number
+}
+
+declare class CPhysSurfacePropertiesAudio {
+	m_reflectivity: number
+	m_hardnessFactor: number
+	m_roughnessFactor: number
+	m_roughThreshold: number
+	m_hardThreshold: number
+	m_hardVelocityThreshold: number
+	m_flStaticImpactVolume: number
 }
 
 declare class CAnimBoneDifference {
@@ -1479,6 +1804,7 @@ declare class C_INIT_InitSkinnedPositionFromCPSnapshot extends CParticleFunction
 
 declare class C_INIT_InitFloat extends CParticleFunctionInitializer {
 	readonly m_InputValue: CPerParticleFloatInput
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class VPhysXAggregateData_t {
@@ -1499,9 +1825,146 @@ declare class VPhysXAggregateData_t {
 	readonly m_embeddedKeyvalues: string
 }
 
+declare class VPhysXBodyPart_t {
+	m_nFlags: number
+	m_flMass: number
+	readonly m_rnShape: VPhysics2ShapeDef_t
+	readonly m_nSurfacepropertyIndices: number[]
+	m_nCollisionAttributeIndex: number
+	m_nReserved: number
+	m_flInertiaScale: number
+	m_flLinearDamping: number
+	m_flAngularDamping: number
+	m_bOverrideMassCenter: boolean
+	m_vMassCenterOverride: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+}
+
+declare class VPhysics2ShapeDef_t {
+	readonly m_spheres: RnSphereDesc_t[]
+	readonly m_capsules: RnCapsuleDesc_t[]
+	readonly m_hulls: RnHullDesc_t[]
+	readonly m_meshes: RnMeshDesc_t[]
+	readonly m_CollisionAttributeIndices: number[]
+}
+
+declare class RnSphereDesc_t extends RnShapeDesc_t {
+	readonly m_Sphere: RnSphere_t
+}
+
 declare class RnShapeDesc_t {
 	m_nCollisionAttributeIndex: number
 	m_nSurfacePropertyIndex: number
+}
+
+declare class RnSphere_t {
+	m_vCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flRadius: number
+}
+
+declare class RnCapsuleDesc_t extends RnShapeDesc_t {
+	readonly m_Capsule: RnCapsule_t
+}
+
+declare class RnHullDesc_t extends RnShapeDesc_t {
+	readonly m_Hull: RnHull_t
+}
+
+declare class RnHull_t {
+	m_vCentroid: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flMaxAngularRadius: number
+	readonly m_Vertices: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
+	readonly m_Planes: RnPlane_t[]
+	readonly m_Edges: RnHalfEdge_t[]
+	readonly m_Faces: RnFace_t[]
+	m_vOrthographicAreas: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flVolume: number
+	m_flMaxMotionRadius: number
+	m_flMinMotionThickness: number
+	readonly m_Bounds: AABB_t
+	m_nFlags: number
+}
+
+declare class RnHalfEdge_t {
+	m_nNext: number
+	m_nTwin: number
+	m_nOrigin: number
+	m_nFace: number
+}
+
+declare class AABB_t {
+	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+}
+
+declare class RnMeshDesc_t extends RnShapeDesc_t {
+	readonly m_Mesh: RnMesh_t
+}
+
+declare class RnMesh_t {
+	m_vMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_Nodes: RnNode_t[]
+	readonly m_Triangles: RnTriangle_t[]
+	readonly m_Materials: number[]
+	m_vOrthographicAreas: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+}
+
+declare class RnNode_t {
+	m_vMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_nChildren: number
+	m_vMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_nTriangleOffset: number
+}
+
+declare class RnTriangle_t {
+	readonly m_nIndex: number[]
+}
+
+declare class VPhysXConstraint2_t {
+	m_nFlags: number
+	m_nParent: number
+	m_nChild: number
+	readonly m_params: VPhysXConstraintParams_t
+}
+
+declare class VPhysXJoint_t {
+	m_nType: number
+	m_nBody1: number
+	m_nBody2: number
+	m_nFlags: number
+	m_bEnableCollision: boolean
+	m_bEnableLinearLimit: boolean
+	readonly m_LinearLimit: VPhysXRange_t
+	m_bEnableLinearMotor: boolean
+	m_vLinearTargetVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flMaxForce: number
+	m_bEnableSwingLimit: boolean
+	readonly m_SwingLimit: VPhysXRange_t
+	m_bEnableTwistLimit: boolean
+	readonly m_TwistLimit: VPhysXRange_t
+	m_bEnableAngularMotor: boolean
+	m_vAngularTargetVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flMaxTorque: number
+	m_flLinearFrequency: number
+	m_flLinearDampingRatio: number
+	m_flAngularFrequency: number
+	m_flAngularDampingRatio: number
+}
+
+declare class VPhysXRange_t {
+	m_flMin: number
+	m_flMax: number
+}
+
+declare class VPhysXCollisionAttributes_t {
+	m_CollisionGroup: number
+	readonly m_InteractAs: number[]
+	readonly m_InteractWith: number[]
+	readonly m_InteractExclude: number[]
+	readonly m_CollisionGroupString: string
+	readonly m_InteractAsStrings: string[]
+	readonly m_InteractWithStrings: string[]
+	readonly m_InteractExcludeStrings: string[]
 }
 
 declare class CAnimParameterBase {
@@ -1520,11 +1983,6 @@ declare class C_INIT_ModelCull extends CParticleFunctionInitializer {
 	m_bCullOutside: boolean
 	m_bUseBones: boolean
 	readonly m_HitboxSetName: number[]
-}
-
-declare class CFlexRule {
-	m_nFlex: number
-	readonly m_FlexOps: CFlexOp[]
 }
 
 declare class CAnimInputDamping {
@@ -1553,7 +2011,7 @@ declare class fogplayerparams_t {
 
 declare class C_OP_SetFloat extends CParticleFunctionOperator {
 	readonly m_InputValue: CPerParticleFloatInput
-	m_bScaleInitialValue: boolean
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class C_OP_DistanceBetweenCPsToCP extends CParticleFunctionPreEmission {
@@ -1679,11 +2137,6 @@ declare class JiggleData {
 	tipAccel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
-declare class RnSphere_t {
-	m_vCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flRadius: number
-}
-
 declare class CBoneConstraintPoseSpaceBone__Input_t {
 	m_inputValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
@@ -1694,6 +2147,21 @@ declare class PhysSoftbodyDesc_t {
 	readonly m_Springs: RnSoftbodySpring_t[]
 	readonly m_Capsules: RnSoftbodyCapsule_t[]
 	readonly m_ParticleBoneName: string[]
+}
+
+declare class RnSoftbodyParticle_t {
+	m_flMassInv: number
+}
+
+declare class RnSoftbodySpring_t {
+	readonly m_nParticle: number[]
+	m_flLength: number
+}
+
+declare class RnSoftbodyCapsule_t {
+	readonly m_vCenter: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flRadius: number
+	readonly m_nParticle: number[]
 }
 
 declare class CFootLockAnimNode extends CAnimNodeBase {
@@ -1718,6 +2186,13 @@ declare class CFootLockAnimNode extends CAnimNodeBase {
 	m_flTiltPlaneRollSpringStrength: number
 	m_bEnableHipDrop: boolean
 	m_flMaxIKExtension: number
+}
+
+declare class CFootLockItem {
+	readonly m_footName: string
+	readonly m_targetBoneName: string
+	readonly m_ikChainName: string
+	readonly m_disableTagID: AnimTagID
 }
 
 declare class CDOTA_Buff {
@@ -1757,6 +2232,15 @@ declare class CDOTA_Buff {
 	readonly m_hAuraUnits: C_BaseEntity[]
 }
 
+declare class CDOTA_BuffParticle {
+	readonly m_iIndex: ParticleIndex_t
+	m_iPriority: number
+	m_bDestroyImmediatly: boolean
+	m_bStatusEffect: boolean
+	m_bHeroEffect: boolean
+	m_bOverheadEffectOffset: boolean
+}
+
 declare class C_OP_RemapNamedModelElementOnceTimed extends CParticleFunctionOperator {
 	readonly m_inNames: string[]
 	readonly m_outNames: string[]
@@ -1773,7 +2257,7 @@ declare class C_INIT_RemapParticleCountToScalar extends CParticleFunctionInitial
 	m_nScaleControlPointField: number
 	m_flOutputMin: number
 	m_flOutputMax: number
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bActiveRange: boolean
 	m_bInvert: boolean
 	m_bWrap: boolean
@@ -1781,13 +2265,6 @@ declare class C_INIT_RemapParticleCountToScalar extends CParticleFunctionInitial
 }
 
 declare class VMapResourceData_t {}
-
-declare class FeCtrlSoftOffset_t {
-	nCtrlParent: number
-	nCtrlChild: number
-	vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	flAlpha: number
-}
 
 declare class IBotController {}
 
@@ -1809,13 +2286,6 @@ declare class C_OP_SetControlPointToHand extends CParticleFunctionPreEmission {
 	m_nHand: number
 	m_vecCP1Pos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bOrientToHand: boolean
-}
-
-declare class CMorphBundleData {
-	m_flULeftSrc: number
-	m_flVTopSrc: number
-	readonly m_offsets: number[]
-	readonly m_ranges: number[]
 }
 
 declare class DamageShareEvent_t {
@@ -1872,15 +2342,6 @@ declare class InfoForResourceTypeCVSoundEventScriptList {}
 
 declare class InfoForResourceTypeCTextureBase {}
 
-declare class FeNodeBase_t {
-	nNode: number
-	readonly nDummy: number[]
-	nNodeX0: number
-	nNodeX1: number
-	nNodeY0: number
-	nNodeY1: number
-}
-
 declare class ModelBoneFlexDriverControl_t {
 	m_nBoneComponent: ModelBoneFlexComponent_t
 	readonly m_flexController: string
@@ -1908,8 +2369,7 @@ declare class C_OP_SequenceFromModel extends CParticleFunctionOperator {
 	m_flInputMax: number
 	m_flOutputMin: number
 	m_flOutputMax: number
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class C_OP_SetCPOrientationToGroundNormal extends CParticleFunctionOperator {
@@ -1932,6 +2392,7 @@ declare class C_OP_CycleScalar extends CParticleFunctionOperator {
 	m_nCPScale: number
 	m_nCPFieldMin: number
 	m_nCPFieldMax: number
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class CBasePathAnimMotor extends CBaseAnimMotor {
@@ -1944,7 +2405,7 @@ declare class CResponseCriteriaSet {
 }
 
 declare class C_OP_RemapCPVisibilityToVector extends CParticleFunctionOperator {
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_nControlPoint: number
 	m_flInputMin: number
 	m_flInputMax: number
@@ -1964,6 +2425,160 @@ declare class CSequenceGroupData {
 	readonly m_localBoneMaskArray: CSeqBoneMaskList[]
 	readonly m_localPoseParamArray: CSeqPoseParamDesc[]
 	readonly m_localIKAutoplayLockArray: CSeqIKLock[]
+}
+
+declare class CSeqS1SeqDesc {
+	readonly m_flags: CSeqSeqDescFlag
+	readonly m_fetch: CSeqMultiFetch
+	m_nLocalWeightlist: number
+	readonly m_autoLayerArray: CSeqAutoLayer[]
+	readonly m_IKLockArray: CSeqIKLock[]
+	readonly m_transition: CSeqTransition
+	readonly m_activityArray: CAnimActivity[]
+	readonly m_footMotion: CFootMotion[]
+}
+
+declare class CSeqMultiFetch {
+	readonly m_flags: CSeqMultiFetchFlag
+	readonly m_localReferenceArray: number[]
+	readonly m_nGroupSize: number[]
+	readonly m_nLocalPose: number[]
+	readonly m_poseKeyArray0: number[]
+	readonly m_poseKeyArray1: number[]
+	m_nLocalCyclePoseParameter: number
+	m_bCalculatePoseParameters: boolean
+}
+
+declare class CSeqAutoLayer {
+	m_nLocalReference: number
+	m_nLocalPose: number
+	readonly m_flags: CSeqAutoLayerFlag
+	m_start: number
+	m_peak: number
+	m_tail: number
+	m_end: number
+}
+
+declare class CSeqAutoLayerFlag {
+	m_bPost: boolean
+	m_bSpline: boolean
+	m_bXFade: boolean
+	m_bNoBlend: boolean
+	m_bLocal: boolean
+	m_bPose: boolean
+	m_bFetchFrame: boolean
+	m_bSubtract: boolean
+}
+
+declare class CSeqIKLock {
+	m_flPosWeight: number
+	m_flAngleWeight: number
+	m_nLocalBone: number
+	m_bBonesOrientedAlongPositiveX: boolean
+}
+
+declare class CSeqTransition {
+	m_flFadeInTime: number
+	m_flFadeOutTime: number
+}
+
+declare class CAnimActivity {
+	m_nActivity: number
+	m_nFlags: number
+	m_nWeight: number
+}
+
+declare class CFootMotion {
+	readonly m_strides: CFootStride[]
+	readonly m_name: string
+}
+
+declare class CFootStride {
+	readonly m_definition: CFootCycleDefinition
+	readonly m_trajectories: CFootTrajectories
+}
+
+declare class CFootCycleDefinition {
+	m_vStancePositionMS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vStanceDirectionMS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vToStrideStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flMaxExtent: number
+	readonly m_footLiftCycle: CFootCycle
+	readonly m_footOffCycle: CFootCycle
+	readonly m_footStrikeCycle: CFootCycle
+	readonly m_footLandCycle: CFootCycle
+	readonly m_stanceCycle: CAnimCycle
+	m_bIsInPlace: boolean
+}
+
+declare class CAnimCycle extends CCycleBase {}
+
+declare class CFootTrajectories {
+	readonly m_trajectories: CFootTrajectory[]
+}
+
+declare class CFootTrajectory {
+	m_vPositionOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flProgression: number
+}
+
+declare class CSeqSynthAnimDesc {
+	readonly m_flags: CSeqSeqDescFlag
+	readonly m_transition: CSeqTransition
+	m_nLocalBaseReference: number
+	m_nLocalBoneMask: number
+	readonly m_activityArray: CAnimActivity[]
+}
+
+declare class CSeqCmdSeqDesc {
+	readonly m_flags: CSeqSeqDescFlag
+	readonly m_transition: CSeqTransition
+	m_nFrameRangeSequence: number
+	m_nFrameCount: number
+	m_flFPS: number
+	m_nSubCycles: number
+	m_numLocalResults: number
+	readonly m_cmdLayerArray: CSeqCmdLayer[]
+	readonly m_eventArray: CAnimAnimEvent[]
+	readonly m_activityArray: CAnimActivity[]
+	readonly m_poseSettingArray: CSeqPoseSetting[]
+}
+
+declare class CSeqCmdLayer {
+	m_cmd: number
+	m_nLocalReference: number
+	m_nLocalBonemask: number
+	m_nDstResult: number
+	m_nSrcResult: number
+	m_bSpline: boolean
+	m_flVar1: number
+	m_flVar2: number
+	m_nLineNumber: number
+}
+
+declare class CAnimAnimEvent {
+	m_nFrame: number
+	m_flCycle: number
+}
+
+declare class CSeqPoseSetting {
+	m_flValue: number
+	m_bX: boolean
+	m_bY: boolean
+	m_bZ: boolean
+	m_eType: number
+}
+
+declare class CSeqBoneMaskList {
+	readonly m_nLocalBoneArray: number[]
+	readonly m_flBoneWeightArray: number[]
+}
+
+declare class CSeqPoseParamDesc {
+	m_flStart: number
+	m_flEnd: number
+	m_flLoop: number
+	m_bLooping: boolean
 }
 
 declare class C_INIT_RemapParticleCountToNamedModelElementScalar extends C_INIT_RemapParticleCountToScalar {
@@ -2001,14 +2616,6 @@ declare class sBounceInfo {
 	iAttackIndex: number
 	iBounceCount: number
 	readonly hAlreadyHitList: C_BaseEntity[]
-}
-
-declare class FeAxialEdgeBend_t {
-	te: number
-	tv: number
-	flDist: number
-	readonly flWeight: number[]
-	readonly nNode: number[]
 }
 
 declare class AnimStateID {
@@ -2065,20 +2672,6 @@ declare class C_OP_RemapCPtoCP extends CParticleFunctionPreEmission {
 	m_flOutputMax: number
 }
 
-declare class FourQuaternions {
-}
-
-declare class CSeqAutoLayerFlag {
-	m_bPost: boolean
-	m_bSpline: boolean
-	m_bXFade: boolean
-	m_bNoBlend: boolean
-	m_bLocal: boolean
-	m_bPose: boolean
-	m_bFetchFrame: boolean
-	m_bSubtract: boolean
-}
-
 declare class CSkeletalInputAnimNode extends CAnimNodeBase {
 	m_motionRange: AnimVRHandMotionRange_t
 	m_bEnableIK: boolean
@@ -2122,6 +2715,12 @@ declare class CAttributeManager {
 	m_ProviderType: attributeprovidertypes_t
 }
 
+declare class CAttributeManager__cached_attribute_float_t {
+	flIn: number
+	readonly iAttribHook: string
+	flOut: number
+}
+
 declare class Extent {
 	lo: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	hi: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
@@ -2136,14 +2735,6 @@ declare class sControlGroupElem {
 	readonly m_IllusionLabel: number[]
 }
 
-declare class CSeqPoseSetting {
-	m_flValue: number
-	m_bX: boolean
-	m_bY: boolean
-	m_bZ: boolean
-	m_eType: number
-}
-
 declare class C_INIT_GlobalScale extends CParticleFunctionInitializer {
 	m_flScale: number
 	m_nScaleControlPointNumber: number
@@ -2151,14 +2742,6 @@ declare class C_INIT_GlobalScale extends CParticleFunctionInitializer {
 	m_bScaleRadius: boolean
 	m_bScalePosition: boolean
 	m_bScaleVelocity: boolean
-}
-
-declare class FeTaperedCapsuleRigid_t {
-	nNode: number
-	nCollisionMask: number
-	readonly vCenter: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly flRadius: number[]
-	flStickiness: number
 }
 
 declare class CDOTA_ItemStockInfo {
@@ -2258,13 +2841,29 @@ declare class MaterialResourceData_t {
 	readonly m_renderAttributesUsed: string[]
 }
 
-declare class CNetworkedSequenceOperation {
-	m_flPrevCycle: number
-	m_flCycle: number
-	m_bSequenceChangeNetworked: boolean
-	m_bDiscontinuity: boolean
-	m_flPrevCycleFromDiscontinuity: number
-	m_flPrevCycleForAnimEventDetection: number
+declare class MaterialParamInt_t extends MaterialParam_t {
+	m_nValue: number
+}
+
+declare class MaterialParam_t {
+	readonly m_name: string
+}
+
+declare class MaterialParamFloat_t extends MaterialParam_t {
+	m_flValue: number
+}
+
+declare class MaterialParamVector_t extends MaterialParam_t {
+}
+
+declare class MaterialParamTexture_t extends MaterialParam_t {
+}
+
+declare class MaterialParamBuffer_t extends MaterialParam_t {
+}
+
+declare class MaterialParamString_t extends MaterialParam_t {
+	readonly m_value: string
 }
 
 declare class C_OP_ConstrainDistance extends CParticleFunctionConstraint {
@@ -2330,24 +2929,6 @@ declare class C_OP_MovementRigidAttachToCP extends CParticleFunctionOperator {
 	m_bOffsetLocal: boolean
 }
 
-declare class RnTriangle_t {
-	readonly m_nIndex: number[]
-}
-
-declare class CSeqTransition {
-	m_flFadeInTime: number
-	m_flFadeOutTime: number
-}
-
-declare class CDOTA_BuffParticle {
-	readonly m_iIndex: ParticleIndex_t
-	m_iPriority: number
-	m_bDestroyImmediatly: boolean
-	m_bStatusEffect: boolean
-	m_bHeroEffect: boolean
-	m_bOverheadEffectOffset: boolean
-}
-
 declare class C_OP_RemapScalarOnceTimed extends CParticleFunctionOperator {
 	m_bProportional: boolean
 	m_flInputMin: number
@@ -2397,18 +2978,12 @@ declare class CIntAnimParameter extends CAnimParameterBase {
 declare class C_INIT_RemapNamedModelElementToScalar extends CParticleFunctionInitializer {
 	readonly m_names: string[]
 	readonly m_values: number[]
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bModelFromRenderer: boolean
 }
 
 declare class C_OP_RadiusDecay extends CParticleFunctionOperator {
 	m_flMinRadius: number
-}
-
-declare class FeAnimStrayRadius_t {
-	readonly nNode: number[]
-	flMaxDist: number
-	flRelaxationFactor: number
 }
 
 declare class CDirectPlaybackAnimNode extends CAnimNodeBase {
@@ -2426,12 +3001,14 @@ declare class C_OP_LockToPointList extends CParticleFunctionOperator {
 	m_nNumPointsAlongPath: number
 }
 
-declare class ModelReference_t {
-	m_flRelativeProbabilityOfSpawn: number
+declare class PointDefinition_t {
+	m_nControlPoint: number
+	m_bLocalCoords: boolean
+	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
-declare class RnCapsuleDesc_t extends RnShapeDesc_t {
-	readonly m_Capsule: RnCapsule_t
+declare class ModelReference_t {
+	m_flRelativeProbabilityOfSpawn: number
 }
 
 declare class CAnimGraphDebugReplay {
@@ -2529,17 +3106,9 @@ declare class C_OP_RemapCPtoVector extends CParticleFunctionOperator {
 	m_flStartTime: number
 	m_flEndTime: number
 	m_flInterpRate: number
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bOffset: boolean
 	m_bAccelerate: boolean
-}
-
-declare class FeWorldCollisionParams_t {
-	flWorldFriction: number
-	flGroundFriction: number
-	nListBegin: number
-	nListEnd: number
 }
 
 declare class InfoForResourceTypeCSequenceGroupData {}
@@ -2551,7 +3120,7 @@ declare class C_OP_SetControlPointToCenter extends CParticleFunctionPreEmission 
 
 declare class CBaseRendererSource2 extends CParticleFunctionRenderer {
 	m_flAnimationRate: number
-	m_bFitCycleToLifetime: boolean
+	m_nAnimationType: AnimationType_t
 	m_bAnimateInFPS: boolean
 	m_bPerVertexLighting: boolean
 	m_flSelfIllumAmount: number
@@ -2615,10 +3184,6 @@ declare class MaterialOverride_t extends BaseSceneObjectOverride_t {
 declare class SheetFrameImage_t {
 	readonly uvCropped: boolean[] // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly uvUncropped: boolean[] // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-}
-
-declare class MaterialParam_t {
-	readonly m_name: string
 }
 
 declare class InfoForResourceTypeCResourceManifestInternal {}
@@ -2749,7 +3314,7 @@ declare class C_OP_DifferencePreviousParticle extends CParticleFunctionOperator 
 	m_flInputMax: number
 	m_flOutputMin: number
 	m_flOutputMax: number
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bActiveRange: boolean
 	m_bSetPreviousParticle: boolean
 }
@@ -2759,6 +3324,21 @@ declare class CBaseConstraint extends CBoneConstraintBase {
 	m_vUpVector: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_slaves: CConstraintSlave[]
 	readonly m_targets: CConstraintTarget[]
+}
+
+declare class CConstraintSlave {
+	m_nBoneHash: number
+	m_flWeight: number
+	m_vBasePosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_sName: string
+}
+
+declare class CConstraintTarget {
+	m_nBoneHash: number
+	m_flWeight: number
+	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_bIsAttachment: boolean
+	readonly m_sName: string
 }
 
 declare class CPathStatusCondition extends CAnimStateConditionBase {
@@ -2913,14 +3493,6 @@ declare class C_OP_SetControlPointFieldToWater extends CParticleFunctionPreEmiss
 	m_nCPField: number
 }
 
-declare class CPhysSurfacePropertiesPhysics {
-	m_friction: number
-	m_elasticity: number
-	m_density: number
-	m_thickness: number
-	m_dampening: number
-}
-
 declare class EventClientPostOutput_t {
 	readonly m_LoopState: EngineLoopState_t
 	m_flRenderTime: number
@@ -2942,22 +3514,6 @@ declare class C_INIT_CreateSpiralSphere extends CParticleFunctionInitializer {
 	m_flInitialSpeedMin: number
 	m_flInitialSpeedMax: number
 	m_bUseParticleCount: boolean
-}
-
-declare class FeNodeIntegrator_t {
-	flPointDamping: number
-	flAnimationForceAttraction: number
-	flAnimationVertexAttraction: number
-	flGravity: number
-}
-
-declare class RnMesh_t {
-	m_vMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly m_Nodes: RnNode_t[]
-	readonly m_Triangles: RnTriangle_t[]
-	readonly m_Materials: number[]
-	m_vOrthographicAreas: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CAimConstraint extends CBaseConstraint {
@@ -3019,12 +3575,6 @@ declare class ControlPointReference_t {
 	m_bOffsetInLocalSpace: boolean
 }
 
-declare class FeFollowNode_t {
-	nParentNode: number
-	nChildNode: number
-	flWeight: number
-}
-
 declare class CovMatrix3 {
 	m_vDiag: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flXY: number
@@ -3072,12 +3622,6 @@ declare class CreatureAbilityData_t {
 	nAbilityType: CreatureAbilityType
 }
 
-declare class RnSoftbodyCapsule_t {
-	readonly m_vCenter: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flRadius: number
-	readonly m_nParticle: number[]
-}
-
 declare class IEconItemInterface {}
 
 declare class CAttributeList {
@@ -3105,11 +3649,6 @@ declare class CGeneralRandomRotation extends CParticleFunctionInitializer {
 	m_flDegrees: number
 	m_flRotationRandExponent: number
 	m_bRandomlyFlipDirection: boolean
-}
-
-declare class RnPlane_t {
-	m_vNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flOffset: number
 }
 
 declare class CAnimDesc_Flag {
@@ -3215,6 +3754,14 @@ declare class CModelState {
 
 declare class CNetworkedIKContext {
 	readonly m_ProceduralTargetContexts: CNetworkedIKProceduralTargetContext[]
+}
+
+declare class CNetworkedIKProceduralTargetContext {
+	m_nChainIndex: number
+	m_nRuleIndex: number
+	m_vTargetPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flWeight: number
+	m_bIsValid: boolean
 }
 
 declare class C_INIT_RandomScalar extends CParticleFunctionInitializer {
@@ -3326,6 +3873,10 @@ declare class C_OP_ConstrainDistanceToUserSpecifiedPath extends CParticleFunctio
 	readonly m_pointList: PointDefinitionWithTimeValues_t[]
 }
 
+declare class PointDefinitionWithTimeValues_t extends PointDefinition_t {
+	m_flTimeDuration: number
+}
+
 declare class C_INIT_RemapScalarToVector extends CParticleFunctionInitializer {
 	m_flInputMin: number
 	m_flInputMax: number
@@ -3333,7 +3884,7 @@ declare class C_INIT_RemapScalarToVector extends CParticleFunctionInitializer {
 	m_vecOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartTime: number
 	m_flEndTime: number
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_nControlPointNumber: number
 	m_bLocalCoords: boolean
 	m_flRemapBias: number
@@ -3342,20 +3893,6 @@ declare class C_INIT_RemapScalarToVector extends CParticleFunctionInitializer {
 declare class VPhysXDiskShapeHeader_t {
 	m_nType: number
 	m_nCollisionAttribute: number
-}
-
-declare class FeMorphLayerDepr_t {
-	readonly m_Name: string
-	m_nNameHash: number
-	readonly m_Nodes: number[]
-	readonly m_InitPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
-	readonly m_Gravity: number[]
-	readonly m_GoalStrength: number[]
-	readonly m_GoalDamping: number[]
-	m_nFlags: number
-}
-
-declare class FourCovMatrices3 {
 }
 
 declare class IKSolverSettings_t {
@@ -3379,14 +3916,6 @@ declare class C_OP_RemapNamedModelElementEndCap extends CParticleFunctionOperato
 	readonly m_outNames: string[]
 	readonly m_fallbackNames: string[]
 	m_bModelFromRenderer: boolean
-}
-
-declare class FeFitMatrix_t {
-	vCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	nEnd: number
-	nNode: number
-	nCtrl: number
-	nBeginDynamic: number
 }
 
 declare class C_OP_RenderDeferredLight extends CParticleFunctionRenderer {
@@ -3439,14 +3968,6 @@ declare class C_OP_LerpEndCapScalar extends CParticleFunctionOperator {
 	m_flLerpTime: number
 }
 
-declare class CConstraintTarget {
-	m_nBoneHash: number
-	m_flWeight: number
-	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_bIsAttachment: boolean
-	readonly m_sName: string
-}
-
 declare class CPathAnimMotor extends CBasePathAnimMotor {}
 
 declare class CPassengerSeat {
@@ -3454,6 +3975,11 @@ declare class CPassengerSeat {
 	m_nAttachmentID: number
 	readonly m_EntryTransitions: CPassengerSeatTransition[]
 	readonly m_ExitTransitions: CPassengerSeatTransition[]
+}
+
+declare class CPassengerSeatTransition {
+	readonly m_strAnimationName: string
+	m_nPriority: number
 }
 
 declare class C_INIT_RandomLifeTime extends CParticleFunctionInitializer {
@@ -3488,11 +4014,6 @@ declare class HeroDeathRecord_t {
 	nVictimPlayerID: number
 	fTime: number
 	fTimeRespawn: number
-}
-
-declare class AABB_t {
-	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class C_INIT_OffsetVectorToVector extends CParticleFunctionInitializer {
@@ -3531,6 +4052,20 @@ declare class CAnimStateList {
 	readonly m_states: CAnimState[]
 }
 
+declare class CAnimState {
+	readonly m_tags: AnimTagID[]
+	readonly m_tagBehaviors: number[]
+	readonly m_name: string
+	readonly m_childNodeID: AnimNodeID
+	readonly m_stateID: AnimStateID
+	m_position: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_bIsStartState: boolean
+	m_bIsEndtState: boolean
+	m_bIsPassthrough: boolean
+	m_bIsRootMotionExclusive: boolean
+	m_bExclusiveFootMotion: boolean
+}
+
 declare class IRecipientFilter {}
 
 declare class C_INIT_CreateSequentialPath extends CParticleFunctionInitializer {
@@ -3547,6 +4082,20 @@ declare class PermEntityLumpData_t {
 	m_flags: EntityLumpFlags_t
 	readonly m_manifestName: string
 	readonly m_entityKeyValues: EntityKeyValueData_t[]
+}
+
+declare class EntityKeyValueData_t {
+	readonly m_connections: EntityIOConnectionData_t[]
+}
+
+declare class EntityIOConnectionData_t {
+	readonly m_outputName: string
+	m_targetType: number
+	readonly m_targetName: string
+	readonly m_inputName: string
+	readonly m_overrideParam: string
+	m_flDelay: number
+	m_nTimesToFire: number
 }
 
 declare class C_OP_ConnectParentParticleToNearest extends CParticleFunctionOperator {
@@ -3699,21 +4248,6 @@ declare class C_INIT_InitialVelocityFromHitbox extends CParticleFunctionInitiali
 	m_bUseBones: boolean
 }
 
-declare class RnNode_t {
-	m_vMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_nChildren: number
-	m_vMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_nTriangleOffset: number
-}
-
-declare class CSeqSynthAnimDesc {
-	readonly m_flags: CSeqSeqDescFlag
-	readonly m_transition: CSeqTransition
-	m_nLocalBaseReference: number
-	m_nLocalBoneMask: number
-	readonly m_activityArray: CAnimActivity[]
-}
-
 declare class CVariantDefaultAllocator {}
 
 declare class FeEdgeDesc_t {
@@ -3729,16 +4263,12 @@ declare class C_INIT_RemapScalar extends CParticleFunctionInitializer {
 	m_flOutputMax: number
 	m_flStartTime: number
 	m_flEndTime: number
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bActiveRange: boolean
 	m_flRemapBias: number
 }
 
 declare class CStateMachineAnimNode extends CAnimNodeBase {
-}
-
-declare class MaterialParamInt_t extends MaterialParam_t {
-	m_nValue: number
 }
 
 declare class TransitioningLayer_t {
@@ -3806,40 +4336,9 @@ declare class C_OP_InheritFromParentParticlesV2 extends CParticleFunctionOperato
 	m_nMissingParentBehavior: MissingParentInheritBehavior_t
 }
 
-declare class FeCtrlOffset_t {
-	nCtrlParent: number
-	nCtrlChild: number
-	vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-}
-
-declare class FeTri_t {
-	readonly nNode: number[]
-	w1: number
-	w2: number
-	v1x: number
-	v2: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-}
-
 declare class IKTargetSettings_t {
 	m_TargetSource: IKTargetSource
 	readonly m_Bone: IKBoneNameAndIndex_t
-}
-
-declare class CAnimationLayer {
-	readonly m_op: CNetworkedSequenceOperation
-	m_nOrder: number
-	m_bLooping: boolean
-	m_nNewSequenceParity: number
-	m_nFlags: number
-	m_bSequenceFinished: boolean
-	m_flKillRate: number
-	m_flKillDelay: number
-	m_flLayerAnimtime: number
-	m_flLayerFadeOuttime: number
-	m_nActivity: number
-	m_nPriority: number
-	m_flLastEventCycle: number
-	m_flLastAccess: number
 }
 
 declare class CBaseTrailRenderer extends CBaseRendererSource2 {
@@ -3904,17 +4403,6 @@ declare class CLocalNPCObstructionsCache {
 }
 
 declare class IDamageHandler {}
-
-declare class CFlexOp {
-	m_OpCode: FlexOpCode_t
-	m_Data: number
-}
-
-declare class FeFitWeight_t {
-	flWeight: number
-	nNode: number
-	nDummy: number
-}
 
 declare class C_DOTAGamerules extends C_TeamplayRules {
 	readonly __m_pChainEntity: CNetworkVarChainer
@@ -4106,6 +4594,21 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_NeutralSpawnBoxes: NeutralSpawnBoxes_t[]
 }
 
+declare class CHeroesPerPlayer {
+	readonly m_vecHeroIDs: number[]
+}
+
+declare class CHeroStatueLiked {
+	m_iPlayerIDLiker: number
+	m_iPlayerIDLiked: number
+}
+
+declare class NeutralSpawnBoxes_t {
+	readonly neutralSpawnBoxes: AABB_t
+	vSpawnBoxOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly strCampName: string
+}
+
 declare class CEntityIOOutput {
 }
 
@@ -4155,19 +4658,16 @@ declare class CInteractionManager {
 	readonly m_vecHandInteractions: interactions_data_t[]
 }
 
+declare class prevent_interaction_t {
+	m_hEntity: C_BaseEntity
+	m_flUntilTime: number
+}
+
 declare class C_INIT_SequenceFromCP extends CParticleFunctionInitializer {
 	m_bKillUnused: boolean
 	m_bRadiusScale: boolean
 	m_nCP: number
 	m_vecOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-}
-
-declare class FeBoxRigid_t {
-	nNode: number
-	nCollisionMask: number
-	vSize: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	flStickiness: number
-	readonly flReserved: number[]
 }
 
 declare class CBoneMaskAnimNode extends CAnimNodeBase {
@@ -4199,26 +4699,6 @@ declare class TimedEvent {
 }
 
 declare class C_INIT_RandomNamedModelMeshGroup extends C_INIT_RandomNamedModelElement {}
-
-declare class CPhysSurfacePropertiesAudio {
-	m_reflectivity: number
-	m_hardnessFactor: number
-	m_roughnessFactor: number
-	m_roughThreshold: number
-	m_hardThreshold: number
-	m_hardVelocityThreshold: number
-	m_flStaticImpactVolume: number
-}
-
-declare class FeSimdNodeBase_t {
-	readonly nNode: number[]
-	readonly nNodeX0: number[]
-	readonly nNodeX1: number[]
-	readonly nNodeY0: number[]
-	readonly nNodeY1: number[]
-	readonly nDummy: number[]
-	readonly qAdjust: FourQuaternions
-}
 
 declare class VelocitySampler {
 	m_prevSample: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
@@ -4297,6 +4777,25 @@ declare class CAnimRetargetData {
 	readonly m_chain: CAnimRetargetChainData[]
 }
 
+declare class CAnimRetargetElementData {
+	m_nElementType: number
+	m_nGroupType: number
+	m_nChainType: number
+	m_nChainIndex: number
+	m_nChainInvIndex: number
+	m_nBoneIndex: number
+	m_flDistance: number
+	m_vecMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flMass: number
+}
+
+declare class CAnimRetargetChainData {
+	m_nGroupType: number
+	m_nChainType: number
+	readonly m_nElement: number[]
+}
+
 declare class CAnimEncodeDifference {
 	readonly m_boneArray: CAnimBoneDifference[]
 	readonly m_morphArray: CAnimMorphDifference[]
@@ -4305,6 +4804,9 @@ declare class CAnimEncodeDifference {
 	readonly m_bHasMovementBitArray: number[]
 	readonly m_bHasMorphBitArray: number[]
 	readonly m_bHasUserBitArray: number[]
+}
+
+declare class CAnimMorphDifference {
 }
 
 declare class CLookAtAnimNode extends CAnimNodeBase {
@@ -4393,9 +4895,6 @@ declare class CAnimIKRuleStallFrame {
 	end: number
 }
 
-declare class MaterialParamBuffer_t extends MaterialParam_t {
-}
-
 declare class EventPostDataUpdate_t {
 	m_nCount: number
 }
@@ -4438,8 +4937,17 @@ declare class CSSDSMsg_ViewTargetList {
 	readonly m_Targets: CSSDSMsg_ViewTarget[]
 }
 
-declare class FeSimdAnimStrayRadius_t {
-	readonly nNode: number[][]
+declare class CSSDSMsg_ViewTarget {
+	readonly m_Name: string
+	m_TextureId: bigint
+	m_nWidth: number
+	m_nHeight: number
+	m_nRequestedWidth: number
+	m_nRequestedHeight: number
+	m_nNumMipLevels: number
+	m_nDepth: number
+	m_nMultisampleNumSamples: number
+	m_nFormat: number
 }
 
 declare class CAnimUser {
@@ -4464,21 +4972,6 @@ declare class C_INIT_CreateOnGrid extends CParticleFunctionInitializer {
 	m_bLocalSpace: boolean
 	m_bCenter: boolean
 	m_bHollow: boolean
-}
-
-declare class FeSpringIntegrator_t {
-	readonly nNode: number[]
-	flSpringRestLength: number
-	flSpringConstant: number
-	flSpringDamping: number
-	flNodeWeight0: number
-}
-
-declare class RenderSkeletonBone_t {
-	readonly m_boneName: string
-	readonly m_parentName: string
-	readonly m_bbox: SkeletonBoneBounds_t
-	m_flSphereRadius: number
 }
 
 declare class AnimationDecodeDebugDump_t {
@@ -4555,15 +5048,6 @@ declare class PARTICLE_EHANDLE__ {
 	unused: number
 }
 
-declare class CAnimCycle extends CCycleBase {}
-
-declare class FeCollisionPlane_t {
-	nCtrlParent: number
-	nChildNode: number
-	readonly m_Plane: RnPlane_t
-	flStickiness: number
-}
-
 declare class CEntityComponentHelper {
 	m_flags: number
 	readonly m_pInfo: EntComponentInfo_t
@@ -4636,13 +5120,6 @@ declare class C_OP_PointVectorAtNextParticle extends CParticleFunctionOperator {
 	readonly m_flInterpolation: CPerParticleFloatInput
 }
 
-declare class CFootLockItem {
-	readonly m_footName: string
-	readonly m_targetBoneName: string
-	readonly m_ikChainName: string
-	readonly m_disableTagID: AnimTagID
-}
-
 declare class CFourWheelVehiclePhysics {
 	m_pOuter: C_BaseAnimating
 	readonly m_pOuterServerVehicle: CFourWheelServerVehicle
@@ -4707,12 +5184,46 @@ declare class IServerVehicle extends IVehicle {}
 
 declare class IVehicle {}
 
+declare class CPassengerInfo {
+	m_nRole: number
+	m_nSeat: number
+	readonly m_strRoleName: string
+	readonly m_strSeatName: string
+	m_hPassenger: C_BaseCombatCharacter
+}
+
+declare class CPassengerRole {
+	readonly m_strName: string
+	readonly m_PassengerSeats: CPassengerSeat[]
+}
+
+declare class CBaseServerVehicle__exitanim_t {
+	bUpright: boolean
+	bEscapeExit: boolean
+	readonly szAnimName: number[]
+	vecExitPointLocal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	vecExitAnglesLocal: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+}
+
 declare class vehiclesounds_t {
 	readonly pGears: vehicle_gear_t[]
 	readonly crashSounds: vehicle_crashsound_t[]
 	readonly iszSound: string[]
 	readonly iszStateSounds: string[]
 	readonly minStateTime: number[]
+}
+
+declare class vehicle_gear_t {
+	flMinSpeed: number
+	flMaxSpeed: number
+	flSpeedApproachFactor: number
+}
+
+declare class vehicle_crashsound_t {
+	flMinSpeed: number
+	flMinDeltaSpeed: number
+	gearLimit: number
+	readonly iszCrashSound: string
 }
 
 declare class ViewSmoothingData_t {
@@ -4828,7 +5339,7 @@ declare class C_INIT_DistanceToCPInit extends CParticleFunctionInitializer {
 	readonly m_CollisionGroupName: number[]
 	m_flMaxTraceLength: number
 	m_flLOSScale: number
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bActiveRange: boolean
 	m_vecDistanceScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRemapBias: number
@@ -4862,8 +5373,10 @@ declare class PermModelData_t {
 	readonly m_boneFlexDrivers: ModelBoneFlexDriver_t[]
 }
 
-declare class MaterialParamFloat_t extends MaterialParam_t {
-	m_flValue: number
+declare class ModelBoneFlexDriver_t {
+	readonly m_boneName: string
+	m_boneNameToken: number
+	readonly m_controls: ModelBoneFlexDriverControl_t[]
 }
 
 declare class EventServerSimulate_t extends EventSimulate_t {}
@@ -4894,16 +5407,29 @@ declare class CVrSkeletalInputSettings {
 	m_eHand: AnimVRHand_t
 }
 
-declare class CSeqCmdLayer {
-	m_cmd: number
-	m_nLocalReference: number
-	m_nLocalBonemask: number
-	m_nDstResult: number
-	m_nSrcResult: number
-	m_bSpline: boolean
-	m_flVar1: number
-	m_flVar2: number
-	m_nLineNumber: number
+declare class CWristBone {
+	readonly m_name: string
+	m_vForwardLS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vUpLS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+}
+
+declare class CFingerChain {
+	readonly m_targets: CFingerSource[]
+	readonly m_bones: CFingerBone[]
+	readonly m_name: string
+	readonly m_tipParentBoneName: string
+	m_vTipOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_metacarpalBoneName: string
+	m_vSplayHingeAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flSplayMinAngle: number
+	m_flSplayMaxAngle: number
+	m_flFingerScaleRatio: number
+}
+
+declare class CFingerSource {
+	m_nFingerIndex: AnimVRFinger_t
+	m_flFingerWeight: number
 }
 
 declare class InfoForResourceTypeCPanoramaStyle {}
@@ -4923,8 +5449,7 @@ declare class C_OP_DistanceToCP extends CParticleFunctionOperator {
 	readonly m_CollisionGroupName: number[]
 	m_flMaxTraceLength: number
 	m_flLOSScale: number
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bActiveRange: boolean
 	m_bAdditive: boolean
 }
@@ -4938,8 +5463,7 @@ declare class C_OP_PercentageBetweenCPLerpCPs extends CParticleFunctionOperator 
 	m_nOutputStartField: number
 	m_nOutputEndCP: number
 	m_nOutputEndField: number
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bActiveRange: boolean
 	m_bRadialCheck: boolean
 }
@@ -4948,6 +5472,7 @@ declare class C_OP_BoxConstraint extends CParticleFunctionConstraint {
 	m_vecMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vecMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nCP: number
+	m_bLocalSpace: boolean
 }
 
 declare class C_OP_SnapshotRigidSkinToBones extends CParticleFunctionOperator {
@@ -4996,24 +5521,6 @@ declare class C_OP_SetControlPointFromObjectScale extends CParticleFunctionPreEm
 	m_nCPOutput: number
 }
 
-declare class FeRigidColliderIndices_t {
-	m_nTaperedCapsuleRigidIndex: number
-	m_nSphereRigidIndex: number
-	m_nBoxRigidIndex: number
-	readonly m_nCollisionSphereIndex: number[]
-	m_nCollisionPlaneIndex: number
-}
-
-declare class CSeqAutoLayer {
-	m_nLocalReference: number
-	m_nLocalPose: number
-	readonly m_flags: CSeqAutoLayerFlag
-	m_start: number
-	m_peak: number
-	m_tail: number
-	m_end: number
-}
-
 declare class WorldBuilderParams_t {
 	m_nSizeBytesPerVoxel: number
 	m_flMinDrawVolumeSize: number
@@ -5052,24 +5559,13 @@ declare class C_OP_FadeIn extends CParticleFunctionOperator {
 
 declare class COrientConstraint extends CBaseConstraint {}
 
-declare class FourVectors2D {
-}
-
 declare class InfoForResourceTypeCChoreoSceneFileData {}
 
 declare class C_OP_SetAttributeToScalarExpression extends CParticleFunctionOperator {
 	m_nExpression: ScalarExpressionType_t
 	readonly m_flInput1: CPerParticleFloatInput
 	readonly m_flInput2: CPerParticleFloatInput
-	m_bScaleInitialValue: boolean
-}
-
-declare class FeRodConstraint_t {
-	readonly nNode: number[]
-	flMaxDist: number
-	flMinDist: number
-	flWeight0: number
-	flRelaxationFactor: number
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class CBaseAnimatingEasings_t {
@@ -5103,8 +5599,7 @@ declare class C_OP_RemapSpeed extends CParticleFunctionOperator {
 	m_flInputMax: number
 	m_flOutputMin: number
 	m_flOutputMax: number
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bIgnoreDelta: boolean
 }
 
@@ -5130,9 +5625,6 @@ declare class AnimationSnapshotBase_t {
 	m_SnapshotType: AnimationSnapshotType_t
 	m_bHasDecodeDump: boolean
 	readonly m_DecodeDump: AnimationDecodeDebugDumpElement_t
-}
-
-declare class MaterialParamTexture_t extends MaterialParam_t {
 }
 
 declare class InfoForResourceTypeCPanoramaScript {}
@@ -5185,14 +5677,6 @@ declare class CGlobalLightBase {
 	m_fSlowSmoothedAmount: number
 }
 
-declare class CPassengerInfo {
-	m_nRole: number
-	m_nSeat: number
-	readonly m_strRoleName: string
-	readonly m_strSeatName: string
-	m_hPassenger: C_BaseCombatCharacter
-}
-
 declare class AIHullFlags_t {
 	m_bHull_Human: boolean
 	m_bHull_SmallCentered: boolean
@@ -5213,7 +5697,7 @@ declare class C_INIT_RemapSpeedToScalar extends CParticleFunctionInitializer {
 	m_flInputMax: number
 	m_flOutputMin: number
 	m_flOutputMax: number
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bPerParticle: boolean
 }
 
@@ -5244,8 +5728,7 @@ declare class C_OP_CylindricalDistanceToCP extends CParticleFunctionOperator {
 	readonly m_flOutputMax: CPerParticleFloatInput
 	m_nStartCP: number
 	m_nEndCP: number
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bActiveRange: boolean
 	m_bAdditive: boolean
 	m_bCapsule: boolean
@@ -5413,12 +5896,6 @@ declare class C_OP_SetParentControlPointsToChildCP extends CParticleFunctionPreE
 	m_bSetOrientation: boolean
 }
 
-declare class CAnimActivity {
-	m_nActivity: number
-	m_nFlags: number
-	m_nWeight: number
-}
-
 declare class EventClientPollNetworking_t {
 	m_nTickCount: number
 }
@@ -5438,11 +5915,6 @@ declare class C_OP_LagCompensation extends CParticleFunctionOperator {
 
 declare class CMoveHeadingCondition extends CAnimStateConditionBase {
 	m_comparisonValue: number
-}
-
-declare class prevent_interaction_t {
-	m_hEntity: C_BaseEntity
-	m_flUntilTime: number
 }
 
 declare class C_OP_SetToCP extends CParticleFunctionOperator {
@@ -5678,23 +6150,7 @@ declare class FeBuildTaperedCapsuleRigid_t extends FeTaperedCapsuleRigid_t {
 	m_nPriority: number
 }
 
-declare class CPhysSurfaceProperties {
-	readonly m_name: string
-	m_nameHash: number
-	m_baseNameHash: number
-	m_bHidden: boolean
-	readonly m_description: string
-	readonly m_physics: CPhysSurfacePropertiesPhysics
-	readonly m_audioSounds: CPhysSurfacePropertiesSoundNames
-	readonly m_audioParams: CPhysSurfacePropertiesAudio
-}
-
 declare class CDOTA_Modifier_Lua_Vertical_Motion extends CDOTA_Modifier_Lua/*, CVerticalMotionController*/ {}
-
-declare class CFootTrajectory {
-	m_vPositionOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flProgression: number
-}
 
 declare class CTurnHelperAnimNode extends CAnimNodeBase {
 	readonly m_childID: AnimNodeID
@@ -5755,6 +6211,14 @@ declare class CSolveIKChainAnimNode extends CAnimNodeBase {
 	readonly m_IkChains: CSolveIKChainAnimNodeChainData[]
 }
 
+declare class CSolveIKChainAnimNodeChainData {
+	readonly m_IkChain: string
+	m_SolverSettingSource: SolveIKChainAnimNodeSettingSource
+	readonly m_OverrideSolverSettings: IKSolverSettings_t
+	m_TargetSettingSource: SolveIKChainAnimNodeSettingSource
+	readonly m_OverrideTargetSettings: IKTargetSettings_t
+}
+
 declare class CRecipientFilter extends IRecipientFilter {
 	m_nBufType: NetChannelBufType_t
 	m_bInitMessage: boolean
@@ -5775,13 +6239,6 @@ declare class C_OP_RampScalarSplineSimple extends CParticleFunctionOperator {
 	m_bEaseOut: boolean
 }
 
-declare class CSeqIKLock {
-	m_flPosWeight: number
-	m_flAngleWeight: number
-	m_nLocalBone: number
-	m_bBonesOrientedAlongPositiveX: boolean
-}
-
 declare class C_EconItemAttribute {
 	m_iAttributeDefinitionIndex: number
 	m_flValue: number
@@ -5791,6 +6248,12 @@ declare class C_CHintMessageQueue {
 	m_tmMessageEnd: number
 	readonly m_messages: CHintMessage[]
 	readonly m_pPlayer: C_BasePlayer
+}
+
+declare class CHintMessage {
+	readonly m_hintString: string
+	readonly m_args: string[]
+	m_duration: number
 }
 
 declare class C_BasePlayer extends C_BaseCombatCharacter {
@@ -6068,18 +6531,7 @@ declare class CTeamplayRules extends CMultiplayRules {
 	m_bScrambleTeams: boolean
 }
 
-declare class FeQuad_t {
-	readonly nNode: number[]
-	flSlack: number
-}
-
 declare class dota_minimap_boundary extends CEmptyEntityInstance {}
-
-declare class vehicle_gear_t {
-	flMinSpeed: number
-	flMaxSpeed: number
-	flSpeedApproachFactor: number
-}
 
 declare class C_INIT_VelocityFromNormal extends CParticleFunctionInitializer {
 	m_fSpeedMin: number
@@ -6134,11 +6586,6 @@ declare class CSound {
 
 declare class C_OP_NormalLock extends CParticleFunctionOperator {
 	m_nControlPointNumber: number
-}
-
-declare class CSSDSEndFrameViewInfo {
-	m_nViewId: bigint
-	readonly m_ViewName: string
 }
 
 declare class CDOTA_Modifier_Lua_Horizontal_Motion extends CDOTA_Modifier_Lua/*, CHorizontalMotionController*/ {}
@@ -6281,21 +6728,6 @@ declare class C_OP_ScreenForceFromPlayerView extends CParticleFunctionForce {
 	m_flAccel: number
 }
 
-declare class RnHull_t {
-	m_vCentroid: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flMaxAngularRadius: number
-	readonly m_Vertices: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
-	readonly m_Planes: RnPlane_t[]
-	readonly m_Edges: RnHalfEdge_t[]
-	readonly m_Faces: RnFace_t[]
-	m_vOrthographicAreas: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flVolume: number
-	m_flMaxMotionRadius: number
-	m_flMinMotionThickness: number
-	readonly m_Bounds: AABB_t
-	m_nFlags: number
-}
-
 declare class CPlayerInputAnimMotor extends CBasePathAnimMotor {
 	m_flAnticipationTime: number
 	readonly m_anticipationPosParam: AnimParamID
@@ -6385,12 +6817,6 @@ declare class C_INIT_MoveBetweenPoints extends CParticleFunctionInitializer {
 	m_bTrailBias: boolean
 }
 
-declare class CAttributeManager__cached_attribute_float_t {
-	flIn: number
-	readonly iAttribHook: string
-	flOut: number
-}
-
 declare class dynpitchvol_t extends dynpitchvol_base_t {}
 
 declare class C_INIT_SetRigidAttachment extends CParticleFunctionInitializer {
@@ -6403,13 +6829,6 @@ declare class C_OP_CurlNoiseForce extends CParticleFunctionForce {
 	m_vecNoiseFreq: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vecNoiseScale: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vecOffsetRate: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-}
-
-declare class CSeqPoseParamDesc {
-	m_flStart: number
-	m_flEnd: number
-	m_flLoop: number
-	m_bLooping: boolean
 }
 
 declare class CAnimParameterList {
@@ -6453,8 +6872,7 @@ declare class C_OP_RemapParticleCountToScalar extends CParticleFunctionOperator 
 	readonly m_flOutputMin: CParticleCollectionFloatInput
 	readonly m_flOutputMax: CParticleCollectionFloatInput
 	m_bActiveRange: boolean
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class CRenderBufferBinding {
@@ -6547,11 +6965,6 @@ declare class CSosSoundEventGroupSchema {
 	readonly m_vActions: CSosGroupActionSchema[]
 }
 
-declare class CFootMotion {
-	readonly m_strides: CFootStride[]
-	readonly m_name: string
-}
-
 declare class C_OP_TwistAroundAxis extends CParticleFunctionForce {
 	m_fForceAmount: number
 	m_TwistAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
@@ -6562,13 +6975,6 @@ declare class C_OP_TwistAroundAxis extends CParticleFunctionForce {
 declare class C_OP_ClampScalar extends CParticleFunctionOperator {
 	m_flOutputMin: number
 	m_flOutputMax: number
-}
-
-declare class RnHalfEdge_t {
-	m_nNext: number
-	m_nTwin: number
-	m_nOrigin: number
-	m_nFace: number
 }
 
 declare class CGoalVelocityMetric extends CMotionMetricBase {}
@@ -6652,19 +7058,6 @@ declare class CAnimDataChannelDesc {
 	readonly m_nElementMaskArray: number[]
 }
 
-declare class CAnimRetargetElementData {
-	m_nElementType: number
-	m_nGroupType: number
-	m_nChainType: number
-	m_nChainIndex: number
-	m_nChainInvIndex: number
-	m_nBoneIndex: number
-	m_flDistance: number
-	m_vecMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vecMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flMass: number
-}
-
 declare class EventClientProcessNetworking_t {}
 
 declare class PlayerSeatAssignment_t {
@@ -6676,7 +7069,7 @@ declare class PlayerSeatAssignment_t {
 
 declare class C_OP_SetFloatCollection extends CParticleFunctionOperator {
 	readonly m_InputValue: CParticleCollectionFloatInput
-	m_bScaleInitialValue: boolean
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class InfoForResourceTypeCPanoramaLayout {}
@@ -6707,7 +7100,7 @@ declare class CPhysicsShake {
 
 declare class C_OP_RenderLights extends C_OP_RenderPoints {
 	m_flAnimationRate: number
-	m_bFitCycleToLifetime: boolean
+	m_nAnimationType: AnimationType_t
 	m_bAnimateInFPS: boolean
 	m_flMinSize: number
 	m_flMaxSize: number
@@ -6742,19 +7135,6 @@ declare class C_OP_EnableChildrenFromParentParticleCount extends CParticleFuncti
 	m_nChildGroupID: number
 	m_nFirstChild: number
 	m_nNumChildrenToEnable: number
-}
-
-declare class CFootCycleDefinition {
-	m_vStancePositionMS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vStanceDirectionMS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vToStrideStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flMaxExtent: number
-	readonly m_footLiftCycle: CFootCycle
-	readonly m_footOffCycle: CFootCycle
-	readonly m_footStrikeCycle: CFootCycle
-	readonly m_footLandCycle: CFootCycle
-	readonly m_stanceCycle: CAnimCycle
-	m_bIsInPlace: boolean
 }
 
 declare class VertexPositionColor_t {
@@ -6794,19 +7174,6 @@ declare class SceneObject_t {
 	m_nLODOverride: number
 	m_nCubeMapPrecomputedHandshake: number
 	m_nLightProbeVolumePrecomputedHandshake: number
-}
-
-declare class CSSDSMsg_ViewTarget {
-	readonly m_Name: string
-	m_TextureId: bigint
-	m_nWidth: number
-	m_nHeight: number
-	m_nRequestedWidth: number
-	m_nRequestedHeight: number
-	m_nNumMipLevels: number
-	m_nDepth: number
-	m_nMultisampleNumSamples: number
-	m_nFormat: number
 }
 
 declare class PostProcessingBloomParameters_t {
@@ -6892,31 +7259,15 @@ declare class CDOTA_Bot {
 
 declare class C_OP_EndCapDecay extends CParticleFunctionOperator {}
 
-declare class RnSphereDesc_t extends RnShapeDesc_t {
-	readonly m_Sphere: RnSphere_t
-}
-
 declare class CBoneConstraintPoseSpaceMorph extends CBoneConstraintBase {
 	readonly m_sBoneName: string
 	readonly m_sAttachmentName: string
 	readonly m_outputMorph: string[]
 }
 
-declare class CSeqMultiFetch {
-	readonly m_flags: CSeqMultiFetchFlag
-	readonly m_localReferenceArray: number[]
-	readonly m_nGroupSize: number[]
-	readonly m_nLocalPose: number[]
-	readonly m_poseKeyArray0: number[]
-	readonly m_poseKeyArray1: number[]
-	m_nLocalCyclePoseParameter: number
-	m_bCalculatePoseParameters: boolean
-}
-
-declare class CAnimRetargetChainData {
-	m_nGroupType: number
-	m_nChainType: number
-	readonly m_nElement: number[]
+declare class CBoneConstraintPoseSpaceMorph__Input_t {
+	m_inputValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_outputWeightList: number[]
 }
 
 declare class InfoForResourceTypeIAnimationGraph {}
@@ -6930,25 +7281,11 @@ declare class C_INIT_RemapCPtoScalar extends CParticleFunctionInitializer {
 	m_flOutputMax: number
 	m_flStartTime: number
 	m_flEndTime: number
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_flRemapBias: number
 }
 
 declare class CSSDSMsg_PreLayer extends CSSDSMsg_LayerBase {}
-
-declare class RnSoftbodyParticle_t {
-	m_flMassInv: number
-}
-
-declare class CPassengerSeatTransition {
-	readonly m_strAnimationName: string
-	m_nPriority: number
-}
-
-declare class CHeroStatueLiked {
-	m_iPlayerIDLiker: number
-	m_iPlayerIDLiked: number
-}
 
 declare class CEffectScriptElement {
 	readonly m_szEffectName: number[]
@@ -6969,20 +7306,6 @@ declare class CEffectScriptElement {
 	m_bActive: boolean
 }
 
-declare class CSeqCmdSeqDesc {
-	readonly m_flags: CSeqSeqDescFlag
-	readonly m_transition: CSeqTransition
-	m_nFrameRangeSequence: number
-	m_nFrameCount: number
-	m_flFPS: number
-	m_nSubCycles: number
-	m_numLocalResults: number
-	readonly m_cmdLayerArray: CSeqCmdLayer[]
-	readonly m_eventArray: CAnimAnimEvent[]
-	readonly m_activityArray: CAnimActivity[]
-	readonly m_poseSettingArray: CSeqPoseSetting[]
-}
-
 declare class EventFrameBoundary_t {
 	m_flFrameTime: number
 }
@@ -6991,10 +7314,6 @@ declare class InfoForResourceTypeCRenderMesh {}
 
 declare class CSimTimer extends CSimpleSimTimer {
 	m_interval: number
-}
-
-declare class CHeroesPerPlayer {
-	readonly m_vecHeroIDs: number[]
 }
 
 declare class C_INIT_RemapParticleCountToNamedModelBodyPartScalar extends C_INIT_RemapParticleCountToNamedModelElementScalar {}
@@ -7086,21 +7405,6 @@ declare class C_OP_DampenToCP extends CParticleFunctionOperator {
 	m_flScale: number
 }
 
-declare class RnSoftbodySpring_t {
-	readonly m_nParticle: number[]
-	m_flLength: number
-}
-
-declare class FeNodeReverseOffset_t {
-	nBoneCtrl: number
-	nTargetNode: number
-	vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-}
-
-declare class RnHullDesc_t extends RnShapeDesc_t {
-	readonly m_Hull: RnHull_t
-}
-
 declare class C_OP_Spin extends CGeneralSpin {}
 
 declare class C_OP_RemapCPtoScalar extends CParticleFunctionOperator {
@@ -7113,8 +7417,7 @@ declare class C_OP_RemapCPtoScalar extends CParticleFunctionOperator {
 	m_flStartTime: number
 	m_flEndTime: number
 	m_flInterpRate: number
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class EventClientSendInput_t {}
@@ -7140,14 +7443,6 @@ declare class C_INIT_CreateFromCPs extends CParticleFunctionInitializer {
 	m_nMinCP: number
 	m_nMaxCP: number
 	readonly m_nDynamicCPCount: CParticleCollectionFloatInput
-}
-
-declare class FeCollisionSphere_t {
-	nCtrlParent: number
-	nChildNode: number
-	m_flRFactor: number
-	m_vOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	flStickiness: number
 }
 
 declare class CEnvWindShared__WindVariationEvent_t {
@@ -7190,29 +7485,6 @@ declare class ExtraVertexStreamOverride_t extends BaseSceneObjectOverride_t {
 	readonly m_extraBufferBinding: CRenderBufferBinding
 }
 
-declare class EntityIOConnectionData_t {
-	readonly m_outputName: string
-	m_targetType: number
-	readonly m_targetName: string
-	readonly m_inputName: string
-	readonly m_overrideParam: string
-	m_flDelay: number
-	m_nTimesToFire: number
-}
-
-declare class CFingerChain {
-	readonly m_targets: CFingerSource[]
-	readonly m_bones: CFingerBone[]
-	readonly m_name: string
-	readonly m_tipParentBoneName: string
-	m_vTipOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly m_metacarpalBoneName: string
-	m_vSplayHingeAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flSplayMinAngle: number
-	m_flSplayMaxAngle: number
-	m_flFingerScaleRatio: number
-}
-
 declare class CFootCycleMetric extends CMotionMetricBase {
 	readonly m_feet: string[]
 }
@@ -7222,17 +7494,6 @@ declare class C_HorizontalMotionController {}
 declare class C_OP_RemapDistanceToLineSegmentToScalar extends C_OP_RemapDistanceToLineSegmentBase {
 	m_flMinOutputValue: number
 	m_flMaxOutputValue: number
-}
-
-declare class CSeqS1SeqDesc {
-	readonly m_flags: CSeqSeqDescFlag
-	readonly m_fetch: CSeqMultiFetch
-	m_nLocalWeightlist: number
-	readonly m_autoLayerArray: CSeqAutoLayer[]
-	readonly m_IKLockArray: CSeqIKLock[]
-	readonly m_transition: CSeqTransition
-	readonly m_activityArray: CAnimActivity[]
-	readonly m_footMotion: CFootMotion[]
 }
 
 declare class hudtextparms_t {
@@ -7364,16 +7625,6 @@ declare class C_OP_LerpToInitialPosition extends CParticleFunctionOperator {
 	readonly m_flInterpolation: CPerParticleFloatInput
 }
 
-declare class CMorphData {
-	readonly m_name: string
-	readonly m_morphRectDatas: CMorphRectData[]
-}
-
-declare class FeCtrlOsOffset_t {
-	nCtrlParent: number
-	nCtrlChild: number
-}
-
 declare class CMotionMatchingAnimNode extends CAnimNodeBase {
 	readonly m_blendCurve: CBlendCurve
 	m_flPredictionTime: number
@@ -7414,16 +7665,6 @@ declare class C_BaseAnimatingController extends CSkeletonAnimationController {
 	m_ClientSideAnimationListHandle: number
 }
 
-declare class ModelBoneFlexDriver_t {
-	readonly m_boneName: string
-	m_boneNameToken: number
-	readonly m_controls: ModelBoneFlexDriverControl_t[]
-}
-
-declare class FeSimdSpringIntegrator_t {
-	readonly nNode: number[][]
-}
-
 declare class CFollowPathAnimNode extends CAnimNodeBase {
 	readonly m_childID: AnimNodeID
 	readonly m_goalPoseChildID: AnimNodeID
@@ -7460,12 +7701,6 @@ declare class C_ViewSmoothingData_t {
 	vecAngleDiffMin: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
-declare class CHintMessage {
-	readonly m_hintString: string
-	readonly m_args: string[]
-	m_duration: number
-}
-
 declare class C_OP_LocalAccelerationForce extends CParticleFunctionForce {
 	m_nCP: number
 	m_nScaleCP: number
@@ -7488,11 +7723,6 @@ declare class InfoForResourceTypeVMapResourceData_t {}
 declare class SimpleConstraintSoundProfile {
 	readonly m_keyPoints: number[]
 	readonly m_reversalSoundThresholds: number[]
-}
-
-declare class CPassengerRole {
-	readonly m_strName: string
-	readonly m_PassengerSeats: CPassengerSeat[]
 }
 
 declare class CNavVolumeAll extends CNavVolumeVector {}
@@ -7520,25 +7750,9 @@ declare class C_OP_RampCPLinearRandom extends CParticleFunctionPreEmission {
 	m_vecRateMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
-declare class VPhysXCollisionAttributes_t {
-	m_CollisionGroup: number
-	readonly m_InteractAs: number[]
-	readonly m_InteractWith: number[]
-	readonly m_InteractExclude: number[]
-	readonly m_CollisionGroupString: string
-	readonly m_InteractAsStrings: string[]
-	readonly m_InteractWithStrings: string[]
-	readonly m_InteractExcludeStrings: string[]
-}
-
 declare class AnimationSnapshot_t extends AnimationSnapshotBase_t {
 	m_nEntIndex: number
 	readonly m_modelName: string
-}
-
-declare class CAnimAnimEvent {
-	m_nFrame: number
-	m_flCycle: number
 }
 
 declare class CAnimFrameSegment {
@@ -7666,8 +7880,18 @@ declare class CSceneObjectData {
 	readonly m_drawCullData: CDrawCullingData[]
 }
 
-declare class FeTreeChildren_t {
-	readonly nChild: number[]
+declare class CMaterialDrawDescriptor {
+	m_nPrimitiveType: RenderPrimitiveType_t
+	m_nBaseVertex: number
+	m_nVertexCount: number
+	m_nStartIndex: number
+	m_nIndexCount: number
+	m_nStartInstance: number
+	m_nInstanceCount: number
+	m_flUvDensity: number
+	m_vTintColor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_CullDataIndex: number
+	readonly m_indexBuffer: CRenderBufferBinding
 }
 
 declare class CMoverAnimNode extends CAnimNodeBase {
@@ -7706,10 +7930,6 @@ declare class C_INIT_PositionWarpScalar extends CParticleFunctionInitializer {
 	m_nControlPointNumber: number
 }
 
-declare class CFootTrajectories {
-	readonly m_trajectories: CFootTrajectory[]
-}
-
 declare class CBlendAnimNode extends CAnimNodeBase {
 	readonly m_children: CBlendNodeChild[]
 	m_blendValueSource: AnimValueSource
@@ -7720,6 +7940,12 @@ declare class CBlendAnimNode extends CAnimNodeBase {
 	m_bLoop: boolean
 	m_bLockWhenWaning: boolean
 	readonly m_damping: CAnimInputDamping
+}
+
+declare class CBlendNodeChild {
+	readonly m_nodeID: AnimNodeID
+	readonly m_name: string
+	m_blendValue: number
 }
 
 declare class CGroundIKSolveAnimNode extends CAnimNodeBase {
@@ -7802,20 +8028,6 @@ declare class CChoiceAnimNode extends CAnimNodeBase {
 
 declare class CParameterAnimCondition extends CAnimStateConditionBase {
 	readonly m_paramID: AnimParamID
-}
-
-declare class CAnimState {
-	readonly m_tags: AnimTagID[]
-	readonly m_tagBehaviors: number[]
-	readonly m_name: string
-	readonly m_childNodeID: AnimNodeID
-	readonly m_stateID: AnimStateID
-	m_position: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_bIsStartState: boolean
-	m_bIsEndtState: boolean
-	m_bIsPassthrough: boolean
-	m_bIsRootMotionExclusive: boolean
-	m_bExclusiveFootMotion: boolean
 }
 
 declare class C_OP_RemapNamedModelMeshGroupEndCap extends C_OP_RemapNamedModelElementEndCap {}
@@ -8099,14 +8311,6 @@ declare class C_OP_RemapModelVolumetoCP extends CParticleFunctionPreEmission {
 	m_flOutputMax: number
 }
 
-declare class VPhysics2ShapeDef_t {
-	readonly m_spheres: RnSphereDesc_t[]
-	readonly m_capsules: RnCapsuleDesc_t[]
-	readonly m_hulls: RnHullDesc_t[]
-	readonly m_meshes: RnMeshDesc_t[]
-	readonly m_CollisionAttributeIndices: number[]
-}
-
 declare class CResponseQueue {
 	readonly m_ExpresserTargets: CAI_Expresser[]
 }
@@ -8162,14 +8366,28 @@ declare class WorldNode_t {
 	readonly m_nodeLightingInfo: BakedLightingInfo_t
 }
 
+declare class InfoOverlayData_t {
+	m_flWidth: number
+	m_flHeight: number
+	m_flDepth: number
+	m_vUVStart: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vUVEnd: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_nRenderOrder: number
+	m_nSequenceOverride: number
+}
+
+declare class WorldNodeOnDiskBufferData_t {
+	m_nElementCount: number
+	m_nElementSizeInBytes: number
+	readonly m_inputLayoutFields: RenderInputLayoutField_t[]
+	readonly m_pData: number[]
+}
+
 declare class CNeuralNetAnimNode extends CAnimNodeBase {
 	readonly m_weightsFile: string
 	readonly m_testInputFile: string
 	readonly m_boneMapFile: string
 	readonly m_sensorRangeFile: string
-}
-
-declare class CAnimMorphDifference {
 }
 
 declare class ItemDropData_t {
@@ -8220,9 +8438,6 @@ declare class CTwoBoneIKAnimNode extends CAnimNodeBase {
 	m_bMatchTargetOrientation: boolean
 }
 
-declare class MaterialParamVector_t extends MaterialParam_t {
-}
-
 declare class C_OP_SetSingleControlPointPosition extends CParticleFunctionPreEmission {
 	m_bUseWorldLocation: boolean
 	m_bSetOnce: boolean
@@ -8232,13 +8447,6 @@ declare class C_OP_SetSingleControlPointPosition extends CParticleFunctionPreEmi
 }
 
 declare class C_OP_RenderFogSprites extends C_OP_RenderSprites {
-}
-
-declare class CConstraintSlave {
-	m_nBoneHash: number
-	m_flWeight: number
-	m_vBasePosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly m_sName: string
 }
 
 declare class CAnimMovement {
@@ -8303,19 +8511,6 @@ declare class CCommentarySystem {
 	m_hLastCommentaryNode: C_BaseEntity
 }
 
-declare class CSeqBoneMaskList {
-	readonly m_nLocalBoneArray: number[]
-	readonly m_flBoneWeightArray: number[]
-}
-
-declare class CBaseServerVehicle__exitanim_t {
-	bUpright: boolean
-	bEscapeExit: boolean
-	readonly szAnimName: number[]
-	vecExitPointLocal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	vecExitAnglesLocal: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-}
-
 declare class CPlayerState {
 	deadflag: boolean
 	hltv: boolean
@@ -8342,12 +8537,7 @@ declare class C_OP_LerpVector extends CParticleFunctionOperator {
 	m_vecOutput: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartTime: number
 	m_flEndTime: number
-	m_bScaleInitialRange: boolean
-}
-
-declare class VPhysXRange_t {
-	m_flMin: number
-	m_flMax: number
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class CSchemaSystemInternalRegistration {
@@ -8373,6 +8563,22 @@ declare class CAnimData {
 	readonly m_decoderArray: CAnimDecoder[]
 	m_nMaxUniqueFrameIndex: number
 	readonly m_segmentArray: CAnimFrameSegment[]
+}
+
+declare class CAnimDesc {
+	readonly m_flags: CAnimDesc_Flag
+	fps: number
+	readonly m_Data: CAnimEncodedFrames
+	readonly m_movementArray: CAnimMovement[]
+	readonly m_eventArray: CAnimAnimEvent[]
+	readonly m_activityArray: CAnimActivity[]
+	readonly m_hierarchyArray: CAnimLocalHierarchy[]
+	framestalltime: number
+	m_vecRootMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vecRootMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_vecBoneWorldMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
+	readonly m_vecBoneWorldMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
+	readonly m_sequenceParams: CAnimSequenceParams
 }
 
 declare class InfoForResourceTypeCVoxelVisibility {}
@@ -8454,10 +8660,6 @@ declare class C_INIT_CreateSequentialPathV2 extends CParticleFunctionInitializer
 	readonly m_PathParams: CPathParameters
 }
 
-declare class FeSimdQuad_t {
-	readonly nNode: number[][]
-}
-
 declare class C_SingleplayRules extends C_GameRules {}
 
 declare class EventClientPostAdvanceTick_t extends EventPostAdvanceTick_t {}
@@ -8492,20 +8694,6 @@ declare class C_OP_WorldTraceConstraint extends CParticleFunctionConstraint {
 	m_nIgnoreCP: number
 	readonly m_CollisionGroupName: number[]
 	m_bBrushOnly: boolean
-}
-
-declare class VPhysXBodyPart_t {
-	m_nFlags: number
-	m_flMass: number
-	readonly m_rnShape: VPhysics2ShapeDef_t
-	readonly m_nSurfacepropertyIndices: number[]
-	m_nCollisionAttributeIndex: number
-	m_nReserved: number
-	m_flInertiaScale: number
-	m_flLinearDamping: number
-	m_flAngularDamping: number
-	m_bOverrideMassCenter: boolean
-	m_vMassCenterOverride: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class CDecalInfo {
@@ -8546,12 +8734,6 @@ declare class InfoForResourceTypeCModel {}
 declare class C_OP_ConstrainLineLength extends CParticleFunctionConstraint {
 	m_flMinDistance: number
 	m_flMaxDistance: number
-}
-
-declare class PointDefinition_t {
-	m_nControlPoint: number
-	m_bLocalCoords: boolean
-	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 declare class EntInput_t {}
@@ -8672,12 +8854,6 @@ declare class CParticleSystemDefinition extends IParticleSystemDefinition {
 
 declare class EventClientSimulate_t extends EventSimulate_t {}
 
-declare class NeutralSpawnBoxes_t {
-	readonly neutralSpawnBoxes: AABB_t
-	vSpawnBoxOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly strCampName: string
-}
-
 declare class CDOTA_AttackRecord {
 	m_hSource: C_BaseEntity
 	m_hInflictor: C_BaseEntity
@@ -8727,28 +8903,8 @@ declare class CDOTA_AttackRecord {
 	readonly m_iCustomFXIndex: ParticleIndex_t
 }
 
-declare class PointDefinitionWithTimeValues_t extends PointDefinition_t {
-	m_flTimeDuration: number
-}
-
 declare class CTwistConstraint extends CBaseConstraint {
 	m_bInverse: boolean
-}
-
-declare class CAnimDesc {
-	readonly m_flags: CAnimDesc_Flag
-	fps: number
-	readonly m_Data: CAnimEncodedFrames
-	readonly m_movementArray: CAnimMovement[]
-	readonly m_eventArray: CAnimAnimEvent[]
-	readonly m_activityArray: CAnimActivity[]
-	readonly m_hierarchyArray: CAnimLocalHierarchy[]
-	framestalltime: number
-	m_vecRootMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vecRootMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly m_vecBoneWorldMin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
-	readonly m_vecBoneWorldMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
-	readonly m_sequenceParams: CAnimSequenceParams
 }
 
 declare class sSpiritDef {
@@ -8981,12 +9137,6 @@ declare class CNewParticleEffect extends IParticleEffect {
 
 declare class C_INIT_RandomRotation extends CGeneralRandomRotation {}
 
-declare class CFeIndexedJiggleBone {
-	m_nNode: number
-	m_nJiggleParent: number
-	readonly m_jiggleBone: CFeJiggleBone
-}
-
 declare class CAnimTagSpan {
 	readonly m_id: AnimTagID
 	m_fStartCycle: number
@@ -9015,6 +9165,13 @@ declare class CHitBoxSetList {
 	readonly m_HitBoxSets: CHitBoxSet[]
 }
 
+declare class CHitBoxSet {
+	readonly m_name: string
+	m_nNameHash: number
+	readonly m_HitBoxes: CHitBox[]
+	readonly m_SourceFilename: string
+}
+
 declare class CBoolAnimParameter extends CAnimParameterBase {
 	m_bDefaultValue: boolean
 }
@@ -9027,10 +9184,6 @@ declare class CDirectionalBlendAnimNode extends CAnimNodeBase {
 	m_bLockBlendOnReset: boolean
 	m_playbackSpeed: number
 	readonly m_damping: CAnimInputDamping
-}
-
-declare class MaterialParamString_t extends MaterialParam_t {
-	readonly m_value: string
 }
 
 declare class VsInputSignature_t {
@@ -9051,16 +9204,6 @@ declare class C_INIT_CreateWithinBox extends CParticleFunctionInitializer {
 	m_nScaleCP: number
 }
 
-declare class InfoOverlayData_t {
-	m_flWidth: number
-	m_flHeight: number
-	m_flDepth: number
-	m_vUVStart: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vUVEnd: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_nRenderOrder: number
-	m_nSequenceOverride: number
-}
-
 declare class C_INIT_RandomNamedModelSequence extends C_INIT_RandomNamedModelElement {}
 
 declare class C_OP_RenderScreenVelocityRotate extends CParticleFunctionRenderer {
@@ -9078,7 +9221,7 @@ declare class C_INIT_RemapCPtoVector extends CParticleFunctionInitializer {
 	m_vOutputMax: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flStartTime: number
 	m_flEndTime: number
-	m_bScaleInitialRange: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bOffset: boolean
 	m_bAccelerate: boolean
 	m_nLocalSpaceCP: number
@@ -9102,16 +9245,13 @@ declare class CVoxelVisibility {
 	m_nPVSSizeCompressed: number
 }
 
-declare class SelectedEditItemInfo_t {
-	readonly m_EditItems: SosEditItemInfo_t[]
+declare class voxel_vis_cluster_t {
+	m_nBlockIndex: number
+	m_nOffsetIntoBlock: number
 }
 
-declare class CSolveIKChainAnimNodeChainData {
-	readonly m_IkChain: string
-	m_SolverSettingSource: SolveIKChainAnimNodeSettingSource
-	readonly m_OverrideSolverSettings: IKSolverSettings_t
-	m_TargetSettingSource: SolveIKChainAnimNodeSettingSource
-	readonly m_OverrideTargetSettings: IKTargetSettings_t
+declare class SelectedEditItemInfo_t {
+	readonly m_EditItems: SosEditItemInfo_t[]
 }
 
 declare class C_LightGlowOverlay extends CGlowOverlay {
@@ -9135,13 +9275,6 @@ declare class IControlPointEditorData {}
 
 declare class CSSDSMsg_PostLayer extends CSSDSMsg_LayerBase {}
 
-declare class VPhysXConstraint2_t {
-	m_nFlags: number
-	m_nParent: number
-	m_nChild: number
-	readonly m_params: VPhysXConstraintParams_t
-}
-
 declare class CSequenceAnimNode extends CAnimNodeBase {
 	readonly m_sequenceName: string
 	m_playbackSpeed: number
@@ -9160,7 +9293,6 @@ declare class CAttributeContainer extends CAttributeManager {
 
 declare class C_OP_RemapCPtoVelocity extends CParticleFunctionOperator {
 	m_nCPInput: number
-	m_bScaleCurrent: boolean
 }
 
 declare class C_OP_LockPoints extends CParticleFunctionOperator {
@@ -9170,12 +9302,6 @@ declare class C_OP_LockPoints extends CParticleFunctionOperator {
 	m_nMaxRow: number
 	m_nControlPoint: number
 	m_flBlendValue: number
-}
-
-declare class CBlendNodeChild {
-	readonly m_nodeID: AnimNodeID
-	readonly m_name: string
-	m_blendValue: number
 }
 
 declare class CAnimKeyData {
@@ -9225,6 +9351,17 @@ declare class World_t {
 	readonly m_worldLightingInfo: BakedLightingInfo_t
 }
 
+declare class NodeData_t {
+	m_Flags: number
+	m_nParent: number
+	m_vOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_flMinimumDistance: number
+	readonly m_ChildNodeIndices: number[]
+	readonly m_worldNodePrefix: string
+}
+
 declare class CVectorAnimParameter extends CAnimParameterBase {
 	m_defaultValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bInterpolate: boolean
@@ -9251,8 +9388,7 @@ declare class C_OP_DistanceBetweenCPs extends CParticleFunctionOperator {
 	m_flLOSScale: number
 	readonly m_CollisionGroupName: number[]
 	m_bLOS: boolean
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class C_INIT_CreateParticleImpulse extends CParticleFunctionInitializer {
@@ -9261,13 +9397,6 @@ declare class C_INIT_CreateParticleImpulse extends CParticleFunctionInitializer 
 	m_nFalloffFunction: ParticleFalloffFunction_t
 	readonly m_InputFalloffExp: CPerParticleFloatInput
 	m_nImpulseType: ParticleImpulseType_t
-}
-
-declare class CHitBoxSet {
-	readonly m_name: string
-	m_nNameHash: number
-	readonly m_HitBoxes: CHitBox[]
-	readonly m_SourceFilename: string
 }
 
 declare class C_INIT_StatusEffect extends CParticleFunctionInitializer {
@@ -9289,11 +9418,6 @@ declare class C_INIT_StatusEffect extends CParticleFunctionInitializer {
 	m_flReflectionsTintByBaseBlendToNone: number
 	m_flMetalnessBlendToFull: number
 	m_flSelfIllumBlendToFull: number
-}
-
-declare class FeSimdTri_t {
-	readonly nNode: number[][]
-	readonly v2: FourVectors2D
 }
 
 declare class CControlValueCondition extends CAnimStateConditionBase {
@@ -9353,35 +9477,9 @@ declare class C_OP_PercentageBetweenCPs extends CParticleFunctionOperator {
 	m_flOutputMax: number
 	m_nStartCP: number
 	m_nEndCP: number
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bActiveRange: boolean
 	m_bRadialCheck: boolean
-}
-
-declare class NodeData_t {
-	m_Flags: number
-	m_nParent: number
-	m_vOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vMinBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vMaxBounds: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flMinimumDistance: number
-	readonly m_ChildNodeIndices: number[]
-	readonly m_worldNodePrefix: string
-}
-
-declare class CMaterialDrawDescriptor {
-	m_nPrimitiveType: RenderPrimitiveType_t
-	m_nBaseVertex: number
-	m_nVertexCount: number
-	m_nStartIndex: number
-	m_nIndexCount: number
-	m_nStartInstance: number
-	m_nInstanceCount: number
-	m_flUvDensity: number
-	m_vTintColor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_CullDataIndex: number
-	readonly m_indexBuffer: CRenderBufferBinding
 }
 
 declare class CStringAnimTag extends CAnimTagBase {}
@@ -9422,15 +9520,7 @@ declare class C_OP_RemapParticleCountOnScalarEndCap extends CParticleFunctionOpe
 	m_flOutputMin: number
 	m_flOutputMax: number
 	m_bBackwards: boolean
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
-}
-
-declare class CFlexController {
-	readonly m_szName: string
-	readonly m_szType: string
-	min: number
-	max: number
+	m_nSetMethod: ParticleSetMethod_t
 }
 
 declare class NextBotGroundLocomotion extends CLocomotionBase {
@@ -9471,15 +9561,6 @@ declare class C_OP_RandomForce extends CParticleFunctionForce {
 	m_MaxForce: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
-declare class EntityKeyValueData_t {
-	readonly m_connections: EntityIOConnectionData_t[]
-}
-
-declare class CFootStride {
-	readonly m_definition: CFootCycleDefinition
-	readonly m_trajectories: CFootTrajectories
-}
-
 declare class CAnimationGroup {
 	m_nFlags: number
 	readonly m_decodeKey: CAnimKeyData
@@ -9495,14 +9576,6 @@ declare class C_OP_SetControlPointToImpactPoint extends CParticleFunctionPreEmis
 	m_vecTraceDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_CollisionGroupName: number[]
 	m_bSetToEndpoint: boolean
-}
-
-declare class FeTaperedCapsuleStretch_t {
-	readonly nNode: number[]
-	nCollisionMask: number
-	nDummy: number
-	readonly flRadius: number[]
-	flStickiness: number
 }
 
 declare class VPhysXDiskCapsule_t extends VPhysXDiskShapeHeader_t {
@@ -9799,18 +9872,6 @@ declare class C_OP_ConstrainDistanceToPath extends CParticleFunctionConstraint {
 	m_flTravelTime: number
 }
 
-declare class WorldNodeOnDiskBufferData_t {
-	m_nElementCount: number
-	m_nElementSizeInBytes: number
-	readonly m_inputLayoutFields: RenderInputLayoutField_t[]
-	readonly m_pData: number[]
-}
-
-declare class CFingerSource {
-	m_nFingerIndex: AnimVRFinger_t
-	m_flFingerWeight: number
-}
-
 declare class sLoadoutItem {
 	readonly name: string
 	iFlags: number
@@ -9932,17 +9993,8 @@ declare class C_OP_RemapCPOrientationToRotations extends CParticleFunctionOperat
 	m_bWriteNormal: boolean
 }
 
-declare class voxel_vis_cluster_t {
-	m_nBlockIndex: number
-	m_nOffsetIntoBlock: number
-}
-
 declare class CSosSoundEventGroupListSchema {
 	readonly m_groupList: CSosSoundEventGroupSchema[]
-}
-
-declare class CFlexDesc {
-	readonly m_szFacs: string
 }
 
 declare class InfoForResourceTypeIMaterial2 {}
@@ -9960,12 +10012,6 @@ declare class c_vehicleview_t {
 	flPitchMax: number
 }
 
-declare class FeSimdFitMatrices_t {
-	readonly nEnd: number[]
-	readonly nCtrl: number[]
-	readonly AqqInv: FourCovMatrices3
-}
-
 declare class CNavVolumeBreadthFirstSearch extends CNavVolumeCalculatedVector {
 	m_vStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flSearchDist: number
@@ -9979,8 +10025,7 @@ declare class C_OP_RemapDotProductToScalar extends CParticleFunctionOperator {
 	m_flOutputMin: number
 	m_flOutputMax: number
 	m_bUseParticleVelocity: boolean
-	m_bScaleInitialRange: boolean
-	m_bScaleCurrent: boolean
+	m_nSetMethod: ParticleSetMethod_t
 	m_bActiveRange: boolean
 	m_bUseParticleNormal: boolean
 }
@@ -10057,25 +10102,6 @@ declare class PlayerResourcePlayerEventData_t {
 	m_iEventPointAdjustmentsRemaining: number
 	m_iAvailableSalutes: number
 	m_iSaluteAmounts: number
-}
-
-declare class CBoneConstraintPoseSpaceMorph__Input_t {
-	m_inputValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly m_outputWeightList: number[]
-}
-
-declare class CWristBone {
-	readonly m_name: string
-	m_vForwardLS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vUpLS: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-}
-
-declare class vehicle_crashsound_t {
-	flMinSpeed: number
-	flMinDeltaSpeed: number
-	gearLimit: number
-	readonly iszCrashSound: string
 }
 
 declare class locksound_t {
@@ -10179,30 +10205,6 @@ declare class C_INIT_CreateOnModelAtHeight extends CParticleFunctionInitializer 
 	readonly m_HitboxSetName: number[]
 }
 
-declare class VPhysXJoint_t {
-	m_nType: number
-	m_nBody1: number
-	m_nBody2: number
-	m_nFlags: number
-	m_bEnableCollision: boolean
-	m_bEnableLinearLimit: boolean
-	readonly m_LinearLimit: VPhysXRange_t
-	m_bEnableLinearMotor: boolean
-	m_vLinearTargetVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flMaxForce: number
-	m_bEnableSwingLimit: boolean
-	readonly m_SwingLimit: VPhysXRange_t
-	m_bEnableTwistLimit: boolean
-	readonly m_TwistLimit: VPhysXRange_t
-	m_bEnableAngularMotor: boolean
-	m_vAngularTargetVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flMaxTorque: number
-	m_flLinearFrequency: number
-	m_flLinearDampingRatio: number
-	m_flAngularFrequency: number
-	m_flAngularDampingRatio: number
-}
-
 declare class CDOTA_Tree extends CObstructionObject {
 	m_bStanding: boolean
 	m_bSpecialConsume: boolean
@@ -10211,10 +10213,6 @@ declare class CDOTA_Tree extends CObstructionObject {
 }
 
 declare class C_INIT_RemapNamedModelMeshGroupToScalar extends C_INIT_RemapNamedModelElementToScalar {}
-
-declare class RnMeshDesc_t extends RnShapeDesc_t {
-	readonly m_Mesh: RnMesh_t
-}
 
 declare class C_DOTABaseAbility extends C_BaseEntity {
 	GetSpecialValue(special_name: string, level?: number): number
@@ -11403,6 +11401,15 @@ declare class C_EconEntity extends C_BaseFlex/*, IHasAttributes*/ {
 	m_hOldProvidee: C_BaseEntity
 }
 
+declare class C_EconEntity__AttachedParticleInfo_t {
+	readonly m_nAttachedParticleIndex: ParticleIndex_t
+	m_bShouldDestroyImmediately: boolean
+}
+
+declare class C_EconEntity__AttachedModelData_t {
+	m_iModelDisplayFlags: number
+}
+
 declare class C_DOTA_Item_Recipe_Buckler extends C_DOTA_Item {}
 
 declare class C_DOTA_Item_Tango_Single extends C_DOTA_Item {}
@@ -11639,11 +11646,6 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Sniper_5 extends C_DOTABaseAbi
 declare class C_DOTA_Ability_Special_Bonus_Unique_Broodmother_2 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_All_Stats_6 extends C_DOTABaseAbility {}
-
-declare class C_EconEntity__AttachedParticleInfo_t {
-	readonly m_nAttachedParticleIndex: ParticleIndex_t
-	m_bShouldDestroyImmediately: boolean
-}
 
 declare class C_DOTA_Unit_Hero_Slark extends C_DOTA_BaseNPC_Hero {}
 
@@ -12370,6 +12372,71 @@ declare class C_DOTA_DataNonSpectator extends C_BaseEntity {
 	readonly m_bSuggestedLaneJungle: boolean[]
 }
 
+declare class DataTeamPlayer_t {
+	m_iReliableGold: number
+	m_iUnreliableGold: number
+	m_iStartingPosition: number
+	m_iTotalEarnedGold: number
+	m_iTotalEarnedXP: number
+	m_iSharedGold: number
+	m_iHeroKillGold: number
+	m_iCreepKillGold: number
+	m_iIncomeGold: number
+	m_iNetWorth: number
+	m_iDenyCount: number
+	m_iLastHitCount: number
+	m_iLastHitStreak: number
+	m_iLastHitMultikill: number
+	m_iNearbyCreepDeathCount: number
+	m_iClaimedDenyCount: number
+	m_iClaimedMissCount: number
+	m_iMissCount: number
+	m_nPossibleHeroSelection: number
+	m_iMetaLevel: number
+	m_iMetaExperience: number
+	m_iMetaExperienceAwarded: number
+	m_flBuybackCooldownTime: number
+	m_flBuybackGoldLimitTime: number
+	m_flBuybackCostTime: number
+	m_flCustomBuybackCooldown: number
+	m_fStuns: number
+	m_fHealing: number
+	m_iTowerKills: number
+	m_iRoshanKills: number
+	m_hCameraTarget: C_BaseEntity
+	m_hOverrideSelectionEntity: C_BaseEntity
+	m_iObserverWardsPlaced: number
+	m_iSentryWardsPlaced: number
+	m_iCreepsStacked: number
+	m_iCampsStacked: number
+	m_iRunePickups: number
+	m_iGoldSpentOnSupport: number
+	m_iHeroDamage: number
+	m_iWardsPurchased: number
+	m_iWardsDestroyed: number
+	readonly m_PreGameInventory: C_DOTA_UnitInventory
+	readonly m_nKillsPerOpposingTeamMember: number[]
+	readonly m_iSuggestedAbilities: number[]
+	readonly m_fSuggestedAbilityWeights: number[]
+	readonly m_iSuggestedPregameItems: number[]
+	readonly m_iSuggestedItemSequences: number[]
+	readonly m_iSuggestedWeightedItems: WeightedSuggestion_t[]
+	readonly m_iSuggestedHeroes: number[]
+	readonly m_flSuggestedHeroesWeights: number[]
+	readonly m_iDamageByTypeReceivedPreReduction: number[]
+	readonly m_iDamageByTypeReceivedPostReduction: number[]
+	m_iCommandsIssued: number
+	m_iGoldSpentOnConsumables: number
+	m_iGoldSpentOnItems: number
+	m_iGoldSpentOnBuybacks: number
+	m_iGoldLostToDeath: number
+}
+
+declare class TreeModelReplacement_t {
+	m_nBinaryObjectID: number
+	readonly m_szModel: number[]
+}
+
 declare class C_TeamRoundTimer extends C_BaseEntity {
 	m_bTimerPaused: boolean
 	m_flTimeRemaining: number
@@ -12480,66 +12547,6 @@ declare class C_DOTA_Ability_Special_Bonus_Attack_Range_300 extends C_DOTABaseAb
 declare class C_DOTA_Ability_Special_Bonus_HP_Regen_4 extends C_DOTABaseAbility {}
 
 declare class CDOTA_Ability_FillerAbility extends C_DOTABaseAbility {}
-
-declare class DataTeamPlayer_t {
-	m_iReliableGold: number
-	m_iUnreliableGold: number
-	m_iStartingPosition: number
-	m_iTotalEarnedGold: number
-	m_iTotalEarnedXP: number
-	m_iSharedGold: number
-	m_iHeroKillGold: number
-	m_iCreepKillGold: number
-	m_iIncomeGold: number
-	m_iNetWorth: number
-	m_iDenyCount: number
-	m_iLastHitCount: number
-	m_iLastHitStreak: number
-	m_iLastHitMultikill: number
-	m_iNearbyCreepDeathCount: number
-	m_iClaimedDenyCount: number
-	m_iClaimedMissCount: number
-	m_iMissCount: number
-	m_nPossibleHeroSelection: number
-	m_iMetaLevel: number
-	m_iMetaExperience: number
-	m_iMetaExperienceAwarded: number
-	m_flBuybackCooldownTime: number
-	m_flBuybackGoldLimitTime: number
-	m_flBuybackCostTime: number
-	m_flCustomBuybackCooldown: number
-	m_fStuns: number
-	m_fHealing: number
-	m_iTowerKills: number
-	m_iRoshanKills: number
-	m_hCameraTarget: C_BaseEntity
-	m_hOverrideSelectionEntity: C_BaseEntity
-	m_iObserverWardsPlaced: number
-	m_iSentryWardsPlaced: number
-	m_iCreepsStacked: number
-	m_iCampsStacked: number
-	m_iRunePickups: number
-	m_iGoldSpentOnSupport: number
-	m_iHeroDamage: number
-	m_iWardsPurchased: number
-	m_iWardsDestroyed: number
-	readonly m_PreGameInventory: C_DOTA_UnitInventory
-	readonly m_nKillsPerOpposingTeamMember: number[]
-	readonly m_iSuggestedAbilities: number[]
-	readonly m_fSuggestedAbilityWeights: number[]
-	readonly m_iSuggestedPregameItems: number[]
-	readonly m_iSuggestedItemSequences: number[]
-	readonly m_iSuggestedWeightedItems: WeightedSuggestion_t[]
-	readonly m_iSuggestedHeroes: number[]
-	readonly m_flSuggestedHeroesWeights: number[]
-	readonly m_iDamageByTypeReceivedPreReduction: number[]
-	readonly m_iDamageByTypeReceivedPostReduction: number[]
-	m_iCommandsIssued: number
-	m_iGoldSpentOnConsumables: number
-	m_iGoldSpentOnItems: number
-	m_iGoldSpentOnBuybacks: number
-	m_iGoldLostToDeath: number
-}
 
 declare class C_DOTA_PhantomAssassin_Gravestone extends C_DOTA_BaseNPC_Additive {
 	m_nVictimPlayerID: number
@@ -12727,6 +12734,64 @@ declare class C_DOTA_PlayerResource extends C_BaseEntity {
 	m_nEventNPCReplaced: number
 	m_nEventPlayerInfo: number
 	m_nInventoryUpdated: number
+}
+
+declare class PlayerResourcePlayerTeamData_t {
+	m_nSelectedHeroID: number
+	m_iKills: number
+	m_iAssists: number
+	m_iDeaths: number
+	m_iStreak: number
+	m_iLevel: number
+	m_iRespawnSeconds: number
+	m_iLastBuybackTime: number
+	m_hSelectedHero: C_BaseEntity
+	m_bAFK: boolean
+	readonly m_nSuggestedHeroes: number[]
+	readonly m_bBanSuggestedHeroes: boolean[]
+	m_bVoiceChatBanned: boolean
+	m_iTimedRewardDrops: number
+	m_iTimedRewardDropOrigins: number
+	m_iTimedRewardCrates: number
+	m_iTimedRewardEvents: number
+	m_unCompendiumLevel: number
+	m_bCanRepick: boolean
+	m_bCanEarnRewards: boolean
+	m_bHasRandomed: boolean
+	m_nRandomedHeroID: number
+	m_bBattleBonusActive: boolean
+	m_iBattleBonusRate: number
+	m_iCustomBuybackCost: number
+	m_CustomPlayerColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	m_bQualifiesForPAContractReward: boolean
+	m_bHasPredictedVictory: boolean
+	m_UnitShareMasks: number
+	m_iTeamSlot: number
+	m_iBattleCupWinStreak: number
+	m_iBattleCupWinDate: bigint
+	m_iBattleCupSkillLevel: number
+	m_iBattleCupTeamID: number
+	m_iBattleCupTournamentID: number
+	m_iBattleCupDivision: number
+	m_flTeamFightParticipation: number
+	m_iFirstBloodClaimed: number
+	m_iFirstBloodGiven: number
+	m_unPickOrder: number
+	m_flTimeOfLastSaluteSent: number
+	readonly m_vecPlayerEventData: PlayerResourcePlayerEventData_t[]
+	m_unSelectedHeroBadgeXP: number
+	m_iObsoleteEventPoints: number
+	m_iObsoleteEventPremiumPoints: number
+	m_iObsoleteEventWagerTokensRemaining: number
+	m_iObsoleteEventWagerTokensMax: number
+	m_iObsoleteEventEffectsMask: number
+	m_iObsoleteEventRanks: number
+	m_bObsoleteIsEventOwned: boolean
+	m_iObsoleteRankWagersAvailable: number
+	m_iObsoleteRankWagersMax: number
+	m_iObsoleteEventPointAdjustmentsRemaining: number
+	m_iObsoleteAvailableSalutes: number
+	m_iObsoleteSaluteAmounts: number
 }
 
 declare class C_DOTA_Item_RuneSpawner_Bounty extends C_BaseAnimating {
@@ -12969,64 +13034,6 @@ declare class C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_10 extends C_DOTABase
 
 declare class C_DOTA_Ability_BackdoorProtectionInBase extends C_DOTABaseAbility {}
 
-declare class PlayerResourcePlayerTeamData_t {
-	m_nSelectedHeroID: number
-	m_iKills: number
-	m_iAssists: number
-	m_iDeaths: number
-	m_iStreak: number
-	m_iLevel: number
-	m_iRespawnSeconds: number
-	m_iLastBuybackTime: number
-	m_hSelectedHero: C_BaseEntity
-	m_bAFK: boolean
-	readonly m_nSuggestedHeroes: number[]
-	readonly m_bBanSuggestedHeroes: boolean[]
-	m_bVoiceChatBanned: boolean
-	m_iTimedRewardDrops: number
-	m_iTimedRewardDropOrigins: number
-	m_iTimedRewardCrates: number
-	m_iTimedRewardEvents: number
-	m_unCompendiumLevel: number
-	m_bCanRepick: boolean
-	m_bCanEarnRewards: boolean
-	m_bHasRandomed: boolean
-	m_nRandomedHeroID: number
-	m_bBattleBonusActive: boolean
-	m_iBattleBonusRate: number
-	m_iCustomBuybackCost: number
-	m_CustomPlayerColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_bQualifiesForPAContractReward: boolean
-	m_bHasPredictedVictory: boolean
-	m_UnitShareMasks: number
-	m_iTeamSlot: number
-	m_iBattleCupWinStreak: number
-	m_iBattleCupWinDate: bigint
-	m_iBattleCupSkillLevel: number
-	m_iBattleCupTeamID: number
-	m_iBattleCupTournamentID: number
-	m_iBattleCupDivision: number
-	m_flTeamFightParticipation: number
-	m_iFirstBloodClaimed: number
-	m_iFirstBloodGiven: number
-	m_unPickOrder: number
-	m_flTimeOfLastSaluteSent: number
-	readonly m_vecPlayerEventData: PlayerResourcePlayerEventData_t[]
-	m_unSelectedHeroBadgeXP: number
-	m_iObsoleteEventPoints: number
-	m_iObsoleteEventPremiumPoints: number
-	m_iObsoleteEventWagerTokensRemaining: number
-	m_iObsoleteEventWagerTokensMax: number
-	m_iObsoleteEventEffectsMask: number
-	m_iObsoleteEventRanks: number
-	m_bObsoleteIsEventOwned: boolean
-	m_iObsoleteRankWagersAvailable: number
-	m_iObsoleteRankWagersMax: number
-	m_iObsoleteEventPointAdjustmentsRemaining: number
-	m_iObsoleteAvailableSalutes: number
-	m_iObsoleteSaluteAmounts: number
-}
-
 declare class C_DOTA_NPC_Techies_Minefield_Sign extends C_DOTA_BaseNPC_Additive {}
 
 declare class C_DOTA_Unit_LoopingSound extends C_DOTA_BaseNPC_Additive {
@@ -13078,6 +13085,10 @@ declare class C_SceneEntity extends C_PointEntity {
 	readonly m_hActorList: C_BaseFlex[]
 	m_bWasPlaying: boolean
 	m_flCurrentTime: number
+}
+
+declare class C_SceneEntity__QueuedEvents_t {
+	starttime: number
 }
 
 declare class C_DOTA_Item_Flying_Courier extends C_DOTA_Item {
@@ -13218,6 +13229,8 @@ declare class C_DOTA_Ability_SatyrTrickster_Purge extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Special_Bonus_Unique_Razor extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Visage_2 extends C_DOTABaseAbility {}
+
+declare class C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_40 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Respawn_Reduction_25 extends C_DOTABaseAbility {}
 
@@ -14086,14 +14099,6 @@ declare class C_DOTA_Ability_Special_Bonus_Cast_Range_75 extends C_DOTABaseAbili
 
 declare class C_DOTA_Ability_Special_Bonus_Cleave_20 extends C_DOTABaseAbility {}
 
-declare class CNetworkedIKProceduralTargetContext {
-	m_nChainIndex: number
-	m_nRuleIndex: number
-	m_vTargetPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_flWeight: number
-	m_bIsValid: boolean
-}
-
 declare class C_DOTA_Unit_Hero_Naga_Siren extends C_DOTA_BaseNPC_Hero {}
 
 declare class C_DOTA_Unit_Hero_Bane extends C_DOTA_BaseNPC_Hero {}
@@ -14579,10 +14584,6 @@ declare class C_DOTA_Ability_Special_Bonus_Movement_Speed_60 extends C_DOTABaseA
 declare class C_DOTA_Ability_Special_Bonus_HP_Regen_10 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Item_NullTalisman extends C_DOTA_Item {}
-
-declare class C_EconEntity__AttachedModelData_t {
-	m_iModelDisplayFlags: number
-}
 
 declare class CDOTA_Item_RiverPainter4 extends C_DOTA_Item_RiverPainter {}
 
@@ -16093,6 +16094,8 @@ declare class C_DOTA_Ability_BlackDragon_Fireball extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Spell_Amplify_12 extends C_DOTABaseAbility {}
 
+declare class C_DOTA_Ability_Special_Bonus_Cleave_35 extends C_DOTABaseAbility {}
+
 declare class C_FuncDistanceOccluder extends C_FuncOccluder {
 	m_flFadeStartDist: number
 	m_flFadeEndDist: number
@@ -16254,10 +16257,6 @@ declare class C_DOTA_Ability_Special_Bonus_Strength_4 extends C_DOTABaseAbility 
 
 declare class C_DOTA_Ability_Pudge_FleshHeap extends C_DOTABaseAbility {
 	m_iKills: number
-}
-
-declare class C_SceneEntity__QueuedEvents_t {
-	starttime: number
 }
 
 declare class CDOTA_Item_Tombstone_Drop extends C_DOTA_Item_Physical {}
@@ -16698,11 +16697,6 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Skywrath_3 extends C_DOTABaseA
 declare class C_DOTA_Ability_Special_Bonus_Movement_Speed_100 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_160 extends C_DOTABaseAbility {}
-
-declare class TreeModelReplacement_t {
-	m_nBinaryObjectID: number
-	readonly m_szModel: number[]
-}
 
 declare class C_DOTA_Unit_Hero_Silencer extends C_DOTA_BaseNPC_Hero {}
 
@@ -19786,6 +19780,12 @@ declare const enum MissingParentInheritBehavior_t {
 	MISSING_PARENT_FIND_NEW = 1
 }
 
+declare const enum AnimationType_t {
+	ANIMATION_TYPE_FIXED_RATE = 0,
+	ANIMATION_TYPE_FIT_LIFETIME = 1,
+	ANIMATION_TYPE_MANUAL_FRAMES = 2
+}
+
 declare const enum AnimParamButton_t {
 	ANIMPARAM_BUTTON_NONE = 0,
 	ANIMPARAM_BUTTON_DPAD_UP = 1,
@@ -19845,6 +19845,13 @@ declare const enum PerformanceMode_t {
 	PM_NO_GIBS = 1,
 	PM_FULL_GIBS = 2,
 	PM_REDUCED_GIBS = 3
+}
+
+declare const enum ParticleSetMethod_t {
+	PARTICLE_SET_REPLACE_VALUE = 0,
+	PARTICLE_SET_SCALE_INITIAL_VALUE = 1,
+	PARTICLE_SET_ADD_TO_INITIAL_VALUE = 2,
+	PARTICLE_SET_SCALE_CURRENT_VALUE = 3
 }
 
 declare const enum ChoiceMethod {
@@ -23095,7 +23102,9 @@ declare const enum ScalarExpressionType_t {
 	SCALAR_EXPRESSION_SUBTRACT = 1,
 	SCALAR_EXPRESSION_MUL = 2,
 	SCALAR_EXPRESSION_DIVIDE = 3,
-	SCALAR_EXPRESSION_INPUT_1 = 4
+	SCALAR_EXPRESSION_INPUT_1 = 4,
+	SCALAR_EXPRESSION_MIN = 5,
+	SCALAR_EXPRESSION_MAX = 6
 }
 
 declare const enum ResetCycleOption {
