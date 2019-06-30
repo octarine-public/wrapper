@@ -25,7 +25,7 @@ EventsSDK.on("onTick", () => {
 		return;
 
 	let mine = mines.find(mine => mine.IsAlive && hero.CanAttack(mine) 
-		&& mine.IsInRange(hero, Math.max(hero.AttackRange, mine.ModifiersBook.GetBuff(0).Ability.AOERadius)));
+		&& mine.IsInRange(hero, hero.AttackRange));
 	
 	if (mine !== undefined)
 		hero.AttackTarget(mine);
