@@ -663,6 +663,9 @@ export default class Vector2 {
 	Extend(vec: Vector2, distance: number): Vector2 {
 		return vec.Subtract(this).Normalize().MultiplyScalarForThis(distance).AddForThis(this); // this + (distance * (vec - this).Normalize())
 	}
+	Clone(): Vector2 {
+		return new Vector2(this.x, this.y)
+	}
 	/**
 	 * Returns if the distance to target is lower than range
 	 */

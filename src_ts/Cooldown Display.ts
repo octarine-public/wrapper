@@ -92,7 +92,7 @@ EventsSDK.on("onDraw", () => {
 					RendererSDK.FilledRect(need_pos, new Vector2(size.value, size.value), new Color(0, 0, 0, 150))
 					RendererSDK.Text(
 						cd.toFixed(1),
-						need_pos.AddScalarX(s).AddScalarY(size.value / 2.9),
+						need_pos.Clone().AddScalarX(s).AddScalarY(size.value / 2.9),
 						new Color(255, 255, 255),
 						"Consolas",
 						new Vector2(size.value / 3, 0),
@@ -101,7 +101,7 @@ EventsSDK.on("onDraw", () => {
 				}
 				RendererSDK.Text(
 					abil.Level.toString(),
-					need_pos.AddScalarX(size.value * (3 / 40)).AddScalarY(size.value * (13 / 20)),
+					need_pos.Clone().AddScalarX(size.value * (3 / 40)).AddScalarY(size.value * (13 / 20)),
 					new Color(255, 255, 255, opacity.value),
 					"Consolas",
 					new Vector2(size.value / 3, 0),
