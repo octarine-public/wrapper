@@ -6,6 +6,7 @@ import {
 	Hero,
 	RendererSDK,
 	Vector2,
+	Game,
 } from "wrapper/Imports"
 
 let renderable_heroes: Hero[] = [],
@@ -105,7 +106,20 @@ EventsSDK.on("onDraw", () => {
 					new Color(255, 255, 255, opacity.value),
 					"Consolas",
 					new Vector2(size.value / 3, 0),
-					FontFlags_t.OUTLINE)
+					FontFlags_t.OUTLINE
+				)
+				/*if (abil.IsInAbilityPhase) {
+					let time = abil.CastPoint - (Game.RawGameTime - abil.m_pBaseEntity.m_flCastStartTime)
+					if (time >= 0)
+						RendererSDK.Text(
+							time.toFixed(1),
+							need_pos.Clone().AddScalarX(size.value * (3 / 40)).AddScalarY(size.value * (21 / 20)),
+							new Color(255, 255, 255, opacity.value),
+							"Consolas",
+							new Vector2(size.value / 3, 0),
+							FontFlags_t.OUTLINE
+						)
+				}*/
 			}
 		}))
 	})
