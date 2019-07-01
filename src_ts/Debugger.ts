@@ -55,7 +55,7 @@ addUnitMenu.AddKeybind("Add creep")
 	.SetToolTip("dota_create_unit npc_dota_creep_badguys_melee enemy")
 	.OnRelease(self => SendToConsole(self.hint))
 
-EventsSDK.on("onGameStarted", () => {
+EventsSDK.on("GameStarted", () => {
 	ConVars.Set("sv_cheats", ConVars.Get("sv_cheats") || sv_cheats.value)
 	ConVars.Set("dota_ability_debug", wtf.value)
 
@@ -81,7 +81,7 @@ const debugOtherEvents = debugEventsMenu.AddToggle("Debug Other");
 
 let allEvents: EventEmitter[] = [];
 
-Events.on("onGameStarted", (pl_ent) => {
+Events.on("GameStarted", (pl_ent) => {
 	if (!debugEvents.value || !debugOtherEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
@@ -90,90 +90,90 @@ Events.on("onGameStarted", (pl_ent) => {
 	if (!(pl_ent instanceof C_DOTA_BaseNPC_Hero))
 		throw Error("onGameStarted. pl_ent is not C_DOTA_BaseNPC_Hero:" + pl_ent)
 });
-Events.on("onGameEnded", () => {
+Events.on("GameEnded", () => {
 	if (!debugEvents.value || !debugOtherEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onGameEnded");
 });
-Events.on("onLocalPlayerTeamAssigned", teamNum => {
+Events.on("LocalPlayerTeamAssigned", teamNum => {
 	if (!debugEvents.value || !debugOtherEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onLocalPlayerTeamAssigned", teamNum);
 })
-Events.on("onEntityCreated", (ent, id) => {
+Events.on("EntityCreated", (ent, id) => {
 	if (!debugEvents.value || !debugEntitiesEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onEntityCreated", ent, id);
 });
-Events.on("onEntityDestroyed", (ent, id) => {
+Events.on("EntityDestroyed", (ent, id) => {
 	if (!debugEvents.value || !debugEntitiesEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onEntityCreated", ent, id);
 });
-Events.on("onUnitStateChanged", npc => {
+Events.on("UnitStateChanged", npc => {
 	if (!debugEvents.value || !debugOtherEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onUnitStateChanged", npc);
 });
-Events.on("onTeamVisibilityChanged", (npc, newTagged) => {
+Events.on("TeamVisibilityChanged", (npc, newTagged) => {
 	if (!debugEvents.value || !debugOtherEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onTeamVisibilityChanged", npc, newTagged);
 });
-Events.on("onDraw", () => {
+Events.on("Draw", () => {
 	if (!debugEvents.value || !debugDrawEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onDraw");
 });
-Events.on("onParticleCreated", (...args) => debugConsole("onParticleCreated", ...args));
-Events.on("onParticleUpdated", (...args) => debugConsole("onParticleUpdated", ...args));
-Events.on("onParticleUpdatedEnt", (...args) => debugConsole("onParticleUpdatedEnt", ...args));
-Events.on("onBloodImpact", (...args) => debugConsole("onBloodImpact", ...args));
-Events.on("onPrepareUnitOrders", order => {
+Events.on("ParticleCreated", (...args) => debugConsole("onParticleCreated", ...args));
+Events.on("ParticleUpdated", (...args) => debugConsole("onParticleUpdated", ...args));
+Events.on("ParticleUpdatedEnt", (...args) => debugConsole("onParticleUpdatedEnt", ...args));
+Events.on("BloodImpact", (...args) => debugConsole("onBloodImpact", ...args));
+Events.on("PrepareUnitOrders", order => {
 	if (!debugEvents.value || !debugOtherEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onPrepareUnitOrders", order);
 });
-Events.on("onLinearProjectileCreated", (...args) => debugConsole("onLinearProjectileCreated", ...args));
-Events.on("onLinearProjectileDestroyed", proj => debugConsole("onLinearProjectileDestroyed", proj, "m_iID", proj.m_iID, "m_bIsValid", proj.m_bIsValid, proj.m_vecPosition, Vector3.fromIOBuffer(proj.m_vecPosition)));
-Events.on("onTrackingProjectileCreated", (...args) => debugConsole("onTrackingProjectileCreated", ...args));
-Events.on("onTrackingProjectileUpdated", (...args) => debugConsole("onTrackingProjectileUpdated", ...args));
-Events.on("onTrackingProjectileDestroyed", proj => debugConsole("onTrackingProjectileDestroyed", proj));
-Events.on("onUnitAnimation", (...args) => debugConsole("onUnitAnimation", ...args));
-Events.on("onUnitAnimationEnd", (...args) => debugConsole("onUnitAnimation", ...args));
-Events.on("onBuffAdded", (npc, buff) => {
+Events.on("LinearProjectileCreated", (...args) => debugConsole("onLinearProjectileCreated", ...args));
+Events.on("LinearProjectileDestroyed", proj => debugConsole("onLinearProjectileDestroyed", proj, "m_iID", proj.m_iID, "m_bIsValid", proj.m_bIsValid, proj.m_vecPosition, Vector3.fromIOBuffer(proj.m_vecPosition)));
+Events.on("TrackingProjectileCreated", (...args) => debugConsole("onTrackingProjectileCreated", ...args));
+Events.on("TrackingProjectileUpdated", (...args) => debugConsole("onTrackingProjectileUpdated", ...args));
+Events.on("TrackingProjectileDestroyed", proj => debugConsole("onTrackingProjectileDestroyed", proj));
+Events.on("UnitAnimation", (...args) => debugConsole("onUnitAnimation", ...args));
+Events.on("UnitAnimationEnd", (...args) => debugConsole("onUnitAnimation", ...args));
+Events.on("BuffAdded", (npc, buff) => {
 	if (!debugEvents.value || !debugBuffsEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onBuffAdded", npc, buff);
 });
-Events.on("onBuffRemoved", (npc, buff) => {
+Events.on("BuffRemoved", (npc, buff) => {
 	if (!debugEvents.value || !debugBuffsEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onBuffRemoved", npc, buff);
 });
-Events.on("onBuffStackCountChanged", buff => {
+Events.on("BuffStackCountChanged", buff => {
 	if (!debugEvents.value || !debugBuffsEvents.value) return;
 	
 	if (!debugOnlyThrowEvents.value) 
 		console.log("onBuffStackCountChanged", buff);
 });
-Events.on("onCustomGameEvent", (...args) => debugConsole("onCustomGameEvent", ...args));
+Events.on("CustomGameEvent", (...args) => debugConsole("onCustomGameEvent", ...args));
 
 let debugConsole = (name: string, ...args: any) => 
 	debugEvents.value && !debugOnlyThrowEvents.value && debugOtherEvents.value && console.log(name, ...args);
 	
 	
-/* EventsSDK.on("onTick", () => {
+/* EventsSDK.on("Tick", () => {
 	
 	EntityManager.AllEntities.forEach(entity => {
 		if (entity instanceof Hero && entity.IsControllable) {

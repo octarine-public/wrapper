@@ -22,7 +22,7 @@ class ModifierManager {
 
 export default new ModifierManager();
 
-Events.on("onBuffAdded", (npc, buffNative) => {
+Events.on("BuffAdded", (npc, buffNative) => {
 
 	const unit = EntityManager.GetEntityByNative(npc, true) as Unit;
 	
@@ -41,7 +41,7 @@ Events.on("onBuffAdded", (npc, buffNative) => {
 	addAndEmitModifier(unit, buff);
 })
 
-Events.on("onBuffRemoved", (npc, buffNative) => {
+Events.on("BuffRemoved", (npc, buffNative) => {
 
 	const buff = AllModifier.get(buffNative);
 	
@@ -62,7 +62,7 @@ Events.on("onBuffRemoved", (npc, buffNative) => {
 	
 	changeFieldsByEvents(unit);
 	
-	EventsSDK.emit("onBuffRemoved", false, unit, buff);
+	EventsSDK.emit("BuffRemoved", false, unit, buff);
 })
 
 function AddToCache(buff: Modifier, unit: Unit) {
@@ -86,7 +86,7 @@ function addAndEmitModifier(unit: Unit, buff: Modifier) {
 
 	changeFieldsByEvents(unit);
 
-	EventsSDK.emit("onBuffAdded", false, unit, buff);
+	EventsSDK.emit("BuffAdded", false, unit, buff);
 }
 
 export function useQueueModifiers(owner: Unit) {
@@ -111,7 +111,7 @@ function changeFieldsByEvents(unit: Unit) {
 
 		if (isTrueSighted !== lastIsTrueSighted) {
 			unit.IsTrueSightedForEnemies = isTrueSighted;
-			EventsSDK.emit("onTrueSightedChanged", false, unit, isTrueSighted);
+			EventsSDK.emit("TrueSightedChanged", false, unit, isTrueSighted);
 		}
 	}
 	
@@ -121,7 +121,7 @@ function changeFieldsByEvents(unit: Unit) {
 
 		if (hasScepter !== lastHasScepter) {
 			unit.HasScepter = hasScepter;
-			EventsSDK.emit("onHasScepterChanged", false, unit, hasScepter);
+			EventsSDK.emit("HasScepterChanged", false, unit, hasScepter);
 		}
 	}
 }

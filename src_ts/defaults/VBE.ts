@@ -36,21 +36,21 @@ function Destroy(particleID: number, unit: Unit) {
 	allUnits.set(unit, -1);
 }
 
-EventsSDK.on("onGameEnded", DestroyAll);
+EventsSDK.on("GameEnded", DestroyAll);
 
-EventsSDK.on("onEntityCreated", ent => {
+EventsSDK.on("EntityCreated", ent => {
 	if (ent instanceof Unit && ent.IsAlly())
 		allUnits.set(ent, -1);
 })
 
-EventsSDK.on("onEntityDestroyed", ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof Unit)
 		allUnits.delete(ent);
 })
 
-EventsSDK.on("onTeamVisibilityChanged", CheckUnit);
+EventsSDK.on("TeamVisibilityChanged", CheckUnit);
 
-EventsSDK.on("onTick", () => {
+EventsSDK.on("Tick", () => {
 	if (!stateMain.value || Game.IsPaused)
 		return;
 	// loop-optimizer: KEEP	// because this is Map

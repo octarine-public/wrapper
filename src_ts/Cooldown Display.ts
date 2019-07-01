@@ -19,7 +19,7 @@ const Menu = MenuManager.MenuFactory("Cooldown Display"),
 	panelx = Menu.AddSlider("X offset", 0, 0, 100),
 	panely = Menu.AddSlider("Y offset", 0, 0, 100)
 
-EventsSDK.on("onEntityCreated", npc => {
+EventsSDK.on("EntityCreated", npc => {
 	if (
 		npc instanceof Hero
 		&& npc.IsEnemy()
@@ -27,12 +27,12 @@ EventsSDK.on("onEntityCreated", npc => {
 	)
 		heroes.push(npc)
 })
-Events.on("onEntityDestroyed", ent => {
+Events.on("EntityDestroyed", ent => {
 	if (ent instanceof Hero)
 		ArrayExtensions.arrayRemove(heroes, ent)
 })
 
-Events.on("onUpdate", () => {
+Events.on("Update", () => {
 	if (!stateMain.value)
 		return
 	renderable_heroes = heroes.filter(npc => npc.IsAlive && npc.IsVisible)
@@ -49,7 +49,7 @@ let ignore_abils = [
 	"invoker_empty2",
 	"generic_hidden"
 ]
-EventsSDK.on("onDraw", () => {
+EventsSDK.on("Draw", () => {
 	if (!stateMain.value)
 		return
 	renderable_heroes.forEach(hero => {

@@ -154,11 +154,11 @@ class RendererSDK {
 
 export default global.RendererSDK = new RendererSDK();
 
-EventsSDK.on("onUpdate", cmd => {
+EventsSDK.on("Update", cmd => {
 	CursorOnWorld = cmd.VectorUnderCursor
 });
 
-EventsSDK.on("onTick", () => {
+EventsSDK.on("Tick", () => {
 
 	if (sleeper.Sleeping("WindowSize"))
 		return;

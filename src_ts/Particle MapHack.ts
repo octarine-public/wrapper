@@ -56,8 +56,8 @@ function onEntityAdded(ent: Entity) {
 	}
 }
 
-// EventsSDK.on("onGameStarted", lp => allNeutrals = []);
-EventsSDK.on("onGameEnded", () => {
+// EventsSDK.on("GameStarted", lp => allNeutrals = []);
+EventsSDK.on("GameEnded", () => {
 	allNeutrals = []
 	allBloodTargets = []
 	allTechiesMines = []
@@ -66,8 +66,8 @@ EventsSDK.on("onGameEnded", () => {
 	latest_plant = undefined
 })
 
-// EventsSDK.on("onParticleCreated", console.log)
-EventsSDK.on("onParticleCreated", (id, path, psHandle, attach, target: Entity) => {
+// EventsSDK.on("ParticleCreated", console.log)
+EventsSDK.on("ParticleCreated", (id, path, psHandle, attach, target: Entity) => {
 	let mine_name
 	
 	if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)_plant.vpcf$/.exec(path)) !== null) {
@@ -77,8 +77,8 @@ EventsSDK.on("onParticleCreated", (id, path, psHandle, attach, target: Entity) =
 	} else if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)(s_detonate|_explode).vpcf$/.exec(path)) !== null)
 		waiting_explode.push([id, mine_name[1]])
 })
-// EventsSDK.on("onParticleUpdatedEnt", console.log)
-EventsSDK.on("onParticleUpdatedEnt", (id, control_point, ent, attach, attachment, position: Vector3) => {
+// EventsSDK.on("ParticleUpdatedEnt", console.log)
+EventsSDK.on("ParticleUpdatedEnt", (id, control_point, ent, attach, attachment, position: Vector3) => {
 	if (control_point !== 0 || attach !== ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW)
 		return false
 	waiting_explode.some(([particle_id, mine_name], i) => {
@@ -100,12 +100,12 @@ EventsSDK.on("onParticleUpdatedEnt", (id, control_point, ent, attach, attachment
 		return true
 	})
 })
-// EventsSDK.on("onUnitAnimation", console.log)
-// EventsSDK.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
+// EventsSDK.on("UnitAnimation", console.log)
+// EventsSDK.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 
 // })
-// EventsSDK.on("onUnitAnimationEnd", console.log)
-// EventsSDK.on("onUnitAnimationEnd", npc => {
+// EventsSDK.on("UnitAnimationEnd", console.log)
+// EventsSDK.on("UnitAnimationEnd", npc => {
 
 // })
 
@@ -113,8 +113,8 @@ function CalculateCenter(vecs: Vector3[]): Vector3 {
 	return Vector3.GetCenter(vecs)
 }
 
-// EventsSDK.on("onParticleUpdated", console.log)
-EventsSDK.on("onParticleUpdated", (id, control_point, position: Vector3) => {
+// EventsSDK.on("ParticleUpdated", console.log)
+EventsSDK.on("ParticleUpdated", (id, control_point, position: Vector3) => {
 	if (control_point === 1)
 		waiting_spawn.some(([particle_id, mine_name], i) => {
 			if (particle_id !== id)
@@ -158,14 +158,14 @@ EventsSDK.on("onParticleUpdated", (id, control_point, position: Vector3) => {
 		})
 })
 
-EventsSDK.on("onEntityCreated", onEntityAdded)
+EventsSDK.on("EntityCreated", onEntityAdded)
 
-EventsSDK.on("onEntityDestroyed", (ent: Entity) => {
+EventsSDK.on("EntityDestroyed", (ent: Entity) => {
 	if (ent instanceof Creep)
 		ArrayExtensions.arrayRemove(allNeutrals, ent)
 })
 
-EventsSDK.on("onBloodImpact", (target: Entity) => {
+EventsSDK.on("BloodImpact", (target: Entity) => {
 	if (!stateMain.value || !phBloodState.value)
 		return
 
@@ -181,7 +181,7 @@ EventsSDK.on("onBloodImpact", (target: Entity) => {
 		phBloodTimer.value * 1000)
 })
 
-EventsSDK.on("onDraw", () => {
+EventsSDK.on("Draw", () => {
 	if (!stateMain.value)
 		return
 
@@ -261,7 +261,7 @@ EventsSDK.on("onDraw", () => {
 
 })
 
-EventsSDK.on("onTick", () => {
+EventsSDK.on("Tick", () => {
 	if (!stateMain.value)
 		return
 

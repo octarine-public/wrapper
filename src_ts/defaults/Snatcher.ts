@@ -93,9 +93,9 @@ function onDeactivateItems() {
 	ground_items = []
 }
 
-EventsSDK.on("onGameEnded", () => picking_up = [])
+EventsSDK.on("GameEnded", () => picking_up = [])
 
-EventsSDK.on("onEntityCreated", ent => {
+EventsSDK.on("EntityCreated", ent => {
 
 	if (ent instanceof Rune) {
 		allRunes.push(ent)
@@ -116,7 +116,7 @@ EventsSDK.on("onEntityCreated", ent => {
 	}
 });
 
-EventsSDK.on("onEntityDestroyed", ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof Rune)
 		removedIDRune(ent)
 	else if (ent instanceof PhysicalItem)
@@ -125,7 +125,7 @@ EventsSDK.on("onEntityDestroyed", ent => {
 		ArrayExtensions.arrayRemove(npcs, ent)
 })
 
-EventsSDK.on("onUpdate", () => {
+EventsSDK.on("Update", () => {
 	if (!stateMain.value || !Game.IsInGame || Game.IsPaused)
 		return
 
@@ -137,7 +137,7 @@ EventsSDK.on("onUpdate", () => {
 	snatchItems(controllables)
 })
 
-EventsSDK.on("onDraw", () => {
+EventsSDK.on("Draw", () => {
 	if (!drawStatus.value || !Game.IsInGame)
 		return
 
@@ -160,7 +160,7 @@ EventsSDK.on("onDraw", () => {
 	)
 })
 
-EventsSDK.on("onPrepareUnitOrders", order => picking_up[(order.Unit as Unit).Index] === undefined)
+EventsSDK.on("PrepareUnitOrders", order => picking_up[(order.Unit as Unit).Index] === undefined)
 
 function GetControllables() {
 	return npcs.filter(npc =>

@@ -6,7 +6,7 @@ var manabars: Hero[] = [],
 const EMBMenu = MenuManager.MenuFactory("EnemyManaBars"),
 	stateMain = EMBMenu.AddToggle("State");
 
-EventsSDK.on("onEntityCreated", npc => {
+EventsSDK.on("EntityCreated", npc => {
 	if (
 		npc instanceof Hero
 		&& npc.IsEnemy()
@@ -14,17 +14,17 @@ EventsSDK.on("onEntityCreated", npc => {
 	)
 		heroes.push(npc)
 })
-Events.on("onEntityDestroyed", ent => {
+Events.on("EntityDestroyed", ent => {
 	if (ent instanceof Hero)
 		ArrayExtensions.arrayRemove(heroes, ent)
 })
 
-Events.on("onUpdate", () => {
+Events.on("Update", () => {
 	if (!stateMain.value || Game.IsPaused)
 		return
 	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible)
 });
-Events.on("onDraw", () => {
+Events.on("Draw", () => {
 	if (!stateMain.value || !Game.IsInGame)
 		return;
 		

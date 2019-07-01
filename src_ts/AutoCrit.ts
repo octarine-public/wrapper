@@ -5,11 +5,11 @@ var config = { hotkey: 0,},
 	target: Entity,
 	target_pos,
 	timer: number = 0;
-Events.on("onDraw", () => {
+Events.on("Draw", () => {
 	if (enabled)
 		Renderer.Text(0, 100, "Auto Crit enabled");
 })
-EventsSDK.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
+EventsSDK.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 	if (!enabled || !npc.IsControllableByPlayer(LocalPlayer.PlayerID))
 		return
 	if (activity == 1505) {
@@ -21,7 +21,7 @@ EventsSDK.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, 
 		npc.OrderStop(false);
 	}
 });
-EventsSDK.on("onPrepareUnitOrders", order => {
+EventsSDK.on("PrepareUnitOrders", order => {
 	if (order.Unit === LocalPlayer.Hero)
 		switch (order.OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
@@ -40,7 +40,7 @@ EventsSDK.on("onPrepareUnitOrders", order => {
 		}
 	return true
 });
-Events.on("onUpdate", () => {
+Events.on("Update", () => {
 	if (!enabled || target === undefined || !target.IsAlive || LocalPlayer.Hero === undefined)
 		return false;
 	let Me = LocalPlayer.Hero;
@@ -135,7 +135,7 @@ Events.on("onUpdate", () => {
 		}
 	}
 })
-Events.on("onWndProc", (message_type, wParam) => {
+Events.on("WndProc", (message_type, wParam) => {
 	if (!IsInGame() || parseInt(wParam as any) !== config.hotkey)
 		return true
 	if (message_type === 0x100) // WM_KEYDOWN
@@ -146,7 +146,7 @@ Events.on("onWndProc", (message_type, wParam) => {
 	}
 	return true
 })
-Events.on("onGameEnded", () => enabled = false)
+Events.on("GameEnded", () => enabled = false)
 
 {
 	let root = new Menu_Node("Auto Crit")

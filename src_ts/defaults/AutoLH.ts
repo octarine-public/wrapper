@@ -148,7 +148,7 @@ function EnoughDamage(sender: C_DOTA_BaseNPC_Hero, target: C_DOTA_BaseNPC, cur_t
 	return Utils.CalculateDamageByHand(target, sender) > Utils.GetHealthAfter(target, delay, false, sender, config.melee_time_offset) - config.creep_hp_offset
 }
 
-Events.on("onDraw", () => {
+Events.on("Draw", () => {
 	if (enabled)
 		Renderer.Text(0, 0, "Auto LastHit enabled")
 	else {
@@ -172,7 +172,7 @@ Events.on("onDraw", () => {
 	glow_ents_old = glow_ents
 })
 
-Events.on("onTick", () => {
+Events.on("Tick", () => {
 	if (!enabled || GameRules.m_bGamePaused)
 		return
 	let pl_ent = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC_Hero
@@ -217,16 +217,16 @@ Events.on("onTick", () => {
 		})
 	}
 })
-Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+Events.on("NPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (npc instanceof C_DOTA_BaseNPC_Creep)
 		attackable_ents.push(npc)
 })
-Events.on("onEntityDestroyed", ent => {
+Events.on("EntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC_Creep)
 		Utils.arrayRemove(attackable_ents, ent)
 })
-Events.on("onPrepareUnitOrders", order => enabled && !config.glow_only ? Utils.GetOrdersWithoutSideEffects().includes(order.order_type) || !block_orders : true)
-Events.on("onWndProc", (message_type, wParam) => {
+Events.on("PrepareUnitOrders", order => enabled && !config.glow_only ? Utils.GetOrdersWithoutSideEffects().includes(order.order_type) || !block_orders : true)
+Events.on("WndProc", (message_type, wParam) => {
 	if (!IsInGame() || parseInt(wParam as any) !== config.hotkey)
 		return true
 	if (message_type === 0x100) // WM_KEYDOWN
@@ -238,7 +238,7 @@ Events.on("onWndProc", (message_type, wParam) => {
 	}
 	return true
 })
-Events.on("onGameEnded", () => {
+Events.on("GameEnded", () => {
 	enabled = false
 	glow_ents = glow_ents_old = []
 })

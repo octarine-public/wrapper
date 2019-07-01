@@ -11,7 +11,7 @@ const Notification = MenuFactory("Notification"),
 // 	  statusPosX 	= 	NotificationRoshanTree.AddSlider("Position X (%)", 0, 0, 100),
 // 	  statusPosY 	= 	NotificationRoshanTree.AddSlider("Position Y (%)", 75, 0, 100)
 	  
-EventsSDK.on("onParticleCreated", (Id: number, ParticlePath: string, Handle: bigint, Attach: ParticleAttachment_t, Entity: Entity) => {
+EventsSDK.on("ParticleCreated", (Id: number, ParticlePath: string, Handle: bigint, Attach: ParticleAttachment_t, Entity: Entity) => {
 
 	if (!NotificationRoshanState.value)
 		return;
@@ -40,7 +40,7 @@ EventsSDK.on("onParticleCreated", (Id: number, ParticlePath: string, Handle: big
 	}
 });
 
-// EventsSDK.on("onDraw", () => {
+// EventsSDK.on("Draw", () => {
 	
 // 	if (!drawStatus.value || !Game.IsInGame)
 // 		return
@@ -66,11 +66,11 @@ EventsSDK.on("onParticleCreated", (Id: number, ParticlePath: string, Handle: big
 
 
 
-EventsSDK.on("onGameEnded", () => {
+EventsSDK.on("GameEnded", () => {
 	IsAlive = undefined;
 });
 
-// EventsSDK.on("onTick", () => {
+// EventsSDK.on("Tick", () => {
 // });
 
 

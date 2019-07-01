@@ -49,7 +49,7 @@ function getTopParent(node: Tree | Keybind): Tree {
 	return parent !== undefined ? getTopParent(parent) : node as Tree
 }
 
-Events.on("onWndProc", (msg, wParam) => {
+Events.on("WndProc", (msg, wParam) => {
 
 	if (!Game.IsInGame || wParam === undefined)
 		return true

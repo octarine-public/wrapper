@@ -64,7 +64,7 @@ setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...a
 setInterval(() => {
 	try {
 		if (IsInGame())
-			Events.emit("onTick", false)
+			Events.emit("Tick", false)
 	} catch (e) {
 		throw e
 	}
@@ -88,7 +88,7 @@ global.Entities = new (class Entities {
 	}
 })()
 
-Events.on("onEntityCreated", (ent, id) => {
+Events.on("EntityCreated", (ent, id) => {
 	AllEntities.push(ent)
 	EntitiesIDs[id] = ent
 
@@ -96,11 +96,11 @@ Events.on("onEntityCreated", (ent, id) => {
 		if ((ent.m_pEntity.m_flags & (1 << 2)) !== 0)
 			NPCs.push(ent)
 		else
-			Events.emit("onNPCCreated", false, ent)
+			Events.emit("NPCCreated", false, ent)
 	}
 })
 
-Events.on("onEntityDestroyed", (ent, id) => {
+Events.on("EntityDestroyed", (ent, id) => {
 	AllEntities.splice(AllEntities.indexOf(ent), 1)
 	delete EntitiesIDs[id]
 
@@ -111,27 +111,27 @@ Events.on("onEntityDestroyed", (ent, id) => {
 	}
 })
 
-Events.on("onTick", () => {
+Events.on("Tick", () => {
 	for (let i = 0, end = NPCs.length; i < end; i++) {
 		let npc = NPCs[i]
 		if ((npc.m_pEntity.m_flags & (1 << 2)) === 0) {
-			Events.emit("onNPCCreated", false, npc)
+			Events.emit("NPCCreated", false, npc)
 			NPCs.splice(i--, 1)
 			end--
 		}
 	}
 })
 
-Events.on("onTeamVisibilityChanged", (npc, newTagged) => {
+Events.on("TeamVisibilityChanged", (npc, newTagged) => {
 	npc.m_iTaggedAsVisibleByTeam = newTagged
 })
 
 //
-/* Events.on("onNetworkFieldChanged", (obj, name) => {
+/* Events.on("NetworkFieldChanged", (obj, name) => {
 	if (obj === GameRules && name === "m_fGameTime")
-		Events.emit("onTick", false)
+		Events.emit("Tick", false)
 	else if (obj instanceof C_DOTA_BaseNPC && name === "m_iszUnitName" && !NPCs.includes(obj) && obj.m_iszUnitName !== undefined) {
-		Events.emit("onNPCCreated", false, obj)
+		Events.emit("NPCCreated", false, obj)
 		NPCs.push(obj)
 	}
 }) */

@@ -278,7 +278,7 @@ function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolea
 	Me.UseSmartAbility(disable_abil, hero);
 	return true;
 }
-Events.on("onTick", () => {
+Events.on("Tick", () => {
 	if (!MenuState.value || Game.IsPaused || LocalPlayer.Hero === undefined)
 		return;
 	const Me = LocalPlayer.Hero;
@@ -290,14 +290,14 @@ Events.on("onTick", () => {
 	if (needed_heroes.some(hero => hero.Buffs.some(buff => DisableBuffs.includes(buff.Name)) && Disable(Me, hero, BuffsDisablers)))
 		return;
 });
-EventsSDK.on("onEntityCreated", (npc: Unit) => {
+EventsSDK.on("EntityCreated", (npc: Unit) => {
 	if (!MenuState.value || LocalPlayer.Hero === undefined || npc === undefined || LocalPlayer.Hero === npc)
 		return;
 	if (!npc.IsValid || !npc.IsHero || !npc.IsEnemy || !npc.IsAlive || npc.IsIllusion || !npc.IsVisible)
 		return;
 	heroes.push(npc);
 });
-EventsSDK.on("onEntityDestroyed", (npc: Unit) => ArrayExtensions.arrayRemove(heroes, npc));
+EventsSDK.on("EntityDestroyed", (npc: Unit) => ArrayExtensions.arrayRemove(heroes, npc));
 function TransformToAvailable(abil_arrays: Array<[string, boolean, boolean?]>): Array<[string, boolean, boolean?]> {
 	if (LocalPlayer.Hero === undefined)
 		return;
@@ -306,7 +306,7 @@ function TransformToAvailable(abil_arrays: Array<[string, boolean, boolean?]>): 
 		return abil_arrays;
 	return abil_arrays.filter(abilData => abilData[0].startsWith("item_") || GetAbilityByName(Me, abilData[0]) !== undefined);
 }
-Events.on("onGameStarted", (Me: C_DOTA_BaseNPC_Hero) => {
+Events.on("GameStarted", (Me: C_DOTA_BaseNPC_Hero) => {
 	if (Me === undefined)
 		return;
 	Abils = TransformToAvailable(Abils_);

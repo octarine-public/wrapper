@@ -17,23 +17,23 @@ declare class EventEmitter {
 }
 
 declare interface Events extends EventEmitter {
-	on(name: "onGameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): EventEmitter
-	on(name: "onGameEnded", callback: () => void): EventEmitter
-	on(name: "onLocalPlayerTeamAssigned", callback: (team_num: number) => void): EventEmitter
+	on(name: "GameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): EventEmitter
+	on(name: "GameEnded", callback: () => void): EventEmitter
+	on(name: "LocalPlayerTeamAssigned", callback: (team_num: number) => void): EventEmitter
 	/**
 	 * Also, this event emitted about ALL entities that have already been created before reloading scripts
 	 */
-	on(name: "onEntityCreated", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
-	on(name: "onEntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
-	on(name: "onWndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
-	on(name: "onTick", callback: () => void): EventEmitter
-	on(name: "onUpdate", callback: (cmd: CUserCmd) => void): EventEmitter
-	on(name: "onUnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
-	on(name: "onTeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC, new_m_iTaggedAsVisibleByTeam: number) => void): EventEmitter
-	on(name: "onDraw", callback: () => void): EventEmitter
-	on(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target: C_BaseEntity | number) => void): EventEmitter
-	on(name: "onParticleUpdated", callback: (id: number, control_point: number) => void): EventEmitter // position: Vector3 at IOBuffer offset 0
-	on(name: "onParticleUpdatedEnt", callback: ( // fallback_position: Vector3 at IOBuffer offset 0
+	on(name: "EntityCreated", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
+	on(name: "EntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
+	on(name: "WndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
+	on(name: "Tick", callback: () => void): EventEmitter
+	on(name: "Update", callback: (cmd: CUserCmd) => void): EventEmitter
+	on(name: "UnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
+	on(name: "TeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC, new_m_iTaggedAsVisibleByTeam: number) => void): EventEmitter
+	on(name: "Draw", callback: () => void): EventEmitter
+	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target: C_BaseEntity | number) => void): EventEmitter
+	on(name: "ParticleUpdated", callback: (id: number, control_point: number) => void): EventEmitter // position: Vector3 at IOBuffer offset 0
+	on(name: "ParticleUpdatedEnt", callback: ( // fallback_position: Vector3 at IOBuffer offset 0
 		id: number,
 		control_point: number,
 		ent: C_BaseEntity | number,
@@ -41,9 +41,9 @@ declare interface Events extends EventEmitter {
 		attachment: number,
 		include_wearables: boolean
 	) => void): EventEmitter
-	on(name: "onBloodImpact", callback: (target: C_BaseEntity | number, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
-	on(name: "onPrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
-	on(name: "onLinearProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0
+	on(name: "BloodImpact", callback: (target: C_BaseEntity | number, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
+	on(name: "PrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
+	on(name: "LinearProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0
 		proj: LinearProjectile,
 		ent: C_BaseEntity | number,
 		path: string,
@@ -53,8 +53,8 @@ declare interface Events extends EventEmitter {
 		sticky_fow_reveal: boolean,
 		distance: number
 	) => void): EventEmitter
-	on(name: "onLinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventEmitter
-	on(name: "onTrackingProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0
+	on(name: "LinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventEmitter
+	on(name: "TrackingProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0
 		proj: TrackingProjectile,
 		sourceAttachment: number,
 		path: string,
@@ -62,14 +62,15 @@ declare interface Events extends EventEmitter {
 		maximpacttime: number,
 		launch_tick: number
 	) => void): EventEmitter
-	on(name: "onTrackingProjectileUpdated", callback: ( // vSourceLoc: Vector3 at IOBuffer offset 0, colorgemcolor: Color at IOBuffer offset 3
+	on(name: "TrackingProjectileUpdated", callback: ( // vSourceLoc: Vector3 at IOBuffer offset 0, colorgemcolor: Color at IOBuffer offset 3
 		proj: TrackingProjectile,
 		path: string,
 		particleSystemHandle: bigint,
 		launch_tick: number
 	) => void): EventEmitter
-	on(name: "onTrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
-	on(name: "onUnitAnimation", callback: (
+	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
+	on(name: "TrackingProjectilesDodged", callback: (ent: C_BaseEntity, attacks_only: boolean) => void): EventEmitter
+	on(name: "UnitAnimation", callback: (
 		npc: C_DOTA_BaseNPC,
 		sequenceVariant: number,
 		playbackrate: number,
@@ -77,14 +78,14 @@ declare interface Events extends EventEmitter {
 		type: number,
 		activity: number
 	) => void): EventEmitter
-	on(name: "onUnitAnimationEnd", callback: (
+	on(name: "UnitAnimationEnd", callback: (
 		npc: C_DOTA_BaseNPC,
 		snap: boolean
 	) => void): EventEmitter
-	on(name: "onBuffAdded", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): EventEmitter
-	on(name: "onBuffRemoved", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): EventEmitter
-	on(name: "onBuffStackCountChanged", listener: (buff: CDOTA_Buff) => void): EventEmitter
-	on(name: "onCustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
-	on(name: "onNetworkFieldChanged", listener: (object: any, name: string) => void): EventEmitter
+	on(name: "BuffAdded", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): EventEmitter
+	on(name: "BuffRemoved", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): EventEmitter
+	on(name: "BuffStackCountChanged", listener: (buff: CDOTA_Buff) => void): EventEmitter
+	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
+	on(name: "NetworkFieldChanged", listener: (object: any, name: string) => void): EventEmitter
 }
 declare var Events: Events

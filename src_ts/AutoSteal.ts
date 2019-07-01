@@ -578,7 +578,7 @@ function OnTick(): void {
 	})
 }
 
-Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+Events.on("NPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (LocalDOTAPlayer === undefined)
 		return
 	if (
@@ -593,12 +593,12 @@ Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 	)
 		possibleTargets.push(npc)
 })
-Events.on("onEntityDestroyed", ent => {
+Events.on("EntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC)
 		Utils.arrayRemove(possibleTargets, ent)
 })
-Events.on("onGameEnded", () => possibleTargets = [])
-Events.on("onTick", OnTick)
+Events.on("GameEnded", () => possibleTargets = [])
+Events.on("Tick", OnTick)
 
 {
 	let root = new Menu_Node("AutoSteal")

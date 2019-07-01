@@ -2,7 +2,7 @@ import { EventsSDK, EntityManager, LocalPlayer } from "./wrapper/Imports"
 import { orderBy } from "wrapper/Utils/ArrayExtensions"
 import { GetHealthAfter, GetRotationTime } from "Utils"
 
-EventsSDK.on("onTick", () => {
+EventsSDK.on("Tick", () => {
 	let pl_ent = LocalPlayer.Hero;
 	if (pl_ent === undefined || !pl_ent.IsAlive)
 		return;

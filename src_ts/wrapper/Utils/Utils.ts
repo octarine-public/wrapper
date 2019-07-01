@@ -32,4 +32,4 @@ export function HasMaskBigInt(num: bigint, mask: bigint): boolean {
 }
 
 export const CursorWorldVec: Vector3 = new Vector3()
-EventsSDK.on("onUpdate", cmd => cmd.VectorUnderCursor.CopyTo(CursorWorldVec))
+EventsSDK.on("Update", cmd => cmd.VectorUnderCursor.CopyTo(CursorWorldVec))

@@ -107,7 +107,7 @@ Invoke("invoker_alacrity")
 PrepareSpheres("eee") // just for damage
 combo.addAbility("invoker_alacrity", EComboAction.SELF)*/
 
-Events.on("onWndProc", (message_type, wParam) => {
+Events.on("WndProc", (message_type, wParam) => {
 	if (executing || !IsInGame() || parseInt(wParam as any) !== config.hotkey)
 		return true
 	if (message_type === 0x100) { // WM_KEYDOWN

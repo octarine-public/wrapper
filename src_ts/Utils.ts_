@@ -981,14 +981,14 @@ export function arrayRemove<T>(ar: T[], el: T) {
 		ar.splice(id, 1)
 }
 
-Events.on("onUpdate", cmd => CursorWorldVec = cmd.vec_under_cursor)
+Events.on("Update", cmd => CursorWorldVec = cmd.vec_under_cursor)
 
-Events.on("onEntityDestroyed", (ent, ent_id) => {
+Events.on("EntityDestroyed", (ent, ent_id) => {
 	// loop-optimizer: KEEP
 	attacks = attacks.filter((data, attacker_id) => attacker_id !== ent_id && data[2] !== ent)
 })
 
-Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
+Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 	if (activity === 1503 && !HasAttackCapability(npc, DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)) {
 		let delay = (1 / npc.m_fAttacksPerSecond) - 0.06
 		attacks[Entities.GetEntityID(npc)] = [
@@ -999,7 +999,7 @@ Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, typ
 	}
 })
 
-Events.on("onUnitAnimationEnd", npc => {
+Events.on("UnitAnimationEnd", npc => {
 	let id = Entities.GetEntityID(npc)
 	let found = attacks[id]
 	if (found === undefined)
@@ -1017,9 +1017,9 @@ Events.on("onUnitAnimationEnd", npc => {
 	]
 })
 
-Events.on("onGameEnded", () => attacks = [])
+Events.on("GameEnded", () => attacks = [])
 
-Events.on("onTick", () => {
+Events.on("Tick", () => {
 	// attack sanitizer
 	let time = GameRules.m_fGameTime
 	// loop-optimizer: KEEP

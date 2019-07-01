@@ -6,17 +6,17 @@ import * as DrawParticle from "./base/DrawParticle";
 import * as CreepBlock from "./modules/CreepBlock/Block";
 import * as HeroBlock from "./modules/HeroBlock/Block";
 
-EventsSDK.on("onGameStarted", () => {
+EventsSDK.on("GameStarted", () => {
 	CreepBlock.GameStarted();
 });
 
-EventsSDK.on("onGameEnded", () => {
+EventsSDK.on("GameEnded", () => {
 	DrawParticle.GameEnded();
 	CreepBlock.GameEnded();
 	HeroBlock.GameEnded();
 })
 
-EventsSDK.on("onTick", () => {
+EventsSDK.on("Tick", () => {
 	if (!stateMain.value || !Game.IsInGame || Game.IsPaused)
 		return;
 	
@@ -24,7 +24,7 @@ EventsSDK.on("onTick", () => {
 	HeroBlock.Update();
 })
 
-EventsSDK.on("onDraw", () => {
+EventsSDK.on("Draw", () => {
 	if (!stateMain.value || !Game.IsInGame)
 		return;
 	

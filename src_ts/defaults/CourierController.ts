@@ -65,9 +65,9 @@ let CastCourAbility = (num: number) => allyCourier
 
 // --- Callbacks
 
-EventsSDK.on("onGameStarted", () => playersBlockList.SetToolTip(TOOLTIP_ONPLAYING))
+EventsSDK.on("GameStarted", () => playersBlockList.SetToolTip(TOOLTIP_ONPLAYING))
 
-EventsSDK.on("onGameEnded", () => {
+EventsSDK.on("GameEnded", () => {
 
 	allyCourier = undefined
 	
@@ -81,7 +81,7 @@ EventsSDK.on("onGameEnded", () => {
 
 // --- Methods
 
-EventsSDK.on("onEntityCreated", (ent: Entity) => {
+EventsSDK.on("EntityCreated", (ent: Entity) => {
 
 	if (
 		ent instanceof Player
@@ -107,13 +107,13 @@ EventsSDK.on("onEntityCreated", (ent: Entity) => {
 	}
 })
 
-EventsSDK.on("onEntityDestroyed", (ent: Entity) => {
+EventsSDK.on("EntityDestroyed", (ent: Entity) => {
 
 	if (ent instanceof Courier && allyCourier === ent)
 		allyCourier = undefined
 })
 
-EventsSDK.on("onUpdate", () => {
+EventsSDK.on("Update", () => {
 
 	if (!Game.IsInGame || !Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
 		return

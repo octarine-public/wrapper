@@ -10,7 +10,7 @@ export let allCreeps: Creep[] = [];
 export let allTowers: Tower[] = [];
 
 // --- Methods
-EventsSDK.on("onEntityCreated", ent => {
+EventsSDK.on("EntityCreated", ent => {
 	if (ent instanceof Creep && ent.IsLaneCreep) {
 		if (ent.IsAlly())
 			allCreeps.push(ent)
@@ -23,7 +23,7 @@ EventsSDK.on("onEntityCreated", ent => {
 	}
 });
 
-EventsSDK.on("onEntityDestroyed", ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	
 	if (ent instanceof Creep)
 		ArrayExtensions.arrayRemove(allCreeps, ent);

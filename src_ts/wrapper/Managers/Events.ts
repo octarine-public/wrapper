@@ -16,33 +16,33 @@ const EventsSDK: EventsSDK = new EventEmitter();
 
 export default EventsSDK;
 
-Events.on("onGameStarted", ent => EventsSDK.emit("onGameStarted", false, EntityManager.GetEntityByNative(ent)));
+Events.on("GameStarted", ent => EventsSDK.emit("GameStarted", false, EntityManager.GetEntityByNative(ent)));
 
-Events.on("onGameEnded", () => EventsSDK.emit("onGameEnded"));
+Events.on("GameEnded", () => EventsSDK.emit("GameEnded"));
 
-Events.on("onLocalPlayerTeamAssigned", teamNum => EventsSDK.emit("onLocalPlayerTeamAssigned", false, teamNum));
+Events.on("LocalPlayerTeamAssigned", teamNum => EventsSDK.emit("LocalPlayerTeamAssigned", false, teamNum));
 
-Events.on("onWndProc", (...args) => EventsSDK.emit("onWndProc", true, ...args));
+Events.on("WndProc", (...args) => EventsSDK.emit("WndProc", true, ...args));
 
 setInterval(() => {
 	try {
 		if (LocalPlayer !== undefined)
-			EventsSDK.emit("onTick")
+			EventsSDK.emit("Tick")
 	} catch (e) {
 		throw e
 	}
 }, Math.max(1000 / 30, GetLatency(Flow_t.IN)));
 
-Events.on("onUpdate", cmd => EventsSDK.emit("onUpdate", false, new UserCmd(cmd)));
+Events.on("Update", cmd => EventsSDK.emit("Update", false, new UserCmd(cmd)));
 
-Events.on("onUnitStateChanged", npc => {
+Events.on("UnitStateChanged", npc => {
 	if (LocalPlayer === undefined)
 		return;
 	
-	EventsSDK.emit("onUnitStateChanged", false, EntityManager.GetEntityByNative(npc, true))
+	EventsSDK.emit("UnitStateChanged", false, EntityManager.GetEntityByNative(npc, true))
 });
 
-Events.on("onTeamVisibilityChanged", (npc, newTagged) => {
+Events.on("TeamVisibilityChanged", (npc, newTagged) => {
 	if (LocalPlayer === undefined)
 		return;
 	
@@ -51,71 +51,71 @@ Events.on("onTeamVisibilityChanged", (npc, newTagged) => {
 	const isVisibleForEnemies = Unit.IsVisibleForEnemies(unit, newTagged);
 	unit.IsVisibleForEnemies = isVisibleForEnemies;
 	
-	EventsSDK.emit("onTeamVisibilityChanged", false, unit, isVisibleForEnemies, newTagged)
+	EventsSDK.emit("TeamVisibilityChanged", false, unit, isVisibleForEnemies, newTagged)
 });
 
-Events.on("onDraw", () => EventsSDK.emit("onDraw"));
+Events.on("Draw", () => EventsSDK.emit("Draw"));
 
-Events.on("onParticleCreated", (id, path, particleSystemHandle, attach, target) => 
-	EventsSDK.emit("onParticleCreated", false, id, path, particleSystemHandle, attach, 
+Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) => 
+	EventsSDK.emit("ParticleCreated", false, id, path, particleSystemHandle, attach, 
 		target instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(target)
 			: EntityManager.EntityByIndex(target)));
 
-Events.on("onParticleUpdated", (id, control_point) =>
-	EventsSDK.emit("onParticleUpdated", false, id, control_point, Vector3.fromIOBuffer()))
+Events.on("ParticleUpdated", (id, control_point) =>
+	EventsSDK.emit("ParticleUpdated", false, id, control_point, Vector3.fromIOBuffer()))
 
-Events.on("onParticleUpdatedEnt", (id, control_point, ent, attach, attachment, include_wearables) => 
-	EventsSDK.emit("onParticleUpdatedEnt", false, id, control_point,
+Events.on("ParticleUpdatedEnt", (id, control_point, ent, attach, attachment, include_wearables) => 
+	EventsSDK.emit("ParticleUpdatedEnt", false, id, control_point,
 		ent instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(ent)
 			: EntityManager.EntityByIndex(ent),
 		attach, attachment, Vector3.fromIOBuffer(), include_wearables));
 
-Events.on("onBloodImpact", (target, scale, xnormal, ynormal) => 
-	EventsSDK.emit("onBloodImpact", false,
+Events.on("BloodImpact", (target, scale, xnormal, ynormal) => 
+	EventsSDK.emit("BloodImpact", false,
 		target instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(target)
 			: EntityManager.EntityByIndex(target),
 		scale, xnormal, ynormal));
 
-Events.on("onPrepareUnitOrders", order => {
+Events.on("PrepareUnitOrders", order => {
 	const ordersSDK = ExecuteOrder.fromNative(order);
 	
 	if (ordersSDK === undefined)
 		return true;
 	
-	return EventsSDK.emit("onPrepareUnitOrders", true, ordersSDK);
+	return EventsSDK.emit("PrepareUnitOrders", true, ordersSDK);
 })
 
-Events.on("onLinearProjectileCreated", (proj, ent, path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance) => {
-	EventsSDK.emit("onLinearProjectileCreated", false, proj, 
+Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance) => {
+	EventsSDK.emit("LinearProjectileCreated", false, proj, 
 		ent instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(ent)
 			: EntityManager.EntityByIndex(ent), 
 		path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance, Color.fromIOBuffer())
 });
 
-Events.on("onLinearProjectileDestroyed", proj =>
-	EventsSDK.emit("onLinearProjectileDestroyed", false, proj))
+Events.on("LinearProjectileDestroyed", proj =>
+	EventsSDK.emit("LinearProjectileDestroyed", false, proj))
 
-Events.on("onTrackingProjectileCreated", (proj, sourceAttachment, path, particleSystemHandle, maximpacttime, launch_tick) =>
-	EventsSDK.emit("onTrackingProjectileCreated", false, proj, sourceAttachment, path, particleSystemHandle, maximpacttime, Color.fromIOBuffer(), launch_tick))
+Events.on("TrackingProjectileCreated", (proj, sourceAttachment, path, particleSystemHandle, maximpacttime, launch_tick) =>
+	EventsSDK.emit("TrackingProjectileCreated", false, proj, sourceAttachment, path, particleSystemHandle, maximpacttime, Color.fromIOBuffer(), launch_tick))
 
-Events.on("onTrackingProjectileUpdated", (proj, path, particleSystemHandle, launch_tick) =>
-	EventsSDK.emit("onTrackingProjectileUpdated", false, Vector3.fromIOBuffer(), proj, path, particleSystemHandle, Color.fromIOBuffer(), launch_tick))
+Events.on("TrackingProjectileUpdated", (proj, path, particleSystemHandle, launch_tick) =>
+	EventsSDK.emit("TrackingProjectileUpdated", false, Vector3.fromIOBuffer(), proj, path, particleSystemHandle, Color.fromIOBuffer(), launch_tick))
 
-Events.on("onTrackingProjectileDestroyed", proj =>
-	EventsSDK.emit("onTrackingProjectileDestroyed", false, proj))
+Events.on("TrackingProjectileDestroyed", proj =>
+	EventsSDK.emit("TrackingProjectileDestroyed", false, proj))
 
-Events.on("onUnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) =>
-	EventsSDK.emit("onUnitAnimation", false, EntityManager.GetEntityByNative(npc), sequenceVariant, playbackrate, castpoint, type, activity))
+Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) =>
+	EventsSDK.emit("UnitAnimation", false, EntityManager.GetEntityByNative(npc), sequenceVariant, playbackrate, castpoint, type, activity))
 
-Events.on("onUnitAnimationEnd", (npc, snap) =>
-	EventsSDK.emit("onUnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
+Events.on("UnitAnimationEnd", (npc, snap) =>
+	EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
 
-Events.on("onCustomGameEvent", (...args) =>
-	EventsSDK.emit("onCustomGameEvent", false, ...args));
+Events.on("CustomGameEvent", (...args) =>
+	EventsSDK.emit("CustomGameEvent", false, ...args));
 
 
 interface EventsSDK extends EventEmitter {
@@ -124,17 +124,17 @@ interface EventsSDK extends EventEmitter {
 	 * 
 	 * Also, emitted when scripts reloading
 	 */
-	on(name: "onGameStarted", callback: (localHero: Hero) => void): EventEmitter
+	on(name: "GameStarted", callback: (localHero: Hero) => void): EventEmitter
 	/**
 	 * Emitted when game ended
 	 * 
 	 * Also, emitted when scripts reloading
 	 */
-	on(name: "onGameEnded", callback: () => void): EventEmitter
+	on(name: "GameEnded", callback: () => void): EventEmitter
 	/**
 	 * Emitted local player choose team. Now LocalPlayer is available and valid
 	 */
-	on(name: "onLocalPlayerTeamAssigned", callback: (teamNum: DOTATeam_t) => void): EventEmitter
+	on(name: "LocalPlayerTeamAssigned", callback: (teamNum: DOTATeam_t) => void): EventEmitter
 	/**
 	 * Emitted about ALL entities that have may be in "Staging" and Is NOT Valid flag (NPC and childs, PhysicalItems and etc.)
 	 * 
@@ -144,7 +144,7 @@ interface EventsSDK extends EventEmitter {
 	 * 
 	 * CAREFUL !Use this if you know what you are doing!
 	 */
-	on(name: "onEntityPreCreated", callback: (ent: Entity, index: number) => void): EventEmitter
+	on(name: "EntityPreCreated", callback: (ent: Entity, index: number) => void): EventEmitter
 	/**
 	 * Emitted about ALL entities that have Valid flag. This callback is best suited for use.
 	 * 
@@ -152,27 +152,27 @@ interface EventsSDK extends EventEmitter {
 	 * 
 	 * Emitted ONLY after LocalPlayer created
 	 */
-	on(name: "onEntityCreated", callback: (ent: Entity, index: number) => void): EventEmitter
-	on(name: "onEntityDestroyed", callback: (ent: Entity, index: number) => void): EventEmitter
+	on(name: "EntityCreated", callback: (ent: Entity, index: number) => void): EventEmitter
+	on(name: "EntityDestroyed", callback: (ent: Entity, index: number) => void): EventEmitter
 	/**
 	 * Analog (w/o hwnd) - https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms633573(v%3Dvs.85)
 	 * 
 	 * messageType: https://www.autoitscript.com/autoit3/docs/appendix/WinMsgCodes.htm
 	 */
-	on(name: "onWndProc", callback: (messageType: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
+	on(name: "WndProc", callback: (messageType: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
 	/**
 	 * Every ~33ms. Emitted after LocalPlayer has been created
 	 */
-	on(name: "onTick", callback: () => void): EventEmitter
-	on(name: "onUpdate", callback: (cmd: UserCmd) => void): EventEmitter
-	on(name: "onUnitStateChanged", callback: (npc: Unit) => void): EventEmitter
-	on(name: "onTeamVisibilityChanged", callback: (npc: Unit, isVisibleForEnemies: boolean, isVisibleForTeamMask: number) => void): EventEmitter
-	on(name: "onTrueSightedChanged", callback: (npc: Unit, isTrueSighted: boolean) => void): EventEmitter
-	on(name: "onHasScepterChanged", callback: (npc: Unit, hasScepter: boolean) => void): EventEmitter
-	on(name: "onDraw", callback: () => void): EventEmitter
-	on(name: "onParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity) => void): EventEmitter
-	on(name: "onParticleUpdated", callback: (id: number, controlPoint: number, position: Vector3) => void): EventEmitter
-	on(name: "onParticleUpdatedEnt", callback: (
+	on(name: "Tick", callback: () => void): EventEmitter
+	on(name: "Update", callback: (cmd: UserCmd) => void): EventEmitter
+	on(name: "UnitStateChanged", callback: (npc: Unit) => void): EventEmitter
+	on(name: "TeamVisibilityChanged", callback: (npc: Unit, isVisibleForEnemies: boolean, isVisibleForTeamMask: number) => void): EventEmitter
+	on(name: "TrueSightedChanged", callback: (npc: Unit, isTrueSighted: boolean) => void): EventEmitter
+	on(name: "HasScepterChanged", callback: (npc: Unit, hasScepter: boolean) => void): EventEmitter
+	on(name: "Draw", callback: () => void): EventEmitter
+	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity) => void): EventEmitter
+	on(name: "ParticleUpdated", callback: (id: number, controlPoint: number, position: Vector3) => void): EventEmitter
+	on(name: "ParticleUpdatedEnt", callback: (
 		id: number,
 		controlPoint: number,
 		ent: Entity,
@@ -181,9 +181,9 @@ interface EventsSDK extends EventEmitter {
 		fallbackPosition: Vector3,
 		includeWearables: boolean
 	) => void): EventEmitter
-	on(name: "onBloodImpact", callback: (target: Entity, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
-	on(name: "onPrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventEmitter
-	on(name: "onLinearProjectileCreated", callback: (
+	on(name: "BloodImpact", callback: (target: Entity, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
+	on(name: "PrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventEmitter
+	on(name: "LinearProjectileCreated", callback: (
 		proj: LinearProjectile,
 		ent: Entity,
 		path: string,
@@ -194,8 +194,8 @@ interface EventsSDK extends EventEmitter {
 		distance: number,
 		colorgemcolor: Color
 	) => void): EventEmitter
-	on(name: "onLinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventEmitter
-	on(name: "onTrackingProjectileCreated", callback: (
+	on(name: "LinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventEmitter
+	on(name: "TrackingProjectileCreated", callback: (
 		proj: TrackingProjectile,
 		sourceAttachment: number,
 		path: string,
@@ -204,7 +204,7 @@ interface EventsSDK extends EventEmitter {
 		colorgemcolor: Color,
 		launchTick: number
 	) => void): EventEmitter
-	on(name: "onTrackingProjectileUpdated", callback: (
+	on(name: "TrackingProjectileUpdated", callback: (
 		proj: TrackingProjectile,
 		vSourceLoc: Vector3,
 		path: string,
@@ -212,8 +212,8 @@ interface EventsSDK extends EventEmitter {
 		colorgemcolor: Color,
 		launchTick: number
 	) => void): EventEmitter
-	on(name: "onTrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
-	on(name: "onUnitAnimation", callback: (
+	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
+	on(name: "UnitAnimation", callback: (
 		npc: Unit,
 		sequenceVariant: number,
 		playbackrate: number,
@@ -221,16 +221,16 @@ interface EventsSDK extends EventEmitter {
 		type: number,
 		activity: number
 	) => void): EventEmitter
-	on(name: "onUnitAnimationEnd", callback: (
+	on(name: "UnitAnimationEnd", callback: (
 		npc: Unit,
 		snap: boolean
 	) => void): EventEmitter
 	/**
 	 *	Also, this event emitted about ALL buffs(modifiers) that have already been created (and valids) before reloading scripts
 	 */
-	on(name: "onBuffAdded", listener: (npc: Unit, buff: Modifier) => void): EventEmitter
-	on(name: "onBuffRemoved", listener: (npc: Unit, buff: Modifier) => void): EventEmitter
-	on(name: "onBuffStackCountChanged", listener: (buff: Modifier) => void): EventEmitter
-	on(name: "onCustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
-	//on(name: "onNetworkFieldChanged", listener: (object: any, name: string) => void): EventEmitter
+	on(name: "BuffAdded", listener: (npc: Unit, buff: Modifier) => void): EventEmitter
+	on(name: "BuffRemoved", listener: (npc: Unit, buff: Modifier) => void): EventEmitter
+	on(name: "BuffStackCountChanged", listener: (buff: Modifier) => void): EventEmitter
+	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
+	//on(name: "NetworkFieldChanged", listener: (object: any, name: string) => void): EventEmitter
 }

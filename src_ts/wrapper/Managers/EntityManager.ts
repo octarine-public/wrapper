@@ -73,7 +73,7 @@ const entityManager = new EntityManager();
 
 export default global.EntityManager = entityManager;
 
-Events.on("onEntityCreated", (ent, index) => {
+Events.on("EntityCreated", (ent, index) => {
 
 	{ // add globals
 		if (ent instanceof C_DOTA_PlayerResource) {
@@ -103,7 +103,7 @@ Events.on("onEntityCreated", (ent, index) => {
 	AddToCache(entity);
 })
 
-Events.on("onEntityDestroyed", (ent, index) => {
+Events.on("EntityDestroyed", (ent, index) => {
 
 	{ // delete global
 		if (ent instanceof C_DOTA_PlayerResource) {
@@ -165,7 +165,7 @@ setInterval(() => {
 
 function AddToCache(entity: Entity) {
 	//console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
-	EventsSDK.emit("onEntityPreCreated", false, entity, entity.Index);
+	EventsSDK.emit("EntityPreCreated", false, entity, entity.Index);
 
 	if (CheckIsInStagingEntity(entity.m_pBaseEntity)) {
 		InStage.set(entity.m_pBaseEntity, entity);
@@ -183,7 +183,7 @@ function AddToCache(entity: Entity) {
 	changeFieldsByEvents(entity as Unit);
 	
 	//console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
-	EventsSDK.emit("onEntityCreated", false, entity, index);
+	EventsSDK.emit("EntityCreated", false, entity, index);
 }
 
 function DeleteFromCache(entNative: C_BaseEntity, index: number) {
@@ -200,7 +200,7 @@ function DeleteFromCache(entNative: C_BaseEntity, index: number) {
 	arrayRemove(AllEntities, entity);
 	
 	//console.log("onEntityDestroyed SDK", entity, entity.m_pBaseEntity, index);
-	EventsSDK.emit("onEntityDestroyed", false, entity, index);
+	EventsSDK.emit("EntityDestroyed", false, entity, index);
 }
 
 function findEntityNative(ent: C_BaseEntity, inStage: boolean = false): Entity {
@@ -311,6 +311,6 @@ function changeFieldsByEvents(unit: Unit) {
 		const isVisibleForEnemies = Unit.IsVisibleForEnemies(unit, visibleTagged);
 		unit.IsVisibleForEnemies = isVisibleForEnemies;
 
-		EventsSDK.emit("onTeamVisibilityChanged", false, unit, isVisibleForEnemies, visibleTagged)
+		EventsSDK.emit("TeamVisibilityChanged", false, unit, isVisibleForEnemies, visibleTagged)
 	}
 }

@@ -2,10 +2,10 @@
 let onTickHandlers = [];
 let onUpdateHandlers = [];
 
-Events.on("onTick", () => {
+Events.on("Tick", () => {
 	
 });
 
-Events.on("onUpdate", () => {
+Events.on("Update", () => {
 
 });

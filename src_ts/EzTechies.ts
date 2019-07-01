@@ -178,12 +178,12 @@ function RegisterMine(npc: C_DOTA_BaseNPC) {
 	])
 }
 
-Events.on("onTick", onTick)
-Events.on("onGameStarted", pl_ent => {
+Events.on("Tick", onTick)
+Events.on("GameStarted", pl_ent => {
 	if (pl_ent.m_iHeroID === HeroID_t.npc_dota_hero_techies)
 		techies = pl_ent as C_DOTA_Unit_Hero_Techies
 })
-Events.on("onGameEnded", () => {
+Events.on("GameEnded", () => {
 	rmines = []
 	if (IsInGame())
 		// loop-optimizer: KEEP
@@ -193,7 +193,7 @@ Events.on("onGameEnded", () => {
 	heroes = []
 	techies = undefined as any
 })
-Events.on("onPrepareUnitOrders", args => {
+Events.on("PrepareUnitOrders", args => {
 	if (!config.auto_stack)
 		return true
 	if (
@@ -218,7 +218,7 @@ Events.on("onPrepareUnitOrders", args => {
 	}
 	return true
 })
-Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
+Events.on("NPCCreated", (npc: C_DOTA_BaseNPC) => {
 	if (LocalDOTAPlayer === undefined)
 		return
 	if (Utils.IsEnemy(npc, LocalDOTAPlayer)) {
@@ -233,7 +233,7 @@ Events.on("onNPCCreated", (npc: C_DOTA_BaseNPC) => {
 			RegisterMine(npc)
 	}
 })
-Events.on("onEntityDestroyed", ent => {
+Events.on("EntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC_Hero)
 		Utils.arrayRemove(heroes, ent)
 	else if (ent instanceof C_DOTA_NPC_TechiesMines && ent.m_iszUnitName === "npc_dota_techies_remote_mine") {

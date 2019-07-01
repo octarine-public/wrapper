@@ -21,7 +21,7 @@ var spots: Vector3[] = /*Utils.orderBy(*/[
 	},
 	is_stacking: boolean = false
 
-EventsSDK.on("onDraw", () => {
+EventsSDK.on("Draw", () => {
 	if (!config.visals || !Game.IsInGame)
 		return
 	spots.forEach((spot, i) => {
@@ -32,7 +32,7 @@ EventsSDK.on("onDraw", () => {
 		Renderer.Text(screen_pos.x, screen_pos.y, (i + 1).toString(), 0, 255, 0)
 	})
 })
-EventsSDK.on("onTick", () => {
+EventsSDK.on("Tick", () => {
 	if (!config.enabled || is_stacking)
 		return
 	var MyEnt = LocalPlayer.Hero
@@ -70,9 +70,9 @@ EventsSDK.on("onTick", () => {
 	})
 })
 
-EventsSDK.on("onPrepareUnitOrders", order => order.Unit !== LocalPlayer.Hero || !is_stacking) // cancel orders while stacking
+EventsSDK.on("PrepareUnitOrders", order => order.Unit !== LocalPlayer.Hero || !is_stacking) // cancel orders while stacking
 
-/*EventsSDK.on("onWndProc", (message_type, wParam) => {
+/*EventsSDK.on("WndProc", (message_type, wParam) => {
 	if (!IsInGame())
 		return true
 	let key = parseInt(wParam as any)

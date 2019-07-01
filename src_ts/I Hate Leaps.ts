@@ -9,7 +9,7 @@ const stateMain = iHateLeapsMenu.AddToggle("State", false);
 let mks: Unit[] = [],
 	techiess: Unit[] = [];
 
-EventsSDK.on("onEntityCreated", (npc: Unit) => {
+EventsSDK.on("EntityCreated", (npc: Unit) => {
 
 	if (LocalPlayer === undefined || LocalPlayer.Hero === npc)
 		return
@@ -18,14 +18,14 @@ EventsSDK.on("onEntityCreated", (npc: Unit) => {
 	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Techies)
 		techiess.push(npc)
 })
-EventsSDK.on("onEntityDestroyed", (npc: Unit) => {
+EventsSDK.on("EntityDestroyed", (npc: Unit) => {
 	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_MonkeyKing)
 		ArrayExtensions.arrayRemove(mks, npc)
 	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Techies)
 		ArrayExtensions.arrayRemove(techiess, npc)
 })
 
-EventsSDK.on("onTick", () => {
+EventsSDK.on("Tick", () => {
 	if (!stateMain.value)
 		return
 	const pl_ent = LocalPlayer.Hero;

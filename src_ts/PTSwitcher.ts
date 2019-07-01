@@ -11,7 +11,7 @@ function IsValidMyHero(MyHero: any): boolean {
 	return MyHero === undefined || MyHero.IsStunned || !MyHero.IsAlive || MyHero.IsInvisible || MyHero.IsInvulnerable || MyHero.IsChanneling;
 }
 
-EventsSDK.on("onUpdate", () => {
+EventsSDK.on("Update", () => {
 	
 	if (!state.value)
 		return;
@@ -41,7 +41,7 @@ EventsSDK.on("onUpdate", () => {
 	}
 })
 
-Events.on("onPrepareUnitOrders", orders => {
+Events.on("PrepareUnitOrders", orders => {
 	
 	if (!state.value)
 		return;

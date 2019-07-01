@@ -40,7 +40,7 @@ function TryDodge(pl_ent: Unit, proj: TrackingProjectile | LinearProjectile) {
 		console.log(path)
 }
 
-EventsSDK.on("onTick", () => {
+EventsSDK.on("Tick", () => {
 	if (!enabled/* stateMain.value */ || !Game.IsInGame)
 		return
 		
@@ -50,7 +50,7 @@ EventsSDK.on("onTick", () => {
 	// loop-optimizer: KEEP
 	proj_list.forEach(proj => TryDodge(pl_ent, proj))
 })
-Events.on("onTrackingProjectileCreated", (proj, sourceAttachment, path) => {
+Events.on("TrackingProjectileCreated", (proj, sourceAttachment, path) => {
 	if (!enabled/* stateMain.value */  || !Game.IsInGame)
 		return
 	let pl_ent = EntityManager.LocalHero;
@@ -60,7 +60,7 @@ Events.on("onTrackingProjectileCreated", (proj, sourceAttachment, path) => {
 	proj_list.push(proj)
 	TryDodge(pl_ent, proj)
 })
-Events.on("onLinearProjectileCreated", (proj, ent, path) => {
+Events.on("LinearProjectileCreated", (proj, ent, path) => {
 	if (!enabled/* stateMain.value */ || !Game.IsInGame)
 		return
 	let pl_ent = EntityManager.LocalHero;
@@ -70,5 +70,5 @@ Events.on("onLinearProjectileCreated", (proj, ent, path) => {
 	proj_list.push(proj)
 	TryDodge(pl_ent, proj)
 })
-Events.on("onTrackingProjectileDestroyed", DeleteProjectile)
-Events.on("onLinearProjectileDestroyed", DeleteProjectile)
+Events.on("TrackingProjectileDestroyed", DeleteProjectile)
+Events.on("LinearProjectileDestroyed", DeleteProjectile)
