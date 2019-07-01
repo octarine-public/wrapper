@@ -56,7 +56,7 @@ EventsSDK.on("Draw", () => {
 		// loop-optimizer: FORWARD
 		let renderable_abils = hero.Spells.filter((abil, i) => {
 			let name = abil.Name
-			return i < 6 && !ignore_abils.some(ignore_name => name === ignore_name)
+			return i < 6 && !ignore_abils.some(ignore_name => name === ignore_name) && !abil.IsHidden
 		})
 		// loop-optimizer: FORWARD
 		renderable_abils.forEach(((abil, i) => {
@@ -108,18 +108,6 @@ EventsSDK.on("Draw", () => {
 					new Vector2(size.value / 3, 0),
 					FontFlags_t.OUTLINE
 				)
-				/*if (abil.IsInAbilityPhase) {
-					let time = abil.CastPoint - (Game.RawGameTime - abil.m_pBaseEntity.m_flCastStartTime)
-					if (time >= 0)
-						RendererSDK.Text(
-							time.toFixed(1),
-							need_pos.Clone().AddScalarX(size.value * (3 / 40)).AddScalarY(size.value * (21 / 20)),
-							new Color(255, 255, 255, opacity.value),
-							"Consolas",
-							new Vector2(size.value / 3, 0),
-							FontFlags_t.OUTLINE
-						)
-				}*/
 			}
 		}))
 	})
