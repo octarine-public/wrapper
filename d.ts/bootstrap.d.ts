@@ -92,7 +92,8 @@ declare interface Events extends EventEmitter {
 		concept: number,
 		response: string,
 		recipient_type: number,
-		level: number, muteable: boolean
+		level: number,
+		muteable: boolean
 	) => void): EventEmitter
 	on(name: "UnitSpeechMute", listener: (npc: C_DOTA_BaseNPC | number, delay: number) => void): EventEmitter
 	on(name: "UnitAddGesture", listener: (

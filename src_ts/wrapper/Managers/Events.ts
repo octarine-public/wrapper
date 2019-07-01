@@ -69,14 +69,14 @@ Events.on("ParticleUpdatedEnt", (id, control_point, ent, attach, attachment, inc
 	EventsSDK.emit("ParticleUpdatedEnt", false, id, control_point,
 		ent instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(ent)
-			: EntityManager.EntityByIndex(ent),
+			: ent,
 		attach, attachment, Vector3.fromIOBuffer(), include_wearables));
 
 Events.on("BloodImpact", (target, scale, xnormal, ynormal) => 
 	EventsSDK.emit("BloodImpact", false,
 		target instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(target)
-			: EntityManager.EntityByIndex(target),
+			: target,
 		scale, xnormal, ynormal));
 
 Events.on("PrepareUnitOrders", order => {
@@ -89,11 +89,15 @@ Events.on("PrepareUnitOrders", order => {
 })
 
 Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance) => {
-	EventsSDK.emit("LinearProjectileCreated", false, proj, 
+	EventsSDK.emit (
+		"LinearProjectileCreated", false,
+		proj, 
 		ent instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(ent)
-			: EntityManager.EntityByIndex(ent), 
-		path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance, Color.fromIOBuffer())
+			: ent,
+		path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance,
+		Color.fromIOBuffer()
+	)
 });
 
 Events.on("LinearProjectileDestroyed", proj =>
@@ -108,6 +112,9 @@ Events.on("TrackingProjectileUpdated", (proj, path, particleSystemHandle, launch
 Events.on("TrackingProjectileDestroyed", proj =>
 	EventsSDK.emit("TrackingProjectileDestroyed", false, proj))
 
+Events.on("TrackingProjectilesDodged", (ent, attacks_only) =>
+	EventsSDK.emit("TrackingProjectilesDodged", false, EntityManager.GetEntityByNative(ent), attacks_only))
+
 Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) =>
 	EventsSDK.emit("UnitAnimation", false, EntityManager.GetEntityByNative(npc), sequenceVariant, playbackrate, castpoint, type, activity))
 
@@ -117,6 +124,58 @@ Events.on("UnitAnimationEnd", (npc, snap) =>
 Events.on("CustomGameEvent", (...args) =>
 	EventsSDK.emit("CustomGameEvent", false, ...args));
 
+Events.on("UnitAnimationEnd", (npc, snap) =>
+	EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
+
+Events.on("UnitSpeech", (npc, concept, response, recipient_type, level, muteable) => {
+	EventsSDK.emit (
+		"UnitSpeech", false,
+		npc instanceof C_BaseEntity
+			? EntityManager.GetEntityByNative(npc)
+			: npc,
+		concept, response, recipient_type, level, muteable
+	)
+})
+
+Events.on("UnitSpeechMute", (npc, delay) => {
+	EventsSDK.emit (
+		"UnitSpeechMute", false,
+		npc instanceof C_BaseEntity
+			? EntityManager.GetEntityByNative(npc)
+			: npc,
+		delay
+	)
+})
+
+Events.on("UnitAddGesture", (npc, activity, slot, fade_in, fade_out, playback_rate, sequence_variant) => {
+	EventsSDK.emit (
+		"UnitAddGesture", false,
+		npc instanceof C_BaseEntity
+			? EntityManager.GetEntityByNative(npc)
+			: npc,
+		activity, slot, fade_in, fade_out, playback_rate, sequence_variant
+	)
+})
+
+Events.on("UnitRemoveGesture", (npc, activity) => {
+	EventsSDK.emit (
+		"UnitRemoveGesture", false,
+		npc instanceof C_BaseEntity
+			? EntityManager.GetEntityByNative(npc)
+			: npc,
+		activity
+	)
+})
+
+Events.on("UnitFadeGesture", (npc, activity) => {
+	EventsSDK.emit (
+		"UnitFadeGesture", false,
+		npc instanceof C_BaseEntity
+			? EntityManager.GetEntityByNative(npc)
+			: npc,
+		activity
+	)
+})
 
 interface EventsSDK extends EventEmitter {
 	/**
@@ -175,17 +234,17 @@ interface EventsSDK extends EventEmitter {
 	on(name: "ParticleUpdatedEnt", callback: (
 		id: number,
 		controlPoint: number,
-		ent: Entity,
+		ent: Entity | number,
 		attach: ParticleAttachment_t,
 		attachment: number,
 		fallbackPosition: Vector3,
 		includeWearables: boolean
 	) => void): EventEmitter
-	on(name: "BloodImpact", callback: (target: Entity, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
+	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
 	on(name: "PrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventEmitter
 	on(name: "LinearProjectileCreated", callback: (
 		proj: LinearProjectile,
-		ent: Entity,
+		ent: Entity | number,
 		path: string,
 		particleSystemHandle: bigint,
 		maxSpeed: number,
@@ -213,6 +272,7 @@ interface EventsSDK extends EventEmitter {
 		launchTick: number
 	) => void): EventEmitter
 	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
+	on(name: "TrackingProjectilesDodged", callback: (ent: Entity, attacks_only: boolean) => void): EventEmitter
 	on(name: "UnitAnimation", callback: (
 		npc: Unit,
 		sequenceVariant: number,
@@ -233,4 +293,24 @@ interface EventsSDK extends EventEmitter {
 	on(name: "BuffStackCountChanged", listener: (buff: Modifier) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	//on(name: "NetworkFieldChanged", listener: (object: any, name: string) => void): EventEmitter
+	on(name: "UnitSpeech", listener: (
+		npc: Unit | number,
+		concept: number,
+		response: string,
+		recipient_type: number,
+		level: number,
+		muteable: boolean
+	) => void): EventEmitter
+	on(name: "UnitSpeechMute", listener: (npc: Unit | number, delay: number) => void): EventEmitter
+	on(name: "UnitAddGesture", listener: (
+		npc: Unit | number,
+		activity: number,
+		slot: number,
+		fade_in: number,
+		fade_out: number,
+		playback_rate: number,
+		sequence_variant: number
+	) => void): EventEmitter
+	on(name: "UnitRemoveGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
+	on(name: "UnitFadeGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
 }
