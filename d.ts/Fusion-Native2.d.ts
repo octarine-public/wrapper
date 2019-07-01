@@ -1,6 +1,6 @@
 /// ENUMS
 
-declare const enum ConnectionState {
+declare enum ConnectionState {
 	Unknown ,
 	NotYetConnected,
 	Connected,
@@ -10,25 +10,25 @@ declare const enum ConnectionState {
 	Failed,
 }
 
-declare const enum ArmorType {
+declare enum ArmorType {
 	Structure,
 	Hero,
 	Basic
 }
 
-declare const enum AttackDamageType {
+declare enum AttackDamageType {
 	Hero,
 	Basic,
 	Pierce,
 	Siege
 }
 
-declare const enum Flow_t {
+declare enum Flow_t {
 	IN = 0,
 	OUT = 1
 }
 
-declare const enum FontFlags_t {
+declare enum FontFlags_t {
 	NONE = 0,
 	ITALIC = 1 << 0,
 	UNDERLINE = 1 << 1,
@@ -44,7 +44,7 @@ declare const enum FontFlags_t {
 	BITMAP = 1 << 11 // compiled bitmap font - no fallbacks
 }
 
-declare const enum DOTA_GameMode {
+declare enum DOTA_GameMode {
 	DOTA_GAMEMODE_NONE = 0,
 	DOTA_GAMEMODE_AP = 1,
 	DOTA_GAMEMODE_CM = 2,
@@ -72,7 +72,7 @@ declare const enum DOTA_GameMode {
 	DOTA_GAMEMODE_MUTATION = 24
 }
 
-declare const enum DOTA_GameState {
+declare enum DOTA_GameState {
 	DOTA_GAMERULES_STATE_INIT = 0,
 	DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD = 1,
 	DOTA_GAMERULES_STATE_HERO_SELECTION = 2,
@@ -87,7 +87,7 @@ declare const enum DOTA_GameState {
 	DOTA_GAMERULES_STATE_LAST = 11
 }
 
-declare const enum dotaunitorder_t {
+declare enum dotaunitorder_t {
 	DOTA_UNIT_ORDER_NONE = 0,
 	DOTA_UNIT_ORDER_MOVE_TO_POSITION = 1,
 	DOTA_UNIT_ORDER_MOVE_TO_TARGET = 2,
@@ -127,7 +127,7 @@ declare const enum dotaunitorder_t {
 	DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT = 36
 }
 
-declare const enum HeroID_t {
+declare enum HeroID_t {
 	npc_dota_hero_antimage = 1,
 	npc_dota_hero_axe = 2,
 	npc_dota_hero_bane = 3,
@@ -248,7 +248,7 @@ declare const enum HeroID_t {
 	npc_dota_hero_mars = 129
 }
 
-declare const enum PingType_t {
+declare enum PingType_t {
 	NORMAL = 0,
 	DANGER = 1,
 	HEADING = 2,
@@ -18639,7 +18639,7 @@ declare class C_DOTA_Ability_Special_Bonus_Evasion_75 extends C_DOTABaseAbility 
 
 declare class C_DOTA_Ability_Special_Bonus_Intelligence_12 extends C_DOTABaseAbility {}
 
-declare const enum Hull_t {
+declare enum Hull_t {
 	HULL_HUMAN = 0,
 	HULL_SMALL_CENTERED = 1,
 	HULL_WIDE_HUMAN = 2,
@@ -18653,7 +18653,7 @@ declare const enum Hull_t {
 	HULL_NONE = 10
 }
 
-declare const enum AnimationProcessingType_t {
+declare enum AnimationProcessingType_t {
 	ANIMATION_PROCESSING_SERVER_SIMULATION = 0,
 	ANIMATION_PROCESSING_CLIENT_SIMULATION = 1,
 	ANIMATION_PROCESSING_CLIENT_PREDICTION = 2,
@@ -18662,7 +18662,7 @@ declare const enum AnimationProcessingType_t {
 	ANIMATION_PROCESSING_MAX = 5
 }
 
-declare const enum RenderPrimitiveType_t {
+declare enum RenderPrimitiveType_t {
 	RENDER_PRIM_POINTS = 0,
 	RENDER_PRIM_LINES = 1,
 	RENDER_PRIM_LINES_WITH_ADJACENCY = 2,
@@ -18710,7 +18710,7 @@ declare const enum RenderPrimitiveType_t {
 	RENDER_PRIM_TYPE_COUNT = 44
 }
 
-declare const enum LuaModifierType {
+declare enum LuaModifierType {
 	LUA_MODIFIER_MOTION_NONE = 0,
 	LUA_MODIFIER_MOTION_HORIZONTAL = 1,
 	LUA_MODIFIER_MOTION_VERTICAL = 2,
@@ -18718,7 +18718,7 @@ declare const enum LuaModifierType {
 	LUA_MODIFIER_INVALID = 4
 }
 
-declare const enum ObjectTypeFlags_t {
+declare enum ObjectTypeFlags_t {
 	OBJECT_TYPE_IMAGE_LOD = 1,
 	OBJECT_TYPE_GEOMETRY_LOD = 2,
 	OBJECT_TYPE_DECAL = 4,
@@ -18733,7 +18733,7 @@ declare const enum ObjectTypeFlags_t {
 	OBJECT_TYPE_PRECOMPUTED_VISMEMBERS = 16384
 }
 
-declare const enum DOTAMusicStatus_t {
+declare enum DOTAMusicStatus_t {
 	DOTA_MUSIC_STATUS_NONE = 0,
 	DOTA_MUSIC_STATUS_EXPLORATION = 1,
 	DOTA_MUSIC_STATUS_BATTLE = 2,
@@ -18742,7 +18742,7 @@ declare const enum DOTAMusicStatus_t {
 	DOTA_MUSIC_STATUS_LAST = 5
 }
 
-declare const enum MoveCollide_t {
+declare enum MoveCollide_t {
 	MOVECOLLIDE_DEFAULT = 0,
 	MOVECOLLIDE_FLY_BOUNCE = 1,
 	MOVECOLLIDE_FLY_CUSTOM = 2,
@@ -18751,7 +18751,7 @@ declare const enum MoveCollide_t {
 	MOVECOLLIDE_MAX_BITS = 3
 }
 
-declare const enum DOTA_RUNES {
+declare enum DOTA_RUNES {
 	DOTA_RUNE_INVALID = -1,
 	DOTA_RUNE_DOUBLEDAMAGE = 0,
 	DOTA_RUNE_HASTE = 1,
@@ -18763,12 +18763,12 @@ declare const enum DOTA_RUNES {
 	DOTA_RUNE_COUNT = 7
 }
 
-declare const enum Blend2DMode {
+declare enum Blend2DMode {
 	Blend2DMode_General = 0,
 	Blend2DMode_Directional = 1
 }
 
-declare const enum ItemQuality_t {
+declare enum ItemQuality_t {
 	DOTA_ITEM_QUALITY_CONSUMABLE = 0,
 	DOTA_ITEM_QUALITY_PLAIN = 1,
 	DOTA_ITEM_QUALITY_COMMON = 2,
@@ -18779,7 +18779,7 @@ declare const enum ItemQuality_t {
 	NUM_ITEM_QUALITY_LEVELS = 7
 }
 
-declare const enum SteamUGCQuery {
+declare enum SteamUGCQuery {
 	RankedByVote = 0,
 	RankedByPublicationDate = 1,
 	AcceptedForGameRankedByAcceptanceDate = 2,
@@ -18801,7 +18801,7 @@ declare const enum SteamUGCQuery {
 	RankedByLifetimePlaytimeSessions = 18
 }
 
-declare const enum SpawnDebugRestrictionOverrideState_t {
+declare enum SpawnDebugRestrictionOverrideState_t {
 	SPAWN_DEBUG_RESTRICT_NONE = 0,
 	SPAWN_DEBUG_RESTRICT_IGNORE_MANAGER_DISTANCE_REQS = 1,
 	SPAWN_DEBUG_RESTRICT_IGNORE_TEMPLATE_DISTANCE_LOS_REQS = 2,
@@ -18809,25 +18809,25 @@ declare const enum SpawnDebugRestrictionOverrideState_t {
 	SPAWN_DEBUG_RESTRICT_IGNORE_TARGET_COOLDOWN_LIMITS = 8
 }
 
-declare const enum PlayerConnectedState {
+declare enum PlayerConnectedState {
 	PlayerConnected = 0,
 	PlayerDisconnecting = 1,
 	PlayerDisconnected = 2
 }
 
-declare const enum JointMotion_t {
+declare enum JointMotion_t {
 	JOINT_MOTION_FREE = 0,
 	JOINT_MOTION_LOCKED = 1,
 	JOINT_MOTION_COUNT = 2
 }
 
-declare const enum OrderQueueBehavior_t {
+declare enum OrderQueueBehavior_t {
 	DOTA_ORDER_QUEUE_DEFAULT = 0,
 	DOTA_ORDER_QUEUE_NEVER = 1,
 	DOTA_ORDER_QUEUE_ALWAYS = 2
 }
 
-declare const enum DotaGestureSlot_t {
+declare enum DotaGestureSlot_t {
 	GESTURE_SLOT_NONE = -1,
 	GESTURE_SLOT_ATTACK = 0,
 	GESTURE_SLOT_ABILITY = 1,
@@ -18842,7 +18842,7 @@ declare const enum DotaGestureSlot_t {
 	GESTURE_SLOT_STOLEN_ABILITY_BIT = 128
 }
 
-declare const enum RenderFx_t {
+declare enum RenderFx_t {
 	kRenderFxNone = 0,
 	kRenderFxPulseSlow = 1,
 	kRenderFxPulseFast = 2,
@@ -18865,7 +18865,7 @@ declare const enum RenderFx_t {
 	kRenderFxMax = 19
 }
 
-declare const enum GameActivity_t {
+declare enum GameActivity_t {
 	ACT_DOTA_IDLE = 1500,
 	ACT_DOTA_IDLE_RARE = 1501,
 	ACT_DOTA_RUN = 1502,
@@ -19116,7 +19116,7 @@ declare const enum GameActivity_t {
 	ACT_DOTA_NOTICE = 1747
 }
 
-declare const enum TOGGLE_STATE {
+declare enum TOGGLE_STATE {
 	TS_AT_TOP = 0,
 	TS_AT_BOTTOM = 1,
 	TS_GOING_UP = 2,
@@ -19127,7 +19127,7 @@ declare const enum TOGGLE_STATE {
 	DOOR_CLOSING = 3
 }
 
-declare const enum Attributes {
+declare enum Attributes {
 	DOTA_ATTRIBUTE_STRENGTH = 0,
 	DOTA_ATTRIBUTE_AGILITY = 1,
 	DOTA_ATTRIBUTE_INTELLECT = 2,
@@ -19135,20 +19135,20 @@ declare const enum Attributes {
 	DOTA_ATTRIBUTE_INVALID = -1
 }
 
-declare const enum SpeechPriorityType {
+declare enum SpeechPriorityType {
 	SPEECH_PRIORITY_LOW = 0,
 	SPEECH_PRIORITY_NORMAL = 1,
 	SPEECH_PRIORITY_MANUAL = 2,
 	SPEECH_PRIORITY_UNINTERRUPTABLE = 3
 }
 
-declare const enum PointWorldTextJustifyVertical_t {
+declare enum PointWorldTextJustifyVertical_t {
 	POINT_WORLD_TEXT_JUSTIFY_VERTICAL_BOTTOM = 0,
 	POINT_WORLD_TEXT_JUSTIFY_VERTICAL_CENTER = 1,
 	POINT_WORLD_TEXT_JUSTIFY_VERTICAL_TOP = 2
 }
 
-declare const enum PortraitScale_t {
+declare enum PortraitScale_t {
 	PORTRAIT_SCALE_INVALID = -1,
 	PORTRAIT_SCALE_LOADOUT = 0,
 	PORTRAIT_SCALE_ALTERNATE_LOADOUT = 1,
@@ -19157,7 +19157,7 @@ declare const enum PortraitScale_t {
 	PORTRAIT_SCALE_VERSUS_LOADOUT = 4
 }
 
-declare const enum DOTA_UNIT_TARGET_TEAM {
+declare enum DOTA_UNIT_TARGET_TEAM {
 	DOTA_UNIT_TARGET_TEAM_NONE = 0,
 	DOTA_UNIT_TARGET_TEAM_FRIENDLY = 1,
 	DOTA_UNIT_TARGET_TEAM_ENEMY = 2,
@@ -19165,13 +19165,13 @@ declare const enum DOTA_UNIT_TARGET_TEAM {
 	DOTA_UNIT_TARGET_TEAM_BOTH = 3
 }
 
-declare const enum PointTemplateOwnerSpawnGroupType_t {
+declare enum PointTemplateOwnerSpawnGroupType_t {
 	INSERT_INTO_POINT_TEMPLATE_SPAWN_GROUP = 0,
 	INSERT_INTO_CURRENTLY_ACTIVE_SPAWN_GROUP = 1,
 	INSERT_INTO_NEWLY_CREATED_SPAWN_GROUP = 2
 }
 
-declare const enum ObstructionRelationshipClass_t {
+declare enum ObstructionRelationshipClass_t {
 	DOTA_OBSTRUCTION_RELATIONSHIP_NONE = 0,
 	DOTA_OBSTRUCTION_RELATIONSHIP_BUILDING = 1,
 	DOTA_OBSTRUCTION_RELATIONSHIP_PLAYER_CONTROLLED = 2,
@@ -19179,7 +19179,7 @@ declare const enum ObstructionRelationshipClass_t {
 	DOTA_OBSTRUCTION_RELATIONSHIP_LAST = 4
 }
 
-declare const enum NavDirType {
+declare enum NavDirType {
 	NORTH = 0,
 	EAST = 1,
 	SOUTH = 2,
@@ -19187,13 +19187,13 @@ declare const enum NavDirType {
 	NUM_DIRECTIONS = 4
 }
 
-declare const enum ViewFadeMode_t {
+declare enum ViewFadeMode_t {
 	VIEW_FADE_CONSTANT_COLOR = 0,
 	VIEW_FADE_MODULATE = 1,
 	VIEW_FADE_MOD2X = 2
 }
 
-declare const enum CLICK_BEHAVIORS {
+declare enum CLICK_BEHAVIORS {
 	DOTA_CLICK_BEHAVIOR_NONE = 0,
 	DOTA_CLICK_BEHAVIOR_MOVE = 1,
 	DOTA_CLICK_BEHAVIOR_ATTACK = 2,
@@ -19209,7 +19209,7 @@ declare const enum CLICK_BEHAVIORS {
 	DOTA_CLICK_BEHAVIOR_LAST = 12
 }
 
-declare const enum sound_states {
+declare enum sound_states {
 	SS_NONE = 0,
 	SS_SHUTDOWN = 1,
 	SS_SHUTDOWN_WATER = 2,
@@ -19233,7 +19233,7 @@ declare const enum sound_states {
 	SS_NUM_STATES = 20
 }
 
-declare const enum SurroundingBoundsType_t {
+declare enum SurroundingBoundsType_t {
 	USE_OBB_COLLISION_BOUNDS = 0,
 	USE_BEST_COLLISION_BOUNDS = 1,
 	USE_HITBOXES = 2,
@@ -19245,7 +19245,7 @@ declare const enum SurroundingBoundsType_t {
 	SURROUNDING_TYPE_BIT_COUNT = 3
 }
 
-declare const enum FlexOpCode_t {
+declare enum FlexOpCode_t {
 	FLEX_OP_CONST = 1,
 	FLEX_OP_FETCH1 = 2,
 	FLEX_OP_FETCH2 = 3,
@@ -19273,7 +19273,7 @@ declare const enum FlexOpCode_t {
 	FLEX_OP_COS = 25
 }
 
-declare const enum CHeadLookParams__HeadLookPriority_t {
+declare enum CHeadLookParams__HeadLookPriority_t {
 	CHeadLookParams__BORING = 0,
 	CHeadLookParams__INTERESTING = 1,
 	CHeadLookParams__IMPORTANT = 2,
@@ -19281,7 +19281,7 @@ declare const enum CHeadLookParams__HeadLookPriority_t {
 	CHeadLookParams__MANDATORY = 4
 }
 
-declare const enum RenderMultisampleType_t {
+declare enum RenderMultisampleType_t {
 	RENDER_MULTISAMPLE_INVALID = -1,
 	RENDER_MULTISAMPLE_NONE = 0,
 	RENDER_MULTISAMPLE_2X = 1,
@@ -19292,13 +19292,13 @@ declare const enum RenderMultisampleType_t {
 	RENDER_MULTISAMPLE_TYPE_COUNT = 6
 }
 
-declare const enum ParticleLightTypeChoiceList_t {
+declare enum ParticleLightTypeChoiceList_t {
 	PARTICLE_LIGHT_TYPE_POINT = 0,
 	PARTICLE_LIGHT_TYPE_SPOT = 1,
 	PARTICLE_LIGHT_TYPE_FX = 2
 }
 
-declare const enum IKSolverType {
+declare enum IKSolverType {
 	IKSOLVER_Perlin = 0,
 	IKSOLVER_TwoBone = 1,
 	IKSOLVER_Fabrik = 2,
@@ -19306,13 +19306,13 @@ declare const enum IKSolverType {
 	IKSOLVER_COUNT = 4
 }
 
-declare const enum WorldTextPanelOrientation_t {
+declare enum WorldTextPanelOrientation_t {
 	WORLDTEXT_ORIENTATION_DEFAULT = 0,
 	WORLDTEXT_ORIENTATION_FACEUSER = 1,
 	WORLDTEXT_ORIENTATION_FACEUSER_UPRIGHT = 2
 }
 
-declare const enum DotaCustomUIType_t {
+declare enum DotaCustomUIType_t {
 	DOTA_CUSTOM_UI_TYPE_HUD = 0,
 	DOTA_CUSTOM_UI_TYPE_HERO_SELECTION = 1,
 	DOTA_CUSTOM_UI_TYPE_GAME_INFO = 2,
@@ -19324,7 +19324,7 @@ declare const enum DotaCustomUIType_t {
 	DOTA_CUSTOM_UI_TYPE_INVALID = -1
 }
 
-declare const enum TextureSpecificationFlags_t {
+declare enum TextureSpecificationFlags_t {
 	TSPEC_FLAGS = 0,
 	TSPEC_RENDER_TARGET = 1,
 	TSPEC_VERTEX_TEXTURE = 2,
@@ -19348,18 +19348,18 @@ declare const enum TextureSpecificationFlags_t {
 	TSPEC_LINEAR_COLOR_SPACE = 524288
 }
 
-declare const enum EShareAbility {
+declare enum EShareAbility {
 	ITEM_FULLY_SHAREABLE = 0,
 	ITEM_PARTIALLY_SHAREABLE = 1,
 	ITEM_NOT_SHAREABLE = 2
 }
 
-declare const enum ShatterSurface_t {
+declare enum ShatterSurface_t {
 	SHATTERSURFACE_GLASS = 0,
 	SHATTERSURFACE_TILE = 1
 }
 
-declare const enum vote_create_failed_t {
+declare enum vote_create_failed_t {
 	VOTE_FAILED_GENERIC = 0,
 	VOTE_FAILED_TRANSITIONING_PLAYERS = 1,
 	VOTE_FAILED_RATE_EXCEEDED = 2,
@@ -19378,19 +19378,19 @@ declare const enum vote_create_failed_t {
 	VOTE_FAILED_MAX = 15
 }
 
-declare const enum PetLevelup_Rule_t {
+declare enum PetLevelup_Rule_t {
 	PETLEVELFROM_NOTHING = 0,
 	PETLEVELFROM_KILLEATER = 1,
 	PETLEVELFROM_COMPENDIUM_LEVEL = 2,
 	NUM_PETLEVELUPRULES = 3
 }
 
-declare const enum VPhysXJoint_t__Flags_t {
+declare enum VPhysXJoint_t__Flags_t {
 	VPhysXJoint_t__JOINT_FLAGS_NONE = 0,
 	VPhysXJoint_t__JOINT_FLAGS_BODY1_FIXED = 1
 }
 
-declare const enum EDOTA_ModifyGold_Reason {
+declare enum EDOTA_ModifyGold_Reason {
 	DOTA_ModifyGold_Unspecified = 0,
 	DOTA_ModifyGold_Death = 1,
 	DOTA_ModifyGold_Buyback = 2,
@@ -19410,7 +19410,7 @@ declare const enum EDOTA_ModifyGold_Reason {
 	DOTA_ModifyGold_SharedGold = 16
 }
 
-declare const enum DOTASlotType_t {
+declare enum DOTASlotType_t {
 	DOTA_LOADOUT_TYPE_INVALID = -1,
 	DOTA_LOADOUT_TYPE_WEAPON = 0,
 	DOTA_LOADOUT_TYPE_OFFHAND_WEAPON = 1,
@@ -19490,20 +19490,20 @@ declare const enum DOTASlotType_t {
 	DOTA_LOADOUT_TYPE_COUNT = 71
 }
 
-declare const enum GroundIKTiltSource_t {
+declare enum GroundIKTiltSource_t {
 	TILT_None = 0,
 	TILT_IK = 1,
 	TILT_MovementManagerSlope = 2
 }
 
-declare const enum PlayerUltimateStateOrTime_t {
+declare enum PlayerUltimateStateOrTime_t {
 	PLAYER_ULTIMATE_STATE_READY = 0,
 	PLAYER_ULTIMATE_STATE_NO_MANA = -1,
 	PLAYER_ULTIMATE_STATE_NOT_LEVELED = -2,
 	PLAYER_ULTIMATE_STATE_HIDDEN = -3
 }
 
-declare const enum DOTA_HOLDOUT_WALL_TYPE {
+declare enum DOTA_HOLDOUT_WALL_TYPE {
 	DOTA_HOLDOUT_WALL_NONE = 0,
 	DOTA_HOLDOUT_WALL_PHYSICAL = 1,
 	DOTA_HOLDOUT_WALL_FIRE = 2,
@@ -19511,7 +19511,7 @@ declare const enum DOTA_HOLDOUT_WALL_TYPE {
 	DOTA_HOLDOUT_WALL_COUNT = 4
 }
 
-declare const enum Materials {
+declare enum Materials {
 	matGlass = 0,
 	matWood = 1,
 	matMetal = 2,
@@ -19526,30 +19526,30 @@ declare const enum Materials {
 	matLastMaterial = 11
 }
 
-declare const enum LayoutPositionType_e {
+declare enum LayoutPositionType_e {
 	LAYOUTPOSITIONTYPE_VIEWPORT_RELATIVE = 0,
 	LAYOUTPOSITIONTYPE_FRACTIONAL = 1,
 	LAYOUTPOSITIONTYPE_NONE = 2
 }
 
-declare const enum HeroPickType {
+declare enum HeroPickType {
 	HERO_PICK = 0,
 	HERO_BAN = 1
 }
 
-declare const enum JointAxis_t {
+declare enum JointAxis_t {
 	JOINT_AXIS_X = 0,
 	JOINT_AXIS_Y = 1,
 	JOINT_AXIS_Z = 2,
 	JOINT_AXIS_COUNT = 3
 }
 
-declare const enum AimMatrixBlendMode {
+declare enum AimMatrixBlendMode {
 	AimMatrixBlendMode_Additive = 0,
 	AimMatrixBlendMode_BoneMask = 1
 }
 
-declare const enum modifierstate {
+declare enum modifierstate {
 	MODIFIER_STATE_ROOTED = 0,
 	MODIFIER_STATE_DISARMED = 1,
 	MODIFIER_STATE_ATTACK_IMMUNE = 2,
@@ -19593,12 +19593,12 @@ declare const enum modifierstate {
 	MODIFIER_STATE_LAST = 40
 }
 
-declare const enum BlurFilterType_t {
+declare enum BlurFilterType_t {
 	BLURFILTER_GAUSSIAN = 0,
 	BLURFILTER_BOX = 1
 }
 
-declare const enum MeshDrawPrimitiveFlags_t {
+declare enum MeshDrawPrimitiveFlags_t {
 	MESH_DRAW_FLAGS_NONE = 0,
 	MESH_DRAW_FLAGS_USE_SHADOW_FAST_PATH = 1,
 	MESH_DRAW_FLAGS_USE_COMPRESSED_NORMAL_TANGENT = 2,
@@ -19611,12 +19611,12 @@ declare const enum MeshDrawPrimitiveFlags_t {
 	MESH_DRAW_FLAGS_HAS_LIGHTING_BASIS = 256
 }
 
-declare const enum AnimVRHand_t {
+declare enum AnimVRHand_t {
 	AnimVRHand_Left = 0,
 	AnimVRHand_Right = 1
 }
 
-declare const enum ParticleFloatType_t {
+declare enum ParticleFloatType_t {
 	PF_TYPE_INVALID = -1,
 	PF_TYPE_LITERAL = 0,
 	PF_TYPE_RANDOM_UNIFORM = 1,
@@ -19633,24 +19633,24 @@ declare const enum ParticleFloatType_t {
 	PF_TYPE_COUNT = 12
 }
 
-declare const enum EconEntityParticleDisableMode_t {
+declare enum EconEntityParticleDisableMode_t {
 	ECON_ENTITY_PARTICLES_ENABLED = 0,
 	ECON_ENTITY_PARTICLES_DISABLED = 1,
 	ECON_ENTITY_PARTICLES_DISABLED_BUT_PLAY_ENDCAPS_TO_STOP = 2
 }
 
-declare const enum ShopItemViewMode_t {
+declare enum ShopItemViewMode_t {
 	SHOP_VIEW_MODE_LIST = 0,
 	SHOP_VIEW_MODE_GRID = 1
 }
 
-declare const enum IBody__ArousalType {
+declare enum IBody__ArousalType {
 	IBody__NEUTRAL = 0,
 	IBody__ALERT = 1,
 	IBody__INTENSE = 2
 }
 
-declare const enum ParticleFloatMapType_t {
+declare enum ParticleFloatMapType_t {
 	PF_MAP_TYPE_INVALID = -1,
 	PF_MAP_TYPE_DIRECT = 0,
 	PF_MAP_TYPE_MULT = 1,
@@ -19660,7 +19660,7 @@ declare const enum ParticleFloatMapType_t {
 	PF_MAP_TYPE_COUNT = 5
 }
 
-declare const enum BeamType_t {
+declare enum BeamType_t {
 	BEAM_INVALID = 0,
 	BEAM_POINTS = 1,
 	BEAM_ENTPOINT = 2,
@@ -19670,7 +19670,7 @@ declare const enum BeamType_t {
 	BEAM_LASER = 6
 }
 
-declare const enum subquest_player_stat_types_t {
+declare enum subquest_player_stat_types_t {
 	SUBQUEST_PLAYER_STAT_GOLD = 0,
 	SUBQUEST_PLAYER_STAT_LEVEL = 1,
 	SUBQUEST_PLAYER_STAT_LAST_HITS = 2,
@@ -19678,7 +19678,7 @@ declare const enum subquest_player_stat_types_t {
 	SUBQUEST_NUM_PLAYER_STATS = 4
 }
 
-declare const enum SequenceCombineMode_t {
+declare enum SequenceCombineMode_t {
 	SEQUENCE_COMBINE_MODE_USE_SEQUENCE_0 = 0,
 	SEQUENCE_COMBINE_MODE_USE_SEQUENCE_1 = 1,
 	SEQUENCE_COMBINE_MODE_AVERAGE = 2,
@@ -19694,7 +19694,7 @@ declare const enum SequenceCombineMode_t {
 	SEQUENCE_COMBINE_MODE_REPLICATE_COLOR_1 = 12
 }
 
-declare const enum LightType_t {
+declare enum LightType_t {
 	MATERIAL_LIGHT_DISABLE = 0,
 	MATERIAL_LIGHT_POINT = 1,
 	MATERIAL_LIGHT_DIRECTIONAL = 2,
@@ -19703,14 +19703,14 @@ declare const enum LightType_t {
 	MATERIAL_LIGHT_ENVIRONMENT_PROBE = 5
 }
 
-declare const enum ValueRemapperOutputType_t {
+declare enum ValueRemapperOutputType_t {
 	OutputType_AnimationCycle = 0,
 	OutputType_RotationX = 1,
 	OutputType_RotationY = 2,
 	OutputType_RotationZ = 3
 }
 
-declare const enum WorldTextAttachmentType_t {
+declare enum WorldTextAttachmentType_t {
 	ATTACHED_NONE = 0,
 	ATTACHED_PRIMARY_HAND = 1,
 	ATTACHED_OFF_HAND = 2,
@@ -19720,7 +19720,7 @@ declare const enum WorldTextAttachmentType_t {
 	ATTACHED_HAND_SPECIFIED_IN_EVENT = 6
 }
 
-declare const enum DOTA_ABILITY_BEHAVIOR {
+declare enum DOTA_ABILITY_BEHAVIOR {
 	DOTA_ABILITY_BEHAVIOR_NONE = 0,
 	DOTA_ABILITY_BEHAVIOR_HIDDEN = 1,
 	DOTA_ABILITY_BEHAVIOR_PASSIVE = 2,
@@ -19760,7 +19760,7 @@ declare const enum DOTA_ABILITY_BEHAVIOR {
 	DOTA_ABILITY_BEHAVIOR_SUPPRESS_ASSOCIATED_CONSUMABLE = 34359738368
 }
 
-declare const enum DAMAGE_TYPES {
+declare enum DAMAGE_TYPES {
 	DAMAGE_TYPE_NONE = 0,
 	DAMAGE_TYPE_PHYSICAL = 1,
 	DAMAGE_TYPE_MAGICAL = 2,
@@ -19769,24 +19769,24 @@ declare const enum DAMAGE_TYPES {
 	DAMAGE_TYPE_ALL = 7
 }
 
-declare const enum SosGroupType_t {
+declare enum SosGroupType_t {
 	SOS_GROUPTYPE_DYNAMIC = 0,
 	SOS_GROUPTYPE_STATIC = 1
 }
 
-declare const enum MissingParentInheritBehavior_t {
+declare enum MissingParentInheritBehavior_t {
 	MISSING_PARENT_DO_NOTHING = -1,
 	MISSING_PARENT_KILL = 0,
 	MISSING_PARENT_FIND_NEW = 1
 }
 
-declare const enum AnimationType_t {
+declare enum AnimationType_t {
 	ANIMATION_TYPE_FIXED_RATE = 0,
 	ANIMATION_TYPE_FIT_LIFETIME = 1,
 	ANIMATION_TYPE_MANUAL_FRAMES = 2
 }
 
-declare const enum AnimParamButton_t {
+declare enum AnimParamButton_t {
 	ANIMPARAM_BUTTON_NONE = 0,
 	ANIMPARAM_BUTTON_DPAD_UP = 1,
 	ANIMPARAM_BUTTON_DPAD_RIGHT = 2,
@@ -19802,13 +19802,13 @@ declare const enum AnimParamButton_t {
 	ANIMPARAM_BUTTON_RTRIGGER = 12
 }
 
-declare const enum BloomBlendMode_t {
+declare enum BloomBlendMode_t {
 	BLOOM_BLEND_ADD = 0,
 	BLOOM_BLEND_SCREEN = 1,
 	BLOOM_BLEND_BLUR = 2
 }
 
-declare const enum PrecipitationType_t {
+declare enum PrecipitationType_t {
 	PRECIPITATION_TYPE_RAIN = 0,
 	PRECIPITATION_TYPE_SNOW = 1,
 	PRECIPITATION_TYPE_ASH = 2,
@@ -19826,7 +19826,7 @@ declare const enum PrecipitationType_t {
 	NUM_PRECIPITATION_TYPES = 14
 }
 
-declare const enum DOTAModifierAttribute_t {
+declare enum DOTAModifierAttribute_t {
 	MODIFIER_ATTRIBUTE_NONE = 0,
 	MODIFIER_ATTRIBUTE_PERMANENT = 1,
 	MODIFIER_ATTRIBUTE_MULTIPLE = 2,
@@ -19834,40 +19834,40 @@ declare const enum DOTAModifierAttribute_t {
 	MODIFIER_ATTRIBUTE_AURA_PRIORITY = 8
 }
 
-declare const enum SelectorTagBehaior_t {
+declare enum SelectorTagBehaior_t {
 	SelectorTagBehavior_OnWhileCurrent = 0,
 	SelectorTagBehavior_OffWhenFinished = 1,
 	SelectorTagBehavior_OffBeforeFinished = 2
 }
 
-declare const enum PerformanceMode_t {
+declare enum PerformanceMode_t {
 	PM_NORMAL = 0,
 	PM_NO_GIBS = 1,
 	PM_FULL_GIBS = 2,
 	PM_REDUCED_GIBS = 3
 }
 
-declare const enum ParticleSetMethod_t {
+declare enum ParticleSetMethod_t {
 	PARTICLE_SET_REPLACE_VALUE = 0,
 	PARTICLE_SET_SCALE_INITIAL_VALUE = 1,
 	PARTICLE_SET_ADD_TO_INITIAL_VALUE = 2,
 	PARTICLE_SET_SCALE_CURRENT_VALUE = 3
 }
 
-declare const enum ChoiceMethod {
+declare enum ChoiceMethod {
 	WeightedRandom = 0,
 	WeightedRandomNoRepeat = 1,
 	Iterate = 2,
 	IterateRandom = 3
 }
 
-declare const enum PathStatusOptions {
+declare enum PathStatusOptions {
 	PathStatus_HasPath = 0,
 	PathStatus_WaypointIsGoal = 1,
 	PathStatus_GoalHasChanged = 2
 }
 
-declare const enum CGroundIKSolveAnimNode__DebugSkeletonBoneType_t {
+declare enum CGroundIKSolveAnimNode__DebugSkeletonBoneType_t {
 	CGroundIKSolveAnimNode__FLAG_NO_BONE_FLAGS = 0,
 	CGroundIKSolveAnimNode__FLAG_BONEFLEXDRIVER = 4,
 	CGroundIKSolveAnimNode__FLAG_CLOTH = 8,
@@ -19894,25 +19894,25 @@ declare const enum CGroundIKSolveAnimNode__DebugSkeletonBoneType_t {
 	CGroundIKSolveAnimNode__FLAG_ALL_BONE_FLAGS = 16777215
 }
 
-declare const enum ParticleSelection_t {
+declare enum ParticleSelection_t {
 	PARTICLE_SELECTION_FIRST = 0,
 	PARTICLE_SELECTION_LAST = 1,
 	PARTICLE_SELECTION_NUMBER = 2
 }
 
-declare const enum MorphLookupType_t {
+declare enum MorphLookupType_t {
 	LOOKUP_TYPE_TEXCOORD = 0,
 	LOOKUP_TYPE_VERTEX_ID = 1,
 	LOOKUP_TYPE_COUNT = 2
 }
 
-declare const enum BrushSolidities_e {
+declare enum BrushSolidities_e {
 	BRUSHSOLID_TOGGLE = 0,
 	BRUSHSOLID_NEVER = 1,
 	BRUSHSOLID_ALWAYS = 2
 }
 
-declare const enum Detail2Combo_t {
+declare enum Detail2Combo_t {
 	DETAIL_2_COMBO_UNINITIALIZED = -1,
 	DETAIL_2_COMBO_OFF = 0,
 	DETAIL_2_COMBO_ADD = 1,
@@ -19922,13 +19922,13 @@ declare const enum Detail2Combo_t {
 	DETAIL_2_COMBO_CROSSFADE = 5
 }
 
-declare const enum ScreenEffectType_t {
+declare enum ScreenEffectType_t {
 	SCREENEFFECT_EP2_ADVISOR_STUN = 0,
 	SCREENEFFECT_EP1_INTRO = 1,
 	SCREENEFFECT_EP2_GROGGY = 2
 }
 
-declare const enum IGE_AssassinationState {
+declare enum IGE_AssassinationState {
 	ASSASSINMINIGAMESTATE_NotActive = 0,
 	ASSASSINMINIGAMESTATE_AwaitingInitialization = 1,
 	ASSASSINMINIGAMESTATE_InProgress = 2,
@@ -19936,12 +19936,12 @@ declare const enum IGE_AssassinationState {
 	ASSASSINMINIGAMESTATE_ContractDenied = 4
 }
 
-declare const enum ValueRemapperInputType_t {
+declare enum ValueRemapperInputType_t {
 	InputType_PlayerShootPosition = 0,
 	InputType_PlayerShootPositionAroundAxis = 1
 }
 
-declare const enum BaseActivity_t {
+declare enum BaseActivity_t {
 	ACT_RESET = 0,
 	ACT_IDLE = 1,
 	ACT_TRANSITION = 2,
@@ -20972,7 +20972,7 @@ declare const enum BaseActivity_t {
 	ACT_CSGO_PARACHUTE = 1027
 }
 
-declare const enum ParticleVecType_t {
+declare enum ParticleVecType_t {
 	PVEC_TYPE_INVALID = -1,
 	PVEC_TYPE_LITERAL = 0,
 	PVEC_TYPE_PARTICLE_VECTOR = 1,
@@ -20985,39 +20985,39 @@ declare const enum ParticleVecType_t {
 	PVEC_TYPE_COUNT = 8
 }
 
-declare const enum ThreeState_t {
+declare enum ThreeState_t {
 	TRS_FALSE = 0,
 	TRS_TRUE = 1,
 	TRS_NONE = 2
 }
 
-declare const enum TrainOrientationType_t {
+declare enum TrainOrientationType_t {
 	TrainOrientation_Fixed = 0,
 	TrainOrientation_AtPathTracks = 1,
 	TrainOrientation_LinearBlend = 2,
 	TrainOrientation_EaseInEaseOut = 3
 }
 
-declare const enum AnimVrFingerSplay_t {
+declare enum AnimVrFingerSplay_t {
 	AnimVrFingerSplay_Thumb_Index = 0,
 	AnimVrFingerSplay_Index_Middle = 1,
 	AnimVrFingerSplay_Middle_Ring = 2,
 	AnimVrFingerSplay_Ring_Pinky = 3
 }
 
-declare const enum ValueRemapperMomentumType_t {
+declare enum ValueRemapperMomentumType_t {
 	MomentumType_None = 0,
 	MomentumType_Friction = 1,
 	MomentumType_SpringTowardSnapValue = 2,
 	MomentumType_SpringAwayFromSnapValue = 3
 }
 
-declare const enum ValueRemapperHapticsType_t {
+declare enum ValueRemapperHapticsType_t {
 	HaticsType_Default = 0,
 	HaticsType_None = 1
 }
 
-declare const enum quest_hud_types_t {
+declare enum quest_hud_types_t {
 	QUEST_HUD_TYPE_DEFAULT = 0,
 	QUEST_HUD_TYPE_GOLD = 1,
 	QUEST_HUD_TYPE_ATTACK = 2,
@@ -21025,7 +21025,7 @@ declare const enum quest_hud_types_t {
 	QUEST_NUM_HUD_TYPES = 4
 }
 
-declare const enum ParticleImpulseType_t {
+declare enum ParticleImpulseType_t {
 	IMPULSE_TYPE_NONE = 0,
 	IMPULSE_TYPE_GENERIC = 1,
 	IMPULSE_TYPE_ROPE = 2,
@@ -21034,31 +21034,31 @@ declare const enum ParticleImpulseType_t {
 	IMPULSE_TYPE_PARTICLE_SYSTEM = 16
 }
 
-declare const enum VPhysXAggregateData_t__VPhysXFlagEnum_t {
+declare enum VPhysXAggregateData_t__VPhysXFlagEnum_t {
 	VPhysXAggregateData_t__FLAG_IS_POLYSOUP_GEOMETRY = 1,
 	VPhysXAggregateData_t__FLAG_LEVEL_COLLISION = 16,
 	VPhysXAggregateData_t__FLAG_IGNORE_SCALE = 32
 }
 
-declare const enum ParticleFloatRandomMode_t {
+declare enum ParticleFloatRandomMode_t {
 	PF_RANDOM_MODE_INVALID = -1,
 	PF_RANDOM_MODE_CONSTANT = 0,
 	PF_RANDOM_MODE_VARYING = 1,
 	PF_RANDOM_MODE_COUNT = 2
 }
 
-declare const enum DamageCategory_t {
+declare enum DamageCategory_t {
 	DOTA_DAMAGE_CATEGORY_SPELL = 0,
 	DOTA_DAMAGE_CATEGORY_ATTACK = 1
 }
 
-declare const enum AnimNodeNetworkMode {
+declare enum AnimNodeNetworkMode {
 	ServerAuthoritative = 0,
 	ClientSimulate = 1,
 	ClientPredicted = 2
 }
 
-declare const enum IBody__PostureType {
+declare enum IBody__PostureType {
 	IBody__STAND = 0,
 	IBody__CROUCH = 1,
 	IBody__SIT = 2,
@@ -21066,7 +21066,7 @@ declare const enum IBody__PostureType {
 	IBody__LIE = 4
 }
 
-declare const enum SeqCmd_t {
+declare enum SeqCmd_t {
 	SeqCmd_Nop = 0,
 	SeqCmd_LinearDelta = 1,
 	SeqCmd_FetchFrameRange = 2,
@@ -21086,7 +21086,7 @@ declare const enum SeqCmd_t {
 	SeqCmd_Transform = 16
 }
 
-declare const enum SteamUGCMatchingUGCType {
+declare enum SteamUGCMatchingUGCType {
 	Items = 0,
 	Items_Mtx = 1,
 	Items_ReadyToUse = 2,
@@ -21103,22 +21103,22 @@ declare const enum SteamUGCMatchingUGCType {
 	All = -1
 }
 
-declare const enum navproperties_t {
+declare enum navproperties_t {
 	NAV_IGNORE = 1
 }
 
-declare const enum CRR_Response__ResponseEnum_t {
+declare enum CRR_Response__ResponseEnum_t {
 	CRR_Response__MAX_RESPONSE_NAME = 192,
 	CRR_Response__MAX_RULE_NAME = 128
 }
 
-declare const enum Explosions {
+declare enum Explosions {
 	expRandom = 0,
 	expDirected = 1,
 	expUsePrecise = 2
 }
 
-declare const enum DOTAProjectileAttachment_t {
+declare enum DOTAProjectileAttachment_t {
 	DOTA_PROJECTILE_ATTACHMENT_NONE = 0,
 	DOTA_PROJECTILE_ATTACHMENT_ATTACK_1 = 1,
 	DOTA_PROJECTILE_ATTACHMENT_ATTACK_2 = 2,
@@ -21128,19 +21128,19 @@ declare const enum DOTAProjectileAttachment_t {
 	DOTA_PROJECTILE_ATTACHMENT_LAST = 6
 }
 
-declare const enum AbilityBarType_t {
+declare enum AbilityBarType_t {
 	ABILITY_BAR_TYPE_MAIN = 0,
 	ABILITY_BAR_TYPE_SECONDARY = 1,
 	ABILITY_BAR_TYPE_TERTIARY = 2
 }
 
-declare const enum ChoiceChangeMethod {
+declare enum ChoiceChangeMethod {
 	OnReset = 0,
 	OnCycleEnd = 1,
 	OnResetOrCycleEnd = 2
 }
 
-declare const enum Touch_t {
+declare enum Touch_t {
 	touch_none = 0,
 	touch_player_only = 1,
 	touch_npc_only = 2,
@@ -21148,14 +21148,14 @@ declare const enum Touch_t {
 	touch_player_or_npc_or_physicsprop = 4
 }
 
-declare const enum PropDoorRotatingSpawnPos_t {
+declare enum PropDoorRotatingSpawnPos_t {
 	DOOR_SPAWN_CLOSED = 0,
 	DOOR_SPAWN_OPEN_FORWARD = 1,
 	DOOR_SPAWN_OPEN_BACK = 2,
 	DOOR_SPAWN_AJAR = 3
 }
 
-declare const enum DOTAInventoryFlags_t {
+declare enum DOTAInventoryFlags_t {
 	DOTA_INVENTORY_ALLOW_NONE = 0,
 	DOTA_INVENTORY_ALLOW_MAIN = 1,
 	DOTA_INVENTORY_ALLOW_STASH = 2,
@@ -21165,7 +21165,7 @@ declare const enum DOTAInventoryFlags_t {
 	DOTA_INVENTORY_ALL_ACCESS = 3
 }
 
-declare const enum DotaDefaultUIElement_t {
+declare enum DotaDefaultUIElement_t {
 	DOTA_DEFAULT_UI_INVALID = -1,
 	DOTA_DEFAULT_UI_TOP_TIMEOFDAY = 0,
 	DOTA_DEFAULT_UI_TOP_HEROES = 1,
@@ -21197,13 +21197,13 @@ declare const enum DotaDefaultUIElement_t {
 	DOTA_DEFAULT_UI_ELEMENT_COUNT = 27
 }
 
-declare const enum MeshTranslucencyType_t {
+declare enum MeshTranslucencyType_t {
 	MESH_TRANSLUCENCY_FULLY_OPAQUE = 0,
 	MESH_TRANSLUCENCY_PARTIALLY_ALPHA_BLENDED = 1,
 	MESH_TRANSLUCENCY_FULLY_ALPHA_BLENDED = 2
 }
 
-declare const enum SignonState_t {
+declare enum SignonState_t {
 	SIGNONSTATE_NONE = 0,
 	SIGNONSTATE_CHALLENGE = 1,
 	SIGNONSTATE_CONNECTED = 2,
@@ -21214,18 +21214,18 @@ declare const enum SignonState_t {
 	SIGNONSTATE_CHANGELEVEL = 7
 }
 
-declare const enum EDOTASpecialBonusOperation {
+declare enum EDOTASpecialBonusOperation {
 	SPECIAL_BONUS_ADD = 0,
 	SPECIAL_BONUS_MULTIPLY = 1,
 	SPECIAL_BONUS_SUBTRACT = 2
 }
 
-declare const enum DOTAAbilitySpeakTrigger_t {
+declare enum DOTAAbilitySpeakTrigger_t {
 	DOTA_ABILITY_SPEAK_START_ACTION_PHASE = 0,
 	DOTA_ABILITY_SPEAK_CAST = 1
 }
 
-declare const enum HierarchyType_t {
+declare enum HierarchyType_t {
 	HIERARCHY_NONE = 0,
 	HIERARCHY_BONE_MERGE = 1,
 	HIERARCHY_ATTACHMENT = 2,
@@ -21234,13 +21234,13 @@ declare const enum HierarchyType_t {
 	HIERARCHY_TYPE_COUNT = 5
 }
 
-declare const enum BoneMaskBlendSpace {
+declare enum BoneMaskBlendSpace {
 	BlendSpace_Parent = 0,
 	BlendSpace_Model = 1,
 	BlendSpace_Model_RotationOnly = 2
 }
 
-declare const enum quest_text_replace_values_t {
+declare enum quest_text_replace_values_t {
 	QUEST_TEXT_REPLACE_VALUE_CURRENT_VALUE = 0,
 	QUEST_TEXT_REPLACE_VALUE_TARGET_VALUE = 1,
 	QUEST_TEXT_REPLACE_VALUE_ROUND = 2,
@@ -21248,13 +21248,13 @@ declare const enum quest_text_replace_values_t {
 	QUEST_NUM_TEXT_REPLACE_VALUES = 4
 }
 
-declare const enum modifierremove {
+declare enum modifierremove {
 	DOTA_BUFF_REMOVE_ALL = 0,
 	DOTA_BUFF_REMOVE_ENEMY = 1,
 	DOTA_BUFF_REMOVE_ALLY = 2
 }
 
-declare const enum DoorState_t {
+declare enum DoorState_t {
 	DOOR_STATE_CLOSED = 0,
 	DOOR_STATE_OPENING = 1,
 	DOOR_STATE_OPEN = 2,
@@ -21262,7 +21262,7 @@ declare const enum DoorState_t {
 	DOOR_STATE_AJAR = 4
 }
 
-declare const enum AnimVectorSource {
+declare enum AnimVectorSource {
 	MoveDirection = 0,
 	FacingDirection = 1,
 	LookDirection = 2,
@@ -21277,7 +21277,7 @@ declare const enum AnimVectorSource {
 	RootMotionVelocity = 11
 }
 
-declare const enum fieldtype_t {
+declare enum fieldtype_t {
 	FIELD_VOID = 0,
 	FIELD_FLOAT32 = 1,
 	FIELD_STRING = 2,
@@ -21345,27 +21345,27 @@ declare const enum fieldtype_t {
 	FIELD_TYPECOUNT = 64
 }
 
-declare const enum PlayerOrderIssuer_t {
+declare enum PlayerOrderIssuer_t {
 	DOTA_ORDER_ISSUER_SELECTED_UNITS = 0,
 	DOTA_ORDER_ISSUER_CURRENT_UNIT_ONLY = 1,
 	DOTA_ORDER_ISSUER_HERO_ONLY = 2,
 	DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY = 3
 }
 
-declare const enum SPELL_DISPELLABLE_TYPES {
+declare enum SPELL_DISPELLABLE_TYPES {
 	SPELL_DISPELLABLE_NONE = 0,
 	SPELL_DISPELLABLE_YES_STRONG = 1,
 	SPELL_DISPELLABLE_YES = 2,
 	SPELL_DISPELLABLE_NO = 3
 }
 
-declare const enum LessonPanelLayoutFileTypes_t {
+declare enum LessonPanelLayoutFileTypes_t {
 	LAYOUT_HAND_DEFAULT = 0,
 	LAYOUT_WORLD_DEFAULT = 1,
 	LAYOUT_CUSTOM = 2
 }
 
-declare const enum DOTAMinimapEvent_t {
+declare enum DOTAMinimapEvent_t {
 	DOTA_MINIMAP_EVENT_ANCIENT_UNDER_ATTACK = 2,
 	DOTA_MINIMAP_EVENT_BASE_UNDER_ATTACK = 4,
 	DOTA_MINIMAP_EVENT_BASE_GLYPHED = 8,
@@ -21381,7 +21381,7 @@ declare const enum DOTAMinimapEvent_t {
 	DOTA_MINIMAP_EVENT_RADAR_TARGET = 8192
 }
 
-declare const enum EntityIOTargetType_t {
+declare enum EntityIOTargetType_t {
 	ENTITY_IO_TARGET_INVALID = -1,
 	ENTITY_IO_TARGET_CLASSNAME = 0,
 	ENTITY_IO_TARGET_CLASSNAME_DERIVES_FROM = 1,
@@ -21393,7 +21393,7 @@ declare const enum EntityIOTargetType_t {
 	ENTITY_IO_TARGET_ENTITYNAME_OR_CLASSNAME = 7
 }
 
-declare const enum ModelSkeletonData_t__BoneFlags_t {
+declare enum ModelSkeletonData_t__BoneFlags_t {
 	ModelSkeletonData_t__FLAG_NO_BONE_FLAGS = 0,
 	ModelSkeletonData_t__FLAG_BONEFLEXDRIVER = 4,
 	ModelSkeletonData_t__FLAG_CLOTH = 8,
@@ -21419,7 +21419,7 @@ declare const enum ModelSkeletonData_t__BoneFlags_t {
 	ModelSkeletonData_t__FLAG_PROCEDURAL = 4194304
 }
 
-declare const enum PetCoopStates_t {
+declare enum PetCoopStates_t {
 	COOP_IGNORE = 0,
 	COOPTELEPORT_START_PERFORMING = 1,
 	COOPTELEPORT_PLAY_ENDANIM = 2,
@@ -21428,7 +21428,7 @@ declare const enum PetCoopStates_t {
 	COOP_WARD_SENTRY = 5
 }
 
-declare const enum gender_t {
+declare enum gender_t {
 	GENDER_NONE = 0,
 	GENDER_MALE = 1,
 	GENDER_FEMALE = 2,
@@ -21452,7 +21452,7 @@ declare const enum gender_t {
 	GENDER_LAST = 20
 }
 
-declare const enum IBody__ActivityType {
+declare enum IBody__ActivityType {
 	IBody__MOTION_CONTROLLED_XY = 1,
 	IBody__MOTION_CONTROLLED_Z = 2,
 	IBody__ACTIVITY_UNINTERRUPTIBLE = 4,
@@ -21460,7 +21460,7 @@ declare const enum IBody__ActivityType {
 	IBody__ENTINDEX_PLAYBACK_RATE = 16
 }
 
-declare const enum SteamUniverse {
+declare enum SteamUniverse {
 	Invalid = 0,
 	Internal = 3,
 	Dev = 4,
@@ -21468,12 +21468,12 @@ declare const enum SteamUniverse {
 	Public = 1
 }
 
-declare const enum DOTACustomHeroPickRulesPhase_t {
+declare enum DOTACustomHeroPickRulesPhase_t {
 	PHASE_Ban = 0,
 	PHASE_Pick = 1
 }
 
-declare const enum DOTA_HOLDOUT_TOWER_TYPE {
+declare enum DOTA_HOLDOUT_TOWER_TYPE {
 	DOTA_HOLDOUT_TOWER_NONE = 0,
 	DOTA_HOLDOUT_TOWER_LIGHTFAST = 1,
 	DOTA_HOLDOUT_TOWER_HEAVYSLOW = 2,
@@ -21481,12 +21481,12 @@ declare const enum DOTA_HOLDOUT_TOWER_TYPE {
 	DOTA_HOLDOUT_TOWER_COUNT = 4
 }
 
-declare const enum PointWorldTextReorientMode_t {
+declare enum PointWorldTextReorientMode_t {
 	POINT_WORLD_TEXT_REORIENT_NONE = 0,
 	POINT_WORLD_TEXT_REORIENT_AROUND_UP = 1
 }
 
-declare const enum DOTA_PURGE_FLAGS {
+declare enum DOTA_PURGE_FLAGS {
 	DOTA_PURGE_FLAG_NONE = 0,
 	DOTA_PURGE_FLAG_REMOVE_BUFFS = 2,
 	DOTA_PURGE_FLAG_REMOVE_DEBUFFS = 4,
@@ -21495,12 +21495,12 @@ declare const enum DOTA_PURGE_FLAGS {
 	DOTA_PURGE_FLAG_REMOVE_THIS_FRAME_ONLY = 32
 }
 
-declare const enum SosActionSortType_t {
+declare enum SosActionSortType_t {
 	SOS_SORTTYPE_HIGHEST = 0,
 	SOS_SORTTYPE_LOWEST = 1
 }
 
-declare const enum NPC_STATE {
+declare enum NPC_STATE {
 	NPC_STATE_INVALID = -1,
 	NPC_STATE_NONE = 0,
 	NPC_STATE_IDLE = 1,
@@ -21512,24 +21512,24 @@ declare const enum NPC_STATE {
 	NPC_STATE_DEAD = 7
 }
 
-declare const enum ParticleFalloffFunction_t {
+declare enum ParticleFalloffFunction_t {
 	PARTICLE_FALLOFF_CONSTANT = 0,
 	PARTICLE_FALLOFF_LINEAR = 1,
 	PARTICLE_FALLOFF_EXPONENTIAL = 2
 }
 
-declare const enum AnimVRHandMotionRange_t {
+declare enum AnimVRHandMotionRange_t {
 	MotionRange_WithController = 0,
 	MotionRange_WithoutController = 1
 }
 
-declare const enum WorldTextPanelHorizontalAlign_t {
+declare enum WorldTextPanelHorizontalAlign_t {
 	WORLDTEXT_HORIZONTAL_ALIGN_LEFT = 0,
 	WORLDTEXT_HORIZONTAL_ALIGN_CENTER = 1,
 	WORLDTEXT_HORIZONTAL_ALIGN_RIGHT = 2
 }
 
-declare const enum DOTA_UNIT_TARGET_TYPE {
+declare enum DOTA_UNIT_TARGET_TYPE {
 	DOTA_UNIT_TARGET_NONE = 0,
 	DOTA_UNIT_TARGET_HERO = 1,
 	DOTA_UNIT_TARGET_CREEP = 2,
@@ -21542,13 +21542,13 @@ declare const enum DOTA_UNIT_TARGET_TYPE {
 	DOTA_UNIT_TARGET_ALL = 55
 }
 
-declare const enum PetGroundType_t {
+declare enum PetGroundType_t {
 	PET_GROUND_NONE = 0,
 	PET_GROUND_GRID = 1,
 	PET_GROUND_PLANE = 2
 }
 
-declare const enum PortraitDisplayMode_t {
+declare enum PortraitDisplayMode_t {
 	PORTRAIT_DISPLAY_MODE_INVALID = -1,
 	PORTRAIT_DISPLAY_MODE_LOADOUT = 0,
 	PORTRAIT_DISPLAY_MODE_LOADOUT_DIRE = 1,
@@ -21556,14 +21556,14 @@ declare const enum PortraitDisplayMode_t {
 	PORTRAIT_DISPLAY_MODE_TREASURE_SMALL = 3
 }
 
-declare const enum eLogicalHandType {
+declare enum eLogicalHandType {
 	LOGICAL_HAND_TYPE_UNKNOWN = -1,
 	LOGICAL_HAND_TYPE_PRIMARY_HAND = 0,
 	LOGICAL_HAND_TYPE_OFF_HAND = 1,
 	LOGICAL_HAND_TYPE_COUNT = 2
 }
 
-declare const enum InputLayoutVariation_t {
+declare enum InputLayoutVariation_t {
 	INPUT_LAYOUT_VARIATION_DEFAULT = 0,
 	INPUT_LAYOUT_VARIATION_STREAM1_MAT3X4 = 1,
 	INPUT_LAYOUT_VARIATION_STREAM1_INSTANCEID = 2,
@@ -21572,20 +21572,20 @@ declare const enum InputLayoutVariation_t {
 	INPUT_LAYOUT_VARIATION_MAX = 5
 }
 
-declare const enum MorphEncodingType_t {
+declare enum MorphEncodingType_t {
 	ENCODING_TYPE_OBJECT_SPACE = 0,
 	ENCODING_TYPE_TANGENT_SPACE = 1,
 	ENCODING_TYPE_COUNT = 2
 }
 
-declare const enum BlendKeyType {
+declare enum BlendKeyType {
 	BlendKey_UserValue = 0,
 	BlendKey_Velocity = 1,
 	BlendKey_Distance = 2,
 	BlendKey_RemainingDistance = 3
 }
 
-declare const enum ParticlePinDistance_t {
+declare enum ParticlePinDistance_t {
 	PARTICLE_PIN_DISTANCE_NONE = -1,
 	PARTICLE_PIN_DISTANCE_NEIGHBOR = 0,
 	PARTICLE_PIN_DISTANCE_FARTHEST = 1,
@@ -21598,18 +21598,18 @@ declare const enum ParticlePinDistance_t {
 	PARTICLE_PIN_SPEED = 9
 }
 
-declare const enum VertJustification_e {
+declare enum VertJustification_e {
 	VERT_JUSTIFICATION_TOP = 0,
 	VERT_JUSTIFICATION_CENTER = 1,
 	VERT_JUSTIFICATION_BOTTOM = 2,
 	VERT_JUSTIFICATION_NONE = 3
 }
 
-declare const enum TakeHealthOptions_t {
+declare enum TakeHealthOptions_t {
 	TH_IGNORE_MAX_HITPOINTS = 1
 }
 
-declare const enum MoveType_t {
+declare enum MoveType_t {
 	MOVETYPE_NONE = 0,
 	MOVETYPE_ISOMETRIC = 1,
 	MOVETYPE_WALK = 2,
@@ -21626,7 +21626,7 @@ declare const enum MoveType_t {
 	MOVETYPE_MAX_BITS = 4
 }
 
-declare const enum AnimVRFinger_t {
+declare enum AnimVRFinger_t {
 	AnimVrFinger_Thumb = 0,
 	AnimVrFinger_Index = 1,
 	AnimVrFinger_Middle = 2,
@@ -21634,7 +21634,7 @@ declare const enum AnimVRFinger_t {
 	AnimVrFinger_Pinky = 4
 }
 
-declare const enum LatchDirtyPermission_t {
+declare enum LatchDirtyPermission_t {
 	LATCH_DIRTY_DISALLOW = 0,
 	LATCH_DIRTY_SERVER_CONTROLLED = 1,
 	LATCH_DIRTY_CLIENT_SIMULATED = 2,
@@ -21643,7 +21643,7 @@ declare const enum LatchDirtyPermission_t {
 	LATCH_DIRTY_PARTICLE_SIMULATE = 5
 }
 
-declare const enum AbilityLearnResult_t {
+declare enum AbilityLearnResult_t {
 	ABILITY_CAN_BE_UPGRADED = 0,
 	ABILITY_CANNOT_BE_UPGRADED_NOT_UPGRADABLE = 1,
 	ABILITY_CANNOT_BE_UPGRADED_AT_MAX = 2,
@@ -21651,7 +21651,7 @@ declare const enum AbilityLearnResult_t {
 	ABILITY_NOT_LEARNABLE = 4
 }
 
-declare const enum PostProcessParameterNames_t {
+declare enum PostProcessParameterNames_t {
 	PPPN_FADE_TIME = 0,
 	PPPN_LOCAL_CONTRAST_STRENGTH = 1,
 	PPPN_LOCAL_CONTRAST_EDGE_STRENGTH = 2,
@@ -21667,14 +21667,14 @@ declare const enum PostProcessParameterNames_t {
 	POST_PROCESS_PARAMETER_COUNT = 12
 }
 
-declare const enum HorizJustification_e {
+declare enum HorizJustification_e {
 	HORIZ_JUSTIFICATION_LEFT = 0,
 	HORIZ_JUSTIFICATION_CENTER = 1,
 	HORIZ_JUSTIFICATION_RIGHT = 2,
 	HORIZ_JUSTIFICATION_NONE = 3
 }
 
-declare const enum DOTAPortraitEnvironmentType_t {
+declare enum DOTAPortraitEnvironmentType_t {
 	DOTA_PORTRAIT_ENVIRONMENT_INVALID = -1,
 	DOTA_PORTRAIT_ENVIRONMENT_DEFAULT = 0,
 	DOTA_PORTRAIT_ENVIRONMENT_FULL_BODY = 1,
@@ -21684,19 +21684,19 @@ declare const enum DOTAPortraitEnvironmentType_t {
 	DOTA_PORTRAIT_ENVIRONMENT_TYPE_COUNT = 5
 }
 
-declare const enum PointTemplateClientOnlyEntityBehavior_t {
+declare enum PointTemplateClientOnlyEntityBehavior_t {
 	CREATE_FOR_CURRENTLY_CONNECTED_CLIENTS_ONLY = 0,
 	CREATE_FOR_CLIENTS_WHO_CONNECT_LATER = 1
 }
 
-declare const enum SeqPoseSetting_t {
+declare enum SeqPoseSetting_t {
 	SEQ_POSE_SETTING_CONSTANT = 0,
 	SEQ_POSE_SETTING_ROTATION = 1,
 	SEQ_POSE_SETTING_POSITION = 2,
 	SEQ_POSE_SETTING_VELOCITY = 3
 }
 
-declare const enum DOTADamageFlag_t {
+declare enum DOTADamageFlag_t {
 	DOTA_DAMAGE_FLAG_NONE = 0,
 	DOTA_DAMAGE_FLAG_IGNORES_MAGIC_ARMOR = 1,
 	DOTA_DAMAGE_FLAG_IGNORES_PHYSICAL_ARMOR = 2,
@@ -21715,7 +21715,7 @@ declare const enum DOTADamageFlag_t {
 	DOTA_DAMAGE_FLAG_IGNORES_BASE_PHYSICAL_ARMOR = 16384
 }
 
-declare const enum TimelineCompression_t {
+declare enum TimelineCompression_t {
 	TIMELINE_COMPRESSION_SUM = 0,
 	TIMELINE_COMPRESSION_COUNT_PER_INTERVAL = 1,
 	TIMELINE_COMPRESSION_AVERAGE = 2,
@@ -21723,31 +21723,31 @@ declare const enum TimelineCompression_t {
 	TIMELINE_COMPRESSION_TOTAL = 4
 }
 
-declare const enum MorphFlexControllerRemapType_t {
+declare enum MorphFlexControllerRemapType_t {
 	MORPH_FLEXCONTROLLER_REMAP_PASSTHRU = 0,
 	MORPH_FLEXCONTROLLER_REMAP_2WAY = 1,
 	MORPH_FLEXCONTROLLER_REMAP_NWAY = 2,
 	MORPH_FLEXCONTROLLER_REMAP_EYELID = 3
 }
 
-declare const enum ERoshanSpawnPhase {
+declare enum ERoshanSpawnPhase {
 	ROSHAN_SPAWN_PHASE_ALIVE = 0,
 	ROSHAN_SPAWN_PHASE_BASE_TIMER = 1,
 	ROSHAN_SPAWN_PHASE_VISIBLE_TIMER = 2
 }
 
-declare const enum attributeprovidertypes_t {
+declare enum attributeprovidertypes_t {
 	PROVIDER_GENERIC = 0,
 	PROVIDER_WEAPON = 1
 }
 
-declare const enum DOTAUnitMoveCapability_t {
+declare enum DOTAUnitMoveCapability_t {
 	DOTA_UNIT_CAP_MOVE_NONE = 0,
 	DOTA_UNIT_CAP_MOVE_GROUND = 1,
 	DOTA_UNIT_CAP_MOVE_FLY = 2
 }
 
-declare const enum DOTA_MOTION_CONTROLLER_PRIORITY {
+declare enum DOTA_MOTION_CONTROLLER_PRIORITY {
 	DOTA_MOTION_CONTROLLER_PRIORITY_LOWEST = 0,
 	DOTA_MOTION_CONTROLLER_PRIORITY_LOW = 1,
 	DOTA_MOTION_CONTROLLER_PRIORITY_MEDIUM = 2,
@@ -21755,7 +21755,7 @@ declare const enum DOTA_MOTION_CONTROLLER_PRIORITY {
 	DOTA_MOTION_CONTROLLER_PRIORITY_HIGHEST = 4
 }
 
-declare const enum DOTAUnitAttackCapability_t {
+declare enum DOTAUnitAttackCapability_t {
 	DOTA_UNIT_CAP_NO_ATTACK = 0,
 	DOTA_UNIT_CAP_MELEE_ATTACK = 1,
 	DOTA_UNIT_CAP_RANGED_ATTACK = 2,
@@ -21763,13 +21763,13 @@ declare const enum DOTAUnitAttackCapability_t {
 	DOTA_UNIT_ATTACK_CAPABILITY_BIT_COUNT = 3
 }
 
-declare const enum SpawnDebugOverrideState_t {
+declare enum SpawnDebugOverrideState_t {
 	SPAWN_DEBUG_OVERRIDE_NONE = 0,
 	SPAWN_DEBUG_OVERRIDE_FORCE_ENABLED = 1,
 	SPAWN_DEBUG_OVERRIDE_FORCE_DISABLED = 2
 }
 
-declare const enum attackfail {
+declare enum attackfail {
 	DOTA_ATTACK_RECORD_FAIL_NO = 0,
 	DOTA_ATTACK_RECORD_FAIL_TERRAIN_MISS = 1,
 	DOTA_ATTACK_RECORD_FAIL_SOURCE_MISS = 2,
@@ -21780,7 +21780,7 @@ declare const enum attackfail {
 	DOTA_ATTACK_RECORD_FAIL_BLOCKED_BY_OBSTRUCTION = 7
 }
 
-declare const enum ControlValue {
+declare enum ControlValue {
 	ControlValue_MoveHeading = 0,
 	ControlValue_MoveSpeed = 1,
 	ControlValue_FacingHeading = 2,
@@ -21820,14 +21820,14 @@ declare const enum ControlValue {
 	ControlValue_Invalid = 255
 }
 
-declare const enum MorphBundleType_t {
+declare enum MorphBundleType_t {
 	MORPH_BUNDLE_TYPE_NONE = 0,
 	MORPH_BUNDLE_TYPE_POSITION_SPEED = 1,
 	MORPH_BUNDLE_TYPE_NORMAL_WRINKLE = 2,
 	MORPH_BUNDLE_TYPE_COUNT = 3
 }
 
-declare const enum NavAttributeEnum {
+declare enum NavAttributeEnum {
 	NAV_MESH_CROUCH = 1,
 	NAV_MESH_JUMP = 2,
 	NAV_MESH_PRECISE = 4,
@@ -21846,7 +21846,7 @@ declare const enum NavAttributeEnum {
 	NAV_MESH_NO_HOSTAGES = 2048
 }
 
-declare const enum RenderBufferFlags_t {
+declare enum RenderBufferFlags_t {
 	RENDER_BUFFER_USAGE_VERTEX_BUFFER = 1,
 	RENDER_BUFFER_USAGE_INDEX_BUFFER = 2,
 	RENDER_BUFFER_USAGE_SHADER_RESOURCE = 4,
@@ -21857,7 +21857,7 @@ declare const enum RenderBufferFlags_t {
 	RENDER_BUFFER_UAV_COUNTER = 128
 }
 
-declare const enum DOTA_UNIT_TARGET_FLAGS {
+declare enum DOTA_UNIT_TARGET_FLAGS {
 	DOTA_UNIT_TARGET_FLAG_NONE = 0,
 	DOTA_UNIT_TARGET_FLAG_RANGED_ONLY = 2,
 	DOTA_UNIT_TARGET_FLAG_MELEE_ONLY = 4,
@@ -21882,13 +21882,13 @@ declare const enum DOTA_UNIT_TARGET_FLAGS {
 	DOTA_UNIT_TARGET_FLAG_RESPECT_OBSTRUCTIONS = 2097152
 }
 
-declare const enum TRAIN_CODE {
+declare enum TRAIN_CODE {
 	TRAIN_SAFE = 0,
 	TRAIN_BLOCKING = 1,
 	TRAIN_FOLLOWING = 2
 }
 
-declare const enum SosEditItemType_t {
+declare enum SosEditItemType_t {
 	SOS_EDIT_ITEM_TYPE_SOUNDEVENTS = 0,
 	SOS_EDIT_ITEM_TYPE_SOUNDEVENT = 1,
 	SOS_EDIT_ITEM_TYPE_LIBRARYSTACKS = 2,
@@ -21897,11 +21897,11 @@ declare const enum SosEditItemType_t {
 	SOS_EDIT_ITEM_TYPE_FIELD = 5
 }
 
-declare const enum VPhysXDiskShapeHeader_t__VersinEnum_t {
+declare enum VPhysXDiskShapeHeader_t__VersinEnum_t {
 	VPhysXDiskShapeHeader_t__VERSION = 129
 }
 
-declare const enum DOTAScriptInventorySlot_t {
+declare enum DOTAScriptInventorySlot_t {
 	DOTA_ITEM_SLOT_1 = 0,
 	DOTA_ITEM_SLOT_2 = 1,
 	DOTA_ITEM_SLOT_3 = 2,
@@ -21919,31 +21919,31 @@ declare const enum DOTAScriptInventorySlot_t {
 	DOTA_STASH_SLOT_6 = 14
 }
 
-declare const enum filter_t {
+declare enum filter_t {
 	FILTER_AND = 0,
 	FILTER_OR = 1
 }
 
-declare const enum subquest_text_replace_values_t {
+declare enum subquest_text_replace_values_t {
 	SUBQUEST_TEXT_REPLACE_VALUE_CURRENT_VALUE = 0,
 	SUBQUEST_TEXT_REPLACE_VALUE_TARGET_VALUE = 1,
 	SUBQUEST_NUM_TEXT_REPLACE_VALUES = 2
 }
 
-declare const enum SosActionStopType_t {
+declare enum SosActionStopType_t {
 	SOS_STOPTYPE_NONE = 0,
 	SOS_STOPTYPE_TIME = 1,
 	SOS_STOPTYPE_OPVAR = 2
 }
 
-declare const enum ModelBoneFlexComponent_t {
+declare enum ModelBoneFlexComponent_t {
 	MODEL_BONE_FLEX_INVALID = -1,
 	MODEL_BONE_FLEX_TX = 0,
 	MODEL_BONE_FLEX_TY = 1,
 	MODEL_BONE_FLEX_TZ = 2
 }
 
-declare const enum ParticleAttachment_t {
+declare enum ParticleAttachment_t {
 	PATTACH_INVALID = -1,
 	PATTACH_ABSORIGIN = 0,
 	PATTACH_ABSORIGIN_FOLLOW = 1,
@@ -21963,7 +21963,7 @@ declare const enum ParticleAttachment_t {
 	MAX_PATTACH_TYPES = 15
 }
 
-declare const enum WeaponProficiency_t {
+declare enum WeaponProficiency_t {
 	WEAPON_PROFICIENCY_POOR = 0,
 	WEAPON_PROFICIENCY_AVERAGE = 1,
 	WEAPON_PROFICIENCY_GOOD = 2,
@@ -21971,7 +21971,7 @@ declare const enum WeaponProficiency_t {
 	WEAPON_PROFICIENCY_PERFECT = 4
 }
 
-declare const enum CourierState_t {
+declare enum CourierState_t {
 	COURIER_STATE_INIT = -1,
 	COURIER_STATE_IDLE = 0,
 	COURIER_STATE_AT_BASE = 1,
@@ -21982,7 +21982,7 @@ declare const enum CourierState_t {
 	COURIER_NUM_STATES = 6
 }
 
-declare const enum SolidType_t {
+declare enum SolidType_t {
 	SOLID_NONE = 0,
 	SOLID_BSP = 1,
 	SOLID_BBOX = 2,
@@ -21993,17 +21993,17 @@ declare const enum SolidType_t {
 	SOLID_LAST = 8
 }
 
-declare const enum FuncDoorSpawnPos_t {
+declare enum FuncDoorSpawnPos_t {
 	FUNC_DOOR_SPAWN_CLOSED = 0,
 	FUNC_DOOR_SPAWN_OPEN = 1
 }
 
-declare const enum DOTA_ITEM_STATE {
+declare enum DOTA_ITEM_STATE {
 	DOTA_ITEM_NEEDS_EQUIPPED = 0,
 	DOTA_ITEM_READY = 1
 }
 
-declare const enum CubeMapFace_t {
+declare enum CubeMapFace_t {
 	CUBEMAP_FACE_POSITIVE_X = 0,
 	CUBEMAP_FACE_NEGATIVE_X = 1,
 	CUBEMAP_FACE_POSITIVE_Y = 2,
@@ -22012,7 +22012,7 @@ declare const enum CubeMapFace_t {
 	CUBEMAP_FACE_NEGATIVE_Z = 5
 }
 
-declare const enum DOTAKeybindCommand_t {
+declare enum DOTAKeybindCommand_t {
 	DOTA_KEYBIND_NONE = 0,
 	DOTA_KEYBIND_FIRST = 1,
 	DOTA_KEYBIND_CAMERA_UP = 1,
@@ -22241,7 +22241,7 @@ declare const enum DOTAKeybindCommand_t {
 	DOTA_KEYBIND_COUNT = 224
 }
 
-declare const enum modifierpriority {
+declare enum modifierpriority {
 	MODIFIER_PRIORITY_LOW = 0,
 	MODIFIER_PRIORITY_NORMAL = 1,
 	MODIFIER_PRIORITY_HIGH = 2,
@@ -22249,7 +22249,7 @@ declare const enum modifierpriority {
 	MODIFIER_PRIORITY_SUPER_ULTRA = 4
 }
 
-declare const enum ParticleOrientationChoiceList_t {
+declare enum ParticleOrientationChoiceList_t {
 	PARTICLE_ORIENTATION_SCREEN_ALIGNED = 0,
 	PARTICLE_ORIENTATION_SCREEN_Z_ALIGNED = 1,
 	PARTICLE_ORIENTATION_WORLD_Z_ALIGNED = 2,
@@ -22258,7 +22258,7 @@ declare const enum ParticleOrientationChoiceList_t {
 	PARTICLE_ORIENTATION_FULL_3AXIS_ROTATION = 5
 }
 
-declare const enum DOTA_SHOP_TYPE {
+declare enum DOTA_SHOP_TYPE {
 	DOTA_SHOP_HOME = 0,
 	DOTA_SHOP_SIDE = 1,
 	DOTA_SHOP_SECRET = 2,
@@ -22269,23 +22269,23 @@ declare const enum DOTA_SHOP_TYPE {
 	DOTA_SHOP_NONE = 7
 }
 
-declare const enum EntityDisolveType_t {
+declare enum EntityDisolveType_t {
 	ENTITY_DISSOLVE_NORMAL = 0,
 	ENTITY_DISSOLVE_ELECTRICAL = 1,
 	ENTITY_DISSOLVE_ELECTRICAL_LIGHT = 2,
 	ENTITY_DISSOLVE_CORE = 3
 }
 
-declare const enum LightSourceShape_t {
+declare enum LightSourceShape_t {
 	LIGHT_SOURCE_SHAPE_SPHERE = 0
 }
 
-declare const enum ShadowType_t {
+declare enum ShadowType_t {
 	SHADOWS_NONE = 0,
 	SHADOWS_SIMPLE = 1
 }
 
-declare const enum DOTASpeechType_t {
+declare enum DOTASpeechType_t {
 	DOTA_SPEECH_USER_INVALID = 0,
 	DOTA_SPEECH_USER_SINGLE = 1,
 	DOTA_SPEECH_USER_TEAM = 2,
@@ -22298,7 +22298,7 @@ declare const enum DOTASpeechType_t {
 	DOTA_SPEECH_RECIPIENT_TYPE_MAX = 9
 }
 
-declare const enum Class_T {
+declare enum Class_T {
 	CLASS_NONE = 0,
 	CLASS_PLAYER = 1,
 	CLASS_PLAYER_ALLY = 2,
@@ -22306,13 +22306,13 @@ declare const enum Class_T {
 	LAST_SHARED_ENTITY_CLASS = 4
 }
 
-declare const enum TrainVelocityType_t {
+declare enum TrainVelocityType_t {
 	TrainVelocity_Instantaneous = 0,
 	TrainVelocity_LinearBlend = 1,
 	TrainVelocity_EaseInEaseOut = 2
 }
 
-declare const enum Disposition_t {
+declare enum Disposition_t {
 	D_ER = 0,
 	D_HT = 1,
 	D_FR = 2,
@@ -22325,13 +22325,13 @@ declare const enum Disposition_t {
 	D_NEUTRAL = 4
 }
 
-declare const enum TrackOrientationType_t {
+declare enum TrackOrientationType_t {
 	TrackOrientation_Fixed = 0,
 	TrackOrientation_FacePath = 1,
 	TrackOrientation_FacePathAngles = 2
 }
 
-declare const enum ParticleTopology_t {
+declare enum ParticleTopology_t {
 	PARTICLE_TOPOLOGY_POINTS = 0,
 	PARTICLE_TOPOLOGY_LINES = 1,
 	PARTICLE_TOPOLOGY_TRIS = 2,
@@ -22339,7 +22339,7 @@ declare const enum ParticleTopology_t {
 	PARTICLE_TOPOLOGY_CUBES = 4
 }
 
-declare const enum DOTA_HeroPickState {
+declare enum DOTA_HeroPickState {
 	DOTA_HEROPICK_STATE_NONE = 0,
 	DOTA_HEROPICK_STATE_AP_SELECT = 1,
 	DOTA_HEROPICK_STATE_SD_SELECT = 2,
@@ -22402,7 +22402,7 @@ declare const enum DOTA_HeroPickState {
 	DOTA_HEROPICK_STATE_COUNT = 59
 }
 
-declare const enum AttributeDerivedStats {
+declare enum AttributeDerivedStats {
 	DOTA_ATTRIBUTE_STRENGTH_DAMAGE = 0,
 	DOTA_ATTRIBUTE_STRENGTH_HP = 1,
 	DOTA_ATTRIBUTE_STRENGTH_HP_REGEN = 2,
@@ -22419,18 +22419,18 @@ declare const enum AttributeDerivedStats {
 	DOTA_ATTRIBUTE_INTELLIGENCE_MAGIC_RESISTANCE_PERCENT = 13
 }
 
-declare const enum DampingSpeedFunction {
+declare enum DampingSpeedFunction {
 	NoDamping = 0,
 	Constant = 1,
 	Spring = 2
 }
 
-declare const enum SolveIKChainAnimNodeSettingSource {
+declare enum SolveIKChainAnimNodeSettingSource {
 	SOLVEIKCHAINANIMNODESETTINGSOURCE_Default = 0,
 	SOLVEIKCHAINANIMNODESETTINGSOURCE_Override = 1
 }
 
-declare const enum RenderMode_t {
+declare enum RenderMode_t {
 	kRenderNormal = 0,
 	kRenderTransColor = 1,
 	kRenderTransTexture = 2,
@@ -22446,14 +22446,14 @@ declare const enum RenderMode_t {
 	kRenderModeCount = 12
 }
 
-declare const enum EDOTA_ModifyXP_Reason {
+declare enum EDOTA_ModifyXP_Reason {
 	DOTA_ModifyXP_Unspecified = 0,
 	DOTA_ModifyXP_HeroKill = 1,
 	DOTA_ModifyXP_CreepKill = 2,
 	DOTA_ModifyXP_RoshanKill = 3
 }
 
-declare const enum ParticleColorBlendType_t {
+declare enum ParticleColorBlendType_t {
 	PARTICLE_COLOR_BLEND_MULTIPLY = 0,
 	PARTICLE_COLOR_BLEND_ADD = 1,
 	PARTICLE_COLOR_BLEND_SUBTRACT = 2,
@@ -22464,21 +22464,21 @@ declare const enum ParticleColorBlendType_t {
 	PARTICLE_COLOR_BLEND_REPLACE = 7
 }
 
-declare const enum BeamClipStyle_t {
+declare enum BeamClipStyle_t {
 	kNOCLIP = 0,
 	kGEOCLIP = 1,
 	kMODELCLIP = 2,
 	kBEAMCLIPSTYLE_NUMBITS = 2
 }
 
-declare const enum MaterialModifyMode_t {
+declare enum MaterialModifyMode_t {
 	MATERIAL_MODIFY_MODE_NONE = 0,
 	MATERIAL_MODIFY_MODE_SETVAR = 1,
 	MATERIAL_MODIFY_MODE_ANIM_SEQUENCE = 2,
 	MATERIAL_MODIFY_MODE_FLOAT_LERP = 3
 }
 
-declare const enum soundlevel_t {
+declare enum soundlevel_t {
 	SNDLVL_NONE = 0,
 	SNDLVL_20dB = 20,
 	SNDLVL_25dB = 25,
@@ -22511,7 +22511,7 @@ declare const enum soundlevel_t {
 	SNDLVL_180dB = 180
 }
 
-declare const enum AnimationSnapshotType_t {
+declare enum AnimationSnapshotType_t {
 	ANIMATION_SNAPSHOT_SERVER_SIMULATION = 0,
 	ANIMATION_SNAPSHOT_CLIENT_SIMULATION = 1,
 	ANIMATION_SNAPSHOT_CLIENT_PREDICTION = 2,
@@ -22521,12 +22521,12 @@ declare const enum AnimationSnapshotType_t {
 	ANIMATION_SNAPSHOT_MAX = 6
 }
 
-declare const enum ValueRemapperRatchetType_t {
+declare enum ValueRemapperRatchetType_t {
 	RatchetType_Absolute = 0,
 	RatchetType_EachEngage = 1
 }
 
-declare const enum PermModelInfo_t__FlagEnum {
+declare enum PermModelInfo_t__FlagEnum {
 	PermModelInfo_t__FLAG_TRANSLUCENT = 1,
 	PermModelInfo_t__FLAG_TRANSLUCENT_TWO_PASS = 2,
 	PermModelInfo_t__FLAG_MODEL_IS_RUNTIME_COMBINED = 4,
@@ -22544,7 +22544,7 @@ declare const enum PermModelInfo_t__FlagEnum {
 	PermModelInfo_t__FLAG_MODEL_DOC = 8388608
 }
 
-declare const enum gamerules_roundstate_t {
+declare enum gamerules_roundstate_t {
 	GR_STATE_INIT = 0,
 	GR_STATE_PREGAME = 1,
 	GR_STATE_STARTGAME = 2,
@@ -22557,7 +22557,7 @@ declare const enum gamerules_roundstate_t {
 	GR_NUM_ROUND_STATES = 9
 }
 
-declare const enum ParticleColorBlendMode_t {
+declare enum ParticleColorBlendMode_t {
 	PARTICLEBLEND_DEFAULT = 0,
 	PARTICLEBLEND_OVERLAY = 1,
 	PARTICLEBLEND_DARKEN = 2,
@@ -22565,13 +22565,13 @@ declare const enum ParticleColorBlendMode_t {
 	PARTICLEBLEND_MULTIPLY = 4
 }
 
-declare const enum PropDoorRotatingOpenDirection_e {
+declare enum PropDoorRotatingOpenDirection_e {
 	DOOR_ROTATING_OPEN_BOTH_WAYS = 0,
 	DOOR_ROTATING_OPEN_FORWARD = 1,
 	DOOR_ROTATING_OPEN_BACKWARD = 2
 }
 
-declare const enum eEconItemOrigin {
+declare enum eEconItemOrigin {
 	kEconItemOrigin_Invalid = -1,
 	kEconItemOrigin_Drop = 0,
 	kEconItemOrigin_Achievement = 1,
@@ -22620,12 +22620,12 @@ declare const enum eEconItemOrigin {
 	kEconItemOrigin_Max = 44
 }
 
-declare const enum SelectionSource_t {
+declare enum SelectionSource_t {
 	SelectionSource_Bool = 0,
 	SelectionSource_Enum = 1
 }
 
-declare const enum DOTALimits_t {
+declare enum DOTALimits_t {
 	DOTA_MAX_PLAYERS = 64,
 	DOTA_MAX_TEAM = 24,
 	DOTA_MAX_PLAYER_TEAMS = 10,
@@ -22636,12 +22636,12 @@ declare const enum DOTALimits_t {
 	DOTA_DEFAULT_MAX_TEAM_PLAYERS = 10
 }
 
-declare const enum interactions_t {
+declare enum interactions_t {
 	INTERACTION_NONE = -1,
 	NUM_HAND_INTERACTIONS = 0
 }
 
-declare const enum LifeState_t {
+declare enum LifeState_t {
 	LIFE_ALIVE = 0,
 	LIFE_DYING = 1,
 	LIFE_DEAD = 2,
@@ -22649,35 +22649,35 @@ declare const enum LifeState_t {
 	LIFE_RESPAWNING = 4
 }
 
-declare const enum voxel_vis_compression_t {
+declare enum voxel_vis_compression_t {
 	VOXVIS_COMPRESS_RAW = 0,
 	VOXVIS_COMPRESS_RLE = 1
 }
 
-declare const enum DamageOptions_t {
+declare enum DamageOptions_t {
 	DAMAGE_NO = 0,
 	DAMAGE_EVENTS_ONLY = 1,
 	DAMAGE_YES = 2
 }
 
-declare const enum PortraitSoundMode_t {
+declare enum PortraitSoundMode_t {
 	PORTRAIT_SOUND_MODE_INVALID = -1,
 	PORTRAIT_SOUND_MODE_NO_SOUNDS = 0,
 	PORTRAIT_SOUND_MODE_ONLY_TAUNT_SOUNDS = 1,
 	PORTRAIT_SOUND_MODE_ALL_SOUNDS = 2
 }
 
-declare const enum EntityLumpFlags_t {
+declare enum EntityLumpFlags_t {
 	ENTITY_LUMP_NONE = 0
 }
 
-declare const enum EntFinderMethod_t {
+declare enum EntFinderMethod_t {
 	ENT_FIND_METHOD_NEAREST = 0,
 	ENT_FIND_METHOD_FARTHEST = 1,
 	ENT_FIND_METHOD_RANDOM = 2
 }
 
-declare const enum DOTA_SHOP_CATEGORY {
+declare enum DOTA_SHOP_CATEGORY {
 	DOTA_SHOP_CATEGORY_NONE = -1,
 	DOTA_SHOP_CATEGORY_CONSUMABLES = 0,
 	DOTA_SHOP_CATEGORY_ATTRIBUTES = 1,
@@ -22697,32 +22697,32 @@ declare const enum DOTA_SHOP_CATEGORY {
 	NUM_SHOP_CATEGORIES = 15
 }
 
-declare const enum IkEndEffectorType {
+declare enum IkEndEffectorType {
 	IkEndEffector_Attachment = 0,
 	IkEndEffector_Bone = 1
 }
 
-declare const enum eLiteralHandType {
+declare enum eLiteralHandType {
 	LITERAL_HAND_TYPE_UNKNOWN = -1,
 	LITERAL_HAND_TYPE_RIGHT = 0,
 	LITERAL_HAND_TYPE_LEFT = 1,
 	LITERAL_HAND_TYPE_COUNT = 2
 }
 
-declare const enum WeaponState_t {
+declare enum WeaponState_t {
 	WEAPON_NOT_CARRIED = 0,
 	WEAPON_IS_CARRIED_BY_PLAYER = 1,
 	WEAPON_IS_ACTIVE = 2
 }
 
-declare const enum IkTargetType {
+declare enum IkTargetType {
 	IkTarget_Attachment = 0,
 	IkTarget_Bone = 1,
 	IkTarget_Parameter_ModelSpace = 2,
 	IkTarget_Parameter_WorldSpace = 3
 }
 
-declare const enum UnitFilterResult {
+declare enum UnitFilterResult {
 	UF_SUCCESS = 0,
 	UF_FAIL_FRIENDLY = 1,
 	UF_FAIL_ENEMY = 2,
@@ -22754,13 +22754,13 @@ declare const enum UnitFilterResult {
 	UF_FAIL_OBSTRUCTED = 28
 }
 
-declare const enum doorCheck_e {
+declare enum doorCheck_e {
 	DOOR_CHECK_FORWARD = 0,
 	DOOR_CHECK_BACKWARD = 1,
 	DOOR_CHECK_FULL = 2
 }
 
-declare const enum SPELL_IMMUNITY_TYPES {
+declare enum SPELL_IMMUNITY_TYPES {
 	SPELL_IMMUNITY_NONE = 0,
 	SPELL_IMMUNITY_ALLIES_YES = 1,
 	SPELL_IMMUNITY_ALLIES_NO = 2,
@@ -22768,7 +22768,7 @@ declare const enum SPELL_IMMUNITY_TYPES {
 	SPELL_IMMUNITY_ENEMIES_NO = 4
 }
 
-declare const enum ParticleFloatBiasType_t {
+declare enum ParticleFloatBiasType_t {
 	PF_BIAS_TYPE_INVALID = -1,
 	PF_BIAS_TYPE_STANDARD = 0,
 	PF_BIAS_TYPE_GAIN = 1,
@@ -22776,26 +22776,26 @@ declare const enum ParticleFloatBiasType_t {
 	PF_BIAS_TYPE_COUNT = 3
 }
 
-declare const enum ParticleDepthFeatheringMode_t {
+declare enum ParticleDepthFeatheringMode_t {
 	PARTICLE_DEPTH_FEATHERING_OFF = 0,
 	PARTICLE_DEPTH_FEATHERING_ON_OPTIONAL = 1,
 	PARTICLE_DEPTH_FEATHERING_ON_REQUIRED = 2
 }
 
-declare const enum RenderSlotType_t {
+declare enum RenderSlotType_t {
 	RENDER_SLOT_INVALID = -1,
 	RENDER_SLOT_PER_VERTEX = 0,
 	RENDER_SLOT_PER_INSTANCE = 1
 }
 
-declare const enum VPhysXConstraintParams_t__EnumFlags0_t {
+declare enum VPhysXConstraintParams_t__EnumFlags0_t {
 	VPhysXConstraintParams_t__FLAG0_SHIFT_INTERPENETRATE = 0,
 	VPhysXConstraintParams_t__FLAG0_SHIFT_CONSTRAIN = 1,
 	VPhysXConstraintParams_t__FLAG0_SHIFT_BREAKABLE_FORCE = 2,
 	VPhysXConstraintParams_t__FLAG0_SHIFT_BREAKABLE_TORQUE = 3
 }
 
-declare const enum AnimValueSource {
+declare enum AnimValueSource {
 	MoveHeading = 0,
 	MoveSpeed = 1,
 	ForwardSpeed = 2,
@@ -22829,7 +22829,7 @@ declare const enum AnimValueSource {
 	FingerSplay_Ring_Pinky = 30
 }
 
-declare const enum modifierfunction {
+declare enum modifierfunction {
 	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE = 0,
 	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_TARGET = 1,
 	MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE_PROC = 2,
@@ -23039,7 +23039,7 @@ declare const enum modifierfunction {
 	MODIFIER_FUNCTION_INVALID = 255
 }
 
-declare const enum DOTATeam_t {
+declare enum DOTATeam_t {
 	DOTA_TEAM_SPECTATOR = 1,
 	DOTA_TEAM_FIRST = 2,
 	DOTA_TEAM_GOODGUYS = 2,
@@ -23060,18 +23060,18 @@ declare const enum DOTATeam_t {
 	DOTA_TEAM_CUSTOM_COUNT = 8
 }
 
-declare const enum HitboxLerpType_t {
+declare enum HitboxLerpType_t {
 	HITBOX_LERP_LIFETIME = 0,
 	HITBOX_LERP_CONSTANT = 1
 }
 
-declare const enum CreatureAbilityType {
+declare enum CreatureAbilityType {
 	CREATURE_ABILITY_OFFENSIVE = 0,
 	CREATURE_ABILITY_DEFENSIVE = 1,
 	CREATURE_ABILITY_ESCAPE = 2
 }
 
-declare const enum VPhysXBodyPart_t__VPhysXFlagEnum_t {
+declare enum VPhysXBodyPart_t__VPhysXFlagEnum_t {
 	VPhysXBodyPart_t__FLAG_STATIC = 1,
 	VPhysXBodyPart_t__FLAG_KINEMATIC = 2,
 	VPhysXBodyPart_t__FLAG_JOINT = 4,
@@ -23079,24 +23079,24 @@ declare const enum VPhysXBodyPart_t__VPhysXFlagEnum_t {
 	VPhysXBodyPart_t__FLAG_ALWAYS_DYNAMIC_ON_CLIENT = 16
 }
 
-declare const enum EntityDormancyType_t {
+declare enum EntityDormancyType_t {
 	ENTITY_NOT_DORMANT = 0,
 	ENTITY_DORMANT = 1,
 	ENTITY_SUSPENDED = 2
 }
 
-declare const enum StartupBehavior_t {
+declare enum StartupBehavior_t {
 	UNIT_STARTUP_BEHAVIOR_DEFAULT = 0,
 	UNIT_STARTUP_BEHAVIOR_TAUNT = 1
 }
 
-declare const enum BinaryNodeTiming {
+declare enum BinaryNodeTiming {
 	UseChild1 = 0,
 	UseChild2 = 1,
 	SyncChildren = 2
 }
 
-declare const enum ScalarExpressionType_t {
+declare enum ScalarExpressionType_t {
 	SCALAR_EXPRESSION_UNINITIALIZED = -1,
 	SCALAR_EXPRESSION_ADD = 0,
 	SCALAR_EXPRESSION_SUBTRACT = 1,
@@ -23107,14 +23107,14 @@ declare const enum ScalarExpressionType_t {
 	SCALAR_EXPRESSION_MAX = 6
 }
 
-declare const enum ResetCycleOption {
+declare enum ResetCycleOption {
 	Beginning = 0,
 	SameCycleAsSource = 1,
 	InverseSourceCycle = 2,
 	FixedValue = 3
 }
 
-declare const enum DOTA_LANE {
+declare enum DOTA_LANE {
 	DOTA_LANE_NONE = 0,
 	DOTA_LANE_TOP = 1,
 	DOTA_LANE_MIDDLE = 2,
@@ -23122,7 +23122,7 @@ declare const enum DOTA_LANE {
 	DOTA_LANE_MAX = 4
 }
 
-declare const enum DOTAHUDVisibility_t {
+declare enum DOTAHUDVisibility_t {
 	DOTA_HUD_VISIBILITY_INVALID = -1,
 	DOTA_HUD_VISIBILITY_TOP_TIMEOFDAY = 0,
 	DOTA_HUD_VISIBILITY_TOP_HEROES = 1,
@@ -23154,20 +23154,20 @@ declare const enum DOTAHUDVisibility_t {
 	DOTA_HUD_VISIBILITY_COUNT = 27
 }
 
-declare const enum ABILITY_TYPES {
+declare enum ABILITY_TYPES {
 	ABILITY_TYPE_BASIC = 0,
 	ABILITY_TYPE_ULTIMATE = 1,
 	ABILITY_TYPE_ATTRIBUTES = 2,
 	ABILITY_TYPE_HIDDEN = 3
 }
 
-declare const enum ActionType_t {
+declare enum ActionType_t {
 	SOS_ACTION_NONE = 0,
 	SOS_ACTION_LIMITER = 1,
 	SOS_ACTION_TIME_LIMIT = 2
 }
 
-declare const enum FootFallTagFoot_t {
+declare enum FootFallTagFoot_t {
 	FOOT1 = 0,
 	FOOT2 = 1,
 	FOOT3 = 2,
@@ -23178,7 +23178,7 @@ declare const enum FootFallTagFoot_t {
 	FOOT8 = 7
 }
 
-declare const enum ShakeCommand_t {
+declare enum ShakeCommand_t {
 	SHAKE_START = 0,
 	SHAKE_STOP = 1,
 	SHAKE_AMPLITUDE = 2,
@@ -23187,7 +23187,7 @@ declare const enum ShakeCommand_t {
 	SHAKE_START_NORUMBLE = 5
 }
 
-declare const enum PoseController_FModType_t {
+declare enum PoseController_FModType_t {
 	POSECONTROLLER_FMODTYPE_NONE = 0,
 	POSECONTROLLER_FMODTYPE_SINE = 1,
 	POSECONTROLLER_FMODTYPE_SQUARE = 2,
@@ -23197,37 +23197,37 @@ declare const enum PoseController_FModType_t {
 	POSECONTROLLER_FMODTYPE_TOTAL = 6
 }
 
-declare const enum SimpleConstraintSoundProfile__SimpleConstraintsSoundProfileKeypoints_t {
+declare enum SimpleConstraintSoundProfile__SimpleConstraintsSoundProfileKeypoints_t {
 	SimpleConstraintSoundProfile__kMIN_THRESHOLD = 0,
 	SimpleConstraintSoundProfile__kMIN_FULL = 1,
 	SimpleConstraintSoundProfile__kHIGHWATER = 2
 }
 
-declare const enum IKTargetSource {
+declare enum IKTargetSource {
 	IKTARGETSOURCE_Bone = 0,
 	IKTARGETSOURCE_COUNT = 1
 }
 
-declare const enum WorldTextPanelVerticalAlign_t {
+declare enum WorldTextPanelVerticalAlign_t {
 	WORLDTEXT_VERTICAL_ALIGN_TOP = 0,
 	WORLDTEXT_VERTICAL_ALIGN_CENTER = 1,
 	WORLDTEXT_VERTICAL_ALIGN_BOTTOM = 2
 }
 
-declare const enum NetChannelBufType_t {
+declare enum NetChannelBufType_t {
 	BUF_DEFAULT = -1,
 	BUF_UNRELIABLE = 0,
 	BUF_RELIABLE = 1,
 	BUF_VOICE = 2
 }
 
-declare const enum PointWorldTextJustifyHorizontal_t {
+declare enum PointWorldTextJustifyHorizontal_t {
 	POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_LEFT = 0,
 	POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_CENTER = 1,
 	POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_RIGHT = 2
 }
 
-declare const enum C_BaseCombatCharacter__WaterWakeMode_t {
+declare enum C_BaseCombatCharacter__WaterWakeMode_t {
 	C_BaseCombatCharacter__WATER_WAKE_NONE = 0,
 	C_BaseCombatCharacter__WATER_WAKE_IDLE = 1,
 	C_BaseCombatCharacter__WATER_WAKE_WALKING = 2,
