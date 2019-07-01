@@ -87,5 +87,24 @@ declare interface Events extends EventEmitter {
 	on(name: "BuffStackCountChanged", listener: (buff: CDOTA_Buff) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "NetworkFieldChanged", listener: (object: any, name: string) => void): EventEmitter
+	on(name: "UnitSpeech", listener: (
+		npc: C_DOTA_BaseNPC | number,
+		concept: number,
+		response: string,
+		recipient_type: number,
+		level: number, muteable: boolean
+	) => void): EventEmitter
+	on(name: "UnitSpeechMute", listener: (npc: C_DOTA_BaseNPC | number, delay: number) => void): EventEmitter
+	on(name: "UnitAddGesture", listener: (
+		npc: C_DOTA_BaseNPC | number,
+		activity: number,
+		slot: number,
+		fade_in: number,
+		fade_out: number,
+		playback_rate: number,
+		sequence_variant: number
+	) => void): EventEmitter
+	on(name: "UnitRemoveGesture", listener: (npc: C_DOTA_BaseNPC | number, activity: number) => void): EventEmitter
+	on(name: "UnitFadeGesture", listener: (npc: C_DOTA_BaseNPC | number, activity: number) => void): EventEmitter
 }
 declare var Events: Events
