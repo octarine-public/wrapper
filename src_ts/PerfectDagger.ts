@@ -10,8 +10,7 @@ EventsSDK.on('PrepareUnitOrders',order => {
         if(!order.Position.IsInRange(order.Unit.Position,blink_range)){
             let vec
             if(order.Unit.IsMoving){
-                let cvec = order.Unit.Position.Add(order.Unit.Forward).MultiplyScalarForThis(order.Unit.IdealSpeed * Game.GetAvgLatency(Flow_t.OUT))
-                vec = cvec.Extend(order.Position,blink_range-1)
+                vec = order.Unit.Position.Add(order.Unit.Forward.MultiplyScalar(order.Unit.IdealSpeed * Game.GetLatency())).Extend(order.Position,blink_range-30)
             }else
                 vec = order.Unit.Position.Extend(order.Position,blink_range-1)
             order.Unit.CastPosition(order.Ability,vec,false,true)
