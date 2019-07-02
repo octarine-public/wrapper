@@ -68,7 +68,7 @@ export default class ExecuteOrder {
 
 	private m_OrderType: dotaunitorder_t
 	private m_Target: Entity | number
-	private m_Position: Vector3 | Vector2
+	private m_Position: Vector3
 	private m_Ability: Ability
 	private m_OrderIssuer: PlayerOrderIssuer_t
 	private m_Unit: Unit
@@ -106,7 +106,7 @@ export default class ExecuteOrder {
 	get Target(): Entity | number {
 		return this.m_Target
 	}
-	get Position(): Vector3 | Vector2 {
+	get Position(): Vector3 {
 		return this.m_Position
 	}
 	get Ability(): Ability {
