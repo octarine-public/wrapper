@@ -7,10 +7,13 @@ EventsSDK.on('PrepareUnitOrders',order => {
     if(active.value && order.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION && order.Ability.Name === 'item_blink'){
         if(blink_range === undefined)
             blink_range = order.Ability.GetSpecialValue('blink_range')
-        if(order.Unit.Distance2D(order.Position) > blink_range){
-            let vec = order.Unit.Position.Extend(order.Position,blink_range)
-            console.log(order.Unit.Distance2D(order.Position))
-            console.log(order.Unit.Distance2D(vec))
+        if(!order.Position.IsInRange(order.Unit.Position,blink_range)){
+            let vec
+            if(order.Unit.IsMoving){
+                let cvec = order.Unit.Position.Add(order.Unit.Forward).MultiplyScalarForThis(order.Unit.IdealSpeed * Game.GetAvgLatency(Flow_t.OUT))
+                vec = cvec.Extend(order.Position,blink_range-1)
+            }else
+                vec = order.Unit.Position.Extend(order.Position,blink_range-1)
             order.Unit.CastPosition(order.Ability,vec,false,true)
             return false
         }
