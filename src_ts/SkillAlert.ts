@@ -116,6 +116,7 @@ EventsSDK.on("Draw",()=>{
         let vector = RendererSDK.WorldToScreen(val[3])
         if(icons.value){
             RendererSDK.Image("panorama/images/spellicons/" + val[2] + "_png.vtex_c", vector, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
+            vector.AddScalarY(-30)
         }
         RendererSDK.Text(rend.toFixed(2),vector,Color.White,'Calibri',new Vector2(textSize.value,200))
         
