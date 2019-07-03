@@ -3,8 +3,13 @@ import { MenuManager, RendererSDK, EventsSDK, Hero, ArrayExtensions, Game, Vecto
 var manabars: Hero[] = [],
 	heroes: Hero[] = []
 
-const EMBMenu = MenuManager.MenuFactory("EnemyManaBars"),
-	stateMain = EMBMenu.AddToggle("State");
+const EMBMenu = MenuManager.MenuFactory("Enemy Bars"),
+	emb = EMBMenu.AddTree("Mana Bars"),
+	ehb = EMBMenu.AddTree("Hp Bars"),
+	stateMain = emb.AddToggle("State",true),
+	embText = emb.AddCheckBox("Show numbers",false),
+	ehbText = ehb.AddCheckBox("Show numbers ### 2",false),
+	floor = Math.floor;
 
 EventsSDK.on("EntityCreated", npc => {
 	if (
@@ -14,17 +19,17 @@ EventsSDK.on("EntityCreated", npc => {
 	)
 		heroes.push(npc)
 })
-Events.on("EntityDestroyed", ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof Hero)
 		ArrayExtensions.arrayRemove(heroes, ent)
 })
 
-Events.on("Update", () => {
+EventsSDK.on("Update", () => {
 	if (!stateMain.value || Game.IsPaused)
 		return
 	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible)
 });
-Events.on("Draw", () => {
+EventsSDK.on("Draw", () => {
 	if (!stateMain.value || !Game.IsInGame)
 		return;
 		
@@ -65,7 +70,16 @@ Events.on("Draw", () => {
 		wts.AddScalarX(off_x).AddScalarY(off_y);
 		let size = new Vector2(manabar_w, manabar_h);
 		RendererSDK.FilledRect(wts, size, Color.Black);
-		RendererSDK.FilledRect(wts, size.MultiplyScalarForThis((hero.Mana / hero.MaxMana)), Color.Blue);
+		size.MultiplyScalarForThis(hero.Mana / hero.MaxMana)
+		size.SetY(manabar_h)
+		RendererSDK.FilledRect(wts, size, Color.RoyalBlue);
+		wts.AddScalarX(25).AddScalarY(-4)
+		if(embText.value){
+			RendererSDK.Text(`${floor(hero.Mana)}/${floor(hero.MaxMana)}`,wts,Color.White,'Calibri',new Vector2(14,200))
+		}
+		if(ehbText.value){
+			RendererSDK.Text(`${floor(hero.HP)}/${floor(hero.MaxHP)}`,wts.AddScalarY(-10),Color.White,'Calibri',new Vector2(14,200))
+		}
 		//let mana: any = Math.round(hero.Mana);
 		//wts.AddScalarX(off_x_text).AddScalarY(off_y_text);
 		//RendererSDK.Text(mana + "/" + Math.round(hero.MaxMana), wts, Color.White, "Calibri", new Vector2(14, 100))

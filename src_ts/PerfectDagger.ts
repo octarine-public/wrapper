@@ -1,5 +1,4 @@
 import { Game, MenuManager, EventsSDK, Entity, RendererSDK, Debug, Vector2 } from "wrapper/Imports";
-import Vector3 from './wrapper/Base/Vector3';
 let { MenuFactory } = MenuManager,blink_range: number = undefined;
 const menu = MenuFactory("Perfect Dagger"),
     active = menu.AddToggle("Active")

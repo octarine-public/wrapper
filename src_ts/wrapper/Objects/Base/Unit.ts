@@ -512,6 +512,18 @@ export default class Unit extends Entity {
 
 		return super.Distance2D(vec) - (fromCenterToCenter ? 0 : this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0))
 	}
+	GetAbilityByName(name) {
+		return this.AbilitiesBook.GetAbilityByName(name);
+	}
+	
+	GetBuffByName(name) {
+		return this.ModifiersBook.GetBuffByName(name);
+	}
+	
+	GetTalentValue(name) {
+		let talent = this.AbilitiesBook.GetAbilityByName(name);
+		return talent && talent.Level > 0 ? talent.GetSpecialValue("value") : 0;
+	}
 	/**
 	 * faster (Distance <= range)
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
