@@ -114,6 +114,8 @@ EventsSDK.on("Draw",()=>{
             return
         }
         let vector = RendererSDK.WorldToScreen(val[3])
+        if(!vector)
+            return
         if(icons.value){
             RendererSDK.Image("panorama/images/spellicons/" + val[2] + "_png.vtex_c", vector, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
             vector.AddScalarY(-30)
