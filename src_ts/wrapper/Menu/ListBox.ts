@@ -14,10 +14,9 @@ function getTopParent(node: Tree | ListBox): Tree {
 }
 
 export default class ListBox extends Menu_List {
-
 	parent: Tree
-
-	defaultValue: boolean[]
+	default_values: boolean[]
+	selected_flags_wrapped: boolean[]
 
 	OnValueCallback: (value: boolean[], self: ListBox) => void
 	OnActivateCallback: (self: ListBox) => void
@@ -29,13 +28,18 @@ export default class ListBox extends Menu_List {
 	readonly callback: (self: ListBox) => void
 
 	constructor(parent: Tree, name: string, values: string[], selected_flags: boolean[], hint: string) {
+		if (selected_flags.length < values.length)
+			for (let i = selected_flags.length, end = values.length; i < end; i++)
+				selected_flags[i] = false
+		let default_values = [...selected_flags]
 
 		if (hint === undefined)
 			super(name, values, selected_flags)
 		else
 			super(name, values, selected_flags, hint)
-
-		this.defaultValue = selected_flags
+		
+		this.default_values = default_values
+		this.selected_flags_wrapped = selected_flags
 
 		Object.defineProperty(this, "callback", {
 			value: () => ListBoxCallback(this),
@@ -78,12 +82,11 @@ export default class ListBox extends Menu_List {
 	}
 
 	get IsZeroSelected(): boolean {
-		return !this.selected_flags.some(x => x === true)
+		return !this.selected_flags_wrapped.some(x => x === true)
 	}
-	IsInSelected(value: string): boolean {
+	IsSelected(value: string): boolean {
 		let indexOf = this.values.indexOf(value)
-
-		return indexOf > -1 && this.selected_flags[indexOf]
+		return indexOf > -1 && this.selected_flags_wrapped[indexOf]
 	}
 
 	ChangeValue(value: boolean[]): this {
@@ -91,7 +94,7 @@ export default class ListBox extends Menu_List {
 		return this
 	}
 	ChangeToDefault(): this {
-		this.selected_flags = this.defaultValue
+		this.selected_flags = this.default_values
 		return this
 	}
 
