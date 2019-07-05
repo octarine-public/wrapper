@@ -64,8 +64,13 @@ class EntityManager {
 		return findEntitiesNative(ents, inStage);
 	}
 	GetEntitiesInRange(vec: Vector3, range: number, filter?: (value: Entity) => boolean): Entity[] {
-		return AllEntities.filter(entity => entity.Position.Distance(vec) <= range 
-			|| !(filter === undefined || filter(entity) === false));
+		return AllEntities.filter(entity => {
+			if (entity.Position.Distance(vec) > range)
+				return false
+			if (filter !== undefined)
+				return filter(entity) === true
+			return true
+		})
 	}
 }
 

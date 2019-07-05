@@ -1,21 +1,33 @@
-import { Game, MenuManager, EventsSDK, Entity, RendererSDK, Debug, Vector2, Unit, Color } from "wrapper/Imports";
+import { Game, MenuManager, EventsSDK, Entity, RendererSDK, Debug, Vector2, Unit, Color,EntityManager,Hero,Modifier } from "wrapper/Imports";
 import Vector3 from './wrapper/Base/Vector3';
 let { MenuFactory } = MenuManager
 const menu = MenuFactory("Skill Alert"),
     active = menu.AddToggle("Active"),
-    show = menu.AddListBox('Alert Skills',['Sun Strike','Torrent','Light Strike Array','Split Earth']),
+    names = menu.AddCheckBox("Show skill names"),
+    show = menu.AddListBox('Alert Skills',['Sun Strike','Torrent','Light Strike Array','Split Earth','Charge of Darkness','Snowball','Infest','Primal Spring'],[false,false,false,false,false,false,false,false,]),
     textSize = menu.AddSlider('Timer text size',17,10,30),
     spellIcons = menu.AddTree('Spell Icons'),
     icons = spellIcons.AddCheckBox("Show spell icons"),
 	size = spellIcons.AddSlider("Size", 30, 3, 100),
 	opacity = spellIcons.AddSlider("Opacity", 255, 0, 255),
+    chat = menu.AddTree('Send to chat'),
+    chatActive = chat.AddCheckBox("Active ### 2"),
+	chatRangeCheck = chat.AddSlider("Range Check", 1300, 200, 5000),
+    chatShow = chat.AddListBox('Chat Alert Skills',show.values,[false,false,false,false,false,false,false,false,]),
     arModifiers = [
         "modifier_invoker_sun_strike",
         "modifier_kunkka_torrent_thinker",
         "modifier_lina_light_strike_array",
-        "modifier_leshrac_split_earth_thinker"
+        "modifier_leshrac_split_earth_thinker",
+        false,false,false,
+        'modifier_monkey_king_spring_thinker'
     ],
-    arDurations = [1.7,1.6,0.5,0.35],
+    arHeroModifiers = {
+        'modifier_spirit_breaker_charge_of_darkness_vision': [true,true,'particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_target_mark.vpcf',4],
+        'modifier_tusk_snowball_target': [true,true,"particles/units/heroes/hero_tusk/tusk_snowball_target.vpcf",5],
+        'modifier_life_stealer_infest_effect': [false,false,"particles/units/heroes/hero_life_stealer/life_stealer_infested_unit_icon.vpcf",6],
+    },
+    arDurations = [1.7,1.6,0.5,0.35,0,0,0,1.7],
     arSpecialDuration = [
         'delay',
         'delay',
@@ -23,15 +35,20 @@ const menu = MenuFactory("Skill Alert"),
         'delay'
     ],
     arParticles = [
-        ['particles/units/heroes/hero_invoker/invoker_sun_strike.vpcf',['pos','rad']],
+        ['particles/units/heroes/hero_invoker/invoker_sun_strike_team.vpcf',['pos','rad']],
         ['particles/units/heroes/hero_kunkka/kunkka_spell_torrent_bubbles.vpcf',['pos']],
-        ['particles/units/heroes/hero_lina/lina_spell_light_strike_array_ray_team.vpcf',['pos','rad']]
+        ['particles/units/heroes/hero_lina/lina_spell_light_strike_array_ray_team.vpcf',['pos','rad']],
+        false,false,false,false,
+        ["particles/units/heroes/hero_monkey_king/monkey_king_spring_cast.vpcf",['pos','rad']]
+
     ] as [string, string[]][],
     arAbilities = [
         'invoker_sun_strike',
         'kunkka_torrent',
         'lina_light_strike_array',
-        'leshrac_split_earth'
+        'leshrac_split_earth',
+        '','','',
+        'monkey_king_primal_spring'
     ],
     arSounds = [
         'invoker_invo_ability_sunstrike_01',
@@ -43,10 +60,31 @@ const menu = MenuFactory("Skill Alert"),
         'area_of_effect',
         'radius',
         'light_strike_array_aoe',
-        'radius'
+        'radius',
+        '','','',
+        'impact_radius'
     ],
-    talent = [false,'special_bonus_unique_kunkka']
-let arTimers = [] as [number,number,string,Vector3][]
+    talent = [false,'special_bonus_unique_kunkka'],
+    arMessages = [
+        'SunStrike near ',
+        'Torrent near ',
+        'Light Strike Array near ',
+        'Split Earth near ',
+        'Spirit Breaker charged on ',
+        'Tusk snowballed on ',
+        'LifeStealer sit in ',
+        'Primal Spring near ',
+    ],
+    arNames = {
+        'invoker_sun_strike':'Sun Strike',
+        'kunkka_torrent':'Torrent',
+        'lina_light_strike_array':'Light Strike Array',
+        'leshrac_split_earth':'Split Earth',
+        'monkey_king_primal_spring':"Primal Spring"
+    },
+    floor = Math.floor
+let arTimers = new Map<Modifier,[number,number,string,Vector3]>(),
+    arHeroMods = {}
 
 
 EventsSDK.on("BuffAdded", (ent,buff) => {
@@ -64,8 +102,12 @@ EventsSDK.on("BuffAdded", (ent,buff) => {
             if(ent.Owner instanceof Unit){
                 let ability = ent.Owner.GetAbilityByName(arAbilities[index])
                 if(ability != undefined){
-                    radius = ability.GetSpecialValue(arSpecialValues[index])
-                    delay = ability.GetSpecialValue(arSpecialDuration[index])
+                    if(arSpecialValues[index])
+                        radius = ability.GetSpecialValue(arSpecialValues[index])
+                    if(arSpecialDuration[index])
+                        delay = ability.GetSpecialValue(arSpecialDuration[index])
+                    else if(ability.ChannelStartTime)
+                        delay = ability.ChannelStartTime
                     if(talent[index])
                         radius += ent.Owner.GetTalentValue(talent[index])
                 }
@@ -94,7 +136,17 @@ EventsSDK.on("BuffAdded", (ent,buff) => {
             Particles.SetControlPoint(part, 3)
             new Vector3(255,255,255).toIOBuffer();
             Particles.SetControlPoint(part, 4)
-            arTimers.push([Game.GameTime,delay,arAbilities[index],ent.Position.Clone()])
+            arTimers.set(buff,[Game.GameTime,delay,arAbilities[index],ent.Position.Clone()])
+            if(chatActive.value && chatShow.selected_flags[index] && arMessages[index]){
+                let heroes = EntityManager.GetEntitiesInRange(ent.Position,chatRangeCheck.value,ent=>ent instanceof Hero && !ent.IsEnemy()),
+                    names = [],
+                    string = ''
+                heroes.forEach(hero=>names.push(hero.Name.substring(14)+` in ${floor(hero.Distance2D(ent))} range`))
+                string = names.join(', ')
+                if(!string)
+                    string = 'no one, lul'
+                SendToConsole(`say_team ${arMessages[index]+string}`)
+            }
             setTimeout(()=>{
                 Particles.Destroy(part,false)
                 if(abPart)
@@ -102,29 +154,54 @@ EventsSDK.on("BuffAdded", (ent,buff) => {
             },delay * 1000)
         }
     }
+    let mod = arHeroModifiers[buff.Name]
+    if(mod){
+        if(!show.selected_flags[mod[3]])
+            return
+        if(mod[0] && !ent.IsHero)
+            return
+        if(mod[1] && ent.IsEnemy())
+            return
+        const part = Particles.Create(mod[2],ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW,ent.m_pBaseEntity)
+        arHeroMods[ent.Index]=[buff.Name,part]
+        if(chatActive.value && chatShow.selected_flags[mod[3]] && arMessages[mod[3]]){
+			SendToConsole(`say_team ${arMessages[mod[3]]+ent.Name.substring(9)}`)
+        }
+    }
 });
+EventsSDK.on("BuffRemoved",(ent,buff)=>{
+    let part = arHeroMods[ent.Index]
+    arTimers.delete(buff)
+    if(part && buff.Name === part[0]){
+        Particles.Destroy(part[1],false)
+    }
+})
 EventsSDK.on("Draw",()=>{
     if(!active.value)
         return
     let delArray = [];
-    arTimers.forEach((val,i)=>{
+    // loop-optimizer: KEEP
+    arTimers.forEach((val,buff)=>{
         let rend = val[0]-Game.GameTime+val[1]
         if(rend<=0){
-            delArray.push(i)
+            delArray.push(buff)
             return
         }
         let vector = RendererSDK.WorldToScreen(val[3])
         if(!vector)
             return
+        if(names.value){
+            RendererSDK.Text(arNames[val[2]],vector,Color.White,'Calibri',new Vector2(textSize.value,200))
+            vector.AddScalarY(-size.value)
+        }
         if(icons.value){
             RendererSDK.Image("panorama/images/spellicons/" + val[2] + "_png.vtex_c", vector, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
             vector.AddScalarY(-30)
         }
         RendererSDK.Text(rend.toFixed(2),vector,Color.White,'Calibri',new Vector2(textSize.value,200))
-        
     })
-    delArray.forEach(val=>{
-        arTimers.splice(val)
+    delArray.forEach(buff=>{
+        arTimers.delete(buff)
     })
 
 })
