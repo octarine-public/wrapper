@@ -279,15 +279,17 @@ function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolea
 	return true;
 }
 Events.on("Tick", () => {
-	if (!MenuState.value || Game.IsPaused || LocalPlayer.Hero === undefined)
+	if (!MenuState.value || Game.IsPaused || LocalPlayer === undefined)
 		return;
-	const Me = LocalPlayer.Hero;
-	if (Me === undefined || !Me.IsAlive || Me.IsIllusion || Me.IsInvulnerable || Me.IsStunned)
-		return false;
-	let needed_heroes = heroes.filter(hero => hero.IsVisible && hero.IsAlive);
-	if (needed_heroes.some(hero => hero.Spells.some(abil => abil && Disable(Me, hero, Abils, abil))))
+	const Me = LocalPlayer;
+	if (Me.Hero === undefined)
 		return;
-	if (needed_heroes.some(hero => hero.Buffs.some(buff => DisableBuffs.includes(buff.Name)) && Disable(Me, hero, BuffsDisablers)))
+	if (!Me.Hero.IsAlive || Me.Hero.IsIllusion || Me.Hero.IsInvulnerable || Me.Hero.IsStunned)
+		return;
+	let needed_heroes = heroes.filter(hero => hero.IsVisible && hero.IsAlive && hero !== undefined);
+	if (needed_heroes.some(hero => hero.Spells.some(abil => abil && Disable(Me.Hero, hero, Abils, abil))))
+		return;
+	if (needed_heroes.some(hero => hero.Buffs.some(buff => DisableBuffs.includes(buff.Name)) && Disable(Me.Hero, hero, BuffsDisablers)))
 		return;
 });
 EventsSDK.on("EntityCreated", (npc: Unit) => {
@@ -299,15 +301,17 @@ EventsSDK.on("EntityCreated", (npc: Unit) => {
 });
 EventsSDK.on("EntityDestroyed", (npc: Unit) => ArrayExtensions.arrayRemove(heroes, npc));
 function TransformToAvailable(abil_arrays: Array<[string, boolean, boolean?]>): Array<[string, boolean, boolean?]> {
-	if (LocalPlayer.Hero === undefined)
+	let Me = LocalPlayer;
+	if (Me.Hero === undefined)
 		return;
-	let Me = LocalPlayer.Hero, name = Me.Name;
+	let name = Me.Hero.Name;
 	if (name === "npc_dota_hero_rubick" || name === "npc_dota_hero_morphling")
 		return abil_arrays;
-	return abil_arrays.filter(abilData => abilData[0].startsWith("item_") || GetAbilityByName(Me, abilData[0]) !== undefined);
+	return abil_arrays.filter(abilData => abilData[0].startsWith("item_") || GetAbilityByName(Me.Hero, abilData[0]) !== undefined);
 }
 Events.on("GameStarted", (Me: C_DOTA_BaseNPC_Hero) => {
-	if (Me === undefined)
+	let Player = LocalPlayer;
+	if (Player.Hero === undefined || Me === undefined)
 		return;
 	Abils = TransformToAvailable(Abils_);
 	BuffsDisablers = TransformToAvailable(BuffsDisablers_);
