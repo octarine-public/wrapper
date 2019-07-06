@@ -1,5 +1,4 @@
 export default class AbilitySpecialData {
-
 	readonly m_pAbilitySpecialData: DOTASpecialAbility_t
 	
 	constructor(data: DOTASpecialAbility_t) {

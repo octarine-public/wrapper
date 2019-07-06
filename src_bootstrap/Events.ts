@@ -68,7 +68,7 @@ setInterval(() => {
 	} catch (e) {
 		throw e
 	}
-}, Math.max(1000 / 30, GetLatency(Flow_t.IN)));
+}, Math.max(GetLatency(Flow_t.IN) * 1000, 1000 / 30));
 
 let AllEntities: C_BaseEntity[] = [],
 	EntitiesIDs: C_BaseEntity[] = [],

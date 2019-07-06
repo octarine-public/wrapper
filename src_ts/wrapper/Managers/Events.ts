@@ -24,14 +24,14 @@ Events.on("LocalPlayerTeamAssigned", teamNum => EventsSDK.emit("LocalPlayerTeamA
 
 Events.on("WndProc", (...args) => EventsSDK.emit("WndProc", true, ...args));
 
-setInterval(() => {
+Events.on("Tick", () => {
 	try {
 		if (LocalPlayer !== undefined)
 			EventsSDK.emit("Tick")
 	} catch (e) {
 		throw e
 	}
-}, Math.max(1000 / 30, GetLatency(Flow_t.IN)));
+})
 
 Events.on("Update", cmd => EventsSDK.emit("Update", false, new UserCmd(cmd)));
 

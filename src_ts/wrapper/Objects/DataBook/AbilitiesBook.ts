@@ -3,32 +3,28 @@ import Unit from "../Base/Unit";
 import EntityManager from "../../Managers/EntityManager";
 import Ability from "../Base/Ability";
 
-const MAX_SKILLS = 24;
+const MAX_SKILLS = 30;
 
 export default class AbilitiesBook {
-	protected m_Unit: Unit
-	private m_pBaseEntity: C_DOTA_BaseNPC
-	m_hAbilities: C_DOTABaseAbility[]
+	readonly Owner: Unit
+	readonly m_hAbilities: C_DOTABaseAbility[]
 
 	constructor(ent: Unit) {
-		this.m_Unit = ent;
-		this.m_pBaseEntity = ent.m_pBaseEntity;
-		this.m_hAbilities = this.m_pBaseEntity.m_hAbilities as C_DOTABaseAbility[]
+		this.Owner = ent;
+		this.m_hAbilities = this.Owner.m_pBaseEntity.m_hAbilities as C_DOTABaseAbility[]
 	}
 	
 	get CountSpells(): number {
-		if (!this.m_Unit.IsValid)
+		if (!this.Owner.IsValid)
 			return 0;
 		
 		return this.m_hAbilities.length;
 	}
 
-	get Owner(): Unit {
-		return this.m_Unit;
-	}
-
 	get Spells(): Ability[] {
-		return this.m_Unit.IsValid ? EntityManager.GetEntitiesByNative(this.m_hAbilities) as Ability[] : []
+		return this.Owner.IsValid
+			? EntityManager.GetEntitiesByNative(this.m_hAbilities) as Ability[]
+			: []
 	}
 
 	SpellsByOwner(excludeNativeSpells: boolean = false): Ability[] {
@@ -62,27 +58,24 @@ export default class AbilitiesBook {
 	} */
 
 	SetSpell(slot: number, ability: Ability) {
-		this.m_pBaseEntity.m_hAbilities[slot] = ability.m_pBaseEntity;
+		this.m_hAbilities[slot] = ability.m_pBaseEntity;
 	}
 
 	GetSpell(slot: number): Ability {
-		if (!this.m_Unit.IsValid || slot > MAX_SKILLS)
+		if (!this.Owner.IsValid || slot > MAX_SKILLS)
 			return undefined;
 
 		return EntityManager.GetEntityByNative(this.m_hAbilities[slot]) as Ability;
 	}
 
 	GetAbilityByName(name: string | RegExp): Ability {
-		if (this.m_Unit.IsValid) {
-			let abilsNative = this.m_hAbilities
-
-			for (let i = 0, len = abilsNative.length; i < len; i++) {
-				let abil = EntityManager.GetEntityByNative(abilsNative[i]) as Ability;
-
-				if (abil !== undefined && (name instanceof RegExp ? name.test(abil.AbilityData.Name) : abil.AbilityData.Name === name))
-					return abil;
-			}
-		}
-		return undefined
+		return this.Spells.find(abil =>
+			abil !== undefined
+			&& (
+				name instanceof RegExp
+					? name.test(abil.AbilityData.Name)
+					: abil.AbilityData.Name === name
+			)
+		)
 	}
 }

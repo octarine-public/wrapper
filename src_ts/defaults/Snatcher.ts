@@ -104,7 +104,7 @@ EventsSDK.on("EntityCreated", ent => {
 
 	if (ent instanceof PhysicalItem) {
 		let m_hItem = ent.Item;
-		if (m_hItem !== undefined && listOfItems.IsInSelected(m_hItem.Name))
+		if (m_hItem !== undefined && listOfItems.IsSelected(m_hItem.Name))
 			ground_items.push(ent)
 
 		return;

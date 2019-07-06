@@ -57,12 +57,44 @@ class EntityManager {
 			return undefined;
 		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player;
 	}
+
 	GetEntityByNative(ent: C_BaseEntity, inStage: boolean = false): Entity {
-		return findEntityNative(ent, inStage);
+		if (ent === undefined)
+			return undefined;
+	
+		let entityFind = AllEntitiesAsMap.get(ent)
+		
+		if (entityFind !== undefined)
+			return entityFind
+		
+		if (!inStage)
+			return undefined;
+		
+		entityFind = InStage.get(ent)
+		
+		if (entityFind !== undefined)
+			return entityFind
+		
+		return queueEntitiesAsMap.get(ent);
 	}
+
 	GetEntitiesByNative(ents: C_BaseEntity[], inStage: boolean = false): Entity[] {
-		return findEntitiesNative(ents, inStage);
+		let entities: Entity[] = []
+	
+		// loop-optimizer: FORWARD
+		ents.forEach(entNative => {
+			let entityFind = AllEntitiesAsMap.get(entNative)
+	
+			if (inStage)
+				entityFind = entityFind || InStage.get(entNative) || queueEntitiesAsMap.get(entNative)
+			
+			if (entityFind !== undefined)
+				entities.push(entityFind);
+		})
+		
+		return entities;
 	}
+
 	GetEntitiesInRange(vec: Vector3, range: number, filter?: (value: Entity) => boolean): Entity[] {
 		return AllEntities.filter(entity => {
 			if (entity.Position.Distance(vec) > range)
@@ -137,13 +169,11 @@ Events.on("EntityDestroyed", (ent, index) => {
 
 function CheckIsInStagingEntity(ent: C_BaseEntity) {
 	return HasBit(ent.m_pEntity.m_flags, 2)
-};
+}
 
 setInterval(() => {
-	
 	if (queueEntitiesAsMap.size > 0) {
-		
-		// loop-optimizer: KEEP	// because this is Map
+		// loop-optimizer: KEEP
 		queueEntitiesAsMap.forEach((entity, baseEntity) => {
 			if (CheckIsInStagingEntity(baseEntity))
 				return;
@@ -157,8 +187,7 @@ setInterval(() => {
 	}
 	
 	if (InStage.size > 0) {
-	
-		// loop-optimizer: KEEP	// because this is Map
+		// loop-optimizer: KEEP
 		InStage.forEach((entity, baseEntity) => {
 			if (CheckIsInStagingEntity(baseEntity))
 				return;
@@ -166,7 +195,7 @@ setInterval(() => {
 			AddToCache(entity)
 		});
 	}
-}, 0);
+}, 0)
 
 function AddToCache(entity: Entity) {
 	//console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
@@ -192,9 +221,13 @@ function AddToCache(entity: Entity) {
 }
 
 function DeleteFromCache(entNative: C_BaseEntity, index: number) {
-	
-	if (queueEntitiesAsMap.delete(entNative) || InStage.delete(entNative))
-		return;
+	{
+		let is_queued_entity = false
+		is_queued_entity = queueEntitiesAsMap.delete(entNative) || is_queued_entity
+		is_queued_entity = InStage.delete(entNative) || is_queued_entity
+		if (is_queued_entity)
+			return
+	}
 	
 	const entity = AllEntitiesAsMap.get(entNative); // EntitiesIDs[index]; ???
 
@@ -206,50 +239,6 @@ function DeleteFromCache(entNative: C_BaseEntity, index: number) {
 	
 	//console.log("onEntityDestroyed SDK", entity, entity.m_pBaseEntity, index);
 	EventsSDK.emit("EntityDestroyed", false, entity, index);
-}
-
-function findEntityNative(ent: C_BaseEntity, inStage: boolean = false): Entity {
-	if (ent === undefined)
-		return undefined;
-
-	let entityFind = AllEntitiesAsMap.get(ent)
-		
-	if (entityFind !== undefined)
-		return entityFind
-	
-	if (!inStage)
-		return undefined;
-		
-	entityFind = InStage.get(ent)
-	
-	if (entityFind !== undefined)
-		return entityFind
-			
-	return queueEntitiesAsMap.get(ent);
-}
-
-function findEntitiesNative(ents: C_BaseEntity[], inStage: boolean = false): Entity[] {
-	
-	let entities: Entity[] = []
-
-	// loop-optimizer: FORWARD
-	ents.forEach(entNative => {
-		
-		let entityFind = AllEntitiesAsMap.get(entNative)
-
-		if (entityFind === undefined && inStage) {
-			
-			entityFind = InStage.get(entNative)
-
-			if (entityFind === undefined)
-				entityFind = queueEntitiesAsMap.get(entNative);
-		}
-	
-		if (entityFind !== undefined)
-			entities.push(entityFind);
-	})
-	
-	return entities;
 }
 
 function ClassFromNative(ent: C_BaseEntity, index: number) {
@@ -292,7 +281,7 @@ function useQueueEntities() {
 	if (queueEntitiesAsMap.size === 0)
 		return;
 		
-	// loop-optimizer: KEEP	// because this is Map
+	// loop-optimizer: KEEP
 	queueEntitiesAsMap.forEach(entity => {
 		AddToCache(entity);
 

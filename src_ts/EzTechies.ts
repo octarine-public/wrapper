@@ -180,8 +180,8 @@ function RegisterMine(npc: C_DOTA_BaseNPC) {
 
 Events.on("Tick", onTick)
 Events.on("GameStarted", pl_ent => {
-	if (pl_ent.m_iHeroID === HeroID_t.npc_dota_hero_techies)
-		techies = pl_ent as C_DOTA_Unit_Hero_Techies
+	if (pl_ent instanceof C_DOTA_Unit_Hero_Techies)
+		techies = pl_ent
 })
 Events.on("GameEnded", () => {
 	rmines = []

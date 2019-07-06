@@ -34,6 +34,9 @@ export default class Ability extends Entity {
 	get CastPoint(): number {
 		return this.m_pBaseEntity.m_fCastPoint
 	}
+	get CastStartTime(): number {
+		return this.m_pBaseEntity.m_flCastStartTime
+	}
 	get ChannelStartTime(): number {
 		return this.m_pBaseEntity.m_flChannelStartTime
 	}
@@ -110,7 +113,7 @@ export default class Ability extends Entity {
 		return this.m_pBaseEntity.m_iManaCost
 	}
 	get MaxLevel(): number {
-		return this.m_pBaseEntity.m_iMaxLevel
+		return this.AbilityData.MaxLevel
 	}
 	get Name(): string {
 		return this.AbilityData.Name;

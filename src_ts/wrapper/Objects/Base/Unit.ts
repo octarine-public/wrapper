@@ -414,8 +414,8 @@ export default class Unit extends Entity {
 		return this.Inventory.Items;
 	}
 
-	GetItemByName(name: string | RegExp): Item {
-		return this.Items.find(item => name instanceof RegExp ? name.test(item.Name) : item.Name === name)
+	GetItemByName(name: string  | RegExp, includeBackpack: boolean = false): Item {
+		return this.Inventory.GetItemByName(name, includeBackpack)
 	}
 
 	get ModifiersBook(): ModifiersBook {
@@ -512,12 +512,11 @@ export default class Unit extends Entity {
 
 		return super.Distance2D(vec) - (fromCenterToCenter ? 0 : this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0))
 	}
-	GetAbilityByName(name) {
-		return this.AbilitiesBook.GetAbilityByName(name);
+	GetAbilityByName(name: string | RegExp) {
+		return this.AbilitiesBook.GetAbilityByName(name)
 	}
-	
-	GetBuffByName(name) {
-		return this.ModifiersBook.GetBuffByName(name);
+	GetBuffByName(name: string) {
+		return this.ModifiersBook.GetBuffByName(name)
 	}
 	
 	GetTalentValue(name) {

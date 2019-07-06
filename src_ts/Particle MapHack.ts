@@ -56,7 +56,6 @@ function onEntityAdded(ent: Entity) {
 	}
 }
 
-// EventsSDK.on("GameStarted", lp => allNeutrals = []);
 EventsSDK.on("GameEnded", () => {
 	allNeutrals = []
 	allBloodTargets = []

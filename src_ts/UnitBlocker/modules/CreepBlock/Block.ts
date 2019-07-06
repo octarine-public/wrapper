@@ -70,6 +70,7 @@ export function GameStarted() {
 
 export function GameEnded() {
 	turnStateBlock = false;
+	sleeper.FullReset()
 }
 
 export function Update() {
@@ -99,7 +100,7 @@ export function Update() {
 
 			if (creeps.length === 0) {
 
-				if (GoingToBestPosition(localHero))
+				if (GoToBestPosition.value && GoingToBestPosition(localHero))
 					return;
 
 				ControllablesUnitsDraw.set(localHero, "Waiting Creeps");
@@ -218,7 +219,6 @@ function PreparingUnits(controllables: Unit[]) {
 			ControllablesUnitsDraw.set(unit, "Waiting Creeps");
 
 		if (GoToBestPosition.value) {
-
 			let [group, moveDirection] = unit.ClosestGroup(groups, group => getCenterDirection(group));
 
 			if (!unit.IsInRange(moveDirection, 500)) {
@@ -254,7 +254,7 @@ function Stopping(unit: Unit, creeps: Creep[], moveDirection = getCenterDirectio
 		return;
 	}
 
-	ControllablesUnitsDraw.set(unit, "Stopping");
+	ControllablesUnitsDraw.set(unit, "Stopping ");
 
 	creeps = ArrayExtensions.orderBy(creeps, creep => creep.Distance2D(moveDirection));
 
@@ -272,7 +272,7 @@ function Stopping(unit: Unit, creeps: Creep[], moveDirection = getCenterDirectio
 
 		let npcSpeed = unit.IdealSpeed,
 			creepSpeed = creep.IdealSpeed;
-
+		console.log(npcSpeed)
 		let moveDistance = ((Sensitivity.value + 45) * 10) / npcSpeed * 100;
 
 		if ((npcSpeed - creepSpeed) > 50)

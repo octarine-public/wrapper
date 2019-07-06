@@ -2,7 +2,6 @@ import Unit from "../Base/Unit";
 import Modifier from "../Base/Modifier";
 
 export default class ModifiersBook {
-
 	private m_Unit: Unit
 	m_Buffs: Modifier[] = [];
 	

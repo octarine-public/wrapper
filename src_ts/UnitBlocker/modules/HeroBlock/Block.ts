@@ -93,6 +93,7 @@ KeyAlly.OnExecute(isPressed => {
 
 export function GameEnded() {
 	turnStateBlock = false;
+	sleeper.FullReset()
 }
 
 export function Update(): number {

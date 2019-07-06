@@ -2,7 +2,6 @@ import { MaskToArrayBigInt, MaskToArrayNumber } from "../../Utils/Utils";
 import AbilitySpecialData from "./AbilitySpecialData";
 
 export default class AbilityData {
-	
 	readonly m_pAbilityData: DOTAAbilityData_t
 	private m_AbilitySpecialData: AbilitySpecialData
 	
@@ -78,5 +77,8 @@ export default class AbilityData {
 	}
 	get TextureName(): string {
 		return this.m_pAbilityData.m_pszTextureName
+	}
+	get MaxLevel(): number {
+		return this.m_pAbilityData.m_iMaxLevel
 	}
 }

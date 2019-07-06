@@ -7,13 +7,14 @@ import Hero from "../Base/Hero";
 const MAX_ITEMS = 15;
 
 export default class Inventory {
-	
 	protected m_Unit: Unit
 	readonly m_Inventory: C_DOTA_UnitInventory
+	readonly m_hItems: C_DOTA_Item[]
 	
 	constructor(ent: Unit) {
 		this.m_Unit = ent;
 		this.m_Inventory = ent.m_pBaseEntity.m_Inventory;
+		this.m_hItems = this.m_Inventory.m_hItems as C_DOTA_Item[]
 	}
 
 	get Items(): Item[] {
@@ -63,70 +64,52 @@ export default class Inventory {
 		if (!this.m_Unit.IsValid || slot > MAX_ITEMS)
 			return undefined;
 
-		return EntityManager.GetEntityByNative(this.m_Inventory.m_hItems[slot]) as Item;
+		return EntityManager.GetEntityByNative(this.m_hItems[slot]) as Item;
 	}
 	GetItems(start: number, end: number): Item[] {
+		start = Math.min(start, MAX_ITEMS)
+		end = Math.min(end, MAX_ITEMS)
+
 		let items: Item[] = [];
-		
-		if (this.m_Unit.IsValid && start <= MAX_ITEMS && start <= end) {
-			let itemsNative = this.m_Inventory.m_hItems;
-		
+		if (this.m_Unit.IsValid && start <= end)
 			for (let i = start; i < end; i++) {
-				if (i > MAX_ITEMS)
-					break;
-					
-				let item = EntityManager.GetEntityByNative(itemsNative[i]) as Item;
-				
+				let item = this.GetItem(i)
 				if (item !== undefined)
 					items.push(item);
 			}
-		}
 		
 		return items;
 	}
 	GetFreeSlots(start: number, end: number): DOTAScriptInventorySlot_t[] {
-		let items: DOTAScriptInventorySlot_t[] = [];
+		start = Math.min(start, MAX_ITEMS)
+		end = Math.min(end, MAX_ITEMS)
 
-		if (this.m_Unit.IsValid && start <= MAX_ITEMS && start <= end) {
-			let itemsNative = this.m_Inventory.m_hItems;
-			
-			for (let i = start; i < end; i++) {
-				if (i > MAX_ITEMS)
-					break;
-
-				let item = itemsNative[i];
-
-				if (item !== undefined)
-					items.push(i as DOTAScriptInventorySlot_t);
-			}
-		}
-		return items;
+		let items: DOTAScriptInventorySlot_t[] = []
+		if (this.m_Unit.IsValid && start <= end)
+			for (let i = start; i < end; i++)
+				if (this.m_hItems[i] !== undefined)
+					items.push(i as DOTAScriptInventorySlot_t)
+		return items
 	}
 	HasAnyItem(start: number, end: number): boolean {
-
 		if (this.m_Unit.IsValid && start <= MAX_ITEMS && start <= end) {
-			let itemsNative = this.m_Inventory.m_hItems;
-
 			for (let i = end + 1; i-- > start;) {
 				if (i > MAX_ITEMS)
 					break;
 
-				if (itemsNative[i] !== undefined)
+				if (this.m_hItems[i] !== undefined)
 					return true;
 			}
 		}
 		return false;
 	}
 	HasFreeSlot(start: number, end: number): boolean {
-		
 		if (this.m_Unit.IsValid && start <= MAX_ITEMS && start <= end) {
-			let itemsNative = this.m_Inventory.m_hItems;
-
 			for (let i = end + 1; i-- > start;) {
 				if (i > MAX_ITEMS)
 					break;
 
-				if (itemsNative[i] === undefined)
+				if (this.m_hItems[i] === undefined)
 					return true;
 			}
 		}
@@ -135,7 +118,7 @@ export default class Inventory {
 	HasItemByOtherPlayer(player: Hero): boolean {
 
 		if (this.m_Unit.IsValid) {
-			let itemsNative = this.m_Inventory.m_hItems,
+			let itemsNative = this.m_hItems,
 				playerID = player.PlayerID;
 
 			for (let i = 0; i < 14; i++) {
@@ -146,17 +129,15 @@ export default class Inventory {
 		}
 		return false;
 	}
-	GetItemByName(name: string, includeBackpack: boolean = false): Item {
+	GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Item {
 		if (this.m_Unit.IsValid) {
-		
-			let items = this.m_Inventory.m_hItems,
+			let items = this.m_hItems,
 				len = Math.min(items.length, includeBackpack ? 9 : 6)
 
 			for (let i = 0; i < len; i++) {
-				
 				let item = EntityManager.GetEntityByNative(items[i]) as Item;
 
-				if (item !== undefined && item.AbilityData.Name === name)
+				if (item !== undefined && (name instanceof RegExp ? name.test(item.Name) : item.Name === name))
 					return item
 			}
 		}
@@ -165,7 +146,7 @@ export default class Inventory {
 	GetItemByRegexp(regex: RegExp, includeBackpack: boolean = false): Item {
 		if (this.m_Unit.IsValid) {
 			
-			let items = this.m_Inventory.m_hItems,
+			let items = this.m_hItems,
 				len = Math.min(items.length, includeBackpack ? 9 : 6)
 
 			for (let i = 0; i < len; i++) {
@@ -197,7 +178,7 @@ export default class Inventory {
 	GetItemByNameInBackpack(name: string): Item {
 		if (this.m_Unit.IsValid) {
 			
-			let items = this.m_Inventory.m_hItems,
+			let items = this.m_hItems,
 				len = Math.min(items.length, 9)
 
 			for (let i = 6; i < len; i++) {
