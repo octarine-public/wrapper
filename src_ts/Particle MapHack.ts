@@ -35,10 +35,9 @@ const phTechiesMineShowTimers = phTechiesMine.AddToggle("Show Timers")
 // --- Variables
 let allNeutrals: Creep[] = [],
 	allBloodTargets: Unit[] = [],
-	allTechiesMines: Array<[Vector3[], Vector3, string]> = [],
+	allTechiesMines: Array<[Vector3[], Vector3, string]> = [], // positions, center, stack-name
 	waiting_explode: Array<[number, string]> = [],
-	waiting_spawn: Array<[number, string]> = [],
-	latest_plant: [Vector3, string]
+	waiting_spawn: Array<[number, string]> = []
 
 // --- Methods
 
@@ -62,7 +61,6 @@ EventsSDK.on("GameEnded", () => {
 	allTechiesMines = []
 	waiting_explode = []
 	waiting_spawn = []
-	latest_plant = undefined
 })
 
 // EventsSDK.on("ParticleCreated", console.log)
@@ -142,7 +140,7 @@ EventsSDK.on("ParticleUpdated", (id, control_point, position: Vector3) => {
 					return false
 				let mines = obj[0]
 				return mines.some((vec, j) => {
-					if (vec.Distance(position) !== 0)
+					if (vec.Distance(position) > 10)
 						return false
 					if (mines.length !== 1) {
 						mines.splice(j, 1)

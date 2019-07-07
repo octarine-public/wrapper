@@ -69,7 +69,7 @@ declare interface Events extends EventEmitter {
 		launch_tick: number
 	) => void): EventEmitter
 	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
-	on(name: "TrackingProjectilesDodged", callback: (ent: C_BaseEntity, attacks_only: boolean) => void): EventEmitter
+	on(name: "TrackingProjectilesDodged", callback: (ent: C_BaseEntity | number, attacks_only: boolean) => void): EventEmitter
 	on(name: "UnitAnimation", callback: (
 		npc: C_DOTA_BaseNPC,
 		sequenceVariant: number,
@@ -107,5 +107,56 @@ declare interface Events extends EventEmitter {
 	) => void): EventEmitter
 	on(name: "UnitRemoveGesture", listener: (npc: C_DOTA_BaseNPC | number, activity: number) => void): EventEmitter
 	on(name: "UnitFadeGesture", listener: (npc: C_DOTA_BaseNPC | number, activity: number) => void): EventEmitter
+	on(name: "ParticleUpdatedFwd", listener: ( // forward: Vector3 at IOBuffer offset 0
+		id: number,
+		control_point: number
+	) => void): EventEmitter
+	on(name: "ParticleUpdatedOrient", listener: ( // forward: Vector3 at IOBuffer offset 0, up: Vector3 at IOBuffer offset 3, left: Vector3 at IOBuffer offset 6
+		id: number,
+		control_point: number
+	) => void): EventEmitter 
+	on(name: "ParticleUpdatedFallback", listener: ( // position: Vector3 at IOBuffer offset 0
+		id: number,
+		control_point: number
+	) => void): EventEmitter
+	on(name: "ParticleUpdatedOffset", listener: ( // origin_offset: Vector3 at IOBuffer offset 0, angle_offset: QAngle at IOBuffer offset 3
+		id: number,
+		control_point: number
+	) => void): EventEmitter
+	on(name: "ParticleDestroyed", listener: (id: number, destroy_immediately: boolean) => void): EventEmitter
+	on(name: "ParticleDestroyedInvolving", listener: (
+		id: number,
+		destroy_immediately: boolean,
+		ent: C_BaseEntity
+	) => void): EventEmitter
+	on(name: "ParticleReleased", listener: (id: number) => void): EventEmitter
+	on(name: "ParticleUpdatedShouldDraw", listener: (id: number, should_draw: boolean) => void): EventEmitter
+	on(name: "ParticleUpdatedSetFrozen", listener: (id: number, set_frozen: boolean) => void): EventEmitter
+	on(name: "ParticleChangedControlPointAttachment", listener: (
+		id: number,
+		attachment_old: number,
+		attachment_new: number,
+		ent: C_BaseEntity | number
+	) => void): EventEmitter
+	on(name: "ParticleUpdatedEntityPosition", listener: ( // position: Vector3 at IOBuffer offset 0
+		id: number,
+		ent: C_BaseEntity | number
+	) => void): EventEmitter
+	on(name: "ParticleSetText", listener: (id: number, text: string) => void): EventEmitter
+	on(name: "ParticleSetControlPointModel", listener: (
+		id: number,
+		control_point: number,
+		model_name: string
+	) => void): EventEmitter
+	on(name: "ParticleSetControlPointSnapshot", listener: (
+		id: number,
+		control_point: number,
+		snapshot_name: string
+	) => void): EventEmitter
+	on(name: "ParticleSetTextureAttribute", listener: (
+		id: number,
+		attribute_name: string,
+		texture_name: string
+	) => void): EventEmitter
 }
 declare var Events: Events

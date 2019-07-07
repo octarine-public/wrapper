@@ -112,8 +112,14 @@ Events.on("TrackingProjectileUpdated", (proj, path, particleSystemHandle, launch
 Events.on("TrackingProjectileDestroyed", proj =>
 	EventsSDK.emit("TrackingProjectileDestroyed", false, proj))
 
-Events.on("TrackingProjectilesDodged", (ent, attacks_only) =>
-	EventsSDK.emit("TrackingProjectilesDodged", false, EntityManager.GetEntityByNative(ent), attacks_only))
+Events.on("TrackingProjectilesDodged", (ent, attacks_only) => EventsSDK.emit (
+	"TrackingProjectilesDodged",
+	false,
+	ent instanceof C_BaseEntity
+		? EntityManager.GetEntityByNative(ent)
+		: ent,
+	attacks_only
+))
 
 Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) =>
 	EventsSDK.emit("UnitAnimation", false, EntityManager.GetEntityByNative(npc), sequenceVariant, playbackrate, castpoint, type, activity))
@@ -272,7 +278,7 @@ interface EventsSDK extends EventEmitter {
 		launchTick: number
 	) => void): EventEmitter
 	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
-	on(name: "TrackingProjectilesDodged", callback: (ent: Entity, attacks_only: boolean) => void): EventEmitter
+	on(name: "TrackingProjectilesDodged", callback: (ent: Entity | number, attacks_only: boolean) => void): EventEmitter
 	on(name: "UnitAnimation", callback: (
 		npc: Unit,
 		sequenceVariant: number,

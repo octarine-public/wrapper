@@ -259,7 +259,7 @@ declare enum PingType_t {
 }
 
 /// GLOBAL OBJECTS
-declare var IOBuffer: Float32Array // 8 floats in size
+declare var IOBuffer: Float32Array // 16 floats in size
 declare var global: any
 
 declare var ConVars: ConVars
@@ -274,8 +274,8 @@ declare class CUnitOrder {
 	readonly issuer: PlayerOrderIssuer_t
 	readonly position: boolean // returns Vector3 to IOBuffer offset 0 on get
 	readonly unit?: C_DOTA_BaseNPC
-	readonly target: C_BaseEntity
-	readonly ability: C_DOTABaseAbility
+	readonly target: C_BaseEntity | number
+	readonly ability: C_DOTABaseAbility | number
 	readonly show_effects: boolean
 }
 
@@ -308,8 +308,8 @@ declare class CUserCmd {
 	impulse: number
 	vec_under_cursor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	viewangles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	weaponselect: C_BaseEntity
-	weaponsubtype: C_BaseEntity
+	weaponselect: C_BaseEntity | number
+	weaponsubtype: C_BaseEntity | number
 }
 
 declare class LinearProjectile {

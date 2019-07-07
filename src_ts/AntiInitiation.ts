@@ -105,9 +105,7 @@ var Abils_ = [
 	Abils: Array<[string, boolean, boolean?]> = [],
 	BuffsDisablers: Array<[string, boolean, boolean?]> = [],
 	heroes: Unit[] = [],
-	ignore_heroes = new Map<Unit, number>(),
-	dodge_blink = true,
-	dodge_with_blink = true
+	ignore_heroes = new Map<Unit, number>()
 
 function GetAbilArray(abilNameToSearch: string) {
 	return Abils_.find(abilAr => abilAr[0] === abilNameToSearch)
