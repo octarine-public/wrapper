@@ -1,13 +1,13 @@
-import Vector2 from "../Base/Vector2";
-import Vector3 from "../Base/Vector3";
-import Color from "../Base/Color";
-import EventsSDK from "../Managers/Events";
-import { Sleeper } from "../Helpers/Sleeper";
+import Color from "../Base/Color"
+import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
+import { Sleeper } from "../Helpers/Sleeper"
+import EventsSDK from "../Managers/Events"
 
-let sleeper = new Sleeper();
+let sleeper = new Sleeper()
 
 let CursorOnWorld = new Vector3(),
-	WindowSize = new Vector2();
+	WindowSize = new Vector2()
 
 class RendererSDK {
 	/**
@@ -16,7 +16,7 @@ class RendererSDK {
 	 * @param font Weight as Y | default: 200
 	 */
 	get DefaultTextSize(): Vector2 {
-		return new Vector2(18, 200);
+		return new Vector2(18, 200)
 	}
 	/**
 	 * Default Size of Shape = Weight 5 x Height 5
@@ -30,13 +30,13 @@ class RendererSDK {
 	 * Cached. Updating every 5 sec
 	 */
 	get WindowSize(): Vector2 {
-		return Vector2.CopyFrom(WindowSize);
+		return Vector2.CopyFrom(WindowSize)
 	}
 	get CursorOnWorld(): Vector3 {
-		return Vector3.CopyFrom(CursorOnWorld);
+		return Vector3.CopyFrom(CursorOnWorld)
 	}
 	get CursorOnScreen(): Vector2 {
-		return Vector2.fromIOBuffer(Renderer.CursorPos);
+		return Vector2.fromIOBuffer(Renderer.CursorPos)
 	}
 	/**
 	 * @param pos world position that needs to be turned to screen position
@@ -44,10 +44,10 @@ class RendererSDK {
 	 */
 	WorldToScreen(position: Vector2 | Vector3): Vector2 {
 		position.toIOBuffer()
-		return Vector2.fromIOBuffer(Renderer.WorldToScreen());
+		return Vector2.fromIOBuffer(Renderer.WorldToScreen())
 	}
 	/**
-	 * 
+	 *
 	 */
 	FilledCircle(vec: Vector2 | Vector3 = new Vector2(), radius: number, color?: Color): void {
 
@@ -57,7 +57,7 @@ class RendererSDK {
 			Renderer.FilledCircle(vec.x, vec.y, radius)
 	}
 	/**
-	 * 
+	 *
 	 */
 	OutlinedCircle(vec: Vector2 | Vector3 = new Vector2(), radius: number, color?: Color): void {
 
@@ -76,7 +76,7 @@ class RendererSDK {
 		if (color === undefined)
 			Renderer.Line(vecPos.x, vecPos.y, vecSize.x, vecSize.y)
 		else
-			Renderer.Line(vecPos.x, vecPos.y, vecSize.x, vecSize.y, color.r, color.g, color.b, color.a);
+			Renderer.Line(vecPos.x, vecPos.y, vecSize.x, vecSize.y, color.r, color.g, color.b, color.a)
 	}
 	/**
 	 * @param vecSize default Weight 5 x Height 5
@@ -88,7 +88,7 @@ class RendererSDK {
 		if (color === undefined)
 			Renderer.FilledRect(vecPos.x, vecPos.y, vecSize.x, vecSize.y)
 		else
-			Renderer.FilledRect(vecPos.x, vecPos.y, vecSize.x, vecSize.y, color.r, color.g, color.b, color.a);
+			Renderer.FilledRect(vecPos.x, vecPos.y, vecSize.x, vecSize.y, color.r, color.g, color.b, color.a)
 	}
 	/**
 	 * @param vecSize default Weight 5 x Height 5
@@ -100,7 +100,7 @@ class RendererSDK {
 		if (color === undefined)
 			Renderer.OutlinedRect(vecPos.x, vecPos.y, vecSize.x, vecSize.y)
 		else
-			Renderer.OutlinedRect(vecPos.x, vecPos.y, vecSize.x, vecSize.y, color.r, color.g, color.b, color.a);
+			Renderer.OutlinedRect(vecPos.x, vecPos.y, vecSize.x, vecSize.y, color.r, color.g, color.b, color.a)
 	}
 	/**
 	 * @param path start it with "~/" (without double-quotes) to load image from "%loader_path%/scripts_files/path"
@@ -110,11 +110,11 @@ class RendererSDK {
 
 		if (vecSize === undefined)
 			Renderer.Image(path, vecPos.x, vecPos.y)
-		
-		else if (color === undefined) 
+
+		else if (color === undefined)
 			Renderer.Image(path, vecPos.x, vecPos.y, vecSize.x, vecSize.y)
 
-		else Renderer.Image(path, vecPos.x, vecPos.y, vecSize.x, vecSize.y, color.r, color.g, color.b, color.a);
+		else Renderer.Image(path, vecPos.x, vecPos.y, vecSize.x, vecSize.y, color.r, color.g, color.b, color.a)
 	}
 	/**
 	 * @param font Size as X from Vector2 | default: 14
@@ -124,13 +124,13 @@ class RendererSDK {
 	 * @param flags default: FontFlags_t.OUTLINE
 	 */
 	Text(text: string, vec: Vector2 | Vector3 = new Vector2(), color?: Color, font_name?: string, font = this.DefaultTextSize, flags = FontFlags_t.OUTLINE): void {
-	
+
 		if (color === undefined)
-			Renderer.Text(vec.x, vec.y, text);
+			Renderer.Text(vec.x, vec.y, text)
 
 		else if (font_name === undefined)
-			Renderer.Text(vec.x, vec.y, text, color.r, color.g, color.b, color.a);
-		
+			Renderer.Text(vec.x, vec.y, text, color.r, color.g, color.b, color.a)
+
 		else Renderer.Text(vec.x, vec.y, text, color.r, color.g, color.b, color.a, font_name, font.x, font.y, flags)
 	}
 	/**
@@ -144,25 +144,25 @@ class RendererSDK {
 	TextAroundMouse(text: string, vec?: Vector2 | Vector3 | false, color = Color.Yellow, font_name = "Calibri", font = new Vector2(30), flags = FontFlags_t.ANTIALIAS): void {
 
 		let vecMouse = this.CursorOnScreen.AddScalarX(30).AddScalarY(15)
-		
+
 		if (vec !== undefined && vec !== false)
-			vecMouse = vecMouse.Add(vec as Vector2);
-		
+			vecMouse = vecMouse.Add(vec as Vector2)
+
 		this.Text(text, vecMouse, color, font_name, font, flags)
 	}
 }
 
-export default global.RendererSDK = new RendererSDK();
+export default global.RendererSDK = new RendererSDK()
 
 EventsSDK.on("Update", cmd => {
 	CursorOnWorld = cmd.VectorUnderCursor
-});
+})
 
 EventsSDK.on("Tick", () => {
 
 	if (sleeper.Sleeping("WindowSize"))
-		return;
+		return
 
-	WindowSize = Vector2.fromIOBuffer(Renderer.WindowSize);
-	sleeper.Sleep(5000, "WindowSize");
+	WindowSize = Vector2.fromIOBuffer(Renderer.WindowSize)
+	sleeper.Sleep(5000, "WindowSize")
 })

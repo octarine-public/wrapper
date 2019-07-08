@@ -37,7 +37,7 @@ export default class ListBox extends Menu_List {
 			super(name, values, selected_flags)
 		else
 			super(name, values, selected_flags, hint)
-		
+
 		this.default_values = default_values
 		this.selected_flags_wrapped = selected_flags
 
@@ -64,9 +64,9 @@ export default class ListBox extends Menu_List {
 			configurable: false,
 		})
 	}
-	
+
 	get IndexInMenu(): number {
-		return this.parent.entries.indexOf(this);
+		return this.parent.entries.indexOf(this)
 	}
 
 	Remove(): void {

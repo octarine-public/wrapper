@@ -1,9 +1,9 @@
 // Utils
-import * as Utils from "./Utils/Utils";
-import * as MathSDK from "./Utils/Math";
-import * as Debug from "./Utils/Debug";
-import * as ArrayExtensions from "./Utils/ArrayExtensions";
-import * as MapExtensions from "./Utils/MapExtensions";
+import * as ArrayExtensions from "./Utils/ArrayExtensions"
+import * as Debug from "./Utils/Debug"
+import * as MapExtensions from "./Utils/MapExtensions"
+import * as MathSDK from "./Utils/Math"
+import * as Utils from "./Utils/Utils"
 export { default as Benchmark } from "./Utils/BenchMark";
 
 export { Utils, MathSDK, Debug, ArrayExtensions, MapExtensions }
@@ -19,7 +19,7 @@ export { default as RendererSDK } from "./Native/Renderer";
 export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder";
 
 // Menu
-import * as MenuManager from "./Menu/MenuManager";
+import * as MenuManager from "./Menu/MenuManager"
 
 export { MenuManager }
 
@@ -27,11 +27,11 @@ export { MenuManager }
 export { Sleeper, GameSleeper } from "./Helpers/Sleeper";
 
 // Managers
-export { 
-	default as EntityManager, 
-	LocalPlayer, 
-	Game, 
-	PlayerResource 
+export {
+	default as EntityManager,
+	LocalPlayer,
+	Game,
+	PlayerResource
 } from "./Managers/EntityManager";
 
 export { default as ModifierManager } from "./Managers/ModifierManager";
@@ -63,7 +63,6 @@ export { default as Tree } from "./Objects/Base/Tree";
 export { default as Building } from "./Objects/Base/Building";
 export { default as Tower } from "./Objects/Base/Tower";
 export { default as Shop } from "./Objects/Base/Shop";
-
 
 /*
 	TODO:

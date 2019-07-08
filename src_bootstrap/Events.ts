@@ -36,7 +36,7 @@ global.EventEmitter = class EventEmitter {
 		let listeners = this.events[name]
 		if (listeners === undefined)
 			return true
-		
+
 		return !listeners.some(listener => {
 			try {
 				return listener.apply(this, args) === false && cancellable
@@ -58,7 +58,7 @@ global.EventEmitter = class EventEmitter {
 
 global.Events = new EventEmitter()
 
-setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args));
+setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))
 
 // temp onTick
 setInterval(() => {
@@ -68,7 +68,7 @@ setInterval(() => {
 	} catch (e) {
 		throw e
 	}
-}, Math.max(GetLatency(Flow_t.IN) * 1000, 1000 / 30));
+}, Math.max(GetLatency(Flow_t.IN) * 1000, 1000 / 30))
 
 let AllEntities: C_BaseEntity[] = [],
 	EntitiesIDs: C_BaseEntity[] = [],

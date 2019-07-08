@@ -1,9 +1,9 @@
-import { Ability, LocalPlayer, MenuManager, EventsSDK, Game, ArrayExtensions, Unit, Hero } from "wrapper/Imports";
+import { Ability, ArrayExtensions, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Unit } from "wrapper/Imports"
 
 // Menu
-const Menu = MenuManager.MenuFactory("AntiInitiation");
-const MenuState = Menu.AddToggle("State");
-const Additionaldelay = Menu.AddSliderFloat("Additional delay", 0.03, 0.03);
+const Menu = MenuManager.MenuFactory("AntiInitiation")
+const MenuState = Menu.AddToggle("State")
+const Additionaldelay = Menu.AddSliderFloat("Additional delay", 0.03, 0.03)
 
 // loop-optimizer: KEEP
 var Abils_ = [
@@ -112,8 +112,8 @@ function GetAbilArray(abilNameToSearch: string) {
 }
 
 function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolean?]>, Abil?: Ability): boolean {
-	let delta = Me.GetRotationTime(hero.NetworkPosition) / 1000 + Additionaldelay.value;
-	let AbilAr: [string, boolean, boolean?];
+	let delta = Me.GetRotationTime(hero.NetworkPosition) / 1000 + Additionaldelay.value
+	let AbilAr: [string, boolean, boolean?]
 	if (
 		Abil !== undefined
 		&& (
@@ -125,14 +125,14 @@ function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolea
 	)
 		return false
 	let disable_abil = DisableAr.filter(abilAr => abilAr[1]).map(abilAr => {
-		let abil_name = abilAr[0];
-		return abil_name.startsWith("item_") ? Me.GetItemByName(abil_name) : Me.GetAbilityByName(abil_name);
+		let abil_name = abilAr[0]
+		return abil_name.startsWith("item_") ? Me.GetItemByName(abil_name) : Me.GetAbilityByName(abil_name)
 	}).find(abil =>
 		abil !== undefined
 		&& !abil.IsHidden
 		&& abil.Cooldown === 0
 		&& Me.Mana >= abil.ManaCost
-		&& (abil.CastRange <= 0 || Me.NetworkPosition.Distance2D(hero.NetworkPosition) <= abil.CastRange + hero.HullRadius * 2)
+		&& (abil.CastRange <= 0 || Me.NetworkPosition.Distance2D(hero.NetworkPosition) <= abil.CastRange + hero.HullRadius * 2),
 	)
 	if (disable_abil === undefined)
 		return false
@@ -143,7 +143,7 @@ function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolea
 
 EventsSDK.on("Update", () => {
 	if (!MenuState.value || Game.IsPaused || LocalPlayer === undefined)
-		return;
+		return
 	const Me = LocalPlayer,
 		hero = Me.Hero
 	if (hero === undefined || !hero.IsAlive || hero.IsStunned)
@@ -154,13 +154,13 @@ EventsSDK.on("Update", () => {
 		if (current_time > until)
 			ignore_heroes.delete(hero)
 	})
-	let needed_heroes = heroes.filter(hero => hero.IsVisible && hero.IsAlive);
+	let needed_heroes = heroes.filter(hero => hero.IsVisible && hero.IsAlive)
 	if (needed_heroes.some(hero =>
 		!ignore_heroes.has(hero)
 		&& (
 			hero.Spells.some(abil => abil && Disable(Me.Hero, hero, Abils, abil))
 			|| hero.Buffs.some(buff => DisableBuffs.includes(buff.Name) && Disable(Me.Hero, hero, BuffsDisablers))
-		)
+		),
 	))
 		return
 })

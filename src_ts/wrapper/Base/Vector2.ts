@@ -1,11 +1,11 @@
-import Vector3 from "./Vector3";
+import Vector3 from "./Vector3"
 
 export default class Vector2 {
 	/* ================== Static ================== */
 	static fromIOBuffer(buffer: boolean = true, offset: number = 0): Vector2 {
 		if (buffer !== true)
 			return undefined
-		return new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1]);
+		return new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1])
 	}
 	static fromArray(array: [number, number]): Vector2 {
 		return new Vector2(array[0] || 0, array[1] || 0)
@@ -15,32 +15,32 @@ export default class Vector2 {
 	}
 	/**
 	 * From polar coordinates
-	 * @param radial 
-	 * @param polar 
+	 * @param radial
+	 * @param polar
 	 */
 	static FromPolarCoordinates(radial: number, polar: number): Vector2 {
 		return new Vector2(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
 	static GetCenterType<T>(array: T[], callback: (value: T) => Vector2): Vector2 {
 
-		let newVec = new Vector2();
+		let newVec = new Vector2()
 
-		array.forEach(vec => newVec.AddForThis(callback(vec)));
+		array.forEach(vec => newVec.AddForThis(callback(vec)))
 
-		return newVec.DivideScalarForThis(array.length);
+		return newVec.DivideScalarForThis(array.length)
 
 	}
 	static GetCenter(array: Vector2[]): Vector2 {
 
-		let newVec = new Vector2();
+		let newVec = new Vector2()
 
-		array.forEach(vec => newVec.AddForThis(vec));
+		array.forEach(vec => newVec.AddForThis(vec))
 
-		return newVec.DivideScalarForThis(array.length);
+		return newVec.DivideScalarForThis(array.length)
 
 	}
 	static CopyFrom(vec: Vector2): Vector2 {
-		return new Vector2(vec.x, vec.y);
+		return new Vector2(vec.x, vec.y)
 	}
 
 	/* =================== Fields =================== */
@@ -56,7 +56,7 @@ export default class Vector2 {
 	 * vector.Normalize();
 	 */
 	constructor(x: number = 0, y: number = 0) {
-		this.SetVector(x, y);
+		this.SetVector(x, y)
 	}
 
 	/* ================== Getters ================== */
@@ -94,7 +94,7 @@ export default class Vector2 {
 	 */
 	get Polar(): number {
 		if (Math.abs(this.x - 0) <= 1e-9)
-			return this.y > 0 ? 90 : this.y < 0 ? 270 : 0;
+			return this.y > 0 ? 90 : this.y < 0 ? 270 : 0
 
 		let theta = Math.atan(this.y / this.x) * (180 / Math.PI)
 
@@ -209,9 +209,9 @@ export default class Vector2 {
 	 * @returns another vector
 	 */
 	CopyTo(vec: Vector2): Vector2 {
-		vec.x = this.x;
-		vec.y = this.y;
-		return vec;
+		vec.x = this.x
+		vec.y = this.y
+		return vec
 	}
 	/**
 	 * Copy fron another vector to this vector and return it
@@ -219,9 +219,9 @@ export default class Vector2 {
 	 * @returns this vector
 	 */
 	CopyFrom(vec: Vector2): Vector2 {
-		this.x = vec.x;
-		this.y = vec.y;
-		return this;
+		this.x = vec.x
+		this.y = vec.y
+		return this
 	}
 	/**
 	 * Set vector by numbers
@@ -336,7 +336,7 @@ export default class Vector2 {
 	AddScalar(scalar: number): Vector2 {
 		return new Vector2(
 			this.x + scalar,
-			this.y + scalar
+			this.y + scalar,
 		)
 	}
 	/**
@@ -383,7 +383,7 @@ export default class Vector2 {
 	SubtractForThis(vec: Vector2): Vector2 {
 		this.x -= vec.x
 		this.y -= vec.y
-		return this;
+		return this
 	}
 	/**
 	 * Subtract scalar from vector
@@ -391,7 +391,7 @@ export default class Vector2 {
 	SubtractScalar(scalar: number): Vector2 {
 		return new Vector2(
 			this.x - scalar,
-			this.y - scalar
+			this.y - scalar,
 		)
 	}
 	/**
@@ -401,7 +401,7 @@ export default class Vector2 {
 	SubtractScalarForThis(scalar: number): Vector2 {
 		this.x -= scalar
 		this.y -= scalar
-		return this;
+		return this
 	}
 	/**
 	 * Subtract scalar from X of vector
@@ -438,7 +438,7 @@ export default class Vector2 {
 	MultiplyForThis(vec: Vector2): Vector2 {
 		this.x *= vec.x
 		this.y *= vec.y
-		return this;
+		return this
 	}
 	/**
 	 * Multiply the vector by scalar
@@ -446,7 +446,7 @@ export default class Vector2 {
 	MultiplyScalar(scalar: number): Vector2 {
 		return new Vector2(
 			this.x * scalar,
-			this.y * scalar
+			this.y * scalar,
 		)
 	}
 	/**
@@ -456,7 +456,7 @@ export default class Vector2 {
 	MultiplyScalarForThis(scalar: number): Vector2 {
 		this.x *= scalar
 		this.y *= scalar
-		return this;
+		return this
 	}
 	/**
 	 * Multiply the X of vector by scalar
@@ -493,7 +493,7 @@ export default class Vector2 {
 	DivideForThis(vec: Vector2): Vector2 {
 		this.x /= vec.x
 		this.y /= vec.y
-		return this;
+		return this
 	}
 	/**
 	 * Divide the scalar by vector
@@ -502,7 +502,7 @@ export default class Vector2 {
 	DivideScalar(scalar: number): Vector2 {
 		return new Vector2(
 			this.x / scalar,
-			this.y / scalar
+			this.y / scalar,
 		)
 	}
 	/**
@@ -574,9 +574,9 @@ export default class Vector2 {
 	 */
 	PolarAngle(radian: boolean = false): number {
 		if (radian)
-			return this.Angle;
+			return this.Angle
 
-		return this.Angle * (180 / Math.PI);
+		return this.Angle * (180 / Math.PI)
 	}
 	/**
 	 * Rotates the Vector2 to a set angle.
@@ -587,7 +587,7 @@ export default class Vector2 {
 
 		return new Vector2 (
 			(this.x * cos) - (this.y * sin),
-			(this.y * cos) + (this.x * sin)
+			(this.y * cos) + (this.x * sin),
 		)
 	}
 	/**
@@ -615,15 +615,15 @@ export default class Vector2 {
 	 * @param distance distance to be added
 	 */
 	InFrontFromAngle(angle: number, distance: number): Vector2 {
-		return this.Rotation(Vector2.FromAngle(angle), distance);
+		return this.Rotation(Vector2.FromAngle(angle), distance)
 	}
 	/**
-	 * 
+	 *
 	 * @param vec The another vector
 	 * @param vecAngleRadian Angle of this vector
 	 */
 	FindRotationAngle(vec: Vector2, vecAngleRadian: number): number {
-		let angle = Math.abs(Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian);
+		let angle = Math.abs(Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian)
 
 		if (angle > Math.PI)
 			angle = Math.abs((Math.PI * 2) - angle)
@@ -638,16 +638,16 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 */
 	AngleBetweenVectors(vec: Vector2): number {
-		var theta = this.Polar - vec.Polar;
+		var theta = this.Polar - vec.Polar
 		if (theta < 0) {
-			theta = theta + 360;
+			theta = theta + 360
 		}
 
 		if (theta > 180) {
-			theta = 360 - theta;
+			theta = 360 - theta
 		}
 
-		return theta;
+		return theta
 	}
 	/**
 	 * Angle between two fronts
@@ -661,7 +661,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 */
 	Extend(vec: Vector2, distance: number): Vector2 {
-		return vec.Subtract(this).Normalize().MultiplyScalarForThis(distance).AddForThis(this); // this + (distance * (vec - this).Normalize())
+		return vec.Subtract(this).Normalize().MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).Normalize())
 	}
 	Clone(): Vector2 {
 		return new Vector2(this.x, this.y)
@@ -674,18 +674,18 @@ export default class Vector2 {
 	}
 	Closest(vecs: Vector2[]): Vector2 {
 
-		let minVec = new Vector2();
-		let distance = Number.POSITIVE_INFINITY;
+		let minVec = new Vector2()
+		let distance = Number.POSITIVE_INFINITY
 
 		vecs.forEach(vec => {
 
-			let tempDist = this.Distance(vec);
+			let tempDist = this.Distance(vec)
 			if (tempDist < distance) {
-				distance = tempDist;
-				minVec = vec;
+				distance = tempDist
+				minVec = vec
 			}
 		})
-		return minVec;
+		return minVec
 	}
 	/**
 	 * Returns true if the point is under the rectangle
@@ -694,10 +694,10 @@ export default class Vector2 {
 		return this.x > x && this.x < (x + width) && this.y > y && this.y < (y + height)
 	}
 	RadiansToDegrees(): Vector2 {
-		return this.MultiplyScalar(180).DivideScalar(Math.PI);
+		return this.MultiplyScalar(180).DivideScalar(Math.PI)
 	}
 	DegreesToRadians(): Vector2 {
-		return this.MultiplyScalar(Math.PI).DivideScalar(180);
+		return this.MultiplyScalar(Math.PI).DivideScalar(180)
 	}
 	/* ================== Geometric ================== */
 	/**
@@ -717,11 +717,11 @@ export default class Vector2 {
 	toVector3(): Vector3 {
 		return new Vector3(this.x, this.y, 0)
 	}
-	
+
 	toIOBuffer(offset: number = 0): true {
-		IOBuffer[offset + 0] = this.x;
-		IOBuffer[offset + 1] = this.y;
-		return true;
+		IOBuffer[offset + 0] = this.x
+		IOBuffer[offset + 1] = this.y
+		return true
 	}
 }
 //global.Vector2 = Vector2;

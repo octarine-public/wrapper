@@ -1,24 +1,23 @@
-import Vector3 from "../../Base/Vector3";
-import Vector2 from "../../Base/Vector2";
-import { default as ExecuteOrder } from "../../Native/ExecuteOrder";
-import { default as EntityManager, LocalPlayer, PlayerResource } from "../../Managers/EntityManager";
+import Vector2 from "../../Base/Vector2"
+import Vector3 from "../../Base/Vector3"
+import { default as EntityManager, LocalPlayer, PlayerResource } from "../../Managers/EntityManager"
+import { default as ExecuteOrder } from "../../Native/ExecuteOrder"
+import Ability from "./Ability"
 import Entity from "./Entity"
 import Hero from "./Hero"
-import Unit from "./Unit";
-import Ability from "./Ability";
-
+import Unit from "./Unit"
 
 export default class Player extends Entity {
 	readonly m_pBaseEntity: C_DOTAPlayer
 	private m_Name: string
 	private m_PlayerData: PlayerResourcePlayerData_t
 	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t
-	private m_hAssignedHeroLast: Hero;
+	private m_hAssignedHeroLast: Hero
 	/**
 	 * Only for LocalPlayer
 	 */
 	get ActiveAbility(): Ability {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hActiveAbility) as Ability;
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hActiveAbility) as Ability
 	}
 	get Assists(): number {
 		return this.PlayerTeamData.m_iAssists
@@ -53,11 +52,11 @@ export default class Player extends Entity {
 	// HasRepicked 				=> PlayerResourcePlayerTeamData_t
 	// Healing					=> NonSpectator
 	get Hero(): Hero {
-		let nowHero = this.m_pBaseEntity.m_hAssignedHero;
-		
+		let nowHero = this.m_pBaseEntity.m_hAssignedHero
+
 		if (this.m_hAssignedHeroLast === undefined || this.m_hAssignedHeroLast.m_pBaseEntity !== nowHero)
-			this.m_hAssignedHeroLast = EntityManager.GetEntityByNative(nowHero) as Hero;
-			
+			this.m_hAssignedHeroLast = EntityManager.GetEntityByNative(nowHero) as Hero
+
 		return this.m_hAssignedHeroLast
 	}
 	get HeroAssigned(): boolean {
@@ -70,88 +69,88 @@ export default class Player extends Entity {
 	}
 	// IncomeGold				=> NonSpectator
 	get IsAFK(): boolean {
-		return this.PlayerTeamData.m_bAFK;
+		return this.PlayerTeamData.m_bAFK
 	}
 	get IsBattleBonusActive(): boolean {
-		return this.PlayerTeamData.m_bBattleBonusActive;
+		return this.PlayerTeamData.m_bBattleBonusActive
 	}
 	get IsBroadcaster(): boolean {
-		return this.PlayerData.m_bIsBroadcaster;
+		return this.PlayerData.m_bIsBroadcaster
 	}
 	get IsFakeClient(): boolean {
-		return this.PlayerData.m_bFakeClient;
+		return this.PlayerData.m_bFakeClient
 	}
 	get IsFullyJoinedServer(): boolean {
-		return this.PlayerData.m_bFullyJoinedServer;
+		return this.PlayerData.m_bFullyJoinedServer
 	}
 	get IsPredictingVictory(): boolean {
-		return this.PlayerTeamData.m_bHasPredictedVictory;
+		return this.PlayerTeamData.m_bHasPredictedVictory
 	}
 	get IsVoiceChatBanned(): boolean {
-		return this.PlayerTeamData.m_bVoiceChatBanned;
+		return this.PlayerTeamData.m_bVoiceChatBanned
 	}
 	get Kills(): number {
-		return this.PlayerTeamData.m_iKills;
+		return this.PlayerTeamData.m_iKills
 	}
 	get KillStreak(): number {
-		return this.PlayerTeamData.m_iStreak;
+		return this.PlayerTeamData.m_iStreak
 	}
 	get LastBuybackTime(): number {
-		return this.PlayerTeamData.m_iLastBuybackTime;
+		return this.PlayerTeamData.m_iLastBuybackTime
 	}
 	// LastHitCount				=> NonSpectator
 	// LastHitMultikill			=> NonSpectator
 	// LastHitStreak			=> NonSpectator
 	get Level(): number {
-		return this.PlayerTeamData.m_iLevel;
+		return this.PlayerTeamData.m_iLevel
 	}
 	// MissCount				=> NonSpectator
 	get Name(): string {
 		return this.m_Name
 			|| this.IsValid && PlayerResource
-			? (this.m_Name = PlayerResource.GetNameByPlayerID(this.PlayerID)) : "";
+			? (this.m_Name = PlayerResource.GetNameByPlayerID(this.PlayerID)) : ""
 	}
 	// NearbyCreepDeathCount	=> NonSpectator
 	// ObserverWardsPlaced		=> NonSpectator
 	get PlayerData(): PlayerResourcePlayerData_t {
 		return this.m_PlayerData
 			|| this.IsValid
-			? (this.m_PlayerData = PlayerResource.GetPlayerDataByPlayerID(this.PlayerID)) : undefined;
+			? (this.m_PlayerData = PlayerResource.GetPlayerDataByPlayerID(this.PlayerID)) : undefined
 	}
 	get PlayerTeamData(): PlayerResourcePlayerTeamData_t {
 		return this.m_PlayerTeamData
 			|| this.IsValid && PlayerResource
-			? (this.m_PlayerTeamData = PlayerResource.GetPlayerTeamDataByPlayerID(this.PlayerID)) : undefined;
+			? (this.m_PlayerTeamData = PlayerResource.GetPlayerTeamDataByPlayerID(this.PlayerID)) : undefined
 	}
 	get PlayerSteamID(): bigint {
-		return this.m_PlayerData.m_iPlayerSteamID;
+		return this.m_PlayerData.m_iPlayerSteamID
 	}
 	get QueryUnit(): Unit {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hQueryUnit) as Unit;
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hQueryUnit) as Unit
 	}
 
 	// ReliableGold				=> NonSpectator
 	get RespawnSeconds(): number {
-		return this.PlayerTeamData.m_iRespawnSeconds;
+		return this.PlayerTeamData.m_iRespawnSeconds
 	}
 	// RoshanKills				=> NonSpectator
 	// RunePickups				=> NonSpectator
 	get SelectedHeroId(): HeroID_t {
-		return this.PlayerTeamData.m_nSelectedHeroID;
+		return this.PlayerTeamData.m_nSelectedHeroID
 	}
 	get SelectedUnits(): Entity[] {
 
-		let selected: Entity[] = [];
+		let selected: Entity[] = []
 
-		let selUnits = this.m_pBaseEntity.m_nSelectedUnits;
+		let selUnits = this.m_pBaseEntity.m_nSelectedUnits
 		if (selUnits !== undefined && selUnits.length > 0) {
 			selUnits.forEach(unitNative => {
-				let unit = EntityManager.GetEntityByNative(unitNative);
+				let unit = EntityManager.GetEntityByNative(unitNative)
 				if (unit !== undefined)
-					selected.push(unit);
+					selected.push(unit)
 			})
 		}
-		return selected;
+		return selected
 	}
 	// SentryWardsPlaced		=> NonSpectator
 	// SharedGold				=> NonSpectator
@@ -159,10 +158,10 @@ export default class Player extends Entity {
 	// Stuns					=> NonSpectator
 	// TeamSlot					=> NonSpectator
 	get TotalEarnedGold(): number {
-		return this.m_pBaseEntity.m_iTotalEarnedGold;
+		return this.m_pBaseEntity.m_iTotalEarnedGold
 	}
 	get TotalEarnedXP(): number {
-		return this.m_pBaseEntity.m_iTotalEarnedXP;
+		return this.m_pBaseEntity.m_iTotalEarnedXP
 	}
 	// TowerKills				=> NonSpectator
 	// UnreliableGold			=> NonSpectator
@@ -170,8 +169,8 @@ export default class Player extends Entity {
 	// WardsPurchased			=> NonSpectator
 
 	static get QuickBuyItems(): number[] {
-		return LocalPlayer !== undefined 
-			? LocalPlayer.m_pBaseEntity.m_quickBuyItems : [];
+		return LocalPlayer !== undefined
+			? LocalPlayer.m_pBaseEntity.m_quickBuyItems : []
 	}
 	// StickyItemId ??
 
@@ -183,42 +182,42 @@ export default class Player extends Entity {
 		orderIssuer?: PlayerOrderIssuer_t,
 		unit?: Unit,
 		queue?: boolean,
-		showEffects?: boolean
+		showEffects?: boolean,
 	}): ExecuteOrder {
 		return ExecuteOrder.fromObject(order).Execute()
 	}
 
 	static OrderNone(unit: Unit, queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_NONE, unit, queue, showEffects });
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_NONE, unit, queue, showEffects })
 	}
 	/**
 	 * Only for LocalPlayer
 	 */
 	static Buyback(queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK, queue, showEffects });
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK, queue, showEffects })
 	}
 	/**
 	 * Only for LocalPlayer
 	 */
 	static Glyph(queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, queue, showEffects });
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, queue, showEffects })
 	}
 	/**
 	 * Only for LocalPlayer
 	 */
 	static CastRiverPaint(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT, position, queue, showEffects });
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT, position, queue, showEffects })
 	}
 	/**
 	 * Only for LocalPlayer
 	 */
 	static PreGameAdgustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT, target: ItemID, queue, showEffects });
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT, target: ItemID, queue, showEffects })
 	}
 	/**
 	 * Only for LocalPlayer
 	 */
 	static Scan(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects });
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects })
 	}
 }

@@ -1,8 +1,8 @@
-import { DamageAmplifyPerIntelligencePrecent } from "../../Data/GameData";
+import { DamageAmplifyPerIntelligencePrecent } from "../../Data/GameData"
 
+import EntityManager from "../../Managers/EntityManager"
+import Player from "./Player"
 import Unit from "./Unit"
-import EntityManager from "../../Managers/EntityManager";
-import Player from "./Player";
 
 export default class Hero extends Unit {
 	readonly m_pBaseEntity: C_DOTA_BaseNPC_Hero
@@ -12,7 +12,7 @@ export default class Hero extends Unit {
 	}
 
 	/* ============ BASE  ============ */
-	
+
 	get AbilityPoint(): number {
 		return this.m_pBaseEntity.m_iAbilityPoints
 	}
@@ -32,7 +32,7 @@ export default class Hero extends Unit {
 		return this.m_pBaseEntity.m_bBuybackDisabled
 	}
 	get IsIllusion(): boolean {
-		return this.m_pBaseEntity.m_hReplicatingOtherHeroModel !== undefined;
+		return this.m_pBaseEntity.m_hReplicatingOtherHeroModel !== undefined
 	}
 	get IsReincarnating(): boolean {
 		return this.m_pBaseEntity.m_bReincarnating
@@ -41,10 +41,10 @@ export default class Hero extends Unit {
 		return this.m_pBaseEntity.m_flLastHurtTime
 	}
 	get Player(): Player {
-		return EntityManager.GetPlayerByID(this.PlayerID) as Player;
+		return EntityManager.GetPlayerByID(this.PlayerID) as Player
 	}
 	get PlayerID(): number {
-		return this.m_pBaseEntity.m_iPlayerID;
+		return this.m_pBaseEntity.m_iPlayerID
 	}
 	get PrimaryAtribute(): Attributes {
 		return this.m_pBaseEntity.m_iPrimaryAttribute
@@ -53,7 +53,7 @@ export default class Hero extends Unit {
 		return this.m_pBaseEntity.m_iRecentDamage
 	}
 	get ReplicateFrom(): Hero {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hReplicatingOtherHeroModel, true) as Hero;
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hReplicatingOtherHeroModel, true) as Hero
 	}
 	get RespawnTime(): number {
 		return this.m_pBaseEntity.m_flRespawnTime
@@ -76,9 +76,9 @@ export default class Hero extends Unit {
 	get TotalStrength(): number {
 		return this.m_pBaseEntity.m_flStrengthTotal
 	}
-	
+
 	/* ============ EXTENSIONS ============ */
-	
+
 	get SpellAmplification(): number {
 		return super.SpellAmplification + (this.TotalIntelligence * DamageAmplifyPerIntelligencePrecent / 100)
 	}

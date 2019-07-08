@@ -1,13 +1,13 @@
-import { EventsSDK, MenuManager, Unit, LocalPlayer, ArrayExtensions } from "./wrapper/Imports";
+import { ArrayExtensions, EventsSDK, LocalPlayer, MenuManager, Unit } from "./wrapper/Imports"
 
 //import * as Orders from "Orders"
 //import * as Utils from "Utils"
 
-const iHateLeapsMenu = MenuManager.MenuFactory("I Hate Leaps");
-const stateMain = iHateLeapsMenu.AddToggle("State", false);
+const iHateLeapsMenu = MenuManager.MenuFactory("I Hate Leaps")
+const stateMain = iHateLeapsMenu.AddToggle("State", false)
 
 let mks: Unit[] = [],
-	techiess: Unit[] = [];
+	techiess: Unit[] = []
 
 EventsSDK.on("EntityCreated", (npc: Unit) => {
 
@@ -28,7 +28,7 @@ EventsSDK.on("EntityDestroyed", (npc: Unit) => {
 EventsSDK.on("Tick", () => {
 	if (!stateMain.value)
 		return
-	const pl_ent = LocalPlayer.Hero;
+	const pl_ent = LocalPlayer.Hero
 	if (pl_ent === undefined || pl_ent.IsStunned || !pl_ent.IsAlive || LocalPlayer.ActiveAbility !== undefined)
 		return
 	if (mks.length !== 0)
@@ -38,17 +38,17 @@ EventsSDK.on("Tick", () => {
 			.some(item => {
 				if (!item.CanBeCasted())
 					return false
-					
-				let castrange = item.CastRange;
-				
+
+				let castrange = item.CastRange
+
 				return mks.some(mk => {
 					if (mk.IsDormant || !mk.IsAlive)
 						return false
-						
-					let m_nPerchedTree = (mk.m_pBaseEntity as C_DOTA_Unit_Hero_MonkeyKing).m_nPerchedTree;
+
+					let m_nPerchedTree = (mk.m_pBaseEntity as C_DOTA_Unit_Hero_MonkeyKing).m_nPerchedTree
 					if (m_nPerchedTree === 4294967295 || mk.Distance2D(pl_ent) > castrange)
-						return false;
-					
+						return false
+
 					PrepareUnitOrders ({
 						OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE,
 						Target: m_nPerchedTree,
@@ -56,7 +56,7 @@ EventsSDK.on("Tick", () => {
 						Queue: false,
 						Unit: pl_ent.m_pBaseEntity,
 						OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
-						ShowEffects: false
+						ShowEffects: false,
 					})
 					return true
 			})
@@ -77,8 +77,8 @@ EventsSDK.on("Tick", () => {
 				return false
 			if (hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_MonkeyKing && hero.ModifiersBook.GetBuffByName("modifier_monkey_king_bounce_leap") === undefined)
 				return false
-			
-			pl_ent.CastTarget(force, hero);
+
+			pl_ent.CastTarget(force, hero)
 			return true
 		})
 	}

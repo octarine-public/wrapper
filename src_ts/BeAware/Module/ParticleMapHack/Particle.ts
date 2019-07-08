@@ -22,14 +22,14 @@
 // 		// case 16068608692953167828n:
 // 		// // bounty hanter
 // 		// case 6989698579171478207n:
-// 		// // mirana leap 
+// 		// // mirana leap
 // 		// case 15115639205087631833n:
 // 		// // mirana moon
 // 		// case 15874864990078876431n:
 // 		// // monkey king form revert
 // 		// case 15874864990078876431n:
 // 		// // scroll
-// 		//case 14739391071850926756n:	
+// 		//case 14739391071850926756n:
 // 			par_id = id;
 // 		break;
 // 	}
@@ -50,13 +50,4 @@
 // 	pos.Invalidate();
 // 	par_id = -1;
 // }
-
-
-
-
-
-
-
-
-
-
+

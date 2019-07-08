@@ -1,4 +1,4 @@
-import { Vector3, Ability, Unit, Utils, EntityManager, Hero, Tower, Creep } from "./Imports"
+import { Ability, Creep, EntityManager, Hero, Tower, Unit, Utils, Vector3 } from "./Imports"
 
 var additional_delay = 30
 
@@ -73,9 +73,9 @@ export class Combo {
 		if (index === 0) {
 			// we need only instance from combo start, and as Utils.GetCursorWorldVec is dynamically changed vector - we need new instance of it
 			this.cursor_pos = Utils.CursorWorldVec
-			
-			let ents_under_cursor = EntityManager.GetEntitiesInRange(this.cursor_pos, 1000); // must be split from another declarations, otherwise loop optimizer will fuck up our code
-			
+
+			let ents_under_cursor = EntityManager.GetEntitiesInRange(this.cursor_pos, 1000) // must be split from another declarations, otherwise loop optimizer will fuck up our code
+
 			let cursor_enemy = ents_under_cursor.filter(ent => ent.IsEnemy(caster) && (ent instanceof Roshan || (ent instanceof Hero && ent.m_pBaseEntity.m_hReplicatingOtherHeroModel === undefined))) as Unit[],
 				cursor_ally = ents_under_cursor.filter(ent => !ent.IsEnemy(caster) && ent instanceof Hero && ent.m_pBaseEntity.m_hReplicatingOtherHeroModel === undefined) as Unit[]
 			this.cursor_ally = cursor_ally.length > 0 ? this.cursor_ally = cursor_ally[0] : undefined
@@ -99,7 +99,7 @@ export class Combo {
 			else this.nextExecute(caster, callback, delay, index)
 			return
 		}
-		
+
 		let is_tech = this.tech_names.some(name => abilName === name)
 		if (!is_tech && (abil === undefined || abil.Level === 0 || abil.Cooldown !== 0)) {
 			this.nextExecute(caster, callback, delay, index)
@@ -173,7 +173,7 @@ export class Combo {
 			case undefined:
 				break
 			default:
-				throw "Unknown EComboAction: " + act
+				throw new Error("Unknown EComboAction: " + act)
 		}
 
 		if (abilName === "linken_breaker") {
@@ -247,7 +247,7 @@ export class Combo {
 					caster.CastToggle(abil, false)
 					break
 				default:
-					throw "Unknown EComboAction: " + act
+					throw new Error("Unknown EComboAction: " + act)
 			}
 		}
 

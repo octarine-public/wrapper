@@ -1,21 +1,20 @@
 // This is temporary solution of updateManager.
-import { Game } from "../Managers/EntityManager";
-
+import { Game } from "../Managers/EntityManager"
 
 class SleeperBase {
-	protected SleepDB = new Map<string, number>();
-	
+	protected SleepDB = new Map<string, number>()
+
 	protected setTime(id: string, time: number): number {
 		this.SleepDB.set(id, time)
-		return time;
+		return time
 	}
 	protected updateTime(id: string, timeNow: number, timeExtend: number): boolean {
-		let value = this.SleepDB.get(id);
-		
+		let value = this.SleepDB.get(id)
+
 		if (value === undefined || value <= timeExtend)
-			return false;
-		
-		this.setTime(id, timeNow += timeExtend);
+			return false
+
+		this.setTime(id, timeNow += timeExtend)
 		return true
 	}
 }
@@ -24,24 +23,24 @@ class SleeperBase {
  * Sleeper by Date.now()
  */
 export class Sleeper extends SleeperBase {
-	
+
 	Sleep(ms: number, id: string, extend: boolean = false): number {
 		if (typeof ms !== "number")
-			return this.setTime(id, Date.now());
+			return this.setTime(id, Date.now())
 
 		if (extend && this.updateTime(id, Date.now(), ms))
-			return;
+			return
 
-		return this.setTime(id, Date.now() + ms);
+		return this.setTime(id, Date.now() + ms)
 	}
 	Sleeping(id: string): boolean {
-		let sleepID = this.SleepDB.get(id);
-		return sleepID !== undefined && Date.now() < sleepID;
+		let sleepID = this.SleepDB.get(id)
+		return sleepID !== undefined && Date.now() < sleepID
 	}
-	
+
 	FullReset(): Sleeper {
-		this.SleepDB.clear();
-		return this;
+		this.SleepDB.clear()
+		return this
 	}
 }
 
@@ -52,20 +51,20 @@ export class GameSleeper extends SleeperBase {
 
 	Sleep(ms: number, id: string, extend: boolean = false): number {
 		if (typeof ms !== "number")
-			return this.setTime(id, Game.RawGameTime);
+			return this.setTime(id, Game.RawGameTime)
 
 		if (extend && this.updateTime(id, Game.RawGameTime, ms / 1000))
-			return;
+			return
 
-		return this.setTime(id, Game.RawGameTime + ms / 1000);
+		return this.setTime(id, Game.RawGameTime + ms / 1000)
 	}
 	Sleeping(id: string): boolean {
-		let sleepID = this.SleepDB.get(id);
-		return sleepID !== undefined && Game.RawGameTime < sleepID;
+		let sleepID = this.SleepDB.get(id)
+		return sleepID !== undefined && Game.RawGameTime < sleepID
 	}
 
 	FullReset(): GameSleeper {
-		this.SleepDB.clear();
-		return this;
+		this.SleepDB.clear()
+		return this
 	}
 }

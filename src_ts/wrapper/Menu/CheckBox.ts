@@ -73,9 +73,9 @@ export default class CheckBox extends Menu_Boolean {
 			configurable: false,
 		})
 	}
-	
+
 	get IndexInMenu(): number {
-		return this.parent.entries.indexOf(this);
+		return this.parent.entries.indexOf(this)
 	}
 
 	Remove(): void {

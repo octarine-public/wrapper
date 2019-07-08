@@ -1,39 +1,39 @@
 export default class Color {
-	
-	public static readonly Black = new Color(0, 0, 0);
-	public static readonly Red = new Color(255);
-	public static readonly Green = new Color(0, 255);
-	public static readonly Blue = new Color(0, 0, 255);
-	public static readonly RoyalBlue = new Color(78, 121, 248);
-	public static readonly Yellow = new Color(255, 255);
-	public static readonly Orange = new Color(255, 128);
-	public static readonly Fuchsia = new Color(255, 0, 255);
-	public static readonly Aqua = new Color(0, 255, 255);
-	public static readonly White = new Color(255, 255, 255);
-	
+
+	public static readonly Black = new Color(0, 0, 0)
+	public static readonly Red = new Color(255)
+	public static readonly Green = new Color(0, 255)
+	public static readonly Blue = new Color(0, 0, 255)
+	public static readonly RoyalBlue = new Color(78, 121, 248)
+	public static readonly Yellow = new Color(255, 255)
+	public static readonly Orange = new Color(255, 128)
+	public static readonly Fuchsia = new Color(255, 0, 255)
+	public static readonly Aqua = new Color(0, 255, 255)
+	public static readonly White = new Color(255, 255, 255)
+
 	/* ================== Static ================== */
 	static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): Color {
 
 		if (bufferOrOffset === undefined)
-			return new Color(IOBuffer[0], IOBuffer[1], IOBuffer[2], IOBuffer[3]);
+			return new Color(IOBuffer[0], IOBuffer[1], IOBuffer[2], IOBuffer[3])
 
 		if (typeof bufferOrOffset === "boolean") {
 
 			if (!bufferOrOffset)
-				return new Color();
+				return new Color()
 
-			bufferOrOffset = offset;
+			bufferOrOffset = offset
 		}
 
-		return new Color(IOBuffer[bufferOrOffset + 0], IOBuffer[bufferOrOffset + 1], IOBuffer[bufferOrOffset + 2], IOBuffer[bufferOrOffset + 3]);
+		return new Color(IOBuffer[bufferOrOffset + 0], IOBuffer[bufferOrOffset + 1], IOBuffer[bufferOrOffset + 2], IOBuffer[bufferOrOffset + 3])
 	}
-	
+
 	/* =================== Fields =================== */
 	r: number
 	g: number
 	b: number
 	a: number
-	
+
 	/* ================ Constructors ================ */
 	/**
 	 * Create new Color with r, g, b, a
@@ -42,11 +42,10 @@ export default class Color {
 	 * var color = new Color(1, 2, 3)
 	 */
 	constructor(r: number = 0, g: number = 0, b: number = 0, a: number = 255) {
-		this.SetColor(r, g, b, a);
+		this.SetColor(r, g, b, a)
 	}
-	
+
 	/* ================== Getters ================== */
-	
 
 	/* ================== Methods ================== */
 	/**
@@ -87,7 +86,7 @@ export default class Color {
 		this.a = a
 		return this
 	}
-	
+
 	/* ================== To ================== */
 	/**
 	 * Color to String Color
@@ -104,11 +103,11 @@ export default class Color {
 	}
 
 	toIOBuffer(offset: number = 0): true {
-		IOBuffer[offset + 0] = this.r;
-		IOBuffer[offset + 1] = this.g;
-		IOBuffer[offset + 2] = this.b;
-		IOBuffer[offset + 3] = this.a;
-		return true;
+		IOBuffer[offset + 0] = this.r
+		IOBuffer[offset + 1] = this.g
+		IOBuffer[offset + 2] = this.b
+		IOBuffer[offset + 3] = this.a
+		return true
 	}
 }
 

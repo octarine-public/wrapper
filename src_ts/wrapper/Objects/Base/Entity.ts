@@ -1,8 +1,8 @@
-import { DegreesToRadian } from "../../Utils/Math";
-import QAngle from "../../Base/QAngle";
-import Vector2 from "../../Base/Vector2";
-import Vector3 from "../../Base/Vector3";
-import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager";
+import QAngle from "../../Base/QAngle"
+import Vector2 from "../../Base/Vector2"
+import Vector3 from "../../Base/Vector3"
+import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager"
+import { DegreesToRadian } from "../../Utils/Math"
 
 export const rotation_speed = {
 	npc_dota_hero_base: 0.5,
@@ -134,35 +134,35 @@ m_pEntity.m_flags
 */
 export default class Entity {
 	/* ================================ Fields ================================ */
-	
+
 	/* protected */ readonly m_pBaseEntity: C_BaseEntity
-	protected m_iIndex: number;
-	private m_bIsValid: boolean = false;
-	
+	protected m_iIndex: number
+	IsValid: boolean = false
+
 	private m_pEntity: CEntityIdentity
 	private m_hOwnerEntity: Entity
-	
+
 	/* ================================ BASE ================================ */
-	
+
 	constructor(ent?: C_BaseEntity, id: number = -1) {
-		this.m_pBaseEntity = ent;
-		this.m_iIndex = id;
+		this.m_pBaseEntity = ent
+		this.m_iIndex = id
 	}
-	
+
 	/* ================ GETTERS ================ */
 	private get Entity(): CEntityIdentity {
 		if (!this.IsValid)
-			return undefined;
-		return this.m_pEntity || (this.m_pEntity = this.m_pBaseEntity.m_pEntity);
+			return undefined
+		return this.m_pEntity || (this.m_pEntity = this.m_pBaseEntity.m_pEntity)
 	}
-	
+
 	get Angles(): QAngle {
 		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
 
 		if (gameSceneNode !== undefined)
-			return QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation);
-		
-		return this.NetworkAngles;
+			return QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation)
+
+		return this.NetworkAngles
 	}
 	get CreateTime(): number {
 		return this.m_pBaseEntity.m_flCreateTime
@@ -171,10 +171,10 @@ export default class Entity {
 		return this.m_pBaseEntity.m_iHealth
 	}
 	get HPPercent(): number {
-		return Math.floor(this.HP / this.MaxHP * 100) || 0;
+		return Math.floor(this.HP / this.MaxHP * 100) || 0
 	}
 	get Index(): number {
-		return this.m_iIndex;
+		return this.m_iIndex
 	}
 	get IsAlive(): boolean {
 		return this.LifeState === LifeState_t.LIFE_ALIVE // || this.HP === 0
@@ -183,16 +183,10 @@ export default class Entity {
 		return !this.IsVisible
 	}
 	get IsDOTANPC(): boolean {
-		return this.m_pBaseEntity.m_bIsDOTANPC;
+		return this.m_pBaseEntity.m_bIsDOTANPC
 	}
 	get IsNPC(): boolean {
-		return this.m_pBaseEntity.m_bIsNPC;
-	}
-	get IsValid(): boolean {
-		return this.m_bIsValid;
-	}
-	set IsValid(value: boolean) {
-		this.m_bIsValid = value;
+		return this.m_pBaseEntity.m_bIsNPC
 	}
 	get IsVisible(): boolean {
 		return (this.Flags & (1 << 7)) === 0
@@ -205,23 +199,23 @@ export default class Entity {
 	}
 	get Name(): string {
 		if (!this.IsValid)
-			return "";
-		
+			return ""
+
 		return this.Entity.m_designerName
 			|| this.Entity.m_name
-			|| "";
+			|| ""
 	}
 	get NetworkAngles(): QAngle {
 		return QAngle.fromIOBuffer(this.m_pBaseEntity.m_angNetworkAngles)
 	}
 	get NetworkPosition(): Vector3 {
-		return Vector3.fromIOBuffer(this.m_pBaseEntity.m_vecNetworkOrigin);
+		return Vector3.fromIOBuffer(this.m_pBaseEntity.m_vecNetworkOrigin)
 	}
 	get NetworkRotation(): number {
 		return this.m_pBaseEntity.m_angNetworkAngles ? IOBuffer[1] : 0
 	}
 	get NetworkRotationRad(): number {
-		return DegreesToRadian(this.NetworkRotation);
+		return DegreesToRadian(this.NetworkRotation)
 	}
 	/**
 	 * as Direction
@@ -230,15 +224,15 @@ export default class Entity {
 		return Vector3.FromAngle(this.NetworkRotationRad)
 	}
 	get Owner(): Entity {
-		return this.m_hOwnerEntity || (this.m_hOwnerEntity = EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true));
+		return this.m_hOwnerEntity || (this.m_hOwnerEntity = EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
 	}
 	get Position(): Vector3 {
 		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
 
 		if (gameSceneNode !== undefined)
-			return Vector3.fromIOBuffer(gameSceneNode.m_vecAbsOrigin);
+			return Vector3.fromIOBuffer(gameSceneNode.m_vecAbsOrigin)
 
-		return this.NetworkPosition;
+		return this.NetworkPosition
 	}
 	get Rotation(): number {
 		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
@@ -246,10 +240,10 @@ export default class Entity {
 		if (gameSceneNode !== undefined)
 			return gameSceneNode.m_angRotation ? IOBuffer[1] : 0
 
-		return this.NetworkRotation;
+		return this.NetworkRotation
 	}
 	get RotationRad(): number {
-		return DegreesToRadian(this.Rotation);
+		return DegreesToRadian(this.Rotation)
 	}
 	get Scale(): number {
 		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
@@ -270,25 +264,25 @@ export default class Entity {
 	}
 	get Flags(): number {
 		if (!this.IsValid)
-			return -1;
-		return this.Entity.m_flags;
+			return -1
+		return this.Entity.m_flags
 	}
 	set Flags(value: number) {
 		if (!this.IsValid)
-			return;
-		this.Entity.m_flags = value;
+			return
+		this.Entity.m_flags = value
 	}
 
 	/* ================ METHODS ================ */
 
 	toString(): string {
-		return this.Name;
+		return this.Name
 	}
-	
+
 	/* ================================ EXTENSIONS ================================ */
-	
+
 	/* ================ METHODS ================ */
-	
+
 	/**
 	 */
 	Distance(vec: Vector3 | Entity): number {
@@ -302,7 +296,7 @@ export default class Entity {
 	Distance2D(vec: Vector3 | Vector2 | Entity): number {
 		if (vec instanceof Vector3 || vec instanceof Vector2)
 			return this.NetworkPosition.Distance2D(vec)
-			
+
 		return this.NetworkPosition.Distance2D(vec.NetworkPosition)
 	}
 	/**
@@ -310,7 +304,7 @@ export default class Entity {
 	DistanceSquared(vec: Vector3 | Entity): number {
 		if (vec instanceof Vector3)
 			return this.NetworkPosition.DistanceSqr(vec)
-			
+
 		return this.NetworkPosition.DistanceSqr(vec.NetworkPosition)
 	}
 	/**
@@ -328,13 +322,13 @@ export default class Entity {
 		return this.Position.Rotation(this.Forward, distance)
 	}
 	InFrontFromAngle(angle: number, distance: number): Vector3 {
-		return this.Position.InFrontFromAngle(this.NetworkRotationRad + angle, distance);
+		return this.Position.InFrontFromAngle(this.NetworkRotationRad + angle, distance)
 	}
 	FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
-			vec = vec.NetworkPosition;
+			vec = vec.NetworkPosition
 
-		return this.NetworkPosition.FindRotationAngle(vec, this.NetworkRotationRad);
+		return this.NetworkPosition.FindRotationAngle(vec, this.NetworkRotationRad)
 	}
 	/**
 	 * faster (Distance <= range)
@@ -343,46 +337,42 @@ export default class Entity {
 		return this.DistanceSquared2D(ent) < range ** 2
 	}
 	Closest(ents: Entity[]): Entity {
-		
-		let thisPos = this.NetworkPosition;
-		
-		let entity: Entity = undefined;
-		let distance = Number.POSITIVE_INFINITY;
+		let thisPos = this.NetworkPosition
+
+		let entity: Entity
+		let distance = Number.POSITIVE_INFINITY
 
 		ents.forEach(ent => {
-
-			let tempDist = ent.Distance(thisPos);
+			let tempDist = ent.Distance(thisPos)
 			if (tempDist < distance) {
-				distance = tempDist;
-				entity = ent;
+				distance = tempDist
+				entity = ent
 			}
 		})
-		return entity;
+		return entity
 	}
 	/**
 	 * @example
 	 * unit.ClosestGroup(groups, group => Vector3.GetCenterType(creeps, creep => creep.InFront(200)))
 	 */
 	ClosestGroup(groups: Entity[][], callback: (entity: Entity[]) => Vector3): [Entity[], Vector3] {
+		let thisPos = this.NetworkPosition
 
-		let thisPos = this.NetworkPosition;
-		
-		let entities: Entity[] = [];
-		let vec = new Vector3();
-		let distance = Number.POSITIVE_INFINITY;
+		let entities: Entity[] = []
+		let vec = new Vector3()
+		let distance = Number.POSITIVE_INFINITY
 
 		groups.forEach(group => {
+			let tempVec = callback(group)
+			let tempDist = thisPos.Distance(tempVec)
 
-			let tempVec = callback(group);
-			let tempDist = thisPos.Distance(tempVec);
-			
 			if (tempDist < distance) {
-				distance = tempDist;
-				entities = group;
-				vec = tempVec;
+				distance = tempDist
+				entities = group
+				vec = tempVec
 			}
 		})
-		return [entities, vec];
+		return [entities, vec]
 	}
 	/**
 	 * @param ent if undefined => this compare with LocalPlayer
@@ -396,11 +386,11 @@ export default class Entity {
 	IsAlly(ent: Entity = LocalPlayer): boolean {
 		return ent !== undefined && ent.Team === this.Team
 	}
-	
+
 	Select(bAddToGroup: boolean = false): boolean {
 		return SelectUnit(this.m_pBaseEntity, bAddToGroup)
 	}
-	
+
 	GetRotationTime(vec: Vector3): number {
 		const turn_rad = Math.PI - 0.25
 		let ang = this.FindRotationAngle(vec)

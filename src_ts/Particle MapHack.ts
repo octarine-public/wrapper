@@ -1,7 +1,6 @@
-import { ArrayExtensions, MenuManager, EventsSDK, EntityManager, Entity, Unit, Vector3, Creep, RendererSDK, Debug } from "wrapper/Imports"
+import { ArrayExtensions, Creep, Debug, Entity, EntityManager, EventsSDK, MenuManager, RendererSDK, Unit, Vector3 } from "wrapper/Imports"
 
-
-let { MenuFactory, CreateRGBATree } = MenuManager;
+let { MenuFactory, CreateRGBATree } = MenuManager
 
 // --- Menu
 const jungleMHMenu = MenuFactory("Particle MapHack")
@@ -66,7 +65,7 @@ EventsSDK.on("GameEnded", () => {
 // EventsSDK.on("ParticleCreated", console.log)
 EventsSDK.on("ParticleCreated", (id, path, psHandle, attach, target: Entity) => {
 	let mine_name
-	
+
 	if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)_plant.vpcf$/.exec(path)) !== null) {
 		if (target === undefined || !target.IsEnemy())
 			return
@@ -174,7 +173,7 @@ EventsSDK.on("BloodImpact", (target: Entity) => {
 
 	allBloodTargets.push(target as Unit)
 
-	setTimeout(() => ArrayExtensions.arrayRemove(allBloodTargets, target), 
+	setTimeout(() => ArrayExtensions.arrayRemove(allBloodTargets, target),
 		phBloodTimer.value * 1000)
 })
 
@@ -183,7 +182,7 @@ EventsSDK.on("Draw", () => {
 		return
 
 	if (campInformerState.value) {
-		
+
 		allNeutrals.forEach(creep => {
 
 			let isWaitSpawn = creep.IsWaitingToSpawn
@@ -215,10 +214,10 @@ EventsSDK.on("Draw", () => {
 			allBloodTargets.forEach(target => {
 
 				if (!target.IsValid || target.IsVisible)
-					return;
-				
+					return
+
 				let pos = target.Position
-				
+
 				if (pos.IsZero())
 					return
 

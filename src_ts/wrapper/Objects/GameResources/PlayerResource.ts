@@ -1,95 +1,95 @@
-import Entity from "../Base/Entity";
-import Player from "../Base/Player";
-import EntityManager from "../../Managers/EntityManager";
-import Courier from "../Base/Courier";
+import EntityManager from "../../Managers/EntityManager"
+import Courier from "../Base/Courier"
+import Entity from "../Base/Entity"
+import Player from "../Base/Player"
 
 class PlayerResource extends Entity {
-	
+
 	public m_pBaseEntity: C_DOTA_PlayerResource
 	public m_iIndex: number
-	
+
 	get Names(): string[] {
-		let playerResource = this.m_pBaseEntity;
-		
-		return playerResource !== undefined ? playerResource.m_iszName : [];
+		let playerResource = this.m_pBaseEntity
+
+		return playerResource !== undefined ? playerResource.m_iszName : []
 	}
 	get AllPlayers(): Player[] {
-		let playerResource = this.m_pBaseEntity;
-		
-		return playerResource !== undefined 
-			? EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_playerIDToPlayer) as Player[] 
-			: [];
+		let playerResource = this.m_pBaseEntity
+
+		return playerResource !== undefined
+			? EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_playerIDToPlayer) as Player[]
+			: []
 	}
 	get PlayerTeamData(): PlayerResourcePlayerTeamData_t[] {
-		let playerResource = this.m_pBaseEntity;
-		
-		return playerResource !== undefined 
-			? playerResource.m_vecPlayerTeamData 
-			: [];
+		let playerResource = this.m_pBaseEntity
+
+		return playerResource !== undefined
+			? playerResource.m_vecPlayerTeamData
+			: []
 	}
 	get PlayerData(): PlayerResourcePlayerData_t[] {
-		let playerResource = this.m_pBaseEntity;
-		
-		return playerResource !== undefined 
-			? playerResource.m_vecPlayerData 
-			: [];
+		let playerResource = this.m_pBaseEntity
+
+		return playerResource !== undefined
+			? playerResource.m_vecPlayerData
+			: []
 	}
 	get TeamCouriers(): Courier[][] {
-		let playerResource = this.m_pBaseEntity;
-		
+		let playerResource = this.m_pBaseEntity
+
 		if (playerResource === undefined)
-			return [];
-		
-		let couriers: Courier[][] = [];
-		
+			return []
+
+		let couriers: Courier[][] = []
+
 		playerResource.m_hTeamCouriers.forEach(cours =>
 			couriers.push(EntityManager.GetEntitiesByNative(cours) as Courier[]))
-		
-		return couriers;
+
+		return couriers
 	}
 	get PlayerCouriers(): Courier[][] {
-		let playerResource = this.m_pBaseEntity;
-		
+		let playerResource = this.m_pBaseEntity
+
 		if (playerResource === undefined)
-			return [];
-			
-		let couriers: Courier[][] = [];
+			return []
+
+		let couriers: Courier[][] = []
 
 		playerResource.m_hPlayerCouriers.forEach(cours =>
 			couriers.push(EntityManager.GetEntitiesByNative(cours) as Courier[]))
 
-		return couriers;
+		return couriers
 	}
-	
+
 	GetNameByPlayerID(playerID: number): string {
-		let playerResource = this.m_pBaseEntity;
-		
-		return playerResource !== undefined ? this.m_pBaseEntity.m_iszName[playerID] : "";
+		let playerResource = this.m_pBaseEntity
+
+		return playerResource !== undefined ? this.m_pBaseEntity.m_iszName[playerID] : ""
 	}
 	GetPlayerByPlayerID(playerID: number): Player {
-		let playerResource = this.m_pBaseEntity;
-		
-		return playerResource !== undefined 
+		let playerResource = this.m_pBaseEntity
+
+		return playerResource !== undefined
 			? EntityManager.GetEntityByNative(this.m_pBaseEntity.m_playerIDToPlayer[playerID], true) as Player
-			: undefined;
+			: undefined
 	}
 	GetPlayerTeamDataByPlayerID(playerID: number): PlayerResourcePlayerTeamData_t {
-		let playerResource = this.m_pBaseEntity;
-		
-		return playerResource !== undefined ? this.PlayerTeamData[playerID] : undefined;
+		let playerResource = this.m_pBaseEntity
+
+		return playerResource !== undefined ? this.PlayerTeamData[playerID] : undefined
 	}
 	GetPlayerDataByPlayerID(playerID: number): PlayerResourcePlayerData_t {
-		let playerResource = this.m_pBaseEntity;
-		
-		return playerResource !== undefined ? this.PlayerData[playerID] : undefined;
+		let playerResource = this.m_pBaseEntity
+
+		return playerResource !== undefined ? this.PlayerData[playerID] : undefined
 	}
 	GetPlayerCouriersByPlayerID(playerID: number): Courier[] {
-		let playerResource = this.m_pBaseEntity;
-		
+		let playerResource = this.m_pBaseEntity
+
 		return playerResource !== undefined
 			? EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_hPlayerCouriers[playerID]) as Courier[]
-			: [];
+			: []
 	}
 }
 
-export default global.PlayerResource = new PlayerResource();
+export default global.PlayerResource = new PlayerResource()

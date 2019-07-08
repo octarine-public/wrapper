@@ -1,10 +1,10 @@
-import { Game, MenuManager, EventsSDK, Vector3 } from "wrapper/Imports";
+import { EventsSDK, Game, MenuManager, Vector3 } from "wrapper/Imports"
 
 let { MenuFactory } = MenuManager,
-	blink_range: number = undefined
+	blink_range: number
 const menu = MenuFactory("Perfect Dagger"),
 	active = menu.AddToggle("Active")
-EventsSDK.on('PrepareUnitOrders', order => {
+EventsSDK.on("PrepareUnitOrders", order => {
 	if (
 		!active.value
 		|| order.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION
@@ -12,11 +12,11 @@ EventsSDK.on('PrepareUnitOrders', order => {
 	)
 		return true
 	if (blink_range === undefined)
-		blink_range = order.Ability.GetSpecialValue('blink_range')
+		blink_range = order.Ability.GetSpecialValue("blink_range")
 	if (order.Position.IsInRange(order.Unit.Position, blink_range))
 		return true
 	let vec: Vector3 = order.Unit.Position
-	if(order.Unit.IsMoving)
+	if (order.Unit.IsMoving)
 		vec = order.Unit.Position
 			.Add(order.Unit.Forward.MultiplyScalar(order.Unit.IdealSpeed * Game.GetLatency()))
 			.Extend(order.Position, blink_range - 30)

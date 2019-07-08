@@ -1,32 +1,32 @@
-export const AegisExpirationTime = 300;
+export const AegisExpirationTime = 300
 
-export const BountyRuneRespawnTime = 300;
+export const BountyRuneRespawnTime = 300
 
-export const BuybackCooldown = 480;
+export const BuybackCooldown = 480
 
-export const CreepSpeed = 325;
+export const CreepSpeed = 325
 
-export const RoshanMaxRespawnTime = 660;
+export const RoshanMaxRespawnTime = 660
 
-export const RoshanMinRespawnTime = 480;
+export const RoshanMinRespawnTime = 480
 
-export const RuneRespawnTime = 120;
+export const RuneRespawnTime = 120
 
-export const ScanActiveTime = 8;
+export const ScanActiveTime = 8
 
-export const ScanRadius = 900;
+export const ScanRadius = 900
 
 /**
  * https://dota2.gamepedia.com/Intelligence
  */
-export const DamageAmplifyPerIntelligencePrecent = 0.07;
+export const DamageAmplifyPerIntelligencePrecent = 0.07
 
-export const HealthGainPerStrength = 20;
+export const HealthGainPerStrength = 20
 
-export const HurricanePikeBonusAttackSpeed = 100;
+export const HurricanePikeBonusAttackSpeed = 100
 
-export const MaxAttackSpeed = 700;
+export const MaxAttackSpeed = 700
 
-export const MaxMovementSpeed = 550;
+export const MaxMovementSpeed = 550
 
-export const MinAttackSpeed = 20;
+export const MinAttackSpeed = 20

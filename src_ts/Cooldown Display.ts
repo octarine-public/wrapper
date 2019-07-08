@@ -2,11 +2,11 @@ import {
 	ArrayExtensions,
 	Color,
 	EventsSDK,
-	MenuManager,
+	Game,
 	Hero,
+	MenuManager,
 	RendererSDK,
 	Vector2,
-	Game,
 } from "wrapper/Imports"
 
 let renderable_heroes: Hero[] = [],
@@ -42,14 +42,14 @@ Events.on("Update", () => {
 })
 
 let ignore_abils = [
-	'morphling_morph_agi',
-	'morphling_morph_str',
+	"morphling_morph_agi",
+	"morphling_morph_str",
 	"invoker_empty1",
 	"invoker_empty2",
 	"generic_hidden",
 	"rubick_hidden1",
 	"rubick_hidden2",
-	"rubick_hidden3"
+	"rubick_hidden3",
 ]
 EventsSDK.on("Draw", () => {
 	if (!stateMain.value)
@@ -72,7 +72,7 @@ EventsSDK.on("Draw", () => {
 					RendererSDK.FilledRect (
 						need_pos.Clone().AddScalarY(size.value * time),
 						new Vector2(size.value, size.value * (1 - time)),
-						new Color(232, 232, 232, 100)
+						new Color(232, 232, 232, 100),
 					)
 				}
 				if (abil.Level !== 0) {
@@ -102,7 +102,7 @@ EventsSDK.on("Draw", () => {
 						new Color(255, 255, 255),
 						"Consolas",
 						new Vector2(size.value / 3, 0),
-						FontFlags_t.OUTLINE
+						FontFlags_t.OUTLINE,
 					)
 				}
 				for (let i = 0, lvl = abil.Level, end = abil.MaxLevel; i < end; i++) {

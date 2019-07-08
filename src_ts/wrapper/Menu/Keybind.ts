@@ -1,8 +1,8 @@
-import { arrayRemove } from "../Utils/ArrayExtensions";
+import { arrayRemove } from "../Utils/ArrayExtensions"
 
-import Game from "../Objects/GameResources/GameRules";
+import Game from "../Objects/GameResources/GameRules"
 
-import { Tree } from "./Tree";
+import { Tree } from "./Tree"
 
 let IsPressing: boolean[] = [],
 	OnExecute: [Keybind[]] = [[]]
@@ -12,7 +12,7 @@ function KeyBindCallback(keybind: Keybind): void {
 	var onValueCall = keybind.OnValueCallback
 
 	AddOrChangeKeyEvent(keybind)
-	
+
 	if (onValueCall)
 		onValueCall(keybind.value, keybind)
 }
@@ -55,16 +55,16 @@ Events.on("WndProc", (msg, wParam) => {
 		return true
 
 	if (msg !== 0x100 && msg !== 0x101)
-		return true;
+		return true
 
 	let key = parseInt(wParam as any),
 		onExecute = OnExecute[key]
 
 	if (onExecute === undefined)
-		return true;
+		return true
 
-	let isPressed = (msg === 0x100); // WM_KEYDOWN
-		
+	let isPressed = (msg === 0x100) // WM_KEYDOWN
+
 	if (IsPressing[key] === isPressed)
 		return true
 
@@ -79,16 +79,16 @@ Events.on("WndProc", (msg, wParam) => {
 			return
 		}
 
-		const onExecuteCall = keybind.OnExecuteCallback;
+		const onExecuteCall = keybind.OnExecuteCallback
 
 		if (onExecuteCall)
 			ret = !!onExecuteCall(isPressed, keybind)
 
 		if (isPressed) {
-			const onPressedCall = keybind.OnPressedCallback	
+			const onPressedCall = keybind.OnPressedCallback
 			ret = !(onPressedCall && onPressedCall(keybind) === false)
 		} else {
-			const onReleaseCall = keybind.OnReleaseCallback;
+			const onReleaseCall = keybind.OnReleaseCallback
 			ret = !(onReleaseCall && onReleaseCall(keybind) === false)
 		}
 	})
@@ -145,9 +145,9 @@ export default class Keybind extends Menu_Keybind {
 			configurable: false,
 		})
 	}
-	
+
 	get IndexInMenu(): number {
-		return this.parent.entries.indexOf(this);
+		return this.parent.entries.indexOf(this)
 	}
 
 	Remove(): void {
@@ -176,7 +176,7 @@ export default class Keybind extends Menu_Keybind {
 		this.OnValueCallback = callback
 		return this
 	}
-	
+
 	get IsPressed() {
 		return IsPressing[this.value]
 	}

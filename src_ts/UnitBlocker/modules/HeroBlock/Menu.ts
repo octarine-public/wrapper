@@ -1,6 +1,6 @@
-import { Menu, MenuBase, MenuDraw } from "../../base/MenuBase";
+import { Menu, MenuBase, MenuDraw } from "../../base/MenuBase"
 
-import MenuControllables from "../Controllables";
+import MenuControllables from "../Controllables"
 
 const {
 	BaseTree,
@@ -8,7 +8,7 @@ const {
 	Key,
 	KeyStyle,
 	Sensitivity,
-} = MenuBase(Menu, "Hero Block", "9");
+} = MenuBase(Menu, "Hero Block", "9")
 
 const {
 	BaseTree: BaseTreeAlly,
@@ -16,14 +16,14 @@ const {
 	Key: KeyAlly,
 	KeyStyle: KeyStyleAlly,
 	Sensitivity: SensitivityAlly,
-} = MenuBase(BaseTree, "Hero Block (Allies)");
+} = MenuBase(BaseTree, "Hero Block (Allies)")
 
 const {
 	ControllablesTree,
 	StateUnits,
 	CenterCamera,
-	CountUnits
-} = MenuControllables(BaseTree);
+	CountUnits,
+} = MenuControllables(BaseTree)
 
 const SpreadUnits = ControllablesTree.AddToggle("Spread units", true)
 	.SetToolTip("If enabled units will try to form an arc, otherwise they all will run in front of the hero")
@@ -32,9 +32,8 @@ const {
 	DrawTree,
 	DrawState,
 	StatusAroundUnits,
-	StatusMouse
-} = MenuDraw(BaseTree);
-
+	StatusMouse,
+} = MenuDraw(BaseTree)
 
 export {
 	State,
@@ -47,12 +46,12 @@ export {
 	KeyAlly,
 	KeyStyleAlly,
 	SensitivityAlly,
-	
+
 	StateUnits,
 	CenterCamera,
 	CountUnits,
 	SpreadUnits,
-	
+
 	DrawState,
 	StatusMouse,
 	StatusAroundUnits,

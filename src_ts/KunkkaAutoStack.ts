@@ -1,4 +1,4 @@
-import { EventsSDK, Vector3, RendererSDK, LocalPlayer, Game, ArrayExtensions } from "./wrapper/Imports"
+import { ArrayExtensions, EventsSDK, Game, LocalPlayer, RendererSDK, Vector3 } from "./wrapper/Imports"
 
 /* import * as Orders from "Orders"
 import * as Utils from "Utils" */
@@ -41,7 +41,7 @@ EventsSDK.on("Tick", () => {
 	var torrent = MyEnt.AbilitiesBook.GetAbilityByClass(C_DOTA_Ability_Kunkka_Torrent)
 	if (torrent === undefined || !torrent.CanBeCasted())
 		return
-	
+
 	var cur_time = Game.GameTime
 	if (cur_time < 60)
 		return
@@ -54,16 +54,16 @@ EventsSDK.on("Tick", () => {
 	if (
 		Math.abs (
 			(cur_time % 60) -
-			(60 - (torrent.CastPoint + torrent.GetSpecialValue("delay") + 0.6)) // it tooks ~0.6sec to raise y coord of creeps
+			(60 - (torrent.CastPoint + torrent.GetSpecialValue("delay") + 0.6)), // it tooks ~0.6sec to raise y coord of creeps
 		) >= 1 / 30
 	)
 		return
-		
+
 	var my_vec = MyEnt.NetworkPosition,
 		cast_range = torrent.CastRange
 	// loop-optimizer: KEEP
 	ArrayExtensions.orderBy(spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
-		MyEnt.CastPosition(torrent, spot);
+		MyEnt.CastPosition(torrent, spot)
 		is_stacking = true
 		setTimeout(() => is_stacking = false, torrent.CastPoint * 1000 + 30)
 		return false

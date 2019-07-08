@@ -10,7 +10,7 @@
 // 	statusPosY = drawMenu.AddSlider("Position Y (%)", 4, 0, 100),
 // 	crutch = NotificationRoshanTree.AddTree("crutch"),
 // 	IsAlive = crutch.AddCheckBox("IsAlive").SetToolTip("don't pick, crutch for save last alive rosh");
-	
+
 // EventsSDK.on("ParticleCreated", (Id: number, ParticlePath: string, Handle: bigint, Attach: ParticleAttachment_t, Entity: Entity) => {
 // 	if (!NotificationRoshanState.value)
 // 		return;

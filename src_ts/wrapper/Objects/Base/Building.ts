@@ -1,15 +1,15 @@
-import Unit from "./Unit";
+import Unit from "./Unit"
 
 export default class Building extends Unit {
 	readonly m_pBaseEntity: C_DOTA_BaseNPC_Building
-	
+
 	get IsBuilding(): boolean {
 		return true
 	}
 	get HeroStatueOwnerPlayerID(): number {
-		return this.m_pBaseEntity.m_iHeroStatueOwnerPlayerID;
+		return this.m_pBaseEntity.m_iHeroStatueOwnerPlayerID
 	}
 	get IsHeroStatue(): boolean {
-		return this.m_pBaseEntity.m_bHeroStatue;
+		return this.m_pBaseEntity.m_bHeroStatue
 	}
 }

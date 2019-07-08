@@ -1,12 +1,12 @@
 export default class AbilitySpecialData {
 	readonly m_pAbilitySpecialData: DOTASpecialAbility_t
-	
+
 	constructor(data: DOTASpecialAbility_t) {
-		this.m_pAbilitySpecialData = data;
+		this.m_pAbilitySpecialData = data
 	}
-	
+
 	get Count(): number {
-		return this.m_pAbilitySpecialData.m_nCount;
+		return this.m_pAbilitySpecialData.m_nCount
 	}
 	get IsSpellDamageField(): boolean {
 		return this.m_pAbilitySpecialData.m_bSpellDamageField
@@ -15,13 +15,13 @@ export default class AbilitySpecialData {
 		return this.m_pAbilitySpecialData.m_pszName
 	}
 	get SpecialBonusAbility(): string {
-		return this.m_pAbilitySpecialData.m_pszSpecialBonusAbility;
+		return this.m_pAbilitySpecialData.m_pszSpecialBonusAbility
 	}
-	
+
 	/* Value(index: number): number {
 		if (index >= this.Count)
 			return 0;
-		
-		return 
+
+		return
 	} */
 }

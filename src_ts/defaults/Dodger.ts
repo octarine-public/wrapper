@@ -1,23 +1,23 @@
-import { MenuManager, EventsSDK, Game, Vector3, Unit, Player, EntityManager, ArrayExtensions } from "wrapper/Imports";
+import { ArrayExtensions, EntityManager, EventsSDK, Game, MenuManager, Player, Unit, Vector3 } from "wrapper/Imports"
 
-// menu 
+// menu
 /* const DodgerMenu = MenuManager.MenuFactory("Dodger");
 const stateMain = DodgerMenu.AddToggle("State", false); */
 
-let enabled = false;
+let enabled = false
 
 //import * as Orders from "Orders"
 //import * as Utils from "Utils"
 
 var proj2path: string[] = [],
-	proj_list: Array<TrackingProjectile | LinearProjectile> = [];
+	proj_list: Array<TrackingProjectile | LinearProjectile> = []
 
 function DeleteProjectile(proj: TrackingProjectile | LinearProjectile) {
 	ArrayExtensions.arrayRemove(proj_list, proj)
 }
 
 function Dodge(pl_ent: Unit, delay: number, target_pos?: Vector3, aoe: number = 0) {
-	pl_ent.AbilitiesBook.GetSpell(2).UseAbility();
+	pl_ent.AbilitiesBook.GetSpell(2).UseAbility()
 }
 
 function TryDodge(pl_ent: Unit, proj: TrackingProjectile | LinearProjectile) {
@@ -29,7 +29,7 @@ function TryDodge(pl_ent: Unit, proj: TrackingProjectile | LinearProjectile) {
 	if (proj instanceof TrackingProjectile) {
 		switch (path) {
 			case "particles/units/heroes/hero_alchemist/alchemist_unstable_concoction_projectile.vpcf":
-				let positionProj = Vector3.fromIOBuffer(proj.m_vecTarget);
+				let positionProj = Vector3.fromIOBuffer(proj.m_vecTarget)
 				if (positionProj.Distance2D(pl_ent.NetworkPosition) <= 200 + pl_ent.HullRadius)
 					Dodge(pl_ent, positionProj.Distance(Vector3.fromIOBuffer(proj.m_vecPosition)) / proj.m_iSpeed, positionProj, 200)
 				break
@@ -41,19 +41,19 @@ function TryDodge(pl_ent: Unit, proj: TrackingProjectile | LinearProjectile) {
 }
 
 EventsSDK.on("Tick", () => {
-	if (!enabled/* stateMain.value */ || !Game.IsInGame)
+	if (!enabled /* stateMain.value */ || !Game.IsInGame)
 		return
-		
-	let pl_ent = EntityManager.LocalHero;
+
+	let pl_ent = EntityManager.LocalHero
 	if (pl_ent === undefined || pl_ent.IsWaitingToSpawn || pl_ent.IsStunned)
 		return
 	// loop-optimizer: KEEP
 	proj_list.forEach(proj => TryDodge(pl_ent, proj))
 })
 Events.on("TrackingProjectileCreated", (proj, sourceAttachment, path) => {
-	if (!enabled/* stateMain.value */  || !Game.IsInGame)
+	if (!enabled /* stateMain.value */  || !Game.IsInGame)
 		return
-	let pl_ent = EntityManager.LocalHero;
+	let pl_ent = EntityManager.LocalHero
 	if (pl_ent === undefined || pl_ent.IsWaitingToSpawn || pl_ent.IsStunned)
 		return
 	proj2path[1024 + proj.m_iID] = path
@@ -61,9 +61,9 @@ Events.on("TrackingProjectileCreated", (proj, sourceAttachment, path) => {
 	TryDodge(pl_ent, proj)
 })
 Events.on("LinearProjectileCreated", (proj, ent, path) => {
-	if (!enabled/* stateMain.value */ || !Game.IsInGame)
+	if (!enabled /* stateMain.value */ || !Game.IsInGame)
 		return
-	let pl_ent = EntityManager.LocalHero;
+	let pl_ent = EntityManager.LocalHero
 	if (pl_ent === undefined || pl_ent.IsWaitingToSpawn || pl_ent.IsStunned)
 		return
 	proj2path[proj.m_iID] = path

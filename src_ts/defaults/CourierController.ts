@@ -1,8 +1,8 @@
-import { MenuManager, EventsSDK, Player, Courier, Entity, EntityManager, LocalPlayer, Unit, Hero, Game } from "wrapper/Imports";
+import { Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Player, Unit } from "wrapper/Imports"
 
 //import * as Utils from "Utils"
 
-let { MenuFactory } = MenuManager;
+let { MenuFactory } = MenuManager
 
 let allyCourier: Courier,
 	allAllyPlayers: AllyPlayer[] = []
@@ -14,7 +14,7 @@ const TOOLTIP_ONPLAYING = "List of players for blocking courier(s)"
 
 const courCtlrMenu = MenuFactory("Courier Controller")
 
-const stateMain = courCtlrMenu.AddToggle("State");
+const stateMain = courCtlrMenu.AddToggle("State")
 
 // deliver
 const deliverMenu = courCtlrMenu.AddTree("Deliver settings")
@@ -70,7 +70,7 @@ EventsSDK.on("GameStarted", () => playersBlockList.SetToolTip(TOOLTIP_ONPLAYING)
 EventsSDK.on("GameEnded", () => {
 
 	allyCourier = undefined
-	
+
 	allAllyPlayers = []
 
 	playersBlockList.SetToolTip(TOOLTIP_NEEDPLAYING)
@@ -101,7 +101,7 @@ EventsSDK.on("EntityCreated", (ent: Entity) => {
 	}
 
 	if (ent instanceof Hero && !ent.IsIllusion) {
-		let findPlayer = allAllyPlayers.find(player => player.ent.Hero === ent);
+		let findPlayer = allAllyPlayers.find(player => player.ent.Hero === ent)
 		if (findPlayer)
 			findPlayer.UpdateMenu()
 	}
@@ -133,7 +133,7 @@ EventsSDK.on("Update", () => {
 				let shield = allyCourier.AbilitiesBook.GetSpell(5) // "courier_shield"
 
 				if (shield !== undefined && shield.Level > 0 && shield.IsCooldownReady)
-					shield.UseAbility();
+					shield.UseAbility()
 			}
 		})
 
@@ -165,7 +165,6 @@ EventsSDK.on("Update", () => {
 	}
 })
 
-
 function checkCourSelf(stateEnt: Hero, state: CourierState_t) {
 
 	let localHero = EntityManager.LocalHero
@@ -173,7 +172,7 @@ function checkCourSelf(stateEnt: Hero, state: CourierState_t) {
 	if (localHero === undefined)
 		return false
 
-	let selfState = localHero === stateEnt;
+	let selfState = localHero === stateEnt
 
 	switch (state) {
 		case CourierState_t.COURIER_STATE_MOVING: // ?
@@ -190,15 +189,15 @@ function trySelfDeliver() {
 	if (!deliverState.value)
 		return false
 
-	let localEnt = EntityManager.LocalHero;
+	let localEnt = EntityManager.LocalHero
 
 	if (localEnt === undefined || !localEnt.IsAlive || !localEnt.Inventory.HasFreeSlot(0, 9) || !allyCourier.Inventory.HasFreeSlot(0, 9))
-		return false;
+		return false
 
 	if (allyCourier.Inventory.HasItemByOtherPlayer(localEnt)) {
 		CastCourAbility(4) // courier_transfer_items
 		return true
-	} 
+	}
 	else if (localEnt.Inventory.HasAnyItemStash) {
 		CastCourAbility(7) // courier_take_stash_and_transfer_items
 		return true

@@ -1,5 +1,5 @@
-import { Vector3, RendererSDK, EntityManager} from "wrapper/Imports";
-import { State } from "./Menu";
+import { EntityManager, RendererSDK, Vector3} from "wrapper/Imports"
+import { State } from "./Menu"
 
 let wisp: C_DOTA_Unit_Hero_Wisp | number,
 	pos = new Vector3().Invalidate(),
@@ -7,34 +7,34 @@ let wisp: C_DOTA_Unit_Hero_Wisp | number,
 
 export function ParticleCreate(id: number, handle: BigInt){
 	if (!State.value)
-		return;
+		return
 	if (handle === 2971384879877296313n)
-		par_id = id;
+		par_id = id
 }
 export function ParticleUpdated(id: number, ent: C_BaseEntity) {
 	if (!State.value)
-		return;
+		return
 	if (id === par_id || ent instanceof C_DOTA_Unit_Hero_Wisp) {
-		pos = Vector3.fromIOBuffer();
-		wisp = ent as C_DOTA_Unit_Hero_Wisp | number;
+		pos = Vector3.fromIOBuffer()
+		wisp = ent as C_DOTA_Unit_Hero_Wisp | number
 	}
 }
 export function OnDraw() {
 	if (!State.value)
-		return;
-	let wisp_ = wisp instanceof C_BaseEntity ? EntityManager.GetEntityByNative(wisp) : undefined;
+		return
+	let wisp_ = wisp instanceof C_BaseEntity ? EntityManager.GetEntityByNative(wisp) : undefined
 	if (wisp_ !== undefined && (!wisp_.IsEnemy() || wisp_.IsVisible || !wisp_.IsAlive))
-		return;
+		return
 	pos.toIOBuffer()
-	let screen_pos = RendererSDK.WorldToScreen(pos);
+	let screen_pos = RendererSDK.WorldToScreen(pos)
 	if (screen_pos === undefined)
-		return;
-	RendererSDK.Image("panorama/images/heroes/icons/npc_dota_hero_wisp_png.vtex_c", screen_pos);
+		return
+	RendererSDK.Image("panorama/images/heroes/icons/npc_dota_hero_wisp_png.vtex_c", screen_pos)
 }
 export function GameEnded() {
 	if (!State.value)
-		return;
-	wisp = undefined;
-	pos.Invalidate();
-	par_id = -1;
+		return
+	wisp = undefined
+	pos.Invalidate()
+	par_id = -1
 }

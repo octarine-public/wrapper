@@ -1,4 +1,4 @@
-import { arrayRemove } from "../Utils/ArrayExtensions";
+import { arrayRemove } from "../Utils/ArrayExtensions"
 
 import CheckBox from "./CheckBox"
 import ComboBox from "./ComboBox"
@@ -57,11 +57,11 @@ export class Tree extends Menu_Node {
 
 	get IndexInMenu(): number {
 		if (this.parent === undefined)
-			return -1;
-		
-		return this.parent.entries.indexOf(this);
+			return -1
+
+		return this.parent.entries.indexOf(this)
 	}
-	
+
 	SetToolTip(text: string) {
 		this.hint = text
 		return this
@@ -77,9 +77,9 @@ export class Tree extends Menu_Node {
 
 		return this
 	}
-	
+
 	HasControl(ctrl: Menu_Base): boolean {
-		return this.entries.includes(ctrl);
+		return this.entries.includes(ctrl)
 	}
 
 	RemoveControl(ctrl: Menu_Base): Tree {

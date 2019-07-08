@@ -1,10 +1,9 @@
-import Vector3 from "../Base/Vector3";
-import Vector2 from "../Base/Vector2";
-import EntityManager from "../Managers/EntityManager";
-import Entity from "../Objects/Base/Entity";
-import Unit from "../Objects/Base/Unit";
-import Ability from "../Objects/Base/Ability";
-
+import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
+import EntityManager from "../Managers/EntityManager"
+import Ability from "../Objects/Base/Ability"
+import Entity from "../Objects/Base/Entity"
+import Unit from "../Objects/Base/Unit"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -27,13 +26,13 @@ export default class ExecuteOrder {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
 		position?: Vector3 | Vector2,
-		ability?: Ability,
+		ability?: Ability | number,
 		orderIssuer?: PlayerOrderIssuer_t,
 		unit?: Unit,
 		queue?: boolean,
-		showEffects?: boolean
+		showEffects?: boolean,
 	}): ExecuteOrder {
-		return new ExecuteOrder(
+		return new ExecuteOrder (
 			order.orderType,
 			order.target,
 			order.position,
@@ -41,35 +40,39 @@ export default class ExecuteOrder {
 			order.orderIssuer,
 			order.unit,
 			order.queue,
-			order.showEffects
-		);
+			order.showEffects,
+		)
 	}
-	
+
 	static fromNative(order: CUnitOrder): ExecuteOrder {
-		
+
 		let unit = order.unit !== undefined
 			? EntityManager.GetEntityByNative(order.unit) as Unit
-			: EntityManager.LocalHero;
-		
+			: EntityManager.LocalHero
+
 		if (unit === undefined)
-			return undefined;
-			
-		return new ExecuteOrder(
+			return undefined
+
+		return new ExecuteOrder (
 			order.order_type,
-			EntityManager.GetEntityByNative(order.target) as Entity,
+			order.target instanceof C_BaseEntity
+				? EntityManager.GetEntityByNative(order.target) as Entity
+				: order.target,
 			Vector3.fromIOBuffer(order.position !== undefined),
-			EntityManager.GetEntityByNative(order.ability) as Ability,
+			order.ability instanceof C_DOTABaseAbility
+				? EntityManager.GetEntityByNative(order.ability) as Ability
+				: order.ability,
 			order.issuer,
 			unit,
 			order.queue,
-			order.show_effects
-		);
+			order.show_effects,
+		)
 	}
 
 	private m_OrderType: dotaunitorder_t
 	private m_Target: Entity | number
 	private m_Position: Vector3
-	private m_Ability: Ability
+	private m_Ability: Ability | number
 	private m_OrderIssuer: PlayerOrderIssuer_t
 	private m_Unit: Unit
 	private m_Queue: boolean
@@ -84,22 +87,22 @@ export default class ExecuteOrder {
 		orderType: dotaunitorder_t,
 		target: Entity | number,
 		position: Vector3 | Vector2 = new Vector3(),
-		ability: Ability,
-		issuer: PlayerOrderIssuer_t = PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY, 
+		ability: Ability | number,
+		issuer: PlayerOrderIssuer_t = PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
 		unit: Unit,
 		queue: boolean = false,
 		showEffects: boolean = false,
 	) {
-		this.m_OrderType = orderType;
-		this.m_Target = target instanceof Entity ? target : target;
-		this.m_Position = position;
-		this.m_Ability = ability;
-		this.m_OrderIssuer = issuer;
-		this.m_Unit = unit;
-		this.m_Queue = queue;
-		this.m_ShowEffects = showEffects;
+		this.m_OrderType = orderType
+		this.m_Target = target instanceof Entity ? target : target
+		this.m_Position = position instanceof Vector2 ? position.toVector3() : position
+		this.m_Ability = ability
+		this.m_OrderIssuer = issuer
+		this.m_Unit = unit
+		this.m_Queue = queue
+		this.m_ShowEffects = showEffects
 	}
-	
+
 	get OrderType(): dotaunitorder_t {
 		return this.m_OrderType
 	}
@@ -109,7 +112,7 @@ export default class ExecuteOrder {
 	get Position(): Vector3 {
 		return this.m_Position
 	}
-	get Ability(): Ability {
+	get Ability(): Ability | number {
 		return this.m_Ability
 	}
 	get OrderIssuer(): PlayerOrderIssuer_t {
@@ -124,31 +127,31 @@ export default class ExecuteOrder {
 	get ShowEffects(): boolean {
 		return this.m_ShowEffects
 	}
-	
+
 	/**
 	 * pass Position: Vector3 at IOBuffer offset 0
 	 */
 	toNative(): {
 		OrderType: dotaunitorder_t,
 		Target: C_BaseEntity | number,
-		Ability: C_DOTABaseAbility,
-		OrderIssuer: PlayerOrderIssuer_t
+		Ability: C_DOTABaseAbility | number,
+		OrderIssuer: PlayerOrderIssuer_t,
 		Unit: C_DOTA_BaseNPC,
 		Queue: boolean,
-		ShowEffects: boolean
+		ShowEffects: boolean,
 	} {
 
 		if (!this.m_Position.IsZero())
-			this.m_Position.toIOBuffer();
+			this.m_Position.toIOBuffer()
 
 		const target = this.m_Target,
 			ability = this.m_Ability,
-			unit = this.m_Unit;
+			unit = this.m_Unit
 
 		return {
 			OrderType: this.m_OrderType,
 			Target: target instanceof Entity ? target.m_pBaseEntity : target,
-			Ability: ability !== undefined ? ability.m_pBaseEntity : undefined,
+			Ability: ability instanceof Ability ? ability.m_pBaseEntity : ability,
 			OrderIssuer: this.m_OrderIssuer,
 			Unit: unit !== undefined ? unit.m_pBaseEntity : undefined,
 			Queue: this.m_Queue,
@@ -162,19 +165,19 @@ export default class ExecuteOrder {
 		PrepareUnitOrders(this.toNative())
 		return this
 	}
-	
+
 	toString(): string {
-		return JSON.stringify(this.toObject());
+		return JSON.stringify(this.toObject())
 	}
 	toObject(): {
 		OrderType: dotaunitorder_t,
 		Target: Entity | number,
-		Position: Vector3 | Vector2,
-		Ability: Ability,
+		Position: Vector3,
+		Ability: Ability | number,
 		OrderIssuer: PlayerOrderIssuer_t
 		Unit: Unit,
 		Queue: boolean,
-		ShowEffects: boolean
+		ShowEffects: boolean,
 	} {
 		return {
 			OrderType: this.m_OrderType,

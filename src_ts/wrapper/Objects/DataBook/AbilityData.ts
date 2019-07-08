@@ -1,5 +1,5 @@
-import { MaskToArrayBigInt, MaskToArrayNumber } from "../../Utils/Utils";
-import AbilitySpecialData from "./AbilitySpecialData";
+import { MaskToArrayBigInt, MaskToArrayNumber } from "../../Utils/Utils"
+import AbilitySpecialData from "./AbilitySpecialData"
 
 export default class AbilityData {
 	readonly m_pAbilityData: DOTAAbilityData_t
@@ -23,7 +23,7 @@ export default class AbilityData {
 	readonly AlternateModelName: string
 
 	constructor(data: DOTAAbilityData_t) {
-		this.m_pAbilityData = data;
+		this.m_pAbilityData = data
 		this.Name = this.m_pAbilityData.m_pszAbilityName || ""
 		this.AbilityBehavior = MaskToArrayBigInt(this.m_pAbilityData.m_iAbilityBehavior)
 		this.AbilitySpecialData = new AbilitySpecialData(this.m_pAbilityData.m_pSpecialAbilities)
@@ -43,18 +43,18 @@ export default class AbilityData {
 		this.Cost = this.m_pAbilityData.m_iItemCost
 		this.AlternateModelName = this.m_pAbilityData.m_pModelAlternateName
 	}
-	
+
 	get DamageType(): DAMAGE_TYPES {
 		return this.m_pAbilityData.m_iAbilityDamageType
 	}
 	get DispellableType(): SPELL_DISPELLABLE_TYPES {
-		return this.m_pAbilityData.m_iAbilityDispellableType;
+		return this.m_pAbilityData.m_iAbilityDispellableType
 	}
 	get LevelsBeetweenUpgrades(): number {
-		return this.m_pAbilityData.m_iLevelsBetweenUpgrades;
+		return this.m_pAbilityData.m_iLevelsBetweenUpgrades
 	}
 	get RequiredLevel(): number {
-		return this.m_pAbilityData.m_iRequiredLevel;
+		return this.m_pAbilityData.m_iRequiredLevel
 	}
 	get AbilityImmunityType(): SPELL_IMMUNITY_TYPES {
 		return this.m_pAbilityData.m_iAbilityImmunityType

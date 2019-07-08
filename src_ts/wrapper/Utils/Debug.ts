@@ -1,23 +1,23 @@
-export function ClassDump(obj: Object, field?: string | string[], recursiveCount: number = 1) {
-	dumpClass(obj, field, recursiveCount);
+export function ClassDump(obj: object, field?: string | string[], recursiveCount: number = 1) {
+	dumpClass(obj, field, recursiveCount)
 }
 
-function dumpClass(obj: Object, field: string | string[], recursiveCount: number, alreadyCount: number = 1) {
-	let fieledIsArray = field && Array.isArray(field);
+function dumpClass(obj: object, field: string | string[], recursiveCount: number, alreadyCount: number = 1) {
+	let fieledIsArray = field && Array.isArray(field)
 
 	//console.log("[info]");
-	
+
 	for (let name in obj) {
 		if (fieledIsArray && !field.includes(name))
-			continue;
+			continue
 
-		let value = obj[name];
+		let value = obj[name]
 
-		console.log("\t".repeat(alreadyCount), "|", name, ":", value);
-		
+		console.log("\t".repeat(alreadyCount), "|", name, ":", value)
+
 		if (typeof value === "object" && !Array.isArray(value)) {
 			if (recursiveCount > 0)
-				dumpClass(value, field, recursiveCount - 1, alreadyCount + 1);
+				dumpClass(value, field, recursiveCount - 1, alreadyCount + 1)
 		}
 	}
 }

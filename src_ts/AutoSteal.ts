@@ -475,7 +475,7 @@ var abils: Array<{
 					agi = (entFrom as C_DOTA_BaseNPC_Hero).m_flAgilityTotal
 				return Utils.CalculateDamage(entTo, base + (min_mul + mul * (agi / (entFrom as C_DOTA_BaseNPC_Hero).m_flStrengthTotal)) * agi * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
-		}
+		},
 		// TODO: mars_gods_rebuke
 	],
 	flag: boolean = false,

@@ -1,14 +1,14 @@
-import { Vector3 } from "../Imports";
-import EventsSDK from "../Managers/Events";
+import { Vector3 } from "../Imports"
+import EventsSDK from "../Managers/Events"
 
-let masksBigInt: bigint[] = new Array(64),
+let masksBigInt: Array<bigint> = new Array(64),
 	masksNumber: number[] = new Array(64)
 
-for (let i = 64; i--;)
-	masksBigInt[i] = 1n << BigInt(i);
-	
-for (let i = 64; i--;)
-	masksNumber[i] = 1 << i;
+for (let i = 64; i--; )
+	masksBigInt[i] = 1n << BigInt(i)
+
+for (let i = 64; i--; )
+	masksNumber[i] = 1 << i
 
 export function MaskToArrayBigInt(num: bigint): number[] {
 	return masksBigInt.map(mask => Number(num & mask)).filter(masked => masked !== 0)
