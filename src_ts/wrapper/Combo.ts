@@ -61,7 +61,7 @@ export class Combo {
 
 	getNextAbility(caster: Unit, index: number): [Ability, string | RegExp, number | ((caster: Unit, target: Unit) => number), ComboOptions] {
 		var [abilName, act, options] = this.abils[index]
-		return [caster.AbilitiesBook.GetAbilityByName(abilName) || caster.GetItemByName(abilName), abilName, act, options]
+		return [caster.GetAbilityByName(abilName) || caster.GetItemByName(abilName), abilName, act, options]
 	}
 
 	tech_names = [

@@ -6,7 +6,6 @@ import Unit from "./Unit"
 import AbilityData from "../DataBook/AbilityData";
 
 export default class Ability extends Entity {
-	
 	/* protected */ readonly m_pBaseEntity: C_DOTABaseAbility
 	private m_AbilityData: AbilityData
 	
@@ -80,7 +79,7 @@ export default class Ability extends Entity {
 		return this.Cooldown === 0
 	}
 	get IsGrantedByScepter(): boolean {
-		return this.AbilityData.IsGrantedByScepter;
+		return this.AbilityData.IsGrantedByScepter
 	}
 	get IsHidden(): boolean {
 		return this.m_pBaseEntity.m_bHidden
@@ -116,7 +115,7 @@ export default class Ability extends Entity {
 		return this.AbilityData.MaxLevel
 	}
 	get Name(): string {
-		return this.AbilityData.Name;
+		return this.AbilityData.Name
 	}
 	get OverrideCastPoint(): number {
 		return this.m_pBaseEntity.m_flOverrideCastPoint
@@ -151,21 +150,21 @@ export default class Ability extends Entity {
 		
 		switch (this.Name) {
 			case "skywrath_mage_concussive_shot": {
-				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4");
+				let unique = owner.AbilitiesBook.GetAbilityByClass(C_DOTA_Ability_Special_Bonus_Unique_Skywrath_4);
 				if (unique !== undefined && unique.Level > 0)
 					return Number.MAX_SAFE_INTEGER;
 				
 				break;
 			}
 			case "gyrocopter_call_down": {
-				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_gyrocopter_5");
+				let unique = owner.AbilitiesBook.GetAbilityByClass(C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_3);
 				if (unique !== undefined && unique.Level > 0)
 					return Number.MAX_SAFE_INTEGER;
 					
 				break;
 			}
 			case 'lion_impale': {
-				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_lion_2");
+				let unique = owner.AbilitiesBook.GetAbilityByClass(C_DOTA_Ability_Special_Bonus_Unique_Lion_2);
 				if (unique !== undefined && unique.Level > 0)
 					castrange += unique.GetSpecialValue("value")
 					

@@ -171,22 +171,3 @@ Events.on("CustomGameEvent", (...args) => debugConsole("onCustomGameEvent", ...a
 
 let debugConsole = (name: string, ...args: any) => 
 	debugEvents.value && !debugOnlyThrowEvents.value && debugOtherEvents.value && console.log(name, ...args);
-	
-	
-/* EventsSDK.on("Tick", () => {
-	
-	EntityManager.AllEntities.forEach(entity => {
-		if (entity instanceof Hero && entity.IsControllable) {
-			
-			if (entity === undefined || !entity.IsAlive)
-				return
-				
-			let high_five = entity.AbilitiesBook.GetAbilityByName("high_five")
-			
-			if (high_five === undefined || !high_five.IsCooldownReady)
-				return
-			console.log(high_five.Cooldown);
-			entity.CastNoTarget(high_five)
-		}
-	})
-}) */

@@ -78,4 +78,11 @@ export default class AbilitiesBook {
 			)
 		)
 	}
+
+	GetAbilityByClass(class_: any): Ability {
+		return this.Spells.find(abil => abil instanceof class_)
+	}
+	GetAbilityByClassName(class_name: any): Ability {
+		return this.Spells.find(abil => abil.constructor.name === class_name)
+	}
 }

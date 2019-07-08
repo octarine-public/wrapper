@@ -64,7 +64,7 @@ const menu = MenuFactory("Skill Alert"),
         '','','',
         'impact_radius'
     ],
-    talent = [false,'special_bonus_unique_kunkka'],
+    talent: Array<any> = [false, C_DOTA_Ability_Special_Bonus_Unique_Kunkka],
     arMessages = [
         'SunStrike near ',
         'Torrent near ',
@@ -108,8 +108,9 @@ EventsSDK.on("BuffAdded", (ent,buff) => {
                         delay = ability.GetSpecialValue(arSpecialDuration[index])
                     else if(ability.ChannelStartTime)
                         delay = ability.ChannelStartTime
-                    if(talent[index])
-                        radius += ent.Owner.GetTalentValue(talent[index])
+                    let talent_class = talent[index]
+                    if (talent_class !== undefined && talent_class !== false)
+                        radius += ent.Owner.GetTalentClassValue(talent_class)
                 }
             }
             let abPart

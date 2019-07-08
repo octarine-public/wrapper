@@ -519,9 +519,13 @@ export default class Unit extends Entity {
 		return this.ModifiersBook.GetBuffByName(name)
 	}
 	
-	GetTalentValue(name) {
+	GetTalentValue(name: string | RegExp) {
 		let talent = this.AbilitiesBook.GetAbilityByName(name);
-		return talent && talent.Level > 0 ? talent.GetSpecialValue("value") : 0;
+		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
+	}
+	GetTalentClassValue(class_: any) {
+		let talent = this.AbilitiesBook.GetAbilityByClass(name);
+		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
 	}
 	/**
 	 * faster (Distance <= range)

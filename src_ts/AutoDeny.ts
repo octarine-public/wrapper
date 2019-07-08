@@ -6,15 +6,10 @@ EventsSDK.on("Tick", () => {
 	let pl_ent = LocalPlayer.Hero;
 	if (pl_ent === undefined || !pl_ent.IsAlive)
 		return;
-	let mist_coil = pl_ent.AbilitiesBook.GetAbilityByName("abaddon_death_coil");
+	let mist_coil = pl_ent.AbilitiesBook.GetAbilityByClass(C_DOTA_Ability_Abaddon_DeathCoil);
 	if (mist_coil === undefined || !mist_coil.CanBeCasted())
 		return;
-	let dmg = mist_coil.GetSpecialValue("self_damage");
-	{
-		let talent = pl_ent.AbilitiesBook.GetAbilityByName("special_bonus_unique_abaddon_2");
-		if (talent !== undefined && talent.Level !== 0)
-			dmg += talent.GetSpecialValue("value");
-	}
+	let dmg = mist_coil.GetSpecialValue("self_damage") + pl_ent.GetTalentClassValue(C_DOTA_Ability_Special_Bonus_Unique_Abaddon_2);
 	if (GetHealthAfter(pl_ent.m_pBaseEntity, mist_coil.CastPoint, false) > dmg)
 		return;
 	let targets = orderBy (

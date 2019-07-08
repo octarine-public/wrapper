@@ -173,8 +173,7 @@ EventsSDK.on("EntityCreated", (npc: Unit) => {
 EventsSDK.on("EntityDestroyed", npc => npc instanceof Unit && ArrayExtensions.arrayRemove(heroes, npc))
 
 function TransformToAvailable(hero: Hero, abil_arrays: Array<[string, boolean, boolean?]>): Array<[string, boolean, boolean?]> {
-	let name = hero.Name
-	if (name === "npc_dota_hero_rubick" || name === "npc_dota_hero_morphling")
+	if (hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Rubick || hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Morphling)
 		return abil_arrays
 	return abil_arrays.filter(abilData => abilData[0].startsWith("item_") || hero.GetAbilityByName(abilData[0]) !== undefined)
 }
