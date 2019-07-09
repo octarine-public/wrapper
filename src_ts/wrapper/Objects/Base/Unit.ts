@@ -522,7 +522,7 @@ export default class Unit extends Entity {
 		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
 	}
 	GetTalentClassValue(class_: any) {
-		let talent = this.AbilitiesBook.GetAbilityByClass(name)
+		let talent = this.AbilitiesBook.GetAbilityByClass(class_)
 		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
 	}
 	/**
