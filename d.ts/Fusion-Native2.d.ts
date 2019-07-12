@@ -312,32 +312,6 @@ declare class CUserCmd {
 	weaponsubtype: C_BaseEntity | number
 }
 
-declare class LinearProjectile {
-	readonly m_flWidth: number
-	readonly m_flDistance: number
-	readonly m_vecOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get
-	readonly m_vecPosition: boolean // returns Vector3 to IOBuffer offset 0 on get
-	readonly m_vecVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get
-	readonly m_vecAcceleration: boolean // returns Vector3 to IOBuffer offset 0 on get
-	readonly m_iID: number
-	readonly m_bIsValid: boolean
-}
-
-declare class TrackingProjectile {
-	readonly m_bDodgeable: boolean
-	readonly m_bIsAttack: boolean
-	readonly m_bIsEvaded: boolean
-	readonly m_flExpireTime: number
-	readonly m_iSpeed: number
-	readonly m_hSource: C_DOTA_BaseNPC | number
-	readonly m_hTarget: C_BaseEntity | number
-	readonly m_vecPosition: boolean // returns Vector3 to IOBuffer offset 0 on get
-	readonly m_vecTarget: boolean // returns Vector3 to IOBuffer offset 0 on get
-	readonly m_particle: CNewParticleEffect
-	readonly m_iID: number
-	readonly m_bIsValid: boolean
-}
-
 declare interface ConVars {
 	Get(convar_name: string): number
 	Set(convar_name: string, value:  string | number | boolean): void

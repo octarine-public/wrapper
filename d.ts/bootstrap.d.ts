@@ -43,8 +43,8 @@ declare interface Events extends EventEmitter {
 	) => void): EventEmitter
 	on(name: "BloodImpact", callback: (target: C_BaseEntity | number, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
 	on(name: "PrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
-	on(name: "LinearProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0
-		proj: LinearProjectile,
+	on(name: "LinearProjectileCreated", callback: ( // origin: Vector3 at IOBuffer offset 0, velocity: Vector2 at IOBuffer offset 3, acceleration: Vector2 at IOBuffer offset 5, colorgemcolor: Color at IOBuffer offset 7
+		proj: number,
 		ent: C_BaseEntity | number,
 		path: string,
 		particleSystemHandle: bigint,
@@ -53,22 +53,33 @@ declare interface Events extends EventEmitter {
 		sticky_fow_reveal: boolean,
 		distance: number
 	) => void): EventEmitter
-	on(name: "LinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventEmitter
-	on(name: "TrackingProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0
-		proj: TrackingProjectile,
+	on(name: "LinearProjectileDestroyed", callback: (proj: number) => void): EventEmitter
+	on(name: "TrackingProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0, vTargetLoc: Vector3 at IOBuffer offset 3
+		proj: number,
+		hSource: C_BaseEntity | number,
+		hTarget: C_BaseEntity | number,
+		moveSpeed: number,
 		sourceAttachment: number,
 		path: string,
 		particleSystemHandle: bigint,
+		dodgeable: boolean,
+		isAttack: boolean,
+		expireTime: number,
 		maximpacttime: number,
 		launch_tick: number
 	) => void): EventEmitter
-	on(name: "TrackingProjectileUpdated", callback: ( // vSourceLoc: Vector3 at IOBuffer offset 0, colorgemcolor: Color at IOBuffer offset 3
-		proj: TrackingProjectile,
+	on(name: "TrackingProjectileUpdated", callback: ( // vSourceLoc: Vector3 at IOBuffer offset 0, vTargetLoc: Vector3 at IOBuffer offset 3, colorgemcolor: Color at IOBuffer offset 6
+		proj: number,
+		hTarget: C_BaseEntity | number,
+		moveSpeed: number,
 		path: string,
 		particleSystemHandle: bigint,
+		dodgeable: boolean,
+		isAttack: boolean,
+		expireTime: number,
 		launch_tick: number
 	) => void): EventEmitter
-	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
+	on(name: "TrackingProjectileDestroyed", callback: (proj: number) => void): EventEmitter
 	on(name: "TrackingProjectilesDodged", callback: (ent: C_BaseEntity | number, attacks_only: boolean) => void): EventEmitter
 	on(name: "UnitAnimation", callback: (
 		npc: C_DOTA_BaseNPC,
