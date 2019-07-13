@@ -169,5 +169,14 @@ declare interface Events extends EventEmitter {
 		attribute_name: string,
 		texture_name: string
 	) => void): EventEmitter
+	on(name: "ServerTick", listener: (
+		tick: number,
+		host_frametime: number,
+		host_frametime_std_deviation: number,
+		host_computationtime: number,
+		host_computationtime_std_deviation: number,
+		host_framestarttime_std_deviation: number,
+		host_loss: number
+	) => void): EventEmitter
 }
 declare var Events: Events
