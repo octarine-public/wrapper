@@ -437,6 +437,9 @@ declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer 
 declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
 declare function GetLatency(flow: Flow_t): number
 declare function GetAvgLatency(flow: Flow_t): number
+declare function GetServerTickCount(): number
+declare function GetPreviousServerTickCount(): number
+declare function GetClientTickCount(): number
 /**
  * @param time in milliseconds
  * @returns TimeoutData that can be used to edit/destroy this timeout
