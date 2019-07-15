@@ -324,7 +324,7 @@ declare interface GameEvents {
 }
 
 declare interface Minimap {
-	SendPing(type?: PingType_t, direct_ping?: boolean, target?: C_BaseEntity): void // pass location: Vector3 at IOBuffer offset 0
+	SendPing(type?: PingType_t, direct_ping?: boolean, target?: C_BaseEntity): void // pass location: Vector2 at IOBuffer offset 0
 	SendLine(x: number, y: number, initial: boolean): void
 }
 
