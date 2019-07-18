@@ -2,7 +2,7 @@ import { MaskToArrayBigInt, MaskToArrayNumber } from "../../Utils/Utils"
 import AbilitySpecialData from "./AbilitySpecialData"
 
 export default class AbilityData {
-	readonly m_pAbilityData: DOTAAbilityData_t
+	readonly m_pAbilityData: DOTAAbilityDefinition_t
 	readonly Name: string
 	readonly AbilityBehavior: DOTA_ABILITY_BEHAVIOR[]
 	readonly AbilitySpecialData: AbilitySpecialData
@@ -22,7 +22,7 @@ export default class AbilityData {
 	readonly Cost: number
 	readonly AlternateModelName: string
 
-	constructor(data: DOTAAbilityData_t) {
+	constructor(data: DOTAAbilityDefinition_t) {
 		this.m_pAbilityData = data
 		this.Name = this.m_pAbilityData.m_pszAbilityName || ""
 		this.AbilityBehavior = MaskToArrayBigInt(this.m_pAbilityData.m_iAbilityBehavior)
