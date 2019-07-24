@@ -56,7 +56,7 @@ addUnitMenu.AddKeybind("Add creep")
 	.OnRelease(self => SendToConsole(self.hint))
 
 EventsSDK.on("GameStarted", () => {
-	ConVars.Set("sv_cheats", ConVars.Get("sv_cheats") || sv_cheats.value)
+	ConVars.Set("sv_cheats", ConVars.GetInt("sv_cheats") || sv_cheats.value)
 	ConVars.Set("dota_ability_debug", wtf.value)
 
 	if (PlayerResource.AllPlayers.length <= 1)

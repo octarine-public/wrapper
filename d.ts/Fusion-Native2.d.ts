@@ -313,7 +313,8 @@ declare class CUserCmd {
 }
 
 declare interface ConVars {
-	Get(convar_name: string): number
+	GetInt(convar_name: string): number
+	GetString(convar_name: string): string
 	Set(convar_name: string, value:  string | number | boolean): void
 }
 
@@ -332,6 +333,7 @@ declare interface Particles {
 	Create(path: string, attach: ParticleAttachment_t, ent?: C_BaseEntity): number
 	Destroy(particle_id: number, immediate: boolean): void
 	SetControlPoint(particle_id: number, control_point: number): void // pass vec: Vector3 at IOBuffer offset 0
+	SetControlPointForward(particle_id: number, control_point: number): void // pass vec: Vector3 at IOBuffer offset 0
 }
 
 // must be called only in onDraw!
@@ -411,6 +413,12 @@ declare interface Renderer {
 	 * @returns screen position to IOBuffer if return value is true
 	 */
 	WorldToScreen(): boolean // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
+}
+
+declare interface Camera {
+	Distance: number
+	Angle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	Position: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
 /// GLOBAL FUNCTIONS
@@ -2178,6 +2186,10 @@ declare class CFootLockItem {
 }
 
 declare class CDOTA_Buff {
+	readonly m_bIsDebuff: boolean
+	readonly m_bIsHidden: boolean
+	readonly m_iszTextureName: string
+
 	readonly m_name: string
 	readonly m_class: string
 	readonly m_szModifierAura: string
@@ -10339,6 +10351,8 @@ declare class C_DOTABaseAbility extends C_BaseEntity {
 declare class C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_2 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Item extends C_DOTABaseAbility {
+	readonly m_bIsMuted: boolean
+
 	m_bCombinable: boolean
 	m_bPermanent: boolean
 	m_bStackable: boolean

@@ -9,6 +9,7 @@ class Game {
 	m_GameRules: C_DOTAGamerules
 	m_GameManager: C_DOTAGameManager
 	m_StockInfo: StockInfo[]
+	Language = ConVars.GetString("cl_language")
 
 	GetLatency(flow: Flow_t = Flow_t.IN) {
 		return GetLatency(flow)
