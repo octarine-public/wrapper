@@ -93,10 +93,8 @@ EventsSDK.on("EntityCreated", (ent: Entity) => {
 	}
 
 	if (ent instanceof Courier) {
-
 		if (allyCourier === undefined && ent.IsAlly() && ent.IsControllable)
 			allyCourier = ent
-
 		return
 	}
 
@@ -115,12 +113,10 @@ EventsSDK.on("EntityDestroyed", (ent: Entity) => {
 
 EventsSDK.on("Update", () => {
 
-	if (!Game.IsInGame || !Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
+	if (!Game.IsInGame || Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
 		return
-
 	if (allyCourier === undefined)
 		return
-
 	if (autoShieldState.value) {
 		EntityManager.AllEntities.forEach(ent => {
 
@@ -143,7 +139,7 @@ EventsSDK.on("Update", () => {
 
 	if (checkCourSelf(stateCourEnt, stateCourEnum))
 		return
-
+	console.log(allyCourier.State)
 	switch (stateCourEnum) {
 		case CourierState_t.COURIER_STATE_IDLE:
 		case CourierState_t.COURIER_STATE_AT_BASE:
