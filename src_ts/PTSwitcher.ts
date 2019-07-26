@@ -1,4 +1,5 @@
 import { EventsSDK, Game, LocalPlayer, MenuManager } from "./wrapper/Imports"
+import { Ability } from 'wrapper/Imports';
 
 const PtswitcherMenu = MenuManager.MenuFactory("PT Switcher")
 const state = PtswitcherMenu.AddToggle("State", false)
@@ -32,7 +33,7 @@ EventsSDK.on("Update", () => {
 
 		if (_PowerTreads.m_iStat !== lastStat && !changed) {
 			MyHero.CastNoTarget(pt)
-			nextTick = nextTick + 0.15 + GetAvgLatency(Flow_t.OUT)
+			nextTick = nextTick + 0.05 + GetAvgLatency(Flow_t.OUT)
 		}
 		if (_PowerTreads.m_iStat === lastStat){
 			lastStat = undefined
@@ -41,8 +42,8 @@ EventsSDK.on("Update", () => {
 	}
 })
 
-Events.on("PrepareUnitOrders", orders => {
-
+EventsSDK.on("PrepareUnitOrders", orders => {
+	
 	if (!state.value)
 		return
 
@@ -51,18 +52,18 @@ Events.on("PrepareUnitOrders", orders => {
 	if (IsValidMyHero(MyHero))
 		return
 
-	let pt = MyHero.Inventory.GetItemByName("item_power_treads")
+	let pt = MyHero.GetItemByName("item_power_treads")
 
 	if (pt === undefined)
 		return
 
-	if (orders.order_type !== 5 && orders.order_type !== 6
-		&& orders.order_type !== 7 && orders.order_type !== 8 && orders.order_type !== 9)
+	if (orders.OrderType !== 5 && orders.OrderType !== 6
+		&& orders.OrderType !== 7 && orders.OrderType !== 8 && orders.OrderType !== 9)
 		return
 
-	let ability = orders.ability
+	let ability = orders.Ability as Ability
 
-	if (!ability.m_iManaCost)
+	if (!ability.ManaCost)
 		return
 
 	let _PowerTreads = pt.m_pBaseEntity as C_DOTA_Item_PowerTreads // ???
@@ -77,8 +78,7 @@ Events.on("PrepareUnitOrders", orders => {
 		MyHero.CastNoTarget(pt)
 		MyHero.CastNoTarget(pt)
 	}
-
 	changed = false
-	nextTick = Game.RawGameTime + ability.m_fCastPoint + 0.45 + GetAvgLatency(Flow_t.OUT)
-
+	nextTick = Game.RawGameTime + ability.CastPoint + GetAvgLatency(Flow_t.OUT)
+	orders.Execute()
 })

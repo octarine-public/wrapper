@@ -139,7 +139,6 @@ EventsSDK.on("Update", () => {
 
 	if (checkCourSelf(stateCourEnt, stateCourEnum))
 		return
-	console.log(allyCourier.State)
 	switch (stateCourEnum) {
 		case CourierState_t.COURIER_STATE_IDLE:
 		case CourierState_t.COURIER_STATE_AT_BASE:
