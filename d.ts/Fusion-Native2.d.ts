@@ -458,6 +458,7 @@ declare function setTimeout(func: (self: TimeoutData) => void, time: number): Ti
  * @returns TimeoutData that can be used to edit/destroy this interval
  */
 declare function setInterval(func: (self: TimeoutData) => void, time: number): TimeoutData
+declare function ChatWheelAbuse(str: string): void
 
 /// AUTOMATICALLY GENERATED
 
