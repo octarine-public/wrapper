@@ -45,6 +45,7 @@ export { default as Player } from "./Objects/Base/Player";
 export { default as Courier } from "./Objects/Base/Courier";
 export { default as Creep } from "./Objects/Base/Creep";
 export { default as Meepo } from "./Objects/Heroes/Meepo";
+export { default as Roshan } from "./Objects/Units/Roshan";
 
 export { default as Ability } from "./Objects/Base/Ability";
 export { default as Item } from "./Objects/Base/Item";

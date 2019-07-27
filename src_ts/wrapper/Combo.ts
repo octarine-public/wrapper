@@ -1,4 +1,4 @@
-import { Ability, Creep, EntityManager, Hero, Tower, Unit, Utils, Vector3 } from "./Imports"
+import { Ability, Creep, EntityManager, Hero, Tower, Unit, Utils, Vector3, Roshan } from "./Imports"
 
 var additional_delay = 30
 

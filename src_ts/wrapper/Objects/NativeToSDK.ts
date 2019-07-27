@@ -20,6 +20,9 @@ constructors.C_DOTA_Unit_Courier = Courier
 import Meepo from "../Objects/Heroes/Meepo"
 constructors.C_DOTA_Unit_Hero_Meepo = Meepo
 
+import Roshan from "../Objects/Units/Roshan"
+constructors.C_DOTA_Unit_Roshan = Roshan
+
 /* Items */
 
 import item_abyssal_blade from "./Abilities/Items/item_abyssal_blade"
