@@ -32,7 +32,7 @@ const muteFilter = blockCourMenu.AddToggle("Mute filter")
 	.SetToolTip("Blocking courier(s) for muted (voice) players");
 */
 
-const playersBlockList = blockCourMenu.AddListBox("Players for block", [])
+const playersBlockList = blockCourMenu.AddListBox("Players for block", [],[false,false,false,false,false])
 	.SetToolTip(TOOLTIP_NEEDPLAYING)
 
 // other
@@ -93,8 +93,9 @@ EventsSDK.on("EntityCreated", (ent: Entity) => {
 	}
 
 	if (ent instanceof Courier) {
-		if (allyCourier === undefined && ent.IsAlly() && ent.IsControllable)
+		if (allyCourier === undefined && ent.IsAlly() && ent.IsControllable){
 			allyCourier = ent
+		}
 		return
 	}
 

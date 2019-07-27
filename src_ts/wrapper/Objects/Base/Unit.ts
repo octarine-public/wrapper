@@ -416,6 +416,10 @@ export default class Unit extends Entity {
 		return this.Inventory.GetItemByName(name, includeBackpack)
 	}
 
+	HasItemInInventory(name: string  | RegExp, includeBackpack: boolean = false): boolean {
+		return this.GetItemByName(name, includeBackpack) !== undefined
+	}
+
 	get ModifiersBook(): ModifiersBook {
 		return this.m_ModifiersBook
 			|| (this.m_ModifiersBook = new ModifiersBook(this))
@@ -681,6 +685,9 @@ export default class Unit extends Entity {
 	// check
 	DisassembleItem(item: Item, queue?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM, unit: this, ability: item, queue })
+	}
+	ItemSetCombineLock(item: Item, lock = true, queue?: boolean) {
+		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, unit: this, ability: item,target:lock+0, queue })
 	}
 	MoveItem(item: Item, slot: DOTAScriptInventorySlot_t) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM, unit: this, target: slot, ability: item })

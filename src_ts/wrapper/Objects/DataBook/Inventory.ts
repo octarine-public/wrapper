@@ -115,6 +115,20 @@ export default class Inventory {
 		}
 		return false
 	}
+	HasFreeSlots(start: number, end: number, howMany: number): boolean {
+		if (this.m_Unit.IsValid && start <= MAX_ITEMS && start <= end) {
+			let man = 0;
+			for (let i = end + 1; i-- > start; ) {
+				if (i > MAX_ITEMS)
+					break
+
+				if (this.m_hItems[i] === undefined)
+					man++;
+			}
+			return man >= howMany
+		}
+		return false
+	}
 	HasItemByOtherPlayer(player: Hero): boolean {
 
 		if (this.m_Unit.IsValid) {

@@ -57,8 +57,11 @@ EventsSDK.on("PrepareUnitOrders", orders => {
 	if (pt === undefined)
 		return
 
-	if (orders.OrderType !== 5 && orders.OrderType !== 6
-		&& orders.OrderType !== 7 && orders.OrderType !== 8 && orders.OrderType !== 9)
+	if (orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION 
+		&& orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET
+		&& orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE 
+		&& orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET 
+		&& orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE)
 		return
 
 	let ability = orders.Ability as Ability
@@ -79,6 +82,6 @@ EventsSDK.on("PrepareUnitOrders", orders => {
 		MyHero.CastNoTarget(pt)
 	}
 	changed = false
-	nextTick = Game.RawGameTime + ability.CastPoint + GetAvgLatency(Flow_t.OUT)
+	nextTick = Game.RawGameTime + ability.CastPoint + 0.45 + GetAvgLatency(Flow_t.OUT)
 	orders.Execute()
 })
