@@ -127,8 +127,8 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
 	}
 	get IsMagicImmune(): boolean {
-		return this.m_pBaseEntity.m_bIsMagicImmune
-		// return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE);
+		//return this.m_pBaseEntity.m_bIsMagicImmune
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE);
 	}
 	get IsDeniable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)
@@ -699,8 +699,8 @@ export default class Unit extends Entity {
 	DisassembleItem(item: Item, queue?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM, unit: this, ability: item, queue })
 	}
-	ItemSetCombineLock(item: Item, lock = true, queue?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, unit: this, ability: item,target:lock+0, queue })
+	ItemSetCombineLock(item: Item, lock: boolean | number = true, queue?: boolean) {
+		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, unit: this, ability: item, target:(lock as number) + 0, queue })
 	}
 	MoveItem(item: Item, slot: DOTAScriptInventorySlot_t) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM, unit: this, target: slot, ability: item })
