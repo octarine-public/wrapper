@@ -601,8 +601,7 @@ export default class Unit extends Entity {
 		return damage * mult
 	}
 	CanAttack(target?: Unit): boolean {
-		if (!this.IsAlive || this.IsInvulnerable || this.IsDormant || !this.IsSpawned
-			|| this.IsAttackImmune)
+		if (!this.IsAlive || this.IsInvulnerable || this.IsDormant || !this.IsSpawned)
 			return false
 
 		if (target === undefined || !target.IsAlive || target.IsInvulnerable || target.IsDormant || !target.IsSpawned
