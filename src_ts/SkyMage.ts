@@ -3,6 +3,7 @@ let { MenuFactory } = MenuManager
 const menu = MenuFactory("SkyWrathCombo"),
     active = menu.AddToggle("Active"),
     ezKill = menu.AddToggle("Check for EZ Kill"),
+    comboToggle = menu.AddCheckBox("Clamp combo key"),
     comboKey = menu.AddKeybind("Combo Key"),
     harrasKey = menu.AddKeybind("Harras Key"),
     cursorRadius = menu.AddSlider("Nearest cursor radius", 200, 100, 1000),
@@ -99,13 +100,17 @@ EventsSDK.on("GameEnded",()=>{
 EventsSDK.on("Tick",()=>{
     if(!active.value || !Game.IsInGame || Game.IsPaused || sky === undefined || !sky.IsAlive)
         return
-    if(comboKeyPress){
+    if(!comboToggle.value && comboKeyPress){
         if(target !== undefined){
             target = undefined
         }else if(nearest !== undefined){
             target = nearest
         }
         comboKeyPress = false
+    }else if(comboToggle.value && comboKey.IsPressed){
+        target = nearest
+    }else{
+        target = undefined
     }
     if(target !== undefined){
         if(!target.IsAlive)
