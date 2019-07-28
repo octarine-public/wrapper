@@ -119,12 +119,12 @@ EventsSDK.on("Tick",()=>{
             if(amReflect.value && target.Name === 'npc_dota_hero_antimage' 
                 && !target.ModifiersBook.HasAnyBuffByNames(['modifier_silver_edge_debuff','modifier_viper_nethertoxin'])
                 && target.GetAbilityByName('antimage_spell_shield').IsReady){
-                if(popLink(nullifier,amReflectItems.selected_flags[0])) return
+                if(popLink(forcestaff,amReflectItems.selected_flags[3])) return
                 if(popLink(cyclone,amReflectItems.selected_flags[1])) return
                 if(popLink(atos,amReflectItems.selected_flags[2])) return
-                if(popLink(forcestaff,amReflectItems.selected_flags[3])) return
-                if(popLink(dagon,amReflectItems.selected_flags[4])) return
                 if(popLink(bolt,amReflectItems.selected_flags[5])) return
+                if(popLink(dagon,amReflectItems.selected_flags[4])) return
+                if(popLink(nullifier,amReflectItems.selected_flags[0])) return
                 return 
             }
             if(popLinkV.value && target.HasLinkenAtTime()){
