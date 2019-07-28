@@ -104,8 +104,8 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_DISARMED)
 	}
 	get IsAttackImmune(): boolean {
-		return this.m_pBaseEntity.m_bIsAttackImmune
-		// return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ATTACK_IMMUNE);
+		// return this.m_pBaseEntity.m_bIsAttackImmune
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ATTACK_IMMUNE);
 	}
 	get IsSilenced(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SILENCED)
@@ -601,7 +601,8 @@ export default class Unit extends Entity {
 		return damage * mult
 	}
 	CanAttack(target?: Unit): boolean {
-		if (!this.IsAlive || this.IsInvulnerable || this.IsDormant || !this.IsSpawned)
+		if (!this.IsAlive || this.IsInvulnerable || this.IsDormant || !this.IsSpawned
+			|| this.IsAttackImmune)
 			return false
 
 		if (target === undefined || !target.IsAlive || target.IsInvulnerable || target.IsDormant || !target.IsSpawned
