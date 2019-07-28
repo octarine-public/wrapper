@@ -3,7 +3,7 @@ import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/Utils"
 
-import { LocalPlayer } from "../../Managers/EntityManager"
+import { LocalPlayer, Game } from "../../Managers/EntityManager"
 
 import Entity from "./Entity"
 import Player from "./Player"
@@ -543,6 +543,19 @@ export default class Unit extends Entity {
 		}
 
 		return super.IsInRange(ent, range)
+	}
+	HasLinkenAtTime(time: number = 0): boolean {
+		if (!this.IsHero)
+			return false
+		const sphere = this.GetItemByName("item_sphere")
+	
+		return (
+			sphere !== undefined &&
+			sphere.Cooldown - time <= 0
+		) || (
+			this.GetBuffByName("modifier_item_sphere_target") !== undefined
+			&& this.GetBuffByName("modifier_item_sphere_target").DieTime - Game.GameTime - time <= 0
+		)
 	}
 	AttackDamage(target: Unit, useMinDamage: boolean = false, damageAmplifier: number = 0): number {
 

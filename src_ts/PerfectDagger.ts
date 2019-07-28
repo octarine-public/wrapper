@@ -1,4 +1,4 @@
-import { EventsSDK, Game, MenuManager, Vector3 } from "wrapper/Imports"
+import { EventsSDK, Game, MenuManager, Vector3, Ability } from 'wrapper/Imports';
 
 let { MenuFactory } = MenuManager,
 	blink_range: number
@@ -8,11 +8,11 @@ EventsSDK.on("PrepareUnitOrders", order => {
 	if (
 		!active.value
 		|| order.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION
-		|| !(order.Ability.m_pBaseEntity instanceof C_DOTA_Item_BlinkDagger)
+		|| !((order.Ability as Ability).m_pBaseEntity instanceof C_DOTA_Item_BlinkDagger)
 	)
 		return true
 	if (blink_range === undefined)
-		blink_range = order.Ability.GetSpecialValue("blink_range")
+		blink_range = (order.Ability as Ability).GetSpecialValue("blink_range")
 	if (order.Position.IsInRange(order.Unit.Position, blink_range))
 		return true
 	let vec: Vector3 = order.Unit.Position
@@ -22,7 +22,7 @@ EventsSDK.on("PrepareUnitOrders", order => {
 			.Extend(order.Position, blink_range - 30)
 	else
 		vec = order.Unit.Position.Extend(order.Position, blink_range - 1)
-	order.Unit.CastPosition(order.Ability, vec, false, true)
+	order.Unit.CastPosition((order.Ability as Ability), vec, false, true)
 	return false
 })
 EventsSDK.on("GameEnded", () => blink_range = undefined)

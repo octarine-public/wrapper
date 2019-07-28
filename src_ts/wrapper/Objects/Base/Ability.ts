@@ -78,6 +78,10 @@ export default class Ability extends Entity {
 	get IsCooldownReady(): boolean {
 		return this.Cooldown === 0
 	}
+	get IsReady(): boolean {
+		const unit = this.Owner as Unit
+		return this.IsCooldownReady && unit.Mana >= this.ManaCost && !unit.IsSilenced && this.Level>0
+	}
 	get IsGrantedByScepter(): boolean {
 		return this.AbilityData.IsGrantedByScepter
 	}

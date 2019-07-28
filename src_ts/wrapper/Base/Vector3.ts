@@ -305,7 +305,7 @@ export default class Vector3 {
 			this.y = 0
 			this.z = 0
 		} else
-			this.MultiplyScalar(scalar / length)
+			this.MultiplyScalarForThis(scalar / length)
 
 		return this
 	}

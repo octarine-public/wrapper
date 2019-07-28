@@ -103,8 +103,19 @@ Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max
 Events.on("LinearProjectileDestroyed", proj =>
 	EventsSDK.emit("LinearProjectileDestroyed", false, proj))
 
-Events.on("TrackingProjectileCreated", (proj, sourceAttachment, path, particleSystemHandle, maximpacttime, launch_tick) =>
-	EventsSDK.emit("TrackingProjectileCreated", false, proj, sourceAttachment, path, particleSystemHandle, maximpacttime, Color.fromIOBuffer(), launch_tick))
+Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed,sourceAttachment,path,particleSystemHandle,dodgeable,isAttack,expireTime,maximpacttime,launch_tick) =>{
+	EventsSDK.emit("TrackingProjectileCreated", false, proj, 
+		source instanceof C_BaseEntity
+			? EntityManager.GetEntityByNative(source)
+			: source, 
+		target instanceof C_BaseEntity
+			? EntityManager.GetEntityByNative(target)
+			: target,
+		moveSpeed,
+		sourceAttachment,
+		path,
+		particleSystemHandle, dodgeable, isAttack, expireTime,maximpacttime,launch_tick)
+})
 
 Events.on("TrackingProjectileUpdated", (proj, path, particleSystemHandle, launch_tick) =>
 	EventsSDK.emit("TrackingProjectileUpdated", false, Vector3.fromIOBuffer(), proj, path, particleSystemHandle, Color.fromIOBuffer(), launch_tick))
@@ -261,13 +272,18 @@ interface EventsSDK extends EventEmitter {
 	) => void): EventEmitter
 	on(name: "LinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventEmitter
 	on(name: "TrackingProjectileCreated", callback: (
-		proj: TrackingProjectile,
+		proj: number, 
+		source: Unit|number, 
+		target: Unit|number,
+		moveSpeed: number,
 		sourceAttachment: number,
 		path: string,
-		particleSystemHandle: bigint,
-		maximpacttime: number,
-		colorgemcolor: Color,
-		launchTick: number,
+		particleSystemHandle:bigint, 
+		dodgeable:boolean, 
+		isAttack:boolean, 
+		expireTime:number,
+		maximpacttime:number,
+		launch_tick:number
 	) => void): EventEmitter
 	on(name: "TrackingProjectileUpdated", callback: (
 		proj: TrackingProjectile,

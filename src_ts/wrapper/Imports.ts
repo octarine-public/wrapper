@@ -35,6 +35,7 @@ export {
 } from "./Managers/EntityManager";
 
 export { default as ModifierManager } from "./Managers/ModifierManager";
+// export /*{ default as ProjectileManager }*/ * from "./Managers/ProjectileManager";
 export { default as EventsSDK } from "./Managers/Events";
 
 // Objects
