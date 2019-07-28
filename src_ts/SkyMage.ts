@@ -109,7 +109,7 @@ EventsSDK.on("Tick",()=>{
         comboKeyPress = false
     }else if(comboToggle.value && comboKey.IsPressed){
         target = nearest
-    }else{
+    }else if(comboToggle.value && !comboKey.IsPressed){
         target = undefined
     }
     if(target !== undefined){
