@@ -111,9 +111,11 @@ function GetAbilArray(abilNameToSearch: string) {
 	return Abils_.find(abilAr => abilAr[0] === abilNameToSearch)
 }
 
-function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolean?]>, Abil?: Ability): boolean {
+function Disable(Me: Hero, hero: Unit, DisableAr: Array<[string, boolean, boolean?]>, Abil?: Ability): boolean {
 	let delta = Me.GetRotationTime(hero.NetworkPosition) / 1000 + Additionaldelay.value
 	let AbilAr: [string, boolean, boolean?]
+	if (hero.Index === Me.Index)
+		return false;
 	if (
 		Abil !== undefined
 		&& (
@@ -129,13 +131,14 @@ function Disable(Me: Unit, hero: Unit, DisableAr: Array<[string, boolean, boolea
 		return abil_name.startsWith("item_") ? Me.GetItemByName(abil_name) : Me.GetAbilityByName(abil_name)
 	}).find(abil =>
 		abil !== undefined
-		&& !abil.IsHidden
+		&& !abil.IsHidden 
+		&& abil.Level !== 0
 		&& abil.Cooldown === 0
 		&& Me.Mana >= abil.ManaCost
 		&& (abil.CastRange <= 0 || Me.NetworkPosition.Distance2D(hero.NetworkPosition) <= abil.CastRange + hero.HullRadius * 2),
 	)
 	if (disable_abil === undefined)
-		return false
+		return false;
 	Me.UseSmartAbility(disable_abil, hero)
 	ignore_heroes.set(hero, Game.RawGameTime + delta + GetLatency(Flow_t.OUT))
 	return true
