@@ -700,7 +700,7 @@ export default class Unit extends Entity {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM, unit: this, ability: item, queue })
 	}
 	ItemSetCombineLock(item: Item, lock = true, queue?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, unit: this, ability: item,target:lock, queue })
+		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, unit: this, ability: item,target:lock+0, queue })
 	}
 	MoveItem(item: Item, slot: DOTAScriptInventorySlot_t) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM, unit: this, target: slot, ability: item })
