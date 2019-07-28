@@ -18,6 +18,11 @@ declare class Menu_Node extends Menu_Base {
 	constructor(name: string, entries?: Menu_Base[])
 }
 
+declare class Menu_Button extends Menu_Base {
+	constructor(name: string, desc?: string, hint?: string, callback?: (self: Menu_Button) => void)
+	constructor(name: string, desc?: string, callback?: (self: Menu_Button) => void)
+}
+
 declare class Menu_Toggle extends Menu_Base {
 	value: boolean
 
