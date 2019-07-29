@@ -6,6 +6,7 @@ import Keybind from "./Keybind"
 import ListBox from "./ListBox"
 import { Slider, SliderFloat } from "./Slider"
 import Toggle from "./Toggle"
+import Button from "./Button";
 
 export { CheckBox, ComboBox, Keybind, ListBox, Slider, SliderFloat, Toggle }
 
@@ -210,6 +211,17 @@ export class Tree extends Menu_Node {
 		this.AddControl(listBox)
 
 		return listBox
+	}
+
+	AddButton(name: string, desc?: string, hint?: string) {
+
+		name = CheckSameName(name, this)
+
+		var button = new Button(this, name, desc, hint)
+
+		this.AddControl(button)
+
+		return button
 	}
 }/*
 

@@ -127,8 +127,8 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
 	}
 	get IsMagicImmune(): boolean {
-		//return this.m_pBaseEntity.m_bIsMagicImmune
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE);
+		return this.m_pBaseEntity.m_bIsMagicImmune
+		// return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE);
 	}
 	get IsDeniable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)
