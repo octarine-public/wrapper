@@ -38,9 +38,3 @@ EventsSDK.on("GameEnded", () => {
 	Wisp.GameEnded()
 	Treant.GameEnded()
 })
-EventsSDK.on("EntityDestroyed", npc => {
-	TopHud.entityDestroy(npc)
-})
-EventsSDK.on("EntityCreated", npc => {
-	TopHud.entityCreate(npc)
-})
