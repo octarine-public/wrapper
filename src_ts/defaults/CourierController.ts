@@ -114,7 +114,7 @@ EventsSDK.on("EntityDestroyed", (ent: Entity) => {
 
 EventsSDK.on("Update", () => {
 
-	if (!Game.IsInGame || Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
+	if (!Game.IsInGame || Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !stateMain.value)
 		return
 	if (allyCourier === undefined)
 		return
@@ -182,7 +182,7 @@ function checkCourSelf(stateEnt: Hero, state: CourierState_t) {
 
 function trySelfDeliver() {
 
-	if (!deliverState.value)
+	if (!stateMain.value || !deliverState.value)
 		return false
 
 	let localEnt = EntityManager.LocalHero

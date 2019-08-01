@@ -1,4 +1,4 @@
-import { Color, Debug, Entity, EntityManager, EventsSDK, Game, Hero, MenuManager, Modifier, RendererSDK, Unit, Vector2 } from "wrapper/Imports"
+import { Color, Debug, Entity, EntityManager, EventsSDK, Game, Hero, MenuManager, Modifier, RendererSDK, Unit, Vector2, LocalPlayer } from 'wrapper/Imports';
 import Vector3 from "./wrapper/Base/Vector3"
 let { MenuFactory } = MenuManager
 const menu = MenuFactory("Skill Alert"),
@@ -11,7 +11,8 @@ const menu = MenuFactory("Skill Alert"),
 	size = spellIcons.AddSlider("Size", 30, 3, 100),
 	opacity = spellIcons.AddSlider("Opacity", 255, 0, 255),
     chat = menu.AddTree("Send to chat"),
-    chatActive = chat.AddCheckBox("Active ### 2"),
+    // pick = chat.AddCheckBox("Pick on position"),
+    chatActive = chat.AddCheckBox("Chat say"),
 	chatRangeCheck = chat.AddSlider("Range Check", 1300, 200, 5000),
     chatShow = chat.AddListBox("Chat Alert Skills", show.values, [true, true, true, true, true, true, true, true]),
     arModifiers = [
@@ -84,7 +85,7 @@ const menu = MenuFactory("Skill Alert"),
     },
     floor = Math.floor
 let arTimers = new Map<Modifier, [number, number, string, Vector3]>(),
-    arHeroMods = {}
+    arHeroMods = new Map<Modifier,number>()
 
 EventsSDK.on("BuffAdded", (ent, buff) => {
     if (!active.value)
@@ -163,17 +164,31 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
         if (mod[1] && ent.IsEnemy())
             return
         const part = Particles.Create(mod[2], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent.m_pBaseEntity)
-        arHeroMods[ent.Index] = [buff.Name, part]
+        arHeroMods.set(buff,part)
         if (chatActive.value && chatShow.selected_flags[mod[3]] && arMessages[mod[3]]){
 			SendToConsole(`say_team ${arMessages[mod[3]] + ent.Name.substring(9)}`)
         }
     }
 })
 EventsSDK.on("BuffRemoved", (ent, buff) => {
-    let part = arHeroMods[ent.Index]
     arTimers.delete(buff)
-    if (part && buff.Name === part[0]){
-        Particles.Destroy(part[1], false)
+    if(arHeroMods.has(buff)){
+        let part = arHeroMods.get(buff)
+        arHeroMods.delete(buff)
+        Particles.Destroy(part, false)
+    }
+})
+EventsSDK.on('Tick',()=>{
+    if (!active.value)
+        return
+    if(arHeroMods.size > 0){
+        // loop-optimizer: KEEP
+        arHeroMods.forEach((part,buff) => {
+            if(buff.RemainingTime === null){
+                arHeroMods.delete(buff)
+                Particles.Destroy(part, false)
+            }
+        });
     }
 })
 EventsSDK.on("Draw", () => {
