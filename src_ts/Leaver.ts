@@ -1,8 +1,11 @@
-import { Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Player, Unit, Color, PlayerResource } from 'wrapper/Imports';
+import { Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Player, Unit, Color, PlayerResource, RendererSDK } from 'wrapper/Imports';
 
+var TimerStart: boolean = false;
 const { MenuFactory } = MenuManager,
     tree = MenuFactory("Leaver"),
     leave = tree.AddKeybind('Leave button xD'),
+    autodisconnect = tree.AddToggle("Auto Disconnect"),
+    Additionaldelay = tree.AddSlider("Delay auto disconnect", 1000, 1000, 10000).SetToolTip("in millisecond 1000 = 1sec"),
     pid = tree.AddComboBox('Player ID',['0','1','2','3','4','5','6','7','8','9']),
     colors = ['#415fff','#83ffda','#c3009c','#d5ff16','#f16900','#ff6ca5','#85c83b','#74d6f9','#009e31','#8f6f00'],
     heroes = {
@@ -122,11 +125,18 @@ const { MenuFactory } = MenuManager,
         "npc_dota_hero_obsidian_destroyer":	"Outworld Devourer",
         "npc_dota_hero_lycan":	"Lycan",
     }
-leave.OnPressed(btn=>{
+leave.OnPressed(btn => {
     const player = PlayerResource.GetPlayerByPlayerID(pid.selected_id),
         id = player.PlayerID,
         name = player.Name,
         hero = player.Hero.Name
     ChatWheelAbuse(`Хорошо сыграно!<br><font color="${colors[id]}">${name} (${heroes[hero]})</font> отключается от игры. Пожалуйста, дождитесь повторного подключения.<br><font color='#FF0000'><b>У <font color="${colors[id]}">${name} (${heroes[hero]})</font> осталась 5 мин. для повторного подключения.</b></font><br><font color="${colors[id]}">${name} (${heroes[hero]})</font> покидает игру.<br><font color='#00FF00'><b>Теперь эту игру можно спокойно покинуть.</b></font>`)
-    setTimeout(()=>SendToConsole('disconnect'),1000)
-})
+    if(autodisconnect.value) {
+        setTimeout(() => {
+            SendToConsole('disconnect');
+            EventsSDK.on('GameEnded', () => {
+                TimerStart = true;
+            })
+        }, Additionaldelay.value)
+    }
+});
