@@ -22,6 +22,12 @@ declare class Menu_Button extends Menu_Base {
 	constructor(name: string, desc?: string, hint?: string, callback?: (self: Menu_Button) => void)
 	constructor(name: string, desc?: string, callback?: (self: Menu_Button) => void)
 }
+declare class Menu_TextEntry  extends Menu_Base {
+	value: string
+
+	constructor(name: string, value: string, desc?: string, hint?: string, callback?: (self: Menu_TextEntry) => void)
+	constructor(name: string, value: string, callback?: (self: Menu_TextEntry) => void)
+}
 
 declare class Menu_Toggle extends Menu_Base {
 	value: boolean
