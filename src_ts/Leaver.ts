@@ -132,11 +132,6 @@ leave.OnPressed(btn => {
         hero = player.Hero.Name
     ChatWheelAbuse(`Хорошо сыграно!<br><font color="${colors[id]}">${name} (${heroes[hero]})</font> отключается от игры. Пожалуйста, дождитесь повторного подключения.<br><font color='#FF0000'><b>У <font color="${colors[id]}">${name} (${heroes[hero]})</font> осталась 5 мин. для повторного подключения.</b></font><br><font color="${colors[id]}">${name} (${heroes[hero]})</font> покидает игру.<br><font color='#00FF00'><b>Теперь эту игру можно спокойно покинуть.</b></font>`)
     if(autodisconnect.value) {
-        setTimeout(() => {
-            SendToConsole('disconnect');
-            EventsSDK.on('GameEnded', () => {
-                TimerStart = true;
-            })
-        }, Additionaldelay.value)
+        setTimeout(() =>  SendToConsole('disconnect'), Additionaldelay.value)
     }
 });
