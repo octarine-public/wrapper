@@ -10,6 +10,8 @@ let enemies:Hero[] = [],
     allies:Hero[] = []
 
 export function gameStarted(){
+    // let screen_size = RendererSDK.WindowSize
+    // if(screen_size.x == )
 }
 export function gameEnded(){
 	enemies = []
