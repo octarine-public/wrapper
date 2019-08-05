@@ -150,6 +150,11 @@ class RendererSDK {
 
 		this.Text(text, vecMouse, color, font_name, font, flags)
 	}
+	DrawMiniMapIcon(name: string,size: number,worldPos: Vector3,color:Color){
+		worldPos.toIOBuffer(0)
+        color.toIOBuffer(3)
+        Renderer.DrawIcon(name, size)
+	}
 }
 
 export default global.RendererSDK = new RendererSDK()

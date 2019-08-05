@@ -16,8 +16,10 @@ function RenderPosition(pos: Vector3){
 			case 6: TextStyle = "⊗"; break;
 			case 7: TextStyle = "[]"; break;
 		}
+		//-createhero creep enemy
+		RendererSDK.DrawMiniMapIcon("minimap_courier", ConVars.GetInt("dota_minimap_hero_size"),pos,DrawRGBA.Color)
 		Renderer.Text(position_unit.x, position_unit.y, TextStyle,
-		DrawRGBA.R.value, DrawRGBA.G.value,DrawRGBA.B.value, DrawRGBA.A.value, "Arial", Size.value)
+			DrawRGBA.R.value, DrawRGBA.G.value,DrawRGBA.B.value, DrawRGBA.A.value, "Arial", Size.value)
 	}
 }
 export function UnitAnimationCreate(unit: Unit) {
@@ -36,7 +38,7 @@ export function OnDraw() {
 			? RenderPosition(pos)
 			: RenderPosition(new Vector3(-2394.375, 1873.9375, 159.96875));
 			
-		setTimeout(() => ArrayExtensions.arrayRemove(jungl_unit, unit), 1 * 1000)
+		setTimeout(() => ArrayExtensions.arrayRemove(jungl_unit, unit), 1000)
 	})
 }
 export function GameEnded() {
