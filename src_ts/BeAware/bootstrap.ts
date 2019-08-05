@@ -33,4 +33,6 @@ EventsSDK.on("GameEnded", () => {
 	Wisp.GameEnded()
 	Treant.GameEnded()
 	Jungle.GameEnded()
+	Techies.GameEnded()
+	ParticleHack.GameEnded()
 })

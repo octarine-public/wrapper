@@ -50,15 +50,15 @@ export function OnDraw() {
 		let pos_particle = RendererSDK.WorldToScreen(position);
 		if (pos_particle === undefined || target === undefined || target.IsVisible)
 			return;
+		let Name = target.Name;
+		if (Name === undefined)
+			return;
 		switch (ComboBox.selected_id) {
 			case 0: 
 				Renderer.Image(`panorama/images/heroes/icons/${target.Name}_png.vtex_c`, 
 					pos_particle.x - Size.value / 4, pos_particle.y - Size.value / 4, Size.value / 2, Size.value / 2);
 			 break;
 			case 1:
-				let Name = target.Name;
-				if (Name === undefined)
-					return;
 				let NameRenderUnit = Name.split("_").splice(3, 3).join(' ');
 				Renderer.Text(pos_particle.x, pos_particle.y, ucFirst(NameRenderUnit),
 					DrawRGBA.R.value, DrawRGBA.G.value, DrawRGBA.B.value, DrawRGBA.A.value, "Arial", Size.value / 4)
