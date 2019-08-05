@@ -16,14 +16,13 @@ export function MenuBase(root: MenuManager.MenuControllers.Tree, name: string, t
 export function MenuDrawBase(root: MenuManager.MenuControllers.Tree, RGBname?: 
 	string, BoxName?: string, ArrayBox?: string[], 
 	SliderName?: string, defaultValue?: number, minValue?: number, maxValue?: number,
-	SliderName_2?: string, defaultValue_2?: number, minValue_2?: number, maxValue_2?: number
 	) 
 	{
 		let DrawTree = root.AddTree(root.name + " - Draw")
-		return {
-			DrawTree,
-			Size: DrawTree.AddSlider(SliderName, defaultValue, minValue, maxValue),
-			ComboBox: DrawTree.AddComboBox(BoxName, ArrayBox),
-			DrawRGBA: MenuManager.CreateRGBATree(DrawTree, root.name + " - " + RGBname),
-		}
+	return {
+		DrawTree,
+		Size: DrawTree.AddSlider(SliderName, defaultValue, minValue, maxValue),
+		DrawRGBA: MenuManager.CreateRGBATree(DrawTree, root.name + " - " + RGBname),
+		ComboBox: ArrayBox.length <= 0 ? undefined : DrawTree.AddComboBox(BoxName, ArrayBox),
+	}
 }
