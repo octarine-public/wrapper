@@ -1,53 +1,69 @@
-// import { Vector3, RendererSDK, EntityManager, Entity } from "wrapper/Imports";
+import { Vector3, RendererSDK, Entity, EventsSDK, Game } from "wrapper/Imports";
+import { State, DrawRGBA, Size, ComboBox } from "./Menu"
+import { ucFirst } from "../../abstract/Function"
 
-// let Hero: C_BaseEntity | C_DOTA_Unit_Hero_Wisp,
-// 	pos = new Vector3().Invalidate(),
-// 	par_id = -1,
-// 	par_id_n = [];
-
-// export function ParticleUpdated(id: number, ent: C_BaseEntity) {
-// 	if (id === par_id) {
-// 		pos = Vector3.fromIOBuffer();
-// 		Hero = ent as C_BaseEntity | C_DOTA_Unit_Hero_Wisp;
-// 		console.log(par_id)
-// 	}
-// }
-// export function ParticleCreate(id: number, handle: BigInt, target: C_BaseEntity) {
-// 	switch (handle) {
-// 		// wisp
-// 		case 2971384879877296313n:
-// 		// // invoker
-// 		// case 5077511336076212576n:
-// 		// case 8966909212642600721n:
-// 		// case 16068608692953167828n:
-// 		// // bounty hanter
-// 		// case 6989698579171478207n:
-// 		// // mirana leap
-// 		// case 15115639205087631833n:
-// 		// // mirana moon
-// 		// case 15874864990078876431n:
-// 		// // monkey king form revert
-// 		// case 15874864990078876431n:
-// 		// // scroll
-// 		//case 14739391071850926756n:
-// 			par_id = id;
-// 		break;
-// 	}
-// }
-
-// export function OnDraw() {
-// 	let Hero_ = Hero instanceof C_BaseEntity ? EntityManager.GetEntityByNative(Hero) : undefined;
-// 	if (Hero_ !== undefined && (!Hero_.IsEnemy() || Hero_.IsVisible || !Hero_.IsAlive))
-// 		return;
-// 	pos.toIOBuffer()
-// 	let screen_pos = RendererSDK.WorldToScreen(pos);
-// 	if (screen_pos === undefined)
-// 		return;
-// 	RendererSDK.Image(`panorama/images/heroes/icons/${Hero_.Name}_png.vtex_c`, screen_pos);
-// }
-// export function GameEnded() {
-// 	Hero = undefined;
-// 	pos.Invalidate();
-// 	par_id = -1;
-// }
-
+let Particle: Array<[number, BigInt?, Entity?, number?, Vector3?]> = [];
+function ClassChecking(entity: Entity) {
+	return entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane
+		|| entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Neutral
+		|| entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Tower
+		|| entity.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Wisp
+}
+export function ParticleCreate(id: number, handle: BigInt, entity: Entity){
+	if (!State.value || (entity !== undefined && (!entity.IsEnemy() || ClassChecking(entity)))) /// ......
+		return;
+	if (handle === 6662325468141068933n) // antimage_blink_start
+		return;
+	//antimage_blink_start
+	//Debug.ClassDump(entity)
+	Particle.push([id, handle, entity, Game.RawGameTime + 1]);
+}
+export function ParticleCreateUpdate(id: number, control_point: number, position: Vector3){
+	if (!State.value)
+		return;
+	if (control_point === 0 || control_point === 1) {
+		Particle.some(([particle_id, handle, entity, Time]) => {
+			if (particle_id !== id)
+				return false;
+			Particle.push([particle_id, handle, entity, Time, position])
+			return true
+		})
+	}
+}
+export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3){
+	if (!State.value)
+		return;
+	Particle.some(([particle_id, handle, target, Time], i) => {
+		let Ent = ent as Entity
+		if (particle_id !== id || !Ent.IsEnemy())
+			return false;
+		Particle.push([particle_id, handle, Ent, Time, position])
+		return true
+	})
+}
+export function OnDraw() {
+	if (Particle.length <= 0)
+		return;
+	Particle.forEach(([particle_id, handle, target, Time, position], i) => {
+		if (position === undefined || Time <= Game.RawGameTime)
+			return Particle.splice(i, 1)
+		let pos_particle = RendererSDK.WorldToScreen(position);
+		if (pos_particle === undefined || target === undefined)
+			return;
+		switch (ComboBox.selected_id) {
+			case 0: 
+				Renderer.Image(`panorama/images/heroes/icons/${target.Name}_png.vtex_c`, 
+					pos_particle.x - Size.value / 4, pos_particle.y - Size.value / 4, Size.value / 2, Size.value / 2);
+			 break;
+			case 1:
+				let ArrayName = target.Name.split("_"),
+					NameRenderUnit = ArrayName.splice(3, 3).join(' ');
+				Renderer.Text(pos_particle.x, pos_particle.y, ucFirst(NameRenderUnit),
+					DrawRGBA.R.value, DrawRGBA.G.value, DrawRGBA.B.value, DrawRGBA.A.value, "Arial", Size.value / 4)
+			break;
+		}
+	})
+}
+export function GameEnded() {
+	Particle = [];
+}

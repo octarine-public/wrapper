@@ -1,40 +1,34 @@
-import { EventsSDK, Game,Hero,ArrayExtensions } from "wrapper/Imports"
+import { EventsSDK, Game,Hero,ArrayExtensions, LocalPlayer, Unit, Entity, Vector3 } from "wrapper/Imports"
 import { stateMain } from "./abstract/Menu.Base"
 import * as Roshan from "./Module/Roshan/Particle"
 import * as Treant from "./Module/TreantMapHack/Particle"
 import * as Wisp from "./Module/WispMapHack/Particle"
-import * as TopHud from "./Module/TopHud/Entities"
+import * as Jungle from "./Module/JungleMapHack/Particle"
+import * as ParticleHack from "./Module/ParticleMapHack/Particle"
+// import * as TopHud from "./Module/TopHud/Entities"
 
 EventsSDK.on("Tick", () => {
-	if (!stateMain.value || !Game.IsInGame || Game.IsPaused)
+	if (!stateMain.value || Game.IsPaused)
 		return
 	if (!Treant.Tick())
 		return false
 })
 EventsSDK.on("Draw", () => {
-	if (!stateMain.value || !Game.IsInGame)
+	if (!stateMain.value || Game.IsPaused)
 		return
-	TopHud.Draw()
+	//TopHud.Draw()
 	Wisp.OnDraw()
 	Roshan.Draw()
-})
-Events.on("ParticleCreated", (id, path, handle) => {
-	if (!stateMain.value || !Game.IsInGame)
-		return
-	Roshan.Create(handle)
-	Wisp.ParticleCreate(id, handle)
+	Jungle.OnDraw()
+	ParticleHack.OnDraw()
 })
 
-Events.on("ParticleUpdatedEnt", (id, cp, ent) => {
-	if (!stateMain.value || !Game.IsInGame)
-		return
-	Wisp.ParticleUpdated(id, ent as C_DOTA_Unit_Hero_Wisp)
-})
 EventsSDK.on("GameStarted", () => {
-	TopHud.gameStarted()
+	//TopHud.gameStarted()
 })
 EventsSDK.on("GameEnded", () => {
-	TopHud.gameEnded()
+	//TopHud.gameEnded()
 	Wisp.GameEnded()
 	Treant.GameEnded()
+	Jungle.GameEnded()
 })

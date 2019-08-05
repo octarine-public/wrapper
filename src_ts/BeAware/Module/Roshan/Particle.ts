@@ -1,7 +1,7 @@
 import { Game, RendererSDK } from "wrapper/Imports"
 import { BaseTree, drawStatus, IsAlive, NotificationRoshanStateChat, State, statusPosX, statusPosY} from "./Menu"
 var Timer: number = 0
-export function Create(Handle: BigInt) {
+export function ParticleCreate(Handle: BigInt) {
 	if (Handle === 7431777948785381669n) {
 		IsAlive.ChangeValue(true)
 		if (!State.value)
