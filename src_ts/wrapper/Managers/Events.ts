@@ -61,6 +61,9 @@ Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) =>
 		target instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(target)
 			: EntityManager.EntityByIndex(target)))
+			
+Events.on("ParticleDestroyed", (id, destroy_immediately) =>
+	EventsSDK.emit("ParticleDestroyed", false, id, destroy_immediately))
 
 Events.on("ParticleUpdated", (id, control_point) =>
 	EventsSDK.emit("ParticleUpdated", false, id, control_point, Vector3.fromIOBuffer()))
@@ -257,6 +260,7 @@ interface EventsSDK extends EventEmitter {
 		fallbackPosition: Vector3,
 		includeWearables: boolean,
 	) => void): EventEmitter
+	on(name: "ParticleDestroyed", listener: (id: number, destroy_immediately: boolean) => void): EventEmitter
 	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
 	on(name: "PrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventEmitter
 	on(name: "LinearProjectileCreated", callback: (

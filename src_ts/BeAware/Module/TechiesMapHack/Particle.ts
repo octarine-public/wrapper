@@ -1,12 +1,10 @@
 import { RendererSDK, Vector3, Entity } from "wrapper/Imports"
 import { State, Size, DrawRGBA } from "./Menu"
-let allTechiesMines: Array < [Vector3[], Vector3, string] > =[], // positions, center, stack-name
-	waiting_explode: Array < [number, string] > =[],
-	waiting_spawn: Array < [number, string] > =[]
 
-export function CalculateCenter(vecs: Vector3[]): Vector3 {
-	return Vector3.GetCenter(vecs)
-}
+let allTechiesMines: Array<[Array<[Vector3, number]>, Vector3, string]> = [], // positions+particle_ids, center, stack-name
+	waiting_explode: Array<[number, string]> = [],
+	waiting_spawn: Array<[number, string]> = []
+
 export function ParticleCreated(id: number, target: Entity, path: string) {
 	if (!State.value)
 		return;
@@ -32,11 +30,11 @@ export function ParticleUpdated(id: number, control_point: number, position: Vec
 					mines = obj[0]
 				if (center.Distance(position) > 100)
 					return false
-				mines.push(position)
-				obj[1] = CalculateCenter(mines)
+				mines.push([position, id])
+				obj[1] = Vector3.GetCenter(mines.map(([vec]) => vec))
 				return true
 			}))
-				allTechiesMines.push([[position], position, mine_name])
+				allTechiesMines.push([[[position, id]], position, mine_name])
 			waiting_spawn.splice(i, 1)
 			return true
 		})
@@ -49,12 +47,12 @@ export function ParticleUpdated(id: number, control_point: number, position: Vec
 				if (obj[2] !== mine_name)
 					return false
 				let mines = obj[0]
-				return mines.some((vec, j) => {
+				return mines.some(([vec, particle_id], j) => {
 					if (vec.Distance(position) > 10)
 						return false
 					if (mines.length !== 1) {
 						mines.splice(j, 1)
-						obj[1] = CalculateCenter(mines)
+						obj[1] = Vector3.GetCenter(mines.map(([vec]) => vec))
 					} else
 						allTechiesMines.splice(i, 1)
 					return true
@@ -78,16 +76,28 @@ export function ParticleUpdatedEnt(id: number, control_point: number, attach: Pa
 				return false
 			let mines = obj[0]
 			return mines.some((vec, i) => {
-				if (vec.Distance(position) !== 0)
+				if (vec[0].Distance(position) !== 0)
 					return false
 				mines.splice(i, 1)
-				obj[1] = CalculateCenter(mines)
+				obj[1] = Vector3.GetCenter(mines.map(([vec]) => vec))
 				return true
 			})
 		})
 		waiting_explode.splice(i, 1)
 		return true
 	})
+}
+export function ParticleDestroyed(id: number) {
+	allTechiesMines.some(([positions], i) => positions.some(([pos, particle_id], pos_id) => {
+		if (id !== particle_id)
+			return false
+		if (positions.length !== 1) {
+			positions.splice(pos_id, 1)
+			allTechiesMines[i][1] = Vector3.GetCenter(allTechiesMines[i][0].map(([vec]) => vec))
+		} else
+			allTechiesMines.splice(i, 1)
+		return true
+	}))
 }
 export function OnDraw() {
 	if (!State.value || allTechiesMines.length <= 0)
@@ -101,6 +111,7 @@ export function OnDraw() {
 		}
 	})
 }
+
 export function GameEnded(){
 	allTechiesMines = []
 	waiting_explode = []
