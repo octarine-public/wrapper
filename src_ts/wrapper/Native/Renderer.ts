@@ -124,14 +124,12 @@ class RendererSDK {
 	 * @param flags default: FontFlags_t.OUTLINE
 	 */
 	Text(text: string, vec: Vector2 | Vector3 = new Vector2(), color?: Color, font_name?: string, font = this.DefaultTextSize, flags = FontFlags_t.OUTLINE): void {
-
 		if (color === undefined)
 			Renderer.Text(vec.x, vec.y, text)
-
 		else if (font_name === undefined)
 			Renderer.Text(vec.x, vec.y, text, color.r, color.g, color.b, color.a)
-
-		else Renderer.Text(vec.x, vec.y, text, color.r, color.g, color.b, color.a, font_name, font.x, font.y, flags)
+		else
+			Renderer.Text(vec.x, vec.y, text, color.r, color.g, color.b, color.a, font_name, font.x, font.y, flags)
 	}
 	/**
 	 * @param color default: Yellow
@@ -142,7 +140,6 @@ class RendererSDK {
 	 * @param flags default: FontFlags_t.ANTIALIAS
 	 */
 	TextAroundMouse(text: string, vec?: Vector2 | Vector3 | false, color = Color.Yellow, font_name = "Calibri", font = new Vector2(30), flags = FontFlags_t.ANTIALIAS): void {
-
 		let vecMouse = this.CursorOnScreen.AddScalarX(30).AddScalarY(15)
 
 		if (vec !== undefined && vec !== false)
@@ -150,7 +147,9 @@ class RendererSDK {
 
 		this.Text(text, vecMouse, color, font_name, font, flags)
 	}
-	DrawMiniMapIcon(name: string,size: number,worldPos: Vector3,color:Color){
+
+	default_color = new Color(255, 255, 255)
+	DrawMiniMapIcon(name: string, worldPos: Vector3, size: number = 800, color: Color = this.default_color) {
 		worldPos.toIOBuffer(0)
         color.toIOBuffer(3)
         Renderer.DrawIcon(name, size)
