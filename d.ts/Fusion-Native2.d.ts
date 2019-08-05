@@ -413,6 +413,12 @@ declare interface Renderer {
 	 * @returns screen position to IOBuffer if return value is true
 	 */
 	WorldToScreen(): boolean // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
+	/**
+	 * Draws icon at minimap
+	 * @param icon_name can be found at https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/game/dota/pak01_dir/scripts/mod_textures.txt
+	 * @param size you can get that value for heroes from ConVars.GetInt("dota_minimap_hero_size")
+	 */
+	DrawIcon(icon_name: string, size: number): void // pass pos: Vector3 at IOBuffer offset 0, color: Color at IOBuffer offset 3
 }
 
 declare interface Camera {
