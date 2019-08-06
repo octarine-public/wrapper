@@ -91,7 +91,6 @@ export function OnDraw() {
 				)
 				break
 		}
-		console.log(Size.value)
 		RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Name}`, position, Size.value * 12, fullColor)
 	})
 }

@@ -274,7 +274,6 @@ function Stopping(unit: Unit, creeps: Creep[], moveDirection = getCenterDirectio
 
 		let npcSpeed = unit.IdealSpeed,
 			creepSpeed = creep.IdealSpeed
-		console.log(npcSpeed)
 		let moveDistance = ((Sensitivity.value + 45) * 10) / npcSpeed * 100
 
 		if ((npcSpeed - creepSpeed) > 50)
