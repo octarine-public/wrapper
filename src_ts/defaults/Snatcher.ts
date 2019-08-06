@@ -162,13 +162,7 @@ EventsSDK.on("Draw", () => {
 	// items
 	text += `${stateItems.name}: ${(stateItems.value || itemsHoldKey.IsPressed) ? "On" : "Off"}`
 
-	const wSize = RendererSDK.WindowSize
-
-	Renderer.Text(
-		wSize.x / 100 * statusPosX.value,
-		wSize.y / 100 * statusPosY.value,
-		text,
-	)
+	RendererSDK.Text(text, RendererSDK.WindowSize.DivideScalar(100).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value))
 })
 
 EventsSDK.on("PrepareUnitOrders", order => picking_up[(order.Unit as Unit).Index] === undefined)

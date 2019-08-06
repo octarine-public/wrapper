@@ -340,74 +340,26 @@ declare interface Particles {
 declare interface Renderer {
 	readonly WindowSize: boolean // returns Vector2 to IOBuffer offset 0 at get
 	readonly CursorPos: boolean // returns Vector2 to IOBuffer offset 0 at get
-	
-	/**
-	 * Allowed non-passable element groups:
-	 * [r, g, b]
-	 * [a]
-	 * NodeJS-like decl:
-	 * FilledCircle(x: number, y: number, radius: number[, r?: number, g?: number, b?: number][, a?: number]): void
-	 */
-	FilledCircle(x: number, y: number, radius: number, r?: number, g?: number, b?: number, a?: number): void
-	/**
-	 * Allowed non-passable element groups:
-	 * [r, g, b]
-	 * [a]
-	 * NodeJS-like decl:
-	 * OutlinedCircle(x: number, y: number, radius: number[, r?: number, g?: number, b?: number][, a?: number]): void
-	 */
-	OutlinedCircle(x: number, y: number, radius: number, r?: number, g?: number, b?: number, a?: number): void
-	/**
-	 * Allowed non-passable element groups:
-	 * [r, g, b]
-	 * [a]
-	 * NodeJS-like decl:
-	 * Line(baseX: number, baseY: number, baseW: number, baseH: number[, r?: number, g?: number, b?: number][, a?: number]): void
-	 */
-	Line(baseX: number, baseY: number, baseW: number, baseH: number, r?: number, g?: number, b?: number, a?: number): void
-	/**
-	 * Allowed non-passable element groups:
-	 * [r, g, b]
-	 * [a]
-	 * NodeJS-like decl:
-	 * FilledRect(baseX: number, baseY: number, baseW: number, baseH: number[, r?: number, g?: number, b?: number][, a?: number]): void
-	 */
-	FilledRect(baseX: number, baseY: number, baseW: number, baseH: number, r?: number, g?: number, b?: number, a?: number): void
-	/**
-	 * Allowed non-passable element groups:
-	 * [r, g, b]
-	 * [a]
-	 * NodeJS-like decl:
-	 * OutlinedRect(baseX: number, baseY: number, baseW: number, baseH: number[, r?: number, g?: number, b?: number][, a?: number]): void
-	 */
-	OutlinedRect(baseX: number, baseY: number, baseW: number, baseH: number, r?: number, g?: number, b?: number, a?: number): void
+
+	FilledCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a: number): void
+	OutlinedCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a: number): void
+	Line(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number, a: number): void
+	FilledRect(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number, a: number): void
+	OutlinedRect(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number, a: number): void
 	/**
 	 * @param path start it with "~/" (without double-quotes) to load image from "%loader_path%/scripts_files/%path%"
 	 * @param path also must end with "_c" (without double-quotes), if that's vtex_c
-	 * Allowed non-passable element groups:
-	 * [baseW, baseH] (or you can use -1 as one/both of those values to leave them auto)
-	 * [r, g, b]
-	 * [a]
-	 * NodeJS-like decl:
-	 * Image(path: string, baseX: number, baseY: number[, baseW?: number, baseH?: number][, r?: number, g?: number, b?: number][, a?: number]): void
+	 * @param baseW you can use -1 to leave it auto
+	 * @param baseH you can use -1 to leave it auto
 	 */
-	Image(path: string, baseX: number, baseY: number, baseW?: number, baseH?: number, r?: number, g?: number, b?: number, a?: number): void
+	Image(path: string, baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number, a: number): void
 	/**
 	 * @param font_name default: "Calibri"
 	 * @param font_size default: 12
 	 * @param font_weight default: 150
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
-	 * @param flags default: FontFlags_t.OUTLINE
-	 * Allowed non-passable element groups:
-	 * [r, g, b]
-	 * [a]
-	 * [font_name, font_size]
-	 * [font_weight]
-	 * [flags]
-	 * NodeJS-like decl:
-	 * Text(x: number, y: number, text: string[, r?: number, g?: number, b?: number][, a?: number][, font_name?: string, uint8_t font_size][, uint16_t font_weight][, int flags]): void
 	 */
-	Text(x: number, y: number, text: string, r?: number, g?: number, b?: number, a?: number, font_name?: string, font_size?: number, font_weight?: number, flags?: number): void
+	Text(x: number, y: number, text: string, r: number, g: number, b: number, a: number, font_name: string, font_size: number, font_weight: number, flags: number): void
 	/**
 	 * @param pos world position that needs to be turned to screen position
 	 * @returns screen position to IOBuffer if return value is true

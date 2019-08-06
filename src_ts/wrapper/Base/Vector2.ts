@@ -500,7 +500,7 @@ export default class Vector2 {
 	 * @param {number} scalar
 	 */
 	DivideScalar(scalar: number): Vector2 {
-		return new Vector2(
+		return new Vector2 (
 			this.x / scalar,
 			this.y / scalar,
 		)

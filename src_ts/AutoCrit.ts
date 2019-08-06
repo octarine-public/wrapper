@@ -1,4 +1,4 @@
-import { Entity, EntityManager, EventsSDK, Game, LocalPlayer, Unit } from "./wrapper/Imports"
+import { Entity, EntityManager, EventsSDK, Game, LocalPlayer, Unit, Vector2, RendererSDK } from "./wrapper/Imports"
 
 var config = { hotkey: 0},
 	enabled = false,
@@ -7,7 +7,7 @@ var config = { hotkey: 0},
 	timer: number = 0
 Events.on("Draw", () => {
 	if (enabled)
-		Renderer.Text(0, 100, "Auto Crit enabled")
+		RendererSDK.Text("Auto Crit enabled", new Vector2(0, 100))
 })
 EventsSDK.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 	if (!enabled || !npc.IsControllableByPlayer(LocalPlayer.PlayerID))

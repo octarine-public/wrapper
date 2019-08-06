@@ -1,4 +1,4 @@
-import { ArrayExtensions, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Vector3, Utils } from "wrapper/Imports"
 
 import { allHeroes } from "../../base/Listeners"
 
@@ -234,8 +234,7 @@ function TurnOff() {
 }
 
 function GetClosestHero(exclude: (unit: Hero) => boolean) {
-
-	let mouseCursor = RendererSDK.CursorOnWorld
+	let mouseCursor = Utils.CursorWorldVec
 
 	return ArrayExtensions.orderBy(allHeroes, hero => hero.Distance2D(mouseCursor))
 		.find(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.IsInRange(mouseCursor, 1000)

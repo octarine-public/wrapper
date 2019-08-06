@@ -1,4 +1,4 @@
-import { RendererSDK, Vector3, Entity } from "wrapper/Imports"
+import { RendererSDK, Vector3, Entity, Vector2, Color } from "wrapper/Imports"
 import { State, Size, DrawRGBA } from "./Menu"
 
 let allTechiesMines: Array<[Array<[Vector3, number]>, Vector3, string]> = [], // positions+particle_ids, center, stack-name
@@ -105,9 +105,19 @@ export function OnDraw() {
 	allTechiesMines.forEach(([allMines, pos, name]) => {
 		let wts = RendererSDK.WorldToScreen(pos)
 		if (wts !== undefined || name !== undefined) {
-			Renderer.Image(`~/other/npc_dota_${name}.png`, wts.x - 64 / 4, wts.y - 87 / 4, 64 / 2, 87 / 2)
-			Renderer.Text(wts.x + (Size.value / 4), wts.y, "x" + allMines.length,
-				DrawRGBA.R.value, DrawRGBA.G.value, DrawRGBA.B.value, DrawRGBA.A.value, "Arial", Size.value)
+			RendererSDK.Image(`~/other/npc_dota_${name}.png`, wts.SubtractScalarX(64 / 4).SubtractScalarY(87 / 4), new Vector2(64 / 2, 87 / 2))
+			RendererSDK.Text (
+				"x" + allMines.length,
+				wts.AddScalarX(Size.value / 4),
+				new Color (
+					DrawRGBA.R.value,
+					DrawRGBA.G.value,
+					DrawRGBA.B.value,
+					DrawRGBA.A.value
+				),
+				"Arial",
+				Size.value
+			)
 		}
 	})
 }

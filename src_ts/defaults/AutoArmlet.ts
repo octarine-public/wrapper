@@ -1,5 +1,6 @@
 import * as Orders from "Orders"
 import * as Utils from "Utils"
+import { RendererSDK, Vector2 } from "../wrapper/Imports";
 
 var config = {
 		hotkey: 0,
@@ -11,7 +12,7 @@ var config = {
 
 Events.on("Draw", () => {
 	if (enabled)
-		Renderer.Text(0, 50, "Auto Armlet enabled")
+		RendererSDK.Text("Auto Armlet enabled", new Vector2(0, 50))
 })
 Events.on("Tick", () => {
 	let cur_time = GameRules.m_fGameTime

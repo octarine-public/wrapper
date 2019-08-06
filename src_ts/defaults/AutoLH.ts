@@ -1,5 +1,6 @@
 import * as Orders from "Orders"
 import * as Utils from "Utils"
+import { RendererSDK } from "../wrapper/Imports";
 enum AutoLH_Mode {
 	LASTHIT = 1,
 	DENY,
@@ -150,7 +151,7 @@ function EnoughDamage(sender: C_DOTA_BaseNPC_Hero, target: C_DOTA_BaseNPC, cur_t
 
 Events.on("Draw", () => {
 	if (enabled)
-		Renderer.Text(0, 0, "Auto LastHit enabled")
+		RendererSDK.Text("Auto LastHit enabled")
 	else {
 		glow_ents_old = glow_ents
 		glow_ents = []

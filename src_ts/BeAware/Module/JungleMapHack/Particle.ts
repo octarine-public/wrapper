@@ -1,4 +1,4 @@
-import { Vector3, RendererSDK, ArrayExtensions, Unit} from "wrapper/Imports";
+import { Vector3, RendererSDK, ArrayExtensions, Unit, Color} from "wrapper/Imports";
 import { State, DrawRGBA, Size, ComboBox } from "./Menu"
 export let jungl_unit: Unit[] = [];
 
@@ -17,8 +17,18 @@ function RenderPosition(pos: Vector3){
 			case 7: TextStyle = "[]"; break;
 		}
 		//-createhero k_drag enemy
-		Renderer.Text(position_unit.x, position_unit.y, TextStyle,
-			DrawRGBA.R.value, DrawRGBA.G.value,DrawRGBA.B.value, DrawRGBA.A.value, "Arial", Size.value)
+		RendererSDK.Text (
+			TextStyle,
+			position_unit,
+			new Color (
+				DrawRGBA.R.value,
+				DrawRGBA.G.value,
+				DrawRGBA.B.value,
+				DrawRGBA.A.value
+			),
+			"Arial",
+			Size.value
+		)
 	}
 	RendererSDK.DrawMiniMapIcon("minimap_creep", 500,pos,DrawRGBA.Color)
 }

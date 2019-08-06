@@ -1,4 +1,4 @@
-import { Vector3, RendererSDK, Entity, Game, Color } from "wrapper/Imports";
+import { Vector3, RendererSDK, Entity, Game, Color, Vector2 } from "wrapper/Imports";
 import { State, DrawRGBA, Size, ComboBox } from "./Menu"
 import { ucFirst } from "../../abstract/Function"
 const fullColor = new Color(255,255,255)
@@ -71,14 +71,27 @@ export function OnDraw() {
 			return
 		switch (ComboBox.selected_id) {
 			case 0: 
-				Renderer.Image(`panorama/images/heroes/icons/${target.Name}_png.vtex_c`, 
-					pos_particle.x - Size.value / 4, pos_particle.y - Size.value / 4, Size.value / 2, Size.value / 2);
-			break;
+				RendererSDK.Image (
+					`panorama/images/heroes/icons/${target.Name}_png.vtex_c`,
+					pos_particle.SubtractScalar(Size.value / 4),
+					new Vector2(Size.value / 2, Size.value / 2)
+				)
+				break
 			case 1:
 				let NameRenderUnit = Name.split("_").splice(3, 3).join(' ');
-				Renderer.Text(pos_particle.x, pos_particle.y, ucFirst(NameRenderUnit),
-					DrawRGBA.R.value, DrawRGBA.G.value, DrawRGBA.B.value, DrawRGBA.A.value, "Arial", Size.value / 4)
-			break;
+				RendererSDK.Text (
+					ucFirst(NameRenderUnit),
+					pos_particle,
+					new Color (
+						DrawRGBA.R.value,
+						DrawRGBA.G.value,
+						DrawRGBA.B.value,
+						DrawRGBA.A.value
+					),
+					"Arial",
+					Size.value / 4
+				)
+				break
 		}
 	})
 }

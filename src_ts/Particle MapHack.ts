@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, Debug, Entity, EntityManager, EventsSDK, MenuManager, RendererSDK, Unit, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Creep, Debug, Entity, EntityManager, EventsSDK, MenuManager, RendererSDK, Unit, Vector3, Vector2, Color } from "wrapper/Imports"
 
 let { MenuFactory, CreateRGBATree } = MenuManager
 
@@ -198,11 +198,19 @@ EventsSDK.on("Draw", () => {
 					.split("_")
 					.join(" ")
 
-				Renderer.Text(wts.x, wts.y, name, 0,
-					isWaitSpawn ? 0 : 255,
-					isWaitSpawn ? 255 : 0,
-					campInformerAlpha.value,
-					"Arial", campInformerSize.value, 200)
+				RendererSDK.Text(
+					name,
+					wts,
+					new Color (
+						0,
+						isWaitSpawn ? 0 : 255,
+						isWaitSpawn ? 255 : 0,
+						campInformerAlpha.value
+					),
+					"Arial",
+					campInformerSize.value,
+					200
+				)
 			}
 		})
 	}
@@ -224,12 +232,18 @@ EventsSDK.on("Draw", () => {
 				let wts = RendererSDK.WorldToScreen(pos)
 
 				if (wts !== undefined) {
-					Renderer.Text(wts.x, wts.y, target.Name,
-						phBloodColor.R.value,
-						phBloodColor.G.value,
-						phBloodColor.B.value,
-						phBloodColor.A.value,
-						"Arial", phBloodSize.value)
+					RendererSDK.Text (
+						target.Name,
+						wts,
+						new Color (
+							phBloodColor.R.value,
+							phBloodColor.G.value,
+							phBloodColor.B.value,
+							phBloodColor.A.value
+						),
+						"Arial",
+						phBloodSize.value
+					)
 				}
 			})
 		}
@@ -241,15 +255,20 @@ EventsSDK.on("Draw", () => {
 				let wts = RendererSDK.WorldToScreen(pos)
 
 				if (wts !== undefined) {
+					RendererSDK.Image(`~/other/npc_dota_${name}.png`, new Vector2(wts.x - 64 / 4, wts.y - 87 / 4), new Vector2(64 / 2, 87 / 2))
 
-					Renderer.Image(`~/other/npc_dota_${name}.png`, wts.x - 64 / 4, wts.y - 87 / 4, 64 / 2, 87 / 2)
-
-					Renderer.Text(wts.x + (64 / 4), wts.y, "x" + allMines.length,
-						phBloodColor.R.value,
-						phBloodColor.G.value,
-						phBloodColor.B.value,
-						phBloodColor.A.value,
-						"Arial", phBloodSize.value)
+					RendererSDK.Text (
+						"x" + allMines.length,
+						wts.AddScalarX(64 / 4),
+						new Color (
+							phBloodColor.R.value,
+							phBloodColor.G.value,
+							phBloodColor.B.value,
+							phBloodColor.A.value
+						),
+						"Arial",
+						phBloodSize.value
+					)
 				}
 			})
 		}

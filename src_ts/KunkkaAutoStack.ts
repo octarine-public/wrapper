@@ -1,4 +1,4 @@
-import { ArrayExtensions, EventsSDK, Game, LocalPlayer, RendererSDK, Vector3 } from "./wrapper/Imports"
+import { ArrayExtensions, EventsSDK, Game, LocalPlayer, RendererSDK, Vector3, Color, Vector2 } from "./wrapper/Imports"
 
 /* import * as Orders from "Orders"
 import * as Utils from "Utils" */
@@ -28,8 +28,8 @@ EventsSDK.on("Draw", () => {
 		let screen_pos = RendererSDK.WorldToScreen(spot)
 		if (screen_pos === undefined)
 			return
-		Renderer.FilledRect(screen_pos.x - 25, screen_pos.y - 25, 50, 50, 255, 0, 0)
-		Renderer.Text(screen_pos.x, screen_pos.y, (i + 1).toString(), 0, 255, 0)
+		RendererSDK.FilledRect(screen_pos.SubtractScalar(25), new Vector2(50, 50), new Color(255, 0, 0))
+		RendererSDK.Text((i + 1).toString(), screen_pos, new Color(0, 255, 0))
 	})
 })
 EventsSDK.on("Tick", () => {

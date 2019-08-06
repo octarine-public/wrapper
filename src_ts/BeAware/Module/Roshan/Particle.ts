@@ -1,4 +1,4 @@
-import { Game, RendererSDK } from "wrapper/Imports"
+import { Game, RendererSDK, Color } from "wrapper/Imports"
 import { BaseTree, drawStatus, IsAlive, NotificationRoshanStateChat, State, statusPosX, statusPosY} from "./Menu"
 var Timer: number = 0
 export function ParticleCreate(Handle: BigInt) {
@@ -30,11 +30,11 @@ export function ParticleCreate(Handle: BigInt) {
 export function Draw() {
 	if (!drawStatus.value || !Game.IsInGame)
 		return
-	let text = `${BaseTree.name}: ${IsAlive.value ? "Alive" : "Dead"}`
-	const wSize = RendererSDK.WindowSize
-	Renderer.Text(
-		wSize.x / 100 * statusPosX.value,
-		wSize.y / 100 * statusPosY.value,
-		text, 255, 255, 255, 100, "Radiance", 24,
+	RendererSDK.Text (
+		`${BaseTree.name}: ${IsAlive.value ? "Alive" : "Dead"}`,
+		RendererSDK.WindowSize.DivideScalar(100).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value),
+		new Color(255, 255, 255, 100),
+		"Radiance",
+		24
 	)
 }
