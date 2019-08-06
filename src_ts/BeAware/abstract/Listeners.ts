@@ -55,5 +55,6 @@ EventsSDK.on("ParticleUpdatedEnt", (id: number, control_point: number, entity: E
 })
 EventsSDK.on("ParticleDestroyed", id => {
 	Techies.ParticleDestroyed(id)
+	ParicleMapHack.ParticleDestroyed(id)
 })
 
