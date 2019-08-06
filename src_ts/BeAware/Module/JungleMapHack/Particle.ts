@@ -30,7 +30,7 @@ function RenderPosition(pos: Vector3){
 			Size.value
 		)
 	}
-	RendererSDK.DrawMiniMapIcon("minimap_creep", 500,pos,DrawRGBA.Color)
+	RendererSDK.DrawMiniMapIcon("minimap_creep", pos, 500, DrawRGBA.Color)
 }
 export function UnitAnimationCreate(unit: Unit) {
 	if (!unit.IsValid || unit.IsVisible || !State.value)

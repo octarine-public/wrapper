@@ -10,8 +10,8 @@ export function ParticleCreated(id: number, target: Entity, path: string) {
 		return;
 	let mine_name
 	if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)_plant.vpcf$/.exec(path)) !== null) {
-		if (target === undefined || !target.IsEnemy())
-			return
+		// if (target === undefined || !target.IsEnemy())
+		// 	return
 		waiting_spawn.push([id, mine_name[1]])
 	} else if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)(s_detonate|_explode).vpcf$/.exec(path)) !== null)
 		waiting_explode.push([id, mine_name[1]])
@@ -104,7 +104,7 @@ export function OnDraw() {
 		return;
 	allTechiesMines.forEach(([allMines, pos, name]) => {
 		let wts = RendererSDK.WorldToScreen(pos)
-		if (wts !== undefined || name !== undefined) {
+		if (wts !== undefined && name !== undefined) {
 			RendererSDK.Image(`~/other/npc_dota_${name}.png`, wts.SubtractScalarX(64 / 4).SubtractScalarY(87 / 4), new Vector2(64 / 2, 87 / 2))
 			RendererSDK.Text (
 				"x" + allMines.length,

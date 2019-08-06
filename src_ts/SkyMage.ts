@@ -469,7 +469,7 @@ EventsSDK.on("Draw",()=>{
 					wSize.x / 100 * statusPosX.value,
 					wSize.y / 100 * statusPosY.value + (i * textSize.value)
 				),
-				new Color(255, 255, 255, 100),
+				new Color(255, 255, 255, 255),
 				"Radiance",
 				textSize.value
 			);
