@@ -16,7 +16,7 @@ EventsSDK.on("Tick", () => {
 		return false
 })
 EventsSDK.on("Draw", () => {
-	if (!stateMain.value || Game.IsPaused)
+	if (!stateMain.value || !Game.IsInGame || Game.IsPaused)
 		return
 	Camp.OnDraw()
 	Wisp.OnDraw()

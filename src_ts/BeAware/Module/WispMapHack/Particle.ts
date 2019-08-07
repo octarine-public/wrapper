@@ -20,7 +20,7 @@ export function ParticleUpdated(id: number, ent: C_BaseEntity) {
 	}
 }
 export function OnDraw() {
-	if (!State.value)
+	if (!State.value || !pos.IsValid)
 		return
 	let wisp_ = wisp instanceof C_BaseEntity ? EntityManager.GetEntityByNative(wisp) : undefined
 	if (wisp_ !== undefined && (!wisp_.IsEnemy() || wisp_.IsVisible || !wisp_.IsAlive))
