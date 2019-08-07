@@ -66,7 +66,7 @@ export function OnDraw() {
 			return;
 		} 
 		else {
-			if (!target.IsEnemy() || target.IsVisible)
+			if (!target.IsEnemy() || target.IsVisible || position.Length < 10)
 				return;
 			let Name = target.Name;
 			if (Name === undefined)
