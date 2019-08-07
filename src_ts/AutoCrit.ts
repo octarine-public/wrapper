@@ -1,16 +1,19 @@
-import { Entity, EntityManager, EventsSDK, Game, LocalPlayer, Unit, Vector2, RendererSDK } from "./wrapper/Imports"
+import { Entity, EntityManager, EventsSDK, Game, LocalPlayer, Unit, Vector2, MenuManager, RendererSDK, Vector3 } from "./wrapper/Imports"
 
-var config = { hotkey: 0},
-	enabled = false,
-	target: Entity,
-	target_pos,
-	timer: number = 0
+const Menu = MenuManager.MenuFactory("Auto Crit"),
+	MenuState = Menu.AddToggle("State"),
+	hotkey = Menu.AddKeybind('Hotkey').OnRelease(() => !MenuState.value);
+
+var target: Entity,
+	target_pos: Vector3,
+	timer: number = 0;
+	
 Events.on("Draw", () => {
-	if (enabled)
+	if (MenuState.value)
 		RendererSDK.Text("Auto Crit enabled", new Vector2(0, 100))
 })
 EventsSDK.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
-	if (!enabled || !npc.IsControllableByPlayer(LocalPlayer.PlayerID))
+	if (!MenuState.value || !npc.IsControllableByPlayer(LocalPlayer.PlayerID))
 		return
 	if (activity == 1505) {
 		timer = Game.GameTime + castpoint
@@ -33,7 +36,7 @@ EventsSDK.on("PrepareUnitOrders", order => {
 				target_pos = order.Position
 				break
 			case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
-				enabled = false
+				MenuState.value
 				break
 			default:
 				break
@@ -41,9 +44,14 @@ EventsSDK.on("PrepareUnitOrders", order => {
 	return true
 })
 Events.on("Update", () => {
-	if (!enabled || target === undefined || !target.IsAlive || LocalPlayer.Hero === undefined)
+	if (!MenuState.value || !hotkey.IsPressed || target === undefined || !target.IsAlive || LocalPlayer.Hero === undefined)
 		return false
 	let Me = LocalPlayer.Hero
+	if (Me.Name !== "npc_dota_hero_phantom_assassin" 
+		&& Me.Name !== "npc_dota_hero_skeleton_king" && Me.Name !== "npc_dota_hero_juggernaut"
+		&& Me.Name !== "npc_dota_hero_chaos_knight")
+		return false;
+		
 	if (timer <= Game.GameTime) {
 		let AttacksPerSecond = Me.AttacksPerSecond
 		switch (Me.Name) {
@@ -131,31 +139,26 @@ Events.on("Update", () => {
 					timer = Game.GameTime + 0.54
 				Me.AttackTarget(target, false)
 				break
-			default: return
+			default: 
+			return false
 		}
 	}
 })
-Events.on("WndProc", (message_type, wParam) => {
-	if (!IsInGame() || parseInt(wParam as any) !== config.hotkey)
-		return true
-	if (message_type === 0x100) // WM_KEYDOWN
-		return false
-	else if (message_type === 0x101) { // WM_KEYUP
-		enabled = !enabled
-		return false
-	}
-	return true
-})
-Events.on("GameEnded", () => enabled = false)
 
-{
-	let root = new Menu_Node("Auto Crit")
-	root.entries.push(new Menu_Keybind(
-		"Hotkey",
-		config.hotkey,
-		"Hotkey is in toggle mode",
-		node => config.hotkey = node.value,
-	))
-	root.Update()
-	Menu.AddEntry(root)
-}
+// hotkey.OnExecute(value => Pressed = value);
+
+// hotkey.OnRelease(value => hotkey.value = value.value);
+
+// Events.on("GameEnded", () => MenuState.va)
+
+// {
+// 	let root = new Menu_Node("Auto Crit")
+// 	root.entries.push(new Menu_Keybind(
+// 		"Hotkey",
+// 		config.hotkey,
+// 		"Hotkey is in toggle mode",
+// 		node => config.hotkey = node.value,
+// 	))
+// 	root.Update()
+// 	Menu.AddEntry(root)
+// }

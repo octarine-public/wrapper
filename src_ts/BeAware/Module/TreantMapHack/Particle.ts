@@ -3,6 +3,8 @@ import { State } from "./Menu"
 
 var treant_eyes: Unit[] = [], pars: number[] = []
 export function Destroy(ent: Entity, id: number) {
+	if (!State.value)
+		return
 	if (ArrayExtensions.arrayRemove(treant_eyes, ent))
 		delete pars[id]
 }

@@ -22,7 +22,7 @@ export function MenuDrawBase(root: MenuManager.MenuControllers.Tree, RGBname?:
 	return {
 		DrawTree,
 		Size: DrawTree.AddSlider(SliderName, defaultValue, minValue, maxValue),
-		DrawRGBA: MenuManager.CreateRGBATree(DrawTree, root.name + " - " + RGBname),
+		DrawRGBA: RGBname === null ? undefined : MenuManager.CreateRGBATree(DrawTree, root.name + " - " + RGBname),
 		ComboBox: ArrayBox.length <= 0 ? undefined : DrawTree.AddComboBox(BoxName, ArrayBox),
 	}
 }

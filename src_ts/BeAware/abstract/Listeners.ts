@@ -1,57 +1,55 @@
-import { Entity, EventsSDK, Unit, Vector3, Game} from "wrapper/Imports"
-
+import { Entity, EventsSDK, Unit, Vector3, Game, EntityManager} from "wrapper/Imports"
 import { stateMain } from "./Menu.Base"
 import * as Rosh from "../Module/Roshan/Particle"
-import { State } from "../Module/TreantMapHack/Menu"
+import * as Camp from "../Module/CampInformer/Entity"
 import * as Wisp from "../Module/WispMapHack/Particle"
 import * as Treant from "../Module/TreantMapHack/Particle"
 import * as Techies from "../Module/TechiesMapHack/Particle"
 import * as JungMapHack from "../Module/JungleMapHack/Particle"
 import * as ParicleMapHack from "../Module/ParticleMapHack/Particle"
-
 // import * as TopHud from "../Module/TopHud/Entities"
+
 export var NPC: Unit[] = []
-EventsSDK.on("EntityCreated", (ent: Entity, index: number) => {
+EventsSDK.on("EntityCreated", (ent, index) => {
 	if (!stateMain.value || ent === undefined || index === undefined)
 		return
-	if (State.value){
-		Treant.Create(ent, index)
-	}
+	Treant.Create(ent, index);
+	Camp.onEntityAdded(ent)
 	//TopHud.entityCreate(ent)
 })
-EventsSDK.on("EntityDestroyed", (ent: Entity, index: number) => {
+
+EventsSDK.on("EntityDestroyed", (ent, index) => {
 	if (!stateMain.value || ent === undefined || index === undefined)
 		return
-	if (State.value){
-		Treant.Destroy(ent, index)
-	}
+	Treant.Destroy(ent, index)
+	Camp.EntityDestroyed(ent)
 	//TopHud.entityDestroy(ent)
 })
-EventsSDK.on("UnitAnimation", (npc: Unit, sequenceVariant?: number, playbackrate?: number, castpoint?: number, type?: number, activity?: number) => {
+EventsSDK.on("UnitAnimation", npc => {
 	if (!stateMain.value || npc === undefined || Game.IsPaused)
 		return;
 	JungMapHack.UnitAnimationCreate(npc);
 })
-EventsSDK.on("ParticleCreated", (id: number, path: string, handle: bigint, attach: number, entity: Entity) => {
+EventsSDK.on("ParticleCreated", (id, path, handle, attach, entity) => {
 	if (!stateMain.value || Game.IsPaused)
 		return;
 	Rosh.ParticleCreate(handle)
 	Wisp.ParticleCreate(id, handle)
-	Techies.ParticleCreated(id, entity, path)
-	ParicleMapHack.ParticleCreate(id, handle, entity)
+	Techies.ParticleCreated(id, entity instanceof Entity ? entity : undefined, path)
+	ParicleMapHack.ParticleCreate(id, handle, entity instanceof Entity ? entity : undefined)
 })
-EventsSDK.on("ParticleUpdated", (id: number, control_point: number, position: Vector3) => {
+EventsSDK.on("ParticleUpdated", (id, control_point, position) => {
 	if (!stateMain.value || Game.IsPaused)
 		return;
 	Techies.ParticleUpdated(id, control_point, position)
 	ParicleMapHack.ParticleCreateUpdate(id, control_point, position)
 })
-EventsSDK.on("ParticleUpdatedEnt", (id: number, control_point: number, entity: Entity, attach: ParticleAttachment_t, attachment: number, vector: Vector3) => {
+EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachment, vector) => {
 	if (!stateMain.value || Game.IsPaused)
 		return;
 	Techies.ParticleUpdatedEnt(id, control_point, attach, vector)
-	Wisp.ParticleUpdated(id, entity.m_pBaseEntity as C_BaseEntity)
-	ParicleMapHack.ParticleUpdatedEnt(id, entity, vector)
+	Wisp.ParticleUpdated(id, entity instanceof Entity ? entity.m_pBaseEntity : undefined)
+	ParicleMapHack.ParticleUpdatedEnt(id, entity instanceof Entity ? entity : undefined, vector)
 })
 EventsSDK.on("ParticleDestroyed", id => {
 	Techies.ParticleDestroyed(id)

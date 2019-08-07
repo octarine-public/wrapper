@@ -60,7 +60,7 @@ Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) =>
 	EventsSDK.emit("ParticleCreated", false, id, path, particleSystemHandle, attach,
 		target instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(target)
-			: EntityManager.EntityByIndex(target)))
+			: target))
 			
 Events.on("ParticleDestroyed", (id, destroy_immediately) =>
 	EventsSDK.emit("ParticleDestroyed", false, id, destroy_immediately))
@@ -249,7 +249,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "TrueSightedChanged", callback: (npc: Unit, isTrueSighted: boolean) => void): EventEmitter
 	on(name: "HasScepterChanged", callback: (npc: Unit, hasScepter: boolean) => void): EventEmitter
 	on(name: "Draw", callback: () => void): EventEmitter
-	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity) => void): EventEmitter
+	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity | number) => void): EventEmitter
 	on(name: "ParticleUpdated", callback: (id: number, controlPoint: number, position: Vector3) => void): EventEmitter
 	on(name: "ParticleUpdatedEnt", callback: (
 		id: number,

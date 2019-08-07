@@ -1,4 +1,4 @@
-import { EntityManager, RendererSDK, Vector3} from "wrapper/Imports"
+import { EntityManager, RendererSDK, Vector3, Color} from "wrapper/Imports"
 import { State } from "./Menu"
 
 let wisp: C_DOTA_Unit_Hero_Wisp | number,
@@ -25,7 +25,7 @@ export function OnDraw() {
 	let wisp_ = wisp instanceof C_BaseEntity ? EntityManager.GetEntityByNative(wisp) : undefined
 	if (wisp_ !== undefined && (!wisp_.IsEnemy() || wisp_.IsVisible || !wisp_.IsAlive))
 		return
-	pos.toIOBuffer()
+	RendererSDK.DrawMiniMapIcon("minimap_heroicon_npc_dota_hero_wisp", pos, 64 * 12, new Color(255, 255, 255))
 	let screen_pos = RendererSDK.WorldToScreen(pos)
 	if (screen_pos === undefined)
 		return
