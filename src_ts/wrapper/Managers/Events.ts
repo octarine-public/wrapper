@@ -121,7 +121,7 @@ Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed,sourceAt
 })
 
 Events.on("TrackingProjectileUpdated", (proj, path, particleSystemHandle, launch_tick) =>
-	EventsSDK.emit("TrackingProjectileUpdated", false, Vector3.fromIOBuffer(), proj, path, particleSystemHandle, Color.fromIOBuffer(), launch_tick))
+	EventsSDK.emit("TrackingProjectileUpdated", false, proj, path, particleSystemHandle, launch_tick))
 
 Events.on("TrackingProjectileDestroyed", proj =>
 	EventsSDK.emit("TrackingProjectileDestroyed", false, proj))
@@ -290,14 +290,12 @@ interface EventsSDK extends EventEmitter {
 		launch_tick:number
 	) => void): EventEmitter
 	on(name: "TrackingProjectileUpdated", callback: (
-		proj: TrackingProjectile,
-		vSourceLoc: Vector3,
+		proj: number,
 		path: string,
 		particleSystemHandle: bigint,
-		colorgemcolor: Color,
 		launchTick: number,
 	) => void): EventEmitter
-	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
+	on(name: "TrackingProjectileDestroyed", callback: (proj: number) => void): EventEmitter
 	on(name: "TrackingProjectilesDodged", callback: (ent: Entity | number, attacks_only: boolean) => void): EventEmitter
 	on(name: "UnitAnimation", callback: (
 		npc: Unit,
