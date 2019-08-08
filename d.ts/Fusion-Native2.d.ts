@@ -327,6 +327,24 @@ declare interface GameEvents {
 declare interface Minimap {
 	SendPing(type?: PingType_t, direct_ping?: boolean, target?: C_BaseEntity): void // pass location: Vector2 at IOBuffer offset 0
 	SendLine(x: number, y: number, initial: boolean): void
+	/**
+	 * Draws icon at minimap
+	 * @param icon_name can be found at https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/game/dota/pak01_dir/scripts/mod_textures.txt
+	 * @param size you can get that value for heroes from ConVars.GetInt("dota_minimap_hero_size")
+	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
+	 * @param end_time Changing it to 1 will hide icon from minimap if you're not calling it repeatedly in Draw event.
+	 * @param end_time If it's <= 0 it'll be infinity for DotA.
+	 * @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
+	 */
+	DrawIcon(icon_name: string, size: number, end_time: number, uid: number): void // pass pos: Vector3 at IOBuffer offset 0, color: Color at IOBuffer offset 3
+	/**
+	 * Draws ping at minimap
+	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
+	 * @param end_time Changing it to 1 will hide ping from minimap if you're not calling it repeatedly in Draw event.
+	 * @param end_time If it's <= 0 it'll be infinity for DotA.
+	 * @param uid you can use this value to edit existing uid's location/color, or specify 0x80000000 to make it unique
+	 */
+	DrawPing(end_time: number, uid: number): void // pass pos: Vector3 at IOBuffer offset 0, color: Color at IOBuffer offset 3
 }
 
 declare interface Particles {
@@ -365,12 +383,6 @@ declare interface Renderer {
 	 * @returns screen position to IOBuffer if return value is true
 	 */
 	WorldToScreen(): boolean // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
-	/**
-	 * Draws icon at minimap
-	 * @param icon_name can be found at https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/game/dota/pak01_dir/scripts/mod_textures.txt
-	 * @param size you can get that value for heroes from ConVars.GetInt("dota_minimap_hero_size")
-	 */
-	DrawIcon(icon_name: string, size: number): void // pass pos: Vector3 at IOBuffer offset 0, color: Color at IOBuffer offset 3
 }
 
 declare interface Camera {
