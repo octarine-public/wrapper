@@ -37,10 +37,9 @@ const playersBlockList = blockCourMenu.AddListBox("Players for block", [],[false
 
 // other
 const autoShieldState = courCtlrMenu.AddToggle("Auto Shield")
-	.SetToolTip("Auto use shield to safe")
+	.SetToolTip("Auto use shield to try to save courier")
 
 class AllyPlayer {
-
 	ent: Player
 	indexInMenu: number
 
@@ -65,10 +64,13 @@ let CastCourAbility = (num: number) => allyCourier
 
 // --- Callbacks
 
-EventsSDK.on("GameStarted", () => playersBlockList.SetToolTip(TOOLTIP_ONPLAYING))
+EventsSDK.on("GameStarted", () => {
+	playersBlockList.SetToolTip(TOOLTIP_ONPLAYING)
+	playersBlockList.selected_flags = []
+	playersBlockList.values = []
+})
 
 EventsSDK.on("GameEnded", () => {
-
 	allyCourier = undefined
 
 	allAllyPlayers = []
@@ -82,7 +84,6 @@ EventsSDK.on("GameEnded", () => {
 // --- Methods
 
 EventsSDK.on("EntityCreated", (ent: Entity) => {
-
 	if (
 		ent instanceof Player
 		&& (LocalPlayer === undefined
@@ -107,20 +108,17 @@ EventsSDK.on("EntityCreated", (ent: Entity) => {
 })
 
 EventsSDK.on("EntityDestroyed", (ent: Entity) => {
-
 	if (ent instanceof Courier && allyCourier === ent)
 		allyCourier = undefined
 })
 
 EventsSDK.on("Update", () => {
-
 	if (!Game.IsInGame || Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !stateMain.value)
 		return
 	if (allyCourier === undefined)
 		return
 	if (autoShieldState.value) {
 		EntityManager.AllEntities.forEach(ent => {
-
 			if (
 				ent instanceof Unit
 				&& ent.HasAttackCapability()
@@ -148,12 +146,12 @@ EventsSDK.on("Update", () => {
 			break
 
 		case CourierState_t.COURIER_STATE_MOVING:
-			if (IsBlocked(stateCourEnt) && !trySelfDeliver())
+			if (IsBlocked(stateCourEnt) && trySelfDeliver())
 				CastCourAbility(0) // courier_return_to_base
 			break
 
 		case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
-			if (IsBlocked(stateCourEnt) && !trySelfDeliver())
+			if (IsBlocked(stateCourEnt) && trySelfDeliver())
 				CastCourAbility(2) // courier_return_stash_items
 			break
 
@@ -162,55 +160,53 @@ EventsSDK.on("Update", () => {
 })
 
 function checkCourSelf(stateEnt: Hero, state: CourierState_t) {
-
 	let localHero = EntityManager.LocalHero
 
-	if (localHero === undefined)
+	if (localHero === undefined || localHero !== stateEnt)
 		return false
 
-	let selfState = localHero === stateEnt
-
-	switch (state) {
+	/*switch (state) {
 		case CourierState_t.COURIER_STATE_MOVING: // ?
 		case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
 			if (allyCourier.IsFlying)
-				selfState = selfState && (localHero.FindRotationAngle(allyCourier) < 0.2)
+				return localHero.FindRotationAngle(allyCourier) < 0.2
 			break
-	}
-	return selfState
+		default:
+			break
+	}*/
+	return true
 }
 
 function trySelfDeliver() {
-
-	if (!stateMain.value || !deliverState.value)
+	if (!deliverState.value)
 		return false
 
 	let localEnt = EntityManager.LocalHero
 
-	if (localEnt === undefined || !localEnt.IsAlive || !localEnt.Inventory.HasFreeSlot(0, 9) || !allyCourier.Inventory.HasFreeSlot(0, 9))
+	if (localEnt === undefined || !localEnt.IsAlive || !localEnt.Inventory.HasFreeSlot(0, 9))
 		return false
 
-	if (allyCourier.Inventory.HasItemByOtherPlayer(localEnt)) {
-		CastCourAbility(4) // courier_transfer_items
-		return true
-	}
-	else if (localEnt.Inventory.HasAnyItemStash) {
+	let free_slots_local = localEnt.Inventory.GetFreeSlots(0, 8).length,
+		cour_slots_local = allyCourier.Inventory.CountItemByOtherPlayer(localEnt)
+	let items_in_stash = localEnt.Inventory.Stash.reduce((prev, cur) => prev + (cur !== undefined ? 1 : 0), 0)
+	if (items_in_stash > 0 && allyCourier.Inventory.GetFreeSlots(0, 8).length >= items_in_stash && free_slots_local >= items_in_stash + cour_slots_local) {
 		CastCourAbility(7) // courier_take_stash_and_transfer_items
 		return true
+	}
+	if (cour_slots_local > 0 && free_slots_local >= cour_slots_local) {
+		CastCourAbility(4) // courier_transfer_items
+		return false
 	}
 
 	return false
 }
 
 function IsBlocked(npc: Hero) {
-
 	if (antiReuseState.value)
 		return true
 
-	/*
-	if (muteFilter.value && PlayerResource.m_vecPlayerTeamData[npc.m_iPlayerID].m_bVoiceChatBanned)
-		return true;
-	 */
+	/*if (muteFilter.value && PlayerResource.PlayerTeamData[(npc.Owner as Player).PlayerID].m_bVoiceChatBanned)
+		return true*/
 	return playersBlockList.selected_flags.length > 0 && allAllyPlayers.some(player =>
 		player.ent.Hero === npc && playersBlockList.selected_flags[player.indexInMenu])
 }

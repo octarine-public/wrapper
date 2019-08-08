@@ -72,7 +72,7 @@ export default class Inventory {
 
 		let items: Item[] = []
 		if (this.m_Unit.IsValid && start <= end)
-			for (let i = start; i < end; i++) {
+			for (let i = start; i <= end; i++) {
 				let item = this.GetItem(i)
 				if (item !== undefined)
 					items.push(item)
@@ -86,8 +86,8 @@ export default class Inventory {
 
 		let items: DOTAScriptInventorySlot_t[] = []
 		if (this.m_Unit.IsValid && start <= end)
-			for (let i = start; i < end; i++)
-				if (this.m_hItems[i] !== undefined)
+			for (let i = start; i <= end; i++)
+				if (this.m_hItems[i] === undefined)
 					items.push(i as DOTAScriptInventorySlot_t)
 		return items
 	}
@@ -129,19 +129,17 @@ export default class Inventory {
 		}
 		return false
 	}
-	HasItemByOtherPlayer(player: Hero): boolean {
-
+	CountItemByOtherPlayer(player: Hero): number {
+		let counter = 0
 		if (this.m_Unit.IsValid) {
 			let itemsNative = this.m_hItems,
 				playerID = player.PlayerID
 
-			for (let i = 0; i < 14; i++) {
-
-				if (itemsNative[i] !== undefined && (itemsNative[i] as C_DOTA_Item).m_iPlayerOwnerID === playerID)
-					return true
-			}
+			for (let i = 0; i < 14; i++)
+				if (itemsNative[i] !== undefined && itemsNative[i].m_iPlayerOwnerID === playerID)
+					counter++
 		}
-		return false
+		return counter
 	}
 	GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Item {
 		if (this.m_Unit.IsValid) {
