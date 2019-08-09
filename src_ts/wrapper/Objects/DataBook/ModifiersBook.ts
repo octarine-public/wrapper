@@ -50,6 +50,12 @@ export default class ModifiersBook {
 		names.some(name => (buff = this.GetBuffByName(name)) !== undefined)
 		return buff
 	}
+	HasBuffByName(name: string): boolean {
+		if (!this.m_Unit.IsValid)
+			return false
+		
+		return this.m_Buffs.some(buff => /* !buff.m_pBuff.m_bMarkedForDeletion && */ buff.Name === name)
+	}
 	HasAnyBuffByNames(names: string[]): boolean {
 		if (!this.m_Unit.IsValid)
 			return undefined

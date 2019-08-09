@@ -157,7 +157,11 @@ export default class Entity {
 	}
 
 	get Angles(): QAngle {
-		return QAngle.fromIOBuffer(this.m_pBaseEntity.m_pGameSceneNode.m_angAbsRotation)
+		let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+		if (gameSceneNode !== undefined)
+			return QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation)
+		
+		return new QAngle()
 	}
 	get CreateTime(): number {
 		return this.m_pBaseEntity.m_flCreateTime
@@ -172,7 +176,7 @@ export default class Entity {
 		return this.m_iIndex
 	}
 	get IsAlive(): boolean {
-		return this.LifeState === LifeState_t.LIFE_ALIVE // || this.HP === 0
+		return this.LifeState === LifeState_t.LIFE_ALIVE
 	}
 	get IsDormant(): boolean {
 		return !this.IsVisible
@@ -201,7 +205,11 @@ export default class Entity {
 			|| ""
 	}
 	get NetworkPosition(): Vector3 {
-		return Vector3.fromIOBuffer(this.m_pBaseEntity.m_pGameSceneNode.m_vecOrigin.m_vecValue)
+		let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+		if (gameSceneNode !== undefined)
+			return Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_vecValue)
+		
+		return new Vector3()
 	}
 	/**
 	 * as Direction
@@ -221,7 +229,11 @@ export default class Entity {
 		return this.NetworkPosition
 	}
 	get Rotation(): number {
-		return this.m_pBaseEntity.m_pGameSceneNode.m_angRotation ? IOBuffer[1] : 0
+		let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+		if (gameSceneNode !== undefined)
+			return gameSceneNode.m_angRotation ? IOBuffer[1] : 0
+
+		return 0
 	}
 	get RotationRad(): number {
 		return DegreesToRadian(this.Rotation)

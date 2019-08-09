@@ -27,9 +27,6 @@ export default class Ability extends Entity {
 	get AOERadius(): number {
 		return this.m_pBaseEntity.m_fAOERadius
 	}
-	get BaseCastRange(): number {
-		return this.m_pBaseEntity.m_iCastRange
-	}
 	get CastPoint(): number {
 		return this.m_pBaseEntity.m_fCastPoint
 	}
@@ -150,7 +147,7 @@ export default class Ability extends Entity {
 
 	get CastRange(): number {
 		let owner = this.Owner as Unit,
-			castrange = this.BaseCastRange
+			castrange = this.m_pBaseEntity.m_fCastRange
 
 		switch (this.Name) {
 			case "skywrath_mage_concussive_shot": {
@@ -170,13 +167,13 @@ export default class Ability extends Entity {
 			case "lion_impale": {
 				let unique = owner.AbilitiesBook.GetAbilityByClass(C_DOTA_Ability_Special_Bonus_Unique_Lion_2)
 				if (unique !== undefined && unique.Level > 0)
-					castrange += unique.GetSpecialValue("value")
+					castrange -= unique.GetSpecialValue("value")
 
 				break
 			}
 		}
 
-		return castrange + owner.CastRangeBonus
+		return castrange// + owner.CastRangeBonus
 	}
 
 	UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {

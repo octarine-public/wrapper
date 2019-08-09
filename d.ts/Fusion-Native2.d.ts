@@ -10357,6 +10357,7 @@ declare class C_DOTABaseAbility extends C_BaseEntity {
 	
 	readonly m_pAbilityData: DOTAAbilityDefinition_t
 	readonly m_fCastPoint: number
+	readonly m_fCastRange: number
 	readonly m_fChannelTime: number
 	readonly m_iAbilityDamage: number
 	readonly m_fAOERadius: number

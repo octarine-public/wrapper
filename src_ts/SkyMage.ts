@@ -376,19 +376,19 @@ function getItems(){
 	blink = sky.GetItemByName("item_blink")
 }
 function IsDebuffed(){
-	if(atos && atos.IsReady && items.selected_flags[0] && target.ModifiersBook.HasAnyBuffByNames(["modifier_item_rod_of_atos"])) 
+	if(atos && atos.IsReady && items.selected_flags[0] && target.ModifiersBook.HasBuffByName("modifier_item_rod_of_atos"))
 		return false
-	if(veil && veil.IsReady && items.selected_flags[3] && target.ModifiersBook.HasAnyBuffByNames(["modifier_item_veil_of_discord"])) 
+	if(veil && veil.IsReady && items.selected_flags[3] && target.ModifiersBook.HasBuffByName("modifier_item_veil_of_discord"))
 		return false
-	if(orchid && orchid.IsReady && items.selected_flags[5] && target.ModifiersBook.HasAnyBuffByNames(["modifier_item_orchid_malevolence"])) 
+	if(orchid && orchid.IsReady && items.selected_flags[5] && target.ModifiersBook.HasBuffByName("modifier_item_orchid_malevolence"))
 		return false
-	if(eblade && eblade.IsReady && items.selected_flags[2] && target.ModifiersBook.HasAnyBuffByNames(["modifier_item_ethereal_blade_slow"])) 
+	if(eblade && eblade.IsReady && items.selected_flags[2] && target.ModifiersBook.HasBuffByName("modifier_item_ethereal_blade_slow"))
 		return false
-	if(blood && blood.IsReady && items.selected_flags[6] && target.ModifiersBook.HasAnyBuffByNames(["modifier_item_bloodthorn"])) 
+	if(blood && blood.IsReady && items.selected_flags[6] && target.ModifiersBook.HasBuffByName("modifier_item_bloodthorn"))
 		return false
-	if(seal  && seal.IsReady && target.ModifiersBook.HasAnyBuffByNames(["modifier_skywrath_mage_ancient_seal"])) 
+	if(seal  && seal.IsReady && target.ModifiersBook.HasBuffByName("modifier_skywrath_mage_ancient_seal"))
 		return false
-	if(shot  && shot.IsReady && target.ModifiersBook.HasAnyBuffByNames(["modifier_skywrath_mage_concussive_shot_slow"])) 
+	if(shot  && shot.IsReady && target.ModifiersBook.HasBuffByName("modifier_skywrath_mage_concussive_shot_slow"))
 		return false
 	return true
 }
