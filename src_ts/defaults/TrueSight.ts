@@ -7,8 +7,6 @@ const ParticleStyles = [
 
 var particlePath = "",
 	allUnitsAsMap = new Map<Unit, number>()
-	/* allUnits: Unit[] = [],
-	allParticles: number[] = []; */
 
 const TrueSightMenu = MenuManager.MenuFactory("TrueSight Detector"),
 	stateMain = TrueSightMenu.AddToggle("State").OnValue(() => OnChangeValue()),

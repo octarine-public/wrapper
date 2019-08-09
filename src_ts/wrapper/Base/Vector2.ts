@@ -611,7 +611,7 @@ export default class Vector2 {
 	}
 	/**
 	 * Extends vector in the rotation direction by angle
-	 * @param angle for ex. Entity#NetworkRotationRad
+	 * @param angle for ex. Entity#RotationRad
 	 * @param distance distance to be added
 	 */
 	InFrontFromAngle(angle: number, distance: number): Vector2 {

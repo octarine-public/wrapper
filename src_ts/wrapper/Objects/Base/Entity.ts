@@ -157,12 +157,7 @@ export default class Entity {
 	}
 
 	get Angles(): QAngle {
-		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
-
-		if (gameSceneNode !== undefined)
-			return QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation)
-
-		return this.NetworkAngles
+		return QAngle.fromIOBuffer(this.m_pBaseEntity.m_pGameSceneNode.m_angAbsRotation)
 	}
 	get CreateTime(): number {
 		return this.m_pBaseEntity.m_flCreateTime
@@ -205,23 +200,14 @@ export default class Entity {
 			|| this.Entity.m_name
 			|| ""
 	}
-	get NetworkAngles(): QAngle {
-		return QAngle.fromIOBuffer(this.m_pBaseEntity.m_angNetworkAngles)
-	}
 	get NetworkPosition(): Vector3 {
-		return Vector3.fromIOBuffer(this.m_pBaseEntity.m_vecNetworkOrigin)
-	}
-	get NetworkRotation(): number {
-		return this.m_pBaseEntity.m_angNetworkAngles ? IOBuffer[1] : 0
-	}
-	get NetworkRotationRad(): number {
-		return DegreesToRadian(this.NetworkRotation)
+		return Vector3.fromIOBuffer(this.m_pBaseEntity.m_pGameSceneNode.m_vecOrigin.m_vecValue)
 	}
 	/**
 	 * as Direction
 	 */
 	get Forward(): Vector3 {
-		return Vector3.FromAngle(this.NetworkRotationRad)
+		return Vector3.FromAngle(this.RotationRad)
 	}
 	get Owner(): Entity {
 		return this.m_hOwnerEntity || (this.m_hOwnerEntity = EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
@@ -235,12 +221,7 @@ export default class Entity {
 		return this.NetworkPosition
 	}
 	get Rotation(): number {
-		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
-
-		if (gameSceneNode !== undefined)
-			return gameSceneNode.m_angRotation ? IOBuffer[1] : 0
-
-		return this.NetworkRotation
+		return this.m_pBaseEntity.m_pGameSceneNode.m_angRotation ? IOBuffer[1] : 0
 	}
 	get RotationRad(): number {
 		return DegreesToRadian(this.Rotation)
@@ -322,13 +303,13 @@ export default class Entity {
 		return this.Position.Rotation(this.Forward, distance)
 	}
 	InFrontFromAngle(angle: number, distance: number): Vector3 {
-		return this.Position.InFrontFromAngle(this.NetworkRotationRad + angle, distance)
+		return this.Position.InFrontFromAngle(this.RotationRad + angle, distance)
 	}
 	FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.NetworkPosition
 
-		return this.NetworkPosition.FindRotationAngle(vec, this.NetworkRotationRad)
+		return this.NetworkPosition.FindRotationAngle(vec, this.RotationRad)
 	}
 	/**
 	 * faster (Distance <= range)
