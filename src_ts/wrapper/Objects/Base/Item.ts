@@ -138,7 +138,7 @@ export default class Item extends Ability {
 		if (this.IsRequiringCharges && this.CurrentCharges < 1)
 			return false
 
-		return this.Level > 0 /* && this.IsMuted */
+		return this.Level > 0 && !this.IsEnabled
 			&& !(this.Owner as Unit).IsMuted
 			&& this.IsManaEnough(bonusMana)
 			&& this.IsCooldownReady
