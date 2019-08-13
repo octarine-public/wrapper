@@ -49,7 +49,6 @@ export default class ListBox extends Menu_List {
 		var selfParent = parent
 		Object.defineProperty(this, "parent", {
 			set: (value: Tree) => {
-
 				this.Remove()
 
 				value.entries.push(this)
@@ -82,7 +81,7 @@ export default class ListBox extends Menu_List {
 	}
 
 	get IsZeroSelected(): boolean {
-		return !this.selected_flags_wrapped.some(x => x === true)
+		return !this.selected_flags_wrapped.some(x => x)
 	}
 	IsSelected(value: string): boolean {
 		let indexOf = this.values.indexOf(value)

@@ -1,107 +1,99 @@
-import { Vector3, Unit, EntityManager, Entity, Color } from 'wrapper/Imports';
-export class Projectile{
-    readonly ProjectileID: number
-    protected SourceUnit: Unit | number;
-    protected path: string;
-    protected particleSystemHandle: bigint;
-    constructor(projID: number,path: string,particleSystemHandle: bigint,SourceUnit: Unit | number = undefined){
-        this.ProjectileID = projID
-        this.path = path
-        this.particleSystemHandle = particleSystemHandle
-        if(SourceUnit instanceof Unit)
-            this.SourceUnit = SourceUnit as Unit
-        else
-            this.SourceUnit = SourceUnit
-    }
-    get Source(): Unit | number {
-        if(this.SourceUnit instanceof Unit)
-            return this.SourceUnit
-        else{
-            const unit = EntityManager.EntityByIndex(this.SourceUnit)
-            if(unit!==undefined){
-                return unit as Unit
-            }
-        }
-        return this.SourceUnit
-    }
-    get particle(): string{
-        return this.path
-    }
-    get ParticleSystemHandle(): bigint{
-        return this.particleSystemHandle
-    }
+import { Unit, EntityManager, Color, Entity } from 'wrapper/Imports'
+
+export class Projectile {
+	readonly ProjectileID: number
+	protected SourceUnit: Entity | number
+	protected path: string
+	protected particleSystemHandle: bigint
+
+	constructor(projID: number, path: string, particleSystemHandle: bigint, SourceUnit: Entity | number, protected launchTick: number) {
+		this.ProjectileID = projID
+		this.path = path
+		this.particleSystemHandle = particleSystemHandle
+		this.SourceUnit = SourceUnit
+	}
+
+	get Source(): Entity | number {
+		if(this.SourceUnit instanceof Entity)
+			return this.SourceUnit
+		return EntityManager.EntityByIndex(this.SourceUnit) || this.SourceUnit
+	}
+	get ParticlePath(): string { return this.path }
+	get ParticleSystemHandle(): string { return this.ParticleSystemHandle }
 }
-export class LineProjectile extends Projectile{
-    readonly maxSpeed: number;
-    readonly fowRadius: number;
-    readonly stickyFowReveal: boolean;
-    readonly distance: number;
-    readonly colorgemcolor: Color;
-    constructor(proj,ent,path,particleSystemHandle,maxSpeed,fowRadius,stickyFowReveal,distance,colorgemcolor){
-        super(proj,path,particleSystemHandle,ent)
-        this.maxSpeed = maxSpeed
-        this.fowRadius = fowRadius
-        this.stickyFowReveal = stickyFowReveal
-        this.distance = distance
-        this.colorgemcolor = colorgemcolor
-    }
+
+export class LinearProjectile extends Projectile {
+	readonly maxSpeed: number
+	readonly fowRadius: number
+	readonly stickyFowReveal: boolean
+	readonly distance: number
+	readonly colorgemcolor: Color
+
+	constructor (
+		projID: number,
+		ent: Entity | number,
+		path: string,
+		particleSystemHandle: bigint,
+		maxSpeed: number,
+		fowRadius: number,
+		stickyFowReveal: boolean,
+		distance: number,
+		colorgemcolor: Color
+	) {
+		super(projID, path, particleSystemHandle, ent, 0)
+		this.maxSpeed = maxSpeed
+		this.fowRadius = fowRadius
+		this.stickyFowReveal = stickyFowReveal
+		this.distance = distance
+		this.colorgemcolor = colorgemcolor
+	}
 }
-export class TrackProjectile extends Projectile{
-    private TargetEntity: Unit|number;
-    private isAttack: boolean;
-    private expire: number;
-    private speed: number;
-    readonly sourceAttachment: number;
-    readonly maximpacttime: number;
-    protected tick: number;
-    private dodgeable: boolean;
-    private dodged = false;
-    get IsDodgeable(): boolean {
-        return this.dodgeable
+export class TrackingProjectile extends Projectile {
+	private dodged = false
+
+	constructor (
+		projID: number,
+		source: Entity | number,
+		private TargetEntity: Entity | number,
+		private speed: number,
+		readonly sourceAttachment: number,
+		path: string,
+		particleSystemHandle: bigint,
+		private dodgeable: boolean,
+		private isAttack: boolean,
+		private expireTime: number,
+		readonly maximpacttime: number,
+		launchTick: number
+	) {
+		super(projID, path, particleSystemHandle, source, launchTick)
 	}
-    get IsDodged(): boolean {
-        return this.dodged
+
+	get IsDodged(): boolean {
+		return this.dodged
 	}
-    get IsAttack(): boolean {
-        return this.isAttack
+	Dodge() {
+		this.dodged = true
 	}
-    get ExpireTime(): number {
-        return this.expire
+
+	get IsDodgeable(): boolean { return this.dodgeable }
+	get IsAttack(): boolean { return this.isAttack }
+	get Speed(): number { return this.speed }
+	get ExpireTime(): number { return this.expireTime }
+
+	get Target(): Entity | number {
+		if (this.TargetEntity instanceof Entity)
+			return this.TargetEntity
+		return EntityManager.EntityByIndex(this.TargetEntity) || this.TargetEntity
 	}
-    get Speed(): number {
-        return this.speed
+
+	Update(TargetEntity: Entity | number, Speed: number, path: string, particleSystemHandle: bigint, dodgeable: boolean, isAttack: boolean, expireTime: number, launchTick: number) {
+		this.TargetEntity = TargetEntity
+		this.speed = Speed
+		this.path = path
+		this.particleSystemHandle = particleSystemHandle
+		this.dodgeable = dodgeable
+		this.isAttack = isAttack
+		this.expireTime = expireTime
+		this.launchTick = launchTick
 	}
-    get Target(): Unit | number {
-        if(this.TargetEntity instanceof Unit)
-            return this.TargetEntity
-        else{
-            const unit = EntityManager.EntityByIndex(this.TargetEntity)
-            if(unit!==undefined){
-                return unit as Unit
-            }
-        }
-        return this.TargetEntity
-    }
-    get launchTick(): number{
-        return this.tick
-    }
-    constructor(proj,source,target,ms,sourceAttachment,path,pSH,dodgeable,isAttack,expire,maximpacttime,launch_tick){
-        super(proj,path,pSH,source)
-        this.TargetEntity = target
-        this.speed = ms
-        this.dodgeable = dodgeable
-        this.isAttack = isAttack
-        this.expire = expire
-        this.sourceAttachment = sourceAttachment
-        this.maximpacttime = maximpacttime
-        this.tick = launch_tick
-    }
-    Update(path,particleSystemHandle,launchTick){
-        this.path = path
-        this.particleSystemHandle = particleSystemHandle
-        this.tick = launchTick
-    }
-    Dodge(){
-        this.dodged = true
-    }
 }

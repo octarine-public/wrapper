@@ -11,6 +11,7 @@ import Unit from "../Objects/Base/Unit"
 
 import ExecuteOrder from "../Native/ExecuteOrder"
 import UserCmd from "../Native/UserCmd"
+import { TrackingProjectile, LinearProjectile } from "../Objects/Base/Projectile";
 
 const EventsSDK: EventsSDK = new EventEmitter()
 
@@ -102,38 +103,6 @@ Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max
 		Color.fromIOBuffer(),
 	)
 })
-
-Events.on("LinearProjectileDestroyed", proj =>
-	EventsSDK.emit("LinearProjectileDestroyed", false, proj))
-
-Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed,sourceAttachment,path,particleSystemHandle,dodgeable,isAttack,expireTime,maximpacttime,launch_tick) =>{
-	EventsSDK.emit("TrackingProjectileCreated", false, proj, 
-		source instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(source)
-			: source, 
-		target instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(target)
-			: target,
-		moveSpeed,
-		sourceAttachment,
-		path,
-		particleSystemHandle, dodgeable, isAttack, expireTime,maximpacttime,launch_tick)
-})
-
-Events.on("TrackingProjectileUpdated", (proj, path, particleSystemHandle, launch_tick) =>
-	EventsSDK.emit("TrackingProjectileUpdated", false, proj, path, particleSystemHandle, launch_tick))
-
-Events.on("TrackingProjectileDestroyed", proj =>
-	EventsSDK.emit("TrackingProjectileDestroyed", false, proj))
-
-Events.on("TrackingProjectilesDodged", (ent, attacks_only) => EventsSDK.emit (
-	"TrackingProjectilesDodged",
-	false,
-	ent instanceof C_BaseEntity
-		? EntityManager.GetEntityByNative(ent)
-		: ent,
-	attacks_only,
-))
 
 Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) =>
 	EventsSDK.emit("UnitAnimation", false, EntityManager.GetEntityByNative(npc), sequenceVariant, playbackrate, castpoint, type, activity))
@@ -263,39 +232,11 @@ interface EventsSDK extends EventEmitter {
 	on(name: "ParticleDestroyed", listener: (id: number, destroy_immediately: boolean) => void): EventEmitter
 	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
 	on(name: "PrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventEmitter
-	on(name: "LinearProjectileCreated", callback: (
-		proj: LinearProjectile,
-		ent: Entity | number,
-		path: string,
-		particleSystemHandle: bigint,
-		maxSpeed: number,
-		fowRadius: number,
-		stickyFowReveal: boolean,
-		distance: number,
-		colorgemcolor: Color,
-	) => void): EventEmitter
+	on(name: "LinearProjectileCreated", callback: (proj: LinearProjectile) => void): EventEmitter
 	on(name: "LinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventEmitter
-	on(name: "TrackingProjectileCreated", callback: (
-		proj: number, 
-		source: Unit|number, 
-		target: Unit|number,
-		moveSpeed: number,
-		sourceAttachment: number,
-		path: string,
-		particleSystemHandle:bigint, 
-		dodgeable:boolean, 
-		isAttack:boolean, 
-		expireTime:number,
-		maximpacttime:number,
-		launch_tick:number
-	) => void): EventEmitter
-	on(name: "TrackingProjectileUpdated", callback: (
-		proj: number,
-		path: string,
-		particleSystemHandle: bigint,
-		launchTick: number,
-	) => void): EventEmitter
-	on(name: "TrackingProjectileDestroyed", callback: (proj: number) => void): EventEmitter
+	on(name: "TrackingProjectileCreated", callback: (proj: TrackingProjectile) => void): EventEmitter
+	on(name: "TrackingProjectileUpdated", callback: (proj: TrackingProjectile) => void): EventEmitter
+	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
 	on(name: "TrackingProjectilesDodged", callback: (ent: Entity | number, attacks_only: boolean) => void): EventEmitter
 	on(name: "UnitAnimation", callback: (
 		npc: Unit,
