@@ -198,11 +198,12 @@ export default class Entity {
 		return this.Entity.m_designerName || this.Entity.m_name || ""
 	}
 	get NetworkPosition(): Vector3 {
-		let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+		/*let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
 		if (gameSceneNode !== undefined)
 			return Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_vecValue)
 
-		return new Vector3()
+		return this.Position*/
+		return this.Position
 	}
 	/**
 	 * as Direction

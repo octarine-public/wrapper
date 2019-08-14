@@ -66,7 +66,7 @@ let sky: Hero,
 comboKey.OnExecute(val => comboKeyPress = val)
 
 EventsSDK.on("GameStarted", hero => {
-	if (hero.Name === "npc_dota_hero_skywrath_mage") {
+	if (hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Skywrath_Mage) {
 		sky = hero
 		getAbils()
 	}

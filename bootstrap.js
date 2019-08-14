@@ -68,30 +68,23 @@ setInterval(() => {
     throw e;
   }
 }, Math.max(GetLatency(Flow_t.IN) * 1000, 1000 / 30));
-let AllEntities = [],
-    EntitiesIDs = [],
-    NPCs = [];
-global.Entities = new class Entities {
-  get AllEntities() {
-    return AllEntities;
-  }
-
-  get EntitiesIDs() {
-    return EntitiesIDs;
-  }
+let NPCs = [];
+global.Entities = new class EntityManager {
+  AllEntities = [];
+  EntitiesIDs = [];
 
   GetEntityID(ent) {
-    return EntitiesIDs.indexOf(ent);
+    return this.EntitiesIDs.indexOf(ent);
   }
 
   GetEntityByID(id) {
-    return EntitiesIDs[id];
+    return this.EntitiesIDs[id];
   }
 
 }();
 Events.on("EntityCreated", (ent, id) => {
-  AllEntities.push(ent);
-  EntitiesIDs[id] = ent;
+  Entities.AllEntities.push(ent);
+  Entities.EntitiesIDs[id] = ent;
 
   if (ent instanceof C_DOTA_BaseNPC) {
     if ((ent.m_pEntity.m_flags & 1 << 2) !== 0) {
@@ -100,8 +93,8 @@ Events.on("EntityCreated", (ent, id) => {
   }
 });
 Events.on("EntityDestroyed", (ent, id) => {
-  AllEntities.splice(AllEntities.indexOf(ent), 1);
-  delete EntitiesIDs[id];
+  Entities.AllEntities.splice(Entities.AllEntities.indexOf(ent), 1);
+  delete Entities.EntitiesIDs[id];
 
   if (ent instanceof C_DOTA_BaseNPC) {
     const NPCs_id = NPCs.indexOf(ent);
@@ -123,5 +116,5 @@ Events.on("Tick", () => {
   }
 });
 Events.on("TeamVisibilityChanged", (npc, newTagged) => {
-  npc.m_iTaggedAsVisibleByTeam = newTagged;
+  return npc.m_iTaggedAsVisibleByTeam = newTagged;
 });

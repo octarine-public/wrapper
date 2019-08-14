@@ -17,7 +17,7 @@ const EventsSDK: EventsSDK = new EventEmitter()
 
 export default EventsSDK
 
-Events.on("GameStarted", ent => EventsSDK.emit("GameStarted", false, EntityManager.GetEntityByNative(ent)))
+Events.on("GameStarted", ent => EventsSDK.emit("GameStarted", false, EntityManager.GetEntityByNative(ent, true)))
 
 Events.on("GameEnded", () => EventsSDK.emit("GameEnded"))
 

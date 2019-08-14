@@ -23,8 +23,7 @@ import Tree from "./Tree"
 
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
-
-	static IsVisibleForEnemies(unit: Unit, newTagged: number): boolean {
+	public static IsVisibleForEnemies(unit: Unit, newTagged: number): boolean {
 		const valid_teams = ~(1 | (1 << DOTATeam_t.DOTA_TEAM_SPECTATOR)
 			| (1 << DOTATeam_t.DOTA_TEAM_NEUTRALS)
 			| (1 << DOTATeam_t.DOTA_TEAM_NOTEAM)) // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
@@ -39,7 +38,6 @@ export default class Unit extends Entity {
 	}
 
 	/* ================================ Fields ================================ */
-
 	public readonly m_pBaseEntity: C_DOTA_BaseNPC
 	private m_Inventory: Inventory
 	private m_AbilitiesBook: AbilitiesBook
@@ -50,374 +48,371 @@ export default class Unit extends Entity {
 	private m_bHasScepterModifier: boolean = false
 
 	/* ================ GETTERS ================ */
-
-	get IsHero(): boolean {
+	public get IsHero(): boolean {
 		return HasBit(this.UnitType, 0)
 	}
-	get IsTower(): boolean {
+	public get IsTower(): boolean {
 		return HasBit(this.UnitType, 2)
 	}
-	get IsConsideredHero(): boolean {
+	public get IsConsideredHero(): boolean {
 		return HasBit(this.UnitType, 3)
 	}
-	get IsBuilding(): boolean {
+	public get IsBuilding(): boolean {
 		return HasBit(this.UnitType, 4)
 	}
-	get IsFort(): boolean {
+	public get IsFort(): boolean {
 		return HasBit(this.UnitType, 5)
 	}
-	get IsBarrack(): boolean {
+	public get IsBarrack(): boolean {
 		return HasBit(this.UnitType, 6)
 	}
-	get IsCreep(): boolean {
+	public get IsCreep(): boolean {
 		return HasBit(this.UnitType, 7)
 	}
-	get IsCourier(): boolean {
+	public get IsCourier(): boolean {
 		return HasBit(this.UnitType, 8)
 	}
-	get IsShop(): boolean {
+	public get IsShop(): boolean {
 		return HasBit(this.UnitType, 9)
 	}
-	get IsLaneCreep(): boolean {
+	public get IsLaneCreep(): boolean {
 		return HasBit(this.UnitType, 10)
 	}
-	get IsShrine(): boolean {
+	public get IsShrine(): boolean {
 		return HasBit(this.UnitType, 12)
 	}
-	get IsWard(): boolean {
+	public get IsWard(): boolean {
 		return HasBit(this.UnitType, 17)
 	}
 
 	/* ======== modifierstate ======== */
-
-	get IsRooted(): boolean {
+	public get IsRooted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
 	}
-	get IsDisarmed(): boolean {
+	public get IsDisarmed(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_DISARMED)
 	}
-	get IsAttackImmune(): boolean {
+	public get IsAttackImmune(): boolean {
 		// return this.m_pBaseEntity.m_bIsAttackImmune
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ATTACK_IMMUNE)
 	}
-	get IsSilenced(): boolean {
+	public get IsSilenced(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SILENCED)
 	}
-	get IsMuted(): boolean {
+	public get IsMuted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MUTED)
 	}
-	get IsStunned(): boolean {
+	public get IsStunned(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_STUNNED)
 	}
-	get IsHexed(): boolean {
+	public get IsHexed(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_HEXED)
 	}
-	get IsInvisible(): boolean {
+	public get IsInvisible(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE)
 			|| this.InvisibleLevel > 0.5
 	}
-	get IsInvulnerable(): boolean {
+	public get IsInvulnerable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
 	}
-	get IsMagicImmune(): boolean {
+	public get IsMagicImmune(): boolean {
 		return this.m_pBaseEntity.m_bIsMagicImmune
 		// return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE);
 	}
-	get IsDeniable(): boolean {
+	public get IsDeniable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)
 	}
 	//
-	get IsNoHealthBar(): boolean {
+	public get HasNoHealthBar(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_HEALTH_BAR)
 	}
 	//
-	get IsNoCollision(): boolean {
+	public get HasNoCollision(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_NO_UNIT_COLLISION)
 	}
 	//
-	get IsBlind(): boolean {
+	public get IsBlind(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_BLIND)
 	}
 	//
-	get IsRealUnit(): boolean {
+	public get IsRealUnit(): boolean {
 		return this.UnitType !== 0 && !this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY)
 	}
 	//
-	get IsTrueSightImmune(): boolean {
+	public get IsTrueSightImmune(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_TRUESIGHT_IMMUNE)
 	}
 
 	/* ======== base ======== */
-
-	get IsInFadeTime(): boolean {
+	public get IsInFadeTime(): boolean {
 		return this.m_pBaseEntity.m_flInvisibilityLevel > 0
 	}
-	set IsVisibleForEnemies(value: boolean) {
+	public set IsVisibleForEnemies(value: boolean) {
 		this.m_bIsVisibleForEnemies = value
 	}
-	get IsVisibleForEnemies(): boolean {
+	public get IsVisibleForEnemies(): boolean {
 		return this.m_bIsVisibleForEnemies
 	}
-	set IsTrueSightedForEnemies(value: boolean) {
+	public set IsTrueSightedForEnemies(value: boolean) {
 		this.m_bIsTrueSightedForEnemies = value
 	}
-	get IsTrueSightedForEnemies(): boolean {
+	public get IsTrueSightedForEnemies(): boolean {
 		return this.m_bIsTrueSightedForEnemies
 	}
-	get IsControllableByAnyPlayer(): boolean {
+	public get IsControllableByAnyPlayer(): boolean {
 		return this.m_pBaseEntity.m_iIsControllableByPlayer64 !== 0n
 	}
-	get IsRangeAttacker(): boolean {
+	public get IsRangeAttacker(): boolean {
 		return this.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
 	}
-	set HasScepter(value: boolean) {
+	public set HasScepter(value: boolean) {
 		this.m_bHasScepterModifier = value
 	}
-	get HasScepter(): boolean {
+	public get HasScepter(): boolean {
 		if (this.HasStolenScepter)
 			return true
 
 		return this.m_bHasScepterModifier
 	}
 
-	get Armor(): number {
+	public get Armor(): number {
 		return this.m_pBaseEntity.m_flPhysicalArmorValue
 	}
-	get ArmorType(): ArmorType {
+	public get ArmorType(): ArmorType {
 		return this.m_pBaseEntity.m_iCombatClassDefend
 	}
-	get AttackCapability(): DOTAUnitAttackCapability_t {
+	public get AttackCapability(): DOTAUnitAttackCapability_t {
 		return this.m_pBaseEntity.m_iAttackCapabilities
 	}
-	get AttackDamageType(): AttackDamageType {
+	public get AttackDamageType(): AttackDamageType {
 		return this.m_pBaseEntity.m_iCombatClassAttack
 	}
-	get AttackRange(): number {
+	public get AttackRange(): number {
 		return this.m_pBaseEntity.m_fAttackRange
 	}
-	get AttacksPerSecond(): number {
+	public get AttacksPerSecond(): number {
 		return 1 / this.m_pBaseEntity.m_fAttacksPerSecond
 	}
-	get AvailableShops(): DOTA_SHOP_TYPE /*Enums.ShopFlags*/ {
+	public get AvailableShops(): DOTA_SHOP_TYPE /*Enums.ShopFlags*/ {
 		return this.m_pBaseEntity.m_iNearShopMask
 	}
 	// BaseArmor
-	get BaseAttackTime(): number {
+	public get BaseAttackTime(): number {
 		return this.m_pBaseEntity.m_flBaseAttackTime
 	}
 	// BaseHealthRegeneration
 	// BaseManaRegeneration
-	get BaseMoveSpeed(): number {
+	public get BaseMoveSpeed(): number {
 		return this.m_pBaseEntity.m_iMoveSpeed
 	}
-	get BKBChargesUsed(): number {
+	public get BKBChargesUsed(): number {
 		return this.m_pBaseEntity.m_iBKBChargesUsed
 	}
-	get DamageAverage(): number {
+	public get DamageAverage(): number {
 		return (this.MinDamage + this.MaxDamage) / 2
 	}
-	get DamageBonus(): number {
+	public get DamageBonus(): number {
 		return this.m_pBaseEntity.m_iDamageBonus
 	}
 	/**
 	 * https://dota2.gamepedia.com/Armor
 	 */
-	get DamageResist(): number {
+	public get DamageResist(): number {
 		let armor = this.Armor
 		return (0.052 * armor) / (0.9 + 0.048 * Math.abs(armor))
 	}
-	get CollisionPadding(): number {
+	public get CollisionPadding(): number {
 		return this.m_pBaseEntity.m_flCollisionPadding
 	}
-	get DayVision(): number {
+	public get DayVision(): number {
 		return this.m_pBaseEntity.m_iDayTimeVisionRange
 	}
-	get DeathTime(): number {
+	public get DeathTime(): number {
 		return this.m_pBaseEntity.m_flDeathTime
 	}
-	get DebuffState(): modifierstate[] {
+	public get DebuffState(): modifierstate[] {
 		return MaskToArrayBigInt(this.m_pBaseEntity.m_nUnitDebuffState)
 	}
 	// check
-	get HasArcana(): boolean {
+	public get HasArcana(): boolean {
 		return this.m_pBaseEntity.m_nArcanaLevel > 0
 	}
-	get BaseStatsChanged(): boolean {
+	public get BaseStatsChanged(): boolean {
 		return this.m_pBaseEntity.m_bBaseStatsChanged
 	}
-	get HasInventory(): boolean {
+	public get HasInventory(): boolean {
 		return this.m_pBaseEntity.m_bHasInventory
 	}
-	get HasSharedAbilities(): boolean {
+	public get HasSharedAbilities(): boolean {
 		return this.m_pBaseEntity.m_bHasSharedAbilities
 	}
-	get HasStolenScepter(): boolean {
+	public get HasStolenScepter(): boolean {
 		return this.m_pBaseEntity.m_bStolenScepter
 	}
-	get HasUpgradeableAbilities(): boolean {
+	public get HasUpgradeableAbilities(): boolean {
 		return this.m_pBaseEntity.m_bHasUpgradeableAbilities
 	}
-	get HealthBarOffset(): number {
+	public get HealthBarOffset(): number {
 		return this.m_pBaseEntity.m_iHealthBarOffset
 	}
-	get HealthBarHighlightColor(): Color {
+	public get HealthBarHighlightColor(): Color {
 		return Color.fromIOBuffer(this.m_pBaseEntity.m_iHealthBarHighlightColor)
 	}
-	get HPRegen(): number {
+	public get HPRegen(): number {
 		return this.m_pBaseEntity.m_flHealthThinkRegen
 	}
-	get HullRadius(): number {
+	public get HullRadius(): number {
 		return this.m_pBaseEntity.m_flHullRadius
 	}
-	get IncreasedAttackSpeed(): number {
+	public get IncreasedAttackSpeed(): number {
 		return this.m_pBaseEntity.m_fIncreasedAttackSpeed
 	}
 
-	get InvisibleLevel(): number {
+	public get InvisibleLevel(): number {
 		return this.m_pBaseEntity.m_flInvisibilityLevel
 	}
-	get IsAncient(): boolean {
+	public get IsAncient(): boolean {
 		return this.m_pBaseEntity.m_bIsAncient
 	}
 	/**
 	 * IsControllable by LocalPlayer
 	 */
-	get IsControllable(): boolean {
+	public get IsControllable(): boolean {
 		return LocalPlayer !== undefined && this.IsControllableByPlayer(LocalPlayer.PlayerID)
 	}
-	get IsDominatable(): boolean {
+	public get IsDominatable(): boolean {
 		return this.m_pBaseEntity.m_bCanBeDominated
 	}
-	get IsIllusion(): boolean {
+	public get IsIllusion(): boolean {
 		return this.m_pBaseEntity.m_bIsIllusion
 	}
-	get IsMelee(): boolean {
+	public get IsMelee(): boolean {
 		return this.AttackCapability === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK
 	}
-	get IsMoving(): boolean {
+	public get IsMoving(): boolean {
 		return this.m_pBaseEntity.m_bIsMoving
 	}
-	get IsNeutral(): boolean {
+	public get IsNeutral(): boolean {
 		return this.m_pBaseEntity.m_bIsNeutralUnitType
 	}
-	get IsPhantom(): boolean {
+	public get IsPhantom(): boolean {
 		return this.m_pBaseEntity.m_bIsPhantom
 	}
-	get IsRanged(): boolean {
+	public get IsRanged(): boolean {
 		return this.AttackCapability === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK
 	}
-	get IsSpawned(): boolean {
+	public get IsSpawned(): boolean {
 		return !this.IsWaitingToSpawn
 	}
-	get IsSummoned(): boolean {
+	public get IsSummoned(): boolean {
 		return this.m_pBaseEntity.m_bIsSummoned
 	}
-	set IsVisibleForTeamMask(value: number) {
+	public set IsVisibleForTeamMask(value: number) {
 		this.m_pBaseEntity.m_iTaggedAsVisibleByTeam = value
 	}
-	get IsVisibleForTeamMask(): number {
+	public get IsVisibleForTeamMask(): number {
 		return this.m_pBaseEntity.m_iTaggedAsVisibleByTeam
 	}
-	get IsWaitingToSpawn(): boolean {
+	public get IsWaitingToSpawn(): boolean {
 		return this.m_pBaseEntity.m_bIsWaitingToSpawn
 	}
-	get Level(): number {
+	public get Level(): number {
 		return this.m_pBaseEntity.m_iCurrentLevel
 	}
-	get MagicDamageResist(): number {
+	public get MagicDamageResist(): number {
 		return this.m_pBaseEntity.m_flMagicalResistanceValue
 	}
-	get Mana(): number {
+	public get Mana(): number {
 		return this.m_pBaseEntity.m_flMana
 	}
-	get ManaPercent(): number {
+	public get ManaPercent(): number {
 		return Math.floor(this.Mana / this.MaxMana * 100) || 0
 	}
-	get ManaRegen(): number {
+	public get ManaRegen(): number {
 		return this.m_pBaseEntity.m_flManaRegen
 	}
-	get MaxDamage(): number {
+	public get MaxDamage(): number {
 		return this.m_pBaseEntity.m_iDamageMax
 	}
-	get MaxMana(): number {
+	public get MaxMana(): number {
 		return this.m_pBaseEntity.m_flMaxMana
 	}
-	get MinimapIcon(): string {
+	public get MinimapIcon(): string {
 		return this.m_pBaseEntity.m_iszMinimapIcon
 	}
-	get MinimapIconSize(): number {
+	public get MinimapIconSize(): number {
 		return this.m_pBaseEntity.m_flMinimapIconSize
 	}
-	get MinDamage(): number {
+	public get MinDamage(): number {
 		return this.m_pBaseEntity.m_iDamageMin
 	}
-	get MoveCapability(): DOTAUnitMoveCapability_t {
+	public get MoveCapability(): DOTAUnitMoveCapability_t {
 		return this.m_pBaseEntity.m_iMoveCapabilities
 	}
-	get IdealSpeed(): number {
+	public get IdealSpeed(): number {
 		return this.m_pBaseEntity.m_fIdealSpeed
 	}
-	get Name(): string {
+	public get Name(): string {
 		return this.m_pBaseEntity.m_iszUnitName || ""
 	}
-	get NetworkActivity(): GameActivity_t {
+	public get NetworkActivity(): GameActivity_t {
 		return this.m_pBaseEntity.m_NetworkActivity
 	}
-	get NightVision(): number {
+	public get NightVision(): number {
 		return this.m_pBaseEntity.m_iNightTimeVisionRange
 	}
-	get ProjectileCollisionSize(): number {
+	public get ProjectileCollisionSize(): number {
 		return this.m_pBaseEntity.m_flProjectileCollisionSize
 	}
-	get RingRadius(): number {
+	public get RingRadius(): number {
 		return this.m_pBaseEntity.m_flRingRadius
 	}
-	get RotationDifference(): number {
+	public get RotationDifference(): number {
 		return this.m_pBaseEntity.m_anglediff
 	}
-	get SecondsPerAttack(): number {
+	public get SecondsPerAttack(): number {
 		return this.m_pBaseEntity.m_fAttacksPerSecond
 	}
-	get TauntCooldown(): number {
+	public get TauntCooldown(): number {
 		return this.m_pBaseEntity.m_flTauntCooldown
 	}
-	get TotalDamageTaken(): bigint {
+	public get TotalDamageTaken(): bigint {
 		return this.m_pBaseEntity.m_nTotalDamageTaken
 	}
-	get UnitState(): modifierstate[] {
+	public get UnitState(): modifierstate[] {
 		return MaskToArrayBigInt(this.m_pBaseEntity.m_nUnitState64)
 	}
-	get UnitType(): number {
+	public get UnitType(): number {
 		return this.m_pBaseEntity.m_iUnitType
 	}
 
-	get AbilitiesBook(): AbilitiesBook {
+	public get AbilitiesBook(): AbilitiesBook {
 		return this.m_AbilitiesBook
 			|| (this.m_AbilitiesBook = new AbilitiesBook(this))
 	}
-	get Spells(): Ability[] {
+	public get Spells(): Ability[] {
 		return this.AbilitiesBook.Spells
 	}
-	get Inventory(): Inventory {
+	public get Inventory(): Inventory {
 		return this.m_Inventory || (this.m_Inventory = new Inventory(this))
 	}
-	get Items(): Item[] {
+	public get Items(): Item[] {
 		return this.Inventory.Items
 	}
 
-	GetItemByName(name: string  | RegExp, includeBackpack: boolean = false): Item {
+	public GetItemByName(name: string  | RegExp, includeBackpack: boolean = false): Item {
 		return this.Inventory.GetItemByName(name, includeBackpack)
 	}
 
-	HasItemInInventory(name: string  | RegExp, includeBackpack: boolean = false): boolean {
+	public HasItemInInventory(name: string  | RegExp, includeBackpack: boolean = false): boolean {
 		return this.GetItemByName(name, includeBackpack) !== undefined
 	}
 
-	get ModifiersBook(): ModifiersBook {
+	public get ModifiersBook(): ModifiersBook {
 		return this.m_ModifiersBook
 			|| (this.m_ModifiersBook = new ModifiersBook(this))
 	}
-	get Buffs(): Modifier[] {
+	public get Buffs(): Modifier[] {
 		return this.ModifiersBook.Buffs
 	}
 
@@ -426,7 +421,7 @@ export default class Unit extends Entity {
 	/**
 	 * @param flag if not exists => is Melee or Range attack
 	 */
-	HasAttackCapability(flag?: DOTAUnitAttackCapability_t): boolean {
+	public HasAttackCapability(flag?: DOTAUnitAttackCapability_t): boolean {
 		let attackCap = this.m_pBaseEntity.m_iAttackCapabilities
 
 		if (flag !== undefined)
@@ -440,7 +435,7 @@ export default class Unit extends Entity {
 	/**
 	 * @param flag if not exists => isn't move NONE
 	 */
-	HasMoveCapability(flag: DOTAUnitMoveCapability_t): boolean {
+	public HasMoveCapability(flag: DOTAUnitMoveCapability_t): boolean {
 		let moveCap = this.m_pBaseEntity.m_iMoveCapabilities
 
 		if (flag !== undefined)
@@ -449,28 +444,27 @@ export default class Unit extends Entity {
 		return flag !== DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
 	}
 
-	IsUnitStateFlagSet(flag: modifierstate): boolean {
+	public IsUnitStateFlagSet(flag: modifierstate): boolean {
 		return HasBitBigInt((this.m_pBaseEntity.m_nUnitState64 | this.m_pBaseEntity.m_nUnitDebuffState), BigInt(flag))
 	}
-	IsControllableByPlayer(playerID: number): boolean {
+	public IsControllableByPlayer(playerID: number): boolean {
 		return HasBitBigInt(this.m_pBaseEntity.m_iIsControllableByPlayer64, BigInt(playerID))
 	}
 
 	/* ================================ EXTENSIONS ================================ */
 
 	/* ================ GETTERS ================ */
-
-	get IsRotating(): boolean {
+	public get IsRotating(): boolean {
 		return this.RotationDifference !== 0
 	}
 
-	get IsChanneling(): boolean {
+	public get IsChanneling(): boolean {
 		if (this.HasInventory && this.Items.some(item => item.IsChanneling))
 			return true
 
 		return this.Spells.some(spell => spell.IsChanneling)
 	}
-	get CastRangeBonus(): number {
+	public get CastRangeBonus(): number {
 		let castrange = 0
 
 		let lens = this.GetItemByName("item_aether_lens")
@@ -483,7 +477,7 @@ export default class Unit extends Entity {
 		})*/
 		return castrange
 	}
-	get SpellAmplification(): number {
+	public get SpellAmplification(): number {
 		let spellAmp = 0
 
 		this.Items.forEach(item => spellAmp += item.GetSpecialValue("spell_amp") / 100)
@@ -497,28 +491,27 @@ export default class Unit extends Entity {
 	}
 
 	/* ================ METHODS ================ */
-
 	/**
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
-	Distance2D(vec: Vector3 | Vector2 | Entity, fromCenterToCenter: boolean = false): number {
+	public Distance2D(vec: Vector3 | Vector2 | Entity, fromCenterToCenter: boolean = false): number {
 		if (vec instanceof Vector3 || vec instanceof Vector2)
 			return super.Distance2D(vec)
 
 		return super.Distance2D(vec) - (fromCenterToCenter ? 0 : this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0))
 	}
-	GetAbilityByName(name: string | RegExp) {
+	public GetAbilityByName(name: string | RegExp) {
 		return this.AbilitiesBook.GetAbilityByName(name)
 	}
-	GetBuffByName(name: string) {
+	public GetBuffByName(name: string) {
 		return this.ModifiersBook.GetBuffByName(name)
 	}
 
-	GetTalentValue(name: string | RegExp) {
+	public GetTalentValue(name: string | RegExp) {
 		let talent = this.AbilitiesBook.GetAbilityByName(name)
 		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
 	}
-	GetTalentClassValue(class_: any) {
+	public GetTalentClassValue(class_: any) {
 		let talent = this.AbilitiesBook.GetAbilityByClass(class_)
 		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
 	}
@@ -526,7 +519,7 @@ export default class Unit extends Entity {
 	 * faster (Distance <= range)
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
-	IsInRange(ent: Vector3 | Vector2 | Entity, range: number, fromCenterToCenter: boolean = false): boolean {
+	public IsInRange(ent: Vector3 | Vector2 | Entity, range: number, fromCenterToCenter: boolean = false): boolean {
 		if (fromCenterToCenter === false) {
 
 			range += this.HullRadius
@@ -537,7 +530,7 @@ export default class Unit extends Entity {
 
 		return super.IsInRange(ent, range)
 	}
-	WillIgnore(damage_type: DAMAGE_TYPES): boolean {
+	public WillIgnore(damage_type: DAMAGE_TYPES): boolean {
 		if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_NONE)
 			return true
 
@@ -549,7 +542,7 @@ export default class Unit extends Entity {
 			return ignore_buffs.includes(name)
 		})
 	}
-	AbsorbedDamage(dmg: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
+	public AbsorbedDamage(dmg: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
 		this.Buffs.forEach(buff => {
 			let abil = buff.Ability
 			if (abil === undefined)
@@ -617,7 +610,7 @@ export default class Unit extends Entity {
 		})
 		return dmg
 	}
-	CalculateDamage(damage: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
+	public CalculateDamage(damage: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
 		if (damage <= 0 || this.WillIgnore(damage_type))
 			return 0
 		damage = this.AbsorbedDamage(damage, damage_type, source)
@@ -657,7 +650,50 @@ export default class Unit extends Entity {
 		}
 		return Math.max(damage, 0)
 	}
-	IsInside(vec: Vector3, radius: number): boolean {
+	/*FindAttackingUnit(unit: Unit): Unit {
+		if (!config.enabled)
+			return
+		if (unit === undefined)
+			return undefined
+		let is_default_creep = unit.IsCreep && !unit.IsControllableByAnyPlayer
+		return ArrayExtensions.orderBy(EntityManager.AllEntities.filter(npc_ => {
+			if (npc_ === unit || !(npc_ instanceof Unit))
+				return false
+			let npc_pos = npc_.NetworkPosition
+			return (
+				unit.Distance2D(npc_) <= (unit.AttackRange + unit.HullRadius + npc_.HullRadius) &&
+				!unit.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE) &&
+				unit.IsInside(npc_pos, npc_.HullRadius) &&
+				(unit.IsEnemy(npc_) || (!is_default_creep && npc_.IsDeniable))
+			)
+		}), ent => unit.GetAngle(ent.NetworkPosition))[0] as Unit
+	}*/
+	GetHealthAfter(delay: number/*, include_projectiles: boolean = false, attacker?: Unit, melee_time_offset: number = 0*/): number {
+		// let cur_time = Game.GameTime,
+		let hpafter = this.HP
+		/*// loop-optimizer: KEEP
+		attacks.forEach((data, attacker_id) => {
+			let attacker_ent = EntityManager.EntityByIndex(attacker_id) as Unit,
+				[end_time, end_time_2, attack_target] = data
+			if (attacker_ent !== attacker && attack_target === unit) {
+				let end_time_delta = end_time - (cur_time + delay + melee_time_offset),
+					dmg = attacker_ent.AttackDamage(unit)
+				if (end_time_delta <= 0 && end_time_delta >= -Unit.melee_end_time_delta)
+					hpafter -= dmg
+				let end_time_2_delta = end_time_2 - (cur_time + delay + melee_time_offset)
+				if (end_time_2_delta <= 0 && end_time_2_delta >= -Unit.melee_end_time_delta)
+					hpafter -= dmg
+			}
+		})
+		if (include_projectiles)
+			Projectiles.GetAllTracking().forEach(proj => {
+				let source = proj.m_hSource
+				if (proj.m_hTarget === this && source !== undefined && proj.m_bIsAttack && !proj.m_bIsEvaded && (proj.m_vecPosition.Distance(proj.m_vecTarget) / proj.m_iSpeed) <= delay)
+					hpafter -= this.AttackDamage(source)
+			})*/
+		return Math.min(hpafter + this.HPRegen * delay, this.MaxHP)
+	}
+	public IsInside(vec: Vector3, radius: number): boolean {
 		const direction = this.Forward,
 			npc_pos = this.NetworkPosition
 		const npc_pos_x = npc_pos.x, npc_pos_y = npc_pos.y,
@@ -671,17 +707,17 @@ export default class Unit extends Entity {
 				return true
 		return false
 	}
-	GetAngle(vec: Vector3): number {
+	public GetAngle(vec: Vector3): number {
 		let npc_pos = this.NetworkPosition,
 			angle = Math.abs(Math.atan2(npc_pos.y - vec.y, npc_pos.x - vec.x) - this.Forward.Angle)
 		if (angle > Math.PI)
 			angle = Math.abs((Math.PI * 2) - angle)
 		return angle
 	}
-	IsManaEnough(abil: Ability) {
+	public IsManaEnough(abil: Ability) {
 		return this.Mana >= abil.ManaCost
 	}
-	HasLinkenAtTime(time: number = 0): boolean {
+	public HasLinkenAtTime(time: number = 0): boolean {
 		if (!this.IsHero)
 			return false
 		const sphere = this.GetItemByName("item_sphere")
@@ -694,8 +730,7 @@ export default class Unit extends Entity {
 			&& this.GetBuffByName("modifier_item_sphere_target").DieTime - Game.RawGameTime - time <= 0
 		)
 	}
-	AttackDamage(target: Unit, useMinDamage: boolean = false, damageAmplifier: number = 0): number {
-
+	public AttackDamage(target: Unit, useMinDamage: boolean = false, damageAmplifier: number = 0): number {
 		let damage = (useMinDamage ? this.MinDamage : this.DamageAverage) + this.DamageBonus,
 			damageType = this.AttackDamageType,
 			armorType = target.ArmorType,
@@ -719,7 +754,6 @@ export default class Unit extends Entity {
 			mult *= 2.5
 
 		if (target.IsNeutral || (target.IsCreep && this.IsEnemy(target))) {
-
 			let isMelee = this.IsMelee,
 				inventory = this.Inventory
 
@@ -737,17 +771,14 @@ export default class Unit extends Entity {
 
 		return damage * mult
 	}
-	CanAttack(target?: Unit): boolean {
-		if (!this.IsAlive || this.IsInvulnerable || this.IsDormant || !this.IsSpawned
-			|| this.IsAttackImmune)
+	public CanAttack(target?: Unit): boolean {
+		if (!this.IsAlive || this.IsInvulnerable || this.IsDormant || !this.IsSpawned || this.IsAttackImmune)
 			return false
 
-		if (target === undefined || !target.IsAlive || target.IsInvulnerable || target.IsDormant || !target.IsSpawned
-			|| target.IsAttackImmune)
+		if (target === undefined || !target.IsAlive || target.IsInvulnerable || target.IsDormant || !target.IsSpawned || target.IsAttackImmune)
 			return false
 
 		if (target.Team === LocalPlayer.Team) {
-
 			if (target.IsCreep)
 				return target.HPPercent < 0.5
 
@@ -761,8 +792,7 @@ export default class Unit extends Entity {
 		return true
 	}
 	/* ================================ ORDERS ================================ */
-	UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
-
+	public UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
 		if (checkToggled && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && !ability.IsToggled)
 			return this.CastToggle(ability, queue, showEffects)
 
@@ -780,111 +810,109 @@ export default class Unit extends Entity {
 			return this.CastTarget(ability, target as Entity, showEffects)
 	}
 
-	MoveTo(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public MoveTo(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, unit: this, position, queue, showEffects })
 	}
-	MoveToTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
+	public MoveToTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, unit: this, target, queue, showEffects })
 	}
-	AttackMove(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public AttackMove(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE, unit: this, position, queue, showEffects })
 	}
-	AttackTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
+	public AttackTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET, unit: this, target, queue, showEffects })
 	}
-	CastPosition(ability: Ability, position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public CastPosition(ability: Ability, position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION, unit: this, ability, position, queue, showEffects })
 	}
-	CastTarget(ability: Ability, target: Entity | number, queue?: boolean, showEffects?: boolean) {
+	public CastTarget(ability: Ability, target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET, unit: this, target, ability, queue, showEffects })
 	}
-	CastTargetTree(ability: Ability, tree: Tree | number, queue?: boolean, showEffects?: boolean) {
+	public CastTargetTree(ability: Ability, tree: Tree | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE, unit: this, target: tree, ability, queue, showEffects })
 	}
-	CastNoTarget(ability: Ability, queue?: boolean, showEffects?: boolean) {
+	public CastNoTarget(ability: Ability, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET, unit: this, ability, queue, showEffects })
 	}
-	CastToggle(ability: Ability, queue?: boolean, showEffects?: boolean) {
+	public CastToggle(ability: Ability, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE, unit: this, ability, queue, showEffects })
 	}
-	HoldPosition(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public HoldPosition(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION, unit: this, position, queue, showEffects })
 	}
-	TrainAbility(ability: Ability) {
+	public TrainAbility(ability: Ability) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY, unit: this, ability })
 	}
-	DropItem(item: Item, position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public DropItem(item: Item, position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM, unit: this, ability: item, position, queue, showEffects })
 	}
-	GiveItem(item: Item, target: Entity | number, queue?: boolean, showEffects?: boolean) {
+	public GiveItem(item: Item, target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM, unit: this, target, ability: item, queue, showEffects })
 	}
-	PickupItem(physicalItem: PhysicalItem | number, queue?: boolean, showEffects?: boolean) {
+	public PickupItem(physicalItem: PhysicalItem | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM, unit: this, target: physicalItem, queue, showEffects })
 	}
-	PickupRune(rune: Rune | number, queue?: boolean, showEffects?: boolean) {
+	public PickupRune(rune: Rune | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE, unit: this, target: rune, queue, showEffects })
 	}
 	// check
-	PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean) {
+	public PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM, unit: this, target: itemID, queue, showEffects })
 	}
-	SellItem(item: Item) {
+	public SellItem(item: Item) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM, unit: this, ability: item })
 	}
 	// check
-	DisassembleItem(item: Item, queue?: boolean) {
+	public DisassembleItem(item: Item, queue?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM, unit: this, ability: item, queue })
 	}
-	ItemSetCombineLock(item: Item, lock: boolean | number = true, queue?: boolean) {
+	public ItemSetCombineLock(item: Item, lock: boolean | number = true, queue?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, unit: this, ability: item, target: (lock as number) + 0, queue })
 	}
-	MoveItem(item: Item, slot: DOTAScriptInventorySlot_t) {
+	public MoveItem(item: Item, slot: DOTAScriptInventorySlot_t) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM, unit: this, target: slot, ability: item })
 	}
-	CastToggleAuto(item: Item, queue?: boolean, showEffects?: boolean) {
+	public CastToggleAuto(item: Item, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO, unit: this, ability: item, queue, showEffects })
 	}
-	OrderStop(queue?: boolean, showEffects?: boolean) {
+	public OrderStop(queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_STOP, unit: this, queue, showEffects })
 	}
-	UnitTaunt(queue?: boolean, showEffects?: boolean) {
+	public UnitTaunt(queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT, unit: this, queue, showEffects })
 	}
-	ItemFromStash(item: Item) {
+	public ItemFromStash(item: Item) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH, unit: this, ability: item })
 	}
-	CastRune(runeItem: Item | number, queue?: boolean, showEffects?: boolean) {
+	public CastRune(runeItem: Item | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RUNE, unit: this, target: runeItem, queue, showEffects })
 	}
-	PingAbility(ability: Ability) {
+	public PingAbility(ability: Ability) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PING_ABILITY, unit: this, ability })
 	}
-	MoveToDirection(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public MoveToDirection(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION, unit: this, position, queue, showEffects })
 	}
-	Patrol(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public Patrol(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PATROL, unit: this, position, queue, showEffects })
 	}
-	VectorTargetPosition(ability: Ability, Direction: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public VectorTargetPosition(ability: Ability, Direction: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION, unit: this, ability, position: Direction, queue, showEffects })
 	}
-	CastVectorTargetPosition(ability: Ability, position: Vector3 | Vector2 | Unit, Direction: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): void {
-
+	public CastVectorTargetPosition(ability: Ability, position: Vector3 | Vector2 | Unit, Direction: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): void {
 		if (position instanceof Unit)
 			position = position.Position
 
 		this.VectorTargetPosition(ability, Direction, queue, showEffects)
 		this.CastPosition(ability, position, queue, showEffects)
 	}
-	ItemLock(item: Item, state: boolean = true) {
+	public ItemLock(item: Item, state: boolean = true) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, unit: this, ability: item, target: state === false ? 0 : undefined })
 	}
-	OrderContinue(item: Item, queue?: boolean, showEffects?: boolean) {
+	public OrderContinue(item: Item, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE, unit: this, ability: item, queue, showEffects })
 	}
-	VectorTargetCanceled(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public VectorTargetCanceled(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED, unit: this, position, queue, showEffects })
 	}
 }
-//global.Unit = Unit;

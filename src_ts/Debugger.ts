@@ -85,7 +85,7 @@ Events.on("GameStarted", pl_ent => {
 		console.log("onGameStarted", pl_ent)
 
 	if (!(pl_ent instanceof C_DOTA_BaseNPC_Hero))
-		throw "onGameStarted. pl_ent is not C_DOTA_BaseNPC_Hero: " + pl_ent.constructor.name
+		throw "onGameStarted. pl_ent is not C_DOTA_BaseNPC_Hero: " + pl_ent
 })
 Events.on("GameEnded", () => {
 	if (!debugEvents.value || !debugOtherEvents.value) return

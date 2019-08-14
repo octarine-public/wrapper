@@ -21,7 +21,7 @@ var abils: Array<{
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
 				var killThreshold = abil.GetSpecialValue("kill_threshold"),
 					damage = entTo.CalculateDamage(abil.GetSpecialValue("damage"), DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
-					hp = GetHealthAfter(entTo,abil.CastPoint)
+					hp = entTo.GetHealthAfter(abil.CastPoint)
 				return hp > killThreshold ? damage * latest_spellamp : killThreshold
 			},
 		},
@@ -30,7 +30,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
 				var DamagePerMissHP = abil.GetSpecialValue("damage_per_health"),
-					delta = GetHealthAfter(entTo,3)
+					delta = entTo.GetHealthAfter(3)
 				return entTo.CalculateDamage((entTo.MaxHP - delta) * DamagePerMissHP, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
 		},
@@ -258,8 +258,8 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
 				const ents = entTo.AbsOrigin.GetEntitiesInRange(abil.GetSpecialValue("radius")),
-					creeps = ents.filter(ent => ent.IsCreep && ent.IsEnemy),
-					heroes = ents.filter(ent => ent.IsHero && ent.IsEnemy)
+					creeps = ents.filter(ent => ent.IsCreep && ent.IsEnemy()),
+					heroes = ents.filter(ent => ent.IsHero && ent.IsEnemy())
 				return Utils.CalculateDamage(entTo, (abil.GetSpecialValue("damage") * heroes.length + abil.GetSpecialValue("damage_per_unit") * creeps.length) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
 			}
 		},*/
@@ -503,7 +503,7 @@ function OnTick(): void {
 			var damage = (abilData.abilDamageF || getDamage)(abil, MyEnt, ent)
 			if (zuus_passive !== undefined)
 				damage += (abil.GetSpecialValue("damage_health_pct") + zuus_talent) / 100 * ent.HP
-			if (damage < GetHealthAfter(ent, abil.CastPoint))
+			if (damage < ent.GetHealthAfter(abil.CastPoint))
 				return false
 
 			let ping = GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)
@@ -565,49 +565,6 @@ EventsSDK.on("Tick", OnTick)
 	Menu.AddEntry(root)
 }
 
-/*function FindAttackingUnit(unit: Unit): Unit {
-	if (!config.enabled)
-		return
-	if (unit === undefined)
-		return undefined
-	let is_default_creep = unit.IsCreep && !unit.IsControllableByAnyPlayer
-	return ArrayExtensions.orderBy(EntityManager.AllEntities.filter(npc_ => {
-		if (npc_ === unit || !(npc_ instanceof Unit))
-			return false
-		let npc_pos = npc_.NetworkPosition
-		return (
-			unit.Distance2D(npc_) <= (unit.AttackRange + unit.HullRadius + npc_.HullRadius) &&
-			!unit.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE) &&
-			unit.IsInside(npc_pos, npc_.HullRadius) &&
-			(unit.IsEnemy(npc_) || (!is_default_creep && npc_.IsDeniable))
-		)
-	}), ent => unit.GetAngle(ent.NetworkPosition))[0] as Unit
-}*/
-function GetHealthAfter(unit: Unit, delay: number/*, include_projectiles: boolean = false, attacker?: Unit, melee_time_offset: number = 0*/): number {
-	// let cur_time = Game.GameTime,
-	let hpafter = unit.HP
-	/*// loop-optimizer: KEEP
-	attacks.forEach((data, attacker_id) => {
-		let attacker_ent = EntityManager.EntityByIndex(attacker_id) as Unit,
-			[end_time, end_time_2, attack_target] = data
-		if (attacker_ent !== attacker && attack_target === unit) {
-			let end_time_delta = end_time - (cur_time + delay + melee_time_offset),
-				dmg = attacker_ent.AttackDamage(unit)
-			if (end_time_delta <= 0 && end_time_delta >= -Unit.melee_end_time_delta)
-				hpafter -= dmg
-			let end_time_2_delta = end_time_2 - (cur_time + delay + melee_time_offset)
-			if (end_time_2_delta <= 0 && end_time_2_delta >= -Unit.melee_end_time_delta)
-				hpafter -= dmg
-		}
-	})
-	if (include_projectiles)
-		Projectiles.GetAllTracking().forEach(proj => {
-			let source = proj.m_hSource
-			if (proj.m_hTarget === this && source !== undefined && proj.m_bIsAttack && !proj.m_bIsEvaded && (proj.m_vecPosition.Distance(proj.m_vecTarget) / proj.m_iSpeed) <= delay)
-				hpafter -= this.AttackDamage(source)
-		})*/
-	return Math.min(hpafter + unit.HPRegen * delay, unit.MaxHP)
-}
 // let attacks: Array<[number, number, Unit]> = [];
 EventsSDK.on("EntityDestroyed",(unit, unit_id) => {
 	if (!config.enabled)
