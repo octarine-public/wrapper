@@ -2,7 +2,9 @@ import { Vector3, RendererSDK, Entity, Game, Color, Vector2, Unit } from "wrappe
 import { State, DrawRGBA, Size, ComboBox } from "./Menu"
 import { ucFirst } from "../../abstract/Function"
 const fullColor = new Color(255,255,255)
-let Particle: Array<[number, BigInt?, Entity?, number?, Vector3?]> = [];
+let Particle: Map<number,[BigInt?, Entity?, number?, Vector3?]> = new Map(),
+	lastTeleport = undefined,
+	teleport2hero = new Map<number,number>()
 function ClassChecking(entity: Entity) {
 	if (entity === undefined)
 		return false;
@@ -16,44 +18,51 @@ export function ParticleCreate(id: number, handle: BigInt, entity: Entity){
 		return;
 	if (handle === 6662325468141068933n)
 		return;
-	Particle.push([id, handle, entity, Game.RawGameTime + 2]);
+	if(handle === 16169843851719108633n){
+		lastTeleport = id
+	}
+	if(handle === 9908905996079864839n){
+		teleport2hero.set(id,lastTeleport)
+		lastTeleport = undefined
+	}
+	Particle.set(id,[handle, entity, Game.RawGameTime + 10]);
 }
 export function ParticleCreateUpdate(id: number, control_point: number, position: Vector3){
 	if (!State.value || !Game.IsInGame)
 		return;
 	if (control_point === 0 || control_point === 1) {
-		Particle.some(([particle_id, handle, entity, Time]) => {
-			if (particle_id !== id)
-				return false;
-			if(handle === 14221266834388661971n && !position.Equals(new Vector3(1200,1,1200)))
-				SendToConsole('play ui/ping')
-			Particle.push([particle_id, handle, entity, Time, position])
-			return true
-		})
+		let part = Particle.get(id)
+		if(part[0] === 14221266834388661971n && !position.Equals(new Vector3(1200,1,1200)))
+			SendToConsole('play ui/ping')
+		Particle.set(id,[part[0], part[1], part[2], position])
 	}
 }
 export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3){
 	if (!State.value || !Game.IsInGame || ClassChecking(ent))
 		return;
 	let Ent = ent as Unit
-	Particle.some(([particle_id, handle, target, Time]) => {
-		if (particle_id !== id)
-			return false;
-		Particle.push([particle_id, handle, Ent, Time, position])
-		return true
-	})
+	let part = Particle.get(id)
+	if(part[0] === 9908905996079864839n){
+		let partf = teleport2hero.get(id),
+			partar = Particle.get(partf)
+		Particle.set(partf,[partar[0], Ent, partar[2], part[3]])
+	}
+	Particle.set(id,[part[0], Ent, part[2], position])
 }
 export function OnDraw() {
-	if (Particle.length <= 0 || !Game.IsInGame)
+	if (Particle.size <= 0 || !Game.IsInGame)
 		return;
-	Particle.forEach(([particle_id, handle, target, Time, position], i) => {
+	// loop-optimizer: KEEP
+	Particle.forEach(([handle, target, Time, position], i) => {
 		
 		/*|| handle === 16411378985643724199n || handle === 1676164312013390125n */ //Target undefined............ facepalm
 		
 		if (position === undefined || Time <= Game.RawGameTime /*|| handle === 16411378985643724199n || handle === 1676164312013390125n */) {
-			Particle.splice(i, 1)
+			Particle.delete(i)
 			return
 		}
+		// if(handle == 16169843851719108633n)
+			// console.log(position.toString())
 		if (target === undefined) {
 			if(handle !== 16169843851719108633n && handle !== 14221266834388661971n) {
 				
@@ -71,7 +80,11 @@ export function OnDraw() {
 			let Name = target.Name;
 			if (Name === undefined)
 				return;
-			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Name}`, position, Size.value * 12, fullColor)
+			let color = fullColor
+			if(handle == 9908905996079864839n){
+				color = new Color(100,100,100)
+			}
+			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Name}`, position, Size.value * 12, color)
 			let pos_particle = RendererSDK.WorldToScreen(position);
 			if (pos_particle === undefined)
 				return
@@ -103,13 +116,11 @@ export function OnDraw() {
 	})
 }
 export function ParticleDestroyed(id: number) {
-	Particle.some(([particle_id], i) => {
-		if (particle_id !== id)
-			return false;
-		Particle.splice(i, 2)
-		return true
-	})
+	if(teleport2hero.has(id))
+		teleport2hero.delete(id)
+	Particle.delete(id)
 }
 export function GameEnded() {
-	Particle = [];
+	Particle = new Map();
+	teleport2hero = new Map();
 }
