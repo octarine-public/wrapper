@@ -138,15 +138,13 @@ export default class Entity {
 	public readonly m_pBaseEntity: C_BaseEntity
 	public IsValid: boolean = false
 
-	protected m_iIndex: number
 	private m_pEntity: CEntityIdentity
 	private m_hOwnerEntity: Entity
 
 	/* ================================ BASE ================================ */
 
-	constructor(ent?: C_BaseEntity, id: number = -1) {
+	constructor(ent?: C_BaseEntity, public readonly Index: number = -1) {
 		this.m_pBaseEntity = ent
-		this.m_iIndex = id
 	}
 
 	/* ================ GETTERS ================ */
@@ -171,9 +169,6 @@ export default class Entity {
 	}
 	get HPPercent(): number {
 		return Math.floor(this.HP / this.MaxHP * 100) || 0
-	}
-	get Index(): number {
-		return this.m_iIndex
 	}
 	get IsAlive(): boolean {
 		return this.LifeState === LifeState_t.LIFE_ALIVE

@@ -5,7 +5,6 @@ let mousePosition: Vector3 = new Vector3()
 
 // need more
 class Game {
-
 	m_GameRules: C_DOTAGamerules
 	m_GameManager: C_DOTAGameManager
 	m_StockInfo: StockInfo[]

@@ -109,11 +109,9 @@ const entityManager = new EntityManager()
 export default global.EntityManager = entityManager
 
 Events.on("EntityCreated", (ent, index) => {
-
 	{ // add globals
 		if (ent instanceof C_DOTA_PlayerResource) {
 			PlayerResource.m_pBaseEntity = ent
-			PlayerResource.m_iIndex = index
 			return
 		}
 
@@ -123,7 +121,7 @@ Events.on("EntityCreated", (ent, index) => {
 		}
 
 		if (ent instanceof C_DOTAGameManagerProxy) {
-			Game.m_GameManager = undefined
+			Game.m_GameManager = ent.m_pGameManager
 			return
 		}
 	}
@@ -139,7 +137,6 @@ Events.on("EntityCreated", (ent, index) => {
 })
 
 Events.on("EntityDestroyed", (ent, index) => {
-
 	{ // delete global
 		if (ent instanceof C_DOTA_PlayerResource) {
 			PlayerResource.m_pBaseEntity = undefined

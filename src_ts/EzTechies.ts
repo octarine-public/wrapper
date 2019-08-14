@@ -107,7 +107,7 @@ function onTick() {
 			if (Utils.IsVisibleForEnemies(mine) && cur_time > invis_time)
 				ExplodeMine(mine)
 	rmines.filter(([rmine]) => rmine.m_iHealth !== rmine.m_iMaxHealth).forEach(([rmine]) => ExplodeMine(rmine))
-	latest_techies_spellamp = Utils.SpellAmplification(techies) / 100
+	latest_techies_spellamp = techies.SpellAmplification
 	{
 		let bs_buff = Utils.GetBuffByName(techies, "modifier_bloodseeker_bloodrage")
 		if (bs_buff !== undefined)

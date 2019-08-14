@@ -1,7 +1,7 @@
 import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/Utils"
+import { DamageIgnoreBuffs, HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/Utils"
 
 import { Game, LocalPlayer } from "../../Managers/EntityManager"
 
@@ -537,6 +537,150 @@ export default class Unit extends Entity {
 
 		return super.IsInRange(ent, range)
 	}
+	WillIgnore(damage_type: DAMAGE_TYPES): boolean {
+		if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_NONE)
+			return true
+
+		let ignore_buffs = DamageIgnoreBuffs[damage_type]
+		return this.Buffs.some(buff => {
+			let name = buff.Name
+			if (name === undefined)
+				return false
+			return ignore_buffs.includes(name)
+		})
+	}
+	AbsorbedDamage(dmg: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
+		this.Buffs.forEach(buff => {
+			let abil = buff.Ability
+			if (abil === undefined)
+				return
+			if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
+				switch (buff.Name) {
+					case "modifier_ember_spirit_flame_guard": {
+						let talent = this.AbilitiesBook.GetAbilityByName("special_bonus_unique_ember_spirit_1")
+						if (talent !== undefined && talent.Level > 0)
+							dmg -= talent.GetSpecialValue("value")
+						dmg -= abil.GetSpecialValue("absorb_amount")
+						return
+					}
+					case "modifier_item_pipe_barrier":
+					case "modifier_item_hood_of_defiance_barrier":
+					case "modifier_item_infused_raindrop":
+						dmg -= abil.GetSpecialValue("barrier_block")
+						return
+					default:
+						break
+				}
+			switch (abil.Name) {
+				case "abaddon_aphotic_shield": {
+					let talent = this.AbilitiesBook.GetAbilityByName("special_bonus_unique_abaddon")
+					if (talent !== undefined && talent.Level > 0)
+						dmg -= talent.GetSpecialValue("value")
+					dmg -= abil.GetSpecialValue("damage_absorb")
+					return
+				}
+				case "bloodseeker_bloodrage":
+					dmg *= abil.GetSpecialValue("damage_increase_pct") / 100
+					return
+				case "spectre_dispersion":
+					dmg *= 1 - (abil.GetSpecialValue("damage_reflection_pct") / 100)
+					return
+				case "ursa_enrage":
+				case "centaur_stampede":
+					dmg *= 1 - (abil.GetSpecialValue("damage_reduction") / 100)
+					return
+				case "kunkka_ghostship":
+					dmg *= 1 - (abil.GetSpecialValue("ghostship_absorb") / 100)
+					return
+				case "wisp_overcharge":
+					dmg *= 1 + (abil.GetSpecialValue("bonus_damage_pct") / 100)
+					return
+				case "medusa_mana_shield": {
+					let max_absorbed_dmg = this.Mana * abil.GetSpecialValue("damage_per_mana"),
+						possible_absorbed = dmg * abil.GetSpecialValue("absorption_tooltip") / 100
+					dmg -= Math.min(max_absorbed_dmg, possible_absorbed)
+					return
+				}
+				case "bristleback_bristleback": {
+					if (source !== undefined) {
+						let rot_angle = source.FindRotationAngle(this)
+						if (rot_angle > 1.90)
+							dmg *= 1 - abil.GetSpecialValue("back_damage_reduction") / 100
+						else if (rot_angle > 1.20)
+							dmg *= 1 - abil.GetSpecialValue("side_damage_reduction") / 100
+					}
+					return
+				}
+				default:
+					return
+			}
+		})
+		return dmg
+	}
+	CalculateDamage(damage: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
+		if (damage <= 0 || this.WillIgnore(damage_type))
+			return 0
+		damage = this.AbsorbedDamage(damage, damage_type, source)
+		if (damage <= 0)
+			return 0
+		switch (damage_type) {
+			case DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL:
+				damage *= 1 - this.MagicDamageResist / 100
+				break
+			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL: {
+				let armor = this.Armor
+				damage *= Math.max(Math.min((1 - (0.052 * armor) / (0.9 + 0.048 * armor)), 2), 0)
+				{
+					let phys_damage_type = source === undefined ? AttackDamageType.Basic : source.AttackDamageType,
+						phys_armor_type = this.ArmorType
+					if (phys_damage_type === AttackDamageType.Hero && phys_armor_type === ArmorType.Structure)
+						damage *= .5
+					else if (phys_damage_type === AttackDamageType.Basic && phys_armor_type === ArmorType.Hero)
+						damage *= .75
+					else if (phys_damage_type === AttackDamageType.Basic && phys_armor_type === ArmorType.Structure)
+						damage *= .7
+					else if (phys_damage_type === AttackDamageType.Pierce && phys_armor_type === ArmorType.Hero)
+						damage *= .5
+					else if (phys_damage_type === AttackDamageType.Pierce && phys_armor_type === ArmorType.Basic)
+						damage *= 1.5
+					else if (phys_damage_type === AttackDamageType.Pierce && phys_armor_type === ArmorType.Structure)
+						damage *= .35
+					else if (phys_damage_type === AttackDamageType.Siege && phys_armor_type === ArmorType.Hero)
+						damage *= .85
+					else if (phys_damage_type === AttackDamageType.Siege && phys_armor_type === ArmorType.Structure)
+						damage *= 2.5
+				}
+				break
+			}
+			default:
+				break
+		}
+		return Math.max(damage, 0)
+	}
+	IsInside(vec: Vector3, radius: number): boolean {
+		const direction = this.Forward,
+			npc_pos = this.NetworkPosition
+		const npc_pos_x = npc_pos.x, npc_pos_y = npc_pos.y,
+			vec_x = vec.x, vec_y = vec.y,
+			direction_x = direction.x, direction_y = direction.y,
+			radius_sqr = radius ** 2
+		for (let i = Math.floor(vec.Distance2D(npc_pos) / radius) + 1; i--; )
+			// if (npc_pos.Distance2D(new Vector3(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
+			// optimized version, as V8 unable to optimize any native code by inlining
+			if ((((vec_x - direction_x * i * radius - npc_pos_x) ** 2) + ((vec_y - direction_y * i * radius - npc_pos_y) ** 2)) <= radius_sqr)
+				return true
+		return false
+	}
+	GetAngle(vec: Vector3): number {
+		let npc_pos = this.NetworkPosition,
+			angle = Math.abs(Math.atan2(npc_pos.y - vec.y, npc_pos.x - vec.x) - this.Forward.Angle)
+		if (angle > Math.PI)
+			angle = Math.abs((Math.PI * 2) - angle)
+		return angle
+	}
+	IsManaEnough(abil: Ability) {
+		return this.Mana >= abil.ManaCost
+	}
 	HasLinkenAtTime(time: number = 0): boolean {
 		if (!this.IsHero)
 			return false
@@ -547,7 +691,7 @@ export default class Unit extends Entity {
 			sphere.Cooldown - time <= 0
 		) || (
 			this.GetBuffByName("modifier_item_sphere_target") !== undefined
-			&& this.GetBuffByName("modifier_item_sphere_target").DieTime - Game.GameTime - time <= 0
+			&& this.GetBuffByName("modifier_item_sphere_target").DieTime - Game.RawGameTime - time <= 0
 		)
 	}
 	AttackDamage(target: Unit, useMinDamage: boolean = false, damageAmplifier: number = 0): number {
@@ -743,3 +887,4 @@ export default class Unit extends Entity {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED, unit: this, position, queue, showEffects })
 	}
 }
+//global.Unit = Unit;

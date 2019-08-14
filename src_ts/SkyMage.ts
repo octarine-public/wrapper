@@ -250,7 +250,7 @@ function killCheck() {
 		damage += shot.GetSpecialValue("damage")
 		reqMana += shot.ManaCost
 	}
-	damage *= amp + (1 - target.MagicDamageResist * 0.01)
+	damage *= 1 + amp - target.MagicDamageResist * 0.01
 	if (reqMana < sky.Mana && target.HP <= damage) {
 		lastCheckTime = Game.GameTime
 		return true

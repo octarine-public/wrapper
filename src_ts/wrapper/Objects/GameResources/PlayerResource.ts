@@ -1,10 +1,9 @@
 import EntityManager from "../../Managers/EntityManager"
 import Courier from "../Base/Courier"
-import Entity from "../Base/Entity"
 import Player from "../Base/Player"
 
-class PlayerResource extends Entity {
-	public readonly m_pBaseEntity: C_DOTA_PlayerResource
+class PlayerResource {
+	public m_pBaseEntity: C_DOTA_PlayerResource
 
 	public get Names(): string[] {
 		let playerResource = this.m_pBaseEntity
