@@ -38,13 +38,27 @@ EventsSDK.on("Tick", () => {
 	}))
 })
 
+function IsDewardable(ent: Entity) {
+	return ent.IsEnemy() && (
+		ent.m_pBaseEntity instanceof CDOTA_NPC_Observer_Ward
+		|| ent.m_pBaseEntity instanceof CDOTA_NPC_Observer_Ward_TrueSight
+		|| (
+			ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines
+			&& (
+				ent.Name === "npc_dota_techies_remote_mine"
+				|| ent.Name === "npc_dota_techies_stasis_trap"
+			)
+		)
+	)
+}
+
 EventsSDK.on("EntityCreated", ent => {
-	if ((ent.m_pBaseEntity instanceof CDOTA_NPC_Observer_Ward || ent.m_pBaseEntity instanceof CDOTA_NPC_Observer_Ward_TrueSight) && ent.IsEnemy())
+	if (IsDewardable(ent))
 		ward_list.push(ent)
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if ((ent.m_pBaseEntity instanceof CDOTA_NPC_Observer_Ward || ent.m_pBaseEntity instanceof CDOTA_NPC_Observer_Ward_TrueSight) && ent.IsEnemy())
+	if (IsDewardable(ent))
 		ArrayExtensions.arrayRemove(ward_list, ent)
 })
 
