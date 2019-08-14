@@ -1,4 +1,4 @@
-import { EventsSDK, LocalPlayer, MenuManager, Game, ArrayExtensions, Entity } from "./wrapper/Imports"
+import { ArrayExtensions, Entity, EventsSDK, Game, LocalPlayer, MenuManager } from "./wrapper/Imports"
 
 // Menu //
 const Config = MenuManager.MenuFactory("Auto Deward")
@@ -15,7 +15,7 @@ const Items = ["item_quelling_blade", "item_bfury", "item_tango", "item_tango_si
 EventsSDK.on("Tick", () => {
 	if (!Config_State.value || ward_list.length === 0)
 		return
-	
+
 	const myHero = LocalPlayer.Hero
 	if (
 		myHero === undefined
@@ -25,12 +25,12 @@ EventsSDK.on("Tick", () => {
 		|| IssueOrderT + Config_IssueOrderDelay.value > Game.RawGameTime
 	)
 		return
-	
+
 	myHero.Inventory.GetItemsByNames(["item_quelling_blade", "item_bfury", "item_tango", "item_tango_single"]).filter(item =>
-		item != undefined
+		item !== undefined
 		&& Config_Items.IsSelectedID(Items.indexOf(item.Name))
 		&& item.IsReady
-		&& item.CanBeCasted
+		&& item.CanBeCasted,
 	).some(item => ward_list.filter(ent => ent.IsAlive && ent.IsVisible && ent.IsInRange(myHero, item.CastRange)).some(ent => {
 		myHero.CastTarget(item, ent)
 		IssueOrderT = Game.RawGameTime

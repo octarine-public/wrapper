@@ -27,7 +27,7 @@ export function DrawParticles() {
 		return
 
 	if (Game.LevelNameShort !== "dota") {
-		//console.error("UnitBlock => CreepBlock => ParticleHelp. Particles can't draw because map is not 'DOTA'")
+		// console.error("UnitBlock => CreepBlock => ParticleHelp. Particles can't draw because map is not 'DOTA'")
 		return
 	}
 

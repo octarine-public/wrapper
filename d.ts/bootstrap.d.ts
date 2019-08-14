@@ -1,9 +1,9 @@
 declare class EntityManager {
-	readonly AllEntities: C_BaseEntity[];
-	readonly EntitiesIDs: C_BaseEntity[];
+	public readonly AllEntities: C_BaseEntity[];
+	public readonly EntitiesIDs: C_BaseEntity[];
 	
-	GetEntityID(ent: C_BaseEntity): number
-	GetEntityByID(id: number): C_BaseEntity
+	public GetEntityID(ent: C_BaseEntity): number
+	public GetEntityByID(id: number): C_BaseEntity
 }
 declare var Entities: EntityManager;
 

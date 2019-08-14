@@ -2,48 +2,33 @@ import Modifier from "../Base/Modifier"
 import Unit from "../Base/Unit"
 
 export default class ModifiersBook {
-	private m_Unit: Unit
 	m_Buffs: Modifier[] = []
 
-	constructor(ent: Unit) {
-		this.m_Unit = ent
-	}
+	constructor(public readonly Owner: Unit) {}
 
 	get Buffs(): Modifier[] {
-		if (!this.m_Unit.IsValid)
+		if (!this.Owner.IsValid)
 			return []
 
-		return this.m_Buffs//.filter(buff => !buff.m_pBuff.m_bMarkedForDeletion);
-	}
-	get CountBuffs(): number {
-		if (!this.m_Unit.IsValid)
-			return 0
-
-		return this.m_Buffs/* .filter(buff => !buff.m_pBuff.m_bMarkedForDeletion) */.length
-	}
-	get Owner(): Unit {
-		return this.m_Unit
+		return this.m_Buffs // .filter(buff => !buff.m_pBuff.m_bMarkedForDeletion);
 	}
 
 	GetBuff(num: number): Modifier {
-		if (!this.m_Unit.IsValid)
+		if (!this.Owner.IsValid)
 			return undefined
 		return this.m_Buffs[num]
 	}
 	GetBuffByName(name: string): Modifier {
-		if (!this.m_Unit.IsValid)
-			return undefined
-
-		return this.m_Buffs.find(buff => /* !buff.m_pBuff.m_bMarkedForDeletion && */ buff.Name === name)
+		return this.Buffs.find(buff => buff.Name === name)
 	}
 	GetBuffByRegexp(regex: RegExp): Modifier {
-		if (!this.m_Unit.IsValid)
+		if (!this.Owner.IsValid)
 			return undefined
 
-		return this.m_Buffs.find(buff => /* !buff.m_pBuff.m_bMarkedForDeletion && */ regex.test(buff.Name))
+		return this.Buffs.find(buff => regex.test(buff.Name))
 	}
 	GetAnyBuffByNames(names: string[]): Modifier {
-		if (!this.m_Unit.IsValid)
+		if (!this.Owner.IsValid)
 			return undefined
 
 		let buff: Modifier
@@ -51,14 +36,11 @@ export default class ModifiersBook {
 		return buff
 	}
 	HasBuffByName(name: string): boolean {
-		if (!this.m_Unit.IsValid)
-			return false
-		
-		return this.m_Buffs.some(buff => /* !buff.m_pBuff.m_bMarkedForDeletion && */ buff.Name === name)
+		return this.Buffs.some(buff => buff.Name === name)
 	}
 	HasAnyBuffByNames(names: string[]): boolean {
-		if (!this.m_Unit.IsValid)
-			return undefined
+		if (!this.Owner.IsValid)
+			return false
 
 		return names.some(name => this.GetBuffByName(name) !== undefined)
 	}

@@ -1,12 +1,12 @@
 import { arrayRemove } from "../Utils/ArrayExtensions"
 
+import Button from "./Button"
 import CheckBox from "./CheckBox"
 import ComboBox from "./ComboBox"
 import Keybind from "./Keybind"
 import ListBox from "./ListBox"
 import { Slider, SliderFloat } from "./Slider"
 import Toggle from "./Toggle"
-import Button from "./Button";
 
 export { CheckBox, ComboBox, Keybind, ListBox, Slider, SliderFloat, Toggle }
 

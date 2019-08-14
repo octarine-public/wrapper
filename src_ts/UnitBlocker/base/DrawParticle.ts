@@ -8,7 +8,6 @@ export function GameEnded() {
 }
 
 export function AddOrUpdateParticle(name: string, unit: Unit, pos: Vector3, range: number) {
-
 	let nameOfParticle = name + unit.Index,
 		particle = allParticles.get(nameOfParticle)
 
@@ -33,7 +32,6 @@ export function AddOrUpdateParticle(name: string, unit: Unit, pos: Vector3, rang
 }
 
 export function RemoveParticle(name: string, unit: Unit) {
-
 	let nameOfParticle = name + unit.Index,
 		particle = allParticles.get(nameOfParticle)
 

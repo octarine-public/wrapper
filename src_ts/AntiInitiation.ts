@@ -115,7 +115,7 @@ function Disable(Me: Hero, hero: Unit, DisableAr: Array<[string, boolean, boolea
 	let delta = Me.GetRotationTime(hero.NetworkPosition) / 1000 + Additionaldelay.value
 	let AbilAr: [string, boolean, boolean?]
 	if (hero.Index === Me.Index)
-		return false;
+		return false
 	if (
 		Abil !== undefined
 		&& (
@@ -131,14 +131,14 @@ function Disable(Me: Hero, hero: Unit, DisableAr: Array<[string, boolean, boolea
 		return abil_name.startsWith("item_") ? Me.GetItemByName(abil_name) : Me.GetAbilityByName(abil_name)
 	}).find(abil =>
 		abil !== undefined
-		&& !abil.IsHidden 
+		&& !abil.IsHidden
 		&& abil.Level !== 0
 		&& abil.Cooldown === 0
 		&& Me.Mana >= abil.ManaCost
 		&& (abil.CastRange <= 0 || Me.NetworkPosition.Distance2D(hero.NetworkPosition) <= abil.CastRange + hero.HullRadius * 2),
 	)
 	if (disable_abil === undefined)
-		return false;
+		return false
 	Me.UseSmartAbility(disable_abil, hero)
 	ignore_heroes.set(hero, Game.RawGameTime + delta + GetLatency(Flow_t.OUT))
 	return true
@@ -153,16 +153,16 @@ EventsSDK.on("Update", () => {
 		return
 	let current_time = Game.RawGameTime
 	// loop-optimizer: KEEP
-	ignore_heroes.forEach((until, hero) => {
+	ignore_heroes.forEach((until, hero_) => {
 		if (current_time > until)
-			ignore_heroes.delete(hero)
+			ignore_heroes.delete(hero_)
 	})
-	let needed_heroes = heroes.filter(hero => hero.IsVisible && hero.IsAlive)
-	if (needed_heroes.some(hero =>
-		!ignore_heroes.has(hero)
+	let needed_heroes = heroes.filter(hero_ => hero_.IsVisible && hero_.IsAlive)
+	if (needed_heroes.some(hero_ =>
+		!ignore_heroes.has(hero_)
 		&& (
-			hero.Spells.some(abil => abil && Disable(Me.Hero, hero, Abils, abil))
-			|| hero.Buffs.some(buff => DisableBuffs.includes(buff.Name) && Disable(Me.Hero, hero, BuffsDisablers))
+			hero_.Spells.some(abil => abil && Disable(hero, hero_, Abils, abil))
+			|| hero_.Buffs.some(buff => DisableBuffs.includes(buff.Name) && Disable(Me.Hero, hero_, BuffsDisablers))
 		),
 	))
 		return

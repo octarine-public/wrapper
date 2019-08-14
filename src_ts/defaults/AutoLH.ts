@@ -1,6 +1,6 @@
 import * as Orders from "Orders"
 import * as Utils from "Utils"
-import { RendererSDK } from "../wrapper/Imports";
+import { RendererSDK } from "../wrapper/Imports"
 enum AutoLH_Mode {
 	LASTHIT = 1,
 	DENY,

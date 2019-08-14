@@ -77,7 +77,7 @@ export default class Ability extends Entity {
 	}
 	get IsReady(): boolean {
 		const unit = this.Owner as Unit
-		return this.IsCooldownReady && unit.Mana >= this.ManaCost && !unit.IsSilenced && this.Level>0
+		return this.IsCooldownReady && unit.Mana >= this.ManaCost && !unit.IsSilenced && this.Level > 0
 	}
 	get IsGrantedByScepter(): boolean {
 		return this.AbilityData.IsGrantedByScepter
@@ -171,6 +171,8 @@ export default class Ability extends Entity {
 
 				break
 			}
+			default:
+				break
 		}
 
 		return castrange + owner.CastRangeBonus

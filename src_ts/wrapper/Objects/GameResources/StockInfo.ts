@@ -3,22 +3,17 @@ import AbilityData from "../DataBook/AbilityData";
 import Ability from "../Base/Ability"; */
 
 export default class StockInfo {
-
-	readonly m_StockInfo: CDOTA_ItemStockInfo
-
 	// private m_AbilityData: AbilityData
 	private m_AbilityID: number
 	private m_InitStockDuration: number
 	private m_MaxCount: number
 	private m_Team: DOTATeam_t
 
-	constructor(info: CDOTA_ItemStockInfo) {
-		this.m_StockInfo = info
-
-		this.m_AbilityID = info.nItemAbilityID
-		this.m_InitStockDuration = info.fInitialStockDuration
-		this.m_MaxCount = info.iMaxCount
-		this.m_Team = info.iTeamNumber
+	constructor(public readonly m_StockInfo: CDOTA_ItemStockInfo) {
+		this.m_AbilityID = m_StockInfo.nItemAbilityID
+		this.m_InitStockDuration = m_StockInfo.fInitialStockDuration
+		this.m_MaxCount = m_StockInfo.iMaxCount
+		this.m_Team = m_StockInfo.iTeamNumber
 	}
 
 	/* get AbilityData(): AbilityData {

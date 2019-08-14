@@ -7,20 +7,20 @@ export function MenuBase(root: MenuManager.MenuControllers.Tree, name: string, t
 
 	return {
 		BaseTree,
-		State: tooltip != undefined
+		State: tooltip !== undefined
 			? BaseTree.AddToggle(BaseTree.name + " - State", true).SetToolTip(tooltip)
 			: BaseTree.AddToggle(BaseTree.name + " - State", true),
 	}
 }
-export function MenuDrawBase (
+export function MenuDrawBase(
 	root: MenuManager.MenuControllers.Tree,
 	RGBname?: string,
 	BoxName?: string,
-	ArrayBox?: string[], 
+	ArrayBox?: string[],
 	SliderName?: string,
 	defaultValue?: number,
 	minValue?: number,
-	maxValue?: number
+	maxValue?: number,
 )  {
 	let DrawTree = root.AddTree(root.name + " - Draw")
 	return {

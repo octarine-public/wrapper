@@ -1,4 +1,4 @@
-import { ArrayExtensions, EventsSDK, Game, LocalPlayer, RendererSDK, Vector3, Color, Vector2 } from "./wrapper/Imports"
+import { ArrayExtensions, Color, EventsSDK, Game, LocalPlayer, RendererSDK, Vector2, Vector3 } from "./wrapper/Imports"
 
 /* import * as Orders from "Orders"
 import * as Utils from "Utils" */

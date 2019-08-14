@@ -34,7 +34,7 @@ export default function Menu(root: MenuManager.MenuControllers.Tree) {
 
 	const StateUnits = ControllablesTree.AddComboBox("Units", [
 		"Local Hero",
-		//"Selected Unit(s)",
+		// "Selected Unit(s)",
 		"Only controllables",
 		"All Controllables",
 	])

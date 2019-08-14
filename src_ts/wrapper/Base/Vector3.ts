@@ -41,11 +41,6 @@ export default class Vector3 {
 		return new Vector3(vec.x, vec.y, vec.z)
 	}
 
-	/* =================== Fields =================== */
-	x: number
-	y: number
-	z: number
-
 	/* ================ Constructors ================ */
 	/**
 	 * Create new Vector3 with x, y, z
@@ -54,7 +49,7 @@ export default class Vector3 {
 	 * var vector = new Vector3(1, 2, 3)
 	 * vector.Normalize();
 	 */
-	constructor(x: number = 0, y: number = 0, z: number = 0) {
+	constructor(public x: number = 0, public y: number = 0, public z: number = 0) {
 		this.SetVector(x, y, z)
 	}
 
@@ -746,11 +741,11 @@ export default class Vector3 {
 		return Math.acos((this.x * front.x) + (this.y * front.y))
 	}
 	/**
-	* Extends this vector in the direction of 2nd vector for given distance
-	* @param vec 2nd vector
-	* @param distance distance to extend
-	* @returns extended vector (new Vector3)
-	*/
+	 * Extends this vector in the direction of 2nd vector for given distance
+	 * @param vec 2nd vector
+	 * @param distance distance to extend
+	 * @returns extended vector (new Vector3)
+	 */
 	Extend(vec: Vector3, distance: number): Vector3 {
 		return vec.Subtract(this).Normalize().MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).Normalize())
 	}
@@ -822,4 +817,4 @@ export default class Vector3 {
 		return true
 	}
 }
-//global.Vector3 = Vector3;
+global.Vector3 = Vector3

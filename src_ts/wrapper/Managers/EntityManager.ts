@@ -1,7 +1,6 @@
 import { arrayRemove } from "../Utils/ArrayExtensions"
 
-//import * as Debug from "../Utils/Debug";
-import Benchmark from "../Utils/BenchMark"
+// import * as Debug from "../Utils/Debug"
 
 import EventsSDK from "./Events"
 
@@ -29,7 +28,6 @@ import { HasBit } from "../Utils/Utils"
 
 export { PlayerResource, Game }
 
-//let queueEntities: Entity[] = [];
 let queueEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 
 let AllEntities: Entity[] = []
@@ -198,7 +196,7 @@ setInterval(() => {
 }, 0)
 
 function AddToCache(entity: Entity) {
-	//console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
+	// console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
 	EventsSDK.emit("EntityPreCreated", false, entity, entity.Index)
 
 	if (CheckIsInStagingEntity(entity.m_pBaseEntity)) {
@@ -216,7 +214,7 @@ function AddToCache(entity: Entity) {
 
 	changeFieldsByEvents(entity as Unit)
 
-	//console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
+	// console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
 	EventsSDK.emit("EntityCreated", false, entity, index)
 }
 
@@ -237,7 +235,7 @@ function DeleteFromCache(entNative: C_BaseEntity, index: number) {
 	delete EntitiesIDs[index]
 	arrayRemove(AllEntities, entity)
 
-	//console.log("onEntityDestroyed SDK", entity, entity.m_pBaseEntity, index);
+	// console.log("onEntityDestroyed SDK", entity, entity.m_pBaseEntity, index);
 	EventsSDK.emit("EntityDestroyed", false, entity, index)
 }
 
@@ -301,7 +299,6 @@ function changeFieldsByEvents(unit: Unit) {
 	const visibleTagged = unit.IsVisibleForTeamMask
 
 	if (visibleTagged > 0) {
-
 		const isVisibleForEnemies = Unit.IsVisibleForEnemies(unit, visibleTagged)
 		unit.IsVisibleForEnemies = isVisibleForEnemies
 

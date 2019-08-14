@@ -7,34 +7,32 @@ import Modifier from "../Objects/Base/Modifier"
 import Unit from "../Objects/Base/Unit"
 import { default as EntityManager, LocalPlayer } from "./EntityManager"
 
-let queueModifiers = new Map<Unit, Modifier[]>()
-let AllModifiersUnit = new Map<Unit, Modifier[]>()
-let AllModifier = new Map<CDOTA_Buff, Modifier>()
+let ModifierManager = new (class ModifierManager {
+	public readonly queueModifiers = new Map<Unit, Modifier[]>()
+	public readonly AllModifiersUnit = new Map<Unit, Modifier[]>()
+	public readonly AllModifier = new Map<CDOTA_Buff, Modifier>()
 
-class ModifierManager {
-	GetBuffsByUnit(ent: Unit): Modifier[] {
+	public GetBuffsByUnit(ent: Unit): Modifier[] {
 		if (!ent.IsValid)
 			return []
 
-		return AllModifiersUnit.get(ent) || []
+		return this.AllModifiersUnit.get(ent) || []
 	}
-}
-
-export default new ModifierManager()
+})()
+export default ModifierManager
 
 Events.on("BuffAdded", (npc, buffNative) => {
-
 	const unit = EntityManager.GetEntityByNative(npc, true) as Unit
 
 	if (unit === undefined)
-		throw Error("onBuffAdded. entity undefined. " + npc + " " + buffNative)
+		throw "onBuffAdded. entity undefined. " + npc + " " + buffNative
 
 	const buff = new Modifier(buffNative, unit)
 
-	AllModifier.set(buffNative, buff)
+	ModifierManager.AllModifier.set(buffNative, buff)
 
 	if (LocalPlayer === undefined) {
-		addArrayInMap(queueModifiers, unit, buff)
+		addArrayInMap(ModifierManager.queueModifiers, unit, buff)
 		return
 	}
 
@@ -42,20 +40,19 @@ Events.on("BuffAdded", (npc, buffNative) => {
 })
 
 Events.on("BuffRemoved", (npc, buffNative) => {
-
-	const buff = AllModifier.get(buffNative)
+	const buff = ModifierManager.AllModifier.get(buffNative)
 
 	if (buff === undefined)
 		return
 
-	AllModifier.delete(buffNative)
+	ModifierManager.AllModifier.delete(buffNative)
 
 	const unit = EntityManager.GetEntityByNative(npc, true) as Unit
 
 	if (unit === undefined)
-		throw Error("onBuffRemoved. entity undefined. " + npc + " " + buffNative)
+		throw "onBuffRemoved. entity undefined. " + npc + " " + buffNative
 
-	if (removeArrayInMap(queueModifiers, unit, buff))
+	if (removeArrayInMap(ModifierManager.queueModifiers, unit, buff))
 		return
 
 	DeleteFromCache(unit, buff)
@@ -66,17 +63,15 @@ Events.on("BuffRemoved", (npc, buffNative) => {
 })
 
 function AddToCache(buff: Modifier, unit: Unit) {
-
-	addArrayInMap(AllModifiersUnit, unit, buff)
+	addArrayInMap(ModifierManager.AllModifiersUnit, unit, buff)
 
 	unit.ModifiersBook.m_Buffs.push(buff)
 }
 
 function DeleteFromCache(unit: Unit, buff: Modifier) {
-
 	buff.IsValid = false
 
-	removeArrayInMap(AllModifiersUnit, unit, buff)
+	removeArrayInMap(ModifierManager.AllModifiersUnit, unit, buff)
 
 	arrayRemove(unit.ModifiersBook.m_Buffs, buff)
 }
@@ -90,10 +85,10 @@ function addAndEmitModifier(unit: Unit, buff: Modifier) {
 }
 
 export function useQueueModifiers(owner: Unit) {
-	if (queueModifiers.size === 0)
+	if (ModifierManager.queueModifiers.size === 0)
 		return
 
-	let buffs = queueModifiers.get(owner)
+	let buffs = ModifierManager.queueModifiers.get(owner)
 
 	if (buffs === undefined)
 		return
@@ -102,7 +97,6 @@ export function useQueueModifiers(owner: Unit) {
 }
 
 function changeFieldsByEvents(unit: Unit) {
-
 	const buffs = unit.ModifiersBook.m_Buffs
 
 	{ // IsTrueSightedForEnemies

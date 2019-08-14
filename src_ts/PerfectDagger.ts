@@ -1,4 +1,4 @@
-import { EventsSDK, Game, MenuManager, Vector3, Ability } from 'wrapper/Imports';
+import { Ability, EventsSDK, Game, MenuManager, Vector3 } from "wrapper/Imports"
 
 let { MenuFactory } = MenuManager,
 	blink_range: number

@@ -5,12 +5,12 @@
 // 	autoDisable = BaseTree.AddToggle("Auto disable items", false).SetToolTip("Auto \"disable\" items when using shrine and there is no enemies near"),
 // 	hpDisableThreshold = BaseTree.AddSlider("HP% threshold (items)", 85, 50, 99).SetToolTip("Disable items only if you have less hp%"),
 // 	mpDisableThreshold = BaseTree.AddSlider("MP% threshold (items)", 85, 50, 99).SetToolTip("Disable items only if you have less mp%");
-	
-// export { 
-// 	State, 
-// 	hpUseThreshold, 
-// 	mpUseThreshold, 
-// 	autoDisable, 
+
+// export {
+// 	State,
+// 	hpUseThreshold,
+// 	mpUseThreshold,
+// 	autoDisable,
 // 	hpDisableThreshold,
 // 	mpDisableThreshold
 // }

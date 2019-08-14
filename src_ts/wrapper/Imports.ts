@@ -4,19 +4,19 @@ import * as Debug from "./Utils/Debug"
 import * as MapExtensions from "./Utils/MapExtensions"
 import * as MathSDK from "./Utils/Math"
 import * as Utils from "./Utils/Utils"
-export { default as Benchmark } from "./Utils/BenchMark";
+export { default as Benchmark } from "./Utils/BenchMark"
 
 export { Utils, MathSDK, Debug, ArrayExtensions, MapExtensions }
 
 // base
-export { default as Vector2 } from "./Base/Vector2";
-export { default as Vector3 } from "./Base/Vector3";
-export { default as QAngle } from "./Base/QAngle";
-export { default as Color } from "./Base/Color";
+export { default as Vector2 } from "./Base/Vector2"
+export { default as Vector3 } from "./Base/Vector3"
+export { default as QAngle } from "./Base/QAngle"
+export { default as Color } from "./Base/Color"
 
 // Native
-export { default as RendererSDK } from "./Native/Renderer";
-export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder";
+export { default as RendererSDK } from "./Native/Renderer"
+export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
 
 // Menu
 import * as MenuManager from "./Menu/MenuManager"
@@ -24,7 +24,7 @@ import * as MenuManager from "./Menu/MenuManager"
 export { MenuManager }
 
 // Helpers
-export { Sleeper, GameSleeper } from "./Helpers/Sleeper";
+export { Sleeper, GameSleeper } from "./Helpers/Sleeper"
 
 // Managers
 export {
@@ -34,37 +34,38 @@ export {
 	PlayerResource
 } from "./Managers/EntityManager";
 
-export { default as ModifierManager } from "./Managers/ModifierManager";
-// export /*{ default as ProjectileManager }*/ * from "./Managers/ProjectileManager";
-export { default as EventsSDK } from "./Managers/Events";
+export { default as ModifierManager } from "./Managers/ModifierManager"
+export { default as ProjectileManager } from "./Managers/ProjectileManager"
+export { default as EventsSDK } from "./Managers/Events"
 
 // Objects
-export { default as Entity } from "./Objects/Base/Entity";
-export { default as Unit } from "./Objects/Base/Unit";
-export { default as Hero } from "./Objects/Base/Hero";
-export { default as Player } from "./Objects/Base/Player";
-export { default as Courier } from "./Objects/Base/Courier";
-export { default as Creep } from "./Objects/Base/Creep";
-export { default as Meepo } from "./Objects/Heroes/Meepo";
-export { default as Roshan } from "./Objects/Units/Roshan";
+export { default as Entity } from "./Objects/Base/Entity"
+export { default as Unit } from "./Objects/Base/Unit"
+export { default as Hero } from "./Objects/Base/Hero"
+export { default as Player } from "./Objects/Base/Player"
+export { default as Courier } from "./Objects/Base/Courier"
+export { default as Creep } from "./Objects/Base/Creep"
+export { default as Meepo } from "./Objects/Heroes/Meepo"
+export { default as Roshan } from "./Objects/Units/Roshan"
 
-export { default as Ability } from "./Objects/Base/Ability";
-export { default as Item } from "./Objects/Base/Item";
+export { default as Ability } from "./Objects/Base/Ability"
+export { default as Item } from "./Objects/Base/Item"
 export {
 	default as Modifier,
 	TRUESIGHT_MODIFIERS,
 	SCEPTER_MODIFIERS,
 	BLOCKING_DAMAGE_MODIFIERS,
 	REFLECTING_DAMAGE_MODIFIERS
-} from "./Objects/Base/Modifier";
+} from "./Objects/Base/Modifier"
 
-export { default as PhysicalItem } from "./Objects/Base/PhysicalItem";
-export { default as Rune } from "./Objects/Base/Rune";
-export { default as Tree } from "./Objects/Base/Tree";
+export { default as PhysicalItem } from "./Objects/Base/PhysicalItem"
+export { default as Rune } from "./Objects/Base/Rune"
+export { default as Tree } from "./Objects/Base/Tree"
 
-export { default as Building } from "./Objects/Base/Building";
-export { default as Tower } from "./Objects/Base/Tower";
-export { default as Shop } from "./Objects/Base/Shop";
+export { default as Building } from "./Objects/Base/Building"
+export { default as Tower } from "./Objects/Base/Tower"
+export { default as Shop } from "./Objects/Base/Shop"
+export { LinearProjectile, TrackingProjectile } from "./Objects/Base/Projectile"
 
 /*
 	TODO:

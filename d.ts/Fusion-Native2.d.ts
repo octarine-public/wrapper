@@ -300,7 +300,7 @@ declare class CUserCmd {
 	camerax: number
 	cameray: number
 	click_behaviors: number
-	scoreboard_opened: boolean
+	scoreboard_opened: boolean // dota_spectator_stats_panel
 	shopmask: number
 	spectator_stats_category_id: number
 	spectator_stats_sort_method: number

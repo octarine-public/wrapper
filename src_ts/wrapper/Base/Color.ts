@@ -1,5 +1,4 @@
 export default class Color {
-
 	public static readonly Black = new Color(0, 0, 0)
 	public static readonly Red = new Color(255)
 	public static readonly Green = new Color(0, 255)
@@ -12,7 +11,7 @@ export default class Color {
 	public static readonly White = new Color(255, 255, 255)
 
 	/* ================== Static ================== */
-	static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): Color {
+	public static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): Color {
 
 		if (bufferOrOffset === undefined)
 			return new Color(IOBuffer[0], IOBuffer[1], IOBuffer[2], IOBuffer[3])
@@ -28,12 +27,6 @@ export default class Color {
 		return new Color(IOBuffer[bufferOrOffset + 0], IOBuffer[bufferOrOffset + 1], IOBuffer[bufferOrOffset + 2], IOBuffer[bufferOrOffset + 3])
 	}
 
-	/* =================== Fields =================== */
-	r: number
-	g: number
-	b: number
-	a: number
-
 	/* ================ Constructors ================ */
 	/**
 	 * Create new Color with r, g, b, a
@@ -41,11 +34,7 @@ export default class Color {
 	 * @example
 	 * var color = new Color(1, 2, 3)
 	 */
-	constructor(r: number = 0, g: number = 0, b: number = 0, a: number = 255) {
-		this.SetColor(r, g, b, a)
-	}
-
-	/* ================== Getters ================== */
+	constructor(public r: number = 0, public g: number = 0, public b: number = 0, public a: number = 255) {}
 
 	/* ================== Methods ================== */
 	/**
@@ -110,5 +99,4 @@ export default class Color {
 		return true
 	}
 }
-
-//global.Color = Color
+global.Color = Color

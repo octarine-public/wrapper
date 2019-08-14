@@ -78,9 +78,6 @@ const debugEntitiesEvents = debugEventsMenu.AddToggle("Debug Entities")
 const debugBuffsEvents = debugEventsMenu.AddToggle("Debug Buffs")
 
 const debugOtherEvents = debugEventsMenu.AddToggle("Debug Other")
-
-let allEvents: EventEmitter[] = []
-
 Events.on("GameStarted", pl_ent => {
 	if (!debugEvents.value || !debugOtherEvents.value) return
 
@@ -88,7 +85,7 @@ Events.on("GameStarted", pl_ent => {
 		console.log("onGameStarted", pl_ent)
 
 	if (!(pl_ent instanceof C_DOTA_BaseNPC_Hero))
-		throw Error("onGameStarted. pl_ent is not C_DOTA_BaseNPC_Hero:" + pl_ent)
+		throw "onGameStarted. pl_ent is not C_DOTA_BaseNPC_Hero: " + pl_ent.constructor.name
 })
 Events.on("GameEnded", () => {
 	if (!debugEvents.value || !debugOtherEvents.value) return

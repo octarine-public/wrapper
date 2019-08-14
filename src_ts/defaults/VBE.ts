@@ -72,7 +72,6 @@ function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsVisibleForE
 
 	if ((isVisibleForEnemies && particleID === -1) && isAlive)
 		allUnits.set(unit, Particles.Create(particlePath, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit.m_pBaseEntity))
-
 	else if ((!isVisibleForEnemies || !isAlive) && particleID !== -1)
 		Destroy(particleID, unit)
 }

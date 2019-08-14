@@ -1,4 +1,4 @@
-import { ArrayExtensions, EntityManager, EventsSDK, Game, MenuManager, Player, Unit, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, EntityManager, EventsSDK, Game, LinearProjectile, TrackingProjectile, Unit, Vector3 } from "wrapper/Imports"
 
 // menu
 /* const DodgerMenu = MenuManager.MenuFactory("Dodger");
@@ -6,8 +6,8 @@ const stateMain = DodgerMenu.AddToggle("State", false); */
 
 let enabled = false
 
-//import * as Orders from "Orders"
-//import * as Utils from "Utils"
+// import * as Orders from "Orders"
+// import * as Utils from "Utils"
 
 var proj2path: string[] = [],
 	proj_list: Array<TrackingProjectile | LinearProjectile> = []
@@ -22,7 +22,7 @@ function Dodge(pl_ent: Unit, delay: number, target_pos?: Vector3, aoe: number = 
 
 function TryDodge(pl_ent: Unit, proj: TrackingProjectile | LinearProjectile) {
 	let path = proj2path[(proj instanceof TrackingProjectile ? 1024 : 0) + proj.m_iID]
-	if (path === undefined || !proj.m_bIsValid) {
+	if (path === undefined || !proj.IsValid) {
 		DeleteProjectile(proj)
 		return
 	}

@@ -79,11 +79,11 @@ function CheckUnit(unit: Unit, isTrueSighted: boolean = unit.IsTrueSightedForEne
 		return
 
 	if ((isTrueSighted && particleID === -1) && isAlive) {
-		allUnitsAsMap.set(unit, Particles.Create(
+		allUnitsAsMap.set(unit, Particles.Create (
 			particlePath || (particlePath = ParticleStyles[particleStylesCombo.selected_id]),
-			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit.m_pBaseEntity))
-	}
-	else if ((!isTrueSighted || !isAlive) && particleID !== -1) {
+			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
+			unit.m_pBaseEntity,
+		))
+	} else if ((!isTrueSighted || !isAlive) && particleID !== -1)
 		Destroy(particleID, unit)
-	}
 }

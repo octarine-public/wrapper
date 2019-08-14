@@ -1,5 +1,5 @@
-import { RendererSDK, Vector3, Entity, Vector2, Color } from "wrapper/Imports"
-import { State, Size, DrawRGBA } from "./Menu"
+import { Color, Entity, RendererSDK, Vector2, Vector3 } from "wrapper/Imports"
+import { DrawRGBA, Size, State } from "./Menu"
 
 let allTechiesMines: Array<[Array<[Vector3, number]>, Vector3, string]> = [], // positions+particle_ids, center, stack-name
 	waiting_explode: Array<[number, string]> = [],
@@ -7,7 +7,7 @@ let allTechiesMines: Array<[Array<[Vector3, number]>, Vector3, string]> = [], //
 
 export function ParticleCreated(id: number, target: Entity, path: string) {
 	if (!State.value)
-		return;
+		return
 	let mine_name
 	if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)_plant.vpcf$/.exec(path)) !== null) {
 		// if (target === undefined || !target.IsEnemy())
@@ -16,10 +16,10 @@ export function ParticleCreated(id: number, target: Entity, path: string) {
 	} else if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)(s_detonate|_explode).vpcf$/.exec(path)) !== null)
 		waiting_explode.push([id, mine_name[1]])
 }
-export function ParticleUpdated(id: number, control_point: number, position: Vector3){
+export function ParticleUpdated(id: number, control_point: number, position: Vector3) {
 	if (!State.value)
-		return;
-	if (control_point === 1){
+		return
+	if (control_point === 1) {
 		waiting_spawn.some(([particle_id, mine_name], i) => {
 			if (particle_id !== id)
 				return false
@@ -39,22 +39,22 @@ export function ParticleUpdated(id: number, control_point: number, position: Vec
 			return true
 		})
 	}
-	if (control_point === 0){
+	if (control_point === 0) {
 		waiting_explode.some(([particle_id, mine_name], i) => {
 			if (particle_id !== id)
 				return false
-			allTechiesMines.some((obj, i) => {
+			allTechiesMines.some((obj, j) => {
 				if (obj[2] !== mine_name)
 					return false
 				let mines = obj[0]
-				return mines.some(([vec, particle_id], j) => {
+				return mines.some(([vec], k) => {
 					if (vec.Distance(position) > 10)
 						return false
 					if (mines.length !== 1) {
-						mines.splice(j, 1)
-						obj[1] = Vector3.GetCenter(mines.map(([vec]) => vec))
+						mines.splice(k, 1)
+						obj[1] = Vector3.GetCenter(mines.map(([vec_]) => vec_))
 					} else
-						allTechiesMines.splice(i, 1)
+						allTechiesMines.splice(j, 1)
 					return true
 				})
 			})
@@ -63,9 +63,9 @@ export function ParticleUpdated(id: number, control_point: number, position: Vec
 		})
 	}
 }
-export function ParticleUpdatedEnt(id: number, control_point: number, attach: ParticleAttachment_t, position: Vector3){
+export function ParticleUpdatedEnt(id: number, control_point: number, attach: ParticleAttachment_t, position: Vector3) {
 	if (!State.value)
-		return;
+		return
 	if (control_point !== 0 || attach !== ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW)
 		return false
 	waiting_explode.some(([particle_id, mine_name], i) => {
@@ -75,11 +75,11 @@ export function ParticleUpdatedEnt(id: number, control_point: number, attach: Pa
 			if (obj[2] !== mine_name)
 				return false
 			let mines = obj[0]
-			return mines.some((vec, i) => {
+			return mines.some((vec, j) => {
 				if (vec[0].Distance(position) !== 0)
 					return false
-				mines.splice(i, 1)
-				obj[1] = Vector3.GetCenter(mines.map(([vec]) => vec))
+				mines.splice(j, 1)
+				obj[1] = Vector3.GetCenter(mines.map(([vec_]) => vec_))
 				return true
 			})
 		})
@@ -101,7 +101,7 @@ export function ParticleDestroyed(id: number) {
 }
 export function OnDraw() {
 	if (!State.value || allTechiesMines.length <= 0)
-		return;
+		return
 	allTechiesMines.forEach(([allMines, pos, name]) => {
 		let wts = RendererSDK.WorldToScreen(pos)
 		if (wts !== undefined && name !== undefined) {
@@ -113,16 +113,16 @@ export function OnDraw() {
 					DrawRGBA.R.value,
 					DrawRGBA.G.value,
 					DrawRGBA.B.value,
-					DrawRGBA.A.value
+					DrawRGBA.A.value,
 				),
 				"Arial",
-				Size.value
+				Size.value,
 			)
 		}
 	})
 }
 
-export function GameEnded(){
+export function GameEnded() {
 	allTechiesMines = []
 	waiting_explode = []
 	waiting_spawn = []

@@ -43,10 +43,6 @@ export default class Vector2 {
 		return new Vector2(vec.x, vec.y)
 	}
 
-	/* =================== Fields =================== */
-	x: number
-	y: number
-
 	/* ================ Constructors ================ */
 	/**
 	 * Create new Vector2 with x, y
@@ -55,7 +51,7 @@ export default class Vector2 {
 	 * var vector = new Vector2(1, 2)
 	 * vector.Normalize();
 	 */
-	constructor(x: number = 0, y: number = 0) {
+	constructor(public x: number = 0, public y: number = 0) {
 		this.SetVector(x, y)
 	}
 
@@ -724,4 +720,4 @@ export default class Vector2 {
 		return true
 	}
 }
-//global.Vector2 = Vector2;
+global.Vector2 = Vector2

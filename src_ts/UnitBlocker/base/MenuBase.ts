@@ -4,7 +4,6 @@ export const Menu = MenuManager.MenuFactory("Unit Blocker")
 export const stateMain = Menu.AddToggle("State")
 
 export function MenuBase(root: MenuManager.MenuControllers.Tree, name: string, defaultKey = "") {
-
 	let BaseTree = root.AddTree(name)
 
 	return {
@@ -18,7 +17,6 @@ export function MenuBase(root: MenuManager.MenuControllers.Tree, name: string, d
 }
 
 export function MenuDraw(root: MenuManager.MenuControllers.Tree) {
-
 	let DrawTree = root.AddTree(root.name + " - Draw")
 
 	return {

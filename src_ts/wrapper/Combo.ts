@@ -1,4 +1,4 @@
-import { Ability, Creep, EntityManager, Hero, Tower, Unit, Utils, Vector3, Roshan } from "./Imports"
+import { Ability, Creep, EntityManager, Hero, Roshan, Tower, Unit, Utils, Vector3 } from "./Imports"
 
 var additional_delay = 30
 
@@ -17,7 +17,7 @@ export enum EComboAction {
 	TOGGLE,
 }
 
-interface ComboOptions {
+interface IComboOptions {
 	// must be in MS
 	combo_delay?: number
 	dynamicDelay?: (abil: Ability, caster: Unit, ent: Unit) => number
@@ -26,17 +26,23 @@ interface ComboOptions {
 	custom_cast?: (caster: Unit, ent: Unit) => /*delay: */number
 }
 
-type AbilDef = [string | RegExp, number | ((caster: Unit, target: Unit) => number), ComboOptions]
+type AbilDef = [string | RegExp, number | ((caster: Unit, target: Unit) => number), IComboOptions]
 
 export class Combo {
-	abils: AbilDef[] = []
-	vars: any = {} // available while combo are executing, clearing on end
-	cursor_enemy: Unit = undefined
-	cursor_ally: Unit = undefined
-	cursor_pos: Vector3 = undefined
+	private static readonly tech_names = [
+		"linken_breaker",
+		"move",
+		"custom_cast",
+	]
+
+	private abils: AbilDef[] = []
+	public vars: any = {} // available while combo are executing, clearing on end
+	private cursor_enemy: Unit = undefined
+	private cursor_ally: Unit = undefined
+	private cursor_pos: Vector3 = undefined
 
 	/** @param {EComboAction} act */
-	addAbility(abilName: string | RegExp, act: number | ((caster: Unit, target: Unit) => number), options: ComboOptions = {}, index?: number): void {
+	public addAbility(abilName: string | RegExp, act: number | ((caster: Unit, target: Unit) => number), options: IComboOptions = {}, index?: number): void {
 		var obj: AbilDef = [abilName, act, options]
 		if (index !== undefined)
 			this.abils.splice(index, 0, obj)
@@ -44,13 +50,13 @@ export class Combo {
 			this.abils.push(obj)
 	}
 
-	addDelay(delay: number | ((caster: Unit, target: Unit) => number) = 30, options: ComboOptions = {}) { this.addAbility("delay", delay) }
+	public addDelay(delay: number | ((caster: Unit, target: Unit) => number) = 30, options: IComboOptions = {}) { this.addAbility("delay", delay) }
 	/** @param {EComboAction} act */
-	addLinkenBreaker(act: number = EComboAction.CURSOR_ENEMY, options: ComboOptions = {}) { this.addAbility("linken_breaker", act) }
+	public addLinkenBreaker(act: number = EComboAction.CURSOR_ENEMY, options: IComboOptions = {}) { this.addAbility("linken_breaker", act) }
 	/** @param {EComboAction} act */
-	addMove(act: number = EComboAction.CURSOR_ENEMY, options: ComboOptions = {}) { this.addAbility("move", act) }
+	public addMove(act: number = EComboAction.CURSOR_ENEMY, options: IComboOptions = {}) { this.addAbility("move", act) }
 
-	removeAbility(abilName: string): void {
+	public removeAbility(abilName: string): void {
 		var flag = true
 		while (flag) {
 			let abilAr = this.abils.filter(([abilName2]) => abilName === abilName2)
@@ -59,17 +65,12 @@ export class Combo {
 		}
 	}
 
-	getNextAbility(caster: Unit, index: number): [Ability, string | RegExp, number | ((caster: Unit, target: Unit) => number), ComboOptions] {
+	public getNextAbility(caster: Unit, index: number): [Ability, string | RegExp, number | ((caster: Unit, target: Unit) => number), IComboOptions] {
 		var [abilName, act, options] = this.abils[index]
 		return [caster.GetAbilityByName(abilName) || caster.GetItemByName(abilName), abilName, act, options]
 	}
 
-	tech_names = [
-		"linken_breaker",
-		"move",
-		"custom_cast",
-	]
-	execute(caster: Unit, callback?: () => void, index: number = 0): void {
+	public execute(caster: Unit, callback?: () => void, index: number = 0): void {
 		if (index === 0) {
 			// we need only instance from combo start, and as Utils.GetCursorWorldVec is dynamically changed vector - we need new instance of it
 			this.cursor_pos = Utils.CursorWorldVec
@@ -100,7 +101,7 @@ export class Combo {
 			return
 		}
 
-		let is_tech = this.tech_names.some(name => abilName === name)
+		let is_tech = Combo.tech_names.some(name => abilName === name)
 		if (!is_tech && (abil === undefined || abil.Level === 0 || abil.Cooldown !== 0)) {
 			this.nextExecute(caster, callback, delay, index)
 			return
@@ -173,7 +174,7 @@ export class Combo {
 			case undefined:
 				break
 			default:
-				throw new Error("Unknown EComboAction: " + act)
+				throw "Unknown EComboAction: " + act
 		}
 
 		if (abilName === "linken_breaker") {
@@ -247,14 +248,14 @@ export class Combo {
 					caster.CastToggle(abil, false)
 					break
 				default:
-					throw new Error("Unknown EComboAction: " + act)
+					throw "Unknown EComboAction: " + act
 			}
 		}
 
 		setTimeout(() => this.nextExecute(caster, callback, delay, index), 1000 / 30)
 	}
 
-	nextExecute(caster: Unit, callback: (() => void) | undefined, delay: number, index: number): void {
+	public nextExecute(caster: Unit, callback: (() => void) | undefined, delay: number, index: number): void {
 		if (++index < this.abils.length) {// increments variable and checks is index valid
 			if (delay > 0)
 				setTimeout(() => this.execute(caster, callback, index), delay + (GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000)
@@ -266,9 +267,9 @@ export class Combo {
 		}
 	}
 
-	get abilsNames(): Array<string | RegExp> { return this.abils.map(([abilName]) => abilName) }
+	public get abilsNames(): Array<string | RegExp> { return this.abils.map(([abilName]) => abilName) }
 
-	get length(): number { return this.abils.length }
+	public get length(): number { return this.abils.length }
 }
 
 {

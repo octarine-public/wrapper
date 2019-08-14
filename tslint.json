@@ -7,6 +7,7 @@
 	"rules": {
 		"semicolon": [true, "never"],
 		"no-trailing-whitespace": true,
+		"whitespace": [true, "check-preblock"],
 		"indent": [true, "tabs", 1],
 		"curly": "as-needed",
 		"arrow-parens": [true, "ban-single-arg-parens"],
@@ -25,7 +26,11 @@
 			"allow-snake-case",
 			"ban-keywords"
 		],
-		"member-access": true
+		"member-access": true,
+		"no-string-throw": false,
+		"max-classes-per-file": false,
+		"class-name": false,
+		"unified-signatures": false
 	},
 	"rulesDirectory": [],
 	"linterOptions": {

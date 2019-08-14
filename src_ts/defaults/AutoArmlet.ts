@@ -1,6 +1,6 @@
 import * as Orders from "Orders"
 import * as Utils from "Utils"
-import { RendererSDK, Vector2 } from "../wrapper/Imports";
+import { RendererSDK, Vector2 } from "../wrapper/Imports"
 
 var config = {
 		hotkey: 0,

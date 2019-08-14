@@ -11,7 +11,7 @@ import Unit from "../Objects/Base/Unit"
 
 import ExecuteOrder from "../Native/ExecuteOrder"
 import UserCmd from "../Native/UserCmd"
-import { TrackingProjectile, LinearProjectile } from "../Objects/Base/Projectile";
+import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 
 const EventsSDK: EventsSDK = new EventEmitter()
 
@@ -62,7 +62,7 @@ Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) =>
 		target instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(target)
 			: target))
-			
+
 Events.on("ParticleDestroyed", (id, destroy_immediately) =>
 	EventsSDK.emit("ParticleDestroyed", false, id, destroy_immediately))
 
@@ -251,13 +251,13 @@ interface EventsSDK extends EventEmitter {
 		snap: boolean,
 	) => void): EventEmitter
 	/**
-	 *	Also, this event emitted about ALL buffs(modifiers) that have already been created (and valids) before reloading scripts
+	 * Also, this event emitted about ALL buffs(modifiers) that have already been created (and valids) before reloading scripts
 	 */
 	on(name: "BuffAdded", listener: (npc: Unit, buff: Modifier) => void): EventEmitter
 	on(name: "BuffRemoved", listener: (npc: Unit, buff: Modifier) => void): EventEmitter
 	on(name: "BuffStackCountChanged", listener: (buff: Modifier) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
-	//on(name: "NetworkFieldChanged", listener: (object: any, name: string) => void): EventEmitter
+	// on(name: "NetworkFieldChanged", listener: (object: any, name: string) => void): EventEmitter
 	on(name: "UnitSpeech", listener: (
 		npc: Unit | number,
 		concept: number,

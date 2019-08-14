@@ -2,7 +2,7 @@ import { Tree } from "./Tree"
 function ButtonCallback(button: Button): void {
 	var onPress = button.OnPressCallback
 	if (onPress)
-        onPress(button)
+		onPress(button)
 }
 function getTopParent(node: Tree | Button): Tree {
 	let parent = node.parent
@@ -14,13 +14,12 @@ export default class Button extends Menu_Button {
 	/**
 	 * You can't change 'callback'. For this use 'OnValue' or 'OnValueCallback'
 	 */
-    readonly callback: (self: Button) => void
-    constructor(parent: Tree, name: string, desc: string, hint: string) {
-
+	readonly callback: (self: Button) => void
+	constructor(parent: Tree, name: string, desc: string, hint: string) {
 		if (desc === undefined && hint === undefined)
-            super(name)
-        else if(hint === undefined)
-            super(name,desc)
+			super(name)
+		else if (hint === undefined)
+			super(name, desc)
 		else
 			super(name, desc, hint)
 
@@ -32,7 +31,6 @@ export default class Button extends Menu_Button {
 		var selfParent = parent
 		Object.defineProperty(this, "parent", {
 			set: (new_value: Tree) => {
-
 				this.Remove()
 
 				new_value.entries.push(this)
@@ -46,8 +44,8 @@ export default class Button extends Menu_Button {
 			get: () => selfParent,
 			configurable: false,
 		})
-    }
-    Remove(): void {
+	}
+	Remove(): void {
 		this.parent.RemoveControl(this)
 	}
 	ChangeParentTo(parent: Tree) {

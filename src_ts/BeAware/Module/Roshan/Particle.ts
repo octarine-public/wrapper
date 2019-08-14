@@ -1,4 +1,4 @@
-import { Game, RendererSDK, Color } from "wrapper/Imports"
+import { Color, Game, RendererSDK } from "wrapper/Imports"
 import { BaseTree, drawStatus, IsAlive, NotificationRoshanStateChat, State, statusPosX, statusPosY} from "./Menu"
 var Timer: number = 0
 export function ParticleCreate(Handle: BigInt) {
@@ -6,14 +6,14 @@ export function ParticleCreate(Handle: BigInt) {
 		IsAlive.ChangeValue(true)
 		if (!State.value)
 			return
-		if (NotificationRoshanStateChat.value && Game.GameTime > 0){
+		if (NotificationRoshanStateChat.value && Game.GameTime > 0) {
 			SendToConsole("say_team please check roshan")
 			Timer = 0
 		}
 	}
 	if (Handle === 13891217767486593796n) {
-		if (NotificationRoshanStateChat.value){
-			if (Timer < Game.GameTime){
+		if (NotificationRoshanStateChat.value) {
+			if (Timer < Game.GameTime) {
 				SendToConsole("say_team please check roshan")
 				Timer += (Game.GameTime + 10)
 			}
@@ -35,6 +35,6 @@ export function Draw() {
 		RendererSDK.WindowSize.DivideScalar(100).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value),
 		new Color(255, 255, 255, 100),
 		"Radiance",
-		24
+		24,
 	)
 }

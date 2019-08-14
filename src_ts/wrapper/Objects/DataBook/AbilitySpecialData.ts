@@ -1,9 +1,5 @@
 export default class AbilitySpecialData {
-	readonly m_pAbilitySpecialData: DOTASpecialAbility_t
-
-	constructor(data: DOTASpecialAbility_t) {
-		this.m_pAbilitySpecialData = data
-	}
+	constructor(public readonly m_pAbilitySpecialData: DOTASpecialAbility_t) {}
 
 	get Count(): number {
 		return this.m_pAbilitySpecialData.m_nCount

@@ -1,13 +1,9 @@
 import { arrayRemove, arrayRemoveCallback } from "./ArrayExtensions"
 
 export function addArrayInMap<K, V>(map: Map<K, V[]>, key: K, value: V): void {
-	const values = map.get(key)
-
-	if (values !== undefined) {
-		values.push(value)
-		map.set(key, values)
-	}
-	else map.set(key, [value])
+	const values = map.get(key) || []
+	values.push(value)
+	map.set(key, values)
 }
 
 export function findArrayInMap<K, V>(map: Map<K, V[]>, key: K, find: V | ((value: V) => boolean)): V {

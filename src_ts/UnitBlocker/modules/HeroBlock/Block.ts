@@ -1,4 +1,4 @@
-import { ArrayExtensions, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Vector3, Utils } from "wrapper/Imports"
+import { ArrayExtensions, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Utils, Vector3 } from "wrapper/Imports"
 
 import { allHeroes } from "../../base/Listeners"
 
@@ -96,31 +96,26 @@ export function GameEnded() {
 }
 
 export function Update(): number {
-
 	if (!IsOn() || sleeper.Sleeping("tick"))
 		return
 
 	if (targetBlock !== undefined) {
-
 		if (!targetBlock.IsAlive) {
 			targetStatus = TargetStatus.DEAD
 			return
-		}
-		else if (targetBlock.IsDormant) {
+		} else if (targetBlock.IsDormant) {
 			targetStatus = TargetStatus.DORMANT
 			return
 		}
 
 		targetStatus = TargetStatus.VALID
-
-	}
-	else targetStatus = TargetStatus.NOT_VALID
+	} else
+		targetStatus = TargetStatus.NOT_VALID
 
 	let countUnits = 0
 
 	switch (StateUnits.selected_id) {
 		case 0: { // local
-
 			let localHero = LocalPlayer.Hero
 
 			if (localHero === undefined || !baseCheckUnit(localHero))
@@ -138,7 +133,6 @@ export function Update(): number {
 			break
 		}
 		/* case 1: {
-
 			let selected = SelectedStopping()
 
 			if (selected.length === 0)
@@ -154,7 +148,6 @@ export function Update(): number {
 			break;
 		} */
 		case 1: {
-
 			let controllables = Controllables()
 
 			if (controllables.length === 0)
@@ -178,7 +171,6 @@ export function Update(): number {
 			break
 		}
 		case 2: {
-
 			let controllables = Controllables()
 
 			if (controllables.length === 0)
@@ -196,6 +188,8 @@ export function Update(): number {
 
 			break
 		}
+		default:
+			break
 	}
 
 	sleeper.Sleep(countUnits * 100, "tick")
@@ -242,7 +236,6 @@ function GetClosestHero(exclude: (unit: Hero) => boolean) {
 }
 
 function IsOn() {
-
 	let stateEnemy = stateBlock === StateBlock.Enemy
 
 	let stateOn = stateEnemy ? State.value : StateAlly.value
@@ -260,8 +253,7 @@ function IsOn() {
 	return true
 }
 
-let GetSensitivity = () =>
-	((stateBlock === StateBlock.Enemy ? Sensitivity.value : SensitivityAlly.value) + 3) * 10
+let GetSensitivity = () => ((stateBlock === StateBlock.Enemy ? Sensitivity.value : SensitivityAlly.value) + 3) * 10
 
 function Block(unit: Unit) {
 
@@ -331,17 +323,12 @@ function BlockMulty(units: Unit[]) {
 		let angle = targetBlock.FindRotationAngle(unit)
 
 		if (angle > 1.1 + index * 0.5) {
-
 			let delta = angle * 0.6
-
-			let vecRight = targetBlock.InFrontFromAngle(delta, Math.max(GetSensitivity(), 150))
-
-			let vecLeft = targetBlock.InFrontFromAngle(-delta, Math.max(GetSensitivity(), 150))
+			let vecRight = targetBlock.InFrontFromAngle(delta, Math.max(GetSensitivity(), 150)),
+				vecLeft = targetBlock.InFrontFromAngle(-delta, Math.max(GetSensitivity(), 150))
 
 			blockPos = unit.Distance(vecRight) < unit.Distance(vecLeft) ? vecRight : vecLeft
-		}
-		else {
-
+		} else {
 			if (targetBlock.IsMoving && angle < 0.3 && unit.IsMoving) {
 				StopUnit(unit)
 				return

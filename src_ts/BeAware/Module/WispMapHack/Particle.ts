@@ -1,11 +1,11 @@
-import { EntityManager, RendererSDK, Vector3, Color} from "wrapper/Imports"
+import { Color, EntityManager, RendererSDK, Vector3} from "wrapper/Imports"
 import { State } from "./Menu"
 
 let wisp: C_DOTA_Unit_Hero_Wisp | number,
 	pos = new Vector3().Invalidate(),
 	par_id = -1
 
-export function ParticleCreate(id: number, handle: BigInt){
+export function ParticleCreate(id: number, handle: BigInt) {
 	if (!State.value)
 		return
 	if (handle === 2971384879877296313n)

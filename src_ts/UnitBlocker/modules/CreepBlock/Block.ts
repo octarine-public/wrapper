@@ -85,7 +85,6 @@ export function Update() {
 
 	switch (StateUnits.selected_id) {
 		case 0: { // local
-
 			let localHero = LocalPlayer.Hero
 
 			if (localHero === undefined || !baseCheckUnit(localHero))
@@ -99,7 +98,6 @@ export function Update() {
 			let creeps = GetCreeps(localHero)
 
 			if (creeps.length === 0) {
-
 				if (GoToBestPosition.value && GoingToBestPosition(localHero))
 					return
 
@@ -112,7 +110,6 @@ export function Update() {
 			break
 		}
 		case 1: {
-
 			let controllables = Controllables()
 
 			if (controllables.length === 0)
@@ -126,9 +123,11 @@ export function Update() {
 			countUnits += PreparingUnits(controllables) || 0
 			break
 		}
-		//case 1: PreparingUnits(SelectedStopping()); break;
+		// case 1: PreparingUnits(SelectedStopping()); break;
 		case 2:
 			countUnits += PreparingUnits(Controllables())
+			break
+		default:
 			break
 	}
 
@@ -176,7 +175,7 @@ function GetGroupsCreeps() {
 
 	creeps.forEach(creep => {
 		let group = creeps.filter(creepNear => creep.IsInRange(creepNear, 500)
-			&& !groups.some(group => group.some(creepInGroup => creepInGroup === creep)))
+			&& !groups.some(group_ => group_.some(creep_ => creep_ === creep)))
 
 		if (group.length > 0)
 			groups.push(group)
@@ -214,14 +213,13 @@ function PreparingUnits(controllables: Unit[]) {
 	let groups = GetGroupsCreeps()
 
 	controllables.forEach(unit => {
-
 		let command = ControllablesUnitsDraw.get(unit)
 
 		if (command === undefined)
 			ControllablesUnitsDraw.set(unit, "Waiting Creeps")
 
 		if (GoToBestPosition.value) {
-			let [group, moveDirection] = unit.ClosestGroup(groups, group => getCenterDirection(group))
+			let [group, moveDirection] = unit.ClosestGroup(groups, group_ => getCenterDirection(group_))
 
 			if (!unit.IsInRange(moveDirection, 500)) {
 				if (!GoingToBestPosition(unit))

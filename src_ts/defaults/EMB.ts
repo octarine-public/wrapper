@@ -35,20 +35,20 @@ EventsSDK.on("Draw", () => {
 
 	let off_x: number,
 		off_y: number,
-		//off_x_text: number,
-		//off_y_text: number,
+		// off_x_text: number,
+		// off_y_text: number,
 		manabar_w: number,
 		manabar_h: number
 
 	{ // TODO: multiple aspect ratio support (current: 16:10)
 		let screen_size = RendererSDK.WindowSize
-		if (screen_size.x === 1920 && screen_size.y === 1080){
+		if (screen_size.x === 1920 && screen_size.y === 1080) {
 			off_x = screen_size.x * -0.027
 			off_y = screen_size.y * -0.01715
 			manabar_w = screen_size.x * 0.053
 			manabar_h = screen_size.y * 0.005
-			//off_x_text = screen_size.x * 0.017;
-			//off_y_text = screen_size.y * -0.003;
+			// off_x_text = screen_size.x * 0.017;
+			// off_y_text = screen_size.y * -0.003;
 
 		} else if (screen_size.x === 1680 && screen_size.y === 1050) {
 			off_x = screen_size.x * -0.03095
@@ -74,14 +74,14 @@ EventsSDK.on("Draw", () => {
 		size.SetY(manabar_h)
 		RendererSDK.FilledRect(wts, size, Color.RoyalBlue)
 		wts.AddScalarX(25).AddScalarY(-4)
-		if (embText.value){
+		if (embText.value) {
 			RendererSDK.Text(`${floor(hero.Mana)}/${floor(hero.MaxMana)}`, wts, Color.White, "Calibri", new Vector2(14, 200))
 		}
-		if (ehbText.value){
+		if (ehbText.value) {
 			RendererSDK.Text(`${floor(hero.HP)}/${floor(hero.MaxHP)}`, wts.AddScalarY(-10), Color.White, "Calibri", new Vector2(14, 200))
 		}
-		//let mana: any = Math.round(hero.Mana);
-		//wts.AddScalarX(off_x_text).AddScalarY(off_y_text);
-		//RendererSDK.Text(mana + "/" + Math.round(hero.MaxMana), wts, Color.White, "Calibri", new Vector2(14, 100))
+		// let mana: any = Math.round(hero.Mana);
+		// wts.AddScalarX(off_x_text).AddScalarY(off_y_text);
+		// RendererSDK.Text(mana + "/" + Math.round(hero.MaxMana), wts, Color.White, "Calibri", new Vector2(14, 100))
 	})
 })

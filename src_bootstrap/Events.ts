@@ -70,27 +70,22 @@ setInterval(() => {
 	}
 }, Math.max(GetLatency(Flow_t.IN) * 1000, 1000 / 30))
 
-let AllEntities: C_BaseEntity[] = [],
-	EntitiesIDs: C_BaseEntity[] = [],
-	NPCs: C_DOTA_BaseNPC[] = []
-global.Entities = new (class Entities {
-	get AllEntities() {
-		return AllEntities
+let NPCs: C_DOTA_BaseNPC[] = []
+global.Entities = new (class EntityManager {
+	public readonly AllEntities: C_BaseEntity[] = []
+	public readonly EntitiesIDs: C_BaseEntity[] = []
+
+	public GetEntityID(ent: C_BaseEntity) {
+		return this.EntitiesIDs.indexOf(ent)
 	}
-	get EntitiesIDs() {
-		return EntitiesIDs
-	}
-	GetEntityID(ent: C_BaseEntity) {
-		return EntitiesIDs.indexOf(ent)
-	}
-	GetEntityByID(id: number) {
-		return EntitiesIDs[id]
+	public GetEntityByID(id: number) {
+		return this.EntitiesIDs[id]
 	}
 })()
 
 Events.on("EntityCreated", (ent, id) => {
-	AllEntities.push(ent)
-	EntitiesIDs[id] = ent
+	Entities.AllEntities.push(ent)
+	Entities.EntitiesIDs[id] = ent
 
 	if (ent instanceof C_DOTA_BaseNPC) {
 		if ((ent.m_pEntity.m_flags & (1 << 2)) !== 0)
@@ -101,8 +96,8 @@ Events.on("EntityCreated", (ent, id) => {
 })
 
 Events.on("EntityDestroyed", (ent, id) => {
-	AllEntities.splice(AllEntities.indexOf(ent), 1)
-	delete EntitiesIDs[id]
+	Entities.AllEntities.splice(Entities.AllEntities.indexOf(ent), 1)
+	delete Entities.EntitiesIDs[id]
 
 	if (ent instanceof C_DOTA_BaseNPC) {
 		const NPCs_id = NPCs.indexOf(ent)
@@ -122,11 +117,8 @@ Events.on("Tick", () => {
 	}
 })
 
-Events.on("TeamVisibilityChanged", (npc, newTagged) => {
-	npc.m_iTaggedAsVisibleByTeam = newTagged
-})
+Events.on("TeamVisibilityChanged", (npc, newTagged) => npc.m_iTaggedAsVisibleByTeam = newTagged)
 
-//
 /* Events.on("NetworkFieldChanged", (obj, name) => {
 	if (obj === GameRules && name === "m_fGameTime")
 		Events.emit("Tick", false)

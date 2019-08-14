@@ -8,6 +8,57 @@ import Hero from "./Hero"
 import Unit from "./Unit"
 
 export default class Player extends Entity {
+	static get QuickBuyItems(): number[] {
+		return LocalPlayer !== undefined ? LocalPlayer.m_pBaseEntity.m_quickBuyItems : []
+	}
+
+	static PrepareOrder(order: {
+		orderType: dotaunitorder_t,
+		target?: Entity | number,
+		position?: Vector3 | Vector2,
+		ability?: Ability,
+		orderIssuer?: PlayerOrderIssuer_t,
+		unit?: Unit,
+		queue?: boolean,
+		showEffects?: boolean,
+	}): ExecuteOrder {
+		return ExecuteOrder.fromObject(order).Execute()
+	}
+
+	static OrderNone(unit: Unit, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_NONE, unit, queue, showEffects })
+	}
+	/**
+	 * Only for LocalPlayer
+	 */
+	static Buyback(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK, queue, showEffects })
+	}
+	/**
+	 * Only for LocalPlayer
+	 */
+	static Glyph(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, queue, showEffects })
+	}
+	/**
+	 * Only for LocalPlayer
+	 */
+	static CastRiverPaint(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT, position, queue, showEffects })
+	}
+	/**
+	 * Only for LocalPlayer
+	 */
+	static PreGameAdgustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT, target: ItemID, queue, showEffects })
+	}
+	/**
+	 * Only for LocalPlayer
+	 */
+	static Scan(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects })
+	}
+
 	readonly m_pBaseEntity: C_DOTAPlayer
 	private m_Name: string
 	private m_PlayerData: PlayerResourcePlayerData_t
@@ -167,57 +218,5 @@ export default class Player extends Entity {
 	// UnreliableGold			=> NonSpectator
 	// WardsDestroyed			=> NonSpectator
 	// WardsPurchased			=> NonSpectator
-
-	static get QuickBuyItems(): number[] {
-		return LocalPlayer !== undefined
-			? LocalPlayer.m_pBaseEntity.m_quickBuyItems : []
-	}
 	// StickyItemId ??
-
-	static PrepareOrder(order: {
-		orderType: dotaunitorder_t,
-		target?: Entity | number,
-		position?: Vector3 | Vector2,
-		ability?: Ability,
-		orderIssuer?: PlayerOrderIssuer_t,
-		unit?: Unit,
-		queue?: boolean,
-		showEffects?: boolean,
-	}): ExecuteOrder {
-		return ExecuteOrder.fromObject(order).Execute()
-	}
-
-	static OrderNone(unit: Unit, queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_NONE, unit, queue, showEffects })
-	}
-	/**
-	 * Only for LocalPlayer
-	 */
-	static Buyback(queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK, queue, showEffects })
-	}
-	/**
-	 * Only for LocalPlayer
-	 */
-	static Glyph(queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, queue, showEffects })
-	}
-	/**
-	 * Only for LocalPlayer
-	 */
-	static CastRiverPaint(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT, position, queue, showEffects })
-	}
-	/**
-	 * Only for LocalPlayer
-	 */
-	static PreGameAdgustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT, target: ItemID, queue, showEffects })
-	}
-	/**
-	 * Only for LocalPlayer
-	 */
-	static Scan(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects })
-	}
 }

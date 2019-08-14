@@ -46,7 +46,7 @@ function PrepareSpheres(str: string, abil_name?: string) {
 				})
 				break
 			default:
-				throw new Error("Unknown key: " + i)
+				throw "Unknown key: " + i
 		}
 		combo.addDelay(30)
 	}

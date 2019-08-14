@@ -1,5 +1,5 @@
+import { Ability } from "wrapper/Imports"
 import { EventsSDK, Game, LocalPlayer, MenuManager } from "./wrapper/Imports"
-import { Ability } from 'wrapper/Imports';
 
 const PtswitcherMenu = MenuManager.MenuFactory("PT Switcher")
 const state = PtswitcherMenu.AddToggle("State", false)
@@ -35,7 +35,7 @@ EventsSDK.on("Update", () => {
 			MyHero.CastNoTarget(pt)
 			nextTick = nextTick + 0.05 + GetAvgLatency(Flow_t.OUT)
 		}
-		if (_PowerTreads.m_iStat === lastStat){
+		if (_PowerTreads.m_iStat === lastStat) {
 			lastStat = undefined
 			changed = true
 		}
@@ -43,7 +43,7 @@ EventsSDK.on("Update", () => {
 })
 
 EventsSDK.on("PrepareUnitOrders", orders => {
-	
+
 	if (!state.value)
 		return
 
@@ -57,10 +57,10 @@ EventsSDK.on("PrepareUnitOrders", orders => {
 	if (pt === undefined)
 		return
 
-	if (orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION 
+	if (orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION
 		&& orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET
-		&& orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE 
-		&& orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET 
+		&& orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE
+		&& orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET
 		&& orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE)
 		return
 
@@ -75,9 +75,9 @@ EventsSDK.on("PrepareUnitOrders", orders => {
 		lastStat = _PowerTreads.m_iStat
 	}
 
-	if (_PowerTreads.m_iStat === 0){
+	if (_PowerTreads.m_iStat === 0) {
 		MyHero.CastNoTarget(pt)
-	} else if (_PowerTreads.m_iStat === 2){
+	} else if (_PowerTreads.m_iStat === 2) {
 		MyHero.CastNoTarget(pt)
 		MyHero.CastNoTarget(pt)
 	}

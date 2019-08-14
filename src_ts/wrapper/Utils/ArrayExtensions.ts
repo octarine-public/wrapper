@@ -54,23 +54,32 @@ export function arrayRemove<T>(ar: T[], el: T, deleteEl: boolean = false): boole
  */
 export function arrayRemoveCallback<T>(ar: T[], cb: (value: T, index: number, obj: T[]) => boolean, deleteEl: boolean = false): boolean {
 	const id = ar.findIndex(cb)
-	if (id !== -1)
-		deleteEl ? delete ar[id] : ar.splice(id, 1)
+	if (id === -1)
+		return false
 
-	return id !== -1
+	if (deleteEl)
+		delete ar[id]
+	else
+		ar.splice(id, 1)
+
+	return true
 }
 
 export function orderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return ar.sort((a, b) => (cb(a) as number) - (cb(b) as number))
 }
 export function Sorter<T>(array: T[], index: string, invert: boolean): T[] {
-	return array.sort(function (a, b) {
-		return invert
+	return array.sort((a, b) =>
+		invert
 			? a[index] < b[index]
-				? 1 : a[index] > b[index]
-					? -1 : 0
+				? 1
+				: a[index] > b[index]
+					? -1
+					: 0
 			: a[index] > b[index]
-				? 1 : a[index] < b[index]
-					? -1 : 0;
-	});
+				? 1
+				: a[index] < b[index]
+					? -1
+					: 0,
+	)
 }

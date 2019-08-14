@@ -10,7 +10,7 @@ export default class Item extends Ability {
 
 	get IsReady(): boolean {
 		const unit = this.Owner as Unit
-		return this.IsCooldownReady && unit.Mana >= this.ManaCost && !unit.IsMuted && this.Level>0
+		return this.IsCooldownReady && unit.Mana >= this.ManaCost && !unit.IsMuted && this.Level > 0
 	}
 	get AssembledTime(): number {
 		return this.m_pBaseEntity.m_flAssembledTime

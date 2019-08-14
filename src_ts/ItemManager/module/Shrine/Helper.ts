@@ -11,9 +11,8 @@
 // 	mpDisableThreshold
 // } from "./Menu"
 
-
 // export function EntityCreate(Entity: Entity) {
-// 	if (Entity instanceof Unit && Entity.IsBuilding 
+// 	if (Entity instanceof Unit && Entity.IsBuilding
 // 		&& !Entity.IsTower && !Entity.IsFort && !Entity.IsShrine && !Entity.IsBarrack)
 // 		ShrineList.push(Entity);
 // 	//else if (Entity instanceof Unit && Entity.IsHero)
@@ -22,13 +21,13 @@
 
 // function IsShrane(): boolean {
 // 	let Me = EntityManager.LocalHero
-	
+
 // 	if (!State.value || Me === undefined)
 // 		return false;
-		
+
 // 	ShrineList.forEach(shrine => {
 
-// 		if (shrine === undefined || !shrine.IsValid || !shrine.IsAlive 
+// 		if (shrine === undefined || !shrine.IsValid || !shrine.IsAlive
 // 			|| Me.Team != shrine.Team || !shrine.IsInRange(Me, 400))
 // 			return;
 
@@ -37,10 +36,10 @@
 // 				return true
 // 			return false
 // 		});
-		
+
 // 		if (!buffsShrine)
 // 			return
-			
+
 // 		let Items = Me.Inventory.GetItems(0, 8) as Item[]
 
 // 		Items.some(item => {
@@ -51,13 +50,11 @@
 // 			return false;
 // 		})
 
-		
 // 		// if (Me.HPPercent > hpDisableThreshold.value && Me.ManaPercent > mpDisableThreshold.value)
 // 		// 	return;
 
 // 		// console.log(buffsShrine)
-		
-		
+
 // 		//Me.MoveTo(shrine.Position)
 
 // 		// && !shrine.IsInRange(LocalPlayer.Hero.Position, 500)
@@ -69,9 +66,9 @@
 
 // // npc_dota_badguys_fillers
 // EventsSDK.on("Tick", () => {
-	
+
 // 	if(!State.value)
 // 		return false;
-	
+
 // 	IsShrane();
 // })

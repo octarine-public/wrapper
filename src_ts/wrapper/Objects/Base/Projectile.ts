@@ -1,7 +1,8 @@
-import { Unit, EntityManager, Color, Entity } from 'wrapper/Imports'
+import { Color, Entity, EntityManager } from "wrapper/Imports"
 
 export class Projectile {
-	readonly ProjectileID: number
+	public IsValid = true
+	public readonly ProjectileID: number
 	protected SourceUnit: Entity | number
 	protected path: string
 	protected particleSystemHandle: bigint
@@ -14,7 +15,7 @@ export class Projectile {
 	}
 
 	get Source(): Entity | number {
-		if(this.SourceUnit instanceof Entity)
+		if (this.SourceUnit instanceof Entity)
 			return this.SourceUnit
 		return EntityManager.EntityByIndex(this.SourceUnit) || this.SourceUnit
 	}
@@ -23,35 +24,24 @@ export class Projectile {
 }
 
 export class LinearProjectile extends Projectile {
-	readonly maxSpeed: number
-	readonly fowRadius: number
-	readonly stickyFowReveal: boolean
-	readonly distance: number
-	readonly colorgemcolor: Color
-
-	constructor (
+	constructor(
 		projID: number,
 		ent: Entity | number,
 		path: string,
 		particleSystemHandle: bigint,
-		maxSpeed: number,
-		fowRadius: number,
-		stickyFowReveal: boolean,
-		distance: number,
-		colorgemcolor: Color
+		public readonly moveSpeed: number,
+		public readonly fowRadius: number,
+		public readonly stickyFowReveal: boolean,
+		public readonly distance: number,
+		public readonly colorgemcolor: Color,
 	) {
 		super(projID, path, particleSystemHandle, ent, 0)
-		this.maxSpeed = maxSpeed
-		this.fowRadius = fowRadius
-		this.stickyFowReveal = stickyFowReveal
-		this.distance = distance
-		this.colorgemcolor = colorgemcolor
 	}
 }
 export class TrackingProjectile extends Projectile {
 	private dodged = false
 
-	constructor (
+	constructor(
 		projID: number,
 		source: Entity | number,
 		private TargetEntity: Entity | number,
@@ -63,7 +53,7 @@ export class TrackingProjectile extends Projectile {
 		private isAttack: boolean,
 		private expireTime: number,
 		readonly maximpacttime: number,
-		launchTick: number
+		launchTick: number,
 	) {
 		super(projID, path, particleSystemHandle, source, launchTick)
 	}

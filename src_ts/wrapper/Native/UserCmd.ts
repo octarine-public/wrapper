@@ -3,148 +3,143 @@ import Vector3 from "../Base/Vector3"
 import Entity from "../Objects/Base/Entity"
 
 export default class UserCmd {
+	constructor(public readonly m_CUserCmd: CUserCmd) {}
 
-	private m_CUserCmd: CUserCmd
-
-	constructor(cmd: CUserCmd) {
-		this.m_CUserCmd = cmd
-	}
-
-	get ComandNumber(): number {
+	public get ComandNumber(): number {
 		return this.m_CUserCmd.command_number
 	}
-	set ComandNumber(value: number) {
+	public set ComandNumber(value: number) {
 		this.m_CUserCmd.command_number = value
 	}
-	get TickCount(): number {
+	public get TickCount(): number {
 		return this.m_CUserCmd.tick_count
 	}
-	set TickCount(value: number) {
+	public set TickCount(value: number) {
 		this.m_CUserCmd.tick_count = value
 	}
-	get ForwardMove(): number {
+	public get ForwardMove(): number {
 		return this.m_CUserCmd.forwardmove
 	}
-	set ForwardMove(value: number) {
+	public set ForwardMove(value: number) {
 		this.m_CUserCmd.forwardmove = value
 	}
-	get SideMove(): number {
+	public get SideMove(): number {
 		return this.m_CUserCmd.sidemove
 	}
-	set SideMove(value: number) {
+	public set SideMove(value: number) {
 		this.m_CUserCmd.sidemove = value
 	}
-	get UpMove(): number {
+	public get UpMove(): number {
 		return this.m_CUserCmd.upmove
 	}
-	set UpMove(value: number) {
+	public set UpMove(value: number) {
 		this.m_CUserCmd.upmove = value
 	}
-	get RandomSeed(): number {
+	public get RandomSeed(): number {
 		return this.m_CUserCmd.random_seed
 	}
-	set RandomSeed(value: number) {
+	public set RandomSeed(value: number) {
 		this.m_CUserCmd.random_seed = value
 	}
-	get MouseX(): number {
+	public get MouseX(): number {
 		return this.m_CUserCmd.mousex
 	}
-	set MouseX(value: number) {
+	public set MouseX(value: number) {
 		this.m_CUserCmd.mousex = value
 	}
-	get MouseY(): number {
+	public get MouseY(): number {
 		return this.m_CUserCmd.mousey
 	}
-	set MouseY(value: number) {
+	public set MouseY(value: number) {
 		this.m_CUserCmd.mousey = value
 	}
-	get CameraX(): number {
+	public get CameraX(): number {
 		return this.m_CUserCmd.camerax
 	}
-	set CameraX(value: number) {
+	public set CameraX(value: number) {
 		this.m_CUserCmd.camerax = value
 	}
-	get CameraY(): number {
+	public get CameraY(): number {
 		return this.m_CUserCmd.cameray
 	}
-	set CameraY(value: number) {
+	public set CameraY(value: number) {
 		this.m_CUserCmd.cameray = value
 	}
-	get ClickBehaviors(): number {
+	public get ClickBehaviors(): number {
 		return this.m_CUserCmd.click_behaviors
 	}
-	set ClickBehaviors(value: number) {
+	public set ClickBehaviors(value: number) {
 		this.m_CUserCmd.click_behaviors = value
 	}
-	get ScoreboardOpened(): boolean {
+	public get ScoreboardOpened(): boolean { // dota_spectator_stats_panel
 		return this.m_CUserCmd.scoreboard_opened
 	}
-	set ScoreboardOpened(value: boolean) {
+	public set ScoreboardOpened(value: boolean) {
 		this.m_CUserCmd.scoreboard_opened = value
 	}
-	get ShopMask(): number {
+	public get ShopMask(): number {
 		return this.m_CUserCmd.shopmask
 	}
-	set ShopMask(value: number) {
+	public set ShopMask(value: number) {
 		this.m_CUserCmd.shopmask = value
 	}
-	get SpectatorStatsCategoryId(): number {
+	public get SpectatorStatsCategoryId(): number {
 		return this.m_CUserCmd.spectator_stats_category_id
 	}
-	set SpectatorStatsCategoryId(value: number) {
+	public set SpectatorStatsCategoryId(value: number) {
 		this.m_CUserCmd.spectator_stats_category_id = value
 	}
-	get SpectatorStatsSortMethod(): number {
+	public get SpectatorStatsSortMethod(): number {
 		return this.m_CUserCmd.spectator_stats_sort_method
 	}
-	set SpectatorStatsSortMethod(value: number) {
+	public set SpectatorStatsSortMethod(value: number) {
 		this.m_CUserCmd.spectator_stats_sort_method = value
 	}
-	get Buttons(): bigint {
+	public get Buttons(): bigint {
 		return this.m_CUserCmd.buttons
 	}
-	set Buttons(value: bigint) {
+	public set Buttons(value: bigint) {
 		this.m_CUserCmd.buttons = value
 	}
-	get Impulse(): number {
+	public get Impulse(): number {
 		return this.m_CUserCmd.impulse
 	}
-	set Impulse(value: number) {
+	public set Impulse(value: number) {
 		this.m_CUserCmd.impulse = value
 	}
-	get VectorUnderCursor(): Vector3 {
+	public get VectorUnderCursor(): Vector3 {
 		return Vector3.fromIOBuffer(this.m_CUserCmd.vec_under_cursor)
 	}
-	set VectorUnderCursor(value: Vector3) {
+	public set VectorUnderCursor(value: Vector3) {
 		this.m_CUserCmd.vec_under_cursor = value.toIOBuffer()
 	}
-	get ViewAngles(): QAngle {
+	public get ViewAngles(): QAngle {
 		return QAngle.fromIOBuffer(this.m_CUserCmd.viewangles)
 	}
-	set ViewAngles(value: QAngle) {
+	public set ViewAngles(value: QAngle) {
 		this.m_CUserCmd.viewangles = value.toIOBuffer()
 	}
-	get WeaponSelect(): number {
+	public get WeaponSelect(): number {
 		return this.m_CUserCmd.spectator_stats_category_id
 	}
-	set WeaponSelect(value: number) {
+	public set WeaponSelect(value: number) {
 		this.m_CUserCmd.spectator_stats_category_id = value
 	}
-	get WeaponSubType(): number {
+	public get WeaponSubType(): number {
 		return this.m_CUserCmd.spectator_stats_category_id
 	}
-	set WeaponSubType(value: number) {
+	public set WeaponSubType(value: number) {
 		this.m_CUserCmd.spectator_stats_category_id = value
 	}
 
 	toString(): string {
-
 		const string = Object.assign(this.toObject())
 
 		string.Buttons = Number(string.Buttons)
 
 		return JSON.stringify(string, null, "\t")
 	}
+
 	toObject() {
 		return {
 			ComandNumber: this.ComandNumber,

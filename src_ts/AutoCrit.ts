@@ -1,13 +1,13 @@
-import { Entity, EntityManager, EventsSDK, Game, LocalPlayer, Unit, Vector2, MenuManager, RendererSDK, Vector3 } from "./wrapper/Imports"
+import { Entity, EntityManager, EventsSDK, Game, LocalPlayer, MenuManager, RendererSDK, Unit, Vector2, Vector3 } from "./wrapper/Imports"
 
 const Menu = MenuManager.MenuFactory("Auto Crit"),
 	MenuState = Menu.AddToggle("State"),
-	hotkey = Menu.AddKeybind('Hotkey').OnRelease(() => !MenuState.value);
+	hotkey = Menu.AddKeybind("Hotkey").OnRelease(() => !MenuState.value)
 
 var target: Entity,
 	target_pos: Vector3,
-	timer: number = 0;
-	
+	timer: number = 0
+
 Events.on("Draw", () => {
 	if (MenuState.value)
 		RendererSDK.Text("Auto Crit enabled", new Vector2(0, 100))
@@ -15,14 +15,13 @@ Events.on("Draw", () => {
 EventsSDK.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
 	if (!MenuState.value || !npc.IsControllableByPlayer(LocalPlayer.PlayerID))
 		return
-	if (activity == 1505) {
-		timer = Game.GameTime + castpoint
-	} else if (activity === 1503) {
+	if (activity === 1503) {
 		if (target !== undefined)
 			if (!target.IsEnemy(npc) || (target instanceof Unit && (target.IsWard || target.IsTower || target.IsShrine)))
 				return
 		npc.OrderStop(false)
-	}
+	} else if (activity === 1505)
+		timer = Game.GameTime + castpoint
 })
 EventsSDK.on("PrepareUnitOrders", order => {
 	if (order.Unit === LocalPlayer.Hero)
@@ -36,7 +35,7 @@ EventsSDK.on("PrepareUnitOrders", order => {
 				target_pos = order.Position
 				break
 			case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
-				MenuState.value
+				MenuState.value = false
 				break
 			default:
 				break
@@ -47,11 +46,11 @@ Events.on("Update", () => {
 	if (!MenuState.value || !hotkey.IsPressed || target === undefined || !target.IsAlive || LocalPlayer.Hero === undefined)
 		return false
 	let Me = LocalPlayer.Hero
-	if (Me.Name !== "npc_dota_hero_phantom_assassin" 
+	if (Me.Name !== "npc_dota_hero_phantom_assassin"
 		&& Me.Name !== "npc_dota_hero_skeleton_king" && Me.Name !== "npc_dota_hero_juggernaut"
 		&& Me.Name !== "npc_dota_hero_chaos_knight")
-		return false;
-		
+		return false
+
 	if (timer <= Game.GameTime) {
 		let AttacksPerSecond = Me.AttacksPerSecond
 		switch (Me.Name) {
@@ -139,7 +138,7 @@ Events.on("Update", () => {
 					timer = Game.GameTime + 0.54
 				Me.AttackTarget(target, false)
 				break
-			default: 
+			default:
 			return false
 		}
 	}

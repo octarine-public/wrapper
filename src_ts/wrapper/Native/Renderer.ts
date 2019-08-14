@@ -113,8 +113,8 @@ class RendererSDK {
 	}
 	DrawMiniMapIcon(name: string, worldPos: Vector3, size: number = 800, color: Color = new Color(255, 255, 255)) {
 		worldPos.toIOBuffer(0)
-        color.toIOBuffer(3)
-        Minimap.DrawIcon(name, size, 1, 0x80000000)
+		color.toIOBuffer(3)
+		Minimap.DrawIcon(name, size, 1, 0x80000000)
 	}
 }
 

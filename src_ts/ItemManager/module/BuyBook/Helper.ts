@@ -6,13 +6,11 @@
 // export function Tick(): boolean {
 // 	if (!State.value)
 // 		return false
-		
+
 // 	let Me = LocalPlayer;
 
 // 	if(Me === undefined)
 // 		return false
-	
-	
 
 // 	return false
 // }

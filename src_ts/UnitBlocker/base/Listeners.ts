@@ -23,18 +23,12 @@ EventsSDK.on("EntityCreated", ent => {
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-
-	if (ent instanceof Creep)
-		ArrayExtensions.arrayRemove(allCreeps, ent)
-
-	else if (ent instanceof Tower)
-		ArrayExtensions.arrayRemove(allTowers, ent)
-
-	else if (ent instanceof Unit) {
-
+	if (ent instanceof Unit) {
 		if (ent instanceof Hero)
 			ArrayExtensions.arrayRemove(allHeroes, ent)
-
 		ArrayExtensions.arrayRemove(allNPCs, ent)
-	}
+	} else if (ent instanceof Tower)
+		ArrayExtensions.arrayRemove(allTowers, ent)
+	else if (ent instanceof Creep)
+		ArrayExtensions.arrayRemove(allCreeps, ent)
 })

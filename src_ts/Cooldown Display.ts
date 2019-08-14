@@ -105,10 +105,10 @@ EventsSDK.on("Draw", () => {
 						FontFlags_t.OUTLINE,
 					)
 				}
-				for (let i = 0, lvl = abil.Level, end = abil.MaxLevel; i < end; i++) {
-					let rect_pos = need_pos.Clone().AddScalarX(size.value / end * i).AddScalarY(size.value * (17 / 20)),
+				for (let j = 0, lvl = abil.Level, end = abil.MaxLevel; j < end; j++) {
+					let rect_pos = need_pos.Clone().AddScalarX(size.value / end * j).AddScalarY(size.value * (17 / 20)),
 						rect_size = new Vector2(size.value / end, size.value * (3 / 20))
-					if (lvl > i)
+					if (lvl > j)
 						RendererSDK.FilledRect(rect_pos, rect_size, new Color(185, 167, 110))
 					RendererSDK.OutlinedRect(rect_pos, rect_size, new Color(185, 167, 110))
 				}

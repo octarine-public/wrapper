@@ -3,11 +3,11 @@ import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/Utils"
 
-import { LocalPlayer, Game } from "../../Managers/EntityManager"
+import { Game, LocalPlayer } from "../../Managers/EntityManager"
 
 import Entity from "./Entity"
 import Player from "./Player"
-//import Creep from "./Creep";
+// import Creep from "./Creep";
 
 import AbilitiesBook from "../DataBook/AbilitiesBook"
 import Inventory from "../DataBook/Inventory"
@@ -20,11 +20,6 @@ import Modifier from "./Modifier"
 import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
 import Tree from "./Tree"
-
-/* ================================  ================================ */
-/* ================  ================ */
-/* ========  ======== */
-/* ==== ==== */
 
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
@@ -45,7 +40,7 @@ export default class Unit extends Entity {
 
 	/* ================================ Fields ================================ */
 
-	/* protected */ readonly m_pBaseEntity: C_DOTA_BaseNPC
+	public readonly m_pBaseEntity: C_DOTA_BaseNPC
 	private m_Inventory: Inventory
 	private m_AbilitiesBook: AbilitiesBook
 	private m_ModifiersBook: ModifiersBook
@@ -53,8 +48,6 @@ export default class Unit extends Entity {
 	private m_bIsVisibleForEnemies: boolean = false
 	private m_bIsTrueSightedForEnemies: boolean = false
 	private m_bHasScepterModifier: boolean = false
-
-	/* ================================ BASE ================================ */
 
 	/* ================ GETTERS ================ */
 
@@ -105,7 +98,7 @@ export default class Unit extends Entity {
 	}
 	get IsAttackImmune(): boolean {
 		// return this.m_pBaseEntity.m_bIsAttackImmune
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ATTACK_IMMUNE);
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ATTACK_IMMUNE)
 	}
 	get IsSilenced(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SILENCED)
@@ -548,7 +541,7 @@ export default class Unit extends Entity {
 		if (!this.IsHero)
 			return false
 		const sphere = this.GetItemByName("item_sphere")
-	
+
 		return (
 			sphere !== undefined &&
 			sphere.Cooldown - time <= 0
@@ -591,7 +584,7 @@ export default class Unit extends Entity {
 				damage += quellingBlade.GetSpecialValue(isMelee ? "damage_bonus" : "damage_bonus_ranged")
 
 			let battleFury = inventory.GetItemByName("item_bfury")
-			if (battleFury != undefined)
+			if (battleFury !== undefined)
 				mult *= battleFury.GetSpecialValue(isMelee ? "quelling_bonus" : "quelling_bonus_ranged") / 100
 		}
 
@@ -700,7 +693,7 @@ export default class Unit extends Entity {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM, unit: this, ability: item, queue })
 	}
 	ItemSetCombineLock(item: Item, lock: boolean | number = true, queue?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, unit: this, ability: item, target:(lock as number) + 0, queue })
+		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, unit: this, ability: item, target: (lock as number) + 0, queue })
 	}
 	MoveItem(item: Item, slot: DOTAScriptInventorySlot_t) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM, unit: this, target: slot, ability: item })

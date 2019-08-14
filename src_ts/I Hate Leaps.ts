@@ -10,7 +10,6 @@ let mks: Unit[] = [],
 	techiess: Unit[] = []
 
 EventsSDK.on("EntityCreated", (npc: Unit) => {
-
 	if (LocalPlayer === undefined || LocalPlayer.Hero === npc)
 		return
 	if (npc.m_pBaseEntity instanceof C_DOTA_Unit_Hero_MonkeyKing)

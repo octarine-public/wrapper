@@ -4,37 +4,35 @@ import Entity from "../Base/Entity"
 import Player from "../Base/Player"
 
 class PlayerResource extends Entity {
+	public readonly m_pBaseEntity: C_DOTA_PlayerResource
 
-	public m_pBaseEntity: C_DOTA_PlayerResource
-	public m_iIndex: number
-
-	get Names(): string[] {
+	public get Names(): string[] {
 		let playerResource = this.m_pBaseEntity
 
 		return playerResource !== undefined ? playerResource.m_iszName : []
 	}
-	get AllPlayers(): Player[] {
+	public get AllPlayers(): Player[] {
 		let playerResource = this.m_pBaseEntity
 
 		return playerResource !== undefined
-			? EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_playerIDToPlayer) as Player[]
+			? EntityManager.GetEntitiesByNative(playerResource.m_playerIDToPlayer) as Player[]
 			: []
 	}
-	get PlayerTeamData(): PlayerResourcePlayerTeamData_t[] {
+	public get PlayerTeamData(): PlayerResourcePlayerTeamData_t[] {
 		let playerResource = this.m_pBaseEntity
 
 		return playerResource !== undefined
 			? playerResource.m_vecPlayerTeamData
 			: []
 	}
-	get PlayerData(): PlayerResourcePlayerData_t[] {
+	public get PlayerData(): PlayerResourcePlayerData_t[] {
 		let playerResource = this.m_pBaseEntity
 
 		return playerResource !== undefined
 			? playerResource.m_vecPlayerData
 			: []
 	}
-	get TeamCouriers(): Courier[][] {
+	public get TeamCouriers(): Courier[][] {
 		let playerResource = this.m_pBaseEntity
 
 		if (playerResource === undefined)
@@ -47,7 +45,7 @@ class PlayerResource extends Entity {
 
 		return couriers
 	}
-	get PlayerCouriers(): Courier[][] {
+	public get PlayerCouriers(): Courier[][] {
 		let playerResource = this.m_pBaseEntity
 
 		if (playerResource === undefined)
@@ -61,29 +59,29 @@ class PlayerResource extends Entity {
 		return couriers
 	}
 
-	GetNameByPlayerID(playerID: number): string {
+	public GetNameByPlayerID(playerID: number): string {
 		let playerResource = this.m_pBaseEntity
 
-		return playerResource !== undefined ? this.m_pBaseEntity.m_iszName[playerID] : ""
+		return playerResource !== undefined ? playerResource.m_iszName[playerID] : ""
 	}
-	GetPlayerByPlayerID(playerID: number): Player {
+	public GetPlayerByPlayerID(playerID: number): Player {
 		let playerResource = this.m_pBaseEntity
 
 		return playerResource !== undefined
-			? EntityManager.GetEntityByNative(this.m_pBaseEntity.m_playerIDToPlayer[playerID], true) as Player
+			? EntityManager.GetEntityByNative(playerResource.m_playerIDToPlayer[playerID], true) as Player
 			: undefined
 	}
-	GetPlayerTeamDataByPlayerID(playerID: number): PlayerResourcePlayerTeamData_t {
+	public GetPlayerTeamDataByPlayerID(playerID: number): PlayerResourcePlayerTeamData_t {
 		let playerResource = this.m_pBaseEntity
 
 		return playerResource !== undefined ? this.PlayerTeamData[playerID] : undefined
 	}
-	GetPlayerDataByPlayerID(playerID: number): PlayerResourcePlayerData_t {
+	public GetPlayerDataByPlayerID(playerID: number): PlayerResourcePlayerData_t {
 		let playerResource = this.m_pBaseEntity
 
 		return playerResource !== undefined ? this.PlayerData[playerID] : undefined
 	}
-	GetPlayerCouriersByPlayerID(playerID: number): Courier[] {
+	public GetPlayerCouriersByPlayerID(playerID: number): Courier[] {
 		let playerResource = this.m_pBaseEntity
 
 		return playerResource !== undefined

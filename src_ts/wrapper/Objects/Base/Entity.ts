@@ -135,10 +135,10 @@ m_pEntity.m_flags
 export default class Entity {
 	/* ================================ Fields ================================ */
 
-	/* protected */ readonly m_pBaseEntity: C_BaseEntity
-	protected m_iIndex: number
-	IsValid: boolean = false
+	public readonly m_pBaseEntity: C_BaseEntity
+	public IsValid: boolean = false
 
+	protected m_iIndex: number
 	private m_pEntity: CEntityIdentity
 	private m_hOwnerEntity: Entity
 
@@ -160,7 +160,7 @@ export default class Entity {
 		let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
 		if (gameSceneNode !== undefined)
 			return QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation)
-		
+
 		return new QAngle()
 	}
 	get CreateTime(): number {
@@ -200,15 +200,13 @@ export default class Entity {
 		if (!this.IsValid)
 			return ""
 
-		return this.Entity.m_designerName
-			|| this.Entity.m_name
-			|| ""
+		return this.Entity.m_designerName || this.Entity.m_name || ""
 	}
 	get NetworkPosition(): Vector3 {
 		let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
 		if (gameSceneNode !== undefined)
 			return Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_vecValue)
-		
+
 		return new Vector3()
 	}
 	/**

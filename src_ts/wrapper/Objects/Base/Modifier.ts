@@ -79,7 +79,7 @@ export default class Modifier {
 		this.Name = buff.m_name || ""
 		this.Class = this.m_pBuff.m_class || ""
 		this.ModifierAura = buff.m_szModifierAura || ""
-		
+
 		this.Owner = owner
 		this.Ability = EntityManager.GetEntityByNative(this.m_pBuff.m_hAbility) as Ability
 		this.Caster = EntityManager.GetEntityByNative(this.m_pBuff.m_hCaster)
