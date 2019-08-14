@@ -1,4 +1,4 @@
-import { arrayRemove, arrayRemoveCallBack } from "./ArrayExtensions"
+import { arrayRemove, arrayRemoveCallback } from "./ArrayExtensions"
 
 export function addArrayInMap<K, V>(map: Map<K, V[]>, key: K, value: V): void {
 	const values = map.get(key)
@@ -27,7 +27,7 @@ export function removeArrayInMap<K, V>(map: Map<K, V[]>, key: K, find: V | ((val
 	if (values === undefined)
 		return false
 
-	if (find instanceof Function ? !arrayRemoveCallBack(values, find) : arrayRemove(values, find))
+	if (find instanceof Function ? !arrayRemoveCallback(values, find) : arrayRemove(values, find))
 		return false
 
 	values.length === 0 ? map.delete(key) : map.set(key, values)

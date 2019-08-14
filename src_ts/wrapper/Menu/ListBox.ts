@@ -87,6 +87,9 @@ export default class ListBox extends Menu_List {
 		let indexOf = this.values.indexOf(value)
 		return indexOf > -1 && this.selected_flags_wrapped[indexOf]
 	}
+	IsSelectedID(id: number): boolean {
+		return this.selected_flags_wrapped[id]
+	}
 
 	ChangeValue(value: boolean[]): this {
 		this.selected_flags = value

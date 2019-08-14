@@ -52,7 +52,7 @@ export function arrayRemove<T>(ar: T[], el: T, deleteEl: boolean = false): boole
  *
  * @param deleteEl uses operator 'delete' instead of 'splice'
  */
-export function arrayRemoveCallBack<T>(ar: T[], cb: (value: T, index: number, obj: T[]) => boolean, deleteEl: boolean = false): boolean {
+export function arrayRemoveCallback<T>(ar: T[], cb: (value: T, index: number, obj: T[]) => boolean, deleteEl: boolean = false): boolean {
 	const id = ar.findIndex(cb)
 	if (id !== -1)
 		deleteEl ? delete ar[id] : ar.splice(id, 1)

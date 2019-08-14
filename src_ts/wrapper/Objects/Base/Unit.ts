@@ -480,10 +480,14 @@ export default class Unit extends Entity {
 	get CastRangeBonus(): number {
 		let castrange = 0
 
-		this.Spells.forEach(spell => {
+		let lens = this.GetItemByName("item_aether_lens")
+		if (lens !== undefined)
+			castrange += lens.GetSpecialValue("cast_range_bonus")
+
+		/*this.Spells.forEach(spell => {
 			if (spell.Level > 0 && /special_bonus_cast_range_/.test(spell.Name))
 				castrange -= spell.GetSpecialValue("value")
-		})
+		})*/
 		return castrange
 	}
 	get SpellAmplification(): number {

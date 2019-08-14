@@ -28,7 +28,6 @@ function getTopParent(node: Tree | Toggle): Tree {
 
 export default class Toggle extends Menu_Toggle {
 	parent: Tree
-	currentValue: boolean
 	defaultValue: boolean
 
 	OnValueCallback: (value: boolean, self: Toggle) => void

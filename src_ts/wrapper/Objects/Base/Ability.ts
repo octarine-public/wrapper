@@ -173,7 +173,7 @@ export default class Ability extends Entity {
 			}
 		}
 
-		return castrange// + owner.CastRangeBonus
+		return castrange + owner.CastRangeBonus
 	}
 
 	UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {

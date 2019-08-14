@@ -75,7 +75,7 @@ export default class Item extends Ability {
 	get IsRecipe(): boolean {
 		return this.m_pBaseEntity.m_bRecipe
 	}
-	get IsRequiringCharges(): boolean {
+	get RequiresCharges(): boolean {
 		return this.m_pBaseEntity.m_bRequiresCharges
 	}
 	get IsSellable(): boolean {
@@ -135,7 +135,7 @@ export default class Item extends Ability {
 		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled)
 			return false
 
-		if (this.IsRequiringCharges && this.CurrentCharges < 1)
+		if (this.RequiresCharges && this.CurrentCharges < 1)
 			return false
 
 		return this.Level > 0 && !this.IsEnabled
