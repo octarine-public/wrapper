@@ -3,7 +3,6 @@ export const Menu = MenuManager.MenuFactory("Be Aware")
 export const stateMain = Menu.AddToggle("State", false)
 
 export function MenuBase(root: MenuManager.MenuControllers.Tree, name: string, tooltip?: string) {
-
 	let BaseTree = root.AddTree(name)
 
 	return {
@@ -13,12 +12,17 @@ export function MenuBase(root: MenuManager.MenuControllers.Tree, name: string, t
 			: BaseTree.AddToggle(BaseTree.name + " - State", true),
 	}
 }
-export function MenuDrawBase(root: MenuManager.MenuControllers.Tree, RGBname?: 
-	string, BoxName?: string, ArrayBox?: string[], 
-	SliderName?: string, defaultValue?: number, minValue?: number, maxValue?: number,
-	) 
-	{
-		let DrawTree = root.AddTree(root.name + " - Draw")
+export function MenuDrawBase (
+	root: MenuManager.MenuControllers.Tree,
+	RGBname?: string,
+	BoxName?: string,
+	ArrayBox?: string[], 
+	SliderName?: string,
+	defaultValue?: number,
+	minValue?: number,
+	maxValue?: number
+)  {
+	let DrawTree = root.AddTree(root.name + " - Draw")
 	return {
 		DrawTree,
 		Size: DrawTree.AddSlider(SliderName, defaultValue, minValue, maxValue),
