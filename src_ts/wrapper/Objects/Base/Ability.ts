@@ -143,6 +143,10 @@ export default class Ability extends Entity {
 		return this.AbilityData.TextureName
 	}
 
+	get IsPassive(): boolean {
+		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
+	}
+
 	/* ============ EXTENSIONS ============ */
 
 	get CastRange(): number {
