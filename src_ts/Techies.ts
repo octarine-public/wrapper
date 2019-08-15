@@ -1,18 +1,19 @@
-import { Unit, Hero, Entity, Game, ArrayExtensions, EventsSDK, LocalPlayer, EntityManager, Vector3, Ability } from "./wrapper/Imports"
+import { Unit, Hero, Entity, Game, ArrayExtensions, EventsSDK, LocalPlayer, EntityManager, Vector3, Ability, MenuManager } from "./wrapper/Imports"
+
+let TechiesMenu = MenuManager.MenuFactory("Techies"),
+	State = TechiesMenu.AddToggle("State"),
+	Explode_seen_mines = TechiesMenu.AddCheckBox("Explode seen mines"),
+	Explode_expiring_mines = TechiesMenu.AddCheckBox("Explode expiring mines"),
+	safe_mode = TechiesMenu.AddCheckBox("Safe mode").SetToolTip("Reduces explosion radius based on hero speed"),
+	use_prediction = TechiesMenu.AddCheckBox("Use prediction"),
+	auto_stack = TechiesMenu.AddCheckBox("Autostack mines").SetToolTip("Automatically stacks mines in place"),
+	auto_stack_range = TechiesMenu.AddSliderFloat("Autostack range", 300, 50, 1000).SetToolTip("Range where autostack will try to find other mines")
 
 const RMineTriggerRadius = 425,
 	RMineBlowDelay = .25,
 	ForcestaffUnits = 600
-var config: any = {
-		enabled: true,
-		explode_seen_mines: true,
-		explode_expiring_mines: false,
-		safe_mode: true,
-		use_prediction: false,
-		auto_stack: true,
-		auto_stack_range: 300,
-	},
-	NoTarget: Entity[] = [],
+	
+var NoTarget: Entity[] = [],
 	particles = new Map<Unit, number>(),
 	rmines: Array<[
 		/* mine */Unit,
@@ -83,10 +84,10 @@ function CallMines (
 
 function NeedToTriggerMine(rmine: Unit, ent: Unit, forcestaff: boolean = false): boolean {
 	var TriggerRadius = RMineTriggerRadius
-	if (config.safe_mode)
+	if (safe_mode.value)
 		TriggerRadius -= ent.IdealSpeed * (RMineBlowDelay / 30)
 
-	return config.use_prediction
+	return use_prediction.value
 		? ent.InFront(((ent.IsMoving as any) * RMineBlowDelay) + (forcestaff ? ForcestaffUnits : 0)).Distance2D(rmine.NetworkPosition) <= TriggerRadius
 		: forcestaff
 			? rmine.NetworkPosition.Distance2D(ent.InFront(ForcestaffUnits)) <= TriggerRadius
@@ -94,17 +95,17 @@ function NeedToTriggerMine(rmine: Unit, ent: Unit, forcestaff: boolean = false):
 }
 
 Events.on("Tick",  () => {
-	if (!config.enabled || techies === undefined || Game.IsPaused)
+	if (!State.value || techies === undefined || Game.IsPaused)
 		return
 	var cur_time = Game.RawGameTime
 	rmines = rmines.filter(([rmine]) => rmine.IsAlive)
-	if (config.explode_expiring_mines) {
+	if (Explode_expiring_mines.value) {
 		const rmineTimeout = 595 // 600 is mine duration
 		for (const [mine, dmg, setup_time] of rmines)
 			if (cur_time > setup_time + rmineTimeout)
 				ExplodeMine(mine)
 	}
-	if (config.explode_seen_mines)
+	if (Explode_seen_mines.value)
 		for (const [mine, dmg, setup_time, invis_time] of rmines)
 			if (mine.IsVisibleForEnemies && cur_time > invis_time)
 				ExplodeMine(mine)
@@ -154,7 +155,7 @@ function CreateParticleFor(npc: Unit) {
 		if (npc.IsValid)
 			switch (npc.Name) {
 				case "npc_dota_techies_remote_mine":
-					range = RMineTriggerRadius * (config.safe_mode ? 0.85 : 1)
+					range = RMineTriggerRadius * (safe_mode.value ? 0.85 : 1)
 				case "npc_dota_techies_stasis_trap":
 				case "npc_dota_techies_land_mine":
 					particles.set(npc, CreateRange(npc, range))
@@ -195,7 +196,7 @@ Events.on("GameEnded", () => {
 	techies = undefined as any
 })
 EventsSDK.on("PrepareUnitOrders", args => {
-	if (!config.auto_stack)
+	if (!auto_stack.value)
 		return true
 	if (
 		args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION
@@ -204,7 +205,7 @@ EventsSDK.on("PrepareUnitOrders", args => {
 		|| !(args.Ability instanceof Ability && args.Ability.Name === "techies_remote_mines")
 	)
 		return true
-	const ents = EntityManager.GetEntitiesInRange(args.Position, config.auto_stack_range)
+	const ents = EntityManager.GetEntitiesInRange(args.Position, auto_stack_range.value)
 	var minePos: Vector3
 	if (ents.some(ent => {
 		const isMine = ent instanceof Unit && ent.Name === "npc_dota_techies_remote_mine" && ent.IsAlive
@@ -243,55 +244,3 @@ EventsSDK.on("EntityDestroyed", ent => {
 		RemoveMine(ent)
 	}
 })
-
-{
-	let root = new Menu_Node("Techies")
-	root.entries.push(new Menu_Toggle (
-		"State",
-		config.enabled,
-		node => config.enabled = node.value,
-	))
-	root.entries.push(new Menu_Boolean (
-		"Explode seen mines",
-		config.explode_seen_mines,
-		node => config.explode_seen_mines = node.value,
-	))
-	root.entries.push(new Menu_Boolean (
-		"Explode expiring mines",
-		config.explode_expiring_mines,
-		node => config.explode_expiring_mines = node.value,
-	))
-	root.entries.push(new Menu_Boolean (
-		"Safe mode",
-		config.safe_mode,
-		"Reduces explosion radius based on hero speed",
-		node => {
-			config.safe_mode = node.value
-			particles.forEach((par, ent) => {
-				Particles.Destroy(par, true)
-				CreateParticleFor(ent as Unit)
-			})
-		},
-	))
-	root.entries.push(new Menu_Boolean (
-		"Use prediction",
-		config.use_prediction,
-		node => config.use_prediction = node.value,
-	))
-	root.entries.push(new Menu_Boolean (
-		"Autostack mines",
-		config.auto_stack,
-		"Automatically stacks mines in place",
-		node => config.auto_stack = node.value,
-	))
-	root.entries.push(new Menu_SliderFloat (
-		"Autostack range",
-		config.auto_stack_range,
-		50,
-		1000,
-		"Range where autostack will try to find other mines",
-		node => config.auto_stack_range = node.value,
-	))
-	root.Update()
-	Menu.AddEntry(root)
-}
