@@ -352,9 +352,6 @@ export default class Unit extends Entity {
 	public get IdealSpeed(): number {
 		return this.m_pBaseEntity.m_fIdealSpeed
 	}
-	public get Name(): string {
-		return this.m_pBaseEntity.m_iszUnitName || ""
-	}
 	public get NetworkActivity(): GameActivity_t {
 		return this.m_pBaseEntity.m_NetworkActivity
 	}
@@ -718,8 +715,6 @@ export default class Unit extends Entity {
 		return this.Mana >= abil.ManaCost
 	}
 	public HasLinkenAtTime(time: number = 0): boolean {
-		if (!this.IsHero)
-			return false
 		const sphere = this.GetItemByName("item_sphere")
 
 		return (
@@ -809,6 +804,13 @@ export default class Unit extends Entity {
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
 			return this.CastTarget(ability, target as Entity, showEffects)
 	}
+
+	OnCreated() {
+		super.OnCreated()
+		this.Name_ = this.m_pBaseEntity.m_iszUnitName || this.Name_
+	}
+
+	/* ORDERS */
 
 	public MoveTo(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, unit: this, position, queue, showEffects })

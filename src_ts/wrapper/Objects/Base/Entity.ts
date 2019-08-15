@@ -134,32 +134,74 @@ m_pEntity.m_flags
 */
 export default class Entity {
 	/* ================================ Fields ================================ */
-
-	public readonly m_pBaseEntity: C_BaseEntity
 	public IsValid: boolean = false
-
-	private m_pEntity: CEntityIdentity
-	private m_hOwnerEntity: Entity
+	private readonly NetworkPosition_: Vector3 = new Vector3().Invalidate() // cached networkposition
+	private readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
+	private readonly Angles_: QAngle = new QAngle().Invalidate() // cached angles
+	private Rotation_: number = NaN // cached rotation
+	private Scale_: number = 1 // cached scale
+	protected Name_: string = "<m_pEntity udnefined>"
+	private readonly Entity: CEntityIdentity
+	private Owner_: Entity
 
 	/* ================================ BASE ================================ */
-
-	constructor(ent?: C_BaseEntity, public readonly Index: number = -1) {
-		this.m_pBaseEntity = ent
+	constructor(public readonly m_pBaseEntity: C_BaseEntity, public readonly Index: number = -1) {
+		this.Entity = this.m_pBaseEntity.m_pEntity
+		if (this.Entity !== undefined)
+			this.Name_ = this.Entity.m_designerName || this.Entity.m_name
 	}
 
 	/* ================ GETTERS ================ */
-	private get Entity(): CEntityIdentity {
-		if (!this.IsValid)
-			return undefined
-		return this.m_pEntity || (this.m_pEntity = this.m_pBaseEntity.m_pEntity)
+	get Owner(): Entity { // trick to make it public ro, and protected rw
+		return this.Owner_ || (this.Owner_ = EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
 	}
-
+	get Name(): string { // trick to make it public ro, and protected rw
+		return this.Name_
+	}
+	get Position(): Vector3 { // trick to make it public ro, and protected rw
+		if (!this.NetworkPosition_.IsValid) {
+			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+			if (gameSceneNode === undefined)
+				return new QAngle()
+			Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_vecValue).CopyTo(this.Position_)
+		}
+		return this.Position_.Clone()
+	}
+	get NetworkPosition(): Vector3 {
+		if (!this.NetworkPosition_.IsValid) {
+			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+			if (gameSceneNode === undefined)
+				return new QAngle()
+			Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_vecValue).CopyTo(this.NetworkPosition_)
+		}
+		return this.NetworkPosition_.Clone()
+	}
+	get Scale(): number {
+		if (this.Rotation_ === NaN) {
+			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+			if (gameSceneNode === undefined)
+				return 0
+			this.Scale_ = gameSceneNode.m_flAbsScale
+		}
+		return this.Scale_
+	}
+	get Rotation(): number {
+		if (this.Rotation_ === NaN) {
+			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+			if (gameSceneNode === undefined)
+				return 0
+			this.Rotation_ = QAngle.fromIOBuffer(gameSceneNode.m_angRotation)[1]
+		}
+		return this.Rotation_
+	}
 	get Angles(): QAngle {
-		let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
-		if (gameSceneNode !== undefined)
-			return QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation)
-
-		return new QAngle()
+		if (!this.Angles_.IsValid) {
+			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+			if (gameSceneNode === undefined)
+				return new QAngle()
+			QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation).CopyTo(this.Angles_)
+		}
+		return this.Angles_.Clone()
 	}
 	get CreateTime(): number {
 		return this.m_pBaseEntity.m_flCreateTime
@@ -191,54 +233,14 @@ export default class Entity {
 	get MaxHP(): number {
 		return this.m_pBaseEntity.m_iMaxHealth
 	}
-	get Name(): string {
-		if (!this.IsValid)
-			return ""
-
-		return this.Entity.m_designerName || this.Entity.m_name || ""
-	}
-	get NetworkPosition(): Vector3 {
-		/*let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
-		if (gameSceneNode !== undefined)
-			return Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_vecValue)
-
-		return this.Position*/
-		return this.Position
-	}
 	/**
 	 * as Direction
 	 */
 	get Forward(): Vector3 {
 		return Vector3.FromAngle(this.RotationRad)
 	}
-	get Owner(): Entity {
-		return this.m_hOwnerEntity || (this.m_hOwnerEntity = EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
-	}
-	get Position(): Vector3 {
-		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
-
-		if (gameSceneNode !== undefined)
-			return Vector3.fromIOBuffer(gameSceneNode.m_vecAbsOrigin)
-
-		return this.NetworkPosition
-	}
-	get Rotation(): number {
-		let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
-		if (gameSceneNode !== undefined)
-			return gameSceneNode.m_angRotation ? IOBuffer[1] : 0
-
-		return 0
-	}
 	get RotationRad(): number {
 		return DegreesToRadian(this.Rotation)
-	}
-	get Scale(): number {
-		var gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
-
-		if (gameSceneNode === undefined)
-			return 1.0
-
-		return gameSceneNode.m_flAbsScale
 	}
 	/**
 	 * Buffs/debuffs are not taken
@@ -382,5 +384,18 @@ export default class Entity {
 		const turn_rad = Math.PI - 0.25
 		let ang = this.FindRotationAngle(vec)
 		return ang <= turn_rad ? 30 * ang / rotation_speed[this.Name] : 0
+	}
+
+	OnGameSceneNodeChanged(m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_angRotation: number, m_flAbsScale: number) {
+		m_vecOrigin.CopyTo(this.Position_)
+		m_angAbsRotation.CopyTo(this.Angles_)
+		this.Rotation_ = m_angRotation
+		this.Scale_ = m_flAbsScale
+	}
+	OnNetworkPositionChanged(new_position: Vector3) {
+		new_position.CopyTo(this.NetworkPosition_)
+	}
+	OnCreated() {
+		this.IsValid = true
 	}
 }

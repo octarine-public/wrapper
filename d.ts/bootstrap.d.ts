@@ -178,5 +178,7 @@ declare interface Events extends EventEmitter {
 		host_framestarttime_std_deviation: number,
 		host_loss: number
 	) => void): EventEmitter
+	on(name: "NetworkPositionChanged", listener: (ent: C_BaseEntity) => void): EventEmitter // position: Vector3 at IOBuffer offset 0
+	on(name: "GameSceneNodeChanged", listener: (ent: C_BaseEntity) => void): EventEmitter // m_vecOrigin: Vector3 at IOBuffer offset 0, m_angAbsRotation: QAngle at IOBuffer offset 3, m_angRotation: number at IOBuffer offset 6, m_flAbsScale: number at IOBuffer offset 7
 }
 declare var Events: Events

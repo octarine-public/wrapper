@@ -25,6 +25,7 @@ import Tower from "../Objects/Base/Tower"
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/Utils"
+import QAngle from "../Base/QAngle"
 
 export { PlayerResource, Game }
 
@@ -201,10 +202,9 @@ function AddToCache(entity: Entity) {
 		return
 	}
 
-	const index = entity.Index
-
 	entity.IsValid = true
 
+	const index = entity.Index
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
 	EntitiesIDs[index] = entity
 	AllEntities.push(entity)
@@ -302,3 +302,14 @@ function changeFieldsByEvents(unit: Unit) {
 		EventsSDK.emit("TeamVisibilityChanged", false, unit, isVisibleForEnemies, visibleTagged)
 	}
 }
+
+Events.on("NetworkPositionChanged", ent => {
+	let ent_ = entityManager.GetEntityByNative(ent, true)
+	if (ent_ !== undefined)
+		ent_.OnNetworkPositionChanged(Vector3.fromIOBuffer())
+})
+Events.on("GameSceneNodeChanged", ent => {
+	let ent_ = entityManager.GetEntityByNative(ent, true)
+	if (ent_ !== undefined)
+		ent_.OnGameSceneNodeChanged(Vector3.fromIOBuffer(), QAngle.fromIOBuffer(3), IOBuffer[6], IOBuffer[7])
+})
