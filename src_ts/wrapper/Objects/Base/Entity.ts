@@ -168,12 +168,8 @@ export default class Entity {
 		return this.Position_.Clone()
 	}
 	get NetworkPosition(): Vector3 {
-		if (!this.NetworkPosition_.IsValid) {
-			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
-			if (gameSceneNode === undefined)
-				return new QAngle()
-			Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_vecValue).CopyTo(this.NetworkPosition_)
-		}
+		if (!this.NetworkPosition_.IsValid)
+			this.Position.CopyTo(this.NetworkPosition_)
 		return this.NetworkPosition_.Clone()
 	}
 	get Scale(): number {

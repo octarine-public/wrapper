@@ -39,13 +39,20 @@ export default class Unit extends Entity {
 
 	/* ================================ Fields ================================ */
 	public readonly m_pBaseEntity: C_DOTA_BaseNPC
-	private m_Inventory: Inventory
-	private m_AbilitiesBook: AbilitiesBook
-	private m_ModifiersBook: ModifiersBook
+	public readonly AbilitiesBook: AbilitiesBook
+	public readonly Inventory: Inventory
+	public readonly ModifiersBook: ModifiersBook
+	public IsVisibleForEnemies: boolean = false
+	public IsTrueSightedForEnemies: boolean = false
 
-	private m_bIsVisibleForEnemies: boolean = false
-	private m_bIsTrueSightedForEnemies: boolean = false
 	private m_bHasScepterModifier: boolean = false
+
+	constructor(m_pBaseEntity: C_BaseEntity, Index: number = -1) {
+		super(m_pBaseEntity, Index)
+		this.AbilitiesBook = new AbilitiesBook(this)
+		this.Inventory = new Inventory(this)
+		this.ModifiersBook = new ModifiersBook(this)
+	}
 
 	/* ================ GETTERS ================ */
 	public get IsHero(): boolean {
@@ -109,8 +116,7 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_HEXED)
 	}
 	public get IsInvisible(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE)
-			|| this.InvisibleLevel > 0.5
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE) || this.InvisibleLevel > 0.5
 	}
 	public get IsInvulnerable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
@@ -147,18 +153,6 @@ export default class Unit extends Entity {
 	public get IsInFadeTime(): boolean {
 		return this.m_pBaseEntity.m_flInvisibilityLevel > 0
 	}
-	public set IsVisibleForEnemies(value: boolean) {
-		this.m_bIsVisibleForEnemies = value
-	}
-	public get IsVisibleForEnemies(): boolean {
-		return this.m_bIsVisibleForEnemies
-	}
-	public set IsTrueSightedForEnemies(value: boolean) {
-		this.m_bIsTrueSightedForEnemies = value
-	}
-	public get IsTrueSightedForEnemies(): boolean {
-		return this.m_bIsTrueSightedForEnemies
-	}
 	public get IsControllableByAnyPlayer(): boolean {
 		return this.m_pBaseEntity.m_iIsControllableByPlayer64 !== 0n
 	}
@@ -169,10 +163,7 @@ export default class Unit extends Entity {
 		this.m_bHasScepterModifier = value
 	}
 	public get HasScepter(): boolean {
-		if (this.HasStolenScepter)
-			return true
-
-		return this.m_bHasScepterModifier
+		return this.m_bHasScepterModifier || this.HasStolenScepter
 	}
 
 	public get Armor(): number {
@@ -383,15 +374,8 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_iUnitType
 	}
 
-	public get AbilitiesBook(): AbilitiesBook {
-		return this.m_AbilitiesBook
-			|| (this.m_AbilitiesBook = new AbilitiesBook(this))
-	}
 	public get Spells(): Ability[] {
 		return this.AbilitiesBook.Spells
-	}
-	public get Inventory(): Inventory {
-		return this.m_Inventory || (this.m_Inventory = new Inventory(this))
 	}
 	public get Items(): Item[] {
 		return this.Inventory.Items
@@ -405,10 +389,6 @@ export default class Unit extends Entity {
 		return this.GetItemByName(name, includeBackpack) !== undefined
 	}
 
-	public get ModifiersBook(): ModifiersBook {
-		return this.m_ModifiersBook
-			|| (this.m_ModifiersBook = new ModifiersBook(this))
-	}
 	public get Buffs(): Modifier[] {
 		return this.ModifiersBook.Buffs
 	}

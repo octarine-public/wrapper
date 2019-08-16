@@ -208,7 +208,8 @@ function AddToCache(entity: Entity) {
 	EntitiesIDs[index] = entity
 	AllEntities.push(entity)
 
-	changeFieldsByEvents(entity as Unit)
+	if (entity instanceof Unit)
+		changeFieldsByEvents(entity)
 
 	// console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
 	EventsSDK.emit("EntityCreated", false, entity, index)
@@ -289,9 +290,6 @@ function useQueueEntities() {
 /* ================ CHANGE FIELDS ================ */
 
 function changeFieldsByEvents(unit: Unit) {
-	if (!(unit instanceof Unit))
-		return
-
 	const visibleTagged = unit.IsVisibleForTeamMask
 
 	if (visibleTagged > 0) {
