@@ -115,7 +115,7 @@ EventsSDK.on("GameEnded", () => {
 		targetParticle = undefined
 	}
 	if (cshotparticle !== undefined) {
-		Particles.Destroy(cshotparticle, false)
+		Particles.Destroy(cshotparticle, true)
 		cshotparticle = undefined
 		currentcshot = undefined
 		cshotenemy = undefined
@@ -426,7 +426,7 @@ EventsSDK.on("Draw", () => {
 		}
 		if (targetParticle !== undefined) {
 			if (nearest === undefined && target === undefined) {
-				Particles.Destroy(targetParticle, false)
+				Particles.Destroy(targetParticle, true)
 				targetParticle = undefined
 			}else {
 				sky.Position.toIOBuffer()
@@ -444,7 +444,7 @@ EventsSDK.on("Draw", () => {
 	if (concShot.value) {
 		if (!shot.IsReady || (cshotenemy === undefined && cshotparticle !== undefined) || (currentcshot !== cshotenemy && cshotparticle !== undefined)) {
 			if (cshotparticle !== undefined)
-				Particles.Destroy(cshotparticle, false)
+				Particles.Destroy(cshotparticle, true)
 			cshotparticle = undefined
 			currentcshot = cshotenemy
 		}
