@@ -23,14 +23,16 @@ export const BestPosition = [
 ]
 
 export function DrawParticles() {
-	if (!stateMain.value || !State.value || !DrawState.value || !DrawHelpPosition.value || !Game.IsInGame || EntityManager.LocalHero === undefined)
+	if (
+		Game.LevelNameShort === "hero_demo_main"
+		|| !stateMain.value
+		|| !State.value
+		|| !DrawState.value
+		|| !DrawHelpPosition.value
+		|| !Game.IsInGame
+		|| EntityManager.LocalHero === undefined
+	)
 		return
-
-	if (Game.LevelNameShort !== "dota") {
-		// console.error("UnitBlock => CreepBlock => ParticleHelp. Particles can't draw because map is not 'DOTA'")
-		return
-	}
-
 	lastHero = EntityManager.LocalHero
 
 	const teamParticles = BestPosition[lastHero.Team - 2]
