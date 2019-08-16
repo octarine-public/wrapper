@@ -202,8 +202,7 @@ function AddToCache(entity: Entity) {
 		return
 	}
 
-	entity.IsValid = true
-
+	entity.OnCreated()
 	const index = entity.Index
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
 	EntitiesIDs[index] = entity
