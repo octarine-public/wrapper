@@ -1,4 +1,4 @@
-import { ArrayExtensions, Entity, EventsSDK, Game, Hero, LocalPlayer, Unit, Vector3 } from "wrapper/Imports"
+import { EventsSDK, Game } from "wrapper/Imports"
 import { stateMain } from "./abstract/Menu.Base"
 import * as Camp from "./Module/CampInformer/Entity"
 import * as Jungle from "./Module/JungleMapHack/Particle"

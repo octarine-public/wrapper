@@ -1,18 +1,17 @@
-import { Color, Debug, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Modifier, RendererSDK, Unit, Vector2 } from "wrapper/Imports"
-import Vector3 from "./wrapper/Base/Vector3"
+import { Color, EntityManager, EventsSDK, Game, Hero, MenuManager, Modifier, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
 let { MenuFactory } = MenuManager
 const menu = MenuFactory("Skill Alert"),
-	active = menu.AddToggle("Active"),
-	names = menu.AddCheckBox("Show skill names"),
+	active = menu.AddToggle("Active", true),
+	names = menu.AddCheckBox("Show skill names", false),
 	show = menu.AddListBox("Alert Skills", ["Sun Strike", "Torrent", "Light Strike Array", "Split Earth", "Charge of Darkness", "Snowball", "Infest", "Primal Spring"], [true, true, true, true, true, true, true, true]),
 	textSize = menu.AddSlider("Timer text size", 17, 10, 30),
 	spellIcons = menu.AddTree("Spell Icons"),
-	icons = spellIcons.AddCheckBox("Show spell icons"),
+	icons = spellIcons.AddCheckBox("Show spell icons", false),
 	size = spellIcons.AddSlider("Size", 30, 3, 100),
 	opacity = spellIcons.AddSlider("Opacity", 255, 0, 255),
 	chat = menu.AddTree("Send to chat"),
 	// pick = chat.AddCheckBox("Pick on position"),
-	chatActive = chat.AddCheckBox("Chat say"),
+	chatActive = chat.AddCheckBox("Chat say", false),
 	chatRangeCheck = chat.AddSlider("Range Check", 1300, 200, 5000),
 	chatShow = chat.AddListBox("Chat Alert Skills", show.values, [true, true, true, true, true, true, true, true]),
 	arModifiers = [
@@ -82,8 +81,7 @@ const menu = MenuFactory("Skill Alert"),
 		lina_light_strike_array: "Light Strike Array",
 		leshrac_split_earth: "Split Earth",
 		monkey_king_primal_spring: "Primal Spring",
-	},
-	floor = Math.floor
+	}
 let arTimers = new Map<Modifier, [number, number, string, Vector3]>(),
 	arHeroMods = new Map<Modifier, number>()
 
@@ -144,7 +142,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 				let heroes = EntityManager.GetEntitiesInRange(ent.Position, chatRangeCheck.value, ent => ent instanceof Hero && !ent.IsEnemy()),
 					names = [],
 					string = ""
-				heroes.forEach(hero => names.push(hero.Name.substring(14) + ` in ${floor(hero.Distance2D(ent))} range`))
+				heroes.forEach(hero => names.push(hero.Name.substring(14) + ` in ${Math.floor(hero.Distance2D(ent))} range`))
 				string = names.join(", ")
 				if (!string)
 					string = "no one, lul"
@@ -212,7 +210,7 @@ EventsSDK.on("Draw", () => {
 			vector.AddScalarY(-size.value)
 		}
 		if (icons.value) {
-			RendererSDK.Image("panorama/images/spellicons/" + val[2] + "_png.vtex_c", vector, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
+			RendererSDK.Image(`panorama/images/spellicons/${val[2]}_png.vtex_c`, vector, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
 			vector.AddScalarY(-30)
 		}
 		RendererSDK.Text(rend.toFixed(2), vector, Color.White, "Calibri", new Vector2(textSize.value, 200))

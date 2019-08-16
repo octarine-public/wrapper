@@ -1,6 +1,6 @@
 import { MenuManager } from "wrapper/Imports"
 export const Menu = MenuManager.MenuFactory("Be Aware")
-export const stateMain = Menu.AddToggle("State", false)
+export const stateMain = Menu.AddToggle("State", true)
 
 export function MenuBase(root: MenuManager.MenuControllers.Tree, name: string, tooltip?: string) {
 	let BaseTree = root.AddTree(name)

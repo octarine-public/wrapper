@@ -127,7 +127,7 @@ const { MenuFactory } = MenuManager,
 		npc_dota_hero_obsidian_destroyer:	"Outworld Devourer",
 		npc_dota_hero_lycan:	"Lycan",
 	}
-leave.OnPressed(btn => {
+leave.OnPressed(() => {
 	const player = PlayerResource.GetPlayerByPlayerID(pid.selected_id)
 	if (player === undefined)
 		return
@@ -139,7 +139,7 @@ leave.OnPressed(btn => {
 		setTimeout(() =>  SendToConsole("disconnect"), Additionaldelay.value * 1000)
 	}
 })
-leaveFriend.OnPressed(btn => {
+leaveFriend.OnPressed(() => {
 	const player = PlayerResource.GetPlayerByPlayerID(pid.selected_id)
 	if (player === undefined)
 		return

@@ -9,7 +9,7 @@ var particlePath = "",
 	allUnitsAsMap = new Map<Unit, number>()
 
 const TrueSightMenu = MenuManager.MenuFactory("TrueSight Detector"),
-	stateMain = TrueSightMenu.AddToggle("State").OnValue(() => OnChangeValue()),
+	stateMain = TrueSightMenu.AddToggle("State", true).OnValue(() => OnChangeValue()),
 	allyState = TrueSightMenu.AddToggle("Allies state", true).OnValue(() => OnChangeValue())
 
 const particleStylesCombo = TrueSightMenu.AddComboBox("Particle", [

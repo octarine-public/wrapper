@@ -10,7 +10,7 @@ let allUnits = new Map<Unit, number>() // <Unit, Particle>
 let particlePath = "particles/items_fx/aura_shivas.vpcf"
 
 const VBEMenu = MenuManager.MenuFactory("Visible By Enemy"),
-	stateMain = VBEMenu.AddToggle("State").OnValue(OnChangeValue),
+	stateMain = VBEMenu.AddToggle("State", true).OnValue(OnChangeValue),
 	allyState = VBEMenu.AddToggle("Allies state", true).OnValue(OnChangeValue)
 
 function OnChangeValue() {
