@@ -45,6 +45,7 @@ export default class Unit extends Entity {
 	public IsVisibleForEnemies: boolean = false
 	public IsTrueSightedForEnemies: boolean = false
 
+	private UnitName_: string
 	private m_bHasScepterModifier: boolean = false
 
 	constructor(m_pBaseEntity: C_BaseEntity, Index: number = -1) {
@@ -784,10 +785,15 @@ export default class Unit extends Entity {
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
 			return this.CastTarget(ability, target as Entity, showEffects)
 	}
+	public get Name(): string {
+		if (this.UnitName_ === undefined)
+			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
+		return this.UnitName_ || super.Name
+	}
 
 	OnCreated() {
 		super.OnCreated()
-		this.Name_ = this.m_pBaseEntity.m_iszUnitName || this.Name_
+		this.UnitName_ = this.m_pBaseEntity.m_iszUnitName || this.Name_
 	}
 
 	/* ORDERS */

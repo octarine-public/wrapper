@@ -156,13 +156,15 @@ export default class Entity {
 		return this.Owner_ || (this.Owner_ = EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
 	}
 	get Name(): string { // trick to make it public ro, and protected rw
+		if (this.Name_ === undefined && this.Entity !== undefined)
+			return this.Name_ = this.Entity.m_designerName || this.Entity.m_name
 		return this.Name_
 	}
 	get Position(): Vector3 { // trick to make it public ro, and protected rw
-		if (!this.NetworkPosition_.IsValid) {
+		if (!this.Position_.IsValid) {
 			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
 			if (gameSceneNode === undefined)
-				return new QAngle()
+				return new Vector3()
 			Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_vecValue).CopyTo(this.Position_)
 		}
 		return this.Position_.Clone()
@@ -389,7 +391,7 @@ export default class Entity {
 		this.Scale_ = m_flAbsScale
 	}
 	OnNetworkPositionChanged(new_position: Vector3) {
-		new_position.CopyTo(this.NetworkPosition_)
+		new_position.CopyTo(this.NetworkPosition_).CopyTo(this.Position_)
 	}
 	OnCreated() {
 		this.IsValid = true
