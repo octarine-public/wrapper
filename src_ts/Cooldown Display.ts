@@ -7,39 +7,21 @@ import {
 	MenuManager,
 	RendererSDK,
 	Vector2,
+	Ability,
+	LocalPlayer,
 } from "wrapper/Imports"
 
-let renderable_heroes: Hero[] = [],
-	heroes: Hero[] = []
-
 const Menu = MenuManager.MenuFactory("Cooldown Display"),
-	stateMain = Menu.AddToggle("State"),
-	size = Menu.AddSlider("Size", 30, 3, 100),
-	opacity = Menu.AddSlider("Opacity", 255, 0, 255),
-	lvl_r = Menu.AddSlider("Level R", 255, 0, 255),
-	lvl_g = Menu.AddSlider("Level G", 255, 0, 255),
-	lvl_b = Menu.AddSlider("Level B", 255, 0, 255),
-	panelx = Menu.AddSlider("X offset", 0, 0, 100),
-	panely = Menu.AddSlider("Y offset", 0, 0, 100)
-
-EventsSDK.on("EntityCreated", npc => {
-	if (
-		npc instanceof Hero
-		&& npc.IsEnemy()
-		&& !npc.IsIllusion
-	)
-		heroes.push(npc)
-})
-Events.on("EntityDestroyed", ent => {
-	if (ent instanceof Hero)
-		ArrayExtensions.arrayRemove(heroes, ent)
-})
-
-Events.on("Update", () => {
-	if (!stateMain.value)
-		return
-	renderable_heroes = heroes.filter(npc => npc.IsAlive && npc.IsVisible && !npc.IsIllusion)
-})
+	optionEnable = Menu.AddToggle("Enable"),
+	optionAlly = Menu.AddToggle("Show ally"),
+	optionSelf = Menu.AddToggle("Show local"),
+	optionBoxSize = Menu.AddSlider("Size", 30, 20, 60),
+	optionBoxOffsetX = Menu.AddSlider("Offset X", 0, -100, 100),
+	optionBoxOffsetY = Menu.AddSlider("Offset Y", 0, -100, 100),
+	optionBoxAlpha = Menu.AddSlider("Opacity", 255, 0, 255),
+	optionFontBold = Menu.AddToggle("Font bold"),
+	optionFontOutlined = Menu.AddToggle("Font outlined"),
+	DrawRGBA = MenuManager.CreateRGBATree(Menu, "Color ability level", new Color(0, 255, 255))
 
 let ignore_abils = [
 	"morphling_morph_agi",
@@ -50,69 +32,196 @@ let ignore_abils = [
 	"rubick_hidden1",
 	"rubick_hidden2",
 	"rubick_hidden3",
-]
-EventsSDK.on("Draw", () => {
-	if (!stateMain.value)
-		return
-	renderable_heroes.forEach(hero => {
-		// loop-optimizer: FORWARD
-		let renderable_abils = hero.Spells.filter((abil, i) => {
-			let name = abil.Name
-			return i < 6 && !ignore_abils.some(ignore_name => name === ignore_name) && !abil.IsHidden
-		})
-		// loop-optimizer: FORWARD
-		renderable_abils.forEach(((abil, i) => {
-			let screen_pos = RendererSDK.WorldToScreen(hero.Position)
+];
 
-			if (screen_pos !== undefined) {
-				let need_pos = (screen_pos.AddScalarX(size.value * i)).Add(new Vector2(panelx.value, 30 + panely.value)).Subtract(new Vector2(renderable_abils.length * (size.value / 2), 0))
-				RendererSDK.Image("panorama/images/spellicons/" + abil.Name + "_png.vtex_c", need_pos, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
-				if (abil.IsInAbilityPhase) {
-					let time = Math.max(((Game.RawGameTime - abil.CastStartTime) / abil.CastPoint), 0)
-					RendererSDK.FilledRect (
-						need_pos.Clone().AddScalarY(size.value * time),
-						new Vector2(size.value, size.value * (1 - time)),
-						new Color(232, 232, 232, 100),
-					)
-				}
-				if (abil.Level !== 0) {
-					let r = 0, g = 255, b = 0, a = 40
-					if (hero.Mana < abil.ManaCost) {
-						r = 0, g = 170, b = 255
-					}
-					if (a)
-						RendererSDK.OutlinedRect(need_pos, new Vector2(size.value, size.value), new Color(r, g, b, opacity.value > 40 ? opacity.value - a : 10))
-					else
-						RendererSDK.OutlinedRect(need_pos, new Vector2(size.value, size.value), new Color(r, g, b, opacity.value))
-				} else
-					RendererSDK.OutlinedRect(need_pos, new Vector2(size.value, size.value), new Color(255, 0, 0, opacity.value))
-				if (abil.Cooldown !== 0) {
-					let s = size.value / 3.5
-					let cd = abil.Cooldown
-					if (cd >= 10) {
-						if (cd < 100)
-							s = size.value / 5
-						else
-							s = size.value / 10
-					}
-					RendererSDK.FilledRect(need_pos, new Vector2(size.value, size.value), new Color(0, 0, 0, 150))
-					RendererSDK.Text(
-						cd.toFixed(1),
-						need_pos.Clone().AddScalarX(s).AddScalarY(size.value / 2.9),
-						new Color(255, 255, 255),
-						"Consolas",
-						new Vector2(size.value / 3, 0),
-						FontFlags_t.OUTLINE,
-					)
-				}
-				for (let j = 0, lvl = abil.Level, end = abil.MaxLevel; j < end; j++) {
-					let rect_pos = need_pos.Clone().AddScalarX(size.value / end * j).AddScalarY(size.value * (17 / 20)),
-						rect_size = new Vector2(size.value / end, size.value * (3 / 20))
-					if (lvl > j)
-						RendererSDK.FilledRect(rect_pos, rect_size, new Color(185, 167, 110))
-					RendererSDK.OutlinedRect(rect_pos, rect_size, new Color(185, 167, 110))
-				}
+let heroes: Hero[] = [];
+
+EventsSDK.on("EntityCreated", npc => {
+	if (!optionEnable.value || !Game.IsInGame)
+		return;
+	if (npc instanceof Hero
+		&& !npc.IsIllusion) {
+		heroes.push(npc)
+	}
+});
+
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent instanceof Hero) {
+		ArrayExtensions.arrayRemove(heroes, ent)
+	}
+});
+
+function IsCastable(ability: Ability, mana): boolean {
+	return (
+		ability.ManaCost <= mana &&
+		ability.Level > 0 &&
+		ability.Cooldown <= 0
+	);
+}
+
+function DrawAbilityLevels(ability: Ability, x, y) {
+	let level = ability.Level;
+
+	let level_box_size = Math.floor(optionBoxSize.value * 0.1875);
+
+	x++;
+	y = (
+		(y + optionBoxSize.value) -
+		level_box_size
+	) - 1;
+
+
+	for (let i = 0; i < level; i++) {
+		let size = new Vector2(level_box_size, level_box_size);
+		let pos = new Vector2(x + i * level_box_size, y);
+
+		RendererSDK.FilledRect(
+			pos,
+			size,
+			new Color(DrawRGBA.Color.r, DrawRGBA.Color.g, DrawRGBA.Color.b, DrawRGBA.Color.a)
+		);
+
+		RendererSDK.OutlinedRect(
+			pos,
+			size,
+			new Color(0, 0, 0)
+		);
+	}
+}
+
+function DrawAbilitySquare(hero: Hero, ability: Ability, x, y, index) {
+	let real_x = x + (index * optionBoxSize.value) + 2;
+	//default colors = can cast
+	let imageColor = new Color(255, 255, 255);
+	let outlineColor = new Color(0, 255, 0);
+
+	if (!IsCastable(ability, hero.Mana)) {
+		if (ability.Level == 0) {
+			imageColor = new Color(125, 125, 125);
+			outlineColor = new Color(255, 0, 0);
+		} else if (ability.ManaCost > hero.Mana) {
+			imageColor = new Color(150, 150, 255);
+			outlineColor = new Color(0, 0, 255);
+		} else {
+			imageColor = new Color(255, 150, 150);
+			outlineColor = new Color(255, 0, 0);
+		}
+	}
+
+	imageColor.SetA(optionBoxAlpha.value);
+
+	let box_size = new Vector2(optionBoxSize.value, optionBoxSize.value);
+
+	RendererSDK.Image(
+		"panorama/images/spellicons/" + ability.Name + "_png.vtex_c",
+		new Vector2(real_x, y),
+		box_size,
+		imageColor
+	);
+
+	RendererSDK.OutlinedRect(new Vector2(real_x, y), box_size, outlineColor);
+
+	let cooldown_lenght = ability.CooldownLenght;
+	let cooldown = ability.Cooldown;
+
+	if (cooldown > 0.0 && cooldown_lenght > 0.0) {
+
+		let inner_box_size = optionBoxSize.value - 2;
+
+		let cooldown_ratio = cooldown / cooldown_lenght;
+		let cooldown_size = Math.floor(inner_box_size * cooldown_ratio);
+
+		RendererSDK.FilledRect(
+			new Vector2(real_x + 1, y + (inner_box_size - cooldown_size) + 1),
+			new Vector2(inner_box_size, cooldown_size),
+			new Color(255, 255, 255, 50)
+		);
+
+		let text_cooldown = (
+			cooldown >= 10 ?
+				Math.floor(cooldown) :
+				cooldown.toFixed(1)
+		).toString();
+
+		const magic_number = 0.643;
+
+		let font_size = Math.floor(inner_box_size * magic_number);
+
+		RendererSDK.Text(
+			text_cooldown,
+			new Vector2(
+				real_x + inner_box_size / 2 -
+				text_cooldown.length * font_size * (1 - magic_number) / 2,
+				y
+			),
+			new Color(255, 255, 255),
+			"Tahoma",
+			new Vector2(
+				font_size,
+				optionFontBold.value ? 800 : 200
+			),
+			optionFontOutlined.value ? FontFlags_t.OUTLINE : 0
+		);
+	}
+	DrawAbilityLevels(ability, real_x, y)
+}
+
+function DrawDisplay(hero: Hero) {
+	let pos = hero.Position.AddScalarZ(hero.HealthBarOffset);
+
+	let screen_pos = RendererSDK.WorldToScreen(pos);
+
+	if (screen_pos !== undefined) {
+		// loop-optimizer: FORWARD
+		let abilities = hero.Spells.filter((abil, i) => {
+			let name = abil.Name;
+			return i < 6 &&
+				!ignore_abils.some(ignore_name => name === ignore_name) &&
+				!abil.IsHidden
+		})
+
+		let start_x = screen_pos.x - Math.floor((abilities.length / 2) * optionBoxSize.value) + optionBoxOffsetX.value;
+		let start_y = screen_pos.y + optionBoxOffsetY.value;
+
+		RendererSDK.FilledRect(
+			new Vector2(start_x + 1, start_y - 1),
+			new Vector2((optionBoxSize.value * abilities.length) + 2, optionBoxSize.value + 2),
+			new Color(0, 0, 0, 160)
+		);
+
+		abilities.forEach(((ability, i) => {
+			DrawAbilitySquare(hero, ability, start_x, start_y, i);
+		}));
+
+		RendererSDK.OutlinedRect(
+			new Vector2(start_x + 1, start_y - 1),
+			new Vector2(
+				(optionBoxSize.value * abilities.length) + 2,
+				optionBoxSize.value + 2
+			),
+			new Color(0, 0, 0)
+		);
+
+	}
+}
+
+EventsSDK.on("Draw", () => {
+	if (!optionEnable.value || !Game.IsInGame)
+		return;
+	heroes.forEach((hero) => {
+		if (hero.IsAlive && !hero.IsDormant) {
+			let is_local = hero == LocalPlayer.Hero;
+
+			if (
+				(optionSelf.value || !is_local) &&
+				(optionAlly.value || hero.IsEnemy(LocalPlayer.Hero) || is_local)
+			) {
+				DrawDisplay(hero);
 			}
-		}))
-	})
+		}
+	});
+});
+
+EventsSDK.on("GameEnded", () => {
+	heroes = [];
 })
