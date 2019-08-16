@@ -76,6 +76,7 @@ function IsValidUnit(unit: Unit) {
 	return unit !== undefined && unit.IsEnemy && unit.IsAlive && !unit.IsStunned && !unit.IsChanneling
 		&& (unit.Name === "npc_dota_hero_riki" || unit.InvisibleLevel <= 0 || IgnoreBuffs)
 }
+
 function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
 	return AllCreeps.filter(Creep => {
 		if (Creep !== undefined
@@ -101,6 +102,7 @@ function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
 		return false
 	})
 }
+
 function CheckUnitForUrn(Unit: Unit, MaxHP: number) {
 	return Unit.IsAlive && Unit.HP <= MaxHP && !Unit.IsInvulnerable
 		&& !Unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))
