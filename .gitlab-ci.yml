@@ -1,6 +1,12 @@
 # Official framework image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/node/tags/
 image: node:10.9-alpine
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+  - node_modules/
+
 stages:
   - prepare
 #  - test
@@ -13,9 +19,6 @@ stages:
 
 prepare:
   stage: prepare
-  cache:
-    paths:
-      - node_modules/
   script:
    - npm i
 
@@ -23,7 +26,6 @@ build:
   stage: build
   cache:
     paths:
-      - node_modules/
       - scripts/
       - bootstrap.js
   script:
@@ -37,7 +39,6 @@ package:
   stage: package
   cache:
     paths:
-      - node_modules/
       - scripts/
   script:
     - apk update
