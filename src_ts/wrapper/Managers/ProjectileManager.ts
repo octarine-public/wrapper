@@ -126,8 +126,8 @@ Events.on("LinearProjectileDestroyed", proj => {
 
 Events.on("ServerTick", () => {
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
-		proj.Position.x += proj.Velocity.x / 60
-		proj.Position.y += proj.Velocity.y / 60
+		proj.Position.x += proj.Velocity.x / 30
+		proj.Position.y += proj.Velocity.y / 30
 	})
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
 		if (!proj.Position.IsValid)
@@ -137,16 +137,22 @@ Events.on("ServerTick", () => {
 					.CopyTo(proj.Position)
 			else
 				return
-		proj.Position.Extend(proj.TargetLoc, proj.Speed / 60).CopyTo(proj.Position)
+		proj.Position.Extend(proj.TargetLoc, proj.Speed / 30).CopyTo(proj.Position)
 		if (proj.DestroyAtNextTick)
 			DestroyTrackingProjectile(proj)
-		else if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 60)
+		else if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30)
 			proj.DestroyAtNextTick = true
 	})
 })
 
 Events.on("Draw", () => {
-	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
+	ProjectileManager.AllTrackingProjectiles.flat().forEach(proj => {
+		let w2s = RendererSDK.WorldToScreen(proj.Position)
+		if (w2s === undefined)
+			return
+		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
+	})
+	ProjectileManager.AllLinearProjectiles.flat().forEach(proj => {
 		let w2s = RendererSDK.WorldToScreen(proj.Position)
 		if (w2s === undefined)
 			return
