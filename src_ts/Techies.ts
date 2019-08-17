@@ -1,4 +1,4 @@
-import { Unit, Hero, Entity, Game, ArrayExtensions, EventsSDK, LocalPlayer, EntityManager, Vector3, Ability, MenuManager } from "./wrapper/Imports"
+import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Unit, Vector3 } from "./wrapper/Imports"
 
 let TechiesMenu = MenuManager.MenuFactory("Techies"),
 	State = TechiesMenu.AddToggle("State"),
@@ -12,7 +12,7 @@ let TechiesMenu = MenuManager.MenuFactory("Techies"),
 const RMineTriggerRadius = 425,
 	RMineBlowDelay = .25,
 	ForcestaffUnits = 600
-	
+
 var NoTarget: Entity[] = [],
 	particles = new Map<Unit, number>(),
 	rmines: Array<[
@@ -60,7 +60,7 @@ function TryDagon(ent: Unit, damage: number = 0, damage_type: number = DAMAGE_TY
 	return false
 }
 
-function CallMines (
+function CallMines(
 	ent: Unit,
 	callback: (rmine: Unit) => boolean,
 	explosionCallback: (RMinesToBlow: Unit[], RMinesDmg: number) => void,

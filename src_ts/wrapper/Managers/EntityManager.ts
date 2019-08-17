@@ -22,10 +22,10 @@ import Building from "../Objects/Base/Building"
 import PhysicalItem from "../Objects/Base/PhysicalItem"
 import Tower from "../Objects/Base/Tower"
 
+import QAngle from "../Base/QAngle"
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/Utils"
-import QAngle from "../Base/QAngle"
 
 export { PlayerResource, Game }
 

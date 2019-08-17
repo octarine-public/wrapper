@@ -1,10 +1,10 @@
 import { Color, EntityManager, EventsSDK, RendererSDK } from "wrapper/Imports"
+import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
+import Entity from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import { arrayRemove } from "../Utils/ArrayExtensions"
-import Vector3 from "../Base/Vector3"
-import Vector2 from "../Base/Vector2"
 import { Game } from "./EntityManager"
-import Entity from "../Objects/Base/Entity"
 
 let ProjectileManager = new (class ProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
@@ -76,7 +76,7 @@ Events.on("TrackingProjectilesDodged", (ent, attacks_only) => {
 	ProjectileManager.AllTrackingProjectiles.filter(proj =>
 		proj.IsDodgeable
 		&& proj.Target === ent_
-		&& (!attacks_only || proj.IsAttack)
+		&& (!attacks_only || proj.IsAttack),
 	).forEach(proj => proj.Dodge())
 })
 

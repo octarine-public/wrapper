@@ -1,16 +1,16 @@
-import { Entity, ArrayExtensions, Game, LocalPlayer, Hero, Item } from "wrapper/Imports";
+import { ArrayExtensions, Entity, Game, Hero, Item, LocalPlayer } from "wrapper/Imports"
 import {
-	State, StateItems
+	State, StateItems,
 } from "./Menu"
 
 let ward_list: Entity[] = [],
 	Items = [
-		"item_quelling_blade", 
-		"item_bfury", 
-		"item_tango", 
-		"item_tango_single"
-	];
-	
+		"item_quelling_blade",
+		"item_bfury",
+		"item_tango",
+		"item_tango_single",
+	]
+
 function IsValidHero(Hero: Hero) {
 	return Hero === undefined
 	|| !Hero.IsAlive
@@ -34,12 +34,12 @@ function IsDewardable(ent: Entity) {
 
 export function EntityCreate(ent: Entity) {
 	if (!State.value)
-		return false;
+		return false
 	if (IsDewardable(ent))
 		ward_list.push(ent)
 }
 
-export function EntityDestroyed(ent: Entity){
+export function EntityDestroyed(ent: Entity) {
 	if (IsDewardable(ent))
 		ArrayExtensions.arrayRemove(ward_list, ent)
 }
@@ -49,7 +49,7 @@ export function Tick() {
 		return false
 	let Me = LocalPlayer.Hero
 	if (IsValidHero(Me))
-		return false;		
+		return false
 	Me.Inventory.GetItemsByNames(["item_quelling_blade", "item_bfury", "item_tango", "item_tango_single"]).filter(item =>
 		item !== undefined
 		&& StateItems.IsSelectedID(Items.indexOf(item.Name))
