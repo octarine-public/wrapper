@@ -75,7 +75,7 @@ export function OnDraw() {
 				RendererSDK.DrawMiniMapIcon("minimap_creep", position, 500, DrawRGBA.Color)
 			else if (handle === 14221266834388661971n && !position.Equals(new Vector3(1200, 1, 1200))) // "particles/items2_fx/smoke_of_deceit.vpcf"
 				RendererSDK.DrawMiniMapIcon("minimap_ping", position, 700, DrawRGBA.Color)
-		} else if (target.IsEnemy() && !target.IsVisible) {
+		} else if (target.IsEnemy() && (!target.IsVisible || handle === 9908905996079864839n)) {
 			let Name = target.Name
 			let color = fullColor
 			if (handle === 9908905996079864839n) // "particles/items2_fx/teleport_end.vpcf"
@@ -116,7 +116,6 @@ export function OnDraw() {
 export function ParticleDestroyed(id: number) {
 	if (teleport_end2start.has(id))
 		teleport_end2start.delete(id)
-	Particle.delete(id)
 }
 export function GameEnded() {
 	Particle = new Map()
