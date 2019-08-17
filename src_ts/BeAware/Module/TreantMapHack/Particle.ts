@@ -1,4 +1,4 @@
-import { ArrayExtensions, Entity, LocalPlayer, Unit, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Entity, LocalPlayer, Unit, Vector3, ParticlesSDK } from "wrapper/Imports"
 import { State } from "./Menu"
 
 var treant_eyes: Unit[] = [], pars: number[] = []
@@ -13,9 +13,8 @@ export function Create(ent: Entity, id: number) {
 		return
 	if (ent instanceof Unit && ent.m_pBaseEntity instanceof C_DOTA_NPC_Treant_EyesInTheForest) {
 		treant_eyes.push(ent)
-		var par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent.m_pBaseEntity)
-		new Vector3(100, 0, 0).toIOBuffer()
-		Particles.SetControlPoint(par, 1)
+		var par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
+		ParticlesSDK.SetControlPoint(par, 1, new Vector3(100, 0, 0))
 		pars[id] = par
 	}
 }
@@ -43,7 +42,7 @@ export function Tick(): boolean {
 			ent.Flags |= 1 << 7
 			ent.Flags &= ~(1 << 3)
 			treant_eyes.splice(i, 1)
-			Particles.Destroy(pars[ent.Index], true)
+			ParticlesSDK.Destroy(pars[ent.Index], true)
 			delete pars[ent.Index]
 			return true
 		}
@@ -55,6 +54,6 @@ export function GameEnded() {
 		return
 	treant_eyes = []
 	// loop-optimizer: POSSIBLE_UNDEFINED
-	pars.forEach(par => Particles.Destroy(par, true))
+	pars.forEach(par => ParticlesSDK.Destroy(par, true))
 	pars = []
 }

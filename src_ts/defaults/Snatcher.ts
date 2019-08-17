@@ -12,6 +12,7 @@ import {
 	Rune,
 	Unit,
 	Vector3,
+	ParticlesSDK,
 } from "wrapper/Imports"
 
 // import { PickupItem, PickupRune } from "../Orders"
@@ -242,24 +243,23 @@ function removedIDRune(rune: Rune) {
 }
 
 function createRuneParticle(ent: Entity, color: Color, radius: number) {
-	const particleID = Particles.Create (
+	const particleID = ParticlesSDK.Create (
 		"particles/ui_mouseactions/drag_selected_ring.vpcf",
 		ParticleAttachment_t.PATTACH_ABSORIGIN,
-		ent.m_pBaseEntity,
+		ent,
 	)
 
-	color.toIOBuffer()
-	Particles.SetControlPoint(particleID, 1)
-	new Vector3(radius * 1.1, 255).toIOBuffer()
-	Particles.SetControlPoint(particleID, 2)
+	ParticlesSDK.SetControlPoint(particleID, 1, new Vector3(color.r, color.g, color.b))
+	ParticlesSDK.SetControlPoint(particleID, 2, new Vector3(radius * 1.1, 255))
 
 	allRunesParticles[ent.Index].push(particleID)
 }
 
 function updateRuneAllParticle() {
-	drawParticleTake_Color.Color.toIOBuffer()
+	let color = drawParticleTake_Color.Color
+	let color_ = new Vector3(color.r, color.g, color.b)
 	// loop-optimizer: POSSIBLE_UNDEFINED
-	allRunesParticles.forEach(partcl => Particles.SetControlPoint(partcl[0], 1))
+	allRunesParticles.forEach(partcl => ParticlesSDK.SetControlPoint(partcl[0], 1, color_))
 }
 
 function destroyRuneParticles(runeID: number | string) {
@@ -267,7 +267,7 @@ function destroyRuneParticles(runeID: number | string) {
 	if (particles !== undefined) {
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		particles.forEach(particleID =>
-			Particles.Destroy(particleID, true))
+			ParticlesSDK.Destroy(particleID, true))
 
 		allRunesParticles[runeID] = undefined
 	}
@@ -276,7 +276,7 @@ function destroyRuneParticles(runeID: number | string) {
 function destroyRuneAllParticles() {
 	// loop-optimizer: POSSIBLE_UNDEFINED
 	allRunesParticles.forEach(particles => {
-		particles.forEach(particleID => Particles.Destroy(particleID, true))
+		particles.forEach(particleID => ParticlesSDK.Destroy(particleID, true))
 	})
 
 	allRunesParticles = []

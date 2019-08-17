@@ -4,6 +4,7 @@ import {
 	LocalPlayer,
 	MenuManager,
 	Unit,
+	ParticlesSDK,
 } from "wrapper/Imports"
 
 let allUnits = new Map<Unit, number>() // <Unit, Particle>
@@ -32,7 +33,7 @@ function Destroy(particleID: number, unit: Unit) {
 	if (particleID === -1)
 		return
 
-	Particles.Destroy(particleID, true)
+	ParticlesSDK.Destroy(particleID, true)
 	allUnits.set(unit, -1)
 }
 
@@ -71,7 +72,7 @@ function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsVisibleForE
 		return
 
 	if ((isVisibleForEnemies && particleID === -1) && isAlive)
-		allUnits.set(unit, Particles.Create(particlePath, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit.m_pBaseEntity))
+		allUnits.set(unit, ParticlesSDK.Create(particlePath, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit))
 	else if ((!isVisibleForEnemies || !isAlive) && particleID !== -1)
 		Destroy(particleID, unit)
 }

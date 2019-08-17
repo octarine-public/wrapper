@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Color, Debug, Entity, EntityManager, EventsSDK, Game, Hero, Item, MenuManager, Modifier, RendererSDK, Unit, Utils, Vector2, Vector3 } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Color, Debug, Entity, EntityManager, EventsSDK, Game, Hero, Item, MenuManager, Modifier, RendererSDK, Unit, Utils, Vector2, Vector3, ParticlesSDK } from "wrapper/Imports"
 let { MenuFactory } = MenuManager
 const menu = MenuFactory("SkyWrathCombo"),
 	active = menu.AddToggle("Active"),
@@ -111,11 +111,11 @@ EventsSDK.on("GameEnded", () => {
 	IsEZKillable = false
 	lastCheckTime = undefined
 	if (targetParticle !== undefined) {
-		Particles.Destroy(targetParticle, true)
+		ParticlesSDK.Destroy(targetParticle, true)
 		targetParticle = undefined
 	}
 	if (cshotparticle !== undefined) {
-		Particles.Destroy(cshotparticle, true)
+		ParticlesSDK.Destroy(cshotparticle, true)
 		cshotparticle = undefined
 		currentcshot = undefined
 		cshotenemy = undefined
@@ -422,41 +422,34 @@ EventsSDK.on("Draw", () => {
 		return
 	if (drawTargetParticle.value) {
 		if (targetParticle === undefined && (nearest !== undefined || target !== undefined)) {
-			targetParticle = Particles.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, nearest.m_pBaseEntity)
+			targetParticle = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, nearest)
 		}
 		if (targetParticle !== undefined) {
 			if (nearest === undefined && target === undefined) {
-				Particles.Destroy(targetParticle, true)
+				ParticlesSDK.Destroy(targetParticle, true)
 				targetParticle = undefined
 			}else {
-				sky.Position.toIOBuffer()
-				Particles.SetControlPoint(targetParticle, 2)
-				new Vector3(1, 0, 0).toIOBuffer()
-				Particles.SetControlPoint(targetParticle, 6)
-				if (target === undefined)
-					nearest.Position.toIOBuffer()
-				else
-					target.Position.toIOBuffer()
-				Particles.SetControlPoint(targetParticle, 7)
+				ParticlesSDK.SetControlPoint(targetParticle, 2, sky.Position)
+				ParticlesSDK.SetControlPoint(targetParticle, 6, new Vector3(1))
+				ParticlesSDK.SetControlPoint(targetParticle, 7, (target || nearest).Position)
 			}
 		}
 	}
 	if (concShot.value) {
 		if (!shot.IsReady || (cshotenemy === undefined && cshotparticle !== undefined) || (currentcshot !== cshotenemy && cshotparticle !== undefined)) {
 			if (cshotparticle !== undefined)
-				Particles.Destroy(cshotparticle, true)
+				ParticlesSDK.Destroy(cshotparticle, true)
 			cshotparticle = undefined
 			currentcshot = cshotenemy
 		}
 		if (cshotparticle === undefined && cshotenemy !== undefined && shot.IsReady)
-			cshotparticle = Particles.Create("particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
+			cshotparticle = ParticlesSDK.Create("particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
 		if (cshotparticle !== undefined && shot.IsReady) {
 			const pos = cshotenemy.Position
-			pos.SetZ(pos.z + 310).toIOBuffer()
-			Particles.SetControlPoint(cshotparticle, 0)
-			Particles.SetControlPoint(cshotparticle, 1)
-			new Vector3(cshotenemy.IdealSpeed, 0, 0).toIOBuffer()
-			Particles.SetControlPoint(cshotparticle, 2)
+			pos.AddScalarZ(310)
+			ParticlesSDK.SetControlPoint(cshotparticle, 0, pos)
+			ParticlesSDK.SetControlPoint(cshotparticle, 1, pos)
+			ParticlesSDK.SetControlPoint(cshotparticle, 2, new Vector3(cshotenemy.IdealSpeed))
 		}
 	}
 	if (drawStatus.value) {

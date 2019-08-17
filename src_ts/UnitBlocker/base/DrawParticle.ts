@@ -1,10 +1,10 @@
-import { Unit, Vector3 } from "wrapper/Imports"
+import { Unit, Vector3, ParticlesSDK } from "wrapper/Imports"
 
 let allParticles = new Map<string, number>()
 
 export function GameEnded() {
 	// loop-optimizer: KEEP
-	allParticles.forEach(partl => Particles.Destroy(partl, true))
+	allParticles.forEach(partl => ParticlesSDK.Destroy(partl, true))
 }
 
 export function AddOrUpdateParticle(name: string, unit: Unit, pos: Vector3, range: number) {
@@ -12,23 +12,15 @@ export function AddOrUpdateParticle(name: string, unit: Unit, pos: Vector3, rang
 		particle = allParticles.get(nameOfParticle)
 
 	if (particle === undefined) {
-		allParticles.set(nameOfParticle, Particles.Create("particles/ui_mouseactions/drag_selected_ring.vpcf", 0, unit.m_pBaseEntity))
+		allParticles.set(nameOfParticle, ParticlesSDK.Create("particles/ui_mouseactions/drag_selected_ring.vpcf", 0, unit))
 
 		particle = allParticles.get(nameOfParticle)
 
-		IOBuffer[0] = 0
-		IOBuffer[1] = 255
-		IOBuffer[2] = 255
-		Particles.SetControlPoint(particle, 1)
-
-		IOBuffer[0] = range * 1.1
-		IOBuffer[1] = 255
-		IOBuffer[2] = 0
-		Particles.SetControlPoint(particle, 2)
+		ParticlesSDK.SetControlPoint(particle, 1, new Vector3(0, 255, 255))
+		ParticlesSDK.SetControlPoint(particle, 2, new Vector3(range * 1.1, 255, 0))
 	}
 
-	pos.toIOBuffer()
-	Particles.SetControlPoint(particle, 0)
+	ParticlesSDK.SetControlPoint(particle, 0, pos)
 }
 
 export function RemoveParticle(name: string, unit: Unit) {
@@ -36,7 +28,7 @@ export function RemoveParticle(name: string, unit: Unit) {
 		particle = allParticles.get(nameOfParticle)
 
 	if (particle !== undefined) {
-		Particles.Destroy(particle, true)
+		ParticlesSDK.Destroy(particle, true)
 		allParticles.delete(nameOfParticle)
 	}
 }

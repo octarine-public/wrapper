@@ -1,4 +1,4 @@
-import { Color, EntityManager, EventsSDK, Game, Hero, MenuManager, Modifier, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
+import { Color, EntityManager, EventsSDK, Game, Hero, MenuManager, Modifier, RendererSDK, Unit, Vector2, Vector3, ParticlesSDK } from "wrapper/Imports"
 let { MenuFactory } = MenuManager
 const menu = MenuFactory("Skill Alert"),
 	active = menu.AddToggle("Active", true),
@@ -113,30 +113,28 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			}
 			let abPart
 			if (arParticles[index]) {
-				abPart = Particles.Create(arParticles[index][0], ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent.m_pBaseEntity)
+				abPart = ParticlesSDK.Create(arParticles[index][0], ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
 				arParticles[index][1].forEach((val, i) => {
+					let pos: Vector3
 					switch (val) {
 						case "pos":
-							ent.Position.toIOBuffer()
+							pos = ent.Position
 							break
 						case "rad":
-							new Vector3(radius, radius, radius).toIOBuffer()
+							pos = new Vector3(radius, radius, radius)
 							break
 						default:
+							pos = new Vector3()
 							break
 					}
-					Particles.SetControlPoint(abPart, i)
+					ParticlesSDK.SetControlPoint(abPart, i, pos)
 				})
 			}
-			const part = Particles.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent.m_pBaseEntity)
-			ent.Position.toIOBuffer()
-			Particles.SetControlPoint(part, 0)
-			ent.Position.toIOBuffer()
-			Particles.SetControlPoint(part, 2)
-			new Vector3(radius, 0, 0).toIOBuffer()
-			Particles.SetControlPoint(part, 3)
-			new Vector3(255, 255, 255).toIOBuffer()
-			Particles.SetControlPoint(part, 4)
+			const part = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
+			ParticlesSDK.SetControlPoint(part, 0, ent.Position)
+			ParticlesSDK.SetControlPoint(part, 2, ent.Position)
+			ParticlesSDK.SetControlPoint(part, 3, new Vector3(radius, 0, 0))
+			ParticlesSDK.SetControlPoint(part, 4, new Vector3(255, 255, 255))
 			arTimers.set(buff, [Game.GameTime, delay, arAbilities[index], ent.Position.Clone()])
 			if (chatActive.value && chatShow.selected_flags[index] && arMessages[index]) {
 				let heroes = EntityManager.GetEntitiesInRange(ent.Position, chatRangeCheck.value, ent => ent instanceof Hero && !ent.IsEnemy()),
@@ -149,9 +147,9 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 				SendToConsole(`say_team ${arMessages[index] + string}`)
 			}
 			setTimeout(() => {
-				Particles.Destroy(part, false)
+				ParticlesSDK.Destroy(part, false)
 				if (abPart)
-					Particles.Destroy(abPart, false)
+					ParticlesSDK.Destroy(abPart, false)
 			}, delay * 1000)
 		}
 	}
@@ -163,7 +161,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			return
 		if (mod[1] && ent.IsEnemy())
 			return
-		const part = Particles.Create(mod[2], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent.m_pBaseEntity)
+		const part = ParticlesSDK.Create(mod[2], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent)
 		arHeroMods.set(buff, part)
 		if (chatActive.value && chatShow.selected_flags[mod[3]] && arMessages[mod[3]]) {
 			SendToConsole(`say_team ${arMessages[mod[3]] + ent.Name.substring(9)}`)
@@ -175,7 +173,7 @@ EventsSDK.on("BuffRemoved", (ent, buff) => {
 	if (arHeroMods.has(buff)) {
 		let part = arHeroMods.get(buff)
 		arHeroMods.delete(buff)
-		Particles.Destroy(part, false)
+		ParticlesSDK.Destroy(part, false)
 	}
 })
 EventsSDK.on("Tick", () => {
@@ -186,7 +184,7 @@ EventsSDK.on("Tick", () => {
 		arHeroMods.forEach((part, buff) => {
 			if (buff.RemainingTime === null) {
 				arHeroMods.delete(buff)
-				Particles.Destroy(part, false)
+				ParticlesSDK.Destroy(part, false)
 			}
 		})
 	}

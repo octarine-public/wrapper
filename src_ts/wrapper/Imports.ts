@@ -36,6 +36,7 @@ export {
 
 export { default as ModifierManager } from "./Managers/ModifierManager"
 export { default as ProjectileManager } from "./Managers/ProjectileManager"
+export { default as ParticlesSDK } from "./Managers/Particles"
 export { default as EventsSDK } from "./Managers/Events"
 
 // Objects

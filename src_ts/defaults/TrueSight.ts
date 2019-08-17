@@ -1,4 +1,4 @@
-import { EventsSDK, Game, LocalPlayer, MenuManager, Unit } from "wrapper/Imports"
+import { EventsSDK, Game, LocalPlayer, MenuManager, Unit, ParticlesSDK } from "wrapper/Imports"
 
 const ParticleStyles = [
 	"particles/econ/wards/portal/ward_portal_core/ward_portal_eye_sentry.vpcf",
@@ -38,7 +38,7 @@ function Destroy(particleID: number, unit: Unit) {
 	if (particleID === -1)
 		return
 
-	Particles.Destroy(particleID, true)
+	ParticlesSDK.Destroy(particleID, true)
 	allUnitsAsMap.set(unit, -1)
 }
 
@@ -79,10 +79,10 @@ function CheckUnit(unit: Unit, isTrueSighted: boolean = unit.IsTrueSightedForEne
 		return
 
 	if ((isTrueSighted && particleID === -1) && isAlive) {
-		allUnitsAsMap.set(unit, Particles.Create (
+		allUnitsAsMap.set(unit, ParticlesSDK.Create (
 			particlePath || (particlePath = ParticleStyles[particleStylesCombo.selected_id]),
 			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
-			unit.m_pBaseEntity,
+			unit,
 		))
 	} else if ((!isTrueSighted || !isAlive) && particleID !== -1)
 		Destroy(particleID, unit)

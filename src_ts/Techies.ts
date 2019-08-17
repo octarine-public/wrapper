@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Unit, Vector3 } from "./wrapper/Imports"
+import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Unit, Vector3, ParticlesSDK } from "./wrapper/Imports"
 
 let TechiesMenu = MenuManager.MenuFactory("Techies"),
 	State = TechiesMenu.AddToggle("State"),
@@ -26,10 +26,8 @@ var NoTarget: Entity[] = [],
 	latest_techies_spellamp: number = 1
 
 function CreateRange(ent: Entity, range: number): number {
-	const par = Particles.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent.m_pBaseEntity)
-	IOBuffer[0] = range
-	IOBuffer[1] = IOBuffer[2] = 0
-	Particles.SetControlPoint(par, 1)
+	const par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
+	ParticlesSDK.SetControlPoint(par, 1, new Vector3(range))
 	return par
 }
 
@@ -189,7 +187,7 @@ Events.on("GameEnded", () => {
 	rmines = []
 	if (IsInGame())
 		// loop-optimizer: KEEP
-		particles.forEach(particle => { Particles.Destroy(particle, true) })
+		particles.forEach(particle => { ParticlesSDK.Destroy(particle, true) })
 	particles = new Map<Unit, number>()
 	NoTarget = []
 	heroes = []
@@ -240,7 +238,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 		ArrayExtensions.arrayRemove(heroes, ent)
 	else if (ent instanceof Unit && ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines && ent.Name === "npc_dota_techies_remote_mine") {
 		if (particles.has(ent))
-			Particles.Destroy(particles.get(ent), true)
+			ParticlesSDK.Destroy(particles.get(ent), true)
 		RemoveMine(ent)
 	}
 })
