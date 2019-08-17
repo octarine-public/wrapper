@@ -1,18 +1,19 @@
-import { Color, Entity, EntityManager } from "wrapper/Imports"
+import Vector3 from "../../Base/Vector3"
+import Color from "../../Base/Color"
+import Entity from "./Entity"
+import EntityManager from "../../Managers/EntityManager"
+import Vector2 from "../../Base/Vector2"
 
 export class Projectile {
 	public IsValid = true
-	public readonly ProjectileID: number
-	protected SourceUnit: Entity | number
-	protected path: string
-	protected particleSystemHandle: bigint
 
-	constructor(projID: number, path: string, particleSystemHandle: bigint, SourceUnit: Entity | number, protected launchTick: number) {
-		this.ProjectileID = projID
-		this.path = path
-		this.particleSystemHandle = particleSystemHandle
-		this.SourceUnit = SourceUnit
-	}
+	constructor(
+		public readonly ID: number,
+		protected path: string,
+		protected particleSystemHandle: bigint,
+		protected SourceUnit: Entity | number,
+		public readonly colorgemcolor: Color,
+	) {}
 
 	get Source(): Entity | number {
 		if (this.SourceUnit instanceof Entity)
@@ -24,21 +25,34 @@ export class Projectile {
 }
 
 export class LinearProjectile extends Projectile {
+	public readonly Position: Vector3
+	public readonly Forward: Vector3
+	public readonly TargetLoc: Vector3
+
 	constructor(
 		projID: number,
 		ent: Entity | number,
 		path: string,
 		particleSystemHandle: bigint,
-		public readonly moveSpeed: number,
-		public readonly fowRadius: number,
-		public readonly stickyFowReveal: boolean,
-		public readonly distance: number,
-		public readonly colorgemcolor: Color,
+		public readonly MaxSpeed: number,
+		public readonly FowRadius: number,
+		public readonly StickyFowReveal: boolean,
+		public readonly Distance: number,
+		public readonly Origin: Vector3,
+		public readonly Velocity: Vector2,
+		public readonly Acceleration: Vector2,
+		colorgemcolor: Color,
 	) {
-		super(projID, path, particleSystemHandle, ent, 0)
+		super(projID, path, particleSystemHandle, ent, colorgemcolor)
+		this.Position = this.Origin.Clone()
+		this.Forward = Vector3.FromAngle(this.Velocity.Angle)
+		this.TargetLoc = Origin.Rotation(this.Forward, this.Distance)
 	}
 }
 export class TrackingProjectile extends Projectile {
+	public readonly Position: Vector3
+	public DestroyAtNextTick: boolean = false
+
 	private dodged = false
 
 	constructor(
@@ -46,16 +60,19 @@ export class TrackingProjectile extends Projectile {
 		source: Entity | number,
 		private TargetEntity: Entity | number,
 		private speed: number,
-		readonly sourceAttachment: number,
+		public readonly sourceAttachment: number,
 		path: string,
 		particleSystemHandle: bigint,
 		private dodgeable: boolean,
 		private isAttack: boolean,
 		private expireTime: number,
-		readonly maximpacttime: number,
-		launchTick: number,
+		public readonly maximpacttime: number,
+		public LaunchTick: number,
+		private readonly targetLoc: Vector3,
+		colorgemcolor: Color,
 	) {
-		super(projID, path, particleSystemHandle, source, launchTick)
+		super(projID, path, particleSystemHandle, source, colorgemcolor)
+		this.Position = this.Source instanceof Entity ? this.Source.Position : new Vector3().Invalidate()
 	}
 
 	get IsDodged(): boolean {
@@ -65,18 +82,27 @@ export class TrackingProjectile extends Projectile {
 		this.dodged = true
 	}
 
+	public get TargetLoc() {
+		if (!this.IsDodged && this.Target instanceof Entity)
+			return this.Target.Position
+		return this.targetLoc
+	}
+
 	get IsDodgeable(): boolean { return this.dodgeable }
 	get IsAttack(): boolean { return this.isAttack }
 	get Speed(): number { return this.speed }
 	get ExpireTime(): number { return this.expireTime }
 
 	get Target(): Entity | number {
-		if (this.TargetEntity instanceof Entity)
-			return this.TargetEntity
-		return EntityManager.EntityByIndex(this.TargetEntity) || this.TargetEntity
+		if (!(this.TargetEntity instanceof Entity)) {
+			let ent = EntityManager.EntityByIndex(this.TargetEntity)
+			if (ent !== undefined)
+				return this.TargetEntity = ent
+		}
+		return this.TargetEntity
 	}
 
-	Update(TargetEntity: Entity | number, Speed: number, path: string, particleSystemHandle: bigint, dodgeable: boolean, isAttack: boolean, expireTime: number, launchTick: number) {
+	Update(TargetEntity: Entity | number, Speed: number, path: string, particleSystemHandle: bigint, dodgeable: boolean, isAttack: boolean, expireTime: number, launchTick: number, targetLoc: Vector3) {
 		this.TargetEntity = TargetEntity
 		this.speed = Speed
 		this.path = path
@@ -84,6 +110,7 @@ export class TrackingProjectile extends Projectile {
 		this.dodgeable = dodgeable
 		this.isAttack = isAttack
 		this.expireTime = expireTime
-		this.launchTick = launchTick
+		this.LaunchTick = launchTick
+		targetLoc.CopyTo(this.targetLoc)
 	}
 }

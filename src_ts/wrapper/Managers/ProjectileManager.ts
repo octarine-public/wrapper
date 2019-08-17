@@ -1,21 +1,28 @@
-import { Color, EntityManager, EventsSDK } from "wrapper/Imports"
+import { Color, EntityManager, EventsSDK, RendererSDK } from "wrapper/Imports"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import { arrayRemove } from "../Utils/ArrayExtensions"
-let AllLinearProjectiles: LinearProjectile[] = [],
-	AllLinearProjectilesMap: Map<number, LinearProjectile> = new Map(),
-	AllTrackingProjectilesMap: Map<number, TrackingProjectile> = new Map(),
-	AllTrackingProjectiles: TrackingProjectile[] = []
+import Vector3 from "../Base/Vector3"
+import Vector2 from "../Base/Vector2"
+import { Game } from "./EntityManager"
+import Entity from "../Objects/Base/Entity"
 
-class ProjectileManager {
-	get AllLinearProjectiles(): LinearProjectile[] {
-		return AllLinearProjectiles.slice()
-	}
-	get AllTrackingProjectiles(): TrackingProjectile[] {
-		return AllTrackingProjectiles.slice()
-	}
-}
+let ProjectileManager = new (class ProjectileManager {
+	public readonly AllLinearProjectiles: LinearProjectile[] = []
+	public readonly AllTrackingProjectiles: TrackingProjectile[] = []
 
-export default new ProjectileManager()
+	public readonly AllLinearProjectilesMap: Map<number, LinearProjectile> = new Map()
+	public readonly AllTrackingProjectilesMap: Map<number, TrackingProjectile> = new Map()
+})()
+export default ProjectileManager
+
+Events.on("GameEnded", () => {
+	ProjectileManager.AllLinearProjectiles.splice(0)
+	ProjectileManager.AllTrackingProjectiles.splice(0)
+
+	ProjectileManager.AllLinearProjectilesMap.clear()
+	ProjectileManager.AllTrackingProjectilesMap.clear()
+})
+
 Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceAttachment, path, particleSystemHandle, dodgeable, isAttack, expireTime, maximpacttime, launch_tick) => {
 	let projectile = new TrackingProjectile (
 		proj,
@@ -34,10 +41,56 @@ Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceA
 		expireTime,
 		maximpacttime,
 		launch_tick,
+		Vector3.fromIOBuffer(),
+		Color.fromIOBuffer(3),
 	)
 	EventsSDK.emit("TrackingProjectileCreated", false, projectile)
-	AllTrackingProjectiles.push(projectile)
-	AllTrackingProjectilesMap.set(proj, projectile)
+	ProjectileManager.AllTrackingProjectiles.push(projectile)
+	ProjectileManager.AllTrackingProjectilesMap.set(proj, projectile)
+})
+
+Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particleSystemHandle, dodgeable, isAttack, expireTime, launch_tick) => {
+	let projectile = ProjectileManager.AllTrackingProjectilesMap.get(proj)
+	if (projectile === undefined)
+		return
+	projectile.Update (
+		hTarget instanceof C_BaseEntity
+			? EntityManager.GetEntityByNative(hTarget)
+			: hTarget,
+		moveSpeed,
+		path,
+		particleSystemHandle,
+		dodgeable,
+		isAttack,
+		expireTime,
+		launch_tick,
+		Vector3.fromIOBuffer(true, 3),
+	)
+	EventsSDK.emit("TrackingProjectileUpdated", false, projectile)
+})
+
+Events.on("TrackingProjectilesDodged", (ent, attacks_only) => {
+	let ent_ = ent instanceof C_BaseEntity
+		? EntityManager.GetEntityByNative(ent)
+		: ent
+	ProjectileManager.AllTrackingProjectiles.filter(proj =>
+		proj.IsDodgeable
+		&& proj.Target === ent_
+		&& (!attacks_only || proj.IsAttack)
+	).forEach(proj => proj.Dodge())
+})
+
+function DestroyTrackingProjectile(proj: TrackingProjectile) {
+	EventsSDK.emit("TrackingProjectileDestroyed", false, proj)
+	arrayRemove(ProjectileManager.AllTrackingProjectiles, proj)
+	ProjectileManager.AllTrackingProjectilesMap.delete(proj.ID)
+	proj.IsValid = false
+}
+
+Events.on("TrackingProjectileDestroyed", proj => {
+	let projectile = ProjectileManager.AllTrackingProjectilesMap.get(proj)
+	if (projectile !== undefined)
+		DestroyTrackingProjectile(projectile)
 })
 
 Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance) => {
@@ -52,58 +105,51 @@ Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max
 		fow_radius,
 		sticky_fow_reveal,
 		distance,
+		Vector3.fromIOBuffer(),
+		Vector2.fromIOBuffer(true, 3),
+		Vector2.fromIOBuffer(true, 5),
 		Color.fromIOBuffer(7),
 	)
 	EventsSDK.emit("LinearProjectileCreated", false, projectile)
-	AllLinearProjectiles.push(projectile)
-	AllLinearProjectilesMap.set(proj, projectile)
-})
-
-Events.on("TrackingProjectileDestroyed", proj => {
-	let projectile = AllTrackingProjectilesMap.get(proj)
-	if (projectile === undefined)
-		return
-	EventsSDK.emit("TrackingProjectileDestroyed", false, projectile)
-	arrayRemove(AllTrackingProjectiles, projectile)
-	AllTrackingProjectilesMap.delete(proj)
-})
-
-Events.on("TrackingProjectilesDodged", (ent, attacks_only) => {
-	let ent_ = ent instanceof C_BaseEntity
-		? EntityManager.GetEntityByNative(ent)
-		: ent
-	AllTrackingProjectiles.forEach(val => {
-		if (!val.IsDodgeable || val.Target !== ent_)
-			return
-		if (!attacks_only || (attacks_only && val.IsAttack))
-			val.Dodge()
-	})
-})
-
-Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particleSystemHandle, dodgeable, isAttack, expireTime, launch_tick) => {
-	let projectile = AllTrackingProjectilesMap.get(proj)
-	if (projectile === undefined)
-		return
-	projectile.Update (
-		hTarget instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(hTarget)
-			: hTarget,
-		moveSpeed,
-		path,
-		particleSystemHandle,
-		dodgeable,
-		isAttack,
-		expireTime,
-		launch_tick,
-	)
-	EventsSDK.emit("TrackingProjectileUpdated", false, projectile)
+	ProjectileManager.AllLinearProjectiles.push(projectile)
+	ProjectileManager.AllLinearProjectilesMap.set(proj, projectile)
 })
 
 Events.on("LinearProjectileDestroyed", proj => {
-	let projectile = AllLinearProjectilesMap.get(proj)
+	let projectile = ProjectileManager.AllLinearProjectilesMap.get(proj)
 	if (projectile === undefined)
 		return
 	EventsSDK.emit("LinearProjectileDestroyed", false, projectile)
-	arrayRemove(AllLinearProjectiles, projectile)
-	AllLinearProjectilesMap.delete(proj)
+	arrayRemove(ProjectileManager.AllLinearProjectiles, projectile)
+	ProjectileManager.AllLinearProjectilesMap.delete(proj)
+})
+
+Events.on("ServerTick", () => {
+	ProjectileManager.AllLinearProjectiles.forEach(proj => {
+		proj.Position.x += proj.Velocity.x / 60
+		proj.Position.y += proj.Velocity.y / 60
+	})
+	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
+		if (!proj.Position.IsValid)
+			if (proj.Target instanceof Entity && proj.Source instanceof Entity && !proj.IsDodged)
+				proj.Source.Position
+					.Extend(proj.Target.Position, (Game.CurrentServerTick - proj.LaunchTick) / 30 * proj.Speed)
+					.CopyTo(proj.Position)
+			else
+				return
+		proj.Position.Extend(proj.TargetLoc, proj.Speed / 60).CopyTo(proj.Position)
+		if (proj.DestroyAtNextTick)
+			DestroyTrackingProjectile(proj)
+		else if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 60)
+			proj.DestroyAtNextTick = true
+	})
+})
+
+Events.on("Draw", () => {
+	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
+		let w2s = RendererSDK.WorldToScreen(proj.Position)
+		if (w2s === undefined)
+			return
+		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
+	})
 })

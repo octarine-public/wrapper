@@ -264,13 +264,9 @@ export default class Vector3 {
 	/**
 	 * Normalize the vector
 	 */
-	Normalize(scalar?: number): Vector3 {
+	Normalize(scalar: number = 1): Vector3 {
 		var length = this.Length
-
-		if (length !== 0)
-			this.DivideScalarForThis(scalar !== undefined ? length * scalar : length)
-
-		return this
+		return length !== 0 ? this.DivideScalarForThis(length * scalar) : this
 	}
 	/**
 	 * The cross product of this and vec.

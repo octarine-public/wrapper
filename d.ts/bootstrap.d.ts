@@ -54,7 +54,7 @@ declare interface Events extends EventEmitter {
 		distance: number
 	) => void): EventEmitter
 	on(name: "LinearProjectileDestroyed", callback: (proj: number) => void): EventEmitter
-	on(name: "TrackingProjectileCreated", callback: ( // colorgemcolor: Color at IOBuffer offset 0, vTargetLoc: Vector3 at IOBuffer offset 3
+	on(name: "TrackingProjectileCreated", callback: ( // vTargetLoc: Vector3 at IOBuffer offset 0, colorgemcolor: Color at IOBuffer offset 3
 		proj: number,
 		hSource: C_BaseEntity | number,
 		hTarget: C_BaseEntity | number,

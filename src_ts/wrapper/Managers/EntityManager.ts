@@ -292,12 +292,9 @@ function useQueueEntities() {
 function changeFieldsByEvents(unit: Unit) {
 	const visibleTagged = unit.IsVisibleForTeamMask
 
-	if (visibleTagged > 0) {
-		const isVisibleForEnemies = Unit.IsVisibleForEnemies(unit, visibleTagged)
-		unit.IsVisibleForEnemies = isVisibleForEnemies
-
-		EventsSDK.emit("TeamVisibilityChanged", false, unit, isVisibleForEnemies, visibleTagged)
-	}
+	const isVisibleForEnemies = Unit.IsVisibleForEnemies(unit, visibleTagged)
+	unit.IsVisibleForEnemies = isVisibleForEnemies
+	EventsSDK.emit("TeamVisibilityChanged", false, unit, isVisibleForEnemies, visibleTagged)
 }
 
 Events.on("NetworkPositionChanged", ent => {

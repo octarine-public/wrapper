@@ -1,6 +1,3 @@
-import Color from "../Base/Color"
-import QAngle from "../Base/QAngle"
-
 import Vector3 from "../Base/Vector3"
 import { default as EntityManager, LocalPlayer } from "./EntityManager"
 
@@ -90,18 +87,6 @@ Events.on("PrepareUnitOrders", order => {
 		return true
 
 	return EventsSDK.emit("PrepareUnitOrders", true, ordersSDK)
-})
-
-Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance) => {
-	EventsSDK.emit (
-		"LinearProjectileCreated", false,
-		proj,
-		ent instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(ent)
-			: ent,
-		path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance,
-		Color.fromIOBuffer(),
-	)
 })
 
 Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) =>
