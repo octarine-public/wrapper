@@ -51,6 +51,11 @@ EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachmen
 	Wisp.ParticleUpdated(id, entity instanceof Entity ? entity.m_pBaseEntity : undefined)
 	ParicleMapHack.ParticleUpdatedEnt(id, entity instanceof Entity ? entity : undefined, vector)
 })
+// EventsSDK.on("BloodImpact", (entity, scale, xnormal, ynormal) => {
+// 	if (!stateMain.value || Game.IsPaused)
+// 		return
+// 	ParicleMapHack.ParticleCreateUpdateImpact(entity instanceof Entity ? entity : undefined, scale, xnormal, ynormal)
+// })
 EventsSDK.on("ParticleDestroyed", id => {
 	Techies.ParticleDestroyed(id)
 	ParicleMapHack.ParticleDestroyed(id)

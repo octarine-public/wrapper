@@ -59,10 +59,9 @@ export function OnDraw() {
 		return
 	jungl_unit.forEach(unit => {
 		let pos = unit.Name !== "npc_dota_roshan" ? unit.Position : new Vector3(-2394.375, 1873.9375, 159.96875)
-		if (pos.IsZero() || unit.IsHero || unit.IsLaneCreep)
+		if (pos.IsZero() || unit.IsHero || unit.IsLaneCreep || pos.Length < 10)
 			return
 		RenderPosition(pos)
-
 		setTimeout(() => ArrayExtensions.arrayRemove(jungl_unit, unit), 2000)
 	})
 }
