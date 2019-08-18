@@ -35,7 +35,6 @@ export {
 } from "./Managers/EntityManager";
 
 export { default as ModifierManager } from "./Managers/ModifierManager"
-export { default as ProjectileManager } from "./Managers/ProjectileManager"
 export { default as ParticlesSDK } from "./Managers/Particles"
 export { default as EventsSDK } from "./Managers/Events"
 
@@ -66,7 +65,10 @@ export { default as Tree } from "./Objects/Base/Tree"
 export { default as Building } from "./Objects/Base/Building"
 export { default as Tower } from "./Objects/Base/Tower"
 export { default as Shop } from "./Objects/Base/Shop"
+
+// projectiles
 export { LinearProjectile, TrackingProjectile } from "./Objects/Base/Projectile"
+export { default as ProjectileManager } from "./Managers/ProjectileManager"
 
 /*
 	TODO:

@@ -1,4 +1,4 @@
-import { EntityManager, EventsSDK, Hero, LocalPlayer, MenuManager, PlayerResource, Vector3 } from "./wrapper/Imports"
+import { EventsSDK, MenuManager, PlayerResource, Vector3, ProjectileManager, RendererSDK, Vector2, Color } from "./wrapper/Imports"
 
 let { MenuFactory } = MenuManager
 
@@ -78,6 +78,7 @@ const debugEntitiesEvents = debugEventsMenu.AddToggle("Debug Entities")
 const debugBuffsEvents = debugEventsMenu.AddToggle("Debug Buffs")
 
 const debugOtherEvents = debugEventsMenu.AddToggle("Debug Other")
+const debugProjectiles = debugEventsMenu.AddToggle("Debug projectiles", false, "Visual only")
 Events.on("GameStarted", pl_ent => {
 	if (!debugEvents.value || !debugOtherEvents.value) return
 
@@ -168,3 +169,20 @@ Events.on("CustomGameEvent", (...args) => debugConsole("onCustomGameEvent", ...a
 
 let debugConsole = (name: string, ...args: any) =>
 	debugEvents.value && !debugOnlyThrowEvents.value && debugOtherEvents.value && console.log(name, ...args)
+
+EventsSDK.on("Draw", () => {
+	if (!debugEvents.value || debugOnlyThrowEvents.value || !debugProjectiles.value)
+		return
+	ProjectileManager.AllTrackingProjectiles.filter(proj => !proj.HadHitTargetLoc).forEach(proj => {
+		let w2s = RendererSDK.WorldToScreen(proj.Position)
+		if (w2s === undefined)
+			return
+		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
+	})
+	ProjectileManager.AllLinearProjectiles.forEach(proj => {
+		let w2s = RendererSDK.WorldToScreen(proj.Position)
+		if (w2s === undefined)
+			return
+		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
+	})
+})

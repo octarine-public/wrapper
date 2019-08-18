@@ -1,4 +1,5 @@
 import Vector3 from "../Base/Vector3"
+import QAngle from "../Base/QAngle"
 import { default as EntityManager, LocalPlayer } from "./EntityManager"
 
 import Entity from "../Objects/Base/Entity"
@@ -173,6 +174,38 @@ Events.on("UnitFadeGesture", (npc, activity) => EventsSDK.emit (
 	activity,
 ))
 
+Events.on("NetworkPositionChanged", ent => {
+	let m_vecOrigin = Vector3.fromIOBuffer()
+	let ent_ = EntityManager.GetEntityByNative(ent, true)
+	if (ent === undefined)
+		return
+	EventsSDK.emit (
+		"NetworkPositionChanged", false,
+		ent_,
+		m_vecOrigin,
+	)
+	ent_.OnNetworkPositionChanged(m_vecOrigin)
+})
+
+Events.on("GameSceneNodeChanged", ent => {
+	let m_vecOrigin = Vector3.fromIOBuffer(),
+		m_angAbsRotation = QAngle.fromIOBuffer(3),
+		m_angRotation = IOBuffer[6],
+		m_flAbsScale = IOBuffer[7]
+	let ent_ = EntityManager.GetEntityByNative(ent, true)
+	if (ent === undefined)
+		return
+	EventsSDK.emit (
+		"GameSceneNodeChanged", false,
+		ent_,
+		m_vecOrigin,
+		m_angAbsRotation,
+		m_angRotation,
+		m_flAbsScale,
+	)
+	ent_.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation, m_angRotation, m_flAbsScale)
+})
+
 Events.on("InputCaptured", is_captured => EventsSDK.emit (
 	"InputCaptured", false,
 	is_captured,
@@ -290,5 +323,7 @@ interface EventsSDK extends EventEmitter {
 	) => void): EventEmitter
 	on(name: "UnitRemoveGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
 	on(name: "UnitFadeGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
+	on(name: "NetworkPositionChanged", listener: (ent: Entity, m_vecOrigin: Vector3) => void): EventEmitter
+	on(name: "GameSceneNodeChanged", listener: (ent: Entity, m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_angRotation: number, m_flAbsScale: number) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 }

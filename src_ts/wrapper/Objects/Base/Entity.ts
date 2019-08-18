@@ -390,8 +390,8 @@ export default class Entity {
 		this.Rotation_ = m_angRotation
 		this.Scale_ = m_flAbsScale
 	}
-	OnNetworkPositionChanged(new_position: Vector3) {
-		new_position.CopyTo(this.NetworkPosition_).CopyTo(this.Position_)
+	OnNetworkPositionChanged(m_vecOrigin: Vector3) {
+		m_vecOrigin.CopyTo(this.NetworkPosition_).CopyTo(this.Position_)
 	}
 	OnCreated() {
 		this.IsValid = true

@@ -5,6 +5,7 @@ import Entity from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import { Game } from "./EntityManager"
+import Unit from "../Objects/Base/Unit"
 
 let ProjectileManager = new (class ProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
@@ -77,7 +78,7 @@ Events.on("TrackingProjectilesDodged", (ent, attacks_only) => {
 		proj.IsDodgeable
 		&& proj.Target === ent_
 		&& (!attacks_only || proj.IsAttack),
-	).forEach(proj => proj.Dodge())
+	).forEach(proj => proj.IsDodged = true)
 })
 
 function DestroyTrackingProjectile(proj: TrackingProjectile) {
@@ -138,24 +139,12 @@ Events.on("ServerTick", () => {
 			else
 				return
 		proj.Position.Extend(proj.TargetLoc, proj.Speed / 30).CopyTo(proj.Position)
-		if (proj.DestroyAtNextTick)
+		if (proj.HadHitTargetLoc)
 			DestroyTrackingProjectile(proj)
-		else if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30)
-			proj.DestroyAtNextTick = true
+		else if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30 + (proj.Target instanceof Unit ? proj.Target.HullRadius : 0))
+			proj.HadHitTargetLoc = true
 	})
 })
 
-Events.on("Draw", () => {
-	ProjectileManager.AllTrackingProjectiles.flat().forEach(proj => {
-		let w2s = RendererSDK.WorldToScreen(proj.Position)
-		if (w2s === undefined)
-			return
-		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
-	})
-	ProjectileManager.AllLinearProjectiles.flat().forEach(proj => {
-		let w2s = RendererSDK.WorldToScreen(proj.Position)
-		if (w2s === undefined)
-			return
-		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
-	})
-})
+EventsSDK.on("NetworkPositionChanged", (ent, m_vecOrigin) =>
+	ProjectileManager.AllTrackingProjectiles.filter(proj => proj.Target === ent).forEach(proj => m_vecOrigin.CopyTo(proj.TargetLoc)))

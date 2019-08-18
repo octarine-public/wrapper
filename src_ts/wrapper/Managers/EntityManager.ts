@@ -22,7 +22,6 @@ import Building from "../Objects/Base/Building"
 import PhysicalItem from "../Objects/Base/PhysicalItem"
 import Tower from "../Objects/Base/Tower"
 
-import QAngle from "../Base/QAngle"
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/Utils"
@@ -296,14 +295,3 @@ function changeFieldsByEvents(unit: Unit) {
 	unit.IsVisibleForEnemies = isVisibleForEnemies
 	EventsSDK.emit("TeamVisibilityChanged", false, unit, isVisibleForEnemies, visibleTagged)
 }
-
-Events.on("NetworkPositionChanged", ent => {
-	let ent_ = entityManager.GetEntityByNative(ent, true)
-	if (ent_ !== undefined)
-		ent_.OnNetworkPositionChanged(Vector3.fromIOBuffer())
-})
-Events.on("GameSceneNodeChanged", ent => {
-	let ent_ = entityManager.GetEntityByNative(ent, true)
-	if (ent_ !== undefined)
-		ent_.OnGameSceneNodeChanged(Vector3.fromIOBuffer(), QAngle.fromIOBuffer(3), IOBuffer[6], IOBuffer[7])
-})

@@ -50,10 +50,9 @@ export class LinearProjectile extends Projectile {
 	}
 }
 export class TrackingProjectile extends Projectile {
-	public readonly Position: Vector3
-	public DestroyAtNextTick: boolean = false
-
-	private dodged = false
+	public readonly Position: Vector3 = new Vector3()
+	public HadHitTargetLoc = false
+	public IsDodged = false
 
 	constructor(
 		projID: number,
@@ -68,24 +67,16 @@ export class TrackingProjectile extends Projectile {
 		private expireTime: number,
 		public readonly maximpacttime: number,
 		public LaunchTick: number,
-		private readonly targetLoc: Vector3,
+		public readonly TargetLoc: Vector3,
 		colorgemcolor: Color,
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor)
-		this.Position = this.Source instanceof Entity ? this.Source.Position : new Vector3().Invalidate()
-	}
-
-	get IsDodged(): boolean {
-		return this.dodged
-	}
-	Dodge() {
-		this.dodged = true
-	}
-
-	public get TargetLoc() {
-		if (!this.IsDodged && this.Target instanceof Entity)
-			return this.Target.Position
-		return this.targetLoc
+		if (this.Source instanceof Entity)
+			this.Source.Position.CopyTo(this.Position)
+		else
+			this.Position.Invalidate()
+		if (this.TargetEntity instanceof Entity)
+			this.TargetEntity.Position.CopyTo(this.TargetLoc)
 	}
 
 	get IsDodgeable(): boolean { return this.dodgeable }
@@ -94,6 +85,8 @@ export class TrackingProjectile extends Projectile {
 	get ExpireTime(): number { return this.expireTime }
 
 	get Target(): Entity | number {
+		if (this.IsDodged)
+			return undefined
 		if (!(this.TargetEntity instanceof Entity)) {
 			let ent = EntityManager.EntityByIndex(this.TargetEntity)
 			if (ent !== undefined)
@@ -111,6 +104,6 @@ export class TrackingProjectile extends Projectile {
 		this.isAttack = isAttack
 		this.expireTime = expireTime
 		this.LaunchTick = launchTick
-		targetLoc.CopyTo(this.targetLoc)
+		targetLoc.CopyTo(this.TargetLoc)
 	}
 }
