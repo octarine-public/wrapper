@@ -181,5 +181,12 @@ declare interface Events extends EventEmitter {
 	on(name: "NetworkPositionChanged", listener: (ent: C_BaseEntity) => void): EventEmitter // m_vecOrigin: Vector3 at IOBuffer offset 0
 	on(name: "GameSceneNodeChanged", listener: (ent: C_BaseEntity) => void): EventEmitter // m_vecOrigin: Vector3 at IOBuffer offset 0, m_angAbsRotation: QAngle at IOBuffer offset 3, m_angRotation: number at IOBuffer offset 6, m_flAbsScale: number at IOBuffer offset 7
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
+	on(name: "NetworkFieldChanged", listener: (
+		entity: C_BaseEntity,
+		trigger: any, // anything that entity owns, which had triggered this change
+		field_name: string,
+		field_type: string,
+		array_index: number // -1 if that's not an array change
+	) => void): EventEmitter
 }
 declare var Events: Events
