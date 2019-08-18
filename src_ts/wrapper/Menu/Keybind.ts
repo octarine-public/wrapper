@@ -8,7 +8,6 @@ let IsPressing: boolean[] = [],
 	OnExecute: [Keybind[]] = [[]]
 
 function KeyBindCallback(keybind: Keybind): void {
-
 	var onValueCall = keybind.OnValueCallback
 
 	AddOrChangeKeyEvent(keybind)
@@ -18,7 +17,6 @@ function KeyBindCallback(keybind: Keybind): void {
 }
 
 function AddOrChangeKeyEvent(keybind: Keybind) {
-
 	let key = keybind.value
 
 	if (IsPressing[key] === undefined)
@@ -50,8 +48,7 @@ function getTopParent(node: Tree | Keybind): Tree {
 }
 
 Events.on("WndProc", (msg, wParam) => {
-
-	if (!Game.IsInGame || wParam === undefined)
+	if (Game.IsInputCaptured || !Game.IsInGame || wParam === undefined)
 		return true
 
 	if (msg !== 0x100 && msg !== 0x101)
@@ -73,7 +70,6 @@ Events.on("WndProc", (msg, wParam) => {
 	let ret = true
 
 	onExecute.forEach(keybind => {
-
 		if (keybind.value !== key) {
 			RemoveKeyEvent(keybind)
 			return
@@ -97,7 +93,6 @@ Events.on("WndProc", (msg, wParam) => {
 })
 
 export default class Keybind extends Menu_Keybind {
-
 	parent: Tree
 	defaultValue: number
 

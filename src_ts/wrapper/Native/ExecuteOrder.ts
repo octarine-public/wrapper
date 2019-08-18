@@ -45,7 +45,6 @@ export default class ExecuteOrder {
 	}
 
 	static fromNative(order: CUnitOrder): ExecuteOrder {
-
 		let unit = order.unit !== undefined
 			? EntityManager.GetEntityByNative(order.unit) as Unit
 			: EntityManager.LocalHero

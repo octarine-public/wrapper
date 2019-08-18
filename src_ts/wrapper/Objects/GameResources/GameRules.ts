@@ -6,6 +6,7 @@ let Game = global.Game = new (class Game {
 	public m_StockInfo: StockInfo[]
 	public readonly Language = ConVars.GetString("cl_language")
 	public CurrentServerTick: number = -1
+	public IsInputCaptured: boolean = false
 
 	public GetLatency(flow: Flow_t = Flow_t.IN) {
 		return GetLatency(flow)
@@ -150,3 +151,4 @@ let Game = global.Game = new (class Game {
 export default Game
 
 Events.on("ServerTick", tick => Game.CurrentServerTick = tick)
+Events.on("InputCaptured", is_captured => Game.IsInputCaptured = is_captured)

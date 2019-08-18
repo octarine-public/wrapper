@@ -54,31 +54,52 @@ Events.on("TeamVisibilityChanged", (npc, newTagged) => {
 
 Events.on("Draw", () => EventsSDK.emit("Draw"))
 
-Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) =>
-	EventsSDK.emit("ParticleCreated", false, id, path, particleSystemHandle, attach,
-		target instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(target)
-			: target))
+Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) => EventsSDK.emit (
+	"ParticleCreated", false,
+	id,
+	path,
+	particleSystemHandle,
+	attach,
+	target instanceof C_BaseEntity
+		? EntityManager.GetEntityByNative(target)
+		: target
+))
 
-Events.on("ParticleDestroyed", (id, destroy_immediately) =>
-	EventsSDK.emit("ParticleDestroyed", false, id, destroy_immediately))
+Events.on("ParticleDestroyed", (id, destroy_immediately) => EventsSDK.emit (
+	"ParticleDestroyed", false,
+	id,
+	destroy_immediately
+))
 
-Events.on("ParticleUpdated", (id, control_point) =>
-	EventsSDK.emit("ParticleUpdated", false, id, control_point, Vector3.fromIOBuffer()))
+Events.on("ParticleUpdated", (id, control_point) => EventsSDK.emit (
+	"ParticleUpdated", false,
+	id,
+	control_point,
+	Vector3.fromIOBuffer()
+))
 
-Events.on("ParticleUpdatedEnt", (id, control_point, ent, attach, attachment, include_wearables) =>
-	EventsSDK.emit("ParticleUpdatedEnt", false, id, control_point,
-		ent instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(ent)
-			: ent,
-		attach, attachment, Vector3.fromIOBuffer(), include_wearables))
+Events.on("ParticleUpdatedEnt", (id, control_point, ent, attach, attachment, include_wearables) => EventsSDK.emit (
+	"ParticleUpdatedEnt", false,
+	id,
+	control_point,
+	ent instanceof C_BaseEntity
+		? EntityManager.GetEntityByNative(ent)
+		: ent,
+	attach,
+	attachment,
+	Vector3.fromIOBuffer(),
+	include_wearables
+))
 
-Events.on("BloodImpact", (target, scale, xnormal, ynormal) =>
-	EventsSDK.emit("BloodImpact", false,
-		target instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(target)
-			: target,
-		scale, xnormal, ynormal))
+Events.on("BloodImpact", (target, scale, xnormal, ynormal) => EventsSDK.emit (
+	"BloodImpact", false,
+	target instanceof C_BaseEntity
+		? EntityManager.GetEntityByNative(target)
+		: target,
+	scale,
+	xnormal,
+	ynormal
+))
 
 Events.on("PrepareUnitOrders", order => {
 	const ordersSDK = ExecuteOrder.fromNative(order)
@@ -89,67 +110,73 @@ Events.on("PrepareUnitOrders", order => {
 	return EventsSDK.emit("PrepareUnitOrders", true, ordersSDK)
 })
 
-Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) =>
-	EventsSDK.emit("UnitAnimation", false, EntityManager.GetEntityByNative(npc), sequenceVariant, playbackrate, castpoint, type, activity))
+Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => EventsSDK.emit (
+	"UnitAnimation", false,
+	EntityManager.GetEntityByNative(npc),
+	sequenceVariant,
+	playbackrate,
+	castpoint,
+	type,
+	activity
+))
 
-Events.on("UnitAnimationEnd", (npc, snap) =>
-	EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
+Events.on("UnitAnimationEnd", (npc, snap) => EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
+Events.on("CustomGameEvent", (...args) => EventsSDK.emit("CustomGameEvent", false, ...args))
+Events.on("UnitAnimationEnd", (npc, snap) => EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
 
-Events.on("CustomGameEvent", (...args) =>
-	EventsSDK.emit("CustomGameEvent", false, ...args))
+Events.on("UnitSpeech", (npc, concept, response, recipient_type, level, muteable) => EventsSDK.emit (
+	"UnitSpeech", false,
+	npc instanceof C_BaseEntity
+		? EntityManager.GetEntityByNative(npc)
+		: npc,
+	concept,
+	response,
+	recipient_type,
+	level,
+	muteable,
+))
 
-Events.on("UnitAnimationEnd", (npc, snap) =>
-	EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
+Events.on("UnitSpeechMute", (npc, delay) => EventsSDK.emit (
+	"UnitSpeechMute", false,
+	npc instanceof C_BaseEntity
+		? EntityManager.GetEntityByNative(npc)
+		: npc,
+	delay,
+))
 
-Events.on("UnitSpeech", (npc, concept, response, recipient_type, level, muteable) => {
-	EventsSDK.emit (
-		"UnitSpeech", false,
-		npc instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(npc)
-			: npc,
-		concept, response, recipient_type, level, muteable,
-	)
-})
+Events.on("UnitAddGesture", (npc, activity, slot, fade_in, fade_out, playback_rate, sequence_variant) => EventsSDK.emit (
+	"UnitAddGesture", false,
+	npc instanceof C_BaseEntity
+		? EntityManager.GetEntityByNative(npc)
+		: npc,
+	activity,
+	slot,
+	fade_in,
+	fade_out,
+	playback_rate,
+	sequence_variant,
+))
 
-Events.on("UnitSpeechMute", (npc, delay) => {
-	EventsSDK.emit (
-		"UnitSpeechMute", false,
-		npc instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(npc)
-			: npc,
-		delay,
-	)
-})
+Events.on("UnitRemoveGesture", (npc, activity) => EventsSDK.emit (
+	"UnitRemoveGesture", false,
+	npc instanceof C_BaseEntity
+		? EntityManager.GetEntityByNative(npc)
+		: npc,
+	activity,
+))
 
-Events.on("UnitAddGesture", (npc, activity, slot, fade_in, fade_out, playback_rate, sequence_variant) => {
-	EventsSDK.emit (
-		"UnitAddGesture", false,
-		npc instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(npc)
-			: npc,
-		activity, slot, fade_in, fade_out, playback_rate, sequence_variant,
-	)
-})
+Events.on("UnitFadeGesture", (npc, activity) => EventsSDK.emit (
+	"UnitFadeGesture", false,
+	npc instanceof C_BaseEntity
+		? EntityManager.GetEntityByNative(npc)
+		: npc,
+	activity,
+))
 
-Events.on("UnitRemoveGesture", (npc, activity) => {
-	EventsSDK.emit (
-		"UnitRemoveGesture", false,
-		npc instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(npc)
-			: npc,
-		activity,
-	)
-})
-
-Events.on("UnitFadeGesture", (npc, activity) => {
-	EventsSDK.emit (
-		"UnitFadeGesture", false,
-		npc instanceof C_BaseEntity
-			? EntityManager.GetEntityByNative(npc)
-			: npc,
-		activity,
-	)
-})
+Events.on("InputCaptured", is_captured => EventsSDK.emit (
+	"InputCaptured", false,
+	is_captured,
+))
 
 interface EventsSDK extends EventEmitter {
 	/**
@@ -263,4 +290,5 @@ interface EventsSDK extends EventEmitter {
 	) => void): EventEmitter
 	on(name: "UnitRemoveGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
 	on(name: "UnitFadeGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
+	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 }
