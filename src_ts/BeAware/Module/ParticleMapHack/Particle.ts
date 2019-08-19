@@ -49,7 +49,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		if (part === undefined || part[0] === 14560529784942794097n/** naga rip tide  */ || part[0] === 6400371855556675384n)
 			return
 		if (part[0] === 14221266834388661971n && !position.Equals(new Vector3(1200, 1, 1200))) // "particles/items2_fx/smoke_of_deceit.vpcf"
-			SendToConsole("play ui/ping")
+			SendToConsole("playvol ui/ping 0.1")
 		if (position.Length < 10)
 			return
 		Particle.set(id, [part[0], part[1], part[2], position])
