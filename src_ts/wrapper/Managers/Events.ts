@@ -221,6 +221,8 @@ Events.on("NetworkFieldChanged", (entity, trigger, field_name, field_type, array
 		let abil = entity_.m_pBaseEntity.m_hAbilities[array_index]
 		entity_.AbilitiesBook.Spells_[array_index] = EntityManager.GetEntityByNative(abil) as Ability || (abil instanceof C_BaseEntity ? abil.m_pEntity.m_iIndex : abil)
 	}
+	if (array_index === -1 && field_name === "m_hOwner")
+		entity_.Owner_ = entity.m_hOwnerEntity
 })
 Events.on("SetEntityName", (entity, new_name) => {
 	let entity_ = EntityManager.GetEntityByNative(entity, true)

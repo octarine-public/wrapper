@@ -142,18 +142,19 @@ export default class Entity {
 	private Scale_: number = 1 // cached scale
 	public Name: string = ""
 	private readonly Entity: CEntityIdentity
-	private Owner_: Entity
+	public Owner_: Entity | C_BaseEntity | number
 
 	/* ================================ BASE ================================ */
 	constructor(public m_pBaseEntity: C_BaseEntity, public readonly Index: number) {
 		this.Entity = this.m_pBaseEntity.m_pEntity
+		this.Owner_ = this.m_pBaseEntity.m_hOwnerEntity
 		if (this.Entity !== undefined)
 			this.Name = this.Entity.m_name || this.Entity.m_designerName || ""
 	}
 
 	/* ================ GETTERS ================ */
 	get Owner(): Entity { // trick to make it public ro, and protected rw
-		return this.Owner_ || (this.Owner_ = EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
+		return this.Owner_ instanceof Entity ? this.Owner_ : (this.Owner_ = EntityManager.GetEntityByNative(this.Owner_, true))
 	}
 	get Position(): Vector3 { // trick to make it public ro, and protected rw
 		if (!this.Position_.IsValid) {
@@ -256,46 +257,26 @@ export default class Entity {
 	}
 
 	/* ================ METHODS ================ */
-
-	toString(): string {
-		return this.Name
-	}
-
-	/* ================================ EXTENSIONS ================================ */
-
-	/* ================ METHODS ================ */
-
-	/**
-	 */
 	Distance(vec: Vector3 | Entity): number {
 		if (vec instanceof Vector3)
 			return this.NetworkPosition.Distance(vec)
 
 		return this.NetworkPosition.Distance(vec.NetworkPosition)
 	}
-	/**
-	 */
 	Distance2D(vec: Vector3 | Vector2 | Entity): number {
-		if (vec instanceof Vector3 || vec instanceof Vector2)
-			return this.NetworkPosition.Distance2D(vec)
-
-		return this.NetworkPosition.Distance2D(vec.NetworkPosition)
+		if (vec instanceof Entity)
+			vec = vec.NetworkPosition
+		return this.NetworkPosition.Distance2D(vec)
 	}
-	/**
-	 */
-	DistanceSquared(vec: Vector3 | Entity): number {
-		if (vec instanceof Vector3)
-			return this.NetworkPosition.DistanceSqr(vec)
-
-		return this.NetworkPosition.DistanceSqr(vec.NetworkPosition)
+	DistanceSqr(vec: Vector3 | Entity): number {
+		if (vec instanceof Entity)
+			vec = vec.NetworkPosition
+		return this.NetworkPosition.DistanceSqr(vec)
 	}
-	/**
-	 */
-	DistanceSquared2D(vec: Vector3 | Vector2 | Entity): number {
-		if (vec instanceof Vector3 || vec instanceof Vector2)
-			return this.NetworkPosition.DistanceSqr2D(vec)
-
-		return this.NetworkPosition.DistanceSqr2D(vec.NetworkPosition)
+	DistanceSqr2D(vec: Vector3 | Vector2 | Entity): number {
+		if (vec instanceof Entity)
+			vec = vec.NetworkPosition
+		return this.NetworkPosition.DistanceSqr2D(vec)
 	}
 	AngleBetweenFaces(front: Vector3): number {
 		return this.Forward.AngleBetweenFaces(front)
@@ -309,14 +290,13 @@ export default class Entity {
 	FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.NetworkPosition
-
 		return this.NetworkPosition.FindRotationAngle(vec, this.RotationRad)
 	}
 	/**
 	 * faster (Distance <= range)
 	 */
 	IsInRange(ent: Vector3 | Vector2 | Entity, range: number): boolean {
-		return this.DistanceSquared2D(ent) < range ** 2
+		return this.DistanceSqr2D(ent) < range ** 2
 	}
 	Closest(ents: Entity[]): Entity {
 		let thisPos = this.NetworkPosition
@@ -384,5 +364,9 @@ export default class Entity {
 	}
 	OnCreated() {
 		this.IsValid = true
+	}
+
+	toString(): string {
+		return this.Name
 	}
 }
