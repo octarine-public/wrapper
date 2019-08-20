@@ -97,7 +97,6 @@ declare interface Events extends EventEmitter {
 	on(name: "BuffRemoved", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): EventEmitter
 	on(name: "BuffStackCountChanged", listener: (buff: CDOTA_Buff) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
-	on(name: "NetworkFieldChanged", listener: (object: any, name: string) => void): EventEmitter
 	on(name: "UnitSpeech", listener: (
 		npc: C_DOTA_BaseNPC | number,
 		concept: number,

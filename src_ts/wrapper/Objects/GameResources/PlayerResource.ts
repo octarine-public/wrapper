@@ -6,86 +6,57 @@ class PlayerResource {
 	public m_pBaseEntity: C_DOTA_PlayerResource
 
 	public get Names(): string[] {
-		let playerResource = this.m_pBaseEntity
-
-		return playerResource !== undefined ? playerResource.m_iszName : []
+		if (this.m_pBaseEntity === undefined)
+			return []
+		return this.m_pBaseEntity.m_iszName
 	}
 	public get AllPlayers(): Player[] {
-		let playerResource = this.m_pBaseEntity
-
-		return playerResource !== undefined
-			? EntityManager.GetEntitiesByNative(playerResource.m_playerIDToPlayer) as Player[]
-			: []
+		if (this.m_pBaseEntity === undefined)
+			return []
+		return EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_playerIDToPlayer) as Player[]
 	}
 	public get PlayerTeamData(): PlayerResourcePlayerTeamData_t[] {
-		let playerResource = this.m_pBaseEntity
-
-		return playerResource !== undefined
-			? playerResource.m_vecPlayerTeamData
-			: []
+		if (this.m_pBaseEntity === undefined)
+			return []
+		return this.m_pBaseEntity.m_vecPlayerTeamData
 	}
 	public get PlayerData(): PlayerResourcePlayerData_t[] {
-		let playerResource = this.m_pBaseEntity
-
-		return playerResource !== undefined
-			? playerResource.m_vecPlayerData
-			: []
+		if (this.m_pBaseEntity === undefined)
+			return []
+		return this.m_pBaseEntity.m_vecPlayerData
 	}
 	public get TeamCouriers(): Courier[][] {
-		let playerResource = this.m_pBaseEntity
-
-		if (playerResource === undefined)
+		if (this.m_pBaseEntity === undefined)
 			return []
-
-		let couriers: Courier[][] = []
-
-		playerResource.m_hTeamCouriers.forEach(cours =>
-			couriers.push(EntityManager.GetEntitiesByNative(cours) as Courier[]))
-
-		return couriers
+		return this.m_pBaseEntity.m_hTeamCouriers.map(cours => EntityManager.GetEntitiesByNative(cours) as Courier[])
 	}
 	public get PlayerCouriers(): Courier[][] {
-		let playerResource = this.m_pBaseEntity
-
-		if (playerResource === undefined)
+		if (this.m_pBaseEntity === undefined)
 			return []
-
-		let couriers: Courier[][] = []
-
-		playerResource.m_hPlayerCouriers.forEach(cours =>
-			couriers.push(EntityManager.GetEntitiesByNative(cours) as Courier[]))
-
-		return couriers
+		return this.m_pBaseEntity.m_hPlayerCouriers.map(cours => EntityManager.GetEntitiesByNative(cours) as Courier[])
 	}
 
 	public GetNameByPlayerID(playerID: number): string {
-		let playerResource = this.m_pBaseEntity
-
-		return playerResource !== undefined ? playerResource.m_iszName[playerID] : ""
+		if (this.m_pBaseEntity === undefined)
+			return ""
+		return this.m_pBaseEntity.m_iszName[playerID]
 	}
 	public GetPlayerByPlayerID(playerID: number): Player {
-		let playerResource = this.m_pBaseEntity
-
-		return playerResource !== undefined
-			? EntityManager.GetEntityByNative(playerResource.m_playerIDToPlayer[playerID], true) as Player
-			: undefined
-	}
-	public GetPlayerTeamDataByPlayerID(playerID: number): PlayerResourcePlayerTeamData_t {
-		let playerResource = this.m_pBaseEntity
-
-		return playerResource !== undefined ? this.PlayerTeamData[playerID] : undefined
-	}
-	public GetPlayerDataByPlayerID(playerID: number): PlayerResourcePlayerData_t {
-		let playerResource = this.m_pBaseEntity
-
-		return playerResource !== undefined ? this.PlayerData[playerID] : undefined
+		if (this.m_pBaseEntity === undefined)
+			return undefined
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_playerIDToPlayer[playerID], true) as Player
 	}
 	public GetPlayerCouriersByPlayerID(playerID: number): Courier[] {
-		let playerResource = this.m_pBaseEntity
-
-		return playerResource !== undefined
-			? EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_hPlayerCouriers[playerID]) as Courier[]
-			: []
+		if (this.m_pBaseEntity === undefined)
+			return []
+		return EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_hPlayerCouriers[playerID]) as Courier[]
+	}
+	
+	public GetPlayerTeamDataByPlayerID(playerID: number): PlayerResourcePlayerTeamData_t {
+		return this.PlayerTeamData[playerID]
+	}
+	public GetPlayerDataByPlayerID(playerID: number): PlayerResourcePlayerData_t {
+		return this.PlayerData[playerID]
 	}
 }
 

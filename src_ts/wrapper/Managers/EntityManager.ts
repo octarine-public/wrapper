@@ -31,7 +31,7 @@ export { PlayerResource, Game }
 let queueEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 
 let AllEntities: Entity[] = []
-let EntitiesIDs: Entity[] = []
+let EntitiesIDs = new Map<number, Entity>()
 let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 let InStage = new Map<C_BaseEntity, Entity>()
 
@@ -48,7 +48,7 @@ class EntityManager {
 		return AllEntities.slice()
 	}
 	EntityByIndex(index: number): Entity {
-		return EntitiesIDs[index]
+		return EntitiesIDs.get(index)
 	}
 	GetPlayerByID(playerID: number): Player {
 		if (playerID === -1)
@@ -163,33 +163,30 @@ Events.on("EntityDestroyed", (ent, index) => {
 /* ================ RUNTIME CACHE ================ */
 
 function CheckIsInStagingEntity(ent: C_BaseEntity) {
-	return HasBit(ent.m_pEntity.m_flags, 2)
+	let ent_ = ent.m_pEntity
+	return ent_ === undefined || HasBit(ent_.m_flags, 2)
 }
 
 setInterval(() => {
-	if (queueEntitiesAsMap.size > 0) {
-		// loop-optimizer: KEEP
-		queueEntitiesAsMap.forEach((entity, baseEntity) => {
-			if (CheckIsInStagingEntity(baseEntity))
-				return
+	// loop-optimizer: KEEP
+	queueEntitiesAsMap.forEach((entity, baseEntity) => {
+		if (CheckIsInStagingEntity(baseEntity))
+			return
 
-			if (!(baseEntity instanceof C_DOTAPlayer) || !baseEntity.m_bIsLocalPlayer)
-				return
+		if (!(baseEntity instanceof C_DOTAPlayer && baseEntity.m_bIsLocalPlayer))
+			return
 
-			LocalPlayer = entity as Player
-			useQueueEntities()
-		})
-	}
+		LocalPlayer = entity as Player
+		useQueueEntities()
+	})
 
-	if (InStage.size > 0) {
-		// loop-optimizer: KEEP
-		InStage.forEach((entity, baseEntity) => {
-			if (CheckIsInStagingEntity(baseEntity))
-				return
-			InStage.delete(baseEntity)
-			AddToCache(entity)
-		})
-	}
+	// loop-optimizer: KEEP
+	InStage.forEach((entity, baseEntity) => {
+		if (CheckIsInStagingEntity(baseEntity))
+			return
+		InStage.delete(baseEntity)
+		AddToCache(entity)
+	})
 }, 0)
 
 function AddToCache(entity: Entity) {
@@ -204,7 +201,7 @@ function AddToCache(entity: Entity) {
 	entity.OnCreated()
 	const index = entity.Index
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
-	EntitiesIDs[index] = entity
+	EntitiesIDs.set(index, entity)
 	AllEntities.push(entity)
 
 	if (entity instanceof Unit)
@@ -223,12 +220,13 @@ function DeleteFromCache(entNative: C_BaseEntity, index: number) {
 			return
 	}
 
-	const entity = AllEntitiesAsMap.get(entNative) // EntitiesIDs[index]; ???
+	const entity = AllEntitiesAsMap.get(entNative)
 
 	entity.IsValid = false
+	entity.m_pBaseEntity = undefined
 
 	AllEntitiesAsMap.delete(entNative)
-	delete EntitiesIDs[index]
+	EntitiesIDs.delete(index)
 	arrayRemove(AllEntities, entity)
 
 	// console.log("onEntityDestroyed SDK", entity, entity.m_pBaseEntity, index);

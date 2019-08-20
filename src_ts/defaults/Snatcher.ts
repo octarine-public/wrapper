@@ -27,10 +27,10 @@ enum ESelectedType {
 }
 
 let allRunes: Rune[] = [],
-	allRunesParticles: number[][] = [],
+	allRunesParticles = new Map<Rune, number[]>(),
 	ground_items: PhysicalItem[] = [],
 	npcs: Unit[] = [],
-	picking_up: Rune[] = [],
+	picking_up = new Map<Unit, Rune>(),
 	selectedRuneType: ESelectedType = ESelectedType.ALL
 
 const snatcherMenu = MenuFactory("Snatcher")
@@ -104,7 +104,7 @@ function onDeactivateItems() {
 	ground_items = []
 }
 
-EventsSDK.on("GameEnded", () => picking_up = [])
+EventsSDK.on("GameEnded", () => picking_up.clear())
 
 EventsSDK.on("EntityCreated", ent => {
 
@@ -165,7 +165,7 @@ EventsSDK.on("Draw", () => {
 	RendererSDK.Text(text, RendererSDK.WindowSize.DivideScalar(100).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value))
 })
 
-EventsSDK.on("PrepareUnitOrders", order => picking_up[(order.Unit as Unit).Index] === undefined)
+EventsSDK.on("PrepareUnitOrders", order => !picking_up.has(order.Unit as Unit))
 
 function GetControllables() {
 	return npcs.filter(npc =>
@@ -193,20 +193,19 @@ function snatchRunes(controllables: Unit[]) {
 			return
 		let near = ArrayExtensions.orderBy(controllables, unit => unit.Distance(rune)).some(npc => snatchRuneByUnit(npc, rune))
 		if (!near && (drawParticleTake.value || drawParticleKill.value))
-			destroyRuneParticles(rune.Index)
+			destroyRuneParticles(rune)
 	})
 }
 
 function snatchRuneByUnit(npc: Unit, rune: Rune) {
-	let npc_id = npc.Index
-	if (picking_up[npc_id] !== undefined)
+	if (picking_up.has(npc))
 		return false
 
 	if (!npc.IsStunned && !npc.IsWaitingToSpawn) {
 		const Distance = npc.Distance2D(rune)
 
 		if (Distance <= takeRadius.value && !(npc.IsInvulnerable && Distance > 100)) {
-			picking_up[npc_id] = rune
+			picking_up.set(npc, rune)
 			npc.PickupRune(rune)
 			return false
 		}
@@ -217,10 +216,8 @@ function snatchRuneByUnit(npc: Unit, rune: Rune) {
 			return false
 
 		if (drawParticleTake.value || drawParticleKill.value) {
-			const runeID = rune.Index
-
-			if (allRunesParticles[runeID] === undefined) {
-				allRunesParticles[runeID] = []
+			if (!allRunesParticles.has(rune)) {
+				allRunesParticles.set(rune, [])
 
 				if (drawParticleTake.value)
 					createRuneParticle(rune, new Color(0, 255), takeRadius.value)
@@ -235,14 +232,18 @@ function snatchRuneByUnit(npc: Unit, rune: Rune) {
 }
 
 function removedIDRune(rune: Rune) {
-
-	ArrayExtensions.arrayRemove(picking_up, rune, true)
+	for (let [unit, rune_] of picking_up.entries()) {
+		if (rune !== rune_)
+			continue
+		picking_up.delete(unit)
+		break
+	}
 
 	if (ArrayExtensions.arrayRemove(allRunes, rune))
-		destroyRuneParticles(rune.Index)
+		destroyRuneParticles(rune)
 }
 
-function createRuneParticle(ent: Entity, color: Color, radius: number) {
+function createRuneParticle(ent: Rune, color: Color, radius: number) {
 	const particleID = ParticlesSDK.Create (
 		"particles/ui_mouseactions/drag_selected_ring.vpcf",
 		ParticleAttachment_t.PATTACH_ABSORIGIN,
@@ -252,7 +253,7 @@ function createRuneParticle(ent: Entity, color: Color, radius: number) {
 	ParticlesSDK.SetControlPoint(particleID, 1, new Vector3(color.r, color.g, color.b))
 	ParticlesSDK.SetControlPoint(particleID, 2, new Vector3(radius * 1.1, 255))
 
-	allRunesParticles[ent.Index].push(particleID)
+	allRunesParticles.get(ent).push(particleID)
 }
 
 function updateRuneAllParticle() {
@@ -262,24 +263,20 @@ function updateRuneAllParticle() {
 	allRunesParticles.forEach(partcl => ParticlesSDK.SetControlPoint(partcl[0], 1, color_))
 }
 
-function destroyRuneParticles(runeID: number | string) {
-	var particles = allRunesParticles[runeID] as number[]
-	if (particles !== undefined) {
-		// loop-optimizer: POSSIBLE_UNDEFINED
-		particles.forEach(particleID =>
-			ParticlesSDK.Destroy(particleID, true))
-
-		allRunesParticles[runeID] = undefined
-	}
+function destroyRuneParticles(rune: Rune) {
+	if (!allRunesParticles.has(rune))
+		return
+	var particles = allRunesParticles.get(rune)
+	// loop-optimizer: POSSIBLE_UNDEFINED
+	particles.forEach(particleID => ParticlesSDK.Destroy(particleID, true))
+	allRunesParticles.delete(rune)
 }
 
 function destroyRuneAllParticles() {
 	// loop-optimizer: POSSIBLE_UNDEFINED
-	allRunesParticles.forEach(particles => {
-		particles.forEach(particleID => ParticlesSDK.Destroy(particleID, true))
-	})
+	allRunesParticles.forEach(particles => particles.forEach(particleID => ParticlesSDK.Destroy(particleID, true)))
 
-	allRunesParticles = []
+	allRunesParticles.clear()
 }
 
 // ------- Items

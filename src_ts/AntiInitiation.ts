@@ -114,7 +114,7 @@ function GetAbilArray(abilNameToSearch: string) {
 function Disable(Me: Hero, hero: Unit, DisableAr: Array<[string, boolean, boolean?]>, Abil?: Ability): boolean {
 	let delta = Me.GetRotationTime(hero.NetworkPosition) / 1000 + Additionaldelay.value
 	let AbilAr: [string, boolean, boolean?]
-	if (hero.Index === Me.Index)
+	if (hero === Me)
 		return false
 	if (
 		Abil !== undefined

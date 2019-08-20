@@ -11,6 +11,9 @@ export default class Ability extends Entity {
 
 	/* ============ BASE  ============ */
 
+	get Owner(): Unit {
+		return super.Owner as Unit
+	}
 	get AbilityBehavior(): DOTA_ABILITY_BEHAVIOR[] {
 		return this.AbilityData.AbilityBehavior
 	}
@@ -76,7 +79,7 @@ export default class Ability extends Entity {
 		return this.Cooldown === 0
 	}
 	get IsReady(): boolean {
-		const unit = this.Owner as Unit
+		const unit = this.Owner
 		return this.IsCooldownReady && unit.Mana >= this.ManaCost && !unit.IsSilenced && this.Level > 0
 	}
 	get IsGrantedByScepter(): boolean {
@@ -150,26 +153,26 @@ export default class Ability extends Entity {
 	/* ============ EXTENSIONS ============ */
 
 	get CastRange(): number {
-		let owner = this.Owner as Unit,
+		let owner = this.Owner,
 			castrange = this.m_pBaseEntity.m_fCastRange
 
 		switch (this.Name) {
 			case "skywrath_mage_concussive_shot": {
-				let unique = owner.AbilitiesBook.GetAbilityByClass(C_DOTA_Ability_Special_Bonus_Unique_Skywrath_4)
+				let unique = owner.AbilitiesBook.GetAbilityByNativeClass(C_DOTA_Ability_Special_Bonus_Unique_Skywrath_4)
 				if (unique !== undefined && unique.Level > 0)
 					return Number.MAX_SAFE_INTEGER
 
 				break
 			}
 			case "gyrocopter_call_down": {
-				let unique = owner.AbilitiesBook.GetAbilityByClass(C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_3)
+				let unique = owner.AbilitiesBook.GetAbilityByNativeClass(C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_3)
 				if (unique !== undefined && unique.Level > 0)
 					return Number.MAX_SAFE_INTEGER
 
 				break
 			}
 			case "lion_impale": {
-				let unique = owner.AbilitiesBook.GetAbilityByClass(C_DOTA_Ability_Special_Bonus_Unique_Lion_2)
+				let unique = owner.AbilitiesBook.GetAbilityByNativeClass(C_DOTA_Ability_Special_Bonus_Unique_Lion_2)
 				if (unique !== undefined && unique.Level > 0)
 					castrange -= unique.GetSpecialValue("value")
 
@@ -183,28 +186,28 @@ export default class Ability extends Entity {
 	}
 
 	UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
-		return (this.Owner as Unit).UseSmartAbility(this, target, checkToggled, queue, showEffects)
+		return this.Owner.UseSmartAbility(this, target, checkToggled, queue, showEffects)
 	}
 	UpgradeAbility() {
-		return (this.Owner as Unit).TrainAbility(this)
+		return this.Owner.TrainAbility(this)
 	}
 	PingAbility() {
-		return (this.Owner as Unit).PingAbility(this)
+		return this.Owner.PingAbility(this)
 	}
 
 	GetSpecialValue(special_name: string, level: number = this.Level): number {
 		if (level < 0 || level > this.MaxLevel)
 			throw `Invalid GetSpecialValue level for ${this.Name}: ${level} (current level: ${this.Level}, max level: ${this.MaxLevel})`
-		let cache = this.m_AbilityData.SpecialValueCache[special_name]
+		let cache = this.AbilityData.SpecialValueCache[special_name]
 		if (cache === undefined) {
-			cache = this.m_AbilityData.SpecialValueCache[special_name] = []
+			cache = this.AbilityData.SpecialValueCache[special_name] = []
 			for (let i = 0; i <= this.MaxLevel; i++)
 				cache[i] = this.m_pBaseEntity.GetSpecialValue(special_name, i)
 		}
 		return cache[level]
 	}
 	IsManaEnough(bonusMana: number = 0): boolean {
-		return ((this.Owner as Unit).Mana + bonusMana) >= this.ManaCost
+		return (this.Owner.Mana + bonusMana) >= this.ManaCost
 	}
 	HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
 		return HasMaskBigInt(this.AbilityData.m_pAbilityData.m_iAbilityBehavior, BigInt(flag))
@@ -226,7 +229,7 @@ export default class Ability extends Entity {
 			return false
 
 		return this.Level > 0
-			&& !(this.Owner as Unit).IsSilenced
+			&& !this.Owner.IsSilenced
 			&& this.IsManaEnough(bonusMana)
 			&& this.IsCooldownReady
 	}

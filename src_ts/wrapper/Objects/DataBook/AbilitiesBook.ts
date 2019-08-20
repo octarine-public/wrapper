@@ -27,20 +27,6 @@ export default class AbilitiesBook {
 			: []
 	}
 
-	SpellsByOwner(excludeNativeSpells: boolean = false): Ability[] {
-		let owner = this.Owner,
-			abilsNative = this.m_hAbilities
-
-		return EntityManager.AllEntities.filter(entity =>
-			entity instanceof Ability
-			&& !(entity.m_pBaseEntity instanceof C_DOTA_Ability_Morphling_Waveform)
-			&& !(entity instanceof Item)
-			&& !entity.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
-			&& entity.Owner === owner
-			&& (!excludeNativeSpells || !abilsNative.includes(entity.m_pBaseEntity)),
-		) as Ability[]
-	}
-
 	/* get ValidSpells(): Ability[] {
 		let spells: Ability[] = [];
 
@@ -56,10 +42,6 @@ export default class AbilitiesBook {
 		}
 		return spells;
 	} */
-
-	SetSpell(slot: number, ability: Ability) {
-		this.m_hAbilities[slot] = ability.m_pBaseEntity
-	}
 
 	GetSpell(slot: number): Ability {
 		if (!this.Owner.IsValid || slot > MAX_SKILLS)
@@ -79,10 +61,7 @@ export default class AbilitiesBook {
 		)
 	}
 
-	GetAbilityByClass(class_: any): Ability {
-		return this.Spells.find(abil => abil instanceof class_)
-	}
-	GetAbilityByClassName(class_name: any): Ability {
-		return this.Spells.find(abil => abil.constructor.name === class_name)
+	GetAbilityByNativeClass(class_: any): Ability {
+		return this.Spells.find(abil => abil.m_pBaseEntity instanceof class_)
 	}
 }

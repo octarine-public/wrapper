@@ -177,7 +177,7 @@ Events.on("UnitFadeGesture", (npc, activity) => EventsSDK.emit (
 Events.on("NetworkPositionChanged", ent => {
 	let m_vecOrigin = Vector3.fromIOBuffer()
 	let ent_ = EntityManager.GetEntityByNative(ent, true)
-	if (ent === undefined)
+	if (ent_ === undefined)
 		return
 	EventsSDK.emit (
 		"NetworkPositionChanged", false,
@@ -193,7 +193,7 @@ Events.on("GameSceneNodeChanged", ent => {
 		m_angRotation = IOBuffer[6],
 		m_flAbsScale = IOBuffer[7]
 	let ent_ = EntityManager.GetEntityByNative(ent, true)
-	if (ent === undefined)
+	if (ent_ === undefined)
 		return
 	EventsSDK.emit (
 		"GameSceneNodeChanged", false,
