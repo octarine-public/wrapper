@@ -56,9 +56,11 @@ class EntityManager {
 		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player
 	}
 
-	GetEntityByNative(ent: C_BaseEntity, inStage: boolean = false): Entity {
+	GetEntityByNative(ent: C_BaseEntity | number, inStage: boolean = false): Entity {
 		if (ent === undefined)
 			return undefined
+		if (!(ent instanceof C_BaseEntity))
+			return this.EntityByIndex(ent)
 
 		let entityFind = AllEntitiesAsMap.get(ent)
 
@@ -76,21 +78,20 @@ class EntityManager {
 		return queueEntitiesAsMap.get(ent)
 	}
 
-	GetEntitiesByNative(ents: C_BaseEntity[], inStage: boolean = false): Entity[] {
-		let entities: Entity[] = []
-
+	GetEntitiesByNative(ents: Array<C_BaseEntity | Entity | number>, inStage: boolean = false): Array<Entity | any> {
 		// loop-optimizer: FORWARD
-		ents.forEach(entNative => {
-			let entityFind = AllEntitiesAsMap.get(entNative)
+		return ents.map(ent => {
+			if (ent instanceof Entity)
+				return ent
+			if (!(ent instanceof C_BaseEntity))
+				return this.EntityByIndex(ent)
+			let ent_ = AllEntitiesAsMap.get(ent)
 
 			if (inStage)
-				entityFind = entityFind || InStage.get(entNative) || queueEntitiesAsMap.get(entNative)
+				ent_ = ent_ || InStage.get(ent) || queueEntitiesAsMap.get(ent)
 
-			if (entityFind !== undefined)
-				entities.push(entityFind)
+			return ent_
 		})
-
-		return entities
 	}
 
 	GetEntitiesInRange(vec: Vector3, range: number, filter?: (value: Entity) => boolean): Entity[] {
@@ -193,15 +194,15 @@ function AddToCache(entity: Entity) {
 	// console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
 	EventsSDK.emit("EntityPreCreated", false, entity, entity.Index)
 
+	const index = entity.Index
+	EntitiesIDs.set(index, entity)
 	if (CheckIsInStagingEntity(entity.m_pBaseEntity)) {
 		InStage.set(entity.m_pBaseEntity, entity)
 		return
 	}
 
 	entity.OnCreated()
-	const index = entity.Index
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
-	EntitiesIDs.set(index, entity)
 	AllEntities.push(entity)
 
 	if (entity instanceof Unit)
@@ -223,7 +224,6 @@ function DeleteFromCache(entNative: C_BaseEntity, index: number) {
 	const entity = AllEntitiesAsMap.get(entNative)
 
 	entity.IsValid = false
-	entity.m_pBaseEntity = undefined
 
 	AllEntitiesAsMap.delete(entNative)
 	EntitiesIDs.delete(index)

@@ -158,7 +158,7 @@ export default class Inventory {
 			for (let i = 0; i < len; i++) {
 				let item = EntityManager.GetEntityByNative(items[i]) as Item
 
-				if (item !== undefined && regex.test(item.AbilityData.Name))
+				if (item !== undefined && regex.test(item.Name))
 					return item
 			}
 		}
@@ -186,7 +186,7 @@ export default class Inventory {
 			for (let i = 6; i < len; i++) {
 				let item = EntityManager.GetEntityByNative(items[i]) as Item
 
-				if (item !== undefined && item.AbilityData.Name === name)
+				if (item !== undefined && item.Name === name)
 					return item
 			}
 		}

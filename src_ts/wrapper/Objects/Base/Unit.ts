@@ -48,7 +48,7 @@ export default class Unit extends Entity {
 	private UnitName_: string
 	private m_bHasScepterModifier: boolean = false
 
-	constructor(m_pBaseEntity: C_BaseEntity, Index: number = -1) {
+	constructor(m_pBaseEntity: C_BaseEntity, Index: number) {
 		super(m_pBaseEntity, Index)
 		this.AbilitiesBook = new AbilitiesBook(this)
 		this.Inventory = new Inventory(this)
@@ -440,7 +440,7 @@ export default class Unit extends Entity {
 		if (this.HasInventory && this.Items.some(item => item.IsChanneling))
 			return true
 
-		return this.Spells.some(spell => spell.IsChanneling)
+		return this.Spells.some(spell => spell !== undefined && spell.IsChanneling)
 	}
 	public get CastRangeBonus(): number {
 		let castrange = 0
@@ -460,6 +460,7 @@ export default class Unit extends Entity {
 
 		this.Items.forEach(item => spellAmp += item.GetSpecialValue("spell_amp") / 100)
 
+		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
 			if (spell.Level > 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
 				spellAmp += spell.GetSpecialValue("value") / 100
@@ -490,7 +491,7 @@ export default class Unit extends Entity {
 		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
 	}
 	public GetTalentClassValue(class_: any) {
-		let talent = this.AbilitiesBook.GetAbilityByClass(class_)
+		let talent = this.AbilitiesBook.GetAbilityByNativeClass(class_)
 		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
 	}
 	/**
@@ -793,7 +794,7 @@ export default class Unit extends Entity {
 
 	OnCreated() {
 		super.OnCreated()
-		this.UnitName_ = this.m_pBaseEntity.m_iszUnitName || this.Name_
+		this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
 	}
 
 	/* ORDERS */

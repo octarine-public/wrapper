@@ -1,28 +1,27 @@
-import * as Orders from "Orders"
-import * as Utils from "Utils"
+import { EntityManager, EventsSDK, Game, LocalPlayer, Unit } from "./wrapper/Imports"
 
 var enabled = false,
 	doingTP = false
 
-Events.on("Tick", () => {
-	if (!enabled || doingTP || LocalDOTAPlayer.m_hAssignedHero === undefined)
+EventsSDK.on("Tick", () => {
+	if (!enabled || doingTP || !LocalPlayer.HeroAssigned)
 		return
-	var MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC
-	if (!Utils.IsAlive(MyEnt)) return
-	var buff = Utils.GetBuffByName(MyEnt, "modifier_skeleton_king_reincarnation_scepter_active"),
-		tp = Utils.GetItemByRegexp(MyEnt, /item_(tpscroll|travel_boots)/),
-		bkb = Utils.GetItemByName(MyEnt, "item_black_king_bar"),
+	var MyEnt = LocalPlayer.Hero
+	if (!MyEnt.IsAlive) return
+	var buff = MyEnt.GetBuffByName("modifier_skeleton_king_reincarnation_scepter_active"),
+		tp = MyEnt.GetItemByName(/item_(tpscroll|travel_boots)/),
+		bkb = MyEnt.GetItemByName("item_black_king_bar"),
 		waitTime = 1 + (bkb === undefined ? 1 : 2) / 30
-	if (buff === undefined || tp === undefined || tp.m_fCooldown > 0 || buff.m_flDieTime - GameRules.m_fGameTime - (Math.max(GameRules.m_fGameTime - tp.m_flChannelStartTime, 0) + waitTime) > 1 / 30) return
+	if (buff === undefined || tp === undefined || tp.Cooldown > 0 || buff.DieTime - Game.RawGameTime - (Math.max(Game.RawGameTime - tp.ChannelStartTime, 0) + waitTime) > 1 / 30) return
 	doingTP = true
-	Orders.CastNoTarget(MyEnt, bkb, false)
-	var fountain = Entities.AllEntities.filter(ent =>
-		!Utils.IsEnemy(ent, LocalDOTAPlayer)
-		&& ent instanceof C_DOTA_BaseNPC
-		&& ent.m_iszUnitName === "dota_fountain",
+	MyEnt.CastNoTarget(bkb, false)
+	var fountain = EntityManager.AllEntities.filter(ent =>
+		!ent.IsEnemy()
+		&& ent instanceof Unit
+		&& ent.Name === "dota_fountain",
 	)[0]
-	Orders.CastPosition(MyEnt, tp, fountain.m_vecNetworkOrigin, false)
-	setTimeout((waitTime + GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000 + 30, () => doingTP = false)
+	MyEnt.CastPosition(tp, fountain.NetworkPosition, false)
+	setTimeout(() => doingTP = false, (waitTime + GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000 + 30)
 })
 
 {

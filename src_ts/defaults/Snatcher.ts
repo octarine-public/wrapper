@@ -7,12 +7,12 @@ import {
 	Hero,
 	LocalPlayer,
 	MenuManager,
+	ParticlesSDK,
 	PhysicalItem,
 	RendererSDK,
 	Rune,
 	Unit,
 	Vector3,
-	ParticlesSDK,
 } from "wrapper/Imports"
 
 // import { PickupItem, PickupRune } from "../Orders"
@@ -107,7 +107,6 @@ function onDeactivateItems() {
 EventsSDK.on("GameEnded", () => picking_up.clear())
 
 EventsSDK.on("EntityCreated", ent => {
-
 	if (ent instanceof Rune) {
 		allRunes.push(ent)
 		return

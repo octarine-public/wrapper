@@ -1,4 +1,4 @@
-import { Unit, Vector3, ParticlesSDK } from "wrapper/Imports"
+import { ParticlesSDK, Unit, Vector3 } from "wrapper/Imports"
 
 let allParticles = new Map<string, number>()
 

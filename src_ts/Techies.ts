@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Unit, Vector3, ParticlesSDK } from "./wrapper/Imports"
+import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, ParticlesSDK, Unit, Vector3 } from "./wrapper/Imports"
 
 let TechiesMenu = MenuManager.MenuFactory("Techies"),
 	State = TechiesMenu.AddToggle("State"),

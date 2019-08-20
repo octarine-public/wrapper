@@ -1,4 +1,4 @@
-import { Color, Entity, Game, Hero, RendererSDK, Vector2, Vector3, Unit } from "wrapper/Imports"
+import { Color, Entity, Game, Hero, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
 import { ComboBox, DrawRGBA, IconLifetime, Size, State } from "./Menu"
 
@@ -17,7 +17,7 @@ let Particle: Map<number, [bigint, Entity, number, Vector3?]> = new Map(),
 		10795105686913770252n,	// barak raddiant hero
 		//10753307352412363396n
 	]
-	
+
 function ClassChecking(entity: Entity) {
 	return entity !== undefined && (
 		   entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane

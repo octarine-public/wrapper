@@ -1,4 +1,4 @@
-import { Ability, Color, EventsSDK, Game, Item, MenuManager, Vector3, ParticlesSDK } from "wrapper/Imports"
+import { Ability, Color, EventsSDK, Game, Item, MenuManager, ParticlesSDK, Vector3 } from "wrapper/Imports"
 import { LocalPlayer } from "./wrapper/Managers/EntityManager"
 import ListBox from "./wrapper/Menu/ListBox"
 import { CreateRGBTree } from "./wrapper/Menu/MenuManager"

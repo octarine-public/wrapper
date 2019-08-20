@@ -1,4 +1,4 @@
-import { EventsSDK, Game, LocalPlayer, MenuManager, Unit, ParticlesSDK } from "wrapper/Imports"
+import { EventsSDK, Game, LocalPlayer, MenuManager, ParticlesSDK, Unit } from "wrapper/Imports"
 
 const ParticleStyles = [
 	"particles/econ/wards/portal/ward_portal_core/ward_portal_eye_sentry.vpcf",
@@ -45,7 +45,7 @@ function Destroy(particleID: number, unit: Unit) {
 EventsSDK.on("GameEnded", DestroyAll)
 
 EventsSDK.on("EntityCreated", npc => {
-	if (npc instanceof Unit && npc.IsAlly())
+	if (npc instanceof Unit && !npc.IsEnemy())
 		allUnitsAsMap.set(npc, -1)
 })
 

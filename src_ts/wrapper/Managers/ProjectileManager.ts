@@ -3,9 +3,9 @@ import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import Entity from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
+import Unit from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import { Game } from "./EntityManager"
-import Unit from "../Objects/Base/Unit"
 
 let ProjectileManager = new (class ProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []

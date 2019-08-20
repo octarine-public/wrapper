@@ -1,4 +1,4 @@
-import { ArrayExtensions, Entity, LocalPlayer, Unit, Vector3, ParticlesSDK } from "wrapper/Imports"
+import { ArrayExtensions, Entity, LocalPlayer, ParticlesSDK, Unit, Vector3 } from "wrapper/Imports"
 import { State } from "./Menu"
 
 var treant_eyes: Unit[] = [], pars = new Map<Entity, number>()

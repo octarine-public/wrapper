@@ -87,14 +87,14 @@ EventsSDK.on("EntityCreated", (ent: Entity) => {
 	if (
 		ent instanceof Player
 		&& (LocalPlayer === undefined
-			|| (ent.PlayerID !== LocalPlayer.PlayerID && ent.IsAlly()))
+			|| (ent.PlayerID !== LocalPlayer.PlayerID && !ent.IsEnemy()))
 	) {
 		allAllyPlayers.push(new AllyPlayer(ent))
 		return
 	}
 
 	if (ent instanceof Courier) {
-		if (allyCourier === undefined && ent.IsAlly() && ent.IsControllable) {
+		if (allyCourier === undefined && !ent.IsEnemy() && ent.IsControllable) {
 			allyCourier = ent
 		}
 		return

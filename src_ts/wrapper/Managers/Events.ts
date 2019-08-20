@@ -1,5 +1,5 @@
-import Vector3 from "../Base/Vector3"
 import QAngle from "../Base/QAngle"
+import Vector3 from "../Base/Vector3"
 import { default as EntityManager, LocalPlayer } from "./EntityManager"
 
 import Entity from "../Objects/Base/Entity"
@@ -9,7 +9,9 @@ import Unit from "../Objects/Base/Unit"
 
 import ExecuteOrder from "../Native/ExecuteOrder"
 import UserCmd from "../Native/UserCmd"
+import Ability from "../Objects/Base/Ability"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
+import AbilityData from "../Objects/DataBook/AbilityData"
 
 const EventsSDK: EventsSDK = new EventEmitter()
 
@@ -63,20 +65,20 @@ Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) =>
 	attach,
 	target instanceof C_BaseEntity
 		? EntityManager.GetEntityByNative(target)
-		: target
+		: target,
 ))
 
 Events.on("ParticleDestroyed", (id, destroy_immediately) => EventsSDK.emit (
 	"ParticleDestroyed", false,
 	id,
-	destroy_immediately
+	destroy_immediately,
 ))
 
 Events.on("ParticleUpdated", (id, control_point) => EventsSDK.emit (
 	"ParticleUpdated", false,
 	id,
 	control_point,
-	Vector3.fromIOBuffer()
+	Vector3.fromIOBuffer(),
 ))
 
 Events.on("ParticleUpdatedEnt", (id, control_point, ent, attach, attachment, include_wearables) => EventsSDK.emit (
@@ -89,7 +91,7 @@ Events.on("ParticleUpdatedEnt", (id, control_point, ent, attach, attachment, inc
 	attach,
 	attachment,
 	Vector3.fromIOBuffer(),
-	include_wearables
+	include_wearables,
 ))
 
 Events.on("BloodImpact", (target, scale, xnormal, ynormal) => EventsSDK.emit (
@@ -99,7 +101,7 @@ Events.on("BloodImpact", (target, scale, xnormal, ynormal) => EventsSDK.emit (
 		: target,
 	scale,
 	xnormal,
-	ynormal
+	ynormal,
 ))
 
 Events.on("PrepareUnitOrders", order => {
@@ -118,7 +120,7 @@ Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type,
 	playbackrate,
 	castpoint,
 	type,
-	activity
+	activity,
 ))
 
 Events.on("UnitAnimationEnd", (npc, snap) => EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
@@ -210,6 +212,24 @@ Events.on("InputCaptured", is_captured => EventsSDK.emit (
 	"InputCaptured", false,
 	is_captured,
 ))
+
+Events.on("NetworkFieldChanged", (entity, trigger, field_name, field_type, array_index) => {
+	let entity_ = EntityManager.GetEntityByNative(entity, true)
+	if (entity_ === undefined)
+		return
+	if (array_index !== -1 && field_name === "m_hAbilities" && entity_ instanceof Unit) {
+		let abil = entity_.m_pBaseEntity.m_hAbilities[array_index]
+		entity_.AbilitiesBook.Spells_[array_index] = EntityManager.GetEntityByNative(abil) as Ability || (abil instanceof C_BaseEntity ? abil.m_pEntity.m_iIndex : abil)
+	}
+})
+Events.on("SetEntityName", (entity, new_name) => {
+	let entity_ = EntityManager.GetEntityByNative(entity, true)
+	if (entity_ === undefined)
+		return
+	entity_.Name = new_name
+	if (entity_ instanceof Ability)
+		entity_.AbilityData = new AbilityData((entity as C_DOTABaseAbility).m_pAbilityData)
+})
 
 interface EventsSDK extends EventEmitter {
 	/**

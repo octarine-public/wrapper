@@ -1,3 +1,6 @@
+// TYPEDEFS
+type CEntityIndex = C_BaseEntity | number | undefined
+
 /// ENUMS
 
 declare enum ConnectionState {
@@ -1474,7 +1477,7 @@ declare class CAnimTagManager {
 }
 
 declare class CGameSceneNodeHandle {
-	m_hOwner: C_BaseEntity
+	m_hOwner: CEntityIndex
 }
 
 declare class CountdownTimer {
@@ -1972,7 +1975,7 @@ declare class CAnimInputDamping {
 }
 
 declare class fogplayerparams_t {
-	m_hCtrl: C_FogController
+	m_hCtrl: CEntityIndex // C_FogController
 	m_flTransitionTime: number
 	m_OldColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flOldStart: number
@@ -2033,8 +2036,8 @@ declare class CEffectData {
 	m_vStart: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hEntity: C_BaseEntity
-	m_hOtherEntity: C_BaseEntity
+	m_hEntity: CEntityIndex
+	m_hOtherEntity: CEntityIndex
 	m_flScale: number
 	m_flMagnitude: number
 	m_flRadius: number
@@ -2200,10 +2203,10 @@ declare class CDOTA_Buff {
 	m_flLastAppliedTime: number
 	m_flDuration: number
 	m_flDieTime: number
-	m_hCaster: C_BaseEntity
-	m_hAbility: C_BaseEntity
-	m_hParent: C_BaseEntity
-	m_hAuraOwner: C_BaseEntity
+	m_hCaster: CEntityIndex // C_BaseEntity
+	m_hAbility: CEntityIndex // C_BaseEntity
+	m_hParent: CEntityIndex // C_BaseEntity
+	m_hAuraOwner: CEntityIndex // C_BaseEntity
 	m_iStackCount: number
 	m_iAuraSearchTeam: number
 	m_iAuraSearchType: number
@@ -2222,7 +2225,7 @@ declare class CDOTA_Buff {
 	m_flThinkInterval: number
 	m_flThinkTimeAccumulator: number
 	readonly m_iParticles: CDOTA_BuffParticle[]
-	readonly m_hAuraUnits: C_BaseEntity[]
+	readonly m_hAuraUnits: CEntityIndex // C_BaseEntity[]
 }
 
 declare class CDOTA_BuffParticle {
@@ -2597,7 +2600,7 @@ declare class sAcquireHistory {
 declare class sBounceInfo {
 	iAttackIndex: number
 	iBounceCount: number
-	readonly hAlreadyHitList: C_BaseEntity[]
+	readonly hAlreadyHitList: CEntityIndex // C_BaseEntity[]
 }
 
 declare class AnimStateID {
@@ -2605,7 +2608,7 @@ declare class AnimStateID {
 }
 
 declare class CProjectedTextureBase {
-	m_hTargetEntity: C_BaseEntity
+	m_hTargetEntity: CEntityIndex // C_BaseEntity
 	m_bState: boolean
 	m_bAlwaysUpdate: boolean
 	m_flLightFOV: number
@@ -2689,10 +2692,10 @@ declare class RenderInputLayoutField_t {
 }
 
 declare class CAttributeManager {
-	readonly m_Providers: C_BaseEntity[]
-	readonly m_Receivers: C_BaseEntity[]
+	readonly m_Providers: CEntityIndex // C_BaseEntity[]
+	readonly m_Receivers: CEntityIndex // C_BaseEntity[]
 	m_iReapplyProvisionParity: number
-	m_hOuter: C_BaseEntity
+	m_hOuter: CEntityIndex // C_BaseEntity
 	m_bPreventLoopback: boolean
 	m_ProviderType: attributeprovidertypes_t
 }
@@ -2716,7 +2719,7 @@ declare class sControlGroupElem {
 	readonly m_UnitName: number[]
 	readonly m_UnitLabel: number[]
 	m_unUnitLabelIndex: number
-	m_hEntity: C_BaseEntity
+	m_hEntity: CEntityIndex // C_BaseEntity
 	m_bIsIllusion: boolean
 	readonly m_IllusionLabel: number[]
 }
@@ -3018,7 +3021,7 @@ declare class CAnimationGraph {
 }
 
 declare class C_fogplayerparams_t {
-	m_hCtrl: C_FogController
+	m_hCtrl: CEntityIndex // C_FogController
 	m_flTransitionTime: number
 	m_OldColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flOldStart: number
@@ -3254,7 +3257,7 @@ declare class C_DOTASpectatorGraphManager {
 	m_bTrackingTeamStats: boolean
 	m_flStartTime: number
 	m_nNextUpdatePlayer: number
-	readonly m_rgPlayerGraphData: C_DOTASpecGraphPlayerData[]
+	readonly m_rgPlayerGraphData: CEntityIndex[] // C_DOTASpecGraphPlayerData
 	readonly m_rgRadiantTotalEarnedGold: number[]
 	readonly m_rgDireTotalEarnedGold: number[]
 	readonly m_rgRadiantTotalEarnedXP: number[]
@@ -3272,7 +3275,7 @@ declare class C_DOTASpectatorGraphManager {
 }
 
 declare class magnetted_objects_t {
-	hEntity: C_BaseEntity
+	hEntity: CEntityIndex // C_BaseEntity
 }
 
 declare class CHorizontalMotionController {}
@@ -3345,7 +3348,7 @@ declare class CNavVolumeVector extends CNavVolume {
 
 declare class CSpeechBubbleInfo {
 	readonly m_LocalizationStr: number[]
-	m_hNPC: C_BaseEntity
+	m_hNPC: CEntityIndex // C_BaseEntity
 	m_flDuration: number
 	m_unOffsetX: number
 	m_unOffsetY: number
@@ -3440,7 +3443,7 @@ declare class InGamePredictionData_t {
 declare class sGlaiveInfo {
 	iAttackIndex: number
 	iBounceCount: number
-	readonly hAlreadyHitList: C_BaseEntity[]
+	readonly hAlreadyHitList: CEntityIndex // C_BaseEntity[]
 }
 
 declare class CParticleVecInput {
@@ -3512,7 +3515,7 @@ declare class INextBotComponent extends INextBotEventResponder {
 declare class IPlayerInfo {}
 
 declare class CreatureAbilityData_t {
-	hAbility: C_BaseEntity
+	hAbility: CEntityIndex // C_BaseEntity
 	bIsDamage: boolean
 	bIsDebuff: boolean
 	bIsStun: boolean
@@ -3639,6 +3642,7 @@ declare class IHandleEntity {}
 
 declare class CEntityIdentity {
 	readonly m_pEntity: C_BaseEntity
+	readonly m_iIndex: number
 	
 	m_nameStringableIndex: number
 	readonly m_name: string
@@ -4081,13 +4085,13 @@ declare class CDOTA_TeamCommander {
 	readonly m_fNextPotentialLocationTick: number[]
 	readonly m_iPotentialLocationBuffer: number[]
 	readonly m_PotentialLocationGrid: number[][][]
-	m_hRoamingUnit: C_BaseEntity
+	m_hRoamingUnit: CEntityIndex // C_BaseEntity
 	m_RoamTargetLane: DOTA_LANE
 	readonly m_fRuneDibsDesire: number[]
 	readonly m_iRuneTypes: number[]
 	readonly m_fLastSeenRuneTime: number[]
-	readonly m_Buildings: C_BaseEntity[][]
-	readonly m_LaneNodes: C_BaseEntity[][]
+	readonly m_Buildings: CEntityIndex[] // C_BaseEntity[]
+	readonly m_LaneNodes: CEntityIndex[] // C_BaseEntity[]
 	readonly m_fPushLaneDesire: number[]
 	readonly m_fPushLaneRawDesire: number[]
 	readonly m_fPushLaneConvenienceDesire: number[]
@@ -4097,36 +4101,36 @@ declare class CDOTA_TeamCommander {
 	readonly m_fFarmLaneDesire: number[]
 	m_iLastSeenRoshanHealth: number
 	m_fRoshanDesire: number
-	readonly m_hProposedPushUnits: C_BaseEntity[][]
-	readonly m_hProposedDefendUnits: C_BaseEntity[][]
-	readonly m_hProposedRoamUnits: C_BaseEntity[]
-	readonly m_hProposedRoshanUnits: C_BaseEntity[]
+	readonly m_hProposedPushUnits: CEntityIndex[] // C_BaseEntity[]
+	readonly m_hProposedDefendUnits: CEntityIndex[] // C_BaseEntity[]
+	readonly m_hProposedRoamUnits: CEntityIndex // C_BaseEntity[]
+	readonly m_hProposedRoshanUnits: CEntityIndex // C_BaseEntity[]
 	m_fRoamDesire: number
 	m_fRoamOffensivePowerFactor: number
 	m_fRoamDistanceFactor: number
 	m_fRoamPositionFactor: number
-	m_hRoamTarget: C_BaseEntity
+	m_hRoamTarget: CEntityIndex // C_BaseEntity
 	m_vRoamTargetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_fHeroSelectionTimes: number[]
 	m_vBaseLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly m_AllUnits: C_BaseEntity[]
-	readonly m_AllAlliedUnits: C_BaseEntity[]
-	readonly m_AllAlliedHeroes: C_BaseEntity[]
-	readonly m_AllAlliedCreeps: C_BaseEntity[]
-	readonly m_AllAlliedWards: C_BaseEntity[]
-	readonly m_AllAlliedBuildings: C_BaseEntity[]
-	readonly m_AllAlliedOther: C_BaseEntity[]
-	readonly m_AllEnemyUnits: C_BaseEntity[]
-	readonly m_AllEnemyHeroes: C_BaseEntity[]
-	readonly m_AllEnemyCreeps: C_BaseEntity[]
-	readonly m_AllEnemyWards: C_BaseEntity[]
-	readonly m_AllEnemyBuildings: C_BaseEntity[]
-	readonly m_AllEnemyOther: C_BaseEntity[]
-	readonly m_AllNeutralCreeps: C_BaseEntity[]
-	readonly m_ThinkerUnits: C_BaseEntity[]
-	readonly m_AllUnitsIncludingDead: C_BaseEntity[]
-	readonly m_hCouriers: C_BaseEntity[]
-	readonly m_hDisabledBots: C_BaseEntity[]
+	readonly m_AllUnits: CEntityIndex // C_BaseEntity[]
+	readonly m_AllAlliedUnits: CEntityIndex // C_BaseEntity[]
+	readonly m_AllAlliedHeroes: CEntityIndex // C_BaseEntity[]
+	readonly m_AllAlliedCreeps: CEntityIndex // C_BaseEntity[]
+	readonly m_AllAlliedWards: CEntityIndex // C_BaseEntity[]
+	readonly m_AllAlliedBuildings: CEntityIndex // C_BaseEntity[]
+	readonly m_AllAlliedOther: CEntityIndex // C_BaseEntity[]
+	readonly m_AllEnemyUnits: CEntityIndex // C_BaseEntity[]
+	readonly m_AllEnemyHeroes: CEntityIndex // C_BaseEntity[]
+	readonly m_AllEnemyCreeps: CEntityIndex // C_BaseEntity[]
+	readonly m_AllEnemyWards: CEntityIndex // C_BaseEntity[]
+	readonly m_AllEnemyBuildings: CEntityIndex // C_BaseEntity[]
+	readonly m_AllEnemyOther: CEntityIndex // C_BaseEntity[]
+	readonly m_AllNeutralCreeps: CEntityIndex // C_BaseEntity[]
+	readonly m_ThinkerUnits: CEntityIndex // C_BaseEntity[]
+	readonly m_AllUnitsIncludingDead: CEntityIndex // C_BaseEntity[]
+	readonly m_hCouriers: CEntityIndex // C_BaseEntity[]
+	readonly m_hDisabledBots: CEntityIndex // C_BaseEntity[]
 	m_bCreatedLobbyBots: boolean
 	m_fGoodLuckFlavorTextTime: number
 	m_fTeamfightFlavorTextTime: number
@@ -4404,14 +4408,14 @@ declare class CSSDSMsg_ViewRender {
 declare class CDOTA_ReconnectInfo {
 	m_playerSteamId: bigint
 	m_iTeam: number
-	m_iUnitControlled: C_BaseEntity
+	m_iUnitControlled: CEntityIndex
 	m_bWantsRandomHero: boolean
 }
 
 declare class CLocalNPCObstructionsCache {
 	m_nLastUpdatedTick: number
 	m_flRadius: number
-	readonly m_hCachedNPCs: C_DOTA_BaseNPC[]
+	readonly m_hCachedNPCs: CEntityIndex // C_DOTA_BaseNPC[]
 }
 
 declare class IDamageHandler {}
@@ -4419,8 +4423,8 @@ declare class IDamageHandler {}
 declare class C_DOTAGamerules extends C_TeamplayRules {
 	readonly __m_pChainEntity: CNetworkVarChainer
 	m_iMiscHeroPickCounter: number
-	m_hEndGameCinematicEntity: C_BaseEntity
-	m_hOverlayHealthBarUnit: C_DOTA_BaseNPC
+	m_hEndGameCinematicEntity: CEntityIndex // C_BaseEntity
+	m_hOverlayHealthBarUnit: CEntityIndex // C_DOTA_BaseNPC
 	m_nOverlayHealthBarType: number
 	m_bIsInCinematicMode: boolean
 	m_bIsInClientSideCinematicMode: boolean
@@ -4444,8 +4448,8 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_flOverride_dota_team_showcase_duration: number
 	m_flOverride_dota_rune_spawn_time: number
 	m_iGameMode: number
-	m_hGameModeEntity: C_BaseEntity
-	m_hCustomHeroPickRulesEntity: C_BaseEntity
+	m_hGameModeEntity: CEntityIndex // C_BaseEntity
+	m_hCustomHeroPickRulesEntity: CEntityIndex // C_BaseEntity
 	m_flHeroPickStateTransitionTime: number
 	m_iPlayerIDsInControl: bigint
 	m_bSameHeroSelectionEnabled: boolean
@@ -4539,19 +4543,19 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_nGameWinner: number
 	m_unMatchID64: bigint
 	m_bMatchSignoutComplete: boolean
-	m_hSideShop1: C_BaseEntity
-	m_hSideShop2: C_BaseEntity
-	m_hSecretShop1: C_BaseEntity
-	m_hSecretShop2: C_BaseEntity
-	readonly m_hTeamFountains: C_BaseEntity[]
-	readonly m_hTeamForts: C_BaseEntity[]
-	readonly m_hTeamShops: C_BaseEntity[]
-	m_hAnnouncerGood: C_BaseEntity
-	m_hAnnouncerBad: C_BaseEntity
-	m_hAnnouncerSpectator: C_BaseEntity
-	m_hAnnouncerGood_KillingSpree: C_BaseEntity
-	m_hAnnouncerBad_KillingSpree: C_BaseEntity
-	m_hAnnouncerSpectator_KillingSpree: C_BaseEntity
+	m_hSideShop1: CEntityIndex // C_BaseEntity
+	m_hSideShop2: CEntityIndex // C_BaseEntity
+	m_hSecretShop1: CEntityIndex // C_BaseEntity
+	m_hSecretShop2: CEntityIndex // C_BaseEntity
+	readonly m_hTeamFountains: CEntityIndex[] // C_BaseEntity
+	readonly m_hTeamForts: CEntityIndex[] // C_BaseEntity
+	readonly m_hTeamShops: CEntityIndex[] // C_BaseEntity
+	m_hAnnouncerGood: CEntityIndex // C_BaseEntity
+	m_hAnnouncerBad: CEntityIndex // C_BaseEntity
+	m_hAnnouncerSpectator: CEntityIndex // C_BaseEntity
+	m_hAnnouncerGood_KillingSpree: CEntityIndex // C_BaseEntity
+	m_hAnnouncerBad_KillingSpree: CEntityIndex // C_BaseEntity
+	m_hAnnouncerSpectator_KillingSpree: CEntityIndex // C_BaseEntity
 	m_fGameTime: number
 	m_fTimeOfDay: number
 	m_iNetTimeOfDay: number
@@ -4574,7 +4578,7 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_BotDebugDefendLane: number[]
 	readonly m_BotDebugFarmLane: number[]
 	readonly m_BotDebugRoam: number[]
-	readonly m_hBotDebugRoamTarget: C_BaseEntity[]
+	readonly m_hBotDebugRoamTarget: CEntityIndex[] // C_BaseEntity
 	readonly m_BotDebugRoshan: number[]
 	m_nRoshanRespawnPhase: ERoshanSpawnPhase
 	m_flRoshanRespawnPhaseEndTime: number
@@ -4600,9 +4604,9 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	readonly m_vecHeroStatueLiked: CHeroStatueLiked[]
 	readonly m_CustomGameTeamMaxPlayers: number[]
 	readonly m_iMutations: number[]
-	readonly m_vecIngameEvents: C_IngameEvent_Base[]
+	readonly m_vecIngameEvents: CEntityIndex // C_IngameEvent_Base[]
 	m_nPrimaryIngameEventIndex: number
-	m_hObsoleteIngameEvent: C_IngameEvent_Base
+	m_hObsoleteIngameEvent: CEntityIndex // C_IngameEvent_Base
 	readonly m_NeutralSpawnBoxes: NeutralSpawnBoxes_t[]
 }
 
@@ -4661,9 +4665,9 @@ declare class PlayerResourceBroadcasterData_t {
 
 declare class CInteractionManager {
 	m_nActiveInteraction: interactions_t
-	m_hSelf: C_BaseAnimating
-	m_hPlayer: C_BasePlayer
-	m_hInteractionTarget: C_BaseAnimating
+	m_hSelf: CEntityIndex // C_BaseAnimating
+	m_hPlayer: CEntityIndex // C_BasePlayer
+	m_hInteractionTarget: CEntityIndex // C_BaseAnimating
 	m_flInteractionLerp: number
 	m_bAllInteractionsDisabled: boolean
 	readonly m_vecPreventionEntities: prevent_interaction_t[]
@@ -4671,7 +4675,7 @@ declare class CInteractionManager {
 }
 
 declare class prevent_interaction_t {
-	m_hEntity: C_BaseEntity
+	m_hEntity: CEntityIndex // C_BaseEntity
 	m_flUntilTime: number
 }
 
@@ -4916,9 +4920,9 @@ declare class CTakeDamageInfo {
 	m_vecDamagePosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vecReportedPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vecDamageDirection: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hInflictor: C_BaseEntity
-	m_hAttacker: C_BaseEntity
-	m_hWeapon: C_BaseEntity
+	m_hInflictor: CEntityIndex // C_BaseEntity
+	m_hAttacker: CEntityIndex // C_BaseEntity
+	m_hWeapon: CEntityIndex // C_BaseEntity
 	m_flDamage: number
 	m_flMaxDamage: number
 	m_flBaseDamage: number
@@ -5137,7 +5141,7 @@ declare class C_OP_PointVectorAtNextParticle extends CParticleFunctionOperator {
 }
 
 declare class CFourWheelVehiclePhysics {
-	m_pOuter: C_BaseAnimating
+	m_pOuter: CEntityIndex // C_BaseAnimating
 	readonly m_pOuterServerVehicle: CFourWheelServerVehicle
 	readonly m_controls: vehicle_controlparams_t
 	m_nSpeed: number
@@ -5185,7 +5189,7 @@ declare class CBaseServerVehicle extends IServerVehicle {
 	m_iCurrentExitAnim: number
 	m_vecCurrentExitEndPoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_savedViewOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hExitBlocker: C_BaseEntity
+	m_hExitBlocker: CEntityIndex
 	m_chPreviousTextureType: number
 	readonly m_vehicleSounds: vehiclesounds_t
 	m_flVehicleVolume: number
@@ -5205,7 +5209,7 @@ declare class CPassengerInfo {
 	m_nSeat: number
 	readonly m_strRoleName: string
 	readonly m_strSeatName: string
-	m_hPassenger: C_BaseCombatCharacter
+	m_hPassenger: CEntityIndex // C_BaseCombatCharacter
 }
 
 declare class CPassengerRole {
@@ -5705,8 +5709,8 @@ declare class CGlobalLightBase {
 	readonly m_WorldPoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vFogOffsetLayer0: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vFogOffsetLayer1: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hEnvWind: C_BaseEntity
-	m_hEnvSky: C_BaseEntity
+	m_hEnvWind: CEntityIndex // C_BaseEntity
+	m_hEnvSky: CEntityIndex // C_BaseEntity
 	m_fSmoothedAmount: number
 	m_fSlowSmoothedAmount: number
 }
@@ -6067,7 +6071,7 @@ declare class C_BaseEntity extends C_GameEntity {
 	m_lifeState: number
 	m_takedamage: DamageOptions_t
 	m_ubInterpolationFrame: number
-	m_hSceneObjectController: C_BaseEntity
+	m_hSceneObjectController: CEntityIndex // C_BaseEntity
 	m_nNoInterpolationTick: number
 	m_flProxyRandomValue: number
 	m_iEFlags: number
@@ -6096,14 +6100,14 @@ declare class C_BaseEntity extends C_GameEntity {
 	m_vecAbsVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_vecVelocity: CNetworkVelocityVector
 	m_vecBaseVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hEffectEntity: C_BaseEntity
-	m_hOwnerEntity: C_BaseEntity
+	m_hEffectEntity: CEntityIndex // C_BaseEntity
+	m_hOwnerEntity: CEntityIndex // C_BaseEntity
 	m_MoveCollide: MoveCollide_t
 	m_MoveType: MoveType_t
 	m_Gender: gender_t
 	m_nWaterLevel: number
 	m_fEffects: number
-	m_hGroundEntity: C_BaseEntity
+	m_hGroundEntity: CEntityIndex // C_BaseEntity
 	m_flFriction: number
 	m_flElasticity: number
 	m_bSimulatedEveryTick: boolean
@@ -6123,7 +6127,7 @@ declare class C_BaseEntity extends C_GameEntity {
 	m_bPredictable: boolean
 	m_bRenderWithViewModels: boolean
 	m_nSplitUserPlayerPredictionSlot: number
-	m_hOldMoveParent: C_BaseEntity
+	m_hOldMoveParent: CEntityIndex // C_BaseEntity
 	readonly m_Particles: CParticleProperty
 	readonly m_vecPredictedScriptFloats: number[]
 	readonly m_vecPredictedScriptFloatIDs: number[]
@@ -6293,7 +6297,7 @@ declare class CSolveIKChainAnimNodeChainData {
 declare class CRecipientFilter extends IRecipientFilter {
 	m_nBufType: NetChannelBufType_t
 	m_bInitMessage: boolean
-	readonly m_Recipients: C_BaseEntity[]
+	readonly m_Recipients: CEntityIndex[]
 	m_bUsingPredictionRules: boolean
 	m_bIgnorePredictionCull: boolean
 }
@@ -6336,7 +6340,7 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_bBehindLocalPlayer: boolean
 	m_nBehindLocalPlayerFrame: number
 	readonly m_CurrentFog: fogparams_t
-	m_hOldFogController: C_FogController
+	m_hOldFogController: CEntityIndex // C_FogController
 	readonly m_bOverrideFogColor: boolean[]
 	readonly m_OverrideFogColor: boolean[] // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_bOverrideFogStartEnd: boolean[]
@@ -6344,7 +6348,7 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	readonly m_fOverrideFogEnd: number[]
 	m_StuckLast: number
 	readonly m_Local: C_PlayerLocalData
-	m_hTonemapController: C_BaseEntity
+	m_hTonemapController: CEntityIndex // C_BaseEntity
 	readonly m_pl: C_PlayerState
 	m_iFOV: number
 	m_iFOVStart: number
@@ -6365,26 +6369,26 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_iBonusProgress: number
 	m_iBonusChallenge: number
 	m_flMaxspeed: number
-	m_hZoomOwner: C_BaseEntity
-	m_hVehicle: C_BaseEntity
-	m_hLastWeapon: C_BaseCombatWeapon
-	readonly m_hViewModel: C_BaseViewModel[]
-	m_hPropHMDAvatar: C_PropHMDAvatar
-	m_hPointHMDAnchor: C_PointHMDAnchor
+	m_hZoomOwner: CEntityIndex // C_BaseEntity
+	m_hVehicle: CEntityIndex // C_BaseEntity
+	m_hLastWeapon: CEntityIndex // C_BaseCombatWeapon
+	readonly m_hViewModel: CEntityIndex[] // C_BaseViewModel
+	m_hPropHMDAvatar: CEntityIndex // C_PropHMDAvatar
+	m_hPointHMDAnchor: CEntityIndex // C_PointHMDAnchor
 	m_VRControllerType: number
 	m_fOnTarget: boolean
 	m_iDefaultFOV: number
 	m_afButtonDisabled: bigint
 	m_afButtonForced: bigint
-	m_hViewEntity: C_BaseEntity
-	m_hConstraintEntity: C_BaseEntity
+	m_hViewEntity: CEntityIndex // C_BaseEntity
+	m_hConstraintEntity: CEntityIndex // C_BaseEntity
 	m_vecConstraintCenter: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flConstraintRadius: number
 	m_flConstraintWidth: number
 	m_flConstraintSpeedFactor: number
 	m_bConstraintPastRadius: boolean
 	m_iObserverMode: number
-	m_hObserverTarget: C_BaseEntity
+	m_hObserverTarget: CEntityIndex // C_BaseEntity
 	m_flObserverChaseDistance: number
 	m_vecFreezeFrameStart: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flFreezeFrameStartTime: number
@@ -6392,9 +6396,9 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_bStartedFreezeFraming: boolean
 	m_bFinishedFreezeFraming: boolean
 	m_flDeathTime: number
-	m_hOldVehicle: C_BaseEntity
-	m_hUseEntity: C_BaseEntity
-	m_hHeldEntity: C_BaseEntity
+	m_hOldVehicle: CEntityIndex // C_BaseEntity
+	m_hUseEntity: CEntityIndex // C_BaseEntity
+	m_hHeldEntity: CEntityIndex // C_BaseEntity
 	m_vecWaterJumpVel: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vecOldViewAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bWasFrozen: boolean
@@ -6426,17 +6430,17 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_chTextureType: number
 	m_bSentFreezeFrame: boolean
 	m_flFreezeZOffset: number
-	readonly m_hSplitScreenPlayers: C_BasePlayer[]
+	readonly m_hSplitScreenPlayers: CEntityIndex // C_BasePlayer[]
 	m_nSplitScreenSlot: number
-	m_hSplitOwner: C_BasePlayer
+	m_hSplitOwner: CEntityIndex // C_BasePlayer
 	m_bIsLocalPlayer: boolean
 	m_movementCollisionNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_groundNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vOldOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flOldSimulationTime: number
-	m_stuckCharacter: C_BaseCombatCharacter
-	m_hPostProcessCtrl: C_PostProcessController
-	m_hColorCorrectionCtrl: C_ColorCorrection
+	m_stuckCharacter: CEntityIndex // C_BaseCombatCharacter
+	m_hPostProcessCtrl: CEntityIndex // C_PostProcessController
+	m_hColorCorrectionCtrl: CEntityIndex // C_ColorCorrection
 	readonly m_PlayerFog: C_fogplayerparams_t
 	m_vecElevatorFixup: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nUnHoldableButtons: bigint
@@ -6445,9 +6449,9 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 declare class C_BaseCombatCharacter extends C_BaseFlex {
 	m_flNextAttack: number
 	readonly m_iAmmo: number[]
-	readonly m_hMyWeapons: C_BaseCombatWeapon[]
-	m_hActiveWeapon: C_BaseCombatWeapon
-	readonly m_hMyWearables: C_EconWearable[]
+	readonly m_hMyWeapons: CEntityIndex // C_BaseCombatWeapon[]
+	m_hActiveWeapon: CEntityIndex // C_BaseCombatWeapon
+	readonly m_hMyWearables: CEntityIndex // C_EconWearable[]
 	m_bloodColor: number
 	m_leftFootAttachment: number
 	m_rightFootAttachment: number
@@ -6575,7 +6579,7 @@ declare class C_PlayerLocalData {
 	m_bAutoAimTarget: boolean
 	readonly m_skybox3d: sky3dparams_t
 	readonly m_audio: audioparams_t
-	readonly m_PostProcessingVolumes: C_PostProcessingVolume[]
+	readonly m_PostProcessingVolumes: CEntityIndex // C_PostProcessingVolume[]
 	m_bInLanding: boolean
 	m_flLandingTime: number
 	m_vecClientBaseVelocity: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
@@ -6634,8 +6638,8 @@ declare class C_OP_PinParticleToCP extends CParticleFunctionOperator {
 }
 
 declare class CSound {
-	m_hOwner: C_BaseEntity
-	m_hTarget: C_BaseEntity
+	m_hOwner: CEntityIndex // C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 	m_iVolume: number
 	m_flOcclusionScale: number
 	m_iType: number
@@ -6808,7 +6812,7 @@ declare class EventClientFrameSimulate_t {
 }
 
 declare class CModifierParams {
-	ability: C_DOTABaseAbility
+	ability: CEntityIndex // C_DOTABaseAbility
 	fDamage: number
 	fOriginalDamage: number
 	nActivity: number
@@ -6823,7 +6827,7 @@ declare class CModifierParams {
 	fGain: number
 	fAttackTimeRemaining: number
 	m_nIssuerPlayerIndex: number
-	inflictor: C_BaseEntity
+	inflictor: CEntityIndex // C_BaseEntity
 	nDamageType: number
 	nDamageflags: number
 	nDamageCategory: number
@@ -6847,15 +6851,15 @@ declare class CModifierParams {
 	bProcessProcs: boolean
 	bProjectileIsFromIllusion: boolean
 	nPlayerids_stick: number
-	hattacker: C_BaseEntity
-	htarget: C_BaseEntity
-	hunit: C_BaseEntity
+	hattacker: CEntityIndex // C_BaseEntity
+	htarget: CEntityIndex // C_BaseEntity
+	hunit: CEntityIndex // C_BaseEntity
 	readonly pAddedBuff: CDOTA_Buff
 }
 
 declare class CDOTA_Orb {
-	m_hCaster: C_BaseEntity
-	m_hAbility: C_BaseEntity
+	m_hCaster: CEntityIndex // C_BaseEntity
+	m_hAbility: CEntityIndex // C_BaseEntity
 }
 
 declare class CDOTASubChallengeInfo {
@@ -7003,7 +7007,7 @@ declare class CChoreoAnimNode extends CAnimNodeBase {
 
 declare class CCopyRecipientFilter extends IRecipientFilter {
 	m_Flags: number
-	readonly m_Recipients: C_BaseEntity[]
+	readonly m_Recipients: CEntityIndex[]
 }
 
 declare class CRandSimTimer extends CSimpleSimTimer {
@@ -7099,7 +7103,7 @@ declare class CPlayerLocalData {
 	m_bAutoAimTarget: boolean
 	readonly m_skybox3d: sky3dparams_t
 	readonly m_audio: audioparams_t
-	readonly m_PostProcessingVolumes: C_PostProcessingVolume[]
+	readonly m_PostProcessingVolumes: CEntityIndex // C_PostProcessingVolume[]
 	readonly m_fog: fogparams_t
 }
 
@@ -7109,7 +7113,7 @@ declare class CSceneEventInfo {
 	m_iPriority: number
 	m_bIsGesture: boolean
 	m_flWeight: number
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 	m_bIsMoving: boolean
 	m_bHasArrived: boolean
 	m_flInitialYaw: number
@@ -7289,7 +7293,7 @@ declare class CDOTA_Bot {
 	readonly m_fExecutionTime: number[]
 	m_iCurExecutionTime: number
 	m_iPlayerID: number
-	m_hUnit: C_BaseEntity
+	m_hUnit: CEntityIndex // C_BaseEntity
 	readonly m_pTeamCommander: CDOTA_TeamCommander
 	m_iUnitType: number
 	m_fAggressionFactor: number
@@ -7331,17 +7335,17 @@ declare class CDOTA_Bot {
 	m_nAttackingHeroes: number
 	m_fLastSeen: number
 	m_nFailedPaths: number
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 	m_vTargetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fTargetLastSeen: number
-	m_hTargetLastHitCreep: C_BaseEntity
+	m_hTargetLastHitCreep: CEntityIndex // C_BaseEntity
 	m_bWasInvisible: boolean
 	m_bKnownInvisible: boolean
 	m_vLastSeenLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vRequestedBlinkLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fRequestedBlinkStart: number
 	m_fRequestedBlinkExpire: number
-	readonly m_hMinions: C_BaseEntity[]
+	readonly m_hMinions: CEntityIndex // C_BaseEntity[]
 	readonly m_fModeDesires: number[]
 	m_iPreviousBotModeType: number
 	m_fPendingActionExecuteTime: number
@@ -7382,7 +7386,7 @@ declare class CSSDSMsg_PreLayer extends CSSDSMsg_LayerBase {}
 declare class CEffectScriptElement {
 	readonly m_szEffectName: number[]
 	m_bTrailActive: boolean
-	m_pSprite: C_Sprite
+	m_pSprite: CEntityIndex // C_Sprite
 	m_iType: number
 	m_iRenderType: number
 	m_iR: number
@@ -7517,7 +7521,7 @@ declare class EventClientSendInput_t {}
 
 declare class C_SpeechBubbleInfo {
 	readonly m_LocalizationStr: number[]
-	m_hNPC: C_BaseEntity
+	m_hNPC: CEntityIndex // C_BaseEntity
 	m_flDuration: number
 	m_unOffsetX: number
 	m_unOffsetY: number
@@ -7651,7 +7655,7 @@ declare class CDOTASpectatorGraphManager {
 	m_bTrackingTeamStats: boolean
 	m_flStartTime: number
 	m_nNextUpdatePlayer: number
-	readonly m_rgPlayerGraphData: C_DOTASpecGraphPlayerData[]
+	readonly m_rgPlayerGraphData: CEntityIndex[] // C_DOTASpecGraphPlayerData
 	readonly m_rgRadiantTotalEarnedGold: number[]
 	readonly m_rgDireTotalEarnedGold: number[]
 	readonly m_rgRadiantTotalEarnedXP: number[]
@@ -7780,13 +7784,13 @@ declare class C_OP_LocalAccelerationForce extends CParticleFunctionForce {
 }
 
 declare class CUnitOrders {
-	readonly m_nUnits: C_BaseEntity[]
+	readonly m_nUnits: CEntityIndex[]
 	m_vPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nIssuerPlayerIndex: number
 	m_nOrderSequenceNumber: number
 	m_nOrderType: number
-	m_nTargetIndex: C_BaseEntity
-	m_nAbilityIndex: C_BaseEntity
+	m_nTargetIndex: CEntityIndex
+	m_nAbilityIndex: CEntityIndex
 	m_bQueue: boolean
 }
 
@@ -8097,8 +8101,8 @@ declare class CSoundPatch {
 	m_shutdownTime: number
 	m_flLastTime: number
 	readonly m_iszSoundScriptName: string
-	m_hEnt: C_BaseEntity
-	m_soundEntityIndex: C_BaseEntity
+	m_hEnt: CEntityIndex // C_BaseEntity
+	m_soundEntityIndex: CEntityIndex
 	m_soundOrigin: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_isPlaying: number
 	readonly m_Filter: CCopyRecipientFilter
@@ -8286,7 +8290,7 @@ declare class CEnvWindShared {
 	m_bGusting: boolean
 	m_flWindAngleVariation: number
 	m_flWindSpeedVariation: number
-	m_iEntIndex: C_BaseEntity
+	m_iEntIndex: CEntityIndex
 }
 
 declare class C_OP_RenderAsModels extends CParticleFunctionRenderer {
@@ -8386,7 +8390,7 @@ declare class CBoneVelocityMetric extends CMotionMetricBase {
 declare class CResponseQueue__CDeferredResponse {
 	readonly m_contexts: CResponseCriteriaSet
 	m_fDispatchTime: number
-	m_hIssuer: C_BaseEntity
+	m_hIssuer: CEntityIndex // C_BaseEntity
 	readonly m_response: CRR_Response
 	m_bResponseValid: boolean
 }
@@ -8422,7 +8426,7 @@ declare class TempViewerInfo_t {
 	m_bDirty: boolean
 	flEndTime: number
 	nFoWID: number
-	hOwner: C_BaseEntity
+	hOwner: CEntityIndex // C_BaseEntity
 }
 
 declare class CBaseAnimatingOverlayController extends CBaseAnimatingController {
@@ -8597,7 +8601,7 @@ declare class C_CEnvWindShared {
 	m_bGusting: boolean
 	m_flWindAngleVariation: number
 	m_flWindSpeedVariation: number
-	m_iEntIndex: C_BaseEntity
+	m_iEntIndex: CEntityIndex
 }
 
 declare class CCommentarySystem {
@@ -8610,10 +8614,10 @@ declare class CCommentarySystem {
 	m_iTeleportStage: number
 	m_bCheatState: boolean
 	m_bIsFirstSpawnGroupToLoad: boolean
-	readonly m_hSpawnedEntities: C_BaseEntity[]
-	m_hCurrentNode: C_BaseEntity
-	m_hActiveCommentaryNode: C_BaseEntity
-	m_hLastCommentaryNode: C_BaseEntity
+	readonly m_hSpawnedEntities: CEntityIndex // C_BaseEntity[]
+	m_hCurrentNode: CEntityIndex
+	m_hActiveCommentaryNode: CEntityIndex
+	m_hLastCommentaryNode: CEntityIndex
 }
 
 declare class CStrideLengthAdjusterAnimNode extends CAnimNodeBase {
@@ -8830,8 +8834,8 @@ declare class CDecalInfo {
 }
 
 declare class CPortraitData extends CBasePortraitData {
-	readonly m_RenderList: C_BaseEntity[]
-	m_hHero: C_BaseEntity
+	readonly m_RenderList: CEntityIndex // C_BaseEntity[]
+	m_hHero: CEntityIndex // C_BaseEntity
 }
 
 declare class C_INIT_CreateFromPlaneCache extends CParticleFunctionInitializer {
@@ -8891,7 +8895,7 @@ declare class CFinishedCondition extends CAnimStateConditionBase {
 }
 
 declare class RemnantData_t {
-	m_hRemnant: C_BaseEntity
+	m_hRemnant: CEntityIndex // C_BaseEntity
 	m_nProjectileHandle: number
 }
 
@@ -8964,10 +8968,10 @@ declare class CParticleSystemDefinition extends IParticleSystemDefinition {
 declare class EventClientSimulate_t extends EventSimulate_t {}
 
 declare class CDOTA_AttackRecord {
-	m_hSource: C_BaseEntity
-	m_hInflictor: C_BaseEntity
-	m_hTarget: C_BaseEntity
-	m_hProjectileSource: C_BaseEntity
+	m_hSource: CEntityIndex // C_BaseEntity
+	m_hInflictor: CEntityIndex // C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
+	m_hProjectileSource: CEntityIndex // C_BaseEntity
 	m_flDamage: number
 	m_flOriginalDamage: number
 	m_flDamagePhysical: number
@@ -9038,6 +9042,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_bStolenScepter: boolean
 	m_bIsNeutralUnitType: boolean
 	m_bSelectOnSpawn: boolean
+	m_bCachedReplicatedMorphlingIllusion: boolean
 	m_bIgnoreAddSummonedToSelection: boolean
 	m_bConsideredHero: boolean
 	m_bUsesConstantGesture: boolean
@@ -9070,7 +9075,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_iBotDebugData: number
 	m_bIsIllusion: boolean
 	m_bHasClientSeenIllusionModifier: boolean
-	readonly m_hAbilities: C_BaseEntity[]
+	readonly m_hAbilities: CEntityIndex[] // C_BaseEntity
 	m_flInvisibilityLevel: number
 	m_flHullRadius: number
 	m_flCollisionPadding: number
@@ -9148,6 +9153,8 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_flMagicalResistanceValue: number
 	m_nPrevSequenceParity: number
 	m_flPrevInvisLevel: number
+	m_nUnitModelVariant: number
+	m_nUnitModelVariantCount: number
 	m_iPrevSequence: number
 	readonly m_pLastWeatherEffectName: string
 	readonly m_VoiceBackgroundSoundTimer: CountdownTimer
@@ -9172,9 +9179,9 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_NetworkSequenceIndex: number
 	m_bShouldDoFlyHeightVisual: boolean
 	m_flStartSequenceCycle: number
-	m_hBackgroundSceneEnt: C_BaseEntity
-	m_hSpeakingSceneEnt: C_BaseEntity
-	readonly m_hOldWearables: C_EconWearable[]
+	m_hBackgroundSceneEnt: CEntityIndex // C_BaseEntity
+	m_hSpeakingSceneEnt: CEntityIndex // C_BaseEntity
+	readonly m_hOldWearables: CEntityIndex // C_EconWearable[]
 	readonly m_CustomHealthLabel: number[]
 	m_CustomHealthLabelColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_gibTintColor: boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
@@ -9182,6 +9189,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_bShouldDrawParticlesWhileHidden: boolean
 	m_bIsClientThinkPending: boolean
 	m_bActivityModifiersDirty: boolean
+	m_bUnitModelVariantChanged: boolean
 }
 
 declare class C_NextBotCombatCharacter extends C_BaseCombatCharacter {
@@ -9196,7 +9204,7 @@ declare class C_NextBotCombatCharacter extends C_BaseCombatCharacter {
 }
 
 declare class CDOTA_ModifierManager {
-	m_hModifierParent: C_BaseEntity
+	m_hModifierParent: CEntityIndex // C_BaseEntity
 	m_nHasTruesightForTeam: number
 	m_nHasTruesightForTeamValid: number
 	m_nProvidesFOWPositionForTeam: number
@@ -9207,13 +9215,13 @@ declare class CDOTA_ModifierManager {
 
 declare class C_DOTA_UnitInventory {
 	readonly m_SharedCooldownList: sSharedCooldownInfo[]
-	readonly m_hItems: C_BaseEntity[]
+	readonly m_hItems: CEntityIndex[] // C_BaseEntity
 	readonly m_bItemQueried: boolean[]
 	m_iParity: number
-	m_hInventoryParent: C_BaseEntity
+	m_hInventoryParent: CEntityIndex // C_BaseEntity
 	m_bIsActive: boolean
 	m_bStashEnabled: boolean
-	m_hTransientCastItem: C_BaseEntity
+	m_hTransientCastItem: CEntityIndex // C_BaseEntity
 	m_bSendChangedMsg: boolean
 }
 
@@ -9430,7 +9438,7 @@ declare class EventPreDataUpdate_t {
 }
 
 declare class Relationship_t {
-	entity: C_BaseEntity
+	entity: CEntityIndex // C_BaseEntity
 	classType: Class_T
 	faction: number
 	disposition: Disposition_t
@@ -9569,7 +9577,7 @@ declare class CDOTA_CombatLogQueryProgress {
 
 declare class sSpiritInfo {
 	vTargetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	hTarget: C_BaseEntity
+	hTarget: CEntityIndex // C_BaseEntity
 	bHit: boolean
 	iHealAmount: number
 	readonly nFXAmbientIndex: ParticleIndex_t
@@ -9658,7 +9666,7 @@ declare class NextBotGroundLocomotion extends CLocomotionBase {
 	m_desiredLean: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIsJumping: boolean
 	m_bIsJumpingAcrossGap: boolean
-	m_hGround: C_BaseEntity
+	m_hGround: CEntityIndex // C_BaseEntity
 	m_vGroundNormal: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vGroundSampleLastPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bIsClimbingUpToLedge: boolean
@@ -9671,7 +9679,7 @@ declare class NextBotGroundLocomotion extends CLocomotionBase {
 	m_flAccumApproachWeights: number
 	m_bRecomputePostureOnCollision: boolean
 	readonly m_ignorePhysicsPropTimer: CountdownTimer
-	m_hIgnorePhysicsProp: C_BaseEntity
+	m_hIgnorePhysicsProp: CEntityIndex // C_BaseEntity
 	m_actJump: number
 	m_actJumpAcrossGap: number
 }
@@ -9719,9 +9727,9 @@ declare class CPostGraphIKChainBlendTag extends CAnimTagBase {
 declare class CDOTAGamerules extends CTeamplayRules {
 	readonly __m_pChainEntity: CNetworkVarChainer
 	m_iMiscHeroPickCounter: number
-	m_hEndGameCinematicEntity: C_BaseEntity
+	m_hEndGameCinematicEntity: CEntityIndex // C_BaseEntity
 	readonly m_EndGameCinematicTimer: CountdownTimer
-	m_hOverlayHealthBarUnit: C_DOTA_BaseNPC
+	m_hOverlayHealthBarUnit: CEntityIndex // C_DOTA_BaseNPC
 	m_nOverlayHealthBarType: number
 	m_bIsInCinematicMode: boolean
 	m_bIsInClientSideCinematicMode: boolean
@@ -9744,8 +9752,8 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_flOverride_dota_rune_spawn_time: number
 	m_flOverride_dota_tree_regrow_time: number
 	m_iGameMode: number
-	m_hGameModeEntity: C_BaseEntity
-	m_hCustomHeroPickRulesEntity: C_BaseEntity
+	m_hGameModeEntity: CEntityIndex // C_BaseEntity
+	m_hCustomHeroPickRulesEntity: CEntityIndex // C_BaseEntity
 	m_flHeroPickStateTransitionTime: number
 	m_iPlayerIDsInControl: bigint
 	m_bSameHeroSelectionEnabled: boolean
@@ -9841,19 +9849,19 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_nGameWinner: number
 	m_unMatchID64: bigint
 	m_bMatchSignoutComplete: boolean
-	m_hSideShop1: C_BaseEntity
-	m_hSideShop2: C_BaseEntity
-	m_hSecretShop1: C_BaseEntity
-	m_hSecretShop2: C_BaseEntity
-	readonly m_hTeamFountains: C_BaseEntity[]
-	readonly m_hTeamForts: C_BaseEntity[]
-	readonly m_hTeamShops: C_BaseEntity[]
-	m_hAnnouncerGood: C_BaseEntity
-	m_hAnnouncerBad: C_BaseEntity
-	m_hAnnouncerSpectator: C_BaseEntity
-	m_hAnnouncerGood_KillingSpree: C_BaseEntity
-	m_hAnnouncerBad_KillingSpree: C_BaseEntity
-	m_hAnnouncerSpectator_KillingSpree: C_BaseEntity
+	m_hSideShop1: CEntityIndex // C_BaseEntity
+	m_hSideShop2: CEntityIndex // C_BaseEntity
+	m_hSecretShop1: CEntityIndex // C_BaseEntity
+	m_hSecretShop2: CEntityIndex // C_BaseEntity
+	readonly m_hTeamFountains: CEntityIndex[] // C_BaseEntity
+	readonly m_hTeamForts: CEntityIndex[] // C_BaseEntity
+	readonly m_hTeamShops: CEntityIndex[] // C_BaseEntity
+	m_hAnnouncerGood: CEntityIndex // C_BaseEntity
+	m_hAnnouncerBad: CEntityIndex // C_BaseEntity
+	m_hAnnouncerSpectator: CEntityIndex // C_BaseEntity
+	m_hAnnouncerGood_KillingSpree: CEntityIndex // C_BaseEntity
+	m_hAnnouncerBad_KillingSpree: CEntityIndex // C_BaseEntity
+	m_hAnnouncerSpectator_KillingSpree: CEntityIndex // C_BaseEntity
 	m_fGameTime: number
 	m_fTimeOfDay: number
 	m_iNetTimeOfDay: number
@@ -9877,7 +9885,7 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	readonly m_BotDebugDefendLane: number[]
 	readonly m_BotDebugFarmLane: number[]
 	readonly m_BotDebugRoam: number[]
-	readonly m_hBotDebugRoamTarget: C_BaseEntity[]
+	readonly m_hBotDebugRoamTarget: CEntityIndex[] // C_BaseEntity
 	readonly m_BotDebugRoshan: number[]
 	m_nRoshanRespawnPhase: ERoshanSpawnPhase
 	m_flRoshanRespawnPhaseEndTime: number
@@ -9894,15 +9902,15 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_bAllDraftRadiantFirst: boolean
 	m_bAllowOverrideVPK: boolean
 	readonly m_nARDMHeroesRemaining: number[]
-	readonly m_hGlobalPetList: C_BaseEntity[]
+	readonly m_hGlobalPetList: CEntityIndex[]
 	readonly m_vecHeroPickRecord: HeroPickRecord_t[]
 	readonly m_vecHeroDeathRecord: HeroDeathRecord_t[]
-	readonly m_BadResultPositionTriggers: C_BaseEntity[]
-	readonly m_RoshanPositionTriggers: C_BaseEntity[]
-	readonly m_hRuneSpawners: C_BaseEntity[]
-	readonly m_hBountyRuneSpawners: C_BaseEntity[]
-	readonly m_hNeutralSpawners: C_BaseEntity[][]
-	readonly m_hAncientSpawners: C_BaseEntity[][]
+	readonly m_BadResultPositionTriggers: CEntityIndex // C_BaseEntity[]
+	readonly m_RoshanPositionTriggers: CEntityIndex // C_BaseEntity[]
+	readonly m_hRuneSpawners: CEntityIndex // C_BaseEntity[]
+	readonly m_hBountyRuneSpawners: CEntityIndex // C_BaseEntity[]
+	readonly m_hNeutralSpawners: CEntityIndex[] // C_BaseEntity[]
+	readonly m_hAncientSpawners: CEntityIndex[] // C_BaseEntity[]
 	m_iPreviousRune1: number
 	m_iPreviousRune2: number
 	m_fNextPowerupRuneSpawnTime: number
@@ -9915,21 +9923,21 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_bBountyRuneLocation_3: boolean
 	m_bBountyRuneLocation_4: boolean
 	m_fNextSnapshotTime: number
-	m_hRoshanSpawner: C_BaseEntity
+	m_hRoshanSpawner: CEntityIndex // C_BaseEntity
 	m_iPreviousSpectators: number
 	m_bTeammateEvaluationMatch: boolean
 	readonly m_rgAssignedPlayerID: number[]
 	m_nMaxSpectators: number
-	readonly m_hDroppedItems: C_BaseEntity[]
-	readonly m_hWards: C_BaseEntity[]
-	m_hGameEvents: C_BaseEntity
-	readonly m_Towers: C_BaseEntity[]
-	readonly m_TeamTowers: C_DOTA_BaseNPC_Tower[][]
+	readonly m_hDroppedItems: CEntityIndex // C_BaseEntity[]
+	readonly m_hWards: CEntityIndex // C_BaseEntity[]
+	m_hGameEvents: CEntityIndex // C_BaseEntity
+	readonly m_Towers: CEntityIndex // C_BaseEntity[]
+	readonly m_TeamTowers: CEntityIndex[] // C_DOTA_BaseNPC_Tower[]
 	readonly m_TeamTowerPositions: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 	readonly m_TeamTowerLevels: number[][]
 	readonly m_TeamTowerLanes: number[][]
-	readonly m_TeamBarracks: C_DOTA_BaseNPC_Building[][]
-	readonly m_TeamShrines: C_DOTA_BaseNPC_Building[][]
+	readonly m_TeamBarracks: CEntityIndex[] // C_DOTA_BaseNPC_Building[]
+	readonly m_TeamShrines: CEntityIndex[] // C_DOTA_BaseNPC_Building[]
 	readonly m_TempDayTimer: CountdownTimer
 	readonly m_TempNightTimer: CountdownTimer
 	readonly m_NightstalkerNightTimer: CountdownTimer
@@ -9943,7 +9951,7 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_nRecordBalanceTime: number
 	readonly m_pszLastUsedAbility: string[]
 	readonly m_reconnectinfos: CDOTA_ReconnectInfo[]
-	readonly m_hEnemyCreepsInBase: C_BaseEntity[][]
+	readonly m_hEnemyCreepsInBase: CEntityIndex[] // C_BaseEntity[]
 	readonly m_bTeamHasAbandonedPlayer: boolean[]
 	m_bLobbyHasLeaverDetected: boolean
 	m_bGameIsForcedSafeToLeave: boolean
@@ -9972,7 +9980,7 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	readonly m_vecHeroStatueLiked: CHeroStatueLiked[]
 	readonly m_CustomGameTeamMaxPlayers: number[]
 	readonly m_iMutations: number[]
-	readonly m_vecIngameEvents: C_IngameEvent_Base[]
+	readonly m_vecIngameEvents: CEntityIndex // C_IngameEvent_Base[]
 	m_nPrimaryIngameEventIndex: number
 	readonly m_NeutralSpawnBoxes: NeutralSpawnBoxes_t[]
 	readonly m_flLastItemSuggestionRequestTime: number[]
@@ -10429,7 +10437,7 @@ declare class C_DOTA_Item extends C_DOTABaseAbility {
 	m_bItemEnabled: boolean
 	m_flEnableTime: number
 	m_bDisplayOwnership: boolean
-	m_hOldOwnerEntity: C_BaseEntity
+	m_hOldOwnerEntity: CEntityIndex // C_BaseEntity
 	m_iOldCharges: number
 	m_iPlayerOwnerID: number
 	readonly m_vecPreGameTransferPlayerIDs: number[]
@@ -10440,7 +10448,7 @@ declare class C_DOTA_Ability_Riki_BlinkStrike extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Mirana_Arrow extends C_DOTABaseAbility {
 	m_vStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_nFXIndex: ParticleIndex_t
-	readonly hAlreadyHitList: C_BaseEntity[]
+	readonly hAlreadyHitList: CEntityIndex // C_BaseEntity[]
 }
 
 declare class CDOTA_Ability_Special_Bonus_Unique_Jungle_Spirit_Spell_Amplify extends C_DOTABaseAbility {}
@@ -10450,7 +10458,7 @@ declare class CDOTA_Ability_Frostivus2018_Centaur_Stampede extends C_DOTABaseAbi
 	base_damage: number
 	strength_damage: number
 	slow_duration: number
-	readonly m_hHitEntities: C_BaseEntity[]
+	readonly m_hHitEntities: CEntityIndex // C_BaseEntity[]
 	armor_amount: number
 	armor_duration: number
 	max_armor_stacks: number
@@ -10555,9 +10563,9 @@ declare class C_DOTA_Ability_EarthSpirit_BoulderSmash extends C_DOTABaseAbility 
 	unit_distance: number
 	rock_distance: number
 	m_nProjectileID: number
-	m_hCursorTarget: C_BaseEntity
+	m_hCursorTarget: CEntityIndex // C_BaseEntity
 	m_bUsedStone: boolean
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 	m_bTargetStone: boolean
 }
 
@@ -10588,7 +10596,7 @@ declare class C_DOTA_Ability_Animation_Attack extends C_DOTABaseAbility {
 declare class C_DOTA_Ability_Windrunner_Shackleshot extends C_DOTABaseAbility {
 	shackle_count: number
 	m_vArrowStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Frostivus2018_TrollWarlord_BattleTrance extends C_DOTABaseAbility {
@@ -10935,7 +10943,7 @@ declare class C_DOTA_Item_VitalityBooster extends C_DOTA_Item {}
 declare class C_DOTA_Item_BladesOfAttack extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_ArcWarden_TempestDouble extends C_DOTABaseAbility {
-	m_hDoubles: C_BaseEntity
+	m_hDoubles: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Invoker_AttributeBonus extends C_DOTABaseAbility {}
@@ -10993,7 +11001,7 @@ declare class C_DOTA_Item_Tome_Of_Knowledge extends C_DOTA_Item {}
 
 declare class CDOTA_Ability_Techies_RemoteMines extends C_DOTABaseAbility {
 	readonly m_nFXIndex: ParticleIndex_t
-	m_hRMine: C_BaseEntity
+	m_hRMine: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_LoneDruid_SpiritBear_Demolish extends C_DOTABaseAbility {}
@@ -11026,8 +11034,8 @@ declare class CDOTA_Ability_Special_Bonus_Unique_Grimstroke_3 extends C_DOTABase
 declare class C_DOTA_Ability_Elder_Titan_NaturalOrder_Spirit extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Undying_Tombstone extends C_DOTABaseAbility {
-	readonly m_vZombies: C_BaseEntity[]
-	hTombstone: C_BaseEntity
+	readonly m_vZombies: CEntityIndex // C_BaseEntity[]
+	hTombstone: CEntityIndex // C_BaseEntity
 	radius: number
 	duration: number
 }
@@ -11082,7 +11090,7 @@ declare class C_DOTA_BaseNPC_Hero extends C_DOTA_BaseNPC_Additive {
 	readonly m_nFXSilenceIndex: ParticleIndex_t
 	readonly m_nFXDeathIndex: ParticleIndex_t
 	m_iPlayerID: number
-	m_hReplicatingOtherHeroModel: C_DOTA_BaseNPC_Hero
+	m_hReplicatingOtherHeroModel: CEntityIndex // C_DOTA_BaseNPC_Hero
 	m_bReincarnating: boolean
 	m_bCustomKillEffect: boolean
 	m_flSpawnedAt: number
@@ -11100,7 +11108,7 @@ declare class C_DOTA_BaseNPC_Hero extends C_DOTA_BaseNPC_Additive {
 	m_flCheckLegacyItemsAt: number
 	m_bDisplayAdditionalHeroes: boolean
 	readonly m_vecAttachedParticleIndeces: ParticleIndex_t[]
-	readonly m_hPets: C_BaseEntity[]
+	readonly m_hPets: CEntityIndex // C_BaseEntity[]
 	readonly m_bBuybackDisabled: boolean
 	readonly m_bWasFrozen: boolean
 	readonly m_bUpdateClientsideWearables: boolean
@@ -11126,7 +11134,7 @@ declare class C_DOTA_Ability_WitchDoctor_DeathWard extends C_DOTABaseAbility {
 	m_iBounceRadius: number
 	m_iBounces: number
 	m_iProjectileSpeed: number
-	m_hWard: C_BaseEntity
+	m_hWard: CEntityIndex // C_BaseEntity
 	m_fWardExpireTime: number
 	readonly m_nFXIndex: ParticleIndex_t
 	m_iAttackIndex: number
@@ -11158,8 +11166,8 @@ declare class C_RopeKeyframe extends C_BaseModelEntity {
 	m_RopeFlags: number
 	readonly m_LightValues: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nSegments: number
-	m_hStartPoint: C_BaseEntity
-	m_hEndPoint: C_BaseEntity
+	m_hStartPoint: CEntityIndex // C_BaseEntity
+	m_hEndPoint: CEntityIndex // C_BaseEntity
 	m_iStartAttachment: number
 	m_iEndAttachment: number
 	m_Subdiv: number
@@ -11218,7 +11226,7 @@ declare class C_DOTA_Ability_Oracle_FortunesEnd extends C_DOTABaseAbility {
 	m_flStartTime: number
 	m_flDuration: number
 	m_bAbsorbed: boolean
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 	readonly m_nFXIndex: ParticleIndex_t
 }
 
@@ -11324,7 +11332,7 @@ declare class C_DOTABaseGameMode extends C_BaseEntity {
 	m_bBuybackEnabled: boolean
 	m_flCameraDistanceOverride: number
 	m_nCameraSmoothCountOverride: number
-	m_hOverrideSelectionEntity: C_DOTA_BaseNPC
+	m_hOverrideSelectionEntity: CEntityIndex // C_DOTA_BaseNPC
 	m_bTopBarTeamValuesOverride: boolean
 	m_bTopBarTeamValuesVisible: boolean
 	m_nTeamGoodGuysTopBarValue: number
@@ -11498,8 +11506,8 @@ declare class C_GlobalLight extends C_BaseEntity/*, CGlobalLightBase*/ {
 	readonly m_WorldPoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vFogOffsetLayer0: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vFogOffsetLayer1: boolean // returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hEnvWind: C_BaseEntity
-	m_hEnvSky: C_BaseEntity
+	m_hEnvWind: CEntityIndex // C_BaseEntity
+	m_hEnvSky: CEntityIndex // C_BaseEntity
 	m_fSmoothedAmount: number
 	m_fSlowSmoothedAmount: number
 }
@@ -11533,10 +11541,10 @@ declare class C_EconEntity extends C_BaseFlex/*, IHasAttributes*/ {
 	m_nDisableMode: EconEntityParticleDisableMode_t
 	m_bParticleSystemsCreated: boolean
 	m_bForceDestroyAttachedParticlesImmediately: boolean
-	m_hViewmodelAttachment: C_BaseAnimating
+	m_hViewmodelAttachment: CEntityIndex // C_BaseAnimating
 	m_iOldTeam: number
 	m_bAttachmentDirty: boolean
-	m_hOldProvidee: C_BaseEntity
+	m_hOldProvidee: CEntityIndex // C_BaseEntity
 }
 
 declare class C_EconEntity__AttachedParticleInfo_t {
@@ -11723,7 +11731,7 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Pugna_3 extends C_DOTABaseAbil
 declare class C_DOTA_Ability_Special_Bonus_Unique_Techies_4 extends C_DOTABaseAbility {}
 
 declare class C_Team extends C_BaseEntity {
-	readonly m_aPlayers: C_BasePlayer[]
+	readonly m_aPlayers: CEntityIndex // C_BasePlayer[]
 	m_iScore: number
 	m_iRoundsWon: number
 	readonly m_szTeamname: number[]
@@ -11757,7 +11765,7 @@ declare class C_DOTA_Item_MonkeyKingBar extends C_DOTA_Item {}
 declare class C_DOTA_Ability_MonkeyKing_Spring extends C_DOTABaseAbility {
 	m_vPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_fStartChannelTime: number
-	m_hThinker: C_BaseEntity
+	m_hThinker: CEntityIndex // C_BaseEntity
 	readonly m_nFxIndex: ParticleIndex_t
 	m_nRefCount: number
 }
@@ -11810,7 +11818,7 @@ declare class C_DOTA_Unit_Hero_MonkeyKing extends C_DOTA_BaseNPC_Hero {
 	mb_MonkeyHasArcana: boolean
 	m_nTreeDisguise: number
 	m_nPerchedTree: number
-	m_hTreeDisguiseEnt: C_BaseEntity
+	m_hTreeDisguiseEnt: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Unit_Hero_Rubick extends C_DOTA_BaseNPC_Hero {
@@ -11848,7 +11856,7 @@ declare class C_DOTA_Ability_Lion_Impale extends C_DOTABaseAbility {
 }
 
 declare class C_DOTA_Ability_Tidehunter_Ravage extends C_DOTABaseAbility {
-	readonly m_hEntsHit: C_BaseEntity[]
+	readonly m_hEntsHit: CEntityIndex // C_BaseEntity[]
 	m_bAwardedKillEater: boolean
 	duration: number
 }
@@ -11919,7 +11927,7 @@ declare class C_DOTA_Item_RuneSpawner extends C_BaseAnimating {
 }
 
 declare class C_BaseButton extends C_BaseToggle {
-	m_glowEntity: C_BaseModelEntity
+	m_glowEntity: CEntityIndex // C_BaseModelEntity
 	m_usable: boolean
 	readonly m_szDisplayText: string
 }
@@ -11947,7 +11955,7 @@ declare class C_DOTA_Item_Recipe_Blade_Mail extends C_DOTA_Item {}
 declare class C_DOTA_Item_MantaStyle extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_Lion_ManaDrain extends C_DOTABaseAbility {
-	readonly m_Victims: C_BaseEntity[]
+	readonly m_Victims: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Tiny_Grow extends C_DOTABaseAbility {}
@@ -12049,7 +12057,7 @@ declare class C_DOTA_Item_Recipe_Vanguard extends C_DOTA_Item {}
 declare class CDOTA_Ability_Centaur_Return extends C_DOTABaseAbility {}
 
 declare class CDOTA_Ability_Life_Stealer_Assimilate extends C_DOTABaseAbility {
-	m_hLastAssimilation: C_BaseEntity
+	m_hLastAssimilation: CEntityIndex // C_BaseEntity
 }
 
 declare class CDOTA_Ability_Frostivus2018_Luna_LucentBeam extends C_DOTABaseAbility {
@@ -12330,8 +12338,8 @@ declare class C_DOTA_Ability_Shredder_Chakram extends C_DOTABaseAbility {
 	readonly m_nFXIndexB: ParticleIndex_t
 	readonly m_nFXIndexC: ParticleIndex_t
 	m_nProjectileIndex: number
-	m_hThinker: C_BaseEntity
-	readonly m_hReturnHits: C_BaseEntity[]
+	m_hThinker: CEntityIndex // C_BaseEntity
+	readonly m_hReturnHits: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Invoker_SunStrike extends CDOTA_Ability_Invoker_InvokedBase {}
@@ -12347,7 +12355,7 @@ declare class C_DOTA_Item_HelmOfTheDominator extends C_DOTA_Item {}
 declare class C_DOTA_Ability_MonkeyKing_Transform extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_KeeperOfTheLight_SpiritFormIlluminate extends C_DOTABaseAbility {
-	m_hThinker: C_BaseEntity
+	m_hThinker: CEntityIndex // C_BaseEntity
 	max_channel_time: number
 	damage_per_second: number
 	m_fPower: number
@@ -12411,14 +12419,14 @@ declare class C_DOTA_Item_Blade_Mail extends C_DOTA_Item {}
 declare class C_DOTA_Item_Recipe_AbyssalBlade extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_MonkeyKing_FurArmy extends C_DOTABaseAbility {
-	m_hThinker: C_BaseEntity
+	m_hThinker: CEntityIndex // C_BaseEntity
 	readonly m_nFXIndex: ParticleIndex_t
 	num_first_soldiers: number
 	num_second_soldiers: number
 	m_bCreateMonkeys: boolean
 	m_flNextCreationTime: number
 	m_flScepterTime: number
-	readonly m_vecSoldiers: C_BaseEntity[]
+	readonly m_vecSoldiers: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Medusa_MysticSnake extends C_DOTABaseAbility {
@@ -12434,7 +12442,7 @@ declare class C_DOTA_Ability_Medusa_MysticSnake extends C_DOTABaseAbility {
 	m_iTotalMana: number
 	m_flDamage: number
 	m_flMana: number
-	readonly m_hHitEntities: C_BaseEntity[]
+	readonly m_hHitEntities: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Nyx_Assassin_SpikedCarapace extends C_DOTABaseAbility {}
@@ -12452,9 +12460,9 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Invoker_7 extends C_DOTABaseAb
 declare class C_DOTA_Ability_Special_Bonus_Armor_7 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Brewmaster_PrimalSplit extends C_DOTABaseAbility {
-	m_hPrimary: C_BaseEntity
-	m_hSecondary: C_BaseEntity
-	m_hTertiary: C_BaseEntity
+	m_hPrimary: CEntityIndex // C_BaseEntity
+	m_hSecondary: CEntityIndex // C_BaseEntity
+	m_hTertiary: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Unit_Hero_Tusk extends C_DOTA_BaseNPC_Hero {}
@@ -12540,8 +12548,8 @@ declare class DataTeamPlayer_t {
 	m_fHealing: number
 	m_iTowerKills: number
 	m_iRoshanKills: number
-	m_hCameraTarget: C_BaseEntity
-	m_hOverrideSelectionEntity: C_BaseEntity
+	m_hCameraTarget: CEntityIndex // C_BaseEntity
+	m_hOverrideSelectionEntity: CEntityIndex // C_BaseEntity
 	m_iObserverWardsPlaced: number
 	m_iSentryWardsPlaced: number
 	m_iCreepsStacked: number
@@ -12639,7 +12647,7 @@ declare class C_FoWBlockerEntity extends C_BaseEntity {}
 
 declare class C_EnvProjectedTexture extends C_ModelPointEntity/*, CProjectedTextureBase*/ {
 	// Low-priority parent definition [CProjectedTextureBase]
-	m_hTargetEntity: C_BaseEntity
+	m_hTargetEntity: CEntityIndex // C_BaseEntity
 	m_bState: boolean
 	m_bAlwaysUpdate: boolean
 	m_flLightFOV: number
@@ -12702,7 +12710,7 @@ declare class CBodyComponentBaseModelEntity extends CBodyComponentSkeletonInstan
 
 declare class C_DOTA_Ability_Visage_SummonFamiliars extends C_DOTABaseAbility {
 	readonly szUnitName: number[]
-	readonly m_hExistingUnits: C_BaseEntity[]
+	readonly m_hExistingUnits: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Frostivus2018_DarkWillow_Bedlam extends C_DOTABaseAbility {}
@@ -12732,15 +12740,15 @@ declare class C_DOTA_BaseNPC_RotatableBuilding extends C_DOTA_BaseNPC {
 declare class C_BaseAttributableItem extends C_EconEntity {}
 
 declare class C_EnvClock extends C_BaseEntity {
-	m_hHourHand: C_BaseEntity
-	m_hMinuteHand: C_BaseEntity
-	m_hSecondHand: C_BaseEntity
+	m_hHourHand: CEntityIndex // C_BaseEntity
+	m_hMinuteHand: CEntityIndex // C_BaseEntity
+	m_hSecondHand: CEntityIndex // C_BaseEntity
 	m_flStartGameTime: number
 	m_flStartClockSeconds: number
 }
 
 declare class C_DOTA_Ability_TrollWarlord_Whirling_Axes_Melee extends C_DOTABaseAbility {
-	readonly m_hAxes: C_BaseEntity[]
+	readonly m_hAxes: CEntityIndex // C_BaseEntity[]
 	m_nAxeIdx: number
 }
 
@@ -12757,7 +12765,7 @@ declare class C_DOTA_Ability_Holdout_Omnislash extends C_DOTABaseAbility {
 	m_vPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vJuggStartLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRange: number
-	readonly m_hEntities: C_BaseEntity[]
+	readonly m_hEntities: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_3 extends C_DOTABaseAbility {}
@@ -12821,8 +12829,8 @@ declare class C_DOTA_Ability_Special_Bonus_Armor_30 extends C_DOTABaseAbility {}
 declare class C_DOTA_Unit_Hero_Omniknight extends C_DOTA_BaseNPC_Hero {}
 
 declare class C_DOTA_Item_Physical extends C_BaseAnimating {
-	m_hItem: C_DOTA_Item
-	m_hOldItem: C_DOTA_Item
+	m_hItem: CEntityIndex // C_DOTA_Item
+	m_hOldItem: CEntityIndex // C_DOTA_Item
 	m_bShowingTooltip: boolean
 }
 
@@ -12856,7 +12864,7 @@ declare class C_DOTA_PlayerResource extends C_BaseEntity {
 	readonly m_iEstimatedMatchDurationRadiant: number[]
 	readonly m_iEstimatedMatchDurationDire: number[]
 	m_nObsoleteEventIDAssociatedWithEventData: number
-	readonly m_playerIDToPlayer: C_BaseEntity[]
+	readonly m_playerIDToPlayer: CEntityIndex[] // C_BaseEntity
 	readonly m_iszName: string[]
 	readonly m_iszHTMLSafeName: string[]
 	readonly m_iszFilteredHTMLSafeName: string[]
@@ -12866,8 +12874,8 @@ declare class C_DOTA_PlayerResource extends C_BaseEntity {
 	m_bHasWorldTreesChanged: boolean
 	m_bWorldTreeModelsChanged: boolean
 	readonly m_bSwapWillingness: boolean[]
-	readonly m_hTeamCouriers: C_DOTA_Unit_Courier[][]
-	readonly m_hPlayerCouriers: C_DOTA_Unit_Courier[][]
+	readonly m_hTeamCouriers: CEntityIndex[] // C_DOTA_Unit_Courier[]
+	readonly m_hPlayerCouriers: CEntityIndex[] // C_DOTA_Unit_Courier[]
 	readonly m_vecOnstageHomeTeams: number[]
 	readonly m_pPlayerIDToOnstageSlot: PlayerSeatAssignment_t[]
 	readonly m_vecOnstagePlayerSeats: PlayerSeatAssignment_t[]
@@ -12885,7 +12893,7 @@ declare class PlayerResourcePlayerTeamData_t {
 	m_iLevel: number
 	m_iRespawnSeconds: number
 	m_iLastBuybackTime: number
-	m_hSelectedHero: C_BaseEntity
+	m_hSelectedHero: CEntityIndex // C_BaseEntity
 	m_bAFK: boolean
 	readonly m_nSuggestedHeroes: number[]
 	readonly m_bBanSuggestedHeroes: boolean[]
@@ -12968,12 +12976,12 @@ declare class CDOTA_Ability_Winter_Wyvern_Splinter_Blast extends C_DOTABaseAbili
 
 declare class CDOTA_Ability_Techies_StasisTrap extends C_DOTABaseAbility {
 	readonly m_nFXIndex: ParticleIndex_t
-	m_hTrap: C_BaseEntity
+	m_hTrap: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Huskar_Life_Break extends C_DOTABaseAbility/*, C_HorizontalMotionController*/ {
 	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 	m_bInterrupted: boolean
 }
 
@@ -12996,7 +13004,7 @@ declare class C_PointHintUi extends C_PointClientUIWorldPanel {
 	readonly m_pszCaption: string
 	m_vOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_attachType: WorldTextAttachmentType_t
-	m_hIconTarget: C_BaseEntity
+	m_hIconTarget: CEntityIndex // C_BaseEntity
 	readonly m_szTargetAttachmentName: string
 	readonly m_pszCustomLayoutFile: string
 	m_nTrackedDeviceIndex: number
@@ -13009,8 +13017,8 @@ declare class C_PointHintUi extends C_PointClientUIWorldPanel {
 declare class CServerOnlyModelEntity extends C_BaseModelEntity {}
 
 declare class C_DOTA_Item_Necronomicon extends C_DOTA_Item {
-	m_hWarrior: C_BaseEntity
-	m_hArcher: C_BaseEntity
+	m_hWarrior: CEntityIndex // C_BaseEntity
+	m_hArcher: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Item_QuellingBlade extends C_DOTA_Item {}
@@ -13037,7 +13045,7 @@ declare class C_DOTA_Unit_Hero_SandKing extends C_DOTA_BaseNPC_Hero {}
 
 declare class C_DOTA_BaseNPC_Tower extends C_DOTA_BaseNPC_Building {
 	readonly m_iRangeFX: ParticleIndex_t
-	m_hTowerAttackTarget: C_BaseEntity
+	m_hTowerAttackTarget: CEntityIndex // C_BaseEntity
 	m_iPoseParameterAim: number
 	m_angDefaultCustomTowerAngle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flLastAimYaw: number
@@ -13222,8 +13230,8 @@ declare class C_SceneEntity extends C_PointEntity {
 	m_flForceClientTime: number
 	m_nSceneStringIndex: number
 	m_bClientOnly: boolean
-	m_hOwner: C_BaseFlex
-	readonly m_hActorList: C_BaseFlex[]
+	m_hOwner: CEntityIndex // C_BaseFlex
+	readonly m_hActorList: CEntityIndex // C_BaseFlex[]
 	m_bWasPlaying: boolean
 	m_flCurrentTime: number
 }
@@ -13385,7 +13393,7 @@ declare class C_DOTA_Ability_Special_Bonus_Respawn_Reduction_25 extends C_DOTABa
 declare class C_DOTA_Unit_Roshan extends C_DOTA_BaseNPC_Additive {
 	m_iLastHealthPercent: number
 	readonly m_nFXIndex: ParticleIndex_t
-	readonly m_hAttackingHeroes: C_BaseEntity[]
+	readonly m_hAttackingHeroes: CEntityIndex // C_BaseEntity[]
 	m_bGoldenRoshan: boolean
 }
 
@@ -13521,7 +13529,7 @@ declare class C_BreakableProp extends CBaseProp {
 	m_impactEnergyScale: number
 	m_iMinHealthDmg: number
 	m_flPressureDelay: number
-	m_hBreaker: C_BaseEntity
+	m_hBreaker: CEntityIndex // C_BaseEntity
 	m_PerformanceMode: PerformanceMode_t
 	m_flDmgModBullet: number
 	m_flDmgModClub: number
@@ -13538,11 +13546,11 @@ declare class C_BreakableProp extends CBaseProp {
 	readonly m_explosionBuildupSound: string
 	readonly m_explosionCustomEffect: string
 	readonly m_explosionCustomSound: string
-	m_hPhysicsAttacker: C_BasePlayer
+	m_hPhysicsAttacker: CEntityIndex // C_BasePlayer
 	m_flLastPhysicsInfluenceTime: number
 	m_flDefaultFadeScale: number
-	m_hLastAttacker: C_BaseEntity
-	m_hFlareEnt: C_BaseEntity
+	m_hLastAttacker: CEntityIndex // C_BaseEntity
+	m_hFlareEnt: CEntityIndex // C_BaseEntity
 	m_noGhostCollision: boolean
 	m_flClothScale: number
 }
@@ -13598,8 +13606,8 @@ declare class C_DOTA_Item_Flask extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_LoneDruid_SpiritBear extends C_DOTABaseAbility {
 	m_bLevelChanged: boolean
-	m_hBear: C_BaseEntity
-	m_hPreBear: C_BaseEntity
+	m_hBear: CEntityIndex // C_BaseEntity
+	m_hPreBear: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_PhantomAssassin_Stifling_Dagger extends C_DOTABaseAbility {}
@@ -13666,7 +13674,7 @@ declare class C_DOTA_Unit_Hero_LoneDruid extends C_DOTA_BaseNPC_Hero {}
 declare class C_DOTA_Item_Recipe_Arcane_Ring extends C_DOTA_Item {}
 
 declare class CDOTA_Ability_Winter_Wyvern_Arctic_Burn extends C_DOTABaseAbility {
-	readonly m_BurnedTargets: C_BaseEntity[]
+	readonly m_BurnedTargets: CEntityIndex[]
 }
 
 declare class C_DOTA_Ability_Shadow_Demon_Demonic_Purge extends C_DOTABaseAbility {
@@ -13789,8 +13797,8 @@ declare class C_DOTA_PortraitEntity extends C_DOTA_BaseNPC {
 	readonly m_iPortraitParticle: ParticleIndex_t
 	m_PortraitActivity: number
 	m_bIsSimulationActive: boolean
-	m_hAppearanceFromNPC: C_BaseEntity
-	readonly m_vecWearables: C_DOTAWearableItem[]
+	m_hAppearanceFromNPC: CEntityIndex
+	readonly m_vecWearables: CEntityIndex // C_DOTAWearableItem[]
 }
 
 declare class C_DOTA_Unit_Hero_Bristleback extends C_DOTA_BaseNPC_Hero {}
@@ -13862,7 +13870,7 @@ declare class C_DOTA_Ability_DragonKnight_ElderDragonForm extends C_DOTABaseAbil
 declare class C_DOTA_Ability_Nian_Dive extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Frostivus2018_Puck_DreamCoil extends C_DOTABaseAbility {
-	m_hThinker: C_BaseEntity
+	m_hThinker: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_7 extends C_DOTABaseAbility {}
@@ -13902,7 +13910,7 @@ declare class C_DOTA_MapTree extends C_DOTA_BinaryObject {
 }
 
 declare class C_Sprite extends C_BaseModelEntity {
-	m_hAttachedToEntity: C_BaseEntity
+	m_hAttachedToEntity: CEntityIndex // C_BaseEntity
 	m_nAttachment: number
 	m_flSpriteFramerate: number
 	m_flFrame: number
@@ -14026,7 +14034,7 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_1 extends C_DOTABas
 declare class C_DOTA_Ability_Special_Bonus_Cast_Range_125 extends C_DOTABaseAbility {}
 
 declare class C_BaseCombatWeapon extends C_BaseAnimating {
-	m_hOwner: C_BaseCombatCharacter
+	m_hOwner: CEntityIndex // C_BaseCombatCharacter
 	m_nViewModelIndex: number
 	m_flNextPrimaryAttack: number
 	m_flNextSecondaryAttack: number
@@ -14059,7 +14067,7 @@ declare class C_BaseCombatWeapon extends C_BaseAnimating {
 	m_IdealActivity: number
 	m_iSubType: number
 	m_flUnlockTime: number
-	m_hLocker: C_BaseEntity
+	m_hLocker: CEntityIndex // C_BaseEntity
 	m_nTracerAttachmentIndex: number
 	m_iAltFireHudHintCount: number
 	m_iReloadHudHintCount: number
@@ -14075,7 +14083,7 @@ declare class C_BaseCombatWeapon extends C_BaseAnimating {
 }
 
 declare class C_CombatWeaponClone extends C_BaseAnimating {
-	m_hWeaponParent: C_BaseCombatWeapon
+	m_hWeaponParent: CEntityIndex // C_BaseCombatWeapon
 	m_nLastUpdatedWorldModelClone: number
 }
 
@@ -14116,12 +14124,12 @@ declare class CDOTA_Item_Recipe_Diffusal_Blade2 extends C_DOTA_Item_Recipe_Diffu
 declare class C_DOTA_Ability_Omniknight_Pacify extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_ShadowShaman_Shackles extends C_DOTABaseAbility {
-	m_hShackleTarget: C_BaseEntity
+	m_hShackleTarget: CEntityIndex // C_BaseEntity
 	readonly nShackleFXIndex: ParticleIndex_t
 }
 
 declare class C_DOTA_Ability_Lich_Sinister_Gaze extends C_DOTABaseAbility {
-	m_hShackleTarget: C_BaseEntity
+	m_hShackleTarget: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Morphling_Morph_Agi extends C_DOTABaseAbility {}
@@ -14186,7 +14194,7 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Ursa_4 extends C_DOTABaseAbili
 declare class C_DOTA_Ability_Special_Bonus_HP_Regen_35 extends C_DOTABaseAbility {}
 
 declare class C_PropVehicleDriveable extends C_BaseAnimating {
-	m_hPlayer: C_BasePlayer
+	m_hPlayer: CEntityIndex // C_BasePlayer
 	m_nSpeed: number
 	m_nRPM: number
 	m_flThrottle: number
@@ -14211,7 +14219,7 @@ declare class C_PropVehicleDriveable extends C_BaseAnimating {
 	m_vecEyeExitEndpoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bHasGun: boolean
 	m_bUnableToFire: boolean
-	m_hPrevPlayer: C_BasePlayer
+	m_hPrevPlayer: CEntityIndex // C_BasePlayer
 	readonly m_ViewSmoothingData: C_ViewSmoothingData_t
 }
 
@@ -14224,16 +14232,16 @@ declare class C_CDOTA_Ability_Treant_LeechSeed extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Meepo_DividedWeStand extends C_DOTABaseAbility {
 	m_nWhichDividedWeStand: number
 	m_nNumDividedWeStand: number
-	m_entPrimeDividedWeStand: C_DOTA_Ability_Meepo_DividedWeStand
-	m_entNextDividedWeStand: C_DOTA_Ability_Meepo_DividedWeStand
+	m_entPrimeDividedWeStand: CEntityIndex // C_DOTA_Ability_Meepo_DividedWeStand
+	m_entNextDividedWeStand: CEntityIndex // C_DOTA_Ability_Meepo_DividedWeStand
 }
 
 declare class CDOTA_Ability_Pudge_Dismember extends C_DOTABaseAbility {
-	m_hVictim: C_BaseEntity
+	m_hVictim: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_CDOTA_Item_BagOfGold_Caster_Only extends C_DOTA_Item {
-	m_hThinker: C_BaseEntity
+	m_hThinker: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_2 extends C_DOTABaseAbility {}
@@ -14321,9 +14329,9 @@ declare class C_DOTA_Ability_EmberSpirit_Activate_FireRemnant extends C_DOTABase
 	m_vStartLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_ProjectileAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hRemnantToKill: C_BaseEntity
+	m_hRemnantToKill: CEntityIndex // C_BaseEntity
 	m_bProjectileStarted: boolean
-	readonly hAlreadyHitList: C_BaseEntity[]
+	readonly hAlreadyHitList: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Bristleback_ViscousNasalGoo extends C_DOTABaseAbility {}
@@ -14350,8 +14358,8 @@ declare class C_DOTA_Unit_Courier extends C_DOTA_BaseNPC_Additive {
 	m_bFlyingCourier: boolean
 	m_flRespawnTime: number
 	m_nCourierState: CourierState_t
-	m_hCourierStateEntity: C_BaseEntity
-	readonly m_hPickupFromStash: C_BaseEntity[]
+	m_hCourierStateEntity: CEntityIndex // C_BaseEntity
+	readonly m_hPickupFromStash: CEntityIndex[] // C_BaseEntity
 }
 
 declare class C_ParticleSystem extends C_BaseModelEntity {
@@ -14361,7 +14369,7 @@ declare class C_ParticleSystem extends C_BaseModelEntity {
 	m_flStartTime: number
 	readonly m_vServerControlPoints: boolean[] // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	readonly m_iServerControlPointAssignments: number[]
-	readonly m_hControlPointEnts: C_BaseEntity[]
+	readonly m_hControlPointEnts: CEntityIndex[] // C_BaseEntity
 	m_bNoSave: boolean
 	m_bStartActive: boolean
 	readonly m_iszEffectName: string
@@ -14370,7 +14378,7 @@ declare class C_ParticleSystem extends C_BaseModelEntity {
 }
 
 declare class C_DOTA_Ability_Tiny_CraggyExterior extends C_DOTABaseAbility {
-	m_hStolenTree: C_BaseEntity
+	m_hStolenTree: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Frostivus2018_DarkWillow_ShadowRealm extends C_DOTABaseAbility {}
@@ -14424,13 +14432,13 @@ declare class C_DevtestHierarchy extends C_DynamicProp {
 	m_vRotationAxis: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_flRotationSpeed: number
 	m_nTestMode: number
-	m_hChild: C_BaseEntity
+	m_hChild: CEntityIndex // C_BaseEntity
 	m_vDynamicAttachOffset: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nDynamicResetCount: number
 	m_nDynamicDetachCount: number
 	m_bChildIsDynamic: boolean
 	m_bCreateChildSideChild: boolean
-	m_hAlternateParent: C_BaseEntity
+	m_hAlternateParent: CEntityIndex // C_BaseEntity
 	m_flEntityStartTime: number
 	m_nTestIndex: number
 	m_nCurrType: HierarchyType_t
@@ -14509,7 +14517,7 @@ declare class C_DOTA_Ability_Tusk_IceShards extends C_DOTABaseAbility {
 declare class C_DOTA_Ability_Lycan_SummonWolves_PermanentInvisibility extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Chen_HolyPersuasion extends C_DOTABaseAbility {
-	readonly m_hDominatedUnits: C_BaseEntity[]
+	readonly m_hDominatedUnits: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Lich_ChainFrost extends C_DOTABaseAbility {
@@ -14538,7 +14546,7 @@ declare class C_DOTA_Ability_Legion_Commander_PressTheAttack extends C_DOTABaseA
 
 declare class C_DOTA_Ability_Magnataur_Shockwave extends C_DOTABaseAbility {
 	readonly m_nFXIndex: ParticleIndex_t
-	readonly hAlreadyHitList: C_BaseEntity[]
+	readonly hAlreadyHitList: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Enchantress_Enchant extends C_DOTABaseAbility {}
@@ -14596,7 +14604,7 @@ declare class C_DOTA_Ability_Medusa_StoneGaze extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Slark_EssenceShift extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Kunkka_XMarksTheSpot extends C_DOTABaseAbility {
-	m_hThinker: C_BaseEntity
+	m_hThinker: CEntityIndex // C_BaseEntity
 }
 
 declare class C_ColorCorrection extends C_BaseEntity {
@@ -14633,7 +14641,7 @@ declare class C_AI_BaseNPC extends C_BaseCombatCharacter {
 	m_bFadeCorpse: boolean
 	m_bSpeedModActive: boolean
 	m_bImportantRagdoll: boolean
-	m_hServerRagdoll: C_BaseEntity
+	m_hServerRagdoll: CEntityIndex // C_BaseEntity
 	m_nFootstepType: number
 }
 
@@ -14677,7 +14685,7 @@ declare class C_PropVRTrackedObject extends C_BaseAnimating {
 declare class C_DOTA_Item_Yasha_And_Kaya extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_ChaosKnight_Phantasm extends C_DOTABaseAbility {
-	readonly m_hIllusions: C_BaseEntity[]
+	readonly m_hIllusions: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Spectre_SpectralDagger extends C_DOTABaseAbility {
@@ -14686,8 +14694,8 @@ declare class C_DOTA_Ability_Spectre_SpectralDagger extends C_DOTABaseAbility {
 	m_fCreateInterval: number
 	m_fLastCreate: number
 	m_bIsTrackingProjectile: boolean
-	readonly m_hTrackingProjectileHits: C_BaseEntity[]
-	m_hTrackingTarget: C_BaseEntity
+	readonly m_hTrackingProjectileHits: CEntityIndex // C_BaseEntity[]
+	m_hTrackingTarget: CEntityIndex // C_BaseEntity
 }
 
 declare class CDOTA_Ability_Life_Stealer_Control extends C_DOTABaseAbility {}
@@ -14724,7 +14732,7 @@ declare class C_DOTA_Ability_Nevermore_Requiem extends C_DOTABaseAbility {
 	m_nCachedSouls: number
 	readonly m_nFXIndex: ParticleIndex_t
 	m_nKilleater_nLines: number
-	readonly m_vecHeroesReqd: C_BaseEntity[]
+	readonly m_vecHeroesReqd: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Batrider_3 extends C_DOTABaseAbility {}
@@ -14809,7 +14817,7 @@ declare class C_DOTA_Ability_DarkWillow_ShadowRealm extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Leshrac_Pulse_Nova extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Puck_DreamCoil extends C_DOTABaseAbility {
-	m_hThinker: C_BaseEntity
+	m_hThinker: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Dazzle_4 extends C_DOTABaseAbility {}
@@ -14823,7 +14831,7 @@ declare class C_BaseDoor extends C_BaseToggle {
 }
 
 declare class C_PointClientUIDialog extends C_BaseClientUIEntity {
-	m_hActivator: C_BaseEntity
+	m_hActivator: CEntityIndex // C_BaseEntity
 	m_bStartEnabled: boolean
 }
 
@@ -14850,7 +14858,7 @@ declare class C_DOTA_Ability_Special_Bonus_Cleave_60 extends C_DOTABaseAbility {
 declare class C_DOTA_Item_BootsOfTravel extends C_DOTA_Item {
 	readonly m_nFXOrigin: ParticleIndex_t
 	readonly m_nFXDestination: ParticleIndex_t
-	m_hTeleportTarget: C_BaseEntity
+	m_hTeleportTarget: CEntityIndex // C_BaseEntity
 	m_vTeleportLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bTeleportTargetIsBuilding: boolean
 }
@@ -14889,7 +14897,7 @@ declare class C_DOTA_Unit_Hero_Pugna extends C_DOTA_BaseNPC_Hero {}
 
 declare class CDOTA_Ability_AbyssalUnderlord_DarkRift extends C_DOTABaseAbility {
 	teleport_delay: number
-	m_hTeleportTarget: C_BaseEntity
+	m_hTeleportTarget: CEntityIndex // C_BaseEntity
 }
 
 declare class CDOTA_Ability_CallOfTheWild_Boar_Poison extends C_DOTABaseAbility {}
@@ -14897,11 +14905,11 @@ declare class CDOTA_Ability_CallOfTheWild_Boar_Poison extends C_DOTABaseAbility 
 declare class C_DOTA_Ability_Courier_QueuePickupFromStash extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Item_BagOfGold extends C_DOTA_Item {
-	m_hThinker: C_BaseEntity
+	m_hThinker: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_EnragedWildkin_Tornado extends C_DOTABaseAbility {
-	m_hTornado: C_BaseEntity
+	m_hTornado: CEntityIndex // C_BaseEntity
 	readonly m_nFXIndex: ParticleIndex_t
 }
 
@@ -14957,7 +14965,7 @@ declare class CDOTAPropArenaOfBloodWarrior extends C_DynamicProp {
 }
 
 declare class C_HandleTest extends C_BaseEntity {
-	m_Handle: C_BaseEntity
+	m_Handle: CEntityIndex // C_BaseEntity
 	m_bSendHandle: boolean
 }
 
@@ -14988,11 +14996,11 @@ declare class C_DOTA_Unit_Hero_Oracle extends C_DOTA_BaseNPC_Hero {
 }
 
 declare class C_DOTAWearableItem extends C_EconWearable {
-	m_hAdditionalWearable: C_BaseAnimating
+	m_hAdditionalWearable: CEntityIndex // C_BaseAnimating
 	m_bOwnerModelChanged: boolean
 	m_bIsGeneratingEconItem: boolean
 	m_bIsItemVisibleOnGeneratedEntity: boolean
-	m_hDrawWearable: C_DOTAWearableItem
+	m_hDrawWearable: CEntityIndex // C_DOTAWearableItem
 	m_bHiddenByCombiner: boolean
 	m_bIsPortrait: boolean
 	m_fZDelta: number
@@ -15127,7 +15135,7 @@ declare class CDOTA_Ability_Alchemist_GoblinsGreed extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Dazzle_ShadowWave extends C_DOTABaseAbility {
 	m_iCurJumpCount: number
 	m_vCurTargetLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly m_hHitEntities: C_BaseEntity[]
+	readonly m_hHitEntities: CEntityIndex // C_BaseEntity[]
 	bounce_radius: number
 	damage_radius: number
 	damage: number
@@ -15161,7 +15169,7 @@ declare class C_DOTA_Item_Ring_Of_Basilius extends C_DOTA_Item {}
 declare class CDOTA_Ability_AbyssalUnderlord_AtrophyAura extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_EarthSpirit_GeomagneticGrip extends C_DOTABaseAbility {
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Leshrac_Lightning_Storm extends C_DOTABaseAbility {}
@@ -15216,8 +15224,8 @@ declare class C_DOTA_Ability_EmberSpirit_SearingChains extends C_DOTABaseAbility
 declare class C_DOTA_Ability_Rubick_SpellSteal extends C_DOTABaseAbility {
 	readonly m_ActivityModifier: number[]
 	m_fStolenCastPoint: number
-	m_hStealTarget: C_BaseEntity
-	m_hStealAbility: C_DOTABaseAbility
+	m_hStealTarget: CEntityIndex // C_BaseEntity
+	m_hStealAbility: CEntityIndex // C_DOTABaseAbility
 	readonly m_nFXIndex: ParticleIndex_t
 }
 
@@ -15234,7 +15242,7 @@ declare class CDOTA_Ability_AncientApparition_IceVortex extends C_DOTABaseAbilit
 declare class C_DOTA_Item_Arcane_Boots extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_Wisp_Tether extends C_DOTABaseAbility/*, C_HorizontalMotionController*/ {
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_bProjectileActive: boolean
 	latch_distance: number
@@ -15378,8 +15386,8 @@ declare class C_DOTA_Unit_Hero_VengefulSpirit extends C_DOTA_BaseNPC_Hero {}
 declare class C_PropHMDAvatar extends C_PropVRTrackedObject {
 	readonly m_hLiteralControllerSlots: number[]
 	readonly m_hLogicalControllerSlots: number[]
-	readonly m_hVRControllers: C_PropVRHand[]
-	m_hCloseCaption: C_PointWorldText
+	readonly m_hVRControllers: CEntityIndex[] // C_PropVRHand
+	m_hCloseCaption: CEntityIndex // C_PointWorldText
 	m_bLocalHMDPoseValid: boolean
 	m_flLastZPos: number
 }
@@ -15451,7 +15459,7 @@ declare class CDOTA_Item_BootsOfTravel_2 extends C_DOTA_Item_BootsOfTravel {}
 declare class C_DOTA_Ability_BountyHunter_Jinada extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Pugna_LifeDrain extends C_DOTABaseAbility {
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Frostivus2018_Festive_Firework extends C_DOTABaseAbility {}
@@ -15617,13 +15625,13 @@ declare class C_DOTA_Unit_SpiritBear extends C_DOTA_BaseNPC_Additive {
 declare class C_DOTA_Unit_Hero_Lycan extends C_DOTA_BaseNPC_Hero {}
 
 declare class C_PropVRHand extends C_PropVRTrackedObject {
-	m_hActiveHandAttachment: C_BaseVRHandAttachment
-	m_hHMDAvatar: C_PropHMDAvatar
+	m_hActiveHandAttachment: CEntityIndex // C_BaseVRHandAttachment
+	m_hHMDAvatar: CEntityIndex // C_PropHMDAvatar
 	m_bVrSkeletonActive: boolean
 	m_nVrBoneCount: number
 	m_unVrCompressedBoneTransformsSize: number
 	readonly m_vrCompressedBoneTransforms: number[]
-	readonly m_hAttachments: C_BaseVRHandAttachment[]
+	readonly m_hAttachments: CEntityIndex // C_BaseVRHandAttachment[]
 	m_bInitialized: boolean
 	m_bIsInView: boolean
 	m_nHandID: number
@@ -15685,7 +15693,7 @@ declare class C_DOTA_Ability_EarthSpirit_RollingBoulder extends C_DOTABaseAbilit
 declare class C_DOTA_Ability_Visage_GraveChill extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_TemplarAssassin_Trap_Teleport extends C_DOTABaseAbility {
-	m_hTrap: C_BaseEntity
+	m_hTrap: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Riki_TricksOfTheTrade extends C_DOTABaseAbility {}
@@ -15720,7 +15728,7 @@ declare class C_DOTA_Ability_Lycan_SummonWolves extends C_DOTABaseAbility {
 	readonly szUnitName: number[]
 	wolf_index: number
 	wolf_duration: number
-	readonly m_hExistingUnits: C_BaseEntity[]
+	readonly m_hExistingUnits: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Tinker_Rearm extends C_DOTABaseAbility {
@@ -15867,7 +15875,7 @@ declare class C_DotaTutorialNetworker extends C_BaseEntity {
 	m_nUIState: number
 	m_nShopState: number
 	m_TargetLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_TargetEntity: C_BaseEntity
+	m_TargetEntity: CEntityIndex // C_BaseEntity
 	readonly m_SpeechBubbles: C_SpeechBubbleInfo[]
 	m_nLocationID: number
 	readonly m_GuideStr: number[]
@@ -15876,12 +15884,12 @@ declare class C_DotaTutorialNetworker extends C_BaseEntity {
 	m_nPreUIState: number
 	m_nPreShopState: number
 	m_vecPrevTargetLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hPrevTargetEntity: C_BaseEntity
+	m_hPrevTargetEntity: CEntityIndex // C_BaseEntity
 }
 
 declare class C_FuncLadder extends C_BaseModelEntity {
 	m_vecLadderDir: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly m_Dismounts: C_InfoLadderDismount[]
+	readonly m_Dismounts: CEntityIndex // C_InfoLadderDismount[]
 	m_vecLocalTop: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vecPlayerMountPositionTop: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vecPlayerMountPositionBottom: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
@@ -15958,13 +15966,13 @@ declare class C_DOTA_Ability_Tusk_Snowball extends C_DOTABaseAbility/*, C_Horizo
 	snowball_speed: number
 	snowball_duration: number
 	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	readonly m_hSnowballedUnits: C_BaseEntity[]
+	readonly m_hSnowballedUnits: CEntityIndex // C_BaseEntity[]
 	readonly m_nFXIndex: ParticleIndex_t
 	readonly ctSnowball: CountdownTimer
 	m_bSpeakAlly: boolean
 	m_bIsExpired: boolean
 	m_bInWindup: boolean
-	m_hPrimaryTarget: C_BaseEntity
+	m_hPrimaryTarget: CEntityIndex // C_BaseEntity
 	m_nContainedValidUnits: number
 	m_bEndingSnowball: boolean
 }
@@ -16061,7 +16069,7 @@ declare class C_DOTA_Item_Orb_of_Venom extends C_DOTA_Item {}
 declare class C_DOTA_Item_Eaglehorn extends C_DOTA_Item {}
 
 declare class C_DOTA_Ability_Shadow_Demon_Disruption extends C_DOTABaseAbility {
-	m_hDisruptedUnit: C_BaseEntity
+	m_hDisruptedUnit: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Jakiro extends C_DOTABaseAbility {}
@@ -16117,13 +16125,13 @@ declare class C_DOTA_Unit_VisageFamiliar extends C_DOTA_BaseNPC_Creep {
 declare class CDOTA_Item_RiverPainter3 extends C_DOTA_Item_RiverPainter {}
 
 declare class C_DOTA_Ability_Sniper_Assassinate extends C_DOTABaseAbility {
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 	readonly m_iIndex: ParticleIndex_t
 	scepter_radius: number
 }
 
 declare class C_DOTA_Ability_PhantomLancer_SpiritLance extends C_DOTABaseAbility {
-	readonly m_hHitEntities: C_BaseEntity[]
+	readonly m_hHitEntities: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_ForestTrollHighPriest_ManaAura extends C_DOTABaseAbility {}
@@ -16194,9 +16202,10 @@ declare class C_DOTA_Ability_Special_Bonus_Agility_13 extends C_DOTABaseAbility 
 declare class C_DOTA_Wisp_Spirit extends C_DOTA_BaseNPC {}
 
 declare class C_DOTA_Unit_Hero_Tiny extends C_DOTA_BaseNPC_Hero {
-	m_hTreeWearable: C_BaseEntity
+	m_hTreeWearable: CEntityIndex // C_BaseEntity
 	readonly m_nFXIndexScepterAmbient: ParticleIndex_t
-	m_hIllusionOwner: C_DOTA_BaseNPC
+	m_hIllusionOwner: CEntityIndex // C_DOTA_BaseNPC
+	m_bIllusionHasTree: boolean
 }
 
 declare class C_DOTA_Unit_Hero_SkeletonKing extends C_DOTA_BaseNPC_Hero {
@@ -16268,7 +16277,7 @@ declare class C_FuncDistanceOccluder extends C_FuncOccluder {
 	m_flFadeStartDist: number
 	m_flFadeEndDist: number
 	m_flTranslucencyLimit: number
-	m_hAttachedOccluder: C_BaseEntity
+	m_hAttachedOccluder: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_LoneDruid_SpiritBear_Entangle extends C_DOTABaseAbility {}
@@ -16414,7 +16423,7 @@ declare class C_DOTA_Ability_Holdout_Multishot extends C_DOTABaseAbility {
 	arrow_spread: number
 	arrow_count: number
 	m_bShouldReduceDamage: boolean
-	readonly m_vHitTargets: C_BaseEntity[]
+	readonly m_vHitTargets: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Juggernaut_2 extends C_DOTABaseAbility {}
@@ -16470,7 +16479,7 @@ declare class C_ServerRagdoll extends C_BaseAnimating {
 	readonly m_ragPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 	readonly m_ragAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set[]
 	m_flBlendWeight: number
-	m_hRagdollSource: C_BaseEntity
+	m_hRagdollSource: CEntityIndex // C_BaseEntity
 	m_iEyeAttachment: number
 	m_flBlendWeightCurrent: number
 	readonly m_parentPhysicsBoneIndices: number[]
@@ -16541,7 +16550,7 @@ declare class CInfoDynamicShadowHint extends C_PointEntity {
 	m_bDisabled: boolean
 	m_flRange: number
 	m_nImportance: number
-	m_hLight: C_BaseEntity
+	m_hLight: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_Treant_LivingArmor extends C_DOTABaseAbility {}
@@ -16567,7 +16576,7 @@ declare class CDOTA_Ability_Centaur_Stampede extends C_DOTABaseAbility {
 	base_damage: number
 	strength_damage: number
 	slow_duration: number
-	readonly m_hHitEntities: C_BaseEntity[]
+	readonly m_hHitEntities: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_NightStalker_CripplingFear extends C_DOTABaseAbility {}
@@ -16575,7 +16584,7 @@ declare class C_DOTA_Ability_NightStalker_CripplingFear extends C_DOTABaseAbilit
 declare class C_DOTA_Ability_Tinker_Laser extends C_DOTABaseAbility {
 	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	bBlocked: boolean
-	readonly m_hHitEntities: C_BaseEntity[]
+	readonly m_hHitEntities: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Nevermore_Shadowraze3 extends C_DOTA_Ability_Nevermore_Shadowraze {}
@@ -16741,14 +16750,14 @@ declare class C_PointValueRemapper extends C_BaseEntity {
 	m_bDisabledOld: boolean
 	m_bUpdateOnClient: boolean
 	m_nInputType: ValueRemapperInputType_t
-	m_hRemapLineStart: C_BaseEntity
-	m_hRemapLineEnd: C_BaseEntity
+	m_hRemapLineStart: CEntityIndex // C_BaseEntity
+	m_hRemapLineEnd: CEntityIndex // C_BaseEntity
 	m_flMaximumChangePerSecond: number
 	m_flDisengageDistance: number
 	m_flEngageDistance: number
 	m_bRequiresUseKey: boolean
 	m_nOutputType: ValueRemapperOutputType_t
-	readonly m_hOutputEntities: C_BaseEntity[]
+	readonly m_hOutputEntities: CEntityIndex // C_BaseEntity[]
 	m_nHapticsType: ValueRemapperHapticsType_t
 	m_nMomentumType: ValueRemapperMomentumType_t
 	m_flMomentumModifier: number
@@ -16887,25 +16896,25 @@ declare class CDOTA_Ability_Elder_Titan_EchoStomp extends C_DOTABaseAbility {
 	stomp_damage: number
 	sleep_duration: number
 	cast_time: number
-	readonly m_vecStompedHeroes: C_BaseEntity[]
-	readonly m_vecStompedHeroes_BuffCounted: C_BaseEntity[]
+	readonly m_vecStompedHeroes: CEntityIndex // C_BaseEntity[]
+	readonly m_vecStompedHeroes_BuffCounted: CEntityIndex // C_BaseEntity[]
 	m_bStompedInvisibleHero: boolean
 }
 
 declare class C_DOTA_Ability_NagaSiren_MirrorImage extends C_DOTABaseAbility {
-	readonly m_hIllusions: C_BaseEntity[]
+	readonly m_hIllusions: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Weaver_TheSwarm extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_BountyHunter_ShurikenToss extends C_DOTABaseAbility {
-	readonly m_hHitEntities: C_BaseEntity[]
-	readonly m_hHitEntitiesScepter: C_BaseEntity[]
+	readonly m_hHitEntities: CEntityIndex // C_BaseEntity[]
+	readonly m_hHitEntitiesScepter: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Nian_Waterball extends C_DOTABaseAbility {
 	readonly m_ctTimer: CountdownTimer
-	readonly m_hEntities: C_BaseEntity[]
+	readonly m_hEntities: CEntityIndex // C_BaseEntity[]
 }
 
 declare class CDOTA_Ability_Special_Jungle_Spirit_Storm_Cyclone_Debuff_Duration extends C_DOTABaseAbility {}
@@ -16945,7 +16954,7 @@ declare class C_DOTA_Ability_DeathProphet_CarrionSwarm extends C_DOTABaseAbility
 }
 
 declare class C_DOTA_Ability_Morphling_Replicate extends C_DOTABaseAbility {
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 }
 
 declare class C_DOTA_Ability_PhantomLancer_PhantomEdge extends C_DOTABaseAbility {}
@@ -16970,7 +16979,7 @@ declare class C_DOTA_Item_Dagon_Upgraded5 extends C_DOTA_Item_Dagon_Upgraded {}
 declare class C_DOTA_Ability_Pangolier_GyroshellStop extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Broodmother_SpinWeb extends C_DOTABaseAbility {
-	readonly m_hWebs: C_BaseEntity[]
+	readonly m_hWebs: CEntityIndex // C_BaseEntity[]
 	charge_restore_time: number
 	max_charges: number
 	max_charges_scepter: number
@@ -17003,8 +17012,8 @@ declare class CDOTA_Unit_Elder_Titan_AncestralSpirit extends C_DOTA_BaseNPC_Addi
 declare class CAdditionalWearable extends C_DynamicProp {}
 
 declare class C_PropVehicleChoreoGeneric extends C_DynamicProp {
-	m_hPlayer: C_BasePlayer
-	m_hPrevPlayer: C_BasePlayer
+	m_hPlayer: CEntityIndex // C_BasePlayer
+	m_hPrevPlayer: CEntityIndex // C_BasePlayer
 	m_bEnterAnimOn: boolean
 	m_bExitAnimOn: boolean
 	m_vecEyeExitEndpoint: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
@@ -17082,8 +17091,8 @@ declare class C_DOTA_DataDire extends C_DOTA_DataNonSpectator {}
 
 declare class CDOTA_NPC_Observer_Ward_TrueSight extends CDOTA_NPC_Observer_Ward {
 	m_iTrueSight: number
-	m_hCasterEntity: C_BaseEntity
-	m_hAbilityEntity: C_BaseEntity
+	m_hCasterEntity: CEntityIndex
+	m_hAbilityEntity: CEntityIndex
 }
 
 declare class C_DOTA_Item_Recipe_Desolator extends C_DOTA_Item {}
@@ -17110,7 +17119,7 @@ declare class C_DOTA_Ability_Slardar_Amplify_Damage extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Frostivus2018_Huskar_Life_Break extends C_DOTABaseAbility/*, C_HorizontalMotionController*/ {
 	m_vProjectileLocation: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hTarget: C_BaseEntity
+	m_hTarget: CEntityIndex // C_BaseEntity
 	m_bInterrupted: boolean
 	max_damage: number
 }
@@ -17146,7 +17155,7 @@ declare class CDOTA_Ability_Elder_Titan_AncestralSpirit extends C_DOTABaseAbilit
 	m_nCreepsHit: number
 	m_nHeroesHit: number
 	m_bIsReturning: boolean
-	m_hAncestralSpirit: C_BaseEntity
+	m_hAncestralSpirit: CEntityIndex // C_BaseEntity
 	readonly m_nReturnFXIndex: ParticleIndex_t
 }
 
@@ -17249,8 +17258,8 @@ declare class C_DOTA_PortraitBaseModel extends C_BaseAnimating {}
 declare class C_DOTA_PortraitTree extends C_BaseAnimating {}
 
 declare class C_PropZipline extends C_BaseAnimating {
-	m_hPrevZipline: C_PropZipline
-	m_hNextZipline: C_PropZipline
+	m_hPrevZipline: CEntityIndex // C_PropZipline
+	m_hNextZipline: CEntityIndex // C_PropZipline
 	m_flMaxSpeed: number
 }
 
@@ -17324,10 +17333,10 @@ declare class C_DOTAPlayer extends C_BasePlayer {
 	m_nPlayerAssistFlags: number
 	m_vLatestEvent: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_vecStartingPosition: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hAssignedHero: C_BaseEntity
-	m_hLastAssignedHero: C_BaseEntity
-	m_hKillCamUnit: C_BaseEntity
-	m_hPreviousKillCamUnit: C_BaseEntity
+	m_hAssignedHero: CEntityIndex // C_BaseEntity
+	m_hLastAssignedHero: CEntityIndex // C_BaseEntity
+	m_hKillCamUnit: CEntityIndex // C_BaseEntity
+	m_hPreviousKillCamUnit: CEntityIndex // C_BaseEntity
 	m_flKillCamUnitReceivedTime: number
 	m_nRareLineClickCount: number
 	m_nRareLinesPlayed: number
@@ -17351,20 +17360,20 @@ declare class C_DOTAPlayer extends C_BasePlayer {
 	m_nSelectedControlGroup: number
 	m_iPlayerID: number
 	m_nCachedCoachedTeam: number
-	m_hActiveAbility: C_DOTABaseAbility
+	m_hActiveAbility: CEntityIndex // C_DOTABaseAbility
 	readonly m_unitorders: CUnitOrders[]
 	m_nOutgoingOrderSequenceNumber: number
 	m_nServerOrderSequenceNumber: number
-	readonly m_nSelectedUnits: C_BaseEntity[]
+	readonly m_nSelectedUnits: CEntityIndex[]
 	readonly m_nWaypoints: ParticleIndex_t[]
 	m_iActions: number
-	m_hQueryUnit: C_DOTA_BaseNPC
+	m_hQueryUnit: CEntityIndex // C_DOTA_BaseNPC
 	m_bInQuery: boolean
 	m_bSelectionChangedInDataUpdate: boolean
 	m_flQueryInhibitingActionTime: number
 	m_flQueryInhibitDuration: number
-	readonly m_RingedEntities: C_BaseEntity[]
-	readonly m_ActiveRingOwners: C_BaseEntity[]
+	readonly m_RingedEntities: CEntityIndex // C_BaseEntity[]
+	readonly m_ActiveRingOwners: CEntityIndex // C_BaseEntity[]
 	m_bOverridingQuery: boolean
 	m_flLastAutoRepeatTime: number
 	m_flConsumeDoubleclickTime: number
@@ -17380,7 +17389,7 @@ declare class C_DOTAPlayer extends C_BasePlayer {
 	readonly m_iCursor: number[]
 	m_iSpectatorClickBehavior: number
 	m_flAspectRatio: number
-	m_hSpectatorQueryUnit: C_BaseEntity
+	m_hSpectatorQueryUnit: CEntityIndex // C_BaseEntity
 	m_iStatsPanel: number
 	m_iShopPanel: number
 	m_iShopViewMode: ShopItemViewMode_t
@@ -17451,7 +17460,7 @@ declare class CInfoTarget extends C_PointEntity {}
 declare class CDOTA_Ability_Special_Bonus_Unique_SpearBonusDamage extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Obsidian_Destroyer_AstralImprisonment extends C_DOTABaseAbility {
-	m_hImprisonedUnit: C_BaseEntity
+	m_hImprisonedUnit: CEntityIndex // C_BaseEntity
 	max_charges_scepter: number
 	charge_restore_time_scepter: number
 }
@@ -17688,7 +17697,7 @@ declare class CDOTA_Ability_EarthSpirit_Petrify extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_EmberSpirit_SleightOfFist extends C_DOTABaseAbility {
 	m_vCastLoc: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nHeroesKilled: number
-	readonly m_hAttackEntities: C_BaseEntity[]
+	readonly m_hAttackEntities: CEntityIndex // C_BaseEntity[]
 	readonly m_nFXMarkerIndex: ParticleIndex_t
 }
 
@@ -17860,7 +17869,7 @@ declare class C_Beam extends C_BaseModelEntity {
 	m_queryHandleHalo: number
 	m_nBeamType: BeamType_t
 	m_nBeamFlags: number
-	readonly m_hAttachEntity: C_BaseEntity[]
+	readonly m_hAttachEntity: CEntityIndex[] // C_BaseEntity
 	readonly m_nAttachIndex: number[]
 	m_fWidth: number
 	m_fEndWidth: number
@@ -17873,7 +17882,7 @@ declare class C_Beam extends C_BaseModelEntity {
 	m_nClipStyle: BeamClipStyle_t
 	m_bTurnedOff: boolean
 	m_vecEndPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hEndEntity: C_BaseEntity
+	m_hEndEntity: CEntityIndex // C_BaseEntity
 }
 
 declare class C_ShadowControl extends C_BaseEntity {
@@ -17892,7 +17901,7 @@ declare class C_DOTA_Ability_TrollWarlord_WhirlingAxes_Ranged extends C_DOTABase
 	axe_range: number
 	axe_spread: number
 	axe_count: number
-	readonly m_hHitUnits: C_BaseEntity[]
+	readonly m_hHitUnits: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DotaSubquestTutorialEvent extends C_DotaSubquestBase {}
@@ -17934,8 +17943,8 @@ declare class C_DOTA_Ability_Special_Bonus_Strength_3 extends C_DOTABaseAbility 
 
 declare class C_DOTA_Hero_Recorder extends C_BaseEntity {
 	m_bStartRecording: boolean
-	m_hHero: C_DOTA_BaseNPC
-	m_hPlayer: C_DOTAPlayer
+	m_hHero: CEntityIndex // C_DOTA_BaseNPC
+	m_hPlayer: CEntityIndex // C_DOTAPlayer
 	m_bRecording: boolean
 	m_bLastStartRecording: boolean
 	m_flLastCycle: number
@@ -17962,7 +17971,7 @@ declare class C_DOTA_Ability_Broodmother_InsatiableHunger extends C_DOTABaseAbil
 declare class C_DOTA_Ability_Ursa_Earthshock extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_Bane_FiendsGrip extends C_DOTABaseAbility {
-	m_hGripTarget: C_BaseEntity
+	m_hGripTarget: CEntityIndex // C_BaseEntity
 	fiend_grip_damage: number
 }
 
@@ -18113,7 +18122,7 @@ declare class C_BasePropDoor extends C_DynamicProp {
 	m_eDoorState: DoorState_t
 	m_modelChanged: boolean
 	m_bLocked: boolean
-	m_hMaster: C_BasePropDoor
+	m_hMaster: CEntityIndex // C_BasePropDoor
 }
 
 declare class C_PointEntityAlias_info_target_portrait_root extends C_PointEntity {}
@@ -18177,7 +18186,7 @@ declare class C_DotaQuest extends C_BaseEntity {
 	readonly m_pszQuestTitle: number[]
 	readonly m_pszQuestText: number[]
 	m_nQuestType: number
-	readonly m_hSubquests: C_DotaSubquestBase[]
+	readonly m_hSubquests: CEntityIndex[] // C_DotaSubquestBase
 	m_bHidden: boolean
 	m_bCompleted: boolean
 	m_bWinIfCompleted: boolean
@@ -18309,7 +18318,7 @@ declare class C_FuncMonitor extends C_FuncBrush {
 	m_bRenderShadows: boolean
 	m_bUseUniqueColorTarget: boolean
 	readonly m_brushModelName: string
-	m_hTargetCamera: C_BaseEntity
+	m_hTargetCamera: CEntityIndex // C_BaseEntity
 	m_bEnabled: boolean
 }
 
@@ -18333,7 +18342,7 @@ declare class C_DOTA_Ability_Batrider_Flamebreak extends C_DOTABaseAbility {
 }
 
 declare class C_DOTA_Ability_Rattletrap_RocketFlare extends C_DOTABaseAbility {
-	readonly m_vecEnemyHeroesInFog: C_BaseEntity[]
+	readonly m_vecEnemyHeroesInFog: CEntityIndex // C_BaseEntity[]
 }
 
 declare class CDOTA_Ability_Jungle_Spirit_Reductions extends C_DOTABaseAbility {}
@@ -18341,8 +18350,8 @@ declare class CDOTA_Ability_Jungle_Spirit_Reductions extends C_DOTABaseAbility {
 declare class C_DOTA_Ability_Frostivus2018_Windrunner_Shackleshot extends C_DOTABaseAbility {
 	shackle_count: number
 	m_vArrowStartPos: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	m_hTarget: C_BaseEntity
-	readonly m_hEntitiesAffected: C_BaseEntity[]
+	m_hTarget: CEntityIndex // C_BaseEntity
+	readonly m_hEntitiesAffected: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Visage_1 extends C_DOTABaseAbility {}
@@ -18393,7 +18402,7 @@ declare class C_PoseController extends C_BaseEntity {
 	m_fFModTimeOffset: number
 	m_fFModRate: number
 	m_fFModAmplitude: number
-	readonly m_hProps: C_BaseEntity[]
+	readonly m_hProps: CEntityIndex[] // C_BaseEntity
 	readonly m_chPoseIndex: number[]
 	m_bOldPoseValueParity: boolean
 	m_fCurrentPoseValue: number
@@ -18411,7 +18420,7 @@ declare class C_ViewmodelWeapon extends C_BaseAnimating {
 
 declare class C_PhysMagnet extends C_BaseAnimating {
 	readonly m_aAttachedObjectsFromServer: number[]
-	readonly m_aAttachedObjects: C_BaseEntity[]
+	readonly m_aAttachedObjects: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_FuncConveyor extends C_BaseModelEntity {
@@ -18452,12 +18461,12 @@ declare class C_BaseViewModel extends C_BaseAnimatingOverlay {
 	m_nAnimationParity: number
 	m_nLayer: number
 	m_flAnimationStartTime: number
-	m_hWeapon: C_BaseCombatWeapon
-	m_hOwner: C_BaseEntity
+	m_hWeapon: CEntityIndex // C_BaseCombatWeapon
+	m_hOwner: CEntityIndex // C_BaseEntity
 	m_Activity: number
 	readonly m_sVMName: string
 	readonly m_sAnimationPrefix: string
-	m_hWeaponModel: C_ViewmodelWeapon
+	m_hWeaponModel: CEntityIndex // C_ViewmodelWeapon
 	m_iCameraAttachment: number
 	m_vecLastCameraAngles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_previousElapsedDuration: number
@@ -18510,12 +18519,12 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_5 extends C_D
 declare class CDOTA_VR_AvatarManagerCallbackHandler extends C_BaseEntity {}
 
 declare class C_DOTA_DataSpectator extends C_DOTA_DataNonSpectator {
-	m_hPowerupRune_1: C_BaseEntity
-	m_hPowerupRune_2: C_BaseEntity
-	m_hBountyRune_1: C_BaseEntity
-	m_hBountyRune_2: C_BaseEntity
-	m_hBountyRune_3: C_BaseEntity
-	m_hBountyRune_4: C_BaseEntity
+	m_hPowerupRune_1: CEntityIndex // C_BaseEntity
+	m_hPowerupRune_2: CEntityIndex // C_BaseEntity
+	m_hBountyRune_1: CEntityIndex // C_BaseEntity
+	m_hBountyRune_2: CEntityIndex // C_BaseEntity
+	m_hBountyRune_3: CEntityIndex // C_BaseEntity
+	m_hBountyRune_4: CEntityIndex // C_BaseEntity
 	readonly m_iNetWorth: number[]
 	m_fRadiantWinProbability: number
 	readonly m_iGoldSpentOnSupport: number[]
@@ -18566,10 +18575,10 @@ declare class C_DOTA_Ability_Tinker_HeatSeekingMissile extends C_DOTABaseAbility
 }
 
 declare class C_BaseVRHandAttachment extends C_BaseAnimating {
-	m_hOldAttachedHand: C_PropVRHand
+	m_hOldAttachedHand: CEntityIndex // C_PropVRHand
 	readonly m_OnAttachedToHand: CEntityIOOutput
 	readonly m_OnDetachedFromHand: CEntityIOOutput
-	m_hAttachedHand: C_PropVRHand
+	m_hAttachedHand: CEntityIndex // C_PropVRHand
 	m_bIsAttached: boolean
 }
 
@@ -18612,8 +18621,8 @@ declare class C_DOTA_Ability_Special_Bonus_Cast_Range_150 extends C_DOTABaseAbil
 declare class C_DOTA_Ability_Special_Bonus_Attack_Range_125 extends C_DOTABaseAbility {}
 
 declare class C_EntityFlame extends C_BaseEntity {
-	m_hEntAttached: C_BaseEntity
-	m_hOldAttached: C_BaseEntity
+	m_hEntAttached: CEntityIndex // C_BaseEntity
+	m_hOldAttached: CEntityIndex // C_BaseEntity
 	m_bCheapEffect: boolean
 }
 
@@ -18692,7 +18701,7 @@ declare class C_DOTA_Ability_Phoenix_LaunchFireSpirit extends C_DOTABaseAbility 
 declare class CDOTA_Ability_Elder_Titan_EchoStomp_Spirit extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Ability_VengefulSpirit_Command_Aura extends C_DOTABaseAbility {
-	m_hScepterIllusion: C_BaseEntity
+	m_hScepterIllusion: CEntityIndex // C_BaseEntity
 }
 
 declare class CDOTA_Ability_Jungle_Spirit_RiverRejuvenation extends C_DOTABaseAbility {}
@@ -18738,7 +18747,7 @@ declare class CDOTA_Ability_AncientApparition_IceBlast extends C_DOTABaseAbility
 	frostbite_duration: number
 	frostbite_duration_scepter: number
 	target_sight_radius: number
-	readonly m_hFrostbittenEntities: C_BaseEntity[]
+	readonly m_hFrostbittenEntities: CEntityIndex // C_BaseEntity[]
 }
 
 declare class C_DOTA_Ability_JungleSpirit_Volcano_Eruption extends C_DOTABaseAbility {

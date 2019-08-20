@@ -1,37 +1,26 @@
 import EntityManager from "../../Managers/EntityManager"
 import Ability from "../Base/Ability"
-import Item from "../Base/Item"
 import Unit from "../Base/Unit"
 
-const MAX_SKILLS = 30
+const MAX_SKILLS = 31
 
 export default class AbilitiesBook {
-	readonly Owner: Unit
-	readonly m_hAbilities: C_DOTABaseAbility[]
+	public Spells_: Array<Ability | number>
 
-	constructor(ent: Unit) {
-		this.Owner = ent
-		this.m_hAbilities = this.Owner.m_pBaseEntity.m_hAbilities as C_DOTABaseAbility[]
-	}
-
-	get CountSpells(): number {
-		if (!this.Owner.IsValid)
-			return 0
-
-		return this.m_hAbilities.length
+	constructor(public readonly Owner: Unit) {
+		// loop-optimizer: FORWARD
+		this.Spells_ = this.Owner.m_pBaseEntity.m_hAbilities.map(abil => EntityManager.GetEntityByNative(abil) as Ability || (abil instanceof C_BaseEntity ? abil.m_pEntity.m_iIndex : abil))
 	}
 
 	get Spells(): Ability[] {
-		return this.Owner.IsValid
-			? EntityManager.GetEntitiesByNative(this.m_hAbilities) as Ability[]
-			: []
+		return (this.Spells_ = EntityManager.GetEntitiesByNative(this.Spells_))
 	}
 
 	/* get ValidSpells(): Ability[] {
 		let spells: Ability[] = [];
 
 		if (this.m_Unit.IsValid) {
-			let abilsNative = this.m_hAbilities
+			let abilsNative = this.NativeAbilities
 
 			for (let i = 0, len = abilsNative.length; i < len; i++) {
 				let abil = EntityManager.GetEntityByNative(abilsNative[i]) as Ability;
@@ -47,7 +36,7 @@ export default class AbilitiesBook {
 		if (!this.Owner.IsValid || slot > MAX_SKILLS)
 			return undefined
 
-		return EntityManager.GetEntityByNative(this.m_hAbilities[slot]) as Ability
+		return this.Spells[slot]
 	}
 
 	GetAbilityByName(name: string | RegExp): Ability {
@@ -55,13 +44,13 @@ export default class AbilitiesBook {
 			abil !== undefined
 			&& (
 				name instanceof RegExp
-					? name.test(abil.AbilityData.Name)
-					: abil.AbilityData.Name === name
+					? name.test(abil.Name)
+					: abil.Name === name
 			),
 		)
 	}
 
 	GetAbilityByNativeClass(class_: any): Ability {
-		return this.Spells.find(abil => abil.m_pBaseEntity instanceof class_)
+		return this.Spells.find(abil => abil !== undefined && abil.m_pBaseEntity instanceof class_)
 	}
 }

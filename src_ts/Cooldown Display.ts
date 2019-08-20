@@ -171,7 +171,7 @@ function DrawDisplay(hero: Hero) {
 	let screen_pos = RendererSDK.WorldToScreen(pos)
 
 	if (screen_pos !== undefined) {
-		// loop-optimizer: FORWARD
+		// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
 		let abilities = hero.Spells.filter((abil, i) => {
 			let name = abil.Name
 			return i < 6 &&

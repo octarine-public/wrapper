@@ -25,15 +25,15 @@ class PlayerResource {
 			return []
 		return this.m_pBaseEntity.m_vecPlayerData
 	}
-	public get TeamCouriers(): Courier[][] {
+	public get TeamCouriers(): Courier[] {
 		if (this.m_pBaseEntity === undefined)
 			return []
-		return this.m_pBaseEntity.m_hTeamCouriers.map(cours => EntityManager.GetEntitiesByNative(cours) as Courier[])
+		return EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_hTeamCouriers) as Courier[]
 	}
-	public get PlayerCouriers(): Courier[][] {
+	public get PlayerCouriers(): Courier[] {
 		if (this.m_pBaseEntity === undefined)
 			return []
-		return this.m_pBaseEntity.m_hPlayerCouriers.map(cours => EntityManager.GetEntitiesByNative(cours) as Courier[])
+		return EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_hPlayerCouriers) as Courier[]
 	}
 
 	public GetNameByPlayerID(playerID: number): string {
@@ -46,12 +46,12 @@ class PlayerResource {
 			return undefined
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_playerIDToPlayer[playerID], true) as Player
 	}
-	public GetPlayerCouriersByPlayerID(playerID: number): Courier[] {
+	public GetPlayerCouriersByPlayerID(playerID: number): Courier {
 		if (this.m_pBaseEntity === undefined)
-			return []
-		return EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_hPlayerCouriers[playerID]) as Courier[]
+			return undefined
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hPlayerCouriers[playerID]) as Courier
 	}
-	
+
 	public GetPlayerTeamDataByPlayerID(playerID: number): PlayerResourcePlayerTeamData_t {
 		return this.PlayerTeamData[playerID]
 	}

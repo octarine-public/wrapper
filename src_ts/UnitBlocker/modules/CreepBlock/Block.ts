@@ -191,7 +191,6 @@ function CheckTowerNear(unit: Unit): boolean {
 }
 
 function GoingToBestPosition(unit: Unit): boolean {
-
 	let closest = unit.NetworkPosition.Closest(BestPosition[unit.Team - 2])
 
 	if (unit.IsInRange(closest, 100))

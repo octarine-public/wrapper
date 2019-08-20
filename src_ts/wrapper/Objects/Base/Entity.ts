@@ -140,25 +140,20 @@ export default class Entity {
 	private readonly Angles_: QAngle = new QAngle().Invalidate() // cached angles
 	private Rotation_: number = NaN // cached rotation
 	private Scale_: number = 1 // cached scale
-	protected Name_: string = "<m_pEntity udnefined>"
+	public Name: string = ""
 	private readonly Entity: CEntityIdentity
 	private Owner_: Entity
 
 	/* ================================ BASE ================================ */
-	constructor(public readonly m_pBaseEntity: C_BaseEntity, public readonly Index: number = -1) {
+	constructor(public m_pBaseEntity: C_BaseEntity, public readonly Index: number) {
 		this.Entity = this.m_pBaseEntity.m_pEntity
 		if (this.Entity !== undefined)
-			this.Name_ = this.Entity.m_designerName || this.Entity.m_name
+			this.Name = this.Entity.m_name || this.Entity.m_designerName || ""
 	}
 
 	/* ================ GETTERS ================ */
 	get Owner(): Entity { // trick to make it public ro, and protected rw
 		return this.Owner_ || (this.Owner_ = EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
-	}
-	get Name(): string { // trick to make it public ro, and protected rw
-		if (this.Name_ === undefined && this.Entity !== undefined)
-			return this.Name_ = this.Entity.m_designerName || this.Entity.m_name
-		return this.Name_
 	}
 	get Position(): Vector3 { // trick to make it public ro, and protected rw
 		if (!this.Position_.IsValid) {
@@ -366,12 +361,6 @@ export default class Entity {
 	 */
 	IsEnemy(ent: Entity = LocalPlayer): boolean {
 		return ent === undefined || ent.Team !== this.Team
-	}
-	/**
-	 * @param ent Any Entity. If undefined => this compare with LocalPlayer
-	 */
-	IsAlly(ent: Entity = LocalPlayer): boolean {
-		return ent !== undefined && ent.Team === this.Team
 	}
 
 	Select(bAddToGroup: boolean = false): boolean {

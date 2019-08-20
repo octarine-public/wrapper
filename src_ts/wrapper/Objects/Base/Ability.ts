@@ -6,8 +6,15 @@ import Entity from "./Entity"
 import Unit from "./Unit"
 
 export default class Ability extends Entity {
-	/* protected */ readonly m_pBaseEntity: C_DOTABaseAbility
-	private m_AbilityData: AbilityData
+	public readonly m_pBaseEntity: C_DOTABaseAbility
+	public AbilityData: AbilityData
+
+	constructor(m_pBaseEntity: C_BaseEntity, Index: number) {
+		super(m_pBaseEntity, Index)
+		let m_pAbilityData = this.m_pBaseEntity.m_pAbilityData
+		if (m_pAbilityData !== undefined)
+			this.AbilityData = new AbilityData(m_pAbilityData)
+	}
 
 	/* ============ BASE  ============ */
 
@@ -19,10 +26,6 @@ export default class Ability extends Entity {
 	}
 	get AbilityDamage(): number {
 		return this.m_pBaseEntity.m_iAbilityDamage
-	}
-	get AbilityData(): AbilityData {
-		return this.m_AbilityData
-			|| (this.m_AbilityData = new AbilityData(this.m_pBaseEntity.m_pAbilityData))
 	}
 	get AbilityType(): ABILITY_TYPES {
 		return this.AbilityData.AbilityType
@@ -117,9 +120,6 @@ export default class Ability extends Entity {
 	}
 	get MaxLevel(): number {
 		return this.AbilityData.MaxLevel || (this.IsItem ? 1 : 0)
-	}
-	get Name(): string {
-		return this.AbilityData.Name
 	}
 	get OverrideCastPoint(): number {
 		return this.m_pBaseEntity.m_flOverrideCastPoint

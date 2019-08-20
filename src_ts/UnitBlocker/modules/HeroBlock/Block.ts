@@ -232,7 +232,7 @@ function GetClosestHero(exclude: (unit: Hero) => boolean) {
 
 	return ArrayExtensions.orderBy(allHeroes, hero => hero.Distance2D(mouseCursor))
 		.find(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.IsInRange(mouseCursor, 1000)
-			&& (stateBlock === StateBlock.Enemy ? hero.IsEnemy() : hero.IsAlly()) && exclude(hero))
+			&& (stateBlock === StateBlock.Enemy ? hero.IsEnemy() : !hero.IsEnemy()) && exclude(hero))
 }
 
 function IsOn() {

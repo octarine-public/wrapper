@@ -1,4 +1,4 @@
-import { EventsSDK, MenuManager, PlayerResource, Vector3, ProjectileManager, RendererSDK, Vector2, Color } from "./wrapper/Imports"
+import { Color, EventsSDK, MenuManager, PlayerResource, ProjectileManager, RendererSDK, Vector2, Vector3 } from "./wrapper/Imports"
 
 let { MenuFactory } = MenuManager
 
@@ -140,11 +140,6 @@ Events.on("PrepareUnitOrders", order => {
 	if (!debugOnlyThrowEvents.value)
 		console.log("onPrepareUnitOrders", order)
 })
-Events.on("LinearProjectileCreated", (...args) => debugConsole("onLinearProjectileCreated", ...args))
-Events.on("LinearProjectileDestroyed", proj => debugConsole("onLinearProjectileDestroyed", proj, "m_iID", proj.m_iID, "m_bIsValid", proj.m_bIsValid, proj.m_vecPosition, Vector3.fromIOBuffer(proj.m_vecPosition)))
-Events.on("TrackingProjectileCreated", (...args) => debugConsole("onTrackingProjectileCreated", ...args))
-Events.on("TrackingProjectileUpdated", (...args) => debugConsole("onTrackingProjectileUpdated", ...args))
-Events.on("TrackingProjectileDestroyed", proj => debugConsole("onTrackingProjectileDestroyed", proj))
 Events.on("UnitAnimation", (...args) => debugConsole("onUnitAnimation", ...args))
 Events.on("UnitAnimationEnd", (...args) => debugConsole("onUnitAnimation", ...args))
 Events.on("BuffAdded", (npc, buff) => {

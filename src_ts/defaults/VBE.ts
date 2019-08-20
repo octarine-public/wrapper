@@ -3,8 +3,8 @@ import {
 	Game,
 	LocalPlayer,
 	MenuManager,
-	Unit,
 	ParticlesSDK,
+	Unit,
 } from "wrapper/Imports"
 
 let allUnits = new Map<Unit, number>() // <Unit, Particle>
@@ -40,7 +40,7 @@ function Destroy(particleID: number, unit: Unit) {
 EventsSDK.on("GameEnded", DestroyAll)
 
 EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof Unit && ent.IsAlly())
+	if (ent instanceof Unit && !ent.IsEnemy())
 		allUnits.set(ent, -1)
 })
 

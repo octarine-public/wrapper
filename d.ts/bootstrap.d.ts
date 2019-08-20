@@ -187,5 +187,6 @@ declare interface Events extends EventEmitter {
 		field_type: string,
 		array_index: number // -1 if that's not an array change
 	) => void): EventEmitter
+	on(name: "SetEntityName", listener: (ent: C_BaseEntity, new_name: string) => void): EventEmitter
 }
 declare var Events: Events
