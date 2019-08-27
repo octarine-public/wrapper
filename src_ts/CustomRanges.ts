@@ -1,23 +1,20 @@
-import { Ability, Color, EventsSDK, Game, Item, MenuManager, ParticlesSDK, Vector3 } from "wrapper/Imports"
-import { LocalPlayer } from "./wrapper/Managers/EntityManager"
-import ListBox from "./wrapper/Menu/ListBox"
-import { CreateRGBTree } from "./wrapper/Menu/MenuManager"
-let { MenuFactory } = MenuManager
-const menu = MenuFactory("Custom Ranges"),
+import { Ability, Color, EventsSDK, Game, Item, LocalPlayer, Menu, ParticlesSDK, Vector3 } from "wrapper/Imports"
+
+const menu = Menu.AddEntry(["Visual", "Custom Ranges"]),
 	active = menu.AddToggle("Active"),
-	first = menu.AddTree("Custom radius #1"),
-	fActive = first.AddCheckBox("Active"),
+	first = menu.AddNode("Custom radius #1"),
+	fActive = first.AddToggle("Active"),
 	fRange = first.AddSlider("Range", 1300, 100, 4000),
-	fColor = CreateRGBTree(first, "Color", new Color(0, 255, 0)),
-	second = menu.AddTree("Custom radius #2"),
-	sActive = second.AddCheckBox("Active"),
+	fColor = menu.AddColorPicker("Color", new Color(0, 255, 0)),
+	second = menu.AddNode("Custom radius #2"),
+	sActive = second.AddToggle("Active"),
 	sRange = second.AddSlider("Range", 1300, 100, 4000),
-	sColor = CreateRGBTree(second, "Color", new Color(0, 255, 0)),
+	sColor = menu.AddColorPicker("Color", new Color(0, 255, 0)),
 	refresh = menu.AddButton("Refresh", "Refresh Abilities and Items"),
-	abils = menu.AddListBox("Abilities", []),
-	items = menu.AddListBox("Item", []),
-	abColors = menu.AddTree("Ability Colors", "If you choose abilities, there will be colors"),
-	itmColors = menu.AddTree("Item Colors", "If you choose items, there will be colors")
+	abils = menu.AddImageSelector("Abilities", []),
+	items = menu.AddImageSelector("Item", []),
+	abColors = menu.AddNode("Ability Colors", "If you choose abilities, there will be colors"),
+	itmColors = menu.AddNode("Item Colors", "If you choose items, there will be colors")
 
 let fPart,
 	sPart,
@@ -30,8 +27,8 @@ let fPart,
 	itemColors: Map<Item, any> = new Map(),
 	itemsRanges: Map<Item, number> = new Map()
 
-active.OnValue(val => {
-	if (!val) {
+active.OnValue(() => {
+	if (!active.value) {
 		if (fPart !== undefined) {
 			ParticlesSDK.Destroy(fPart, true)
 			fPart = undefined
@@ -48,9 +45,9 @@ function removeMenu(obj) {
 	obj.clr.tree.parent.RemoveControl(obj.clr.tree)
 	obj.men.parent.RemoveControl(obj.men)
 }
-function OnValAbility(val, list: ListBox) {
-	val.some((val, i) => {
-		const spell = LocalPlayer.Hero.AbilitiesBook.GetAbilityByName(list.values[i])
+function OnValAbility(val: Map<string, boolean>, list: Menu.ImageSelector) {
+	val.forEach((val, key) => {
+		const spell = LocalPlayer.Hero.AbilitiesBook.GetAbilityByName(key)
 		if (val) {
 			if (spell !== undefined && spell.CastRange > 0 && !abilsParticles.has(spell)) {
 				const part = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, LocalPlayer.Hero)
@@ -60,11 +57,11 @@ function OnValAbility(val, list: ListBox) {
 				ParticlesSDK.SetControlPoint(part, 4, new Vector3(0, 255, 0))
 				abilsRanges.set(spell, spell.CastRange)
 				abilsParticles.set(spell, part)
-				const men = abColors.AddTree(spell.Name),
-					clr = CreateRGBTree(men, "Color")
+				const men = abColors.AddNode(spell.Name),
+					clr = men.AddColorPicker("Color")
 				abilsColors.set(spell, {men, clr})
 			}
-		}else if (abilsParticles.has(spell)) {
+		} else if (abilsParticles.has(spell)) {
 			ParticlesSDK.Destroy(abilsParticles.get(spell), true)
 			removeMenu(abilsColors.get(spell))
 			abilsColors.delete(spell)
@@ -72,9 +69,9 @@ function OnValAbility(val, list: ListBox) {
 		}
 	})
 }
-function OnValItem(val, list: ListBox) {
-	val.some((val, i) => {
-		const spell = LocalPlayer.Hero.Inventory.GetItemByName(list.values[i])
+function OnValItem(val: Map<string, boolean>, list: Menu.ImageSelector) {
+	val.forEach((val, key) => {
+		const spell = LocalPlayer.Hero.Inventory.GetItemByName(key)
 		if (val) {
 			if (spell !== undefined && spell.CastRange > 0 && !itemsParticles.has(spell)) {
 				const part = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, LocalPlayer.Hero)
@@ -84,11 +81,11 @@ function OnValItem(val, list: ListBox) {
 				ParticlesSDK.SetControlPoint(part, 4, new Vector3(0, 255, 0))
 				itemsRanges.set(spell, spell.CastRange)
 				itemsParticles.set(spell, part)
-				const men = itmColors.AddTree(spell.Name),
-					clr = CreateRGBTree(men, "Color")
+				const men = itmColors.AddNode(spell.Name),
+					clr = men.AddColorPicker("Color")
 				itemColors.set(spell, {men, clr})
 			}
-		}else if (itemsParticles.has(spell)) {
+		} else if (itemsParticles.has(spell)) {
 			ParticlesSDK.Destroy(itemsParticles.get(spell), true)
 			removeMenu(itemColors.get(spell))
 			itemColors.delete(spell)
@@ -168,7 +165,7 @@ EventsSDK.on("Draw", () => {
 		})
 		abilsParticles.clear()
 		abilsColors.clear()
-		OnValAbility(abils.selected_flags, abils)
+		OnValAbility(abils.enabled_values, abils)
 	}
 	if (updateItem) {
 		// loop-optimizer: KEEP
@@ -178,12 +175,12 @@ EventsSDK.on("Draw", () => {
 		})
 		itemsParticles.clear()
 		abilsColors.clear()
-		OnValItem(items.selected_flags, items)
+		OnValItem(items.enabled_values, items)
 	}
 })
 
-abils.OnValue(OnValAbility)
-items.OnValue(OnValItem)
+abils.OnValue(() => OnValAbility(abils.enabled_values, abils))
+items.OnValue(() => OnValItem(items.enabled_values, items))
 
 function Refresh(arg?) {
 	// loop-optimizer: KEEP
@@ -202,7 +199,8 @@ function Refresh(arg?) {
 	itemColors.clear()
 	abils.values = []
 	items.values = []
-	menu.Update()
+	abils.Update()
+	items.Update()
 	if (!active.value || !Game.IsInGame || LocalPlayer.Hero === undefined)
 		return false
 	for (let i = 0; i < 24; i++) {
@@ -216,12 +214,13 @@ function Refresh(arg?) {
 		}
 	}
 	if (arg !== undefined) {
-		OnValAbility(abils.selected_flags, abils)
-		OnValItem(items.selected_flags, items)
+		OnValAbility(abils.enabled_values, abils)
+		OnValItem(items.enabled_values, items)
 	}
-	menu.Update()
+	abils.Update()
+	items.Update()
 }
-refresh.OnPress(Refresh)
+refresh.OnValue(Refresh)
 EventsSDK.on("GameStarted", Refresh)
 EventsSDK.on("GameEnded", () => {
 	if (fPart !== undefined) {

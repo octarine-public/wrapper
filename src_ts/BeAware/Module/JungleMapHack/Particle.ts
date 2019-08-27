@@ -39,12 +39,7 @@ function RenderPosition(pos: Vector3) {
 	RendererSDK.Text (
 		TextStyle,
 		position_unit,
-		new Color (
-			DrawRGBA.R.value,
-			DrawRGBA.G.value,
-			DrawRGBA.B.value,
-			DrawRGBA.A.value,
-		),
+		DrawRGBA.Color,
 		"Arial",
 		Size.value,
 	)

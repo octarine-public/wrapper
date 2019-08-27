@@ -182,7 +182,7 @@ export default class Ability extends Entity {
 				break
 		}
 
-		return castrange + owner.CastRangeBonus
+		return castrange + (owner !== undefined ? owner.CastRangeBonus : 0)
 	}
 
 	UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {

@@ -1,43 +1,41 @@
-import { Color, EventsSDK, MenuManager, PlayerResource, ProjectileManager, RendererSDK, Vector2, Vector3 } from "./wrapper/Imports"
+import { Color, EventsSDK, Hero, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Vector3, Game } from "./wrapper/Imports"
 
-let { MenuFactory } = MenuManager
+let setConVar = (toggle: Menu.Toggle) =>
+	ConVars.Set(toggle.tooltip,toggle.value)
 
-let setConVar = (value: number | string | boolean, menuBase: Menu_Base) =>
-	ConVars.Set(menuBase.hint, value)
+let debuggerMenu = Menu.AddEntry("Debugger")
 
-let debuggerMenu = MenuFactory("Debugger")
-
-let sv_cheatsMenu = debuggerMenu.AddTree("sv_cheats tree")
+let sv_cheatsMenu = debuggerMenu.AddNode("Concommands")
 
 let sv_cheats = sv_cheatsMenu.AddToggle("sv_cheats")
-	.SetToolTip("sv_cheats")
+	.SetTooltip("sv_cheats")
 	.OnValue(setConVar)
 
 let wtf = sv_cheatsMenu.AddToggle("wtf")
-	.SetToolTip("dota_ability_debug")
+	.SetTooltip("dota_ability_debug")
 	.OnValue(setConVar)
 
 let vision = sv_cheatsMenu.AddToggle("all vision")
-	.SetToolTip("dota_all_vision")
+	.SetTooltip("dota_all_vision")
 	.OnValue(setConVar)
 
 let creepsNoSpawn = sv_cheatsMenu.AddToggle("Creeps no spawning")
-	.SetToolTip("dota_creeps_no_spawning")
+	.SetTooltip("dota_creeps_no_spawning")
 	.OnValue(setConVar)
 
 sv_cheatsMenu.AddKeybind("Refresh")
-	.SetToolTip("dota_hero_refresh")
-	.OnRelease(self => SendToConsole(self.hint))
+	.SetTooltip("dota_hero_refresh")
+	.OnRelease(self => SendToConsole(self.tooltip))
 
-sv_cheatsMenu.AddKeybind("Local lvl max")
-	.SetToolTip("dota_hero_level 25")
-	.OnRelease(self => SendToConsole(self.hint))
+sv_cheatsMenu.AddButton("Local lvl max")
+	.SetTooltip("dota_hero_level 25")
+	.OnValue(self => SendToConsole(self.tooltip))
 
-sv_cheatsMenu.AddKeybind("Get Rap God")
-	.SetToolTip("dota_rap_god")
-	.OnRelease(self => SendToConsole(self.hint))
+sv_cheatsMenu.AddButton("Get Rap God")
+	.SetTooltip("dota_rap_god")
+	.OnValue(self => SendToConsole(self.tooltip))
 
-let addUnitMenu = debuggerMenu.AddTree("add unit")
+let addUnitMenu = debuggerMenu.AddNode("add unit")
 
 addUnitMenu.AddKeybind("Add full Sven")
 	.OnRelease(() => {
@@ -52,8 +50,8 @@ addUnitMenu.AddKeybind("Add full Sven")
 	})
 
 addUnitMenu.AddKeybind("Add creep")
-	.SetToolTip("dota_create_unit npc_dota_creep_badguys_melee enemy")
-	.OnRelease(self => SendToConsole(self.hint))
+	.SetTooltip("dota_create_unit npc_dota_creep_badguys_melee enemy")
+	.OnRelease(self => SendToConsole(self.tooltip))
 
 EventsSDK.on("GameStarted", () => {
 	ConVars.Set("sv_cheats", ConVars.GetInt("sv_cheats") || sv_cheats.value)
@@ -67,7 +65,7 @@ EventsSDK.on("GameStarted", () => {
 
 // ======================= DEBUGGING EVENTS
 
-const debugEventsMenu = debuggerMenu.AddTree("Debugging events", "Debugging native events in console")
+const debugEventsMenu = debuggerMenu.AddNode("Debugging events", "Debugging native events in console")
 
 const debugEvents = debugEventsMenu.AddToggle("Debugging events")
 const debugOnlyThrowEvents = debugEventsMenu.AddToggle("Debugging only throw", true)
@@ -79,26 +77,20 @@ const debugBuffsEvents = debugEventsMenu.AddToggle("Debug Buffs")
 
 const debugOtherEvents = debugEventsMenu.AddToggle("Debug Other")
 const debugProjectiles = debugEventsMenu.AddToggle("Debug projectiles", false, "Visual only")
-Events.on("GameStarted", pl_ent => {
+EventsSDK.on("GameStarted", pl_ent => {
 	if (!debugEvents.value || !debugOtherEvents.value) return
 
 	if (!debugOnlyThrowEvents.value)
 		console.log("onGameStarted", pl_ent)
 
-	if (!(pl_ent instanceof C_DOTA_BaseNPC_Hero))
+	if (!(pl_ent instanceof Hero))
 		throw "onGameStarted. pl_ent is not C_DOTA_BaseNPC_Hero: " + pl_ent
 })
-Events.on("GameEnded", () => {
+EventsSDK.on("GameEnded", () => {
 	if (!debugEvents.value || !debugOtherEvents.value) return
 
 	if (!debugOnlyThrowEvents.value)
 		console.log("onGameEnded")
-})
-Events.on("LocalPlayerTeamAssigned", teamNum => {
-	if (!debugEvents.value || !debugOtherEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onLocalPlayerTeamAssigned", teamNum)
 })
 Events.on("EntityCreated", (ent, id) => {
 	if (!debugEvents.value || !debugEntitiesEvents.value) return
@@ -166,7 +158,7 @@ let debugConsole = (name: string, ...args: any) =>
 	debugEvents.value && !debugOnlyThrowEvents.value && debugOtherEvents.value && console.log(name, ...args)
 
 EventsSDK.on("Draw", () => {
-	if (!debugEvents.value || debugOnlyThrowEvents.value || !debugProjectiles.value)
+	if (!debugEvents.value || debugOnlyThrowEvents.value || !debugProjectiles.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	ProjectileManager.AllTrackingProjectiles.filter(proj => !proj.HadHitTargetLoc).forEach(proj => {
 		let w2s = RendererSDK.WorldToScreen(proj.Position)

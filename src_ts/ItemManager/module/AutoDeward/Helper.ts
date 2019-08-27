@@ -1,15 +1,9 @@
 import { ArrayExtensions, Entity, Game, Hero, Item, LocalPlayer } from "wrapper/Imports"
 import {
-	State, StateItems,
+	Items, State, StateItems,
 } from "./Menu"
 
-let ward_list: Entity[] = [],
-	Items = [
-		"item_quelling_blade",
-		"item_bfury",
-		"item_tango",
-		"item_tango_single",
-	]
+let ward_list: Entity[] = []
 
 function IsValidHero(Hero: Hero) {
 	return Hero === undefined
@@ -50,9 +44,9 @@ export function Tick() {
 	let Me = LocalPlayer.Hero
 	if (IsValidHero(Me))
 		return false
-	Me.Inventory.GetItemsByNames(["item_quelling_blade", "item_bfury", "item_tango", "item_tango_single"]).filter(item =>
+	Me.Inventory.GetItemsByNames(Items).filter(item =>
 		item !== undefined
-		&& StateItems.IsSelectedID(Items.indexOf(item.Name))
+		&& StateItems.IsEnabled(item.Name)
 		&& item.IsReady
 		&& item.CanBeCasted(),
 	).some(item => ward_list.filter(ent => ent.IsAlive && ent.IsVisible && ent.IsInRange(Me, item.CastRange)).some(ent => {

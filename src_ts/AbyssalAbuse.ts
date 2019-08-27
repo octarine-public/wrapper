@@ -1,6 +1,6 @@
-import { Ability, Color, Debug, Entity, EntityManager, EventsSDK, Game, Hero, Item, LocalPlayer, MenuManager, Modifier, RendererSDK, Unit, Vector2 } from "wrapper/Imports"
-let { MenuFactory } = MenuManager
-const menu = MenuFactory("Abyssal Abuser"),
+import {EventsSDK, Game, Hero, LocalPlayer, Menu, Modifier } from "wrapper/Imports"
+
+const menu = Menu.AddEntry(["Utility", "Abyssal Abuser"]),
 	active = menu.AddToggle("Active")
 
 let lock = false,

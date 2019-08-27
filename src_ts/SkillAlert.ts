@@ -1,19 +1,19 @@
-import { Color, EntityManager, EventsSDK, Game, Hero, MenuManager, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
-let { MenuFactory } = MenuManager
-const menu = MenuFactory("Skill Alert"),
+import { Color, EntityManager, EventsSDK, Game, Hero, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
+
+const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	active = menu.AddToggle("Active", true),
-	names = menu.AddCheckBox("Show skill names", false),
-	show = menu.AddListBox("Alert Skills", ["Sun Strike", "Torrent", "Light Strike Array", "Split Earth", "Charge of Darkness", "Snowball", "Infest", "Primal Spring"], [true, true, true, true, true, true, true, true]),
+	names = menu.AddToggle("Show skill names", false),
+	show = menu.AddImageSelector("Alert Skills", ["invoker_sun_strike", "kunkka_torrent", "lina_light_strike_array", "leshrac_split_earth", "spirit_breaker_charge_of_darkness", "tusk_snowball", "life_stealer_infest", "monkey_king_primal_spring"]),
 	textSize = menu.AddSlider("Timer text size", 17, 10, 30),
-	spellIcons = menu.AddTree("Spell Icons"),
-	icons = spellIcons.AddCheckBox("Show spell icons", false),
+	spellIcons = menu.AddNode("Spell Icons"),
+	icons = spellIcons.AddToggle("Show spell icons", false),
 	size = spellIcons.AddSlider("Size", 30, 3, 100),
 	opacity = spellIcons.AddSlider("Opacity", 255, 0, 255),
-	chat = menu.AddTree("Send to chat"),
+	chat = menu.AddNode("Send to chat"),
 	// pick = chat.AddCheckBox("Pick on position"),
-	chatActive = chat.AddCheckBox("Chat say", false),
+	chatActive = chat.AddToggle("Chat say", false),
 	chatRangeCheck = chat.AddSlider("Range Check", 1300, 200, 5000),
-	chatShow = chat.AddListBox("Chat Alert Skills", show.values, [true, true, true, true, true, true, true, true]),
+	chatShow = chat.AddImageSelector("Chat Alert Skills", show.values),
 	arModifiers = [
 		"modifier_invoker_sun_strike",
 		"modifier_kunkka_torrent_thinker",
@@ -93,7 +93,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			return
 		let index = arModifiers.indexOf(buff.Name)
 		if (index !== -1) {
-			if (!show.selected_flags[index])
+			if (!show.IsEnabledID(index))
 				return
 			let radius = 175,
 			delay = arDurations[index]
@@ -136,7 +136,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			ParticlesSDK.SetControlPoint(part, 3, new Vector3(radius, 0, 0))
 			ParticlesSDK.SetControlPoint(part, 4, new Vector3(255, 255, 255))
 			arTimers.set(buff, [Game.GameTime, delay, arAbilities[index], ent.Position.Clone()])
-			if (chatActive.value && chatShow.selected_flags[index] && arMessages[index]) {
+			if (chatActive.value && chatShow.IsEnabledID(index) && arMessages[index]) {
 				let heroes = EntityManager.GetEntitiesInRange(ent.Position, chatRangeCheck.value, ent => ent instanceof Hero && !ent.IsEnemy()),
 					names = [],
 					string = ""
@@ -155,7 +155,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 	}
 	let mod = arHeroModifiers[buff.Name]
 	if (mod) {
-		if (!show.selected_flags[mod[3]])
+		if (!show.IsEnabled(mod[3]))
 			return
 		if (mod[0] && !ent.IsHero)
 			return
@@ -163,7 +163,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			return
 		const part = ParticlesSDK.Create(mod[2], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent)
 		arHeroMods.set(buff, part)
-		if (chatActive.value && chatShow.selected_flags[mod[3]] && arMessages[mod[3]]) {
+		if (chatActive.value && chatShow.IsEnabled(mod[3]) && arMessages[mod[3]]) {
 			SendToConsole(`say_team ${arMessages[mod[3]] + ent.Name.substring(9)}`)
 		}
 	}
@@ -190,7 +190,7 @@ EventsSDK.on("Tick", () => {
 	}
 })
 EventsSDK.on("Draw", () => {
-	if (!active.value)
+	if (!active.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	let delArray = []
 	// loop-optimizer: KEEP

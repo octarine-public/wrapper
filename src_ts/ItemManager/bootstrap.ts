@@ -9,11 +9,6 @@ EventsSDK.on("Tick", () => {
 	AutoItems.Tick()
 	AutoDeward.Tick()
 })
-EventsSDK.on("Draw", () => {
-	if (!StateBase.value || !Game.IsInGame || Game.IsPaused)
-		return
-
-})
 
 EventsSDK.on("GameStarted", () => {
 	AutoItems.GameStart()

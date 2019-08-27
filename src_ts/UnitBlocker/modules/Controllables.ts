@@ -1,4 +1,4 @@
-import { Entity, GameSleeper, LocalPlayer, MenuManager, Unit, Vector3 } from "wrapper/Imports"
+import { Entity, LocalPlayer, Menu as MenuSDK, Unit, Vector3 } from "wrapper/Imports"
 
 import { allNPCs } from "../base/Listeners"
 
@@ -28,48 +28,19 @@ export let StopUnit = (unit: Unit) => {
 	unit.OrderStop()
 }
 
-export default function Menu(root: MenuManager.MenuControllers.Tree) {
+export default function Menu(root: MenuSDK.Node) {
 
-	const ControllablesTree = root.AddTree(root.name + " - Controllables")
+	const ControllablesTree = root.AddNode(root.name + " - Controllables")
 
-	const StateUnits = ControllablesTree.AddComboBox("Units", [
+	const StateUnits = ControllablesTree.AddSwitcher("Units", [
 		"Local Hero",
 		// "Selected Unit(s)",
 		"Only controllables",
 		"All Controllables",
 	])
 
-	const CenterCamera = ControllablesTree.AddToggle("Center Camera").SetToolTip("Centering camera on your hero")
-
-	const CenterCameraIndex = CenterCamera.IndexInMenu
-
-	const CountUnits = ControllablesTree.AddSlider("Number of unit", 3, 1, 10).SetToolTip("Number of units to use")
-
-	const CountUnitsIndex = CountUnits.IndexInMenu
-
-	if (StateUnits.selected_id === 0)
-		ControllablesTree.RemoveControl(CountUnits)
-	else
-		ControllablesTree.RemoveControl(CenterCamera)
-
-	StateUnits.OnValue(value => {
-
-		if (value === 0) {
-
-			if (CountUnits.IndexInMenu !== -1)
-				ControllablesTree.RemoveControl(CountUnits)
-
-			if (CenterCamera.IndexInMenu === -1)
-				ControllablesTree.AddControl(CenterCamera, CenterCameraIndex)
-		} else {
-
-			if (CountUnits.IndexInMenu === -1)
-				ControllablesTree.AddControl(CountUnits, CountUnitsIndex)
-
-			if (CenterCamera.IndexInMenu !== -1)
-				ControllablesTree.RemoveControl(CenterCamera)
-		}
-	})
+	const CenterCamera = ControllablesTree.AddToggle("Center Camera").SetTooltip("Centering camera on your hero")
+	const CountUnits = ControllablesTree.AddSlider("Number of unit", 3, 1, 10).SetTooltip("Number of units to use")
 
 	return {
 		ControllablesTree,

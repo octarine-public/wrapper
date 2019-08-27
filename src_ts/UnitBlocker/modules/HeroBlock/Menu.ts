@@ -26,7 +26,7 @@ const {
 } = MenuControllables(BaseTree)
 
 const SpreadUnits = ControllablesTree.AddToggle("Spread units", true)
-	.SetToolTip("If enabled units will try to form an arc, otherwise they all will run in front of the hero")
+	.SetTooltip("If enabled units will try to form an arc, otherwise they all will run in front of the hero")
 
 const {
 	DrawTree,

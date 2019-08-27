@@ -12,12 +12,10 @@ export default class Color {
 
 	/* ================== Static ================== */
 	public static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): Color {
-
 		if (bufferOrOffset === undefined)
 			return new Color(IOBuffer[0], IOBuffer[1], IOBuffer[2], IOBuffer[3])
 
 		if (typeof bufferOrOffset === "boolean") {
-
 			if (!bufferOrOffset)
 				return new Color()
 
@@ -74,6 +72,10 @@ export default class Color {
 	SetA(a: number): Color {
 		this.a = a
 		return this
+	}
+
+	Equals(col: Color): boolean {
+		return this.r === col.r && this.g === col.g && this.b === col.b && this.a === col.a
 	}
 
 	/* ================== To ================== */

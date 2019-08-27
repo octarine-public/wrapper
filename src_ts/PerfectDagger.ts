@@ -1,8 +1,6 @@
-import { Ability, EventsSDK, Game, MenuManager, Vector3 } from "wrapper/Imports"
-
-let { MenuFactory } = MenuManager,
-	blink_range: number
-const menu = MenuFactory("Perfect Dagger"),
+import { Ability, EventsSDK, Game, Menu, Vector3 } from "wrapper/Imports"
+let blink_range: number
+const menu = Menu.AddEntry(["Utility", "Perfect Dagger"]),
 	active = menu.AddToggle("Active")
 EventsSDK.on("PrepareUnitOrders", order => {
 	if (

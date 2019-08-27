@@ -1,10 +1,9 @@
-import { Ability, ArrayExtensions, Creep, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Modifier, Unit, Utils } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Creep, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Modifier, Unit, Utils, Menu } from "wrapper/Imports"
 
-var config: any = {
-	enabled: false,
-	kill_creeps: true,
-	kill_heroes: true,
-}
+let root = Menu.AddEntry(["Utility", "AutoSteal"]),
+	state = root.AddToggle("State", false),
+	kill_creeps = root.AddToggle("Kill creeps", false),
+	kill_heroes = root.AddToggle("Kill heroes", true);
 
 var abils: Array<{
 	abilName: string | RegExp
@@ -448,7 +447,7 @@ function OnTick(): void {
 	attacks = attacks.filter(([end_time, end_time_2, attack_target]) => time - end_time_2 <= Unit.melee_end_time_delta)
 	// loop-optimizer: KEEP
 	attacks.forEach((data, attacker_id) => data[2] = FindAttackingUnit((EntityManager.EntityByIndex(attacker_id) as Unit)))*/
-	if (!config.enabled)
+	if (!state.value)
 		return
 
 	var MyEnt = LocalPlayer.Hero/*,
@@ -472,8 +471,8 @@ function OnTick(): void {
 			ent.IsVisible &&
 			!ent.IsWaitingToSpawn &&
 			ent.IsAlive &&
-			(!ent.IsCreep || config.kill_creeps) &&
-			(!ent.IsHero || config.kill_heroes) &&
+			(!ent.IsCreep || kill_creeps.value) &&
+			(!ent.IsHero || kill_heroes.value) &&
 			NoTarget.indexOf(ent) === -1,
 		)
 	availableAbils.some(abilData => {
@@ -544,37 +543,17 @@ EventsSDK.on("EntityCreated", (npc: Unit) => {
 })
 EventsSDK.on("Tick", OnTick)
 
-{
-	let root = new Menu_Node("AutoSteal")
-	root.entries.push(new Menu_Toggle (
-		"State",
-		config.enabled,
-		node => config.enabled = node.value,
-	))
-	root.entries.push(new Menu_Boolean (
-		"Kill creeps",
-		config.kill_creeps,
-		node => config.kill_creeps = node.value,
-	))
-	root.entries.push(new Menu_Boolean (
-		"Kill heroes",
-		config.kill_heroes,
-		node => config.kill_heroes = node.value,
-	))
-	root.Update()
-	Menu.AddEntry(root)
-}
 
 // let attacks: Array<[number, number, Unit]> = [];
 EventsSDK.on("EntityDestroyed",(unit, unit_id) => {
-	if (!config.enabled)
+	if (!state.value)
 		return
 	if (unit instanceof Unit)
 		ArrayExtensions.arrayRemove(possibleTargets, unit)
 	// attacks = attacks.filter((data, attacker_id) => attacker_id !== unit_id && data!==undefined && data[2] !== unit)
 })
 /*EventsSDK.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
-	if (!config.enabled)
+	if (!state.value)
 		return
 	if (activity === 1503 && !npc.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)) {
 		let delay = (1 / npc.AttacksPerSecond) - 0.06
@@ -588,7 +567,7 @@ EventsSDK.on("EntityDestroyed",(unit, unit_id) => {
 	}
 })
 EventsSDK.on("UnitAnimationEnd", npc => {
-	if (!config.enabled)
+	if (!state.value)
 		return
 	let id = npc.Index,
 	found = attacks[id]

@@ -16,7 +16,7 @@ EventsSDK.on("Tick", () => {
 		return false
 })
 EventsSDK.on("Draw", () => {
-	if (!stateMain.value || !Game.IsInGame || Game.IsPaused)
+	if (!stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	Camp.OnDraw()
 	Wisp.OnDraw()

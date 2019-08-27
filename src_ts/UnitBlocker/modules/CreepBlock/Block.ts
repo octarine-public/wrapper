@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, GameSleeper, LocalPlayer, RendererSDK, Unit, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Creep, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit, Vector3 } from "wrapper/Imports"
 
 import { allCreeps, allTowers } from "../../base/Listeners"
 
@@ -33,7 +33,7 @@ import { BestPosition, DrawParticles, RemoveParticles } from "./ParticleHelp"
 
 let sleeper = new GameSleeper()
 
-let SwitchParticles = (value: boolean) => value ? DrawParticles() : RemoveParticles()
+let SwitchParticles = (caller: Menu.Toggle) => caller.value ? DrawParticles() : RemoveParticles()
 let turnStateBlock: boolean = false
 let ControllablesUnitsDraw = new Map<Unit, string>()
 
@@ -54,7 +54,8 @@ Key.OnPressed(() => {
 		SendToConsole((turnStateBlock ? "+" : "-") + "dota_camera_center_on_hero")
 })
 
-Key.OnExecute(isPressed => {
+Key.OnValue(caller => {
+	let isPressed = caller.is_pressed
 	if (!CenterCamera.value || StateUnits.selected_id !== 0 || KeyStyle.selected_id !== 0)
 		return
 
@@ -78,7 +79,7 @@ export function Update() {
 		return
 
 	if ((KeyStyle.selected_id === 1 && !turnStateBlock) ||
-		(KeyStyle.selected_id === 0 && !Key.IsPressed))
+		(KeyStyle.selected_id === 0 && !Key.is_pressed))
 		return
 
 	let countUnits = 0
@@ -139,7 +140,7 @@ export function Draw(): string {
 		return
 
 	if ((KeyStyle.selected_id === 1 && !turnStateBlock) ||
-		(KeyStyle.selected_id === 0 && !Key.IsPressed))
+		(KeyStyle.selected_id === 0 && !Key.is_pressed))
 		return
 
 	if (StatusAroundUnits.value) {

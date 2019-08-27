@@ -44,7 +44,10 @@ export function Swap<T>(array: T[], indexA: number, indexB: number): T[] {
 export function arrayRemove<T>(ar: T[], el: T, deleteEl: boolean = false): boolean {
 	const id = ar.indexOf(el)
 	if (id !== -1)
-		deleteEl ? delete ar[id] : ar.splice(id, 1)
+		if (deleteEl)
+			delete ar[id]
+		else
+			ar.splice(id, 1)
 	return id !== -1
 }
 

@@ -1,12 +1,11 @@
 import {
 	ArrayExtensions,
 	Color,
-	Entity,
 	EventsSDK,
 	Game,
 	Hero,
 	LocalPlayer,
-	MenuManager,
+	Menu,
 	ParticlesSDK,
 	PhysicalItem,
 	RendererSDK,
@@ -17,8 +16,6 @@ import {
 
 // import { PickupItem, PickupRune } from "../Orders"
 // import * as Utils from "../Utils"
-
-let { MenuFactory, CreateRGBTree } = MenuManager
 
 enum ESelectedType {
 	ALL = 0,
@@ -32,8 +29,7 @@ let allRunes: Rune[] = [],
 	npcs: Unit[] = [],
 	picking_up = new Map<Unit, Rune>(),
 	selectedRuneType: ESelectedType = ESelectedType.ALL
-
-const snatcherMenu = MenuFactory("Snatcher")
+const snatcherMenu = Menu.AddEntry(["Utility", "Snatcher"])
 
 const stateMain = snatcherMenu.AddToggle("State")
 	.OnValue(() => {
@@ -43,59 +39,54 @@ const stateMain = snatcherMenu.AddToggle("State")
 
 // ----- Rune
 
-const runeMenu = snatcherMenu.AddTree("Rune settings")
+const runeMenu = snatcherMenu.AddNode("Rune settings")
 
 const stateRune = runeMenu.AddToggle("Snatch Rune").OnDeactivate(destroyRuneAllParticles)
 
-const typesSelect = runeMenu.AddComboBox("Runes for snatch", ["All", "Only Bounty", "Only PowerUps"])
-typesSelect.OnValueCallback = onTypeSelected
+const typesSelect = runeMenu.AddSwitcher("Runes for snatch", ["All", "Only Bounty", "Only PowerUps"])
+typesSelect.OnValue(onTypeSelected)
 
-runeMenu.AddKeybind("Rune toogle").OnRelease(() => stateRune.ChangeReverse())
+runeMenu.AddKeybind("Rune toogle").OnRelease(() => stateRune.value = !stateRune.value)
 
 const runeHoldKey = runeMenu.AddKeybind("Rune hold key").OnRelease(() => !stateRune.value && destroyRuneAllParticles())
 
 // -- Draw particles
 
-const drawParticles = runeMenu.AddTree("Draw indicators (particles)")
+const drawParticles = runeMenu.AddNode("Draw indicators (particles)")
 
 const drawParticleTake = drawParticles.AddToggle("Take rune")
 	.OnValue(destroyRuneAllParticles)
-	.OnActivate(self =>
-		drawParticles.AddControl(drawParticleTake_Color.tree, self.IndexInMenu + 1))
-	.OnDeactivate(() =>
-		drawParticles.RemoveControl(drawParticleTake_Color.tree))
 
-const drawParticleTake_Color = CreateRGBTree(drawParticleTake.value ? drawParticles : undefined, "indicators color")
-
-drawParticleTake_Color.R.OnValue(updateRuneAllParticle)
-drawParticleTake_Color.G.OnValue(updateRuneAllParticle)
-drawParticleTake_Color.B.OnValue(updateRuneAllParticle)
+const drawParticleTake_Color = drawParticles.AddColorPicker("indicators color").OnValue(updateRuneAllParticle)
 
 const drawParticleKill = drawParticles.AddToggle("Kill rune")
-	.SetToolTip("Color for kill - Red")
+	.SetTooltip("Color for kill - Red")
 	.OnValue(destroyRuneAllParticles)
 
 // ----- Items
 
-const itemsMenu = snatcherMenu.AddTree("Items settings")
+const itemsMenu = snatcherMenu.AddNode("Items settings")
 
 const stateItems = itemsMenu.AddToggle("Snatch Items").OnDeactivate(onDeactivateItems)
 
-itemsMenu.AddKeybind("Items toogle").OnRelease(() => stateItems.ChangeReverse())
+itemsMenu.AddKeybind("Items toogle").OnRelease(() => stateItems.value = !stateItems.value)
 
 const itemsHoldKey = itemsMenu.AddKeybind("Items hold key").OnRelease(() => !stateItems.value && onDeactivateItems())
 
 const takeRadius = snatcherMenu.AddSlider("Pickup radius", 150, 50, 500, "Default range is 150, that one don't require rotating unit to pickup something")
 
-const listOfItems = itemsMenu.AddListBox("Items for snatch",
-	["item_gem", "item_cheese", "item_rapier", "item_aegis"],
-	[true, true, true, true])
+const listOfItems = itemsMenu.AddImageSelector("Items for snatch", [
+	"item_gem",
+	"item_cheese",
+	"item_rapier",
+	"item_aegis",
+], new Map<string, boolean>([["item_gem", true], ["item_cheese", true], ["item_rapier", true], ["item_aegis", true]]))
 
 const stateControllables = snatcherMenu.AddToggle("Use other units")
 
 // ----- Draw
 
-const drawMenu = snatcherMenu.AddTree("Draw")
+const drawMenu = snatcherMenu.AddNode("Draw")
 const drawStatus = drawMenu.AddToggle("Draw status"),
 	statusPosX = drawMenu.AddSlider("Position X (%)", 0, 0, 100),
 	statusPosY = drawMenu.AddSlider("Position Y (%)", 75, 0, 100)
@@ -114,7 +105,7 @@ EventsSDK.on("EntityCreated", ent => {
 
 	if (ent instanceof PhysicalItem) {
 		let m_hItem = ent.Item
-		if (m_hItem !== undefined && listOfItems.IsSelected(m_hItem.Name))
+		if (m_hItem !== undefined && listOfItems.IsEnabled(m_hItem.Name))
 			ground_items.push(ent)
 
 		return
@@ -148,18 +139,18 @@ EventsSDK.on("Update", () => {
 })
 
 EventsSDK.on("Draw", () => {
-	if (!drawStatus.value || !Game.IsInGame)
+	if (!drawStatus.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 
 	let text = ""
 
 	// rune
-	text += `${stateRune.name}: ${(stateRune.value || runeHoldKey.IsPressed) ? "On" : "Off"}`
+	text += `${stateRune.name}: ${(stateRune.value || runeHoldKey.is_pressed) ? "On" : "Off"}`
 
 	text += " | "
 
 	// items
-	text += `${stateItems.name}: ${(stateItems.value || itemsHoldKey.IsPressed) ? "On" : "Off"}`
+	text += `${stateItems.name}: ${(stateItems.value || itemsHoldKey.is_pressed) ? "On" : "Off"}`
 
 	RendererSDK.Text(text, RendererSDK.WindowSize.DivideScalar(100).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value))
 })
@@ -182,7 +173,7 @@ function onTypeSelected(value) {
 }
 
 function snatchRunes(controllables: Unit[]) {
-	if (!stateRune.value && !runeHoldKey.IsPressed)
+	if (!stateRune.value && !runeHoldKey.is_pressed)
 		return
 
 	allRunes.forEach(rune => {
@@ -281,7 +272,7 @@ function destroyRuneAllParticles() {
 // ------- Items
 
 function snatchItems(controllables: Unit[]) {
-	if ((!stateItems.value && !itemsHoldKey.IsPressed) || listOfItems.IsZeroSelected)
+	if ((!stateItems.value && !itemsHoldKey.is_pressed) || listOfItems.IsZeroSelected)
 		return
 
 	let free_controllables = controllables

@@ -16,7 +16,7 @@ let ProjectileManager = new (class ProjectileManager {
 })()
 export default ProjectileManager
 
-Events.on("GameEnded", () => {
+EventsSDK.on("GameEnded", () => {
 	ProjectileManager.AllLinearProjectiles.splice(0)
 	ProjectileManager.AllTrackingProjectiles.splice(0)
 

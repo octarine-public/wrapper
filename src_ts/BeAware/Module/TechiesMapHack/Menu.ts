@@ -4,5 +4,5 @@ const { DrawRGBA, Size, ComboBox } = MenuDrawBase(BaseTree,
 	"Color", null, [],
 	"Size", 32, 14, 100,
 )
-State.SetToolTip("Display position enemy heroes if use ability")
+State.SetTooltip("Display position enemy heroes if use ability")
 export { State, DrawRGBA, Size, ComboBox };

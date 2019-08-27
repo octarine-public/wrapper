@@ -6,12 +6,12 @@ import {
 	Game,
 	Hero,
 	LocalPlayer,
-	MenuManager,
+	Menu as MenuSDK,
 	RendererSDK,
 	Vector2,
 } from "wrapper/Imports"
 
-const Menu = MenuManager.MenuFactory("Cooldown Display"),
+const Menu = MenuSDK.AddEntry(["Visual", "Cooldown Display"]),
 	optionEnable = Menu.AddToggle("Enable"),
 	optionAlly = Menu.AddToggle("Show ally"),
 	optionSelf = Menu.AddToggle("Show local"),
@@ -21,7 +21,7 @@ const Menu = MenuManager.MenuFactory("Cooldown Display"),
 	optionBoxAlpha = Menu.AddSlider("Opacity", 255, 0, 255),
 	optionFontBold = Menu.AddToggle("Font bold"),
 	optionFontOutlined = Menu.AddToggle("Font outlined"),
-	DrawRGBA = MenuManager.CreateRGBATree(Menu, "Color ability level", new Color(0, 255, 255))
+	DrawRGBA = Menu.AddColorPicker("Color ability level", new Color(0, 255, 255))
 
 let ignore_abils = [
 	"morphling_morph_agi",
@@ -90,12 +90,12 @@ function DrawAbilityLevels(ability: Ability, x, y) {
 
 function DrawAbilitySquare(hero: Hero, ability: Ability, x, y, index) {
 	let real_x = x + (index * optionBoxSize.value) + 2
-	//default colors = can cast
+	// default colors = can cast
 	let imageColor = new Color(255, 255, 255)
 	let outlineColor = new Color(0, 255, 0)
 
 	if (!IsCastable(ability, hero.Mana)) {
-		if (ability.Level == 0) {
+		if (ability.Level === 0) {
 			imageColor = new Color(125, 125, 125)
 			outlineColor = new Color(255, 0, 0)
 		} else if (ability.ManaCost > hero.Mana) {
@@ -205,11 +205,11 @@ function DrawDisplay(hero: Hero) {
 }
 
 EventsSDK.on("Draw", () => {
-	if (!optionEnable.value || !Game.IsInGame)
+	if (!optionEnable.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	heroes.forEach(hero => {
 		if (hero.IsAlive && !hero.IsDormant) {
-			let is_local = hero == LocalPlayer.Hero
+			let is_local = hero === LocalPlayer.Hero
 
 			if (
 				(optionSelf.value || !is_local) &&

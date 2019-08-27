@@ -1,15 +1,15 @@
-import { Entity, EntityManager, EventsSDK, Game, LocalPlayer, MenuManager, RendererSDK, Unit, Vector2, Vector3 } from "./wrapper/Imports"
+import { Entity, EntityManager, EventsSDK, Game, LocalPlayer, Menu, RendererSDK, Unit, Vector2, Vector3 } from "./wrapper/Imports"
 
-const Menu = MenuManager.MenuFactory("Auto Crit"),
-	MenuState = Menu.AddToggle("State"),
-	hotkey = Menu.AddKeybind("Hotkey").OnRelease(() => !MenuState.value)
+const Menu_ = Menu.AddEntry(["Utility", "Auto Crit"]),
+	MenuState = Menu_.AddToggle("State"),
+	hotkey = Menu_.AddKeybind("Hotkey").OnRelease(() => MenuState.value = !MenuState.value)
 
 var target: Entity,
 	target_pos: Vector3,
 	timer: number = 0
 
 Events.on("Draw", () => {
-	if (MenuState.value)
+	if (MenuState.value && Game.UIState === DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		RendererSDK.Text("Auto Crit enabled", new Vector2(0, 100))
 })
 EventsSDK.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
@@ -43,7 +43,7 @@ EventsSDK.on("PrepareUnitOrders", order => {
 	return true
 })
 Events.on("Update", () => {
-	if (!MenuState.value || !hotkey.IsPressed || target === undefined || !target.IsAlive || LocalPlayer.Hero === undefined)
+	if (!MenuState.value || !hotkey.is_pressed || target === undefined || !target.IsAlive || LocalPlayer.Hero === undefined)
 		return false
 	let Me = LocalPlayer.Hero
 	if (Me.Name !== "npc_dota_hero_phantom_assassin"
@@ -143,21 +143,3 @@ Events.on("Update", () => {
 		}
 	}
 })
-
-// hotkey.OnExecute(value => Pressed = value);
-
-// hotkey.OnRelease(value => hotkey.value = value.value);
-
-// Events.on("GameEnded", () => MenuState.va)
-
-// {
-// 	let root = new Menu_Node("Auto Crit")
-// 	root.entries.push(new Menu_Keybind(
-// 		"Hotkey",
-// 		config.hotkey,
-// 		"Hotkey is in toggle mode",
-// 		node => config.hotkey = node.value,
-// 	))
-// 	root.Update()
-// 	Menu.AddEntry(root)
-// }

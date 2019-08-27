@@ -17,12 +17,6 @@ const EventsSDK: EventsSDK = new EventEmitter()
 
 export default EventsSDK
 
-Events.on("GameStarted", ent => EventsSDK.emit("GameStarted", false, EntityManager.GetEntityByNative(ent, true)))
-
-Events.on("GameEnded", () => EventsSDK.emit("GameEnded"))
-
-Events.on("LocalPlayerTeamAssigned", teamNum => EventsSDK.emit("LocalPlayerTeamAssigned", false, teamNum))
-
 Events.on("WndProc", (...args) => EventsSDK.emit("WndProc", true, ...args))
 
 Events.on("Tick", () => {
@@ -234,6 +228,7 @@ Events.on("SetEntityName", (entity, new_name) => {
 })
 
 interface EventsSDK extends EventEmitter {
+	on(name: "GameConnected", callback: () => void): EventEmitter
 	/**
 	 * Emitted when local hero and local player are available
 	 *
@@ -246,10 +241,6 @@ interface EventsSDK extends EventEmitter {
 	 * Also, emitted when scripts reloading
 	 */
 	on(name: "GameEnded", callback: () => void): EventEmitter
-	/**
-	 * Emitted local player choose team. Now LocalPlayer is available and valid
-	 */
-	on(name: "LocalPlayerTeamAssigned", callback: (teamNum: DOTATeam_t) => void): EventEmitter
 	/**
 	 * Emitted about ALL entities that have may be in "Staging" and Is NOT Valid flag (NPC and childs, PhysicalItems and etc.)
 	 *

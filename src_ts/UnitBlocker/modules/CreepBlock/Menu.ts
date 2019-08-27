@@ -8,10 +8,10 @@ const {
 	Key,
 	KeyStyle,
 	Sensitivity,
-} = MenuBase(Menu, "Creep Block", "=")
+} = MenuBase(Menu, "Creep Block", "4")
 
 const GoToBestPosition = BaseTree.AddToggle("Go to the best position", true)
-	.SetToolTip("Going to the best position when waiting creeps (Visual: Help position)")
+	.SetTooltip("Going to the best position when waiting creeps (Visual: Help position)")
 
 const SkipRange = BaseTree.AddToggle("Skip range-creeps")
 
@@ -21,7 +21,7 @@ const {
 	CountUnits,
 } = MenuControllables(BaseTree)
 
-StateUnits.SetToolTip("More than two units(or heroes) for one line of creeps is not recommended")
+StateUnits.SetTooltip("More than two units(or heroes) for one line of creeps is not recommended")
 
 const {
 	DrawTree,
@@ -31,7 +31,7 @@ const {
 } = MenuDraw(BaseTree)
 
 const DrawHelpPosition = DrawTree.AddToggle("Best position", true)
-	.SetToolTip("Drawing help particle where the best position for block creeps. Auto removed in 5 min after creating")
+	.SetTooltip("Drawing help particle where the best position for block creeps. Auto removed in 5 min after creating")
 
 export {
 	State,

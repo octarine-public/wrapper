@@ -1,11 +1,23 @@
 global.EventEmitter = class EventEmitter {
   events = {};
+  events_after = {};
 
   on(name, listener) {
     let listeners = this.events[name];
 
     if (listeners === undefined) {
       this.events[name] = listeners = [];
+    }
+
+    listeners.push(listener);
+    return this;
+  }
+
+  after(name, listener) {
+    let listeners = this.events_after[name];
+
+    if (listeners === undefined) {
+      this.events_after[name] = listeners = [];
     }
 
     listeners.push(listener);
@@ -29,13 +41,9 @@ global.EventEmitter = class EventEmitter {
   }
 
   emit(name, cancellable = false, ...args) {
-    let listeners = this.events[name];
-
-    if (listeners === undefined) {
-      return true;
-    }
-
-    return !listeners.some(listener => {
+    let listeners = this.events[name],
+        listeners_after = this.events_after[name];
+    let ret = listeners === undefined || !listeners.some(listener => {
       try {
         return listener.apply(this, args) === false && cancellable;
       } catch (e) {
@@ -43,6 +51,24 @@ global.EventEmitter = class EventEmitter {
         return false;
       }
     });
+
+    if (listeners_after !== undefined) {
+      let _a = listeners_after;
+
+      let _f = listener => {
+        try {
+          listener.apply(this, args);
+        } catch (e) {
+          console.log(e.stack || new Error(e).stack);
+        }
+      };
+
+      for (let _i = _a.length; _i--;) {
+        _f(_a[_i], _i, _a);
+      }
+    }
+
+    return ret;
   }
 
   once(name, listener) {

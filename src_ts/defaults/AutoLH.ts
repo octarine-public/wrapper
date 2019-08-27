@@ -1,6 +1,25 @@
 import * as Orders from "Orders"
 import * as Utils from "Utils"
-import { RendererSDK } from "../wrapper/Imports"
+import { RendererSDK, EventsSDK, Menu, Game } from "../wrapper/Imports"
+
+let root = Menu.AddEntry(["Utility", "Auto LastHit"]),
+	hotkey = root.AddKeybind("Hotkey", "", "Hotkey is in toggle mode"),
+	creep_hp_offset = root.AddSlider("Creep HP offset", 15, -15),
+	melee_time_offset = root.AddSliderFloat("Melee attack time offset", -0.2, -0.2),
+	delay_multiplier = root.AddSliderFloat("Melee attack time offset", -2.5, -2.5),
+	glow_enabled = root.AddSwitcher("Glow mode", ["Enabled", "Disabled"]),
+	glow_finder_range = root.AddSlider("Glow finder range", 0, 0, 1500),
+	glow_only = root.AddSwitcher(
+			"Mode", 
+		[
+			"None",
+			"Lasthit",
+			"Deny",
+			"Both",
+			"Show only",
+		]
+	)
+
 enum AutoLH_Mode {
 	LASTHIT = 1,
 	DENY,
@@ -128,16 +147,6 @@ var attack_anim_point = {
 		npc_dota_hero_grimstroke: 0.35,
 		npc_dota_hero_mars: 0.4,
 	},
-	config = {
-		hotkey: 0,
-		creep_hp_offset: 0,
-		melee_time_offset: 0,
-		delay_multiplier: 1700,
-		mode: 0,
-		glow_only: false,
-		glow_enabled: true,
-		glow_finder_range: 1500,
-	},
 	enabled = false,
 	block_orders = false,
 	attackable_ents: C_DOTA_BaseNPC[] = [],
@@ -146,13 +155,14 @@ var attack_anim_point = {
 
 function EnoughDamage(sender: C_DOTA_BaseNPC_Hero, target: C_DOTA_BaseNPC, cur_time: number): boolean {
 	let delay = 1 / sender.m_fAttacksPerSecond + Utils.GetProjectileDelay(sender, target) + Utils.GetRotationTime(sender, target.m_vecNetworkOrigin) / 1000
-	return Utils.CalculateDamageByHand(target, sender) > Utils.GetHealthAfter(target, delay, false, sender, config.melee_time_offset) - config.creep_hp_offset
+	return Utils.CalculateDamageByHand(target, sender) > Utils.GetHealthAfter(target, delay, false, sender, melee_time_offset.value) - creep_hp_offset.value
 }
 
 Events.on("Draw", () => {
-	if (enabled)
-		RendererSDK.Text("Auto LastHit enabled")
-	else {
+	if (enabled) {
+		if (Game.UIState === DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+			RendererSDK.Text("Auto LastHit enabled")
+	} else {
 		glow_ents_old = glow_ents
 		glow_ents = []
 	}
@@ -183,18 +193,18 @@ Events.on("Tick", () => {
 		pl_ent_pos = pl_ent.m_vecNetworkOrigin,
 		pl_ent_team = pl_ent.m_iTeamNum,
 		attack_range = pl_ent.m_fAttackRange * (Utils.HasAttackCapability(pl_ent, DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? 1 : 1.5) + pl_ent.m_flHullRadius,
-		max_range = Math.max(attack_range, config.glow_finder_range)
+		max_range = Math.max(attack_range, glow_finder_range.value)
 	let filtered = Utils.orderBy((attackable_ents.filter(ent => {
 		if (!Utils.IsAlive(ent) || !Utils.IsVisible(ent))
 			return false
-		if ((config.mode & AutoLH_Mode.LASTHIT) && (ent.m_iTeamNum !== pl_ent_team))
+		if ((mode.value & AutoLH_Mode.LASTHIT) && (ent.m_iTeamNum !== pl_ent_team))
 			return true
 		if ((config.mode & AutoLH_Mode.DENY) && (ent.m_iTeamNum === pl_ent_team) && Utils.IsDeniable(ent))
 			return true
 		return false
 	}).map(ent => [ent, ent.m_vecNetworkOrigin.Distance2D(pl_ent_pos)]) as Array<[C_DOTA_BaseNPC, number]>).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent, ent, cur_time)), ([creep]) => creep.m_iHealth)
 	glow_ents = (config.glow_enabled && config.glow_finder_range !== 0 ? config.glow_finder_range !== -1 ? filtered.filter(([ent, dist]) => dist <= config.glow_finder_range) : filtered : []).map(a => a[0])
-	if (!config.glow_only && !block_orders) {
+	if (!glow_only.selected_id && !block_orders) {
 		let ent_pair = filtered.filter(([ent, dist]) => dist <= (attack_range + ent.m_flHullRadius))[0]
 		if (ent_pair === undefined)
 			return
@@ -209,16 +219,16 @@ Events.on("Tick", () => {
 				clearInterval(in_id)
 			}
 		})
-		setTimeout(1000 / pl_ent.m_fAttacksPerSecond - (attack_anim_point[pl_ent.m_iszUnitName] * config.delay_multiplier), () => {
+		setTimeout(() => {
 			if (!done) {
 				clearInterval(id)
 				block_orders = false
 				done = true
 			}
-		})
+		}, 1000 / pl_ent.m_fAttacksPerSecond - (attack_anim_point[pl_ent.m_iszUnitName] * config.delay_multiplier))
 	}
 })
-Events.on("NPCCreated", (npc: C_DOTA_BaseNPC) => {
+EventsSDK.on("EntityCreated", npc => {
 	if (npc instanceof C_DOTA_BaseNPC_Creep)
 		attackable_ents.push(npc)
 })
@@ -226,9 +236,9 @@ Events.on("EntityDestroyed", ent => {
 	if (ent instanceof C_DOTA_BaseNPC_Creep)
 		Utils.arrayRemove(attackable_ents, ent)
 })
-Events.on("PrepareUnitOrders", order => enabled && !config.glow_only ? Utils.GetOrdersWithoutSideEffects().includes(order.order_type) || !block_orders : true)
+Events.on("PrepareUnitOrders", order => enabled && !glow_only.selected_id ? Utils.GetOrdersWithoutSideEffects().includes(order.order_type) || !block_orders : true)
 Events.on("WndProc", (message_type, wParam) => {
-	if (!IsInGame() || parseInt(wParam as any) !== config.hotkey)
+	if (!IsInGame() || parseInt(wParam as any) /*!== hotkey.OnValue(caller.)*/)
 		return true
 	if (message_type === 0x100) // WM_KEYDOWN
 		return false
@@ -239,76 +249,8 @@ Events.on("WndProc", (message_type, wParam) => {
 	}
 	return true
 })
-Events.on("GameEnded", () => {
+EventsSDK.on("GameEnded", () => {
 	enabled = false
 	glow_ents = glow_ents_old = []
 })
 
-{
-	let root = new Menu_Node("Auto LastHit")
-	root.entries.push(new Menu_Keybind (
-		"Hotkey",
-		config.hotkey,
-		"Hotkey is in toggle mode",
-		node => config.hotkey = node.value,
-	))
-	root.entries.push(new Menu_SliderInt (
-		"Creep HP offset",
-		config.creep_hp_offset,
-		-15,
-		15,
-		node => config.creep_hp_offset = node.value,
-	))
-	root.entries.push(new Menu_SliderFloat (
-		"Melee attack time offset",
-		config.melee_time_offset,
-		-0.2,
-		0.2,
-		node => config.melee_time_offset = node.value,
-	))
-	root.entries.push(new Menu_SliderFloat (
-		"Delay multiplier after attack",
-		-config.delay_multiplier / 1000,
-		-2.5,
-		0,
-		node => config.delay_multiplier = -node.value * 1000,
-	))
-	root.entries.push(new Menu_Combo (
-		"Glow mode",
-		[
-			"Enabled",
-			"Disabled",
-		],
-		config.glow_enabled ? 0 : 1,
-		node => config.glow_enabled = node.selected_id === 0,
-	))
-	root.entries.push(new Menu_SliderInt (
-		"Glow finder range",
-		config.glow_finder_range,
-		0,
-		1500,
-		node => config.glow_finder_range = node.value,
-	))
-	root.entries.push(new Menu_Combo (
-		"Mode",
-		[
-			"None",
-			"Lasthit",
-			"Deny",
-			"Both",
-			"Show only",
-		],
-		0,
-		node => {
-			if (node.selected_id === 4) {
-				config.mode = 3
-				config.glow_only = true
-			} else {
-				config.mode = node.selected_id
-				config.glow_only = false
-			}
-		},
-	))
-	root.Update()
-	Menu.AddEntry(root)
-}

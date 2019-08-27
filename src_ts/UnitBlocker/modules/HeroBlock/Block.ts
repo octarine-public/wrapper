@@ -77,17 +77,17 @@ Key.OnPressed(() => {
 	stateBlock = StateBlock.Enemy
 	OnPressed()
 })
-Key.OnExecute(isPressed => {
+Key.OnValue(caller => {
 	stateBlock = StateBlock.Enemy
-	OnExecute(isPressed)
+	OnExecute(caller.is_pressed)
 })
 KeyAlly.OnPressed(() => {
 	stateBlock = StateBlock.Ally
 	OnPressed()
 })
-KeyAlly.OnExecute(isPressed => {
+KeyAlly.OnValue(caller => {
 	stateBlock = StateBlock.Ally
-	OnExecute(isPressed)
+	OnExecute(caller.is_pressed)
 })
 
 export function GameEnded() {
@@ -247,7 +247,7 @@ function IsOn() {
 		key = stateEnemy ? Key : KeyAlly
 
 	if ((keyStyle.selected_id === 1 && !turnStateBlock) ||
-		(keyStyle.selected_id === 0 && !key.IsPressed))
+		(keyStyle.selected_id === 0 && !key.is_pressed))
 		return false
 
 	return true

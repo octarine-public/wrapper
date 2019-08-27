@@ -1,7 +1,7 @@
 import { Ability } from "wrapper/Imports"
-import { EventsSDK, Game, LocalPlayer, MenuManager } from "./wrapper/Imports"
+import { EventsSDK, Game, LocalPlayer, Menu } from "./wrapper/Imports"
 
-const PtswitcherMenu = MenuManager.MenuFactory("PT Switcher")
+const PtswitcherMenu = Menu.AddEntry(["Utility", "PT Switcher"])
 const state = PtswitcherMenu.AddToggle("State", false)
 
 var nextTick: number = 0

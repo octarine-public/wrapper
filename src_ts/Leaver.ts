@@ -1,13 +1,12 @@
-import { Color, Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Player, PlayerResource, RendererSDK, Unit } from "wrapper/Imports"
+import { Menu, PlayerResource } from "wrapper/Imports"
 
 var TimerStart: boolean = false
-const { MenuFactory } = MenuManager,
-	tree = MenuFactory("Leaver"),
+const tree = Menu.AddEntry(["Utility", "Leaver"]),
 	leave = tree.AddKeybind("Leave button xD"),
 	autodisconnect = tree.AddToggle("Auto Disconnect"),
 	Additionaldelay = tree.AddSliderFloat("Delay auto disconnect", 1, 1, 10),
 	leaveFriend = tree.AddKeybind("Leave friend button"),
-	pid = tree.AddComboBox("Player ID", ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
+	pid = tree.AddSlider("Player ID", 0, 0, 9),
 	colors = ["#415fff", "#83ffda", "#c3009c", "#d5ff16", "#f16900", "#ff6ca5", "#85c83b", "#74d6f9", "#009e31", "#8f6f00"],
 	gap = "<br>".repeat(75),
 	heroes = {
@@ -128,7 +127,7 @@ const { MenuFactory } = MenuManager,
 		npc_dota_hero_lycan:	"Lycan",
 	}
 leave.OnPressed(() => {
-	const player = PlayerResource.GetPlayerByPlayerID(pid.selected_id)
+	const player = PlayerResource.GetPlayerByPlayerID(Math.floor(pid.value))
 	if (player === undefined)
 		return
 	const id = player.PlayerID,
@@ -140,7 +139,7 @@ leave.OnPressed(() => {
 	}
 })
 leaveFriend.OnPressed(() => {
-	const player = PlayerResource.GetPlayerByPlayerID(pid.selected_id)
+	const player = PlayerResource.GetPlayerByPlayerID(Math.floor(pid.value))
 	if (player === undefined)
 		return
 	const id = player.PlayerID,

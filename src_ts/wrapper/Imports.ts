@@ -3,25 +3,26 @@ import * as ArrayExtensions from "./Utils/ArrayExtensions"
 import * as Debug from "./Utils/Debug"
 import * as MapExtensions from "./Utils/MapExtensions"
 import * as MathSDK from "./Utils/Math"
+import * as Parse from "./Utils/ParseKV"
 import * as Utils from "./Utils/Utils"
 export { default as Benchmark } from "./Utils/BenchMark"
 
-export { Utils, MathSDK, Debug, ArrayExtensions, MapExtensions }
+export { Utils, MathSDK, Debug, ArrayExtensions, MapExtensions, Parse }
 
 // base
 export { default as Vector2 } from "./Base/Vector2"
+export { default as Rectangle } from "./Base/Rectangle"
 export { default as Vector3 } from "./Base/Vector3"
 export { default as QAngle } from "./Base/QAngle"
 export { default as Color } from "./Base/Color"
 
 // Native
-export { default as RendererSDK } from "./Native/Renderer"
+export { default as RendererSDK } from "./Native/RendererSDK"
 export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
 
 // Menu
-import * as MenuManager from "./Menu/MenuManager"
-
-export { MenuManager }
+import * as Menu from "./Menu/Imports"
+export { Menu }
 
 // Helpers
 export { Sleeper, GameSleeper } from "./Helpers/Sleeper"

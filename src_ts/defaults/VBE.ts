@@ -2,7 +2,7 @@ import {
 	EventsSDK,
 	Game,
 	LocalPlayer,
-	MenuManager,
+	Menu,
 	ParticlesSDK,
 	Unit,
 } from "wrapper/Imports"
@@ -10,15 +10,14 @@ import {
 let allUnits = new Map<Unit, number>() // <Unit, Particle>
 let particlePath = "particles/items_fx/aura_shivas.vpcf"
 
-const VBEMenu = MenuManager.MenuFactory("Visible By Enemy"),
-	stateMain = VBEMenu.AddToggle("State", true).OnValue(OnChangeValue),
-	allyState = VBEMenu.AddToggle("Allies state", true).OnValue(OnChangeValue)
+const VBEMenu = Menu.AddEntry(["Visual", "Visible By Enemy"]),
+	stateMain = VBEMenu.AddToggle("State", true).OnValue(OnChangeValue)
 
-function OnChangeValue() {
-	if (!stateMain.value || !allyState.value)
+function OnChangeValue(caller: Menu.Toggle) {
+	if (!caller.value)
 		DestroyAll()
 
-	if (stateMain.value) {
+	if (caller.value) {
 		// loop-optimizer: KEEP	// because this is Map
 		allUnits.forEach((particle, unit) => CheckUnit(unit))
 	}
@@ -60,9 +59,6 @@ EventsSDK.on("Tick", () => {
 
 function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsVisibleForEnemies) {
 	if (!stateMain.value || unit.IsEnemy())
-		return
-
-	if (!allyState.value && unit !== LocalPlayer.Hero)
 		return
 
 	let isAlive = unit.IsAlive,

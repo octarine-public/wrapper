@@ -1,4 +1,4 @@
-import { EventsSDK, Game, GameSleeper, RendererSDK } from "wrapper/Imports"
+import { EventsSDK, Game, RendererSDK } from "wrapper/Imports"
 
 import * as DrawParticle from "./base/DrawParticle"
 import { stateMain } from "./base/MenuBase"
@@ -25,7 +25,7 @@ EventsSDK.on("Tick", () => {
 })
 
 EventsSDK.on("Draw", () => {
-	if (!stateMain.value || !Game.IsInGame)
+	if (!stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 
 	let textAroundMouse = ""

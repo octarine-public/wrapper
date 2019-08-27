@@ -1,51 +1,54 @@
 import { Menu, MenuBase } from "../../abstract/MenuBase"
 const { BaseTree, State } = MenuBase(Menu, "Auto Items")
-State.SetToolTip("Auto use items")
+State.SetTooltip("Auto use items")
 
-let ItemsTree = BaseTree.AddTree("Select Items")
-let ItemsForUse = ItemsTree.AddListBox("Select items for use",
-	[
-		"Phase Boots",
-		"Stick",
-		"Faerie Fire",
-		"Cheese",
-		"Arcane Boots",
-		"Mekansm / Graves",
-		"Bottle",
-		"Bloodstone",
-		"Buckler",
-		"Midas",
-		"Urn of Shadows / Spirit Vessel",
-		"Dust Of Apperance",
-	],
-)
+// loop-optimizer: KEEP
+let Items: string[] = [
+	"item_phase_boots",
+	"item_magic_stick",
+	"item_magic_wand",
+	"item_hand_of_midas",
+	"item_arcane_boots",
+	"item_mekansm",
+	"item_guardian_greaves",
+	"item_bottle",
+	"item_urn_of_shadows",
+	"item_spirit_vessel",
+	"item_bloodstone",
+	"item_faerie_fire",
+	"item_dust",
+	"item_buckler",
+	"item_cheese",
+]
+
+let ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items)
 
 // Settings Items
-let SettingsAutoItems = BaseTree.AddTree("Items settings"),
-	AutoUseItemsSticks = SettingsAutoItems.AddTree("Stick"),
+let SettingsAutoItems = BaseTree.AddNode("Items settings"),
+	AutoUseItemsSticks = SettingsAutoItems.AddNode("Stick"),
 	AutoUseItemsSticks_val = AutoUseItemsSticks.AddSlider("HP precent (%)", 10, 1, 99)
 
-let AutoUseItemsFaerieFire = SettingsAutoItems.AddTree("Faerie Fire"),
+let AutoUseItemsFaerieFire = SettingsAutoItems.AddNode("Faerie Fire"),
 	AutoUseItemsFaerieFire_val = AutoUseItemsFaerieFire.AddSlider("HP for use", 100, 1, 1000)
 
-let AutoUseItemsCheese = SettingsAutoItems.AddTree("Cheese"),
+let AutoUseItemsCheese = SettingsAutoItems.AddNode("Cheese"),
 	AutoUseItemsCheese_val = AutoUseItemsCheese.AddSlider("HP precent (%)", 10, 1, 99)
 
-let AutoUseItemsArcane = SettingsAutoItems.AddTree("Arcane Boots"),
+let AutoUseItemsArcane = SettingsAutoItems.AddNode("Arcane Boots"),
 	AutoUseItemsArcane_val = AutoUseItemsArcane.AddSlider("MP precent (%)", 10, 1, 99)
 
-let AutoUseItemsMG = SettingsAutoItems.AddTree("Mekansm / Graves"),
+let AutoUseItemsMG = SettingsAutoItems.AddNode("Mekansm / Graves"),
 	AutoUseItemsMG_val = AutoUseItemsMG.AddSlider("HP precent (%)", 10, 1, 99)
 
-let AutoUseItemsBlood = SettingsAutoItems.AddTree("Bloodstone"),
+let AutoUseItemsBlood = SettingsAutoItems.AddNode("Bloodstone"),
 	AutoUseItemsBloodHP_val = AutoUseItemsBlood.AddSlider("HP precent (%)", 10, 1, 99),
 	AutoUseItemsBloodMP_val = AutoUseItemsBlood.AddSlider("Min mana precent (%)", 7, 1, 100)
 
-let AutoUseItemsMidas = SettingsAutoItems.AddTree("Midas"),
+let AutoUseItemsMidas = SettingsAutoItems.AddNode("Midas"),
 	AutoUseItemsMidas_range = AutoUseItemsMidas.AddToggle("Only range-creeps"),
 	AutoUseItemsMidas_CheckBIG = AutoUseItemsMidas.AddToggle("Check on big creeps")
 
-let AutoUseItemsUrn = SettingsAutoItems.AddTree("Urn of Shadows / Spirit Vessel"),
+let AutoUseItemsUrn = SettingsAutoItems.AddNode("Urn of Shadows / Spirit Vessel"),
 	AutoUseItemsUrnAlies = AutoUseItemsUrn.AddToggle("Use Urn for Allies"),
 	AutoUseItemsUrnAliesAlliesHP = AutoUseItemsUrn.AddSlider("HP for use allies", 300, 1, 1000),
 
@@ -53,7 +56,7 @@ let AutoUseItemsUrn = SettingsAutoItems.AddTree("Urn of Shadows / Spirit Vessel"
 	AutoUseItemsUrnAliesEnemyHP = AutoUseItemsUrn.AddSlider("HP for use enemy", 200, 1, 1000)
 
 export {
-	MenuBase,
+	MenuBase, Items,
 	State, ItemsForUse,
 	AutoUseItemsMG_val,
 	AutoUseItemsSticks_val,
@@ -67,5 +70,5 @@ export {
 	AutoUseItemsUrnAlies,
 	AutoUseItemsUrnAliesAlliesHP,
 	AutoUseItemsUrnEnemy,
-	AutoUseItemsUrnAliesEnemyHP
+	AutoUseItemsUrnAliesEnemyHP,
 }

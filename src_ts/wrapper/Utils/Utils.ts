@@ -1,5 +1,6 @@
 import { Vector3 } from "../Imports"
 import EventsSDK from "../Managers/Events"
+import { parseKV } from "./ParseKV"
 
 let masksBigInt: Array<bigint> = new Array(64),
 	masksNumber: number[] = new Array(64)
@@ -72,6 +73,48 @@ export function HasMask(num: number, mask: number): boolean {
 }
 export function HasMaskBigInt(num: bigint, mask: bigint): boolean {
 	return (num & mask) === mask
+}
+
+export function Utf8ArrayToStr(array: Uint8Array): string {
+	var out = ""
+
+	for (let i = 0, end = array.byteLength, c = array[i], char2, char3; i < end; i++, c = array[i])
+		switch(c >> 4) {
+		case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+			// 0xxxxxxx
+			out += String.fromCharCode(c)
+			break
+		case 12: case 13:
+			// 110x xxxx   10xx xxxx
+			char2 = array[i++]
+			out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F))
+			break
+		case 14:
+			// 1110 xxxx  10xx xxxx  10xx xxxx
+			char2 = array[i++]
+			char3 = array[i++]
+			out += String.fromCharCode(((c & 0x0F) << 12) |
+						((char2 & 0x3F) << 6) |
+						((char3 & 0x3F) << 0));
+			break
+		}
+
+	return out
+}
+
+export function parseKVFile(path: string) {
+	let buf = readFile(path)
+	if (buf === undefined)
+		return undefined
+	return parseKV(Utf8ArrayToStr(new Uint8Array(buf)))
+}
+
+export function parseKVFileToMap(path: string): Map<string, any> {
+	let parsed = parseKVFile(path)
+	if (parsed === undefined)
+		return undefined
+	console.log(Object.keys(parsed))
+	return new Map<string, string>(Object.entries(parsed[Object.keys(parsed).find(key => key !== "values" && key !== "comments")]))
 }
 
 export const CursorWorldVec: Vector3 = new Vector3()

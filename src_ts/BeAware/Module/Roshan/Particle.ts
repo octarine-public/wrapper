@@ -3,7 +3,7 @@ import { BaseTree, drawStatus, IsAlive, NotificationRoshanStateChat, State, stat
 var Timer: number = 0
 export function ParticleCreate(Handle: BigInt) {
 	if (Handle === 7431777948785381669n) {
-		IsAlive.ChangeValue(true)
+		IsAlive.value = true
 		if (!State.value)
 			return
 		if (NotificationRoshanStateChat.value && Game.GameTime > 0) {
@@ -24,7 +24,7 @@ export function ParticleCreate(Handle: BigInt) {
 			SendToConsole("chatwheel_say 53; chatwheel_say 57;") // > Roshan and time
 			Timer = 0
 		}
-		IsAlive.ChangeValue(false)
+		IsAlive.value = true
 	}
 };
 export function Draw() {

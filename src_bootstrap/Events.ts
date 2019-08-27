@@ -6,11 +6,20 @@ declare var global: any
 /// actual code
 global.EventEmitter = class EventEmitter {
 	private readonly events: { [event_name: string]: Listener[] } = {}
+	private readonly events_after: { [event_name: string]: Listener[] } = {}
 
 	public on(name: string, listener: Listener): EventEmitter {
 		let listeners = this.events[name]
 		if (listeners === undefined)
 			this.events[name] = listeners = []
+
+		listeners.push(listener)
+		return this
+	}
+	public after(name: string, listener: Listener): EventEmitter {
+		let listeners = this.events_after[name]
+		if (listeners === undefined)
+			this.events_after[name] = listeners = []
 
 		listeners.push(listener)
 		return this
@@ -33,11 +42,10 @@ global.EventEmitter = class EventEmitter {
 	} */
 
 	public emit(name: string, cancellable: boolean = false, ...args: any[]): boolean {
-		let listeners = this.events[name]
-		if (listeners === undefined)
-			return true
+		let listeners = this.events[name],
+			listeners_after = this.events_after[name]
 
-		return !listeners.some(listener => {
+		let ret = listeners === undefined || !listeners.some(listener => {
 			try {
 				return listener.apply(this, args) === false && cancellable
 			} catch (e) {
@@ -45,6 +53,15 @@ global.EventEmitter = class EventEmitter {
 				return false
 			}
 		})
+		if (listeners_after !== undefined)
+			listeners_after.forEach(listener => {
+				try {
+					listener.apply(this, args)
+				} catch (e) {
+					console.log(e.stack || new Error(e).stack)
+				}
+			})
+		return ret
 	}
 
 	public once(name: string, listener: Listener): EventEmitter {

@@ -1,28 +1,76 @@
-import { Ability, ArrayExtensions, Color, Debug, Entity, EntityManager, EventsSDK, Game, Hero, Item, MenuManager, Modifier, ParticlesSDK, RendererSDK, Unit, Utils, Vector2, Vector3 } from "wrapper/Imports"
-let { MenuFactory } = MenuManager
-const menu = MenuFactory("SkyWrathCombo"),
+import { Ability, ArrayExtensions, Color, EventsSDK, Game, Hero, Item, Menu, ParticlesSDK, RendererSDK, Utils, Vector2, Vector3 } from "wrapper/Imports"
+
+const menu = Menu.AddEntry(["Heroes", "SkyWrathCombo"]),
 	active = menu.AddToggle("Active"),
 	ezKill = menu.AddToggle("Check for EZ Kill"),
-	comboToggle = menu.AddCheckBox("Clamp combo key"),
+	comboToggle = menu.AddToggle("Clamp combo key"),
 	comboKey = menu.AddKeybind("Combo Key"),
 	harrasKey = menu.AddKeybind("Harras Key"),
 	cursorRadius = menu.AddSlider("Nearest cursor radius", 200, 100, 1000),
-	popLinkV = menu.AddCheckBox("Pop Linken"),
-	popLinkItems = menu.AddListBox("Pop Linken with", ["Pop with Nullifier", "Pop with Eul's Scepter of Divinity", "Pop with Rod of Atos", "Pop with Scythe of Vyse", "Pop with Force Staff", "Pop with Dagon", "Pop with Orchid", "Pop with Bloodthorn", "Pop with Ancient Seal", "Pop with Arcane Bolt", "Pop with Hurricane Pike"]),
-	bmcheck = menu.AddCheckBox("Check BlaidMail"),
-	soulRing = menu.AddCheckBox("Enable SoulRing"),
-	blinkV = menu.AddCheckBox("Enable Blink"),
+	linken_settings = menu.AddNode("Linken Settings"),
+	popLinkV = linken_settings.AddToggle("Pop Linken"),
+	popLinkItems = linken_settings.AddImageSelector(
+			"Pop Linken with",
+		[
+			"item_nullifier",
+			"item_cyclone",
+			"item_rod_of_atos",
+			"item_sheepstick",
+			"item_force_staff",
+			"item_dagon_5",
+			"item_orchid",
+			"item_bloodthorn",
+			"skywrath_mage_ancient_seal",
+			"skywrath_mage_arcane_bolt",
+			"item_hurricane_pike",
+		],
+	),
+	bmcheck = menu.AddToggle("Check BlaidMail"),
+	soulRing = menu.AddToggle("Enable SoulRing"),
+	blinkV = menu.AddToggle("Enable Blink"),
 	blinkRadius = menu.AddSlider("Blink distance from enemy", 200, 0, 800),
-	doubleFlare = menu.AddCheckBox("Double Mystic Flare"),
-	abils = menu.AddListBox("Active abilities", ["Arcane Bolt", "Concussive Shot", "Ancient Seal", "Mystic Flare"]),
-	items = menu.AddListBox("Active items", ["Rod of Atos", "Scythe of Vyse", "Ethereal Blade", "Veil of Discrod", "Dagon", "Orchid", "Bloodthorn", "Shiva's guard", "Nullifier"]),
-	drawable = menu.AddTree("Drawable"),
-	heroMenu = menu.AddTree("Hero Specifics"),
-	amReflect = heroMenu.AddCheckBox("Enabled Pop AM Reflect"),
-	amReflectItems = heroMenu.AddListBox("Pop AM Reflect", ["Pop with Nullifier", "Pop with Eul's Scepter of Divinity", "Pop with Rod of Atos", "Pop with Force Staff", "Pop with Dagon", "Pop with Arcane Bolt"]),
-	drawTargetParticle = drawable.AddCheckBox("Draw line to target"),
-	concShot = drawable.AddCheckBox("Draw concusive shot indicator"),
-	drawStatus = drawable.AddCheckBox("Draw status"),
+	doubleFlare = menu.AddToggle("Double Mystic Flare"),
+	ability_items_settings = menu.AddNode("Active - Abilities/Items"),
+	abils = ability_items_settings.AddImageSelector(
+			"Active abilities",
+		[
+			"skywrath_mage_arcane_bolt",
+			"skywrath_mage_concussive_shot",
+			"skywrath_mage_ancient_seal",
+			"skywrath_mage_mystic_flare",
+		],
+	),
+	items = ability_items_settings.AddImageSelector(
+			"Active items",
+		[
+			"item_rod_of_atos",
+			"item_sheepstick",
+			"item_ethereal_blade",
+			"item_veil_of_discord",
+			"item_dagon_5",
+			"item_orchid",
+			"item_bloodthorn",
+			"item_shivas_guard",
+			"item_nullifier",
+		],
+	),
+	drawable = menu.AddNode("Drawable"),
+	heroMenu = menu.AddNode("Hero Specifics"),
+	amReflect = heroMenu.AddToggle("Enabled Pop AM Reflect"),
+	amReflectItems = heroMenu.AddImageSelector(
+			"Pop AM Reflect",
+		[
+			"item_nullifier",
+			"item_cyclone",
+			"item_rod_of_atos",
+			"item_force_staff",
+			"item_dagon_5",
+			"skywrath_mage_arcane_bolt",
+		],
+	),
+	drawTargetParticle = drawable.AddToggle("Draw line to target"),
+	concShot = drawable.AddToggle("Draw concusive shot indicator"),
+	drawStatus = drawable.AddToggle("Draw status"),
 	statusPosX = drawable.AddSlider("Position X (%)", 19, 0, 100),
 	statusPosY = drawable.AddSlider("Position Y (%)", 4, 0, 100),
 	textSize = drawable.AddSlider("Text size", 15, 10, 30),
@@ -63,7 +111,7 @@ let sky: Hero,
 	cshotparticle: number,
 	lastCheckTime: number
 
-comboKey.OnExecute(val => comboKeyPress = val)
+comboKey.OnValue(caller => comboKeyPress = caller.is_pressed)
 
 EventsSDK.on("GameStarted", hero => {
 	if (hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Skywrath_Mage) {
@@ -131,9 +179,9 @@ EventsSDK.on("Tick", () => {
 			target = nearest
 		}
 		comboKeyPress = false
-	}else if (comboToggle.value && comboKey.IsPressed) {
+	} else if (comboToggle.value && comboKey.is_pressed) {
 		target = nearest
-	}else if (comboToggle.value && !comboKey.IsPressed) {
+	} else if (comboToggle.value && !comboKey.is_pressed) {
 		target = undefined
 	}
 	if (target !== undefined) {
@@ -148,59 +196,70 @@ EventsSDK.on("Tick", () => {
 			if (amReflect.value && target.Name === "npc_dota_hero_antimage"
 				&& !target.ModifiersBook.HasAnyBuffByNames(["modifier_silver_edge_debuff", "modifier_viper_nethertoxin"])
 				&& target.GetAbilityByName("antimage_spell_shield").IsReady) {
-				if (popLink(forcestaff, amReflectItems.selected_flags[3])) return
-				if (popLink(cyclone, amReflectItems.selected_flags[1])) return
-				if (popLink(atos, amReflectItems.selected_flags[2])) return
-				if (popLink(bolt, amReflectItems.selected_flags[5])) return
-				if (popLink(dagon, amReflectItems.selected_flags[4])) return
-				if (popLink(nullifier, amReflectItems.selected_flags[0])) return
+				if (popLink(forcestaff, amReflectItems.IsEnabled("item_force_staff"))) return
+				if (popLink(cyclone, amReflectItems.IsEnabled("item_cyclone"))) return
+				if (popLink(atos, amReflectItems.IsEnabled("item_rod_of_atos"))) return
+				if (popLink(bolt, amReflectItems.IsEnabled("skywrath_mage_arcane_bolt"))) return
+				if (popLink(dagon, amReflectItems.IsEnabled("item_dagon_5"))) return
+				if (popLink(nullifier, amReflectItems.IsEnabled("item_nullifier"))) return
 				return
 			}
 			if (popLinkV.value && target.HasLinkenAtTime()) {
-				if (popLink(nullifier, popLinkItems.selected_flags[0])) return
-				if (popLink(cyclone, popLinkItems.selected_flags[1])) return
-				if (popLink(atos, popLinkItems.selected_flags[2])) return
-				if (popLink(hex, popLinkItems.selected_flags[3])) return
-				if (popLink(forcestaff, popLinkItems.selected_flags[4])) return
-				if (popLink(dagon, popLinkItems.selected_flags[5])) return
-				if (popLink(orchid, popLinkItems.selected_flags[6])) return
-				if (popLink(blood, popLinkItems.selected_flags[7])) return
-				if (popLink(seal, popLinkItems.selected_flags[8])) return
-				if (popLink(bolt, popLinkItems.selected_flags[9])) return
-				if (popLink(hurricane, popLinkItems.selected_flags[10])) return
+				if (popLink(nullifier, popLinkItems.IsEnabled("item_nullifier"))) return
+				if (popLink(cyclone, popLinkItems.IsEnabled("item_cyclone"))) return
+				if (popLink(atos, popLinkItems.IsEnabled("item_rod_of_atos"))) return
+				if (popLink(hex, popLinkItems.IsEnabled("item_sheepstick"))) return
+				if (popLink(forcestaff, popLinkItems.IsEnabled("item_force_staff"))) return
+				if (popLink(dagon, popLinkItems.IsEnabled("item_dagon_5"))) return
+				if (popLink(orchid, popLinkItems.IsEnabled("item_orchid"))) return
+				if (popLink(blood, popLinkItems.IsEnabled("item_bloodthorn"))) return
+				if (popLink(seal, popLinkItems.IsEnabled("skywrath_mage_ancient_seal"))) return
+				if (popLink(bolt, popLinkItems.IsEnabled("skywrath_mage_arcane_bolt"))) return
+				if (popLink(hurricane, popLinkItems.IsEnabled("item_hurricane_pike"))) return
 				return
 			}
 			if (!target.IsStunned && !target.IsHexed)
-				if (useItem(hex, items.selected_flags[1])) return
+				if (useItem(hex, items.IsEnabled(items[1]))) return
 			if (sky.IsInRange(target, 700) && !target.ModifiersBook.HasAnyBuffByNames(["modifier_teleporting"]))
 				IsEZKillable = killCheck()
 			if (soulRing.value && soulring !== undefined && soulring.IsReady) {
 				sky.CastNoTarget(soulring)
 				return
 			}
-			if (useBlink() || aeonDispelling() || castAbility(shot, abils.selected_flags[1]) || useItem(atos, items.selected_flags[0])
-				|| castAbility(seal, abils.selected_flags[2]) || useItem(veil, items.selected_flags[3]) || useItem(eblade, items.selected_flags[2])
-				|| castAbility(bolt, abils.selected_flags[0]) || castAbility(flare, abils.selected_flags[3]) || useItem(orchid, items.selected_flags[5])
-				|| useItem(dagon, items.selected_flags[4]) || useItem(blood, items.selected_flags[6]) || useItem(shiva, items.selected_flags[7]))
+			if (
+				useBlink()
+				|| aeonDispelling()
+				|| castAbility(shot, abils.IsEnabled("skywrath_mage_concussive_shot"))
+				|| useItem(atos, items.IsEnabled("item_rod_of_atos"))
+				|| castAbility(seal, abils.IsEnabled("skywrath_mage_ancient_seal"))
+				|| useItem(veil, items.IsEnabled("item_veil_of_discord"))
+				|| useItem(eblade, items.IsEnabled("item_ethereal_blade"))
+				|| castAbility(bolt, abils.IsEnabled("skywrath_mage_arcane_bolt"))
+				|| castAbility(flare, abils.IsEnabled("skywrath_mage_mystic_flare"))
+				|| useItem(orchid, items.IsEnabled("item_orchid"))
+				|| useItem(dagon, items.IsEnabled("item_dagon_5"))
+				|| useItem(blood, items.IsEnabled("item_bloodthorn"))
+				|| useItem(shiva, items.IsEnabled("item_shivas_guard"))
+			)
 				return
 			if (!target.ModifiersBook.HasAnyBuffByNames(["modifier_item_nullifier_mute"]) && !target.IsHexed) {
 				const item = target.GetItemByName("item_aeon_disk")
-				if (item !== undefined && !item.IsReady && useItem(nullifier, items.selected_flags[8]))
+				if (item !== undefined && !item.IsReady && useItem(nullifier, items.IsEnabled("item_nullifier")))
 					return
-				else if (item === undefined && useItem(nullifier, items.selected_flags[8]))
+				else if (item === undefined && useItem(nullifier, items.IsEnabled("item_nullifier")))
 					return
 				return
 			}
 		}
 	}
-	if (harrasKey.IsPressed) {
+	if (harrasKey.is_pressed) {
 		if (nearest !== undefined) {
 			if (sky.CanAttack(nearest))
 				sky.AttackTarget(nearest)
 			if (!checkMods(true) || nearest.IsMagicImmune)
 				return
 			getAbils()
-			if (castAbility(bolt, abils.selected_flags[0], true))
+			if (castAbility(bolt, abils.IsEnabled("skywrath_mage_arcane_bolt"), true))
 				return
 		}
 	}
@@ -224,29 +283,29 @@ function killCheck() {
 	let amp = sky.SpellAmplification + sky.GetTalentValue("special_bonus_unique_skywrath_3") * -0.01,
 		reqMana = 0,
 		damage = 0
-	if (veil && veil.IsReady && items.selected_flags[3]) {
+	if (veil && veil.IsReady && items.IsEnabled("item_veil_of_discord")) {
 		amp += veil.GetSpecialValue("resist_debuff") * -0.01
 		reqMana += veil.ManaCost
 	}
-	if (seal && seal.IsReady && abils.selected_flags[3]) {
+	if (seal && seal.IsReady && abils.IsEnabled("skywrath_mage_mystic_flare")) {
 		amp += seal.GetSpecialValue("resist_debuff") * -0.01
 		reqMana += seal.ManaCost
 	}
-	if (eblade && eblade.IsReady && items.selected_flags[2]) {
+	if (eblade && eblade.IsReady && items.IsEnabled("item_ethereal_blade")) {
 		amp += eblade.GetSpecialValue("ethereal_damage_bonus") * -0.01
 		reqMana += eblade.ManaCost
 		damage += eblade.GetSpecialValue("blast_damage_base") + eblade.GetSpecialValue("blast_agility_multiplier") * int
 	}
-	if (dagon && dagon.IsReady && items.selected_flags[4]) {
+	if (dagon && dagon.IsReady && items.IsEnabled("item_dagon_5")) {
 		reqMana += dagon.ManaCost
 		damage += dagon.GetSpecialValue("dagon")
 	}
-	if (bolt && bolt.IsReady && abils.selected_flags[0]) {
+	if (bolt && bolt.IsReady && abils.IsEnabled("skywrath_mage_arcane_bolt")) {
 		const mult = bolt.CooldownLenght <= 2 ? 2 : 1
 		damage += (bolt.GetSpecialValue("bolt_damage") + bolt.GetSpecialValue("int_multiplier") * int) * mult
 		reqMana += bolt.ManaCost * mult
 	}
-	if (shot && shot.IsReady && abils.selected_flags[1]) {
+	if (shot && shot.IsReady && abils.IsEnabled("skywrath_mage_concussive_shot")) {
 		damage += shot.GetSpecialValue("damage")
 		reqMana += shot.ManaCost
 	}
@@ -376,15 +435,15 @@ function getItems() {
 	blink = sky.GetItemByName("item_blink")
 }
 function IsDebuffed() {
-	if (atos && atos.IsReady && items.selected_flags[0] && target.ModifiersBook.HasBuffByName("modifier_item_rod_of_atos"))
+	if (atos && atos.IsReady && items.IsEnabled("item_rod_of_atos") && target.ModifiersBook.HasBuffByName("modifier_item_rod_of_atos"))
 		return false
-	if (veil && veil.IsReady && items.selected_flags[3] && target.ModifiersBook.HasBuffByName("modifier_item_veil_of_discord"))
+	if (veil && veil.IsReady && items.IsEnabled("item_veil_of_discord") && target.ModifiersBook.HasBuffByName("modifier_item_veil_of_discord"))
 		return false
-	if (orchid && orchid.IsReady && items.selected_flags[5] && target.ModifiersBook.HasBuffByName("modifier_item_orchid_malevolence"))
+	if (orchid && orchid.IsReady && items.IsEnabled("item_orchid") && target.ModifiersBook.HasBuffByName("modifier_item_orchid_malevolence"))
 		return false
-	if (eblade && eblade.IsReady && items.selected_flags[2] && target.ModifiersBook.HasBuffByName("modifier_item_ethereal_blade_slow"))
+	if (eblade && eblade.IsReady && items.IsEnabled("item_ethereal_blade") && target.ModifiersBook.HasBuffByName("modifier_item_ethereal_blade_slow"))
 		return false
-	if (blood && blood.IsReady && items.selected_flags[6] && target.ModifiersBook.HasBuffByName("modifier_item_bloodthorn"))
+	if (blood && blood.IsReady && items.IsEnabled("item_bloodthorn") && target.ModifiersBook.HasBuffByName("modifier_item_bloodthorn"))
 		return false
 	if (seal  && seal.IsReady && target.ModifiersBook.HasBuffByName("modifier_skywrath_mage_ancient_seal"))
 		return false
@@ -452,7 +511,7 @@ EventsSDK.on("Draw", () => {
 			ParticlesSDK.SetControlPoint(cshotparticle, 2, new Vector3(cshotenemy.IdealSpeed))
 		}
 	}
-	if (drawStatus.value) {
+	if (drawStatus.value && Game.UIState === DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
 		let text = ["SkyCombo", `Current target: ${target !== undefined ? target.Name : "none"}`]
 		const wSize = RendererSDK.WindowSize
 		text.forEach((val, i) => {

@@ -5,8 +5,10 @@ let Game = global.Game = new (class Game {
 	public m_GameManager: C_DOTAGameManager
 	public m_StockInfo: StockInfo[]
 	public readonly Language = ConVars.GetString("cl_language")
-	public CurrentServerTick: number = -1
-	public IsInputCaptured: boolean = false
+	public CurrentServerTick = -1
+	public IsInputCaptured = false
+	public IsConnected = false
+	public UIState = GetUIState()
 
 	public GetLatency(flow: Flow_t = Flow_t.IN) {
 		return GetLatency(flow)
@@ -67,10 +69,6 @@ let Game = global.Game = new (class Game {
 			return 0
 
 		return Math.max(gameRules.m_fGoodGlyphCooldown - gameRules.m_fGameTime, 0)
-	}
-	// IsChatOpen
-	public get IsConnected(): boolean {
-		return IsInGame() // IS CONNECTED!
 	}
 	public get IsCustomGame(): boolean {
 		let gameRules = this.m_GameManager
@@ -152,3 +150,4 @@ export default Game
 
 Events.on("ServerTick", tick => Game.CurrentServerTick = tick)
 Events.on("InputCaptured", is_captured => Game.IsInputCaptured = is_captured)
+Events.on("UIStateChanged", new_state => Game.UIState = new_state)

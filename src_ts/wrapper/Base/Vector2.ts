@@ -669,7 +669,6 @@ export default class Vector2 {
 		return this.DistanceSqr(vec) < range ** 2
 	}
 	Closest(vecs: Vector2[]): Vector2 {
-
 		let minVec = new Vector2()
 		let distance = Number.POSITIVE_INFINITY
 

@@ -1,14 +1,14 @@
-import { ArrayExtensions, Color, EventsSDK, Game, Hero, MenuManager, RendererSDK, Vector2 } from "wrapper/Imports"
+import { ArrayExtensions, Color, EventsSDK, Game, Hero, Menu, RendererSDK, Vector2 } from "wrapper/Imports"
 
 var manabars: Hero[] = [],
 	heroes: Hero[] = []
 
-const EMBMenu = MenuManager.MenuFactory("Enemy Bars"),
-	emb = EMBMenu.AddTree("Mana Bars"),
-	ehb = EMBMenu.AddTree("Hp Bars"),
+const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"]),
+	emb = EMBMenu.AddNode("Mana Bars"),
+	ehb = EMBMenu.AddNode("Hp Bars"),
 	stateMain = emb.AddToggle("State", true),
-	embText = emb.AddCheckBox("Show numbers", false),
-	ehbText = ehb.AddCheckBox("Show numbers ### 2", false),
+	embText = emb.AddToggle("Show numbers", false),
+	ehbText = ehb.AddToggle("Show numbers", false),
 	floor = Math.floor
 
 EventsSDK.on("EntityCreated", npc => {
@@ -30,7 +30,7 @@ EventsSDK.on("Update", () => {
 	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible)
 })
 EventsSDK.on("Draw", () => {
-	if (!stateMain.value || !Game.IsInGame)
+	if (!stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 
 	let off_x: number,

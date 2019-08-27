@@ -1,4 +1,4 @@
-import { Color, Entity, RendererSDK, Vector2, Vector3 } from "wrapper/Imports"
+import { Entity, RendererSDK, Vector2, Vector3 } from "wrapper/Imports"
 import { DrawRGBA, Size, State } from "./Menu"
 
 let allTechiesMines: Array<[Array<[Vector3, number]>, Vector3, string]> = [], // positions+particle_ids, center, stack-name
@@ -109,12 +109,7 @@ export function OnDraw() {
 			RendererSDK.Text (
 				"x" + allMines.length,
 				wts.AddScalarX(Size.value / 4),
-				new Color (
-					DrawRGBA.R.value,
-					DrawRGBA.G.value,
-					DrawRGBA.B.value,
-					DrawRGBA.A.value,
-				),
+				DrawRGBA.Color,
 				"Arial",
 				Size.value,
 			)

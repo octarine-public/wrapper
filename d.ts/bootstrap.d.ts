@@ -10,6 +10,7 @@ declare var Entities: EntityManager;
 type Listener = (...args: any) => false | any
 declare class EventEmitter {
 	public on(name: string, listener: Listener): EventEmitter
+	public after(name: string, listener: Listener): EventEmitter
 	public removeListener(name: string, listener: Listener): EventEmitter
 	//public removeAllListeners(): EventEmitter
 	public emit(name: string, cancellable?: boolean, ...args: any[]): boolean
@@ -17,9 +18,7 @@ declare class EventEmitter {
 }
 
 declare interface Events extends EventEmitter {
-	on(name: "GameStarted", callback: (pl_ent: C_DOTA_BaseNPC_Hero) => void): EventEmitter
-	on(name: "GameEnded", callback: () => void): EventEmitter
-	on(name: "LocalPlayerTeamAssigned", callback: (team_num: number) => void): EventEmitter
+	on(name: "UIStateChanged", callback: (new_state: number) => void): EventEmitter
 	/**
 	 * Also, this event emitted about ALL entities that have already been created before reloading scripts
 	 */

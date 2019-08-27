@@ -1,9 +1,9 @@
-import { Ability, ArrayExtensions, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Unit } from "wrapper/Imports"
+import { Ability, ArrayExtensions, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit } from "wrapper/Imports"
 
 // Menu
-const Menu = MenuManager.MenuFactory("AntiInitiation")
-const MenuState = Menu.AddToggle("State")
-const Additionaldelay = Menu.AddSliderFloat("Additional delay", 0.03, 0.03)
+const MenuEntry = Menu.AddEntry(["Utility", "AntiInitiation"])
+const MenuState = MenuEntry.AddToggle("State")
+const Additionaldelay = MenuEntry.AddSliderFloat("Additional delay", 0.03, 0.03)
 
 // loop-optimizer: KEEP
 var Abils_ = [

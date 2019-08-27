@@ -1,4 +1,4 @@
-import { Color, Entity, Game, Hero, RendererSDK, Unit, Vector2, Vector3, LocalPlayer } from "wrapper/Imports"
+import { Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
 import { ComboBox, DrawRGBA, Size, State } from "./Menu"
 
@@ -101,7 +101,7 @@ let npc_hero: string = "npc_dota_hero_",
 
 function ClassChecking(entity: Entity) {
 	return entity !== undefined && (
-		   entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane
+		entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane
 		|| entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Neutral
 		|| entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Tower
 		|| entity.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Wisp
@@ -119,7 +119,7 @@ function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: C
 					: `panorama/images/items/${items}`
 				,
 				pos_particle.SubtractScalar(Size.value / 4),
-				new Vector2(Size.value / 2, Size.value / 2), color
+				new Vector2(Size.value / 2, Size.value / 2), color,
 			)
 			break
 		case 1:
@@ -127,12 +127,7 @@ function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: C
 			RendererSDK.Text(
 				ucFirst(NameRenderUnit),
 				pos_particle,
-				new Color(
-					DrawRGBA.R.value,
-					DrawRGBA.G.value,
-					DrawRGBA.B.value,
-					DrawRGBA.A.value,
-				),
+				DrawRGBA.Color,
 				"Arial",
 				Size.value / 4,
 			)
@@ -152,29 +147,29 @@ export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 	}
 	//
 	// console.log(handle.toString() + " | " + entity)
-	// blink 
+	// blink
 	// if (handle === 6400371855556675384n) {
 	// 	Particle.set(id, [handle, entity, undefined])
 	// }
-	
+
 	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined, Game.RawGameTime])
 }
 export function ParticleCreateUpdate(id: number, control_point: number, position: Vector3) {
-	let part = Particle.get(id);
+	let part = Particle.get(id)
 	if (!State.value || !Game.IsInGame || part === undefined || ignoreListCreateUpdate.includes(part[0]))
-		return	
+		return
 
-	//console.log("ParticleCreateUpdate  | " + position + " | " + control_point + " | " + id)
+	// console.log("ParticleCreateUpdate  | " + position + " | " + control_point + " | " + id)
 
 	/**
-	* Not valid Entity
-	* */
+	 * Not valid Entity
+	 **/
 	if (control_point === 0) { // # Ability
-		
+
 		// beastmaster_call_bird
 		if (part[0] === 1463643803508630076n || part[0] === 8069164713690266618n)
 			Particle.set(id, [part[0], npc_hero + "beastmaster", part[2], position])
-		//brewmaster_thunder_clap
+		// brewmaster_thunder_clap
 		if (part[0] === 3752518292310259682n)
 			Particle.set(id, [part[0], npc_hero + "brewmaster", part[2], position])
 		// espirit_stone_explosion
@@ -186,16 +181,16 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// elder_titan_earth_splitter
 		if (part[0] === 13324101320785174829n)
 			Particle.set(id, [part[0], npc_hero + "elder_titan", part[2], position])
-		//elder_titan_echo_stomp_physical
+		// elder_titan_echo_stomp_physical
 		if (part[0] === 5667977939467904231n)
 			Particle.set(id, [part[0], npc_hero + "elder_titan", part[2], position])
-		//inner fire
+		// inner fire
 		if (part[0] === 6167123975649691624n)
 			Particle.set(id, [part[0], npc_hero + "huskar", part[2], position])
-		//kunkka torrent
+		// kunkka torrent
 		if (part[0] === 90527129446097558n)
 			Particle.set(id, [part[0], npc_hero + "kunkka", part[2], position])
-		//ghost
+		// ghost
 		if (part[0] === 2339675573930106922n)
 			Particle.set(id, [part[0], npc_hero + "kunkka", part[2], position])
 		// life stealer infest
@@ -258,7 +253,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// riki tricks start | end
 		if (part[0] === 2742846163382429517n || part[0] === 3058260807409708966n)
 			Particle.set(id, [part[0], npc_hero + "riki", part[2], position])
-		// shadow fiend | shadowraze	
+		// shadow fiend | shadowraze
 		if (part[0] === 8605851627288464612n)
 			Particle.set(id, [part[0], npc_hero + "nevermore", part[2], position])
 		// venomancer poison nova
@@ -294,13 +289,13 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// leshrac split
 		if (part[0] === 10977498504300558457n || part[0] === 3807435887289622893n || part[0] === 2957027257057922287n)
 			Particle.set(id, [part[0], npc_hero + "leshrac", part[2], position])
-		// lich 
+		// lich
 		if (part[0] === 17931751641656559282n)
 			Particle.set(id, [part[0], npc_hero + "lich", part[2], position])
 		// lina | laguna or strike Array
 		if (part[0] === 5326871934185736886n || part[0] === 14136065189915347240n)
 			Particle.set(id, [part[0], npc_hero + "lina", part[2], position])
-		// furion sprout teleport  
+		// furion sprout teleport
 		if (part[0] === 18101938899273081277n || part[0] === 16375869442840467308n || part[0] === 1413959092767481831n)
 			Particle.set(id, [part[0], npc_hero + "furion", part[2], position, new Color(100, 100, 100)])
 		// obsidian_destroyer | eclipse | astral
@@ -312,16 +307,16 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// with_doctor | maledict
 		if (part[0] === 12994327613543406041n)
 			Particle.set(id, [part[0], npc_hero + "witch_doctor", part[2], position, new Color(255, 255, 255)])
-		// smoke 
-		if (part[0] === 14221266834388661971n){
+		// smoke
+		if (part[0] === 14221266834388661971n) {
 			Particle.set(id, [part[0], "Smoke", part[2], position, new Color(255, 17, 0)])
-			SendToConsole("playvol ui/ping 0.1") 
+			SendToConsole("playvol ui/ping 0.1")
 		}
-		// dust 
+		// dust
 		if (part[0] === 2930661440000609946n)
 			Particle.set(id, [part[0], "Dust", part[2], position, new Color(255, 255, 255)])
-			
-		// // blink 
+
+		// // blink
 		// if (part[0] === 6400371855556675384n || part[0] === 10753307352412363396n)
 		// 	Particle.set(id, [part[0], "Blink", part[2], position, new Color(255, 255, 255)])
 	}
@@ -359,43 +354,43 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		if (part[0] === 5950705063951953059n)
 			Particle.set(id, [part[0], npc_hero + "shadow_demon", part[2], position, new Color(255, 255, 255), +1])
 	}
-	/** 
+	/**
 	 * Valid Entity
-	 * */ 
+	 **/
 	if (control_point === 0) {
-		//viper toxin
+		// viper toxin
 		if (part[0] === 7830573181181083183n)
 			Particle.set(id, [part[0], part[1], part[2], position])
 		// Scroll
 		if (part[0] === 9908905996079864839n)
 			Particle.set(id, [part[0], "Scroll", part[2], position])
 	}
-	
+
 	if (control_point === 1) {// # Ability
 		// espirit_rollingboulder | rattletrap_battery_assault
 		if (part[0] === 12716414980205333824n || part[0] === 15612669588476236884n)
 			Particle.set(id, [part[0], part[1], part[2], position])
 	}
-	
-	//if (control_point === 5) { // #Items
-		
-	//}
+
+	// if (control_point === 5) { // #Items
+
+	// }
 }
 export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	if (!State.value || !Game.IsInGame || ClassChecking(ent))
 		return
 	let part = Particle.get(id)
-	//console.log("ParticleUpdatedEnt  | " + position + " | " + ent + " | " + id)
+	// console.log("ParticleUpdatedEnt  | " + position + " | " + ent + " | " + id)
 
 	if (part === undefined || ignoreListCreateUpdateEnt.includes(part[0]))
 		return
-	// ursa 
+	// ursa
 	if (part[0] === 16250734879025969559n && ent.Name === npc_hero + "roshan") {
 		Particle.set(id, [part[0], npc_hero + "ursa", part[2], position])
 		return
 	}
 	// dark_willow terroraze
-	if (part[0] === 9157461782681193972n || part[0] === 448910324462799275n){
+	if (part[0] === 9157461782681193972n || part[0] === 448910324462799275n) {
 		Particle.set(id, [part[0], npc_hero + "dark_willow", part[2], position])
 		return
 	}
@@ -405,12 +400,12 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 		return
 	}
 	// death_prophet siphon
-	if (part[0] === 14579008345438684595n || part[0] === 3167953162413416262n){
+	if (part[0] === 14579008345438684595n || part[0] === 3167953162413416262n) {
 		Particle.set(id, [part[0], npc_hero + "keeper_of_the_light", part[2], position])
 		return
 	}
 	// antimage blink
-	if (part[0] === 6662325468141068933n){
+	if (part[0] === 6662325468141068933n) {
 		Particle.set(id, [part[0], ent, part[2], position, new Color(100,100,100)])
 		return
 	}
@@ -420,22 +415,22 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 		return
 	}
 	// puck | dream coil
-	if (part[0] === 5608482983863018919n){
+	if (part[0] === 5608482983863018919n) {
 		Particle.set(id, [part[0], npc_hero + "puck", part[2], position])
 		return
 	}
 	// puck | shift
-	if (part[0] === 7547411452476548145n){
+	if (part[0] === 7547411452476548145n) {
 		Particle.set(id, [part[0], ent.Name, part[2], position])
 		return
 	}
-	// Items Scroll 
+	// Items Scroll
 	if (part[0] === 9908905996079864839n) { // "particles/items2_fx/teleport_end.vpcf"
 		Particle.set(id, [part[0], ent, part[2], position, new Color(100,100,100)])
 		let ID_START_SCROLL = END_SCROLL.get(id),
 			_part = Particle.get(ID_START_SCROLL)
 		if (part[1] === "Scroll")
-			Particle.set(ID_START_SCROLL, [_part[0], ent, _part[2], part[3]])		
+			Particle.set(ID_START_SCROLL, [_part[0], ent, _part[2], part[3]])
 		return
 	}
 	Particle.set(id, [part[0], ent instanceof Hero ? ent : part[1], part[2], position])
@@ -447,8 +442,8 @@ export function OnDraw() {
 	// loop-optimizer: KEEP
 	Particle.forEach(([handle, target, Time, position, color, delete_time], i) => {
 		if (delete_time === undefined)
-			delete_time =+ 3 // def time for del. 
-		//console.log("Position: " + position + " | Color: " + color)
+			delete_time =+ 3 // def time for del.
+		// console.log("Position: " + position + " | Color: " + color)
 		if (position === undefined || Time + delete_time <= Game.RawGameTime) {
 			Particle.delete(i)
 			return
@@ -461,21 +456,20 @@ export function OnDraw() {
 			} else if (target === "Dust") {
 				RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
 				DrawIconWorldHero(position, Target, new Color(255, 255, 255), "dust_png.vtex_c")
-			}else{
+			} else {
 				if (target === undefined)
 					return
 				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${target}`, position, Size.value * 12, color)
-				DrawIconWorldHero(position, Target, color)	
+				DrawIconWorldHero(position, Target, color)
 			}
-		}
-		else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && !Target.IsVisible) {
+		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && !Target.IsVisible) {
 			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
 			DrawIconWorldHero(position, Target, color)
 		}
 	})
 }
 export function ParticleDestroyed(id: number) {
-	//console.log(id + " - ID Deleted ================== ")
+	// console.log(id + " - ID Deleted ================== ")
 	if (END_SCROLL.has(id))
 		END_SCROLL.delete(id)
 	if(Particle.has(id))

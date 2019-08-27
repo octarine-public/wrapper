@@ -1,7 +1,7 @@
 import { EntityManager, EventsSDK, Game, LinearProjectile, ProjectileManager, TrackingProjectile, Unit, Vector3 } from "wrapper/Imports"
 
 // menu
-/* const DodgerMenu = MenuManager.MenuFactory("Dodger");
+/* const DodgerMenu = Menu.AddEntry("Dodger");
 const stateMain = DodgerMenu.AddToggle("State", false); */
 
 let enabled = false

@@ -4,7 +4,7 @@ type CEntityIndex = C_BaseEntity | number | undefined
 /// ENUMS
 
 declare enum ConnectionState {
-	Unknown ,
+	Unknown,
 	NotYetConnected,
 	Connected,
 	Disconnected,
@@ -261,6 +261,13 @@ declare enum PingType_t {
 	OWN_VISION = 6
 }
 
+declare enum DOTAGameUIState_t {
+	DOTA_GAME_UI_STATE_INVALID,
+	DOTA_GAME_UI_STATE_LOADING_SCREEN,
+	DOTA_GAME_UI_DOTA_INGAME,
+	DOTA_GAME_UI_STATE_DASHBOARD
+}
+
 /// GLOBAL OBJECTS
 declare var IOBuffer: Float32Array // 16 floats in size
 declare var global: any
@@ -270,6 +277,7 @@ declare var GameEvents: GameEvents
 declare var Minimap: Minimap
 declare var Particles: Particles
 declare var Renderer: Renderer
+declare var Camera: Camera
 
 declare class CUnitOrder {
 	readonly order_type: dotaunitorder_t
@@ -362,6 +370,12 @@ declare interface Renderer {
 	readonly WindowSize: boolean // returns Vector2 to IOBuffer offset 0 at get
 	readonly CursorPos: boolean // returns Vector2 to IOBuffer offset 0 at get
 
+	/**
+	 * @param pos world position that needs to be turned to screen position
+	 * @returns screen position to IOBuffer if return value is true
+	 */
+	WorldToScreen(): boolean // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
+
 	FilledCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a: number): void
 	OutlinedCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a: number): void
 	Line(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number, a: number): void
@@ -381,11 +395,9 @@ declare interface Renderer {
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
 	 */
 	Text(x: number, y: number, text: string, r: number, g: number, b: number, a: number, font_name: string, font_size: number, font_weight: number, flags: number): void
-	/**
-	 * @param pos world position that needs to be turned to screen position
-	 * @returns screen position to IOBuffer if return value is true
-	 */
-	WorldToScreen(): boolean // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
+
+	GetTextSize(text: string, font_name: string, font_size: number, font_weight: number, flags: number): boolean // returns Vector2 to IOBuffer offset 0 on get
+	ExecuteCommandBuffer(ar: ArrayBuffer): void
 }
 
 declare interface Camera {
@@ -401,6 +413,11 @@ declare function SendToConsole(command: string): void
  * @param path start it with "~/" (without double-quotes) to load file from "%loader_path%/scripts_files/%path%"
  */
 declare function readFile(path: string): ArrayBuffer
+/**
+ * @param path pass empty to read from confings/../settings.json
+ */
+declare function readConfig(path: string): string
+declare function writeConfig(path: string, data: string)
 declare function sleep(ms: number): void
 declare function usleep(ns: number): void
 declare function IsInGame(): boolean
@@ -418,6 +435,7 @@ declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer 
 declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
 declare function GetLatency(flow: Flow_t): number
 declare function GetAvgLatency(flow: Flow_t): number
+declare function GetUIState(): DOTAGameUIState_t
 declare function GetServerTickCount(): number
 declare function GetPreviousServerTickCount(): number
 declare function GetClientTickCount(): number

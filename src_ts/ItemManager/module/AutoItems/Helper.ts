@@ -13,32 +13,14 @@ import {
 	AutoUseItemsUrnAliesAlliesHP,
 	AutoUseItemsUrnAliesEnemyHP,
 	AutoUseItemsUrnEnemy,
-	ItemsForUse,
-	State,
+	Items,
+	ItemsForUse, State,
 } from "./Menu"
 
 let UnitsControllable: Unit[] = [],
 	AllUnits: Unit[] = [],
 	AllCreeps: Creep[] = []
 
-// loop-optimizer: KEEP
-let Items: string[] = [
-	"item_phase_boots",
-	"item_magic_stick",
-	"item_magic_wand",
-	"item_hand_of_midas",
-	"item_arcane_boots",
-	"item_mekansm",
-	"item_guardian_greaves",
-	"item_bottle",
-	"item_urn_of_shadows",
-	"item_spirit_vessel",
-	"item_bloodstone",
-	"item_faerie_fire",
-	"item_dust",
-	"item_buckler",
-	"item_cheese",
-]
 let Buffs = {
 	NotHeal: [
 		"modifier_fountain_aura_buff",
@@ -135,7 +117,7 @@ function AutoUseItems(unit: Unit) {
 			return false
 		switch (Item.Name) {
 			case "item_phase_boots":
-				if (!ItemsForUse.selected_flags[0])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				if (!unit.IsMoving)
 					return false
@@ -143,7 +125,7 @@ function AutoUseItems(unit: Unit) {
 				break
 			case "item_magic_stick":
 			case "item_magic_wand":
-				if (!ItemsForUse.selected_flags[1])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				if (unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal)))
 					return false
@@ -151,7 +133,7 @@ function AutoUseItems(unit: Unit) {
 					unit.CastNoTarget(Item)
 				break
 			case "item_faerie_fire":
-				if (!ItemsForUse.selected_flags[2])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				if (unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal)))
 					return false
@@ -159,7 +141,7 @@ function AutoUseItems(unit: Unit) {
 					unit.CastNoTarget(Item)
 				break
 			case "item_cheese":
-				if (!ItemsForUse.selected_flags[3])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				if (unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal)))
 					return false
@@ -167,14 +149,14 @@ function AutoUseItems(unit: Unit) {
 					unit.CastNoTarget(Item)
 				break
 			case "item_arcane_boots":
-				if (!ItemsForUse.selected_flags[4])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				if (unit.ManaPercent < AutoUseItemsArcane_val.value)
 					unit.CastNoTarget(Item)
 				break
 			case "item_mekansm":
 			case "item_guardian_greaves":
-				if (!ItemsForUse.selected_flags[5])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				AllUnits.some(allies => {
 					if (!unit.IsInRange(allies.NetworkPosition, Item.AOERadius))
@@ -188,7 +170,7 @@ function AutoUseItems(unit: Unit) {
 				})
 				break
 			case "item_bottle":
-				if (!ItemsForUse.selected_flags[6])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				if (Item.CurrentCharges < 3)
 					return false
@@ -205,19 +187,19 @@ function AutoUseItems(unit: Unit) {
 				}
 				break
 			case "item_bloodstone":
-				if (!ItemsForUse.selected_flags[7])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				if (unit.HPPercent > AutoUseItemsBloodHP_val.value || unit.ManaPercent < AutoUseItemsBloodMP_val.value)
 					return false
 				unit.CastNoTarget(Item)
 				break
 			case "item_buckler":
-				if (!ItemsForUse.selected_flags[8])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				unit.CastNoTarget(Item)
 				break
 			case "item_hand_of_midas":
-				if (!ItemsForUse.selected_flags[9])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				if (AutoUseItemsMidas_CheckBIG.value) {
 					var Creep = GetAllCreepsForMidas(unit, Item)
@@ -231,7 +213,7 @@ function AutoUseItems(unit: Unit) {
 				break
 			case "item_urn_of_shadows":
 			case "item_spirit_vessel":
-				if (!ItemsForUse.selected_flags[10])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				if (CheckUnitForUrn(LocalPlayer.Hero, AutoUseItemsUrnAliesAlliesHP.value) && !unit.IsIllusion
 					&& !LocalPlayer.Hero.Buffs.some(buff => buff.Name === "modifier_item_urn_heal" || buff.Name === "modifier_item_spirit_vessel_heal"))
@@ -244,7 +226,7 @@ function AutoUseItems(unit: Unit) {
 				UnitCheckForAlliesEnemy(unit, Item)
 				break
 			case "item_dust":
-				if (!ItemsForUse.selected_flags[11])
+				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				if (unit.GetItemByName("item_gem"))
 					return false

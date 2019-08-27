@@ -1,62 +1,44 @@
-import { Tree } from "./Tree"
-function ButtonCallback(button: Button): void {
-	var onPress = button.OnPressCallback
-	if (onPress)
-		onPress(button)
-}
-function getTopParent(node: Tree | Button): Tree {
-	let parent = node.parent
-	return parent !== undefined ? getTopParent(parent) : node as Tree
-}
-export default class Button extends Menu_Button {
-	parent: Tree
-	OnPressCallback: (self: Button) => void
-	/**
-	 * You can't change 'callback'. For this use 'OnValue' or 'OnValueCallback'
-	 */
-	readonly callback: (self: Button) => void
-	constructor(parent: Tree, name: string, desc: string, hint: string) {
-		if (desc === undefined && hint === undefined)
-			super(name)
-		else if (hint === undefined)
-			super(name, desc)
-		else
-			super(name, desc, hint)
+import Color from "../Base/Color"
+import Rectangle from "../Base/Rectangle"
+import Vector2 from "../Base/Vector2"
+import RendererSDK from "../Native/RendererSDK"
+import Base from "./Base"
 
-		Object.defineProperty(this, "callback", {
-			value: () => ButtonCallback(this),
-			writable: false,
-		})
+export default class Button extends Base {
+	protected readonly button_offset = new Vector2(8, 3)
+	protected readonly button_color = new Color(14, 99, 152)
+	protected readonly buttom_activated_color = new Color(36, 40, 50) // while not MouseLeftUp
+	protected readonly execute_on_add = false
+	protected name_size: Vector2
 
-		var selfParent = parent
-		Object.defineProperty(this, "parent", {
-			set: (new_value: Tree) => {
-				this.Remove()
-
-				new_value.entries.push(this)
-
-				var parnt = getTopParent(new_value)
-
-				parnt.Update()
-
-				selfParent = new_value
-			},
-			get: () => selfParent,
-			configurable: false,
-		})
+	constructor(name: string, tooltip?: string) {
+		super(name)
+		this.tooltip = tooltip
+		this.Update()
 	}
-	Remove(): void {
-		this.parent.RemoveControl(this)
+	public Update() {
+		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		this.TotalSize_.x = this.name_size.x + 10 + this.border_size.x * 2
 	}
-	ChangeParentTo(parent: Tree) {
-		this.parent = parent
+	private get ButtonRect() {
+		let base_pos = this.Position.Add(this.button_offset).AddForThis(this.border_size)
+		return new Rectangle(base_pos, base_pos.Add(this.TotalSize).SubtractForThis(this.button_offset.MultiplyScalar(2)).SubtractForThis(this.border_size.MultiplyScalar(2)))
 	}
-	SetToolTip(text: string): this {
-		this.hint = text
-		return this
+	public Render(): void {
+		super.Render()
+		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
+		let button_rect = this.ButtonRect
+		RendererSDK.FilledRect(button_rect.pos1, button_rect.pos2.Subtract(button_rect.pos1), this.button_color)
+		RendererSDK.Text(this.name, button_rect.pos1.Add(button_rect.pos2).DivideScalarForThis(2).SubtractForThis(this.name_size.DivideScalar(2)), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		if (!this.ButtonRect.Contains(this.MousePosition))
+			super.RenderTooltip()
 	}
-	OnPress(callback: (self: Button) => void): this {
-		this.OnPressCallback = callback
-		return this
+	public OnMouseLeftDown(): boolean {
+		return !this.Rect.Contains(this.MousePosition)
+	}
+	public OnMouseLeftUp(): boolean {
+		if (this.ButtonRect.Contains(this.MousePosition))
+			this.OnValueChangedCBs.forEach(f => f(this))
+		return false
 	}
 }

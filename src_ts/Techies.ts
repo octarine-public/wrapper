@@ -1,13 +1,13 @@
-import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, ParticlesSDK, Unit, Vector3 } from "./wrapper/Imports"
+import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, ParticlesSDK, Unit, Vector3 } from "./wrapper/Imports"
 
-let TechiesMenu = MenuManager.MenuFactory("Techies"),
+let TechiesMenu = Menu.AddEntry(["Heroes", "Techies"]),
 	State = TechiesMenu.AddToggle("State"),
-	Explode_seen_mines = TechiesMenu.AddCheckBox("Explode seen mines"),
-	Explode_expiring_mines = TechiesMenu.AddCheckBox("Explode expiring mines"),
-	safe_mode = TechiesMenu.AddCheckBox("Safe mode").SetToolTip("Reduces explosion radius based on hero speed"),
-	use_prediction = TechiesMenu.AddCheckBox("Use prediction"),
-	auto_stack = TechiesMenu.AddCheckBox("Autostack mines").SetToolTip("Automatically stacks mines in place"),
-	auto_stack_range = TechiesMenu.AddSliderFloat("Autostack range", 300, 50, 1000).SetToolTip("Range where autostack will try to find other mines")
+	Explode_seen_mines = TechiesMenu.AddToggle("Explode seen mines"),
+	Explode_expiring_mines = TechiesMenu.AddToggle("Explode expiring mines"),
+	safe_mode = TechiesMenu.AddToggle("Safe mode").SetTooltip("Reduces explosion radius based on hero speed"),
+	use_prediction = TechiesMenu.AddToggle("Use prediction"),
+	auto_stack = TechiesMenu.AddToggle("Autostack mines").SetTooltip("Automatically stacks mines in place"),
+	auto_stack_range = TechiesMenu.AddSliderFloat("Autostack range", 300, 50, 1000).SetTooltip("Range where autostack will try to find other mines")
 
 const RMineTriggerRadius = 425,
 	RMineBlowDelay = .25,
@@ -183,7 +183,7 @@ EventsSDK.on("GameStarted", pl_ent => {
 	if (pl_ent.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Techies)
 		techies = pl_ent
 })
-Events.on("GameEnded", () => {
+EventsSDK.on("GameEnded", () => {
 	rmines = []
 	if (IsInGame())
 		// loop-optimizer: KEEP

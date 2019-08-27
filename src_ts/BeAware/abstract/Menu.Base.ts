@@ -1,19 +1,19 @@
-import { MenuManager } from "wrapper/Imports"
-export const Menu = MenuManager.MenuFactory("Be Aware")
+import { Menu as MenuSDK } from "wrapper/Imports"
+export const Menu = MenuSDK.AddEntry(["Visual", "Be Aware"])
 export const stateMain = Menu.AddToggle("State", true)
 
-export function MenuBase(root: MenuManager.MenuControllers.Tree, name: string, tooltip?: string) {
-	let BaseTree = root.AddTree(name)
+export function MenuBase(root: MenuSDK.Node, name: string, tooltip?: string) {
+	let BaseTree = root.AddNode(name)
 
 	return {
 		BaseTree,
 		State: tooltip !== undefined
-			? BaseTree.AddToggle(BaseTree.name + " - State", true).SetToolTip(tooltip)
-			: BaseTree.AddToggle(BaseTree.name + " - State", true),
+			? BaseTree.AddToggle("State", true).SetTooltip(tooltip)
+			: BaseTree.AddToggle("State", true),
 	}
 }
 export function MenuDrawBase(
-	root: MenuManager.MenuControllers.Tree,
+	root: MenuSDK.Node,
 	RGBname?: string,
 	BoxName?: string,
 	ArrayBox?: string[],
@@ -22,11 +22,11 @@ export function MenuDrawBase(
 	minValue?: number,
 	maxValue?: number,
 )  {
-	let DrawTree = root.AddTree(root.name + " - Draw")
+	let DrawTree = root
 	return {
 		DrawTree,
 		Size: DrawTree.AddSlider(SliderName, defaultValue, minValue, maxValue),
-		DrawRGBA: RGBname === null ? undefined : MenuManager.CreateRGBATree(DrawTree, root.name + " - " + RGBname),
-		ComboBox: ArrayBox.length <= 0 ? undefined : DrawTree.AddComboBox(BoxName, ArrayBox),
+		DrawRGBA: RGBname === null ? undefined : DrawTree.AddColorPicker(root.name + " - " + RGBname),
+		ComboBox: ArrayBox.length <= 0 ? undefined : DrawTree.AddSwitcher(BoxName, ArrayBox),
 	}
 }

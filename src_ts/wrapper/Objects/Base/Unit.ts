@@ -270,7 +270,7 @@ export default class Unit extends Entity {
 	 * IsControllable by LocalPlayer
 	 */
 	public get IsControllable(): boolean {
-		return LocalPlayer !== undefined && this.IsControllableByPlayer(LocalPlayer.PlayerID)
+		return this.IsValid && LocalPlayer !== undefined && this.IsControllableByPlayer(LocalPlayer.PlayerID)
 	}
 	public get IsDominatable(): boolean {
 		return this.m_pBaseEntity.m_bCanBeDominated

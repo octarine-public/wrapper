@@ -188,8 +188,9 @@ setInterval(() => {
 		InStage.delete(baseEntity)
 		AddToCache(entity)
 	})
-}, 0)
+}, 5)
 
+let gameInProgress = false
 function AddToCache(entity: Entity) {
 	// console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
 	EventsSDK.emit("EntityPreCreated", false, entity, entity.Index)
@@ -205,12 +206,25 @@ function AddToCache(entity: Entity) {
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
 	AllEntities.push(entity)
 
-	if (entity instanceof Unit)
-		changeFieldsByEvents(entity)
-
 	// console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
 	EventsSDK.emit("EntityCreated", false, entity, index)
+	if (entity instanceof Unit)
+		changeFieldsByEvents(entity)
+	if (LocalPlayer !== undefined && LocalPlayer.Hero === entity) {
+		gameInProgress = true
+		EventsSDK.emit("GameStarted", false, entity)
+	}
 }
+setInterval(() => {
+	let old_val = Game.IsConnected
+	Game.IsConnected = IsInGame()
+	if (!old_val && Game.IsConnected)
+		EventsSDK.emit("GameConnected", false)
+	if (gameInProgress && !Game.IsConnected) {
+		gameInProgress = false
+		EventsSDK.emit("GameEnded", false)
+	}
+}, 1000 / 30)
 
 function DeleteFromCache(entNative: C_BaseEntity, index: number) {
 	{

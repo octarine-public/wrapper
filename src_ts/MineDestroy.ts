@@ -1,6 +1,6 @@
-import { ArrayExtensions, Debug, EventsSDK, Game, LocalPlayer, MenuManager, Unit } from "./wrapper/Imports"
+import { ArrayExtensions, EventsSDK, Game, LocalPlayer, Menu, Unit } from "./wrapper/Imports"
 
-const menu = MenuManager.MenuFactory("Mine Destroy")
+const menu = Menu.AddEntry(["Utility", "Mine Destroy"])
 const menuState = menu.AddToggle("State")
 
 let mines: Unit[] = [] // C_DOTA_NPC_TechiesMines

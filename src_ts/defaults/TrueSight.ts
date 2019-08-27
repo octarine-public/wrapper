@@ -1,4 +1,4 @@
-import { EventsSDK, Game, LocalPlayer, MenuManager, ParticlesSDK, Unit } from "wrapper/Imports"
+import { EventsSDK, Game, LocalPlayer, Menu, ParticlesSDK, Unit } from "wrapper/Imports"
 
 const ParticleStyles = [
 	"particles/econ/wards/portal/ward_portal_core/ward_portal_eye_sentry.vpcf",
@@ -8,23 +8,21 @@ const ParticleStyles = [
 var particlePath = "",
 	allUnitsAsMap = new Map<Unit, number>()
 
-const TrueSightMenu = MenuManager.MenuFactory("TrueSight Detector"),
-	stateMain = TrueSightMenu.AddToggle("State", true).OnValue(() => OnChangeValue()),
-	allyState = TrueSightMenu.AddToggle("Allies state", true).OnValue(() => OnChangeValue())
+const TrueSightMenu = Menu.AddEntry(["Visual", "TrueSight Detector"]),
+	stateMain = TrueSightMenu.AddToggle("State", true).OnValue(caller => OnChangeValue(!caller.value))
 
-const particleStylesCombo = TrueSightMenu.AddComboBox("Particle", [
+const particleStylesCombo = TrueSightMenu.AddSwitcher("Particle", [
 	"Sentry ward particle",
 	"Shiva's Guard (DotA 1 effect)",
-]).OnValue(value => {
-	particlePath = ParticleStyles[value]
+]).OnValue(caller => {
+	particlePath = ParticleStyles[caller.selected_id]
 	OnChangeValue(true)
 })
 
-function OnChangeValue(destroy: boolean = !stateMain.value || !allyState.value) {
+function OnChangeValue(destroy: boolean) {
 	if (destroy)
 		DestroyAll()
-
-	if (stateMain.value)
+	else
 		// loop-optimizer: KEEP
 		allUnitsAsMap.forEach((particle, unit) => CheckUnit(unit))
 }
@@ -67,9 +65,6 @@ EventsSDK.on("Tick", () => {
 function CheckUnit(unit: Unit, isTrueSighted: boolean = unit.IsTrueSightedForEnemies) {
 
 	if (!stateMain.value || unit.IsEnemy())
-		return
-
-	if (!allyState.value && unit !== LocalPlayer.Hero)
 		return
 
 	let isAlive = unit.IsAlive,

@@ -1,8 +1,6 @@
-import { Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, MenuManager, Player, Unit } from "wrapper/Imports"
+import { Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, Player, Unit } from "wrapper/Imports"
 
 // import * as Utils from "Utils"
-
-let { MenuFactory } = MenuManager
 
 let allyCourier: Courier,
 	allAllyPlayers: AllyPlayer[] = []
@@ -12,32 +10,32 @@ const TOOLTIP_ONPLAYING = "List of players for blocking courier(s)"
 
 // --- Menu
 
-const courCtlrMenu = MenuFactory("Courier Controller")
+const courCtlrMenu = Menu.AddEntry(["Utility", "Courier Controller"])
 
 const stateMain = courCtlrMenu.AddToggle("State")
 
 // deliver
-const deliverMenu = courCtlrMenu.AddTree("Deliver settings")
+const deliverMenu = courCtlrMenu.AddNode("Deliver settings")
 
 const deliverState = deliverMenu.AddToggle("Auto deliver")
 
 const antiReuseState = deliverMenu.AddToggle("Anti Reuse")
 
 // blocking
-const blockCourMenu = courCtlrMenu.AddTree("Block settings")
+const blockCourMenu = courCtlrMenu.AddNode("Block settings")
 
 /*
 // need add to Native (Player.IsMuted)
 const muteFilter = blockCourMenu.AddToggle("Mute filter")
-	.SetToolTip("Blocking courier(s) for muted (voice) players");
+	.SetTooltip("Blocking courier(s) for muted (voice) players");
 */
 
-const playersBlockList = blockCourMenu.AddListBox("Players for block", [], [false, false, false, false, false])
-	.SetToolTip(TOOLTIP_NEEDPLAYING)
+const playersBlockList = blockCourMenu.AddImageSelector("Players for block", [])
+	.SetTooltip(TOOLTIP_NEEDPLAYING)
 
 // other
 const autoShieldState = courCtlrMenu.AddToggle("Auto Shield")
-	.SetToolTip("Auto use shield to try to save courier")
+	.SetTooltip("Auto use shield to try to save courier")
 
 class AllyPlayer {
 	ent: Player
@@ -55,7 +53,7 @@ class AllyPlayer {
 
 		this.indexInMenu = playersBlockList.values.push(`${this.ent.Name} (${this.ent.Hero})`) - 1
 
-		courCtlrMenu.Update()
+		playersBlockList.Update()
 	}
 }
 
@@ -65,8 +63,8 @@ let CastCourAbility = (num: number) => allyCourier
 // --- Callbacks
 
 EventsSDK.on("GameStarted", () => {
-	playersBlockList.SetToolTip(TOOLTIP_ONPLAYING)
-	playersBlockList.selected_flags = []
+	playersBlockList.SetTooltip(TOOLTIP_ONPLAYING)
+	playersBlockList.enabled_values.forEach((_, key) => playersBlockList.enabled_values.set(key,false))
 	playersBlockList.values = []
 })
 
@@ -75,10 +73,10 @@ EventsSDK.on("GameEnded", () => {
 
 	allAllyPlayers = []
 
-	playersBlockList.SetToolTip(TOOLTIP_NEEDPLAYING)
-	playersBlockList.selected_flags = []
+	playersBlockList.SetTooltip(TOOLTIP_NEEDPLAYING)
+	playersBlockList.enabled_values.forEach((_, key) => playersBlockList.enabled_values.set(key, false))
 	playersBlockList.values = []
-	courCtlrMenu.Update()
+	playersBlockList.Update()
 })
 
 // --- Methods
@@ -207,6 +205,6 @@ function IsBlocked(npc: Hero) {
 
 	/*if (muteFilter.value && PlayerResource.PlayerTeamData[(npc.Owner as Player).PlayerID].m_bVoiceChatBanned)
 		return true*/
-	return playersBlockList.selected_flags.length > 0 && allAllyPlayers.some(player =>
-		player.ent.Hero === npc && playersBlockList.selected_flags[player.indexInMenu])
+	return !playersBlockList.IsZeroSelected && allAllyPlayers.some(player =>
+		player.ent.Hero === npc && playersBlockList.enabled_values.get(player.ent.Name))
 }

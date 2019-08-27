@@ -1,8 +1,8 @@
-import { ArrayExtensions, Color, EventsSDK, Game, Hero, MenuManager, RendererSDK, Vector2 } from "wrapper/Imports"
+import { ArrayExtensions, Color, EventsSDK, Game, Hero, Menu as MenuSDK } from "wrapper/Imports"
 
 var heroes: Hero[] = []
 
-const Menu = MenuManager.MenuFactory("Show Illusions"),
+const Menu = MenuSDK.AddEntry(["Utility", "Show Illusions"]),
 	illus_color = new Color(0, 0, 255),
 	stateMain = Menu.AddToggle("State", true)
 

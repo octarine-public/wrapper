@@ -21,7 +21,6 @@ export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 ]
 
 export default class ExecuteOrder {
-
 	static fromObject(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,

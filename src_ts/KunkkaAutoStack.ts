@@ -22,7 +22,7 @@ var spots: Vector3[] = /*Utils.orderBy(*/[
 	is_stacking: boolean = false
 
 EventsSDK.on("Draw", () => {
-	if (!config.visals || !Game.IsInGame)
+	if (!config.visals || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	spots.forEach((spot, i) => {
 		let screen_pos = RendererSDK.WorldToScreen(spot)
@@ -100,23 +100,22 @@ EventsSDK.on("PrepareUnitOrders", order => order.Unit !== LocalPlayer.Hero || !i
 	return true
 })*/
 
-{
-	let root = new Menu_Node("Kunkka Autostacker")
-	root.entries.push(new Menu_Toggle (
-		"State",
-		config.enabled,
-		node => config.enabled = node.value,
-	))
-	root.entries.push(new Menu_Toggle (
-		"Draw visuals over stackable spots",
-		config.visals,
-		node => config.visals = node.value,
-	))
-	/*root.entries.push(new Menu_Keybind (
-		"Dynamic hotkey (reqires spot vision)",
-		config.hotkey_dynamic,
-		node => config.hotkey_dynamic = node.value
-	))*/
-	root.Update()
-	Menu.AddEntry(root)
-}
+// {
+// 	let root = new Menu_Node("Kunkka Autostacker")
+// 	root.entries.push(new Menu_Toggle (
+// 		"State",
+// 		config.enabled,
+// 		node => config.enabled = node.value,
+// 	))
+// 	root.entries.push(new Menu_Toggle (
+// 		"Draw visuals over stackable spots",
+// 		config.visals,
+// 		node => config.visals = node.value,
+// 	))
+// 	/*root.entries.push(new Menu_Keybind (
+// 		"Dynamic hotkey (reqires spot vision)",
+// 		config.hotkey_dynamic,
+// 		node => config.hotkey_dynamic = node.value
+// 	))*/
+// 	root.Update()
+// }
