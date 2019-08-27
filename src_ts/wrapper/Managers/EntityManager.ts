@@ -220,6 +220,8 @@ setInterval(() => {
 	Game.IsConnected = IsInGame()
 	if (!old_val && Game.IsConnected)
 		EventsSDK.emit("GameConnected", false)
+	if (old_val && !Game.IsConnected)
+		Particles.DeleteAll()
 	if (gameInProgress && !Game.IsConnected) {
 		gameInProgress = false
 		EventsSDK.emit("GameEnded", false)

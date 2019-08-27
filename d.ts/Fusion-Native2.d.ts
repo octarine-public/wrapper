@@ -363,6 +363,7 @@ declare interface Particles {
 	Destroy(particle_id: number, immediate: boolean): void
 	SetControlPoint(particle_id: number, control_point: number): void // pass vec: Vector3 at IOBuffer offset 0
 	SetControlPointForward(particle_id: number, control_point: number): void // pass vec: Vector3 at IOBuffer offset 0
+	DeleteAll(): void
 }
 
 // must be called only in onDraw!
