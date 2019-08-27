@@ -1,6 +1,6 @@
 import { Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
-import { ComboBox, DrawRGBA, Size, State } from "./Menu"
+import { ComboBox, DrawRGBA, Size, State, PMH_Smoke_snd } from "./Menu"
 
 let npc_hero: string = "npc_dota_hero_",
 	Particle: Map<number, [bigint, string | Entity, number, Vector3?, Color?, number?]> = new Map(), // TODO Radius for ability
@@ -296,8 +296,8 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		if (part[0] === 5326871934185736886n || part[0] === 14136065189915347240n)
 			Particle.set(id, [part[0], npc_hero + "lina", part[2], position])
 		// furion sprout teleport
-		if (part[0] === 18101938899273081277n || part[0] === 16375869442840467308n || part[0] === 1413959092767481831n)
-			Particle.set(id, [part[0], npc_hero + "furion", part[2], position, new Color(100, 100, 100)])
+		if (part[0] === 18101938899273081277n || part[0] === 16375869442840467308n)
+			Particle.set(id, [part[0], part[1], part[2], position, new Color(100, 100, 100)])
 		// obsidian_destroyer | eclipse | astral
 		if (part[0] === 11562582309822695519n || part[0] === 12439617424976039911n || part[0] === 14147094464891580395n)
 			Particle.set(id, [part[0], npc_hero + "obsidian_destroyer", part[2], position])
@@ -310,7 +310,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// smoke
 		if (part[0] === 14221266834388661971n) {
 			Particle.set(id, [part[0], "Smoke", part[2], position, new Color(255, 17, 0)])
-			SendToConsole("playvol ui/ping 0.1")
+			SendToConsole("playvol ui/ping " + PMH_Smoke_snd.value / 100)
 		}
 		// dust
 		if (part[0] === 2930661440000609946n)
@@ -463,6 +463,9 @@ export function OnDraw() {
 				DrawIconWorldHero(position, Target, color)
 			}
 		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && !Target.IsVisible) {
+			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
+			DrawIconWorldHero(position, Target, color)
+		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && (handle === 9908905996079864839n || handle === 16169843851719108633n)) {
 			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
 			DrawIconWorldHero(position, Target, color)
 		}

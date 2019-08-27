@@ -8,4 +8,5 @@ const { DrawRGBA, Size, ComboBox } = MenuDrawBase (
 	"Size", 42, 42, 300,
 )
 State.SetTooltip("Display position enemy heroes if use ability")
-export { State, DrawRGBA, Size, ComboBox }
+let PMH_Smoke_snd = BaseTree.AddSliderFloat("Smoke volume", 1, 0, 100)
+export { State, DrawRGBA, Size, ComboBox, PMH_Smoke_snd }
