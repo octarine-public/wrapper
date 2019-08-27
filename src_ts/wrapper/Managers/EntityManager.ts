@@ -90,7 +90,7 @@ class EntityManager {
 			if (inStage)
 				ent_ = ent_ || InStage.get(ent) || queueEntitiesAsMap.get(ent)
 
-			return ent_
+			return ent_ || ent
 		})
 	}
 

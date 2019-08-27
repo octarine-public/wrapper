@@ -13,7 +13,8 @@ export default class AbilitiesBook {
 	}
 
 	get Spells(): Ability[] {
-		return (this.Spells_ = EntityManager.GetEntitiesByNative(this.Spells_))
+		// loop-optimizer: FORWARD
+		return (this.Spells_ = EntityManager.GetEntitiesByNative(this.Spells_)).map(abil => abil instanceof Ability ? abil : undefined)
 	}
 
 	/* get ValidSpells(): Ability[] {
