@@ -55,19 +55,19 @@ const menu = Menu.AddEntry(["Heroes", "SkyWrathCombo"]),
 		],
 	),
 	drawable = menu.AddNode("Drawable"),
-	heroMenu = menu.AddNode("Hero Specifics"),
-	amReflect = heroMenu.AddToggle("Enabled Pop AM Reflect"),
-	amReflectItems = heroMenu.AddImageSelector(
-			"Pop AM Reflect",
-		[
-			"item_nullifier",
-			"item_cyclone",
-			"item_rod_of_atos",
-			"item_force_staff",
-			"item_dagon_5",
-			"skywrath_mage_arcane_bolt",
-		],
-	),
+	// heroMenu = menu.AddNode("Hero Specifics"),
+	// amReflect = heroMenu.AddToggle("Enabled Pop AM Reflect"),
+	// amReflectItems = heroMenu.AddImageSelector(
+	// 		"Pop AM Reflect",
+	// 	[
+	// 		"item_nullifier",
+	// 		"item_cyclone",
+	// 		"item_rod_of_atos",
+	// 		"item_force_staff",
+	// 		"item_dagon_5",
+	// 		"skywrath_mage_arcane_bolt",
+	// 	],
+	// ),
 	drawTargetParticle = drawable.AddToggle("Draw line to target"),
 	concShot = drawable.AddToggle("Draw concusive shot indicator"),
 	drawStatus = drawable.AddToggle("Draw status"),
@@ -193,17 +193,17 @@ EventsSDK.on("Tick", () => {
 			getAbils()
 			getItems()
 			debuffed = IsDebuffed()
-			if (amReflect.value && target.Name === "npc_dota_hero_antimage"
-				&& !target.ModifiersBook.HasAnyBuffByNames(["modifier_silver_edge_debuff", "modifier_viper_nethertoxin"])
-				&& target.GetAbilityByName("antimage_spell_shield").IsReady) {
-				if (popLink(forcestaff, amReflectItems.IsEnabled("item_force_staff"))) return
-				if (popLink(cyclone, amReflectItems.IsEnabled("item_cyclone"))) return
-				if (popLink(atos, amReflectItems.IsEnabled("item_rod_of_atos"))) return
-				if (popLink(bolt, amReflectItems.IsEnabled("skywrath_mage_arcane_bolt"))) return
-				if (popLink(dagon, amReflectItems.IsEnabled("item_dagon_5"))) return
-				if (popLink(nullifier, amReflectItems.IsEnabled("item_nullifier"))) return
-				return
-			}
+			// if (amReflect.value && target.Name === "npc_dota_hero_antimage"
+			// 	&& !target.ModifiersBook.HasAnyBuffByNames(["modifier_silver_edge_debuff", "modifier_viper_nethertoxin"])
+			// 	&& target.GetAbilityByName("antimage_spell_shield").IsReady) {
+			// 	if (popLink(forcestaff, amReflectItems.IsEnabled("item_force_staff"))) return
+			// 	if (popLink(cyclone, amReflectItems.IsEnabled("item_cyclone"))) return
+			// 	if (popLink(atos, amReflectItems.IsEnabled("item_rod_of_atos"))) return
+			// 	if (popLink(bolt, amReflectItems.IsEnabled("skywrath_mage_arcane_bolt"))) return
+			// 	if (popLink(dagon, amReflectItems.IsEnabled("item_dagon_5"))) return
+			// 	if (popLink(nullifier, amReflectItems.IsEnabled("item_nullifier"))) return
+			// 	return
+			// }
 			if (popLinkV.value && target.HasLinkenAtTime()) {
 				if (popLink(nullifier, popLinkItems.IsEnabled("item_nullifier"))) return
 				if (popLink(cyclone, popLinkItems.IsEnabled("item_cyclone"))) return
