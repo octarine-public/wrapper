@@ -9,8 +9,8 @@ export default class Item extends Ability {
 	readonly m_pBaseEntity: C_DOTA_Item
 
 	get IsReady(): boolean {
-		const unit = this.Owner as Unit
-		return this.IsCooldownReady && unit.Mana >= this.ManaCost && !unit.IsMuted && this.Level > 0
+		const unit = this.Owner
+		return this.IsCooldownReady && this.Level > 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
 	}
 	get AssembledTime(): number {
 		return this.m_pBaseEntity.m_flAssembledTime

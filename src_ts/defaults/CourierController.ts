@@ -51,7 +51,7 @@ class AllyPlayer {
 		if (!this.ent.HeroAssigned || this.indexInMenu !== undefined)
 			return
 
-		this.indexInMenu = playersBlockList.values.push(`${this.ent.Name} (${this.ent.Hero})`) - 1
+		this.indexInMenu = playersBlockList.values.push(`${this.ent.Hero}`) - 1
 
 		playersBlockList.Update()
 	}
@@ -115,6 +115,7 @@ EventsSDK.on("Update", () => {
 		return
 	if (allyCourier === undefined)
 		return
+
 	if (autoShieldState.value) {
 		EntityManager.AllEntities.forEach(ent => {
 			if (
