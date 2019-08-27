@@ -219,7 +219,7 @@ EventsSDK.on("Tick", () => {
 				return
 			}
 			if (!target.IsStunned && !target.IsHexed)
-				if (useItem(hex, items.IsEnabled(items[1]))) return
+				if (useItem(hex, items.IsEnabled("item_sheepstick"))) return
 			if (sky.IsInRange(target, 700) && !target.ModifiersBook.HasAnyBuffByNames(["modifier_teleporting"]))
 				IsEZKillable = killCheck()
 			if (soulRing.value && soulring !== undefined && soulring.IsReady) {
