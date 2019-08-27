@@ -15,22 +15,18 @@ const courCtlrMenu = Menu.AddEntry(["Utility", "Courier Controller"])
 const stateMain = courCtlrMenu.AddToggle("State")
 
 // deliver
-const deliverMenu = courCtlrMenu.AddNode("Deliver settings")
+const deliverState = courCtlrMenu.AddToggle("Auto deliver")
 
-const deliverState = deliverMenu.AddToggle("Auto deliver")
-
-const antiReuseState = deliverMenu.AddToggle("Anti Reuse")
+const antiReuseState = courCtlrMenu.AddToggle("Anti Reuse")
 
 // blocking
-const blockCourMenu = courCtlrMenu.AddNode("Block settings")
-
 /*
 // need add to Native (Player.IsMuted)
 const muteFilter = blockCourMenu.AddToggle("Mute filter")
 	.SetTooltip("Blocking courier(s) for muted (voice) players");
 */
 
-const playersBlockList = blockCourMenu.AddImageSelector("Players for block", [])
+const playersBlockList = courCtlrMenu.AddImageSelector("Players for block", [])
 	.SetTooltip(TOOLTIP_NEEDPLAYING)
 
 // other
