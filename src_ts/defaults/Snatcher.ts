@@ -132,7 +132,7 @@ EventsSDK.on("Update", () => {
 
 	let controllables: Unit[] = stateControllables.value
 		? GetControllables()
-		: [LocalPlayer.Hero]
+		: LocalPlayer.HeroAssigned ? [LocalPlayer.Hero] : []
 
 	snatchRunes(controllables)
 	snatchItems(controllables)
