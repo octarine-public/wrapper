@@ -177,14 +177,10 @@ declare interface Events extends EventEmitter {
 		host_loss: number
 	) => void): EventEmitter
 	on(name: "NetworkPositionChanged", listener: (ent: C_BaseEntity) => void): EventEmitter // m_vecOrigin: Vector3 at IOBuffer offset 0
-	on(name: "GameSceneNodeChanged", listener: (ent: C_BaseEntity) => void): EventEmitter // m_vecOrigin: Vector3 at IOBuffer offset 0, m_angAbsRotation: QAngle at IOBuffer offset 3, m_angRotation: number at IOBuffer offset 6, m_flAbsScale: number at IOBuffer offset 7
+	on(name: "GameSceneNodeChanged", listener: (node: CGameSceneNode) => void): EventEmitter // m_vecOrigin: Vector3 at IOBuffer offset 0, m_angAbsRotation: QAngle at IOBuffer offset 3, m_angRotation: number at IOBuffer offset 6, m_flAbsScale: number at IOBuffer offset 7
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
-	on(name: "NetworkFieldChanged", listener: (
-		entity: C_BaseEntity,
-		trigger: any, // anything that entity owns, which had triggered this change
-		field_name: string,
-		field_type: string,
-		array_index: number // -1 if that's not an array change
+	on(name: "NetworkFieldsChanged", listener: (
+		map: Map<C_BaseEntity, Map<any, Array<[string, string, number]>>> // 1st key: entity, 2nd: trigger, values: [field_name, field_type, array_index]
 	) => void): EventEmitter
 	on(name: "SetEntityName", listener: (ent: C_BaseEntity, new_name: string) => void): EventEmitter
 }

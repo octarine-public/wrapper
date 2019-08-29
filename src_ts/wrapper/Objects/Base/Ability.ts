@@ -119,7 +119,7 @@ export default class Ability extends Entity {
 		return this.m_pBaseEntity.m_iManaCost
 	}
 	get MaxLevel(): number {
-		return this.AbilityData.MaxLevel || (this.IsItem ? 1 : 0)
+		return this.AbilityData.MaxLevel
 	}
 	get OverrideCastPoint(): number {
 		return this.m_pBaseEntity.m_flOverrideCastPoint
@@ -196,15 +196,13 @@ export default class Ability extends Entity {
 	}
 
 	GetSpecialValue(special_name: string, level: number = this.Level): number {
-		if (level < 0 || level > this.MaxLevel)
-			throw `Invalid GetSpecialValue level for ${this.Name}: ${level} (current level: ${this.Level}, max level: ${this.MaxLevel})`
 		let cache = this.AbilityData.SpecialValueCache[special_name]
 		if (cache === undefined) {
 			cache = this.AbilityData.SpecialValueCache[special_name] = []
 			for (let i = 0; i <= this.MaxLevel; i++)
 				cache[i] = this.m_pBaseEntity.GetSpecialValue(special_name, i)
 		}
-		return cache[level]
+		return cache[level] || (cache[level] = this.m_pBaseEntity.GetSpecialValue(special_name, level))
 	}
 	IsManaEnough(bonusMana: number = 0): boolean {
 		return (this.Owner.Mana + bonusMana) >= this.ManaCost

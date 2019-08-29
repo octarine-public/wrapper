@@ -183,23 +183,33 @@ Events.on("NetworkPositionChanged", ent => {
 	ent_.OnNetworkPositionChanged(m_vecOrigin)
 })
 
-Events.on("GameSceneNodeChanged", ent => {
+let node2ent = new Map<CGameSceneNode, Entity>()
+Events.on("GameSceneNodeChanged", node => {
 	let m_vecOrigin = Vector3.fromIOBuffer(),
 		m_angAbsRotation = QAngle.fromIOBuffer(3),
 		m_angRotation = IOBuffer[6],
 		m_flAbsScale = IOBuffer[7]
-	let ent_ = EntityManager.GetEntityByNative(ent, true)
-	if (ent_ === undefined)
+	let ent = node2ent.get(node)
+	if (ent === undefined)
+		node2ent.set(node, ent = EntityManager.AllEntities.find(ent => ent.GameSceneNode_ === node) || EntityManager.AllEntities.find(ent => ent.GameSceneNode === node))
+	if (ent === undefined)
 		return
 	EventsSDK.emit (
 		"GameSceneNodeChanged", false,
-		ent_,
+		ent,
 		m_vecOrigin,
 		m_angAbsRotation,
 		m_angRotation,
 		m_flAbsScale,
 	)
-	ent_.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation, m_angRotation, m_flAbsScale)
+	ent.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation, m_angRotation, m_flAbsScale)
+})
+Events.on("EntityDestroyed", ent => {
+	// loop-optimizer: KEEP
+	node2ent.forEach((val, key) => {
+		if (val === undefined || val.m_pBaseEntity === ent)
+			node2ent.delete(key)
+	})
 })
 
 Events.on("InputCaptured", is_captured => EventsSDK.emit (
@@ -207,16 +217,22 @@ Events.on("InputCaptured", is_captured => EventsSDK.emit (
 	is_captured,
 ))
 
-Events.on("NetworkFieldChanged", (entity, trigger, field_name, field_type, array_index) => {
-	let entity_ = EntityManager.GetEntityByNative(entity, true)
-	if (entity_ === undefined)
-		return
-	if (array_index !== -1 && field_name === "m_hAbilities" && entity_ instanceof Unit) {
-		let abil = entity_.m_pBaseEntity.m_hAbilities[array_index]
-		entity_.AbilitiesBook.Spells_[array_index] = EntityManager.GetEntityByNative(abil) as Ability || (abil instanceof C_BaseEntity ? abil.m_pEntity.m_iIndex : abil)
-	}
-	if (array_index === -1 && field_name === "m_hOwner")
-		entity_.Owner_ = entity.m_hOwnerEntity
+Events.on("NetworkFieldsChanged", map => {
+	// loop-optimizer: KEEP
+	map.forEach((map2, entity) => {
+		let entity_ = EntityManager.GetEntityByNative(entity, true)
+		if (entity_ === undefined)
+			return
+		// loop-optimizer: KEEP
+		map2.forEach((ar, trigger) => ar.forEach(([field_name, field_type, array_index]) => {
+			if (array_index !== -1 && field_name === "m_hAbilities" && entity_ instanceof Unit) {
+				let abil = entity_.m_pBaseEntity.m_hAbilities[array_index]
+				entity_.AbilitiesBook.Spells_[array_index] = EntityManager.GetEntityByNative(abil) as Ability || (abil instanceof C_BaseEntity ? abil.m_pEntity.m_iIndex : abil)
+			}
+			if (array_index === -1 && field_name === "m_hOwner")
+				entity_.Owner_ = entity.m_hOwnerEntity
+		}))
+	})
 })
 Events.on("SetEntityName", (entity, new_name) => {
 	let entity_ = EntityManager.GetEntityByNative(entity, true)

@@ -143,6 +143,7 @@ export default class Entity {
 	public Name: string = ""
 	private readonly Entity: CEntityIdentity
 	public Owner_: Entity | C_BaseEntity | number
+	public GameSceneNode_: CGameSceneNode
 
 	/* ================================ BASE ================================ */
 	constructor(public m_pBaseEntity: C_BaseEntity, public readonly Index: number) {
@@ -156,9 +157,12 @@ export default class Entity {
 	get Owner(): Entity { // trick to make it public ro, and protected rw
 		return this.Owner_ instanceof Entity ? this.Owner_ : (this.Owner_ = EntityManager.GetEntityByNative(this.Owner_, true) || EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
 	}
+	get GameSceneNode(): CGameSceneNode {
+		return this.GameSceneNode_ || (this.GameSceneNode_ = this.m_pBaseEntity.m_pGameSceneNode)
+	}
 	get Position(): Vector3 { // trick to make it public ro, and protected rw
 		if (!this.Position_.IsValid) {
-			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
 				return new Vector3()
 			Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_vecValue).CopyTo(this.Position_)
@@ -172,7 +176,7 @@ export default class Entity {
 	}
 	get Scale(): number {
 		if (this.Rotation_ === NaN) {
-			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
 				return 0
 			this.Scale_ = gameSceneNode.m_flAbsScale
@@ -181,7 +185,7 @@ export default class Entity {
 	}
 	get Rotation(): number {
 		if (this.Rotation_ === NaN) {
-			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
 				return 0
 			this.Rotation_ = QAngle.fromIOBuffer(gameSceneNode.m_angRotation)[1]
@@ -190,7 +194,7 @@ export default class Entity {
 	}
 	get Angles(): QAngle {
 		if (!this.Angles_.IsValid) {
-			let gameSceneNode = this.m_pBaseEntity.m_pGameSceneNode
+			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
 				return new QAngle()
 			QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation).CopyTo(this.Angles_)
