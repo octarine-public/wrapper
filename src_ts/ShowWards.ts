@@ -35,15 +35,12 @@ EventsSDK.on("EntityDestroyed", (ent) => {
 	if (ent instanceof Hero) {
 		ArrayExtensions.arrayRemove(heroes, ent);
 	}
-	console.log(ent.Name);
 
 	//if (ent.Name == "npc_dota_sentry_wards" ||
 	//ent.Name == "npc_dota_observer_wards") {
 
 	if (ent.Name == "npc_dota_ward_base" ||
 		ent.Name == "npc_dota_ward_base_truesight") {
-
-		console.log("wardo destroyo: " + ent.Position.x + " " + ent.Position.y + " " + ent.Position.z);
 
 		wardProcessingTable = wardProcessingTable.filter((w) => (w != undefined));
 
