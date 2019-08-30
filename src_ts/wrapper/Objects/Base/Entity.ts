@@ -165,7 +165,7 @@ export default class Entity {
 			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
 				return new Vector3()
-			Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_vecValue).CopyTo(this.Position_)
+			Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_Value).CopyTo(this.Position_)
 		}
 		return this.Position_.Clone()
 	}

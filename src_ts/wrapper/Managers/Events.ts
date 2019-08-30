@@ -170,28 +170,47 @@ Events.on("UnitFadeGesture", (npc, activity) => EventsSDK.emit (
 	activity,
 ))
 
-Events.on("NetworkPositionChanged", ent => {
-	let m_vecOrigin = Vector3.fromIOBuffer()
-	let ent_ = EntityManager.GetEntityByNative(ent, true)
-	if (ent_ === undefined)
+let node2ent = new Map<CGameSceneNode, Entity>()
+function GetEntityByNode(node: CGameSceneNode) {
+	let ent = node2ent.get(node)
+	if (ent === undefined)
+		node2ent.set(node, ent = EntityManager.AllEntities.find(ent => ent.GameSceneNode_ === node) || EntityManager.AllEntities.find(ent => ent.GameSceneNode === node))
+	return ent
+}
+
+let m_vecOrigin2ent = new Map<CNetworkOriginCellCoordQuantizedVector, Entity>()
+function GetEntityByVecOrigin(vec: CNetworkOriginCellCoordQuantizedVector) {
+	let ent = m_vecOrigin2ent.get(vec)
+	if (ent === undefined)
+		m_vecOrigin2ent.set(vec, ent = EntityManager.AllEntities.find(ent => {
+			let node = ent.GameSceneNode_
+			return node !== undefined && node.m_vecOrigin === vec
+		}) || EntityManager.AllEntities.find(ent => {
+			let node = ent.GameSceneNode
+			return node !== undefined && node.m_vecOrigin === vec
+		}))
+	return ent
+}
+
+Events.on("NetworkPositionsChanged", vecs => vecs.forEach(vec => {
+	let ent = GetEntityByVecOrigin(vec)
+	if (ent === undefined)
 		return
+	let m_vecOrigin = Vector3.fromIOBuffer(vec.m_Value)
 	EventsSDK.emit (
 		"NetworkPositionChanged", false,
-		ent_,
+		ent,
 		m_vecOrigin,
 	)
-	ent_.OnNetworkPositionChanged(m_vecOrigin)
-})
+	ent.OnNetworkPositionChanged(m_vecOrigin)
+}))
 
-let node2ent = new Map<CGameSceneNode, Entity>()
 Events.on("GameSceneNodeChanged", node => {
 	let m_vecOrigin = Vector3.fromIOBuffer(),
 		m_angAbsRotation = QAngle.fromIOBuffer(3),
 		m_angRotation = IOBuffer[6],
 		m_flAbsScale = IOBuffer[7]
-	let ent = node2ent.get(node)
-	if (ent === undefined)
-		node2ent.set(node, ent = EntityManager.AllEntities.find(ent => ent.GameSceneNode_ === node) || EntityManager.AllEntities.find(ent => ent.GameSceneNode === node))
+	let ent = GetEntityByNode(node)
 	if (ent === undefined)
 		return
 	EventsSDK.emit (

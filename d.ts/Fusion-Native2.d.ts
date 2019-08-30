@@ -1579,7 +1579,7 @@ declare class CObstructionObject {
 }
 
 declare class CNetworkOriginCellCoordQuantizedVector {
-	readonly m_vecValue: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	readonly m_Value: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	
 	m_cellX: number
 	m_cellY: number
