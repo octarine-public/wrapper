@@ -7,20 +7,36 @@ import {
 	Vector2,
 	Vector3,
 	Entity,
-	Unit,
 	RendererSDK,
 	Color,
+	Menu as MenuSDK,
 } from "wrapper/Imports"
 
 //font = Renderer.LoadFont("Tahoma", 22, Enum.FontWeight.EXTRABOLD)
 
+
+const Menu = MenuSDK.AddEntry(["Visual", "Show Wards"]),
+	optionEnable = Menu.AddToggle("Enable"),
+	//optionPingTeam = Menu.AddToggle("Ping for team"),
+	optionPlaySound = Menu.AddToggle("Play sound")
+
+optionEnable.OnValueChangedCBs.push(() => { if (!optionEnable.value) { ClearAll(); } });
+
 let wardCaptureTiming = 0;
-let wardDrawingRemove = 0;
 
 let wardDispenserCount = [];
 let wardProcessingTable = [];
 
 let heroes: Hero[] = [];
+
+function ClearAll() {
+	wardCaptureTiming = 0;
+	wardDispenserCount.filter(() => false);
+	wardProcessingTable.filter(() => false);
+	heroes.filter(() => false);
+	//vpadlu guglit kak ochistit massiv
+}
+
 
 EventsSDK.on("EntityCreated", ent => {
 	if (ent instanceof Hero &&
@@ -31,28 +47,52 @@ EventsSDK.on("EntityCreated", ent => {
 	}
 });
 
+EventsSDK.on("GameEnded", ClearAll);
+
+
 EventsSDK.on("EntityDestroyed", (ent) => {
 	if (ent instanceof Hero) {
 		ArrayExtensions.arrayRemove(heroes, ent);
 	}
 
-	//if (ent.Name == "npc_dota_sentry_wards" ||
-	//ent.Name == "npc_dota_observer_wards") {
+	let is_observer = ent.Name == "npc_dota_ward_base";
+	let is_sentry = ent.Name == "npc_dota_ward_base_truesight";
 
-	if (ent.Name == "npc_dota_ward_base" ||
-		ent.Name == "npc_dota_ward_base_truesight") {
+	if (is_observer || is_sentry) {
 
 		wardProcessingTable = wardProcessingTable.filter((w) => (w != undefined));
 
+		let min_distance = Number.MAX_VALUE;
+		let idx = 0;
+
 		wardProcessingTable.forEach((ward, i) => {
-			if (ward.unit.Position.Subtract(ent.Position).Length < 500) {
-				wardProcessingTable.splice(i, 1);
+
+			if ((is_observer && ward.type == "observer") ||
+				(is_sentry && ward.type == "sentry")) {
+
+				let distance = ent.Position.Subtract(ward.pos).Length;
+
+				console.log("id: " + i + "dist: " + distance);
+				if (distance < min_distance) {
+
+					min_distance = distance;
+					idx = i;
+				}
 			}
 		});
+
+		if (min_distance < 1500) {
+			wardProcessingTable.splice(idx, 1);
+		}
 	}
 });
 
 function PingEnemyWard(pos: Vector3, hero: Entity) {
+
+	//if (optionPingTeam.value) {
+	//	pos.toIOBuffer();
+	//	Minimap.SendPing(PingType_t.ENEMY_VISION, false, hero.m_pBaseEntity);
+	//}
 
 	let map_ping = ParticlesSDK.Create(
 		"particles/ui_mouseactions/ping_enemyward.vpcf",
@@ -64,10 +104,16 @@ function PingEnemyWard(pos: Vector3, hero: Entity) {
 	ParticlesSDK.SetControlPoint(map_ping, 1, new Vector3(1, 1, 1));
 	ParticlesSDK.SetControlPoint(map_ping, 5, new Vector3(10, 0, 0));
 
-	SendToConsole("play sounds/ui/ping_warning");
+	if (optionPlaySound.value) {
+		SendToConsole("playvol sounds/ui/ping_warning 0.2");
+	}
 }
 
 EventsSDK.on("Update", () => {
+	if (!optionEnable.value) {
+		return;
+	}
+
 	wardProcessingTable = wardProcessingTable.filter((l) => (l !== undefined && l.dieTime > Game.GameTime));
 
 	if (Game.GameTime - wardCaptureTiming < 0.1) {
@@ -83,6 +129,8 @@ EventsSDK.on("Update", () => {
 			let sentry_stack = 0;
 			let observer_stack = 0;
 			let owner_idx = hero.Index;
+
+			let unique_id = owner_idx + Math.floor(Game.GameTime);
 
 			if (sentry !== undefined) {
 				sentry_stack = sentry.CurrentCharges;
@@ -105,13 +153,13 @@ EventsSDK.on("Update", () => {
 					if (wardDispenserCount[owner_idx].sentry > sentry_stack) {
 						ward_type = "sentry";
 					}
-					else if (wardDispenserCount[owner_idx].observer > sentry_stack) {
+					else if (wardDispenserCount[owner_idx].observer > observer_stack) {
 						ward_type = "observer";
 					}
 
 					if (ward_type != undefined) {
 
-						wardProcessingTable[owner_idx + Math.floor(Game.GameTime)] = {
+						wardProcessingTable[unique_id] = {
 							"type": ward_type,
 							"pos": hero.Position,
 							"dieTime": Math.floor(Game.GameTime + 360),
@@ -138,55 +186,39 @@ EventsSDK.on("Update", () => {
 				}
 			}
 			else {
-				if (
+				if (!(
 					wardDispenserCount[owner_idx]["sentry"] < sentry_stack ||
 					wardDispenserCount[owner_idx]["observer"] < observer_stack
-				) {
-					wardDispenserCount[owner_idx] =
-						{
-							"sentry": sentry_stack,
-							"observer": observer_stack
-						};
+				)) {
+					let ward_type = undefined;
 
-					wardCaptureTiming = Game.GameTime;
+					if (wardDispenserCount[owner_idx].sentry > sentry_stack) {
+						ward_type = "sentry";
+					}
+					else if (wardDispenserCount[owner_idx].observer > observer_stack) {
+						ward_type = "observer";
+					}
+
+					if (ward_type !== undefined) {
+						wardProcessingTable[unique_id] =
+							{
+								"type": ward_type,
+								"pos": hero.Position,
+								"dieTime": Math.floor(Game.GameTime + 360),
+								"unit": hero
+							};
+
+						PingEnemyWard(hero.Position, hero);
+					}
 				}
-				else if (wardDispenserCount[owner_idx]["sentry"] > sentry_stack) {
-					wardProcessingTable[owner_idx + Math.floor(Game.GameTime)] =
-						{
-							"type": "sentry",
-							"pos": hero.Position,
-							"dieTime": Math.floor(Game.GameTime + 360),
-							"unit": hero
-						};
 
-					PingEnemyWard(hero.Position, hero);
+				wardDispenserCount[owner_idx] =
+					{
+						"sentry": sentry_stack,
+						"observer": observer_stack
+					};
 
-					wardDispenserCount[owner_idx] =
-						{
-							"sentry": sentry_stack,
-							"observer": observer_stack
-						};
-					wardCaptureTiming = Game.GameTime;
-				}
-				else if (wardDispenserCount[owner_idx]["observer"] > observer_stack) {
-					wardProcessingTable[owner_idx + Math.floor(Game.GameTime)] =
-						{
-							"type": "observer",
-							"pos": hero.Position,
-							"dieTime": Math.floor(Game.GameTime + 360),
-							"unit": hero
-						};
-
-					PingEnemyWard(hero.Position, hero);
-
-					wardDispenserCount[owner_idx] =
-						{
-							"sentry": sentry_stack,
-							"observer": observer_stack
-						};
-
-					wardCaptureTiming = Game.GameTime;
-				}
+				wardCaptureTiming = Game.GameTime;
 			}
 		}
 		else if (hero !== undefined && hero.IsDormant) {
@@ -198,39 +230,46 @@ EventsSDK.on("Update", () => {
 
 EventsSDK.on("Draw", () => {
 
+	if (!optionEnable.value) {
+		return;
+	}
+
 	wardProcessingTable.forEach((v, i) => {
 
-		if (v !== undefined) {
+		if (v == undefined) {
+			wardProcessingTable.splice(i, 1);
+		}
+		else {
 			if (v.dieTime < Game.GameTime) {
 				wardProcessingTable.splice(i, 1);
-				return;
 			}
+			else {
+				let type = v.type;
+				let screen_pos = RendererSDK.WorldToScreen(v.pos);
 
-			let type = v.type;
-			let screen_pos = RendererSDK.WorldToScreen(v.pos);
+				if (screen_pos !== undefined) {
+					RendererSDK.Image(
+						"panorama\\images\\icon_ward_psd.vtex_c",
+						new Vector2(
+							screen_pos.x - 15,
+							screen_pos.y - 15
+						),
+						new Vector2(30, 30),
+						(type == "sentry" ?
+							new Color(15, 0, 221) :
+							new Color(222, 170, 0)) //observer
+					);
 
-			if (screen_pos !== undefined) {
-				RendererSDK.Image(
-					"panorama\\images\\icon_ward_psd.vtex_c",
-					new Vector2(
-						screen_pos.x - 15,
-						screen_pos.y - 15
-					),
-					new Vector2(30, 30),
-					(type == "sentry" ?
-						new Color(15, 0, 221) :
-						new Color(222, 170, 0)) //observer
-				);
+					let seconds = Math.floor(v.dieTime - Game.GameTime);
 
-				let seconds = Math.floor(v.dieTime - Game.GameTime);
-
-				RendererSDK.Text(
-					Math.floor(seconds / 60) + ":" + (seconds < 10 ? " " : "") + seconds % 60,
-					new Vector2(
-						screen_pos.x - 15,
-						screen_pos.y + 15
-					)
-				);
+					RendererSDK.Text(
+						Math.floor(seconds / 60) + ":" + ((seconds % 60) < 10 ? "0" : "") + seconds % 60,
+						new Vector2(
+							screen_pos.x - 15,
+							screen_pos.y + 15
+						)
+					);
+				}
 			}
 		}
 	});
