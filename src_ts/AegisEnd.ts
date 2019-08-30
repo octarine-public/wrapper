@@ -7,7 +7,7 @@ let AegisExists = false;
 
 function NotifyAegisEnd() {
 	if (AegisExists) {
-		SendToConsole("say_team aegis ended");
+		// SendToConsole("say_team aegis ended"); // fuck bulb4
 		AegisExists = false;
 	}
 }
