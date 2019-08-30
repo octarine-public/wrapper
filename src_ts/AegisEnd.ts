@@ -1,19 +1,29 @@
 import {
 	EventsSDK,
 	Game,
+	Menu as MenuSDK
 } from "wrapper/Imports"
+
+
+const Menu = MenuSDK.AddEntry(["Utility", "Aegis End"]),
+	optionChatAlert = Menu.AddToggle("Chat alert");
+
 
 let AegisExists = false;
 
 function NotifyAegisEnd() {
 	if (AegisExists) {
-		// SendToConsole("say_team aegis ended"); // fuck bulb4
+		if (optionChatAlert.value) {
+			console.log("aegis end");
+			SendToConsole("say_team aegis ended"); // fuck bulb4
+		}
 		AegisExists = false;
 	}
 }
 
 EventsSDK.on("BuffAdded", (npc, buf) => {
 	if (buf.Name == "modifier_item_aegis") {
+		console.log("add aegis");
 		setTimeout(NotifyAegisEnd, 300000 - Math.floor(Game.GameTime - buf.CreationTime)); //aegis self destruct time
 		AegisExists = true;
 	}
@@ -23,4 +33,8 @@ EventsSDK.on("EntityDestroyed", ent => {
 	if (ent.Name == "item_aegis") {
 		NotifyAegisEnd();
 	}
+});
+
+EventsSDK.on("GameEnded", () => {
+	AegisExists = false;
 });
