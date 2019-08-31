@@ -86,10 +86,8 @@ class EntityManager {
 			if (!(ent instanceof C_BaseEntity))
 				return this.EntityByIndex(ent)
 			let ent_ = AllEntitiesAsMap.get(ent)
-
 			if (inStage)
 				ent_ = ent_ || InStage.get(ent) || queueEntitiesAsMap.get(ent)
-
 			return ent_ || ent
 		})
 	}

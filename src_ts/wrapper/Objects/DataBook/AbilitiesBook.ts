@@ -5,11 +5,11 @@ import Unit from "../Base/Unit"
 const MAX_SKILLS = 31
 
 export default class AbilitiesBook {
-	public Spells_: Array<Ability | number>
+	public Spells_: Array<Ability | C_BaseEntity | number>
 
 	constructor(public readonly Owner: Unit) {
 		// loop-optimizer: FORWARD
-		this.Spells_ = this.Owner.m_pBaseEntity.m_hAbilities.map(abil => EntityManager.GetEntityByNative(abil) as Ability || (abil instanceof C_BaseEntity ? abil.m_pEntity.m_iIndex : abil))
+		this.Spells_ = this.Owner.m_pBaseEntity.m_hAbilities.map(abil => EntityManager.GetEntityByNative(abil) as Ability || abil)
 	}
 
 	get Spells(): Ability[] {
