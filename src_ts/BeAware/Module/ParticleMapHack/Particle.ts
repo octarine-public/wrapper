@@ -285,7 +285,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 			Particle.set(id, [part[0], npc_hero + "enigma", part[2], position])
 		// invoker metior
 		if (part[0] === 6544262852176998491n)
-			Particle.set(id, [part[0], npc_hero + "invoker", part[2], position, new Color(255,255,255)])
+			Particle.set(id, [part[0], npc_hero + "invoker", part[2], position, new Color(255, 255, 255)])
 		// leshrac split
 		if (part[0] === 10977498504300558457n || part[0] === 3807435887289622893n || part[0] === 2957027257057922287n)
 			Particle.set(id, [part[0], npc_hero + "leshrac", part[2], position])
@@ -406,7 +406,7 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	}
 	// antimage blink
 	if (part[0] === 6662325468141068933n) {
-		Particle.set(id, [part[0], ent, part[2], position, new Color(100,100,100)])
+		Particle.set(id, [part[0], ent, part[2], position, new Color(100, 100, 100)])
 		return
 	}
 	// obsidian_destroyer | EQ
@@ -426,7 +426,7 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	}
 	// Items Scroll
 	if (part[0] === 9908905996079864839n) { // "particles/items2_fx/teleport_end.vpcf"
-		Particle.set(id, [part[0], ent, part[2], position, new Color(100,100,100)])
+		Particle.set(id, [part[0], ent, part[2], position, new Color(100, 100, 100)])
 		let ID_START_SCROLL = END_SCROLL.get(id),
 			_part = Particle.get(ID_START_SCROLL)
 		if (part[1] === "Scroll")
@@ -442,7 +442,7 @@ export function OnDraw() {
 	// loop-optimizer: KEEP
 	Particle.forEach(([handle, target, Time, position, color, delete_time], i) => {
 		if (delete_time === undefined)
-			delete_time =+ 3 // def time for del.
+			delete_time = + 3 // def time for del.
 		// console.log("Position: " + position + " | Color: " + color)
 		if (position === undefined || Time + delete_time <= Game.RawGameTime) {
 			Particle.delete(i)
@@ -468,6 +468,14 @@ export function OnDraw() {
 		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && (handle === 9908905996079864839n || handle === 16169843851719108633n)) {
 			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
 			DrawIconWorldHero(position, Target, color)
+
+			if (handle === 16169843851719108633n) {
+				let screen_pos = RendererSDK.WorldToScreen(position);
+
+				if (screen_pos !== undefined) {
+					RendererSDK.Text((Game.RawGameTime - Time).toFixed(1).toString(), screen_pos);
+				}
+			}
 		}
 	})
 }
@@ -475,7 +483,7 @@ export function ParticleDestroyed(id: number) {
 	// console.log(id + " - ID Deleted ================== ")
 	if (END_SCROLL.has(id))
 		END_SCROLL.delete(id)
-	if(Particle.has(id))
+	if (Particle.has(id))
 		Particle.delete(id)
 }
 export function GameEnded() {
