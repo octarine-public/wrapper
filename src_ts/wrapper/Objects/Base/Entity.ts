@@ -357,10 +357,10 @@ export default class Entity {
 		return ang <= turn_rad ? 30 * ang / rotation_speed[this.Name] : 0
 	}
 
-	OnGameSceneNodeChanged(m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_angRotation: number, m_flAbsScale: number) {
+	OnGameSceneNodeChanged(m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_flAbsScale: number) {
 		m_vecOrigin.CopyTo(this.Position_)
 		m_angAbsRotation.CopyTo(this.Angles_)
-		this.Rotation_ = m_angRotation
+		this.Rotation_ = this.Angles_.y
 		this.Scale_ = m_flAbsScale
 	}
 	OnNetworkPositionChanged(m_vecOrigin: Vector3) {

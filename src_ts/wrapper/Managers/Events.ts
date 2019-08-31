@@ -170,14 +170,6 @@ Events.on("UnitFadeGesture", (npc, activity) => EventsSDK.emit (
 	activity,
 ))
 
-let node2ent = new Map<CGameSceneNode, Entity>()
-function GetEntityByNode(node: CGameSceneNode) {
-	let ent = node2ent.get(node)
-	if (ent === undefined)
-		node2ent.set(node, ent = EntityManager.AllEntities.find(ent => ent.GameSceneNode_ === node) || EntityManager.AllEntities.find(ent => ent.GameSceneNode === node))
-	return ent
-}
-
 let m_vecOrigin2ent = new Map<CNetworkOriginCellCoordQuantizedVector, Entity>()
 function GetEntityByVecOrigin(vec: CNetworkOriginCellCoordQuantizedVector) {
 	let ent = m_vecOrigin2ent.get(vec)
@@ -205,29 +197,27 @@ Events.on("NetworkPositionsChanged", vecs => vecs.forEach(vec => {
 	ent.OnNetworkPositionChanged(m_vecOrigin)
 }))
 
-Events.on("GameSceneNodeChanged", node => {
-	let m_vecOrigin = Vector3.fromIOBuffer(),
-		m_angAbsRotation = QAngle.fromIOBuffer(3),
-		m_angRotation = IOBuffer[6],
-		m_flAbsScale = IOBuffer[7]
-	let ent = GetEntityByNode(node)
+Events.on("GameSceneNodesChanged", vecs => vecs.forEach(vec => {
+	let ent = GetEntityByVecOrigin(vec)
 	if (ent === undefined)
 		return
+	let m_vecOrigin = Vector3.fromIOBuffer(vec.m_Value),
+		m_angAbsRotation = QAngle.fromIOBuffer(ent.GameSceneNode.m_angAbsRotation),
+		m_flAbsScale = ent.GameSceneNode.m_flAbsScale
 	EventsSDK.emit (
 		"GameSceneNodeChanged", false,
 		ent,
 		m_vecOrigin,
 		m_angAbsRotation,
-		m_angRotation,
 		m_flAbsScale,
 	)
-	ent.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation, m_angRotation, m_flAbsScale)
-})
+	ent.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation, m_flAbsScale)
+}))
 Events.on("EntityDestroyed", ent => {
 	// loop-optimizer: KEEP
-	node2ent.forEach((val, key) => {
+	m_vecOrigin2ent.forEach((val, key) => {
 		if (val === undefined || val.m_pBaseEntity === ent)
-			node2ent.delete(key)
+			m_vecOrigin2ent.delete(key)
 	})
 })
 
@@ -372,6 +362,6 @@ interface EventsSDK extends EventEmitter {
 	on(name: "UnitRemoveGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
 	on(name: "UnitFadeGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
 	on(name: "NetworkPositionChanged", listener: (ent: Entity, m_vecOrigin: Vector3) => void): EventEmitter
-	on(name: "GameSceneNodeChanged", listener: (ent: Entity, m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_angRotation: number, m_flAbsScale: number) => void): EventEmitter
+	on(name: "GameSceneNodeChanged", listener: (ent: Entity, m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_flAbsScale: number) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 }
