@@ -1,4 +1,4 @@
-import { Color, EventsSDK, Hero, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Vector3, Game } from "./wrapper/Imports"
+import { Color, EventsSDK, Hero, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Vector3, Game, LocalPlayer } from "./wrapper/Imports"
 
 let setConVar = (toggle: Menu.Toggle) =>
 	ConVars.Set(toggle.tooltip,toggle.value)
@@ -26,6 +26,16 @@ let creepsNoSpawn = sv_cheatsMenu.AddToggle("Creeps no spawning")
 sv_cheatsMenu.AddKeybind("Refresh")
 	.SetTooltip("dota_hero_refresh")
 	.OnRelease(self => SendToConsole(self.tooltip))
+
+let ability_abuse = sv_cheatsMenu.AddKeybind("Ability Abuse")
+let ability_abuse_selector = sv_cheatsMenu.AddImageSelector("Ability Abuse Selector", [
+	"witch_doctor_voodoo_restoration",
+	"medusa_mana_shield",
+	"invoker_exort",
+	"bristleback_quill_spray",
+	"item_shadow_amulet",
+	"item_shivas_guard",
+])
 
 sv_cheatsMenu.AddButton("Local lvl max")
 	.SetTooltip("dota_hero_level 25")
@@ -172,4 +182,92 @@ EventsSDK.on("Draw", () => {
 			return
 		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
 	})
+})
+
+EventsSDK.on("Tick", () => {
+	if (!ability_abuse.is_pressed)
+		return
+	let MyEnt = LocalPlayer.Hero
+	if (MyEnt === undefined)
+		return
+	let repeated_unit = new Array<C_BaseEntity>(0x80/*max: 0x3FFF*/).fill(MyEnt.m_pBaseEntity)
+	let ability = ability_abuse_selector.IsEnabled("witch_doctor_voodoo_restoration") ? MyEnt.GetAbilityByName("witch_doctor_voodoo_restoration") : undefined
+	if (ability !== undefined && ability.CanBeCasted()) {
+		PrepareUnitOrders({
+			OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE,
+			Ability: ability.m_pBaseEntity,
+			OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+			Unit: repeated_unit,
+			Queue: false,
+			ShowEffects: false,
+		})
+		return
+	}
+	if (ability_abuse_selector.IsEnabled("medusa_mana_shield"))
+		ability = ability || MyEnt.GetAbilityByName("medusa_mana_shield")
+	if (ability !== undefined && ability.CanBeCasted()) {
+		PrepareUnitOrders({
+			OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE,
+			Ability: ability.m_pBaseEntity,
+			OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+			Unit: repeated_unit,
+			Queue: false,
+			ShowEffects: false,
+		})
+		return
+	}
+	if (ability_abuse_selector.IsEnabled("invoker_exort"))
+		ability = ability || MyEnt.GetAbilityByName("invoker_exort")
+	if (ability !== undefined && ability.CanBeCasted()) {
+		PrepareUnitOrders({
+			OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
+			Ability: ability.m_pBaseEntity,
+			OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+			Unit: repeated_unit,
+			Queue: false,
+			ShowEffects: false,
+		})
+		return
+	}
+	if (ability_abuse_selector.IsEnabled("bristleback_quill_spray"))
+		ability = ability || MyEnt.GetAbilityByName("bristleback_quill_spray")
+	if (ability !== undefined && ability.CanBeCasted()) {
+		PrepareUnitOrders({
+			OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
+			Ability: ability.m_pBaseEntity,
+			OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+			Unit: repeated_unit,
+			Queue: false,
+			ShowEffects: false,
+		})
+		return
+	}
+	if (ability_abuse_selector.IsEnabled("item_shivas_guard"))
+		ability = ability || MyEnt.GetItemByName("item_shivas_guard")
+	if (ability !== undefined && ability.CanBeCasted()) {
+		PrepareUnitOrders({
+			OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
+			Ability: ability.m_pBaseEntity,
+			OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+			Unit: repeated_unit,
+			Queue: false,
+			ShowEffects: false,
+		})
+		return
+	}
+	if (ability_abuse_selector.IsEnabled("item_shadow_amulet"))
+		ability = ability || MyEnt.GetItemByName("item_shadow_amulet")
+	if (ability !== undefined && ability.CanBeCasted()) {
+		PrepareUnitOrders({
+			OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET,
+			Ability: ability.m_pBaseEntity,
+			OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+			Unit: repeated_unit,
+			Queue: false,
+			ShowEffects: false,
+			Target: MyEnt.m_pBaseEntity,
+		})
+		return
+	}
+	MyEnt.UseSmartAbility(ability, MyEnt)
 })

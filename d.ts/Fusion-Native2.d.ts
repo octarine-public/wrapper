@@ -429,7 +429,7 @@ declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer 
 	Target?: C_BaseEntity | number,
 	Ability?: C_BaseEntity | number,
 	OrderIssuer?: PlayerOrderIssuer_t,
-	Unit?: C_BaseEntity | number,
+	Unit?: Array<C_BaseEntity | number> | C_BaseEntity | number,
 	Queue?: boolean,
 	ShowEffects?: boolean
 }): void
