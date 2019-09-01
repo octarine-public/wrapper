@@ -33,6 +33,7 @@ let ability_abuse_selector = sv_cheatsMenu.AddImageSelector("Ability Abuse Selec
 	"medusa_mana_shield",
 	"invoker_exort",
 	"bristleback_quill_spray",
+	"queenofpain_scream_of_pain",
 	"item_shadow_amulet",
 	"item_shivas_guard",
 ])
@@ -196,7 +197,7 @@ EventsSDK.on("Tick", () => {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE,
 				Ability: ability.m_pBaseEntity,
-				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
 				ShowEffects: false,
@@ -209,7 +210,7 @@ EventsSDK.on("Tick", () => {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE,
 				Ability: ability.m_pBaseEntity,
-				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
 				ShowEffects: false,
@@ -222,7 +223,7 @@ EventsSDK.on("Tick", () => {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
 				Ability: ability.m_pBaseEntity,
-				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
 				ShowEffects: false,
@@ -235,7 +236,20 @@ EventsSDK.on("Tick", () => {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
 				Ability: ability.m_pBaseEntity,
-				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
+				Unit: repeated_unit,
+				Queue: false,
+				ShowEffects: false,
+			})
+			return
+		}
+		if (ability_abuse_selector.IsEnabled("queenofpain_scream_of_pain"))
+			ability = MyEnt.GetAbilityByName("queenofpain_scream_of_pain")
+		if (ability !== undefined && ability.CanBeCasted()) {
+			PrepareUnitOrders({
+				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
+				Ability: ability.m_pBaseEntity,
+				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
 				ShowEffects: false,
@@ -248,7 +262,7 @@ EventsSDK.on("Tick", () => {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
 				Ability: ability.m_pBaseEntity,
-				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
 				ShowEffects: false,
@@ -261,7 +275,7 @@ EventsSDK.on("Tick", () => {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET,
 				Ability: ability.m_pBaseEntity,
-				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
 				ShowEffects: false,

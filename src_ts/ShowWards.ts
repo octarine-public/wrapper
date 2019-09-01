@@ -30,11 +30,10 @@ let wardProcessingTable = [];
 let heroes: Hero[] = [];
 
 function ClearAll() {
-	wardCaptureTiming = 0;
-	wardDispenserCount.filter(() => false);
-	wardProcessingTable.filter(() => false);
-	heroes.filter(() => false);
-	//vpadlu guglit kak ochistit massiv
+	wardCaptureTiming = 0
+	wardDispenserCount = []
+	wardProcessingTable = 
+	heroes = []
 }
 
 
