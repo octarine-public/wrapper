@@ -344,6 +344,9 @@ export default class Unit extends Entity {
 	public get IdealSpeed(): number {
 		return this.m_pBaseEntity.m_fIdealSpeed
 	}
+	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
+		return this.InFront(movespeed * time)
+	}
 	public get NetworkActivity(): GameActivity_t {
 		return this.m_pBaseEntity.m_NetworkActivity
 	}

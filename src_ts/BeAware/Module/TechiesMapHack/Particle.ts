@@ -8,11 +8,10 @@ let allTechiesMines: Array<[Array<[Vector3, number]>, Vector3, string]> = [], //
 export function ParticleCreated(id: number, target: Entity, path: string) {
 	if (!State.value)
 		return
-	let mine_name
+	let mine_name: any
 	if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)_plant.vpcf$/.exec(path)) !== null) {
-		// if (target === undefined || !target.IsEnemy())
-		// 	return
-		waiting_spawn.push([id, mine_name[1]])
+		if (mine_name !== "particles/units/heroes/hero_techies/techies_stasis_trap_plant.vpcf" && (target === undefined || target.IsEnemy()))
+			waiting_spawn.push([id, mine_name[1]])
 	} else if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)(s_detonate|_explode).vpcf$/.exec(path)) !== null)
 		waiting_explode.push([id, mine_name[1]])
 }
