@@ -22,7 +22,6 @@ function NotifyAegisEnd() {
 
 EventsSDK.on("BuffAdded", (npc, buf) => {
 	if (buf.Name == "modifier_item_aegis") {
-		console.log("add aegis");
 		setTimeout(NotifyAegisEnd, 300000 - Math.floor(Game.GameTime - buf.CreationTime)); //aegis self destruct time
 		AegisExists = true;
 	}
