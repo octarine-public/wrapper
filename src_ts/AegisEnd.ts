@@ -14,7 +14,6 @@ let AegisExists = false;
 function NotifyAegisEnd() {
 	if (AegisExists) {
 		if (optionChatAlert.value) {
-			console.log("aegis end");
 			SendToConsole("say_team aegis ended"); // fuck bulb4
 		}
 		AegisExists = false;

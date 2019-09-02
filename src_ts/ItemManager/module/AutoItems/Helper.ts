@@ -126,7 +126,7 @@ function AutoUseItems(unit: Unit) {
 				if (!ItemsForUse.IsEnabled(Item.Name) || !unit.IsMoving || unit.IdealSpeed >= Base.MaxMoveSpeed)
 					return false
 				let enemy_phase = AutoUseItemsPhaseBootsState.value
-					? AllUnits.some(enemy => enemy.IsVisible
+					? AllUnits.some(enemy => enemy.IsVisible && enemy.Team !== unit.Team
 						&& unit.Distance2D(enemy.NetworkPosition) !== 0 
 						&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsPhase_val.value)
 					: AutoUseItemsPhaseBootsState.value
@@ -138,7 +138,7 @@ function AutoUseItems(unit: Unit) {
 			case "item_mjollnir":
 				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
-				let enemy_mjolnir = AllUnits.some(enemy => enemy.IsVisible 
+				let enemy_mjolnir = AllUnits.some(enemy => enemy.IsVisible && enemy.Team !== unit.Team
 					&& unit.Distance2D(enemy.NetworkPosition) !== 0 
 					&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsMjollnir_val.value)
 				if (enemy_mjolnir)
