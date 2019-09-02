@@ -1,9 +1,7 @@
 import { EventsSDK, Game, Menu as MenuSDK } from "./wrapper/Imports"
 
-let Menu = MenuSDK.AddEntry("Misc");
-
-const CameraMaxDistance = 10000;
-const CameraMinDistance = 1300;
+let Menu = MenuSDK.AddEntry("Misc"),
+	CameraMinDistance = 1300, CameraMaxDistance = 10000;
 
 let CameraTree = Menu.AddNode("Camera"),
 	CamDist = CameraTree.AddSliderFloat("Camera Distance", CameraMinDistance, 0, CameraMaxDistance).OnValue(UpdateCameraDistance),
@@ -32,7 +30,7 @@ function ReloadScripts() {
 }
 
 Menu.AddButton("Reload Scripts").OnValue(ReloadScripts);
-Menu.AddKeybind("Reload keybind", "Numpad 2").OnPressed(ReloadScripts);
+Menu.AddKeybind("Reload keybind").OnPressed(ReloadScripts);
 
 CameraTree.AddButton("Reset camera").OnValue(() => {
 	Camera.Distance = CamDist.value = 1134;
@@ -41,9 +39,7 @@ CameraTree.AddButton("Reset camera").OnValue(() => {
 
 function UpdateCameraDistance(slid: MenuSDK.Slider = CamDist) {
 	ConVars.Set("r_farz", slid.value * 2);
-	if (Game.IsInGame) {
-		Camera.Distance = slid.value;
-	}
+	Camera.Distance = slid.value;
 }
 
 EventsSDK.on("GameConnected", () => {
@@ -59,16 +55,14 @@ EventsSDK.on("GameConnected", () => {
 });
 
 EventsSDK.on("WndProc", (msg, wParam) => {
-	if (msg == 522 /* WM_MOUSEWHEEL */ &&
+	if (Game.IsInGame && msg == 522 /* WM_MOUSEWHEEL */ &&
 		CamMouseState.value) {
 
-		if (wParam === 7864320n) { //wheel up
-
+		if (wParam === 7864320n) //wheel up
 			CamDist.value -= CamStep.value;
-		}
-		if (wParam === 4287102976n) { //wheel down
+
+		if (wParam === 4287102976n) //wheel down
 			CamDist.value += CamStep.value;
-		}
 
 		if (CamDist.value < CameraMinDistance) {
 			CamDist.value = CameraMinDistance;
@@ -76,8 +70,8 @@ EventsSDK.on("WndProc", (msg, wParam) => {
 		else if (CamDist.value > CameraMaxDistance) {
 			CamDist.value = CameraMaxDistance;
 		}
-
 		UpdateCameraDistance();
 		return false;
 	}
+	return true;
 });
