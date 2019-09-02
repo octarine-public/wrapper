@@ -19,6 +19,7 @@ let Items: string[] = [
 	"item_dust",
 	"item_buckler",
 	"item_cheese",
+	"item_mjollnir"
 ]
 
 let ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items)
@@ -28,6 +29,10 @@ let SettingsAutoItems = BaseTree.AddNode("Items settings"),
 	AutoUseItemsSticks = SettingsAutoItems.AddNode("Stick"),
 	AutoUseItemsSticks_val = AutoUseItemsSticks.AddSlider("HP precent (%)", 10, 1, 99)
 
+let AutoUseItemsPhaseBoots = SettingsAutoItems.AddNode("Phase Boots"),
+	AutoUseItemsPhaseBootsState = AutoUseItemsPhaseBoots.AddToggle("Check from enemy"),
+	AutoUseItemsPhase_val = AutoUseItemsPhaseBoots.AddSlider("Distance", 300, 150, 2000)
+	
 let AutoUseItemsFaerieFire = SettingsAutoItems.AddNode("Faerie Fire"),
 	AutoUseItemsFaerieFire_val = AutoUseItemsFaerieFire.AddSlider("HP for use", 100, 1, 1000)
 
@@ -48,12 +53,15 @@ let AutoUseItemsMidas = SettingsAutoItems.AddNode("Midas"),
 	AutoUseItemsMidas_range = AutoUseItemsMidas.AddToggle("Only range-creeps"),
 	AutoUseItemsMidas_CheckBIG = AutoUseItemsMidas.AddToggle("Check on big creeps")
 
-let AutoUseItemsUrn = SettingsAutoItems.AddNode("Urn of Shadows / Spirit Vessel"),
+let AutoUseItemsUrn = SettingsAutoItems.AddNode("Urn / Vessel"),
 	AutoUseItemsUrnAlies = AutoUseItemsUrn.AddToggle("Use Urn for Allies"),
 	AutoUseItemsUrnAliesAlliesHP = AutoUseItemsUrn.AddSlider("HP for use allies", 300, 1, 1000),
 
 	AutoUseItemsUrnEnemy = AutoUseItemsUrn.AddToggle("Use Urn for Enemy"),
 	AutoUseItemsUrnAliesEnemyHP = AutoUseItemsUrn.AddSlider("HP for use enemy", 200, 1, 1000)
+	
+let AutoUseItemsMjollnir = SettingsAutoItems.AddNode("Mjollnir"),
+	AutoUseItemsMjollnir_val = AutoUseItemsMjollnir.AddSlider("Distance from enemy", 600, 150, 2000);
 
 export {
 	MenuBase, Items,
@@ -71,4 +79,7 @@ export {
 	AutoUseItemsUrnAliesAlliesHP,
 	AutoUseItemsUrnEnemy,
 	AutoUseItemsUrnAliesEnemyHP,
+	AutoUseItemsPhase_val,
+	AutoUseItemsPhaseBootsState,
+	AutoUseItemsMjollnir_val
 }

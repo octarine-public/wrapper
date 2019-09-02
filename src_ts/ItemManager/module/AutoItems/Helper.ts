@@ -1,6 +1,8 @@
-import {  ArrayExtensions, Creep, Entity, Game, Item, LocalPlayer, Unit } from "wrapper/Imports"
+import ItemManagerBase from "../../abstract/Base"
+import { ArrayExtensions, Creep, Entity, Game, Item, LocalPlayer, Unit } from "wrapper/Imports"
 
 import {
+
 	AutoUseItemsArcane_val, AutoUseItemsBloodHP_val,
 	AutoUseItemsBloodMP_val,
 	AutoUseItemsCheese_val,
@@ -13,8 +15,10 @@ import {
 	AutoUseItemsUrnAliesAlliesHP,
 	AutoUseItemsUrnAliesEnemyHP,
 	AutoUseItemsUrnEnemy,
-	Items,
 	ItemsForUse, State,
+	Items, AutoUseItemsPhase_val,
+	AutoUseItemsPhaseBootsState,
+	AutoUseItemsMjollnir_val,
 } from "./Menu"
 
 let UnitsControllable: Unit[] = [],
@@ -34,6 +38,8 @@ let Buffs = {
 		"modifier_truesight",
 	],
 }
+
+let Base = new ItemManagerBase
 
 export function EntityCreate(Entity: Entity) {
 	if (Entity instanceof Creep && Entity.IsCreep && !Entity.IsAncient)
@@ -117,11 +123,26 @@ function AutoUseItems(unit: Unit) {
 			return false
 		switch (Item.Name) {
 			case "item_phase_boots":
+				if (!ItemsForUse.IsEnabled(Item.Name) || !unit.IsMoving || unit.IdealSpeed >= Base.MaxMoveSpeed)
+					return false
+				let enemy_phase = AutoUseItemsPhaseBootsState.value
+					? AllUnits.some(enemy => enemy.IsVisible
+						&& unit.Distance2D(enemy.NetworkPosition) !== 0 
+						&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsPhase_val.value)
+					: AutoUseItemsPhaseBootsState.value
+				if(AutoUseItemsPhaseBootsState.value && enemy_phase)
+					unit.CastNoTarget(Item)
+				else if (!AutoUseItemsPhaseBootsState.value) 
+					unit.CastNoTarget(Item)		
+				break
+			case "item_mjollnir":
 				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
-				if (!unit.IsMoving)
-					return false
-				unit.CastNoTarget(Item)
+				let enemy_mjolnir = AllUnits.some(enemy => enemy.IsVisible 
+					&& unit.Distance2D(enemy.NetworkPosition) !== 0 
+					&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsMjollnir_val.value)
+				if (enemy_mjolnir)
+					unit.CastTarget(Item, unit)
 				break
 			case "item_magic_stick":
 			case "item_magic_wand":
