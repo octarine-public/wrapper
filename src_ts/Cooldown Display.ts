@@ -16,12 +16,19 @@ const Menu = MenuSDK.AddEntry(["Visual", "Cooldown Display"]),
 	optionAlly = Menu.AddToggle("Show ally"),
 	optionSelf = Menu.AddToggle("Show local"),
 	optionBoxSize = Menu.AddSlider("Size", 30, 20, 60),
-	optionBoxOffsetX = Menu.AddSlider("Offset X", 0, -100, 100),
-	optionBoxOffsetY = Menu.AddSlider("Offset Y", 0, -100, 100),
+	optionBoxPixelOffset = Menu.AddSlider("Pixel Offset", 0, -150, 150),
+	optionBoxWorldOffset = Menu.AddSlider("World Offset", 0, -250, 250),
 	optionBoxAlpha = Menu.AddSlider("Opacity", 255, 0, 255),
 	optionFontBold = Menu.AddToggle("Font bold"),
 	optionFontOutlined = Menu.AddToggle("Font outlined"),
 	DrawRGBA = Menu.AddColorPicker("Color ability level", new Color(0, 255, 255))
+
+
+	Menu.AddButton("Reset position").OnValue(() => {
+		optionBoxPixelOffset.value = 0;
+		optionBoxWorldOffset.value = -50;
+	});
+
 
 let ignore_abils = [
 	"morphling_morph_agi",
@@ -166,7 +173,7 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x, y, index) {
 }
 
 function DrawDisplay(hero: Hero) {
-	let pos = hero.Position.AddScalarZ(hero.HealthBarOffset)
+	let pos = hero.Position.AddScalarZ(optionBoxWorldOffset.value)
 
 	let screen_pos = RendererSDK.WorldToScreen(pos)
 
@@ -179,8 +186,8 @@ function DrawDisplay(hero: Hero) {
 				!abil.IsHidden
 		})
 
-		let start_x = screen_pos.x - Math.floor((abilities.length / 2) * optionBoxSize.value) + optionBoxOffsetX.value
-		let start_y = screen_pos.y + optionBoxOffsetY.value
+		let start_x = screen_pos.x - Math.floor((abilities.length / 2) * optionBoxSize.value);
+		let start_y = screen_pos.y + optionBoxPixelOffset.value
 
 		RendererSDK.FilledRect(
 			new Vector2(start_x + 1, start_y - 1),
