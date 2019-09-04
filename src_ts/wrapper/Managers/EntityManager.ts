@@ -216,7 +216,7 @@ function AddToCache(entity: Entity) {
 setInterval(() => {
 	let old_val = Game.IsConnected
 	Game.IsConnected = IsInGame()
-	if (!old_val && Game.IsConnected)
+	if (!old_val && Game.IsConnected && LocalPlayer !== undefined)
 		EventsSDK.emit("GameConnected", false)
 	if (old_val && !Game.IsConnected)
 		Particles.DeleteAll()
