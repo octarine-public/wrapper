@@ -49,14 +49,7 @@ function UpdateVisuals() {
 	ConVars.Set("dota_unit_orders_rate", 512)
 }
 
-EventsSDK.on("GameConnected", () => {
-	setInterval(data => {
-		if (Camera.Distance === undefined)
-			return
-		data.Destroy()
-		UpdateVisuals()
-	}, 100)
-})
+EventsSDK.on("GameStarted", () => UpdateVisuals())
 
 EventsSDK.on("WndProc", (msg, wParam) => {
 	if (Game.IsInGame && msg == 522 /* WM_MOUSEWHEEL */ && CamMouseState.value) {
