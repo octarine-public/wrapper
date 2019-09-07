@@ -4,12 +4,12 @@
 		"module": "esnext",
 		"baseUrl": "src",
 		// Don't emit; allow Babel to transform files.
-		"noEmit": true,
+		"noEmit": true
 	},
 	"include": [
 		"d.ts/**/*.d.ts",
 		"src_ts/**/*.ts",
 		"src_bootstrap/**/*.ts"
 	],
-	"compileOnSave": true,
+	"compileOnSave": true
 }

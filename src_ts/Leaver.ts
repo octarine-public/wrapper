@@ -1,14 +1,17 @@
-import { Menu, PlayerResource } from "wrapper/Imports"
+import { Menu, PlayerResource, EventsSDK, Hero, Player, GameSleeper } from "wrapper/Imports"
 
-var TimerStart: boolean = false
-const tree = Menu.AddEntry(["Utility", "Leaver"]),
-	leave = tree.AddKeybind("Leave button xD"),
+let Time = 0,
+	Listplayer: Player,
+	Sleeper = new GameSleeper()
+const tree = Menu.AddEntry(["Utility", "Bait leave"]),
+	State = tree.AddToggle("State"),
+	Key = tree.AddKeybind("Leave button xD"),
 	autodisconnect = tree.AddToggle("Auto Disconnect"),
 	Additionaldelay = tree.AddSliderFloat("Delay auto disconnect", 1, 1, 10),
-	leaveFriend = tree.AddKeybind("Leave friend button"),
-	pid = tree.AddSlider("Player ID", 0, 0, 9),
+	playersList = tree.AddSwitcher("Only Alies", ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8", "Player 9"]),
 	colors = ["#415fff", "#83ffda", "#c3009c", "#d5ff16", "#f16900", "#ff6ca5", "#85c83b", "#74d6f9", "#009e31", "#8f6f00"],
 	gap = "<br>".repeat(75),
+	Language = tree.AddSwitcher("Language", ["Russian", "English"]),
 	heroes = {
 		npc_dota_hero_queenofpain:	"Queen of Pain",
 		npc_dota_hero_antimage:	"Anti-Mage",
@@ -126,25 +129,51 @@ const tree = Menu.AddEntry(["Utility", "Leaver"]),
 		npc_dota_hero_obsidian_destroyer:	"Outworld Devourer",
 		npc_dota_hero_lycan:	"Lycan",
 	}
-leave.OnPressed(() => {
-	const player = PlayerResource.GetPlayerByPlayerID(Math.floor(pid.value))
-	if (player === undefined)
-		return
-	const id = player.PlayerID,
-		name = player.Name,
-		hero = player.Hero.Name
-	ChatWheelAbuse(`${gap}<font color="${colors[id]}">${name} (${heroes[hero]})</font> отключается от игры. Пожалуйста, дождитесь повторного подключения.<br><font color='#FF0000'><b>У <font color="${colors[id]}">${name} (${heroes[hero]})</font> осталось 5 мин. для повторного подключения.</b></font><br><font color="${colors[id]}">${name} (${heroes[hero]})</font> покидает игру.<br><font color='#00FF00'><b>Теперь эту игру можно спокойно покинуть.</b></font>`)
-	if (autodisconnect.value) {
-		setTimeout(() =>  SendToConsole("disconnect"), Additionaldelay.value * 1000)
-	}
-})
-leaveFriend.OnPressed(() => {
-	const player = PlayerResource.GetPlayerByPlayerID(Math.floor(pid.value))
-	if (player === undefined)
-		return
-	const id = player.PlayerID,
-		name = player.Name,
-		hero = player.Hero.Name
+	
+function MainInit(){
 
-	ChatWheelAbuse(`${gap}<font color="${colors[id]}">${name} (${heroes[hero]})</font> покидает игру.<br><font color='#00FF00'><b>Теперь эту игру можно спокойно покинуть.</b></font>`)
+	Listplayer = PlayerResource.GetPlayerByPlayerID(Math.floor(playersList.selected_id))
+
+	if (Listplayer === undefined)
+		return false
+		
+	let PlayerName = Listplayer.GameName,
+		PlayerID = playersList.selected_id,
+		PlayerHeroName = Listplayer.Hero.Name,
+		switch_language: string;
+
+	switch (Language.selected_id) {
+		case 0:
+			switch_language = `
+			<font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> отключается от игры. Пожалуйста, дождитесь повторного подключения.<br><font color='#FF0000'>
+			<b>У <font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> осталось 5 мин. для повторного подключения.</b></font>
+			<br> <font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> покидает игру.<br><font color='#00FF00'><b>Теперь эту игру можно спокойно покинуть.</b></font>`
+			break;
+		case 1:
+			switch_language = `
+				<font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> has disconnected from the game. Please wait for them to reconnect.<br><font color='#FF0000'>
+				<b> <font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> has 5 minutes left to reconnect.</b></font>
+				<br> <font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> has abandoned the game.<br><font color='#00FF00'><b>This game is now safe to leave.</b></font>`
+			break;
+	}
+	ChatWheelAbuse(`${gap}${switch_language}`)
+	
+	if (autodisconnect.value)
+		setTimeout(() => SendToConsole('disconnect'), Additionaldelay.value)
+		
+	Sleeper.Sleep(1000, "Cd_" + playersList.selected_id)
+}
+
+EventsSDK.on("Tick", () => {
+	if (!State.value || !Key.is_pressed || Sleeper.Sleeping("Cd_" + playersList.selected_id))
+		return false
+	MainInit();
+})
+
+EventsSDK.on("GameStarted", () => {
+	Listplayer = PlayerResource.GetPlayerByPlayerID(Math.floor(playersList.selected_id))
+})
+
+EventsSDK.on("GameEnded", () => {
+	Listplayer = undefined
 })
