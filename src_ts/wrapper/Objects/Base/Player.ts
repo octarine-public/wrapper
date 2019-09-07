@@ -155,6 +155,9 @@ export default class Player extends Entity {
 	get Level(): number {
 		return this.PlayerTeamData.m_iLevel
 	}
+	get GameName(): string {
+		return this.PlayerData.m_iszPlayerName
+	}
 	// MissCount				=> NonSpectator
 	get Name(): string {
 		return this.m_Name
