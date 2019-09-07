@@ -1,6 +1,6 @@
 export default class ItemManagerBase {
-	constructor() { 
-		
+	constructor() {
+
 	}
 	public get MaxMoveSpeed(): number {
 		return Number.MAX_SAFE_INTEGER

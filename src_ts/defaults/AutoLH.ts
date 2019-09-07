@@ -1,6 +1,6 @@
 import * as Orders from "Orders"
 import * as Utils from "Utils"
-import { RendererSDK, EventsSDK, Menu, Game } from "../wrapper/Imports"
+import { EventsSDK, Game, Menu, RendererSDK } from "../wrapper/Imports"
 
 let root = Menu.AddEntry(["Utility", "Auto LastHit"]),
 	hotkey = root.AddKeybind("Hotkey", "", "Hotkey is in toggle mode"),
@@ -10,14 +10,14 @@ let root = Menu.AddEntry(["Utility", "Auto LastHit"]),
 	glow_enabled = root.AddSwitcher("Glow mode", ["Enabled", "Disabled"]),
 	glow_finder_range = root.AddSlider("Glow finder range", 0, 0, 1500),
 	glow_only = root.AddSwitcher(
-			"Mode", 
+			"Mode",
 		[
 			"None",
 			"Lasthit",
 			"Deny",
 			"Both",
 			"Show only",
-		]
+		],
 	)
 
 enum AutoLH_Mode {
@@ -253,4 +253,4 @@ EventsSDK.on("GameEnded", () => {
 	enabled = false
 	glow_ents = glow_ents_old = []
 })
-
+

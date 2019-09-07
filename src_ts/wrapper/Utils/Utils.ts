@@ -95,7 +95,7 @@ export function Utf8ArrayToStr(array: Uint8Array): string {
 			char3 = array[i++]
 			out += String.fromCharCode(((c & 0x0F) << 12) |
 						((char2 & 0x3F) << 6) |
-						((char3 & 0x3F) << 0));
+						((char3 & 0x3F) << 0))
 			break
 		}
 

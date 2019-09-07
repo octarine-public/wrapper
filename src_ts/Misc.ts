@@ -24,7 +24,6 @@ CamDist.OnValue(UpdateVisuals)
 
 Menu.AddKeybind("Menu (Open/Close)", "Insert").OnPressed(() => MenuSDK.MenuManager.is_open = !MenuSDK.MenuManager.is_open).activates_in_menu = true
 
-
 function ReloadScripts() {
 	EventsSDK.emit("GameEnded", false)
 	global.reload("eTE9Te5rgBYThsO", true)

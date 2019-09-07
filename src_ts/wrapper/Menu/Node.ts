@@ -173,7 +173,7 @@ export default class Node extends Base {
 			get Color(): Color {
 				return new Color(R.value, G.value, B.value, A.value)
 			},
-			OnValue: function (this: Color) { return this },
+			OnValue: function(this: Color) { return this },
 		}
 	}
 	public AddKeybind(name: string, default_key = "", tooltip?: string) {

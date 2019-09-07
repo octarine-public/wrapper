@@ -1,4 +1,4 @@
-import { EventsSDK, EntityManager, Menu, Hero, LocalPlayer } from "./wrapper/Imports";
+import { EntityManager, EventsSDK, Hero, LocalPlayer, Menu } from "./wrapper/Imports"
 let AbilityAbuser = Menu.AddEntry(["Utility", "Ability | Items Abuse"]),
 	ability_abuse = AbilityAbuser.AddKeybind("Hold key"),
 	ability_abuse_selector = AbilityAbuser.AddImageSelector("Ability Abuse Selector", [

@@ -19,7 +19,7 @@ let Items: string[] = [
 	"item_dust",
 	"item_buckler",
 	"item_cheese",
-	"item_mjollnir"
+	"item_mjollnir",
 ]
 
 let ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items)
@@ -32,7 +32,7 @@ let SettingsAutoItems = BaseTree.AddNode("Items settings"),
 let AutoUseItemsPhaseBoots = SettingsAutoItems.AddNode("Phase Boots"),
 	AutoUseItemsPhaseBootsState = AutoUseItemsPhaseBoots.AddToggle("Check from enemy"),
 	AutoUseItemsPhase_val = AutoUseItemsPhaseBoots.AddSlider("Distance", 300, 150, 2000)
-	
+
 let AutoUseItemsFaerieFire = SettingsAutoItems.AddNode("Faerie Fire"),
 	AutoUseItemsFaerieFire_val = AutoUseItemsFaerieFire.AddSlider("HP for use", 100, 1, 1000)
 
@@ -59,9 +59,9 @@ let AutoUseItemsUrn = SettingsAutoItems.AddNode("Urn / Vessel"),
 
 	AutoUseItemsUrnEnemy = AutoUseItemsUrn.AddToggle("Use Urn for Enemy"),
 	AutoUseItemsUrnAliesEnemyHP = AutoUseItemsUrn.AddSlider("HP for use enemy", 200, 1, 1000)
-	
+
 let AutoUseItemsMjollnir = SettingsAutoItems.AddNode("Mjollnir"),
-	AutoUseItemsMjollnir_val = AutoUseItemsMjollnir.AddSlider("Distance from enemy", 600, 150, 2000);
+	AutoUseItemsMjollnir_val = AutoUseItemsMjollnir.AddSlider("Distance from enemy", 600, 150, 2000)
 
 export {
 	MenuBase, Items,

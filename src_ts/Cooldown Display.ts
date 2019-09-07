@@ -23,12 +23,10 @@ const Menu = MenuSDK.AddEntry(["Visual", "Cooldown Display"]),
 	optionFontOutlined = Menu.AddToggle("Font outlined"),
 	DrawRGBA = Menu.AddColorPicker("Color ability level", new Color(0, 255, 255))
 
-
 	Menu.AddButton("Reset position").OnValue(() => {
-		optionBoxPixelOffset.value = 0;
-		optionBoxWorldOffset.value = -50;
-	});
-
+		optionBoxPixelOffset.value = 0
+		optionBoxWorldOffset.value = -50
+	})
 
 let ignore_abils = [
 	"morphling_morph_agi",
@@ -186,7 +184,7 @@ function DrawDisplay(hero: Hero) {
 				!abil.IsHidden
 		})
 
-		let start_x = screen_pos.x - Math.floor((abilities.length / 2) * optionBoxSize.value);
+		let start_x = screen_pos.x - Math.floor((abilities.length / 2) * optionBoxSize.value)
 		let start_y = screen_pos.y + optionBoxPixelOffset.value
 
 		RendererSDK.FilledRect(

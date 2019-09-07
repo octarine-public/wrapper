@@ -1,6 +1,6 @@
 import { Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
-import { ComboBox, DrawRGBA, Size, State, PMH_Smoke_snd } from "./Menu"
+import { ComboBox, DrawRGBA, PMH_Smoke_snd, Size, State } from "./Menu"
 
 let npc_hero: string = "npc_dota_hero_",
 	Particle: Map<number, [bigint, string | Entity, number, Vector3?, Color?, number?]> = new Map(), // TODO Radius for ability
@@ -470,10 +470,10 @@ export function OnDraw() {
 			DrawIconWorldHero(position, Target, color)
 
 			if (handle === 16169843851719108633n) {
-				let screen_pos = RendererSDK.WorldToScreen(position);
+				let screen_pos = RendererSDK.WorldToScreen(position)
 
 				if (screen_pos !== undefined) {
-					RendererSDK.Text((Game.RawGameTime - Time).toFixed(1).toString(), screen_pos);
+					RendererSDK.Text((Game.RawGameTime - Time).toFixed(1).toString(), screen_pos)
 				}
 			}
 		}

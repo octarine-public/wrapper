@@ -64,7 +64,6 @@ export default class Player extends Entity {
 	private m_PlayerData: PlayerResourcePlayerData_t
 	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t
 	private m_hAssignedHeroLast: Hero
-	private m_iszPlayerName: string
 	/**
 	 * Only for LocalPlayer
 	 */
@@ -161,9 +160,6 @@ export default class Player extends Entity {
 		return this.m_Name
 			|| this.IsValid && PlayerResource
 			? (this.m_Name = PlayerResource.GetNameByPlayerID(this.PlayerID)) : ""
-	}
-	get GameName(): string {
-		return this.PlayerData.m_iszPlayerName
 	}
 	// NearbyCreepDeathCount	=> NonSpectator
 	// ObserverWardsPlaced		=> NonSpectator

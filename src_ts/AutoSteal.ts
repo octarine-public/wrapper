@@ -1,9 +1,9 @@
-import { Ability, ArrayExtensions, Creep, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Modifier, Unit, Utils, Menu } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Creep, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, Modifier, Unit, Utils } from "wrapper/Imports"
 
 let root = Menu.AddEntry(["Utility", "AutoSteal"]),
 	state = root.AddToggle("State", false),
 	kill_creeps = root.AddToggle("Kill creeps", false),
-	kill_heroes = root.AddToggle("Kill heroes", true);
+	kill_heroes = root.AddToggle("Kill heroes", true)
 
 var abils: Array<{
 	abilName: string | RegExp
@@ -542,7 +542,6 @@ EventsSDK.on("EntityCreated", (npc: Unit) => {
 		possibleTargets.push(npc)
 })
 EventsSDK.on("Tick", OnTick)
-
 
 // let attacks: Array<[number, number, Unit]> = [];
 EventsSDK.on("EntityDestroyed",(unit, unit_id) => {

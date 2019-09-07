@@ -1,19 +1,18 @@
-import {ArrayExtensions, EventsSDK, Game, Hero, Utils, GameSleeper, ParticlesSDK, Vector3, EntityManager, Unit } from "wrapper/Imports"
-import { State, CursorPos, KeyCombo, MyItems, MyAbility, Items_settings, Ability_settings, BlinkRadius, DrawTargetParticle } from "./Menu"
-
+import {ArrayExtensions, EntityManager, EventsSDK, Game, GameSleeper, Hero, ParticlesSDK, Unit, Utils, Vector3 } from "wrapper/Imports"
+import { Ability_settings, BlinkRadius, CursorPos, DrawTargetParticle, Items_settings, KeyCombo, MyAbility, MyItems, State } from "./Menu"
 
 let myHeroes: Unit[] = [], // arr my hero
 	Enemy: Hero,
 	Heroes: Hero[] = [], // arr Enemy
 	TargetParticle: number,
 	Sleeper = new GameSleeper()
-	
+
 function MainCombo(unit: Unit, Enemy: Hero): boolean {
 	if (!unit.IsAlive || unit.IsInvulnerable)
-		return false;
+		return false
 	if (unit.Distance2D(Enemy) >= 1200) {
-		unit.MoveTo(Enemy.NetworkPosition);
-		return false;
+		unit.MoveTo(Enemy.NetworkPosition)
+		return false
 	}
 	unit.AttackTarget(Enemy)
 	if (Enemy.IsMagicImmune)
@@ -48,14 +47,14 @@ function MainCombo(unit: Unit, Enemy: Hero): boolean {
 			unit.CastTarget(Items, unit)
 			return true
 		}
-		if (Items.Name === "item_bloodthorn" || Items.Name === "item_orchid"){
+		if (Items.Name === "item_bloodthorn" || Items.Name === "item_orchid") {
 			if (Enemy.IsSilenced)
-				continue;
+				continue
 			Sleeper.Sleep(100, "Combo")
 			unit.UseSmartAbility(Items, Enemy)
 			return true
 		}
-		if (Items.Name === "item_sheepstick"){
+		if (Items.Name === "item_sheepstick") {
 			if (Enemy.IsHexed)
 				continue
 			Sleeper.Sleep(100, "Combo")
@@ -84,7 +83,7 @@ function MainCombo(unit: Unit, Enemy: Hero): boolean {
 		if (Abils === undefined || !Abils.CanBeCasted() || !IsEnebled)
 			continue
 		if (Abils.Name === "arc_warden_magnetic_field") {
-			let IsRanged = Enemy.IsRanged ? (Enemy.AttackRange + unit.HullRadius) : 600;
+			let IsRanged = Enemy.IsRanged ? (Enemy.AttackRange + unit.HullRadius) : 600
 			if (unit.Distance2D(Enemy) <= IsRanged) {
 				Sleeper.Sleep(Abils.CastPoint * 1000, "Combo")
 				unit.CastPosition(Abils, unit.InFront(-150))
@@ -117,11 +116,11 @@ EventsSDK.on("Tick", () => {
 	if (myName !== "npc_dota_hero_arc_warden")
 		return false
 	if (!myHeroes.some(hero_ => !MainCombo(hero_, Enemy)))
-		return false;
+		return false
 })
 
 EventsSDK.on("GameStarted", LocalPlayer => {
-	if (LocalPlayer.m_pBaseEntity instanceof CDOTA_Unit_Hero_ArcWarden) 
+	if (LocalPlayer.m_pBaseEntity instanceof CDOTA_Unit_Hero_ArcWarden)
 		myHeroes.push(LocalPlayer)
 })
 

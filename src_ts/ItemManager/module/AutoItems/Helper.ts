@@ -1,5 +1,5 @@
-import ItemManagerBase from "../../abstract/Base"
 import { ArrayExtensions, Creep, Entity, Game, Item, LocalPlayer, Unit } from "wrapper/Imports"
+import ItemManagerBase from "../../abstract/Base"
 
 import {
 
@@ -10,15 +10,15 @@ import {
 	AutoUseItemsMG_val,
 	AutoUseItemsMidas_CheckBIG,
 	AutoUseItemsMidas_range,
+	AutoUseItemsMjollnir_val,
+	AutoUseItemsPhase_val,
+	AutoUseItemsPhaseBootsState,
 	AutoUseItemsSticks_val,
 	AutoUseItemsUrnAlies,
-	AutoUseItemsUrnAliesAlliesHP,
-	AutoUseItemsUrnAliesEnemyHP,
-	AutoUseItemsUrnEnemy,
-	ItemsForUse, State,
-	Items, AutoUseItemsPhase_val,
-	AutoUseItemsPhaseBootsState,
-	AutoUseItemsMjollnir_val,
+	AutoUseItemsUrnAliesAlliesHP, AutoUseItemsUrnAliesEnemyHP,
+	AutoUseItemsUrnEnemy, Items,
+	ItemsForUse,
+	State,
 } from "./Menu"
 
 let UnitsControllable: Unit[] = [],
@@ -127,19 +127,19 @@ function AutoUseItems(unit: Unit) {
 					return false
 				let enemy_phase = AutoUseItemsPhaseBootsState.value
 					? AllUnits.some(enemy => enemy.IsVisible && enemy.Team !== unit.Team
-						&& unit.Distance2D(enemy.NetworkPosition) !== 0 
+						&& unit.Distance2D(enemy.NetworkPosition) !== 0
 						&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsPhase_val.value)
 					: AutoUseItemsPhaseBootsState.value
 				if(AutoUseItemsPhaseBootsState.value && enemy_phase)
 					unit.CastNoTarget(Item)
-				else if (!AutoUseItemsPhaseBootsState.value) 
-					unit.CastNoTarget(Item)		
+				else if (!AutoUseItemsPhaseBootsState.value)
+					unit.CastNoTarget(Item)
 				break
 			case "item_mjollnir":
 				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
 				let enemy_mjolnir = AllUnits.some(enemy => enemy.IsVisible && enemy.Team !== unit.Team
-					&& unit.Distance2D(enemy.NetworkPosition) !== 0 
+					&& unit.Distance2D(enemy.NetworkPosition) !== 0
 					&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsMjollnir_val.value)
 				if (enemy_mjolnir)
 					unit.CastTarget(Item, unit)

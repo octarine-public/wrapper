@@ -1,4 +1,4 @@
-import { Color, EventsSDK, Hero, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Game, LocalPlayer, EntityManager } from "./wrapper/Imports"
+import { Color, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2 } from "./wrapper/Imports"
 
 let setConVar = (toggle: Menu.Toggle) =>
 	ConVars.Set(toggle.tooltip,toggle.value)
@@ -173,4 +173,4 @@ EventsSDK.on("Draw", () => {
 		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
 	})
 })
-
+
