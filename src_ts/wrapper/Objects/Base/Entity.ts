@@ -1,6 +1,7 @@
 import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
+import { Team } from "../Base/Team"
 import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager"
 import { DegreesToRadian } from "../../Utils/Math"
 
@@ -246,7 +247,7 @@ export default class Entity {
 	get Speed(): number {
 		return this.m_pBaseEntity.m_flSpeed
 	}
-	get Team(): DOTATeam_t {
+	get Team(): DOTATeam_t | Team {
 		return this.m_pBaseEntity.m_iTeamNum
 	}
 	get Flags(): number {

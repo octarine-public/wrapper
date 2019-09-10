@@ -30,6 +30,7 @@ EventsSDK.on("Draw", () => {
 EventsSDK.on("GameStarted", () => {
 	// TopHud.gameStarted()
 })
+
 EventsSDK.on("GameEnded", () => {
 	// TopHud.gameEnded()
 	Camp.GameEnded()
@@ -38,4 +39,8 @@ EventsSDK.on("GameEnded", () => {
 	Jungle.GameEnded()
 	Techies.GameEnded()
 	ParticleHack.GameEnded()
+})
+
+EventsSDK.on("GameConnected", () => {
+	ParticleHack.GameConnect()
 })

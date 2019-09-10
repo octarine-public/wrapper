@@ -15,4 +15,5 @@ EventsSDK.on("EntityCreated", (ent, index) => {
 EventsSDK.on("EntityDestroyed", (ent, index) => {
 	if (!StateBase.value || ent === undefined || index === undefined)
 		return
+	AutoItems.EntityCreateDestroy(ent)
 })

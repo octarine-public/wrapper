@@ -20,6 +20,7 @@ import Modifier from "./Modifier"
 import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
 import Tree from "./Tree"
+import TreeTemp from "./TreeTemp"
 
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
@@ -820,7 +821,7 @@ export default class Unit extends Entity {
 	public CastTarget(ability: Ability, target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET, unit: this, target, ability, queue, showEffects })
 	}
-	public CastTargetTree(ability: Ability, tree: Tree | number, queue?: boolean, showEffects?: boolean) {
+	public CastTargetTree(ability: Ability, tree: Tree | TreeTemp | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE, unit: this, target: tree, ability, queue, showEffects })
 	}
 	public CastNoTarget(ability: Ability, queue?: boolean, showEffects?: boolean) {

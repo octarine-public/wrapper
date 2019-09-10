@@ -185,6 +185,10 @@ export default class Ability extends Entity {
 		return castrange + (owner !== undefined ? owner.CastRangeBonus : 0)
 	}
 
+	GetDamage(target: Unit): number {
+		return target.CalculateDamage((this.AbilityDamage || this.GetSpecialValue("damage")) * 1, this.DamageType, this.Owner)
+	}
+	
 	UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
 		return this.Owner.UseSmartAbility(this, target, checkToggled, queue, showEffects)
 	}

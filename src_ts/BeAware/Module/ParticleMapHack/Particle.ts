@@ -451,29 +451,51 @@ export function OnDraw() {
 		let Target = target as Unit
 		if (Target === undefined || Target.Name === undefined) {
 			if (target === "Smoke") {
-				RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
+				try {
+					RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
+				} catch (error) {
+					console.log(handle.toString() + " | " + position + " | " + target)
+				}	
 				DrawIconWorldHero(position, Target, new Color(255, 255, 255), "smoke_of_deceit_png.vtex_c")
 			} else if (target === "Dust") {
-				RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
+				try {
+					RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
+				} catch (error) {
+					console.log(handle.toString() + " | " + position + " | " + target)
+				}	
 				DrawIconWorldHero(position, Target, new Color(255, 255, 255), "dust_png.vtex_c")
 			} else {
 				if (target === undefined)
 					return
-				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${target}`, position, Size.value * 12, color)
+				try {
+					RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${target}`, position, Size.value * 12, color)
+				} catch (error) {
+					console.log(handle.toString() + " | " + position + " | " + target)
+				}
 				DrawIconWorldHero(position, Target, color)
 			}
 		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && !Target.IsVisible) {
-			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
+			try {
+				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
+			} catch (error) {
+				console.log(handle.toString() + " | " + position + " | " + Target.Name)
+			}
 			DrawIconWorldHero(position, Target, color)
 		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && (handle === 9908905996079864839n || handle === 16169843851719108633n)) {
-			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
+			
+			try {
+				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
+			} catch (error) {
+				console.log(handle.toString() + " | " + position + " | " + Target.Name)
+			}
 			DrawIconWorldHero(position, Target, color)
-
-			if (handle === 16169843851719108633n) {
-				let screen_pos = RendererSDK.WorldToScreen(position)
-
-				if (screen_pos !== undefined) {
-					RendererSDK.Text((Game.RawGameTime - Time).toFixed(1).toString(), screen_pos)
+			if ((handle === 16169843851719108633n || handle === 9908905996079864839n)) {
+				let BuffDieTime = Target.GetBuffByName("modifier_teleporting"),
+					screen_pos = RendererSDK.WorldToScreen(position);
+				if (BuffDieTime === undefined)
+					return
+				if (screen_pos !== undefined){
+					RendererSDK.Text((-(Game.RawGameTime - BuffDieTime.DieTime)).toFixed(1).toString(), screen_pos, new Color(255, 255, 255), "Consoles", Size.value / 3);
 				}
 			}
 		}
@@ -490,3 +512,9 @@ export function GameEnded() {
 	Particle = new Map()
 	END_SCROLL = new Map()
 }
+export function GameConnect() {
+	Particle = new Map()
+	END_SCROLL = new Map()
+	LAST_ID_SCROLL = undefined
+}
+

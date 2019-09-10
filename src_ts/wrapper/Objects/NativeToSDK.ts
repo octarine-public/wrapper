@@ -8,6 +8,9 @@ constructors.C_DOTA_Item_Rune = Rune
 import Tree from "../Objects/Base/Tree"
 constructors.C_DOTA_MapTree = Tree
 
+import TreeTemp from "../Objects/Base/TreeTemp"
+constructors.C_DOTA_TempTree = TreeTemp
+
 import Shop from "../Objects/Base/Shop"
 constructors.C_DOTA_BaseNPC_Shop = Shop
 

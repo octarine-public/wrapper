@@ -1,5 +1,4 @@
-import { ArrayExtensions, Creep, Entity, Game, Item, LocalPlayer, Unit } from "wrapper/Imports"
-import ItemManagerBase from "../../abstract/Base"
+import { ArrayExtensions, Creep, Entity, Game, Item, LocalPlayer, Unit, EntityManager, TreeTemp, RendererSDK, Debug, Tree } from "wrapper/Imports"
 
 import {
 
@@ -21,9 +20,12 @@ import {
 	State,
 } from "./Menu"
 
+import TempTree from "../../../wrapper/Objects/Base/TreeTemp"
+import ItemManagerBase from "../../abstract/Base"
+
 let UnitsControllable: Unit[] = [],
 	AllUnits: Unit[] = [],
-	AllCreeps: Creep[] = []
+	AllCreeps: Creep[] = []//, Trees: TreeTemp[] = [];
 
 let Buffs = {
 	NotHeal: [
@@ -53,6 +55,31 @@ export function EntityCreate(Entity: Entity) {
 	if (Entity instanceof Unit && Entity.IsHero &&
 		(!Entity.IsIllusion || Entity.Name !== "npc_dota_hero_arc_warden"))
 		AllUnits.push(Entity)
+		
+	// if (Entity instanceof TreeTemp && Entity.IsValid)
+	// 	Trees.push(Entity)
+}
+
+export function EntityCreateDestroy(Entity: Entity){
+	// if (Entity instanceof TreeTemp) {
+	// 	if (Trees !== undefined)
+	// 		ArrayExtensions.arrayRemove(Trees, Entity)
+	// }
+
+	if (Entity instanceof Creep) {
+		if (AllCreeps !== undefined)
+			ArrayExtensions.arrayRemove(AllCreeps, Entity)
+	}
+
+	if (Entity instanceof Unit) {
+		if (UnitsControllable !== undefined)
+			ArrayExtensions.arrayRemove(UnitsControllable, Entity)
+	}
+	
+	if (Entity instanceof Unit) {
+		if (AllUnits !== undefined)
+			ArrayExtensions.arrayRemove(AllUnits, Entity)
+	}
 }
 
 function Сompare(NameFind: string) {
@@ -261,6 +288,20 @@ function AutoUseItems(unit: Unit) {
 					}
 				})
 				break
+			// case "item_tango":
+			// case "item_tango_single":
+			// 	if (!ItemsForUse.IsEnabled(Item.Name))
+			// 		return false
+			// 	console.log(Trees.toString())
+				
+			// 	let tr = Trees.filter(x => x.IsVisible).find(x => x !== undefined)
+			// 	if (tr === undefined)
+			// 		return false;
+
+			// 	console.log(tr.Name)
+			// 	unit.CastTargetTree(Item, tr.Index - 1, false, true)
+				
+			// break
 			default:
 				break
 		}
@@ -278,6 +319,7 @@ export function Tick() {
 }
 
 export function GameEnded() {
+	//Trees = []
 	AllUnits = []
 	UnitsControllable = []
 	LastUpdateTime = 0
@@ -286,3 +328,17 @@ export function GameEnded() {
 export function GameStart() {
 	LastUpdateTime = 0
 }
+// export function Draw() {
+// 	let a = LocalPlayer
+// 	if(a === undefined)
+// 		return false
+// 	if (Trees.length <= 0)
+// 		return false
+// 	Trees.forEach(x => {
+// 		if(x === undefined)
+// 			return false
+
+// 		RendererSDK.DrawMiniMapIcon("minimap_ping_shop", x.NetworkPosition, 900)
+// 	})	
+	
+// }

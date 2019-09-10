@@ -1,7 +1,6 @@
 import {
 	EventsSDK,
 	Game,
-	LocalPlayer,
 	Menu,
 	ParticlesSDK,
 	Unit,
