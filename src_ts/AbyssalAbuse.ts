@@ -35,23 +35,15 @@ function checkAbyss() {
 EventsSDK.on("Tick", () => {
 	if (!active.value || !Game.IsInGame || Game.IsPaused || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)
 		return false
-	if (arModifiers.size > 0) {
-		let cache: Modifier[] = [],
-			arForDelete: Modifier[] = []
-		// loop-optimizer: KEEP
-		arModifiers.forEach((time, buff) => {
-			if (!time || !buff.DieTime) {
-				arForDelete.push(buff)
-				return
-			}
-			if (buff.DieTime !== time) {
-				cache.push(buff)
-				checkAbyss()
-			}
-		})
-		cache.some(buff => arModifiers.set(buff, buff.DieTime))
-		arForDelete.some(buff => arModifiers.delete(buff))
-	}
+	// loop-optimizer: KEEP
+	arModifiers.forEach((time, buff) => {
+		if (!time || !buff.DieTime)
+			arModifiers.delete(buff)
+		else if (buff.DieTime !== time) {
+			arModifiers.set(buff, buff.DieTime)
+			checkAbyss()
+		}
+	})
 	if (!lock && !checkAbys)
 		return false
 	if (checkAbys) {
