@@ -1,11 +1,14 @@
 import { Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
-import { ComboBox, DrawRGBA, PMH_Smoke_snd, Size, State } from "./Menu"
+import { ComboBox, DrawRGBA, PMH_Smoke_snd, Size, State, PMH_Show_bounty } from "./Menu"
 
 let npc_hero: string = "npc_dota_hero_",
 	Particle: Map<number, [bigint, string | Entity, number, Vector3?, Color?, number?]> = new Map(), // TODO Radius for ability
 	END_SCROLL = new Map<number, number>(),
 	LAST_ID_SCROLL: number,
+	bountyRunesAr = [true,true,true,true],
+	bountyRunesPos = [new Vector3(4012.952880859375,-1736.2288818359375,256),new Vector3(3695.385498046875,-3758.35400390625,256),new Vector3(-4272.25830078125,1718.5904541015625,256),new Vector3(-3130.38427734375,3569.359619140625,128)],
+	bountyAlreadySeted = true,
 	ignoreListCreate: Array<bigint> = [
 		16411378985643724199n,
 		3845203473627057528n,
@@ -381,7 +384,6 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 		return
 	let part = Particle.get(id)
 	// console.log("ParticleUpdatedEnt  | " + position + " | " + ent + " | " + id)
-
 	if (part === undefined || ignoreListCreateUpdateEnt.includes(part[0]))
 		return
 	// ursa
@@ -437,10 +439,35 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 }
 
 export function OnDraw() {
-	if (Particle === undefined || Particle.size <= 0 || !Game.IsInGame)
+	if(!Game.IsInGame)
+		return
+	if(PMH_Show_bounty.value){
+		if(!bountyAlreadySeted){
+			let time = Game.GameTime%300
+			if(time >= 299 || time <= 1){
+				bountyRunesAr = [true,true,true,true]
+				bountyAlreadySeted= true;
+			}
+		}
+		bountyRunesPos.forEach((val,key)=>{
+			if(bountyRunesAr[key])
+				RendererSDK.DrawMiniMapIcon("minimap_rune_bounty", val, Size.value * 14, new Color(0, 255, 0))
+		})
+	}
+	if (Particle === undefined || Particle.size <= 0)
 		return
 	// loop-optimizer: KEEP
 	Particle.forEach(([handle, target, Time, position, color, delete_time], i) => {
+		//Bounty Rune
+		if(handle === 17096352592726237548n){
+			bountyRunesPos.forEach((val,key)=>{
+				let distance = val.Distance(position)
+				if(distance <= 300){
+					bountyAlreadySeted = false
+					bountyRunesAr[key] = false
+				}
+			})
+		}
 		if (delete_time === undefined)
 			delete_time = + 3 // def time for del.
 		// console.log("Position: " + position + " | Color: " + color)

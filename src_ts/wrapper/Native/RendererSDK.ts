@@ -232,6 +232,17 @@ let RendererSDK = new (class RendererSDK {
 		this.commandCache = new Uint8Array()
 		this.last_color = new Color(-1, -1, -1, -1)
 	}
+	public GetAspectRatio(){
+		let res = this.WindowSize.x / this.WindowSize.y
+		if(res>=1.25&&res<=1.35)
+			return "4x3"
+		else if(res>=1.7&&res<=1.85)
+			return "16x9"
+		else if(res>=1.5&&res<=1.69)
+			return "16x10"
+		else if(res>=2.2&&res<=2.4)
+			return "21x9"
+	}
 })()
 
 Events.after("Draw", () => WindowSize = Vector2.fromIOBuffer(Renderer.WindowSize))
