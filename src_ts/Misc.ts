@@ -25,7 +25,7 @@ CamDist.OnValue(UpdateVisuals)
 let keybind = Menu.AddKeybind("Menu (Open/Close)", "Insert").OnPressed(() => MenuSDK.MenuManager.is_open = !MenuSDK.MenuManager.is_open)
 keybind.activates_in_menu = true
 keybind.trigger_on_chat = true
-Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.trigger_on_chat = toggle.value)
+Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.MenuManager.trigger_on_chat = toggle.value)
 
 function ReloadScripts() {
 	EventsSDK.emit("GameEnded", false)
