@@ -22,7 +22,10 @@ let CameraTree = Menu.AddNode("Camera"),
 	], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id))
 CamDist.OnValue(UpdateVisuals)
 
-Menu.AddKeybind("Menu (Open/Close)", "Insert").OnPressed(() => MenuSDK.MenuManager.is_open = !MenuSDK.MenuManager.is_open).activates_in_menu = true
+let keybind = Menu.AddKeybind("Menu (Open/Close)", "Insert").OnPressed(() => MenuSDK.MenuManager.is_open = !MenuSDK.MenuManager.is_open)
+keybind.activates_in_menu = true
+keybind.trigger_on_chat = true
+Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.trigger_on_chat = toggle.value)
 
 function ReloadScripts() {
 	EventsSDK.emit("GameEnded", false)

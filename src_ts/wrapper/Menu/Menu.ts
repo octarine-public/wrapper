@@ -9,6 +9,7 @@ let Menu = new (class Menu {
 	public config: any
 	public is_open = true
 	public block_mouse_position = true
+	public trigger_on_chat = false
 	private readonly header = new Header("Fusion")
 	private active_element: Base
 

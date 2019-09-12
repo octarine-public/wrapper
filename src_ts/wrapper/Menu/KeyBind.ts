@@ -183,6 +183,7 @@ export default class KeyBind extends Base {
 	public activates_in_menu = false
 	public assigned_key = 0
 	public assigned_key_str = "None"
+	public trigger_on_chat = false
 	protected readonly text_offset = new Vector2(8, 8)
 	protected readonly keybind_text_offset = new Vector2(5, 5)
 	protected readonly keybind_size = new Vector2(40, 20)
@@ -302,6 +303,8 @@ Events.on("WndProc", (msg, wParam) => {
 
 	onExecute.forEach(keybind => {
 		if (!Game.IsInGame && !keybind.activates_in_menu)
+			return
+		if (!Menu.trigger_on_chat && Game.IsInputCaptured && !keybind.trigger_on_chat)
 			return
 		keybind.is_pressed = isPressed
 		keybind.OnValueChangedCBs.forEach(cb => cb(keybind))
