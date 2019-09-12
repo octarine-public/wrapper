@@ -15,6 +15,7 @@ EventsSDK.on("EntityCreated", (ent, index) => {
 		return
 	Treant.Create(ent, index)
 	Camp.onEntityAdded(ent)
+	ParicleMapHack.EntityCreated(ent)
 	// TopHud.entityCreate(ent)
 })
 
@@ -24,6 +25,7 @@ EventsSDK.on("EntityDestroyed", (ent, index) => {
 	Treant.Destroy(ent, index)
 	Camp.EntityDestroyed(ent)
 	// TopHud.entityDestroy(ent)
+	ParicleMapHack.EntityDestroyed(ent)
 })
 EventsSDK.on("UnitAnimation", npc => {
 	if (!stateMain.value || npc === undefined || Game.IsPaused)
@@ -51,12 +53,9 @@ EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachmen
 	Wisp.ParticleUpdated(id, entity instanceof Entity ? entity.m_pBaseEntity : undefined)
 	ParicleMapHack.ParticleUpdatedEnt(id, entity instanceof Entity ? entity : undefined, vector)
 })
-// EventsSDK.on("BloodImpact", (entity, scale, xnormal, ynormal) => {
-// 	if (!stateMain.value || Game.IsPaused)
-// 		return
-// 	ParicleMapHack.ParticleCreateUpdateImpact(entity instanceof Entity ? entity : undefined, scale, xnormal, ynormal)
-// })
+
 EventsSDK.on("ParticleDestroyed", id => {
 	Techies.ParticleDestroyed(id)
 	ParicleMapHack.ParticleDestroyed(id)
 })
+

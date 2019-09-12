@@ -1,4 +1,5 @@
 import { Menu, MenuBase, MenuDrawBase } from "../../abstract/Menu.Base"
+import { Color } from "wrapper/Imports"
 
 const { BaseTree, State } = MenuBase(Menu, "Particle MapHack")
 const { DrawRGBA, Size, ComboBox } = MenuDrawBase (
@@ -8,6 +9,22 @@ const { DrawRGBA, Size, ComboBox } = MenuDrawBase (
 	"Size", 42, 42, 300,
 )
 State.SetTooltip("Display position enemy heroes if use ability")
-let PMH_Smoke_snd = BaseTree.AddSliderFloat("Smoke volume", 1, 0, 100),
-	PMH_Show_bounty = BaseTree.AddToggle('Show Bounty Runes On Map')
-export { State, DrawRGBA, Size, ComboBox, PMH_Smoke_snd, PMH_Show_bounty }
+let PMH_Smoke_snd = BaseTree.AddSliderFloat("Smoke volume", 1, 0, 100)
+
+let TreeBounty = BaseTree.AddNode("Bounty Settings"),
+	PMH_Show_bounty = TreeBounty.AddToggle('Show Bounty Runes'),
+	PMH_Show_bounty_size = TreeBounty.AddSliderFloat('Bounty Runes Size', 42, 24, 300),
+	PMH_Show_bountyRGBA = TreeBounty.AddColorPicker("Color image", new Color(255, 255, 0, 255)),
+	PMH_Show_bountyRGBA_mark = TreeBounty.AddColorPicker('Mark Color', new Color(0, 255, 0, 255));
+	
+export { 
+	Size,
+	State,
+	DrawRGBA,
+	ComboBox,
+	PMH_Smoke_snd,
+	PMH_Show_bounty,
+	PMH_Show_bountyRGBA,
+	PMH_Show_bounty_size,
+	PMH_Show_bountyRGBA_mark,
+}

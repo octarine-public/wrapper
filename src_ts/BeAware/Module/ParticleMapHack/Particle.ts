@@ -1,13 +1,18 @@
-import { Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
+import { Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3, ArrayExtensions } from "wrapper/Imports"
+import { ComboBox, DrawRGBA, PMH_Smoke_snd, Size, State, PMH_Show_bounty, PMH_Show_bountyRGBA, PMH_Show_bountyRGBA_mark, PMH_Show_bounty_size } from "./Menu"
 import { ucFirst } from "../../abstract/Function"
-import { ComboBox, DrawRGBA, PMH_Smoke_snd, Size, State, PMH_Show_bounty } from "./Menu"
 
 let npc_hero: string = "npc_dota_hero_",
 	Particle: Map<number, [bigint, string | Entity, number, Vector3?, Color?, number?]> = new Map(), // TODO Radius for ability
 	END_SCROLL = new Map<number, number>(),
 	LAST_ID_SCROLL: number,
-	bountyRunesAr = [true,true,true,true],
-	bountyRunesPos = [new Vector3(4012.952880859375,-1736.2288818359375,256),new Vector3(3695.385498046875,-3758.35400390625,256),new Vector3(-4272.25830078125,1718.5904541015625,256),new Vector3(-3130.38427734375,3569.359619140625,128)],
+	bountyRunesAr = [true, true, true, true],
+	bountyRunesPos = [
+		new Vector3(4140.375, -1771.09375, 256),
+		new Vector3(3705.4375, -3619.875, 256),
+		new Vector3(-4331.46875, 1591.375, 256),
+		new Vector3(-3073.40625, 3680.9375, 128),
+	],
 	bountyAlreadySeted = true,
 	ignoreListCreate: Array<bigint> = [
 		16411378985643724199n,
@@ -100,7 +105,8 @@ let npc_hero: string = "npc_dota_hero_",
 		7217420080506833917n,
 		16005396280504064234n,
 		8471181176813126689n,
-	]
+	],
+	Hereos: Hero[] = [];
 
 function ClassChecking(entity: Entity) {
 	return entity !== undefined && (
@@ -110,6 +116,7 @@ function ClassChecking(entity: Entity) {
 		|| entity.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Wisp
 	)
 }
+
 function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: Color, items?: string) {
 	let pos_particle = RendererSDK.WorldToScreen(position)
 	if (pos_particle === undefined)
@@ -117,12 +124,13 @@ function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: C
 	switch (ComboBox.selected_id) {
 		case 0:
 			RendererSDK.Image(
-				items === undefined
+				Target !== "bountyrune"
+				? items === undefined
 					? `panorama/images/heroes/icons/${Target}_png.vtex_c`
 					: `panorama/images/items/${items}`
-				,
-				pos_particle.SubtractScalar(Size.value / 4),
-				new Vector2(Size.value / 2, Size.value / 2), color,
+					: `panorama/images/control_icons/check_png.vtex_c`,
+				pos_particle.SubtractScalar(PMH_Show_bounty_size.value / 4),
+				new Vector2(PMH_Show_bounty_size.value / 2, PMH_Show_bounty_size.value / 2), color,
 			)
 			break
 		case 1:
@@ -139,11 +147,13 @@ function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: C
 			break
 	}
 }
+
 export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 	if (!State.value || !Game.IsInGame || ClassChecking(entity) || ignoreListCreate.includes(handle))
 		return
-	if (handle === 16169843851719108633n) 		// "particles/items2_fx/teleport_start.vpcf"
+	if (handle === 16169843851719108633n) { 		// "particles/items2_fx/teleport_start.vpcf"
 		LAST_ID_SCROLL = id
+	}
 	if (handle === 9908905996079864839n) { 		// "particles/items2_fx/teleport_end.vpcf"
 		END_SCROLL.set(id, LAST_ID_SCROLL)
 		LAST_ID_SCROLL = undefined
@@ -157,167 +167,235 @@ export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 
 	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined, Game.RawGameTime])
 }
+
+export function EntityCreated(x: Entity) {
+	if (x instanceof Hero && x.IsEnemy()){
+		Hereos.push(x)
+	}
+}
+export function EntityDestroyed(x: Entity) {
+	if (x instanceof Hero) {
+		if (Hereos !== undefined)
+			ArrayExtensions.arrayRemove(Hereos, x)
+	}
+}
+
+function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: string, name_hero: string, color?: Color, Time?: number) {
+	if (Hereos.length > 0) {
+		let hero = Hereos.find(x => !x.IsVisible && x.Team !== LocalPlayer.Hero.Team && x.Name === name_hero);
+		if (hero !== undefined) {
+			let abil = hero.GetAbilityByName(name_ability)
+			if (abil !== undefined && abil.IsValid) {
+				Particle.set(id, [part[0], hero.Name, part[2], position, color, Time])
+			}
+		}
+	}
+}
+
 export function ParticleCreateUpdate(id: number, control_point: number, position: Vector3) {
 	let part = Particle.get(id)
 	if (!State.value || !Game.IsInGame || part === undefined || ignoreListCreateUpdate.includes(part[0]))
 		return
-
+	
 	// console.log("ParticleCreateUpdate  | " + position + " | " + control_point + " | " + id)
 
 	/**
 	 * Not valid Entity
 	 **/
 	if (control_point === 0) { // # Ability
-
 		// beastmaster_call_bird
-		if (part[0] === 1463643803508630076n || part[0] === 8069164713690266618n)
-			Particle.set(id, [part[0], npc_hero + "beastmaster", part[2], position])
+		if (part[0] === 1463643803508630076n || part[0] === 8069164713690266618n) {
+			FindAbilitySet(id, part, position, "beastmaster_call_of_the_wild_hawk", npc_hero + "beastmaster")
+		}
 		// brewmaster_thunder_clap
-		if (part[0] === 3752518292310259682n)
-			Particle.set(id, [part[0], npc_hero + "brewmaster", part[2], position])
-		// espirit_stone_explosion
-		if (part[0] === 4323854770615447628n)
-			Particle.set(id, [part[0], npc_hero + "earth_spirit", part[2], position])
+		if (part[0] === 3752518292310259682n) {
+			FindAbilitySet(id, part, position, "brewmaster_thunder_clap", npc_hero + "brewmaster")
+		}
+		// earth_spirit_magnetize
+		if (part[0] === 4323854770615447628n) {
+			FindAbilitySet(id, part, position, "earth_spirit_magnetize", npc_hero + "earth_spirit")
+		}
 		// earthshaker_fissure
-		if (part[0] === 17861642577092388618n)
-			Particle.set(id, [part[0], npc_hero + "earthshaker", part[2], position])
+		if (part[0] === 17861642577092388618n) {
+			FindAbilitySet(id, part, position, "earthshaker_fissure", npc_hero + "earthshaker")
+		}
 		// elder_titan_earth_splitter
-		if (part[0] === 13324101320785174829n)
-			Particle.set(id, [part[0], npc_hero + "elder_titan", part[2], position])
+		if (part[0] === 13324101320785174829n) {
+			FindAbilitySet(id, part, position, "elder_titan_earth_splitter", npc_hero + "elder_titan")
+		}
 		// elder_titan_echo_stomp_physical
-		if (part[0] === 5667977939467904231n)
-			Particle.set(id, [part[0], npc_hero + "elder_titan", part[2], position])
+		if (part[0] === 5667977939467904231n) {
+			FindAbilitySet(id, part, position, "elder_titan_echo_stomp_physical", npc_hero + "elder_titan")
+		}
 		// inner fire
-		if (part[0] === 6167123975649691624n)
-			Particle.set(id, [part[0], npc_hero + "huskar", part[2], position])
+		if (part[0] === 6167123975649691624n){
+			FindAbilitySet(id, part, position, "huskar_inner_fire", npc_hero + "huskar")
+		}
 		// kunkka torrent
-		if (part[0] === 90527129446097558n)
-			Particle.set(id, [part[0], npc_hero + "kunkka", part[2], position])
-		// ghost
-		if (part[0] === 2339675573930106922n)
-			Particle.set(id, [part[0], npc_hero + "kunkka", part[2], position])
-		// life stealer infest
-		if (part[0] === 11870561462387758523n)
-			Particle.set(id, [part[0], npc_hero + "life_stealer", part[2], position])
-		// rebuke
-		if (part[0] === 13426387991622823534n || part[0] === 10751958973454668870n)
-			Particle.set(id, [part[0], npc_hero + "mars", part[2], position])
-		// super nova, icarus, spirits, sunray
-		if (part[0] === 1042958021584336511n || part[0] === 15935050925296326403n || part[0] === 10704630012983197169n || part[0] === 1804381298115754254n)
-			Particle.set(id, [part[0], npc_hero + "phoenix", part[2], position])
+		if (part[0] === 90527129446097558n){
+			FindAbilitySet(id, part, position, "kunkka_torrent", npc_hero + "kunkka")
+		}
+		// mars_gods_rebuke
+		if (part[0] === 13426387991622823534n) {
+			FindAbilitySet(id, part, position, "mars_gods_rebuke", npc_hero + "mars")
+		}
+		// mars_arena_of_blood
+		if (part[0] === 10751958973454668870n) {
+			FindAbilitySet(id, part, position, "mars_arena_of_blood", npc_hero + "mars")
+		}
+		if (part[0] === 1042958021584336511n || part[0] === 15935050925296326403n) {
+			FindAbilitySet(id, part, position, "phoenix_supernova", npc_hero + "phoenix")
+		}
+		if (part[0] === 10704630012983197169n || part[0] === 1804381298115754254n) {
+			FindAbilitySet(id, part, position, "phoenix_fire_spirits", npc_hero + "phoenix")
+		}
 		// sand storm
-		if (part[0] === 10608978942364279765n)
-			Particle.set(id, [part[0], npc_hero + "sand_king", part[2], position])
+		if (part[0] === 10608978942364279765n){
+			FindAbilitySet(id, part, position, "sandking_sand_storm", npc_hero + "sand_king")
+		}
 		// spirit breaker charge
-		if (part[0] === 14347153390066670812n)
-			Particle.set(id, [part[0], npc_hero + "spirit_breaker", part[2], position])
+		if (part[0] === 14347153390066670812n) {
+			FindAbilitySet(id, part, position, "spirit_breaker_charge_of_darkness", npc_hero + "spirit_breaker")
+		}
 		// ravage
-		if (part[0] === 2641261068387757532n)
-			Particle.set(id, [part[0], npc_hero + "tidehunter", part[2], position])
+		if (part[0] === 2641261068387757532n) {
+			FindAbilitySet(id, part, position, "tidehunter_ravage", npc_hero + "tidehunter")
+		}
 		// tiny avalance
-		if (part[0] === 11543882486515702213n)
-			Particle.set(id, [part[0], npc_hero + "tiny", part[2], position])
+		if (part[0] === 11543882486515702213n) {
+			FindAbilitySet(id, part, position, "tiny_avalanche", npc_hero + "tiny")
+		}
 		// arc sparc
-		if (part[0] === 9450757242089892587n)
-			Particle.set(id, [part[0], npc_hero + "arc_warden", part[2], position])
+		if (part[0] === 9450757242089892587n){ 
+			FindAbilitySet(id, part, position, "arc_warden_spark_wraith", npc_hero + "arc_warden")
+		}
 		// bloodseeker blood rite
-		if (part[0] === 6542825430051483889n)
-			Particle.set(id, [part[0], npc_hero + "bloodseeker", part[2], position])
+		if (part[0] === 6542825430051483889n) {
+			FindAbilitySet(id, part, position, "bloodseeker_blood_bath", npc_hero + "bloodseeker")
+		}
 		// bounty_hunter hadow
-		if (part[0] === 6989698579171478207n)
-			Particle.set(id, [part[0], npc_hero + "bounty_hunter", part[2], position])
+		if (part[0] === 6989698579171478207n) {
+			FindAbilitySet(id, part, position, "bounty_hunter_wind_walk", npc_hero + "bounty_hunter")
+		}
 		// void chrone
-		if (part[0] === 12395460486751989527n)
-			Particle.set(id, [part[0], npc_hero + "faceless_void", part[2], position])
+		if (part[0] === 12395460486751989527n) {
+			FindAbilitySet(id, part, position, "faceless_void_chronosphere", npc_hero + "faceless_void")
+		}
 		// meepo poof
-		if (part[0] === 14802028619464558908n)
-			Particle.set(id, [part[0], npc_hero + "meepo", part[2], position])
+		if (part[0] === 14802028619464558908n) {
+			FindAbilitySet(id, part, position, "meepo_poof", npc_hero + "meepo")
+		}
 		// mirana arrow
-		if (part[0] === 9880755592293933483n)
-			Particle.set(id, [part[0], npc_hero + "mirana", part[2], position])
+		if (part[0] === 9880755592293933483n) {
+			FindAbilitySet(id, part, position, "mirana_arrow", npc_hero + "mirana")
+		}
 		// monkey_king misschef
-		if (part[0] === 14739391071850926756n)
-			Particle.set(id, [part[0], npc_hero + "monkey_king", part[2], position])
+		if (part[0] === 14739391071850926756n) {
+			FindAbilitySet(id, part, position, "monkey_king_mischief", npc_hero + "monkey_king")
+		}
 		// morph adaptive strike
-		if (part[0] === 11323298806625012598n)
-			Particle.set(id, [part[0], npc_hero + "morphling", part[2], position])
+		if (part[0] === 11323298806625012598n){
+			FindAbilitySet(id, part, position, "morphling_adaptive_strike_agi", npc_hero + "morphling")
+		}
 		// nyx vendeta
-		if (part[0] === 11428460328218524916n)
-			Particle.set(id, [part[0], npc_hero + "nyx_assassin", part[2], position])
+		if (part[0] === 11428460328218524916n) {
+			FindAbilitySet(id, part, position, "nyx_assassin_vendetta", npc_hero + "nyx_assassin")
+		}
 		// pangolier swashbuck
-		if (part[0] === 4709630376105796041n)
-			Particle.set(id, [part[0], npc_hero + "pangolier", part[2], position])
+		if (part[0] === 4709630376105796041n) {
+			FindAbilitySet(id, part, position, "pangolier_swashbuckle", npc_hero + "pangolier")
+		}
 		// phantom_assassin blur
-		if (part[0] === 9671291843391061224n)
-			Particle.set(id, [part[0], npc_hero + "phantom_assassin", part[2], position])
-		// riki blink strike
-		if (part[0] === 5475669274736737409n)
-			Particle.set(id, [part[0], npc_hero + "riki", part[2], position])
+		if (part[0] === 9671291843391061224n) {
+			FindAbilitySet(id, part, position, "phantom_assassin_blur", npc_hero + "phantom_assassin")
+		}
 		// riki tricks start | end
-		if (part[0] === 2742846163382429517n || part[0] === 3058260807409708966n)
-			Particle.set(id, [part[0], npc_hero + "riki", part[2], position])
+		if (part[0] === 2742846163382429517n || part[0] === 3058260807409708966n) {
+			FindAbilitySet(id, part, position, "riki_tricks_of_the_trade", npc_hero + "riki")
+		}
 		// shadow fiend | shadowraze
-		if (part[0] === 8605851627288464612n)
-			Particle.set(id, [part[0], npc_hero + "nevermore", part[2], position])
+		if (part[0] === 8605851627288464612n) {
+			FindAbilitySet(id, part, position, "nevermore_shadowraze3", npc_hero + "nevermore")
+		}
 		// venomancer poison nova
-		if (part[0] === 7695694018062957479n)
-			Particle.set(id, [part[0], npc_hero + "venomancer", part[2], position])
+		if (part[0] === 7695694018062957479n) {
+			//Particle.set(id, [part[0], npc_hero + "venomancer", part[2], position])
+			FindAbilitySet(id, part, position, "venomancer_poison_nova", npc_hero + "venomancer")
+		}
 		// ancient apparition | feet, ice vortex ice blast
-		if (part[0] === 3821454011598415742n || part[0] === 615206036419027595n || part[0] === 18399207273936825531n)
-			Particle.set(id, [part[0], npc_hero + "ancient_apparition", part[2], position])
+		if (part[0] === 3821454011598415742n || part[0] === 615206036419027595n || part[0] === 18399207273936825531n) {
+			FindAbilitySet(id, part, position, "ancient_apparition_cold_feet", npc_hero + "ancient_apparition")
+			// .... FindAbilitySet
+		}
 		// batrider
-		if (part[0] === 8826413520360267931n)
-			Particle.set(id, [part[0], npc_hero + "batrider", part[2], position])
+		if (part[0] === 8826413520360267931n) {
+			FindAbilitySet(id, part, position, "batrider_flamebreak", npc_hero + "batrider")
+		}
 		// crystal maiden | nova
-		if (part[0] === 16327097855826580626n)
-			Particle.set(id, [part[0], npc_hero + "crystal_maiden", part[2], position])
+		if (part[0] === 16327097855826580626n) {
+			FindAbilitySet(id, part, position, "crystal_maiden_crystal_nova", npc_hero + "crystal_maiden")
+		}
 		// dark sier | vacum, wall
-		if (part[0] === 6358407677122692483n || part[0] === 6039488715557449146n)
-			Particle.set(id, [part[0], npc_hero + "dark_seer", part[2], position])
+		if (part[0] === 6358407677122692483n || part[0] === 6039488715557449146n) {
+			FindAbilitySet(id, part, position, "dark_seer_vacuum", npc_hero + "dark_seer")
+		}
 		// dark willow
-		if (part[0] === 2804537531476109693n || part[0] === 13435245877944439363n || part[0] === 448910324462799275n || part[0] === 9157461782681193972n)
-			Particle.set(id, [part[0], npc_hero + "dark_willow", part[2], position])
+		if (part[0] === 2804537531476109693n || part[0] === 13435245877944439363n || part[0] === 448910324462799275n || part[0] === 9157461782681193972n) {
+			FindAbilitySet(id, part, position, "dark_willow_terrorize", npc_hero + "dark_willow")
+		}
 		// death prophet
-		if (part[0] === 3020948711683823655n)
-			Particle.set(id, [part[0], npc_hero + "death_prophet", part[2], position])
+		if (part[0] === 3020948711683823655n) {
+			FindAbilitySet(id, part, position, "death_prophet_carrion_swarm", npc_hero + "death_prophet")
+		}
 		// disraptor | kinetic static storm
-		if (part[0] === 1289768807188690422n || part[0] === 11667161395290290268n)
-			Particle.set(id, [part[0], npc_hero + "disruptor", part[2], position])
+		if (part[0] === 1289768807188690422n || part[0] === 11667161395290290268n){
+			FindAbilitySet(id, part, position, "disruptor_static_storm", npc_hero + "disruptor")
+		}
 		// enigma pulse
-		if (part[0] === 15271579302562161677n)
-			Particle.set(id, [part[0], npc_hero + "enigma", part[2], position])
+		if (part[0] === 15271579302562161677n){
+			FindAbilitySet(id, part, position, "enigma_midnight_pulse", npc_hero + "enigma")
+		}
 		// invoker metior
-		if (part[0] === 6544262852176998491n)
-			Particle.set(id, [part[0], npc_hero + "invoker", part[2], position, new Color(255, 255, 255)])
+		if (part[0] === 6544262852176998491n) {
+			FindAbilitySet(id, part, position, "invoker_chaos_meteor", npc_hero + "invoker")
+		}
 		// leshrac split
-		if (part[0] === 10977498504300558457n || part[0] === 3807435887289622893n || part[0] === 2957027257057922287n)
-			Particle.set(id, [part[0], npc_hero + "leshrac", part[2], position])
+		if (part[0] === 10977498504300558457n || part[0] === 3807435887289622893n || part[0] === 2957027257057922287n) {
+			FindAbilitySet(id, part, position, "leshrac_pulse_nova", npc_hero + "leshrac")
+		}
 		// lich
-		if (part[0] === 17931751641656559282n)
-			Particle.set(id, [part[0], npc_hero + "lich", part[2], position])
+		if (part[0] === 17931751641656559282n) {
+			FindAbilitySet(id, part, position, "lich_frost_nova", npc_hero + "lich")
+		}
 		// lina | laguna or strike Array
-		if (part[0] === 5326871934185736886n || part[0] === 14136065189915347240n)
-			Particle.set(id, [part[0], npc_hero + "lina", part[2], position])
+		if (part[0] === 5326871934185736886n || part[0] === 14136065189915347240n) {
+			FindAbilitySet(id, part, position, "lina_light_strike_array", npc_hero + "lina")
+		}
 		// furion sprout teleport
-		if (part[0] === 18101938899273081277n || part[0] === 16375869442840467308n)
-			Particle.set(id, [part[0], part[1], part[2], position, new Color(100, 100, 100)])
+		if (part[0] === 18101938899273081277n || part[0] === 16375869442840467308n) {
+			FindAbilitySet(id, part, position, "furion_teleportation", npc_hero + "furion", new Color(100, 100, 100))
+		}
 		// obsidian_destroyer | eclipse | astral
-		if (part[0] === 11562582309822695519n || part[0] === 12439617424976039911n || part[0] === 14147094464891580395n)
-			Particle.set(id, [part[0], npc_hero + "obsidian_destroyer", part[2], position])
+		if (part[0] === 11562582309822695519n || part[0] === 12439617424976039911n || part[0] === 14147094464891580395n) {
+			FindAbilitySet(id, part, position, "obsidian_destroyer_sanity_eclipse", npc_hero + "obsidian_destroyer")
+		}
 		// pugna blast
-		if (part[0] === 8533375778285123176n || part[0] === 14964695791820827443n)
-			Particle.set(id, [part[0], npc_hero + "pugna", part[2], position, new Color(255, 255, 255), +1])
+		if (part[0] === 8533375778285123176n || part[0] === 14964695791820827443n) {
+			FindAbilitySet(id, part, position, "pugna_nether_blast", npc_hero + "pugna", new Color(255, 255, 255), +1)
+		}
 		// with_doctor | maledict
-		if (part[0] === 12994327613543406041n)
-			Particle.set(id, [part[0], npc_hero + "witch_doctor", part[2], position, new Color(255, 255, 255)])
+		if (part[0] === 12994327613543406041n) {
+			FindAbilitySet(id, part, position, "witch_doctor_maledict", npc_hero + "witch_doctor", new Color(255, 255, 255))
+		}
 		// smoke
 		if (part[0] === 14221266834388661971n) {
 			Particle.set(id, [part[0], "Smoke", part[2], position, new Color(255, 17, 0)])
 			SendToConsole("playvol ui/ping " + PMH_Smoke_snd.value / 100)
 		}
 		// dust
-		if (part[0] === 2930661440000609946n)
+		if (part[0] === 2930661440000609946n) {
 			Particle.set(id, [part[0], "Dust", part[2], position, new Color(255, 255, 255)])
+		}
 
 		// // blink
 		// if (part[0] === 6400371855556675384n || part[0] === 10753307352412363396n)
@@ -340,8 +418,9 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		if (part[0] === 7382801540246882042n)
 			Particle.set(id, [part[0], part[1], part[2], position])
 		// burrow strike
-		if (part[0] === 13866368357606948277n)
-			Particle.set(id, [part[0], npc_hero + "sand_king", part[2], position])
+		if (part[0] === 13866368357606948277n){
+			FindAbilitySet(id, part, position, "sandking_burrowstrike", npc_hero + "sand_king")
+		}
 		// alchemist_lasthit_coins
 		if (part[0] === 9631112814295870874n)
 			Particle.set(id, [part[0], npc_hero + "alchemist", part[2], position])
@@ -379,11 +458,12 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 
 	// }
 }
+
 export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	if (!State.value || !Game.IsInGame || ClassChecking(ent))
 		return
 	let part = Particle.get(id)
-	// console.log("ParticleUpdatedEnt  | " + position + " | " + ent + " | " + id)
+	//console.log("ParticleUpdatedEnt  | " + position + " | " + ent + " | " + id)
 	if (part === undefined || ignoreListCreateUpdateEnt.includes(part[0]))
 		return
 	// ursa
@@ -393,17 +473,17 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	}
 	// dark_willow terroraze
 	if (part[0] === 9157461782681193972n || part[0] === 448910324462799275n) {
-		Particle.set(id, [part[0], npc_hero + "dark_willow", part[2], position])
+		FindAbilitySet(id, part, position, "dark_willow_terrorize", npc_hero + "dark_willow")
 		return
 	}
 	// death_prophet siphon
 	if (part[0] === 15591984632297613959n) {
-		Particle.set(id, [part[0], npc_hero + "death_prophet", part[2], position])
+		FindAbilitySet(id, part, position, "death_prophet_spirit_siphon", npc_hero + "death_prophet")
 		return
 	}
-	// death_prophet siphon
+	// keeper_of_the_light_will_o_wisp
 	if (part[0] === 14579008345438684595n || part[0] === 3167953162413416262n) {
-		Particle.set(id, [part[0], npc_hero + "keeper_of_the_light", part[2], position])
+		FindAbilitySet(id, part, position, "keeper_of_the_light_will_o_wisp", npc_hero + "keeper_of_the_light")
 		return
 	}
 	// antimage blink
@@ -418,7 +498,7 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	}
 	// puck | dream coil
 	if (part[0] === 5608482983863018919n) {
-		Particle.set(id, [part[0], npc_hero + "puck", part[2], position])
+		FindAbilitySet(id, part, position, "puck_dream_coil", npc_hero + "puck")
 		return
 	}
 	// puck | shift
@@ -441,17 +521,19 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 export function OnDraw() {
 	if(!Game.IsInGame)
 		return
-	if(PMH_Show_bounty.value){
-		if(!bountyAlreadySeted){
-			let time = Game.GameTime%300
-			if(time >= 299 || time <= 1){
-				bountyRunesAr = [true,true,true,true]
-				bountyAlreadySeted= true;
+	if (PMH_Show_bounty.value && Game.GameTime >= 0) {
+		if (!bountyAlreadySeted){
+			let time = Game.GameTime % 300
+			if(time >= 299 || time <= 1) {
+				bountyRunesAr = [true, true, true, true]
+				bountyAlreadySeted = true;
 			}
 		}
-		bountyRunesPos.forEach((val,key)=>{
-			if(bountyRunesAr[key])
-				RendererSDK.DrawMiniMapIcon("minimap_rune_bounty", val, Size.value * 14, new Color(0, 255, 0))
+		bountyRunesPos.forEach((val, key)=>{
+			if(bountyRunesAr[key]) {
+				RendererSDK.DrawMiniMapIcon("minimap_rune_bounty", val, PMH_Show_bounty_size.value * 14, PMH_Show_bountyRGBA.Color)
+				DrawIconWorldHero(val, "bountyrune", PMH_Show_bountyRGBA_mark.Color)
+			}
 		})
 	}
 	if (Particle === undefined || Particle.size <= 0)
@@ -481,14 +563,14 @@ export function OnDraw() {
 				try {
 					RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
 				} catch (error) {
-					console.log(handle.toString() + " | " + position + " | " + target)
+					// console.log(handle.toString() + " | " + position + " | " + target)
 				}	
 				DrawIconWorldHero(position, Target, new Color(255, 255, 255), "smoke_of_deceit_png.vtex_c")
 			} else if (target === "Dust") {
 				try {
 					RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
 				} catch (error) {
-					console.log(handle.toString() + " | " + position + " | " + target)
+					// console.log(handle.toString() + " | " + position + " | " + target)
 				}	
 				DrawIconWorldHero(position, Target, new Color(255, 255, 255), "dust_png.vtex_c")
 			} else {
@@ -497,7 +579,7 @@ export function OnDraw() {
 				try {
 					RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${target}`, position, Size.value * 12, color)
 				} catch (error) {
-					console.log(handle.toString() + " | " + position + " | " + target)
+					// console.log(handle.toString() + " | " + position + " | " + target)
 				}
 				DrawIconWorldHero(position, Target, color)
 			}
@@ -505,7 +587,7 @@ export function OnDraw() {
 			try {
 				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
 			} catch (error) {
-				console.log(handle.toString() + " | " + position + " | " + Target.Name)
+				// console.log(handle.toString() + " | " + position + " | " + Target.Name)
 			}
 			DrawIconWorldHero(position, Target, color)
 		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && (handle === 9908905996079864839n || handle === 16169843851719108633n)) {
@@ -513,7 +595,7 @@ export function OnDraw() {
 			try {
 				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
 			} catch (error) {
-				console.log(handle.toString() + " | " + position + " | " + Target.Name)
+				// console.log(handle.toString() + " | " + position + " | " + Target.Name)
 			}
 			DrawIconWorldHero(position, Target, color)
 			if ((handle === 16169843851719108633n || handle === 9908905996079864839n)) {
@@ -528,6 +610,7 @@ export function OnDraw() {
 		}
 	})
 }
+
 export function ParticleDestroyed(id: number) {
 	// console.log(id + " - ID Deleted ================== ")
 	if (END_SCROLL.has(id))
@@ -535,10 +618,13 @@ export function ParticleDestroyed(id: number) {
 	if (Particle.has(id))
 		Particle.delete(id)
 }
+
 export function GameEnded() {
+	Hereos = []
 	Particle = new Map()
 	END_SCROLL = new Map()
 }
+
 export function GameConnect() {
 	Particle = new Map()
 	END_SCROLL = new Map()
