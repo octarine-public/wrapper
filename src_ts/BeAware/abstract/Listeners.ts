@@ -6,6 +6,8 @@ import * as Rosh from "../Module/Roshan/Particle"
 import * as Techies from "../Module/TechiesMapHack/Particle"
 import * as Treant from "../Module/TreantMapHack/Particle"
 import * as Wisp from "../Module/WispMapHack/Particle"
+import * as VBE from "../Module/VisibleByEnemy/Entities"
+import * as VBS from "../Module/TrueSight/Entities"
 import { stateMain } from "./Menu.Base"
 // import * as TopHud from "../Module/TopHud/Entities"
 
@@ -13,8 +15,10 @@ export var NPC: Unit[] = []
 EventsSDK.on("EntityCreated", (ent, index) => {
 	if (!stateMain.value || ent === undefined || index === undefined)
 		return
-	Treant.Create(ent, index)
+	VBS.EntityCreated(ent)
+	VBE.EntityCreated(ent)
 	Camp.onEntityAdded(ent)
+	Treant.Create(ent, index)
 	ParicleMapHack.EntityCreated(ent)
 	// TopHud.entityCreate(ent)
 })
@@ -22,16 +26,20 @@ EventsSDK.on("EntityCreated", (ent, index) => {
 EventsSDK.on("EntityDestroyed", (ent, index) => {
 	if (!stateMain.value || ent === undefined || index === undefined)
 		return
-	Treant.Destroy(ent, index)
+	VBS.EntityDestroyed(ent)
+	VBE.EntityDestroyed(ent)
 	Camp.EntityDestroyed(ent)
+	Treant.Destroy(ent, index)
 	// TopHud.entityDestroy(ent)
 	ParicleMapHack.EntityDestroyed(ent)
 })
+
 EventsSDK.on("UnitAnimation", npc => {
 	if (!stateMain.value || npc === undefined || Game.IsPaused)
 		return
 	JungMapHack.UnitAnimationCreate(npc)
 })
+
 EventsSDK.on("ParticleCreated", (id, path, handle, attach, entity) => {
 	if (!stateMain.value || Game.IsPaused)
 		return
@@ -40,12 +48,14 @@ EventsSDK.on("ParticleCreated", (id, path, handle, attach, entity) => {
 	Techies.ParticleCreated(id, entity instanceof Entity ? entity : undefined, path)
 	ParicleMapHack.ParticleCreate(id, handle, entity instanceof Entity ? entity : undefined)
 })
+
 EventsSDK.on("ParticleUpdated", (id, control_point, position) => {
 	if (!stateMain.value || Game.IsPaused)
 		return
 	Techies.ParticleUpdated(id, control_point, position)
 	ParicleMapHack.ParticleCreateUpdate(id, control_point, position)
 })
+
 EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachment, vector) => {
 	if (!stateMain.value || Game.IsPaused)
 		return
@@ -57,5 +67,14 @@ EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachmen
 EventsSDK.on("ParticleDestroyed", id => {
 	Techies.ParticleDestroyed(id)
 	ParicleMapHack.ParticleDestroyed(id)
+})
+
+EventsSDK.on("TeamVisibilityChanged", (npc, isVisibleForEnemies) => {
+	if (!stateMain.value)
+		return
+	VBE.TeamVisibilityChanged(npc, isVisibleForEnemies)
+})
+EventsSDK.on("TrueSightedChanged", (npc, isTrueSighted) => {
+	VBS.TrueSightedChanged(npc, isTrueSighted)
 })
 

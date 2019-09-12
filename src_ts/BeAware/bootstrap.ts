@@ -1,5 +1,7 @@
 import { EventsSDK, Game } from "wrapper/Imports"
 import { stateMain } from "./abstract/Menu.Base"
+import * as VBE from "./Module/VisibleByEnemy/Entities"
+import * as VBS from "./Module/TrueSight/Entities"
 import * as Camp from "./Module/CampInformer/Entity"
 import * as Jungle from "./Module/JungleMapHack/Particle"
 import * as ParticleHack from "./Module/ParticleMapHack/Particle"
@@ -12,8 +14,9 @@ import * as Wisp from "./Module/WispMapHack/Particle"
 EventsSDK.on("Tick", () => {
 	if (!stateMain.value || Game.IsPaused)
 		return
-	if (!Treant.Tick())
-		return false
+	VBE.Tick()
+	VBS.Tick()
+	Treant.Tick()
 })
 EventsSDK.on("Draw", () => {
 	if (!stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
@@ -33,6 +36,8 @@ EventsSDK.on("GameStarted", () => {
 
 EventsSDK.on("GameEnded", () => {
 	// TopHud.gameEnded()
+	VBE.GameEnded()
+	VBS.GameEnded()
 	Camp.GameEnded()
 	Wisp.GameEnded()
 	Treant.GameEnded()

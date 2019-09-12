@@ -234,7 +234,7 @@ function removedIDRune(rune: Rune) {
 }
 
 function createRuneParticle(ent: Rune, color: Color, radius: number) {
-	const particleID = ParticlesSDK.Create (
+	const particleID = ParticlesSDK.Create(
 		"particles/ui_mouseactions/drag_selected_ring.vpcf",
 		ParticleAttachment_t.PATTACH_ABSORIGIN,
 		ent,

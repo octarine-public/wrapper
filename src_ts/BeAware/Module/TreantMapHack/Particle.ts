@@ -18,7 +18,7 @@ export function Create(ent: Entity, id: number) {
 		pars.set(ent, par)
 	}
 }
-export function Tick(): boolean {
+export function Tick() {
 	if (!State.value)
 		return
 	var local_team_flag = 1 << LocalPlayer.Team
