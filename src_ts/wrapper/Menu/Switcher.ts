@@ -61,7 +61,7 @@ export default class Switcher extends Base {
 	}
 
 	public get ConfigValue() { return this.selected_id }
-	public set ConfigValue(value) { this.selected_id = Math.max(0, Math.min(this.values.length, value !== undefined ? value : this.selected_id)) }
+	public set ConfigValue(value) { this.selected_id = Math.max(0, Math.min(this.values.length - 1, value !== undefined ? value : this.selected_id)) }
 
 	public OnMouseLeftDown(): boolean {
 		return !this.Rect.Contains(this.MousePosition)
