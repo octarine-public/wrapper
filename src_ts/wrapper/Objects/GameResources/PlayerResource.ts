@@ -35,6 +35,11 @@ class PlayerResource {
 			return []
 		return EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_hPlayerCouriers) as Courier[]
 	}
+	public get PlayerNames(): string[] {
+		if (this.m_pBaseEntity === undefined)
+			return []
+		return this.m_pBaseEntity.m_iszName
+	}
 
 	public GetNameByPlayerID(playerID: number): string {
 		if (this.m_pBaseEntity === undefined)
@@ -44,7 +49,7 @@ class PlayerResource {
 	public GetPlayerByPlayerID(playerID: number): Player {
 		if (this.m_pBaseEntity === undefined)
 			return undefined
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_playerIDToPlayer[playerID], true) as Player
+		return EntityManager.GetEntityByFilter(ent => ent instanceof Player && ent.PlayerID === playerID, true) as Player
 	}
 	public GetPlayerCouriersByPlayerID(playerID: number): Courier {
 		if (this.m_pBaseEntity === undefined)
@@ -57,6 +62,9 @@ class PlayerResource {
 	}
 	public GetPlayerDataByPlayerID(playerID: number): PlayerResourcePlayerData_t {
 		return this.PlayerData[playerID]
+	}
+	public GetPlayerNameByPlayerID(playerID: number): string {
+		return this.PlayerNames[playerID]
 	}
 }
 

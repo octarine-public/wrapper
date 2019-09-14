@@ -1,17 +1,13 @@
-import { EventsSDK, GameSleeper, Hero, Menu, Player, PlayerResource } from "wrapper/Imports"
+import { EventsSDK, GameSleeper, Hero, Menu, Player, PlayerResource, EntityManager } from "wrapper/Imports"
 
-let Time = 0,
-	Listplayer: Player,
-	Sleeper = new GameSleeper()
 const tree = Menu.AddEntry(["Utility", "Bait leave"]),
-	State = tree.AddToggle("State"),
-	Key = tree.AddKeybind("Leave button xD"),
 	autodisconnect = tree.AddToggle("Auto Disconnect"),
 	Additionaldelay = tree.AddSliderFloat("Delay auto disconnect", 1, 1, 10),
-	playersList = tree.AddSwitcher("Only Alies", ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8", "Player 9", "Player 10"]),
+	playersList = tree.AddSwitcher("Player ID", ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8", "Player 9", "Player 10"]),
 	colors = ["#415fff", "#83ffda", "#c3009c", "#d5ff16", "#f16900", "#ff6ca5", "#85c83b", "#74d6f9", "#009e31", "#8f6f00"],
 	gap = "<br>".repeat(75),
 	Language = tree.AddSwitcher("Language", ["Russian", "English"]),
+	button = tree.AddButton("Leave button"),
 	heroes = {
 		npc_dota_hero_queenofpain:	"Queen of Pain",
 		npc_dota_hero_antimage:	"Anti-Mage",
@@ -130,48 +126,32 @@ const tree = Menu.AddEntry(["Utility", "Bait leave"]),
 		npc_dota_hero_lycan:	"Lycan",
 	}
 
-
-EventsSDK.on("Tick", () => {
-	if (!State.value || Sleeper.Sleeping("Cd_" + playersList.selected_id))
-		return false
-	if (!Key.is_pressed)
-		return false
-	Listplayer = PlayerResource.GetPlayerByPlayerID(Math.floor(playersList.selected_id))
-	console.log(Listplayer.Name)
-	if (Listplayer === undefined)
+button.OnValue(() => {
+	let PlayerID = playersList.selected_id,
+		player = PlayerResource.GetPlayerByPlayerID(PlayerID)
+	if (player === undefined)
 		return false
 
-	let PlayerName = Listplayer.GameName,
-		PlayerID = playersList.selected_id,
-		PlayerHeroName = Listplayer.Hero.Name,
+	let PlayerName = player.GameName,
+		PlayerHero = heroes[player.Hero.Name],
 		switch_language: string
 
 	switch (Language.selected_id) {
 		case 0:
 			switch_language = `
-			<font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> отключается от игры. Пожалуйста, дождитесь повторного подключения.<br><font color='#FF0000'>
-			<b>У <font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> осталось 5 мин. для повторного подключения.</b></font>
-			<br> <font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> покидает игру.<br><font color='#00FF00'><b>Теперь эту игру можно спокойно покинуть.</b></font>`
+<font color="${colors[PlayerID]}">${PlayerName} (${PlayerHero})</font> отключается от игры. Пожалуйста, дождитесь повторного подключения.<br><font color='#FF0000'>
+<b>У <font color="${colors[PlayerID]}">${PlayerName} (${PlayerHero})</font> осталось 5 мин. для повторного подключения.</b></font>
+<br> <font color="${colors[PlayerID]}">${PlayerName} (${PlayerHero})</font> покидает игру.<br><font color='#00FF00'><b>Теперь эту игру можно спокойно покинуть.</b></font>`
 			break
 		case 1:
 			switch_language = `
-				<font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> has disconnected from the game. Please wait for them to reconnect.<br><font color='#FF0000'>
-				<b> <font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> has 5 minutes left to reconnect.</b></font>
-				<br> <font color="${colors[PlayerID]}">${PlayerName} (${heroes[PlayerHeroName]})</font> has abandoned the game.<br><font color='#00FF00'><b>This game is now safe to leave.</b></font>`
+<font color="${colors[PlayerID]}">${PlayerName} (${PlayerHero})</font> has disconnected from the game. Please wait for them to reconnect.<br><font color='#FF0000'>
+<b> <font color="${colors[PlayerID]}">${PlayerName} (${PlayerHero})</font> has 5 minutes left to reconnect.</b></font>
+<br> <font color="${colors[PlayerID]}">${PlayerName} (${PlayerHero})</font> has abandoned the game.<br><font color='#00FF00'><b>This game is now safe to leave.</b></font>`
 			break
 	}
-	ChatWheelAbuse(`${gap}${switch_language}`)
+	ChatWheelAbuse(gap + switch_language)
 
 	if (autodisconnect.value)
 		setTimeout(() => SendToConsole('disconnect'), Additionaldelay.value * 1000)
-
-	Sleeper.Sleep(1000, "Cd_" + playersList.selected_id)
-})
-
-EventsSDK.on("GameStarted", () => {
-	Listplayer = PlayerResource.GetPlayerByPlayerID(Math.floor(playersList.selected_id))
-})
-
-EventsSDK.on("GameEnded", () => {
-	Listplayer = undefined
 })

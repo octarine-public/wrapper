@@ -78,6 +78,31 @@ class EntityManager {
 		return queueEntitiesAsMap.get(ent)
 	}
 
+	GetEntityByFilter(filter: (ent: Entity) => boolean, inStage: boolean = false): Entity {
+		let found = AllEntities.find(filter)
+		if (found !== undefined)
+			return found
+
+		if (!inStage)
+			return undefined
+
+		// loop-optimizer: KEEP
+		InStage.forEach((ent, _) => {
+			if (found === undefined && filter(ent))
+				found = ent
+		})
+		if (found !== undefined)
+			return found
+		
+		// loop-optimizer: KEEP
+		queueEntitiesAsMap.forEach((ent, _) => {
+			if (found === undefined && filter(ent))
+				found = ent
+		})
+
+		return found
+	}
+
 	GetEntitiesByNative(ents: Array<C_BaseEntity | Entity | number>, inStage: boolean = false): Array<Entity | any> {
 		// loop-optimizer: FORWARD
 		return ents.map(ent => {

@@ -68,17 +68,17 @@ export default class Switcher extends Base {
 	}
 	public OnMouseLeftUp(): boolean {
 		if (this.LeftArrowRect.Contains(this.MousePosition)) {
-			// forward
-			if (this.selected_id >= this.values.length - 1)
-				this.selected_id = 0
-			else
-				this.selected_id++
-		} else if (this.RightArrowRect.Contains(this.MousePosition)) {
 			// backward
 			if (this.selected_id <= 0)
 				this.selected_id = this.values.length - 1
 			else
 				this.selected_id--
+		} else if (this.RightArrowRect.Contains(this.MousePosition)) {
+			// forward
+			if (this.selected_id >= this.values.length - 1)
+				this.selected_id = 0
+			else
+				this.selected_id++
 		} else
 			return false
 		this.OnValueChangedCBs.forEach(f => f(this))
