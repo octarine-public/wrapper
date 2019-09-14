@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, Entity, Game, Item, LocalPlayer, Unit } from "wrapper/Imports"
+import { ArrayExtensions, Creep, Entity, Game, Item, LocalPlayer, Unit, TreeTemp, RendererSDK } from "wrapper/Imports"
 
 import {
 	AutoUseItemsArcane_val, AutoUseItemsBloodHP_val,
@@ -23,7 +23,8 @@ import ItemManagerBase from "../../abstract/Base"
 
 let UnitsControllable: Unit[] = [],
 	AllUnits: Unit[] = [],
-	AllCreeps: Creep[] = []//, Trees: TreeTemp[] = [];
+	AllCreeps: Creep[] = [],
+	Trees: TreeTemp[] = [];
 
 let Buffs = {
 	NotHeal: [
@@ -45,7 +46,7 @@ export function EntityCreate(Entity: Entity) {
 	if (Entity instanceof Creep && Entity.IsCreep && !Entity.IsAncient)
 		AllCreeps.push(Entity)
 
-	if (Entity instanceof Unit && Entity.IsValid
+	if (Entity instanceof Unit
 		&& Entity.IsControllable && !Entity.IsCourier && !Entity.IsCreep &&
 		(!Entity.IsIllusion || Entity.Name === "npc_dota_hero_arc_warden"))
 			UnitsControllable.push(Entity)
@@ -54,29 +55,20 @@ export function EntityCreate(Entity: Entity) {
 		(!Entity.IsIllusion || Entity.Name !== "npc_dota_hero_arc_warden"))
 		AllUnits.push(Entity)
 		
-	// if (Entity instanceof TreeTemp && Entity.IsValid)
-	// 	Trees.push(Entity)
+	if (Entity instanceof TreeTemp)
+		Trees.push(Entity)
 }
 
 export function EntityCreateDestroy(Entity: Entity){
-	// if (Entity instanceof TreeTemp) {
-	// 	if (Trees !== undefined)
-	// 		ArrayExtensions.arrayRemove(Trees, Entity)
-	// }
+	if (Entity instanceof TreeTemp)
+		ArrayExtensions.arrayRemove(Trees, Entity)
 
-	if (Entity instanceof Creep) {
-		if (AllCreeps !== undefined)
-			ArrayExtensions.arrayRemove(AllCreeps, Entity)
-	}
+	if (Entity instanceof Creep)
+		ArrayExtensions.arrayRemove(AllCreeps, Entity)
 
 	if (Entity instanceof Unit) {
-		if (UnitsControllable !== undefined)
-			ArrayExtensions.arrayRemove(UnitsControllable, Entity)
-	}
-	
-	if (Entity instanceof Unit) {
-		if (AllUnits !== undefined)
-			ArrayExtensions.arrayRemove(AllUnits, Entity)
+		ArrayExtensions.arrayRemove(UnitsControllable, Entity)
+		ArrayExtensions.arrayRemove(AllUnits, Entity)
 	}
 }
 
@@ -286,20 +278,17 @@ function AutoUseItems(unit: Unit) {
 					}
 				})
 				break
-			// case "item_tango":
-			// case "item_tango_single":
-			// 	if (!ItemsForUse.IsEnabled(Item.Name))
-			// 		return false
-			// 	console.log(Trees.toString())
+			case "item_tango":
+			case "item_tango_single":
+				if (!ItemsForUse.IsEnabled(Item.Name))
+					return false
 				
-			// 	let tr = Trees.filter(x => x.IsVisible).find(x => x !== undefined)
-			// 	if (tr === undefined)
-			// 		return false;
+				let tr = Trees.find(x => x.IsInRange(unit, Item.CastRange))
+				if (tr === undefined)
+					return false
 
-			// 	console.log(tr.Name)
-			// 	unit.CastTargetTree(Item, tr.Index - 1, false, true)
-				
-			// break
+				unit.CastTargetTree(Item, tr, false, true)
+				break
 			default:
 				break
 		}
@@ -317,7 +306,7 @@ export function Tick() {
 }
 
 export function GameEnded() {
-	//Trees = []
+	Trees = []
 	AllUnits = []
 	UnitsControllable = []
 	LastUpdateTime = 0
@@ -326,17 +315,3 @@ export function GameEnded() {
 export function GameStart() {
 	LastUpdateTime = 0
 }
-// export function Draw() {
-// 	let a = LocalPlayer
-// 	if(a === undefined)
-// 		return false
-// 	if (Trees.length <= 0)
-// 		return false
-// 	Trees.forEach(x => {
-// 		if(x === undefined)
-// 			return false
-
-// 		RendererSDK.DrawMiniMapIcon("minimap_ping_shop", x.NetworkPosition, 900)
-// 	})	
-	
-// }

@@ -129,16 +129,7 @@ export default class ExecuteOrder {
 	/**
 	 * pass Position: Vector3 at IOBuffer offset 0
 	 */
-	toNative(): {
-		OrderType: dotaunitorder_t,
-		Target: C_BaseEntity | number,
-		Ability: C_DOTABaseAbility | number,
-		OrderIssuer: PlayerOrderIssuer_t,
-		Unit: C_DOTA_BaseNPC,
-		Queue: boolean,
-		ShowEffects: boolean,
-	} {
-
+	toNative() {
 		if (!this.m_Position.IsZero())
 			this.m_Position.toIOBuffer()
 
@@ -148,10 +139,10 @@ export default class ExecuteOrder {
 
 		return {
 			OrderType: this.m_OrderType,
-			Target: target instanceof Entity ? target.m_pBaseEntity : target,
-			Ability: ability instanceof Ability ? ability.m_pBaseEntity : ability,
+			Target: target instanceof Entity ? target.m_pBaseEntity instanceof C_DOTA_BinaryObject ? target.m_pBaseEntity.m_nBinaryID : target.m_pBaseEntity : target,
+			Ability: ability instanceof Ability ? ability.Index : ability,
 			OrderIssuer: this.m_OrderIssuer,
-			Unit: unit !== undefined ? unit.m_pBaseEntity : undefined,
+			Unit: unit !== undefined ? unit.Index : undefined,
 			Queue: this.m_Queue,
 			ShowEffects: this.m_ShowEffects,
 		}

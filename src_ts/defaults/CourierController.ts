@@ -60,6 +60,7 @@ let CastCourAbility = (num: number) => allyCourier
 
 EventsSDK.on("GameStarted", () => {
 	playersBlockList.SetTooltip(TOOLTIP_ONPLAYING)
+	// loop-optimizer: KEEP
 	playersBlockList.enabled_values.forEach((_, key) => playersBlockList.enabled_values.set(key,false))
 	playersBlockList.values = []
 })
@@ -70,6 +71,7 @@ EventsSDK.on("GameEnded", () => {
 	allAllyPlayers = []
 
 	playersBlockList.SetTooltip(TOOLTIP_NEEDPLAYING)
+	// loop-optimizer: KEEP
 	playersBlockList.enabled_values.forEach((_, key) => playersBlockList.enabled_values.set(key, false))
 	playersBlockList.values = []
 	playersBlockList.Update()

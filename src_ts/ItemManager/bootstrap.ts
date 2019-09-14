@@ -18,6 +18,3 @@ EventsSDK.on("GameEnded", () => {
 	AutoItems.GameEnded()
 	AutoDeward.GameEnded()
 })
-// EventsSDK.on("Draw", () => {
-// 	AutoItems.Draw()
-// })
