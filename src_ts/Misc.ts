@@ -10,20 +10,19 @@ let CameraTree = Menu.AddNode("Camera"),
 	CamMouseTree = CameraTree.AddNode("Mouse wheel"),
 	CamMouseState = CamMouseTree.AddToggle("Active"),
 	CamMouseStateCtrl = CamMouseTree.AddToggle("Change if Ctrl is down"),
-	CamStep = CamMouseTree.AddSlider("Camera Step", 50, 10, 1000);
-	
-Menu.AddSwitcher("Weather", [
-	"Default",
-	"Snow",
-	"Rain",
-	"Moonbeam",
-	"Pestilence",
-	"Harvest",
-	"Sirocco",
-	"Spring",
-	"Ash",
-	"Aurora",
-], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id))
+	CamStep = CamMouseTree.AddSlider("Camera Step", 50, 10, 1000),
+	weather = Menu.AddSwitcher("Weather", [
+		"Default",
+		"Snow",
+		"Rain",
+		"Moonbeam",
+		"Pestilence",
+		"Harvest",
+		"Sirocco",
+		"Spring",
+		"Ash",
+		"Aurora",
+	], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id))
 
 CamDist.OnValue(UpdateVisuals)
 
@@ -45,19 +44,18 @@ CameraTree.AddButton("Reset camera").OnValue(() => {
 	ConVars.Set("r_farz", -1)
 })
 
-function UpdateVisuals(call?: MenuSDK.Slider) {
+function UpdateVisuals() {
 	Camera.Distance = CamDist.value
 	ConVars.Set("r_farz", CamDist.value * 2)
+	ConVars.Set("cl_weather", weather.selected_id)
 	ConVars.Set("fog_enable", false)
 	ConVars.Set("fow_client_nofiltering", false)
 	ConVars.Set("dota_use_particle_fow", false)
 	ConVars.Set("demo_recordcommands", false)
 	ConVars.Set("dota_unit_orders_rate", 512)
-	call.OnValue(x => CamDist.value = x.value)
-	
 }
 
-EventsSDK.on("GameStarted", () => UpdateVisuals)
+EventsSDK.on("GameStarted", () => UpdateVisuals())
 
 EventsSDK.on("WndProc", (msg, wParam) => {
 	if (Game.IsInGame && msg === 522 /* WM_MOUSEWHEEL */ && CamMouseState.value) {
@@ -72,6 +70,7 @@ EventsSDK.on("WndProc", (msg, wParam) => {
 		else if (val === -120)
 			CamDist.value += CamStep.value
 		CamDist.value = Math.min(Math.max(CamDist.value, CameraMinDistance), CameraMaxDistance)
+		MenuSDK.MenuManager.UpdateConfig()
 		UpdateVisuals(CamDist)
 		return false
 	}

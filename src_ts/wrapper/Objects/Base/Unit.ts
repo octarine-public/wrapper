@@ -322,7 +322,7 @@ export default class Unit extends Entity {
 		return Math.floor(this.Mana / this.MaxMana * 100) || 0
 	}
 	public get ManaRegen(): number {
-		return this.m_pBaseEntity.m_flManaRegen
+		return this.m_pBaseEntity.m_flManaThinkRegen
 	}
 	public get MaxDamage(): number {
 		return this.m_pBaseEntity.m_iDamageMax
