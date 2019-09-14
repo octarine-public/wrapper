@@ -1,25 +1,30 @@
 import { EventsSDK, Game, Menu as MenuSDK } from "./wrapper/Imports"
 
 let Menu = MenuSDK.AddEntry("Misc"),
-	CameraMinDistance = 0, CameraDefaultDistance = 1300, CameraMaxDistance = 10000
+	CameraMinDistance = 0,
+	CameraMaxDistance = 10000,
+	CameraDefaultDistance = 1300
 
 let CameraTree = Menu.AddNode("Camera"),
-	CamDist = CameraTree.AddSliderFloat("Camera Distance", CameraDefaultDistance, CameraMinDistance, CameraMaxDistance),
+	CamDist = CameraTree.AddSlider("Camera Distance", CameraDefaultDistance, CameraMinDistance, CameraMaxDistance),
 	CamMouseTree = CameraTree.AddNode("Mouse wheel"),
 	CamMouseState = CamMouseTree.AddToggle("Active"),
-	CamStep = CamMouseTree.AddSliderFloat("Camera Step", 50, 10, 1000),
-	Weather = Menu.AddSwitcher("Weather", [
-		"Default",
-		"Snow",
-		"Rain",
-		"Moonbeam",
-		"Pestilence",
-		"Harvest",
-		"Sirocco",
-		"Spring",
-		"Ash",
-		"Aurora",
-	], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id))
+	CamMouseStateCtrl = CamMouseTree.AddToggle("Change if Ctrl is down"),
+	CamStep = CamMouseTree.AddSlider("Camera Step", 50, 10, 1000);
+	
+Menu.AddSwitcher("Weather", [
+	"Default",
+	"Snow",
+	"Rain",
+	"Moonbeam",
+	"Pestilence",
+	"Harvest",
+	"Sirocco",
+	"Spring",
+	"Ash",
+	"Aurora",
+], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id))
+
 CamDist.OnValue(UpdateVisuals)
 
 let keybind = Menu.AddKeybind("Menu (Open/Close)", "Insert").OnPressed(() => MenuSDK.MenuManager.is_open = !MenuSDK.MenuManager.is_open)
@@ -40,27 +45,34 @@ CameraTree.AddButton("Reset camera").OnValue(() => {
 	ConVars.Set("r_farz", -1)
 })
 
-function UpdateVisuals() {
+function UpdateVisuals(call?: MenuSDK.Slider) {
 	Camera.Distance = CamDist.value
 	ConVars.Set("r_farz", CamDist.value * 2)
-	ConVars.Set("cl_weather", Weather.selected_id)
 	ConVars.Set("fog_enable", false)
 	ConVars.Set("fow_client_nofiltering", false)
 	ConVars.Set("dota_use_particle_fow", false)
 	ConVars.Set("demo_recordcommands", false)
 	ConVars.Set("dota_unit_orders_rate", 512)
+	call.OnValue(x => CamDist.value = x.value)
+	
 }
 
-EventsSDK.on("GameStarted", () => UpdateVisuals())
+EventsSDK.on("GameStarted", () => UpdateVisuals)
 
 EventsSDK.on("WndProc", (msg, wParam) => {
-	if (Game.IsInGame && msg == 522 /* WM_MOUSEWHEEL */ && CamMouseState.value) {
-		if (wParam === 7864320n) //wheel up
+	if (Game.IsInGame && msg === 522 /* WM_MOUSEWHEEL */ && CamMouseState.value) {
+		let view = new DataView(new ArrayBuffer(64));
+		view.setBigInt64(0, wParam)
+		let val = view.getInt16(4),
+			IsCtrlPressed = (view.getInt16(6) == 8)
+		if (CamMouseStateCtrl.value && !IsCtrlPressed)
+			return true
+		if (val === 120)
 			CamDist.value -= CamStep.value
-		else if (wParam === 4287102976n) //wheel down
+		else if (val === -120)
 			CamDist.value += CamStep.value
 		CamDist.value = Math.min(Math.max(CamDist.value, CameraMinDistance), CameraMaxDistance)
-		UpdateVisuals()
+		UpdateVisuals(CamDist)
 		return false
 	}
 	return true

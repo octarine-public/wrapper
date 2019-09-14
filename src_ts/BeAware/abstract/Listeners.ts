@@ -11,9 +11,8 @@ import * as VBS from "../Module/TrueSight/Entities"
 import { stateMain } from "./Menu.Base"
 // import * as TopHud from "../Module/TopHud/Entities"
 
-export var NPC: Unit[] = []
 EventsSDK.on("EntityCreated", (ent, index) => {
-	if (!stateMain.value || ent === undefined || index === undefined)
+	if (!stateMain.value || Game.IsPaused || ent === undefined || index === undefined)
 		return
 	VBS.EntityCreated(ent)
 	VBE.EntityCreated(ent)
@@ -24,7 +23,7 @@ EventsSDK.on("EntityCreated", (ent, index) => {
 })
 
 EventsSDK.on("EntityDestroyed", (ent, index) => {
-	if (!stateMain.value || ent === undefined || index === undefined)
+	if (!stateMain.value || Game.IsPaused || ent === undefined || index === undefined)
 		return
 	VBS.EntityDestroyed(ent)
 	VBE.EntityDestroyed(ent)
@@ -70,10 +69,11 @@ EventsSDK.on("ParticleDestroyed", id => {
 })
 
 EventsSDK.on("TeamVisibilityChanged", (npc, isVisibleForEnemies) => {
-	if (!stateMain.value)
+	if (!stateMain.value || Game.IsPaused)
 		return
 	VBE.TeamVisibilityChanged(npc, isVisibleForEnemies)
 })
+
 EventsSDK.on("TrueSightedChanged", (npc, isTrueSighted) => {
 	VBS.TrueSightedChanged(npc, isTrueSighted)
 })

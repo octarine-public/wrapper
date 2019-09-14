@@ -1,7 +1,6 @@
-import { ArrayExtensions, Creep, Entity, Game, Item, LocalPlayer, Unit, EntityManager, TreeTemp, RendererSDK, Debug, Tree } from "wrapper/Imports"
+import { ArrayExtensions, Creep, Entity, Game, Item, LocalPlayer, Unit } from "wrapper/Imports"
 
 import {
-
 	AutoUseItemsArcane_val, AutoUseItemsBloodHP_val,
 	AutoUseItemsBloodMP_val,
 	AutoUseItemsCheese_val,
@@ -17,10 +16,9 @@ import {
 	AutoUseItemsUrnAliesAlliesHP, AutoUseItemsUrnAliesEnemyHP,
 	AutoUseItemsUrnEnemy, Items,
 	ItemsForUse,
-	State,
+	State
 } from "./Menu"
 
-import TempTree from "../../../wrapper/Objects/Base/TreeTemp"
 import ItemManagerBase from "../../abstract/Base"
 
 let UnitsControllable: Unit[] = [],
