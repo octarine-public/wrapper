@@ -4,7 +4,6 @@ import { DegreesToRadian } from "./wrapper/Utils/Math"
 const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	active = menu.AddToggle("Active", true),
 	names = menu.AddToggle("Show skill names", false),
-	show = menu.AddImageSelector("Alert Skills", ["invoker_sun_strike", "kunkka_torrent", "lina_light_strike_array", "leshrac_split_earth", "spirit_breaker_charge_of_darkness", "tusk_snowball", "life_stealer_infest", "monkey_king_primal_spring"]),
 	textSize = menu.AddSlider("Timer text size", 17, 10, 30),
 	spellIcons = menu.AddNode("Spell Icons"),
 	icons = spellIcons.AddToggle("Show spell icons", false),
@@ -14,7 +13,6 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	// pick = chat.AddCheckBox("Pick on position"),
 	chatActive = chat.AddToggle("Chat say", false),
 	chatRangeCheck = chat.AddSlider("Range Check", 1300, 200, 5000),
-	chatShow = chat.AddImageSelector("Chat Alert Skills", show.values),
 	arModifiers = [
 		"modifier_invoker_sun_strike",
 		"modifier_kunkka_torrent_thinker",
@@ -84,7 +82,6 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		monkey_king_primal_spring: "Primal Spring",
 	}
 let arTimers = new Map<Modifier, [number, number, string, Vector3]>(),
-	//arHeroMods = new Map<Modifier, number>()
 	arHeroMods = new Map<number, number>()
 
 let phaseSpells = [
@@ -96,6 +93,17 @@ let phaseSpells = [
 	"lion_impale"
 ]
 
+
+EventsSDK.on("GameEnded", () => {
+	arTimers.clear() 
+	arHeroMods.clear()
+	direct_part_list.clear() 
+	circle_part_list.clear()
+
+	line_table = []
+})
+
+
 EventsSDK.on("BuffAdded", (ent, buff) => {
 	if (!active.value)
 		return
@@ -104,8 +112,6 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			return
 		let index = arModifiers.indexOf(buff.Name)
 		if (index !== -1) {
-			if (!show.IsEnabledID(index))
-				return
 			let radius = 175,
 				delay = arDurations[index]
 			if (ent.Owner instanceof Unit) {
@@ -147,7 +153,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			ParticlesSDK.SetControlPoint(part, 3, new Vector3(radius, 0, 0))
 			ParticlesSDK.SetControlPoint(part, 4, new Vector3(255, 255, 255))
 			arTimers.set(buff, [Game.GameTime, delay, arAbilities[index], ent.Position.Clone()])
-			if (chatActive.value && chatShow.IsEnabledID(index) && arMessages[index]) {
+			if (chatActive.value && arMessages[index]) {
 				let heroes = EntityManager.GetEntitiesInRange(ent.Position, chatRangeCheck.value, ent => ent instanceof Hero && !ent.IsEnemy()),
 					names = [],
 					string = ""
@@ -166,8 +172,6 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 	}
 	let mod = arHeroModifiers[buff.Name]
 	if (mod) {
-		if (!show.IsEnabledID(mod[3]))
-			return
 		if (mod[0] && !ent.IsHero)
 			return
 		if (mod[1] && ent.IsEnemy())
@@ -175,7 +179,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 		const part = ParticlesSDK.Create(mod[2], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent)
 		arHeroMods.set(buff.Index, part)
 		console.log(buff.Index)
-		if (chatActive.value && chatShow.IsEnabledID(mod[3]) && arMessages[mod[3]]) {
+		if (chatActive.value && arMessages[mod[3]]) {
 			SendToConsole(`say_team ${arMessages[mod[3]] + ent.Name.substring(9)}`)
 		}
 
@@ -202,6 +206,7 @@ EventsSDK.on("BuffRemoved", (ent, buff) => {
 // 			}
 // 		})
 // })
+
 EventsSDK.on("Draw", () => {
 	if (!active.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
@@ -299,6 +304,8 @@ function DestroyCircle(id) {
 let abils_list: Ability[] = []
 
 EventsSDK.on("EntityCreated", (ent) => {
+	if (!active.value)
+		return
 	if (ent instanceof Ability &&
 		ent.Owner != undefined &&
 		ent.Owner.IsEnemy()
@@ -331,6 +338,8 @@ EventsSDK.on("EntityCreated", (ent) => {
 })
 
 EventsSDK.on("EntityDestroyed", (ent) => {
+	if (!active.value)
+		return
 	if (ent instanceof Ability) {
 		ArrayExtensions.arrayRemove(abils_list, ent);
 	}
@@ -343,7 +352,11 @@ let line_table: LinearProjectile[] = []
 
 EventsSDK.on("LinearProjectileCreated", (proj) => {
 
-	if (proj.ParticlePath == "particles/units/heroes/hero_tinker/tinker_machine.vpcf" ||
+	if (!active.value)
+		return
+
+	if (!(proj.Source as Hero).IsEnemy() ||
+		proj.ParticlePath == "particles/units/heroes/hero_tinker/tinker_machine.vpcf" ||
 		proj.ParticlePath == "particles/units/heroes/hero_weaver/weaver_swarm_projectile.vpcf")
 		return;
 
@@ -351,6 +364,8 @@ EventsSDK.on("LinearProjectileCreated", (proj) => {
 })
 
 EventsSDK.on("LinearProjectileDestroyed", (proj) => {
+	if (!active.value)
+		return
 	DestroyDirectional(proj.ID)
 	ArrayExtensions.arrayRemove(line_table, proj)
 })
@@ -358,6 +373,8 @@ EventsSDK.on("LinearProjectileDestroyed", (proj) => {
 let particles_table = new Map
 
 EventsSDK.on("ParticleCreated", (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity) => {
+	if (!active.value)
+		return
 
 	if (path == "particles/units/heroes/hero_pudge/pudge_meathook.vpcf") {
 
@@ -375,6 +392,8 @@ EventsSDK.on("ParticleCreated", (id: number, path: string, particleSystemHandle:
 })
 
 EventsSDK.on("ParticleUpdated", (id: number, controlPoint: number, position: Vector3) => {
+	if (!active.value)
+		return
 	if (particles_table.has(id)) {
 
 		let part = particles_table.get(id)
@@ -395,6 +414,10 @@ EventsSDK.on("ParticleUpdatedEnt", (
 	attachment: number,
 	fallbackPosition: Vector3,
 	includeWearables: boolean) => {
+
+		if (!active.value)
+			return
+
 	if (particles_table.has(id)) {
 
 		let part = particles_table.get(id)
@@ -412,6 +435,9 @@ EventsSDK.on("ParticleDestroyed", (id: number, destroy_immediately: boolean) => 
 })
 
 EventsSDK.on("Update", () => {
+
+	if (!active.value)
+		return
 
 	// loop-optimizer: KEEP
 	particles_table.forEach((part, i) => {
