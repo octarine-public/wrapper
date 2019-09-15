@@ -1,8 +1,14 @@
-import { ArrayExtensions, Color, EventsSDK, Game, Hero, Menu, RendererSDK, Vector2 } from "wrapper/Imports"
+import { ArrayExtensions, Color, EventsSDK, Game, Hero, Menu, RendererSDK, Vector2, EntityManager } from "wrapper/Imports"
 
 var manabars: Hero[] = [],
 	heroes: Hero[] = []
 
+function IsSpectator(): boolean {
+	let LocalPlayer = EntityManager.LocalPlayer
+	if (LocalPlayer !== undefined && LocalPlayer.Team === 1)
+		return true
+	return false
+}
 const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"]),
 	emb = EMBMenu.AddNode("Mana Bars"),
 	ehb = EMBMenu.AddNode("Hp Bars"),
@@ -14,6 +20,8 @@ const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"]),
 	floor = Math.floor
 
 EventsSDK.on("EntityCreated", npc => {
+	if (IsSpectator())
+		return false
 	if (
 		npc instanceof Hero
 		&& npc.IsEnemy()
@@ -22,16 +30,23 @@ EventsSDK.on("EntityCreated", npc => {
 		heroes.push(npc)
 })
 EventsSDK.on("EntityDestroyed", ent => {
+	if (IsSpectator())
+		return false
 	if (ent instanceof Hero)
 		ArrayExtensions.arrayRemove(heroes, ent)
 })
 
 EventsSDK.on("Update", () => {
+	if (IsSpectator())
+		return false
 	if (!stateMain.value || Game.IsPaused)
 		return
 	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible)
 })
+
 EventsSDK.on("Draw", () => {
+	if (IsSpectator())
+		return false
 	if (!stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 

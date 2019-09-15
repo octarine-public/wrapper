@@ -71,7 +71,7 @@ EventsSDK.on("WndProc", (msg, wParam) => {
 			CamDist.value += CamStep.value
 		CamDist.value = Math.min(Math.max(CamDist.value, CameraMinDistance), CameraMaxDistance)
 		MenuSDK.MenuManager.UpdateConfig()
-		UpdateVisuals(CamDist)
+		UpdateVisuals()
 		return false
 	}
 	return true

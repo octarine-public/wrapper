@@ -117,7 +117,6 @@ Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type,
 	activity,
 ))
 
-Events.on("UnitAnimationEnd", (npc, snap) => EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
 Events.on("CustomGameEvent", (...args) => EventsSDK.emit("CustomGameEvent", false, ...args))
 Events.on("UnitAnimationEnd", (npc, snap) => EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
 

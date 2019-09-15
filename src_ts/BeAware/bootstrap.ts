@@ -1,4 +1,5 @@
 import { EventsSDK, Game } from "wrapper/Imports"
+import ManagerBase from "./abstract/Base"
 import { stateMain } from "./abstract/Menu.Base"
 import * as VBE from "./Module/VisibleByEnemy/Entities"
 import * as VBS from "./Module/TrueSight/Entities"
@@ -11,16 +12,18 @@ import * as Treant from "./Module/TreantMapHack/Particle"
 import * as Wisp from "./Module/WispMapHack/Particle"
 // import * as TopHud from "./Module/TopHud/Entities"
 
+let LocalPlayer = new ManagerBase
+
 EventsSDK.on("Tick", () => {
-	if (!stateMain.value || Game.IsPaused)
-		return
+	if (LocalPlayer.IsSpectator || !stateMain.value || Game.IsPaused)
+		return false
 	VBE.Tick()
 	VBS.Tick()
 	Treant.Tick()
 })
 EventsSDK.on("Draw", () => {
-	if (!stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
-		return
+	if (LocalPlayer.IsSpectator || !stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+		return false
 	Camp.OnDraw()
 	Wisp.OnDraw()
 	// TopHud.Draw()
@@ -35,6 +38,8 @@ EventsSDK.on("GameStarted", () => {
 })
 
 EventsSDK.on("GameEnded", () => {
+	if(LocalPlayer.IsSpectator)
+		return false
 	// TopHud.gameEnded()
 	VBE.GameEnded()
 	VBS.GameEnded()
@@ -47,5 +52,7 @@ EventsSDK.on("GameEnded", () => {
 })
 
 EventsSDK.on("GameConnected", () => {
+	if (LocalPlayer.IsSpectator)
+		return false
 	ParticleHack.GameConnect()
 })
