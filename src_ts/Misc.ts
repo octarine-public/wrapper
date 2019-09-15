@@ -65,9 +65,9 @@ EventsSDK.on("WndProc", (msg, wParam) => {
 			IsCtrlPressed = (view.getInt16(6) == 8)
 		if (CamMouseStateCtrl.value && !IsCtrlPressed)
 			return true
-		if (val === 120)
+		if (val > -120)
 			CamDist.value -= CamStep.value
-		else if (val === -120)
+		else if (val < 120)
 			CamDist.value += CamStep.value
 		CamDist.value = Math.min(Math.max(CamDist.value, CameraMinDistance), CameraMaxDistance)
 		MenuSDK.MenuManager.UpdateConfig()
