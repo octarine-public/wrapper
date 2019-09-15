@@ -184,7 +184,6 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 EventsSDK.on("BuffRemoved", (ent, buff) => {
 	arTimers.delete(buff)
 	if (arHeroMods.has(buff.Index)) {
-		console.log("removeee")
 		let part = arHeroMods.get(buff.Index)
 		arHeroMods.delete(buff.Index)
 		ParticlesSDK.Destroy(part, false)
@@ -300,8 +299,9 @@ function DestroyCircle(id) {
 let abils_list: Ability[] = []
 
 EventsSDK.on("EntityCreated", (ent) => {
-	if (ent instanceof Ability
-		&& ent.Owner.IsEnemy()
+	if (ent instanceof Ability &&
+		ent.Owner != undefined &&
+		ent.Owner.IsEnemy()
 	) {
 		abils_list.push(ent);
 	}
