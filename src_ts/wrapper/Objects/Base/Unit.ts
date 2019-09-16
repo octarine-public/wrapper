@@ -489,7 +489,10 @@ export default class Unit extends Entity {
 	public GetBuffByName(name: string) {
 		return this.ModifiersBook.GetBuffByName(name)
 	}
-
+	public HasModifier(name: string): boolean {
+		return this.ModifiersBook.GetBuffByName(name) !== undefined 
+			? true : false
+	}
 	public GetTalentValue(name: string | RegExp) {
 		let talent = this.AbilitiesBook.GetAbilityByName(name)
 		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
