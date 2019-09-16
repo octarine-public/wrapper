@@ -1,9 +1,9 @@
-import { Color, EntityManager, EventsSDK, Game, Hero, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
+import { Color, EntityManager, EventsSDK, Game, Hero, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, LinearProjectile, Ability, ArrayExtensions, QAngle, Entity, ModifierManager } from "wrapper/Imports"
+import { DegreesToRadian } from "./wrapper/Utils/Math"
 
 const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	active = menu.AddToggle("Active", true),
 	names = menu.AddToggle("Show skill names", false),
-	show = menu.AddImageSelector("Alert Skills", ["invoker_sun_strike", "kunkka_torrent", "lina_light_strike_array", "leshrac_split_earth", "spirit_breaker_charge_of_darkness", "tusk_snowball", "life_stealer_infest", "monkey_king_primal_spring"]),
 	textSize = menu.AddSlider("Timer text size", 17, 10, 30),
 	spellIcons = menu.AddNode("Spell Icons"),
 	icons = spellIcons.AddToggle("Show spell icons", false),
@@ -13,7 +13,6 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	// pick = chat.AddCheckBox("Pick on position"),
 	chatActive = chat.AddToggle("Chat say", false),
 	chatRangeCheck = chat.AddSlider("Range Check", 1300, 200, 5000),
-	chatShow = chat.AddImageSelector("Chat Alert Skills", show.values),
 	arModifiers = [
 		"modifier_invoker_sun_strike",
 		"modifier_kunkka_torrent_thinker",
@@ -83,7 +82,27 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		monkey_king_primal_spring: "Primal Spring",
 	}
 let arTimers = new Map<Modifier, [number, number, string, Vector3]>(),
-	arHeroMods = new Map<Modifier, number>()
+	arHeroMods = new Map<number, number>()
+
+let phaseSpells = [
+	"lina_dragon_slave",
+	"pudge_meat_hook",
+	"mirana_arrow",
+	"windrunner_powershot",
+	"grimstroke_dark_artistry",
+	"lion_impale"
+]
+
+
+EventsSDK.on("GameEnded", () => {
+	arTimers.clear() 
+	arHeroMods.clear()
+	direct_part_list.clear() 
+	circle_part_list.clear()
+
+	line_table = []
+})
+
 
 EventsSDK.on("BuffAdded", (ent, buff) => {
 	if (!active.value)
@@ -93,10 +112,8 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			return
 		let index = arModifiers.indexOf(buff.Name)
 		if (index !== -1) {
-			if (!show.IsEnabledID(index))
-				return
 			let radius = 175,
-			delay = arDurations[index]
+				delay = arDurations[index]
 			if (ent.Owner instanceof Unit) {
 				let ability = ent.Owner.GetAbilityByName(arAbilities[index])
 				if (ability !== undefined) {
@@ -136,7 +153,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			ParticlesSDK.SetControlPoint(part, 3, new Vector3(radius, 0, 0))
 			ParticlesSDK.SetControlPoint(part, 4, new Vector3(255, 255, 255))
 			arTimers.set(buff, [Game.GameTime, delay, arAbilities[index], ent.Position.Clone()])
-			if (chatActive.value && chatShow.IsEnabledID(index) && arMessages[index]) {
+			if (chatActive.value && arMessages[index]) {
 				let heroes = EntityManager.GetEntitiesInRange(ent.Position, chatRangeCheck.value, ent => ent instanceof Hero && !ent.IsEnemy()),
 					names = [],
 					string = ""
@@ -155,40 +172,41 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 	}
 	let mod = arHeroModifiers[buff.Name]
 	if (mod) {
-		if (!show.IsEnabled(mod[3]))
-			return
 		if (mod[0] && !ent.IsHero)
 			return
 		if (mod[1] && ent.IsEnemy())
 			return
 		const part = ParticlesSDK.Create(mod[2], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent)
-		arHeroMods.set(buff, part)
-		if (chatActive.value && chatShow.IsEnabled(mod[3]) && arMessages[mod[3]]) {
+		arHeroMods.set(buff.Index, part)
+		console.log(buff.Index)
+		if (chatActive.value && arMessages[mod[3]]) {
 			SendToConsole(`say_team ${arMessages[mod[3]] + ent.Name.substring(9)}`)
 		}
+
 	}
 })
 EventsSDK.on("BuffRemoved", (ent, buff) => {
 	arTimers.delete(buff)
-	if (arHeroMods.has(buff)) {
-		let part = arHeroMods.get(buff)
-		arHeroMods.delete(buff)
+	if (arHeroMods.has(buff.Index)) {
+		let part = arHeroMods.get(buff.Index)
+		arHeroMods.delete(buff.Index)
 		ParticlesSDK.Destroy(part, false)
 	}
 })
-EventsSDK.on("Tick", () => {
-	if (!active.value)
-		return
-	if (arHeroMods.size > 0) {
-		// loop-optimizer: KEEP
-		arHeroMods.forEach((part, buff) => {
-			if (buff.RemainingTime === null) {
-				arHeroMods.delete(buff)
-				ParticlesSDK.Destroy(part, false)
-			}
-		})
-	}
-})
+// EventsSDK.on("Tick", () => {
+// 	if (!active.value)
+// 		return
+
+// 		// loop-optimizer: KEEP
+// 		arHeroMods.forEach((part, buff) => {
+// 			if (buff.RemainingTime === null) {
+// 				console.log("removeaaaa")
+// 				arHeroMods.delete(buff)
+// 				ParticlesSDK.Destroy(part, false)
+// 			}
+// 		})
+// })
+
 EventsSDK.on("Draw", () => {
 	if (!active.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
@@ -214,4 +232,270 @@ EventsSDK.on("Draw", () => {
 		RendererSDK.Text(rend.toFixed(2), vector, Color.White, "Calibri", new Vector2(textSize.value, 200))
 	})
 	delArray.forEach(buff => arTimers.delete(buff))
+})
+
+let direct_part_list = new Map
+function DrawDirectional(v1: Vector3, v2: Vector3, id, all = false) {
+
+	let part_table = direct_part_list.get(id);
+
+	if (part_table == undefined) {
+		let index1 = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_directional.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
+		let index2 = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_directional_b.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
+		let index3 = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_directional_c.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
+
+		ParticlesSDK.SetControlPoint(index1, 2, v2)
+		ParticlesSDK.SetControlPoint(index2, 2, v2)
+		ParticlesSDK.SetControlPoint(index3, 2, v2)
+
+		part_table = [index1, index2, index3]
+		direct_part_list.set(id, part_table);
+	}
+
+	ParticlesSDK.SetControlPoint(part_table[0], 0, v1)
+	ParticlesSDK.SetControlPoint(part_table[1], 1, v1)
+	ParticlesSDK.SetControlPoint(part_table[2], 0, v1)
+
+	if (all) {
+		ParticlesSDK.SetControlPoint(part_table[0], 2, v2)
+		ParticlesSDK.SetControlPoint(part_table[1], 2, v2)
+		ParticlesSDK.SetControlPoint(part_table[2], 2, v2)
+	}
+}
+
+function DestroyDirectional(id) {
+	let part_table = direct_part_list.get(id)
+	if (part_table != undefined) {
+		ParticlesSDK.Destroy(part_table[0])
+		ParticlesSDK.Destroy(part_table[1])
+		ParticlesSDK.Destroy(part_table[2])
+		direct_part_list.delete(id);
+	}
+}
+
+
+let circle_part_list = new Map
+
+function DrawParticleCirclePos(pos: Vector3, radius: number, id: number) {
+
+	let part_table = circle_part_list.get(id)
+
+	if (part_table == undefined) {
+
+		let index1 = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
+		ParticlesSDK.SetControlPoint(index1, 1, new Vector3(radius))
+		part_table = [index1]
+		circle_part_list.set(id, part_table)
+	}
+
+	ParticlesSDK.SetControlPoint(part_table[0], 0, pos)
+}
+
+function DestroyCircle(id) {
+
+	let part_table = circle_part_list.get(id)
+
+	if (part_table != undefined) {
+		ParticlesSDK.Destroy(part_table[0])
+		circle_part_list.delete(id)
+	}
+}
+
+let abils_list: Ability[] = []
+
+EventsSDK.on("EntityCreated", (ent) => {
+	if (!active.value)
+		return
+	if (ent instanceof Ability &&
+		ent.Owner != undefined &&
+		ent.Owner.IsEnemy()
+	) {
+		abils_list.push(ent);
+	}
+
+	if (ent.Name == "npc_dota_thinker") {
+		let owner = ent.Owner
+
+		if (owner != undefined) {
+
+			let own_name = owner.Name
+
+			let rad = 0
+
+			if (own_name == "npc_dota_hero_invoker") {
+				rad = 175
+			} else if (own_name == "npc_dota_hero_kunkka") {
+				rad = 175
+			} else if (own_name == "npc_dota_hero_lina") {
+				rad = 225
+			}
+
+			if (rad != 0) {
+				DrawParticleCirclePos(ent.Position, rad, ent.Index)
+			}
+		}
+	}
+})
+
+EventsSDK.on("EntityDestroyed", (ent) => {
+	if (!active.value)
+		return
+	if (ent instanceof Ability) {
+		ArrayExtensions.arrayRemove(abils_list, ent);
+	}
+	if (ent.Name == "npc_dota_thinker") {
+		DestroyCircle(ent.Index)
+	}
+})
+
+let line_table: LinearProjectile[] = []
+
+EventsSDK.on("LinearProjectileCreated", (proj) => {
+
+	if (!active.value)
+		return
+
+	if (!(proj.Source as Hero).IsEnemy() ||
+		proj.ParticlePath == "particles/units/heroes/hero_tinker/tinker_machine.vpcf" ||
+		proj.ParticlePath == "particles/units/heroes/hero_weaver/weaver_swarm_projectile.vpcf")
+		return;
+
+	line_table.push(proj);
+})
+
+EventsSDK.on("LinearProjectileDestroyed", (proj) => {
+	if (!active.value)
+		return
+	DestroyDirectional(proj.ID)
+	ArrayExtensions.arrayRemove(line_table, proj)
+})
+
+let particles_table = new Map
+
+EventsSDK.on("ParticleCreated", (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity) => {
+	if (!active.value)
+		return
+
+	if (path == "particles/units/heroes/hero_pudge/pudge_meathook.vpcf") {
+
+		let p = {
+			time: Game.RawGameTime,
+			create: {
+				path: path,
+			},
+			update: [],
+			update_ent: [],
+		}
+
+		particles_table.set(id, p)
+	}
+})
+
+EventsSDK.on("ParticleUpdated", (id: number, controlPoint: number, position: Vector3) => {
+	if (!active.value)
+		return
+	if (particles_table.has(id)) {
+
+		let part = particles_table.get(id)
+
+		part["update"][controlPoint] = {
+			position: position
+		}
+
+		particles_table.set(id, part)
+	}
+})
+
+EventsSDK.on("ParticleUpdatedEnt", (
+	id: number,
+	controlPoint: number,
+	ent: Entity,
+	attach: ParticleAttachment_t,
+	attachment: number,
+	fallbackPosition: Vector3,
+	includeWearables: boolean) => {
+
+		if (!active.value)
+			return
+
+	if (particles_table.has(id)) {
+
+		let part = particles_table.get(id)
+
+		part["update_ent"][controlPoint] = {
+			position: fallbackPosition
+		}
+
+		particles_table.set(id, part)
+	}
+})
+
+EventsSDK.on("ParticleDestroyed", (id: number, destroy_immediately: boolean) => {
+	particles_table.delete(id)
+})
+
+EventsSDK.on("Update", () => {
+
+	if (!active.value)
+		return
+
+	// loop-optimizer: KEEP
+	particles_table.forEach((part, i) => {
+
+		if (part.create.path == "particles/units/heroes/hero_pudge/pudge_meathook.vpcf" &&
+			part.update_ent[0] != undefined &&
+			part.update[1] != undefined) {
+
+			let pos1 = part.update[1].position as Vector3
+			let pos2 = (part.update_ent[0].position as Vector3).Clone()
+
+			let normal = (pos1.Subtract(pos2)).Normalize()
+			pos2.AddForThis(normal.MultiplyScalar(200))
+
+			let calc_pos = normal.MultiplyScalar((Game.RawGameTime - part.time) * 1450)
+
+			DrawDirectional(pos2.Add(calc_pos), pos1, i)
+
+			if (part.update_ent[1] != undefined || calc_pos.toVector2().Length > pos1.Subtract(pos2).toVector2().Length) {
+				DestroyDirectional(i)
+				particles_table.delete(i)
+			}
+		}
+	})
+
+	// loop-optimizer: KEEP
+	line_table.forEach((proj) => {
+
+		DrawDirectional(
+			proj.Position,
+			proj.TargetLoc,
+			proj.ID
+		)
+	})
+
+	// loop-optimizer: KEEP
+	abils_list.forEach((abil) => {
+		// loop-optimizer: KEEP
+		phaseSpells.forEach((spell) => {
+			if (spell == abil.Name) {
+
+				let owner = abil.Owner
+
+				if (abil.IsInAbilityPhase || (owner.IsChanneling && spell == "windrunner_powershot")) {
+
+					let position = owner.Position
+					let ang = DegreesToRadian(QAngle.fromIOBuffer(owner.GameSceneNode.m_angAbsRotation).y)
+
+					DrawDirectional(
+						position,
+						position.Add(new Vector3(abil.CastRange).Rotated(ang)).AddScalarZ(96),
+						abil.ID + 100000,
+						true
+					)
+				} else {
+					DestroyDirectional(abil.ID + 100000)
+				}
+			}
+		})
+	})
 })
