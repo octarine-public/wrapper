@@ -6,6 +6,7 @@ let AbilityAbuser = Menu.AddEntry(["Utility", "Ability Abuse"]),
 		"invoker_exort",
 		"invoker_quas",
 		"invoker_wex",
+		"item_shivas_guard",
 	])
 
 setInterval(() => {
@@ -57,6 +58,19 @@ setInterval(() => {
 		}
 		if (ability_abuse_selector.IsEnabled("invoker_wex"))
 			ability = MyEnt.GetAbilityByName("invoker_wex")
+		if (ability !== undefined && ability.CanBeCasted()) {
+			PrepareUnitOrders ({
+				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
+				Ability: ability.m_pBaseEntity,
+				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
+				Unit: repeated_unit,
+				Queue: false,
+				ShowEffects: false,
+			})
+			return false
+		}
+		if (ability_abuse_selector.IsEnabled("item_shivas_guard"))
+			ability = MyEnt.GetItemByName("item_shivas_guard")
 		if (ability !== undefined && ability.CanBeCasted()) {
 			PrepareUnitOrders ({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
