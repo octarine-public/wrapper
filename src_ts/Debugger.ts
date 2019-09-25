@@ -110,11 +110,11 @@ Events.on("UnitStateChanged", npc => {
 	if (!debugOnlyThrowEvents.value)
 		console.log("onUnitStateChanged", npc)
 })
-Events.on("TeamVisibilityChanged", (npc, newTagged) => {
+Events.on("TeamVisibilityChanged", npc => {
 	if (!debugEvents.value || !debugOtherEvents.value) return
 
 	if (!debugOnlyThrowEvents.value)
-		console.log("onTeamVisibilityChanged", npc, newTagged)
+		console.log("onTeamVisibilityChanged", npc)
 })
 Events.on("Draw", () => {
 	if (!debugEvents.value || !debugDrawEvents.value) return
@@ -173,4 +173,3 @@ EventsSDK.on("Draw", () => {
 		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
 	})
 })
-

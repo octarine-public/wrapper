@@ -37,7 +37,7 @@ export default class ImageSelector extends Base {
 				Math.min(this.values.length, 8) * (this.image_size.x + this.image_border_size.x * 2 + 2),
 			)
 			+ this.border_size.x * 2
-			+ this.text_offset.x
+			+ this.text_offset.x * 2
 		this.TotalSize.y = this.TotalSize_.y = Math.ceil(this.values.length / 8) * (this.image_size.y + this.image_border_size.x * 2 + 2) + 40
 		Menu.PositionDirty = true
 		super.Update()
@@ -52,8 +52,8 @@ export default class ImageSelector extends Base {
 	public get IsZeroSelected(): boolean {
 		for (let value of this.enabled_values.values())
 			if (value)
-				return true
-		return false
+				return false
+		return true
 	}
 
 	public get IconsRect() {

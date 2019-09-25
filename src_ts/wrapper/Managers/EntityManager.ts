@@ -16,8 +16,6 @@ import Ability from "../Objects/Base/Ability"
 import Item from "../Objects/Base/Item"
 import NativeToSDK from "../Objects/NativeToSDK"
 
-import { useQueueModifiers } from "./ModifierManager"
-
 import Building from "../Objects/Base/Building"
 import PhysicalItem from "../Objects/Base/PhysicalItem"
 import Tower from "../Objects/Base/Tower"
@@ -25,10 +23,9 @@ import Tower from "../Objects/Base/Tower"
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/Utils"
+import AbilityData from "../Objects/DataBook/AbilityData"
 
 export { PlayerResource, Game }
-
-let queueEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 
 let AllEntities: Entity[] = []
 let EntitiesIDs = new Map<number, Entity>()
@@ -36,6 +33,9 @@ let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 let InStage = new Map<C_BaseEntity, Entity>()
 
 export let LocalPlayer: Player
+export function SetLocalPlayer(player: Player) {
+	LocalPlayer = player
+}
 
 class EntityManager {
 	get LocalPlayer(): Player {
@@ -63,19 +63,10 @@ class EntityManager {
 			return this.EntityByIndex(ent)
 
 		let entityFind = AllEntitiesAsMap.get(ent)
+		if (inStage)
+			entityFind = entityFind || InStage.get(ent)
 
-		if (entityFind !== undefined)
-			return entityFind
-
-		if (!inStage)
-			return undefined
-
-		entityFind = InStage.get(ent)
-
-		if (entityFind !== undefined)
-			return entityFind
-
-		return queueEntitiesAsMap.get(ent)
+		return entityFind
 	}
 
 	GetEntityByFilter(filter: (ent: Entity) => boolean, inStage: boolean = false): Entity {
@@ -88,14 +79,6 @@ class EntityManager {
 
 		// loop-optimizer: KEEP
 		InStage.forEach((ent, _) => {
-			if (found === undefined && filter(ent))
-				found = ent
-		})
-		if (found !== undefined)
-			return found
-		
-		// loop-optimizer: KEEP
-		queueEntitiesAsMap.forEach((ent, _) => {
 			if (found === undefined && filter(ent))
 				found = ent
 		})
@@ -112,7 +95,7 @@ class EntityManager {
 				return this.EntityByIndex(ent)
 			let ent_ = AllEntitiesAsMap.get(ent)
 			if (inStage)
-				ent_ = ent_ || InStage.get(ent) || queueEntitiesAsMap.get(ent)
+				ent_ = ent_ || InStage.get(ent)
 			return ent_ || ent
 		})
 	}
@@ -134,48 +117,40 @@ export default global.EntityManager = entityManager
 
 Events.on("EntityCreated", (ent, index) => {
 	{ // add globals
-		if (ent instanceof C_DOTA_PlayerResource) {
+		if (ent instanceof C_DOTA_PlayerResource)
 			PlayerResource.m_pBaseEntity = ent
-			return
-		}
 
 		if (ent instanceof C_DOTAGamerulesProxy) {
 			Game.m_GameRules = ent.m_pGameRules
-			return
+			Game.RawGameTime = Game.m_GameRules.m_fGameTime
+			Game.IsPaused = Game.m_GameRules.m_bGamePaused
+			if (LocalPlayer !== undefined && LocalPlayer.HeroAssigned && !gameInProgress) {
+				gameInProgress = true
+				EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
+			}
 		}
 
-		if (ent instanceof C_DOTAGameManagerProxy) {
+		if (ent instanceof C_DOTAGameManagerProxy)
 			Game.m_GameManager = ent.m_pGameManager
-			return
-		}
 	}
 
 	const entity = ClassFromNative(ent, index)
-
-	if (LocalPlayer === undefined) {
-		queueEntitiesAsMap.set(ent, entity)
-		return
-	}
-
 	AddToCache(entity)
 })
 
 Events.on("EntityDestroyed", (ent, index) => {
 	{ // delete global
-		if (ent instanceof C_DOTA_PlayerResource) {
+		if (ent instanceof C_DOTA_PlayerResource)
 			PlayerResource.m_pBaseEntity = undefined
-			return
-		}
 
 		if (ent instanceof C_DOTAGamerulesProxy) {
 			Game.m_GameRules = undefined
-			return
+			Game.RawGameTime = 0
+			Game.IsPaused = false
 		}
 
-		if (ent instanceof C_DOTAGameManagerProxy) {
+		if (ent instanceof C_DOTAGameManagerProxy)
 			Game.m_GameManager = undefined
-			return
-		}
 
 		if (ent instanceof C_DOTAPlayer && LocalPlayer !== undefined && LocalPlayer.m_pBaseEntity === ent)
 			LocalPlayer = undefined
@@ -193,18 +168,6 @@ function CheckIsInStagingEntity(ent: C_BaseEntity) {
 
 setInterval(() => {
 	// loop-optimizer: KEEP
-	queueEntitiesAsMap.forEach((entity, baseEntity) => {
-		if (CheckIsInStagingEntity(baseEntity))
-			return
-
-		if (!(baseEntity instanceof C_DOTAPlayer && baseEntity.m_bIsLocalPlayer))
-			return
-
-		LocalPlayer = entity as Player
-		useQueueEntities()
-	})
-
-	// loop-optimizer: KEEP
 	InStage.forEach((entity, baseEntity) => {
 		if (CheckIsInStagingEntity(baseEntity))
 			return
@@ -215,15 +178,14 @@ setInterval(() => {
 
 let gameInProgress = false
 function AddToCache(entity: Entity) {
-	// console.log("onEntityPreCreated SDK", entity.m_pBaseEntity, entity.Index);
-	EventsSDK.emit("EntityPreCreated", false, entity, entity.Index)
-
 	const index = entity.Index
 	EntitiesIDs.set(index, entity)
 	if (CheckIsInStagingEntity(entity.m_pBaseEntity)) {
 		InStage.set(entity.m_pBaseEntity, entity)
 		return
 	}
+	if (entity instanceof Player && entity.m_pBaseEntity.m_bIsLocalPlayer)
+		LocalPlayer = entity as Player
 
 	entity.OnCreated()
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
@@ -231,9 +193,8 @@ function AddToCache(entity: Entity) {
 
 	// console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
 	EventsSDK.emit("EntityCreated", false, entity, index)
-	if (entity instanceof Unit)
-		changeFieldsByEvents(entity)
-	if (LocalPlayer !== undefined && LocalPlayer.Hero === entity) {
+	changeFieldsByEvents(entity)
+	if (LocalPlayer !== undefined && LocalPlayer.HeroAssigned && !gameInProgress && Game.m_GameRules !== undefined) {
 		gameInProgress = true
 		EventsSDK.emit("GameStarted", false, entity)
 	}
@@ -254,7 +215,6 @@ setInterval(() => {
 function DeleteFromCache(entNative: C_BaseEntity, index: number) {
 	{
 		let is_queued_entity = false
-		is_queued_entity = queueEntitiesAsMap.delete(entNative) || is_queued_entity
 		is_queued_entity = InStage.delete(entNative) || is_queued_entity
 		if (is_queued_entity)
 			return
@@ -306,29 +266,41 @@ function ClassFromNative(ent: C_BaseEntity, index: number) {
 	return new Entity(ent, index)
 }
 
-/* ================ QUEUE CACHE ================ */
-
-function useQueueEntities() {
-	if (queueEntitiesAsMap.size === 0)
-		return
-
-	// loop-optimizer: KEEP
-	queueEntitiesAsMap.forEach(entity => {
-		AddToCache(entity)
-
-		if (entity instanceof Unit)
-			useQueueModifiers(entity)
-	})
-
-	queueEntitiesAsMap.clear()
-}
-
 /* ================ CHANGE FIELDS ================ */
 
-function changeFieldsByEvents(unit: Unit) {
-	const visibleTagged = unit.IsVisibleForTeamMask
-
-	const isVisibleForEnemies = Unit.IsVisibleForEnemies(unit, visibleTagged)
-	unit.IsVisibleForEnemies = isVisibleForEnemies
-	EventsSDK.emit("TeamVisibilityChanged", false, unit, isVisibleForEnemies, visibleTagged)
+function changeFieldsByEvents(ent: Entity) {
+	ent.MaxHP = ent.m_pBaseEntity.m_iMaxHealth
+	ent.HP = ent.m_pBaseEntity.m_iHealth
+	ent.LifeState = ent.m_pBaseEntity.m_lifeState
+	ent.Team = ent.m_pBaseEntity.m_iTeamNum
+	ent.Owner_ = ent.m_pBaseEntity.m_hOwnerEntity
+	if (ent.Entity !== undefined)
+		ent.Name_ = ent.Entity.m_name || ent.Entity.m_designerName || ""
+	EventsSDK.emit("LifeStateChanged", false, ent)
+	if (ent instanceof Unit) {
+		ent.RotationDifference = ent.m_pBaseEntity.m_anglediff
+		ent.ManaRegen = ent.m_pBaseEntity.m_flManaThinkRegen
+		ent.HPRegen = ent.m_pBaseEntity.m_flHealthThinkRegen
+		ent.MoveCapabilities = ent.m_pBaseEntity.m_iMoveCapabilities
+		ent.AttackCapabilities = ent.m_pBaseEntity.m_iAttackCapabilities
+		ent.IsControllableByPlayerMask = ent.m_pBaseEntity.m_iIsControllableByPlayer64
+		ent.IsVisibleForTeamMask = ent.m_pBaseEntity.m_iTaggedAsVisibleByTeam
+		ent.IsVisibleForEnemies = Unit.IsVisibleForEnemies(ent, ent.IsVisibleForTeamMask)
+		ent.NetworkActivity = ent.m_pBaseEntity.m_NetworkActivity
+		EventsSDK.emit("TeamVisibilityChanged", false, ent)
+		EventsSDK.emit("NetworkActivityChanged", false, ent)
+	}
+	if (ent instanceof Ability) {
+		ent.LastCastClickTime = ent.m_pBaseEntity.m_flLastCastClickTime
+		ent.IsToggled = ent.m_pBaseEntity.m_bToggleState
+		ent.ChannelStartTime = ent.m_pBaseEntity.m_flChannelStartTime
+		ent.CastStartTime = ent.m_pBaseEntity.m_flCastStartTime
+		ent.IsInAbilityPhase = ent.m_pBaseEntity.m_bInAbilityPhase
+		ent.CooldownLength = ent.m_pBaseEntity.m_flCooldownLength
+		ent.Cooldown = ent.m_pBaseEntity.m_fCooldown
+		ent.Level = ent.m_pBaseEntity.m_iLevel
+		let m_pAbilityData = ent.m_pBaseEntity.m_pAbilityData
+		if (m_pAbilityData !== undefined)
+			ent.AbilityData = new AbilityData(m_pAbilityData)
+	}
 }

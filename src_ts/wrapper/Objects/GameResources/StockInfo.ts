@@ -1,19 +1,21 @@
+import { Team } from "../../Helpers/Team"
+
 /* import EntityManager from "../../Managers/EntityManager";
 import AbilityData from "../DataBook/AbilityData";
 import Ability from "../Base/Ability"; */
 
 export default class StockInfo {
-	// private m_AbilityData: AbilityData
-	private m_AbilityID: number
-	private m_InitStockDuration: number
-	private m_MaxCount: number
-	private m_Team: DOTATeam_t
+	// public readonly m_AbilityData: AbilityData
+	public readonly AbilityID: number
+	public readonly InitStockDuration: number
+	public readonly MaxCount: number
+	public readonly Team: Team
 
 	constructor(public readonly m_StockInfo: CDOTA_ItemStockInfo) {
-		this.m_AbilityID = m_StockInfo.nItemAbilityID
-		this.m_InitStockDuration = m_StockInfo.fInitialStockDuration
-		this.m_MaxCount = m_StockInfo.iMaxCount
-		this.m_Team = m_StockInfo.iTeamNumber
+		this.AbilityID = m_StockInfo.nItemAbilityID
+		this.InitStockDuration = m_StockInfo.fInitialStockDuration
+		this.MaxCount = m_StockInfo.iMaxCount
+		this.Team = m_StockInfo.iTeamNumber
 	}
 
 	/* get AbilityData(): AbilityData {
@@ -27,17 +29,8 @@ export default class StockInfo {
 
 		return this.m_AbilityData;
 	} */
-	get AbilityID(): number {
-		return this.m_AbilityID
-	}
-	get InitStockDuration(): number {
-		return this.m_InitStockDuration
-	}
 	get IsAvalible(): boolean {
 		return this.Count > 0
-	}
-	get MaxCount(): number {
-		return this.m_MaxCount
 	}
 	get Count(): number {
 		return this.m_StockInfo.iStockCount
@@ -47,9 +40,6 @@ export default class StockInfo {
 	}
 	get Time(): boolean {
 		return this.m_StockInfo.fStockTime > 0
-	}
-	get Team(): DOTATeam_t {
-		return this.m_Team
 	}
 	get PlayerNumber(): number {
 		return this.m_StockInfo.iPlayerNumber

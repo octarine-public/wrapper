@@ -6,6 +6,7 @@ import * as MathSDK from "./Utils/Math"
 import * as Parse from "./Utils/ParseKV"
 import * as Utils from "./Utils/Utils"
 export { default as Benchmark } from "./Utils/BenchMark"
+export { Team } from "./Helpers/Team"
 
 export { Utils, MathSDK, Debug, ArrayExtensions, MapExtensions, Parse }
 

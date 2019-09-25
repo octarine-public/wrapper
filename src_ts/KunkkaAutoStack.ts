@@ -38,7 +38,7 @@ EventsSDK.on("Tick", () => {
 	var MyEnt = LocalPlayer.Hero
 	if (MyEnt === undefined)
 		return
-	var torrent = MyEnt.AbilitiesBook.GetAbilityByNativeClass(C_DOTA_Ability_Kunkka_Torrent)
+	var torrent = MyEnt.AbilitiesBook.GetAbilityByName("kunkka_torrent")
 	if (torrent === undefined || !torrent.CanBeCasted())
 		return
 

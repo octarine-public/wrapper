@@ -1,19 +1,13 @@
-import { ArrayExtensions, Color, Creep, Entity, EntityManager, RendererSDK, Vector2 } from "wrapper/Imports"
+import { ArrayExtensions, Color, Creep, Entity, RendererSDK, Team, Vector2 } from "wrapper/Imports"
 import { alpha, ComboBox, Size, State } from "./Menu"
 let allNeutrals: Creep[] = []
 
 export function onEntityAdded(ent: Entity) {
-	if (!State.value)
-		return
-	if (ent instanceof Creep && !ent.IsLaneCreep // facepalm
-		&& ent.Team === DOTATeam_t.DOTA_TEAM_NEUTRALS) {
+	if (ent instanceof Creep && !ent.IsLaneCreep && ent.Team === Team.Neutral)
 		allNeutrals.push(ent)
-	}
 }
 
 export function EntityDestroyed(ent: Entity) {
-	if (!State.value)
-		return
 	if (ent instanceof Creep)
 		ArrayExtensions.arrayRemove(allNeutrals, ent)
 }

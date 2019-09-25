@@ -5,5 +5,5 @@ const { BaseTree, State } = MenuBase(Menu, "TrueSight Detector"),
 	showOnAllies = BaseTree.AddToggle("Show on ally heroes", false),
 	showOnWards = BaseTree.AddToggle("Show on wards", false),
 	showOnCreeps = BaseTree.AddToggle("Show on creeps", false)
-	
+
 export { State, showOnAll, showOnSelf, showOnAllies, showOnWards, showOnCreeps };

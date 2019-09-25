@@ -10,7 +10,7 @@ export default class ManagerBase {
 	public get IsSpectator(): boolean {
 		let LocalPlayer = EntityManager.LocalPlayer
 		if (LocalPlayer === undefined)
-			return false		
+			return false
 		if(LocalPlayer.Team === 1)
 			return true
 	}

@@ -1,4 +1,4 @@
-import { Color, EntityManager, EventsSDK, Game, Hero, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, LinearProjectile, Ability, ArrayExtensions, QAngle, Entity, ModifierManager } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Color, Entity, EntityManager, EventsSDK, Game, Hero, LinearProjectile, Menu, Modifier, ModifierManager, ParticlesSDK, QAngle, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
 import { DegreesToRadian } from "./wrapper/Utils/Math"
 
 const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
@@ -63,7 +63,7 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		"", "", "",
 		"impact_radius",
 	],
-	talent: any[] = [false, C_DOTA_Ability_Special_Bonus_Unique_Kunkka],
+	talent: any[] = [false, "special_bonus_unique_kunkka"],
 	arMessages = [
 		"SunStrike near ",
 		"Torrent near ",
@@ -82,7 +82,7 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		monkey_king_primal_spring: "Primal Spring",
 	}
 let arTimers = new Map<Modifier, [number, number, string, Vector3]>(),
-	arHeroMods = new Map<number, number>()
+	arHeroMods = new Map<Modifier, number>()
 
 let phaseSpells = [
 	"lina_dragon_slave",
@@ -90,19 +90,17 @@ let phaseSpells = [
 	"mirana_arrow",
 	"windrunner_powershot",
 	"grimstroke_dark_artistry",
-	"lion_impale"
+	"lion_impale",
 ]
 
-
 EventsSDK.on("GameEnded", () => {
-	arTimers.clear() 
+	arTimers.clear()
 	arHeroMods.clear()
-	direct_part_list.clear() 
+	direct_part_list.clear()
 	circle_part_list.clear()
 
 	line_table = []
 })
-
 
 EventsSDK.on("BuffAdded", (ent, buff) => {
 	if (!active.value)
@@ -125,7 +123,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 						delay = ability.ChannelStartTime
 					let talent_class = talent[index]
 					if (talent_class !== undefined && talent_class !== false)
-						radius += ent.Owner.GetTalentClassValue(talent_class)
+						radius += ent.Owner.GetTalentValue(talent_class)
 				}
 			}
 			let abPart
@@ -177,7 +175,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 		if (mod[1] && ent.IsEnemy())
 			return
 		const part = ParticlesSDK.Create(mod[2], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent)
-		arHeroMods.set(buff.Index, part)
+		arHeroMods.set(buff, part)
 		console.log(buff.Index)
 		if (chatActive.value && arMessages[mod[3]]) {
 			SendToConsole(`say_team ${arMessages[mod[3]] + ent.Name.substring(9)}`)
@@ -187,9 +185,9 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 })
 EventsSDK.on("BuffRemoved", (ent, buff) => {
 	arTimers.delete(buff)
-	if (arHeroMods.has(buff.Index)) {
-		let part = arHeroMods.get(buff.Index)
-		arHeroMods.delete(buff.Index)
+	if (arHeroMods.has(buff)) {
+		let part = arHeroMods.get(buff)
+		arHeroMods.delete(buff)
 		ParticlesSDK.Destroy(part, false)
 	}
 })
@@ -236,10 +234,9 @@ EventsSDK.on("Draw", () => {
 
 let direct_part_list = new Map
 function DrawDirectional(v1: Vector3, v2: Vector3, id, all = false) {
+	let part_table = direct_part_list.get(id)
 
-	let part_table = direct_part_list.get(id);
-
-	if (part_table == undefined) {
+	if (part_table === undefined) {
 		let index1 = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_directional.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
 		let index2 = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_directional_b.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
 		let index3 = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_directional_c.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
@@ -249,7 +246,7 @@ function DrawDirectional(v1: Vector3, v2: Vector3, id, all = false) {
 		ParticlesSDK.SetControlPoint(index3, 2, v2)
 
 		part_table = [index1, index2, index3]
-		direct_part_list.set(id, part_table);
+		direct_part_list.set(id, part_table)
 	}
 
 	ParticlesSDK.SetControlPoint(part_table[0], 0, v1)
@@ -265,14 +262,13 @@ function DrawDirectional(v1: Vector3, v2: Vector3, id, all = false) {
 
 function DestroyDirectional(id) {
 	let part_table = direct_part_list.get(id)
-	if (part_table != undefined) {
+	if (part_table !== undefined) {
 		ParticlesSDK.Destroy(part_table[0])
 		ParticlesSDK.Destroy(part_table[1])
 		ParticlesSDK.Destroy(part_table[2])
-		direct_part_list.delete(id);
+		direct_part_list.delete(id)
 	}
 }
-
 
 let circle_part_list = new Map
 
@@ -280,7 +276,7 @@ function DrawParticleCirclePos(pos: Vector3, radius: number, id: number) {
 
 	let part_table = circle_part_list.get(id)
 
-	if (part_table == undefined) {
+	if (part_table === undefined) {
 
 		let index1 = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
 		ParticlesSDK.SetControlPoint(index1, 1, new Vector3(radius))
@@ -295,7 +291,7 @@ function DestroyCircle(id) {
 
 	let part_table = circle_part_list.get(id)
 
-	if (part_table != undefined) {
+	if (part_table !== undefined) {
 		ParticlesSDK.Destroy(part_table[0])
 		circle_part_list.delete(id)
 	}
@@ -303,67 +299,63 @@ function DestroyCircle(id) {
 
 let abils_list: Ability[] = []
 
-EventsSDK.on("EntityCreated", (ent) => {
+EventsSDK.on("EntityCreated", ent => {
 	if (!active.value)
 		return
-	if (ent instanceof Ability &&
-		ent.Owner != undefined &&
-		ent.Owner.IsEnemy()
-	) {
-		abils_list.push(ent);
-	}
+	if (ent instanceof Ability)
+		abils_list.push(ent)
 
-	if (ent.Name == "npc_dota_thinker") {
+	if (ent.Name === "npc_dota_thinker") {
 		let owner = ent.Owner
 
-		if (owner != undefined) {
+		if (owner !== undefined) {
 
 			let own_name = owner.Name
 
 			let rad = 0
 
-			if (own_name == "npc_dota_hero_invoker") {
+			if (own_name === "npc_dota_hero_invoker") {
 				rad = 175
-			} else if (own_name == "npc_dota_hero_kunkka") {
+			} else if (own_name === "npc_dota_hero_kunkka") {
 				rad = 175
-			} else if (own_name == "npc_dota_hero_lina") {
+			} else if (own_name === "npc_dota_hero_lina") {
 				rad = 225
 			}
 
-			if (rad != 0) {
+			if (rad !== 0) {
 				DrawParticleCirclePos(ent.Position, rad, ent.Index)
 			}
 		}
 	}
 })
 
-EventsSDK.on("EntityDestroyed", (ent) => {
+EventsSDK.on("EntityDestroyed", ent => {
 	if (!active.value)
 		return
-	if (ent instanceof Ability) {
-		ArrayExtensions.arrayRemove(abils_list, ent);
-	}
-	if (ent.Name == "npc_dota_thinker") {
+	if (ent instanceof Ability)
+		ArrayExtensions.arrayRemove(abils_list, ent)
+	if (ent.Name === "npc_dota_thinker") {
 		DestroyCircle(ent.Index)
 	}
 })
 
 let line_table: LinearProjectile[] = []
 
-EventsSDK.on("LinearProjectileCreated", (proj) => {
-
+EventsSDK.on("LinearProjectileCreated", proj => {
 	if (!active.value)
 		return
 
-	if (!(proj.Source as Hero).IsEnemy() ||
-		proj.ParticlePath == "particles/units/heroes/hero_tinker/tinker_machine.vpcf" ||
-		proj.ParticlePath == "particles/units/heroes/hero_weaver/weaver_swarm_projectile.vpcf")
-		return;
+	if (
+		(proj.Source instanceof Entity && !proj.Source.IsEnemy())
+		|| proj.ParticlePath === "particles/units/heroes/hero_tinker/tinker_machine.vpcf"
+		|| proj.ParticlePath === "particles/units/heroes/hero_weaver/weaver_swarm_projectile.vpcf"
+	)
+		return
 
-	line_table.push(proj);
+	line_table.push(proj)
 })
 
-EventsSDK.on("LinearProjectileDestroyed", (proj) => {
+EventsSDK.on("LinearProjectileDestroyed", proj => {
 	if (!active.value)
 		return
 	DestroyDirectional(proj.ID)
@@ -376,12 +368,12 @@ EventsSDK.on("ParticleCreated", (id: number, path: string, particleSystemHandle:
 	if (!active.value)
 		return
 
-	if (path == "particles/units/heroes/hero_pudge/pudge_meathook.vpcf") {
+	if (path === "particles/units/heroes/hero_pudge/pudge_meathook.vpcf") {
 
 		let p = {
 			time: Game.RawGameTime,
 			create: {
-				path: path,
+				path,
 			},
 			update: [],
 			update_ent: [],
@@ -399,7 +391,7 @@ EventsSDK.on("ParticleUpdated", (id: number, controlPoint: number, position: Vec
 		let part = particles_table.get(id)
 
 		part["update"][controlPoint] = {
-			position: position
+			position,
 		}
 
 		particles_table.set(id, part)
@@ -413,17 +405,17 @@ EventsSDK.on("ParticleUpdatedEnt", (
 	attach: ParticleAttachment_t,
 	attachment: number,
 	fallbackPosition: Vector3,
-	includeWearables: boolean) => {
-
-		if (!active.value)
-			return
+	includeWearables: boolean,
+) => {
+	if (!active.value)
+		return
 
 	if (particles_table.has(id)) {
 
 		let part = particles_table.get(id)
 
 		part["update_ent"][controlPoint] = {
-			position: fallbackPosition
+			position: fallbackPosition,
 		}
 
 		particles_table.set(id, part)
@@ -442,9 +434,9 @@ EventsSDK.on("Update", () => {
 	// loop-optimizer: KEEP
 	particles_table.forEach((part, i) => {
 
-		if (part.create.path == "particles/units/heroes/hero_pudge/pudge_meathook.vpcf" &&
-			part.update_ent[0] != undefined &&
-			part.update[1] != undefined) {
+		if (part.create.path === "particles/units/heroes/hero_pudge/pudge_meathook.vpcf" &&
+			part.update_ent[0] !== undefined &&
+			part.update[1] !== undefined) {
 
 			let pos1 = part.update[1].position as Vector3
 			let pos2 = (part.update_ent[0].position as Vector3).Clone()
@@ -456,7 +448,7 @@ EventsSDK.on("Update", () => {
 
 			DrawDirectional(pos2.Add(calc_pos), pos1, i)
 
-			if (part.update_ent[1] != undefined || calc_pos.toVector2().Length > pos1.Subtract(pos2).toVector2().Length) {
+			if (part.update_ent[1] !== undefined || calc_pos.toVector2().Length > pos1.Subtract(pos2).toVector2().Length) {
 				DestroyDirectional(i)
 				particles_table.delete(i)
 			}
@@ -464,37 +456,36 @@ EventsSDK.on("Update", () => {
 	})
 
 	// loop-optimizer: KEEP
-	line_table.forEach((proj) => {
+	line_table.forEach(proj => {
 
 		DrawDirectional(
 			proj.Position,
 			proj.TargetLoc,
-			proj.ID
+			proj.ID,
 		)
 	})
 
-	// loop-optimizer: KEEP
-	abils_list.forEach((abil) => {
-		// loop-optimizer: KEEP
-		phaseSpells.forEach((spell) => {
-			if (spell == abil.Name) {
-
+	// loop-optimizer: FORWARD
+	abils_list.forEach(abil => {
+		if (!abil.IsEnemy())
+			return
+		// loop-optimizer: FORWARD
+		phaseSpells.forEach(spell => {
+			if (spell === abil.Name) {
 				let owner = abil.Owner
 
-				if (abil.IsInAbilityPhase || (owner.IsChanneling && spell == "windrunner_powershot")) {
-
+				if (abil.IsInAbilityPhase || (owner.IsChanneling && spell === "windrunner_powershot")) {
 					let position = owner.Position
 					let ang = DegreesToRadian(QAngle.fromIOBuffer(owner.GameSceneNode.m_angAbsRotation).y)
 
-					DrawDirectional(
+					DrawDirectional (
 						position,
 						position.Add(new Vector3(abil.CastRange).Rotated(ang)).AddScalarZ(96),
 						abil.ID + 100000,
-						true
+						true,
 					)
-				} else {
+				} else
 					DestroyDirectional(abil.ID + 100000)
-				}
 			}
 		})
 	})

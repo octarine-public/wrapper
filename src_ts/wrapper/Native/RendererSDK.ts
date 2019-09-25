@@ -232,7 +232,7 @@ let RendererSDK = new (class RendererSDK {
 		this.commandCache = new Uint8Array()
 		this.last_color = new Color(-1, -1, -1, -1)
 	}
-	public GetAspectRatio(){
+	public GetAspectRatio() {
 		let res = this.WindowSize.x / this.WindowSize.y
 		if(res>=1.25&&res<=1.35)
 			return "4x3"

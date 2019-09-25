@@ -39,8 +39,8 @@ function RoshanDraw(Text: string, color?: Color) {
 export function Draw() {
 	if (!State.value || !drawStatus.value || !Game.IsInGame)
 		return
-	// RendererSDK.Image(`panorama/images/hud/reborn/roshan_timer_roshan_psd.vtex_c`, 
-	// 	RendererSDK.WindowSize.DivideScalar(105).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value), 
+	// RendererSDK.Image(`panorama/images/hud/reborn/roshan_timer_roshan_psd.vtex_c`,
+	// 	RendererSDK.WindowSize.DivideScalar(105).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value),
 	// 	new Vector2(64 / 2, 64 / 2), new Color(255,255,255))
 	IsAlive.value
 		? RoshanDraw("Alive", new Color(0, 255, 0, 255))

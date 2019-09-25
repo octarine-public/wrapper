@@ -125,7 +125,9 @@ Events.on("LinearProjectileDestroyed", proj => {
 	ProjectileManager.AllLinearProjectilesMap.delete(proj)
 })
 
-Events.on("ServerTick", () => {
+setInterval(() => {
+	if (Game.IsPaused)
+		return
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
 		proj.Position.x += proj.Velocity.x / 30
 		proj.Position.y += proj.Velocity.y / 30
@@ -144,7 +146,7 @@ Events.on("ServerTick", () => {
 		else if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30 + (proj.Target instanceof Unit ? proj.Target.HullRadius : 0))
 			proj.HadHitTargetLoc = true
 	})
-})
+}, 1000 / 30)
 
 EventsSDK.on("NetworkPositionChanged", (ent, m_vecOrigin) =>
 	ProjectileManager.AllTrackingProjectiles.filter(proj => proj.Target === ent).forEach(proj => m_vecOrigin.CopyTo(proj.TargetLoc)))

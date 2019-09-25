@@ -1,6 +1,6 @@
-import { Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3, ArrayExtensions } from "wrapper/Imports"
-import { ComboBox, DrawRGBA, PMH_Smoke_snd, Size, State, PMH_Show_bounty, PMH_Show_bountyRGBA, PMH_Show_bountyRGBA_mark, PMH_Show_bounty_size } from "./Menu"
+import { ArrayExtensions, Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
+import { ComboBox, DrawRGBA, PMH_Show_bounty, PMH_Show_bounty_size, PMH_Show_bountyRGBA, PMH_Show_bountyRGBA_mark, PMH_Smoke_snd, Size, State } from "./Menu"
 
 let npc_hero: string = "npc_dota_hero_",
 	Particle: Map<number, [bigint, string | Entity, number, Vector3?, Color?, number?]> = new Map(), // TODO Radius for ability
@@ -106,7 +106,7 @@ let npc_hero: string = "npc_dota_hero_",
 		16005396280504064234n,
 		8471181176813126689n,
 	],
-	Hereos: Hero[] = [];
+	Heroes: Hero[] = []
 
 function ClassChecking(entity: Entity) {
 	return entity !== undefined && (
@@ -169,25 +169,20 @@ export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 }
 
 export function EntityCreated(x: Entity) {
-	if (x instanceof Hero && x.IsEnemy()){
-		Hereos.push(x)
-	}
+	if (x instanceof Hero)
+		Heroes.push(x)
 }
 export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero) {
-		if (Hereos !== undefined)
-			ArrayExtensions.arrayRemove(Hereos, x)
-	}
+	if (x instanceof Hero)
+		ArrayExtensions.arrayRemove(Heroes, x)
 }
 
 function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: string, name_hero: string, color?: Color, Time?: number) {
-	if (Hereos.length > 0) {
-		let hero = Hereos.find(x => !x.IsVisible && x.Team !== LocalPlayer.Hero.Team && x.Name === name_hero);
-		if (hero !== undefined) {
-			let abil = hero.GetAbilityByName(name_ability)
-			if (abil !== undefined && abil.IsValid) {
-				Particle.set(id, [part[0], hero.Name, part[2], position, color, Time])
-			}
+	let hero = Heroes.find(x => x.IsEnemy() && !x.IsVisible && x.Team !== LocalPlayer.Hero.Team && x.Name === name_hero)
+	if (hero !== undefined) {
+		let abil = hero.GetAbilityByName(name_ability)
+		if (abil !== undefined && abil.IsValid) {
+			Particle.set(id, [part[0], hero.Name, part[2], position, color, Time])
 		}
 	}
 }
@@ -196,7 +191,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 	let part = Particle.get(id)
 	if (!State.value || !Game.IsInGame || part === undefined || ignoreListCreateUpdate.includes(part[0]))
 		return
-	
+
 	// console.log("ParticleCreateUpdate  | " + position + " | " + control_point + " | " + id)
 
 	/**
@@ -228,11 +223,11 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 			FindAbilitySet(id, part, position, "elder_titan_echo_stomp_physical", npc_hero + "elder_titan")
 		}
 		// inner fire
-		if (part[0] === 6167123975649691624n){
+		if (part[0] === 6167123975649691624n) {
 			FindAbilitySet(id, part, position, "huskar_inner_fire", npc_hero + "huskar")
 		}
 		// kunkka torrent
-		if (part[0] === 90527129446097558n){
+		if (part[0] === 90527129446097558n) {
 			FindAbilitySet(id, part, position, "kunkka_torrent", npc_hero + "kunkka")
 		}
 		// mars_gods_rebuke
@@ -250,7 +245,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 			FindAbilitySet(id, part, position, "phoenix_fire_spirits", npc_hero + "phoenix")
 		}
 		// sand storm
-		if (part[0] === 10608978942364279765n){
+		if (part[0] === 10608978942364279765n) {
 			FindAbilitySet(id, part, position, "sandking_sand_storm", npc_hero + "sand_king")
 		}
 		// spirit breaker charge
@@ -266,7 +261,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 			FindAbilitySet(id, part, position, "tiny_avalanche", npc_hero + "tiny")
 		}
 		// arc sparc
-		if (part[0] === 9450757242089892587n){ 
+		if (part[0] === 9450757242089892587n) {
 			FindAbilitySet(id, part, position, "arc_warden_spark_wraith", npc_hero + "arc_warden")
 		}
 		// bloodseeker blood rite
@@ -294,7 +289,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 			FindAbilitySet(id, part, position, "monkey_king_mischief", npc_hero + "monkey_king")
 		}
 		// morph adaptive strike
-		if (part[0] === 11323298806625012598n){
+		if (part[0] === 11323298806625012598n) {
 			FindAbilitySet(id, part, position, "morphling_adaptive_strike_agi", npc_hero + "morphling")
 		}
 		// nyx vendeta
@@ -348,11 +343,11 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 			FindAbilitySet(id, part, position, "death_prophet_carrion_swarm", npc_hero + "death_prophet")
 		}
 		// disraptor | kinetic static storm
-		if (part[0] === 1289768807188690422n || part[0] === 11667161395290290268n){
+		if (part[0] === 1289768807188690422n || part[0] === 11667161395290290268n) {
 			FindAbilitySet(id, part, position, "disruptor_static_storm", npc_hero + "disruptor")
 		}
 		// enigma pulse
-		if (part[0] === 15271579302562161677n){
+		if (part[0] === 15271579302562161677n) {
 			FindAbilitySet(id, part, position, "enigma_midnight_pulse", npc_hero + "enigma")
 		}
 		// invoker metior
@@ -418,7 +413,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		if (part[0] === 7382801540246882042n)
 			Particle.set(id, [part[0], part[1], part[2], position])
 		// burrow strike
-		if (part[0] === 13866368357606948277n){
+		if (part[0] === 13866368357606948277n) {
 			FindAbilitySet(id, part, position, "sandking_burrowstrike", npc_hero + "sand_king")
 		}
 		// alchemist_lasthit_coins
@@ -522,14 +517,14 @@ export function OnDraw() {
 	if(!Game.IsInGame)
 		return
 	if (PMH_Show_bounty.value && Game.GameTime >= 0) {
-		if (!bountyAlreadySeted){
+		if (!bountyAlreadySeted) {
 			let time = Game.GameTime % 300
 			if(time >= 299 || time <= 1) {
 				bountyRunesAr = [true, true, true, true]
-				bountyAlreadySeted = true;
+				bountyAlreadySeted = true
 			}
 		}
-		bountyRunesPos.forEach((val, key)=>{
+		bountyRunesPos.forEach((val, key)=> {
 			if(bountyRunesAr[key]) {
 				RendererSDK.DrawMiniMapIcon("minimap_rune_bounty", val, PMH_Show_bounty_size.value * 14, PMH_Show_bountyRGBA.Color)
 				DrawIconWorldHero(val, "bountyrune", PMH_Show_bountyRGBA_mark.Color)
@@ -541,10 +536,10 @@ export function OnDraw() {
 	// loop-optimizer: KEEP
 	Particle.forEach(([handle, target, Time, position, color, delete_time], i) => {
 		//Bounty Rune
-		if(handle === 17096352592726237548n){
-			bountyRunesPos.forEach((val,key)=>{
+		if(handle === 17096352592726237548n) {
+			bountyRunesPos.forEach((val,key)=> {
 				let distance = val.Distance(position)
-				if(distance <= 300){
+				if(distance <= 300) {
 					bountyAlreadySeted = false
 					bountyRunesAr[key] = false
 				}
@@ -564,14 +559,14 @@ export function OnDraw() {
 					RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
 				} catch (error) {
 					// console.log(handle.toString() + " | " + position + " | " + target)
-				}	
+				}
 				DrawIconWorldHero(position, Target, new Color(255, 255, 255), "smoke_of_deceit_png.vtex_c")
 			} else if (target === "Dust") {
 				try {
 					RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
 				} catch (error) {
 					// console.log(handle.toString() + " | " + position + " | " + target)
-				}	
+				}
 				DrawIconWorldHero(position, Target, new Color(255, 255, 255), "dust_png.vtex_c")
 			} else {
 				if (target === undefined)
@@ -591,7 +586,7 @@ export function OnDraw() {
 			}
 			DrawIconWorldHero(position, Target, color)
 		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && (handle === 9908905996079864839n || handle === 16169843851719108633n)) {
-			
+
 			try {
 				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
 			} catch (error) {
@@ -600,11 +595,11 @@ export function OnDraw() {
 			DrawIconWorldHero(position, Target, color)
 			if ((handle === 16169843851719108633n || handle === 9908905996079864839n)) {
 				let BuffDieTime = Target.GetBuffByName("modifier_teleporting"),
-					screen_pos = RendererSDK.WorldToScreen(position);
+					screen_pos = RendererSDK.WorldToScreen(position)
 				if (BuffDieTime === undefined)
 					return
-				if (screen_pos !== undefined){
-					RendererSDK.Text((-(Game.RawGameTime - BuffDieTime.DieTime)).toFixed(1).toString(), screen_pos, new Color(255, 255, 255), "Consoles", Size.value / 3);
+				if (screen_pos !== undefined) {
+					RendererSDK.Text((-(Game.RawGameTime - BuffDieTime.DieTime)).toFixed(1).toString(), screen_pos, new Color(255, 255, 255), "Consoles", Size.value / 3)
 				}
 			}
 		}
@@ -620,7 +615,7 @@ export function ParticleDestroyed(id: number) {
 }
 
 export function GameEnded() {
-	Hereos = []
+	Heroes = []
 	Particle = new Map()
 	END_SCROLL = new Map()
 }
@@ -630,4 +625,3 @@ export function GameConnect() {
 	END_SCROLL = new Map()
 	LAST_ID_SCROLL = undefined
 }
-

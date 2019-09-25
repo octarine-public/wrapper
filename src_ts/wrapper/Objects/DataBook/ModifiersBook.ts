@@ -2,7 +2,7 @@ import Modifier from "../Base/Modifier"
 import Unit from "../Base/Unit"
 
 export default class ModifiersBook {
-	m_Buffs: Modifier[] = []
+	private m_Buffs: Modifier[] = []
 
 	constructor(public readonly Owner: Unit) {}
 
@@ -13,10 +13,10 @@ export default class ModifiersBook {
 		return this.m_Buffs // .filter(buff => !buff.m_pBuff.m_bMarkedForDeletion);
 	}
 
-	GetBuff(num: number): Modifier {
+	GetBuffByID(id: number): Modifier {
 		if (!this.Owner.IsValid)
 			return undefined
-		return this.m_Buffs[num]
+		return this.m_Buffs.find(buff => buff.Index === id)
 	}
 	GetBuffByName(name: string): Modifier {
 		return this.Buffs.find(buff => buff.Name === name)

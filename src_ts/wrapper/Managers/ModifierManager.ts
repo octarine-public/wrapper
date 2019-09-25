@@ -1,14 +1,13 @@
 import { arrayRemove } from "../Utils/ArrayExtensions"
-import { addArrayInMap, findArrayInMap, removeArrayInMap } from "../Utils/MapExtensions"
+import { addArrayInMap, removeArrayInMap } from "../Utils/MapExtensions"
 
 import EventsSDK from "./Events"
 
 import Modifier from "../Objects/Base/Modifier"
 import Unit from "../Objects/Base/Unit"
-import { default as EntityManager, LocalPlayer } from "./EntityManager"
+import { default as EntityManager } from "./EntityManager"
 
 let ModifierManager = new (class ModifierManager {
-	public readonly queueModifiers = new Map<Unit, Modifier[]>()
 	public readonly AllModifiersUnit = new Map<Unit, Modifier[]>()
 	public readonly AllModifier = new Map<CDOTA_Buff, Modifier>()
 
@@ -31,11 +30,6 @@ Events.on("BuffAdded", (npc, buffNative) => {
 
 	ModifierManager.AllModifier.set(buffNative, buff)
 
-	if (LocalPlayer === undefined) {
-		addArrayInMap(ModifierManager.queueModifiers, unit, buff)
-		return
-	}
-
 	addAndEmitModifier(unit, buff)
 })
 
@@ -52,9 +46,6 @@ Events.on("BuffRemoved", (npc, buffNative) => {
 	if (unit === undefined)
 		throw "onBuffRemoved. entity undefined. " + npc + " " + buffNative
 
-	if (removeArrayInMap(ModifierManager.queueModifiers, unit, buff))
-		return
-
 	DeleteFromCache(unit, buff)
 
 	changeFieldsByEvents(unit)
@@ -65,7 +56,7 @@ Events.on("BuffRemoved", (npc, buffNative) => {
 function AddToCache(buff: Modifier, unit: Unit) {
 	addArrayInMap(ModifierManager.AllModifiersUnit, unit, buff)
 
-	unit.ModifiersBook.m_Buffs.push(buff)
+	unit.ModifiersBook.Buffs.push(buff)
 }
 
 function DeleteFromCache(unit: Unit, buff: Modifier) {
@@ -73,7 +64,7 @@ function DeleteFromCache(unit: Unit, buff: Modifier) {
 
 	removeArrayInMap(ModifierManager.AllModifiersUnit, unit, buff)
 
-	arrayRemove(unit.ModifiersBook.m_Buffs, buff)
+	arrayRemove(unit.ModifiersBook.Buffs, buff)
 }
 
 function addAndEmitModifier(unit: Unit, buff: Modifier) {
@@ -84,20 +75,8 @@ function addAndEmitModifier(unit: Unit, buff: Modifier) {
 	EventsSDK.emit("BuffAdded", false, unit, buff)
 }
 
-export function useQueueModifiers(owner: Unit) {
-	if (ModifierManager.queueModifiers.size === 0)
-		return
-
-	let buffs = ModifierManager.queueModifiers.get(owner)
-
-	if (buffs === undefined)
-		return
-	// loop-optimizer: KEEP	// because this is Map
-	buffs.forEach(buff => addAndEmitModifier(owner, buff))
-}
-
 function changeFieldsByEvents(unit: Unit) {
-	const buffs = unit.ModifiersBook.m_Buffs
+	const buffs = unit.ModifiersBook.Buffs
 
 	{ // IsTrueSightedForEnemies
 		const lastIsTrueSighted = unit.IsTrueSightedForEnemies
@@ -105,7 +84,7 @@ function changeFieldsByEvents(unit: Unit) {
 
 		if (isTrueSighted !== lastIsTrueSighted) {
 			unit.IsTrueSightedForEnemies = isTrueSighted
-			EventsSDK.emit("TrueSightedChanged", false, unit, isTrueSighted)
+			EventsSDK.emit("TrueSightedChanged", false, unit)
 		}
 	}
 
@@ -114,8 +93,8 @@ function changeFieldsByEvents(unit: Unit) {
 		const hasScepter = Modifier.HasScepterBuff(buffs)
 
 		if (hasScepter !== lastHasScepter) {
-			unit.HasScepter = hasScepter
-			EventsSDK.emit("HasScepterChanged", false, unit, hasScepter)
+			unit.HasScepterModifier = hasScepter
+			EventsSDK.emit("HasScepterChanged", false, unit)
 		}
 	}
 }

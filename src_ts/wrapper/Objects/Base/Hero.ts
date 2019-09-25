@@ -1,4 +1,4 @@
-import { DamageAmplifyPerIntelligencePrecent } from "../../Data/GameData"
+import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 
 import EntityManager from "../../Managers/EntityManager"
 import Player from "./Player"
@@ -16,17 +16,11 @@ export default class Hero extends Unit {
 	get AbilityPoint(): number {
 		return this.m_pBaseEntity.m_iAbilityPoints
 	}
-	get Agility(): number {
-		return this.m_pBaseEntity.m_flAgility
-	}
 	get CurrentXP(): number {
 		return this.m_pBaseEntity.m_iCurrentXP
 	}
 	get HeroID(): HeroID_t {
 		return this.m_pBaseEntity.m_iHeroID
-	}
-	get Intelligence(): number {
-		return this.m_pBaseEntity.m_flIntellect
 	}
 	get IsBuybackDisabled(): boolean {
 		return this.m_pBaseEntity.m_bBuybackDisabled
@@ -64,13 +58,19 @@ export default class Hero extends Unit {
 	get SpawnedAt(): number {
 		return this.m_pBaseEntity.m_flSpawnedAt
 	}
+	get Agility(): number {
+		return this.m_pBaseEntity.m_flAgility
+	}
+	get Intellect(): number {
+		return this.m_pBaseEntity.m_flIntellect
+	}
 	get Strength(): number {
 		return this.m_pBaseEntity.m_flStrength
 	}
 	get TotalAgility(): number {
 		return this.m_pBaseEntity.m_flAgilityTotal
 	}
-	get TotalIntelligence(): number {
+	get TotalIntellect(): number {
 		return this.m_pBaseEntity.m_flIntellectTotal
 	}
 	get TotalStrength(): number {
@@ -80,6 +80,6 @@ export default class Hero extends Unit {
 	/* ============ EXTENSIONS ============ */
 
 	get SpellAmplification(): number {
-		return super.SpellAmplification + (this.TotalIntelligence * DamageAmplifyPerIntelligencePrecent / 100)
+		return super.SpellAmplification + (this.TotalIntellect * DamageAmplifyPerIntellectPrecent / 100)
 	}
 }

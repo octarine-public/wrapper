@@ -1,3 +1,4 @@
+import { ProjectionInfo } from "../Geometry/ProjectionInfo"
 import Vector3 from "./Vector3"
 
 export default class Vector2 {
@@ -553,6 +554,30 @@ export default class Vector2 {
 	 */
 	Distance(vec: Vector2): number {
 		return Math.sqrt(this.DistanceSqr(vec))
+	}
+	ProjectOn(segmentStart: Vector2, segmentEnd: Vector2): ProjectionInfo {
+		let cx = this.x,
+			cy = this.y,
+			ax = segmentStart.x,
+			ay = segmentStart.y,
+			bx = segmentEnd.x,
+			by = segmentEnd.y
+
+		let rL = ((cx - ax) * (bx - ax) + (cy - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)
+		let pointLine = new Vector2(ax + rL * (bx - ax), ay + rL * (by - ay))
+		let rS = Math.min(1, Math.max(0, rL))
+		let isOnSegment = rS === rL
+		let pointSegment = isOnSegment ? pointLine : new Vector2(ax + rS * (bx - ax), ay + rS * (by - ay))
+		return new ProjectionInfo(isOnSegment, pointSegment, pointLine)
+	}
+	DistanceSegmentSqr(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
+		let objects = this.ProjectOn(segmentStart, segmentEnd)
+		if (!objects.IsOnSegment && onlyIfOnSegment)
+			return Number.MAX_VALUE
+		return this.DistanceSqr(objects.SegmentPoint)
+	}
+	DistanceSegment(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
+		return Math.sqrt(this.DistanceSegmentSqr(segmentStart, segmentEnd, onlyIfOnSegment))
 	}
 
 	/* ================== Geometric ================== */

@@ -47,11 +47,7 @@ function ClearAll() {
 }
 
 EventsSDK.on("EntityCreated", ent => {
-	if (
-		ent instanceof Hero
-		&& !ent.IsIllusion
-		&& ent.IsEnemy()
-	)
+	if (ent instanceof Hero && !ent.IsIllusion)
 		heroes.push(ent)
 })
 
@@ -70,7 +66,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 		// loop-optimizer: KEEP
 		let nearest_ward = ArrayExtensions.orderBy (
 			wardProcessingTable.filter(ward => (is_observer && ward.type === "observer") || (is_sentry && ward.type === "sentry")),
-			ward => ent.Distance(ward.pos)
+			ward => ent.Distance(ward.pos),
 		)[0]
 		if (nearest_ward !== undefined && ent.Distance(nearest_ward.pos) < 1500)
 			ArrayExtensions.arrayRemove(wardProcessingTable, nearest_ward)
@@ -110,6 +106,8 @@ EventsSDK.on("Update", () => {
 		return
 
 	heroes.forEach(hero => {
+		if (!hero.IsEnemy())
+			return
 		if (hero.IsAlive && !hero.IsDormant) {
 			let sentry = hero.GetItemByName("item_ward_sentry"),
 				observer = hero.GetItemByName("item_ward_observer"),
@@ -130,8 +128,8 @@ EventsSDK.on("Update", () => {
 				observer_stack = dispenser.CurrentCharges
 			}
 
-			if (sentry_stack == 0 && observer_stack == 0) {
-				if (wardDispenserCount[owner_idx] == undefined) {
+			if (sentry_stack === 0 && observer_stack === 0) {
+				if (wardDispenserCount[owner_idx] === undefined) {
 					wardCaptureTiming = Game.GameTime
 				}
 				else {
@@ -142,7 +140,7 @@ EventsSDK.on("Update", () => {
 					else if (wardDispenserCount[owner_idx].observer > observer_stack)
 						ward_type = "observer"
 
-					if (ward_type != undefined) {
+					if (ward_type !== undefined) {
 						wardProcessingTable[unique_id] = {
 							type: ward_type,
 							pos: hero.Position,
@@ -158,7 +156,7 @@ EventsSDK.on("Update", () => {
 				}
 			}
 
-			if (wardDispenserCount[owner_idx] == undefined) {
+			if (wardDispenserCount[owner_idx] === undefined) {
 				if (sentry_stack > 0 || observer_stack > 0) {
 					wardDispenserCount[owner_idx] =
 						{

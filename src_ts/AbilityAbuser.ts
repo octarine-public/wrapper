@@ -1,4 +1,4 @@
-import { EntityManager, EventsSDK, Hero, LocalPlayer, Menu, Ability } from "./wrapper/Imports"
+import { Ability, EntityManager, EventsSDK, Hero, LocalPlayer, Menu } from "./wrapper/Imports"
 let AbilityAbuser = Menu.AddEntry(["Utility", "Ability Abuse"]),
 	ability_abuse = AbilityAbuser.AddKeybind("Hold key"),
 	ability_abuse_selector = AbilityAbuser.AddImageSelector("Ability Abuse Selector", [
@@ -11,11 +11,11 @@ let AbilityAbuser = Menu.AddEntry(["Utility", "Ability Abuse"]),
 setInterval(() => {
 	if (!ability_abuse.is_pressed)
 		return false
-	EntityManager.AllEntities.filter(ent => ent instanceof Hero && ent.IsControllableByPlayer(LocalPlayer.PlayerID)).forEach((MyEnt: Hero) => {
+	EntityManager.AllEntities.filter(ent => ent instanceof Hero && ent.IsControllable).forEach((MyEnt: Hero) => {
 		if (MyEnt.IsStunned)
 			return
 		let repeated_unit = new Array<C_BaseEntity>(0x80/*0x80*//*max: 0x3FFF*/).fill(MyEnt.m_pBaseEntity)
-		let ability: Ability = undefined
+		let ability: Ability
 		if (ability_abuse_selector.IsEnabled("invoker_invoke"))
 			ability = MyEnt.GetAbilityByName("invoker_invoke")
 		if (ability !== undefined && ability.CanBeCasted()) {

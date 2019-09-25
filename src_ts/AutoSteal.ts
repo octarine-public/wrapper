@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Creep, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, Modifier, Unit, Utils } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Creep, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, Utils } from "wrapper/Imports"
 
 let root = Menu.AddEntry(["Utility", "AutoSteal"]),
 	state = root.AddToggle("State", false),
@@ -20,7 +20,7 @@ var abils: Array<{
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
 				var killThreshold = abil.GetSpecialValue("kill_threshold"),
 					damage = entTo.CalculateDamage(abil.GetSpecialValue("damage"), DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
-					hp = entTo.GetHealthAfter(abil.CastPoint)
+					hp = Utils.GetHealthAfter(entTo, abil.CastPoint)
 				return hp > killThreshold ? damage * latest_spellamp : killThreshold
 			},
 		},
@@ -29,7 +29,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
 				var DamagePerMissHP = abil.GetSpecialValue("damage_per_health"),
-					delta = entTo.GetHealthAfter(3)
+					delta = Utils.GetHealthAfter(entTo, 3)
 				return entTo.CalculateDamage((entTo.MaxHP - delta) * DamagePerMissHP, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
 		},
@@ -422,10 +422,10 @@ var abils: Array<{
 		// TODO: mars_gods_rebuke
 	],
 	flag: boolean = false,
-	NoTarget: Unit[] = [],
 	possibleTargets: Unit[] = [],
 	blinkFlag: boolean = false,
-	latest_spellamp: number = 1
+	latest_spellamp: number = 1,
+	sleeper = new GameSleeper()
 
 function GetAvailableAbils() {
 	var MyEnt = LocalPlayer.Hero
@@ -452,7 +452,7 @@ function OnTick(): void {
 
 	var MyEnt = LocalPlayer.Hero/*,
 		selectedHero = /^npc_dota_hero_(.*)$/.exec(MyEnt.UnitName)[1]*/
-	if (MyEnt === undefined || MyEnt.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_STUNNED) || !MyEnt.IsAlive || flag || LocalPlayer.ActiveAbility !== undefined/* || (MyEnt.CanBeVisible && selectedHero !== "riki" && selectedHero !== "treant_protector")*/)
+	if (MyEnt === undefined || MyEnt.IsStunned || !MyEnt.IsAlive || flag || LocalPlayer.ActiveAbility !== undefined/* || (MyEnt.CanBeVisible && selectedHero !== "riki" && selectedHero !== "treant_protector")*/)
 		return
 	latest_spellamp = 1 + MyEnt.SpellAmplification
 	{
@@ -468,12 +468,13 @@ function OnTick(): void {
 		zuus_talent = MyEnt.GetTalentValue("special_bonus_unique_zeus"),
 		blink = MyEnt.GetItemByName("item_blink") || MyEnt.GetAbilityByName("antimage_blink"),
 		targets = possibleTargets.filter(ent =>
+			ent.IsEnemy() &&
 			ent.IsVisible &&
 			!ent.IsWaitingToSpawn &&
 			ent.IsAlive &&
 			(!ent.IsCreep || kill_creeps.value) &&
 			(!ent.IsHero || kill_heroes.value) &&
-			NoTarget.indexOf(ent) === -1,
+			!sleeper.Sleeping(ent),
 		)
 	availableAbils.some(abilData => {
 		var abil = abilData.abil,
@@ -502,7 +503,7 @@ function OnTick(): void {
 			var damage = (abilData.abilDamageF || getDamage)(abil, MyEnt, ent)
 			if (zuus_passive !== undefined)
 				damage += (abil.GetSpecialValue("damage_health_pct") + zuus_talent) / 100 * ent.HP
-			if (damage < ent.GetHealthAfter(abil.CastPoint))
+			if (damage < Utils.GetHealthAfter(ent, abil.CastPoint))
 				return false
 
 			let ping = GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)
@@ -510,11 +511,7 @@ function OnTick(): void {
 				MyEnt.CastPosition(blink, ent.NetworkPosition.Extend(MyEnt.NetworkPosition, range - 100), false)
 				setTimeout(() => blinkFlag = false,(blink.CastPoint + ping) * 1000)
 			} else {
-				NoTarget.push(ent)
-				setTimeout (
-					() => NoTarget.splice(NoTarget.indexOf(ent), 1),
-					((abilData.abilDelayF ? abilData.abilDelayF(abil, MyEnt, ent) + abil.CastPoint : 0) + ping) * 1000,
-				)
+				sleeper.Sleep(((abilData.abilDelayF ? abilData.abilDelayF(abil, MyEnt, ent) + abil.CastPoint : 0) + ping) * 1000, ent)
 				if (abilData.abilCastF)
 					abilData.abilCastF(abil, MyEnt, ent)
 				else
@@ -531,12 +528,9 @@ EventsSDK.on("EntityCreated", (npc: Unit) => {
 	if (LocalPlayer === undefined)
 		return
 	if (
-		npc.IsEnemy()
-		&& (
-			npc instanceof Creep
-			|| (
-				npc instanceof Hero && !npc.IsIllusion
-			)
+		npc instanceof Creep
+		|| (
+			npc instanceof Hero && !npc.IsIllusion
 		)
 	)
 		possibleTargets.push(npc)

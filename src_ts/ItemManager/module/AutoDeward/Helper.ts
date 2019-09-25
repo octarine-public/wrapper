@@ -1,4 +1,5 @@
-import { ArrayExtensions, Entity, Game, Hero, Item, LocalPlayer } from "wrapper/Imports"
+import { ArrayExtensions, Entity, Game, Hero, LocalPlayer } from "wrapper/Imports"
+import { StateBase } from "../../abstract/MenuBase"
 import {
 	Items, State, StateItems,
 } from "./Menu"
@@ -13,7 +14,7 @@ function IsValidHero(Hero: Hero) {
 }
 
 function IsDewardable(ent: Entity) {
-	return ent.IsEnemy() && (
+	return (
 		ent.m_pBaseEntity instanceof CDOTA_NPC_Observer_Ward
 		|| ent.m_pBaseEntity instanceof CDOTA_NPC_Observer_Ward_TrueSight
 		|| (
@@ -27,8 +28,6 @@ function IsDewardable(ent: Entity) {
 }
 
 export function EntityCreate(ent: Entity) {
-	if (!State.value)
-		return false
 	if (IsDewardable(ent))
 		ward_list.push(ent)
 }
@@ -39,7 +38,7 @@ export function EntityDestroyed(ent: Entity) {
 }
 
 export function Tick() {
-	if (!State.value || !Game.IsInGame || ward_list.length === 0)
+	if (!StateBase.value || !State.value || !Game.IsInGame || ward_list.length === 0)
 		return false
 	let Me = LocalPlayer.Hero
 	if (IsValidHero(Me))
@@ -49,9 +48,9 @@ export function Tick() {
 		&& StateItems.IsEnabled(item.Name)
 		&& item.IsReady
 		&& item.CanBeCasted(),
-	).some(item => ward_list.filter(ent => ent.IsAlive && ent.IsVisible && ent.IsInRange(Me, 
+	).some(item => ward_list.filter(ent => ent.IsEnemy() && ent.IsAlive && ent.IsVisible && ent.IsInRange(Me,
 		item.GetSpecialValue("cast_range_ward") === undefined
-			? item.CastRange 
+			? item.CastRange
 			: item.GetSpecialValue("cast_range_ward"))).some(ent => {
 		if (ent.Name === "npc_dota_techies_remote_mine" && (item.Name === "item_tango" || item.Name === "item_tango_single"))
 			return false

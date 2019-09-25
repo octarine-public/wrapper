@@ -1,7 +1,7 @@
 import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import { Team } from "../Base/Team"
+import { Team } from "../../Helpers/Team"
 import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager"
 import { DegreesToRadian } from "../../Utils/Math"
 
@@ -138,28 +138,31 @@ export default class Entity {
 	public IsValid: boolean = false
 	private readonly NetworkPosition_: Vector3 = new Vector3().Invalidate() // cached networkposition
 	private readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
-	private readonly Angles_: QAngle = new QAngle().Invalidate() // cached angles
-	private Rotation_: number = NaN // cached rotation
-	private Scale_: number = 1 // cached scale
-	public Name: string = ""
-	private readonly Entity: CEntityIdentity
+	private readonly Angles_ = new QAngle().Invalidate() // cached angles
+	private readonly NetworkAngles_ = new QAngle().Invalidate()// cached network angles
+	private Scale_: number = NaN // cached scale
+	public Name_: string = ""
+	public readonly Entity: CEntityIdentity
 	public Owner_: Entity | C_BaseEntity | number
-	public GameSceneNode_: CGameSceneNode
+	public Team = Team.None
+	public LifeState = LifeState_t.LIFE_ALIVE
+	public HP = 0
+	public MaxHP = 0
 
 	/* ================================ BASE ================================ */
 	constructor(public m_pBaseEntity: C_BaseEntity, public readonly Index: number) {
 		this.Entity = this.m_pBaseEntity.m_pEntity
-		this.Owner_ = this.m_pBaseEntity.m_hOwnerEntity
-		if (this.Entity !== undefined)
-			this.Name = this.Entity.m_name || this.Entity.m_designerName || ""
 	}
 
 	/* ================ GETTERS ================ */
+	public get Name(): string {
+		return this.Name_
+	}
 	get Owner(): Entity { // trick to make it public ro, and protected rw
 		return this.Owner_ instanceof Entity ? this.Owner_ : (this.Owner_ = EntityManager.GetEntityByNative(this.Owner_, true) || EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
 	}
 	get GameSceneNode(): CGameSceneNode {
-		return this.GameSceneNode_ || (this.GameSceneNode_ = this.m_pBaseEntity.m_pGameSceneNode)
+		return this.m_pBaseEntity.m_pGameSceneNode
 	}
 	get Position(): Vector3 { // trick to make it public ro, and protected rw
 		if (!this.Position_.IsValid) {
@@ -176,7 +179,7 @@ export default class Entity {
 		return this.NetworkPosition_.Clone()
 	}
 	get Scale(): number {
-		if (this.Rotation_ === NaN) {
+		if (isNaN(this.Scale_)) {
 			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
 				return 0
@@ -185,13 +188,10 @@ export default class Entity {
 		return this.Scale_
 	}
 	get Rotation(): number {
-		if (this.Rotation_ === NaN) {
-			let gameSceneNode = this.GameSceneNode
-			if (gameSceneNode === undefined)
-				return 0
-			this.Rotation_ = QAngle.fromIOBuffer(gameSceneNode.m_angRotation)[1]
-		}
-		return this.Rotation_
+		return this.Angles.y
+	}
+	get NetworkRotation(): number {
+		return this.NetworkAngles.y
 	}
 	get Angles(): QAngle {
 		if (!this.Angles_.IsValid) {
@@ -202,11 +202,13 @@ export default class Entity {
 		}
 		return this.Angles_.Clone()
 	}
+	get NetworkAngles(): QAngle {
+		if (!this.NetworkAngles_.IsValid)
+			this.Angles.CopyTo(this.NetworkAngles_)
+		return this.NetworkAngles_.Clone()
+	}
 	get CreateTime(): number {
 		return this.m_pBaseEntity.m_flCreateTime
-	}
-	get HP(): number {
-		return this.m_pBaseEntity.m_iHealth
 	}
 	get HPPercent(): number {
 		return Math.floor(this.HP / this.MaxHP * 100) || 0
@@ -226,29 +228,23 @@ export default class Entity {
 	get IsVisible(): boolean {
 		return (this.Flags & (1 << 7)) === 0
 	}
-	get LifeState(): LifeState_t {
-		return this.m_pBaseEntity.m_lifeState
-	}
-	get MaxHP(): number {
-		return this.m_pBaseEntity.m_iMaxHealth
-	}
 	/**
 	 * as Direction
 	 */
 	get Forward(): Vector3 {
-		return Vector3.FromAngle(this.RotationRad)
+		return Vector3.FromAngle(this.NetworkRotationRad)
 	}
 	get RotationRad(): number {
 		return DegreesToRadian(this.Rotation)
+	}
+	get NetworkRotationRad(): number {
+		return DegreesToRadian(this.NetworkRotation)
 	}
 	/**
 	 * Buffs/debuffs are not taken
 	 */
 	get Speed(): number {
 		return this.m_pBaseEntity.m_flSpeed
-	}
-	get Team(): DOTATeam_t | Team {
-		return this.m_pBaseEntity.m_iTeamNum
 	}
 	get Flags(): number {
 		if (!this.IsValid)
@@ -259,6 +255,25 @@ export default class Entity {
 		if (!this.IsValid)
 			return
 		this.Entity.m_flags = value
+	}
+
+	get Agility(): number {
+		return 0
+	}
+	get Intellect(): number {
+		return 0
+	}
+	get Strength(): number {
+		return 0
+	}
+	get TotalAgility(): number {
+		return 0
+	}
+	get TotalIntellect(): number {
+		return 0
+	}
+	get TotalStrength(): number {
+		return 0
 	}
 
 	/* ================ METHODS ================ */
@@ -290,12 +305,12 @@ export default class Entity {
 		return this.Position.Rotation(this.Forward, distance)
 	}
 	InFrontFromAngle(angle: number, distance: number): Vector3 {
-		return this.Position.InFrontFromAngle(this.RotationRad + angle, distance)
+		return this.Position.InFrontFromAngle(this.NetworkRotationRad + angle, distance)
 	}
 	FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.NetworkPosition
-		return this.NetworkPosition.FindRotationAngle(vec, this.RotationRad)
+		return this.NetworkPosition.FindRotationAngle(vec, this.NetworkRotationRad)
 	}
 	/**
 	 * faster (Distance <= range)
@@ -361,11 +376,16 @@ export default class Entity {
 	OnGameSceneNodeChanged(m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_flAbsScale: number) {
 		m_vecOrigin.CopyTo(this.Position_)
 		m_angAbsRotation.CopyTo(this.Angles_)
-		this.Rotation_ = this.Angles_.y
 		this.Scale_ = m_flAbsScale
 	}
 	OnNetworkPositionChanged(m_vecOrigin: Vector3) {
 		m_vecOrigin.CopyTo(this.NetworkPosition_).CopyTo(this.Position_)
+	}
+	OnNetworkRotationChanged() {
+		let gameSceneNode = this.GameSceneNode
+		if (gameSceneNode === undefined)
+			return
+		QAngle.fromIOBuffer(gameSceneNode.m_angRotation).CopyTo(this.NetworkAngles_).CopyTo(this.Angles_)
 	}
 	OnCreated() {
 		this.IsValid = true

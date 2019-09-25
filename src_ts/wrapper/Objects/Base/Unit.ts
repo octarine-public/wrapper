@@ -5,7 +5,7 @@ import { DamageIgnoreBuffs, HasBit, HasBitBigInt, MaskToArrayBigInt } from "../.
 
 import { Game, LocalPlayer } from "../../Managers/EntityManager"
 
-import Entity from "./Entity"
+import Entity, { rotation_speed } from "./Entity"
 import Player from "./Player"
 // import Creep from "./Creep";
 
@@ -17,6 +17,7 @@ import Item from "./Item"
 import ModifiersBook from "../DataBook/ModifiersBook"
 import Modifier from "./Modifier"
 
+import { Team } from "../../Helpers/Team"
 import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
 import Tree from "./Tree"
@@ -25,9 +26,9 @@ import TreeTemp from "./TreeTemp"
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
 	public static IsVisibleForEnemies(unit: Unit, newTagged: number): boolean {
-		const valid_teams = ~(1 | (1 << DOTATeam_t.DOTA_TEAM_SPECTATOR)
-			| (1 << DOTATeam_t.DOTA_TEAM_NEUTRALS)
-			| (1 << DOTATeam_t.DOTA_TEAM_NOTEAM)) // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
+		const valid_teams = ~(1 | (1 << Team.Observer)
+			| (1 << Team.Neutral)
+			| (1 << Team.None)) // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
 
 		let local_team = unit.Team,
 			flags = newTagged & valid_teams
@@ -43,11 +44,19 @@ export default class Unit extends Entity {
 	public readonly AbilitiesBook: AbilitiesBook
 	public readonly Inventory: Inventory
 	public readonly ModifiersBook: ModifiersBook
-	public IsVisibleForEnemies: boolean = false
-	public IsTrueSightedForEnemies: boolean = false
+	public IsVisibleForTeamMask = 0
+	public IsVisibleForEnemies = false
+	public IsTrueSightedForEnemies = false
+	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
+	public IsControllableByPlayerMask = 0n
+	public AttackCapabilities = DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_NO_ATTACK
+	public MoveCapabilities = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
+	public HPRegen = 0
+	public ManaRegen = 0
+	public RotationDifference = 0
+	public HasScepterModifier = false
 
 	private UnitName_: string
-	private m_bHasScepterModifier: boolean = false
 
 	constructor(m_pBaseEntity: C_BaseEntity, Index: number) {
 		super(m_pBaseEntity, Index)
@@ -55,6 +64,13 @@ export default class Unit extends Entity {
 		this.Inventory = new Inventory(this)
 		this.ModifiersBook = new ModifiersBook(this)
 	}
+
+	private EtherealModifiers: string[] = [
+		"modifier_ghost_state",
+		"modifier_item_ethereal_blade_ethereal",
+		"modifier_pugna_decrepify",
+		"modifier_necrolyte_sadist_active",
+	]
 
 	/* ================ GETTERS ================ */
 	public get IsHero(): boolean {
@@ -128,7 +144,21 @@ export default class Unit extends Entity {
 		// return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE);
 	}
 	public get IsDeniable(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE)
+		if (this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE))
+			return true
+		let hp_percent = this.HPPercent
+		if (hp_percent > 50) // nothing can be denied w/o losing half of max HP, so we'd skip unnecessary checks
+			return false
+		if (this.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep)
+			return hp_percent <= 50
+		if (this.m_pBaseEntity instanceof C_DOTA_BaseNPC_Tower)
+			return hp_percent <= 10
+
+		return hp_percent < 25 && this.Buffs.some(buff =>
+			buff.Name === "modifier_doom_bringer_doom"
+			|| buff.Name === "modifier_queenofpain_shadow_strike"
+			|| buff.Name === "modifier_venomancer_venomous_gale",
+		)
 	}
 	//
 	public get HasNoHealthBar(): boolean {
@@ -156,16 +186,13 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_flInvisibilityLevel > 0
 	}
 	public get IsControllableByAnyPlayer(): boolean {
-		return this.m_pBaseEntity.m_iIsControllableByPlayer64 !== 0n
+		return this.IsControllableByPlayerMask !== 0n
 	}
 	public get IsRangeAttacker(): boolean {
 		return this.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
 	}
-	public set HasScepter(value: boolean) {
-		this.m_bHasScepterModifier = value
-	}
 	public get HasScepter(): boolean {
-		return this.m_bHasScepterModifier || this.HasStolenScepter
+		return this.HasScepterModifier || this.HasStolenScepter
 	}
 
 	public get Armor(): number {
@@ -174,9 +201,6 @@ export default class Unit extends Entity {
 	public get ArmorType(): ArmorType {
 		return this.m_pBaseEntity.m_iCombatClassDefend
 	}
-	public get AttackCapability(): DOTAUnitAttackCapability_t {
-		return this.m_pBaseEntity.m_iAttackCapabilities
-	}
 	public get AttackDamageType(): AttackDamageType {
 		return this.m_pBaseEntity.m_iCombatClassAttack
 	}
@@ -184,7 +208,7 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_fAttackRange
 	}
 	public get AttacksPerSecond(): number {
-		return 1 / this.m_pBaseEntity.m_fAttacksPerSecond
+		return this.m_pBaseEntity.m_fAttacksPerSecond
 	}
 	public get AvailableShops(): DOTA_SHOP_TYPE /*Enums.ShopFlags*/ {
 		return this.m_pBaseEntity.m_iNearShopMask
@@ -251,9 +275,6 @@ export default class Unit extends Entity {
 	public get HealthBarHighlightColor(): Color {
 		return Color.fromIOBuffer(this.m_pBaseEntity.m_iHealthBarHighlightColor)
 	}
-	public get HPRegen(): number {
-		return this.m_pBaseEntity.m_flHealthThinkRegen
-	}
 	public get HullRadius(): number {
 		return this.m_pBaseEntity.m_flHullRadius
 	}
@@ -280,7 +301,7 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_bIsIllusion
 	}
 	public get IsMelee(): boolean {
-		return this.AttackCapability === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK
+		return this.AttackCapabilities === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK
 	}
 	public get IsMoving(): boolean {
 		return this.m_pBaseEntity.m_bIsMoving
@@ -292,19 +313,13 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_bIsPhantom
 	}
 	public get IsRanged(): boolean {
-		return this.AttackCapability === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK
+		return this.AttackCapabilities === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK
 	}
 	public get IsSpawned(): boolean {
 		return !this.IsWaitingToSpawn
 	}
 	public get IsSummoned(): boolean {
 		return this.m_pBaseEntity.m_bIsSummoned
-	}
-	public set IsVisibleForTeamMask(value: number) {
-		this.m_pBaseEntity.m_iTaggedAsVisibleByTeam = value
-	}
-	public get IsVisibleForTeamMask(): number {
-		return this.m_pBaseEntity.m_iTaggedAsVisibleByTeam
 	}
 	public get IsWaitingToSpawn(): boolean {
 		return this.m_pBaseEntity.m_bIsWaitingToSpawn
@@ -321,9 +336,6 @@ export default class Unit extends Entity {
 	public get ManaPercent(): number {
 		return Math.floor(this.Mana / this.MaxMana * 100) || 0
 	}
-	public get ManaRegen(): number {
-		return this.m_pBaseEntity.m_flManaThinkRegen
-	}
 	public get MaxDamage(): number {
 		return this.m_pBaseEntity.m_iDamageMax
 	}
@@ -339,17 +351,11 @@ export default class Unit extends Entity {
 	public get MinDamage(): number {
 		return this.m_pBaseEntity.m_iDamageMin
 	}
-	public get MoveCapability(): DOTAUnitMoveCapability_t {
-		return this.m_pBaseEntity.m_iMoveCapabilities
-	}
 	public get IdealSpeed(): number {
 		return this.m_pBaseEntity.m_fIdealSpeed
 	}
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
 		return this.InFront(movespeed * time)
-	}
-	public get NetworkActivity(): GameActivity_t {
-		return this.m_pBaseEntity.m_NetworkActivity
 	}
 	public get NightVision(): number {
 		return this.m_pBaseEntity.m_iNightTimeVisionRange
@@ -360,11 +366,8 @@ export default class Unit extends Entity {
 	public get RingRadius(): number {
 		return this.m_pBaseEntity.m_flRingRadius
 	}
-	public get RotationDifference(): number {
-		return this.m_pBaseEntity.m_anglediff
-	}
 	public get SecondsPerAttack(): number {
-		return this.m_pBaseEntity.m_fAttacksPerSecond
+		return 1 / this.m_pBaseEntity.m_fAttacksPerSecond
 	}
 	public get TauntCooldown(): number {
 		return this.m_pBaseEntity.m_flTauntCooldown
@@ -372,13 +375,18 @@ export default class Unit extends Entity {
 	public get TotalDamageTaken(): bigint {
 		return this.m_pBaseEntity.m_nTotalDamageTaken
 	}
+	public get UnitStateMask(): bigint {
+		return this.m_pBaseEntity.m_nUnitState64 | this.m_pBaseEntity.m_nUnitDebuffState
+	}
 	public get UnitState(): modifierstate[] {
-		return MaskToArrayBigInt(this.m_pBaseEntity.m_nUnitState64)
+		return MaskToArrayBigInt(this.UnitStateMask)
 	}
 	public get UnitType(): number {
 		return this.m_pBaseEntity.m_iUnitType
 	}
-
+	public get IsEthereal(): boolean {
+		return this.ModifiersBook.HasAnyBuffByNames(this.EtherealModifiers)
+	}
 	public get Spells(): Ability[] {
 		return this.AbilitiesBook.Spells
 	}
@@ -403,34 +411,21 @@ export default class Unit extends Entity {
 	/**
 	 * @param flag if not exists => is Melee or Range attack
 	 */
-	public HasAttackCapability(flag?: DOTAUnitAttackCapability_t): boolean {
-		let attackCap = this.m_pBaseEntity.m_iAttackCapabilities
-
-		if (flag !== undefined)
-			return (attackCap & flag) !== 0
-
-		return (attackCap & (
-			DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK |
-			DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
-		) !== 0
+	public HasAttackCapability(flag: DOTAUnitAttackCapability_t = DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK | DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK): boolean {
+		return (this.AttackCapabilities & flag) !== 0
 	}
 	/**
 	 * @param flag if not exists => isn't move NONE
 	 */
-	public HasMoveCapability(flag: DOTAUnitMoveCapability_t): boolean {
-		let moveCap = this.m_pBaseEntity.m_iMoveCapabilities
-
-		if (flag !== undefined)
-			return (moveCap & flag) !== 0
-
-		return flag !== DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
+	public HasMoveCapability(flag: DOTAUnitMoveCapability_t = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_GROUND | DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY): boolean {
+		return (this.MoveCapabilities & flag) !== 0
 	}
 
 	public IsUnitStateFlagSet(flag: modifierstate): boolean {
-		return HasBitBigInt((this.m_pBaseEntity.m_nUnitState64 | this.m_pBaseEntity.m_nUnitDebuffState), BigInt(flag))
+		return HasBitBigInt((this.UnitStateMask), BigInt(flag))
 	}
 	public IsControllableByPlayer(playerID: number): boolean {
-		return HasBitBigInt(this.m_pBaseEntity.m_iIsControllableByPlayer64, BigInt(playerID))
+		return HasBitBigInt(this.IsControllableByPlayerMask, BigInt(playerID))
 	}
 
 	/* ================================ EXTENSIONS ================================ */
@@ -439,7 +434,6 @@ export default class Unit extends Entity {
 	public get IsRotating(): boolean {
 		return this.RotationDifference !== 0
 	}
-
 	public get IsChanneling(): boolean {
 		if (this.HasInventory && this.Items.some(item => item.IsChanneling))
 			return true
@@ -490,15 +484,10 @@ export default class Unit extends Entity {
 		return this.ModifiersBook.GetBuffByName(name)
 	}
 	public HasModifier(name: string): boolean {
-		return this.ModifiersBook.GetBuffByName(name) !== undefined 
-			? true : false
+		return this.ModifiersBook.GetBuffByName(name) !== undefined
 	}
 	public GetTalentValue(name: string | RegExp) {
 		let talent = this.AbilitiesBook.GetAbilityByName(name)
-		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
-	}
-	public GetTalentClassValue(class_: any) {
-		let talent = this.AbilitiesBook.GetAbilityByNativeClass(class_)
 		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
 	}
 	/**
@@ -516,6 +505,7 @@ export default class Unit extends Entity {
 
 		return super.IsInRange(ent, range)
 	}
+
 	public WillIgnore(damage_type: DAMAGE_TYPES): boolean {
 		if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_NONE)
 			return true
@@ -528,6 +518,47 @@ export default class Unit extends Entity {
 			return ignore_buffs.includes(name)
 		})
 	}
+
+	public TurnRate(currentTurnRate: boolean = true): number {
+		let turnRate: number
+		try {
+			turnRate = rotation_speed[this.Name]
+		}
+		catch (error) {
+			turnRate = 0.5
+		}
+
+		if (currentTurnRate) {
+			if (this.HasModifier("modifier_medusa_stone_gaze_slow")) {
+				turnRate *= 0.65
+			}
+
+			if (this.HasModifier("modifier_batrider_sticky_napalm")) {
+				turnRate *= 0.3
+			}
+		}
+
+		return turnRate
+	}
+
+	public TurnTime(angle: number | Vector3) {
+		if (angle instanceof Vector3) {
+			angle = this.FindRotationAngle(angle)
+			if (isNaN(angle)) { // face palm
+				return 0
+			}
+		}
+		let name = this.Name
+		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier" || name === "npc_dota_hero_clinkz") {
+			return 0
+		}
+
+		if (angle <= 0.2) {
+			return 0
+		}
+		return (0.03 / this.TurnRate()) * angle
+	}
+
 	public AbsorbedDamage(dmg: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
 		this.Buffs.forEach(buff => {
 			let abil = buff.Ability
@@ -596,6 +627,7 @@ export default class Unit extends Entity {
 		})
 		return dmg
 	}
+
 	public CalculateDamage(damage: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
 		if (damage <= 0 || this.WillIgnore(damage_type))
 			return 0
@@ -636,63 +668,150 @@ export default class Unit extends Entity {
 		}
 		return Math.max(damage, 0)
 	}
-	/*FindAttackingUnit(unit: Unit): Unit {
-		if (!config.enabled)
-			return
-		if (unit === undefined)
-			return undefined
-		let is_default_creep = unit.IsCreep && !unit.IsControllableByAnyPlayer
-		return ArrayExtensions.orderBy(EntityManager.AllEntities.filter(npc_ => {
-			if (npc_ === unit || !(npc_ instanceof Unit))
-				return false
-			let npc_pos = npc_.NetworkPosition
-			return (
-				unit.Distance2D(npc_) <= (unit.AttackRange + unit.HullRadius + npc_.HullRadius) &&
-				!unit.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE) &&
-				unit.IsInside(npc_pos, npc_.HullRadius) &&
-				(unit.IsEnemy(npc_) || (!is_default_creep && npc_.IsDeniable))
-			)
-		}), ent => unit.GetAngle(ent.NetworkPosition))[0] as Unit
-	}*/
-	GetHealthAfter(delay: number/*, include_projectiles: boolean = false, attacker?: Unit, melee_time_offset: number = 0*/): number {
-		// let cur_time = Game.GameTime,
-		let hpafter = this.HP
-		/*// loop-optimizer: KEEP
-		attacks.forEach((data, attacker_id) => {
-			let attacker_ent = EntityManager.EntityByIndex(attacker_id) as Unit,
-				[end_time, end_time_2, attack_target] = data
-			if (attacker_ent !== attacker && attack_target === unit) {
-				let end_time_delta = end_time - (cur_time + delay + melee_time_offset),
-					dmg = attacker_ent.AttackDamage(unit)
-				if (end_time_delta <= 0 && end_time_delta >= -Unit.melee_end_time_delta)
-					hpafter -= dmg
-				let end_time_2_delta = end_time_2 - (cur_time + delay + melee_time_offset)
-				if (end_time_2_delta <= 0 && end_time_2_delta >= -Unit.melee_end_time_delta)
-					hpafter -= dmg
+
+	CalculateDamageByHand(source: Unit): number {
+		if (source.GetBuffByName("modifier_tinker_laser_blind") !== undefined || this.WillIgnore(DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL))
+			return 0
+		let mult = 1
+		{
+			let damage_type = source.AttackDamageType,
+				armor_type = this.ArmorType
+			if (damage_type === AttackDamageType.Hero && armor_type === ArmorType.Structure)
+				mult *= .5
+			else if (damage_type === AttackDamageType.Basic && armor_type === ArmorType.Hero)
+				mult *= .75
+			else if (damage_type === AttackDamageType.Basic && armor_type === ArmorType.Structure)
+				mult *= .7
+			else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Hero)
+				mult *= .5
+			else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Basic)
+				mult *= 1.5
+			else if (damage_type === AttackDamageType.Pierce && armor_type === ArmorType.Structure)
+				mult *= .35
+			else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Hero)
+				mult *= .85
+			else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Structure)
+				mult *= 2.5
+		}
+		let damage = source.MinDamage + source.DamageBonus
+		damage = this.AbsorbedDamage(damage, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL)
+		if (damage <= 0)
+			return 0
+		let armor = this.Armor,
+			is_enemy = this.IsEnemy(source)
+		if (is_enemy) {
+			{
+				if (!this.HasModifier("modifier_blight_stone_buff")) {
+					let item = source.GetItemByName("item_blight_stone")
+					if (item !== undefined)
+						armor += item[0].GetSpecialValue("corruption_armor")
+				}
 			}
-		})
-		if (include_projectiles)
-			Projectiles.GetAllTracking().forEach(proj => {
-				let source = proj.m_hSource
-				if (proj.m_hTarget === this && source !== undefined && proj.m_bIsAttack && !proj.m_bIsEvaded && (proj.m_vecPosition.Distance(proj.m_vecTarget) / proj.m_iSpeed) <= delay)
-					hpafter -= this.AttackDamage(source)
-			})*/
-		return Math.min(hpafter + this.HPRegen * delay, this.MaxHP)
+			{
+				if (!this.HasModifier("modifier_desolator_buff")) {
+					let item = source.GetItemByName("item_desolator")
+					if (item !== undefined)
+						armor += item[0].GetSpecialValue("corruption_armor")
+				}
+			}
+			{
+				let item = source.GetItemByName("item_quelling_blade")
+				if (item !== undefined)
+					damage += item[0].GetSpecialValue(source.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
+			}
+			{
+				let item = source.GetItemByName("item_bfury")
+				if (item !== undefined)
+					damage += item[0].GetSpecialValue(source.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
+			}
+			{
+				let abil = source.GetAbilityByName("clinkz_searing_arrows")
+				if (abil !== undefined && abil[0].m_bAutoCastState && abil.IsManaEnough())
+					damage += abil[0].GetSpecialValue("damage_bonus")
+			}
+			{
+				let abil = source.GetAbilityByName("antimage_mana_break")
+				if (abil !== undefined && this.MaxMana > 0)
+					damage += Math.min(this.Mana, abil[0].GetSpecialValue("mana_per_hit")) * abil[0].GetSpecialValue("damage_per_burn")
+			}
+			{
+				let abil = source.GetAbilityByName("ursa_fury_swipes")
+				if (abil !== undefined) {
+					let buff = this.GetBuffByName("modifier_ursa_fury_swipes_damage_increase")
+					damage += abil[0].GetSpecialValue("damage_per_stack") * (1 + (buff !== undefined ? buff[0].m_iStackCount : 0))
+				}
+			}
+			{
+				let abil = source.GetAbilityByName("bounty_hunter_jinada")
+				if (abil !== undefined && abil[0].m_fCooldown === 0)
+					damage += abil[0].GetSpecialValue("bonus_damage")
+			}
+		}
+		{
+			let abil = source.GetAbilityByName("kunkka_tidebringer")
+			if (abil !== undefined && abil[0].m_bAutoCastState && abil[0].m_fCooldown === 0)
+				damage += abil[0].GetSpecialValue("damage_bonus")
+		}
+		{
+			let buff = source.GetBuffByName("modifier_storm_spirit_overload_passive")
+			if (buff !== undefined) {
+				let abil = buff.Ability
+				if (abil !== undefined)
+					damage += abil.AbilityDamage
+			}
+		}
+		{
+			let abil = source.GetAbilityByName("riki_permanent_invisibility")
+			if (abil !== undefined && (source.Forward.AngleBetweenFaces(this.Forward) * 180 / Math.PI) < abil[0].GetSpecialValue("backstab_angle"))
+				damage += abil[0].GetSpecialValue("damage_multiplier") * source.TotalAgility
+		}
+		damage *= 1 - (armor * 0.05) / (1 + Math.abs(armor) * 0.05)
+		if (is_enemy) {
+			{
+				let abil = source.GetAbilityByName("silencer_glaives_of_wisdom")
+				if (abil !== undefined && abil[0].m_bAutoCastState && abil.IsManaEnough())
+					damage += abil[0].GetSpecialValue("intellect_damage_pct") * source.TotalIntellect / 100
+			}
+			{
+				let abil = source.GetAbilityByName("obsidian_destroyer_arcane_orb")
+				if (abil !== undefined && abil.IsAutoCastEnebled && abil.IsManaEnough())
+					damage += abil[0].GetSpecialValue("mana_pool_damage_pct") * source.MaxMana / 100
+			}
+		}
+		{
+			let abil = source.GetAbilityByName("spectre_desolate")
+			if (abil !== undefined)
+				damage += abil[0].GetSpecialValue("bonus_damage")
+		}
+		{
+			let buff = source.GetBuffByName("modifier_bloodseeker_bloodrage")
+			if (buff !== undefined) {
+				let abil = buff.Ability
+				if (abil !== undefined)
+					mult *= 1 + abil.GetSpecialValue("damage_increase_pct") / 100
+			}
+		}
+		{
+			let buff = this.GetBuffByName("modifier_bloodseeker_bloodrage")
+			if (buff !== undefined) {
+				let abil = buff.Ability
+				if (abil !== undefined)
+					mult *= 1 + abil.GetSpecialValue("damage_increase_pct") / 100
+			}
+		}
+
+		return Math.max(damage * mult, 0)
 	}
+
 	public IsInside(vec: Vector3, radius: number): boolean {
 		const direction = this.Forward,
 			npc_pos = this.NetworkPosition
-		const npc_pos_x = npc_pos.x, npc_pos_y = npc_pos.y,
-			vec_x = vec.x, vec_y = vec.y,
-			direction_x = direction.x, direction_y = direction.y,
-			radius_sqr = radius ** 2
 		for (let i = Math.floor(vec.Distance2D(npc_pos) / radius) + 1; i--; )
-			// if (npc_pos.Distance2D(new Vector3(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
-			// optimized version, as V8 unable to optimize any native code by inlining
-			if ((((vec_x - direction_x * i * radius - npc_pos_x) ** 2) + ((vec_y - direction_y * i * radius - npc_pos_y) ** 2)) <= radius_sqr)
+			if (npc_pos.Distance2D(new Vector3(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
 				return true
 		return false
 	}
+
 	public GetAngle(vec: Vector3): number {
 		let npc_pos = this.NetworkPosition,
 			angle = Math.abs(Math.atan2(npc_pos.y - vec.y, npc_pos.x - vec.x) - this.Forward.Angle)
@@ -700,9 +819,11 @@ export default class Unit extends Entity {
 			angle = Math.abs((Math.PI * 2) - angle)
 		return angle
 	}
+
 	public IsManaEnough(abil: Ability) {
 		return this.Mana >= abil.ManaCost
 	}
+
 	public HasLinkenAtTime(time: number = 0): boolean {
 		const sphere = this.GetItemByName("item_sphere")
 
@@ -714,7 +835,8 @@ export default class Unit extends Entity {
 			&& this.GetBuffByName("modifier_item_sphere_target").DieTime - Game.RawGameTime - time <= 0
 		)
 	}
-	public AttackDamage(target: Unit, useMinDamage: boolean = false, damageAmplifier: number = 0): number {
+
+	public AttackDamage(target: Unit, useMinDamage: boolean = true, damageAmplifier: number = 0): number {
 		let damage = (useMinDamage ? this.MinDamage : this.DamageAverage) + this.DamageBonus,
 			damageType = this.AttackDamageType,
 			armorType = target.ArmorType,
@@ -755,6 +877,7 @@ export default class Unit extends Entity {
 
 		return damage * mult
 	}
+
 	public CanAttack(target?: Unit): boolean {
 		if (!this.IsAlive || this.IsInvulnerable || this.IsDormant || !this.IsSpawned || this.IsAttackImmune)
 			return false
@@ -775,6 +898,7 @@ export default class Unit extends Entity {
 
 		return true
 	}
+
 	/* ================================ ORDERS ================================ */
 	public UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
 		if (checkToggled && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && !ability.IsToggled)
@@ -793,6 +917,7 @@ export default class Unit extends Entity {
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
 			return this.CastTarget(ability, target as Entity, showEffects)
 	}
+
 	public get Name(): string {
 		if (this.UnitName_ === undefined)
 			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName

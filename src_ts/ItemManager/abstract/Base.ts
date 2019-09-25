@@ -7,8 +7,6 @@ export default class ItemManagerBase {
 	}
 	public get IsSpectator(): boolean {
 		let LocalPlayer = EntityManager.LocalPlayer
-		if (LocalPlayer !== undefined && LocalPlayer.Team === 1)
-			return true
-		return false
+		return LocalPlayer !== undefined && LocalPlayer.Team === 1
 	}
 }

@@ -1,4 +1,4 @@
-import { EntityManager, EventsSDK, Game, Hero, Vector3 } from "wrapper/Imports"
+import { EntityManager, Game, Hero, LocalPlayer, Vector3 } from "wrapper/Imports"
 
 import { AddOrUpdateParticle, RemoveParticle } from "../../base/DrawParticle"
 import { stateMain } from "../../base/MenuBase"
@@ -30,12 +30,17 @@ export function DrawParticles() {
 		|| !DrawState.value
 		|| !DrawHelpPosition.value
 		|| !Game.IsInGame
-		|| EntityManager.LocalHero === undefined
 	)
 		return
 	lastHero = EntityManager.LocalHero
+	if (lastHero === undefined)
+		return
 
-	const teamParticles = BestPosition[lastHero.Team - 2]
+	const teamParticles = BestPosition[LocalPlayer.Team - 2]
+	if (teamParticles === undefined) {
+		console.log("[CreepBlock] [Particles] Unsupported team: " + LocalPlayer.Team)
+		return
+	}
 
 	teamParticles.forEach(vec => {
 		const name = vec.toString()

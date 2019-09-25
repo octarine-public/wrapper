@@ -50,8 +50,4 @@ export default class AbilitiesBook {
 			),
 		)
 	}
-
-	GetAbilityByNativeClass(class_: any): Ability {
-		return this.Spells.find(abil => abil !== undefined && abil.m_pBaseEntity instanceof class_)
-	}
 }

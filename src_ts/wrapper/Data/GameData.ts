@@ -17,9 +17,9 @@ export const ScanActiveTime = 8
 export const ScanRadius = 900
 
 /**
- * https://dota2.gamepedia.com/Intelligence
+ * https://dota2.gamepedia.com/Intellect
  */
-export const DamageAmplifyPerIntelligencePrecent = 0.07
+export const DamageAmplifyPerIntellectPrecent = 0.07
 
 export const HealthGainPerStrength = 20
 

@@ -1,9 +1,8 @@
-import { Unit, Entity, ParticlesSDK, Game, Menu, LocalPlayer } from "wrapper/Imports"
-import { State, showOnAll, showOnSelf, showOnAllies, showOnWards, showOnCreeps } from "./Menu"
+import { Entity, Game, LocalPlayer, ParticlesSDK, Unit } from "wrapper/Imports"
+import { showOnAll, showOnAllies, showOnCreeps, showOnSelf, showOnWards, State } from "./Menu"
 
 let allUnits = new Map<Unit, number>(), // <Unit, Particle>
-	particlePath = "particles/items_fx/aura_shivas.vpcf",
-	isScriptEnabled = true;
+	particlePath = "particles/items_fx/aura_shivas.vpcf"
 
 State.OnValue(OnOptionToggle)
 showOnAll.OnValue(OnOptionToggle),
@@ -12,98 +11,73 @@ showOnAllies.OnValue(OnOptionToggle)
 showOnWards.OnValue(OnOptionToggle)
 showOnCreeps.OnValue(OnOptionToggle)
 
-function Destroy(particleID: number, unit: Unit) {
-	if (particleID === -1)
-		return
-		
+function Destroy(unit: Unit, particleID: number = allUnits.get(unit)) {
 	ParticlesSDK.Destroy(particleID, true)
-	allUnits.set(unit, -1)
-}
-
-function RecheckAll() {
-	// loop-optimizer: KEEP	// because this is Map
-	allUnits.forEach((particle, unit) => {
-		return CheckUnit(unit);
-	});
+	allUnits.delete(unit)
 }
 
 function DestroyAll() {
 	// loop-optimizer: KEEP	// because this is Map
-	allUnits.forEach(Destroy)
-}
-
-export function Tick() {
-	if (Game.IsPaused)
-		return false
-		
-	allUnits.forEach((particle, unit) => !unit.IsAlive && Destroy(particle, unit))
+	allUnits.forEach((particle, unit) => Destroy(unit, particle))
 }
 
 export function GameEnded() {
-	// loop-optimizer: KEEP	// because this is Map
-	allUnits.forEach(Destroy)
+	DestroyAll()
 }
 
-export function EntityCreated(x: Entity){
-	if (x instanceof Unit && !x.IsEnemy())
-		allUnits.set(x, -1)
-}
+function OnOptionToggle() {
+	DestroyAll()
 
-export function EntityDestroyed(x: Entity) {
-	if (x instanceof Unit)
-		allUnits.delete(x)
-}
-
-function OnOptionToggle(caller: Menu.Toggle) {
-	DestroyAll();
-
-	if (isScriptEnabled) {
-		RecheckAll();
+	if (State.value) {
+		// loop-optimizer: KEEP	// because this is Map
+		allUnits.forEach((particle, unit) => CheckUnit(unit))
 	}
 }
 
 function IsUnitShouldBeHighlighted(unit: Unit) {
 	if (unit.IsHero) {
-		if (showOnSelf.value && unit.Owner === LocalPlayer) {
-			return true;
-		}
+		if (showOnSelf.value && unit.Owner === LocalPlayer)
+			return true
 
-		if (showOnAllies.value && unit.Owner !== LocalPlayer) {
-			return true;
-		}
+		if (showOnAllies.value && unit.Owner !== LocalPlayer)
+			return true
 	}
 
-	if (unit.IsCreep && showOnCreeps.value) {
-		return true;
-	}
+	if (unit.IsCreep && showOnCreeps.value)
+		return true
 
-	if (unit.IsWard && showOnWards.value) {
-		return true;
-	}
+	if (unit.IsWard && showOnWards.value)
+		return true
 
-	return false;
+	return showOnAll.value
 }
 
-export function TeamVisibilityChanged(npc: Unit, isVisibleForEnemies: boolean) {
-	CheckUnit(npc, isVisibleForEnemies)
+export function TeamVisibilityChanged(npc: Unit) {
+	CheckUnit(npc)
 }
 
 function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsVisibleForEnemies) {
-	if (!State.value || !isScriptEnabled || unit.IsEnemy())
+	if (!State.value || unit.IsEnemy())
 		return
 
 	let isAlive = unit.IsAlive,
-		particleID = allUnits.get(unit);
+		particleID = allUnits.get(unit)
 
-	if (particleID === undefined) {
-		return;
-	}
-
-	if (isVisibleForEnemies && particleID === -1 && isAlive && (showOnAll.value || IsUnitShouldBeHighlighted(unit))) {
-		allUnits.set(unit, ParticlesSDK.Create(particlePath, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit));
-	} else if ((!isVisibleForEnemies || !isAlive) && particleID !== -1) {
-		Destroy(particleID, unit);
+	if (isVisibleForEnemies && particleID === undefined && isAlive && IsUnitShouldBeHighlighted(unit)) {
+		allUnits.set(unit, ParticlesSDK.Create(particlePath, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit))
+	} else if ((!isVisibleForEnemies || !isAlive) && particleID !== undefined) {
+		Destroy(unit, particleID)
 	}
 }
 
+export function EntityDestroyed(ent: Entity) {
+	if (!(ent instanceof Unit) || !allUnits.has(ent))
+		return
+	Destroy(ent)
+}
 
+export function LifeStateChanged(ent: Entity) {
+	if (ent.IsAlive)
+		return
+	EntityDestroyed(ent)
+}

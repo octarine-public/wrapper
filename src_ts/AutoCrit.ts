@@ -13,7 +13,7 @@ Events.on("Draw", () => {
 		RendererSDK.Text("Auto Crit enabled", new Vector2(0, 100))
 })
 EventsSDK.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
-	if (!MenuState.value || !npc.IsControllableByPlayer(LocalPlayer.PlayerID))
+	if (!MenuState.value || !npc.IsControllable)
 		return
 	if (activity === 1503) {
 		if (target !== undefined)

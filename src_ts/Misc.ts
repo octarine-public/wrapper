@@ -59,10 +59,10 @@ EventsSDK.on("GameStarted", () => UpdateVisuals())
 
 EventsSDK.on("WndProc", (msg, wParam) => {
 	if (Game.IsInGame && msg === 522 /* WM_MOUSEWHEEL */ && CamMouseState.value) {
-		let view = new DataView(new ArrayBuffer(64));
+		let view = new DataView(new ArrayBuffer(64))
 		view.setBigInt64(0, wParam)
 		let val = view.getInt16(4),
-			IsCtrlPressed = (view.getInt16(6) == 8)
+			IsCtrlPressed = (view.getInt16(6) === 8)
 		if (CamMouseStateCtrl.value && !IsCtrlPressed)
 			return true
 		if (val > -120)

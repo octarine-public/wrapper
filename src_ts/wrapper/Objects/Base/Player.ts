@@ -63,7 +63,8 @@ export default class Player extends Entity {
 	private m_Name: string
 	private m_PlayerData: PlayerResourcePlayerData_t
 	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t
-	private m_hAssignedHeroLast: Hero
+	public PlayerID = this.m_pBaseEntity.m_iPlayerID
+	public Hero_: Hero | C_BaseEntity | number
 	/**
 	 * Only for LocalPlayer
 	 */
@@ -103,21 +104,13 @@ export default class Player extends Entity {
 	// HasRepicked 				=> PlayerResourcePlayerTeamData_t
 	// Healing					=> NonSpectator
 	get Hero(): Hero {
-		let nowHero = this.m_pBaseEntity.m_hAssignedHero
-
-		if (this.m_hAssignedHeroLast === undefined || this.m_hAssignedHeroLast.m_pBaseEntity !== nowHero)
-			this.m_hAssignedHeroLast = EntityManager.GetEntityByNative(nowHero) as Hero
-
-		return this.m_hAssignedHeroLast
+		return this.Hero_ instanceof Entity ? this.Hero_ : (this.Hero_ = EntityManager.GetEntityByNative(this.Hero_, true) as Hero || EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hAssignedHero, true) as Hero)
 	}
 	get HeroAssigned(): boolean {
-		return this.Hero !== undefined // this.m_pBaseEntity.m_bHeroAssigned // always false;
+		return this.Hero !== undefined && this.Hero.IsValid
 	}
 	// HeroDamage				=> NonSpectator
 	// HeroKillGold				=> NonSpectator
-	get PlayerID(): number {
-		return this.m_pBaseEntity.m_iPlayerID
-	}
 	// IncomeGold				=> NonSpectator
 	get IsAFK(): boolean {
 		return this.PlayerTeamData.m_bAFK

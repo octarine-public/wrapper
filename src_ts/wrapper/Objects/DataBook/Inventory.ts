@@ -1,4 +1,4 @@
-import EntityManager from "../../Managers/EntityManager"
+import EntityManager, { LocalPlayer } from "../../Managers/EntityManager"
 import Hero from "../Base/Hero"
 import Item from "../Base/Item"
 import Player from "../Base/Player"
@@ -7,12 +7,20 @@ import Unit from "../Base/Unit"
 const MAX_ITEMS = 15
 
 export default class Inventory {
-	public readonly m_Inventory: C_DOTA_UnitInventory
-	public readonly m_hItems: C_DOTA_Item[]
+	public TotalItems_: Array<Item | C_BaseEntity | number> = []
 
 	constructor(public readonly Owner: Unit) {
-		this.m_Inventory = Owner.m_pBaseEntity.m_Inventory
-		this.m_hItems = this.m_Inventory.m_hItems as C_DOTA_Item[]
+		let ar = this.Owner.m_pBaseEntity.m_Inventory.m_hItems
+		if (ar !== undefined) {
+			// loop-optimizer: FORWARD
+			this.TotalItems_ = ar.map(abil => EntityManager.GetEntityByNative(abil) as Item || abil)
+		} else
+			this.TotalItems_ = new Array(MAX_ITEMS)
+	}
+
+	get TotalItems(): Item[] {
+		// loop-optimizer: FORWARD
+		return (this.TotalItems_ = EntityManager.GetEntitiesByNative(this.TotalItems_)).map(item => item instanceof Item ? item : undefined)
 	}
 
 	get Items(): Item[] {
@@ -52,14 +60,11 @@ export default class Inventory {
 		return this.HasFreeSlot(9, 14)
 	}
 	get IsStashEnabled(): boolean {
-		return this.m_Inventory.m_bStashEnabled
+		return this.Owner.m_pBaseEntity.m_Inventory.m_bStashEnabled
 	}
 
 	public GetItem(slot: DOTAScriptInventorySlot_t): Item {
-		if (!this.Owner.IsValid || slot > MAX_ITEMS)
-			return undefined
-
-		return EntityManager.GetEntityByNative(this.m_hItems[slot]) as Item
+		return this.TotalItems[slot]
 	}
 	public GetItems(start: number, end: number): Item[] {
 		start = Math.min(start, MAX_ITEMS)
@@ -82,7 +87,7 @@ export default class Inventory {
 		let items: DOTAScriptInventorySlot_t[] = []
 		if (this.Owner.IsValid && start <= end)
 			for (let i = start; i <= end; i++)
-				if (this.m_hItems[i] === undefined)
+				if (this.GetItem(i) === undefined)
 					items.push(i as DOTAScriptInventorySlot_t)
 		return items
 	}
@@ -92,7 +97,7 @@ export default class Inventory {
 				if (i > MAX_ITEMS)
 					break
 
-				if (this.m_hItems[i] !== undefined)
+				if (this.GetItem(i) !== undefined)
 					return true
 			}
 		}
@@ -104,7 +109,7 @@ export default class Inventory {
 				if (i > MAX_ITEMS)
 					break
 
-				if (this.m_hItems[i] === undefined)
+				if (this.GetItem(i) === undefined)
 					return true
 			}
 		}
@@ -117,33 +122,28 @@ export default class Inventory {
 				if (i > MAX_ITEMS)
 					break
 
-				if (this.m_hItems[i] === undefined)
+				if (this.GetItem(i) === undefined)
 					man++
 			}
 			return man >= howMany
 		}
 		return false
 	}
-	public CountItemByOtherPlayer(player: Hero): number {
+	public CountItemByOtherPlayer(player: Player = LocalPlayer): number {
 		let counter = 0
-		if (this.Owner.IsValid) {
-			let itemsNative = this.m_hItems,
-				playerID = player.PlayerID
-
-			for (let i = 0; i < 14; i++)
-				if (itemsNative[i] !== undefined && itemsNative[i].m_iPlayerOwnerID === playerID)
-					counter++
-		}
+		// loop-optimizer: POSSIBLE_UNDEFINED
+		this.TotalItems.forEach(item => {
+			if (item.m_pBaseEntity.m_iPlayerOwnerID === player.PlayerID)
+				counter++
+		})
 		return counter
 	}
 	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Item {
 		if (this.Owner.IsValid) {
-			let items = this.m_hItems,
-				len = Math.min(items.length, includeBackpack ? 9 : 6)
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
 
 			for (let i = 0; i < len; i++) {
-				let item = EntityManager.GetEntityByNative(items[i]) as Item
-
+				let item = this.GetItem(i)
 				if (item !== undefined && (name instanceof RegExp ? name.test(item.Name) : item.Name === name))
 					return item
 			}
@@ -152,12 +152,10 @@ export default class Inventory {
 	}
 	public GetItemByRegexp(regex: RegExp, includeBackpack: boolean = false): Item {
 		if (this.Owner.IsValid) {
-			let items = this.m_hItems,
-				len = Math.min(items.length, includeBackpack ? 9 : 6)
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
 
 			for (let i = 0; i < len; i++) {
-				let item = EntityManager.GetEntityByNative(items[i]) as Item
-
+				let item = this.GetItem(i)
 				if (item !== undefined && regex.test(item.Name))
 					return item
 			}
@@ -180,12 +178,10 @@ export default class Inventory {
 	}
 	public GetItemByNameInBackpack(name: string): Item {
 		if (this.Owner.IsValid) {
-			let items = this.m_hItems,
-				len = Math.min(items.length, 9)
+			let len = Math.min(this.TotalItems.length, 9)
 
 			for (let i = 6; i < len; i++) {
-				let item = EntityManager.GetEntityByNative(items[i]) as Item
-
+				let item = this.GetItem(i)
 				if (item !== undefined && item.Name === name)
 					return item
 			}

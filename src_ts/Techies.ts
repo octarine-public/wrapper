@@ -1,6 +1,6 @@
-import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, ParticlesSDK, Unit, Vector3 } from "./wrapper/Imports"
+import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, ParticlesSDK, Unit, Utils, Vector3 } from "./wrapper/Imports"
 
-let TechiesMenu = Menu.AddEntry(["Heroes", "Techies"]),
+let TechiesMenu = Menu.AddEntry(["Heroes", "Intelligence", "Techies"]),
 	State = TechiesMenu.AddToggle("State"),
 	Explode_seen_mines = TechiesMenu.AddToggle("Explode seen mines"),
 	Explode_expiring_mines = TechiesMenu.AddToggle("Explode expiring mines"),
@@ -13,17 +13,17 @@ const RMineTriggerRadius = 425,
 	RMineBlowDelay = .25,
 	ForcestaffUnits = 600
 
-var NoTarget: Entity[] = [],
-	particles = new Map<Unit, number>(),
+var particles = new Map<Unit, number>(),
 	rmines: Array<[
 		/* mine */Unit,
 		/* dmg */number,
-		/* will setup after m_fGameTime */number,
-		/* will become invis after m_fGameTime */number,
+		/* will setup after Game.RawGameTime */number,
+		/* will become invis after Game.RawGameTime */number,
 	]> = [],
 	heroes: Hero[] = [],
 	techies: Hero,
-	latest_techies_spellamp: number = 1
+	latest_techies_spellamp: number = 1,
+	sleeper = new GameSleeper()
 
 function CreateRange(ent: Entity, range: number): number {
 	const par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
@@ -46,12 +46,14 @@ function ExplodeMine(rmine: Unit) {
 	RemoveMine(rmine)
 }
 
-function TryDagon(ent: Unit, damage: number = 0, damage_type: number = DAMAGE_TYPES.DAMAGE_TYPE_NONE): boolean {
-	var Dagon = techies.GetItemByName(/item_dagon/),
-		TargetHP = ent.GetHealthAfter(RMineBlowDelay)
+function TryDagon(ent: Unit, damage: number, TargetHP: number): boolean {
+	if (sleeper.Sleeping("dagon"))
+		return false
+	var Dagon = techies.GetItemByName(/item_dagon/)
 	if (Dagon)
-		if (Dagon.Cooldown === 0 && techies.IsInRange(ent, Dagon.CastRange) && TargetHP < ent.CalculateDamage(Dagon.GetSpecialValue("damage") * latest_techies_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies) + ent.CalculateDamage(damage, damage_type, techies)) {
+		if (Dagon.Cooldown === 0 && techies.IsInRange(ent, Dagon.CastRange) && TargetHP < ent.CalculateDamage(Dagon.GetSpecialValue("damage") * latest_techies_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies) + ent.CalculateDamage(damage, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies)) {
 			techies.CastTarget(Dagon, ent, false)
+			sleeper.Sleep(2 * 1000 / 30, "dagon")
 			return true
 		}
 
@@ -63,8 +65,7 @@ function CallMines(
 	callback: (rmine: Unit) => boolean,
 	explosionCallback: (RMinesToBlow: Unit[], RMinesDmg: number) => void,
 ): void {
-	var TargetHP = ent.GetHealthAfter(RMineBlowDelay),
-		cur_time = Game.RawGameTime,
+	var cur_time = Game.RawGameTime,
 		RMinesToBlow: Unit[] = [],
 		RMinesDmg = 0
 
@@ -73,10 +74,12 @@ function CallMines(
 		RMinesDmg += dmg
 		var theres = ent.CalculateDamage(RMinesDmg, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, techies)
 		// console.log("EzTechiesAuto", `There's ${theres} (derived from ${RMinesDmg}), needed ${TargetHP} for ${ent.m_iszUnitName}`)
+		let TargetHP = Utils.GetHealthAfter(ent, RMineBlowDelay + (1 / 30) * RMinesToBlow.length * ent.HPRegen)
 		if (TargetHP < theres) {
 			explosionCallback(RMinesToBlow, RMinesDmg)
 			return false
-		} else return !TryDagon(ent, RMinesDmg, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
+		} else
+			return !TryDagon(ent, RMinesDmg, TargetHP)
 	})
 }
 
@@ -86,16 +89,17 @@ function NeedToTriggerMine(rmine: Unit, ent: Unit, forcestaff: boolean = false):
 		TriggerRadius -= ent.IdealSpeed * (RMineBlowDelay / 30)
 
 	return use_prediction.value
-		? ent.InFront(((ent.IsMoving as any) * RMineBlowDelay) + (forcestaff ? ForcestaffUnits : 0)).Distance2D(rmine.NetworkPosition) <= TriggerRadius
+		? ent.InFront((ent.IsMoving ? RMineBlowDelay : 0) + (forcestaff ? ForcestaffUnits : 0)).Distance2D(rmine.NetworkPosition) <= TriggerRadius
 		: forcestaff
 			? rmine.NetworkPosition.Distance2D(ent.InFront(ForcestaffUnits)) <= TriggerRadius
 			: rmine.IsInRange(ent, TriggerRadius)
 }
 
-Events.on("Tick",  () => {
+EventsSDK.on("Tick",  () => {
 	if (!State.value || techies === undefined || Game.IsPaused)
 		return
 	var cur_time = Game.RawGameTime
+	// loop-optimizer: FORWARD
 	rmines = rmines.filter(([rmine]) => rmine.IsAlive)
 	if (Explode_expiring_mines.value) {
 		const rmineTimeout = 595 // 600 is mine duration
@@ -115,10 +119,11 @@ Events.on("Tick",  () => {
 			latest_techies_spellamp *= bs_buff.Ability.GetSpecialValue("damage_increase_pct") / 100
 	}
 	heroes.filter(ent =>
-		ent.IsAlive
+		ent.IsEnemy()
+		&& ent.IsAlive
 		&& ent.IsVisible
 		&& !ent.IsMagicImmune
-		&& NoTarget.indexOf(ent) === -1,
+		&& !sleeper.Sleeping(ent),
 	).forEach(ent => {
 		var callbackCalled = false
 		CallMines (
@@ -127,8 +132,7 @@ Events.on("Tick",  () => {
 			RMinesToBlow => {
 				callbackCalled = true
 				RMinesToBlow.forEach(rmine => ExplodeMine(rmine), false)
-				NoTarget.push(ent)
-				setTimeout(() => NoTarget.splice(NoTarget.indexOf(ent), 1), (RMineBlowDelay + GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000 + 180)
+				sleeper.Sleep((RMineBlowDelay + GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000 + 180, ent)
 			},
 		)
 
@@ -148,19 +152,16 @@ Events.on("Tick",  () => {
 function CreateParticleFor(npc: Unit) {
 	if (npc === undefined)
 		return
-	setTimeout(() => {
-		var range = 400 // same for land mines and stasis traps
-		if (npc.IsValid)
-			switch (npc.Name) {
-				case "npc_dota_techies_remote_mine":
-					range = RMineTriggerRadius * (safe_mode.value ? 0.85 : 1)
-				case "npc_dota_techies_stasis_trap":
-				case "npc_dota_techies_land_mine":
-					particles.set(npc, CreateRange(npc, range))
-				default:
-					break
-			}
-	}, 30)
+	var range = 400 // same for land mines and stasis traps
+	switch (npc.Name) {
+		case "npc_dota_techies_remote_mine":
+			range = RMineTriggerRadius * (safe_mode.value ? 0.85 : 1)
+		case "npc_dota_techies_stasis_trap":
+		case "npc_dota_techies_land_mine":
+			particles.set(npc, CreateRange(npc, range))
+		default:
+			break
+	}
 }
 
 function RegisterMine(npc: Unit) {
@@ -189,7 +190,7 @@ EventsSDK.on("GameEnded", () => {
 		// loop-optimizer: KEEP
 		particles.forEach(particle => { ParticlesSDK.Destroy(particle, true) })
 	particles = new Map<Unit, number>()
-	NoTarget = []
+	sleeper.FullReset()
 	heroes = []
 	techies = undefined as any
 })
@@ -221,12 +222,9 @@ EventsSDK.on("PrepareUnitOrders", args => {
 EventsSDK.on("EntityCreated", npc => {
 	if (!(npc instanceof Unit) || LocalPlayer === undefined)
 		return
-	if (npc.IsEnemy()) {
-		if (npc instanceof Hero)
-			if (!npc.IsIllusion)
-				heroes.push(npc)
-		return
-	}
+	if (npc instanceof Hero)
+		if (!npc.IsIllusion)
+			heroes.push(npc)
 	if (npc.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines) {
 		CreateParticleFor(npc)
 		if (npc.Name === "npc_dota_techies_remote_mine")

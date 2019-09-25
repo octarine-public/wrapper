@@ -159,6 +159,8 @@ export function Draw(): string {
 
 function GetCreeps(unit?: Unit): Creep[] {
 	return allCreeps.filter(creep => {
+		if (creep.IsEnemy())
+			return false
 		if (SkipRange.value && creep.IsRangeAttacker)
 			return false
 

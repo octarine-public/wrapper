@@ -3,16 +3,14 @@ import { State } from "./Menu"
 
 var treant_eyes: Unit[] = [], pars = new Map<Entity, number>()
 export function Destroy(ent: Entity, id: number) {
-	if (!State.value)
-		return
 	if (ArrayExtensions.arrayRemove(treant_eyes, ent))
 		pars.delete(ent)
 }
 export function Create(ent: Entity, id: number) {
-	if (!State.value)
-		return
 	if (ent instanceof Unit && ent.m_pBaseEntity instanceof C_DOTA_NPC_Treant_EyesInTheForest) {
 		treant_eyes.push(ent)
+		if (!State.value)
+			return
 		var par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
 		ParticlesSDK.SetControlPoint(par, 1, new Vector3(100, 0, 0))
 		pars.set(ent, par)
@@ -30,6 +28,7 @@ export function Tick() {
 			return false
 		if (ent.IsAlive) {
 			ent.IsVisibleForTeamMask |= local_team_flag
+			ent.m_pBaseEntity.m_iTaggedAsVisibleByTeam |= local_team_flag
 			// |= 1 << 2 is EF_IN_STAGING_LIST
 			// |= 1 << 4 is EF_DELETE_IN_PROGRESS
 			// 1 << 5 is EF_NODRAW

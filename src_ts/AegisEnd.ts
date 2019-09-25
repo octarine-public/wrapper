@@ -11,24 +11,22 @@ let AegisExists = false
 
 function NotifyAegisEnd() {
 	if (AegisExists) {
-		if (optionChatAlert.value) {
-			SendToConsole("say_team aegis ended") // fuck bulb4
-		}
+		if (optionChatAlert.value)
+			SendToConsole("say_team aegis ended")
 		AegisExists = false
 	}
 }
 
 EventsSDK.on("BuffAdded", (npc, buf) => {
-	if (buf.Name == "modifier_item_aegis") {
+	if (buf.Name === "modifier_item_aegis") {
 		setTimeout(NotifyAegisEnd, 300000 - Math.floor(Game.GameTime - buf.CreationTime)) //aegis self destruct time
 		AegisExists = true
 	}
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent.Name == "item_aegis") {
+	if (ent.Name === "item_aegis")
 		NotifyAegisEnd()
-	}
 })
 
 EventsSDK.on("GameEnded", () => {

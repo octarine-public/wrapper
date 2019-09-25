@@ -1,6 +1,6 @@
 import QAngle from "../Base/QAngle"
 import Vector3 from "../Base/Vector3"
-import { default as EntityManager, LocalPlayer } from "./EntityManager"
+import { default as EntityManager, Game, LocalPlayer, SetLocalPlayer } from "./EntityManager"
 
 import Entity from "../Objects/Base/Entity"
 import Hero from "../Objects/Base/Hero"
@@ -10,11 +10,12 @@ import Unit from "../Objects/Base/Unit"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import UserCmd from "../Native/UserCmd"
 import Ability from "../Objects/Base/Ability"
+import Item from "../Objects/Base/Item"
+import Player from "../Objects/Base/Player"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import AbilityData from "../Objects/DataBook/AbilityData"
 
 const EventsSDK: EventsSDK = new EventEmitter()
-
 export default EventsSDK
 
 Events.on("WndProc", (...args) => EventsSDK.emit("WndProc", true, ...args))
@@ -38,15 +39,12 @@ Events.on("UnitStateChanged", npc => {
 })
 
 Events.on("TeamVisibilityChanged", (npc, newTagged) => {
-	if (LocalPlayer === undefined)
-		return
-
 	const unit = EntityManager.GetEntityByNative(npc, true) as Unit
 
-	const isVisibleForEnemies = Unit.IsVisibleForEnemies(unit, newTagged)
-	unit.IsVisibleForEnemies = isVisibleForEnemies
+	unit.IsVisibleForTeamMask = newTagged
+	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit, unit.IsVisibleForTeamMask)
 
-	EventsSDK.emit("TeamVisibilityChanged", false, unit, isVisibleForEnemies, newTagged)
+	EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
 
 Events.on("Draw", () => EventsSDK.emit("Draw"))
@@ -174,9 +172,6 @@ function GetEntityByVecOrigin(vec: CNetworkOriginCellCoordQuantizedVector) {
 	let ent = m_vecOrigin2ent.get(vec)
 	if (ent === undefined)
 		m_vecOrigin2ent.set(vec, ent = EntityManager.AllEntities.find(ent => {
-			let node = ent.GameSceneNode_
-			return node !== undefined && node.m_vecOrigin === vec
-		}) || EntityManager.AllEntities.find(ent => {
 			let node = ent.GameSceneNode
 			return node !== undefined && node.m_vecOrigin === vec
 		}))
@@ -225,28 +220,181 @@ Events.on("InputCaptured", is_captured => EventsSDK.emit (
 	is_captured,
 ))
 
+class NetworkFieldChanged {
+	private value: any
+	private value_cached = false
+	constructor(
+		public readonly TriggerEnt: Entity,
+		public Trigger: any,
+		public readonly FieldName: string,
+		public readonly FieldType: string,
+		public readonly ArrayIndex: number,
+	) {}
+
+	public get Value() {
+		if (!this.value_cached) {
+			this.value = this.Trigger[this.FieldName]
+			if (this.ArrayIndex !== -1)
+				this.value = this.value[this.ArrayIndex]
+		}
+		return this.value
+	}
+}
+
 Events.on("NetworkFieldsChanged", map => {
 	// loop-optimizer: KEEP
-	map.forEach((map2, entity) => {
-		let entity_ = EntityManager.GetEntityByNative(entity, true)
-		if (entity_ === undefined)
-			return
+	map.forEach((map2, native_ent) => {
+		let entity = EntityManager.GetEntityByNative(native_ent, true)
 		// loop-optimizer: KEEP
-		map2.forEach((ar, trigger) => ar.forEach(([field_name, field_type, array_index]) => {
-			if (array_index !== -1 && field_name === "m_hAbilities" && entity_ instanceof Unit) {
-				let abil = entity_.m_pBaseEntity.m_hAbilities[array_index]
-				entity_.AbilitiesBook.Spells_[array_index] = EntityManager.GetEntityByNative(abil) as Ability || abil
-			}
-			if (array_index === -1 && field_name === "m_hOwner")
-				entity_.Owner_ = entity.m_hOwnerEntity
-		}))
+		map2.forEach((ar, trigger) => ar.forEach(([field_name, field_type, array_index]) => EventsSDK.emit (
+			"NetworkFieldChanged",
+			false,
+			new NetworkFieldChanged (
+				entity,
+				trigger,
+				field_name,
+				field_type,
+				array_index,
+			),
+		)))
 	})
+})
+EventsSDK.on("NetworkFieldChanged", args => {
+	let entity = args.TriggerEnt
+	if (args.ArrayIndex === -1)
+		switch (args.FieldName) {
+			case "m_hOwner":
+				entity.Owner_ = args.Value
+				break
+			case "m_iPlayerID":
+				if (entity instanceof Player) {
+					entity.PlayerID = args.Value
+					if (entity.PlayerID !== -1 && entity.m_pBaseEntity.m_bIsLocalPlayer)
+						SetLocalPlayer(entity)
+				}
+				break
+			case "m_hAssignedHero":
+				if (entity instanceof Player)
+					entity.Hero_ = args.Value
+				break
+			case "m_iTeamNum":
+				entity.Team = args.Value
+				break
+			case "m_lifeState":
+				entity.LifeState = args.Value
+				EventsSDK.emit("LifeStateChanged", false, entity)
+				break
+			case "m_NetworkActivity":
+				if (entity instanceof Unit) {
+					entity.NetworkActivity = args.Value
+					EventsSDK.emit("NetworkActivityChanged", false, entity)
+				}
+				break
+			case "m_iIsControllableByPlayer64":
+				if (entity instanceof Unit)
+					entity.IsControllableByPlayerMask = args.Value
+				break
+			case "m_iAttackCapabilities":
+				if (entity instanceof Unit)
+					entity.AttackCapabilities = args.Value
+				break
+			case "m_iMoveCapabilities":
+				if (entity instanceof Unit)
+					entity.MoveCapabilities = args.Value
+				break
+			case "m_iHealth":
+				entity.HP = args.Value
+				break
+			case "m_iMaxHealth":
+				entity.MaxHP = args.Value
+				break
+			case "m_flHealthThinkRegen":
+				if (entity instanceof Unit)
+					entity.HPRegen = args.Value
+				break
+			case "m_flManaThinkRegen":
+				if (entity instanceof Unit)
+					entity.ManaRegen = args.Value
+				break
+			case "m_anglediff":
+				if (entity instanceof Unit)
+					entity.RotationDifference = args.Value
+				break
+			case "m_iLevel":
+				if (entity instanceof Ability)
+					entity.Level = args.Value
+				break
+			case "m_fCooldown":
+				if (entity instanceof Ability)
+					entity.Cooldown = args.Value
+				break
+			case "m_flCooldownLength":
+				if (entity instanceof Ability)
+					entity.CooldownLength = args.Value
+				break
+			case "m_bInAbilityPhase":
+				if (entity instanceof Ability)
+					entity.IsInAbilityPhase = args.Value
+				break
+			case "m_flCastStartTime":
+				if (entity instanceof Ability)
+					entity.CastStartTime = args.Value
+				break
+			case "m_flChannelStartTime":
+				if (entity instanceof Ability)
+					entity.ChannelStartTime = args.Value
+				break
+			case "m_bToggleState":
+				if (entity instanceof Ability)
+					entity.IsToggled = args.Value
+				break
+			case "m_flLastCastClickTime":
+				if (entity instanceof Ability)
+					entity.LastCastClickTime = args.Value
+				break
+			
+			// manually whitelisted
+			case "m_angRotation":
+				entity.OnNetworkRotationChanged()
+				break
+			case "m_fGameTime":
+				Game.RawGameTime = Game.m_GameRules.m_fGameTime
+				break
+			case "m_bGamePaused":
+				Game.IsPaused = Game.m_GameRules.m_bGamePaused
+				break
+
+			default:
+				break
+		}
+	else
+		switch (args.FieldName) {
+			case "m_hAbilities":
+				if (entity instanceof Unit) {
+					let abil = args.Value
+					entity.AbilitiesBook.Spells_[args.ArrayIndex] = EntityManager.GetEntityByNative(abil) as Ability || abil
+				}
+				break
+
+			// manually whitelisted
+			case "m_hItems":
+				if (entity instanceof Unit) {
+					args.Trigger = entity.m_pBaseEntity.m_Inventory
+					let item = args.Value
+					entity.Inventory.TotalItems_[args.ArrayIndex] = EntityManager.GetEntityByNative(item) as Item || item
+					EventsSDK.emit("InventoryChanged", false, entity, args.ArrayIndex)
+				}
+				break
+
+			default:
+				break
+		}
 })
 Events.on("SetEntityName", (entity, new_name) => {
 	let entity_ = EntityManager.GetEntityByNative(entity, true)
 	if (entity_ === undefined)
 		return
-	entity_.Name = new_name
+	entity_.Name_ = new_name
 	if (entity_ instanceof Ability)
 		entity_.AbilityData = new AbilityData((entity as C_DOTABaseAbility).m_pAbilityData)
 })
@@ -265,16 +413,6 @@ interface EventsSDK extends EventEmitter {
 	 * Also, emitted when scripts reloading
 	 */
 	on(name: "GameEnded", callback: () => void): EventEmitter
-	/**
-	 * Emitted about ALL entities that have may be in "Staging" and Is NOT Valid flag (NPC and childs, PhysicalItems and etc.)
-	 *
-	 * Also, this event emitted about ALL entities that have already been created before reloading scripts
-	 *
-	 * Emitted ONLY after LocalPlayer created
-	 *
-	 * CAREFUL !Use this if you know what you are doing!
-	 */
-	on(name: "EntityPreCreated", callback: (ent: Entity, index: number) => void): EventEmitter
 	/**
 	 * Emitted about ALL entities that have Valid flag. This callback is best suited for use.
 	 *
@@ -296,9 +434,9 @@ interface EventsSDK extends EventEmitter {
 	on(name: "Tick", callback: () => void): EventEmitter
 	on(name: "Update", callback: (cmd: UserCmd) => void): EventEmitter
 	on(name: "UnitStateChanged", callback: (npc: Unit) => void): EventEmitter
-	on(name: "TeamVisibilityChanged", callback: (npc: Unit, isVisibleForEnemies: boolean, isVisibleForTeamMask: number) => void): EventEmitter
-	on(name: "TrueSightedChanged", callback: (npc: Unit, isTrueSighted: boolean) => void): EventEmitter
-	on(name: "HasScepterChanged", callback: (npc: Unit, hasScepter: boolean) => void): EventEmitter
+	on(name: "TeamVisibilityChanged", callback: (npc: Unit) => void): EventEmitter
+	on(name: "TrueSightedChanged", callback: (npc: Unit) => void): EventEmitter
+	on(name: "HasScepterChanged", callback: (npc: Unit) => void): EventEmitter
 	on(name: "Draw", callback: () => void): EventEmitter
 	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity | number) => void): EventEmitter
 	on(name: "ParticleUpdated", callback: (id: number, controlPoint: number, position: Vector3) => void): EventEmitter
@@ -363,4 +501,8 @@ interface EventsSDK extends EventEmitter {
 	on(name: "NetworkPositionChanged", listener: (ent: Entity, m_vecOrigin: Vector3) => void): EventEmitter
 	on(name: "GameSceneNodeChanged", listener: (ent: Entity, m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_flAbsScale: number) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
+	on(name: "LifeStateChanged", listener: (ent: Entity) => void): EventEmitter
+	on(name: "NetworkFieldChanged", listener: (args: NetworkFieldChanged) => void): EventEmitter
+	on(name: "NetworkActivityChanged", listener: (npc: Unit) => void): EventEmitter
+	on(name: "InventoryChanged", listener: (npc: Unit, slot: number) => void): EventEmitter
 }

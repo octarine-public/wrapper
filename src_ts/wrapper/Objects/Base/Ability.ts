@@ -3,18 +3,21 @@ import { HasMask, HasMaskBigInt } from "../../Utils/Utils"
 import AbilityData from "../DataBook/AbilityData"
 import Game from "../GameResources/GameRules"
 import Entity from "./Entity"
+import Modifier from "./Modifier"
 import Unit from "./Unit"
 
 export default class Ability extends Entity {
 	public readonly m_pBaseEntity: C_DOTABaseAbility
 	public AbilityData: AbilityData
-
-	constructor(m_pBaseEntity: C_BaseEntity, Index: number) {
-		super(m_pBaseEntity, Index)
-		let m_pAbilityData = this.m_pBaseEntity.m_pAbilityData
-		if (m_pAbilityData !== undefined)
-			this.AbilityData = new AbilityData(m_pAbilityData)
-	}
+	public Level = 0
+	public Cooldown = 0
+	public CooldownLength = 0
+	public IsInAbilityPhase = false
+	public CastStartTime = 0
+	public ChannelStartTime = 0 
+	public IsToggled = false
+	public LastCastClickTime = 0
+	protected LastCastAttempt: number
 
 	/* ============ BASE  ============ */
 
@@ -36,20 +39,8 @@ export default class Ability extends Entity {
 	get CastPoint(): number {
 		return this.m_pBaseEntity.m_fCastPoint
 	}
-	get CastStartTime(): number {
-		return this.m_pBaseEntity.m_flCastStartTime
-	}
-	get ChannelStartTime(): number {
-		return this.m_pBaseEntity.m_flChannelStartTime
-	}
 	get ChannelTime(): number {
 		return Math.max(Game.RawGameTime - this.ChannelStartTime, 0)
-	}
-	get Cooldown(): number {
-		return this.m_pBaseEntity.m_fCooldown
-	}
-	get CooldownLenght(): number {
-		return this.m_pBaseEntity.m_flCooldownLength
 	}
 	get DamageType(): DAMAGE_TYPES {
 		return this.AbilityData.DamageType
@@ -91,9 +82,6 @@ export default class Ability extends Entity {
 	get IsHidden(): boolean {
 		return this.m_pBaseEntity.m_bHidden
 	}
-	get IsInAbilityPhase(): boolean {
-		return this.m_pBaseEntity.m_bInAbilityPhase
-	}
 	get IsItem(): boolean {
 		return this.AbilityData.IsItem
 	}
@@ -102,15 +90,6 @@ export default class Ability extends Entity {
 	}
 	get IsStolen(): boolean {
 		return this.m_pBaseEntity.m_bStolen
-	}
-	get IsToggled(): boolean {
-		return this.m_pBaseEntity.m_bToggleState
-	}
-	get LastCastClickTime(): number {
-		return this.m_pBaseEntity.m_flLastCastClickTime
-	}
-	get Level(): number {
-		return this.m_pBaseEntity.m_iLevel
 	}
 	get LevelsBetweenUpgrades(): number {
 		return this.AbilityData.LevelsBeetweenUpgrades
@@ -158,24 +137,21 @@ export default class Ability extends Entity {
 
 		switch (this.Name) {
 			case "skywrath_mage_concussive_shot": {
-				let unique = owner.AbilitiesBook.GetAbilityByNativeClass(C_DOTA_Ability_Special_Bonus_Unique_Skywrath_4)
+				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4")
 				if (unique !== undefined && unique.Level > 0)
 					return Number.MAX_SAFE_INTEGER
 
 				break
 			}
 			case "gyrocopter_call_down": {
-				let unique = owner.AbilitiesBook.GetAbilityByNativeClass(C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_3)
+				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_gyrocopter_5")
 				if (unique !== undefined && unique.Level > 0)
 					return Number.MAX_SAFE_INTEGER
 
 				break
 			}
 			case "lion_impale": {
-				let unique = owner.AbilitiesBook.GetAbilityByNativeClass(C_DOTA_Ability_Special_Bonus_Unique_Lion_2)
-				if (unique !== undefined && unique.Level > 0)
-					castrange -= unique.GetSpecialValue("value")
-
+				castrange -= owner.GetTalentValue("special_bonus_unique_lion_2")
 				break
 			}
 			default:
@@ -185,16 +161,38 @@ export default class Ability extends Entity {
 		return castrange + (owner !== undefined ? owner.CastRangeBonus : 0)
 	}
 
+	public GetCastDelay(position: Vector3): number {
+		return ((this.CastPoint + this.Owner.TurnTime(position)) + Game.GetAvgLatency())
+	}
+
+	public GetHitTime(position: Vector3, ActivationDelay?: number): number {
+		if (this.Speed === Number.MAX_VALUE || this.Speed === 0) {
+			return this.GetCastDelay(position) + (ActivationDelay * 1000)
+		}
+
+		var time = this.Owner.Distance2D(position) / this.Speed
+		return this.GetCastDelay(position) + ((time + ActivationDelay) * 1000)
+	}
+
 	GetDamage(target: Unit): number {
 		return target.CalculateDamage((this.AbilityDamage || this.GetSpecialValue("damage")) * 1, this.DamageType, this.Owner)
 	}
-	
+
 	UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
-		return this.Owner.UseSmartAbility(this, target, checkToggled, queue, showEffects)
+		let result = this.Owner.UseSmartAbility(this, target, checkToggled, queue, showEffects)
+		if (!this.CanBeCasted()) {
+			return false
+		}
+		if (result) {
+			this.LastCastAttempt = Game.RawGameTime
+		}
+		return result
 	}
+
 	UpgradeAbility() {
 		return this.Owner.TrainAbility(this)
 	}
+
 	PingAbility() {
 		return this.Owner.PingAbility(this)
 	}
@@ -224,11 +222,17 @@ export default class Ability extends Entity {
 		return HasMask(this.AbilityData.m_pAbilityData.m_iAbilityTargetType, flag)
 	}
 	CanBeCasted(bonusMana: number = 0): boolean {
-		if (!this.IsValid)
+		if (!this.IsReady || !this.IsValid) {
 			return false
+		}
 
-		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled)
+		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled) {
 			return false
+		}
+
+		if ((Game.RawGameTime - this.LastCastAttempt) < 0.1) {
+			return false
+		}
 
 		return this.Level > 0
 			&& !this.Owner.IsSilenced

@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, Entity, Item, LocalPlayer, Unit, TreeTemp, GameSleeper } from "wrapper/Imports"
+import { ArrayExtensions, Creep, Entity, GameSleeper, Item, LocalPlayer, TreeTemp, Unit } from "wrapper/Imports"
 
 import {
 	AutoUseItemsArcane_val, AutoUseItemsBloodHP_val,
@@ -16,15 +16,16 @@ import {
 	AutoUseItemsUrnAliesAlliesHP, AutoUseItemsUrnAliesEnemyHP,
 	AutoUseItemsUrnEnemy, Items,
 	ItemsForUse,
-	State
+	State,
 } from "./Menu"
 
 import ItemManagerBase from "../../abstract/Base"
+import { StateBase } from "../../abstract/MenuBase"
 
 let UnitsControllable: Unit[] = [],
 	AllUnits: Unit[] = [],
 	AllCreeps: Creep[] = [],
-	Trees: TreeTemp[] = [];
+	Trees: TreeTemp[] = []
 
 let Buffs = {
 	NotHeal: [
@@ -41,39 +42,50 @@ let Buffs = {
 }
 
 let Base = new ItemManagerBase,
-	sleeper = new GameSleeper;
+	sleeper = new GameSleeper
 
 export function EntityCreate(Entity: Entity) {
-	if (Entity instanceof Creep && Entity.IsCreep && !Entity.IsAncient){
+	if (Entity instanceof Creep && Entity.IsCreep && !Entity.IsAncient) {
 		AllCreeps.push(Entity)
 	}
-	if (Entity instanceof Unit && !Entity.IsCourier && !Entity.IsCreep && !Entity.IsEnemy()
-		&& (!Entity.IsIllusion || Entity.Name === "npc_dota_hero_arc_warden")){
-			UnitsControllable.push(Entity)
-	}
-	if (Entity instanceof Unit && Entity.IsHero 
-		&& (!Entity.IsIllusion || Entity.Name !== "npc_dota_hero_arc_warden")){
+	if (
+		Entity instanceof Unit
+		&& !Entity.IsCourier
+		&& !Entity.IsCreep
+		&& Entity.IsControllable
+		&& (!Entity.IsIllusion || Entity.Name === "npc_dota_hero_arc_warden")
+	)
+		UnitsControllable.push(Entity)
+	if (
+		Entity instanceof Unit
+		&& Entity.IsHero
+		&& (!Entity.IsIllusion || Entity.Name !== "npc_dota_hero_arc_warden")
+	) {
 		AllUnits.push(Entity)
 	}
-	if (Entity instanceof TreeTemp){
+	if (Entity instanceof TreeTemp) {
 		Trees.push(Entity)
 	}
 }
 
-export function EntityCreateDestroy(Entity: Entity){
+export function EntityCreateDestroy(Entity: Entity) {
 	if (Entity instanceof TreeTemp) {
-		if (Trees !== undefined)
+		if (Trees !== undefined && Trees.length > 0) {
 			ArrayExtensions.arrayRemove(Trees, Entity)
+		}
 	}
-	if (Entity instanceof Creep){
-		if (AllCreeps !== undefined)
+	if (Entity instanceof Creep) {
+		if (AllCreeps !== undefined && AllCreeps.length > 0) {
 			ArrayExtensions.arrayRemove(AllCreeps, Entity)
+		}
 	}
 	if (Entity instanceof Unit) {
-		if (UnitsControllable !== undefined)
+		if (UnitsControllable !== undefined && UnitsControllable.length > 0) {
 			ArrayExtensions.arrayRemove(UnitsControllable, Entity)
-		if (AllUnits !== undefined)	
+		}
+		if (AllUnits !== undefined && AllUnits.length > 0) {
 			ArrayExtensions.arrayRemove(AllUnits, Entity)
+		}
 	}
 }
 
@@ -155,7 +167,7 @@ function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true
 		if (!unit.IsInRange(enemy.NetworkPosition, Item.CastRange))
 			return false
 		if (CheckUnitForUrn(enemy, AutoUseItemsUrnAliesEnemyHP.value) && !enemy.IsIllusion
-			&& !unit.Buffs.some(buff => buff.Name === "modifier_item_urn_heal" || buff.Name === "modifier_item_spirit_vessel_heal")){
+			&& !unit.Buffs.some(buff => buff.Name === "modifier_item_urn_heal" || buff.Name === "modifier_item_spirit_vessel_heal")) {
 			unit.CastTarget(Item, enemy)
 			sleeper.Sleep(350, Item.Name)
 		}
@@ -178,11 +190,11 @@ function AutoUseItems(unit: Unit) {
 						&& unit.Distance2D(enemy.NetworkPosition) !== 0
 						&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsPhase_val.value)
 					: AutoUseItemsPhaseBootsState.value
-				if(AutoUseItemsPhaseBootsState.value && enemy_phase){
+				if(AutoUseItemsPhaseBootsState.value && enemy_phase) {
 					unit.CastNoTarget(Item)
 					sleeper.Sleep(350, Item.Name)
 				}
-				else if (!AutoUseItemsPhaseBootsState.value){
+				else if (!AutoUseItemsPhaseBootsState.value) {
 					unit.CastNoTarget(Item)
 					sleeper.Sleep(350, Item.Name)
 				}
@@ -193,7 +205,7 @@ function AutoUseItems(unit: Unit) {
 				let enemy_mjolnir = AllUnits.some(enemy => enemy.IsVisible && enemy.Team !== unit.Team
 					&& unit.Distance2D(enemy.NetworkPosition) !== 0
 					&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsMjollnir_val.value)
-				if (enemy_mjolnir){
+				if (enemy_mjolnir) {
 					unit.CastTarget(Item, unit)
 					sleeper.Sleep(350, Item.Name)
 				}
@@ -204,7 +216,7 @@ function AutoUseItems(unit: Unit) {
 					return false
 				if (unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal)))
 					return false
-				if (unit.HPPercent < AutoUseItemsSticks_val.value){
+				if (unit.HPPercent < AutoUseItemsSticks_val.value) {
 					unit.CastNoTarget(Item)
 					sleeper.Sleep(350, Item.Name)
 				}
@@ -224,7 +236,7 @@ function AutoUseItems(unit: Unit) {
 					return false
 				if (unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal)))
 					return false
-				if (unit.HPPercent < AutoUseItemsCheese_val.value){
+				if (unit.HPPercent < AutoUseItemsCheese_val.value) {
 					unit.CastNoTarget(Item)
 					sleeper.Sleep(350, Item.Name)
 				}
@@ -232,7 +244,7 @@ function AutoUseItems(unit: Unit) {
 			case "item_arcane_boots":
 				if (!ItemsForUse.IsEnabled(Item.Name))
 					return false
-				if (unit.ManaPercent < AutoUseItemsArcane_val.value){
+				if (unit.ManaPercent < AutoUseItemsArcane_val.value) {
 					unit.CastNoTarget(Item)
 					sleeper.Sleep(350, Item.Name)
 				}
@@ -248,7 +260,7 @@ function AutoUseItems(unit: Unit) {
 						return false
 					if (!unit.Buffs.some(buff => buff.Name === "modifier_item_mekansm_noheal")
 						&& (allies.HPPercent <= AutoUseItemsMG_val.value && allies.IsAlive ||
-						unit.HPPercent <= AutoUseItemsMG_val.value && unit.IsAlive)){
+						unit.HPPercent <= AutoUseItemsMG_val.value && unit.IsAlive)) {
 						unit.CastNoTarget(Item)
 						sleeper.Sleep(350, Item.Name)
 					}
@@ -266,7 +278,7 @@ function AutoUseItems(unit: Unit) {
 						if (allies.Team !== unit.Team)
 							return false
 						if (!allies.IsInvulnerable && !unit.Buffs.some(buff => buff.Name === "modifier_bottle_regeneration")
-							&& (allies.Mana !== allies.MaxMana || allies.HP !== allies.MaxHP)){
+							&& (allies.Mana !== allies.MaxMana || allies.HP !== allies.MaxHP)) {
 							unit.CastTarget(Item, allies)
 							sleeper.Sleep(350, Item.Name)
 						}
@@ -295,7 +307,7 @@ function AutoUseItems(unit: Unit) {
 					if (Creep.length === 0)
 						return false
 					Creep = ArrayExtensions.Sorter(Creep, "MaxHP", true)
-					if (unit.Distance2D(Creep[0].Position) <= Item.CastRange && unit.CanAttack(Creep[0])){
+					if (unit.Distance2D(Creep[0].Position) <= Item.CastRange && unit.CanAttack(Creep[0])) {
 						unit.CastTarget(Item, Creep[0])
 						sleeper.Sleep(350, Item.Name)
 					}
@@ -323,7 +335,7 @@ function AutoUseItems(unit: Unit) {
 					return false
 				if (unit.GetItemByName("item_gem"))
 					return false
-				let IsVisibly = AllUnits.some(enemy => unit.IsInRange(enemy.NetworkPosition, Item.CastRange) 
+				let IsVisibly = AllUnits.some(enemy => unit.IsInRange(enemy.NetworkPosition, Item.CastRange)
 					&& enemy.IsVisible && (enemy.InvisibleLevel > 0 || enemy.IsInvisible)
 					&& enemy.Buffs.some(buff => Buffs.InvisDebuff.some(InvisDebuff => buff.Name === InvisDebuff))
 					&& !AllUnits.some(allies => allies.GetItemByName("item_gem") && allies.Distance2D(enemy.Position) < 800))
@@ -350,12 +362,10 @@ function AutoUseItems(unit: Unit) {
 	return false
 }
 
-
 export function Tick() {
-	if (!State.value || SleepCHeck())
-		return false
-	if (!UnitsControllable.some(unit => unit.IsValid && AutoUseItems(unit)))
-		return false
+	if (!StateBase.value || !State.value || SleepCHeck())
+		return
+	UnitsControllable.some(unit => !unit.IsEnemy() && AutoUseItems(unit))
 }
 
 export function GameEnded() {

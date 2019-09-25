@@ -5,6 +5,34 @@ let allTechiesMines: Array<[Array<[Vector3, number]>, Vector3, string]> = [], //
 	waiting_explode: Array<[number, string]> = [],
 	waiting_spawn: Array<[number, string]> = []
 
+export function EntityDestroyed(ent: Entity) {
+	let mine_name_ = /^npc_dota_(techies_remote_mine|techies_stasis_trap)$/.exec(ent.Name)
+	if (mine_name_ === null)
+		return
+	let mine_name = mine_name_[1]
+	allTechiesMines.some((obj, j) => {
+		if (obj[2] !== mine_name)
+			return false
+		let mines = obj[0]
+		return mines.some(([vec], k) => {
+			if (vec.Distance(ent.NetworkPosition) > 10)
+				return false
+			if (mines.length !== 1) {
+				mines.splice(k, 1)
+				obj[1] = Vector3.GetCenter(mines.map(([vec_]) => vec_))
+			} else
+				allTechiesMines.splice(j, 1)
+			return true
+		})
+	})
+}
+
+export function LifeStateChanged(ent: Entity) {
+	if (ent.IsAlive)
+		return
+	EntityDestroyed(ent)
+}
+
 export function ParticleCreated(id: number, target: Entity, path: string) {
 	if (!State.value)
 		return
@@ -42,20 +70,25 @@ export function ParticleUpdated(id: number, control_point: number, position: Vec
 		waiting_explode.some(([particle_id, mine_name], i) => {
 			if (particle_id !== id)
 				return false
+			let is_stasis = mine_name === "techies_stasis_trap"
 			allTechiesMines.some((obj, j) => {
 				if (obj[2] !== mine_name)
 					return false
-				let mines = obj[0]
-				return mines.some(([vec], k) => {
-					if (vec.Distance(position) > 10)
+				let mines = obj[0],
+					found = false
+				// loop-optimizer: KEEP
+				mines.some(([vec], k) => {
+					if (vec.Distance(position) > (is_stasis ? 450 : 10))
 						return false
 					if (mines.length !== 1) {
 						mines.splice(k, 1)
 						obj[1] = Vector3.GetCenter(mines.map(([vec_]) => vec_))
 					} else
 						allTechiesMines.splice(j, 1)
-					return true
+					found = true
+					return !is_stasis
 				})
+				return found
 			})
 			waiting_explode.splice(i, 1)
 			return true

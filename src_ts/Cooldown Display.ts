@@ -42,18 +42,13 @@ let ignore_abils = [
 let heroes: Hero[] = []
 
 EventsSDK.on("EntityCreated", npc => {
-	if (!optionEnable.value || !Game.IsInGame)
-		return
-	if (npc instanceof Hero
-		&& !npc.IsIllusion) {
+	if (npc instanceof Hero && !npc.IsIllusion)
 		heroes.push(npc)
-	}
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof Hero) {
+	if (ent instanceof Hero)
 		ArrayExtensions.arrayRemove(heroes, ent)
-	}
 })
 
 function IsCastable(ability: Ability, mana): boolean {
@@ -70,10 +65,7 @@ function DrawAbilityLevels(ability: Ability, x, y) {
 	let level_box_size = Math.floor(optionBoxSize.value * 0.1875)
 
 	x++
-	y = (
-		(y + optionBoxSize.value) -
-		level_box_size
-	) - 1
+	y += optionBoxSize.value - level_box_size - 1
 
 	for (let i = 0; i < level; i++) {
 		let size = new Vector2(level_box_size, level_box_size)
@@ -125,14 +117,14 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x, y, index) {
 
 	RendererSDK.OutlinedRect(new Vector2(real_x, y), box_size, outlineColor)
 
-	let cooldown_lenght = ability.CooldownLenght
+	let cooldown_length = ability.CooldownLength
 	let cooldown = ability.Cooldown
 
-	if (cooldown > 0.0 && cooldown_lenght > 0.0) {
+	if (cooldown > 0.0 && cooldown_length > 0.0) {
 
 		let inner_box_size = optionBoxSize.value - 2
 
-		let cooldown_ratio = cooldown / cooldown_lenght
+		let cooldown_ratio = cooldown / cooldown_length
 		let cooldown_size = Math.floor(inner_box_size * cooldown_ratio)
 
 		RendererSDK.FilledRect(
@@ -175,38 +167,37 @@ function DrawDisplay(hero: Hero) {
 
 	let screen_pos = RendererSDK.WorldToScreen(pos)
 
-	if (screen_pos !== undefined) {
-		// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
-		let abilities = hero.Spells.filter((abil, i) => {
-			let name = abil.Name
-			return i < 6 &&
-				!ignore_abils.some(ignore_name => name === ignore_name) &&
-				!abil.IsHidden
-		})
+	if (screen_pos === undefined)
+		return
+	// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
+	let abilities = hero.Spells.filter((abil, i) => {
+		let name = abil.Name
+		return i < 6 &&
+			!ignore_abils.some(ignore_name => name === ignore_name) &&
+			!abil.IsHidden
+	})
 
-		let start_x = screen_pos.x - Math.floor((abilities.length / 2) * optionBoxSize.value)
-		let start_y = screen_pos.y + optionBoxPixelOffset.value
+	let start_x = screen_pos.x - Math.floor((abilities.length / 2) * optionBoxSize.value)
+	let start_y = screen_pos.y + optionBoxPixelOffset.value
 
-		RendererSDK.FilledRect(
-			new Vector2(start_x + 1, start_y - 1),
-			new Vector2((optionBoxSize.value * abilities.length) + 2, optionBoxSize.value + 2),
-			new Color(0, 0, 0, 160),
-		)
+	RendererSDK.FilledRect(
+		new Vector2(start_x + 1, start_y - 1),
+		new Vector2((optionBoxSize.value * abilities.length) + 2, optionBoxSize.value + 2),
+		new Color(0, 0, 0, 160),
+	)
 
-		abilities.forEach(((ability, i) => {
-			DrawAbilitySquare(hero, ability, start_x, start_y, i)
-		}))
+	abilities.forEach(((ability, i) => {
+		DrawAbilitySquare(hero, ability, start_x, start_y, i)
+	}))
 
-		RendererSDK.OutlinedRect(
-			new Vector2(start_x + 1, start_y - 1),
-			new Vector2(
-				(optionBoxSize.value * abilities.length) + 2,
-				optionBoxSize.value + 2,
-			),
-			new Color(0, 0, 0),
-		)
-
-	}
+	RendererSDK.OutlinedRect(
+		new Vector2(start_x + 1, start_y - 1),
+		new Vector2(
+			(optionBoxSize.value * abilities.length) + 2,
+			optionBoxSize.value + 2,
+		),
+		new Color(0, 0, 0),
+	)
 }
 
 EventsSDK.on("Draw", () => {

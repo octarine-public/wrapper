@@ -7,8 +7,10 @@ let Game = global.Game = new (class Game {
 	public readonly Language = ConVars.GetString("cl_language")
 	public CurrentServerTick = -1
 	public IsInputCaptured = false
-	public IsConnected = false
+	public IsConnected = IsInGame()
 	public UIState = GetUIState()
+	public RawGameTime = 0
+	public IsPaused = false
 
 	public GetLatency(flow: Flow_t = Flow_t.IN) {
 		return GetLatency(flow)
@@ -38,37 +40,30 @@ let Game = global.Game = new (class Game {
 	}
 	public get GameTime(): number {
 		let gameRules = this.m_GameRules
-
 		if (gameRules === undefined)
 			return 0
 
-		const time = gameRules.m_fGameTime
+		const time = this.RawGameTime,
+			transition_time =
+				this.GameState !== DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME
+					? gameRules.m_flGameStartTime + gameRules.m_flGameLoadTime
+					: gameRules.m_flStateTransitionTime
 
-		if (this.GameState !== DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME) {
-
-			const startTime = gameRules.m_flGameStartTime,
-				loadTime = gameRules.m_flGameLoadTime
-
-			return time - startTime + loadTime
-		}
-
-		return time - gameRules.m_flStateTransitionTime
+		return time - transition_time
 	}
 	public get GlyphCooldownDire(): number {
 		let gameRules = this.m_GameRules
-
 		if (gameRules === undefined)
 			return 0
 
-		return Math.max(gameRules.m_fBadGlyphCooldown - gameRules.m_fGameTime, 0)
+		return Math.max(gameRules.m_fBadGlyphCooldown - this.RawGameTime, 0)
 	}
 	public get GlyphCooldownRediant(): number {
 		let gameRules = this.m_GameRules
-
 		if (gameRules === undefined)
 			return 0
 
-		return Math.max(gameRules.m_fGoodGlyphCooldown - gameRules.m_fGameTime, 0)
+		return Math.max(gameRules.m_fGoodGlyphCooldown - this.RawGameTime, 0)
 	}
 	public get IsCustomGame(): boolean {
 		let gameRules = this.m_GameManager
@@ -103,11 +98,6 @@ let Game = global.Game = new (class Game {
 		return gameRules.m_bIsNightstalkerNight || gameRules.m_bIsTemporaryNight
 			|| (this.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS && (this.GameTime / 60) / 5 % 2 === 1)
 	}
-	public get IsPaused(): boolean {
-		let gameRules = this.m_GameRules
-
-		return gameRules && gameRules.m_bGamePaused
-	}
 	// IsWatchingGame
 	public get LevelName(): string {
 		return GetLevelName()
@@ -131,11 +121,11 @@ let Game = global.Game = new (class Game {
 
 		return gameRules !== undefined ? gameRules.m_NeutralSpawnBoxes : []
 	}
-	// Ping
-	public get RawGameTime(): number {
-		let gameRules = this.m_GameRules
-
-		return gameRules !== undefined ? gameRules.m_fGameTime : 0
+	public get Ping() {
+		return (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT)) * 1000
+	}
+	public get AvgPing() {
+		return (GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000
 	}
 	public get StockInfo(): StockInfo[] {
 		let stockInfo = this.m_StockInfo
