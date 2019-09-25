@@ -40,7 +40,7 @@ export function Draw() {
 		if (!Base.ConShot.IsReady
 			|| (Enemy === undefined && Shot !== undefined)
 			|| (CurShot !== Enemy && Shot !== undefined)) {
-			if (Shot !== undefined && !Enemy.IsAlive) {
+			if (Shot !== undefined) {
 				ParticlesSDK.Destroy(Shot, true)
 			}
 			Shot = undefined

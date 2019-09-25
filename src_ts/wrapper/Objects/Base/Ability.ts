@@ -3,7 +3,6 @@ import { HasMask, HasMaskBigInt } from "../../Utils/Utils"
 import AbilityData from "../DataBook/AbilityData"
 import Game from "../GameResources/GameRules"
 import Entity from "./Entity"
-import Modifier from "./Modifier"
 import Unit from "./Unit"
 
 export default class Ability extends Entity {
@@ -136,6 +135,11 @@ export default class Ability extends Entity {
 			castrange = this.m_pBaseEntity.m_fCastRange
 
 		switch (this.Name) {
+			case "item_tango":
+			case "item_tango_single": {
+				castrange = this.GetSpecialValue("cast_range_ward")
+				break
+			}
 			case "skywrath_mage_concussive_shot": {
 				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4")
 				if (unique !== undefined && unique.Level > 0)

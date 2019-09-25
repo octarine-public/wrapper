@@ -48,10 +48,7 @@ export function Tick() {
 		&& StateItems.IsEnabled(item.Name)
 		&& item.IsReady
 		&& item.CanBeCasted(),
-	).some(item => ward_list.filter(ent => ent.IsEnemy() && ent.IsAlive && ent.IsVisible && ent.IsInRange(Me,
-		item.GetSpecialValue("cast_range_ward") === undefined
-			? item.CastRange
-			: item.GetSpecialValue("cast_range_ward"))).some(ent => {
+	).some(item => ward_list.filter(ent => ent.IsEnemy() && ent.IsAlive && ent.IsVisible && ent.IsInRange(Me, item.CastRange)).some(ent => {
 		if (ent.Name === "npc_dota_techies_remote_mine" && (item.Name === "item_tango" || item.Name === "item_tango_single"))
 			return false
 		Me.CastTarget(item, ent)
