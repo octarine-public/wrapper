@@ -294,14 +294,6 @@ EventsSDK.on("NetworkFieldChanged", args => {
 				if (entity instanceof Unit)
 					entity.IsControllableByPlayerMask = args.Value
 				break
-			case "m_iAttackCapabilities":
-				if (entity instanceof Unit)
-					entity.AttackCapabilities = args.Value
-				break
-			case "m_iMoveCapabilities":
-				if (entity instanceof Unit)
-					entity.MoveCapabilities = args.Value
-				break
 			case "m_iHealth":
 				entity.HP = args.Value
 				break

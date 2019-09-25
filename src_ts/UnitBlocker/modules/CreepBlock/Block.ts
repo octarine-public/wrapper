@@ -87,7 +87,6 @@ export function Update() {
 	switch (StateUnits.selected_id) {
 		case 0: { // local
 			let localHero = LocalPlayer.Hero
-
 			if (localHero === undefined || !baseCheckUnit(localHero))
 				return
 

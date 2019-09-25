@@ -4,7 +4,6 @@ import { allNPCs } from "../base/Listeners"
 
 export let baseCheckUnit = (ent: Unit) =>
 	ent.IsAlive
-	&& !ent.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_NO_ATTACK)
 	&& !ent.HasNoCollision
 	&& ent.HasMoveCapability(DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_GROUND)
 

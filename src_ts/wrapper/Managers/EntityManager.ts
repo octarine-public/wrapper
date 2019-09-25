@@ -281,8 +281,6 @@ function changeFieldsByEvents(ent: Entity) {
 		ent.RotationDifference = ent.m_pBaseEntity.m_anglediff
 		ent.ManaRegen = ent.m_pBaseEntity.m_flManaThinkRegen
 		ent.HPRegen = ent.m_pBaseEntity.m_flHealthThinkRegen
-		ent.MoveCapabilities = ent.m_pBaseEntity.m_iMoveCapabilities
-		ent.AttackCapabilities = ent.m_pBaseEntity.m_iAttackCapabilities
 		ent.IsControllableByPlayerMask = ent.m_pBaseEntity.m_iIsControllableByPlayer64
 		ent.IsVisibleForTeamMask = ent.m_pBaseEntity.m_iTaggedAsVisibleByTeam
 		ent.IsVisibleForEnemies = Unit.IsVisibleForEnemies(ent, ent.IsVisibleForTeamMask)

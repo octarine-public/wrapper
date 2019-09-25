@@ -49,8 +49,6 @@ export default class Unit extends Entity {
 	public IsTrueSightedForEnemies = false
 	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
 	public IsControllableByPlayerMask = 0n
-	public AttackCapabilities = DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_NO_ATTACK
-	public MoveCapabilities = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
 	public HPRegen = 0
 	public ManaRegen = 0
 	public RotationDifference = 0
@@ -299,6 +297,12 @@ export default class Unit extends Entity {
 	}
 	public get IsIllusion(): boolean {
 		return this.m_pBaseEntity.m_bIsIllusion
+	}
+	get MoveCapabilities() {
+		return this.m_pBaseEntity.m_iMoveCapabilities
+	}
+	get AttackCapabilities() {
+		return this.m_pBaseEntity.m_iAttackCapabilities
 	}
 	public get IsMelee(): boolean {
 		return this.AttackCapabilities === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK
