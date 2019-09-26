@@ -202,6 +202,9 @@ export default class Ability extends Entity {
 	}
 
 	GetSpecialValue(special_name: string, level: number = this.Level): number {
+		if (this.IsItem)
+			level -= 1
+		level = Math.max(level, 0)
 		let cache = this.AbilityData.SpecialValueCache[special_name]
 		if (cache === undefined) {
 			cache = this.AbilityData.SpecialValueCache[special_name] = []

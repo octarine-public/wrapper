@@ -125,7 +125,6 @@ const tree = Menu.AddEntry(["Utility", "Bait leave"]),
 		npc_dota_hero_obsidian_destroyer:	"Outworld Devourer",
 		npc_dota_hero_lycan:	"Lycan",
 	}
-tree.AddButton("Real abandon").OnValue(() => global.abandon()),
 
 button.OnValue(() => {
 	let PlayerID = playersList.selected_id,

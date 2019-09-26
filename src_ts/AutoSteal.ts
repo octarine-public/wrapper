@@ -506,10 +506,10 @@ function OnTick(): void {
 			if (damage < Utils.GetHealthAfter(ent, abil.CastPoint))
 				return false
 
-			let ping = GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)
+			let ping = Game.Ping / 1000
 			if ((blinkFlag = !(flag = !needBlink))) { // tslint:disable-line:no-conditional-assignment
 				MyEnt.CastPosition(blink, ent.NetworkPosition.Extend(MyEnt.NetworkPosition, range - 100), false)
-				setTimeout(() => blinkFlag = false,(blink.CastPoint + ping) * 1000)
+				setTimeout(() => blinkFlag = false, (blink.CastPoint + ping) * 1000)
 			} else {
 				sleeper.Sleep(((abilData.abilDelayF ? abilData.abilDelayF(abil, MyEnt, ent) + abil.CastPoint : 0) + ping) * 1000, ent)
 				if (abilData.abilCastF)
