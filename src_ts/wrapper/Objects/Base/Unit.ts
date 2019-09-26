@@ -885,25 +885,18 @@ export default class Unit extends Entity {
 		return damage * mult
 	}
 
-	public CanAttack(target?: Unit): boolean {
-		if (!this.IsAlive || this.IsInvulnerable || this.IsDormant || !this.IsSpawned || this.IsAttackImmune)
-			return false
-
-		if (target === undefined || !target.IsAlive || target.IsInvulnerable || target.IsDormant || !target.IsSpawned || target.IsAttackImmune)
-			return false
-
-		if (target.Team === LocalPlayer.Team) {
-			if (target.IsCreep)
-				return target.HPPercent < 0.5
-
-			if (target.IsHero)
-				return target.IsDeniable && target.HPPercent < 0.25
-
-			if (target.IsBuilding)
-				return target.HPPercent < 0.1
-		}
-
-		return true
+	public CanAttack(target: Unit): boolean {
+		return (
+			this.IsAlive
+			&& this.IsVisible
+			&& this.IsSpawned
+			&& target.IsAlive
+			&& !target.IsInvulnerable 
+			&& !target.IsDormant
+			&& target.IsSpawned
+			&& !target.IsAttackImmune
+			&& (this.IsEnemy(target) || target.IsDeniable)
+		)
 	}
 
 	/* ================================ ORDERS ================================ */
