@@ -233,23 +233,24 @@ export function InitCombo() {
 		}
 		var distance = Owner.Distance2D(target, true),
 			blinkReady = Items.Blink !== undefined
-			&& СomboItems.IsEnabled(Items.Blink.Name)
-			&& !Sleep.Sleeping(`${target.Index + Items.Blink.Index}`)
-			&& Items.Blink.CanBeCasted()
+				&& СomboItems.IsEnabled(Items.Blink.Name)
+				&& !Sleep.Sleeping(`${target.Index + Items.Blink.Index}`)
+				&& Items.Blink.CanBeCasted()
 
 		if (cancelAdditionally) {
-			if (distance <= (blinkReady ? Items.ItemCastRange(Items.Blink, "blink_range") : 250)) {
-				let IsPositionAbility = Owner.GetTalentValue("special_bonus_unique_legion_commander_5") !== 0
+			if (!blinkReady || distance <= Items.ItemCastRange(Items.Blink, "blink_range")) {
 				// Press The Attack
-				let pressTheAttackReady = Abilities.PressTheAttack !== undefined
+				if (
+					Abilities.PressTheAttack !== undefined
 					&& СomboAbility.IsEnabled(Abilities.PressTheAttack.Name)
 					&& !Sleep.Sleeping(`${target.Index + Abilities.PressTheAttack.Index}`)
 					&& Abilities.PressTheAttack.CanBeCasted()
-
-				if (pressTheAttackReady && !Owner.IsMagicImmune) {
-					IsPositionAbility
-						? Owner.CastPosition(Abilities.PressTheAttack, Owner.Position)
-						: Abilities.PressTheAttack.UseAbility(Owner)
+					&& !Owner.IsMagicImmune
+				) {
+					if (Owner.GetTalentValue("special_bonus_unique_legion_commander_5") !== 0)
+						Owner.CastPosition(Abilities.PressTheAttack, Owner.Position)
+					else
+						Abilities.PressTheAttack.UseAbility(Owner)
 					Sleep.Sleep(Abilities.CastDelay(Abilities.PressTheAttack), `${target.Index + Abilities.PressTheAttack.Index}`)
 					return true
 				}
@@ -314,30 +315,25 @@ export function InitCombo() {
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.BlackKingBar.Index}`)
 					return true
 				}
-				if (pressTheAttackReady || mjollnirReady || armletReady || bladeMailReady || satanicReady || blackKingBarReady) {
-					Sleep.Sleep(250, "Delay")
-					return false
+				if (!blockingAbilities) {
+					if (
+						Abilities.Duel !== undefined
+						&& СomboAbility.IsEnabled(Abilities.Duel.Name)
+						&& (!Sleep.Sleeping(`${target.Index + Abilities.Duel.Index}`) || !Sleep.Sleeping("Delay"))
+						&& Abilities.Duel.CanBeCasted()
+						&& !comboBreaker
+					) {
+						Abilities.Duel.UseAbility(target)
+						Sleep.Sleep(Abilities.CastDelay(Abilities.Duel), `${target.Index + Abilities.Duel.Index}`)
+						return true
+					}
 				}
-			}
-			if (!blockingAbilities) {
-				if (
-					Abilities.Duel !== undefined
-					&& СomboAbility.IsEnabled(Abilities.Duel.Name)
-					&& (!Sleep.Sleeping(`${target.Index + Abilities.Duel.Index}`) || !Sleep.Sleeping("Delay"))
-					&& Abilities.Duel.CanBeCasted()
-					&& Owner.Distance2D(target) < Abilities.Duel.CastRange + 50
-					&& !comboBreaker
-				) {
-					Abilities.Duel.UseAbility(target)
-					Sleep.Sleep(Abilities.CastDelay(Abilities.Duel), `${target.Index + Abilities.Duel.Index}`)
-					return true
+				else {
+					BreakInit()
 				}
-			}
-			else {
-				BreakInit()
 			}
 			// Blink
-			if (blinkReady && distance <= Items.ItemCastRange(Items.Blink, "blink_range") && distance > 150) {
+			if (blinkReady && distance > 150) {
 				let delay = 0
 				if (
 					Abilities.Duel !== undefined
@@ -346,13 +342,6 @@ export function InitCombo() {
 					&& Abilities.Duel.CanBeCasted()
 				)
 					delay += Abilities.Duel.CastPoint
-				if (
-					Abilities.Overwhelming !== undefined
-					&& СomboAbility.IsEnabled(Abilities.Overwhelming.Name)
-					&& !Sleep.Sleeping(`${target.Index + Abilities.Overwhelming.Index}`)
-					&& Abilities.Overwhelming.CanBeCasted()
-				)
-					delay += Abilities.Overwhelming.CastPoint
 				Items.Blink.UseAbility(target.VelocityWaypoint(delay))
 				Sleep.Sleep(Items.Tick, `${target.Index + Items.Blink.Index}`)
 				return true

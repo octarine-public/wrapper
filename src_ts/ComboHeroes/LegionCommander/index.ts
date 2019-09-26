@@ -12,11 +12,9 @@ EventsSDK.on("TrackingProjectileCreated", TrackingProjectileCreated)
 EventsSDK.on("TrackingProjectileDestroyed", LinearProjectileDestroyed)
 
 EventsSDK.on("Tick", () => {
-	if (Base.DeadInSide) {
-		return false
-	}
 	InitMouse()
-	InitCombo()
+	if (!Base.DeadInSide)
+		InitCombo()
 })
 
 import {

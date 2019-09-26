@@ -10,7 +10,7 @@ class LegionHelper {
 	public get DeadInSide(): boolean {
 		return Heroes.length === 0
 			|| Owner === undefined
-			|| !Heroes.some(x => x !== undefined && x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
+			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
 			|| !Owner.IsAlive
 	}
 	public Cancel(target: Hero): boolean {

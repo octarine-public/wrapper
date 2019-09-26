@@ -205,11 +205,11 @@ EventsSDK.on("Draw", () => {
 		return
 	heroes.forEach(hero => {
 		if (hero.IsAlive && !hero.IsDormant) {
-			let is_local = hero === LocalPlayer.Hero
+			let is_local = LocalPlayer !== undefined && hero === LocalPlayer.Hero
 
 			if (
 				(optionSelf.value || !is_local) &&
-				(optionAlly.value || hero.IsEnemy(LocalPlayer.Hero) || is_local)
+				(optionAlly.value || hero.IsEnemy() || is_local)
 			) {
 				DrawDisplay(hero)
 			}
