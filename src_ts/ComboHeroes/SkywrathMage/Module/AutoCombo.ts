@@ -117,11 +117,14 @@ export function AutoCombo() {
 	}
 
 	// Ethereal
-	if (Items.Ethereal !== undefined
+	if (
+		Items.Ethereal !== undefined
+		&& AutoComboItems.IsEnabled(Items.Ethereal.Name)
 		&& !Base.CancelAbilityRealm(target)
 		&& !Sleep.Sleeping(`${target.Index + Items.Ethereal.Index}`)
-		&& AutoComboItems.IsEnabled(Items.Ethereal.Name)
-		&& Items.Ethereal.CanBeCasted() && MyHero.Distance2D(target) <= Items.Ethereal.CastRange) {
+		&& Items.Ethereal.CanBeCasted()
+		&& MyHero.Distance2D(target) <= Items.Ethereal.CastRange
+	) {
 		Items.Ethereal.UseAbility(target)
 		Sleep.Sleep(Items.Tick, `${target.Index + Items.Ethereal.Index}`)
 		return true
@@ -129,15 +132,22 @@ export function AutoCombo() {
 
 	// Dagon
 	if ((Items.EtherealDelay || Items.Ethereal === undefined) || target.IsEthereal) {
-		if (Items.Dagon !== undefined
+		if (
+			Items.Dagon !== undefined
+			&& AutoComboItems.IsEnabled("item_dagon_5")
 			&& !Base.CancelAbilityRealm(target)
 			&& !Sleep.Sleeping(`${target.Index + Items.Dagon.Index}`)
 			&& Items.Dagon.CanBeCasted() && MyHero.Distance2D(target) <= Items.Dagon.CastRange
-			&& (Abilities.AncientSeal === undefined || (target.HasModifier("modifier_skywrath_mage_ancient_seal")
-			&& !Abilities.AncientSeal.CanBeCasted())
-			|| !AutoComboItems.IsEnabled(Abilities.AncientSeal.Name))
-			&& (Items.Ethereal === undefined || (target.IsEthereal && !Items.Ethereal.CanBeCasted())
-			|| !AutoComboItems.IsEnabled(Items.Dagon.Name))
+			&& (
+				Abilities.AncientSeal === undefined
+				|| target.HasModifier("modifier_skywrath_mage_ancient_seal")
+				|| !AutoComboItems.IsEnabled(Abilities.AncientSeal.Name)
+			)
+			&& (
+				Items.Ethereal === undefined
+				|| (target.IsEthereal && !Items.Ethereal.CanBeCasted())
+				|| !AutoComboItems.IsEnabled(Items.Ethereal.Name)
+			)
 		) {
 			Items.Dagon.UseAbility(target)
 			Sleep.Sleep(Items.Tick, `${target.Index + Items.Dagon.Index}`)

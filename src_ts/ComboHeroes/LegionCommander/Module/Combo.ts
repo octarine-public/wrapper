@@ -161,10 +161,16 @@ export function InitCombo() {
 				// Dagon
 				if (
 					Items.Dagon !== undefined
-					&& СomboItems.IsEnabled(Items.Dagon.Name)
+					&& СomboItems.IsEnabled("item_dagon_5")
+					&& !Base.CancelAbilityRealm(target)
 					&& !Sleep.Sleeping(`${target.Index + Items.Dagon.Index}`)
 					&& Items.Dagon.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.Dagon.CastRange
+					&& (
+						Items.Ethereal === undefined
+						|| (target.IsEthereal && !Items.Ethereal.CanBeCasted())
+						|| !СomboItems.IsEnabled(Items.Ethereal.Name)
+					)
 					&& !comboBreaker
 				) {
 					Items.Dagon.UseAbility(target)
