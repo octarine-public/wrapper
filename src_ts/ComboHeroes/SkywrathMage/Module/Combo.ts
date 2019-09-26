@@ -63,7 +63,7 @@ export function InitCombo() {
 			return false
 		}
 
-		var comboBreaker = Base.ComboBreaker(target),
+		var comboBreaker = Base.AeonDisc(target),
 			//stunDebuff = target.Modifiers.FirstOrDefault(x => x.IsStunDebuff),
 			hexDebuff = target.GetBuffByName("modifier_sheepstick_debuff")
 

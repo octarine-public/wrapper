@@ -1,4 +1,4 @@
-import { Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, Player, Unit } from "wrapper/Imports"
+import { Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, Player, Unit, Team } from "wrapper/Imports"
 
 let allyCourier: Courier
 
@@ -14,7 +14,7 @@ let courCtlrMenu = Menu.AddEntry(["Utility", "Courier Controller"]),
 	playersBlockList = courCtlrMenu.AddImageSelector("Players for block", []).SetTooltip(TOOLTIP_NEEDPLAYING)
 
 function IsSpectator(): boolean {
-	return LocalPlayer !== undefined && LocalPlayer.Team === 1
+	return LocalPlayer !== undefined && LocalPlayer.Team === Team.Observer
 }
 
 function UpdateMenu() {
@@ -24,8 +24,34 @@ function UpdateMenu() {
 	playersBlockList.Update()
 }
 
-let CastCourAbility = (num: number) => allyCourier
-	&& allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
+let CastCourAbility = (num: number) => allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
+
+function CourierStateChanged(cour: Courier) {
+	let stateCourEnt = cour.StateHero,
+		stateCourEnum = cour.State
+	if (checkCourSelf(stateCourEnt, stateCourEnum))
+		return
+	switch (stateCourEnum) {
+		case CourierState_t.COURIER_STATE_IDLE:
+		case CourierState_t.COURIER_STATE_AT_BASE:
+		case CourierState_t.COURIER_STATE_RETURNING_TO_BASE:
+			trySelfDeliver()
+			break
+		case CourierState_t.COURIER_STATE_MOVING:
+		case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
+			if (!trySelfDeliver() || IsBlocked(stateCourEnt)) {
+				CastCourAbility(0)
+			}
+			break
+		default:
+			break
+	}
+}
+
+EventsSDK.on("NetworkFieldChanged", args => {
+	if (args.TriggerEnt instanceof Courier && (args.FieldName === "m_nCourierState" || args.FieldName === "m_hCourierStateEntity") && !args.TriggerEnt.IsEnemy())
+		CourierStateChanged(args.TriggerEnt)
+})
 
 EventsSDK.on("Tick", () => {
 	if (IsSpectator())
@@ -49,24 +75,7 @@ EventsSDK.on("Tick", () => {
 			return false
 		})
 	}
-	let stateCourEnt = allyCourier.StateHero,
-		stateCourEnum = allyCourier.State
-	if (checkCourSelf(stateCourEnt, stateCourEnum))
-		return false
-	switch (stateCourEnum) {
-		case CourierState_t.COURIER_STATE_IDLE:
-		case CourierState_t.COURIER_STATE_AT_BASE:
-		case CourierState_t.COURIER_STATE_RETURNING_TO_BASE:
-			trySelfDeliver()
-		break
-		case CourierState_t.COURIER_STATE_MOVING:
-		case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
-			if (IsBlocked(stateCourEnt) && !trySelfDeliver()) {
-				CastCourAbility(0)
-			}
-		break
-		default: break
-	}
+	CourierStateChanged(allyCourier)
 })
 
 function trySelfDeliver() {

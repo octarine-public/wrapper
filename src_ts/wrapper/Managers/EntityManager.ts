@@ -192,9 +192,10 @@ function AddToCache(entity: Entity) {
 	AllEntities.push(entity)
 
 	// console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
+	InitEntityFields(entity)
 	EventsSDK.emit("EntityCreated", false, entity, index)
-	changeFieldsByEvents(entity)
-	if (LocalPlayer !== undefined && LocalPlayer.HeroAssigned && !gameInProgress && Game.m_GameRules !== undefined) {
+	FireEntityEvents(entity)
+	if (LocalPlayer !== undefined && LocalPlayer.Hero === entity && !gameInProgress && Game.m_GameRules !== undefined) {
 		gameInProgress = true
 		EventsSDK.emit("GameStarted", false, entity)
 	}
@@ -268,7 +269,7 @@ function ClassFromNative(ent: C_BaseEntity, index: number) {
 
 /* ================ CHANGE FIELDS ================ */
 
-function changeFieldsByEvents(ent: Entity) {
+function InitEntityFields(ent: Entity) {
 	ent.MaxHP = ent.m_pBaseEntity.m_iMaxHealth
 	ent.HP = ent.m_pBaseEntity.m_iHealth
 	ent.LifeState = ent.m_pBaseEntity.m_lifeState
@@ -276,7 +277,6 @@ function changeFieldsByEvents(ent: Entity) {
 	ent.Owner_ = ent.m_pBaseEntity.m_hOwnerEntity
 	if (ent.Entity !== undefined)
 		ent.Name_ = ent.Entity.m_name || ent.Entity.m_designerName || ""
-	EventsSDK.emit("LifeStateChanged", false, ent)
 	if (ent instanceof Unit) {
 		ent.RotationDifference = ent.m_pBaseEntity.m_anglediff
 		ent.ManaRegen = ent.m_pBaseEntity.m_flManaThinkRegen
@@ -285,8 +285,6 @@ function changeFieldsByEvents(ent: Entity) {
 		ent.IsVisibleForTeamMask = ent.m_pBaseEntity.m_iTaggedAsVisibleByTeam
 		ent.IsVisibleForEnemies = Unit.IsVisibleForEnemies(ent, ent.IsVisibleForTeamMask)
 		ent.NetworkActivity = ent.m_pBaseEntity.m_NetworkActivity
-		EventsSDK.emit("TeamVisibilityChanged", false, ent)
-		EventsSDK.emit("NetworkActivityChanged", false, ent)
 	}
 	if (ent instanceof Ability) {
 		ent.LastCastClickTime = ent.m_pBaseEntity.m_flLastCastClickTime
@@ -300,5 +298,12 @@ function changeFieldsByEvents(ent: Entity) {
 		let m_pAbilityData = ent.m_pBaseEntity.m_pAbilityData
 		if (m_pAbilityData !== undefined)
 			ent.AbilityData = new AbilityData(m_pAbilityData)
+	}
+}
+function FireEntityEvents(ent: Entity) {
+	EventsSDK.emit("LifeStateChanged", false, ent)
+	if (ent instanceof Unit) {
+		EventsSDK.emit("TeamVisibilityChanged", false, ent)
+		EventsSDK.emit("NetworkActivityChanged", false, ent)
 	}
 }

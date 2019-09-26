@@ -7,14 +7,14 @@ export default class LegionCommanderItems extends ItemBase {
 		super(unit)
 	}
 	// tested
-	public get ComboBreaker(): Item {
+	public get AeonDisc(): Item {
 		return this.unit.GetItemByName("item_combo_breaker")
 	}
-	public get EtherealDelay(): number | boolean {
-		return this.ItemProjectileDelay(this.particle_arr[0], this.Ethereal, ProjList)
+	public get EtherealDelay(): number {
+		return this.ProjectileDelay(this.particle_arr[0], this.Ethereal, ProjList, this.RodofAtos)
 	}
-	public get RodofAtosDelay(): number | boolean {
-		return this.ItemProjectileDelay(this.particle_arr[1], this.RodofAtos, ProjList)
+	public get RodofAtosDelay(): number {
+		return this.ProjectileDelay(this.particle_arr[1], this.RodofAtos, ProjList, this.RodofAtos)
 	}
 	private particle_arr: string[] = [
 		"particles/items_fx/ethereal_blade.vpcf",

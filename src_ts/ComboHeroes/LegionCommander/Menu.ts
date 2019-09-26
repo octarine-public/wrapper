@@ -58,7 +58,7 @@ let Combo = Menu.AddNode("Combo"),
 			["item_blink", true],
 		]),
 	),
-	ComboBreakerItem = Combo.AddToggle("Cancel Important Items and Abilities", true)
+	AeonDiscItem = Combo.AddToggle("Cancel Important Items and Abilities", true)
 		.SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities"),
 	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000)
 
@@ -123,7 +123,7 @@ export {
 	ComboKeyItem,
 	СomboAbility,
 	СomboItems,
-	ComboBreakerItem,
+	AeonDiscItem,
 	NearMouse,
 	LinkenBreakerToggler,
 	DrawTargetItem,

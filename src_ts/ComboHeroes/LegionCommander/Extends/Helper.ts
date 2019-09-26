@@ -1,6 +1,6 @@
 import { EntityManager, Game, Hero, Menu, ParticlesSDK } from "wrapper/Imports"
 import { Heroes, Owner } from "../Listeners"
-import { ComboBreakerItem } from "../Menu"
+import { AeonDiscItem } from "../Menu"
 import InitItems from "./Items"
 
 class LegionHelper {
@@ -16,12 +16,12 @@ class LegionHelper {
 	public Cancel(target: Hero): boolean {
 		return !target.ModifiersBook.HasAnyBuffByNames(this.CancelModifiers)
 	}
-	public ComboBreaker(target: Hero, menu: boolean = true): boolean {
-		if (!ComboBreakerItem && menu) {
+	public AeonDisc(target: Hero, menu: boolean = true): boolean {
+		if (!AeonDiscItem.value && menu) {
 			return false
 		}
 		let Items = new InitItems(target)
-		if (Items.ComboBreaker !== undefined && Items.ComboBreaker.Cooldown <= 0) {
+		if (Items.AeonDisc !== undefined && Items.AeonDisc.Cooldown <= 0) {
 			return true
 		}
 		return false
@@ -34,7 +34,7 @@ class LegionHelper {
 	}
 	public IsLinkensProtected(target: Hero): boolean {
 		let Items = new InitItems(target)
-		return Items.Sphere !== undefined ? Items.Sphere.Cooldown <= 0 : target.HasModifier("modifier_item_sphere_target")
+		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown <= 0)
 	}
 	public IsBlockingAbilities(target: Hero, checkReflecting: boolean = false): boolean {
 		if (checkReflecting && target.HasModifier("modifier_item_lotus_orb_active")) {

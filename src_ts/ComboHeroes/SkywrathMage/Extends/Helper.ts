@@ -152,7 +152,7 @@ class BaseHelper {
 		return false
 	}
 
-	public ComboBreaker(target: Hero, menu: boolean = true): boolean {
+	public AeonDisc(target: Hero, menu: boolean = true): boolean {
 		if (!ComboBreak.value && menu) {
 			return false
 		}

@@ -20,8 +20,7 @@ export function InitCombo() {
 		return false
 	}
 	if (!Owner.IsInvisible) {
-
-		let comboBreaker = Base.ComboBreaker(target),
+		let comboBreaker = Base.AeonDisc(target),
 			cancelAdditionally = Base.CancelAdditionally(target),
 			blockingAbilities = Base.IsBlockingAbilities(target)
 
@@ -32,66 +31,73 @@ export function InitCombo() {
 		if (Base.Cancel(target) && cancelAdditionally) {
 			if (!blockingAbilities) {
 				// Abyssal Blade
-				if (Items.Abyssal !== undefined
+				if (
+					Items.Abyssal !== undefined
 					&& СomboItems.IsEnabled(Items.Abyssal.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.Abyssal.Index}`)
 					&& Items.Abyssal.CanBeCasted()
 					&& Owner.Distance2D(target) < Items.Abyssal.CastRange + 60
 					&& !comboBreaker
-					&& (hexDebuff === undefined || !hexDebuff.IsValid || hexDebuff.RemainingTime <= 0.3))
-				{
+					&& (hexDebuff === undefined || hexDebuff.RemainingTime <= 0.3)
+				) {
 					Items.Abyssal.UseAbility(target)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.Abyssal.Index}`)
 					return true
 				}
 
 				// Hex
-				if (Items.Sheeps !== undefined
+				if (
+					Items.Sheeps !== undefined
 					&& СomboItems.IsEnabled(Items.Sheeps.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.Sheeps.Index}`)
 					&& Items.Sheeps.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.Sheeps.CastRange
 					&& !comboBreaker
-					&& (hexDebuff === undefined || !hexDebuff.IsValid || hexDebuff.RemainingTime <= 0.3))
-				{
+					&& (hexDebuff === undefined || hexDebuff.RemainingTime <= 0.3)
+				) {
 					Items.Sheeps.UseAbility(target)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.Abyssal.Index}`)
 					return true
 				}
 
 				// Orchid
-				if (Items.Orchid !== undefined
+				if (
+					Items.Orchid !== undefined
 					&& СomboItems.IsEnabled(Items.Orchid.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.Sheeps.Index}`)
 					&& Items.Orchid.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.Orchid.CastRange
-					&& !comboBreaker) {
+					&& !comboBreaker
+				) {
 					Items.Orchid.UseAbility(target)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.Orchid.Index}`)
 					return true
 				}
 
 				// Bloodthorn
-				if (Items.Bloodthorn !== undefined
+				if (
+					Items.Bloodthorn !== undefined
 					&& СomboItems.IsEnabled(Items.Bloodthorn.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.Bloodthorn.Index}`)
 					&& Items.Bloodthorn.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.Bloodthorn.CastRange
-					&& !comboBreaker) {
+					&& !comboBreaker
+				) {
 					Items.Bloodthorn.UseAbility(target)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.Bloodthorn.Index}`)
 					return true
 				}
 
 				// Nullifier
-				if (Items.Nullifier !== undefined
+				if (
+					Items.Nullifier !== undefined
 					&& СomboItems.IsEnabled(Items.Nullifier.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.Nullifier.Index}`)
 					&& Items.Nullifier.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.Nullifier.CastRange
 					&& !comboBreaker
-					&& (hexDebuff == null || !hexDebuff.IsValid || hexDebuff.RemainingTime <= 0.5))
-				{
+					&& (hexDebuff === undefined || hexDebuff.RemainingTime <= 0.5)
+				) {
 					Items.Nullifier.UseAbility(target)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.Nullifier.Index}`)
 					return true
@@ -99,115 +105,128 @@ export function InitCombo() {
 
 				// RodofAtos
 				let atosDebuff = target.ModifiersBook.Buffs.some(x => x.Name === "modifier_rod_of_atos_debuff" && x.RemainingTime > 0.5)
-				if (Items.RodofAtos !== undefined
+				if (
+					Items.RodofAtos !== undefined
 					&& СomboItems.IsEnabled(Items.RodofAtos.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.RodofAtos.Index}`)
 					&& Items.RodofAtos.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.RodofAtos.CastRange
-					&& !atosDebuff)
-				{
+					&& !atosDebuff
+				) {
 					Items.RodofAtos.UseAbility(target)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.RodofAtos.Index}`)
 					return true
 				}
 
 				// Discord
-				if (Items.Discord !== undefined
+				if (
+					Items.Discord !== undefined
 					&& СomboItems.IsEnabled(Items.Discord.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.Discord.Index}`)
 					&& Items.Discord.CanBeCasted()
-					&& Owner.Distance2D(target) <= Items.Discord.CastRange) {
+					&& Owner.Distance2D(target) <= Items.Discord.CastRange
+				) {
 					Items.Discord.UseAbility(target.Position)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.Discord.Index}`)
 					return true
 				}
 
 				// Ethereal
-				if (Items.Ethereal !== undefined
+				if (
+					Items.Ethereal !== undefined
 					&& СomboItems.IsEnabled(Items.Ethereal.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.Ethereal.Index}`)
 					&& Items.Ethereal.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.Ethereal.CastRange
-					&& !comboBreaker) {
+					&& !comboBreaker
+				) {
 					Items.Ethereal.UseAbility(target)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.Ethereal.Index}`)
 					return true
 				}
 
 				// Shivas
-				if (Items.Shivas !== undefined
+				if (
+					Items.Shivas !== undefined
 					&& СomboItems.IsEnabled(Items.Shivas.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.Shivas.Index}`)
 					&& Items.Shivas.CanBeCasted()
-					&& Owner.Distance2D(target) <= Items.Shivas.CastRange) {
+					&& Owner.Distance2D(target) <= Items.Shivas.CastRange
+				) {
 					Items.Shivas.UseAbility()
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.Shivas.Index}`)
 					return true
 				}
 
-				if ((!Items.EtherealDelay || Items.Ethereal === undefined) || target.IsEthereal) {
-					// Dagon
-					if (Items.Dagon !== undefined
-						&& СomboItems.IsEnabled(Items.Dagon.Name)
-						&& !Sleep.Sleeping(`${target.Index + Items.Dagon.Index}`)
-						&& Items.Dagon.CanBeCasted()
-						&& Owner.Distance2D(target) <= Items.Dagon.CastRange
-						&& !comboBreaker) {
-						Items.Dagon.UseAbility(target)
-						Sleep.Sleep(Items.Tick, `${target.Index + Items.Dagon.Index}`)
-						return true
-					}
+				// Dagon
+				if (
+					Items.Dagon !== undefined
+					&& СomboItems.IsEnabled(Items.Dagon.Name)
+					&& !Sleep.Sleeping(`${target.Index + Items.Dagon.Index}`)
+					&& Items.Dagon.CanBeCasted()
+					&& Owner.Distance2D(target) <= Items.Dagon.CastRange
+					&& !comboBreaker
+				) {
+					Items.Dagon.UseAbility(target)
+					Sleep.Sleep(Items.Tick, `${target.Index + Items.Dagon.Index}`)
+					return true
 				}
 
 				// Urn
-				if (Items.UrnOfShadows !== undefined
+				if (
+					Items.UrnOfShadows !== undefined
 					&& СomboItems.IsEnabled(Items.UrnOfShadows.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.UrnOfShadows.Index}`)
 					&& Items.UrnOfShadows.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.UrnOfShadows.CastRange
 					&& !comboBreaker
 					// TODO UrnOfShadows return modifier Name
-					&& !target.ModifiersBook.Buffs.some(x => x.Name === Items.UrnOfShadows.Name)) {
+					&& !target.ModifiersBook.Buffs.some(x => x.Name === Items.UrnOfShadows.Name)
+				) {
 					Items.UrnOfShadows.UseAbility(target)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.UrnOfShadows.Index}`)
 					return true
 				}
 
 				// Vessel
-				if (Items.SpiritVesel !== undefined
+				if (
+					Items.SpiritVesel !== undefined
 					&& СomboItems.IsEnabled(Items.SpiritVesel.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.SpiritVesel.Index}`)
 					&& Items.SpiritVesel.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.SpiritVesel.CastRange
 					&& !comboBreaker
 					// TODO UrnOfShadows return modifier Name
-					&& !target.ModifiersBook.Buffs.some(x => x.Name === Items.SpiritVesel.Name)) {
+					&& !target.ModifiersBook.Buffs.some(x => x.Name === Items.SpiritVesel.Name)
+				) {
 					Items.SpiritVesel.UseAbility(target)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.SpiritVesel.Index}`)
 					return true
 				}
 				// Solar Crest
-				if (Items.SolarCrest !== undefined
+				if (
+					Items.SolarCrest !== undefined
 					&& СomboItems.IsEnabled(Items.SolarCrest.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.SolarCrest.Index}`)
 					&& Items.SolarCrest.CanBeCasted()
-					&& Owner.Distance2D(target) <= Items.SolarCrest.CastRange) {
+					&& Owner.Distance2D(target) <= Items.SolarCrest.CastRange
+				) {
 					Items.SolarCrest.UseAbility(target)
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.SolarCrest.Index}`)
 					return true
 				}
-				if ((!Items.EtherealDelay || Items.Ethereal === undefined) || target.IsEthereal) {
-					// Overwhelming Odds
-					if (Abilities.Overwhelming !== undefined
-						&& СomboAbility.IsEnabled(Abilities.Overwhelming.Name)
-						&& !Sleep.Sleeping(`${target.Index + Abilities.Overwhelming.Index}`)
-						&& Abilities.Overwhelming.CanBeCasted()
-						&& Owner.Distance2D(target) <= Abilities.Overwhelming.CastRange
-						&& !comboBreaker) {
-						Abilities.Overwhelming.UseAbility(target)
-						Sleep.Sleep(Abilities.CastDelay(Abilities.Overwhelming), `${target.Index + Abilities.Overwhelming.Index}`)
-						return true
-					}
+				// Overwhelming Odds
+				if (
+					Abilities.Overwhelming !== undefined
+					&& СomboAbility.IsEnabled(Abilities.Overwhelming.Name)
+					&& !Sleep.Sleeping(`${target.Index + Abilities.Overwhelming.Index}`)
+					&& Abilities.Overwhelming.CanBeCasted()
+					&& Owner.Distance2D(target) <= Abilities.Overwhelming.CastRange
+					&& !comboBreaker
+				) {
+					Abilities.Overwhelming.UseAbility(target.VelocityWaypoint(Abilities.Overwhelming.CastPoint))
+					Sleep.Sleep(Abilities.CastDelay(Abilities.Overwhelming), `${target.Index + Abilities.Overwhelming.Index}`)
+					return true
 				}
 
 			} // Base.Cancel(target) && cancelAdditionally
@@ -220,7 +239,7 @@ export function InitCombo() {
 
 		if (cancelAdditionally) {
 			if (distance <= (blinkReady ? Items.ItemCastRange(Items.Blink, "blink_range") : 250)) {
-				let IsPositionAbility: boolean = Owner.GetTalentValue("special_bonus_unique_legion_commander_5") !== 0
+				let IsPositionAbility = Owner.GetTalentValue("special_bonus_unique_legion_commander_5") !== 0
 				// Press The Attack
 				let pressTheAttackReady = Abilities.PressTheAttack !== undefined
 					&& СomboAbility.IsEnabled(Abilities.PressTheAttack.Name)
@@ -301,12 +320,14 @@ export function InitCombo() {
 				}
 			}
 			if (!blockingAbilities) {
-				if (Abilities.Duel !== undefined
+				if (
+					Abilities.Duel !== undefined
 					&& СomboAbility.IsEnabled(Abilities.Duel.Name)
 					&& (!Sleep.Sleeping(`${target.Index + Abilities.Duel.Index}`) || !Sleep.Sleeping("Delay"))
 					&& Abilities.Duel.CanBeCasted()
 					&& Owner.Distance2D(target) < Abilities.Duel.CastRange + 50
-					&& !comboBreaker) {
+					&& !comboBreaker
+				) {
 					Abilities.Duel.UseAbility(target)
 					Sleep.Sleep(Abilities.CastDelay(Abilities.Duel), `${target.Index + Abilities.Duel.Index}`)
 					return true
@@ -317,7 +338,22 @@ export function InitCombo() {
 			}
 			// Blink
 			if (blinkReady && distance <= Items.ItemCastRange(Items.Blink, "blink_range") && distance > 150) {
-				Items.Blink.UseAbility(target.Position)
+				let delay = 0
+				if (
+					Abilities.Duel !== undefined
+					&& СomboAbility.IsEnabled(Abilities.Duel.Name)
+					&& (!Sleep.Sleeping(`${target.Index + Abilities.Duel.Index}`) || !Sleep.Sleeping("Delay"))
+					&& Abilities.Duel.CanBeCasted()
+				)
+					delay += Abilities.Duel.CastPoint
+				if (
+					Abilities.Overwhelming !== undefined
+					&& СomboAbility.IsEnabled(Abilities.Overwhelming.Name)
+					&& !Sleep.Sleeping(`${target.Index + Abilities.Overwhelming.Index}`)
+					&& Abilities.Overwhelming.CanBeCasted()
+				)
+					delay += Abilities.Overwhelming.CastPoint
+				Items.Blink.UseAbility(target.VelocityWaypoint(delay))
 				Sleep.Sleep(Items.Tick, `${target.Index + Items.Blink.Index}`)
 				return true
 			}
@@ -328,7 +364,7 @@ export function InitCombo() {
 		&& !Base.CancelAbilityRealm(target))
 	{
 		Owner.AttackTarget(target)
-		Sleep.Sleep(Owner.AttacksPerSecond * 1000, "Attack")
+		Sleep.Sleep(Owner.SecondsPerAttack * 1000, "Attack")
 		return true
 	}
 	return false

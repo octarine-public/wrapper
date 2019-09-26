@@ -16,7 +16,7 @@ export default class Ability extends Entity {
 	public ChannelStartTime = 0 
 	public IsToggled = false
 	public LastCastClickTime = 0
-	protected LastCastAttempt: number
+	public LastCastAttempt = 0
 
 	/* ============ BASE  ============ */
 

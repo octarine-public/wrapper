@@ -28,7 +28,7 @@ export function AutoCombo() {
 	let target = ArrayExtensions.orderBy(Heroes.filter(x => x.IsEnemy() && Base.Active(x) && x.IsStunned
 		&& !x.IsMagicImmune && x.IsAlive || Base.TriggerAutoCombo(x)), x => x.Distance2D(MyHero))[0]
 
-	if (target === undefined || !Base.Cancel(target) || Base.ComboBreaker(target, false) || (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect"))) {
+	if (target === undefined || !Base.Cancel(target) || Base.AeonDisc(target, false) || (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect"))) {
 		return false
 	}
 	if (AutoComboMinHPpercent.value < target.HPPercent && AutoComboMinHPpercent.value !== 0) {
