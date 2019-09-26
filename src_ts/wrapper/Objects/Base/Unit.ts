@@ -331,8 +331,11 @@ export default class Unit extends Entity {
 	public get Level(): number {
 		return this.m_pBaseEntity.m_iCurrentLevel
 	}
-	public get MagicDamageResist(): number {
+	public get BaseMagicDamageResist(): number {
 		return this.m_pBaseEntity.m_flMagicalResistanceValue
+	}
+	public get MagicDamageResist(): number {
+		return this.m_pBaseEntity.m_flMagicalResistanceValueReal
 	}
 	public get Mana(): number {
 		return this.m_pBaseEntity.m_flMana

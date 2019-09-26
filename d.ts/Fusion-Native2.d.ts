@@ -9052,6 +9052,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_fAttacksPerSecond: number
 	readonly m_fIdealSpeed: number
 	readonly m_fAttackRange: number
+	readonly m_flMagicalResistanceValueReal: number
 	
 	m_bIsPhantom: boolean
 	m_iUnitType: number
