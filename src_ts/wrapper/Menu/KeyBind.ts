@@ -277,7 +277,7 @@ export default class KeyBind extends Base {
 
 let IsPressing = new Map<number, boolean>()
 Events.on("WndProc", (msg, wParam) => {
-	if (!(msg === 0x101 || (msg === 0x100 && !Game.IsInputCaptured)))
+	if (!(msg === 0x101 || msg === 0x100))
 		return true
 
 	let key = parseInt(wParam as any),
