@@ -526,59 +526,16 @@ function OnTick(): void {
 }
 
 EventsSDK.on("EntityCreated", (npc: Unit) => {
-	if (LocalPlayer === undefined)
-		return
-	if (
-		npc instanceof Creep
-		|| (
-			npc instanceof Hero && !npc.IsIllusion
-		)
-	)
+	if (npc instanceof Creep || (npc instanceof Hero && !npc.IsIllusion))
 		possibleTargets.push(npc)
 })
 EventsSDK.on("Tick", OnTick)
 
-// let attacks: Array<[number, number, Unit]> = [];
 EventsSDK.on("EntityDestroyed",(unit, unit_id) => {
-	if (!state.value)
-		return
 	if (unit instanceof Unit)
 		ArrayExtensions.arrayRemove(possibleTargets, unit)
-	// attacks = attacks.filter((data, attacker_id) => attacker_id !== unit_id && data!==undefined && data[2] !== unit)
 })
-/*EventsSDK.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => {
-	if (!state.value)
-		return
-	if (activity === 1503 && !npc.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)) {
-		let delay = (1 / npc.AttacksPerSecond) - 0.06
-		attacks[npc.Index] = [
-			Game.GameTime + delay,
-			npc.IsCreep ? Game.GameTime + delay * 2 + 0.06 : Number.MAX_VALUE,
-			FindAttackingUnit(npc),
-		]
-		// console.log(attacks[npc.Index])
-		// console.log(attacks[npc.Index][2])
-	}
-})
-EventsSDK.on("UnitAnimationEnd", npc => {
-	if (!state.value)
-		return
-	let id = npc.Index,
-	found = attacks[id]
-	if (found === undefined)
-		return
-	let [end_time, end_time_2, attack_target] = found
-	if (attack_target === undefined || !npc.IsCreep || npc.IsControllableByAnyPlayer || !attack_target.IsValid || !attack_target.IsAlive || !attack_target.IsVisible) {
-		delete attacks[id]
-		return
-	}
-	let delay = (1 / npc.AttacksPerSecond) + 0.06
-	attacks[id] = [
-		Game.GameTime + delay,
-		Game.GameTime + delay * 2 - 0.06,
-		attack_target,
-	]
-})*/
+
 EventsSDK.on("GameEnded", () => {
 	// attacks = []
 	possibleTargets = []
