@@ -7,8 +7,7 @@ import { BreakInit } from "./LinkenBreaker"
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
-let Sleep = new GameSleeper()
-
+let Sleep = new GameSleeper
 export function InitCombo() {
 	if (!Base.IsRestrictions(State) || !ComboKey.is_pressed)
 		return false
@@ -20,12 +19,15 @@ export function InitCombo() {
 	let ItemsInit = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero),
 		ItemsTarget = new InitItems(target)
-
+		
 	if (ItemsInit.RodofAtosDelay) {
-		Sleep.Sleep(ItemsInit.RodofAtosDelay as number, "RodofAtosDelay")
+		let Delay = Math.min(30, Math.abs(ItemsInit.RodofAtosDelay as number))
+		console.log(Delay)
+		Sleep.Sleep(Delay, "RodofAtosDelay")
 	}
 	if (ItemsInit.EtherealDelay) {
-		Sleep.Sleep(ItemsInit.EtherealDelay as number, "EtherealDelay")
+		let Delay = Math.min(30, Math.abs(ItemsInit.EtherealDelay as number))
+		Sleep.Sleep(Delay, "EtherealDelay")
 	}
 
 	if (ItemsInit.Blink !== undefined
@@ -289,5 +291,7 @@ export function InitCombo() {
 			return true
 		}
 	}
-	return false
+}
+export function ComboDeleteVarsTemp(){
+	Sleep.FullReset()
 }

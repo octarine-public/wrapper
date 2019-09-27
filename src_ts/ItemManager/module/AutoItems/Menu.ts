@@ -3,6 +3,7 @@ const { BaseTree, State } = MenuBase(Menu, "Auto Items")
 State.SetTooltip("Auto use items")
 // loop-optimizer: KEEP
 let Items: string[] = [
+	"item_abyssal_blade",
 	"item_phase_boots",
 	"item_magic_stick",
 	"item_magic_wand",
@@ -64,6 +65,9 @@ let AutoUseItemsUrn = SettingsAutoItems.AddNode("Urn / Vessel"),
 let AutoUseItemsMjollnir = SettingsAutoItems.AddNode("Mjollnir"),
 	AutoUseItemsMjollnir_val = AutoUseItemsMjollnir.AddSlider("Distance from enemy", 600, 150, 2000)
 
+let AutoUseItemsBluker = SettingsAutoItems.AddNode("Bluker"),
+	AutoUseItemsBluker_val = AutoUseItemsBluker.AddSlider("Distance from enemy", 1000, 150, 2000)
+	
 export {
 	MenuBase, Items,
 	State, ItemsForUse,
@@ -82,5 +86,6 @@ export {
 	AutoUseItemsUrnAliesEnemyHP,
 	AutoUseItemsPhase_val,
 	AutoUseItemsPhaseBootsState,
-	AutoUseItemsMjollnir_val
+	AutoUseItemsMjollnir_val,
+	AutoUseItemsBluker_val
 }

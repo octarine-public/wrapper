@@ -8,10 +8,12 @@ export default class SkywrathMageItems extends ItemBase {
 		super(unit)
 	}
 	public get EtherealDelay(): number | boolean {
-		return this.ProjectileDelay(this.particle_arr[0], this.Ethereal, ProjList, this.Dagon)
+		let Delay = this.ProjectileDelay(this.particle_arr[0], this.Ethereal, ProjList, this.Dagon)
+		return Delay !== 0 ? Delay : false
 	}
 	public get RodofAtosDelay(): number | boolean {
-		return this.ProjectileDelay(this.particle_arr[1], this.RodofAtos, ProjList, this.m_Ability.MysticFlare)
+		let Delay = this.ProjectileDelay(this.particle_arr[1], this.RodofAtos, ProjList, this.m_Ability.MysticFlare)
+		return Delay !== 0 ? Delay : false
 	}
 
 	private particle_arr: string[] = [

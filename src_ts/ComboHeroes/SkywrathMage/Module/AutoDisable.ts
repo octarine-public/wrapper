@@ -52,3 +52,6 @@ export function AutoDisable() {
 
 	return false
 }
+export function AutoDisableDeleteVars() {
+	Sleep.FullReset()
+}

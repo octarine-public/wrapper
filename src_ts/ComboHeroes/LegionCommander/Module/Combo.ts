@@ -364,3 +364,7 @@ export function InitCombo() {
 	}
 	return false
 }
+
+export function GameEndedCombo() {
+	Sleep.FullReset()
+}

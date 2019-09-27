@@ -46,3 +46,6 @@ export function AutoUsage() {
 	}
 	return false
 }
+export function AutoModeDeleteVars() {
+	Sleep.FullReset()
+}

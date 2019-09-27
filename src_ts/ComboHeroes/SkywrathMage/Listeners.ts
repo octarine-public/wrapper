@@ -4,6 +4,12 @@ import {
 } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
+import { ComboDeleteVarsTemp } from "./Module/Combo"
+import { AutoComboDeleteVars } from "./Module/AutoCombo"
+import { AutoDisableDeleteVars } from "./Module/AutoDisable"
+import { LinkenBreakerDeleteVars } from "./Module/LinkenBreaker"
+import { AutoModeDeleteVars } from "./Module/SpamMode"
+import { WithoutFailDestroy } from "./Module/WithoutFail"
 
 export let Heroes: Hero[] = []
 export let Creeps: Creep[] = []
@@ -25,7 +31,16 @@ export function InitMouse() {
 
 export function GameEnded() {
 	MyHero = undefined
+	MouseTarget = undefined
 	Heroes = []
+	Creeps = []
+	ProjList = []
+	WithoutFailDestroy()
+	AutoModeDeleteVars()
+	ComboDeleteVarsTemp()
+	AutoComboDeleteVars()
+	AutoDisableDeleteVars()
+	LinkenBreakerDeleteVars()
 }
 
 export function GameStarted(hero: Hero) {

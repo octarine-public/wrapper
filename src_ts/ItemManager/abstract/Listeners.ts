@@ -11,5 +11,5 @@ EventsSDK.on("EntityCreated", (ent, index) => {
 })
 
 EventsSDK.on("EntityDestroyed", (ent, index) => {
-	AutoItems.EntityCreateDestroy(ent)
+	AutoItems.EntityDestroy(ent)
 })

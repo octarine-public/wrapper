@@ -134,3 +134,7 @@ export function BreakInit() {
 		}
 	}
 }
+
+export function DeleteLinkenBreakAllVars(){
+	Sleep.FullReset()
+}

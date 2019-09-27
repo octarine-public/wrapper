@@ -78,15 +78,15 @@ export function AutoCombo() {
 	if (IsValid(Abilities.MysticFlare, target, AutoComboAbility)) {
 		if (Items.RodofAtos === undefined) {
 			Abilities.UseMysticFlare(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
+			Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.MysticFlare.Index}`)
 			return true
 		} else if (Items.RodofAtos !== undefined && Sleep.Sleeping("RodofAtosDelay")) {
 			Abilities.UseMysticFlare(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
+			Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.MysticFlare.Index}`)
 			return true
 		} else if (Items.RodofAtos.Cooldown <= (Items.RodofAtos.CooldownLength - 1) && !Items.RodofAtosDelay) {
 			Abilities.UseMysticFlare(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
+			Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.MysticFlare.Index}`)
 			return true
 		}
 	}
@@ -155,4 +155,7 @@ export function AutoCombo() {
 		}
 	}
 	return false
+}
+export function AutoComboDeleteVars() {
+	Sleep.FullReset()
 }

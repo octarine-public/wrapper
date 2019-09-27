@@ -151,3 +151,6 @@ export function BreakInit() {
 	}
 	return false
 }
+export function LinkenBreakerDeleteVars() {
+	Sleep.FullReset()
+}

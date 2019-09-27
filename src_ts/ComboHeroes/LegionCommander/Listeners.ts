@@ -1,7 +1,9 @@
 import { ArrayExtensions, Creep, Entity, Hero, TrackingProjectile, Utils } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
+import { GameEndedCombo } from "./Module/Combo"
 import { DrawDeleteTempAllVars } from "./Renderer"
+import { DeleteLinkenBreakAllVars } from "./Module/LinkenBreaker"
 
 export let Heroes: Hero[] = []
 export let Creeps: Creep[] = []
@@ -22,8 +24,13 @@ export function InitMouse() {
 
 export function GameEnded() {
 	Owner = undefined
+	MouseTarget = undefined
 	Heroes = []
+	Creeps = []
+	ProjList = []
+	GameEndedCombo()
 	DrawDeleteTempAllVars()
+	DeleteLinkenBreakAllVars()
 }
 
 export function GameStarted(hero: Hero) {

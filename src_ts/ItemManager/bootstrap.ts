@@ -14,7 +14,6 @@ EventsSDK.on("Tick", () => {
 EventsSDK.on("GameStarted", () => {
 	if (LocalPlayer.IsSpectator)
 		return false
-	AutoItems.GameStart()
 })
 EventsSDK.on("GameEnded", () => {
 	if (LocalPlayer.IsSpectator)
