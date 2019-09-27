@@ -19,9 +19,10 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
 				var killThreshold = abil.GetSpecialValue("kill_threshold"),
-					damage = entTo.CalculateDamage(abil.GetSpecialValue("damage"), DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 					hp = Utils.GetHealthAfter(entTo, abil.CastPoint)
-				return hp > killThreshold ? damage * latest_spellamp : killThreshold
+				return hp > killThreshold
+					? entTo.CalculateDamage(abil.GetSpecialValue("damage") * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
+					: killThreshold
 			},
 		},
 		{
@@ -82,8 +83,8 @@ var abils: Array<{
 			abilName: "tinker_laser",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var laserDamage = abil.GetSpecialValue("laser_damage")+entFrom.GetTalentValue("special_bonus_unique_tinker")
-				return entTo.CalculateDamage(laserDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_PURE, entFrom)
+				var laserDamage = abil.GetSpecialValue("laser_damage") + entFrom.GetTalentValue("special_bonus_unique_tinker")
+				return entTo.CalculateDamage(laserDamage, DAMAGE_TYPES.DAMAGE_TYPE_PURE, entFrom)
 			},
 		},
 		{
@@ -309,7 +310,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDelayF: abil => abil.GetSpecialValue("damage_delay"),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("damage" + (entFrom.HasScepter ? "_scepter" : ""))+entFrom.GetTalentValue("special_bonus_unique_lion_3"),
+				var damage = abil.GetSpecialValue("damage" + (entFrom.HasScepter ? "_scepter" : "")) + entFrom.GetTalentValue("special_bonus_unique_lion_3"),
 					buff = entFrom.GetBuffByName("modifier_lion_finger_of_death_kill_counter")
 				if (buff)
 					damage += buff.StackCount * abil.GetSpecialValue("damage_per_kill")

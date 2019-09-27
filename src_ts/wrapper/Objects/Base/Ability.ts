@@ -201,9 +201,7 @@ export default class Ability extends Entity {
 		return this.Owner.PingAbility(this)
 	}
 
-	GetSpecialValue(special_name: string, level: number = this.Level): number {
-		if (this.IsItem)
-			level -= 1
+	GetSpecialValue(special_name: string, level: number = this.Level - 1): number {
 		level = Math.max(level, 0)
 		let cache = this.AbilityData.SpecialValueCache[special_name]
 		if (cache === undefined) {
