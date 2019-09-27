@@ -212,7 +212,7 @@ export function InitCombo() {
 				// Solar Crest
 				if (
 					Items.SolarCrest !== undefined
-					&& СomboItems.IsEnabled(Items.SolarCrest.Name)
+					&& СomboItems.IsEnabled("item_solar_crest")
 					&& !Sleep.Sleeping(`${target.Index + Items.SolarCrest.Index}`)
 					&& Items.SolarCrest.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.SolarCrest.CastRange

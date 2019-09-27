@@ -66,7 +66,7 @@ export class ItemBase extends ItemsHelper {
 		return this.unit.GetItemByName("item_blade_mail")
 	}
 	public get SolarCrest(): Item {
-		return this.unit.GetItemByName("item_solar_crest")
+		return this.unit.GetItemByName("item_solar_crest") || this.unit.GetItemByName("item_medallion_of_courage")
 	}
 	public get Satanic(): Item {
 		return this.unit.GetItemByName("item_satanic")
