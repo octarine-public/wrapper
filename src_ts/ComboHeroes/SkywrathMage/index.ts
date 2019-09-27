@@ -14,12 +14,13 @@ import { OnExecuteOrder } from "./Module/WithoutFail"
 import { Draw } from "./Renderer"
 
 EventsSDK.on("Tick", () => {
-	if(Base.DeadInSide) {
+	InitMouse()
+	if(Base.DeadInSide)
 		return false
-	}
-	InitMouse(),
-	InitCombo(), AutoCombo(),
-	AutoUsage(), AutoDisable()
+	InitCombo()
+	AutoCombo()
+	AutoUsage()
+	AutoDisable()
 })
 
 EventsSDK.on("Draw", Draw)

@@ -36,22 +36,7 @@ export function InitCombo() {
 		&& ItemsInit.Blink.CanBeCasted()) {
 		// blink c+v :roflanpominki:
 		let castRange = ItemsInit.Blink.GetSpecialValue("blink_range") + MyHero.CastRangeBonus
-		let distance = target.NetworkPosition.Subtract(MyHero.NetworkPosition)
-		let disToTarget = MyHero.Distance(target)
-
-		distance.SetZ(0)
-		distance.Normalize()
-
-		if (disToTarget > castRange) {
-			let di = disToTarget - castRange, minus = 0
-			if (di < BlinkRadius.value) {
-				minus = BlinkRadius.value - di
-			}
-			distance.ScaleTo(castRange - 1 - minus)
-		} else {
-			distance.ScaleTo(disToTarget - BlinkRadius.value - 1)
-		}
-		ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Add(distance))
+		ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.NetworkPosition, Math.min(castRange, MyHero.Distance(target) - BlinkRadius.value) - 1))
 		Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Blink.Index}`)
 		return true
 	}

@@ -34,7 +34,7 @@ class LegionHelper {
 	}
 	public IsLinkensProtected(target: Hero): boolean {
 		let Items = new InitItems(target)
-		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown <= 0)
+		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 	public IsBlockingAbilities(target: Hero, checkReflecting: boolean = false): boolean {
 		if (checkReflecting && target.HasModifier("modifier_item_lotus_orb_active")) {

@@ -109,7 +109,7 @@ class BaseHelper {
 
 	public IsLinkensProtected(target: Hero): boolean {
 		let Items = new InitItems(target)
-		return Items.Sphere !== undefined ? Items.Sphere.Cooldown <= 0 : target.HasModifier("modifier_item_sphere_target")
+		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 
 	public BadUlt(target: Hero): boolean {

@@ -31,7 +31,7 @@ export function AutoCombo() {
 	if (target === undefined || !Base.Cancel(target) || Base.AeonDisc(target, false) || (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect"))) {
 		return false
 	}
-	if (AutoComboMinHPpercent.value < target.HPPercent && AutoComboMinHPpercent.value !== 0) {
+	if (target.HPPercent > AutoComboMinHPpercent.value && AutoComboMinHPpercent.value !== 0) {
 		return false
 	}
 	if (Base.IsLinkensProtected(target)) {

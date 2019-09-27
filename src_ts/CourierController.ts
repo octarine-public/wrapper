@@ -49,6 +49,10 @@ function CourierStateChanged(cour: Courier) {
 }
 
 EventsSDK.on("NetworkFieldChanged", args => {
+	if (IsSpectator())
+		return
+	if (allyCourier === undefined || !Game.IsInGame || Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !State.value)
+		return
 	if (args.TriggerEnt instanceof Courier && (args.FieldName === "m_nCourierState" || args.FieldName === "m_hCourierStateEntity") && !args.TriggerEnt.IsEnemy())
 		CourierStateChanged(args.TriggerEnt)
 })
