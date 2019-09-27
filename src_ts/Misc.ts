@@ -55,7 +55,7 @@ function UpdateVisuals() {
 	ConVars.Set("dota_unit_orders_rate", 512)
 }
 
-EventsSDK.on("GameStarted", UpdateVisuals)
+setTimeout(UpdateVisuals, 100)
 
 EventsSDK.on("WndProc", (msg, wParam) => {
 	if (Game.IsInGame && msg === 522 /* WM_MOUSEWHEEL */ && CamMouseState.value) {
