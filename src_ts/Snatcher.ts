@@ -12,6 +12,7 @@ import {
 	Rune,
 	Unit,
 	Vector3,
+	GameSleeper,
 } from "wrapper/Imports"
 
 // import { PickupItem, PickupRune } from "../Orders"
@@ -28,7 +29,8 @@ let allRunes: Rune[] = [],
 	ground_items: PhysicalItem[] = [],
 	npcs: Unit[] = [],
 	picking_up = new Map<Unit, Rune>(),
-	selectedRuneType: ESelectedType = ESelectedType.ALL
+	selectedRuneType: ESelectedType = ESelectedType.ALL,
+	Sleep = new GameSleeper
 const snatcherMenu = Menu.AddEntry(["Utility", "Snatcher"])
 
 const stateMain = snatcherMenu.AddToggle("State")
@@ -95,7 +97,10 @@ function onDeactivateItems() {
 	ground_items = []
 }
 
-EventsSDK.on("GameEnded", () => picking_up.clear())
+EventsSDK.on("GameEnded", () => {
+	Sleep.FullReset()
+	picking_up.clear()
+})
 
 EventsSDK.on("EntityCreated", ent => {
 	if (ent instanceof Rune) {
@@ -188,7 +193,7 @@ function snatchRunes(controllables: Unit[]) {
 }
 
 function snatchRuneByUnit(npc: Unit, rune: Rune) {
-	if (picking_up.has(npc))
+	if (picking_up.has(npc) && Sleep.Sleeping("PickupRune"))
 		return false
 
 	if (!npc.IsStunned && !npc.IsWaitingToSpawn) {
@@ -197,6 +202,7 @@ function snatchRuneByUnit(npc: Unit, rune: Rune) {
 		if (Distance <= takeRadius.value && !(npc.IsInvulnerable && Distance > 100)) {
 			picking_up.set(npc, rune)
 			npc.PickupRune(rune)
+			Sleep.Sleep(30, "PickupRune")
 			return false
 		}
 

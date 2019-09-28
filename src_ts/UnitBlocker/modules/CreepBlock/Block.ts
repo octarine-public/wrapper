@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Creep, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit, Vector3, Game } from "wrapper/Imports"
 
 import { allCreeps, allTowers } from "../../base/Listeners"
 
@@ -51,7 +51,7 @@ Key.OnPressed(() => {
 		ControllablesUnitsDraw.clear()
 
 	if (KeyStyle.selected_id === 1)
-		SendToConsole((turnStateBlock ? "+" : "-") + "dota_camera_center_on_hero")
+		Game.ExecuteCommand((turnStateBlock ? "+" : "-") + "dota_camera_center_on_hero")
 })
 
 Key.OnValue(caller => {
@@ -59,7 +59,7 @@ Key.OnValue(caller => {
 	if (!CenterCamera.value || StateUnits.selected_id !== 0 || KeyStyle.selected_id !== 0)
 		return
 
-	SendToConsole((isPressed ? "+" : "-") + "dota_camera_center_on_hero")
+	Game.ExecuteCommand((isPressed ? "+" : "-") + "dota_camera_center_on_hero")
 
 	if (!isPressed)
 		ControllablesUnitsDraw.clear()

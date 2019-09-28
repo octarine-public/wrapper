@@ -1,4 +1,4 @@
-import { EntityManager, EventsSDK, GameSleeper, Hero, Menu, Player, PlayerResource } from "wrapper/Imports"
+import { EntityManager, EventsSDK, GameSleeper, Hero, Menu, Player, PlayerResource, Game } from "wrapper/Imports"
 
 const tree = Menu.AddEntry(["Utility", "Bait leave"]),
 	autodisconnect = tree.AddToggle("Auto Disconnect"),
@@ -153,5 +153,5 @@ button.OnValue(() => {
 	ChatWheelAbuse(gap + switch_language)
 
 	if (autodisconnect.value)
-		setTimeout(() => SendToConsole("disconnect"), Additionaldelay.value * 1000)
+		setTimeout(() => Game.ExecuteCommand("disconnect"), Additionaldelay.value * 1000)
 })

@@ -18,7 +18,9 @@ let Game = global.Game = new (class Game {
 	public GetAvgLatency(flow: Flow_t = Flow_t.IN) {
 		return GetLatency(flow)
 	}
-
+	public ExecuteCommand(command: string) {
+		return SendToConsole(command)
+	}
 	public get ExpectedPlayers(): number {
 		let gameRules = this.m_GameRules
 

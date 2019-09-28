@@ -25,33 +25,33 @@ let creepsNoSpawn = sv_cheatsMenu.AddToggle("Creeps no spawning")
 
 sv_cheatsMenu.AddKeybind("Refresh")
 	.SetTooltip("dota_hero_refresh")
-	.OnRelease(self => SendToConsole(self.tooltip))
+	.OnRelease(self => Game.ExecuteCommand(self.tooltip))
 
 sv_cheatsMenu.AddButton("Local lvl max")
 	.SetTooltip("dota_hero_level 25")
-	.OnValue(self => SendToConsole(self.tooltip))
+	.OnValue(self => Game.ExecuteCommand(self.tooltip))
 
 sv_cheatsMenu.AddButton("Get Rap God")
 	.SetTooltip("dota_rap_god")
-	.OnValue(self => SendToConsole(self.tooltip))
+	.OnValue(self => Game.ExecuteCommand(self.tooltip))
 
 let addUnitMenu = debuggerMenu.AddNode("add unit")
 
 addUnitMenu.AddKeybind("Add full Sven")
 	.OnRelease(() => {
-		SendToConsole("dota_create_unit npc_dota_hero_sven enemy")
+		Game.ExecuteCommand("dota_create_unit npc_dota_hero_sven enemy")
 
 		setTimeout(() => {
 			for (var i = 6; i--; )
-				SendToConsole("dota_bot_give_item item_heart")
+				Game.ExecuteCommand("dota_bot_give_item item_heart")
 
-			SendToConsole("dota_bot_give_level 25")
+			Game.ExecuteCommand("dota_bot_give_level 25")
 		}, 1000)
 	})
 
 addUnitMenu.AddKeybind("Add creep")
 	.SetTooltip("dota_create_unit npc_dota_creep_badguys_melee enemy")
-	.OnRelease(self => SendToConsole(self.tooltip))
+	.OnRelease(self => Game.ExecuteCommand(self.tooltip))
 
 EventsSDK.on("GameStarted", () => {
 	ConVars.Set("sv_cheats", ConVars.GetInt("sv_cheats") || sv_cheats.value)

@@ -159,7 +159,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 				string = names.join(", ")
 				if (!string)
 					string = "no one, lul"
-				SendToConsole(`say_team ${arMessages[index] + string}`)
+				Game.ExecuteCommand(`say_team ${arMessages[index] + string}`)
 			}
 			setTimeout(() => {
 				ParticlesSDK.Destroy(part, false)
@@ -176,9 +176,9 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			return
 		const part = ParticlesSDK.Create(mod[2], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent)
 		arHeroMods.set(buff, part)
-		console.log(buff.Index)
+		//console.log(buff.Index)
 		if (chatActive.value && arMessages[mod[3]]) {
-			SendToConsole(`say_team ${arMessages[mod[3]] + ent.Name.substring(9)}`)
+			Game.ExecuteCommand(`say_team ${arMessages[mod[3]] + ent.Name.substring(9)}`)
 		}
 
 	}

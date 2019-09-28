@@ -9,21 +9,21 @@ export function ParticleCreate(Handle: BigInt) {
 		if (!State.value)
 			return
 		if (NotificationRoshanStateChat.value && Game.GameTime > 0) {
-			SendToConsole("say_team please check roshan")
+			Game.ExecuteCommand("say_team please check roshan")
 			Timer = 0
 		}
 	}
 	if (Handle === 13891217767486593796n) {
 		if (NotificationRoshanStateChat.value) {
 			if (Timer < Game.GameTime) {
-				SendToConsole("say_team please check roshan")
+				Game.ExecuteCommand("say_team please check roshan")
 				Timer += (Game.GameTime + 10)
 			}
 		}
 	}
 	if (Handle === 14219564939631888289n) {
 		if (NotificationRoshanStateChat.value) {
-			SendToConsole("chatwheel_say 53; chatwheel_say 57;") // > Roshan and time
+			Game.ExecuteCommand("chatwheel_say 53; chatwheel_say 57;") // > Roshan and time
 			Timer = 0
 		}
 		IsAlive.OnValue(x => x.value = false)

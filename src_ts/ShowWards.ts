@@ -90,7 +90,7 @@ function PingEnemyWard(pos: Vector3, hero: Entity) {
 	ParticlesSDK.SetControlPoint(map_ping, 5, new Vector3(10, 0, 0))
 
 	if (optionPlaySound.value) {
-		SendToConsole("playvol sounds/ui/ping_warning 0.2")
+		Game.ExecuteCommand("playvol sounds/ui/ping_warning 0.2")
 	}
 }
 

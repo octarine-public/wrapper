@@ -12,7 +12,7 @@ let AegisExists = false
 function NotifyAegisEnd() {
 	if (AegisExists) {
 		if (optionChatAlert.value)
-			SendToConsole("say_team aegis ended")
+			Game.ExecuteCommand("say_team aegis ended")
 		AegisExists = false
 	}
 }

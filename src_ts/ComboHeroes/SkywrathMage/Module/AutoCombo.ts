@@ -148,7 +148,7 @@ export function AutoCombo() {
 	}
 
 	// Dagon
-	if ((Items.EtherealDelay || Items.Ethereal === undefined) || target.IsEthereal) {
+	if (Items.Ethereal === undefined || target.IsEthereal) {
 		if (
 			Items.Dagon !== undefined
 			&& AutoComboItems.IsEnabled("item_dagon_5")

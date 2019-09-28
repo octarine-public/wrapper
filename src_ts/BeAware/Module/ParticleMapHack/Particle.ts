@@ -385,7 +385,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// smoke
 		if (part[0] === 14221266834388661971n) {
 			Particle.set(id, [part[0], "Smoke", part[2], position, new Color(255, 17, 0)])
-			SendToConsole("playvol ui/ping " + PMH_Smoke_snd.value / 100)
+			Game.ExecuteCommand("playvol ui/ping " + PMH_Smoke_snd.value / 100)
 		}
 		// dust
 		if (part[0] === 2930661440000609946n) {
