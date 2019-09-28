@@ -1,7 +1,7 @@
 import { GameSleeper, Utils } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { MouseTarget, MyHero } from "../Listeners"
-import { Ability, AutoAttackTarget, BladeMailCancelCombo, BlinkRadius, ComboKey, Items, MinHealthToUltItem, State } from "../Menu"
+import { MouseTarget, MyHero, ProjList } from "../Listeners"
+import { Ability, AutoAttackTarget, BladeMailCancelCombo, BlinkRadius, ComboKey, Items, MinHealthToUltItem, State, ConcussiveShotAwait } from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
 
 import InitAbility from "../Extends/Abilities"
@@ -19,17 +19,18 @@ export function InitCombo() {
 	let ItemsInit = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero),
 		ItemsTarget = new InitItems(target)
-		
-	if (ItemsInit.RodofAtosDelay) {
-		let Delay = Math.min(30, Math.abs(ItemsInit.RodofAtosDelay as number))
-		console.log(Delay)
-		Sleep.Sleep(Delay, "RodofAtosDelay")
-	}
-	if (ItemsInit.EtherealDelay) {
-		let Delay = Math.min(30, Math.abs(ItemsInit.EtherealDelay as number))
-		Sleep.Sleep(Delay, "EtherealDelay")
-	}
 
+
+	let RodofAtosDelay = ProjList.find(x => !x.HadHitTargetLoc
+			&& x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
+		EtherealDelay = ProjList.find(x => !x.HadHitTargetLoc 
+			&& x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),
+		ConcussiveShotDelay = ProjList.find(x => !x.HadHitTargetLoc
+			&& x.ParticlePath === "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf")
+			
+	// if (RodofAtosDelay !== undefined)
+	// 	console.log(target.Distance2D(RodofAtosDelay.Position))
+		
 	if (ItemsInit.Blink !== undefined
 		&& Items.IsEnabled(ItemsInit.Blink.Name)
 		&& Base.CancelAbilityRealm(target)
@@ -133,20 +134,30 @@ export function InitCombo() {
 			&& Ability.IsEnabled(Abilities.MysticFlare.Name)
 			&& MinHealthToUltItem.value <= target.HPPercent
 			&& Abilities.MysticFlare.CanBeCasted()
-			&& MyHero.Distance2D(target) <= Abilities.MysticFlare.CastRange
+			&& MyHero.Distance2D(target) <= (Abilities.MysticFlare.CastRange - 100)
 			&& !comboBreaker
-			&& (Base.BadUlt(target) || Base.Active(target)))
-		{
-
-			if (ItemsInit.RodofAtos === undefined) {
+			&& (Base.BadUlt(target) || Base.Active(target))
+		){
+			if (ItemsInit.RodofAtos === undefined 
+				&& ConcussiveShotAwait.value
+				&& Abilities.ConcussiveShot !== undefined 
+				&& (ConcussiveShotDelay !== undefined && target.Distance2D(ConcussiveShotDelay.Position) <= 100
+				|| EtherealDelay !== undefined && target.Distance2D(EtherealDelay.Position) <= 100)
+				|| target.IsEthereal
+			)
+			{
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
 				return true
-			} else if (ItemsInit.RodofAtos !== undefined && Sleep.Sleeping("RodofAtosDelay")) {
+			} else if (ItemsInit.RodofAtos === undefined && !ConcussiveShotAwait.value) {
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
 				return true
-			} else if (ItemsInit.RodofAtos.Cooldown <= (ItemsInit.RodofAtos.CooldownLength - 1) && !ItemsInit.RodofAtosDelay) {
+			} else if (ItemsInit.RodofAtos !== undefined && RodofAtosDelay !== undefined && target.Distance2D(RodofAtosDelay.Position) <= 100) {
+				Abilities.UseMysticFlare(target)
+				Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
+				return true
+			} else if (ItemsInit.RodofAtos !== undefined && (ItemsInit.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined) {
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
 				return true
@@ -213,47 +224,44 @@ export function InitCombo() {
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Shivas.Index}`)
 			return true
 		}
+		// ConcussiveShot
+		if (Abilities.ConcussiveShot !== undefined
+			&& !Abilities.ConcussiveShot.IsInAbilityPhase
+			&& !Sleep.Sleeping(`${target.Index + Abilities.ConcussiveShot.Index}`)
+			&& Ability.IsEnabled(Abilities.ConcussiveShot.Name)
+			//&& Base.ConcussiveShotTarget(target, Abilities.ConcussiveShot.TargetHit)
+			&& Abilities.ConcussiveShot.CanBeCasted()
+			&& MyHero.Distance2D(target) <= Abilities.ConcussiveShot.CastRange) {
+			Abilities.ConcussiveShot.UseAbility(target)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.ConcussiveShot), `${target.Index + Abilities.ConcussiveShot.Index}`)
+			return true
+		}
+		// ArcaneBolt
+		if (Abilities.ArcaneBolt !== undefined
+			&& !Base.CancelAbilityRealm(target)
+			&& !Abilities.ArcaneBolt.IsInAbilityPhase
+			&& !Sleep.Sleeping(`${target.Index + Abilities.ArcaneBolt.Index}`)
+			&& Ability.IsEnabled(Abilities.ArcaneBolt.Name)
+			&& Abilities.ArcaneBolt.CanBeCasted()
+			&& MyHero.Distance2D(target) <= Abilities.ArcaneBolt.CastRange)
+		{
+			Abilities.ArcaneBolt.UseAbility(target)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt), `${target.Index + Abilities.ArcaneBolt.Index}`)
+			return true
+		}
 
-		if ((ItemsInit.EtherealDelay || ItemsInit.Ethereal === undefined) || target.IsEthereal) {
-			// ConcussiveShot
-			if (Abilities.ConcussiveShot !== undefined
-				&& !Abilities.ConcussiveShot.IsInAbilityPhase
-				&& !Sleep.Sleeping(`${target.Index + Abilities.ConcussiveShot.Index}`)
-				&& Ability.IsEnabled(Abilities.ConcussiveShot.Name)
-				//&& Base.ConcussiveShotTarget(target, Abilities.ConcussiveShot.TargetHit)
-				&& Abilities.ConcussiveShot.CanBeCasted()
-				&& MyHero.Distance2D(target) <= Abilities.ConcussiveShot.CastRange) {
-				Abilities.ConcussiveShot.UseAbility(target)
-				Sleep.Sleep(Abilities.CastDelay(Abilities.ConcussiveShot), `${target.Index + Abilities.ConcussiveShot.Index}`)
-				return true
-			}
-			// ArcaneBolt
-			if (Abilities.ArcaneBolt !== undefined
-				&& !Base.CancelAbilityRealm(target)
-				&& !Abilities.ArcaneBolt.IsInAbilityPhase
-				&& !Sleep.Sleeping(`${target.Index + Abilities.ArcaneBolt.Index}`)
-				&& Ability.IsEnabled(Abilities.ArcaneBolt.Name)
-				&& Abilities.ArcaneBolt.CanBeCasted()
-				&& MyHero.Distance2D(target) <= Abilities.ArcaneBolt.CastRange)
-			{
-				Abilities.ArcaneBolt.UseAbility(target)
-				Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt), `${target.Index + Abilities.ArcaneBolt.Index}`)
-				return true
-			}
-
-			// Dagon
-			if (ItemsInit.Dagon !== undefined
-				&& !Base.CancelAbilityRealm(target)
-				&& Items.IsEnabled(ItemsInit.Dagon.Name)
-				&& !Sleep.Sleeping(`${target.Index + ItemsInit.Dagon.Index}`)
-				&& ItemsInit.Dagon.CanBeCasted()
-				&& MyHero.Distance2D(target) <= ItemsInit.Dagon.CastRange
-				&& !comboBreaker)
-			{
-				ItemsInit.Dagon.UseAbility(target)
-				Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Dagon.Index}`)
-				return true
-			}
+		// Dagon
+		if (ItemsInit.Dagon !== undefined
+			&& !Base.CancelAbilityRealm(target)
+			&& Items.IsEnabled(ItemsInit.Dagon.Name)
+			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Dagon.Index}`)
+			&& ItemsInit.Dagon.CanBeCasted()
+			&& MyHero.Distance2D(target) <= ItemsInit.Dagon.CastRange
+			&& !comboBreaker)
+		{
+			ItemsInit.Dagon.UseAbility(target)
+			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Dagon.Index}`)
+			return true
 		}
 
 		// UrnOfShadows
@@ -287,7 +295,7 @@ export function InitCombo() {
 			&& !Sleep.Sleeping("Attack")
 			&& !Base.CancelAbilityRealm(target)) {
 			MyHero.AttackTarget(target)
-			Sleep.Sleep(MyHero.AttacksPerSecond * 1000, "Attack")
+			Sleep.Sleep(MyHero.SecondsPerAttack * 1000, "Attack")
 			return true
 		}
 	}

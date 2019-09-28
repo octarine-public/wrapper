@@ -32,13 +32,13 @@ export function AutoUsage() {
 	if (!SmartArcaneBoltKey.is_pressed && !SmartArcaneAutoBoltState.value)
 		return false
 	let target = MouseTarget,
-		Abilities = new InitAbility(MyHero),
-		ownerHealth = MouseTarget.HPPercent
+		Abilities = new InitAbility(MyHero)
 	if (Abilities.ArcaneBolt !== undefined
+		&& Base.Cancel(target)
 		&& !Base.CancelAbilityRealm(target)
 		&& Abilities.ArcaneBolt.CanBeCasted()
 		&& !Sleep.Sleeping(`${target.Index + Abilities.ArcaneBolt.Index}`)) {
-		if (SmartArcaneOwnerHP.value > ownerHealth || SmartArcaneOwnerHP.value === 0 || SmartArcaneBoltKey.is_pressed) {
+		if (SmartArcaneOwnerHP.value > MouseTarget.HPPercent || SmartArcaneOwnerHP.value === 0 || SmartArcaneBoltKey.is_pressed) {
 			MyHero.CastTarget(Abilities.ArcaneBolt, MouseTarget)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt), `${target.Index + Abilities.ArcaneBolt.Index}`)
 			return true

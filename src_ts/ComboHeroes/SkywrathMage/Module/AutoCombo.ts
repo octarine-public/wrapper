@@ -1,8 +1,8 @@
 import { Base } from "../Extends/Helper"
-import { Heroes, MyHero } from "../Listeners"
+import { Heroes, MyHero, ProjList } from "../Listeners"
 
 import { Ability, ArrayExtensions, Game, Hero, Item, Menu, Sleeper } from "wrapper/Imports"
-import { AutoComboAbility, AutoComboDisableWhen, AutoComboItems, AutoComboMinHPpercent, AutoComboState, BladeMailCancelCombo, ComboKey, SmartConShotRadius, State } from "../Menu"
+import { AutoComboAbility, AutoComboDisableWhen, AutoComboItems, AutoComboMinHPpercent, AutoComboState, BladeMailCancelCombo, ComboKey, SmartConShotRadius, State, ConcussiveShotAwait } from "../Menu"
 
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
@@ -15,7 +15,7 @@ function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelect
 		&& !Base.CancelAbilityRealm(target)
 		&& !Sleep.Sleeping(`${target.Index + Name.Index}`)
 		&& Selectror.IsEnabled(Name.Name)
-		&& MyHero.Distance2D(target) <= Name.CastRange
+		&& MyHero.Distance2D(target) <= (Name.Name === "skywrath_mage_mystic_flare" ? (Name.CastRange - 100) : Name.CastRange)
 }
 
 export function AutoCombo() {
@@ -40,6 +40,13 @@ export function AutoCombo() {
 	}
 	let Items = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero)
+		
+	let RodofAtosDelay = ProjList.find(x => !x.HadHitTargetLoc
+			&& x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
+		EtherealDelay = ProjList.find(x => !x.HadHitTargetLoc
+			&& x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),
+		ConcussiveShotDelay = ProjList.find(x => !x.HadHitTargetLoc
+			&& x.ParticlePath === "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf")
 
 	if (IsValid(Items.Sheeps, target, AutoComboItems)) {
 		Items.Sheeps.UseAbility(target)
@@ -76,17 +83,27 @@ export function AutoCombo() {
 
 	// MysticFlare
 	if (IsValid(Abilities.MysticFlare, target, AutoComboAbility)) {
-		if (Items.RodofAtos === undefined) {
+		if (Items.RodofAtos === undefined
+			&& ConcussiveShotAwait.value
+			&& Abilities.ConcussiveShot !== undefined
+			&& (ConcussiveShotDelay !== undefined && target.Distance2D(ConcussiveShotDelay.Position) <= 100
+				|| EtherealDelay !== undefined && target.Distance2D(EtherealDelay.Position) <= 100)
+			|| target.IsEthereal
+		) {
 			Abilities.UseMysticFlare(target)
-			Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.MysticFlare.Index}`)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
 			return true
-		} else if (Items.RodofAtos !== undefined && Sleep.Sleeping("RodofAtosDelay")) {
+		} else if (Items.RodofAtos === undefined && !ConcussiveShotAwait.value) {
 			Abilities.UseMysticFlare(target)
-			Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.MysticFlare.Index}`)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
 			return true
-		} else if (Items.RodofAtos.Cooldown <= (Items.RodofAtos.CooldownLength - 1) && !Items.RodofAtosDelay) {
+		} else if (Items.RodofAtos !== undefined && RodofAtosDelay !== undefined && target.Distance2D(RodofAtosDelay.Position) <= 100) {
 			Abilities.UseMysticFlare(target)
-			Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.MysticFlare.Index}`)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
+			return true
+		} else if (Items.RodofAtos !== undefined && (Items.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined) {
+			Abilities.UseMysticFlare(target)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
 			return true
 		}
 	}
