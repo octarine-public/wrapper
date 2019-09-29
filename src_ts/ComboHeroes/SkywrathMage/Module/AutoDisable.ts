@@ -9,13 +9,13 @@ import InitItems from "../Extends/Items"
 let Sleep = new Sleeper()
 
 function IsValidDisable(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
-	return Name !== undefined && !Sleep.Sleeping(`${target.Index + Name.Index}`)
+	return Name !== undefined
 		&& Selectror.IsEnabled(Name.Name) && !Name.IsInAbilityPhase
 		&& !Base.CancelAbilityRealm(target)
 		&& Name.CanBeCasted() && MyHero.Distance2D(target) <= Name.CastRange
 }
 export function AutoDisable() {
-	if (!Base.IsRestrictions(State) || !AutoDisableState.value || ComboKey.is_pressed)
+	if (!Base.IsRestrictions(State) || !AutoDisableState.value || ComboKey.is_pressed || Sleep.Sleeping("Delay"))
 		return false
 	let target = Heroes.find(x => x.IsEnemy() && x.IsVisible && x.IsAlive && !x.IsIllusion && x.IsValid && Base.Disable(x) && !x.IsMagicImmune)
 
@@ -28,25 +28,25 @@ export function AutoDisable() {
 
 	if (IsValidDisable(Items.Sheeps, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Items.Sheeps, target)
-		Sleep.Sleep(Items.Tick, `${target.Index + Items.Sheeps.Index}`)
+		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
 	if (IsValidDisable(Items.Orchid, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Items.Orchid, target)
-		Sleep.Sleep(Items.Tick, `${target.Index + Items.Orchid.Index}`)
+		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
 	if (IsValidDisable(Items.Bloodthorn, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Items.Bloodthorn, target)
-		Sleep.Sleep(Items.Tick, `${target.Index + Items.Bloodthorn.Index}`)
+		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
 	if (IsValidDisable(Abilities.AncientSeal, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Abilities.AncientSeal, target)
-		Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.AncientSeal.Index}`)
+		Sleep.Sleep(Abilities.Tick, "Delay")
 		return true
 	}
 

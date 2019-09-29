@@ -10,7 +10,6 @@ import InitItems from "../Extends/Items"
 
 function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
 	return Name !== undefined && Name.CanBeCasted() && !Name.IsInAbilityPhase
-		&& !Sleep.Sleeping(`${target.Index + Name.Index}`)
 		&& Selectror.IsEnabled(Name.Name)
 		&& MyHero.Distance2D(target) <= Name.CastRange
 }
@@ -20,7 +19,7 @@ export function BreakInit() {
 		return false
 	}
 	let target = MouseTarget
-	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune)
+	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune || Sleep.Sleeping("Delay"))
 		return false
 	let Items = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero)
@@ -30,7 +29,7 @@ export function BreakInit() {
 		&& Items.Cyclone.CanBeCasted()) {
 		if (IsValid(Items.Cyclone, target, LinkenBreakAbilityItems)) {
 			Items.Cyclone.UseAbility(target)
-			Sleep.Sleep(Items.Tick, `${target.Index + Items.Cyclone.Index}`)
+			Sleep.Sleep(Items.Tick, "Delay")
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -44,7 +43,7 @@ export function BreakInit() {
 		&& Items.ForceStaff.CanBeCasted()) {
 		if (IsValid(Items.ForceStaff, target, LinkenBreakAbilityItems)) {
 			Items.ForceStaff.UseAbility(target)
-			Sleep.Sleep(Items.Tick, `${target.Index + Items.ForceStaff.Index}`)
+			Sleep.Sleep(Items.Tick, "Delay")
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -58,7 +57,7 @@ export function BreakInit() {
 		&& Items.Orchid.CanBeCasted()) {
 		if (IsValid(Items.Orchid, target, LinkenBreakAbilityItems)) {
 			Items.Orchid.UseAbility(target)
-			Sleep.Sleep(Items.Tick, `${target.Index + Items.Orchid.Index}`)
+			Sleep.Sleep(Items.Tick, "Delay")
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -72,7 +71,7 @@ export function BreakInit() {
 		&& Items.Bloodthorn.CanBeCasted()) {
 		if (IsValid(Items.Bloodthorn, target, LinkenBreakAbilityItems)) {
 			Items.Bloodthorn.UseAbility(target)
-			Sleep.Sleep(Items.Tick, `${target.Index + Items.Bloodthorn.Index}`)
+			Sleep.Sleep(Items.Tick, "Delay")
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -80,47 +79,6 @@ export function BreakInit() {
 		}
 	}
 
-	// Nullifier
-	if (Items.Nullifier !== undefined
-		&& !Base.CancelAbilityRealm(target)
-		&& Items.Nullifier.CanBeCasted()) {
-		if (IsValid(Items.Nullifier, target, LinkenBreakAbilityItems)) {
-			Items.Nullifier.UseAbility(target)
-			Sleep.Sleep(Items.Tick, `${target.Index + Items.Nullifier.Index}`)
-			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
-			return false
-		}
-	}
-
-	// RodofAtos
-	if (Items.RodofAtos !== undefined
-		&& !Base.CancelAbilityRealm(target)
-		&& Items.RodofAtos.CanBeCasted()) {
-		if (IsValid(Items.RodofAtos, target, LinkenBreakAbilityItems)) {
-			Items.RodofAtos.UseAbility(target)
-			Sleep.Sleep(Items.Tick, `${target.Index + Items.RodofAtos.Index}`)
-			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
-			return false
-		}
-	}
-
-	// RodofAtos
-	if (Items.Sheeps !== undefined
-		&& !Base.CancelAbilityRealm(target)
-		&& Items.Sheeps.CanBeCasted()) {
-		if (IsValid(Items.Sheeps, target, LinkenBreakAbilityItems)) {
-			Items.Sheeps.UseAbility(target)
-			Sleep.Sleep(Items.Tick, `${target.Index + Items.Sheeps.Index}`)
-			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
-			return false
-		}
-	}
 
 	// ArcaneBolt
 	if (Abilities.ArcaneBolt !== undefined
@@ -128,7 +86,7 @@ export function BreakInit() {
 		&& Abilities.ArcaneBolt.CanBeCasted()) {
 		if (IsValid(Abilities.ArcaneBolt, target, LinkenBreakAbilityItems)) {
 			Abilities.ArcaneBolt.UseAbility(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt), `${target.Index + Abilities.ArcaneBolt.Index}`)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt), "Delay")
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -142,7 +100,49 @@ export function BreakInit() {
 		&& Abilities.AncientSeal.CanBeCasted()) {
 		if (IsValid(Abilities.AncientSeal, target, LinkenBreakAbilityItems)) {
 			Abilities.AncientSeal.UseAbility(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal), `${target.Index + Abilities.AncientSeal.Index}`)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal), "Delay")
+			return true
+		}
+		else if (LinkenBreakOnlyFromRange.value) {
+			return false
+		}
+	}
+	
+	// Nullifier
+	if (Items.Nullifier !== undefined
+		&& !Base.CancelAbilityRealm(target)
+		&& Items.Nullifier.CanBeCasted()) {
+		if (IsValid(Items.Nullifier, target, LinkenBreakAbilityItems)) {
+			Items.Nullifier.UseAbility(target)
+			Sleep.Sleep(Items.Tick, "Delay")
+			return true
+		}
+		else if (LinkenBreakOnlyFromRange.value) {
+			return false
+		}
+	}
+
+	// RodofAtos
+	if (Items.RodofAtos !== undefined
+		&& !Base.CancelAbilityRealm(target)
+		&& Items.RodofAtos.CanBeCasted()) {
+		if (IsValid(Items.RodofAtos, target, LinkenBreakAbilityItems)) {
+			Items.RodofAtos.UseAbility(target)
+			Sleep.Sleep(Items.Tick, "Delay")
+			return true
+		}
+		else if (LinkenBreakOnlyFromRange.value) {
+			return false
+		}
+	}
+
+	// RodofAtos
+	if (Items.Sheeps !== undefined
+		&& !Base.CancelAbilityRealm(target)
+		&& Items.Sheeps.CanBeCasted()) {
+		if (IsValid(Items.Sheeps, target, LinkenBreakAbilityItems)) {
+			Items.Sheeps.UseAbility(target)
+			Sleep.Sleep(Items.Tick, "Delay")
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {

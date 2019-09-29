@@ -13,13 +13,12 @@ let Sleep = new Sleeper
 function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
 	return Name !== undefined && Name.CanBeCasted() && !Name.IsInAbilityPhase
 		&& !Base.CancelAbilityRealm(target)
-		&& !Sleep.Sleeping(`${target.Index + Name.Index}`)
 		&& Selectror.IsEnabled(Name.Name)
 		&& MyHero.Distance2D(target) <= (Name.Name === "skywrath_mage_mystic_flare" ? (Name.CastRange - 100) : Name.CastRange)
 }
 
 export function AutoCombo() {
-	if (!Base.IsRestrictions(State) || !AutoComboState.value) {
+	if (!Base.IsRestrictions(State) || !AutoComboState.value || Sleep.Sleeping("Delay")) {
 		return false
 	}
 	if (AutoComboDisableWhen.value && ComboKey.is_pressed) {
@@ -50,34 +49,34 @@ export function AutoCombo() {
 
 	if (IsValid(Items.Sheeps, target, AutoComboItems)) {
 		Items.Sheeps.UseAbility(target)
-		Sleep.Sleep(Items.Tick, `${target.Index + Items.Sheeps.Index}`)
+		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
 	// Orchid
 	if (IsValid(Items.Orchid, target, AutoComboItems)) {
 		Items.Orchid.UseAbility(target)
-		Sleep.Sleep(Items.Tick, `${target.Index + Items.Orchid.Index}`)
+		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
 	// Bloodthorn
 	if (IsValid(Items.Bloodthorn, target, AutoComboItems)) {
 		Items.Bloodthorn.UseAbility(target)
-		Sleep.Sleep(Items.Tick, `${target.Index + Items.Bloodthorn.Index}`)
+		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
 	// AncientSeal
 	if (IsValid(Abilities.AncientSeal, target, AutoComboAbility)) {
 		Abilities.AncientSeal.UseAbility(target)
-		Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal), `${target.Index + Abilities.AncientSeal.Index}`)
+		Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal), "Delay")
 		return true
 	}
 	// RodofAtos
 	if (IsValid(Items.RodofAtos, target, AutoComboItems)) {
 		Items.RodofAtos.UseAbility(target)
-		Sleep.Sleep(Items.Tick, `${target.Index + Items.RodofAtos.Index}`)
+		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
@@ -91,45 +90,44 @@ export function AutoCombo() {
 			|| target.IsEthereal
 		) {
 			Abilities.UseMysticFlare(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
 			return true
 		} else if (Items.RodofAtos === undefined && !ConcussiveShotAwait.value) {
 			Abilities.UseMysticFlare(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
 			return true
 		} else if (Items.RodofAtos !== undefined && RodofAtosDelay !== undefined && target.Distance2D(RodofAtosDelay.Position) <= 100) {
 			Abilities.UseMysticFlare(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
 			return true
 		} else if (Items.RodofAtos !== undefined && (Items.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined) {
 			Abilities.UseMysticFlare(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), `${target.Index + Abilities.MysticFlare.Index}`)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
 			return true
 		}
 	}
 
 	// ConcussiveShot
 	if (Abilities.ConcussiveShot !== undefined
-		&& !Sleep.Sleeping(`${target.Index + Abilities.ConcussiveShot.Index}`)
 		&& AutoComboAbility.IsEnabled(Abilities.ConcussiveShot.Name)
 		&& Abilities.ConcussiveShot.CanBeCasted()
 		&& MyHero.Distance2D(target.Position) <= SmartConShotRadius.value + target.HullRadius) {
 		Abilities.ConcussiveShot.UseAbility()
-		Sleep.Sleep(Items.Tick, `${target.Index + Abilities.ConcussiveShot.Index}`)
+		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
 	// ArcaneBolt
 	if (IsValid(Abilities.ArcaneBolt, target, AutoComboAbility)) {
 		Abilities.ArcaneBolt.UseAbility(target)
-		Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt), `${target.Index + Abilities.ArcaneBolt.Index}`)
+		Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt), "Delay")
 		return true
 	}
 
 	// Veil
 	if (IsValid(Items.Discord, target, AutoComboItems)) {
 		Items.Discord.UseAbility(target)
-		Sleep.Sleep(Items.Tick, `${target.Index + Items.Discord.Index}`)
+		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
@@ -138,12 +136,11 @@ export function AutoCombo() {
 		Items.Ethereal !== undefined
 		&& AutoComboItems.IsEnabled(Items.Ethereal.Name)
 		&& !Base.CancelAbilityRealm(target)
-		&& !Sleep.Sleeping(`${target.Index + Items.Ethereal.Index}`)
 		&& Items.Ethereal.CanBeCasted()
 		&& MyHero.Distance2D(target) <= Items.Ethereal.CastRange
 	) {
 		Items.Ethereal.UseAbility(target)
-		Sleep.Sleep(Items.Tick, `${target.Index + Items.Ethereal.Index}`)
+		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
@@ -153,7 +150,6 @@ export function AutoCombo() {
 			Items.Dagon !== undefined
 			&& AutoComboItems.IsEnabled("item_dagon_5")
 			&& !Base.CancelAbilityRealm(target)
-			&& !Sleep.Sleeping(`${target.Index + Items.Dagon.Index}`)
 			&& Items.Dagon.CanBeCasted() && MyHero.Distance2D(target) <= Items.Dagon.CastRange
 			&& (
 				Abilities.AncientSeal === undefined
@@ -167,7 +163,7 @@ export function AutoCombo() {
 			)
 		) {
 			Items.Dagon.UseAbility(target)
-			Sleep.Sleep(Items.Tick, `${target.Index + Items.Dagon.Index}`)
+			Sleep.Sleep(Items.Tick, "Delay")
 			return true
 		}
 	}
