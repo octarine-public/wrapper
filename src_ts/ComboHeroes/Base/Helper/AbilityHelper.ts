@@ -1,8 +1,8 @@
-import { Ability, Hero } from "wrapper/Imports"
+import { Ability, Hero, Game } from "wrapper/Imports"
 export class AbilityHelper {
 	public readonly unit: Hero
 	public get Tick() {
-		return GetLatency(Flow_t.IN) + 1000 / 30 * 1.5
+		return ((Game.Ping / 2) + 30)
 	}
 	constructor(unit: Hero) {
 		this.unit = unit
