@@ -45,7 +45,7 @@ let Buffs = {
 
 let Base = new ItemManagerBase,
 	Sleep = new GameSleeper,
-	DelayCast = 1000 / 30 * 1.5
+	DelayCast = GetLatency(Flow_t.IN) + 1000 / 30 * 1.5
 
 function IsValidUnit(unit: Unit) {
 	let IgnoreBuffs = unit.Buffs.some(buff => buff.Name === "modifier_smoke_of_deceit")
