@@ -209,10 +209,23 @@ export function InitCombo() {
 					Sleep.Sleep(Items.Tick, `${target.Index + Items.SpiritVesel.Index}`)
 					return true
 				}
+				// Medallion
+				if (
+					Items.Medallion !== undefined
+					&& СomboItems.IsEnabled(Items.Medallion.Name)
+					&& !Sleep.Sleeping(`${target.Index + Items.Medallion.Index}`)
+					&& Items.Medallion.CanBeCasted()
+					&& Owner.Distance2D(target) <= Items.Medallion.CastRange
+				) {
+					Items.Medallion.UseAbility(target)
+					Sleep.Sleep(Items.Tick, `${target.Index + Items.Medallion.Index}`)
+					return true
+				}
+				
 				// Solar Crest
 				if (
 					Items.SolarCrest !== undefined
-					&& СomboItems.IsEnabled("item_solar_crest")
+					&& СomboItems.IsEnabled(Items.SolarCrest.Name)
 					&& !Sleep.Sleeping(`${target.Index + Items.SolarCrest.Index}`)
 					&& Items.SolarCrest.CanBeCasted()
 					&& Owner.Distance2D(target) <= Items.SolarCrest.CastRange
