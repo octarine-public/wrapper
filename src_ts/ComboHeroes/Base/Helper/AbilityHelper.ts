@@ -1,7 +1,7 @@
-import { Ability, Game, Hero } from "wrapper/Imports"
+import { Ability, Hero } from "wrapper/Imports"
 export class AbilityHelper {
 	public readonly unit: Hero
-	public readonly Tick: number = ((Game.Ping / 2) + 30)// 30 tick
+	public readonly Tick = 1000 / 30 * 1.5
 	constructor(unit: Hero) {
 		this.unit = unit
 	}

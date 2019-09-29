@@ -15,8 +15,6 @@ export default class Ability extends Entity {
 	public CastStartTime = 0
 	public ChannelStartTime = 0 
 	public IsToggled = false
-	public LastCastClickTime = 0
-	public LastCastAttempt = 0
 
 	/* ============ BASE  ============ */
 
@@ -183,14 +181,7 @@ export default class Ability extends Entity {
 	}
 
 	UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
-		let result = this.Owner.UseSmartAbility(this, target, checkToggled, queue, showEffects)
-		if (!this.CanBeCasted()) {
-			return false
-		}
-		if (result) {
-			this.LastCastAttempt = Game.RawGameTime
-		}
-		return result
+		this.Owner.UseSmartAbility(this, target, checkToggled, queue, showEffects)
 	}
 
 	UpgradeAbility() {
@@ -202,7 +193,8 @@ export default class Ability extends Entity {
 	}
 
 	GetSpecialValue(special_name: string, level: number = this.Level - 1): number {
-		level = Math.max(level, 0)
+		if (level < 0)
+			return 0
 		let cache = this.AbilityData.SpecialValueCache[special_name]
 		if (cache === undefined) {
 			cache = this.AbilityData.SpecialValueCache[special_name] = []

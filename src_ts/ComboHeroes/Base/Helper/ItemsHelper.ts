@@ -1,7 +1,7 @@
-import { Entity, Game, Hero, Item, TrackingProjectile, Ability } from "wrapper/Imports"
+import { Entity, Hero, Item, TrackingProjectile, Ability } from "wrapper/Imports"
 import { AbilityHelper } from "./AbilityHelper"
 export class ItemsHelper extends AbilityHelper {
-	public readonly Tick: number = ((Game.Ping / 2) + 30) // 30 tick
+	public readonly Tick = 1000 / 30 * 1.5
 	constructor(unit: Hero) {
 		super(unit)
 	}
