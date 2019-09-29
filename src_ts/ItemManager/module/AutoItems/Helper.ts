@@ -44,8 +44,11 @@ let Buffs = {
 }
 
 let Base = new ItemManagerBase,
-	Sleep = new GameSleeper,
-	DelayCast = GetLatency(Flow_t.IN) + 1000 / 30 * 1.5
+	Sleep = new GameSleeper
+
+function GetDelayCast() {
+	return GetLatency(Flow_t.IN) + 1000 / 30 * 1.5
+}
 
 function IsValidUnit(unit: Unit) {
 	let IgnoreBuffs = unit.Buffs.some(buff => buff.Name === "modifier_smoke_of_deceit")
@@ -64,7 +67,8 @@ function AutoUseItems(unit: Unit) {
 	if (!IsValidUnit(unit)) {
 		return false
 	}
-	let Items = new InitItems(unit)
+	let Items = new InitItems(unit),
+		DelayCast = GetDelayCast()
 	
 	if (IsValidItem(Items.PhaseBoots)) {
 		if (unit.IsMoving || unit.IdealSpeed >= Base.MaxMoveSpeed) {
@@ -296,12 +300,12 @@ function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
 				if (AutoUseItemsMidas_range.value) {
 					if (!Creep.IsMelee) {
 						Item.UseAbility(Creep)
-						Sleep.Sleep(DelayCast, Item.Name)
+						Sleep.Sleep(GetDelayCast(), Item.Name)
 						return true
 					}
 				} else {
 					Item.UseAbility(Creep)
-					Sleep.Sleep(DelayCast, Item.Name)
+					Sleep.Sleep(GetDelayCast(), Item.Name)
 					return true
 				}
 				return false
@@ -316,12 +320,11 @@ function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true
 	AllUnits.map(enemy => {
 		let target = IsEnemy ? enemy : unit
 		if (unit.IsInRange(target.NetworkPosition, Item.CastRange)) {
-			console.log(unit.HP + " <= " + AutoUseItemsUrnAliesEnemyHP.value)
 			if (CheckUnitForUrn(target, IsEnemy ? AutoUseItemsUrnAliesEnemyHP.value : AutoUseItemsUrnAliesAlliesHP.value) && !enemy.IsIllusion
 				&& !target.ModifiersBook.GetAnyBuffByNames(["modifier_item_urn_heal", "modifier_item_spirit_vessel_heal"])
 			) {
 				unit.CastTarget(Item, target)
-				Sleep.Sleep(DelayCast, "Delay")
+				Sleep.Sleep(GetDelayCast(), "Delay")
 				return true
 			}
 		}

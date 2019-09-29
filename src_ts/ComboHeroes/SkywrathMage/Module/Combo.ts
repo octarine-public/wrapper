@@ -98,7 +98,6 @@ export function InitCombo() {
 		// AncientSeal
 		if (Abilities.AncientSeal !== undefined
 			&& !Base.CancelAbilityRealm(target)
-			&& !Abilities.AncientSeal.IsInAbilityPhase
 			&& Ability.IsEnabled(Abilities.AncientSeal.Name)
 			&& Abilities.AncientSeal.CanBeCasted()
 			&& MyHero.Distance2D(target) <= Abilities.AncientSeal.CastRange
@@ -123,7 +122,6 @@ export function InitCombo() {
 
 		// MysticFlare
 		if (Abilities.MysticFlare !== undefined
-			&& !Abilities.MysticFlare.IsInAbilityPhase
 			&& Ability.IsEnabled(Abilities.MysticFlare.Name)
 			&& MinHealthToUltItem.value <= target.HPPercent
 			&& Abilities.MysticFlare.CanBeCasted()
@@ -216,7 +214,6 @@ export function InitCombo() {
 		}
 		// ConcussiveShot
 		if (Abilities.ConcussiveShot !== undefined
-			&& !Abilities.ConcussiveShot.IsInAbilityPhase
 			&& Ability.IsEnabled(Abilities.ConcussiveShot.Name)
 			//&& Base.ConcussiveShotTarget(target, Abilities.ConcussiveShot.TargetHit)
 			&& Abilities.ConcussiveShot.CanBeCasted()
@@ -228,7 +225,6 @@ export function InitCombo() {
 		// ArcaneBolt
 		if (Abilities.ArcaneBolt !== undefined
 			&& !Base.CancelAbilityRealm(target)
-			&& !Abilities.ArcaneBolt.IsInAbilityPhase
 			&& Ability.IsEnabled(Abilities.ArcaneBolt.Name)
 			&& Abilities.ArcaneBolt.CanBeCasted()
 			&& MyHero.Distance2D(target) <= Abilities.ArcaneBolt.CastRange)
