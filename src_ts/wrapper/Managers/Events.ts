@@ -260,6 +260,8 @@ Events.on("NetworkFieldsChanged", map => {
 	})
 })
 EventsSDK.on("NetworkFieldChanged", args => {
+	//if (args.FieldName !== "m_fGameTime" && args.FieldName !== "m_fCooldown" && args.FieldName !== "m_flStartSequenceCycle")
+	//console.log(args.TriggerEnt.Name, args.FieldName, args.ArrayIndex)
 	let entity = args.TriggerEnt
 	if (args.ArrayIndex === -1)
 		switch (args.FieldName) {

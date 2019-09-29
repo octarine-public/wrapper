@@ -66,7 +66,7 @@ Key.OnValue(caller => {
 })
 
 export function GameStarted() {
-	DrawParticles()
+	setTimeout(DrawParticles, 150)
 }
 
 export function GameEnded() {

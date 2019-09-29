@@ -11,7 +11,7 @@ let lock = false,
 	arModifiers: Map<Modifier, number> = new Map(),
 	myHero: Hero
 EventsSDK.on("BuffAdded", (npc, buff) => {
-	if (active.value && buff.Name === "modifier_bashed" && buff.Ability.Owner === myHero) {
+	if (active.value && buff.Name === "modifier_bashed" && buff.Ability !== undefined && buff.Ability.Owner === myHero) {
 		arModifiers.set(buff, buff.DieTime)
 		checkAbyss()
 	}

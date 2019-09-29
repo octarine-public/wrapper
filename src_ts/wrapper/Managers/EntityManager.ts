@@ -124,10 +124,6 @@ Events.on("EntityCreated", (ent, index) => {
 			Game.m_GameRules = ent.m_pGameRules
 			Game.RawGameTime = Game.m_GameRules.m_fGameTime
 			Game.IsPaused = Game.m_GameRules.m_bGamePaused
-			if (LocalPlayer !== undefined && LocalPlayer.HeroAssigned && !gameInProgress) {
-				gameInProgress = true
-				EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
-			}
 		}
 
 		if (ent instanceof C_DOTAGameManagerProxy)
@@ -176,7 +172,6 @@ setInterval(() => {
 	})
 }, 5)
 
-let gameInProgress = false
 function AddToCache(entity: Entity) {
 	const index = entity.Index
 	EntitiesIDs.set(index, entity)
@@ -195,11 +190,9 @@ function AddToCache(entity: Entity) {
 	InitEntityFields(entity)
 	EventsSDK.emit("EntityCreated", false, entity, index)
 	FireEntityEvents(entity)
-	if (LocalPlayer !== undefined && LocalPlayer.Hero === entity && !gameInProgress && Game.m_GameRules !== undefined) {
-		gameInProgress = true
-		EventsSDK.emit("GameStarted", false, entity)
-	}
 }
+
+let gameInProgress = false
 setInterval(() => {
 	let old_val = Game.IsConnected
 	Game.IsConnected = IsInGame()
@@ -210,8 +203,11 @@ setInterval(() => {
 	if (gameInProgress && !Game.IsConnected) {
 		gameInProgress = false
 		EventsSDK.emit("GameEnded", false)
+	} else if (!gameInProgress && Game.IsInGame && LocalPlayer !== undefined && LocalPlayer.HeroAssigned) {
+		gameInProgress = true
+		EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
 	}
-}, 1000 / 30)
+}, 20)
 
 function DeleteFromCache(entNative: C_BaseEntity, index: number) {
 	{
