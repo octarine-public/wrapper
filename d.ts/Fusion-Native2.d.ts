@@ -451,6 +451,8 @@ declare function setTimeout(func: (self: TimeoutData) => void, time: number): Ti
  */
 declare function setInterval(func: (self: TimeoutData) => void, time: number): TimeoutData
 declare function ChatWheelAbuse(str: string): void
+declare function HTTPRequest(...paths: string[]): Array<[/* status */ number, /* body */ string]>
+declare function StopFindingMatch(): void
 
 /// AUTOMATICALLY GENERATED
 

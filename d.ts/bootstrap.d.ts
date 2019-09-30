@@ -183,5 +183,6 @@ declare interface Events extends EventEmitter {
 		map: Map<C_BaseEntity, Map<any, Array<[string, string, number]>>> // 1st key: entity, 2nd: trigger, values: [field_name, field_type, array_index]
 	) => void): EventEmitter
 	on(name: "SetEntityName", listener: (ent: C_BaseEntity, new_name: string) => void): EventEmitter
+	on(name: "SharedObjectChanged", listener: (id: number, reason: number, uuid: bigint, obj: any) => void): EventEmitter
 }
 declare var Events: Events
