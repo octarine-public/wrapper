@@ -139,8 +139,4 @@ Events.on("TeamVisibilityChanged", (npc, newTagged) => npc.m_iTaggedAsVisibleByT
 /* Events.on("NetworkFieldChanged", (obj, name) => {
 	if (obj === GameRules && name === "m_fGameTime")
 		Events.emit("Tick", false)
-	else if (obj instanceof C_DOTA_BaseNPC && name === "m_iszUnitName" && !NPCs.includes(obj) && obj.m_iszUnitName !== undefined) {
-		Events.emit("NPCCreated", false, obj)
-		NPCs.push(obj)
-	}
 }) */

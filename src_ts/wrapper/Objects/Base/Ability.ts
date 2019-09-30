@@ -13,7 +13,8 @@ export default class Ability extends Entity {
 	public CooldownLength = 0
 	public IsInAbilityPhase = false
 	public CastStartTime = 0
-	public ChannelStartTime = 0 
+	public ChannelStartTime = 0
+	public LastCastClickTime = 0
 	public IsToggled = false
 
 	/* ============ BASE  ============ */
@@ -219,15 +220,7 @@ export default class Ability extends Entity {
 		return HasMask(this.AbilityData.m_pAbilityData.m_iAbilityTargetType, flag)
 	}
 	CanBeCasted(bonusMana: number = 0): boolean {
-		if (!this.IsReady || !this.IsValid) {
-			return false
-		}
-
-		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled) {
-			return false
-		}
-
-		if ((Game.RawGameTime - this.LastCastAttempt) < 0.1) {
+		if (!this.IsValid || !this.IsReady) {
 			return false
 		}
 
