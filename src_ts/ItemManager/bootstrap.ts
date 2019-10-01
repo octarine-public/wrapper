@@ -15,6 +15,7 @@ EventsSDK.on("GameStarted", () => {
 	if (LocalPlayer.IsSpectator)
 		return false
 })
+
 EventsSDK.on("GameEnded", () => {
 	if (LocalPlayer.IsSpectator)
 		return false

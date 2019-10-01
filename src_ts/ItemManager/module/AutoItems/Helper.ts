@@ -1,5 +1,5 @@
 import InitItems from "../../abstract/Items"
-import { ArrayExtensions, Creep, Entity, GameSleeper, Item, LocalPlayer, TreeTemp, Unit, Game, Ability } from "wrapper/Imports"
+import { ArrayExtensions, Creep, Entity, GameSleeper, Item, LocalPlayer, TreeTemp, Unit, Game, Ability, Vector3, Hero } from "wrapper/Imports"
 
 import {
 	AutoUseItemsArcane_val, AutoUseItemsBloodHP_val,
@@ -27,7 +27,8 @@ import { StateBase } from "../../abstract/MenuBase"
 let Units: Unit[] = [],
 	AllUnits: Unit[] = [],
 	AllCreeps: Creep[] = [],
-	Trees: TreeTemp[] = []
+	Trees: TreeTemp[] = [],
+	Particle: Array<[number, Vector3?]> = [] // TODO Radius for ability
 
 let Buffs = {
 	NotHeal: [
@@ -49,8 +50,39 @@ let Base = new ItemManagerBase,
 function GetDelayCast() {
 	return (((Game.Ping / 2) + 30) + 380)
 }
+export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
+	if (handle === 1954660700683781942n) {
+		Particle.push([id])
+	}
+}
+
+export function ParticleCreateUpdate(id: number, controlPoint: number, position: Vector3) {
+	let part = Particle.find(x => x[0] === id)
+	if (part !== undefined)
+		Particle.push([id, position])
+}
+
 function SleepCHeck() {
-	return Sleep.Sleeping("item_abyssal_blade") || Sleep.Sleeping("item_phase_boots") || Sleep.Sleeping("item_faerie_fire") || Sleep.Sleeping("item_magic_stick") || Sleep.Sleeping("item_magic_wand") || Sleep.Sleeping("item_hand_of_midas") || Sleep.Sleeping("item_arcane_boots") || Sleep.Sleeping("item_mekansm") || Sleep.Sleeping("item_guardian_greaves") || Sleep.Sleeping("item_bottle") || Sleep.Sleeping("item_urn_of_shadows") || Sleep.Sleeping("item_spirit_vessel") || Sleep.Sleeping("item_bloodstone") || Sleep.Sleeping("item_tango") || Sleep.Sleeping("item_tango_single") || Sleep.Sleeping("item_faerie_fire") || Sleep.Sleeping("item_dust") || Sleep.Sleeping("item_buckler") || Sleep.Sleeping("item_cheese") || Sleep.Sleeping("item_mjollnir");
+	return Sleep.Sleeping("item_abyssal_blade") || 
+	Sleep.Sleeping("item_phase_boots") 			|| 
+	Sleep.Sleeping("item_faerie_fire") 			|| 
+	Sleep.Sleeping("item_magic_stick") 			|| 
+	Sleep.Sleeping("item_magic_wand") 			|| 
+	Sleep.Sleeping("item_hand_of_midas") 		|| 
+	Sleep.Sleeping("item_arcane_boots") 		|| 
+	Sleep.Sleeping("item_mekansm") 				|| 
+	Sleep.Sleeping("item_guardian_greaves") 	|| 
+	Sleep.Sleeping("item_bottle") 				|| 
+	Sleep.Sleeping("item_urn_of_shadows") 		|| 
+	Sleep.Sleeping("item_spirit_vessel") 		|| 
+	Sleep.Sleeping("item_bloodstone") 			|| 
+	Sleep.Sleeping("item_tango") 				|| 
+	Sleep.Sleeping("item_tango_single") 		|| 
+	Sleep.Sleeping("item_faerie_fire") 			|| 
+	Sleep.Sleeping("item_dust") 				|| 
+	Sleep.Sleeping("item_buckler") 				|| 
+	Sleep.Sleeping("item_cheese") 				|| 
+	Sleep.Sleeping("item_mjollnir");
 }
 
 function IsValidUnit(unit: Unit) {
@@ -66,7 +98,7 @@ function IsValidItem(Items: Item) {
 		&& Items.CanBeCasted()
 }
 
-function AutoUseItems(unit: Unit) {	
+function AutoUseItems(unit: Unit) {
 	if (!IsValidUnit(unit)) {
 		return false
 	}
@@ -242,16 +274,27 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.Dust)) {
-		if (!Items.Gem) {
-			let IsVisibly = AllUnits.some(enemy => unit.IsEnemy(enemy)
-				&& enemy.IsAlive
-				&& unit.IsInRange(enemy.NetworkPosition, Items.Dust.CastRange)
-				&& !enemy.ModifiersBook.HasAnyBuffByNames(Buffs.InvisDebuff)
-				&& (enemy.IsInvisible || enemy.InvisibleLevel > 0
-					|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy"))
-				&& !AllUnits.some(allies => !unit.IsEnemy(enemy) && allies.GetItemByName("item_gem")
+		if (!Items.Gem) {		
+			let glimer_cape = Particle.find(e => {
+				if(e[0] && e[1] !== undefined && unit.Distance2D(e[1]) <= Items.Dust.CastRange)
+					return e[0]
+				return setTimeout(() => Particle = [], 3000)
+			})
+			let IsVisible = AllUnits.some(enemy => unit.IsEnemy(enemy)
+					&& enemy.IsAlive
+					&& unit.IsInRange(enemy.NetworkPosition, Items.Dust.CastRange)
+					&& !enemy.ModifiersBook.HasAnyBuffByNames(Buffs.InvisDebuff)
+					&& 
+					(
+						enemy.IsInvisible 
+						|| enemy.InvisibleLevel > 0 
+						|| glimer_cape !== undefined
+						|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
+					)
+					&& !AllUnits.some(allies => !unit.IsEnemy(enemy) && allies.GetItemByName("item_gem")
 					&& allies.Distance2D(enemy.Position) < 800))
-			if (IsVisibly) {
+		
+			if (IsVisible) {
 				unit.CastNoTarget(Items.Dust)
 				Sleep.Sleep(DelayCast, Items.Dust.Name)
 				return true
@@ -280,7 +323,6 @@ function AutoUseItems(unit: Unit) {
 
 	return false
 }
-
 
 function CheckUnitForUrn(Unit: Unit, MaxHP: number) {
 	return Unit.IsAlive && Unit.HP <= MaxHP && !Unit.IsInvulnerable
