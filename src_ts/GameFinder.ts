@@ -222,6 +222,7 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 			if (score < AvgGameFactor.value)
 				StopFindingMatch()
 		} catch(e) {
+			console.log(e)
 			StopFindingMatch()
 		}
 	}
