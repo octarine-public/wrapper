@@ -86,4 +86,25 @@ export class ItemBase extends ItemsHelper {
 	public get HeavensHalberd(): Item {
 		return this.unit.GetItemByName("item_heavens_halberd")
 	}
+	public get Soulring(): Item {
+		return this.unit.GetItemByName("item_soul_ring")
+	}
+	public get Tpboot(): Item {
+		return this.unit.GetItemByName(/item_travel_boots/)
+	}
+	public get Bottle(): Item {
+		return this.unit.GetItemByName("item_bottle")
+	}
+	public get Greaves(): Item {
+		return this.unit.GetItemByName("item_guardian_greaves")
+	}
+	public get Lens(): Item {
+		return this.unit.GetItemByName("item_aether_lens")
+	}
+	public get Ghost(): Item {
+		return this.unit.GetItemByName("item_ghost")
+	}
+	public get Glimmer(): Item {
+		return this.unit.GetItemByName("item_glimmer_cape")
+	}
 }
