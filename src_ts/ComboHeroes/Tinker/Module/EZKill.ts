@@ -13,7 +13,7 @@ export function AutoSteal(){
 	let ItemsInit = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero),
 		latest_spellamp = (1 + MyHero.SpellAmplification)
-	let en = Heroes.filter(x =>x!==MyHero&&x.IsEnemy&& x.IsVisible && x.IsAlive && !x.IsMagicImmune)
+	let en = Heroes.filter(x =>x!==MyHero&&x.IsEnemy()&& x.IsVisible && x.IsAlive && !x.IsMagicImmune)
 	en.forEach(e => {
 		if (MyHero.Mana >= ManaFactDamage(e)
 		&& (!Base.CanReflectDamage(e) || MyHero.IsMagicImmune)

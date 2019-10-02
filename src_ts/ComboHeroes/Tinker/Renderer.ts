@@ -61,7 +61,7 @@ export function Draw() {
 			RendererSDK.Line(new Vector2(startX+91, startY+height-1),new Vector2(startX+91, startY+6), Color.Black )
 			//RendererSDK.Line(new Vector2(startX+150, startY+height-1),new Vector2(startX+150, startY+6), new Color(48,48,48,255) )
 			//RendererSDK.Line(new Vector2(startX+151, startY+height-1),new Vector2(startX+151, startY+6), Color.Black )
-			let x = Heroes.filter(e=>e!==MyHero&&e.IsEnemy)
+			let x = Heroes.filter(e=>e!==MyHero&&e.Team!==MyHero.Team)
 			x.forEach(hero => {
 					RendererSDK.Image("panorama/images/heroes/icons/"+hero.Name+"_png.vtex_c", new Vector2(startX+3,startY+height+1-21*(x.indexOf(hero)+1)),new Vector2(19, 19), new Color(255, 255, 255, 255))
 					if (Abilities.r !== undefined && Abilities.r.Level>0)
