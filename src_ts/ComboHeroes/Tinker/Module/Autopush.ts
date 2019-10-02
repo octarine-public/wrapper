@@ -1,6 +1,6 @@
-import { Ability, ArrayExtensions, Color, EventsSDK, Game, Hero, Item, Menu, ParticlesSDK, RendererSDK, Utils, Vector2, Vector3, GameSleeper, Creep, Tree, Entity, Team } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Color, EventsSDK, Game, Hero, Item, Menu, ParticlesSDK, RendererSDK, Utils, Vector2, Vector3, GameSleeper, Creep, Tree, Entity, Team, Tower, Building } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { MyHero, Heroes, creeps,trees, savespots, fountain,radiantSpot, radiantCast, direSpot,direCast, MouseTarget, radj } from "../Listeners"
+import { MyHero, Heroes, creeps,trees, savespots, fountain,radiantSpot, radiantCast, direSpot,direCast, MouseTarget, radj, towers } from "../Listeners"
 import { marshKey, comboKey, TinkerPushCreeps, autoMarsh,TinkerPushEnemies,TinkerPushAllies ,TinkerPushSave ,TinkerPushDef  ,TinkerPushJungle , active, spamKey, autoKey, smartRegen } from "../MenuManager"
 import { TinkerStatus } from "./status";
 import InitItems from "../Extends/Items"
@@ -220,15 +220,13 @@ export function Push(){
 		}
 		 function TinkerPortGetCreepCount(target, range:number) {
 			if (!target) return 0
-			return creeps.filter(e=>e.IsAlive&&e.IsEnemy()&&!e.IsWaitingToSpawn&&e.IsInRange(target, range)&&e.HPPercent>55).length
+			return creeps.filter(e=>e.IsAlive&&e.IsEnemy()&&!e.IsWaitingToSpawn&&e.IsInRange(target, range)&&e.HPPercent>35).length
 		}
 		function TinkerPort()
 		{
-			console.log("enter search func: "+Game.RawGameTime)
 			let targetCreep:Creep = undefined
-			let creepCount = 0
+			let targetTower:Building = undefined
 			// loop-optimizer: KEEP
-			creeps.map
 			let blyat = creeps.filter(
 				e=>e.IsAlive
 				&&!e.IsEnemy()																//friendly creeps
@@ -264,10 +262,46 @@ export function Push(){
 						}
 			if (targetCreep !== undefined )
 			{
-				console.log("exit search func, found: "+Game.RawGameTime)
 				return targetCreep.NetworkPosition	
 			}
-			console.log("exit search func,NOT found: "+Game.RawGameTime)
+			else
+			{
+				let blyat = towers.filter(e=>e.IsAlive
+										 && e.Team == MyHero.Team
+										 &&!e.IsInRange(MyHero, 3000)
+										 &&e.HPPercent>7
+										 &&creeps.some(f=>!f.IsEnemy()&&f.IsInRange(e, 1100+600))							//and not alone
+				&&creeps.filter(g=>g.IsAlive
+								&&g.IsEnemy()
+								&&!g.IsWaitingToSpawn
+								&&g.IsInRange(e, 1100+600)
+								&&e.HPPercent>55).length>TinkerPushCreeps.value//and have enemy creeps nearby
+				&&Heroes.filter(eh=>eh.IsAlive&&eh.IsEnemy()&&eh.IsInRange(e, 1100+600)).length<=TinkerPushEnemies.value
+				&&Heroes.filter(fh=>fh.IsAlive&&!fh.IsEnemy()&&fh.IsInRange(e, 1100+600)).length<=TinkerPushAllies.value)
+				let a = ArrayExtensions.orderBy(blyat, e=>TinkerPortGetCreepCount(e,600+1100))[0]
+				if (TinkerPushSave)
+						{
+							if (blink == undefined)
+							{
+								targetTower = a
+							}
+							else
+							{
+								if (TinkerFarmGetSaveSpot(a, a) !== undefined)
+								{
+									targetTower = a
+								}
+							}
+						}
+						else
+						{
+							targetTower = a
+						}
+			}
+			if (targetTower!==undefined)
+			{
+				return targetTower.NetworkPosition
+			}
 			return
 		}
 		function TinkerPush()
@@ -341,7 +375,7 @@ export function Push(){
 			}
 			if (MyHero.HasModifier("modifier_fountain_aura_buff") && amionf())// onfountain: regen
 			{
-				if (smartRegen.value&& MyHero.ManaPercent<80)	
+				if (smartRegen.value&& MyHero.ManaPercent<80 && !moved)	
 				{
 					if (MyHero.Inventory.HasFreeSlotsBackpack||MyHero.Inventory.HasFreeSlotsStash)
 					{
@@ -358,13 +392,13 @@ export function Push(){
 					}
 					return
 				}
-				/*	if (bottle && bottle.CurrentCharges>0&&!MyHero.HasModifier("modifier_bottle_regeneration"))
+					if (bottle && bottle.CurrentCharges>0&&!MyHero.HasModifier("modifier_bottle_regeneration"))
 				{
 						MyHero.CastNoTarget(bottle)
 						lastTick = Game.RawGameTime + 0.1 + latency
 						console.log("cast bottle, 1330, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 						return	
-				}*/			
+				}		
 
 				if (!e.IsReady || !tpboots.IsReady) //on fountain: rearm
 				{
@@ -583,13 +617,13 @@ export function Push(){
 					lastTick = Game.RawGameTime + latency
 					console.log("cast bottle, 1475, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 					return
-				}		
-			}		
+				}
+			}
 			let targetCreep:Creep = undefined
-			let ecre = creeps.filter(Creep => Creep.IsLaneCreep&&Creep.IsEnemy()&&Creep.IsInRange(MyHero, 1350+MyHero.CastRangeBonus))// WHAT THE FUCK
-			for (let unit of ecre)// WHAT THE FUCK
+			let ecre = creeps.filter(Creep => Creep.IsLaneCreep&&Creep.IsEnemy()&&Creep.IsInRange(MyHero, 1550+MyHero.CastRangeBonus))
+			for (let unit of ecre)
 			{
-				if (TinkerPortGetCreepCount(MyHero, 1250) >= 2)
+				if (unit.IsVisible && TinkerPortGetCreepCount(unit, 700) >= 2 && unit.IsInRange(MyHero, 1550+MyHero.CastRangeBonus))
 				{
 						targetCreep = unit
 						break
@@ -619,7 +653,7 @@ export function Push(){
 					{
 						if (e.CanBeCasted()&&!sleeper.Sleeping("epush"))
 						{ 
-							MyHero.CastPosition(e, MyHero.NetworkPosition.Add((targetCreep.NetworkPosition.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(e.CastRange - 1)))
+							MyHero.CastPosition(e, MyHero.NetworkPosition.Add((targetCreep.NetworkPosition.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(e.CastRange - 10)))
 							lastTick = Game.RawGameTime + 0.75 + latency
 							marched = marched + 1
 							console.log("cast e, 1525, gametime: "+Game.RawGameTime+" lastTick: "+lastTick +" marched " + marched)
@@ -668,7 +702,6 @@ export function Push(){
 									else
 									{
 										if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
-										
 										lastTick = Game.RawGameTime + 0.02 + latency
 										console.log("cast blink, 1614, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										sleeper.Sleep(119,"blpush")
@@ -814,15 +847,15 @@ export function Push(){
 												sleeper.Sleep(119,"blpush")
 												return
 											}
-											else
-											{
-												if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
-												//MyHero.HoldPosition(MyHero.NetworkPosition, true)
-												lastTick = Game.RawGameTime + 0.02 + latency
-												console.log("cast blink, 1797, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
-												sleeper.Sleep(119,"blpush")
-												return
-											}
+											// else
+											// {
+											// 	if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
+											// 	//MyHero.HoldPosition(MyHero.NetworkPosition, true)
+											// 	lastTick = Game.RawGameTime + 0.02 + latency
+											// 	console.log("cast blink, 1797, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											// 	sleeper.Sleep(119,"blpush")
+											// 	return
+											// }
 										}
 										MyHero.CastPosition(tpboots, fountain)
 										lastTick = Game.RawGameTime + 3.05 + latency
@@ -859,14 +892,14 @@ export function Push(){
 												sleeper.Sleep(119,"blpush")
 												return
 											}
-											else
-											{
-												if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
-												lastTick = Game.RawGameTime + 0.02 + latency
-												console.log("cast blink, 1840, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
-												sleeper.Sleep(119,"blpush")
-												return
-											}
+											// else
+											// {
+											// 	if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
+											// 	lastTick = Game.RawGameTime + 0.02 + latency
+											// 	console.log("cast blink, 1840, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											// 	sleeper.Sleep(119,"blpush")
+											// 	return
+											// }
 										}
 										if (blink)// && blink.IsReady)
 										{ 
@@ -896,14 +929,14 @@ export function Push(){
 											sleeper.Sleep(119,"blpush")
 											return
 										}
-										else
-										{
-											if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
-											lastTick = Game.RawGameTime + 0.02 + latency
-											console.log("cast blink, 1840, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
-											sleeper.Sleep(119,"blpush")
-											return
-										}
+										// else
+										// {
+										// 	if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
+										// 	lastTick = Game.RawGameTime + 0.02 + latency
+										// 	console.log("cast blink, 1840, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										// 	sleeper.Sleep(119,"blpush")
+										// 	return
+										// }
 									}
 									if (r.CanBeCasted()) 
 									{
@@ -931,14 +964,14 @@ export function Push(){
 													sleeper.Sleep(119,"blpush")
 													return
 												}
-												else
-												{
-													if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
-													lastTick = Game.RawGameTime + 0.02 + latency
-													console.log("cast blink, 1890, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
-													sleeper.Sleep(119,"blpush")
-													return
-												}
+												// else
+												// {
+												// 	if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
+												// 	lastTick = Game.RawGameTime + 0.02 + latency
+												// 	console.log("cast blink, 1890, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+												// 	sleeper.Sleep(119,"blpush")
+												// 	return
+												// }
 												
 											}
 											MyHero.CastPosition(tpboots, fountain)

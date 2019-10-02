@@ -13,7 +13,7 @@ let Sleep = new GameSleeper()
 export function MainCombo() {
 	if (!Base.IsRestrictions(active))
 		return false
-	if (!comboKey.is_pressed)
+	if (!comboKey.is_pressed||MouseTarget === undefined)
 	{
 		TinkerStatus(3)
 		return false
@@ -27,12 +27,13 @@ export function MainCombo() {
 	if (ItemsInit.EtherealDelay) {
 			Sleep.Sleep(ItemsInit.EtherealDelay as number, "EtherealDelay")
 		}
-	if (!Sleep.Sleeping("r") && !Abilities.r.IsChanneling && Base.Cancel(target)&& !MyHero.Spells.some(x=>x!==undefined&&x.IsInAbilityPhase)) {
+	if (!Sleep.Sleeping("r") && !Abilities.r.IsChanneling && Base.Cancel(target)) {
 		TinkerStatus(0)
 		if (ItemsInit.Blink !== undefined
 			&& blinkV.value
 			&& ItemsInit.Blink.CanBeCasted()
 			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Blink.Index}`)
+			&& !target.IsInRange(MyHero,600)
 			) {
 				let castRange = ItemsInit.Blink.GetSpecialValue("blink_range") + MyHero.CastRangeBonus
 				let qRange = 650+MyHero.CastRangeBonus//q range
@@ -41,22 +42,22 @@ export function MainCombo() {
 				{//c&p sky
 					ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.NetworkPosition, Math.min(castRange, MyHero.Distance(target) - blinkRadius.value) - 1))
 					Sleep.Sleep(ItemsInit.Tick,`${target.Index + ItemsInit.Blink.Index}`)
-					return false
+					return true
 				}
 				else if (blinkM.selected_id==2)//SMART MODE
 				{
 					if (disToTarget>castRange)//RANGE TOO B1G
 					{
-						ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.InFront(20), castRange - 1))
+						ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.NetworkPosition, castRange - 1))
 						Sleep.Sleep(ItemsInit.Tick,`${target.Index + ItemsInit.Blink.Index}`)
-						return false
+						return true
 					}
 					else
 					{
 						let dir:Vector3
 						let fin:Vector3
-						for (let _i = -Math.PI/4; _i < Math.PI/4; _i++) {
-							dir = target.InFrontFromAngle(_i, Math.abs(qRange-target.IdealSpeed*Abilities.r.GetSpecialValue("channel_tooltip")))
+						for (let _i = -Math.PI/3; _i < Math.PI/3; _i++) {
+							dir = target.InFrontFromAngle(_i, qRange-target.IdealSpeed*Abilities.r.GetSpecialValue("channel_tooltip"))
 							if (dir.z>=target.NetworkPosition.z
 								&&!trees.some(Tree => Tree.IsInRange(dir, 250) && Tree.IsAlive)
 								&&!Heroes.some(e =>e!==target&& e.IsInRange(dir, 450) && e.IsAlive))
@@ -64,9 +65,20 @@ export function MainCombo() {
 								fin = dir
 								}
 						}
-						ItemsInit.Blink.UseAbility(fin)
+						if (fin!==undefined)
+						{
+							ItemsInit.Blink.UseAbility(fin)
+						}
+						else if (target.InFront(qRange-target.IdealSpeed*Abilities.r.GetSpecialValue("channel_tooltip")).z>=target.NetworkPosition.z)
+						{
+							ItemsInit.Blink.UseAbility(target.InFront(qRange))
+						}
+						else
+						{
+							ItemsInit.Blink.UseAbility(target.NetworkPosition)
+						}
 						Sleep.Sleep(ItemsInit.Tick,`${target.Index + ItemsInit.Blink.Index}`)
-						return false
+						return true
 						
 					}
 					
@@ -77,21 +89,21 @@ export function MainCombo() {
 					{
 						ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.InFront(30), castRange - 1))
 						Sleep.Sleep(ItemsInit.Tick,`${target.Index + ItemsInit.Blink.Index}`)
-						return false
+						return true
 					}
 					else 
 					{
 						let dir:Vector3 =  target.NetworkPosition.Extend(Utils.CursorWorldVec, qRange-target.IdealSpeed*Abilities.r.GetSpecialValue("channel_tooltip"))
 						ItemsInit.Blink.UseAbility(dir)
 						Sleep.Sleep(ItemsInit.Tick,`${target.Index + ItemsInit.Blink.Index}`)
-						return false
+						return true
 					}
 
 				}
 		}
 		if (Base.IsLinkensProtected(target)||Base.IsLotusProtected(target)) {
 			BreakInit()
-			return false
+			return true
 		}
 		//soulring
 		if (ItemsInit.Soulring !== undefined
@@ -100,9 +112,9 @@ export function MainCombo() {
 			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Soulring.Index}`)
 		) {
 				ItemsInit.Soulring.UseAbility()
-				console.log("soulr: "+Game.RawGameTime)
+				//console.log("soulr: "+Game.RawGameTime)
 				Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Soulring.Index}`)
-				return false
+				return true
 		}
 		//ghost
 		if (ItemsInit.Ghost !== undefined
@@ -113,21 +125,10 @@ export function MainCombo() {
 		) {
 			ItemsInit.Ghost.UseAbility()
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Ghost.Index}`)
-			return false
+			return true
 			
 		}
-		//shivas
-		if (ItemsInit.Shivas !== undefined
-			&& ItemsInit.Shivas.CanBeCasted()
-			&& items.IsEnabled("item_shivas_guard")
-			&&!Sleep.Sleeping(`${target.Index + ItemsInit.Shivas.Index}`)
-			&& MyHero.Distance2D(target)<= 800 + MyHero.CastRangeBonus
-		) {
-			ItemsInit.Shivas.UseAbility()
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Shivas.Index}`)
-			return false
-			
-		}//LotusOrb
+		//LotusOrb
 		if (ItemsInit.LotusOrb !== undefined
 			&& ItemsInit.LotusOrb.CanBeCasted()
 			&& items.IsEnabled("item_lotus_orb")
@@ -139,14 +140,14 @@ export function MainCombo() {
 				if (xxxtentacion !== undefined && MyHero.HasModifier("modifier_item_lotus_orb_active")) {
 					ItemsInit.LotusOrb.UseAbility(xxxtentacion)
 					Sleep.Sleep(ItemsInit.Tick, `${xxxtentacion.Index + ItemsInit.LotusOrb.Index}`)
-					return false
+					return true
 				}
 				else {
 					if (!MyHero.HasModifier("modifier_item_lotus_orb_active"))
 					{
 					ItemsInit.LotusOrb.UseAbility(MyHero)
 					Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.LotusOrb.Index}`)
-					return false
+					return true
 					}
 				}
 			}
@@ -155,7 +156,7 @@ export function MainCombo() {
 				{
 				ItemsInit.LotusOrb.UseAbility(MyHero)
 				Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.LotusOrb.Index}`)
-				return false
+				return true
 				}
 			}
 		}//greaves
@@ -167,7 +168,7 @@ export function MainCombo() {
 		) {
 			ItemsInit.Greaves.UseAbility()
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Greaves.Index}`)
-			return false
+			return true
 		
 		}//zefir
 		if (ItemsInit.Ethereal !== undefined
@@ -177,9 +178,9 @@ export function MainCombo() {
 			&& MyHero.IsInRange(target, ItemsInit.Ethereal.CastRange)
 		) {
 			ItemsInit.Ethereal.UseAbility(target)
-			console.log("ethereal: "+Game.RawGameTime)
+			//console.log("ethereal: "+Game.RawGameTime)
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Ethereal.Index}`)
-			return false
+			return true
 		}
 		//hex
 		if (ItemsInit.Sheeps !== undefined
@@ -192,9 +193,9 @@ export function MainCombo() {
 			&& MyHero.IsInRange(target, ItemsInit.Sheeps.CastRange)		
 		) {
 			ItemsInit.Sheeps.UseAbility(target)
-			console.log("sheep: "+Game.RawGameTime)
+			//console.log("sheep: "+Game.RawGameTime)
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Sheeps.Index}`)
-			return false
+			return true
 		}//nullifier
 		if (ItemsInit.Nullifier !== undefined
 			&& ItemsInit.Nullifier.CanBeCasted()
@@ -205,7 +206,7 @@ export function MainCombo() {
 		) {
 			ItemsInit.Nullifier.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Nullifier.Index}`)
-			return false
+			return true
 		}//orchid
 		if (ItemsInit.Orchid !== undefined
 			&& ItemsInit.Orchid.CanBeCasted()
@@ -216,7 +217,7 @@ export function MainCombo() {
 		) {
 			ItemsInit.Orchid.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Orchid.Index}`)
-			return false
+			return true
 		}//blood
 		if (ItemsInit.Bloodthorn !== undefined
 			&& ItemsInit.Bloodthorn.CanBeCasted()
@@ -227,7 +228,7 @@ export function MainCombo() {
 		) {
 			ItemsInit.Bloodthorn.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Bloodthorn.Index}`)
-			return false
+			return true
 
 		}//atos
 		if (ItemsInit.RodofAtos !== undefined
@@ -238,7 +239,7 @@ export function MainCombo() {
 		) {
 			ItemsInit.RodofAtos.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.RodofAtos.Index}`)
-			return false
+			return true
 		}//veil
 		if (ItemsInit.Discord !== undefined
 			&& ItemsInit.Discord.CanBeCasted()
@@ -248,7 +249,7 @@ export function MainCombo() {
 		) {
 			ItemsInit.Discord.UseAbility(target.InFront(35))
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Discord.Index}`)
-			return false
+			return true
 		}
 		if (etherD.value)
 		{
@@ -265,9 +266,20 @@ export function MainCombo() {
 				&& !Sleep.Sleeping(`${target.Index + Abilities.w.Index}`)
 			) {
 				Abilities.w.UseAbility()
-				console.log("rocket: "+Game.RawGameTime)
-				Sleep.Sleep(Abilities.Tick+Abilities.w.CastPoint*1000, `${target.Index + Abilities.w.Index}`)
-				return false
+				//console.log("rocket: "+Game.RawGameTime)
+				Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.w.Index}`)
+				return true
+			}
+				//shivas
+			if (ItemsInit.Shivas !== undefined
+				&& ItemsInit.Shivas.CanBeCasted()
+				&& items.IsEnabled("item_shivas_guard")
+				&&!Sleep.Sleeping(`${target.Index + ItemsInit.Shivas.Index}`)
+				&& MyHero.Distance2D(target)<= 800 + MyHero.CastRangeBonus
+			) {
+				ItemsInit.Shivas.UseAbility()
+				Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Shivas.Index}`)
+				return true
 			}
 			if (Abilities.q !== undefined//laser
 				&& !Abilities.q.IsInAbilityPhase
@@ -277,10 +289,9 @@ export function MainCombo() {
 				&& !Sleep.Sleeping(`${target.Index + Abilities.q.Index}`)
 			) {
 				Abilities.q.UseAbility(target)
-				console.log("laser: "+Game.RawGameTime)
-				MyHero.MoveToDirection(target.InFront(target.IdealSpeed*Abilities.r.GetSpecialValue("channel_tooltip")))
-				Sleep.Sleep(Abilities.Tick+Abilities.q.CastPoint*1000, `${target.Index + Abilities.q.Index}`)
-				return false
+				//console.log("laser: "+Game.RawGameTime)
+				Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.q.Index}`)
+				return true
 			}
 			if (ItemsInit.Dagon !== undefined//dagon
 				&& items.IsEnabled("item_dagon_5")
@@ -289,9 +300,9 @@ export function MainCombo() {
 				&& !Sleep.Sleeping(`${target.Index + ItemsInit.Dagon.Index}`)
 				) {
 				ItemsInit.Dagon.UseAbility(target)
-				console.log("dagon: "+Game.RawGameTime)
+				//console.log("dagon: "+Game.RawGameTime)
 				Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Dagon.Index}`)
-				return false
+				return true
 			}
 		}
 		//glimmer
@@ -302,7 +313,7 @@ export function MainCombo() {
 		) {
 			ItemsInit.Glimmer.UseAbility(MyHero)
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Glimmer.Index}`)
-			return false
+			return true
 		}
 		if (Abilities.r !== undefined
 			&&Abilities.r.CanBeCasted() 
@@ -312,9 +323,21 @@ export function MainCombo() {
 			&& !Sleep.Sleeping("r")
 			) {
 			Abilities.r.UseAbility()
-			console.log("rearm: "+Game.RawGameTime)
+			//console.log("rearm: "+Game.RawGameTime)
 			Sleep.Sleep(Abilities.r.GetSpecialValue("channel_tooltip")* 1000+Abilities.r.CastPoint*1000+45, "r")
-			return false
+			return true
+		}
+		
+		if (MyHero.CanAttack(target)//tut budet orbwalk:)
+			&& !Sleep.Sleeping("Attack")
+			&& !target.IsEthereal
+			&& !ItemsInit.EtherealDelay
+			&& !MyHero.IsChanneling
+			&& !MyHero.Spells.some(e=>e!==undefined && e.IsInAbilityPhase)
+			) {
+			MyHero.AttackTarget(target)
+			Sleep.Sleep(MyHero.SecondsPerAttack * 1000, "Attack")
+			return true
 		}
 	}
 }

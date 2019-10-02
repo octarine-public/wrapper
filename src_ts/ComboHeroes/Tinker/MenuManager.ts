@@ -9,8 +9,7 @@ abils = mainCombo.AddImageSelector(
     "Active abilities",
     [
         "tinker_laser",
-        "tinker_heat_seeking_missile",
-        "tinker_rearm",
+        "tinker_heat_seeking_missile"
     ],
 ),
 items = mainCombo.AddImageSelector(
@@ -60,7 +59,7 @@ marshBlink = rockSp.AddToggle("Follow/Blink to cursor(marsh)", false),//SPAM
 autoS = menu.AddNode("Auto Use"),
 rocketrearmFailsw = autoS.AddToggle("Rocket and Rearm failswitch"),
 autoSoul = autoS.AddToggle("Auto use soulring before r"),
-ezKill = autoS.AddToggle("Auto Killsteal", true),
+ezKill = autoS.AddToggle("Auto Ethereal+dagon", true),
 blinkKey = menu.AddKeybind("Fast blink Key"),
 cursorRadius = menu.AddSlider("Nearest cursor radius", 200, 100, 1000),
 soulTresh = menu.AddSlider("HP Percent Threshold for soulring", 20, 0, 99),
@@ -111,15 +110,15 @@ tarpCol = drawable.AddNode("Line Color"),
 RedT = tarpCol.AddSlider("red", 20,0,255),
 GreenT = tarpCol.AddSlider("green", 255,0,255),
 BlueT = tarpCol.AddSlider("blue",100,0,255),
-targetCalc = drawable.AddNode("Target Draw"),
-TargetCalculator = drawable.AddToggle("Draw Procast Counter on all heroes", true),//x5 - left of manabar
-RocketCounter = drawable.AddToggle("Draw rocket counter on all heroes", true),
-EzCalc = targetCalc.AddToggle("Draw Ethereal+Dagon Dmg", true),//ezk:
-ProcastCalc = targetCalc.AddToggle("Draw Combo Damage", true),//com:
+blinkPart = drawable.AddToggle("Draw blink partice",true),
+bootRange = drawable.AddToggle("Draw blink range when tping",true),
+TargetCalculator = drawable.AddToggle("Procast Counter on all heroes", true),//x5 - left of manabar
+RocketCounter = drawable.AddToggle("Rocket counter on all heroes", true),
+EzCalc = drawable.AddToggle("Ethereal+Dagon Dmg on target", true),//ezk:
+ProcastCalc = drawable.AddToggle("Combo Dmg on target", true),//com:
 panel = drawable.AddToggle("Draw Panel"),
-//hitcounter = targetCalc.AddToggle("Draw hit counter", true),
-statusPosX = drawable.AddSlider("Position X (%)", 19, 0, 100),
-statusPosY = drawable.AddSlider("Position Y (%)", 4, 0, 100)
+statusPosX = drawable.AddSlider("Pos X (%)", 73, 0, 100),
+statusPosY = drawable.AddSlider("Pos Y (%)", 88, 0, 100)
 export {
     menu
 ,active 
@@ -173,4 +172,6 @@ export {
 ,spamItems
 ,marshItems
 ,panel
+,blinkPart
+,bootRange
 }

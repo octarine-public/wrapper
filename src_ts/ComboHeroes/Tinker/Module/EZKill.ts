@@ -1,7 +1,7 @@
 import { GameSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import {  MyHero, Heroes } from "../Listeners"
-import { comboKey, items, active, ezKill } from "../MenuManager"
+import { comboKey, items, active, ezKill, TargetCalculator } from "../MenuManager"
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 import { TinkerStatus } from "./status";
@@ -43,7 +43,7 @@ export function AutoSteal(){
 				&& e.NetworkPosition.Distance2D(MyHero.NetworkPosition) <= MyHero.AttackRange + 50)
 			{
 				MyHero.AttackTarget(e)
-				return false
+				return true
 			}
 			if (EzkillCheck)
 			{
@@ -56,17 +56,18 @@ export function AutoSteal(){
 				) {
 					ItemsInit.Ethereal.UseAbility(e)
 					Sleep.Sleep(ItemsInit.Tick, `${e.Index + ItemsInit.Ethereal.Index}`)
-					return false
+					return true
 				}
 				if (ItemsInit.Dagon !== undefined//dagon
 					&& items.IsEnabled("item_dagon_5")
 					&& ItemsInit.Dagon.CanBeCasted()
 					&& MyHero.Distance2D(e) <= ItemsInit.Dagon.CastRange
 					&& !Sleep.Sleeping(`${e.Index + ItemsInit.Dagon.Index}`)
+					&& e.IsEthereal
 					) {
 					ItemsInit.Dagon.UseAbility(e)
 					Sleep.Sleep(ItemsInit.Tick, `${e.Index + ItemsInit.Dagon.Index}`)
-					return false
+					return true
 				}
 				Sleep.Sleep(150, "autosteal")
 			}

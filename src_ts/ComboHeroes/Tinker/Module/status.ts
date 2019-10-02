@@ -1,5 +1,3 @@
-import { Base } from "../Extends/Helper"
-import { MyHero } from "../../SkywrathMage/Listeners"
 let stat:number = 0
 export function TinkerStatus(num?: number)
 {

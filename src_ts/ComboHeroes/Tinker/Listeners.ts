@@ -3,11 +3,12 @@ import { cursorRadius, active, items } from "./MenuManager"
 import { 
 	ArrayExtensions, Creep, Entity, 
 	Hero, Utils, TrackingProjectile, 
-	Tree, Team, Vector3, PhysicalItem
+	Tree, Team, Vector3, PhysicalItem, Building, Tower
 } from "wrapper/Imports"
 export let Heroes: Hero[] = []
 export let trees: Tree[] = []
 export let creeps: Creep[] = []
+export let towers: Building[] = []
 export let MyHero: Hero
 export let MouseTarget: Hero
 export let fountain:Vector3
@@ -236,6 +237,10 @@ export function EntityCreated(npc: Entity) {
 	{
 		trees.push(npc)	
 	}
+	if (npc instanceof Tower)
+	{
+		towers.push(npc)
+	}
 }
 
 export function EntityDestroyed(x: Entity) {
@@ -250,6 +255,10 @@ export function EntityDestroyed(x: Entity) {
 	if (x instanceof Tree)
 	{
 		ArrayExtensions.arrayRemove(trees,x)
+	}
+	if (x instanceof Tower)
+	{
+		ArrayExtensions.arrayRemove(towers,x)
 	}
 }
 

@@ -1,6 +1,6 @@
 import { GameSleeper, Hero, Game } from "wrapper/Imports"
 import {  MyHero } from "../Listeners"
-import { items } from "../MenuManager"
+import { items, abils } from "../MenuManager"
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
@@ -13,25 +13,39 @@ export function GetComboDamage()
 		etheral_blade_magic_reduction = 0,
 		veil_of_discord_magic_reduction = 0,
 		base_magic_res = 0.25,
-		totalMagicResistance = 0
+		dagon_d=0,
+		totalMagicResistance,
+		laser_d=0,
+		shiva_d = 0,
+		rocket_d = 0
 	let eblade = ItemsInit.Ethereal
 	if (eblade !== undefined && items.IsEnabled("item_ethereal_blade"))
 	{
 		etheral_blade_magic_reduction = 0.4
-		ethereal_d = ItemsInit.Ethereal.GetSpecialValue("blast_damage_base") + ItemsInit.Ethereal.GetSpecialValue("blast_agility_multiplier") * MyHero.TotalIntellect
+		ethereal_d = (ItemsInit.Ethereal.GetSpecialValue("blast_damage_base") + ItemsInit.Ethereal.GetSpecialValue("blast_agility_multiplier") * MyHero.TotalIntellect)
 	}
 	if (ItemsInit.Discord !== undefined && items.IsEnabled("item_veil_of_discord"))
 	{
 		veil_of_discord_magic_reduction = 0.25
 	}
+	if (ItemsInit.Dagon!==undefined && items.IsEnabled("item_dagon_5"))
+	{
+		dagon_d = ItemsInit.Dagon.GetSpecialValue("damage")*latest_spellamp
+	}
+	if (Abilities.q!==undefined && abils.IsEnabled("tinker_laser") && Abilities.q.Level>0)
+	{
+		laser_d = Abilities.q.GetSpecialValue("laser_damage")+MyHero.GetTalentValue("special_bonus_unique_tinker")
+	}
+	if (Abilities.w !==undefined && abils.IsEnabled("tinker_heat_seeking_missile")&& Abilities.w.Level>0)
+	{
+		rocket_d = Abilities.w.GetSpecialValue("damage")*latest_spellamp
+	}
+	if (ItemsInit.Shivas!==undefined&&items.IsEnabled("item_shivas_guard"))
+	{
+		shiva_d = ItemsInit.Shivas.GetSpecialValue("blast_damage")*latest_spellamp
+	}
 	totalMagicResistance = ((1 - base_magic_res) * (1 + etheral_blade_magic_reduction) * (1 + veil_of_discord_magic_reduction))
-	
-	return (((ethereal_d + ((Abilities.w.Level>0)?
-	Abilities.w.GetSpecialValue("damage"):0)
-	 + ((ItemsInit.Dagon!==undefined)?ItemsInit.Dagon.GetSpecialValue("damage"):0)) * totalMagicResistance*latest_spellamp)
-	+ ((Abilities.q.Level>0)?Abilities.q.GetSpecialValue("damage")+MyHero.GetTalentValue("special_bonus_unique_tinker")	:0)
-	+ (((ItemsInit.Shivas!==undefined)?ItemsInit.Shivas.GetSpecialValue("damage"):0)* totalMagicResistance*latest_spellamp)
-	)
+	return (ethereal_d+dagon_d+laser_d+rocket_d+shiva_d)/totalMagicResistance
 }
 export function ManaFactDamage(en: Hero)
 {
@@ -296,12 +310,13 @@ export function ProcastCounter(en: Hero)
 }*/
 export function OnlyRocketCount(en: Hero)
 {
+	
 	let ItemsInit = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero),
 		latest_spellamp = (1 + MyHero.SpellAmplification)
 	if (!en.IsMagicImmune && !en.IsInvulnerable && Abilities.w!==undefined&&Abilities.w.Level>0)
 	{
-		return ((((en.HP*(1+en.MagicDamageResist/100)) + ((en.Distance2D(MyHero)/900+Abilities.r.GetSpecialValue("channel_tooltip",Abilities.r.Level))*en.HPRegen)) / Abilities.w.GetSpecialValue("damage")*latest_spellamp + 1))
+		return ((((en.HP*(1+en.MagicDamageResist/100)) + ((en.Distance2D(MyHero)/Abilities.w.GetSpecialValue("speed")+Abilities.r.GetSpecialValue("channel_tooltip"))*en.HPRegen)) / (Abilities.w.GetSpecialValue("damage")*latest_spellamp)))
 	}
 
 	return 999
