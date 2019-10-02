@@ -8,7 +8,7 @@ import { fastBlink } from "./Module/fastBlink";
 //import { AutoDisable } from "./Module/AutoDisable";
 import { OnExecuteOrder } from "./Module/WithoutFail";
 import { GameStarted, GameEnded, EntityCreated, EntityDestroyed, InitMouse} from "./Listeners";
-import { Draw } from "./Renderer";
+//import { Draw } from "./Renderer";
 import { AutoSteal } from "./Module/EZKill";
 import { comboKey } from "./MenuManager";
 
@@ -30,7 +30,7 @@ EventsSDK.on("Tick", () => {
 	/*, AutoCombo(),
 	AutoUsage(), AutoDisable()*/
 })
-EventsSDK.on("Draw", Draw)
+//EventsSDK.on("Draw", Draw)
 EventsSDK.on("GameEnded", GameEnded)
 EventsSDK.on("GameStarted", GameStarted)
 EventsSDK.on("EntityCreated", EntityCreated)
