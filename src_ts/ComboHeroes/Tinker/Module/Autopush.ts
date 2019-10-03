@@ -28,15 +28,14 @@ export function Push(){
 	{
 		TinkerPusher = !TinkerPusher
 		sleeper.Sleep(110,"button")
-		TinkerPusher?console.log("On"):console.log("off")
 	}
 	if (TinkerPusher)
 	{
-		//console.log("all neutrals" + creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep).length)
-		//console.log("alive "+creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && e.IsAlive).length)
-		//console.log("!waiting to spawn" + creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && !e.IsWaitingToSpawn).length)
-		//console.log("spawned "+creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && e.IsSpawned).length)
-		//console.log("lifestate dead: "+creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && e.LifeState==LifeState_t.LIFE_DEAD).length +  "lifestate respawning: "+creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && e.LifeState==LifeState_t.LIFE_RESPAWNING).length + "lifestate dying: "+creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && e.LifeState==LifeState_t.LIFE_DYING).length)
+		////console.log("all neutrals" + creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep).length)
+		////console.log("alive "+creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && e.IsAlive).length)
+		////console.log("!waiting to spawn" + creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && !e.IsWaitingToSpawn).length)
+		////console.log("spawned "+creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && e.IsSpawned).length)
+		////console.log("lifestate dead: "+creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && e.LifeState==LifeState_t.LIFE_DEAD).length +  "lifestate respawning: "+creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && e.LifeState==LifeState_t.LIFE_RESPAWNING).length + "lifestate dying: "+creeps.filter(e=>e.Team == Team.Neutral&&!e.IsLaneCreep && e.LifeState==LifeState_t.LIFE_DYING).length)
 		let e = abils.e,
 			r = abils.r,
 			hex = items.Sheeps,
@@ -59,7 +58,7 @@ export function Push(){
 		}
 		function TinkerGetJunglePos()
 		{
-			console.log("TinkerGetJunglePos")
+			//console.log("TinkerGetJunglePos")
 			
 			if  (!e || !r)  return 
 			let marchCount = 3
@@ -68,7 +67,7 @@ export function Push(){
 			let neededMana = r.ManaCost * (marchCount - 1) + e.ManaCost * marchCount - (soulring?(marchCount * 150):0)
 			if ( MyHero.MaxMana < neededMana) 
 			{	
-				console.log("mana return")
+				//console.log("mana return")
 				return 
 			}
 			if (TinkerJungleFarmPos == undefined || TinkerJungleFarmPos[0]== undefined ||TinkerJungleFarmPos[1]== undefined)
@@ -101,7 +100,7 @@ export function Push(){
 		}
 		function TinkerJungleFarm()
 		{
-			console.log("tjunglefarm")
+			//console.log("tjunglefarm")
 			if (TinkerJungleFarmPos == undefined || TinkerJungleFarmPos.length == 0) return
 			let movePos = TinkerJungleFarmPos[0]
 			let castPos = TinkerJungleFarmPos[1]
@@ -122,7 +121,7 @@ export function Push(){
 							if (blink.IsReady) MyHero.CastPosition(blink, blinkPos)
 							lastTick = Game.RawGameTime + 0.02 + latency
 							MyHero.HoldPosition(MyHero.NetworkPosition,true)
-							console.log("cast blink, 1177, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+							//console.log("cast blink, 1177, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 							sleeper.Sleep(119,"blpush")
 							return
 						}
@@ -132,7 +131,7 @@ export function Push(){
 						if (blink.IsReady) MyHero.CastPosition(blink, movePos)
 						MyHero.HoldPosition(MyHero.NetworkPosition,true)
 						lastTick = Game.RawGameTime + 0.02 + latency
-						console.log("cast blink, 1187, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+						//console.log("cast blink, 1187, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 						return
 					}
 					
@@ -148,7 +147,7 @@ export function Push(){
 						MyHero.CastPosition(e, castPos)
 						marched = marched + 1
 						lastTick = Game.RawGameTime + 0.75 + latency
-						console.log("cast e, 1200, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+						//console.log("cast e, 1200, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 						sleeper.Sleep(770+latency,"epush")
 						return
 					}
@@ -158,7 +157,7 @@ export function Push(){
 						{
 							MyHero.CastNoTarget(r)
 							lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-							console.log("cast r, 1210, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+							//console.log("cast r, 1210, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 							return
 						}
 						else
@@ -169,7 +168,7 @@ export function Push(){
 								marched = 0
 								TinkerJungle = false
 								TinkerJungleFarmPos = []
-								console.log("cast boot after jungle, 1218, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+								//console.log("cast boot after jungle, 1218, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 								return
 						}
 					}
@@ -185,7 +184,7 @@ export function Push(){
 						marched = 0
 						TinkerJungle = false
 						TinkerJungleFarmPos = []
-						console.log("cast boot after jungle, 1235, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+						//console.log("cast boot after jungle, 1235, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 						return
 					}
 					else
@@ -194,7 +193,7 @@ export function Push(){
 						{
 							MyHero.CastNoTarget(r)
 							lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-							console.log("cast r, 1248, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+							//console.log("cast r, 1248, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 							return
 						}
 					}
@@ -358,7 +357,7 @@ export function Push(){
 						{
 							if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 							lastTick = Game.RawGameTime + 0.05 + latency
-							console.log("cast blink, 1314, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+							//console.log("cast blink, 1314, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 							sleeper.Sleep(119,"blpush")
 							return
 						}
@@ -366,7 +365,7 @@ export function Push(){
 						{
 							if (blink.IsReady) MyHero.CastPosition(blink, (MyHero.NetworkPosition.Add(fountain.Subtract(MyHero.NetworkPosition))).Normalize().ScaleTo(1150))
 							lastTick = Game.RawGameTime + 0.05 + latency
-							console.log("cast blink, 1321, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+							//console.log("cast blink, 1321, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 							sleeper.Sleep(119,"blpush")
 							return
 						}
@@ -396,7 +395,7 @@ export function Push(){
 				{
 						MyHero.CastNoTarget(bottle)
 						lastTick = Game.RawGameTime + 0.1 + latency
-						console.log("cast bottle, 1330, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+						//console.log("cast bottle, 1330, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 						return	
 				}		
 
@@ -405,7 +404,7 @@ export function Push(){
 					if (r.CanBeCasted())
 						MyHero.CastNoTarget(r)
 						lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-						console.log("cast r, 1334, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+						//console.log("cast r, 1334, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 						return
 				}	
 				
@@ -431,7 +430,7 @@ export function Push(){
 						ported = false
 						TinkerJungleFarmPos = []
 						TinkerJungle = false
-						console.log("return 1372, rawgt: "+Game.RawGameTime)
+						//console.log("return 1372, rawgt: "+Game.RawGameTime)
 						return
 					}
 				}	
@@ -462,7 +461,7 @@ export function Push(){
 							{
 								MyHero.CastPosition(tpboots, a)
 								lastTick = Game.RawGameTime + 3.05 + latency
-								console.log("cast boot, 1365, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+								//console.log("cast boot, 1365, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 								ported = true
 								marched = 0
 								return
@@ -479,7 +478,7 @@ export function Push(){
 									{
 										MyHero.CastPosition(tpboots, TinkerJungleFarmPos[0])
 										lastTick = Game.RawGameTime + 3.05 + latency
-										console.log("cast boot to jngle, 1382, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										//console.log("cast boot to jngle, 1382, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										ported = true
 										TinkerJungle = true
 										marched = 0
@@ -498,10 +497,10 @@ export function Push(){
 									let it = MyHero.Inventory.GetItem(_i)
 									if (it!==undefined &&sitems.includes(it.Name) )
 									{
-										console.log(it.Name+" "+_i)
+										//console.log(it.Name+" "+_i)
 										slots[it.Name] = _i
 										it.MoveItem(MyHero.Inventory.FreeSlotsBackpack.concat(MyHero.Inventory.FreeSlotsStash)[_i])
-										console.log("move "+ it.Name+" slot:"+slots[it.Name])
+										//console.log("move "+ it.Name+" slot:"+slots[it.Name])
 										lastTick = Game.RawGameTime + 0.05 + latency
 										moved = true
 										
@@ -525,7 +524,7 @@ export function Push(){
 								{
 								MyHero.CastPosition(tpboots, a)
 								lastTick = Game.RawGameTime + 3.05 + latency
-								console.log("cast boot, 1402, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+								//console.log("cast boot, 1402, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 								ported = true
 								marched = 0
 								return
@@ -536,7 +535,7 @@ export function Push(){
 									{
 										MyHero.CastNoTarget(r)
 										lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-										console.log("FUCKITcast r, 1410, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										//console.log("FUCKITcast r, 1410, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										return
 									}	
 								}
@@ -554,7 +553,7 @@ export function Push(){
 									{
 										MyHero.CastPosition(tpboots, TinkerJungleFarmPos[0])
 										lastTick = Game.RawGameTime + 3.05 + latency
-										console.log("cast boot to jngle, 1418, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										//console.log("cast boot to jngle, 1418, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										ported = true
 										TinkerJungle = true
 										marched = 0
@@ -570,7 +569,7 @@ export function Push(){
 						{
 							MyHero.CastPosition(tpboots, fountain)
 							lastTick = Game.RawGameTime + 3.05 + latency
-							console.log("cast boot, 1433, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+							//console.log("cast boot, 1433, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 							ported = false
 							marched = 0
 							TinkerJungle = false
@@ -582,7 +581,7 @@ export function Push(){
 							{
 								MyHero.CastNoTarget(r)
 								lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-								console.log("cast r, 1437, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+								//console.log("cast r, 1437, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 								return
 							}
 						}
@@ -595,7 +594,7 @@ export function Push(){
 					{
 						if(soulring.IsReady) MyHero.CastNoTarget(soulring)
 						lastTick = Game.RawGameTime + latency
-						console.log("cast sr, 1440, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+						//console.log("cast sr, 1440, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 						return
 					}
 					else
@@ -604,7 +603,7 @@ export function Push(){
 						{
 							MyHero.CastNoTarget(soulring,true)
 							lastTick = Game.RawGameTime + latency
-							console.log("cast sr, 1450, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+							//console.log("cast sr, 1450, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 							return
 						}
 					}
@@ -615,7 +614,7 @@ export function Push(){
 				{
 					MyHero.CastNoTarget(bottle)
 					lastTick = Game.RawGameTime + latency
-					console.log("cast bottle, 1475, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+					//console.log("cast bottle, 1475, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 					return
 				}
 			}
@@ -643,7 +642,7 @@ export function Push(){
 							{
 								if (blink.IsReady) MyHero.CastPosition(blink, saveSpot, true)
 								lastTick = Game.RawGameTime + 0.02 + latency
-								console.log("cast blink, 1514, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+								//console.log("cast blink, 1514, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 								sleeper.Sleep(119,"blpush")
 								return false
 								
@@ -656,7 +655,7 @@ export function Push(){
 							MyHero.CastPosition(e, MyHero.NetworkPosition.Add((targetCreep.NetworkPosition.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(e.CastRange - 10)))
 							lastTick = Game.RawGameTime + 0.75 + latency
 							marched = marched + 1
-							console.log("cast e, 1525, gametime: "+Game.RawGameTime+" lastTick: "+lastTick +" marched " + marched)
+							//console.log("cast e, 1525, gametime: "+Game.RawGameTime+" lastTick: "+lastTick +" marched " + marched)
 							sleeper.Sleep(770+latency,"epush")
 							return
 						}
@@ -666,7 +665,7 @@ export function Push(){
 							{
 								MyHero.CastNoTarget(r)
 								lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-								console.log("cast r, 1535, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+								//console.log("cast r, 1535, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 								return
 							}
 							else
@@ -675,7 +674,7 @@ export function Push(){
 								{
 									MyHero.CastPosition(tpboots, fountain)
 									lastTick = Game.RawGameTime + 3.05 + latency
-									console.log("cast e, 1544, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+									//console.log("cast e, 1544, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 									marched = 0
 									return
 								}
@@ -695,7 +694,7 @@ export function Push(){
 									{
 										if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 										lastTick = Game.RawGameTime + 0.02 + latency
-										console.log("cast blink, 1607, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										//console.log("cast blink, 1607, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										sleeper.Sleep(119,"blpush")
 										return
 									}
@@ -703,7 +702,7 @@ export function Push(){
 									{
 										if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
 										lastTick = Game.RawGameTime + 0.02 + latency
-										console.log("cast blink, 1614, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										//console.log("cast blink, 1614, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										sleeper.Sleep(119,"blpush")
 										return
 									}
@@ -711,7 +710,7 @@ export function Push(){
 								
 								MyHero.CastPosition(tpboots, fountain)
 								lastTick = Game.RawGameTime + 3.05 + latency
-								console.log("cast boot, 1621, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+								//console.log("cast boot, 1621, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 								marched = 0
 								return
 							}
@@ -721,7 +720,7 @@ export function Push(){
 								{
 									MyHero.CastNoTarget(r)
 									lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-									console.log("cast r, 1631, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+									//console.log("cast r, 1631, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 									return
 								}
 							}
@@ -740,7 +739,7 @@ export function Push(){
 										{
 											if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 											lastTick = Game.RawGameTime + 0.02 + latency
-											console.log("USELESS??cast blink, 1650, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											//console.log("USELESS??cast blink, 1650, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 											sleeper.Sleep(119,"blpush")
 											return
 										}
@@ -748,7 +747,7 @@ export function Push(){
 										{
 											if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
 											lastTick = Game.RawGameTime + 0.02 + latency
-											console.log("USELESS??cast blink, 1657, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											//console.log("USELESS??cast blink, 1657, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 											sleeper.Sleep(119,"blpush")
 											return
 										}
@@ -763,7 +762,7 @@ export function Push(){
 									{
 										MyHero.CastPosition(tpboots, fountain)
 										lastTick = Game.RawGameTime + 3.05 + latency
-										console.log("USELESS??cast boot, 1671, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										//console.log("USELESS??cast boot, 1671, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										marched = 0
 										return
 									}
@@ -774,7 +773,7 @@ export function Push(){
 									{
 										MyHero.CastNoTarget(r)
 										lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-										console.log("USELESS??cast r, 1682, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										//console.log("USELESS??cast r, 1682, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										return
 									}
 								}	
@@ -791,7 +790,7 @@ export function Push(){
 											if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 											//MyHero.HoldPosition(MyHero.NetworkPosition, true)
 											lastTick = Game.RawGameTime + 0.02 + latency
-											console.log("cast blink, 1698, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											//console.log("cast blink, 1698, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 											sleeper.Sleep(119,"blpush")
 											return
 										}
@@ -800,14 +799,14 @@ export function Push(){
 											if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
 											//MyHero.HoldPosition(MyHero.NetworkPosition, true)
 											lastTick = Game.RawGameTime + 0.02 + latency
-											console.log("cast blink, 1707, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											//console.log("cast blink, 1707, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 											sleeper.Sleep(119,"blpush")
 											return
 										}
 									}
 									MyHero.CastPosition(tpboots, fountain)
 									lastTick = Game.RawGameTime + 3.05 + latency
-									console.log("cast boot, 1711, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+									//console.log("cast boot, 1711, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 									marched = 0
 									return
 								}
@@ -817,7 +816,7 @@ export function Push(){
 									{ 
 										MyHero.CastNoTarget(r)
 										lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-										console.log("cast r, 1721, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										//console.log("cast r, 1721, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										return
 									}
 								}
@@ -843,7 +842,7 @@ export function Push(){
 												if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 												//MyHero.HoldPosition(MyHero.NetworkPosition, true)
 												lastTick = Game.RawGameTime + 0.02 + latency
-												console.log("cast blink, 1790, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+												//console.log("cast blink, 1790, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 												sleeper.Sleep(119,"blpush")
 												return
 											}
@@ -852,14 +851,14 @@ export function Push(){
 											// 	if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
 											// 	//MyHero.HoldPosition(MyHero.NetworkPosition, true)
 											// 	lastTick = Game.RawGameTime + 0.02 + latency
-											// 	console.log("cast blink, 1797, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											// 	//console.log("cast blink, 1797, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 											// 	sleeper.Sleep(119,"blpush")
 											// 	return
 											// }
 										}
 										MyHero.CastPosition(tpboots, fountain)
 										lastTick = Game.RawGameTime + 3.05 + latency
-										console.log("cast boot, 1805, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										//console.log("cast boot, 1805, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										marched = 0
 										return
 									}
@@ -869,7 +868,7 @@ export function Push(){
 										{
 											MyHero.CastNoTarget(r)
 											lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-											console.log("cast r, 1811, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											//console.log("cast r, 1811, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 											return
 										}
 									}
@@ -888,7 +887,7 @@ export function Push(){
 											{
 												lastTick = Game.RawGameTime + 0.02 + latency
 												if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
-												console.log("cast blink, 1833, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+												//console.log("cast blink, 1833, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 												sleeper.Sleep(119,"blpush")
 												return
 											}
@@ -896,7 +895,7 @@ export function Push(){
 											// {
 											// 	if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
 											// 	lastTick = Game.RawGameTime + 0.02 + latency
-											// 	console.log("cast blink, 1840, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											// 	//console.log("cast blink, 1840, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 											// 	sleeper.Sleep(119,"blpush")
 											// 	return
 											// }
@@ -905,14 +904,14 @@ export function Push(){
 										{ 
 											ported = false
 											marched = 0
-											console.log("return 1875, rawgt: "+Game.RawGameTime)
+											//console.log("return 1875, rawgt: "+Game.RawGameTime)
 											return
 										}
 										else
 										{
 											MyHero.CastPosition(tpboots, fountain)
 											lastTick = Game.RawGameTime + 3.05 + latency
-											console.log("cast boot, 1854, gametime: "+Game.RawGameTime+" lastTick: "+lastTick+" marched: "+ marched)
+											//console.log("cast boot, 1854, gametime: "+Game.RawGameTime+" lastTick: "+lastTick+" marched: "+ marched)
 											marched = 0
 											return
 										}
@@ -925,7 +924,7 @@ export function Push(){
 										{
 											lastTick = Game.RawGameTime + 0.02 + latency
 											if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
-											console.log("cast blink, 1833, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											//console.log("cast blink, 1833, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 											sleeper.Sleep(119,"blpush")
 											return
 										}
@@ -933,7 +932,7 @@ export function Push(){
 										// {
 										// 	if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
 										// 	lastTick = Game.RawGameTime + 0.02 + latency
-										// 	console.log("cast blink, 1840, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										// 	//console.log("cast blink, 1840, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										// 	sleeper.Sleep(119,"blpush")
 										// 	return
 										// }
@@ -942,7 +941,7 @@ export function Push(){
 									{
 										MyHero.CastNoTarget(r)
 										lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-										console.log("cast r, 1865, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+										//console.log("cast r, 1865, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										return
 									}
 								}	
@@ -960,7 +959,7 @@ export function Push(){
 												{
 													if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 													lastTick = Game.RawGameTime + 0.02 + latency
-													console.log("cast blink, 1883, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+													//console.log("cast blink, 1883, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 													sleeper.Sleep(119,"blpush")
 													return
 												}
@@ -968,7 +967,7 @@ export function Push(){
 												// {
 												// 	if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
 												// 	lastTick = Game.RawGameTime + 0.02 + latency
-												// 	console.log("cast blink, 1890, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+												// 	//console.log("cast blink, 1890, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 												// 	sleeper.Sleep(119,"blpush")
 												// 	return
 												// }
@@ -976,7 +975,7 @@ export function Push(){
 											}
 											MyHero.CastPosition(tpboots, fountain)
 											lastTick = Game.RawGameTime + 3.05 + latency
-											console.log("cast boot, 1897, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+											//console.log("cast boot, 1897, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 											marched = 0
 											return
 									}
@@ -989,7 +988,7 @@ export function Push(){
 												{
 													if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 													lastTick = Game.RawGameTime + 0.02 + latency
-													console.log("cast blink, 1904, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+													//console.log("cast blink, 1904, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 													sleeper.Sleep(119,"blpush")
 													return
 												}
@@ -997,7 +996,7 @@ export function Push(){
 												{
 													if (blink.IsReady) MyHero.CastPosition(blink, MyHero.NetworkPosition.Add((fountain.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(1150)))
 													lastTick = Game.RawGameTime + 0.02 + latency
-													console.log("cast blink, 1905, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+													//console.log("cast blink, 1905, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 													sleeper.Sleep(119,"blpush")
 													return
 												}
@@ -1007,7 +1006,7 @@ export function Push(){
 											{
 												MyHero.CastNoTarget(r)
 												lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
-												console.log("cast r, 1907, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
+												//console.log("cast r, 1907, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 												return
 										}
 									}

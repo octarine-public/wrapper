@@ -318,7 +318,16 @@ export function MainCombo() {
 		if (Abilities.r !== undefined
 			&&Abilities.r.CanBeCasted() 
 			&& abils.IsEnabled("tinker_rearm") 
-			&& ((ItemsInit.Sheeps!==undefined && !ItemsInit.Sheeps.IsReady) || (ItemsInit.Discord!==undefined && !ItemsInit.Discord.IsReady) || (ItemsInit.Ethereal!==undefined&&!ItemsInit.Ethereal.IsReady) || (ItemsInit.Dagon!==undefined&&!ItemsInit.Dagon.IsReady) || (ItemsInit.Orchid!==undefined && !ItemsInit.Orchid.IsReady) || (ItemsInit.Bloodthorn!==undefined&&!ItemsInit.Bloodthorn.IsReady) ||(ItemsInit.Shivas!==undefined&& !ItemsInit.Shivas.IsReady) || (ItemsInit.Nullifier!==undefined&&!ItemsInit.Nullifier.IsReady) || (Abilities.q!==undefined&&!Abilities.q.IsReady) || (Abilities.w!==undefined&&!Abilities.w.IsReady))
+			&& ((ItemsInit.Sheeps!==undefined && !ItemsInit.Sheeps.IsReady) 
+			|| (ItemsInit.Discord!==undefined && !ItemsInit.Discord.IsReady) 
+			|| (ItemsInit.Ethereal!==undefined&&!ItemsInit.Ethereal.IsReady) 
+			|| (ItemsInit.Dagon!==undefined&&!ItemsInit.Dagon.IsReady) 
+			|| (ItemsInit.Orchid!==undefined && !ItemsInit.Orchid.IsReady) 
+			|| (ItemsInit.Bloodthorn!==undefined&&!ItemsInit.Bloodthorn.IsReady) 
+			|| (ItemsInit.Shivas!==undefined&& !ItemsInit.Shivas.IsReady) 
+			|| (ItemsInit.Nullifier!==undefined&&!ItemsInit.Nullifier.IsReady) 
+			|| (Abilities.q!==undefined&&!Abilities.q.IsReady) 
+			|| (Abilities.w!==undefined&&!Abilities.w.IsReady))
 			&& target.IsAlive
 			&& !Sleep.Sleeping("r")
 			) {

@@ -208,7 +208,7 @@ export function Draw() {
 		
 
 	}
-	if (blinkKey.is_pressed && blinkPart)
+	if (blinkKey.is_pressed && blinkPart.value)
 	{
 		AddOrUpdateParticle("blink", MyHero, Utils.CursorWorldVec, 125)
 	}
@@ -217,7 +217,7 @@ export function Draw() {
 		RemoveParticle("blink", MyHero)
 	}
 	
-	if (bootRange&&MyHero.HasModifier("modifier_teleporting")&&ItemsInit.Tpboot!==undefined)
+	if (bootRange.value&&MyHero.HasModifier("modifier_teleporting")&&ItemsInit.Tpboot!==undefined)
 	{
 		let a = creeps.find(e=>e.Team == MyHero.Team && e.HasModifier("modifier_boots_of_travel_incoming"))
 		if (a!==undefined)
@@ -229,14 +229,6 @@ export function Draw() {
 	{
 		RemoveParticle("tprange", MyHero)
 	}
-
-	towers.forEach(e => {
-		if (e.HasModifier("modifier_boots_of_travel_incoming"))
-		{
-			console.log("yes")
-		}
-	});
-	
 
 	
 }

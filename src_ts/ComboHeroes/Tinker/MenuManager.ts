@@ -9,7 +9,8 @@ abils = mainCombo.AddImageSelector(
     "Active abilities",
     [
         "tinker_laser",
-        "tinker_heat_seeking_missile"
+        "tinker_heat_seeking_missile",
+        "tinker_rearm"
     ],
 ),
 items = mainCombo.AddImageSelector(
@@ -96,6 +97,7 @@ popLotusV = linken_settings.AddToggle("Pop Lotus"),
 popLotusItems = linken_settings.AddImageSelector(
     "Pop Lotus with",
     [
+
         "tinker_laser",//
         "item_dagon_5",//
         "item_ethereal_blade",//

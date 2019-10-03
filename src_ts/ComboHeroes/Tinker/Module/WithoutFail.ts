@@ -7,7 +7,6 @@ import InitItems from "../Extends/Items"
 export function OnExecuteOrder(order: ExecuteOrder): boolean {
 	
 	if (!Base.IsRestrictions(active) || !rocketrearmFailsw.value || !autoSoul.value) {
-		console.log("order")
 		return true
 	}
 	if (Base.GetPermitPressing) {

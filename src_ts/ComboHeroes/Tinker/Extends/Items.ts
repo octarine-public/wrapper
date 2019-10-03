@@ -11,6 +11,5 @@ export default class TinkerItems extends ItemBase {
 	}
 	private particle_arr: string[] = [
 		"particles/items_fx/ethereal_blade.vpcf",
-		"particles/items2_fx/rod_of_atos_attack.vpcf",
 	]
 }

@@ -33,22 +33,22 @@ export function Spam(){
 					{
 						ItemsInit.Blink.UseAbility(Utils.CursorWorldVec)
 						Sleep.Sleep(ItemsInit.Tick, `${ItemsInit.Blink.Index}`)
-						return false
+						return true
 					}
 					else
 					{    
 						ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(Utils.CursorWorldVec,castRange-1))
 						Sleep.Sleep(ItemsInit.Tick, `${ItemsInit.Blink.Index}`)
-						return false
+						return true
 					}
 			}
-			if (((marshBlink && ItemsInit.Blink == undefined)
-				||spamBlink && ItemsInit.Blink == undefined)
+			if (((marshBlink.value && ItemsInit.Blink == undefined)
+				||spamBlink.value && ItemsInit.Blink == undefined)
 				 && !Sleep.Sleeping("msmove"))
 			{
 					MyHero.MoveTo(Utils.CursorWorldVec)
 					Sleep.Sleep(50, "msmove")
-					return false
+					return true
 			}
 			if (ItemsInit.Soulring !== undefined
 				&&!Sleep.Sleeping(`${ItemsInit.Soulring.Index}`)
@@ -57,7 +57,7 @@ export function Spam(){
 				) {
 					ItemsInit.Soulring.UseAbility()
 					Sleep.Sleep(ItemsInit.Tick, `${ItemsInit.Soulring.Index}`)
-					return false
+					return true
 			}
 			if (marshKey.is_pressed
 				&&Abilities.e !== undefined//MARSH
@@ -65,9 +65,9 @@ export function Spam(){
 				&&!Abilities.e.IsInAbilityPhase
 				&&Abilities.e.CanBeCasted()
 				) {
-					Abilities.e.UseAbility(MyHero.NetworkPosition.Extend(Utils.CursorWorldVec,250))
+					Abilities.e.UseAbility(MyHero.NetworkPosition.Extend(Utils.CursorWorldVec,Abilities.e.CastRange))
 					Sleep.Sleep(Abilities.Tick+Abilities.e.CastPoint*1000+1, `${Abilities.e.Index}`)
-					return false
+					return true
 			}
 			if (spamKey.is_pressed
 				&&_h!==undefined
@@ -78,7 +78,7 @@ export function Spam(){
 				){
 					Abilities.w.UseAbility()
 					Sleep.Sleep(Abilities.Tick+Abilities.w.CastPoint*1000, `${Abilities.w.Index}`)
-					return false
+					return true
 			}
 			if (ItemsInit.Greaves !== undefined //GREAVES
 				&& ItemsInit.Greaves.CanBeCasted()
@@ -87,7 +87,7 @@ export function Spam(){
 			) {
 					ItemsInit.Greaves.UseAbility()
 					Sleep.Sleep(ItemsInit.Tick, `${ItemsInit.Greaves.Index}`)
-					return false
+					return true
 			}
 			if (ItemsInit.Ghost !== undefined //GHOST
 				&& ItemsInit.Ghost.CanBeCasted()
@@ -97,7 +97,7 @@ export function Spam(){
 			) {
 					ItemsInit.Ghost.UseAbility()
 					Sleep.Sleep(ItemsInit.Tick, `${ItemsInit.Ghost.Index}`)
-					return false
+					return true
 			}
 			if (ItemsInit.Bottle !== undefined //BOTTLE
 				&&ItemsInit.Bottle.CurrentCharges>0
@@ -108,7 +108,7 @@ export function Spam(){
 			) {
 					ItemsInit.Bottle.UseAbility(MyHero)
 					Sleep.Sleep(ItemsInit.Tick, `${ItemsInit.Bottle.Index}`)
-					return false
+					return true
 			}
 			if (ItemsInit.Glimmer !== undefined //GLIMMER
 				&& ItemsInit.Glimmer.CanBeCasted()
@@ -118,7 +118,7 @@ export function Spam(){
 			) {
 					ItemsInit.Glimmer.UseAbility(MyHero)
 					Sleep.Sleep(ItemsInit.Tick, `${ItemsInit.Glimmer.Index}`)
-					return false
+					return true
 			}
 			if (Abilities.r !== undefined
 				&&Abilities.r.CanBeCasted() 
@@ -128,7 +128,7 @@ export function Spam(){
 				) {
 					Abilities.r.UseAbility()
 					Sleep.Sleep(Abilities.r.GetSpecialValue("channel_tooltip") * 1000+Abilities.r.CastPoint*1000+40, "mspam");
-					return false
+					return true
 
 			}
 		}
