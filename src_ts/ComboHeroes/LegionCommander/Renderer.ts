@@ -51,7 +51,7 @@ function UpdateBLink() {
 		ParticlesSDK.SetControlPoint(Blink, 2, Owner.Position)
 		ParticlesSDK.SetControlPoint(Blink, 3, new Vector3(Items.ItemCastRange(Items.Blink, "blink_range")))
 		ParticlesSDK.SetControlPoint(Blink, 4, new Vector3(color.r, color.g, color.b))
-		Sleep.Sleep(30, "Blink")
+		Sleep.Sleep(0, "Blink")
 	}
 	else DeleteBlink()
 }
@@ -72,11 +72,10 @@ function UpdateOverwhelmingOdds() {
 		ParticlesSDK.SetControlPoint(OverwhelmingPartID, 2, Owner.Position)
 		ParticlesSDK.SetControlPoint(OverwhelmingPartID, 3, new Vector3(Abilities.Overwhelming.CastRange))
 		ParticlesSDK.SetControlPoint(OverwhelmingPartID, 4, new Vector3(color.r, color.g, color.b))
-		Sleep.Sleep(30, "UpdateOverwhelmingOdds")
+		Sleep.Sleep(0, "UpdateOverwhelmingOdds")
 	}
 	else DeleteOverwhelmingOdds()
 }
-
 function UpdatePressTheAttack() {
 	if (Sleep.Sleeping("UpdatePressTheAttack"))
 		return false
@@ -94,8 +93,8 @@ function UpdatePressTheAttack() {
 		ParticlesSDK.SetControlPoint(PressTheAttackPartID, 2, Owner.Position)
 		ParticlesSDK.SetControlPoint(PressTheAttackPartID, 3, new Vector3(Abilities.PressTheAttack.CastRange))
 		ParticlesSDK.SetControlPoint(PressTheAttackPartID, 4, new Vector3(color.r, color.g, color.b))
-		Sleep.Sleep(30, "UpdatePressTheAttack")
-	}
+		Sleep.Sleep(0, "UpdatePressTheAttack")
+	} else DeletePressTheAttack()
 }
 function UpdateDuel() {
 	if (Sleep.Sleeping("UpdateDuel"))
@@ -114,10 +113,10 @@ function UpdateDuel() {
 		ParticlesSDK.SetControlPoint(Duel, 2, Owner.Position)
 		ParticlesSDK.SetControlPoint(Duel, 3, new Vector3(Abilities.Duel.CastRange))
 		ParticlesSDK.SetControlPoint(Duel, 4, new Vector3(color.r, color.g, color.b))
-		Sleep.Sleep(30, "UpdateDuel")
+		Sleep.Sleep(0, "UpdateDuel")
 	}
+	else DeleteOverwhelmingOdds()
 }
-
 export function DrawDeleteTempAllVars() {
 	Sleep.FullReset()
 	Duel = undefined
@@ -126,7 +125,6 @@ export function DrawDeleteTempAllVars() {
 	OverwhelmingPartID = undefined
 	PressTheAttackPartID = undefined
 }
-
 export function Draw() {
 
 	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {

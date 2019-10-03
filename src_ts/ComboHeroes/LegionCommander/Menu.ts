@@ -1,101 +1,97 @@
 import { Color, Menu as MenuSDK } from "wrapper/Imports"
 
+import InitItems from "./Extends/Items"
+import InitAbility from "./Extends/Abilities"
+
+let Items = new InitItems(undefined),
+	Abilities = new InitAbility(undefined)
+
 let Menu = MenuSDK.AddEntry(["Heroes", "Strength", "Legion Commander"]),
 	State = Menu.AddToggle("Enable")
 
+let arrayAbility: string[] = [
+	Abilities.Overwhelming.toString(),
+	Abilities.PressTheAttack.toString(),
+	Abilities.Duel.toString(),
+],
+activeAbility: Map<string, boolean> = new Map<string, boolean>([
+	[arrayAbility[1], true],
+	[arrayAbility[2], true],
+])
+
+let arrayItems: string[] = [
+	// 0							// 1
+	Items.BladMail.toString(), 		Items.LotusOrb.toString(),
+	// 2							// 3
+	Items.BlackKingBar.toString(),	Items.Abyssal.toString(),
+	// 4							// 5
+	Items.Mjollnir.toString(),		Items.Armlet.toString(),
+	// 6							// 7
+	Items.Satanic.toString(),		Items.Medallion.toString(),
+	// 8							// 9
+	Items.SolarCrest.toString(),	Items.UrnOfShadows.toString(),
+	// 10							// 11
+	Items.RodofAtos.toString(),		Items.SpiritVesel.toString(),
+	// 12							// 13
+	Items.Sheeps.toString(),		Items.Ethereal.toString(),
+	// 14							// 15
+	Items.Discord.toString(),		Items.Dagon.toString(),
+	// 16							// 17
+	Items.Orchid.toString(),		Items.Bloodthorn.toString(),
+	// 18							// 19
+	Items.Shivas.toString(),		Items.Nullifier.toString(),
+	// 20
+	Items.Blink.toString(),
+],
+activeItems: Map<string, boolean> = new Map<string, boolean>([
+	[arrayItems[0], true], 	[arrayItems[1], true],
+	[arrayItems[2], true], 	[arrayItems[3], true],
+	[arrayItems[4], true], 	[arrayItems[5], true],
+	[arrayItems[6], true], 	[arrayItems[7], true],
+	[arrayItems[8], true], 	[arrayItems[9], true],
+	[arrayItems[10], true],	[arrayItems[11], true],
+	[arrayItems[12], true],	[arrayItems[13], true],
+	[arrayItems[14], true],	[arrayItems[15], true],
+	[arrayItems[16], true],	[arrayItems[17], true],
+	[arrayItems[18], true],	[arrayItems[19], true],
+	[arrayItems[20], true],
+])
+
 let Combo = Menu.AddNode("Combo"),
 	ComboKeyItem = Combo.AddKeybind("Combo Key", "D"),
-	СomboAbility = Combo.AddImageSelector(
-		"Abilities", [
-			"legion_commander_overwhelming_odds",
-			"legion_commander_press_the_attack",
-			"legion_commander_duel",
-		], new Map<string, boolean>([
-			["legion_commander_press_the_attack", true],
-			["legion_commander_duel", true],
-		]),
-	),
-	СomboItems = Combo.AddImageSelector(
-		"Items", [
-			"item_blade_mail",
-			"item_lotus_orb",
-			"item_black_king_bar",
-			"item_abyssal_blade",
-			"item_mjollnir",
-			"item_armlet",
-			"item_satanic",
-			"item_medallion_of_courage",
-			"item_solar_crest",
-			"item_urn_of_shadows",
-			"item_rod_of_atos",
-			"item_spirit_vessel",
-			"item_sheepstick",
-			"item_ethereal_blade",
-			"item_veil_of_discord",
-			"item_dagon_5",
-			"item_orchid",
-			"item_bloodthorn",
-			"item_shivas_guard",
-			"item_nullifier",
-			"item_blink",
-		], new Map<string, boolean>([
-			["item_blade_mail", true],
-			["item_lotus_orb", true],
-			["item_black_king_bar", true],
-			["item_armlet", true],
-			["item_satanic", true],
-			["item_medallion_of_courage", true],
-			["item_solar_crest", true],
-			["item_urn_of_shadows", true],
-			["item_spirit_vessel", true],
-			["item_rod_of_atos", true],
-			["item_sheepstick", true],
-			["item_veil_of_discord", true],
-			["item_ethereal_blade", true],
-			["item_dagon_5", true],
-			["item_orchid", true],
-			["item_bloodthorn", true],
-			["item_shivas_guard", true],
-			["item_nullifier", true],
-			["item_blink", true],
-		]),
-	),
-	AeonDiscItem = Combo.AddToggle("Cancel Important Items and Abilities", true)
-		.SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities"),
+	СomboAbility = Combo.AddImageSelector("Abilities", arrayAbility, activeAbility),
+	СomboItems = Combo.AddImageSelector("Items", arrayItems, activeItems),
+	AeonDiscItem = Combo.AddToggle("Cancel Important Items and Abilities", true).SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities"),
 	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000)
 
 let bladeMailMenu = Menu.AddNode("Blade Mail"),
 	BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false).SetTooltip("Cancel Combo if there is enemy Blade Mail")
 
-let linkenBreakerMenu = Menu.AddNode("Linken Breaker"),
-	LinkenBreakerToggler = linkenBreakerMenu.AddImageSelector(
-		"Items", [
-			"item_abyssal_blade",
-			"item_sheepstick",
-			"item_ethereal_blade",
-			"item_dagon_5",
-			"item_orchid",
-			"item_bloodthorn",
-			"item_nullifier",
-			"item_rod_of_atos",
-			"item_heavens_halberd",
-			"item_force_staff",
-			"item_cyclone",
-		], new Map<string, boolean>([
-			["item_abyssal_blade", true],
-			["item_sheepstick", true],
-			["item_ethereal_blade", true],
-			["item_dagon_5", true],
-			["item_orchid", true],
-			["item_bloodthorn", true],
-			["item_nullifier", true],
-			["item_rod_of_atos", true],
-			["item_heavens_halberd", true],
-			["item_force_staff", true],
-			["item_cyclone", true],
+let arrayLinkenBreak: string[] = [
+	arrayItems[3],	arrayItems[12],
+	arrayItems[10], arrayItems[13],	
+	arrayItems[15], arrayItems[16], 
+	arrayItems[17], arrayItems[19],
+	Items.HeavensHalberd.toString(),
+	Items.ForceStaff.toString(),
+	Items.Cyclone.toString(),
+],
+activeLinkenBreak: Map<string, boolean> = new Map<string, boolean>([
+	[arrayLinkenBreak[0], true],
+	[arrayLinkenBreak[1], true],
+	[arrayLinkenBreak[2], true],
+	[arrayLinkenBreak[3], true],
+	[arrayLinkenBreak[4], true],
+	[arrayLinkenBreak[5], true],
+	[arrayLinkenBreak[6], true],
+	[arrayLinkenBreak[7], true],
+	[arrayLinkenBreak[8], true],
+	[arrayLinkenBreak[9], true],
+	[arrayLinkenBreak[10], true],
+])
 
-		]),
-	),
+let linkenBreakerMenu = Menu.AddNode("Linken Breaker"),
+	LinkenBreakerToggler = linkenBreakerMenu.AddImageSelector("Items", arrayLinkenBreak, activeLinkenBreak),
 	UseOnlyFromRangeItem = linkenBreakerMenu.AddToggle("Use Only From Range")
 
 let DrawingMenu = Menu.AddNode("Drawing"),

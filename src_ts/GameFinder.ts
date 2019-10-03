@@ -1,6 +1,7 @@
 import { Team, Menu as MenuSDK } from "./wrapper/Imports"
 
 let Menu = MenuSDK.AddEntry("Game Finder"),
+	State = Menu.AddToggle("State"),
 	SafeLaneFactor = Menu.AddSlider("Safe Lane factor", 4, 0, 5),
 	OffLaneFactor = Menu.AddSlider("Off Lane factor", 3, 0, 5),
 	MidLaneFactor = Menu.AddSlider("Mid Lane factor", 5, 0, 5),
@@ -210,6 +211,8 @@ class Lobby {
 }
 
 Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
+	if (!State.value)
+		return false
 	console.log("SharedObjectChanged", id, reason, uuid.toString())
 	if (id === 2003)
 		owner_party_id = obj.party_id

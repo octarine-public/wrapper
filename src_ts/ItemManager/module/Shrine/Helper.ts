@@ -11,6 +11,9 @@
 // 	mpDisableThreshold
 // } from "./Menu"
 
+
+// let arr
+
 // export function EntityCreate(Entity: Entity) {
 // 	if (Entity instanceof Unit && Entity.IsBuilding
 // 		&& !Entity.IsTower && !Entity.IsFort && !Entity.IsShrine && !Entity.IsBarrack)
@@ -26,28 +29,23 @@
 // 		return false;
 
 // 	ShrineList.forEach(shrine => {
-
 // 		if (shrine === undefined || !shrine.IsValid || !shrine.IsAlive
-// 			|| Me.Team != shrine.Team || !shrine.IsInRange(Me, 400))
-// 			return;
+// 			|| Me.IsEnemy(shrine) || !shrine.IsInRange(Me, 400))
+// 			return false;
+// 		console.log(shrine.Name)
+// 		let buffsShrine = Me.ModifiersBook.HasBuffByName("modifier_filler_heal");
 
-// 		let buffsShrine = Me.Buffs.some(buffs => {
-// 			if (buffs.Name === "modifier_filler_heal")
-// 				return true
-// 			return false
-// 		});
-
-// 		if (!buffsShrine)
-// 			return
+// 		// if (!buffsShrine)
+// 		// 	return false
 
 // 		let Items = Me.Inventory.GetItems(0, 8) as Item[]
 
 // 		Items.some(item => {
-// 			if (Me.HasItemInInventory(item.Name)){
-// 				Me.MoveItem(item, 6)
+// 			if (Me.HasItemInInventory(item.Name, true))
+// 			{
+// 				Me.MoveItem(item, 7)
 // 				return true
 // 			}
-// 			return false;
 // 		})
 
 // 		// if (Me.HPPercent > hpDisableThreshold.value && Me.ManaPercent > mpDisableThreshold.value)

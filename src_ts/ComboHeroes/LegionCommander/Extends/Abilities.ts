@@ -5,12 +5,24 @@ export default class LegionCommanderAbility extends AbilityBase {
 		super(unit)
 	}
 	public get Overwhelming(): Ability {
-		return this.unit.GetAbilityByName("legion_commander_overwhelming_odds")
+		let name = "legion_commander_overwhelming_odds"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetAbilityByName(name)
 	}
 	public get PressTheAttack(): Ability {
-		return this.unit.GetAbilityByName("legion_commander_press_the_attack")
+		let name = "legion_commander_press_the_attack"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetAbilityByName(name)
 	}
 	public get Duel(): Ability {
-		return this.unit.GetAbilityByName("legion_commander_duel")
+		let name = "legion_commander_duel"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetAbilityByName(name)
 	}
 }

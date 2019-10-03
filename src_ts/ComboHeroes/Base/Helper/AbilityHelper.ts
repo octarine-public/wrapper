@@ -1,10 +1,10 @@
-import { Ability, Hero, Game } from "wrapper/Imports"
+import { Ability, Hero, Game, Unit } from "wrapper/Imports"
 export class AbilityHelper {
-	public readonly unit: Hero
+	public readonly unit: Hero | Unit
 	public get Tick() {
 		return ((Game.Ping / 2) + 30)
 	}
-	constructor(unit: Hero) {
+	constructor(unit: Hero | Unit) {
 		this.unit = unit
 	}
 	public CastDelay(ability: Ability): number {

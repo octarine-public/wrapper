@@ -1,110 +1,261 @@
-import { Hero, Item } from "wrapper/Imports"
+import { Hero, Item, Unit } from "wrapper/Imports"
 import { ItemsHelper } from "./Helper/ItemsHelper"
 
 export class ItemBase extends ItemsHelper {
-	constructor(unit: Hero) {
+	constructor(unit?: Hero | Unit) {
 		super(unit)
 	}
  	public get Abyssal(): Item {
-		return this.unit.GetItemByName("item_abyssal_blade")
+		let name = "item_abyssal_blade"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
 	public get Armlet(): Item {
-		return this.unit.GetItemByName("item_armlet")
+		let name = "item_armlet"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
 	public get BlackKingBar(): Item {
-		return this.unit.GetItemByName("item_black_king_bar")
+		let name = "item_black_king_bar"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get DiffusalBlade(): Item {
+		let name = "item_diffusal_blade"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
 	public get Blink(): Item {
-		return this.unit.GetItemByName("item_blink")
+		let name = "item_blink"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Sheeps(): Item {
-		return this.unit.GetItemByName("item_sheepstick")
+	public get Sheeps(): Item  {
+		let name = "item_sheepstick"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
 	public get Sphere(): Item {
-		return this.unit.GetItemByName("item_sphere")
+		let name = "item_sphere"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Orchid(): Item {
-		return this.unit.GetItemByName("item_orchid")
+	public get Orchid(): Item  {
+		let name = "item_orchid"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Bloodthorn(): Item {
-		return this.unit.GetItemByName("item_bloodthorn")
+	public get Bloodthorn(): Item  {
+		let name = "item_bloodthorn"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get RodofAtos(): Item {
-		return this.unit.GetItemByName("item_rod_of_atos")
+	public get RodofAtos(): Item  {
+		let name = "item_rod_of_atos"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Discord(): Item {
-		return this.unit.GetItemByName("item_veil_of_discord")
+	public get Discord(): Item  {
+		let name = "item_veil_of_discord"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Ethereal(): Item {
-		return this.unit.GetItemByName("item_ethereal_blade")
+	public get Ethereal(): Item  {
+		let name = "item_ethereal_blade"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
 	public get Dagon(): Item {
+		let name = "item_dagon_5"
+		if (this.unit === undefined) {
+			return name as any
+		}
 		return this.unit.GetItemByName(/item_dagon/)
 	}
-	public get Cyclone(): Item {
-		return this.unit.GetItemByName("item_cyclone")
+	public get Cyclone(): Item  {
+		let name = "item_cyclone"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get AeonDisk(): Item {
-		return this.unit.GetItemByName("item_aeon_disk")
+	public get AeonDisk(): Item  {
+		let name = "item_aeon_disk"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Shivas(): Item {
-		return this.unit.GetItemByName("item_shivas_guard")
+	public get Shivas(): Item  {
+		let name = "item_shivas_guard"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get SpiritVesel(): Item {
-		return this.unit.GetItemByName("item_spirit_vessel")
+	public get SpiritVesel(): Item  {
+		let name = "item_spirit_vessel"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get UrnOfShadows(): Item {
-		return this.unit.GetItemByName("item_urn_of_shadows")
+	public get UrnOfShadows(): Item  {
+		let name = "item_urn_of_shadows"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Nullifier(): Item {
-		return this.unit.GetItemByName("item_nullifier")
+	public get Nullifier(): Item  {
+		let name = "item_nullifier"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get ForceStaff(): Item {
-		return this.unit.GetItemByName("item_force_staff")
+	public get ForceStaff(): Item  {
+		let name = "item_force_staff"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
+	public get HurricanePike(): Item {
+		let name = "item_hurricane_pike"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	
 	public get BladMail(): Item {
-		return this.unit.GetItemByName("item_blade_mail")
+		let name = "item_blade_mail"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Medallion(): Item {
-		return this.unit.GetItemByName("item_medallion_of_courage")
+	public get Medallion(): Item  {
+		let name = "item_medallion_of_courage"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get SolarCrest(): Item {
-		return this.unit.GetItemByName("item_solar_crest")
+	public get SolarCrest(): Item  {
+		let name = "item_solar_crest"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Satanic(): Item {
-		return this.unit.GetItemByName("item_satanic")
+	public get Satanic(): Item  {
+		let name = "item_satanic"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Mjollnir(): Item {
-		return this.unit.GetItemByName("item_mjollnir")
+	public get Mjollnir(): Item  {
+		let name = "item_mjollnir"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Necronomicon(): Item {
-		return this.unit.GetItemByName(/item_necronomicon/)
+	public get Necronomicon(): Item  {
+		let name = "item_necronomicon_3"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get LotusOrb(): Item {
-		return this.unit.GetItemByName("item_lotus_orb")
+	public get LotusOrb(): Item  {
+		let name = "item_lotus_orb"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get HeavensHalberd(): Item {
-		return this.unit.GetItemByName("item_heavens_halberd")
+	public get HeavensHalberd(): Item  {
+		let name = "item_heavens_halberd"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Soulring(): Item {
-		return this.unit.GetItemByName("item_soul_ring")
+	public get Soulring(): Item  {
+		let name = "item_soul_ring"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Tpboot(): Item {
+	public get TravelBoot(): Item  {
+		let name = "item_travel_boots_1"
+		if (this.unit === undefined) {
+			return name as any
+		}
 		return this.unit.GetItemByName(/item_travel_boots/)
 	}
-	public get Bottle(): Item {
-		return this.unit.GetItemByName("item_bottle")
+	public get Bottle(): Item  {
+		let name = "item_bottle"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Greaves(): Item {
-		return this.unit.GetItemByName("item_guardian_greaves")
+	public get Greaves(): Item  {
+		let name = "item_guardian_greaves"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Lens(): Item {
-		return this.unit.GetItemByName("item_aether_lens")
+	public get Lens(): Item  {
+		let name = "item_aether_lens"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Ghost(): Item {
-		return this.unit.GetItemByName("item_ghost")
+	public get Ghost(): Item  {
+		let name = "item_ghost"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
-	public get Glimmer(): Item {
-		return this.unit.GetItemByName("item_glimmer_cape")
+	public get Glimmer(): Item  {
+		let name = "item_glimmer_cape"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
 }

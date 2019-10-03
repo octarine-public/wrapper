@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, ParticlesSDK, Unit, Utils, Vector3 } from "./wrapper/Imports"
+import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, ParticlesSDK, Unit, Utils, Vector3 } from "wrapper/Imports"
 
 let TechiesMenu = Menu.AddEntry(["Heroes", "Intelligence", "Techies"]),
 	State = TechiesMenu.AddToggle("State"),

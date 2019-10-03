@@ -1,4 +1,4 @@
-import { Ability, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Vector3 } from "./wrapper/Imports"
+import { Ability, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Vector3 } from "wrapper/Imports"
 
 let root = Menu.AddEntry(["Heroes", "Intelligence", "Techies", "5 year old bug"]),
 	state = root.AddToggle("State", true),

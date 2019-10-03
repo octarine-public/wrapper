@@ -11,7 +11,7 @@ export default class LegionCommanderItems extends ItemBase {
 		return this.unit.GetItemByName("item_combo_breaker")
 	}
 	public get EtherealDelay(): number {
-		return this.ProjectileDelay(this.particle_arr[0], this.Ethereal, ProjList, this.RodofAtos)
+		return this.ProjectileDelay(this.particle_arr[0], this.Ethereal, ProjList, this.Ethereal)
 	}
 	public get RodofAtosDelay(): number {
 		return this.ProjectileDelay(this.particle_arr[1], this.RodofAtos, ProjList, this.RodofAtos)
