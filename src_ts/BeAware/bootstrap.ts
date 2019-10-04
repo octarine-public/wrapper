@@ -12,6 +12,7 @@ import * as VBE from "./Module/VisibleByEnemy/Entities"
 import * as Wisp from "./Module/WispMapHack/Particle"
 import * as TimeController from "./Module/TimeController/Renderer"
 import * as TimeControllerEnt from "./Module/TimeController/Entities"
+import * as EnemyLaneSelection from "./Module/EnemyLaneSelection/Listeners"
 
 // import * as TopHud from "./Module/TopHud/Entities"
 
@@ -27,12 +28,11 @@ EventsSDK.on("Tick", () => {
 	Treant.Tick()
 })
 EventsSDK.on("Draw", () => {
-	if (LocalPlayer === undefined) {
-		return false
-	}
-	if (LocalPlayer.IsSpectator || !stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
-		return false
-	}
+	if (!stateMain.value || LocalPlayer === undefined || LocalPlayer.IsSpectator || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+		return
+	EnemyLaneSelection.Draw()
+	if (!Game.IsInGame)
+		return
 	Camp.OnDraw()
 	Wisp.OnDraw()
 	// TopHud.Draw()

@@ -33,12 +33,20 @@ function PickRandomAPIKey() {
 	return APIKeys[Math.floor(APIKeys.length * Math.random())]
 }*/
 
+enum LaneSelectionFlags_t {
+	SAFE_LANE = 1 << 0,
+	OFF_LANE = 1 << 1,
+	MID_LANE = 1 << 2,
+	SOFT_SUPPORT = 1 << 3,
+	HARD_SUPPORT = 1 << 4,
+}
+
 interface CDOTALobbyMember {
 	id: bigint // steamid
 	team: number
 	party_id: bigint
 	meta_level: number
-	lane_selection_flags: number
+	lane_selection_flags: LaneSelectionFlags_t
 }
 
 interface CSODOTALobby {
@@ -55,14 +63,6 @@ interface MatchRecord {
 	assists: number
 	skill: number
 	leaver_status: number
-}
-
-enum LaneSelectionFlags_t {
-	SAFE_LANE = 1 << 0,
-	OFF_LANE = 1 << 1,
-	MID_LANE = 1 << 2,
-	SOFT_SUPPORT = 1 << 3,
-	HARD_SUPPORT = 1 << 4,
 }
 
 function GetLaneFactor(lane_selection_flags: LaneSelectionFlags_t) {
