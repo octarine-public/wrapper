@@ -9,6 +9,8 @@ import {
 	Menu as MenuSDK,
 	RendererSDK,
 	Vector2,
+	EntityManager,
+	Team,
 } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Visual", "Cooldown Display"]),
@@ -40,7 +42,6 @@ let ignore_abils = [
 ]
 
 let heroes: Hero[] = []
-
 EventsSDK.on("EntityCreated", npc => {
 	if (npc instanceof Hero && !npc.IsIllusion)
 		heroes.push(npc)
@@ -201,7 +202,10 @@ function DrawDisplay(hero: Hero) {
 }
 
 EventsSDK.on("Draw", () => {
-	if (!optionEnable.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if(LocalPlayer === undefined) {
+		return false
+	}
+	if (!optionEnable.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator)
 		return
 	heroes.forEach(hero => {
 		if (hero.IsAlive && !hero.IsDormant) {

@@ -61,7 +61,8 @@ export function OnDraw() {
 	})
 }
 export function GameEnded() {
-	if (!State.value)
-		return
+	jungl_unit = []
+}
+export function GameStarted() {
 	jungl_unit = []
 }

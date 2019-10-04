@@ -154,3 +154,9 @@ export function GameEnded() {
 	waiting_explode = []
 	waiting_spawn = []
 }
+export function GameStarted() {
+	allTechiesMines = []
+	waiting_explode = []
+	waiting_spawn = []
+}
+

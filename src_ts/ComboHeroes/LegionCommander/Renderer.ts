@@ -1,4 +1,4 @@
-import { Game, GameSleeper, ParticlesSDK, Vector3 } from "wrapper/Imports"
+import { Game, GameSleeper, ParticlesSDK, Vector3, LocalPlayer } from "wrapper/Imports"
 import InitAbilities from "./Extends/Abilities"
 import { Base } from "./Extends/Helper"
 import InitItems from "./Extends/Items"
@@ -126,8 +126,10 @@ export function DrawDeleteTempAllVars() {
 	PressTheAttackPartID = undefined
 }
 export function Draw() {
-
-	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
+	if (LocalPlayer === undefined) {
+		return false
+	}
+	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
 		return false
 	}
 

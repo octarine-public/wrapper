@@ -1,4 +1,4 @@
-import { ParticlesSDK, Vector3, Game, GameSleeper } from "wrapper/Imports"
+import { ParticlesSDK, Vector3, Game, GameSleeper, LocalPlayer } from "wrapper/Imports"
 import { MouseTarget, Owner } from "./Listeners"
 import { Base } from "./Extends/Helper"
 import { State, DrawTargetItem } from "./Menu"
@@ -7,7 +7,10 @@ let targetParticle: number
 let Sleep = new GameSleeper
 
 export function Draw() {
-	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
+	if (LocalPlayer === undefined) {
+		return false
+	}
+	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
 		return false
 	}
 	// Target

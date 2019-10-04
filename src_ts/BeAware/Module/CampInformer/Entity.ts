@@ -42,3 +42,6 @@ export function OnDraw() {
 export function GameEnded() {
 	allNeutrals = []
 }
+export function GameStarted() {
+	allNeutrals = []
+}

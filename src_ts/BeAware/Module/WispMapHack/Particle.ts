@@ -38,3 +38,8 @@ export function GameEnded() {
 	pos.Invalidate()
 	par_id = -1
 }
+export function GameStarted() {
+	if(wisp !== undefined) {
+		wisp = undefined
+	}
+}

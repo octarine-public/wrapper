@@ -5,7 +5,7 @@ import { AutoComboDisableWhen, AutoComboState, AutoDisableState, ComboKey,
 	SmartArcaneAutoBoltState, State, TextItem,
 	TextSize, TextXItem, TextYItem } from "./Menu"
 
-import { ArrayExtensions, Color, Game, Hero, ParticlesSDK, RendererSDK, Vector2, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Color, Game, Hero, ParticlesSDK, RendererSDK, Vector2, Vector3, LocalPlayer } from "wrapper/Imports"
 import { Heroes, MouseTarget, MyHero } from "./Listeners"
 let Shot: number,
 	Enemy: Hero,
@@ -27,7 +27,10 @@ export function DrawDestroyAll() {
 	}
 }
 export function Draw() {
-	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
+	if (LocalPlayer === undefined) {
+		return false
+	}
+	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
 		return false
 	}
 	if (MyHero === undefined || !MyHero.IsAlive)

@@ -1,4 +1,4 @@
-import { ArrayExtensions, Color, EventsSDK, Game, Hero, Menu as MenuSDK } from "wrapper/Imports"
+import { ArrayExtensions, Color, EventsSDK, Game, Hero, Menu as MenuSDK, LocalPlayer } from "wrapper/Imports"
 
 var illusions: Hero[] = []
 
@@ -19,9 +19,12 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 EventsSDK.on("Draw", () => {
-	if (!stateMain.value || !Game.IsInGame)
-		return
-
+	if (LocalPlayer === undefined) {
+		return false
+	}
+	if (!stateMain.value || !Game.IsInGame || LocalPlayer.IsSpectator) {
+		return false
+	}
 	illusions.forEach(illus => {
 		if (!illus.IsEnemy())
 			return

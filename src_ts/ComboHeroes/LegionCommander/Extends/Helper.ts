@@ -1,11 +1,11 @@
-import { EntityManager, Game, Hero, Menu, ParticlesSDK } from "wrapper/Imports"
+import { EntityManager, Game, Hero, Menu, ParticlesSDK, Team } from "wrapper/Imports"
 import { Heroes, Owner } from "../Listeners"
 import { AeonDiscItem } from "../Menu"
 import InitItems from "./Items"
 
 class LegionHelper {
 	public IsRestrictions(State: Menu.Toggle) {
-		return !this.IsSpectator && State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
+		return State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
 	}
 	public get DeadInSide(): boolean {
 		return Heroes.length === 0
@@ -46,10 +46,6 @@ class LegionHelper {
 		}
 		// todo qop talent somehow ?
 		return false
-	}
-	private get IsSpectator(): boolean {
-		let LocalPlayer = EntityManager.LocalPlayer
-		return LocalPlayer !== undefined && LocalPlayer.Team === 1
 	}
 	private CancelModifiers: string[]  = [
 		"modifier_winter_wyvern_winters_curse_aura",

@@ -6,6 +6,7 @@ import Ability from "./Ability"
 import Entity from "./Entity"
 import Hero from "./Hero"
 import Unit from "./Unit"
+import { Team } from "../../Helpers/Team"
 
 export default class Player extends Entity {
 	static get QuickBuyItems(): number[] {
@@ -73,6 +74,9 @@ export default class Player extends Entity {
 	}
 	get Assists(): number {
 		return this.PlayerTeamData.m_iAssists
+	}
+	get IsSpectator(): boolean {
+		return this.Team === Team.Observer || this.Team === Team.Neutral || this.Team === Team.None || this.Team === Team.Undefined
 	}
 	get ButtleBonusRate(): number {
 		return this.PlayerTeamData.m_iBattleBonusRate

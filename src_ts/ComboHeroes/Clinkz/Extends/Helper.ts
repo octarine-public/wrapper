@@ -1,12 +1,12 @@
 
-import { EntityManager, Game, Hero, Menu } from "wrapper/Imports"
+import { EntityManager, Game, Hero, Menu, Team } from "wrapper/Imports"
 import { Owner, Heroes } from "../Listeners"
 import { AeonDiscItem } from "../Menu"
 import InitItems from "./Items"
 
 class ClinkzHelper {
 	public IsRestrictions(State: Menu.Toggle) {
-		return !this.IsSpectator && State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
+		return State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
 	}
 	public get DeadInSide(): boolean {
 		return Heroes.length === 0
@@ -55,9 +55,5 @@ class ClinkzHelper {
 	private CancelModifiersItems: string[] = [
 		"modifier_item_lotus_orb_active",
 	]
-	private get IsSpectator(): boolean {
-		let LocalPlayer = EntityManager.LocalPlayer
-		return LocalPlayer !== undefined && LocalPlayer.Team === 1
-	}
 }
 export let Base = new ClinkzHelper()

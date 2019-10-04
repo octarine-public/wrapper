@@ -13,10 +13,12 @@ function IsValidMyHero(MyHero: any): boolean {
 }
 
 EventsSDK.on("Update", () => {
-
-	if (!state.value)
-		return
-
+	if (!state.value || LocalPlayer === undefined) {
+		return false
+	}
+	if (LocalPlayer.IsSpectator) {
+		return false
+	}
 	const MyHero = LocalPlayer.Hero
 
 	if (IsValidMyHero(MyHero))
@@ -43,10 +45,12 @@ EventsSDK.on("Update", () => {
 })
 
 EventsSDK.on("PrepareUnitOrders", orders => {
-
-	if (!state.value)
-		return
-
+	if (!state.value || LocalPlayer === undefined) {
+		return false
+	}
+	if (LocalPlayer.IsSpectator) {
+		return false
+	}
 	const MyHero = LocalPlayer.Hero
 
 	if (IsValidMyHero(MyHero))

@@ -10,6 +10,9 @@ import {
 	RendererSDK,
 	Vector2,
 	Vector3,
+	EntityManager,
+	Team,
+	LocalPlayer,
 } from "wrapper/Imports"
 
 //font = Renderer.LoadFont("Tahoma", 22, Enum.FontWeight.EXTRABOLD)
@@ -95,7 +98,10 @@ function PingEnemyWard(pos: Vector3, hero: Entity) {
 }
 
 EventsSDK.on("Update", () => {
-	if (!optionEnable.value) {
+	if(LocalPlayer === undefined){
+		return false
+	}
+	if (!optionEnable.value || LocalPlayer.IsSpectator) {
 		return
 	}
 
@@ -209,9 +215,12 @@ EventsSDK.on("Update", () => {
 })
 
 EventsSDK.on("Draw", () => {
-	if (!optionEnable.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
-		return
-
+	if(LocalPlayer === undefined) {
+		return false
+	}
+	if (!optionEnable.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
+		return false
+	}
 	// loop-optimizer: KEEP
 	wardProcessingTable.forEach((v, i) => {
 		if (v.dieTime < Game.GameTime) {

@@ -1,4 +1,4 @@
-import { Ability as AbilitySDK, EntityManager, Game, Hero, Menu } from "wrapper/Imports"
+import { Ability as AbilitySDK, EntityManager, Game, Hero, Menu, Team } from "wrapper/Imports"
 import { Heroes, MyHero } from "../Listeners"
 import { Ability, BadUltItem, BadUltMovementSpeedItem, ComboBreak, ComboStartWith, Items as ItemsSDK, SmartConShotOnlyTarget } from "../Menu"
 
@@ -21,7 +21,7 @@ class BaseHelper {
 	}
 
 	public IsRestrictions(State: Menu.Toggle) {
-		return !this.IsSpectator && State.value && !Game.IsPaused && Game.IsInGame && MyHero !== undefined && MyHero.IsAlive
+		return State.value && !Game.IsPaused && Game.IsInGame && MyHero !== undefined && MyHero.IsAlive
 	}
 
 	public get DeadInSide(): boolean {
@@ -172,12 +172,6 @@ class BaseHelper {
 			return Abilities.ConcussiveShot
 		return undefined
 	}
-
-	private get IsSpectator(): boolean {
-		let LocalPlayer = EntityManager.LocalPlayer
-		return LocalPlayer !== undefined && LocalPlayer.Team === 1
-	}
-
 	private readonly AbilityDisable: string[] = [
 		"queenofpain_blink",
 		"antimage_blink",

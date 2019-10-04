@@ -67,6 +67,20 @@ let Game = global.Game = new (class Game {
 
 		return Math.max(gameRules.m_fGoodGlyphCooldown - this.RawGameTime, 0)
 	}
+	public get ScanCooldownRadiant(): number {
+		let gameRules = this.m_GameRules
+		if (gameRules === undefined)
+			return 0
+
+		return Math.max(gameRules.m_fGoodRadarCooldown - this.RawGameTime, 0)
+	}
+	public get ScanCooldownDire(): number {
+		let gameRules = this.m_GameRules
+		if (gameRules === undefined)
+			return 0
+
+		return Math.max(gameRules.m_fBadRadarCooldown - this.RawGameTime, 0)
+	}
 	public get IsCustomGame(): boolean {
 		let gameRules = this.m_GameManager
 

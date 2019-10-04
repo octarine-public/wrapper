@@ -132,9 +132,12 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 EventsSDK.on("Update", () => {
-	if (!stateMain.value || !Game.IsInGame || Game.IsPaused)
-		return
-
+	if (LocalPlayer === undefined) {
+		return false
+	}
+	if (!stateMain.value || !Game.IsInGame || Game.IsPaused || LocalPlayer.IsSpectator){
+		return false
+	}
 	let controllables: Unit[] = stateControllables.value
 		? GetControllables()
 		: LocalPlayer.HeroAssigned ? [LocalPlayer.Hero] : []

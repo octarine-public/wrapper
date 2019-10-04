@@ -625,3 +625,8 @@ export function GameConnect() {
 	END_SCROLL = new Map()
 	LAST_ID_SCROLL = undefined
 }
+export function GameStarted() {
+	Particle = new Map()
+	END_SCROLL = new Map()
+	LAST_ID_SCROLL = undefined
+}
