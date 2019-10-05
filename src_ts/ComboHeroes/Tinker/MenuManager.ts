@@ -6,15 +6,19 @@ mainCombo = menu.AddNode("Combo"),//COMBO
 comboKey = mainCombo.AddKeybind("Combo Key"),
 blindn = mainCombo.AddNode("Blink Settings"),
 abils = mainCombo.AddImageSelector(
-    "Active abilities",
+    "Abilities",
     [
         "tinker_laser",
         "tinker_heat_seeking_missile",
         "tinker_rearm"
-    ],
+    ], new Map<string, boolean>([
+        ["tinker_laser", true],
+        ["tinker_heat_seeking_missile", true],
+        ["tinker_rearm", true],
+    ]),
 ),
 items = mainCombo.AddImageSelector(
-    "Active items",
+    "Items",
     [
         "item_sheepstick",
         "item_ethereal_blade",
@@ -29,10 +33,23 @@ items = mainCombo.AddImageSelector(
         "item_guardian_greaves",
         "item_ghost",
         "item_glimmer_cape"
-    ],
+    ], new Map<string, boolean>([
+        ["item_sheepstick", true],
+        ["item_ethereal_blade", true],
+        ["item_dagon_5", true],
+        ["item_veil_of_discord", true],
+        ["item_orchid", true],
+        ["item_bloodthorn", true],
+        ["item_shivas_guard", true],
+        ["item_nullifier", true],
+        ["item_lotus_orb", true],
+        ["item_rod_of_atos", true],
+        ["item_guardian_greaves", true],
+        ["item_ghost", true],
+        ["item_glimmer_cape", true]
+    ]),
 ),
 helpF = mainCombo.AddToggle("Cast Lotus On Allies",true),
-etherD = mainCombo.AddToggle("Cast Damage Only in Ethereal", true),//COMBO
 bmcheck = mainCombo.AddToggle("Check for BladeMail", true),
 rockSp = menu.AddNode("Spam"),//SPAMMING
 spamKey = rockSp.AddKeybind("Rocket Spam Key"),
@@ -43,7 +60,12 @@ spamItems = rockSp.AddImageSelector(
         "item_glimmer_cape",
         "item_bottle",
         "item_guardian_greaves"
-    ],
+    ], new Map<string, boolean>([
+        ["item_ghost", true],
+        ["item_glimmer_cape", true],
+        ["item_bottle", true],
+        ["item_guardian_greaves", true]
+    ]),
 ),
 spamBlink = rockSp.AddToggle("Follow/Blink to cursor(rockets)", false),
 marshKey = rockSp.AddKeybind("Marsh Spam Key"),
@@ -54,7 +76,12 @@ marshItems = rockSp.AddImageSelector(
         "item_glimmer_cape",
         "item_bottle",
         "item_guardian_greaves"
-    ],
+    ], new Map<string, boolean>([
+        ["item_ghost", true],
+        ["item_glimmer_cape", true],
+        ["item_bottle", true],
+        ["item_guardian_greaves", true]
+    ]),
 ),
 marshBlink = rockSp.AddToggle("Follow/Blink to cursor(marsh)", false),//SPAM
 autoS = menu.AddNode("Auto Use"),
@@ -158,7 +185,6 @@ export {
 ,abils 
 ,items 
 ,helpF 
-,etherD 
 ,drawable 
 ,drawTargetParticle 
 ,statusPosX 

@@ -2,7 +2,7 @@ import { GameSleeper, Sleeper, Game, Vector3, Utils } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, MyHero, Heroes,  trees } from "../Listeners"
 import { BreakInit } from "./LinkenBreaker";
-import { etherD, abils, bmcheck, blinkRadius, comboKey, items,blinkM, helpF,blinkV, soulTresh, active,  blinkKey } from "../MenuManager"
+import { abils, bmcheck, blinkRadius, comboKey, items,blinkM, helpF,blinkV, soulTresh, active } from "../MenuManager"
 
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
@@ -251,60 +251,54 @@ export function MainCombo() {
 			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Discord.Index}`)
 			return true
 		}
-		if (etherD.value)
-		{
-			
+
+		if (Abilities.w !== undefined//rocket
+			&& !Abilities.w.IsInAbilityPhase
+			&& Abilities.w.CanBeCasted()
+			&& abils.IsEnabled("tinker_heat_seeking_missile")
+			&& MyHero.Distance2D(target) <= 2500+MyHero.CastRangeBonus
+			&& !Sleep.Sleeping(`${target.Index + Abilities.w.Index}`)
+		) {
+			Abilities.w.UseAbility()
+			//console.log("rocket: "+Game.RawGameTime)
+			Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.w.Index}`)
+			return true
 		}
-		if (ItemsInit.Ethereal === undefined 
-			|| etherD.value&&(ItemsInit.EtherealDelay||target.IsEthereal) || !etherD.value
-			) {
-			if (Abilities.w !== undefined//rocket
-				&& !Abilities.w.IsInAbilityPhase
-				&& Abilities.w.CanBeCasted()
-				&& abils.IsEnabled("tinker_heat_seeking_missile")
-				&& MyHero.Distance2D(target) <= 2500+MyHero.CastRangeBonus
-				&& !Sleep.Sleeping(`${target.Index + Abilities.w.Index}`)
-			) {
-				Abilities.w.UseAbility()
-				//console.log("rocket: "+Game.RawGameTime)
-				Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.w.Index}`)
-				return true
-			}
-				//shivas
-			if (ItemsInit.Shivas !== undefined
-				&& ItemsInit.Shivas.CanBeCasted()
-				&& items.IsEnabled("item_shivas_guard")
-				&&!Sleep.Sleeping(`${target.Index + ItemsInit.Shivas.Index}`)
-				&& MyHero.Distance2D(target)<= 800 + MyHero.CastRangeBonus
-			) {
-				ItemsInit.Shivas.UseAbility()
-				Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Shivas.Index}`)
-				return true
-			}
-			if (Abilities.q !== undefined//laser
-				&& !Abilities.q.IsInAbilityPhase
-				&& Abilities.q.CanBeCasted()
-				&& abils.IsEnabled("tinker_laser")
-				&& MyHero.Distance2D(target) < 650+MyHero.CastRangeBonus
-				&& !Sleep.Sleeping(`${target.Index + Abilities.q.Index}`)
-			) {
-				Abilities.q.UseAbility(target)
-				//console.log("laser: "+Game.RawGameTime)
-				Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.q.Index}`)
-				return true
-			}
-			if (ItemsInit.Dagon !== undefined//dagon
-				&& items.IsEnabled("item_dagon_5")
-				&& ItemsInit.Dagon.CanBeCasted()
-				&& MyHero.Distance2D(target) <= ItemsInit.Dagon.CastRange
-				&& !Sleep.Sleeping(`${target.Index + ItemsInit.Dagon.Index}`)
-				) {
-				ItemsInit.Dagon.UseAbility(target)
-				//console.log("dagon: "+Game.RawGameTime)
-				Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Dagon.Index}`)
-				return true
-			}
+			//shivas
+		if (ItemsInit.Shivas !== undefined
+			&& ItemsInit.Shivas.CanBeCasted()
+			&& items.IsEnabled("item_shivas_guard")
+			&&!Sleep.Sleeping(`${target.Index + ItemsInit.Shivas.Index}`)
+			&& MyHero.Distance2D(target)<= 800 + MyHero.CastRangeBonus
+		) {
+			ItemsInit.Shivas.UseAbility()
+			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Shivas.Index}`)
+			return true
 		}
+		if (Abilities.q !== undefined//laser
+			&& !Abilities.q.IsInAbilityPhase
+			&& Abilities.q.CanBeCasted()
+			&& abils.IsEnabled("tinker_laser")
+			&& MyHero.Distance2D(target) < 650+MyHero.CastRangeBonus
+			&& !Sleep.Sleeping(`${target.Index + Abilities.q.Index}`)
+		) {
+			Abilities.q.UseAbility(target)
+			//console.log("laser: "+Game.RawGameTime)
+			Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.q.Index}`)
+			return true
+		}
+		if (ItemsInit.Dagon !== undefined//dagon
+			&& items.IsEnabled("item_dagon_5")
+			&& ItemsInit.Dagon.CanBeCasted()
+			&& MyHero.Distance2D(target) <= ItemsInit.Dagon.CastRange
+			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Dagon.Index}`)
+			) {
+			ItemsInit.Dagon.UseAbility(target)
+			//console.log("dagon: "+Game.RawGameTime)
+			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Dagon.Index}`)
+			return true
+		}
+		
 		//glimmer
 		if (ItemsInit.Glimmer !== undefined
 			&& ItemsInit.Glimmer.CanBeCasted()

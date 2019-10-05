@@ -65,7 +65,7 @@ let AutoUseItemsUrn = SettingsAutoItems.AddNode("Urn / Vessel"),
 let AutoUseItemsMjollnir = SettingsAutoItems.AddNode("Mjollnir"),
 	AutoUseItemsMjollnir_val = AutoUseItemsMjollnir.AddSlider("Distance from enemy", 600, 150, 2000)
 
-let AutoUseItemsBluker = SettingsAutoItems.AddNode("Bluker"),
+let AutoUseItemsBluker = SettingsAutoItems.AddNode("Buckler"),
 	AutoUseItemsBluker_val = AutoUseItemsBluker.AddSlider("Distance from enemy", 1000, 150, 2000)
 	
 export {
