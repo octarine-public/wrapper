@@ -45,10 +45,10 @@ EventsSDK.on("Update", () => {
 })
 
 EventsSDK.on("PrepareUnitOrders", orders => {
-	if (!state.value || LocalPlayer === undefined) {
-		return false
+	if (!state.value) {
+		return
 	}
-	if (LocalPlayer.IsSpectator) {
+	if (LocalPlayer.IsSpectator || LocalPlayer === undefined) {
 		return false
 	}
 	const MyHero = LocalPlayer.Hero
