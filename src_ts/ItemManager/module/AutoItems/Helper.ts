@@ -346,7 +346,6 @@ function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
 			if (!AutoUseItemsMidas_CheckBIG.value) {
 				if (AutoUseItemsMidas_range.value) {
 					if (!Creep.IsMelee) {
-						Item.UseAbility(Creep)
 						Unit.CastTarget(Item, Creep)
 						Sleep.Sleep(GetDelayCast(), Item.Name)
 						return true
