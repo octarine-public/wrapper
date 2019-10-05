@@ -114,7 +114,7 @@ function AutoUseItems(unit: Unit) {
 				: AutoUseItemsPhaseBootsState.value
 
 			if (!AutoUseItemsPhaseBootsState.value || enemy_phase_in_position) {
-				Items.PhaseBoots.UseAbility(unit)
+				unit.CastNoTarget(Items.PhaseBoots)
 				Sleep.Sleep(DelayCast, Items.PhaseBoots.Name)
 				return true
 			}
@@ -126,7 +126,7 @@ function AutoUseItems(unit: Unit) {
 			&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsMjollnir_val.value)
 
 		if (enemy_mjolnir) {
-			Items.Mjollnir.UseAbility(unit)
+			unit.CastTarget(Items.Mjollnir, unit)
 			Sleep.Sleep(DelayCast, Items.Mjollnir.Name)
 			return true
 		}
@@ -135,12 +135,12 @@ function AutoUseItems(unit: Unit) {
 	if ((IsValidItem(Items.MagicWand) || IsValidItem(Items.MagicStick))) {
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
-				Items.MagicStick.UseAbility(unit)
+				unit.CastNoTarget(Items.MagicStick)
 				Sleep.Sleep(DelayCast, Items.MagicStick.Name)
 				return true
 			}
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
-				Items.MagicWand.UseAbility(unit)
+				unit.CastNoTarget(Items.MagicStick)
 				Sleep.Sleep(DelayCast, Items.MagicWand.Name)
 				return true
 			}
@@ -150,7 +150,7 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.FaerieFire)) {
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HP < AutoUseItemsFaerieFire_val.value) {
-				Items.FaerieFire.UseAbility(unit)
+				unit.CastNoTarget(Items.FaerieFire)
 				Sleep.Sleep(DelayCast, Items.FaerieFire.Name)
 				return true
 			}
@@ -160,7 +160,7 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.Cheese)) {
 		if (unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsCheese_val.value) {
-				Items.Cheese.UseAbility(unit)
+				unit.CastNoTarget(Items.Cheese)
 				Sleep.Sleep(DelayCast, Items.Cheese.Name)
 				return true
 			}
@@ -171,7 +171,7 @@ function AutoUseItems(unit: Unit) {
 		if (!Sleep.Sleeping(Items.ArcaneBoots.Index)
 			&& !unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsArcane_val.value) {
-				Items.ArcaneBoots.UseAbility(unit)
+				unit.CastNoTarget(Items.ArcaneBoots)
 				Sleep.Sleep(DelayCast, Items.ArcaneBoots.Name)
 				return true
 			}
@@ -188,6 +188,7 @@ function AutoUseItems(unit: Unit) {
 						&& unit.IsAlive)
 				) {
 					Item.UseAbility(unit)
+					unit.CastNoTarget(Item)
 					Sleep.Sleep(DelayCast, Item.Name)
 					return true
 				}
@@ -215,7 +216,7 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.Bloodstone)) {
 		if (unit.HPPercent < AutoUseItemsBloodHP_val.value
 			&& unit.ManaPercent > AutoUseItemsBloodMP_val.value) {
-			Items.Bloodstone.UseAbility(unit)
+			unit.CastNoTarget(Items.Bloodstone)
 			Sleep.Sleep(DelayCast, Items.Bloodstone.Name)
 			return true
 		}
@@ -225,7 +226,7 @@ function AutoUseItems(unit: Unit) {
 		let enemy_bluker = AllUnits.some(enemy => enemy.IsEnemy(unit) && enemy.IsAlive && enemy.IsVisible
 			&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsBluker_val.value)
 		if (enemy_bluker) {
-			Items.Buckler.UseAbility(unit)
+			unit.CastNoTarget(Items.Buckler)
 			Sleep.Sleep(DelayCast, Items.Buckler.Name)
 			return true
 		}
@@ -237,7 +238,7 @@ function AutoUseItems(unit: Unit) {
 			if (Creep.length > 0) {
 				Creep = ArrayExtensions.Sorter(Creep, "MaxHP", true)
 				if (unit.Distance2D(Creep[0].Position) <= ((Items.Midas.CastRange + unit.CastRangeBonus) + 100) && unit.CanAttack(Creep[0])) {
-					Items.Midas.UseAbility(Creep[0])
+					unit.CastTarget(Items.Midas, Creep[0])
 					Sleep.Sleep(DelayCast, Items.Midas.Name)
 					return true
 				}
@@ -260,7 +261,7 @@ function AutoUseItems(unit: Unit) {
 				x.Name === "modifier_item_urn_heal"
 				|| x.Name === "modifier_item_spirit_vessel_heal")
 		) {
-			Item.UseAbility(LocalPlayer.Hero)
+			LocalPlayer.Hero.CastTarget(Item, LocalPlayer.Hero)
 			return true
 		}
 		if (AutoUseItemsUrnAlies.value) {
@@ -315,7 +316,7 @@ function AutoUseItems(unit: Unit) {
 		AllUnits.filter(enemy => enemy.IsEnemy(unit) && enemy.IsValid && enemy.IsAlive).some(x => {
 			if (!x.IsInRange(unit, Items.Abyssal.CastRange))
 				return false
-			Items.Abyssal.UseAbility(x)
+			unit.CastTarget(Items.Abyssal, x)
 			Sleep.Sleep(DelayCast, Items.Abyssal.Name)
 			return true
 		})
@@ -346,11 +347,12 @@ function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
 				if (AutoUseItemsMidas_range.value) {
 					if (!Creep.IsMelee) {
 						Item.UseAbility(Creep)
+						Unit.CastTarget(Item, Creep)
 						Sleep.Sleep(GetDelayCast(), Item.Name)
 						return true
 					}
 				} else {
-					Item.UseAbility(Creep)
+					Unit.CastTarget(Item, Creep)
 					Sleep.Sleep(GetDelayCast(), Item.Name)
 					return true
 				}

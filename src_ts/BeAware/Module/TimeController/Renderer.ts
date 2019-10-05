@@ -1,4 +1,4 @@
-import { Unit, RendererSDK, Color, Game, Vector2, Menu, Team, LocalPlayer } from "wrapper/Imports";
+import { Unit, RendererSDK, Color, Game, Vector2, Menu, Team } from "wrapper/Imports";
 import { Units, Owner, IsShrine } from "./Entities";
 import {
 	

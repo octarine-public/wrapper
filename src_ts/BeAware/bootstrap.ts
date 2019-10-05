@@ -56,10 +56,14 @@ EventsSDK.on("GameStarted", hero => {
 	Techies.GameStarted()
 	ParticleHack.GameStarted()
 	ParticleHack.GameStarted()
+	EnemyLaneSelection.GameStarted()
 	TimeControllerEnt.GameStarted(hero)
 })
 EventsSDK.on("GameEnded", GameEnded_list)
-EventsSDK.on("GameConnected", ParticleHack.GameConnect)
+EventsSDK.on("GameConnected", () => {
+	ParticleHack.GameConnect() 
+	EnemyLaneSelection.GameConnect()
+})
 EventsSDK.on("EntityCreated", TimeControllerEnt.EntityCreated)
 EventsSDK.on("EntityDestroyed", TimeControllerEnt.EntityDestroyed)
 function GameEnded_list() {
@@ -73,4 +77,5 @@ function GameEnded_list() {
 	// TopHud.gameEnded()
 	ParticleHack.GameEnded()
 	TimeControllerEnt.GameEnded()
+	EnemyLaneSelection.GameEnded()
 }

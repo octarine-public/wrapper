@@ -1,5 +1,5 @@
 import { Color, Game, RendererSDK, Vector2 } from "wrapper/Imports"
-import { BaseTree, drawStatus, IsAlive, NotificationRoshanStateChat, State, statusPosX, statusPosY} from "./Menu"
+import { BaseTree, drawStatus, IsAlive, NotificationRoshanStateChat, State, statusPosX, statusPosY, drawStatusSize} from "./Menu"
 var Timer: number = 0
 export function ParticleCreate(Handle: BigInt) {
 	if (!State.value || !Game.IsInGame)
@@ -31,9 +31,10 @@ export function ParticleCreate(Handle: BigInt) {
 };
 
 function RoshanDraw(Text: string, color?: Color) {
+	
 	let VectorSize = RendererSDK.WindowSize.DivideScalar(100).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value)
-	RendererSDK.Text(`${BaseTree.name}: ` + Text, VectorSize, new Color(255, 255, 255, 255), "Radiance", 24)
-	//RendererSDK.Text("•", RendererSDK.WindowSize.DivideScalar(88).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value - 1.56), color, "Radiance", 44)
+	RendererSDK.Text(`${BaseTree.name}: ` + Text, VectorSize, new Color(255, 255, 255, 255), "Calibri", drawStatusSize.value, FontFlags_t.ANTIALIAS)
+	// RendererSDK.Text("•", RendererSDK.WindowSize.DivideScalar(88).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value - 1.56), color, "Calibri", 44)
 }
 
 export function Draw() {
