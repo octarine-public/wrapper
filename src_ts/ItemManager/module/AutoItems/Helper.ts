@@ -133,15 +133,18 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if ((IsValidItem(Items.MagicWand) || IsValidItem(Items.MagicStick))) {
+		let Item = Items.MagicWand !== undefined 
+			? Items.MagicWand 
+			: Items.MagicStick
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
-				unit.CastNoTarget(Items.MagicStick)
-				Sleep.Sleep(DelayCast, Items.MagicStick.Name)
+				unit.CastNoTarget(Item)
+				Sleep.Sleep(DelayCast, Item.Name)
 				return true
 			}
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
-				unit.CastNoTarget(Items.MagicStick)
-				Sleep.Sleep(DelayCast, Items.MagicWand.Name)
+				unit.CastNoTarget(Item)
+				Sleep.Sleep(DelayCast, Item.Name)
 				return true
 			}
 		}
