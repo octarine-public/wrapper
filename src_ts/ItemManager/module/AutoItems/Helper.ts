@@ -99,6 +99,7 @@ function IsValidItem(Items: Item) {
 }
 
 function AutoUseItems(unit: Unit) {
+
 	if (!IsValidUnit(unit)) {
 		return false
 	}
@@ -382,7 +383,7 @@ function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true
 }
 
 export function Tick() {
-	if (!StateBase.value || !State.value || SleepCHeck() || !Game.IsInGame || Game.IsPaused) {
+	if (!StateBase.value || !State.value || SleepCHeck()) {
 		return false
 	}
 	if(!Units.some(x => x !== undefined 

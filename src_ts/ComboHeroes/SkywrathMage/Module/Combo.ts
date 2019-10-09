@@ -205,11 +205,10 @@ export function InitCombo() {
 		// Shivas
 		if (ItemsInit.Shivas !== undefined
 			&& Items.IsEnabled(ItemsInit.Shivas.Name)
-			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Shivas.Index}`)
 			&& ItemsInit.Shivas.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.Shivas.CastRange) {
 			ItemsInit.Shivas.UseAbility()
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Shivas.Index}`)
+			Sleep.Sleep(ItemsInit.Tick, "Delay")
 			return true
 		}
 		// ConcussiveShot
