@@ -1,11 +1,9 @@
-import { EventsSDK, Game, Entity } from "wrapper/Imports"
+import { EventsSDK, Entity } from "wrapper/Imports"
 import * as AutoDeward from "../module/AutoDeward/Helper"
 import * as AutoItems from "../module/AutoItems/Helper"
 //import * as Shrine from "../module/Shrine/Helper"
 
-EventsSDK.on("EntityCreated", (ent, index) => {
-	if (!Game.IsInGame || Game.IsPaused)
-		return false
+EventsSDK.on("EntityCreated", ent => {
 	//Shrine.EntityCreate(ent)
 	AutoItems.EntityCreate(ent)
 	AutoDeward.EntityCreate(ent)

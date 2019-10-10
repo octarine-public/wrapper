@@ -25,7 +25,7 @@ import ItemManagerBase from "../../abstract/Base"
 import { StateBase } from "../../abstract/MenuBase"
 
 let Units: Unit[] = [],
-	AllUnits: Unit[] = [],
+	AllUnitsHero: Unit[] = [],
 	AllCreeps: Creep[] = [],
 	Trees: TreeTemp[] = [],
 	Particle: Array<[number, Vector3?]> = [] // TODO Radius for ability
@@ -109,7 +109,7 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.PhaseBoots)) {
 		if (unit.IsMoving || unit.IdealSpeed >= Base.MaxMoveSpeed) {
 			let enemy_phase_in_position = AutoUseItemsPhaseBootsState.value
-				? AllUnits.some(enemy => enemy.IsVisible && enemy.IsAlive
+				? AllUnitsHero.some(enemy => enemy.IsVisible && enemy.IsAlive
 					&& enemy.IsEnemy(unit)
 					&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsPhase_val.value)
 				: AutoUseItemsPhaseBootsState.value
@@ -123,7 +123,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.Mjollnir)) {
-		let enemy_mjolnir = AllUnits.some(enemy => enemy.IsVisible && enemy.IsEnemy(unit)
+		let enemy_mjolnir = AllUnitsHero.some(enemy => enemy.IsVisible && enemy.IsEnemy(unit)
 			&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsMjollnir_val.value)
 
 		if (enemy_mjolnir) {
@@ -184,7 +184,7 @@ function AutoUseItems(unit: Unit) {
 
 	if (IsValidItem(Items.Mekansm) || IsValidItem(Items.GuardianGreaves)) {
 		let Item = !Items.Mekansm ? Items.GuardianGreaves : Items.Mekansm
-		AllUnits.some(allies => {
+		AllUnitsHero.some(allies => {
 			if (!allies.IsEnemy(unit) && unit.IsInRange(allies.NetworkPosition, Item.AOERadius)) {
 				if (!unit.Buffs.some(buff => buff.Name === "modifier_item_mekansm_noheal")
 					&& (allies.HPPercent <= AutoUseItemsMG_val.value
@@ -203,7 +203,7 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.Bottle)) {
 		if (Items.Bottle.CurrentCharges === 3) {
 			if (unit.Buffs.some(buff => buff.Name === "modifier_fountain_aura_buff")) {
-				AllUnits.some(allies => {
+				AllUnitsHero.some(allies => {
 					if (!allies.IsEnemy(unit) && unit.IsInRange(allies.NetworkPosition, Items.Bottle.CastRange)) {
 						if (!allies.IsInvulnerable && !unit.Buffs.some(buff => buff.Name === "modifier_bottle_regeneration")
 							&& (allies.Mana !== allies.MaxMana || allies.HP !== allies.MaxHP)) {
@@ -227,7 +227,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.Buckler)) {
-		let enemy_bluker = AllUnits.some(enemy => enemy.IsEnemy(unit) && enemy.IsAlive && enemy.IsVisible
+		let enemy_bluker = AllUnitsHero.some(enemy => enemy.IsEnemy(unit) && enemy.IsAlive && enemy.IsVisible
 			&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsBluker_val.value)
 		if (enemy_bluker) {
 			unit.CastNoTarget(Items.Buckler)
@@ -285,7 +285,7 @@ function AutoUseItems(unit: Unit) {
 					return e[0]
 				return setTimeout(() => Particle = [], 3000)
 			})
-			let IsVisible = AllUnits.some(enemy => unit.IsEnemy(enemy)
+			let IsVisible = AllUnitsHero.some(enemy => unit.IsEnemy(enemy)
 					&& enemy.IsAlive
 					&& unit.IsInRange(enemy.NetworkPosition, Items.Dust.CastRange)
 					&& !enemy.ModifiersBook.HasAnyBuffByNames(Buffs.InvisDebuff)
@@ -296,7 +296,7 @@ function AutoUseItems(unit: Unit) {
 						|| glimer_cape !== undefined
 						|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
 					)
-					&& !AllUnits.some(allies => !unit.IsEnemy(enemy) && allies.GetItemByName("item_gem")
+					&& !AllUnitsHero.some(allies => !unit.IsEnemy(enemy) && allies.GetItemByName("item_gem")
 					&& allies.Distance2D(enemy.Position) < 800))
 		
 			if (IsVisible) {
@@ -317,7 +317,8 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.Abyssal)) {
-		AllUnits.filter(enemy => enemy.IsEnemy(unit) && enemy.IsValid && enemy.IsAlive).some(x => {
+		// loop-optimizer: FORWARD
+		AllUnitsHero.filter(enemy => enemy.IsEnemy(unit) && enemy.IsValid && enemy.IsAlive).some(x => {
 			if (!x.IsInRange(unit, Items.Abyssal.CastRange))
 				return false
 			unit.CastTarget(Items.Abyssal, x)
@@ -335,6 +336,7 @@ function CheckUnitForUrn(Unit: Unit, MaxHP: number) {
 }
 
 function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
+	// loop-optimizer: FORWARD
 	return AllCreeps.filter(Creep => {
 		if (Creep !== undefined
 			&& Unit.CanAttack(Creep)
@@ -368,7 +370,8 @@ function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
 }
 
 function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true) {
-	AllUnits.map(enemy => {
+	// loop-optimizer: FORWARD
+	AllUnitsHero.map(enemy => {
 		let target = IsEnemy ? enemy : unit
 		if (unit.IsInRange(target.NetworkPosition, Item.CastRange)) {
 			if (CheckUnitForUrn(target, IsEnemy ? AutoUseItemsUrnAliesEnemyHP.value : AutoUseItemsUrnAliesAlliesHP.value) && !enemy.IsIllusion
@@ -386,16 +389,16 @@ export function Tick() {
 	if (!StateBase.value || !State.value || SleepCHeck()) {
 		return false
 	}
-	if(!Units.some(x => x !== undefined 
-		&& x.IsControllable && !x.IsEnemy()
-		&& !x.IsIllusion && x.IsAlive && AutoUseItems(x)))
-		return false
+	// loop-optimizer: FORWARD
+	Units.filter(x => x !== undefined 
+		&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double")) 
+		&& !x.IsEnemy() && x.IsAlive && AutoUseItems(x))
 }
 
 export function GameEnded() {
 	Units = []
 	Trees = []
-	AllUnits = []
+	AllUnitsHero = []
 	Sleep.FullReset()
 }
 
@@ -403,11 +406,11 @@ export function EntityCreate(Entity: Entity) {
 	if (Entity instanceof Creep && Entity.IsCreep && !Entity.IsAncient) {
 		AllCreeps.push(Entity)
 	}
-	if (Entity instanceof Unit && (Entity.IsControllable || Entity.IsHero)) {
+	if (Entity instanceof Unit && Entity.IsControllable) {
 		Units.push(Entity)
 	}
 	if (Entity instanceof Unit && Entity.IsHero) {
-		AllUnits.push(Entity)
+		AllUnitsHero.push(Entity)
 	}
 	if (Entity instanceof TreeTemp) {
 		Trees.push(Entity)
@@ -429,8 +432,8 @@ export function EntityDestroy(Entity: Entity) {
 		if (Units !== undefined && Units.length > 0) {
 			ArrayExtensions.arrayRemove(Units, Entity)
 		}
-		if (AllUnits !== undefined && AllUnits.length > 0) {
-			ArrayExtensions.arrayRemove(AllUnits, Entity)
+		if (AllUnitsHero !== undefined && AllUnitsHero.length > 0) {
+			ArrayExtensions.arrayRemove(AllUnitsHero, Entity)
 		}
 	}
 }
