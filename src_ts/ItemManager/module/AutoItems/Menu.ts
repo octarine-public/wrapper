@@ -1,30 +1,45 @@
 import { Menu, MenuBase } from "../../abstract/MenuBase"
+import InitItems from "../../abstract/Items"
 const { BaseTree, State } = MenuBase(Menu, "Auto Items")
 State.SetTooltip("Auto use items")
-// loop-optimizer: KEEP
-let Items: string[] = [
-	"item_abyssal_blade",
-	"item_phase_boots",
-	"item_magic_stick",
-	"item_magic_wand",
-	"item_hand_of_midas",
-	"item_arcane_boots",
-	"item_mekansm",
-	"item_guardian_greaves",
-	"item_bottle",
-	"item_urn_of_shadows",
-	"item_spirit_vessel",
-	"item_bloodstone",
-	"item_tango",
-	"item_tango_single",
-	"item_faerie_fire",
-	"item_dust",
-	"item_buckler",
-	"item_cheese",
-	"item_mjollnir",
-]
 
-let ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items)
+let Items = new InitItems(undefined)
+
+// loop-optimizer: KEEP
+let Items_array: string[] = [
+	Items.Abyssal.toString(),
+	Items.PhaseBoots.toString(),
+	Items.MagicStick.toString(),
+	Items.MagicWand.toString(),
+	Items.SoulRing.toString(),
+	Items.Midas.toString(),
+	Items.ArcaneBoots.toString(),
+	Items.Mekansm.toString(),
+	Items.GuardianGreaves.toString(),
+	Items.Bottle.toString(),
+	Items.UrnOfShadows.toString(),
+	Items.SpiritVesel.toString(),
+	Items.Bloodstone.toString(),
+	Items.Tango.toString(),
+	Items.FaerieFire.toString(),
+	Items.Dust.toString(),
+	Items.Buckler.toString(),
+	Items.Cheese.toString(),
+	Items.Mjollnir.toString(),
+],
+activeItems: Map <string, boolean> = new Map<string, boolean>([
+	[Items_array[0], true], [Items_array[1], true],
+	[Items_array[2], true], [Items_array[3], true],
+	[Items_array[4], true], [Items_array[5], true],
+	[Items_array[6], true], [Items_array[7], true],
+	[Items_array[8], true], [Items_array[9], true],
+	[Items_array[10], true], [Items_array[11], true],
+	[Items_array[12], true], [Items_array[13], true],
+	[Items_array[14], true], [Items_array[15], true],
+	[Items_array[16], true], [Items_array[17], true],
+	[Items_array[18], true]
+])
+let ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items_array, activeItems)
 
 // Settings Items
 let SettingsAutoItems = BaseTree.AddNode("Items settings"),
@@ -47,6 +62,13 @@ let AutoUseItemsArcane = SettingsAutoItems.AddNode("Arcane Boots"),
 let AutoUseItemsMG = SettingsAutoItems.AddNode("Mekansm / Graves"),
 	AutoUseItemsMG_val = AutoUseItemsMG.AddSlider("HP precent (%)", 10, 1, 99)
 
+let AutoUseItemsSouring = SettingsAutoItems.AddNode("Soul Ring"),
+	AutoUseItemsSouringInvis = AutoUseItemsSouring.AddToggle("Use when invisible"),
+	AutoUseItemsSouringHP_val = AutoUseItemsSouring.AddSlider("HP(%) threshold ", 70, 0, 100),
+	AutoUseItemsSouringMP_val = AutoUseItemsSouring.AddSlider("MP(%) threshold", 100, 0, 100),
+	AutoUseItemsSouringMPUse_val = AutoUseItemsSouring.AddSlider("MP ability threshold", 25, 0, 100)
+
+	
 let AutoUseItemsBlood = SettingsAutoItems.AddNode("Bloodstone"),
 	AutoUseItemsBloodHP_val = AutoUseItemsBlood.AddSlider("HP precent (%)", 10, 1, 99),
 	AutoUseItemsBloodMP_val = AutoUseItemsBlood.AddSlider("Min mana precent (%)", 7, 1, 100)
@@ -87,5 +109,9 @@ export {
 	AutoUseItemsPhase_val,
 	AutoUseItemsPhaseBootsState,
 	AutoUseItemsMjollnir_val,
-	AutoUseItemsBluker_val
+	AutoUseItemsBluker_val,
+	AutoUseItemsSouringHP_val,
+	AutoUseItemsSouringMP_val,
+	AutoUseItemsSouringInvis,
+	AutoUseItemsSouringMPUse_val
 }

@@ -7,7 +7,6 @@ import * as Parse from "./Utils/ParseKV"
 import * as Utils from "./Utils/Utils"
 export { default as Benchmark } from "./Utils/BenchMark"
 export { Team } from "./Helpers/Team"
-
 export { Utils, MathSDK, Debug, ArrayExtensions, MapExtensions, Parse }
 
 // base
@@ -26,7 +25,7 @@ import * as Menu from "./Menu/Imports"
 export { Menu }
 
 // Helpers
-export { Sleeper, GameSleeper } from "./Helpers/Sleeper"
+export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
 
 // Managers
 export {

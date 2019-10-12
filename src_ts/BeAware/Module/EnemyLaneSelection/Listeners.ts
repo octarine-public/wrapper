@@ -1,6 +1,7 @@
 import { Game, RendererSDK, LocalPlayer, Team, Vector2, GameSleeper } from "wrapper/Imports"
 import { 
-	//ShowAfterGameStart, 
+	//ShowAfterGameStart,
+	DrawPositionGap,
 	State, DrawPositionX, DrawPositionY, SendAlliesChat, ChatTimeOutSend, ChatTimeOutSendRepeat } from "./Menu"
 
 enum LaneSelectionFlags_t {
@@ -57,7 +58,7 @@ ChatTimeOutSendRepeat.OnValue(x => {
 
 let player_size = 125,
 	team_offset = 250,
-	first_offset = 140,
+	first_offset = DrawPositionGap.value,
 	is_send_chat = 0
 	
 

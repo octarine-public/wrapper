@@ -1,25 +1,23 @@
 import { EventsSDK, LocalPlayer, Game } from "wrapper/Imports"
 import * as AutoDeward from "./module/AutoDeward/Helper"
 import * as AutoItems from "./module/AutoItems/Helper"
+import * as AutoGlyph from "./module/AutoGlyph/Helper"
 
 EventsSDK.on("Tick", () => {
 	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || !Game.IsInGame || Game.IsPaused) {
 		return false
 	}
+	AutoGlyph.Tick()
 	AutoItems.Tick()
 	AutoDeward.Tick()
 })
 
-EventsSDK.on("GameStarted", () => {
-	if (LocalPlayer === undefined || LocalPlayer.IsSpectator) {
-		return false
-	}
+EventsSDK.on("GameStarted", hero => {
+	AutoGlyph.GameStarted(hero)
 })
 
 EventsSDK.on("GameEnded", () => {
-	if (LocalPlayer === undefined || LocalPlayer.IsSpectator) {
-		return false
-	}
+	AutoGlyph.GameEnded()
 	AutoItems.GameEnded()
 	AutoDeward.GameEnded()
 })

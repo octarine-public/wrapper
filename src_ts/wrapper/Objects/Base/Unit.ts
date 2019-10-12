@@ -69,7 +69,11 @@ export default class Unit extends Entity {
 		"modifier_pugna_decrepify",
 		"modifier_necrolyte_sadist_active",
 	]
-
+	private CanUseAbilitiesInInvis: string[] = [
+		"modifier_broodmother_spin_web_invisible_applier",
+		"modifier_riki_permanent_invisibility",
+		"modifier_treant_natures_guise_invis"
+	]
 	/* ================ GETTERS ================ */
 	public get IsHero(): boolean {
 		return HasBit(this.UnitType, 0)
@@ -393,6 +397,9 @@ export default class Unit extends Entity {
 	}
 	public get IsEthereal(): boolean {
 		return this.ModifiersBook.HasAnyBuffByNames(this.EtherealModifiers)
+	}
+	public get CanUseAbilitiesInInvisibility(): boolean {
+		return this.ModifiersBook.HasAnyBuffByNames(this.CanUseAbilitiesInInvis);
 	}
 	public get Spells(): Ability[] {
 		return this.AbilitiesBook.Spells
@@ -1001,6 +1008,9 @@ export default class Unit extends Entity {
 	}
 	public UnitTaunt(queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT, unit: this, queue, showEffects })
+	}
+	public UnitGlyph(queue?: boolean, showEffects?: boolean) {
+		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, unit: this, queue, showEffects })
 	}
 	public ItemFromStash(item: Item) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH, unit: this, ability: item })

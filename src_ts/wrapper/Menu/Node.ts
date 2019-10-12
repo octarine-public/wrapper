@@ -20,9 +20,9 @@ export default class Node extends Base {
 	is_open = false
 	is_hovered = false
 	protected readonly node_hovered_color = new Color(21, 24, 22)
-	protected readonly node_selected_color = new Color(14, 14, 14)
-	protected readonly ArrowSize = 24
-	protected readonly node_arrow_size = RendererSDK.GetTextSize(">", this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
+	protected readonly node_selected_color = new Color(14, 14, 14, 249)
+	protected readonly ArrowSize = 36
+	protected readonly node_arrow_size = RendererSDK.GetTextSize("»", this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS).AddScalarY(-6)
 	protected readonly arrow_offset = this.text_offset.Clone().AddScalarX(15).AddScalarY(this.node_arrow_size.y).AddForThis(this.border_size)
 	protected readonly node_arrow_color = new Color(68, 68, 68)
 	protected readonly node_selected_arrow_color = new Color(0x40, 0x80, 0xff)
@@ -44,7 +44,7 @@ export default class Node extends Base {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.is_open ? this.node_selected_color : this.is_hovered ? this.node_hovered_color : this.background_color)
 		RendererSDK.Text(this.name, this.Position.Add(this.border_size).AddForThis(this.text_offset), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
-		RendererSDK.Text(">", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
 		if (!this.is_open)
 			return
 

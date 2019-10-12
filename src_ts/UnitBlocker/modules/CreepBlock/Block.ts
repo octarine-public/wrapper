@@ -131,7 +131,7 @@ export function Update() {
 			break
 	}
 
-	sleeper.Sleep(countUnits * 20, "tick")
+	sleeper.Sleep(countUnits * 25, "tick")
 }
 
 export function Draw(): string {

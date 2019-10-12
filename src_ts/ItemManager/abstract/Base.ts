@@ -1,7 +1,6 @@
-import { EntityManager, Unit, Team } from "wrapper/Imports"
-
+import { Unit } from "wrapper/Imports"
 export default class ItemManagerBase {
-	private readonly unit: Unit
+	public readonly unit: Unit
 	constructor(unit?: Unit) {
 		this.unit = unit
 	}

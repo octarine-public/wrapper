@@ -8,7 +8,7 @@ export default class Switcher extends Base {
 	values: string[]
 	public selected_id = 0
 	protected readonly ArrowSize = 24
-	protected readonly arrow_size = RendererSDK.GetTextSize("<", this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
+	protected readonly arrow_size = RendererSDK.GetTextSize("«", this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
 	protected readonly arrow_rect_size = new Vector2().AddScalar(this.arrow_size.y)
 	protected readonly arrow_rect_offset = this.text_offset.Add(this.arrow_rect_size).AddForThis(this.border_size)
 	protected readonly arrow_offset = new Vector2(this.arrow_rect_size.x / 2 - this.arrow_size.x / 2, -1)
@@ -54,9 +54,9 @@ export default class Switcher extends Base {
 		let left_rect = this.LeftArrowRect,
 			right_rect = this.RightArrowRect
 		RendererSDK.FilledRect(left_rect.pos1, left_rect.pos2.Subtract(left_rect.pos1), this.arrow_background_color)
-		RendererSDK.Text("<", left_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text("«", left_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
 		RendererSDK.FilledRect(right_rect.pos1, right_rect.pos2.Subtract(right_rect.pos1), this.arrow_background_color)
-		RendererSDK.Text(">", right_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text("»", right_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
 		super.RenderTooltip()
 	}
 

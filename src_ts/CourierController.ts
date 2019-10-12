@@ -1,6 +1,7 @@
-import { Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, Player, Unit, Team } from "wrapper/Imports"
+import { Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, Player, Unit, Team, GameSleeper } from "wrapper/Imports"
 
-let allyCourier: Courier
+let allyCourier: Courier,
+	Sleep: GameSleeper = new GameSleeper
 
 let TOOLTIP_NEEDPLAYING = "Your need to playing match",
 	TOOLTIP_ONPLAYING = "List of players for blocking courier(s)"
@@ -16,7 +17,9 @@ let courCtlrMenu = Menu.AddEntry(["Utility", "Courier Controller"]),
 function IsSpectator(): boolean {
 	return LocalPlayer !== undefined && LocalPlayer.Team === Team.Observer
 }
-
+function GetDelayCast() {
+	return (((Game.Ping / 2) + 30) + 250)
+}
 function UpdateMenu() {
 	playersBlockList.values = EntityManager.AllEntities
 		.filter(ent => ent instanceof Player && ent !== LocalPlayer && ent.HeroAssigned && !ent.IsEnemy())
@@ -36,11 +39,13 @@ function CourierStateChanged(cour: Courier) {
 		case CourierState_t.COURIER_STATE_AT_BASE:
 		case CourierState_t.COURIER_STATE_RETURNING_TO_BASE:
 			trySelfDeliver()
+			Sleep.Sleep(GetDelayCast(), "OrderStop")
 			break
 		case CourierState_t.COURIER_STATE_MOVING:
 		case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
 			if (!trySelfDeliver() || IsBlocked(stateCourEnt)) {
 				CastCourAbility(0)
+				Sleep.Sleep(GetDelayCast(), "OrderStop")
 			}
 			break
 		default:
@@ -49,7 +54,7 @@ function CourierStateChanged(cour: Courier) {
 }
 
 EventsSDK.on("Tick", () => {
-	if (IsSpectator())
+	if (IsSpectator() || Sleep.Sleeping("OrderStop") || Sleep.Sleeping("Shield"))
 		return
 	if (allyCourier === undefined || !Game.IsInGame || Game.IsPaused || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !State.value)
 		return
@@ -63,8 +68,10 @@ EventsSDK.on("Tick", () => {
 				&& allyCourier.IsInRange(ent, ent.AttackRange, true)
 			) {
 				let shield = allyCourier.GetAbilityByName("courier_shield")
-				if (shield !== undefined && shield.Level > 0 && shield.IsCooldownReady)
+				if (shield !== undefined && shield.Level > 0 && shield.IsCooldownReady) {
 					shield.UseAbility()
+					Sleep.Sleep(GetDelayCast(), "Shield")
+				}
 				return true
 			}
 			return false
@@ -84,10 +91,12 @@ function trySelfDeliver() {
 	let items_in_stash = localEnt.Inventory.Stash.reduce((prev, cur) => prev + (cur !== undefined ? 1 : 0), 0)
 	if (items_in_stash > 0 && allyCourier.Inventory.GetFreeSlots(0, 8).length >= items_in_stash && free_slots_local >= items_in_stash + cour_slots_local) {
 		CastCourAbility(7) // courier_take_stash_and_transfer_items
+		Sleep.Sleep(GetDelayCast(), "OrderStop")
 		return true
 	}
 	if (cour_slots_local > 0 && free_slots_local >= cour_slots_local) {
 		CastCourAbility(4) // courier_transfer_items
+		Sleep.Sleep(GetDelayCast(), "OrderStop")
 		return false
 	}
 	return false
@@ -117,8 +126,6 @@ EventsSDK.on("GameStarted", () => {
 })
 
 EventsSDK.on("GameEnded", () => {
-	if (IsSpectator())
-		return
 	allyCourier = undefined
 	playersBlockList.SetTooltip(TOOLTIP_NEEDPLAYING)
 	// loop-optimizer: KEEP
@@ -128,9 +135,6 @@ EventsSDK.on("GameEnded", () => {
 })
 
 EventsSDK.on("EntityCreated", (ent: Entity) => {
-	if (IsSpectator())
-		return
-
 	if (ent instanceof Courier && allyCourier === undefined && ent.IsControllable)
 		allyCourier = ent
 
@@ -139,8 +143,6 @@ EventsSDK.on("EntityCreated", (ent: Entity) => {
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (IsSpectator())
-		return
 	if (allyCourier === ent)
 		allyCourier = undefined
 	if (ent instanceof Hero)

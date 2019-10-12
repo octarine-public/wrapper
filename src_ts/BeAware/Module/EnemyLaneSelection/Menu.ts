@@ -9,11 +9,13 @@ let //ShowAfterGameStart = BaseTree.AddToggle("Show after game start", true),
 	ChatTimeOutSendRepeat = BaseTreeChat.AddButton("Repeat message"),
 	BaseTreeDraw = BaseTree.AddNode("Draw Settings"),
 	DrawPositionX = BaseTreeDraw.AddSlider("Position X", 84, -900, 900),
-	DrawPositionY = BaseTreeDraw.AddSlider("Position Y", 84, -900, 900)
+	DrawPositionY = BaseTreeDraw.AddSlider("Position Y", 84, -900, 900),
+	DrawPositionGap = BaseTreeDraw.AddSlider("Gap between role", 140, 0, 900)
 
 	
 export { 
 	State, BaseTree, 
 	//ShowAfterGameStart,
+	DrawPositionGap,
 	DrawPositionX, DrawPositionY, SendAlliesChat, ChatTimeOutSend, ChatTimeOutSendRepeat //DrawTextSize 
 }

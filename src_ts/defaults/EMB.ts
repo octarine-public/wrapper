@@ -14,12 +14,6 @@ const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"]),
 	floor = Math.floor
 
 EventsSDK.on("EntityCreated", npc => {
-	if (LocalPlayer === undefined) {
-		return false
-	}
-	if (LocalPlayer.IsSpectator) {
-		return false
-	}
 	if (
 		npc instanceof Hero
 		&& !npc.IsIllusion
@@ -27,12 +21,6 @@ EventsSDK.on("EntityCreated", npc => {
 		heroes.push(npc)
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (LocalPlayer === undefined) {
-		return false
-	}
-	if (LocalPlayer.IsSpectator) {
-		return false
-	}
 	if (ent instanceof Hero)
 		ArrayExtensions.arrayRemove(heroes, ent)
 })
@@ -47,10 +35,7 @@ EventsSDK.on("Update", () => {
 })
 
 EventsSDK.on("Draw", () => {
-	if(LocalPlayer === undefined) {
-		return false
-	}
-	if (!stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
+	if (LocalPlayer === undefined || !stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
 		return false
 	}
 	let off_x: number,

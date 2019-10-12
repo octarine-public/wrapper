@@ -1,8 +1,7 @@
 import InitItems from "../../abstract/Items"
-import { ArrayExtensions, Creep, Entity, GameSleeper, Item, LocalPlayer, TreeTemp, Unit, Game, Ability, Vector3, Hero } from "wrapper/Imports"
-
 import {
-	AutoUseItemsArcane_val, AutoUseItemsBloodHP_val,
+	AutoUseItemsArcane_val, 
+	AutoUseItemsBloodHP_val,
 	AutoUseItemsBloodMP_val,
 	AutoUseItemsCheese_val,
 	AutoUseItemsFaerieFire_val,
@@ -15,11 +14,18 @@ import {
 	AutoUseItemsSticks_val,
 	AutoUseItemsUrnAlies,
 	AutoUseItemsBluker_val,
-	AutoUseItemsUrnAliesAlliesHP, AutoUseItemsUrnAliesEnemyHP,
-	AutoUseItemsUrnEnemy, Items,
-	ItemsForUse,
-	State,
+	AutoUseItemsUrnAliesAlliesHP, 
+	AutoUseItemsUrnAliesEnemyHP,
+	AutoUseItemsUrnEnemy, ItemsForUse,
+	State, AutoUseItemsSouringHP_val,
+	AutoUseItemsSouringMP_val, AutoUseItemsSouringInvis,
+	AutoUseItemsSouringMPUse_val
 } from "./Menu"
+
+import { ArrayExtensions, Creep, Entity, 
+	GameSleeper, Item, LocalPlayer, TreeTemp, 
+	Unit, Game, Ability, Vector3, ExecuteOrder
+} from "wrapper/Imports"
 
 import ItemManagerBase from "../../abstract/Base"
 import { StateBase } from "../../abstract/MenuBase"
@@ -46,9 +52,9 @@ let Buffs = {
 
 let Base = new ItemManagerBase,
 	Sleep = new GameSleeper
-
+	
 function GetDelayCast() {
-	return (((Game.Ping / 2) + 30) + 380)
+	return (((Game.Ping / 2) + 30) + 250)
 }
 export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 	if (handle === 1954660700683781942n) {
@@ -82,7 +88,7 @@ function SleepCHeck() {
 	Sleep.Sleeping("item_dust") 				|| 
 	Sleep.Sleeping("item_buckler") 				|| 
 	Sleep.Sleeping("item_cheese") 				|| 
-	Sleep.Sleeping("item_mjollnir");
+	Sleep.Sleeping("item_mjollnir")
 }
 
 function IsValidUnit(unit: Unit) {
@@ -436,4 +442,44 @@ export function EntityDestroy(Entity: Entity) {
 			ArrayExtensions.arrayRemove(AllUnitsHero, Entity)
 		}
 	}
+}
+
+export function OnExecuteOrderSoulRing(args: ExecuteOrder): boolean {
+	if (!StateBase.value || !State.value) {
+		return true
+	}
+	let LocalPlayerInit = LocalPlayer
+	if (LocalPlayerInit === undefined) {
+		return true
+	}
+	let Me = LocalPlayerInit.Hero,
+		Items = new InitItems(Me)
+	if (!IsValidItem(Items.SoulRing)){
+		return true
+	}
+	let ability = args.Ability as Ability
+	if (args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION
+		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET
+		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE
+		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET
+		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE)
+		return true
+	if (Me.HPPercent < AutoUseItemsSouringHP_val.value || Me.ManaPercent > AutoUseItemsSouringMP_val.value 
+		|| (Me.IsInvisible && !Me.CanUseAbilitiesInInvisibility && !AutoUseItemsSouringInvis.value)
+	) {
+		return true
+	}
+	if (ability.ManaCost <= AutoUseItemsSouringMPUse_val.value) {
+		return true
+	}
+	Me.CastNoTarget(Items.SoulRing)
+	let Delay = ability.CastPoint <= 0 
+		? GetDelayCast() 
+		: (ability.CastPoint * 1000) + GetDelayCast()
+	Sleep.Sleep(Delay, "OrderStop")
+	if(Sleep.Sleeping("OrderStop")) {
+		args.Execute()
+		return false
+	}
+	return true
 }
