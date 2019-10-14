@@ -120,16 +120,6 @@ popLinkItems = linken_settings.AddImageSelector(
 
     ],
 ),
-popLotusV = linken_settings.AddToggle("Pop Lotus"),
-popLotusItems = linken_settings.AddImageSelector(
-    "Pop Lotus with",
-    [
-
-        "tinker_laser",//
-        "item_dagon_5",//
-        "item_ethereal_blade",//
-    ],
-),
 blinkV = blindn.AddToggle("Enable Blink"),
 blinkM = blindn.AddSwitcher("Blink to", ["Safe dist","Laser Range Cursor", "Smart Mode"],1),
 blinkRadius = blindn.AddSlider("Safe distance from enemy", 200, 0, 500),
@@ -174,8 +164,6 @@ export {
 ,linken_settings 
 ,popLinkV 
 ,popLinkItems 
-,popLotusV
-,popLotusItems
 ,bmcheck 
 ,blindn 
 ,blinkV

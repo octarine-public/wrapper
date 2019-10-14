@@ -1,6 +1,6 @@
 import { Base } from "../Extends/Helper";
 import { MouseTarget, MyHero } from "../Listeners";
-import { active, popLinkItems, popLotusItems } from "../MenuManager";
+import { active, popLinkItems } from "../MenuManager";
 import { GameSleeper, Ability, Item, Hero, Menu } from "wrapper/Imports";
 
 let Sleep = new GameSleeper
@@ -36,7 +36,7 @@ export function BreakInit() {
 	// Dagon
 	if (Items.Dagon !== undefined
 		&& Items.Dagon.CanBeCasted()) {
-		if (IsValid(Items.Dagon, target, popLinkItems)||IsValid(Items.Dagon,target, popLotusItems))
+		if (IsValid(Items.Dagon, target, popLinkItems))
 		{
 			Items.Dagon.UseAbility(target)
 			Sleep.Sleep(Base.SleepTimeDefualt, `${target.Index + Items.Dagon.Index}`)
@@ -46,7 +46,7 @@ export function BreakInit() {
 	// ethereal
 	if (Items.Ethereal!==undefined
 		&&Items.Ethereal.CanBeCasted()) {
-		if (IsValid(Items.Ethereal, target, popLinkItems)||IsValid(Items.Ethereal, target, popLotusItems))
+		if (IsValid(Items.Ethereal, target, popLinkItems))
 		{
 			Items.Ethereal.UseAbility(target)
 			Sleep.Sleep(Base.SleepTimeDefualt, `${target.Index + Items.Ethereal.Index}`)
@@ -116,7 +116,7 @@ export function BreakInit() {
 	// Laser
 	if (Abilities.q !== undefined
 		&& Abilities.q.CanBeCasted()) {
-		if (IsValid(Abilities.q, target, popLinkItems)||IsValid(Abilities.q, target, popLotusItems)) {
+		if (IsValid(Abilities.q, target, popLinkItems)) {
 			Abilities.q.UseAbility(target);
 			Sleep.Sleep(Abilities.CastDelay(Abilities.q), `${target.Index + Abilities.q.Index}`)
 			return true

@@ -11,11 +11,14 @@ import { TinkerStatus } from "./status";
 let Sleep = new GameSleeper()
 
 export function MainCombo() {
-	if (!Base.IsRestrictions(active))
+	if (!Base.IsRestrictions(active)||Sleep.Sleeping("r"))
+	{
 		return false
+	}
 	if (!comboKey.is_pressed||MouseTarget === undefined)
 	{
 		TinkerStatus(3)
+		
 		return false
 	}
 	let target = MouseTarget
@@ -24,15 +27,11 @@ export function MainCombo() {
 	}
 	let ItemsInit = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero)
-	if (ItemsInit.EtherealDelay) {
-			Sleep.Sleep(ItemsInit.EtherealDelay as number, "EtherealDelay")
-		}
-	if (!Sleep.Sleeping("r") && !Abilities.r.IsChanneling && Base.Cancel(target)) {
+	if (Base.Cancel(target) && !MyHero.IsChanneling && !Abilities.r.IsChanneling && !Sleep.Sleeping("r")) {
 		TinkerStatus(0)
 		if (ItemsInit.Blink !== undefined
 			&& blinkV.value
 			&& ItemsInit.Blink.CanBeCasted()
-			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Blink.Index}`)
 			&& !target.IsInRange(MyHero,600)
 			) {
 				let castRange = ItemsInit.Blink.GetSpecialValue("blink_range") + MyHero.CastRangeBonus
@@ -41,7 +40,7 @@ export function MainCombo() {
 				if (blinkM.selected_id==0 && !target.IsInRange(MyHero, 450))//DEF MODE
 				{//c&p sky
 					ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.NetworkPosition, Math.min(castRange, MyHero.Distance(target) - blinkRadius.value) - 1))
-					Sleep.Sleep(ItemsInit.Tick,`${target.Index + ItemsInit.Blink.Index}`)
+					Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,"r")
 					return true
 				}
 				else if (blinkM.selected_id==2)//SMART MODE
@@ -49,7 +48,7 @@ export function MainCombo() {
 					if (disToTarget>castRange)//RANGE TOO B1G
 					{
 						ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.NetworkPosition, castRange - 1))
-						Sleep.Sleep(ItemsInit.Tick,`${target.Index + ItemsInit.Blink.Index}`)
+						Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,"r")
 						return true
 					}
 					else
@@ -77,7 +76,7 @@ export function MainCombo() {
 						{
 							ItemsInit.Blink.UseAbility(target.NetworkPosition)
 						}
-						Sleep.Sleep(ItemsInit.Tick,`${target.Index + ItemsInit.Blink.Index}`)
+						Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,"r")
 						return true
 						
 					}
@@ -88,20 +87,20 @@ export function MainCombo() {
 					if (disToTarget>castRange)//RANGE TOO B1G
 					{
 						ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.InFront(30), castRange - 1))
-						Sleep.Sleep(ItemsInit.Tick,`${target.Index + ItemsInit.Blink.Index}`)
+						Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,`${target.Index + ItemsInit.Blink.Index}`)
 						return true
 					}
 					else 
 					{
 						let dir:Vector3 =  target.NetworkPosition.Extend(Utils.CursorWorldVec, qRange-target.IdealSpeed*Abilities.r.GetSpecialValue("channel_tooltip"))
 						ItemsInit.Blink.UseAbility(dir)
-						Sleep.Sleep(ItemsInit.Tick,`${target.Index + ItemsInit.Blink.Index}`)
+						Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,`${target.Index + ItemsInit.Blink.Index}`)
 						return true
 					}
 
 				}
 		}
-		if (Base.IsLinkensProtected(target)||Base.IsLotusProtected(target)) {
+		if (Base.IsLinkensProtected(target)) {
 			BreakInit()
 			return true
 		}
@@ -109,22 +108,20 @@ export function MainCombo() {
 		if (ItemsInit.Soulring !== undefined
 			&& ItemsInit.Soulring.CanBeCasted()
 			&& (MyHero.HP / MyHero.MaxHP * 100 > soulTresh.value)
-			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Soulring.Index}`)
 		) {
 				ItemsInit.Soulring.UseAbility()
-				//console.log("soulr: "+Game.RawGameTime)
-				Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Soulring.Index}`)
+				//console.log("soulr: "+Game.RawGameTime + " cd "+ItemsInit.Soulring.Cooldown)
+				Sleep.Sleep(ItemsInit.Tick+ GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 				return true
 		}
 		//ghost
 		if (ItemsInit.Ghost !== undefined
 			&& ItemsInit.Ghost.CanBeCasted()
 			&& items.IsEnabled("item_ghost")
-			&&!Sleep.Sleeping(`${target.Index + ItemsInit.Ghost.Index}`)
 			&&!MyHero.IsEthereal
 		) {
 			ItemsInit.Ghost.UseAbility()
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Ghost.Index}`)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 			
 		}
@@ -133,20 +130,19 @@ export function MainCombo() {
 			&& ItemsInit.LotusOrb.CanBeCasted()
 			&& items.IsEnabled("item_lotus_orb")
 			&& Heroes.filter(e => e.IsInRange(MyHero, 1050)).length > 0
-			&&!Sleep.Sleeping
 		) {
 			if (helpF) {
 				let xxxtentacion = Heroes.filter(hero => !hero.IsEnemy()&&hero.Distance(MyHero) <= 900 + MyHero.CastRangeBonus && hero.IsAlive && !hero.ModifiersBook.HasBuffByName("modifier_item_lotus_orb_active"))[0]
 				if (xxxtentacion !== undefined && MyHero.HasModifier("modifier_item_lotus_orb_active")) {
 					ItemsInit.LotusOrb.UseAbility(xxxtentacion)
-					Sleep.Sleep(ItemsInit.Tick, `${xxxtentacion.Index + ItemsInit.LotusOrb.Index}`)
+					Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 					return true
 				}
 				else {
 					if (!MyHero.HasModifier("modifier_item_lotus_orb_active"))
 					{
 					ItemsInit.LotusOrb.UseAbility(MyHero)
-					Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.LotusOrb.Index}`)
+					Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,"r")
 					return true
 					}
 				}
@@ -155,7 +151,7 @@ export function MainCombo() {
 				if (MyHero.HasModifier("modifier_item_lotus_orb_active"))
 				{
 				ItemsInit.LotusOrb.UseAbility(MyHero)
-				Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.LotusOrb.Index}`)
+				Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 				return true
 				}
 			}
@@ -163,23 +159,21 @@ export function MainCombo() {
 		if (ItemsInit.Greaves !== undefined
 			&& ItemsInit.Greaves.CanBeCasted()
 			&& items.IsEnabled("item_guardian_greaves")
-			&&!Sleep.Sleeping(`${target.Index + ItemsInit.Greaves.Index}`)
 			
 		) {
 			ItemsInit.Greaves.UseAbility()
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Greaves.Index}`)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		
-		}//zefir
+		}//ethereal
 		if (ItemsInit.Ethereal !== undefined
 			&& ItemsInit.Ethereal.CanBeCasted()
 			&& items.IsEnabled("item_ethereal_blade")
-			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Ethereal.Index}`)
 			&& MyHero.IsInRange(target, ItemsInit.Ethereal.CastRange)
 		) {
 			ItemsInit.Ethereal.UseAbility(target)
-			//console.log("ethereal: "+Game.RawGameTime)
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Ethereal.Index}`)
+			//console.log("ethereal: "+Game.RawGameTime + " cd "+ItemsInit.Ethereal.Cooldown)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ 150, "r")
 			return true
 		}
 		//hex
@@ -188,67 +182,61 @@ export function MainCombo() {
 			&& items.IsEnabled("item_sheepstick")
 			&& (!target.IsHexed&&!target.IsStunned
 				|| (target.HasModifier("modifier_sheepstick_debuff")
-					&& target.ModifiersBook.GetBuffByName("modifier_sheepstick_debuff").RemainingTime <= Abilities.r.CastPoint + Abilities.r.GetSpecialValue("channel_tooltip", Abilities.r.Level) + GetLatency(0) + GetLatency(1)))
-			&&!Sleep.Sleeping(`${target.Index + ItemsInit.Sheeps.Index}`)
+					&& target.ModifiersBook.GetBuffByName("modifier_sheepstick_debuff").RemainingTime <= Abilities.r.CastPoint + Abilities.r.GetSpecialValue("channel_tooltip", Abilities.r.Level) + GetLatency(0) + GetLatency(1)+60))
 			&& MyHero.IsInRange(target, ItemsInit.Sheeps.CastRange)		
 		) {
 			ItemsInit.Sheeps.UseAbility(target)
-			//console.log("sheep: "+Game.RawGameTime)
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Sheeps.Index}`)
+			//console.log("sheep: "+Game.RawGameTime+ " cd "+ItemsInit.Sheeps.Cooldown)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		}//nullifier
 		if (ItemsInit.Nullifier !== undefined
 			&& ItemsInit.Nullifier.CanBeCasted()
 			&& items.IsEnabled("item_nullifier")
 			&& !target.IsMuted
-			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Nullifier.Index}`)
 			&& MyHero.IsInRange(target, ItemsInit.Nullifier.CastRange)
 		) {
 			ItemsInit.Nullifier.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Nullifier.Index}`)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		}//orchid
 		if (ItemsInit.Orchid !== undefined
 			&& ItemsInit.Orchid.CanBeCasted()
 			&& items.IsEnabled("item_orchid")
 			&& !target.IsSilenced
-			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Orchid.Index}`)
 			&& MyHero.IsInRange(target, ItemsInit.Orchid.CastRange)
 		) {
 			ItemsInit.Orchid.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Orchid.Index}`)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		}//blood
 		if (ItemsInit.Bloodthorn !== undefined
 			&& ItemsInit.Bloodthorn.CanBeCasted()
 			&& items.IsEnabled("item_bloodthorn")
 			&& !target.IsSilenced
-			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Bloodthorn.Index}`)
 			&& MyHero.IsInRange(target, ItemsInit.Bloodthorn.CastRange)
 		) {
 			ItemsInit.Bloodthorn.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Bloodthorn.Index}`)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 
 		}//atos
 		if (ItemsInit.RodofAtos !== undefined
 			&& ItemsInit.RodofAtos.CanBeCasted()
 			&& items.IsEnabled("item_rod_of_atos")
-			&&!Sleep.Sleeping(`${target.Index + ItemsInit.RodofAtos.Index}`)
 			&& MyHero.IsInRange(target, ItemsInit.RodofAtos.CastRange)
 		) {
 			ItemsInit.RodofAtos.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.RodofAtos.Index}`)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,"r")
 			return true
 		}//veil
 		if (ItemsInit.Discord !== undefined
 			&& ItemsInit.Discord.CanBeCasted()
 			&& items.IsEnabled("item_veil_of_discord")
-			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Discord.Index}`)
 			&& MyHero.IsInRange(target, ItemsInit.Discord.CastRange)
 		) {
 			ItemsInit.Discord.UseAbility(target.InFront(35))
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Discord.Index}`)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		}
 
@@ -257,56 +245,53 @@ export function MainCombo() {
 			&& Abilities.w.CanBeCasted()
 			&& abils.IsEnabled("tinker_heat_seeking_missile")
 			&& MyHero.Distance2D(target) <= 2500+MyHero.CastRangeBonus
-			&& !Sleep.Sleeping(`${target.Index + Abilities.w.Index}`)
 		) {
 			Abilities.w.UseAbility()
-			//console.log("rocket: "+Game.RawGameTime)
-			Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.w.Index}`)
+			//console.log("rocket: "+Game.RawGameTime+ " cd "+Abilities.w.Cooldown)
+			Sleep.Sleep(Abilities.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		}
 			//shivas
 		if (ItemsInit.Shivas !== undefined
 			&& ItemsInit.Shivas.CanBeCasted()
 			&& items.IsEnabled("item_shivas_guard")
-			&&!Sleep.Sleeping(`${target.Index + ItemsInit.Shivas.Index}`)
 			&& MyHero.Distance2D(target)<= 800 + MyHero.CastRangeBonus
 		) {
 			ItemsInit.Shivas.UseAbility()
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Shivas.Index}`)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		}
+		
 		if (Abilities.q !== undefined//laser
 			&& !Abilities.q.IsInAbilityPhase
 			&& Abilities.q.CanBeCasted()
 			&& abils.IsEnabled("tinker_laser")
 			&& MyHero.Distance2D(target) < 650+MyHero.CastRangeBonus
-			&& !Sleep.Sleeping(`${target.Index + Abilities.q.Index}`)
 		) {
+			
 			Abilities.q.UseAbility(target)
-			//console.log("laser: "+Game.RawGameTime)
-			Sleep.Sleep(Abilities.Tick, `${target.Index + Abilities.q.Index}`)
+			//console.log("laser: "+Game.RawGameTime+  " cd "+Abilities.q.Cooldown)
+			Sleep.Sleep(Abilities.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30 + 450, "r")
 			return true
 		}
 		if (ItemsInit.Dagon !== undefined//dagon
 			&& items.IsEnabled("item_dagon_5")
 			&& ItemsInit.Dagon.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.Dagon.CastRange
-			&& !Sleep.Sleeping(`${target.Index + ItemsInit.Dagon.Index}`)
 			) {
 			ItemsInit.Dagon.UseAbility(target)
-			//console.log("dagon: "+Game.RawGameTime)
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Dagon.Index}`)
+			//console.log("dagon: "+Game.RawGameTime+ " cd "+ItemsInit.Dagon.CooldownLength)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		}
-		
 		//glimmer
 		if (ItemsInit.Glimmer !== undefined
 			&& ItemsInit.Glimmer.CanBeCasted()
 			&& items.IsEnabled("item_glimmer_cape")
-			&&!Sleep.Sleeping(`${target.Index + ItemsInit.Glimmer.Index}`)
 		) {
+			
 			ItemsInit.Glimmer.UseAbility(MyHero)
-			Sleep.Sleep(ItemsInit.Tick, `${target.Index + ItemsInit.Glimmer.Index}`)
+			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		}
 		if (Abilities.r !== undefined
@@ -323,23 +308,11 @@ export function MainCombo() {
 			|| (Abilities.q!==undefined&&!Abilities.q.IsReady) 
 			|| (Abilities.w!==undefined&&!Abilities.w.IsReady))
 			&& target.IsAlive
-			&& !Sleep.Sleeping("r")
 			) {
+			
 			Abilities.r.UseAbility()
+			Sleep.Sleep(Abilities.r.GetSpecialValue("channel_tooltip")* 1000+Abilities.r.CastPoint*1000+GetLatency(0)*1000+GetLatency(1)*1000+40, "r")
 			//console.log("rearm: "+Game.RawGameTime)
-			Sleep.Sleep(Abilities.r.GetSpecialValue("channel_tooltip")* 1000+Abilities.r.CastPoint*1000+45, "r")
-			return true
-		}
-		
-		if (MyHero.CanAttack(target)//tut budet orbwalk:)
-			&& !Sleep.Sleeping("Attack")
-			&& !target.IsEthereal
-			&& !ItemsInit.EtherealDelay
-			&& !MyHero.IsChanneling
-			&& !MyHero.Spells.some(e=>e!==undefined && e.IsInAbilityPhase)
-			) {
-			MyHero.AttackTarget(target)
-			Sleep.Sleep(MyHero.SecondsPerAttack * 1000, "Attack")
 			return true
 		}
 	}

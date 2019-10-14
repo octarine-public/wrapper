@@ -15,10 +15,9 @@ EventsSDK.on("Tick", () => {
 		return false
 	}
 	InitMouse()
-	if (comboKey.is_pressed)
-	{
-		MainCombo()
-	}
+
+	MainCombo()
+	
 	AutoSteal()
 	Spam(),
 	fastBlink(),

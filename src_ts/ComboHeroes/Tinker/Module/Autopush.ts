@@ -21,7 +21,7 @@ export function Push(){
 		return false
 	let items =  new InitItems(MyHero),
 		abils = new InitAbility(MyHero)
-	if (items.Tpboot == undefined)
+	if (items.TravelBoot == undefined)
 			return	false
 	latency = GetLatency(0)+GetLatency(1)+0.1
 	if (autoKey.is_pressed && !sleeper.Sleeping("button"))
@@ -45,7 +45,7 @@ export function Push(){
 			bottle = items.Bottle,
 			soulring = items.Soulring,
 			blink = items.Blink,
-			tpboots = items.Tpboot,
+			TravelBoots = items.TravelBoot,
 			sitems:String[] = ["item_aether_lens","item_sheepstick","item_dagon_5","item_dagon","item_dagon_2","item_dagon_3","item_dagon_4","item_shivas_guard","item_bloodthorn","item_orchid","item_rod_of_atos"]
 		TinkerStatus(2)
 		function checkForTrees(vec: Vector3, range: number)
@@ -162,8 +162,8 @@ export function Push(){
 						}
 						else
 						{
-							if (tpboots.CanBeCasted()&&tpboots.IsReady) 
-								MyHero.CastPosition(tpboots, fountain)
+							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+								MyHero.CastPosition(TravelBoots, fountain)
 								lastTick = Game.RawGameTime + 3.05 + latency
 								marched = 0
 								TinkerJungle = false
@@ -177,9 +177,9 @@ export function Push(){
 					
 				else
 				{
-					if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+					if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
 					{
-						MyHero.CastPosition(tpboots, fountain)
+						MyHero.CastPosition(TravelBoots, fountain)
 						lastTick = Game.RawGameTime + 3.05 + latency
 						marched = 0
 						TinkerJungle = false
@@ -399,7 +399,7 @@ export function Push(){
 						return	
 				}		
 
-				if (!e.IsReady || !tpboots.IsReady) //on fountain: rearm
+				if (!e.IsReady || !TravelBoots.IsReady) //on fountain: rearm
 				{
 					if (r.CanBeCasted())
 						MyHero.CastNoTarget(r)
@@ -457,9 +457,9 @@ export function Push(){
 						let a =TinkerPort()//CREEP
 						if (a != undefined)
 						{
-							if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
 							{
-								MyHero.CastPosition(tpboots, a)
+								MyHero.CastPosition(TravelBoots, a)
 								lastTick = Game.RawGameTime + 3.05 + latency
 								//console.log("cast boot, 1365, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 								ported = true
@@ -474,9 +474,9 @@ export function Push(){
 								TinkerGetJunglePos()//JUNGLE
 								if (TinkerJungleFarmPos!=undefined && TinkerJungleFarmPos[0]!=undefined && TinkerJungleFarmPos[1]!=undefined)
 								{
-									if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
 									{
-										MyHero.CastPosition(tpboots, TinkerJungleFarmPos[0])
+										MyHero.CastPosition(TravelBoots, TinkerJungleFarmPos[0])
 										lastTick = Game.RawGameTime + 3.05 + latency
 										//console.log("cast boot to jngle, 1382, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										ported = true
@@ -518,11 +518,11 @@ export function Push(){
 						let a = TinkerPort()
 						if (a !== undefined) 
 						{
-							if (tpboots.CanBeCasted()&&tpboots.IsReady)
+							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 							{
 								if (blink.IsReady||blink == undefined)
 								{
-								MyHero.CastPosition(tpboots, a)
+								MyHero.CastPosition(TravelBoots, a)
 								lastTick = Game.RawGameTime + 3.05 + latency
 								//console.log("cast boot, 1402, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 								ported = true
@@ -549,9 +549,9 @@ export function Push(){
 								TinkerGetJunglePos()
 								if (TinkerJungleFarmPos != undefined  && TinkerJungleFarmPos[0]!=undefined && TinkerJungleFarmPos[1]!=undefined)
 								{
-									if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
 									{
-										MyHero.CastPosition(tpboots, TinkerJungleFarmPos[0])
+										MyHero.CastPosition(TravelBoots, TinkerJungleFarmPos[0])
 										lastTick = Game.RawGameTime + 3.05 + latency
 										//console.log("cast boot to jngle, 1418, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										ported = true
@@ -565,9 +565,9 @@ export function Push(){
 					}	
 					else//GO REGEN
 					{
-						if (tpboots.CanBeCasted()&&tpboots.IsReady)
+						if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 						{
-							MyHero.CastPosition(tpboots, fountain)
+							MyHero.CastPosition(TravelBoots, fountain)
 							lastTick = Game.RawGameTime + 3.05 + latency
 							//console.log("cast boot, 1433, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 							ported = false
@@ -670,9 +670,9 @@ export function Push(){
 							}
 							else
 							{
-								if (tpboots.CanBeCasted()) //NO MANA GO HOME
+								if (TravelBoots.CanBeCasted()) //NO MANA GO HOME
 								{
-									MyHero.CastPosition(tpboots, fountain)
+									MyHero.CastPosition(TravelBoots, fountain)
 									lastTick = Game.RawGameTime + 3.05 + latency
 									//console.log("cast e, 1544, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 									marched = 0
@@ -685,7 +685,7 @@ export function Push(){
 					{
 						if (MyHero.ManaPercent < 40) //NO MANA LEFT > GO HOMe
 						{
-							if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
 							{
 								if (blink && blink.IsReady && !TinkerFarmAmISave() && !sleeper.Sleeping("blpush"))
 								{
@@ -708,7 +708,7 @@ export function Push(){
 									}
 								}	
 								
-								MyHero.CastPosition(tpboots, fountain)
+								MyHero.CastPosition(TravelBoots, fountain)
 								lastTick = Game.RawGameTime + 3.05 + latency
 								//console.log("cast boot, 1621, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 								marched = 0
@@ -730,7 +730,7 @@ export function Push(){
 						{
 							if (TinkerPort() !== undefined) //ESLI EST KRIP4IK (ZALUPA)
 							{
-								if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+								if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
 								{
 									if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 
 									{
@@ -760,7 +760,7 @@ export function Push(){
 									}
 									else
 									{
-										MyHero.CastPosition(tpboots, fountain)
+										MyHero.CastPosition(TravelBoots, fountain)
 										lastTick = Game.RawGameTime + 3.05 + latency
 										//console.log("USELESS??cast boot, 1671, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										marched = 0
@@ -780,7 +780,7 @@ export function Push(){
 							}
 							else//GO HOME
 							{
-								if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+								if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
 								{
 									if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 
 									{
@@ -804,7 +804,7 @@ export function Push(){
 											return
 										}
 									}
-									MyHero.CastPosition(tpboots, fountain)
+									MyHero.CastPosition(TravelBoots, fountain)
 									lastTick = Game.RawGameTime + 3.05 + latency
 									//console.log("cast boot, 1711, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 									marched = 0
@@ -832,7 +832,7 @@ export function Push(){
 						{
 							if (ported)//ESLi NAJUMALI TP, MARSHILI I NET TARGETA DLYA MARSHEY + MP ==>GO HOME
 								{
-									if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
 									{
 										if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 
 										{
@@ -856,7 +856,7 @@ export function Push(){
 											// 	return
 											// }
 										}
-										MyHero.CastPosition(tpboots, fountain)
+										MyHero.CastPosition(TravelBoots, fountain)
 										lastTick = Game.RawGameTime + 3.05 + latency
 										//console.log("cast boot, 1805, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 										marched = 0
@@ -879,7 +879,7 @@ export function Push(){
 						{
 							if (TinkerPort() !== undefined) //EST ESHE KRIp4IK
 								{
-									if (tpboots.IsReady&& tpboots.CanBeCasted()) 
+									if (TravelBoots.IsReady&& TravelBoots.CanBeCasted()) 
 									{
 										if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 	{
 											let saveSpot = TinkerFarmGetSaveSpot(MyHero, MyHero)
@@ -909,7 +909,7 @@ export function Push(){
 										}
 										else
 										{
-											MyHero.CastPosition(tpboots, fountain)
+											MyHero.CastPosition(TravelBoots, fountain)
 											lastTick = Game.RawGameTime + 3.05 + latency
 											//console.log("cast boot, 1854, gametime: "+Game.RawGameTime+" lastTick: "+lastTick+" marched: "+ marched)
 											marched = 0
@@ -950,7 +950,7 @@ export function Push(){
 							{
 								if (ported)//NET - SAVE TP HOME
 								{
-									if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
 										{
 											if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 
 											{
@@ -973,7 +973,7 @@ export function Push(){
 												// }
 												
 											}
-											MyHero.CastPosition(tpboots, fountain)
+											MyHero.CastPosition(TravelBoots, fountain)
 											lastTick = Game.RawGameTime + 3.05 + latency
 											//console.log("cast boot, 1897, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 											marched = 0
