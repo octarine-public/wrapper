@@ -1,8 +1,14 @@
 import { Menu, MenuBase } from "../../abstract/Menu.Base";
 import { Color } from "wrapper/Imports";
-const { BaseTree, State} = MenuBase(Menu, "Time Controller")
+let Building = Menu.AddNode("Building")
+const { BaseTree, State } = MenuBase(Building, "Time Controller")
 let GliphTree = BaseTree.AddNode("Glyph"),
 	GliphState = GliphTree.AddToggle("Enable", true),
+	
+	GliphTreeIcon = GliphTree.AddNode("Icon Settings"),
+	GliphStateIcon = GliphTreeIcon.AddToggle("Icon Enable", true),
+	GliphStateIconColor = GliphTreeIcon.AddColorPicker("Icon Color", new Color(255, 255, 255)),
+
 	GliphInRange = GliphTree.AddSlider("In Range from me", 1800, 600, 5000),
 	GliphSwitcher = GliphTree.AddSwitcher("Select", ["Creeps and Building", "Only Creeps", "Only Building"], 0),
 	GliphSwitcherTeam = GliphTree.AddSwitcher("Select", ["Enemy and Allies", "Only Allies", "Only Enemy"], 2)
@@ -19,6 +25,11 @@ let DrawingSettings = GliphTree.AddNode("Draw Settings"),
 
 let ShrineTree = BaseTree.AddNode("Shrine"),
 	ShrineState = ShrineTree.AddToggle("Enable", true),
+	
+	ShrineTreeIcon = ShrineTree.AddNode("Icon Settings"),
+	ShrineStateIcon = ShrineTreeIcon.AddToggle("Icon Enable", true),
+	ShrineStateIconColor = ShrineTreeIcon.AddColorPicker("Icon Color", new Color(255, 255, 255)),
+	
 	DrawTextSizeShrine = ShrineTree.AddSlider("Text Size", 23, 12, 60),
 	DrawEnemyOrAllies = ShrineTree.AddSwitcher("Select", ["Enemy and Allies", "Only Allies", "Only Enemy"], 1),
 	DrawTextColorShrine = ShrineTree.AddColorPicker("Text Color", new Color(255, 255, 255)),
@@ -34,7 +45,9 @@ let RadarTree = BaseTree.AddNode("Scan"),
 
 export { 
 	State, 
-	GliphState, 
+	GliphState,
+	GliphStateIcon,
+	GliphStateIconColor,
 	GliphSwitcher, 
 	GliphSwitcherTeam, 
 	GliphInRange, 
@@ -48,8 +61,10 @@ export {
 
 export { 
 	ShrineState,
+	ShrineStateIcon,
 	DrawTextSizeShrine,
 	DrawTextColorShrine,
+	ShrineStateIconColor,
 	DrawEnemyOrAllies,
 	DrawTextColorShrineIsReady
 }

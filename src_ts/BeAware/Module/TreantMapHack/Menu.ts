@@ -1,3 +1,5 @@
 import { Menu, MenuBase } from "../../abstract/Menu.Base"
-const { BaseTree, State } = MenuBase(Menu, "Treant MapHack", "(Eyes in the forest)")
+let MapHackTreant = Menu.AddNode("MapHack")
+let { BaseTree, State } = MenuBase(MapHackTreant, "Treant protector (Eyes)")
+
 export { State };

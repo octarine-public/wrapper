@@ -1,6 +1,7 @@
 import { Menu, MenuBase } from "../../abstract/Menu.Base"
-const { BaseTree, State } = MenuBase(Menu, "Enemy Lane Selection")
-
+let Special = Menu.AddNode("Special")
+let { BaseTree, State } = MenuBase(Special, "Enemy Lane Selection")
+// Enemy Lane Selection
 let //ShowAfterGameStart = BaseTree.AddToggle("Show after game start", true),
 	//DrawTextSize = BaseTree.AddSlider("Text Size", 23, 12, 60),
 	BaseTreeChat = BaseTree.AddNode("Chat Settings"),

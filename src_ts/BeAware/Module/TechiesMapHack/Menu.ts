@@ -1,5 +1,6 @@
 import { Menu, MenuBase, MenuDrawBase } from "../../abstract/Menu.Base"
-const { BaseTree, State } = MenuBase(Menu, "Techies Mine MapHack")
+let MapHack = Menu.AddNode("MapHack")
+const { BaseTree, State } = MenuBase(MapHack, "Techies Mine")
 const { DrawRGBA, Size, ComboBox } = MenuDrawBase(BaseTree,
 	"Color", null, [],
 	"Size", 32, 14, 100,

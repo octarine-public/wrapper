@@ -1,5 +1,4 @@
 import { EventsSDK, Game, LocalPlayer } from "wrapper/Imports"
-import ManagerBase from "./abstract/Base"
 import { stateMain } from "./abstract/Menu.Base"
 import * as Camp from "./Module/CampInformer/Entity"
 import * as Jungle from "./Module/JungleMapHack/Particle"
@@ -10,6 +9,7 @@ import * as Treant from "./Module/TreantMapHack/Particle"
 import * as VBS from "./Module/TrueSight/Entities"
 import * as VBE from "./Module/VisibleByEnemy/Entities"
 import * as Wisp from "./Module/WispMapHack/Particle"
+import * as TowerRange from "./Module/TowerRange/Particle"
 import * as TimeController from "./Module/TimeController/Renderer"
 import * as TimeControllerEnt from "./Module/TimeController/Entities"
 import * as EnemyLaneSelection from "./Module/EnemyLaneSelection/Listeners"
@@ -19,13 +19,11 @@ import * as EnemyLaneSelection from "./Module/EnemyLaneSelection/Listeners"
 // Something's wrong with reading file "panorama/images/spellicons/monkey_king_primal_spring_early_png.vtex_c"
 
 EventsSDK.on("Tick", () => {
-	if (LocalPlayer === undefined) {
-		return false
-	}
-	if (LocalPlayer.IsSpectator || !stateMain.value || Game.IsPaused) {
+	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || !stateMain.value || Game.IsPaused) {
 		return false
 	}
 	Treant.Tick()
+	Roshan.Tick()
 })
 EventsSDK.on("Draw", () => {
 	if (!stateMain.value || LocalPlayer === undefined || LocalPlayer.IsSpectator || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
@@ -41,15 +39,10 @@ EventsSDK.on("Draw", () => {
 	Techies.OnDraw()
 	ParticleHack.OnDraw()
 	TimeController.Draw()
+	TowerRange.OnDraw()
 })
 
 EventsSDK.on("GameStarted", hero => {
-	if (LocalPlayer === undefined) {
-		return false
-	}
-	if (LocalPlayer.IsSpectator) {
-		return false
-	}
 	// TopHud.gameStarted()
 	Wisp.GameStarted()
 	Jungle.GameStarted()
@@ -64,8 +57,10 @@ EventsSDK.on("GameConnected", () => {
 	ParticleHack.GameConnect() 
 	EnemyLaneSelection.GameConnect()
 })
+
 EventsSDK.on("EntityCreated", TimeControllerEnt.EntityCreated)
 EventsSDK.on("EntityDestroyed", TimeControllerEnt.EntityDestroyed)
+
 function GameEnded_list() {
 	VBE.GameEnded()
 	VBS.GameEnded()
@@ -74,6 +69,7 @@ function GameEnded_list() {
 	Treant.GameEnded()
 	Jungle.GameEnded()
 	Techies.GameEnded()
+	Roshan.GameEnded()
 	// TopHud.gameEnded()
 	ParticleHack.GameEnded()
 	TimeControllerEnt.GameEnded()

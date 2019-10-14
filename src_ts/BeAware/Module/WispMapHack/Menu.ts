@@ -1,3 +1,5 @@
 import { Menu, MenuBase } from "../../abstract/Menu.Base"
-const { BaseTree, State } = MenuBase(Menu, "Wisp MapHack")
+let MapHackWisp = Menu.AddNode("MapHack")
+let { BaseTree, State } = MenuBase(MapHackWisp, "Wisp (IO)")
+	
 export { State }

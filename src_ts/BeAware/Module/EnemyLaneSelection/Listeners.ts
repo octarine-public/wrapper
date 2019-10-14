@@ -1,4 +1,4 @@
-import { Game, RendererSDK, LocalPlayer, Team, Vector2, GameSleeper } from "wrapper/Imports"
+import { Game, RendererSDK, LocalPlayer, Team, Vector2 } from "wrapper/Imports"
 import { 
 	//ShowAfterGameStart,
 	DrawPositionGap,

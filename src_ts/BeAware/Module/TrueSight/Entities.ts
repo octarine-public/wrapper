@@ -1,9 +1,17 @@
 import { Entity, Game, LocalPlayer, ParticlesSDK, Unit } from "wrapper/Imports"
-import { showOnAll, showOnAllies, showOnCreeps, showOnSelf, showOnWards, State } from "./Menu"
+import { showOnAll, showOnAllies, showOnCreeps, showOnSelf, showOnWards, State, switcher } from "./Menu"
 
 let allUnits = new Map<Unit, number>(), // <Unit, Particle>
-	particlePath = "particles/econ/wards/portal/ward_portal_core/ward_portal_eye_sentry.vpcf"
-
+	particlePath: string[] = [
+	"particles/items_fx/aura_shivas.vpcf",
+	"particles/ui/ui_sweeping_ring.vpcf",
+	"particles/units/heroes/hero_omniknight/omniknight_heavenly_grace_beam.vpcf",
+	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_status.vpcf",
+	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_dark.vpcf",
+	"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
+	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_timer.vpcf",
+	"particles/econ/wards/portal/ward_portal_core/ward_portal_eye_sentry.vpcf",
+]
 State.OnValue(OnOptionToggle)
 showOnAll.OnValue(OnOptionToggle),
 showOnSelf.OnValue(OnOptionToggle)
@@ -64,7 +72,11 @@ function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsTrueSighted
 		particleID = allUnits.get(unit)
 
 	if (isVisibleForEnemies && particleID === undefined && isAlive && IsUnitShouldBeHighlighted(unit)) {
-		allUnits.set(unit, ParticlesSDK.Create(particlePath, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit))
+		particlePath.filter((x, i) => {
+			if (switcher.selected_id === i) {
+				allUnits.set(unit, ParticlesSDK.Create(x, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit))
+			}
+		})
 	} else if ((!isVisibleForEnemies || !isAlive) && particleID !== undefined) {
 		Destroy(unit, particleID)
 	}

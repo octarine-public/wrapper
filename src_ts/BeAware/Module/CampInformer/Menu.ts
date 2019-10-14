@@ -1,6 +1,8 @@
 import { Menu, MenuBase, MenuDrawBase } from "../../abstract/Menu.Base"
-const { BaseTree, State } = MenuBase(Menu, "Camp Informer")
-const { Size, ComboBox } = MenuDrawBase(BaseTree, null, "Render Style", ["Text", "Image"], "Size", 14, 16, 150)
-const alpha = BaseTree.AddSlider("Alpha Font", 255, 0, 255)
+let CapmInformer = Menu.AddNode("Creeps")
+const { BaseTree, State } = MenuBase(CapmInformer, "Camp Informer"),
+	{ Size, ComboBox } = MenuDrawBase(BaseTree, null, "Render Style", ["Text", "Image"], "Size - Image/Text", 14, 14, 150),
+	alpha = BaseTree.AddSlider("Alpha Font", 255, 0, 255)
+
 State.SetTooltip("Display spawn creeps")
 export { State, Size, ComboBox, alpha };

@@ -1,17 +1,41 @@
-import { ArrayExtensions, Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3, Ability, ParticlesSDK } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
-import { ComboBox, DrawRGBA, PMH_Show_bounty, PMH_Show_bounty_size, PMH_Show_bountyRGBA, PMH_Show_bountyRGBA_mark, PMH_Smoke_snd, Size, State } from "./Menu"
+import { 
+	ComboBox, 
+	DrawRGBA, 
+	TreeRuneState,
+	PMH_Show_bounty, 
+	PMH_Show_bounty_size, 
+	PMH_Show_bountyRGBA, 
+	PMH_Show_bountyRGBA_mark, 
+	PMH_Smoke_snd, Size, State, 
+	NotifyPowerRune,
+	TreeNotificationPowerChat, 
+	TreeNotificationPowerDrawMap,
+	TreeNotificationPowerSound,
+	
+	NotifyTimeBounty,
+	TreeNotificationBountyDrawMap,
+	TreeNotificationBountyChat,
+	TreeNotificationBountySound,
+	
+} from "./Menu"
 
 let npc_hero: string = "npc_dota_hero_",
-	Particle: Map<number, [bigint, string | Entity, number, Vector3?, Color?, number?]> = new Map(), // TODO Radius for ability
+	Particle: Map<number, [bigint, string | Entity, number, Vector3?, Color?, number?, string?]> = new Map(), // TODO Radius for ability
 	END_SCROLL = new Map<number, number>(),
+	AbilityOtherRadius = new Map<Entity, number>(),
 	LAST_ID_SCROLL: number,
-	bountyRunesAr = [true, true, true, true],
+	bountyRunesAr = [false, false, false, false],
 	bountyRunesPos = [
 		new Vector3(4140.375, -1771.09375, 256),
 		new Vector3(3705.4375, -3619.875, 256),
 		new Vector3(-4331.46875, 1591.375, 256),
 		new Vector3(-3073.40625, 3680.9375, 128),
+	],
+	PowerRunesPos = [
+		new Vector3(-1708.21875, 1174.0625, 128),
+		new Vector3(2404.625, -1864.4375, 128)
 	],
 	bountyAlreadySeted = true,
 	ignoreListCreate: Array<bigint> = [
@@ -106,7 +130,10 @@ let npc_hero: string = "npc_dota_hero_",
 		16005396280504064234n,
 		8471181176813126689n,
 	],
-	Heroes: Hero[] = []
+	Heroes: Hero[] = [],
+	OtherAbility: Entity[] = [],
+	RunePowerTimer: boolean = true,
+	RuneBountyTimerBool: boolean = true
 
 function ClassChecking(entity: Entity) {
 	return entity !== undefined && (
@@ -148,7 +175,7 @@ function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: C
 	}
 }
 
-export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
+export function ParticleCreate(id: number, handle: bigint, path: string, entity: Entity) {
 	if (!State.value || !Game.IsInGame || ClassChecking(entity) || ignoreListCreate.includes(handle))
 		return
 	if (handle === 16169843851719108633n) { 		// "particles/items2_fx/teleport_start.vpcf"
@@ -159,7 +186,7 @@ export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 		LAST_ID_SCROLL = undefined
 	}
 	//
-	// console.log(handle.toString() + " | " + entity)
+	// console.log(handle.toString() + " | " + entity + " | " + path)
 	// blink
 	// if (handle === 6400371855556675384n) {
 	// 	Particle.set(id, [handle, entity, undefined])
@@ -168,21 +195,12 @@ export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined, Game.RawGameTime])
 }
 
-export function EntityCreated(x: Entity) {
-	if (x instanceof Hero)
-		Heroes.push(x)
-}
-export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero)
-		ArrayExtensions.arrayRemove(Heroes, x)
-}
-
 function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: string, name_hero: string, color?: Color, Time?: number) {
 	let hero = Heroes.find(x => x.IsEnemy() && !x.IsVisible && x.Team !== LocalPlayer.Hero.Team && x.Name === name_hero)
 	if (hero !== undefined) {
 		let abil = hero.GetAbilityByName(name_ability)
 		if (abil !== undefined && abil.IsValid) {
-			Particle.set(id, [part[0], hero.Name, part[2], position, color, Time])
+			Particle.set(id, [part[0], hero.Name, part[2], position, color, Time, name_ability])
 		}
 	}
 }
@@ -385,7 +403,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// smoke
 		if (part[0] === 14221266834388661971n) {
 			Particle.set(id, [part[0], "Smoke", part[2], position, new Color(255, 17, 0)])
-			Game.ExecuteCommand("playvol ui/ping " + PMH_Smoke_snd.value / 100)
+			Game.ExecuteCommand("playvol ui/ping " + PMH_Smoke_snd.value / 1000)
 		}
 		// dust
 		if (part[0] === 2930661440000609946n) {
@@ -513,38 +531,126 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	Particle.set(id, [part[0], ent instanceof Hero ? ent : part[1], part[2], position])
 }
 
-export function OnDraw() {
-	if(!Game.IsInGame)
+function DrawIconAbilityHero(position: Vector3, name: string) {
+	let pos_ent = RendererSDK.WorldToScreen(position)
+	if (pos_ent === undefined)
 		return
-	if (PMH_Show_bounty.value && Game.GameTime >= 0) {
-		if (!bountyAlreadySeted) {
-			let time = Game.GameTime % 300
-			if(time >= 299 || time <= 1) {
-				bountyRunesAr = [true, true, true, true]
-				bountyAlreadySeted = true
-			}
+	RendererSDK.Image("panorama/images/spellicons/" + name + "_png.vtex_c",
+		pos_ent.SubtractScalar(44 / 4),
+		new Vector2(44 / 2, 44 / 2),
+	)
+}
+
+function CreateAbilityRadius(ent: Entity, radius: number) {
+	var par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
+	ParticlesSDK.SetControlPoint(par, 1, new Vector3(radius, 0, 0))
+	AbilityOtherRadius.set(ent, par)
+}
+
+function DrawingOtherAbility(x: Entity, name: string, ability_name: string, radius?: number) {
+	if (x.Name.includes(name)) {
+		if (!AbilityOtherRadius.has(x)) {
+			CreateAbilityRadius(x, radius)
 		}
-		bountyRunesPos.forEach((val, key)=> {
-			if(bountyRunesAr[key]) {
-				RendererSDK.DrawMiniMapIcon("minimap_rune_bounty", val, PMH_Show_bounty_size.value * 14, PMH_Show_bountyRGBA.Color)
-				DrawIconWorldHero(val, "bountyrune", PMH_Show_bountyRGBA_mark.Color)
-			}
-		})
+		if (!x.IsVisible) {
+			DrawIconAbilityHero(x.NetworkPosition, ability_name)
+		}
 	}
-	if (Particle === undefined || Particle.size <= 0)
+}
+
+export function OnDraw() {
+	if (!Game.IsInGame)
 		return
 	// loop-optimizer: KEEP
-	Particle.forEach(([handle, target, Time, position, color, delete_time], i) => {
-		//Bounty Rune
-		if(handle === 17096352592726237548n) {
-			bountyRunesPos.forEach((val,key)=> {
-				let distance = val.Distance(position)
-				if(distance <= 300) {
-					bountyAlreadySeted = false
-					bountyRunesAr[key] = false
+	OtherAbility.forEach(x => {
+		if (x === undefined) {
+			return
+		}
+		DrawingOtherAbility(x, "nether_ward", "pugna_nether_ward", 1600)
+		DrawingOtherAbility(x, "psionic_trap", "templar_assassin_trap", 400)
+	})
+	
+	if (Game.GameTime >= 0) {
+		// power
+		if (TreeRuneState.value) {
+			let RunePowerTime = Game.GameTime % 120;
+			if (RunePowerTime >= 120 || RunePowerTime === 0) {
+				bountyRunesAr = [true, true, true, true]
+				bountyAlreadySeted = true
+				if (TreeNotificationPowerChat.value) {
+					RunePowerTimer = true
+				}
+			}
+			// loop-optimizer: KEEP
+			PowerRunesPos.forEach(val => {
+				if (RunePowerTime >= (120 - NotifyPowerRune.value)) {
+					if (TreeNotificationPowerDrawMap.value) {
+						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
+						Game.ExecuteCommand("playvol ui/ping_rune " + TreeNotificationPowerSound.value / 100)
+						// val.toIOBuffer()
+						// Minimap.SendPing(PingType_t.DANGER, false)
+					}
+					if (TreeNotificationPowerChat.value) { 
+						if (RunePowerTimer) {
+							Game.ExecuteCommand("chatwheel_say 57")
+							RunePowerTimer = false
+						}
+					}
 				}
 			})
 		}
+		// bounty
+		if (PMH_Show_bounty.value) {
+			let RuneBountyTime = Game.GameTime % 300
+			if (!bountyAlreadySeted) {
+				if (RuneBountyTime >= 299 || RuneBountyTime <= 1) {
+					bountyRunesAr = [true, true, true, true]
+					bountyAlreadySeted = true
+					if (TreeNotificationBountyChat.value) {
+						RuneBountyTimerBool = true
+					}
+				}
+			}
+			// loop-optimizer: KEEP
+			bountyRunesPos.forEach((val, key)=> {
+				if (RuneBountyTime >= (300 - NotifyTimeBounty.value)) {
+					if (TreeNotificationBountyDrawMap.value){
+						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
+					}
+					Game.ExecuteCommand("playvol ui/ping_rune " + TreeNotificationBountySound.value / 100)
+					if (TreeNotificationBountyChat.value) {
+						if (RuneBountyTimerBool) {
+							Game.ExecuteCommand("chatwheel_say 57")
+							RuneBountyTimerBool = false
+						}
+					}
+				}
+				if(bountyRunesAr[key]) {
+					RendererSDK.DrawMiniMapIcon("minimap_rune_bounty", val, PMH_Show_bounty_size.value * 14, PMH_Show_bountyRGBA.Color)
+					DrawIconWorldHero(val, "bountyrune", PMH_Show_bountyRGBA_mark.Color)
+				}
+			})
+			// loop-optimizer: KEEP
+			Particle.forEach(([handle, target, Time, position], i) => {
+				//Bounty Rune
+				if (handle === 17096352592726237548n) {
+					bountyRunesPos.forEach((val, key) => {
+						let distance = val.Distance(position)
+						if (distance <= 500) {
+							bountyAlreadySeted = false
+							bountyRunesAr[key] = false
+						}
+					})
+				}
+			})
+		}
+	}
+	
+	if (Particle === undefined || Particle.size <= 0 || !State.value)
+		return
+	// loop-optimizer: KEEP
+	Particle.forEach(([handle, target, Time, position, color, delete_time, ability_string], i) => {
+		// particle mapHack
 		if (delete_time === undefined)
 			delete_time = + 3 // def time for del.
 		// console.log("Position: " + position + " | Color: " + color)
@@ -573,6 +679,10 @@ export function OnDraw() {
 					return
 				try {
 					RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${target}`, position, Size.value * 12, color)
+					if (ability_string !== undefined) { 
+						let add_pos = position.Clone().AddScalarY(-80)
+						DrawIconAbilityHero(add_pos, ability_string)
+					}
 				} catch (error) {
 					// console.log(handle.toString() + " | " + position + " | " + target)
 				}
@@ -591,6 +701,10 @@ export function OnDraw() {
 				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
 			} catch (error) {
 				// console.log(handle.toString() + " | " + position + " | " + Target.Name)
+			}
+			if (ability_string !== undefined) { 
+				let add_pos = position.Clone().AddScalarY(-80)
+				DrawIconAbilityHero(add_pos, ability_string)
 			}
 			DrawIconWorldHero(position, Target, color)
 			if ((handle === 16169843851719108633n || handle === 9908905996079864839n)) {
@@ -614,19 +728,38 @@ export function ParticleDestroyed(id: number) {
 		Particle.delete(id)
 }
 
+export function EntityCreated(x: Entity) {
+	//console.log("C_DOTA_BaseNPC: " + x.Name + " | " + x.Position + " | IsVisible: " + x.IsVisible)
+	if (x.Name.includes("npc_dota_pugna_nether_ward_") || x.Name.includes("npc_dota_templar_assassin_psionic_trap")) {
+		OtherAbility.push(x as Entity)
+	}
+	if (x instanceof Hero) {
+		Heroes.push(x)
+	}
+}
+
+export function EntityDestroyed(x: Entity) {
+	if (x instanceof Hero) {
+		ArrayExtensions.arrayRemove(Heroes, x)
+	}
+	ArrayExtensions.arrayRemove(OtherAbility, x)
+}
+
 export function GameEnded() {
 	Heroes = []
-	Particle = new Map()
-	END_SCROLL = new Map()
+	OtherAbility = []
+	Particle.clear()
+	END_SCROLL.clear()
 }
 
 export function GameConnect() {
-	Particle = new Map()
-	END_SCROLL = new Map()
+	Particle.clear()
+	END_SCROLL.clear()
 	LAST_ID_SCROLL = undefined
 }
+
 export function GameStarted() {
-	Particle = new Map()
-	END_SCROLL = new Map()
+	Particle.clear()
+	END_SCROLL.clear()
 	LAST_ID_SCROLL = undefined
 }

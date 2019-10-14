@@ -3,9 +3,11 @@ import { Units, Owner, IsShrine } from "./Entities";
 import {
 	
 	State, 
-	GliphState, 
-	GliphSwitcher, 
-	GliphSwitcherTeam, 
+	GliphState,
+	GliphSwitcher,
+	GliphStateIcon,
+	GliphSwitcherTeam,
+	GliphStateIconColor,
 	GliphInRange, 
 	DrawTextSize, 
 	DrawTextColor,
@@ -15,8 +17,10 @@ import {
 	DrawTimerGliphSize,
 	
 	ShrineState,
+	ShrineStateIcon,
 	DrawTextSizeShrine,
 	DrawTextColorShrine,
+	ShrineStateIconColor,
 	DrawEnemyOrAllies,
 	DrawTextColorShrineIsReady,
 	
@@ -48,6 +52,12 @@ function DrawTimer(Time: number, sliderX: Menu.Slider, sliderY: Menu.Slider, Siz
 	)
 }
 
+function RenderIcon(position_unit: Vector2, path_icon: string, ShrineStateIconColor: any) {
+	RendererSDK.Image(path_icon,
+		position_unit.SubtractScalar(DrawTextSize.value / 4).Clone().AddScalarY(8).AddScalarX(-25),
+		new Vector2(42 / 2, 42 / 2), ShrineStateIconColor.Color,
+	)
+}
 // ============================== Gliph ============================ //
 function addZeros(x: number) {
 	return (x < 10) ? '0' + x : (x < 100) ? '' + x : '0' + x;
@@ -72,11 +82,19 @@ function SelectedGliph(unit: Unit) {
 	let position_unit = RendererSDK.WorldToScreen(unit.NetworkPosition)
 	if (position_unit === undefined)
 		return false
+
+	let pos_unit_text = unit.Name.includes("healers")
+		? position_unit.Clone().AddScalarY(25)
+		: position_unit
+	if (GliphStateIcon.value) {
+		RenderIcon(pos_unit_text, "panorama/images/hud/icon_glyph_small_psd.vtex_c", GliphStateIconColor)
+	}
 	RendererSDK.Text(
-		time.toFixed(1), position_unit, DrawTextColor.Color, "Verdana", DrawTextSize.value, FontFlags_t.ANTIALIAS
+		time.toFixed(1), pos_unit_text, DrawTextColor.Color, "Verdana", DrawTextSize.value, FontFlags_t.ANTIALIAS
 	)
 }
 // ============================== Shrine ============================ //
+
 function DrawShrineTime(unit: Unit) {
 	let abil = unit.GetAbilityByName("filler_ability");
 	if (abil === undefined)
@@ -85,9 +103,18 @@ function DrawShrineTime(unit: Unit) {
 		position_unit = RendererSDK.WorldToScreen(unit.NetworkPosition)
 	if (position_unit === undefined)
 		return false
-	abil.Cooldown <= 0 
-		? RendererSDK.Text("Is Ready", position_unit, DrawTextColorShrineIsReady.Color, "Verdana", DrawTextSizeShrine.value, FontFlags_t.ANTIALIAS)	
-		: RendererSDK.Text(Time, position_unit, DrawTextColorShrine.Color, "Verdana", DrawTextSizeShrine.value, FontFlags_t.ANTIALIAS)
+	if (abil.Cooldown <= 0) {
+		if (ShrineStateIcon.value) {
+			RenderIcon(position_unit, `panorama/images/control_icons/check_png.vtex_c`, ShrineStateIconColor)
+		}
+		RendererSDK.Text("Is Ready", position_unit, DrawTextColorShrineIsReady.Color, "Verdana", DrawTextSizeShrine.value, FontFlags_t.ANTIALIAS)	
+	}
+	else{
+		if (ShrineStateIcon.value) {
+			RenderIcon(position_unit, `panorama/images/status_icons/ability_cooldown_icon_psd.vtex_c`, ShrineStateIconColor)
+		}
+		RendererSDK.Text(Time, position_unit, DrawTextColorShrine.Color, "Verdana", DrawTextSizeShrine.value, FontFlags_t.ANTIALIAS)
+	}
 }
 
 export function Draw() {
@@ -98,7 +125,7 @@ export function Draw() {
 	if (ShrineState.value) {
 		// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
 		Units.filter(x => {
-			if (x.Name !== "npc_dota_goodguys_healers" && x.Name !== "npc_dota_badguys_healers") {
+			if (!x.Name.includes("healers")) {
 				return false
 			}
 			switch (DrawEnemyOrAllies.selected_id) {
@@ -139,6 +166,4 @@ export function Draw() {
 		}
 	}
 }
-
-
 
