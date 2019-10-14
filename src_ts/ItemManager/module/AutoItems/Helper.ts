@@ -180,7 +180,7 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.ArcaneBoots)) {
 		if (!Sleep.Sleeping(Items.ArcaneBoots.Index)
 			&& !unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
-			if (unit.HPPercent < AutoUseItemsArcane_val.value) {
+			if (unit.ManaPercent < AutoUseItemsArcane_val.value) {
 				unit.CastNoTarget(Items.ArcaneBoots)
 				Sleep.Sleep(DelayCast, Items.ArcaneBoots.Name)
 				return true

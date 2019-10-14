@@ -566,8 +566,10 @@ export function OnDraw() {
 		if (x === undefined) {
 			return
 		}
-		DrawingOtherAbility(x, "nether_ward", "pugna_nether_ward", 1600)
-		DrawingOtherAbility(x, "psionic_trap", "templar_assassin_trap", 400)
+		if(x.IsEnemy()) {
+			DrawingOtherAbility(x, "nether_ward", "pugna_nether_ward", 1600)
+			DrawingOtherAbility(x, "psionic_trap", "templar_assassin_trap", 400)
+		}
 	})
 	
 	if (Game.GameTime >= 0) {
@@ -730,8 +732,12 @@ export function ParticleDestroyed(id: number) {
 
 export function EntityCreated(x: Entity) {
 	//console.log("C_DOTA_BaseNPC: " + x.Name + " | " + x.Position + " | IsVisible: " + x.IsVisible)
-	if (x.Name.includes("npc_dota_pugna_nether_ward_") || x.Name.includes("npc_dota_templar_assassin_psionic_trap")) {
-		OtherAbility.push(x as Entity)
+	if (x instanceof Entity) {
+		if (x !== undefined && x.Name !== undefined) {
+			if (x.Name.includes("npc_dota_pugna_nether_ward_") || x.Name.includes("npc_dota_templar_assassin_psionic_trap")) {
+				OtherAbility.push(x)
+			}
+		}
 	}
 	if (x instanceof Hero) {
 		Heroes.push(x)

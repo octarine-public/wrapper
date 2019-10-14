@@ -64,6 +64,9 @@ export function ParticleCreate(Handle: BigInt) {
 		}
 		IsAlive.OnValue(x => x.value = false)
 	}
+	if (Handle === 15464711547879317671n || Handle === 15359352600260660069n || Handle === 995145632723522745n) {
+		AegisTime = 5
+	}
 }
 
 function RenderIcon(position_unit: Vector2, path_icon: string, Size: Menu.Slider, color?: Color) {
@@ -104,7 +107,6 @@ export function Tick() {
 	if (Units.some(x => x.Name !== "npc_dota_roshan")) {
 		return false
 	}
-	console.log(1)
 	if (Time >= checkTick) {
 		Game.ExecuteCommand("playvol sounds\\ui\\ping_attack " + NotificationRoshanStateSound.value / 100)
 		checkTick = Time + 4
