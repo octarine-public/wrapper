@@ -1,5 +1,5 @@
-import { Unit, RendererSDK, Color, Game, Vector2, Menu, Team } from "wrapper/Imports";
-import { Units, Owner, IsShrine } from "./Entities";
+import { Unit, RendererSDK, Color, Game, Vector2, Menu, Team, ParticlesSDK, Vector3, Entity } from "wrapper/Imports";
+import { Units, Owner, IsShrine, RadarDetect, OtherRadius } from "./Entities";
 import {
 	
 	State, 
@@ -28,9 +28,18 @@ import {
 	DrawTimerRadarX,
 	DrawTimerRadarY,
 	RadarTreeSettingsState,
-	DrawTimerRadarSize
+	DrawTimerRadarSize,
+	
+	RadarStateInWorld,
+	RadarStateInWorldSound,
+	RadarStateInWorldTextSize,
+	RadarStateInWorldIconSize,
+	RadarStateInWorldTextColor,
+	RadarStateInWorldMiniMapColor
 	
 } from "./Menu";
+
+let checkTick: number = 0
 
 function DrawTimer(Time: number, sliderX: Menu.Slider, sliderY: Menu.Slider, Size: Menu.Slider) {
 	if (Time === undefined)
@@ -71,6 +80,11 @@ function SelectedBuilding(x: Unit) {
 		case 1: return x.IsAlive && !x.IsEnemy() && SelectedGliph(x)
 		case 2: return x.IsAlive &&  x.IsEnemy() && SelectedGliph(x)
 	}
+}
+function CreateAbilityRadius(ent: Entity, radius: number) {
+	var par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
+	ParticlesSDK.SetControlPoint(par, 1, new Vector3(radius, 0, 0))
+	OtherRadius.set(ent, par)
 }
 function SelectedGliph(unit: Unit) {
 	let buffs = unit.GetBuffByName("modifier_fountain_glyph")
@@ -164,6 +178,51 @@ export function Draw() {
 				DrawTimerRadarX, DrawTimerRadarY, DrawTimerRadarSize)
 			}
 		}
+		if (!RadarStateInWorld.value) {
+			return false
+		}
+		// Radar Detect
+		// loop-optimizer: FORWARD
+		RadarDetect.forEach(x => {
+			if(!x.IsEnemy()) {
+				return
+			}
+			let Time = Game.RawGameTime
+			if (x.Name === "npc_dota_thinker") {
+				let ent = x as Unit
+				if (ent.HasModifier("modifier_radar_thinker")) {
+					if (!OtherRadius.has(x)) {
+						CreateAbilityRadius(x, 900)
+					}
+					RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", 
+					ent.NetworkPosition, 
+					RadarStateInWorldIconSize.value * 20,
+					RadarStateInWorldMiniMapColor.Color)
+					let pos_ent = RendererSDK.WorldToScreen(x.NetworkPosition)
+					if (pos_ent === undefined)
+						return
+					RendererSDK.Image("panorama/images/hud/reborn/icon_scan_on_psd.vtex_c",
+						pos_ent.SubtractScalar(RadarStateInWorldIconSize.value / 4),
+						new Vector2(RadarStateInWorldIconSize.value / 2, RadarStateInWorldIconSize.value / 2),
+					)
+					let BuffDieTime = ent.GetBuffByName("modifier_radar_thinker")
+					if (BuffDieTime !== undefined) {
+						RendererSDK.Text(
+							BuffDieTime.RemainingTime.toFixed(2),
+							pos_ent,
+							RadarStateInWorldTextColor.Color,
+							"Calibri",
+							RadarStateInWorldTextSize.value,
+							FontFlags_t.ANTIALIAS
+						)
+					}
+					if (Time >= checkTick) {
+						Game.ExecuteCommand("playvol sounds\\ui\\scan.vsnd " + RadarStateInWorldSound.value / 100)
+						checkTick = Time + 5
+					}
+				}
+			}
+		})
 	}
 }
 

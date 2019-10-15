@@ -37,6 +37,15 @@ let ShrineTree = BaseTree.AddNode("Shrine"),
 	
 let RadarTree = BaseTree.AddNode("Scan"),
 	RadarState = RadarTree.AddToggle("Enable", true),
+	
+	RadarInWorld = RadarTree.AddNode("Scan in World"),
+	RadarStateInWorld = RadarInWorld.AddToggle("Enable", true),
+	RadarStateInWorldTextSize = RadarInWorld.AddSlider("Text Size", 20, 14, 60),
+	RadarStateInWorldTextColor = RadarInWorld.AddColorPicker("Text Color", new Color(255,255,255)),
+	RadarStateInWorldMiniMapColor = RadarInWorld.AddColorPicker("Scan Color MiniMap", new Color(0, 255, 0)),
+	RadarStateInWorldIconSize = RadarInWorld.AddSlider("Icon Size", 54, 32, 150),
+	RadarStateInWorldSound = RadarInWorld.AddSlider("Sound volume", 1, 0, 100),
+	
 	RadarTreeSettings = RadarTree.AddNode("Enemy Scan Timer"),
 	RadarTreeSettingsState = RadarTreeSettings.AddToggle("Enable", true),
 	DrawTimerRadarX = RadarTreeSettings.AddSliderFloat("X", 16, 0, 100),
@@ -66,7 +75,14 @@ export {
 	DrawTextColorShrine,
 	ShrineStateIconColor,
 	DrawEnemyOrAllies,
-	DrawTextColorShrineIsReady
+	DrawTextColorShrineIsReady,
+	
+	RadarStateInWorld,
+	RadarStateInWorldSound,
+	RadarStateInWorldTextSize,
+	RadarStateInWorldIconSize,
+	RadarStateInWorldTextColor,
+	RadarStateInWorldMiniMapColor
 }
 
 export {

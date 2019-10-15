@@ -1,4 +1,4 @@
-import { ArrayExtensions, Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3, Ability, ParticlesSDK } from "wrapper/Imports"
+import { ArrayExtensions, Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3, Ability, ParticlesSDK, EventsSDK, Modifier, EntityManager } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
 import { 
 	ComboBox, 
@@ -24,7 +24,7 @@ import {
 let npc_hero: string = "npc_dota_hero_",
 	Particle: Map<number, [bigint, string | Entity, number, Vector3?, Color?, number?, string?]> = new Map(), // TODO Radius for ability
 	END_SCROLL = new Map<number, number>(),
-	AbilityOtherRadius = new Map<Entity, number>(),
+	OtherRadius = new Map<Entity, number>(),
 	LAST_ID_SCROLL: number,
 	bountyRunesAr = [false, false, false, false],
 	bountyRunesPos = [
@@ -134,7 +134,7 @@ let npc_hero: string = "npc_dota_hero_",
 	OtherAbility: Entity[] = [],
 	RunePowerTimer: boolean = true,
 	RuneBountyTimerBool: boolean = true
-
+	
 function ClassChecking(entity: Entity) {
 	return entity !== undefined && (
 		entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane
@@ -544,12 +544,12 @@ function DrawIconAbilityHero(position: Vector3, name: string) {
 function CreateAbilityRadius(ent: Entity, radius: number) {
 	var par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
 	ParticlesSDK.SetControlPoint(par, 1, new Vector3(radius, 0, 0))
-	AbilityOtherRadius.set(ent, par)
+	OtherRadius.set(ent, par)
 }
 
 function DrawingOtherAbility(x: Entity, name: string, ability_name: string, radius?: number) {
 	if (x.Name.includes(name)) {
-		if (!AbilityOtherRadius.has(x)) {
+		if (!OtherRadius.has(x)) {
 			CreateAbilityRadius(x, radius)
 		}
 		if (!x.IsVisible) {
@@ -561,6 +561,7 @@ function DrawingOtherAbility(x: Entity, name: string, ability_name: string, radi
 export function OnDraw() {
 	if (!Game.IsInGame)
 		return
+
 	// loop-optimizer: KEEP
 	OtherAbility.forEach(x => {
 		if (x === undefined) {
@@ -720,6 +721,7 @@ export function OnDraw() {
 			}
 		}
 	})
+	
 }
 
 export function ParticleDestroyed(id: number) {
@@ -729,7 +731,6 @@ export function ParticleDestroyed(id: number) {
 	if (Particle.has(id))
 		Particle.delete(id)
 }
-
 export function EntityCreated(x: Entity) {
 	//console.log("C_DOTA_BaseNPC: " + x.Name + " | " + x.Position + " | IsVisible: " + x.IsVisible)
 	if (x instanceof Entity) {
