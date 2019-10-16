@@ -56,9 +56,8 @@ ChatTimeOutSendRepeat.OnValue(x => {
 	is_send_chat = 0
 })
 
-let player_size = 125,
-	team_offset = 250,
-	first_offset = DrawPositionGap.value,
+let team_offset = 250,
+	first_offset = 125,
 	is_send_chat = 0
 	
 
@@ -73,24 +72,22 @@ export function Draw() {
 		ratio = RendererSDK.GetAspectRatio()
 	switch (ratio) {
 		case "4x3":
-			player_size = 90
 			team_offset = 230
 		break
 		case "16x9":
 		if (wSize.x === 1280 && wSize.y === 720) {
-			player_size = 85
 			team_offset = 160
 		}
 		break
 	}
-	let base_enemy_pos = new Vector2(first_offset + (player_size * 5 + team_offset) * enemy_team_id + wSize.x / 100, DrawPositionY.value)
+	let base_enemy_pos = new Vector2(first_offset + (DrawPositionGap.value * 5 + team_offset) * enemy_team_id + wSize.x / 100, DrawPositionY.value)
 	roles[enemy_team_id].forEach((role, i) => {
 		let role_str = GetLaneName(role)
 		if (role_str === undefined)
 			return
 		RendererSDK.Text (
 			role_str,
-			base_enemy_pos.Clone().AddScalarX(i * player_size + DrawPositionX.value)
+			base_enemy_pos.Clone().AddScalarX(i * DrawPositionGap.value + DrawPositionX.value)
 		)
 		if(SendAlliesChat.value) {
 			setTimeout(() => {

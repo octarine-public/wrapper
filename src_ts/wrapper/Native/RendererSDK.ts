@@ -220,10 +220,19 @@ let RendererSDK = new (class RendererSDK {
 
 		this.Text(text, vecMouse, color, font_name, font, flags)
 	}
-	public DrawMiniMapIcon(name: string, worldPos: Vector3, size: number = 800, color: Color = new Color(255, 255, 255)) {
+	/**
+	* Draws icon at minimap
+	* @param icon_name can be found at https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/game/dota/pak01_dir/scripts/mod_textures.txt
+	* @param size you can get that value for heroes from ConVars.GetInt("dota_minimap_hero_size")
+	* @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
+	* @param end_time Changing it to 1 will hide icon from minimap if you're not calling it repeatedly in Draw event.
+	* @param end_time If it's <= 0 it'll be infinity for DotA.
+	* @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
+	*/
+	public DrawMiniMapIcon(name: string, worldPos: Vector3, size: number = 800, color: Color = new Color(255, 255, 255), end_time: number = 1) {
 		worldPos.toIOBuffer(0)
 		color.toIOBuffer(3)
-		Minimap.DrawIcon(name, size, 1, 0x80000000)
+		Minimap.DrawIcon(name, size, end_time, 0x80000000)
 	}
 	public EmitDraw() {
 		if (this.commandCache.byteLength === 0)

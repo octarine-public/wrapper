@@ -1,30 +1,26 @@
-import ManagerBase from "../../abstract/Base"
-import { Color, Game, RendererSDK, Vector2, Unit, Entity, Roshan, ArrayExtensions, Menu } from "wrapper/Imports"
-import { 
-	BaseTree, 
-	drawStatus, 
-	IsAlive, 
-	NotificationRoshanStateChat, 
-	State, 
-	statusPosX, 
-	statusPosY, 
+import ManagerBase from "../../../abstract/Base"
+import { Color, Game, RendererSDK, Vector2, Unit, Menu } from "wrapper/Imports"
+import {
+	IsAlive,
+	drawStatus,	
+	statusPosX,
+	statusPosY,
 	drawStatusSize,
-
+	NotificationRoshanStateChat,
+	
 	IconSettingsState,
 	IconSettingsColorDied,
 	IconSettingsColorAlive,
 	IconSettingsSwitch,
 	NotificationRoshanStateSound,
-	
+
 	AegisStatusPosX,
 	AegisStatusPosY,
 	AegisSettingsState,
 	AegisdrawStatusSize,
 	AegisSettingsStateIcon,
-	
-} from "./Menu"
 
-
+} from "../Menu"
 
 var Timer: number = 0,
 	Units: Unit[] = [],
@@ -39,10 +35,10 @@ var Timer: number = 0,
 	TimersTwo: string,
 	AegisTextTime: string
 
-export function ParticleCreate(Handle: BigInt) {
+export function RoshanParticleCreate(Handle: bigint) {
 	if (Handle === 7431777948785381669n) {
 		if (NotificationRoshanStateChat.value && Game.GameTime > 0) {
-			Game.ExecuteCommand("say_team check please roshan maybe respawn")
+			Game.ExecuteCommand("chatwheel_say 53")
 			Timer = 0
 		}
 		IsAlive.OnValue(x => x.value = true)
@@ -50,7 +46,7 @@ export function ParticleCreate(Handle: BigInt) {
 	if (Handle === 13891217767486593796n) {
 		if (NotificationRoshanStateChat.value) {
 			if (Timer < Game.GameTime) {
-				Game.ExecuteCommand("say_team please check roshan")
+				Game.ExecuteCommand("chatwheel_say 53")
 				Timer += (Game.GameTime + 10)
 			}
 		}
@@ -58,10 +54,10 @@ export function ParticleCreate(Handle: BigInt) {
 	if (Handle === 14219564939631888289n) {
 		if (NotificationRoshanStateChat.value) {
 			Game.ExecuteCommand("chatwheel_say 53; chatwheel_say 57;") // > Roshan and time
-			Timer = 0
-			roshanKillTime = 480
-			AegisTime = 300 // transfer on fire events (Game events)
 		}
+		Timer = 0
+		roshanKillTime = 480
+		AegisTime = 300 // transfer on fire events (Game events)
 		IsAlive.OnValue(x => x.value = false)
 	}
 	if (Handle === 15464711547879317671n || Handle === 15359352600260660069n || Handle === 995145632723522745n) {
@@ -72,9 +68,9 @@ export function ParticleCreate(Handle: BigInt) {
 function RenderIcon(position_unit: Vector2, path_icon: string, Size: Menu.Slider, color?: Color) {
 	RendererSDK.Image(path_icon,
 		position_unit.SubtractScalar(20 / 4).Clone().AddScalarY(4).AddScalarX(-Size.value - 5),
-		new Vector2(Size.value * 1.2, Size.value * 1.2), Units.some(x => x.Name === "npc_dota_roshan") 
-		? new Color(252, 173, 3) 
-		: !color 
+		new Vector2(Size.value * 1.2, Size.value * 1.2), Units.some(x => x.Name === "npc_dota_roshan")
+		? new Color(252, 173, 3)
+		: !color
 			? new Color(255, 255, 255)
 			: color,
 	)
@@ -95,33 +91,34 @@ function RoshanDrawAliveDied(Text: string, color?: Color) {
 	let is_under = Units.some(x => x.Name.includes("roshan"))
 		? "Roshan is under attack"
 		: Text
-	RendererSDK.Text(`${BaseTree.name}: ` + is_under, VectorSize, new Color(255, 255, 255, 255), "Calibri", drawStatusSize.value, FontFlags_t.ANTIALIAS)
+	RendererSDK.Text("Roshan: " + is_under, VectorSize, new Color(255, 255, 255, 255), "Calibri", drawStatusSize.value, FontFlags_t.ANTIALIAS)
 }
 
-export function Tick() {
-	if (Units.length <= 0 || !State.value) {
-		return false
+export function RoshanTick() {
+	if (Units.length <= 0) {
+		return
 	}
 	let Time = Game.RawGameTime
 	setTimeout(DeleteUnits, 250)
 	if (Units.some(x => x.Name !== "npc_dota_roshan")) {
-		return false
+		return
 	}
 	if (Time >= checkTick) {
 		Game.ExecuteCommand("playvol sounds\\ui\\ping_attack " + NotificationRoshanStateSound.value / 100)
 		checkTick = Time + 4
 	}
 	if (!NotificationRoshanStateChat.value) {
-		return false
+		return
 	}
 	if (Time >= checkTickMessage) {
-		Game.ExecuteCommand("say_team Please, check roshan...")
+		Game.ExecuteCommand("chatwheel_say 53")
 		checkTickMessage = Time + 10
 	}
+	return
 }
 
-export function Draw() {
-	if (!State.value || !drawStatus.value || !Game.IsInGame)
+export function DrawRoshan() {
+	if (!drawStatus.value || !Game.IsInGame)
 		return false
 	if (!IsAlive.value) {
 		let time = Game.RawGameTime
@@ -135,7 +132,7 @@ export function Draw() {
 				TimersTwo = Base.TimeSecondToMin(RoshTimeTwo)
 			}
 			if (AegisSettingsState.value) {
-				let Time = AegisTime
+				let Time = --AegisTime
 				if (Math.sign(Time) !== -1) {
 					AegisTextTime = Base.TimeSecondToMin(Time)
 				}
@@ -167,15 +164,17 @@ export function Draw() {
 		: RoshanDrawAliveDied("Died", IconSettingsColorDied.Color)
 }
 
-export function UnitAnimationCreate(unit: Unit) {
-	if (!unit.IsValid || unit.IsVisible || !State.value)
+export function RoshanUnitAnimationCreate(unit: Unit) {
+	if (!unit.IsValid || unit.IsVisible)
 		return
 	Units.push(unit)
 }
+
 function DeleteUnits() {
 	Units = []
 }
-export function GameEnded() {
+
+export function RoshanGameEnded() {
 	DeleteUnits()
 	checkTick = 0
 	TimersOne = undefined

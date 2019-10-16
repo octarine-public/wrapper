@@ -13,7 +13,7 @@ export function Destroy(ent: Entity) {
 }
 
 function DrawTarget(ent: Tower, Owner: Unit) {
-	if (Owner !== undefined) {
+	if (Owner !== undefined && ent.IsAlive) {
 		ParticlesSDK.SetControlPoint(pars.get(ent), 2, ent.Position)
 		ParticlesSDK.SetControlPoint(pars.get(ent), 6, new Vector3(10))
 		ParticlesSDK.SetControlPoint(pars.get(ent), 7, Owner.Position)
@@ -53,10 +53,6 @@ export function OnDraw() {
 		if (tower === undefined || i === undefined) {
 			return
 		}
-		if (!tower.IsAlive) {
-			Destroy(tower)
-			return
-		}
 		let particle_range = TowerRange.get(tower)
 		if (!TowerOnlyTarget.value) {
 			switch (TowerSwitcher.selected_id) {
@@ -93,11 +89,9 @@ export function OnDraw() {
 			}
 		})
 		let particle = pars.get(tower)
-		if (tower.TowerAttackTarget === undefined || tower.Distance2D(tower.TowerAttackTarget.Position) >= tower.AttackRange + tower.HullRadius + 25) {
-			if (particle !== undefined){
-				ParticlesSDK.Destroy(particle)
-				pars.delete(tower)
-			}
+		if (tower.TowerAttackTarget === undefined || !tower.IsAlive ||
+			tower.Distance2D(tower.TowerAttackTarget.Position) >= tower.AttackRange + tower.HullRadius + 25) {
+			RemoveTarget(particle, tower)
 			return
 		}
 		if (particle === undefined) {

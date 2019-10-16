@@ -24,7 +24,7 @@ import {
 
 import { ArrayExtensions, Creep, Entity, 
 	GameSleeper, Item, LocalPlayer, TreeTemp, 
-	Unit, Game, Ability, Vector3, ExecuteOrder
+	Unit, Game, Ability, Vector3, ExecuteOrder, Utils
 } from "wrapper/Imports"
 
 import ItemManagerBase from "../../abstract/Base"
@@ -88,7 +88,11 @@ function SleepCHeck() {
 	Sleep.Sleeping("item_dust") 				|| 
 	Sleep.Sleeping("item_buckler") 				|| 
 	Sleep.Sleeping("item_cheese") 				|| 
-	Sleep.Sleeping("item_mjollnir")
+	Sleep.Sleeping("item_mjollnir")				||
+	Sleep.Sleeping("item_solar_crest")			||
+	Sleep.Sleeping("item_ancient_janggo") 		||
+	Sleep.Sleeping("item_medallion_of_courage")
+	
 }
 
 function IsValidUnit(unit: Unit) {
@@ -109,6 +113,7 @@ function AutoUseItems(unit: Unit) {
 	if (!IsValidUnit(unit)) {
 		return false
 	}
+	
 	let Items = new InitItems(unit),
 		DelayCast = GetDelayCast()
 	
@@ -332,7 +337,7 @@ function AutoUseItems(unit: Unit) {
 			return true
 		})
 	}
-
+	
 	return false
 }
 
@@ -440,6 +445,40 @@ export function EntityDestroy(Entity: Entity) {
 		}
 		if (AllUnitsHero !== undefined && AllUnitsHero.length > 0) {
 			ArrayExtensions.arrayRemove(AllUnitsHero, Entity)
+		}
+	}
+}
+
+export function UseMoseItemTarget(args: ExecuteOrder) {
+	if (!StateBase.value || !State.value || SleepCHeck()) {
+		return true
+	}
+	let unit = args.Target as Unit
+	if (!unit.IsBuilding && unit.IsEnemy()) {
+		switch (args.OrderType) {
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
+				let LocalPlayerInit = LocalPlayer
+				if (LocalPlayerInit === undefined) {
+					return true
+				}
+				let Me = LocalPlayerInit.Hero,
+					Items = new InitItems(Me)
+				let _Item = Items.SolarCrest === undefined 
+					? Items.Medallion 
+					: Items.SolarCrest
+				if (IsValidItem(Items.SolarCrest) || IsValidItem(Items.Medallion) 
+					&& Me.IsInRange(unit, _Item.CastRange)) {
+					Me.CastTarget(_Item, unit)
+					Sleep.Sleep(GetDelayCast(), _Item.Name)
+				}
+				if (unit.IsHero && IsValidItem(Items.Janggo) 
+				&& Me.IsInRange(unit, Items.Janggo.CastRange / 2) 
+				&& !Me.HasModifier("modifier_item_ancient_janggo_active")
+				) {
+					Me.CastNoTarget(Items.Janggo)
+					Sleep.Sleep(GetDelayCast(), Items.Janggo.Name)
+				}
+			break;
 		}
 	}
 }

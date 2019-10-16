@@ -1,5 +1,6 @@
 import { Menu, MenuBase } from "../../abstract/Menu.Base"
 let { BaseTree, State } = MenuBase(Menu, "Enemy Lane Selection")
+
 // Enemy Lane Selection
 let //ShowAfterGameStart = BaseTree.AddToggle("Show after game start", true),
 	//DrawTextSize = BaseTree.AddSlider("Text Size", 23, 12, 60),

@@ -1,9 +1,9 @@
-import { Tower, Hero, Team, Game, GameSleeper, Entity, ArrayExtensions } from "wrapper/Imports"
+import { Tower, Hero, Team, Game, GameSleeper, Entity, ArrayExtensions, Building } from "wrapper/Imports"
 import { StateBase } from "../../abstract/MenuBase";
-import { State, TowerHP } from "./Menu";
+import { State, TowerHP, TowerSwitcher } from "./Menu";
 
 let Me: Hero,
-	Towers: Tower[] = [],
+	Towers: Building[] = [],
 	Sleep: GameSleeper = new GameSleeper()
 	
 function GlyphCooldown(): number {
@@ -25,7 +25,16 @@ export function Tick() {
 	if (Me === undefined || GlyphCooldown() > 0) {
 		return false
 	}
-	if (!Towers.some(x => x !== undefined && !x.IsEnemy() && x.IsAlive && x.HP <= TowerHP.value && x.Name.includes("tower1"))) {
+	let include_name = "tower1"
+	switch (TowerSwitcher.selected_id) {
+		case 0: include_name = "tower1"; break;
+		case 1: include_name = "tower2"; break;
+		case 2: include_name = "tower3"; break;
+		case 3: include_name = "tower4"; break;
+		case 4: include_name = "tower"; break;
+		case 5: include_name = "npc_dota_"; break;
+	}
+	if (!Towers.some(x => x !== undefined && !x.IsEnemy() && x.IsAlive && x.HP <= TowerHP.value && x.Name.includes(include_name))) {
 		return false
 	}
 	Me.UnitGlyph()
@@ -34,7 +43,7 @@ export function Tick() {
 }
 
 export function EntityCreate(x: Entity) {
-	if (x instanceof Tower && x.IsTower){
+	if (x instanceof Building && !x.IsShop && !x.IsShrine){
 		Towers.push(x)
 	}
 }

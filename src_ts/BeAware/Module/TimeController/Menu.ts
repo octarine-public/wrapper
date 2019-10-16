@@ -1,6 +1,101 @@
 import { Menu, MenuBase } from "../../abstract/Menu.Base";
 import { Color } from "wrapper/Imports";
 const { BaseTree, State } = MenuBase(Menu, "Time Controller")
+
+
+let TreeRune = BaseTree.AddNode("Runes"),
+	TreePower = TreeRune.AddNode("Power Runes"),
+	TreeRuneState = TreePower.AddToggle("Enable", true),
+	NotifyPowerRune = TreePower.AddSlider("For what time to notify?", 10, 1, 30),
+	TreeNotificationPowerChat = TreePower.AddToggle("Notify allies", false),
+	TreeNotificationPowerDrawMap = TreePower.AddToggle("Draw minimap", true),
+	TreeNotificationPowerSound = TreePower.AddSlider("Sound volume%", 1, 0, 100),
+
+	TreeBounty = TreeRune.AddNode("Bounty Runes"),
+	PMH_Show_bounty = TreeBounty.AddToggle("Enable", true),
+	NotifyTimeBounty = TreeBounty.AddSlider("For what time to notify?", 10, 1, 30),
+	TreeNotificationBountyChat = TreeBounty.AddToggle("Notify allies", false),
+	TreeNotificationBountySound = TreeBounty.AddSlider("Sound volume%", 1, 0, 100),
+
+	DrawTreeBounty = TreeBounty.AddNode("Draw Settings"),
+	PMH_Show_bounty_size = DrawTreeBounty.AddSliderFloat("Bounty Runes Size", 42, 24, 300),
+	TreeNotificationBountyDrawMap = DrawTreeBounty.AddToggle("Draw minimap", true),
+	PMH_Show_bountyRGBA = DrawTreeBounty.AddColorPicker("Color image", new Color(255, 255, 0, 255)),
+	PMH_Show_bountyRGBA_mark = DrawTreeBounty.AddColorPicker("Mark Color", new Color(0, 255, 0, 255))
+
+export {
+	// Size,
+	// State,
+	// DrawRGBA,
+	// ComboBox,
+	// PMH_Smoke_snd,
+	PMH_Show_bounty,
+	PMH_Show_bountyRGBA,
+	PMH_Show_bounty_size,
+	PMH_Show_bountyRGBA_mark,
+}
+
+export {
+	TreeRuneState,
+	NotifyPowerRune,
+	TreeNotificationPowerChat,
+	TreeNotificationPowerDrawMap,
+	TreeNotificationPowerSound,
+
+	TreeNotificationBountyDrawMap,
+	TreeNotificationBountyChat,
+	NotifyTimeBounty,
+	TreeNotificationBountySound,
+}
+
+let RoshanTree = BaseTree.AddNode("Roshan")
+let NotificationRoshanStateChat = RoshanTree.AddToggle("Chat").SetTooltip("Send notification to chat alies"),
+	NotificationRoshanStateSound = RoshanTree.AddSlider("Sound volume%", 1, 0, 100),
+	drawMenu = RoshanTree.AddNode("Draw Settings"),
+	drawStatus = drawMenu.AddToggle("Draw status", true),
+	IconSettingsTree = drawMenu.AddNode("Icon Settings"),
+
+	AegisSettingsTree = drawMenu.AddNode("Aegis Settings"),
+	AegisSettingsState = AegisSettingsTree.AddToggle("Timer aegis", true),
+	AegisSettingsStateIcon = AegisSettingsTree.AddToggle("Icon Aegis", true),
+	AegisdrawStatusSize = AegisSettingsTree.AddSlider("Text Size", 23, 12, 60),
+	AegisStatusPosX = AegisSettingsTree.AddSlider("Position X (%)", 47, 0, 100),
+	AegisStatusPosY = AegisSettingsTree.AddSlider("Position Y (%)", 4, 0, 100),
+
+	IconSettingsState = IconSettingsTree.AddToggle("Icon Enable", true),
+	IconSettingsSwitch = IconSettingsTree.AddSwitcher("Icon Style", ["Low quality", "High quality"]),
+	IconSettingsColorDied = IconSettingsTree.AddColorPicker("Color Died", new Color(255, 0, 0, 255)),
+	IconSettingsColorAlive = IconSettingsTree.AddColorPicker("Color Alive", new Color(14, 255, 14, 255)),
+
+	drawStatusSize = drawMenu.AddSlider("Text Size", 23, 12, 60),
+	statusPosX = drawMenu.AddSlider("Position X (%)", 47, 0, 100),
+	statusPosY = drawMenu.AddSlider("Position Y (%)", 4, 0, 100),
+	IsAlive = drawMenu.AddToggle("IsAlive").SetTooltip("don't pick, crutch for save last alive rosh, if execute full reload scripts")
+
+export {
+	BaseTree,
+	NotificationRoshanStateChat,
+	drawStatus,
+	statusPosX,
+	statusPosY,
+	IsAlive,
+	drawStatusSize
+}
+
+export {
+	IconSettingsState,
+	IconSettingsColorDied,
+	IconSettingsColorAlive,
+	IconSettingsSwitch,
+
+	AegisStatusPosX,
+	AegisStatusPosY,
+	AegisSettingsState,
+	AegisdrawStatusSize,
+	AegisSettingsStateIcon,
+	NotificationRoshanStateSound,
+}
+
 let GliphTree = BaseTree.AddNode("Glyph"),
 	GliphState = GliphTree.AddToggle("Enable", true),
 	

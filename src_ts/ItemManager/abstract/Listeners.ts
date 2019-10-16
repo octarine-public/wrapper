@@ -17,6 +17,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 	AutoItems.EntityDestroy(ent)
 })
 EventsSDK.on("PrepareUnitOrders", args => {
+	AutoItems.UseMoseItemTarget(args)
 	if (!AutoItems.OnExecuteOrderSoulRing(args)) {
 		return false
 	}

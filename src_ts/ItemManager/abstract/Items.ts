@@ -97,6 +97,20 @@ export default class ItemBase extends ItemManagerBase {
 		}
 		return this.unit.GetItemByName(name)
 	}
+	public get Medallion(): Item {
+		let name = "item_medallion_of_courage"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get Janggo(): Item {
+		let name = "item_ancient_janggo"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
 	public get Mjollnir(): Item {
 		let name = "item_mjollnir"
 		if (this.unit === undefined) {
