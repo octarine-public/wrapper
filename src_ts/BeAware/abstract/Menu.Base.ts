@@ -26,7 +26,7 @@ export function MenuDrawBase(
 	return {
 		DrawTree,
 		Size: DrawTree.AddSlider(SliderName, defaultValue, minValue, maxValue),
-		DrawRGBA: RGBname === null ? undefined : DrawTree.AddColorPicker(root.name + " - " + RGBname),
+		DrawRGBA: RGBname === null ? undefined : DrawTree.AddColorPicker(RGBname),
 		ComboBox: ArrayBox.length <= 0 ? undefined : DrawTree.AddSwitcher(BoxName, ArrayBox),
 	}
 }

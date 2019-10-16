@@ -164,10 +164,10 @@ export default class Node extends Base {
 	}
 	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip?: string) {
 		let node = this.AddNode(name) as Node
-		const R = node.AddSlider("Color: Red", color.r, 0, 255)
-		const G = node.AddSlider("Color: Green", color.g, 0, 255)
-		const B = node.AddSlider("Color: Blue", color.b, 0, 255)
-		const A = node.AddSlider("Alpha: Alpha", color.a, 0, 255)
+		const R = node.AddSlider("Red", color.r, 0, 255)
+		const G = node.AddSlider("Green", color.g, 0, 255)
+		const B = node.AddSlider("Blue", color.b, 0, 255)
+		const A = node.AddSlider("Alpha", color.a, 0, 255)
 		return {
 			R, G, B, A,
 			get Color(): Color {

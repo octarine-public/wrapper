@@ -1,5 +1,4 @@
-import { Menu, MenuBase } from "../../abstract/Menu.Base"
-let MapHackTreant = Menu.AddNode("MapHack")
-let { BaseTree, State } = MenuBase(MapHackTreant, "Treant protector (Eyes)")
+import { Menu } from "../../abstract/Menu.Base"
 
-export { State };
+let State = Menu.AddNode("MapHack").AddToggle("Treant Protector Aghs")
+export { State }

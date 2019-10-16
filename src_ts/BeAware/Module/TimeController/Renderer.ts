@@ -50,7 +50,7 @@ function DrawTimer(Time: number, sliderX: Menu.Slider, sliderY: Menu.Slider, Siz
 		wSize.x / 100 * sliderX.value,
 		wSize.y / 100 * sliderY.value,
 	)
-	name = Time <= 0 ? "Is Ready" : name 
+	name = Time <= 0 ? "Ready" : name 
 	RendererSDK.Text(
 		name,
 		pos,
@@ -121,7 +121,7 @@ function DrawShrineTime(unit: Unit) {
 		if (ShrineStateIcon.value) {
 			RenderIcon(position_unit, `panorama/images/control_icons/check_png.vtex_c`, ShrineStateIconColor)
 		}
-		RendererSDK.Text("Is Ready", position_unit, DrawTextColorShrineIsReady.Color, "Verdana", DrawTextSizeShrine.value, FontFlags_t.ANTIALIAS)	
+		RendererSDK.Text("Ready", position_unit, DrawTextColorShrineIsReady.Color, "Verdana", DrawTextSizeShrine.value, FontFlags_t.ANTIALIAS)	
 	}
 	else{
 		if (ShrineStateIcon.value) {

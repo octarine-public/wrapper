@@ -135,7 +135,7 @@ export function Draw() {
 				TimersTwo = Base.TimeSecondToMin(RoshTimeTwo)
 			}
 			if (AegisSettingsState.value) {
-				let Time = --AegisTime
+				let Time = AegisTime
 				if (Math.sign(Time) !== -1) {
 					AegisTextTime = Base.TimeSecondToMin(Time)
 				}

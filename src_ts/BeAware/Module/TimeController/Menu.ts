@@ -1,7 +1,6 @@
 import { Menu, MenuBase } from "../../abstract/Menu.Base";
 import { Color } from "wrapper/Imports";
-let Building = Menu.AddNode("Building")
-const { BaseTree, State } = MenuBase(Building, "Time Controller")
+const { BaseTree, State } = MenuBase(Menu, "Time Controller")
 let GliphTree = BaseTree.AddNode("Glyph"),
 	GliphState = GliphTree.AddToggle("Enable", true),
 	
@@ -33,7 +32,7 @@ let ShrineTree = BaseTree.AddNode("Shrine"),
 	DrawTextSizeShrine = ShrineTree.AddSlider("Text Size", 23, 12, 60),
 	DrawEnemyOrAllies = ShrineTree.AddSwitcher("Select", ["Enemy and Allies", "Only Allies", "Only Enemy"], 1),
 	DrawTextColorShrine = ShrineTree.AddColorPicker("Text Color", new Color(255, 255, 255)),
-	DrawTextColorShrineIsReady = ShrineTree.AddColorPicker("Text Color IsReady", new Color(0, 255, 0))
+	DrawTextColorShrineIsReady = ShrineTree.AddColorPicker("Text Color Ready", new Color(0, 255, 0))
 	
 let RadarTree = BaseTree.AddNode("Scan"),
 	RadarState = RadarTree.AddToggle("Enable", true),
@@ -44,7 +43,7 @@ let RadarTree = BaseTree.AddNode("Scan"),
 	RadarStateInWorldTextColor = RadarInWorld.AddColorPicker("Text Color", new Color(255,255,255)),
 	RadarStateInWorldMiniMapColor = RadarInWorld.AddColorPicker("Scan Color MiniMap", new Color(0, 255, 0)),
 	RadarStateInWorldIconSize = RadarInWorld.AddSlider("Icon Size", 54, 32, 150),
-	RadarStateInWorldSound = RadarInWorld.AddSlider("Sound volume", 1, 0, 100),
+	RadarStateInWorldSound = RadarInWorld.AddSlider("Sound volume%", 1, 0, 100),
 	
 	RadarTreeSettings = RadarTree.AddNode("Enemy Scan Timer"),
 	RadarTreeSettingsState = RadarTreeSettings.AddToggle("Enable", true),

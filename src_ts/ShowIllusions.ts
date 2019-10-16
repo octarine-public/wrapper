@@ -2,7 +2,7 @@ import { ArrayExtensions, Color, EventsSDK, Game, Hero, Menu as MenuSDK, LocalPl
 
 var illusions: Hero[] = []
 
-const Menu = MenuSDK.AddEntry(["Utility", "Show Illusions"]),
+const Menu = MenuSDK.AddEntry(["Visual", "Show Illusions"]),
 	illus_color = new Color(0, 0, 255),
 	stateMain = Menu.AddToggle("State", true)
 

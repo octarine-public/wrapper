@@ -1,10 +1,10 @@
 import { Menu, MenuBase } from "../../abstract/Menu.Base"
 import { Color } from "wrapper/Imports";
-let Special = Menu.AddNode("Special")
+let Special = Menu.AddNode("Time Controller")
 const { BaseTree, State } = MenuBase(Special, "Roshan")
 
 let NotificationRoshanStateChat = BaseTree.AddToggle("Chat").SetTooltip("Send notification to chat alies"),
-	NotificationRoshanStateSound = BaseTree.AddSlider("Sound volume", 1, 0, 100),
+	NotificationRoshanStateSound = BaseTree.AddSlider("Sound volume%", 1, 0, 100),
 	drawMenu = BaseTree.AddNode("Draw Settings"),
 	drawStatus = drawMenu.AddToggle("Draw status", true),
 	IconSettingsTree = drawMenu.AddNode("Icon Settings"),
