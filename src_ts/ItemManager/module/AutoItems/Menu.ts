@@ -28,22 +28,11 @@ let Items_array: string[] = [
 	Items.Mjollnir.toString(),
 	Items.SolarCrest.toString(),
 	Items.Medallion.toString(),
-	Items.Janggo.toString()
-],
-activeItems: Map <string, boolean> = new Map<string, boolean>([
-	[Items_array[0], true], [Items_array[1], true],
-	[Items_array[2], true], [Items_array[3], true],
-	[Items_array[4], true], [Items_array[5], true],
-	[Items_array[6], true], [Items_array[7], true],
-	[Items_array[8], true], [Items_array[9], true],
-	[Items_array[10], true], [Items_array[11], true],
-	[Items_array[12], true], [Items_array[13], true],
-	[Items_array[14], true], [Items_array[15], true],
-	[Items_array[16], true], [Items_array[17], true],
-	[Items_array[18], true], [Items_array[19], true],
-	[Items_array[20], true], [Items_array[21], true]
-])
-let ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items_array, activeItems)
+	Items.Janggo.toString(),
+	Items.DiffusalBlade.toString(),
+	Items.PowerTreads.toString()
+]
+let ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items_array)
 
 // Settings Items
 let SettingsAutoItems = BaseTree.AddNode("Items settings"),

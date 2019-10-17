@@ -47,8 +47,10 @@ export function DrawRunes() {
 						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
 					}
 					if (Time >= checkTick) {
-						Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
-						checkTick = Time + 4
+						if (TreeNotificationBountySound.value > 0) {
+							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
+							checkTick = Time + 4
+						}
 					}
 					if (RunePowerTimer) {
 						if (TreeNotificationPowerChat.value) {
@@ -78,8 +80,10 @@ export function DrawRunes() {
 						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
 					}
 					if (Time >= checkTick) {
-						Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
-						checkTick = Time + 4
+						if (TreeNotificationBountySound.value > 0) {
+							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
+							checkTick = Time + 4
+						}
 					}
 					if (RuneBountyTimerBool) {
 						if (TreeNotificationBountyChat.value) {

@@ -60,13 +60,13 @@ let team_offset = 250,
 	first_offset = 125,
 	is_send_chat = 0
 	
-
 export function Draw() {
 	if (!State.value || !Game.IsConnected)
 		return
 	let is_in_game = Game.GameState >= DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME
-	if (is_in_game)
-		return
+	if (is_in_game) {
+		return false
+	}
 	let enemy_team_id = (LocalPlayer.Team - Team.Radiant) ^ 1,
 		wSize = RendererSDK.WindowSize,
 		ratio = RendererSDK.GetAspectRatio()
@@ -95,14 +95,14 @@ export function Draw() {
 					setTimeout(() => {
 						Game.ExecuteCommand("say_team " + (i + 1) + " slot " + role_str)
 						++is_send_chat
-					}, i * 500);
+					}, i * 500)
 				}
 			}, ChatTimeOutSend.value * 1000)
 		}
 	})
 }
 export function GameStarted() {
-	is_send_chat = 0
+	// some code...
 }
 export function GameEnded() {
 	is_send_chat = 0

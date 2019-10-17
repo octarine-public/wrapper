@@ -2,6 +2,7 @@ import { EventsSDK, Entity } from "wrapper/Imports"
 import * as AutoDeward from "../module/AutoDeward/Helper"
 import * as AutoGlyph from "../module/AutoGlyph/Helper"
 import * as AutoItems from "../module/AutoItems/Helper"
+import { StateBase } from "./MenuBase"
 
 //import * as Shrine from "../module/Shrine/Helper"
 
@@ -16,9 +17,13 @@ EventsSDK.on("EntityDestroyed", ent => {
 	AutoGlyph.EntityDestroy(ent)
 	AutoItems.EntityDestroy(ent)
 })
+
 EventsSDK.on("PrepareUnitOrders", args => {
-	AutoItems.UseMoseItemTarget(args)
-	if (!AutoItems.OnExecuteOrderSoulRing(args)) {
+	if(!StateBase.value) {
+		return true
+	}
+	AutoItems.UseMouseItemTarget(args)
+	if (!AutoItems.OnExecuteOrder(args)) {
 		return false
 	}
 	return true

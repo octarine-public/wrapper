@@ -24,7 +24,7 @@ import {
 
 import { ArrayExtensions, Creep, Entity, 
 	GameSleeper, Item, LocalPlayer, TreeTemp, 
-	Unit, Game, Ability, Vector3, ExecuteOrder, Utils
+	Unit, Game, Ability, Vector3, ExecuteOrder, Utils, Hero
 } from "wrapper/Imports"
 
 import ItemManagerBase from "../../abstract/Base"
@@ -91,13 +91,14 @@ function SleepCHeck() {
 	Sleep.Sleeping("item_mjollnir")				||
 	Sleep.Sleeping("item_solar_crest")			||
 	Sleep.Sleeping("item_ancient_janggo") 		||
-	Sleep.Sleeping("item_medallion_of_courage")
-	
+	Sleep.Sleeping("item_medallion_of_courage") ||
+	Sleep.Sleeping("item_diffusal_blade")	
 }
 
 function IsValidUnit(unit: Unit) {
 	let IgnoreBuffs = unit.Buffs.some(buff => buff.Name === "modifier_smoke_of_deceit")
-	return unit !== undefined && unit.IsEnemy && unit.IsAlive && !unit.IsStunned && !unit.IsChanneling
+	return unit !== undefined && !unit.IsEnemy() && unit.IsAlive 
+		&& !unit.IsStunned && !unit.IsChanneling && !unit.IsInvulnerable
 		&& (unit.Name === "npc_dota_hero_riki" || unit.InvisibleLevel <= 0 || IgnoreBuffs)
 }
 
@@ -108,6 +109,10 @@ function IsValidItem(Items: Item) {
 		&& Items.CanBeCasted()
 }
 
+let nextTick = 0,
+	changed = true,
+	lastStat: Attributes
+	
 function AutoUseItems(unit: Unit) {
 
 	if (!IsValidUnit(unit)) {
@@ -120,7 +125,7 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.PhaseBoots)) {
 		if (unit.IsMoving || unit.IdealSpeed >= Base.MaxMoveSpeed) {
 			let enemy_phase_in_position = AutoUseItemsPhaseBootsState.value
-				? AllUnitsHero.some(enemy => enemy.IsVisible && enemy.IsAlive
+				? AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsVisible && enemy.IsAlive
 					&& enemy.IsEnemy(unit)
 					&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsPhase_val.value)
 				: AutoUseItemsPhaseBootsState.value
@@ -134,7 +139,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.Mjollnir)) {
-		let enemy_mjolnir = AllUnitsHero.some(enemy => enemy.IsVisible && enemy.IsEnemy(unit)
+		let enemy_mjolnir = AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsVisible && enemy.IsEnemy(unit)
 			&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsMjollnir_val.value)
 
 		if (enemy_mjolnir) {
@@ -196,16 +201,18 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.Mekansm) || IsValidItem(Items.GuardianGreaves)) {
 		let Item = !Items.Mekansm ? Items.GuardianGreaves : Items.Mekansm
 		AllUnitsHero.some(allies => {
-			if (!allies.IsEnemy(unit) && unit.IsInRange(allies.NetworkPosition, Item.AOERadius)) {
-				if (!unit.Buffs.some(buff => buff.Name === "modifier_item_mekansm_noheal")
-					&& (allies.HPPercent <= AutoUseItemsMG_val.value
-						&& allies.IsAlive || unit.HPPercent <= AutoUseItemsMG_val.value
-						&& unit.IsAlive)
-				) {
-					Item.UseAbility(unit)
-					unit.CastNoTarget(Item)
-					Sleep.Sleep(DelayCast, Item.Name)
-					return true
+			if(allies !== undefined) {
+				if (!allies.IsEnemy(unit) && unit.IsInRange(allies.NetworkPosition, Item.AOERadius)) {
+					if (!unit.Buffs.some(buff => buff.Name === "modifier_item_mekansm_noheal")
+						&& (allies.HPPercent <= AutoUseItemsMG_val.value
+							&& allies.IsAlive || unit.HPPercent <= AutoUseItemsMG_val.value
+							&& unit.IsAlive)
+					) {
+						Item.UseAbility(unit)
+						unit.CastNoTarget(Item)
+						Sleep.Sleep(DelayCast, Item.Name)
+						return true
+					}
 				}
 			}
 		})
@@ -215,12 +222,14 @@ function AutoUseItems(unit: Unit) {
 		if (Items.Bottle.CurrentCharges === 3) {
 			if (unit.Buffs.some(buff => buff.Name === "modifier_fountain_aura_buff")) {
 				AllUnitsHero.some(allies => {
-					if (!allies.IsEnemy(unit) && unit.IsInRange(allies.NetworkPosition, Items.Bottle.CastRange)) {
-						if (!allies.IsInvulnerable && !unit.Buffs.some(buff => buff.Name === "modifier_bottle_regeneration")
-							&& (allies.Mana !== allies.MaxMana || allies.HP !== allies.MaxHP)) {
-							unit.CastTarget(Items.Bottle, allies)
-							Sleep.Sleep(DelayCast, Items.Bottle.Name)
-							return true
+					if (allies !== undefined) {
+						if (!allies.IsEnemy(unit) && unit.IsInRange(allies.NetworkPosition, Items.Bottle.CastRange)) {
+							if (!allies.IsInvulnerable && !unit.Buffs.some(buff => buff.Name === "modifier_bottle_regeneration")
+								&& (allies.Mana !== allies.MaxMana || allies.HP !== allies.MaxHP)) {
+								unit.CastTarget(Items.Bottle, allies)
+								Sleep.Sleep(DelayCast, Items.Bottle.Name)
+								return true
+							}
 						}
 					}
 				})
@@ -238,7 +247,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.Buckler)) {
-		let enemy_bluker = AllUnitsHero.some(enemy => enemy.IsEnemy(unit) && enemy.IsAlive && enemy.IsVisible
+		let enemy_bluker = AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsEnemy(unit) && enemy.IsAlive && enemy.IsVisible
 			&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsBluker_val.value)
 		if (enemy_bluker) {
 			unit.CastNoTarget(Items.Buckler)
@@ -296,7 +305,7 @@ function AutoUseItems(unit: Unit) {
 					return e[0]
 				return setTimeout(() => Particle = [], 3000)
 			})
-			let IsVisible = AllUnitsHero.some(enemy => unit.IsEnemy(enemy)
+			let IsVisible = AllUnitsHero.some(enemy => enemy !== undefined && unit.IsEnemy(enemy)
 					&& enemy.IsAlive
 					&& unit.IsInRange(enemy.NetworkPosition, Items.Dust.CastRange)
 					&& !enemy.ModifiersBook.HasAnyBuffByNames(Buffs.InvisDebuff)
@@ -307,7 +316,7 @@ function AutoUseItems(unit: Unit) {
 						|| glimer_cape !== undefined
 						|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
 					)
-					&& !AllUnitsHero.some(allies => !unit.IsEnemy(enemy) && allies.GetItemByName("item_gem")
+					&& !AllUnitsHero.some(allies => allies !== undefined && !unit.IsEnemy(enemy) && allies.GetItemByName("item_gem")
 					&& allies.Distance2D(enemy.Position) < 800))
 		
 			if (IsVisible) {
@@ -329,7 +338,7 @@ function AutoUseItems(unit: Unit) {
 
 	if (IsValidItem(Items.Abyssal)) {
 		// loop-optimizer: FORWARD
-		AllUnitsHero.filter(enemy => enemy.IsEnemy(unit) && enemy.IsValid && enemy.IsAlive).some(x => {
+		AllUnitsHero.filter(enemy => enemy !== undefined && enemy.IsEnemy(unit) && enemy.IsValid && enemy.IsAlive).some(x => {
 			if (!x.IsInRange(unit, Items.Abyssal.CastRange))
 				return false
 			unit.CastTarget(Items.Abyssal, x)
@@ -338,7 +347,22 @@ function AutoUseItems(unit: Unit) {
 		})
 	}
 	
-	return false
+	if (lastStat !== undefined && Game.RawGameTime >= nextTick) {
+		if (Items.PowerTreads !== undefined 
+			&& !Sleep.Sleeping("PowerTreads")
+			&& ItemsForUse.IsEnabled(Items.PowerTreads.Name)) {
+			if (Items.ActiveAttribute !== lastStat && !changed) {
+				unit.CastNoTarget(Items.PowerTreads)
+				nextTick = nextTick + 0.15 + GetAvgLatency(Flow_t.OUT)
+				Sleep.Sleep(GetDelayCast(), "PowerTreads")
+			}
+			if (Items.ActiveAttribute === lastStat) {
+				lastStat = undefined
+				changed = true
+			}
+			return true
+		}
+	}
 }
 
 function CheckUnitForUrn(Unit: Unit, MaxHP: number) {
@@ -383,14 +407,16 @@ function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
 function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true) {
 	// loop-optimizer: FORWARD
 	AllUnitsHero.map(enemy => {
-		let target = IsEnemy ? enemy : unit
-		if (unit.IsInRange(target.NetworkPosition, Item.CastRange)) {
-			if (CheckUnitForUrn(target, IsEnemy ? AutoUseItemsUrnAliesEnemyHP.value : AutoUseItemsUrnAliesAlliesHP.value) && !enemy.IsIllusion
-				&& !target.ModifiersBook.GetAnyBuffByNames(["modifier_item_urn_heal", "modifier_item_spirit_vessel_heal"])
-			) {
-				unit.CastTarget(Item, target)
-				Sleep.Sleep(GetDelayCast(), "Delay")
-				return true
+		if (enemy !== undefined) {
+			let target = IsEnemy ? enemy : unit
+			if (unit.IsInRange(target.NetworkPosition, Item.CastRange)) {
+				if (CheckUnitForUrn(target, IsEnemy ? AutoUseItemsUrnAliesEnemyHP.value : AutoUseItemsUrnAliesAlliesHP.value) && !enemy.IsIllusion
+					&& !target.ModifiersBook.GetAnyBuffByNames(["modifier_item_urn_heal", "modifier_item_spirit_vessel_heal"])
+				) {
+					unit.CastTarget(Item, target)
+					Sleep.Sleep(GetDelayCast(), "Delay")
+					return true
+				}
 			}
 		}
 	})
@@ -449,61 +475,85 @@ export function EntityDestroy(Entity: Entity) {
 	}
 }
 
-export function UseMoseItemTarget(args: ExecuteOrder) {
+export function UseMouseItemTarget(args: ExecuteOrder) {
 	if (!StateBase.value || !State.value || SleepCHeck()) {
 		return true
 	}
-	let unit = args.Target as Unit
-	if (!unit.IsBuilding && unit.IsEnemy()) {
+	let unit = args.Unit as Unit,
+		target = args.Target as Unit
+		
+	if (target === undefined || unit === undefined) {
+		return true
+	}
+	if (!target.IsBuilding) {
 		switch (args.OrderType) {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-				let LocalPlayerInit = LocalPlayer
-				if (LocalPlayerInit === undefined) {
+				if (!target.IsEnemy()) {
 					return true
 				}
-				let Me = LocalPlayerInit.Hero,
-					Items = new InitItems(Me)
-				let _Item = Items.SolarCrest === undefined 
-					? Items.Medallion 
-					: Items.SolarCrest
+				let Items = new InitItems(unit),
+					_Item = Items.SolarCrest === undefined 
+						? Items.Medallion 
+						: Items.SolarCrest
+				// console.log(unit.Buffs.map(e => e.Name))
 				if (IsValidItem(Items.SolarCrest) || IsValidItem(Items.Medallion) 
-					&& Me.IsInRange(unit, _Item.CastRange)) {
-					Me.CastTarget(_Item, unit)
+					&& unit.IsInRange(target, _Item.CastRange)
+					&& !target.IsMagicImmune) {
+					unit.CastTarget(_Item, target)
 					Sleep.Sleep(GetDelayCast(), _Item.Name)
 				}
-				if (unit.IsHero && IsValidItem(Items.Janggo) 
-				&& Me.IsInRange(unit, Items.Janggo.CastRange / 2) 
-				&& !Me.HasModifier("modifier_item_ancient_janggo_active")
+				if (target.IsHero && IsValidItem(Items.Janggo) 
+					&& unit.IsInRange(target, Items.Janggo.CastRange / 2) 
+					&& !unit.HasModifier("modifier_item_ancient_janggo_active")
 				) {
-					Me.CastNoTarget(Items.Janggo)
+					unit.CastNoTarget(Items.Janggo)
 					Sleep.Sleep(GetDelayCast(), Items.Janggo.Name)
+				}
+				if (target.IsHero && !target.IsMagicImmune
+					&& IsValidItem(Items.DiffusalBlade)
+					&& unit.IsInRange(target, Items.DiffusalBlade.CastRange)
+					&& !target.HasModifier("modifier_item_diffusal_blade_slow")
+				) {
+					let hex_debuff = target.GetBuffByName("modifier_sheepstick_debuff")
+					if ((hex_debuff === undefined || !hex_debuff.IsValid 
+						|| hex_debuff.RemainingTime <= 0.3)) {
+						unit.CastTarget(Items.DiffusalBlade, target)
+						Sleep.Sleep(GetDelayCast(), Items.DiffusalBlade.Name)
+					}
 				}
 			break;
 		}
 	}
 }
 
-export function OnExecuteOrderSoulRing(args: ExecuteOrder): boolean {
+export function OnExecuteOrder(args: ExecuteOrder): boolean {
 	if (!StateBase.value || !State.value) {
 		return true
 	}
-	let LocalPlayerInit = LocalPlayer
-	if (LocalPlayerInit === undefined) {
+	let unit = args.Unit as Unit
+	if (unit === undefined) {
 		return true
 	}
-	let Me = LocalPlayerInit.Hero,
-		Items = new InitItems(Me)
-	if (!IsValidItem(Items.SoulRing)){
-		return true
-	}
+	let Items = new InitItems(unit)
 	let ability = args.Ability as Ability
 	if (args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION
 		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET
 		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE
 		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET
-		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE)
+		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE) {
 		return true
-	if (Me.HPPercent < AutoUseItemsSouringHP_val.value || Me.ManaPercent > AutoUseItemsSouringMP_val.value 
+	}
+	if (!UseSoulRing(unit, Items, ability, args) || !UsePowerTreads(args, ability, unit, Items)) {
+		return false
+	}
+	return true
+}
+
+function UseSoulRing(Me: Unit, Items: InitItems, ability: Ability, args: ExecuteOrder): boolean {
+	if (!IsValidItem(Items.SoulRing)) {
+		return true
+	}
+	if (Me.HPPercent < AutoUseItemsSouringHP_val.value || Me.ManaPercent > AutoUseItemsSouringMP_val.value
 		|| (Me.IsInvisible && !Me.CanUseAbilitiesInInvisibility && !AutoUseItemsSouringInvis.value)
 	) {
 		return true
@@ -512,11 +562,50 @@ export function OnExecuteOrderSoulRing(args: ExecuteOrder): boolean {
 		return true
 	}
 	Me.CastNoTarget(Items.SoulRing)
-	let Delay = ability.CastPoint <= 0 
-		? GetDelayCast() 
+	let Delay = ability.CastPoint <= 0
+		? GetDelayCast()
 		: (ability.CastPoint * 1000) + GetDelayCast()
-	Sleep.Sleep(Delay, "OrderStop")
-	if(Sleep.Sleeping("OrderStop")) {
+	Sleep.Sleep(Delay, "OrderStop_" + ability.Index)
+	if (Sleep.Sleeping("OrderStop_" + ability.Index)) {
+		args.Execute()
+		return false
+	}
+	return true
+}
+
+function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit, Items: InitItems): boolean {
+	if (ability.ManaCost < 1 || unit.IsInvisible || Sleep.Sleeping("PowerTreads")) {
+		return true
+	}
+	if (ability.Name === "item_manta"
+		|| ability.Name === "item_invis_sword"
+		|| ability.Name === "item_silver_edge"
+		|| ability.Name === "ember_spirit_sleight_of_fist"
+		|| ability.Name === "morphling_adaptive_strike_agi"
+	) {
+		return true
+	}
+	if (Items.PowerTreads !== undefined
+		&& ItemsForUse.IsEnabled(Items.PowerTreads.Name)) {
+		if (unit.IsStunned || unit.IsHexed || unit.IsInvulnerable) {
+			return true
+		}
+		if (changed) {
+			lastStat = Items.ActiveAttribute
+		}
+		if (Items.ActiveAttribute === 0) {
+			unit.CastNoTarget(Items.PowerTreads)
+			Sleep.Sleep(GetDelayCast(), "PowerTreads")
+		} else if (Items.ActiveAttribute === 2) {
+			unit.CastNoTarget(Items.PowerTreads)
+			unit.CastNoTarget(Items.PowerTreads)
+			Sleep.Sleep(GetDelayCast(), "PowerTreads")
+		}
+		changed = false
+		nextTick = ((Game.RawGameTime + ability.CastPoint) + (0.45 + GetAvgLatency(Flow_t.OUT)))
+	}
+	Sleep.Sleep(nextTick, "OrderStop_" + ability.Index)
+	if (Sleep.Sleeping("OrderStop_" + ability.Index)) {
 		args.Execute()
 		return false
 	}

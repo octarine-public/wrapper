@@ -69,16 +69,14 @@ let NotificationRoshanStateChat = RoshanTree.AddToggle("Chat").SetTooltip("Send 
 
 	drawStatusSize = drawMenu.AddSlider("Text Size", 23, 12, 60),
 	statusPosX = drawMenu.AddSlider("Position X (%)", 47, 0, 100),
-	statusPosY = drawMenu.AddSlider("Position Y (%)", 4, 0, 100),
-	IsAlive = drawMenu.AddToggle("IsAlive").SetTooltip("don't pick, crutch for save last alive rosh, if execute full reload scripts")
-
+	statusPosY = drawMenu.AddSlider("Position Y (%)", 4, 0, 100)
+	
 export {
 	BaseTree,
 	NotificationRoshanStateChat,
 	drawStatus,
 	statusPosX,
 	statusPosY,
-	IsAlive,
 	drawStatusSize
 }
 

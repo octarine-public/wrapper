@@ -1,7 +1,6 @@
 import ManagerBase from "../../../abstract/Base"
 import { Color, Game, RendererSDK, Vector2, Unit, Menu } from "wrapper/Imports"
 import {
-	IsAlive,
 	drawStatus,	
 	statusPosX,
 	statusPosY,
@@ -33,7 +32,8 @@ var Timer: number = 0,
 	Base: ManagerBase = new ManagerBase,
 	TimersOne: string,
 	TimersTwo: string,
-	AegisTextTime: string
+	AegisTextTime: string,
+	IsAlive = true
 
 export function RoshanParticleCreate(Handle: bigint) {
 	if (Handle === 7431777948785381669n) {
@@ -41,7 +41,7 @@ export function RoshanParticleCreate(Handle: bigint) {
 			Game.ExecuteCommand("chatwheel_say 53")
 			Timer = 0
 		}
-		IsAlive.OnValue(x => x.value = true)
+		IsAlive = true
 	}
 	if (Handle === 13891217767486593796n) {
 		if (NotificationRoshanStateChat.value) {
@@ -58,7 +58,7 @@ export function RoshanParticleCreate(Handle: bigint) {
 		Timer = 0
 		roshanKillTime = 480
 		AegisTime = 300 // transfer on fire events (Game events)
-		IsAlive.OnValue(x => x.value = false)
+		IsAlive = false
 	}
 	if (Handle === 15464711547879317671n || Handle === 15359352600260660069n || Handle === 995145632723522745n) {
 		AegisTime = 5
@@ -120,7 +120,7 @@ export function RoshanTick() {
 export function DrawRoshan() {
 	if (!drawStatus.value || !Game.IsInGame)
 		return false
-	if (!IsAlive.value) {
+	if (!IsAlive) {
 		let time = Game.RawGameTime
 		if (time >= checkTick) {
 			let RoshTimeOne = --roshanKillTime,
@@ -159,7 +159,7 @@ export function DrawRoshan() {
 			}
 		})
 	}
-	IsAlive.value
+	IsAlive
 		? RoshanDrawAliveDied("Alive", IconSettingsColorAlive.Color)
 		: RoshanDrawAliveDied("Died", IconSettingsColorDied.Color)
 }
@@ -182,4 +182,5 @@ export function RoshanGameEnded() {
 	aegisPickUpTime = 0
 	checkTickMessage = 0
 	RoshanAttack = false
+	IsAlive = false
 }

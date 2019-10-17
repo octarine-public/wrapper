@@ -167,19 +167,26 @@ export default class ItemBase extends ItemManagerBase {
 		}
 		return this.unit.GetItemByName(/item_tango/)
 	}
-	public get PowerTreads(): Item {
+	public get PowerTreads(): Item  {
 		let name = "item_power_treads"
 		if (this.unit === undefined) {
 			return name as any
 		}
 		return this.unit.GetItemByName(name)
 	}
-	// public get ActiveAttribute(): Attributes {
-	// 	let att = this.PowerTreads
-	// 	if (att === undefined){
-	// 		return Attributes.DOTA_ATTRIBUTE_STRENGTH
-	// 	}
-	// 	let _PowerTreads = att.m_pBaseEntity as C_DOTA_Item_PowerTreads
-	// 	return _PowerTreads.m_iStat
-	// }
+	public get DiffusalBlade(): Item {
+		let name = "item_diffusal_blade"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get ActiveAttribute(): Attributes {
+		let att = this.PowerTreads
+		if (att === undefined){
+			return Attributes.DOTA_ATTRIBUTE_STRENGTH
+		}
+		let _PowerTreads = att.m_pBaseEntity as C_DOTA_Item_PowerTreads
+		return _PowerTreads.m_iStat
+	}
 }
