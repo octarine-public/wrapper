@@ -30,7 +30,7 @@ let	allRunes: Rune[] = [],
 
 export function DrawRunes() {
 	
-	if (Game.GameTime >= 0) {
+	if (Game.GameTime >= 0 && Game.LevelNameShort !== "hero_demo_main") {
 		// power
 		let Time = Game.RawGameTime;
 		if (TreeRuneState.value) {
@@ -47,15 +47,17 @@ export function DrawRunes() {
 						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
 					}
 					if (Time >= checkTick) {
-						if (TreeNotificationBountySound.value > 0) {
-							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
-							checkTick = Time + 4
-						}
-					}
-					if (RunePowerTimer) {
-						if (TreeNotificationPowerChat.value) {
-							Game.ExecuteCommand("chatwheel_say 57")
-							RunePowerTimer = false
+						if (RunePowerTime <= 119) {
+							if (TreeNotificationBountySound.value > 0) {
+								Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
+								checkTick = Time + (NotifyPowerRune.value / 2)
+							}
+							if (RunePowerTimer) {
+								if (TreeNotificationPowerChat.value) {
+									Game.ExecuteCommand("chatwheel_say 57")
+									RunePowerTimer = false
+								}
+							}
 						}
 					}
 				}
@@ -80,15 +82,17 @@ export function DrawRunes() {
 						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
 					}
 					if (Time >= checkTick) {
-						if (TreeNotificationBountySound.value > 0) {
-							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
-							checkTick = Time + 4
+						if (RuneBountyTime <= 299) {
+							if (TreeNotificationBountySound.value > 0) {
+								Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
+								checkTick = Time + (NotifyTimeBounty.value / 2)
+							}
 						}
-					}
-					if (RuneBountyTimerBool) {
-						if (TreeNotificationBountyChat.value) {
-							Game.ExecuteCommand("chatwheel_say 57")
-							RuneBountyTimerBool = false
+						if (RuneBountyTimerBool) {
+							if (TreeNotificationBountyChat.value) {
+								Game.ExecuteCommand("chatwheel_say 57")
+								RuneBountyTimerBool = false
+							}
 						}
 					}
 				}

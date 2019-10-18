@@ -118,8 +118,9 @@ export function RoshanTick() {
 }
 
 export function DrawRoshan() {
-	if (!drawStatus.value || !Game.IsInGame)
+	if (!drawStatus.value || !Game.IsInGame || Game.LevelNameShort === "hero_demo_main") {
 		return false
+	}
 	if (!IsAlive) {
 		let time = Game.RawGameTime
 		if (time >= checkTick) {
