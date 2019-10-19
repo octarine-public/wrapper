@@ -19,7 +19,7 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		"modifier_lina_light_strike_array",
 		"modifier_leshrac_split_earth_thinker",
 		false, false, false,
-		"modifier_monkey_king_spring_thinker",
+		"modifier_monkey_king_spring_thinker"
 	],
 	arHeroModifiers = {
 		modifier_spirit_breaker_charge_of_darkness_vision: [true, true, "particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_target_mark.vpcf", 4],
@@ -299,31 +299,51 @@ function DestroyCircle(id) {
 
 let abils_list: Ability[] = []
 
+function ReturnAOERadius(owner: Unit, name_ability: string): number {
+	let ability = owner.GetAbilityByName(name_ability)
+	return ability.AOERadius
+}
+
+
 EventsSDK.on("EntityCreated", ent => {
 	if (!active.value)
 		return
 	if (ent instanceof Ability)
 		abils_list.push(ent)
-
 	if (ent.Name === "npc_dota_thinker") {
-		let owner = ent.Owner
-
+		let owner = ent.Owner as Unit
 		if (owner !== undefined) {
-
-			let own_name = owner.Name
-
-			let rad = 0
-
-			if (own_name === "npc_dota_hero_invoker") {
-				rad = 175
-			} else if (own_name === "npc_dota_hero_kunkka") {
-				rad = 175
-			} else if (own_name === "npc_dota_hero_lina") {
-				rad = 225
+			//AbilityOwnerRadius(owner)
+			let rad = 0,
+				own_name = owner.Name
+			switch (own_name) {
+				case "npc_dota_hero_invoker":
+					rad = ReturnAOERadius(owner, "invoker_sun_strike")
+					break;
+				case "npc_dota_hero_kunkka":
+					rad = ReturnAOERadius(owner, "kunkka_torrent")
+					break;
+				case "npc_dota_hero_lina":
+					rad = ReturnAOERadius(owner, "lina_light_strike_array")
+					break;
+				case "npc_dota_hero_leshrac":
+					rad = ReturnAOERadius(owner, "leshrac_split_earth")
+					break;
+				case "npc_dota_hero_enigma":
+					rad = ReturnAOERadius(owner, "enigma_black_hole")
+					break;
+				case "npc_dota_hero_arc_warden":
+					rad = ReturnAOERadius(owner, "arc_warden_spark_wraith")
+					break;
+				case "npc_dota_hero_alchemist":
+					rad = ReturnAOERadius(owner, "alchemist_acid_spray")
+					break;
+				case "npc_dota_hero_abyssal_underlord":
+					rad = ReturnAOERadius(owner, "abyssal_underlord_pit_of_malice")
+					break;
 			}
-
 			if (rad !== 0) {
-				DrawParticleCirclePos(ent.Position, rad, ent.Index)
+				DrawParticleCirclePos(ent.NetworkPosition, rad, ent.Index)
 			}
 		}
 	}

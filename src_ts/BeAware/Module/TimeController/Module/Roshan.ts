@@ -178,10 +178,13 @@ function DeleteUnits() {
 export function RoshanGameEnded() {
 	DeleteUnits()
 	checkTick = 0
+	AegisTime = 0
 	TimersOne = undefined
 	TimersTwo = undefined
 	aegisPickUpTime = 0
 	checkTickMessage = 0
 	RoshanAttack = false
-	IsAlive = false
+	roshanKillTime = 0
+	checkTickMessage = 0
+	checkTick = 0
 }
