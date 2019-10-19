@@ -599,7 +599,7 @@ function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit, Items:
 		} else if (Items.ActiveAttribute === 2) {
 			unit.CastNoTarget(Items.PowerTreads)
 			unit.CastNoTarget(Items.PowerTreads)
-			Sleep.Sleep(GetDelayCast(), "PowerTreads")
+			Sleep.Sleep((GetDelayCast() - 250), "PowerTreads")
 		}
 		changed = false
 		nextTick = ((Game.RawGameTime + ability.CastPoint) + (0.45 + GetAvgLatency(Flow_t.OUT)))
