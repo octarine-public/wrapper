@@ -916,7 +916,7 @@ export default class Unit extends Entity {
 
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
 			if (target instanceof Entity)
-				target = target.Position
+				target = target.NetworkPosition
 
 			return this.CastPosition(ability, target, queue, showEffects)
 		}

@@ -12,8 +12,11 @@ export function InitCombo() {
 	if (!Base.IsRestrictions(State) || !ComboKey.is_pressed || Sleep.Sleeping("Delay"))
 		return false
 	let target = MouseTarget
-	if (target === undefined || (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect"))) {
+	if (target === undefined) {
 		MyHero.MoveTo(Utils.CursorWorldVec)
+		return false
+	}
+	if (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect")) {
 		return false
 	}
 	let ItemsInit = new InitItems(MyHero),

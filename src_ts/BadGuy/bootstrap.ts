@@ -1,6 +1,7 @@
 import * as AutoFeed from "./AutoFeed/Listeners";
 import * as AutoLaugh from "./AutoLaugh/Listeners";
 import * as AutoTaunt from "./AutoTaunt/Listeners";
+import * as AutoSpinner from "./AutoSpinner/Listeners";
 import { EventsSDK, LocalPlayer, Game } from "../wrapper/Imports";
 import { MainState } from "./Base/MenuBase";
 
@@ -11,6 +12,7 @@ EventsSDK.on("Tick", () => {
 	AutoFeed.Tick()
 	AutoLaugh.Tick()
 	AutoTaunt.Tick()
+	AutoSpinner.Tick()
 })
 EventsSDK.on("Draw", () => {
 	if (!MainState.value || LocalPlayer === undefined 
@@ -20,7 +22,15 @@ EventsSDK.on("Draw", () => {
 })
 EventsSDK.on("EntityCreated", x => {
 	AutoFeed.EntityCreated(x)
+	AutoSpinner.EntityCreated(x)
 })
 EventsSDK.on("EntityDestroyed", x => {
 	AutoFeed.EntityDestroyed(x)
+	AutoSpinner.EntityDestroyed(x)
+})
+EventsSDK.on("GameEnded", () => {
+	AutoFeed.GameEnded()
+	AutoTaunt.GameEnded()
+	AutoLaugh.GameEnded()
+	AutoSpinner.GameEnded()
 })

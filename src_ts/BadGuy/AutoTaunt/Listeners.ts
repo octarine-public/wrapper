@@ -11,3 +11,6 @@ export function Tick() {
 		Sleep = Timer + Interval.value
 	}
 }
+export function GameEnded() { 
+	Sleep = 0
+}

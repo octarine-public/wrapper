@@ -57,3 +57,8 @@ export function EntityDestroyed(x: Entity) {
 		}
 	}
 }
+
+export function GameEnded() {
+	Sleep.FullReset()
+	Units = []
+}
