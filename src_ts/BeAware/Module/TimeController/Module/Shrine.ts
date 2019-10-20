@@ -26,7 +26,7 @@ function DrawShrineTime(unit: Unit) {
 	if (abil === undefined)
 		return false
 	let Time = Base.TimeSecondToMin(abil.Cooldown),
-		position_unit = RendererSDK.WorldToScreen(unit.NetworkPosition)
+		position_unit = RendererSDK.WorldToScreen(unit.Position)
 	if (position_unit === undefined)
 		return false
 	if (abil.Cooldown <= 0) {

@@ -1,7 +1,7 @@
 import { GameSleeper, Utils } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, MyHero, ProjList } from "../Listeners"
-import { Ability, AutoAttackTarget, BladeMailCancelCombo, BlinkRadius, ComboKey, Items, MinHealthToUltItem, State, ConcussiveShotAwait } from "../Menu"
+import { AbilityMenu, AutoAttackTarget, BladeMailCancelCombo, BlinkRadius, ComboKey, Items, MinHealthToUltItem, State, ConcussiveShotAwait } from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
 
 import InitAbility from "../Extends/Abilities"
@@ -98,7 +98,7 @@ export function InitCombo() {
 		// AncientSeal
 		if (Abilities.AncientSeal !== undefined
 			&& !Base.CancelAbilityRealm(target)
-			&& Ability.IsEnabled(Abilities.AncientSeal.Name)
+			&& AbilityMenu.IsEnabled(Abilities.AncientSeal.Name)
 			&& Abilities.AncientSeal.CanBeCasted()
 			&& MyHero.Distance2D(target) <= Abilities.AncientSeal.CastRange
 			&& !comboBreaker) {
@@ -122,7 +122,7 @@ export function InitCombo() {
 
 		// MysticFlare
 		if (Abilities.MysticFlare !== undefined
-			&& Ability.IsEnabled(Abilities.MysticFlare.Name)
+			&& AbilityMenu.IsEnabled(Abilities.MysticFlare.Name)
 			&& MinHealthToUltItem.value <= target.HPPercent
 			&& Abilities.MysticFlare.CanBeCasted()
 			&& MyHero.Distance2D(target) <= (Abilities.MysticFlare.CastRange - 100)
@@ -213,7 +213,7 @@ export function InitCombo() {
 		}
 		// ConcussiveShot
 		if (Abilities.ConcussiveShot !== undefined
-			&& Ability.IsEnabled(Abilities.ConcussiveShot.Name)
+			&& AbilityMenu.IsEnabled(Abilities.ConcussiveShot.Name)
 			//&& Base.ConcussiveShotTarget(target, Abilities.ConcussiveShot.TargetHit)
 			&& Abilities.ConcussiveShot.CanBeCasted()
 			&& MyHero.Distance2D(target) <= Abilities.ConcussiveShot.CastRange) {
@@ -224,7 +224,7 @@ export function InitCombo() {
 		// ArcaneBolt
 		if (Abilities.ArcaneBolt !== undefined
 			&& !Base.CancelAbilityRealm(target)
-			&& Ability.IsEnabled(Abilities.ArcaneBolt.Name)
+			&& AbilityMenu.IsEnabled(Abilities.ArcaneBolt.Name)
 			&& Abilities.ArcaneBolt.CanBeCasted()
 			&& MyHero.Distance2D(target) <= Abilities.ArcaneBolt.CastRange)
 		{

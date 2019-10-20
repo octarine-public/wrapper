@@ -51,10 +51,10 @@ export function DrawScan() {
 							CreateAbilityRadius(x, 900)
 						}
 						RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting",
-							ent.NetworkPosition,
+							ent.Position,
 							RadarStateInWorldIconSize.value * 20,
 							RadarStateInWorldMiniMapColor.Color)
-						let pos_ent = RendererSDK.WorldToScreen(x.NetworkPosition)
+						let pos_ent = RendererSDK.WorldToScreen(x.Position)
 						if (pos_ent === undefined)
 							return
 						RendererSDK.Image("panorama/images/hud/reborn/icon_scan_on_psd.vtex_c",

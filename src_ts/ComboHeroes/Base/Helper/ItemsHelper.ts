@@ -1,11 +1,11 @@
-import { Entity, Hero, Item, TrackingProjectile, Ability, Unit } from "wrapper/Imports"
+import { Entity, Hero, Item, TrackingProjectile, Ability, Unit, Game } from "wrapper/Imports"
 import { AbilityHelper } from "./AbilityHelper"
 export class ItemsHelper extends AbilityHelper {
 	constructor(unit: Hero | Unit) {
 		super(unit)
 	}
 	public get Tick() {
-		return GetLatency(Flow_t.IN) + 1000 / 30 * 1.5
+		return (((Game.Ping / 2) + 30) + 250)
 	}
 	public ProjectileDelay(proj_name: string, Item: Item, ProjList: TrackingProjectile[], ability: Ability | Item): number {
 		let Projectile = ProjList.find(x => x.HadHitTargetLoc && x.ParticlePath === proj_name)

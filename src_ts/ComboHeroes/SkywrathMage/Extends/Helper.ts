@@ -1,6 +1,6 @@
-import { Ability as AbilitySDK, EntityManager, Game, Hero, Menu, Team } from "wrapper/Imports"
+import { Ability as AbilitySDK, Game, Hero, Menu } from "wrapper/Imports"
 import { Heroes, MyHero } from "../Listeners"
-import { Ability, BadUltItem, BadUltMovementSpeedItem, ComboBreak, ComboStartWith, Items as ItemsSDK, SmartConShotOnlyTarget } from "../Menu"
+import { AbilityMenu, BadUltItem, BadUltMovementSpeedItem, ComboBreak, ComboStartWith, Items as ItemsSDK, SmartConShotOnlyTarget } from "../Menu"
 
 import InitAbility from "./Abilities"
 import InitItems from "./Items"
@@ -97,7 +97,7 @@ class BaseHelper {
 			&& MyHero.Distance2D(target) <= Items.Sheeps.CastRange) {
 			return true
 		} else if (
-			Ability.IsEnabled(Abilities.AncientSeal.Name)
+			AbilityMenu.IsEnabled(Abilities.AncientSeal.Name)
 			&& Abilities.AncientSeal.CanBeCasted()
 			&& MyHero.Distance2D(target) > Abilities.AncientSeal.CastRange
 		) {

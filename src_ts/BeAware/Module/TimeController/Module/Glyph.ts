@@ -33,7 +33,7 @@ function SelectedGliph(unit: Unit) {
 	let time = buffs.RemainingTime
 	if (!unit.IsInRange(Owner, GliphInRange.value) || time <= 0)
 		return false
-	let position_unit = RendererSDK.WorldToScreen(unit.NetworkPosition)
+	let position_unit = RendererSDK.WorldToScreen(unit.Position)
 	if (position_unit === undefined)
 		return false
 

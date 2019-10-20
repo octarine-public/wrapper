@@ -4,7 +4,7 @@ let MenuCombo = Menu.AddEntry(["Heroes", "Intelligence", "SkyWrath Mage"]),
 	State = MenuCombo.AddToggle("Enable").OnValue(DrawDestroyAll)
 
 let Combo = MenuCombo.AddNode("Combo"),
-	Ability = Combo.AddImageSelector(
+	AbilityMenu = Combo.AddImageSelector(
 		"Abilities", [
 			"skywrath_mage_arcane_bolt",
 			"skywrath_mage_concussive_shot",
@@ -191,7 +191,7 @@ let Drawing = MenuCombo.AddNode("Drawing"),
 export {
 	State,
 	Items,
-	Ability,
+	AbilityMenu,
 	ComboKey,
 	NearMouse,
 	//ComboTarget,
