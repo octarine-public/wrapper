@@ -1,9 +1,9 @@
-import { Entity, Unit, Building, GameSleeper, ArrayExtensions } from "wrapper/Imports";
+import { Unit, Building, GameSleeper } from "wrapper/Imports";
 import { State, Swhicher, DrawState } from "./Menu";
 import { Renderer } from "./Renderer";
+import { Units } from "../Base/ListenersBase";
 
-export let Units: Unit[] = [],
-	EnemyBase: Building[] = [],
+export let EnemyBase: Building[] = [],
 	Sleep: GameSleeper = new GameSleeper()
 
 function MoveUnit(x: Unit, to: Building) {
@@ -41,24 +41,6 @@ export function Draw() {
 	}
 }
 
-export function EntityCreated(x: Entity) {
-	if (x instanceof Unit && x.IsControllable) {
-		Units.push(x)
-	}
-	if (x instanceof Building && x.Name === "dota_fountain") {
-		EnemyBase.push(x)
-	}
-}
-
-export function EntityDestroyed(x: Entity) {
-	if (x instanceof Unit && x.IsControllable) {
-		if (Units !== undefined || Units.length > 0) {
-			ArrayExtensions.arrayRemove(Units, x)
-		}
-	}
-}
-
 export function GameEnded() {
 	Sleep.FullReset()
-	Units = []
 }

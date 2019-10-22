@@ -1,9 +1,6 @@
-import { Entity, Unit, Building, GameSleeper, ArrayExtensions, Game, Vector3 } from "wrapper/Imports";
+import { Unit } from "wrapper/Imports";
 import { State, Swhicher, SpinnerKey, ModeSpinner } from "./Menu";
-
-export let Units: Unit[] = [],
-	EnemyBase: Building[] = [],
-	Sleep: GameSleeper = new GameSleeper()
+import { Units } from "../Base/ListenersBase";
 
 function MoveUnit(x: Unit) {
 	switch (ModeSpinner.selected_id) {
@@ -28,23 +25,4 @@ export function Tick() {
 			case 1: MoveUnit(x); break;
 		}
 	})
-}
-
-export function EntityCreated(x: Entity) {
-	if (x instanceof Unit && x.IsControllable) {
-		Units.push(x)
-	}
-}
-
-export function EntityDestroyed(x: Entity) {
-	if (x instanceof Unit && x.IsControllable) {
-		if (Units !== undefined || Units.length > 0) {
-			ArrayExtensions.arrayRemove(Units, x)
-		}
-	}
-}
-
-export function GameEnded() {
-	Sleep.FullReset()
-	Units = []
 }

@@ -1,7 +1,9 @@
 import * as AutoFeed from "./AutoFeed/Listeners";
 import * as AutoLaugh from "./AutoLaugh/Listeners";
 import * as AutoTaunt from "./AutoTaunt/Listeners";
+import * as BaseListeners from "./Base/ListenersBase";
 import * as AutoSpinner from "./AutoSpinner/Listeners";
+
 import { EventsSDK, LocalPlayer, Game } from "../wrapper/Imports";
 import { MainState } from "./Base/MenuBase";
 
@@ -21,16 +23,14 @@ EventsSDK.on("Draw", () => {
 	AutoFeed.Draw()
 })
 EventsSDK.on("EntityCreated", x => {
-	AutoFeed.EntityCreated(x)
-	AutoSpinner.EntityCreated(x)
+	BaseListeners.EntityCreated(x)
 })
 EventsSDK.on("EntityDestroyed", x => {
-	AutoFeed.EntityDestroyed(x)
-	AutoSpinner.EntityDestroyed(x)
+	BaseListeners.EntityDestroyed(x)
 })
 EventsSDK.on("GameEnded", () => {
 	AutoFeed.GameEnded()
 	AutoTaunt.GameEnded()
 	AutoLaugh.GameEnded()
-	AutoSpinner.GameEnded()
+	BaseListeners.GameEnded()
 })
