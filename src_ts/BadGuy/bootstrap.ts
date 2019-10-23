@@ -1,15 +1,14 @@
+
+import { EventsSDK, LocalPlayer, Game, Entity } from "wrapper/Imports";
 import * as AutoFeed from "./AutoFeed/Listeners";
 import * as AutoLaugh from "./AutoLaugh/Listeners";
 import * as AutoTaunt from "./AutoTaunt/Listeners";
 import * as BaseListeners from "./Base/ListenersBase";
 import * as AutoSpinner from "./AutoSpinner/Listeners";
-
-import { EventsSDK, LocalPlayer, Game } from "../wrapper/Imports";
 import { MainState } from "./Base/MenuBase";
 
 EventsSDK.on("Tick", () => {
-	if (!MainState.value || LocalPlayer === undefined
-		|| LocalPlayer.IsSpectator || !Game.IsInGame)
+	if (!MainState.value || LocalPlayer === undefined || LocalPlayer.IsSpectator || !Game.IsInGame)
 		return
 	AutoFeed.Tick()
 	AutoLaugh.Tick()

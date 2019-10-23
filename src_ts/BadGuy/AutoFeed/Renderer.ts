@@ -1,4 +1,4 @@
-import { Units } from "./Listeners";
+import { AllUnits } from "../Base/ListenersBase";
 import { DrawTextSize, Swhicher } from "./Menu";
 import { RendererSDK, Unit, Color } from "wrapper/Imports";
 
@@ -11,8 +11,11 @@ function DrawText(unit: Unit): boolean {
 	return true
 }
 export function Renderer() {
+	if (AllUnits.length <= 0) {
+		return
+	}
 	// loop-optimizer: FORWARD
-	let units = Units.filter(x => x !== undefined && x.IsAlive && x.IsControllable)
+	let units = AllUnits.filter(x => x !== undefined && x.IsAlive && x.IsControllable)
 	// loop-optimizer: FORWARD
 	units.filter(x => {
 		if (!x.IsVisible) {

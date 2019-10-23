@@ -1,28 +1,27 @@
-import { Unit } from "wrapper/Imports";
-import { State, Swhicher, SpinnerKey, ModeSpinner } from "./Menu";
-import { Units } from "../Base/ListenersBase";
+import { Unit, LocalPlayer, GameSleeper, Game } from "wrapper/Imports";
+import { State, SpinnerKey, ModeSpinner } from "./Menu";
 
+export let Sleep: GameSleeper = new GameSleeper()
+function GetDelayCast() {
+	return ((Game.Ping / 2) + 15)
+}
 function MoveUnit(x: Unit) {
 	switch (ModeSpinner.selected_id) {
-		case 0: x.MoveTo(x.InFrontFromAngle(300, 1)); break;
-		case 1: x.MoveTo(x.InFrontFromAngle(250, 50)); break;
+		case 0: x.MoveTo(x.InFrontFromAngle(300, 1), false, true); break;
+		case 1: x.MoveTo(x.InFrontFromAngle(250, 50), false, true); break;
 	}
 }
 
 export function Tick() {
-	if (!State.value || !SpinnerKey.is_pressed) {
-		return false
+	if (!State.value || !SpinnerKey.is_pressed || Sleep.Sleeping("SpeenTime")) {
+		return
 	}
-	// loop-optimizer: FORWARD
-	Units.filter(x => x !== undefined && x.IsAlive && x.IsControllable && x.IsVisible && !x.IsStunned && !x.IsHexed)
-	.some(x => {
-		switch (Swhicher.selected_id) {
-			case 0:
-				if (x.IsHero) {
-					MoveUnit(x)
-				}
-			break;
-			case 1: MoveUnit(x); break;
-		}
-	})
+	if (LocalPlayer === undefined) {
+		return
+	}
+	let myHero = LocalPlayer.Hero
+	if (myHero.IsAlive && myHero.IsControllable && myHero.IsVisible && !myHero.IsStunned && !myHero.IsHexed && !myHero.IsInvulnerable) {
+		MoveUnit(LocalPlayer.Hero)
+		Sleep.Sleep(GetDelayCast(), "SpeenTime")
+	}
 }

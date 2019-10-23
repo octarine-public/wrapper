@@ -1,10 +1,9 @@
 import { Unit, Building, GameSleeper } from "wrapper/Imports";
 import { State, Swhicher, DrawState } from "./Menu";
 import { Renderer } from "./Renderer";
-import { Units } from "../Base/ListenersBase";
+import { AllUnits, EnemyBase } from "../Base/ListenersBase";
 
-export let EnemyBase: Building[] = [],
-	Sleep: GameSleeper = new GameSleeper()
+export let Sleep: GameSleeper = new GameSleeper()
 
 function MoveUnit(x: Unit, to: Building) {
 	x.MoveTo(to.NetworkPosition)
@@ -13,11 +12,12 @@ function MoveUnit(x: Unit, to: Building) {
 
 export function Tick() {
 	if (!State.value || Sleep.Sleeping("FeedTime")) {
-		return false
+		return
 	}
+
 	let fontain = EnemyBase.find(x => x.IsEnemy())
 	// loop-optimizer: FORWARD
-	Units.filter(x => x !== undefined && x.IsAlive && x.IsControllable)
+	AllUnits.filter(x => x !== undefined && x.IsAlive && x.IsControllable)
 	.some(x => {
 		if(!x.IsVisible) {
 			return false
@@ -26,11 +26,10 @@ export function Tick() {
 			case 0: 
 				if (x.IsHero) {
 					MoveUnit(x, fontain)
+					return true
 				}
-			break;
-			case 1:
-				MoveUnit(x, fontain)
-			break;
+			break
+			case 1: MoveUnit(x, fontain); break
 		}
 	})
 }
