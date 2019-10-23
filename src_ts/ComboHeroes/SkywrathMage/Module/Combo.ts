@@ -24,12 +24,9 @@ export function InitCombo() {
 		ItemsTarget = new InitItems(target)
 
 
-	let RodofAtosDelay = ProjList.find(x => !x.HadHitTargetLoc
-			&& x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
-		EtherealDelay = ProjList.find(x => !x.HadHitTargetLoc 
-			&& x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),
-		ConcussiveShotDelay = ProjList.find(x => !x.HadHitTargetLoc
-			&& x.ParticlePath === "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf")
+	let RodofAtosDelay = ProjList.find(x => x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
+		EtherealDelay = ProjList.find(x => x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),
+		ConcussiveShotDelay = ProjList.find(x => x.ParticlePath === "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf")
 			
 	// if (RodofAtosDelay !== undefined)
 	// 	console.log(target.Distance2D(RodofAtosDelay.Position))

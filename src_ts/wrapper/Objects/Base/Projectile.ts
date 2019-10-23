@@ -53,7 +53,6 @@ export class LinearProjectile extends Projectile {
 }
 export class TrackingProjectile extends Projectile {
 	public readonly Position: Vector3 = new Vector3()
-	public HadHitTargetLoc = false
 	public IsDodged = false
 
 	constructor(

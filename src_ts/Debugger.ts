@@ -160,7 +160,7 @@ let debugConsole = (name: string, ...args: any) =>
 EventsSDK.on("Draw", () => {
 	if (!debugEvents.value || debugOnlyThrowEvents.value || !debugProjectiles.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
-	ProjectileManager.AllTrackingProjectiles.filter(proj => !proj.HadHitTargetLoc).forEach(proj => {
+	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
 		let w2s = RendererSDK.WorldToScreen(proj.Position)
 		if (w2s === undefined)
 			return

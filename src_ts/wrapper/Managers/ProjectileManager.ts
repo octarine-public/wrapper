@@ -129,8 +129,8 @@ setInterval(() => {
 	if (Game.IsPaused)
 		return
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
-		proj.Position.x += proj.Velocity.x / 30
-		proj.Position.y += proj.Velocity.y / 30
+		proj.Position.x += proj.Velocity.x / 120
+		proj.Position.y += proj.Velocity.y / 120
 	})
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
 		if (!proj.Position.IsValid)
@@ -140,10 +140,8 @@ setInterval(() => {
 					.CopyTo(proj.Position)
 			else
 				return
-		proj.Position.Extend(proj.TargetLoc, proj.Speed / 30).CopyTo(proj.Position)
-		if (proj.HadHitTargetLoc)
+		proj.Position.Extend(proj.TargetLoc, proj.Speed / 120).CopyTo(proj.Position)
+		if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30 + (proj.Target instanceof Unit ? proj.Target.HullRadius : 0))
 			DestroyTrackingProjectile(proj)
-		else if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30 + (proj.Target instanceof Unit ? proj.Target.HullRadius : 0))
-			proj.HadHitTargetLoc = true
 	})
-}, 1000 / 30)
+}, 1000 / 120)
