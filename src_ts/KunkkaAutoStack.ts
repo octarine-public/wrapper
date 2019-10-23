@@ -1,7 +1,29 @@
-import { ArrayExtensions, Color, EventsSDK, Game, LocalPlayer, RendererSDK, Vector2, Vector3 } from "./wrapper/Imports"
+import { ArrayExtensions, Color, EventsSDK, Game, LocalPlayer, RendererSDK, Vector2, Vector3, Menu as MenuSDK, Utils, EntityManager, Unit } from "./wrapper/Imports"
 
-/* import * as Orders from "Orders"
-import * as Utils from "Utils" */
+const Menu = MenuSDK.AddEntry(["Utility", "Kunkka Autostacker"])
+const State = Menu.AddToggle("State", false)
+const Visuals = Menu.AddToggle("Draw visuals over stackable spots", false)
+const DynamicYotkey = Menu.AddKeybind("Dynamic hotkey (reqires spot vision)")
+DynamicYotkey.OnPressed(() => {
+	const MyEnt = LocalPlayer.Hero,
+		torrent = MyEnt.GetAbilityByName("kunkka_torrent"),
+		torrent_radius = torrent.GetSpecialValue("radius")
+	var ancients = EntityManager.AllEntities.filter(ent =>
+		ent instanceof Unit
+		&& ent.IsInRange(Utils.CursorWorldVec, 1000)
+		&& ent.IsEnemy(MyEnt)
+		&& ent.IsCreep
+		&& !ent.IsLaneCreep
+		// && !ent.IsWaitingToSpawn
+	)
+	var ancientsPosition = ancients.reduce((sum, ent) => sum.AddForThis(ent.Position), new Vector3()).DivideScalarForThis(ancients.length)
+	var failed = ancients.some(ancient => ancient.Distance(ancientsPosition) >= torrent_radius)
+	if (!failed) {
+		console.log(ancientsPosition)
+		MyEnt.CastPosition(torrent, ancientsPosition, false)
+	} else
+		console.log("can't stack it.")
+})
 
 // loop-optimizer: KEEP
 var spots: Vector3[] = /*Utils.orderBy(*/[
@@ -10,19 +32,14 @@ var spots: Vector3[] = /*Utils.orderBy(*/[
 		new Vector3(-1865.487549, 4438.296875, 386.390900), // calibrated
 		new Vector3(2546.226563, 41.390625, 384.000000), // calibrated
 		new Vector3(-4255.669922, 3469.897461, 256.000000), // calibrated
-		new Vector3(-55.859379, -3266.130127, 384.000000), // calibrated
+		new Vector3(-255.859379, -3266.130127, 384.000000), // calibrated
 		new Vector3(424.332947, -4665.735352, 396.747070), // calibrated
 		new Vector3(-3744.976563, 853.449219, 385.992188), // calibrated
 	],
-	config = {
-		enabled: false,
-		// hotkey_dynamic: 0,
-		visals: false,
-	},
-	is_stacking: boolean = false
+	is_stacking = false
 
 EventsSDK.on("Draw", () => {
-	if (!config.visals || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!Visuals.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	spots.forEach((spot, i) => {
 		let screen_pos = RendererSDK.WorldToScreen(spot)
@@ -33,7 +50,7 @@ EventsSDK.on("Draw", () => {
 	})
 })
 EventsSDK.on("Tick", () => {
-	if (!config.enabled || is_stacking)
+	if (!State.value || is_stacking)
 		return
 	var MyEnt = LocalPlayer.Hero
 	if (MyEnt === undefined)
@@ -71,51 +88,3 @@ EventsSDK.on("Tick", () => {
 })
 
 EventsSDK.on("PrepareUnitOrders", order => order.Unit !== LocalPlayer.Hero || !is_stacking) // cancel orders while stacking
-
-/*EventsSDK.on("WndProc", (message_type, wParam) => {
-	if (!IsInGame())
-		return true
-	let key = parseInt(wParam as any)
-	if (key === config.hotkey_dynamic && message_type === 0x101) { // WM_KEYUP
-		const MyEnt = LocalDOTAPlayer.m_hAssignedHero as C_DOTA_BaseNPC,
-			torrent = MyEnt.GetAbilityByName("kunkka_torrent"),
-			torrent_radius = torrent.GetSpecialValue("radius")
-		var ancients = Utils.GetCursorWorldVec().GetEntitiesInRange(1000).filter(ent =>
-				ent instanceof C_DOTA_BaseNPC &&
-				Utils.IsEnemy(ent, MyEnt) &&
-				Utils.IsCreep(ent) &&
-				!IsLaneCreep(ent) // &&
-				//!ent.m_bIsWaitingToSpawn
-			)
-		var ancientsPositionSum = ancients.map(ancient => ancient.m_vecNetworkOrigin).reduce((sum, vec): number[] => sum ? [sum[0] + vec[0], sum[1] + vec[1], sum[2] + vec[2]] : vec),
-			ancientsPosition = new Vector3(ancientsPositionSum[0] / ancients.length, ancientsPositionSum[1] / ancients.length, ancientsPositionSum[2] / ancients.length)
-			var failed = ancients.some(ancient => ancient.m_vecNetworkOrigin.Distance(ancientsPosition) >= torrent_radius)
-			if (!failed) {
-				console.log(ancientsPosition)
-				Orders.CastPosition(MyEnt, torrent, ancientsPosition, false)
-			} else
-				console.log("can't stack it.")
-		return false
-	}
-	return true
-})*/
-
-// {
-// 	let root = new Menu_Node("Kunkka Autostacker")
-// 	root.entries.push(new Menu_Toggle (
-// 		"State",
-// 		config.enabled,
-// 		node => config.enabled = node.value,
-// 	))
-// 	root.entries.push(new Menu_Toggle (
-// 		"Draw visuals over stackable spots",
-// 		config.visals,
-// 		node => config.visals = node.value,
-// 	))
-// 	/*root.entries.push(new Menu_Keybind (
-// 		"Dynamic hotkey (reqires spot vision)",
-// 		config.hotkey_dynamic,
-// 		node => config.hotkey_dynamic = node.value
-// 	))*/
-// 	root.Update()
-// }
