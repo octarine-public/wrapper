@@ -442,9 +442,7 @@ EventsSDK.on("ParticleUpdatedEnt", (
 	}
 })
 
-EventsSDK.on("ParticleDestroyed", (id: number, destroy_immediately: boolean) => {
-	particles_table.delete(id)
-})
+EventsSDK.on("ParticleDestroyed", id => particles_table.delete(id))
 
 EventsSDK.on("Update", () => {
 
@@ -493,18 +491,15 @@ EventsSDK.on("Update", () => {
 		phaseSpells.forEach(spell => {
 			if (spell === abil.Name) {
 				let owner = abil.Owner
-
-				if (abil.IsInAbilityPhase || (owner.IsChanneling && spell === "windrunner_powershot")) {
-					let position = owner.Position
-					let ang = DegreesToRadian(QAngle.fromIOBuffer(owner.GameSceneNode.m_angAbsRotation).y)
-
+				
+				if (abil.IsInAbilityPhase || (owner.IsChanneling && spell === "windrunner_powershot"))
 					DrawDirectional (
-						position,
-						position.Add(new Vector3(abil.CastRange).Rotated(ang)).AddScalarZ(96),
+						owner.Position,
+						owner.Position.Add(Vector3.FromAngle(owner.RotationRad).MultiplyScalarForThis(abil.CastRange)),
 						abil.ID + 100000,
 						true,
 					)
-				} else
+				else
 					DestroyDirectional(abil.ID + 100000)
 			}
 		})
