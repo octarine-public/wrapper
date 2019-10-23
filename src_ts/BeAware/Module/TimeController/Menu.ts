@@ -6,14 +6,18 @@ const { BaseTree, State } = MenuBase(Menu, "Time Controller")
 let TreeRune = BaseTree.AddNode("Runes"),
 	TreePower = TreeRune.AddNode("Power Runes"),
 	TreeRuneState = TreePower.AddToggle("Enable", true),
-	NotifyPowerRune = TreePower.AddSlider("For what time to notify?", 10, 2, 30),
+	NotifyPowerRuneTree = TreePower.AddNode("For what time to notify?"),
+	NotifyPowerRuneMin = NotifyPowerRuneTree.AddSlider("Min", 5, 2, 30),
+	NotifyPowerRuneMax = NotifyPowerRuneTree.AddSlider("Max", 10, 2, 30),
 	TreeNotificationPowerChat = TreePower.AddToggle("Notify allies", false),
 	TreeNotificationPowerDrawMap = TreePower.AddToggle("Draw minimap", true),
 	TreeNotificationPowerSound = TreePower.AddSlider("Sound volume%", 1, 0, 100),
 
 	TreeBounty = TreeRune.AddNode("Bounty Runes"),
 	PMH_Show_bounty = TreeBounty.AddToggle("Enable", true),
-	NotifyTimeBounty = TreeBounty.AddSlider("For what time to notify?", 10, 2, 30),
+	NotifyTimeBountyTree = TreeBounty.AddNode("For what time to notify?"),
+	NotifyTimeBountyMin = NotifyTimeBountyTree.AddSlider("Min", 5, 2, 30),
+	NotifyTimeBountyMax = NotifyTimeBountyTree.AddSlider("Max", 10, 2, 30),
 	TreeNotificationBountyChat = TreeBounty.AddToggle("Notify allies", false),
 	TreeNotificationBountySound = TreeBounty.AddSlider("Sound volume%", 1, 0, 100),
 
@@ -37,14 +41,16 @@ export {
 
 export {
 	TreeRuneState,
-	NotifyPowerRune,
+	NotifyPowerRuneMin,
+	NotifyPowerRuneMax,
 	TreeNotificationPowerChat,
 	TreeNotificationPowerDrawMap,
 	TreeNotificationPowerSound,
 
 	TreeNotificationBountyDrawMap,
 	TreeNotificationBountyChat,
-	NotifyTimeBounty,
+	NotifyTimeBountyMin,
+	NotifyTimeBountyMax,
 	TreeNotificationBountySound,
 }
 

@@ -3,14 +3,16 @@ import {
 	PMH_Show_bounty_size, PMH_Show_bountyRGBA, 
 	PMH_Show_bountyRGBA_mark, TreeNotificationBountyChat, 
 	TreeNotificationBountySound, TreeNotificationBountyDrawMap, 
-	NotifyTimeBounty, PMH_Show_bounty, TreeNotificationPowerChat, 
-	TreeNotificationPowerSound, TreeNotificationPowerDrawMap, 
-	NotifyPowerRune, TreeRuneState 
+	NotifyTimeBountyMin, NotifyTimeBountyMax, PMH_Show_bounty, TreeNotificationPowerChat, 
+	TreeNotificationPowerSound, TreeNotificationPowerDrawMap, TreeRuneState,
+	NotifyPowerRuneMin,
+	NotifyPowerRuneMax,
 } from "../Menu";
 
 let	allRunes: Rune[] = [],
 	Heroes: Hero[] = [],
 	checkTick: number = 0,
+	checkTickPower: number = 0,
 	bountyRunesAr = [false, false, false, false],
 	bountyRunesPos = [
 		new Vector3(4140.375, -1771.09375, 256),
@@ -25,8 +27,14 @@ let	allRunes: Rune[] = [],
 	bountyAlreadySeted = false,
 	RunePowerTimer: boolean = true,
 	RuneBountyTimerBool: boolean = true,
-	Particle: Map<number, [bigint, string | Entity, Vector3?]> = new Map() // TODO Radius for ability
+	Particle: Map<number, [bigint, string | Entity, Vector3?]> = new Map(), // TODO Radius for ability
+	mt_rand_power: number = undefined,
+	mt_rand_bounty: number = undefined
 
+function mt_rand(min: number, max: number) {
+	let rand = min - 0.5 + Math.random() * (max - min + 1);
+	return Math.round(rand);
+}
 
 export function DrawRunes() {
 	
@@ -42,15 +50,18 @@ export function DrawRunes() {
 			}
 			// loop-optimizer: KEEP
 			PowerRunesPos.forEach(val => {
-				if (RunePowerTime >= (120 - NotifyPowerRune.value)) {
+				if (mt_rand_power === undefined) {
+					mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
+				}
+				if (mt_rand_power !== undefined && RunePowerTime >= (120 - mt_rand_power)) {
 					if (TreeNotificationPowerDrawMap.value) {
 						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
 					}
-					if (Time >= checkTick) {
+					if (Time >= checkTickPower) {
 						if (RunePowerTime <= 119) {
 							if (TreeNotificationBountySound.value > 0) {
 								Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
-								checkTick = Time + (NotifyPowerRune.value / 2)
+								checkTickPower = Time + (NotifyPowerRuneMax.value / 3)
 							}
 							if (RunePowerTimer) {
 								if (TreeNotificationPowerChat.value) {
@@ -58,6 +69,7 @@ export function DrawRunes() {
 									RunePowerTimer = false
 								}
 							}
+							mt_rand_power = undefined
 						}
 					}
 				}
@@ -77,7 +89,10 @@ export function DrawRunes() {
 			}
 			// loop-optimizer: KEEP
 			bountyRunesPos.forEach((val, key) => {
-				if (RuneBountyTime >= (300 - NotifyTimeBounty.value)) {
+				if (mt_rand_bounty === undefined) {
+					mt_rand_bounty = mt_rand(NotifyTimeBountyMin.value, NotifyTimeBountyMax.value)
+				}
+				if (mt_rand_bounty !== undefined && RuneBountyTime >= (300 - mt_rand_bounty)) {
 					if (TreeNotificationBountyDrawMap.value) {
 						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
 					}
@@ -85,8 +100,9 @@ export function DrawRunes() {
 						if (RuneBountyTime <= 299) {
 							if (TreeNotificationBountySound.value > 0) {
 								Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
-								checkTick = Time + (NotifyTimeBounty.value / 2)
+								checkTick = Time + (NotifyTimeBountyMax.value / 3)
 							}
+							mt_rand_bounty = undefined
 						}
 						if (RuneBountyTimerBool) {
 							if (TreeNotificationBountyChat.value) {

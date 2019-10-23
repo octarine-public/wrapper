@@ -312,7 +312,7 @@ EventsSDK.on("EntityCreated", ent => {
 		abils_list.push(ent)
 	if (ent.Name === "npc_dota_thinker") {
 		let owner = ent.Owner as Unit
-		if (owner !== undefined) {
+		if (owner !== undefined && owner.IsEnemy()) {
 			//AbilityOwnerRadius(owner)
 			let rad = 0,
 				own_name = owner.Name

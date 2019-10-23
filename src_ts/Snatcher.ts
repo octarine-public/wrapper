@@ -199,7 +199,7 @@ function snatchRuneByUnit(npc: Unit, rune: Rune) {
 	if (picking_up.has(npc) && Sleep.Sleeping("PickupRune"))
 		return false
 
-	if (!npc.IsStunned && !npc.IsWaitingToSpawn) {
+	if (!npc.IsStunned && !npc.IsWaitingToSpawn && npc.IsAlive) {
 		const Distance = npc.Distance2D(rune)
 
 		if (Distance <= takeRadius.value && !(npc.IsInvulnerable && Distance > 100)) {
