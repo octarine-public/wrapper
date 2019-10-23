@@ -1,4 +1,4 @@
-import { GameSleeper, Utils } from "wrapper/Imports"
+import { GameSleeper, Utils, Unit, Game } from "wrapper/Imports"
 
 import { Base } from "../Extends/Helper"
 import { Owner, MouseTarget } from "../Listeners"
@@ -6,10 +6,13 @@ import { Owner, MouseTarget } from "../Listeners"
 import InitItems from "../Extends/Items"
 import InitAbility from "../Extends/Abilities"
 
-import { State, ComboKeyItem, BladeMailItem, СomboItems, СomboAbility, BlinkRadius } from "../Menu"
+import { State, ComboKeyItem, BladeMailItem, СomboItems, СomboAbility, BlinkRadius, HarassModeCombo } from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
 
 let Sleep = new GameSleeper
+function HitAndRun(unit: Unit, mode: boolean = false) {
+	Owner.MoveTo(!mode ? Utils.CursorWorldVec : unit.NetworkPosition)
+}
 export function InitCombo() {
 	if (Sleep.Sleeping("Delay") || !Base.IsRestrictions(State) || !ComboKeyItem.is_pressed)
 		return false
@@ -208,6 +211,17 @@ export function InitCombo() {
 		BreakInit()
 		return false
 	}
+	
+	let Delay = (Owner.SecondsPerAttack * 1000)
+	if (HarassModeCombo.selected_id !== 0 && Sleep.Sleeping("Attack")) {
+		switch (HarassModeCombo.selected_id) {
+			case 1: HitAndRun(target); break;
+			case 2: HitAndRun(target, true); break;
+		}
+		return true
+	}
+	
+	
 	// SearingArrows
 	if (
 		Abilities.SearingArrows !== undefined
@@ -217,15 +231,14 @@ export function InitCombo() {
 		&& !comboBreaker
 	) {
 		Owner.CastTarget(Abilities.SearingArrows, target)
-		Sleep.Sleep(Owner.SecondsPerAttack * 1000, "AttackArrow")
+		Sleep.Sleep(Delay, "AttackArrow")
 		return true
-	} else 
-	if (
+	} else if (
 		Abilities.SearingArrows !== undefined
 		&& !Sleep.Sleeping("Attack")
 	) {
 		Owner.AttackTarget(target)
-		Sleep.Sleep(Owner.SecondsPerAttack * 1000, "Attack")
+		Sleep.Sleep(Delay, "Attack")
 		return true
 	}
 

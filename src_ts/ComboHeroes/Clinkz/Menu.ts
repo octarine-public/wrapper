@@ -44,12 +44,17 @@ activeItems: Map<string, boolean> = new Map<string, boolean>([
 
 let Combo = Menu.AddNode("Combo"),
 	ComboKeyItem = Combo.AddKeybind("Combo Key", "D"),
+	HarassModeCombo = Combo.AddSwitcher("Orb Walker", ["Off", "Move to cursor", "Move to target"]),
 	СomboAbility = Combo.AddImageSelector("Abilities", arrayAbility, activeAbility),
 	СomboItems = Combo.AddImageSelector("Items", arrayItems, activeItems),
 	AeonDiscItem = Combo.AddToggle("Cancel Important Items and Abilities", true).SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities"),
 	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000),
 	BlinkRadius = Combo.AddSlider("Blink distance from enemy", 400, 0, 1200)
 	
+
+let Harass = Menu.AddNode("Harass"),
+	HarassKey = Harass.AddKeybind("Harass key"),
+	HarassMode = Harass.AddSwitcher("Orb Walker", ["Off", "Move to cursor", "Move to target"])
 
 let bladeMailMenu = Menu.AddNode("Blade Mail"),
 	BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false).SetTooltip("Cancel Combo if there is enemy Blade Mail")
@@ -82,7 +87,11 @@ let DrawingMenu = Menu.AddNode("Drawing"),
 	DrawTargetItem = targetMenu.AddToggle("Enable", true)//,
 	//radiusMenu = DrawingMenu.AddNode("Radius")
 
-	
+export {
+	HarassKey,
+	HarassMode
+}
+
 export {
 	State,
 	NearMouse,
@@ -95,4 +104,5 @@ export {
 	DrawTargetItem,
 	LinkenBreakerToggler,
 	UseOnlyFromRangeItem,
+	HarassModeCombo,
 }

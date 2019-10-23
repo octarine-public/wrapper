@@ -1,6 +1,7 @@
 import { EventsSDK } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { InitCombo } from "./Module/Combo"
+import { InitHarass } from "./Module/Harras"
 import { Draw } from "./Renderer"
 
 EventsSDK.on("Draw", Draw)
@@ -14,6 +15,7 @@ EventsSDK.on("EntityDestroyed", EntityDestroyed)
 EventsSDK.on("Tick", () => {
 	InitMouse()
 	if (!Base.DeadInSide){
+		InitHarass()
 		InitCombo()
 	}
 })
@@ -24,3 +26,4 @@ import {
 	GameEnded, GameStarted,
 	InitMouse//, LinearProjectileDestroyed, TrackingProjectileCreated,
 } from "./Listeners"
+

@@ -19,10 +19,11 @@ DynamicYotkey.OnPressed(() => {
 	var ancientsPosition = ancients.reduce((sum, ent) => sum.AddForThis(ent.Position), new Vector3()).DivideScalarForThis(ancients.length)
 	var failed = ancients.some(ancient => ancient.Distance(ancientsPosition) >= torrent_radius)
 	if (!failed) {
-		console.log(ancientsPosition)
+		//console.log(ancientsPosition)
 		MyEnt.CastPosition(torrent, ancientsPosition, false)
-	} else
-		console.log("can't stack it.")
+	} else {
+		//console.log("can't stack it.")
+	}
 })
 
 // loop-optimizer: KEEP
@@ -45,8 +46,11 @@ EventsSDK.on("Draw", () => {
 		let screen_pos = RendererSDK.WorldToScreen(spot)
 		if (screen_pos === undefined)
 			return
-		RendererSDK.FilledRect(screen_pos.SubtractScalar(25), new Vector2(50, 50), new Color(255, 0, 0))
+		RendererSDK.FilledRect(screen_pos.SubtractScalar(2).AddScalarX(-4), new Vector2(20, 20), new Color(255, 0, 0))
 		RendererSDK.Text((i + 1).toString(), screen_pos, new Color(0, 255, 0))
+		if (is_stacking) {
+			RendererSDK.Text("Stacking...", screen_pos.SubtractScalar(5).AddScalarY(20).AddScalarX(-20), new Color(0, 255, 0))
+		}
 	})
 })
 EventsSDK.on("Tick", () => {
