@@ -69,7 +69,7 @@ export class TrackingProjectile extends Projectile {
 		private expireTime: number,
 		public readonly maximpacttime: number,
 		public LaunchTick: number,
-		public readonly TargetLoc: Vector3,
+		private readonly TargetLoc_: Vector3,
 		colorgemcolor: Color,
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
@@ -77,13 +77,17 @@ export class TrackingProjectile extends Projectile {
 			this.Source.Position.CopyTo(this.Position)
 		else
 			this.Position.Invalidate()
-		if (this.TargetEntity instanceof Entity)
-			this.TargetEntity.Position.CopyTo(this.TargetLoc)
 	}
 
 	public get IsDodgeable(): boolean { return this.dodgeable }
 	public get IsAttack(): boolean { return this.isAttack }
 	public get ExpireTime(): number { return this.expireTime }
+	public get TargetLoc(): Vector3 {
+		let target = this.Target
+		if (target instanceof Entity)
+			return target.Position.CopyTo(this.TargetLoc_)
+		return this.TargetLoc_
+	}
 
 	public get Target(): Entity | number {
 		if (this.IsDodged)

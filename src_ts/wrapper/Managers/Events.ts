@@ -183,11 +183,6 @@ Events.on("NetworkPositionsChanged", vecs => vecs.forEach(vec => {
 	if (ent === undefined)
 		return
 	let m_vecOrigin = Vector3.fromIOBuffer(vec.m_Value)
-	EventsSDK.emit (
-		"NetworkPositionChanged", false,
-		ent,
-		m_vecOrigin,
-	)
 	ent.OnNetworkPositionChanged(m_vecOrigin)
 }))
 
@@ -198,13 +193,6 @@ Events.on("GameSceneNodesChanged", vecs => vecs.forEach(vec => {
 	let m_vecOrigin = Vector3.fromIOBuffer(vec.m_Value),
 		m_angAbsRotation = QAngle.fromIOBuffer(ent.GameSceneNode.m_angAbsRotation),
 		m_flAbsScale = ent.GameSceneNode.m_flAbsScale
-	EventsSDK.emit (
-		"GameSceneNodeChanged", false,
-		ent,
-		m_vecOrigin,
-		m_angAbsRotation,
-		m_flAbsScale,
-	)
 	ent.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation, m_flAbsScale)
 }))
 Events.on("EntityDestroyed", ent => {
@@ -370,7 +358,6 @@ Events.on("NetworkFieldsChanged", map => {
 						if (entity instanceof Unit) {
 							let item = entity.m_pBaseEntity.m_Inventory.m_hItems[array_index]
 							entity.Inventory.TotalItems_[array_index] = EntityManager.GetEntityByNative(item) as Item || item
-							EventsSDK.emit("InventoryChanged", false, entity, array_index)
 						}
 						break
 
@@ -487,11 +474,8 @@ interface EventsSDK extends EventEmitter {
 	) => void): EventEmitter
 	on(name: "UnitRemoveGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
 	on(name: "UnitFadeGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
-	on(name: "NetworkPositionChanged", listener: (ent: Entity, m_vecOrigin: Vector3) => void): EventEmitter
-	on(name: "GameSceneNodeChanged", listener: (ent: Entity, m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_flAbsScale: number) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 	on(name: "LifeStateChanged", listener: (ent: Entity) => void): EventEmitter
 	// on(name: "NetworkFieldChanged", listener: (args: NetworkFieldChanged) => void): EventEmitter
 	on(name: "NetworkActivityChanged", listener: (npc: Unit) => void): EventEmitter
-	on(name: "InventoryChanged", listener: (npc: Unit, slot: number) => void): EventEmitter
 }

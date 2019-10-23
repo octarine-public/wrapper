@@ -147,6 +147,3 @@ setInterval(() => {
 			proj.HadHitTargetLoc = true
 	})
 }, 1000 / 30)
-
-EventsSDK.on("NetworkPositionChanged", (ent, m_vecOrigin) =>
-	ProjectileManager.AllTrackingProjectiles.filter(proj => proj.Target === ent).forEach(proj => m_vecOrigin.CopyTo(proj.TargetLoc)))
