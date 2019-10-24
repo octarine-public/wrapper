@@ -1,4 +1,4 @@
-import { ArrayExtensions, Color, EventsSDK, Game, LocalPlayer, RendererSDK, Vector2, Vector3, Menu as MenuSDK, Utils, EntityManager, Unit } from "./wrapper/Imports"
+import { ArrayExtensions, Color, EventsSDK, Game, LocalPlayer, RendererSDK, Vector2, Vector3, Menu as MenuSDK, Utils, EntityManager, Unit, Creep } from "./wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Utility", "Kunkka Autostacker"])
 const State = Menu.AddToggle("State", false)
@@ -37,7 +37,9 @@ var spots: Vector3[] = /*Utils.orderBy(*/[
 		new Vector3(424.332947, -4665.735352, 396.747070), // calibrated
 		new Vector3(-3744.976563, 853.449219, 385.992188), // calibrated
 	],
+	spotsCreep: Unit[] = [],
 	is_stacking = false
+	
 
 EventsSDK.on("Draw", () => {
 	if (!Visuals.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
@@ -53,6 +55,7 @@ EventsSDK.on("Draw", () => {
 		}
 	})
 })
+
 EventsSDK.on("Tick", () => {
 	if (!State.value || is_stacking)
 		return
@@ -82,13 +85,31 @@ EventsSDK.on("Tick", () => {
 
 	var my_vec = MyEnt.NetworkPosition,
 		cast_range = torrent.CastRange
+	
 	// loop-optimizer: KEEP
 	ArrayExtensions.orderBy(spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
-		MyEnt.CastPosition(torrent, spot)
-		is_stacking = true
-		setTimeout(() => is_stacking = false, torrent.CastPoint * 1000 + 30)
-		return false
+		let CreepIsInside = spotsCreep.some(x => x.IsValid && !x.IsWaitingToSpawn && x.IsAlive && x.Distance2D(spot) <= 100)
+		if (CreepIsInside) {
+			MyEnt.CastPosition(torrent, spot)
+			is_stacking = true
+			setTimeout(() => is_stacking = false, torrent.CastPoint * 1000 + 30)
+			return false
+		}
 	})
+})
+
+EventsSDK.on("EntityCreated", ent => {
+	if(ent instanceof Creep && ent.IsNeutral) {
+		spotsCreep.push(ent)
+	}
+})
+
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent instanceof Unit) {
+		if (spotsCreep !== undefined && spotsCreep.length > 0) {
+			ArrayExtensions.arrayRemove(spotsCreep, ent)
+		}
+	}
 })
 
 EventsSDK.on("PrepareUnitOrders", order => order.Unit !== LocalPlayer.Hero || !is_stacking) // cancel orders while stacking

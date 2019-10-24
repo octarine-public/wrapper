@@ -54,7 +54,7 @@ let Base = new ItemManagerBase,
 	Sleep = new GameSleeper
 	
 function GetDelayCast() {
-	return (((Game.Ping / 2) + 30) + 250)
+	return ((Game.Ping / 2) + 50)
 }
 export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 	if (handle === 1954660700683781942n) {
@@ -114,7 +114,6 @@ let nextTick = 0,
 	lastStat: Attributes
 	
 function AutoUseItems(unit: Unit) {
-
 	if (!IsValidUnit(unit)) {
 		return false
 	}

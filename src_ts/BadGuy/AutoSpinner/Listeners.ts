@@ -1,10 +1,6 @@
-import { Unit, LocalPlayer, GameSleeper, Game } from "wrapper/Imports";
+import { Unit, LocalPlayer } from "wrapper/Imports";
 import { State, SpinnerKey, ModeSpinner } from "./Menu";
 
-export let Sleep: GameSleeper = new GameSleeper()
-function GetDelayCast() {
-	return ((Game.Ping / 2) + 15)
-}
 function MoveUnit(x: Unit) {
 	switch (ModeSpinner.selected_id) {
 		case 0: x.MoveTo(x.InFrontFromAngle(300, 1), false, true); break;
@@ -13,7 +9,7 @@ function MoveUnit(x: Unit) {
 }
 
 export function Tick() {
-	if (!State.value || !SpinnerKey.is_pressed || Sleep.Sleeping("SpeenTime")) {
+	if (!State.value || !SpinnerKey.is_pressed) {
 		return
 	}
 	if (LocalPlayer === undefined) {
@@ -22,6 +18,5 @@ export function Tick() {
 	let myHero = LocalPlayer.Hero
 	if (myHero.IsAlive && myHero.IsControllable && myHero.IsVisible && !myHero.IsStunned && !myHero.IsHexed && !myHero.IsInvulnerable) {
 		MoveUnit(LocalPlayer.Hero)
-		Sleep.Sleep(GetDelayCast(), "SpeenTime")
 	}
 }
