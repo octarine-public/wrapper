@@ -169,7 +169,10 @@ export default class Entity {
 			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
 				return new Vector3()
-			Vector3.fromIOBuffer(gameSceneNode.m_vecOrigin.m_Value).CopyTo(this.Position_)
+			let m_vecOrigin = gameSceneNode.m_vecOrigin
+			if (m_vecOrigin === undefined)
+				return new Vector3()
+			Vector3.fromIOBuffer(m_vecOrigin.m_Value).CopyTo(this.Position_)
 		}
 		return this.Position_.Clone()
 	}
@@ -183,7 +186,7 @@ export default class Entity {
 			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
 				return 0
-			this.Scale_ = gameSceneNode.m_flAbsScale
+			this.Scale_ = gameSceneNode.m_flAbsScale || 0
 		}
 		return this.Scale_
 	}
