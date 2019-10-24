@@ -5,7 +5,7 @@ const State = Menu.AddToggle("State", false)
 const Visuals = Menu.AddToggle("Draw visuals over stackable spots", false)
 const DynamicYotkey = Menu.AddKeybind("Dynamic hotkey (reqires spot vision)")
 DynamicYotkey.OnPressed(() => {
-	const MyEnt = LocalPlayer.Hero,
+	const MyEnt = EntityManager.AllEntities.find(ent => ent.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Kunkka) as Unit,
 		torrent = MyEnt.GetAbilityByName("kunkka_torrent"),
 		torrent_radius = torrent.GetSpecialValue("radius")
 	var ancients = EntityManager.AllEntities.filter(ent =>
@@ -56,7 +56,7 @@ EventsSDK.on("Draw", () => {
 EventsSDK.on("Tick", () => {
 	if (!State.value || is_stacking)
 		return
-	var MyEnt = LocalPlayer.Hero
+	var MyEnt = EntityManager.AllEntities.find(ent => ent.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Kunkka) as Unit
 	if (MyEnt === undefined)
 		return
 	var torrent = MyEnt.AbilitiesBook.GetAbilityByName("kunkka_torrent")

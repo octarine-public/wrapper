@@ -233,6 +233,8 @@ Events.on("NetworkFieldsChanged", map => {
 	// loop-optimizer: KEEP
 	map.forEach((map2, native_ent) => {
 		let entity = EntityManager.GetEntityByNative(native_ent, true)
+		if (entity === undefined)
+			return
 		// loop-optimizer: KEEP
 		map2.forEach((ar, trigger) => ar.forEach(([field_name, field_type, array_index]) => {
 			/*EventsSDK.emit (
