@@ -62,4 +62,5 @@ export function GameStarted(hero: Hero) {
 export function GameEnded() {
 	Me = undefined
 	Towers = []
+	Sleep.FullReset()
 }

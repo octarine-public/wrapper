@@ -84,20 +84,20 @@ export function AutoCombo() {
 			&& Abilities.ConcussiveShot !== undefined
 			&& (ConcussiveShotDelay !== undefined && target.Distance2D(ConcussiveShotDelay.Position) <= 100
 				|| EtherealDelay !== undefined && target.Distance2D(EtherealDelay.Position) <= 100)
-			|| target.IsEthereal
+			|| target.IsEthereal || target.IsStunned
 		) {
 			Abilities.UseMysticFlare(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
 			return true
-		} else if (Items.RodofAtos === undefined && !ConcussiveShotAwait.value) {
+		} else if (Items.RodofAtos === undefined && !ConcussiveShotAwait.value || target.IsStunned) {
 			Abilities.UseMysticFlare(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
 			return true
-		} else if (Items.RodofAtos !== undefined && RodofAtosDelay !== undefined && target.Distance2D(RodofAtosDelay.Position) <= 100) {
+		} else if (Items.RodofAtos !== undefined && RodofAtosDelay !== undefined && target.Distance2D(RodofAtosDelay.Position) <= 100 || target.IsStunned) {
 			Abilities.UseMysticFlare(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
 			return true
-		} else if (Items.RodofAtos !== undefined && (Items.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined) {
+		} else if (Items.RodofAtos !== undefined && (Items.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined || target.IsStunned) {
 			Abilities.UseMysticFlare(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
 			return true

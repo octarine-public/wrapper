@@ -1,4 +1,9 @@
-import InitItems from "../../abstract/Items"
+import {
+	ArrayExtensions, Creep, Entity,
+	GameSleeper, Item, LocalPlayer, TreeTemp,
+	Unit, Game, Ability, Vector3, ExecuteOrder
+} from "wrapper/Imports"
+
 import {
 	AutoUseItemsArcane_val, 
 	AutoUseItemsBloodHP_val,
@@ -22,19 +27,31 @@ import {
 	AutoUseItemsSouringMPUse_val
 } from "./Menu"
 
-import { ArrayExtensions, Creep, Entity, 
-	GameSleeper, Item, LocalPlayer, TreeTemp, 
-	Unit, Game, Ability, Vector3, ExecuteOrder, Utils, Hero
-} from "wrapper/Imports"
 
 import ItemManagerBase from "../../abstract/Base"
 import { StateBase } from "../../abstract/MenuBase"
+import InitItems from "../../abstract/Items"
 
 let Units: Unit[] = [],
 	AllUnitsHero: Unit[] = [],
 	AllCreeps: Creep[] = [],
 	Trees: TreeTemp[] = [],
-	Particle: Array<[number, Vector3?]> = [] // TODO Radius for ability
+	Particle: Array<[number, Vector3?]> = [],
+	nextTick = 0,
+	changed = true,
+	lastStat: Attributes
+
+export function GameEnded() {
+	Units = []
+	Trees = []
+	nextTick = undefined
+	lastStat = undefined
+	AllCreeps = []
+	AllUnitsHero = []
+	Particle = []
+	changed = true
+	Sleep.FullReset()
+}
 
 let Buffs = {
 	NotHeal: [
@@ -64,8 +81,9 @@ export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 
 export function ParticleCreateUpdate(id: number, controlPoint: number, position: Vector3) {
 	let part = Particle.find(x => x[0] === id)
-	if (part !== undefined)
+	if (part !== undefined) {
 		Particle.push([id, position])
+	}
 }
 
 function SleepCHeck() {
@@ -109,10 +127,7 @@ function IsValidItem(Items: Item) {
 		&& Items.CanBeCasted()
 }
 
-let nextTick = 0,
-	changed = true,
-	lastStat: Attributes
-	
+
 function AutoUseItems(unit: Unit) {
 	if (!IsValidUnit(unit)) {
 		return false
@@ -429,13 +444,6 @@ export function Tick() {
 	Units.filter(x => x !== undefined 
 		&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double")) 
 		&& !x.IsEnemy() && x.IsAlive && AutoUseItems(x))
-}
-
-export function GameEnded() {
-	Units = []
-	Trees = []
-	AllUnitsHero = []
-	Sleep.FullReset()
 }
 
 export function EntityCreate(Entity: Entity) {

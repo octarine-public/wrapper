@@ -60,7 +60,7 @@ EventsSDK.on("Draw", () => {
 EventsSDK.on("Tick", () => {
 	if (!State.value || is_stacking)
 		return
-	var MyEnt = EntityManager.AllEntities.find(ent => ent.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Kunkka) as Unit
+	var MyEnt = EntityManager.AllEntities.find(ent => ent !== undefined && ent.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Kunkka) as Unit
 	if (MyEnt === undefined)
 		return
 	var torrent = MyEnt.AbilitiesBook.GetAbilityByName("kunkka_torrent")

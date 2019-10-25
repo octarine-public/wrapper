@@ -174,6 +174,8 @@ class BaseHelper {
 	}
 	private readonly AbilityDisable: string[] = [
 		"queenofpain_blink",
+		"monkey_king_boundless_strike",
+		"monkey_king_wukongs_command",
 		"antimage_blink",
 		"antimage_mana_void",
 		"legion_commander_duel",
