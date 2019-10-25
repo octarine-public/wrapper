@@ -258,4 +258,18 @@ export class ItemBase extends ItemsHelper {
 		}
 		return this.unit.GetItemByName(name)
 	}
+	public get RefresherShard() {
+		let name = "item_refresher_shard"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get Refresher() {
+		let name = "item_refresher"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
 }

@@ -1,4 +1,4 @@
-import { GameSleeper, Item } from "wrapper/Imports"
+import { GameSleeper } from "wrapper/Imports"
 import InitAbility from "../Extends/Abilities"
 import { Base } from "../Extends/Helper"
 import InitItems from "../Extends/Items"

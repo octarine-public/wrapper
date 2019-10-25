@@ -1,5 +1,5 @@
 
-import { EntityManager, Game, Hero, Menu, Team } from "wrapper/Imports"
+import { Game, Hero, Menu } from "wrapper/Imports"
 import { Owner, Heroes } from "../Listeners"
 import { AeonDiscItem } from "../Menu"
 import InitItems from "./Items"

@@ -71,7 +71,7 @@ let Base = new ItemManagerBase,
 	Sleep = new GameSleeper
 	
 function GetDelayCast() {
-	return ((Game.Ping / 2) + 50)
+	return (((Game.Ping / 2) + 50) + 250)
 }
 export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 	if (handle === 1954660700683781942n) {

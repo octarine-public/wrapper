@@ -5,7 +5,7 @@ export class ItemsHelper extends AbilityHelper {
 		super(unit)
 	}
 	public get Tick() {
-		return ((Game.Ping / 2) + 50)
+		return (((Game.Ping / 2) + 50) + 250)
 	}
 	public ProjectileDelay(proj_name: string, Item: Item, ProjList: TrackingProjectile[], ability: Ability | Item): number {
 		let Projectile = ProjList.find(x => x.TargetLoc.Distance(x.Position) < x.Speed / 30 * 2 && x.ParticlePath === proj_name)
