@@ -96,7 +96,7 @@ function NeedToTriggerMine(rmine: Unit, ent: Unit, forcestaff: boolean = false):
 }
 
 EventsSDK.on("Tick",  () => {
-	if (!State.value || techies === undefined || Game.IsPaused)
+	if (!State.value || techies === undefined)
 		return
 	var cur_time = Game.RawGameTime
 	// loop-optimizer: FORWARD

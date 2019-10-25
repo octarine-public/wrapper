@@ -16,8 +16,13 @@ EventsSDK.on("Tick", () => {
 	AutoSpinner.Tick()
 })
 EventsSDK.on("Draw", () => {
-	if (!MainState.value || LocalPlayer === undefined 
-	|| LocalPlayer.IsSpectator || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || !Game.IsInGame)
+	if (
+		!MainState.value
+		|| LocalPlayer === undefined 
+		|| LocalPlayer.IsSpectator
+		|| Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME
+		|| !Game.IsInGame
+	)
 		return
 	AutoFeed.Draw()
 })

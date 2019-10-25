@@ -20,15 +20,6 @@ export default EventsSDK
 
 Events.on("WndProc", (...args) => EventsSDK.emit("WndProc", true, ...args))
 
-Events.on("Tick", () => {
-	try {
-		if (LocalPlayer !== undefined)
-			EventsSDK.emit("Tick")
-	} catch (e) {
-		throw e
-	}
-})
-
 Events.on("Update", cmd => EventsSDK.emit("Update", false, new UserCmd(cmd)))
 
 Events.on("UnitStateChanged", npc => {
@@ -338,6 +329,8 @@ Events.on("NetworkFieldsChanged", map => {
 						break
 					case "m_fGameTime":
 						Game.RawGameTime = Game.m_GameRules.m_fGameTime
+						if (LocalPlayer !== undefined)
+							EventsSDK.emit("Tick", false)
 						break
 					case "m_bGamePaused":
 						Game.IsPaused = Game.m_GameRules.m_bGamePaused

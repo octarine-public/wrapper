@@ -1,5 +1,5 @@
-import { Unit, LocalPlayer } from "wrapper/Imports";
-import { State, SpinnerKey, ModeSpinner } from "./Menu";
+import { Unit, LocalPlayer, EntityManager, Courier } from "wrapper/Imports"
+import { State, SpinnerKey, ModeSpinner, ControllablesMode } from "./Menu"
 
 function MoveUnit(x: Unit) {
 	switch (ModeSpinner.selected_id) {
@@ -8,15 +8,25 @@ function MoveUnit(x: Unit) {
 	}
 }
 
+var it = 0, b = false
 export function Tick() {
-	if (!State.value || !SpinnerKey.is_pressed) {
+	if (!b) {
+		b = true
 		return
 	}
-	if (LocalPlayer === undefined) {
+	b = false
+	if (!State.value || !SpinnerKey.is_pressed)
 		return
-	}
-	let myHero = LocalPlayer.Hero
-	if (myHero.IsAlive && myHero.IsControllable && myHero.IsVisible && !myHero.IsStunned && !myHero.IsHexed && !myHero.IsInvulnerable) {
-		MoveUnit(LocalPlayer.Hero)
-	}
+	var ar = ControllablesMode.selected_id !== 0
+		? EntityManager.AllEntities.filter(ent => ent instanceof Unit && ent.IsControllable) as Unit[]
+		: [LocalPlayer.Hero] as Unit[]
+	ar = ar.filter(ent => ent.IsAlive && ent.IsVisible && !ent.IsStunned && !ent.IsHexed)
+	if (ControllablesMode.selected_id === 2)
+		ar = ar.filter(ent => ent instanceof Courier)
+	if (ar.length === 0)
+		return
+	if (it >= ar.length)
+		it = 0
+	MoveUnit(ar[it])
+	it++
 }

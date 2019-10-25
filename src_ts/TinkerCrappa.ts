@@ -636,7 +636,7 @@
 // 	/*fcreeps = fcreeps.filter(e=>e.IsAlive&&e.IsSpawned)
 // 	ecreeps = ecreeps.filter(e=>e.IsAlive&&e.IsSpawned)
 // 	ncreeps = ncreeps.filter(e=>e.IsAlive&&e.IsSpawned)*/
-// 	if (!active.value || !Game.IsInGame || Game.IsPaused || tinker === undefined || !tinker.IsAlive || sleeper.Sleeping("blinker") || sleeper.Sleeping("spam") || sleeper.Sleeping("r") )
+// 	if (!active.value || !Game.IsInGame || tinker === undefined || !tinker.IsAlive || sleeper.Sleeping("blinker") || sleeper.Sleeping("spam") || sleeper.Sleeping("r") )
 // 		return false;
 // 	nearest = ArrayExtensions.orderBy(heroes.filter(hero => hero.Distance(Utils.CursorWorldVec) <= cursorRadius.value && hero.IsAlive), ent => ent.Distance(Utils.CursorWorldVec))[0]
 	

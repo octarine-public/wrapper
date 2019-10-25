@@ -16,7 +16,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 EventsSDK.on("Tick", () => {
-	if (!menuState.value || Game.IsPaused)
+	if (!menuState.value)
 		return
 
 	let hero = LocalPlayer.Hero

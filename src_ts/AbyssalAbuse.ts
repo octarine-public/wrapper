@@ -33,7 +33,7 @@ function checkAbyss() {
 	}
 }
 EventsSDK.on("Tick", () => {
-	if (!active.value || !Game.IsInGame || Game.IsPaused || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)
+	if (!active.value || !Game.IsInGame || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)
 		return false
 	// loop-optimizer: KEEP
 	arModifiers.forEach((time, buff) => {

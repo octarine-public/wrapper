@@ -4,7 +4,7 @@ import * as AutoItems from "./module/AutoItems/Helper"
 import * as AutoGlyph from "./module/AutoGlyph/Helper"
 
 EventsSDK.on("Tick", () => {
-	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || !Game.IsInGame || Game.IsPaused) {
+	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || !Game.IsInGame) {
 		return false
 	}
 	AutoGlyph.Tick()
