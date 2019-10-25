@@ -45,8 +45,9 @@ EventsSDK.on("Draw", () => {
 	if (!Visuals.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	spots.forEach((spot, i) => {
-		let screen_pos = RendererSDK.WorldToScreen(spot)
-		if (screen_pos === undefined)
+		let screen_pos = RendererSDK.WorldToScreen(spot),
+			CreepIsInside = spotsCreep.some(x => x.IsValid && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
+		if (screen_pos === undefined || !CreepIsInside)
 			return
 		RendererSDK.FilledRect(screen_pos.SubtractScalar(2).AddScalarX(-4), new Vector2(20, 20), new Color(255, 0, 0))
 		RendererSDK.Text((i + 1).toString(), screen_pos, new Color(0, 255, 0))
@@ -88,7 +89,7 @@ EventsSDK.on("Tick", () => {
 	
 	// loop-optimizer: KEEP
 	ArrayExtensions.orderBy(spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
-		let CreepIsInside = spotsCreep.some(x => x.IsValid && !x.IsWaitingToSpawn && x.IsAlive && x.Distance2D(spot) <= 100)
+		let CreepIsInside = spotsCreep.some(x => x.IsValid && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
 		if (CreepIsInside) {
 			MyEnt.CastPosition(torrent, spot)
 			is_stacking = true
