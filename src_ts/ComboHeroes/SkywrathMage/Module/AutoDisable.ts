@@ -1,4 +1,4 @@
-import { Ability, Hero, Item, Menu, Sleeper } from "wrapper/Imports"
+import { Ability, Hero, Item, Menu, Sleeper, Entity, Unit } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { Heroes, MyHero } from "../Listeners"
 import { AutoDisableAbilityItems, AutoDisableState, ComboKey, State } from "../Menu"
@@ -7,6 +7,7 @@ import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
 let Sleep = new Sleeper()
+let ParticleHandler: Entity | number = undefined
 
 function IsValidDisable(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
 	return Name !== undefined
@@ -14,10 +15,23 @@ function IsValidDisable(Name: Ability | Item, target: Hero, Selectror: Menu.Imag
 		&& !Base.CancelAbilityRealm(target)
 		&& Name.CanBeCasted() && MyHero.Distance2D(target) <= Name.CastRange
 }
+function ClearParticleHandler() {
+	if (ParticleHandler !== undefined) {
+		ParticleHandler = undefined
+	}
+}
 export function AutoDisable() {
-	if (!Base.IsRestrictions(State) || !AutoDisableState.value || ComboKey.is_pressed || Sleep.Sleeping("Delay"))
+	if (!Base.IsRestrictions(State) || !AutoDisableState.value || ComboKey.is_pressed || Sleep.Sleeping("Delay")) {
 		return false
-	let target = Heroes.find(x => x.IsEnemy() && x.IsVisible && x.IsAlive && !x.IsIllusion && x.IsValid && Base.Disable(x) && !x.IsMagicImmune)
+	}
+	let ParticleTaget = ParticleHandler as Hero,
+		target = ParticleHandler === undefined 
+			? Heroes.find(x => x.IsEnemy() && x.IsVisible && x.IsAlive && !x.IsIllusion && x.IsValid && Base.Disable(x) && !x.IsMagicImmune)
+			: !ParticleTaget.IsMagicImmune && ParticleTaget.IsVisible && ParticleTaget.IsAlive ? ParticleTaget : undefined
+
+	if (ParticleHandler) {
+		setTimeout(() => ClearParticleHandler, 1000)
+	}
 
 	if (target === undefined) {
 		return false
@@ -28,30 +42,42 @@ export function AutoDisable() {
 
 	if (IsValidDisable(Items.Sheeps, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Items.Sheeps, target)
+		ParticleHandler = undefined
 		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
 	if (IsValidDisable(Items.Orchid, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Items.Orchid, target)
+		ParticleHandler = undefined
 		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
 	if (IsValidDisable(Items.Bloodthorn, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Items.Bloodthorn, target)
+		ParticleHandler = undefined
 		Sleep.Sleep(Items.Tick, "Delay")
 		return true
 	}
 
 	if (IsValidDisable(Abilities.AncientSeal, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Abilities.AncientSeal, target)
+		ParticleHandler = undefined
 		Sleep.Sleep(Abilities.Tick, "Delay")
 		return true
 	}
-
 	return false
+}
+export function ParticleCreated(id: number, path: string, handle: bigint, attach: ParticleAttachment_t, target?: Entity | number) {
+	if (target !== undefined && handle === 6400371855556675384n) {
+		let x = target as Hero
+		if (x.IsEnemy()) {
+			ParticleHandler = target
+		}
+	}
 }
 export function AutoDisableDeleteVars() {
 	Sleep.FullReset()
+	ParticleHandler = undefined
 }

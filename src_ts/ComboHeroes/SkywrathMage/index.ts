@@ -4,14 +4,15 @@ import {
 	EntityCreated, EntityDestroyed, GameEnded,
 	GameStarted, InitMouse,
 	LinearProjectileDestroyed,
-	TrackingProjectileCreated,
+	TrackingProjectileCreated
 } from "./Listeners"
-import { AutoCombo } from "./Module/AutoCombo"
-import { AutoDisable } from "./Module/AutoDisable"
+
+import { Draw } from "./Renderer"
 import { InitCombo } from "./Module/Combo"
 import { AutoUsage } from "./Module/SpamMode"
+import { AutoCombo } from "./Module/AutoCombo"
 import { OnExecuteOrder } from "./Module/WithoutFail"
-import { Draw } from "./Renderer"
+import { AutoDisable, ParticleCreated } from "./Module/AutoDisable"
 
 EventsSDK.on("Tick", () => {
 	InitMouse()
@@ -29,5 +30,6 @@ EventsSDK.on("GameStarted", GameStarted)
 EventsSDK.on("EntityCreated", EntityCreated)
 EventsSDK.on("EntityDestroyed", EntityDestroyed)
 EventsSDK.on("PrepareUnitOrders", OnExecuteOrder)
+EventsSDK.on("ParticleCreated", ParticleCreated)
 EventsSDK.on("TrackingProjectileCreated", TrackingProjectileCreated)
 EventsSDK.on("TrackingProjectileDestroyed", LinearProjectileDestroyed)

@@ -16,7 +16,6 @@ export let Creeps: Creep[] = []
 
 export let MyHero: Hero
 export let MouseTarget: Hero
-
 export let ProjList: TrackingProjectile[] = []
 export let MyNameHero: string = "npc_dota_hero_skywrath_mage"
 
