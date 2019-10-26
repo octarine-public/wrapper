@@ -166,7 +166,7 @@ export function ParticleCreate(id: number, handle: bigint, path: string, entity:
 }
 
 function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: string, name_hero: string, color?: Color, Time?: number) {
-	let hero = Heroes.find(x => x !== undefined && x.IsEnemy() && !x.IsVisible && x.Team !== LocalPlayer.Hero.Team && x.Name === name_hero)
+	let hero = Heroes.find(x => x !== undefined && x.IsEnemy() && !x.IsVisible && x.IsEnemy() && x.Name === name_hero)
 	if (hero !== undefined) {
 		let abil = hero.GetAbilityByName(name_ability)
 		if (abil !== undefined && abil.IsValid) {
