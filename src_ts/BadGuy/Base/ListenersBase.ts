@@ -22,4 +22,5 @@ export function EntityDestroyed(x: Entity) {
 
 export function GameEnded() {
 	AllUnits = []
+	EnemyBase = []
 }

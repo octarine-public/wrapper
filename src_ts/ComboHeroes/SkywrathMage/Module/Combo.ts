@@ -103,7 +103,7 @@ export function InitCombo() {
 			&& MyHero.Distance2D(target) <= Abilities.AncientSeal.CastRange
 			&& !comboBreaker) {
 			Abilities.AncientSeal.UseAbility(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal), "Delay")
+			Sleep.Sleep(Abilities.Tick, "Delay")
 			return true
 		}
 
@@ -138,19 +138,19 @@ export function InitCombo() {
 			)
 			{
 				Abilities.UseMysticFlare(target)
-				Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
+				Sleep.Sleep(Abilities.Tick, "Delay")
 				return true
 			} else if (ItemsInit.RodofAtos === undefined && !ConcussiveShotAwait.value) {
 				Abilities.UseMysticFlare(target)
-				Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
+				Sleep.Sleep(Abilities.Tick, "Delay")
 				return true
 			} else if (ItemsInit.RodofAtos !== undefined && RodofAtosDelay !== undefined && target.Distance2D(RodofAtosDelay.Position) <= 100) {
 				Abilities.UseMysticFlare(target)
-				Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
+				Sleep.Sleep(Abilities.Tick, "Delay")
 				return true
 			} else if (ItemsInit.RodofAtos !== undefined && (ItemsInit.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined) {
 				Abilities.UseMysticFlare(target)
-				Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare), "Delay")
+				Sleep.Sleep(Abilities.Tick, "Delay")
 				return true
 			}
 		}
@@ -236,7 +236,7 @@ export function InitCombo() {
 		// Dagon
 		if (ItemsInit.Dagon !== undefined
 			&& !Base.CancelAbilityRealm(target)
-			&& Items.IsEnabled(ItemsInit.Dagon.Name)
+			&& Items.IsEnabled("item_dagon_5")
 			&& ItemsInit.Dagon.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.Dagon.CastRange
 			&& !comboBreaker)

@@ -1,6 +1,8 @@
 import { Hero, ArrayExtensions, Utils, Entity, Creep } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { State, NearMouse } from "./Menu"
+import { ComboGameEnded } from "./Module/Combo"
+import { DrawDeleteTempAllVars } from "./Renderer"
 
 export let Heroes: Hero[] = []
 export let Owner: Hero
@@ -26,9 +28,10 @@ export function GameEnded() {
 	Owner = undefined
 	MouseTarget = undefined
 	Heroes = []
-	//GameEndedCombo()
-	//DrawDeleteTempAllVars()
-	//DeleteLinkenBreakAllVars()
+	CreepsNeutrals = []
+	ComboGameEnded()
+	DrawDeleteTempAllVars()
+	MyNameHero = "npc_dota_hero_kunkka"
 }
 
 export function EntityCreated(x: Entity) {

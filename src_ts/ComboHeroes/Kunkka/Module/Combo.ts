@@ -166,3 +166,13 @@ export function InitCombo() {
 		}
 	}
 }
+
+export function ComboGameEnded() {
+	ShipCombo = false
+	XMarkCastTime = 0
+	ComboTimer = 0
+	XMarkPos = new Vector3
+	AutoCombo = false
+	DisableStaticTime = 1.6
+	Sleep.FullReset()
+}

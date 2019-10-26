@@ -2,7 +2,7 @@ import { Game, ParticlesSDK, Vector3, LocalPlayer } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { State } from "./Menu"
 import { MouseTarget, Owner } from "./Listeners"
-import { InitDrawStaker } from "./Module/AutoStacker"
+import { InitDrawStaker, AutoStakerGameEnded } from "./Module/AutoStacker"
 let targetParticle: number = 0
 export function Draw() {
 	if (LocalPlayer === undefined) {
@@ -28,4 +28,9 @@ export function Draw() {
 		}
 	}
 	InitDrawStaker()
+}
+
+export function DrawDeleteTempAllVars() {
+	targetParticle = 0
+	AutoStakerGameEnded()
 }

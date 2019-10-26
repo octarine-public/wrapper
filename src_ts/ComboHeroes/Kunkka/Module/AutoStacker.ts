@@ -52,3 +52,7 @@ export function InitDrawStaker() {
 		}
 	})
 }
+
+export function AutoStakerGameEnded() {
+	is_stacking = false
+}
