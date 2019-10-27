@@ -19,8 +19,7 @@ let Sleep: GameSleeper = new GameSleeper,
 	DisableStaticTime = 1.6
 
 function CheckAbility(ability: Ability | Item, target: Hero | Vector3): boolean {
-	return ability !== undefined 
-		&& ability.IsReady && !ability.IsInAbilityPhase
+	return ability !== undefined && ability.IsReady
 		&& ability.CanBeCasted() && СomboAbility.IsEnabled(ability.Name) 
 		&& Owner.Distance2D(target) <= ability.CastRange && !Sleep.Sleeping(ability)
 }
@@ -49,6 +48,12 @@ function ComboInit() {
 		RF = Items.Refresher as Item,
 		RFS = Items.RefresherShard as Item,
 		SHG = Items.Shivas as Item
+	if (XMarkPos.LengthSqr !== 0) {
+		if(RX !== undefined && RX.IsHidden && X !== undefined && !X.IsInAbilityPhase) {
+			XMarkPos = new Vector3
+			return false
+		}
+	}
 	if (ShipCombo) {
 		if (XMarkPos.LengthSqr === 0 || X.CanBeCasted()) {
 			return false
@@ -147,6 +152,10 @@ export function InitCombo() {
 					Sleep.Sleep((Items.Tick + CastDelay()), Items.Blink)
 					return false
 				}
+				if (R !== undefined && Owner.Distance2D(target) > (R.CastRange - 50)) {
+					Owner.MoveTo(target.NetworkPosition)
+					return false
+				}
 				if (HEX !== undefined 
 					&& !Sleep.Sleeping(HEX)
 					&& HEX.CanBeCasted() && СomboItems.IsEnabled(HEX.Name)
@@ -156,47 +165,45 @@ export function InitCombo() {
 				}
 				if (CheckAbility(X, target) 
 					&& Q !== undefined && Q.CanBeCasted() 
-					|| R !== undefined && R.CanBeCasted()) {
+					&& R !== undefined && R.CanBeCasted()
+				) {
 					ShipCombo = true
 					let Predict = target.InFront(600 / 1000 * (target.IsMoving ? target.IdealSpeed : 0))
 					XMarkPos = Predict
 					X.UseAbility(target)
 					XMarkCastTime = Time + 1
-					Sleep.Sleep((X.CastPoint * 2), X)
+					Sleep.Sleep(((X.CastPoint * 2) + CastDelay()), X)
 				}
 				if (R === undefined || !R.CanBeCasted() 
 					|| Owner.Distance2D(target) >= R.CastRange
 				) {
+					
 					ShipCombo = false
 					ComboTimer = Time + 3.08
 				}
-				return false
 			}
 			if (ComboKeyItem.is_pressed || AutoCombo) {
 				if (Q !== undefined && Q.CanBeCasted() || R !== undefined && R.CanBeCasted()) {
 					XMode(X, target, Time, true)
 					Sleep.Sleep((X.CastPoint * 2), X)
 				}
-				return false
 			} else if (ComboKeyTorrent.is_pressed) {
 				if (Q !== undefined && Q.CanBeCasted() || R !== undefined && R.CanBeCasted()) {
+					if (X !== undefined && Owner.Distance2D(target) > (X.CastRange - 50)) {
+						Owner.MoveTo(target.NetworkPosition)
+						return false
+					}
 					XMode(X, target, Time, false)
 					Sleep.Sleep((X.CastPoint * 2), X)
 				}
 			}
 		}
 		else {
-			if (XMarkPos.LengthSqr === 0 || X.CanBeCasted()) {
-				return false
-			}
 			ComboInit()
 			return false
 		}
 	}
 	else{
-		if (XMarkPos.LengthSqr === 0 || X.CanBeCasted()) {
-			return false
-		}
 		ComboInit()
 		return false
 	}
