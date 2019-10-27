@@ -24,10 +24,13 @@ export function AutoDisable() {
 	if (!Base.IsRestrictions(State) || !AutoDisableState.value || ComboKey.is_pressed || Sleep.Sleeping("Delay")) {
 		return false
 	}
+	if (MyHero === undefined) {
+		return false
+	}
 	let ParticleTaget = ParticleHandler as Hero,
 		target = ParticleHandler === undefined 
 			? Heroes.find(x => x.IsEnemy() && x.IsVisible && x.IsAlive && !x.IsIllusion && x.IsValid && Base.Disable(x) && !x.IsMagicImmune)
-			: !ParticleTaget.IsMagicImmune && ParticleTaget.IsVisible && ParticleTaget.IsAlive ? ParticleTaget : undefined
+			: ParticleTaget.IsEnemy() && !ParticleTaget.IsMagicImmune && ParticleTaget.IsVisible && ParticleTaget.IsAlive ? ParticleTaget : undefined
 
 	if (ParticleHandler) {
 		setTimeout(() => ClearParticleHandler, 1000)
@@ -71,10 +74,7 @@ export function AutoDisable() {
 }
 export function ParticleCreated(id: number, path: string, handle: bigint, attach: ParticleAttachment_t, target?: Entity | number) {
 	if (target !== undefined && handle === 6400371855556675384n) {
-		let x = target as Hero
-		if (x.IsEnemy()) {
-			ParticleHandler = target
-		}
+		ParticleHandler = target
 	}
 }
 export function AutoDisableDeleteVars() {

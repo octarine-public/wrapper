@@ -6,7 +6,8 @@ import InitItems from "../Extends/Items"
 import InitAbility from "../Extends/Abilities"
 import {
 	State, ComboKeyItem, BlinkRadius, //HarassModeCombo, 
-	СomboItems, AutoComboMenu, СomboAbility, ComboKeyTorrent, BladeMailItem } from "../Menu"
+	СomboItems, AutoComboMenu, СomboAbility, ComboKeyTorrent, BladeMailItem 
+} from "../Menu"
 
 // import { BreakInit } from "./LinkenBreaker"
 export let ShipCombo: boolean = false
@@ -48,17 +49,18 @@ function ComboInit() {
 		RF = Items.Refresher as Item,
 		RFS = Items.RefresherShard as Item,
 		SHG = Items.Shivas as Item
-	if (XMarkPos.LengthSqr !== 0) {
+	if (!XMarkPos.IsZero()) {
 		if(RX !== undefined && RX.IsHidden && X !== undefined && !X.IsInAbilityPhase) {
 			XMarkPos = new Vector3
 			return false
 		}
 	}
 	if (ShipCombo) {
-		if (XMarkPos.LengthSqr === 0 || X.CanBeCasted()) {
-			return false
-		}
 		if (CheckAbility(R, XMarkPos)) {
+			if (Owner.Distance2D(XMarkPos) > (R.CastRange - 50)) {
+				Owner.MoveTo(XMarkPos)
+				return false
+			}
 			R.UseAbility(XMarkPos)
 			ComboTimer = Time + 3.08
 			Sleep.Sleep(((R.CastPoint * 2) + CastDelay()), R)
@@ -101,6 +103,7 @@ function ComboInit() {
 }
 
 export function InitCombo() {
+
 	if (!Base.IsRestrictions(State)) {
 		return false
 	}
@@ -113,15 +116,15 @@ export function InitCombo() {
 		X = Abilities.MarksSpot as Ability,
 		R = Abilities.Ghostship as Ability,
 		HEX = Items.Sheeps as Item	
-	if (XMarkPos.LengthSqr !== 0) {
+	if (!XMarkPos.IsZero()) {
 		ComboInit()
 		return false
 	}
 	if (Base.CanCastSpells(Owner) || target === undefined || target.IsMagicImmune) {
 		return false
 	}
-	if (target !== undefined && XMarkPos.LengthSqr !== 0) {
-		XMarkPos = undefined
+	if (target !== undefined && !XMarkPos.IsZero()) {
+		XMarkPos = new Vector3
 	}
 	let IsStunned = target.GetBuffByName("modifier_bashed"),
 		IsBashed  = target.GetBuffByName("modifier_stunned"),
@@ -167,8 +170,8 @@ export function InitCombo() {
 					&& Q !== undefined && Q.CanBeCasted() 
 					&& R !== undefined && R.CanBeCasted()
 				) {
-					ShipCombo = true
 					let Predict = target.InFront(600 / 1000 * (target.IsMoving ? target.IdealSpeed : 0))
+					ShipCombo = true
 					XMarkPos = Predict
 					X.UseAbility(target)
 					XMarkCastTime = Time + 1

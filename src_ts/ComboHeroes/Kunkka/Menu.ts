@@ -1,4 +1,4 @@
-import { Menu as MenuSDK } from "wrapper/Imports"
+import { Menu as MenuSDK, Color } from "wrapper/Imports"
 
 import InitItems from "./Extends/Items"
 import InitAbility from "./Extends/Abilities"
@@ -52,7 +52,35 @@ let TorrentTree = Menu.AddNode("Torrent"),
 
 let bladeMailMenu = Menu.AddNode("Blade Mail"),
 	BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false).SetTooltip("Cancel Combo if there is enemy Blade Mail")
+
+let ArrayAbilityRadius: string[] = [
+	Abilities.Torrent.toString(),
+	Abilities.Tidebringer.toString(),
+	Abilities.MarksSpot.toString(),
+	Abilities.Ghostship.toString()
+],
+ArrayItemsRadius: string[] = [
+	Items.Blink.toString()
+]
+let DrawRadiusMenu = Menu.AddNode("Drawing radius"),
+	DrawingAbility = DrawRadiusMenu.AddImageSelector("Ability", ArrayAbilityRadius),
+	DrawingItems = DrawRadiusMenu.AddImageSelector("Items", ArrayItemsRadius),
+	DrawingTreeColor = DrawRadiusMenu.AddNode("Color Radius"),
+	DrawingColorAbilityTorrent = DrawingTreeColor.AddColorPicker("Torrent", new Color(255,255,255)),
+	DrawingColorAbilityBringer = DrawingTreeColor.AddColorPicker("Tidebringer", new Color(255,255,255)),
+	DrawingColorAbilityXMarks = DrawingTreeColor.AddColorPicker("X-Marks", new Color(255, 255, 255)),
+	DrawingColorAbilityGhostship = DrawingTreeColor.AddColorPicker("Ghostship", new Color(255, 255, 255))
+
 	
+export {
+	DrawingItems,
+	DrawingAbility,
+	
+	DrawingColorAbilityTorrent,
+	DrawingColorAbilityBringer,
+	DrawingColorAbilityXMarks,
+	DrawingColorAbilityGhostship
+}
 export {
 	State,
 	NearMouse,
