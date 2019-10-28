@@ -7,7 +7,7 @@ import InitItems from "./Items"
 
 class BaseHelper {
 	private PermitPressing: boolean
-	public readonly Tick: number = 30
+	public readonly Tick: number = 100
 	constructor() {
 		this.PermitPressing = false
 	}

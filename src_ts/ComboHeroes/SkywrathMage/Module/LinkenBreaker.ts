@@ -1,9 +1,9 @@
-import { Ability, GameSleeper, Hero, Item, Menu } from "wrapper/Imports"
+import { Ability, GameSleeper, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, MyHero } from "../Listeners"
 import { LinkenBreakAbilityItems, LinkenBreakOnlyFromRange, State } from "../Menu"
 
-let Sleep = new GameSleeper
+let Sleep = new TickSleeper
 
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
@@ -19,7 +19,7 @@ export function BreakInit() {
 		return false
 	}
 	let target = MouseTarget
-	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune || Sleep.Sleeping("Delay"))
+	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune || Sleep.Sleeping)
 		return false
 	let Items = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero)
@@ -29,7 +29,7 @@ export function BreakInit() {
 		&& Items.Cyclone.CanBeCasted()) {
 		if (IsValid(Items.Cyclone, target, LinkenBreakAbilityItems)) {
 			Items.Cyclone.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -43,7 +43,7 @@ export function BreakInit() {
 		&& Items.ForceStaff.CanBeCasted()) {
 		if (IsValid(Items.ForceStaff, target, LinkenBreakAbilityItems)) {
 			Items.ForceStaff.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -57,7 +57,7 @@ export function BreakInit() {
 		&& Items.Orchid.CanBeCasted()) {
 		if (IsValid(Items.Orchid, target, LinkenBreakAbilityItems)) {
 			Items.Orchid.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -71,7 +71,7 @@ export function BreakInit() {
 		&& Items.Bloodthorn.CanBeCasted()) {
 		if (IsValid(Items.Bloodthorn, target, LinkenBreakAbilityItems)) {
 			Items.Bloodthorn.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -86,7 +86,7 @@ export function BreakInit() {
 		&& Abilities.ArcaneBolt.CanBeCasted()) {
 		if (IsValid(Abilities.ArcaneBolt, target, LinkenBreakAbilityItems)) {
 			Abilities.ArcaneBolt.UseAbility(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt), "Delay")
+			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt))
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -100,7 +100,7 @@ export function BreakInit() {
 		&& Abilities.AncientSeal.CanBeCasted()) {
 		if (IsValid(Abilities.AncientSeal, target, LinkenBreakAbilityItems)) {
 			Abilities.AncientSeal.UseAbility(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal), "Delay")
+			Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal))
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -114,7 +114,7 @@ export function BreakInit() {
 		&& Items.Nullifier.CanBeCasted()) {
 		if (IsValid(Items.Nullifier, target, LinkenBreakAbilityItems)) {
 			Items.Nullifier.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -128,7 +128,7 @@ export function BreakInit() {
 		&& Items.RodofAtos.CanBeCasted()) {
 		if (IsValid(Items.RodofAtos, target, LinkenBreakAbilityItems)) {
 			Items.RodofAtos.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -142,7 +142,7 @@ export function BreakInit() {
 		&& Items.Sheeps.CanBeCasted()) {
 		if (IsValid(Items.Sheeps, target, LinkenBreakAbilityItems)) {
 			Items.Sheeps.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (LinkenBreakOnlyFromRange.value) {
@@ -152,5 +152,5 @@ export function BreakInit() {
 	return false
 }
 export function LinkenBreakerDeleteVars() {
-	Sleep.FullReset()
+	Sleep.ResetTimer()
 }

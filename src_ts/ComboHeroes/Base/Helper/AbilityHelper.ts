@@ -2,7 +2,7 @@ import { Ability, Hero, Game, Unit } from "wrapper/Imports"
 export class AbilityHelper {
 	public readonly unit: Hero | Unit
 	public get Tick() {
-		return 30
+		return 100
 	}
 	constructor(unit: Hero | Unit) {
 		this.unit = unit

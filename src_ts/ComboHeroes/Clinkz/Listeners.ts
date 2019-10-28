@@ -4,6 +4,7 @@ import { NearMouse, State } from "./Menu"
 import { GameEndedCombo } from "./Module/Combo"
 import { DrawDeleteTempAllVars } from "./Renderer"
 import { DeleteLinkenBreakAllVars } from "./Module/LinkenBreaker"
+import { HarassGameEdned } from "./Module/Harras"
 
 export let Heroes: Hero[] = []
 export let Owner: Hero
@@ -26,6 +27,7 @@ export function GameEnded() {
 	MouseTarget = undefined
 	Heroes = []
 	GameEndedCombo()
+	HarassGameEdned()
 	DrawDeleteTempAllVars()
 	DeleteLinkenBreakAllVars()
 }
@@ -44,9 +46,7 @@ export function EntityCreated(x: Entity) {
 
 export function EntityDestroyed(x: Entity) {
 	if (x instanceof Hero) {
-		if (Heroes !== undefined || Heroes.length > 0) {
-			ArrayExtensions.arrayRemove(Heroes, x)
-		}
+		ArrayExtensions.arrayRemove(Heroes, x)
 	}
 }
 
@@ -63,7 +63,7 @@ export function TrackingProjectileCreated(proj: TrackingProjectile) {
 }
 
 export function LinearProjectileDestroyed(proj: TrackingProjectile) {
-	if (ProjList !== undefined || ProjList.length > 0) {
+	if (proj instanceof TrackingProjectile) {
 		ArrayExtensions.arrayRemove(ProjList, proj)
 	}
 }

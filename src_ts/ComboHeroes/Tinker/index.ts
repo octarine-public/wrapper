@@ -1,6 +1,6 @@
 import { Draw } from "./Renderer";
 import { Base } from "./Extends/Helper";
-import { Push } from "./Module/Autopush";
+//import { Push } from "./Module/Autopush";
 import { MainCombo } from "./Module/MainCombo";
 import { EventsSDK } from "wrapper/Imports";
 import { Spam } from "./Module/Spam";
@@ -15,13 +15,11 @@ EventsSDK.on("Tick", () => {
 		return false
 	}
 	InitMouse()
-
 	MainCombo()
-	
 	AutoSteal()
-	Spam(),
-	fastBlink(),
-	Push(),
+	Spam()
+	fastBlink()
+	//Push(),
 	AutoSteal()
 })
 EventsSDK.on("Draw", Draw)

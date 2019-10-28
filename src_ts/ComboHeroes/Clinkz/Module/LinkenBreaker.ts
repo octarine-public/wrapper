@@ -1,9 +1,9 @@
-import { GameSleeper, Ability, Hero, Menu, Item } from "wrapper/Imports"
+import { GameSleeper, Ability, Hero, Menu, Item, TickSleeper } from "wrapper/Imports"
 import { Owner, MouseTarget } from "../Listeners"
 import { Base } from "../Extends/Helper"
 import { State, LinkenBreakerToggler, UseOnlyFromRangeItem } from "../Menu"
 
-let Sleep = new GameSleeper
+let Sleep = new TickSleeper
 
 import InitItems from "../Extends/Items"
 
@@ -14,7 +14,7 @@ function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelect
 }
 
 export function BreakInit() {
-	if (!Base.IsRestrictions(State) || Sleep.Sleeping("Delay")) {
+	if (!Base.IsRestrictions(State) || Sleep.Sleeping) {
 		return false
 	}
 	let target = MouseTarget
@@ -26,7 +26,7 @@ export function BreakInit() {
 		&& Items.Cyclone.CanBeCasted()) {
 		if (IsValid(Items.Cyclone, target, LinkenBreakerToggler)) {
 			Items.Cyclone.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (UseOnlyFromRangeItem.value) {
@@ -38,7 +38,7 @@ export function BreakInit() {
 		&& Items.HeavensHalberd.CanBeCasted()) {
 		if (IsValid(Items.HeavensHalberd, target, LinkenBreakerToggler)) {
 			Items.HeavensHalberd.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (UseOnlyFromRangeItem.value) {
@@ -50,7 +50,7 @@ export function BreakInit() {
 		&& Items.DiffusalBlade.CanBeCasted()) {
 		if (IsValid(Items.DiffusalBlade, target, LinkenBreakerToggler)) {
 			Items.DiffusalBlade.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (UseOnlyFromRangeItem.value) {
@@ -62,7 +62,7 @@ export function BreakInit() {
 		&& Items.HurricanePike.CanBeCasted()) {
 		if (IsValid(Items.HurricanePike, target, LinkenBreakerToggler)) {
 			Items.HurricanePike.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (UseOnlyFromRangeItem.value) {
@@ -75,7 +75,7 @@ export function BreakInit() {
 		&& Items.ForceStaff.CanBeCasted()) {
 		if (IsValid(Items.ForceStaff, target, LinkenBreakerToggler)) {
 			Items.ForceStaff.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (UseOnlyFromRangeItem.value) {
@@ -88,7 +88,7 @@ export function BreakInit() {
 		&& Items.Orchid.CanBeCasted()) {
 		if (IsValid(Items.Orchid, target, LinkenBreakerToggler)) {
 			Items.Orchid.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (UseOnlyFromRangeItem.value) {
@@ -101,7 +101,7 @@ export function BreakInit() {
 		&& Items.Bloodthorn.CanBeCasted()) {
 		if (IsValid(Items.Bloodthorn, target, LinkenBreakerToggler)) {
 			Items.Bloodthorn.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (UseOnlyFromRangeItem.value) {
@@ -113,7 +113,7 @@ export function BreakInit() {
 		&& Items.Nullifier.CanBeCasted()) {
 		if (IsValid(Items.Nullifier, target, LinkenBreakerToggler)) {
 			Items.Nullifier.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (UseOnlyFromRangeItem.value) {
@@ -125,7 +125,7 @@ export function BreakInit() {
 		&& Items.RodofAtos.CanBeCasted()) {
 		if (IsValid(Items.RodofAtos, target, LinkenBreakerToggler)) {
 			Items.RodofAtos.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (UseOnlyFromRangeItem.value) {
@@ -137,7 +137,7 @@ export function BreakInit() {
 		&& Items.Sheeps.CanBeCasted()) {
 		if (IsValid(Items.Sheeps, target, LinkenBreakerToggler)) {
 			Items.Sheeps.UseAbility(target)
-			Sleep.Sleep(Items.Tick, "Delay")
+			Sleep.Sleep(Items.Tick)
 			return true
 		}
 		else if (UseOnlyFromRangeItem.value) {
@@ -147,5 +147,5 @@ export function BreakInit() {
 }
 
 export function DeleteLinkenBreakAllVars() {
-	Sleep.FullReset()
+	Sleep.ResetTimer()
 }

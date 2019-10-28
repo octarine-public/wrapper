@@ -1,7 +1,7 @@
 import {
 	ArrayExtensions, Creep, Entity,
 	GameSleeper, Item, LocalPlayer, TreeTemp,
-	Unit, Game, Ability, Vector3, ExecuteOrder
+	Unit, Game, Ability, Vector3, ExecuteOrder, TickSleeper
 } from "wrapper/Imports"
 
 import {
@@ -50,7 +50,7 @@ export function GameEnded() {
 	AllUnitsHero = []
 	Particle = []
 	changed = true
-	Sleep.FullReset()
+	TickSleep.ResetTimer()
 }
 
 let Buffs = {
@@ -68,7 +68,7 @@ let Buffs = {
 }
 
 let Base = new ItemManagerBase,
-	Sleep = new GameSleeper
+	TickSleep: TickSleeper = new TickSleeper
 	
 function GetDelayCast() {
 	return 250
@@ -85,34 +85,6 @@ export function ParticleCreateUpdate(id: number, controlPoint: number, position:
 		Particle.push([id, position])
 	}
 }
-
-function SleepCHeck() {
-	return Sleep.Sleeping("item_abyssal_blade") || 
-	Sleep.Sleeping("item_phase_boots") 			|| 
-	Sleep.Sleeping("item_faerie_fire") 			|| 
-	Sleep.Sleeping("item_magic_stick") 			|| 
-	Sleep.Sleeping("item_magic_wand") 			|| 
-	Sleep.Sleeping("item_hand_of_midas") 		|| 
-	Sleep.Sleeping("item_arcane_boots") 		|| 
-	Sleep.Sleeping("item_mekansm") 				|| 
-	Sleep.Sleeping("item_guardian_greaves") 	|| 
-	Sleep.Sleeping("item_bottle") 				|| 
-	Sleep.Sleeping("item_urn_of_shadows") 		|| 
-	Sleep.Sleeping("item_spirit_vessel") 		|| 
-	Sleep.Sleeping("item_bloodstone") 			|| 
-	Sleep.Sleeping("item_tango") 				|| 
-	Sleep.Sleeping("item_tango_single") 		|| 
-	Sleep.Sleeping("item_faerie_fire") 			|| 
-	Sleep.Sleeping("item_dust") 				|| 
-	Sleep.Sleeping("item_buckler") 				|| 
-	Sleep.Sleeping("item_cheese") 				|| 
-	Sleep.Sleeping("item_mjollnir")				||
-	Sleep.Sleeping("item_solar_crest")			||
-	Sleep.Sleeping("item_ancient_janggo") 		||
-	Sleep.Sleeping("item_medallion_of_courage") ||
-	Sleep.Sleeping("item_diffusal_blade")	
-}
-
 function IsValidUnit(unit: Unit) {
 	let IgnoreBuffs = unit.Buffs.some(buff => buff.Name === "modifier_smoke_of_deceit")
 	return unit !== undefined && !unit.IsEnemy() && unit.IsAlive 
@@ -133,8 +105,7 @@ function AutoUseItems(unit: Unit) {
 		return false
 	}
 	
-	let Items = new InitItems(unit),
-		DelayCast = GetDelayCast()
+	let Items = new InitItems(unit)
 	
 	if (IsValidItem(Items.PhaseBoots)) {
 		if (unit.IsMoving || unit.IdealSpeed >= Base.MaxMoveSpeed) {
@@ -146,19 +117,19 @@ function AutoUseItems(unit: Unit) {
 
 			if (!AutoUseItemsPhaseBootsState.value || enemy_phase_in_position) {
 				unit.CastNoTarget(Items.PhaseBoots)
-				Sleep.Sleep(DelayCast, Items.PhaseBoots.Name)
+				TickSleep.Sleep(GetDelayCast())
 				return true
 			}
 		}
 	}
 
 	if (IsValidItem(Items.Mjollnir)) {
-		let enemy_mjolnir = AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsVisible && enemy.IsEnemy(unit)
+		let enemy_mjolnir = AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsAlive && enemy.IsVisible && enemy.IsEnemy(unit)
 			&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsMjollnir_val.value)
 
 		if (enemy_mjolnir) {
 			unit.CastTarget(Items.Mjollnir, unit)
-			Sleep.Sleep(DelayCast, Items.Mjollnir.Name)
+			TickSleep.Sleep(GetDelayCast())
 			return true
 		}
 	}
@@ -170,12 +141,12 @@ function AutoUseItems(unit: Unit) {
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
 				unit.CastNoTarget(Item)
-				Sleep.Sleep(DelayCast, Item.Name)
+				TickSleep.Sleep(GetDelayCast())
 				return true
 			}
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
 				unit.CastNoTarget(Item)
-				Sleep.Sleep(DelayCast, Item.Name)
+				TickSleep.Sleep(GetDelayCast())
 				return true
 			}
 		}
@@ -185,7 +156,7 @@ function AutoUseItems(unit: Unit) {
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HP < AutoUseItemsFaerieFire_val.value) {
 				unit.CastNoTarget(Items.FaerieFire)
-				Sleep.Sleep(DelayCast, Items.FaerieFire.Name)
+				TickSleep.Sleep(GetDelayCast())
 				return true
 			}
 		}
@@ -195,18 +166,17 @@ function AutoUseItems(unit: Unit) {
 		if (unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsCheese_val.value) {
 				unit.CastNoTarget(Items.Cheese)
-				Sleep.Sleep(DelayCast, Items.Cheese.Name)
+				TickSleep.Sleep(GetDelayCast())
 				return true
 			}
 		}
 	}
 
 	if (IsValidItem(Items.ArcaneBoots)) {
-		if (!Sleep.Sleeping(Items.ArcaneBoots.Index)
-			&& !unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
+		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.ManaPercent < AutoUseItemsArcane_val.value) {
 				unit.CastNoTarget(Items.ArcaneBoots)
-				Sleep.Sleep(DelayCast, Items.ArcaneBoots.Name)
+				TickSleep.Sleep(GetDelayCast())
 				return true
 			}
 		}
@@ -224,7 +194,7 @@ function AutoUseItems(unit: Unit) {
 					) {
 						Item.UseAbility(unit)
 						unit.CastNoTarget(Item)
-						Sleep.Sleep(DelayCast, Item.Name)
+						TickSleep.Sleep(GetDelayCast())
 						return true
 					}
 				}
@@ -241,7 +211,7 @@ function AutoUseItems(unit: Unit) {
 							if (!allies.IsInvulnerable && !unit.Buffs.some(buff => buff.Name === "modifier_bottle_regeneration")
 								&& (allies.Mana !== allies.MaxMana || allies.HP !== allies.MaxHP)) {
 								unit.CastTarget(Items.Bottle, allies)
-								Sleep.Sleep(DelayCast, Items.Bottle.Name)
+								TickSleep.Sleep(GetDelayCast())
 								return true
 							}
 						}
@@ -255,7 +225,7 @@ function AutoUseItems(unit: Unit) {
 		if (unit.HPPercent < AutoUseItemsBloodHP_val.value
 			&& unit.ManaPercent > AutoUseItemsBloodMP_val.value) {
 			unit.CastNoTarget(Items.Bloodstone)
-			Sleep.Sleep(DelayCast, Items.Bloodstone.Name)
+			TickSleep.Sleep(GetDelayCast())
 			return true
 		}
 	}
@@ -265,7 +235,7 @@ function AutoUseItems(unit: Unit) {
 			&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsBluker_val.value)
 		if (enemy_bluker) {
 			unit.CastNoTarget(Items.Buckler)
-			Sleep.Sleep(DelayCast, Items.Buckler.Name)
+			TickSleep.Sleep(GetDelayCast())
 			return true
 		}
 	}
@@ -277,7 +247,7 @@ function AutoUseItems(unit: Unit) {
 				Creep = ArrayExtensions.Sorter(Creep, "MaxHP", true)
 				if (unit.Distance2D(Creep[0].Position) <= ((Items.Midas.CastRange + unit.CastRangeBonus) + 100) && unit.CanAttack(Creep[0])) {
 					unit.CastTarget(Items.Midas, Creep[0])
-					Sleep.Sleep(DelayCast, Items.Midas.Name)
+					TickSleep.Sleep(GetDelayCast())
 					return true
 				}
 			}
@@ -330,12 +300,12 @@ function AutoUseItems(unit: Unit) {
 						|| glimer_cape !== undefined
 						|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
 					)
-					&& !AllUnitsHero.some(allies => allies !== undefined && !unit.IsEnemy(enemy) && allies.GetItemByName("item_gem")
+					&& !AllUnitsHero.some(allies => allies !== undefined && !unit.IsEnemy(enemy) && allies.IsAlive && allies.GetItemByName("item_gem")
 					&& allies.Distance2D(enemy.Position) < 800))
 		
 			if (IsVisible) {
 				unit.CastNoTarget(Items.Dust)
-				Sleep.Sleep(DelayCast, Items.Dust.Name)
+				TickSleep.Sleep(GetDelayCast())
 				return true
 			}
 		}
@@ -345,7 +315,7 @@ function AutoUseItems(unit: Unit) {
 		let tr = Trees.find(x => x.IsInRange(unit, Items.Tango.CastRange))
 		if (tr !== undefined) {
 			unit.CastTargetTree(Items.Tango, tr, false, true)
-			Sleep.Sleep(DelayCast, Items.Tango.Name)
+			TickSleep.Sleep(GetDelayCast())
 			return true
 		}
 	}
@@ -356,19 +326,18 @@ function AutoUseItems(unit: Unit) {
 			if (!x.IsInRange(unit, Items.Abyssal.CastRange))
 				return false
 			unit.CastTarget(Items.Abyssal, x)
-			Sleep.Sleep(DelayCast, Items.Abyssal.Name)
+			TickSleep.Sleep(GetDelayCast())
 			return true
 		})
 	}
 	
 	if (lastStat !== undefined && Game.RawGameTime >= nextTick) {
 		if (Items.PowerTreads !== undefined 
-			&& !Sleep.Sleeping("PowerTreads")
 			&& ItemsForUse.IsEnabled(Items.PowerTreads.Name)) {
 			if (Items.ActiveAttribute !== lastStat && !changed) {
 				unit.CastNoTarget(Items.PowerTreads)
 				nextTick = nextTick + 0.15 + GetAvgLatency(Flow_t.OUT)
-				Sleep.Sleep(GetDelayCast(), "PowerTreads")
+				TickSleep.Sleep(GetDelayCast())
 			}
 			if (Items.ActiveAttribute === lastStat) {
 				lastStat = undefined
@@ -402,12 +371,12 @@ function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
 				if (AutoUseItemsMidas_range.value) {
 					if (!Creep.IsMelee) {
 						Unit.CastTarget(Item, Creep)
-						Sleep.Sleep(GetDelayCast(), Item.Name)
+						TickSleep.Sleep(GetDelayCast())
 						return true
 					}
 				} else {
 					Unit.CastTarget(Item, Creep)
-					Sleep.Sleep(GetDelayCast(), Item.Name)
+					TickSleep.Sleep(GetDelayCast())
 					return true
 				}
 				return false
@@ -428,7 +397,7 @@ function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true
 					&& !target.ModifiersBook.GetAnyBuffByNames(["modifier_item_urn_heal", "modifier_item_spirit_vessel_heal"])
 				) {
 					unit.CastTarget(Item, target)
-					Sleep.Sleep(GetDelayCast(), "Delay")
+					TickSleep.Sleep(GetDelayCast())
 					return true
 				}
 			}
@@ -437,7 +406,7 @@ function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true
 }
 
 export function Tick() {
-	if (!StateBase.value || !State.value || SleepCHeck()) {
+	if (!StateBase.value || TickSleep.Sleeping || !State.value) {
 		return false
 	}
 	// loop-optimizer: FORWARD
@@ -446,44 +415,36 @@ export function Tick() {
 		&& !x.IsEnemy() && x.IsAlive && AutoUseItems(x))
 }
 
-export function EntityCreate(Entity: Entity) {
-	if (Entity instanceof Creep && Entity.IsCreep && !Entity.IsAncient) {
-		AllCreeps.push(Entity)
+export function EntityCreate(x: Entity) {
+	if (x instanceof Creep && x.IsCreep && !x.IsAncient) {
+		AllCreeps.push(x)
 	}
-	if (Entity instanceof Unit && Entity.IsControllable) {
-		Units.push(Entity)
+	if (x instanceof Unit && x.IsControllable) {
+		Units.push(x)
 	}
-	if (Entity instanceof Unit && Entity.IsHero) {
-		AllUnitsHero.push(Entity)
+	if (x instanceof Unit && x.IsHero) {
+		AllUnitsHero.push(x)
 	}
-	if (Entity instanceof TreeTemp) {
-		Trees.push(Entity)
+	if (x instanceof TreeTemp) {
+		Trees.push(x)
 	}
 }
 
 export function EntityDestroy(Entity: Entity) {
 	if (Entity instanceof TreeTemp) {
-		if (Trees !== undefined && Trees.length > 0) {
-			ArrayExtensions.arrayRemove(Trees, Entity)
-		}
+		ArrayExtensions.arrayRemove(Trees, Entity)
 	}
 	if (Entity instanceof Creep) {
-		if (AllCreeps !== undefined && AllCreeps.length > 0) {
-			ArrayExtensions.arrayRemove(AllCreeps, Entity)
-		}
+		ArrayExtensions.arrayRemove(AllCreeps, Entity)
 	}
 	if (Entity instanceof Unit) {
-		if (Units !== undefined && Units.length > 0) {
-			ArrayExtensions.arrayRemove(Units, Entity)
-		}
-		if (AllUnitsHero !== undefined && AllUnitsHero.length > 0) {
-			ArrayExtensions.arrayRemove(AllUnitsHero, Entity)
-		}
+		ArrayExtensions.arrayRemove(Units, Entity)
+		ArrayExtensions.arrayRemove(AllUnitsHero, Entity)
 	}
 }
 
 export function UseMouseItemTarget(args: ExecuteOrder) {
-	if (!StateBase.value || !State.value || SleepCHeck()) {
+	if (!StateBase.value || !State.value || TickSleep.Sleeping) {
 		return true
 	}
 	let unit = args.Unit as Unit,
@@ -507,14 +468,14 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 					&& unit.IsInRange(target, _Item.CastRange)
 					&& !target.IsMagicImmune) {
 					unit.CastTarget(_Item, target)
-					Sleep.Sleep(GetDelayCast(), _Item.Name)
+					TickSleep.Sleep(GetDelayCast())
 				}
 				if (target.IsHero && IsValidItem(Items.Janggo) 
 					&& unit.IsInRange(target, Items.Janggo.CastRange / 2) 
 					&& !unit.HasModifier("modifier_item_ancient_janggo_active")
 				) {
 					unit.CastNoTarget(Items.Janggo)
-					Sleep.Sleep(GetDelayCast(), Items.Janggo.Name)
+					TickSleep.Sleep(GetDelayCast())
 				}
 				if (target.IsHero && !target.IsMagicImmune
 					&& IsValidItem(Items.DiffusalBlade)
@@ -525,7 +486,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 					if ((hex_debuff === undefined || !hex_debuff.IsValid 
 						|| hex_debuff.RemainingTime <= 0.3)) {
 						unit.CastTarget(Items.DiffusalBlade, target)
-						Sleep.Sleep(GetDelayCast(), Items.DiffusalBlade.Name)
+						TickSleep.Sleep(GetDelayCast())
 					}
 				}
 			break;
@@ -572,8 +533,8 @@ function UseSoulRing(Me: Unit, Items: InitItems, ability: Ability, args: Execute
 	let Delay = ability.CastPoint <= 0
 		? GetDelayCast()
 		: (ability.CastPoint * 1000) + GetDelayCast()
-	Sleep.Sleep(Delay, "OrderStop_" + ability.Index)
-	if (Sleep.Sleeping("OrderStop_" + ability.Index)) {
+	TickSleep.Sleep(Delay)
+	if (TickSleep.Sleeping) {
 		args.Execute()
 		return false
 	}
@@ -581,7 +542,7 @@ function UseSoulRing(Me: Unit, Items: InitItems, ability: Ability, args: Execute
 }
 
 function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit, Items: InitItems): boolean {
-	if (ability.ManaCost < 1 || unit.IsInvisible || Sleep.Sleeping("PowerTreads")) {
+	if (ability.ManaCost < 1 || unit.IsInvisible || TickSleep.Sleeping) {
 		return true
 	}
 	if (ability.Name === "item_manta"
@@ -602,17 +563,17 @@ function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit, Items:
 		}
 		if (Items.ActiveAttribute === 0) {
 			unit.CastNoTarget(Items.PowerTreads)
-			Sleep.Sleep(GetDelayCast(), "PowerTreads")
+			TickSleep.Sleep(GetDelayCast())
 		} else if (Items.ActiveAttribute === 2) {
 			unit.CastNoTarget(Items.PowerTreads)
 			unit.CastNoTarget(Items.PowerTreads)
-			Sleep.Sleep(GetDelayCast(), "PowerTreads")
+			TickSleep.Sleep(GetDelayCast())
 		}
 		changed = false
 		nextTick = ((Game.RawGameTime + ability.CastPoint) + (0.45 + GetAvgLatency(Flow_t.OUT)))
 	}
-	Sleep.Sleep(nextTick, "OrderStop_" + ability.Index)
-	if (Sleep.Sleeping("OrderStop_" + ability.Index)) {
+	TickSleep.Sleep(nextTick)
+	if (TickSleep.Sleeping) {
 		args.Execute()
 		return false
 	}

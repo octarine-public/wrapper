@@ -1,13 +1,13 @@
-import { GameSleeper } from "wrapper/Imports"
+import { TickSleeper } from "wrapper/Imports"
 import InitAbility from "../Extends/Abilities"
 import { Base } from "../Extends/Helper"
 import InitItems from "../Extends/Items"
 import { Heroes, MouseTarget, MyHero } from "../Listeners"
 import { BladeMailUseCyclone, ComboKey, SmartArcaneAutoBoltState, SmartArcaneBoltKey, SmartArcaneOwnerHP, State } from "../Menu"
-let Sleep = new GameSleeper
+let Sleep = new TickSleeper
 
 export function AutoUsage() {
-	if (!Base.IsRestrictions(State) || Sleep.Sleeping("Delay"))
+	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return false
 	if (BladeMailUseCyclone.value) {
 		Heroes.filter(x => x.IsEnemy() && x.IsValid && x.IsAlive && x.IsVisible && !x.IsInvulnerable
@@ -17,7 +17,7 @@ export function AutoUsage() {
 			if (Items.Cyclone !== undefined
 				&& Items.Cyclone.CanBeCasted()) {
 				MyHero.CastTarget(Items.Cyclone, MyHero)
-				Sleep.Sleep(Items.Tick, "Delay")
+				Sleep.Sleep(Items.Tick)
 				return true
 			}
 			return false
@@ -37,12 +37,12 @@ export function AutoUsage() {
 		&& Abilities.ArcaneBolt.CanBeCasted()) {
 		if (SmartArcaneOwnerHP.value > MouseTarget.HPPercent || SmartArcaneOwnerHP.value === 0 || SmartArcaneBoltKey.is_pressed) {
 			MyHero.CastTarget(Abilities.ArcaneBolt, MouseTarget)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt), "Delay")
+			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt))
 			return true
 		}
 	}
 	return false
 }
 export function AutoModeDeleteVars() {
-	Sleep.FullReset()
+	Sleep.ResetTimer()
 }

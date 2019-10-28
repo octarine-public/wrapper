@@ -42,3 +42,7 @@ export function InitHarass() {
 		return true
 	}
 }
+
+export function HarassGameEdned() {
+	Sleep.FullReset()
+}

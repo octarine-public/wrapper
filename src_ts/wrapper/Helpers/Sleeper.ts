@@ -75,13 +75,13 @@ export class TickSleeper {
 		}
 		return Game.RawGameTime * 1000;
 	}
-	public Sleeper() {
-		this.lastSleepTickCount = 0;
-	}
 	public get Sleeping(): boolean {
 		return this.TickCount < this.lastSleepTickCount;
 	}
 	public Sleep(duration: number): void {
 		this.lastSleepTickCount = this.TickCount + duration;
+	}
+	public ResetTimer() {
+		this.lastSleepTickCount = 0;
 	}
 }

@@ -62,10 +62,14 @@ let ArrayAbilityRadius: string[] = [
 ArrayItemsRadius: string[] = [
 	Items.Blink.toString()
 ]
-let DrawRadiusMenu = Menu.AddNode("Drawing radius"),
-	DrawingAbility = DrawRadiusMenu.AddImageSelector("Ability", ArrayAbilityRadius),
-	DrawingItems = DrawRadiusMenu.AddImageSelector("Items", ArrayItemsRadius),
-	DrawingTreeColor = DrawRadiusMenu.AddNode("Color Radius"),
+let DrawRadiusMenu = Menu.AddNode("Drawing"),
+	DrawRadiusMouseTree = DrawRadiusMenu.AddNode("Draw Status Mouse"),
+	DrawRadiusMouse = DrawRadiusMouseTree.AddToggle("Draw status mouse"),
+	DrawRadiusMouseColor = DrawRadiusMouseTree.AddColorPicker("Color", new Color(255, 255, 0, 255)),
+	
+	DrawingAbility = DrawRadiusMenu.AddImageSelector("Ability range", ArrayAbilityRadius),
+	DrawingItems = DrawRadiusMenu.AddImageSelector("Items range", ArrayItemsRadius),
+	DrawingTreeColor = DrawRadiusMenu.AddNode("Color Range"),
 	DrawingColorAbilityTorrent = DrawingTreeColor.AddColorPicker("Torrent", new Color(255,255,255)),
 	DrawingColorAbilityBringer = DrawingTreeColor.AddColorPicker("Tidebringer", new Color(255,255,255)),
 	DrawingColorAbilityXMarks = DrawingTreeColor.AddColorPicker("X-Marks", new Color(255, 255, 255)),
@@ -75,6 +79,8 @@ let DrawRadiusMenu = Menu.AddNode("Drawing radius"),
 export {
 	DrawingItems,
 	DrawingAbility,
+	DrawRadiusMouse,
+	DrawRadiusMouseColor,
 	
 	DrawingColorAbilityTorrent,
 	DrawingColorAbilityBringer,

@@ -1,4 +1,4 @@
-import { Game, ParticlesSDK, Vector3, LocalPlayer, GameSleeper, Color } from "wrapper/Imports"
+import { Game, ParticlesSDK, Vector3, LocalPlayer, GameSleeper, Color, RendererSDK, Hero } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { 
 	State,
@@ -7,13 +7,16 @@ import {
 	DrawingColorAbilityTorrent,
 	DrawingColorAbilityBringer,
 	DrawingColorAbilityXMarks,
-	DrawingColorAbilityGhostship
+	DrawingColorAbilityGhostship,
+	DrawRadiusMouse,
+	DrawRadiusMouseColor
 } from "./Menu"
 import { MouseTarget, Owner } from "./Listeners"
 import { InitDrawStaker, AutoStakerGameEnded } from "./Module/AutoStacker"
 
 import InitItems from "./Extends/Items"
 import InitAbilities from "./Extends/Abilities"
+import { XMarkType, XMarkPos } from "./Module/Combo"
 
 let Ship: number,
 	Blink: number,
@@ -22,7 +25,8 @@ let Ship: number,
 	Tidebringer: number,
 	targetParticle: number = 0,
 	Sleep: GameSleeper = new GameSleeper,
-	TempLevelXMarks: number = 0
+	TempLevelXMarks: number = 0,
+	TargetCombo: Hero
 	
 function ShipRadius() {
 	if (Sleep.Sleeping("Ship")) {
@@ -217,6 +221,7 @@ export function Draw() {
 		}
 	}
 	
+	
 	DrawingAbility.IsEnabled("kunkka_torrent")
 		? TorrentRadius()
 		: DeleteTorrent()
@@ -237,6 +242,30 @@ export function Draw() {
 		? BlinkRadius()
 		: DeleteBlink()
 
+	if (DrawRadiusMouse.value) {
+		if (!XMarkPos.IsZero()) {
+			if (TargetCombo === undefined)
+				TargetCombo = MouseTarget
+				
+			if (TargetCombo !== undefined) {
+				let textAroundMouse = "",
+					TargetName = TargetCombo.Name.toString().split("_").splice(3, 3).join(" ")
+				switch (XMarkType) {
+					case 0:
+					case 1:
+						textAroundMouse = "Combo: (" + TargetName + ")";
+					break;
+					default:
+						textAroundMouse = "Torrent: (" + TargetName + ")";
+					break;
+				}
+				RendererSDK.TextAroundMouse(textAroundMouse, false, DrawRadiusMouseColor.Color)
+			}
+		}
+		else if (XMarkPos.IsZero()) {
+			TargetCombo = undefined
+		}
+	}
 	InitDrawStaker()
 }
 

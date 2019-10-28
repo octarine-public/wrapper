@@ -91,16 +91,16 @@ ezKill = autoS.AddToggle("Auto Ethereal+dagon", true),
 blinkKey = menu.AddKeybind("Fast blink Key"),
 cursorRadius = menu.AddSlider("Nearest cursor radius", 200, 100, 1000),
 soulTresh = menu.AddSlider("HP Percent Threshold for soulring", 20, 0, 99),
-autop = menu.AddNode("Auto Pushing"),
-autoKey = autop.AddKeybind("Push Key"),
-autoMarsh = autop.AddSlider("N marshes", 2, 1, 4),
-TinkerPushCreeps = autop.AddSlider("Min creeps",3,1,5),
-TinkerPushEnemies = autop.AddSlider("Max enemy heroes", 0,0,5),
-TinkerPushAllies = autop.AddSlider("Max friendly heroes",0,0,5),
-TinkerPushSave = autop.AddToggle("Only Save TP", true),
-TinkerPushDef = autop.AddToggle("Auto disable if enemy near", true),
-TinkerPushJungle = autop.AddToggle("Farm Jungle", true),
-smartRegen = autop.AddToggle("Smart Regen", false),
+// autop = menu.AddNode("Auto Pushing"),
+// autoKey = autop.AddKeybind("Push Key"),
+// autoMarsh = autop.AddSlider("N marshes", 2, 1, 4),
+// TinkerPushCreeps = autop.AddSlider("Min creeps",3,1,5),
+// TinkerPushEnemies = autop.AddSlider("Max enemy heroes", 0,0,5),
+// TinkerPushAllies = autop.AddSlider("Max friendly heroes",0,0,5),
+// TinkerPushSave = autop.AddToggle("Only Save TP", true),
+// TinkerPushDef = autop.AddToggle("Auto disable if enemy near", true),
+// TinkerPushJungle = autop.AddToggle("Farm Jungle", true),
+// smartRegen = autop.AddToggle("Smart Regen", false),
 linken_settings = mainCombo.AddNode("Linken&Lotus settings"),
 popLinkV = linken_settings.AddToggle("Pop Linken"),
 popLinkItems = linken_settings.AddImageSelector(
@@ -151,16 +151,16 @@ export {
 ,autoSoul 
 ,cursorRadius 
 ,soulTresh 
-,autop 
-,autoKey 
-,autoMarsh
-,TinkerPushCreeps 
-,TinkerPushEnemies
-,TinkerPushAllies 
-,TinkerPushSave   
-,TinkerPushDef    
-,TinkerPushJungle 
-,smartRegen 
+// ,autop 
+// ,autoKey 
+// ,autoMarsh
+// ,TinkerPushCreeps 
+// ,TinkerPushEnemies
+// ,TinkerPushAllies 
+// ,TinkerPushSave   
+// ,TinkerPushDef    
+// ,TinkerPushJungle 
+// ,smartRegen 
 ,linken_settings 
 ,popLinkV 
 ,popLinkItems 

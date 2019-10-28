@@ -1,4 +1,4 @@
-import { GameSleeper, Utils } from "wrapper/Imports"
+import { Utils, TickSleeper, GameSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, MyHero, ProjList } from "../Listeners"
 import { AbilityMenu, AutoAttackTarget, BladeMailCancelCombo, BlinkRadius, ComboKey, Items, MinHealthToUltItem, State, ConcussiveShotAwait } from "../Menu"
@@ -7,10 +7,12 @@ import { BreakInit } from "./LinkenBreaker"
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
-let Sleep = new GameSleeper
+let Sleep = new TickSleeper,
+	GameSleep = new GameSleeper
 export function InitCombo() {
-	if (!Base.IsRestrictions(State) || !ComboKey.is_pressed || Sleep.Sleeping("Delay"))
+	if (!Base.IsRestrictions(State) || !ComboKey.is_pressed || Sleep.Sleeping) {
 		return false
+	}
 	let target = MouseTarget
 	if (target === undefined) {
 		MyHero.MoveTo(Utils.CursorWorldVec)
@@ -39,7 +41,7 @@ export function InitCombo() {
 		// blink c+v :roflanpominki:
 		let castRange = ItemsInit.Blink.GetSpecialValue("blink_range") + MyHero.CastRangeBonus
 		ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.NetworkPosition, Math.min(castRange, MyHero.Distance(target) - BlinkRadius.value) - 1))
-		Sleep.Sleep(ItemsInit.Tick, "Delay")
+		Sleep.Sleep(ItemsInit.Tick)
 		return true
 	}
 
@@ -65,7 +67,7 @@ export function InitCombo() {
 			&& (hexDebuff === undefined || !hexDebuff.IsValid || hexDebuff.RemainingTime <= 0.3))
 		{
 			ItemsInit.Sheeps.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, "Delay")
+			Sleep.Sleep(ItemsInit.Tick)
 			return true
 		}
 
@@ -78,7 +80,7 @@ export function InitCombo() {
 			&& !comboBreaker)
 		{
 			ItemsInit.Orchid.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, "Delay")
+			Sleep.Sleep(ItemsInit.Tick)
 			return true
 		}
 
@@ -91,7 +93,7 @@ export function InitCombo() {
 			&& !comboBreaker)
 		{
 			ItemsInit.Bloodthorn.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, "Delay")
+			Sleep.Sleep(ItemsInit.Tick)
 			return true
 		}
 
@@ -103,7 +105,7 @@ export function InitCombo() {
 			&& MyHero.Distance2D(target) <= Abilities.AncientSeal.CastRange
 			&& !comboBreaker) {
 			Abilities.AncientSeal.UseAbility(target)
-			Sleep.Sleep(Abilities.Tick, "Delay")
+			Sleep.Sleep(Abilities.Tick)
 			return true
 		}
 
@@ -116,7 +118,7 @@ export function InitCombo() {
 			&& MyHero.Distance2D(target) <= ItemsInit.RodofAtos.CastRange
 			&& !atosDebuff) {
 			ItemsInit.RodofAtos.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, "Delay")
+			Sleep.Sleep(ItemsInit.Tick)
 			return true
 		}
 
@@ -132,25 +134,29 @@ export function InitCombo() {
 			if (ItemsInit.RodofAtos === undefined 
 				&& ConcussiveShotAwait.value
 				&& Abilities.ConcussiveShot !== undefined 
-				&& (ConcussiveShotDelay !== undefined && target.Distance2D(ConcussiveShotDelay.Position) <= 100
-				|| EtherealDelay !== undefined && target.Distance2D(EtherealDelay.Position) <= 100)
+				&& 
+				(
+					ConcussiveShotDelay !== undefined && target.Distance2D(ConcussiveShotDelay.Position) <= 100
+					|| EtherealDelay !== undefined && target.Distance2D(EtherealDelay.Position) <= 100
+					|| target.Buffs.some(x => x.Name === "modifier_skywrath_mage_concussive_shot_slow")
+				)
 				|| target.IsEthereal
 			)
 			{
 				Abilities.UseMysticFlare(target)
-				Sleep.Sleep(Abilities.Tick, "Delay")
+				Sleep.Sleep(Abilities.Tick)
 				return true
 			} else if (ItemsInit.RodofAtos === undefined && !ConcussiveShotAwait.value) {
 				Abilities.UseMysticFlare(target)
-				Sleep.Sleep(Abilities.Tick, "Delay")
+				Sleep.Sleep(Abilities.Tick)
 				return true
 			} else if (ItemsInit.RodofAtos !== undefined && RodofAtosDelay !== undefined && target.Distance2D(RodofAtosDelay.Position) <= 100) {
 				Abilities.UseMysticFlare(target)
-				Sleep.Sleep(Abilities.Tick, "Delay")
+				Sleep.Sleep(Abilities.Tick)
 				return true
 			} else if (ItemsInit.RodofAtos !== undefined && (ItemsInit.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined) {
 				Abilities.UseMysticFlare(target)
-				Sleep.Sleep(Abilities.Tick, "Delay")
+				Sleep.Sleep(Abilities.Tick)
 				return true
 			}
 		}
@@ -165,15 +171,15 @@ export function InitCombo() {
 		{
 			if (ItemsTarget.AeonDisk === undefined) {
 				ItemsInit.Nullifier.UseAbility(target)
-				Sleep.Sleep(ItemsInit.Tick, "Delay")
+				Sleep.Sleep(ItemsInit.Tick)
 				return true
 			} else if (ItemsTarget.AeonDisk !== undefined && target.HPPercent <= 70) {
 				ItemsInit.Nullifier.UseAbility(target)
-				Sleep.Sleep(ItemsInit.Tick, "Delay")
+				Sleep.Sleep(ItemsInit.Tick)
 				return true
 			} else if (ItemsTarget.AeonDisk !== undefined && !ItemsTarget.AeonDisk.CanBeCasted()) {
 				Abilities.UseMysticFlare(target)
-				Sleep.Sleep(ItemsInit.Tick, "Delay")
+				Sleep.Sleep(ItemsInit.Tick)
 				return true
 			}
 		}
@@ -185,7 +191,7 @@ export function InitCombo() {
 			&& ItemsInit.Discord.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.Discord.CastRange) {
 			ItemsInit.Discord.UseAbility(target.Position)
-			Sleep.Sleep(ItemsInit.Tick, "Delay")
+			Sleep.Sleep(ItemsInit.Tick)
 			return true
 		}
 
@@ -198,7 +204,7 @@ export function InitCombo() {
 			&& !comboBreaker)
 		{
 			ItemsInit.Ethereal.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, "Delay")
+			Sleep.Sleep(ItemsInit.Tick)
 			return true
 		}
 
@@ -208,7 +214,7 @@ export function InitCombo() {
 			&& ItemsInit.Shivas.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.Shivas.CastRange) {
 			ItemsInit.Shivas.UseAbility()
-			Sleep.Sleep(ItemsInit.Tick, "Delay")
+			Sleep.Sleep(ItemsInit.Tick)
 			return true
 		}
 		// ConcussiveShot
@@ -218,7 +224,7 @@ export function InitCombo() {
 			&& Abilities.ConcussiveShot.CanBeCasted()
 			&& MyHero.Distance2D(target) <= Abilities.ConcussiveShot.CastRange) {
 			Abilities.ConcussiveShot.UseAbility(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.ConcussiveShot), "Delay")
+			Sleep.Sleep(Abilities.CastDelay(Abilities.ConcussiveShot))
 			return true
 		}
 		// ArcaneBolt
@@ -229,7 +235,7 @@ export function InitCombo() {
 			&& MyHero.Distance2D(target) <= Abilities.ArcaneBolt.CastRange)
 		{
 			Abilities.ArcaneBolt.UseAbility(target)
-			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt), "Delay")
+			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt))
 			return true
 		}
 
@@ -242,7 +248,7 @@ export function InitCombo() {
 			&& !comboBreaker)
 		{
 			ItemsInit.Dagon.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, "Delay")
+			Sleep.Sleep(ItemsInit.Tick)
 			return true
 		}
 
@@ -255,7 +261,7 @@ export function InitCombo() {
 			&& !comboBreaker)
 		{
 			ItemsInit.UrnOfShadows.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, "Delay")
+			Sleep.Sleep(ItemsInit.Tick)
 			return true
 		}
 
@@ -268,18 +274,19 @@ export function InitCombo() {
 			&& !comboBreaker)
 		{
 			ItemsInit.SpiritVesel.UseAbility(target)
-			Sleep.Sleep(ItemsInit.Tick, "Delay")
+			Sleep.Sleep(ItemsInit.Tick)
 			return true
 		}
 		if (AutoAttackTarget.value && MyHero.CanAttack(target)
-			&& !Sleep.Sleeping("Attack")
+			&& !GameSleep.Sleeping("Attack")
 			&& !Base.CancelAbilityRealm(target)) {
 			MyHero.AttackTarget(target)
-			Sleep.Sleep(MyHero.SecondsPerAttack * 1000, "Attack")
+			GameSleep.Sleep(MyHero.SecondsPerAttack * 1000, "Attack")
 			return true
 		}
 	}
 }
 export function ComboDeleteVarsTemp(){
-	Sleep.FullReset()
+	Sleep.ResetTimer()
+	GameSleep.FullReset()
 }

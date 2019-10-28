@@ -1,19 +1,19 @@
 import { Base } from "../Extends/Helper"
 import { BreakInit } from "./LinkenBreaker"
 
-import { GameSleeper, Utils } from "wrapper/Imports"
+import { GameSleeper, Utils, TickSleeper } from "wrapper/Imports"
 import { MouseTarget, Owner } from "../Listeners"
 
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
 import { BladeMailItem, ComboKeyItem, State, СomboAbility, СomboItems } from "../Menu"
-
-let Sleep = new GameSleeper
-
+let Sleep = new TickSleeper,
+	GameSleep = new GameSleeper
 export function InitCombo() {
-	if (Sleep.Sleeping("Delay") || !Base.IsRestrictions(State) || !ComboKeyItem.is_pressed)
+	if (!Base.IsRestrictions(State) || !ComboKeyItem.is_pressed || Sleep.Sleeping) {
 		return false
+	}
 	let target = MouseTarget
 	if (target === undefined || (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect"))) {
 		Owner.MoveTo(Utils.CursorWorldVec)
@@ -40,7 +40,7 @@ export function InitCombo() {
 					&& (hexDebuff === undefined || hexDebuff.RemainingTime <= 0.3)
 				) {
 					Items.Abyssal.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -54,7 +54,7 @@ export function InitCombo() {
 					&& (hexDebuff === undefined || hexDebuff.RemainingTime <= 0.3)
 				) {
 					Items.Sheeps.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -67,7 +67,7 @@ export function InitCombo() {
 					&& !comboBreaker
 				) {
 					Items.Orchid.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -80,7 +80,7 @@ export function InitCombo() {
 					&& !comboBreaker
 				) {
 					Items.Bloodthorn.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -94,7 +94,7 @@ export function InitCombo() {
 					&& (hexDebuff === undefined || hexDebuff.RemainingTime <= 0.5)
 				) {
 					Items.Nullifier.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -108,7 +108,7 @@ export function InitCombo() {
 					&& !atosDebuff
 				) {
 					Items.RodofAtos.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -120,7 +120,7 @@ export function InitCombo() {
 					&& Owner.Distance2D(target) <= Items.Discord.CastRange
 				) {
 					Items.Discord.UseAbility(target.Position)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -133,7 +133,7 @@ export function InitCombo() {
 					&& !comboBreaker
 				) {
 					Items.Ethereal.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -145,7 +145,7 @@ export function InitCombo() {
 					&& Owner.Distance2D(target) <= Items.Shivas.CastRange
 				) {
 					Items.Shivas.UseAbility()
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -164,7 +164,7 @@ export function InitCombo() {
 					&& !comboBreaker
 				) {
 					Items.Dagon.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -179,7 +179,7 @@ export function InitCombo() {
 					&& !target.ModifiersBook.Buffs.some(x => x.Name === Items.UrnOfShadows.Name)
 				) {
 					Items.UrnOfShadows.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 
@@ -194,7 +194,7 @@ export function InitCombo() {
 					&& !target.ModifiersBook.Buffs.some(x => x.Name === Items.SpiritVesel.Name)
 				) {
 					Items.SpiritVesel.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 				// Medallion
@@ -205,7 +205,7 @@ export function InitCombo() {
 					&& Owner.Distance2D(target) <= Items.Medallion.CastRange
 				) {
 					Items.Medallion.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 				
@@ -217,7 +217,7 @@ export function InitCombo() {
 					&& Owner.Distance2D(target) <= Items.SolarCrest.CastRange
 				) {
 					Items.SolarCrest.UseAbility(target)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 				// Overwhelming Odds
@@ -229,7 +229,7 @@ export function InitCombo() {
 					&& !comboBreaker
 				) {
 					Abilities.Overwhelming.UseAbility(target.VelocityWaypoint(Abilities.Overwhelming.CastPoint))
-					Sleep.Sleep(Abilities.CastDelay(Abilities.Overwhelming), "Delay")
+					Sleep.Sleep(Abilities.CastDelay(Abilities.Overwhelming))
 					return true
 				}
 
@@ -253,7 +253,7 @@ export function InitCombo() {
 						Owner.CastPosition(Abilities.PressTheAttack, Owner.Position)
 					else
 						Abilities.PressTheAttack.UseAbility(Owner)
-					Sleep.Sleep(Abilities.CastDelay(Abilities.PressTheAttack), "Delay")
+					Sleep.Sleep(Abilities.CastDelay(Abilities.PressTheAttack))
 					return true
 				}
 				// LotusOrb
@@ -262,7 +262,7 @@ export function InitCombo() {
 					&& Items.LotusOrb.CanBeCasted()
 				if (LotusOrbReady) {
 					Items.LotusOrb.UseAbility(Owner)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 				// Mjollnir
@@ -271,7 +271,7 @@ export function InitCombo() {
 					&& Items.Mjollnir.CanBeCasted()
 				if (mjollnirReady) {
 					Items.Mjollnir.UseAbility(Owner)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 				// Armlet
@@ -280,7 +280,7 @@ export function InitCombo() {
 					&& !Items.Armlet.IsToggled
 				if (armletReady) {
 					Items.Armlet.UseAbility(Owner, true)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 				// Blade Mail
@@ -290,7 +290,7 @@ export function InitCombo() {
 					&& !comboBreaker
 				if (bladeMailReady) {
 					Items.BladMail.UseAbility(Owner)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 				// Satanic
@@ -299,7 +299,7 @@ export function InitCombo() {
 					&& Items.Satanic.CanBeCasted() && !comboBreaker
 				if (satanicReady) {
 					Items.Satanic.UseAbility(Owner)
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 				// Black King Bar
@@ -308,7 +308,7 @@ export function InitCombo() {
 					&& Items.BlackKingBar.CanBeCasted() && !comboBreaker
 				if (blackKingBarReady) {
 					Items.BlackKingBar.UseAbility()
-					Sleep.Sleep(Items.Tick, "Delay")
+					Sleep.Sleep(Items.Tick)
 					return true
 				}
 			}
@@ -322,7 +322,7 @@ export function InitCombo() {
 				)
 					delay += Abilities.Duel.CastPoint
 				Items.Blink.UseAbility(target.VelocityWaypoint(delay))
-				Sleep.Sleep(Items.Tick, "Delay")
+				Sleep.Sleep(Items.Tick)
 				return true
 			}
 			if (!blockingAbilities) {
@@ -333,7 +333,7 @@ export function InitCombo() {
 					&& !comboBreaker
 				) {
 					Abilities.Duel.UseAbility(target)
-					Sleep.Sleep(Abilities.CastDelay(Abilities.Duel), "Delay")
+					Sleep.Sleep(Abilities.CastDelay(Abilities.Duel))
 					return true
 				}
 			} else
@@ -341,16 +341,17 @@ export function InitCombo() {
 		}
 	}
 	if (Owner.CanAttack(target)
-		&& !Sleep.Sleeping("Attack")
+		&& !GameSleep.Sleeping("Attack")
 		&& !Base.CancelAbilityRealm(target))
 	{
 		Owner.AttackTarget(target)
-		Sleep.Sleep(Owner.SecondsPerAttack * 1000, "Attack")
+		GameSleep.Sleep(Owner.SecondsPerAttack * 1000, "Attack")
 		return true
 	}
 	return false
 }
 
 export function GameEndedCombo() {
-	Sleep.FullReset()
+	Sleep.ResetTimer()
+	GameSleep.FullReset()
 }

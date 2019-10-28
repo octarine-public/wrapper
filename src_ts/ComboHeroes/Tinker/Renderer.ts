@@ -217,7 +217,7 @@ export function Draw() {
 		RemoveParticle("blink", MyHero)
 	}
 	
-	if (bootRange.value&&MyHero.HasModifier("modifier_teleporting")&&ItemsInit.Tpboot!==undefined)
+	if (bootRange.value && MyHero.HasModifier("modifier_teleporting") && ItemsInit.TravelBoot !== undefined)
 	{
 		let a = creeps.find(e=>e.Team == MyHero.Team && e.HasModifier("modifier_boots_of_travel_incoming"))
 		if (a!==undefined)
