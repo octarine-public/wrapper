@@ -1,7 +1,7 @@
 import { ArrayExtensions, Entity, ParticlesSDK, Unit, Tower, Vector3 } from "wrapper/Imports"
 import { State, TowerSwitcher, TowerOnlyTarget } from "./Menu"
 
-let Towers: Unit[] = [], 
+let Towers: Tower[] = [], 
 	pars = new Map<Entity, number>(),
 	TowerRange = new Map<Entity, number>()
 	

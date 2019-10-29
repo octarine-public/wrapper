@@ -1009,9 +1009,6 @@ export default class Unit extends Entity {
 	public UnitTaunt(queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT, unit: this, queue, showEffects })
 	}
-	public UnitGlyph(queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, unit: this, queue, showEffects })
-	}
 	public ItemFromStash(item: Item) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH, unit: this, ability: item })
 	}

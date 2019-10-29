@@ -63,9 +63,7 @@ export function OnDraw() {
 		setTimeout(() => ArrayExtensions.arrayRemove(jungl_unit, unit), 2000)
 	})
 }
-export function GameEnded() {
-	jungl_unit = []
-}
-export function GameStarted() {
+
+export function Init() {
 	jungl_unit = []
 }

@@ -26,19 +26,13 @@ import {
 } from "./Module/Runes";
 
 export let Units: Unit[] = []
-export let Owner: Hero
 export let OtherRadius = new Map<Entity, number>()
 
-function BaseGameStarted(x: Hero) {
-	if (Owner === undefined) {
-		Owner = x
-	}
-}
 function BaseCreateUnits(x: Entity) {
-	if (x instanceof Unit && !x.IsHero) {
+	if (x instanceof Unit && !x.IsHero)
 		Units.push(x)
-	}
 }
+
 function BaseDestroyedUnits(x: Entity) {
 	if (x instanceof Entity && x instanceof Creep && x.IsLaneCreep && !x.IsHero) {
 		if (Units !== undefined || Units.length > 0) {
@@ -54,17 +48,12 @@ export function Tick() {
 	RoshanTick()
 }
 
-export function GameEnded() {
+export function Init() {
 	Units = []
 	OtherRadius.clear()
-	Owner = undefined
 	ScanGameEnded()
 	RuneGameEnded()
 	RoshanGameEnded()
-}
-
-export function GameStarted(x: Hero) {
-	BaseGameStarted(x)
 }
 
 export function EntityCreated(x: Entity) {

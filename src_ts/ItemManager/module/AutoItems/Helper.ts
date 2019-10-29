@@ -41,7 +41,7 @@ let Units: Unit[] = [],
 	changed = true,
 	lastStat: Attributes
 
-export function GameEnded() {
+export function Init() {
 	Units = []
 	Trees = []
 	nextTick = undefined
@@ -410,16 +410,20 @@ export function Tick() {
 		return false
 	}
 	// loop-optimizer: FORWARD
-	Units.filter(x => x !== undefined 
+	Units.filter(x =>
+		x !== undefined 
+		&& x.IsControllable
 		&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double")) 
-		&& !x.IsEnemy() && x.IsAlive && AutoUseItems(x))
+		&& !x.IsEnemy()
+		&& x.IsAlive
+	).some(ent => AutoUseItems(ent))
 }
 
 export function EntityCreate(x: Entity) {
 	if (x instanceof Creep && x.IsCreep && !x.IsAncient) {
 		AllCreeps.push(x)
 	}
-	if (x instanceof Unit && x.IsControllable) {
+	if (x instanceof Unit) {
 		Units.push(x)
 	}
 	if (x instanceof Unit && x.IsHero) {

@@ -101,12 +101,6 @@ export function Draw() {
 		}
 	})
 }
-export function GameStarted() {
-	// some code...
-}
-export function GameEnded() {
-	is_send_chat = 0
-}
-export function GameConnect() {
+export function Init() {
 	is_send_chat = 0
 }

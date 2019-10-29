@@ -56,6 +56,6 @@ export function Tick() {
 	}))
 }
 
-export function GameEnded() {
+export function Init() {
 	ward_list = []
 }

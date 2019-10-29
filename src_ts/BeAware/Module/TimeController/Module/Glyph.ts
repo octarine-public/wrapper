@@ -1,6 +1,6 @@
 
-import { Units, Owner } from "../Entities"
-import { Team, Game, RendererSDK, Vector2, Unit } from "wrapper/Imports"
+import { Units } from "../Entities"
+import { Team, Game, RendererSDK, Vector2, Unit, LocalPlayer } from "wrapper/Imports"
 import { 
 	GliphState, 
 	GliphSwitcher, 
@@ -31,7 +31,7 @@ function SelectedGliph(unit: Unit) {
 	if (buffs === undefined)
 		return false
 	let time = buffs.RemainingTime
-	if (!unit.IsInRange(Owner, GliphInRange.value) || time <= 0)
+	if (!unit.IsInRange(LocalPlayer.Hero, GliphInRange.value) || time <= 0)
 		return false
 	let position_unit = RendererSDK.WorldToScreen(unit.Position)
 	if (position_unit === undefined)
@@ -67,13 +67,14 @@ export function DrawGlyph() {
 				case 2: return x.IsBuilding && SelectedBuilding(x)
 			}
 		})
-		if (DrawTimerGliphState.value) {
-			if (Owner !== undefined) {
-				Base.DrawTimer(Owner.Team !== Team.Radiant
+		if (DrawTimerGliphState.value && LocalPlayer !== undefined)
+			Base.DrawTimer (
+				LocalPlayer.Team !== Team.Radiant
 					? Game.GlyphCooldownRediant
 					: Game.GlyphCooldownDire,
-					DrawTimerGliphX, DrawTimerGliphY, DrawTimerGliphSize)
-			}
-		}
+				DrawTimerGliphX,
+				DrawTimerGliphY,
+				DrawTimerGliphSize
+			)
 	}
 }

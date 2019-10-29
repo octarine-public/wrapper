@@ -44,9 +44,7 @@ export function Tick() {
 	})
 	return false
 }
-export function GameEnded() {
-	if (!State.value)
-		return
+export function Init() {
 	treant_eyes = []
 	// loop-optimizer: POSSIBLE_UNDEFINED
 	pars.forEach(par => ParticlesSDK.Destroy(par, true))

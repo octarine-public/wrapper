@@ -149,12 +149,7 @@ export function OnDraw() {
 	})
 }
 
-export function GameEnded() {
-	allTechiesMines = []
-	waiting_explode = []
-	waiting_spawn = []
-}
-export function GameStarted() {
+export function Init() {
 	allTechiesMines = []
 	waiting_explode = []
 	waiting_spawn = []

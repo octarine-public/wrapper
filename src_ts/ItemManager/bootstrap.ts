@@ -12,12 +12,8 @@ EventsSDK.on("Tick", () => {
 	AutoDeward.Tick()
 })
 
-EventsSDK.on("GameStarted", hero => {
-	AutoGlyph.GameStarted(hero)
-})
-
-EventsSDK.on("GameEnded", () => {
-	AutoGlyph.GameEnded()
-	AutoItems.GameEnded()
-	AutoDeward.GameEnded()
+EventsSDK.on("GameConnected", () => {
+	AutoGlyph.Init()
+	AutoItems.Init()
+	AutoDeward.Init()
 })

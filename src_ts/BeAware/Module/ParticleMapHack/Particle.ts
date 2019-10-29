@@ -665,20 +665,11 @@ export function EntityDestroyed(x: Entity) {
 	ArrayExtensions.arrayRemove(OtherAbility, x)
 }
 
-export function GameStarted() {
+export function Init() {
+	Heroes = []
+	OtherAbility = []
 	Particle.clear()
 	END_SCROLL.clear()
 	LAST_ID_SCROLL = undefined
 	_Size = Size.value * 20
 }
-
-export function GameEnded() {
-	Heroes = []
-	OtherAbility = []
-	GameStarted()
-}
-
-export function GameConnect() {
-	GameStarted()
-}
-

@@ -9,7 +9,7 @@ import {
 	ShrineState,
 	DrawEnemyOrAllies
 } from "../Menu";
-import { Units, Owner } from "../Entities";
+import { Units } from "../Entities";
 import ManagerBase from "../../../abstract/Base";
 
 let Base: ManagerBase = new ManagerBase
@@ -56,7 +56,7 @@ export function DrawShrine() {
 			switch (DrawEnemyOrAllies.selected_id) {
 				case 0: return Base.IsShrine(x)
 				case 1: return !x.IsEnemy() && Base.IsShrine(x) //&& CreateRange(x, 500)
-				case 2: return x.IsEnemy(Owner) && Base.IsShrine(x) //&& CreateRange(x, 500)
+				case 2: return x.IsEnemy() && Base.IsShrine(x) //&& CreateRange(x, 500)
 			}
 		}).map(DrawShrineTime)
 	}

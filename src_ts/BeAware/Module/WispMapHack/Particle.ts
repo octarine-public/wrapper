@@ -31,15 +31,8 @@ export function OnDraw() {
 		return
 	RendererSDK.Image("panorama/images/heroes/icons/npc_dota_hero_wisp_png.vtex_c", screen_pos)
 }
-export function GameEnded() {
-	if (!State.value)
-		return
+export function Init() {
 	wisp = undefined
 	pos.Invalidate()
 	par_id = -1
-}
-export function GameStarted() {
-	if(wisp !== undefined) {
-		wisp = undefined
-	}
 }

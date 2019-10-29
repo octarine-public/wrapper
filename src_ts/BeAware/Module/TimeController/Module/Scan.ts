@@ -1,5 +1,5 @@
 
-import { Team, Game, Unit, RendererSDK, Vector2, Entity, Vector3, ParticlesSDK, ArrayExtensions } from "wrapper/Imports"
+import { Team, Game, Unit, RendererSDK, Vector2, Entity, Vector3, ParticlesSDK, ArrayExtensions, LocalPlayer } from "wrapper/Imports"
 import { 
 	RadarState, 
 	RadarTreeSettingsState, 
@@ -15,7 +15,7 @@ import {
 } from "../Menu"
 
 import ManagerBase from "../../../abstract/Base"
-import { Owner, OtherRadius } from "../Entities"
+import { OtherRadius } from "../Entities"
 let Base: ManagerBase = new ManagerBase,
 	checkTick: number = 0,
 	RadarDetect: Entity[] = []
@@ -28,14 +28,15 @@ function CreateAbilityRadius(ent: Entity, radius: number) {
 
 export function DrawScan() {
 	if (RadarState.value) {
-		if (RadarTreeSettingsState.value) {
-			if (Owner !== undefined) {
-				Base.DrawTimer(Owner.Team !== Team.Radiant
+		if (RadarTreeSettingsState.value && LocalPlayer !== undefined)
+			Base.DrawTimer (
+				LocalPlayer.Team !== Team.Radiant
 					? Game.ScanCooldownRadiant
 					: Game.ScanCooldownDire,
-					DrawTimerRadarX, DrawTimerRadarY, DrawTimerRadarSize)
-			}
-		}
+				DrawTimerRadarX,
+				DrawTimerRadarY,
+				DrawTimerRadarSize
+			)
 		if (RadarStateInWorld.value) {
 			// Radar Detect
 			// loop-optimizer: FORWARD

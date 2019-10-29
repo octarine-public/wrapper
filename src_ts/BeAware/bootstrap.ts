@@ -50,34 +50,19 @@ EventsSDK.on("Draw", () => {
 	ParticleHack.OnDraw()
 })
 
-EventsSDK.on("GameStarted", hero => {
-	// TopHud.gameStarted()
-	Wisp.GameStarted()
-	Jungle.GameStarted()
-	Techies.GameStarted()
-	ParticleHack.GameStarted()
-	ParticleHack.GameStarted()
-	EnemyLaneSelection.GameStarted()
-	TimeControllerEnt.GameStarted(hero)
-})
-
-EventsSDK.on("GameEnded", () => {
-	VBE.GameEnded()
-	VBS.GameEnded()
-	Camp.GameEnded()
-	Wisp.GameEnded()
-	Treant.GameEnded()
-	Jungle.GameEnded()
-	Techies.GameEnded()
-	// TopHud.gameEnded()
-	ParticleHack.GameEnded()
-	TimeControllerEnt.GameEnded()
-	EnemyLaneSelection.GameEnded()
-})
-
 EventsSDK.on("GameConnected", () => {
-	ParticleHack.GameConnect() 
-	EnemyLaneSelection.GameConnect()
+	// TopHud.gameStarted()?
+	// TopHud.gameEnded()?
+	Wisp.Init()
+	Jungle.Init()
+	Techies.Init()
+	ParticleHack.Init()
+	EnemyLaneSelection.Init()
+	TimeControllerEnt.Init()
+	Treant.Init()
+	Camp.Init()
+	VBE.Init()
+	VBS.Init()
 })
 
 EventsSDK.on("UnitAnimation", npc => {

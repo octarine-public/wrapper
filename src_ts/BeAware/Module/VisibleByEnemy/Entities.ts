@@ -30,8 +30,8 @@ function DestroyAll() {
 	allUnits.forEach((particle, unit) => Destroy(unit, particle))
 }
 
-export function GameEnded() {
-	DestroyAll()
+export function Init() {
+	allUnits.clear()
 }
 
 function OnOptionToggle() {
