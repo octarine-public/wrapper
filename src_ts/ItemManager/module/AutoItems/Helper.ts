@@ -244,7 +244,7 @@ function AutoUseItems(unit: Unit) {
 		if (AutoUseItemsMidas_CheckBIG.value) {
 			let Creep = GetAllCreepsForMidas(unit, Items.Midas)
 			if (Creep.length > 0) {
-				Creep = ArrayExtensions.Sorter(Creep, "MaxHP", true)
+				Creep = Creep.sort((a, b) => b.MaxHP - a.MaxHP) // less MaxHP => first
 				if (unit.Distance2D(Creep[0].Position) <= ((Items.Midas.CastRange + unit.CastRangeBonus) + 100) && unit.CanAttack(Creep[0])) {
 					unit.CastTarget(Items.Midas, Creep[0])
 					TickSleep.Sleep(GetDelayCast())

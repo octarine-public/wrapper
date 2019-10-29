@@ -71,18 +71,3 @@ export function arrayRemoveCallback<T>(ar: T[], cb: (value: T, index: number, ob
 export function orderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return ar.sort((a, b) => (cb(a) as number) - (cb(b) as number))
 }
-export function Sorter<T>(array: T[], index: string, invert: boolean): T[] {
-	return array.sort((a, b) =>
-		invert
-			? a[index] < b[index]
-				? 1
-				: a[index] > b[index]
-					? -1
-					: 0
-			: a[index] > b[index]
-				? 1
-				: a[index] < b[index]
-					? -1
-					: 0,
-	)
-}
