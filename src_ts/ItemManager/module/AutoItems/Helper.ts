@@ -1,6 +1,6 @@
 import {
-	ArrayExtensions, Creep, Entity,
-	GameSleeper, Item, LocalPlayer, TreeTemp,
+	ArrayExtensions, Creep, 
+	Entity, Item, LocalPlayer, TreeTemp,
 	Unit, Game, Ability, Vector3, ExecuteOrder, TickSleeper
 } from "wrapper/Imports"
 
@@ -23,8 +23,8 @@ import {
 	AutoUseItemsUrnAliesEnemyHP,
 	AutoUseItemsUrnEnemy, ItemsForUse,
 	State, AutoUseItemsSouringHP_val,
-	AutoUseItemsSouringMP_val, AutoUseItemsSouringInvis,
-	AutoUseItemsSouringMPUse_val
+	AutoUseItemsSouringMP_val,
+	AutoUseItemsSouringMPUse_val, AutoUseItemsSouringInvis
 } from "./Menu"
 
 
@@ -73,6 +73,21 @@ let Base = new ItemManagerBase,
 function GetDelayCast() {
 	return 250
 }
+
+export function Tick() {
+	if (!StateBase.value || TickSleep.Sleeping || !State.value) {
+		return false
+	}
+	// loop-optimizer: FORWARD
+	Units.filter(x =>
+		x !== undefined
+		&& x.IsControllable
+		&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double"))
+		&& !x.IsEnemy()
+		&& x.IsAlive
+	).some(ent => AutoUseItems(ent))
+}
+
 export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
 	if (handle === 1954660700683781942n) {
 		Particle.push([id])
@@ -85,6 +100,7 @@ export function ParticleCreateUpdate(id: number, controlPoint: number, position:
 		Particle.push([id, position])
 	}
 }
+
 function IsValidUnit(unit: Unit) {
 	let IgnoreBuffs = unit.Buffs.some(buff => buff.Name === "modifier_smoke_of_deceit")
 	return unit !== undefined && !unit.IsEnemy() && unit.IsAlive 
@@ -98,7 +114,6 @@ function IsValidItem(Items: Item) {
 		&& ItemsForUse.IsEnabled(Items.Name)
 		&& Items.CanBeCasted()
 }
-
 
 function AutoUseItems(unit: Unit) {
 	if (!IsValidUnit(unit)) {
@@ -311,10 +326,11 @@ function AutoUseItems(unit: Unit) {
 		}
 	}
 
-	if (IsValidItem(Items.Tango)) {
-		let tr = Trees.find(x => x.IsInRange(unit, Items.Tango.CastRange))
+	if (IsValidItem(Items.Tango) || IsValidItem(Items.TangoSingle) ) {
+		let Tango = !Items.Tango ? Items.TangoSingle : Items.Tango,
+			tr = Trees.find(x => x.IsInRange(unit, Tango.CastRange))
 		if (tr !== undefined) {
-			unit.CastTargetTree(Items.Tango, tr, false, true)
+			unit.CastTargetTree(Tango, tr)
 			TickSleep.Sleep(GetDelayCast())
 			return true
 		}
@@ -403,20 +419,6 @@ function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true
 			}
 		}
 	})
-}
-
-export function Tick() {
-	if (!StateBase.value || TickSleep.Sleeping || !State.value) {
-		return false
-	}
-	// loop-optimizer: FORWARD
-	Units.filter(x =>
-		x !== undefined 
-		&& x.IsControllable
-		&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double")) 
-		&& !x.IsEnemy()
-		&& x.IsAlive
-	).some(ent => AutoUseItems(ent))
 }
 
 export function EntityCreate(x: Entity) {

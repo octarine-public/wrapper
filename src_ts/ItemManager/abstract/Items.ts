@@ -165,7 +165,14 @@ export default class ItemBase extends ItemManagerBase {
 		if (this.unit === undefined) {
 			return name as any
 		}
-		return this.unit.GetItemByName(/item_tango/)
+		return this.unit.GetItemByName(name)
+	}
+	public get TangoSingle(): Item {
+		let name = "item_tango_single"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
 	}
 	public get PowerTreads(): Item  {
 		let name = "item_power_treads"
