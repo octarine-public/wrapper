@@ -20,12 +20,8 @@ export function Tick() {
 	if (!State.value)
 		return
 	var local_team_flag = 1 << LocalPlayer.Team
-	if (treant_eyes === undefined)
-		return false
 	// loop-optimizer: KEEP
 	treant_eyes.forEach((ent, i) => {
-		if (ent === undefined || i === undefined)
-			return false
 		if (ent.IsAlive) {
 			ent.IsVisibleForTeamMask |= local_team_flag
 			ent.m_pBaseEntity.m_iTaggedAsVisibleByTeam |= local_team_flag
