@@ -131,6 +131,7 @@ setInterval(() => {
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
 		proj.Position.x += proj.Velocity.x / 120
 		proj.Position.y += proj.Velocity.y / 120
+		proj.Position.z = RendererSDK.GetPositionHeight(proj.Position.toVector2())
 	})
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
 		if (!proj.Position.IsValid)

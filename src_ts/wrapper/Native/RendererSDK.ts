@@ -234,6 +234,11 @@ let RendererSDK = new (class RendererSDK {
 		color.toIOBuffer(3)
 		Minimap.DrawIcon(name, size, end_time, 0x80000000)
 	}
+	public GetPositionHeight(position: Vector2) {
+		position.toIOBuffer()
+		return Renderer.GetPositionHeight()
+	}
+
 	public EmitDraw() {
 		if (this.commandCache.byteLength === 0)
 			return
