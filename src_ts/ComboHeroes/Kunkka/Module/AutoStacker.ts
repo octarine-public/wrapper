@@ -1,4 +1,4 @@
-import { Vector3, Unit, Game, Ability, ArrayExtensions, RendererSDK, Color, Vector2 } from "wrapper/Imports";
+import { Game, Ability, ArrayExtensions, RendererSDK, Color, Vector2 } from "wrapper/Imports";
 import { Base } from "../Extends/Helper";
 import { State, AutoStakerState, AutoStakerVisuals } from "../Menu";
 import InitAbility from "../Extends/Abilities"
@@ -25,7 +25,7 @@ export function InitStaker() {
 	let my_vec = Owner.NetworkPosition, cast_range = Q.CastRange + Owner.CastRangeBonus
 	// loop-optimizer: KEEP
 	ArrayExtensions.orderBy(Base.Spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
-		let CreepIsInside = CreepsNeutrals.some(x => x.IsValid && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
+		let CreepIsInside = CreepsNeutrals.some(x => x.IsValid && x.IsNeutral && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
 		if (CreepIsInside) {
 			Owner.CastPosition(Q, spot)
 			is_stacking = true
@@ -41,7 +41,7 @@ export function InitDrawStaker() {
 	}
 	Base.Spots.forEach((spot, i) => {
 		let screen_pos = RendererSDK.WorldToScreen(spot),
-			CreepIsInside = CreepsNeutrals.some(x => x.IsValid && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
+			CreepIsInside = CreepsNeutrals.some(x => x.IsValid && x.IsNeutral && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
 		if (screen_pos === undefined || !CreepIsInside) {
 			return
 		}

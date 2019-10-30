@@ -17,13 +17,13 @@ import { InitDrawStaker, AutoStakerGameEnded } from "./Module/AutoStacker"
 import InitItems from "./Extends/Items"
 import InitAbilities from "./Extends/Abilities"
 import { XMarkType, XMarkPos } from "./Module/Combo"
+import InitDrawBase from "../Base/DrawDotTarget"
 
 let Ship: number,
 	Blink: number,
 	Torrent: number,
 	XMarks: number,
 	Tidebringer: number,
-	targetParticle: number = 0,
 	Sleep: GameSleeper = new GameSleeper,
 	TempLevelXMarks: number = 0,
 	TargetCombo: Hero
@@ -195,33 +195,10 @@ function DeleteBlink() {
 }
 
 export function Draw() {
-	if (LocalPlayer === undefined) {
-		return
+	let Drawing = new InitDrawBase(Owner, MouseTarget)
+	if (Drawing !== undefined) {
+		Drawing.DrawTarget(Base, State)
 	}
-	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
-		return
-	}
-	
-	if (Owner === undefined || !Owner.IsAlive) {
-		return
-	}
-	
-	if (targetParticle === undefined && MouseTarget !== undefined) {
-		targetParticle = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, MouseTarget)
-	}
-	
-	if (targetParticle !== undefined) {
-		if (MouseTarget === undefined) {
-			ParticlesSDK.Destroy(targetParticle, true)
-			targetParticle = undefined
-		} else {
-			ParticlesSDK.SetControlPoint(targetParticle, 2, Owner.Position)
-			ParticlesSDK.SetControlPoint(targetParticle, 6, new Vector3(1))
-			ParticlesSDK.SetControlPoint(targetParticle, 7, MouseTarget.Position)
-		}
-	}
-	
-	
 	DrawingAbility.IsEnabled("kunkka_torrent")
 		? TorrentRadius()
 		: DeleteTorrent()
@@ -270,14 +247,13 @@ export function Draw() {
 }
 
 export function DrawDeleteTempAllVars() {
-	targetParticle = 0
 	Ship = undefined
 	Blink = undefined
 	Torrent = undefined
 	XMarks= undefined
 	Tidebringer = undefined
-	targetParticle = 0
 	TempLevelXMarks = 0
 	Sleep.FullReset()
 	AutoStakerGameEnded()
+	new InitDrawBase().ResetEnemyParticle()
 }

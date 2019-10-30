@@ -57,7 +57,7 @@ EventsSDK.on("Draw", () => {
 			// off_y_text = screen_size.y * -0.003;
 
 		} else if (ratio==="16x10") {
-			off_x = screen_size.x * -0.03095
+			off_x = screen_size.x * -0.02950
 			off_y = screen_size.y * -0.01715
 			manabar_w = screen_size.x * 0.0583
 			manabar_h = screen_size.y * 0.0067

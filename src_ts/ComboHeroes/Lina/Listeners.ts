@@ -1,24 +1,24 @@
-import { Hero, ArrayExtensions, Utils, Entity, Creep } from "wrapper/Imports"
-import { Base } from "./Extends/Helper"
-import { State, NearMouse } from "./Menu"
+import { Hero, ArrayExtensions, Entity, Creep, Utils, TrackingProjectile } from "wrapper/Imports"
 import { ComboGameEnded } from "./Module/Combo"
 import { DrawDeleteTempAllVars } from "./Renderer"
+import { State, NearMouse } from "./Menu"
+import { Base } from "./Extends/Helper"
 
 export let Heroes: Hero[] = []
 export let Owner: Hero
 export let MouseTarget: Hero
 export let CreepsNeutrals: Creep[] = []
-export let MyNameHero: string = "npc_dota_hero_kunkka"
+export let MyNameHero: string = "npc_dota_hero_lina"
 
 export function InitMouse() {
-	if (!Base.IsRestrictions(State))
-		return false
+	if (!Base.IsRestrictions(State)) {
+		return
+	}
 	MouseTarget = ArrayExtensions.orderBy(
 		Heroes.filter(x => x.IsEnemy() && x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
 		x => x.Distance(Utils.CursorWorldVec),
 	)[0]
 }
-
 export function GameStarted(hero: Hero) {
 	if (Owner === undefined && hero.Name === MyNameHero) {
 		Owner = hero
@@ -31,14 +31,14 @@ export function GameEnded() {
 	CreepsNeutrals = []
 	ComboGameEnded()
 	DrawDeleteTempAllVars()
-	MyNameHero = "npc_dota_hero_kunkka"
+	MyNameHero = "npc_dota_hero_lina"
 }
 
 export function EntityCreated(x: Entity) {
 	if (x instanceof Hero && !x.IsIllusion) {
 		Heroes.push(x)
 	}
-	if (x instanceof Creep) {
+	if (x instanceof Creep && x.IsNeutral) {
 		CreepsNeutrals.push(x)
 	}
 }

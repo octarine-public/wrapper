@@ -1,4 +1,4 @@
-import { GameSleeper, Utils, Game, Vector3, Ability, Hero, Item, Entity, TickSleeper } from "wrapper/Imports"
+import { Game, Vector3, Ability, Hero, Item, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { Owner, MouseTarget } from "../Listeners"
 
@@ -26,6 +26,10 @@ function CheckAbility(ability: Ability | Item, target: Hero | Vector3): boolean 
 		&& Owner.Distance2D(target) <= ability.CastRange
 }
 
+// function SetAutoAttackMode(set: number) {
+// 	Game.ExecuteCommand("dota_player_units_auto_attack_mode " + set)
+// }
+
 function XMode(abils: Ability, target: Hero, Time: number, Combo: boolean) {
 	let Predict = target.InFront(600 / 1000 * (target.IsMoving ? target.IdealSpeed : 0))
 	if (CheckAbility(abils, target)) {
@@ -39,6 +43,7 @@ function XMode(abils: Ability, target: Hero, Time: number, Combo: boolean) {
 function SetCastDelay() {
 	return ((Game.Ping / 2) + 600)
 }
+
 function ComboInit() {
 	let Items = new InitItems(Owner),
 		Abilities = new InitAbility(Owner),
@@ -58,10 +63,13 @@ function ComboInit() {
 	}
 	if (ShipCombo) {
 		if (CheckAbility(R, XMarkPos)) {
-			if (Owner.Distance2D(XMarkPos) > (R.CastRange - 100)) {
+			if (Owner.Distance2D(XMarkPos) > (R.CastRange - 50)) {
 				Owner.MoveTo(XMarkPos)
 				return false
 			}
+			// if(ConVars.GetInt("dota_player_units_auto_attack_mode") === 1) {
+			// 	SetAutoAttackMode(0)
+			// }
 			R.UseAbility(XMarkPos)
 			ComboTimer = Time + 3.08
 			Sleep.Sleep(Abilities.CastDelay(R))
@@ -99,6 +107,9 @@ function ComboInit() {
 		ShipCombo = false
 		AutoCombo = false
 		Sleep.ResetTimer()
+		// if (ConVars.GetString("dota_player_units_auto_attack_mode") === "0") {
+		// 	SetAutoAttackMode(1)
+		// }
 		return true
 	}
 }
@@ -169,6 +180,9 @@ export function InitCombo() {
 					&& R !== undefined && R.CanBeCasted()
 				) {
 					let Predict = target.InFront(600 / 1000 * (target.IsMoving ? target.IdealSpeed : 0))
+					// if (ConVars.GetString("dota_player_units_auto_attack_mode") === "1") {
+					// 	SetAutoAttackMode(0)
+					// }
 					ShipCombo = true
 					XMarkPos = Predict
 					X.UseAbility(target)
@@ -191,7 +205,7 @@ export function InitCombo() {
 				}
 			} else if (ComboKeyTorrent.is_pressed) {
 				if (Q !== undefined && Q.CanBeCasted() || R !== undefined && R.CanBeCasted()) {
-					if (X !== undefined && Owner.Distance2D(target) > (X.CastRange - 100)) {
+					if (X !== undefined && Owner.Distance2D(target) > (X.CastRange - 50)) {
 						Owner.MoveTo(target.NetworkPosition)
 						return false
 					}
@@ -220,4 +234,7 @@ export function ComboGameEnded() {
 	AutoCombo = false
 	DisableStaticTime = 1.6
 	Sleep.ResetTimer()
+	// if (ConVars.GetInt("dota_player_units_auto_attack_mode") === 0) {
+	// 	SetAutoAttackMode(1)
+	// }
 }
