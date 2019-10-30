@@ -1,4 +1,5 @@
-import { EventsSDK, Game, Menu as MenuSDK } from "./wrapper/Imports"
+import { EventsSDK, Game, Menu as MenuSDK, RendererSDK } from "./wrapper/Imports"
+import UserCmd from "./wrapper/Native/UserCmd"
 
 let Menu = MenuSDK.AddEntry("Misc"),
 	CameraMinDistance = 0,
@@ -75,4 +76,9 @@ EventsSDK.on("WndProc", (msg, wParam) => {
 		return false
 	}
 	return true
+})
+
+EventsSDK.after("Update", (cmd: UserCmd) => {
+	let CursorWorldVec = cmd.VectorUnderCursor
+	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(CursorWorldVec.toVector2()))
 })
