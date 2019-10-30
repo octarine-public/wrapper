@@ -1,4 +1,4 @@
-import { Ability, TickSleeper, Hero } from "wrapper/Imports";
+import { Ability, TickSleeper, Hero, Game } from "wrapper/Imports";
 
 import { Base } from "../Extends/Helper";
 import { Owner, MouseTarget } from "../Listeners";
@@ -6,7 +6,7 @@ import { Owner, MouseTarget } from "../Listeners";
 import InitItems from "../Extends/Items"
 import InitAbility from "../Extends/Abilities"
 
-import { State, СomboAbility, СomboItems, ComboKeyItem } from "../Menu";
+import { State, СomboAbility, СomboItems, ComboKeyItem, BladeMailCancel, ModeInvisCombo } from "../Menu";
 
 let Sleep: TickSleeper = new TickSleeper
 function IsValidAbility(ability: Ability, target: Hero) {
@@ -27,7 +27,9 @@ export function InitCombo() {
 	if (target === undefined || target.IsMagicImmune || !target.IsAlive) {
 		return false
 	}
-	
+	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect")) {
+		return false
+	}
 	let Items = new InitItems(Owner),
 		Abilities = new InitAbility(Owner),
 		Debuff = target.ModifiersBook.GetAnyBuffByNames(["modifier_sheepstick_debuff", "modifier_stunned"])
@@ -36,9 +38,17 @@ export function InitCombo() {
 		if(Owner.CanAttack(target)) {
 			Owner.AttackTarget(target)
 		}
+		if (ModeInvisCombo.selected_id === 0) {
+			if (IsValidAbility(Abilities.LightStrikeArray, target)) {
+				let Prediction = target.VelocityWaypoint((Abilities.LightStrikeArray.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
+				Abilities.LightStrikeArray.UseAbility(Prediction)
+				Sleep.Sleep(Abilities.Tick)
+				return true
+			}
+		}
 		return false
 	}
-	if (Owner.Distance2D(target) > Abilities.LightStrikeArray.CastRange) {
+	if (Abilities.LightStrikeArray !== undefined && Owner.Distance2D(target) > Abilities.LightStrikeArray.CastRange) {
 		Owner.MoveTo(target.NetworkPosition)
 		return false
 	}
@@ -49,12 +59,16 @@ export function InitCombo() {
 	}
 	if (!target.HasModifier("modifier_eul_cyclone")) {
 		if (IsValidItems(Items.Cyclone, target)) {
-			Items.Cyclone.UseAbility(target)
-			Sleep.Sleep(Items.Tick)
-			return true
+			if (Abilities.LightStrikeArray !== undefined && Abilities.LightStrikeArray.CanBeCasted()) {
+				Items.Cyclone.UseAbility(target)
+				Sleep.Sleep(Items.Tick)
+				return true
+			}
 		}
-		if (IsValidAbility(Abilities.LightStrikeArray, target)) {
-			let Prediction = target.VelocityWaypoint(Abilities.LightStrikeArray.CastPoint + 0.35)
+		if ((Items.Cyclone === undefined || !Items.Cyclone.CanBeCasted()) 
+			&& IsValidAbility(Abilities.LightStrikeArray, target)
+		) {
+			let Prediction = target.VelocityWaypoint((Abilities.LightStrikeArray.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
 			Abilities.LightStrikeArray.UseAbility(Prediction)
 			Sleep.Sleep(Abilities.Tick)
 			return true
@@ -103,7 +117,7 @@ export function InitCombo() {
 		Sleep.Sleep(Items.Tick)
 		return true
 	}
-	let Prediction = target.VelocityWaypoint(Abilities.DragonSlave.CastPoint + 0.5)
+	let Prediction = target.VelocityWaypoint((Abilities.DragonSlave.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
 	if (IsValidAbility(Abilities.DragonSlave, target) && !target.IsInvulnerable) {
 		Abilities.DragonSlave.UseAbility(Prediction)
 		Sleep.Sleep(Items.Tick)
@@ -118,5 +132,5 @@ export function InitCombo() {
 }
 
 export function ComboGameEnded() {
-	
+	Sleep.ResetTimer()
 }

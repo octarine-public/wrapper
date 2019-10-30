@@ -55,6 +55,7 @@ let AutoStealTree = Menu.AddNode("Auto Steal"),
 	AutoStealState = AutoStealTree.AddToggle("Enable", true),
 	AutoStealAbility = AutoStealTree.AddImageSelector("Ability", array_ability_steal, activeAbilitySteal),
 	Combo = Menu.AddNode("Combo"),
+	ModeInvisCombo = Combo.AddSwitcher("Invis Mode", ["Stuned and Combo", "Attack + Combo"], 0),
 	ComboKeyItem = Combo.AddKeybind("Combo Key"),
 	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000),
 	СomboItems = Combo.AddImageSelector("Items", array_items, activeItems),
@@ -62,6 +63,9 @@ let AutoStealTree = Menu.AddNode("Auto Steal"),
 	Drawing = Menu.AddNode("Drawing"),
 	DrawingStatus = Drawing.AddToggle("Draw target", true),
 	DrawingStatusKillSteal = Drawing.AddToggle("Draw Kill Steal", true)
+	
+let BladeMail = Menu.AddNode("Blade Mail"),
+	BladeMailCancel = BladeMail.AddToggle("Cancel Combo and Auto Steal", true)
 	
 export {
 	DrawingStatus,
@@ -76,4 +80,6 @@ export {
 	СomboItems,
 	ComboKeyItem,
 	СomboAbility,
+	BladeMailCancel,
+	ModeInvisCombo
 }

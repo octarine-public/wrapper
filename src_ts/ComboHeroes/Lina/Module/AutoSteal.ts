@@ -1,4 +1,4 @@
-import { State, AutoStealState, AutoStealAbility } from "../Menu";
+import { State, AutoStealState, AutoStealAbility, BladeMailCancel } from "../Menu";
 import { Base } from "../Extends/Helper";
 import { Heroes, Owner } from "../Listeners";
 import InitAbility from "../Extends/Abilities"
@@ -6,7 +6,7 @@ import { Ability, Hero, TickSleeper } from "wrapper/Imports";
 
 function IsReadySteal(ability: Ability, target: Hero) {
 	return ability !== undefined 
-		&& AutoStealAbility.IsEnabled(ability.Name) 
+		&& AutoStealAbility.IsEnabled(ability.Name) && target.IsAlive
 		&& ability.CanBeCasted() && Owner.Distance2D(target) <= ability.CastRange
 }
 let Sleep: TickSleeper = new TickSleeper
@@ -20,16 +20,19 @@ export function InitAutoSteal() {
 	if (target === undefined) {
 		return false
 	}
+	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect")) {
+		return false
+	}
 	let Abilities = new InitAbility(Owner)
 	let DMG_TYPE_LAGUNA = Owner.HasScepter 
-			? DAMAGE_TYPES.DAMAGE_TYPE_PURE 
-			: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
+		? DAMAGE_TYPES.DAMAGE_TYPE_PURE 
+		: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
 		Laguna = Abilities.LagunaBlade,
 		DraGonSlave = Abilities.DragonSlave,
 		StealDMDraGonSlave = Owner.CalculateDamage(DraGonSlave.AbilityDamage, DraGonSlave.DamageType, target),
 		StealDMGLaguna = Owner.CalculateDamage(Laguna.AbilityDamage, DMG_TYPE_LAGUNA, target)
 
-	let Prediction = target.VelocityWaypoint(DraGonSlave.CastPoint + 0.5)
+	let Prediction = target.VelocityWaypoint((DraGonSlave.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
 	if (!target.IsMagicImmune
 		&& target.HP < StealDMDraGonSlave
 		&& IsReadySteal(DraGonSlave, target)
@@ -53,4 +56,8 @@ export function InitAutoSteal() {
 		return true
 	}	
 	return false
+}
+
+export function AutoStealGameEnded() {
+	Sleep.ResetTimer()
 }

@@ -1,8 +1,10 @@
-import { Hero, ArrayExtensions, Entity, Creep, Utils, TrackingProjectile } from "wrapper/Imports"
+import { Hero, ArrayExtensions, Entity, Creep, Utils } from "wrapper/Imports"
 import { ComboGameEnded } from "./Module/Combo"
 import { DrawDeleteTempAllVars } from "./Renderer"
 import { State, NearMouse } from "./Menu"
 import { Base } from "./Extends/Helper"
+import { FindCycloneGameEnded } from "./Module/AutoArray"
+import { AutoStealGameEnded } from "./Module/AutoSteal"
 
 export let Heroes: Hero[] = []
 export let Owner: Hero
@@ -31,6 +33,8 @@ export function GameEnded() {
 	CreepsNeutrals = []
 	ComboGameEnded()
 	DrawDeleteTempAllVars()
+	FindCycloneGameEnded()
+	AutoStealGameEnded()
 	MyNameHero = "npc_dota_hero_lina"
 }
 

@@ -32,3 +32,6 @@ export function InitFindCyclone() {
 	}
 	return false
 }
+export function FindCycloneGameEnded() {
+	Sleep.ResetTimer()
+}
