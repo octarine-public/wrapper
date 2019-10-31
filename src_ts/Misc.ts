@@ -44,6 +44,7 @@ CameraTree.AddButton("Reset camera").OnValue(() => {
 	Camera.Distance = CamDist.value = 1134
 	ConVars.Set("r_farz", -1)
 })
+const AutoAccept_delay = Menu.AddSlider("AutoAccept delay", 5, 0, 42 /* 44 is real maximum */)
 
 function UpdateVisuals() {
 	Camera.Distance = CamDist.value
@@ -81,4 +82,31 @@ EventsSDK.on("WndProc", (msg, wParam) => {
 EventsSDK.after("Update", (cmd: UserCmd) => {
 	let CursorWorldVec = cmd.VectorUnderCursor
 	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(CursorWorldVec.toVector2()))
+})
+
+enum CSODOTALobby_State {
+	UI = 0,
+	READYUP = 4,
+	SERVERSETUP = 1,
+	RUN = 2,
+	POSTGAME = 3,
+	NOTREADY = 5,
+	SERVERASSIGN = 6,
+}
+
+interface CSODOTALobby {
+	state: CSODOTALobby_State
+}
+
+let old_state = CSODOTALobby_State.NOTREADY
+Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
+	if (id !== 2004)
+		return
+	let lobby = obj as CSODOTALobby
+	if (lobby.state === CSODOTALobby_State.READYUP && old_state !== CSODOTALobby_State.READYUP)
+		setTimeout(() => {
+			if (old_state === CSODOTALobby_State.READYUP)
+				AcceptMatch()
+		}, AutoAccept_delay.value * 1000)
+	old_state = lobby.state
 })
