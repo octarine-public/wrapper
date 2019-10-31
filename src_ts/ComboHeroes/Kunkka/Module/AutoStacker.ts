@@ -36,7 +36,7 @@ export function InitStaker() {
 }
 
 export function InitDrawStaker() {
-	if (!AutoStakerState.value || !AutoStakerVisuals.value) {
+	if (!AutoStakerState.value || !AutoStakerVisuals.value || Owner === undefined) {
 		return
 	}
 	Base.Spots.forEach((spot, i) => {

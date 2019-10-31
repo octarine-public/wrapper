@@ -6,7 +6,10 @@ let Menu = MenuSDK.AddEntry("Misc"),
 	CameraMaxDistance = 10000,
 	CameraDefaultDistance = 1300
 
-let CameraTree = Menu.AddNode("Camera"),
+let AutoAcceptTree = Menu.AddNode("Auto Accept"),
+	AutoAccept_State = AutoAcceptTree.AddToggle("Auto Accept", true),
+	AutoAccept_delay = AutoAcceptTree.AddSlider("Delay on accept", 5, 0, 42 /* 44 is real maximum */),
+	CameraTree = Menu.AddNode("Camera"),
 	CamDist = CameraTree.AddSlider("Camera Distance", CameraDefaultDistance, CameraMinDistance, CameraMaxDistance),
 	CamMouseTree = CameraTree.AddNode("Mouse wheel"),
 	CamMouseState = CamMouseTree.AddToggle("Active"),
@@ -44,7 +47,6 @@ CameraTree.AddButton("Reset camera").OnValue(() => {
 	Camera.Distance = CamDist.value = 1134
 	ConVars.Set("r_farz", -1)
 })
-const AutoAccept_delay = Menu.AddSlider("AutoAccept delay", 5, 0, 42 /* 44 is real maximum */)
 
 function UpdateVisuals() {
 	Camera.Distance = CamDist.value
@@ -100,7 +102,7 @@ interface CSODOTALobby {
 
 let old_state = CSODOTALobby_State.NOTREADY
 Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
-	if (id !== 2004)
+	if (id !== 2004 || !AutoAccept_State.value)
 		return
 	let lobby = obj as CSODOTALobby
 	if (lobby.state === CSODOTALobby_State.READYUP && old_state !== CSODOTALobby_State.READYUP)
