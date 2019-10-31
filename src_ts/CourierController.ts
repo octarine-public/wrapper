@@ -127,6 +127,9 @@ function Deliver(): boolean {
 }
 
 function IsBlocked(npc: Hero) {
+	if(npc === undefined) {
+		return false
+	}
 	return playersBlockList.enabled_values.get(npc.Name)
 }
 
