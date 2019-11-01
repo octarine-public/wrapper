@@ -109,7 +109,8 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 })
 
 let PrepareUnitOrders_old = PrepareUnitOrders
-let last_order_click = new Vector3().Invalidate()
+let last_order_click = new Vector3(),
+	last_order_click_updates = 0
 global.PrepareUnitOrders = function(order: { // pass Position: Vector3 at IOBuffer offset 0
 	OrderType: dotaunitorder_t,
 	Target?: C_BaseEntity | number,
@@ -128,6 +129,7 @@ global.PrepareUnitOrders = function(order: { // pass Position: Vector3 at IOBuff
 		case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
 			last_order_click.CopyFrom(Vector3.fromIOBuffer())
+			last_order_click_updates = 0
 			break
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
@@ -135,6 +137,7 @@ global.PrepareUnitOrders = function(order: { // pass Position: Vector3 at IOBuff
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
 			last_order_click.CopyFrom(order.Target instanceof Entity ? order.Target.Position : Vector3.fromIOBuffer())
+			last_order_click_updates = 0
 			break
 		default:
 			break
@@ -146,9 +149,10 @@ let experiment = true
 EventsSDK.after("Update", (cmd: UserCmd) => {
 	let CursorWorldVec = cmd.VectorUnderCursor,
 		orig_CursorWorldVec = cmd.VectorUnderCursor.Clone()
-	if (last_order_click.IsValid && last_order_click.Distance2D(cmd.VectorUnderCursor) > 200)
+	if (last_order_click_updates < 6 && last_order_click.Distance2D(cmd.VectorUnderCursor) > 200) {
 		CursorWorldVec = last_order_click.Extend(CursorWorldVec, 200).CopyTo(last_order_click)
-	else
+		last_order_click_updates++
+	} else
 		CursorWorldVec.CopyTo(last_order_click)
 	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(CursorWorldVec.toVector2()))
 	if (!experiment || new Vector3(cmd.CameraX, cmd.CameraY).Distance2D(CursorWorldVec) > 1300 * 1.2) {
