@@ -53,7 +53,7 @@ global.EventEmitter = class EventEmitter {
 				return false
 			}
 		})
-		if (listeners_after !== undefined)
+		if (listeners_after !== undefined && ret)
 			listeners_after.forEach(listener => {
 				try {
 					listener.apply(this, args)

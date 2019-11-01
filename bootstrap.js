@@ -52,7 +52,7 @@ global.EventEmitter = class EventEmitter {
       }
     });
 
-    if (listeners_after !== undefined) {
+    if (listeners_after !== undefined && ret) {
       let _a = listeners_after;
 
       let _f = listener => {
