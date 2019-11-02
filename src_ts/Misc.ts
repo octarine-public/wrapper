@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu as MenuSDK, RendererSDK, ExecuteOrder, Vector3, Entity, Vector2, EntityManager, InputEventSDK, VKeys, Input, MouseWheel } from "./wrapper/Imports"
+import { EventsSDK, Game, Menu as MenuSDK, RendererSDK, ExecuteOrder, Vector3, Entity, Vector2, EntityManager, InputEventSDK, VKeys, Input, MouseWheel, Color } from "./wrapper/Imports"
 import UserCmd from "./wrapper/Native/UserCmd"
 
 let Menu = MenuSDK.AddEntry("Misc");
@@ -136,7 +136,7 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 let PrepareUnitOrders_old = PrepareUnitOrders
 let last_order_click = new Vector3(),
 	last_order_click_update = 0
-global.PrepareUnitOrders = function(order: { // pass Position: Vector3 at IOBuffer offset 0
+global.PrepareUnitOrders = function (order: { // pass Position: Vector3 at IOBuffer offset 0
 	OrderType: dotaunitorder_t,
 	Target?: C_BaseEntity | number,
 	Ability?: C_BaseEntity | number,
@@ -172,7 +172,7 @@ global.PrepareUnitOrders = function(order: { // pass Position: Vector3 at IOBuff
 
 let latest_camera_x = 0,
 	latest_camera_y = 0// ,
-	// latest_mouse_vec = new Vector3()
+// latest_mouse_vec = new Vector3()
 let last_camera_vec = new Vector3(),
 	last_mouse_vec = new Vector3(),
 	last_mouse_pos = new Vector2()
@@ -205,14 +205,15 @@ EventsSDK.after("Update", (cmd: UserCmd) => {
 	last_camera_vec.SetZ(RendererSDK.GetPositionHeight(last_camera_vec.toVector2()))
 })
 
-EventsSDK.on("Draw", () => {
+/* EventsSDK.on("Draw", () => {
 	RendererSDK.FilledRect(last_mouse_pos.SubtractScalar(5), new Vector2(10, 10), Color.Red)
 
 	let camera_screen_pos = RendererSDK.WorldToScreen(last_camera_vec)
 	if (camera_screen_pos !== undefined)
 		RendererSDK.FilledRect(camera_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Green)
-	
+
 	let mouse_screen_pos = RendererSDK.WorldToScreen(last_mouse_vec)
 	if (mouse_screen_pos !== undefined)
 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Blue)
 })
+ */

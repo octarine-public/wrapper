@@ -110,7 +110,7 @@ function DrawItem(item: Item, position: Vector2, isBackPack = false) {
 	}
 
 	const colorItem = isBackPack
-		? (itemCoolDown ? colorDarkGrayPanel : colorGrayPanels)
+		? (itemCoolDown ? colorGrayPanels : colorLightGrayPanels)
 		: (itemCoolDown ? colorGrayPanels : colorPanel)
 
 	RendererSDK.Image(
@@ -156,7 +156,7 @@ function DrawCoolDown(position: Vector2, itemCoolDown: string, isTP = false) {
 	posOfCharges.AddScalarX((itemIconSize.x / 2) - (sizeOfCD.x / 2));
 
 	if (isTP) {
-		posOfCharges.DivideScalarX(1.1)
+		posOfCharges.SubtractScalarX(sizeOfCD.x / 2)
 	}
 
 	RendererSDK.Text(itemCoolDown.toString(), posOfCharges,
@@ -297,6 +297,13 @@ EventsSDK.on("Draw", () => {
 			hero.Items.forEach(item => DrawItem(item, posPanelOnItems));
 
 			if (panelItemsBackpack.value) {
+
+				RendererSDK.FilledRect(posPanelOnItems, onTouchPanel, colorOnTouchPanel)
+
+				isHorizontal
+					? posPanelOnItems.AddScalarX(onTouchPanel.x)
+					: posPanelOnItems.AddScalarY(onTouchPanel.y);
+
 				// loop-optimizer: FORWARD
 				hero.Inventory.Backpack.forEach(item => DrawItem(item, posPanelOnItems, true));
 			}
