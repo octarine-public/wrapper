@@ -1,5 +1,5 @@
 import Vector3 from "../../Base/Vector3"
-import { HasMask, HasMaskBigInt } from "../../Utils/Utils"
+import { HasMask, HasMaskBigInt } from "../../Utils/BitsExtensions"
 import AbilityData from "../DataBook/AbilityData"
 import Game from "../GameResources/GameRules"
 import Entity from "./Entity"
@@ -129,6 +129,18 @@ export default class Ability extends Entity {
 
 	/* ============ EXTENSIONS ============ */
 
+	/**
+	 * In real time cooldown (in fog)
+	 */
+	get CooldownTimeRemaining() {
+		let cd = this.Cooldown;
+
+		if (this.Owner.IsDormant) {
+			cd -= Game.RawGameTime - this.Owner.LastVisibleTime;
+		}
+
+		return cd;
+	}
 	get CastRange(): number {
 		let owner = this.Owner,
 			castrange = this.m_pBaseEntity.m_fCastRange

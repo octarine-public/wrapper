@@ -59,7 +59,11 @@ const drawParticles = runeMenu.AddNode("Draw indicators (particles)")
 const drawParticleTake = drawParticles.AddToggle("Take rune")
 	.OnValue(destroyRuneAllParticles)
 
-const drawParticleTake_Color = drawParticles.AddColorPicker("indicators color").OnValue(updateRuneAllParticle)
+const drawParticleTake_Color = drawParticles.AddColorPicker("indicators color");
+drawParticleTake_Color.R.OnValue(updateRuneAllParticle);
+drawParticleTake_Color.G.OnValue(updateRuneAllParticle);
+drawParticleTake_Color.B.OnValue(updateRuneAllParticle);
+drawParticleTake_Color.A.OnValue(updateRuneAllParticle);
 
 const drawParticleKill = drawParticles.AddToggle("Kill rune")
 	.SetTooltip("Color for kill - Red")
@@ -135,7 +139,7 @@ EventsSDK.on("Update", () => {
 	if (LocalPlayer === undefined) {
 		return false
 	}
-	if (!stateMain.value || !Game.IsInGame || Game.IsPaused || LocalPlayer.IsSpectator){
+	if (!stateMain.value || !Game.IsInGame || Game.IsPaused || LocalPlayer.IsSpectator) {
 		return false
 	}
 	let controllables: Unit[] = stateControllables.value

@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Creep, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, Utils } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Creep, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, Utils, BitsExtensions } from "wrapper/Imports"
 
 let root = Menu.AddEntry(["Utility", "AutoSteal"]),
 	state = root.AddToggle("State", false),
@@ -38,7 +38,7 @@ var abils: Array<{
 			abilName: "zuus_arc_lightning",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var arcDamage = abil.GetSpecialValue("arc_damage")+entFrom.GetTalentValue("special_bonus_unique_zeus_2")
+				var arcDamage = abil.GetSpecialValue("arc_damage") + entFrom.GetTalentValue("special_bonus_unique_zeus_2")
 
 				return entTo.CalculateDamage(arcDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -63,7 +63,7 @@ var abils: Array<{
 			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("bolt_speed"),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
 				var baseDamage = abil.GetSpecialValue("soul_base_damage"),
-					stackDamage = abil.GetSpecialValue("soul_charge_damage")+entFrom.GetTalentValue("special_bonus_unique_visage_4"),
+					stackDamage = abil.GetSpecialValue("soul_charge_damage") + entFrom.GetTalentValue("special_bonus_unique_visage_4"),
 					stackBuff = entFrom.GetBuffByName("modifier_visage_soul_assumption"),
 					stackBuffDamage = stackBuff ? stackBuff.StackCount * stackDamage : 0
 				return entTo.CalculateDamage((baseDamage + stackBuffDamage) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
@@ -97,7 +97,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilRadiusF: abil => abil.GetSpecialValue("radius") / 2 - 25,
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("damage")+entFrom.GetTalentValue("special_bonus_unique_puck_4")
+				var damage = abil.GetSpecialValue("damage") + entFrom.GetTalentValue("special_bonus_unique_puck_4")
 
 				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -124,7 +124,7 @@ var abils: Array<{
 			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
 				var baseDamage = abil.GetSpecialValue("quill_base_damage"),
-					stackDamage = abil.GetSpecialValue("quill_stack_damage")+entFrom.GetTalentValue("special_bonus_unique_bristleback_2"),
+					stackDamage = abil.GetSpecialValue("quill_stack_damage") + entFrom.GetTalentValue("special_bonus_unique_bristleback_2"),
 					maxDamage = abil.GetSpecialValue("max_damage"),
 					stackBuff = entTo.GetBuffByName("modifier_bristleback_quill_spray"),
 					stackBuffDamage = stackBuff ? stackBuff.StackCount * stackDamage : 0
@@ -135,7 +135,7 @@ var abils: Array<{
 			abilName: "luna_lucent_beam",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var beamDamage = abil.GetSpecialValue("beam_damage")+entFrom.GetTalentValue("special_bonus_unique_luna_1")
+				var beamDamage = abil.GetSpecialValue("beam_damage") + entFrom.GetTalentValue("special_bonus_unique_luna_1")
 
 				return entTo.CalculateDamage(beamDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -144,7 +144,7 @@ var abils: Array<{
 			abilName: "alchemist_unstable_concoction",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var maxDamage = abil.GetSpecialValue("max_damage")+entFrom.GetTalentValue("special_bonus_unique_alchemist_2")
+				var maxDamage = abil.GetSpecialValue("max_damage") + entFrom.GetTalentValue("special_bonus_unique_alchemist_2")
 
 				return entTo.CalculateDamage(maxDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL, entFrom)
 			},
@@ -176,7 +176,7 @@ var abils: Array<{
 			abilName: "abaddon_death_coil",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var targetDamage = abil.GetSpecialValue("target_damage")+entFrom.GetTalentValue("special_bonus_unique_abaddon_2")
+				var targetDamage = abil.GetSpecialValue("target_damage") + entFrom.GetTalentValue("special_bonus_unique_abaddon_2")
 
 				return entTo.CalculateDamage(targetDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -186,7 +186,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("speed"),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("bonus_damage")+entFrom.GetTalentValue("special_bonus_unique_bounty_hunter_2")
+				var damage = abil.GetSpecialValue("bonus_damage") + entFrom.GetTalentValue("special_bonus_unique_bounty_hunter_2")
 
 				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -208,10 +208,10 @@ var abils: Array<{
 		{
 			abilName: "undying_soul_rip",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage (
+			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(
 				abil.GetSpecialValue("damage_per_unit")
-				* Math.min (
-					EntityManager.GetEntitiesInRange(entTo.NetworkPosition,abil.GetSpecialValue("radius"),ent =>
+				* Math.min(
+					EntityManager.GetEntitiesInRange(entTo.NetworkPosition, abil.GetSpecialValue("radius"), ent =>
 						ent instanceof Unit && (ent.IsCreep || ent.IsHero) && !ent.IsEnemy(entFrom),
 					).length,
 					abil.GetSpecialValue("max_units"),
@@ -234,7 +234,7 @@ var abils: Array<{
 			abilName: "tusk_walrus_punch",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var critMultiplier = abil.GetSpecialValue("crit_multiplier")+entFrom.GetTalentValue("special_bonus_unique_tusk")
+				var critMultiplier = abil.GetSpecialValue("crit_multiplier") + entFrom.GetTalentValue("special_bonus_unique_tusk")
 
 				return entFrom.AttackDamage(entTo) * critMultiplier / 100
 			},
@@ -243,7 +243,7 @@ var abils: Array<{
 			abilName: "centaur_double_edge",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var edgeDamage = abil.GetSpecialValue("edge_damage")+entFrom.GetTalentValue("special_bonus_unique_centaur_4")
+				var edgeDamage = abil.GetSpecialValue("edge_damage") + entFrom.GetTalentValue("special_bonus_unique_centaur_4")
 
 				return entTo.CalculateDamage(edgeDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -268,7 +268,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("damage")+entFrom.GetTalentValue("special_bonus_unique_broodmother_3")
+				var damage = abil.GetSpecialValue("damage") + entFrom.GetTalentValue("special_bonus_unique_broodmother_3")
 
 				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -277,7 +277,7 @@ var abils: Array<{
 			abilName: "crystal_maiden_crystal_nova",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("nova_damage")+entFrom.GetTalentValue("special_bonus_unique_crystal_maiden_2")
+				var damage = abil.GetSpecialValue("nova_damage") + entFrom.GetTalentValue("special_bonus_unique_crystal_maiden_2")
 
 				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -286,7 +286,7 @@ var abils: Array<{
 			abilName: "shadow_shaman_ether_shock",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("damage")+entFrom.GetTalentValue("special_bonus_unique_shadow_shaman_3")
+				var damage = abil.GetSpecialValue("damage") + entFrom.GetTalentValue("special_bonus_unique_shadow_shaman_3")
 
 				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -342,7 +342,7 @@ var abils: Array<{
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("lance_speed"),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var lanceDamage = abil.GetSpecialValue("lance_damage")+entFrom.GetTalentValue("special_bonus_unique_phantom_lancer_2")
+				var lanceDamage = abil.GetSpecialValue("lance_damage") + entFrom.GetTalentValue("special_bonus_unique_phantom_lancer_2")
 
 				return entTo.CalculateDamage(lanceDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
@@ -430,9 +430,9 @@ var abils: Array<{
 
 function GetAvailableAbils() {
 	var MyEnt = LocalPlayer.Hero
-	return abils.filter (
+	return abils.filter(
 		abilData => abilData.abilName instanceof RegExp
-		|| abilData.abilName.startsWith("item_")
+			|| abilData.abilName.startsWith("item_")
 			|| MyEnt.GetAbilityByName(abilData.abilName) !== undefined,
 	)
 }
@@ -462,9 +462,9 @@ function OnTick(): void {
 			latest_spellamp *= bs_buff.Ability.GetSpecialValue("damage_increase_pct") / 100
 	}
 	var availableAbils = GetAvailableAbils().filter(abilData => {
-			var abil = abilData.abil = MyEnt.GetAbilityByName(abilData.abilName) || MyEnt.GetItemByName(abilData.abilName)
-			return abil !== undefined && !abil.IsHidden && abil.CanBeCasted()
-		}),
+		var abil = abilData.abil = MyEnt.GetAbilityByName(abilData.abilName) || MyEnt.GetItemByName(abilData.abilName)
+		return abil !== undefined && !abil.IsHidden && abil.CanBeCasted()
+	}),
 		zuus_passive = MyEnt.GetAbilityByName("zuus_static_field"),
 		zuus_talent = MyEnt.GetTalentValue("special_bonus_unique_zeus"),
 		blink = MyEnt.GetItemByName("item_blink") || MyEnt.GetAbilityByName("antimage_blink"),
@@ -485,8 +485,8 @@ function OnTick(): void {
 		return targets.some(ent => {
 			if (
 				ent.HasLinkenAtTime(abil.CastPoint) ||
-				(ent.IsCreep && !Utils.HasMaskBigInt(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP))) ||
-				(ent.IsHero && !Utils.HasMaskBigInt(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO)))
+				(ent.IsCreep && !BitsExtensions.HasMaskBigInt(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP))) ||
+				(ent.IsHero && !BitsExtensions.HasMaskBigInt(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO)))
 			)
 				return false
 			var needBlink = false
@@ -516,8 +516,8 @@ function OnTick(): void {
 				if (abilData.abilCastF)
 					abilData.abilCastF(abil, MyEnt, ent)
 				else
-					MyEnt.UseSmartAbility(abil,ent)
-				setTimeout (() => flag = false,(abil.CastPoint + ping) * 1000)
+					MyEnt.UseSmartAbility(abil, ent)
+				setTimeout(() => flag = false, (abil.CastPoint + ping) * 1000)
 			}
 
 			return true
@@ -531,7 +531,7 @@ EventsSDK.on("EntityCreated", (npc: Unit) => {
 })
 EventsSDK.on("Tick", OnTick)
 
-EventsSDK.on("EntityDestroyed",(unit, unit_id) => {
+EventsSDK.on("EntityDestroyed", (unit, unit_id) => {
 	if (unit instanceof Unit)
 		ArrayExtensions.arrayRemove(possibleTargets, unit)
 })

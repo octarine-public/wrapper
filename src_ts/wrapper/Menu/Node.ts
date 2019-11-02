@@ -1,5 +1,6 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
 import RendererSDK from "../Native/RendererSDK"
 import Base from "./Base"
 import Button from "./Button"
@@ -162,6 +163,68 @@ export default class Node extends Base {
 		Menu.PositionDirty = true
 		return switcher
 	}
+	public AddVector2(name: string, vector: Vector2, minVector?: Vector2, maxVector?: Vector2) {
+
+		let node = this.AddNode(name);
+
+		if (typeof minVector === "number")
+			minVector = new Vector2(minVector, minVector);
+
+		if (!(minVector instanceof Vector2))
+			minVector = new Vector2(0, 0);
+
+		if (typeof maxVector === "number")
+			maxVector = new Vector2(maxVector, maxVector);
+
+		if (!(maxVector instanceof Vector2))
+			maxVector = new Vector2(95, 95);
+
+		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x);
+		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y);
+
+		return {
+			node, X, Y,
+			get Vector() {
+				return new Vector2(X.value, Y.value);
+			},
+			set Vector(vector: Vector2) {
+				X.value = vector.x;
+				Y.value = vector.y;
+			}
+		}
+	}
+	public AddVector3(name: string, vector: Vector3, minVector?: Vector3, maxVector?: Vector3) {
+
+		let node = this.AddNode(name);
+
+		if (typeof minVector === "number")
+			minVector = new Vector3(minVector, minVector, minVector);
+
+		if (!(minVector instanceof Vector3))
+			minVector = new Vector3(0, 0);
+
+		if (typeof maxVector === "number")
+			maxVector = new Vector3(maxVector, maxVector, maxVector);
+
+		if (!(maxVector instanceof Vector3))
+			maxVector = new Vector3(95, 95);
+
+		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x);
+		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y);
+		const Z = node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z);
+
+		return {
+			node, X, Y, Z,
+			get Vector() {
+				return new Vector3(X.value, Y.value, Z.value);
+			},
+			set Vector(vector: Vector3) {
+				X.value = vector.x;
+				Y.value = vector.y;
+				Z.value = vector.z;
+			}
+		}
+	}
 	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip?: string) {
 		let node = this.AddNode(name) as Node
 		const R = node.AddSlider("Red", color.r, 0, 255)
@@ -173,7 +236,7 @@ export default class Node extends Base {
 			get Color(): Color {
 				return new Color(R.value, G.value, B.value, A.value)
 			},
-			OnValue: function(this: Color) { return this },
+			OnValue: function (this: Color) { return this },
 		}
 	}
 	public AddKeybind(name: string, default_key = "", tooltip?: string) {

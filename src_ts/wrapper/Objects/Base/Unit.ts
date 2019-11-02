@@ -1,7 +1,8 @@
 import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import { DamageIgnoreBuffs, HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/Utils"
+import { DamageIgnoreBuffs } from "../../Utils/Utils";
+import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 
 import { Game, LocalPlayer } from "../../Managers/EntityManager"
 
@@ -33,7 +34,7 @@ export default class Unit extends Entity {
 		let local_team = unit.Team,
 			flags = newTagged & valid_teams
 
-		for (let i = 14; i--; )
+		for (let i = 14; i--;)
 			if (i !== local_team && ((flags >> i) & 1))
 				return true
 		return false
@@ -53,6 +54,7 @@ export default class Unit extends Entity {
 	public ManaRegen = 0
 	public RotationDifference = 0
 	public HasScepterModifier = false
+	public LastVisibleTime = 0
 
 	private UnitName_: string
 
@@ -408,11 +410,11 @@ export default class Unit extends Entity {
 		return this.Inventory.Items
 	}
 
-	public GetItemByName(name: string  | RegExp, includeBackpack: boolean = false): Item {
+	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Item {
 		return this.Inventory.GetItemByName(name, includeBackpack)
 	}
 
-	public HasItemInInventory(name: string  | RegExp, includeBackpack: boolean = false): boolean {
+	public HasItemInInventory(name: string | RegExp, includeBackpack: boolean = false): boolean {
 		return this.GetItemByName(name, includeBackpack) !== undefined
 	}
 
@@ -820,7 +822,7 @@ export default class Unit extends Entity {
 	public IsInside(vec: Vector3, radius: number): boolean {
 		const direction = this.Forward,
 			npc_pos = this.NetworkPosition
-		for (let i = Math.floor(vec.Distance2D(npc_pos) / radius) + 1; i--; )
+		for (let i = Math.floor(vec.Distance2D(npc_pos) / radius) + 1; i--;)
 			if (npc_pos.Distance2D(new Vector3(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
 				return true
 		return false
@@ -845,9 +847,9 @@ export default class Unit extends Entity {
 			sphere !== undefined &&
 			sphere.Cooldown - time <= 0
 		) || (
-			this.GetBuffByName("modifier_item_sphere_target") !== undefined
-			&& this.GetBuffByName("modifier_item_sphere_target").DieTime - Game.RawGameTime - time <= 0
-		)
+				this.GetBuffByName("modifier_item_sphere_target") !== undefined
+				&& this.GetBuffByName("modifier_item_sphere_target").DieTime - Game.RawGameTime - time <= 0
+			)
 	}
 
 	public AttackDamage(target: Unit, useMinDamage: boolean = true, damageAmplifier: number = 0): number {
@@ -898,7 +900,7 @@ export default class Unit extends Entity {
 			&& this.IsVisible
 			&& this.IsSpawned
 			&& target.IsAlive
-			&& !target.IsInvulnerable 
+			&& !target.IsInvulnerable
 			&& !target.IsDormant
 			&& target.IsSpawned
 			&& !target.IsAttackImmune

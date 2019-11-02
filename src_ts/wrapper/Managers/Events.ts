@@ -40,7 +40,7 @@ Events.on("TeamVisibilityChanged", (npc, newTagged) => {
 
 Events.on("Draw", () => EventsSDK.emit("Draw"))
 
-Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) => EventsSDK.emit (
+Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) => EventsSDK.emit(
 	"ParticleCreated", false,
 	id,
 	path,
@@ -51,20 +51,20 @@ Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) =>
 		: target,
 ))
 
-Events.on("ParticleDestroyed", (id, destroy_immediately) => EventsSDK.emit (
+Events.on("ParticleDestroyed", (id, destroy_immediately) => EventsSDK.emit(
 	"ParticleDestroyed", false,
 	id,
 	destroy_immediately,
 ))
 
-Events.on("ParticleUpdated", (id, control_point) => EventsSDK.emit (
+Events.on("ParticleUpdated", (id, control_point) => EventsSDK.emit(
 	"ParticleUpdated", false,
 	id,
 	control_point,
 	Vector3.fromIOBuffer(),
 ))
 
-Events.on("ParticleUpdatedEnt", (id, control_point, ent, attach, attachment, include_wearables) => EventsSDK.emit (
+Events.on("ParticleUpdatedEnt", (id, control_point, ent, attach, attachment, include_wearables) => EventsSDK.emit(
 	"ParticleUpdatedEnt", false,
 	id,
 	control_point,
@@ -77,7 +77,7 @@ Events.on("ParticleUpdatedEnt", (id, control_point, ent, attach, attachment, inc
 	include_wearables,
 ))
 
-Events.on("BloodImpact", (target, scale, xnormal, ynormal) => EventsSDK.emit (
+Events.on("BloodImpact", (target, scale, xnormal, ynormal) => EventsSDK.emit(
 	"BloodImpact", false,
 	target instanceof C_BaseEntity
 		? EntityManager.GetEntityByNative(target)
@@ -96,7 +96,7 @@ Events.on("PrepareUnitOrders", order => {
 	return EventsSDK.emit("PrepareUnitOrders", true, ordersSDK)
 })
 
-Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => EventsSDK.emit (
+Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type, activity) => EventsSDK.emit(
 	"UnitAnimation", false,
 	EntityManager.GetEntityByNative(npc),
 	sequenceVariant,
@@ -109,7 +109,7 @@ Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type,
 Events.on("CustomGameEvent", (...args) => EventsSDK.emit("CustomGameEvent", false, ...args))
 Events.on("UnitAnimationEnd", (npc, snap) => EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
 
-Events.on("UnitSpeech", (npc, concept, response, recipient_type, level, muteable) => EventsSDK.emit (
+Events.on("UnitSpeech", (npc, concept, response, recipient_type, level, muteable) => EventsSDK.emit(
 	"UnitSpeech", false,
 	npc instanceof C_BaseEntity
 		? EntityManager.GetEntityByNative(npc)
@@ -121,7 +121,7 @@ Events.on("UnitSpeech", (npc, concept, response, recipient_type, level, muteable
 	muteable,
 ))
 
-Events.on("UnitSpeechMute", (npc, delay) => EventsSDK.emit (
+Events.on("UnitSpeechMute", (npc, delay) => EventsSDK.emit(
 	"UnitSpeechMute", false,
 	npc instanceof C_BaseEntity
 		? EntityManager.GetEntityByNative(npc)
@@ -129,7 +129,7 @@ Events.on("UnitSpeechMute", (npc, delay) => EventsSDK.emit (
 	delay,
 ))
 
-Events.on("UnitAddGesture", (npc, activity, slot, fade_in, fade_out, playback_rate, sequence_variant) => EventsSDK.emit (
+Events.on("UnitAddGesture", (npc, activity, slot, fade_in, fade_out, playback_rate, sequence_variant) => EventsSDK.emit(
 	"UnitAddGesture", false,
 	npc instanceof C_BaseEntity
 		? EntityManager.GetEntityByNative(npc)
@@ -142,7 +142,7 @@ Events.on("UnitAddGesture", (npc, activity, slot, fade_in, fade_out, playback_ra
 	sequence_variant,
 ))
 
-Events.on("UnitRemoveGesture", (npc, activity) => EventsSDK.emit (
+Events.on("UnitRemoveGesture", (npc, activity) => EventsSDK.emit(
 	"UnitRemoveGesture", false,
 	npc instanceof C_BaseEntity
 		? EntityManager.GetEntityByNative(npc)
@@ -150,7 +150,7 @@ Events.on("UnitRemoveGesture", (npc, activity) => EventsSDK.emit (
 	activity,
 ))
 
-Events.on("UnitFadeGesture", (npc, activity) => EventsSDK.emit (
+Events.on("UnitFadeGesture", (npc, activity) => EventsSDK.emit(
 	"UnitFadeGesture", false,
 	npc instanceof C_BaseEntity
 		? EntityManager.GetEntityByNative(npc)
@@ -194,7 +194,7 @@ Events.on("EntityDestroyed", ent => {
 	})
 })
 
-Events.on("InputCaptured", is_captured => EventsSDK.emit (
+Events.on("InputCaptured", is_captured => EventsSDK.emit(
 	"InputCaptured", false,
 	is_captured,
 ))
@@ -322,13 +322,19 @@ Events.on("NetworkFieldsChanged", map => {
 						if (entity instanceof Ability)
 							entity.LastCastClickTime = entity.m_pBaseEntity.m_flLastCastClickTime
 						break
-					
+
 					// manually whitelisted
 					case "m_angRotation":
 						entity.OnNetworkRotationChanged()
 						break
 					case "m_fGameTime":
 						Game.RawGameTime = Game.m_GameRules.m_fGameTime
+
+						EntityManager.AllEntities.forEach(ent => {
+							if (ent instanceof Unit && ent.IsVisible)
+								ent.LastVisibleTime = Game.RawGameTime;
+						})
+
 						if (LocalPlayer !== undefined)
 							EventsSDK.emit("Tick", false)
 						break

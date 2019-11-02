@@ -1,5 +1,6 @@
 // Utils
 import * as ArrayExtensions from "./Utils/ArrayExtensions"
+import * as BitsExtensions from "./Utils/BitsExtensions"
 import * as Debug from "./Utils/Debug"
 import * as MapExtensions from "./Utils/MapExtensions"
 import * as MathSDK from "./Utils/Math"
@@ -7,7 +8,7 @@ import * as Parse from "./Utils/ParseKV"
 import * as Utils from "./Utils/Utils"
 export { default as Benchmark } from "./Utils/BenchMark"
 export { Team } from "./Helpers/Team"
-export { Utils, MathSDK, Debug, ArrayExtensions, MapExtensions, Parse }
+export { Utils, MathSDK, Debug, ArrayExtensions, BitsExtensions, MapExtensions, Parse }
 
 // base
 export { default as Vector2 } from "./Base/Vector2"
@@ -38,6 +39,15 @@ export {
 export { default as ModifierManager } from "./Managers/ModifierManager"
 export { default as ParticlesSDK } from "./Managers/Particles"
 export { default as EventsSDK } from "./Managers/Events"
+export {
+	default as Input,
+	InputEventSDK,
+	InputMessage,
+	VKeys,
+	VMouseKeys,
+	VXMouseKeys,
+	MouseWheel,
+} from "./Managers/InputManager";
 
 // Objects
 export { default as Entity } from "./Objects/Base/Entity"

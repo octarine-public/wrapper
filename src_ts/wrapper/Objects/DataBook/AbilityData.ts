@@ -1,4 +1,4 @@
-import { MaskToArrayBigInt, MaskToArrayNumber } from "../../Utils/Utils"
+import { MaskToArrayBigInt, MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import AbilitySpecialData from "./AbilitySpecialData"
 
 export default class AbilityData {

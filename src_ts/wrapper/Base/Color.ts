@@ -8,6 +8,9 @@ export default class Color {
 	public static readonly Orange = new Color(255, 128)
 	public static readonly Fuchsia = new Color(255, 0, 255)
 	public static readonly Aqua = new Color(0, 255, 255)
+	public static readonly BlackGray = new Color(90, 90, 90);
+	public static readonly Gray = new Color(128, 128, 128);
+	public static readonly LightGray = new Color(190, 190, 190);
 	public static readonly White = new Color(255, 255, 255)
 
 	/* ================== Static ================== */
@@ -24,7 +27,9 @@ export default class Color {
 
 		return new Color(IOBuffer[bufferOrOffset + 0], IOBuffer[bufferOrOffset + 1], IOBuffer[bufferOrOffset + 2], IOBuffer[bufferOrOffset + 3])
 	}
-
+	static CopyFrom(color: Color): Color {
+		return new Color(color.r, color.g, color.b, color.a);
+	}
 	/* ================ Constructors ================ */
 	/**
 	 * Create new Color with r, g, b, a
@@ -32,7 +37,7 @@ export default class Color {
 	 * @example
 	 * var color = new Color(1, 2, 3)
 	 */
-	constructor(public r: number = 0, public g: number = 0, public b: number = 0, public a: number = 255) {}
+	constructor(public r: number = 0, public g: number = 0, public b: number = 0, public a: number = 255) { }
 
 	/* ================== Methods ================== */
 	/**
@@ -55,7 +60,7 @@ export default class Color {
 	/**
 	 * Set G of color by number
 	 */
-	SetG(g: number ): Color {
+	SetG(g: number): Color {
 		this.g = g
 		return this
 	}
@@ -76,6 +81,34 @@ export default class Color {
 
 	Equals(col: Color): boolean {
 		return this.r === col.r && this.g === col.g && this.b === col.b && this.a === col.a
+	}
+
+	Clone(): Color {
+		return new Color(this.r, this.g, this.b, this.a);
+	}
+
+	/**
+	 * Copy this color to another color and return it
+	 * @param vec The another color
+	 * @returns another color
+	 */
+	CopyTo(color: Color): Color {
+		color.r = this.r;
+		color.g = this.g;
+		color.b = this.b;
+		return color
+	}
+	/**
+	 * Copy from another color to this color and return it
+	 * @param vec The another color
+	 * @returns this color
+	 */
+	CopyFrom(color: Color): Color {
+		this.r = color.r;
+		this.g = color.g;
+		this.b = color.b;
+		this.a = color.a;
+		return this;
 	}
 
 	/* ================== To ================== */

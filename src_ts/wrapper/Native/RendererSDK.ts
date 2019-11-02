@@ -1,6 +1,7 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
+import { default as Input } from "../Managers/InputManager"
 
 let WindowSize = new Vector2().Invalidate()
 
@@ -68,9 +69,6 @@ let RendererSDK = new (class RendererSDK {
 		if (!WindowSize.IsValid)
 			Vector2.fromIOBuffer(Renderer.WindowSize).CopyTo(WindowSize)
 		return WindowSize.Clone()
-	}
-	public get CursorOnScreen(): Vector2 {
-		return Vector2.fromIOBuffer(Renderer.CursorPos)
 	}
 	/**
 	 * @param pos world position that needs to be turned to screen position
@@ -213,7 +211,7 @@ let RendererSDK = new (class RendererSDK {
 	 * @param flags default: FontFlags_t.ANTIALIAS
 	 */
 	public TextAroundMouse(text: string, vec?: Vector2 | Vector3 | false, color = Color.Yellow, font_name = "Calibri", font = new Vector2(30), flags = FontFlags_t.ANTIALIAS): void {
-		let vecMouse = this.CursorOnScreen.AddScalarX(30).AddScalarY(15)
+		let vecMouse = Input.CursorOnScreen.AddScalarX(30).AddScalarY(15)
 
 		if (vec !== undefined && vec !== false)
 			vecMouse = vecMouse.Add(vec as Vector2)
@@ -248,13 +246,13 @@ let RendererSDK = new (class RendererSDK {
 	}
 	public GetAspectRatio() {
 		let res = this.WindowSize.x / this.WindowSize.y
-		if(res>=1.25&&res<=1.35)
+		if (res >= 1.25 && res <= 1.35)
 			return "4x3"
-		else if(res>=1.7&&res<=1.85)
+		else if (res >= 1.7 && res <= 1.85)
 			return "16x9"
-		else if(res>=1.5&&res<=1.69)
+		else if (res >= 1.5 && res <= 1.69)
 			return "16x10"
-		else if(res>=2.2&&res<=2.4)
+		else if (res >= 2.2 && res <= 2.4)
 			return "21x9"
 	}
 })()

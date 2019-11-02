@@ -22,7 +22,7 @@ import Tower from "../Objects/Base/Tower"
 
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
-import { HasBit } from "../Utils/Utils"
+import { HasBit } from "../Utils/BitsExtensions"
 import AbilityData from "../Objects/DataBook/AbilityData"
 
 export { PlayerResource, Game }
@@ -281,6 +281,7 @@ function InitEntityFields(ent: Entity) {
 		ent.IsVisibleForTeamMask = ent.m_pBaseEntity.m_iTaggedAsVisibleByTeam
 		ent.IsVisibleForEnemies = Unit.IsVisibleForEnemies(ent, ent.IsVisibleForTeamMask)
 		ent.NetworkActivity = ent.m_pBaseEntity.m_NetworkActivity
+		ent.LastVisibleTime = Game.RawGameTime;
 	}
 	if (ent instanceof Ability) {
 		ent.LastCastClickTime = ent.m_pBaseEntity.m_flLastCastClickTime

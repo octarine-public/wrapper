@@ -1,16 +1,13 @@
-import { EventsSDK, Game, Menu as MenuSDK, RendererSDK, ExecuteOrder, Vector3, Entity, Vector2, EntityManager, Color } from "./wrapper/Imports"
+import { EventsSDK, Game, Menu as MenuSDK, RendererSDK, ExecuteOrder, Vector3, Entity, Vector2, EntityManager, InputEventSDK, VKeys, Input, MouseWheel } from "./wrapper/Imports"
 import UserCmd from "./wrapper/Native/UserCmd"
 
-let Menu = MenuSDK.AddEntry("Misc"),
-	CameraMinDistance = 0,
-	CameraMaxDistance = 10000,
-	CameraDefaultDistance = 1300
+let Menu = MenuSDK.AddEntry("Misc");
 
 let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 	AutoAccept_State = AutoAcceptTree.AddToggle("Auto Accept", true),
 	AutoAccept_delay = AutoAcceptTree.AddSlider("Delay on accept", 5, 0, 42 /* 44 is real maximum */),
 	CameraTree = Menu.AddNode("Camera"),
-	CamDist = CameraTree.AddSlider("Camera Distance", CameraDefaultDistance, CameraMinDistance, CameraMaxDistance),
+	CamDist = CameraTree.AddSlider("Camera Distance", 1300, 0, 10000),
 	CamMouseTree = CameraTree.AddNode("Mouse wheel"),
 	CamMouseState = CamMouseTree.AddToggle("Active"),
 	CamMouseStateCtrl = CamMouseTree.AddToggle("Change if Ctrl is down"),
@@ -61,24 +58,27 @@ function UpdateVisuals() {
 
 setInterval(UpdateVisuals, 100)
 
-EventsSDK.on("WndProc", (msg, wParam) => {
-	if (Game.IsInGame && msg === 522 /* WM_MOUSEWHEEL */ && CamMouseState.value) {
-		let view = new DataView(new ArrayBuffer(64))
-		view.setBigInt64(0, wParam)
-		let val = view.getInt16(4),
-			IsCtrlPressed = (view.getInt16(6) === 8)
-		if (CamMouseStateCtrl.value && !IsCtrlPressed)
-			return true
-		if (val > -120)
-			CamDist.value -= CamStep.value
-		else if (val < 120)
-			CamDist.value += CamStep.value
-		CamDist.value = Math.min(Math.max(CamDist.value, CameraMinDistance), CameraMaxDistance)
-		MenuSDK.MenuManager.UpdateConfig()
-		UpdateVisuals()
-		return false
-	}
-	return true
+InputEventSDK.on("MouseWheel", wheel => {
+
+	if (!CamMouseState.value || !Game.IsInGame
+		|| Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+		return;
+
+	if (CamMouseStateCtrl.value && !Input.IsKeyDown(VKeys.CONTROL))
+		return;
+
+	let camDist = CamDist.value;
+
+	if (wheel === MouseWheel.DOWN)
+		camDist += CamStep.value;
+	else
+		camDist -= CamStep.value;
+
+	CamDist.value = Math.min(Math.max(camDist, CamDist.min), CamDist.max);
+
+	MenuSDK.MenuManager.UpdateConfig()
+	UpdateVisuals()
+	return false;
 })
 
 enum CSODOTALobby_State {
@@ -95,17 +95,42 @@ interface CSODOTALobby {
 	state: CSODOTALobby_State
 }
 
-let old_state = CSODOTALobby_State.NOTREADY
+let timeCreate = -1;
+
+function waitAcceptOn() {
+	if (timeCreate === -1) {
+		return;
+	}
+
+	let elepsedTime = (Date.now() - timeCreate) / 1000;
+
+	if (elepsedTime > AutoAccept_delay.max) {
+		timeCreate = -1;
+		return;
+	}
+
+	if (!AutoAccept_State.value || AutoAccept_delay.value - elepsedTime > 0) {
+		return setTimeout(waitAcceptOn, 0);
+	}
+
+	AcceptMatch()
+}
+
+
 Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
-	if (id !== 2004 || !AutoAccept_State.value)
+	if (id !== 2004)
 		return
+
 	let lobby = obj as CSODOTALobby
-	if (lobby.state === CSODOTALobby_State.READYUP && old_state !== CSODOTALobby_State.READYUP)
-		setTimeout(() => {
-			if (old_state === CSODOTALobby_State.READYUP)
-				AcceptMatch()
-		}, AutoAccept_delay.value * 1000)
-	old_state = lobby.state
+
+	if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1) {
+
+		timeCreate = Date.now();
+		waitAcceptOn();
+	}
+	else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1) {
+		timeCreate = -1;
+	}
 })
 
 let PrepareUnitOrders_old = PrepareUnitOrders

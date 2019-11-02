@@ -369,7 +369,6 @@ declare interface Particles {
 // must be called only in onDraw!
 declare interface Renderer {
 	readonly WindowSize: boolean // returns Vector2 to IOBuffer offset 0 at get
-	readonly CursorPos: boolean // returns Vector2 to IOBuffer offset 0 at get
 
 	/**
 	 * @param pos world position that needs to be turned to screen position

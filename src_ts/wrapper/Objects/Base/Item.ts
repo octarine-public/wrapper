@@ -108,6 +108,9 @@ export default class Item extends Ability {
 	get Shareability(): EShareAbility {
 		return this.m_pBaseEntity.m_iSharability
 	}
+	get ShouldDisplayCharges(): boolean {
+		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges;
+	}
 
 	DisassembleItem(queue?: boolean) {
 		return (this.Owner as Unit).DisassembleItem(this, queue)

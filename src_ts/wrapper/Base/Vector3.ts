@@ -171,7 +171,7 @@ export default class Vector3 {
 	 * @param The another vector
 	 */
 	Min(vec: Vector3): Vector3 {
-		return new Vector3 (
+		return new Vector3(
 			Math.min(this.x, vec.x),
 			Math.min(this.y, vec.y),
 			Math.min(this.z, vec.z),
@@ -182,7 +182,7 @@ export default class Vector3 {
 	 * @param The another vector
 	 */
 	Max(vec: Vector3): Vector3 {
-		return new Vector3 (
+		return new Vector3(
 			Math.max(this.x, vec.x),
 			Math.max(this.y, vec.y),
 			Math.max(this.z, vec.z),
@@ -192,7 +192,7 @@ export default class Vector3 {
 	 * Returns a vector whose elements are the absolute values of each of the source vector's elements.
 	 */
 	Abs(): Vector3 {
-		return new Vector3 (
+		return new Vector3(
 			Math.abs(this.x),
 			Math.abs(this.y),
 			Math.abs(this.z),
@@ -202,7 +202,7 @@ export default class Vector3 {
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
 	SquareRoot(): Vector3 {
-		return new Vector3 (
+		return new Vector3(
 			Math.sqrt(this.x),
 			Math.sqrt(this.y),
 			Math.sqrt(this.z),
@@ -220,7 +220,7 @@ export default class Vector3 {
 		return vec
 	}
 	/**
-	 * Copy fron another vector to this vector and return it
+	 * Copy from another vector to this vector and return it
 	 * @param vec The another vector
 	 * @returns this vector
 	 */
@@ -331,7 +331,7 @@ export default class Vector3 {
 	 * @returns	The summed vector (new Vector3)
 	 */
 	Add(vec: Vector3): Vector3 {
-		return new Vector3 (
+		return new Vector3(
 			this.x + vec.x,
 			this.y + vec.y,
 			this.z + vec.z,
@@ -398,7 +398,7 @@ export default class Vector3 {
 	 * @returns The difference vector (new Vector3)
 	 */
 	Subtract(vec: Vector3): Vector3 {
-		return new Vector3 (
+		return new Vector3(
 			this.x - vec.x,
 			this.y - vec.y,
 			this.z - vec.z,
@@ -464,7 +464,7 @@ export default class Vector3 {
 	 * @return The product vector (new Vector3)
 	 */
 	Multiply(vec: Vector3): Vector3 {
-		return new Vector3 (
+		return new Vector3(
 			this.x * vec.x,
 			this.y * vec.y,
 			this.z * vec.z,
@@ -531,7 +531,7 @@ export default class Vector3 {
 	 * @return The vector resulting from the division (new Vector3)
 	 */
 	Divide(vec: Vector3): Vector3 {
-		return new Vector3 (
+		return new Vector3(
 			this.x / vec.x,
 			this.y / vec.y,
 			this.z / vec.z,
@@ -664,7 +664,7 @@ export default class Vector3 {
 		var cos = Math.cos(angle),
 			sin = Math.sin(angle)
 
-		return new Vector3 (
+		return new Vector3(
 			(this.x * cos) - (this.y * sin),
 			(this.y * cos) + (this.x * sin),
 		)
@@ -675,7 +675,7 @@ export default class Vector3 {
 	 * @param distance distance to be added
 	 */
 	Rotation(rotation: Vector3, distance: number): Vector3 {
-		return new Vector3 (
+		return new Vector3(
 			this.x + rotation.x * distance,
 			this.y + rotation.y * distance,
 			this.z + rotation.z * distance,
