@@ -48,8 +48,14 @@ let pathToHeroIcon = "panorama/images/heroes/";
 let pathToItemIcon = "panorama/images/items/";
 
 const GetPathToHeroIcon = (name: string) => `${pathToHeroIcon}${name}_png.vtex_c`;
-const GetPathToItemIcon = (name: string | undefined) =>
-	`${pathToItemIcon}${name ? name.replace("item_", "") : "emptyitembg"}_png.vtex_c`;
+const GetPathToItemIcon = (name: string | undefined) => {
+	if (name !== undefined) {
+		return `${pathToItemIcon}${name && !name.includes("recipe_") 
+			? name.replace("item_", "") 
+			: "recipe"}_png.vtex_c`;
+	}
+	return `${pathToItemIcon}emptyitembg_png.vtex_c`
+}
 
 const IsHorizontal = () => panelSettingsFlow.selected_id === 0;
 
@@ -338,7 +344,7 @@ EventsSDK.on("Draw", () => {
 
 			let itemCoolDown: string;
 
-			if (panelItemsCD.value) {
+			if (tpScroll !== undefined && panelItemsCD.value) {
 				itemCoolDown = CooldownRound(tpScroll.CooldownTimeRemaining);
 			}
 
