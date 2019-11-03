@@ -208,14 +208,14 @@ EventsSDK.after("Update", (cmd: UserCmd) => {
 	last_camera_vec.SetZ(RendererSDK.GetPositionHeight(last_camera_vec.toVector2()))
 })
 
-EventsSDK.on("Draw", () => {
-	RendererSDK.FilledRect(last_mouse_pos.SubtractScalar(5), new Vector2(10, 10), Color.Red)
+// EventsSDK.on("Draw", () => {
+// 	RendererSDK.FilledRect(last_mouse_pos.SubtractScalar(5), new Vector2(10, 10), Color.Red)
 
-	let camera_screen_pos = RendererSDK.WorldToScreen(last_camera_vec)
-	if (camera_screen_pos !== undefined)
-		RendererSDK.FilledRect(camera_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Green)
+// 	let camera_screen_pos = RendererSDK.WorldToScreen(last_camera_vec)
+// 	if (camera_screen_pos !== undefined)
+// 		RendererSDK.FilledRect(camera_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Green)
 
-	let mouse_screen_pos = RendererSDK.WorldToScreen(last_mouse_vec)
-	if (mouse_screen_pos !== undefined)
-		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Blue)
-})
+// 	let mouse_screen_pos = RendererSDK.WorldToScreen(last_mouse_vec)
+// 	if (mouse_screen_pos !== undefined)
+// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Blue)
+// })
