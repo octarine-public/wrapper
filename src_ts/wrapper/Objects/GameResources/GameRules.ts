@@ -7,7 +7,7 @@ let Game = global.Game = new (class Game {
 	public readonly Language = ConVars.GetString("cl_language")
 	public CurrentServerTick = -1
 	public IsInputCaptured = false
-	public IsConnected = IsInGame()
+	public IsConnected = false
 	public UIState = GetUIState()
 	public RawGameTime = 0
 	public IsPaused = false
