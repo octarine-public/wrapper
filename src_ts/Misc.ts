@@ -188,15 +188,18 @@ EventsSDK.after("Update", (cmd: UserCmd) => {
 	}
 	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(CursorWorldVec.toVector2()))
 	let camera_vec = new Vector3(cmd.CameraX, cmd.CameraY)
-	if (camera_vec.Distance2D(CursorWorldVec) > 1300 * 1.2) {
+	if (camera_vec.Clone().AddScalarY(1134 / 2).Distance2D(CursorWorldVec) > 1300)
 		camera_vec = CursorWorldVec.Clone().SubtractScalarY(1134 / 2)
-		cmd.MouseX = cmd.MouseY = 0.5
-	} else
+	else
 		camera_vec = camera_vec.AddScalarY(1134 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= Date.now() ? mult : 1))).SubtractScalarY(1134 / 2)
 	latest_camera_x = cmd.CameraX = camera_vec.x
 	latest_camera_y = cmd.CameraY = camera_vec.y
 
-	if (orig_CursorWorldVec.Distance2D(CursorWorldVec) > 100)
+	let cur_pos = RendererSDK.WorldToScreenCustom(CursorWorldVec, camera_vec.SetZ(RendererSDK.GetPositionHeight(camera_vec.toVector2())))
+	if (cur_pos !== undefined) {
+		cmd.MouseX = cur_pos.x
+		cmd.MouseY = cur_pos.y
+	} else
 		cmd.MouseX = cmd.MouseY = 0.5
 
 	last_mouse_vec.CopyFrom(cmd.VectorUnderCursor)
@@ -205,7 +208,7 @@ EventsSDK.after("Update", (cmd: UserCmd) => {
 	last_camera_vec.SetZ(RendererSDK.GetPositionHeight(last_camera_vec.toVector2()))
 })
 
-/* EventsSDK.on("Draw", () => {
+EventsSDK.on("Draw", () => {
 	RendererSDK.FilledRect(last_mouse_pos.SubtractScalar(5), new Vector2(10, 10), Color.Red)
 
 	let camera_screen_pos = RendererSDK.WorldToScreen(last_camera_vec)
@@ -216,4 +219,3 @@ EventsSDK.after("Update", (cmd: UserCmd) => {
 	if (mouse_screen_pos !== undefined)
 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Blue)
 })
- */
