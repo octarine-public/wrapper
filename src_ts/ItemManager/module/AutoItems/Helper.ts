@@ -119,9 +119,7 @@ function AutoUseItems(unit: Unit) {
 	if (!IsValidUnit(unit)) {
 		return false
 	}
-	
 	let Items = new InitItems(unit)
-	
 	if (IsValidItem(Items.PhaseBoots)) {
 		if (unit.IsMoving || unit.IdealSpeed >= Base.MaxMoveSpeed) {
 			let enemy_phase_in_position = AutoUseItemsPhaseBootsState.value
@@ -326,7 +324,7 @@ function AutoUseItems(unit: Unit) {
 		}
 	}
 
-	if (IsValidItem(Items.Tango) || IsValidItem(Items.TangoSingle) ) {
+	if (IsValidItem(Items.Tango) || IsValidItem(Items.TangoSingle)) {
 		let Tango = !Items.Tango ? Items.TangoSingle : Items.Tango,
 			tr = Trees.find(x => x.IsInRange(unit, Tango.CastRange))
 		if (tr !== undefined) {

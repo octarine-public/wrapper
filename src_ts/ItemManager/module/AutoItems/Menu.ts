@@ -21,6 +21,7 @@ let Items_array: string[] = [
 	Items.SpiritVesel.toString(),
 	Items.Bloodstone.toString(),
 	Items.Tango.toString(),
+	Items.TangoSingle.toString(),
 	Items.FaerieFire.toString(),
 	Items.Dust.toString(),
 	Items.Buckler.toString(),
