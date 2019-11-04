@@ -106,7 +106,16 @@ let RendererSDK = new (class RendererSDK {
 	/**
 	 *
 	 */
-	public FilledCircle(vecPos: Vector2 | Vector3 = new Vector2(), radius: number, color = new Color(255, 255, 255)): void {
+	public FilledCircle(vecPos: Vector2 = new Vector2(), radius: number, color = new Color(255, 255, 255)): void {
+		let vecSize = new Vector2(radius, radius).MultiplyScalarForThis(2)
+		if (!(vecPos.x > 0 && vecPos.y > 0 && vecPos.x <= this.WindowSize.x && vecPos.y <= this.WindowSize.y)) {
+			let vec = vecPos.Add(vecSize)
+			if (!(vec.x > 0 && vec.y > 0))
+				return
+		}
+		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize).SubtractForThis(vecPos)
+		if (vecSize.x <= 0 || vecSize.y <= 0)
+			return
 		this.SetColor(color)
 
 		let view = this.AllocateCommandSpace(3 * 4)
@@ -119,7 +128,16 @@ let RendererSDK = new (class RendererSDK {
 	/**
 	 *
 	 */
-	public OutlinedCircle(vecPos: Vector2 | Vector3 = new Vector2(), radius: number, color = new Color(255, 255, 255)): void {
+	public OutlinedCircle(vecPos: Vector2 = new Vector2(), radius: number, color = new Color(255, 255, 255)): void {
+		let vecSize = new Vector2(radius, radius).MultiplyScalarForThis(2)
+		if (!(vecPos.x > 0 && vecPos.y > 0 && vecPos.x <= this.WindowSize.x && vecPos.y <= this.WindowSize.y)) {
+			let vec = vecPos.Add(vecSize)
+			if (!(vec.x > 0 && vec.y > 0))
+				return
+		}
+		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize).SubtractForThis(vecPos)
+		if (vecSize.x <= 0 || vecSize.y <= 0)
+			return
 		this.SetColor(color)
 
 		let view = this.AllocateCommandSpace(3 * 4)
@@ -134,7 +152,15 @@ let RendererSDK = new (class RendererSDK {
 	 * @param vecSize Weight as X from Vector2
 	 * @param vecSize Height as Y from Vector2
 	 */
-	public Line(vecPos: Vector2 | Vector3 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
+	public Line(vecPos: Vector2 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
+		if (!(vecPos.x > 0 && vecPos.y > 0 && vecPos.x <= this.WindowSize.x && vecPos.y <= this.WindowSize.y)) {
+			let vec = vecPos.Add(vecSize)
+			if (!(vec.x > 0 && vec.y > 0))
+				return
+		}
+		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize).SubtractForThis(vecPos)
+		if (vecSize.x <= 0 || vecSize.y <= 0)
+			return
 		this.SetColor(color)
 
 		let view = this.AllocateCommandSpace(4 * 4)
@@ -150,7 +176,15 @@ let RendererSDK = new (class RendererSDK {
 	 * @param vecSize Weight as X from Vector2
 	 * @param vecSize Height as Y from Vector2
 	 */
-	public FilledRect(vecPos: Vector2 | Vector3 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
+	public FilledRect(vecPos: Vector2 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
+		if (!(vecPos.x > 0 && vecPos.y > 0 && vecPos.x <= this.WindowSize.x && vecPos.y <= this.WindowSize.y)) {
+			let vec = vecPos.Add(vecSize)
+			if (!(vec.x > 0 && vec.y > 0))
+				return
+		}
+		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize).SubtractForThis(vecPos)
+		if (vecSize.x <= 0 || vecSize.y <= 0)
+			return
 		this.SetColor(color)
 
 		let view = this.AllocateCommandSpace(4 * 4)
@@ -166,7 +200,15 @@ let RendererSDK = new (class RendererSDK {
 	 * @param vecSize Weight as X from Vector2
 	 * @param vecSize Height as Y from Vector2
 	 */
-	public OutlinedRect(vecPos: Vector2 | Vector3 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
+	public OutlinedRect(vecPos: Vector2 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
+		if (!(vecPos.x > 0 && vecPos.y > 0 && vecPos.x <= this.WindowSize.x && vecPos.y <= this.WindowSize.y)) {
+			let vec = vecPos.Add(vecSize)
+			if (!(vec.x > 0 && vec.y > 0))
+				return
+		}
+		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize).SubtractForThis(vecPos)
+		if (vecSize.x <= 0 || vecSize.y <= 0)
+			return
 		this.SetColor(color)
 
 		let view = this.AllocateCommandSpace(4 * 4)

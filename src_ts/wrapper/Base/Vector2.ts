@@ -168,18 +168,18 @@ export default class Vector2 {
 	 */
 	Min(vec: Vector2): Vector2 {
 		return new Vector2 (
-			Math.min(this.x, vec.x),
-			Math.min(this.y, vec.y),
+			Math.min(this.x, vec instanceof Vector2 ? vec.x : vec),
+			Math.min(this.y, vec instanceof Vector2 ? vec.y : vec),
 		)
 	}
 	/**
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
 	 * @param The another vector
 	 */
-	Max(vec: Vector2): Vector2 {
+	Max(vec: Vector2 | number): Vector2 {
 		return new Vector2 (
-			Math.max(this.x, vec.x),
-			Math.max(this.y, vec.y),
+			Math.max(this.x, vec instanceof Vector2 ? vec.x : vec),
+			Math.max(this.y, vec instanceof Vector2 ? vec.y : vec),
 		)
 	}
 	/**
