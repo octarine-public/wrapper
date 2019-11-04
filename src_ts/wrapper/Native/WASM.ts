@@ -27,7 +27,9 @@ export function OnDraw() {
 	IOBuffer[5] = camera_angles.z
 	
 	IOBuffer[6] = Camera.Distance || 1134
-	IOBuffer[7] = RendererSDK.WindowSize.x / RendererSDK.WindowSize.y
+	
+	IOBuffer[7] = RendererSDK.WindowSize.x
+	IOBuffer[8] = RendererSDK.WindowSize.y
 
 	wasm.CacheFrame()
 }
@@ -53,7 +55,7 @@ export function WorldToScreen (
 	camera_position: Vector3 | Vector2,
 	camera_distance: number,
 	camera_angles: QAngle,
-	aspect_ratio: number
+	window_size: Vector2
 ): Vector2 {
 	IOBuffer[0] = position.x
 	IOBuffer[1] = position.y
@@ -70,7 +72,9 @@ export function WorldToScreen (
 	IOBuffer[8] = camera_angles.z
 	
 	IOBuffer[9] = camera_distance
-	IOBuffer[10] = aspect_ratio
+
+	IOBuffer[10] = window_size.x
+	IOBuffer[11] = window_size.y
 
 	return wasm.WorldToScreen() ? new Vector2(IOBuffer[0], IOBuffer[1]) : undefined
 }
@@ -80,7 +84,7 @@ export function ScreenToWorld (
 	camera_position: Vector3 | Vector2,
 	camera_distance: number,
 	camera_angles: QAngle,
-	aspect_ratio: number
+	window_size: Vector2
 ): Vector3 {
 	IOBuffer[0] = screen.x
 	IOBuffer[1] = screen.y
@@ -97,7 +101,9 @@ export function ScreenToWorld (
 	IOBuffer[8] = camera_angles.z
 	
 	IOBuffer[9] = camera_distance
-	IOBuffer[10] = aspect_ratio
+
+	IOBuffer[10] = window_size.x
+	IOBuffer[11] = window_size.y
 
 	wasm.ScreenToWorld()
 	return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2])
