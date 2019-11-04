@@ -74,7 +74,7 @@ let RendererSDK = new (class RendererSDK {
 	}
 	/**
 	 * @param pos world position that needs to be turned to screen position
-	 * @returns screen position, or invalid Vector2 (WorldToScreen(...).IsValid === false)
+	 * @returns screen position, or undefined
 	 */
 	public WorldToScreen(position: Vector2 | Vector3): Vector2 {
 		let vec = WASM.WorldToScreenCached(position)
@@ -82,8 +82,26 @@ let RendererSDK = new (class RendererSDK {
 			vec.MultiplyForThis(this.WindowSize)
 		return vec
 	}
+	/**
+	 * @returns screen position with x and y in range {0, 1}, or undefined
+	 */
 	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1134, camera_angles = new QAngle(60, 90, 0), aspect_ratio = this.WindowSize.x / this.WindowSize.y): Vector2 {
 		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, aspect_ratio)
+	}
+	/**
+	 * @param screen screen position
+	 */
+	public ScreenToWorld(screen: Vector2): Vector3 {
+		let vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
+		vec.x = vec.x - 1
+		vec.y = 1 - vec.y
+		return WASM.ScreenToWorldCached(vec)
+	}
+	/**
+	 * @param screen screen position with x and y in range {0, 1}
+	 */
+	public ScreenToWorldCustom(screen: Vector2, camera_position: Vector2 | Vector3, camera_distance = 1134, camera_angles = new QAngle(60, 90, 0), aspect_ratio = this.WindowSize.x / this.WindowSize.y): Vector3 {
+		return WASM.ScreenToWorld(screen, camera_position, camera_distance, camera_angles, aspect_ratio)
 	}
 	/**
 	 *

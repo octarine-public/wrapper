@@ -2,13 +2,16 @@ import QAngle from "../Base/QAngle"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
 import { RendererSDK } from "../Imports"
-import EventsSDK from "../Managers/Events"
+import UserCmd from "./UserCmd"
 
 var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("~/wrapper.wasm")), {}).exports
 global.wasm = wasm
 wasm._start()
 
 var IOBuffer = new Float32Array(wasm.memory.buffer, wasm.GetIOBuffer())
+global.WASMIOBuffer = IOBuffer
+
+var camera_angles = new QAngle(60, 90, 0)
 
 export function OnDraw() {
 	let camera_position = Vector3.fromIOBuffer(Camera.Position) || new Vector3()
@@ -16,7 +19,9 @@ export function OnDraw() {
 	IOBuffer[1] = camera_position.y
 	IOBuffer[2] = camera_position.z
 
-	let camera_angles = Vector3.fromIOBuffer(Camera.Angle) || new QAngle(60, 90 ,0)
+	let new_camera_angles = QAngle.fromIOBuffer(Camera.Angles)
+	if (new_camera_angles !== undefined)
+		new_camera_angles.CopyTo(camera_angles)
 	IOBuffer[3] = camera_angles.x
 	IOBuffer[4] = camera_angles.y
 	IOBuffer[5] = camera_angles.z
@@ -35,6 +40,14 @@ export function WorldToScreenCached(position: Vector3 | Vector2) {
 	return wasm.WorldToScreenCached() ? new Vector2(IOBuffer[0], IOBuffer[1]) : undefined
 }
 
+export function ScreenToWorldCached(screen: Vector2): Vector3 {
+	IOBuffer[0] = screen.x
+	IOBuffer[1] = screen.y
+	IOBuffer[2] = 0 // depth value? probably useless in dota
+	wasm.ScreenToWorldCached()
+	return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2])
+}
+
 export function WorldToScreen (
 	position: Vector3 | Vector2,
 	camera_position: Vector3 | Vector2,
@@ -49,7 +62,7 @@ export function WorldToScreen (
 	IOBuffer[3] = camera_position.x
 	IOBuffer[4] = camera_position.y
 	IOBuffer[5] = camera_position instanceof Vector2
-		? Vector3.fromIOBuffer(Camera.Position).z - Math.sin(QAngle.fromIOBuffer(Camera.Angle).x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
+		? Vector3.fromIOBuffer(Camera.Position).z - Math.sin(camera_angles.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
 		: camera_position.z
 
 	IOBuffer[6] = camera_angles.x
@@ -60,4 +73,32 @@ export function WorldToScreen (
 	IOBuffer[10] = aspect_ratio
 
 	return wasm.WorldToScreen() ? new Vector2(IOBuffer[0], IOBuffer[1]) : undefined
+}
+
+export function ScreenToWorld (
+	screen: Vector2,
+	camera_position: Vector3 | Vector2,
+	camera_distance: number,
+	camera_angles: QAngle,
+	aspect_ratio: number
+): Vector3 {
+	IOBuffer[0] = screen.x
+	IOBuffer[1] = screen.y
+	IOBuffer[2] = 0 // depth value? probably useless in dota
+
+	IOBuffer[3] = camera_position.x
+	IOBuffer[4] = camera_position.y
+	IOBuffer[5] = camera_position instanceof Vector2
+		? Vector3.fromIOBuffer(Camera.Position).z - Math.sin(camera_angles.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
+		: camera_position.z
+
+	IOBuffer[6] = camera_angles.x
+	IOBuffer[7] = camera_angles.y
+	IOBuffer[8] = camera_angles.z
+	
+	IOBuffer[9] = camera_distance
+	IOBuffer[10] = aspect_ratio
+
+	wasm.ScreenToWorld()
+	return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2])
 }

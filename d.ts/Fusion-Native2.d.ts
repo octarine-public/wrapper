@@ -399,7 +399,7 @@ declare interface Renderer {
 
 declare interface Camera {
 	Distance: number
-	Angle: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
+	Angles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	Position: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
 
