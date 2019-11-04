@@ -196,13 +196,10 @@ let gameInProgress = false
 setInterval(() => {
 	let old_val = Game.IsConnected
 	Game.IsConnected = IsInGame()
-	if (!old_val && Game.IsConnected)
-		EventsSDK.emit("GameConnected", false)
-	if (old_val && !Game.IsConnected)
-		Particles.DeleteAll()
-	if (gameInProgress && !Game.IsConnected) {
+	if (old_val && !Game.IsConnected) {
 		gameInProgress = false
 		EventsSDK.emit("GameEnded", false)
+		Particles.DeleteAll()
 	} else if (!gameInProgress && Game.IsConnected && Game.IsInGame && LocalPlayer !== undefined && LocalPlayer.HeroAssigned) {
 		gameInProgress = true
 		EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)

@@ -26,20 +26,6 @@ import * as EnemyLaneSelection from "./Module/EnemyLaneSelection/Listeners"
 // import * as TopHud from "./Module/TopHud/Entities"
 // Something's wrong with reading file "panorama/images/spellicons/monkey_king_primal_spring_early_png.vtex_c"
 
-function MainInit() {
-	// TopHud.gameStarted()?
-	// TopHud.gameEnded()?
-	Wisp.Init()
-	Jungle.Init()
-	Techies.Init()
-	ParticleHack.Init()
-	EnemyLaneSelection.Init()
-	TimeControllerEnt.Init()
-	Treant.Init()
-	Camp.Init()
-	VBE.Init()
-	VBS.Init()
-}
 EventsSDK.on("Tick", () => {
 	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || !stateMain.value) {
 		return false
@@ -63,8 +49,20 @@ EventsSDK.on("Draw", () => {
 	TimeController.Draw()
 	ParticleHack.OnDraw()
 })
-EventsSDK.on("GameEnded", MainInit)
-EventsSDK.on("GameConnected", MainInit)
+EventsSDK.on("GameEnded", () => {
+	// TopHud.gameStarted()?
+	// TopHud.gameEnded()?
+	Wisp.Init()
+	Jungle.Init()
+	Techies.Init()
+	ParticleHack.Init()
+	EnemyLaneSelection.Init()
+	TimeControllerEnt.Init()
+	Treant.Init()
+	Camp.Init()
+	VBE.Init()
+	VBS.Init()
+})
 EventsSDK.on("UnitAnimation", npc => {
 	if (!stateMain.value || npc === undefined)
 		return

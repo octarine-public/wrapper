@@ -383,7 +383,6 @@ Events.on("SetEntityName", (entity, new_name) => {
 })
 
 interface EventsSDK extends EventEmitter {
-	on(name: "GameConnected", callback: () => void): EventEmitter
 	/**
 	 * Emitted when local hero and local player are available
 	 *
