@@ -3,6 +3,7 @@ import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { default as Input } from "../Managers/InputManager"
 import { QAngle } from "../Imports"
+import * as WASM from "./WASM"
 
 let WindowSize = new Vector2().Invalidate()
 
@@ -76,23 +77,13 @@ let RendererSDK = new (class RendererSDK {
 	 * @returns screen position, or invalid Vector2 (WorldToScreen(...).IsValid === false)
 	 */
 	public WorldToScreen(position: Vector2 | Vector3): Vector2 {
-		position.toIOBuffer()
-		if (position instanceof Vector2)
-			IOBuffer[2] = this.GetPositionHeight(position)
-		return Vector2.fromIOBuffer(Renderer.WorldToScreen())
+		let vec = WASM.WorldToScreenCached(position)
+		if (vec !== undefined)
+			vec.MultiplyForThis(this.WindowSize)
+		return vec
 	}
 	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1134, camera_angles = new QAngle(60, 90, 0), aspect_ratio = this.WindowSize.x / this.WindowSize.y): Vector2 {
-		position.toIOBuffer()
-		if (position instanceof Vector2)
-			IOBuffer[2] = this.GetPositionHeight(position)
-		camera_position.toIOBuffer(3)
-		if (camera_position instanceof Vector2)
-			IOBuffer[5] = this.GetPositionHeight(camera_position)
-		IOBuffer[5] += Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
-		camera_angles.toIOBuffer(6)
-		IOBuffer[9] = camera_distance
-		IOBuffer[10] = aspect_ratio
-		return Vector2.fromIOBuffer(Renderer.WorldToScreenCustom())
+		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, aspect_ratio)
 	}
 	/**
 	 *

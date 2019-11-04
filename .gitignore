@@ -1,6 +1,6 @@
 node_modules/
 configs/
-wasm-source/
+wasm_source/
 
 Fusion-Native2-Loader.exe
 Fusion-Native2-Loader.exe - Shortcut.lnk

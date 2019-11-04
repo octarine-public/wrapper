@@ -15,6 +15,8 @@ import Player from "../Objects/Base/Player"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import AbilityData from "../Objects/DataBook/AbilityData"
 
+import * as WASM from "../Native/WASM"
+
 const EventsSDK: EventsSDK = new EventEmitter()
 export default EventsSDK
 
@@ -38,7 +40,10 @@ Events.on("TeamVisibilityChanged", (npc, newTagged) => {
 	EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
 
-Events.on("Draw", () => EventsSDK.emit("Draw"))
+Events.on("Draw", () => {
+	WASM.OnDraw()
+	EventsSDK.emit("Draw")
+})
 
 Events.on("ParticleCreated", (id, path, particleSystemHandle, attach, target) => EventsSDK.emit(
 	"ParticleCreated", false,

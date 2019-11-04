@@ -195,7 +195,7 @@ EventsSDK.after("Update", (cmd: UserCmd) => {
 	latest_camera_x = cmd.CameraX = camera_vec.x
 	latest_camera_y = cmd.CameraY = camera_vec.y
 
-	let cur_pos = RendererSDK.WorldToScreenCustom(CursorWorldVec, camera_vec.SetZ(RendererSDK.GetPositionHeight(camera_vec.toVector2())))
+	let cur_pos = RendererSDK.WorldToScreenCustom(CursorWorldVec, camera_vec.toVector2())
 	if (cur_pos !== undefined) {
 		cmd.MouseX = cur_pos.x
 		cmd.MouseY = cur_pos.y

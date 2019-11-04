@@ -269,7 +269,7 @@ declare enum DOTAGameUIState_t {
 }
 
 /// GLOBAL OBJECTS
-declare var IOBuffer: Float32Array // 16 floats in size
+declare var IOBuffer: Float32Array // 64 floats in size
 declare var global: any
 
 declare var ConVars: ConVars
@@ -369,18 +369,6 @@ declare interface Particles {
 // must be called only in onDraw!
 declare interface Renderer {
 	readonly WindowSize: boolean // returns Vector2 to IOBuffer offset 0 at get
-
-	/**
-	 * @param pos world position that needs to be turned to screen position
-	 * @returns screen position to IOBuffer if return value is true
-	 */
-	WorldToScreen(): boolean // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
-	/**
-	 * pass pos: Vector3 at IOBuffer offset 0, camera_position: Vector3 at IOBuffer offset 3, camera_angles: QAngle at IOBuffer offset 6, camera_distance: number at IOBuffer offset 9, aspect_ratio: number at IOBuffer offset 10
-	 * returns Vector2 to IOBuffer at offset 0
-	 * @param aspect_ratio it's HIGHLY recommended to pass current window aspect ratio
-	 */
-	WorldToScreenCustom(): boolean
 
 	FilledCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a: number): void
 	OutlinedCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a: number): void
