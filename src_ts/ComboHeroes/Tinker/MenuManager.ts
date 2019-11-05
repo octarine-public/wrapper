@@ -1,6 +1,6 @@
 import { Menu } from "wrapper/Imports"
 //import { DrawDestroyAll } from "./Renderer"
-let menu = Menu.AddEntry(["Heroes","Intelligence", "Tinker"]),
+let menu = Menu.AddEntry(["Heroes", "Tinker"]),
 active = menu.AddToggle("Active", false),
 mainCombo = menu.AddNode("Combo"),//COMBO
 comboKey = mainCombo.AddKeybind("Combo Key"),

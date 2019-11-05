@@ -1,6 +1,6 @@
 import { Menu } from "wrapper/Imports"
 import { DrawDestroyAll } from "./Renderer"
-let MenuCombo = Menu.AddEntry(["Heroes", "Intelligence", "SkyWrath Mage"]),
+let MenuCombo = Menu.AddEntry(["Heroes", "SkyWrath Mage"]),
 	State = MenuCombo.AddToggle("Enable").OnValue(DrawDestroyAll)
 
 let Combo = MenuCombo.AddNode("Combo"),

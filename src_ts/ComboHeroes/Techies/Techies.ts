@@ -1,6 +1,6 @@
 import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, ParticlesSDK, Unit, Utils, Vector3 } from "wrapper/Imports"
 
-let TechiesMenu = Menu.AddEntry(["Heroes", "Intelligence", "Techies"]),
+let TechiesMenu = Menu.AddEntry(["Heroes", "Techies"]),
 	State = TechiesMenu.AddToggle("State"),
 	Explode_seen_mines = TechiesMenu.AddToggle("Explode seen mines"),
 	Explode_expiring_mines = TechiesMenu.AddToggle("Explode expiring mines"),

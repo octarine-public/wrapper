@@ -6,7 +6,7 @@ import InitAbility from "./Extends/Abilities"
 let Items = new InitItems(undefined),
 	Abilities = new InitAbility(undefined)
 
-let Menu = MenuSDK.AddEntry(["Heroes", "Intelligence", "Lina"]),
+let Menu = MenuSDK.AddEntry(["Heroes", "Lina"]),
 	State = Menu.AddToggle("Enable")
 
 let array_ability: string[] = [

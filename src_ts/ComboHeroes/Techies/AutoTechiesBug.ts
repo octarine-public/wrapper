@@ -1,6 +1,6 @@
 import { Ability, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Vector3 } from "wrapper/Imports"
 
-let root = Menu.AddEntry(["Heroes", "Intelligence", "Techies", "5 year old bug"]),
+let root = Menu.AddEntry(["Heroes", "Techies", "5 year old bug"]),
 	state = root.AddToggle("State", true),
 	selected_ability = root.AddSwitcher("Ability to bug", [
 		"techies_stasis_trap",
