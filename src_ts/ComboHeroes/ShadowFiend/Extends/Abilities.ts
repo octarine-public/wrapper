@@ -1,25 +1,32 @@
 import { Hero, Ability, Unit } from "wrapper/Imports"
 import { AbilityBase } from "../../Base/Abilities"
-export default class LinaAbility extends AbilityBase {
+export default class ShadowFiendAbility extends AbilityBase {
 	constructor(unit?: Hero | Unit) {
 		super(unit)
 	}
-	public get DragonSlave(): Ability {
-		let name = "lina_dragon_slave"
+	public get Shadowraze1(): Ability {
+		let name = "nevermore_shadowraze1"
 		if (this.unit === undefined) {
 			return name as any
 		}
 		return this.unit.GetAbilityByName(name)
 	}
-	public get LightStrikeArray(): Ability {
-		let name = "lina_light_strike_array"
+	public get Shadowraze2(): Ability {
+		let name = "nevermore_shadowraze2"
 		if (this.unit === undefined) {
 			return name as any
 		}
 		return this.unit.GetAbilityByName(name)
 	}
-	public get LagunaBlade(): Ability {
-		let name = "lina_laguna_blade"
+	public get Shadowraze3(): Ability {
+		let name = "nevermore_shadowraze3"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetAbilityByName(name)
+	}
+	public get Requiem(): Ability {
+		let name = "nevermore_requiem"
 		if (this.unit === undefined) {
 			return name as any
 		}

@@ -3,8 +3,8 @@ import { Color, Menu as MenuSDK } from "wrapper/Imports"
 import InitItems from "./Extends/Items"
 import InitAbility from "./Extends/Abilities"
 
-let Items = new InitItems(undefined),
-	Abilities = new InitAbility(undefined)
+let Items = new InitItems,
+	Abilities = new InitAbility
 
 let Menu = MenuSDK.AddEntry(["Heroes", "Legion Commander"]),
 	State = Menu.AddToggle("Enable")

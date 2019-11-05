@@ -32,6 +32,10 @@ EventsSDK.on("EntityCreated", x => {
 EventsSDK.on("EntityDestroyed", x => {
 	BaseListeners.EntityDestroyed(x)
 })
+EventsSDK.on("GameStarted", (hero) => {
+	AutoLaugh.GameStarted(hero)
+	AutoTaunt.GameStarted(hero)
+})
 EventsSDK.on("GameEnded", () => {
 	AutoFeed.GameEnded()
 	AutoTaunt.GameEnded()

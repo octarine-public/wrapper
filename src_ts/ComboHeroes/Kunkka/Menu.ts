@@ -3,8 +3,8 @@ import { Menu as MenuSDK, Color } from "wrapper/Imports"
 import InitItems from "./Extends/Items"
 import InitAbility from "./Extends/Abilities"
 
-let Items = new InitItems(undefined),
-	Abilities = new InitAbility(undefined)
+let Items = new InitItems,
+	Abilities = new InitAbility
 
 let Menu = MenuSDK.AddEntry(["Heroes", "Kunkka (Beta)"]),
 	State = Menu.AddToggle("Enable")

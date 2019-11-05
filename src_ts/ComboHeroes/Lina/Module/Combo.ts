@@ -1,4 +1,4 @@
-import { Ability, TickSleeper, Hero, Game } from "wrapper/Imports";
+import { Ability, TickSleeper, Hero } from "wrapper/Imports";
 
 import { Base } from "../Extends/Helper";
 import { Owner, MouseTarget } from "../Listeners";

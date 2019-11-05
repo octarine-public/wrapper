@@ -40,6 +40,7 @@ export function GameEnded() {
 	AutoComboDeleteVars()
 	AutoDisableDeleteVars()
 	LinkenBreakerDeleteVars()
+	MyNameHero = "npc_dota_hero_skywrath_mage"
 }
 
 export function GameStarted(hero: Hero) {
