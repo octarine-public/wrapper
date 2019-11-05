@@ -64,8 +64,8 @@ export function InitCombo() {
 			&& MyHero.Distance2D(target) <= ItemsInit.Sheeps.CastRange
 			&& !comboBreaker
 			&& !target.IsStunned
-			&& (hexDebuff === undefined || !hexDebuff.IsValid || hexDebuff.RemainingTime <= 0.3))
-		{
+			&& (hexDebuff === undefined || !hexDebuff.IsValid || hexDebuff.RemainingTime <= 0.3)
+		){
 			ItemsInit.Sheeps.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
 			return true
@@ -77,8 +77,8 @@ export function InitCombo() {
 			&& Items.IsEnabled(ItemsInit.Orchid.Name)
 			&& ItemsInit.Orchid.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.Orchid.CastRange
-			&& !comboBreaker)
-		{
+			&& !comboBreaker
+		){
 			ItemsInit.Orchid.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
 			return true
@@ -90,8 +90,8 @@ export function InitCombo() {
 			&& Items.IsEnabled(ItemsInit.Bloodthorn.Name)
 			&& ItemsInit.Bloodthorn.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.Bloodthorn.CastRange
-			&& !comboBreaker)
-		{
+			&& !comboBreaker
+		){
 			ItemsInit.Bloodthorn.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
 			return true
@@ -103,7 +103,8 @@ export function InitCombo() {
 			&& AbilityMenu.IsEnabled(Abilities.AncientSeal.Name)
 			&& Abilities.AncientSeal.CanBeCasted()
 			&& MyHero.Distance2D(target) <= Abilities.AncientSeal.CastRange
-			&& !comboBreaker) {
+			&& !comboBreaker
+		) {
 			Abilities.AncientSeal.UseAbility(target)
 			Sleep.Sleep(Abilities.Tick)
 			return true
@@ -116,7 +117,8 @@ export function InitCombo() {
 			&& Items.IsEnabled(ItemsInit.RodofAtos.Name)
 			&& ItemsInit.RodofAtos.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.RodofAtos.CastRange
-			&& !atosDebuff) {
+			&& !atosDebuff
+		) {
 			ItemsInit.RodofAtos.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
 			return true
@@ -154,7 +156,8 @@ export function InitCombo() {
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.Tick)
 				return true
-			} else if (ItemsInit.RodofAtos !== undefined && (ItemsInit.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined) {
+			} else if (ItemsInit.RodofAtos !== undefined && (ItemsInit.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined
+			) {
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.Tick)
 				return true
@@ -167,8 +170,8 @@ export function InitCombo() {
 			&& Items.IsEnabled(ItemsInit.Nullifier.Name)
 			&& ItemsInit.Nullifier.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.Nullifier.CastRange
-			&& !comboBreaker)
-		{
+			&& !comboBreaker
+		){
 			if (ItemsTarget.AeonDisk === undefined) {
 				ItemsInit.Nullifier.UseAbility(target)
 				Sleep.Sleep(ItemsInit.Tick)
@@ -178,7 +181,7 @@ export function InitCombo() {
 				Sleep.Sleep(ItemsInit.Tick)
 				return true
 			} else if (ItemsTarget.AeonDisk !== undefined && !ItemsTarget.AeonDisk.CanBeCasted()) {
-				Abilities.UseMysticFlare(target)
+				ItemsInit.Nullifier.UseAbility(target)
 				Sleep.Sleep(ItemsInit.Tick)
 				return true
 			}
@@ -189,7 +192,8 @@ export function InitCombo() {
 			&& !Base.CancelAbilityRealm(target)
 			&& Items.IsEnabled(ItemsInit.Discord.Name)
 			&& ItemsInit.Discord.CanBeCasted()
-			&& MyHero.Distance2D(target) <= ItemsInit.Discord.CastRange) {
+			&& MyHero.Distance2D(target) <= ItemsInit.Discord.CastRange
+		) {
 			ItemsInit.Discord.UseAbility(target.Position)
 			Sleep.Sleep(ItemsInit.Tick)
 			return true
@@ -201,8 +205,8 @@ export function InitCombo() {
 			&& Items.IsEnabled(ItemsInit.Ethereal.Name)
 			&& ItemsInit.Ethereal.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.Ethereal.CastRange
-			&& !comboBreaker)
-		{
+			&& !comboBreaker
+		){
 			ItemsInit.Ethereal.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
 			return true
@@ -212,7 +216,8 @@ export function InitCombo() {
 		if (ItemsInit.Shivas !== undefined
 			&& Items.IsEnabled(ItemsInit.Shivas.Name)
 			&& ItemsInit.Shivas.CanBeCasted()
-			&& MyHero.Distance2D(target) <= ItemsInit.Shivas.CastRange) {
+			&& MyHero.Distance2D(target) <= ItemsInit.Shivas.CastRange
+		) {
 			ItemsInit.Shivas.UseAbility()
 			Sleep.Sleep(ItemsInit.Tick)
 			return true
@@ -222,7 +227,8 @@ export function InitCombo() {
 			&& AbilityMenu.IsEnabled(Abilities.ConcussiveShot.Name)
 			//&& Base.ConcussiveShotTarget(target, Abilities.ConcussiveShot.TargetHit)
 			&& Abilities.ConcussiveShot.CanBeCasted()
-			&& MyHero.Distance2D(target) <= Abilities.ConcussiveShot.CastRange) {
+			&& MyHero.Distance2D(target) <= Abilities.ConcussiveShot.CastRange
+		) {
 			Abilities.ConcussiveShot.UseAbility(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.ConcussiveShot))
 			return true
@@ -232,8 +238,8 @@ export function InitCombo() {
 			&& !Base.CancelAbilityRealm(target)
 			&& AbilityMenu.IsEnabled(Abilities.ArcaneBolt.Name)
 			&& Abilities.ArcaneBolt.CanBeCasted()
-			&& MyHero.Distance2D(target) <= Abilities.ArcaneBolt.CastRange)
-		{
+			&& MyHero.Distance2D(target) <= Abilities.ArcaneBolt.CastRange
+		){
 			Abilities.ArcaneBolt.UseAbility(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt))
 			return true
@@ -245,8 +251,8 @@ export function InitCombo() {
 			&& Items.IsEnabled("item_dagon_5")
 			&& ItemsInit.Dagon.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.Dagon.CastRange
-			&& !comboBreaker)
-		{
+			&& !comboBreaker
+		){
 			ItemsInit.Dagon.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
 			return true
@@ -258,8 +264,8 @@ export function InitCombo() {
 			&& Items.IsEnabled(ItemsInit.UrnOfShadows.Name)
 			&& ItemsInit.UrnOfShadows.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.UrnOfShadows.CastRange
-			&& !comboBreaker)
-		{
+			&& !comboBreaker
+		){
 			ItemsInit.UrnOfShadows.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
 			return true
@@ -271,8 +277,8 @@ export function InitCombo() {
 			&& Items.IsEnabled(ItemsInit.SpiritVesel.Name)
 			&& ItemsInit.SpiritVesel.CanBeCasted()
 			&& MyHero.Distance2D(target) <= ItemsInit.SpiritVesel.CastRange
-			&& !comboBreaker)
-		{
+			&& !comboBreaker
+		){
 			ItemsInit.SpiritVesel.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
 			return true
