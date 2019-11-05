@@ -27,10 +27,10 @@ function checkCourSelf(stateEnt: Hero) {
 	return localHero !== undefined && localHero === stateEnt && Deliver()
 }
 
-let CastCourAbility = (num: number) => allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
+let CastCourAbility = (num: number) => allyCourier.IsControllable && allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
 
 function CourierState(courier: Courier) {
-	if (courier === undefined) {
+	if (courier === undefined || !courier.IsControllable) {
 		return false
 	}
 	let StateCourEnt = courier.StateHero,
@@ -65,6 +65,7 @@ function AutoShiled(): boolean {
 				ent instanceof Unit
 				&& allyCourier !== undefined
 				&& ent.IsLaneCreep
+				&& allyCourier.IsControllable
 				&& ent.HasAttackCapability()
 				&& ent.IsEnemy(allyCourier)
 				&& allyCourier.IsInRange(ent, ent.AttackRange, true)
@@ -106,9 +107,9 @@ function Deliver(): boolean {
 		return false
 	}
 	let free_slots_local = localEnt.Inventory.GetFreeSlots(0, 8).length,
-		cour_slots_local = allyCourier.Inventory.CountItemByOtherPlayer()
+		cour_slots_local = allyCourier.IsControllable && allyCourier.Inventory.CountItemByOtherPlayer()
 	let items_in_stash = localEnt.Inventory.Stash.reduce((prev, cur) => prev + (cur !== undefined ? 1 : 0), 0)
-	if (items_in_stash > 0 && allyCourier.Inventory.GetFreeSlots(0, 8).length >= items_in_stash
+	if (items_in_stash > 0 && allyCourier.IsControllable && allyCourier.Inventory.GetFreeSlots(0, 8).length >= items_in_stash
 		&& free_slots_local >= (items_in_stash + cour_slots_local)) {
 		CourierState_t.COURIER_STATE_RETURNING_TO_BASE
 		CastCourAbility(7) // courier_take_stash_and_transfer_items
@@ -146,7 +147,7 @@ EventsSDK.on("Tick", () => {
 })
 
 EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof Courier && ent.IsControllable) {
+	if (ent instanceof Courier) {
 		allyCourier = ent
 	}
 	if (ent instanceof Hero) {
