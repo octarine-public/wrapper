@@ -77,10 +77,14 @@ let RendererSDK = new (class RendererSDK {
 	 * @returns screen position, or undefined
 	 */
 	public WorldToScreen(position: Vector2 | Vector3): Vector2 {
-		let vec = WASM.WorldToScreenCached(position)
+		/*let vec = WASM.WorldToScreenCached(position)
 		if (vec !== undefined)
 			vec.MultiplyForThis(this.WindowSize)
-		return vec
+		return vec*/
+		position.toIOBuffer()
+		if (position instanceof Vector2)
+			IOBuffer[2] = this.GetPositionHeight(position)
+		return Vector2.fromIOBuffer(Renderer.WorldToScreen())
 	}
 	/**
 	 * @returns screen position with x and y in range {0, 1}, or undefined
