@@ -1,4 +1,5 @@
 import { Ability, Color, EventsSDK, Game, Item, LocalPlayer, Menu, ParticlesSDK, Vector3 } from "wrapper/Imports"
+import { ImageSelector } from "./wrapper/Menu/Imports"
 
 const menu = Menu.AddEntry(["Visual", "Custom Ranges"]),
 	active = menu.AddToggle("Active"),
@@ -45,53 +46,77 @@ function removeMenu(obj) {
 	obj.clr.tree.parent.RemoveControl(obj.clr.tree)
 	obj.men.parent.RemoveControl(obj.men)
 }
-function OnValAbility(val: Map<string, boolean>, list: Menu.ImageSelector) {
-	val.forEach((val, key) => {
-		const spell = LocalPlayer.Hero.AbilitiesBook.GetAbilityByName(key)
+function OnValAbility(val: ImageSelector) {
+
+	if (LocalPlayer === undefined)
+		return;
+
+	// loop-optimizer: KEEP
+	val.enabled_values.forEach((val, key) => {
+		const spell = LocalPlayer.Hero.GetAbilityByName(key)
 		if (val) {
-			if (spell !== undefined && spell.CastRange > 0 && !abilsParticles.has(spell)) {
+			if (spell !== undefined && getRadius(spell) > 0 && !abilsParticles.has(spell)) {
 				const part = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, LocalPlayer.Hero)
 				ParticlesSDK.SetControlPoint(part, 0, LocalPlayer.Hero.Position)
 				ParticlesSDK.SetControlPoint(part, 2, LocalPlayer.Hero.Position)
-				ParticlesSDK.SetControlPoint(part, 3, new Vector3(spell.CastRange))
+				ParticlesSDK.SetControlPoint(part, 3, new Vector3(getRadius(spell)))
 				ParticlesSDK.SetControlPoint(part, 4, new Vector3(0, 255, 0))
-				abilsRanges.set(spell, spell.CastRange)
+
+				abilsRanges.set(spell, getRadius(spell))
 				abilsParticles.set(spell, part)
-				const men = abColors.AddNode(spell.Name),
-					clr = men.AddColorPicker("Color")
-				abilsColors.set(spell, {men, clr})
+
+				if (!abilsColors.has(spell)) {
+					const men = abColors.AddNode(spell.Name),
+						clr = men.AddColorPicker("Color")
+					abilsColors.set(spell, { men, clr })
+				}
 			}
 		} else if (abilsParticles.has(spell)) {
 			ParticlesSDK.Destroy(abilsParticles.get(spell), true)
-			removeMenu(abilsColors.get(spell))
+			//removeMenu(abilsColors.get(spell))
 			abilsColors.delete(spell)
 			abilsParticles.delete(spell)
 		}
 	})
 }
-function OnValItem(val: Map<string, boolean>, list: Menu.ImageSelector) {
-	val.forEach((val, key) => {
+function OnValItem(val: ImageSelector) {
+	if (LocalPlayer === undefined)
+		return;
+
+	// loop-optimizer: KEEP
+	val.enabled_values.forEach((val, key) => {
 		const spell = LocalPlayer.Hero.Inventory.GetItemByName(key)
 		if (val) {
-			if (spell !== undefined && spell.CastRange > 0 && !itemsParticles.has(spell)) {
+			if (spell !== undefined && getRadius(spell) > 0 && !itemsParticles.has(spell)) {
 				const part = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, LocalPlayer.Hero)
 				ParticlesSDK.SetControlPoint(part, 0, LocalPlayer.Hero.Position)
 				ParticlesSDK.SetControlPoint(part, 2, LocalPlayer.Hero.Position)
-				ParticlesSDK.SetControlPoint(part, 3, new Vector3(spell.CastRange))
+				ParticlesSDK.SetControlPoint(part, 3, new Vector3(getRadius(spell)))
 				ParticlesSDK.SetControlPoint(part, 4, new Vector3(0, 255, 0))
-				itemsRanges.set(spell, spell.CastRange)
+				itemsRanges.set(spell, getRadius(spell))
 				itemsParticles.set(spell, part)
-				const men = itmColors.AddNode(spell.Name),
-					clr = men.AddColorPicker("Color")
-				itemColors.set(spell, {men, clr})
+
+				if (!itemColors.has(spell)) {
+					const men = itmColors.AddNode(spell.Name),
+						clr = men.AddColorPicker("Color")
+					itemColors.set(spell, { men, clr })
+				}
 			}
 		} else if (itemsParticles.has(spell)) {
 			ParticlesSDK.Destroy(itemsParticles.get(spell), true)
-			removeMenu(itemColors.get(spell))
+			//removeMenu(itemColors.get(spell))
 			itemColors.delete(spell)
 			itemsParticles.delete(spell)
 		}
 	})
+}
+const getRadius = (skill: Ability) => {
+	let radius = skill.CastRange;
+
+	if (radius <= 0)
+		radius = skill.AOERadius;
+
+	return radius;
 }
 EventsSDK.on("Draw", () => {
 	if (!active.value || !Game.IsInGame || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)
@@ -108,7 +133,7 @@ EventsSDK.on("Draw", () => {
 		ParticlesSDK.SetControlPoint(fPart, 3, new Vector3(fRange.value))
 		let color = fColor.Color
 		ParticlesSDK.SetControlPoint(fPart, 4, new Vector3(color.r, color.g, color.b))
-	}else {
+	} else {
 		if (fPart !== undefined) {
 			ParticlesSDK.Destroy(fPart, true)
 			fPart = undefined
@@ -126,7 +151,7 @@ EventsSDK.on("Draw", () => {
 		ParticlesSDK.SetControlPoint(sPart, 3, new Vector3(sRange.value))
 		let color = sColor.Color
 		ParticlesSDK.SetControlPoint(sPart, 4, new Vector3(color.r, color.g, color.b))
-	}else {
+	} else {
 		if (sPart !== undefined) {
 			ParticlesSDK.Destroy(sPart, true)
 			sPart = undefined
@@ -137,10 +162,13 @@ EventsSDK.on("Draw", () => {
 		updateItem = false
 	// loop-optimizer: KEEP
 	abilsParticles.forEach((part, spell) => {
-		if (abilsRanges.get(spell) !== spell.CastRange)
+		//console.log(spell.Name);
+		if (abilsRanges.get(spell) !== getRadius(spell))
 			updateAbil = true
 		if (updateAbil)
 			return
+
+		//console.log(spell.Name);
 		ParticlesSDK.SetControlPoint(part, 0, LocalPlayer.Hero.Position)
 		ParticlesSDK.SetControlPoint(part, 2, LocalPlayer.Hero.Position)
 		let color: Color = abilsColors.get(spell).clr.Color
@@ -148,10 +176,12 @@ EventsSDK.on("Draw", () => {
 	})
 	// loop-optimizer: KEEP
 	itemsParticles.forEach((part, spell) => {
-		if (itemsRanges.get(spell) !== spell.CastRange)
+		if (itemsRanges.get(spell) !== getRadius(spell))
 			updateItem = true
 		if (updateItem)
 			return
+
+
 		ParticlesSDK.SetControlPoint(part, 0, LocalPlayer.Hero.Position)
 		ParticlesSDK.SetControlPoint(part, 2, LocalPlayer.Hero.Position)
 		let color: Color = itemColors.get(spell).clr.Color
@@ -160,39 +190,39 @@ EventsSDK.on("Draw", () => {
 	if (updateAbil) {
 		// loop-optimizer: KEEP
 		abilsParticles.forEach((val, spell) => {
-			removeMenu(abilsColors.get(spell))
+			//removeMenu(abilsColors.get(spell))
 			ParticlesSDK.Destroy(val, true)
 		})
 		abilsParticles.clear()
 		abilsColors.clear()
-		OnValAbility(abils.enabled_values, abils)
+		OnValAbility(abils)
 	}
 	if (updateItem) {
 		// loop-optimizer: KEEP
 		itemsParticles.forEach((val, spell) => {
-			removeMenu(itemColors.get(spell))
+			//removeMenu(itemColors.get(spell))
 			ParticlesSDK.Destroy(val, true)
 		})
 		itemsParticles.clear()
 		abilsColors.clear()
-		OnValItem(items.enabled_values, items)
+		OnValItem(items)
 	}
 })
 
-abils.OnValue(() => OnValAbility(abils.enabled_values, abils))
-items.OnValue(() => OnValItem(items.enabled_values, items))
+abils.OnValue(OnValAbility)
+items.OnValue(OnValItem)
 
 function Refresh(arg?) {
 	// loop-optimizer: KEEP
 	abilsParticles.forEach((val, spell) => {
-		removeMenu(abilsColors.get(spell))
+		//removeMenu(abilsColors.get(spell))
 		ParticlesSDK.Destroy(val, true)
 	})
 	abilsParticles.clear()
 	abilsColors.clear()
 	// loop-optimizer: KEEP
 	itemsParticles.forEach((val, spell) => {
-		removeMenu(itemColors.get(spell))
+		//removeMenu(itemColors.get(spell))
 		ParticlesSDK.Destroy(val, true)
 	})
 	itemsParticles.clear()
@@ -209,13 +239,13 @@ function Refresh(arg?) {
 		if (spell !== undefined && spell.Name !== "generic_hidden" && spell.Name.indexOf("special_bonus") === -1 && spell.Name.indexOf("seasonal") === -1 && spell.Name.indexOf("high_five") === -1) {
 			abils.values.push(spell.Name)
 		}
-		if (item !== undefined && item.Name !== undefined && item.CastRange > 0) {
+		if (item !== undefined && item.Name !== undefined && getRadius(item) > 0) {
 			items.values.push(item.Name)
 		}
 	}
 	if (arg !== undefined) {
-		OnValAbility(abils.enabled_values, abils)
-		OnValItem(items.enabled_values, items)
+		OnValAbility(abils)
+		OnValItem(items)
 	}
 	abils.Update()
 	items.Update()
