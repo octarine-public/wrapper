@@ -27,7 +27,7 @@ export function OnDraw() {
 	IOBuffer[5] = camera_angles.z
 	
 	IOBuffer[6] = Camera.Distance || 1134
-	
+
 	IOBuffer[7] = RendererSDK.WindowSize.x
 	IOBuffer[8] = RendererSDK.WindowSize.y
 
@@ -45,7 +45,6 @@ export function WorldToScreenCached(position: Vector3 | Vector2) {
 export function ScreenToWorldCached(screen: Vector2): Vector3 {
 	IOBuffer[0] = screen.x
 	IOBuffer[1] = screen.y
-	IOBuffer[2] = 0 // depth value? probably useless in dota
 	wasm.ScreenToWorldCached()
 	return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2])
 }
@@ -88,22 +87,21 @@ export function ScreenToWorld (
 ): Vector3 {
 	IOBuffer[0] = screen.x
 	IOBuffer[1] = screen.y
-	IOBuffer[2] = 0 // depth value? probably useless in dota
 
-	IOBuffer[3] = camera_position.x
-	IOBuffer[4] = camera_position.y
-	IOBuffer[5] = camera_position instanceof Vector2
+	IOBuffer[2] = camera_position.x
+	IOBuffer[3] = camera_position.y
+	IOBuffer[4] = camera_position instanceof Vector2
 		? Vector3.fromIOBuffer(Camera.Position).z - Math.sin(camera_angles.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
 		: camera_position.z
 
-	IOBuffer[6] = camera_angles.x
-	IOBuffer[7] = camera_angles.y
-	IOBuffer[8] = camera_angles.z
+	IOBuffer[5] = camera_angles.x
+	IOBuffer[6] = camera_angles.y
+	IOBuffer[7] = camera_angles.z
 	
-	IOBuffer[9] = camera_distance
+	IOBuffer[8] = camera_distance
 
-	IOBuffer[10] = window_size.x
-	IOBuffer[11] = window_size.y
+	IOBuffer[9] = window_size.x
+	IOBuffer[10] = window_size.y
 
 	wasm.ScreenToWorld()
 	return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2])
