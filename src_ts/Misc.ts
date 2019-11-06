@@ -170,11 +170,10 @@ global.PrepareUnitOrders = function (order: { // pass Position: Vector3 at IOBuf
 }
 
 let latest_camera_x = 0,
-	latest_camera_y = 0// ,
-// latest_mouse_vec = new Vector3()
-/* let last_camera_vec = new Vector3(),
-	last_mouse_vec = new Vector3(),
-	last_mouse_pos = new Vector2() */
+	latest_camera_y = 0
+// let last_camera_vec = new Vector3(),
+// 	last_mouse_vec = new Vector3(),
+// 	last_mouse_pos = new Vector2()
 EventsSDK.after("Update", (cmd: UserCmd) => {
 	let CursorWorldVec = cmd.VectorUnderCursor,
 		orig_CursorWorldVec = cmd.VectorUnderCursor.Clone(),
@@ -201,34 +200,33 @@ EventsSDK.after("Update", (cmd: UserCmd) => {
 	} else
 		cmd.MouseX = cmd.MouseY = 0.5
 
-	/* 	last_mouse_vec.CopyFrom(cmd.VectorUnderCursor)
-		last_mouse_pos.SetX(cmd.MouseX).SetY(cmd.MouseY).MultiplyForThis(RendererSDK.WindowSize)
-		last_camera_vec.SetX(cmd.CameraX).SetY(cmd.CameraY)
-		last_camera_vec.SetZ(RendererSDK.GetPositionHeight(last_camera_vec.toVector2())) */
+	// last_mouse_vec.CopyFrom(cmd.VectorUnderCursor)
+	// last_mouse_pos.SetX(cmd.MouseX).SetY(cmd.MouseY).MultiplyForThis(RendererSDK.WindowSize)
+	// last_camera_vec.SetX(cmd.CameraX).SetY(cmd.CameraY)
+	// last_camera_vec.SetZ(RendererSDK.GetPositionHeight(last_camera_vec.toVector2()))
 })
-/*
-EventsSDK.on("Draw", () => {
-	RendererSDK.FilledRect(last_mouse_pos.SubtractScalar(5), new Vector2(10, 10), Color.Red)
 
-	let camera_screen_pos = RendererSDK.WorldToScreen(last_camera_vec)
-	if (camera_screen_pos !== undefined)
-		RendererSDK.FilledRect(camera_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Green)
+// EventsSDK.on("Draw", () => {
+// 	RendererSDK.FilledRect(last_mouse_pos.SubtractScalar(5), new Vector2(10, 10), Color.Red)
 
-	let mouse_screen_pos = RendererSDK.WorldToScreen(last_mouse_vec)
-	if (mouse_screen_pos !== undefined)
-		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Blue)
+// 	let camera_screen_pos = RendererSDK.WorldToScreen(last_camera_vec)
+// 	if (camera_screen_pos !== undefined)
+// 		RendererSDK.FilledRect(camera_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Green)
 
-	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(new Vector2(0, 0)))
-	if (mouse_screen_pos !== undefined)
-		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
-	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(new Vector2(RendererSDK.WindowSize.x)))
-	if (mouse_screen_pos !== undefined)
-		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
-	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(new Vector2(0, RendererSDK.WindowSize.y)))
-	if (mouse_screen_pos !== undefined)
-		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
-	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(RendererSDK.WindowSize))
-	if (mouse_screen_pos !== undefined)
-		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
-})
- */
+// 	let mouse_screen_pos = RendererSDK.WorldToScreen(last_mouse_vec)
+// 	if (mouse_screen_pos !== undefined)
+// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Blue)
+
+// 	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(new Vector2(0, 0)))
+// 	if (mouse_screen_pos !== undefined)
+// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
+// 	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(new Vector2(RendererSDK.WindowSize.x)))
+// 	if (mouse_screen_pos !== undefined)
+// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
+// 	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(new Vector2(0, RendererSDK.WindowSize.y)))
+// 	if (mouse_screen_pos !== undefined)
+// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
+// 	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(RendererSDK.WindowSize))
+// 	if (mouse_screen_pos !== undefined)
+// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
+// })

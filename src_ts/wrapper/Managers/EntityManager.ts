@@ -199,6 +199,7 @@ setInterval(() => {
 	if (old_val && !Game.IsConnected) {
 		gameInProgress = false
 		EventsSDK.emit("GameEnded", false)
+		Player.order_queue = []
 		Particles.DeleteAll()
 	} else if (!gameInProgress && Game.IsConnected && Game.IsInGame && LocalPlayer !== undefined && LocalPlayer.HeroAssigned) {
 		gameInProgress = true

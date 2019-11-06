@@ -13,6 +13,7 @@ export default class Player extends Entity {
 		return LocalPlayer !== undefined ? LocalPlayer.m_pBaseEntity.m_quickBuyItems : []
 	}
 
+	public static order_queue: ExecuteOrder[] = []
 	static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
