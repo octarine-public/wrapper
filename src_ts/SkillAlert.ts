@@ -308,46 +308,54 @@ function ReturnAOERadius(owner: Unit, name_ability: string): number {
 EventsSDK.on("EntityCreated", ent => {
 	if (!active.value)
 		return
+
 	if (ent instanceof Ability)
 		abils_list.push(ent)
+
 	if (ent.Name === "npc_dota_thinker") {
 
-		let buff = (ent as Unit).Buffs[0];
+		let owner = ent.Owner as Unit;
 
-		if (buff !== undefined && buff.Owner.IsEnemy()) {
+		if (owner === undefined) {
+			let buff = (ent as Unit).Buffs[0];
 
-			//AbilityOwnerRadius(owner)
-			let rad = 0,
-				own_name = buff.Owner.Name
-			switch (own_name) {
-				case "npc_dota_hero_invoker":
-					rad = ReturnAOERadius(buff.Owner, "invoker_sun_strike")
-					break;
-				case "npc_dota_hero_kunkka":
-					rad = ReturnAOERadius(buff.Owner, "kunkka_torrent")
-					break;
-				case "npc_dota_hero_lina":
-					rad = ReturnAOERadius(buff.Owner, "lina_light_strike_array")
-					break;
-				case "npc_dota_hero_leshrac":
-					rad = ReturnAOERadius(buff.Owner, "leshrac_split_earth")
-					break;
-				case "npc_dota_hero_enigma":
-					rad = ReturnAOERadius(buff.Owner, "enigma_black_hole")
-					break;
-				case "npc_dota_hero_arc_warden":
-					rad = ReturnAOERadius(buff.Owner, "arc_warden_spark_wraith")
-					break;
-				case "npc_dota_hero_alchemist":
-					rad = ReturnAOERadius(buff.Owner, "alchemist_acid_spray")
-					break;
-				case "npc_dota_hero_abyssal_underlord":
-					rad = ReturnAOERadius(buff.Owner, "abyssal_underlord_pit_of_malice")
-					break;
-			}
-			if (rad !== 0) {
-				DrawParticleCirclePos(ent.NetworkPosition, rad, ent.Index)
-			}
+			if (buff.Owner !== undefined)
+				owner = buff.Owner;
+		}
+
+		if (owner === undefined || !owner.IsEnemy())
+			return;
+
+		let rad = 0;
+
+		switch (owner.Name) {
+			case "npc_dota_hero_invoker":
+				rad = ReturnAOERadius(owner, "invoker_sun_strike")
+				break;
+			case "npc_dota_hero_kunkka":
+				rad = ReturnAOERadius(owner, "kunkka_torrent")
+				break;
+			case "npc_dota_hero_lina":
+				rad = ReturnAOERadius(owner, "lina_light_strike_array")
+				break;
+			case "npc_dota_hero_leshrac":
+				rad = ReturnAOERadius(owner, "leshrac_split_earth")
+				break;
+			case "npc_dota_hero_enigma":
+				rad = ReturnAOERadius(owner, "enigma_black_hole")
+				break;
+			case "npc_dota_hero_arc_warden":
+				rad = ReturnAOERadius(owner, "arc_warden_spark_wraith")
+				break;
+			case "npc_dota_hero_alchemist":
+				rad = ReturnAOERadius(owner, "alchemist_acid_spray")
+				break;
+			case "npc_dota_hero_abyssal_underlord":
+				rad = ReturnAOERadius(owner, "abyssal_underlord_pit_of_malice")
+				break;
+		}
+		if (rad !== 0) {
+			DrawParticleCirclePos(ent.NetworkPosition, rad, ent.Index)
 		}
 	}
 })
