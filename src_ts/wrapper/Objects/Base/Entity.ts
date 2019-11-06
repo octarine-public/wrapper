@@ -136,11 +136,6 @@ m_pEntity.m_flags
 export default class Entity {
 	/* ================================ Fields ================================ */
 	public IsValid: boolean = false
-	private readonly NetworkPosition_: Vector3 = new Vector3().Invalidate() // cached networkposition
-	private readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
-	private readonly Angles_ = new QAngle().Invalidate() // cached angles
-	private readonly NetworkAngles_ = new QAngle().Invalidate()// cached network angles
-	private Scale_: number = NaN // cached scale
 	public Name_: string = ""
 	public readonly Entity: CEntityIdentity
 	public Owner_: Entity | C_BaseEntity | number
@@ -148,6 +143,11 @@ export default class Entity {
 	public LifeState = LifeState_t.LIFE_ALIVE
 	public HP = 0
 	public MaxHP = 0
+	private readonly NetworkPosition_: Vector3 = new Vector3().Invalidate() // cached networkposition
+	private readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
+	private readonly Angles_ = new QAngle().Invalidate() // cached angles
+	private readonly NetworkAngles_ = new QAngle().Invalidate()// cached network angles
+	private Scale_: number = NaN // cached scale
 
 	/* ================================ BASE ================================ */
 	constructor(public m_pBaseEntity: C_BaseEntity, public readonly Index: number) {
@@ -280,37 +280,37 @@ export default class Entity {
 	}
 
 	/* ================ METHODS ================ */
-	Distance(vec: Vector3 | Entity): number {
+	public Distance(vec: Vector3 | Entity): number {
 		if (vec instanceof Vector3)
 			return this.NetworkPosition.Distance(vec)
 
 		return this.NetworkPosition.Distance(vec.NetworkPosition)
 	}
-	Distance2D(vec: Vector3 | Vector2 | Entity): number {
+	public Distance2D(vec: Vector3 | Vector2 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.NetworkPosition
 		return this.NetworkPosition.Distance2D(vec)
 	}
-	DistanceSqr(vec: Vector3 | Entity): number {
+	public DistanceSqr(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.NetworkPosition
 		return this.NetworkPosition.DistanceSqr(vec)
 	}
-	DistanceSqr2D(vec: Vector3 | Vector2 | Entity): number {
+	public DistanceSqr2D(vec: Vector3 | Vector2 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.NetworkPosition
 		return this.NetworkPosition.DistanceSqr2D(vec)
 	}
-	AngleBetweenFaces(front: Vector3): number {
+	public AngleBetweenFaces(front: Vector3): number {
 		return this.Forward.AngleBetweenFaces(front)
 	}
-	InFront(distance: number): Vector3 {
+	public InFront(distance: number): Vector3 {
 		return this.Position.Rotation(this.Forward, distance)
 	}
-	InFrontFromAngle(angle: number, distance: number): Vector3 {
+	public InFrontFromAngle(angle: number, distance: number): Vector3 {
 		return this.Position.InFrontFromAngle(this.NetworkRotationRad + angle, distance)
 	}
-	FindRotationAngle(vec: Vector3 | Entity): number {
+	public FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.NetworkPosition
 		return this.NetworkPosition.FindRotationAngle(vec, this.NetworkRotationRad)
@@ -318,10 +318,10 @@ export default class Entity {
 	/**
 	 * faster (Distance <= range)
 	 */
-	IsInRange(ent: Vector3 | Vector2 | Entity, range: number): boolean {
+	public IsInRange(ent: Vector3 | Vector2 | Entity, range: number): boolean {
 		return this.DistanceSqr2D(ent) < range ** 2
 	}
-	Closest(ents: Entity[]): Entity {
+	public Closest(ents: Entity[]): Entity {
 		let thisPos = this.NetworkPosition
 
 		let entity: Entity
@@ -340,7 +340,7 @@ export default class Entity {
 	 * @example
 	 * unit.ClosestGroup(groups, group => Vector3.GetCenterType(creeps, creep => creep.InFront(200)))
 	 */
-	ClosestGroup(groups: Entity[][], callback: (entity: Entity[]) => Vector3): [Entity[], Vector3] {
+	public ClosestGroup(groups: Entity[][], callback: (entity: Entity[]) => Vector3): [Entity[], Vector3] {
 		let thisPos = this.NetworkPosition
 
 		let entities: Entity[] = []
@@ -362,39 +362,39 @@ export default class Entity {
 	/**
 	 * @param ent if undefined => this compare with LocalPlayer
 	 */
-	IsEnemy(ent: Entity = LocalPlayer): boolean {
+	public IsEnemy(ent: Entity = LocalPlayer): boolean {
 		return ent === undefined || ent.Team !== this.Team
 	}
 
-	Select(bAddToGroup: boolean = false): boolean {
+	public Select(bAddToGroup: boolean = false): boolean {
 		return SelectUnit(this.m_pBaseEntity, bAddToGroup)
 	}
 
-	GetRotationTime(vec: Vector3): number {
+	public GetRotationTime(vec: Vector3): number {
 		const turn_rad = Math.PI - 0.25
 		let ang = this.FindRotationAngle(vec)
 		return ang <= turn_rad ? 30 * ang / rotation_speed[this.Name] : 0
 	}
 
-	OnGameSceneNodeChanged(m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_flAbsScale: number) {
+	public OnGameSceneNodeChanged(m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_flAbsScale: number) {
 		m_vecOrigin.CopyTo(this.Position_)
 		m_angAbsRotation.CopyTo(this.Angles_)
 		this.Scale_ = m_flAbsScale
 	}
-	OnNetworkPositionChanged(m_vecOrigin: Vector3) {
+	public OnNetworkPositionChanged(m_vecOrigin: Vector3) {
 		m_vecOrigin.CopyTo(this.NetworkPosition_).CopyTo(this.Position_)
 	}
-	OnNetworkRotationChanged() {
+	public OnNetworkRotationChanged() {
 		let gameSceneNode = this.GameSceneNode
 		if (gameSceneNode === undefined)
 			return
 		QAngle.fromIOBuffer(gameSceneNode.m_angRotation).CopyTo(this.NetworkAngles_).CopyTo(this.Angles_)
 	}
-	OnCreated() {
+	public OnCreated() {
 		this.IsValid = true
 	}
 
-	toString(): string {
+	public toString(): string {
 		return this.Name
 	}
 }

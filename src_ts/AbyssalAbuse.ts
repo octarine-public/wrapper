@@ -1,4 +1,4 @@
-import {EventsSDK, Game, Hero, LocalPlayer, Menu, Modifier } from "wrapper/Imports"
+import { EventsSDK, Game, Hero, LocalPlayer, Menu, Modifier } from "wrapper/Imports"
 
 const menu = Menu.AddEntry(["Utility", "Abyssal Abuser"]),
 	active = menu.AddToggle("Active")
@@ -25,12 +25,8 @@ function checkAbyss() {
 		bashC = true
 		vanguardC = true
 		checkAbys = false
-	}else if (abys === undefined) {
-		if (recipeC || bashC || vanguardC)
-			checkAbys = false
-		else
-			checkAbys = true
-	}
+	} else if (abys === undefined)
+		checkAbys = recipeC !== undefined && bashC !== undefined && vanguardC !== undefined
 }
 EventsSDK.on("Tick", () => {
 	if (!active.value || !Game.IsInGame || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)

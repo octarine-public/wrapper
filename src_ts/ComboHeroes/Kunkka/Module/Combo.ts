@@ -10,14 +10,14 @@ import {
 } from "../Menu"
 
 // import { BreakInit } from "./LinkenBreaker"
-export let ShipCombo: boolean = false
-export let XMarkCastTime: number = 0
-export let ComboTimer: number = 0
-export let XMarkPos: Vector3 = new Vector3
-export let XMarkType: number = 0
+export let ShipCombo = false
+export let XMarkCastTime = 0
+export let ComboTimer = 0
+export let XMarkPos = new Vector3()
+export let XMarkType = 0
 
-let Sleep: TickSleeper = new TickSleeper,
-	AutoCombo: boolean = false,
+let Sleep = new TickSleeper(),
+	AutoCombo = false,
 	DisableStaticTime = 1.6
 
 function CheckAbility(ability: Ability | Item, target: Hero | Vector3): boolean {
@@ -48,16 +48,16 @@ function ComboInit() {
 	let Items = new InitItems(Owner),
 		Abilities = new InitAbility(Owner),
 		Time = Game.RawGameTime
-	let Q = Abilities.Torrent as Ability,
-		X = Abilities.MarksSpot as Ability,
-		R = Abilities.Ghostship as Ability,
-		RX = Abilities.Return as Ability,
-		RF = Items.Refresher as Item,
-		RFS = Items.RefresherShard as Item,
-		SHG = Items.Shivas as Item
+	let Q = Abilities.Torrent,
+		X = Abilities.MarksSpot,
+		R = Abilities.Ghostship,
+		RX = Abilities.Return,
+		RF = Items.Refresher,
+		RFS = Items.RefresherShard,
+		SHG = Items.Shivas
 	if (!XMarkPos.IsZero()) {
-		if(RX !== undefined && RX.IsHidden && X !== undefined && !X.IsInAbilityPhase) {
-			XMarkPos = new Vector3
+		if (RX !== undefined && RX.IsHidden && X !== undefined && !X.IsInAbilityPhase) {
+			XMarkPos = new Vector3()
 			return false
 		}
 	}
@@ -67,7 +67,7 @@ function ComboInit() {
 				Owner.MoveTo(XMarkPos)
 				return false
 			}
-			// if(ConVars.GetInt("dota_player_units_auto_attack_mode") === 1) {
+			// if (ConVars.GetInt("dota_player_units_auto_attack_mode") === 1) {
 			// 	SetAutoAttackMode(0)
 			// }
 			R.UseAbility(XMarkPos)
@@ -103,7 +103,7 @@ function ComboInit() {
 		}
 	}
 	if (ComboTimer - Time <= 0.1) {
-		XMarkPos = new Vector3
+		XMarkPos = new Vector3()
 		ShipCombo = false
 		AutoCombo = false
 		Sleep.ResetTimer()
@@ -134,11 +134,10 @@ export function InitCombo() {
 	if (Base.CanCastSpells(Owner) || target === undefined || target.IsMagicImmune) {
 		return false
 	}
-	if (target !== undefined && !XMarkPos.IsZero()) {
-		XMarkPos = new Vector3
-	}
+	if (target !== undefined && !XMarkPos.IsZero())
+		XMarkPos = new Vector3()
 	let IsStunned = target.GetBuffByName("modifier_bashed"),
-		IsBashed  = target.GetBuffByName("modifier_stunned"),
+		IsBashed = target.GetBuffByName("modifier_stunned"),
 		hexDebuff = target.GetBuffByName("modifier_sheepstick_debuff")
 
 	if (hexDebuff !== undefined && hexDebuff.RemainingTime > 0.3
@@ -150,9 +149,8 @@ export function InitCombo() {
 		}
 	}
 	if (ComboTimer < Time) {
-		if (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect")) || !Base.Cancel(target)) {
+		if (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect")) || !Base.Cancel(target))
 			return false
-		}
 		if (!target.HasModifier("modifier_kunkka_x_marks_the_spot")) {
 			if (ComboKeyItem.is_pressed || AutoCombo) {
 				if (Items.Blink !== undefined
@@ -214,13 +212,11 @@ export function InitCombo() {
 					Sleep.Sleep(Abilities.CastDelay(X) + SetCastDelay())
 				}
 			}
-		}
-		else {
+		} else {
 			ComboInit()
 			return false
 		}
-	}
-	else {
+	} else {
 		ComboInit()
 		return false
 	}
@@ -230,7 +226,7 @@ export function ComboGameEnded() {
 	ShipCombo = false
 	XMarkCastTime = 0
 	ComboTimer = 0
-	XMarkPos = new Vector3
+	XMarkPos = new Vector3()
 	AutoCombo = false
 	DisableStaticTime = 1.6
 	Sleep.ResetTimer()

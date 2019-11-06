@@ -9,10 +9,8 @@ import { stateMain } from "./abstract/Menu.Base"
 
 import * as Camp from "./Module/CampInformer/Entity"
 import * as EnemyLaneSelection from "./Module/EnemyLaneSelection/Listeners"
-import * as JungMapHack from "./Module/JungleMapHack/Particle"
-import * as Jungle from "./Module/JungleMapHack/Particle"
+import * as JungleMapHack from "./Module/JungleMapHack/Particle"
 import * as ParicleMapHack from "./Module/ParticleMapHack/Particle"
-import * as ParticleHack from "./Module/ParticleMapHack/Particle"
 import * as Techies from "./Module/TechiesMapHack/Particle"
 import * as TimeControllerEnt from "./Module/TimeController/Entities"
 import * as TimeController from "./Module/TimeController/Renderer"
@@ -43,19 +41,19 @@ EventsSDK.on("Draw", () => {
 	Camp.OnDraw()
 	Wisp.OnDraw()
 	// TopHud.Draw()
-	Jungle.OnDraw()
+	JungleMapHack.OnDraw()
 	Techies.OnDraw()
 	TowerRange.OnDraw()
 	TimeController.Draw()
-	ParticleHack.OnDraw()
+	ParicleMapHack.OnDraw()
 })
 EventsSDK.on("GameEnded", () => {
 	// TopHud.gameStarted()?
 	// TopHud.gameEnded()?
 	Wisp.Init()
-	Jungle.Init()
+	JungleMapHack.Init()
 	Techies.Init()
-	ParticleHack.Init()
+	ParicleMapHack.Init()
 	EnemyLaneSelection.Init()
 	TimeControllerEnt.Init()
 	Treant.Init()
@@ -66,7 +64,7 @@ EventsSDK.on("GameEnded", () => {
 EventsSDK.on("UnitAnimation", npc => {
 	if (!stateMain.value || npc === undefined)
 		return
-	JungMapHack.UnitAnimationCreate(npc)
+	JungleMapHack.UnitAnimationCreate(npc)
 	TimeControllerEnt.UnitAnimationCreate(npc)
 })
 

@@ -23,7 +23,7 @@ class SleeperBase {
  * Sleeper by Date.now()
  */
 export class Sleeper extends SleeperBase {
-	Sleep(ms: number, key: any, extend: boolean = false): number {
+	public Sleep(ms: number, key: any, extend: boolean = false): number {
 		if (typeof ms !== "number")
 			return this.setTime(key, Date.now())
 
@@ -32,12 +32,12 @@ export class Sleeper extends SleeperBase {
 
 		return this.setTime(key, Date.now() + ms)
 	}
-	Sleeping(key: any): boolean {
+	public Sleeping(key: any): boolean {
 		let sleepID = this.SleepDB.get(key)
 		return sleepID !== undefined && Date.now() < sleepID
 	}
 
-	FullReset(): Sleeper {
+	public FullReset(): Sleeper {
 		this.SleepDB.clear()
 		return this
 	}
@@ -47,7 +47,7 @@ export class Sleeper extends SleeperBase {
  * Sleeper by Game.RawGameTime
  */
 export class GameSleeper extends SleeperBase {
-	Sleep(ms: number, key: any, extend: boolean = false): number {
+	public Sleep(ms: number, key: any, extend: boolean = false): number {
 		if (typeof ms !== "number")
 			return this.setTime(key, Game.RawGameTime)
 
@@ -56,12 +56,12 @@ export class GameSleeper extends SleeperBase {
 
 		return this.setTime(key, Game.RawGameTime + ms / 1000)
 	}
-	Sleeping(key: any): boolean {
+	public Sleeping(key: any): boolean {
 		let sleepID = this.SleepDB.get(key)
 		return sleepID !== undefined && Game.RawGameTime < sleepID
 	}
 
-	FullReset(): GameSleeper {
+	public FullReset(): GameSleeper {
 		this.SleepDB.clear()
 		return this
 	}
@@ -69,14 +69,14 @@ export class GameSleeper extends SleeperBase {
 
 export class TickSleeper {
 	private lastSleepTickCount: number
+	public get Sleeping(): boolean {
+		return this.TickCount < this.lastSleepTickCount;
+	}
 	private get TickCount(): number {
 		if (!Game.IsInGame) {
 			return new Date().getTime() & Number.MAX_VALUE;
 		}
 		return Game.RawGameTime * 1000;
-	}
-	public get Sleeping(): boolean {
-		return this.TickCount < this.lastSleepTickCount;
 	}
 	public Sleep(duration: number): void {
 		this.lastSleepTickCount = this.TickCount + duration;

@@ -1,4 +1,4 @@
-import { Ability, Entity, GameSleeper, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
+import { Ability, Entity, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { Heroes, MyHero } from "../Listeners"
 import { AutoDisableAbilityItems, AutoDisableState, ComboKey, State } from "../Menu"
@@ -6,8 +6,8 @@ import { AutoDisableAbilityItems, AutoDisableState, ComboKey, State } from "../M
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
-let Sleep = new TickSleeper
-let ParticleHandler: Entity | number
+let Sleep = new TickSleeper(),
+	ParticleHandler: Entity | number
 
 function IsValidDisable(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
 	return Name !== undefined

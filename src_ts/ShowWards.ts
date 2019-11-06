@@ -2,7 +2,6 @@ import {
 	ArrayExtensions,
 	Color,
 	Entity,
-	EntityManager,
 	EventsSDK,
 	Game,
 	Hero,
@@ -10,7 +9,6 @@ import {
 	Menu as MenuSDK,
 	ParticlesSDK,
 	RendererSDK,
-	Team,
 	Vector2,
 	Vector3,
 } from "wrapper/Imports"
@@ -29,16 +27,16 @@ optionEnable.OnValueChangedCBs.push(() => {
 
 let wardCaptureTiming = 0
 
-let wardDispenserCount: Array<{
+let wardDispenserCount: {
 	sentry: number,
 	observer: number,
-}> = []
-let wardProcessingTable: Array<{
+}[] = []
+let wardProcessingTable: {
 	dieTime: number,
 	type: "observer" | "sentry",
 	pos: Vector3,
 	unit: Hero,
-}> = []
+}[] = []
 
 let heroes: Hero[] = []
 
@@ -67,7 +65,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 
 	if (is_observer || is_sentry) {
 		// loop-optimizer: KEEP
-		let nearest_ward = ArrayExtensions.orderBy (
+		let nearest_ward = ArrayExtensions.orderBy(
 			wardProcessingTable.filter(ward => (is_observer && ward.type === "observer") || (is_sentry && ward.type === "sentry")),
 			ward => ent.Distance(ward.pos),
 		)[0]
@@ -82,7 +80,7 @@ function PingEnemyWard(pos: Vector3, hero: Entity) {
 	//	Minimap.SendPing(PingType_t.ENEMY_VISION, false, hero.m_pBaseEntity);
 	//}
 
-	let map_ping = ParticlesSDK.Create (
+	let map_ping = ParticlesSDK.Create(
 		"particles/ui_mouseactions/ping_enemyward.vpcf",
 		ParticleAttachment_t.PATTACH_WORLDORIGIN,
 		hero,
@@ -98,7 +96,7 @@ function PingEnemyWard(pos: Vector3, hero: Entity) {
 }
 
 EventsSDK.on("Update", () => {
-	if(LocalPlayer === undefined) {
+	if (LocalPlayer === undefined) {
 		return false
 	}
 	if (!optionEnable.value || LocalPlayer.IsSpectator) {
@@ -137,8 +135,7 @@ EventsSDK.on("Update", () => {
 			if (sentry_stack === 0 && observer_stack === 0) {
 				if (wardDispenserCount[owner_idx] === undefined) {
 					wardCaptureTiming = Game.GameTime
-				}
-				else {
+				} else {
 					let ward_type: "sentry" | "observer"
 
 					if (wardDispenserCount[owner_idx].sentry > sentry_stack)
@@ -164,16 +161,14 @@ EventsSDK.on("Update", () => {
 
 			if (wardDispenserCount[owner_idx] === undefined) {
 				if (sentry_stack > 0 || observer_stack > 0) {
-					wardDispenserCount[owner_idx] =
-						{
-							sentry: sentry_stack,
-							observer: observer_stack,
-						}
+					wardDispenserCount[owner_idx] = {
+						sentry: sentry_stack,
+						observer: observer_stack,
+					}
 
 					wardCaptureTiming = Game.GameTime
 				}
-			}
-			else {
+			} else {
 				if (!(
 					wardDispenserCount[owner_idx].sentry < sentry_stack ||
 					wardDispenserCount[owner_idx].observer < observer_stack
@@ -182,19 +177,17 @@ EventsSDK.on("Update", () => {
 
 					if (wardDispenserCount[owner_idx].sentry > sentry_stack) {
 						ward_type = "sentry"
-					}
-					else if (wardDispenserCount[owner_idx].observer > observer_stack) {
+					} else if (wardDispenserCount[owner_idx].observer > observer_stack) {
 						ward_type = "observer"
 					}
 
 					if (ward_type !== undefined) {
-						wardProcessingTable[unique_id] =
-							{
-								type: ward_type,
-								pos: hero.Position,
-								dieTime: Math.floor(Game.GameTime + 360),
-								unit: hero,
-							}
+						wardProcessingTable[unique_id] = {
+							type: ward_type,
+							pos: hero.Position,
+							dieTime: Math.floor(Game.GameTime + 360),
+							unit: hero,
+						}
 
 						PingEnemyWard(hero.Position, hero)
 					}
@@ -215,7 +208,7 @@ EventsSDK.on("Update", () => {
 })
 
 EventsSDK.on("Draw", () => {
-	if(LocalPlayer === undefined) {
+	if (LocalPlayer === undefined) {
 		return false
 	}
 	if (!optionEnable.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
@@ -232,7 +225,7 @@ EventsSDK.on("Draw", () => {
 
 		if (screen_pos === undefined)
 			return
-		RendererSDK.Image (
+		RendererSDK.Image(
 			"panorama\\images\\icon_ward_psd.vtex_c",
 			new Vector2(screen_pos.x - 15, screen_pos.y - 15),
 			new Vector2(30, 30),
@@ -240,7 +233,7 @@ EventsSDK.on("Draw", () => {
 		)
 
 		let seconds = Math.floor(v.dieTime - Game.GameTime)
-		RendererSDK.Text (
+		RendererSDK.Text(
 			Math.floor(seconds / 60) + ":" + ((seconds % 60) < 10 ? "0" : "") + seconds % 60,
 			new Vector2(screen_pos.x - 15, screen_pos.y + 15),
 		)

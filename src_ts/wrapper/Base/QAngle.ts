@@ -2,7 +2,7 @@ import Vector3 from "./Vector3"
 
 export default class QAngle extends Vector3 {
 	/* ================== Static ================== */
-	static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): QAngle {
+	public static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): QAngle {
 		if (bufferOrOffset === undefined)
 			return new QAngle(IOBuffer[0], IOBuffer[1], IOBuffer[2])
 
@@ -16,7 +16,7 @@ export default class QAngle extends Vector3 {
 		return new QAngle(IOBuffer[bufferOrOffset + 0], IOBuffer[bufferOrOffset + 1], IOBuffer[bufferOrOffset + 2])
 	}
 
-	toString(): string {
+	public toString(): string {
 		return "QAngle(" + this.x + "," + this.y + "," + this.z + ")"
 	}
 }

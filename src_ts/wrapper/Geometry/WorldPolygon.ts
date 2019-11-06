@@ -8,9 +8,6 @@ export class WorldPolygon {
 	constructor(...points: Vector3[]) {
 		this.Points = points
 	}
-	private AddPoint(point: Vector3) {
-		this.Points.push(point)
-	}
 	public Add(polygon: WorldPolygon | Vector3): void {
 		if (polygon instanceof WorldPolygon) {
 			// loop-optimizer: FORWARD
@@ -31,6 +28,9 @@ export class WorldPolygon {
 	}
 	public IsOutside(point: Vector3) {
 		return this.PointInPolygon(point) !== 0
+	}
+	private AddPoint(point: Vector3) {
+		this.Points.push(point)
 	}
 	private PointInPolygon(point: Vector3): number {
 		if (this.Points.length < 3)

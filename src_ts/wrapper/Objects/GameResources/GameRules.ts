@@ -11,16 +11,6 @@ let Game = global.Game = new (class Game {
 	public UIState = GetUIState()
 	public RawGameTime = 0
 	public IsPaused = false
-
-	public GetLatency(flow: Flow_t = Flow_t.IN) {
-		return GetLatency(flow)
-	}
-	public GetAvgLatency(flow: Flow_t = Flow_t.IN) {
-		return GetAvgLatency(flow)
-	}
-	public ExecuteCommand(command: string) {
-		return SendToConsole(command)
-	}
 	public get ExpectedPlayers(): number {
 		let gameRules = this.m_GameRules
 
@@ -150,6 +140,16 @@ let Game = global.Game = new (class Game {
 			stockInfo = this.m_StockInfo = this.m_GameRules.m_vecItemStockInfo.map(info => new StockInfo(info))
 
 		return stockInfo
+	}
+
+	public GetLatency(flow: Flow_t = Flow_t.IN) {
+		return GetLatency(flow)
+	}
+	public GetAvgLatency(flow: Flow_t = Flow_t.IN) {
+		return GetAvgLatency(flow)
+	}
+	public ExecuteCommand(command: string) {
+		return SendToConsole(command)
 	}
 })()
 export default Game

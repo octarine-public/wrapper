@@ -17,28 +17,7 @@ enum CommandID {
 	IMAGE,
 	TEXT,
 }
-let RendererSDK = new (class RendererSDK {
-	private commandCache = new Uint8Array()
-	private last_color = new Color(-1, -1, -1, -1)
-
-	private AllocateCommandSpace(bytes: number): DataView {
-		let current_len = this.commandCache.byteLength
-		let buf = new Uint8Array(current_len + 1 + bytes)
-		buf.set(this.commandCache, 0)
-		return new DataView((this.commandCache = buf).buffer, current_len)
-	}
-	private SetColor(color: Color): void {
-		if (this.last_color.Equals(color))
-			return
-		this.last_color = color
-		let view = this.AllocateCommandSpace(4)
-		let off = 0
-		view.setUint8(off, CommandID.SET_COLOR)
-		view.setUint8(off += 1, Math.min(color.r, 255))
-		view.setUint8(off += 1, Math.min(color.g, 255))
-		view.setUint8(off += 1, Math.min(color.b, 255))
-		view.setUint8(off += 1, Math.min(color.a, 255))
-	}
+let RendererSDK_ = new (class RendererSDK {
 	private static StringToUTF8(str): Uint8Array {
 		let buf = new Uint8Array(str.length)
 		for (let i = str.length; i--;)
@@ -64,6 +43,8 @@ let RendererSDK = new (class RendererSDK {
 	 * @param vecSize Height as Y
 	 */
 	public readonly DefaultShapeSize: Vector2 = new Vector2(5, 5)
+	private commandCache = new Uint8Array()
+	private last_color = new Color(-1, -1, -1, -1)
 	/**
 	 * Cached. Updating every 5 sec
 	 */
@@ -290,15 +271,15 @@ let RendererSDK = new (class RendererSDK {
 		this.Text(text, vecMouse, color, font_name, font, flags)
 	}
 	/**
-	* Draws icon at minimap
-	* @param icon_name can be found at https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/game/dota/pak01_dir/scripts/mod_textures.txt
-	* @param size you can get that value for heroes from ConVars.GetInt("dota_minimap_hero_size")
-	* @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
-	* @param end_time Changing it to 1 will hide icon from minimap if you're not calling it repeatedly in Draw event.
-	* @param end_time If it's <= 0 it'll be infinity for DotA.
-	* @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
-	*/
-	public DrawMiniMapIcon(name: string, worldPos: Vector3, size: number = 800, color: Color = new Color(255, 255, 255), end_time: number = 1) {
+	 * Draws icon at minimap
+	 * @param icon_name can be found at https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/game/dota/pak01_dir/scripts/mod_textures.txt
+	 * @param size you can get that value for heroes from ConVars.GetInt("dota_minimap_hero_size")
+	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
+	 * @param end_time Changing it to 1 will hide icon from minimap if you're not calling it repeatedly in Draw event.
+	 * @param end_time If it's <= 0 it'll be infinity for DotA.
+	 * @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
+	 */
+	public DrawMiniMapIcon(name: string, worldPos: Vector3, size = 800, color = new Color(255, 255, 255), end_time = 1) {
 		worldPos.toIOBuffer(0)
 		color.toIOBuffer(3)
 		Minimap.DrawIcon(name, size, end_time, 0x80000000)
@@ -326,8 +307,27 @@ let RendererSDK = new (class RendererSDK {
 		else if (res >= 2.2 && res <= 2.4)
 			return "21x9"
 	}
+
+	private AllocateCommandSpace(bytes: number): DataView {
+		let current_len = this.commandCache.byteLength
+		let buf = new Uint8Array(current_len + 1 + bytes)
+		buf.set(this.commandCache, 0)
+		return new DataView((this.commandCache = buf).buffer, current_len)
+	}
+	private SetColor(color: Color): void {
+		if (this.last_color.Equals(color))
+			return
+		this.last_color = color
+		let view = this.AllocateCommandSpace(4)
+		let off = 0
+		view.setUint8(off, CommandID.SET_COLOR)
+		view.setUint8(off += 1, Math.min(color.r, 255))
+		view.setUint8(off += 1, Math.min(color.g, 255))
+		view.setUint8(off += 1, Math.min(color.b, 255))
+		view.setUint8(off += 1, Math.min(color.a, 255))
+	}
 })()
 
 Events.after("Draw", () => WindowSize = Vector2.fromIOBuffer(Renderer.WindowSize))
 
-export default global.RendererSDK = RendererSDK
+export default global.RendererSDK = RendererSDK_

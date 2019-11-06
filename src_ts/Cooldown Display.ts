@@ -2,14 +2,12 @@ import {
 	Ability,
 	ArrayExtensions,
 	Color,
-	EntityManager,
 	EventsSDK,
 	Game,
 	Hero,
 	LocalPlayer,
 	Menu as MenuSDK,
 	RendererSDK,
-	Team,
 	Vector2,
 } from "wrapper/Imports"
 
@@ -25,10 +23,10 @@ const Menu = MenuSDK.AddEntry(["Visual", "Cooldown Display"]),
 	optionFontOutlined = Menu.AddToggle("Font outlined"),
 	DrawRGBA = Menu.AddColorPicker("Color ability level", new Color(0, 255, 255))
 
-	Menu.AddButton("Reset position").OnValue(() => {
-		optionBoxPixelOffset.value = 0
-		optionBoxWorldOffset.value = -50
-	})
+Menu.AddButton("Reset position").OnValue(() => {
+	optionBoxPixelOffset.value = 0
+	optionBoxWorldOffset.value = -50
+})
 
 let ignore_abils = [
 	"morphling_morph_agi",
@@ -202,7 +200,7 @@ function DrawDisplay(hero: Hero) {
 }
 
 EventsSDK.on("Draw", () => {
-	if(LocalPlayer === undefined) {
+	if (LocalPlayer === undefined) {
 		return false
 	}
 	if (!optionEnable.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator)

@@ -27,7 +27,7 @@ export default class Color {
 
 		return new Color(IOBuffer[bufferOrOffset + 0], IOBuffer[bufferOrOffset + 1], IOBuffer[bufferOrOffset + 2], IOBuffer[bufferOrOffset + 3])
 	}
-	static CopyFrom(color: Color): Color {
+	public static CopyFrom(color: Color): Color {
 		return new Color(color.r, color.g, color.b, color.a);
 	}
 	/* ================ Constructors ================ */
@@ -43,7 +43,7 @@ export default class Color {
 	/**
 	 * Set Color by numbers
 	 */
-	SetColor(r: number = 0, g: number = 0, b: number = 0, a: number = 255): Color {
+	public SetColor(r: number = 0, g: number = 0, b: number = 0, a: number = 255): Color {
 		this.r = r
 		this.g = g
 		this.b = b
@@ -53,37 +53,37 @@ export default class Color {
 	/**
 	 * Set R of color by number
 	 */
-	SetR(r: number): Color {
+	public SetR(r: number): Color {
 		this.r = r
 		return this
 	}
 	/**
 	 * Set G of color by number
 	 */
-	SetG(g: number): Color {
+	public SetG(g: number): Color {
 		this.g = g
 		return this
 	}
 	/**
 	 * Set B of color by number
 	 */
-	SetB(b: number): Color {
+	public SetB(b: number): Color {
 		this.b = b
 		return this
 	}
 	/**
 	 * Set A of color by number
 	 */
-	SetA(a: number): Color {
+	public SetA(a: number): Color {
 		this.a = a
 		return this
 	}
 
-	Equals(col: Color): boolean {
+	public Equals(col: Color): boolean {
 		return this.r === col.r && this.g === col.g && this.b === col.b && this.a === col.a
 	}
 
-	Clone(): Color {
+	public Clone(): Color {
 		return new Color(this.r, this.g, this.b, this.a);
 	}
 
@@ -92,7 +92,7 @@ export default class Color {
 	 * @param vec The another color
 	 * @returns another color
 	 */
-	CopyTo(color: Color): Color {
+	public CopyTo(color: Color): Color {
 		color.r = this.r;
 		color.g = this.g;
 		color.b = this.b;
@@ -103,7 +103,7 @@ export default class Color {
 	 * @param vec The another color
 	 * @returns this color
 	 */
-	CopyFrom(color: Color): Color {
+	public CopyFrom(color: Color): Color {
 		this.r = color.r;
 		this.g = color.g;
 		this.b = color.b;
@@ -116,17 +116,17 @@ export default class Color {
 	 * Color to String Color
 	 * @return Color(r,g,b,a)
 	 */
-	toString(): string {
+	public toString(): string {
 		return "Color(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")"
 	}
 	/**
 	 * @return [r, g, b, a]
 	 */
-	toArray(): [number, number, number, number] {
+	public toArray(): [number, number, number, number] {
 		return [this.r, this.g, this.b, this.a]
 	}
 
-	toIOBuffer(offset: number = 0): true {
+	public toIOBuffer(offset: number = 0): true {
 		IOBuffer[offset + 0] = this.r
 		IOBuffer[offset + 1] = this.g
 		IOBuffer[offset + 2] = this.b

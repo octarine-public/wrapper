@@ -13,7 +13,7 @@ export default class Rune extends Entity {
 		return this.m_pBaseEntity.m_bShowingTooltip
 	}
 
-	HasType(type: DOTA_RUNES): boolean {
+	public HasType(type: DOTA_RUNES): boolean {
 		return this.Type === type
 	}
 }

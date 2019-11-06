@@ -10,24 +10,24 @@ export default class ModifiersBook {
 		return this.m_Buffs // .filter(buff => !buff.m_pBuff.m_bMarkedForDeletion);
 	}
 
-	GetBuffByID(id: number): Modifier {
+	public GetBuffByID(id: number): Modifier {
 		return this.m_Buffs.find(buff => buff.Index === id)
 	}
-	GetBuffByName(name: string): Modifier {
+	public GetBuffByName(name: string): Modifier {
 		return this.Buffs.find(buff => buff.Name === name)
 	}
-	GetBuffByRegexp(regex: RegExp): Modifier {
+	public GetBuffByRegexp(regex: RegExp): Modifier {
 		return this.Buffs.find(buff => regex.test(buff.Name))
 	}
-	GetAnyBuffByNames(names: string[]): Modifier {
+	public GetAnyBuffByNames(names: string[]): Modifier {
 		let buff: Modifier
 		names.some(name => (buff = this.GetBuffByName(name)) !== undefined)
 		return buff
 	}
-	HasBuffByName(name: string): boolean {
+	public HasBuffByName(name: string): boolean {
 		return this.Buffs.some(buff => buff.Name === name)
 	}
-	HasAnyBuffByNames(names: string[]): boolean {
+	public HasAnyBuffByNames(names: string[]): boolean {
 		return names.some(name => this.GetBuffByName(name) !== undefined)
 	}
 }

@@ -4,23 +4,19 @@ import { MouseTarget, Owner } from "./Listeners"
 import { DrawTargetItem, State } from "./Menu"
 
 let targetParticle: number
-let Sleep = new GameSleeper
+let Sleep = new GameSleeper()
 
 export function Draw() {
-	if (LocalPlayer === undefined) {
+	if (LocalPlayer === undefined)
 		return false
-	}
-	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
+	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator)
 		return false
-	}
 	// Target
 	if (DrawTargetItem.value) {
-		if (targetParticle === undefined && MouseTarget !== undefined) {
+		if (targetParticle === undefined && MouseTarget !== undefined)
 			targetParticle = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, MouseTarget)
-		}
-		if (targetParticle !== undefined) {
+		if (targetParticle !== undefined)
 			DrawTarget()
-		}
 	}
 }
 

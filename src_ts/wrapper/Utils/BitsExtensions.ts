@@ -1,4 +1,4 @@
-let masksBigInt: Array<bigint> = new Array(64),
+let masksBigInt: bigint[] = new Array(64),
 	masksNumber: number[] = new Array(64)
 
 for (let i = 64; i--;)

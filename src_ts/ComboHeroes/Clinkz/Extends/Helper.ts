@@ -5,14 +5,24 @@ import { AeonDiscItem } from "../Menu"
 import InitItems from "./Items"
 
 class ClinkzHelper {
-	public IsRestrictions(State: Menu.Toggle) {
-		return State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
-	}
+	private CancelModifiers: string[] = [
+		"modifier_item_blade_mail_reflect",
+		"modifier_item_combo_breaker_buff",
+		"modifier_winter_wyvern_winters_curse_aura",
+		"modifier_winter_wyvern_winters_curse",
+		"modifier_oracle_fates_edict",
+	]
+	private CancelModifiersItems: string[] = [
+		"modifier_item_lotus_orb_active",
+	]
 	public get DeadInSide(): boolean {
 		return Heroes.length === 0
 			|| Owner === undefined
 			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
 			|| !Owner.IsAlive
+	}
+	public IsRestrictions(State: Menu.Toggle) {
+		return State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
 	}
 	public AeonDisc(target: Hero, menu: boolean = true): boolean {
 		if (!AeonDiscItem.value && menu) {
@@ -45,15 +55,5 @@ class ClinkzHelper {
 		// todo qop talent somehow ?
 		return false
 	}
-	private CancelModifiers: string[] = [
-		"modifier_item_blade_mail_reflect",
-		"modifier_item_combo_breaker_buff",
-		"modifier_winter_wyvern_winters_curse_aura",
-		"modifier_winter_wyvern_winters_curse",
-		"modifier_oracle_fates_edict",
-	]
-	private CancelModifiersItems: string[] = [
-		"modifier_item_lotus_orb_active",
-	]
 }
 export let Base = new ClinkzHelper()

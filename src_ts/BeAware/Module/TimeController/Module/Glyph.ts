@@ -17,10 +17,11 @@ import {
 	GliphSwitcherTeam,
 } from "../Menu"
 
-let Base: ManagerBase = new ManagerBase
+let Base = new ManagerBase()
 
 function RenderIcon(position_unit: Vector2, path_icon: string, ShrineStateIconColor: any) {
-	RendererSDK.Image(path_icon,
+	RendererSDK.Image(
+		path_icon,
 		position_unit.SubtractScalar(DrawTextSize.value / 4).Clone().AddScalarY(8).AddScalarX(-25),
 		new Vector2(42 / 2, 42 / 2), ShrineStateIconColor.Color,
 	)
@@ -68,7 +69,7 @@ export function DrawGlyph() {
 			}
 		})
 		if (DrawTimerGliphState.value && LocalPlayer !== undefined)
-			Base.DrawTimer (
+			Base.DrawTimer(
 				LocalPlayer.Team !== Team.Radiant
 					? Game.GlyphCooldownRediant
 					: Game.GlyphCooldownDire,

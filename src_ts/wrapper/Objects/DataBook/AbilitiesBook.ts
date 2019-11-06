@@ -5,7 +5,7 @@ import Unit from "../Base/Unit"
 const MAX_SKILLS = 31
 
 export default class AbilitiesBook {
-	public Spells_: Array<Ability | C_BaseEntity | number>
+	public Spells_: (Ability | C_BaseEntity | number)[]
 
 	constructor(public readonly Owner: Unit) {
 		// loop-optimizer: FORWARD
@@ -33,14 +33,14 @@ export default class AbilitiesBook {
 		return spells;
 	} */
 
-	GetSpell(slot: number): Ability {
+	public GetSpell(slot: number): Ability {
 		if (!this.Owner.IsValid || slot > MAX_SKILLS)
 			return undefined
 
 		return this.Spells[slot]
 	}
 
-	GetAbilityByName(name: string | RegExp): Ability {
+	public GetAbilityByName(name: string | RegExp): Ability {
 		return this.Spells.find(abil =>
 			abil !== undefined
 			&& (

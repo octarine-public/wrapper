@@ -5,12 +5,29 @@
 	],
 	"jsRules": {},
 	"rules": {
-		"semicolon": [false, "never"],
+		"semicolon": [
+			false,
+			"never"
+		],
 		"no-trailing-whitespace": true,
-		"whitespace": [true, "check-preblock"],
-		"indent": [true, "tabs", 1],
-		"curly": "as-needed",
-		"arrow-parens": [true, "ban-single-arg-parens"],
+		"whitespace": [
+			true,
+			"check-preblock",
+			"check-module"
+		],
+		"indent": [
+			true,
+			"tabs",
+			1
+		],
+		"curly": [
+			false,
+			"as-needed"
+		],
+		"arrow-parens": [
+			true,
+			"ban-single-arg-parens"
+		],
 		"max-line-length": false,
 		"object-literal-sort-keys": false,
 		"one-variable-per-declaration": false,
@@ -31,13 +48,29 @@
 		"max-classes-per-file": false,
 		"class-name": false,
 		"unified-signatures": false,
-		"one-line": [true, "check-catch", "check-finally", "check-else", "check-open-brace", "check-whitespace"],
-		"member-ordering": [true, {
-			"order": "fields-first"
-		}]
+		"one-line": [
+			true,
+			"check-catch",
+			"check-finally",
+			"check-else",
+			"check-open-brace",
+			"check-whitespace"
+		],
+		"member-ordering": [
+			true,
+			{
+				"order": "statics-first",
+				"alphabetize": false
+			}
+		],
+		"comment-format": false,
+		"no-implicit-dependencies": false,
+		"no-submodule-imports": false
 	},
 	"rulesDirectory": [],
 	"linterOptions": {
-		"exclude": ["**/node_modules/**"]
+		"exclude": [
+			"**/node_modules/**"
+		]
 	}
 }

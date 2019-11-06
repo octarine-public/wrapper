@@ -189,23 +189,23 @@ export default class Ability extends Entity {
 		return this.GetCastDelay(position) + ((time + ActivationDelay) * 1000)
 	}
 
-	GetDamage(target: Unit): number {
+	public GetDamage(target: Unit): number {
 		return target.CalculateDamage((this.AbilityDamage || this.GetSpecialValue("damage")) * 1, this.DamageType, this.Owner)
 	}
 
-	UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
+	public UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
 		this.Owner.UseSmartAbility(this, target, checkToggled, queue, showEffects)
 	}
 
-	UpgradeAbility() {
+	public UpgradeAbility() {
 		return this.Owner.TrainAbility(this)
 	}
 
-	PingAbility() {
+	public PingAbility() {
 		return this.Owner.PingAbility(this)
 	}
 
-	GetSpecialValue(special_name: string, level: number = this.Level - 1): number {
+	public GetSpecialValue(special_name: string, level: number = this.Level - 1): number {
 		if (level < 0)
 			return 0
 		let cache = this.AbilityData.SpecialValueCache[special_name]
@@ -216,22 +216,22 @@ export default class Ability extends Entity {
 		}
 		return cache[level] || (cache[level] = this.m_pBaseEntity.GetSpecialValue(special_name, level))
 	}
-	IsManaEnough(bonusMana: number = 0): boolean {
+	public IsManaEnough(bonusMana: number = 0): boolean {
 		return (this.Owner.Mana + bonusMana) >= this.ManaCost
 	}
-	HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
+	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
 		return HasMaskBigInt(this.AbilityData.m_pAbilityData.m_iAbilityBehavior, BigInt(flag))
 	}
-	HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
+	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
 		return HasMask(this.AbilityData.m_pAbilityData.m_iAbilityTargetFlags, flag)
 	}
-	HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {
+	public HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {
 		return HasMask(this.AbilityData.m_pAbilityData.m_iAbilityTargetTeam, flag)
 	}
-	HasTargetType(flag: DOTA_UNIT_TARGET_TYPE): boolean {
+	public HasTargetType(flag: DOTA_UNIT_TARGET_TYPE): boolean {
 		return HasMask(this.AbilityData.m_pAbilityData.m_iAbilityTargetType, flag)
 	}
-	CanBeCasted(bonusMana: number = 0): boolean {
+	public CanBeCasted(bonusMana: number = 0): boolean {
 		if (!this.IsValid || !this.IsReady) {
 			return false
 		}

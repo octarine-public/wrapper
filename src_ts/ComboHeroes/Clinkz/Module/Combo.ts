@@ -1,4 +1,4 @@
-import { Game, GameSleeper, TickSleeper, Unit, Utils } from "wrapper/Imports"
+import { GameSleeper, TickSleeper, Unit, Utils } from "wrapper/Imports"
 
 import { Base } from "../Extends/Helper"
 import { MouseTarget, Owner } from "../Listeners"
@@ -9,16 +9,15 @@ import InitItems from "../Extends/Items"
 import { BladeMailItem, BlinkRadius, ComboKeyItem, HarassModeCombo, State, СomboAbility, СomboItems } from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
 
-let Sleep = new TickSleeper,
-	GameSleep = new GameSleeper
+let Sleep = new TickSleeper(),
+	GameSleep = new GameSleeper()
 
 function HitAndRun(unit: Unit, mode: boolean = false) {
 	Owner.MoveTo(!mode ? Utils.CursorWorldVec : unit.NetworkPosition)
 }
 export function InitCombo() {
-	if (!Base.IsRestrictions(State) || !ComboKeyItem.is_pressed || Sleep.Sleeping) {
+	if (!Base.IsRestrictions(State) || !ComboKeyItem.is_pressed || Sleep.Sleeping)
 		return false
-	}
 	let target = MouseTarget
 	if (target === undefined || (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect"))) || !Base.Cancel(target)) {
 		Owner.MoveTo(Utils.CursorWorldVec)

@@ -17,21 +17,23 @@ export function Tick() {
 
 	let fontain = EnemyBase.find(x => x.IsEnemy())
 	// loop-optimizer: FORWARD
-	AllUnits.filter(x => x !== undefined && x.IsAlive && x.IsControllable)
-	.some(x => {
-		if(!x.IsVisible) {
-			return false
-		}
-		switch (Swhicher.selected_id) {
-			case 0:
-				if (x.IsHero) {
+	AllUnits
+		.filter(x => x.IsAlive && x.IsControllable)
+		.some(x => {
+			if (!x.IsVisible)
+				return false
+			switch (Swhicher.selected_id) {
+				case 0:
+					if (x.IsHero) {
+						MoveUnit(x, fontain)
+						return true
+					}
+					break
+				case 1:
 					MoveUnit(x, fontain)
-					return true
-				}
-			break
-			case 1: MoveUnit(x, fontain); break
-		}
-	})
+					break
+			}
+		})
 }
 
 export function Draw() {

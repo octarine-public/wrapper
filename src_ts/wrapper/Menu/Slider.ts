@@ -1,5 +1,4 @@
 import Color from "../Base/Color"
-import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import Base from "./Base"
@@ -8,7 +7,7 @@ export default class Slider extends Base {
 	public min = -200
 	public max = 200
 	public value = 50
-	is_mouse_down = false
+	public is_mouse_down = false
 	protected readonly text_offset = new Vector2(8, 8)
 	protected readonly slider_width = 4
 	protected readonly slider_color = new Color(64, 128, 255)
@@ -31,6 +30,9 @@ export default class Slider extends Base {
 		super.Update()
 	}
 
+	public get ConfigValue() { return this.value }
+	public set ConfigValue(value) { this.value = value !== undefined ? value : this.value }
+
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
@@ -51,9 +53,6 @@ export default class Slider extends Base {
 		this.value = Math.floor(Math.min(this.max, this.min + (off / (this.TotalSize.x - this.border_size.x * 2)) * (this.max - this.min)))
 		this.OnValueChangedCBs.forEach(f => f(this))
 	}
-
-	public get ConfigValue() { return this.value }
-	public set ConfigValue(value) { this.value = value !== undefined ? value : this.value }
 
 	public OnMouseLeftDown(): boolean {
 		if (!this.NodeRect.Contains(this.MousePosition))

@@ -1,4 +1,4 @@
-import { Color, Entity, EntityManager, EventsSDK, ExecuteOrder, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, RendererSDK, Vector2, Vector3, VKeys } from "./wrapper/Imports"
+import { EntityManager, EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, RendererSDK, Vector3, VKeys } from "./wrapper/Imports"
 import UserCmd from "./wrapper/Native/UserCmd"
 
 let Menu = MenuSDK.AddEntry("Misc");
@@ -125,8 +125,7 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 
 		timeCreate = Date.now();
 		waitAcceptOn();
-	}
-	else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1) {
+	} else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1) {
 		timeCreate = -1;
 	}
 })
@@ -134,15 +133,15 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 let PrepareUnitOrders_old = PrepareUnitOrders
 let last_order_click = new Vector3(),
 	last_order_click_update = 0
-global.PrepareUnitOrders = function(order: { // pass Position: Vector3 at IOBuffer offset 0
+global.PrepareUnitOrders = (order: { // pass Position: Vector3 at IOBuffer offset 0
 	OrderType: dotaunitorder_t,
 	Target?: C_BaseEntity | number,
 	Ability?: C_BaseEntity | number,
 	OrderIssuer?: PlayerOrderIssuer_t,
-	Unit?: Array<C_BaseEntity | number> | C_BaseEntity | number,
+	Unit?: (C_BaseEntity | number)[] | C_BaseEntity | number,
 	Queue?: boolean,
 	ShowEffects?: boolean,
-}) {
+}) => {
 	switch (order.OrderType) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
@@ -175,8 +174,8 @@ let latest_camera_x = 0,
 // 	last_mouse_pos = new Vector2()
 EventsSDK.after("Update", (cmd: UserCmd) => {
 	let CursorWorldVec = cmd.VectorUnderCursor,
-		orig_CursorWorldVec = cmd.VectorUnderCursor.Clone(),
-		orig_camera_vec = new Vector3(cmd.CameraX, cmd.CameraY),
+		// orig_CursorWorldVec = cmd.VectorUnderCursor.Clone(),
+		// orig_camera_vec = new Vector3(cmd.CameraX, cmd.CameraY),
 		mult = Math.sin(Date.now() - last_order_click_update)
 	if (last_order_click_update + 450 >= Date.now()) {
 		CursorWorldVec = last_order_click.Extend(CursorWorldVec, Math.min(last_order_click.Distance(CursorWorldVec), 200 * mult)).CopyTo(last_order_click)
@@ -185,10 +184,9 @@ EventsSDK.after("Update", (cmd: UserCmd) => {
 	}
 	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(CursorWorldVec.toVector2()))
 	let camera_vec = new Vector3(cmd.CameraX, cmd.CameraY)
-	if (camera_vec.Clone().AddScalarY(1134 / 2).Distance2D(CursorWorldVec) > 1300)
-		camera_vec = CursorWorldVec.Clone().SubtractScalarY(1134 / 2)
-	else
-		camera_vec = camera_vec.AddScalarY(1134 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= Date.now() ? mult : 1))).SubtractScalarY(1134 / 2)
+	camera_vec = camera_vec.Clone().AddScalarY(1134 / 2).Distance2D(CursorWorldVec) > 1300
+		? CursorWorldVec.Clone().SubtractScalarY(1134 / 2)
+		: camera_vec = camera_vec.AddScalarY(1134 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= Date.now() ? mult : 1))).SubtractScalarY(1134 / 2)
 	latest_camera_x = cmd.CameraX = camera_vec.x
 	latest_camera_y = cmd.CameraY = camera_vec.y
 

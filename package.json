@@ -3,11 +3,11 @@
 	"version": "1.0.0",
 	"description": "Fusion Native 2: Scripts",
 	"devDependencies": {
-		"@babel/cli": "7.4.4",
-		"@babel/core": "7.4.5",
-		"@babel/plugin-syntax-bigint": "7.4.4",
-		"@babel/preset-typescript": "7.3.3",
-		"tslint": "next",
+		"@babel/cli": "latest",
+		"@babel/core": "latest",
+		"@babel/plugin-syntax-bigint": "latest",
+		"@babel/preset-typescript": "latest",
+		"tslint": "beta",
 		"typescript": "next"
 	},
 	"scripts": {
@@ -18,5 +18,18 @@
 		"check-types": "npx tsc",
 		"lint": "npx tslint --fix 'src_*/**/*.ts'"
 	},
-	"author": "moofMonkey"
+	"contributors": [
+		"moofMonkey",
+		"I_GRIN_I",
+		"SicdeX-",
+		"LalkaKaro4",
+		"Bulb4",
+		"0h"
+	],
+	"license": "GNU General Public License v3.0",
+	"repository": {
+		"type": "git",
+		"directory": "/",
+		"url": "https://gitlab.com/FNT_Rework/fusion-native2.d.ts/"
+	}
 }

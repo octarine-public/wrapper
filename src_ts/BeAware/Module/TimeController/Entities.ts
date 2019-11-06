@@ -2,7 +2,6 @@ import {
 	ArrayExtensions,
 	Creep,
 	Entity,
-	Hero,
 	Unit,
 	Vector3,
 } from "wrapper/Imports"

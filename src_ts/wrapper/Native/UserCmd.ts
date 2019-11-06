@@ -1,9 +1,8 @@
 import QAngle from "../Base/QAngle"
 import Vector3 from "../Base/Vector3"
-import Entity from "../Objects/Base/Entity"
 
 export default class UserCmd {
-	constructor(public readonly m_CUserCmd: CUserCmd) {}
+	constructor(public readonly m_CUserCmd: CUserCmd) { }
 
 	public get ComandNumber(): number {
 		return this.m_CUserCmd.command_number
@@ -132,7 +131,7 @@ export default class UserCmd {
 		this.m_CUserCmd.spectator_stats_category_id = value
 	}
 
-	toString(): string {
+	public toString(): string {
 		const string = Object.assign(this.toObject())
 
 		string.Buttons = Number(string.Buttons)
@@ -140,7 +139,7 @@ export default class UserCmd {
 		return JSON.stringify(string, null, "\t")
 	}
 
-	toObject() {
+	public toObject() {
 		return {
 			ComandNumber: this.ComandNumber,
 			TickCount: this.TickCount,

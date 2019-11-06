@@ -83,7 +83,7 @@ export function Draw() {
 			AutoDisable = !Combo && AutoDisableState.value
 
 		let wSize = RendererSDK.WindowSize,
-			text: Array<[string, boolean, boolean]> = [
+			text: [string, boolean, boolean][] = [
 				["Combo: ", Combo, true],
 				["Auto Bolt: ", autoArcaneBolt, true],
 				["Start Mute: ", ComboStartWith.value, false],

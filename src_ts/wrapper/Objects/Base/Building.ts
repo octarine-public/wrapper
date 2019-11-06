@@ -1,7 +1,7 @@
 import Unit from "./Unit"
 
 export default class Building extends Unit {
-	readonly m_pBaseEntity: C_DOTA_BaseNPC_Building
+	public readonly m_pBaseEntity: C_DOTA_BaseNPC_Building
 
 	get IsBuilding(): boolean {
 		return true

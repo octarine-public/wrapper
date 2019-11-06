@@ -21,15 +21,15 @@ import {
 
 } from "../Menu"
 
-var Timer: number = 0,
+var Timer = 0,
 	Units: Unit[] = [],
-	checkTick: number = 0,
-	roshanKillTime: number = 0,
-	aegisPickUpTime: number = 0, // TODO for fireEvents
-	checkTickMessage: number = 0,
-	RoshanAttack: boolean = false,
-	AegisTime: number = 0,
-	Base: ManagerBase = new ManagerBase,
+	checkTick = 0,
+	roshanKillTime = 0,
+	// aegisPickUpTime = 0, // TODO for fireEvents
+	checkTickMessage = 0,
+	// RoshanAttack = false,
+	AegisTime = 0,
+	Base = new ManagerBase(),
 	TimersOne: string,
 	TimersTwo: string,
 	AegisTextTime: string,
@@ -181,9 +181,9 @@ export function RoshanGameEnded() {
 	AegisTime = 0
 	TimersOne = undefined
 	TimersTwo = undefined
-	aegisPickUpTime = 0
+	// aegisPickUpTime = 0
 	checkTickMessage = 0
-	RoshanAttack = false
+	// RoshanAttack = false
 	roshanKillTime = 0
 	checkTickMessage = 0
 	checkTick = 0

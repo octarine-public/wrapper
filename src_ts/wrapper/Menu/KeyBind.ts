@@ -199,6 +199,16 @@ export default class KeyBind extends Base {
 		this.Update()
 	}
 
+	public get ConfigValue() { return this.assigned_key }
+	public set ConfigValue(value) {
+		this.assigned_key = value !== undefined ? value : this.assigned_key
+		this.Update()
+	}
+	private get KeybindRect() {
+		let base_pos = this.Position.Add(this.TotalSize).SubtractForThis(this.keybind_offset).SubtractForThis(this.keybind_size).SubtractForThis(this.border_size.MultiplyScalar(2)).SubtractForThis(this.keybind_text_offset.MultiplyScalar(2)).AddScalarY(this.keybind_text_offset.y)
+		return new Rectangle(base_pos, base_pos.Add(this.keybind_size).AddForThis(this.keybind_text_offset.MultiplyScalar(2)))
+	}
+
 	public OnPressed(func: (caller: this) => void) {
 		return this.OnValue(caller => {
 			if (caller.is_pressed)
@@ -238,10 +248,6 @@ export default class KeyBind extends Base {
 		Menu.PositionDirty = true
 		super.Update()
 	}
-	private get KeybindRect() {
-		let base_pos = this.Position.Add(this.TotalSize).SubtractForThis(this.keybind_offset).SubtractForThis(this.keybind_size).SubtractForThis(this.border_size.MultiplyScalar(2)).SubtractForThis(this.keybind_text_offset.MultiplyScalar(2)).AddScalarY(this.keybind_text_offset.y)
-		return new Rectangle(base_pos, base_pos.Add(this.keybind_size).AddForThis(this.keybind_text_offset.MultiplyScalar(2)))
-	}
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
@@ -251,12 +257,6 @@ export default class KeyBind extends Base {
 		RendererSDK.Text(this.assigned_key_str, keybind_rect.pos1.Add(this.keybind_text_offset), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
 		if (!this.KeybindRect.Contains(this.MousePosition))
 			super.RenderTooltip()
-	}
-
-	public get ConfigValue() { return this.assigned_key }
-	public set ConfigValue(value) {
-		this.assigned_key = value !== undefined ? value : this.assigned_key
-		this.Update()
 	}
 
 	public OnMouseLeftDown(): boolean {

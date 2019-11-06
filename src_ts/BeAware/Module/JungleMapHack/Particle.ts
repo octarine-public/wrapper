@@ -1,4 +1,4 @@
-import { ArrayExtensions, RendererSDK, Unit, Vector3} from "wrapper/Imports"
+import { ArrayExtensions, RendererSDK, Unit, Vector3 } from "wrapper/Imports"
 import { ComboBox, DrawRGBA, Size, State } from "./Menu"
 
 export let jungl_unit: Unit[] = []

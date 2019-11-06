@@ -29,7 +29,6 @@ const SpreadUnits = ControllablesTree.AddToggle("Spread units", true)
 	.SetTooltip("If enabled units will try to form an arc, otherwise they all will run in front of the hero")
 
 const {
-	DrawTree,
 	DrawState,
 	StatusAroundUnits,
 	StatusMouse,

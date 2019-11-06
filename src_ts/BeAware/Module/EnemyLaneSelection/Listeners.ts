@@ -2,7 +2,8 @@ import { Game, LocalPlayer, RendererSDK, Team, Vector2 } from "wrapper/Imports"
 import {
 	//ShowAfterGameStart,
 	ChatTimeOutSend,
-	ChatTimeOutSendRepeat, DrawPositionGap, DrawPositionX, DrawPositionY, SendAlliesChat, State } from "./Menu"
+	ChatTimeOutSendRepeat, DrawPositionGap, DrawPositionX, DrawPositionY, SendAlliesChat, State
+} from "./Menu"
 
 enum LaneSelectionFlags_t {
 	SAFE_LANE = 1 << 0,
@@ -73,23 +74,22 @@ export function Draw() {
 	switch (ratio) {
 		case "4x3":
 			team_offset = 230
-		break
+			break
 		case "16x9":
-		if (wSize.x === 1280 && wSize.y === 720) {
-			team_offset = 160
-		}
-		break
+			if (wSize.x === 1280 && wSize.y === 720)
+				team_offset = 160
+			break
 	}
 	let base_enemy_pos = new Vector2(first_offset + (DrawPositionGap.value * 5 + team_offset) * enemy_team_id + wSize.x / 100, DrawPositionY.value)
 	roles[enemy_team_id].forEach((role, i) => {
 		let role_str = GetLaneName(role)
 		if (role_str === undefined)
 			return
-		RendererSDK.Text (
+		RendererSDK.Text(
 			role_str,
 			base_enemy_pos.Clone().AddScalarX(i * DrawPositionGap.value + DrawPositionX.value),
 		)
-		if(SendAlliesChat.value) {
+		if (SendAlliesChat.value) {
 			setTimeout(() => {
 				if (is_send_chat < 5) {
 					setTimeout(() => {

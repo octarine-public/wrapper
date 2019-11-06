@@ -16,13 +16,13 @@ export default class Button extends Base {
 		this.tooltip = tooltip
 		this.Update()
 	}
-	public Update() {
-		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
-		this.TotalSize_.x = this.name_size.x + 10 + this.border_size.x * 2
-	}
 	private get ButtonRect() {
 		let base_pos = this.Position.Add(this.button_offset).AddForThis(this.border_size)
 		return new Rectangle(base_pos, base_pos.Add(this.TotalSize).SubtractForThis(this.button_offset.MultiplyScalar(2)).SubtractForThis(this.border_size.MultiplyScalar(2)))
+	}
+	public Update() {
+		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		this.TotalSize_.x = this.name_size.x + 10 + this.border_size.x * 2
 	}
 	public Render(): void {
 		super.Render()

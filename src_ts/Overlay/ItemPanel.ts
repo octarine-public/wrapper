@@ -228,8 +228,7 @@ EventsSDK.on("Draw", () => {
 			}
 
 			isDraggingPanel = true;
-		}
-		else if (isDraggingPanel && !Input.IsMouseKeyDown(VMouseKeys.MK_LBUTTON)) {
+		} else if (isDraggingPanel && !Input.IsMouseKeyDown(VMouseKeys.MK_LBUTTON)) {
 			MenuSDK.MenuManager.UpdateConfig();
 			isDraggingPanel = false;
 		}
@@ -238,9 +237,7 @@ EventsSDK.on("Draw", () => {
 			positionPanel.CopyFrom(mousePos.Subtract(mouseOnPanel));
 
 			// clamp between 0 and (WindowSize - max size of panel)
-			positionPanel.CopyFrom(
-				positionPanel.Max(new Vector2).Min(windowSize.Subtract(sizeOfTouchRect)),
-			);
+			positionPanel.CopyFrom(positionPanel.Max(new Vector2()).Min(windowSize.Subtract(sizeOfTouchRect)));
 
 			const positionPanelPercent = positionPanel.Divide(windowSize).MultiplyScalarForThis(100);
 
@@ -285,8 +282,7 @@ EventsSDK.on("Draw", () => {
 
 				posOfLevel.AddScalarY(heroIconSize.y - sizeOfLevel.y)
 					.AddScalarX(panelSettingsSize.value / 5);
-			}
-			else {
+			} else {
 				posOfLevel.SubtractScalarY(panelSettingsSize.value / 10)
 					.AddScalarX(2);
 			}
@@ -331,8 +327,7 @@ EventsSDK.on("Draw", () => {
 					.SubtractScalarX(offset);
 
 				posPanelOnLine.x = posOfTP.x + offset;
-			}
-			else {
+			} else {
 
 				const offset = itemIconSize.y / 2.5;
 

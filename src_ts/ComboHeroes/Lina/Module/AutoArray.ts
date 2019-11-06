@@ -9,7 +9,7 @@ function IsValidAbility(ability: Ability, target: Hero) {
 		&& Owner.Distance2D(target) <= ability.CastRange
 }
 
-let Sleep: TickSleeper = new TickSleeper
+let Sleep = new TickSleeper()
 import InitAbility from "../Extends/Abilities"
 
 export function InitFindCyclone() {

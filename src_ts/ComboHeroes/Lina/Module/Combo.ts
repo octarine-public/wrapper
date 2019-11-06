@@ -8,7 +8,7 @@ import InitItems from "../Extends/Items"
 
 import { BladeMailCancel, ComboKeyItem, ModeInvisCombo, State, СomboAbility, СomboItems } from "../Menu";
 
-let Sleep: TickSleeper = new TickSleeper
+let Sleep = new TickSleeper()
 function IsValidAbility(ability: Ability, target: Hero) {
 	return ability !== undefined && ability.IsReady
 		&& ability.CanBeCasted() && СomboAbility.IsEnabled(ability.Name)
@@ -34,8 +34,8 @@ export function InitCombo() {
 		Abilities = new InitAbility(Owner),
 		Debuff = target.ModifiersBook.GetAnyBuffByNames(["modifier_sheepstick_debuff", "modifier_stunned"])
 
-	if(Owner.IsInvisible) {
-		if(Owner.CanAttack(target)) {
+	if (Owner.IsInvisible) {
+		if (Owner.CanAttack(target)) {
 			Owner.AttackTarget(target)
 		}
 		if (ModeInvisCombo.selected_id === 0) {

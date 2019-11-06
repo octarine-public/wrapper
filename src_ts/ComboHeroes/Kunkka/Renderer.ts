@@ -1,4 +1,4 @@
-import { Color, Game, GameSleeper, Hero, LocalPlayer, ParticlesSDK, RendererSDK, Vector3 } from "wrapper/Imports"
+import { Color, GameSleeper, Hero, ParticlesSDK, RendererSDK, Vector3 } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { MouseTarget, Owner } from "./Listeners"
 import {
@@ -24,22 +24,19 @@ let Ship: number,
 	Torrent: number,
 	XMarks: number,
 	Tidebringer: number,
-	Sleep: GameSleeper = new GameSleeper,
-	TempLevelXMarks: number = 0,
+	Sleep = new GameSleeper(),
+	TempLevelXMarks = 0,
 	TargetCombo: Hero
 
 function ShipRadius() {
-	if (Sleep.Sleeping("Ship")) {
+	if (Sleep.Sleeping("Ship"))
 		return false
-	}
-	if (!Owner.IsAlive) {
+	if (!Owner.IsAlive)
 		DeleteShip()
-	}
 
 	if (Ship === undefined) {
-		if (Ship !== undefined) {
+		if (Ship !== undefined)
 			ParticlesSDK.Destroy(Ship, true)
-		}
 		Ship = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, Owner)
 	}
 	let Abilities = new InitAbilities(Owner),
@@ -51,27 +48,24 @@ function ShipRadius() {
 		ParticlesSDK.SetControlPoint(Ship, 3, new Vector3(Ghostship.CastRange))
 		ParticlesSDK.SetControlPoint(Ship, 4, new Vector3(color.r, color.g, color.b))
 		Sleep.Sleep(0, "Ship")
-	}
-	else DeleteShip()
+	} else
+		DeleteShip()
 }
 function DeleteShip() {
-	if (Ship !== undefined) {
-		ParticlesSDK.Destroy(Ship, true)
-		Ship = undefined
-	}
+	if (Ship === undefined)
+		return
+	ParticlesSDK.Destroy(Ship, true)
+	Ship = undefined
 }
 
 function TorrentRadius() {
-	if (Sleep.Sleeping("Torrent")) {
+	if (Sleep.Sleeping("Torrent"))
 		return false
-	}
-	if (!Owner.IsAlive) {
+	if (!Owner.IsAlive)
 		DeleteTorrent()
-	}
 	if (Torrent === undefined) {
-		if (Torrent !== undefined) {
+		if (Torrent !== undefined)
 			ParticlesSDK.Destroy(Torrent, true)
-		}
 		Torrent = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, Owner)
 	}
 	let Abilities = new InitAbilities(Owner),
@@ -83,8 +77,7 @@ function TorrentRadius() {
 		ParticlesSDK.SetControlPoint(Torrent, 3, new Vector3(TorrentAbil.CastRange))
 		ParticlesSDK.SetControlPoint(Torrent, 4, new Vector3(color.r, color.g, color.b))
 		Sleep.Sleep(0, "Torrent")
-	}
-	else DeleteTorrent()
+	} else DeleteTorrent()
 }
 function DeleteTorrent() {
 	if (Torrent !== undefined) {
@@ -94,16 +87,13 @@ function DeleteTorrent() {
 }
 
 function XMarksRadius() {
-	if (Sleep.Sleeping("XMarks")) {
+	if (Sleep.Sleeping("XMarks"))
 		return false
-	}
-	if (!Owner.IsAlive) {
+	if (!Owner.IsAlive)
 		DeleteXMarks()
-	}
 	if (XMarks === undefined) {
-		if (XMarks !== undefined) {
+		if (XMarks !== undefined)
 			ParticlesSDK.Destroy(XMarks, true)
-		}
 		XMarks = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, Owner)
 	}
 	let Abilities = new InitAbilities(Owner),
@@ -119,8 +109,7 @@ function XMarksRadius() {
 		ParticlesSDK.SetControlPoint(XMarks, 3, new Vector3(XMarksSpot.CastRange))
 		ParticlesSDK.SetControlPoint(XMarks, 4, new Vector3(color.r, color.g, color.b))
 		Sleep.Sleep(0, "XMarks")
-	}
-	else DeleteXMarks()
+	} else DeleteXMarks()
 }
 function DeleteXMarks() {
 	if (XMarks !== undefined) {
@@ -137,9 +126,8 @@ function TidebringerRadius() {
 		DeleteTidebringer()
 	}
 	if (Tidebringer === undefined) {
-		if (Tidebringer !== undefined) {
+		if (Tidebringer !== undefined)
 			ParticlesSDK.Destroy(Tidebringer, true)
-		}
 		Tidebringer = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, Owner)
 	}
 	let Abilities = new InitAbilities(Owner),
@@ -151,8 +139,7 @@ function TidebringerRadius() {
 		ParticlesSDK.SetControlPoint(Tidebringer, 3, new Vector3(1100))
 		ParticlesSDK.SetControlPoint(Tidebringer, 4, new Vector3(color.r, color.g, color.b))
 		Sleep.Sleep(0, "Tidebringer")
-	}
-	else DeleteTidebringer()
+	} else DeleteTidebringer()
 }
 function DeleteTidebringer() {
 	if (Tidebringer !== undefined) {
@@ -171,9 +158,8 @@ function BlinkRadius() {
 	}
 	let Items = new InitItems(Owner)
 	if (Blink === undefined) {
-		if (Blink !== undefined) {
+		if (Blink !== undefined)
 			ParticlesSDK.Destroy(Blink, true)
-		}
 		Blink = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, Owner)
 	}
 
@@ -184,8 +170,7 @@ function BlinkRadius() {
 		ParticlesSDK.SetControlPoint(Blink, 3, new Vector3(1100))
 		ParticlesSDK.SetControlPoint(Blink, 4, new Vector3(color.r, color.g, color.b))
 		Sleep.Sleep(0, "Blink")
-	}
-	else DeleteBlink()
+	} else DeleteBlink()
 }
 function DeleteBlink() {
 	if (Blink !== undefined) {
@@ -231,15 +216,14 @@ export function Draw() {
 					case 0:
 					case 1:
 						textAroundMouse = "Combo: (" + TargetName + ")";
-					break;
+						break;
 					default:
 						textAroundMouse = "Torrent: (" + TargetName + ")";
-					break;
+						break;
 				}
 				RendererSDK.TextAroundMouse(textAroundMouse, false, DrawRadiusMouseColor.Color)
 			}
-		}
-		else if (XMarkPos.IsZero()) {
+		} else if (XMarkPos.IsZero()) {
 			TargetCombo = undefined
 		}
 	}
@@ -250,7 +234,7 @@ export function DrawDeleteTempAllVars() {
 	Ship = undefined
 	Blink = undefined
 	Torrent = undefined
-	XMarks= undefined
+	XMarks = undefined
 	Tidebringer = undefined
 	TempLevelXMarks = 0
 	Sleep.FullReset()

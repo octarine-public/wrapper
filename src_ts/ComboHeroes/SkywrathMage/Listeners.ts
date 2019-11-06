@@ -22,7 +22,7 @@ export let MyNameHero: string = "npc_dota_hero_skywrath_mage"
 export function InitMouse() {
 	if (!Base.IsRestrictions(State))
 		return false
-	MouseTarget = ArrayExtensions.orderBy (
+	MouseTarget = ArrayExtensions.orderBy(
 		Heroes.filter(x => x.IsEnemy() && x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
 		x => x.Distance(Utils.CursorWorldVec),
 	)[0]
@@ -68,10 +68,12 @@ export function TrackingProjectileCreated(proj: TrackingProjectile) {
 	if (!Base.IsRestrictions(State)) {
 		return false
 	}
-	let Entity = proj.Source as Entity
-	if (proj instanceof TrackingProjectile
-	&& Entity instanceof Hero
-	&& !Entity.IsEnemy() && Entity.Name === MyNameHero) {
+	let entity = proj.Source as Entity
+	if (
+		proj instanceof TrackingProjectile
+		&& entity instanceof Hero
+		&& !entity.IsEnemy() && entity.Name === MyNameHero
+	) {
 		ProjList.push(proj)
 	}
 }

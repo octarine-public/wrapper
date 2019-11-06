@@ -30,7 +30,7 @@ let allRunes: Rune[] = [],
 	npcs: Unit[] = [],
 	picking_up = new Map<Unit, Rune>(),
 	selectedRuneType: ESelectedType = ESelectedType.ALL,
-	Sleep = new GameSleeper
+	Sleep = new GameSleeper()
 const snatcherMenu = Menu.AddEntry(["Utility", "Snatcher"])
 
 const stateMain = snatcherMenu.AddToggle("State")

@@ -14,12 +14,12 @@ const RMineTriggerRadius = 425,
 	ForcestaffUnits = 600
 
 var particles = new Map<Unit, number>(),
-	rmines: Array<[
+	rmines: [
 		/* mine */Unit,
 		/* dmg */number,
 		/* will setup after Game.RawGameTime */number,
 		/* will become invis after Game.RawGameTime */number,
-	]> = [],
+	][] = [],
 	heroes: Hero[] = [],
 	techies: Hero,
 	latest_techies_spellamp: number = 1,
@@ -95,7 +95,7 @@ function NeedToTriggerMine(rmine: Unit, ent: Unit, forcestaff: boolean = false):
 			: rmine.IsInRange(ent, TriggerRadius)
 }
 
-EventsSDK.on("Tick",  () => {
+EventsSDK.on("Tick", () => {
 	if (!State.value || techies === undefined)
 		return
 	var cur_time = Game.RawGameTime
@@ -126,7 +126,7 @@ EventsSDK.on("Tick",  () => {
 		&& !sleeper.Sleeping(ent),
 	).forEach(ent => {
 		var callbackCalled = false
-		CallMines (
+		CallMines(
 			ent,
 			rmine => NeedToTriggerMine(rmine, ent),
 			RMinesToBlow => {
@@ -141,7 +141,7 @@ EventsSDK.on("Tick",  () => {
 			!callbackCalled && force !== undefined && techies.IsAlive && force.Cooldown === 0
 			&& techies.IsInRange(ent, force.CastRange)
 		)
-			CallMines (
+			CallMines(
 				ent,
 				rmine => NeedToTriggerMine(rmine, ent, true),
 				() => techies.CastTarget(force, ent, false),
@@ -170,7 +170,7 @@ function RegisterMine(npc: Unit) {
 		return
 	}
 	const Ulti = techies !== undefined ? techies.GetAbilityByName("techies_remote_mines") : undefined
-	rmines.push ([
+	rmines.push([
 		npc,
 		Ulti ?
 			Ulti.GetSpecialValue("damage" + (techies.HasScepter ? "_scepter" : ""))

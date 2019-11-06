@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, Entity, Hero, Utils } from "wrapper/Imports"
+import { ArrayExtensions, Entity, Hero, Utils } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { FindCycloneGameEnded } from "./Module/AutoArray"
@@ -9,7 +9,7 @@ import { DrawDeleteTempAllVars } from "./Renderer"
 export let Heroes: Hero[] = []
 export let Owner: Hero
 export let MouseTarget: Hero
-export let MyNameHero: string = "npc_dota_hero_lina"
+export let MyNameHero = "npc_dota_hero_lina"
 
 export function InitMouse() {
 	if (!Base.IsRestrictions(State)) {

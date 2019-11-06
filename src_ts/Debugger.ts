@@ -42,7 +42,7 @@ addUnitMenu.AddKeybind("Add full Sven")
 		Game.ExecuteCommand("dota_create_unit npc_dota_hero_sven enemy")
 
 		setTimeout(() => {
-			for (var i = 6; i--; )
+			for (var i = 6; i--;)
 				Game.ExecuteCommand("dota_bot_give_item item_heart")
 
 			Game.ExecuteCommand("dota_bot_give_level 25")

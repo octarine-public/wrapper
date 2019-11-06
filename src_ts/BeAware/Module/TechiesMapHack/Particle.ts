@@ -1,9 +1,9 @@
 import { Entity, RendererSDK, Vector2, Vector3 } from "wrapper/Imports"
 import { DrawRGBA, Size, State } from "./Menu"
 
-let allTechiesMines: Array<[Array<[Vector3, number]>, Vector3, string]> = [], // positions+particle_ids, center, stack-name
-	waiting_explode: Array<[number, string]> = [],
-	waiting_spawn: Array<[number, string]> = []
+let allTechiesMines: [[Vector3, number][], Vector3, string][] = [], // positions+particle_ids, center, stack-name
+	waiting_explode: [number, string][] = [],
+	waiting_spawn: [number, string][] = []
 
 export function EntityDestroyed(ent: Entity) {
 	let mine_name_ = /^npc_dota_(techies_remote_mine|techies_stasis_trap)$/.exec(ent.Name)
@@ -36,9 +36,9 @@ export function LifeStateChanged(ent: Entity) {
 export function ParticleCreated(id: number, target: Entity, path: string) {
 	if (!State.value)
 		return
-	let mine_name: any
+	let mine_name: RegExpExecArray
 	if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)_plant.vpcf$/.exec(path)) !== null) {
-		if (mine_name !== "particles/units/heroes/hero_techies/techies_stasis_trap_plant.vpcf" && (target === undefined || target.IsEnemy()))
+		if (/*mine_name !== "particles/units/heroes/hero_techies/techies_stasis_trap_plant.vpcf" && */(target === undefined || target.IsEnemy()))
 			waiting_spawn.push([id, mine_name[1]])
 	} else if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)(s_detonate|_explode).vpcf$/.exec(path)) !== null)
 		waiting_explode.push([id, mine_name[1]])
@@ -138,7 +138,7 @@ export function OnDraw() {
 		let wts = RendererSDK.WorldToScreen(pos)
 		if (wts !== undefined && name !== undefined) {
 			RendererSDK.Image(`~/other/npc_dota_${name}.png`, wts.SubtractScalarX(64 / 4).SubtractScalarY(87 / 4), new Vector2(64 / 2, 87 / 2))
-			RendererSDK.Text (
+			RendererSDK.Text(
 				"x" + allMines.length,
 				wts.AddScalarX(Size.value / 4),
 				DrawRGBA.Color,

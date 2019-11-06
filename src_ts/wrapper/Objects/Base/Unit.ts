@@ -58,13 +58,6 @@ export default class Unit extends Entity {
 
 	private UnitName_: string
 
-	constructor(m_pBaseEntity: C_BaseEntity, Index: number) {
-		super(m_pBaseEntity, Index)
-		this.AbilitiesBook = new AbilitiesBook(this)
-		this.Inventory = new Inventory(this)
-		this.ModifiersBook = new ModifiersBook(this)
-	}
-
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
 		"modifier_item_ethereal_blade_ethereal",
@@ -76,6 +69,13 @@ export default class Unit extends Entity {
 		"modifier_riki_permanent_invisibility",
 		"modifier_treant_natures_guise_invis",
 	]
+
+	constructor(m_pBaseEntity: C_BaseEntity, Index: number) {
+		super(m_pBaseEntity, Index)
+		this.AbilitiesBook = new AbilitiesBook(this)
+		this.Inventory = new Inventory(this)
+		this.ModifiersBook = new ModifiersBook(this)
+	}
 	/* ================ GETTERS ================ */
 	public get IsHero(): boolean {
 		return HasBit(this.UnitType, 0)
@@ -367,9 +367,6 @@ export default class Unit extends Entity {
 	public get IdealSpeed(): number {
 		return this.m_pBaseEntity.m_fIdealSpeed
 	}
-	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
-		return this.InFront(movespeed * time)
-	}
 	public get NightVision(): number {
 		return this.m_pBaseEntity.m_iNightTimeVisionRange
 	}
@@ -410,38 +407,8 @@ export default class Unit extends Entity {
 		return this.Inventory.Items
 	}
 
-	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Item {
-		return this.Inventory.GetItemByName(name, includeBackpack)
-	}
-
-	public HasItemInInventory(name: string | RegExp, includeBackpack: boolean = false): boolean {
-		return this.GetItemByName(name, includeBackpack) !== undefined
-	}
-
 	public get Buffs(): Modifier[] {
 		return this.ModifiersBook.Buffs
-	}
-
-	/* ================ METHODS ================ */
-
-	/**
-	 * @param flag if not exists => is Melee or Range attack
-	 */
-	public HasAttackCapability(flag: DOTAUnitAttackCapability_t = DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK | DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK): boolean {
-		return (this.AttackCapabilities & flag) !== 0
-	}
-	/**
-	 * @param flag if not exists => isn't move NONE
-	 */
-	public HasMoveCapability(flag: DOTAUnitMoveCapability_t = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_GROUND | DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY): boolean {
-		return (this.MoveCapabilities & flag) !== 0
-	}
-
-	public IsUnitStateFlagSet(flag: modifierstate): boolean {
-		return HasBitBigInt((this.UnitStateMask), BigInt(flag))
-	}
-	public IsControllableByPlayer(playerID: number): boolean {
-		return HasBitBigInt(this.IsControllableByPlayerMask, BigInt(playerID))
 	}
 
 	/* ================================ EXTENSIONS ================================ */
@@ -481,6 +448,45 @@ export default class Unit extends Entity {
 		})
 
 		return spellAmp
+	}
+
+	public get Name(): string {
+		if (this.UnitName_ === undefined)
+			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
+		return this.UnitName_ || super.Name
+	}
+	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
+		return this.InFront(movespeed * time)
+	}
+
+	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Item {
+		return this.Inventory.GetItemByName(name, includeBackpack)
+	}
+
+	public HasItemInInventory(name: string | RegExp, includeBackpack: boolean = false): boolean {
+		return this.GetItemByName(name, includeBackpack) !== undefined
+	}
+
+	/* ================ METHODS ================ */
+
+	/**
+	 * @param flag if not exists => is Melee or Range attack
+	 */
+	public HasAttackCapability(flag: DOTAUnitAttackCapability_t = DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK | DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK): boolean {
+		return (this.AttackCapabilities & flag) !== 0
+	}
+	/**
+	 * @param flag if not exists => isn't move NONE
+	 */
+	public HasMoveCapability(flag: DOTAUnitMoveCapability_t = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_GROUND | DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY): boolean {
+		return (this.MoveCapabilities & flag) !== 0
+	}
+
+	public IsUnitStateFlagSet(flag: modifierstate): boolean {
+		return HasBitBigInt((this.UnitStateMask), BigInt(flag))
+	}
+	public IsControllableByPlayer(playerID: number): boolean {
+		return HasBitBigInt(this.IsControllableByPlayerMask, BigInt(playerID))
 	}
 
 	/* ================ METHODS ================ */
@@ -677,7 +683,7 @@ export default class Unit extends Entity {
 		return Math.max(damage, 0)
 	}
 
-	CalculateDamageByHand(source: Unit): number {
+	public CalculateDamageByHand(source: Unit): number {
 		if (source.GetBuffByName("modifier_tinker_laser_blind") !== undefined || this.WillIgnore(DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL))
 			return 0
 		let mult = 1
@@ -923,13 +929,7 @@ export default class Unit extends Entity {
 		}
 	}
 
-	public get Name(): string {
-		if (this.UnitName_ === undefined)
-			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
-		return this.UnitName_ || super.Name
-	}
-
-	OnCreated() {
+	public OnCreated() {
 		super.OnCreated()
 		this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
 	}

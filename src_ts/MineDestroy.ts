@@ -1,4 +1,4 @@
-import { ArrayExtensions, EventsSDK, Game, LocalPlayer, Menu, Unit } from "./wrapper/Imports"
+import { ArrayExtensions, EventsSDK, LocalPlayer, Menu, Unit } from "./wrapper/Imports"
 
 const menu = Menu.AddEntry(["Utility", "Mine Destroyer"])
 const menuState = menu.AddToggle("State", true)
@@ -24,7 +24,12 @@ EventsSDK.on("Tick", () => {
 	if (hero === undefined || !hero.IsAlive || hero.IsChanneling || hero.IsInFadeTime)
 		return
 
-	let mine = mines.find(mine => mine.IsEnemy() && mine.IsAlive && hero.CanAttack(mine) && mine.IsInRange(hero, hero.AttackRange))
+	let mine = mines.find(mine_ =>
+		mine_.IsEnemy()
+		&& mine_.IsAlive
+		&& hero.CanAttack(mine_)
+		&& mine_.IsInRange(hero, hero.AttackRange)
+	)
 	if (mine !== undefined)
 		hero.AttackTarget(mine)
 })

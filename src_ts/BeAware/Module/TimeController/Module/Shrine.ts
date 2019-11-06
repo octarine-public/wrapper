@@ -12,10 +12,11 @@ import {
 	ShrineStateIconColor,
 } from "../Menu";
 
-let Base: ManagerBase = new ManagerBase
+let Base: ManagerBase = new ManagerBase()
 
-function RenderIcon(position_unit: Vector2, path_icon: string, ShrineStateIconColor: any) {
-	RendererSDK.Image(path_icon,
+function RenderIcon(position_unit: Vector2, path_icon: string) {
+	RendererSDK.Image(
+		path_icon,
 		position_unit.SubtractScalar(DrawTextSize.value / 4).Clone().AddScalarY(8).AddScalarX(-25),
 		new Vector2(42 / 2, 42 / 2), ShrineStateIconColor.Color,
 	)
@@ -30,15 +31,12 @@ function DrawShrineTime(unit: Unit) {
 	if (position_unit === undefined)
 		return false
 	if (abil.Cooldown <= 0) {
-		if (ShrineStateIcon.value) {
-			RenderIcon(position_unit, `panorama/images/control_icons/check_png.vtex_c`, ShrineStateIconColor)
-		}
+		if (ShrineStateIcon.value)
+			RenderIcon(position_unit, `panorama/images/control_icons/check_png.vtex_c`)
 		RendererSDK.Text("Ready", position_unit, DrawTextColorShrineIsReady.Color, "Verdana", DrawTextSizeShrine.value, FontFlags_t.ANTIALIAS)
-	}
-	else {
-		if (ShrineStateIcon.value) {
-			RenderIcon(position_unit, `panorama/images/status_icons/ability_cooldown_icon_psd.vtex_c`, ShrineStateIconColor)
-		}
+	} else {
+		if (ShrineStateIcon.value)
+			RenderIcon(position_unit, `panorama/images/status_icons/ability_cooldown_icon_psd.vtex_c`)
 		RendererSDK.Text(Time, position_unit, DrawTextColorShrine.Color, "Verdana", DrawTextSizeShrine.value, FontFlags_t.ANTIALIAS)
 	}
 }
@@ -54,9 +52,12 @@ export function DrawShrine() {
 				return false
 			}
 			switch (DrawEnemyOrAllies.selected_id) {
-				case 0: return Base.IsShrine(x)
-				case 1: return !x.IsEnemy() && Base.IsShrine(x) //&& CreateRange(x, 500)
-				case 2: return x.IsEnemy() && Base.IsShrine(x) //&& CreateRange(x, 500)
+				case 0:
+					return Base.IsShrine(x)
+				case 1:
+					return !x.IsEnemy() && Base.IsShrine(x) //&& CreateRange(x, 500)
+				case 2:
+					return x.IsEnemy() && Base.IsShrine(x) //&& CreateRange(x, 500)
 			}
 		}).map(DrawShrineTime)
 	}

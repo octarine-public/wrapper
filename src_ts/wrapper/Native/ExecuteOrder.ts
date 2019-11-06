@@ -21,7 +21,7 @@ export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 ]
 
 export default class ExecuteOrder {
-	static fromObject(order: {
+	public static fromObject(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
 		position?: Vector3 | Vector2,
@@ -43,7 +43,7 @@ export default class ExecuteOrder {
 		)
 	}
 
-	static fromNative(order: CUnitOrder): ExecuteOrder {
+	public static fromNative(order: CUnitOrder): ExecuteOrder {
 		let unit = order.unit !== undefined
 			? EntityManager.GetEntityByNative(order.unit) as Unit
 			: EntityManager.LocalHero
@@ -129,7 +129,7 @@ export default class ExecuteOrder {
 	/**
 	 * pass Position: Vector3 at IOBuffer offset 0
 	 */
-	toNative() {
+	public toNative() {
 		if (!this.m_Position.IsZero())
 			this.m_Position.toIOBuffer()
 
@@ -150,15 +150,15 @@ export default class ExecuteOrder {
 	/**
 	 * Execute order with this fields
 	 */
-	Execute(): ExecuteOrder {
+	public Execute(): ExecuteOrder {
 		PrepareUnitOrders(this.toNative())
 		return this
 	}
 
-	toString(): string {
+	public toString(): string {
 		return JSON.stringify(this.toObject())
 	}
-	toObject(): {
+	public toObject(): {
 		OrderType: dotaunitorder_t,
 		Target: Entity | number,
 		Position: Vector3,

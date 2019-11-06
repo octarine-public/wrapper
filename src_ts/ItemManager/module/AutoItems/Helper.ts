@@ -35,7 +35,7 @@ let Units: Unit[] = [],
 	AllUnitsHero: Unit[] = [],
 	AllCreeps: Creep[] = [],
 	Trees: TreeTemp[] = [],
-	Particle: Array<[number, Vector3?]> = [],
+	Particle: [number, Vector3?][] = [],
 	nextTick = 0,
 	changed = true,
 	lastStat: Attributes
@@ -66,8 +66,8 @@ let Buffs = {
 	],
 }
 
-let Base = new ItemManagerBase,
-	TickSleep: TickSleeper = new TickSleeper
+let Base = new ItemManagerBase(),
+	TickSleep = new TickSleeper()
 
 function GetDelayCast() {
 	return 250
@@ -147,17 +147,17 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if ((IsValidItem(Items.MagicWand) || IsValidItem(Items.MagicStick))) {
-		let Item = Items.MagicWand !== undefined
+		let item = Items.MagicWand !== undefined
 			? Items.MagicWand
 			: Items.MagicStick
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
-				unit.CastNoTarget(Item)
+				unit.CastNoTarget(item)
 				TickSleep.Sleep(GetDelayCast())
 				return true
 			}
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
-				unit.CastNoTarget(Item)
+				unit.CastNoTarget(item)
 				TickSleep.Sleep(GetDelayCast())
 				return true
 			}
@@ -197,7 +197,7 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.Mekansm) || IsValidItem(Items.GuardianGreaves)) {
 		let Item = !Items.Mekansm ? Items.GuardianGreaves : Items.Mekansm
 		AllUnitsHero.some(allies => {
-			if(allies !== undefined) {
+			if (allies !== undefined) {
 				if (!allies.IsEnemy(unit) && unit.IsInRange(allies.NetworkPosition, Item.AOERadius)) {
 					if (!unit.Buffs.some(buff => buff.Name === "modifier_item_mekansm_noheal")
 						&& (allies.HPPercent <= AutoUseItemsMG_val.value
@@ -297,22 +297,22 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.Dust)) {
 		if (!Items.Gem) {
 			let glimer_cape = Particle.find(e => {
-				if(e[0] && e[1] !== undefined && unit.Distance2D(e[1]) <= Items.Dust.CastRange)
+				if (e[0] && e[1] !== undefined && unit.Distance2D(e[1]) <= Items.Dust.CastRange)
 					return e[0]
 				return setTimeout(() => Particle = [], 3000)
 			})
 			let IsVisible = AllUnitsHero.some(enemy => enemy !== undefined && unit.IsEnemy(enemy)
-					&& enemy.IsAlive
-					&& unit.IsInRange(enemy.NetworkPosition, Items.Dust.CastRange)
-					&& !enemy.ModifiersBook.HasAnyBuffByNames(Buffs.InvisDebuff)
-					&&
-					(
-						enemy.IsInvisible
-						|| enemy.InvisibleLevel > 0
-						|| glimer_cape !== undefined
-						|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
-					)
-					&& !AllUnitsHero.some(allies => allies !== undefined && !unit.IsEnemy(enemy) && allies.IsAlive && allies.GetItemByName("item_gem")
+				&& enemy.IsAlive
+				&& unit.IsInRange(enemy.NetworkPosition, Items.Dust.CastRange)
+				&& !enemy.ModifiersBook.HasAnyBuffByNames(Buffs.InvisDebuff)
+				&&
+				(
+					enemy.IsInvisible
+					|| enemy.InvisibleLevel > 0
+					|| glimer_cape !== undefined
+					|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
+				)
+				&& !AllUnitsHero.some(allies => allies !== undefined && !unit.IsEnemy(enemy) && allies.IsAlive && allies.GetItemByName("item_gem")
 					&& allies.Distance2D(enemy.Position) < 800))
 
 			if (IsVisible) {
@@ -492,7 +492,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 						TickSleep.Sleep(GetDelayCast())
 					}
 				}
-			break;
+				break;
 		}
 	}
 }

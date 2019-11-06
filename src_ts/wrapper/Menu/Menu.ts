@@ -18,14 +18,6 @@ let Menu = new (class Menu {
 		this.header.ConfigValue = this.config.Header
 	}
 
-	public UpdateConfig() {
-		this.config.Header = this.header.ConfigValue
-		writeConfig("default.json", JSON.stringify(this.ConfigValue))
-	}
-	public ForwardConfig() {
-		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.name])
-	}
-
 	public get Position() {
 		return this.header.Position.Clone()
 	}
@@ -34,6 +26,23 @@ let Menu = new (class Menu {
 	}
 	public set PositionDirty(val: boolean) {
 		this.header.position_dirty = val
+	}
+
+	public get ConfigValue() {
+		this.entries.forEach(entry => this.config[entry.name] = entry.ConfigValue)
+		return this.config
+	}
+	public set ConfigValue(obj) {
+		this.config = obj
+		this.ForwardConfig()
+	}
+
+	public UpdateConfig() {
+		this.config.Header = this.header.ConfigValue
+		writeConfig("default.json", JSON.stringify(this.ConfigValue))
+	}
+	public ForwardConfig() {
+		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.name])
 	}
 	public Render(): void {
 		if (this.header.position_dirty) {
@@ -54,15 +63,6 @@ let Menu = new (class Menu {
 		this.header.Render()
 		// loop-optimizer: KEEP
 		this.entries.forEach(node => node.Render())
-	}
-
-	public get ConfigValue() {
-		this.entries.forEach(entry => this.config[entry.name] = entry.ConfigValue)
-		return this.config
-	}
-	public set ConfigValue(obj) {
-		this.config = obj
-		this.ForwardConfig()
 	}
 
 	public OnMouseLeftDown(): boolean {
@@ -98,7 +98,7 @@ let Menu = new (class Menu {
 		this.entries.forEach(node => ret = node.OnMousePositionChanged(MousePosition) && ret)
 		return ret || !this.block_mouse_position
 	}
-	AddEntry(name: string | string[]): Node {
+	public AddEntry(name: string | string[]): Node {
 		if (name instanceof Array) {
 			if (name.length === 0)
 				throw "Invalid name array passed to Menu.AddEntry"

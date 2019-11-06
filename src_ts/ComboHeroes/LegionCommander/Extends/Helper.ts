@@ -4,14 +4,19 @@ import { AeonDiscItem } from "../Menu"
 import InitItems from "./Items"
 
 class LegionHelper {
-	public IsRestrictions(State: Menu.Toggle) {
-		return State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
-	}
+	private CancelModifiers: string[]  = [
+		"modifier_winter_wyvern_winters_curse_aura",
+		"modifier_winter_wyvern_winters_curse",
+		"modifier_oracle_fates_edict",
+	]
 	public get DeadInSide(): boolean {
 		return Heroes.length === 0
 			|| Owner === undefined
 			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
 			|| !Owner.IsAlive
+	}
+	public IsRestrictions(State: Menu.Toggle) {
+		return State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
 	}
 	public Cancel(target: Hero): boolean {
 		return !target.ModifiersBook.HasAnyBuffByNames(this.CancelModifiers)
@@ -47,10 +52,5 @@ class LegionHelper {
 		// todo qop talent somehow ?
 		return false
 	}
-	private CancelModifiers: string[]  = [
-		"modifier_winter_wyvern_winters_curse_aura",
-		"modifier_winter_wyvern_winters_curse",
-		"modifier_oracle_fates_edict",
-	]
 }
 export let Base = new LegionHelper()

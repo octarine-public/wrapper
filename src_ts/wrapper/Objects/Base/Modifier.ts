@@ -41,36 +41,36 @@ const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scept
 export default class Modifier {
 	/* ================== Static ================== */
 
-	static HasTrueSightBuff(buffs: Modifier[]): boolean {
+	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => TRUESIGHT_MODIFIERS.some(nameBuff => nameBuff === buff.Name))
 	}
 
-	static HasScepterBuff(buffs: Modifier[]): boolean {
+	public static HasScepterBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => ScepterRegExp.test(buff.Name))
 	}
 
 	/* =================== Fields =================== */
 
-	readonly m_pBuff: CDOTA_Buff
-	readonly Index: number
-	IsValid: boolean = true
+	public readonly m_pBuff: CDOTA_Buff
+	public readonly Index: number
+	public IsValid: boolean = true
 
-	readonly Name: string
-	readonly Class: string
-	readonly ModifierAura: string
+	public readonly Name: string
+	public readonly Class: string
+	public readonly ModifierAura: string
 
-	readonly Owner: Unit
-	readonly Ability: Ability
-	readonly Caster: Entity
-	readonly Parent: Entity
-	readonly Team: number
-	readonly IsPurgable: boolean
-	readonly IsAura: boolean
-	readonly AuraRadius: number
-	readonly AuraSearchFlags: number
-	readonly AuraSearchTeam: number
-	readonly AuraSearchType: number
-	readonly CreationTime: number
+	public readonly Owner: Unit
+	public readonly Ability: Ability
+	public readonly Caster: Entity
+	public readonly Parent: Entity
+	public readonly Team: number
+	public readonly IsPurgable: boolean
+	public readonly IsAura: boolean
+	public readonly AuraRadius: number
+	public readonly AuraSearchFlags: number
+	public readonly AuraSearchTeam: number
+	public readonly AuraSearchType: number
+	public readonly CreationTime: number
 
 	constructor(buff: CDOTA_Buff, owner: Unit) {
 		this.m_pBuff = buff
@@ -121,7 +121,7 @@ export default class Modifier {
 		return this.m_pBuff.m_iStackCount
 	}
 
-	toString(): string {
+	public toString(): string {
 		return this.Name
 	}
 }

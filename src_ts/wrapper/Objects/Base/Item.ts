@@ -6,7 +6,7 @@ import Player from "./Player"
 import Unit from "./Unit"
 
 export default class Item extends Ability {
-	readonly m_pBaseEntity: C_DOTA_Item
+	public readonly m_pBaseEntity: C_DOTA_Item
 
 	get IsReady(): boolean {
 		const unit = this.Owner
@@ -112,26 +112,26 @@ export default class Item extends Ability {
 		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges;
 	}
 
-	DisassembleItem(queue?: boolean) {
+	public DisassembleItem(queue?: boolean) {
 		return (this.Owner as Unit).DisassembleItem(this, queue)
 	}
-	MoveItem(slot: DOTAScriptInventorySlot_t) {
+	public MoveItem(slot: DOTAScriptInventorySlot_t) {
 		return (this.Owner as Unit).MoveItem(this, slot)
 	}
-	ItemFromStash() {
+	public ItemFromStash() {
 		return (this.Owner as Unit).ItemFromStash(this)
 	}
-	SellItem() {
+	public SellItem() {
 		return (this.Owner as Unit).SellItem(this)
 	}
-	ItemLock() {
+	public ItemLock() {
 		return (this.Owner as Unit).ItemLock(this)
 	}
-	ItemUnlock() {
+	public ItemUnlock() {
 		return (this.Owner as Unit).ItemLock(this, false)
 	}
 
-	CanBeCasted(bonusMana: number = 0): boolean {
+	public CanBeCasted(bonusMana: number = 0): boolean {
 		if (!this.IsValid)
 			return false
 

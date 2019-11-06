@@ -9,7 +9,7 @@ import {
 	TreeRuneState,
 } from "../Menu";
 
-let	allRunes: Rune[] = [],
+let allRunes: Rune[] = [],
 	Heroes: Hero[] = [],
 	checkTick: number = 0,
 	checkTickPower: number = 0,
@@ -113,10 +113,10 @@ export function DrawRunes() {
 					}
 				}
 				// Bounty Rune
-				let Rune = allRunes.some(rune => rune.IsValid && rune.IsAlive && val.IsInRange(rune.NetworkPosition, 430))
+				let rune = allRunes.some(rune_ => rune_.IsAlive && val.IsInRange(rune_.NetworkPosition, 430))
 				// loop-optimizer: FORWARD
 				Heroes.filter((x, i) => {
-					if (!Rune && x.IsInRange(val, 430)) {
+					if (rune === undefined && x.IsInRange(val, 430)) {
 						bountyAlreadySeted = false
 						bountyRunesAr[key] = false
 					}
@@ -148,21 +148,17 @@ export function DrawRunes() {
 }
 
 export function EntityCreatedRune(x: Entity) {
-	if (x instanceof Hero) {
+	if (x instanceof Hero)
 		Heroes.push(x)
-	}
-	if (x instanceof Rune) {
+	if (x instanceof Rune)
 		allRunes.push(x)
-	}
 }
 
 export function EntityDestroyedRune(x: Entity) {
-	if (x instanceof Rune) {
+	if (x instanceof Rune)
 		ArrayExtensions.arrayRemove(allRunes, x)
-	}
-	if (x instanceof Hero) {
+	if (x instanceof Hero)
 		ArrayExtensions.arrayRemove(Heroes, x)
-	}
 }
 
 export function RuneGameEnded() {

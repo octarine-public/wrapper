@@ -1,7 +1,7 @@
-import { Courier, Entity, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Player, PlayerResource, Team, Unit } from "wrapper/Imports"
+import { Courier, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Player, Unit } from "wrapper/Imports"
 
 let allyCourier: Courier,
-	Sleep: GameSleeper = new GameSleeper
+	Sleep = new GameSleeper()
 
 let courCtlrMenu = Menu.AddEntry(["Utility", "Courier Controller"]),
 	State = courCtlrMenu.AddToggle("State"),
@@ -30,14 +30,14 @@ function checkCourSelf(stateEnt: Hero) {
 let CastCourAbility = (num: number) => allyCourier.IsControllable && allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
 
 function CourierState(courier: Courier) {
-	if (courier === undefined || !courier.IsControllable) {
+	if (courier === undefined || !courier.IsControllable)
 		return false
-	}
+
 	let StateCourEnt = courier.StateHero,
 		StateCourEnum = courier.State
-	if (checkCourSelf(StateCourEnt)) {
+	if (checkCourSelf(StateCourEnt))
 		return false
-	}
+
 	switch (StateCourEnum) {
 		case CourierState_t.COURIER_STATE_IDLE:
 		case CourierState_t.COURIER_STATE_AT_BASE:
@@ -109,9 +109,12 @@ function Deliver(): boolean {
 	let free_slots_local = localEnt.Inventory.GetFreeSlots(0, 8).length,
 		cour_slots_local = allyCourier.IsControllable && allyCourier.Inventory.CountItemByOtherPlayer()
 	let items_in_stash = localEnt.Inventory.Stash.reduce((prev, cur) => prev + (cur !== undefined ? 1 : 0), 0)
-	if (items_in_stash > 0 && allyCourier.IsControllable && allyCourier.Inventory.GetFreeSlots(0, 8).length >= items_in_stash
-		&& free_slots_local >= (items_in_stash + cour_slots_local)) {
-		CourierState_t.COURIER_STATE_RETURNING_TO_BASE
+	if (
+		items_in_stash > 0
+		&& allyCourier.IsControllable
+		&& allyCourier.Inventory.GetFreeSlots(0, 8).length >= items_in_stash
+		&& free_slots_local >= (items_in_stash + cour_slots_local)
+	) {
 		CastCourAbility(7) // courier_take_stash_and_transfer_items
 		Sleep.Sleep(GetDelayCast(), "OrderStop")
 		return true
@@ -128,7 +131,7 @@ function Deliver(): boolean {
 }
 
 function IsBlocked(npc: Hero) {
-	if(npc === undefined) {
+	if (npc === undefined) {
 		return false
 	}
 	return playersBlockList.enabled_values.get(npc.Name)

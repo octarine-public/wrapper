@@ -1,9 +1,9 @@
-import { Ability, GameSleeper, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
+import { Ability, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, Owner } from "../Listeners"
 import { LinkenBreakerToggler, State, UseOnlyFromRangeItem } from "../Menu"
 
-let Sleep = new TickSleeper
+let Sleep = new TickSleeper()
 
 import InitItems from "../Extends/Items"
 
@@ -28,8 +28,7 @@ export function BreakInit() {
 			Items.Cyclone.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return false
 		}
 	}
@@ -40,8 +39,7 @@ export function BreakInit() {
 			Items.HeavensHalberd.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return false
 		}
 	}
@@ -52,8 +50,7 @@ export function BreakInit() {
 			Items.DiffusalBlade.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return false
 		}
 	}
@@ -64,8 +61,7 @@ export function BreakInit() {
 			Items.HurricanePike.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return false
 		}
 	}
@@ -77,8 +73,7 @@ export function BreakInit() {
 			Items.ForceStaff.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return false
 		}
 	}
@@ -90,8 +85,7 @@ export function BreakInit() {
 			Items.Orchid.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return false
 		}
 	}
@@ -103,8 +97,7 @@ export function BreakInit() {
 			Items.Bloodthorn.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return false
 		}
 	}
@@ -115,8 +108,7 @@ export function BreakInit() {
 			Items.Nullifier.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return false
 		}
 	}
@@ -127,8 +119,7 @@ export function BreakInit() {
 			Items.RodofAtos.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return false
 		}
 	}
@@ -139,8 +130,7 @@ export function BreakInit() {
 			Items.Sheeps.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return false
 		}
 	}

@@ -5,7 +5,7 @@ let root = Menu.AddEntry(["Utility", "AutoSteal"]),
 	kill_creeps = root.AddToggle("Kill creeps", false),
 	kill_heroes = root.AddToggle("Kill heroes", true)
 
-var abils: Array<{
+var abils: {
 	abilName: string | RegExp
 	abil?: Ability
 	targets: bigint
@@ -13,7 +13,7 @@ var abils: Array<{
 	abilDelayF?: (abil: Ability, entFrom: Unit, entTo: Unit) => number
 	abilDamageF?: (abil: Ability, entFrom: Unit, entTo: Unit) => number
 	abilCastF?: (abil: Ability, entFrom: Unit, entTo: Unit) => void,
-}> = [
+}[] = [
 		{
 			abilName: "axe_culling_blade",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),

@@ -1,4 +1,4 @@
-import { Ability, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Vector3 } from "wrapper/Imports"
+import { Ability, EntityManager, EventsSDK, GameSleeper, Hero, Menu, Vector3 } from "wrapper/Imports"
 
 let root = Menu.AddEntry(["Heroes", "Techies", "5 year old bug"]),
 	state = root.AddToggle("State", true),
@@ -30,18 +30,18 @@ EventsSDK.on("Tick", () => {
 	if (
 		!EntityManager.AllEntities
 			.filter(ent => ent !== techies && ent instanceof Hero && ent.FindRotationAngle(techies) <= 0.1)
-			.some((hero: Hero) => hero.Spells.some(abil => {
+			.some((hero: Hero) => hero.Spells.some(abil_ => {
 				if (
-					abil !== undefined
-					&& !sleeper.Sleeping(abil)
-					&& abil.IsInAbilityPhase
+					abil_ !== undefined
+					&& !sleeper.Sleeping(abil_)
+					&& abil_.IsInAbilityPhase
 					&& (
-						abil.Name === "bane_nightmare"
-						|| abil.Name === "shadow_demon_disruption"
+						abil_.Name === "bane_nightmare"
+						|| abil_.Name === "shadow_demon_disruption"
 					)
-					&& techies.IsInRange(hero, abil.CastRange)
+					&& techies.IsInRange(hero, abil_.CastRange)
 				) {
-					last_abil = abil
+					last_abil = abil_
 					return true
 				}
 				return false

@@ -2,16 +2,22 @@ import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { RendererSDK } from "../Imports"
-import UserCmd from "./UserCmd"
 
-var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("~/wrapper.wasm")), {}).exports
+var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("~/wrapper.wasm")), {}).exports as any as {
+	_start: () => void,
+	CacheFrame: () => void,
+	GetIOBuffer: () => number,
+	memory: Uint8Array,
+	ScreenToWorld: () => void,
+	ScreenToWorldCached: () => void,
+	WorldToScreen: () => boolean,
+	WorldToScreenCached: () => boolean,
+}
 global.wasm = wasm
 wasm._start()
 
 var IOBuffer = new Float32Array(wasm.memory.buffer, wasm.GetIOBuffer())
 global.WASMIOBuffer = IOBuffer
-
-var camera_angles = new QAngle(60, 90, 0)
 
 export function OnDraw() {
 	let camera_position = Vector3.fromIOBuffer(Camera.Position) || new Vector3()
@@ -19,9 +25,7 @@ export function OnDraw() {
 	IOBuffer[1] = camera_position.y
 	IOBuffer[2] = camera_position.z
 
-	let new_camera_angles = QAngle.fromIOBuffer(Camera.Angles)
-	if (new_camera_angles !== undefined)
-		new_camera_angles.CopyTo(camera_angles)
+	let camera_angles = QAngle.fromIOBuffer(Camera.Angles)
 	IOBuffer[3] = camera_angles.x
 	IOBuffer[4] = camera_angles.y
 	IOBuffer[5] = camera_angles.z

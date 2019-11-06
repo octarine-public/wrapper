@@ -17,9 +17,9 @@ interface IMenu {
 
 export default class Node extends Base {
 	public parent: Node | IMenu
-	entries: Base[] = []
-	is_open = false
-	is_hovered = false
+	public entries: Base[] = []
+	public is_open = false
+	public is_hovered = false
 	protected readonly node_hovered_color = new Color(21, 24, 22)
 	protected readonly node_selected_color = new Color(14, 14, 14, 249)
 	protected readonly ArrowSize = 36
@@ -41,18 +41,6 @@ export default class Node extends Base {
 			+ this.text_offset.x * 2
 	}
 
-	public Render(): void {
-		super.Render()
-		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.is_open ? this.node_selected_color : this.is_hovered ? this.node_hovered_color : this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.border_size).AddForThis(this.text_offset), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
-		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
-		if (!this.is_open)
-			return
-
-		// loop-optimizer: KEEP
-		this.entries.forEach(entry => entry.Render())
-	}
-
 	public get ConfigValue() {
 		if (this.entries.length === 0)
 			return undefined
@@ -66,8 +54,16 @@ export default class Node extends Base {
 		this.entries.forEach(entry => entry.ConfigValue = obj[entry.name])
 	}
 
-	private SortEntries(): void {
-		this.entries = this.entries.sort((a, b) => a instanceof Node && b instanceof Node ? a.name.localeCompare(b.name) : 0)
+	public Render(): void {
+		super.Render()
+		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.is_open ? this.node_selected_color : this.is_hovered ? this.node_hovered_color : this.background_color)
+		RendererSDK.Text(this.name, this.Position.Add(this.border_size).AddForThis(this.text_offset), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
+		if (!this.is_open)
+			return
+
+		// loop-optimizer: KEEP
+		this.entries.forEach(entry => entry.Render())
 	}
 
 	public OnMouseLeftDown(): boolean {
@@ -236,7 +232,7 @@ export default class Node extends Base {
 			get Color(): Color {
 				return new Color(R.value, G.value, B.value, A.value)
 			},
-			OnValue: function(this: Color) { return this },
+			OnValue(this: Color) { return this },
 		}
 	}
 	public AddKeybind(name: string, default_key = "", tooltip?: string) {
@@ -262,5 +258,9 @@ export default class Node extends Base {
 		Menu.ForwardConfig()
 		Menu.PositionDirty = true
 		return button
+	}
+
+	private SortEntries(): void {
+		this.entries = this.entries.sort((a, b) => a instanceof Node && b instanceof Node ? a.name.localeCompare(b.name) : 0)
 	}
 }

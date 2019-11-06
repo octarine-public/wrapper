@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, Entity, Hero, Utils } from "wrapper/Imports"
+import { ArrayExtensions, Entity, Hero, Utils } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { ComboGameEnded } from "./Module/Combo"

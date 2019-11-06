@@ -369,6 +369,12 @@ declare interface Particles {
 // must be called only in onDraw!
 declare interface Renderer {
 	readonly WindowSize: boolean // returns Vector2 to IOBuffer offset 0 at get
+	
+	/**
+	 * @param pos world position that needs to be turned to screen position
+	 * @returns screen position to IOBuffer if return value is true
+	 */
+	WorldToScreen(): boolean // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
 
 	FilledCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a: number): void
 	OutlinedCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a: number): void

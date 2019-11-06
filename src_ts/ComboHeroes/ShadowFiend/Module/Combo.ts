@@ -1,4 +1,4 @@
-import { Ability, Game, GameSleeper, Hero, TickSleeper, Unit, Utils, Vector3 } from "wrapper/Imports";
+import { Ability, Game, Hero, TickSleeper } from "wrapper/Imports";
 
 import { Base } from "../Extends/Helper";
 import { MouseTarget, Owner } from "../Listeners";
@@ -6,8 +6,8 @@ import { MouseTarget, Owner } from "../Listeners";
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
-import { BladeMailCancel, ComboKeyItem, State, СomboAbility, СomboItems} from "../Menu";
-let Sleep: TickSleeper = new TickSleeper
+import { BladeMailCancel, ComboKeyItem, State, СomboAbility, СomboItems } from "../Menu";
+let Sleep = new TickSleeper()
 function IsValidAbility(ability: Ability, target: Hero) {
 	return ability !== undefined && ability.IsReady
 		&& ability.CanBeCasted() && СomboAbility.IsEnabled(ability.Name)
@@ -62,9 +62,9 @@ export function InitCombo() {
 		if (IsValidItems(Items.Cyclone, target)
 			&& Abilities.Requiem.CanBeCasted()
 			&& Owner.IsInRange(target, Items.Blink !== undefined && СomboItems.IsEnabled(Items.Blink.Name)
-			&& Items.Blink.CanBeCasted()
-			? DistpossibleRange
-			: 285)
+				&& Items.Blink.CanBeCasted()
+				? DistpossibleRange
+				: 285)
 		) {
 			Items.Cyclone.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
@@ -99,8 +99,7 @@ export function InitCombo() {
 				Items.Blink.UseAbility(blink_pos)
 				Sleep.Sleep(Items.Tick)
 				return true
-			}
-			else {
+			} else {
 				Owner.MoveTo(target.NetworkPosition)
 				return true
 			}
@@ -118,8 +117,7 @@ export function InitCombo() {
 				return true
 			}
 		}
-	}
-	else {
+	} else {
 		if (IsValidItems(Items.Sheeps, target) && !target.IsInvulnerable) {
 			Items.Sheeps.UseAbility(target)
 			Sleep.Sleep(Items.Tick)

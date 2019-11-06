@@ -5,7 +5,7 @@ import RendererSDK from "../Native/RendererSDK"
 import Base from "./Base"
 
 export default class Switcher extends Base {
-	values: string[]
+	public values: string[]
 	public selected_id = 0
 	protected readonly ArrowSize = 24
 	protected readonly arrow_size = RendererSDK.GetTextSize("«", this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
@@ -26,6 +26,17 @@ export default class Switcher extends Base {
 		this.Update()
 	}
 
+	public get RightArrowRect(): Rectangle {
+		let base_pos = this.Position.Add(this.TotalSize).SubtractScalarY(this.longest_value_size.y + 3).SubtractForThis(this.arrow_rect_offset)
+		return new Rectangle(base_pos, base_pos.Add(this.arrow_rect_size))
+	}
+	public get LeftArrowRect(): Rectangle {
+		return this.RightArrowRect.SubtractX(this.arrow_rect_size.x + this.separator_size)
+	}
+
+	public get ConfigValue() { return this.selected_id }
+	public set ConfigValue(value) { this.selected_id = Math.max(0, Math.min(this.values.length - 1, value !== undefined ? value : this.selected_id)) }
+
 	public Update(): void {
 		let longest_value = this.values.reduce((prev, cur) => cur.length > prev.length ? cur : prev, "")
 		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
@@ -36,14 +47,6 @@ export default class Switcher extends Base {
 			+ 10 * 2
 			+ this.border_size.x * 2
 		this.TotalSize.y = this.TotalSize_.y = this.name_size.y + this.longest_value_size.y + 3 + this.border_size.y * 2 + this.text_offset.y * 2
-	}
-
-	public get RightArrowRect(): Rectangle {
-		let base_pos = this.Position.Add(this.TotalSize).SubtractScalarY(this.longest_value_size.y + 3).SubtractForThis(this.arrow_rect_offset)
-		return new Rectangle(base_pos, base_pos.Add(this.arrow_rect_size))
-	}
-	public get LeftArrowRect(): Rectangle {
-		return this.RightArrowRect.SubtractX(this.arrow_rect_size.x + this.separator_size)
 	}
 
 	public Render(): void {
@@ -59,9 +62,6 @@ export default class Switcher extends Base {
 		RendererSDK.Text("»", right_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
 		super.RenderTooltip()
 	}
-
-	public get ConfigValue() { return this.selected_id }
-	public set ConfigValue(value) { this.selected_id = Math.max(0, Math.min(this.values.length - 1, value !== undefined ? value : this.selected_id)) }
 
 	public OnMouseLeftDown(): boolean {
 		return !this.Rect.Contains(this.MousePosition)

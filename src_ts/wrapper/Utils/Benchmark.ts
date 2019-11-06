@@ -23,7 +23,7 @@ export default class Benchmark {
 	 * 		}
 	 * ], 100000).Start().ShowResult();
 	 */
-	constructor(callbacks: Array<(value?: number) => void> | ((value?: number) => void), public readonly iterations: number = 1000000) {
+	constructor(callbacks: ((value?: number) => void)[] | ((value?: number) => void), public readonly iterations: number = 1000000) {
 		if (!Array.isArray(callbacks))
 			callbacks = [callbacks]
 		callbacks.forEach(callback => {
@@ -40,7 +40,7 @@ export default class Benchmark {
 	 *
 	 * @param number number benchmark will be start only for given number
 	 */
-	Start(number?: number): Benchmark {
+	public Start(number?: number): Benchmark {
 		if (number !== undefined) {
 			if (number > this.callbacks.length - 1)
 				throw "number is greater than length of callbacks"
@@ -49,7 +49,7 @@ export default class Benchmark {
 
 			let time = Date.now()
 
-			for (let m = this.iterations; m--; )
+			for (let m = this.iterations; m--;)
 				callbackFunc(m)
 
 			let timeEnd = Date.now()
@@ -63,7 +63,7 @@ export default class Benchmark {
 
 				let time = Date.now()
 
-				for (let m = this.iterations; m--; )
+				for (let m = this.iterations; m--;)
 					callbackFunc(m)
 
 				let timeEnd = Date.now()
@@ -80,7 +80,7 @@ export default class Benchmark {
 	/**
 	 * @param number number of callback in all callbacks
 	 */
-	ShowResult(number?: number): Benchmark {
+	public ShowResult(number?: number): Benchmark {
 		if (number !== undefined) {
 			if (number > this.callbacks.length - 1)
 				throw "number is greater than length of callbacks"
@@ -94,7 +94,7 @@ export default class Benchmark {
 		return this
 	}
 
-	StartAndShow(number?: number): Benchmark {
+	public StartAndShow(number?: number): Benchmark {
 		this.Start(number)
 		this.ShowResult(number)
 		return this

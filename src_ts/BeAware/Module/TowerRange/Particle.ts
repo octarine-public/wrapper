@@ -57,10 +57,9 @@ export function OnDraw() {
 		if (!TowerOnlyTarget.value) {
 			switch (TowerSwitcher.selected_id) {
 				case 0:
-					if(!tower.IsEnemy()) {
+					if (!tower.IsEnemy()) {
 						SwicthTowers(particle_range, tower)
-					}
-					else {
+					} else {
 						if (particle_range === undefined)
 							CreateTowerRange(tower)
 					}
@@ -68,22 +67,20 @@ export function OnDraw() {
 				case 1:
 					if (tower.IsEnemy()) {
 						SwicthTowers(particle_range, tower)
-					}
-					else {
+					} else {
 						if (particle_range === undefined)
 							CreateTowerRange(tower)
 					}
-				break
+					break
 				case 2:
 					if (particle_range === undefined) {
 						CreateTowerRange(tower)
 					}
-				break
+					break
 			}
-		}
-		else SwicthTowers(particle_range, tower)
+		} else SwicthTowers(particle_range, tower)
 		State.OnValue(x => {
-			if(!x.value) {
+			if (!x.value) {
 				SwicthTowers(particle_range, tower)
 				RemoveTarget(particle, tower)
 			}
@@ -98,25 +95,22 @@ export function OnDraw() {
 			let par: number
 			switch (TowerSwitcher.selected_id) {
 				case 0:
-					if(tower.IsEnemy()) {
+					if (tower.IsEnemy())
 						par = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, tower.TowerAttackTarget)
-					}
-				break
+					break
 				case 1:
-					if (!tower.IsEnemy()) {
+					if (!tower.IsEnemy())
 						par = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, tower.TowerAttackTarget)
-					}
-				break
+					break
 				case 2:
 					par = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, tower.TowerAttackTarget)
-				break
+					break
 			}
 			if (par !== undefined)
 				pars.set(tower, par)
 		}
-		if (pars.has(tower)) {
+		if (pars.has(tower))
 			DrawTarget(tower, tower.TowerAttackTarget)
-		}
 	})
 }
 export function GameEnded() {

@@ -47,16 +47,16 @@ class EntityManager {
 	get AllEntities(): Entity[] {
 		return AllEntities.slice()
 	}
-	EntityByIndex(index: number): Entity {
+	public EntityByIndex(index: number): Entity {
 		return EntitiesIDs.get(index)
 	}
-	GetPlayerByID(playerID: number): Player {
+	public GetPlayerByID(playerID: number): Player {
 		if (playerID === -1)
 			return undefined
 		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player
 	}
 
-	GetEntityByNative(ent: C_BaseEntity | number, inStage: boolean = false): Entity {
+	public GetEntityByNative(ent: C_BaseEntity | number, inStage: boolean = false): Entity {
 		if (ent === undefined)
 			return undefined
 		if (!(ent instanceof C_BaseEntity))
@@ -69,7 +69,7 @@ class EntityManager {
 		return entityFind
 	}
 
-	GetEntityByFilter(filter: (ent: Entity) => boolean, inStage: boolean = false): Entity {
+	public GetEntityByFilter(filter: (ent: Entity) => boolean, inStage: boolean = false): Entity {
 		let found = AllEntities.find(filter)
 		if (found !== undefined)
 			return found
@@ -86,7 +86,7 @@ class EntityManager {
 		return found
 	}
 
-	GetEntitiesByNative(ents: Array<C_BaseEntity | Entity | number>, inStage: boolean = false): Array<Entity | any> {
+	public GetEntitiesByNative(ents: (C_BaseEntity | Entity | number)[], inStage: boolean = false): (Entity | any)[] {
 		// loop-optimizer: FORWARD
 		return ents.map(ent => {
 			if (ent instanceof Entity)
@@ -100,7 +100,7 @@ class EntityManager {
 		})
 	}
 
-	GetEntitiesInRange(vec: Vector3, range: number, filter?: (value: Entity) => boolean): Entity[] {
+	public GetEntitiesInRange(vec: Vector3, range: number, filter?: (value: Entity) => boolean): Entity[] {
 		return AllEntities.filter(entity => {
 			if (entity.Position.Distance(vec) > range)
 				return false

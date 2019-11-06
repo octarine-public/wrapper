@@ -1,5 +1,4 @@
-import { Ability, ArrayExtensions, Color, Entity, EntityManager, EventsSDK, Game, Hero, LinearProjectile, Menu, Modifier, ModifierManager, ParticlesSDK, QAngle, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
-import { DegreesToRadian } from "./wrapper/Utils/Math"
+import { Ability, ArrayExtensions, Color, Entity, EntityManager, EventsSDK, Game, Hero, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
 
 const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	active = menu.AddToggle("Active", true),
@@ -40,7 +39,7 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		false, false, false, false,
 		["particles/units/heroes/hero_monkey_king/monkey_king_spring_cast.vpcf", ["pos", "rad"]],
 
-	] as Array<[string, string[]]>,
+	] as [string, string[]][],
 	arAbilities = [
 		"invoker_sun_strike",
 		"kunkka_torrent",
@@ -49,12 +48,12 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		"", "", "",
 		"monkey_king_primal_spring",
 	],
-	arSounds = [
-		"invoker_invo_ability_sunstrike_01",
-		"kunkka_kunk_ability_torrent_01",
-		"lina_lina_ability_lightstrike_02",
-		"leshrac_lesh_ability_split_05",
-	],
+	// arSounds = [
+	// 	"invoker_invo_ability_sunstrike_01",
+	// 	"kunkka_kunk_ability_torrent_01",
+	// 	"lina_lina_ability_lightstrike_02",
+	// 	"leshrac_lesh_ability_split_05",
+	// ],
 	arSpecialValues = [
 		"area_of_effect",
 		"radius",
@@ -232,7 +231,7 @@ EventsSDK.on("Draw", () => {
 	delArray.forEach(buff => arTimers.delete(buff))
 })
 
-let direct_part_list = new Map
+let direct_part_list = new Map()
 function DrawDirectional(v1: Vector3, v2: Vector3, id, all = false) {
 	let part_table = direct_part_list.get(id)
 
@@ -270,7 +269,7 @@ function DestroyDirectional(id) {
 	}
 }
 
-let circle_part_list = new Map
+let circle_part_list = new Map()
 
 function DrawParticleCirclePos(pos: Vector3, radius: number, id: number) {
 
@@ -392,14 +391,13 @@ EventsSDK.on("LinearProjectileDestroyed", proj => {
 	ArrayExtensions.arrayRemove(line_table, proj)
 })
 
-let particles_table = new Map
+let particles_table = new Map()
 
-EventsSDK.on("ParticleCreated", (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity) => {
+EventsSDK.on("ParticleCreated", (id, path) => {
 	if (!active.value)
 		return
 
 	if (path === "particles/units/heroes/hero_pudge/pudge_meathook.vpcf") {
-
 		let p = {
 			time: Game.RawGameTime,
 			create: {
@@ -413,14 +411,14 @@ EventsSDK.on("ParticleCreated", (id: number, path: string, particleSystemHandle:
 	}
 })
 
-EventsSDK.on("ParticleUpdated", (id: number, controlPoint: number, position: Vector3) => {
+EventsSDK.on("ParticleUpdated", (id, controlPoint, position) => {
 	if (!active.value)
 		return
 	if (particles_table.has(id)) {
 
 		let part = particles_table.get(id)
 
-		part["update"][controlPoint] = {
+		part.update[controlPoint] = {
 			position,
 		}
 
@@ -428,15 +426,7 @@ EventsSDK.on("ParticleUpdated", (id: number, controlPoint: number, position: Vec
 	}
 })
 
-EventsSDK.on("ParticleUpdatedEnt", (
-	id: number,
-	controlPoint: number,
-	ent: Entity,
-	attach: ParticleAttachment_t,
-	attachment: number,
-	fallbackPosition: Vector3,
-	includeWearables: boolean,
-) => {
+EventsSDK.on("ParticleUpdatedEnt", (id, controlPoint, ent, attach, attachment, fallbackPosition) => {
 	if (!active.value)
 		return
 
@@ -444,7 +434,7 @@ EventsSDK.on("ParticleUpdatedEnt", (
 
 		let part = particles_table.get(id)
 
-		part["update_ent"][controlPoint] = {
+		part.update_ent[controlPoint] = {
 			position: fallbackPosition,
 		}
 
@@ -455,13 +445,11 @@ EventsSDK.on("ParticleUpdatedEnt", (
 EventsSDK.on("ParticleDestroyed", id => particles_table.delete(id))
 
 EventsSDK.on("Update", () => {
-
 	if (!active.value)
 		return
 
 	// loop-optimizer: KEEP
 	particles_table.forEach((part, i) => {
-
 		if (part.create.path === "particles/units/heroes/hero_pudge/pudge_meathook.vpcf" &&
 			part.update_ent[0] !== undefined &&
 			part.update[1] !== undefined) {
@@ -485,7 +473,6 @@ EventsSDK.on("Update", () => {
 
 	// loop-optimizer: KEEP
 	line_table.forEach(proj => {
-
 		DrawDirectional(
 			proj.Position,
 			proj.TargetLoc,

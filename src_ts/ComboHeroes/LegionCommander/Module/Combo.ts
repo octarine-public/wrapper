@@ -1,7 +1,7 @@
 import { Base } from "../Extends/Helper"
 import { BreakInit } from "./LinkenBreaker"
 
-import { Ability, Game, Hero, Item, Menu, TickSleeper, Utils } from "wrapper/Imports"
+import { Ability, Hero, Item, Menu, TickSleeper, Utils } from "wrapper/Imports"
 import { MouseTarget, Owner } from "../Listeners"
 
 import InitAbility from "../Extends/Abilities"
@@ -9,7 +9,7 @@ import InitItems from "../Extends/Items"
 
 import { BladeMailItem, ComboKeyItem, ComboMode, ComboModeInvis, State, СomboAbility, СomboItems } from "../Menu"
 
-let GameSleep = new TickSleeper
+let GameSleep = new TickSleeper()
 
 function IsValid(item: Ability | Item, Selector: Menu.ImageSelector) {
 	return item && Selector.IsEnabled(item.Name) && item.CanBeCasted()
@@ -52,7 +52,7 @@ function Init(
 	blockingAbilities: boolean,
 	UseBlink: boolean = false,
 	is_invise: boolean = false,
-	callback?: Function,
+	callback?: () => void,
 ) {
 	typeof callback !== "function"
 		? PressTheAttack(Abilities, target)
@@ -100,8 +100,8 @@ function Init(
 		}
 		return
 	}
-	if (IsValid(Items.BladMail, СomboItems)) {
-		Items.BladMail.UseAbility(Owner)
+	if (IsValid(Items.BladeMail, СomboItems)) {
+		Items.BladeMail.UseAbility(Owner)
 		return
 	}
 	if (UseBlink && Items.Blink.CanBeCasted()) {
@@ -176,8 +176,7 @@ export function InitCombo() {
 			) {
 				Init(Abilities, Items, target, blockingAbilities, true)
 				return
-			}
-			else {
+			} else {
 				if (Items.InvisSword || Items.SilverEdge) {
 					CastInvis(Abilities, Items, blockingAbilities, target)
 					if (!GameSleep.Sleeping) {
@@ -187,8 +186,7 @@ export function InitCombo() {
 				}
 				return
 			}
-		}
-		else { // IsInvisible
+		} else { // IsInvisible
 			CastInvis(Abilities, Items, blockingAbilities, target)
 			return
 		}

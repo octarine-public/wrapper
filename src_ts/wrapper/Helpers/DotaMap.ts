@@ -7,6 +7,15 @@ import { MapArea } from "./MapArea"
 import { Team } from "./Team"
 
 export class DotaMap {
+
+	private static Load(name: string): Vector3[] {
+		let ar: [number, number, number][] = JSON.parse(Utils.Utf8ArrayToStr(new Uint8Array(readFile(`Map/${name}.json`))))
+		// loop-optimizer: FORWARD
+		return ar.map(([x, y, z]) => new Vector3(x, y, z))
+	}
+	private static LoadPoly(name: string): WorldPolygon {
+		return new WorldPolygon(...DotaMap.Load(name))
+	}
 	public readonly Top = DotaMap.LoadPoly("Top")
 	public readonly Middle = DotaMap.LoadPoly("Middle")
 	public readonly Bottom = DotaMap.LoadPoly("Bottom")
@@ -76,14 +85,5 @@ export class DotaMap {
 				break
 		}
 		return []
-	}
-
-	private static Load(name: string): Vector3[] {
-		let ar: Array<[number, number, number]> = JSON.parse(Utils.Utf8ArrayToStr(new Uint8Array(readFile(`Map/${name}.json`))))
-		// loop-optimizer: FORWARD
-		return ar.map(([x, y, z]) => new Vector3(x, y, z))
-	}
-	private static LoadPoly(name: string): WorldPolygon {
-		return new WorldPolygon(...DotaMap.Load(name))
 	}
 }

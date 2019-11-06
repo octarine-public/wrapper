@@ -42,12 +42,11 @@ active.OnValue(() => {
 	Refresh()
 })
 
-function removeMenu(obj) {
-	obj.clr.tree.parent.RemoveControl(obj.clr.tree)
-	obj.men.parent.RemoveControl(obj.men)
-}
+// function removeMenu(obj) {
+// 	obj.clr.tree.parent.RemoveControl(obj.clr.tree)
+// 	obj.men.parent.RemoveControl(obj.men)
+// }
 function OnValAbility(val: ImageSelector) {
-
 	if (LocalPlayer === undefined)
 		return;
 

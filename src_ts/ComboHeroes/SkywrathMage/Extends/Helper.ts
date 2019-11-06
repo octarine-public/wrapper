@@ -6,8 +6,73 @@ import InitAbility from "./Abilities"
 import InitItems from "./Items"
 
 class BaseHelper {
-	private PermitPressing: boolean
 	public readonly Tick: number = 100
+	private PermitPressing: boolean
+	private readonly AbilityDisable: string[] = [
+		"queenofpain_blink",
+		"monkey_king_boundless_strike",
+		"monkey_king_wukongs_command",
+		"antimage_blink",
+		"antimage_mana_void",
+		"legion_commander_duel",
+		"doom_bringer_doom",
+		"faceless_void_time_walk",
+		"faceless_void_chronosphere",
+		"witch_doctor_death_ward",
+		"rattletrap_power_cogs",
+		"tidehunter_ravage",
+		"axe_berserkers_call",
+		"brewmaster_primal_split",
+		"omniknight_guardian_angel",
+		"queenofpain_sonic_wave",
+		"slardar_slithereen_crush",
+		"lion_finger_of_death",
+		"lina_laguna_blade",
+		"sven_storm_bolt",
+		"pudge_dismember",
+	]
+
+	private readonly ActiveAbilities: string[] = [
+		"rattletrap_power_cogs",
+		"enigma_black_hole",
+		"bane_fiends_grip",
+		"witch_doctor_death_ward",
+	]
+
+	private readonly ActiveModifiers: string[] = [
+		"modifier_skywrath_mystic_flare_aura_effect",
+		"modifier_rod_of_atos_debuff",
+		"modifier_crystal_maiden_frostbite",
+		"modifier_crystal_maiden_freezing_field",
+		"modifier_naga_siren_ensnare",
+		"modifier_meepo_earthbind",
+		"modifier_lone_druid_spirit_bear_entangle_effect",
+		"modifier_legion_commander_duel",
+		"modifier_kunkka_torrent",
+		"modifier_enigma_black_hole_pull",
+		"modifier_ember_spirit_searing_chains",
+		"modifier_dark_troll_warlord_ensnare",
+		"modifier_rattletrap_cog_marker",
+		"modifier_axe_berserkers_call",
+		"modifier_faceless_void_chronosphere_freeze",
+		"modifier_winter_wyvern_cold_embrace",
+	]
+
+	private readonly CancelModifiers: string[] = [
+		"modifier_abaddon_borrowed_time",
+		"modifier_item_combo_breaker_buff",
+		"modifier_winter_wyvern_winters_curse_aura",
+		"modifier_winter_wyvern_winters_curse",
+		"modifier_oracle_fates_edict",
+		"modifier_item_lotus_orb_active",
+		"modifier_antimage_counterspell",
+	]
+
+	private readonly ModifiersTrigger: string[] = [
+		"modifier_rod_of_atos_debuff",
+		"modifier_skywrath_mage_concussive_shot_slow",
+		"modifier_skywrath_mage_ancient_seal",
+	]
 	constructor() {
 		this.PermitPressing = false
 	}
@@ -20,15 +85,22 @@ class BaseHelper {
 		return this.PermitPressing
 	}
 
-	public IsRestrictions(State: Menu.Toggle) {
-		return State.value && !Game.IsPaused && Game.IsInGame && MyHero !== undefined && MyHero.IsAlive
-	}
-
 	public get DeadInSide(): boolean {
 		return Heroes.length === 0
 			|| MyHero === undefined
 			|| !Heroes.some(x => x !== undefined && x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
 			|| !MyHero.IsAlive
+	}
+
+	public get ConShot(): AbilitySDK {
+		let Abilities = new InitAbility(MyHero)
+		if (Abilities.ConcussiveShot !== undefined)
+			return Abilities.ConcussiveShot
+		return undefined
+	}
+
+	public IsRestrictions(State: Menu.Toggle) {
+		return State.value && !Game.IsPaused && Game.IsInGame && MyHero !== undefined && MyHero.IsAlive
 	}
 
 	public Active(target: Hero): boolean {
@@ -165,77 +237,5 @@ class BaseHelper {
 
 		return false
 	}
-
-	public get ConShot(): AbilitySDK {
-		let Abilities = new InitAbility(MyHero)
-		if (Abilities.ConcussiveShot !== undefined)
-			return Abilities.ConcussiveShot
-		return undefined
-	}
-	private readonly AbilityDisable: string[] = [
-		"queenofpain_blink",
-		"monkey_king_boundless_strike",
-		"monkey_king_wukongs_command",
-		"antimage_blink",
-		"antimage_mana_void",
-		"legion_commander_duel",
-		"doom_bringer_doom",
-		"faceless_void_time_walk",
-		"faceless_void_chronosphere",
-		"witch_doctor_death_ward",
-		"rattletrap_power_cogs",
-		"tidehunter_ravage",
-		"axe_berserkers_call",
-		"brewmaster_primal_split",
-		"omniknight_guardian_angel",
-		"queenofpain_sonic_wave",
-		"slardar_slithereen_crush",
-		"lion_finger_of_death",
-		"lina_laguna_blade",
-		"sven_storm_bolt",
-		"pudge_dismember",
-	]
-
-	private readonly ActiveAbilities: string[] = [
-		"rattletrap_power_cogs",
-		"enigma_black_hole",
-		"bane_fiends_grip",
-		"witch_doctor_death_ward",
-	]
-
-	private readonly ActiveModifiers: string[] = [
-		"modifier_skywrath_mystic_flare_aura_effect",
-		"modifier_rod_of_atos_debuff",
-		"modifier_crystal_maiden_frostbite",
-		"modifier_crystal_maiden_freezing_field",
-		"modifier_naga_siren_ensnare",
-		"modifier_meepo_earthbind",
-		"modifier_lone_druid_spirit_bear_entangle_effect",
-		"modifier_legion_commander_duel",
-		"modifier_kunkka_torrent",
-		"modifier_enigma_black_hole_pull",
-		"modifier_ember_spirit_searing_chains",
-		"modifier_dark_troll_warlord_ensnare",
-		"modifier_rattletrap_cog_marker",
-		"modifier_axe_berserkers_call",
-		"modifier_faceless_void_chronosphere_freeze",
-		"modifier_winter_wyvern_cold_embrace",
-	]
-
-	private readonly CancelModifiers: string[] = [
-		"modifier_abaddon_borrowed_time",
-		"modifier_item_combo_breaker_buff",
-		"modifier_winter_wyvern_winters_curse_aura",
-		"modifier_winter_wyvern_winters_curse",
-		"modifier_oracle_fates_edict",
-		"modifier_item_lotus_orb_active",
-		"modifier_antimage_counterspell",
-	]
-
-	private readonly ModifiersTrigger: string[] = [
-		"modifier_rod_of_atos_debuff",
-		"modifier_skywrath_mage_concussive_shot_slow",
-		"modifier_skywrath_mage_ancient_seal",
-	]
 }
 export let Base = new BaseHelper()

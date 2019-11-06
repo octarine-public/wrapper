@@ -1,4 +1,3 @@
-import { Color } from "wrapper/Imports"
 import { Menu, MenuBase, MenuDrawBase } from "../../abstract/Menu.Base"
 let MapHack = Menu.AddNode("MapHack")
 const { BaseTree, State } = MenuBase(MapHack, "Particle")

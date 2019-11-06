@@ -16,8 +16,8 @@ import {
 
 import ManagerBase from "../../../abstract/Base"
 import { OtherRadius } from "../Entities"
-let Base: ManagerBase = new ManagerBase,
-	checkTick: number = 0,
+let Base = new ManagerBase(),
+	checkTick = 0,
 	RadarDetect: Entity[] = []
 
 function CreateAbilityRadius(ent: Entity, radius: number) {
@@ -29,7 +29,7 @@ function CreateAbilityRadius(ent: Entity, radius: number) {
 export function DrawScan() {
 	if (RadarState.value) {
 		if (RadarTreeSettingsState.value && LocalPlayer !== undefined)
-			Base.DrawTimer (
+			Base.DrawTimer(
 				LocalPlayer.Team !== Team.Radiant
 					? Game.ScanCooldownRadiant
 					: Game.ScanCooldownDire,

@@ -3,15 +3,15 @@ import Vector3 from "./Vector3"
 
 export default class Vector2 {
 	/* ================== Static ================== */
-	static fromIOBuffer(buffer: boolean = true, offset: number = 0): Vector2 {
+	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Vector2 {
 		if (buffer !== true)
 			return undefined
 		return new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1])
 	}
-	static fromArray(array: [number, number]): Vector2 {
+	public static fromArray(array: [number, number]): Vector2 {
 		return new Vector2(array[0] || 0, array[1] || 0)
 	}
-	static FromAngle(angle: number): Vector2 {
+	public static FromAngle(angle: number): Vector2 {
 		return new Vector2(Math.cos(angle), Math.sin(angle))
 	}
 	/**
@@ -19,10 +19,10 @@ export default class Vector2 {
 	 * @param radial
 	 * @param polar
 	 */
-	static FromPolarCoordinates(radial: number, polar: number): Vector2 {
+	public static FromPolarCoordinates(radial: number, polar: number): Vector2 {
 		return new Vector2(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
-	static GetCenterType<T>(array: T[], callback: (value: T) => Vector2): Vector2 {
+	public static GetCenterType<T>(array: T[], callback: (value: T) => Vector2): Vector2 {
 
 		let newVec = new Vector2()
 
@@ -31,7 +31,7 @@ export default class Vector2 {
 		return newVec.DivideScalarForThis(array.length)
 
 	}
-	static GetCenter(array: Vector2[]): Vector2 {
+	public static GetCenter(array: Vector2[]): Vector2 {
 
 		let newVec = new Vector2()
 
@@ -40,7 +40,7 @@ export default class Vector2 {
 		return newVec.DivideScalarForThis(array.length)
 
 	}
-	static CopyFrom(vec: Vector2): Vector2 {
+	public static CopyFrom(vec: Vector2): Vector2 {
 		return new Vector2(vec.x, vec.y)
 	}
 
@@ -105,7 +105,7 @@ export default class Vector2 {
 	}
 
 	/* ================== Methods ================== */
-	Equals(vec: Vector2): boolean {
+	public Equals(vec: Vector2): boolean {
 		return this.x === vec.x
 			&& this.y === vec.y
 	}
@@ -113,7 +113,7 @@ export default class Vector2 {
 	/**
 	 * Are all components of this vector are 0?
 	 */
-	IsZero(tolerance: number = 0.01): boolean {
+	public IsZero(tolerance: number = 0.01): boolean {
 		var x = this.x,
 			y = this.y
 
@@ -123,33 +123,33 @@ export default class Vector2 {
 	/**
 	 * Are length of this vector are  greater than value?
 	 */
-	IsLengthGreaterThan(val: number): boolean {
+	public IsLengthGreaterThan(val: number): boolean {
 		return this.LengthSqr > val ** 2
 	}
 	/**
 	 * Are length of this vector are less than value?
 	 */
-	IsLengthLessThan(val: number): boolean {
+	public IsLengthLessThan(val: number): boolean {
 		return this.LengthSqr < val ** 2
 	}
 	/**
 	 * Invalidates this vector
 	 */
-	Invalidate(): Vector2 {
+	public Invalidate(): Vector2 {
 		this.x = this.y = NaN
 		return this
 	}
 	/**
 	 * Zeroes this vector
 	 */
-	toZero(): Vector2 {
+	public toZero(): Vector2 {
 		this.x = this.y = 0
 		return this
 	}
 	/**
 	 * Negates this vector (equiv to x = -x, z = -z, y = -y)
 	 */
-	Negate(): Vector2 {
+	public Negate(): Vector2 {
 		this.x *= -1
 		this.y *= -1
 		return this
@@ -157,7 +157,7 @@ export default class Vector2 {
 	/**
 	 * Randomizes this vector within given values
 	 */
-	Random(minVal: number, maxVal: number): Vector2 {
+	public Random(minVal: number, maxVal: number): Vector2 {
 		this.x = Math.random() * (maxVal - minVal) + minVal
 		this.y = Math.random() * (maxVal - minVal) + minVal
 		return this
@@ -166,7 +166,7 @@ export default class Vector2 {
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
 	 * @param The another vector
 	 */
-	Min(vec: Vector2): Vector2 {
+	public Min(vec: Vector2): Vector2 {
 		return new Vector2 (
 			Math.min(this.x, vec instanceof Vector2 ? vec.x : vec),
 			Math.min(this.y, vec instanceof Vector2 ? vec.y : vec),
@@ -176,7 +176,7 @@ export default class Vector2 {
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
 	 * @param The another vector
 	 */
-	Max(vec: Vector2 | number): Vector2 {
+	public Max(vec: Vector2 | number): Vector2 {
 		return new Vector2 (
 			Math.max(this.x, vec instanceof Vector2 ? vec.x : vec),
 			Math.max(this.y, vec instanceof Vector2 ? vec.y : vec),
@@ -185,7 +185,7 @@ export default class Vector2 {
 	/**
 	 * Returns a vector whose elements are the absolute values of each of the source vector's elements.
 	 */
-	Abs(): Vector2 {
+	public Abs(): Vector2 {
 		return new Vector2 (
 			Math.abs(this.x),
 			Math.abs(this.y),
@@ -194,7 +194,7 @@ export default class Vector2 {
 	/**
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
-	SquareRoot(): Vector2 {
+	public SquareRoot(): Vector2 {
 		return new Vector2 (
 			Math.sqrt(this.x),
 			Math.sqrt(this.y),
@@ -205,7 +205,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @returns another vector
 	 */
-	CopyTo(vec: Vector2): Vector2 {
+	public CopyTo(vec: Vector2): Vector2 {
 		vec.x = this.x
 		vec.y = this.y
 		return vec
@@ -215,7 +215,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @returns this vector
 	 */
-	CopyFrom(vec: Vector2): Vector2 {
+	public CopyFrom(vec: Vector2): Vector2 {
 		this.x = vec.x
 		this.y = vec.y
 		return this
@@ -223,7 +223,7 @@ export default class Vector2 {
 	/**
 	 * Set vector by numbers
 	 */
-	SetVector(x: number = 0, y: number = 0): Vector2 {
+	public SetVector(x: number = 0, y: number = 0): Vector2 {
 		this.x = x
 		this.y = y
 		return this
@@ -231,14 +231,14 @@ export default class Vector2 {
 	/**
 	 * Set X of vector by number
 	 */
-	SetX(num: number): Vector2 {
+	public SetX(num: number): Vector2 {
 		this.x = num
 		return this
 	}
 	/**
 	 * Set Y of vector by number
 	 */
-	SetY(num: number): Vector2 {
+	public SetY(num: number): Vector2 {
 		this.y = num
 		return this
 	}
@@ -246,7 +246,7 @@ export default class Vector2 {
 	/**
 	 * Normalize the vector
 	 */
-	Normalize(scalar?: number): Vector2 {
+	public Normalize(scalar?: number): Vector2 {
 		var length = this.Length
 
 		if (length !== 0)
@@ -257,20 +257,20 @@ export default class Vector2 {
 	/**
 	 * Returns the cross product Z value.
 	 */
-	Cross(vec: Vector2): number {
+	public Cross(vec: Vector2): number {
 		return (vec.y * this.x) - (vec.x * this.y)
 	}
 	/**
 	 * The dot product of this vector and another vector.
 	 * @param vec The another vector
 	 */
-	Dot(vec: Vector2): number {
+	public Dot(vec: Vector2): number {
 		return this.x * vec.x + this.y * vec.y
 	}
 	/**
 	 * Scale the vector to length. ( Returns 0 vector if the length of this vector is 0 )
 	 */
-	ScaleTo(scalar: number): Vector2 {
+	public ScaleTo(scalar: number): Vector2 {
 		var length = this.Length
 
 		if (length === 0) {
@@ -285,7 +285,7 @@ export default class Vector2 {
 	/**
 	 * Divides both vector axis by the given scalar value
 	 */
-	DivideTo(scalar: number): Vector2 {
+	public DivideTo(scalar: number): Vector2 {
 		var length = this.Length
 
 		if (length === 0)
@@ -298,7 +298,7 @@ export default class Vector2 {
 	/**
 	 * Restricts a vector between a min and max value.
 	 */
-	Clamp(min: Vector2, max: Vector2): Vector2 {
+	public Clamp(min: Vector2, max: Vector2): Vector2 {
 		return new Vector2 (
 			Math.min((this.x > max.x) ? max.x : this.x, min.x),
 			Math.min((this.y > max.y) ? max.y : this.y, min.y),
@@ -311,7 +311,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @returns	The summed vector
 	 */
-	Add(vec: Vector2): Vector2 {
+	public Add(vec: Vector2): Vector2 {
 		return new Vector2 (
 			this.x + vec.x,
 			this.y + vec.y,
@@ -322,7 +322,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @returns	The summed vector (this vector)
 	 */
-	AddForThis(vec: Vector2): Vector2 {
+	public AddForThis(vec: Vector2): Vector2 {
 		this.x += vec.x
 		this.y += vec.y
 		return this
@@ -330,7 +330,7 @@ export default class Vector2 {
 	/**
 	 * Add scalar to vector
 	 */
-	AddScalar(scalar: number): Vector2 {
+	public AddScalar(scalar: number): Vector2 {
 		return new Vector2(
 			this.x + scalar,
 			this.y + scalar,
@@ -340,7 +340,7 @@ export default class Vector2 {
 	 * Add scalar to vector
 	 * @returns (this Vector2)
 	 */
-	AddScalarForThis(scalar: number): Vector2 {
+	public AddScalarForThis(scalar: number): Vector2 {
 		this.x += scalar
 		this.y += scalar
 		return this
@@ -348,14 +348,14 @@ export default class Vector2 {
 	/**
 	 * Add scalar to X of vector
 	 */
-	AddScalarX(scalar: number): Vector2 {
+	public AddScalarX(scalar: number): Vector2 {
 		this.x += scalar
 		return this
 	}
 	/**
 	 * Add scalar to Y of vector
 	 */
-	AddScalarY(scalar: number): Vector2 {
+	public AddScalarY(scalar: number): Vector2 {
 		this.y += scalar
 		return this
 	}
@@ -366,7 +366,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @returns The difference vector
 	 */
-	Subtract(vec: Vector2): Vector2 {
+	public Subtract(vec: Vector2): Vector2 {
 		return new Vector2 (
 			this.x - vec.x,
 			this.y - vec.y,
@@ -377,7 +377,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @returns The difference vector (this vector)
 	 */
-	SubtractForThis(vec: Vector2): Vector2 {
+	public SubtractForThis(vec: Vector2): Vector2 {
 		this.x -= vec.x
 		this.y -= vec.y
 		return this
@@ -385,7 +385,7 @@ export default class Vector2 {
 	/**
 	 * Subtract scalar from vector
 	 */
-	SubtractScalar(scalar: number): Vector2 {
+	public SubtractScalar(scalar: number): Vector2 {
 		return new Vector2(
 			this.x - scalar,
 			this.y - scalar,
@@ -395,7 +395,7 @@ export default class Vector2 {
 	 * Subtract scalar from vector
 	 * @returns (this vector)
 	 */
-	SubtractScalarForThis(scalar: number): Vector2 {
+	public SubtractScalarForThis(scalar: number): Vector2 {
 		this.x -= scalar
 		this.y -= scalar
 		return this
@@ -403,14 +403,14 @@ export default class Vector2 {
 	/**
 	 * Subtract scalar from X of vector
 	 */
-	SubtractScalarX(scalar: number): Vector2 {
+	public SubtractScalarX(scalar: number): Vector2 {
 		this.x -= scalar
 		return this
 	}
 	/**
 	 * Subtract scalar from Y of vector
 	 */
-	SubtractScalarY(scalar: number): Vector2 {
+	public SubtractScalarY(scalar: number): Vector2 {
 		this.y -= scalar
 		return this
 	}
@@ -421,7 +421,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @return The product vector
 	 */
-	Multiply(vec: Vector2): Vector2 {
+	public Multiply(vec: Vector2): Vector2 {
 		return new Vector2 (
 			this.x * vec.x,
 			this.y * vec.y,
@@ -432,7 +432,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @return The product vector (this vector)
 	 */
-	MultiplyForThis(vec: Vector2): Vector2 {
+	public MultiplyForThis(vec: Vector2): Vector2 {
 		this.x *= vec.x
 		this.y *= vec.y
 		return this
@@ -440,7 +440,7 @@ export default class Vector2 {
 	/**
 	 * Multiply the vector by scalar
 	 */
-	MultiplyScalar(scalar: number): Vector2 {
+	public MultiplyScalar(scalar: number): Vector2 {
 		return new Vector2(
 			this.x * scalar,
 			this.y * scalar,
@@ -450,7 +450,7 @@ export default class Vector2 {
 	 * Multiply the vector by scalar
 	 * @return (this vector)
 	 */
-	MultiplyScalarForThis(scalar: number): Vector2 {
+	public MultiplyScalarForThis(scalar: number): Vector2 {
 		this.x *= scalar
 		this.y *= scalar
 		return this
@@ -458,14 +458,14 @@ export default class Vector2 {
 	/**
 	 * Multiply the X of vector by scalar
 	 */
-	MultiplyScalarX(scalar: number): Vector2 {
+	public MultiplyScalarX(scalar: number): Vector2 {
 		this.x *= scalar
 		return this
 	}
 	/**
 	 * Multiply the Y of vector by scalar
 	 */
-	MultiplyScalarY(scalar: number): Vector2 {
+	public MultiplyScalarY(scalar: number): Vector2 {
 		this.y *= scalar
 		return this
 	}
@@ -476,7 +476,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @return The vector resulting from the division
 	 */
-	Divide(vec: Vector2): Vector2 {
+	public Divide(vec: Vector2): Vector2 {
 		return new Vector2 (
 			this.x / vec.x,
 			this.y / vec.y,
@@ -487,7 +487,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @return The vector resulting from the division (this vector)
 	 */
-	DivideForThis(vec: Vector2): Vector2 {
+	public DivideForThis(vec: Vector2): Vector2 {
 		this.x /= vec.x
 		this.y /= vec.y
 		return this
@@ -496,7 +496,7 @@ export default class Vector2 {
 	 * Divide the scalar by vector
 	 * @param {number} scalar
 	 */
-	DivideScalar(scalar: number): Vector2 {
+	public DivideScalar(scalar: number): Vector2 {
 		return new Vector2 (
 			this.x / scalar,
 			this.y / scalar,
@@ -506,7 +506,7 @@ export default class Vector2 {
 	 * Divide the scalar by vector
 	 * @returns (this vector)
 	 */
-	DivideScalarForThis(scalar: number): Vector2 {
+	public DivideScalarForThis(scalar: number): Vector2 {
 		this.x /= scalar
 		this.y /= scalar
 		return this
@@ -514,14 +514,14 @@ export default class Vector2 {
 	/**
 	 * Divide the scalar by X of vector
 	 */
-	DivideScalarX(scalar: number): Vector2 {
+	public DivideScalarX(scalar: number): Vector2 {
 		this.x /= scalar
 		return this
 	}
 	/**
 	 * Divide the scalar by Y of vector
 	 */
-	DivideScalarY(scalar: number): Vector2 {
+	public DivideScalarY(scalar: number): Vector2 {
 		this.y /= scalar
 		return this
 	}
@@ -529,13 +529,13 @@ export default class Vector2 {
 	/**
 	 * Multiply, add, and assign to this
 	 */
-	MultiplyAdd(vec: Vector2, vec2: Vector2, scalar: number): Vector2 {
+	public MultiplyAdd(vec: Vector2, vec2: Vector2, scalar: number): Vector2 {
 		return vec.Add(vec2).MultiplyScalar(scalar)
 	}
 	/**
 	 * Multiply, add, and assign to this vector and return new vector
 	 */
-	MultiplyAddForThis(vec2: Vector2, scalar: number): Vector2 {
+	public MultiplyAddForThis(vec2: Vector2, scalar: number): Vector2 {
 		return this.AddForThis(vec2).MultiplyScalarForThis(scalar)
 	}
 	/* ======== Distance ======== */
@@ -544,7 +544,7 @@ export default class Vector2 {
 	 *
 	 * @param vec The another vector
 	 */
-	DistanceSqr(vec: Vector2): number {
+	public DistanceSqr(vec: Vector2): number {
 		return (vec.x - this.x) ** 2 + (vec.y - this.y) ** 2
 	}
 	/**
@@ -552,10 +552,10 @@ export default class Vector2 {
 	 *
 	 * @param vec The another vector
 	 */
-	Distance(vec: Vector2): number {
+	public Distance(vec: Vector2): number {
 		return Math.sqrt(this.DistanceSqr(vec))
 	}
-	ProjectOn(segmentStart: Vector2, segmentEnd: Vector2): ProjectionInfo {
+	public ProjectOn(segmentStart: Vector2, segmentEnd: Vector2): ProjectionInfo {
 		let cx = this.x,
 			cy = this.y,
 			ax = segmentStart.x,
@@ -570,13 +570,13 @@ export default class Vector2 {
 		let pointSegment = isOnSegment ? pointLine : new Vector2(ax + rS * (bx - ax), ay + rS * (by - ay))
 		return new ProjectionInfo(isOnSegment, pointSegment, pointLine)
 	}
-	DistanceSegmentSqr(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
+	public DistanceSegmentSqr(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
 		let objects = this.ProjectOn(segmentStart, segmentEnd)
 		if (!objects.IsOnSegment && onlyIfOnSegment)
 			return Number.MAX_VALUE
 		return this.DistanceSqr(objects.SegmentPoint)
 	}
-	DistanceSegment(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
+	public DistanceSegment(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
 		return Math.sqrt(this.DistanceSegmentSqr(segmentStart, segmentEnd, onlyIfOnSegment))
 	}
 
@@ -585,7 +585,7 @@ export default class Vector2 {
 	 *
 	 * @param {number} offset Axis Offset (0 = X, 1 = Y)
 	 */
-	Perpendicular(is_x: boolean = true): Vector2 {
+	public Perpendicular(is_x: boolean = true): Vector2 {
 		return is_x
 			? new Vector2(-this.y, this.x)
 			: new Vector2(this.y, -this.x)
@@ -593,7 +593,7 @@ export default class Vector2 {
 	/**
 	 * Calculates the polar angle of the given vector. Returns degree values on default, radian if requested.
 	 */
-	PolarAngle(radian: boolean = false): number {
+	public PolarAngle(radian: boolean = false): number {
 		if (radian)
 			return this.Angle
 
@@ -602,7 +602,7 @@ export default class Vector2 {
 	/**
 	 * Rotates the Vector2 to a set angle.
 	 */
-	Rotated(angle: number): Vector2 {
+	public Rotated(angle: number): Vector2 {
 		var cos = Math.cos(angle),
 			sin = Math.sin(angle)
 
@@ -616,7 +616,7 @@ export default class Vector2 {
 	 * @param rotation for ex. Entity#Forward
 	 * @param distance distance to be added
 	 */
-	Rotation(rotation: Vector2, distance: number): Vector2 {
+	public Rotation(rotation: Vector2, distance: number): Vector2 {
 		return new Vector2 (
 			this.x + rotation.x * distance,
 			this.y + rotation.y * distance,
@@ -627,7 +627,7 @@ export default class Vector2 {
 	 * @param rotation for ex. Entity#Forward
 	 * @param distance distance to be added
 	 */
-	RotationRad(rotation: Vector2, distance: number): Vector2 {
+	public RotationRad(rotation: Vector2, distance: number): Vector2 {
 		return this.Rotation(rotation.DegreesToRadians(), distance)
 	}
 	/**
@@ -635,7 +635,7 @@ export default class Vector2 {
 	 * @param angle for ex. Entity#RotationRad
 	 * @param distance distance to be added
 	 */
-	InFrontFromAngle(angle: number, distance: number): Vector2 {
+	public InFrontFromAngle(angle: number, distance: number): Vector2 {
 		return this.Rotation(Vector2.FromAngle(angle), distance)
 	}
 	/**
@@ -643,7 +643,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @param vecAngleRadian Angle of this vector
 	 */
-	FindRotationAngle(vec: Vector2, vecAngleRadian: number): number {
+	public FindRotationAngle(vec: Vector2, vecAngleRadian: number): number {
 		let angle = Math.abs(Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian)
 
 		if (angle > Math.PI)
@@ -651,14 +651,14 @@ export default class Vector2 {
 
 		return angle
 	}
-	RotationTime(rot_speed: number): number {
+	public RotationTime(rot_speed: number): number {
 		return this.Angle / (30 * rot_speed)
 	}
 	/**
 	 * Angle between two vectors
 	 * @param vec The another vector
 	 */
-	AngleBetweenVectors(vec: Vector2): number {
+	public AngleBetweenVectors(vec: Vector2): number {
 		var theta = this.Polar - vec.Polar
 		if (theta < 0) {
 			theta = theta + 360
@@ -674,26 +674,26 @@ export default class Vector2 {
 	 * Angle between two fronts
 	 * @param vec The another vector
 	 */
-	AngleBetweenFronts(front: Vector2): number {
+	public AngleBetweenFronts(front: Vector2): number {
 		return Math.acos((this.x * front.x) + (this.y * front.y))
 	}
 	/**
 	 * Extends this vector in the direction of 2nd vector for given distance
 	 * @param vec The another vector
 	 */
-	Extend(vec: Vector2, distance: number): Vector2 {
+	public Extend(vec: Vector2, distance: number): Vector2 {
 		return vec.Subtract(this).Normalize().MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).Normalize())
 	}
-	Clone(): Vector2 {
+	public Clone(): Vector2 {
 		return new Vector2(this.x, this.y)
 	}
 	/**
 	 * Returns if the distance to target is lower than range
 	 */
-	IsInRange(vec: Vector2, range: number): boolean {
+	public IsInRange(vec: Vector2, range: number): boolean {
 		return this.DistanceSqr(vec) < range ** 2
 	}
-	Closest(vecs: Vector2[]): Vector2 {
+	public Closest(vecs: Vector2[]): Vector2 {
 		let minVec = new Vector2()
 		let distance = Number.POSITIVE_INFINITY
 
@@ -710,13 +710,13 @@ export default class Vector2 {
 	/**
 	 * Returns true if the point is under the rectangle
 	 */
-	IsUnderRectangle(x: number, y: number, width: number, height: number) {
+	public IsUnderRectangle(x: number, y: number, width: number, height: number) {
 		return this.x > x && this.x < (x + width) && this.y > y && this.y < (y + height)
 	}
-	RadiansToDegrees(): Vector2 {
+	public RadiansToDegrees(): Vector2 {
 		return this.MultiplyScalar(180).DivideScalar(Math.PI)
 	}
-	DegreesToRadians(): Vector2 {
+	public DegreesToRadians(): Vector2 {
 		return this.MultiplyScalar(Math.PI).DivideScalar(180)
 	}
 	/* ================== Geometric ================== */
@@ -724,21 +724,21 @@ export default class Vector2 {
 	 * Vector2 to String Vector2
 	 * @return new Vector2(x,y,z)
 	 */
-	toString(): string {
+	public toString(): string {
 		return "Vector2(" + this.x + "," + this.y + ")"
 	}
 	/**
 	 * @return [x, y, z]
 	 */
-	toArray(): [number, number] {
+	public toArray(): [number, number] {
 		return [this.x, this.y]
 	}
 
-	toVector3(): Vector3 {
+	public toVector3(): Vector3 {
 		return new Vector3(this.x, this.y, 0)
 	}
 
-	toIOBuffer(offset: number = 0): true {
+	public toIOBuffer(offset: number = 0): true {
 		IOBuffer[offset + 0] = this.x
 		IOBuffer[offset + 1] = this.y
 		return true

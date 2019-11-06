@@ -1,4 +1,4 @@
-import { EventsSDK, Rectangle, Vector2, Vector3 } from "../Imports";
+import { EventsSDK, Vector2, Vector3 } from "../Imports";
 import { FixInt16 } from "../Utils/BitsExtensions";
 
 const CursorOnWorld: Vector3 = new Vector3();
@@ -22,10 +22,10 @@ class Input {
 	get CursorOnScreen() {
 		return CursorOnScreen.Clone();
 	}
-	IsKeyDown(key: VKeys): boolean {
+	public IsKeyDown(key: VKeys): boolean {
 		return KeysDown.get(key) === true;
 	}
-	IsMouseKeyDown(key: VMouseKeys): boolean {
+	public IsMouseKeyDown(key: VMouseKeys): boolean {
 		return MouseDown.get(key) === true;
 	}
 }
@@ -60,14 +60,11 @@ Events.on("WndProc", (msg, wParam, lParam) => {
 
 			if (msg === InputMessage.WM_LBUTTONDOWN || msg === InputMessage.WM_LBUTTONDBLCLK) {
 				mKey = VMouseKeys.MK_LBUTTON;
-			}
-			else if (msg === InputMessage.WM_RBUTTONDOWN || msg === InputMessage.WM_RBUTTONDBLCLK) {
+			} else if (msg === InputMessage.WM_RBUTTONDOWN || msg === InputMessage.WM_RBUTTONDBLCLK) {
 				mKey = VMouseKeys.MK_RBUTTON;
-			}
-			else if (msg === InputMessage.WM_MBUTTONDOWN || msg === InputMessage.WM_MBUTTONDBLCLK) {
+			} else if (msg === InputMessage.WM_MBUTTONDOWN || msg === InputMessage.WM_MBUTTONDBLCLK) {
 				mKey = VMouseKeys.MK_MBUTTON;
-			}
-			else if (msg === InputMessage.WM_XBUTTONDOWN || msg === InputMessage.WM_XBUTTONDBLCLK) {
+			} else if (msg === InputMessage.WM_XBUTTONDOWN || msg === InputMessage.WM_XBUTTONDBLCLK) {
 				mKey = XMouseKey(wParam);
 			}
 
@@ -83,14 +80,11 @@ Events.on("WndProc", (msg, wParam, lParam) => {
 
 			if (msg === InputMessage.WM_LBUTTONUP) {
 				mKey = VMouseKeys.MK_LBUTTON;
-			}
-			else if (msg === InputMessage.WM_RBUTTONUP) {
+			} else if (msg === InputMessage.WM_RBUTTONUP) {
 				mKey = VMouseKeys.MK_RBUTTON;
-			}
-			else if (msg === InputMessage.WM_MBUTTONUP) {
+			} else if (msg === InputMessage.WM_MBUTTONUP) {
 				mKey = VMouseKeys.MK_MBUTTON;
-			}
-			else if (msg === InputMessage.WM_XBUTTONUP) {
+			} else if (msg === InputMessage.WM_XBUTTONUP) {
 				mKey = XMouseKey(wParam);
 			}
 

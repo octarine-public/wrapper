@@ -1,4 +1,4 @@
-import { Color, EntityManager, RendererSDK, Vector3} from "wrapper/Imports"
+import { Color, EntityManager, RendererSDK, Vector3 } from "wrapper/Imports"
 import { State } from "./Menu"
 
 let wisp: C_DOTA_Unit_Hero_Wisp | number,

@@ -81,7 +81,7 @@ var Abils_ = [
 		["item_nullifier", true, true],
 		["item_abyssal_blade", true, true],
 	],
-].flat(1).map(([name, is_disable, instant]) => [name, is_disable, instant || false]) as Array<[string, boolean, boolean]>,
+].flat(1).map(([name, is_disable, instant]) => [name, is_disable, instant || false]) as [string, boolean, boolean][],
 	BuffsDisablers_ = [[ // any _target_ (micro-)stun
 		["lion_voodoo", true, true],
 		["shadow_shaman_voodoo", true, true],
@@ -95,15 +95,15 @@ var Abils_ = [
 		["item_sheepstick", true, true],
 		["item_cyclone", true, true],
 		["item_heavens_halberd", true, true],
-	]].flat(1).map(([item_name, is_disable, instant]) => [item_name, is_disable, instant || false]) as Array<[string, boolean, boolean]>,
+	]].flat(1).map(([item_name, is_disable, instant]) => [item_name, is_disable, instant || false]) as [string, boolean, boolean][],
 	DisableBuffs: string[] = [
 		"modifier_teleporting",
 		"modifier_techies_suicide_leap",
 		"modifier_monkey_king_bounce_leap",
 		"modifier_spirit_breaker_charge_of_darkness",
 	],
-	Abils: Array<[string, boolean, boolean?]> = [],
-	BuffsDisablers: Array<[string, boolean, boolean?]> = [],
+	Abils: [string, boolean, boolean?][] = [],
+	BuffsDisablers: [string, boolean, boolean?][] = [],
 	heroes: Unit[] = [],
 	ignore_heroes = new Map<Unit, number>()
 
@@ -111,7 +111,7 @@ function GetAbilArray(abilNameToSearch: string) {
 	return Abils_.find(abilAr => abilAr[0] === abilNameToSearch)
 }
 
-function Disable(Me: Hero, hero: Unit, DisableAr: Array<[string, boolean, boolean?]>, Abil?: Ability): boolean {
+function Disable(Me: Hero, hero: Unit, DisableAr: [string, boolean, boolean?][], Abil?: Ability): boolean {
 	let delta = Me.GetRotationTime(hero.NetworkPosition) / 1000 + Additionaldelay.value
 	let AbilAr: [string, boolean, boolean?]
 	if (hero === Me)
@@ -175,7 +175,7 @@ EventsSDK.on("EntityCreated", (npc: Unit) => {
 
 EventsSDK.on("EntityDestroyed", npc => npc instanceof Unit && ArrayExtensions.arrayRemove(heroes, npc))
 
-function TransformToAvailable(hero: Hero, abil_arrays: Array<[string, boolean, boolean?]>): Array<[string, boolean, boolean?]> {
+function TransformToAvailable(hero: Hero, abil_arrays: [string, boolean, boolean?][]): [string, boolean, boolean?][] {
 	if (hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Rubick || hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Morphling)
 		return abil_arrays
 	return abil_arrays.filter(abilData => abilData[0].startsWith("item_") || hero.GetAbilityByName(abilData[0]) !== undefined)

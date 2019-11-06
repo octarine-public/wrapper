@@ -27,6 +27,14 @@ export default class Toggle extends Base {
 		super.Update()
 	}
 
+	public get ConfigValue() { return this.value }
+	public set ConfigValue(value) { this.value = value !== undefined ? value : this.value }
+
+	private get ToggleRect() {
+		let base_pos = this.Position.Add(this.TotalSize).SubtractForThis(this.toggle_offset).SubtractForThis(this.border_size.MultiplyScalar(2))
+		return new Rectangle(base_pos, base_pos.Add(this.toggle_size))
+	}
+
 	public OnActivate(func: (caller: this) => void) {
 		return this.OnValue(caller => {
 			if (caller.value)
@@ -39,11 +47,6 @@ export default class Toggle extends Base {
 				func(caller)
 		})
 	}
-
-	private get ToggleRect() {
-		let base_pos = this.Position.Add(this.TotalSize).SubtractForThis(this.toggle_offset).SubtractForThis(this.border_size.MultiplyScalar(2))
-		return new Rectangle(base_pos, base_pos.Add(this.toggle_size))
-	}
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
@@ -55,9 +58,6 @@ export default class Toggle extends Base {
 		if (!toggle_rect.Contains(this.MousePosition))
 			super.RenderTooltip()
 	}
-
-	public get ConfigValue() { return this.value }
-	public set ConfigValue(value) { this.value = value !== undefined ? value : this.value }
 
 	public OnMouseLeftDown(): boolean {
 		return !this.Rect.Contains(this.MousePosition)

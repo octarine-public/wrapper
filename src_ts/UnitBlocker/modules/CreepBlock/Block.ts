@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, Game, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Creep, Game, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit } from "wrapper/Imports"
 
 import { allCreeps, allTowers } from "../../base/Listeners"
 

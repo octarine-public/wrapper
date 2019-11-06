@@ -1,4 +1,4 @@
- /// tokenize ///
+/// tokenize ///
 function tokenizeKV(data) {
 	data = data.toString()
 	return data

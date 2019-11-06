@@ -1,9 +1,9 @@
-import { Ability, GameSleeper, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
+import { Ability, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, MyHero } from "../Listeners"
 import { LinkenBreakAbilityItems, LinkenBreakOnlyFromRange, State } from "../Menu"
 
-let Sleep = new TickSleeper
+let Sleep = new TickSleeper()
 
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
@@ -15,9 +15,8 @@ function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelect
 }
 
 export function BreakInit() {
-	if (!Base.IsRestrictions(State)) {
+	if (!Base.IsRestrictions(State))
 		return false
-	}
 	let target = MouseTarget
 	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune || Sleep.Sleeping)
 		return false
@@ -31,8 +30,7 @@ export function BreakInit() {
 			Items.Cyclone.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value) {
 			return false
 		}
 	}
@@ -45,8 +43,7 @@ export function BreakInit() {
 			Items.ForceStaff.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value) {
 			return false
 		}
 	}
@@ -59,8 +56,7 @@ export function BreakInit() {
 			Items.Orchid.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value) {
 			return false
 		}
 	}
@@ -73,8 +69,7 @@ export function BreakInit() {
 			Items.Bloodthorn.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value) {
 			return false
 		}
 	}
@@ -87,8 +82,7 @@ export function BreakInit() {
 			Abilities.ArcaneBolt.UseAbility(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt))
 			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value) {
 			return false
 		}
 	}
@@ -101,8 +95,7 @@ export function BreakInit() {
 			Abilities.AncientSeal.UseAbility(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal))
 			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value) {
 			return false
 		}
 	}
@@ -115,8 +108,7 @@ export function BreakInit() {
 			Items.Nullifier.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value) {
 			return false
 		}
 	}
@@ -129,8 +121,7 @@ export function BreakInit() {
 			Items.RodofAtos.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value) {
 			return false
 		}
 	}
@@ -143,8 +134,7 @@ export function BreakInit() {
 			Items.Sheeps.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return true
-		}
-		else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value) {
 			return false
 		}
 	}

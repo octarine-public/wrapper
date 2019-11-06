@@ -4,14 +4,13 @@ import { Base } from "../Extends/Helper";
 import { MouseTarget, Owner } from "../Listeners";
 import { BladeMailItem, HarassKey, HarassMode, State } from "../Menu";
 
-let Sleep = new GameSleeper
+let Sleep = new GameSleeper()
 function HitAndRun(unit: Unit, mode: boolean = false) {
 	Owner.MoveTo(!mode ? Utils.CursorWorldVec : unit.NetworkPosition)
 }
 export function InitHarass() {
-	if (!Base.IsRestrictions(State) || !HarassKey.is_pressed || HarassMode.selected_id === 0) {
+	if (!Base.IsRestrictions(State) || !HarassKey.is_pressed || HarassMode.selected_id === 0)
 		return false
-	}
 	let target = MouseTarget
 	if (target === undefined || (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect"))) || !Base.Cancel(target)) {
 		Owner.MoveTo(Utils.CursorWorldVec)

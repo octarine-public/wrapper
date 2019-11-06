@@ -1,19 +1,19 @@
-import { Entity, Game, LocalPlayer, ParticlesSDK, Unit } from "wrapper/Imports"
+import { Entity, LocalPlayer, ParticlesSDK, Unit } from "wrapper/Imports"
 import { showOnAll, showOnAllies, showOnCreeps, showOnSelf, showOnWards, State, switcher } from "./Menu"
 
 let allUnits = new Map<Unit, number>(), // <Unit, Particle>
 	particlePath: string[] = [
-	"particles/items_fx/aura_shivas.vpcf",
-	"particles/ui/ui_sweeping_ring.vpcf",
-	"particles/units/heroes/hero_omniknight/omniknight_heavenly_grace_beam.vpcf",
-	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_status.vpcf",
-	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_dark.vpcf",
-	"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
-	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_timer.vpcf",
-	"particles/econ/wards/portal/ward_portal_core/ward_portal_eye_sentry.vpcf",
-]
+		"particles/items_fx/aura_shivas.vpcf",
+		"particles/ui/ui_sweeping_ring.vpcf",
+		"particles/units/heroes/hero_omniknight/omniknight_heavenly_grace_beam.vpcf",
+		"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_status.vpcf",
+		"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_dark.vpcf",
+		"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
+		"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_timer.vpcf",
+		"particles/econ/wards/portal/ward_portal_core/ward_portal_eye_sentry.vpcf",
+	]
 State.OnValue(OnOptionToggle)
-showOnAll.OnValue(OnOptionToggle),
+showOnAll.OnValue(OnOptionToggle)
 showOnSelf.OnValue(OnOptionToggle)
 showOnAllies.OnValue(OnOptionToggle)
 showOnWards.OnValue(OnOptionToggle)

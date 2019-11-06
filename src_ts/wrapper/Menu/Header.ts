@@ -14,12 +14,12 @@ interface IMenu {
 export default class Header extends Base {
 	public readonly FontSize = 34
 	public position_dirty = true
-
-	protected dragging = false
-	protected background_size = new Vector2(750 / 5, 200 / 5)
 	public readonly underline_width = 3
+	public readonly background_size = new Vector2(750 / 5, 200 / 5)
 	public readonly TotalSize_ = this.background_size.Clone().AddScalarY(this.underline_width)
 	public readonly TotalSize = this.TotalSize_.Clone()
+
+	protected dragging = false
 	protected readonly dragging_offset = new Vector2()
 	protected readonly underline_color = new Color(0x40, 0x80, 0xff)
 	protected readonly text_size: Vector2
@@ -29,18 +29,18 @@ export default class Header extends Base {
 		this.text_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
 	}
 
-	public Render(): void {
-		super.Render()
-		RendererSDK.Text(this.name, this.Position.Add(new Vector2(this.TotalSize.x / 2 - this.text_size.x / 2, 3)), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
-		RendererSDK.FilledRect(this.Position.Clone().AddScalarY(this.background_size.y), new Vector2(this.TotalSize.x, this.underline_width), this.underline_color)
-	}
-
 	public get ConfigValue() { return this.Position.toArray() }
 	public set ConfigValue(value) {
 		if (value === undefined)
 			return
 		Vector2.fromArray(value).CopyTo(this.Position)
 		this.position_dirty = true
+	}
+
+	public Render(): void {
+		super.Render()
+		RendererSDK.Text(this.name, this.Position.Add(new Vector2(this.TotalSize.x / 2 - this.text_size.x / 2, 3)), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.FilledRect(this.Position.Clone().AddScalarY(this.background_size.y), new Vector2(this.TotalSize.x, this.underline_width), this.underline_color)
 	}
 
 	public OnMouseLeftDown(): boolean {

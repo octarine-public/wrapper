@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, Entity, Hero, TrackingProjectile, Utils } from "wrapper/Imports"
+import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { GameEndedCombo } from "./Module/Combo"
@@ -16,7 +16,7 @@ export let MyNameHero: string = "npc_dota_hero_clinkz"
 export function InitMouse() {
 	if (!Base.IsRestrictions(State))
 		return false
-	MouseTarget = ArrayExtensions.orderBy (
+	MouseTarget = ArrayExtensions.orderBy(
 		Heroes.filter(x => x.IsEnemy() && x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
 		x => x.Distance(Utils.CursorWorldVec),
 	)[0]

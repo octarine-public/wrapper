@@ -1,5 +1,4 @@
 import EntityManager, { LocalPlayer } from "../../Managers/EntityManager"
-import Hero from "../Base/Hero"
 import Item from "../Base/Item"
 import Player from "../Base/Player"
 import Unit from "../Base/Unit"
@@ -7,10 +6,11 @@ import Unit from "../Base/Unit"
 const MAX_ITEMS = 15
 
 export default class Inventory {
-	public TotalItems_: Array<Item | C_BaseEntity | number> = []
+	public TotalItems_: (Item | C_BaseEntity | number)[] = []
 
 	constructor(public readonly Owner: Unit) {
 		let ar = this.Owner.m_pBaseEntity.m_Inventory.m_hItems
+		// tslint:disable-next-line:prefer-conditional-expression
 		if (ar !== undefined) {
 			// loop-optimizer: FORWARD
 			this.TotalItems_ = ar.map(abil => EntityManager.GetEntityByNative(abil) as Item || abil)
@@ -93,7 +93,7 @@ export default class Inventory {
 	}
 	public HasAnyItem(start: number, end: number): boolean {
 		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end) {
-			for (let i = end + 1; i-- > start; ) {
+			for (let i = end + 1; i-- > start;) {
 				if (i > MAX_ITEMS)
 					break
 
@@ -105,7 +105,7 @@ export default class Inventory {
 	}
 	public HasFreeSlot(start: number, end: number): boolean {
 		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end) {
-			for (let i = end + 1; i-- > start; ) {
+			for (let i = end + 1; i-- > start;) {
 				if (i > MAX_ITEMS)
 					break
 
@@ -118,7 +118,7 @@ export default class Inventory {
 	public HasFreeSlots(start: number, end: number, howMany: number): boolean {
 		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end) {
 			let man = 0
-			for (let i = end + 1; i-- > start; ) {
+			for (let i = end + 1; i-- > start;) {
 				if (i > MAX_ITEMS)
 					break
 

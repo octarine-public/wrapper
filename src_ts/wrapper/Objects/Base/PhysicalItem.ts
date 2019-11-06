@@ -3,7 +3,7 @@ import Entity from "./Entity"
 import Item from "./Item"
 
 export default class PhysicalItem extends Entity {
-	readonly m_pBaseEntity: C_DOTA_Item_Physical
+	public readonly m_pBaseEntity: C_DOTA_Item_Physical
 
 	get Item(): Item {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hItem, true) as Item
@@ -15,7 +15,7 @@ export default class PhysicalItem extends Entity {
 		return this.m_pBaseEntity.m_bShowingTooltip
 	}
 
-	toString(): string {
+	public toString(): string {
 		let item = this.Item
 		if (item !== undefined)
 			return item.Name

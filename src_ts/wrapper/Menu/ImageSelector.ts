@@ -24,6 +24,28 @@ export default class ImageSelector extends Base {
 		this.tooltip = tooltip
 		this.Update()
 	}
+	public get IsZeroSelected(): boolean {
+		for (let value of this.enabled_values.values())
+			if (value)
+				return false
+		return true
+	}
+
+	public get IconsRect() {
+		let base_pos = this.Position.Add(this.text_offset).AddForThis(this.border_size).AddScalarY(this.name_size.y + 3)
+		return new Rectangle(base_pos, base_pos.Add(this.image_size.AddScalar(this.image_border_size.x * 2 + 2).Multiply(new Vector2(Math.min(this.values.length, 8), Math.ceil(this.values.length / 8)))).SubtractScalar(6))
+	}
+
+	public get ConfigValue() { return Array.from(this.enabled_values.entries()) }
+	public set ConfigValue(value) {
+		if (value === undefined)
+			return
+		this.enabled_values = new Map<string, boolean>(value)
+		this.values.forEach(value_ => {
+			if (!this.enabled_values.has(value_))
+				this.enabled_values.set(value_, false)
+		})
+	}
 
 	public Update() {
 		this.values.forEach(value => {
@@ -49,17 +71,6 @@ export default class ImageSelector extends Base {
 	public IsEnabledID(id: number): boolean {
 		return this.IsEnabled(this.values[id])
 	}
-	public get IsZeroSelected(): boolean {
-		for (let value of this.enabled_values.values())
-			if (value)
-				return false
-		return true
-	}
-
-	public get IconsRect() {
-		let base_pos = this.Position.Add(this.text_offset).AddForThis(this.border_size).AddScalarY(this.name_size.y + 3)
-		return new Rectangle(base_pos, base_pos.Add(this.image_size.AddScalar(this.image_border_size.x * 2 + 2).Multiply(new Vector2(Math.min(this.values.length, 8), Math.ceil(this.values.length / 8)))).SubtractScalar(6))
-	}
 
 	public Render(): void {
 		super.Render()
@@ -84,17 +95,6 @@ export default class ImageSelector extends Base {
 		}
 		if (!this.IconsRect.Contains(this.MousePosition))
 			super.RenderTooltip()
-	}
-
-	public get ConfigValue() { return Array.from(this.enabled_values.entries()) }
-	public set ConfigValue(value) {
-		if (value === undefined)
-			return
-		this.enabled_values = new Map<string, boolean>(value)
-		this.values.forEach(value => {
-			if (!this.enabled_values.has(value))
-				this.enabled_values.set(value, false)
-		})
 	}
 
 	public OnMouseLeftDown(): boolean {

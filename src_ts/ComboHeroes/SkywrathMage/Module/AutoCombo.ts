@@ -8,7 +8,7 @@ import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 import { BreakInit } from "./LinkenBreaker"
 
-let Sleep = new TickSleeper
+let Sleep = new TickSleeper()
 
 function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
 	return Name !== undefined && Name.CanBeCasted() && !Name.IsInAbilityPhase
@@ -83,10 +83,10 @@ export function AutoCombo() {
 			&& ConcussiveShotAwait.value
 			&& Abilities.ConcussiveShot !== undefined
 			&& (
-					ConcussiveShotDelay !== undefined && target.Distance2D(ConcussiveShotDelay.Position) <= 100
-					|| EtherealDelay !== undefined && target.Distance2D(EtherealDelay.Position) <= 100
-					|| target.Buffs.some(x => x.Name === "modifier_skywrath_mage_concussive_shot_slow")
-				)
+				ConcussiveShotDelay !== undefined && target.Distance2D(ConcussiveShotDelay.Position) <= 100
+				|| EtherealDelay !== undefined && target.Distance2D(EtherealDelay.Position) <= 100
+				|| target.Buffs.some(x => x.Name === "modifier_skywrath_mage_concussive_shot_slow")
+			)
 			|| target.IsEthereal || target.IsStunned
 		) {
 			Abilities.UseMysticFlare(target)

@@ -1,9 +1,7 @@
-import { Hero, Vector3 } from "../Imports"
-import EntityManager, { Game } from "../Managers/EntityManager"
+import { Vector3 } from "../Imports"
 import EventsSDK from "../Managers/Events"
 import ProjectileManager from "../Managers/ProjectileManager"
 import Unit from "../Objects/Base/Unit"
-import * as ArrayExtensions from "./ArrayExtensions"
 import { parseKV } from "./ParseKV"
 
 export const DamageIgnoreBuffs = [

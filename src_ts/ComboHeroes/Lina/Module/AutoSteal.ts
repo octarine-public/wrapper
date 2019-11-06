@@ -9,20 +9,17 @@ function IsReadySteal(ability: Ability, target: Hero) {
 		&& AutoStealAbility.IsEnabled(ability.Name) && target.IsAlive
 		&& ability.CanBeCasted() && Owner.Distance2D(target) <= ability.CastRange
 }
-let Sleep: TickSleeper = new TickSleeper
+let Sleep = new TickSleeper()
 export function InitAutoSteal() {
-	if (!Base.IsRestrictions(State) || !AutoStealState.value || Sleep.Sleeping) {
+	if (!Base.IsRestrictions(State) || !AutoStealState.value || Sleep.Sleeping)
 		return false
-	}
 	let target = Heroes.sort((a, b) => b.Distance2D(Owner) - a.Distance2D(Owner))
 		.filter(x => x.IsValid && x.IsAlive && x.IsEnemy())
 		.find(e => !e.IsMagicImmune && !e.IsInvulnerable)
-	if (target === undefined) {
+	if (target === undefined)
 		return false
-	}
-	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect")) {
+	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect"))
 		return false
-	}
 	let Abilities = new InitAbility(Owner)
 	let DMG_TYPE_LAGUNA = Owner.HasScepter
 		? DAMAGE_TYPES.DAMAGE_TYPE_PURE

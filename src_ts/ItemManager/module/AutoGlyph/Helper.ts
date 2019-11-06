@@ -1,4 +1,4 @@
-import { ArrayExtensions, Building, Entity, Game, GameSleeper, Hero, LocalPlayer, Player, Team } from "wrapper/Imports"
+import { ArrayExtensions, Building, Entity, Game, GameSleeper, LocalPlayer, Player, Team } from "wrapper/Imports"
 import { StateBase } from "../../abstract/MenuBase"
 import { State, TowerHP, TowerSwitcher } from "./Menu"
 

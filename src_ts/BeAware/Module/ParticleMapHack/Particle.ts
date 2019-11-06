@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Color, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Modifier, ParticlesSDK, RendererSDK, Rune, Unit, Vector2, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Color, Entity, Game, Hero, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
 import {
 	ComboBox,
@@ -11,7 +11,7 @@ let npc_hero: string = "npc_dota_hero_",
 	END_SCROLL = new Map<number, number>(),
 	OtherRadius = new Map<Entity, number>(),
 	LAST_ID_SCROLL: number,
-	ignoreListCreate: Array<bigint> = [
+	ignoreListCreate: bigint[] = [
 		16411378985643724199n,
 		3845203473627057528n,
 		2493460162828289005n,
@@ -55,7 +55,7 @@ let npc_hero: string = "npc_dota_hero_",
 		16005396280504064234n,
 		8471181176813126689n,
 	],
-	ignoreListCreateUpdate: Array<bigint> = [
+	ignoreListCreateUpdate: bigint[] = [
 		8654159076113771741n,
 		3319765426154305425n,
 		7751829135967853782n,
@@ -80,7 +80,7 @@ let npc_hero: string = "npc_dota_hero_",
 		16005396280504064234n,
 		8471181176813126689n,
 	],
-	ignoreListCreateUpdateEnt: Array<bigint> = [
+	ignoreListCreateUpdateEnt: bigint[] = [
 		1463643803508630076n,
 		8069164713690266618n,
 		5690601709983082755n,
@@ -184,7 +184,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 
 	/**
 	 * Not valid Entity
-	 **/
+	 */
 	if (control_point === 0) { // # Ability
 		// beastmaster_call_bird
 		if (part[0] === 1463643803508630076n || part[0] === 8069164713690266618n) {
@@ -421,7 +421,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 	}
 	/**
 	 * Valid Entity
-	 **/
+	 */
 	if (control_point === 0) {
 		// viper toxin
 		if (part[0] === 7830573181181083183n)
@@ -546,7 +546,7 @@ export function OnDraw() {
 		if (x === undefined) {
 			return
 		}
-		if(x.IsEnemy()) {
+		if (x.IsEnemy()) {
 			DrawingOtherAbility(x, "nether_ward", "pugna_nether_ward", 1600)
 			DrawingOtherAbility(x, "psionic_trap", "templar_assassin_trap", 400)
 		}

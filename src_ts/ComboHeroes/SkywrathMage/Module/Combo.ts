@@ -7,8 +7,8 @@ import { BreakInit } from "./LinkenBreaker"
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
-let Sleep = new TickSleeper,
-	GameSleep = new GameSleeper
+let Sleep = new TickSleeper(),
+	GameSleep = new GameSleeper()
 export function InitCombo() {
 	if (!Base.IsRestrictions(State) || !ComboKey.is_pressed || Sleep.Sleeping) {
 		return false
@@ -142,8 +142,7 @@ export function InitCombo() {
 					|| target.Buffs.some(x => x.Name === "modifier_skywrath_mage_concussive_shot_slow")
 				)
 				|| target.IsEthereal
-			)
-			{
+			) {
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.Tick)
 				return true

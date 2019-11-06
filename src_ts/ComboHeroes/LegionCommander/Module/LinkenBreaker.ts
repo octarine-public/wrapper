@@ -1,4 +1,4 @@
-import { Ability, GameSleeper, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
+import { Ability, Hero, Item, Menu } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, Owner } from "../Listeners"
 import { LinkenBreakerToggler, State, UseOnlyFromRangeItem } from "../Menu"
@@ -26,8 +26,7 @@ export function BreakInit() {
 		if (IsValid(Items.Cyclone, target, LinkenBreakerToggler)) {
 			Items.Cyclone.UseAbility(target)
 			return
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return
 		}
 	}
@@ -37,8 +36,7 @@ export function BreakInit() {
 		if (IsValid(Items.Abyssal, target, LinkenBreakerToggler)) {
 			Items.Abyssal.UseAbility(target)
 			return
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return
 		}
 	}
@@ -48,8 +46,7 @@ export function BreakInit() {
 		if (IsValid(Items.HeavensHalberd, target, LinkenBreakerToggler)) {
 			Items.HeavensHalberd.UseAbility(target)
 			return
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return
 		}
 	}
@@ -60,8 +57,7 @@ export function BreakInit() {
 		if (IsValid(Items.ForceStaff, target, LinkenBreakerToggler)) {
 			Items.ForceStaff.UseAbility(target)
 			return
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return
 		}
 	}
@@ -72,8 +68,7 @@ export function BreakInit() {
 		if (IsValid(Items.Orchid, target, LinkenBreakerToggler)) {
 			Items.Orchid.UseAbility(target)
 			return
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return
 		}
 	}
@@ -84,8 +79,7 @@ export function BreakInit() {
 		if (IsValid(Items.Bloodthorn, target, LinkenBreakerToggler)) {
 			Items.Bloodthorn.UseAbility(target)
 			return
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return
 		}
 	}
@@ -95,8 +89,7 @@ export function BreakInit() {
 		if (IsValid(Items.Nullifier, target, LinkenBreakerToggler)) {
 			Items.Nullifier.UseAbility(target)
 			return
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return
 		}
 	}
@@ -106,8 +99,7 @@ export function BreakInit() {
 		if (IsValid(Items.RodofAtos, target, LinkenBreakerToggler)) {
 			Items.RodofAtos.UseAbility(target)
 			return
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value) {
 			return
 		}
 	}
@@ -123,4 +115,5 @@ export function BreakInit() {
 }
 
 export function DeleteLinkenBreakAllVars() {
+	// ???
 }

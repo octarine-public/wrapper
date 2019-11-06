@@ -5,7 +5,7 @@ import Player from "./Player"
 import Unit from "./Unit"
 
 export default class Hero extends Unit {
-	readonly m_pBaseEntity: C_DOTA_BaseNPC_Hero
+	public readonly m_pBaseEntity: C_DOTA_BaseNPC_Hero
 
 	get IsHero(): boolean {
 		return true

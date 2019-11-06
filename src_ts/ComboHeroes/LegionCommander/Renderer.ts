@@ -21,7 +21,7 @@ let Duel: number,
 	OverwhelmingPartID: number,
 	PressTheAttackPartID: number
 
-let Sleep = new GameSleeper
+let Sleep = new GameSleeper()
 
 function DrawTarget() {
 	if (MouseTarget === undefined) {
@@ -35,7 +35,7 @@ function DrawTarget() {
 }
 
 function UpdateBLink() {
-	if(Sleep.Sleeping("Blink"))
+	if (Sleep.Sleeping("Blink"))
 		return false
 	let Items = new InitItems(Owner)
 	if (Blink === undefined) {
@@ -52,8 +52,7 @@ function UpdateBLink() {
 		ParticlesSDK.SetControlPoint(Blink, 3, new Vector3(Items.ItemCastRange(Items.Blink, "blink_range")))
 		ParticlesSDK.SetControlPoint(Blink, 4, new Vector3(color.r, color.g, color.b))
 		Sleep.Sleep(0, "Blink")
-	}
-	else DeleteBlink()
+	} else DeleteBlink()
 }
 function UpdateOverwhelmingOdds() {
 	if (Sleep.Sleeping("UpdateOverwhelmingOdds"))
@@ -73,8 +72,7 @@ function UpdateOverwhelmingOdds() {
 		ParticlesSDK.SetControlPoint(OverwhelmingPartID, 3, new Vector3(Abilities.Overwhelming.CastRange))
 		ParticlesSDK.SetControlPoint(OverwhelmingPartID, 4, new Vector3(color.r, color.g, color.b))
 		Sleep.Sleep(0, "UpdateOverwhelmingOdds")
-	}
-	else DeleteOverwhelmingOdds()
+	} else DeleteOverwhelmingOdds()
 }
 function UpdatePressTheAttack() {
 	if (Sleep.Sleeping("UpdatePressTheAttack"))
@@ -114,8 +112,7 @@ function UpdateDuel() {
 		ParticlesSDK.SetControlPoint(Duel, 3, new Vector3(Abilities.Duel.CastRange))
 		ParticlesSDK.SetControlPoint(Duel, 4, new Vector3(color.r, color.g, color.b))
 		Sleep.Sleep(0, "UpdateDuel")
-	}
-	else DeleteOverwhelmingOdds()
+	} else DeleteOverwhelmingOdds()
 }
 export function DrawDeleteTempAllVars() {
 	Sleep.FullReset()
