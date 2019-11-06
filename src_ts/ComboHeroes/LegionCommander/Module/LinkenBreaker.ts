@@ -3,8 +3,6 @@ import { Base } from "../Extends/Helper"
 import { MouseTarget, Owner } from "../Listeners"
 import { LinkenBreakerToggler, State, UseOnlyFromRangeItem } from "../Menu"
 
-let Sleep = new TickSleeper
-
 import InitItems from "../Extends/Items"
 
 function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
@@ -14,23 +12,23 @@ function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelect
 }
 
 export function BreakInit() {
-	if (!Base.IsRestrictions(State) || Sleep.Sleeping) {
-		return false
+	if (!Base.IsRestrictions(State)) {
+		return
 	}
 	let target = MouseTarget
-	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune)
-		return false
+	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune) {
+		return
+	}
 	let Items = new InitItems(Owner)
 	// Eul
 	if (Items.Cyclone !== undefined
 		&& Items.Cyclone.CanBeCasted()) {
 		if (IsValid(Items.Cyclone, target, LinkenBreakerToggler)) {
 			Items.Cyclone.UseAbility(target)
-			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		else if (UseOnlyFromRangeItem.value) {
-			return false
+			return
 		}
 	}
 
@@ -38,11 +36,10 @@ export function BreakInit() {
 		&& Items.Abyssal.CanBeCasted()) {
 		if (IsValid(Items.Abyssal, target, LinkenBreakerToggler)) {
 			Items.Abyssal.UseAbility(target)
-			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		else if (UseOnlyFromRangeItem.value) {
-			return false
+			return
 		}
 	}
 	// Heavens Halberd
@@ -50,11 +47,10 @@ export function BreakInit() {
 		&& Items.HeavensHalberd.CanBeCasted()) {
 		if (IsValid(Items.HeavensHalberd, target, LinkenBreakerToggler)) {
 			Items.HeavensHalberd.UseAbility(target)
-			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		else if (UseOnlyFromRangeItem.value) {
-			return false
+			return
 		}
 	}
 
@@ -63,11 +59,10 @@ export function BreakInit() {
 		&& Items.ForceStaff.CanBeCasted()) {
 		if (IsValid(Items.ForceStaff, target, LinkenBreakerToggler)) {
 			Items.ForceStaff.UseAbility(target)
-			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		else if (UseOnlyFromRangeItem.value) {
-			return false
+			return
 		}
 	}
 
@@ -76,11 +71,10 @@ export function BreakInit() {
 		&& Items.Orchid.CanBeCasted()) {
 		if (IsValid(Items.Orchid, target, LinkenBreakerToggler)) {
 			Items.Orchid.UseAbility(target)
-			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		else if (UseOnlyFromRangeItem.value) {
-			return false
+			return
 		}
 	}
 
@@ -89,11 +83,10 @@ export function BreakInit() {
 		&& Items.Bloodthorn.CanBeCasted()) {
 		if (IsValid(Items.Bloodthorn, target, LinkenBreakerToggler)) {
 			Items.Bloodthorn.UseAbility(target)
-			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		else if (UseOnlyFromRangeItem.value) {
-			return false
+			return
 		}
 	}
 	// Nullifier
@@ -101,11 +94,10 @@ export function BreakInit() {
 		&& Items.Nullifier.CanBeCasted()) {
 		if (IsValid(Items.Nullifier, target, LinkenBreakerToggler)) {
 			Items.Nullifier.UseAbility(target)
-			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		else if (UseOnlyFromRangeItem.value) {
-			return false
+			return
 		}
 	}
 	// RodofAtos
@@ -113,11 +105,10 @@ export function BreakInit() {
 		&& Items.RodofAtos.CanBeCasted()) {
 		if (IsValid(Items.RodofAtos, target, LinkenBreakerToggler)) {
 			Items.RodofAtos.UseAbility(target)
-			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		else if (UseOnlyFromRangeItem.value) {
-			return false
+			return
 		}
 	}
 	// Sheeps
@@ -125,15 +116,13 @@ export function BreakInit() {
 		&& Items.Sheeps.CanBeCasted()) {
 		if (IsValid(Items.Sheeps, target, LinkenBreakerToggler)) {
 			Items.Sheeps.UseAbility(target)
-			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		else if (UseOnlyFromRangeItem.value) {
-			return false
+			return
 		}
 	}
 }
 
 export function DeleteLinkenBreakAllVars(){
-	Sleep.ResetTimer()
 }

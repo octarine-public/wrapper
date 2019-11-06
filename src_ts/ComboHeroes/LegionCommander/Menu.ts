@@ -20,28 +20,26 @@ activeAbility: Map<string, boolean> = new Map<string, boolean>([
 ])
 
 let arrayItems: string[] = [
-	// 0							// 1
-	Items.BladMail.toString(), 		Items.LotusOrb.toString(),
-	// 2							// 3
-	Items.BlackKingBar.toString(),	Items.Abyssal.toString(),
-	// 4							// 5
-	Items.Mjollnir.toString(),		Items.Armlet.toString(),
-	// 6							// 7
-	Items.Satanic.toString(),		Items.Medallion.toString(),
-	// 8							// 9
-	Items.SolarCrest.toString(),	Items.UrnOfShadows.toString(),
-	// 10							// 11
-	Items.RodofAtos.toString(),		Items.SpiritVesel.toString(),
-	// 12							// 13
-	Items.Sheeps.toString(),		Items.Ethereal.toString(),
-	// 14							// 15
-	Items.Discord.toString(),		Items.Dagon.toString(),
-	// 16							// 17
-	Items.Orchid.toString(),		Items.Bloodthorn.toString(),
-	// 18							// 19
-	Items.Shivas.toString(),		Items.Nullifier.toString(),
-	// 20
-	Items.Blink.toString(),
+	Items.BladMail.toString(), 			// 0	
+	Items.LotusOrb.toString(), 			// 1
+	Items.BlackKingBar.toString(), 		// 2	
+	Items.Abyssal.toString(), 			// 3
+	Items.Mjollnir.toString(),			// 4	
+	Items.Armlet.toString(), 			// 5
+	Items.Satanic.toString(),			// 6	
+	Items.Medallion.toString(), 		// 7
+	Items.SolarCrest.toString(),		// 8
+	Items.UrnOfShadows.toString(), 		// 9
+	Items.RodofAtos.toString(), 		// 10
+	Items.SpiritVesel.toString(), 		// 11
+	Items.Sheeps.toString(), 			// 12
+	Items.Blink.toString(), 			// 13
+	Items.Orchid.toString(), 			// 14	
+	Items.Bloodthorn.toString(), 		// 15
+	Items.Shivas.toString(), 			// 16
+	Items.Nullifier.toString(), 		// 17
+	Items.InvisSword.toString(), 		// 18
+	Items.SilverEdge.toString(), 		// 19
 ],
 activeItems: Map<string, boolean> = new Map<string, boolean>([
 	[arrayItems[0], true], 	[arrayItems[1], true],
@@ -53,12 +51,13 @@ activeItems: Map<string, boolean> = new Map<string, boolean>([
 	[arrayItems[12], true],	[arrayItems[13], true],
 	[arrayItems[14], true],	[arrayItems[15], true],
 	[arrayItems[16], true],	[arrayItems[17], true],
-	[arrayItems[18], true],	[arrayItems[19], true],
-	[arrayItems[20], true],
+	[arrayItems[18], true], [arrayItems[19], true],
 ])
 
 let Combo = Menu.AddNode("Combo"),
 	ComboKeyItem = Combo.AddKeybind("Combo Key", "D"),
+	ComboMode = Combo.AddSwitcher("Use combo with (Priority)", ["Invisible Sword", "Dagger"], 1),
+	ComboModeInvis = Combo.AddToggle("Use Press of Attak before invisibility", true),
 	СomboAbility = Combo.AddImageSelector("Abilities", arrayAbility, activeAbility),
 	СomboItems = Combo.AddImageSelector("Items", arrayItems, activeItems),
 	AeonDiscItem = Combo.AddToggle("Cancel Important Items and Abilities", true).SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities"),
@@ -68,10 +67,12 @@ let bladeMailMenu = Menu.AddNode("Blade Mail"),
 	BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false).SetTooltip("Cancel Combo if there is enemy Blade Mail")
 
 let arrayLinkenBreak: string[] = [
-	arrayItems[3],	arrayItems[12],
-	arrayItems[10], arrayItems[13],	
-	arrayItems[15], arrayItems[16], 
-	arrayItems[17], arrayItems[19],
+	arrayItems[3],	
+	arrayItems[10], 
+	arrayItems[12],
+	arrayItems[14],
+	arrayItems[15],
+	arrayItems[17], 
 	Items.HeavensHalberd.toString(),
 	Items.ForceStaff.toString(),
 	Items.Cyclone.toString(),
@@ -85,9 +86,7 @@ activeLinkenBreak: Map<string, boolean> = new Map<string, boolean>([
 	[arrayLinkenBreak[5], true],
 	[arrayLinkenBreak[6], true],
 	[arrayLinkenBreak[7], true],
-	[arrayLinkenBreak[8], true],
-	[arrayLinkenBreak[9], true],
-	[arrayLinkenBreak[10], true],
+	[arrayLinkenBreak[8], true]
 ])
 
 let linkenBreakerMenu = Menu.AddNode("Linken Breaker"),
@@ -121,8 +120,10 @@ export {
 	ComboKeyItem,
 	СomboAbility,
 	СomboItems,
+	ComboModeInvis,
 	AeonDiscItem,
 	NearMouse,
+	ComboMode,
 	LinkenBreakerToggler,
 	DrawTargetItem,
 	UseOnlyFromRangeItem,

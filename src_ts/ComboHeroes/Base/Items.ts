@@ -61,6 +61,20 @@ export class ItemBase extends ItemsHelper {
 		}
 		return this.unit.GetItemByName(name)
 	}
+	public get InvisSword(): Item {
+		let name = "item_invis_sword"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get SilverEdge(): Item {
+		let name = "item_silver_edge"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
 	public get Bloodthorn(): Item  {
 		let name = "item_bloodthorn"
 		if (this.unit === undefined) {

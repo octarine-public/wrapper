@@ -910,21 +910,25 @@ export default class Unit extends Entity {
 
 	/* ================================ ORDERS ================================ */
 	public UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
-		if (checkToggled && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && !ability.IsToggled)
+		if (checkToggled && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && !ability.IsToggled) {
 			return this.CastToggle(ability, queue, showEffects)
+		}
 
-		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET))
+		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
 			return this.CastNoTarget(ability, queue, showEffects)
+		}
 
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
-			if (target instanceof Entity)
+			if (target instanceof Entity) {
 				target = target.NetworkPosition
+			}
 
 			return this.CastPosition(ability, target, queue, showEffects)
 		}
 
-		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
+		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {
 			return this.CastTarget(ability, target as Entity, showEffects)
+		}
 	}
 
 	public get Name(): string {
