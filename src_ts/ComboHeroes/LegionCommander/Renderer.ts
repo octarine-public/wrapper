@@ -1,4 +1,4 @@
-import { Game, GameSleeper, ParticlesSDK, Vector3, LocalPlayer } from "wrapper/Imports"
+import { Game, GameSleeper, LocalPlayer, ParticlesSDK, Vector3 } from "wrapper/Imports"
 import InitAbilities from "./Extends/Abilities"
 import { Base } from "./Extends/Helper"
 import InitItems from "./Extends/Items"

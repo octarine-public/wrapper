@@ -1,5 +1,5 @@
 export enum Type {
 	Any,
 	Circle,
-	Rectangle
+	Rectangle,
 }

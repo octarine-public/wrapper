@@ -1,5 +1,5 @@
-import { State, Interval } from "./Menu";
 import { Game, Hero } from "wrapper/Imports";
+import { Interval, State } from "./Menu";
 let MyHero: Hero,
 	Sleep: number = 0
 export function Tick() {

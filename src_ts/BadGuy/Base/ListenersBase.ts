@@ -1,4 +1,4 @@
-import { Unit, ArrayExtensions, Entity, Building } from "wrapper/Imports";
+import { ArrayExtensions, Building, Entity, Unit } from "wrapper/Imports";
 
 export let AllUnits: Unit[] = []
 export let EnemyBase: Building[] = []

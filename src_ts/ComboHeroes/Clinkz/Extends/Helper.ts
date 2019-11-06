@@ -1,6 +1,6 @@
 
 import { Game, Hero, Menu } from "wrapper/Imports"
-import { Owner, Heroes } from "../Listeners"
+import { Heroes, Owner } from "../Listeners"
 import { AeonDiscItem } from "../Menu"
 import InitItems from "./Items"
 
@@ -50,7 +50,7 @@ class ClinkzHelper {
 		"modifier_item_combo_breaker_buff",
 		"modifier_winter_wyvern_winters_curse_aura",
 		"modifier_winter_wyvern_winters_curse",
-		"modifier_oracle_fates_edict"
+		"modifier_oracle_fates_edict",
 	]
 	private CancelModifiersItems: string[] = [
 		"modifier_item_lotus_orb_active",

@@ -5,7 +5,7 @@
 	],
 	"jsRules": {},
 	"rules": {
-		"semicolon": [true, "never"],
+		"semicolon": [false, "never"],
 		"no-trailing-whitespace": true,
 		"whitespace": [true, "check-preblock"],
 		"indent": [true, "tabs", 1],
@@ -30,7 +30,11 @@
 		"no-string-throw": false,
 		"max-classes-per-file": false,
 		"class-name": false,
-		"unified-signatures": false
+		"unified-signatures": false,
+		"one-line": [true, "check-catch", "check-finally", "check-else", "check-open-brace", "check-whitespace"],
+		"member-ordering": [true, {
+			"order": "fields-first"
+		}]
 	},
 	"rulesDirectory": [],
 	"linterOptions": {

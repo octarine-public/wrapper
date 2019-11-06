@@ -1,7 +1,7 @@
-import { ParticlesSDK, Vector3, Game, GameSleeper, LocalPlayer } from "wrapper/Imports"
-import { MouseTarget, Owner } from "./Listeners"
+import { Game, GameSleeper, LocalPlayer, ParticlesSDK, Vector3 } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
-import { State, DrawTargetItem } from "./Menu"
+import { MouseTarget, Owner } from "./Listeners"
+import { DrawTargetItem, State } from "./Menu"
 
 let targetParticle: number
 let Sleep = new GameSleeper
@@ -23,7 +23,6 @@ export function Draw() {
 		}
 	}
 }
-
 
 function DrawTarget() {
 	if (MouseTarget === undefined) {

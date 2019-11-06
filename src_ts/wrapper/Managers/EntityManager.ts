@@ -20,10 +20,10 @@ import Building from "../Objects/Base/Building"
 import PhysicalItem from "../Objects/Base/PhysicalItem"
 import Tower from "../Objects/Base/Tower"
 
+import AbilityData from "../Objects/DataBook/AbilityData"
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/BitsExtensions"
-import AbilityData from "../Objects/DataBook/AbilityData"
 
 export { PlayerResource, Game }
 

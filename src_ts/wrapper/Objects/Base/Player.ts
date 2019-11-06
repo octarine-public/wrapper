@@ -1,12 +1,12 @@
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
+import { Team } from "../../Helpers/Team"
 import { default as EntityManager, LocalPlayer, PlayerResource } from "../../Managers/EntityManager"
 import { default as ExecuteOrder } from "../../Native/ExecuteOrder"
 import Ability from "./Ability"
 import Entity from "./Entity"
 import Hero from "./Hero"
 import Unit from "./Unit"
-import { Team } from "../../Helpers/Team"
 
 export default class Player extends Entity {
 	static get QuickBuyItems(): number[] {
@@ -14,7 +14,7 @@ export default class Player extends Entity {
 	}
 
 	public static order_queue: ExecuteOrder[] = []
-	static PrepareOrder(order: {
+	public static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
 		position?: Vector3 | Vector2,
@@ -27,13 +27,10 @@ export default class Player extends Entity {
 		return ExecuteOrder.fromObject(order).Execute()
 	}
 
-	static OrderNone(unit: Unit, queue?: boolean, showEffects?: boolean): ExecuteOrder {
-		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_NONE, unit, queue, showEffects })
-	}
 	/**
 	 * Only for LocalPlayer
 	 */
-	static Buyback(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	public static Buyback(queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK, queue, showEffects })
 	}
 	/**

@@ -1,16 +1,16 @@
-import { Unit, RendererSDK, Vector2 } from "wrapper/Imports";
-import { 
-	ShrineStateIcon, 
-	DrawTextColorShrine, 
-	DrawTextSizeShrine, 
-	ShrineStateIconColor, 
-	DrawTextColorShrineIsReady, 
-	DrawTextSize, 
-	ShrineState,
-	DrawEnemyOrAllies
-} from "../Menu";
-import { Units } from "../Entities";
+import { RendererSDK, Unit, Vector2 } from "wrapper/Imports";
 import ManagerBase from "../../../abstract/Base";
+import { Units } from "../Entities";
+import {
+	DrawEnemyOrAllies,
+	DrawTextColorShrine,
+	DrawTextColorShrineIsReady,
+	DrawTextSize,
+	DrawTextSizeShrine,
+	ShrineState,
+	ShrineStateIcon,
+	ShrineStateIconColor,
+} from "../Menu";
 
 let Base: ManagerBase = new ManagerBase
 

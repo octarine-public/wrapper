@@ -1,9 +1,9 @@
-import { MouseTarget, Owner, Heroes } from "./Listeners"
-import { State, AutoStealAbility, AutoStealState, DrawingStatus, DrawingStatusKillSteal } from "./Menu"
-import { Base } from "./Extends/Helper"
+import { Color, RendererSDK, Vector2 } from "../../wrapper/Imports"
 import InitDrawBase from "../Base/DrawDotTarget"
 import InitAbility from "./Extends/Abilities"
-import { RendererSDK, Vector2, Color } from "../../wrapper/Imports"
+import { Base } from "./Extends/Helper"
+import { Heroes, MouseTarget, Owner } from "./Listeners"
+import { AutoStealAbility, AutoStealState, DrawingStatus, DrawingStatusKillSteal, State } from "./Menu"
 
 export function Draw() {
 	let Drawing = new InitDrawBase(Owner, MouseTarget)
@@ -25,7 +25,7 @@ function DrawAutoSteal() {
 		bar_h: number,
 		screen_size = RendererSDK.WindowSize,
 		ratio = RendererSDK.GetAspectRatio()
-	
+
 	{
 		if (ratio === "16x9") {
 			off_x = screen_size.x * -0.0270
@@ -59,32 +59,31 @@ function DrawAutoSteal() {
 			return
 		}
 		let Abilities = new InitAbility(Owner),
-			DMG_TYPE_LAGUNA = Owner.HasScepter 
-				? DAMAGE_TYPES.DAMAGE_TYPE_PURE 
+			DMG_TYPE_LAGUNA = Owner.HasScepter
+				? DAMAGE_TYPES.DAMAGE_TYPE_PURE
 				: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
 			Laguna = Abilities.LagunaBlade,
 			DraGonSlave = Abilities.DragonSlave,
 			StealDMDraGonSlave = Owner.CalculateDamage(DraGonSlave.AbilityDamage, DraGonSlave.DamageType, hero),
 			StealDMGLaguna = Owner.CalculateDamage(Laguna.AbilityDamage, DMG_TYPE_LAGUNA, hero)
-				
+
 		if (!Laguna.CanBeCasted() || !AutoStealAbility.IsEnabled(Laguna.Name)) {
 			StealDMGLaguna = 0
 		}
 		if (!DraGonSlave.CanBeCasted() || !AutoStealAbility.IsEnabled(DraGonSlave.Name)) {
 			StealDMDraGonSlave = 0
 		}
-		
+
 		wts.AddScalarX(off_x).AddScalarY(off_y)
 		let size = new Vector2(bar_w, bar_h)
 		RendererSDK.FilledRect(wts, size, new Color(0, 0, 0, 165))
 		let SizeSteal = (StealDMDraGonSlave + StealDMGLaguna) / hero.HP
-		size.MultiplyScalarForThis(SizeSteal >= 1 ? 1 : SizeSteal)	
+		size.MultiplyScalarForThis(SizeSteal >= 1 ? 1 : SizeSteal)
 		size.SetY(bar_h)
 		RendererSDK.FilledRect(wts, size, new Color(0, 255, 0, 100))
 	})
-	
-}
 
+}
 
 export function DrawDeleteTempAllVars() {
 	new InitDrawBase().ResetEnemyParticle()

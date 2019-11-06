@@ -1,10 +1,10 @@
-import { ArrayExtensions, Entity, ParticlesSDK, Unit, Tower, Vector3 } from "wrapper/Imports"
-import { State, TowerSwitcher, TowerOnlyTarget } from "./Menu"
+import { ArrayExtensions, Entity, ParticlesSDK, Tower, Unit, Vector3 } from "wrapper/Imports"
+import { State, TowerOnlyTarget, TowerSwitcher } from "./Menu"
 
-let Towers: Tower[] = [], 
+let Towers: Tower[] = [],
 	pars = new Map<Entity, number>(),
 	TowerRange = new Map<Entity, number>()
-	
+
 export function Destroy(ent: Entity) {
 	if (ArrayExtensions.arrayRemove(Towers, ent)) {
 		pars.delete(ent)
@@ -56,7 +56,7 @@ export function OnDraw() {
 		let particle_range = TowerRange.get(tower)
 		if (!TowerOnlyTarget.value) {
 			switch (TowerSwitcher.selected_id) {
-				case 0: 
+				case 0:
 					if(!tower.IsEnemy()) {
 						SwicthTowers(particle_range, tower)
 					}
@@ -65,7 +65,7 @@ export function OnDraw() {
 							CreateTowerRange(tower)
 					}
 					break
-				case 1: 
+				case 1:
 					if (tower.IsEnemy()) {
 						SwicthTowers(particle_range, tower)
 					}

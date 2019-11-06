@@ -1,10 +1,10 @@
-import { Base } from "./Extends/Helper"
-import { cursorRadius, active, items } from "./MenuManager"
-import { 
-	ArrayExtensions, Creep, Entity, 
-	Hero, Utils, TrackingProjectile, 
-	Tree, Team, Vector3, PhysicalItem, Building, Tower
+import {
+	ArrayExtensions, Building, Creep,
+	Entity, Hero, PhysicalItem,
+	Team, Tower, TrackingProjectile, Tree, Utils, Vector3,
 } from "wrapper/Imports"
+import { Base } from "./Extends/Helper"
+import { active, cursorRadius, items } from "./MenuManager"
 export let Heroes: Hero[] = []
 export let trees: Tree[] = []
 export let creeps: Creep[] = []
@@ -235,7 +235,7 @@ export function EntityCreated(npc: Entity) {
 	}
 	if (npc instanceof Tree)
 	{
-		trees.push(npc)	
+		trees.push(npc)
 	}
 	if (npc instanceof Tower)
 	{
@@ -267,14 +267,14 @@ export function TrackingProjectileCreated(proj: TrackingProjectile) {
 		return false
 	}
 	let Entity = proj.Source as Entity
-	if (proj instanceof TrackingProjectile 
-	&& Entity instanceof Hero 
+	if (proj instanceof TrackingProjectile
+	&& Entity instanceof Hero
 	&& !Entity.IsEnemy() && Entity.Name === MyNameHero) {
 		ProjList.push(proj)
 	}
 }
 
-export function LinearProjectileDestroyed(proj: TrackingProjectile){
+export function LinearProjectileDestroyed(proj: TrackingProjectile) {
 	if (!Base.IsRestrictions(active)) {
 		return false
 	}

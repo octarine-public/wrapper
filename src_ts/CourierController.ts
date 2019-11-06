@@ -1,4 +1,4 @@
-import { Courier, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, Player, Unit, Team, GameSleeper, PlayerResource } from "wrapper/Imports"
+import { Courier, Entity, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Player, PlayerResource, Team, Unit } from "wrapper/Imports"
 
 let allyCourier: Courier,
 	Sleep: GameSleeper = new GameSleeper

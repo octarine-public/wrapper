@@ -1,4 +1,4 @@
-import { Hero, Ability, Unit } from "wrapper/Imports"
+import { Ability, Hero, Unit } from "wrapper/Imports"
 import { AbilityBase } from "../../Base/Abilities"
 export default class ClinkzAbility extends AbilityBase {
 	constructor(unit?: Hero | Unit) {

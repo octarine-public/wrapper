@@ -10,7 +10,7 @@ abils = mainCombo.AddImageSelector(
     [
         "tinker_laser",
         "tinker_heat_seeking_missile",
-        "tinker_rearm"
+        "tinker_rearm",
     ], new Map<string, boolean>([
         ["tinker_laser", true],
         ["tinker_heat_seeking_missile", true],
@@ -32,7 +32,7 @@ items = mainCombo.AddImageSelector(
         "item_rod_of_atos",
         "item_guardian_greaves",
         "item_ghost",
-        "item_glimmer_cape"
+        "item_glimmer_cape",
     ], new Map<string, boolean>([
         ["item_sheepstick", true],
         ["item_ethereal_blade", true],
@@ -46,7 +46,7 @@ items = mainCombo.AddImageSelector(
         ["item_rod_of_atos", true],
         ["item_guardian_greaves", true],
         ["item_ghost", true],
-        ["item_glimmer_cape", true]
+        ["item_glimmer_cape", true],
     ]),
 ),
 helpF = mainCombo.AddToggle("Cast Lotus On Allies",true),
@@ -59,12 +59,12 @@ spamItems = rockSp.AddImageSelector(
         "item_ghost",
         "item_glimmer_cape",
         "item_bottle",
-        "item_guardian_greaves"
+        "item_guardian_greaves",
     ], new Map<string, boolean>([
         ["item_ghost", true],
         ["item_glimmer_cape", true],
         ["item_bottle", true],
-        ["item_guardian_greaves", true]
+        ["item_guardian_greaves", true],
     ]),
 ),
 spamBlink = rockSp.AddToggle("Follow/Blink to cursor(rockets)", false),
@@ -75,12 +75,12 @@ marshItems = rockSp.AddImageSelector(
         "item_ghost",
         "item_glimmer_cape",
         "item_bottle",
-        "item_guardian_greaves"
+        "item_guardian_greaves",
     ], new Map<string, boolean>([
         ["item_ghost", true],
         ["item_glimmer_cape", true],
         ["item_bottle", true],
-        ["item_guardian_greaves", true]
+        ["item_guardian_greaves", true],
     ]),
 ),
 marshBlink = rockSp.AddToggle("Follow/Blink to cursor(marsh)", false),//SPAM
@@ -116,7 +116,7 @@ popLinkItems = linken_settings.AddImageSelector(
         "item_orchid",//
         "item_bloodthorn",//
         "item_force_staff",//
-        "item_ethereal_blade"//
+        "item_ethereal_blade",//
 
     ],
 ),
@@ -140,49 +140,49 @@ statusPosX = drawable.AddSlider("Pos X (%)", 73, 0, 100),
 statusPosY = drawable.AddSlider("Pos Y (%)", 88, 0, 100)
 export {
     menu
-,active 
-,spamBlink 
-,comboKey 
-,spamKey 
-,blinkKey 
+,active
+,spamBlink
+,comboKey
+,spamKey
+,blinkKey
 ,marshBlink
-,marshKey 
-,rocketrearmFailsw 
-,autoSoul 
-,cursorRadius 
-,soulTresh 
-// ,autop 
-// ,autoKey 
+,marshKey
+,rocketrearmFailsw
+,autoSoul
+,cursorRadius
+,soulTresh
+// ,autop
+// ,autoKey
 // ,autoMarsh
-// ,TinkerPushCreeps 
+// ,TinkerPushCreeps
 // ,TinkerPushEnemies
-// ,TinkerPushAllies 
-// ,TinkerPushSave   
-// ,TinkerPushDef    
-// ,TinkerPushJungle 
-// ,smartRegen 
-,linken_settings 
-,popLinkV 
-,popLinkItems 
-,bmcheck 
-,blindn 
+// ,TinkerPushAllies
+// ,TinkerPushSave
+// ,TinkerPushDef
+// ,TinkerPushJungle
+// ,smartRegen
+,linken_settings
+,popLinkV
+,popLinkItems
+,bmcheck
+,blindn
 ,blinkV
 ,blinkM
-,blinkRadius 
-,mainCombo  
-,abils 
-,items 
-,helpF 
-,drawable 
-,drawTargetParticle 
-,statusPosX 
-,statusPosY 
+,blinkRadius
+,mainCombo
+,abils
+,items
+,helpF
+,drawable
+,drawTargetParticle
+,statusPosX
+,statusPosY
 ,ezKill
 ,RedT
 ,GreenT
 ,BlueT
 ,TargetCalculator
-,ProcastCalc 
+,ProcastCalc
 ,EzCalc
 ,RocketCounter
 ,spamItems

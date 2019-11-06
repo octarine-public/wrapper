@@ -1,17 +1,17 @@
-import { GameSleeper, Utils, Unit, Game, TickSleeper } from "wrapper/Imports"
+import { Game, GameSleeper, TickSleeper, Unit, Utils } from "wrapper/Imports"
 
 import { Base } from "../Extends/Helper"
-import { Owner, MouseTarget } from "../Listeners"
+import { MouseTarget, Owner } from "../Listeners"
 
-import InitItems from "../Extends/Items"
 import InitAbility from "../Extends/Abilities"
+import InitItems from "../Extends/Items"
 
-import { State, ComboKeyItem, BladeMailItem, СomboItems, СomboAbility, BlinkRadius, HarassModeCombo } from "../Menu"
+import { BladeMailItem, BlinkRadius, ComboKeyItem, HarassModeCombo, State, СomboAbility, СomboItems } from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
 
 let Sleep = new TickSleeper,
 	GameSleep = new GameSleeper
-	
+
 function HitAndRun(unit: Unit, mode: boolean = false) {
 	Owner.MoveTo(!mode ? Utils.CursorWorldVec : unit.NetworkPosition)
 }
@@ -24,12 +24,12 @@ export function InitCombo() {
 		Owner.MoveTo(Utils.CursorWorldVec)
 		return false
 	}
-	
+
 	let hexDebuff = target.GetBuffByName("modifier_sheepstick_debuff"),
 		Items = new InitItems(Owner),
 		Abilities = new InitAbility(Owner),
 		comboBreaker = Base.AeonDisc(target)
-		
+
 	if (Items.Blink !== undefined
 		&& СomboItems.IsEnabled(Items.Blink.Name)
 		&& !target.IsInRange(Owner, 600)
@@ -117,7 +117,7 @@ export function InitCombo() {
 			Sleep.Sleep(Items.Tick)
 			return true
 		}
-		
+
 		// Medallion
 		if (
 			Items.Medallion !== undefined
@@ -143,7 +143,7 @@ export function InitCombo() {
 			Sleep.Sleep(Items.Tick)
 			return true
 		}
-		
+
 		// RodofAtos
 		let atosDebuff = target.ModifiersBook.Buffs.some(x => x.Name === "modifier_rod_of_atos_debuff" && x.RemainingTime > 0.5)
 		if (
@@ -214,7 +214,7 @@ export function InitCombo() {
 		BreakInit()
 		return false
 	}
-	
+
 	let Delay = (Owner.SecondsPerAttack * 1000)
 	if (HarassModeCombo.selected_id !== 0 && GameSleep.Sleeping("Attack")) {
 		switch (HarassModeCombo.selected_id) {
@@ -223,8 +223,7 @@ export function InitCombo() {
 		}
 		return true
 	}
-	
-	
+
 	// SearingArrows
 	if (
 		Abilities.SearingArrows !== undefined

@@ -2,15 +2,15 @@ import {
 	Ability,
 	ArrayExtensions,
 	Color,
+	EntityManager,
 	EventsSDK,
 	Game,
 	Hero,
 	LocalPlayer,
 	Menu as MenuSDK,
 	RendererSDK,
-	Vector2,
-	EntityManager,
 	Team,
+	Vector2,
 } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Visual", "Cooldown Display"]),

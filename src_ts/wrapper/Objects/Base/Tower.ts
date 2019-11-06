@@ -3,7 +3,7 @@ import Building from "./Building"
 import Unit from "./Unit"
 
 export default class Tower extends Building {
-	readonly m_pBaseEntity: C_DOTA_BaseNPC_Tower
+	public readonly m_pBaseEntity: C_DOTA_BaseNPC_Tower
 
 	get IsTower(): boolean {
 		return true

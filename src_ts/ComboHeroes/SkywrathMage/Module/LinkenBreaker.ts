@@ -79,7 +79,6 @@ export function BreakInit() {
 		}
 	}
 
-
 	// ArcaneBolt
 	if (Abilities.ArcaneBolt !== undefined
 		&& !Base.CancelAbilityRealm(target)
@@ -107,7 +106,7 @@ export function BreakInit() {
 			return false
 		}
 	}
-	
+
 	// Nullifier
 	if (Items.Nullifier !== undefined
 		&& !Base.CancelAbilityRealm(target)

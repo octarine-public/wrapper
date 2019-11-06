@@ -181,7 +181,6 @@ EventsSDK.on("Draw", () => {
 		if (updateItem)
 			return
 
-
 		ParticlesSDK.SetControlPoint(part, 0, LocalPlayer.Hero.Position)
 		ParticlesSDK.SetControlPoint(part, 2, LocalPlayer.Hero.Position)
 		let color: Color = itemColors.get(spell).clr.Color

@@ -1,5 +1,5 @@
-import { Menu, MenuBase } from "../../abstract/MenuBase"
 import InitItems from "../../abstract/Items"
+import { Menu, MenuBase } from "../../abstract/MenuBase"
 const { BaseTree, State } = MenuBase(Menu, "Auto Items")
 State.SetTooltip("Auto use items")
 
@@ -31,7 +31,7 @@ let Items_array: string[] = [
 	Items.Medallion.toString(),
 	Items.Janggo.toString(),
 	Items.DiffusalBlade.toString(),
-	Items.PowerTreads.toString()
+	Items.PowerTreads.toString(),
 ]
 let ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items_array)
 
@@ -62,7 +62,6 @@ let AutoUseItemsSouring = SettingsAutoItems.AddNode("Soul Ring"),
 	AutoUseItemsSouringMP_val = AutoUseItemsSouring.AddSlider("MP(%) threshold", 100, 0, 100),
 	AutoUseItemsSouringMPUse_val = AutoUseItemsSouring.AddSlider("MP ability threshold", 25, 0, 100)
 
-	
 let AutoUseItemsBlood = SettingsAutoItems.AddNode("Bloodstone"),
 	AutoUseItemsBloodHP_val = AutoUseItemsBlood.AddSlider("HP precent (%)", 10, 1, 99),
 	AutoUseItemsBloodMP_val = AutoUseItemsBlood.AddSlider("Min mana precent (%)", 7, 1, 100)
@@ -83,7 +82,7 @@ let AutoUseItemsMjollnir = SettingsAutoItems.AddNode("Mjollnir"),
 
 let AutoUseItemsBluker = SettingsAutoItems.AddNode("Buckler"),
 	AutoUseItemsBluker_val = AutoUseItemsBluker.AddSlider("Distance from enemy", 1000, 150, 2000)
-	
+
 export {
 	MenuBase, Items,
 	State, ItemsForUse,

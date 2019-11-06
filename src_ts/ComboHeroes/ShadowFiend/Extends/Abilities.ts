@@ -1,4 +1,4 @@
-import { Hero, Ability, Unit } from "wrapper/Imports"
+import { Ability, Hero, Unit } from "wrapper/Imports"
 import { AbilityBase } from "../../Base/Abilities"
 export default class ShadowFiendAbility extends AbilityBase {
 	constructor(unit?: Hero | Unit) {

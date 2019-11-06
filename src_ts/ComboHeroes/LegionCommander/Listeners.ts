@@ -2,8 +2,8 @@ import { ArrayExtensions, Creep, Entity, Hero, TrackingProjectile, Utils } from 
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { GameEndedCombo } from "./Module/Combo"
-import { DrawDeleteTempAllVars } from "./Renderer"
 import { DeleteLinkenBreakAllVars } from "./Module/LinkenBreaker"
+import { DrawDeleteTempAllVars } from "./Renderer"
 
 export let Heroes: Hero[] = []
 export let Creeps: Creep[] = []

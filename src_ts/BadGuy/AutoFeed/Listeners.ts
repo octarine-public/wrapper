@@ -1,7 +1,7 @@
-import { Unit, Building, GameSleeper } from "wrapper/Imports";
-import { State, Swhicher, DrawState } from "./Menu";
-import { Renderer } from "./Renderer";
+import { Building, GameSleeper, Unit } from "wrapper/Imports";
 import { AllUnits, EnemyBase } from "../Base/ListenersBase";
+import { DrawState, State, Swhicher } from "./Menu";
+import { Renderer } from "./Renderer";
 
 export let Sleep: GameSleeper = new GameSleeper()
 
@@ -23,7 +23,7 @@ export function Tick() {
 			return false
 		}
 		switch (Swhicher.selected_id) {
-			case 0: 
+			case 0:
 				if (x.IsHero) {
 					MoveUnit(x, fontain)
 					return true

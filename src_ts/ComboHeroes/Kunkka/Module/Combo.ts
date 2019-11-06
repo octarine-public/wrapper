@@ -1,12 +1,12 @@
-import { Game, Vector3, Ability, Hero, Item, TickSleeper } from "wrapper/Imports"
+import { Ability, Game, Hero, Item, TickSleeper, Vector3 } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { Owner, MouseTarget } from "../Listeners"
+import { MouseTarget, Owner } from "../Listeners"
 
-import InitItems from "../Extends/Items"
 import InitAbility from "../Extends/Abilities"
+import InitItems from "../Extends/Items"
 import {
-	State, ComboKeyItem, BlinkRadius, //HarassModeCombo, 
-	СomboItems, AutoComboMenu, СomboAbility, ComboKeyTorrent, BladeMailItem 
+	AutoComboMenu, BladeMailItem, BlinkRadius, //HarassModeCombo,
+	ComboKeyItem, ComboKeyTorrent, State, СomboAbility, СomboItems,
 } from "../Menu"
 
 // import { BreakInit } from "./LinkenBreaker"
@@ -16,13 +16,13 @@ export let ComboTimer: number = 0
 export let XMarkPos: Vector3 = new Vector3
 export let XMarkType: number = 0
 
-let Sleep: TickSleeper = new TickSleeper, 
+let Sleep: TickSleeper = new TickSleeper,
 	AutoCombo: boolean = false,
 	DisableStaticTime = 1.6
 
 function CheckAbility(ability: Ability | Item, target: Hero | Vector3): boolean {
 	return ability !== undefined && ability.IsReady
-		&& ability.CanBeCasted() && СomboAbility.IsEnabled(ability.Name) 
+		&& ability.CanBeCasted() && СomboAbility.IsEnabled(ability.Name)
 		&& Owner.Distance2D(target) <= ability.CastRange
 }
 
@@ -120,13 +120,13 @@ export function InitCombo() {
 	}
 	let target = MouseTarget,
 		Time = Game.RawGameTime
-			
+
 	let Items = new InitItems(Owner),
 		Abilities = new InitAbility(Owner)
 	let Q = Abilities.Torrent as Ability,
 		X = Abilities.MarksSpot as Ability,
 		R = Abilities.Ghostship as Ability,
-		HEX = Items.Sheeps as Item	
+		HEX = Items.Sheeps as Item
 	if (!XMarkPos.IsZero()) {
 		ComboInit()
 		return false
@@ -140,8 +140,8 @@ export function InitCombo() {
 	let IsStunned = target.GetBuffByName("modifier_bashed"),
 		IsBashed  = target.GetBuffByName("modifier_stunned"),
 		hexDebuff = target.GetBuffByName("modifier_sheepstick_debuff")
-		
-	if (hexDebuff !== undefined && hexDebuff.RemainingTime > 0.3 
+
+	if (hexDebuff !== undefined && hexDebuff.RemainingTime > 0.3
 		|| IsBashed !== undefined && IsBashed.RemainingTime > DisableStaticTime
 		|| IsStunned !== undefined && IsStunned.RemainingTime > DisableStaticTime
 	) {
@@ -169,14 +169,14 @@ export function InitCombo() {
 					Owner.MoveTo(target.NetworkPosition)
 					return false
 				}
-				if (HEX !== undefined 
+				if (HEX !== undefined
 					&& HEX.CanBeCasted() && СomboItems.IsEnabled(HEX.Name)
 					&& (hexDebuff === undefined || !hexDebuff.IsValid || hexDebuff.RemainingTime <= 0.3)) {
 					HEX.UseAbility(target)
 					Sleep.Sleep((Items.Tick + SetCastDelay()))
 				}
-				if (CheckAbility(X, target) 
-					&& Q !== undefined && Q.CanBeCasted() 
+				if (CheckAbility(X, target)
+					&& Q !== undefined && Q.CanBeCasted()
 					&& R !== undefined && R.CanBeCasted()
 				) {
 					let Predict = target.InFront(600 / 1000 * (target.IsMoving ? target.IdealSpeed : 0))
@@ -189,10 +189,10 @@ export function InitCombo() {
 					XMarkCastTime = Time + 1
 					Sleep.Sleep(Abilities.CastDelay(X) + SetCastDelay())
 				}
-				if (R === undefined || !R.CanBeCasted() 
+				if (R === undefined || !R.CanBeCasted()
 					|| Owner.Distance2D(target) >= R.CastRange
 				) {
-					
+
 					ShipCombo = false
 					ComboTimer = Time + 3.08
 				}
@@ -220,7 +220,7 @@ export function InitCombo() {
 			return false
 		}
 	}
-	else{
+	else {
 		ComboInit()
 		return false
 	}

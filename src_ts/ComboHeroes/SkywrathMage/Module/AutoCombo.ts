@@ -2,7 +2,7 @@ import { Base } from "../Extends/Helper"
 import { Heroes, MyHero, ProjList } from "../Listeners"
 
 import { Ability, ArrayExtensions, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
-import { AutoComboAbility, AutoComboDisableWhen, AutoComboItems, AutoComboMinHPpercent, AutoComboState, BladeMailCancelCombo, ComboKey, SmartConShotRadius, State, ConcussiveShotAwait } from "../Menu"
+import { AutoComboAbility, AutoComboDisableWhen, AutoComboItems, AutoComboMinHPpercent, AutoComboState, BladeMailCancelCombo, ComboKey, ConcussiveShotAwait, SmartConShotRadius, State } from "../Menu"
 
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
@@ -39,7 +39,7 @@ export function AutoCombo() {
 	}
 	let Items = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero)
-		
+
 	let RodofAtosDelay = ProjList.find(x => x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
 		EtherealDelay = ProjList.find(x => x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),
 		ConcussiveShotDelay = ProjList.find(x => x.ParticlePath === "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf")
@@ -105,7 +105,7 @@ export function AutoCombo() {
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare))
 			return true
 		}
-		
+
 	}
 
 	// ConcussiveShot

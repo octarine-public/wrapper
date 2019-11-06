@@ -13,10 +13,9 @@ let //ShowAfterGameStart = BaseTree.AddToggle("Show after game start", true),
 	DrawPositionY = BaseTreeDraw.AddSlider("Position Y", 84, -900, 900),
 	DrawPositionGap = BaseTreeDraw.AddSlider("Players gap", 140, 0, 900)
 
-	
-export { 
-	State, BaseTree, 
+export {
+	State, BaseTree,
 	//ShowAfterGameStart,
 	DrawPositionGap,
-	DrawPositionX, DrawPositionY, SendAlliesChat, ChatTimeOutSend, ChatTimeOutSendRepeat //DrawTextSize 
+	DrawPositionX, DrawPositionY, SendAlliesChat, ChatTimeOutSend, ChatTimeOutSendRepeat //DrawTextSize
 }

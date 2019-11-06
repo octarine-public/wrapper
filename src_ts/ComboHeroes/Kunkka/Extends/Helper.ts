@@ -1,6 +1,6 @@
 
 import { Game, Hero, Menu, Vector3 } from "wrapper/Imports"
-import { Owner, Heroes } from "../Listeners"
+import { Heroes, Owner } from "../Listeners"
 import InitItems from "./Items"
 
 class KunkkaHelper {
@@ -69,14 +69,14 @@ class KunkkaHelper {
 		"modifier_storm_spirit_electric_vortex_pull",
 		"modifier_tidehunter_ravage",
 		"modifier_windrunner_shackle_shot",
-		"modifier_item_nullifier_mute"
+		"modifier_item_nullifier_mute",
 	]
 	private CancelModifiers: string[] = [
 		"modifier_item_blade_mail_reflect",
 		"modifier_item_combo_breaker_buff",
 		"modifier_winter_wyvern_winters_curse_aura",
 		"modifier_winter_wyvern_winters_curse",
-		"modifier_oracle_fates_edict"
+		"modifier_oracle_fates_edict",
 	]
 	private CancelModifiersItems: string[] = [
 		"modifier_item_lotus_orb_active",

@@ -1,7 +1,7 @@
-import { Game, Ability, Hero, TickSleeper } from "wrapper/Imports"
-import { Heroes, Owner } from "../Listeners"
-import { СomboAbility, State } from "../Menu"
+import { Ability, Game, Hero, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
+import { Heroes, Owner } from "../Listeners"
+import { State, СomboAbility } from "../Menu"
 
 function IsValidAbility(ability: Ability, target: Hero) {
 	return ability !== undefined && ability.IsReady
@@ -18,7 +18,7 @@ export function InitFindCyclone() {
 	}
 	let target = Heroes.sort((a, b) => b.Distance2D(Owner) - a.Distance2D(Owner))
 		.filter(x => x.IsValid && x.IsAlive && x.IsEnemy() && !x.IsMagicImmune)
-		.find(e => e.HasModifier("modifier_eul_cyclone"))	
+		.find(e => e.HasModifier("modifier_eul_cyclone"))
 	if (target === undefined) {
 		return false
 	}

@@ -1,10 +1,10 @@
-import { Hero, Team, Game, GameSleeper, Entity, ArrayExtensions, Building, LocalPlayer, Player } from "wrapper/Imports"
+import { ArrayExtensions, Building, Entity, Game, GameSleeper, Hero, LocalPlayer, Player, Team } from "wrapper/Imports"
 import { StateBase } from "../../abstract/MenuBase"
 import { State, TowerHP, TowerSwitcher } from "./Menu"
 
 let Towers: Building[] = [],
 	Sleep: GameSleeper = new GameSleeper()
-	
+
 function GlyphCooldown(): number {
 	switch (0) {
 		case Team.Radiant:

@@ -1,7 +1,7 @@
-import { EventsSDK, LocalPlayer, Game } from "wrapper/Imports"
+import { EventsSDK, Game, LocalPlayer } from "wrapper/Imports"
 import * as AutoDeward from "./module/AutoDeward/Helper"
-import * as AutoItems from "./module/AutoItems/Helper"
 import * as AutoGlyph from "./module/AutoGlyph/Helper"
+import * as AutoItems from "./module/AutoItems/Helper"
 
 EventsSDK.on("Tick", () => {
 	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || !Game.IsInGame) {

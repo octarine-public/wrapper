@@ -1,23 +1,23 @@
+import { Color, Game, Menu, RendererSDK, Unit, Vector2 } from "wrapper/Imports"
 import ManagerBase from "../../../abstract/Base"
-import { Color, Game, RendererSDK, Vector2, Unit, Menu } from "wrapper/Imports"
 import {
-	drawStatus,	
-	statusPosX,
-	statusPosY,
-	drawStatusSize,
-	NotificationRoshanStateChat,
-	
-	IconSettingsState,
-	IconSettingsColorDied,
-	IconSettingsColorAlive,
-	IconSettingsSwitch,
-	NotificationRoshanStateSound,
-
+	AegisdrawStatusSize,
+	AegisSettingsState,
+	AegisSettingsStateIcon,
 	AegisStatusPosX,
 	AegisStatusPosY,
-	AegisSettingsState,
-	AegisdrawStatusSize,
-	AegisSettingsStateIcon,
+
+	drawStatus,
+	drawStatusSize,
+	IconSettingsColorAlive,
+	IconSettingsColorDied,
+	IconSettingsState,
+
+	IconSettingsSwitch,
+	NotificationRoshanStateChat,
+	NotificationRoshanStateSound,
+	statusPosX,
+	statusPosY,
 
 } from "../Menu"
 

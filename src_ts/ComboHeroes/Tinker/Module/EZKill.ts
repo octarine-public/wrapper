@@ -1,13 +1,13 @@
 import { GameSleeper } from "wrapper/Imports"
-import { Base } from "../Extends/Helper"
-import {  MyHero, Heroes } from "../Listeners"
-import { comboKey, items, active, ezKill, TargetCalculator } from "../MenuManager"
 import InitAbility from "../Extends/Abilities"
+import { Base } from "../Extends/Helper"
 import InitItems from "../Extends/Items"
+import {  Heroes, MyHero } from "../Listeners"
+import { active, comboKey, ezKill, items, TargetCalculator } from "../MenuManager"
+import { EZKill, ManaFactDamage, OneHitLeft } from "./Calc";
 import { TinkerStatus } from "./status";
-import { ManaFactDamage, OneHitLeft, EZKill } from "./Calc";
 let Sleep = new GameSleeper()
-export function AutoSteal(){
+export function AutoSteal() {
 	if (!Base.IsRestrictions(active) || comboKey.is_pressed || TinkerStatus()==2||!ezKill.value)
 		return false
 	let ItemsInit = new InitItems(MyHero),
@@ -71,9 +71,8 @@ export function AutoSteal(){
 				}
 				Sleep.Sleep(150, "autosteal")
 			}
-			
+
 		}
 	}
-})	
+})
 }
-

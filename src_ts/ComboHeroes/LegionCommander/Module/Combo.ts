@@ -1,16 +1,16 @@
 import { Base } from "../Extends/Helper"
 import { BreakInit } from "./LinkenBreaker"
 
-import { Utils, Ability, Item, TickSleeper, Menu, Hero, Game } from "wrapper/Imports"
+import { Ability, Game, Hero, Item, Menu, TickSleeper, Utils } from "wrapper/Imports"
 import { MouseTarget, Owner } from "../Listeners"
 
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
-import { BladeMailItem, ComboKeyItem, State, СomboAbility, СomboItems, ComboMode, ComboModeInvis } from "../Menu"
+import { BladeMailItem, ComboKeyItem, ComboMode, ComboModeInvis, State, СomboAbility, СomboItems } from "../Menu"
 
 let GameSleep = new TickSleeper
-	
+
 function IsValid(item: Ability | Item, Selector: Menu.ImageSelector) {
 	return item && Selector.IsEnabled(item.Name) && item.CanBeCasted()
 }
@@ -46,18 +46,18 @@ function AttackTargetCustom(target: Hero) {
 }
 
 function Init(
-	Abilities: InitAbility, 
-	Items: InitItems, 
-	target: Hero, 
-	blockingAbilities: boolean, 
-	UseBlink: boolean = false, 
-	is_invise: boolean = false, 
-	callback?: Function
+	Abilities: InitAbility,
+	Items: InitItems,
+	target: Hero,
+	blockingAbilities: boolean,
+	UseBlink: boolean = false,
+	is_invise: boolean = false,
+	callback?: Function,
 ) {
 	typeof callback !== "function"
 		? PressTheAttack(Abilities, target)
 		: callback()
-		
+
 	if (IsValid(Items.Mjollnir, СomboItems)) {
 		Items.Mjollnir.UseAbility(Owner)
 		return
@@ -71,7 +71,7 @@ function Init(
 			}
 		}
 	}
-	if (Items.Armlet && !Items.Armlet.IsToggled 
+	if (Items.Armlet && !Items.Armlet.IsToggled
 		&& СomboItems.IsEnabled(Items.Armlet.Name)
 	) {
 		if (!GameSleep.Sleeping) {
@@ -119,13 +119,13 @@ function Init(
 		BreakInit()
 		return
 	}
-	if (IsValid(Abilities.Duel, СomboAbility) 
+	if (IsValid(Abilities.Duel, СomboAbility)
 		&& Owner.Distance2D(target) <= (Abilities.Duel.CastRange + Owner.HullRadius)
 	) {
 		Abilities.Duel.UseAbility(target)
 		return
 	}
-	
+
 	AttackTargetCustom(target)
 }
 
@@ -146,7 +146,7 @@ export function InitCombo() {
 		return
 	}
 	let target = MouseTarget
-	if (target === undefined || (BladeMailItem.value 
+	if (target === undefined || (BladeMailItem.value
 		&& target.HasModifier("modifier_item_blade_mail_reflect"))
 	) {
 		Owner.MoveTo(Utils.CursorWorldVec)
@@ -157,9 +157,9 @@ export function InitCombo() {
 		blockingAbilities = Base.IsBlockingAbilities(target),
 		Items = new InitItems(Owner),
 		Abilities = new InitAbility(Owner)
-		
+
 	if (Base.Cancel(target) && cancelAdditionally) {
-		if (!Owner.IsVisibleForEnemies 
+		if (!Owner.IsVisibleForEnemies
 			&& Owner.ModifiersBook.HasAnyBuffByNames(["modifier_item_invisibility_edge_windwalk", "modifier_item_silver_edge_windwalk"])
 		) {
 			AttackTargetCustom(target)
@@ -176,7 +176,7 @@ export function InitCombo() {
 			) {
 				Init(Abilities, Items, target, blockingAbilities, true)
 				return
-			} 
+			}
 			else {
 				if (Items.InvisSword || Items.SilverEdge) {
 					CastInvis(Abilities, Items, blockingAbilities, target)
@@ -191,7 +191,7 @@ export function InitCombo() {
 		else { // IsInvisible
 			CastInvis(Abilities, Items, blockingAbilities, target)
 			return
-		}		
+		}
 	}
 	return
 }

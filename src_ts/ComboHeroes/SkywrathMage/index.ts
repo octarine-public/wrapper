@@ -4,15 +4,15 @@ import {
 	EntityCreated, EntityDestroyed, GameEnded,
 	GameStarted, InitMouse,
 	LinearProjectileDestroyed,
-	TrackingProjectileCreated
+	TrackingProjectileCreated,
 } from "./Listeners"
 
-import { Draw } from "./Renderer"
+import { AutoCombo } from "./Module/AutoCombo"
+import { AutoDisable, ParticleCreated } from "./Module/AutoDisable"
 import { InitCombo } from "./Module/Combo"
 import { AutoUsage } from "./Module/SpamMode"
-import { AutoCombo } from "./Module/AutoCombo"
 import { OnExecuteOrder } from "./Module/WithoutFail"
-import { AutoDisable, ParticleCreated } from "./Module/AutoDisable"
+import { Draw } from "./Renderer"
 
 EventsSDK.on("Tick", () => {
 	InitMouse()

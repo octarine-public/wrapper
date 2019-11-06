@@ -251,8 +251,6 @@
 // 	farmp: number,
 // 	jungTick:number
 
-
-
 // EventsSDK.on("GameStarted", hero => {
 // 	if (hero instanceof Hero && !hero.IsEnemy() && hero.Name == "npc_dota_hero_tinker") {
 //     if (hero === undefined)
@@ -314,9 +312,9 @@
 // 	}
 // 	if (npc instanceof Tree)
 // 	{
-// 		trees.push(npc)	
+// 		trees.push(npc)
 // 	}
-	
+
 // })
 // EventsSDK.on("GameEnded", () => {
 // 	sleeper.FullReset();
@@ -369,7 +367,7 @@
 // 	{
 // 		return
 // 	}
-// 	else 
+// 	else
 // 	{
 // 	if (order.Unit === tinker && order.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET) {
 // 		if ((order.Ability as Ability).Name === "tinker_heat_seeking_missile" && rocketrearmFailsw) {
@@ -441,18 +439,18 @@
 // 	if (target !== undefined && !sleeper.Sleeping("r")) {
 // 		if (!target.IsAlive )
 // 			target = undefined
-		
+
 // 		if (!target.IsMagicImmune) {
-			
+
 // 		if (!r.IsChanneling){
 // 			if (bmcheck.value && target.ModifiersBook.HasAnyBuffByNames(["modifier_item_blade_mail_reflect","modifier_item_lotus_orb_active","modifier_antimage_counterspell","modifier_nyx_assassin_spiked_carapace"]) && !tinker.IsMagicImmune)
 // 			{
 // 				console.log("bmcheck")
 // 				//target = undefined
 // 				return false;
-			
+
 // 			}
-			
+
 // 			useBlink()
 // 				if (popLinkV.value && target.HasLinkenAtTime()) {
 // 				if (popLink(nullifier, popLinkItems.IsEnabled("item_nullifier"))) return
@@ -477,7 +475,7 @@
 
 // 			}
 // 			if (lotus && lotus.CanBeCasted() && items.IsEnabled("item_lotus_orb"))
-// 			{ 
+// 			{
 // 				if (helpF)
 // 				{
 // 					let xxxtentacion = ArrayExtensions.orderBy(fheroes.filter(hero => hero.Distance(tinker) <= 900+tinker.CastRangeBonus && hero.IsAlive && !hero.ModifiersBook.HasBuffByName("modifier_item_lotus_orb_active") ), ent => ent.Distance(Utils.CursorWorldVec))[0]
@@ -487,44 +485,44 @@
 // 				else
 // 				{
 // 					tinker.CastTarget(lotus, tinker)
-	
+
 // 				}
 // 			}
 // 			if (greaves && greaves.CanBeCasted() && items.IsEnabled("item_guardian_greaves"))
 // 			{
 // 				tinker.CastNoTarget(greaves)
-	
+
 // 			}
 // 			if (hex &&  hex.CanBeCasted() && items.IsEnabled("item_sheepstick") && (!target.IsHexed||(Game.RawGameTime - lastCheckTime[0] )>(3.4-r.GetSpecialValue("channel_tooltip", r.Level))))
 // 			{
 // 				tinker.CastTarget(hex, target)
 // 				lastCheckTime[0] = Game.RawGameTime
-	
+
 // 			}
 // 			if (nullifier && nullifier.CanBeCasted() && items.IsEnabled("item_nullifier")&& !target.IsMuted)
 // 			{
-// 				tinker.CastTarget(nullifier, target)	
-	
-// 			}	
+// 				tinker.CastTarget(nullifier, target)
+
+// 			}
 // 			if (orchid && orchid.CanBeCasted() && items.IsEnabled("item_orchid")&& !target.IsSilenced)
 // 			{
 // 				tinker.CastTarget(orchid, target)
-	
+
 // 			}
 // 			if (blood && blood.CanBeCasted() && items.IsEnabled("item_bloodthorn") && !target.IsSilenced)
 // 			{
 // 				tinker.CastTarget(blood, target)
-		
+
 // 			}
 // 			if (atos && atos.CanBeCasted() && items.IsEnabled("item_rod_of_atos"))
 // 			{
 // 				tinker.CastTarget(atos, target)
 
-// 			}		
+// 			}
 // 			if (veil && veil.CanBeCasted() && items.IsEnabled("item_veil_of_discord"))
 // 			{
 // 				tinker.CastPosition(veil, target.NetworkPosition)
-	
+
 // 			}
 // 			if (eblade && eblade.CanBeCasted() && items.IsEnabled("item_ethereal_blade") && (etherU|| (Game.RawGameTime - lastCheckTime[1] )>(4.1-r.GetSpecialValue("channel_tooltip", r.Level)-tinker.Distance2D(target)/1275)))
 // 			{
@@ -534,7 +532,7 @@
 // 			}
 // 			if (w.CanBeCasted() && abils.IsEnabled("tinker_heat_seeking_missile")&& target.IsVisible)
 // 			{
-// 			   tinker.CastNoTarget(w) 
+// 			   tinker.CastNoTarget(w)
 
 // 			}
 // 			if (q.CanBeCasted() && tinker.IsInRange(target, q.CastRange) && abils.IsEnabled("tinker_laser"))
@@ -550,9 +548,8 @@
 // 			{
 // 				tinker.CastNoTarget(r)
 // 				sleeper.Sleep(r.GetSpecialValue("channel_tooltip", r.Level)*1000, "r")
-				
-				
-// 			}			
+
+// 			}
 // 		}
 // 	}
 // 	}
@@ -595,7 +592,7 @@
 // 		tinker.CastPosition(blink, tinker.NetworkPosition.Add(distance))
 // 		return true
 // 	}
-	
+
 // 	return false
 // }
 // function getAbils() {
@@ -639,7 +636,7 @@
 // 	if (!active.value || !Game.IsInGame || tinker === undefined || !tinker.IsAlive || sleeper.Sleeping("blinker") || sleeper.Sleeping("spam") || sleeper.Sleeping("r") )
 // 		return false;
 // 	nearest = ArrayExtensions.orderBy(heroes.filter(hero => hero.Distance(Utils.CursorWorldVec) <= cursorRadius.value && hero.IsAlive), ent => ent.Distance(Utils.CursorWorldVec))[0]
-	
+
 // 	latency= GetLatency(0)+GetLatency(1)
 // 	getAbils()
 // 	getItems()
@@ -654,7 +651,7 @@
 // 		mainCombo(target)
 // 		TinkerStatus = 1
 // 	} else {
-		
+
 // 		target = undefined
 // 		if (TinkerStatus ==1) TinkerStatus=0
 // 	}
@@ -668,7 +665,7 @@
 // 	return false
 // }
 // EventsSDK.on("Update", cmd => {
-	
+
 // 	if (!active.value || !Game.IsInGame || Game.IsPaused || tinker === undefined || !tinker.IsAlive)
 // 		return
 // 	//TinkerJungle = false
@@ -682,14 +679,12 @@
 // 	{
 // 		TinkerStatus = 0
 // 	}
-		
-	
 
 // })
 // EventsSDK.on("Draw", () => {
 // 	if (!active.value || !Game.IsInGame  || tinker === undefined || !tinker.IsAlive)
 // 		return
-	
+
 // 	if (drawTargetParticle.value) {
 // 		if (targetParticle === undefined && (nearest !== undefined || target !== undefined)) {
 // 			targetParticle = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, nearest)
@@ -716,7 +711,6 @@
 // 			thr:string = "",
 // 			numh:number = 0;
 
-
 // 		if (spamKey.is_pressed)
 // 		{
 // 			tar = "RocketSpam"
@@ -733,7 +727,7 @@
 // 			suc = " "+(Math.round(disp[0])*disp[1]/tinker.Mana*100).toFixed(2)+" %"
 // 			col = new Color(68, 108, 179, 255)
 // 		}
-// 		else if (nearest !== undefined) 
+// 		else if (nearest !== undefined)
 // 		{
 // 			suc = "not enough "+(((Math.round(disp[0])*disp[1]/tinker.Mana)*100).toFixed(3))+" %"
 // 			col = new Color(255,0,0,255)
@@ -753,19 +747,19 @@
 // 					wSize.y / 100 * statusPosY.value + (_i * textSize.value),
 // 				),
 // 				kal
-// 				, 
+// 				,
 // 				"Consolas",
 // 				textSize.value,
 // 			)
 // 		}
-		
+
 // 	}*/
-	
+
 // })
 // function display(mode: number){
 // 	getItems()
 // 	getAbils()
-	
+
 // 	if (nearest !== undefined && mode == 0)
 // 	{
 // 	let pipe = (nearest.GetItemByName("item_pipe"))?0.35:0
@@ -778,24 +772,24 @@
 // 	let lasere = 0
 // 	if(q&&abils.IsEnabled("tinker_laser")) lasere= (q.GetSpecialValue("laser_damage") + tinker.GetTalentValue("special_bonus_unique_tinker")),	 mana = mana+q.ManaCost
 // 	if (w&&abils.IsEnabled("tinker_heat_seeking_missile")){
-// 	switch (w.Level) { 
-// 		case 1: { 
+// 	switch (w.Level) {
+// 		case 1: {
 // 		   damage_d = damage_d+125
-// 		   break; 
-// 		} 
-// 		case 2: { 
-// 			damage_d = damage_d+200 
-// 		   break; 
-// 		} 
-// 		case 3: { 
+// 		   break;
+// 		}
+// 		case 2: {
+// 			damage_d = damage_d+200
+// 		   break;
+// 		}
+// 		case 3: {
 // 			damage_d = damage_d+275
-// 			break; 
+// 			break;
 // 		 }
-// 		 case 4: { 
-// 			damage_d = damage_d+350 
-// 			break; 
-// 		 } 
-// 	 } 
+// 		 case 4: {
+// 			damage_d = damage_d+350
+// 			break;
+// 		 }
+// 	 }
 // 	 mana = mana+w.ManaCost
 // 	}
 // 	if (dagon&&items.IsEnabled("item_dagon_5"))		 damage_d=damage_d+dagon.GetSpecialValue("damage"),		 mana = mana+dagon.ManaCost
@@ -810,28 +804,28 @@
 // 	//return Math.abs(Math.floor(number))
 // 	return [number1/number2, mana]
 // 	}
-// 	else if (mode == 1) 
+// 	else if (mode == 1)
 // 	{
 // 		let mana = -150+tinker.ManaRegen*3/r.Level+r.ManaCost
 // 		let damage_d = 0
-// 		switch (w.Level) { 
-// 			case 1: { 
+// 		switch (w.Level) {
+// 			case 1: {
 // 			   damage_d = damage_d+125
-// 			   break; 
-// 			} 
-// 			case 2: { 
-// 				damage_d = damage_d+200 
-// 			   break; 
-// 			} 
-// 			case 3: { 
+// 			   break;
+// 			}
+// 			case 2: {
+// 				damage_d = damage_d+200
+// 			   break;
+// 			}
+// 			case 3: {
 // 				damage_d = damage_d+275
-// 				break; 
+// 				break;
 // 			 }
-// 			 case 4: { 
-// 				damage_d = damage_d+350 
-// 				break; 
-// 			 } 
-// 		 } 
+// 			 case 4: {
+// 				damage_d = damage_d+350
+// 				break;
+// 			 }
+// 		 }
 // 		 mana = mana+w.ManaCost
 
 // 		 return [damage_d*(tinker.SpellAmplification+1)*0.75, Math.round(tinker.Mana/mana)]
@@ -853,14 +847,14 @@
 // 		}
 // 		else if (num == 1)
 // 		{
-// 			if (ncreeps.filter(e=>e.IsInRange(radiantSpot[1], 1284)).length>=3) 
+// 			if (ncreeps.filter(e=>e.IsInRange(radiantSpot[1], 1284)).length>=3)
 // 			{
 // 				console.log("rad tuple1 alive")
 // 				return true
 // 			}
 // 		}
 // 		else if (num ==2)
-// 		{	
+// 		{
 // 			if (ncreeps.filter(e=>e.IsInRange(radiantSpot[2], 1432)).length>=3)
 // 			{
 // 				console.log("rad tuple2 alive")
@@ -877,14 +871,14 @@
 // 		}
 // 		else if (num ==4)
 // 		{
-// 			if (ncreeps.filter(e=>e.IsInRange(radiantSpot[4], 1087)).length>=3) 
+// 			if (ncreeps.filter(e=>e.IsInRange(radiantSpot[4], 1087)).length>=3)
 // 			{
 // 				console.log("rad tuple 4 alive")
 // 				return true
 // 			}
 
 // 		}
-		
+
 // 	}
 // 	else
 // 	{
@@ -900,24 +894,24 @@
 // 	}
 // 	console.log("farmtuple return false")
 // 	return false
-	
+
 // }
 // function TinkerGetJunglePos()
 // {
 // 	console.log("TinkerGetJunglePos")
-	
-// 	if  (!tinker.IsAlive || !e || !r)  return 
+
+// 	if  (!tinker.IsAlive || !e || !r)  return
 // 	let marchCount = 3
-// 	//if tinker.talent("special_bonus_unique_tinker_2") && Ability.GetLevel(NPC.GetAbility(myHero, "special_bonus_unique_tinker_2")) > 0 
+// 	//if tinker.talent("special_bonus_unique_tinker_2") && Ability.GetLevel(NPC.GetAbility(myHero, "special_bonus_unique_tinker_2")) > 0
 // 	//	marchCount = 2
 // 	let neededMana = r.ManaCost * (marchCount - 1) + e.ManaCost * marchCount
 // 	if (soulRing && soulring) neededMana = neededMana - (marchCount * 150)
-// 	if ( tinker.MaxMana < neededMana) 
+// 	if ( tinker.MaxMana < neededMana)
 // 	{	console.log("mana return")
-// 	  return 
+// 	  return
 // 	}
 // 	if ((Game.GameTime-jungTick)/60<1)
-// 	{ 
+// 	{
 // 		TinkerJungleFarmPos = []
 // 		return
 // 	}
@@ -928,18 +922,18 @@
 // 			if (TinkerIsFarmTupleAlive(0) )
 // 			{
 // 					TinkerJungleFarmPos = [radiantSpot[0],radiantCast[0] ]
-// 					return 
-// 			}	
+// 					return
+// 			}
 // 			else if (TinkerIsFarmTupleAlive(1) )
 // 			{
 // 					TinkerJungleFarmPos = [radiantSpot[1],radiantCast[1] ]
 // 					return
-// 			}	
+// 			}
 // 			else if (TinkerIsFarmTupleAlive(2))
 // 			{
 // 					TinkerJungleFarmPos =[radiantSpot[2],radiantCast[2] ]
-// 					return 
-// 			}	
+// 					return
+// 			}
 // 			else if (TinkerIsFarmTupleAlive(3))
 // 			{
 // 					TinkerJungleFarmPos =[radiantSpot[3],radiantCast[3] ]
@@ -952,11 +946,10 @@
 // 			}
 // 			else
 // 			{
-// 				return 
+// 				return
 // 			}
 
-
-// 		}	
+// 		}
 // 		else
 // 		{
 // 			if (TinkerIsFarmTupleAlive(0))
@@ -966,7 +959,7 @@
 // 			else if (TinkerIsFarmTupleAlive(1))
 // 			{
 // 				TinkerJungleFarmPos = [direSpot[1],direCast[1] ]
-// 			}	
+// 			}
 // 			else if (TinkerIsFarmTupleAlive(2))
 // 			{
 // 				TinkerJungleFarmPos = [direSpot[2],direCast[2] ]
@@ -974,11 +967,11 @@
 // 			else if (TinkerIsFarmTupleAlive(3))
 // 			{
 // 				TinkerJungleFarmPos = [direSpot[3],direCast[3] ]
-// 			}	
+// 			}
 // 			else if (TinkerIsFarmTupleAlive(4))
 // 			{
 // 				TinkerJungleFarmPos = [direSpot[4],direCast[4] ]
-// 			}	
+// 			}
 // 			else if (TinkerIsFarmTupleAlive(5))
 // 			{
 // 				TinkerJungleFarmPos = [direSpot[5],direCast[5] ]
@@ -987,7 +980,7 @@
 // 			{
 // 				return undefined
 // 			}
-// 		}	
+// 		}
 // 	}
 // }
 // function TinkerJungleFarm()
@@ -998,9 +991,8 @@
 // 	let movePos = TinkerJungleFarmPos[0]
 // 	let castPos = TinkerJungleFarmPos[1]
 // 	let marchCount = 3
-// 	//	if NPC.HasAbility(myHero, "special_bonus_unique_tinker_2") && Ability.GetLevel(NPC.GetAbility(myHero, "special_bonus_unique_tinker_2")) > 0 
+// 	//	if NPC.HasAbility(myHero, "special_bonus_unique_tinker_2") && Ability.GetLevel(NPC.GetAbility(myHero, "special_bonus_unique_tinker_2")) > 0
 // 	//		marchCount = 2
-		
 
 // 	if (!tinker.IsInRange(movePos,35))
 // 	{
@@ -1018,7 +1010,7 @@
 // 					sleeper.Sleep(119,"blpush")
 // 					return
 // 				}
-// 			}	
+// 			}
 // 			else
 // 			{
 // 				tinker.CastPosition(blink, movePos)
@@ -1027,7 +1019,7 @@
 // 				console.log("cast blink, 1187, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 				return
 // 			}
-			
+
 // 		}
 // 		tinker.MoveTo(movePos)
 // 	}
@@ -1035,7 +1027,7 @@
 // 	{
 // 		if (marched < marchCount)
 // 		{
-// 			if (e.CanBeCasted()&& e.IsReady&&!sleeper.Sleeping("epush")) 
+// 			if (e.CanBeCasted()&& e.IsReady&&!sleeper.Sleeping("epush"))
 // 			{
 // 				tinker.CastPosition(e, castPos)
 // 				marched = marched + 1
@@ -1046,7 +1038,7 @@
 // 			}
 // 			else
 // 			{
-// 				if (r.CanBeCasted()) 
+// 				if (r.CanBeCasted())
 // 				{
 // 					tinker.CastNoTarget(r)
 // 					lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + 0.60 + latency
@@ -1055,7 +1047,7 @@
 // 				}
 // 				else
 // 				{
-// 					if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 					if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 						tinker.CastPosition(tpboots, fountain)
 // 						lastTick = Game.RawGameTime + 3.05 + latency
 // 						jungTick = Game.GameTime+3.05+latency
@@ -1066,12 +1058,12 @@
 // 						return
 // 				}
 // 			}
-					
-// 		}		
-			
+
+// 		}
+
 // 		else
 // 		{
-// 			if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 			if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 			{
 // 				tinker.CastPosition(tpboots, fountain)
 // 				lastTick = Game.RawGameTime + 3.05 + latency
@@ -1084,7 +1076,7 @@
 // 			}
 // 			else
 // 			{
-// 				if (r.CanBeCasted()) 
+// 				if (r.CanBeCasted())
 // 				{
 // 					tinker.CastNoTarget(r)
 // 					lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + 0.60 + latency
@@ -1092,35 +1084,35 @@
 // 					return
 // 				}
 // 			}
-// 		}		
-// 	}		
-// 	return	
-// }				
+// 		}
+// 	}
+// 	return
+// }
 // function TinkerPush()
 // {
 // 	if (!tinker.IsAlive)
-// 	{ 
-// 		console.log("return 1267, rawgt: "+Game.RawGameTime)
-// 		return 
-// 	}
-// 	if (tinker.IsChanneling) 
 // 	{
-// 		return 
+// 		console.log("return 1267, rawgt: "+Game.RawGameTime)
+// 		return
+// 	}
+// 	if (tinker.IsChanneling)
+// 	{
+// 		return
 // 	}
 // 	let mousePos = Utils.CursorWorldVec
-// 	if (!tpboots )  
+// 	if (!tpboots )
 // 	{
 // 		console.log("return 1279, rawgt: "+Game.RawGameTime)
 // 		return
 // 	}
-// 	if  (!e||e.Level<1)    
+// 	if  (!e||e.Level<1)
 // 	{
 // 		console.log("return 1283, rawgt: "+Game.RawGameTime)
 // 		return
 // 	}
 // 	if (Game.RawGameTime < lastTick)
 // 	{
-// 		return 
+// 		return
 // 	}
 // 	else
 // 	{
@@ -1129,12 +1121,12 @@
 // 			 tinker.HoldPosition(tinker.NetworkPosition, false)
 // 			 console.log("hold 1295")
 // 		}
-// 	}	
+// 	}
 // 	if (TinkerFarmDANGER())
 // 	{
 // 		if (TinkerPushDef)//tinkerPushDef - menu
 // 		{
-// 			if (ArrayExtensions.orderBy(heroes.filter(hero=>hero.IsAlive&&hero.IsInRange(tinker,750)),ent => ent.Distance(tinker))[0] != undefined) 
+// 			if (ArrayExtensions.orderBy(heroes.filter(hero=>hero.IsAlive&&hero.IsInRange(tinker,750)),ent => ent.Distance(tinker))[0] != undefined)
 // 			{
 // 				let target = ArrayExtensions.orderBy(heroes.filter(hero=>hero.IsAlive&&hero.IsInRange(tinker,750)),ent => ent.Distance(tinker))[0]
 // 				if (hex && hex.CanBeCasted())
@@ -1162,7 +1154,7 @@
 // 					return
 // 				}
 // 			}
-// 		}			
+// 		}
 // 		if (blink && blink.CanBeCasted()&&!sleeper.Sleeping("blpush"))
 // 		{
 // 			let saveSpot = TinkerFarmGetSaveSpot(tinker, tinker)
@@ -1182,21 +1174,19 @@
 // 				sleeper.Sleep(119,"blpush")
 // 				return
 // 			}
-// 		}	
-// 	}	
-	
-		
+// 		}
+// 	}
+
 // 	if (tinker.HasModifier("modifier_fountain_aura_buff") && amionf())
 // 	{
-// 		if (!e.IsReady || !tpboots.IsReady) 
+// 		if (!e.IsReady || !tpboots.IsReady)
 // 		{
 // 			if (r.CanBeCasted())
 // 				tinker.CastNoTarget(r)
 // 				lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + 0.60 + latency
 // 				console.log("cast r, 1334, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 				return
-// 		}	
-		
+// 		}
 
 // 		if (tinker.Mana / tinker.MaxMana > 0.8 )
 // 		{
@@ -1208,19 +1198,18 @@
 // 				console.log("return 1372, rawgt: "+Game.RawGameTime)
 // 				return
 // 			}
-// 		}	
-// 	}	
-	
+// 		}
+// 	}
 
 // 	if  (!ported )
 // 	{
 // 		if (amionf())
 // 		{
 // 			if (tinker.Mana / tinker.MaxMana > 0.8 )
-// 			{	
+// 			{
 // 				if (TinkerPort() != undefined)
 // 				{
-// 					if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 					if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 					{
 // 						tinker.CastPosition(tpboots, TinkerPort())
 // 						lastTick = Game.RawGameTime + 3.05 + latency
@@ -1229,7 +1218,7 @@
 // 						marched = 0
 // 						return
 // 					}
-// 				}	
+// 				}
 // 				else
 // 				{
 // 					if (TinkerPushJungle)
@@ -1237,7 +1226,7 @@
 // 						TinkerGetJunglePos()
 // 						if (TinkerJungleFarmPos!=undefined && TinkerJungleFarmPos[0]!=undefined && TinkerJungleFarmPos[1]!=undefined)
 // 						{
-// 							if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 							if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 							{
 // 								tinker.CastPosition(tpboots, TinkerJungleFarmPos[0])
 // 								lastTick = Game.RawGameTime + 3.05 + latency
@@ -1250,22 +1239,22 @@
 // 						}
 // 					}
 // 				}
-// 			}		
-// 		}	
+// 			}
+// 		}
 // 		else
 // 		{
 // 			if (tinker.Mana / tinker.MaxMana > 0.6)
 // 			{
-// 				if (TinkerPort() != undefined) 
+// 				if (TinkerPort() != undefined)
 // 				{
-// 					if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 					if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 						tinker.CastPosition(tpboots, TinkerPort())
 // 						lastTick = Game.RawGameTime + 3.05 + latency
 // 						console.log("cast boot, 1402, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 						ported = true
 // 						marched = 0
 // 						return
-// 				}	
+// 				}
 // 				else
 // 				{
 // 					if (TinkerPushJungle)
@@ -1273,7 +1262,7 @@
 // 						TinkerGetJunglePos()
 // 						if (TinkerJungleFarmPos != undefined  && TinkerJungleFarmPos[0]!=undefined && TinkerJungleFarmPos[1]!=undefined)
 // 						{
-// 							if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 							if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 							{
 // 								tinker.CastPosition(tpboots, TinkerJungleFarmPos[0])
 // 								lastTick = Game.RawGameTime + 3.05 + latency
@@ -1285,11 +1274,11 @@
 // 							}
 // 						}
 // 					}
-// 				}				
-// 			}	
+// 				}
+// 			}
 // 			else
 // 			{
-// 				if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 				if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 					tinker.CastPosition(tpboots, fountain)
 // 					lastTick = Game.RawGameTime + 3.05 + latency
 // 					console.log("cast boot, 1433, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
@@ -1297,12 +1286,11 @@
 // 					marched = 0
 // 					TinkerJungle = false
 // 					return
-// 			}	
-// 		}	
-		
-	
+// 			}
+// 		}
+
 // 	}
-// 	if (soulRing && soulring&& soulring.IsReady && soulring.CanBeCasted()) 
+// 	if (soulRing && soulring&& soulring.IsReady && soulring.CanBeCasted())
 // 	{
 // 			if (!amionf())
 // 			{
@@ -1318,7 +1306,7 @@
 // 				{
 // 					tinker.CastNoTarget(soulring,true)
 // 					//tinker.HoldPosition(tinker.NetworkPosition,true)
-					
+
 // 					lastTick = Game.RawGameTime + 0.15 + latency
 // 					console.log("cast sr, 1450, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 					sleeper.Sleep
@@ -1337,11 +1325,9 @@
 // 				console.log("cast bottle, 1475, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 				sleeper.Sleep(110+latency,"bpush")
 // 				return
-// 			}		
-// 	}			
-			
-		
-	
+// 			}
+// 	}
+
 // 	let targetCreep:Creep = undefined
 // 	let ecre = ecreeps.filter(Creep => Creep.IsInRange(tinker, 1350+tinker.CastRangeBonus))
 // 	for (let unit of ecre)
@@ -1358,12 +1344,12 @@
 // 	}
 // 	else
 // 	{
-// 		if (targetCreep != undefined) 
+// 		if (targetCreep != undefined)
 // 		{
-// 			if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() && !sleeper.Sleeping("blpush")) 
+// 			if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() && !sleeper.Sleeping("blpush"))
 // 			{
 // 				let saveSpot = TinkerFarmGetSaveSpot(tinker, tinker)//targetCreep)
-// 				if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375) 
+// 				if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 				{
 // 					tinker.CastPosition(blink, saveSpot)
 // 					tinker.HoldPosition(tinker.NetworkPosition)
@@ -1372,11 +1358,11 @@
 // 					sleeper.Sleep(119,"blpush")
 // 					return
 // 				}
-// 			}	
-// 			if (marched <= autoMarsh.value) 
+// 			}
+// 			if (marched <= autoMarsh.value)
 // 			{
 // 				if (e.CanBeCasted()&&!sleeper.Sleeping("epush"))
-// 				{ 
+// 				{
 // 					tinker.CastPosition(e, tinker.NetworkPosition.Add((targetCreep.NetworkPosition.Subtract(tinker.NetworkPosition)).Normalize().ScaleTo(e.CastRange - 1)))
 // 					lastTick = Game.RawGameTime + 0.75 + latency
 // 					marched = marched + 1
@@ -1386,7 +1372,7 @@
 // 				}
 // 				else
 // 				{
-// 					if (r.CanBeCasted()) 
+// 					if (r.CanBeCasted())
 // 					{
 // 						tinker.CastNoTarget(r)
 // 						lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + 0.60 + latency
@@ -1395,7 +1381,7 @@
 // 					}
 // 					else
 // 					{
-// 						if (tpboots.CanBeCasted()) 
+// 						if (tpboots.CanBeCasted())
 // 						{
 // 							tinker.CastPosition(tpboots, fountain)
 // 							lastTick = Game.RawGameTime + 3.05 + latency
@@ -1403,20 +1389,20 @@
 // 							marched = 0
 // 							return
 // 						}
-// 					}	
-// 				}	
-// 			}	
+// 					}
+// 				}
+// 			}
 // 			else
 // 			{
-				
-// 					if (tinker.Mana / tinker.MaxMana < 0.6) 
+
+// 					if (tinker.Mana / tinker.MaxMana < 0.6)
 // 					{
-// 						if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 						if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 						{
 // 							if (blink && blink.IsReady && !TinkerFarmAmISave() && !sleeper.Sleeping("blpush"))
 // 							{
 // 								let saveSpot = TinkerFarmGetSaveSpot(tinker, tinker)
-// 								if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375) 
+// 								if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 								{
 // 									tinker.CastPosition(blink, saveSpot)
 // 									tinker.HoldPosition(tinker.NetworkPosition, true)
@@ -1435,8 +1421,8 @@
 // 									sleeper.Sleep(119,"blpush")
 // 									return
 // 								}
-// 							}	
-							
+// 							}
+
 // 							tinker.CastPosition(tpboots, fountain)
 // 							lastTick = Game.RawGameTime + 3.05 + latency
 // 							console.log("cast boot, 1621, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
@@ -1445,7 +1431,7 @@
 // 						}
 // 						else
 // 						{
-// 							if (r.CanBeCasted()) 
+// 							if (r.CanBeCasted())
 // 							{
 // 								tinker.CastNoTarget(r)
 // 								lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + 0.60 + latency
@@ -1453,18 +1439,18 @@
 // 								return
 // 							}
 // 						}
-							
-// 					}	
+
+// 					}
 // 					else
 // 					{
-// 						if (TinkerPort() != undefined) 
+// 						if (TinkerPort() != undefined)
 // 						{
-// 							if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 							if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 							{
-// 								if (blink && blink.CanBeCasted() && !TinkerFarmAmISave()&&!sleeper.Sleeping("blpush")) 
+// 								if (blink && blink.CanBeCasted() && !TinkerFarmAmISave()&&!sleeper.Sleeping("blpush"))
 // 								{
 // 									let saveSpot = TinkerFarmGetSaveSpot(tinker, tinker)
-// 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375) 
+// 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 									{
 // 										tinker.CastPosition(blink, saveSpot)
 // 										tinker.HoldPosition(tinker.NetworkPosition)
@@ -1497,26 +1483,26 @@
 // 									marched = 0
 // 									return
 // 								}
-// 							}		
+// 							}
 // 							else
 // 							{
-// 								if (r.CanBeCasted()) 
+// 								if (r.CanBeCasted())
 // 								{
 // 									tinker.CastNoTarget(r)
 // 									lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + 0.60 + latency
 // 									console.log("cast r, 1682, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 									return
 // 								}
-// 							}	
+// 							}
 // 						}
 // 						else
 // 						{
-// 							if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 							if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 							{
-// 								if (blink && blink.CanBeCasted() && !TinkerFarmAmISave()&&!sleeper.Sleeping("blpush")) 
+// 								if (blink && blink.CanBeCasted() && !TinkerFarmAmISave()&&!sleeper.Sleeping("blpush"))
 // 								{
 // 									let saveSpot = TinkerFarmGetSaveSpot(tinker, tinker)
-// 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375) 
+// 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 									{
 // 										tinker.CastPosition(blink, saveSpot)
 // 										tinker.HoldPosition(tinker.NetworkPosition, true)
@@ -1544,33 +1530,33 @@
 // 							else
 // 							{
 // 								if (r.CanBeCasted())
-// 								{ 
+// 								{
 // 									tinker.CastNoTarget(r)
 // 									lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + 0.60 + latency
 // 									console.log("cast r, 1721, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 									return
 // 								}
 // 							}
-// 						}			
-// 					}			
-					
-// 			}						
-// 		}	
+// 						}
+// 					}
+
+// 			}
+// 		}
 // 		else
 // 		{
 // 			if (!amionf())
 // 			{
-				
-// 					if (tinker.Mana / tinker.MaxMana < 0.6) 
+
+// 					if (tinker.Mana / tinker.MaxMana < 0.6)
 // 					{
 // 						if (ported)
 // 						{
-// 							if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 							if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 							{
-// 								if (blink && blink.CanBeCasted() && !TinkerFarmAmISave()&&!sleeper.Sleeping("blpush")) 
+// 								if (blink && blink.CanBeCasted() && !TinkerFarmAmISave()&&!sleeper.Sleeping("blpush"))
 // 								{
 // 									let saveSpot = TinkerFarmGetSaveSpot(tinker, tinker)
-// 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375) 
+// 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 									{
 // 										tinker.CastPosition(blink, saveSpot)
 // 										tinker.HoldPosition(tinker.NetworkPosition, true)
@@ -1597,7 +1583,7 @@
 // 							}
 // 							else
 // 							{
-// 								if (r.CanBeCasted()) 
+// 								if (r.CanBeCasted())
 // 								{
 // 									tinker.CastNoTarget(r)
 // 									lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + 0.60 + latency
@@ -1605,19 +1591,19 @@
 // 									return
 // 								}
 // 							}
-								
-// 						}	
-// 					}	
+
+// 						}
+// 					}
 // 					else
 // 					{
-// 						if (TinkerPort() != undefined) 
+// 						if (TinkerPort() != undefined)
 // 						{
-// 							if (tpboots.IsReady&& tpboots.CanBeCasted()) 
+// 							if (tpboots.IsReady&& tpboots.CanBeCasted())
 // 							{
-// 								if (blink && blink.CanBeCasted() && !TinkerFarmAmISave()&&!sleeper.Sleeping("blpush")) 
+// 								if (blink && blink.CanBeCasted() && !TinkerFarmAmISave()&&!sleeper.Sleeping("blpush"))
 // 								{
 // 									let saveSpot = TinkerFarmGetSaveSpot(tinker, tinker)
-// 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375) 
+// 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 									{
 // 										tinker.CastPosition(blink, saveSpot)
 // 										tinker.HoldPosition(tinker.NetworkPosition)
@@ -1637,7 +1623,7 @@
 // 									}
 // 								}
 // 								if (blink && blink.IsReady)
-// 								{ 
+// 								{
 // 									ported = false
 // 									marched = 0
 // 									console.log("return 1875, rawgt: "+Game.RawGameTime)
@@ -1651,28 +1637,28 @@
 // 									marched = 0
 // 									return
 // 								}
-// 							}		
+// 							}
 // 							else
 // 							{
-// 								if (r.CanBeCasted()) 
+// 								if (r.CanBeCasted())
 // 								{
 // 									tinker.CastNoTarget(r)
 // 									lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + 0.60 + latency
 // 									console.log("cast r, 1865, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 									return
 // 								}
-// 							}	
-// 						}	
+// 							}
+// 						}
 // 						else
 // 						{
 // 							if (ported)
 // 							{
-// 								if (tpboots.CanBeCasted()&&tpboots.IsReady) 
+// 								if (tpboots.CanBeCasted()&&tpboots.IsReady)
 // 								{
-// 									if (blink && blink.CanBeCasted() && !TinkerFarmAmISave()&&!sleeper.Sleeping("blpush")) 
+// 									if (blink && blink.CanBeCasted() && !TinkerFarmAmISave()&&!sleeper.Sleeping("blpush"))
 // 									{
 // 										let saveSpot = TinkerFarmGetSaveSpot(tinker, tinker)
-// 										if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375) 
+// 										if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 										{
 // 											tinker.CastPosition(blink, saveSpot)
 // 											tinker.OrderStop()
@@ -1690,7 +1676,7 @@
 // 											sleeper.Sleep(119,"blpush")
 // 											return
 // 										}
-										
+
 // 									}
 // 									tinker.CastPosition(tpboots, fountain)
 // 									lastTick = Game.RawGameTime + 3.05 + latency
@@ -1700,7 +1686,7 @@
 // 								}
 // 								else
 // 								{
-// 									if (r.CanBeCasted()) 
+// 									if (r.CanBeCasted())
 // 									{
 // 										tinker.CastNoTarget(r)
 // 										lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + 0.60 + latency
@@ -1711,16 +1697,16 @@
 // 							}
 // 						}
 // 					}
-				
+
 // 			}
-// 		}									
-// 	}	
+// 		}
+// 	}
 // 	//console.log("return 1948, rawgt: "+Game.RawGameTime)
 // 	return
 // }
 // function TinkerFarmAmISave()
 // {
-// 	if (!tinker.IsAlive) return false 
+// 	if (!tinker.IsAlive) return false
 // 	let myPos = tinker.NetworkPosition
 // 	for (let enemy of heroes)
 // 	{
@@ -1735,11 +1721,11 @@
 // }
 // function TinkerFarmDANGER()
 // {
-// 	if (!tinker.IsAlive) return false 
-// 	if (amionf())  return false 
-// 	//if next(dodgeItTable) != nil  return true 
-// 	//if TargetGotDisableModifier(myHero, myHero) == true  return true 
-// 	if (tinker.IsSilenced || tinker.IsStunned || tinker.IsHexed)  return true 					
+// 	if (!tinker.IsAlive) return false
+// 	if (amionf())  return false
+// 	//if next(dodgeItTable) != nil  return true
+// 	//if TargetGotDisableModifier(myHero, myHero) == true  return true
+// 	if (tinker.IsSilenced || tinker.IsStunned || tinker.IsHexed)  return true
 // 	for (let enema of heroes.filter(hero => hero.IsAlive && hero.IsInRange(tinker,888)))
 // 		{
 // 			if (tinker.IsInRange(enema, enema.AttackRange+140)) return true
@@ -1748,9 +1734,9 @@
 // }
 // function TinkerFarmGetSaveSpot(myHero ,target)
 // {
-// 	if (!tinker.IsAlive) return 
-// 	if (!target)  return 
-// 	if (!blink)  return 
+// 	if (!tinker.IsAlive) return
+// 	if (!target)  return
+// 	if (!blink)  return
 // 	let targetPos = target.NetworkPosition
 // 	let myPos = myHero.NetworkPosition
 // 	for (let spot of savespots)
@@ -1763,7 +1749,7 @@
 // 						return spot
 // 				}
 // 		}
-// 	}		
+// 	}
 // 	let treeCount = 0
 // 	let targetTree:Tree = undefined
 // 	for (let t of trees.filter(e=>e.IsInRange(targetPos, 900)&&e.IsAlive))
@@ -1784,10 +1770,10 @@
 // 			if (treeTargetPos.Distance2D(targetPos)<1000&&myPos.Distance2D(treeTargetPos)< 1125+tinker.CastRangeBonus && checkForTrees(treeTargetPos,400)>=3)
 // 				treeTargetPos = targetTree.NetworkPosition
 // 		}
-// 	}				
+// 	}
 // 	if (treeTargetPos != undefined )
 // 	{
-// 		if (checkForTrees(treeTargetPos,30)>0) 
+// 		if (checkForTrees(treeTargetPos,30)>0)
 // 		{
 // 			return ((treeTargetPos.Add(treeTargetPos.Subtract(tinker.NetworkPosition))).Normalize().ScaleTo(35))
 // 		}
@@ -1814,32 +1800,32 @@
 // 				}
 // 			}
 // 		}
-					
-// 	}	
+
+// 	}
 // 	return
 // }
 // function TinkerPortGetCreepCount(target, range:number)
 // {
-// 	if (!tinker.IsAlive) return 0 
-// 	if (!target) return 0 
+// 	if (!tinker.IsAlive) return 0
+// 	if (!target) return 0
 // 	let count = 0
 // 	for (let npc of ecreeps.filter(e=>e.IsAlive&&!e.IsWaitingToSpawn&&e.IsInRange(target, range)))
 // 	{
 // 		if (npc.HP/npc.MaxHP >0.6)
 // 			count = count+1
 // 	}
-// 	return count	
+// 	return count
 // }
 // function TinkerPortGetHeroCount(target, range:number)
 // {
-// 	if (!tinker.IsAlive) return 0 
-// 	if (!target)return 0 
+// 	if (!tinker.IsAlive) return 0
+// 	if (!target)return 0
 // 	let count = heroes.filter(e=>e.IsAlive&&e.IsInRange(target, range)).length
 // 	return count
 // }
 // function TinkerPort()
 // {
-// 	if (!tinker.IsAlive) return 
+// 	if (!tinker.IsAlive) return
 
 // 		let targetCreep = undefined
 // 		let creepCount = 0
@@ -1881,13 +1867,13 @@
 // 					}
 // 				}
 // 			}
-// 		if (targetCreep == undefined) 
+// 		if (targetCreep == undefined)
 // 			creepCount = 0
-// 		}					
-// 		if (targetCreep == undefined) 
+// 		}
+// 		if (targetCreep == undefined)
 // 			creepCount = 0
 // 		if (targetCreep != undefined )
-// 			return targetCreep.NetworkPosition	
+// 			return targetCreep.NetworkPosition
 
 // 	return
 // }
@@ -1895,7 +1881,7 @@
 // {
 // 	if (!active.value) return
 // 	optionHeroTinkerPanelKey.OnPressed(()=>Toggler = !Toggler )
-// 	if (Toggler) return 
+// 	if (Toggler) return
 // 	let w = RendererSDK.WindowSize.x,
 // 		h = RendererSDK.WindowSize.y
 // 	TinkerPanelX = w / 100 * statusPosX.value
@@ -1919,9 +1905,9 @@
 // 	RendererSDK.OutlinedRect(new Vector2(startX + width/2, startY+40), new Vector2( width/2, 20),new Color(0, 0, 0, 255) )
 // 	// RendererSDK.OutlinedRect(new Vector2(startX, startY+40, width/2, 20)
 // 	// RendererSDK.OutlinedRect(new Vector2(startX + width/2, startY+40, width/2, 20)
-	
+
 // 	let hoveringOverAuto = RendererSDK.CursorOnScreen.IsUnderRectangle(startX, startY+40, width/2, 20)
-	
+
 // 	let hoveringOverCursor = RendererSDK.CursorOnScreen.IsUnderRectangle(startX + width/2, startY+40, width/2, 20)
 // 	if (!TinkerPushMode)
 // 	{
@@ -1932,18 +1918,17 @@
 // 	{
 // 		RendererSDK.Text("auto", new Vector2( startX + 21, startY + 40),new Color(255, 255, 255, 75), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 		RendererSDK.Text("cursor", new Vector2( startX + 86, startY + 40),new Color(0, 255, 0, 255), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
-	
+
 // 	}
 
-	
 // 	RendererSDK.Text("Auto line options", new Vector2( startX + 17, startY + 70-7), new Color(0, 191, 255, 255),"Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	//Wrap.DrawTextCentered(arcWardenfont, startX + width/2, startY + 70, "Auto line options", 1)
 // 	RendererSDK.FilledRect(new Vector2(startX+1, startY+61), new Vector2(width-2, 20-2), new Color(255, 255, 255, 45))
 // 	//RendererSDK.DrawFilledRect(startX+1, startY+61, width-2, 20-2)
-	
+
 // 	RendererSDK.OutlinedRect(new Vector2(startX + width/4*3, startY+80), new Vector2( width/4, 20), new Color(0, 0, 0, 255))
 // //	RendererSDK.OutlinedRect(new Vector2(startX + width/4*3, startY+80, width/4, 20)
-	
+
 // 	RendererSDK.Text("Min creeps", new Vector2( startX + 5, startY + 81), new Color(0, 255, 0, 255),"Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // //	RendererSDK.DrawText(arcWardenfont, startX + 5, startY + 81, "Min. creeps", 1)
 
@@ -1951,30 +1936,27 @@
 // 	let a:Color
 // 	if (TinkerPushCreeps > 0) {
 // 		if (!TinkerPushMode) {
-// 			a =new Color(0, 255, 0, 255)	
+// 			a =new Color(0, 255, 0, 255)
 // 		}
-// 		else	
+// 		else
 // 		{
 // 			a =new Color(255, 255, 255, 75)
 // 		}
 // 		RendererSDK.Text(TinkerPushCreeps.toFixed(0),new Vector2(startX + width/4*3 + 18, startY + 81), a, "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
-		
+
 // 	}
 // 	else
 // 	{
 // 		RendererSDK.Text(TinkerPushCreeps.toFixed(0),new Vector2(startX + width/4*3 + 18, startY + 81), new Color(255, 255, 255, 75), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
-// 	}	
+// 	}
 
-	
-	
 // 	RendererSDK.OutlinedRect(new Vector2(startX + width/4*3, startY+100), new Vector2( width/4, 20), new Color(0, 0, 0, 255))
 // 	//RendererSDK.OutlinedRect(new Vector2(,)
-	
+
 // 	RendererSDK.Text("Max enemies", new Vector2(startX + 5, startY + 101),new Color(0, 255, 0, 255), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	//RendererSDK.DrawText(arcWardenfont, startX + 5, startY + 101, "Max. enemies", 1)
 
 // 	 let hoveringOverEnemies = RendererSDK.CursorOnScreen.IsUnderRectangle(startX + width/4*3, startY+100, width/4, 20)
-
 
 // 	let b:Color
 // 	if (TinkerPushEnemies > 0) {
@@ -1992,12 +1974,9 @@
 // 		RendererSDK.Text(TinkerPushEnemies.toFixed(0), new Vector2( startX + width/4*3 + 18, startY + 101), new Color(255, 255, 255, 75), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	}
 
-	
-	
 // 	RendererSDK.OutlinedRect(new Vector2(startX + width/4*3, startY+120),new Vector2( width/4, 20), new Color(0, 0, 0, 255))
-	
+
 // 	RendererSDK.Text("Max allies", new Vector2(startX + 5, startY + 121), new Color(0, 255, 0, 255), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
-	
 
 // 	 let hoveringOverAllies = RendererSDK.CursorOnScreen.IsUnderRectangle(startX + width/4*3, startY+120, width/4, 20)
 // 	let c:Color
@@ -2011,13 +1990,13 @@
 // 		}
 // 		RendererSDK.Text(TinkerPushAllies.toFixed(0), new Vector2( startX + width/4*3 + 18, startY + 121), c, "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	}
-// 	else	
+// 	else
 // 	{
-		
+
 // 		RendererSDK.Text(TinkerPushAllies.toFixed(0), new Vector2( startX + width/4*3 + 18, startY + 121), new Color(255, 255, 255, 75), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	}
 // 	RendererSDK.OutlinedRect(new Vector2(startX + width/4*3, startY+140),new Vector2( width/4, 20),new Color(0, 0, 0, 255))
-	
+
 // 	RendererSDK.Text("Save TP only", new Vector2(startX + 5, startY + 141), new Color(0, 255, 0, 255), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	let hoveringOverSave = RendererSDK.CursorOnScreen.IsUnderRectangle(startX + width/4*3, startY+140, width/4, 20)
 
@@ -2038,15 +2017,12 @@
 // 		RendererSDK.Text("off", new Vector2(startX + width/4*3 + 18, startY + 141), new Color(255, 255, 255, 75),"Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	}
 
-
-	
 // 	RendererSDK.OutlinedRect(new Vector2(startX + width/4*3, startY+160) ,new Vector2( width/4, 20), new Color(0, 0, 0, 255))
 // 	new Color(0, 0, 0, 255)
 // 	RendererSDK.Text("Auto disable", new Vector2(startX + 5, startY + 161), new Color(0, 255, 0, 255), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	//RendererSDK.DrawText(arcWardenfont, startX + 5, startY + 161, "Auto defend", 1)
 
 // 	let hoveringOverDefend = RendererSDK.CursorOnScreen.IsUnderRectangle(startX + width/4*3, startY+160, width/4, 20)
-
 
 // 	if (TinkerPushDef) {
 // 		RendererSDK.Text("on", new Vector2(startX + width/4*3 + 18, startY + 161), new Color(0, 255, 0, 255), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
@@ -2056,9 +2032,8 @@
 // 		RendererSDK.Text("off", new Vector2(startX + width/4*3 + 18, startY + 161), new Color(255, 255, 255, 75), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	}
 
-	
 // 	RendererSDK.OutlinedRect(new Vector2(startX + width/4*3, startY+180),new Vector2(width/4, 20), new Color(0, 0, 0, 255))
-	
+
 // 	RendererSDK.Text("Allow Jungle", new Vector2(startX + 5, startY + 181), new Color(0, 255, 0, 255), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	//RendererSDK.DrawText(arcWardenfont, , "Allow jungle", 1)
 
@@ -2089,12 +2064,12 @@
 // 	RendererSDK.Text("Tinker action", new Vector2( startXinfo + 30, startYinfo + 23), new Color(0, 191, 255, 255),"Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 	RendererSDK.FilledRect(new Vector2(startX+1, startYinfo+21), new Vector2(width-2, 20-2),new Color(255, 255, 255, 45) )
 // 		if (TinkerStatus == 0) {
-			
-// 			RendererSDK.Text("manual", new Vector2( startX + 47, startYinfo + 40), new Color(255, 100, 0, 255),"Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE) 
-			
+
+// 			RendererSDK.Text("manual", new Vector2( startX + 47, startYinfo + 40), new Color(255, 100, 0, 255),"Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
+
 // 		}
 // 		else if (TinkerStatus == 1 && target != undefined) {
-			
+
 // 			RendererSDK.Text("combo", new Vector2( startXinfo + 50, startYinfo + 40), new Color(0, 255, 0, 255),"Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 			//Wrap.DrawTextCenteredX(arcWardenfont,, "comboing", 0)
 // 			let heroNameShort = target.Name.replace("npc_dota_hero_", "")
@@ -2103,12 +2078,12 @@
 // 			//RendererSDK.DrawImage(imageH&&le, startX + width/2 - 35, startYinfo + 58, 67, 48)
 // 		}
 // 		else if (TinkerStatus == 2) {
-			
+
 // 			RendererSDK.Text("TP push", new Vector2(startXinfo +45 , startYinfo + 40), new Color(0, 255, 0, 255), "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 			//Wrap.DrawTextCenteredX(arcWardenfont, , "TP pushing", 0)
 // 		}
 // 		else if (TinkerStatus == 3) {
-			
+
 // 			RendererSDK.Text("Rocket Spam",new Vector2(startXinfo + 30, startYinfo + 40), new Color(0, 255, 0, 255),  "Verdana", 14, FontFlags_t.ANTIALIAS||FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 // 			//Wrap.DrawTextCenteredX(arcWardenfont, , "Rocket spam", 0)
 // 		}
@@ -2117,9 +2092,9 @@
 // 	let m_pos:Vector2
 // 	if (msg_type == 0x201)//LBUTTONDOWN
 // 	{
-// 		if (RendererSDK.CursorOnScreen.IsUnderRectangle(TinkerPanelX, TinkerPanelY+40, 140/2, 20)) 
+// 		if (RendererSDK.CursorOnScreen.IsUnderRectangle(TinkerPanelX, TinkerPanelY+40, 140/2, 20))
 // 		{
-// 			if (TinkerPushMode) 
+// 			if (TinkerPushMode)
 // 			{
 // 				TinkerPushMode = !TinkerPushMode
 // 			}
@@ -2127,7 +2102,7 @@
 // 		if (RendererSDK.CursorOnScreen.IsUnderRectangle(TinkerPanelX + 140/2, TinkerPanelY+40, 140/2, 20))
 // 		{
 // 			if (!TinkerPushMode)
-// 			{			
+// 			{
 // 			TinkerPushMode = !TinkerPushMode
 // 			}
 // 		}
@@ -2186,4 +2161,3 @@
 // 	return true
 // 	}
 // })
-

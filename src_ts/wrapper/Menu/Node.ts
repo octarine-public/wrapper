@@ -190,7 +190,7 @@ export default class Node extends Base {
 			set Vector(vector: Vector2) {
 				X.value = vector.x;
 				Y.value = vector.y;
-			}
+			},
 		}
 	}
 	public AddVector3(name: string, vector: Vector3, minVector?: Vector3, maxVector?: Vector3) {
@@ -222,7 +222,7 @@ export default class Node extends Base {
 				X.value = vector.x;
 				Y.value = vector.y;
 				Z.value = vector.z;
-			}
+			},
 		}
 	}
 	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip?: string) {
@@ -236,7 +236,7 @@ export default class Node extends Base {
 			get Color(): Color {
 				return new Color(R.value, G.value, B.value, A.value)
 			},
-			OnValue: function (this: Color) { return this },
+			OnValue: function(this: Color) { return this },
 		}
 	}
 	public AddKeybind(name: string, default_key = "", tooltip?: string) {

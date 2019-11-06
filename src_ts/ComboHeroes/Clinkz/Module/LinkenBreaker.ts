@@ -1,7 +1,7 @@
-import { GameSleeper, Ability, Hero, Menu, Item, TickSleeper } from "wrapper/Imports"
-import { Owner, MouseTarget } from "../Listeners"
+import { Ability, GameSleeper, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { State, LinkenBreakerToggler, UseOnlyFromRangeItem } from "../Menu"
+import { MouseTarget, Owner } from "../Listeners"
+import { LinkenBreakerToggler, State, UseOnlyFromRangeItem } from "../Menu"
 
 let Sleep = new TickSleeper
 
@@ -69,7 +69,7 @@ export function BreakInit() {
 			return false
 		}
 	}
-	
+
 	// ForceStaff
 	if (Items.ForceStaff !== undefined
 		&& Items.ForceStaff.CanBeCasted()) {

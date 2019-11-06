@@ -1,10 +1,10 @@
 
-import { EventsSDK, LocalPlayer, Game, Entity } from "wrapper/Imports";
+import { Entity, EventsSDK, Game, LocalPlayer } from "wrapper/Imports";
 import * as AutoFeed from "./AutoFeed/Listeners";
 import * as AutoLaugh from "./AutoLaugh/Listeners";
+import * as AutoSpinner from "./AutoSpinner/Listeners";
 import * as AutoTaunt from "./AutoTaunt/Listeners";
 import * as BaseListeners from "./Base/ListenersBase";
-import * as AutoSpinner from "./AutoSpinner/Listeners";
 import { MainState } from "./Base/MenuBase";
 
 EventsSDK.on("Tick", () => {
@@ -18,7 +18,7 @@ EventsSDK.on("Tick", () => {
 EventsSDK.on("Draw", () => {
 	if (
 		!MainState.value
-		|| LocalPlayer === undefined 
+		|| LocalPlayer === undefined
 		|| LocalPlayer.IsSpectator
 		|| Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME
 		|| !Game.IsInGame
@@ -32,7 +32,7 @@ EventsSDK.on("EntityCreated", x => {
 EventsSDK.on("EntityDestroyed", x => {
 	BaseListeners.EntityDestroyed(x)
 })
-EventsSDK.on("GameStarted", (hero) => {
+EventsSDK.on("GameStarted", hero => {
 	AutoLaugh.GameStarted(hero)
 	AutoTaunt.GameStarted(hero)
 })

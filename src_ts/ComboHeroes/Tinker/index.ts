@@ -1,14 +1,14 @@
-import { Draw } from "./Renderer";
+import { EventsSDK } from "wrapper/Imports";
 import { Base } from "./Extends/Helper";
+import { EntityCreated, EntityDestroyed, GameEnded, GameStarted, InitMouse} from "./Listeners";
+import { comboKey } from "./MenuManager";
+import { AutoSteal } from "./Module/EZKill";
+import { fastBlink } from "./Module/fastBlink";
 //import { Push } from "./Module/Autopush";
 import { MainCombo } from "./Module/MainCombo";
-import { EventsSDK } from "wrapper/Imports";
 import { Spam } from "./Module/Spam";
-import { fastBlink } from "./Module/fastBlink";
 import { OnExecuteOrder } from "./Module/WithoutFail";
-import { GameStarted, GameEnded, EntityCreated, EntityDestroyed, InitMouse} from "./Listeners";
-import { AutoSteal } from "./Module/EZKill";
-import { comboKey } from "./MenuManager";
+import { Draw } from "./Renderer";
 
 EventsSDK.on("Tick", () => {
 	if(Base.DeadInSide) {

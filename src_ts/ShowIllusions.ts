@@ -1,4 +1,4 @@
-import { ArrayExtensions, Color, EventsSDK, Game, Hero, Menu as MenuSDK, LocalPlayer } from "wrapper/Imports"
+import { ArrayExtensions, Color, EventsSDK, Game, Hero, LocalPlayer, Menu as MenuSDK } from "wrapper/Imports"
 
 var illusions: Hero[] = []
 

@@ -2,17 +2,17 @@ import {
 	ArrayExtensions,
 	Color,
 	Entity,
+	EntityManager,
 	EventsSDK,
 	Game,
 	Hero,
+	LocalPlayer,
 	Menu as MenuSDK,
 	ParticlesSDK,
 	RendererSDK,
+	Team,
 	Vector2,
 	Vector3,
-	EntityManager,
-	Team,
-	LocalPlayer,
 } from "wrapper/Imports"
 
 //font = Renderer.LoadFont("Tahoma", 22, Enum.FontWeight.EXTRABOLD)
@@ -98,7 +98,7 @@ function PingEnemyWard(pos: Vector3, hero: Entity) {
 }
 
 EventsSDK.on("Update", () => {
-	if(LocalPlayer === undefined){
+	if(LocalPlayer === undefined) {
 		return false
 	}
 	if (!optionEnable.value || LocalPlayer.IsSpectator) {

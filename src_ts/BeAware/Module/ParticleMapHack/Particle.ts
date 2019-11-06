@@ -1,9 +1,9 @@
-import { ArrayExtensions, Color, Entity, Game, Hero, LocalPlayer, RendererSDK, Unit, Vector2, Vector3, Ability, ParticlesSDK, EventsSDK, Modifier, EntityManager, Rune } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Color, Entity, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Modifier, ParticlesSDK, RendererSDK, Rune, Unit, Vector2, Vector3 } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
-import { 
-	ComboBox, 
+import {
+	ComboBox,
 	DrawRGBA,
-	PMH_Smoke_snd, Size, State
+	PMH_Smoke_snd, Size, State,
 } from "./Menu"
 
 let npc_hero: string = "npc_dota_hero_",
@@ -106,7 +106,7 @@ let npc_hero: string = "npc_dota_hero_",
 	Heroes: Hero[] = [],
 	OtherAbility: Entity[] = [],
 	_Size = Size.value * 20
-	
+
 function ClassChecking(entity: Entity) {
 	return entity !== undefined && (
 		entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane
@@ -531,7 +531,7 @@ function DrawingOtherAbility(x: Entity, name: string, ability_name: string, radi
 function RenderTeleportMap(handle: bigint, position: Vector3) {
 	if (handle === 16169843851719108633n) {
 		let minus = --_Size * 2
-		minus >= Size.value * 20 
+		minus >= Size.value * 20
 			? RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, minus, new Color(0, 200, 0))
 			: RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, Size.value * 20, new Color(0, 200, 0))
 	}
@@ -551,7 +551,7 @@ export function OnDraw() {
 			DrawingOtherAbility(x, "psionic_trap", "templar_assassin_trap", 400)
 		}
 	})
-	
+
 	if (Particle === undefined || Particle.size <= 0 || !State.value)
 		return
 	// loop-optimizer: KEEP
@@ -585,7 +585,7 @@ export function OnDraw() {
 					return
 				try {
 					RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${target}`, position, Size.value * 12, color)
-					if (ability_string !== undefined) { 
+					if (ability_string !== undefined) {
 						let add_pos = position.Clone().AddScalarY(-80)
 						DrawIconAbilityHero(add_pos, ability_string)
 					}
@@ -605,7 +605,7 @@ export function OnDraw() {
 				// console.log(handle.toString() + " | " + position + " | " + Target.Name)
 			}
 			DrawIconWorldHero(position, Target, color)
-		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" 
+		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke"
 			&& (handle === 9908905996079864839n || handle === 16169843851719108633n)) {
 			try {
 				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
@@ -616,7 +616,7 @@ export function OnDraw() {
 			} catch (error) {
 				// console.log(handle.toString() + " | " + position + " | " + Target.Name)
 			}
-			if (ability_string !== undefined) { 
+			if (ability_string !== undefined) {
 				let add_pos = position.Clone().AddScalarY(-80)
 				DrawIconAbilityHero(add_pos, ability_string)
 			}
@@ -632,7 +632,7 @@ export function OnDraw() {
 			}
 		}
 	})
-	
+
 }
 
 export function ParticleDestroyed(id: number) {

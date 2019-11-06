@@ -4,6 +4,6 @@ let TowerSwitcher = BaseTree.AddSwitcher("Select", ["Only T1 towers", "Only T2 t
 	TowerHP = BaseTree.AddSlider("Health", 100, 1, 500)
 export {
 	State,
-	TowerHP, 
+	TowerHP,
 	TowerSwitcher
 }

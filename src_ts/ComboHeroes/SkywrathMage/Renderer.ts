@@ -5,7 +5,7 @@ import { AutoComboDisableWhen, AutoComboState, AutoDisableState, ComboKey,
 	SmartArcaneAutoBoltState, State, TextItem,
 	TextSize, TextXItem, TextYItem } from "./Menu"
 
-import { ArrayExtensions, Color, Game, Hero, ParticlesSDK, RendererSDK, Vector2, Vector3, LocalPlayer } from "wrapper/Imports"
+import { ArrayExtensions, Color, Game, Hero, LocalPlayer, ParticlesSDK, RendererSDK, Vector2, Vector3 } from "wrapper/Imports"
 import { Heroes, MouseTarget, MyHero } from "./Listeners"
 let Shot: number,
 	Enemy: Hero,

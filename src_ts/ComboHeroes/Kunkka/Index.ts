@@ -1,7 +1,7 @@
 import { EventsSDK } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
-import { InitCombo } from "./Module/Combo"
 import { InitStaker } from "./Module/AutoStacker"
+import { InitCombo } from "./Module/Combo"
 import { OnExecuteOrder } from "./Module/WithoutFail"
 import { Draw } from "./Renderer"
 
@@ -24,5 +24,5 @@ import {
 	EntityCreated,
 	EntityDestroyed,
 	GameEnded, GameStarted,
-	InitMouse
+	InitMouse,
 } from "./Listeners"

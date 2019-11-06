@@ -1,4 +1,4 @@
-import { Ability, Hero, Game, Unit } from "wrapper/Imports"
+import { Ability, Game, Hero, Unit } from "wrapper/Imports"
 export class AbilityHelper {
 	public readonly unit: Hero | Unit
 	public get Tick() {

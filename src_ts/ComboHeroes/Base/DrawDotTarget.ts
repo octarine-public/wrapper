@@ -1,4 +1,4 @@
-import { Hero, Unit, LocalPlayer, Game, Menu, ParticlesSDK, Vector3 } from "wrapper/Imports"
+import { Game, Hero, LocalPlayer, Menu, ParticlesSDK, Unit, Vector3 } from "wrapper/Imports"
 export let EnemyParticle: number
 export default class DrawTarget {
 	public owner: Hero | Unit

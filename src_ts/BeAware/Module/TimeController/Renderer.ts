@@ -1,9 +1,9 @@
 import { State } from "./Menu";
-import { DrawScan } from "./Module/Scan";
-import { DrawRunes } from "./Module/Runes";
 import { DrawGlyph } from "./Module/Glyph";
-import { DrawShrine } from "./Module/Shrine";
 import { DrawRoshan } from "./Module/Roshan";
+import { DrawRunes } from "./Module/Runes";
+import { DrawScan } from "./Module/Scan";
+import { DrawShrine } from "./Module/Shrine";
 
 export function Draw() {
 	if (State.value) {
@@ -14,4 +14,3 @@ export function Draw() {
 		DrawRoshan()
 	}
 }
-

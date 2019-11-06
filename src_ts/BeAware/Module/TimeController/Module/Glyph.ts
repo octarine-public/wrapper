@@ -1,21 +1,21 @@
 
-import { Units } from "../Entities"
-import { Team, Game, RendererSDK, Vector2, Unit, LocalPlayer } from "wrapper/Imports"
-import { 
-	GliphState, 
-	GliphSwitcher, 
-	DrawTimerGliphState, 
-	GliphSwitcherTeam, 
-	GliphStateIcon, 
-	GliphStateIconColor, 
-	DrawTextColor, 
-	DrawTextSize, 
-	GliphInRange,
-	DrawTimerGliphX,
-	DrawTimerGliphSize,
-	DrawTimerGliphY
-} from "../Menu"
+import { Game, LocalPlayer, RendererSDK, Team, Unit, Vector2 } from "wrapper/Imports"
 import ManagerBase from "../../../abstract/Base"
+import { Units } from "../Entities"
+import {
+	DrawTextColor,
+	DrawTextSize,
+	DrawTimerGliphSize,
+	DrawTimerGliphState,
+	DrawTimerGliphX,
+	DrawTimerGliphY,
+	GliphInRange,
+	GliphState,
+	GliphStateIcon,
+	GliphStateIconColor,
+	GliphSwitcher,
+	GliphSwitcherTeam,
+} from "../Menu"
 
 let Base: ManagerBase = new ManagerBase
 
@@ -44,7 +44,7 @@ function SelectedGliph(unit: Unit) {
 		RenderIcon(pos_unit_text, "panorama/images/hud/icon_glyph_small_psd.vtex_c", GliphStateIconColor)
 	}
 	RendererSDK.Text(
-		time.toFixed(1), pos_unit_text, DrawTextColor.Color, "Verdana", DrawTextSize.value, FontFlags_t.ANTIALIAS
+		time.toFixed(1), pos_unit_text, DrawTextColor.Color, "Verdana", DrawTextSize.value, FontFlags_t.ANTIALIAS,
 	)
 }
 
@@ -74,7 +74,7 @@ export function DrawGlyph() {
 					: Game.GlyphCooldownDire,
 				DrawTimerGliphX,
 				DrawTimerGliphY,
-				DrawTimerGliphSize
+				DrawTimerGliphSize,
 			)
 	}
 }

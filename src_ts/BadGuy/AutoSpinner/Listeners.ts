@@ -1,5 +1,5 @@
-import { Unit, LocalPlayer, EntityManager, Courier } from "wrapper/Imports"
-import { State, SpinnerKey, ModeSpinner, ControllablesMode } from "./Menu"
+import { Courier, EntityManager, LocalPlayer, Unit } from "wrapper/Imports"
+import { ControllablesMode, ModeSpinner, SpinnerKey, State } from "./Menu"
 
 function MoveUnit(x: Unit) {
 	switch (ModeSpinner.selected_id) {

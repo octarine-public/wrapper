@@ -1,4 +1,4 @@
-import { Ability, Unit, Game } from "wrapper/Imports";
+import { Ability, Game, Unit } from "wrapper/Imports";
 
 // class {
 // 	public GetRequiredTime(EvadableAbility: Ability, unit: Unit, remainingTime: number)

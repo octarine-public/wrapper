@@ -1,7 +1,7 @@
-import { Menu as MenuSDK, Color, Ability } from "wrapper/Imports"
+import { Ability, Color, Menu as MenuSDK } from "wrapper/Imports"
 
-import InitItems from "./Extends/Items"
 import InitAbility from "./Extends/Abilities"
+import InitItems from "./Extends/Items"
 
 let Items = new InitItems,
 	Abilities = new InitAbility
@@ -16,7 +16,7 @@ let array_ability: string[] = [
 ], activeAbility: Map<string, boolean> = new Map<string, boolean>([
 	[array_ability[0], true],
 	[array_ability[1], true],
-	[array_ability[2], true]
+	[array_ability[2], true],
 ])
 
 let array_items: string[] = [
@@ -40,7 +40,7 @@ let array_items: string[] = [
 	[array_ability[6], true],
 	[array_ability[7], true],
 	[array_ability[8], true],
-	[array_ability[9], true]
+	[array_ability[9], true],
 ])
 let array_ability_steal: string[] = [
 	Abilities.DragonSlave.toString(),
@@ -48,7 +48,7 @@ let array_ability_steal: string[] = [
 ], activeAbilitySteal: Map<string, boolean> = new Map<string, boolean>([
 	[array_ability[0], true],
 	[array_ability[1], true],
-	[array_ability[2], true]
+	[array_ability[2], true],
 ])
 
 let AutoStealTree = Menu.AddNode("Auto Steal"),
@@ -63,17 +63,17 @@ let AutoStealTree = Menu.AddNode("Auto Steal"),
 	Drawing = Menu.AddNode("Drawing"),
 	DrawingStatus = Drawing.AddToggle("Draw target", true),
 	DrawingStatusKillSteal = Drawing.AddToggle("Draw Kill Steal", true)
-	
+
 let BladeMail = Menu.AddNode("Blade Mail"),
 	BladeMailCancel = BladeMail.AddToggle("Cancel Combo and Auto Steal", true)
-	
+
 export {
 	DrawingStatus,
 	AutoStealState,
 	AutoStealAbility,
 	DrawingStatusKillSteal
 }
-	
+
 export {
 	State,
 	NearMouse,

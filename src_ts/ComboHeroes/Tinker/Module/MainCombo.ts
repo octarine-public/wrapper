@@ -1,8 +1,8 @@
-import { GameSleeper, Sleeper, Game, Vector3, Utils } from "wrapper/Imports"
+import { Game, GameSleeper, Sleeper, Utils, Vector3 } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { MouseTarget, MyHero, Heroes,  trees } from "../Listeners"
+import { Heroes, MouseTarget, MyHero,  trees } from "../Listeners"
+import { abils, active, blinkM, blinkRadius, blinkV,bmcheck, comboKey,helpF, items, soulTresh } from "../MenuManager"
 import { BreakInit } from "./LinkenBreaker";
-import { abils, bmcheck, blinkRadius, comboKey, items,blinkM, helpF,blinkV, soulTresh, active } from "../MenuManager"
 
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
@@ -18,7 +18,7 @@ export function MainCombo() {
 	if (!comboKey.is_pressed||MouseTarget === undefined)
 	{
 		TinkerStatus(3)
-		
+
 		return false
 	}
 	let target = MouseTarget
@@ -37,15 +37,15 @@ export function MainCombo() {
 				let castRange = ItemsInit.Blink.GetSpecialValue("blink_range") + MyHero.CastRangeBonus
 				let qRange = 650+MyHero.CastRangeBonus//q range
 				let disToTarget  = MyHero.Distance(target)
-				if (blinkM.selected_id==0 && !target.IsInRange(MyHero, 450))//DEF MODE
+				if (blinkM.selected_id==0 && !target.IsInRange(MyHero, 450)) //DEF MODE
 				{//c&p sky
 					ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.NetworkPosition, Math.min(castRange, MyHero.Distance(target) - blinkRadius.value) - 1))
 					Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,"r")
 					return true
 				}
-				else if (blinkM.selected_id==2)//SMART MODE
+				else if (blinkM.selected_id==2) //SMART MODE
 				{
-					if (disToTarget>castRange)//RANGE TOO B1G
+					if (disToTarget>castRange) //RANGE TOO B1G
 					{
 						ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.NetworkPosition, castRange - 1))
 						Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,"r")
@@ -78,19 +78,19 @@ export function MainCombo() {
 						}
 						Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,"r")
 						return true
-						
+
 					}
-					
+
 				}
-				else if (blinkM.selected_id==1)//LASER w CURSOR MODE
+				else if (blinkM.selected_id==1) //LASER w CURSOR MODE
 				{
-					if (disToTarget>castRange)//RANGE TOO B1G
+					if (disToTarget>castRange) //RANGE TOO B1G
 					{
 						ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.InFront(30), castRange - 1))
 						Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,`${target.Index + ItemsInit.Blink.Index}`)
 						return true
 					}
-					else 
+					else
 					{
 						let dir:Vector3 =  target.NetworkPosition.Extend(Utils.CursorWorldVec, qRange-target.IdealSpeed*Abilities.r.GetSpecialValue("channel_tooltip"))
 						ItemsInit.Blink.UseAbility(dir)
@@ -123,7 +123,7 @@ export function MainCombo() {
 			ItemsInit.Ghost.UseAbility()
 			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
-			
+
 		}
 		//LotusOrb
 		if (ItemsInit.LotusOrb !== undefined
@@ -159,12 +159,12 @@ export function MainCombo() {
 		if (ItemsInit.Greaves !== undefined
 			&& ItemsInit.Greaves.CanBeCasted()
 			&& items.IsEnabled("item_guardian_greaves")
-			
+
 		) {
 			ItemsInit.Greaves.UseAbility()
 			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
-		
+
 		}//ethereal
 		if (ItemsInit.Ethereal !== undefined
 			&& ItemsInit.Ethereal.CanBeCasted()
@@ -183,7 +183,7 @@ export function MainCombo() {
 			&& (!target.IsHexed&&!target.IsStunned
 				|| (target.HasModifier("modifier_sheepstick_debuff")
 					&& target.ModifiersBook.GetBuffByName("modifier_sheepstick_debuff").RemainingTime <= Abilities.r.CastPoint + Abilities.r.GetSpecialValue("channel_tooltip", Abilities.r.Level) + GetLatency(0) + GetLatency(1)+60))
-			&& MyHero.IsInRange(target, ItemsInit.Sheeps.CastRange)		
+			&& MyHero.IsInRange(target, ItemsInit.Sheeps.CastRange)
 		) {
 			ItemsInit.Sheeps.UseAbility(target)
 			//console.log("sheep: "+Game.RawGameTime+ " cd "+ItemsInit.Sheeps.Cooldown)
@@ -261,14 +261,14 @@ export function MainCombo() {
 			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		}
-		
+
 		if (Abilities.q !== undefined//laser
 			&& !Abilities.q.IsInAbilityPhase
 			&& Abilities.q.CanBeCasted()
 			&& abils.IsEnabled("tinker_laser")
 			&& MyHero.Distance2D(target) < 650+MyHero.CastRangeBonus
 		) {
-			
+
 			Abilities.q.UseAbility(target)
 			//console.log("laser: "+Game.RawGameTime+  " cd "+Abilities.q.Cooldown)
 			Sleep.Sleep(Abilities.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30 + 450, "r")
@@ -289,27 +289,27 @@ export function MainCombo() {
 			&& ItemsInit.Glimmer.CanBeCasted()
 			&& items.IsEnabled("item_glimmer_cape")
 		) {
-			
+
 			ItemsInit.Glimmer.UseAbility(MyHero)
 			Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30, "r")
 			return true
 		}
 		if (Abilities.r !== undefined
-			&&Abilities.r.CanBeCasted() 
-			&& abils.IsEnabled("tinker_rearm") 
-			&& ((ItemsInit.Sheeps!==undefined && !ItemsInit.Sheeps.IsReady) 
-			|| (ItemsInit.Discord!==undefined && !ItemsInit.Discord.IsReady) 
-			|| (ItemsInit.Ethereal!==undefined&&!ItemsInit.Ethereal.IsReady) 
-			|| (ItemsInit.Dagon!==undefined&&!ItemsInit.Dagon.IsReady) 
-			|| (ItemsInit.Orchid!==undefined && !ItemsInit.Orchid.IsReady) 
-			|| (ItemsInit.Bloodthorn!==undefined&&!ItemsInit.Bloodthorn.IsReady) 
-			|| (ItemsInit.Shivas!==undefined&& !ItemsInit.Shivas.IsReady) 
-			|| (ItemsInit.Nullifier!==undefined&&!ItemsInit.Nullifier.IsReady) 
-			|| (Abilities.q!==undefined&&!Abilities.q.IsReady) 
+			&&Abilities.r.CanBeCasted()
+			&& abils.IsEnabled("tinker_rearm")
+			&& ((ItemsInit.Sheeps!==undefined && !ItemsInit.Sheeps.IsReady)
+			|| (ItemsInit.Discord!==undefined && !ItemsInit.Discord.IsReady)
+			|| (ItemsInit.Ethereal!==undefined&&!ItemsInit.Ethereal.IsReady)
+			|| (ItemsInit.Dagon!==undefined&&!ItemsInit.Dagon.IsReady)
+			|| (ItemsInit.Orchid!==undefined && !ItemsInit.Orchid.IsReady)
+			|| (ItemsInit.Bloodthorn!==undefined&&!ItemsInit.Bloodthorn.IsReady)
+			|| (ItemsInit.Shivas!==undefined&& !ItemsInit.Shivas.IsReady)
+			|| (ItemsInit.Nullifier!==undefined&&!ItemsInit.Nullifier.IsReady)
+			|| (Abilities.q!==undefined&&!Abilities.q.IsReady)
 			|| (Abilities.w!==undefined&&!Abilities.w.IsReady))
 			&& target.IsAlive
 			) {
-			
+
 			Abilities.r.UseAbility()
 			Sleep.Sleep(Abilities.r.GetSpecialValue("channel_tooltip")* 1000+Abilities.r.CastPoint*1000+GetLatency(0)*1000+GetLatency(1)*1000+40, "r")
 			//console.log("rearm: "+Game.RawGameTime)

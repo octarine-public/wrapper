@@ -1,12 +1,12 @@
+import { Ability, GameSleeper, Hero, Item, Menu } from "wrapper/Imports";
 import { Base } from "../Extends/Helper";
 import { MouseTarget, MyHero } from "../Listeners";
 import { active, popLinkItems } from "../MenuManager";
-import { GameSleeper, Ability, Item, Hero, Menu } from "wrapper/Imports";
 
 let Sleep = new GameSleeper
 
-import InitItems from "../Extends/Items"
 import InitAbility from "../Extends/Abilities"
+import InitItems from "../Extends/Items"
 
 function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
 	return Name !== undefined && Name.CanBeCasted() && !Name.IsInAbilityPhase
@@ -41,7 +41,7 @@ export function BreakInit() {
 			Items.Dagon.UseAbility(target)
 			Sleep.Sleep(Base.SleepTimeDefualt, `${target.Index + Items.Dagon.Index}`)
 			return true
-		}	
+		}
 	}
 	// ethereal
 	if (Items.Ethereal!==undefined
@@ -62,7 +62,7 @@ export function BreakInit() {
 			return true
 		}
 	}
-	
+
 	// Orchid
 	if (Items.Orchid !== undefined
 		&& Items.Orchid.CanBeCasted()) {
@@ -72,7 +72,7 @@ export function BreakInit() {
 			return true
 		}
 	}
-	
+
 	// Bloodthorn
 	if (Items.Bloodthorn !== undefined
 		&& Items.Bloodthorn.CanBeCasted()) {
@@ -82,7 +82,7 @@ export function BreakInit() {
 			return true
 		}
 	}
-	
+
 	// Nullifier
 	if (Items.Nullifier !== undefined
 		&& Items.Nullifier.CanBeCasted()) {
@@ -92,7 +92,7 @@ export function BreakInit() {
 			return true
 		}
 	}
-	
+
 	// RodofAtos
 	if (Items.RodofAtos !== undefined
 		&& Items.RodofAtos.CanBeCasted()) {
@@ -102,7 +102,7 @@ export function BreakInit() {
 			return true
 		}
 	}
-	
+
 	// Sheep
 	if (Items.Sheeps !== undefined
 		&& Items.Sheeps.CanBeCasted()) {
@@ -112,7 +112,7 @@ export function BreakInit() {
 			return true
 		}
 	}
-	
+
 	// Laser
 	if (Abilities.q !== undefined
 		&& Abilities.q.CanBeCasted()) {
@@ -123,6 +123,5 @@ export function BreakInit() {
 		}
 	}
 
-	
 	return false
 }

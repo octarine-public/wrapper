@@ -1,7 +1,7 @@
 import {
-	Menu as MenuSDK, Vector2, EventsSDK, Hero,
-	ArrayExtensions, Meepo, Game, RendererSDK, Color, Rectangle,
-	Input, VMouseKeys, LocalPlayer, Item
+	ArrayExtensions, Color, EventsSDK, Game,
+	Hero, Input, Item, LocalPlayer, Meepo, Menu as MenuSDK,
+	Rectangle, RendererSDK, Vector2, VMouseKeys,
 } from "wrapper/Imports";
 
 // ["Visual", "Overlay", "Item Panel"]
@@ -50,8 +50,8 @@ let pathToItemIcon = "panorama/images/items/";
 const GetPathToHeroIcon = (name: string) => `${pathToHeroIcon}${name}_png.vtex_c`;
 const GetPathToItemIcon = (name: string | undefined) => {
 	if (name !== undefined) {
-		return `${pathToItemIcon}${name && !name.includes("recipe_") 
-			? name.replace("item_", "") 
+		return `${pathToItemIcon}${name && !name.includes("recipe_")
+			? name.replace("item_", "")
 			: "recipe"}_png.vtex_c`;
 	}
 	return `${pathToItemIcon}emptyitembg_png.vtex_c`
@@ -239,7 +239,7 @@ EventsSDK.on("Draw", () => {
 
 			// clamp between 0 and (WindowSize - max size of panel)
 			positionPanel.CopyFrom(
-				positionPanel.Max(new Vector2).Min(windowSize.Subtract(sizeOfTouchRect))
+				positionPanel.Max(new Vector2).Min(windowSize.Subtract(sizeOfTouchRect)),
 			);
 
 			const positionPanelPercent = positionPanel.Divide(windowSize).MultiplyScalarForThis(100);

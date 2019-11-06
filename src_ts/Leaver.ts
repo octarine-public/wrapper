@@ -1,4 +1,4 @@
-import { EntityManager, EventsSDK, GameSleeper, Hero, Menu, Player, PlayerResource, Game } from "wrapper/Imports"
+import { EntityManager, EventsSDK, Game, GameSleeper, Hero, Menu, Player, PlayerResource } from "wrapper/Imports"
 
 const tree = Menu.AddEntry(["Utility", "Bait leave"]),
 	autodisconnect = tree.AddToggle("Auto Disconnect"),

@@ -1,4 +1,4 @@
-import { EntityManager, Game, Hero, Menu, Ability as AbilitySDK } from "wrapper/Imports"
+import { Ability as AbilitySDK, EntityManager, Game, Hero, Menu } from "wrapper/Imports"
 import { Heroes, MyHero } from "../Listeners"
 
 import InitItems from "./Items"
@@ -6,7 +6,7 @@ import InitItems from "./Items"
 class BaseHelper {
 	private PermitPressing: boolean
 	public readonly SleepTimeDefualt = 30; // tick
-	
+
 	constructor() {
 		this.PermitPressing = false
 	}
@@ -88,7 +88,6 @@ class BaseHelper {
 			&& !target.ModifiersBook.HasAnyBuffByNames(this.CancelModifiers)
 	}
 
-
 	public IsLinkensProtected(target: Hero): boolean {
 		let Items = new InitItems(target)
 		return Items.Sphere !== undefined ? Items.Sphere.Cooldown <= 0 : target.HasModifier("modifier_item_sphere_target")
@@ -101,20 +100,20 @@ class BaseHelper {
 	public TriggerAutoCombo(target: Hero): boolean {
 		return target.ModifiersBook.HasAnyBuffByNames(this.ModifiersTrigger) || target.IsEthereal || target.IsHexed
 	}
-	
+
 	public ComboBreaker(target: Hero, menu: boolean = true): boolean {
 		let Items = new InitItems(target)
 		if (Items.AeonDisk !== undefined && Items.AeonDisk.Cooldown <= 0) {
 			return true
 		}
 		return false
-	}	
+	}
 
 	private get IsSpectator(): boolean {
 		let LocalPlayer = EntityManager.LocalPlayer
 		return LocalPlayer !== undefined && LocalPlayer.Team === 1
 	}
-	
+
 	private readonly AbilityDisable: string[] = [
 		"queenofpain_blink",
 		"antimage_blink",
@@ -170,7 +169,7 @@ class BaseHelper {
 		"modifier_winter_wyvern_winters_curse",
 		"modifier_oracle_fates_edict",
 		"modifier_antimage_counterspell",
-		"modifier_nyx_assassin_spiked_carapace"
+		"modifier_nyx_assassin_spiked_carapace",
 	]
 
 	private readonly ModifiersTrigger: string[] = [

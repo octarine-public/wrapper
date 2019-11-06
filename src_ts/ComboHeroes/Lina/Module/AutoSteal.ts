@@ -1,11 +1,11 @@
-import { State, AutoStealState, AutoStealAbility, BladeMailCancel } from "../Menu";
+import { Ability, Hero, TickSleeper } from "wrapper/Imports";
+import InitAbility from "../Extends/Abilities"
 import { Base } from "../Extends/Helper";
 import { Heroes, Owner } from "../Listeners";
-import InitAbility from "../Extends/Abilities"
-import { Ability, Hero, TickSleeper } from "wrapper/Imports";
+import { AutoStealAbility, AutoStealState, BladeMailCancel, State } from "../Menu";
 
 function IsReadySteal(ability: Ability, target: Hero) {
-	return ability !== undefined 
+	return ability !== undefined
 		&& AutoStealAbility.IsEnabled(ability.Name) && target.IsAlive
 		&& ability.CanBeCasted() && Owner.Distance2D(target) <= ability.CastRange
 }
@@ -16,7 +16,7 @@ export function InitAutoSteal() {
 	}
 	let target = Heroes.sort((a, b) => b.Distance2D(Owner) - a.Distance2D(Owner))
 		.filter(x => x.IsValid && x.IsAlive && x.IsEnemy())
-		.find(e => !e.IsMagicImmune && !e.IsInvulnerable)	
+		.find(e => !e.IsMagicImmune && !e.IsInvulnerable)
 	if (target === undefined) {
 		return false
 	}
@@ -24,8 +24,8 @@ export function InitAutoSteal() {
 		return false
 	}
 	let Abilities = new InitAbility(Owner)
-	let DMG_TYPE_LAGUNA = Owner.HasScepter 
-		? DAMAGE_TYPES.DAMAGE_TYPE_PURE 
+	let DMG_TYPE_LAGUNA = Owner.HasScepter
+		? DAMAGE_TYPES.DAMAGE_TYPE_PURE
 		: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
 		Laguna = Abilities.LagunaBlade,
 		DraGonSlave = Abilities.DragonSlave,
@@ -54,7 +54,7 @@ export function InitAutoSteal() {
 		Laguna.UseAbility(target)
 		Sleep.Sleep(Abilities.Tick)
 		return true
-	}	
+	}
 	return false
 }
 

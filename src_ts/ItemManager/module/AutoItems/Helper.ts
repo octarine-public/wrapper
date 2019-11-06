@@ -1,13 +1,14 @@
 import {
-	ArrayExtensions, Creep, 
-	Entity, Item, LocalPlayer, TreeTemp,
-	Unit, Game, Ability, Vector3, ExecuteOrder, TickSleeper
+	Ability, ArrayExtensions,
+	Creep, Entity, ExecuteOrder, Game,
+	Item, LocalPlayer, TickSleeper, TreeTemp, Unit, Vector3,
 } from "wrapper/Imports"
 
 import {
-	AutoUseItemsArcane_val, 
+	AutoUseItemsArcane_val,
 	AutoUseItemsBloodHP_val,
 	AutoUseItemsBloodMP_val,
+	AutoUseItemsBluker_val,
 	AutoUseItemsCheese_val,
 	AutoUseItemsFaerieFire_val,
 	AutoUseItemsMG_val,
@@ -16,21 +17,19 @@ import {
 	AutoUseItemsMjollnir_val,
 	AutoUseItemsPhase_val,
 	AutoUseItemsPhaseBootsState,
-	AutoUseItemsSticks_val,
-	AutoUseItemsUrnAlies,
-	AutoUseItemsBluker_val,
-	AutoUseItemsUrnAliesAlliesHP, 
-	AutoUseItemsUrnAliesEnemyHP,
-	AutoUseItemsUrnEnemy, ItemsForUse,
-	State, AutoUseItemsSouringHP_val,
+	AutoUseItemsSouringHP_val,
+	AutoUseItemsSouringInvis,
 	AutoUseItemsSouringMP_val,
-	AutoUseItemsSouringMPUse_val, AutoUseItemsSouringInvis
+	AutoUseItemsSouringMPUse_val,
+	AutoUseItemsSticks_val, AutoUseItemsUrnAlies,
+	AutoUseItemsUrnAliesAlliesHP, AutoUseItemsUrnAliesEnemyHP,
+	AutoUseItemsUrnEnemy,
+	ItemsForUse, State,
 } from "./Menu"
 
-
 import ItemManagerBase from "../../abstract/Base"
-import { StateBase } from "../../abstract/MenuBase"
 import InitItems from "../../abstract/Items"
+import { StateBase } from "../../abstract/MenuBase"
 
 let Units: Unit[] = [],
 	AllUnitsHero: Unit[] = [],
@@ -69,7 +68,7 @@ let Buffs = {
 
 let Base = new ItemManagerBase,
 	TickSleep: TickSleeper = new TickSleeper
-	
+
 function GetDelayCast() {
 	return 250
 }
@@ -84,7 +83,7 @@ export function Tick() {
 		&& x.IsControllable
 		&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double"))
 		&& !x.IsEnemy()
-		&& x.IsAlive
+		&& x.IsAlive,
 	).some(ent => AutoUseItems(ent))
 }
 
@@ -103,13 +102,13 @@ export function ParticleCreateUpdate(id: number, controlPoint: number, position:
 
 function IsValidUnit(unit: Unit) {
 	let IgnoreBuffs = unit.Buffs.some(buff => buff.Name === "modifier_smoke_of_deceit")
-	return unit !== undefined && !unit.IsEnemy() && unit.IsAlive 
+	return unit !== undefined && !unit.IsEnemy() && unit.IsAlive
 		&& !unit.IsStunned && !unit.IsChanneling && !unit.IsInvulnerable
 		&& (unit.Name === "npc_dota_hero_riki" || unit.InvisibleLevel <= 0 || IgnoreBuffs)
 }
 
 function IsValidItem(Items: Item) {
-	return Items !== undefined 
+	return Items !== undefined
 		&& Items.IsReady
 		&& ItemsForUse.IsEnabled(Items.Name)
 		&& Items.CanBeCasted()
@@ -148,8 +147,8 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if ((IsValidItem(Items.MagicWand) || IsValidItem(Items.MagicStick))) {
-		let Item = Items.MagicWand !== undefined 
-			? Items.MagicWand 
+		let Item = Items.MagicWand !== undefined
+			? Items.MagicWand
 			: Items.MagicStick
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
@@ -296,7 +295,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.Dust)) {
-		if (!Items.Gem) {		
+		if (!Items.Gem) {
 			let glimer_cape = Particle.find(e => {
 				if(e[0] && e[1] !== undefined && unit.Distance2D(e[1]) <= Items.Dust.CastRange)
 					return e[0]
@@ -306,16 +305,16 @@ function AutoUseItems(unit: Unit) {
 					&& enemy.IsAlive
 					&& unit.IsInRange(enemy.NetworkPosition, Items.Dust.CastRange)
 					&& !enemy.ModifiersBook.HasAnyBuffByNames(Buffs.InvisDebuff)
-					&& 
+					&&
 					(
-						enemy.IsInvisible 
-						|| enemy.InvisibleLevel > 0 
+						enemy.IsInvisible
+						|| enemy.InvisibleLevel > 0
 						|| glimer_cape !== undefined
 						|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
 					)
 					&& !AllUnitsHero.some(allies => allies !== undefined && !unit.IsEnemy(enemy) && allies.IsAlive && allies.GetItemByName("item_gem")
 					&& allies.Distance2D(enemy.Position) < 800))
-		
+
 			if (IsVisible) {
 				unit.CastNoTarget(Items.Dust)
 				TickSleep.Sleep(GetDelayCast())
@@ -344,9 +343,9 @@ function AutoUseItems(unit: Unit) {
 			return true
 		})
 	}
-	
+
 	if (lastStat !== undefined && Game.RawGameTime >= nextTick) {
-		if (Items.PowerTreads !== undefined 
+		if (Items.PowerTreads !== undefined
 			&& ItemsForUse.IsEnabled(Items.PowerTreads.Name)) {
 			if (Items.ActiveAttribute !== lastStat && !changed) {
 				unit.CastNoTarget(Items.PowerTreads)
@@ -453,7 +452,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 	}
 	let unit = args.Unit as Unit,
 		target = args.Target as Unit
-		
+
 	if (target === undefined || unit === undefined) {
 		return true
 	}
@@ -464,18 +463,18 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 					return true
 				}
 				let Items = new InitItems(unit),
-					_Item = Items.SolarCrest === undefined 
-						? Items.Medallion 
+					_Item = Items.SolarCrest === undefined
+						? Items.Medallion
 						: Items.SolarCrest
 				// console.log(unit.Buffs.map(e => e.Name))
-				if (IsValidItem(Items.SolarCrest) || IsValidItem(Items.Medallion) 
+				if (IsValidItem(Items.SolarCrest) || IsValidItem(Items.Medallion)
 					&& unit.IsInRange(target, _Item.CastRange)
 					&& !target.IsMagicImmune) {
 					unit.CastTarget(_Item, target)
 					TickSleep.Sleep(GetDelayCast())
 				}
-				if (target.IsHero && IsValidItem(Items.Janggo) 
-					&& unit.IsInRange(target, Items.Janggo.CastRange / 2) 
+				if (target.IsHero && IsValidItem(Items.Janggo)
+					&& unit.IsInRange(target, Items.Janggo.CastRange / 2)
 					&& !unit.HasModifier("modifier_item_ancient_janggo_active")
 				) {
 					unit.CastNoTarget(Items.Janggo)
@@ -487,7 +486,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 					&& !target.HasModifier("modifier_item_diffusal_blade_slow")
 				) {
 					let hex_debuff = target.GetBuffByName("modifier_sheepstick_debuff")
-					if ((hex_debuff === undefined || !hex_debuff.IsValid 
+					if ((hex_debuff === undefined || !hex_debuff.IsValid
 						|| hex_debuff.RemainingTime <= 0.3)) {
 						unit.CastTarget(Items.DiffusalBlade, target)
 						TickSleep.Sleep(GetDelayCast())

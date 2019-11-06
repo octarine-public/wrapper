@@ -117,12 +117,10 @@ export function BreakInit() {
 		if (IsValid(Items.Sheeps, target, LinkenBreakerToggler)) {
 			Items.Sheeps.UseAbility(target)
 			return
-		}
-		else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 }
 
-export function DeleteLinkenBreakAllVars(){
+export function DeleteLinkenBreakAllVars() {
 }

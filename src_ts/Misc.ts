@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu as MenuSDK, RendererSDK, ExecuteOrder, Vector3, Entity, Vector2, EntityManager, InputEventSDK, VKeys, Input, MouseWheel, Color } from "./wrapper/Imports"
+import { Color, Entity, EntityManager, EventsSDK, ExecuteOrder, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, RendererSDK, Vector2, Vector3, VKeys } from "./wrapper/Imports"
 import UserCmd from "./wrapper/Native/UserCmd"
 
 let Menu = MenuSDK.AddEntry("Misc");
@@ -115,7 +115,6 @@ function waitAcceptOn() {
 	AcceptMatch()
 }
 
-
 Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 	if (id !== 2004)
 		return
@@ -135,14 +134,14 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 let PrepareUnitOrders_old = PrepareUnitOrders
 let last_order_click = new Vector3(),
 	last_order_click_update = 0
-global.PrepareUnitOrders = function (order: { // pass Position: Vector3 at IOBuffer offset 0
+global.PrepareUnitOrders = function(order: { // pass Position: Vector3 at IOBuffer offset 0
 	OrderType: dotaunitorder_t,
 	Target?: C_BaseEntity | number,
 	Ability?: C_BaseEntity | number,
 	OrderIssuer?: PlayerOrderIssuer_t,
 	Unit?: Array<C_BaseEntity | number> | C_BaseEntity | number,
 	Queue?: boolean,
-	ShowEffects?: boolean
+	ShowEffects?: boolean,
 }) {
 	switch (order.OrderType) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:

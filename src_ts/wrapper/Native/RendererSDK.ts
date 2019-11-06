@@ -1,8 +1,8 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import { default as Input } from "../Managers/InputManager"
 import { QAngle } from "../Imports"
+import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
 
 let WindowSize = new Vector2().Invalidate()

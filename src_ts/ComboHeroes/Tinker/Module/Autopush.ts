@@ -59,16 +59,16 @@
 // 		function TinkerGetJunglePos()
 // 		{
 // 			//console.log("TinkerGetJunglePos")
-			
-// 			if  (!e || !r)  return 
+
+// 			if  (!e || !r)  return
 // 			let marchCount = 3
 // 			if (MyHero.GetTalentValue("special_bonus_spell_amplify_10")||MyHero.GetItemByName(/item_kaya/)!== undefined)
 // 				marchCount = 2
 // 			let neededMana = r.ManaCost * (marchCount - 1) + e.ManaCost * marchCount - (soulring?(marchCount * 150):0)
-// 			if ( MyHero.MaxMana < neededMana) 
-// 			{	
+// 			if ( MyHero.MaxMana < neededMana)
+// 			{
 // 				//console.log("mana return")
-// 				return 
+// 				return
 // 			}
 // 			if (TinkerJungleFarmPos == undefined || TinkerJungleFarmPos[0]== undefined ||TinkerJungleFarmPos[1]== undefined)
 // 			{
@@ -82,8 +82,8 @@
 // 							return
 // 						}
 // 					}
-// 					return 
-// 				}	
+// 					return
+// 				}
 // 				else
 // 				{
 // 					for (let _s = 0; _s <5;_s++)
@@ -95,7 +95,7 @@
 // 						}
 // 					}
 // 					return
-// 				}	
+// 				}
 // 			}
 // 		}
 // 		function TinkerJungleFarm()
@@ -105,9 +105,8 @@
 // 			let movePos = TinkerJungleFarmPos[0]
 // 			let castPos = TinkerJungleFarmPos[1]
 // 			let marchCount = 3
-// 			//	if NPC.HasAbility(myHero, "special_bonus_unique_tinker_2") && Ability.GetLevel(NPC.GetAbility(myHero, "special_bonus_unique_tinker_2")) > 0 
+// 			//	if NPC.HasAbility(myHero, "special_bonus_unique_tinker_2") && Ability.GetLevel(NPC.GetAbility(myHero, "special_bonus_unique_tinker_2")) > 0
 // 			//		marchCount = 2
-				
 
 // 			if (!MyHero.IsInRange(movePos,35))
 // 			{
@@ -125,7 +124,7 @@
 // 							sleeper.Sleep(119,"blpush")
 // 							return
 // 						}
-// 					}	
+// 					}
 // 					else
 // 					{
 // 						if (blink.IsReady) MyHero.CastPosition(blink, movePos)
@@ -134,7 +133,7 @@
 // 						//console.log("cast blink, 1187, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 						return
 // 					}
-					
+
 // 				}
 // 				MyHero.MoveTo(movePos)
 // 			}
@@ -142,7 +141,7 @@
 // 			{
 // 				if (marched < marchCount)
 // 				{
-// 					if (e.CanBeCasted()&& e.IsReady&&!sleeper.Sleeping("epush")) 
+// 					if (e.CanBeCasted()&& e.IsReady&&!sleeper.Sleeping("epush"))
 // 					{
 // 						MyHero.CastPosition(e, castPos)
 // 						marched = marched + 1
@@ -153,7 +152,7 @@
 // 					}
 // 					else
 // 					{
-// 						if (r.CanBeCasted()) 
+// 						if (r.CanBeCasted())
 // 						{
 // 							MyHero.CastNoTarget(r)
 // 							lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
@@ -162,7 +161,7 @@
 // 						}
 // 						else
 // 						{
-// 							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+// 							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 								MyHero.CastPosition(TravelBoots, fountain)
 // 								lastTick = Game.RawGameTime + 3.05 + latency
 // 								marched = 0
@@ -172,12 +171,12 @@
 // 								return
 // 						}
 // 					}
-							
-// 				}		
-					
+
+// 				}
+
 // 				else
 // 				{
-// 					if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+// 					if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 					{
 // 						MyHero.CastPosition(TravelBoots, fountain)
 // 						lastTick = Game.RawGameTime + 3.05 + latency
@@ -189,7 +188,7 @@
 // 					}
 // 					else
 // 					{
-// 						if (r.CanBeCasted()) 
+// 						if (r.CanBeCasted())
 // 						{
 // 							MyHero.CastNoTarget(r)
 // 							lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
@@ -197,14 +196,14 @@
 // 							return
 // 						}
 // 					}
-// 				}		
-// 			}		
-// 			return	
+// 				}
+// 			}
+// 			return
 // 		}
 // 		function TinkerFarmGetSaveSpot(ent ,target)
 // 		{
-// 			if (!target)  return 
-// 			if (!blink)  return 
+// 			if (!target)  return
+// 			if (!blink)  return
 // 			let targetPos = target.NetworkPosition
 // 			// loop-optimizer: KEEP
 // 			return savespots.find(spot=>checkForTrees(spot, 251)>=2
@@ -212,7 +211,7 @@
 // 									&&targetPos.IsInRange(spot,1125+ent.CastRangeBonus)
 // 								)
 // 		}
-// 		function TinkerFarmAmISave() { 
+// 		function TinkerFarmAmISave() {
 // 			if (Heroes.some(enemy=>enemy.IsAlive && enemy != MouseTarget && MyHero.IsInRange(enemy, 200))) return false
 // 			if(savespots.some(e=>MyHero.IsInRange(e,75) || checkForTrees(MyHero.NetworkPosition, 250)>=4)) return true
 // 			return false
@@ -261,7 +260,7 @@
 // 						}
 // 			if (targetCreep !== undefined )
 // 			{
-// 				return targetCreep.NetworkPosition	
+// 				return targetCreep.NetworkPosition
 // 			}
 // 			else
 // 			{
@@ -307,11 +306,11 @@
 // 		{
 // 			if (MyHero.IsChanneling||MyHero.HasModifier("modifier_tinker_rearm")||sleeper.Sleeping("blpush")||sleeper.Sleeping("epush")||sleeper.Sleeping("srpush")||r.IsInAbilityPhase||e.IsInAbilityPhase||!e||e.Level<1)
 // 			{
-// 				return 
+// 				return
 // 			}
 // 			if (Game.RawGameTime < lastTick+0.029)//NOT TIME YET
 // 			{
-// 				return 
+// 				return
 // 			}
 // 			else//CANCEL ANY MANUAL MOVES!
 // 			{
@@ -324,7 +323,7 @@
 // 			{
 // 				let a = Heroes.filter(hero=>hero.IsAlive&&hero.IsEnemy()&&hero.IsInRange(MyHero,750))
 // 				let target = ArrayExtensions.orderBy(a,ent => ent.Distance(MyHero))[0]
-// 				if (target !== undefined) 
+// 				if (target !== undefined)
 // 				{
 // 					if (hex && hex.CanBeCasted())
 // 					{
@@ -374,7 +373,7 @@
 // 			}
 // 			if (MyHero.HasModifier("modifier_fountain_aura_buff") && amionf())// onfountain: regen
 // 			{
-// 				if (smartRegen.value&& MyHero.ManaPercent<80 && !moved)	
+// 				if (smartRegen.value&& MyHero.ManaPercent<80 && !moved)
 // 				{
 // 					if (MyHero.Inventory.HasFreeSlotsBackpack||MyHero.Inventory.HasFreeSlotsStash)
 // 					{
@@ -396,8 +395,8 @@
 // 						MyHero.CastNoTarget(bottle)
 // 						lastTick = Game.RawGameTime + 0.1 + latency
 // 						//console.log("cast bottle, 1330, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
-// 						return	
-// 				}		
+// 						return
+// 				}
 
 // 				if (!e.IsReady || !TravelBoots.IsReady) //on fountain: rearm
 // 				{
@@ -406,8 +405,8 @@
 // 						lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
 // 						//console.log("cast r, 1334, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 						return
-// 				}	
-				
+// 				}
+
 // 				if (MyHero.ManaPercent >80 )//naregenilis
 // 				{
 // 					if (smartRegen.value && moved){
@@ -417,30 +416,30 @@
 // 							{
 // 								it.MoveItem(slots[it.Name])
 // 								lastTick = Game.RawGameTime + 0.05 + latency
-								
+
 // 							}
 // 						}
 // 						moved = false
 // 					return
 // 					}
-					
+
 // 					if (ported)//tp fail
 // 					{
-						
+
 // 						ported = false
 // 						TinkerJungleFarmPos = []
 // 						TinkerJungle = false
 // 						//console.log("return 1372, rawgt: "+Game.RawGameTime)
 // 						return
 // 					}
-// 				}	
-// 			}	
+// 				}
+// 			}
 // 			if  (!ported )//TP TO PUSH WAS NOT CASTED YET
 // 			{
 // 				if (amionf())//FOUNTAIN:+INITIAL TP
 // 				{
 // 					if (MyHero.ManaPercent > 80 )//ENOUGH MANA FOR PUSHING
-// 					{	
+// 					{
 // 						if (smartRegen.value && moved){
 // 						for (var _i = 6; _i < 15; _i++) {
 // 							let it = MyHero.Inventory.GetItem(_i)
@@ -448,7 +447,7 @@
 // 							{
 // 								it.MoveItem(slots[it.Name])
 // 								lastTick = Game.RawGameTime + 0.05 + latency
-								
+
 // 							}
 // 						}
 // 						moved = false
@@ -457,7 +456,7 @@
 // 						let a =TinkerPort()//CREEP
 // 						if (a != undefined)
 // 						{
-// 							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+// 							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 							{
 // 								MyHero.CastPosition(TravelBoots, a)
 // 								lastTick = Game.RawGameTime + 3.05 + latency
@@ -466,7 +465,7 @@
 // 								marched = 0
 // 								return
 // 							}
-// 						}	
+// 						}
 // 						else
 // 						{
 // 							if (TinkerPushJungle.value)
@@ -474,7 +473,7 @@
 // 								TinkerGetJunglePos()//JUNGLE
 // 								if (TinkerJungleFarmPos!=undefined && TinkerJungleFarmPos[0]!=undefined && TinkerJungleFarmPos[1]!=undefined)
 // 								{
-// 									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+// 									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 									{
 // 										MyHero.CastPosition(TravelBoots, TinkerJungleFarmPos[0])
 // 										lastTick = Game.RawGameTime + 3.05 + latency
@@ -503,20 +502,20 @@
 // 										//console.log("move "+ it.Name+" slot:"+slots[it.Name])
 // 										lastTick = Game.RawGameTime + 0.05 + latency
 // 										moved = true
-										
+
 // 									}
 // 								}
-							
+
 // 						}
 // 						return
-// 					}	
-// 				}	
+// 					}
+// 				}
 // 				else
 // 				{
 // 					if (MyHero.ManaPercent >51)//ENOUGH MANA FOR PUSHING
 // 					{
 // 						let a = TinkerPort()
-// 						if (a !== undefined) 
+// 						if (a !== undefined)
 // 						{
 // 							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 							{
@@ -531,17 +530,17 @@
 // 								}
 // 								else
 // 								{
-// 									if (r.CanBeCasted()) 
+// 									if (r.CanBeCasted())
 // 									{
 // 										MyHero.CastNoTarget(r)
 // 										lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
 // 										//console.log("FUCKITcast r, 1410, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										return
-// 									}	
+// 									}
 // 								}
 // 							}
-								
-// 						}	
+
+// 						}
 // 						else
 // 						{
 // 							if (TinkerPushJungle.value)
@@ -549,7 +548,7 @@
 // 								TinkerGetJunglePos()
 // 								if (TinkerJungleFarmPos != undefined  && TinkerJungleFarmPos[0]!=undefined && TinkerJungleFarmPos[1]!=undefined)
 // 								{
-// 									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+// 									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 									{
 // 										MyHero.CastPosition(TravelBoots, TinkerJungleFarmPos[0])
 // 										lastTick = Game.RawGameTime + 3.05 + latency
@@ -561,8 +560,8 @@
 // 									}
 // 								}
 // 							}
-// 						}				
-// 					}	
+// 						}
+// 					}
 // 					else//GO REGEN
 // 					{
 // 						if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
@@ -577,7 +576,7 @@
 // 						}
 // 						else
 // 						{
-// 							if (r.CanBeCasted()) 
+// 							if (r.CanBeCasted())
 // 							{
 // 								MyHero.CastNoTarget(r)
 // 								lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
@@ -585,8 +584,8 @@
 // 								return
 // 							}
 // 						}
-// 					}	
-// 				}	
+// 					}
+// 				}
 // 			}
 // 			if (soulring&& soulring.CanBeCasted()&&!sleeper.Sleeping("srpush")) //SOULRING USAGE
 // 			{
@@ -638,20 +637,20 @@
 // 				{
 // 					if (blink && blink.CanBeCasted() && (!TinkerFarmAmISave()||MyHero.IsVisibleForEnemies)	&& !sleeper.Sleeping("blpush"))	{
 // 							let saveSpot = TinkerFarmGetSaveSpot(MyHero, targetCreep)//targetCreep)
-// 							if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true)) 
+// 							if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true))
 // 							{
 // 								if (blink.IsReady) MyHero.CastPosition(blink, saveSpot, true)
 // 								lastTick = Game.RawGameTime + 0.02 + latency
 // 								//console.log("cast blink, 1514, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 								sleeper.Sleep(119,"blpush")
 // 								return false
-								
+
 // 							}
-// 					}	
+// 					}
 // 					if (marched <= autoMarsh.value) //WE DIDNT MARSH ENOUGH YET
 // 					{
 // 						if (e.CanBeCasted()&&!sleeper.Sleeping("epush"))
-// 						{ 
+// 						{
 // 							MyHero.CastPosition(e, MyHero.NetworkPosition.Add((targetCreep.NetworkPosition.Subtract(MyHero.NetworkPosition)).Normalize().ScaleTo(e.CastRange - 10)))
 // 							lastTick = Game.RawGameTime + 0.75 + latency
 // 							marched = marched + 1
@@ -661,7 +660,7 @@
 // 						}
 // 						else
 // 						{
-// 							if (r.CanBeCasted()) 
+// 							if (r.CanBeCasted())
 // 							{
 // 								MyHero.CastNoTarget(r)
 // 								lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
@@ -678,19 +677,19 @@
 // 									marched = 0
 // 									return
 // 								}
-// 							}	
-// 						}	
-// 					}	
+// 							}
+// 						}
+// 					}
 // 					else//WE MARSHED FOR 9 TIMES
 // 					{
 // 						if (MyHero.ManaPercent < 40) //NO MANA LEFT > GO HOMe
 // 						{
-// 							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+// 							if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 							{
 // 								if (blink && blink.IsReady && !TinkerFarmAmISave() && !sleeper.Sleeping("blpush"))
 // 								{
 // 									let saveSpot = TinkerFarmGetSaveSpot(MyHero, MyHero)
-// 									if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true)) 
+// 									if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true))
 // 									{
 // 										if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 // 										lastTick = Game.RawGameTime + 0.02 + latency
@@ -706,8 +705,8 @@
 // 										sleeper.Sleep(119,"blpush")
 // 										return
 // 									}
-// 								}	
-								
+// 								}
+
 // 								MyHero.CastPosition(TravelBoots, fountain)
 // 								lastTick = Game.RawGameTime + 3.05 + latency
 // 								//console.log("cast boot, 1621, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
@@ -716,7 +715,7 @@
 // 							}
 // 							else
 // 							{
-// 								if (r.CanBeCasted()) 
+// 								if (r.CanBeCasted())
 // 								{
 // 									MyHero.CastNoTarget(r)
 // 									lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
@@ -724,18 +723,18 @@
 // 									return
 // 								}
 // 							}
-								
-// 						}	
+
+// 						}
 // 						else//WE HAVE SOME MORE MANA, WHAT DO WE DO?
 // 						{
 // 							if (TinkerPort() !== undefined) //ESLI EST KRIP4IK (ZALUPA)
 // 							{
-// 								if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+// 								if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 								{
-// 									if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 
+// 									if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush"))
 // 									{
 // 										let saveSpot = TinkerFarmGetSaveSpot(MyHero, MyHero)
-// 										if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true)) 
+// 										if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true))
 // 										{
 // 											if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 // 											lastTick = Game.RawGameTime + 0.02 + latency
@@ -766,26 +765,26 @@
 // 										marched = 0
 // 										return
 // 									}
-// 								}		
+// 								}
 // 								else
 // 								{
-// 									if (r.CanBeCasted()) 
+// 									if (r.CanBeCasted())
 // 									{
 // 										MyHero.CastNoTarget(r)
 // 										lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
 // 										//console.log("USELESS??cast r, 1682, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										return
 // 									}
-// 								}	
+// 								}
 // 							}
 // 							else//GO HOME
 // 							{
-// 								if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+// 								if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 								{
-// 									if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 
+// 									if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush"))
 // 									{
 // 										let saveSpot = TinkerFarmGetSaveSpot(MyHero, MyHero)
-// 										if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true)) 
+// 										if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true))
 // 										{
 // 											if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 // 											//MyHero.HoldPosition(MyHero.NetworkPosition, true)
@@ -813,31 +812,31 @@
 // 								else
 // 								{
 // 									if (r.CanBeCasted())
-// 									{ 
+// 									{
 // 										MyHero.CastNoTarget(r)
 // 										lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
 // 										//console.log("cast r, 1721, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										return
 // 									}
 // 								}
-// 							}			
+// 							}
 // 						}
-// 					}						
-// 				}	
+// 					}
+// 				}
 // 				else//NET TARGETOV FOR MARSH
 // 				{
-// 					if (!amionf())//CHEKAT TOLKO KOGDA ULeTELI 
+// 					if (!amionf())//CHEKAT TOLKO KOGDA ULeTELI
 // 					{
 // 						if (MyHero.ManaPercent<45) //KON4iLAS MP
 // 						{
 // 							if (ported)//ESLi NAJUMALI TP, MARSHILI I NET TARGETA DLYA MARSHEY + MP ==>GO HOME
 // 								{
-// 									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+// 									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 									{
-// 										if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 
+// 										if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush"))
 // 										{
 // 											let saveSpot = TinkerFarmGetSaveSpot(MyHero, MyHero)
-// 											if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true)) 
+// 											if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true))
 // 											{
 // 												if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 // 												//MyHero.HoldPosition(MyHero.NetworkPosition, true)
@@ -864,7 +863,7 @@
 // 									}
 // 									else
 // 									{
-// 										if (r.CanBeCasted()) 
+// 										if (r.CanBeCasted())
 // 										{
 // 											MyHero.CastNoTarget(r)
 // 											lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
@@ -872,18 +871,18 @@
 // 											return
 // 										}
 // 									}
-										
-// 							}	
-// 						}	
+
+// 							}
+// 						}
 // 						else//ESHE EST MP
 // 						{
 // 							if (TinkerPort() !== undefined) //EST ESHE KRIp4IK
 // 								{
-// 									if (TravelBoots.IsReady&& TravelBoots.CanBeCasted()) 
+// 									if (TravelBoots.IsReady&& TravelBoots.CanBeCasted())
 // 									{
 // 										if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 	{
 // 											let saveSpot = TinkerFarmGetSaveSpot(MyHero, MyHero)
-// 											if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true)) 
+// 											if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true))
 // 											{
 // 												lastTick = Game.RawGameTime + 0.02 + latency
 // 												if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
@@ -901,7 +900,7 @@
 // 											// }
 // 										}
 // 										if (blink)// && blink.IsReady)
-// 										{ 
+// 										{
 // 											ported = false
 // 											marched = 0
 // 											//console.log("return 1875, rawgt: "+Game.RawGameTime)
@@ -915,12 +914,12 @@
 // 											marched = 0
 // 											return
 // 										}
-// 								}		
+// 								}
 // 								else
 // 								{
 // 									if (blink && blink.CanBeCasted() && (!TinkerFarmAmISave()||MyHero.IsVisibleForEnemies) &&!sleeper.Sleeping("blpush")) 	{
 // 										let saveSpot = TinkerFarmGetSaveSpot(MyHero, MyHero)
-// 										if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true)) 
+// 										if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true))
 // 										{
 // 											lastTick = Game.RawGameTime + 0.02 + latency
 // 											if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
@@ -937,25 +936,25 @@
 // 										// 	return
 // 										// }
 // 									}
-// 									if (r.CanBeCasted()) 
+// 									if (r.CanBeCasted())
 // 									{
 // 										MyHero.CastNoTarget(r)
 // 										lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
 // 										//console.log("cast r, 1865, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										return
 // 									}
-// 								}	
-// 							}	
+// 								}
+// 							}
 // 							else//NET - GO NOME
 // 							{
 // 								if (ported)//NET - SAVE TP HOME
 // 								{
-// 									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady) 
+// 									if (TravelBoots.CanBeCasted()&&TravelBoots.IsReady)
 // 										{
-// 											if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 
+// 											if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush"))
 // 											{
 // 												let saveSpot = TinkerFarmGetSaveSpot(MyHero, MyHero)
-// 												if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true)) 
+// 												if (saveSpot !== undefined && !MyHero.IsInRange(saveSpot, 199,true))
 // 												{
 // 													if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 // 													lastTick = Game.RawGameTime + 0.02 + latency
@@ -971,7 +970,7 @@
 // 												// 	sleeper.Sleep(119,"blpush")
 // 												// 	return
 // 												// }
-												
+
 // 											}
 // 											MyHero.CastPosition(TravelBoots, fountain)
 // 											lastTick = Game.RawGameTime + 3.05 + latency
@@ -981,10 +980,10 @@
 // 									}
 // 									else
 // 									{
-// 										if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush")) 
+// 										if (blink && blink.CanBeCasted() && !TinkerFarmAmISave() &&!sleeper.Sleeping("blpush"))
 // 											{
 // 												let saveSpot = TinkerFarmGetSaveSpot(MyHero, MyHero)
-// 												if (saveSpot !== undefined && MyHero.Distance2D(saveSpot)>175) 
+// 												if (saveSpot !== undefined && MyHero.Distance2D(saveSpot)>175)
 // 												{
 // 													if (blink.IsReady) MyHero.CastPosition(blink, saveSpot)
 // 													lastTick = Game.RawGameTime + 0.02 + latency
@@ -1000,9 +999,9 @@
 // 													sleeper.Sleep(119,"blpush")
 // 													return
 // 												}
-												
+
 // 										}
-// 										if (r.CanBeCasted()) 
+// 										if (r.CanBeCasted())
 // 											{
 // 												MyHero.CastNoTarget(r)
 // 												lastTick = Game.RawGameTime + r.GetSpecialValue("channel_tooltip") + r.CastPoint + latency
@@ -1013,8 +1012,8 @@
 // 								}
 // 							}
 // 						}
-// 					}									
-// 				}	
+// 					}
+// 				}
 // 			return
 // 			}
 // 		}

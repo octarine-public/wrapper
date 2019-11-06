@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Creep, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, Utils, BitsExtensions } from "wrapper/Imports"
+import { Ability, ArrayExtensions, BitsExtensions, Creep, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, Utils } from "wrapper/Imports"
 
 let root = Menu.AddEntry(["Utility", "AutoSteal"]),
 	state = root.AddToggle("State", false),

@@ -190,7 +190,7 @@ export default class ItemBase extends ItemManagerBase {
 	}
 	public get ActiveAttribute(): Attributes {
 		let att = this.PowerTreads
-		if (att === undefined){
+		if (att === undefined) {
 			return Attributes.DOTA_ATTRIBUTE_STRENGTH
 		}
 		let _PowerTreads = att.m_pBaseEntity as C_DOTA_Item_PowerTreads

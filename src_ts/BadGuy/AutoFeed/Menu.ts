@@ -6,7 +6,6 @@ let Swhicher = BaseTree.AddSwitcher("Select Controllable", ["Only Hero", "All Co
 	DrawState = DrawStatus.AddToggle("Enable", true),
 	DrawTextSize = DrawStatus.AddSlider("Text Size", 20, 14, 60)
 
-
 export {
 	State,
 	BaseTree,

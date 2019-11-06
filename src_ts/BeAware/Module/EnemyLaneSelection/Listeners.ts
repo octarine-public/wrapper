@@ -1,8 +1,8 @@
-import { Game, RendererSDK, LocalPlayer, Team, Vector2 } from "wrapper/Imports"
-import { 
+import { Game, LocalPlayer, RendererSDK, Team, Vector2 } from "wrapper/Imports"
+import {
 	//ShowAfterGameStart,
-	DrawPositionGap,
-	State, DrawPositionX, DrawPositionY, SendAlliesChat, ChatTimeOutSend, ChatTimeOutSendRepeat } from "./Menu"
+	ChatTimeOutSend,
+	ChatTimeOutSendRepeat, DrawPositionGap, DrawPositionX, DrawPositionY, SendAlliesChat, State } from "./Menu"
 
 enum LaneSelectionFlags_t {
 	SAFE_LANE = 1 << 0,
@@ -59,7 +59,7 @@ ChatTimeOutSendRepeat.OnValue(x => {
 let team_offset = 250,
 	first_offset = 125,
 	is_send_chat = 0
-	
+
 export function Draw() {
 	if (!State.value || !Game.IsConnected)
 		return
@@ -87,7 +87,7 @@ export function Draw() {
 			return
 		RendererSDK.Text (
 			role_str,
-			base_enemy_pos.Clone().AddScalarX(i * DrawPositionGap.value + DrawPositionX.value)
+			base_enemy_pos.Clone().AddScalarX(i * DrawPositionGap.value + DrawPositionX.value),
 		)
 		if(SendAlliesChat.value) {
 			setTimeout(() => {

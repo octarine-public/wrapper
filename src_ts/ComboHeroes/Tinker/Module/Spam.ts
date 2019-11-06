@@ -1,12 +1,12 @@
 import { GameSleeper, Hero, Utils } from "wrapper/Imports"
-import { Base } from "../Extends/Helper"
-import { Heroes, MyHero } from "../Listeners"
-import {  spamKey,marshKey, active, soulTresh, comboKey, marshBlink, spamBlink,marshItems,spamItems } from "../MenuManager"
-import InitItems from "../Extends/Items"
 import InitAbility from "../Extends/Abilities"
+import { Base } from "../Extends/Helper"
+import InitItems from "../Extends/Items"
+import { Heroes, MyHero } from "../Listeners"
+import {  active,comboKey, marshBlink, marshItems, marshKey, soulTresh, spamBlink,spamItems,spamKey } from "../MenuManager"
 import { TinkerStatus } from "./status"
 let Sleep = new GameSleeper
-export function Spam(){
+export function Spam() {
 	if (!Base.IsRestrictions(active)||Sleep.Sleeping("mspam"))
 		return false
 	if (comboKey.is_pressed)
@@ -14,12 +14,12 @@ export function Spam(){
 	let _h:Hero = Heroes.find(hero => (hero!==MyHero && hero.IsEnemy() && hero.Distance(MyHero) <= 2500+MyHero.CastRangeBonus&&hero.IsVisible&&!hero.IsMagicImmune))
 	if (marshKey.is_pressed||spamKey.is_pressed&&_h !==undefined)
 	{
-	
+
 	let ItemsInit = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero)
-	
+
 	//console.log(_h)
-		if (!MyHero.IsChanneling && !Sleep.Sleeping("mspam")){
+	if (!MyHero.IsChanneling && !Sleep.Sleeping("mspam")) {
 			TinkerStatus(1)
 			if (ItemsInit.Blink !== undefined//blink
 				&& (marshBlink.value&&marshKey.is_pressed||spamBlink.value&&spamKey.is_pressed)
@@ -34,7 +34,7 @@ export function Spam(){
 						return true
 					}
 					else
-					{    
+					{
 						ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(Utils.CursorWorldVec,castRange-1))
 						Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,"mspam")
 						return true
@@ -48,7 +48,7 @@ export function Spam(){
 					return true
 			}
 			if (ItemsInit.Soulring !== undefined
-				&& ItemsInit.Soulring.CanBeCasted() 
+				&& ItemsInit.Soulring.CanBeCasted()
 				&& (MyHero.HP / MyHero.MaxHP * 100 > soulTresh.value)
 				) {
 					ItemsInit.Soulring.UseAbility()
@@ -69,7 +69,7 @@ export function Spam(){
 				&&Abilities.w !== undefined//ROCKET
 				&&!Abilities.w.IsInAbilityPhase
 				&&Abilities.w.CanBeCasted()
-				){
+				) {
 					Abilities.w.UseAbility()
 					Sleep.Sleep(ItemsInit.Tick+GetLatency(Flow_t.OUT)*1000+ GetLatency(Flow_t.IN)*1000 + 30,"mspam")
 					return true
@@ -111,7 +111,7 @@ export function Spam(){
 					return true
 			}
 			if (Abilities.r !== undefined
-				&&Abilities.r.CanBeCasted() 
+				&&Abilities.r.CanBeCasted()
 				&&(!Abilities.e.IsInAbilityPhase||!Abilities.w.IsInAbilityPhase)
 				&&(!Abilities.e.IsReady&&marshKey.is_pressed||!Abilities.w.IsReady&&spamKey.is_pressed)
 				) {

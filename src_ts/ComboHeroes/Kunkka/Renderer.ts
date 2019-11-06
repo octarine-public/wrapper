@@ -1,23 +1,23 @@
-import { Game, ParticlesSDK, Vector3, LocalPlayer, GameSleeper, Color, RendererSDK, Hero } from "wrapper/Imports"
+import { Color, Game, GameSleeper, Hero, LocalPlayer, ParticlesSDK, RendererSDK, Vector3 } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
-import { 
-	State,
-	DrawingItems,
-	DrawingAbility,
-	DrawingColorAbilityTorrent,
-	DrawingColorAbilityBringer,
-	DrawingColorAbilityXMarks,
-	DrawingColorAbilityGhostship,
-	DrawRadiusMouse,
-	DrawRadiusMouseColor
-} from "./Menu"
 import { MouseTarget, Owner } from "./Listeners"
-import { InitDrawStaker, AutoStakerGameEnded } from "./Module/AutoStacker"
+import {
+	DrawingAbility,
+	DrawingColorAbilityBringer,
+	DrawingColorAbilityGhostship,
+	DrawingColorAbilityTorrent,
+	DrawingColorAbilityXMarks,
+	DrawingItems,
+	DrawRadiusMouse,
+	DrawRadiusMouseColor,
+	State,
+} from "./Menu"
+import { AutoStakerGameEnded, InitDrawStaker } from "./Module/AutoStacker"
 
-import InitItems from "./Extends/Items"
-import InitAbilities from "./Extends/Abilities"
-import { XMarkType, XMarkPos } from "./Module/Combo"
 import InitDrawBase from "../Base/DrawDotTarget"
+import InitAbilities from "./Extends/Abilities"
+import InitItems from "./Extends/Items"
+import { XMarkPos, XMarkType } from "./Module/Combo"
 
 let Ship: number,
 	Blink: number,
@@ -27,7 +27,7 @@ let Ship: number,
 	Sleep: GameSleeper = new GameSleeper,
 	TempLevelXMarks: number = 0,
 	TargetCombo: Hero
-	
+
 function ShipRadius() {
 	if (Sleep.Sleeping("Ship")) {
 		return false
@@ -202,19 +202,19 @@ export function Draw() {
 	DrawingAbility.IsEnabled("kunkka_torrent")
 		? TorrentRadius()
 		: DeleteTorrent()
-		
+
 	DrawingAbility.IsEnabled("kunkka_tidebringer")
 		? TidebringerRadius()
 		: DeleteTidebringer()
-		
+
 	DrawingAbility.IsEnabled("kunkka_x_marks_the_spot")
 		? XMarksRadius()
 		: DeleteXMarks()
-	
+
 	DrawingAbility.IsEnabled("kunkka_ghostship")
 		? ShipRadius()
 		: DeleteShip()
-		
+
 	DrawingItems.IsEnabled("item_blink")
 		? BlinkRadius()
 		: DeleteBlink()
@@ -223,7 +223,7 @@ export function Draw() {
 		if (!XMarkPos.IsZero()) {
 			if (TargetCombo === undefined)
 				TargetCombo = MouseTarget
-				
+
 			if (TargetCombo !== undefined) {
 				let textAroundMouse = "",
 					TargetName = TargetCombo.Name.toString().split("_").splice(3, 3).join(" ")

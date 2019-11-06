@@ -1,7 +1,7 @@
-import { Menu as MenuSDK, Color } from "wrapper/Imports"
+import { Color, Menu as MenuSDK } from "wrapper/Imports"
 
-import InitItems from "./Extends/Items"
 import InitAbility from "./Extends/Abilities"
+import InitItems from "./Extends/Items"
 
 let Items = new InitItems,
 	Abilities = new InitAbility
@@ -12,12 +12,12 @@ let Menu = MenuSDK.AddEntry(["Heroes", "Kunkka (Beta)"]),
 let arrayAbility: string[] = [
 	Abilities.Torrent.toString(),
 	Abilities.MarksSpot.toString(),
-	Abilities.Ghostship.toString()
+	Abilities.Ghostship.toString(),
 ],
 activeAbility: Map <string, boolean> = new Map<string, boolean>([
 	[arrayAbility[0], true],
 	[arrayAbility[1], true],
-	[arrayAbility[2], true]
+	[arrayAbility[2], true],
 ])
 
 let arrayItems: string[] = [
@@ -27,7 +27,7 @@ let arrayItems: string[] = [
 	Items.Sheeps.toString(),
 	Items.Blink.toString(),
 ], activeItems: Map <string, boolean> = new Map<string, boolean>([
-	[arrayItems[0], true], 
+	[arrayItems[0], true],
 	[arrayItems[1], true],
 	[arrayItems[2], true],
 	[arrayItems[3], true],
@@ -42,7 +42,6 @@ let Combo = Menu.AddNode("Combo"),
 	СomboItems = Combo.AddImageSelector("Items", arrayItems, activeItems),
 	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000),
 	BlinkRadius = Combo.AddSlider("Blink distance from enemy", 400, 0, 1200)
-	
 
 let TorrentTree = Menu.AddNode("Torrent"),
 	AutoStakerTree = TorrentTree.AddNode("Auto Staker"),
@@ -57,16 +56,16 @@ let ArrayAbilityRadius: string[] = [
 	Abilities.Torrent.toString(),
 	Abilities.Tidebringer.toString(),
 	Abilities.MarksSpot.toString(),
-	Abilities.Ghostship.toString()
+	Abilities.Ghostship.toString(),
 ],
 ArrayItemsRadius: string[] = [
-	Items.Blink.toString()
+	Items.Blink.toString(),
 ]
 let DrawRadiusMenu = Menu.AddNode("Drawing"),
 	DrawRadiusMouseTree = DrawRadiusMenu.AddNode("Draw Status Mouse"),
 	DrawRadiusMouse = DrawRadiusMouseTree.AddToggle("Draw status mouse"),
 	DrawRadiusMouseColor = DrawRadiusMouseTree.AddColorPicker("Color", new Color(255, 255, 0, 255)),
-	
+
 	DrawingAbility = DrawRadiusMenu.AddImageSelector("Ability range", ArrayAbilityRadius),
 	DrawingItems = DrawRadiusMenu.AddImageSelector("Items range", ArrayItemsRadius),
 	DrawingTreeColor = DrawRadiusMenu.AddNode("Color Range"),
@@ -75,13 +74,12 @@ let DrawRadiusMenu = Menu.AddNode("Drawing"),
 	DrawingColorAbilityXMarks = DrawingTreeColor.AddColorPicker("X-Marks", new Color(255, 255, 255)),
 	DrawingColorAbilityGhostship = DrawingTreeColor.AddColorPicker("Ghostship", new Color(255, 255, 255))
 
-	
 export {
 	DrawingItems,
 	DrawingAbility,
 	DrawRadiusMouse,
 	DrawRadiusMouseColor,
-	
+
 	DrawingColorAbilityTorrent,
 	DrawingColorAbilityBringer,
 	DrawingColorAbilityXMarks,

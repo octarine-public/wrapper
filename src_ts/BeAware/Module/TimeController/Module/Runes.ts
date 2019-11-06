@@ -1,12 +1,12 @@
-import { Vector3, Rune, RendererSDK, Entity, Game, ArrayExtensions, Hero, Color, Vector2 } from "wrapper/Imports";
-import { 
-	PMH_Show_bounty_size, PMH_Show_bountyRGBA, 
-	PMH_Show_bountyRGBA_mark, TreeNotificationBountyChat, 
-	TreeNotificationBountySound, TreeNotificationBountyDrawMap, 
-	NotifyTimeBountyMin, NotifyTimeBountyMax, PMH_Show_bounty, TreeNotificationPowerChat, 
-	TreeNotificationPowerSound, TreeNotificationPowerDrawMap, TreeRuneState,
-	NotifyPowerRuneMin,
-	NotifyPowerRuneMax,
+import { ArrayExtensions, Color, Entity, Game, Hero, RendererSDK, Rune, Vector2, Vector3 } from "wrapper/Imports";
+import {
+	NotifyPowerRuneMax, NotifyPowerRuneMin,
+	NotifyTimeBountyMax, NotifyTimeBountyMin,
+	PMH_Show_bounty, PMH_Show_bounty_size,
+	PMH_Show_bountyRGBA, PMH_Show_bountyRGBA_mark, TreeNotificationBountyChat, TreeNotificationBountyDrawMap,
+	TreeNotificationBountySound, TreeNotificationPowerChat, TreeNotificationPowerDrawMap,
+	TreeNotificationPowerSound,
+	TreeRuneState,
 } from "../Menu";
 
 let	allRunes: Rune[] = [],
@@ -22,14 +22,14 @@ let	allRunes: Rune[] = [],
 	],
 	PowerRunesPos = [
 		new Vector3(-1708.21875, 1174.0625, 128),
-		new Vector3(2404.625, -1864.4375, 128)
+		new Vector3(2404.625, -1864.4375, 128),
 	],
 	bountyAlreadySeted = false,
 	RunePowerTimer: boolean = true,
 	RuneBountyTimerBool: boolean = true,
 	Particle: Map<number, [bigint, string | Entity, Vector3?]> = new Map(), // TODO Radius for ability
-	mt_rand_power: number = undefined,
-	mt_rand_bounty: number = undefined
+	mt_rand_power: number,
+	mt_rand_bounty: number
 
 function mt_rand(min: number, max: number) {
 	let rand = min - 0.5 + Math.random() * (max - min + 1);
@@ -37,7 +37,7 @@ function mt_rand(min: number, max: number) {
 }
 
 export function DrawRunes() {
-	
+
 	if (Game.GameTime >= 0 && Game.LevelNameShort !== "hero_demo_main") {
 		// power
 		let Time = Game.RawGameTime;

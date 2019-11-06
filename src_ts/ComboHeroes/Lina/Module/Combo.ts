@@ -1,12 +1,12 @@
-import { Ability, TickSleeper, Hero } from "wrapper/Imports";
+import { Ability, Hero, TickSleeper } from "wrapper/Imports";
 
 import { Base } from "../Extends/Helper";
-import { Owner, MouseTarget } from "../Listeners";
+import { MouseTarget, Owner } from "../Listeners";
 
-import InitItems from "../Extends/Items"
 import InitAbility from "../Extends/Abilities"
+import InitItems from "../Extends/Items"
 
-import { State, СomboAbility, СomboItems, ComboKeyItem, BladeMailCancel, ModeInvisCombo } from "../Menu";
+import { BladeMailCancel, ComboKeyItem, ModeInvisCombo, State, СomboAbility, СomboItems } from "../Menu";
 
 let Sleep: TickSleeper = new TickSleeper
 function IsValidAbility(ability: Ability, target: Hero) {
@@ -33,7 +33,7 @@ export function InitCombo() {
 	let Items = new InitItems(Owner),
 		Abilities = new InitAbility(Owner),
 		Debuff = target.ModifiersBook.GetAnyBuffByNames(["modifier_sheepstick_debuff", "modifier_stunned"])
-	
+
 	if(Owner.IsInvisible) {
 		if(Owner.CanAttack(target)) {
 			Owner.AttackTarget(target)
@@ -65,7 +65,7 @@ export function InitCombo() {
 				return true
 			}
 		}
-		if ((Items.Cyclone === undefined || !Items.Cyclone.CanBeCasted()) 
+		if ((Items.Cyclone === undefined || !Items.Cyclone.CanBeCasted())
 			&& IsValidAbility(Abilities.LightStrikeArray, target)
 		) {
 			let Prediction = target.VelocityWaypoint((Abilities.LightStrikeArray.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
@@ -82,7 +82,7 @@ export function InitCombo() {
 		return true
 	}
 	if (Items.BlackKingBar !== undefined && Items.BlackKingBar.IsReady
-		&& Items.BlackKingBar.CanBeCasted() && СomboItems.IsEnabled(Items.BlackKingBar.Name) 
+		&& Items.BlackKingBar.CanBeCasted() && СomboItems.IsEnabled(Items.BlackKingBar.Name)
 		&& !target.IsInvulnerable
 		&& (Debuff !== undefined && Debuff.RemainingTime <= 0.3)) {
 		Items.BlackKingBar.UseAbility(Owner)

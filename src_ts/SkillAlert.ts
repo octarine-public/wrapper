@@ -19,7 +19,7 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		"modifier_lina_light_strike_array",
 		"modifier_leshrac_split_earth_thinker",
 		false, false, false,
-		"modifier_monkey_king_spring_thinker"
+		"modifier_monkey_king_spring_thinker",
 	],
 	arHeroModifiers = {
 		modifier_spirit_breaker_charge_of_darkness_vision: [true, true, "particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_target_mark.vpcf", 4],
@@ -303,7 +303,6 @@ function ReturnAOERadius(owner: Unit, name_ability: string): number {
 	let ability = owner.GetAbilityByName(name_ability)
 	return ability.AOERadius
 }
-
 
 EventsSDK.on("EntityCreated", ent => {
 	if (!active.value)

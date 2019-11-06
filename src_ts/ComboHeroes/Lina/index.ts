@@ -1,8 +1,8 @@
 import { EventsSDK } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
-import { InitCombo } from "./Module/Combo"
-import { InitAutoSteal } from "./Module/AutoSteal"
 import { InitFindCyclone } from "./Module/AutoArray"
+import { InitAutoSteal } from "./Module/AutoSteal"
+import { InitCombo } from "./Module/Combo"
 //import { OnExecuteOrder } from "./Module/WithoutFail"
 import { Draw } from "./Renderer"
 
@@ -17,7 +17,7 @@ EventsSDK.on("Tick", () => {
 	InitMouse()
 	if (Base.DeadInSide) {
 		return false
-	}	
+	}
 	InitCombo()
 	InitFindCyclone()
 	InitAutoSteal()
@@ -26,5 +26,5 @@ EventsSDK.on("Tick", () => {
 import {
 	EntityCreated,
 	EntityDestroyed,
-	GameEnded, GameStarted, InitMouse
+	GameEnded, GameStarted, InitMouse,
 } from "./Listeners"

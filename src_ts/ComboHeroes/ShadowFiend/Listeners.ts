@@ -1,7 +1,7 @@
-import { Hero, ArrayExtensions, Entity, Creep, Utils } from "wrapper/Imports"
-import { ComboGameEnded } from "./Module/Combo"
-import { State, NearMouse } from "./Menu"
+import { ArrayExtensions, Creep, Entity, Hero, Utils } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
+import { NearMouse, State } from "./Menu"
+import { ComboGameEnded } from "./Module/Combo"
 import { DrawDeleteTempAllVars } from "./Renderer"
 export let Heroes: Hero[] = []
 export let Owner: Hero

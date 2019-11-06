@@ -1,4 +1,4 @@
-import { Ability, Hero, Item, Menu, Entity, TickSleeper, GameSleeper } from "wrapper/Imports"
+import { Ability, Entity, GameSleeper, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { Heroes, MyHero } from "../Listeners"
 import { AutoDisableAbilityItems, AutoDisableState, ComboKey, State } from "../Menu"
@@ -7,7 +7,7 @@ import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
 let Sleep = new TickSleeper
-let ParticleHandler: Entity | number = undefined
+let ParticleHandler: Entity | number
 
 function IsValidDisable(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
 	return Name !== undefined
@@ -28,7 +28,7 @@ export function AutoDisable() {
 		return false
 	}
 	let ParticleTaget = ParticleHandler as Hero,
-		target = ParticleHandler === undefined 
+		target = ParticleHandler === undefined
 			? Heroes.find(x => x.IsEnemy() && x.IsVisible && x.IsAlive && !x.IsIllusion && x.IsValid && Base.Disable(x) && !x.IsMagicImmune)
 			: ParticleTaget.IsEnemy() && !ParticleTaget.IsMagicImmune && ParticleTaget.IsVisible && ParticleTaget.IsAlive ? ParticleTaget : undefined
 

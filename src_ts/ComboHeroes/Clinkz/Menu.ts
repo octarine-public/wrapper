@@ -1,7 +1,7 @@
 import { Menu as MenuSDK } from "wrapper/Imports"
 
-import InitItems from "./Extends/Items"
 import InitAbility from "./Extends/Abilities"
+import InitItems from "./Extends/Items"
 
 let Items = new InitItems,
 	Abilities = new InitAbility
@@ -12,16 +12,16 @@ let Menu = MenuSDK.AddEntry(["Heroes", "Clinkz"]),
 let arrayAbility: string[] = [
 	Abilities.Strafe.toString(),
 	Abilities.SearingArrows.toString(),
-	Abilities.BurningArmy.toString()
+	Abilities.BurningArmy.toString(),
 ],
 activeAbility: Map<string, boolean> = new Map<string, boolean>([
-	[arrayAbility[0], true], 
-	[arrayAbility[1], true], 
-	[arrayAbility[2], true]
+	[arrayAbility[0], true],
+	[arrayAbility[1], true],
+	[arrayAbility[2], true],
 ])
 let arrayItems: string[] = [
 	Items.BladMail.toString(), 		Items.LotusOrb.toString(),
-	Items.BlackKingBar.toString(),	Items.Mjollnir.toString(), 		
+	Items.BlackKingBar.toString(),	Items.Mjollnir.toString(),
 	Items.Satanic.toString(), 		Items.Medallion.toString(),
 	Items.SolarCrest.toString(), 	Items.UrnOfShadows.toString(),
 	Items.RodofAtos.toString(), 	Items.SpiritVesel.toString(),
@@ -50,7 +50,6 @@ let Combo = Menu.AddNode("Combo"),
 	AeonDiscItem = Combo.AddToggle("Cancel Important Items and Abilities", true).SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities"),
 	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000),
 	BlinkRadius = Combo.AddSlider("Blink distance from enemy", 400, 0, 1200)
-	
 
 let Harass = Menu.AddNode("Harass"),
 	HarassKey = Harass.AddKeybind("Harass key"),
@@ -58,14 +57,14 @@ let Harass = Menu.AddNode("Harass"),
 
 let bladeMailMenu = Menu.AddNode("Blade Mail"),
 	BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false).SetTooltip("Cancel Combo if there is enemy Blade Mail")
-	
+
 let arrayLinkenBreak: string[] = [
 	arrayItems[8], arrayItems[10],
 	arrayItems[11], arrayItems[13],
 	Items.HeavensHalberd.toString(),
 	Items.ForceStaff.toString(),
 	Items.Cyclone.toString(),
-	Items.HurricanePike.toString()
+	Items.HurricanePike.toString(),
 ],
 activeLinkenBreak: Map<string, boolean> = new Map<string, boolean>([
 	[arrayLinkenBreak[0], true],

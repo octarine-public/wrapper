@@ -1,12 +1,12 @@
- import { Base } from "./Extends/Helper"
- import { active,drawTargetParticle, RedT, GreenT, BlueT, TargetCalculator, EzCalc, ProcastCalc, RocketCounter, panel, statusPosX, statusPosY, blinkKey, blinkPart, bootRange, items} from "./MenuManager"
- import { Color, Game, Hero, ParticlesSDK, RendererSDK, Vector2, Vector3,GameSleeper, Utils } from "wrapper/Imports"
- import { Heroes, MouseTarget, MyHero, creeps, towers } from "./Listeners"
- import { ProcastCounter, EZKill, GetEZKillDamage, GetComboDamage, OnlyRocketCount, Manaonerocket, Manaprocast } from "./Module/Calc"
- import InitAbility from "./Extends/Abilities"
- import InitItems from "./Extends/Items"
- import {TinkerStatusText}  from "./Module/status"
+  import { Color, Game, GameSleeper, Hero, ParticlesSDK, RendererSDK, Utils,Vector2, Vector3 } from "wrapper/Imports"
 import { AddOrUpdateParticle, RemoveParticle } from "../../UnitBlocker/base/DrawParticle"
+ import InitAbility from "./Extends/Abilities"
+import { Base } from "./Extends/Helper"
+ import InitItems from "./Extends/Items"
+ import { creeps, Heroes, MouseTarget, MyHero, towers } from "./Listeners"
+ import { active,blinkKey, blinkPart, BlueT, bootRange, drawTargetParticle, EzCalc, GreenT, items, panel, ProcastCalc, RedT, RocketCounter, statusPosX, statusPosY, TargetCalculator} from "./MenuManager"
+ import { EZKill, GetComboDamage, GetEZKillDamage, Manaonerocket, Manaprocast, OnlyRocketCount, ProcastCounter } from "./Module/Calc"
+ import {TinkerStatusText}  from "./Module/status"
 
 let targetParticle: number,
 	info:Hero[],
@@ -14,13 +14,13 @@ let targetParticle: number,
 	blinkParticle: number,
 	off_x: number,
 	off_y: number
-	
+
 export function Draw() {
 	if (active.value && MyHero !== undefined && MyHero.Team !== 1 && Game.IsInGame )
 	{
 		let	ItemsInit = new InitItems(MyHero),
 			Abilities = new InitAbility(MyHero)
-		if (panel.value)//PANNEL
+		if (panel.value) //PANNEL
 		{
 			let w = RendererSDK.WindowSize.x,
 			h = RendererSDK.WindowSize.y
@@ -39,11 +39,11 @@ export function Draw() {
 			RendererSDK.Line(new Vector2(startX+1, startY+height-1), new Vector2(startX+width-1, startY+height-1),new Color(48,48,48,255))//bottom
 			//RendererSDK.OutlinedRect(new Vector2(startX, startY), new Vector2(width, height), new Color(10, 10, 10, 255))
 			RendererSDK.Text("tinker status: "+TinkerStatusText(), new Vector2(startX+ 14, startY-7), Color.Yellow, "Verdana", 13, FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
-			
+
 			RendererSDK.Line(new Vector2(startX+1, startY+1), new Vector2(startX+13, startY+1),new Color(48,48,48,255))//gray top half
 			RendererSDK.Line(new Vector2(startX, startY), new Vector2(startX+13, startY),Color.Black)//black top half
 			let a =RendererSDK.GetTextSize("tinker status: "+TinkerStatusText(),"Verdana", 13, FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE).x
-			
+
 			RendererSDK.Line(new Vector2(startX+a+14, startY), new Vector2(startX+width, startY),Color.Black)//black top half
 			RendererSDK.Line(new Vector2(startX+a+15, startY+1), new Vector2(startX+width, startY+1),new Color(48,48,48,255))//gray top half
 			if (TinkerStatusText()=="combo" && MouseTarget !== undefined)
@@ -51,9 +51,7 @@ export function Draw() {
 			for (var _i = 0; _i < 4; _i++) {//lines
 				RendererSDK.Line(new Vector2(startX+2,startY+height-2-21*(_i+1)), new Vector2(startX+width-2,startY+height-2-21*(_i+1)),Color.Black)//lines black
 				RendererSDK.Line(new Vector2(startX+2,startY+1+height-2-21*(_i+1)), new Vector2(startX+width-2,startY+1+height-2-21*(_i+1)),new Color(48,48,48,255))
-				
-				
-		
+
 			}
 			RendererSDK.Line(new Vector2(startX+19+5, startY+height-1),new Vector2(startX+19+5, startY+6), new Color(48,48,48,255) )
 			RendererSDK.Line(new Vector2(startX+19+6, startY+height-1),new Vector2(startX+19+6, startY+6), Color.Black )
@@ -68,7 +66,7 @@ export function Draw() {
 					{
 						RendererSDK.Text("x" + ProcastCounter(hero)+" combo",new Vector2(startX+27,startY+height+3-21*(x.indexOf(hero)+1)) ,(MyHero.Mana+MyHero.ManaRegen*ProcastCounter(hero)*(Abilities.r.GetSpecialValue("channel_tooltip")+Abilities.r.CastPoint+0.1)) / (Manaprocast()) >= ProcastCounter(hero) ?  Color.White:Color.RoyalBlue, "Verdana", 13,FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
 						RendererSDK.Text("x" + Math.round(OnlyRocketCount(hero)) + " rkts",new Vector2(startX+94,startY+height+3-21*(x.indexOf(hero)+1)) ,Math.ceil(((MyHero.Mana+MyHero.ManaRegen*OnlyRocketCount(hero)*(Abilities.r.GetSpecialValue("channel_tooltip")+Abilities.r.CastPoint+0.1)) / (Manaonerocket() + Abilities.r.ManaCost))) >= OnlyRocketCount(hero) ? Color.Green : Color.RoyalBlue, "Verdana", 13,FontFlags_t.DROPSHADOW||FontFlags_t.OUTLINE)
-						
+
 						if (ItemsInit.Ethereal!==undefined&&ItemsInit.Dagon!==undefined)
 						{
 							let ezCol:Color
@@ -91,9 +89,7 @@ export function Draw() {
 						}
 				}
 				})
-				
-			
-			
+
 		}
 	}
 	if (!Base.IsRestrictions(active) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {//particles&&mousetarget
@@ -125,7 +121,6 @@ export function Draw() {
 		}
 	}
 
-
 	if (ratio==="16x9") {//ratio
 		off_x = screen_size.x * -0.027
 		off_y = screen_size.y * -0.01715
@@ -140,7 +135,7 @@ export function Draw() {
 		off_y = screen_size.y * -0.01715
 	}
 
-	if (info.length>0 && (TargetCalculator.value||RocketCounter.value)&&Abilities.r.Level>0)//ALL TARGETS DRAW
+	if (info.length>0 && (TargetCalculator.value||RocketCounter.value)&&Abilities.r.Level>0) //ALL TARGETS DRAW
 		{
 		info.forEach(hero => {
 			if (hero.IsAlive && hero.IsVisible)
@@ -157,7 +152,7 @@ export function Draw() {
 		}
 			});
 		}
-	if (MouseTarget!==undefined &&MouseTarget.IsVisible)//MOUSE TARGET DRAW
+	if (MouseTarget!==undefined &&MouseTarget.IsVisible) //MOUSE TARGET DRAW
 	{
 		wts = RendererSDK.WorldToScreen(MouseTarget.Position.AddScalarZ(MouseTarget.HealthBarOffset))
 		wts.AddScalarX(off_x).AddScalarY(off_y)
@@ -205,7 +200,6 @@ export function Draw() {
 		}
 		//if (hitcounter.value)
 		//	RendererSDK.Text(HitCount(MouseTarget)+" hits", wts.Add(new Vector2(117,-13)), (HitCount(MouseTarget)<=1)?Color.Green:Color.White, "Verdana", 14, FontFlags_t.OUTLINE)
-		
 
 	}
 	if (blinkKey.is_pressed && blinkPart.value)
@@ -216,7 +210,7 @@ export function Draw() {
 	{
 		RemoveParticle("blink", MyHero)
 	}
-	
+
 	if (bootRange.value && MyHero.HasModifier("modifier_teleporting") && ItemsInit.TravelBoot !== undefined)
 	{
 		let a = creeps.find(e=>e.Team == MyHero.Team && e.HasModifier("modifier_boots_of_travel_incoming"))
@@ -230,6 +224,4 @@ export function Draw() {
 		RemoveParticle("tprange", MyHero)
 	}
 
-	
 }
-

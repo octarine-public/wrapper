@@ -1,8 +1,8 @@
-import { GameSleeper, Hero, Game } from "wrapper/Imports"
-import {  MyHero } from "../Listeners"
-import { items, abils } from "../MenuManager"
+import { Game, GameSleeper, Hero } from "wrapper/Imports"
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
+import {  MyHero } from "../Listeners"
+import { abils, items } from "../MenuManager"
 
 export function GetComboDamage()
 {
@@ -51,13 +51,13 @@ export function ManaFactDamage(en: Hero)
 {
 	if (en !== undefined && en.IsAlive && en.IsValid)
 			{
-				let manalaser = 0, 
-					manarocket = 0, 
-					manarearm = 0, 
-					manadagon = 0, 
-					dagondist = 0, 
-					manaethereal = 0, 
-					manashiva = 0, 
+				let manalaser = 0,
+					manarocket = 0,
+					manarearm = 0,
+					manadagon = 0,
+					dagondist = 0,
+					manaethereal = 0,
+					manashiva = 0,
 					manasoulring = 0,
 					ItemsInit = new InitItems(MyHero),
 					Abilities = new InitAbility(MyHero)
@@ -68,7 +68,7 @@ export function ManaFactDamage(en: Hero)
 				else
 				{
 					manalaser = 0
-				}	
+				}
 				if (Abilities.w !== undefined &&  Abilities.w.Level > 0 && Abilities.w.CanBeCasted())
 				{
 					manarocket = Abilities.w.ManaCost
@@ -76,7 +76,7 @@ export function ManaFactDamage(en: Hero)
 				else
 				{
 					manarocket = 0
-				}	
+				}
 				if (Abilities.r !== undefined &&  Abilities.r.Level > 0   && Abilities.r.CanBeCasted())
 				{
 					manarearm = Abilities.r.ManaCost
@@ -84,7 +84,7 @@ export function ManaFactDamage(en: Hero)
 				else
 				{
 					manarearm = 0
-				}	
+				}
 				if (ItemsInit.Dagon !== undefined && ItemsInit.Dagon.CanBeCasted())
 				{
 					dagondist = ItemsInit.Dagon.GetSpecialValue("range_tooltip")
@@ -92,9 +92,9 @@ export function ManaFactDamage(en: Hero)
 				}
 				else
 				{
-					manadagon = 0		
+					manadagon = 0
 					dagondist = 0
-				}	
+				}
 				if (ItemsInit.Ethereal !== undefined && ItemsInit.Ethereal.CanBeCasted())
 				{
 					manaethereal = ItemsInit.Ethereal.ManaCost
@@ -103,7 +103,7 @@ export function ManaFactDamage(en: Hero)
 				{
 					manaethereal = 0
 				}
-					
+
 				if (ItemsInit.Shivas !== undefined && ItemsInit.Shivas.CanBeCasted())
 				{
 					manashiva = ItemsInit.Shivas.ManaCost
@@ -121,24 +121,24 @@ export function ManaFactDamage(en: Hero)
 					manasoulring = 0
 				}
 				//factical mana consume in current range
-				return ((MyHero.Distance2D(en) < 650 + MyHero.CastRangeBonus? manalaser : 0) 
-					+ (MyHero.Distance2D(en) < 2500 ? manarocket : 0) 
-					+ (MyHero.Distance2D(en) < 800 + MyHero.CastRangeBonus ? manaethereal : 0) 
-					+ (MyHero.Distance2D(en) < dagondist + MyHero.CastRangeBonus ? manadagon : 0) 
-					+ (MyHero.Distance2D(en) < 900  ? manashiva : 0) 
+				return ((MyHero.Distance2D(en) < 650 + MyHero.CastRangeBonus? manalaser : 0)
+					+ (MyHero.Distance2D(en) < 2500 ? manarocket : 0)
+					+ (MyHero.Distance2D(en) < 800 + MyHero.CastRangeBonus ? manaethereal : 0)
+					+ (MyHero.Distance2D(en) < dagondist + MyHero.CastRangeBonus ? manadagon : 0)
+					+ (MyHero.Distance2D(en) < 900  ? manashiva : 0)
 					- manasoulring)
 			}
-			return 0
+	return 0
 }
 export function  Manaprocast()
 {
-	let manalaser = 0, 
-		manarocket = 0, manarearm = 0, 
-		manadagon = 0, 
-		manaveil = 0, 
-		manasheep = 0, 
-		manaethereal = 0, 
-		manashiva = 0, 
+	let manalaser = 0,
+		manarocket = 0, manarearm = 0,
+		manadagon = 0,
+		manaveil = 0,
+		manasheep = 0,
+		manaethereal = 0,
+		manashiva = 0,
 		manasoulring = 0,
 		ItemsInit = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero)
@@ -151,7 +151,7 @@ export function  Manaprocast()
 	{
 		manalaser = 0;
 	}
-		
+
 	if (Abilities.w !== null && Abilities.w.Level>0)
 	{
 		Abilities.w.ManaCost
@@ -160,17 +160,16 @@ export function  Manaprocast()
 	{
 		manarocket = 0;
 	}
-		
-		
+
 	if (Abilities.r !== undefined && Abilities.r.Level>0)
 	{
 		manarearm = Abilities.r.ManaCost
-	}	
+	}
 	else
 	{
 		manarearm = 0;
 	}
-		
+
 	if (ItemsInit.Dagon !== undefined && items.IsEnabled("item_dagon_5"))
 	{
 		manadagon = ItemsInit.Dagon.ManaCost
@@ -188,7 +187,7 @@ export function  Manaprocast()
 	{
 		manaethereal = 0;
 	}
-		
+
 	if (ItemsInit.Discord !== undefined && items.IsEnabled("item_veil_of_discord"))
 	{
 		manaveil = ItemsInit.Discord.ManaCost
@@ -197,7 +196,7 @@ export function  Manaprocast()
 	{
 		manaveil = 0;
 	}
-		
+
 	if (ItemsInit.Sheeps !== undefined && items.IsEnabled("item_sheepstick"))
 	{
 		manasheep = ItemsInit.Sheeps.ManaCost
@@ -206,11 +205,11 @@ export function  Manaprocast()
 	{
 		manasheep = 0;
 	}
-		
+
 	if (ItemsInit.Shivas !== undefined && items.IsEnabled("item_shivas_guard"))
 	{
 		manashiva = ItemsInit.Shivas.ManaCost
-	}		
+	}
 	else
 	{
 		manashiva = 0;
@@ -224,9 +223,9 @@ export function  Manaprocast()
 	{
 		manasoulring = 0;
 	}
-					
+
 	return manarearm + manalaser + manarocket + manadagon + manaethereal + manaveil + manasheep + manashiva - manasoulring;
-}	
+}
 export function OneHitLeft(en: Hero)
 {
 	if (((en.HP < GetOneAutoAttackDamage(en)))
@@ -310,7 +309,7 @@ export function ProcastCounter(en: Hero)
 }*/
 export function OnlyRocketCount(en: Hero)
 {
-	
+
 	let ItemsInit = new InitItems(MyHero),
 		Abilities = new InitAbility(MyHero),
 		latest_spellamp = (1 + MyHero.SpellAmplification)
@@ -337,7 +336,7 @@ export function Manaonerocket()
 	{
 		manarocket = 0
 	}
-		
+
 	if (Abilities.r !== undefined && Abilities.r.Level>0)
 	{
 		manarearm = Abilities.r.ManaCost
@@ -346,7 +345,7 @@ export function Manaonerocket()
 	{
 		manarearm = 0
 	}
-		
+
 	if (ItemsInit.Soulring !== null)
 	{
 		manasoulring = 150
@@ -355,6 +354,6 @@ export function Manaonerocket()
 	{
 		manasoulring = 0
 	}
-	
+
 	return manarocket - manasoulring
-}	
+}

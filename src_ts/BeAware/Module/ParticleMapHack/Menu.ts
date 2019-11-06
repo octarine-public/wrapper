@@ -6,8 +6,8 @@ const { DrawRGBA, Size, ComboBox } = MenuDrawBase(
 	BaseTree,
 	"Color", "Render Style",
 	[
-		"Image", 
-		"Text"
+		"Image",
+		"Text",
 	],
 	"Image/Text Size", 42, 42, 300,
 )

@@ -1,7 +1,7 @@
 import { ExecuteOrder, Game } from "wrapper/Imports";
-import { ComboTimer, XMarkCastTime } from "./Combo";
 import InitAbility from "../Extends/Abilities"
 import { Owner } from "../Listeners";
+import { ComboTimer, XMarkCastTime } from "./Combo";
 
 export function OnExecuteOrder(order: ExecuteOrder) {
 	let Time = Game.RawGameTime

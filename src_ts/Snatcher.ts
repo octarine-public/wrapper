@@ -3,6 +3,7 @@ import {
 	Color,
 	EventsSDK,
 	Game,
+	GameSleeper,
 	Hero,
 	LocalPlayer,
 	Menu,
@@ -12,7 +13,6 @@ import {
 	Rune,
 	Unit,
 	Vector3,
-	GameSleeper,
 } from "wrapper/Imports"
 
 // import { PickupItem, PickupRune } from "../Orders"

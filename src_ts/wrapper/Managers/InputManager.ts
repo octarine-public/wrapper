@@ -1,5 +1,5 @@
+import { EventsSDK, Rectangle, Vector2, Vector3 } from "../Imports";
 import { FixInt16 } from "../Utils/BitsExtensions";
-import { Rectangle, Vector3, Vector2, EventsSDK } from "../Imports";
 
 const CursorOnWorld: Vector3 = new Vector3();
 const CursorOnScreen: Vector2 = new Vector2();
@@ -190,7 +190,6 @@ export enum InputMessage {
 	WM_GETDLGCODE = 0x0087,
 	WM_SYNCPAINT = 0x0088,
 
-
 	WM_NCMOUSEMOVE = 0x00A0,
 	WM_NCLBUTTONDOWN = 0x00A1,
 	WM_NCLBUTTONUP = 0x00A2,
@@ -295,7 +294,6 @@ export enum InputMessage {
 	WM_MDICASCADE = 0x0227,
 	WM_MDIICONARRANGE = 0x0228,
 	WM_MDIGETACTIVE = 0x0229,
-
 
 	WM_MDISETMENU = 0x0230,
 	WM_ENTERSIZEMOVE = 0x0231,
@@ -566,7 +564,7 @@ export enum VKeys {
 	ZOOM = 0xFB,
 	NONAME = 0xFC,
 	PA1 = 0xFD,
-	OEM_CLEAR = 0xFE
+	OEM_CLEAR = 0xFE,
 }
 
 export enum VMouseKeys {
@@ -576,17 +574,17 @@ export enum VMouseKeys {
 	MK_CONTROL = 0x08,
 	MK_MBUTTON = 0x10,
 	MK_XBUTTON1 = 0x20,
-	MK_XBUTTON2 = 0x40
+	MK_XBUTTON2 = 0x40,
 }
 
 export enum VXMouseKeys {
 	XBUTTON1 = 0x01,
-	XBUTTON2 = 0x02
+	XBUTTON2 = 0x02,
 }
 
 export enum MouseWheel {
 	UP,
-	DOWN
+	DOWN,
 }
 
 interface InputEventSDK extends EventEmitter {

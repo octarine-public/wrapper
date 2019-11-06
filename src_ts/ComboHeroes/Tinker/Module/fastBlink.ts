@@ -1,9 +1,9 @@
 import { GameSleeper, Hero, Utils, Vector2 } from "wrapper/Imports"
-import { Base } from "../Extends/Helper"
-import { MyHero } from "../Listeners"
-import { blinkKey, active, soulTresh } from "../MenuManager"
-import InitItems from "../Extends/Items"
 import InitAbility from "../Extends/Abilities"
+import { Base } from "../Extends/Helper"
+import InitItems from "../Extends/Items"
+import { MyHero } from "../Listeners"
+import { active, blinkKey, soulTresh } from "../MenuManager"
 
 let Sleep = new GameSleeper
 
@@ -11,7 +11,7 @@ export function fastBlink() {
 	if (!Base.IsRestrictions(active))
 		return false
 	let ItemsInit = new InitItems(MyHero),
-		Abilities = new InitAbility(MyHero)	
+		Abilities = new InitAbility(MyHero)
 	if (!blinkKey.is_pressed|| ItemsInit.Blink==undefined || Sleep.Sleeping("blinker") || Abilities.r.IsChanneling)
 		return false
 	let castRange = ItemsInit.Blink.GetSpecialValue("blink_range") + MyHero.CastRangeBonus
@@ -32,10 +32,10 @@ export function fastBlink() {
 			Sleep.Sleep(40,"fastbm")
 			return false
 		}
-		if (ItemsInit.Soulring !== undefined 
-			&& ItemsInit.Soulring.CanBeCasted() 
+		if (ItemsInit.Soulring !== undefined
+			&& ItemsInit.Soulring.CanBeCasted()
 			&& MyHero.HP / MyHero.MaxHP * 100 > soulTresh.value
-			) { 
+			) {
 				ItemsInit.Soulring.UseAbility()
 			}
 		if (Abilities.r !== undefined

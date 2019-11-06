@@ -1,17 +1,17 @@
 
-import { Team, Game, Unit, RendererSDK, Vector2, Entity, Vector3, ParticlesSDK, ArrayExtensions, LocalPlayer } from "wrapper/Imports"
-import { 
-	RadarState, 
-	RadarTreeSettingsState, 
-	RadarStateInWorld, 
-	RadarStateInWorldIconSize, 
-	RadarStateInWorldMiniMapColor, 
-	RadarStateInWorldTextColor, 
-	RadarStateInWorldTextSize, 
-	RadarStateInWorldSound, 
-	DrawTimerRadarX, 
-	DrawTimerRadarY, 
-	DrawTimerRadarSize 
+import { ArrayExtensions, Entity, Game, LocalPlayer, ParticlesSDK, RendererSDK, Team, Unit, Vector2, Vector3 } from "wrapper/Imports"
+import {
+	DrawTimerRadarSize,
+	DrawTimerRadarX,
+	DrawTimerRadarY,
+	RadarState,
+	RadarStateInWorld,
+	RadarStateInWorldIconSize,
+	RadarStateInWorldMiniMapColor,
+	RadarStateInWorldSound,
+	RadarStateInWorldTextColor,
+	RadarStateInWorldTextSize,
+	RadarTreeSettingsState,
 } from "../Menu"
 
 import ManagerBase from "../../../abstract/Base"
@@ -35,7 +35,7 @@ export function DrawScan() {
 					: Game.ScanCooldownDire,
 				DrawTimerRadarX,
 				DrawTimerRadarY,
-				DrawTimerRadarSize
+				DrawTimerRadarSize,
 			)
 		if (RadarStateInWorld.value) {
 			// Radar Detect
@@ -70,7 +70,7 @@ export function DrawScan() {
 								RadarStateInWorldTextColor.Color,
 								"Calibri",
 								RadarStateInWorldTextSize.value,
-								FontFlags_t.ANTIALIAS
+								FontFlags_t.ANTIALIAS,
 							)
 						}
 						if (Time >= checkTick) {

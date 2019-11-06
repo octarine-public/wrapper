@@ -166,7 +166,7 @@ export class ItemBase extends ItemsHelper {
 		}
 		return this.unit.GetItemByName(name)
 	}
-	
+
 	public get BladMail(): Item {
 		let name = "item_blade_mail"
 		if (this.unit === undefined) {

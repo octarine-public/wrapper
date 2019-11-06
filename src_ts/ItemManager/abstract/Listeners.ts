@@ -1,4 +1,4 @@
-import { EventsSDK, Entity } from "wrapper/Imports"
+import { Entity, EventsSDK } from "wrapper/Imports"
 import * as AutoDeward from "../module/AutoDeward/Helper"
 import * as AutoGlyph from "../module/AutoGlyph/Helper"
 import * as AutoItems from "../module/AutoItems/Helper"

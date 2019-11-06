@@ -1,12 +1,12 @@
-import { Ability, TickSleeper, Hero, Game, Vector3, GameSleeper, Unit, Utils } from "wrapper/Imports";
+import { Ability, Game, GameSleeper, Hero, TickSleeper, Unit, Utils, Vector3 } from "wrapper/Imports";
 
 import { Base } from "../Extends/Helper";
-import { Owner, MouseTarget } from "../Listeners";
+import { MouseTarget, Owner } from "../Listeners";
 
-import InitItems from "../Extends/Items"
 import InitAbility from "../Extends/Abilities"
+import InitItems from "../Extends/Items"
 
-import { State, СomboAbility, СomboItems, ComboKeyItem, BladeMailCancel} from "../Menu";
+import { BladeMailCancel, ComboKeyItem, State, СomboAbility, СomboItems} from "../Menu";
 let Sleep: TickSleeper = new TickSleeper
 function IsValidAbility(ability: Ability, target: Hero) {
 	return ability !== undefined && ability.IsReady
@@ -34,7 +34,7 @@ export function InitCombo() {
 		cycloneDebuff = target.GetBuffByName("modifier_eul_cyclone"),
 		possibleRange = (Owner.Speed * 0.8),
 		DistpossibleRange = 1175 + 0.75 * possibleRange
-		
+
 	if (IsValidItems(Items.Discord, target) && !target.IsInvulnerable) {
 		Items.Discord.UseAbility(target)
 		Sleep.Sleep(Items.Tick)
@@ -44,7 +44,7 @@ export function InitCombo() {
 		Items.Ethereal.UseAbility(target)
 		Sleep.Sleep(Items.Tick + 450)
 		return true
-	}	
+	}
 	if (
 		Items.Dagon !== undefined && Items.Dagon.IsReady
 		&& Items.Dagon.CanBeCasted() && СomboItems.IsEnabled("item_dagon_5")
@@ -57,12 +57,12 @@ export function InitCombo() {
 	if (Abilities.Requiem === undefined) {
 		return false
 	}
-	
+
 	if (!target.HasModifier("modifier_eul_cyclone")) {
 		if (IsValidItems(Items.Cyclone, target)
 			&& Abilities.Requiem.CanBeCasted()
-			&& Owner.IsInRange(target, Items.Blink !== undefined && СomboItems.IsEnabled(Items.Blink.Name) 
-			&& Items.Blink.CanBeCasted() 
+			&& Owner.IsInRange(target, Items.Blink !== undefined && СomboItems.IsEnabled(Items.Blink.Name)
+			&& Items.Blink.CanBeCasted()
 			? DistpossibleRange
 			: 285)
 		) {
@@ -71,18 +71,18 @@ export function InitCombo() {
 			return true
 		}
 	}
-	
-	if (cycloneDebuff !== undefined 
+
+	if (cycloneDebuff !== undefined
 		&& Abilities.Requiem.CanBeCasted()
 	) {
 		let CastTime = Abilities.Requiem.CastPoint + (GetAvgLatency(Flow_t.OUT)),
 			blink_pos = target.Position.Add(Owner.NetworkPosition.Subtract(target.NetworkPosition).Normalize().ScaleTo(0.75 * possibleRange))
-			
+
 		// TODO => Select for User
 		// if (cycloneDebuff.Caster !== Owner) {
 		// 	return false
 		// }
-		
+
 		if (Items.BlackKingBar !== undefined && Items.BlackKingBar.IsReady
 			&& Items.BlackKingBar.CanBeCasted() && СomboItems.IsEnabled(Items.BlackKingBar.Name)
 		) {

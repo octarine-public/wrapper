@@ -1,7 +1,7 @@
 import { Color, Menu as MenuSDK } from "wrapper/Imports"
 
-import InitItems from "./Extends/Items"
 import InitAbility from "./Extends/Abilities"
+import InitItems from "./Extends/Items"
 
 let Items = new InitItems,
 	Abilities = new InitAbility
@@ -20,13 +20,13 @@ activeAbility: Map<string, boolean> = new Map<string, boolean>([
 ])
 
 let arrayItems: string[] = [
-	Items.BladMail.toString(), 			// 0	
+	Items.BladMail.toString(), 			// 0
 	Items.LotusOrb.toString(), 			// 1
-	Items.BlackKingBar.toString(), 		// 2	
+	Items.BlackKingBar.toString(), 		// 2
 	Items.Abyssal.toString(), 			// 3
-	Items.Mjollnir.toString(),			// 4	
+	Items.Mjollnir.toString(),			// 4
 	Items.Armlet.toString(), 			// 5
-	Items.Satanic.toString(),			// 6	
+	Items.Satanic.toString(),			// 6
 	Items.Medallion.toString(), 		// 7
 	Items.SolarCrest.toString(),		// 8
 	Items.UrnOfShadows.toString(), 		// 9
@@ -34,7 +34,7 @@ let arrayItems: string[] = [
 	Items.SpiritVesel.toString(), 		// 11
 	Items.Sheeps.toString(), 			// 12
 	Items.Blink.toString(), 			// 13
-	Items.Orchid.toString(), 			// 14	
+	Items.Orchid.toString(), 			// 14
 	Items.Bloodthorn.toString(), 		// 15
 	Items.Shivas.toString(), 			// 16
 	Items.Nullifier.toString(), 		// 17
@@ -67,12 +67,12 @@ let bladeMailMenu = Menu.AddNode("Blade Mail"),
 	BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false).SetTooltip("Cancel Combo if there is enemy Blade Mail")
 
 let arrayLinkenBreak: string[] = [
-	arrayItems[3],	
-	arrayItems[10], 
+	arrayItems[3],
+	arrayItems[10],
 	arrayItems[12],
 	arrayItems[14],
 	arrayItems[15],
-	arrayItems[17], 
+	arrayItems[17],
 	Items.HeavensHalberd.toString(),
 	Items.ForceStaff.toString(),
 	Items.Cyclone.toString(),
@@ -86,7 +86,7 @@ activeLinkenBreak: Map<string, boolean> = new Map<string, boolean>([
 	[arrayLinkenBreak[5], true],
 	[arrayLinkenBreak[6], true],
 	[arrayLinkenBreak[7], true],
-	[arrayLinkenBreak[8], true]
+	[arrayLinkenBreak[8], true],
 ])
 
 let linkenBreakerMenu = Menu.AddNode("Linken Breaker"),

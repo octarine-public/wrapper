@@ -35,7 +35,7 @@
 // 			let abil = abilData.abil = unit.GetAbilityByName(abilData.abil_name) || unit.GetItemByName(abilData.abil_name)
 // 			return abil !== undefined && !abil.IsHidden && abil.CanBeCasted()
 // 		})
-		
+
 // 		console.log(availableAbils.map(x => x.abil.Name))
 // 	})
 // 	// all_units.filter(unit => {

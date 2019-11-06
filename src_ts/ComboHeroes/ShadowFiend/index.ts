@@ -13,12 +13,12 @@ EventsSDK.on("Tick", () => {
 	InitMouse()
 	if (Base.DeadInSide) {
 		return false
-	}	
+	}
 	InitCombo()
 })
 
 import {
 	EntityCreated,
 	EntityDestroyed,
-	GameEnded, GameStarted, InitMouse
+	GameEnded, GameStarted, InitMouse,
 } from "./Listeners"

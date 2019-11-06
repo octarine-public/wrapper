@@ -7,6 +7,6 @@ export function MenuBase(root: MenuSDK.Node, name: string) {
 
 	return {
 		BaseTree,
-		State: BaseTree.AddToggle("State")
+		State: BaseTree.AddToggle("State"),
 	}
 }

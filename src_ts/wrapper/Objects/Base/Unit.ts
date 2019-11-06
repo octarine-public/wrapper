@@ -1,8 +1,8 @@
 import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import { DamageIgnoreBuffs } from "../../Utils/Utils";
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
+import { DamageIgnoreBuffs } from "../../Utils/Utils";
 
 import { Game, LocalPlayer } from "../../Managers/EntityManager"
 
@@ -74,7 +74,7 @@ export default class Unit extends Entity {
 	private CanUseAbilitiesInInvis: string[] = [
 		"modifier_broodmother_spin_web_invisible_applier",
 		"modifier_riki_permanent_invisibility",
-		"modifier_treant_natures_guise_invis"
+		"modifier_treant_natures_guise_invis",
 	]
 	/* ================ GETTERS ================ */
 	public get IsHero(): boolean {
@@ -536,22 +536,14 @@ export default class Unit extends Entity {
 	}
 
 	public TurnRate(currentTurnRate: boolean = true): number {
-		let turnRate: number
-		try {
-			turnRate = rotation_speed[this.Name]
-		}
-		catch (error) {
-			turnRate = 0.5
-		}
+		let turnRate = rotation_speed[this.Name] || 0.5
 
 		if (currentTurnRate) {
-			if (this.HasModifier("modifier_medusa_stone_gaze_slow")) {
+			if (this.HasModifier("modifier_medusa_stone_gaze_slow"))
 				turnRate *= 0.65
-			}
 
-			if (this.HasModifier("modifier_batrider_sticky_napalm")) {
+			if (this.HasModifier("modifier_batrider_sticky_napalm"))
 				turnRate *= 0.3
-			}
 		}
 
 		return turnRate

@@ -154,4 +154,3 @@ export function Init() {
 	waiting_explode = []
 	waiting_spawn = []
 }
-

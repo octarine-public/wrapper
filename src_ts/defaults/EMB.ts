@@ -1,4 +1,4 @@
-import { ArrayExtensions, Color, EventsSDK, Game, Hero, Menu, RendererSDK, Vector2, LocalPlayer } from "wrapper/Imports"
+import { ArrayExtensions, Color, EventsSDK, Game, Hero, LocalPlayer, Menu, RendererSDK, Vector2 } from "wrapper/Imports"
 
 var manabars: Hero[] = [],
 	heroes: Hero[] = []
