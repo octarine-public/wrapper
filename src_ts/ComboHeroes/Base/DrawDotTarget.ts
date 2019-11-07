@@ -1,40 +1,64 @@
-import { Game, Hero, LocalPlayer, Menu, ParticlesSDK, Unit, Vector3 } from "wrapper/Imports"
-export let EnemyParticle: number
+import { Unit, LocalPlayer, Menu, ParticlesSDK, Vector3, Color, Hero } from "wrapper/Imports"
+let allParticles = new Map<string, number>()
+let EnemyParticle = new Map<string, number>()
+
 export default class DrawTarget {
-	public owner: Hero | Unit
-	public target: Hero | Unit
-	constructor(owner?: Hero | Unit, target?: Hero | Unit) {
+	public owner: Unit
+	constructor(owner?: Unit) {
 		this.owner = owner
-		this.target = target
 	}
-	public DrawTarget(Base: any, State: Menu.Toggle): void {
-		if (LocalPlayer === undefined) {
+	private get IsOwnerValid(): boolean {
+		return LocalPlayer !== undefined && !LocalPlayer.IsSpectator && this.owner !== undefined
+	}
+	public UpdateLineDot(name: string, Base: any, State: Menu.Toggle, target: Hero) {
+		if (!this.IsOwnerValid) {
 			return
 		}
-		if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
-			return
+		let particle = allParticles.get(name)
+		if (particle === undefined && target !== undefined) {
+			particle = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, target)
+			ParticlesSDK.SetControlPoint(particle, 6, new Vector3(1))
+			allParticles.set(name, particle)
 		}
-		if (this.owner === undefined || !this.owner.IsAlive) {
-			return
-		}
-		if (EnemyParticle === undefined && this.target !== undefined) {
-			EnemyParticle = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, this.target)
-		}
-		if (EnemyParticle !== undefined) {
-			if (this.target === undefined) {
-				ParticlesSDK.Destroy(EnemyParticle, true)
-				EnemyParticle = undefined
+		if (!EnemyParticle.has(name)) {
+			if (target === undefined || !this.owner.IsAlive || !Base.IsRestrictions(State)) {
+				this.RemoveParticle(name)
 			} else {
-				ParticlesSDK.SetControlPoint(EnemyParticle, 2, this.owner.Position)
-				ParticlesSDK.SetControlPoint(EnemyParticle, 6, new Vector3(1))
-				ParticlesSDK.SetControlPoint(EnemyParticle, 7, this.target.Position)
+				ParticlesSDK.SetControlPoint(particle, 2, this.owner.Position)
+				ParticlesSDK.SetControlPoint(particle, 7, target.Position)
 			}
 		}
 	}
-	public ResetEnemyParticle() {
-		if (EnemyParticle !== undefined) {
-			ParticlesSDK.Destroy(EnemyParticle, true)
-			EnemyParticle = undefined
+
+	public UpdateCircle(name: string, range: number, Colors: Color = new Color(255, 255, 255)) {
+		if (!this.IsOwnerValid) {
+			return
+		}
+		let particle = allParticles.get(name)
+		if (particle === undefined) {
+			particle = ParticlesSDK.Create("particles/ui_mouseactions/drag_selected_ring.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, this.owner)
+			allParticles.set(name, particle)
+		}
+		if (name) {
+			ParticlesSDK.SetControlPoint(particle, 0, this.owner.Position)
+			ParticlesSDK.SetControlPoint(particle, 1, new Vector3(Colors.r, Colors.g, Colors.b))
+			ParticlesSDK.SetControlPoint(particle, 2, new Vector3(range * 1.111, 255, 0))
+		}
+	}
+
+	public RemoveParticle(name: string) {
+		if (!this.IsOwnerValid) {
+			return
+		}
+		let particle = allParticles.get(name)
+		if (particle !== undefined) {
+			ParticlesSDK.Destroy(particle, true)
+			allParticles.delete(name)
+		}
+		let _particle = EnemyParticle.get(name)
+		if (_particle !== undefined) {
+			ParticlesSDK.Destroy(_particle, true)
+			EnemyParticle.delete(name)
 		}
 	}
 }

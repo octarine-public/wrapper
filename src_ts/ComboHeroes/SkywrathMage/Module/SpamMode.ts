@@ -10,18 +10,19 @@ export function AutoUsage() {
 	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return false
 	if (BladeMailUseCyclone.value) {
-		Heroes.filter(x => x.IsEnemy() && x.IsValid && x.IsAlive && x.IsVisible && !x.IsInvulnerable
+		if(
+			Heroes.some(x => x.IsEnemy() 
+			&& x.IsValid && x.IsAlive && x.IsVisible && !x.IsInvulnerable
 			&& x.HasModifier("modifier_item_blade_mail_reflect")
-			&& x.HasModifier("modifier_skywrath_mystic_flare_aura_effect")).some(target => {
-				let Items = new InitItems(MyHero)
-				if (Items.Cyclone !== undefined
-					&& Items.Cyclone.CanBeCasted()) {
-					MyHero.CastTarget(Items.Cyclone, MyHero)
-					Sleep.Sleep(Items.Tick)
-					return true
-				}
-				return false
-			})
+			&& x.HasModifier("modifier_skywrath_mystic_flare_aura_effect")))
+		{
+			let Items = new InitItems(MyHero)
+			if (Items.Cyclone && Items.Cyclone.CanBeCasted()) {
+				MyHero.CastTarget(Items.Cyclone, MyHero)
+				Sleep.Sleep(Items.Tick)
+				return true
+			}
+		}
 	}
 
 	// ArcaneBolt

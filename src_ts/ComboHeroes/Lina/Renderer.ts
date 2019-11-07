@@ -1,18 +1,18 @@
 import { Color, RendererSDK, Vector2 } from "../../wrapper/Imports"
-import InitDrawBase from "../Base/DrawDotTarget"
+//import InitDrawBase from "../Base/DrawDotTarget"
 import InitAbility from "./Extends/Abilities"
-import { Base } from "./Extends/Helper"
+//import { Base } from "./Extends/Helper"
 import { Heroes, MouseTarget, Owner } from "./Listeners"
 import { AutoStealAbility, AutoStealState, DrawingStatus, DrawingStatusKillSteal, State } from "./Menu"
 
 export function Draw() {
-	let Drawing = new InitDrawBase(Owner, MouseTarget)
-	if (!DrawingStatus.value) {
-		Drawing.ResetEnemyParticle()
-	}
-	if (Drawing !== undefined && DrawingStatus.value) {
-		Drawing.DrawTarget(Base, State)
-	}
+	// let Drawing = new InitDrawBase(Owner, MouseTarget)
+	// if (!DrawingStatus.value) {
+	// 	Drawing.ResetEnemyParticle()
+	// }
+	// if (Drawing !== undefined && DrawingStatus.value) {
+	// 	Drawing.DrawTarget(Base, State)
+	// }
 	if (AutoStealState.value && State.value && DrawingStatusKillSteal.value) {
 		DrawAutoSteal()
 	}
@@ -86,5 +86,5 @@ function DrawAutoSteal() {
 }
 
 export function DrawDeleteTempAllVars() {
-	new InitDrawBase().ResetEnemyParticle()
+	//new InitDrawBase().ResetEnemyParticle()
 }

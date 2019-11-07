@@ -180,10 +180,10 @@ function DeleteBlink() {
 }
 
 export function Draw() {
-	let Drawing = new InitDrawBase(Owner, MouseTarget)
-	if (Drawing !== undefined) {
-		Drawing.DrawTarget(Base, State)
-	}
+	// let Drawing = new InitDrawBase(Owner, MouseTarget)
+	// if (Drawing !== undefined) {
+	// 	Drawing.DrawTarget(Base, State)
+	// }
 	DrawingAbility.IsEnabled("kunkka_torrent")
 		? TorrentRadius()
 		: DeleteTorrent()
@@ -239,5 +239,5 @@ export function DrawDeleteTempAllVars() {
 	TempLevelXMarks = 0
 	Sleep.FullReset()
 	AutoStakerGameEnded()
-	new InitDrawBase().ResetEnemyParticle()
+	//new InitDrawBase().ResetEnemyParticle()
 }
