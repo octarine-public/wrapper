@@ -1,18 +1,20 @@
 import { Ability, ArrayExtensions, Color, Game, RendererSDK, Vector2 } from "wrapper/Imports";
-import InitAbility from "../Extends/Abilities"
 import { Base } from "../Extends/Helper";
-import { CreepsNeutrals, Owner } from "../Listeners";
+import { CreepsNeutrals, Owner, initAbilityMap } from "../Listeners";
 import { AutoStakerState, AutoStakerVisuals, State } from "../Menu";
 export let is_stacking = false
 export function InitStaker() {
 	if (!Base.IsRestrictions(State) || !AutoStakerState.value || is_stacking) {
 		return false
 	}
-	let Abilities = new InitAbility(Owner),
-		Q = Abilities.Torrent as Ability,
+	let Abilities = initAbilityMap.get(Owner)
+	if (Abilities === undefined) {
+		return
+	}
+	let Q = Abilities.Torrent as Ability,
 		cur_time = Game.GameTime
 	if (cur_time < 60) {
-		return false
+		return
 	}
 	if (
 		Math.abs(
@@ -20,17 +22,17 @@ export function InitStaker() {
 			(60 - (Q.CastPoint + Q.GetSpecialValue("delay") + 0.6)), // it tooks ~0.6sec to raise y coord of creeps
 		) >= 1 / 30
 	) {
-		return false
+		return
 	}
 	let my_vec = Owner.NetworkPosition, cast_range = Q.CastRange + Owner.CastRangeBonus
 	// loop-optimizer: KEEP
 	ArrayExtensions.orderBy(Base.Spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
 		let CreepIsInside = CreepsNeutrals.some(x => x.IsValid && x.IsNeutral && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
-		if (CreepIsInside) {
+		if (CreepIsInside && Q.CanBeCasted()) {
 			Owner.CastPosition(Q, spot)
 			is_stacking = true
 			setTimeout(() => is_stacking = false, Q.CastPoint * 1000 + 30)
-			return false
+			return
 		}
 	})
 }

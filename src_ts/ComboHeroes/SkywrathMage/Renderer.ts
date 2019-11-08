@@ -1,79 +1,46 @@
 import { Base } from "./Extends/Helper"
-
-import { AutoComboDisableWhen, AutoComboState, AutoDisableState, ComboKey,
-	ComboStartWith, ConShotPoaitionPosShot, DrawingtargetState, DrawingtargetStateShot,
+import {
+	Radius,
+	BlinkRadiusItemColor,
+	AttackRangeRadius,
+	RadiusColorAttackRange,
+	DrawingtargetStateShot,
+	AutoComboDisableWhen, AutoComboState, AutoDisableState, ComboKey,
+	ComboStartWith, ConShotPoaitionPosShot, DrawingtargetState,
 	SmartArcaneAutoBoltState, State, TextItem,
-	TextSize, TextXItem, TextYItem } from "./Menu"
+	TextSize, TextXItem, TextYItem,
+	ArcaneBoltRadiusColor,
+	MysticFlareRadiusColor,
+	AncientSealRadiusColor,
+	ConcussiveShotRadiusColor
+} from "./Menu"
+import { Color, Game, LocalPlayer, RendererSDK, Vector2 } from "wrapper/Imports"
+import { MouseTarget, MyHero, initDrawMap, initItemsMap, initAbilityMap } from "./Listeners"
 
-import { ArrayExtensions, Color, Game, Hero, LocalPlayer, ParticlesSDK, RendererSDK, Vector2, Vector3 } from "wrapper/Imports"
-import { Heroes, MouseTarget, MyHero } from "./Listeners"
-let Shot: number,
-	Enemy: Hero,
-	CurShot: Hero,
-	targetParticle: number
-
-export function DrawDestroyAll() {
-	if (Shot !== undefined) {
-		ParticlesSDK.Destroy(Shot, true)
-		if (Shot !== undefined) {
-			Shot = undefined
-		}
-		if (CurShot !== undefined) {
-			CurShot = undefined
-		}
-		if (Enemy !== undefined) {
-			Enemy = undefined
-		}
-	}
-}
 export function Draw() {
-	if (LocalPlayer === undefined) {
-		return false
+	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || MyHero === undefined) {
+		return
 	}
-	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator) {
-		return false
-	}
-	if (MyHero === undefined || !MyHero.IsAlive)
-		return false
-	if (DrawingtargetStateShot.value) {
-		Enemy = ArrayExtensions.orderBy(Heroes.filter(x => x.IsEnemy()
-			&& x.Distance(MyHero) <= Base.ConShot.CastRange
-			&& x.IsAlive && x.IsVisible), ent => ent.Distance(MyHero))[0]
 
-		if (!Base.ConShot.IsReady
-			|| (Enemy === undefined && Shot !== undefined)
-			|| (CurShot !== Enemy && Shot !== undefined)) {
-			if (Shot !== undefined) {
-				ParticlesSDK.Destroy(Shot, true)
-			}
-			Shot = undefined
-			CurShot = Enemy
-		}
-		if (Shot === undefined && Enemy !== undefined && Base.ConShot.IsReady) {
-			Shot = ParticlesSDK.Create("particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
-		}
-		if (Shot !== undefined && Base.ConShot.IsReady) {
-			let pos = Enemy.Position
-			pos.AddScalarZ(ConShotPoaitionPosShot.value)
-			ParticlesSDK.SetControlPoint(Shot, 0, pos)
-			ParticlesSDK.SetControlPoint(Shot, 1, pos)
-			ParticlesSDK.SetControlPoint(Shot, 2, new Vector3(3000))
-		}
+	let Particle = initDrawMap.get(MyHero),
+		Items = initItemsMap.get(MyHero),
+		Abilities = initAbilityMap.get(MyHero)
+
+	if (Items === undefined || Abilities === undefined || Particle === undefined) {
+		return
 	}
-	if (DrawingtargetState.value) {
-		if (targetParticle === undefined && MouseTarget !== undefined) {
-			targetParticle = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, MouseTarget)
-		}
-		if (targetParticle !== undefined) {
-			if (MouseTarget === undefined) {
-				ParticlesSDK.Destroy(targetParticle, true)
-				targetParticle = undefined
-			} else {
-				ParticlesSDK.SetControlPoint(targetParticle, 2, MyHero.Position)
-				ParticlesSDK.SetControlPoint(targetParticle, 6, new Vector3(1))
-				ParticlesSDK.SetControlPoint(targetParticle, 7, MouseTarget.Position)
-			}
-		}
+
+	Particle.RenderLineTarget(Base, DrawingtargetState, State, MouseTarget)
+	Particle.RenderAttackRange(State, AttackRangeRadius, MyHero.AttackRange, RadiusColorAttackRange.Color)
+	Particle.RenderConShot(Abilities.ConcussiveShot, ConShotPoaitionPosShot, DrawingtargetStateShot)
+	Particle.Render(Abilities.ArcaneBolt, Abilities.ArcaneBolt.Name, Abilities.ArcaneBolt.CastRange, Radius, State, ArcaneBoltRadiusColor.Color)
+	Particle.Render(Abilities.AncientSeal, Abilities.AncientSeal.Name, Abilities.AncientSeal.CastRange, Radius, State, AncientSealRadiusColor.Color)
+	Particle.Render(Abilities.MysticFlare, Abilities.MysticFlare.Name, Abilities.MysticFlare.CastRange, Radius, State, MysticFlareRadiusColor.Color)
+	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius + MyHero.CastRangeBonus, Radius, State, BlinkRadiusItemColor.Color)
+	Particle.RenderConShotRadius(Abilities.ConcussiveShot, Radius, State, ConcussiveShotRadiusColor.Color)
+
+	if (Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
+		return
 	}
 
 	if (TextItem.value) {
@@ -96,7 +63,7 @@ export function Draw() {
 		text.forEach(([name, value, render_disabled]) => {
 			if (!render_disabled && !value)
 				return
-			let pos = new Vector2 (
+			let pos = new Vector2(
 				wSize.x / 100 * TextXItem.value,
 				wSize.y / 100 * TextYItem.value + (i * TextSize.value),
 			)
@@ -109,7 +76,7 @@ export function Draw() {
 				FontFlags_t.ANTIALIAS,
 			)
 			RendererSDK.Text(
-				value ? "ON": "OFF",
+				value ? "ON" : "OFF",
 				pos.AddScalarX(RendererSDK.GetTextSize(name, "Consoles", TextSize.value, FontFlags_t.ANTIALIAS).x),
 				new Color(value ? 0 : 255, value ? 255 : 0, 0, 255),
 				"Consoles",

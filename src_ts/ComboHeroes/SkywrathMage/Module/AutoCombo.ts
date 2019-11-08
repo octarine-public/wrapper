@@ -1,11 +1,13 @@
 import { Base } from "../Extends/Helper"
-import { Heroes, MyHero, ProjList } from "../Listeners"
-
+import { Heroes, MyHero, ProjList, initItemsMap, initAbilityMap } from "../Listeners"
 import { Ability, ArrayExtensions, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
-import { AutoComboAbility, AutoComboDisableWhen, AutoComboItems, AutoComboMinHPpercent, AutoComboState, BladeMailCancelCombo, ComboKey, ConcussiveShotAwait, SmartConShotRadius, State } from "../Menu"
-
-import InitAbility from "../Extends/Abilities"
-import InitItems from "../Extends/Items"
+import {
+	AutoComboAbility,
+	AutoComboDisableWhen, AutoComboItems,
+	AutoComboMinHPpercent, AutoComboState,
+	BladeMailCancelCombo, ComboKey, ConcussiveShotAwait,
+	SmartConShotRadius, State
+} from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
 
 let Sleep = new TickSleeper()
@@ -19,26 +21,30 @@ function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelect
 
 export function AutoCombo() {
 	if (!Base.IsRestrictions(State) || !AutoComboState.value || Sleep.Sleeping) {
-		return false
+		return
 	}
 	if (AutoComboDisableWhen.value && ComboKey.is_pressed) {
-		return false
+		return
 	}
 	let target = ArrayExtensions.orderBy(Heroes.filter(x => x.IsEnemy() && Base.Active(x) && x.IsStunned
 		&& !x.IsMagicImmune && x.IsAlive || Base.TriggerAutoCombo(x)), x => x.Distance2D(MyHero))[0]
 
 	if (target === undefined || !Base.Cancel(target) || Base.AeonDisc(target, false) || (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect"))) {
-		return false
+		return
 	}
 	if (target.HPPercent > AutoComboMinHPpercent.value && AutoComboMinHPpercent.value !== 0) {
-		return false
+		return
 	}
 	if (Base.IsLinkensProtected(target)) {
 		BreakInit()
-		return false
+		return
 	}
-	let Items = new InitItems(MyHero),
-		Abilities = new InitAbility(MyHero)
+	let Items = initItemsMap.get(MyHero),
+		Abilities = initAbilityMap.get(MyHero)
+
+	if (Items === undefined || Abilities === undefined) {
+		return
+	}
 
 	let RodofAtosDelay = ProjList.find(x => x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
 		EtherealDelay = ProjList.find(x => x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),
@@ -47,34 +53,34 @@ export function AutoCombo() {
 	if (IsValid(Items.Sheeps, target, AutoComboItems)) {
 		Items.Sheeps.UseAbility(target)
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 
 	// Orchid
 	if (IsValid(Items.Orchid, target, AutoComboItems)) {
 		Items.Orchid.UseAbility(target)
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 
 	// Bloodthorn
 	if (IsValid(Items.Bloodthorn, target, AutoComboItems)) {
 		Items.Bloodthorn.UseAbility(target)
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 
 	// AncientSeal
 	if (IsValid(Abilities.AncientSeal, target, AutoComboAbility)) {
 		Abilities.AncientSeal.UseAbility(target)
 		Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal))
-		return true
+		return
 	}
 	// RodofAtos
 	if (IsValid(Items.RodofAtos, target, AutoComboItems)) {
 		Items.RodofAtos.UseAbility(target)
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 
 	// MysticFlare
@@ -91,19 +97,19 @@ export function AutoCombo() {
 		) {
 			Abilities.UseMysticFlare(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare))
-			return true
+			return
 		} else if (Items.RodofAtos === undefined && !ConcussiveShotAwait.value || target.IsStunned) {
 			Abilities.UseMysticFlare(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare))
-			return true
+			return
 		} else if (Items.RodofAtos !== undefined && RodofAtosDelay !== undefined && target.Distance2D(RodofAtosDelay.Position) <= 100 || target.IsStunned) {
 			Abilities.UseMysticFlare(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare))
-			return true
+			return
 		} else if (Items.RodofAtos !== undefined && (Items.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined || target.IsStunned) {
 			Abilities.UseMysticFlare(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare))
-			return true
+			return
 		}
 
 	}
@@ -115,21 +121,21 @@ export function AutoCombo() {
 		&& MyHero.Distance2D(target.Position) <= SmartConShotRadius.value + target.HullRadius) {
 		Abilities.ConcussiveShot.UseAbility()
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 
 	// ArcaneBolt
 	if (IsValid(Abilities.ArcaneBolt, target, AutoComboAbility)) {
 		Abilities.ArcaneBolt.UseAbility(target)
 		Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt))
-		return true
+		return
 	}
 
 	// Veil
 	if (IsValid(Items.Discord, target, AutoComboItems)) {
 		Items.Discord.UseAbility(target)
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 
 	// Ethereal
@@ -142,7 +148,7 @@ export function AutoCombo() {
 	) {
 		Items.Ethereal.UseAbility(target)
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 
 	// Dagon
@@ -165,10 +171,10 @@ export function AutoCombo() {
 		) {
 			Items.Dagon.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 	}
-	return false
+	return
 }
 export function AutoComboDeleteVars() {
 	Sleep.ResetTimer()

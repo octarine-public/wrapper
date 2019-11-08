@@ -2,7 +2,7 @@ import { Base } from "../Extends/Helper"
 import { BreakInit } from "./LinkenBreaker"
 
 import { Utils, Ability, Item, TickSleeper, Menu, Hero } from "wrapper/Imports"
-import { MouseTarget, Owner } from "../Listeners"
+import { MouseTarget, Owner, initAbilityMap, initItemsMap } from "../Listeners"
 
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
@@ -215,9 +215,11 @@ export function InitCombo() {
 	}
 	let cancelAdditionally = Base.CancelAdditionally(target),
 		blockingAbilities = Base.IsBlockingAbilities(target),
-		Items = new InitItems(Owner),
-		Abilities = new InitAbility(Owner)
-
+		Items = initItemsMap.get(Owner),
+		Abilities = initAbilityMap.get(Owner)
+	if (Abilities === undefined || Items === undefined) {
+		return
+	}
 	if (Base.Cancel(target) && cancelAdditionally) {
 		if (!Owner.IsVisibleForEnemies
 			&& Owner.ModifiersBook.HasAnyBuffByNames(["modifier_item_invisibility_edge_windwalk", "modifier_item_silver_edge_windwalk"])

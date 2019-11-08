@@ -1,4 +1,4 @@
-import { Menu as MenuSDK } from "wrapper/Imports"
+import { Menu as MenuSDK, Color } from "wrapper/Imports"
 
 import InitAbility from "./Extends/Abilities"
 import InitItems from "./Extends/Items"
@@ -32,6 +32,13 @@ let array_ability_steal: string[] = [
 	Abilities.LagunaBlade.toString(),
 ]
 
+let array_radius: string[] = [
+	array_ability[0],
+	array_ability[1],
+	array_ability[2],
+	array_items[2]
+]
+
 let AutoStealTree = Menu.AddNode("Auto Steal"),
 	AutoStealState = AutoStealTree.AddToggle("Enable", true),
 	AutoStealAbility = AutoStealTree.AddImageSelector("Ability", array_ability_steal, new Map(array_ability_steal.map(name => [name, true]))),
@@ -42,17 +49,33 @@ let AutoStealTree = Menu.AddNode("Auto Steal"),
 	СomboItems = Combo.AddImageSelector("Items", array_items, new Map(array_items.map(name => [name, true]))),
 	СomboAbility = Combo.AddImageSelector("Ability", array_ability, new Map(array_ability.map(name => [name, true]))),
 	Drawing = Menu.AddNode("Drawing"),
-	DrawingStatus = Drawing.AddToggle("Draw target", true),
+	RadiusTree = Drawing.AddNode("Radius"),
+	Radius = RadiusTree.AddImageSelector("Select", array_radius),
+	AttackRangeRadiusTree = RadiusTree.AddNode("Attack Range"),
+	AttackRangeRadius = AttackRangeRadiusTree.AddToggle("Enable"),
+	RadiusColorAttackRange = AttackRangeRadiusTree.AddColorPicker("Color", new Color(255, 255, 0)),
+	BlinkRadiusItemColor = RadiusTree.AddColorPicker("Blink", new Color(255, 255, 255)),
+	DragonSlaveRadiusColor = RadiusTree.AddColorPicker("Dragon Slave", new Color(255, 255, 255)),
+	LightStrikeArrayColor = RadiusTree.AddColorPicker("Light Strike", new Color(255, 255, 255)),
+	LagunaBladeColor = RadiusTree.AddColorPicker("Laguna Blade", new Color(255, 255, 255)),
+
+	DrawingStatus = Drawing.AddToggle("Draw Target", true),
 	DrawingStatusKillSteal = Drawing.AddToggle("Draw Kill Steal", true)
 
 let BladeMail = Menu.AddNode("Blade Mail"),
 	BladeMailCancel = BladeMail.AddToggle("Cancel Combo and Auto Steal", true)
 
 export {
+	Radius,
 	DrawingStatus,
 	AutoStealState,
 	AutoStealAbility,
-	DrawingStatusKillSteal
+	DrawingStatusKillSteal,
+	BlinkRadiusItemColor,
+	DragonSlaveRadiusColor, LightStrikeArrayColor,
+	LagunaBladeColor,
+	AttackRangeRadius,
+	RadiusColorAttackRange
 }
 
 export {

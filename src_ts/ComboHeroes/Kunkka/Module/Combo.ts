@@ -1,9 +1,6 @@
 import { Ability, Game, Hero, Item, TickSleeper, Vector3 } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { MouseTarget, Owner } from "../Listeners"
-
-import InitAbility from "../Extends/Abilities"
-import InitItems from "../Extends/Items"
+import { MouseTarget, Owner, initAbilityMap, initItemsMap } from "../Listeners"
 import {
 	AutoComboMenu, BladeMailItem, BlinkRadius, //HarassModeCombo,
 	ComboKeyItem, ComboKeyTorrent, State, СomboAbility, СomboItems,
@@ -45,10 +42,13 @@ function SetCastDelay() {
 }
 
 function ComboInit() {
-	let Items = new InitItems(Owner),
-		Abilities = new InitAbility(Owner),
-		Time = Game.RawGameTime
-	let Q = Abilities.Torrent,
+	let Items = initItemsMap.get(Owner),
+		Abilities = initAbilityMap.get(Owner)
+	if (Abilities === undefined || Items === undefined) {
+		return
+	}
+	let Time = Game.RawGameTime,
+		Q = Abilities.Torrent,
 		X = Abilities.MarksSpot,
 		R = Abilities.Ghostship,
 		RX = Abilities.Return,
@@ -58,14 +58,14 @@ function ComboInit() {
 	if (!XMarkPos.IsZero()) {
 		if (RX !== undefined && RX.IsHidden && X !== undefined && !X.IsInAbilityPhase) {
 			XMarkPos = new Vector3()
-			return false
+			return
 		}
 	}
 	if (ShipCombo) {
 		if (CheckAbility(R, XMarkPos)) {
 			if (Owner.Distance2D(XMarkPos) > (R.CastRange - 50)) {
 				Owner.MoveTo(XMarkPos)
-				return false
+				return
 			}
 			// if (ConVars.GetInt("dota_player_units_auto_attack_mode") === 1) {
 			// 	SetAutoAttackMode(0)
@@ -77,7 +77,7 @@ function ComboInit() {
 	}
 	if (ComboTimer - Time <= 2.05) {
 		if (XMarkPos.LengthSqr === 0 || X.CanBeCasted()) {
-			return false
+			return
 		}
 		if (CheckAbility(Q, XMarkPos)) {
 			Q.UseAbility(XMarkPos)
@@ -110,29 +110,31 @@ function ComboInit() {
 		// if (ConVars.GetString("dota_player_units_auto_attack_mode") === "0") {
 		// 	SetAutoAttackMode(1)
 		// }
-		return true
+		return
 	}
 }
 
 export function InitCombo() {
 	if (!Base.IsRestrictions(State) || Sleep.Sleeping) {
-		return false
+		return
 	}
 	let target = MouseTarget,
 		Time = Game.RawGameTime
-
-	let Items = new InitItems(Owner),
-		Abilities = new InitAbility(Owner)
+	let Items = initItemsMap.get(Owner),
+		Abilities = initAbilityMap.get(Owner)
+	if (Abilities === undefined || Items === undefined) {
+		return
+	}
 	let Q = Abilities.Torrent as Ability,
 		X = Abilities.MarksSpot as Ability,
 		R = Abilities.Ghostship as Ability,
 		HEX = Items.Sheeps as Item
 	if (!XMarkPos.IsZero()) {
 		ComboInit()
-		return false
+		return
 	}
 	if (Base.CanCastSpells(Owner) || target === undefined || target.IsMagicImmune) {
-		return false
+		return
 	}
 	if (target !== undefined && !XMarkPos.IsZero())
 		XMarkPos = new Vector3()
@@ -150,7 +152,7 @@ export function InitCombo() {
 	}
 	if (ComboTimer < Time) {
 		if (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect")) || !Base.Cancel(target))
-			return false
+			return
 		if (!target.HasModifier("modifier_kunkka_x_marks_the_spot")) {
 			if (ComboKeyItem.is_pressed || AutoCombo) {
 				if (Items.Blink !== undefined
@@ -161,11 +163,11 @@ export function InitCombo() {
 					let castRange = Items.Blink.GetSpecialValue("blink_range") + Owner.CastRangeBonus
 					Items.Blink.UseAbility(Owner.NetworkPosition.Extend(target.NetworkPosition, Math.min(castRange, Owner.Distance(target) - BlinkRadius.value) - 1))
 					Sleep.Sleep((Items.Tick + SetCastDelay()))
-					return false
+					return
 				}
 				if (R !== undefined && Owner.Distance2D(target) > (R.CastRange - 50)) {
 					Owner.MoveTo(target.NetworkPosition)
-					return false
+					return
 				}
 				if (HEX !== undefined
 					&& HEX.CanBeCasted() && СomboItems.IsEnabled(HEX.Name)
@@ -205,7 +207,7 @@ export function InitCombo() {
 				if (Q !== undefined && Q.CanBeCasted() || R !== undefined && R.CanBeCasted()) {
 					if (X !== undefined && Owner.Distance2D(target) > (X.CastRange - 50)) {
 						Owner.MoveTo(target.NetworkPosition)
-						return false
+						return
 					}
 					XMode(X, target, Time, false)
 					XMarkType = 2
@@ -214,11 +216,11 @@ export function InitCombo() {
 			}
 		} else {
 			ComboInit()
-			return false
+			return
 		}
 	} else {
 		ComboInit()
-		return false
+		return
 	}
 }
 

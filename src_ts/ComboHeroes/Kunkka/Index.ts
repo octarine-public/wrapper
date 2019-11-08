@@ -13,6 +13,7 @@ EventsSDK.on("EntityDestroyed", EntityDestroyed)
 EventsSDK.on("PrepareUnitOrders", OnExecuteOrder)
 
 EventsSDK.on("Tick", () => {
+	Tick()
 	InitMouse()
 	if (!Base.DeadInSide) {
 		InitCombo()
@@ -21,8 +22,9 @@ EventsSDK.on("Tick", () => {
 })
 
 import {
+	Tick,
 	EntityCreated,
 	EntityDestroyed,
 	GameEnded, GameStarted,
-	InitMouse,
+	InitMouse
 } from "./Listeners"

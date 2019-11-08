@@ -1,15 +1,12 @@
 import { Ability, Creep, ExecuteOrder, Hero, LocalPlayer, Menu, Unit } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { Creeps, Heroes, MyHero } from "../Listeners"
+import { Creeps, Heroes, MyHero, initAbilityMap } from "../Listeners"
 import { SmartConShotFail, SmartConShotOnlyTarget, SmartConShotRadius, State } from "../Menu"
 
 function IChecking(x: Hero | Creep, rad: Menu.Slider) {
 	return x.IsAlive && x.IsVisible && MyHero.Distance2D(x) <= rad.value - x.HullRadius
 }
-import InitAbility from "../Extends/Abilities"
-
 let target: Unit
-
 export function OnExecuteOrder(order: ExecuteOrder): boolean {
 	if (!Base.IsRestrictions(State) || !SmartConShotFail.value) {
 		return true
@@ -22,7 +19,10 @@ export function OnExecuteOrder(order: ExecuteOrder): boolean {
 		if (order.Unit === LocalPlayer.Hero) {
 			if (order.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET) {
 				let ability = order.Ability as Ability,
-					Abilities = new InitAbility(MyHero)
+					Abilities = initAbilityMap.get(MyHero)
+				if (Abilities === undefined) {
+					return true
+				}
 				if (ability !== undefined && ability.Name === Abilities.ConcussiveShot.Name) {
 					target = SmartConShotOnlyTarget.value
 						? Heroes.find(x => x.IsEnemy() && IChecking(x, SmartConShotRadius))

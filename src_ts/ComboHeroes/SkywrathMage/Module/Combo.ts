@@ -1,29 +1,29 @@
 import { GameSleeper, TickSleeper, Utils } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { MouseTarget, MyHero, ProjList } from "../Listeners"
+import { MouseTarget, MyHero, ProjList, initItemsMap, initAbilityMap, initItemsTargetMap } from "../Listeners"
 import { AbilityMenu, AutoAttackTarget, BladeMailCancelCombo, BlinkRadius, ComboKey, ConcussiveShotAwait, Items, MinHealthToUltItem, State } from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
-
-import InitAbility from "../Extends/Abilities"
-import InitItems from "../Extends/Items"
-
 let Sleep = new TickSleeper(),
 	GameSleep = new GameSleeper()
 export function InitCombo() {
 	if (!Base.IsRestrictions(State) || !ComboKey.is_pressed || Sleep.Sleeping) {
-		return false
+		return
 	}
+
 	let target = MouseTarget
 	if (target === undefined) {
 		MyHero.MoveTo(Utils.CursorWorldVec)
-		return false
+		return
 	}
 	if (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect")) {
-		return false
+		return
 	}
-	let ItemsInit = new InitItems(MyHero),
-		Abilities = new InitAbility(MyHero),
-		ItemsTarget = new InitItems(target)
+	let ItemsInit = initItemsMap.get(MyHero),
+		Abilities = initAbilityMap.get(MyHero),
+		ItemsTarget = initItemsTargetMap.get(target)
+	if (Items === undefined || Abilities === undefined || ItemsTarget === undefined) {
+		return
+	}
 
 	let RodofAtosDelay = ProjList.find(x => x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
 		EtherealDelay = ProjList.find(x => x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),
@@ -41,14 +41,14 @@ export function InitCombo() {
 		let castRange = ItemsInit.Blink.GetSpecialValue("blink_range") + MyHero.CastRangeBonus
 		ItemsInit.Blink.UseAbility(MyHero.NetworkPosition.Extend(target.NetworkPosition, Math.min(castRange, MyHero.Distance(target) - BlinkRadius.value) - 1))
 		Sleep.Sleep(ItemsInit.Tick)
-		return true
+		return
 	}
 
 	if (Base.Cancel(target) && Base.StartCombo(target)) {
 
 		if (Base.IsLinkensProtected(target)) {
 			BreakInit()
-			return false
+			return
 		}
 
 		var comboBreaker = Base.AeonDisc(target),
@@ -67,7 +67,7 @@ export function InitCombo() {
 		) {
 			ItemsInit.Sheeps.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
-			return true
+			return
 		}
 
 		// Orchid
@@ -80,7 +80,7 @@ export function InitCombo() {
 		) {
 			ItemsInit.Orchid.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
-			return true
+			return
 		}
 
 		// Bloodthorn
@@ -93,7 +93,7 @@ export function InitCombo() {
 		) {
 			ItemsInit.Bloodthorn.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
-			return true
+			return
 		}
 
 		// AncientSeal
@@ -106,7 +106,7 @@ export function InitCombo() {
 		) {
 			Abilities.AncientSeal.UseAbility(target)
 			Sleep.Sleep(Abilities.Tick)
-			return true
+			return
 		}
 
 		// RodofAtos
@@ -120,7 +120,7 @@ export function InitCombo() {
 		) {
 			ItemsInit.RodofAtos.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
-			return true
+			return
 		}
 
 		// MysticFlare
@@ -145,20 +145,20 @@ export function InitCombo() {
 			) {
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.Tick)
-				return true
+				return
 			} else if (ItemsInit.RodofAtos === undefined && !ConcussiveShotAwait.value) {
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.Tick)
-				return true
+				return
 			} else if (ItemsInit.RodofAtos !== undefined && RodofAtosDelay !== undefined && target.Distance2D(RodofAtosDelay.Position) <= 100) {
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.Tick)
-				return true
+				return
 			} else if (ItemsInit.RodofAtos !== undefined && (ItemsInit.RodofAtos.Cooldown - 1) && RodofAtosDelay === undefined
 			) {
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.Tick)
-				return true
+				return
 			}
 		}
 
@@ -173,15 +173,15 @@ export function InitCombo() {
 			if (ItemsTarget.AeonDisk === undefined) {
 				ItemsInit.Nullifier.UseAbility(target)
 				Sleep.Sleep(ItemsInit.Tick)
-				return true
+				return
 			} else if (ItemsTarget.AeonDisk !== undefined && target.HPPercent <= 70) {
 				ItemsInit.Nullifier.UseAbility(target)
 				Sleep.Sleep(ItemsInit.Tick)
-				return true
+				return
 			} else if (ItemsTarget.AeonDisk !== undefined && !ItemsTarget.AeonDisk.CanBeCasted()) {
 				ItemsInit.Nullifier.UseAbility(target)
 				Sleep.Sleep(ItemsInit.Tick)
-				return true
+				return
 			}
 		}
 
@@ -194,7 +194,7 @@ export function InitCombo() {
 		) {
 			ItemsInit.Discord.UseAbility(target.Position)
 			Sleep.Sleep(ItemsInit.Tick)
-			return true
+			return
 		}
 
 		// Ethereal
@@ -207,7 +207,7 @@ export function InitCombo() {
 		) {
 			ItemsInit.Ethereal.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
-			return true
+			return
 		}
 
 		// Shivas
@@ -218,7 +218,7 @@ export function InitCombo() {
 		) {
 			ItemsInit.Shivas.UseAbility()
 			Sleep.Sleep(ItemsInit.Tick)
-			return true
+			return
 		}
 		// ConcussiveShot
 		if (Abilities.ConcussiveShot !== undefined
@@ -229,7 +229,7 @@ export function InitCombo() {
 		) {
 			Abilities.ConcussiveShot.UseAbility(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.ConcussiveShot))
-			return true
+			return
 		}
 		// ArcaneBolt
 		if (Abilities.ArcaneBolt !== undefined
@@ -240,7 +240,7 @@ export function InitCombo() {
 		) {
 			Abilities.ArcaneBolt.UseAbility(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt))
-			return true
+			return
 		}
 
 		// Dagon
@@ -253,7 +253,7 @@ export function InitCombo() {
 		) {
 			ItemsInit.Dagon.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
-			return true
+			return
 		}
 
 		// UrnOfShadows
@@ -266,7 +266,7 @@ export function InitCombo() {
 		) {
 			ItemsInit.UrnOfShadows.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
-			return true
+			return
 		}
 
 		// SpiritVessel
@@ -279,14 +279,14 @@ export function InitCombo() {
 		) {
 			ItemsInit.SpiritVesel.UseAbility(target)
 			Sleep.Sleep(ItemsInit.Tick)
-			return true
+			return
 		}
 		if (AutoAttackTarget.value && MyHero.CanAttack(target)
 			&& !GameSleep.Sleeping("Attack")
 			&& !Base.CancelAbilityRealm(target)) {
 			MyHero.AttackTarget(target)
 			GameSleep.Sleep(MyHero.SecondsPerAttack * 1000, "Attack")
-			return true
+			return
 		}
 	}
 }

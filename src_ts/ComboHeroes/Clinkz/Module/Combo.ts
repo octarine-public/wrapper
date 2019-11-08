@@ -1,11 +1,6 @@
 import { GameSleeper, TickSleeper, Unit, Utils } from "wrapper/Imports"
-
 import { Base } from "../Extends/Helper"
-import { MouseTarget, Owner } from "../Listeners"
-
-import InitAbility from "../Extends/Abilities"
-import InitItems from "../Extends/Items"
-
+import { MouseTarget, Owner, initAbilityMap, initItemsMap } from "../Listeners"
 import { BladeMailItem, BlinkRadius, ComboKeyItem, HarassModeCombo, State, СomboAbility, СomboItems } from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
 
@@ -17,18 +12,19 @@ function HitAndRun(unit: Unit, mode: boolean = false) {
 }
 export function InitCombo() {
 	if (!Base.IsRestrictions(State) || !ComboKeyItem.is_pressed || Sleep.Sleeping)
-		return false
+		return
 	let target = MouseTarget
 	if (target === undefined || (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect"))) || !Base.Cancel(target)) {
 		Owner.MoveTo(Utils.CursorWorldVec)
-		return false
+		return
 	}
-
 	let hexDebuff = target.GetBuffByName("modifier_sheepstick_debuff"),
-		Items = new InitItems(Owner),
-		Abilities = new InitAbility(Owner),
-		comboBreaker = Base.AeonDisc(target)
-
+		Items = initItemsMap.get(Owner),
+		Abilities = initAbilityMap.get(Owner)
+	if (Abilities === undefined || Items === undefined) {
+		return
+	}
+	let comboBreaker = Base.AeonDisc(target)
 	if (Items.Blink !== undefined
 		&& СomboItems.IsEnabled(Items.Blink.Name)
 		&& !target.IsInRange(Owner, 600)
@@ -36,11 +32,11 @@ export function InitCombo() {
 		let castRange = Items.Blink.GetSpecialValue("blink_range") + Owner.CastRangeBonus
 		Items.Blink.UseAbility(Owner.NetworkPosition.Extend(target.NetworkPosition, Math.min(castRange, Owner.Distance(target) - BlinkRadius.value) - 1))
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 	if (!target.IsInRange(Owner, Owner.AttackRange)) {
 		Owner.MoveTo(Utils.CursorWorldVec)
-		return false
+		return
 	}
 	let blockingAbilities = Base.IsBlockingAbilities(target)
 	if (!blockingAbilities) {
@@ -56,7 +52,7 @@ export function InitCombo() {
 		) {
 			Items.Sheeps.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		// Orchid
 		if (
@@ -70,7 +66,7 @@ export function InitCombo() {
 		) {
 			Items.Orchid.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		// Bloodthorn
 		if (
@@ -83,7 +79,7 @@ export function InitCombo() {
 		) {
 			Items.Bloodthorn.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		// Urn
 		if (
@@ -98,7 +94,7 @@ export function InitCombo() {
 		) {
 			Items.UrnOfShadows.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 
 		// Vessel
@@ -114,7 +110,7 @@ export function InitCombo() {
 		) {
 			Items.SpiritVesel.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 
 		// Medallion
@@ -127,7 +123,7 @@ export function InitCombo() {
 		) {
 			Items.Medallion.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 
 		// Solar Crest
@@ -140,7 +136,7 @@ export function InitCombo() {
 		) {
 			Items.SolarCrest.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 
 		// RodofAtos
@@ -155,7 +151,7 @@ export function InitCombo() {
 		) {
 			Items.RodofAtos.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		// Nullifier
 		if (
@@ -169,7 +165,7 @@ export function InitCombo() {
 		) {
 			Items.Nullifier.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		// Shivas
 		if (
@@ -181,7 +177,7 @@ export function InitCombo() {
 		) {
 			Items.Shivas.UseAbility()
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		// Strafe
 		if (
@@ -192,7 +188,7 @@ export function InitCombo() {
 		) {
 			Abilities.Strafe.UseAbility()
 			Sleep.Sleep(Abilities.Tick)
-			return true
+			return
 		}
 		// BurningArmy
 		if (
@@ -206,12 +202,12 @@ export function InitCombo() {
 				minus = target.Position.Extend(target.InFront(-castRange), castRange);
 			Owner.CastVectorTargetPosition(Abilities.BurningArmy, plus, minus);
 			Sleep.Sleep(Abilities.Tick)
-			return true
+			return
 		}
 	}
 	if (blockingAbilities) {
 		BreakInit()
-		return false
+		return
 	}
 
 	let Delay = (Owner.SecondsPerAttack * 1000)
@@ -220,7 +216,7 @@ export function InitCombo() {
 			case 1: HitAndRun(target); break;
 			case 2: HitAndRun(target, true); break;
 		}
-		return true
+		return
 	}
 
 	// SearingArrows
@@ -233,17 +229,17 @@ export function InitCombo() {
 	) {
 		Owner.CastTarget(Abilities.SearingArrows, target)
 		GameSleep.Sleep(Delay, "AttackArrow")
-		return true
+		return
 	} else if (
 		Abilities.SearingArrows !== undefined
 		&& !GameSleep.Sleeping("Attack")
 	) {
 		Owner.AttackTarget(target)
 		GameSleep.Sleep(Delay, "Attack")
-		return true
+		return
 	}
 
-	return false
+	return
 }
 
 export function GameEndedCombo() {

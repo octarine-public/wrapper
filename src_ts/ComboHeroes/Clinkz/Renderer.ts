@@ -1,37 +1,20 @@
-import { Game, GameSleeper, LocalPlayer, ParticlesSDK, Vector3 } from "wrapper/Imports"
+import { LocalPlayer } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
-import { MouseTarget, Owner } from "./Listeners"
-import { DrawTargetItem, State } from "./Menu"
-
-let targetParticle: number
-let Sleep = new GameSleeper()
+import { MouseTarget, Owner, initDrawBaseMap, initItemsMap, initAbilityMap } from "./Listeners"
+import { DrawTargetItem, State, BlinkRadiusItemColor, Radius, BurningArmyRadiusColor, AttackRangeRadius, RadiusColorAttackRange } from "./Menu"
 
 export function Draw() {
-	if (LocalPlayer === undefined)
-		return false
-	if (!Base.IsRestrictions(State) || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator)
-		return false
-	// Target
-	if (DrawTargetItem.value) {
-		if (targetParticle === undefined && MouseTarget !== undefined)
-			targetParticle = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, MouseTarget)
-		if (targetParticle !== undefined)
-			DrawTarget()
+	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || Owner === undefined) {
+		return
 	}
-}
-
-function DrawTarget() {
-	if (MouseTarget === undefined) {
-		ParticlesSDK.Destroy(targetParticle, true)
-		targetParticle = undefined
-	} else {
-		ParticlesSDK.SetControlPoint(targetParticle, 2, Owner.Position)
-		ParticlesSDK.SetControlPoint(targetParticle, 6, new Vector3(1))
-		ParticlesSDK.SetControlPoint(targetParticle, 7, MouseTarget.Position)
+	let Particle = initDrawBaseMap.get(Owner),
+		Items = initItemsMap.get(Owner),
+		Abilities = initAbilityMap.get(Owner)
+	if (Items === undefined || Abilities === undefined || Particle === undefined) {
+		return
 	}
-}
-
-export function DrawDeleteTempAllVars() {
-	Sleep.FullReset()
-	targetParticle = undefined
+	Particle.RenderLineTarget(Base, DrawTargetItem, State, MouseTarget)
+	Particle.RenderAttackRange(State, AttackRangeRadius, Owner.AttackRange, RadiusColorAttackRange.Color)
+	Particle.Render(Abilities.BurningArmy, "clinkz_burning_army", Abilities.BurningArmy.CastRange, Radius, State, BurningArmyRadiusColor.Color)
+	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius + this.owner.CastRangeBonus, Radius, State, BlinkRadiusItemColor.Color)
 }

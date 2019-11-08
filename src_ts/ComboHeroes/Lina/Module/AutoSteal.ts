@@ -1,7 +1,6 @@
 import { Ability, Hero, TickSleeper } from "wrapper/Imports";
-import InitAbility from "../Extends/Abilities"
 import { Base } from "../Extends/Helper";
-import { Heroes, Owner } from "../Listeners";
+import { Heroes, Owner, initAbilityMap } from "../Listeners";
 import { AutoStealAbility, AutoStealState, BladeMailCancel, State } from "../Menu";
 
 function IsReadySteal(ability: Ability, target: Hero) {
@@ -12,15 +11,19 @@ function IsReadySteal(ability: Ability, target: Hero) {
 let Sleep = new TickSleeper()
 export function InitAutoSteal() {
 	if (!Base.IsRestrictions(State) || !AutoStealState.value || Sleep.Sleeping)
-		return false
+		return
 	let target = Heroes.sort((a, b) => b.Distance2D(Owner) - a.Distance2D(Owner))
 		.filter(x => x.IsValid && x.IsAlive && x.IsEnemy())
 		.find(e => !e.IsMagicImmune && !e.IsInvulnerable)
 	if (target === undefined)
-		return false
-	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect"))
-		return false
-	let Abilities = new InitAbility(Owner)
+		return
+	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect")) {
+		return
+	}
+	let Abilities = initAbilityMap.get(Owner)
+	if (Abilities === undefined) {
+		return
+	}
 	let DMG_TYPE_LAGUNA = Owner.HasScepter
 		? DAMAGE_TYPES.DAMAGE_TYPE_PURE
 		: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
@@ -36,13 +39,13 @@ export function InitAutoSteal() {
 	) {
 		DraGonSlave.UseAbility(Prediction)
 		Sleep.Sleep(Abilities.Tick)
-		return true
+		return
 	}
 	if (target.HP < StealDMGLaguna
 		&& IsReadySteal(Laguna, target) && Owner.Distance2D(target) <= Laguna.CastRange) {
 		Laguna.UseAbility(target)
 		Sleep.Sleep(Abilities.Tick)
-		return true
+		return
 	}
 
 	if (target.HP < (StealDMDraGonSlave + StealDMGLaguna)
@@ -50,9 +53,9 @@ export function InitAutoSteal() {
 		&& IsReadySteal(DraGonSlave, target) && IsReadySteal(Laguna, target)) {
 		Laguna.UseAbility(target)
 		Sleep.Sleep(Abilities.Tick)
-		return true
+		return
 	}
-	return false
+	return
 }
 
 export function AutoStealGameEnded() {

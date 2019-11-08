@@ -1,10 +1,7 @@
 import { Ability, Entity, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { Heroes, MyHero } from "../Listeners"
+import { Heroes, MyHero, initItemsMap, initAbilityMap } from "../Listeners"
 import { AutoDisableAbilityItems, AutoDisableState, ComboKey, State } from "../Menu"
-
-import InitAbility from "../Extends/Abilities"
-import InitItems from "../Extends/Items"
 
 let Sleep = new TickSleeper(),
 	ParticleHandler: Entity | number
@@ -22,10 +19,10 @@ function ClearParticleHandler() {
 }
 export function AutoDisable() {
 	if (!Base.IsRestrictions(State) || !AutoDisableState.value || ComboKey.is_pressed || Sleep.Sleeping) {
-		return false
+		return
 	}
 	if (MyHero === undefined) {
-		return false
+		return
 	}
 	let ParticleTaget = ParticleHandler as Hero,
 		target = ParticleHandler === undefined
@@ -37,40 +34,42 @@ export function AutoDisable() {
 	}
 
 	if (target === undefined) {
-		return false
+		return
 	}
+	let Items = initItemsMap.get(MyHero),
+		Abilities = initAbilityMap.get(MyHero)
 
-	let Items = new InitItems(MyHero),
-		Abilities = new InitAbility(MyHero)
-
+	if (Items === undefined || Abilities === undefined) {
+		return
+	}
 	if (IsValidDisable(Items.Sheeps, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Items.Sheeps, target)
 		ParticleHandler = undefined
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 
 	if (IsValidDisable(Items.Orchid, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Items.Orchid, target)
 		ParticleHandler = undefined
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 
 	if (IsValidDisable(Items.Bloodthorn, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Items.Bloodthorn, target)
 		ParticleHandler = undefined
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 
 	if (IsValidDisable(Abilities.AncientSeal, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Abilities.AncientSeal, target)
 		ParticleHandler = undefined
 		Sleep.Sleep(Abilities.Tick)
-		return true
+		return
 	}
-	return false
+	return
 }
 export function ParticleCreated(id: number, path: string, handle: bigint, attach: ParticleAttachment_t, target?: Entity | number) {
 	if (target !== undefined && handle === 6400371855556675384n) {

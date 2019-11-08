@@ -1,9 +1,7 @@
 import { Ability, Hero, Item, Menu } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { MouseTarget, Owner } from "../Listeners"
+import { MouseTarget, Owner, initItemsMap } from "../Listeners"
 import { LinkenBreakerToggler, State, UseOnlyFromRangeItem } from "../Menu"
-
-import InitItems from "../Extends/Items"
 
 function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
 	return Name !== undefined && Name.CanBeCasted() && !Name.IsInAbilityPhase
@@ -19,7 +17,10 @@ export function BreakInit() {
 	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune) {
 		return
 	}
-	let Items = new InitItems(Owner)
+	let Items = initItemsMap.get(Owner)
+	if (Items === undefined) {
+		return
+	}
 	// Eul
 	if (Items.Cyclone !== undefined
 		&& Items.Cyclone.CanBeCasted()) {

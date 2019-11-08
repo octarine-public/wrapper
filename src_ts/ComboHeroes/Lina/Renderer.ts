@@ -1,23 +1,50 @@
-import { Color, RendererSDK, Vector2 } from "../../wrapper/Imports"
-//import InitDrawBase from "../Base/DrawDotTarget"
-import InitAbility from "./Extends/Abilities"
-//import { Base } from "./Extends/Helper"
-import { Heroes, MouseTarget, Owner } from "./Listeners"
-import { AutoStealAbility, AutoStealState, DrawingStatus, DrawingStatusKillSteal, State } from "./Menu"
+import { Base } from "./Extends/Helper"
+import LinaAbility from "./Extends/Abilities"
+import { Color, RendererSDK, Vector2, LocalPlayer, Game } from "wrapper/Imports"
+import { Heroes, MouseTarget, Owner, initDrawMap, initItemsMap, initAbilityMap } from "./Listeners"
+
+import {
+	State,
+	Radius,
+	AutoStealAbility,
+	AutoStealState,
+	DrawingStatus,
+	DrawingStatusKillSteal,
+	BlinkRadiusItemColor,
+	DragonSlaveRadiusColor, LightStrikeArrayColor,
+	LagunaBladeColor,
+	AttackRangeRadius,
+	RadiusColorAttackRange
+} from "./Menu"
 
 export function Draw() {
-	// let Drawing = new InitDrawBase(Owner, MouseTarget)
-	// if (!DrawingStatus.value) {
-	// 	Drawing.ResetEnemyParticle()
-	// }
-	// if (Drawing !== undefined && DrawingStatus.value) {
-	// 	Drawing.DrawTarget(Base, State)
-	// }
+	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || Owner === undefined) {
+		return
+	}
+	let Particle = initDrawMap.get(Owner),
+		Items = initItemsMap.get(Owner),
+		Abilities = initAbilityMap.get(Owner)
+	if (Items === undefined || Abilities === undefined || Particle === undefined) {
+		return
+	}
+	// Particle Render
+	Particle.RenderLineTarget(Base, DrawingStatus, State, MouseTarget)
+	Particle.RenderAttackRange(State, AttackRangeRadius, Owner.AttackRange, RadiusColorAttackRange.Color)
+	Particle.Render(Abilities.LagunaBlade, "lina_laguna_blade", Abilities.LagunaBlade.CastRange, Radius, State, LagunaBladeColor.Color)
+	Particle.Render(Abilities.DragonSlave, "lina_dragon_slave", Abilities.DragonSlave.CastRange, Radius, State, DragonSlaveRadiusColor.Color)
+	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius + Owner.CastRangeBonus, Radius, State, BlinkRadiusItemColor.Color)
+	Particle.Render(Abilities.LightStrikeArray, "lina_light_strike_array", Abilities.LightStrikeArray.CastRange, Radius, State, LightStrikeArrayColor.Color)
+
+	if (Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
+		return
+	}
+	// Screen Render
 	if (AutoStealState.value && State.value && DrawingStatusKillSteal.value) {
-		DrawAutoSteal()
+		DrawAutoSteal(Abilities)
 	}
 }
-function DrawAutoSteal() {
+
+function DrawAutoSteal(Ability: LinaAbility) {
 	// c + v
 	let off_x: number,
 		off_y: number,
@@ -58,7 +85,7 @@ function DrawAutoSteal() {
 		if (Owner === undefined) {
 			return
 		}
-		let Abilities = new InitAbility(Owner),
+		let Abilities = Ability,
 			DMG_TYPE_LAGUNA = Owner.HasScepter
 				? DAMAGE_TYPES.DAMAGE_TYPE_PURE
 				: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
@@ -82,9 +109,4 @@ function DrawAutoSteal() {
 		size.SetY(bar_h)
 		RendererSDK.FilledRect(wts, size, new Color(0, 255, 0, 100))
 	})
-
-}
-
-export function DrawDeleteTempAllVars() {
-	//new InitDrawBase().ResetEnemyParticle()
 }

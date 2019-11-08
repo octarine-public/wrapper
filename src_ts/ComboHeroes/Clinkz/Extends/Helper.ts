@@ -1,9 +1,7 @@
 
 import { Game, Hero, Menu } from "wrapper/Imports"
-import { Heroes, Owner } from "../Listeners"
+import { Heroes, Owner, initItemsTargetMap } from "../Listeners"
 import { AeonDiscItem } from "../Menu"
-import InitItems from "./Items"
-
 class ClinkzHelper {
 	private CancelModifiers: string[] = [
 		"modifier_item_blade_mail_reflect",
@@ -28,7 +26,10 @@ class ClinkzHelper {
 		if (!AeonDiscItem.value && menu) {
 			return false
 		}
-		let Items = new InitItems(target)
+		let Items = initItemsTargetMap.get(target)
+		if (Items === undefined) {
+			return false
+		}
 		if (Items.AeonDisk !== undefined && Items.AeonDisk.Cooldown <= 0) {
 			return true
 		}
@@ -41,7 +42,10 @@ class ClinkzHelper {
 		return !target.IsMagicImmune && !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiersItems);
 	}
 	public IsLinkensProtected(target: Hero): boolean {
-		let Items = new InitItems(target)
+		let Items = initItemsTargetMap.get(target)
+		if (Items === undefined) {
+			return false
+		}
 		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 	public IsBlockingAbilities(target: Hero, checkReflecting: boolean = false): boolean {

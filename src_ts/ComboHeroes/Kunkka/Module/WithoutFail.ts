@@ -1,13 +1,15 @@
 import { ExecuteOrder, Game } from "wrapper/Imports";
-import InitAbility from "../Extends/Abilities"
-import { Owner } from "../Listeners";
+import { Owner, initAbilityMap } from "../Listeners";
 import { ComboTimer, XMarkCastTime } from "./Combo";
 
 export function OnExecuteOrder(order: ExecuteOrder) {
 	let Time = Game.RawGameTime
 	if (ComboTimer > Time && XMarkCastTime > Time) {
-		let Abilities = new InitAbility(Owner),
-			Q = Abilities.Torrent,
+		let Abilities = initAbilityMap.get(Owner)
+		if (Abilities === undefined) {
+			return true
+		}
+		let Q = Abilities.Torrent,
 			R = Abilities.Ghostship,
 			RX = Abilities.Return
 		if (XMarkCastTime - Time < 1 && XMarkCastTime - Time > 0 && R.IsReady) {

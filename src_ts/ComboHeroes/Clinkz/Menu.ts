@@ -1,4 +1,4 @@
-import { Menu as MenuSDK } from "wrapper/Imports"
+import { Menu as MenuSDK, Color } from "wrapper/Imports"
 
 import InitAbility from "./Extends/Abilities"
 import InitItems from "./Extends/Items"
@@ -15,14 +15,22 @@ let arrayAbility: string[] = [
 	Abilities.BurningArmy.toString(),
 ]
 let arrayItems: string[] = [
-	Items.BladeMail.toString(), Items.LotusOrb.toString(),
-	Items.BlackKingBar.toString(), Items.Mjollnir.toString(),
-	Items.Satanic.toString(), Items.Medallion.toString(),
-	Items.SolarCrest.toString(), Items.UrnOfShadows.toString(),
-	Items.RodofAtos.toString(), Items.SpiritVesel.toString(),
-	Items.Sheeps.toString(), Items.Orchid.toString(),
-	Items.Bloodthorn.toString(), Items.Shivas.toString(),
-	Items.Nullifier.toString(), Items.Armlet.toString(),
+	Items.BladeMail.toString(),
+	Items.LotusOrb.toString(),
+	Items.BlackKingBar.toString(),
+	Items.Mjollnir.toString(),
+	Items.Satanic.toString(),
+	Items.Medallion.toString(),
+	Items.SolarCrest.toString(),
+	Items.UrnOfShadows.toString(),
+	Items.RodofAtos.toString(),
+	Items.SpiritVesel.toString(),
+	Items.Sheeps.toString(),
+	Items.Orchid.toString(),
+	Items.Bloodthorn.toString(),
+	Items.Shivas.toString(),
+	Items.Nullifier.toString(),
+	Items.Armlet.toString(),
 	Items.Blink.toString(),
 ]
 
@@ -56,13 +64,29 @@ let linkenBreakerMenu = Menu.AddNode("Linken Breaker"),
 	UseOnlyFromRangeItem = linkenBreakerMenu.AddToggle("Use Only From Range", true)
 
 let DrawingMenu = Menu.AddNode("Drawing"),
-	targetMenu = DrawingMenu.AddNode("Target"),
-	DrawTargetItem = targetMenu.AddToggle("Enable", true)//,
-//radiusMenu = DrawingMenu.AddNode("Radius")
+	RadiusTree = DrawingMenu.AddNode("Radius"),
+	Radius = RadiusTree.AddImageSelector("Select", [
+		arrayAbility[2],
+		arrayItems[16]
+	]),
+	AttackRangeRadiusTree = RadiusTree.AddNode("Attack Range"),
+	AttackRangeRadius = AttackRangeRadiusTree.AddToggle("Enable"),
+	RadiusColorAttackRange = AttackRangeRadiusTree.AddColorPicker("Color", new Color(255, 255, 0)),
+	BurningArmyRadiusColor = RadiusTree.AddColorPicker("Burning Army", new Color(255, 255, 255)),
+	BlinkRadiusItemColor = RadiusTree.AddColorPicker("Blink", new Color(255, 255, 255)),
+	DrawTargetItem = DrawingMenu.AddToggle("Draw Target", true)
 
 export {
 	HarassKey,
 	HarassMode
+}
+// Drawing
+export {
+	Radius,
+	AttackRangeRadius,
+	BlinkRadiusItemColor,
+	BurningArmyRadiusColor,
+	RadiusColorAttackRange
 }
 
 export {

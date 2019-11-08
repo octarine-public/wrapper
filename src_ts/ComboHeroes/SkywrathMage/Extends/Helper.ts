@@ -1,9 +1,6 @@
-import { Ability as AbilitySDK, Game, Hero, Menu } from "wrapper/Imports"
-import { Heroes, MyHero } from "../Listeners"
+import { Game, Hero, Menu } from "wrapper/Imports"
+import { Heroes, MyHero, initAbilityMap, initItemsMap, initItemsTargetMap } from "../Listeners"
 import { AbilityMenu, BadUltItem, BadUltMovementSpeedItem, ComboBreak, ComboStartWith, Items as ItemsSDK, SmartConShotOnlyTarget } from "../Menu"
-
-import InitAbility from "./Abilities"
-import InitItems from "./Items"
 
 class BaseHelper {
 	public readonly Tick: number = 100
@@ -92,13 +89,6 @@ class BaseHelper {
 			|| !MyHero.IsAlive
 	}
 
-	public get ConShot(): AbilitySDK {
-		let Abilities = new InitAbility(MyHero)
-		if (Abilities.ConcussiveShot !== undefined)
-			return Abilities.ConcussiveShot
-		return undefined
-	}
-
 	public IsRestrictions(State: Menu.Toggle) {
 		return State.value && !Game.IsPaused && Game.IsInGame && MyHero !== undefined && MyHero.IsAlive
 	}
@@ -121,7 +111,7 @@ class BaseHelper {
 		// TODO
 		//var stunDebuff = target.Modifiers.some(x => x.IsStunDebuff && x.Duration > 1);
 		return target.Speed < 240 /*|| stunDebuff*/
-		|| target.ModifiersBook.HasAnyBuffByNames(this.ActiveModifiers)
+			|| target.ModifiersBook.HasAnyBuffByNames(this.ActiveModifiers)
 	}
 
 	public Disable(target: Hero): boolean {
@@ -159,10 +149,11 @@ class BaseHelper {
 		if (!ComboStartWith.value) {
 			return true
 		}
-
-		let Items = new InitItems(MyHero),
-			Abilities = new InitAbility(MyHero)
-
+		let Items = initItemsMap.get(MyHero),
+			Abilities = initAbilityMap.get(MyHero)
+		if (Items === undefined || Abilities === undefined) {
+			return false
+		}
 		if (Items.Sheeps !== undefined
 			&& ItemsSDK.IsEnabled(Items.Sheeps.Name)
 			&& Items.Sheeps.CanBeCasted()
@@ -180,7 +171,10 @@ class BaseHelper {
 	}
 
 	public IsLinkensProtected(target: Hero): boolean {
-		let Items = new InitItems(target)
+		let Items = initItemsTargetMap.get(target)
+		if (Items === undefined) {
+			return false
+		}
 		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 
@@ -188,8 +182,8 @@ class BaseHelper {
 		if (!BadUltItem.value) {
 			return false
 		}
-		let Items = new InitItems(MyHero)
-		if (Items.RodofAtos !== undefined || Items.Sheeps !== undefined || Items.Ethereal !== undefined) {
+		let Items = initItemsTargetMap.get(target)
+		if (Items === undefined || Items.RodofAtos !== undefined || Items.Sheeps !== undefined || Items.Ethereal !== undefined) {
 			return false
 		}
 
@@ -228,10 +222,8 @@ class BaseHelper {
 		if (!ComboBreak.value && menu) {
 			return false
 		}
-
-		let Items = new InitItems(target)
-
-		if (Items.AeonDisk !== undefined && Items.AeonDisk.Cooldown <= 0) {
+		let Items = initItemsTargetMap.get(target)
+		if (Items !== undefined && Items.AeonDisk !== undefined && Items.AeonDisk.Cooldown <= 0) {
 			return true
 		}
 

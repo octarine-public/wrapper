@@ -5,6 +5,7 @@ import {
 	GameStarted, InitMouse,
 	LinearProjectileDestroyed,
 	TrackingProjectileCreated,
+	Tick,
 } from "./Listeners"
 
 import { AutoCombo } from "./Module/AutoCombo"
@@ -15,13 +16,14 @@ import { OnExecuteOrder } from "./Module/WithoutFail"
 import { Draw } from "./Renderer"
 
 EventsSDK.on("Tick", () => {
+	Tick()
 	InitMouse()
-	if(Base.DeadInSide)
-		return false
-	InitCombo()
-	AutoCombo()
-	AutoUsage()
-	AutoDisable()
+	if (!Base.DeadInSide) {
+		InitCombo()
+		AutoCombo()
+		AutoUsage()
+		AutoDisable()
+	}
 })
 
 EventsSDK.on("Draw", Draw)

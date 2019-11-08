@@ -13,6 +13,7 @@ EventsSDK.on("EntityDestroyed", EntityDestroyed)
 // EventsSDK.on("TrackingProjectileDestroyed", LinearProjectileDestroyed)
 
 EventsSDK.on("Tick", () => {
+	Tick()
 	InitMouse()
 	if (!Base.DeadInSide) {
 		InitHarass()
@@ -24,5 +25,6 @@ import {
 	EntityCreated,
 	EntityDestroyed,
 	GameEnded, GameStarted,
-	InitMouse, //, LinearProjectileDestroyed, TrackingProjectileCreated,
+	InitMouse,
+	Tick, //, LinearProjectileDestroyed, TrackingProjectileCreated,
 } from "./Listeners"

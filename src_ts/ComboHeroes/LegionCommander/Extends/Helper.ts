@@ -1,10 +1,8 @@
 import { Game, Hero, Menu } from "wrapper/Imports"
-import { Heroes, Owner } from "../Listeners"
+import { Heroes, Owner, initItemsTargetMap } from "../Listeners"
 import { AeonDiscItem } from "../Menu"
-import InitItems from "./Items"
-
 class LegionHelper {
-	private CancelModifiers: string[]  = [
+	private CancelModifiers: string[] = [
 		"modifier_winter_wyvern_winters_curse_aura",
 		"modifier_winter_wyvern_winters_curse",
 		"modifier_oracle_fates_edict",
@@ -25,7 +23,10 @@ class LegionHelper {
 		if (!AeonDiscItem.value && menu) {
 			return false
 		}
-		let Items = new InitItems(target)
+		let Items = initItemsTargetMap.get(target)
+		if (Items === undefined) {
+			return false
+		}
 		if (Items.AeonDisc !== undefined && Items.AeonDisc.Cooldown <= 0) {
 			return true
 		}
@@ -38,7 +39,10 @@ class LegionHelper {
 		return !target.IsInvulnerable && !target.ModifiersBook.HasAnyBuffByNames(["modifier_abaddon_borrowed_time", "modifier_item_combo_breaker_buff"])
 	}
 	public IsLinkensProtected(target: Hero): boolean {
-		let Items = new InitItems(target)
+		let Items = initItemsTargetMap.get(target)
+		if (Items === undefined) {
+			return false
+		}
 		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 	public IsBlockingAbilities(target: Hero, checkReflecting: boolean = false): boolean {

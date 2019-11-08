@@ -1,13 +1,10 @@
 import { Ability, Game, Hero, TickSleeper } from "wrapper/Imports";
-
 import { Base } from "../Extends/Helper";
-import { MouseTarget, Owner } from "../Listeners";
-
-import InitAbility from "../Extends/Abilities"
-import InitItems from "../Extends/Items"
-
+import { MouseTarget, Owner, initItemsMap, initAbilityMap } from "../Listeners";
 import { BladeMailCancel, ComboKeyItem, State, СomboAbility, СomboItems } from "../Menu";
+
 let Sleep = new TickSleeper()
+
 function IsValidAbility(ability: Ability, target: Hero) {
 	return ability !== undefined && ability.IsReady
 		&& ability.CanBeCasted() && СomboAbility.IsEnabled(ability.Name)
@@ -20,30 +17,32 @@ function IsValidItems(Item: Ability, target: Hero) {
 }
 export function InitCombo() {
 	if (!Base.IsRestrictions(State) || !ComboKeyItem.is_pressed || Sleep.Sleeping) {
-		return false
+		return
 	}
 	let target = MouseTarget
 	if (target === undefined || target.IsMagicImmune || !target.IsAlive) {
-		return false
+		return
 	}
 	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect")) {
-		return false
+		return
 	}
-	let Abilities = new InitAbility(Owner),
-		Items = new InitItems(Owner),
-		cycloneDebuff = target.GetBuffByName("modifier_eul_cyclone"),
+	let Items = initItemsMap.get(Owner),
+		Abilities = initAbilityMap.get(Owner)
+	if (Items === undefined || Abilities === undefined) {
+		return
+	}
+	let cycloneDebuff = target.GetBuffByName("modifier_eul_cyclone"),
 		possibleRange = (Owner.Speed * 0.8),
 		DistpossibleRange = 1175 + 0.75 * possibleRange
-
 	if (IsValidItems(Items.Discord, target) && !target.IsInvulnerable) {
 		Items.Discord.UseAbility(target)
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 	if (IsValidItems(Items.Ethereal, target) && !target.IsInvulnerable) {
 		Items.Ethereal.UseAbility(target)
 		Sleep.Sleep(Items.Tick + 450)
-		return true
+		return
 	}
 	if (
 		Items.Dagon !== undefined && Items.Dagon.IsReady
@@ -51,11 +50,11 @@ export function InitCombo() {
 		&& Owner.Distance2D(target) <= Items.Dagon.CastRange && !target.IsInvulnerable) {
 		Items.Dagon.UseAbility(target)
 		Sleep.Sleep(Items.Tick)
-		return true
+		return
 	}
 	// EulCombo
 	if (Abilities.Requiem === undefined) {
-		return false
+		return
 	}
 
 	if (!target.HasModifier("modifier_eul_cyclone")) {
@@ -68,7 +67,7 @@ export function InitCombo() {
 		) {
 			Items.Cyclone.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 	}
 
@@ -80,7 +79,7 @@ export function InitCombo() {
 
 		// TODO => Select for User
 		// if (cycloneDebuff.Caster !== Owner) {
-		// 	return false
+		// 	return
 		// }
 
 		if (Items.BlackKingBar !== undefined && Items.BlackKingBar.IsReady
@@ -88,7 +87,7 @@ export function InitCombo() {
 		) {
 			Items.BlackKingBar.UseAbility(Owner)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		if (!Owner.IsInRange(target, possibleRange)) {
 			if (Items.Blink !== undefined
@@ -98,53 +97,53 @@ export function InitCombo() {
 			) {
 				Items.Blink.UseAbility(blink_pos)
 				Sleep.Sleep(Items.Tick)
-				return true
+				return
 			} else {
 				Owner.MoveTo(target.NetworkPosition)
-				return true
+				return
 			}
 		}
 		if (!Owner.IsInRange(target, 64 / 2)) {
 			Owner.MoveTo(target.NetworkPosition)
 			Sleep.Sleep(Items.Tick)
-			return false
+			return
 		} else {
 			if (IsValidAbility(Abilities.Requiem, target)
 				&& cycloneDebuff.DieTime - Game.RawGameTime <= CastTime
 			) {
 				Abilities.Requiem.UseAbility(target.NetworkPosition)
 				Sleep.Sleep(Abilities.Tick)
-				return true
+				return
 			}
 		}
 	} else {
 		if (IsValidItems(Items.Sheeps, target) && !target.IsInvulnerable) {
 			Items.Sheeps.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		if (IsValidItems(Items.Bloodthorn, target) && !target.IsInvulnerable) {
 			Items.Bloodthorn.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		if (IsValidItems(Items.Orchid, target) && !target.IsInvulnerable) {
 			Items.Orchid.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		if (IsValidItems(Items.Shivas, target) && !target.IsInvulnerable) {
 			Items.Shivas.UseAbility()
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 		if (!Owner.IsInRange(target, Owner.AttackRange)) {
 			Owner.MoveTo(target.Position)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		}
 	}
-	return false
+	return
 }
 export function ComboGameEnded() {
 	Sleep.ResetTimer()

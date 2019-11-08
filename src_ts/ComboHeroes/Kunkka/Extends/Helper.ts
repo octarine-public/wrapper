@@ -1,8 +1,6 @@
 
 import { Game, Hero, Menu, Vector3 } from "wrapper/Imports"
-import { Heroes, Owner } from "../Listeners"
-import InitItems from "./Items"
-
+import { Heroes, Owner, initItemsTargetMap } from "../Listeners"
 class KunkkaHelper {
 	// loop-optimizer: KEEP
 	public Spots: Vector3[] = [
@@ -57,7 +55,7 @@ class KunkkaHelper {
 	public IsRestrictions(State: Menu.Toggle) {
 		return State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
 	}
-	public CanCastSpells(Owner: Hero): boolean  {
+	public CanCastSpells(Owner: Hero): boolean {
 		return Owner.IsStunned || Owner.IsHexed || Owner.ModifiersBook.HasAnyBuffByNames(this.ModifierCanCastAbility)
 	}
 	public Cancel(target: Hero): boolean {
@@ -67,7 +65,10 @@ class KunkkaHelper {
 		return !target.IsMagicImmune && !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiersItems);
 	}
 	public IsLinkensProtected(target: Hero): boolean {
-		let Items = new InitItems(target)
+		let Items = initItemsTargetMap.get(target)
+		if (Items === undefined) {
+			return false
+		}
 		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 	public IsBlockingAbilities(target: Hero, checkReflecting: boolean = false): boolean {

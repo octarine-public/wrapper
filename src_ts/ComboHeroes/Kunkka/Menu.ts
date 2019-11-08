@@ -41,34 +41,37 @@ let TorrentTree = Menu.AddNode("Torrent"),
 let bladeMailMenu = Menu.AddNode("Blade Mail"),
 	BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false).SetTooltip("Cancel Combo if there is enemy Blade Mail")
 
-let ArrayAbilityRadius: string[] = [
+let ArrayRadius: string[] = [
 	Abilities.Torrent.toString(),
 	Abilities.Tidebringer.toString(),
 	Abilities.MarksSpot.toString(),
 	Abilities.Ghostship.toString(),
-],
-	ArrayItemsRadius: string[] = [
-		Items.Blink.toString(),
-	]
+	Items.Blink.toString(),
+]
 let DrawRadiusMenu = Menu.AddNode("Drawing"),
+	DrawTarget = DrawRadiusMenu.AddToggle("Draw Target", true),
 	DrawRadiusMouseTree = DrawRadiusMenu.AddNode("Draw Status Mouse"),
 	DrawRadiusMouse = DrawRadiusMouseTree.AddToggle("Draw status mouse"),
 	DrawRadiusMouseColor = DrawRadiusMouseTree.AddColorPicker("Color", new Color(255, 255, 0, 255)),
 
-	DrawingAbility = DrawRadiusMenu.AddImageSelector("Ability range", ArrayAbilityRadius),
-	DrawingItems = DrawRadiusMenu.AddImageSelector("Items range", ArrayItemsRadius),
-	DrawingTreeColor = DrawRadiusMenu.AddNode("Color Range"),
-	DrawingColorAbilityTorrent = DrawingTreeColor.AddColorPicker("Torrent", new Color(255, 255, 255)),
-	DrawingColorAbilityBringer = DrawingTreeColor.AddColorPicker("Tidebringer", new Color(255, 255, 255)),
-	DrawingColorAbilityXMarks = DrawingTreeColor.AddColorPicker("X-Marks", new Color(255, 255, 255)),
-	DrawingColorAbilityGhostship = DrawingTreeColor.AddColorPicker("Ghostship", new Color(255, 255, 255))
+	Radius = DrawRadiusMenu.AddImageSelector("Select", ArrayRadius),
+	AttackRangeRadiusTree = DrawRadiusMenu.AddNode("Attack Range"),
+	AttackRangeRadius = AttackRangeRadiusTree.AddToggle("Enable"),
+	RadiusColorAttackRange = AttackRangeRadiusTree.AddColorPicker("Color", new Color(255, 255, 0)),
+	BlinkRadiusItemColor = DrawRadiusMenu.AddColorPicker("Blink", new Color(255, 255, 255)),
+	DrawingColorAbilityTorrent = DrawRadiusMenu.AddColorPicker("Torrent", new Color(255, 255, 255)),
+	DrawingColorAbilityBringer = DrawRadiusMenu.AddColorPicker("Tidebringer", new Color(255, 255, 255)),
+	DrawingColorAbilityXMarks = DrawRadiusMenu.AddColorPicker("X-Marks", new Color(255, 255, 255)),
+	DrawingColorAbilityGhostship = DrawRadiusMenu.AddColorPicker("Ghostship", new Color(255, 255, 255))
 
 export {
-	DrawingItems,
-	DrawingAbility,
+	Radius,
+	DrawTarget,
 	DrawRadiusMouse,
+	AttackRangeRadius,
+	RadiusColorAttackRange,
 	DrawRadiusMouseColor,
-
+	BlinkRadiusItemColor,
 	DrawingColorAbilityTorrent,
 	DrawingColorAbilityBringer,
 	DrawingColorAbilityXMarks,

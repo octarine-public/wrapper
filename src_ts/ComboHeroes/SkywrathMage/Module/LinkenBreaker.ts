@@ -1,12 +1,9 @@
 import { Ability, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { MouseTarget, MyHero } from "../Listeners"
+import { MouseTarget, MyHero, initItemsMap, initAbilityMap } from "../Listeners"
 import { LinkenBreakAbilityItems, LinkenBreakOnlyFromRange, State } from "../Menu"
 
 let Sleep = new TickSleeper()
-
-import InitAbility from "../Extends/Abilities"
-import InitItems from "../Extends/Items"
 
 function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelector) {
 	return Name !== undefined && Name.CanBeCasted() && !Name.IsInAbilityPhase
@@ -16,12 +13,17 @@ function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelect
 
 export function BreakInit() {
 	if (!Base.IsRestrictions(State))
-		return false
+		return
 	let target = MouseTarget
 	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune || Sleep.Sleeping)
-		return false
-	let Items = new InitItems(MyHero),
-		Abilities = new InitAbility(MyHero)
+		return
+
+	let Items = initItemsMap.get(MyHero),
+		Abilities = initAbilityMap.get(MyHero)
+
+	if (Items === undefined || Abilities === undefined) {
+		return
+	}
 	// Eul
 	if (Items.Cyclone !== undefined
 		&& !Base.CancelAbilityRealm(target)
@@ -29,9 +31,9 @@ export function BreakInit() {
 		if (IsValid(Items.Cyclone, target, LinkenBreakAbilityItems)) {
 			Items.Cyclone.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		} else if (LinkenBreakOnlyFromRange.value) {
-			return false
+			return
 		}
 	}
 
@@ -42,9 +44,9 @@ export function BreakInit() {
 		if (IsValid(Items.ForceStaff, target, LinkenBreakAbilityItems)) {
 			Items.ForceStaff.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		} else if (LinkenBreakOnlyFromRange.value) {
-			return false
+			return
 		}
 	}
 
@@ -55,9 +57,9 @@ export function BreakInit() {
 		if (IsValid(Items.Orchid, target, LinkenBreakAbilityItems)) {
 			Items.Orchid.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		} else if (LinkenBreakOnlyFromRange.value) {
-			return false
+			return
 		}
 	}
 
@@ -68,9 +70,9 @@ export function BreakInit() {
 		if (IsValid(Items.Bloodthorn, target, LinkenBreakAbilityItems)) {
 			Items.Bloodthorn.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		} else if (LinkenBreakOnlyFromRange.value) {
-			return false
+			return
 		}
 	}
 
@@ -81,9 +83,9 @@ export function BreakInit() {
 		if (IsValid(Abilities.ArcaneBolt, target, LinkenBreakAbilityItems)) {
 			Abilities.ArcaneBolt.UseAbility(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt))
-			return true
+			return
 		} else if (LinkenBreakOnlyFromRange.value) {
-			return false
+			return
 		}
 	}
 
@@ -94,9 +96,9 @@ export function BreakInit() {
 		if (IsValid(Abilities.AncientSeal, target, LinkenBreakAbilityItems)) {
 			Abilities.AncientSeal.UseAbility(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal))
-			return true
+			return
 		} else if (LinkenBreakOnlyFromRange.value) {
-			return false
+			return
 		}
 	}
 
@@ -107,9 +109,9 @@ export function BreakInit() {
 		if (IsValid(Items.Nullifier, target, LinkenBreakAbilityItems)) {
 			Items.Nullifier.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		} else if (LinkenBreakOnlyFromRange.value) {
-			return false
+			return
 		}
 	}
 
@@ -120,9 +122,9 @@ export function BreakInit() {
 		if (IsValid(Items.RodofAtos, target, LinkenBreakAbilityItems)) {
 			Items.RodofAtos.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		} else if (LinkenBreakOnlyFromRange.value) {
-			return false
+			return
 		}
 	}
 
@@ -133,12 +135,12 @@ export function BreakInit() {
 		if (IsValid(Items.Sheeps, target, LinkenBreakAbilityItems)) {
 			Items.Sheeps.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
-			return true
+			return
 		} else if (LinkenBreakOnlyFromRange.value) {
-			return false
+			return
 		}
 	}
-	return false
+	return
 }
 export function LinkenBreakerDeleteVars() {
 	Sleep.ResetTimer()

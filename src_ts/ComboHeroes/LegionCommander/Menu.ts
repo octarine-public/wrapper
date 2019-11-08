@@ -14,7 +14,7 @@ let arrayAbility: string[] = [
 	Abilities.PressTheAttack.toString(),
 	Abilities.Duel.toString(),
 ],
-activeAbility = new Map<string, boolean>()
+	activeAbility = new Map<string, boolean>()
 
 arrayAbility.forEach(abilName => {
 	activeAbility.set(abilName, abilName !== Abilities.Overwhelming.toString())
@@ -40,7 +40,7 @@ let arrayItems: string[] = [
 	Items.InvisSword.toString(), 		// 16
 	Items.SilverEdge.toString(), 		// 17
 ],
-activeItems = new Map<string, boolean>();
+	activeItems = new Map<string, boolean>();
 
 arrayItems.forEach(itemName => {
 	activeItems.set(itemName, true);
@@ -60,8 +60,8 @@ let bladeMailMenu = Menu.AddNode("Blade Mail"),
 	BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false).SetTooltip("Cancel Combo if there is enemy Blade Mail")
 
 let arrayLinkenBreak: string[] = [
-	arrayItems[9],	
-	arrayItems[12], 
+	arrayItems[9],
+	arrayItems[12],
 	arrayItems[13],
 	arrayItems[15],
 	Items.HeavensHalberd.toString(),
@@ -69,7 +69,7 @@ let arrayLinkenBreak: string[] = [
 	Items.HurricanePike.toString(),
 	Items.Cyclone.toString(),
 ],
-activeLinkenBreak = new Map<string, boolean>();
+	activeLinkenBreak = new Map<string, boolean>();
 
 arrayLinkenBreak.forEach(itemName => {
 	activeLinkenBreak.set(itemName, true);
@@ -82,8 +82,7 @@ let linkenBreakerMenu = Menu.AddNode("Linken Breaker"),
 // Drawing
 
 let DrawingMenu = Menu.AddNode("Drawing"),
-	targetMenu = DrawingMenu.AddNode("Target"),
-	DrawTargetItem = targetMenu.AddToggle("Enable", true),
+	DrawTargetItem = DrawingMenu.AddToggle("Draw Target", true),
 	radiusMenu = DrawingMenu.AddNode("Radius"),
 	Radius = radiusMenu.AddImageSelector("Select", [
 		arrayAbility[0],
@@ -91,6 +90,9 @@ let DrawingMenu = Menu.AddNode("Drawing"),
 		arrayAbility[2],
 		arrayItems[11]
 	]),
+	AttackRangeRadiusTree = radiusMenu.AddNode("Attack Range"),
+	AttackRangeRadius = AttackRangeRadiusTree.AddToggle("Enable"),
+	RadiusColorAttackRange = AttackRangeRadiusTree.AddColorPicker("Color", new Color(255, 255, 255)),
 	OverwhelmingOddsRadiusColor = radiusMenu.AddColorPicker("Overwhelming Odds", new Color(255, 255, 255)),
 	PressTheAttackRadiusItemColor = radiusMenu.AddColorPicker("Press The Attack", new Color(255, 255, 255)),
 	DuelRadiusItemColor = radiusMenu.AddColorPicker("Duel", new Color(255, 255, 255)),
@@ -116,5 +118,7 @@ export {
 	OverwhelmingOddsRadiusColor,
 	PressTheAttackRadiusItemColor,
 	DuelRadiusItemColor,
-	BlinkRadiusItemColor
+	BlinkRadiusItemColor,
+	AttackRangeRadius,
+	RadiusColorAttackRange,
 }

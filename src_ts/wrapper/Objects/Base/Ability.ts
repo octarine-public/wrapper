@@ -169,6 +169,14 @@ export default class Ability extends Entity {
 				castrange -= owner.GetTalentValue("special_bonus_unique_lion_2")
 				break
 			}
+			case "lina_dragon_slave":
+			case "lina_laguna_blade":
+			case "lina_light_strike_array": {
+				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_cast_range_125")
+				if (unique !== undefined && unique.Level > 0)
+					castrange += 125
+				break
+			}
 			default:
 				break
 		}

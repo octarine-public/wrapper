@@ -15,7 +15,4 @@ export class ItemsHelper extends AbilityHelper {
 			return (this.unit.Distance2D(Projectile.Target as Entity) / Projectile.Speed * 1000) - this.CastDelay(ability)
 		return 0
 	}
-	public ItemCastRange(Item: Item, GetSpecialValue: string): number {
-		return Item.GetSpecialValue(GetSpecialValue) + this.unit.CastRangeBonus
-	}
 }
