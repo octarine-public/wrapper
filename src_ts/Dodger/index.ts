@@ -1,6 +1,6 @@
-// import { EventsSDK, Unit, Menu, TrackingProjectile, Ability, ArrayExtensions, LocalPlayer } from "wrapper/Imports";
+// import { EventsSDK, Hero, Menu, TrackingProjectile, Ability, ArrayExtensions, TickSleeper } from "wrapper/Imports";
 
-// let all_units: Unit[] = [],
+// let all_units: Hero[] = [],
 // 	proj_list: TrackingProjectile[] = []
 
 // let MenuTree = Menu.AddEntry(["Utility", "Dodger"])
@@ -9,63 +9,47 @@
 // 	abil_name: string | RegExp
 // 	abil?: Ability
 // }> = [
-// 	{
-// 		abil_name: "antimage_counterspell",
-// 	},
-// ]
-
-// function GetAvailableAbils() {
-// 	var MyEnt = LocalPlayer.Hero
+// 		{
+// 			abil_name: "antimage_counterspell",
+// 		},
+// 		{
+// 			abil_name: "item_cyclone",
+// 		},
+// 	]
+// let Sleep = new TickSleeper
+// function GetAvailableAbils(unit: Hero) {
 // 	return abils.filter(
 // 		abilData => abilData.abil_name instanceof RegExp
 // 			|| abilData.abil_name.startsWith("item_")
-// 			|| MyEnt.GetAbilityByName(abilData.abil_name) !== undefined,
+// 			|| unit.GetAbilityByName(abilData.abil_name) !== undefined,
 // 	)
 // }
 
 // EventsSDK.on("Tick", () => {
-// 	if (!MenuState.value) {
-// 		return false
+// 	if (!MenuState.value || Sleep.Sleeping) {
+// 		return
 // 	}
 // 	all_units.filter(unit => {
 // 		if (!unit.IsControllable && !unit.IsHero || unit.IsEnemy()) {
 // 			return
 // 		}
-// 		let availableAbils = GetAvailableAbils().filter(abilData => {
+// 		let availableAbils = GetAvailableAbils(unit).filter(abilData => {
 // 			let abil = abilData.abil = unit.GetAbilityByName(abilData.abil_name) || unit.GetItemByName(abilData.abil_name)
-// 			return abil !== undefined && !abil.IsHidden && abil.CanBeCasted()
+// 			return abil !== undefined && !abil.IsHidden
 // 		})
-
-// 		console.log(availableAbils.map(x => x.abil.Name))
+// 		let ability = availableAbils.find(x => x !== undefined && x.abil.CanBeCasted())
+// 		if (ability !== undefined) {
+// 			proj_list.filter(x => {
+// 				let delay = 0
+// 				if (ability.abil.CastPoint <= 0) {
+// 					delay = 0.2
+// 				}
+// 				if (unit.Distance(x.Position) <= (GetLatency(Flow_t.OUT) * 1000) + 230) {
+// 					ability.abil.UseAbility(unit)
+// 					Sleep.Sleep(((delay * 2) * 1000) + 30)
+// 					return
+// 				}
+// 			})
+// 		}
 // 	})
-// 	// all_units.filter(unit => {
-// 	// 	proj_list.filter(x => {
-// 	// 		if (unit.IsEnemy()) {
-// 	// 			return
-// 	// 		}
-// 	// 		if (unit.Distance2D(x.Position) <= 150) {
-// 	// 			let abil = unit.GetAbilityByName("antimage_counterspell")
-// 	// 			if (abil !== undefined && abil.CanBeCasted()) {
-// 	// 				abil.UseAbility(unit)
-// 	// 			}
-// 	// 		}
-// 	// 	})
-// 	// })
-// })
-
-// EventsSDK.on("EntityCreated", x => {
-// 	if (x instanceof Unit) {
-// 		all_units.push(x)
-// 	}
-// })
-
-// EventsSDK.on("TrackingProjectileCreated", (proj: TrackingProjectile) => {
-// 	if (proj instanceof TrackingProjectile && proj.IsValid && proj.IsDodgeable) {
-// 		proj_list.push(proj)
-// 	}
-// })
-// EventsSDK.on("TrackingProjectileDestroyed", (proj: TrackingProjectile) => {
-// 	if (proj instanceof TrackingProjectile && proj.IsValid && proj.IsDodgeable) {
-// 		ArrayExtensions.arrayRemove(proj_list, proj)
-// 	}
 // })
