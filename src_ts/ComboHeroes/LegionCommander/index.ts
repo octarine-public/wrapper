@@ -5,7 +5,7 @@ import { Draw } from "./Renderer"
 import {
 	EntityCreated,
 	EntityDestroyed,
-	GameEnded, GameStarted, InitMouse, 
+	GameEnded, GameStarted, InitMouse,
 	LinearProjectileDestroyed, TrackingProjectileCreated, Tick,
 } from "./Listeners"
 

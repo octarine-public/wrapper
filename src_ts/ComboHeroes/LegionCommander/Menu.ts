@@ -23,17 +23,17 @@ arrayAbility.forEach(abilName => {
 let arrayItems: string[] = [
 	Items.BladeMail.toString(), 		// 0
 	Items.LotusOrb.toString(), 			// 1
-	Items.BlackKingBar.toString(), 		// 2	
-	Items.Mjollnir.toString(),			// 3	
+	Items.BlackKingBar.toString(), 		// 2
+	Items.Mjollnir.toString(),			// 3
 	Items.Armlet.toString(), 			// 4
-	Items.Satanic.toString(),			// 5	
+	Items.Satanic.toString(),			// 5
 	Items.Medallion.toString(), 		// 6
 	Items.SolarCrest.toString(),		// 7
 	Items.UrnOfShadows.toString(), 		// 8
 	Items.RodofAtos.toString(), 		// 9
 	Items.SpiritVesel.toString(), 		// 10
 	Items.Blink.toString(), 			// 11
-	Items.Orchid.toString(), 			// 12	
+	Items.Orchid.toString(), 			// 12
 	Items.Bloodthorn.toString(), 		// 13
 	Items.Shivas.toString(), 			// 14
 	Items.Nullifier.toString(), 		// 15

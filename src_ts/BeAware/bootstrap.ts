@@ -133,7 +133,7 @@ EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachmen
 	if (!stateMain.value)
 		return
 	Techies.ParticleUpdatedEnt(id, control_point, attach, vector)
-	Wisp.ParticleUpdated(id, entity instanceof Entity ? entity.m_pBaseEntity : undefined)
+	Wisp.ParticleUpdated(id, entity instanceof Entity ? entity : undefined, vector)
 	ParicleMapHack.ParticleUpdatedEnt(id, entity instanceof Entity ? entity : undefined, vector)
 	TimeControllerEnt.ParticleUpdateEnt(id, entity instanceof Entity ? entity : undefined, vector)
 })

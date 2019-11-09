@@ -238,8 +238,7 @@ export function InitCombo() {
 			) {
 				Init(Abilities, Items, target, blockingAbilities, true)
 				return
-			}
-			else {
+			} else {
 				if (Items.InvisSword || Items.SilverEdge) {
 					CastInvis(Abilities, Items, blockingAbilities, target)
 				}
