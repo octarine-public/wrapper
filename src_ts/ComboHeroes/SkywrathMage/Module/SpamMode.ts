@@ -7,25 +7,22 @@ let Sleep = new TickSleeper()
 export function AutoUsage() {
 	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
-	if (BladeMailUseCyclone.value) {
-		if (
-			Heroes.some
-				(x =>
-					x.IsEnemy()
-					&& x.IsValid && x.IsAlive && x.IsVisible && !x.IsInvulnerable
-					&& x.HasModifier("modifier_item_blade_mail_reflect")
-					&& x.HasModifier("modifier_skywrath_mystic_flare_aura_effect")
-				)
-		) {
-			let Items = initItemsMap.get(MyHero)
-			if (Items === undefined) {
-				return
-			}
-			if (Items.Cyclone && Items.Cyclone.CanBeCasted()) {
-				MyHero.CastTarget(Items.Cyclone, MyHero)
-				Sleep.Sleep(Items.Tick)
-				return
-			}
+	if (
+		BladeMailUseCyclone.value
+		&& Heroes.some(x =>
+			x.IsEnemy()
+			&& x.HasModifier("modifier_item_blade_mail_reflect")
+			&& x.HasModifier("modifier_skywrath_mystic_flare_aura_effect")
+			&& x.IsAlive && x.IsVisible && !x.IsInvulnerable
+		)
+	) {
+		let Items = initItemsMap.get(MyHero)
+		if (Items === undefined)
+			return
+		if (Items.Cyclone && Items.Cyclone.CanBeCasted()) {
+			MyHero.CastTarget(Items.Cyclone, MyHero)
+			Sleep.Sleep(Items.Tick)
+			return
 		}
 	}
 

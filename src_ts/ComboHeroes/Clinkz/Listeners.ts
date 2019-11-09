@@ -50,27 +50,24 @@ export function GameEnded() {
 }
 
 export function GameStarted(hero: Hero) {
-	if (Owner === undefined && hero.Name === MyNameHero) {
+	if (Owner === undefined && hero.Name === MyNameHero)
 		Owner = hero
-	}
 }
 
 export function EntityCreated(x: Entity) {
-	if (x instanceof Hero && !x.IsIllusion) {
+	if (x instanceof Hero && !x.IsIllusion)
 		Heroes.push(x)
-	}
 }
 
 export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero) {
+	if (x instanceof Hero)
 		ArrayExtensions.arrayRemove(Heroes, x)
-	}
 }
 
 export function TrackingProjectileCreated(proj: TrackingProjectile) {
-	if (!Base.IsRestrictions(State)) {
+	if (!Base.IsRestrictions(State))
 		return false
-	}
+
 	let Entity = proj.Source as Entity
 	if (proj instanceof TrackingProjectile
 		&& Entity instanceof Hero

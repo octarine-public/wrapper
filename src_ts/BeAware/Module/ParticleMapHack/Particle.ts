@@ -148,9 +148,8 @@ function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: C
 export function ParticleCreate(id: number, handle: bigint, path: string, entity: Entity) {
 	if (!State.value || !Game.IsInGame || ClassChecking(entity) || ignoreListCreate.includes(handle))
 		return
-	if (handle === 16169843851719108633n) { 		// "particles/items2_fx/teleport_start.vpcf"
+	if (handle === 16169843851719108633n)		// "particles/items2_fx/teleport_start.vpcf"
 		LAST_ID_SCROLL = id
-	}
 	if (handle === 9908905996079864839n) { 		// "particles/items2_fx/teleport_end.vpcf"
 		END_SCROLL.set(id, LAST_ID_SCROLL)
 		LAST_ID_SCROLL = undefined
@@ -169,9 +168,8 @@ function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: 
 	let hero = Heroes.find(x => x !== undefined && x.IsEnemy() && !x.IsVisible && x.IsEnemy() && x.Name === name_hero)
 	if (hero !== undefined) {
 		let abil = hero.GetAbilityByName(name_ability)
-		if (abil !== undefined && abil.IsValid) {
+		if (abil !== undefined && abil.IsValid)
 			Particle.set(id, [part[0], hero.Name, part[2], position, color, Time, name_ability])
-		}
 	}
 }
 

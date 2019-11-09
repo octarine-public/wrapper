@@ -21,9 +21,9 @@ export function InitCombo() {
 	let hexDebuff = target.GetBuffByName("modifier_sheepstick_debuff"),
 		Items = initItemsMap.get(Owner),
 		Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined || Items === undefined) {
+	if (Abilities === undefined || Items === undefined)
 		return
-	}
+
 	let comboBreaker = Base.AeonDisc(target)
 	if (Items.Blink !== undefined
 		&& СomboItems.IsEnabled(Items.Blink.Name)

@@ -96,10 +96,8 @@ export function ParticleUpdated(id: number, control_point: number, position: Vec
 	}
 }
 export function ParticleUpdatedEnt(id: number, control_point: number, attach: ParticleAttachment_t, position: Vector3) {
-	if (!State.value)
+	if (!State.value || control_point !== 0 || attach !== ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW)
 		return
-	if (control_point !== 0 || attach !== ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW)
-		return false
 	waiting_explode.some(([particle_id, mine_name], i) => {
 		if (particle_id !== id)
 			return false

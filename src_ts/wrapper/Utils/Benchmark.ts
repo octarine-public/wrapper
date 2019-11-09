@@ -57,7 +57,7 @@ export default class Benchmark {
 			this.callbacks[number].timeStart = time
 			this.callbacks[number].timeEnd = timeEnd
 			this.callbacks[number].time = timeEnd - time
-		} else {
+		} else
 			for (let i = 0, len = this.callbacks.length; i < len; i++) {
 				let callbackFunc = this.callbacks[i].callback
 
@@ -72,7 +72,6 @@ export default class Benchmark {
 				this.callbacks[i].timeEnd = timeEnd
 				this.callbacks[i].time = (timeEnd - time) / this.iterations
 			}
-		}
 
 		return this
 	}
@@ -86,10 +85,9 @@ export default class Benchmark {
 				throw "number is greater than length of callbacks"
 
 			console.log(number + ":\t" + this.callbacks[number].time + " ms = " + this.callbacks[number].timeStart + " - " + this.callbacks[number].timeEnd)
-		} else {
+		} else
 			for (let i = 0, len = this.callbacks.length; i < len; i++)
 				console.log(i + ":\t" + this.callbacks[i].time + " ms = " + this.callbacks[i].timeStart + " - " + this.callbacks[i].timeEnd)
-		}
 
 		return this
 	}

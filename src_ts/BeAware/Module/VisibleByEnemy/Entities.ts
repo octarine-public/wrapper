@@ -72,15 +72,10 @@ function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsVisibleForE
 	let isAlive = unit.IsAlive,
 		particleID = allUnits.get(unit)
 
-	if (isVisibleForEnemies && particleID === undefined && isAlive && IsUnitShouldBeHighlighted(unit)) {
-		particlePath.filter((x, i) => {
-			if (switcher.selected_id === i) {
-				allUnits.set(unit, ParticlesSDK.Create(x, ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit))
-			}
-		})
-	} else if ((!isVisibleForEnemies || !isAlive) && particleID !== undefined) {
+	if (isVisibleForEnemies && particleID === undefined && isAlive && IsUnitShouldBeHighlighted(unit))
+		allUnits.set(unit, ParticlesSDK.Create(particlePath[switcher.selected_id], ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit))
+	else if ((!isVisibleForEnemies || !isAlive) && particleID !== undefined)
 		Destroy(unit, particleID)
-	}
 }
 
 export function EntityDestroyed(ent: Entity) {

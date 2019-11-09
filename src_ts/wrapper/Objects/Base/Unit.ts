@@ -558,18 +558,15 @@ export default class Unit extends Entity {
 	public TurnTime(angle: number | Vector3) {
 		if (angle instanceof Vector3) {
 			angle = this.FindRotationAngle(angle)
-			if (isNaN(angle)) { // face palm
+			if (isNaN(angle)) // face palm
 				return 0
-			}
 		}
 		let name = this.Name
-		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier" || name === "npc_dota_hero_clinkz") {
+		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier" || name === "npc_dota_hero_clinkz")
 			return 0
-		}
 
-		if (angle <= 0.2) {
+		if (angle <= 0.2)
 			return 0
-		}
 		return (0.03 / this.TurnRate()) * angle
 	}
 

@@ -15,9 +15,8 @@ EventsSDK.on("PrepareUnitOrders", OnExecuteOrder)
 EventsSDK.on("Tick", () => {
 	Tick()
 	InitMouse()
-	if (!Base.DeadInSide) {
+	if (!Base.DeadInSide)
 		InitCombo()
-	}
 	InitStaker()
 })
 

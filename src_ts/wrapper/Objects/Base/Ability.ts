@@ -135,9 +135,8 @@ export default class Ability extends Entity {
 	get CooldownTimeRemaining() {
 		let cd = this.Cooldown;
 
-		if (this.Owner.IsDormant) {
-			cd -= Game.RawGameTime - this.Owner.LastVisibleTime;
-		}
+		if (this.Owner.IsDormant)
+			cd = Math.max(0, cd - (Game.RawGameTime - this.Owner.LastVisibleTime))
 
 		return cd;
 	}

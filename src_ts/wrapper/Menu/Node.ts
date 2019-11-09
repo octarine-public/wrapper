@@ -160,7 +160,6 @@ export default class Node extends Base {
 		return switcher
 	}
 	public AddVector2(name: string, vector: Vector2, minVector?: Vector2, maxVector?: Vector2) {
-
 		let node = this.AddNode(name);
 
 		if (typeof minVector === "number")
@@ -190,7 +189,6 @@ export default class Node extends Base {
 		}
 	}
 	public AddVector3(name: string, vector: Vector3, minVector?: Vector3, maxVector?: Vector3) {
-
 		let node = this.AddNode(name);
 
 		if (typeof minVector === "number")

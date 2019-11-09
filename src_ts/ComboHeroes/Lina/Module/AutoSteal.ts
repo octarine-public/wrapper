@@ -15,15 +15,13 @@ export function InitAutoSteal() {
 	let target = Heroes.sort((a, b) => b.Distance2D(Owner) - a.Distance2D(Owner))
 		.filter(x => x.IsValid && x.IsAlive && x.IsEnemy())
 		.find(e => !e.IsMagicImmune && !e.IsInvulnerable)
-	if (target === undefined)
+	if (target === undefined || BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect"))
 		return
-	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect")) {
-		return
-	}
+
 	let Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined) {
+	if (Abilities === undefined)
 		return
-	}
+
 	let DMG_TYPE_LAGUNA = Owner.HasScepter
 		? DAMAGE_TYPES.DAMAGE_TYPE_PURE
 		: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,

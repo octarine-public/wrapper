@@ -68,9 +68,7 @@ EventsSDK.on("Tick", () => {
 				vanguardC = false
 			}
 		}
-		if (!recipeC && !bashC && !vanguardC) {
-			lock = false
-		}
+		lock = recipeC !== undefined || bashC !== undefined || vanguardC !== undefined
 	}
 	return false
 })

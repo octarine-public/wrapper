@@ -12,16 +12,16 @@ function IsValid(Name: Ability | Item, target: Hero, Selectror: Menu.ImageSelect
 }
 
 export function BreakInit() {
-	if (!Base.IsRestrictions(State) || Sleep.Sleeping) {
+	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
-	}
+
 	let target = MouseTarget
 	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune)
 		return
 	let Items = initItemsMap.get(Owner)
-	if (Items === undefined) {
+	if (Items === undefined)
 		return
-	}
+
 	// Eul
 	if (Items.Cyclone !== undefined
 		&& Items.Cyclone.CanBeCasted()) {
@@ -29,9 +29,8 @@ export function BreakInit() {
 			Items.Cyclone.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 	// Heavens Halberd
 	if (Items.HeavensHalberd !== undefined
@@ -40,9 +39,8 @@ export function BreakInit() {
 			Items.HeavensHalberd.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 	// Diffusal Blade
 	if (Items.DiffusalBlade !== undefined
@@ -51,9 +49,8 @@ export function BreakInit() {
 			Items.DiffusalBlade.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 	// HurricanePike
 	if (Items.HurricanePike !== undefined
@@ -62,9 +59,8 @@ export function BreakInit() {
 			Items.HurricanePike.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 
 	// ForceStaff
@@ -74,9 +70,8 @@ export function BreakInit() {
 			Items.ForceStaff.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 
 	// Orchid
@@ -86,9 +81,8 @@ export function BreakInit() {
 			Items.Orchid.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 
 	// Bloodthorn
@@ -98,9 +92,8 @@ export function BreakInit() {
 			Items.Bloodthorn.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 	// Nullifier
 	if (Items.Nullifier !== undefined
@@ -109,9 +102,8 @@ export function BreakInit() {
 			Items.Nullifier.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 	// RodofAtos
 	if (Items.RodofAtos !== undefined
@@ -120,9 +112,8 @@ export function BreakInit() {
 			Items.RodofAtos.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 	// Sheeps
 	if (Items.Sheeps !== undefined
@@ -131,9 +122,8 @@ export function BreakInit() {
 			Items.Sheeps.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (UseOnlyFromRangeItem.value) {
+		} else if (UseOnlyFromRangeItem.value)
 			return
-		}
 	}
 }
 

@@ -1,10 +1,7 @@
-import { Ability, Entity, Hero, Item, TrackingProjectile, Unit } from "wrapper/Imports"
+import { Ability, Entity, Item, TrackingProjectile } from "wrapper/Imports"
 import { AbilityHelper } from "./AbilityHelper"
 
 export class ItemsHelper extends AbilityHelper {
-	constructor(unit: Hero | Unit) {
-		super(unit)
-	}
 	public get Tick() {
 		return 100
 	}

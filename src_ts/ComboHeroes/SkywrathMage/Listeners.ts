@@ -68,18 +68,15 @@ export function GameStarted(hero: Hero) {
 }
 
 export function EntityCreated(x: Entity) {
-	if (x instanceof Hero && !x.IsIllusion) {
+	if (x instanceof Hero && !x.IsIllusion)
 		Heroes.push(x)
-	}
-	if (x instanceof Creep) {
+	if (x instanceof Creep)
 		Creeps.push(x)
-	}
 }
 
 export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero) {
+	if (x instanceof Hero)
 		ArrayExtensions.arrayRemove(Heroes, x)
-	}
 }
 
 export function TrackingProjectileCreated(proj: TrackingProjectile) {

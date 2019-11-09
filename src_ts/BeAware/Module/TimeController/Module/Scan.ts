@@ -41,9 +41,9 @@ export function DrawScan() {
 			// Radar Detect
 			// loop-optimizer: FORWARD
 			RadarDetect.forEach(x => {
-				if (!x.IsEnemy()) {
+				if (!x.IsEnemy())
 					return
-				}
+
 				let Time = Game.RawGameTime
 				if (x.Name === "npc_dota_thinker") {
 					let ent = x as Unit

@@ -29,9 +29,8 @@ export function InitMouse() {
 }
 
 export function GameStarted(hero: Hero) {
-	if (Owner === undefined && hero.Name === MyNameHero) {
+	if (Owner === undefined && hero.Name === MyNameHero)
 		Owner = hero
-	}
 }
 function MapClear() {
 	initItemsMap.clear()
@@ -52,21 +51,17 @@ export function GameEnded() {
 }
 
 export function EntityCreated(x: Entity) {
-	if (x instanceof Hero && !x.IsIllusion) {
+	if (x instanceof Hero && !x.IsIllusion)
 		Heroes.push(x)
-	}
-	if (x instanceof Creep) {
+	if (x instanceof Creep)
 		CreepsNeutrals.push(x)
-	}
 }
 
 export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero) {
+	if (x instanceof Hero)
 		ArrayExtensions.arrayRemove(Heroes, x)
-	}
-	if (x instanceof Creep) {
+	if (x instanceof Creep)
 		ArrayExtensions.arrayRemove(CreepsNeutrals, x)
-	}
 }
 
 export function Tick() {

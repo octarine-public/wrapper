@@ -8,18 +8,18 @@ function HitAndRun(unit: Unit, mode: boolean = false) {
 	Owner.MoveTo(!mode ? Utils.CursorWorldVec : unit.NetworkPosition)
 }
 export function InitHarass() {
-	if (!Base.IsRestrictions(State) || !HarassKey.is_pressed || HarassMode.selected_id === 0) {
+	if (!Base.IsRestrictions(State) || !HarassKey.is_pressed || HarassMode.selected_id === 0)
 		return
-	}
+
 	let target = MouseTarget
 	if (target === undefined || (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect"))) || !Base.Cancel(target)) {
 		Owner.MoveTo(Utils.CursorWorldVec)
 		return
 	}
 	let Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined) {
+	if (Abilities === undefined)
 		return
-	}
+
 	let Delay = (Owner.SecondsPerAttack * 1000) + (Game.Ping / 2)
 	if (HarassMode.selected_id !== 0 && Sleep.Sleeping("Attack")) {
 		switch (HarassMode.selected_id) {

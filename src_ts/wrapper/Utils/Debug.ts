@@ -15,9 +15,7 @@ function dumpClass(obj: object, field: string | string[], recursiveCount: number
 
 		console.log("\t".repeat(alreadyCount), "|", name, ":", value)
 
-		if (typeof value === "object" && !Array.isArray(value)) {
-			if (recursiveCount > 0)
-				dumpClass(value, field, recursiveCount - 1, alreadyCount + 1)
-		}
+		if (typeof value === "object" && !Array.isArray(value) && recursiveCount > 0)
+			dumpClass(value, field, recursiveCount - 1, alreadyCount + 1)
 	}
 }

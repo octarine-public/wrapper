@@ -43,26 +43,24 @@ export function RoshanParticleCreate(Handle: bigint) {
 		}
 		IsAlive = true
 	}
-	if (Handle === 13891217767486593796n) {
-		if (NotificationRoshanStateChat.value) {
-			if (Timer < Game.GameTime) {
-				Game.ExecuteCommand("chatwheel_say 53")
-				Timer += (Game.GameTime + 10)
-			}
-		}
+	if (
+		Handle === 13891217767486593796n
+		&& NotificationRoshanStateChat.value
+		&& Timer < Game.GameTime
+	) {
+		Game.ExecuteCommand("chatwheel_say 53")
+		Timer += (Game.GameTime + 10)
 	}
 	if (Handle === 14219564939631888289n) {
-		if (NotificationRoshanStateChat.value) {
+		if (NotificationRoshanStateChat.value)
 			Game.ExecuteCommand("chatwheel_say 53; chatwheel_say 57;") // > Roshan and time
-		}
 		Timer = 0
 		roshanKillTime = 480
 		AegisTime = 300 // transfer on fire events (Game events)
 		IsAlive = false
 	}
-	if (Handle === 15464711547879317671n || Handle === 15359352600260660069n || Handle === 995145632723522745n) {
+	if (Handle === 15464711547879317671n || Handle === 15359352600260660069n || Handle === 995145632723522745n)
 		AegisTime = 5
-	}
 }
 
 function RenderIcon(position_unit: Vector2, path_icon: string, Size: Menu.Slider, color?: Color) {
@@ -78,16 +76,15 @@ function RenderIcon(position_unit: Vector2, path_icon: string, Size: Menu.Slider
 
 function RoshanDrawAliveDied(Text: string, color?: Color) {
 	let VectorSize = RendererSDK.WindowSize.DivideScalar(100).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value)
-	if (IconSettingsState.value) {
+	if (IconSettingsState.value)
 		switch (IconSettingsSwitch.selected_id) {
 			case 0:
 				RenderIcon(VectorSize, "panorama/images/hud/icon_roshan_psd.vtex_c", drawStatusSize, color)
-				break;
+				break
 			case 1:
 				RenderIcon(VectorSize, "panorama/images/hud/reborn/roshan_timer_roshan_psd.vtex_c", drawStatusSize, color)
-				break;
+				break
 		}
-	}
 	let is_under = Units.some(x => x.Name.includes("roshan"))
 		? "Roshan is under attack"
 		: Text

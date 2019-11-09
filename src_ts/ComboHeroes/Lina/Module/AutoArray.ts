@@ -9,19 +9,19 @@ function IsValidAbility(ability: Ability, target: Hero) {
 }
 let Sleep = new TickSleeper()
 export function InitFindCyclone() {
-	if (!Base.IsRestrictions(State) || Sleep.Sleeping) {
+	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
-	}
+
 	let target = Heroes.sort((a, b) => b.Distance2D(Owner) - a.Distance2D(Owner))
 		.filter(x => x.IsValid && x.IsAlive && x.IsEnemy() && !x.IsMagicImmune)
 		.find(e => e.HasModifier("modifier_eul_cyclone"))
-	if (target === undefined) {
+	if (target === undefined)
 		return
-	}
+
 	let Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined) {
+	if (Abilities === undefined)
 		return
-	}
+
 	let cycloneDebuff = target.GetBuffByName("modifier_eul_cyclone")
 	let CastTime = Abilities.LightStrikeArray.CastPoint + Abilities.LightStrikeArray.GetSpecialValue("light_strike_array_delay_time") + (GetAvgLatency(Flow_t.OUT))
 	if (IsValidAbility(Abilities.LightStrikeArray, target) && (cycloneDebuff !== undefined && cycloneDebuff.DieTime - Game.RawGameTime) <= CastTime) {
@@ -29,7 +29,6 @@ export function InitFindCyclone() {
 		Sleep.Sleep(Abilities.Tick)
 		return
 	}
-	return
 }
 export function FindCycloneGameEnded() {
 	Sleep.ResetTimer()

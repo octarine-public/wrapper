@@ -66,21 +66,13 @@ class KunkkaHelper {
 	}
 	public IsLinkensProtected(target: Hero): boolean {
 		let Items = initItemsTargetMap.get(target)
-		if (Items === undefined) {
+		if (Items === undefined)
 			return false
-		}
+
 		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 	public IsBlockingAbilities(target: Hero, checkReflecting: boolean = false): boolean {
-		if (checkReflecting && target.HasModifier("modifier_item_lotus_orb_active")) {
-			return true
-		}
-
-		if (this.IsLinkensProtected(target)) {
-			return true
-		}
-		// todo qop talent somehow ?
-		return false
+		return this.IsLinkensProtected(target) || (checkReflecting && target.HasModifier("modifier_item_lotus_orb_active"))
 	}
 }
 export let Base = new KunkkaHelper()

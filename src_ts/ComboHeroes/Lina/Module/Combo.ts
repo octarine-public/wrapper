@@ -15,21 +15,21 @@ function IsValidItems(Item: Ability, target: Hero) {
 		&& Owner.Distance2D(target) <= Item.CastRange && !Sleep.Sleeping
 }
 export function InitCombo() {
-	if (!Base.IsRestrictions(State) || !ComboKeyItem.is_pressed || Sleep.Sleeping) {
+	if (!Base.IsRestrictions(State) || !ComboKeyItem.is_pressed || Sleep.Sleeping)
 		return
-	}
+
 	let target = MouseTarget
 	if (target === undefined || target.IsMagicImmune || !target.IsAlive) {
 		return
 	}
-	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect")) {
+	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect"))
 		return
-	}
+
 	let Items = initItemsMap.get(Owner),
 		Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined || Items === undefined) {
+	if (Abilities === undefined || Items === undefined)
 		return
-	}
+
 	let Debuff = target.ModifiersBook.GetAnyBuffByNames(["modifier_sheepstick_debuff", "modifier_stunned"])
 	if (Owner.IsInvisible) {
 		if (Owner.CanAttack(target)) {

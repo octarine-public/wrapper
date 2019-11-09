@@ -43,20 +43,16 @@ export function DrawRunes() {
 		let Time = Game.RawGameTime;
 		if (TreeRuneState.value) {
 			let RunePowerTime = Game.GameTime % 120;
-			if (TreeNotificationPowerChat.value) {
-				if (RunePowerTime >= 120 || RunePowerTime === 0) {
-					RunePowerTimer = true
-				}
-			}
+			if (TreeNotificationPowerChat.value && RunePowerTime >= 120 || RunePowerTime === 0)
+				RunePowerTimer = true
 			// loop-optimizer: KEEP
 			PowerRunesPos.forEach(val => {
-				if (mt_rand_power === undefined) {
+				if (mt_rand_power === undefined)
 					mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
-				}
 				if (mt_rand_power !== undefined && RunePowerTime >= (120 - mt_rand_power)) {
-					if (TreeNotificationPowerDrawMap.value) {
+					if (TreeNotificationPowerDrawMap.value)
 						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
-					}
+
 					if (Time >= checkTickPower) {
 						if (RunePowerTime <= 119) {
 							if (TreeNotificationBountySound.value > 0) {

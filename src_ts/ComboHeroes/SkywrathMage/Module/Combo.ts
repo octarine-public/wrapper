@@ -6,24 +6,22 @@ import { BreakInit } from "./LinkenBreaker"
 let Sleep = new TickSleeper(),
 	GameSleep = new GameSleeper()
 export function InitCombo() {
-	if (!Base.IsRestrictions(State) || !ComboKey.is_pressed || Sleep.Sleeping) {
+	if (!Base.IsRestrictions(State) || !ComboKey.is_pressed || Sleep.Sleeping)
 		return
-	}
 
 	let target = MouseTarget
 	if (target === undefined) {
 		MyHero.MoveTo(Utils.CursorWorldVec)
 		return
 	}
-	if (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect")) {
+	if (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect"))
 		return
-	}
+
 	let ItemsInit = initItemsMap.get(MyHero),
 		Abilities = initAbilityMap.get(MyHero),
 		ItemsTarget = initItemsTargetMap.get(target)
-	if (Items === undefined || Abilities === undefined || ItemsTarget === undefined) {
+	if (Items === undefined || Abilities === undefined || ItemsTarget === undefined)
 		return
-	}
 
 	let RodofAtosDelay = ProjList.find(x => x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
 		EtherealDelay = ProjList.find(x => x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),

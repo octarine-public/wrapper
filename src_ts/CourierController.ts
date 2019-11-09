@@ -59,28 +59,26 @@ function CourierState(courier: Courier) {
 }
 
 function AutoShiled(): boolean {
-	if (autoShieldState.value) {
-		EntityManager.AllEntities.some(ent => {
-			if (
-				ent instanceof Unit
-				&& allyCourier !== undefined
-				&& ent.IsLaneCreep
-				&& allyCourier.IsControllable
-				&& ent.HasAttackCapability()
-				&& ent.IsEnemy(allyCourier)
-				&& allyCourier.IsInRange(ent, ent.AttackRange, true)
-			) {
-				let shield = allyCourier.GetAbilityByName("courier_shield")
-				if (shield !== undefined && shield.Level > 0 && shield.IsCooldownReady) {
-					shield.UseAbility()
-					Sleep.Sleep(GetDelayCast(), "Shield")
-				}
-				return true
-			}
-			return false
-		})
-	}
-	return false
+	if (autoShieldState.value || allyCourier === undefined)
+		return false
+	let shield = allyCourier.GetAbilityByName("courier_shield")
+	if (shield === undefined || shield.Level === 0 || !shield.IsCooldownReady)
+		return false
+	return EntityManager.AllEntities.some(ent => {
+		if (
+			ent instanceof Unit
+			&& ent.IsLaneCreep
+			&& allyCourier.IsControllable
+			&& ent.HasAttackCapability()
+			&& ent.IsEnemy(allyCourier)
+			&& allyCourier.IsInRange(ent, ent.AttackRange, true)
+		) {
+			shield.UseAbility()
+			Sleep.Sleep(GetDelayCast(), "Shield")
+			return true
+		}
+		return false
+	})
 }
 
 function ItemsChecking(): boolean {

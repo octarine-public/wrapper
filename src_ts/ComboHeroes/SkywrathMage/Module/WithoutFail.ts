@@ -8,31 +8,27 @@ function IChecking(x: Hero | Creep, rad: Menu.Slider) {
 }
 let target: Unit
 export function OnExecuteOrder(order: ExecuteOrder): boolean {
-	if (!Base.IsRestrictions(State) || !SmartConShotFail.value) {
+	if (!Base.IsRestrictions(State) || !SmartConShotFail.value)
 		return true
-	}
-	if (Base.GetPermitPressing) {
+	if (Base.GetPermitPressing)
 		return false
-	}
-	let SkyWrath = LocalPlayer
-	if (SkyWrath !== undefined) {
-		if (order.Unit === LocalPlayer.Hero) {
-			if (order.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET) {
-				let ability = order.Ability as Ability,
-					Abilities = initAbilityMap.get(MyHero)
-				if (Abilities === undefined) {
-					return true
-				}
-				if (ability !== undefined && ability.Name === Abilities.ConcussiveShot.Name) {
-					target = SmartConShotOnlyTarget.value
-						? Heroes.find(x => x.IsEnemy() && IChecking(x, SmartConShotRadius))
-						: Creeps.find(x => x.IsEnemy() && IChecking(x, SmartConShotRadius)) || Heroes.find(x => x.IsEnemy() && IChecking(x, SmartConShotRadius))
-					if (target === undefined) {
-						return false
-					}
-				}
-			}
-		}
+	if (
+		LocalPlayer === undefined
+		|| order.Unit !== LocalPlayer.Hero
+		|| order.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET
+	)
+		return true
+
+	let ability = order.Ability as Ability,
+		Abilities = initAbilityMap.get(MyHero)
+	if (Abilities === undefined)
+		return true
+	if (ability !== undefined && ability.Name === Abilities.ConcussiveShot.Name) {
+		target = SmartConShotOnlyTarget.value
+			? Heroes.find(x => x.IsEnemy() && IChecking(x, SmartConShotRadius))
+			: Creeps.find(x => x.IsEnemy() && IChecking(x, SmartConShotRadius)) || Heroes.find(x => x.IsEnemy() && IChecking(x, SmartConShotRadius))
+		if (target === undefined)
+			return false
 	}
 	return true
 }

@@ -5,16 +5,16 @@ import { Units } from "../Entities"
 import {
 	DrawTextColor,
 	DrawTextSize,
-	DrawTimerGliphSize,
-	DrawTimerGliphState,
-	DrawTimerGliphX,
-	DrawTimerGliphY,
-	GliphInRange,
-	GliphState,
-	GliphStateIcon,
-	GliphStateIconColor,
-	GliphSwitcher,
-	GliphSwitcherTeam,
+	DrawTimerGlyphSize,
+	DrawTimerGlyphState,
+	DrawTimerGlyphX,
+	DrawTimerGlyphY,
+	GlyphInRange,
+	GlyphState,
+	GlyphStateIcon,
+	GlyphStateIconColor,
+	GlyphSwitcher,
+	GlyphSwitcherTeam,
 } from "../Menu"
 
 let Base = new ManagerBase()
@@ -27,55 +27,59 @@ function RenderIcon(position_unit: Vector2, path_icon: string, ShrineStateIconCo
 	)
 }
 
-function SelectedGliph(unit: Unit) {
-	let buffs = unit.GetBuffByName("modifier_fountain_glyph")
-	if (buffs === undefined)
-		return false
-	let time = buffs.RemainingTime
-	if (!unit.IsInRange(LocalPlayer.Hero, GliphInRange.value) || time <= 0)
-		return false
+function SelectedGlyph(unit: Unit) {
+	let buff = unit.GetBuffByName("modifier_fountain_glyph")
+	if (buff === undefined)
+		return
+	let time = buff.RemainingTime
+	if (!unit.IsInRange(LocalPlayer.Hero, GlyphInRange.value) || time <= 0)
+		return
 	let position_unit = RendererSDK.WorldToScreen(unit.Position)
 	if (position_unit === undefined)
-		return false
+		return
 
 	let pos_unit_text = unit.Name.includes("healers")
 		? position_unit.Clone().AddScalarY(25)
 		: position_unit
-	if (GliphStateIcon.value) {
-		RenderIcon(pos_unit_text, "panorama/images/hud/icon_glyph_small_psd.vtex_c", GliphStateIconColor)
-	}
+	if (GlyphStateIcon.value)
+		RenderIcon(pos_unit_text, "panorama/images/hud/icon_glyph_small_psd.vtex_c", GlyphStateIconColor)
 	RendererSDK.Text(
-		time.toFixed(1), pos_unit_text, DrawTextColor.Color, "Verdana", DrawTextSize.value, FontFlags_t.ANTIALIAS,
+		time.toFixed(1),
+		pos_unit_text,
+		DrawTextColor.Color,
+		"Verdana",
+		DrawTextSize.value,
+		FontFlags_t.ANTIALIAS,
 	)
 }
 
 function SelectedBuilding(x: Unit) {
-	switch (GliphSwitcherTeam.selected_id) {
-		case 0: return x.IsAlive && SelectedGliph(x)
-		case 1: return x.IsAlive && !x.IsEnemy() && SelectedGliph(x)
-		case 2: return x.IsAlive && x.IsEnemy() && SelectedGliph(x)
+	switch (GlyphSwitcherTeam.selected_id) {
+		case 0: return SelectedGlyph(x)
+		case 1: return !x.IsEnemy() && SelectedGlyph(x)
+		case 2: return x.IsEnemy() && SelectedGlyph(x)
 	}
 }
 
 export function DrawGlyph() {
-	if (GliphState.value) {
-		// ============================== Gliph ============================ //
+	if (GlyphState.value) {
+		// ============================== Glyph ============================ //
 		// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
-		Units.forEach(x => {
-			switch (GliphSwitcher.selected_id) {
+		Units.filter(x => x.IsAlive).forEach(x => {
+			switch (GlyphSwitcher.selected_id) {
 				case 0: return SelectedBuilding(x)
 				case 1: return x.IsLaneCreep && SelectedBuilding(x)
 				case 2: return x.IsBuilding && SelectedBuilding(x)
 			}
 		})
-		if (DrawTimerGliphState.value && LocalPlayer !== undefined)
+		if (DrawTimerGlyphState.value && LocalPlayer !== undefined)
 			Base.DrawTimer(
 				LocalPlayer.Team !== Team.Radiant
 					? Game.GlyphCooldownRediant
 					: Game.GlyphCooldownDire,
-				DrawTimerGliphX,
-				DrawTimerGliphY,
-				DrawTimerGliphSize,
+				DrawTimerGlyphX,
+				DrawTimerGlyphY,
+				DrawTimerGlyphSize,
 			)
 	}
 }

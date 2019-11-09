@@ -99,26 +99,26 @@ export {
 	NotificationRoshanStateSound,
 }
 
-let GliphTree = BaseTree.AddNode("Glyph"),
-	GliphState = GliphTree.AddToggle("Enable", true),
+let GlyphTree = BaseTree.AddNode("Glyph"),
+	GlyphState = GlyphTree.AddToggle("Enable", true),
 
-	GliphTreeIcon = GliphTree.AddNode("Icon Settings"),
-	GliphStateIcon = GliphTreeIcon.AddToggle("Icon Enable", true),
-	GliphStateIconColor = GliphTreeIcon.AddColorPicker("Icon Color", new Color(255, 255, 255)),
+	GlyphTreeIcon = GlyphTree.AddNode("Icon Settings"),
+	GlyphStateIcon = GlyphTreeIcon.AddToggle("Icon Enable", true),
+	GlyphStateIconColor = GlyphTreeIcon.AddColorPicker("Icon Color", new Color(255, 255, 255)),
 
-	GliphInRange = GliphTree.AddSlider("In Range from me", 1800, 600, 5000),
-	GliphSwitcher = GliphTree.AddSwitcher("Select", ["Creeps and Building", "Only Creeps", "Only Building"], 0),
-	GliphSwitcherTeam = GliphTree.AddSwitcher("Select", ["Enemy and Allies", "Only Allies", "Only Enemy"], 2)
+	GlyphInRange = GlyphTree.AddSlider("In Range from me", 1800, 600, 5000),
+	GlyphSwitcher = GlyphTree.AddSwitcher("Select", ["Creeps and Building", "Only Creeps", "Only Building"], 0),
+	GlyphSwitcherTeam = GlyphTree.AddSwitcher("Select", ["Enemy and Allies", "Only Allies", "Only Enemy"], 2)
 
-let DrawingSettings = GliphTree.AddNode("Draw Settings"),
+let DrawingSettings = GlyphTree.AddNode("Draw Settings"),
 	DrawTextSize = DrawingSettings.AddSlider("Text Size", 23, 12, 60),
 	DrawTextColor = DrawingSettings.AddColorPicker("Text Color", new Color(255, 255, 255)),
 
-	DrawTimerGliph = DrawingSettings.AddNode("Enemy Gliph Timer"),
-	DrawTimerGliphState = DrawTimerGliph.AddToggle("Enable", true),
-	DrawTimerGliphX = DrawTimerGliph.AddSliderFloat("X", 16, 0, 100),
-	DrawTimerGliphY = DrawTimerGliph.AddSliderFloat("Y", 96, 0, 100),
-	DrawTimerGliphSize = DrawTimerGliph.AddSliderFloat("Text Size", 20, 12, 60)
+	DrawTimerGlyph = DrawingSettings.AddNode("Enemy Glyph Timer"),
+	DrawTimerGlyphState = DrawTimerGlyph.AddToggle("Enable", true),
+	DrawTimerGlyphX = DrawTimerGlyph.AddSliderFloat("X", 16, 0, 100),
+	DrawTimerGlyphY = DrawTimerGlyph.AddSliderFloat("Y", 96, 0, 100),
+	DrawTimerGlyphSize = DrawTimerGlyph.AddSliderFloat("Text Size", 20, 12, 60)
 
 let ShrineTree = BaseTree.AddNode("Shrine"),
 	ShrineState = ShrineTree.AddToggle("Enable", true),
@@ -138,7 +138,7 @@ let RadarTree = BaseTree.AddNode("Scan"),
 	RadarInWorld = RadarTree.AddNode("Scan in World"),
 	RadarStateInWorld = RadarInWorld.AddToggle("Enable", true),
 	RadarStateInWorldTextSize = RadarInWorld.AddSlider("Text Size", 20, 14, 60),
-	RadarStateInWorldTextColor = RadarInWorld.AddColorPicker("Text Color", new Color(255,255,255)),
+	RadarStateInWorldTextColor = RadarInWorld.AddColorPicker("Text Color", new Color(255, 255, 255)),
 	RadarStateInWorldMiniMapColor = RadarInWorld.AddColorPicker("Scan Color MiniMap", new Color(0, 255, 0)),
 	RadarStateInWorldIconSize = RadarInWorld.AddSlider("Icon Size", 54, 32, 150),
 	RadarStateInWorldSound = RadarInWorld.AddSlider("Sound volume%", 1, 0, 100),
@@ -151,18 +151,18 @@ let RadarTree = BaseTree.AddNode("Scan"),
 
 export {
 	State,
-	GliphState,
-	GliphStateIcon,
-	GliphStateIconColor,
-	GliphSwitcher,
-	GliphSwitcherTeam,
-	GliphInRange,
+	GlyphState,
+	GlyphStateIcon,
+	GlyphStateIconColor,
+	GlyphSwitcher,
+	GlyphSwitcherTeam,
+	GlyphInRange,
 	DrawTextSize,
 	DrawTextColor,
-	DrawTimerGliphX,
-	DrawTimerGliphY,
-	DrawTimerGliphState,
-	DrawTimerGliphSize
+	DrawTimerGlyphX,
+	DrawTimerGlyphY,
+	DrawTimerGlyphState,
+	DrawTimerGlyphSize
 }
 
 export {

@@ -23,7 +23,7 @@ export default class Base {
 
 	constructor(public name: string = "") { this.name = name }
 	public get ConfigValue(): any { return undefined }
-	public set ConfigValue(value: any) { }
+	public set ConfigValue(value: any) { return }
 	protected get Rect() {
 		return new Rectangle(this.Position, this.Position.Add(this.TotalSize))
 	}

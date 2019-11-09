@@ -55,7 +55,6 @@ Events.on("WndProc", (msg, wParam, lParam) => {
 		case InputMessage.WM_RBUTTONDOWN: case InputMessage.WM_RBUTTONDBLCLK:
 		case InputMessage.WM_MBUTTONDOWN: case InputMessage.WM_MBUTTONDBLCLK:
 		case InputMessage.WM_XBUTTONDOWN: case InputMessage.WM_XBUTTONDBLCLK: {
-
 			let mKey: VMouseKeys = 0;
 
 			if (msg === InputMessage.WM_LBUTTONDOWN || msg === InputMessage.WM_LBUTTONDBLCLK) {

@@ -2,9 +2,6 @@ import { Hero, Item, Unit } from "wrapper/Imports"
 import { ItemsHelper } from "./Helper/ItemsHelper"
 
 export class ItemBase extends ItemsHelper {
-	constructor(unit?: Hero | Unit) {
-		super(unit)
-	}
 	public get Abyssal(): Item {
 		let name = "item_abyssal_blade"
 		if (this.unit === undefined) {

@@ -11,9 +11,8 @@ function MoveUnit(x: Unit, to: Building) {
 }
 
 export function Tick() {
-	if (!State.value || Sleep.Sleeping("FeedTime")) {
+	if (!State.value || Sleep.Sleeping("FeedTime"))
 		return
-	}
 
 	let fontain = EnemyBase.find(x => x.IsEnemy())
 	// loop-optimizer: FORWARD
@@ -37,9 +36,8 @@ export function Tick() {
 }
 
 export function Draw() {
-	if (State.value && DrawState.value) {
+	if (State.value && DrawState.value)
 		Renderer()
-	}
 }
 
 export function GameEnded() {

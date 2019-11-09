@@ -192,13 +192,12 @@ export default class Player extends Entity {
 		let selected: Entity[] = []
 
 		let selUnits = this.m_pBaseEntity.m_nSelectedUnits
-		if (selUnits !== undefined && selUnits.length > 0) {
+		if (selUnits !== undefined && selUnits.length > 0)
 			selUnits.forEach(unitNative => {
 				let unit = EntityManager.GetEntityByNative(unitNative)
 				if (unit !== undefined)
 					selected.push(unit)
 			})
-		}
 		return selected
 	}
 	// SentryWardsPlaced		=> NonSpectator

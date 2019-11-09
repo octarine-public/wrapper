@@ -4,42 +4,21 @@ let LineDotParticles = new Map<string, number>()
 let CircleParticlesTempRange = new Map<number, number>()
 
 export class DrawBase {
-	public unit: Unit
-	constructor(unit?: Unit) {
-		this.unit = unit
-	}
+	constructor(public unit?: Unit) { }
+
 	private get IsOwnerValid(): boolean {
 		return LocalPlayer !== undefined && !LocalPlayer.IsSpectator && this.unit !== undefined
 	}
-	private UpdateLineDot(name: string, Base: any, State: Menu.Toggle, target: Hero) {
-		if (!this.IsOwnerValid) {
-			return
-		}
-		let particle = LineDotParticles.get(name)
-		if (particle === undefined && target !== undefined) {
-			particle = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, target)
-			ParticlesSDK.SetControlPoint(particle, 6, new Vector3(1))
-			LineDotParticles.set(name, particle)
-		}
-		if (LineDotParticles.has(name)) {
-			if (target === undefined || !this.unit.IsAlive || !Base.IsRestrictions(State)) {
-				this.RemoveParticle(name)
-			} else {
-				ParticlesSDK.SetControlPoint(particle, 2, this.unit.Position)
-				ParticlesSDK.SetControlPoint(particle, 7, target.Position)
-			}
-		}
-	}
 	/**
-	* Render Ability or Item Range Radius
-	* @param Items | Item or Ability
-	* @param name | Name item or ability for destroyer
-	* @param Range | Radius
-	* @param Selector | Select in Menu
-	* @param State | Turn off/on Toggle
-	* @param Colors | Color default 255, 255, 255
-	* @param InfrontUnit | InFrontUnit
-	*/
+	 * Render Ability or Item Range Radius
+	 * @param Items | Item or Ability
+	 * @param name | Name item or ability for destroyer
+	 * @param Range | Radius
+	 * @param Selector | Select in Menu
+	 * @param State | Turn off/on Toggle
+	 * @param Colors | Color default 255, 255, 255
+	 * @param InfrontUnit | InFrontUnit
+	 */
 	public Render(
 		Items: Ability,
 		name: string,
@@ -82,10 +61,10 @@ export class DrawBase {
 	 * @param Colors | undefined | Color default 255, 255, 255
 	 * @param InfrontUnit | undefined | InfrontUnit
 	 * @param callback | Function Custom SetControlPoint and Create, return particleid from DrawBase class
-	 * @example 
+	 * @example
 	 * UpdateCircle("item_blink", 1200, new Color(255, 255, 255))
-	 * @example 
-	 * UpdateCircle("item_blink", 1200, new Color(255, 255, 255), unit.Infront(200), 
+	 * @example
+	 * UpdateCircle("item_blink", 1200, new Color(255, 255, 255), unit.Infront(200),
 	 * (parricle) => {
 	 * 		ParticlesSDK.SetControlPoint(particle, 1, new Vector3(Colors.r, Colors.g, Colors.b))
 	 * })
@@ -94,13 +73,15 @@ export class DrawBase {
 		name: string,
 		range: number,
 		Colors: Color = new Color(255, 255, 255),
-		InfrontUnit?: Vector3, callback?: Function,
-		path?: string, attach?: ParticleAttachment_t,
+		InfrontUnit?: Vector3,
+		callback?: (par_id: number) => void,
+		path?: string,
+		attach?: ParticleAttachment_t,
 		unit?: Unit
 	) {
-		if (!this.IsOwnerValid) {
+		if (!this.IsOwnerValid)
 			return
-		}
+
 		let particle = CircleParticles.get(name)
 		if (particle === undefined) {
 			particle = !callback
@@ -114,14 +95,13 @@ export class DrawBase {
 			CircleParticlesTempRange.clear()
 			return
 		}
-		if (name) {
-			if (!callback) {
+		if (name !== undefined) {
+			if (callback === undefined) {
 				ParticlesSDK.SetControlPoint(particle, 1, new Vector3(Colors.r, Colors.g, Colors.b))
 				ParticlesSDK.SetControlPoint(particle, 2, new Vector3(range * 1.114, 255, 0))
 				ParticlesSDK.SetControlPoint(particle, 0, InfrontUnit === undefined ? this.unit.Position : InfrontUnit)
-			} else {
+			} else
 				callback(particle)
-			}
 		}
 	}
 	/**
@@ -130,9 +110,9 @@ export class DrawBase {
 	 * @example RemoveParticle("item_blink")
 	 */
 	public RemoveParticle(name: string) {
-		if (!this.IsOwnerValid) {
+		if (!this.IsOwnerValid)
 			return
-		}
+
 		let particle = CircleParticles.get(name)
 		if (particle !== undefined) {
 			ParticlesSDK.Destroy(particle, true)
@@ -152,5 +132,24 @@ export class DrawBase {
 		CircleParticles.clear()
 		LineDotParticles.clear()
 		CircleParticlesTempRange.clear()
+	}
+
+	private UpdateLineDot(name: string, Base: any, State: Menu.Toggle, target: Hero) {
+		if (!this.IsOwnerValid)
+			return
+
+		let particle = LineDotParticles.get(name)
+		if (particle === undefined && target !== undefined) {
+			particle = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_tower_aoe.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, target)
+			ParticlesSDK.SetControlPoint(particle, 6, new Vector3(1))
+			LineDotParticles.set(name, particle)
+		}
+		if (LineDotParticles.has(name)) {
+			if (target !== undefined && this.unit.IsAlive && Base.IsRestrictions(State)) {
+				ParticlesSDK.SetControlPoint(particle, 2, this.unit.Position)
+				ParticlesSDK.SetControlPoint(particle, 7, target.Position)
+			} else
+				this.RemoveParticle(name)
+		}
 	}
 }

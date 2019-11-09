@@ -33,17 +33,13 @@ function BaseCreateUnits(x: Entity) {
 }
 
 function BaseDestroyedUnits(x: Entity) {
-	if (x instanceof Entity && x instanceof Creep && x.IsLaneCreep && !x.IsHero) {
-		if (Units !== undefined || Units.length > 0) {
-			ArrayExtensions.arrayRemove(Units, x)
-		}
-	}
+	if (x instanceof Unit)
+		ArrayExtensions.arrayRemove(Units, x)
 }
 
 export function Tick() {
-	if (!State.value) {
-		return false
-	}
+	if (!State.value)
+		return
 	RoshanTick()
 }
 

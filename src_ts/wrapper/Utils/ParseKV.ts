@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 /// tokenize ///
 function tokenizeKV(data) {
 	data = data.toString()

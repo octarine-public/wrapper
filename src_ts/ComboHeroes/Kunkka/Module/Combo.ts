@@ -44,9 +44,9 @@ function SetCastDelay() {
 function ComboInit() {
 	let Items = initItemsMap.get(Owner),
 		Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined || Items === undefined) {
+	if (Abilities === undefined || Items === undefined)
 		return
-	}
+
 	let Time = Game.RawGameTime,
 		Q = Abilities.Torrent,
 		X = Abilities.MarksSpot,
@@ -55,30 +55,25 @@ function ComboInit() {
 		RF = Items.Refresher,
 		RFS = Items.RefresherShard,
 		SHG = Items.Shivas
-	if (!XMarkPos.IsZero()) {
-		if (RX !== undefined && RX.IsHidden && X !== undefined && !X.IsInAbilityPhase) {
-			XMarkPos = new Vector3()
+	if (!XMarkPos.IsZero() && RX !== undefined && RX.IsHidden && X !== undefined && !X.IsInAbilityPhase) {
+		XMarkPos = new Vector3()
+		return
+	}
+	if (ShipCombo && CheckAbility(R, XMarkPos)) {
+		if (Owner.Distance2D(XMarkPos) > (R.CastRange - 50)) {
+			Owner.MoveTo(XMarkPos)
 			return
 		}
-	}
-	if (ShipCombo) {
-		if (CheckAbility(R, XMarkPos)) {
-			if (Owner.Distance2D(XMarkPos) > (R.CastRange - 50)) {
-				Owner.MoveTo(XMarkPos)
-				return
-			}
-			// if (ConVars.GetInt("dota_player_units_auto_attack_mode") === 1) {
-			// 	SetAutoAttackMode(0)
-			// }
-			R.UseAbility(XMarkPos)
-			ComboTimer = Time + 3.08
-			Sleep.Sleep(Abilities.CastDelay(R))
-		}
+		// if (ConVars.GetInt("dota_player_units_auto_attack_mode") === 1) {
+		// 	SetAutoAttackMode(0)
+		// }
+		R.UseAbility(XMarkPos)
+		ComboTimer = Time + 3.08
+		Sleep.Sleep(Abilities.CastDelay(R))
 	}
 	if (ComboTimer - Time <= 2.05) {
-		if (XMarkPos.LengthSqr === 0 || X.CanBeCasted()) {
+		if (XMarkPos.LengthSqr === 0 || X.CanBeCasted())
 			return
-		}
 		if (CheckAbility(Q, XMarkPos)) {
 			Q.UseAbility(XMarkPos)
 			Sleep.Sleep(Abilities.CastDelay(Q))
@@ -115,16 +110,16 @@ function ComboInit() {
 }
 
 export function InitCombo() {
-	if (!Base.IsRestrictions(State) || Sleep.Sleeping) {
+	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
-	}
+
 	let target = MouseTarget,
 		Time = Game.RawGameTime
 	let Items = initItemsMap.get(Owner),
 		Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined || Items === undefined) {
+	if (Abilities === undefined || Items === undefined)
 		return
-	}
+
 	let Q = Abilities.Torrent as Ability,
 		X = Abilities.MarksSpot as Ability,
 		R = Abilities.Ghostship as Ability,
@@ -133,9 +128,9 @@ export function InitCombo() {
 		ComboInit()
 		return
 	}
-	if (Base.CanCastSpells(Owner) || target === undefined || target.IsMagicImmune) {
+	if (Base.CanCastSpells(Owner) || target === undefined || target.IsMagicImmune)
 		return
-	}
+
 	if (target !== undefined && !XMarkPos.IsZero())
 		XMarkPos = new Vector3()
 	let IsStunned = target.GetBuffByName("modifier_bashed"),
@@ -145,11 +140,9 @@ export function InitCombo() {
 	if (hexDebuff !== undefined && hexDebuff.RemainingTime > 0.3
 		|| IsBashed !== undefined && IsBashed.RemainingTime > DisableStaticTime
 		|| IsStunned !== undefined && IsStunned.RemainingTime > DisableStaticTime
-	) {
-		if (AutoComboMenu.value) {
+	)
+		if (AutoComboMenu.value)
 			AutoCombo = true
-		}
-	}
 	if (ComboTimer < Time) {
 		if (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect")) || !Base.Cancel(target))
 			return

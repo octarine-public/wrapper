@@ -42,15 +42,15 @@ function DrawShrineTime(unit: Unit) {
 }
 
 export function DrawShrine() {
-	if (Units.length <= 0) {
+	if (Units.length === 0)
 		return false
-	}
+
 	if (ShrineState.value) {
 		// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
 		Units.filter(x => {
-			if (!x.Name.includes("healers")) {
+			if (!x.Name.includes("healers"))
 				return false
-			}
+
 			switch (DrawEnemyOrAllies.selected_id) {
 				case 0:
 					return Base.IsShrine(x)

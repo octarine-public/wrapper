@@ -20,21 +20,21 @@ export function OnDraw() {
 		if ((!isWaitSpawn && creep.IsVisible))
 			return
 		let wts = RendererSDK.WorldToScreen(creep.Position)
-		if (wts !== undefined) {
-			switch (ComboBox.selected_id) {
-				case 0:
-					let name = creep.Name.replace("npc_dota_neutral_", "").split("_").join(" ")
-					RendererSDK.Text(name, wts, new Color(0, isWaitSpawn ? 0 : 255, isWaitSpawn ? 255 : 0, alpha.value),
-						"Arial", new Vector2(Size.value, 200))
-					break
-				case 1:
-					RendererSDK.Image(`panorama/images/heroes/${creep.Name}_png.vtex_c`,
-						wts.SubtractScalar(Size.value / 4),
-						new Vector2(Size.value / 2, Size.value / 2), new Color(255, 255, 255, alpha.value))
-					break
-				default:
-					break
-			}
+		if (wts === undefined)
+			return
+		switch (ComboBox.selected_id) {
+			case 0:
+				let name = creep.Name.replace("npc_dota_neutral_", "").split("_").join(" ")
+				RendererSDK.Text(name, wts, new Color(0, isWaitSpawn ? 0 : 255, isWaitSpawn ? 255 : 0, alpha.value),
+					"Arial", new Vector2(Size.value, 200))
+				break
+			case 1:
+				RendererSDK.Image(`panorama/images/heroes/${creep.Name}_png.vtex_c`,
+					wts.SubtractScalar(Size.value / 4),
+					new Vector2(Size.value / 2, Size.value / 2), new Color(255, 255, 255, alpha.value))
+				break
+			default:
+				break
 		}
 	})
 }

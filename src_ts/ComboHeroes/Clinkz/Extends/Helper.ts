@@ -23,16 +23,16 @@ class ClinkzHelper {
 		return State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
 	}
 	public AeonDisc(target: Hero, menu: boolean = true): boolean {
-		if (!AeonDiscItem.value && menu) {
+		if (!AeonDiscItem.value && menu)
 			return false
-		}
+
 		let Items = initItemsTargetMap.get(target)
-		if (Items === undefined) {
+		if (Items === undefined)
 			return false
-		}
-		if (Items.AeonDisk !== undefined && Items.AeonDisk.Cooldown <= 0) {
+
+		if (Items.AeonDisk !== undefined && Items.AeonDisk.Cooldown <= 0)
 			return true
-		}
+
 		return false
 	}
 	public Cancel(target: Hero): boolean {

@@ -17,9 +17,9 @@ export const initDrawMap = new Map<Unit, InitDraw>()
 
 
 export function InitMouse() {
-	if (!Base.IsRestrictions(State)) {
+	if (!Base.IsRestrictions(State))
 		return
-	}
+
 	MouseTarget = ArrayExtensions.orderBy(
 		Heroes.filter(x => x.IsEnemy() && x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
 		x => x.Distance(Utils.CursorWorldVec),

@@ -38,9 +38,9 @@ export function Tick() {
 		case 4: include_name = "tower"; break;
 		case 5: include_name = "npc_dota_"; break;
 	}
-	if (!Towers.some(x => x !== undefined && !x.IsEnemy() && x.IsAlive && x.HP <= TowerHP.value && x.Name.includes(include_name))) {
+	if (!Towers.some(x => x !== undefined && !x.IsEnemy() && x.IsAlive && x.HP <= TowerHP.value && x.Name.includes(include_name)))
 		return false
-	}
+
 	Player.Glyph()
 	Sleep.Sleep(GetDelayCast(), "Glyph")
 	return true

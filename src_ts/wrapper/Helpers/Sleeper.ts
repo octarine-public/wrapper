@@ -68,20 +68,20 @@ export class GameSleeper extends SleeperBase {
 }
 
 export class TickSleeper {
-	private lastSleepTickCount: number
+	private lastSleepTickCount = 0
+
 	public get Sleeping(): boolean {
-		return this.TickCount < this.lastSleepTickCount;
+		return this.TickCount < this.lastSleepTickCount
 	}
 	private get TickCount(): number {
-		if (!Game.IsInGame) {
-			return new Date().getTime() & Number.MAX_VALUE;
-		}
-		return Game.RawGameTime * 1000;
+		if (!Game.IsInGame)
+			return Date.now()
+		return Game.RawGameTime * 1000
 	}
 	public Sleep(duration: number): void {
-		this.lastSleepTickCount = this.TickCount + duration;
+		this.lastSleepTickCount = this.TickCount + duration
 	}
 	public ResetTimer() {
-		this.lastSleepTickCount = 0;
+		this.lastSleepTickCount = 0
 	}
 }

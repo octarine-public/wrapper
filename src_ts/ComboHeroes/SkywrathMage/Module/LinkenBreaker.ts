@@ -21,9 +21,9 @@ export function BreakInit() {
 	let Items = initItemsMap.get(MyHero),
 		Abilities = initAbilityMap.get(MyHero)
 
-	if (Items === undefined || Abilities === undefined) {
+	if (Items === undefined || Abilities === undefined)
 		return
-	}
+
 	// Eul
 	if (Items.Cyclone !== undefined
 		&& !Base.CancelAbilityRealm(target)
@@ -32,9 +32,8 @@ export function BreakInit() {
 			Items.Cyclone.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value)
 			return
-		}
 	}
 
 	// ForceStaff
@@ -45,9 +44,8 @@ export function BreakInit() {
 			Items.ForceStaff.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value)
 			return
-		}
 	}
 
 	// Orchid
@@ -58,9 +56,8 @@ export function BreakInit() {
 			Items.Orchid.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value)
 			return
-		}
 	}
 
 	// Bloodthorn
@@ -71,9 +68,8 @@ export function BreakInit() {
 			Items.Bloodthorn.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value)
 			return
-		}
 	}
 
 	// ArcaneBolt
@@ -84,9 +80,8 @@ export function BreakInit() {
 			Abilities.ArcaneBolt.UseAbility(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.ArcaneBolt))
 			return
-		} else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value)
 			return
-		}
 	}
 
 	// ArcaneBolt
@@ -97,9 +92,8 @@ export function BreakInit() {
 			Abilities.AncientSeal.UseAbility(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.AncientSeal))
 			return
-		} else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value)
 			return
-		}
 	}
 
 	// Nullifier
@@ -110,9 +104,8 @@ export function BreakInit() {
 			Items.Nullifier.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value)
 			return
-		}
 	}
 
 	// RodofAtos
@@ -123,9 +116,8 @@ export function BreakInit() {
 			Items.RodofAtos.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value)
 			return
-		}
 	}
 
 	// RodofAtos
@@ -136,9 +128,8 @@ export function BreakInit() {
 			Items.Sheeps.UseAbility(target)
 			Sleep.Sleep(Items.Tick)
 			return
-		} else if (LinkenBreakOnlyFromRange.value) {
+		} else if (LinkenBreakOnlyFromRange.value)
 			return
-		}
 	}
 	return
 }
