@@ -3,12 +3,14 @@ import { State, TowerOnlyTarget, TowerSwitcher } from "./Menu"
 
 let Towers: Tower[] = [],
 	pars = new Map<Entity, number>(),
-	TowerRange = new Map<Entity, number>()
+	TowerRange = new Map<Entity, number>(),
+	FirstCreate: boolean = false
 
 export function Destroy(ent: Entity) {
-	if (ArrayExtensions.arrayRemove(Towers, ent)) {
+	if (ent instanceof Tower) {
 		pars.delete(ent)
 		TowerRange.delete(ent)
+		ArrayExtensions.arrayRemove(Towers, ent)
 	}
 }
 
@@ -23,14 +25,13 @@ function DrawTarget(ent: Tower, Owner: Unit) {
 export function Create(ent: Entity) {
 	if (ent instanceof Tower) {
 		Towers.push(ent)
-		if (State.value)
-			CreateTowerRange(ent)
 	}
 }
 function CreateTowerRange(ent: Tower) {
 	var par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
 	ParticlesSDK.SetControlPoint(par, 1, new Vector3(ent.AttackRange + ent.HullRadius + 25, 0, 0))
 	TowerRange.set(ent, par)
+	return par
 }
 function SwicthTowers(particle_range: number, tower: Tower) {
 	if (particle_range !== undefined) {
@@ -52,6 +53,10 @@ export function OnDraw() {
 	Towers.forEach((tower: Tower, i) => {
 		if (tower === undefined || i === undefined) {
 			return
+		}
+		if (!FirstCreate) { // shit, in ent create don'n work
+			CreateTowerRange(tower)
+			FirstCreate = true
 		}
 		let particle_range = TowerRange.get(tower)
 		if (!TowerOnlyTarget.value) {
