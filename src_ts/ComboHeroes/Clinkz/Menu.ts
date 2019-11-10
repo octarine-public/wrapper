@@ -36,6 +36,7 @@ let arrayItems: string[] = [
 
 let Combo = Menu.AddNode("Combo"),
 	ComboKeyItem = Combo.AddKeybind("Combo Key", "D"),
+	StyleCombo = Combo.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"]),
 	HarassModeCombo = Combo.AddSwitcher("Orb Walker", ["Off", "Move to cursor", "Move to target"]),
 	СomboAbility = Combo.AddImageSelector("Abilities", arrayAbility, new Map(arrayAbility.map(name => [name, true]))),
 	СomboItems = Combo.AddImageSelector("Items", arrayItems, new Map(arrayItems.map(name => [name, true]))),
@@ -92,6 +93,7 @@ export {
 export {
 	State,
 	NearMouse,
+	StyleCombo,
 	СomboItems,
 	BlinkRadius,
 	ComboKeyItem,

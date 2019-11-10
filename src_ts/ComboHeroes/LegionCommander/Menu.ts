@@ -48,6 +48,7 @@ arrayItems.forEach(itemName => {
 
 let Combo = Menu.AddNode("Combo"),
 	ComboKeyItem = Combo.AddKeybind("Combo Key", "D"),
+	StyleCombo = Combo.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"]),
 	ComboMode = Combo.AddSwitcher("Use combo with (Priority)", ["Invisible Sword", "Dagger"], 1),
 	ComboModeInvis = Combo.AddToggle("Use Press of Attak before invisibility", true),
 	СomboAbility = Combo.AddImageSelector("Abilities", arrayAbility, activeAbility),
@@ -101,6 +102,7 @@ let DrawingMenu = Menu.AddNode("Drawing"),
 export {
 	// Combo
 	State,
+	StyleCombo,
 	ComboKeyItem,
 	СomboAbility,
 	СomboItems,

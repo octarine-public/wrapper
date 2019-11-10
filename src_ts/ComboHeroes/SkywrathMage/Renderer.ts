@@ -12,10 +12,12 @@ import {
 	ArcaneBoltRadiusColor,
 	MysticFlareRadiusColor,
 	AncientSealRadiusColor,
-	ConcussiveShotRadiusColor
+	ConcussiveShotRadiusColor,
+	StyleCombo
 } from "./Menu"
 import { Color, Game, LocalPlayer, RendererSDK, Vector2 } from "wrapper/Imports"
 import { MouseTarget, MyHero, initDrawMap, initItemsMap, initAbilityMap } from "./Listeners"
+import { ComboActived } from "./Module/Combo"
 
 export function Draw() {
 	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || MyHero === undefined)
@@ -40,7 +42,7 @@ export function Draw() {
 	if (Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || !TextItem.value)
 		return
 
-	let Combo = ComboKey.is_pressed,
+	let Combo = (StyleCombo.selected_id === 1 && ComboActived) || (StyleCombo.selected_id === 0 && ComboKey.is_pressed),
 		autoArcaneBolt = !Combo && SmartArcaneAutoBoltState.value,
 		AutoCombo = AutoComboState.value && (!AutoComboDisableWhen.value || !Combo),
 		AutoDisable = !Combo && AutoDisableState.value

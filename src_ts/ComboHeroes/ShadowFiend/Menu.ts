@@ -38,6 +38,7 @@ let array_radius: string[] = [
 
 let Combo = Menu.AddNode("Combo"),
 	ComboKeyItem = Combo.AddKeybind("Combo Key"),
+	StyleCombo = Combo.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"]),
 	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000),
 	СomboItems = Combo.AddImageSelector("Items", array_items, new Map(array_items.map(name => [name, true]))),
 	СomboAbility = Combo.AddImageSelector("Ability", array_ability, new Map(array_ability.map(name => [name, true]))),
@@ -72,6 +73,7 @@ export {
 export {
 	State,
 	NearMouse,
+	StyleCombo,
 	СomboItems,
 	ComboKeyItem,
 	СomboAbility,

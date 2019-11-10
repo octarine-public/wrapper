@@ -1,14 +1,18 @@
 import { GameSleeper, TickSleeper, Utils } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, MyHero, ProjList, initItemsMap, initAbilityMap, initItemsTargetMap } from "../Listeners"
-import { AbilityMenu, AutoAttackTarget, BladeMailCancelCombo, BlinkRadius, ComboKey, ConcussiveShotAwait, Items, MinHealthToUltItem, State } from "../Menu"
+import { AbilityMenu, AutoAttackTarget, BladeMailCancelCombo, BlinkRadius, ComboKey, ConcussiveShotAwait, Items, MinHealthToUltItem, State, StyleCombo } from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
 let Sleep = new TickSleeper(),
 	GameSleep = new GameSleeper()
+export let ComboActived = false
+ComboKey.OnRelease(() => ComboActived = !ComboActived);
 export function InitCombo() {
-	if (!Base.IsRestrictions(State) || !ComboKey.is_pressed || Sleep.Sleeping)
+	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
-
+	if ((StyleCombo.selected_id === 1 && !ComboActived) || (StyleCombo.selected_id === 0 && !ComboKey.is_pressed)) {
+		return
+	}
 	let target = MouseTarget
 	if (target === undefined) {
 		MyHero.MoveTo(Utils.CursorWorldVec)

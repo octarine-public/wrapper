@@ -1,9 +1,13 @@
 import { Ability, Hero, TickSleeper } from "wrapper/Imports";
 import { Base } from "../Extends/Helper";
 import { MouseTarget, Owner, initItemsMap, initAbilityMap } from "../Listeners";
-import { BladeMailCancel, ComboKeyItem, ModeInvisCombo, State, СomboAbility, СomboItems } from "../Menu";
+import { BladeMailCancel, ComboKeyItem, ModeInvisCombo, State, СomboAbility, СomboItems, StyleCombo } from "../Menu";
 
-let Sleep = new TickSleeper()
+let Sleep = new TickSleeper(),
+	ComboActived = false
+
+ComboKeyItem.OnRelease(() => ComboActived = !ComboActived);
+
 function IsValidAbility(ability: Ability, target: Hero) {
 	return ability !== undefined && ability.IsReady
 		&& ability.CanBeCasted() && СomboAbility.IsEnabled(ability.Name)
@@ -15,9 +19,11 @@ function IsValidItems(Item: Ability, target: Hero) {
 		&& Owner.Distance2D(target) <= Item.CastRange && !Sleep.Sleeping
 }
 export function InitCombo() {
-	if (!Base.IsRestrictions(State) || !ComboKeyItem.is_pressed || Sleep.Sleeping)
+	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
-
+	if ((StyleCombo.selected_id === 1 && !ComboActived) || (StyleCombo.selected_id === 0 && !ComboKeyItem.is_pressed)) {
+		return
+	}
 	let target = MouseTarget
 	if (target === undefined || target.IsMagicImmune || !target.IsAlive) {
 		return

@@ -7,9 +7,12 @@ import { MouseTarget, Owner, initAbilityMap, initItemsMap } from "../Listeners"
 import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
 
-import { BladeMailItem, ComboKeyItem, State, СomboAbility, СomboItems, ComboMode, ComboModeInvis, isRunToTarget } from "../Menu"
+import { BladeMailItem, ComboKeyItem, State, СomboAbility, СomboItems, ComboMode, ComboModeInvis, isRunToTarget, StyleCombo } from "../Menu"
 
-let GameSleep = new TickSleeper()
+let GameSleep = new TickSleeper(),
+	ComboActived = false
+
+ComboKeyItem.OnRelease(() => ComboActived = !ComboActived);
 
 function IsValid(item: Ability | Item, Selector: Menu.ImageSelector) {
 	return item && Selector.IsEnabled(item.Name) && item.CanBeCasted()
@@ -199,7 +202,10 @@ function CastInvis(Abilities: InitAbility, Items: InitItems, blockingAbilities: 
 }
 
 export function InitCombo() {
-	if (!Base.IsRestrictions(State) || !ComboKeyItem.is_pressed || GameSleep.Sleeping) {
+	if (!Base.IsRestrictions(State) || GameSleep.Sleeping) {
+		return
+	}
+	if ((StyleCombo.selected_id === 1 && !ComboActived) || (StyleCombo.selected_id === 0 && !ComboKeyItem.is_pressed)) {
 		return
 	}
 	let target = MouseTarget
