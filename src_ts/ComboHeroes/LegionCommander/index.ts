@@ -5,8 +5,9 @@ import { Draw } from "./Renderer"
 import {
 	EntityCreated,
 	EntityDestroyed,
+	Tick,
 	GameEnded, GameStarted, InitMouse,
-	LinearProjectileDestroyed, TrackingProjectileCreated, Tick,
+	LinearProjectileDestroyed, TrackingProjectileCreated
 } from "./Listeners"
 
 EventsSDK.on("Draw", Draw)

@@ -317,8 +317,10 @@ EventsSDK.on("EntityCreated", ent => {
 		if (owner === undefined) {
 			let buff = (ent as Unit).Buffs[0];
 
-			if (buff.Owner !== undefined)
-				owner = buff.Owner;
+			if (buff === undefined || buff.Owner === undefined)
+				return;
+
+			owner = buff.Owner;
 		}
 
 		if (owner === undefined || !owner.IsEnemy())

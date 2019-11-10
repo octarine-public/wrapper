@@ -47,13 +47,6 @@ function PressTheAttack(Abilities: InitAbility, Items: InitItems, target: Hero) 
 		Items.BladeMail.UseAbility(Owner)
 		return
 	}
-	if (Items.Medallion || Items.SolarCrest) {
-		let Item = Items.Medallion ? Items.Medallion : Items.SolarCrest
-		if (IsValid(Item, СomboItems) && Owner.Distance2D(target) <= Item.CastRange && !target.IsMagicImmune) {
-			Item.UseAbility(target)
-			return
-		}
-	}
 }
 
 function AttackTargetCustom(target: Hero) {
@@ -61,15 +54,15 @@ function AttackTargetCustom(target: Hero) {
 		Owner.CanAttack(target)
 			? Owner.AttackTarget(target)
 			: Owner.MoveTo(target.NetworkPosition)
-		GameSleep.Sleep(300)
+		GameSleep.Sleep(250)
 		return
 	}
 }
 
 function Init(
-	Abilities: InitAbility,
-	Items: InitItems,
 	target: Hero,
+	Items: InitItems,
+	Abilities: InitAbility,
 	blockingAbilities: boolean,
 	UseBlink: boolean = false,
 	is_invise: boolean = false,
@@ -85,7 +78,7 @@ function Init(
 	}
 	if (is_invise) {
 		if (Items.InvisSword || Items.SilverEdge) {
-			let Item = Items.InvisSword ? Items.InvisSword : Items.SilverEdge
+			let Item = Items.InvisSword !== undefined ? Items.InvisSword : Items.SilverEdge
 			if (IsValid(Item, СomboItems)) {
 				Item.UseAbility(Owner)
 				return
@@ -112,9 +105,12 @@ function Init(
 		GameSleep.Sleep(Abilities.Overwhelming.CastPoint * 1000)
 		return
 	}
-	if (blockingAbilities) {
-		BreakInit()
-		return
+	if (Items.Medallion || Items.SolarCrest) {
+		let Item = Items.Medallion !== undefined ? Items.Medallion : Items.SolarCrest
+		if (IsValid(Item, СomboItems) && Owner.Distance2D(target) <= Item.CastRange && !target.IsMagicImmune) {
+			Item.UseAbility(target)
+			return
+		}
 	}
 	if (IsValid(Items.LotusOrb, СomboItems)) {
 		Items.LotusOrb.UseAbility(Owner)
@@ -129,6 +125,10 @@ function Init(
 	if (UseBlink && Items.Blink.CanBeCasted()) {
 		Items.Blink.UseAbility(target)
 		GameSleep.Sleep(Items.Tick)
+		return
+	}
+	if (blockingAbilities) {
+		BreakInit()
 		return
 	}
 	if (IsValid(Items.Nullifier, СomboItems)
@@ -169,7 +169,7 @@ function Init(
 		return
 	}
 	if (IsValid(Items.UrnOfShadows, СomboItems) || IsValid(Items.SpiritVesel, СomboItems)) {
-		let Item = Items.UrnOfShadows ? Items.UrnOfShadows : Items.SpiritVesel
+		let Item = Items.UrnOfShadows !== undefined ? Items.UrnOfShadows : Items.SpiritVesel
 		if (Owner.Distance2D(target) <= (Item.CastRange + Owner.HullRadius) && !target.IsMagicImmune) {
 			Item.UseAbility(Owner)
 			GameSleep.Sleep(Items.Tick)
@@ -180,7 +180,6 @@ function Init(
 		&& Owner.Distance2D(target) <= (Abilities.Duel.CastRange + Owner.HullRadius)
 	) {
 		Abilities.Duel.UseAbility(target)
-		GameSleep.Sleep(Abilities.Duel.CastPoint * 1000)
 		return
 	}
 
@@ -188,7 +187,7 @@ function Init(
 }
 
 function CastInvis(Abilities: InitAbility, Items: InitItems, blockingAbilities: boolean, target: Hero) {
-	Init(Abilities, Items, target, blockingAbilities, false, true, () => {
+	Init(target, Items, Abilities, blockingAbilities, false, true, () => {
 		if (ComboModeInvis.value) {
 			PressTheAttack(Abilities, Items, target)
 		} else {
@@ -209,7 +208,7 @@ export function InitCombo() {
 	) {
 		if (isRunToTarget.value) {
 			Owner.MoveTo(Utils.CursorWorldVec)
-			GameSleep.Sleep(300)
+			GameSleep.Sleep(250)
 		}
 		return
 	}
@@ -229,14 +228,14 @@ export function InitCombo() {
 		}
 		if (ComboMode.selected_id === 1 || Owner.IsVisibleForEnemies) {
 			if (Owner.IsInRange(target, (Abilities.Duel.CastRange + Owner.HullRadius))) {
-				Init(Abilities, Items, target, blockingAbilities)
+				Init(target, Items, Abilities, blockingAbilities)
 				return
 			} else if (Items.Blink
 				&& Items.Blink.CanBeCasted()
 				&& СomboItems.IsEnabled(Items.Blink.Name)
-				&& Owner.IsInRange(target, (Items.Blink.AOERadius - (Owner.HullRadius + target.HullRadius)))
+				&& Owner.IsInRange(target, (Items.Blink.AOERadius + (Owner.HullRadius + target.HullRadius)))
 			) {
-				Init(Abilities, Items, target, blockingAbilities, true)
+				Init(target, Items, Abilities, blockingAbilities, true)
 				return
 			} else {
 				if (Items.InvisSword || Items.SilverEdge) {

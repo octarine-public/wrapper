@@ -1,10 +1,7 @@
-import { ArrayExtensions, Creep, Entity, Hero, TrackingProjectile, Utils, Unit } from "wrapper/Imports"
+import { ArrayExtensions, Creep, Entity, Hero, TrackingProjectile, Utils, Unit, Ability } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { GameEndedCombo } from "./Module/Combo"
-import { DeleteLinkenBreakAllVars } from "./Module/LinkenBreaker"
-//import { DrawDeleteTempAllVars } from "./Renderer"
-
 import InitDraw from "./Extends/Draw"
 import InitItems from "./Extends/Items"
 import InitAbilities from "./Extends/Abilities"
@@ -45,7 +42,6 @@ export function GameEnded() {
 	GameEndedCombo()
 	Owner = undefined
 	MouseTarget = undefined
-	DeleteLinkenBreakAllVars()
 }
 export function GameStarted(hero: Hero) {
 	if (Owner === undefined && hero.Name === MyNameHero) {
