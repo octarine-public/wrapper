@@ -1,8 +1,22 @@
 import { Courier, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Player, Unit } from "wrapper/Imports"
 
 let allyCourier: Courier,
-	Sleep = new GameSleeper()
-
+	Sleep = new GameSleeper(),
+	unit_anim: Unit[] = []
+// use ability courier
+const per_ability_kill: string[] = [
+	"axe_culling_blade",
+	"bane_brain_sap",
+	"bane_fiends_grip",
+	"lina_laguna_blade",
+	"magnataur_reverse_polarity",
+	"beastmaster_primal_roar",
+	"pudge_dismember",
+	"spirit_breaker_nether_strike",
+	"batrider_flaming_lasso",
+	"viper_viper_strike",
+	"shadow_demon_demonic_purge"
+]
 let courCtlrMenu = Menu.AddEntry(["Utility", "Courier Controller"]),
 	State = courCtlrMenu.AddToggle("State"),
 	// deliver
@@ -30,14 +44,14 @@ function checkCourSelf(stateEnt: Hero) {
 let CastCourAbility = (num: number) => allyCourier.IsControllable && allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
 
 function CourierState(courier: Courier) {
-	if (courier === undefined || !courier.IsControllable)
+	if (courier === undefined || !courier.IsControllable) {
 		return false
-
+	}
 	let StateCourEnt = courier.StateHero,
 		StateCourEnum = courier.State
-	if (checkCourSelf(StateCourEnt))
+	if (checkCourSelf(StateCourEnt)) {
 		return false
-
+	}
 	switch (StateCourEnum) {
 		case CourierState_t.COURIER_STATE_IDLE:
 		case CourierState_t.COURIER_STATE_AT_BASE:
@@ -59,26 +73,33 @@ function CourierState(courier: Courier) {
 }
 
 function AutoShiled(): boolean {
-	if (autoShieldState.value || allyCourier === undefined)
+	//console.log(unit_anim.toString())
+	if (!autoShieldState.value || allyCourier === undefined || unit_anim.length <= 0) {
 		return false
+	}
 	let shield = allyCourier.GetAbilityByName("courier_shield")
-	if (shield === undefined || shield.Level === 0 || !shield.IsCooldownReady)
+	if (shield === undefined || shield.Level === 0) {
 		return false
-	return EntityManager.AllEntities.some(ent => {
-		if (
-			ent instanceof Unit
-			&& ent.IsLaneCreep
-			&& allyCourier.IsControllable
-			&& ent.HasAttackCapability()
-			&& ent.IsEnemy(allyCourier)
-			&& allyCourier.IsInRange(ent, ent.AttackRange, true)
-		) {
-			shield.UseAbility()
-			Sleep.Sleep(GetDelayCast(), "Shield")
-			return true
-		}
+	}
+	let attack_courier = unit_anim.some(unit =>
+		per_ability_kill.some(abil => unit.GetAbilityByName(abil) !== undefined
+			&& unit.IsInRange(allyCourier, unit.GetAbilityByName(abil).CastRange)
+			&& !unit.GetAbilityByName(abil).IsInAbilityPhase
+		) ||
+		(
+			unit.IsInRange(allyCourier, (unit.AttackRange + unit.HullRadius))
+			&& unit.AttackDamage(allyCourier, true) > allyCourier.HP
+		)
+	)
+	//console.log(attack_courier)
+	if (!attack_courier && unit_anim.length !== 0 || !shield.IsCooldownReady) {
+		unit_anim = []
 		return false
-	})
+	}
+	unit_anim = []
+	shield.UseAbility()
+	Sleep.Sleep(GetDelayCast(), "Shield")
+	return true
 }
 
 function ItemsChecking(): boolean {
@@ -175,8 +196,14 @@ EventsSDK.on("GameStarted", () => {
 
 EventsSDK.on("GameEnded", () => {
 	allyCourier = undefined
+	unit_anim = []
 	// loop-optimizer: KEEP
 	playersBlockList.enabled_values.forEach((_, key) => playersBlockList.enabled_values.set(key, false))
 	playersBlockList.values = []
 	playersBlockList.Update()
+})
+EventsSDK.on("UnitAnimation", (unit) => {
+	if (unit.IsEnemy()) {
+		unit_anim.push(unit)
+	}
 })
