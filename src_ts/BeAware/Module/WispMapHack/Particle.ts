@@ -20,7 +20,7 @@ export function ParticleUpdated(id: number, ent: Entity, vector: Vector3) {
 export function OnDraw() {
 	if (!State.value || !pos.IsValid)
 		return
-	let wisp_ = wisp instanceof C_BaseEntity ? EntityManager.GetEntityByNative(wisp) : undefined
+	let wisp_ = wisp instanceof Entity ? wisp : undefined
 	if (wisp_ !== undefined && (!wisp_.IsEnemy() || wisp_.IsVisible || !wisp_.IsAlive))
 		return
 	RendererSDK.DrawMiniMapIcon("minimap_heroicon_npc_dota_hero_wisp", pos, 64 * 12, new Color(255, 255, 255))
