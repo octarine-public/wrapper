@@ -1,4 +1,4 @@
-import { Color, EntityManager, RendererSDK, Vector3, Entity } from "wrapper/Imports"
+import { Color, RendererSDK, Vector3, Entity } from "wrapper/Imports"
 import { State } from "./Menu"
 
 let wisp: Entity | number,

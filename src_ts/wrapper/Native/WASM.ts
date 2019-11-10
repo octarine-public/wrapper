@@ -7,11 +7,14 @@ var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("~/wrapper.w
 	_start: () => void,
 	CacheFrame: () => void,
 	GetIOBuffer: () => number,
-	memory: Uint8Array,
+	memory: WebAssembly.Memory,
 	ScreenToWorld: () => void,
 	ScreenToWorldCached: () => void,
 	WorldToScreen: () => boolean,
 	WorldToScreenCached: () => boolean,
+	my_malloc: (size: number) => number,
+	my_free: (ptr: number) => void,
+	ParseImage: (ptr: number, size: number) => number
 }
 global.wasm = wasm
 wasm._start()
@@ -109,4 +112,23 @@ export function ScreenToWorld(
 
 	wasm.ScreenToWorld()
 	return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2])
+}
+
+export function ParseImage(buf: ArrayBuffer): [Uint8Array, Vector2] {
+	if (buf === undefined)
+		return [new Uint8Array(new Array(4).fill(0xFF)), new Vector2(1, 1)]
+
+	let addr = wasm.my_malloc(buf.byteLength)
+	let memory = new Uint8Array(wasm.memory.buffer, addr)
+	memory.set(new Uint8Array(buf))
+
+	addr = wasm.ParseImage(addr, buf.byteLength)
+	if (addr === 0)
+		throw "Image conversion failed"
+	let image_size = new Vector2(IOBuffer[0], IOBuffer[1])
+	let copy = new Uint8Array(image_size.x * image_size.y * 4)
+	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
+	wasm.my_free(addr)
+
+	return [copy, image_size]
 }

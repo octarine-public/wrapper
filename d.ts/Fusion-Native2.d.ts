@@ -375,31 +375,13 @@ declare interface Renderer {
 	 * @returns screen position to IOBuffer if return value is true
 	 */
 	WorldToScreen(): boolean // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
-
-	FilledCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a: number): void
-	OutlinedCircle(x: number, y: number, radius: number, r: number, g: number, b: number, a: number): void
-	Line(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number, a: number): void
-	FilledRect(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number, a: number): void
-	OutlinedRect(baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number, a: number): void
-	/**
-	 * @param path start it with "~/" (without double-quotes) to load image from "%loader_path%/scripts_files/%path%"
-	 * @param path also must end with "_c" (without double-quotes), if that's vtex_c
-	 * @param baseW you can use -1 to leave it auto
-	 * @param baseH you can use -1 to leave it auto
-	 */
-	Image(path: string, baseX: number, baseY: number, baseW: number, baseH: number, r: number, g: number, b: number, a: number): void
-	/**
-	 * @param font_name default: "Calibri"
-	 * @param font_size default: 12
-	 * @param font_weight default: 150
-	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
-	 */
-	Text(x: number, y: number, text: string, r: number, g: number, b: number, a: number, font_name: string, font_size: number, font_weight: number, flags: number): void
-
-	GetTextSize(text: string, font_name: string, font_size: number, font_weight: number, flags: number): boolean // returns Vector2 to IOBuffer offset 0 on get
-	
+	CreateTextureID(): number
+	FreeTextureID(texture_id: number): void
+	CreateFontID(): number
+	FreeFontID(font_id: number): void
+	EditFont(font_id: number, font_name: string, font_size: number, font_weight: number, flags: number): boolean
+	GetTextSize(text: string, font_id: number): boolean // returns Vector2 to IOBuffer offset 0 on get
 	GetPositionHeight(): number // pass Position: Vector2 at IOBuffer offset 0
-	
 	ExecuteCommandBuffer(ar: ArrayBuffer): void
 }
 
