@@ -19,17 +19,12 @@ enum CommandID {
 	TEXT,
 }
 let RendererSDK_ = new (class RendererSDK {
-	private font_cache = new Map</* name */string, Map</* size */number, Map</* weight */number, Map</* flags */number, /* font_id */number>>>>()
-	private texture_cache = new Map</* path */string, number>()
-	private tex2size = new Map</* texture_id */number, Vector2>()
-
 	private static StringToUTF16(str): Uint8Array {
 		let buf = new Uint16Array(str.length)
 		for (let i = str.length; i--;)
 			buf[i] = str.charCodeAt(i)
 		return new Uint8Array(buf.buffer)
 	}
-
 	/**
 	 * Default Size of Text = Size 18 x Weight 200
 	 * @param font Size as X | default: 18
@@ -42,7 +37,12 @@ let RendererSDK_ = new (class RendererSDK {
 	 * @param vecSize Height as Y
 	 */
 	public readonly DefaultShapeSize: Vector2 = new Vector2(5, 5)
+
 	private commandCache = new Uint8Array()
+	private commandCacheSize = 0
+	private font_cache = new Map</* name */string, Map</* size */number, Map</* weight */number, Map</* flags */number, /* font_id */number>>>>()
+	private texture_cache = new Map</* path */string, number>()
+	private tex2size = new Map</* texture_id */number, Vector2>()
 	private last_color = new Color(-1, -1, -1, -1)
 	/**
 	 * Cached. Updating every 5 sec
@@ -352,10 +352,12 @@ let RendererSDK_ = new (class RendererSDK {
 	}
 
 	public EmitDraw() {
-		if (this.commandCache.byteLength === 0)
+		if (this.commandCacheSize === 0)
 			return
-		Renderer.ExecuteCommandBuffer(this.commandCache.buffer)
-		this.commandCache = new Uint8Array()
+		Renderer.ExecuteCommandBuffer(this.commandCache.slice(0, this.commandCacheSize))
+		if (this.commandCacheSize < this.commandCache.byteLength / 3)
+			this.commandCache = new Uint8Array()
+		this.commandCacheSize = 0
 		this.last_color = new Color(-1, -1, -1, -1)
 	}
 	public GetAspectRatio() {
@@ -371,10 +373,16 @@ let RendererSDK_ = new (class RendererSDK {
 	}
 
 	private AllocateCommandSpace(bytes: number): DataView {
-		let current_len = this.commandCache.byteLength
-		let buf = new Uint8Array(current_len + 1 + bytes)
-		buf.set(this.commandCache, 0)
-		return new DataView((this.commandCache = buf).buffer, current_len)
+		bytes += 1 // msgid
+		let current_len = this.commandCacheSize
+		if (current_len + bytes > this.commandCache.byteLength) {
+			const grow_factor = 2
+			let buf = new Uint8Array(Math.max(this.commandCache.byteLength * grow_factor, current_len + bytes))
+			buf.set(this.commandCache, 0)
+			this.commandCache = buf
+		}
+		this.commandCacheSize += bytes
+		return new DataView(this.commandCache.buffer, current_len)
 	}
 	private SetColor(color: Color): void {
 		if (this.last_color.Equals(color))
