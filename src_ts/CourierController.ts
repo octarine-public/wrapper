@@ -157,7 +157,7 @@ function IsBlocked(npc: Hero) {
 }
 
 EventsSDK.on("Tick", () => {
-	if (!State.value || (LocalPlayer !== undefined && LocalPlayer.IsSpectator) || Sleep.Sleeping("OrderStop") || Sleep.Sleeping("Shield")) {
+	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || !State.value || Sleep.Sleeping("OrderStop") || Sleep.Sleeping("Shield")) {
 		return false
 	}
 	if (AutoShiled()) {
@@ -187,8 +187,8 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 EventsSDK.on("GameStarted", () => {
-	if (LocalPlayer !== undefined && LocalPlayer.IsSpectator) {
-		return false
+	if (playersBlockList.enabled_values.size <= 0) {
+		return
 	}
 	// loop-optimizer: KEEP
 	playersBlockList.enabled_values.forEach((_, key) => playersBlockList.enabled_values.set(key, false))
