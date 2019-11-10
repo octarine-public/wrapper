@@ -118,7 +118,7 @@ const getRadius = (skill: Ability) => {
 	return radius;
 }
 EventsSDK.on("Draw", () => {
-	if (!active.value || !Game.IsInGame || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)
+	if (!active.value || !Game.IsInGame || LocalPlayer === undefined || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)
 		return false
 	if (fActive.value) {
 		if (fPart === undefined || fCache !== fRange.value) {
