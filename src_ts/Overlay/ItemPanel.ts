@@ -18,8 +18,10 @@ const panelAllies = Menu.AddToggle("Show Allies");
 const panelSettingsKey = panelSettings.AddKeybind("Toggle Key")//.SetTooltip(`Show/hide ${Menu.name}`)
 const panelSettingsSize = panelSettings.AddSlider("Size", 30, 20, 50)
 const panelSettingsFlow = panelSettings.AddSwitcher("Style", ["Horizontal", "Vertical"]);
+const panelSettingsOutline = panelSettings.AddToggle("Outline", true);
 const panelSettingsOpacity = panelSettings.AddSlider("Opacity", 60, 5, 100);
 const panelSettingsPosition = panelSettings.AddVector2("Position", new Vector2(0, 60));
+const panelSettingsTurnTouch = panelSettingsPosition.node.AddToggle("Touch panel", true);
 const panelSettingsGapIcon = panelSettings.AddSlider("Gap between Icons", 1, 0, 10);
 const panelSettingsSpectator = panelSettings.AddToggle("Turn on when spectating");
 
@@ -84,8 +86,8 @@ function ChangeStylePanel() {
 		panelSettingsSize.value);
 
 	onTouchPanel.SetVector(
-		IsHorizontal() ? 7 : panelSettingsSize.value * 1.31,
-		IsHorizontal() ? panelSettingsSize.value : 7);
+		IsHorizontal() ? (panelSettingsSize.value / 3.5) : panelSettingsSize.value * 1.31,
+		IsHorizontal() ? panelSettingsSize.value : (panelSettingsSize.value / 3.5));
 }
 
 function CooldownRound(time: number) {
@@ -123,7 +125,8 @@ function DrawItem(item: Item, position: Vector2, isBackPack = false) {
 		GetPathToItemIcon(item.Name),
 		position, itemIconSize, colorItem);
 
-	RendererSDK.OutlinedRect(position, itemIconSize, isBackPack ? colorDarkGrayPanel : colorGrayPanels);
+	if (panelSettingsOutline.value)
+		RendererSDK.OutlinedRect(position, itemIconSize, isBackPack ? colorDarkGrayPanel : colorGrayPanels);
 
 	if (panelItemsCharges.value) {
 
@@ -205,52 +208,56 @@ EventsSDK.on("Draw", () => {
 
 	{ // Touch Panel
 
-		const lastPosTouchRect = positionPanel.Clone();
+		if (panelSettingsTurnTouch.value) {
 
-		isHorizontal
-			? lastPosTouchRect.AddScalarX(onTouchPanel.x)
-			: lastPosTouchRect.AddScalarY(onTouchPanel.y)
+			const lastPosTouchRect = positionPanel.Clone();
 
-		filteredHeroes.forEach(() => isHorizontal
-			? lastPosTouchRect.AddScalarY(onTouchPanel.y + panelSettingsGapIcon.value * 2)
-			: lastPosTouchRect.AddScalarX(onTouchPanel.x + panelSettingsGapIcon.value * 2));
+			isHorizontal
+				? lastPosTouchRect.AddScalarX(onTouchPanel.x)
+				: lastPosTouchRect.AddScalarY(onTouchPanel.y)
 
-		const OnTouchRect = new Rectangle(positionPanel, lastPosTouchRect);
+			filteredHeroes.forEach(() => isHorizontal
+				? lastPosTouchRect.AddScalarY(onTouchPanel.y + panelSettingsGapIcon.value * 2)
+				: lastPosTouchRect.AddScalarX(onTouchPanel.x + panelSettingsGapIcon.value * 2));
 
-		const sizeOfTouchRect = lastPosTouchRect.Subtract(positionPanel);
+			const OnTouchRect = new Rectangle(positionPanel, lastPosTouchRect);
 
-		RendererSDK.FilledRect(positionPanel, sizeOfTouchRect, colorOnTouchPanel)
+			const sizeOfTouchRect = lastPosTouchRect.Subtract(positionPanel);
 
-		if (OnTouchRect.Contains(mousePos) && Input.IsMouseKeyDown(VMouseKeys.MK_LBUTTON)) {
+			RendererSDK.FilledRect(positionPanel, sizeOfTouchRect, colorOnTouchPanel)
 
-			if (!isDraggingPanel) {
-				mouseOnPanel.CopyFrom(mousePos.Subtract(positionPanel));
+			if (OnTouchRect.Contains(mousePos) && Input.IsMouseKeyDown(VMouseKeys.MK_LBUTTON)) {
+
+				if (!isDraggingPanel) {
+					mouseOnPanel.CopyFrom(mousePos.Subtract(positionPanel));
+				}
+
+				isDraggingPanel = true;
+			}
+			else if (isDraggingPanel && !Input.IsMouseKeyDown(VMouseKeys.MK_LBUTTON)) {
+				MenuSDK.MenuManager.UpdateConfig();
+				isDraggingPanel = false;
 			}
 
-			isDraggingPanel = true;
-		} else if (isDraggingPanel && !Input.IsMouseKeyDown(VMouseKeys.MK_LBUTTON)) {
-			MenuSDK.MenuManager.UpdateConfig();
-			isDraggingPanel = false;
+			if (isDraggingPanel) {
+				positionPanel.CopyFrom(mousePos.Subtract(mouseOnPanel));
+
+				// clamp between 0 and (WindowSize - max size of panel)
+				positionPanel.CopyFrom(positionPanel.Max(new Vector2()).Min(windowSize.Subtract(sizeOfTouchRect)));
+
+				const positionPanelPercent = positionPanel.Divide(windowSize).MultiplyScalarForThis(100);
+
+				positionPanelPercent.x = Math.round(positionPanelPercent.x * 10) / 10;
+				positionPanelPercent.y = Math.round(positionPanelPercent.y * 10) / 10;
+
+				// save position to menu
+				panelSettingsPosition.Vector = positionPanelPercent;
+			}
+
+			isHorizontal
+				? positionPanel.AddScalarX(onTouchPanel.x + panelSettingsGapIcon.value)
+				: positionPanel.AddScalarY(onTouchPanel.y + panelSettingsGapIcon.value);
 		}
-
-		if (isDraggingPanel) {
-			positionPanel.CopyFrom(mousePos.Subtract(mouseOnPanel));
-
-			// clamp between 0 and (WindowSize - max size of panel)
-			positionPanel.CopyFrom(positionPanel.Max(new Vector2()).Min(windowSize.Subtract(sizeOfTouchRect)));
-
-			const positionPanelPercent = positionPanel.Divide(windowSize).MultiplyScalarForThis(100);
-
-			positionPanelPercent.x = Math.round(positionPanelPercent.x * 10) / 10;
-			positionPanelPercent.y = Math.round(positionPanelPercent.y * 10) / 10;
-
-			// save position to menu
-			panelSettingsPosition.Vector = positionPanelPercent;
-		}
-
-		isHorizontal
-			? positionPanel.AddScalarX(onTouchPanel.x + panelSettingsGapIcon.value)
-			: positionPanel.AddScalarY(onTouchPanel.y + panelSettingsGapIcon.value);
 	}
 
 	filteredHeroes.forEach(hero => {
@@ -265,7 +272,9 @@ EventsSDK.on("Draw", () => {
 		RendererSDK.Image(GetPathToHeroIcon(hero.Name),
 			posPanelOnLine, heroIconSize, colorPanel);
 
-		RendererSDK.OutlinedRect(posPanelOnLine, heroIconSize, colorGrayPanels);
+		if (panelSettingsOutline.value) {
+			RendererSDK.OutlinedRect(posPanelOnLine, heroIconSize, colorGrayPanels);
+		}
 
 		isHorizontal
 			? posPanelOnLine.AddScalarX(heroIconSize.x)
