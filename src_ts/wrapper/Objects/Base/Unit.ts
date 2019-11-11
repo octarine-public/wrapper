@@ -24,6 +24,28 @@ import Rune from "./Rune"
 import Tree from "./Tree"
 import TreeTemp from "./TreeTemp"
 
+import { parseKVFile } from "../../Utils/Utils";
+
+const attackAnimationPoint = new Map<string, number>();
+
+let parseHeroes = parseKVFile("scripts/npc/npc_heroes.txt");
+
+// loop-optimizer: KEEP
+let heroesNames = Object.keys(parseHeroes.DOTAHeroes).filter(hero =>
+	!(hero.includes("values") || hero.includes("hero_base")));
+
+// loop-optimizer: KEEP
+heroesNames.forEach(hero => {
+	const heroFields = parseHeroes.DOTAHeroes[hero].values;
+
+	if (heroFields.AttackAnimationPoint !== undefined) {
+		attackAnimationPoint.set(hero, parseFloat(heroFields.AttackAnimationPoint));
+	}
+
+	// another values from script files. (i.e AttackRate, AttackRate)
+})
+
+
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
 	public static IsVisibleForEnemies(unit: Unit, newTagged: number): boolean {
@@ -414,6 +436,9 @@ export default class Unit extends Entity {
 	/* ================================ EXTENSIONS ================================ */
 
 	/* ================ GETTERS ================ */
+	public get AttackAnimationPoint(): number {
+		return attackAnimationPoint.get(this.Name) || 0;
+	}
 	public get IsRotating(): boolean {
 		return this.RotationDifference !== 0
 	}
