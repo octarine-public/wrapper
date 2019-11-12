@@ -1,17 +1,17 @@
 export default class Color {
-	public static readonly Black = new Color(0, 0, 0)
-	public static readonly Red = new Color(255)
-	public static readonly Green = new Color(0, 255)
-	public static readonly Blue = new Color(0, 0, 255)
-	public static readonly RoyalBlue = new Color(78, 121, 248)
-	public static readonly Yellow = new Color(255, 255)
-	public static readonly Orange = new Color(255, 128)
-	public static readonly Fuchsia = new Color(255, 0, 255)
-	public static readonly Aqua = new Color(0, 255, 255)
-	public static readonly BlackGray = new Color(90, 90, 90);
-	public static readonly Gray = new Color(128, 128, 128);
-	public static readonly LightGray = new Color(190, 190, 190);
-	public static readonly White = new Color(255, 255, 255)
+	public static get Black() { return new Color(0, 0, 0); }
+	public static get Red() { return new Color(255); }
+	public static get Green() { return new Color(0, 255); }
+	public static get Blue() { return new Color(0, 0, 255); }
+	public static get RoyalBlue() { return new Color(78, 121, 248); }
+	public static get Yellow() { return new Color(255, 255); }
+	public static get Orange() { return new Color(255, 128); }
+	public static get Fuchsia() { return new Color(255, 0, 255); }
+	public static get Aqua() { return new Color(0, 255, 255); }
+	public static get BlackGray() { return new Color(90, 90, 90); }
+	public static get Gray() { return new Color(128, 128, 128); }
+	public static get LightGray() { return new Color(190, 190, 190); }
+	public static get White() { return new Color(255, 255, 255); }
 
 	/* ================== Static ================== */
 	public static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): Color {

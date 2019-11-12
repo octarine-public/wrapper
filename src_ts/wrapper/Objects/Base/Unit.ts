@@ -206,7 +206,6 @@ export default class Unit extends Entity {
 	public get IsTrueSightImmune(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_TRUESIGHT_IMMUNE)
 	}
-
 	/* ======== base ======== */
 	public get IsInFadeTime(): boolean {
 		return this.m_pBaseEntity.m_flInvisibilityLevel > 0
@@ -220,7 +219,6 @@ export default class Unit extends Entity {
 	public get HasScepter(): boolean {
 		return this.HasScepterModifier || this.HasStolenScepter
 	}
-
 	public get Armor(): number {
 		return this.m_pBaseEntity.m_flPhysicalArmorValue
 	}
@@ -304,10 +302,29 @@ export default class Unit extends Entity {
 	public get HullRadius(): number {
 		return this.m_pBaseEntity.m_flHullRadius
 	}
+	public get AttackSpeed(): number {
+		return this.m_pBaseEntity.m_fAttackSpeed
+	}
 	public get IncreasedAttackSpeed(): number {
 		return this.m_pBaseEntity.m_fIncreasedAttackSpeed
 	}
-
+	public get AttackSpeedBonus() {
+		let attackSpeed = this.AttackSpeed;
+		// TODO
+		if (this.IsHero) {
+			switch (this.Name) {
+				case "npc_dota_hero_ursa":
+					let overpPower = this.GetAbilityByName("ursa_overpower");
+					if (overpPower && this.GetAbilityByName("modifier_ursa_overpower"))
+						attackSpeed += overpPower.GetSpecialValue("attack_speed_bonus_pct");
+					break;
+			}
+		}
+		return Math.min(Math.max(20, attackSpeed * 100), 600);
+	}
+	public get AttackPoint(): number {
+		return this.AttackAnimationPoint / (1 + ((this.AttackSpeedBonus - 100) / 100));
+	}
 	public get InvisibleLevel(): number {
 		return this.m_pBaseEntity.m_flInvisibilityLevel
 	}
@@ -474,7 +491,6 @@ export default class Unit extends Entity {
 
 		return spellAmp
 	}
-
 	public get Name(): string {
 		if (this.UnitName_ === undefined)
 			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
@@ -483,15 +499,12 @@ export default class Unit extends Entity {
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
 		return this.InFront(movespeed * time)
 	}
-
 	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Item {
 		return this.Inventory.GetItemByName(name, includeBackpack)
 	}
-
 	public HasItemInInventory(name: string | RegExp, includeBackpack: boolean = false): boolean {
 		return this.GetItemByName(name, includeBackpack) !== undefined
 	}
-
 	/* ================ METHODS ================ */
 
 	/**
