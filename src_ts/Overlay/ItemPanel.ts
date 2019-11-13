@@ -16,7 +16,7 @@ const panelAllies = Menu.AddToggle("Show Allies");
 
 // style
 const panelSettingsKey = panelSettings.AddKeybind("Toggle Key")//.SetTooltip(`Show/hide ${Menu.name}`)
-const panelSettingsSize = panelSettings.AddSlider("Size", 30, 20, 50)
+const panelSettingsSize = panelSettings.AddSlider("Size", 30, 10, 50)
 const panelSettingsFlow = panelSettings.AddSwitcher("Style", ["Horizontal", "Vertical"]);
 const panelSettingsOutline = panelSettings.AddToggle("Outline", true);
 const panelSettingsOpacity = panelSettings.AddSlider("Opacity", 60, 5, 100);
