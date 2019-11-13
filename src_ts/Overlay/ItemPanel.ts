@@ -80,14 +80,14 @@ function ChangeStylePanel() {
 
 	heroIconSize.SetVector(panelSettingsSize.value
 		* (IsHorizontal() ? 1.83 : 1.31),
-		(IsHorizontal() ? panelSettingsSize.value : panelSettingsSize.value * 1.31));
+		(IsHorizontal() ? panelSettingsSize.value : panelSettingsSize.value * 1.31)).RoundForThis();
 
 	itemIconSize.SetVector(panelSettingsSize.value * 1.31,
-		panelSettingsSize.value);
+		panelSettingsSize.value).RoundForThis();
 
 	onTouchPanel.SetVector(
 		IsHorizontal() ? (panelSettingsSize.value / 3.5) : panelSettingsSize.value * 1.31,
-		IsHorizontal() ? panelSettingsSize.value : (panelSettingsSize.value / 3.5));
+		IsHorizontal() ? panelSettingsSize.value : (panelSettingsSize.value / 3.5)).RoundForThis();
 }
 
 function CooldownRound(time: number) {
@@ -245,13 +245,8 @@ EventsSDK.on("Draw", () => {
 				// clamp between 0 and (WindowSize - max size of panel)
 				positionPanel.CopyFrom(positionPanel.Max(new Vector2()).Min(windowSize.Subtract(sizeOfTouchRect)));
 
-				const positionPanelPercent = positionPanel.Divide(windowSize).MultiplyScalarForThis(100);
-
-				positionPanelPercent.x = Math.round(positionPanelPercent.x * 10) / 10;
-				positionPanelPercent.y = Math.round(positionPanelPercent.y * 10) / 10;
-
 				// save position to menu
-				panelSettingsPosition.Vector = positionPanelPercent;
+				panelSettingsPosition.Vector = positionPanel.Divide(windowSize).MultiplyScalarForThis(100).Round(1);
 			}
 
 			isHorizontal

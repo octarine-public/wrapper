@@ -167,7 +167,7 @@ export default class Vector2 {
 	 * @param The another vector
 	 */
 	public Min(vec: Vector2): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			Math.min(this.x, vec instanceof Vector2 ? vec.x : vec),
 			Math.min(this.y, vec instanceof Vector2 ? vec.y : vec),
 		)
@@ -177,7 +177,7 @@ export default class Vector2 {
 	 * @param The another vector
 	 */
 	public Max(vec: Vector2 | number): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			Math.max(this.x, vec instanceof Vector2 ? vec.x : vec),
 			Math.max(this.y, vec instanceof Vector2 ? vec.y : vec),
 		)
@@ -186,16 +186,31 @@ export default class Vector2 {
 	 * Returns a vector whose elements are the absolute values of each of the source vector's elements.
 	 */
 	public Abs(): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			Math.abs(this.x),
 			Math.abs(this.y),
 		)
+	}
+	public Round(count: number = 0): Vector2 {
+		const pow = Math.pow(10, count);
+		return new Vector2(
+			Math.round(this.x * pow) / pow,
+			Math.round(this.y * pow) / pow
+		)
+	}
+	public RoundForThis(count: number = 0): Vector2 {
+		const pow = Math.pow(10, count);
+
+		this.x = Math.round(this.x * pow) / pow;
+		this.y = Math.round(this.y * pow) / pow;
+
+		return this;
 	}
 	/**
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
 	public SquareRoot(): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			Math.sqrt(this.x),
 			Math.sqrt(this.y),
 		)
@@ -299,7 +314,7 @@ export default class Vector2 {
 	 * Restricts a vector between a min and max value.
 	 */
 	public Clamp(min: Vector2, max: Vector2): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			Math.min((this.x > max.x) ? max.x : this.x, min.x),
 			Math.min((this.y > max.y) ? max.y : this.y, min.y),
 		)
@@ -312,7 +327,7 @@ export default class Vector2 {
 	 * @returns	The summed vector
 	 */
 	public Add(vec: Vector2): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			this.x + vec.x,
 			this.y + vec.y,
 		)
@@ -367,7 +382,7 @@ export default class Vector2 {
 	 * @returns The difference vector
 	 */
 	public Subtract(vec: Vector2): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			this.x - vec.x,
 			this.y - vec.y,
 		)
@@ -422,7 +437,7 @@ export default class Vector2 {
 	 * @return The product vector
 	 */
 	public Multiply(vec: Vector2): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			this.x * vec.x,
 			this.y * vec.y,
 		)
@@ -477,7 +492,7 @@ export default class Vector2 {
 	 * @return The vector resulting from the division
 	 */
 	public Divide(vec: Vector2): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			this.x / vec.x,
 			this.y / vec.y,
 		)
@@ -497,7 +512,7 @@ export default class Vector2 {
 	 * @param {number} scalar
 	 */
 	public DivideScalar(scalar: number): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			this.x / scalar,
 			this.y / scalar,
 		)
@@ -606,7 +621,7 @@ export default class Vector2 {
 		var cos = Math.cos(angle),
 			sin = Math.sin(angle)
 
-		return new Vector2 (
+		return new Vector2(
 			(this.x * cos) - (this.y * sin),
 			(this.y * cos) + (this.x * sin),
 		)
@@ -617,7 +632,7 @@ export default class Vector2 {
 	 * @param distance distance to be added
 	 */
 	public Rotation(rotation: Vector2, distance: number): Vector2 {
-		return new Vector2 (
+		return new Vector2(
 			this.x + rotation.x * distance,
 			this.y + rotation.y * distance,
 		)

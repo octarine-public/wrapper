@@ -198,6 +198,23 @@ export default class Vector3 {
 			Math.abs(this.z),
 		)
 	}
+	public Round(count: number = 0): Vector3 {
+		const pow = Math.pow(10, count);
+		return new Vector3(
+			Math.round(this.x * pow) / pow,
+			Math.round(this.y * pow) / pow,
+			Math.round(this.z * pow) / pow
+		)
+	}
+	public RoundForThis(count: number = 0): Vector3 {
+		const pow = Math.pow(10, count);
+
+		this.x = Math.round(this.x * pow) / pow;
+		this.y = Math.round(this.y * pow) / pow;
+		this.z = Math.round(this.z * pow) / pow;
+
+		return this;
+	}
 	/**
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
 	 */
