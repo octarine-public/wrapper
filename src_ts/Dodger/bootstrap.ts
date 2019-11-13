@@ -22,10 +22,10 @@ const ignorelistitems = [
 import InitMenu from "./Menu/Menu"
 
 MenuState.OnValue(caller => {
-	if (!caller.value) {
-		GameEndedCallback()
-	}
-	console.log(caller.value)
+	// if (!caller.value) {
+	// 	GameEndedCallback()
+	// }
+	// console.log(caller.value)
 })
 
 export const initItemsTargetMap = new Map<Unit, InitMenu>()

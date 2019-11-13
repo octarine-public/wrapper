@@ -16,6 +16,7 @@ export function InitCombo() {
 	let target = MouseTarget
 	if (target === undefined) {
 		MyHero.MoveTo(Utils.CursorWorldVec)
+		Sleep.Sleep(350)
 		return
 	}
 	if (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect"))

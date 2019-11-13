@@ -28,8 +28,8 @@ export class DrawBase {
 		Colors?: Color,
 		InfrontUnit?: Vector3
 	) {
-		Items && Selector.IsEnabled(Items.Name) && this.unit.IsAlive && State.value
-			? this.DrawParticle(Items.Name, Range, Colors, InfrontUnit)
+		Items && Selector.IsEnabled(name) && this.unit.IsAlive && State.value
+			? this.DrawParticle(name, Range, Colors, InfrontUnit)
 			: this.RemoveParticle(name)
 	}
 	/**
@@ -72,7 +72,7 @@ export class DrawBase {
 	public DrawParticle(
 		name: string,
 		range: number,
-		Colors: Color = new Color(255, 255, 255),
+		Colors: Color = Color.White,
 		InfrontUnit?: Vector3,
 		callback?: (par_id: number) => void,
 		path?: string,
@@ -100,8 +100,10 @@ export class DrawBase {
 				ParticlesSDK.SetControlPoint(particle, 1, new Vector3(Colors.r, Colors.g, Colors.b))
 				ParticlesSDK.SetControlPoint(particle, 2, new Vector3(range * 1.114, 255, 0))
 				ParticlesSDK.SetControlPoint(particle, 0, InfrontUnit === undefined ? this.unit.Position : InfrontUnit)
-			} else
+			}
+			else {
 				callback(particle)
+			}
 		}
 	}
 	/**

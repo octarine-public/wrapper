@@ -184,15 +184,14 @@ export default class Ability extends Entity {
 	}
 
 	public GetCastDelay(position: Vector3): number {
-		return ((this.CastPoint + this.Owner.TurnTime(position)) + Game.GetAvgLatency())
+		return ((this.CastPoint + this.Owner.TurnTime(position)) + Game.Ping / 2000)
 	}
 
 	public GetHitTime(position: Vector3, ActivationDelay?: number): number {
-		if (this.Speed === Number.MAX_VALUE || this.Speed === 0) {
+		if (this.Owner.IdealSpeed === Number.MAX_VALUE || this.Owner.IdealSpeed === 0) {
 			return this.GetCastDelay(position) + (ActivationDelay * 1000)
 		}
-
-		var time = this.Owner.Distance2D(position) / this.Speed
+		let time = this.Owner.Distance2D(position) / this.Owner.IdealSpeed
 		return this.GetCastDelay(position) + ((time + ActivationDelay) * 1000)
 	}
 

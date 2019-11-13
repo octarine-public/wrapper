@@ -2,12 +2,11 @@ import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils, Unit } from "
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { GameEndedCombo } from "./Module/Combo"
-import { HarassGameEdned } from "./Module/Harras"
-import { DeleteLinkenBreakAllVars } from "./Module/LinkenBreaker"
 
-import InitItems from "./Extends/Items"
-import InitAbilities from "./Extends/Abilities"
 import InitDraw from "./Extends/Draw"
+import InitItems from "./Extends/Items"
+import HitAndRun from "./Extends/HitAndRun";
+import InitAbilities from "./Extends/Abilities"
 
 export let Heroes: Hero[] = []
 export let Owner: Hero
@@ -15,6 +14,7 @@ export let MouseTarget: Hero
 
 export const initItemsMap = new Map<Unit, InitItems>()
 export const initItemsTargetMap = new Map<Unit, InitItems>()
+export const initHitAndRunMap = new Map<Unit, HitAndRun>()
 export const initAbilityMap = new Map<Unit, InitAbilities>()
 export const initDrawBaseMap = new Map<Unit, InitDraw>()
 
@@ -35,7 +35,9 @@ function MapClear() {
 	initItemsMap.clear()
 	initAbilityMap.clear()
 	initDrawBaseMap.clear()
+	initHitAndRunMap.clear()
 	initItemsTargetMap.clear()
+	new HitAndRun().ClearVars()
 	new InitDraw().GameEndedParticleRemove()
 }
 
@@ -43,10 +45,8 @@ export function GameEnded() {
 	MapClear()
 	Heroes = []
 	GameEndedCombo()
-	HarassGameEdned()
 	Owner = undefined
 	MouseTarget = undefined
-	DeleteLinkenBreakAllVars()
 }
 
 export function GameStarted(hero: Hero) {
@@ -102,5 +102,10 @@ export function Tick() {
 	if (initDrawBase === undefined) {
 		initDrawBase = new InitDraw(Owner)
 		initDrawBaseMap.set(Owner, initDrawBase)
+	}
+	let initinitHitAndRun = initHitAndRunMap.get(Owner)
+	if (initinitHitAndRun === undefined) {
+		initinitHitAndRun = new HitAndRun(Owner)
+		initHitAndRunMap.set(Owner, initinitHitAndRun)
 	}
 }

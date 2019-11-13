@@ -6,8 +6,8 @@ import InitItems from "./Extends/Items"
 let Items = new InitItems(),
 	Abilities = new InitAbility()
 
-let Menu = MenuSDK.AddEntry(["Heroes", "Clinkz"]),
-	State = Menu.AddToggle("Enable")
+const Menu = MenuSDK.AddEntry(["Heroes", "Clinkz"])
+export const State = Menu.AddToggle("Enable")
 
 let arrayAbility: string[] = [
 	Abilities.Strafe.toString(),
@@ -15,6 +15,7 @@ let arrayAbility: string[] = [
 	Abilities.BurningArmy.toString(),
 ]
 let arrayItems: string[] = [
+	Items.DiffusalBlade.toString(),
 	Items.BladeMail.toString(),
 	Items.LotusOrb.toString(),
 	Items.BlackKingBar.toString(),
@@ -34,74 +35,52 @@ let arrayItems: string[] = [
 	Items.Blink.toString(),
 ]
 
-let Combo = Menu.AddNode("Combo"),
-	ComboKeyItem = Combo.AddKeybind("Combo Key", "D"),
-	StyleCombo = Combo.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"]),
-	HarassModeCombo = Combo.AddSwitcher("Orb Walker", ["Off", "Move to cursor", "Move to target"]),
-	СomboAbility = Combo.AddImageSelector("Abilities", arrayAbility, new Map(arrayAbility.map(name => [name, true]))),
-	СomboItems = Combo.AddImageSelector("Items", arrayItems, new Map(arrayItems.map(name => [name, true]))),
-	AeonDiscItem = Combo.AddToggle("Cancel Important Items and Abilities", true).SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities"),
-	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000),
-	BlinkRadius = Combo.AddSlider("Blink distance from enemy", 400, 0, 1200)
+const Combo = Menu.AddNode("Combo")
+export const ComboKeyItem = Combo.AddKeybind("Bind Key", "D")
+const ComboHitAndRunTree = Combo.AddNode("HitAndRun")
+export const ComboHitAndRunAttack = ComboHitAndRunTree.AddToggle("Auto attack", true)
+export const TypeHitAndRun = ComboHitAndRunTree.AddSwitcher("Type Run", ["Run to target", "Run to cursor", "None"])
+export const StyleCombo = Combo.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"])
+export const СomboAbility = Combo.AddImageSelector("Abilities", arrayAbility, new Map(arrayAbility.map(name => [name, true])))
+export const СomboItems = Combo.AddImageSelector("Items", arrayItems, new Map(arrayItems.map(name => [name, true])))
+export const AeonDiscItem = Combo.AddToggle("Cancel Important Items and Abilities", true).SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities")
 
-let Harass = Menu.AddNode("Harass"),
-	HarassKey = Harass.AddKeybind("Harass key"),
-	HarassMode = Harass.AddSwitcher("Orb Walker", ["Off", "Move to cursor", "Move to target"])
+const Harras = Menu.AddNode("Harass arrow")
+const HarrasHitAndRunTree = Harras.AddNode("HitAndRun")
+export const HarrasHitAndRunAttack = HarrasHitAndRunTree.AddToggle("Auto orb arrow", true)
+export const HarrasTypeHitAndRun = HarrasHitAndRunTree.AddSwitcher("Type Run", ["Run to target", "Run to cursor", "None"])
+export const HarrasKey = Harras.AddKeybind("Bind key")
+export const StyleHarras = Harras.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"])
 
-let bladeMailMenu = Menu.AddNode("Blade Mail"),
-	BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false).SetTooltip("Cancel Combo if there is enemy Blade Mail")
 
-let arrayLinkenBreak: string[] = [
-	arrayItems[8], arrayItems[10],
-	arrayItems[11], arrayItems[13],
+const arrayLinkenBreak: string[] = [
+	Items.DiffusalBlade.toString(),
+	Items.RodofAtos.toString(),
+	Items.Sheeps.toString(),
+	Items.Orchid.toString(),
+	Items.Nullifier.toString(),
+	Items.Bloodthorn.toString(),
 	Items.HeavensHalberd.toString(),
 	Items.ForceStaff.toString(),
 	Items.Cyclone.toString(),
 	Items.HurricanePike.toString(),
 ]
 
-let linkenBreakerMenu = Menu.AddNode("Linken Breaker"),
-	LinkenBreakerToggler = linkenBreakerMenu.AddImageSelector("Items", arrayLinkenBreak, new Map(arrayLinkenBreak.map(name => [name, true]))),
-	UseOnlyFromRangeItem = linkenBreakerMenu.AddToggle("Use Only From Range", true)
+const SettingTarget = Menu.AddNode("Settings")
+export const NearMouse = SettingTarget.AddSlider("Near Mouse (Range)", 800, 100, 1000)
+export const BlinkRadius = SettingTarget.AddSlider("Blink distance from enemy", 400, 0, 1200)
+export const LinkenBreakerToggler = SettingTarget.AddImageSelector("Linken break", arrayLinkenBreak, new Map(arrayLinkenBreak.map(name => [name, true])))
+export const BladeMailItem = SettingTarget.AddToggle("Cancel Combo/Harras if there is enemy Blade Mail", false)
 
-let DrawingMenu = Menu.AddNode("Drawing"),
-	RadiusTree = DrawingMenu.AddNode("Radius"),
-	Radius = RadiusTree.AddImageSelector("Select", [
-		arrayAbility[2],
-		arrayItems[16]
-	]),
-	AttackRangeRadiusTree = RadiusTree.AddNode("Attack Range"),
-	AttackRangeRadius = AttackRangeRadiusTree.AddToggle("Enable"),
-	RadiusColorAttackRange = AttackRangeRadiusTree.AddColorPicker("Color", new Color(255, 255, 0)),
-	BurningArmyRadiusColor = RadiusTree.AddColorPicker("Burning Army", new Color(255, 255, 255)),
-	BlinkRadiusItemColor = RadiusTree.AddColorPicker("Blink", new Color(255, 255, 255)),
-	DrawTargetItem = DrawingMenu.AddToggle("Draw Target", true)
-
-export {
-	HarassKey,
-	HarassMode
-}
-// Drawing
-export {
-	Radius,
-	AttackRangeRadius,
-	BlinkRadiusItemColor,
-	BurningArmyRadiusColor,
-	RadiusColorAttackRange
-}
-
-export {
-	State,
-	NearMouse,
-	StyleCombo,
-	СomboItems,
-	BlinkRadius,
-	ComboKeyItem,
-	AeonDiscItem,
-	СomboAbility,
-	BladeMailItem,
-	DrawTargetItem,
-	LinkenBreakerToggler,
-	UseOnlyFromRangeItem,
-	HarassModeCombo,
-}
+const DrawingMenu = Menu.AddNode("Drawing")
+export const RadiusTree = DrawingMenu.AddNode("Radius")
+export const Radius = RadiusTree.AddImageSelector("Select", [
+	Abilities.BurningArmy.toString(),
+	Items.Blink.toString()
+])
+export const AttackRangeRadiusTree = RadiusTree.AddNode("Attack Range")
+export const AttackRangeRadius = AttackRangeRadiusTree.AddToggle("Enable")
+export const RadiusColorAttackRange = AttackRangeRadiusTree.AddColorPicker("Color", new Color(255, 255, 0))
+export const BurningArmyRadiusColor = RadiusTree.AddColorPicker("Burning Army", new Color(255, 255, 255))
+export const BlinkRadiusItemColor = RadiusTree.AddColorPicker("Blink", new Color(255, 255, 255))
+export const DrawTargetItem = DrawingMenu.AddToggle("Draw Target", true)

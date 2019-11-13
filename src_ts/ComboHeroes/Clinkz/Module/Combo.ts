@@ -1,16 +1,14 @@
-import { GameSleeper, TickSleeper, Unit, Utils } from "wrapper/Imports"
+import { GameSleeper, TickSleeper, Utils } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { MouseTarget, Owner, initAbilityMap, initItemsMap } from "../Listeners"
-import { BladeMailItem, BlinkRadius, ComboKeyItem, HarassModeCombo, State, СomboAbility, СomboItems, StyleCombo } from "../Menu"
+import { MouseTarget, Owner, initAbilityMap, initItemsMap, initHitAndRunMap } from "../Listeners"
+import { BladeMailItem, BlinkRadius, ComboKeyItem, State, СomboAbility, СomboItems, StyleCombo, ComboHitAndRunAttack, TypeHitAndRun } from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
 
 let Sleep = new TickSleeper(),
 	GameSleep = new GameSleeper()
 export let ComboActived = false
 ComboKeyItem.OnRelease(() => ComboActived = !ComboActived);
-function HitAndRun(unit: Unit, mode: boolean = false) {
-	Owner.MoveTo(!mode ? Utils.CursorWorldVec : unit.NetworkPosition)
-}
+
 export function InitCombo() {
 	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
@@ -20,12 +18,15 @@ export function InitCombo() {
 	let target = MouseTarget
 	if (target === undefined || (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect"))) || !Base.Cancel(target)) {
 		Owner.MoveTo(Utils.CursorWorldVec)
+		Sleep.Sleep(350)
 		return
 	}
 	let hexDebuff = target.GetBuffByName("modifier_sheepstick_debuff"),
 		Items = initItemsMap.get(Owner),
-		Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined || Items === undefined)
+		Abilities = initAbilityMap.get(Owner),
+		HitAndRun_Unit = initHitAndRunMap.get(Owner);
+
+	if (Abilities === undefined || Items === undefined || HitAndRun_Unit === undefined)
 		return
 
 	let comboBreaker = Base.AeonDisc(target)
@@ -40,6 +41,7 @@ export function InitCombo() {
 	}
 	if (!target.IsInRange(Owner, Owner.AttackRange)) {
 		Owner.MoveTo(Utils.CursorWorldVec)
+		Sleep.Sleep(350)
 		return
 	}
 	let blockingAbilities = Base.IsBlockingAbilities(target)
@@ -214,36 +216,22 @@ export function InitCombo() {
 		return
 	}
 
-	let Delay = (Owner.SecondsPerAttack * 1000)
-	if (HarassModeCombo.selected_id !== 0 && GameSleep.Sleeping("Attack")) {
-		switch (HarassModeCombo.selected_id) {
-			case 1: HitAndRun(target); break;
-			case 2: HitAndRun(target, true); break;
-		}
-		return
-	}
+	if (!Owner.CanAttack(target) || (!HitAndRun_Unit.ExecuteTo(target, TypeHitAndRun.selected_id)
+		&& ComboHitAndRunAttack.value) || !ComboHitAndRunAttack.value)
+		return;
 
 	// SearingArrows
 	if (
 		Abilities.SearingArrows !== undefined
-		&& !GameSleep.Sleeping("AttackArrow")
 		&& СomboAbility.IsEnabled(Abilities.SearingArrows.Name)
 		&& Abilities.SearingArrows.CanBeCasted()
-		&& !comboBreaker
 	) {
 		Owner.CastTarget(Abilities.SearingArrows, target)
-		GameSleep.Sleep(Delay, "AttackArrow")
 		return
-	} else if (
-		Abilities.SearingArrows !== undefined
-		&& !GameSleep.Sleeping("Attack")
-	) {
+	} else {
 		Owner.AttackTarget(target)
-		GameSleep.Sleep(Delay, "Attack")
 		return
 	}
-
-	return
 }
 
 export function GameEndedCombo() {

@@ -77,6 +77,8 @@ export function EntityCreated(x: Entity) {
 export function EntityDestroyed(x: Entity) {
 	if (x instanceof Hero)
 		ArrayExtensions.arrayRemove(Heroes, x)
+	if (x instanceof Creep)
+		ArrayExtensions.arrayRemove(Creeps, x)
 }
 
 export function TrackingProjectileCreated(proj: TrackingProjectile) {

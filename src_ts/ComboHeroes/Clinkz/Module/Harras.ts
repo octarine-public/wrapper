@@ -1,49 +1,44 @@
-import { Game, GameSleeper, Unit, Utils } from "wrapper/Imports";
+import { Utils, TickSleeper } from "wrapper/Imports";
 import { Base } from "../Extends/Helper";
-import { MouseTarget, Owner, initAbilityMap } from "../Listeners";
-import { BladeMailItem, HarassKey, HarassMode, State } from "../Menu";
+import { MouseTarget, Owner, initAbilityMap, initHitAndRunMap } from "../Listeners";
+import { BladeMailItem, HarrasKey, State, HarrasTypeHitAndRun, HarrasHitAndRunAttack, StyleHarras } from "../Menu";
 
-let Sleep = new GameSleeper()
-function HitAndRun(unit: Unit, mode: boolean = false) {
-	Owner.MoveTo(!mode ? Utils.CursorWorldVec : unit.NetworkPosition)
-}
+export let HarrasActived = false
+HarrasKey.OnRelease(() => HarrasActived = !HarrasActived);
+let Sleep = new TickSleeper
+
 export function InitHarass() {
-	if (!Base.IsRestrictions(State) || !HarassKey.is_pressed || HarassMode.selected_id === 0)
+	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
-
+	if ((StyleHarras.selected_id === 1 && !HarrasActived) || (StyleHarras.selected_id === 0 && !HarrasKey.is_pressed)) {
+		return
+	}
 	let target = MouseTarget
 	if (target === undefined || (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect"))) || !Base.Cancel(target)) {
 		Owner.MoveTo(Utils.CursorWorldVec)
+		Sleep.Sleep(350)
 		return
 	}
-	let Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined)
+	let Abilities = initAbilityMap.get(Owner),
+		HitAndRun_Unit = initHitAndRunMap.get(Owner);
+
+	if (Abilities === undefined || HitAndRun_Unit === undefined)
 		return
 
-	let Delay = (Owner.SecondsPerAttack * 1000) + (Game.Ping / 2)
-	if (HarassMode.selected_id !== 0 && Sleep.Sleeping("Attack")) {
-		switch (HarassMode.selected_id) {
-			case 1: HitAndRun(target); break;
-			case 2: HitAndRun(target, true); break;
-		}
-		return
-	}
+
+	if (!Owner.CanAttack(target) || (!HitAndRun_Unit.ExecuteTo(target, HarrasTypeHitAndRun.selected_id)
+		&& HarrasHitAndRunAttack.value) || !HarrasHitAndRunAttack.value)
+		return;
+
+	// SearingArrows
 	if (
 		Abilities.SearingArrows !== undefined
-		&& !Sleep.Sleeping("AttackArrow")
-		&& Owner.AttackRange <= Abilities.SearingArrows.CastRange
 		&& Abilities.SearingArrows.CanBeCasted()
 	) {
 		Owner.CastTarget(Abilities.SearingArrows, target)
-		Sleep.Sleep(Delay, "AttackArrow")
 		return
-	} else if (!Sleep.Sleeping("Attack")) {
+	} else {
 		Owner.AttackTarget(target)
-		Sleep.Sleep(Delay, "Attack")
 		return
 	}
-}
-
-export function HarassGameEdned() {
-	Sleep.FullReset()
 }

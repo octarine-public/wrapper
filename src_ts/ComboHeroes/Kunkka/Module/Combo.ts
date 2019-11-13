@@ -62,6 +62,7 @@ function ComboInit() {
 	if (ShipCombo && CheckAbility(R, XMarkPos)) {
 		if (Owner.Distance2D(XMarkPos) > (R.CastRange - 50)) {
 			Owner.MoveTo(XMarkPos)
+			Sleep.Sleep(SetCastDelay())
 			return
 		}
 		// if (ConVars.GetInt("dota_player_units_auto_attack_mode") === 1) {
@@ -71,7 +72,7 @@ function ComboInit() {
 		ComboTimer = Time + 3.08
 		Sleep.Sleep(Abilities.CastDelay(R))
 	}
-	if (ComboTimer - Time <= 2.05) {
+	if (ComboTimer - Time <= 0.65) { // after Ghostship 
 		if (XMarkPos.LengthSqr === 0 || X.CanBeCasted())
 			return
 		if (CheckAbility(Q, XMarkPos)) {
@@ -160,6 +161,7 @@ export function InitCombo() {
 				}
 				if (R !== undefined && Owner.Distance2D(target) > (R.CastRange - 50)) {
 					Owner.MoveTo(target.NetworkPosition)
+					Sleep.Sleep(SetCastDelay())
 					return
 				}
 				if (HEX !== undefined
@@ -200,6 +202,7 @@ export function InitCombo() {
 				if (Q !== undefined && Q.CanBeCasted() || R !== undefined && R.CanBeCasted()) {
 					if (X !== undefined && Owner.Distance2D(target) > (X.CastRange - 50)) {
 						Owner.MoveTo(target.NetworkPosition)
+						Sleep.Sleep(SetCastDelay())
 						return
 					}
 					XMode(X, target, Time, false)

@@ -1,7 +1,7 @@
 import { Ability, Hero, Menu } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, Owner, initItemsMap } from "../Listeners"
-import { LinkenBreakerToggler, State } from "../Menu"
+import { State, Menu_Combo_LinkenBreaker_Items } from "../Menu"
 
 function IsValid(Name: Ability, target: Hero, Selectror: Menu.ImageSelector) {
 	return Name !== undefined && Name.CanBeCasted() && !Name.IsInAbilityPhase
@@ -9,7 +9,7 @@ function IsValid(Name: Ability, target: Hero, Selectror: Menu.ImageSelector) {
 		&& Owner.Distance2D(target) <= Name.CastRange
 }
 function ItemCast(abil: Ability, target: Hero) {
-	if (IsValid(abil, target, LinkenBreakerToggler)) {
+	if (IsValid(abil, target, Menu_Combo_LinkenBreaker_Items)) {
 		abil.UseAbility(target)
 		return true
 	}
@@ -27,7 +27,6 @@ export function BreakInit() {
 		return
 	}
 	let arr_linken: Ability[] = [
-		Items.Cyclone,
 		Items.Abyssal,
 		Items.HeavensHalberd,
 		Items.ForceStaff,
@@ -35,7 +34,8 @@ export function BreakInit() {
 		Items.Bloodthorn,
 		Items.Nullifier,
 		Items.RodofAtos,
-		Items.Sheeps
+		Items.Sheeps,
+		Items.Cyclone
 	]
 	if (arr_linken.some(item => ItemCast(item, target))) {
 		return

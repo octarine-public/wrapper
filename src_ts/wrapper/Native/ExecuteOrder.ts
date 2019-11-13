@@ -31,7 +31,7 @@ export default class ExecuteOrder {
 		queue?: boolean,
 		showEffects?: boolean,
 	}): ExecuteOrder {
-		return new ExecuteOrder (
+		return new ExecuteOrder(
 			order.orderType,
 			order.target,
 			order.position,
@@ -51,7 +51,7 @@ export default class ExecuteOrder {
 		if (unit === undefined)
 			return undefined
 
-		return new ExecuteOrder (
+		return new ExecuteOrder(
 			order.order_type,
 			order.target instanceof C_BaseEntity
 				? EntityManager.GetEntityByNative(order.target) as Entity

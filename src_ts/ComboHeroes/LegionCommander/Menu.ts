@@ -6,15 +6,14 @@ import InitItems from "./Extends/Items"
 let Items = new InitItems(),
 	Abilities = new InitAbility()
 
-let Menu = MenuSDK.AddEntry(["Heroes", "Legion Commander"]),
-	State = Menu.AddToggle("Enable")
+const Menu = MenuSDK.AddEntry(["Heroes", "Legion Commander"])
+export const State = Menu.AddToggle("Enable")
 
 let arrayAbility: string[] = [
 	Abilities.Overwhelming.toString(),
 	Abilities.PressTheAttack.toString(),
 	Abilities.Duel.toString(),
-],
-	activeAbility = new Map<string, boolean>()
+], activeAbility = new Map<string, boolean>()
 
 arrayAbility.forEach(abilName => {
 	activeAbility.set(abilName, abilName !== Abilities.Overwhelming.toString())
@@ -39,28 +38,26 @@ let arrayItems: string[] = [
 	Items.Nullifier.toString(), 		// 15
 	Items.InvisSword.toString(), 		// 16
 	Items.SilverEdge.toString(), 		// 17
-],
-	activeItems = new Map<string, boolean>();
-
-arrayItems.forEach(itemName => {
-	activeItems.set(itemName, true);
-});
-
-let Combo = Menu.AddNode("Combo"),
-	ComboKeyItem = Combo.AddKeybind("Combo Key", "D"),
-	StyleCombo = Combo.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"]),
-	ComboMode = Combo.AddSwitcher("Use combo with (Priority)", ["Invisible Sword", "Dagger"], 1),
-	ComboModeInvis = Combo.AddToggle("Use Press of Attak before invisibility", true),
-	СomboAbility = Combo.AddImageSelector("Abilities", arrayAbility, activeAbility),
-	СomboItems = Combo.AddImageSelector("Items", arrayItems, activeItems),
-	isRunToTarget = Combo.AddToggle("Run to mouse position (target has blade mail, etc)"),
-	AeonDiscItem = Combo.AddToggle("Cancel Important Items and Abilities", true).SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities"),
-	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000)
-
-let bladeMailMenu = Menu.AddNode("Blade Mail"),
-	BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false).SetTooltip("Cancel Combo if there is enemy Blade Mail")
-
-let arrayLinkenBreak: string[] = [
+]
+const ComboMenu = Menu.AddNode("Combo")
+export const ComboKeyItem = ComboMenu.AddKeybind("Combo Key", "D")
+export const StyleCombo = ComboMenu.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"])
+export const ComboMode = ComboMenu.AddSwitcher("Use combo with (Priority)", ["Invisible Sword", "Dagger"], 1)
+export const ComboModeInvis = ComboMenu.AddToggle("Use Press of Attak before invisibility", true)
+export const СomboAbility = ComboMenu.AddImageSelector("Abilities", arrayAbility, activeAbility)
+export const СomboItems = ComboMenu.AddImageSelector("Items", arrayItems, new Map(arrayItems.map(name => [name, true])))
+const Settings = Menu.AddNode("Settings")
+const ComboHitAndRunTree = Settings.AddNode("HitAndRun")
+export const ComboHitAndRunAttack = ComboHitAndRunTree.AddToggle("Auto attack", true)
+export const TypeHitAndRun = ComboHitAndRunTree.AddSwitcher("Type Run", ["Run to target", "Run to cursor", "None"])
+export const isRunToTarget = Settings.AddToggle("Run to mouse position (target has blade mail, etc)")
+export const AeonDiscItem = Settings.AddToggle("Cancel Important Items and Abilities", true)
+	.SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities")
+export const NearMouse = Settings.AddSlider("Near Mouse (Range)", 800, 100, 1000)
+const bladeMailMenu = Menu.AddNode("Blade Mail")
+export const BladeMailItem = bladeMailMenu.AddToggle("Cancel Combo", false)
+	.SetTooltip("Cancel Combo if there is enemy Blade Mail")
+const arrayLinkenBreak: string[] = [
 	arrayItems[9],
 	arrayItems[12],
 	arrayItems[13],
@@ -69,58 +66,22 @@ let arrayLinkenBreak: string[] = [
 	Items.ForceStaff.toString(),
 	Items.HurricanePike.toString(),
 	Items.Cyclone.toString(),
-],
-	activeLinkenBreak = new Map<string, boolean>();
-
-arrayLinkenBreak.forEach(itemName => {
-	activeLinkenBreak.set(itemName, true);
-});
-
-let linkenBreakerMenu = Menu.AddNode("Linken Breaker"),
-	LinkenBreakerToggler = linkenBreakerMenu.AddImageSelector("Items", arrayLinkenBreak, new Map(arrayLinkenBreak.map(name => [name, true]))),
-	UseOnlyFromRangeItem = linkenBreakerMenu.AddToggle("Use Only From Range")
-
+]
+export const LinkenBreakerToggler = Settings.AddImageSelector("Linken break", arrayLinkenBreak, new Map(arrayLinkenBreak.map(name => [name, true])))
 // Drawing
-
-let DrawingMenu = Menu.AddNode("Drawing"),
-	DrawTargetItem = DrawingMenu.AddToggle("Draw Target", true),
-	radiusMenu = DrawingMenu.AddNode("Radius"),
-	Radius = radiusMenu.AddImageSelector("Select", [
-		arrayAbility[0],
-		arrayAbility[1],
-		arrayAbility[2],
-		arrayItems[11]
-	]),
-	AttackRangeRadiusTree = radiusMenu.AddNode("Attack Range"),
-	AttackRangeRadius = AttackRangeRadiusTree.AddToggle("Enable"),
-	RadiusColorAttackRange = AttackRangeRadiusTree.AddColorPicker("Color", new Color(255, 255, 255)),
-	OverwhelmingOddsRadiusColor = radiusMenu.AddColorPicker("Overwhelming Odds", new Color(255, 255, 255)),
-	PressTheAttackRadiusItemColor = radiusMenu.AddColorPicker("Press The Attack", new Color(255, 255, 255)),
-	DuelRadiusItemColor = radiusMenu.AddColorPicker("Duel", new Color(255, 255, 255)),
-	BlinkRadiusItemColor = radiusMenu.AddColorPicker("Blink", new Color(255, 255, 255))
-
-export {
-	// Combo
-	State,
-	StyleCombo,
-	ComboKeyItem,
-	СomboAbility,
-	СomboItems,
-	ComboModeInvis,
-	AeonDiscItem,
-	NearMouse,
-	ComboMode,
-	isRunToTarget,
-	LinkenBreakerToggler,
-	DrawTargetItem,
-	UseOnlyFromRangeItem,
-	BladeMailItem,
-	// Drawing
-	Radius,
-	OverwhelmingOddsRadiusColor,
-	PressTheAttackRadiusItemColor,
-	DuelRadiusItemColor,
-	BlinkRadiusItemColor,
-	AttackRangeRadius,
-	RadiusColorAttackRange,
-}
+const DrawingMenu = Menu.AddNode("Drawing")
+export const DrawTargetItem = DrawingMenu.AddToggle("Draw Target", true)
+const radiusMenu = DrawingMenu.AddNode("Radius")
+export const Radius = radiusMenu.AddImageSelector("Select", [
+	arrayAbility[0],
+	arrayAbility[1],
+	arrayAbility[2],
+	arrayItems[11]
+])
+const AttackRangeRadiusTree = radiusMenu.AddNode("Attack Range")
+export const AttackRangeRadius = AttackRangeRadiusTree.AddToggle("Enable")
+export const RadiusColorAttackRange = AttackRangeRadiusTree.AddColorPicker("Color", Color.White)
+export const OverwhelmingOddsRadiusColor = radiusMenu.AddColorPicker("Overwhelming Odds", Color.White)
+export const PressTheAttackRadiusItemColor = radiusMenu.AddColorPicker("Press The Attack", Color.White)
+export const DuelRadiusItemColor = radiusMenu.AddColorPicker("Duel", Color.White)
+export const BlinkRadiusItemColor = radiusMenu.AddColorPicker("Blink", Color.White)

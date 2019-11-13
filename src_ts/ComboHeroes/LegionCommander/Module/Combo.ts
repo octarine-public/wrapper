@@ -2,12 +2,26 @@ import { Base } from "../Extends/Helper"
 import { BreakInit } from "./LinkenBreaker"
 
 import { Utils, Ability, Item, TickSleeper, Menu, Hero } from "wrapper/Imports"
-import { MouseTarget, Owner, initAbilityMap, initItemsMap } from "../Listeners"
+import { MouseTarget, Owner, initAbilityMap, initItemsMap, initHitAndRunMap } from "../Listeners"
 
-import InitAbility from "../Extends/Abilities"
 import InitItems from "../Extends/Items"
+import HitAndRun from "../Extends/HitAndRun"
+import InitAbility from "../Extends/Abilities"
 
-import { BladeMailItem, ComboKeyItem, State, СomboAbility, СomboItems, ComboMode, ComboModeInvis, isRunToTarget, StyleCombo } from "../Menu"
+
+import {
+	BladeMailItem,
+	ComboKeyItem,
+	State,
+	СomboAbility,
+	СomboItems,
+	ComboMode,
+	ComboModeInvis,
+	isRunToTarget,
+	StyleCombo,
+	ComboHitAndRunAttack,
+	TypeHitAndRun
+} from "../Menu"
 
 let GameSleep = new TickSleeper(),
 	ComboActived = false
@@ -46,12 +60,36 @@ function PressTheAttack(Abilities: InitAbility, Items: InitItems, target: Hero) 
 		}
 		return
 	}
+	if (Items.Armlet && !Items.Armlet.IsToggled
+		&& СomboItems.IsEnabled(Items.Armlet.Name)
+	) {
+		if (!GameSleep.Sleeping) {
+			Items.Armlet.UseAbility(Owner, true)
+			GameSleep.Sleep((GetAvgLatency(Flow_t.OUT) + 0.1) * 1000)
+		}
+		return
+	}
 	if (IsValid(Items.BladeMail, СomboItems)) {
 		Items.BladeMail.UseAbility(Owner)
 		return
 	}
+	if (IsValid(Items.LotusOrb, СomboItems)) {
+		Items.LotusOrb.UseAbility(Owner)
+		GameSleep.Sleep(Items.Tick)
+		return
+	}
+	if (IsValid(Items.Shivas, СomboItems)) {
+		Items.Shivas.UseAbility(Owner)
+		GameSleep.Sleep(Items.Tick)
+		return
+	}
 }
-
+function AttackTargetHitAndRun(target: Hero, HitAndRun_Unit: HitAndRun) {
+	if (!Owner.CanAttack(target) || (!HitAndRun_Unit.ExecuteTo(target, TypeHitAndRun.selected_id)
+		&& ComboHitAndRunAttack.value) || !ComboHitAndRunAttack.value)
+		return;
+	Owner.AttackTarget(target)
+}
 function AttackTargetCustom(target: Hero) {
 	if (!GameSleep.Sleeping) {
 		Owner.CanAttack(target)
@@ -63,6 +101,7 @@ function AttackTargetCustom(target: Hero) {
 }
 
 function Init(
+	HitAndRun_Unit: HitAndRun,
 	target: Hero,
 	Items: InitItems,
 	Abilities: InitAbility,
@@ -88,15 +127,6 @@ function Init(
 			}
 		}
 	}
-	if (Items.Armlet && !Items.Armlet.IsToggled
-		&& СomboItems.IsEnabled(Items.Armlet.Name)
-	) {
-		if (!GameSleep.Sleeping) {
-			Items.Armlet.UseAbility(Owner, true)
-			GameSleep.Sleep((GetAvgLatency(Flow_t.OUT) + 0.1) * 1000)
-		}
-		return
-	}
 	if (is_invise && Owner.InvisibleLevel > 0) {
 		return
 	}
@@ -104,7 +134,7 @@ function Init(
 		&& Owner.Distance2D(target) <= (Abilities.Overwhelming.CastRange + Owner.HullRadius)
 		&& !target.IsMagicImmune
 	) {
-		Abilities.Overwhelming.UseAbility(target)
+		Abilities.Overwhelming.UseAbility(target.VelocityWaypoint(Abilities.Overwhelming.CastPoint * 2))
 		GameSleep.Sleep(Abilities.Overwhelming.CastPoint * 1000)
 		return
 	}
@@ -114,16 +144,6 @@ function Init(
 			Item.UseAbility(target)
 			return
 		}
-	}
-	if (IsValid(Items.LotusOrb, СomboItems)) {
-		Items.LotusOrb.UseAbility(Owner)
-		GameSleep.Sleep(Items.Tick)
-		return
-	}
-	if (IsValid(Items.Shivas, СomboItems)) {
-		Items.Shivas.UseAbility(Owner)
-		GameSleep.Sleep(Items.Tick)
-		return
 	}
 	if (UseBlink && Items.Blink.CanBeCasted()) {
 		Items.Blink.UseAbility(target)
@@ -185,12 +205,13 @@ function Init(
 		Abilities.Duel.UseAbility(target)
 		return
 	}
-
-	AttackTargetCustom(target)
+	Abilities.Duel && !Abilities.Duel.CanBeCasted()
+		? AttackTargetHitAndRun(target, HitAndRun_Unit)
+		: AttackTargetCustom(target)
 }
 
-function CastInvis(Abilities: InitAbility, Items: InitItems, blockingAbilities: boolean, target: Hero) {
-	Init(target, Items, Abilities, blockingAbilities, false, true, () => {
+function CastInvis(HitAndRun_Unit: HitAndRun, Abilities: InitAbility, Items: InitItems, blockingAbilities: boolean, target: Hero) {
+	Init(HitAndRun_Unit, target, Items, Abilities, blockingAbilities, false, true, () => {
 		if (ComboModeInvis.value) {
 			PressTheAttack(Abilities, Items, target)
 		} else {
@@ -212,46 +233,52 @@ export function InitCombo() {
 	if (target === undefined || (BladeMailItem.value
 		&& target.HasModifier("modifier_item_blade_mail_reflect"))
 	) {
-		if (isRunToTarget.value) {
-			Owner.MoveTo(Utils.CursorWorldVec)
-			GameSleep.Sleep(250)
-		}
+		if (!isRunToTarget.value)
+			return
+		Owner.MoveTo(Utils.CursorWorldVec)
+		GameSleep.Sleep(250)
 		return
 	}
 	let cancelAdditionally = Base.CancelAdditionally(target),
 		blockingAbilities = Base.IsBlockingAbilities(target),
 		Items = initItemsMap.get(Owner),
-		Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined || Items === undefined) {
+		Abilities = initAbilityMap.get(Owner),
+		HitAndRun_Unit = initHitAndRunMap.get(Owner);
+
+	if (Abilities === undefined || Items === undefined || HitAndRun_Unit === undefined) {
 		return
 	}
 	if (Base.Cancel(target) && cancelAdditionally) {
 		if (!Owner.IsVisibleForEnemies
 			&& Owner.ModifiersBook.HasAnyBuffByNames(["modifier_item_invisibility_edge_windwalk", "modifier_item_silver_edge_windwalk"])
 		) {
-			AttackTargetCustom(target)
+			Abilities.Duel && !Abilities.Duel.CanBeCasted()
+				? AttackTargetHitAndRun(target, HitAndRun_Unit)
+				: AttackTargetCustom(target)
 			return
 		}
 		if (ComboMode.selected_id === 1 || Owner.IsVisibleForEnemies) {
 			if (Owner.IsInRange(target, (Abilities.Duel.CastRange + Owner.HullRadius))) {
-				Init(target, Items, Abilities, blockingAbilities)
+				Init(HitAndRun_Unit, target, Items, Abilities, blockingAbilities)
 				return
 			} else if (Items.Blink
 				&& Items.Blink.CanBeCasted()
 				&& СomboItems.IsEnabled(Items.Blink.Name)
-				&& Owner.IsInRange(target, (Items.Blink.AOERadius + (Owner.HullRadius + target.HullRadius)))
+				&& Owner.IsInRange(target, Items.Blink.AOERadius - (Abilities.Duel.CastRange + (Owner.HullRadius + target.HullRadius)))
 			) {
-				Init(target, Items, Abilities, blockingAbilities, true)
+				Init(HitAndRun_Unit, target, Items, Abilities, blockingAbilities, true)
 				return
 			} else {
 				if (Items.InvisSword || Items.SilverEdge) {
-					CastInvis(Abilities, Items, blockingAbilities, target)
+					CastInvis(HitAndRun_Unit, Abilities, Items, blockingAbilities, target)
 				}
-				AttackTargetCustom(target)
+				Abilities.Duel && !Abilities.Duel.CanBeCasted()
+					? AttackTargetHitAndRun(target, HitAndRun_Unit)
+					: AttackTargetCustom(target)
 				return
 			}
 		} else { // IsInvisible
-			CastInvis(Abilities, Items, blockingAbilities, target)
+			CastInvis(HitAndRun_Unit, Abilities, Items, blockingAbilities, target)
 			return
 		}
 	}
@@ -260,4 +287,5 @@ export function InitCombo() {
 
 export function GameEndedCombo() {
 	GameSleep.ResetTimer()
+	ComboActived = false
 }

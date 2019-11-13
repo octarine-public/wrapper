@@ -1,18 +1,20 @@
-import { ArrayExtensions, Creep, Entity, Hero, TrackingProjectile, Utils, Unit, Ability } from "wrapper/Imports"
+import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils, Unit } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { GameEndedCombo } from "./Module/Combo"
+
 import InitDraw from "./Extends/Draw"
 import InitItems from "./Extends/Items"
 import InitAbilities from "./Extends/Abilities"
+import HitAndRun from "./Extends/HitAndRun"
 
 export let Heroes: Hero[] = []
-export let Creeps: Creep[] = []
 export let Owner: Hero
 export let MouseTarget: Hero
 
 export const initItemsMap = new Map<Unit, InitItems>()
 export const initItemsTargetMap = new Map<Unit, InitItems>()
+export const initHitAndRunMap = new Map<Unit, HitAndRun>()
 export const initAbilityMap = new Map<Unit, InitAbilities>()
 export const initDrawMap = new Map<Unit, InitDraw>()
 
@@ -32,7 +34,9 @@ function MapClear() {
 	initItemsMap.clear()
 	initAbilityMap.clear()
 	initDrawMap.clear()
+	initHitAndRunMap.clear()
 	initItemsTargetMap.clear()
+	new HitAndRun().ClearVars()
 	new InitDraw().GameEndedParticleRemove()
 }
 export function GameEnded() {
@@ -51,9 +55,6 @@ export function GameStarted(hero: Hero) {
 export function EntityCreated(x: Entity) {
 	if (x instanceof Hero && !x.IsIllusion) {
 		Heroes.push(x)
-	}
-	if (x instanceof Creep) {
-		Creeps.push(x)
 	}
 }
 export function EntityDestroyed(x: Entity) {
@@ -97,5 +98,10 @@ export function Tick() {
 	if (initDrawBase === undefined) {
 		initDrawBase = new InitDraw(Owner)
 		initDrawMap.set(Owner, initDrawBase)
+	}
+	let initinitHitAndRun = initHitAndRunMap.get(Owner)
+	if (initinitHitAndRun === undefined) {
+		initinitHitAndRun = new HitAndRun(Owner)
+		initHitAndRunMap.set(Owner, initinitHitAndRun)
 	}
 }

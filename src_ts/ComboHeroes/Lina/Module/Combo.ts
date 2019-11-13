@@ -53,6 +53,7 @@ export function InitCombo() {
 	}
 	if (Abilities.LightStrikeArray !== undefined && Owner.Distance2D(target) > Abilities.LightStrikeArray.CastRange) {
 		Owner.MoveTo(target.NetworkPosition)
+		Sleep.Sleep(350)
 		return
 	}
 	if (IsValidItems(Items.Discord, target) && !target.IsInvulnerable) {
