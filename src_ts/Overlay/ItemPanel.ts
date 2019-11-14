@@ -15,8 +15,8 @@ const panelItems = Menu.AddNode("Items");
 const panelAllies = Menu.AddToggle("Show Allies");
 
 // style
-const panelSettingsKey = panelSettings.AddKeybind("Toggle Key")//.SetTooltip(`Show/hide ${Menu.name}`)
-const panelSettingsSize = panelSettings.AddSlider("Size", 30, 10, 50)
+const panelSettingsKey = panelSettings.AddKeybind("Toggle Key");//.SetTooltip(`Show/hide ${Menu.name}`)
+const panelSettingsSize = panelSettings.AddSlider("Size", 30, 10, 50);
 const panelSettingsFlow = panelSettings.AddSwitcher("Style", ["Horizontal", "Vertical"]);
 const panelSettingsOutline = panelSettings.AddToggle("Outline", true);
 const panelSettingsOpacity = panelSettings.AddSlider("Opacity", 60, 5, 100);
@@ -56,8 +56,8 @@ const GetPathToItemIcon = (name: string | undefined) => {
 			? name.replace("item_", "")
 			: "recipe"}_png.vtex_c`;
 	}
-	return `${pathToItemIcon}emptyitembg_png.vtex_c`
-}
+	return `${pathToItemIcon}emptyitembg_png.vtex_c`;
+};
 
 const IsHorizontal = () => panelSettingsFlow.selected_id === 0;
 
@@ -119,7 +119,7 @@ function DrawItem(item: Item, position: Vector2, isBackPack = false) {
 
 	const colorItem = isBackPack
 		? (itemCoolDown ? colorGrayPanels : colorLightGrayPanels)
-		: (itemCoolDown ? colorGrayPanels : colorPanel)
+		: (itemCoolDown ? colorGrayPanels : colorPanel);
 
 	RendererSDK.Image(
 		GetPathToItemIcon(item.Name),
@@ -165,7 +165,7 @@ function DrawCoolDown(position: Vector2, itemCoolDown: string, isTP = false) {
 	posOfCharges.AddScalarX((itemIconSize.x / 2) - (sizeOfCD.x / 2));
 
 	if (isTP) {
-		posOfCharges.SubtractScalarX(sizeOfCD.x / 2)
+		posOfCharges.SubtractScalarX(sizeOfCD.x / 2);
 	}
 
 	RendererSDK.Text(itemCoolDown.toString(), posOfCharges,
@@ -173,8 +173,7 @@ function DrawCoolDown(position: Vector2, itemCoolDown: string, isTP = false) {
 }
 
 EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof Hero && !ent.IsIllusion &&
-		(!(ent instanceof Meepo) || (ent.WhichMeepo === 0))) {
+	if (ent instanceof Hero && !ent.IsIllusion) {
 		heroes.push(ent);
 	}
 });
@@ -204,7 +203,8 @@ EventsSDK.on("Draw", () => {
 
 	const isHorizontal = IsHorizontal();
 
-	const filteredHeroes = heroes.filter(hero => panelAllies.value || hero.IsEnemy());
+	const filteredHeroes = heroes.filter(hero => (!(hero instanceof Meepo) || (hero.UnitIndex === 0))
+		&& (panelAllies.value || hero.IsEnemy()));
 
 	{ // Touch Panel
 
@@ -214,7 +214,7 @@ EventsSDK.on("Draw", () => {
 
 			isHorizontal
 				? lastPosTouchRect.AddScalarX(onTouchPanel.x)
-				: lastPosTouchRect.AddScalarY(onTouchPanel.y)
+				: lastPosTouchRect.AddScalarY(onTouchPanel.y);
 
 			filteredHeroes.forEach(() => isHorizontal
 				? lastPosTouchRect.AddScalarY(onTouchPanel.y + panelSettingsGapIcon.value * 2)
@@ -224,7 +224,7 @@ EventsSDK.on("Draw", () => {
 
 			const sizeOfTouchRect = lastPosTouchRect.Subtract(positionPanel);
 
-			RendererSDK.FilledRect(positionPanel, sizeOfTouchRect, colorOnTouchPanel)
+			RendererSDK.FilledRect(positionPanel, sizeOfTouchRect, colorOnTouchPanel);
 
 			if (OnTouchRect.Contains(mousePos) && Input.IsMouseKeyDown(VMouseKeys.MK_LBUTTON)) {
 
@@ -304,7 +304,7 @@ EventsSDK.on("Draw", () => {
 
 			if (panelItemsBackpack.value) {
 
-				RendererSDK.FilledRect(posPanelOnItems, onTouchPanel, colorOnTouchPanel)
+				RendererSDK.FilledRect(posPanelOnItems, onTouchPanel, colorOnTouchPanel);
 
 				isHorizontal
 					? posPanelOnItems.AddScalarX(onTouchPanel.x)
@@ -347,7 +347,7 @@ EventsSDK.on("Draw", () => {
 				itemCoolDown = CooldownRound(tpScroll.CooldownTimeRemaining);
 			}
 
-			const colorTP = itemCoolDown ? colorLightGrayPanels : colorPanel
+			const colorTP = itemCoolDown ? colorLightGrayPanels : colorPanel;
 
 			// change to Circle Image
 			RendererSDK.Image(
