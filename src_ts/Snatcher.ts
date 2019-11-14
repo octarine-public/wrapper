@@ -33,7 +33,7 @@ let allRunes: Rune[] = [],
 	Sleep = new GameSleeper()
 const snatcherMenu = Menu.AddEntry(["Utility", "Snatcher"])
 
-const stateMain = snatcherMenu.AddToggle("State")
+const stateMain = snatcherMenu.AddToggle("State", true)
 	.OnValue(() => {
 		destroyRuneAllParticles()
 		onDeactivateItems()
@@ -43,7 +43,7 @@ const stateMain = snatcherMenu.AddToggle("State")
 
 const runeMenu = snatcherMenu.AddNode("Rune settings")
 
-const stateRune = runeMenu.AddToggle("Snatch Rune").OnDeactivate(destroyRuneAllParticles)
+const stateRune = runeMenu.AddToggle("Snatch Rune", true).OnDeactivate(destroyRuneAllParticles)
 
 const typesSelect = runeMenu.AddSwitcher("Runes for snatch", ["All", "Only Bounty", "Only PowerUps"])
 typesSelect.OnValue(onTypeSelected)
@@ -73,7 +73,7 @@ const drawParticleKill = drawParticles.AddToggle("Kill rune")
 
 const itemsMenu = snatcherMenu.AddNode("Items settings")
 
-const stateItems = itemsMenu.AddToggle("Snatch Items").OnDeactivate(onDeactivateItems)
+const stateItems = itemsMenu.AddToggle("Snatch Items", true).OnDeactivate(onDeactivateItems)
 
 itemsMenu.AddKeybind("Items toogle").OnRelease(() => stateItems.value = !stateItems.value)
 

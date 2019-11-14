@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"@babel/cli": "latest",
 		"@babel/core": "latest",
-		"@babel/plugin-proposal-optional-chaining": "^7.6.0",
+		"@babel/plugin-proposal-optional-chaining": "latest",
 		"@babel/plugin-syntax-bigint": "latest",
 		"@babel/preset-typescript": "latest",
 		"tslint": "beta",
