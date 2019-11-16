@@ -437,6 +437,7 @@ declare function setInterval(func: (self: TimeoutData) => void, time: number): T
 declare function ChatWheelAbuse(str: string): void
 declare function StopFindingMatch(): void
 declare function AcceptMatch(): void
+declare function ToggleFakeChat(state: boolean): void
 
 /// AUTOMATICALLY GENERATED
 

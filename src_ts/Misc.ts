@@ -31,6 +31,7 @@ let keybind = Menu.AddKeybind("Menu (Open/Close)", "Insert").OnPressed(() => Men
 keybind.activates_in_menu = true
 keybind.trigger_on_chat = true
 Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.MenuManager.trigger_on_chat = toggle.value)
+Menu.AddToggle("Team chat mute fix", false).OnValue(toggle => ToggleFakeChat(toggle.value))
 
 function ReloadScripts() {
 	EventsSDK.emit("GameEnded", false)
