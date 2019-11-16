@@ -387,7 +387,7 @@ let RendererSDK_ = new (class RendererSDK {
 	private SetColor(color: Color): void {
 		if (this.last_color.Equals(color))
 			return
-		this.last_color = color
+		this.last_color = color.Clone()
 		let view = this.AllocateCommandSpace(4)
 		let off = 0
 		view.setUint8(off, CommandID.SET_COLOR)
