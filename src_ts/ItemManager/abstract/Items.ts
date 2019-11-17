@@ -13,6 +13,13 @@ export default class ItemBase extends ItemManagerBase {
 		}
 		return this.unit.GetItemByName(name)
 	}
+	public get Armlet(): Item {
+		let name = "item_armlet"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
 	public get ArcaneBoots(): Item {
 		let name = "item_arcane_boots"
 		if (this.unit === undefined) {
@@ -174,7 +181,7 @@ export default class ItemBase extends ItemManagerBase {
 		}
 		return this.unit.GetItemByName(name)
 	}
-	public get PowerTreads(): Item  {
+	public get PowerTreads(): Item {
 		let name = "item_power_treads"
 		if (this.unit === undefined) {
 			return name as any

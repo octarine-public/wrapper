@@ -44,6 +44,8 @@ export function Draw() {
 	}
 }
 
+const colorBar = Color.Green;
+
 function DrawAutoSteal(Ability: LinaAbility) {
 	// c + v
 	let off_x: number,
@@ -78,11 +80,7 @@ function DrawAutoSteal(Ability: LinaAbility) {
 	}
 
 	Heroes.forEach(hero => {
-		let wts = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(hero.HealthBarOffset))
-		if (wts === undefined || !hero.IsEnemy() || !hero.IsAlive || !hero.IsVisible) {
-			return
-		}
-		if (Owner === undefined) {
+		if (Owner === undefined || !hero.IsEnemy() || !hero.IsAlive || !hero.IsVisible) {
 			return
 		}
 		let Abilities = Ability,
@@ -101,12 +99,29 @@ function DrawAutoSteal(Ability: LinaAbility) {
 			StealDMDraGonSlave = 0
 		}
 
+		let wts = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(hero.HealthBarOffset))
+		if (wts === undefined) {
+			return
+		}
 		wts.AddScalarX(off_x).AddScalarY(off_y)
-		let size = new Vector2(bar_w, bar_h)
-		RendererSDK.FilledRect(wts, size, new Color(0, 0, 0, 165))
 		let SizeSteal = (StealDMDraGonSlave + StealDMGLaguna) / hero.HP
-		size.MultiplyScalarForThis(SizeSteal >= 1 ? 1 : SizeSteal)
-		size.SetY(bar_h)
-		RendererSDK.FilledRect(wts, size, new Color(0, 255, 0, 100))
+		if (SizeSteal === 0)
+			return;
+
+		let sizeBarX = 0;
+
+		if (SizeSteal < 1) {
+			colorBar.SetColor(74, 177, 48);
+			SizeSteal = (StealDMDraGonSlave + StealDMGLaguna) / hero.MaxHP;
+			sizeBarX += bar_w * SizeSteal;
+		}
+		else {
+			colorBar.SetColor(0, 255, 0);
+			sizeBarX += hero.HP / hero.MaxHP * bar_w;
+		}
+		sizeBarX = Math.min(sizeBarX, bar_w);
+
+		// colorBar ??? new color quest in moof 
+		RendererSDK.FilledRect(wts, new Vector2(sizeBarX, bar_h), colorBar)
 	})
 }

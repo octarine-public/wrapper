@@ -300,7 +300,7 @@ let abils_list: Ability[] = []
 
 function ReturnAOERadius(owner: Unit, name_ability: string): number {
 	let ability = owner.GetAbilityByName(name_ability)
-	return ability.AOERadius
+	return ability?.AOERadius
 }
 
 EventsSDK.on("EntityCreated", ent => {
@@ -326,7 +326,7 @@ EventsSDK.on("EntityCreated", ent => {
 		if (owner === undefined || !owner.IsEnemy())
 			return;
 
-		let rad = 0;
+		let rad = undefined;
 
 		switch (owner.Name) {
 			case "npc_dota_hero_invoker":
@@ -354,7 +354,7 @@ EventsSDK.on("EntityCreated", ent => {
 				rad = ReturnAOERadius(owner, "abyssal_underlord_pit_of_malice")
 				break;
 		}
-		if (rad !== 0) {
+		if (rad !== undefined) {
 			DrawParticleCirclePos(ent.NetworkPosition, rad, ent.Index)
 		}
 	}

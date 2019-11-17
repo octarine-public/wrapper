@@ -65,9 +65,9 @@ export function EntityDestroyed(x: Entity) {
 }
 
 export function TrackingProjectileCreated(proj: TrackingProjectile) {
-	if (!Base.IsRestrictions(State))
-		return false
-
+	if (!Base.IsRestrictions(State)) {
+		return
+	}
 	let Entity = proj.Source as Entity
 	if (proj instanceof TrackingProjectile
 		&& Entity instanceof Hero

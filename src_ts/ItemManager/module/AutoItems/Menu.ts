@@ -30,6 +30,7 @@ let Items_array: string[] = [
 	Items.SolarCrest.toString(),
 	Items.Medallion.toString(),
 	Items.Janggo.toString(),
+	// Items.Armlet.toString(),
 	Items.DiffusalBlade.toString(),
 	Items.PowerTreads.toString(),
 ]

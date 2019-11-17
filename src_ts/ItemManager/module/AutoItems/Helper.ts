@@ -30,6 +30,8 @@ import {
 import ItemManagerBase from "../../abstract/Base"
 import InitItems from "../../abstract/Items"
 import { StateBase } from "../../abstract/MenuBase"
+import { Key } from "../../../UnitBlocker/modules/CreepBlock/Menu"
+import { Key as Keys } from "../../../UnitBlocker/modules/HeroBlock/Menu"
 
 let Units: Unit[] = [],
 	AllUnitsHero: Unit[] = [],
@@ -120,6 +122,9 @@ function AutoUseItems(unit: Unit) {
 	}
 	let Items = new InitItems(unit)
 	if (IsValidItem(Items.PhaseBoots)) {
+		if (Key.is_pressed || Keys.is_pressed) {
+			return false
+		}
 		if (unit.IsMoving || unit.IdealSpeed >= Base.MaxMoveSpeed) {
 			let enemy_phase_in_position = AutoUseItemsPhaseBootsState.value
 				? AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsVisible && enemy.IsAlive
