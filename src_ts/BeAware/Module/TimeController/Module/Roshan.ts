@@ -1,4 +1,4 @@
-import { Color, Game, Menu, RendererSDK, Unit, Vector2 } from "wrapper/Imports"
+import { Color, Game, Menu, RendererSDK, Unit, Vector2, Player, LocalPlayer, Team } from "wrapper/Imports"
 import ManagerBase from "../../../abstract/Base"
 import {
 	AegisdrawStatusSize,
@@ -18,6 +18,7 @@ import {
 	NotificationRoshanStateSound,
 	statusPosX,
 	statusPosY,
+	UseScanForAlies,
 
 } from "../Menu"
 
@@ -34,6 +35,7 @@ var Timer = 0,
 	TimersTwo: string,
 	AegisTextTime: string,
 	IsAlive = true
+
 
 export function RoshanParticleCreate(Handle: bigint) {
 	if (Handle === 7431777948785381669n) {
@@ -108,6 +110,14 @@ export function RoshanTick() {
 		return
 	}
 	if (Time >= checkTickMessage) {
+		if (LocalPlayer !== undefined && Player !== undefined && UseScanForAlies.value) {
+			let Time = LocalPlayer.Team === Team.Radiant
+				? Game.ScanCooldownRadiant
+				: Game.ScanCooldownDire
+			if (Time === 0) {
+				Player.Scan(Base.RoshanPosition)
+			}
+		}
 		Game.ExecuteCommand("chatwheel_say 53")
 		checkTickMessage = Time + 10
 	}
@@ -151,7 +161,7 @@ export function DrawRoshan() {
 	}
 	if (Units.length > 0) {
 		Units.filter(x => {
-			if (!x.Name.includes("roshan") && x.Distance2D(Base.RoshanPosition) <= 900) {
+			if (!x.IsVisible && !x.Name.includes("roshan") && x.IsInRange(Base.RoshanPosition, 650)) {
 				RendererSDK.DrawMiniMapIcon("minimap_danger", Base.RoshanPosition, 900)
 				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${x.Name}`, Base.RoshanPosition, 900)
 			}

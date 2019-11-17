@@ -53,9 +53,11 @@ export {
 	TreeNotificationBountySound,
 }
 
-let RoshanTree = BaseTree.AddNode("Roshan")
-let NotificationRoshanStateChat = RoshanTree.AddToggle("Chat").SetTooltip("Send notification to chat alies"),
+let RoshanTree = BaseTree.AddNode("Roshan"),
+	UseScanForAlies = RoshanTree.AddToggle("Use scan in roshpit", true),
+	NotificationRoshanStateChat = RoshanTree.AddToggle("Chat").SetTooltip("Send notification to chat alies"),
 	NotificationRoshanStateSound = RoshanTree.AddSlider("Sound volume%", 1, 0, 100),
+
 	drawMenu = RoshanTree.AddNode("Draw Settings"),
 	drawStatus = drawMenu.AddToggle("Draw status", true),
 	IconSettingsTree = drawMenu.AddNode("Icon Settings"),
@@ -82,7 +84,8 @@ export {
 	drawStatus,
 	statusPosX,
 	statusPosY,
-	drawStatusSize
+	drawStatusSize,
+	UseScanForAlies
 }
 
 export {
