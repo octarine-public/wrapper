@@ -438,6 +438,7 @@ declare function ChatWheelAbuse(str: string): void
 declare function StopFindingMatch(): void
 declare function AcceptMatch(): void
 declare function ToggleFakeChat(state: boolean): void
+declare function GetEntityByVecOrigin(vec: CNetworkOriginCellCoordQuantizedVector): C_BaseEntity
 
 /// AUTOMATICALLY GENERATED
 

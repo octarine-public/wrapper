@@ -158,13 +158,13 @@ export default class Entity {
 	public get Name(): string {
 		return this.Name_
 	}
-	get Owner(): Entity { // trick to make it public ro, and protected rw
+	public get Owner(): Entity { // trick to make it public ro, and protected rw
 		return this.Owner_ instanceof Entity ? this.Owner_ : (this.Owner_ = EntityManager.GetEntityByNative(this.Owner_, true) || EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
 	}
-	get GameSceneNode(): CGameSceneNode {
+	public get GameSceneNode(): CGameSceneNode {
 		return this.m_pBaseEntity.m_pGameSceneNode
 	}
-	get Position(): Vector3 { // trick to make it public ro, and protected rw
+	public get Position(): Vector3 { // trick to make it public ro, and protected rw
 		if (!this.Position_.IsValid) {
 			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
@@ -176,12 +176,12 @@ export default class Entity {
 		}
 		return this.Position_.Clone()
 	}
-	get NetworkPosition(): Vector3 {
+	public get NetworkPosition(): Vector3 {
 		if (!this.NetworkPosition_.IsValid)
 			this.Position.CopyTo(this.NetworkPosition_)
 		return this.NetworkPosition_.Clone()
 	}
-	get Scale(): number {
+	public get Scale(): number {
 		if (isNaN(this.Scale_)) {
 			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
@@ -190,13 +190,13 @@ export default class Entity {
 		}
 		return this.Scale_
 	}
-	get Rotation(): number {
+	public get Rotation(): number {
 		return this.Angles.y
 	}
-	get NetworkRotation(): number {
+	public get NetworkRotation(): number {
 		return this.NetworkAngles.y
 	}
-	get Angles(): QAngle {
+	public get Angles(): QAngle {
 		if (!this.Angles_.IsValid) {
 			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
@@ -205,77 +205,77 @@ export default class Entity {
 		}
 		return this.Angles_.Clone()
 	}
-	get NetworkAngles(): QAngle {
+	public get NetworkAngles(): QAngle {
 		if (!this.NetworkAngles_.IsValid)
 			this.Angles.CopyTo(this.NetworkAngles_)
 		return this.NetworkAngles_.Clone()
 	}
-	get CreateTime(): number {
+	public get CreateTime(): number {
 		return this.m_pBaseEntity.m_flCreateTime
 	}
-	get HPPercent(): number {
+	public get HPPercent(): number {
 		return Math.floor(this.HP / this.MaxHP * 100) || 0
 	}
-	get IsAlive(): boolean {
+	public get IsAlive(): boolean {
 		return this.LifeState === LifeState_t.LIFE_ALIVE
 	}
-	get IsDormant(): boolean {
+	public get IsDormant(): boolean {
 		return !this.IsVisible
 	}
-	get IsDOTANPC(): boolean {
+	public get IsDOTANPC(): boolean {
 		return this.m_pBaseEntity.m_bIsDOTANPC
 	}
-	get IsNPC(): boolean {
+	public get IsNPC(): boolean {
 		return this.m_pBaseEntity.m_bIsNPC
 	}
-	get IsVisible(): boolean {
+	public get IsVisible(): boolean {
 		return (this.Flags & (1 << 7)) === 0
 	}
 	/**
 	 * as Direction
 	 */
-	get Forward(): Vector3 {
+	public get Forward(): Vector3 {
 		return Vector3.FromAngle(this.NetworkRotationRad)
 	}
-	get RotationRad(): number {
+	public get RotationRad(): number {
 		return DegreesToRadian(this.Rotation)
 	}
-	get NetworkRotationRad(): number {
+	public get NetworkRotationRad(): number {
 		return DegreesToRadian(this.NetworkRotation)
 	}
 	/**
 	 * Buffs/debuffs are not taken
 	 */
-	get Speed(): number {
+	public get Speed(): number {
 		return this.m_pBaseEntity.m_flSpeed
 	}
-	get Flags(): number {
+	public get Flags(): number {
 		if (!this.IsValid)
 			return -1
 		return this.Entity.m_flags
 	}
-	set Flags(value: number) {
+	public set Flags(value: number) {
 		if (!this.IsValid)
 			return
 		this.Entity.m_flags = value
 	}
 
-	get Agility(): number {
+	public get Agility(): number {
 		return 0
 	}
-	get Intellect(): number {
+	public get Intellect(): number {
 		return 0
 	}
-	get Strength(): number {
+	public get Strength(): number {
 		return 0
 	}
-	get TotalAgility(): number {
+	public get TotalAgility(): number {
 		return 0
 	}
-	get TotalIntellect(): number {
+	public get TotalIntellect(): number {
 		return 0
 	}
-	get TotalStrength(): number {
+	public get TotalStrength(): number {
 		return 0
 	}
 
