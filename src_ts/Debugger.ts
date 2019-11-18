@@ -1,7 +1,7 @@
 import { Color, EventsSDK, Game, Hero, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2 } from "./wrapper/Imports"
 
 let setConVar = (toggle: Menu.Toggle) =>
-	ConVars.Set(toggle.tooltip,toggle.value)
+	ConVars.Set(toggle.tooltip, toggle.value)
 
 let debuggerMenu = Menu.AddEntry("Debugger")
 

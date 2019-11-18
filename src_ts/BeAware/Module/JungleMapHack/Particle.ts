@@ -37,7 +37,7 @@ function RenderPosition(pos: Vector3) {
 			break
 	}
 	// -createhero k_drag enemy
-	RendererSDK.Text (
+	RendererSDK.Text(
 		TextStyle,
 		position_unit,
 		DrawRGBA.Color,
