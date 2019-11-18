@@ -13,7 +13,7 @@ export function Tick() {
 		|| LocalPlayer === undefined || LocalPlayer.IsSpectator) {
 		return false
 	}
-	let Time = LocalPlayer.Hero.Team === Team.Radiant
+	let Time = LocalPlayer.Team === Team.Radiant
 		? Game.GlyphCooldownRediant
 		: Game.GlyphCooldownDire
 	if (Time !== 0) {
