@@ -22,7 +22,9 @@ import {
 	AutoUseItemsSouringMP_val,
 	AutoUseItemsSouringMPUse_val,
 	AutoUseItemsSticks_val, AutoUseItemsUrnAlies,
-	AutoUseItemsUrnAliesAlliesHP, AutoUseItemsUrnAliesEnemyHP,
+	AutoUseItemsUrnAliesAlliesHP,
+	AutoUseItemsUrnAliesEnemyHP,
+	AutoUseItemsTango_val,
 	AutoUseItemsUrnEnemy,
 	ItemsForUse, State,
 } from "./Menu"
@@ -120,6 +122,7 @@ function AutoUseItems(unit: Unit) {
 	if (!IsValidUnit(unit)) {
 		return false
 	}
+
 	let Items = new InitItems(unit)
 	if (IsValidItem(Items.PhaseBoots)) {
 		if (Key.is_pressed || Keys.is_pressed) {
@@ -328,10 +331,17 @@ function AutoUseItems(unit: Unit) {
 		}
 	}
 
-	if (IsValidItem(Items.Tango) || IsValidItem(Items.TangoSingle)) {
+	if (!unit.ModifiersBook.GetAnyBuffByNames(
+		[
+			"modifier_tango_heal",
+			"modifier_item_urn_heal",
+			"modifier_item_spirit_vessel_heal"
+		]
+	) && (IsValidItem(Items.Tango) || IsValidItem(Items.TangoSingle))
+	) {
 		let Tango = !Items.Tango ? Items.TangoSingle : Items.Tango,
 			tr = Trees.find(x => x.IsInRange(unit, Tango.CastRange))
-		if (tr !== undefined) {
+		if (tr !== undefined && unit.HP <= AutoUseItemsTango_val.value) {
 			unit.CastTargetTree(Tango, tr)
 			TickSleep.Sleep(GetDelayCast())
 			return true
@@ -341,8 +351,9 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.Abyssal)) {
 		// loop-optimizer: FORWARD
 		AllUnitsHero.filter(enemy => enemy !== undefined && enemy.IsEnemy(unit) && enemy.IsValid && enemy.IsAlive).some(x => {
-			if (!x.IsInRange(unit, Items.Abyssal.CastRange))
+			if (!x.IsInRange(unit, Items.Abyssal.CastRange)) {
 				return false
+			}
 			unit.CastTarget(Items.Abyssal, x)
 			TickSleep.Sleep(GetDelayCast())
 			return true

@@ -1,12 +1,12 @@
 import InitItems from "../../abstract/Items"
 import { Menu, MenuBase } from "../../abstract/MenuBase"
-const { BaseTree, State } = MenuBase(Menu, "Auto Items")
+export const { BaseTree, State } = MenuBase(Menu, "Auto Items")
 State.SetTooltip("Auto use items")
 
-let Items = new InitItems(undefined)
+const Items = new InitItems(undefined)
 
 // loop-optimizer: KEEP
-let Items_array: string[] = [
+const Items_array: string[] = [
 	Items.Abyssal.toString(),
 	Items.PhaseBoots.toString(),
 	Items.MagicStick.toString(),
@@ -34,78 +34,54 @@ let Items_array: string[] = [
 	Items.DiffusalBlade.toString(),
 	Items.PowerTreads.toString(),
 ]
-let ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items_array)
+export const ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items_array)
 
 // Settings Items
-let SettingsAutoItems = BaseTree.AddNode("Items settings"),
-	AutoUseItemsSticks = SettingsAutoItems.AddNode("Stick"),
-	AutoUseItemsSticks_val = AutoUseItemsSticks.AddSlider("HP precent (%)", 10, 1, 99)
+const SettingsAutoItems = BaseTree.AddNode("Items settings")
+export const AutoUseItemsSticks = SettingsAutoItems.AddNode("Stick")
+export const AutoUseItemsSticks_val = AutoUseItemsSticks.AddSlider("HP precent (%)", 10, 1, 99)
 
-let AutoUseItemsPhaseBoots = SettingsAutoItems.AddNode("Phase Boots"),
-	AutoUseItemsPhaseBootsState = AutoUseItemsPhaseBoots.AddToggle("Check from enemy"),
-	AutoUseItemsPhase_val = AutoUseItemsPhaseBoots.AddSlider("Distance", 300, 150, 2000)
+const AutoUseItemsTango = SettingsAutoItems.AddNode("Tango")
+export const AutoUseItemsTango_val = AutoUseItemsTango.AddSlider("HP (min) for use", 450, 1, 1000)
 
-let AutoUseItemsFaerieFire = SettingsAutoItems.AddNode("Faerie Fire"),
-	AutoUseItemsFaerieFire_val = AutoUseItemsFaerieFire.AddSlider("HP for use", 100, 1, 1000)
+const AutoUseItemsPhaseBoots = SettingsAutoItems.AddNode("Phase Boots")
+export const AutoUseItemsPhaseBootsState = AutoUseItemsPhaseBoots.AddToggle("Check from enemy")
+export const AutoUseItemsPhase_val = AutoUseItemsPhaseBoots.AddSlider("Distance", 300, 150, 2000)
 
-let AutoUseItemsCheese = SettingsAutoItems.AddNode("Cheese"),
-	AutoUseItemsCheese_val = AutoUseItemsCheese.AddSlider("HP precent (%)", 10, 1, 99)
+const AutoUseItemsFaerieFire = SettingsAutoItems.AddNode("Faerie Fire")
+export const AutoUseItemsFaerieFire_val = AutoUseItemsFaerieFire.AddSlider("HP (min) for use", 100, 1, 1000)
 
-let AutoUseItemsArcane = SettingsAutoItems.AddNode("Arcane Boots"),
-	AutoUseItemsArcane_val = AutoUseItemsArcane.AddSlider("MP precent (%)", 10, 1, 99)
+const AutoUseItemsCheese = SettingsAutoItems.AddNode("Cheese")
+export const AutoUseItemsCheese_val = AutoUseItemsCheese.AddSlider("HP precent (%)", 10, 1, 99)
 
-let AutoUseItemsMG = SettingsAutoItems.AddNode("Mekansm / Graves"),
-	AutoUseItemsMG_val = AutoUseItemsMG.AddSlider("HP precent (%)", 10, 1, 99)
+const AutoUseItemsArcane = SettingsAutoItems.AddNode("Arcane Boots")
+export const AutoUseItemsArcane_val = AutoUseItemsArcane.AddSlider("MP precent (%)", 10, 1, 99)
 
-let AutoUseItemsSouring = SettingsAutoItems.AddNode("Soul Ring"),
-	AutoUseItemsSouringInvis = AutoUseItemsSouring.AddToggle("Use when invisible"),
-	AutoUseItemsSouringHP_val = AutoUseItemsSouring.AddSlider("HP(%) threshold ", 70, 0, 100),
-	AutoUseItemsSouringMP_val = AutoUseItemsSouring.AddSlider("MP(%) threshold", 100, 0, 100),
-	AutoUseItemsSouringMPUse_val = AutoUseItemsSouring.AddSlider("MP ability threshold", 25, 0, 100)
+const AutoUseItemsMG = SettingsAutoItems.AddNode("Mekansm / Graves")
+export const AutoUseItemsMG_val = AutoUseItemsMG.AddSlider("HP precent (%)", 10, 1, 99)
 
-let AutoUseItemsBlood = SettingsAutoItems.AddNode("Bloodstone"),
-	AutoUseItemsBloodHP_val = AutoUseItemsBlood.AddSlider("HP precent (%)", 10, 1, 99),
-	AutoUseItemsBloodMP_val = AutoUseItemsBlood.AddSlider("Min mana precent (%)", 7, 1, 100)
+const AutoUseItemsSouring = SettingsAutoItems.AddNode("Soul Ring")
+export const AutoUseItemsSouringInvis = AutoUseItemsSouring.AddToggle("Use when invisible")
+export const AutoUseItemsSouringHP_val = AutoUseItemsSouring.AddSlider("HP(%) threshold ", 70, 0, 100)
+export const AutoUseItemsSouringMP_val = AutoUseItemsSouring.AddSlider("MP(%) threshold", 100, 0, 100)
+export const AutoUseItemsSouringMPUse_val = AutoUseItemsSouring.AddSlider("MP ability threshold", 25, 0, 100)
 
-let AutoUseItemsMidas = SettingsAutoItems.AddNode("Midas"),
-	AutoUseItemsMidas_range = AutoUseItemsMidas.AddToggle("Only range-creeps"),
-	AutoUseItemsMidas_CheckBIG = AutoUseItemsMidas.AddToggle("Check on big creeps")
+const AutoUseItemsBlood = SettingsAutoItems.AddNode("Bloodstone")
+export const AutoUseItemsBloodHP_val = AutoUseItemsBlood.AddSlider("HP precent (%)", 10, 1, 99)
+export const AutoUseItemsBloodMP_val = AutoUseItemsBlood.AddSlider("Min mana precent (%)", 7, 1, 100)
 
-let AutoUseItemsUrn = SettingsAutoItems.AddNode("Urn / Vessel"),
-	AutoUseItemsUrnAlies = AutoUseItemsUrn.AddToggle("Use Urn for Allies"),
-	AutoUseItemsUrnAliesAlliesHP = AutoUseItemsUrn.AddSlider("HP for use allies", 300, 1, 1000),
+const AutoUseItemsMidas = SettingsAutoItems.AddNode("Midas")
+export const AutoUseItemsMidas_range = AutoUseItemsMidas.AddToggle("Only range-creeps")
+export const AutoUseItemsMidas_CheckBIG = AutoUseItemsMidas.AddToggle("Check on big creeps")
 
-	AutoUseItemsUrnEnemy = AutoUseItemsUrn.AddToggle("Use Urn for Enemy"),
-	AutoUseItemsUrnAliesEnemyHP = AutoUseItemsUrn.AddSlider("HP for use enemy", 200, 1, 1000)
+const AutoUseItemsUrn = SettingsAutoItems.AddNode("Urn / Vessel")
+export const AutoUseItemsUrnAlies = AutoUseItemsUrn.AddToggle("Use Urn for Allies")
+export const AutoUseItemsUrnAliesAlliesHP = AutoUseItemsUrn.AddSlider("HP for use allies", 300, 1, 1000)
+export const AutoUseItemsUrnEnemy = AutoUseItemsUrn.AddToggle("Use Urn for Enemy")
+export const AutoUseItemsUrnAliesEnemyHP = AutoUseItemsUrn.AddSlider("HP for use enemy", 200, 1, 1000)
 
-let AutoUseItemsMjollnir = SettingsAutoItems.AddNode("Mjollnir"),
-	AutoUseItemsMjollnir_val = AutoUseItemsMjollnir.AddSlider("Distance from enemy", 600, 150, 2000)
+const AutoUseItemsMjollnir = SettingsAutoItems.AddNode("Mjollnir")
+export const AutoUseItemsMjollnir_val = AutoUseItemsMjollnir.AddSlider("Distance from enemy", 600, 150, 2000)
 
-let AutoUseItemsBluker = SettingsAutoItems.AddNode("Buckler"),
-	AutoUseItemsBluker_val = AutoUseItemsBluker.AddSlider("Distance from enemy", 1000, 150, 2000)
-
-export {
-	MenuBase, Items,
-	State, ItemsForUse,
-	AutoUseItemsMG_val,
-	AutoUseItemsSticks_val,
-	AutoUseItemsCheese_val,
-	AutoUseItemsArcane_val,
-	AutoUseItemsBloodHP_val,
-	AutoUseItemsBloodMP_val,
-	AutoUseItemsMidas_range,
-	AutoUseItemsMidas_CheckBIG,
-	AutoUseItemsFaerieFire_val,
-	AutoUseItemsUrnAlies,
-	AutoUseItemsUrnAliesAlliesHP,
-	AutoUseItemsUrnEnemy,
-	AutoUseItemsUrnAliesEnemyHP,
-	AutoUseItemsPhase_val,
-	AutoUseItemsPhaseBootsState,
-	AutoUseItemsMjollnir_val,
-	AutoUseItemsBluker_val,
-	AutoUseItemsSouringHP_val,
-	AutoUseItemsSouringMP_val,
-	AutoUseItemsSouringInvis,
-	AutoUseItemsSouringMPUse_val
-}
+const AutoUseItemsBluker = SettingsAutoItems.AddNode("Buckler")
+export const AutoUseItemsBluker_val = AutoUseItemsBluker.AddSlider("Distance from enemy", 1000, 150, 2000)
