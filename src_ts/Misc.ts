@@ -156,7 +156,7 @@ global.PrepareUnitOrders = (order: { // pass Position: Vector3 at IOBuffer offse
 			break
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
+		// case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:

@@ -1,4 +1,4 @@
-import { Color, EventsSDK, Game, Hero, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2 } from "./wrapper/Imports"
+import { EventsSDK, Game, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color } from "./wrapper/Imports"
 
 let setConVar = (toggle: Menu.Toggle) =>
 	ConVars.Set(toggle.tooltip, toggle.value)
@@ -31,7 +31,7 @@ sv_cheatsMenu.AddButton("Local lvl max")
 	.SetTooltip("dota_hero_level 25")
 	.OnValue(self => Game.ExecuteCommand(self.tooltip))
 
-sv_cheatsMenu.AddButton("Get Rap God")
+sv_cheatsMenu.AddButton("Get Rapier God")
 	.SetTooltip("dota_rap_god")
 	.OnValue(self => Game.ExecuteCommand(self.tooltip))
 
@@ -63,102 +63,16 @@ EventsSDK.on("GameStarted", () => {
 	ConVars.Set("dota_creeps_no_spawning", creepsNoSpawn.value)
 })
 
-// ======================= DEBUGGING EVENTS
-
 const debugEventsMenu = debuggerMenu.AddNode("Debugging events", "Debugging native events in console")
 
 const debugEvents = debugEventsMenu.AddToggle("Debugging events")
-const debugOnlyThrowEvents = debugEventsMenu.AddToggle("Debugging only throw", true)
 
 const debugDrawEvents = debugEventsMenu.AddToggle("Debug Draw")
 
-const debugEntitiesEvents = debugEventsMenu.AddToggle("Debug Entities")
-const debugBuffsEvents = debugEventsMenu.AddToggle("Debug Buffs")
-
-const debugOtherEvents = debugEventsMenu.AddToggle("Debug Other")
 const debugProjectiles = debugEventsMenu.AddToggle("Debug projectiles", false, "Visual only")
-EventsSDK.on("GameStarted", pl_ent => {
-	if (!debugEvents.value || !debugOtherEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onGameStarted", pl_ent)
-
-	if (!(pl_ent instanceof Hero))
-		throw "onGameStarted. pl_ent is not C_DOTA_BaseNPC_Hero: " + pl_ent
-})
-EventsSDK.on("GameEnded", () => {
-	if (!debugEvents.value || !debugOtherEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onGameEnded")
-})
-Events.on("EntityCreated", (ent, id) => {
-	if (!debugEvents.value || !debugEntitiesEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onEntityCreated", ent, id)
-})
-Events.on("EntityDestroyed", (ent, id) => {
-	if (!debugEvents.value || !debugEntitiesEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onEntityCreated", ent, id)
-})
-Events.on("UnitStateChanged", npc => {
-	if (!debugEvents.value || !debugOtherEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onUnitStateChanged", npc)
-})
-Events.on("TeamVisibilityChanged", npc => {
-	if (!debugEvents.value || !debugOtherEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onTeamVisibilityChanged", npc)
-})
-Events.on("Draw", () => {
-	if (!debugEvents.value || !debugDrawEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onDraw")
-})
-Events.on("ParticleCreated", (...args) => debugConsole("onParticleCreated", ...args))
-Events.on("ParticleUpdated", (...args) => debugConsole("onParticleUpdated", ...args))
-Events.on("ParticleUpdatedEnt", (...args) => debugConsole("onParticleUpdatedEnt", ...args))
-Events.on("BloodImpact", (...args) => debugConsole("onBloodImpact", ...args))
-Events.on("PrepareUnitOrders", order => {
-	if (!debugEvents.value || !debugOtherEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onPrepareUnitOrders", order)
-})
-Events.on("UnitAnimation", (...args) => debugConsole("onUnitAnimation", ...args))
-Events.on("UnitAnimationEnd", (...args) => debugConsole("onUnitAnimation", ...args))
-Events.on("BuffAdded", (npc, buff) => {
-	if (!debugEvents.value || !debugBuffsEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onBuffAdded", npc, buff)
-})
-Events.on("BuffRemoved", (npc, buff) => {
-	if (!debugEvents.value || !debugBuffsEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onBuffRemoved", npc, buff)
-})
-Events.on("BuffStackCountChanged", buff => {
-	if (!debugEvents.value || !debugBuffsEvents.value) return
-
-	if (!debugOnlyThrowEvents.value)
-		console.log("onBuffStackCountChanged", buff)
-})
-Events.on("CustomGameEvent", (...args) => debugConsole("onCustomGameEvent", ...args))
-
-let debugConsole = (name: string, ...args: any) =>
-	debugEvents.value && !debugOnlyThrowEvents.value && debugOtherEvents.value && console.log(name, ...args)
 
 EventsSDK.on("Draw", () => {
-	if (!debugEvents.value || debugOnlyThrowEvents.value || !debugProjectiles.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!debugEvents.value || !debugProjectiles.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
 		let w2s = RendererSDK.WorldToScreen(proj.Position)
@@ -173,3 +87,41 @@ EventsSDK.on("Draw", () => {
 		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
 	})
 })
+
+let old_emit = Events.emit,
+	avg_map = new Map<string, [number, number]>(),
+	max_map = new Map<string, number>()
+
+function RegisterStats(name: string, took: number) {
+	if (!avg_map.has(name)) {
+		avg_map.set(name, [0, 0])
+		max_map.set(name, 0)
+	}
+	let avg_ar = avg_map.get(name)
+	avg_ar[0] *= avg_ar[1]
+	avg_ar[0] += took
+	avg_ar[1]++
+	avg_ar[0] /= avg_ar[1]
+	max_map.set(name, Math.max(max_map.get(name), took))
+}
+
+function ProfileEmit(name: string, cancellable?: boolean, ...args: any[]) {
+	let t = Date.now()
+	let ret = old_emit.apply(Events, [name, cancellable, ...args])
+	t = Date.now() - t
+	RegisterStats(name, t)
+	return ret
+}
+Events.emit = ProfileEmit
+
+global.dump_stats = () => {
+	console.log("Average: ")
+	for (let [name, [took]] of avg_map.entries())
+		console.log(`${name}: ${took}ms`)
+
+	console.log("-".repeat(10))
+
+	console.log("Max: ")
+	for (let [name, took] of max_map.entries())
+		console.log(`${name}: ${took}ms`)
+}

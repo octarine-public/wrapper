@@ -5,28 +5,28 @@ declare var global: any
 
 /// actual code
 global.EventEmitter = class EventEmitter {
-	private readonly events: { [event_name: string]: Listener[] } = {}
-	private readonly events_after: { [event_name: string]: Listener[] } = {}
+	private readonly events = new Map<string, Listener[]>()
+	private readonly events_after = new Map<string, Listener[]>()
 
 	public on(name: string, listener: Listener): EventEmitter {
-		let listeners = this.events[name]
+		let listeners = this.events.get(name)
 		if (listeners === undefined)
-			this.events[name] = listeners = []
+			this.events.set(name, listeners = [])
 
 		listeners.push(listener)
 		return this
 	}
 	public after(name: string, listener: Listener): EventEmitter {
-		let listeners = this.events_after[name]
+		let listeners = this.events_after.get(name)
 		if (listeners === undefined)
-			this.events_after[name] = listeners = []
+			this.events_after.set(name, listeners = [])
 
 		listeners.push(listener)
 		return this
 	}
 
 	public removeListener(name: string, listener: Listener): EventEmitter {
-		let listeners = this.events[name]
+		let listeners = this.events.get(name)
 		if (listeners === undefined)
 			return
 
@@ -36,14 +36,9 @@ global.EventEmitter = class EventEmitter {
 		return this
 	}
 
-	/* public removeAllListeners(): EventEmitter {
-		Object.keys(this.events).forEach(name => this.events[name].splice(0))
-		return this
-	} */
-
 	public emit(name: string, cancellable: boolean = false, ...args: any[]): boolean {
-		let listeners = this.events[name],
-			listeners_after = this.events_after[name]
+		let listeners = this.events.get(name),
+			listeners_after = this.events_after.get(name)
 
 		let ret = listeners === undefined || !listeners.some(listener => {
 			try {

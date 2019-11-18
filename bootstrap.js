@@ -1,12 +1,12 @@
 global.EventEmitter = class EventEmitter {
-  events = {};
-  events_after = {};
+  events = new Map();
+  events_after = new Map();
 
   on(name, listener) {
-    let listeners = this.events[name];
+    let listeners = this.events.get(name);
 
     if (listeners === undefined) {
-      this.events[name] = listeners = [];
+      this.events.set(name, listeners = []);
     }
 
     listeners.push(listener);
@@ -14,10 +14,10 @@ global.EventEmitter = class EventEmitter {
   }
 
   after(name, listener) {
-    let listeners = this.events_after[name];
+    let listeners = this.events_after.get(name);
 
     if (listeners === undefined) {
-      this.events_after[name] = listeners = [];
+      this.events_after.set(name, listeners = []);
     }
 
     listeners.push(listener);
@@ -25,7 +25,7 @@ global.EventEmitter = class EventEmitter {
   }
 
   removeListener(name, listener) {
-    let listeners = this.events[name];
+    let listeners = this.events.get(name);
 
     if (listeners === undefined) {
       return;
@@ -41,8 +41,8 @@ global.EventEmitter = class EventEmitter {
   }
 
   emit(name, cancellable = false, ...args) {
-    let listeners = this.events[name],
-        listeners_after = this.events_after[name];
+    let listeners = this.events.get(name),
+        listeners_after = this.events_after.get(name);
     let ret = listeners === undefined || !listeners.some(listener => {
       try {
         return listener.apply(this, args) === false && cancellable;

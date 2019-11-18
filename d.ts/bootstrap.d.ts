@@ -1,18 +1,18 @@
 declare class EntityManager {
 	public readonly AllEntities: C_BaseEntity[];
 	public readonly EntitiesIDs: C_BaseEntity[];
-	
+
 	public GetEntityID(ent: C_BaseEntity): number
 	public GetEntityByID(id: number): C_BaseEntity
 }
 declare var Entities: EntityManager;
 
 type Listener = (...args: any) => false | any
+type ListenerEvery = (event_name: string, ...args: any) => false | any
 declare class EventEmitter {
 	public on(name: string, listener: Listener): EventEmitter
 	public after(name: string, listener: Listener): EventEmitter
 	public removeListener(name: string, listener: Listener): EventEmitter
-	//public removeAllListeners(): EventEmitter
 	public emit(name: string, cancellable?: boolean, ...args: any[]): boolean
 	public once(name: string, listener: Listener): EventEmitter
 }
@@ -123,7 +123,7 @@ declare interface Events extends EventEmitter {
 	on(name: "ParticleUpdatedOrient", listener: ( // forward: Vector3 at IOBuffer offset 0, up: Vector3 at IOBuffer offset 3, left: Vector3 at IOBuffer offset 6
 		id: number,
 		control_point: number
-	) => void): EventEmitter 
+	) => void): EventEmitter
 	on(name: "ParticleUpdatedFallback", listener: ( // position: Vector3 at IOBuffer offset 0
 		id: number,
 		control_point: number
