@@ -2,6 +2,7 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
+import * as ArrayExtensions from "../Utils/ArrayExtensions"
 
 export interface IMenu {
 	entries: Base[]
@@ -61,5 +62,16 @@ export default class Base {
 	public RenderTooltip(): void {
 		if (this.tooltip === undefined || this.tooltip.length === 0 || !this.Rect.Contains(this.MousePosition))
 			return
+	}
+
+	/**
+	 * @returns true on success
+	 */
+	public DetachFromParent(): boolean {
+		let parent = this.parent
+		if (parent === undefined)
+			return false
+		this.parent = undefined
+		return ArrayExtensions.arrayRemove(parent.entries, this)
 	}
 }
