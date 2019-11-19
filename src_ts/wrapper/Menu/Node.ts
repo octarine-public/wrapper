@@ -2,7 +2,7 @@ import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import RendererSDK from "../Native/RendererSDK"
-import Base from "./Base"
+import Base, { IMenu } from "./Base"
 import Button from "./Button"
 import ImageSelectror from "./ImageSelector"
 import KeyBind from "./KeyBind"
@@ -11,12 +11,7 @@ import Slider from "./Slider"
 import Switcher from "./Switcher"
 import Toggle from "./Toggle"
 
-interface IMenu {
-	entries: Node[]
-}
-
 export default class Node extends Base {
-	public parent: Node | IMenu
 	public entries: Base[] = []
 	public is_open = false
 	public is_hovered = false
@@ -30,8 +25,8 @@ export default class Node extends Base {
 	protected active_element: Base
 	protected readonly MousePosition = new Vector2()
 
-	constructor(name: string, tooltip?: string) {
-		super(name)
+	constructor(parent: IMenu, name: string, tooltip?: string) {
+		super(parent, name)
 		this.tooltip = tooltip
 		this.TotalSize_.x =
 			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS).x
@@ -121,7 +116,7 @@ export default class Node extends Base {
 	}
 
 	public AddToggle(name: string, default_value: boolean = false, tooltip?: string): Toggle {
-		let toggle = new Toggle(name, default_value, tooltip)
+		let toggle = new Toggle(this, name, default_value, tooltip)
 		this.entries.push(toggle)
 		this.SortEntries()
 		Menu.ForwardConfig()
@@ -129,7 +124,7 @@ export default class Node extends Base {
 		return toggle
 	}
 	public AddSlider(name: string, default_value = 0, min = 0, max = 100, tooltip?: string): Slider {
-		let slider = new Slider(name, default_value, min, max, tooltip)
+		let slider = new Slider(this, name, default_value, min, max, tooltip)
 		this.entries.push(slider)
 		this.SortEntries()
 		Menu.ForwardConfig()
@@ -143,8 +138,7 @@ export default class Node extends Base {
 		let node = this.entries.find(entry => entry instanceof Node && entry.name === name) as Node
 		if (node !== undefined)
 			return node
-		node = new Node(name, tooltip)
-		node.parent = this
+		node = new Node(this, name, tooltip)
 		this.entries.push(node)
 		this.SortEntries()
 		Menu.ForwardConfig()
@@ -152,7 +146,7 @@ export default class Node extends Base {
 		return node
 	}
 	public AddSwitcher(name: string, values: string[], default_value = 0): Switcher {
-		let switcher = new Switcher(name, values, default_value)
+		let switcher = new Switcher(this, name, values, default_value)
 		this.entries.push(switcher)
 		this.SortEntries()
 		Menu.ForwardConfig()
@@ -234,7 +228,7 @@ export default class Node extends Base {
 		}
 	}
 	public AddKeybind(name: string, default_key = "", tooltip?: string) {
-		let keybind = new KeyBind(name, default_key, tooltip)
+		let keybind = new KeyBind(this, name, default_key, tooltip)
 		this.entries.push(keybind)
 		this.SortEntries()
 		Menu.ForwardConfig()
@@ -242,7 +236,7 @@ export default class Node extends Base {
 		return keybind
 	}
 	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip?: string) {
-		let image_selector = new ImageSelectror(name, values, default_values, tooltip)
+		let image_selector = new ImageSelectror(this, name, values, default_values, tooltip)
 		this.entries.push(image_selector)
 		this.SortEntries()
 		Menu.ForwardConfig()
@@ -250,7 +244,7 @@ export default class Node extends Base {
 		return image_selector
 	}
 	public AddButton(name: string, tooltip?: string): Button {
-		let button = new Button(name, tooltip)
+		let button = new Button(this, name, tooltip)
 		this.entries.push(button)
 		this.SortEntries()
 		Menu.ForwardConfig()

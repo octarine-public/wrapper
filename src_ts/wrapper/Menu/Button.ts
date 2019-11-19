@@ -2,7 +2,7 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
-import Base from "./Base"
+import Base, { IMenu } from "./Base"
 
 export default class Button extends Base {
 	protected readonly button_offset = new Vector2(8, 3)
@@ -11,8 +11,8 @@ export default class Button extends Base {
 	protected readonly execute_on_add = false
 	protected name_size: Vector2
 
-	constructor(name: string, tooltip?: string) {
-		super(name)
+	constructor(parent: IMenu, name: string, tooltip?: string) {
+		super(parent, name)
 		this.tooltip = tooltip
 		this.Update()
 	}

@@ -1,15 +1,7 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
-import Base from "./Base"
-
-interface INode {
-	TotalSize: Vector2
-}
-
-interface IMenu {
-	entries: INode[]
-}
+import Base, { IMenu } from "./Base"
 
 export default class Header extends Base {
 	public readonly FontSize = 34
@@ -24,8 +16,8 @@ export default class Header extends Base {
 	protected readonly underline_color = new Color(0x40, 0x80, 0xff)
 	protected readonly text_size: Vector2
 
-	constructor(name: string) {
-		super(name)
+	constructor(parent: IMenu, name: string) {
+		super(parent, name)
 		this.text_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
 	}
 

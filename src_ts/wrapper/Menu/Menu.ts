@@ -10,7 +10,7 @@ let Menu = new (class Menu {
 	public is_open = true
 	public block_mouse_position = true
 	public trigger_on_chat = false
-	private readonly header = new Header("Fusion")
+	private readonly header = new Header(this, "Fusion")
 	private active_element: Base
 
 	constructor() {
@@ -114,7 +114,7 @@ let Menu = new (class Menu {
 		let node = this.entries.find(node => node.name === name)
 		if (node !== undefined)
 			return node
-		node = new Node(name)
+		node = new Node(this, name)
 		node.parent = this
 		this.entries.push(node)
 		this.entries = this.entries.sort((a, b) => a.name.localeCompare(b.name))
@@ -142,7 +142,7 @@ function LParamToScreenCoords(lParam: bigint): Vector2 {
 	let buf = new ArrayBuffer(8)
 	let view = new DataView(buf)
 	view.setBigUint64(0, lParam, true)
-	return new Vector2 (
+	return new Vector2(
 		view.getInt16(0, true),
 		view.getInt16(2, true),
 	)
@@ -150,7 +150,7 @@ function LParamToScreenCoords(lParam: bigint): Vector2 {
 
 let last_click_ret = true
 Events.on("WndProc", (msg_type, wParam, lParam) => {
-	switch(msg_type) {
+	switch (msg_type) {
 		case 0x201: // WM_LBUTTONDOWN
 			return last_click_ret = Menu.OnMouseLeftDown()
 		case 0x202: // WM_LBUTTONUP

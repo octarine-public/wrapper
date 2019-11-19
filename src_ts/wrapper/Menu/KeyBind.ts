@@ -4,7 +4,7 @@ import Vector2 from "../Base/Vector2"
 import { ArrayExtensions } from "../Imports"
 import { Game } from "../Managers/EntityManager"
 import RendererSDK from "../Native/RendererSDK"
-import Base from "./Base"
+import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
 
 export default class KeyBind extends Base {
@@ -192,8 +192,8 @@ export default class KeyBind extends Base {
 	protected readonly MousePosition = new Vector2()
 	protected readonly execute_on_add = false
 
-	constructor(name: string, default_key = "None", tooltip?: string) {
-		super(name)
+	constructor(parent: IMenu, name: string, default_key = "None", tooltip?: string) {
+		super(parent, name)
 		this.assigned_key = KeyBind.KeyNames.indexOf(default_key)
 		this.tooltip = tooltip
 		this.Update()

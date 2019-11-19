@@ -2,7 +2,7 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
-import Base from "./Base"
+import Base, { IMenu } from "./Base"
 
 export default class Switcher extends Base {
 	public values: string[]
@@ -19,8 +19,8 @@ export default class Switcher extends Base {
 	protected name_size: Vector2
 	protected longest_value_size: Vector2
 
-	constructor(name: string, values: string[], default_value = 0) {
-		super(name + ":")
+	constructor(parent: IMenu, name: string, values: string[], default_value = 0) {
+		super(parent, name + ":")
 		this.values = values
 		this.selected_id = default_value
 		this.Update()

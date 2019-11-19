@@ -2,7 +2,7 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
-import Base from "./Base"
+import Base, { IMenu } from "./Base"
 
 export default class Toggle extends Base {
 	public value = true
@@ -14,8 +14,8 @@ export default class Toggle extends Base {
 	protected readonly toggle_activated_color = new Color(14, 99, 152)
 	protected readonly MousePosition = new Vector2()
 
-	constructor(name: string, default_value: boolean, tooltip?: string) {
-		super(name)
+	constructor(parent: IMenu, name: string, default_value: boolean, tooltip?: string) {
+		super(parent, name)
 		this.value = default_value
 		this.tooltip = tooltip
 		this.TotalSize_.x =

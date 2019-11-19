@@ -2,7 +2,7 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
-import Base from "./Base"
+import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
 
 // every icon: 32x32, 1x1 border
@@ -17,8 +17,8 @@ export default class ImageSelector extends Base {
 	protected readonly image_activated_color = new Color(255, 255, 255)
 	protected name_size: Vector2
 
-	constructor(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip?: string) {
-		super(name)
+	constructor(parent: IMenu, name: string, values: string[], default_values = new Map<string, boolean>(), tooltip?: string) {
+		super(parent, name)
 		this.values = values
 		this.enabled_values = default_values
 		this.tooltip = tooltip

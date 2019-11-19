@@ -3,6 +3,10 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 
+export interface IMenu {
+	entries: Base[]
+}
+
 export default class Base {
 	public tooltip: string = ""
 	public OnValueChangedCBs: ((caller: this) => void)[] = []
@@ -21,7 +25,7 @@ export default class Base {
 	protected readonly MousePosition = new Vector2()
 	protected readonly execute_on_add: boolean = true
 
-	constructor(public name: string = "") { this.name = name }
+	constructor(public parent: IMenu, public name: string = "") { this.name = name }
 	public get ConfigValue(): any { return undefined }
 	public set ConfigValue(value: any) { return }
 	protected get Rect() {

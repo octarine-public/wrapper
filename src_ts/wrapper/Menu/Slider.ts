@@ -1,7 +1,7 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
-import Base from "./Base"
+import Base, { IMenu } from "./Base"
 
 export default class Slider extends Base {
 	public min = -200
@@ -15,8 +15,8 @@ export default class Slider extends Base {
 	protected readonly value_text_offset = new Vector2(10, 10)
 	protected readonly MousePosition = new Vector2()
 
-	constructor(name: string, default_value = 0, min = 0, max = 100, tooltip?: string) {
-		super(name)
+	constructor(parent: IMenu, name: string, default_value = 0, min = 0, max = 100, tooltip?: string) {
+		super(parent, name)
 		this.value = default_value
 		this.min = min
 		this.max = max
