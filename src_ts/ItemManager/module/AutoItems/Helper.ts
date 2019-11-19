@@ -132,7 +132,7 @@ function AutoUseItems(unit: Unit) {
 			let enemy_phase_in_position = AutoUseItemsPhaseBootsState.value
 				? AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsVisible && enemy.IsAlive
 					&& enemy.IsEnemy(unit)
-					&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsPhase_val.value)
+					&& unit.Distance2D(enemy.Position) <= AutoUseItemsPhase_val.value)
 				: AutoUseItemsPhaseBootsState.value
 
 			if (!AutoUseItemsPhaseBootsState.value || enemy_phase_in_position) {
@@ -145,7 +145,7 @@ function AutoUseItems(unit: Unit) {
 
 	if (IsValidItem(Items.Mjollnir)) {
 		let enemy_mjolnir = AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsAlive && enemy.IsVisible && enemy.IsEnemy(unit)
-			&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsMjollnir_val.value)
+			&& unit.Distance2D(enemy.Position) <= AutoUseItemsMjollnir_val.value)
 
 		if (enemy_mjolnir) {
 			unit.CastTarget(Items.Mjollnir, unit)
@@ -206,7 +206,7 @@ function AutoUseItems(unit: Unit) {
 		let Item = !Items.Mekansm ? Items.GuardianGreaves : Items.Mekansm
 		AllUnitsHero.some(allies => {
 			if (allies !== undefined) {
-				if (!allies.IsEnemy(unit) && unit.IsInRange(allies.NetworkPosition, Item.AOERadius)) {
+				if (!allies.IsEnemy(unit) && unit.IsInRange(allies.Position, Item.AOERadius)) {
 					if (!unit.Buffs.some(buff => buff.Name === "modifier_item_mekansm_noheal")
 						&& (allies.HPPercent <= AutoUseItemsMG_val.value
 							&& allies.IsAlive || unit.HPPercent <= AutoUseItemsMG_val.value
@@ -227,7 +227,7 @@ function AutoUseItems(unit: Unit) {
 			if (unit.Buffs.some(buff => buff.Name === "modifier_fountain_aura_buff")) {
 				AllUnitsHero.some(allies => {
 					if (allies !== undefined) {
-						if (!allies.IsEnemy(unit) && unit.IsInRange(allies.NetworkPosition, Items.Bottle.CastRange)) {
+						if (!allies.IsEnemy(unit) && unit.IsInRange(allies.Position, Items.Bottle.CastRange)) {
 							if (!allies.IsInvulnerable && !unit.Buffs.some(buff => buff.Name === "modifier_bottle_regeneration")
 								&& (allies.Mana !== allies.MaxMana || allies.HP !== allies.MaxHP)) {
 								unit.CastTarget(Items.Bottle, allies)
@@ -252,7 +252,7 @@ function AutoUseItems(unit: Unit) {
 
 	if (IsValidItem(Items.Buckler)) {
 		let enemy_bluker = AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsEnemy(unit) && enemy.IsAlive && enemy.IsVisible
-			&& unit.Distance2D(enemy.NetworkPosition) <= AutoUseItemsBluker_val.value)
+			&& unit.Distance2D(enemy.Position) <= AutoUseItemsBluker_val.value)
 		if (enemy_bluker) {
 			unit.CastNoTarget(Items.Buckler)
 			TickSleep.Sleep(GetDelayCast())
@@ -311,7 +311,7 @@ function AutoUseItems(unit: Unit) {
 			})
 			let IsVisible = AllUnitsHero.some(enemy => enemy !== undefined && unit.IsEnemy(enemy)
 				&& enemy.IsAlive
-				&& unit.IsInRange(enemy.NetworkPosition, Items.Dust.CastRange)
+				&& unit.IsInRange(enemy.Position, Items.Dust.CastRange)
 				&& !enemy.ModifiersBook.HasAnyBuffByNames(Buffs.InvisDebuff)
 				&&
 				(
@@ -421,7 +421,7 @@ function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true
 	AllUnitsHero.map(enemy => {
 		if (enemy !== undefined) {
 			let target = IsEnemy ? enemy : unit
-			if (unit.IsInRange(target.NetworkPosition, Item.CastRange)) {
+			if (unit.IsInRange(target.Position, Item.CastRange)) {
 				if (CheckUnitForUrn(target, IsEnemy ? AutoUseItemsUrnAliesEnemyHP.value : AutoUseItemsUrnAliesAlliesHP.value) && !enemy.IsIllusion
 					&& !target.ModifiersBook.GetAnyBuffByNames(["modifier_item_urn_heal", "modifier_item_spirit_vessel_heal"])
 				) {

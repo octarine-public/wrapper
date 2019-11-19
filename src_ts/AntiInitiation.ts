@@ -112,7 +112,7 @@ function GetAbilArray(abilNameToSearch: string) {
 }
 
 function Disable(Me: Hero, hero: Unit, DisableAr: [string, boolean, boolean?][], Abil?: Ability): boolean {
-	let delta = Me.GetRotationTime(hero.NetworkPosition) / 1000 + Additionaldelay.value
+	let delta = Me.GetRotationTime(hero.Position) / 1000 + Additionaldelay.value
 	let AbilAr: [string, boolean, boolean?]
 	if (hero === Me)
 		return false
@@ -135,7 +135,7 @@ function Disable(Me: Hero, hero: Unit, DisableAr: [string, boolean, boolean?][],
 		&& abil.Level !== 0
 		&& abil.Cooldown === 0
 		&& Me.Mana >= abil.ManaCost
-		&& (abil.CastRange <= 0 || Me.NetworkPosition.Distance2D(hero.NetworkPosition) <= abil.CastRange + hero.HullRadius * 2),
+		&& (abil.CastRange <= 0 || Me.Position.Distance2D(hero.Position) <= abil.CastRange + hero.HullRadius * 2),
 	)
 	if (disable_abil === undefined)
 		return false

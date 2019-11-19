@@ -854,7 +854,7 @@ export default class Unit extends Entity {
 
 	public IsInside(vec: Vector3, radius: number): boolean {
 		const direction = this.Forward,
-			npc_pos = this.NetworkPosition
+			npc_pos = this.Position
 		for (let i = Math.floor(vec.Distance2D(npc_pos) / radius) + 1; i--;)
 			if (npc_pos.Distance2D(new Vector3(vec.x - direction.x * i * radius, vec.y - direction.y * i * radius, vec.z - direction.z * i * radius)) <= radius)
 				return true
@@ -862,7 +862,7 @@ export default class Unit extends Entity {
 	}
 
 	public GetAngle(vec: Vector3): number {
-		let npc_pos = this.NetworkPosition,
+		let npc_pos = this.Position,
 			angle = Math.abs(Math.atan2(npc_pos.y - vec.y, npc_pos.x - vec.x) - this.Forward.Angle)
 		if (angle > Math.PI)
 			angle = Math.abs((Math.PI * 2) - angle)
@@ -953,7 +953,7 @@ export default class Unit extends Entity {
 
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
 			if (target instanceof Entity) {
-				target = target.NetworkPosition
+				target = target.Position
 			}
 
 			return this.CastPosition(ability, target, queue, showEffects)

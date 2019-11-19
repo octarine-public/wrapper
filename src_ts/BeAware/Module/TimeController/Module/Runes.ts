@@ -109,7 +109,7 @@ export function DrawRunes() {
 					}
 				}
 				// Bounty Rune
-				let rune = allRunes.some(rune_ => rune_.IsAlive && val.IsInRange(rune_.NetworkPosition, 430))
+				let rune = allRunes.some(rune_ => rune_.IsAlive && val.IsInRange(rune_.Position, 430))
 				// loop-optimizer: FORWARD
 				Heroes.filter((x, i) => {
 					if (rune === undefined && x.IsInRange(val, 430)) {

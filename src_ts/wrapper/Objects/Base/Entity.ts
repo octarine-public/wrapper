@@ -143,11 +143,9 @@ export default class Entity {
 	public LifeState = LifeState_t.LIFE_ALIVE
 	public HP = 0
 	public MaxHP = 0
-	private readonly NetworkPosition_: Vector3 = new Vector3().Invalidate() // cached networkposition
 	private readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
 	private readonly Angles_ = new QAngle().Invalidate() // cached angles
 	private readonly NetworkAngles_ = new QAngle().Invalidate()// cached network angles
-	private Scale_: number = NaN // cached scale
 
 	/* ================================ BASE ================================ */
 	constructor(public m_pBaseEntity: C_BaseEntity, public readonly Index: number) {
@@ -166,29 +164,12 @@ export default class Entity {
 	}
 	public get Position(): Vector3 { // trick to make it public ro, and protected rw
 		if (!this.Position_.IsValid) {
-			let gameSceneNode = this.GameSceneNode
-			if (gameSceneNode === undefined)
+			let vec = Vector3.fromIOBuffer(this.m_pBaseEntity.m_VisualData)
+			if (vec === undefined)
 				return new Vector3()
-			let m_vecOrigin = gameSceneNode.m_vecOrigin
-			if (m_vecOrigin === undefined)
-				return new Vector3()
-			Vector3.fromIOBuffer(m_vecOrigin.m_Value).CopyTo(this.Position_)
+			vec.CopyTo(this.Position_)
 		}
 		return this.Position_.Clone()
-	}
-	public get NetworkPosition(): Vector3 {
-		if (!this.NetworkPosition_.IsValid)
-			this.Position.CopyTo(this.NetworkPosition_)
-		return this.NetworkPosition_.Clone()
-	}
-	public get Scale(): number {
-		if (isNaN(this.Scale_)) {
-			let gameSceneNode = this.GameSceneNode
-			if (gameSceneNode === undefined)
-				return 0
-			this.Scale_ = gameSceneNode.m_flAbsScale || 0
-		}
-		return this.Scale_
 	}
 	public get Rotation(): number {
 		return this.Angles.y
@@ -281,25 +262,24 @@ export default class Entity {
 
 	/* ================ METHODS ================ */
 	public Distance(vec: Vector3 | Entity): number {
-		if (vec instanceof Vector3)
-			return this.NetworkPosition.Distance(vec)
-
-		return this.NetworkPosition.Distance(vec.NetworkPosition)
+		if (vec instanceof Entity)
+			vec = vec.Position
+		return this.Position.Distance(vec)
 	}
 	public Distance2D(vec: Vector3 | Vector2 | Entity): number {
 		if (vec instanceof Entity)
-			vec = vec.NetworkPosition
-		return this.NetworkPosition.Distance2D(vec)
+			vec = vec.Position
+		return this.Position.Distance2D(vec)
 	}
 	public DistanceSqr(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
-			vec = vec.NetworkPosition
-		return this.NetworkPosition.DistanceSqr(vec)
+			vec = vec.Position
+		return this.Position.DistanceSqr(vec)
 	}
 	public DistanceSqr2D(vec: Vector3 | Vector2 | Entity): number {
 		if (vec instanceof Entity)
-			vec = vec.NetworkPosition
-		return this.NetworkPosition.DistanceSqr2D(vec)
+			vec = vec.Position
+		return this.Position.DistanceSqr2D(vec)
 	}
 	public AngleBetweenFaces(front: Vector3): number {
 		return this.Forward.AngleBetweenFaces(front)
@@ -312,8 +292,8 @@ export default class Entity {
 	}
 	public FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
-			vec = vec.NetworkPosition
-		return this.NetworkPosition.FindRotationAngle(vec, this.NetworkRotationRad)
+			vec = vec.Position
+		return this.Position.FindRotationAngle(vec, this.NetworkRotationRad)
 	}
 	/**
 	 * faster (Distance <= range)
@@ -322,7 +302,7 @@ export default class Entity {
 		return this.DistanceSqr2D(ent) < range ** 2
 	}
 	public Closest(ents: Entity[]): Entity {
-		let thisPos = this.NetworkPosition
+		let thisPos = this.Position
 
 		let entity: Entity
 		let distance = Number.POSITIVE_INFINITY
@@ -341,7 +321,7 @@ export default class Entity {
 	 * unit.ClosestGroup(groups, group => Vector3.GetCenterType(creeps, creep => creep.InFront(200)))
 	 */
 	public ClosestGroup(groups: Entity[][], callback: (entity: Entity[]) => Vector3): [Entity[], Vector3] {
-		let thisPos = this.NetworkPosition
+		let thisPos = this.Position
 
 		let entities: Entity[] = []
 		let vec = new Vector3()
@@ -376,13 +356,9 @@ export default class Entity {
 		return ang <= turn_rad ? 30 * ang / rotation_speed[this.Name] : 0
 	}
 
-	public OnGameSceneNodeChanged(m_vecOrigin: Vector3, m_angAbsRotation: QAngle, m_flAbsScale: number) {
+	public OnGameSceneNodeChanged(m_vecOrigin: Vector3, m_angAbsRotation: QAngle) {
 		m_vecOrigin.CopyTo(this.Position_)
 		m_angAbsRotation.CopyTo(this.Angles_)
-		this.Scale_ = m_flAbsScale
-	}
-	public OnNetworkPositionChanged(m_vecOrigin: Vector3) {
-		m_vecOrigin.CopyTo(this.NetworkPosition_).CopyTo(this.Position_)
 	}
 	public OnNetworkRotationChanged() {
 		let gameSceneNode = this.GameSceneNode

@@ -24,7 +24,7 @@ export function InitStaker() {
 	)
 		return
 
-	let my_vec = Owner.NetworkPosition, cast_range = Q.CastRange + Owner.CastRangeBonus
+	let my_vec = Owner.Position, cast_range = Q.CastRange + Owner.CastRangeBonus
 	// loop-optimizer: KEEP
 	ArrayExtensions.orderBy(Base.Spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
 		let CreepIsInside = CreepsNeutrals.some(x => x.IsValid && x.IsNeutral && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))

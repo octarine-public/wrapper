@@ -149,7 +149,7 @@
 // 	glow_ents_old: Creep[] = []
 
 // function EnoughDamage(sender: Hero, target: Unit, cur_time: number): boolean {
-// 	let delay = sender.SecondsPerAttack + Utils.GetProjectileDelay(sender, target) + sender.GetRotationTime(target.NetworkPosition) / 1000
+// 	let delay = sender.SecondsPerAttack + Utils.GetProjectileDelay(sender, target) + sender.GetRotationTime(target.Position) / 1000
 // 	return target.CalculateDamageByHand(sender) > Utils.GetHealthAfter(target, delay, true, false, sender, melee_time_offset.value) - creep_hp_offset.value
 // }
 
@@ -198,7 +198,7 @@
 // 		if (use_ally && !ent.IsEnemy(pl_ent) && ent.IsDeniable)
 // 			return true
 // 		return false
-// 	}).map(ent => [ent, ent.NetworkPosition.Distance2D(pl_ent.NetworkPosition)]) as Array<[Creep, number]>).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent, ent, cur_time)), ([creep]) => creep.HP)
+// 	}).map(ent => [ent, ent.Position.Distance2D(pl_ent.Position)]) as Array<[Creep, number]>).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent, ent, cur_time)), ([creep]) => creep.HP)
 // 	glow_ents = (glow_enabled.value && glow_finder_range.value !== 0 ? filtered.filter(([ent, dist]) => dist <= glow_finder_range.value) : filtered).map(a => a[0])
 // 	if (!glow_only.value && !block_orders) {
 // 		let ent_pair = filtered.filter(([ent, dist]) => dist <= (attack_range + ent.HullRadius))[0]

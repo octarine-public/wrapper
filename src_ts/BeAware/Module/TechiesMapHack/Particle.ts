@@ -15,7 +15,7 @@ export function EntityDestroyed(ent: Entity) {
 			return false
 		let mines = obj[0]
 		return mines.some(([vec], k) => {
-			if (vec.Distance(ent.NetworkPosition) > 10)
+			if (vec.Distance(ent.Position) > 10)
 				return false
 			if (mines.length !== 1) {
 				mines.splice(k, 1)

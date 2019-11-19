@@ -36,7 +36,7 @@ export class DotaMap {
 	public readonly DireBottomRoute = DotaMap.Load("DireBottomRoute")
 
 	public GetLane(unit: Unit): MapArea {
-		let pos = unit.NetworkPosition
+		let pos = unit.Position
 		if (this.Top.IsInside(pos))
 			return MapArea.Top
 		if (this.Middle.IsInside(pos))

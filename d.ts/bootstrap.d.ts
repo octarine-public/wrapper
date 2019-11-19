@@ -176,8 +176,7 @@ declare interface Events extends EventEmitter {
 		host_framestarttime_std_deviation: number,
 		host_loss: number
 	) => void): EventEmitter
-	on(name: "NetworkPositionsChanged", listener: (vecs: CNetworkOriginCellCoordQuantizedVector[]) => void): EventEmitter
-	on(name: "GameSceneNodesChanged", listener: (vecs: CNetworkOriginCellCoordQuantizedVector[]) => void): EventEmitter
+	on(name: "EntityPositionsChanged", listener: (ents: C_BaseEntity[]) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 	on(name: "NetworkFieldsChanged", listener: (
 		map: Map<C_BaseEntity, Map<any, Array<[string, string, number]>>> // 1st key: entity, 2nd: trigger, values: [field_name, field_type, array_index]

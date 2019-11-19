@@ -6,7 +6,7 @@ import { Renderer } from "./Renderer";
 export let Sleep: GameSleeper = new GameSleeper()
 
 function MoveUnit(x: Unit, to: Building) {
-	x.MoveTo(to.NetworkPosition)
+	x.MoveTo(to.Position)
 	Sleep.Sleep(250, "FeedTime")
 }
 

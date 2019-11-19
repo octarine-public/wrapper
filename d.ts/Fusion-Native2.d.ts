@@ -1569,8 +1569,6 @@ declare class CObstructionObject {
 }
 
 declare class CNetworkOriginCellCoordQuantizedVector {
-	readonly m_Value: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	
 	m_cellX: number
 	m_cellY: number
 	m_cellZ: number
@@ -6156,6 +6154,8 @@ declare class C_BaseFire extends C_BaseEntity {
 }
 
 declare class C_BaseEntity extends C_GameEntity {
+	m_VisualData: boolean // returns m_vecOrigin: Vector3 to IOBuffer offset 0, m_angAbsRotation: QAngle to IOBuffer offset 3 on get, sets on set
+
 	readonly m_CBodyComponent: CBodyComponent
 	readonly m_NetworkTransmitComponent: CNetworkTransmitComponent
 	readonly m_pDummyPhysicsComponent: CPhysicsComponent

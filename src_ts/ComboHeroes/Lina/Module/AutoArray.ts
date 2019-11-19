@@ -25,7 +25,7 @@ export function InitFindCyclone() {
 	let cycloneDebuff = target.GetBuffByName("modifier_eul_cyclone")
 	let CastTime = Abilities.LightStrikeArray.CastPoint + Abilities.LightStrikeArray.GetSpecialValue("light_strike_array_delay_time") + (GetAvgLatency(Flow_t.OUT))
 	if (IsValidAbility(Abilities.LightStrikeArray, target) && (cycloneDebuff !== undefined && cycloneDebuff.DieTime - Game.RawGameTime) <= CastTime) {
-		Abilities.LightStrikeArray.UseAbility(target.NetworkPosition)
+		Abilities.LightStrikeArray.UseAbility(target.Position)
 		Sleep.Sleep(Abilities.Tick)
 		return
 	}

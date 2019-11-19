@@ -31,11 +31,10 @@ export let ComboActived = false
 ComboKeyItem.OnRelease(() => ComboActived = !ComboActived);
 
 function UseBlackKingBar(Items: InitItems) {
-	if (СomboItems.IsEnabled("item_black_king_bar") && !Sleep.Sleeping("item_black_king_bar")) {
+	if (СomboItems.IsEnabled("item_black_king_bar")) {
 		var BlackingBar = Items.BlackKingBar
 		if (BlackingBar && BlackingBar.CanBeCasted()) {
 			BlackingBar.UseAbility(Owner)
-			Sleep.Sleep(GetDelayCast(), "item_black_king_bar")
 		}
 	}
 }
@@ -46,7 +45,7 @@ function GetDelayCast() {
 
 function GetPosition(unit: Unit, delay: number) {
 	if (!delay || !unit.IsMoving || unit.IsRooted)
-		return unit.NetworkPosition
+		return unit.Position
 	return unit.InFront(unit.Speed * ((delay + Game.Ping / 1000) || 1));
 }
 
@@ -97,7 +96,7 @@ export function InitCombo() {
 		return
 	}
 	if (Owner.Distance2D(Target) >= (1175 + 0.75 * (Owner.Speed * 0.5))) { // !isInRange
-		Owner.MoveTo(Target.NetworkPosition);
+		Owner.MoveTo(Target.Position);
 		Sleep.Sleep(GetDelayCast(), Target.Index)
 		return
 	}
@@ -117,9 +116,9 @@ export function InitCombo() {
 		let blink = Items.Blink;
 		let Cyclone = Items.Cyclone;
 		if (blink && !Sleep.Sleeping(blink) && blink.CanBeCasted()) {
-			if (Cyclone && Cyclone.CanBeCasted() && Owner.Distance2D(Target) < (1175 + 0.75 * (Owner.IdealSpeed * 0.5))) { // check
+			if (Cyclone && Cyclone.CanBeCasted() && Owner.Distance2D(Target) < (1175 + 0.75 * (Owner.Speed * 0.5))) { // check
 				if (calc_pos_1 > calc_pos_2 + 0.25) {
-					let BPosition = Target.NetworkPosition.Add(Owner.NetworkPosition.SubtractForThis(Target.NetworkPosition).Normalize().ScaleTo(0.75 * (Owner.IdealSpeed * 0.5)));
+					let BPosition = Target.Position.Add(Owner.Position.SubtractForThis(Target.Position).Normalize().ScaleTo(0.75 * (Owner.Speed * 0.5)));
 					blink.UseAbility(BPosition)
 					Sleep.Sleep(GetDelayCast(), blink)
 					UseBlackKingBar(Items);
@@ -127,9 +126,9 @@ export function InitCombo() {
 				}
 			}
 			if ((Abilities.Requiem && !Abilities.Requiem.CanBeCasted()) || (!Cyclone || !Cyclone.CanBeCasted())) {
-				let blinkPos = Target.NetworkPosition.Extend(Utils.CursorWorldVec, Menu_Combo_BlinkDistance.value);
+				let blinkPos = Target.Position.Extend(Utils.CursorWorldVec, Menu_Combo_BlinkDistance.value);
 				if (Owner.Distance2D(blinkPos) > blink.AOERadius)
-					blinkPos = Owner.NetworkPosition.Extend(blinkPos, blink.AOERadius - 1);
+					blinkPos = Owner.Position.Extend(blinkPos, blink.AOERadius - 1);
 				if (Owner.Distance2D(Target) >= Owner.AttackRange) {
 					blink.UseAbility(blinkPos);
 					UseBlackKingBar(Items);
@@ -150,7 +149,7 @@ export function InitCombo() {
 			&& (!Sleep.Sleeping(Target.Index) || !Sleep.Sleeping(Cyclone))
 			&& Cyclone.CanBeCasted()
 		) {
-			SafeTarget = Target.NetworkPosition
+			SafeTarget = Target.Position
 			if (calc_pos_1 < calc_pos_2 - 1.35) {
 				UseBlackKingBar(Items);
 				Owner.CastTarget(Cyclone, Target);
@@ -164,7 +163,7 @@ export function InitCombo() {
 			}
 			else {
 				if (blink && blink.CanBeCasted()) {
-					let BPosition = Target.NetworkPosition.Add(Owner.NetworkPosition.SubtractForThis(Target.NetworkPosition).Normalize().ScaleTo(0.75 * (Owner.IdealSpeed * 0.5)));
+					let BPosition = Target.Position.Add(Owner.Position.SubtractForThis(Target.Position).Normalize().ScaleTo(0.75 * (Owner.Speed * 0.5)));
 					blink.UseAbility(BPosition)
 					UseBlackKingBar(Items);
 					Sleep.Sleep(GetDelayCast(), blink)
@@ -176,7 +175,7 @@ export function InitCombo() {
 	let EulBuff = Target.GetBuffByName("modifier_eul_cyclone")
 	if (EulBuff !== undefined && !Sleep.Sleeping(Target.Index)) {
 		let GameTime = Game.RawGameTime,
-			CastTime = (EulBuff.DieTime - GameTime) - (((Abilities.Requiem && Abilities.Requiem.CastPoint) + GetAvgLatency(Flow_t.OUT)) - 0.03)
+			CastTime = (EulBuff.DieTime - GameTime) - (((Abilities.Requiem && Abilities.Requiem.CastPoint) + GetAvgLatency(Flow_t.OUT)) + 0.025)
 		if (!Owner.IsInRange(SafeTarget, 64 / 2)) {
 			Owner.MoveTo(SafeTarget);
 			Sleep.Sleep(GetDelayCast(), Target.Index)
@@ -200,7 +199,7 @@ export function InitCombo() {
 		return
 
 	if (Target.IsEthereal && !Sleep.Sleeping(Target.Index)) {
-		Owner.MoveTo(Target.NetworkPosition);
+		Owner.MoveTo(Target.Position);
 		Sleep.Sleep(GetDelayCast(), Target.Index)
 		return
 	}

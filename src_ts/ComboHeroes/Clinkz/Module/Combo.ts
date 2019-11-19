@@ -35,7 +35,7 @@ export function InitCombo() {
 		&& !target.IsInRange(Owner, 600)
 		&& Items.Blink.CanBeCasted()) {
 		let castRange = Items.Blink.GetSpecialValue("blink_range") + Owner.CastRangeBonus
-		Items.Blink.UseAbility(Owner.NetworkPosition.Extend(target.NetworkPosition, Math.min(castRange, Owner.Distance(target) - BlinkRadius.value) - 1))
+		Items.Blink.UseAbility(Owner.Position.Extend(target.Position, Math.min(castRange, Owner.Distance(target) - BlinkRadius.value) - 1))
 		Sleep.Sleep(Items.Tick)
 		return
 	}

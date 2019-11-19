@@ -163,39 +163,17 @@ Events.on("UnitFadeGesture", (npc, activity) => EventsSDK.emit(
 	activity,
 ))
 
-let m_vecOrigin2ent = new Map<CNetworkOriginCellCoordQuantizedVector, Entity>()
-function GetEntityByVecOriginCached(vec: CNetworkOriginCellCoordQuantizedVector) {
-	let ent = m_vecOrigin2ent.get(vec)
-	if (ent === undefined)
-		m_vecOrigin2ent.set(vec, ent = EntityManager.GetEntityByNative(GetEntityByVecOrigin(vec)))
-	return ent
-}
+Events.on("EntityPositionsChanged", ents => ents.forEach(ent_ => {
+	if (ent_ === undefined)
+		throw "LOL INVALID NATIVE ENTITY"
+	let ent = EntityManager.GetEntityByNative(ent_)
+	if (ent === undefined || !ent_.m_VisualData)
+		return // probably ent.m_pGameSceneNode === undefined
 
-Events.on("NetworkPositionsChanged", vecs => vecs.forEach(vec => {
-	let ent = GetEntityByVecOriginCached(vec)
-	if (ent === undefined)
-		return
-	let m_vecOrigin = Vector3.fromIOBuffer(vec.m_Value)
-	ent.OnNetworkPositionChanged(m_vecOrigin)
+	let m_vecOrigin = Vector3.fromIOBuffer()
+	let m_angAbsRotation = QAngle.fromIOBuffer(true, 3)
+	ent.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation)
 }))
-
-Events.on("GameSceneNodesChanged", vecs => vecs.forEach(vec => {
-	let ent = GetEntityByVecOriginCached(vec)
-	if (ent === undefined)
-		return
-	let m_vecOrigin = Vector3.fromIOBuffer(vec.m_Value)
-	let node = ent.GameSceneNode
-	let m_angAbsRotation = QAngle.fromIOBuffer(node.m_angAbsRotation),
-		m_flAbsScale = node.m_flAbsScale
-	ent.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation, m_flAbsScale)
-}))
-Events.on("EntityDestroyed", ent => {
-	// loop-optimizer: KEEP
-	m_vecOrigin2ent.forEach((val, key) => {
-		if (val === undefined || val.m_pBaseEntity === ent)
-			m_vecOrigin2ent.delete(key)
-	})
-})
 
 Events.on("InputCaptured", is_captured => EventsSDK.emit(
 	"InputCaptured", false,

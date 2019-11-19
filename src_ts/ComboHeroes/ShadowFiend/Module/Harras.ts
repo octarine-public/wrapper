@@ -40,7 +40,7 @@ export function InitHarras() {
 		return
 	}
 	if (Owner.Distance2D(Target) >= (1175 + 0.75 * (Owner.Speed * 0.5))) { // !isInRange
-		Owner.MoveTo(Target.NetworkPosition);
+		Owner.MoveTo(Target.Position);
 		Sleep.Sleep(CastDelay, Target.Index)
 		return
 	}
@@ -56,7 +56,7 @@ export function InitHarras() {
 			var blinkPos = Target.Position.Extend(Utils.CursorWorldVec, Menu_Combo_BlinkDistance.value);
 
 			if (Owner.Distance2D(blinkPos) > blink.AOERadius) {
-				blinkPos = Owner.NetworkPosition.Extend(blinkPos, blink.AOERadius - 1);
+				blinkPos = Owner.Position.Extend(blinkPos, blink.AOERadius - 1);
 			}
 			if (Owner.Distance2D(Target) >= Owner.AttackRange) {
 				Owner.CastPosition(blink, blinkPos)

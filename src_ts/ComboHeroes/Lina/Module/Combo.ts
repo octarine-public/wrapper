@@ -52,7 +52,7 @@ export function InitCombo() {
 		return
 	}
 	if (Abilities.LightStrikeArray !== undefined && Owner.Distance2D(target) > Abilities.LightStrikeArray.CastRange) {
-		Owner.MoveTo(target.NetworkPosition)
+		Owner.MoveTo(target.Position)
 		Sleep.Sleep(350)
 		return
 	}

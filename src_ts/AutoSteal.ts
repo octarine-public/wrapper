@@ -211,7 +211,7 @@ var abils: {
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(
 				abil.GetSpecialValue("damage_per_unit")
 				* Math.min(
-					EntityManager.GetEntitiesInRange(entTo.NetworkPosition, abil.GetSpecialValue("radius"), ent =>
+					EntityManager.GetEntitiesInRange(entTo.Position, abil.GetSpecialValue("radius"), ent =>
 						ent instanceof Unit && (ent.IsCreep || ent.IsHero) && !ent.IsEnemy(entFrom),
 					).length,
 					abil.GetSpecialValue("max_units"),
@@ -509,7 +509,7 @@ function OnTick(): void {
 
 			let ping = Game.Ping / 1000
 			if ((blinkFlag = !(flag = !needBlink))) { // tslint:disable-line:no-conditional-assignment
-				MyEnt.CastPosition(blink, ent.NetworkPosition.Extend(MyEnt.NetworkPosition, range - 100), false)
+				MyEnt.CastPosition(blink, ent.Position.Extend(MyEnt.Position, range - 100), false)
 				setTimeout(() => blinkFlag = false, (blink.CastPoint + ping) * 1000)
 			} else {
 				sleeper.Sleep(((abilData.abilDelayF ? abilData.abilDelayF(abil, MyEnt, ent) + abil.CastPoint : 0) + ping) * 1000, ent)

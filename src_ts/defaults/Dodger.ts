@@ -15,7 +15,7 @@ function TryDodge(pl_ent: Unit, proj: TrackingProjectile | LinearProjectile) {
 		switch (proj.ParticlePath) {
 			case "particles/units/heroes/hero_alchemist/alchemist_unstable_concoction_projectile.vpcf":
 				let positionProj = proj.TargetLoc
-				if (positionProj.Distance2D(pl_ent.NetworkPosition) <= 200 + pl_ent.HullRadius)
+				if (positionProj.Distance2D(pl_ent.Position) <= 200 + pl_ent.HullRadius)
 					Dodge(pl_ent, positionProj.Distance(proj.Position) / proj.Speed, positionProj, 200)
 				break
 			default:

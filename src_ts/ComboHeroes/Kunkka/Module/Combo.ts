@@ -155,12 +155,12 @@ export function InitCombo() {
 					&& Items.Blink.CanBeCasted()
 				) {
 					let castRange = Items.Blink.GetSpecialValue("blink_range") + Owner.CastRangeBonus
-					Items.Blink.UseAbility(Owner.NetworkPosition.Extend(target.NetworkPosition, Math.min(castRange, Owner.Distance(target) - BlinkRadius.value) - 1))
+					Items.Blink.UseAbility(Owner.Position.Extend(target.Position, Math.min(castRange, Owner.Distance(target) - BlinkRadius.value) - 1))
 					Sleep.Sleep((Items.Tick + SetCastDelay()))
 					return
 				}
 				if (R !== undefined && Owner.Distance2D(target) > (R.CastRange - 50)) {
-					Owner.MoveTo(target.NetworkPosition)
+					Owner.MoveTo(target.Position)
 					Sleep.Sleep(SetCastDelay())
 					return
 				}
@@ -201,7 +201,7 @@ export function InitCombo() {
 			} else if (ComboKeyTorrent.is_pressed) {
 				if (Q !== undefined && Q.CanBeCasted() || R !== undefined && R.CanBeCasted()) {
 					if (X !== undefined && Owner.Distance2D(target) > (X.CastRange - 50)) {
-						Owner.MoveTo(target.NetworkPosition)
+						Owner.MoveTo(target.Position)
 						Sleep.Sleep(SetCastDelay())
 						return
 					}

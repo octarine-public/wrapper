@@ -42,7 +42,7 @@ function PressTheAttack(Abilities: InitAbility, Items: InitItems, target: Hero) 
 		}
 		let Talent = Owner.GetTalentValue("special_bonus_unique_legion_commander_5"),
 			ExtendsPosition = !Owner.IsMoving
-				? Owner.NetworkPosition
+				? Owner.Position
 				: Owner.InFront(Talent !== 0 ? Talent : 0 / 1000 * Owner.Speed)
 
 		Talent !== 0
@@ -94,7 +94,7 @@ function AttackTargetCustom(target: Hero) {
 	if (!GameSleep.Sleeping) {
 		Owner.CanAttack(target)
 			? Owner.AttackTarget(target)
-			: Owner.MoveTo(target.NetworkPosition)
+			: Owner.MoveTo(target.Position)
 		GameSleep.Sleep(250)
 		return
 	}

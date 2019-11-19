@@ -4,7 +4,7 @@ let LastAttackTime = 0;
 export class HitAndRun {
 	constructor(public Unit?: Unit) { }
 	private GetTurnTime(target: Unit, time: number) {
-		return time + (Game.Ping / 2000) + this.Unit.TurnTime(target.NetworkPosition);
+		return time + (Game.Ping / 2000) + this.Unit.TurnTime(target.Position);
 	}
 	private CanMove(time: number) {
 		return (((time - 0.15) + (Game.Ping / 2000)) - LastAttackTime) > this.Unit.AttackPoint;
@@ -20,7 +20,7 @@ export class HitAndRun {
 	/**
 	 * ExecuteTo
 	 * @param target | Enemy
-	 * @param MoveTo type |  0 = enemy NetworkPosition, any number return
+	 * @param MoveTo type |  0 = enemy Position, any number return
 	 */
 	public ExecuteTo(target: Unit, type: number): boolean {
 		var time = Game.RawGameTime;
@@ -30,7 +30,7 @@ export class HitAndRun {
 		if ((!target.IsValid || !this.CanAttack(target, time)) && this.CanMove(time)) {
 			switch (type) {
 				case 0:
-					this.Unit.MoveTo(target.NetworkPosition);
+					this.Unit.MoveTo(target.Position);
 					break;
 				case 1:
 					this.Unit.MoveTo(Utils.CursorWorldVec);

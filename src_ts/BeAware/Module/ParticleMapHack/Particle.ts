@@ -521,7 +521,7 @@ function DrawingOtherAbility(x: Entity, name: string, ability_name: string, radi
 			CreateAbilityRadius(x, radius)
 		}
 		if (!x.IsVisible) {
-			DrawIconAbilityHero(x.NetworkPosition, ability_name)
+			DrawIconAbilityHero(x.Position, ability_name)
 		}
 	}
 }

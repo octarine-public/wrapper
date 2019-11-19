@@ -89,9 +89,9 @@ function NeedToTriggerMine(rmine: Unit, ent: Unit, forcestaff: boolean = false):
 		TriggerRadius -= ent.IdealSpeed * (RMineBlowDelay / 30)
 
 	return use_prediction.value
-		? ent.InFront((ent.IsMoving ? RMineBlowDelay : 0) + (forcestaff ? ForcestaffUnits : 0)).Distance2D(rmine.NetworkPosition) <= TriggerRadius
+		? ent.InFront((ent.IsMoving ? RMineBlowDelay : 0) + (forcestaff ? ForcestaffUnits : 0)).Distance2D(rmine.Position) <= TriggerRadius
 		: forcestaff
-			? rmine.NetworkPosition.Distance2D(ent.InFront(ForcestaffUnits)) <= TriggerRadius
+			? rmine.Position.Distance2D(ent.InFront(ForcestaffUnits)) <= TriggerRadius
 			: rmine.IsInRange(ent, TriggerRadius)
 }
 
@@ -209,7 +209,7 @@ EventsSDK.on("PrepareUnitOrders", args => {
 	if (ents.some(ent => {
 		const isMine = ent instanceof Unit && ent.Name === "npc_dota_techies_remote_mine" && ent.IsAlive
 		if (isMine)
-			minePos = ent.NetworkPosition
+			minePos = ent.Position
 		return isMine
 	})) {
 		if (minePos.Equals(args.Position))

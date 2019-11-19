@@ -521,7 +521,7 @@
 // 			}
 // 			if (veil && veil.CanBeCasted() && items.IsEnabled("item_veil_of_discord"))
 // 			{
-// 				tinker.CastPosition(veil, target.NetworkPosition)
+// 				tinker.CastPosition(veil, target.Position)
 
 // 			}
 // 			if (eblade && eblade.CanBeCasted() && items.IsEnabled("item_ethereal_blade") && (etherU|| (Game.RawGameTime - lastCheckTime[1] )>(4.1-r.GetSpecialValue("channel_tooltip", r.Level)-tinker.Distance2D(target)/1275)))
@@ -575,7 +575,7 @@
 // 		if (target.IsInRange(tinker, 600))
 // 			return false
 // 		let castRange = blink.GetSpecialValue("blink_range") + tinker.CastRangeBonus,
-// 			distance = target.NetworkPosition.Subtract(tinker.NetworkPosition),
+// 			distance = target.Position.Subtract(tinker.Position),
 // 			disToTarget = tinker.Distance(target)
 // 		distance.SetZ(0)
 // 		distance.Normalize()
@@ -589,7 +589,7 @@
 // 			if (useP) a = target.IdealSpeed*r.GetSpecialValue("channel_tooltip", r.Level)
 // 			distance.ScaleTo(disToTarget - blinkRadius.value - 1 + a)
 // 		}
-// 		tinker.CastPosition(blink, tinker.NetworkPosition.Add(distance))
+// 		tinker.CastPosition(blink, tinker.Position.Add(distance))
 // 		return true
 // 	}
 
@@ -996,16 +996,16 @@
 
 // 	if (!tinker.IsInRange(movePos,35))
 // 	{
-// 		if (blink && blink.CanBeCasted()&&!sleeper.Sleeping("blpush") && (tinker.NetworkPosition.Distance2D(movePos) > 500 ))
+// 		if (blink && blink.CanBeCasted()&&!sleeper.Sleeping("blpush") && (tinker.Position.Distance2D(movePos) > 500 ))
 // 		{
-// 			if (tinker.NetworkPosition.Distance2D(movePos) > 1190 )
+// 			if (tinker.Position.Distance2D(movePos) > 1190 )
 // 			{
-// 				let blinkPos = tinker.NetworkPosition.Add((movePos.Subtract(tinker.NetworkPosition)).Normalize().ScaleTo(1190))
+// 				let blinkPos = tinker.Position.Add((movePos.Subtract(tinker.Position)).Normalize().ScaleTo(1190))
 // 				if (checkForTrees(blinkPos, 150)<1)
 // 				{
 // 					tinker.CastPosition(blink, blinkPos)
 // 					lastTick = Game.RawGameTime + 0.11 + latency
-// 					tinker.HoldPosition(tinker.NetworkPosition,true)
+// 					tinker.HoldPosition(tinker.Position,true)
 // 					console.log("cast blink, 1177, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 					sleeper.Sleep(119,"blpush")
 // 					return
@@ -1014,7 +1014,7 @@
 // 			else
 // 			{
 // 				tinker.CastPosition(blink, movePos)
-// 				tinker.HoldPosition(tinker.NetworkPosition,true)
+// 				tinker.HoldPosition(tinker.Position,true)
 // 				lastTick = Game.RawGameTime + 0.11 + latency
 // 				console.log("cast blink, 1187, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 				return
@@ -1118,7 +1118,7 @@
 // 	{
 // 		if (tinker.IsMoving && TinkerJungle == false)
 // 		{
-// 			 tinker.HoldPosition(tinker.NetworkPosition, false)
+// 			 tinker.HoldPosition(tinker.Position, false)
 // 			 console.log("hold 1295")
 // 		}
 // 	}
@@ -1168,7 +1168,7 @@
 // 			}
 // 			else
 // 			{
-// 				tinker.CastPosition(blink, (tinker.NetworkPosition.Add(fountain.Subtract(tinker.NetworkPosition))).Normalize().ScaleTo(1150))
+// 				tinker.CastPosition(blink, (tinker.Position.Add(fountain.Subtract(tinker.Position))).Normalize().ScaleTo(1150))
 // 				lastTick = Game.RawGameTime + 0.05 + latency
 // 				console.log("cast blink, 1321, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 				sleeper.Sleep(119,"blpush")
@@ -1295,7 +1295,7 @@
 // 			if (!amionf())
 // 			{
 // 				tinker.CastNoTarget(soulring,true)
-// 				//tinker.HoldPosition(tinker.NetworkPosition,true)
+// 				//tinker.HoldPosition(tinker.Position,true)
 // 				lastTick = Game.RawGameTime + 0.15 + latency
 // 				console.log("cast sr, 1440, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 				return
@@ -1305,7 +1305,7 @@
 // 				if (tinker.Mana / tinker.MaxMana > 0.7 )
 // 				{
 // 					tinker.CastNoTarget(soulring,true)
-// 					//tinker.HoldPosition(tinker.NetworkPosition,true)
+// 					//tinker.HoldPosition(tinker.Position,true)
 
 // 					lastTick = Game.RawGameTime + 0.15 + latency
 // 					console.log("cast sr, 1450, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
@@ -1352,7 +1352,7 @@
 // 				if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 				{
 // 					tinker.CastPosition(blink, saveSpot)
-// 					tinker.HoldPosition(tinker.NetworkPosition)
+// 					tinker.HoldPosition(tinker.Position)
 // 					lastTick = Game.RawGameTime + 0.11 + latency
 // 					console.log("cast blink, 1514, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 					sleeper.Sleep(119,"blpush")
@@ -1363,7 +1363,7 @@
 // 			{
 // 				if (e.CanBeCasted()&&!sleeper.Sleeping("epush"))
 // 				{
-// 					tinker.CastPosition(e, tinker.NetworkPosition.Add((targetCreep.NetworkPosition.Subtract(tinker.NetworkPosition)).Normalize().ScaleTo(e.CastRange - 1)))
+// 					tinker.CastPosition(e, tinker.Position.Add((targetCreep.Position.Subtract(tinker.Position)).Normalize().ScaleTo(e.CastRange - 1)))
 // 					lastTick = Game.RawGameTime + 0.75 + latency
 // 					marched = marched + 1
 // 					console.log("cast e, 1525, gametime: "+Game.RawGameTime+" lastTick: "+lastTick +" marched " + marched)
@@ -1405,17 +1405,17 @@
 // 								if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 								{
 // 									tinker.CastPosition(blink, saveSpot)
-// 									tinker.HoldPosition(tinker.NetworkPosition, true)
+// 									tinker.HoldPosition(tinker.Position, true)
 // 									lastTick = Game.RawGameTime + 0.11 + latency
-// 									tinker.HoldPosition(tinker.NetworkPosition, true)
+// 									tinker.HoldPosition(tinker.Position, true)
 // 									console.log("cast blink, 1607, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 									sleeper.Sleep(119,"blpush")
 // 									return
 // 								}
 // 								else
 // 								{
-// 									tinker.CastPosition(blink, tinker.NetworkPosition.Add((fountain.Subtract(tinker.NetworkPosition)).Normalize().ScaleTo(1150)))
-// 									tinker.HoldPosition(tinker.NetworkPosition)
+// 									tinker.CastPosition(blink, tinker.Position.Add((fountain.Subtract(tinker.Position)).Normalize().ScaleTo(1150)))
+// 									tinker.HoldPosition(tinker.Position)
 // 									lastTick = Game.RawGameTime + 0.11 + latency
 // 									console.log("cast blink, 1614, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 									sleeper.Sleep(119,"blpush")
@@ -1453,7 +1453,7 @@
 // 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 									{
 // 										tinker.CastPosition(blink, saveSpot)
-// 										tinker.HoldPosition(tinker.NetworkPosition)
+// 										tinker.HoldPosition(tinker.Position)
 // 										lastTick = Game.RawGameTime + 0.11 + latency
 // 										console.log("cast blink, 1650, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										sleeper.Sleep(119,"blpush")
@@ -1461,8 +1461,8 @@
 // 									}
 // 									else
 // 									{
-// 										tinker.CastPosition(blink, tinker.NetworkPosition.Add((fountain.Subtract(tinker.NetworkPosition)).Normalize().ScaleTo(1150)))
-// 										tinker.HoldPosition(tinker.NetworkPosition)
+// 										tinker.CastPosition(blink, tinker.Position.Add((fountain.Subtract(tinker.Position)).Normalize().ScaleTo(1150)))
+// 										tinker.HoldPosition(tinker.Position)
 // 										lastTick = Game.RawGameTime + 0.11 + latency
 // 										console.log("cast blink, 1657, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										sleeper.Sleep(119,"blpush")
@@ -1505,7 +1505,7 @@
 // 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 									{
 // 										tinker.CastPosition(blink, saveSpot)
-// 										tinker.HoldPosition(tinker.NetworkPosition, true)
+// 										tinker.HoldPosition(tinker.Position, true)
 // 										lastTick = Game.RawGameTime + 0.11 + latency
 // 										console.log("cast blink, 1698, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										sleeper.Sleep(119,"blpush")
@@ -1513,8 +1513,8 @@
 // 									}
 // 									else
 // 									{
-// 										tinker.CastPosition(blink, tinker.NetworkPosition.Add((fountain.Subtract(tinker.NetworkPosition)).Normalize().ScaleTo(1150)))
-// 										tinker.HoldPosition(tinker.NetworkPosition, true)
+// 										tinker.CastPosition(blink, tinker.Position.Add((fountain.Subtract(tinker.Position)).Normalize().ScaleTo(1150)))
+// 										tinker.HoldPosition(tinker.Position, true)
 // 										lastTick = Game.RawGameTime + 0.11 + latency
 // 										console.log("cast blink, 1707, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										sleeper.Sleep(119,"blpush")
@@ -1559,7 +1559,7 @@
 // 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 									{
 // 										tinker.CastPosition(blink, saveSpot)
-// 										tinker.HoldPosition(tinker.NetworkPosition, true)
+// 										tinker.HoldPosition(tinker.Position, true)
 // 										lastTick = Game.RawGameTime + 0.11 + latency
 // 										console.log("cast blink, 1790, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										sleeper.Sleep(119,"blpush")
@@ -1567,8 +1567,8 @@
 // 									}
 // 									else
 // 									{
-// 										tinker.CastPosition(blink, tinker.NetworkPosition.Add((fountain.Subtract(tinker.NetworkPosition)).Normalize().ScaleTo(1150)))
-// 										tinker.HoldPosition(tinker.NetworkPosition, true)
+// 										tinker.CastPosition(blink, tinker.Position.Add((fountain.Subtract(tinker.Position)).Normalize().ScaleTo(1150)))
+// 										tinker.HoldPosition(tinker.Position, true)
 // 										lastTick = Game.RawGameTime + 0.11 + latency
 // 										console.log("cast blink, 1797, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										sleeper.Sleep(119,"blpush")
@@ -1606,7 +1606,7 @@
 // 									if (saveSpot != undefined && tinker.Distance2D(saveSpot)>375)
 // 									{
 // 										tinker.CastPosition(blink, saveSpot)
-// 										tinker.HoldPosition(tinker.NetworkPosition)
+// 										tinker.HoldPosition(tinker.Position)
 // 										lastTick = Game.RawGameTime + 0.11 + latency
 // 										console.log("cast blink, 1833, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										sleeper.Sleep(119,"blpush")
@@ -1614,8 +1614,8 @@
 // 									}
 // 									else
 // 									{
-// 										tinker.CastPosition(blink, tinker.NetworkPosition.Add((fountain.Subtract(tinker.NetworkPosition)).Normalize().ScaleTo(1150)))
-// 										tinker.HoldPosition(tinker.NetworkPosition)
+// 										tinker.CastPosition(blink, tinker.Position.Add((fountain.Subtract(tinker.Position)).Normalize().ScaleTo(1150)))
+// 										tinker.HoldPosition(tinker.Position)
 // 										lastTick = Game.RawGameTime + 0.11 + latency
 // 										console.log("cast blink, 1840, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
 // 										sleeper.Sleep(119,"blpush")
@@ -1669,7 +1669,7 @@
 // 										}
 // 										else
 // 										{
-// 											tinker.CastPosition(blink, tinker.NetworkPosition.Add((fountain.Subtract(tinker.NetworkPosition)).Normalize().ScaleTo(1150)))
+// 											tinker.CastPosition(blink, tinker.Position.Add((fountain.Subtract(tinker.Position)).Normalize().ScaleTo(1150)))
 // 											tinker.OrderStop()
 // 											lastTick = Game.RawGameTime + 0.1 + latency
 // 											console.log("cast blink, 1890, gametime: "+Game.RawGameTime+" lastTick: "+lastTick)
@@ -1707,7 +1707,7 @@
 // function TinkerFarmAmISave()
 // {
 // 	if (!tinker.IsAlive) return false
-// 	let myPos = tinker.NetworkPosition
+// 	let myPos = tinker.Position
 // 	for (let enemy of heroes)
 // 	{
 // 		if (enemy.IsAlive && enemy != target && tinker.IsInRange(enemy, 200)) return false
@@ -1737,8 +1737,8 @@
 // 	if (!tinker.IsAlive) return
 // 	if (!target)  return
 // 	if (!blink)  return
-// 	let targetPos = target.NetworkPosition
-// 	let myPos = myHero.NetworkPosition
+// 	let targetPos = target.Position
+// 	let myPos = myHero.Position
 // 	for (let spot of savespots)
 // 	{
 // 		if (checkForTrees(spot, 251)>=3)
@@ -1754,9 +1754,9 @@
 // 	let targetTree:Tree = undefined
 // 	for (let t of trees.filter(e=>e.IsInRange(targetPos, 900)&&e.IsAlive))
 // 	{
-// 		if (myPos.Distance2D(t.NetworkPosition)>315 &&myPos.Distance2D(t.NetworkPosition)<1100)
+// 		if (myPos.Distance2D(t.Position)>315 &&myPos.Distance2D(t.Position)<1100)
 // 			{
-// 				let treesAround = checkForTrees(t.NetworkPosition, 350)
+// 				let treesAround = checkForTrees(t.Position, 350)
 // 				if (treesAround>treeCount)
 // 					treeCount
 // 					targetTree = t
@@ -1768,14 +1768,14 @@
 // 		if (targetTree != undefined )
 // 		{
 // 			if (treeTargetPos.Distance2D(targetPos)<1000&&myPos.Distance2D(treeTargetPos)< 1125+tinker.CastRangeBonus && checkForTrees(treeTargetPos,400)>=3)
-// 				treeTargetPos = targetTree.NetworkPosition
+// 				treeTargetPos = targetTree.Position
 // 		}
 // 	}
 // 	if (treeTargetPos != undefined )
 // 	{
 // 		if (checkForTrees(treeTargetPos,30)>0)
 // 		{
-// 			return ((treeTargetPos.Add(treeTargetPos.Subtract(tinker.NetworkPosition))).Normalize().ScaleTo(35))
+// 			return ((treeTargetPos.Add(treeTargetPos.Subtract(tinker.Position))).Normalize().ScaleTo(35))
 // 		}
 // 		else
 // 		{
@@ -1792,11 +1792,11 @@
 // 		let myPosZ = myPos.z
 // 		for (let t of treesArcoundPos)
 // 		{
-// 			if (myPos.Distance2D(t.NetworkPosition)<1050)
+// 			if (myPos.Distance2D(t.Position)<1050)
 // 			{
-// 				if (t.NetworkPosition.z>myPosZ && Math.abs(t.NetworkPosition.z - myPosZ)>50)
+// 				if (t.Position.z>myPosZ && Math.abs(t.Position.z - myPosZ)>50)
 // 				{
-// 					return (myPos.Add(t.NetworkPosition.Subtract(myPos))).ScaleTo(0.9)
+// 					return (myPos.Add(t.Position.Subtract(myPos))).ScaleTo(0.9)
 // 				}
 // 			}
 // 		}
@@ -1873,7 +1873,7 @@
 // 		if (targetCreep == undefined)
 // 			creepCount = 0
 // 		if (targetCreep != undefined )
-// 			return targetCreep.NetworkPosition
+// 			return targetCreep.Position
 
 // 	return
 // }

@@ -7,6 +7,6 @@ export class AbilityHelper {
 		return 100
 	}
 	public CastDelay(ability: Ability): number {
-		return ((ability.GetCastDelay(this.unit.NetworkPosition) * 1000) + this.Tick)
+		return ((ability.GetCastDelay(this.unit.Position) * 1000) + this.Tick)
 	}
 }
