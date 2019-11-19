@@ -175,7 +175,7 @@ export function InitCombo() {
 	let EulBuff = Target.GetBuffByName("modifier_eul_cyclone")
 	if (EulBuff !== undefined && !Sleep.Sleeping(Target.Index)) {
 		let GameTime = Game.RawGameTime,
-			CastTime = (EulBuff.DieTime - GameTime) - (((Abilities.Requiem && Abilities.Requiem.CastPoint) + GetAvgLatency(Flow_t.OUT)) + 0.025)
+			CastTime = (EulBuff.DieTime - GameTime) - ((Abilities.Requiem && Abilities.Requiem.CastPoint) - 0.03)
 		if (!Owner.IsInRange(SafeTarget, 64 / 2)) {
 			Owner.MoveTo(SafeTarget);
 			Sleep.Sleep(GetDelayCast(), Target.Index)
