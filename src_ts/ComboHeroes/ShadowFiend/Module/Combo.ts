@@ -31,10 +31,11 @@ export let ComboActived = false
 ComboKeyItem.OnRelease(() => ComboActived = !ComboActived);
 
 function UseBlackKingBar(Items: InitItems) {
-	if (СomboItems.IsEnabled("item_black_king_bar")) {
+	if (СomboItems.IsEnabled("item_black_king_bar") && !Sleep.Sleeping("item_black_king_bar")) {
 		var BlackingBar = Items.BlackKingBar
 		if (BlackingBar && BlackingBar.CanBeCasted()) {
 			BlackingBar.UseAbility(Owner)
+			Sleep.Sleep(GetDelayCast(), "item_black_king_bar")
 		}
 	}
 }
@@ -116,9 +117,9 @@ export function InitCombo() {
 		let blink = Items.Blink;
 		let Cyclone = Items.Cyclone;
 		if (blink && !Sleep.Sleeping(blink) && blink.CanBeCasted()) {
-			if (Cyclone && Cyclone.CanBeCasted() && Owner.Distance2D(Target) < (1175 + 0.75 * (Owner.Speed * 0.5))) { // check
+			if (Cyclone && Cyclone.CanBeCasted() && Owner.Distance2D(Target) < (1175 + 0.75 * (Owner.IdealSpeed * 0.5))) { // check
 				if (calc_pos_1 > calc_pos_2 + 0.25) {
-					let BPosition = Target.NetworkPosition.Add(Owner.NetworkPosition.SubtractForThis(Target.NetworkPosition).Normalize().ScaleTo(0.75 * (Owner.Speed * 0.5)));
+					let BPosition = Target.NetworkPosition.Add(Owner.NetworkPosition.SubtractForThis(Target.NetworkPosition).Normalize().ScaleTo(0.75 * (Owner.IdealSpeed * 0.5)));
 					blink.UseAbility(BPosition)
 					Sleep.Sleep(GetDelayCast(), blink)
 					UseBlackKingBar(Items);
@@ -163,7 +164,7 @@ export function InitCombo() {
 			}
 			else {
 				if (blink && blink.CanBeCasted()) {
-					let BPosition = Target.NetworkPosition.Add(Owner.NetworkPosition.SubtractForThis(Target.NetworkPosition).Normalize().ScaleTo(0.75 * (Owner.Speed * 0.5)));
+					let BPosition = Target.NetworkPosition.Add(Owner.NetworkPosition.SubtractForThis(Target.NetworkPosition).Normalize().ScaleTo(0.75 * (Owner.IdealSpeed * 0.5)));
 					blink.UseAbility(BPosition)
 					UseBlackKingBar(Items);
 					Sleep.Sleep(GetDelayCast(), blink)
@@ -175,7 +176,7 @@ export function InitCombo() {
 	let EulBuff = Target.GetBuffByName("modifier_eul_cyclone")
 	if (EulBuff !== undefined && !Sleep.Sleeping(Target.Index)) {
 		let GameTime = Game.RawGameTime,
-			CastTime = (EulBuff.DieTime - GameTime) - (((Abilities.Requiem && Abilities.Requiem.CastPoint) + GetAvgLatency(Flow_t.OUT)) + 0.025)
+			CastTime = (EulBuff.DieTime - GameTime) - (((Abilities.Requiem && Abilities.Requiem.CastPoint) + GetAvgLatency(Flow_t.OUT)) - 0.03)
 		if (!Owner.IsInRange(SafeTarget, 64 / 2)) {
 			Owner.MoveTo(SafeTarget);
 			Sleep.Sleep(GetDelayCast(), Target.Index)
