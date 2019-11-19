@@ -355,7 +355,7 @@ EventsSDK.on("EntityCreated", ent => {
 				break;
 		}
 		if (rad !== undefined) {
-			DrawParticleCirclePos(ent.NetworkPosition, rad, ent.Index)
+			DrawParticleCirclePos(ent.Position, rad, ent.Index)
 		}
 	}
 })
