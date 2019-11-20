@@ -6155,7 +6155,7 @@ declare class C_BaseFire extends C_BaseEntity {
 
 declare class C_BaseEntity extends C_GameEntity {
 	m_VisualData: boolean // returns m_vecOrigin: Vector3 to IOBuffer offset 0, m_angAbsRotation: QAngle to IOBuffer offset 3 on get, sets on set
-
+	
 	readonly m_CBodyComponent: CBodyComponent
 	readonly m_NetworkTransmitComponent: CNetworkTransmitComponent
 	readonly m_pDummyPhysicsComponent: CPhysicsComponent
@@ -7905,7 +7905,7 @@ declare class CUnitOrders {
 	m_nOrderType: number
 	m_nTargetIndex: CEntityIndex
 	m_nAbilityIndex: CEntityIndex
-	m_bQueue: boolean
+	m_nFlags: number
 }
 
 declare class InfoForResourceTypeVMapResourceData_t {}
@@ -17534,6 +17534,7 @@ declare class C_DOTAPlayer extends C_BasePlayer {
 	readonly m_vecSuggestedWardLocationEffects: ParticleIndex_t[]
 	readonly m_pSmartCastNPC: C_DOTA_BaseNPC
 	readonly m_nTeamSprayParticleIndex: ParticleIndex_t
+	m_bIsNextCastOrderFromMouseClick: boolean
 	readonly m_iCursor: number[]
 	m_iSpectatorClickBehavior: number
 	m_flAspectRatio: number
