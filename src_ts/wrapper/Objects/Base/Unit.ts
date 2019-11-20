@@ -49,9 +49,12 @@ heroesNames.forEach(hero => {
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
 	public static IsVisibleForEnemies(unit: Unit): boolean {
-		const valid_teams = ~(1 | (1 << Team.Observer)
+		const valid_teams = ~( // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
+			(1 << Team.None)
+			| (1 << Team.Observer)
 			| (1 << Team.Neutral)
-			| (1 << Team.None)) // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
+			| (1 << Team.Undefined)
+		)
 
 		let local_team = unit.Team,
 			flags = unit.IsVisibleForTeamMask & valid_teams
