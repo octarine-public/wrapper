@@ -164,8 +164,6 @@ Events.on("UnitFadeGesture", (npc, activity) => EventsSDK.emit(
 ))
 
 Events.on("EntityPositionsChanged", ents => ents.forEach(ent_ => {
-	if (ent_ === undefined)
-		throw "LOL INVALID NATIVE ENTITY"
 	let ent = EntityManager.GetEntityByNative(ent_)
 	if (ent === undefined || !ent_.m_VisualData)
 		return // probably ent.m_pGameSceneNode === undefined
