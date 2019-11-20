@@ -1,108 +1,17 @@
-import { ArrayExtensions, Color, Entity, Game, Hero, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Color, Entity, Game, Hero, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, LocalPlayer } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
 import {
 	ComboBox,
 	DrawRGBA,
-	PMH_Smoke_snd, Size, State,
+	PMH_Smoke_snd, Size, State, PMH_RenderStateMouseSmoke,
 } from "./Menu"
+import { ignoreListCreate, ignoreListCreateUpdate, ignoreListCreateUpdateEnt } from "./DataHandle"
 
 let npc_hero: string = "npc_dota_hero_",
 	Particle: Map<number, [bigint, string | Entity, number, Vector3?, Color?, number?, string?]> = new Map(), // TODO Radius for ability
 	END_SCROLL = new Map<number, number>(),
 	OtherRadius = new Map<Entity, number>(),
 	LAST_ID_SCROLL: number,
-	ignoreListCreate: bigint[] = [
-		16411378985643724199n,
-		3845203473627057528n,
-		2493460162828289005n,
-		9081781702343064031n,
-		16250734879025969559n,
-		1676164312013390125n,
-		10795105686913770252n,
-		16706021384021574062n,
-		3319765426154305425n,
-		5244941174913880949n,
-		16999430003839366138n,
-		10146932630609076181n,
-		6194896432063109095n,
-		5261289796642637593n,
-		6121206817302591590n,
-		1395910015532192133n,
-		13737405313044748592n,
-		13587968156146944372n,
-		7315652834289833775n,
-		6474080100146051362n,
-		9411589899328073635n,
-		4639487695481367673n,
-		9401153279394287079n,
-		11281804850637540807n,
-		8975046362064371102n,
-		3940118018570288807n,
-		8975046362064371102n,
-		3717260057587970775n,
-		17986169416295743678n,
-		17172670307536884918n,
-		12143317949272742843n,
-		3965532167141887388n,
-		11822138159889275084n,
-		11576574379184336442n,
-		6176380103998265840n,
-		10251977501855418809n,
-		4337809086382604824n,
-		15591984632297613959n,
-		16426221189982166438n,
-		7217420080506833917n,
-		16005396280504064234n,
-		8471181176813126689n,
-	],
-	ignoreListCreateUpdate: bigint[] = [
-		8654159076113771741n,
-		3319765426154305425n,
-		7751829135967853782n,
-		8942984728089511588n,
-		13345813756589668588n,
-		204393823251131443n,
-		3719375578397730360n,
-		16501589714501556266n,
-		6224567014058177052n,
-		5261289796642637593n,
-		6907985077120073095n,
-		945443000161015079n,
-		6474080100146051362n,
-		9411589899328073635n,
-		11281804850637540807n,
-		11822138159889275084n,
-		11576574379184336442n,
-		6176380103998265840n,
-		15591984632297613959n,
-		10251977501855418809n,
-		7217420080506833917n,
-		16005396280504064234n,
-		8471181176813126689n,
-	],
-	ignoreListCreateUpdateEnt: bigint[] = [
-		1463643803508630076n,
-		8069164713690266618n,
-		5690601709983082755n,
-		4320979652851470482n,
-		3282926860763809157n,
-		6474080100146051362n,
-		15862585917379413836n,
-		11281804850637540807n,
-		17986169416295743678n,
-		17172670307536884918n,
-		12143317949272742843n,
-		6176380103998265840n,
-		10251977501855418809n,
-		9157461782681193972n,
-		448910324462799275n,
-		15591984632297613959n,
-		2831560734339649020n,
-		15091348526487023459n,
-		7217420080506833917n,
-		16005396280504064234n,
-		8471181176813126689n,
-	],
 	Heroes: Hero[] = [],
 	OtherAbility: Entity[] = [],
 	_Size = Size.value * 20
@@ -112,7 +21,7 @@ function ClassChecking(entity: Entity) {
 		entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane
 		|| entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Neutral
 		|| entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Tower
-		|| entity.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Wisp
+		//|| entity.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Wisp
 	)
 }
 
@@ -122,13 +31,14 @@ function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: C
 		return
 	switch (ComboBox.selected_id) {
 		case 0:
-			RendererSDK.Image(
-				items === undefined
-					? `panorama/images/heroes/icons/${Target}_png.vtex_c`
-					: `panorama/images/items/${items}`,
-				pos_particle.SubtractScalar(Size.value / 4),
-				new Vector2(Size.value / 2, Size.value / 2), color,
-			)
+			RendererSDK.Image
+				(
+					items === undefined
+						? `panorama/images/heroes/icons/${Target}_png.vtex_c`
+						: `panorama/images/items/${items}`,
+					pos_particle.SubtractScalar(Size.value / 4),
+					new Vector2(Size.value / 2, Size.value / 2), color,
+				)
 			break
 		case 1:
 			let NameRenderUnit = Target.toString().split("_").splice(3, 3).join(" ")
@@ -164,8 +74,11 @@ export function ParticleCreate(id: number, handle: bigint, path: string, entity:
 	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined, Game.RawGameTime])
 }
 
+function IsEnemyUse(position: Vector3) {
+	return !Heroes.find(x => x !== undefined && x.IsVisible && !x.IsEnemy()).IsInRange(position, 900)
+}
 function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: string, name_hero: string, color?: Color, Time?: number) {
-	let hero = Heroes.find(x => x !== undefined && x.IsEnemy() && !x.IsVisible && x.IsEnemy() && x.Name === name_hero)
+	let hero = Heroes.find(x => x !== undefined && x.IsEnemy() && !x.IsVisible && x.Name === name_hero)
 	if (hero !== undefined) {
 		let abil = hero.GetAbilityByName(name_ability)
 		if (abil !== undefined && abil.IsValid)
@@ -362,19 +275,19 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		}
 		// pugna blast
 		if (part[0] === 8533375778285123176n || part[0] === 14964695791820827443n) {
-			FindAbilitySet(id, part, position, "pugna_nether_blast", npc_hero + "pugna", new Color(255, 255, 255), +1)
+			FindAbilitySet(id, part, position, "pugna_nether_blast", npc_hero + "pugna", new Color(255, 255, 255), + 1)
 		}
 		// with_doctor | maledict
 		if (part[0] === 12994327613543406041n) {
 			FindAbilitySet(id, part, position, "witch_doctor_maledict", npc_hero + "witch_doctor", new Color(255, 255, 255))
 		}
 		// smoke
-		if (part[0] === 14221266834388661971n) {
-			Particle.set(id, [part[0], "Smoke", part[2], position, new Color(255, 17, 0)])
+		if (part[0] === 14221266834388661971n && IsEnemyUse(position)) {
+			Particle.set(id, [part[0], "Smoke", part[2], position, new Color(255, 17, 0), + 5])
 			Game.ExecuteCommand("playvol ui/ping " + PMH_Smoke_snd.value / 1000)
 		}
 		// dust
-		if (part[0] === 2930661440000609946n) {
+		if (part[0] === 2930661440000609946n && IsEnemyUse(position)) {
 			Particle.set(id, [part[0], "Dust", part[2], position, new Color(255, 255, 255)])
 		}
 
@@ -527,12 +440,12 @@ function DrawingOtherAbility(x: Entity, name: string, ability_name: string, radi
 }
 
 function RenderTeleportMap(handle: bigint, position: Vector3) {
-	if (handle === 16169843851719108633n) {
-		let minus = --_Size * 2
-		minus >= Size.value * 20
-			? RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, minus, new Color(0, 200, 0))
-			: RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, Size.value * 20, new Color(0, 200, 0))
-	}
+	if (handle !== 16169843851719108633n)
+		return
+	let minus = --_Size * 2
+	minus >= Size.value * 20
+		? RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, minus, new Color(0, 200, 0))
+		: RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, Size.value * 20, new Color(0, 200, 0))
 }
 
 export function OnDraw() {
@@ -565,69 +478,52 @@ export function OnDraw() {
 		let Target = target as Unit
 		if (Target === undefined || Target.Name === undefined) {
 			if (target === "Smoke") {
-				try {
-					RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 20, color)
-				} catch (error) {
-					// console.log(handle.toString() + " | " + position + " | " + target)
-				}
+				RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 20, color)
 				DrawIconWorldHero(position, Target, new Color(255, 255, 255), "smoke_of_deceit_png.vtex_c")
-			} else if (target === "Dust") {
-				try {
-					RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
-				} catch (error) {
-					// console.log(handle.toString() + " | " + position + " | " + target)
+				if (LocalPlayer !== undefined && PMH_RenderStateMouseSmoke.value) {
+					RendererSDK.TextAroundMouse("Enemy used smoke, distance from you (" + Math.round(LocalPlayer.Hero.Distance2D(position)) + ") units", false, new Color(255, 255, 0, 155), "Calibri", new Vector2(18))
 				}
+			} else if (target === "Dust") {
+				RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
 				DrawIconWorldHero(position, Target, new Color(255, 255, 255), "dust_png.vtex_c")
 			} else {
 				if (target === undefined)
 					return
-				try {
-					RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${target}`, position, Size.value * 12, color)
-					if (ability_string !== undefined) {
-						let add_pos = position.Clone().AddScalarY(-80)
-						DrawIconAbilityHero(add_pos, ability_string)
-					}
-				} catch (error) {
-					// console.log(handle.toString() + " | " + position + " | " + target)
+				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${target}`, position, Size.value * 12, color)
+				if (ability_string !== undefined) {
+					let add_pos = position.Clone().AddScalarY(-80)
+					DrawIconAbilityHero(add_pos, ability_string)
 				}
 				DrawIconWorldHero(position, Target, color)
 			}
 		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && !Target.IsVisible) {
-			try {
-				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
-				if (handle === 9908905996079864839n) {
-					RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, Size.value * 20, color)
-				}
-				RenderTeleportMap(handle, position)
-			} catch (error) {
-				// console.log(handle.toString() + " | " + position + " | " + Target.Name)
+			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
+			if (handle === 9908905996079864839n) {
+				RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, Size.value * 20, color)
 			}
+			RenderTeleportMap(handle, position)
 			DrawIconWorldHero(position, Target, color)
-		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke"
-			&& (handle === 9908905996079864839n || handle === 16169843851719108633n)) {
-			try {
-				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
-				if (handle === 9908905996079864839n) {
-					RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, _Size, color)
-				}
-				RenderTeleportMap(handle, position)
-			} catch (error) {
-				// console.log(handle.toString() + " | " + position + " | " + Target.Name)
+		} else if (Target !== undefined && Target.IsEnemy()
+			&& target !== "Smoke" && (handle === 9908905996079864839n || handle === 16169843851719108633n)
+		) {
+			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
+			if (handle === 9908905996079864839n) {
+				RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, _Size, color)
 			}
+			RenderTeleportMap(handle, position)
 			if (ability_string !== undefined) {
 				let add_pos = position.Clone().AddScalarY(-80)
 				DrawIconAbilityHero(add_pos, ability_string)
 			}
 			DrawIconWorldHero(position, Target, color)
-			if ((handle === 16169843851719108633n || handle === 9908905996079864839n)) {
-				let BuffDieTime = Target.GetBuffByName("modifier_teleporting"),
-					screen_pos = RendererSDK.WorldToScreen(position)
-				if (BuffDieTime === undefined)
-					return
-				if (screen_pos !== undefined) {
-					RendererSDK.Text((-(Game.RawGameTime - BuffDieTime.DieTime)).toFixed(1).toString(), screen_pos, new Color(255, 255, 255), "Consoles", Size.value / 3)
-				}
+			if (handle !== 16169843851719108633n && handle !== 9908905996079864839n) {
+				return
 			}
+			let BuffDieTime = Target.GetBuffByName("modifier_teleporting"),
+				screen_pos = RendererSDK.WorldToScreen(position)
+			if (BuffDieTime === undefined || screen_pos !== undefined)
+				return
+			RendererSDK.Text((-(Game.RawGameTime - BuffDieTime.DieTime)).toFixed(1).toString(), screen_pos, new Color(255, 255, 255), "Consoles", Size.value / 3)
 		}
 	})
 

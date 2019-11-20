@@ -95,7 +95,7 @@ export function InitCombo() {
 	if ((StyleCombo.selected_id === 1 && !ComboActived) || (StyleCombo.selected_id === 0 && !ComboKeyItem.is_pressed)) {
 		return
 	}
-	if (Owner.Distance2D(Target) >= (1175 + 0.75 * (Owner.Speed * 0.5))) { // !isInRange
+	if (Owner.Distance2D(Target) >= (1175 + 0.75 * (Owner.IdealSpeed * 0.5))) { // !isInRange
 		Owner.MoveTo(Target.Position);
 		Sleep.Sleep(GetDelayCast(), Target.Index)
 		return
@@ -116,9 +116,9 @@ export function InitCombo() {
 		let blink = Items.Blink;
 		let Cyclone = Items.Cyclone;
 		if (blink && !Sleep.Sleeping(blink) && blink.CanBeCasted()) {
-			if (Cyclone && Cyclone.CanBeCasted() && Owner.Distance2D(Target) < (1175 + 0.75 * (Owner.Speed * 0.5))) { // check
+			if (Cyclone && Cyclone.CanBeCasted() && Owner.Distance2D(Target) < (1175 + 0.75 * (Owner.IdealSpeed * 0.5))) { // check
 				if (calc_pos_1 > calc_pos_2 + 0.25) {
-					let BPosition = Target.Position.Add(Owner.Position.SubtractForThis(Target.Position).Normalize().ScaleTo(0.75 * (Owner.Speed * 0.5)));
+					let BPosition = Target.Position.Add(Owner.Position.SubtractForThis(Target.Position).Normalize().ScaleTo(0.75 * (Owner.IdealSpeed * 0.5)));
 					blink.UseAbility(BPosition)
 					Sleep.Sleep(GetDelayCast(), blink)
 					UseBlackKingBar(Items);
@@ -163,7 +163,7 @@ export function InitCombo() {
 			}
 			else {
 				if (blink && blink.CanBeCasted()) {
-					let BPosition = Target.Position.Add(Owner.Position.SubtractForThis(Target.Position).Normalize().ScaleTo(0.75 * (Owner.Speed * 0.5)));
+					let BPosition = Target.Position.Add(Owner.Position.SubtractForThis(Target.Position).Normalize().ScaleTo(0.75 * (Owner.IdealSpeed * 0.5)));
 					blink.UseAbility(BPosition)
 					UseBlackKingBar(Items);
 					Sleep.Sleep(GetDelayCast(), blink)
@@ -175,8 +175,8 @@ export function InitCombo() {
 	let EulBuff = Target.GetBuffByName("modifier_eul_cyclone")
 	if (EulBuff !== undefined && !Sleep.Sleeping(Target.Index)) {
 		let GameTime = Game.RawGameTime,
-			CastTime = (EulBuff.DieTime - GameTime) - ((Abilities.Requiem && Abilities.Requiem.CastPoint) - 0.03)
-		if (!Owner.IsInRange(SafeTarget, 64 / 2)) {
+			CastTime = (EulBuff.DieTime - GameTime) - ((Abilities.Requiem && Abilities.Requiem.CastPoint) + 0.03)
+		if (!Owner.IsInRange(SafeTarget, 64 / 2) && !Sleep.Sleeping(Target.Index)) {
 			Owner.MoveTo(SafeTarget);
 			Sleep.Sleep(GetDelayCast(), Target.Index)
 			return

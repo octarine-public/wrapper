@@ -32,8 +32,7 @@ let allRunes: Rune[] = [],
 	mt_rand_bounty: number
 
 function mt_rand(min: number, max: number) {
-	let rand = min - 0.5 + Math.random() * (max - min + 1);
-	return Math.round(rand);
+	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 export function DrawRunes() {
@@ -129,13 +128,13 @@ export function DrawRunes() {
 				// loop-optimizer: KEEP
 				bountyRunesPos.forEach((val, key) => {
 					//Bounty Rune
-					if (handle === 17096352592726237548n) {
-						let distance = val.Distance(position)
-						if (distance <= 500) {
-							bountyAlreadySeted = false
-							bountyRunesAr[key] = false
-							Particle.clear()
-						}
+					if (handle !== 17096352592726237548n)
+						return
+					let distance = val.Distance(position)
+					if (distance <= 800) {
+						bountyAlreadySeted = false
+						bountyRunesAr[key] = false
+						Particle.clear()
 					}
 				})
 			})
@@ -174,14 +173,15 @@ function DrawIcon(position: Vector3, color?: Color) {
 }
 
 export function RuneParticleDestroyed(id: number) {
-	if (Particle.has(id))
-		Particle.delete(id)
+	if (!Particle.has(id))
+		return
+	Particle.delete(id)
 }
 
 export function RuneParticleCreate(id: number, entity: Entity, handle: bigint) {
-	if (handle === 17096352592726237548n) {
-		Particle.set(id, [handle, entity instanceof Hero ? entity : undefined])
-	}
+	if (handle !== 17096352592726237548n)
+		return
+	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined])
 }
 
 export function RuneParticleCreateUpdateEnt(id: number, ent: Entity, position: Vector3) {

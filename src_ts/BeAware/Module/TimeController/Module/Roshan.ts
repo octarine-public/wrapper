@@ -106,9 +106,6 @@ export function RoshanTick() {
 		Game.ExecuteCommand("playvol sounds\\ui\\ping_attack " + NotificationRoshanStateSound.value / 100)
 		checkTick = Time + 4
 	}
-	if (!NotificationRoshanStateChat.value) {
-		return
-	}
 	if (Time >= checkTickMessage) {
 		if (LocalPlayer !== undefined && Player !== undefined && UseScanForAlies.value) {
 			let Time = LocalPlayer.Team === Team.Radiant
@@ -118,7 +115,9 @@ export function RoshanTick() {
 				Player.Scan(Base.RoshanPosition)
 			}
 		}
-		Game.ExecuteCommand("chatwheel_say 53")
+		if (NotificationRoshanStateChat.value) {
+			Game.ExecuteCommand("chatwheel_say 53")
+		}
 		checkTickMessage = Time + 10
 	}
 	return
@@ -126,7 +125,7 @@ export function RoshanTick() {
 
 export function DrawRoshan() {
 	if (!drawStatus.value || !Game.IsInGame || Game.LevelNameShort === "hero_demo_main") {
-		return false
+		return
 	}
 	if (!IsAlive) {
 		let time = Game.RawGameTime
@@ -183,7 +182,6 @@ function DeleteUnits() {
 }
 
 export function RoshanGameEnded() {
-	DeleteUnits()
 	checkTick = 0
 	AegisTime = 0
 	TimersOne = undefined
@@ -194,4 +192,5 @@ export function RoshanGameEnded() {
 	roshanKillTime = 0
 	checkTickMessage = 0
 	checkTick = 0
+	Units = []
 }
