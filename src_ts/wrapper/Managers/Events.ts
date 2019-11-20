@@ -24,22 +24,6 @@ Events.on("WndProc", (...args) => EventsSDK.emit("WndProc", true, ...args))
 
 Events.on("Update", cmd => EventsSDK.emit("Update", false, new UserCmd(cmd)))
 
-Events.on("UnitStateChanged", npc => {
-	if (LocalPlayer === undefined)
-		return
-
-	EventsSDK.emit("UnitStateChanged", false, EntityManager.GetEntityByNative(npc, true))
-})
-
-Events.on("TeamVisibilityChanged", (npc, newTagged) => {
-	const unit = EntityManager.GetEntityByNative(npc, true) as Unit
-
-	unit.IsVisibleForTeamMask = newTagged
-	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit, unit.IsVisibleForTeamMask)
-
-	EventsSDK.emit("TeamVisibilityChanged", false, unit)
-})
-
 Events.on("Draw", () => {
 	WASM.OnDraw()
 	EventsSDK.emit("Draw")
@@ -301,6 +285,17 @@ Events.on("NetworkFieldsChanged", map => {
 						if (entity instanceof Ability)
 							entity.LastCastClickTime = entity.m_pBaseEntity.m_flLastCastClickTime
 						break
+					case "m_iTaggedAsVisibleByTeam":
+						if (entity instanceof Unit) {
+							entity.IsVisibleForTeamMask = entity.m_pBaseEntity.m_iTaggedAsVisibleByTeam
+							entity.IsVisibleForEnemies = Unit.IsVisibleForEnemies(entity)
+							EventsSDK.emit("TeamVisibilityChanged", false, entity)
+						}
+						break
+					case "m_nUnitState64":
+						if (entity instanceof Unit)
+							EventsSDK.emit("UnitStateChanged", false, entity)
+						break
 
 					// manually whitelisted
 					case "m_angRotation":
@@ -320,6 +315,13 @@ Events.on("NetworkFieldsChanged", map => {
 					case "m_bGamePaused":
 						Game.IsPaused = Game.m_GameRules.m_bGamePaused
 						break
+					case "m_name":
+						if (trigger instanceof CEntityIdentity) {
+							entity.Name_ = trigger.m_name
+							if (entity instanceof Ability)
+								entity.AbilityData = new AbilityData(entity.m_pBaseEntity.m_pAbilityData)
+						}
+						break
 
 					default:
 						break
@@ -329,7 +331,7 @@ Events.on("NetworkFieldsChanged", map => {
 					case "m_hAbilities":
 						if (entity instanceof Unit) {
 							let abil = entity.m_pBaseEntity.m_hAbilities[array_index]
-							entity.AbilitiesBook.Spells_[array_index] = EntityManager.GetEntityByNative(abil) as Ability || abil
+							entity.AbilitiesBook.Spells_[array_index] = abil
 						}
 						break
 
@@ -337,7 +339,7 @@ Events.on("NetworkFieldsChanged", map => {
 					case "m_hItems":
 						if (entity instanceof Unit) {
 							let item = entity.m_pBaseEntity.m_Inventory.m_hItems[array_index]
-							entity.Inventory.TotalItems_[array_index] = EntityManager.GetEntityByNative(item) as Item || item
+							entity.Inventory.TotalItems_[array_index] = item
 						}
 						break
 
@@ -346,14 +348,6 @@ Events.on("NetworkFieldsChanged", map => {
 				}
 		}))
 	})
-})
-Events.on("SetEntityName", (entity, new_name) => {
-	let entity_ = EntityManager.GetEntityByNative(entity, true)
-	if (entity_ === undefined)
-		return
-	entity_.Name_ = new_name
-	if (entity_ instanceof Ability)
-		entity_.AbilityData = new AbilityData((entity as C_DOTABaseAbility).m_pAbilityData)
 })
 
 interface EventsSDK extends EventEmitter {

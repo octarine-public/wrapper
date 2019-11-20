@@ -277,7 +277,7 @@ function InitEntityFields(ent: Entity) {
 		ent.HPRegen = ent.m_pBaseEntity.m_flHealthThinkRegen
 		ent.IsControllableByPlayerMask = ent.m_pBaseEntity.m_iIsControllableByPlayer64
 		ent.IsVisibleForTeamMask = ent.m_pBaseEntity.m_iTaggedAsVisibleByTeam
-		ent.IsVisibleForEnemies = Unit.IsVisibleForEnemies(ent, ent.IsVisibleForTeamMask)
+		ent.IsVisibleForEnemies = Unit.IsVisibleForEnemies(ent)
 		ent.NetworkActivity = ent.m_pBaseEntity.m_NetworkActivity
 		ent.LastVisibleTime = Game.RawGameTime;
 	}

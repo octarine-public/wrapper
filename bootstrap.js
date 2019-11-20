@@ -85,6 +85,3 @@ global.Events = new EventEmitter();
 setFireEvent((name, cancellable, ...args) => {
   return Events.emit(name, cancellable, ...args);
 });
-Events.on("TeamVisibilityChanged", (npc, newTagged) => {
-  return npc.m_iTaggedAsVisibleByTeam = newTagged;
-});

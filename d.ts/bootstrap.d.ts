@@ -27,8 +27,6 @@ declare interface Events extends EventEmitter {
 	on(name: "WndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
 	on(name: "Tick", callback: () => void): EventEmitter
 	on(name: "Update", callback: (cmd: CUserCmd) => void): EventEmitter
-	on(name: "UnitStateChanged", callback: (npc: C_DOTA_BaseNPC) => void): EventEmitter
-	on(name: "TeamVisibilityChanged", callback: (npc: C_DOTA_BaseNPC, new_m_iTaggedAsVisibleByTeam: number) => void): EventEmitter
 	on(name: "Draw", callback: () => void): EventEmitter
 	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target: C_BaseEntity | number) => void): EventEmitter
 	on(name: "ParticleUpdated", callback: (id: number, control_point: number) => void): EventEmitter // position: Vector3 at IOBuffer offset 0
@@ -181,7 +179,6 @@ declare interface Events extends EventEmitter {
 	on(name: "NetworkFieldsChanged", listener: (
 		map: Map<C_BaseEntity, Map<any, Array<[string, string, number]>>> // 1st key: entity, 2nd: trigger, values: [field_name, field_type, array_index]
 	) => void): EventEmitter
-	on(name: "SetEntityName", listener: (ent: C_BaseEntity, new_name: string) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (id: number, reason: number, uuid: bigint, obj: any) => void): EventEmitter
 }
 declare var Events: Events
