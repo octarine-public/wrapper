@@ -115,21 +115,18 @@ export default class Node extends Base {
 		})
 	}
 
-	public AddToggle(name: string, default_value: boolean = false, tooltip?: string): Toggle {
-		let toggle = new Toggle(this, name, default_value, tooltip)
-		this.entries.push(toggle)
+	private AddEntry<T extends Base>(entry: T): T {
+		this.entries.push(entry)
 		this.SortEntries()
 		Menu.ForwardConfig()
 		Menu.PositionDirty = true
-		return toggle
+		return entry
+	}
+	public AddToggle(name: string, default_value: boolean = false, tooltip?: string): Toggle {
+		return this.AddEntry(new Toggle(this, name, default_value, tooltip))
 	}
 	public AddSlider(name: string, default_value = 0, min = 0, max = 100, tooltip?: string): Slider {
-		let slider = new Slider(this, name, default_value, min, max, tooltip)
-		this.entries.push(slider)
-		this.SortEntries()
-		Menu.ForwardConfig()
-		Menu.PositionDirty = true
-		return slider
+		return this.AddEntry(new Slider(this, name, default_value, min, max, tooltip))
 	}
 	public AddSliderFloat(name: string, default_value = 0, min = 0, max = 100, tooltip?: string): Slider {
 		return this.AddSlider(name, default_value, min, max, tooltip)
@@ -138,21 +135,21 @@ export default class Node extends Base {
 		let node = this.entries.find(entry => entry instanceof Node && entry.name === name) as Node
 		if (node !== undefined)
 			return node
-		node = new Node(this, name, tooltip)
-		this.entries.push(node)
-		this.SortEntries()
-		Menu.ForwardConfig()
-		Menu.PositionDirty = true
-		return node
+		return this.AddEntry(new Node(this, name, tooltip))
 	}
 	public AddSwitcher(name: string, values: string[], default_value = 0): Switcher {
-		let switcher = new Switcher(this, name, values, default_value)
-		this.entries.push(switcher)
-		this.SortEntries()
-		Menu.ForwardConfig()
-		Menu.PositionDirty = true
-		return switcher
+		return this.AddEntry(new Switcher(this, name, values, default_value))
 	}
+	public AddKeybind(name: string, default_key = "", tooltip?: string) {
+		return this.AddEntry(new KeyBind(this, name, default_key, tooltip))
+	}
+	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip?: string) {
+		return this.AddEntry(new ImageSelectror(this, name, values, default_values, tooltip))
+	}
+	public AddButton(name: string, tooltip?: string): Button {
+		return this.AddEntry(new Button(this, name, tooltip))
+	}
+
 	public AddVector2(name: string, vector: Vector2, minVector?: Vector2, maxVector?: Vector2) {
 		let node = this.AddNode(name);
 
@@ -226,30 +223,6 @@ export default class Node extends Base {
 			},
 			OnValue(this: Color) { return this },
 		}
-	}
-	public AddKeybind(name: string, default_key = "", tooltip?: string) {
-		let keybind = new KeyBind(this, name, default_key, tooltip)
-		this.entries.push(keybind)
-		this.SortEntries()
-		Menu.ForwardConfig()
-		Menu.PositionDirty = true
-		return keybind
-	}
-	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip?: string) {
-		let image_selector = new ImageSelectror(this, name, values, default_values, tooltip)
-		this.entries.push(image_selector)
-		this.SortEntries()
-		Menu.ForwardConfig()
-		Menu.PositionDirty = true
-		return image_selector
-	}
-	public AddButton(name: string, tooltip?: string): Button {
-		let button = new Button(this, name, tooltip)
-		this.entries.push(button)
-		this.SortEntries()
-		Menu.ForwardConfig()
-		Menu.PositionDirty = true
-		return button
 	}
 
 	private SortEntries(): void {
