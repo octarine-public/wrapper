@@ -1,4 +1,4 @@
-import { ArrayExtensions, Color, Entity, Game, Hero, RendererSDK, Rune, Vector2, Vector3 } from "wrapper/Imports";
+import { ArrayExtensions, Color, Entity, Game, Hero, RendererSDK, Rune, Vector2, Vector3, Unit } from "wrapper/Imports";
 import {
 	NotifyPowerRuneMax, NotifyPowerRuneMin,
 	NotifyTimeBountyMax, NotifyTimeBountyMin,
@@ -34,111 +34,111 @@ let allRunes: Rune[] = [],
 function mt_rand(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
-
 export function DrawRunes() {
+	if (Game.GameTime <= 0 || Game.LevelNameShort === "hero_demo_main") {
+		return
+	}
+	// power
+	let Time = Game.RawGameTime;
+	if (TreeRuneState.value) {
+		let RunePowerTime = Game.GameTime % 120;
+		if (TreeNotificationPowerChat.value && RunePowerTime >= 120 || RunePowerTime === 0)
+			RunePowerTimer = true
+		// loop-optimizer: KEEP
+		PowerRunesPos.forEach(val => {
+			if (mt_rand_power === undefined)
+				mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
+			if (mt_rand_power !== undefined && RunePowerTime >= (120 - mt_rand_power)) {
+				if (TreeNotificationPowerDrawMap.value)
+					RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
 
-	if (Game.GameTime >= 0 && Game.LevelNameShort !== "hero_demo_main") {
-		// power
-		let Time = Game.RawGameTime;
-		if (TreeRuneState.value) {
-			let RunePowerTime = Game.GameTime % 120;
-			if (TreeNotificationPowerChat.value && RunePowerTime >= 120 || RunePowerTime === 0)
-				RunePowerTimer = true
-			// loop-optimizer: KEEP
-			PowerRunesPos.forEach(val => {
-				if (mt_rand_power === undefined)
-					mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
-				if (mt_rand_power !== undefined && RunePowerTime >= (120 - mt_rand_power)) {
-					if (TreeNotificationPowerDrawMap.value)
-						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
-
-					if (Time >= checkTickPower) {
-						if (RunePowerTime <= 119) {
-							if (TreeNotificationBountySound.value > 0) {
-								Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
-								checkTickPower = Time + (NotifyPowerRuneMax.value / 3)
-							}
-							if (RunePowerTimer) {
-								if (TreeNotificationPowerChat.value) {
-									Game.ExecuteCommand("chatwheel_say 57")
-									RunePowerTimer = false
-								}
-							}
-							mt_rand_power = undefined
+				if (Time >= checkTickPower) {
+					if (RunePowerTime <= 119) {
+						if (TreeNotificationBountySound.value > 0) {
+							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
+							checkTickPower = Time + (NotifyPowerRuneMax.value / 3)
 						}
-					}
-				}
-			})
-		}
-		// bounty
-		if (PMH_Show_bounty.value) {
-			let RuneBountyTime = Game.GameTime % 300
-			if (!bountyAlreadySeted) {
-				if (RuneBountyTime >= 299 || RuneBountyTime <= 1) {
-					bountyRunesAr = [true, true, true, true]
-					bountyAlreadySeted = true
-					if (TreeNotificationBountyChat.value) {
-						RuneBountyTimerBool = true
+						if (RunePowerTimer) {
+							if (TreeNotificationPowerChat.value) {
+								Game.ExecuteCommand("chatwheel_say 57")
+								RunePowerTimer = false
+							}
+						}
+						mt_rand_power = undefined
 					}
 				}
 			}
+		})
+	}
+	// bounty
+	if (PMH_Show_bounty.value) {
+		let RuneBountyTime = Game.GameTime % 300
+		if (!bountyAlreadySeted) {
+			if (RuneBountyTime >= 299 || RuneBountyTime <= 1) {
+				bountyRunesAr = [true, true, true, true]
+				bountyAlreadySeted = true
+				if (TreeNotificationBountyChat.value) {
+					RuneBountyTimerBool = true
+				}
+			}
+		}
+		// loop-optimizer: KEEP
+		bountyRunesPos.forEach((val, key) => {
+			if (mt_rand_bounty === undefined) {
+				mt_rand_bounty = mt_rand(NotifyTimeBountyMin.value, NotifyTimeBountyMax.value)
+			}
+			if (mt_rand_bounty !== undefined && RuneBountyTime >= (300 - mt_rand_bounty)) {
+				if (TreeNotificationBountyDrawMap.value) {
+					RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
+				}
+				if (Time >= checkTick) {
+					if (RuneBountyTime <= 299) {
+						if (TreeNotificationBountySound.value > 0) {
+							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
+							checkTick = Time + (NotifyTimeBountyMax.value / 3)
+						}
+						mt_rand_bounty = undefined
+					}
+					if (RuneBountyTimerBool) {
+						if (TreeNotificationBountyChat.value) {
+							Game.ExecuteCommand("chatwheel_say 57")
+							RuneBountyTimerBool = false
+						}
+					}
+				}
+			}
+			// Bounty Rune
+			let rune = allRunes.some(rune_ => rune_.IsAlive && val.IsInRange(rune_.Position, 430))
+			// loop-optimizer: FORWARD
+			Heroes.filter((x, i) => {
+				if (rune === undefined && x.IsInRange(val, 430)) {
+					bountyAlreadySeted = false
+					bountyRunesAr[key] = false
+				}
+			})
+			if (bountyRunesAr[key]) {
+				RendererSDK.DrawMiniMapIcon("minimap_rune_bounty", val, PMH_Show_bounty_size.value * 14, PMH_Show_bountyRGBA.Color)
+				DrawIcon(val, PMH_Show_bountyRGBA_mark.Color)
+			}
+		})
+		if (Particle === undefined || Particle.size <= 0)
+			return
+		// loop-optimizer: KEEP
+		Particle.forEach(([handle, target, position], i) => {
 			// loop-optimizer: KEEP
 			bountyRunesPos.forEach((val, key) => {
-				if (mt_rand_bounty === undefined) {
-					mt_rand_bounty = mt_rand(NotifyTimeBountyMin.value, NotifyTimeBountyMax.value)
-				}
-				if (mt_rand_bounty !== undefined && RuneBountyTime >= (300 - mt_rand_bounty)) {
-					if (TreeNotificationBountyDrawMap.value) {
-						RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
-					}
-					if (Time >= checkTick) {
-						if (RuneBountyTime <= 299) {
-							if (TreeNotificationBountySound.value > 0) {
-								Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
-								checkTick = Time + (NotifyTimeBountyMax.value / 3)
-							}
-							mt_rand_bounty = undefined
-						}
-						if (RuneBountyTimerBool) {
-							if (TreeNotificationBountyChat.value) {
-								Game.ExecuteCommand("chatwheel_say 57")
-								RuneBountyTimerBool = false
-							}
-						}
-					}
-				}
-				// Bounty Rune
-				let rune = allRunes.some(rune_ => rune_.IsAlive && val.IsInRange(rune_.Position, 430))
-				// loop-optimizer: FORWARD
-				Heroes.filter((x, i) => {
-					if (rune === undefined && x.IsInRange(val, 430)) {
-						bountyAlreadySeted = false
-						bountyRunesAr[key] = false
-					}
-				})
-				if (bountyRunesAr[key]) {
-					RendererSDK.DrawMiniMapIcon("minimap_rune_bounty", val, PMH_Show_bounty_size.value * 14, PMH_Show_bountyRGBA.Color)
-					DrawIcon(val, PMH_Show_bountyRGBA_mark.Color)
+				//Bounty Rune
+				if (handle !== 17096352592726237548n && handle !== 16517413739925325824n)
+					return
+				let hero = (target as Unit),
+					distance = val.Distance2D(position)
+				if (distance <= 500 || (hero !== undefined && hero.Name === "npc_dota_hero_pudge" && hero.Distance2D(val) <= 10)) {
+					bountyAlreadySeted = false
+					bountyRunesAr[key] = false
+					setTimeout(Particle.clear, 1500);
 				}
 			})
-			if (Particle === undefined || Particle.size <= 0)
-				return
-			// loop-optimizer: KEEP
-			Particle.forEach(([handle, target, position], i) => {
-				// loop-optimizer: KEEP
-				bountyRunesPos.forEach((val, key) => {
-					//Bounty Rune
-					if (handle !== 17096352592726237548n)
-						return
-					let distance = val.Distance(position)
-					if (distance <= 800) {
-						bountyAlreadySeted = false
-						bountyRunesAr[key] = false
-						Particle.clear()
-					}
-				})
-			})
-		}
+		})
 	}
 }
 
@@ -179,7 +179,7 @@ export function RuneParticleDestroyed(id: number) {
 }
 
 export function RuneParticleCreate(id: number, entity: Entity, handle: bigint) {
-	if (handle !== 17096352592726237548n)
+	if (handle !== 17096352592726237548n && handle !== 16517413739925325824n)
 		return
 	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined])
 }
