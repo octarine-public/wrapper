@@ -2,7 +2,7 @@ import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
-import { DamageIgnoreBuffs } from "../../Utils/Utils";
+import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils";
 
 import { Game, LocalPlayer } from "../../Managers/EntityManager"
 
@@ -23,8 +23,6 @@ import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
 import Tree from "./Tree"
 import TreeTemp from "./TreeTemp"
-
-import { parseKVFile } from "../../Utils/Utils";
 
 const attackAnimationPoint = new Map<string, number>();
 
@@ -49,7 +47,7 @@ heroesNames.forEach(hero => {
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
 	public static IsVisibleForEnemies(unit: Unit): boolean {
-		const valid_teams = ~( // don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
+		const valid_teams = ~(// don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
 			(1 << Team.None)
 			| (1 << Team.Observer)
 			| (1 << Team.Neutral)
@@ -546,7 +544,7 @@ export default class Unit extends Entity {
 	public GetBuffByName(name: string) {
 		return this.ModifiersBook.GetBuffByName(name)
 	}
-	public HasModifier(name: string): boolean {
+	public HasBuffByName(name: string): boolean {
 		return this.ModifiersBook.GetBuffByName(name) !== undefined
 	}
 	public GetTalentValue(name: string | RegExp) {
@@ -586,10 +584,10 @@ export default class Unit extends Entity {
 		let turnRate = rotation_speed[this.Name] || 0.5
 
 		if (currentTurnRate) {
-			if (this.HasModifier("modifier_medusa_stone_gaze_slow"))
+			if (this.HasBuffByName("modifier_medusa_stone_gaze_slow"))
 				turnRate *= 0.65
 
-			if (this.HasModifier("modifier_batrider_sticky_napalm"))
+			if (this.HasBuffByName("modifier_batrider_sticky_napalm"))
 				turnRate *= 0.3
 		}
 
@@ -753,14 +751,14 @@ export default class Unit extends Entity {
 			is_enemy = this.IsEnemy(source)
 		if (is_enemy) {
 			{
-				if (!this.HasModifier("modifier_blight_stone_buff")) {
+				if (!this.HasBuffByName("modifier_blight_stone_buff")) {
 					let item = source.GetItemByName("item_blight_stone")
 					if (item !== undefined)
 						armor += item[0].GetSpecialValue("corruption_armor")
 				}
 			}
 			{
-				if (!this.HasModifier("modifier_desolator_buff")) {
+				if (!this.HasBuffByName("modifier_desolator_buff")) {
 					let item = source.GetItemByName("item_desolator")
 					if (item !== undefined)
 						armor += item[0].GetSpecialValue("corruption_armor")

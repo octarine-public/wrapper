@@ -13,7 +13,11 @@
 		"whitespace": [
 			true,
 			"check-preblock",
-			"check-module"
+			"check-module",
+			"check-separator",
+			"check-branch",
+			"check-rest-spread",
+			"check-type"
 		],
 		"indent": [
 			true,

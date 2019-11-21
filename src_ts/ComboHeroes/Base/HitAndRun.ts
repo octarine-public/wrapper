@@ -3,12 +3,6 @@ let TurnEndTime = 0;
 let LastAttackTime = 0;
 export class HitAndRun {
 	constructor(public Unit?: Unit) { }
-	private GetTurnTime(target: Unit, time: number) {
-		return time + (Game.Ping / 2000) + this.Unit.TurnTime(target.Position);
-	}
-	private CanMove(time: number) {
-		return (((time - 0.15) + (Game.Ping / 2000)) - LastAttackTime) > this.Unit.AttackPoint;
-	}
 	/**
 	 * CanAttack
 	 * @param target | Enemy
@@ -52,5 +46,11 @@ export class HitAndRun {
 	public ClearVars() {
 		TurnEndTime = 0
 		LastAttackTime = 0
+	}
+	private GetTurnTime(target: Unit, time: number) {
+		return time + (Game.Ping / 2000) + this.Unit.TurnTime(target.Position);
+	}
+	private CanMove(time: number) {
+		return (((time - 0.15) + (Game.Ping / 2000)) - LastAttackTime) > this.Unit.AttackPoint;
 	}
 }

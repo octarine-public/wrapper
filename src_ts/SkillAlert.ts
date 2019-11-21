@@ -151,7 +151,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 			ParticlesSDK.SetControlPoint(part, 4, new Vector3(255, 255, 255))
 			arTimers.set(buff, [Game.GameTime, delay, arAbilities[index], ent.Position.Clone()])
 			if (chatActive.value && arMessages[index]) {
-				let heroes = EntityManager.GetEntitiesInRange(ent.Position, chatRangeCheck.value, ent => ent instanceof Hero && !ent.IsEnemy()),
+				let heroes = EntityManager.GetEntitiesInRange(ent.Position, chatRangeCheck.value, ent_ => ent_ instanceof Hero && !ent_.IsEnemy()),
 					names = [],
 					string = ""
 				heroes.forEach(hero => names.push(hero.Name.substring(14) + ` in ${Math.floor(hero.Distance2D(ent))} range`))
@@ -300,7 +300,7 @@ let abils_list: Ability[] = []
 
 function ReturnAOERadius(owner: Unit, name_ability: string): number {
 	let ability = owner.GetAbilityByName(name_ability)
-	return ability?.AOERadius
+	return ability?.AOERadius ?? 0
 }
 
 EventsSDK.on("EntityCreated", ent => {
@@ -326,37 +326,36 @@ EventsSDK.on("EntityCreated", ent => {
 		if (owner === undefined || !owner.IsEnemy())
 			return;
 
-		let rad = undefined;
+		let rad = 0
 
 		switch (owner.Name) {
 			case "npc_dota_hero_invoker":
 				rad = ReturnAOERadius(owner, "invoker_sun_strike")
-				break;
+				break
 			case "npc_dota_hero_kunkka":
 				rad = ReturnAOERadius(owner, "kunkka_torrent")
-				break;
+				break
 			case "npc_dota_hero_lina":
 				rad = ReturnAOERadius(owner, "lina_light_strike_array")
-				break;
+				break
 			case "npc_dota_hero_leshrac":
 				rad = ReturnAOERadius(owner, "leshrac_split_earth")
-				break;
+				break
 			case "npc_dota_hero_enigma":
 				rad = ReturnAOERadius(owner, "enigma_black_hole")
-				break;
+				break
 			case "npc_dota_hero_arc_warden":
 				rad = ReturnAOERadius(owner, "arc_warden_spark_wraith")
-				break;
+				break
 			case "npc_dota_hero_alchemist":
 				rad = ReturnAOERadius(owner, "alchemist_acid_spray")
-				break;
+				break
 			case "npc_dota_hero_abyssal_underlord":
 				rad = ReturnAOERadius(owner, "abyssal_underlord_pit_of_malice")
-				break;
+				break
 		}
-		if (rad !== undefined) {
+		if (rad !== 0)
 			DrawParticleCirclePos(ent.Position, rad, ent.Index)
-		}
 	}
 })
 

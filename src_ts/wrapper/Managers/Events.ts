@@ -76,7 +76,7 @@ declare interface Events extends EventEmitter {
 	on(name: "Draw", callback: () => void): EventEmitter
 	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target: C_BaseEntity | number) => void): EventEmitter
 	on(name: "ParticleUpdated", callback: (id: number, control_point: number) => void): EventEmitter // position: Vector3 at IOBuffer offset 0
-	on(name: "ParticleUpdatedEnt", callback: ( // fallback_position: Vector3 at IOBuffer offset 0
+	on(name: "ParticleUpdatedEnt", callback: (// fallback_position: Vector3 at IOBuffer offset 0
 		id: number,
 		control_point: number,
 		ent: C_BaseEntity | number,
@@ -86,7 +86,7 @@ declare interface Events extends EventEmitter {
 	) => void): EventEmitter
 	on(name: "BloodImpact", callback: (target: C_BaseEntity | number, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
 	on(name: "PrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
-	on(name: "LinearProjectileCreated", callback: ( // origin: Vector3 at IOBuffer offset 0, velocity: Vector2 at IOBuffer offset 3, acceleration: Vector2 at IOBuffer offset 5, colorgemcolor: Color at IOBuffer offset 7
+	on(name: "LinearProjectileCreated", callback: (// origin: Vector3 at IOBuffer offset 0, velocity: Vector2 at IOBuffer offset 3, acceleration: Vector2 at IOBuffer offset 5, colorgemcolor: Color at IOBuffer offset 7
 		proj: number,
 		ent: C_BaseEntity | number,
 		path: string,
@@ -97,7 +97,7 @@ declare interface Events extends EventEmitter {
 		distance: number
 	) => void): EventEmitter
 	on(name: "LinearProjectileDestroyed", callback: (proj: number) => void): EventEmitter
-	on(name: "TrackingProjectileCreated", callback: ( // vTargetLoc: Vector3 at IOBuffer offset 0, colorgemcolor: Color at IOBuffer offset 3
+	on(name: "TrackingProjectileCreated", callback: (// vTargetLoc: Vector3 at IOBuffer offset 0, colorgemcolor: Color at IOBuffer offset 3
 		proj: number,
 		hSource: C_BaseEntity | number,
 		hTarget: C_BaseEntity | number,
@@ -111,7 +111,7 @@ declare interface Events extends EventEmitter {
 		maximpacttime: number,
 		launch_tick: number
 	) => void): EventEmitter
-	on(name: "TrackingProjectileUpdated", callback: ( // vSourceLoc: Vector3 at IOBuffer offset 0, vTargetLoc: Vector3 at IOBuffer offset 3, colorgemcolor: Color at IOBuffer offset 6
+	on(name: "TrackingProjectileUpdated", callback: (// vSourceLoc: Vector3 at IOBuffer offset 0, vTargetLoc: Vector3 at IOBuffer offset 3, colorgemcolor: Color at IOBuffer offset 6
 		proj: number,
 		hTarget: C_BaseEntity | number,
 		moveSpeed: number,
@@ -160,19 +160,19 @@ declare interface Events extends EventEmitter {
 	) => void): EventEmitter
 	on(name: "UnitRemoveGesture", listener: (npc: C_DOTA_BaseNPC | number, activity: number) => void): EventEmitter
 	on(name: "UnitFadeGesture", listener: (npc: C_DOTA_BaseNPC | number, activity: number) => void): EventEmitter
-	on(name: "ParticleUpdatedFwd", listener: ( // forward: Vector3 at IOBuffer offset 0
+	on(name: "ParticleUpdatedFwd", listener: (// forward: Vector3 at IOBuffer offset 0
 		id: number,
 		control_point: number
 	) => void): EventEmitter
-	on(name: "ParticleUpdatedOrient", listener: ( // forward: Vector3 at IOBuffer offset 0, up: Vector3 at IOBuffer offset 3, left: Vector3 at IOBuffer offset 6
+	on(name: "ParticleUpdatedOrient", listener: (// forward: Vector3 at IOBuffer offset 0, up: Vector3 at IOBuffer offset 3, left: Vector3 at IOBuffer offset 6
 		id: number,
 		control_point: number
 	) => void): EventEmitter
-	on(name: "ParticleUpdatedFallback", listener: ( // position: Vector3 at IOBuffer offset 0
+	on(name: "ParticleUpdatedFallback", listener: (// position: Vector3 at IOBuffer offset 0
 		id: number,
 		control_point: number
 	) => void): EventEmitter
-	on(name: "ParticleUpdatedOffset", listener: ( // origin_offset: Vector3 at IOBuffer offset 0, angle_offset: QAngle at IOBuffer offset 3
+	on(name: "ParticleUpdatedOffset", listener: (// origin_offset: Vector3 at IOBuffer offset 0, angle_offset: QAngle at IOBuffer offset 3
 		id: number,
 		control_point: number
 	) => void): EventEmitter
@@ -191,7 +191,7 @@ declare interface Events extends EventEmitter {
 		attachment_new: number,
 		ent: C_BaseEntity | number
 	) => void): EventEmitter
-	on(name: "ParticleUpdatedEntityPosition", listener: ( // position: Vector3 at IOBuffer offset 0
+	on(name: "ParticleUpdatedEntityPosition", listener: (// position: Vector3 at IOBuffer offset 0
 		id: number,
 		ent: C_BaseEntity | number
 	) => void): EventEmitter
@@ -223,10 +223,11 @@ declare interface Events extends EventEmitter {
 	on(name: "EntityPositionsChanged", listener: (ents: C_BaseEntity[]) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 	on(name: "NetworkFieldsChanged", listener: (
-		map: Map<C_BaseEntity, Map<any, Array<[string, string, number]>>> // 1st key: entity, 2nd: trigger, values: [field_name, field_type, array_index]
+		map: Map<C_BaseEntity, Map<any, [string, string, number][]>> // 1st key: entity, 2nd: trigger, values: [field_name, field_type, array_index]
 	) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (id: number, reason: number, uuid: bigint, obj: any) => void): EventEmitter
 }
 const Events: Events = new EventEmitter()
+global.Events = Events
 export default Events
 setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))

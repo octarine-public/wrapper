@@ -19,7 +19,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 EventsSDK.on("PrepareUnitOrders", args => {
-	if(!StateBase.value) {
+	if (!StateBase.value) {
 		return true
 	}
 	AutoItems.UseMouseItemTarget(args)

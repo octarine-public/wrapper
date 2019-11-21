@@ -19,20 +19,20 @@ class ShadowFiendHelper {
 		if (target.Name !== "npc_dota_hero_antimage") {
 			return false
 		}
-		return target.HasModifier("modifier_antimage_counterspell")
+		return target.HasBuffByName("modifier_antimage_counterspell")
 	}
 	public IsAeonProtected(target: Unit): boolean {
 		if (target === undefined) {
 			return false
 		}
-		return target.HasModifier("modifier_item_aeon_disk_buff")
+		return target.HasBuffByName("modifier_item_aeon_disk_buff")
 	}
 	public IsLinkensProtected(target: Unit) {
 		var Linken = target.GetItemByName("item_sphere");
-		return (Linken && Linken.IsCooldownReady) || target.HasModifier("modifier_item_sphere_target")
+		return (Linken && Linken.IsCooldownReady) || target.HasBuffByName("modifier_item_sphere_target")
 	}
 	public IsBlockingAbilities(target: Unit, checkReflecting: boolean = false): boolean {
-		if (checkReflecting && target.HasModifier("modifier_item_lotus_orb_active")) {
+		if (checkReflecting && target.HasBuffByName("modifier_item_lotus_orb_active")) {
 			return true
 		}
 

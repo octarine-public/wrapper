@@ -11,8 +11,8 @@ export function AutoUsage() {
 		BladeMailUseCyclone.value
 		&& Heroes.some(x =>
 			x.IsEnemy()
-			&& x.HasModifier("modifier_item_blade_mail_reflect")
-			&& x.HasModifier("modifier_skywrath_mystic_flare_aura_effect")
+			&& x.HasBuffByName("modifier_item_blade_mail_reflect")
+			&& x.HasBuffByName("modifier_skywrath_mystic_flare_aura_effect")
 			&& x.IsAlive && x.IsVisible && !x.IsInvulnerable
 		)
 	) {

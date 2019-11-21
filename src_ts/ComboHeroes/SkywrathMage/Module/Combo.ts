@@ -19,7 +19,7 @@ export function InitCombo() {
 		Sleep.Sleep(350)
 		return
 	}
-	if (BladeMailCancelCombo.value && target.HasModifier("modifier_item_blade_mail_reflect"))
+	if (BladeMailCancelCombo.value && target.HasBuffByName("modifier_item_blade_mail_reflect"))
 		return
 
 	let ItemsInit = initItemsMap.get(MyHero),

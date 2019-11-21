@@ -33,7 +33,7 @@ class LegionHelper {
 		return false
 	}
 	public CancelAbilityRealm(target: Hero): boolean {
-		return target.HasModifier("modifier_dark_willow_shadow_realm_buff")
+		return target.HasBuffByName("modifier_dark_willow_shadow_realm_buff")
 	}
 	public CancelAdditionally(target: Hero): boolean {
 		return !target.IsInvulnerable && !target.ModifiersBook.HasAnyBuffByNames(["modifier_abaddon_borrowed_time", "modifier_item_combo_breaker_buff"])
@@ -43,10 +43,10 @@ class LegionHelper {
 		if (Items === undefined) {
 			return false
 		}
-		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
+		return target.HasBuffByName("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 	public IsBlockingAbilities(target: Hero, checkReflecting: boolean = false): boolean {
-		if (checkReflecting && target.HasModifier("modifier_item_lotus_orb_active")) {
+		if (checkReflecting && target.HasBuffByName("modifier_item_lotus_orb_active")) {
 			return true
 		}
 

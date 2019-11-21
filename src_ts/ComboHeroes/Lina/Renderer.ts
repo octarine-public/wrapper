@@ -114,14 +114,13 @@ function DrawAutoSteal(Ability: LinaAbility) {
 			colorBar.SetColor(74, 177, 48);
 			SizeSteal = (StealDMDraGonSlave + StealDMGLaguna) / hero.MaxHP;
 			sizeBarX += bar_w * SizeSteal;
-		}
-		else {
+		} else {
 			colorBar.SetColor(0, 255, 0);
 			sizeBarX += hero.HP / hero.MaxHP * bar_w;
 		}
 		sizeBarX = Math.min(sizeBarX, bar_w);
 
-		// colorBar ??? new color quest in moof 
+		// colorBar ??? new color quest in moof
 		RendererSDK.FilledRect(wts, new Vector2(sizeBarX, bar_h), colorBar)
 	})
 }

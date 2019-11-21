@@ -52,11 +52,11 @@ class KunkkaHelper {
 			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
 			|| !Owner.IsAlive
 	}
+	public get CanCastSpells(): boolean {
+		return !(Owner.IsStunned || Owner.IsHexed || Owner.ModifiersBook.HasAnyBuffByNames(this.ModifierCanCastAbility))
+	}
 	public IsRestrictions(State: Menu.Toggle) {
 		return State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
-	}
-	public CanCastSpells(Owner: Hero): boolean {
-		return Owner.IsStunned || Owner.IsHexed || Owner.ModifiersBook.HasAnyBuffByNames(this.ModifierCanCastAbility)
 	}
 	public Cancel(target: Hero): boolean {
 		return !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiers);
@@ -69,10 +69,10 @@ class KunkkaHelper {
 		if (Items === undefined)
 			return false
 
-		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
+		return target.HasBuffByName("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 	public IsBlockingAbilities(target: Hero, checkReflecting: boolean = false): boolean {
-		return this.IsLinkensProtected(target) || (checkReflecting && target.HasModifier("modifier_item_lotus_orb_active"))
+		return this.IsLinkensProtected(target) || (checkReflecting && target.HasBuffByName("modifier_item_lotus_orb_active"))
 	}
 }
 export let Base = new KunkkaHelper()

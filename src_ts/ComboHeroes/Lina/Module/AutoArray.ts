@@ -14,7 +14,7 @@ export function InitFindCyclone() {
 
 	let target = Heroes.sort((a, b) => b.Distance2D(Owner) - a.Distance2D(Owner))
 		.filter(x => x.IsValid && x.IsAlive && x.IsEnemy() && !x.IsMagicImmune)
-		.find(e => e.HasModifier("modifier_eul_cyclone"))
+		.find(e => e.HasBuffByName("modifier_eul_cyclone"))
 	if (target === undefined)
 		return
 

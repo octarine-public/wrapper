@@ -120,6 +120,7 @@ interface EventsSDK extends EventEmitter {
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()
+global.EventsSDK = EventsSDK
 export default EventsSDK
 
 Events.on("WndProc", (...args) => EventsSDK.emit("WndProc", true, ...args))
@@ -408,7 +409,7 @@ Events.on("NetworkFieldsChanged", map => {
 
 						EntityManager.AllEntities.forEach(ent => {
 							if (ent instanceof Unit && ent.IsVisible)
-								ent.LastVisibleTime = Game.RawGameTime;
+								ent.LastVisibleTime = Game.RawGameTime
 						})
 
 						if (LocalPlayer !== undefined)

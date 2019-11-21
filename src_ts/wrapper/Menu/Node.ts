@@ -114,14 +114,6 @@ export default class Node extends Base {
 				entry.UpdateEntriesPositions()
 		})
 	}
-
-	private AddEntry<T extends Base>(entry: T): T {
-		this.entries.push(entry)
-		this.SortEntries()
-		Menu.ForwardConfig()
-		Menu.PositionDirty = true
-		return entry
-	}
 	public AddToggle(name: string, default_value: boolean = false, tooltip?: string): Toggle {
 		return this.AddEntry(new Toggle(this, name, default_value, tooltip))
 	}
@@ -223,6 +215,14 @@ export default class Node extends Base {
 			},
 			OnValue(this: Color) { return this },
 		}
+	}
+
+	private AddEntry<T extends Base>(entry: T): T {
+		this.entries.push(entry)
+		this.SortEntries()
+		Menu.ForwardConfig()
+		Menu.PositionDirty = true
+		return entry
 	}
 
 	private SortEntries(): void {

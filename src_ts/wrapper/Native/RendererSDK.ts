@@ -201,28 +201,6 @@ let RendererSDK_ = new (class RendererSDK {
 		view.setInt32(off += 4, vecPos.x + vecSize.x, true)
 		view.setInt32(off += 4, vecPos.y + vecSize.y, true)
 	}
-	private SetTextureData(texture_id: number, rgba: Uint8Array, size: Vector2) {
-		if (rgba.byteLength !== size.x * size.y * 4)
-			throw "Invalid RGBA buffer or size"
-		let view = this.AllocateCommandSpace(3 * 4 + rgba.byteLength)
-		let off = 0
-		view.setUint8(off, CommandID.TEXTURE_DATA)
-		view.setInt32(off += 1, texture_id, true)
-		view.setInt32(off += 4, size.x, true)
-		view.setInt32(off += 4, size.y, true)
-		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(rgba)
-	}
-	private GetTexture(path: string): number {
-		let texture_id = this.texture_cache.get(path)
-		if (texture_id === undefined) {
-			texture_id = Renderer.CreateTextureID()
-			let [parsed, size] = WASM.ParseImage(readFile(path))
-			this.tex2size.set(texture_id, size)
-			this.SetTextureData(texture_id, parsed, size)
-			this.texture_cache.set(path, texture_id)
-		}
-		return texture_id
-	}
 	/**
 	 * @param path start it with "~/" (without double-quotes) to load image from "%loader_path%/scripts_files/path"
 	 * @param path also must end with "_c" (without double-quotes), if that's vtex_c
@@ -246,48 +224,6 @@ let RendererSDK_ = new (class RendererSDK {
 		view.setInt32(off += 4, vecSize.x, true)
 		view.setInt32(off += 4, vecSize.y, true)
 		view.setInt32(off += 4, texture_id, true)
-	}
-	private GetFont(font_name: string, font: Vector2, flags: number): number {
-		let font_name_map = this.font_cache.get(font_name)
-		if (font_name_map === undefined) {
-			font_name_map = new Map()
-			let size_map = new Map</* weight */number, Map</* flags */number, /* font_id */number>>()
-			let weight_map = new Map</* flags */number, /* font_id */number>()
-			let font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
-			weight_map.set(flags, font_id)
-			size_map.set(font.y, weight_map)
-			font_name_map.set(font.x, size_map)
-			this.font_cache.set(font_name, font_name_map)
-			return font_id
-		}
-		let size_map = font_name_map.get(font.x)
-		if (size_map === undefined) {
-			size_map = new Map()
-			let weight_map = new Map</* flags */number, /* font_id */number>()
-			let font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
-			weight_map.set(flags, font_id)
-			size_map.set(font.y, weight_map)
-			font_name_map.set(font.x, size_map)
-			return font_id
-		}
-		let weight_map = size_map.get(font.y)
-		if (weight_map === undefined) {
-			weight_map = new Map()
-			let font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
-			weight_map.set(flags, font_id)
-			size_map.set(font.y, weight_map)
-			return font_id
-		}
-		let font_id = weight_map.get(flags)
-		if (font_id === undefined) {
-			let font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
-			weight_map.set(flags, font_id)
-		}
-		return font_id
 	}
 	/**
 	 * @param font Size as X from Vector2 | default: 14
@@ -371,6 +307,70 @@ let RendererSDK_ = new (class RendererSDK {
 			return "16x10"
 		else if (res >= 2.2 && res <= 2.4)
 			return "21x9"
+	}
+	private SetTextureData(texture_id: number, rgba: Uint8Array, size: Vector2) {
+		if (rgba.byteLength !== size.x * size.y * 4)
+			throw "Invalid RGBA buffer or size"
+		let view = this.AllocateCommandSpace(3 * 4 + rgba.byteLength)
+		let off = 0
+		view.setUint8(off, CommandID.TEXTURE_DATA)
+		view.setInt32(off += 1, texture_id, true)
+		view.setInt32(off += 4, size.x, true)
+		view.setInt32(off += 4, size.y, true)
+		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(rgba)
+	}
+	private GetTexture(path: string): number {
+		let texture_id = this.texture_cache.get(path)
+		if (texture_id === undefined) {
+			texture_id = Renderer.CreateTextureID()
+			let [parsed, size] = WASM.ParseImage(readFile(path))
+			this.tex2size.set(texture_id, size)
+			this.SetTextureData(texture_id, parsed, size)
+			this.texture_cache.set(path, texture_id)
+		}
+		return texture_id
+	}
+	private GetFont(font_name: string, font: Vector2, flags: number): number {
+		let font_name_map = this.font_cache.get(font_name)
+		if (font_name_map === undefined) {
+			font_name_map = new Map()
+			let size_map = new Map</* weight */number, Map</* flags */number, /* font_id */number>>()
+			let weight_map = new Map</* flags */number, /* font_id */number>()
+			let font_id = Renderer.CreateFontID()
+			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
+			weight_map.set(flags, font_id)
+			size_map.set(font.y, weight_map)
+			font_name_map.set(font.x, size_map)
+			this.font_cache.set(font_name, font_name_map)
+			return font_id
+		}
+		let size_map = font_name_map.get(font.x)
+		if (size_map === undefined) {
+			size_map = new Map()
+			let weight_map = new Map</* flags */number, /* font_id */number>()
+			let font_id = Renderer.CreateFontID()
+			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
+			weight_map.set(flags, font_id)
+			size_map.set(font.y, weight_map)
+			font_name_map.set(font.x, size_map)
+			return font_id
+		}
+		let weight_map = size_map.get(font.y)
+		if (weight_map === undefined) {
+			weight_map = new Map()
+			let font_id = Renderer.CreateFontID()
+			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
+			weight_map.set(flags, font_id)
+			size_map.set(font.y, weight_map)
+			return font_id
+		}
+		let font_id = weight_map.get(flags)
+		if (font_id === undefined) {
+			let font_id = Renderer.CreateFontID()
+			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
+			weight_map.set(flags, font_id)
+		}
+		return font_id
 	}
 
 	private AllocateCommandSpace(bytes: number): DataView {

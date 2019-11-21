@@ -125,7 +125,7 @@ class BaseHelper {
 	}
 
 	public DuelAghanimsScepter(target: Hero): boolean {
-		return target.HasModifier("modifier_legion_commander_duel")
+		return target.HasBuffByName("modifier_legion_commander_duel")
 			&& Heroes.some(x =>
 				!x.IsEnemy()
 				&& x.Name === "npc_dota_hero_legion_commander"
@@ -143,7 +143,7 @@ class BaseHelper {
 			&& !target.ModifiersBook.HasAnyBuffByNames(this.CancelModifiers)
 	}
 	public CancelAbilityRealm(target: Hero): boolean {
-		return target.HasModifier("modifier_dark_willow_shadow_realm_buff")
+		return target.HasBuffByName("modifier_dark_willow_shadow_realm_buff")
 	}
 	public StartCombo(target: Hero): boolean {
 		if (!ComboStartWith.value) {
@@ -175,7 +175,7 @@ class BaseHelper {
 		if (Items === undefined) {
 			return false
 		}
-		return target.HasModifier("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
+		return target.HasBuffByName("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 
 	public BadUlt(target: Hero): boolean {

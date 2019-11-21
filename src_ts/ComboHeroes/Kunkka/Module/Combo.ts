@@ -72,7 +72,7 @@ function ComboInit() {
 		ComboTimer = Time + 3.08
 		Sleep.Sleep(Abilities.CastDelay(R))
 	}
-	if (ComboTimer - Time <= 0.65) { // after Ghostship 
+	if (ComboTimer - Time <= 0.65) { // after Ghostship
 		if (XMarkPos.LengthSqr === 0 || X.CanBeCasted())
 			return
 		if (CheckAbility(Q, XMarkPos)) {
@@ -129,7 +129,7 @@ export function InitCombo() {
 		ComboInit()
 		return
 	}
-	if (Base.CanCastSpells(Owner) || target === undefined || target.IsMagicImmune)
+	if (!Base.CanCastSpells || target === undefined || target.IsMagicImmune)
 		return
 
 	if (target !== undefined && !XMarkPos.IsZero())
@@ -145,9 +145,9 @@ export function InitCombo() {
 		if (AutoComboMenu.value)
 			AutoCombo = true
 	if (ComboTimer < Time) {
-		if (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect")) || !Base.Cancel(target))
+		if (BladeMailItem.value && (BladeMailItem.value && target.HasBuffByName("modifier_item_blade_mail_reflect")) || !Base.Cancel(target))
 			return
-		if (!target.HasModifier("modifier_kunkka_x_marks_the_spot")) {
+		if (!target.HasBuffByName("modifier_kunkka_x_marks_the_spot")) {
 			if (ComboKeyItem.is_pressed || AutoCombo) {
 				if (Items.Blink !== undefined
 					&& СomboItems.IsEnabled(Items.Blink.Name)

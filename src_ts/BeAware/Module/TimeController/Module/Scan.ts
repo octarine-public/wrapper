@@ -47,7 +47,7 @@ export function DrawScan() {
 				let Time = Game.RawGameTime
 				if (x.Name === "npc_dota_thinker") {
 					let ent = x as Unit
-					if (ent.HasModifier("modifier_radar_thinker")) {
+					if (ent.HasBuffByName("modifier_radar_thinker")) {
 						if (!OtherRadius.has(x)) {
 							CreateAbilityRadius(x, 900)
 						}

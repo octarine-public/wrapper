@@ -491,7 +491,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 				}
 				if (target.IsHero && IsValidItem(Items.Janggo)
 					&& unit.IsInRange(target, Items.Janggo.CastRange / 2)
-					&& !unit.HasModifier("modifier_item_ancient_janggo_active")
+					&& !unit.HasBuffByName("modifier_item_ancient_janggo_active")
 				) {
 					unit.CastNoTarget(Items.Janggo)
 					TickSleep.Sleep(GetDelayCast())
@@ -499,7 +499,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 				if (target.IsHero && !target.IsMagicImmune
 					&& IsValidItem(Items.DiffusalBlade)
 					&& unit.IsInRange(target, Items.DiffusalBlade.CastRange)
-					&& !target.HasModifier("modifier_item_diffusal_blade_slow")
+					&& !target.HasBuffByName("modifier_item_diffusal_blade_slow")
 				) {
 					let hex_debuff = target.GetBuffByName("modifier_sheepstick_debuff")
 					if ((hex_debuff === undefined || !hex_debuff.IsValid

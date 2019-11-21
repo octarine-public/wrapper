@@ -1,12 +1,11 @@
 import { Ability, Menu, Hero, Utils, Unit, Sleeper, Game } from "wrapper/Imports";
 import { PredictionRize } from "./Combo";
 import { Owner, MouseTarget, initAbilityMap, initHitAndRunMap, initItemsMap } from "../Listeners";
-import { State, HarrasKeyItem, ComboHitAndRunAttack, TypeHitAndRun, Menu_Combo_BlinkDistance, HarrasAbility, StyleHarras } from "../Menu";
+import { State, HarrasKeyItem, ComboHitAndRunAttack, TypeHitAndRun, Menu_Combo_BlinkDistance, HarrasAbility, StyleHarras, BladeMailCancel } from "../Menu";
 import { Base } from "../Extends/Helper";
-import { BladeMailCancel } from "../Menu";
 
 let Target: Hero,
-	Sleep = new Sleeper,
+	Sleep = new Sleeper(),
 	CastDelay = ((Game.Ping / 2000) + (50 * 2))
 
 let BuffForCheckTarget: string[] = [
@@ -80,7 +79,7 @@ export function InitHarras() {
 }
 
 function CheckBuffToReflect() {
-	if (BladeMailCancel.value && Target.HasModifier("modifier_item_blade_mail_reflect")) {
+	if (BladeMailCancel.value && Target.HasBuffByName("modifier_item_blade_mail_reflect")) {
 		return true
 	}
 	BuffForCheckTarget.some(items => {

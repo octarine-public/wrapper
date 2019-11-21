@@ -82,7 +82,7 @@ export function Draw() {
 		return raze_1 || raze_2 || raze_3;
 	})
 }
-/**
+/*
 
 function DrawAutoSteal(Ability: ShadowFiendAbility, hero: Unit) {
 	if (Owner === undefined || !hero.IsAlive) {

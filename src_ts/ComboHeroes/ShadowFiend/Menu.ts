@@ -5,8 +5,8 @@ import InitAbility from "./Extends/Abilities"
 import { parseKVFile } from "../../wrapper/Utils/Utils"
 let parseSpells = parseKVFile("scripts/npc/npc_abilities.txt");
 
-let Items = new InitItems
-let Abilities = new InitAbility
+let Items = new InitItems()
+let Abilities = new InitAbility()
 
 let Menu = MenuSDK.AddEntry(["Heroes", "Shadow Fiend"])
 export const State = Menu.AddToggle("Enable")

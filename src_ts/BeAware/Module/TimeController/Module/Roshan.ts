@@ -108,16 +108,14 @@ export function RoshanTick() {
 	}
 	if (Time >= checkTickMessage) {
 		if (LocalPlayer !== undefined && Player !== undefined && UseScanForAlies.value) {
-			let Time = LocalPlayer.Team === Team.Radiant
+			let cd = LocalPlayer.Team === Team.Radiant
 				? Game.ScanCooldownRadiant
 				: Game.ScanCooldownDire
-			if (Time === 0) {
+			if (cd === 0)
 				Player.Scan(Base.RoshanPosition)
-			}
 		}
-		if (NotificationRoshanStateChat.value) {
+		if (NotificationRoshanStateChat.value)
 			Game.ExecuteCommand("chatwheel_say 53")
-		}
 		checkTickMessage = Time + 10
 	}
 	return

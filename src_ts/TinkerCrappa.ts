@@ -1177,7 +1177,7 @@
 // 		}
 // 	}
 
-// 	if (tinker.HasModifier("modifier_fountain_aura_buff") && amionf())
+// 	if (tinker.HasBuffByName("modifier_fountain_aura_buff") && amionf())
 // 	{
 // 		if (!e.IsReady || !tpboots.IsReady)
 // 		{
@@ -1314,7 +1314,7 @@
 // 				}
 // 			}
 // 	}
-// 	if (bottle && bottle.CurrentCharges>0&&!tinker.HasModifier("modifier_bottle_regeneration"))
+// 	if (bottle && bottle.CurrentCharges>0&&!tinker.HasBuffByName("modifier_bottle_regeneration"))
 // 	{
 // 			let hpGap = tinker.HP / tinker.MaxHP
 // 			let manaGap = tinker.Mana / tinker.MaxMana

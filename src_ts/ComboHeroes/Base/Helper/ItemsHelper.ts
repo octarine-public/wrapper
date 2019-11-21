@@ -6,9 +6,9 @@ export class ItemsHelper extends AbilityHelper {
 		return 100
 	}
 	// maybe is bad work
-	public ProjectileDelay(proj_name: string, Item: Item, ProjList: TrackingProjectile[], ability: Ability | Item): number {
+	public ProjectileDelay(proj_name: string, item: Item, ProjList: TrackingProjectile[], ability: Ability | Item): number {
 		let Projectile = ProjList.find(x => x.TargetLoc.Distance(x.Position) < x.Speed / 30 * 2 && x.ParticlePath === proj_name)
-		if (Projectile !== undefined && Item !== undefined)
+		if (Projectile !== undefined && item !== undefined)
 			return (this.unit.Distance2D(Projectile.Target as Entity) / Projectile.Speed * 1000) - this.CastDelay(ability)
 		return 0
 	}

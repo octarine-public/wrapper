@@ -202,7 +202,7 @@ EventsSDK.on("GameEnded", () => {
 	playersBlockList.values = []
 	playersBlockList.Update()
 })
-EventsSDK.on("UnitAnimation", (unit) => {
+EventsSDK.on("UnitAnimation", unit => {
 	if (unit.IsEnemy()) {
 		unit_anim.push(unit)
 	}

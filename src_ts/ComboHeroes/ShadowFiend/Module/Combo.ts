@@ -24,8 +24,8 @@ let BuffForCheckTarget: string[] = [
 	"modifier_nyx_assassin_spiked_carapace",
 	"modifier_winter_wyvern_winters_curse",
 ]
-let Sleep = new Sleeper,
-	SafeTarget = new Vector3
+let Sleep = new Sleeper(),
+	SafeTarget = new Vector3()
 
 export let ComboActived = false
 ComboKeyItem.OnRelease(() => ComboActived = !ComboActived);
@@ -160,8 +160,7 @@ export function InitCombo() {
 				Owner.MoveTo(Target.Position)
 				Sleep.Sleep(GetDelayCast(), Target.Index)
 				return
-			}
-			else {
+			} else {
 				if (blink && blink.CanBeCasted()) {
 					let BPosition = Target.Position.Add(Owner.Position.SubtractForThis(Target.Position).Normalize().ScaleTo(0.75 * (Owner.IdealSpeed * 0.5)));
 					blink.UseAbility(BPosition)
@@ -187,15 +186,15 @@ export function InitCombo() {
 		}
 		Owner.CastNoTarget(Abilities.Requiem)
 		Sleep.Sleep(GetDelayCast(), Target.Index)
-		SafeTarget = new Vector3
+		SafeTarget = new Vector3()
 		return
 	}
 
 	if (Base.IsAeonProtected(Target) && !Sleep.Sleeping("item_nullifier") && InitCast(Owner.GetItemByName("item_nullifier"), СomboItems, "item_nullifier"))
 		return
-	if (array_items.some(x => !Sleep.Sleeping(x) && x != "item_blink" && x != "item_cyclone" && InitCast(Owner.GetItemByName(x), СomboItems, x)))
+	if (array_items.some(x => !Sleep.Sleeping(x) && x !== "item_blink" && x !== "item_cyclone" && InitCast(Owner.GetItemByName(x), СomboItems, x)))
 		return
-	if (array_ability.some(x => !Sleep.Sleeping(x) && x != "nevermore_requiem" && InitCast(Owner.GetAbilityByName(x), СomboAbility, x)))
+	if (array_ability.some(x => !Sleep.Sleeping(x) && x !== "nevermore_requiem" && InitCast(Owner.GetAbilityByName(x), СomboAbility, x)))
 		return
 
 	if (Target.IsEthereal && !Sleep.Sleeping(Target.Index)) {
@@ -212,20 +211,15 @@ export function InitCombo() {
 }
 
 function CheckBuffToReflect() {
-	if (BladeMailCancel.value && Target.HasModifier("modifier_item_blade_mail_reflect")) {
+	if (BladeMailCancel.value && Target.HasBuffByName("modifier_item_blade_mail_reflect"))
 		return true;
-	}
-	for (var i = 0, len = BuffForCheckTarget.length; i < len; i++) {
-		if (Target.GetBuffByName(BuffForCheckTarget[i])) {
-			if (BuffForCheckTarget[i] != "modifier_nyx_assassin_spiked_carapace") {
-				return false
-			}
-			return true
-		}
-	}
+
+	for (var i = 0, len = BuffForCheckTarget.length; i < len; i++)
+		if (Target.HasBuffByName(BuffForCheckTarget[i]))
+			return BuffForCheckTarget[i] === "modifier_nyx_assassin_spiked_carapace"
 }
 export function ComboGameEnded() {
 	Sleep.FullReset()
 	ComboActived = false
-	SafeTarget = new Vector3
+	SafeTarget = new Vector3()
 }

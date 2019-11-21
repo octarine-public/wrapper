@@ -16,7 +16,7 @@ export function InitCombo() {
 		return
 	}
 	let target = MouseTarget
-	if (target === undefined || (BladeMailItem.value && (BladeMailItem.value && target.HasModifier("modifier_item_blade_mail_reflect"))) || !Base.Cancel(target)) {
+	if (target === undefined || (BladeMailItem.value && (BladeMailItem.value && target.HasBuffByName("modifier_item_blade_mail_reflect"))) || !Base.Cancel(target)) {
 		Owner.MoveTo(Utils.CursorWorldVec)
 		Sleep.Sleep(350)
 		return

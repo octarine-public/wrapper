@@ -68,10 +68,13 @@ export function TrackingProjectileCreated(proj: TrackingProjectile) {
 	if (!Base.IsRestrictions(State)) {
 		return
 	}
-	let Entity = proj.Source as Entity
-	if (proj instanceof TrackingProjectile
-		&& Entity instanceof Hero
-		&& !Entity.IsEnemy() && Entity.Name === MyNameHero) {
+	let entity = proj.Source as Entity
+	if (
+		proj instanceof TrackingProjectile
+		&& entity instanceof Hero
+		&& !entity.IsEnemy()
+		&& entity.Name === MyNameHero
+	) {
 		ProjList.push(proj)
 	}
 }

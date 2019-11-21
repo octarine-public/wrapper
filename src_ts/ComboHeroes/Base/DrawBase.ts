@@ -100,8 +100,7 @@ export class DrawBase {
 				ParticlesSDK.SetControlPoint(particle, 1, new Vector3(Colors.r, Colors.g, Colors.b))
 				ParticlesSDK.SetControlPoint(particle, 2, new Vector3(range * 1.114, 255, 0))
 				ParticlesSDK.SetControlPoint(particle, 0, InfrontUnit === undefined ? this.unit.Position : InfrontUnit)
-			}
-			else {
+			} else {
 				callback(particle)
 			}
 		}

@@ -120,9 +120,9 @@ function Init(
 	}
 	if (is_invise) {
 		if (Items.InvisSword || Items.SilverEdge) {
-			let Item = Items.InvisSword !== undefined ? Items.InvisSword : Items.SilverEdge
-			if (IsValid(Item, СomboItems)) {
-				Item.UseAbility(Owner)
+			let item = Items.InvisSword !== undefined ? Items.InvisSword : Items.SilverEdge
+			if (IsValid(item, СomboItems)) {
+				item.UseAbility(Owner)
 				return
 			}
 		}
@@ -139,9 +139,9 @@ function Init(
 		return
 	}
 	if (Items.Medallion || Items.SolarCrest) {
-		let Item = Items.Medallion !== undefined ? Items.Medallion : Items.SolarCrest
-		if (IsValid(Item, СomboItems) && Owner.Distance2D(target) <= Item.CastRange && !target.IsMagicImmune) {
-			Item.UseAbility(target)
+		let item = Items.Medallion !== undefined ? Items.Medallion : Items.SolarCrest
+		if (IsValid(item, СomboItems) && Owner.IsInRange(target, item.CastRange) && !target.IsMagicImmune) {
+			item.UseAbility(target)
 			return
 		}
 	}
@@ -192,9 +192,9 @@ function Init(
 		return
 	}
 	if (IsValid(Items.UrnOfShadows, СomboItems) || IsValid(Items.SpiritVesel, СomboItems)) {
-		let Item = Items.UrnOfShadows !== undefined ? Items.UrnOfShadows : Items.SpiritVesel
-		if (Owner.Distance2D(target) <= (Item.CastRange + Owner.HullRadius) && !target.IsMagicImmune) {
-			Item.UseAbility(Owner)
+		let item = Items.UrnOfShadows !== undefined ? Items.UrnOfShadows : Items.SpiritVesel
+		if (Owner.IsInRange(target, item.CastRange) && !target.IsMagicImmune) {
+			item.UseAbility(Owner)
 			GameSleep.Sleep(Items.Tick)
 			return
 		}
@@ -231,7 +231,7 @@ export function InitCombo() {
 	}
 	let target = MouseTarget
 	if (target === undefined || (BladeMailItem.value
-		&& target.HasModifier("modifier_item_blade_mail_reflect"))
+		&& target.HasBuffByName("modifier_item_blade_mail_reflect"))
 	) {
 		if (!isRunToTarget.value)
 			return

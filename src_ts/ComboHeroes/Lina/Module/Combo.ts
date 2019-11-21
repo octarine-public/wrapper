@@ -28,7 +28,7 @@ export function InitCombo() {
 	if (target === undefined || target.IsMagicImmune || !target.IsAlive) {
 		return
 	}
-	if (BladeMailCancel.value && target.HasModifier("modifier_item_blade_mail_reflect"))
+	if (BladeMailCancel.value && target.HasBuffByName("modifier_item_blade_mail_reflect"))
 		return
 
 	let Items = initItemsMap.get(Owner),
@@ -43,8 +43,8 @@ export function InitCombo() {
 		}
 		if (ModeInvisCombo.selected_id === 0) {
 			if (IsValidAbility(Abilities.LightStrikeArray, target)) {
-				let Prediction = target.VelocityWaypoint((Abilities.LightStrikeArray.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
-				Abilities.LightStrikeArray.UseAbility(Prediction)
+				let prediction = target.VelocityWaypoint((Abilities.LightStrikeArray.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
+				Abilities.LightStrikeArray.UseAbility(prediction)
 				Sleep.Sleep(Abilities.Tick)
 				return
 			}
@@ -61,7 +61,7 @@ export function InitCombo() {
 		Sleep.Sleep(Items.Tick)
 		return
 	}
-	if (!target.HasModifier("modifier_eul_cyclone")) {
+	if (!target.HasBuffByName("modifier_eul_cyclone")) {
 		if (IsValidItems(Items.Cyclone, target)) {
 			if (Abilities.LightStrikeArray !== undefined && Abilities.LightStrikeArray.CanBeCasted()) {
 				Items.Cyclone.UseAbility(target)
@@ -72,8 +72,8 @@ export function InitCombo() {
 		if ((Items.Cyclone === undefined || !Items.Cyclone.CanBeCasted())
 			&& IsValidAbility(Abilities.LightStrikeArray, target)
 		) {
-			let Prediction = target.VelocityWaypoint((Abilities.LightStrikeArray.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
-			Abilities.LightStrikeArray.UseAbility(Prediction)
+			let prediction = target.VelocityWaypoint((Abilities.LightStrikeArray.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
+			Abilities.LightStrikeArray.UseAbility(prediction)
 			Sleep.Sleep(Abilities.Tick)
 			return
 		}

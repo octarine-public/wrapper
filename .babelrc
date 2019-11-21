@@ -5,7 +5,8 @@
 	"plugins": [
 		"@babel/plugin-syntax-bigint",
 		"./babel-plugin-loop-optimizer",
-		"@babel/plugin-proposal-optional-chaining"
+		"@babel/plugin-syntax-optional-chaining",
+		"@babel/plugin-syntax-nullish-coalescing-operator"
 	],
 	"comments": false,
 	"ignore": [

@@ -28,7 +28,7 @@ export default class SkywrathMageAbility extends AbilityBase {
 			}
 		}
 
-		if (unit.IsHexed || unit.IsRooted && unit.HasModifier("modifier_rune_haste")) {
+		if (unit.IsHexed || unit.IsRooted && unit.HasBuffByName("modifier_rune_haste")) {
 			this.MysticFlareDelay = 300
 		}
 

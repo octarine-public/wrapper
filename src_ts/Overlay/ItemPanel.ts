@@ -15,7 +15,7 @@ const panelItems = Menu.AddNode("Items");
 const panelAllies = Menu.AddToggle("Show Allies");
 
 // style
-const panelSettingsKey = panelSettings.AddKeybind("Toggle Key");//.SetTooltip(`Show/hide ${Menu.name}`)
+const panelSettingsKey = panelSettings.AddKeybind("Toggle Key"); //.SetTooltip(`Show/hide ${Menu.name}`)
 const panelSettingsSize = panelSettings.AddSlider("Size", 30, 10, 50);
 const panelSettingsFlow = panelSettings.AddSwitcher("Style", ["Horizontal", "Vertical"]);
 const panelSettingsOutline = panelSettings.AddToggle("Outline", true);
@@ -233,8 +233,7 @@ EventsSDK.on("Draw", () => {
 				}
 
 				isDraggingPanel = true;
-			}
-			else if (isDraggingPanel && !Input.IsMouseKeyDown(VMouseKeys.MK_LBUTTON)) {
+			} else if (isDraggingPanel && !Input.IsMouseKeyDown(VMouseKeys.MK_LBUTTON)) {
 				MenuSDK.MenuManager.UpdateConfig();
 				isDraggingPanel = false;
 			}

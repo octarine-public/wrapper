@@ -103,12 +103,12 @@ EventsSDK.on("Tick", () => {
 	rmines = rmines.filter(([rmine]) => rmine.IsAlive)
 	if (Explode_expiring_mines.value) {
 		const rmineTimeout = 595 // 600 is mine duration
-		for (const [mine, dmg, setup_time] of rmines)
+		for (const [mine, , setup_time] of rmines)
 			if (cur_time > setup_time + rmineTimeout)
 				ExplodeMine(mine)
 	}
 	if (Explode_seen_mines.value)
-		for (const [mine, dmg, setup_time, invis_time] of rmines)
+		for (const [mine, , , invis_time] of rmines)
 			if (mine.IsVisibleForEnemies && cur_time > invis_time)
 				ExplodeMine(mine)
 	rmines.filter(([rmine]) => rmine.HPPercent !== 100).forEach(([rmine]) => ExplodeMine(rmine))

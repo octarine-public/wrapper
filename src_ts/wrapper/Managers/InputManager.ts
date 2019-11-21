@@ -1,35 +1,35 @@
-import { FixInt16 } from "../Utils/BitsExtensions";
-import Vector2 from "../Base/Vector2";
-import Vector3 from "../Base/Vector3";
-import Events, { EventEmitter } from "./Events";
-import EventsSDK from "./EventsSDK";
+import { FixInt16 } from "../Utils/BitsExtensions"
+import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
+import Events, { EventEmitter } from "./Events"
+import EventsSDK from "./EventsSDK"
 
-const CursorOnWorld: Vector3 = new Vector3();
-const CursorOnScreen: Vector2 = new Vector2();
+const CursorOnWorld: Vector3 = new Vector3()
+const CursorOnScreen: Vector2 = new Vector2()
 
-const KeysDown = new Map<VKeys, boolean>();
-const MouseDown = new Map<VMouseKeys, boolean>();
+const KeysDown = new Map<VKeys, boolean>()
+const MouseDown = new Map<VMouseKeys, boolean>()
 
-export const InputEventSDK: InputEventSDK = new EventEmitter();
+export const InputEventSDK: InputEventSDK = new EventEmitter()
 
-const LOWORD = (_dw: bigint) => Number(_dw & 0xffffn);
-const HIWORD = (_dw: bigint) => Number((_dw >> 16n) & 0xffffn);
+const LOWORD = (_dw: bigint) => Number(_dw & 0xffffn)
+const HIWORD = (_dw: bigint) => Number((_dw >> 16n) & 0xffffn)
 
 const XMouseKey = (wParam: bigint) => HIWORD(wParam) === VMouseKeys.MK_XBUTTON1
-	? VMouseKeys.MK_XBUTTON1 : VMouseKeys.MK_XBUTTON2;
+	? VMouseKeys.MK_XBUTTON1 : VMouseKeys.MK_XBUTTON2
 
 class Input {
-	get CursorOnWorld() {
-		return CursorOnWorld.Clone();
+	get CursorOnWorld(): Vector3 {
+		return CursorOnWorld.Clone()
 	}
-	get CursorOnScreen() {
-		return CursorOnScreen.Clone();
+	get CursorOnScreen(): Vector2 {
+		return CursorOnScreen.Clone()
 	}
 	public IsKeyDown(key: VKeys): boolean {
-		return KeysDown.get(key) === true;
+		return KeysDown.get(key) === true
 	}
 	public IsMouseKeyDown(key: VMouseKeys): boolean {
-		return MouseDown.get(key) === true;
+		return MouseDown.get(key) === true
 	}
 }
 
@@ -37,73 +37,75 @@ Events.on("WndProc", (msg, wParam, lParam) => {
 	if (wParam === undefined || lParam === undefined)
 		return true
 
+	let mKey: VMouseKeys = 0
+	switch (msg) {
+		case InputMessage.WM_LBUTTONUP:
+		case InputMessage.WM_LBUTTONDOWN:
+		case InputMessage.WM_LBUTTONDBLCLK:
+			mKey = VMouseKeys.MK_LBUTTON
+			break
+		case InputMessage.WM_RBUTTONUP:
+		case InputMessage.WM_RBUTTONDOWN:
+		case InputMessage.WM_RBUTTONDBLCLK:
+			mKey = VMouseKeys.MK_RBUTTON
+			break
+		case InputMessage.WM_MBUTTONUP:
+		case InputMessage.WM_MBUTTONDOWN:
+		case InputMessage.WM_MBUTTONDBLCLK:
+			mKey = VMouseKeys.MK_MBUTTON
+			break
+		case InputMessage.WM_XBUTTONUP:
+		case InputMessage.WM_XBUTTONDOWN:
+		case InputMessage.WM_XBUTTONDBLCLK:
+			mKey = XMouseKey(wParam)
+			break
+	}
+
 	switch (msg) {
 		case InputMessage.WM_KEYDOWN:
 		case InputMessage.WM_SYSKEYDOWN:
 			if (wParam < 256) {
-				KeysDown.set(LOWORD(wParam), true);
-				return InputEventSDK.emit("KeyDown", true, LOWORD(wParam));
+				KeysDown.set(LOWORD(wParam), true)
+				return InputEventSDK.emit("KeyDown", true, LOWORD(wParam))
 			}
+			break
+
 		case InputMessage.WM_KEYUP:
 		case InputMessage.WM_SYSKEYUP:
-			KeysDown.delete(LOWORD(wParam));
-			return InputEventSDK.emit("KeyUp", true, LOWORD(wParam));
+			KeysDown.delete(LOWORD(wParam))
+			return InputEventSDK.emit("KeyUp", true, LOWORD(wParam))
 
 		case InputMessage.WM_MOUSEMOVE:
-			CursorOnScreen.SetVector(LOWORD(lParam), HIWORD(lParam));
-			return InputEventSDK.emit("MouseMove", true, CursorOnScreen.Clone());
+			CursorOnScreen.SetVector(LOWORD(lParam), HIWORD(lParam))
+			return InputEventSDK.emit("MouseMove", true, CursorOnScreen.Clone())
 
 		case InputMessage.WM_LBUTTONDOWN: case InputMessage.WM_LBUTTONDBLCLK:
 		case InputMessage.WM_RBUTTONDOWN: case InputMessage.WM_RBUTTONDBLCLK:
 		case InputMessage.WM_MBUTTONDOWN: case InputMessage.WM_MBUTTONDBLCLK:
-		case InputMessage.WM_XBUTTONDOWN: case InputMessage.WM_XBUTTONDBLCLK: {
-			let mKey: VMouseKeys = 0;
+		case InputMessage.WM_XBUTTONDOWN: case InputMessage.WM_XBUTTONDBLCLK:
+			MouseDown.set(mKey, true)
+			return InputEventSDK.emit("MouseKeyDown", true, mKey)
 
-			if (msg === InputMessage.WM_LBUTTONDOWN || msg === InputMessage.WM_LBUTTONDBLCLK) {
-				mKey = VMouseKeys.MK_LBUTTON;
-			} else if (msg === InputMessage.WM_RBUTTONDOWN || msg === InputMessage.WM_RBUTTONDBLCLK) {
-				mKey = VMouseKeys.MK_RBUTTON;
-			} else if (msg === InputMessage.WM_MBUTTONDOWN || msg === InputMessage.WM_MBUTTONDBLCLK) {
-				mKey = VMouseKeys.MK_MBUTTON;
-			} else if (msg === InputMessage.WM_XBUTTONDOWN || msg === InputMessage.WM_XBUTTONDBLCLK) {
-				mKey = XMouseKey(wParam);
-			}
-
-			MouseDown.set(mKey, true);
-			return InputEventSDK.emit("MouseKeyDown", true, mKey);
-		}
 		case InputMessage.WM_LBUTTONUP:
 		case InputMessage.WM_RBUTTONUP:
 		case InputMessage.WM_MBUTTONUP:
 		case InputMessage.WM_XBUTTONUP:
-
-			let mKey: VMouseKeys = 0;
-
-			if (msg === InputMessage.WM_LBUTTONUP) {
-				mKey = VMouseKeys.MK_LBUTTON;
-			} else if (msg === InputMessage.WM_RBUTTONUP) {
-				mKey = VMouseKeys.MK_RBUTTON;
-			} else if (msg === InputMessage.WM_MBUTTONUP) {
-				mKey = VMouseKeys.MK_MBUTTON;
-			} else if (msg === InputMessage.WM_XBUTTONUP) {
-				mKey = XMouseKey(wParam);
-			}
-
-			MouseDown.delete(mKey);
-			return InputEventSDK.emit("MouseKeyUp", true, mKey);
+			MouseDown.delete(mKey)
+			return InputEventSDK.emit("MouseKeyUp", true, mKey)
 
 		case InputMessage.WM_MOUSEWHEEL:
-			return InputEventSDK.emit("MouseWheel", true, FixInt16(HIWORD(wParam)) > 0 ? MouseWheel.UP : MouseWheel.DOWN);
+			return InputEventSDK.emit("MouseWheel", true, FixInt16(HIWORD(wParam)) > 0 ? MouseWheel.UP : MouseWheel.DOWN)
 
-		default: break;
+		default:
+			break
 	}
 
-	return true;
+	return true
 })
 
 EventsSDK.on("Update", cmd => cmd.VectorUnderCursor.CopyTo(CursorOnWorld))
 
-export default new Input();
+export default new Input()
 
 export enum InputMessage {
 	WM_NULL = 0x0000,
