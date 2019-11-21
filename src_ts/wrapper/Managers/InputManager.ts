@@ -1,5 +1,8 @@
-import { EventsSDK, Vector2, Vector3 } from "../Imports";
 import { FixInt16 } from "../Utils/BitsExtensions";
+import Vector2 from "../Base/Vector2";
+import Vector3 from "../Base/Vector3";
+import Events, { EventEmitter } from "./Events";
+import EventsSDK from "./EventsSDK";
 
 const CursorOnWorld: Vector3 = new Vector3();
 const CursorOnScreen: Vector2 = new Vector2();
@@ -31,7 +34,6 @@ class Input {
 }
 
 Events.on("WndProc", (msg, wParam, lParam) => {
-
 	if (wParam === undefined || lParam === undefined)
 		return true
 

@@ -2,7 +2,7 @@ import { arrayRemove } from "../Utils/ArrayExtensions"
 
 // import * as Debug from "../Utils/Debug"
 
-import EventsSDK from "./Events"
+import Events from "./Events"
 
 import Vector3 from "../Base/Vector3"
 
@@ -24,6 +24,7 @@ import AbilityData from "../Objects/DataBook/AbilityData"
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/BitsExtensions"
+import EventsSDK from "./EventsSDK"
 
 export { PlayerResource, Game }
 

@@ -1,5 +1,5 @@
 import { Vector3 } from "../Imports"
-import EventsSDK from "../Managers/Events"
+import EventsSDK from "../Managers/EventsSDK"
 import ProjectileManager from "../Managers/ProjectileManager"
 import Unit from "../Objects/Base/Unit"
 import { parseKV } from "./ParseKV"

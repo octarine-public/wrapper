@@ -1,6 +1,5 @@
 import {
 	ArrayExtensions,
-	Creep,
 	Entity,
 	Unit,
 	Vector3,

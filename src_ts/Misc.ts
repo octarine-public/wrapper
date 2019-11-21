@@ -1,4 +1,4 @@
-import { EntityManager, EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, RendererSDK, Vector3, VKeys } from "./wrapper/Imports"
+import { EntityManager, EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, RendererSDK, Vector3, VKeys, Events } from "./wrapper/Imports"
 import UserCmd from "./wrapper/Native/UserCmd"
 
 let Menu = MenuSDK.AddEntry("Misc");

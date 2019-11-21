@@ -4,6 +4,7 @@ import Vector3 from "../Base/Vector3"
 import { QAngle } from "../Imports"
 import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
+import Events from "../Managers/Events"
 
 let WindowSize = new Vector2().Invalidate()
 

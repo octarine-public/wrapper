@@ -439,6 +439,7 @@ declare function StopFindingMatch(): void
 declare function AcceptMatch(): void
 declare function ToggleFakeChat(state: boolean): void
 declare function GetEntityByVecOrigin(vec: CNetworkOriginCellCoordQuantizedVector): C_BaseEntity
+declare function setFireEvent(func: (event_name: string, cancellable: boolean, ...args: any) => boolean): void
 
 /// AUTOMATICALLY GENERATED
 

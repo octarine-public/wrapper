@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color } from "./wrapper/Imports"
+import { EventsSDK, Game, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color, Events } from "./wrapper/Imports"
 
 let setConVar = (toggle: Menu.Toggle) =>
 	ConVars.Set(toggle.tooltip, toggle.value)
@@ -66,8 +66,6 @@ EventsSDK.on("GameStarted", () => {
 const debugEventsMenu = debuggerMenu.AddNode("Debugging events", "Debugging native events in console")
 
 const debugEvents = debugEventsMenu.AddToggle("Debugging events")
-
-const debugDrawEvents = debugEventsMenu.AddToggle("Debug Draw")
 
 const debugProjectiles = debugEventsMenu.AddToggle("Debug projectiles", false, "Visual only")
 

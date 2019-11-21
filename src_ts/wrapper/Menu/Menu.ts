@@ -3,6 +3,7 @@ import RendererSDK from "../Native/RendererSDK"
 import Base from "./Base"
 import Header from "./Header"
 import Node from "./Node"
+import Events from "../Managers/Events"
 
 let Menu = new (class Menu {
 	public entries: Node[] = []

@@ -6,6 +6,7 @@ import { Game } from "../Managers/EntityManager"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
+import Events from "../Managers/Events"
 
 export default class KeyBind extends Base {
 	public static readonly KeyNames = [

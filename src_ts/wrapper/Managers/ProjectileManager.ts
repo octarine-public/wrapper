@@ -1,11 +1,14 @@
-import { Color, EntityManager, EventsSDK, RendererSDK } from "wrapper/Imports"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import Entity from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import Unit from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
-import { Game } from "./EntityManager"
+import EntityManager, { Game } from "./EntityManager"
+import Events from "./Events"
+import EventsSDK from "./EventsSDK"
+import Color from "../Base/Color"
+import RendererSDK from "../Native/RendererSDK"
 
 let ProjectileManager = new (class ProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
@@ -25,7 +28,7 @@ EventsSDK.on("GameEnded", () => {
 })
 
 Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceAttachment, path, particleSystemHandle, dodgeable, isAttack, expireTime, maximpacttime, launch_tick) => {
-	let projectile = new TrackingProjectile (
+	let projectile = new TrackingProjectile(
 		proj,
 		source instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(source)
@@ -54,7 +57,7 @@ Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particle
 	let projectile = ProjectileManager.AllTrackingProjectilesMap.get(proj)
 	if (projectile === undefined)
 		return
-	projectile.Update (
+	projectile.Update(
 		hTarget instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(hTarget)
 			: hTarget,
@@ -95,7 +98,7 @@ Events.on("TrackingProjectileDestroyed", proj => {
 })
 
 Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max_speed, fow_radius, sticky_fow_reveal, distance) => {
-	let projectile = new LinearProjectile (
+	let projectile = new LinearProjectile(
 		proj,
 		ent instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(ent)

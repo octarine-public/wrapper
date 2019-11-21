@@ -1,4 +1,5 @@
 import StockInfo from "./StockInfo"
+import Events from "../../Managers/Events"
 
 let Game = global.Game = new (class Game {
 	public m_GameRules: C_DOTAGamerules

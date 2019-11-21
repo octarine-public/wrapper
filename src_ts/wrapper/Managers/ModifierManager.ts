@@ -1,11 +1,12 @@
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import { addArrayInMap, removeArrayInMap } from "../Utils/MapExtensions"
 
-import EventsSDK from "./Events"
+import Events from "./Events"
 
 import Modifier from "../Objects/Base/Modifier"
 import Unit from "../Objects/Base/Unit"
 import { default as EntityManager } from "./EntityManager"
+import EventsSDK from "./EventsSDK"
 
 let ModifierManager = new (class ModifierManager {
 	public readonly AllModifiersUnit = new Map<Unit, Modifier[]>()

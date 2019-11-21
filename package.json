@@ -13,9 +13,7 @@
 	},
 	"scripts": {
 		"watch": "npx babel --watch src_ts --extensions \".ts\" --out-dir scripts",
-		"watch_bootstrap": "npx babel --watch src_bootstrap --extensions \".ts\" --out-file bootstrap.js",
 		"build": "npx babel src_ts --extensions \".ts\" --out-dir scripts",
-		"build_bootstrap": "npx babel src_bootstrap --extensions \".ts\" --out-file bootstrap.js",
 		"check-types": "npx tsc",
 		"lint": "npx tslint --fix 'src_*/**/*.ts'"
 	},

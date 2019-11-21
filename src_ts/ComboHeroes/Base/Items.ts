@@ -1,4 +1,4 @@
-import { Hero, Item, Unit } from "wrapper/Imports"
+import { Item } from "wrapper/Imports"
 import { ItemsHelper } from "./Helper/ItemsHelper"
 
 export class ItemBase extends ItemsHelper {
