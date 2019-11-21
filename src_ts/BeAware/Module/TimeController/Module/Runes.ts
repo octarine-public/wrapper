@@ -135,7 +135,7 @@ export function DrawRunes() {
 				if (distance <= 500 || (hero !== undefined && hero.Name === "npc_dota_hero_pudge" && hero.Distance2D(val) <= 10)) {
 					bountyAlreadySeted = false
 					bountyRunesAr[key] = false
-					setTimeout(Particle.clear, 1500);
+					setTimeout(() => Particle.clear(), 1500);
 				}
 			})
 		})
