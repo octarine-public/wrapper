@@ -13,6 +13,7 @@ let npc_hero: string = "npc_dota_hero_",
 	OtherRadius = new Map<Entity, number>(),
 	LAST_ID_SCROLL: number,
 	Heroes: Hero[] = [],
+	Units: Unit[] = [],
 	OtherAbility: Entity[] = [],
 	_Size = Size.value * 20
 
@@ -75,7 +76,9 @@ export function ParticleCreate(id: number, handle: bigint, path: string, entity:
 }
 
 function IsEnemyUse(position: Vector3) {
-	return !Heroes.find(x => x !== undefined && x.IsVisible && !x.IsEnemy()).IsInRange(position, 900)
+	return Units.some(x => x !== undefined
+		&& (x.IsHero || x.IsCourier) && x.IsAlive
+		&& x.IsEnemy() && x.Distance2D(position) < 900)
 }
 function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: string, name_hero: string, color?: Color, Time?: number) {
 	let hero = Heroes.find(x => x !== undefined && x.IsEnemy() && !x.IsVisible && x.Name === name_hero)
@@ -549,6 +552,9 @@ export function EntityCreated(x: Entity) {
 	}
 	if (x instanceof Hero) {
 		Heroes.push(x)
+	}
+	if (x instanceof Unit) {
+		Units.push(x)
 	}
 }
 
