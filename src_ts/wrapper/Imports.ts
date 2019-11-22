@@ -15,9 +15,6 @@ export { default as Vector3 } from "./Base/Vector3"
 export { default as QAngle } from "./Base/QAngle"
 export { default as Color } from "./Base/Color"
 
-export { default as RendererSDK } from "./Native/RendererSDK"
-export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
-
 import * as Menu from "./Menu/Imports"
 export { Menu }
 
@@ -42,6 +39,8 @@ export {
 	VXMouseKeys,
 	MouseWheel,
 } from "./Managers/InputManager"
+export { default as RendererSDK } from "./Native/RendererSDK"
+export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
 
 export { default as Entity } from "./Objects/Base/Entity"
 export { default as Unit } from "./Objects/Base/Unit"

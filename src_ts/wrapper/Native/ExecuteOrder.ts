@@ -4,6 +4,9 @@ import EntityManager from "../Managers/EntityManager"
 import Ability from "../Objects/Base/Ability"
 import Entity from "../Objects/Base/Entity"
 import Unit from "../Objects/Base/Unit"
+import UserCmd from "./UserCmd"
+import RendererSDK from "./RendererSDK"
+import Events from "../Managers/Events"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -21,6 +24,11 @@ export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 ]
 
 export default class ExecuteOrder {
+	public static order_queue: ExecuteOrder[] = []
+	public static wait_next_usercmd = false
+	public static wait_near_cursor = false
+	public static debug_orders = false
+
 	public static fromObject(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
@@ -92,7 +100,7 @@ export default class ExecuteOrder {
 		showEffects: boolean = false,
 	) {
 		this.m_OrderType = orderType
-		this.m_Target = target instanceof Entity ? target : target
+		this.m_Target = target
 		this.m_Position = position instanceof Vector2 ? position.toVector3() : position
 		this.m_Ability = ability
 		this.m_OrderIssuer = issuer
@@ -154,6 +162,10 @@ export default class ExecuteOrder {
 		PrepareUnitOrders(this.toNative())
 		return this
 	}
+	public ExecuteQueued(): ExecuteOrder {
+		ExecuteOrder.order_queue.push(this)
+		return this
+	}
 
 	public toString(): string {
 		return JSON.stringify(this.toObject())
@@ -180,3 +192,90 @@ export default class ExecuteOrder {
 		}
 	}
 }
+
+let last_order_click = new Vector3(),
+	last_order_click_update = 0,
+	latest_camera_x = 0,
+	latest_camera_y = 0,
+	execute_current = false,
+	current_order: ExecuteOrder
+Events.after("Update", (cmd_: CUserCmd) => {
+	let cmd = new UserCmd(cmd_)
+	if (execute_current) {
+		let order = ExecuteOrder.order_queue[0]
+		order.Execute()
+		if (ExecuteOrder.debug_orders)
+			console.log("Executing order " + order.OrderType + " after " + (Date.now() - last_order_click_update) + "ms")
+		ExecuteOrder.order_queue.splice(0, 1)
+		execute_current = false
+	}
+	let order = ExecuteOrder.order_queue[0]
+	if (order !== undefined && order !== current_order) {
+		current_order = order
+		switch (order.OrderType) {
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
+				last_order_click.CopyFrom(order.Position)
+				last_order_click_update = Date.now()
+				break
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
+				if (order.Target instanceof C_BaseEntity) {
+					let ent = EntityManager.GetEntityByNative(order.Target)
+					if (ent !== undefined)
+						last_order_click.CopyFrom(ent.Position)
+				} else if (order.Target instanceof Entity)
+					last_order_click.CopyFrom(order.Target.Position)
+				else if (order.Position !== undefined)
+					last_order_click.CopyFrom(order.Position)
+				else
+					last_order_click.toZero()
+				last_order_click_update = Date.now()
+				break
+			default:
+				order.Execute()
+				ExecuteOrder.order_queue.splice(0, 1)
+				order = undefined
+				current_order = undefined
+				break
+		}
+	}
+	let CursorWorldVec = cmd.VectorUnderCursor,
+		mult = Math.sin(Date.now() - last_order_click_update)
+	if (last_order_click_update + 450 >= Date.now()) {
+		CursorWorldVec = last_order_click.Extend(CursorWorldVec, Math.min(last_order_click.Distance(CursorWorldVec), 200 * mult)).CopyTo(last_order_click)
+		cmd.CameraX = latest_camera_x
+		cmd.CameraY = latest_camera_y
+	}
+	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(CursorWorldVec.toVector2()))
+	if (order !== undefined && (!ExecuteOrder.wait_near_cursor || cmd.VectorUnderCursor.Distance(last_order_click) <= 100)) {
+		if (!ExecuteOrder.wait_next_usercmd) {
+			order.Execute()
+			if (ExecuteOrder.debug_orders)
+				console.log("Executing order " + order.OrderType + " after " + (Date.now() - last_order_click_update) + "ms")
+			ExecuteOrder.order_queue.splice(0, 1)
+		}
+		execute_current = ExecuteOrder.wait_next_usercmd
+	}
+	let camera_vec = new Vector3(cmd.CameraX, cmd.CameraY)
+	camera_vec = camera_vec.Clone().AddScalarY(1134 / 2).Distance2D(CursorWorldVec) > 1300
+		? CursorWorldVec.Clone().SubtractScalarY(1134 / 2)
+		: camera_vec = camera_vec.AddScalarY(1134 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= Date.now() ? mult : 1))).SubtractScalarY(1134 / 2)
+	latest_camera_x = cmd.CameraX = camera_vec.x
+	latest_camera_y = cmd.CameraY = camera_vec.y
+
+	let cur_pos = RendererSDK.WorldToScreenCustom(CursorWorldVec, camera_vec.toVector2())
+	if (cur_pos !== undefined) {
+		cmd.MouseX = cur_pos.x
+		cmd.MouseY = cur_pos.y
+	}
+})

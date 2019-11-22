@@ -15,6 +15,7 @@ import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile
 import Hero from "../Objects/Base/Hero"
 import QAngle from "../Base/QAngle"
 import Modifier from "../Objects/Base/Modifier"
+import InputManager from "./InputManager"
 
 interface EventsSDK extends EventEmitter {
 	/**
@@ -125,7 +126,11 @@ export default EventsSDK
 
 Events.on("WndProc", (...args) => EventsSDK.emit("WndProc", true, ...args))
 
-Events.on("Update", cmd => EventsSDK.emit("Update", false, new UserCmd(cmd)))
+Events.on("Update", cmd => {
+	let cmd_ = new UserCmd(cmd)
+	InputManager.CursorOnWorld = cmd_.VectorUnderCursor
+	EventsSDK.emit("Update", false, cmd_)
+})
 
 Events.on("Draw", () => {
 	WASM.OnDraw()

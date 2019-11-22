@@ -2,9 +2,7 @@ import { FixInt16 } from "../Utils/BitsExtensions"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import Events, { EventEmitter } from "./Events"
-import EventsSDK from "./EventsSDK"
 
-const CursorOnWorld: Vector3 = new Vector3()
 const CursorOnScreen: Vector2 = new Vector2()
 
 const KeysDown = new Map<VKeys, boolean>()
@@ -19,8 +17,13 @@ const XMouseKey = (wParam: bigint) => HIWORD(wParam) === VMouseKeys.MK_XBUTTON1
 	? VMouseKeys.MK_XBUTTON1 : VMouseKeys.MK_XBUTTON2
 
 class Input {
+	private CursorOnWorld_ = new Vector3()
+
 	get CursorOnWorld(): Vector3 {
-		return CursorOnWorld.Clone()
+		return this.CursorOnWorld_.Clone()
+	}
+	set CursorOnWorld(vec: Vector3) {
+		this.CursorOnWorld_.CopyFrom(vec)
 	}
 	get CursorOnScreen(): Vector2 {
 		return CursorOnScreen.Clone()
@@ -102,8 +105,6 @@ Events.on("WndProc", (msg, wParam, lParam) => {
 
 	return true
 })
-
-EventsSDK.on("Update", cmd => cmd.VectorUnderCursor.CopyTo(CursorOnWorld))
 
 export default new Input()
 

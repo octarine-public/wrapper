@@ -1,5 +1,4 @@
-import { EntityManager, EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, RendererSDK, Vector3, VKeys, Events } from "./wrapper/Imports"
-import UserCmd from "./wrapper/Native/UserCmd"
+import { EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder } from "./wrapper/Imports"
 
 let Menu = MenuSDK.AddEntry("Misc");
 
@@ -32,6 +31,10 @@ keybind.activates_in_menu = true
 keybind.trigger_on_chat = true
 Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.MenuManager.trigger_on_chat = toggle.value)
 Menu.AddToggle("Team chat mute fix", false).OnValue(toggle => ToggleFakeChat(toggle.value))
+let humanizer = Menu.AddNode("Humanizer")
+humanizer.AddToggle("wait_next_usercmd", false).OnValue(toggle => ExecuteOrder.wait_next_usercmd = toggle.value)
+humanizer.AddToggle("wait_near_cursor", false).OnValue(toggle => ExecuteOrder.wait_near_cursor = toggle.value)
+humanizer.AddToggle("debug_orders", false).OnValue(toggle => ExecuteOrder.debug_orders = toggle.value)
 
 function ReloadScripts() {
 	EventsSDK.emit("GameEnded", false)
@@ -130,102 +133,3 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 		timeCreate = -1;
 	}
 })
-
-let PrepareUnitOrders_old = PrepareUnitOrders
-let last_order_click = new Vector3(),
-	last_order_click_update = 0
-global.PrepareUnitOrders = (order: { // pass Position: Vector3 at IOBuffer offset 0
-	OrderType: dotaunitorder_t,
-	Target?: C_BaseEntity | number,
-	Ability?: C_BaseEntity | number,
-	OrderIssuer?: PlayerOrderIssuer_t,
-	Unit?: (C_BaseEntity | number)[] | C_BaseEntity | number,
-	Queue?: boolean,
-	ShowEffects?: boolean,
-}) => {
-	switch (order.OrderType) {
-		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
-			last_order_click.CopyFrom(Vector3.fromIOBuffer())
-			last_order_click_update = Date.now()
-			break
-		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
-		// case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
-			last_order_click.CopyFrom(order.Target instanceof C_BaseEntity ? EntityManager.GetEntityByNative(order.Target).Position : Vector3.fromIOBuffer())
-			last_order_click_update = Date.now()
-			break
-		default:
-			break
-	}
-	PrepareUnitOrders_old(order)
-}
-
-let latest_camera_x = 0,
-	latest_camera_y = 0
-// let last_camera_vec = new Vector3(),
-// 	last_mouse_vec = new Vector3(),
-// 	last_mouse_pos = new Vector2()
-EventsSDK.after("Update", (cmd: UserCmd) => {
-	let CursorWorldVec = cmd.VectorUnderCursor,
-		// orig_CursorWorldVec = cmd.VectorUnderCursor.Clone(),
-		// orig_camera_vec = new Vector3(cmd.CameraX, cmd.CameraY),
-		mult = Math.sin(Date.now() - last_order_click_update)
-	if (last_order_click_update + 450 >= Date.now()) {
-		CursorWorldVec = last_order_click.Extend(CursorWorldVec, Math.min(last_order_click.Distance(CursorWorldVec), 200 * mult)).CopyTo(last_order_click)
-		cmd.CameraX = latest_camera_x
-		cmd.CameraY = latest_camera_y
-	}
-	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(CursorWorldVec.toVector2()))
-	let camera_vec = new Vector3(cmd.CameraX, cmd.CameraY)
-	camera_vec = camera_vec.Clone().AddScalarY(1134 / 2).Distance2D(CursorWorldVec) > 1300
-		? CursorWorldVec.Clone().SubtractScalarY(1134 / 2)
-		: camera_vec = camera_vec.AddScalarY(1134 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= Date.now() ? mult : 1))).SubtractScalarY(1134 / 2)
-	latest_camera_x = cmd.CameraX = camera_vec.x
-	latest_camera_y = cmd.CameraY = camera_vec.y
-
-	let cur_pos = RendererSDK.WorldToScreenCustom(CursorWorldVec, camera_vec.toVector2())
-	if (cur_pos !== undefined) {
-		cmd.MouseX = cur_pos.x
-		cmd.MouseY = cur_pos.y
-	} else
-		cmd.MouseX = cmd.MouseY = 0.5
-
-	// last_mouse_vec.CopyFrom(cmd.VectorUnderCursor)
-	// last_mouse_pos.SetX(cmd.MouseX).SetY(cmd.MouseY).MultiplyForThis(RendererSDK.WindowSize)
-	// last_camera_vec.SetX(cmd.CameraX).SetY(cmd.CameraY)
-	// last_camera_vec.SetZ(RendererSDK.GetPositionHeight(last_camera_vec.toVector2()))
-})
-
-// EventsSDK.on("Draw", () => {
-// 	RendererSDK.FilledRect(last_mouse_pos.SubtractScalar(5), new Vector2(10, 10), Color.Red)
-
-// 	let camera_screen_pos = RendererSDK.WorldToScreen(last_camera_vec)
-// 	if (camera_screen_pos !== undefined)
-// 		RendererSDK.FilledRect(camera_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Green)
-
-// 	let mouse_screen_pos = RendererSDK.WorldToScreen(last_mouse_vec)
-// 	if (mouse_screen_pos !== undefined)
-// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Blue)
-
-// 	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(new Vector2(0, 0)))
-// 	if (mouse_screen_pos !== undefined)
-// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
-// 	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(new Vector2(RendererSDK.WindowSize.x)))
-// 	if (mouse_screen_pos !== undefined)
-// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
-// 	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(new Vector2(0, RendererSDK.WindowSize.y)))
-// 	if (mouse_screen_pos !== undefined)
-// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
-// 	mouse_screen_pos = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorld(RendererSDK.WindowSize))
-// 	if (mouse_screen_pos !== undefined)
-// 		RendererSDK.FilledRect(mouse_screen_pos.SubtractScalar(5), new Vector2(10, 10), Color.Yellow)
-// })

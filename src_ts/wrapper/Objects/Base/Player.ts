@@ -9,8 +9,6 @@ import Hero from "./Hero"
 import Unit from "./Unit"
 
 export default class Player extends Entity {
-
-	public static order_queue: ExecuteOrder[] = []
 	static get QuickBuyItems(): number[] {
 		return LocalPlayer !== undefined ? LocalPlayer.m_pBaseEntity.m_quickBuyItems : []
 	}
@@ -24,7 +22,7 @@ export default class Player extends Entity {
 		queue?: boolean,
 		showEffects?: boolean,
 	}): ExecuteOrder {
-		return ExecuteOrder.fromObject(order).Execute()
+		return ExecuteOrder.fromObject(order).ExecuteQueued()
 	}
 
 	/**
