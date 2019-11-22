@@ -1,120 +1,106 @@
-import { EventsSDK, Hero, TrackingProjectile, ArrayExtensions, Ability, Unit } from "wrapper/Imports"
+import { EventsSDK, TrackingProjectile, ArrayExtensions, Unit, TickSleeper, Hero, LinearProjectile } from "wrapper/Imports"
 import { MenuState } from "./Menu"
 
-
-let SpawnEntity = false
-let lengthItems: number = 0
-
-export let all_units: Hero[] = []
+export let all_units: Unit[] = []
 export let proj_list: TrackingProjectile[] = []
-const ignorelistitems = [
-	"item_tango",
-	"item_single",
-	"item_courier",
-	"item_tpscroll",
-	"item_ward_observer",
-	"item_bottle",
-	"item_ward_sentry",
-	"item_travel_boots",
-	"item_travel_boots_2",
-	"item_flask"
+let Sleep = new TickSleeper
+let ignorelist: string[] = [
+	"particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf"
 ]
-import InitMenu from "./Menu/Menu"
+let proj_union: string[] = [
+	"particles/units/heroes/hero_skywrath_mage/skywrath_mage_arcane_bolt.vpcf"
+]
 
-MenuState.OnValue(caller => {
-	// if (!caller.value) {
-	// 	GameEndedCallback()
-	// }
-	// console.log(caller.value)
-})
-
-export const initItemsTargetMap = new Map<Unit, InitMenu>()
-
-function IsValidItems(item: Ability) {
-	return item === undefined || item.IsHidden || !item.IsValid
-		|| item.IsPassive || ignorelistitems.some(x => item.Name.includes(x))
-}
-
-function IsValidAbility(abil: Ability) {
-	return abil === undefined || abil.IsHidden || !abil.IsValid || abil.IsPassive
-}
-
-function AddMenuHeroItemAbility(x: Hero) {
-	let MenuDodger = initItemsTargetMap.get(x)
-	if (MenuDodger === undefined) {
-		return
+let Owner: Hero
+let EnemyIsInAbilityPhase: string[] = [
+	"skywrath_mage_ancient_seal",
+	"necrolyte_reapers_scythe",
+	"lina_laguna_blade",
+	"sven_storm_bolt",
+	"shadow_demon_demonic_purge",
+	"pudge_dismember",
+	"nyx_assassin_mana_burn",
+	"doom_bringer_doom",
+	"crystal_maiden_frostbite",
+	"phantom_assassin_stifling_dagger",
+	"phantom_lancer_spirit_lance",
+	"bounty_hunter_shuriken_toss",
+	"queenofpain_shadow_strike",
+	"juggernaut_omni_slash",
+]
+// ability or items for IsInside
+function UseAbility(unit: Unit, length: number) {
+	if (!unit.IsEnemy()) {
+		return false
 	}
-	if (lengthItems !== x.Inventory.GetItems(0, 5).length) {
-		SpawnEntity = false
-	}
-	if (SpawnEntity || !x.IsControllable) {
-		return
-	}
-	let NameHero = x.Name.toString().split("_").splice(3, 3).join(" ")
-	x.Inventory.GetItems(0, 5).filter(item => {
-		if (IsValidItems(item)) {
-			return
+	let abil = Owner.GetAbilityByName("antimage_counterspell")
+	return EnemyIsInAbilityPhase.some(abil_ => {
+		let abils = unit.GetAbilityByName(abil_)
+		if (Sleep.Sleeping || abils === undefined || !abils.IsInAbilityPhase) {
+			return false
 		}
-		MenuDodger.AddTreeInHero(x, NameHero, item)
-		lengthItems = x.Inventory.GetItems(0, 5).length
-		x.AbilitiesBook.Spells.filter(abil => {
-			if (IsValidAbility(abil)) {
-				return
-			}
-			MenuDodger.AddTreeInHero(x, NameHero, abil)
-			SpawnEntity = true
-		})
+		Owner.CastNoTarget(abil)
+		Sleep.Sleep(length * 5)
+		return true
+	})
+}
+function UseProjectile(unit: Unit, length: number) {
+	let abil = unit.GetAbilityByName("antimage_counterspell")
+	if (abil === undefined || !abil.CanBeCasted()) {
+		return false
+	}
+	proj_list.forEach(proj => {
+		if (ignorelist.includes(proj.ParticlePath))
+			return
+		let target_proj = proj.Target as Unit,
+			HullRadius = unit.HullRadius + target_proj.HullRadius,
+			Dist = (unit.Distance(proj.Position) + HullRadius) / proj.Speed
+
+		if (proj_union.includes(proj.ParticlePath))
+			Dist -= 0.3
+
+		if (Dist >= 0.3 || target_proj !== unit || Sleep.Sleeping) {
+			return false
+		}
+		//console.log(Dist)
+		unit.CastNoTarget(abil)
+		//console.log("use")
+		Sleep.Sleep(length * 5)
+		return true
 	})
 }
 
 EventsSDK.on("Tick", () => {
-	if (!MenuState.value) {
+	if (!MenuState.value)
 		return
-	}
-	all_units.filter(AddMenuHeroItemAbility)
+	// if (all_units.some((unit, i) => unit.IsControllable && (UseProjectile(unit, i) /*|| UseAbility(unit, i)*/)))
+	// 	return
 })
 
 EventsSDK.on("EntityCreated", x => {
-	if (x instanceof Hero) {
+	if (x instanceof Unit)
 		all_units.push(x)
-		SpawnEntity = false
+})
+EventsSDK.on("GameStarted", (hero) => {
+	if (Owner === undefined) {
+		Owner = hero
 	}
 })
 EventsSDK.on("EntityDestroyed", x => {
-	if (x instanceof Hero) {
+	if (x instanceof Unit)
 		ArrayExtensions.arrayRemove(all_units, x)
-		SpawnEntity = false
-	}
 })
 export function GameEndedCallback() {
 	all_units = []
 	proj_list = []
-	lengthItems = 0
-	SpawnEntity = false
 }
-
 EventsSDK.on("TrackingProjectileCreated", (proj: TrackingProjectile) => {
-	if (proj instanceof TrackingProjectile && proj.IsValid) {
+	if (proj instanceof TrackingProjectile && proj.IsValid)
 		proj_list.push(proj)
-	}
 })
 EventsSDK.on("TrackingProjectileDestroyed", (proj: TrackingProjectile) => {
-	if (proj instanceof TrackingProjectile && proj.IsValid) {
+	if (proj instanceof TrackingProjectile && proj.IsValid)
 		ArrayExtensions.arrayRemove(proj_list, proj)
-	}
 })
-function ClassCache() {
-	if (!MenuState.value) {
-		return
-	}
-	all_units.filter(unit => {
-		let initMenuTarget = initItemsTargetMap.get(unit)
-		if (initMenuTarget === undefined) {
-			initMenuTarget = new InitMenu(unit)
-			initItemsTargetMap.set(unit, initMenuTarget)
-		}
-	})
-}
 
-EventsSDK.on("Update", ClassCache)
 EventsSDK.on("GameEnded", GameEndedCallback)

@@ -572,4 +572,5 @@ export function Init() {
 	END_SCROLL.clear()
 	LAST_ID_SCROLL = undefined
 	_Size = Size.value * 20
+	Units = []
 }
