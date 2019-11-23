@@ -543,34 +543,30 @@ export function ParticleDestroyed(id: number) {
 }
 
 export function EntityCreated(x: Entity) {
-	if (x instanceof Entity) {
-		if (x !== undefined && x.Name !== undefined) {
-			if (x.Name.includes("npc_dota_pugna_nether_ward_") || x.Name.includes("npc_dota_templar_assassin_psionic_trap")) {
+	if (x instanceof Entity)
+		if (x.Name !== undefined)
+			if (x.Name.includes("npc_dota_pugna_nether_ward_") || x.Name.includes("npc_dota_templar_assassin_psionic_trap"))
 				OtherAbility.push(x)
-			}
-		}
-	}
-	if (x instanceof Hero) {
+	if (x instanceof Hero)
 		Heroes.push(x)
-	}
-	if (x instanceof Unit) {
+	if (x instanceof Unit)
 		Units.push(x)
-	}
 }
 
 export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero) {
+	if (x instanceof Hero)
 		ArrayExtensions.arrayRemove(Heroes, x)
-	}
+	if (x instanceof Unit)
+		ArrayExtensions.arrayRemove(Units, x)
 	ArrayExtensions.arrayRemove(OtherAbility, x)
 }
 
 export function Init() {
 	Heroes = []
+	Units = []
 	OtherAbility = []
 	Particle.clear()
 	END_SCROLL.clear()
 	LAST_ID_SCROLL = undefined
 	_Size = Size.value * 20
-	Units = []
 }
