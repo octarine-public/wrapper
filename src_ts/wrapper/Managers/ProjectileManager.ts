@@ -157,7 +157,7 @@ Events.on("LinearProjectileDestroyed", proj => {
 	ProjectileManager.AllLinearProjectilesMap.delete(proj)
 })
 
-setInterval(() => {
+EventsSDK.on("Tick", () => {
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
 		let cur_time = Game.RawGameTime
 		proj.Position.x += proj.Velocity.x * (cur_time - proj.LastUpdate)
@@ -179,4 +179,4 @@ setInterval(() => {
 		if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30 + (proj.Target instanceof Unit ? proj.Target.HullRadius : 0))
 			DestroyTrackingProjectile(proj)
 	})
-}, 1000 / 120)
+})
