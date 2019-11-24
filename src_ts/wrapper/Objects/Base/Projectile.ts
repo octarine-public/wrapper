@@ -1,11 +1,12 @@
 import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import EntityManager from "../../Managers/EntityManager"
+import EntityManager, { Game } from "../../Managers/EntityManager"
 import Entity from "./Entity"
 
 export class Projectile {
 	public IsValid = true
+	public LastUpdate = Game.RawGameTime
 
 	constructor(
 		public readonly ID: number,
@@ -14,7 +15,7 @@ export class Projectile {
 		protected SourceUnit: Entity | number,
 		public readonly colorgemcolor: Color,
 		protected speed: number,
-	) {}
+	) { }
 
 	public get Source(): Entity | number {
 		if (this.SourceUnit instanceof Entity)

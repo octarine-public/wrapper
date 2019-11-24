@@ -28,6 +28,7 @@ EventsSDK.on("GameEnded", () => {
 })
 
 const TrackingProjectileCreated = (proj: number, projectile: TrackingProjectile) => {
+	projectile.Position.Extend(projectile.TargetLoc, (Game.CurrentServerTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
 	EventsSDK.emit("TrackingProjectileCreated", false, projectile);
 	ProjectileManager.AllTrackingProjectiles.push(projectile);
 	ProjectileManager.AllTrackingProjectilesMap.set(proj, projectile)
@@ -77,9 +78,10 @@ Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particle
 			expireTime,
 			undefined,
 			launch_tick,
-			Vector3.fromIOBuffer(),
-			Color.fromIOBuffer(3),
+			Vector3.fromIOBuffer(true, 3),
+			Color.fromIOBuffer(6),
 		);
+		projectile.Position.CopyFrom(Vector3.fromIOBuffer())
 
 		TrackingProjectileCreated(proj, projectile);
 	}
@@ -156,22 +158,24 @@ Events.on("LinearProjectileDestroyed", proj => {
 })
 
 setInterval(() => {
-	if (Game.IsPaused)
-		return
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
-		proj.Position.x += proj.Velocity.x / 120
-		proj.Position.y += proj.Velocity.y / 120
+		let cur_time = Game.RawGameTime
+		proj.Position.x += proj.Velocity.x * (cur_time - proj.LastUpdate)
+		proj.Position.y += proj.Velocity.y * (cur_time - proj.LastUpdate)
+		proj.LastUpdate = cur_time
 		proj.Position.z = RendererSDK.GetPositionHeight(proj.Position.toVector2())
 	})
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
 		if (!proj.Position.IsValid)
 			if (proj.Target instanceof Entity && proj.Source instanceof Entity && !proj.IsDodged)
 				proj.Source.Position
-					.Extend(proj.Target.Position, (Game.CurrentServerTick - proj.LaunchTick) / 30 * proj.Speed)
+					.Extend(proj.TargetLoc, (Game.CurrentServerTick - proj.LaunchTick) / 30 * proj.Speed)
 					.CopyTo(proj.Position)
 			else
 				return
-		proj.Position.Extend(proj.TargetLoc, proj.Speed / 120).CopyTo(proj.Position)
+		let cur_time = Game.RawGameTime
+		proj.Position.Extend(proj.TargetLoc, proj.Speed * (cur_time - proj.LastUpdate)).CopyTo(proj.Position)
+		proj.LastUpdate = cur_time
 		if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30 + (proj.Target instanceof Unit ? proj.Target.HullRadius : 0))
 			DestroyTrackingProjectile(proj)
 	})
