@@ -17,7 +17,7 @@ import {
 
 const Menu = MenuSDK.AddEntry(["Visual", "Show Wards"]),
 	optionEnable = Menu.AddToggle("Enable"),
-	//optionPingTeam = Menu.AddToggle("Ping for team"),
+	optionPingTeam = Menu.AddToggle("Ping for team", true),
 	optionPlaySound = Menu.AddToggle("Play sound")
 
 optionEnable.OnValueChangedCBs.push(() => {
@@ -74,11 +74,11 @@ EventsSDK.on("EntityDestroyed", ent => {
 	}
 })
 
-function PingEnemyWard(pos: Vector3, hero: Entity) {
-	//if (optionPingTeam.value) {
-	//	pos.toIOBuffer();
-	//	Minimap.SendPing(PingType_t.ENEMY_VISION, false, hero.m_pBaseEntity);
-	//}
+function PingEnemyWard(hero: Entity) {
+	if (optionPingTeam.value) {
+		hero.InFront(200).toIOBuffer();
+		Minimap.SendPing(PingType_t.ENEMY_VISION, false, hero.m_pBaseEntity);
+	}
 
 	let map_ping = ParticlesSDK.Create(
 		"particles/ui_mouseactions/ping_enemyward.vpcf",
@@ -86,7 +86,7 @@ function PingEnemyWard(pos: Vector3, hero: Entity) {
 		hero,
 	)
 
-	ParticlesSDK.SetControlPoint(map_ping, 0, pos)
+	ParticlesSDK.SetControlPoint(map_ping, 0, hero.InFront(200))
 	ParticlesSDK.SetControlPoint(map_ping, 1, new Vector3(1, 1, 1))
 	ParticlesSDK.SetControlPoint(map_ping, 5, new Vector3(10, 0, 0))
 
@@ -95,9 +95,9 @@ function PingEnemyWard(pos: Vector3, hero: Entity) {
 	}
 }
 
-EventsSDK.on("Update", () => {
+EventsSDK.on("Tick", () => {
 	if (LocalPlayer === undefined) {
-		return false
+		return
 	}
 	if (!optionEnable.value || LocalPlayer.IsSpectator) {
 		return
@@ -146,13 +146,11 @@ EventsSDK.on("Update", () => {
 					if (ward_type !== undefined) {
 						wardProcessingTable[unique_id] = {
 							type: ward_type,
-							pos: hero.Position,
+							pos: hero.InFront(200),
 							dieTime: Math.floor(Game.GameTime + 360),
 							unit: hero,
 						}
-
-						PingEnemyWard(hero.Position, hero)
-
+						PingEnemyWard(hero)
 						wardDispenserCount[owner_idx] = undefined
 						wardCaptureTiming = Game.GameTime
 					}
@@ -184,20 +182,17 @@ EventsSDK.on("Update", () => {
 					if (ward_type !== undefined) {
 						wardProcessingTable[unique_id] = {
 							type: ward_type,
-							pos: hero.Position,
+							pos: hero.InFront(200),
 							dieTime: Math.floor(Game.GameTime + 360),
 							unit: hero,
 						}
-
-						PingEnemyWard(hero.Position, hero)
+						PingEnemyWard(hero)
 					}
 				}
-
 				wardDispenserCount[owner_idx] = {
 					sentry: sentry_stack,
 					observer: observer_stack,
 				}
-
 				wardCaptureTiming = Game.GameTime
 			}
 		} else if (hero !== undefined && hero.IsDormant) {

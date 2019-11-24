@@ -19,7 +19,7 @@ import {
 	statusPosX,
 	statusPosY,
 	UseScanForAlies,
-
+	PingForAllies
 } from "../Menu"
 
 var Timer = 0,
@@ -111,12 +111,17 @@ export function RoshanTick() {
 			let cd = LocalPlayer.Team === Team.Radiant
 				? Game.ScanCooldownRadiant
 				: Game.ScanCooldownDire
-			if (cd === 0)
+			if (cd === 0) {
 				Player.Scan(Base.RoshanPosition)
+			}
+			if (PingForAllies.value) {
+				Base.RoshanPosition.toIOBuffer();
+				Minimap.SendPing(PingType_t.DANGER, false);
+			}
 		}
 		if (NotificationRoshanStateChat.value)
 			Game.ExecuteCommand("chatwheel_say 53")
-		checkTickMessage = Time + 10
+		checkTickMessage = Time + 5
 	}
 	return
 }

@@ -27,6 +27,12 @@ EventsSDK.on("GameEnded", () => {
 	ProjectileManager.AllTrackingProjectilesMap.clear()
 })
 
+const TrackingProjectileCreated = (proj: number, projectile: TrackingProjectile) => {
+	EventsSDK.emit("TrackingProjectileCreated", false, projectile);
+	ProjectileManager.AllTrackingProjectiles.push(projectile);
+	ProjectileManager.AllTrackingProjectilesMap.set(proj, projectile)
+}
+
 Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceAttachment, path, particleSystemHandle, dodgeable, isAttack, expireTime, maximpacttime, launch_tick) => {
 	let projectile = new TrackingProjectile(
 		proj,
@@ -47,16 +53,37 @@ Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceA
 		launch_tick,
 		Vector3.fromIOBuffer(),
 		Color.fromIOBuffer(3),
-	)
-	EventsSDK.emit("TrackingProjectileCreated", false, projectile)
-	ProjectileManager.AllTrackingProjectiles.push(projectile)
-	ProjectileManager.AllTrackingProjectilesMap.set(proj, projectile)
+	);
+
+	TrackingProjectileCreated(proj, projectile);
 })
 
 Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particleSystemHandle, dodgeable, isAttack, expireTime, launch_tick) => {
 	let projectile = ProjectileManager.AllTrackingProjectilesMap.get(proj)
-	if (projectile === undefined)
-		return
+
+	if (projectile === undefined) {
+		projectile = new TrackingProjectile(
+			proj,
+			undefined,
+			hTarget instanceof C_BaseEntity
+				? EntityManager.GetEntityByNative(hTarget)
+				: hTarget,
+			moveSpeed,
+			undefined,
+			path,
+			particleSystemHandle,
+			dodgeable,
+			isAttack,
+			expireTime,
+			undefined,
+			launch_tick,
+			Vector3.fromIOBuffer(),
+			Color.fromIOBuffer(3),
+		);
+
+		TrackingProjectileCreated(proj, projectile);
+	}
+
 	projectile.Update(
 		hTarget instanceof C_BaseEntity
 			? EntityManager.GetEntityByNative(hTarget)

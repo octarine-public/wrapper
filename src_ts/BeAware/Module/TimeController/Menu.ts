@@ -55,6 +55,7 @@ export {
 
 let RoshanTree = BaseTree.AddNode("Roshan"),
 	UseScanForAlies = RoshanTree.AddToggle("Use scan in roshpit", true),
+	PingForAllies = RoshanTree.AddToggle("Ping for allies in roshpit", true),
 	NotificationRoshanStateChat = RoshanTree.AddToggle("Chat").SetTooltip("Send notification to chat alies"),
 	NotificationRoshanStateSound = RoshanTree.AddSlider("Sound volume%", 1, 0, 100),
 
@@ -85,7 +86,8 @@ export {
 	statusPosX,
 	statusPosY,
 	drawStatusSize,
-	UseScanForAlies
+	UseScanForAlies,
+	PingForAllies
 }
 
 export {

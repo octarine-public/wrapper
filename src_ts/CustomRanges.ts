@@ -118,8 +118,8 @@ const getRadius = (skill: Ability) => {
 	return radius;
 }
 EventsSDK.on("Draw", () => {
-	if (!active.value || !Game.IsInGame || LocalPlayer === undefined || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)
-		return false
+	if (!active.value || !Game.IsInGame || LocalPlayer === undefined || LocalPlayer.IsSpectator || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)
+		return
 	if (fActive.value) {
 		if (fPart === undefined || fCache !== fRange.value) {
 			fCache = fRange.value
@@ -229,8 +229,8 @@ function Refresh(arg?) {
 	items.values = []
 	abils.Update()
 	items.Update()
-	if (!active.value || !Game.IsInGame || LocalPlayer.Hero === undefined)
-		return false
+	if (!active.value || !Game.IsInGame || LocalPlayer === undefined || LocalPlayer.IsSpectator || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)
+		return
 	for (let i = 0; i < 24; i++) {
 		const spell = LocalPlayer.Hero.AbilitiesBook.GetSpell(i),
 			item = LocalPlayer.Hero.Inventory.GetItem(i)

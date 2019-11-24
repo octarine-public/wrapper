@@ -76,7 +76,7 @@ EventsSDK.on("Draw", () => {
 		let w2s = RendererSDK.WorldToScreen(proj.Position)
 		if (w2s === undefined)
 			return
-		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(255))
+		RendererSDK.FilledRect(w2s.SubtractForThis(new Vector2(10, 10)), new Vector2(20, 20), new Color(0, 255))
 	})
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
 		let w2s = RendererSDK.WorldToScreen(proj.Position)

@@ -1,4 +1,4 @@
-import { EventsSDK, TrackingProjectile, ArrayExtensions, Unit, TickSleeper, Hero, LinearProjectile } from "wrapper/Imports"
+import { EventsSDK, TrackingProjectile, ArrayExtensions, Unit, TickSleeper, Hero, LinearProjectile, Events } from "wrapper/Imports"
 import { MenuState } from "./Menu"
 
 export let all_units: Unit[] = []
@@ -49,25 +49,25 @@ function UseProjectile(unit: Unit, length: number) {
 	if (abil === undefined || !abil.CanBeCasted()) {
 		return false
 	}
-	proj_list.forEach(proj => {
+	proj_list.some(proj => {
 		if (ignorelist.includes(proj.ParticlePath))
-			return
+			return false
 		let target_proj = proj.Target as Unit,
 			HullRadius = unit.HullRadius + target_proj.HullRadius,
 			Dist = (unit.Distance(proj.Position) + HullRadius) / proj.Speed
-
+		//console.log("1: ", proj.Position)
 		if (proj_union.includes(proj.ParticlePath))
 			Dist -= 0.3
 
 		if (Dist >= 0.3 || target_proj !== unit || Sleep.Sleeping) {
 			return false
 		}
-		//console.log(Dist)
+		//console.log("2: ", Dist)
 		unit.CastNoTarget(abil)
-		//console.log("use")
 		Sleep.Sleep(length * 5)
 		return true
 	})
+	//console.log(proj_list.length);
 }
 
 EventsSDK.on("Tick", () => {
@@ -90,17 +90,31 @@ EventsSDK.on("EntityDestroyed", x => {
 	if (x instanceof Unit)
 		ArrayExtensions.arrayRemove(all_units, x)
 })
-export function GameEndedCallback() {
+export function GameEnded() {
 	all_units = []
 	proj_list = []
 }
-EventsSDK.on("TrackingProjectileCreated", (proj: TrackingProjectile) => {
-	if (proj instanceof TrackingProjectile && proj.IsValid)
-		proj_list.push(proj)
-})
-EventsSDK.on("TrackingProjectileDestroyed", (proj: TrackingProjectile) => {
-	if (proj instanceof TrackingProjectile && proj.IsValid)
-		ArrayExtensions.arrayRemove(proj_list, proj)
-})
+// EventsSDK.on("TrackingProjectileCreated", (proj: TrackingProjectile) => {
+// 	if (proj instanceof TrackingProjectile && proj.IsValid)
+// 		proj_list.push(proj)
+// })
 
-EventsSDK.on("GameEnded", GameEndedCallback)
+// EventsSDK.on("TrackingProjectileDestroyed", (proj: TrackingProjectile) => {
+// 	if (proj.IsAttack)
+// 		return;
+// 	//console.log("TrackingProjectileDestroyed", proj.ID);
+// 	const id = proj_list.indexOf(proj);
+// 	//console.log("id: ", id);
+// 	if (id !== -1) {
+// 		//console.log("before: ", proj_list.length);
+// 		proj_list.splice(id, 1)
+// 		//console.log("after: ", proj_list.length);
+
+// 	}
+// 	ArrayExtensions.arrayRemove(proj_list, proj);
+// 	//console.log("TrackingProjectileDestroyed", proj);
+// })
+
+
+
+EventsSDK.on("GameEnded", GameEnded)
