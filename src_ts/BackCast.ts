@@ -1,4 +1,4 @@
-import { Menu as MenuSDK, EventsSDK, Ability, Hero, RendererSDK, Color, Game } from "wrapper/Imports";
+import { Menu as MenuSDK, EventsSDK, Ability, RendererSDK, Color, Game, Unit, LocalPlayer, ArrayExtensions } from "wrapper/Imports";
 const Abilities: string[] = [
 	"magnataur_skewer",
 	"terrorblade_sunder",
@@ -46,6 +46,7 @@ let ignore_list = [
 ]
 const Menu = MenuSDK.AddEntry(["Utility", "Back Cast"])
 const State = Menu.AddToggle("Enable")
+const StateMiltiUnit = Menu.AddSwitcher("Multi units", ["Only you hero", "All Heroes"], 0)
 const Drawing = Menu.AddNode("Drawing")
 const DrawingState = Drawing.AddToggle("State", true)
 const SuppAbils = Menu.AddImageSelector("Ability", Abilities, new Map(Abilities.map(name => [name, true])))
@@ -54,21 +55,38 @@ const DrawingPositionX = Drawing.AddSlider("Text Pos X", 34, -100, 250)
 const DrawingPositionY = Drawing.AddSlider("Text Pos Y", -20, -100, 250)
 const DrawingColorText = Drawing.AddColorPicker("Text Color", new Color(0, 255, 0, 101))
 
-let Owner: Hero = undefined
+let Units: Unit[] = []
 let SpellsReady: boolean = false
 
 EventsSDK.on("Update", () => {
-	if (!State.value || Owner === undefined) {
+	if (!State.value || Units.length <= 0 || LocalPlayer === undefined) {
 		return
 	}
-	SpellsReady = !Owner.IsMoving && Owner.Spells.filter(abil => abil !== undefined
-		&& abil.CanBeCasted()
-		&& SuppAbils.IsEnabled(abil.Name)
-		&& Abilities.includes(abil.Name)).length > 0
+	Units.filter(x => {
+		if (x.IsEnemy() || !x.IsAlive || !x.IsHero || !x.IsControllable || x.IsMoving) {
+			return
+		}
+		if (StateMiltiUnit.selected_id === 0) {
+			if (LocalPlayer.Hero !== x && Units.length >= 5) {
+				ArrayExtensions.arrayRemove(Units, x)
+				x = LocalPlayer.Hero
+			}
+		} else {
+			if (LocalPlayer.Hero !== x && Units.length < 5) {
+				Units.push(x)
+			}
+		}
+	})
+	SpellsReady = Units.some(unit => !unit.IsEnemy() && unit.IsAlive && unit.IsHero
+		&& unit.IsControllable && !unit.IsMoving
+		&& unit.Spells.filter(abil => abil !== undefined
+			&& abil.CanBeCasted()
+			&& SuppAbils.IsEnabled(abil.Name)
+			&& Abilities.includes(abil.Name)).length > 0)
 })
 
 EventsSDK.on("Draw", () => {
-	if (Owner === undefined
+	if (Units.length <= 0
 		|| !State.value
 		|| !DrawingState.value
 		|| !Game.IsInGame
@@ -76,40 +94,51 @@ EventsSDK.on("Draw", () => {
 		|| Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
 		return
 	}
-	let wts = RendererSDK.WorldToScreen(Owner.Position)
-	if (wts === undefined) {
-		return
-	}
-	RendererSDK.Text(
-		"Back cast: ready",
-		wts.SubtractScalarX(DrawingPositionX.value).SubtractScalarY(DrawingPositionY.value),
-		DrawingColorText.Color, "Calibri", DrawingColorSize.value
-	)
+	Units.filter(unit => {
+		if (unit.IsEnemy() || !unit.IsAlive || !unit.IsHero || !unit.IsControllable) {
+			return
+		}
+		let wts = RendererSDK.WorldToScreen(unit.Position)
+		if (wts === undefined || unit.IsMoving) {
+			return
+		}
+		return RendererSDK.Text(
+			"Back cast: ready",
+			wts.SubtractScalarX(DrawingPositionX.value).SubtractScalarY(DrawingPositionY.value),
+			DrawingColorText.Color, "Calibri", DrawingColorSize.value
+		)
+	})
 })
 EventsSDK.on("PrepareUnitOrders", (orders) => {
-	if (Owner === undefined || !State.value || !SpellsReady || orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION) {
+	if (Units.length <= 0 || !State.value || !SpellsReady || orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION) {
 		return true
 	}
 	let abils = orders.Ability as Ability
 	if (abils === undefined) {
 		return true
 	}
-	let abil_name = Owner.GetAbilityByName(abils.Name)
-	if (abil_name === undefined || ignore_list.includes(abil_name.Name)) {
+	let units_ = Units.filter(unit => !unit.IsEnemy() && unit.IsAlive
+		&& unit.IsHero && unit.IsControllable && !unit.IsMoving)
+
+	if (units_.map(unit => {
+		if (ignore_list.includes(abils.Name)) {
+			return false
+		}
+		if (abils.CastRange + unit.CastRangeBonus < (orders.Position.Distance2D(unit.Position))) {
+			return false
+		}
+		unit.CastPosition(abils, unit.Position.Add((orders.Position.Subtract(unit.Position)).Normalize().ScaleTo(1.3)))
 		return true
-	}
-	if (abils.CastRange + Owner.CastRangeBonus < (orders.Position.Distance2D(Owner.Position))) {
-		return true
-	}
-	Owner.CastPosition(abils, Owner.Position.Add((orders.Position.Subtract(Owner.Position)).Normalize().ScaleTo(1.3)))
-	return false
-})
-EventsSDK.on("GameStarted", (hero) => {
-	if (Owner === undefined) {
-		Owner = hero
-	}
+	}))
+		return false
 })
 EventsSDK.on("GameEnded", () => {
-	Owner = undefined
+	Units = []
 	SpellsReady = false
+})
+
+EventsSDK.on("EntityCreated", x => {
+	if (x instanceof Unit) {
+		Units.push(x)
+	}
 })
