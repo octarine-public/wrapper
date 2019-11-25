@@ -39,10 +39,15 @@ const Abilities: string[] = [
 	"ancient_apparition_ice_blast",
 	"troll_warlord_whirling_axes_ranged",
 ]
-let ignore_list = [
+const ignore_list = [
 	"tinker_march_of_the_machines",
 	"sniper_shrapnel",
 	"venomancer_plague_ward",
+	"item_tpscroll",
+	"item_meteor_hammer",
+	"item_blink",
+	"item_travel_boots",
+	"item_travel_boots_2"
 ]
 const Menu = MenuSDK.AddEntry(["Utility", "Back Cast"])
 const State = Menu.AddToggle("Enable")
@@ -58,12 +63,17 @@ const DrawingColorText = Drawing.AddColorPicker("Text Color", new Color(0, 255, 
 let Units: Unit[] = []
 let SpellsReady: boolean = false
 
+function IsReadyUnit(x: Unit): boolean {
+	return x.IsEnemy() || !x.IsAlive || !x.IsHero || x.IsMoving
+		|| !x.IsControllable || x.HasBuffByName("modifier_teleporting")
+		|| x.IsStunned || x.IsHexed || x.IsIllusion || x.IsInvulnerable
+}
 EventsSDK.on("Update", () => {
 	if (!State.value || Units.length <= 0 || LocalPlayer === undefined) {
 		return
 	}
 	Units.filter(x => {
-		if (x.IsEnemy() || !x.IsAlive || !x.IsHero || !x.IsControllable || x.IsMoving) {
+		if (IsReadyUnit(x)) {
 			return
 		}
 		if (StateMiltiUnit.selected_id === 0) {
@@ -117,13 +127,12 @@ EventsSDK.on("PrepareUnitOrders", (orders) => {
 	if (abils === undefined) {
 		return true
 	}
+	if (ignore_list.includes(abils.Name)) {
+		return true
+	}
 	let units_ = Units.filter(unit => !unit.IsEnemy() && unit.IsAlive
 		&& unit.IsHero && unit.IsControllable && !unit.IsMoving)
-
 	if (units_.map(unit => {
-		if (ignore_list.includes(abils.Name)) {
-			return false
-		}
 		if (abils.CastRange + unit.CastRangeBonus < (orders.Position.Distance2D(unit.Position))) {
 			return false
 		}
