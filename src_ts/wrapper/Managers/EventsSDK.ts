@@ -93,6 +93,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "BuffAdded", listener: (npc: Unit, buff: Modifier) => void): EventEmitter
 	on(name: "BuffRemoved", listener: (npc: Unit, buff: Modifier) => void): EventEmitter
 	on(name: "BuffStackCountChanged", listener: (buff: Modifier) => void): EventEmitter
+	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "UnitSpeech", listener: (
 		npc: Unit | number,
@@ -203,7 +204,8 @@ Events.on("UnitAnimation", (npc, sequenceVariant, playbackrate, castpoint, type,
 	activity,
 ))
 
-Events.on("CustomGameEvent", (...args) => EventsSDK.emit("CustomGameEvent", false, ...args))
+Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
+Events.on("CustomGameEvent", (name, obj) => EventsSDK.emit("CustomGameEvent", false, name, obj))
 Events.on("UnitAnimationEnd", (npc, snap) => EventsSDK.emit("UnitAnimationEnd", false, EntityManager.GetEntityByNative(npc), snap))
 
 Events.on("UnitSpeech", (npc, concept, response, recipient_type, level, muteable) => EventsSDK.emit(

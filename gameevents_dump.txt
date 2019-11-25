@@ -1,0 +1,1244 @@
+server_spawn
+	string hostname
+	string address
+	short port
+	string game
+	string mapname
+	string addonname
+	long maxplayers
+	string os
+	bool dedicated
+	bool password
+
+server_pre_shutdown
+	string reason
+
+server_shutdown
+	string reason
+
+server_message
+	string text
+
+server_cvar
+	string cvarname
+	string cvarvalue
+
+server_addban
+	string name
+	short userid
+	string networkid
+	string ip
+	string duration
+	string by
+	bool kicked
+
+server_removeban
+	string networkid
+	string ip
+	string by
+
+player_activate
+	short userid
+
+player_connect_full
+	short userid
+	byte index
+	short PlayerID
+
+player_say
+	short userid
+	string text
+
+player_full_update
+	short userid
+	short count
+
+player_connect
+	string name
+	byte index
+	short userid
+	string networkid
+	string address
+
+player_disconnect
+	short userid
+	short reason
+	string name
+	string networkid
+	short PlayerID
+
+player_info
+	string name
+	byte index
+	short userid
+	string networkid
+	bool bot
+
+player_spawn
+	short userid
+
+player_team
+	short userid
+	byte team
+	byte oldteam
+	bool disconnect
+	bool autoteam
+	bool silent
+	string name
+	bool isbot
+
+player_changename
+	short userid
+	string oldname
+	string newname
+
+player_class
+	short userid
+	string class
+
+player_score
+	short userid
+	short kills
+	short deaths
+	short score
+
+player_hurt
+	short userid
+	short attacker
+	byte health
+
+player_shoot
+	short userid
+	byte weapon
+	byte mode
+
+player_chat
+	bool teamonly
+	short userid
+	short playerid
+	string text
+
+teamplay_broadcast_audio
+	byte team
+	string sound
+
+finale_start
+	short rushes
+
+player_stats_updated
+	bool forceupload
+
+user_data_downloaded
+
+ragdoll_dissolved
+	long entindex
+
+team_info
+	byte teamid
+	string teamname
+
+team_score
+	byte teamid
+	short score
+
+hltv_cameraman
+	short index
+
+hltv_chase
+	short target1
+	short target2
+	short distance
+	short theta
+	short phi
+	byte inertia
+	byte ineye
+
+hltv_rank_camera
+	byte index
+	float rank
+	short target
+
+hltv_rank_entity
+	short index
+	float rank
+	short target
+
+hltv_fixed
+	long posx
+	long posy
+	long posz
+	short theta
+	short phi
+	short offset
+	float fov
+	short target
+
+hltv_message
+	string text
+
+hltv_status
+	long clients
+	long slots
+	short proxies
+	string master
+
+hltv_title
+	string text
+
+hltv_chat
+	string name
+	string text
+	uint64 steamID
+
+hltv_versioninfo
+	long version
+
+demo_stop
+
+map_shutdown
+
+map_transition
+
+hostname_changed
+	string hostname
+
+difficulty_changed
+	short newDifficulty
+	short oldDifficulty
+	string strDifficulty
+
+game_message
+	byte target
+	string text
+
+game_newmap
+	string mapname
+	bool transition
+
+round_start
+	long timelimit
+	long fraglimit
+	string objective
+
+round_end
+	byte winner
+	byte reason
+	string message
+	float time
+
+round_start_pre_entity
+
+round_start_post_nav
+
+round_freeze_end
+
+teamplay_round_start
+	bool full_reset
+
+player_death
+	short userid
+	short attacker
+
+player_footstep
+	short userid
+
+player_hintmessage
+	string hintmessage
+
+break_breakable
+	long entindex
+	short userid
+	byte material
+
+break_prop
+	long entindex
+	short userid
+	bool player_held
+	bool player_thrown
+	bool player_dropped
+
+entity_killed
+	long entindex_killed
+	long entindex_attacker
+	long entindex_inflictor
+	long damagebits
+
+door_open
+	short userid
+	bool checkpoint
+	bool closed
+
+door_close
+	short userid
+	bool checkpoint
+
+door_unlocked
+	short userid
+	bool checkpoint
+
+vote_started
+	string issue
+	string param1
+	string votedata
+	byte team
+	long initiator
+
+vote_failed
+	byte team
+
+vote_passed
+	string details
+	string param1
+	byte team
+
+vote_changed
+	byte yesVotes
+	byte noVotes
+	byte potentialVotes
+
+vote_cast_yes
+	byte team
+	long entityid
+
+vote_cast_no
+	byte team
+	long entityid
+
+achievement_event
+	string achievement_name
+	short cur_val
+	short max_val
+
+achievement_earned
+	byte player
+	short achievement
+
+achievement_write_failed
+
+bonus_updated
+	short numadvanced
+	short numbronze
+	short numsilver
+	short numgold
+
+spec_target_updated
+
+entity_visible
+	short userid
+	long subject
+	string classname
+	string entityname
+
+player_use_miss
+	short userid
+
+gameinstructor_draw
+
+gameinstructor_nodraw
+
+flare_ignite_npc
+	long entindex
+
+helicopter_grenade_punt_miss
+
+physgun_pickup
+	long entindex
+
+inventory_updated
+	short itemdef
+	long itemid
+
+cart_updated
+
+store_pricesheet_updated
+
+item_schema_initialized
+
+drop_rate_modified
+
+event_ticket_modified
+
+gc_connected
+
+instructor_start_lesson
+	short userid
+	string hint_name
+	long hint_target
+
+instructor_close_lesson
+	short userid
+	string hint_name
+
+instructor_server_hint_create
+	short userid
+	long hint_entindex
+	string hint_name
+	string hint_replace_key
+	long hint_target
+	short hint_activator_userid
+	short hint_timeout
+	string hint_icon_onscreen
+	string hint_icon_offscreen
+	string hint_caption
+	string hint_activator_caption
+	string hint_color
+	float hint_icon_offset
+	float hint_range
+	long hint_flags
+	string hint_binding
+	bool hint_allow_nodraw_target
+	bool hint_nooffscreen
+	bool hint_forcecaption
+	bool hint_local_player_only
+	string hint_start_sound
+	string hint_layoutfile
+	short hint_vr_panel_type
+	float hint_vr_height_offset
+	float hint_vr_offset_x
+	float hint_vr_offset_y
+	float hint_vr_offset_z
+
+instructor_server_hint_stop
+	string hint_name
+	long hint_entindex
+
+set_instructor_group_enabled
+	string group
+	short enabled
+
+clientside_lesson_closed
+	string lesson_name
+
+dynamic_shadow_light_changed
+
+dota_chase_hero
+	short target1
+	short target2
+	byte type
+	short priority
+	float gametime
+	bool highlight
+	byte target1playerid
+	byte target2playerid
+	short eventtype
+
+dota_combatlog
+	byte type
+	short sourcename
+	short targetname
+	short attackername
+	short inflictorname
+	bool attackerillusion
+	bool targetillusion
+	short value
+	short health
+	float timestamp
+	short targetsourcename
+	float timestampraw
+	bool attackerhero
+	bool targethero
+	bool ability_toggle_on
+	bool ability_toggle_off
+	short ability_level
+	short gold_reason
+	short xp_reason
+
+dota_game_state_change
+	short old_state
+	short new_state
+
+dota_player_pick_hero
+	short player
+	short heroindex
+	string hero
+
+modifier_event
+	string eventname
+	short caster
+	short ability
+
+dota_player_kill
+	short victim_userid
+	short killer1_userid
+	short killer2_userid
+	short killer3_userid
+	short killer4_userid
+	short killer5_userid
+	short bounty
+	short neutral
+	short greevil
+
+dota_player_deny
+	short killer_userid
+	short victim_userid
+
+dota_barracks_kill
+	short barracks_id
+	short killer_playerid
+	short killer_team
+	short bounty_amount
+
+dota_tower_kill
+	short killer_userid
+	short teamnumber
+	short gold
+
+dota_effigy_kill
+	short owner_userid
+
+dota_roshan_kill
+	short teamnumber
+	short gold
+
+dota_courier_lost
+	short killerid
+	short teamnumber
+	short bounty_gold
+
+dota_courier_respawned
+	short teamnumber
+
+dota_glyph_used
+	short teamnumber
+
+dota_super_creeps
+	short teamnumber
+
+dota_item_purchase
+	short userid
+	long item_ability_id
+
+dota_item_gifted
+	short userid
+	long item_ability_id
+	short sourceid
+
+dota_rune_pickup
+	short userid
+	short type
+	short rune
+	short bounty_amount
+
+dota_ward_killed
+	short userid
+	short type
+	short bounty_amount
+
+dota_rune_spotted
+	short userid
+	short rune
+	string map_location
+	short rune_team
+
+dota_item_spotted
+	short userid
+	long item_ability_id
+
+dota_no_battle_points
+	short userid
+	short reason
+
+dota_chat_informational
+	short userid
+	short type
+
+dota_action_item
+	short reason
+	short itemdef
+	short message
+
+dota_chat_ban_notification
+	short userid
+
+dota_chat_event
+	short userid
+	short gold
+	short message
+
+dota_chat_timed_reward
+	short userid
+	short itmedef
+	short message
+
+dota_pause_event
+	short userid
+	short value
+	short message
+
+dota_chat_kill_streak
+	short gold
+	short killer_id
+	short killer_streak
+	short killer_multikill
+	short victim_id
+	short victim_streak
+
+dota_chat_first_blood
+	short gold
+	short killer_id
+	short victim_id
+
+dota_chat_assassin_announce
+	short assassin_id
+	short target_id
+	short message
+
+dota_chat_assassin_denied
+	short assassin_id
+	short target_id
+	short message
+
+dota_chat_assassin_success
+	short assassin_id
+	short target_id
+	short message
+
+dota_player_update_hero_selection
+	bool tabcycle
+
+dota_player_update_selected_unit
+
+dota_player_update_query_unit
+
+dota_player_update_killcam_unit
+
+dota_player_take_tower_damage
+	short PlayerID
+	short damage
+
+dota_hud_error_message
+	byte reason
+	string message
+
+dota_action_success
+
+dota_starting_position_changed
+
+dota_money_changed
+
+dota_enemy_money_changed
+
+dota_portrait_unit_stats_changed
+
+dota_portrait_unit_modifiers_changed
+	bool modifier_affects_abilities
+
+dota_force_portrait_update
+
+dota_inventory_changed
+
+dota_item_suggestions_changed
+
+dota_estimated_match_duration_changed
+
+dota_hero_ability_points_changed
+
+dota_item_picked_up
+	string itemname
+	short PlayerID
+	short ItemEntityIndex
+	short HeroEntityIndex
+
+dota_inventory_item_changed
+	short entityIndex
+
+dota_ability_changed
+	short entityIndex
+
+dota_spectator_talent_changed
+	string abilityname
+	short playerid
+
+dota_portrait_ability_layout_changed
+
+dota_inventory_item_added
+	string itemname
+
+dota_inventory_changed_query_unit
+
+dota_link_clicked
+	string link
+	bool nav
+	bool nav_back
+	short recipe
+	short shop
+
+dota_set_quick_buy
+	string item
+	byte recipe
+	bool toggle
+
+dota_quick_buy_changed
+	string item
+	byte recipe
+
+dota_player_shop_changed
+	byte prevshopmask
+	byte shopmask
+
+dota_player_show_killcam
+	byte nodes
+	short player
+
+dota_player_show_minikillcam
+	byte nodes
+	short player
+
+gc_user_session_created
+
+team_data_updated
+
+guild_data_updated
+
+guild_open_parties_updated
+
+fantasy_updated
+
+fantasy_league_changed
+
+fantasy_score_info_changed
+
+league_admin_info_updated
+
+league_series_info_updated
+
+player_info_updated
+
+player_info_individual_updated
+	long account_id
+
+game_rules_state_change
+
+match_history_updated
+	uint64 SteamID
+
+match_details_updated
+	uint64 matchID
+	byte result
+
+team_details_updated
+	long teamID
+
+live_games_updated
+
+recent_matches_updated
+	short Page
+
+news_updated
+
+persona_updated
+	uint64 SteamID
+
+tournament_state_updated
+
+party_updated
+
+lobby_updated
+
+dashboard_caches_cleared
+
+last_hit
+	short PlayerID
+	short EntKilled
+	bool FirstBlood
+	bool HeroKill
+	bool TowerKill
+
+player_completed_game
+	short PlayerID
+	byte Winner
+
+player_reconnected
+	short PlayerID
+
+nommed_tree
+	short PlayerID
+
+dota_rune_activated_server
+	short PlayerID
+	short rune
+
+dota_player_gained_level
+	short PlayerID
+	short level
+
+dota_player_learned_ability
+	short PlayerID
+	short player
+	string abilityname
+
+dota_player_used_ability
+	short PlayerID
+	string abilityname
+
+dota_non_player_used_ability
+	string abilityname
+
+dota_player_begin_cast
+	short PlayerID
+	string abilityname
+
+dota_non_player_begin_cast
+	string abilityname
+
+dota_ability_channel_finished
+	string abilityname
+	bool interrupted
+
+dota_holdout_revive_complete
+	short caster
+	short target
+	float channel_time
+
+dota_holdout_revive_eliminated
+	short caster
+	short target
+	float channel_time
+
+dota_player_killed
+	short PlayerID
+	bool HeroKill
+	bool TowerKill
+
+bindpanel_open
+
+bindpanel_close
+
+keybind_changed
+
+dota_item_drag_begin
+
+dota_item_drag_end
+
+dota_shop_item_drag_begin
+
+dota_shop_item_drag_end
+
+dota_item_purchased
+	short PlayerID
+	string itemname
+	short itemcost
+
+dota_item_combined
+	short PlayerID
+	string itemname
+	short itemcost
+
+dota_item_used
+	short PlayerID
+	string itemname
+
+dota_item_auto_purchase
+	short item_id
+
+dota_unit_event
+	short victim
+	short attacker
+	short basepriority
+	short priority
+	short eventtype
+
+dota_quest_started
+	long questIndex
+
+dota_quest_completed
+	long questIndex
+
+gameui_activated
+
+gameui_hidden
+
+player_fullyjoined
+	short userid
+	string name
+
+dota_spectate_hero
+	byte entindex
+
+dota_match_done
+	byte winningteam
+
+dota_match_done_client
+
+joined_chat_channel
+	string channelName
+
+left_chat_channel
+	string channelName
+
+gc_chat_channel_list_updated
+
+file_downloaded
+	bool success
+	string local_filename
+	string remote_url
+
+player_report_counts_updated
+	byte positive_remaining
+	byte negative_remaining
+	short positive_total
+	short negative_total
+
+scaleform_file_download_complete
+	bool success
+	string local_filename
+	string remote_url
+
+item_purchased
+	short itemid
+
+gc_mismatched_version
+
+dota_workshop_fileselected
+	string filename
+
+dota_workshop_filecanceled
+
+rich_presence_updated
+
+live_leagues_updated
+
+dota_hero_random
+	short userid
+	short heroid
+
+dota_river_painted
+	short userid
+	short riverid
+
+dota_scan_used
+	short teamnumber
+
+dota_rd_chat_turn
+	short userid
+
+dota_ad_nominated_ban
+	short heroid
+
+dota_ad_ban
+	short heroid
+
+dota_ad_ban_count
+	short count
+
+dota_favorite_heroes_updated
+
+profile_opened
+
+profile_closed
+
+item_preview_closed
+
+dashboard_switched_section
+	short section
+
+dota_tournament_item_event
+	short winner_count
+	short event_type
+
+dota_hero_swap
+	byte playerid1
+	byte playerid2
+
+dota_reset_suggested_items
+
+halloween_high_score_received
+	short round
+
+halloween_phase_end
+	byte phase
+	byte team
+
+halloween_high_score_request_failed
+	short round
+
+dota_hud_skin_changed
+	string skin
+	byte style
+
+dota_inventory_player_got_item
+	string itemname
+
+player_is_experienced
+
+player_is_notexperienced
+
+dota_tutorial_lesson_start
+
+dota_tutorial_task_advance
+
+dota_tutorial_shop_toggled
+	bool shop_opened
+
+map_location_updated
+
+richpresence_custom_updated
+
+game_end_visible
+
+enable_china_logomark
+
+highlight_hud_element
+	string elementname
+	float duration
+
+hide_highlight_hud_element
+
+intro_video_finished
+
+matchmaking_status_visibility_changed
+
+practice_lobby_visibility_changed
+
+dota_courier_transfer_item
+
+full_ui_unlocked
+
+hero_selector_preview_set
+	short setindex
+
+antiaddiction_toast
+	string message
+	float duration
+
+hero_picker_shown
+
+hero_picker_hidden
+
+dota_local_quickbuy_changed
+
+show_center_message
+	string message
+	float duration
+	bool clear_message_queue
+
+hud_flip_changed
+	bool flipped
+
+frosty_points_updated
+
+defeated
+	short entindex
+
+reset_defeated
+
+booster_state_updated
+
+custom_game_difficulty
+	byte difficulty
+
+tree_cut
+	float tree_x
+	float tree_y
+
+ugc_details_arrived
+	uint64 published_file_id
+
+ugc_subscribed
+	uint64 published_file_id
+
+ugc_unsubscribed
+	uint64 published_file_id
+
+ugc_download_requested
+	uint64 published_file_id
+
+ugc_installed
+	uint64 published_file_id
+
+prizepool_received
+	bool success
+	uint64 prizepool
+	uint64 leagueid
+
+microtransaction_success
+	uint64 txnid
+
+dota_rubick_ability_steal
+	short abilityIndex
+	byte abilityLevel
+
+community_cached_names_updated
+
+spec_item_pickup
+	short player_id
+	string item_name
+	bool purchase
+
+spec_aegis_reclaim_time
+	float reclaim_time
+
+account_trophies_changed
+	uint64 account_id
+
+account_all_hero_challenge_changed
+	uint64 account_id
+
+team_showcase_ui_update
+	bool show
+	uint64 account_id
+	short hero_entindex
+	bool display_ui_on_left
+
+dota_match_signout
+
+dota_illusions_created
+	short original_entindex
+
+dota_year_beast_killed
+	short killer_player_id
+	short message
+	uint64 beast_id
+
+dota_player_spawned
+	byte PlayerID
+
+dota_hero_undoselection
+	byte playerid1
+
+dota_challenge_socache_updated
+
+dota_player_team_changed
+
+party_invites_updated
+
+lobby_invites_updated
+
+custom_game_mode_list_updated
+
+custom_game_lobby_list_updated
+
+friend_lobby_list_updated
+
+dota_team_player_list_changed
+
+dota_player_details_changed
+
+player_profile_stats_updated
+	uint64 account_id
+
+custom_game_player_count_updated
+	uint64 custom_game_id
+
+custom_game_friends_played_updated
+	uint64 custom_game_id
+
+custom_games_friends_play_updated
+
+dota_player_update_assigned_hero
+	short playerid
+
+dota_player_hero_selection_dirty
+
+dota_npc_goal_reached
+	short npc_entindex
+	short goal_entindex
+	short next_goal_entindex
+
+dota_player_selected_custom_team
+	short player_id
+	short team_id
+	bool success
+
+dota_coin_wager
+	short userid
+	short message
+	uint64 coins
+
+dota_wager_token
+	short userid
+	short message
+	long amount
+
+dota_rank_wager
+	short userid
+
+colorblind_mode_changed
+
+dota_report_submitted
+	long result
+	long report_flags
+	string message
+
+client_reload_game_keyvalues
+
+dota_hero_inventory_item_change
+	long player_id
+	long hero_entindex
+	long item_entindex
+	bool removed
+
+game_rules_shutdown
+
+aegis_event
+	short player_id
+	short chat_message_type
+
+dota_buyback
+	long entindex
+	long player_id
+
+bought_back
+	short player_id
+
+dota_shrine_kill
+	short killer_userid
+	short teamnumber
+	short gold
+
+particle_system_start
+	string targetname
+
+particle_system_stop
+	string targetname
+	bool immediate
+
+dota_combat_event_message
+	string message
+	short teamnumber
+	long player_id
+	long player_id2
+	long int_value
+	string locstring_value
+
+dota_item_spawned
+	long item_ent_index
+	long player_id
+
+dota_player_reconnected
+	long player_id
+
+dota_on_hero_finish_spawn
+	long heroindex
+	string hero
+
+dota_creature_gained_level
+	short entindex
+	short level
+
+npc_spawned
+	long entindex
+
+npc_replaced
+	long old_entindex
+	long new_entindex
+
+entity_hurt
+	long entindex_killed
+	long entindex_attacker
+	long entindex_inflictor
+	long damagebits
+	float damage
+
+chat_new_message
+	byte channel
+
+chat_members_changed
+	byte channel
+
+dota_team_kill_credit
+	short killer_userid
+	short victim_userid
+	short teamnumber
+	short herokills
+	
