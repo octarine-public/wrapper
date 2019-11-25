@@ -81,7 +81,7 @@ function CourierBestPos() {
 	if (allyCourier === undefined || !allyCourier.IsControllable) {
 		return false
 	}
-	let Position = Owner.Team === Team.Dire ? CourierBestPosition[0] : CourierBestPosition[1]
+	let Position = LocalPlayer.Team === Team.Dire ? CourierBestPosition[0] : CourierBestPosition[1]
 	return Enemy.some(enemy => {
 		switch (allyCourier.State) {
 			case CourierState_t.COURIER_STATE_IDLE:

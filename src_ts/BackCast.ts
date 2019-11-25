@@ -122,6 +122,7 @@ EventsSDK.on("PrepareUnitOrders", (orders) => {
 		if (abils.CastRange + unit.CastRangeBonus < (orders.Position.Distance2D(unit.Position))) {
 			return false
 		}
+		unit.OrderStop()
 		unit.CastPosition(abils, unit.Position.Add((orders.Position.Subtract(unit.Position)).Normalize().ScaleTo(1.3)))
 		return true
 	}))
