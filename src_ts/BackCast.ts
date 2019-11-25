@@ -1,12 +1,6 @@
 import { Menu as MenuSDK, EventsSDK, Ability, RendererSDK, Color, Game, Unit, LocalPlayer, ArrayExtensions } from "wrapper/Imports";
 const Abilities: string[] = [
 	"magnataur_skewer",
-	"terrorblade_sunder",
-	"pudge_dismember",
-	"crystal_maiden_crystal_nova",
-	"warlock_upheaval",
-	"sniper_assassinate",
-	"phantom_lancer_doppelwalk",
 	"pudge_meat_hook",
 	"windrunner_powershot",
 	"death_prophet_carrion_swarm",
@@ -34,24 +28,16 @@ const Abilities: string[] = [
 	"puck_illusory_orb",
 	"shadow_demon_shadow_poison",
 	"spectre_spectral_dagger",
-	"tidehunter_gush",
+	// "tidehunter_gush", // TODO: aghs only
 	"tinker_march_of_the_machines",
 	"ancient_apparition_ice_blast",
 	"troll_warlord_whirling_axes_ranged",
-]
-const ignore_list = [
-	"tinker_march_of_the_machines",
-	"sniper_shrapnel",
-	"venomancer_plague_ward",
-	"item_tpscroll",
-	"item_meteor_hammer",
-	"item_blink",
-	"item_travel_boots",
-	"item_travel_boots_2"
+	"earth_spirit_rolling_boulder",
+	"elder_titan_earth_splitter",
 ]
 const Menu = MenuSDK.AddEntry(["Utility", "Back Cast"])
 const State = Menu.AddToggle("Enable")
-const StateMiltiUnit = Menu.AddSwitcher("Multi units", ["Only you hero", "All Heroes"], 0)
+const StateMiltiUnit = Menu.AddSwitcher("Multi units", ["Only your hero", "All Heroes"], 0)
 const Drawing = Menu.AddNode("Drawing")
 const DrawingState = Drawing.AddToggle("State", true)
 const SuppAbils = Menu.AddImageSelector("Ability", Abilities, new Map(Abilities.map(name => [name, true])))
@@ -127,7 +113,7 @@ EventsSDK.on("PrepareUnitOrders", (orders) => {
 	if (abils === undefined) {
 		return true
 	}
-	if (ignore_list.includes(abils.Name)) {
+	if (!SuppAbils.IsEnabled(abils.Name)) {
 		return true
 	}
 	let units_ = Units.filter(unit => !unit.IsEnemy() && unit.IsAlive
