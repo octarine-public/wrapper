@@ -61,6 +61,7 @@ let RoshanTree = BaseTree.AddNode("Roshan"),
 
 	drawMenu = RoshanTree.AddNode("Draw Settings"),
 	drawStatus = drawMenu.AddToggle("Draw status", true),
+	drawImageHeroWorld = drawMenu.AddSlider("Image hero in world", 64, 32, 150),
 	IconSettingsTree = drawMenu.AddNode("Icon Settings"),
 
 	AegisSettingsTree = drawMenu.AddNode("Aegis Settings"),
@@ -87,7 +88,8 @@ export {
 	statusPosY,
 	drawStatusSize,
 	UseScanForAlies,
-	PingForAllies
+	PingForAllies,
+	drawImageHeroWorld
 }
 
 export {

@@ -25,6 +25,7 @@ import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/BitsExtensions"
 import EventsSDK from "./EventsSDK"
+import ExecuteOrder from "../Native/ExecuteOrder"
 
 export { PlayerResource, Game }
 
@@ -200,7 +201,7 @@ setInterval(() => {
 	if (old_val && !Game.IsConnected) {
 		gameInProgress = false
 		EventsSDK.emit("GameEnded", false)
-		Player.order_queue = []
+		ExecuteOrder.order_queue = []
 		Particles.DeleteAll()
 	} else if (!gameInProgress && Game.IsConnected && Game.IsInGame && LocalPlayer !== undefined && LocalPlayer.HeroAssigned) {
 		gameInProgress = true

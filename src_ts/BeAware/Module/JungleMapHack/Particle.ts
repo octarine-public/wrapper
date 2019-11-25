@@ -1,68 +1,54 @@
-import { ArrayExtensions, RendererSDK, Unit, Vector3 } from "wrapper/Imports"
-import { ComboBox, DrawRGBA, Size, State } from "./Menu"
+import { RendererSDK, Vector3, EntityManager, Hero, Creep, Team, Game, Vector2 } from "wrapper/Imports"
+import { State, ImageSizeMinimap, ImageSizeWorld } from "./Menu"
 
-export let jungl_unit: Unit[] = []
-
-function RenderPosition(pos: Vector3) {
-	let position_unit = RendererSDK.WorldToScreen(pos),
-		TextStyle: string
-	RendererSDK.DrawMiniMapIcon("minimap_creep", pos, 500, DrawRGBA.Color)
-	if (position_unit === undefined)
+let jungle_units: Array<[Hero, Vector3[], number]> = []
+export function GameEvent(name: string, obj: any) {
+	if (name !== "entity_hurt" && name !== "entity_killed")
 		return
-	switch (ComboBox.selected_id) {
-		case 0:
-			TextStyle = "•"
-			break
-		case 1:
-			TextStyle = "°"
-			break
-		case 2:
-			TextStyle = "⍟"
-			break
-		case 3:
-			TextStyle = "★"
-			break
-		case 4:
-			TextStyle = "⊛"
-			break
-		case 5:
-			TextStyle = "◊"
-			break
-		default:
-		case 6:
-			TextStyle = "⊗"
-			break
-		case 7:
-			TextStyle = "[]"
-			break
-	}
-	// -createhero k_drag enemy
-	RendererSDK.Text(
-		TextStyle,
-		position_unit,
-		DrawRGBA.Color,
-		"Arial",
-		Size.value,
+	let ent1 = EntityManager.EntityByIndex(obj.entindex_killed),
+		ent2 = EntityManager.EntityByIndex(obj.entindex_attacker)
+	if (
+		ent1 === undefined || ent2 === undefined
+		|| !ent1.IsValid || !ent2.IsValid
+		|| ent1.IsVisible || ent2.IsVisible
+		|| (!(ent1 instanceof Hero) && !(ent2 instanceof Hero))
+		|| (!(ent1 instanceof Creep && ent1.Team === Team.Neutral) && !(ent2 instanceof Creep && ent2.Team === Team.Neutral))
 	)
-}
-export function UnitAnimationCreate(unit: Unit) {
-	if (!unit.IsValid || unit.IsVisible || !State.value)
 		return
-	jungl_unit.push(unit)
+	let hero = ent1 instanceof Hero ? ent1 : ent2 as Hero
+	let creep = hero === ent1 ? ent2 : ent1
+	let ar = jungle_units.find(ar_ => ar_[0] === hero)
+	if (ar !== undefined) {
+		if (Vector3.GetCenter(ar[1]).Distance2D(creep.Position) > 300)
+			ar[1] = []
+		ar[1].push(creep.Position)
+		ar[2] = Game.RawGameTime
+	} else
+		jungle_units.push([hero, [creep.Position], Game.RawGameTime])
+}
+
+export function Tick() {
+	let time = Game.RawGameTime
+	jungle_units = jungle_units.filter(ar => time - ar[2] < 3)
 }
 
 export function OnDraw() {
 	if (!State.value)
 		return
-	jungl_unit.forEach(unit => {
-		let pos = unit.Name !== "npc_dota_roshan" ? unit.Position : new Vector3(-2394.375, 1873.9375, 159.96875)
-		if (pos.IsZero() || unit.IsHero || unit.IsLaneCreep || pos.Length < 10)
+	jungle_units.forEach(([hero, positions]) => {
+		let position = Vector3.GetCenter(positions)
+		RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${hero.Name}`, position, ImageSizeMinimap.value * 12)
+		let screen_pos = RendererSDK.WorldToScreen(position)
+		if (screen_pos === undefined)
 			return
-		RenderPosition(pos)
-		setTimeout(() => ArrayExtensions.arrayRemove(jungl_unit, unit), 2000)
+		RendererSDK.Image(
+			`panorama/images/heroes/icons/${hero.Name}_png.vtex_c`,
+			screen_pos.SubtractScalar(ImageSizeWorld.value / 4),
+			new Vector2(ImageSizeWorld.value / 2, ImageSizeWorld.value / 2)
+		)
 	})
 }
 
 export function Init() {
-	jungl_unit = []
+	jungle_units = []
 }

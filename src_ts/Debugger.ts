@@ -69,6 +69,12 @@ const debugEvents = debugEventsMenu.AddToggle("Debugging events")
 
 const debugProjectiles = debugEventsMenu.AddToggle("Debug projectiles", false, "Visual only")
 
+EventsSDK.on("GameEvent", (name, obj) => {
+	if (!debugEvents.value)
+		return
+	console.log(name, obj)
+})
+
 EventsSDK.on("Draw", () => {
 	if (!debugEvents.value || !debugProjectiles.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return

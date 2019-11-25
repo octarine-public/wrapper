@@ -1,10 +1,6 @@
-import { Menu, MenuBase, MenuDrawBase } from "../../abstract/Menu.Base"
+import { Menu, MenuBase } from "../../abstract/Menu.Base"
 let MapHack = Menu.AddNode("MapHack")
-const { BaseTree, State } = MenuBase(MapHack, "Jungle")
-const { DrawRGBA, Size, ComboBox } = MenuDrawBase(BaseTree,
-	"Text Color", "Render Style",
-	["Dot", "Dot 2", "Stars", "Stars 2", "Snowflake", "Rhomb", "Cross", "Double square"],
-	"Text Size", 64, 24, 300,
-)
-State.SetTooltip("Display position who farming jungle or hit roshan")
-export { State, DrawRGBA, Size, ComboBox };
+export const { State, BaseTree } = MenuBase(MapHack, "Jungle")
+export const ImageSizeWorld = BaseTree.AddSlider("Image world size", 64, 32, 150)
+export const ImageSizeMinimap = BaseTree.AddSlider("Image minimap size", 64, 24, 150)
+State.SetTooltip("Display position whwn enemy is farming jungle")

@@ -129,6 +129,8 @@ function AutoUseItems(unit: Unit) {
 			return false
 		}
 		if (unit.IsMoving || unit.IdealSpeed >= Base.MaxMoveSpeed) {
+			if (unit.HasBuffByName("modifier_monkey_king_transform"))
+				return false
 			let enemy_phase_in_position = AutoUseItemsPhaseBootsState.value
 				? AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsVisible && enemy.IsAlive
 					&& enemy.IsEnemy(unit)

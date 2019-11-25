@@ -9,7 +9,7 @@ import {
 	RoshanGameEnded,
 	RoshanParticleCreate,
 	RoshanTick,
-	RoshanUnitAnimationCreate,
+	RoshanGameEvent,
 } from "./Module/Roshan";
 
 import { State } from "./Menu";
@@ -64,11 +64,8 @@ export function ParticleDestroyed(id: number) {
 	RuneParticleDestroyed(id)
 }
 
-export function UnitAnimationCreate(unit: Unit) {
-	if (!State.value) {
-		return false
-	}
-	RoshanUnitAnimationCreate(unit)
+export function GameEvent(name: string, obj: any) {
+	RoshanGameEvent(name, obj)
 }
 
 export function ParticleUpdateEnt(id: number, entity: Entity, vector: Vector3) {

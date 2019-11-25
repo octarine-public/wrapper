@@ -29,6 +29,7 @@ EventsSDK.on("Tick", () => {
 		return false
 	Treant.Tick()
 	TimeControllerEnt.Tick()
+	JungleMapHack.Tick()
 })
 
 EventsSDK.on("Draw", () => {
@@ -60,11 +61,9 @@ EventsSDK.on("GameEnded", () => {
 	VBE.Init()
 	VBS.Init()
 })
-EventsSDK.on("UnitAnimation", npc => {
-	if (!stateMain.value || npc === undefined)
-		return
-	JungleMapHack.UnitAnimationCreate(npc)
-	TimeControllerEnt.UnitAnimationCreate(npc)
+EventsSDK.on("GameEvent", (name, obj) => {
+	JungleMapHack.GameEvent(name, obj)
+	TimeControllerEnt.GameEvent(name, obj)
 })
 
 EventsSDK.on("LifeStateChanged", ent => {

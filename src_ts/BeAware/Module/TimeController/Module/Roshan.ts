@@ -1,4 +1,4 @@
-import { Color, Game, Menu, RendererSDK, Unit, Vector2, Player, LocalPlayer, Team } from "wrapper/Imports"
+import { Color, Game, Menu, RendererSDK, Vector2, Player, LocalPlayer, Team, Roshan, Hero, EntityManager, Entity } from "wrapper/Imports"
 import ManagerBase from "../../../abstract/Base"
 import {
 	AegisdrawStatusSize,
@@ -19,11 +19,12 @@ import {
 	statusPosX,
 	statusPosY,
 	UseScanForAlies,
-	PingForAllies
+	PingForAllies,
+	drawImageHeroWorld
 } from "../Menu"
 
 var Timer = 0,
-	Units: Unit[] = [],
+	Units: Array<[Entity, number]> = [],
 	checkTick = 0,
 	roshanKillTime = 0,
 	// aegisPickUpTime = 0, // TODO for fireEvents
@@ -68,11 +69,12 @@ export function RoshanParticleCreate(Handle: bigint) {
 function RenderIcon(position_unit: Vector2, path_icon: string, Size: Menu.Slider, color?: Color) {
 	RendererSDK.Image(path_icon,
 		position_unit.SubtractScalar(20 / 4).Clone().AddScalarY(4).AddScalarX(-Size.value - 5),
-		new Vector2(Size.value * 1.2, Size.value * 1.2), Units.some(x => x.Name === "npc_dota_roshan")
-		? new Color(252, 173, 3)
-		: !color
-			? new Color(255, 255, 255)
-			: color,
+		new Vector2(Size.value * 1.2, Size.value * 1.2),
+		Units.length !== 0
+			? new Color(252, 173, 3)
+			: color !== undefined
+				? color
+				: Color.White
 	)
 }
 
@@ -87,21 +89,17 @@ function RoshanDrawAliveDied(Text: string, color?: Color) {
 				RenderIcon(VectorSize, "panorama/images/hud/reborn/roshan_timer_roshan_psd.vtex_c", drawStatusSize, color)
 				break
 		}
-	let is_under = Units.some(x => x.Name.includes("roshan"))
+	let is_under = Units.length !== 0
 		? "Roshan is under attack"
 		: Text
 	RendererSDK.Text("Roshan: " + is_under, VectorSize, new Color(255, 255, 255, 255), "Calibri", drawStatusSize.value, FontFlags_t.ANTIALIAS)
 }
 
 export function RoshanTick() {
-	if (Units.length <= 0) {
-		return
-	}
 	let Time = Game.RawGameTime
-	setTimeout(DeleteUnits, 250)
-	if (Units.some(x => x.Name !== "npc_dota_roshan")) {
+	Units = Units.filter(ar => Time - ar[1] < 2)
+	if (Units.length === 0)
 		return
-	}
 	if (Time >= checkTick) {
 		Game.ExecuteCommand("playvol sounds\\ui\\ping_attack " + NotificationRoshanStateSound.value / 100)
 		checkTick = Time + 4
@@ -123,7 +121,6 @@ export function RoshanTick() {
 			Game.ExecuteCommand("chatwheel_say 53")
 		checkTickMessage = Time + 5
 	}
-	return
 }
 
 export function DrawRoshan() {
@@ -162,26 +159,40 @@ export function DrawRoshan() {
 		}
 	}
 	if (Units.length > 0) {
-		Units.filter(x => {
-			if (!x.IsVisible && !x.Name.includes("roshan") && x.IsInRange(Base.RoshanPosition, 650)) {
-				RendererSDK.DrawMiniMapIcon("minimap_danger", Base.RoshanPosition, 900)
-				RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${x.Name}`, Base.RoshanPosition, 900)
-			}
-		})
+		RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Units[0][0].Name}`, Base.RoshanPosition, 900)
+		let screen_pos = RendererSDK.WorldToScreen(Base.RoshanPosition)
+		if (screen_pos !== undefined) {
+			RendererSDK.Image(
+				`panorama/images/heroes/icons/${Units[0][0].Name}_png.vtex_c`,
+				screen_pos.SubtractScalar(drawImageHeroWorld.value / 4),
+				new Vector2(drawImageHeroWorld.value / 2, drawImageHeroWorld.value / 2)
+			)
+		}
 	}
 	IsAlive
 		? RoshanDrawAliveDied("Alive", IconSettingsColorAlive.Color)
 		: RoshanDrawAliveDied("Died", IconSettingsColorDied.Color)
 }
 
-export function RoshanUnitAnimationCreate(unit: Unit) {
-	if (!unit.IsValid || unit.IsVisible)
+export function RoshanGameEvent(name: string, obj: any) {
+	if (name !== "entity_hurt" && name !== "entity_killed")
 		return
-	Units.push(unit)
-}
-
-function DeleteUnits() {
-	Units = []
+	let ent1 = EntityManager.EntityByIndex(obj.entindex_killed),
+		ent2 = EntityManager.EntityByIndex(obj.entindex_attacker)
+	if (
+		ent1 === undefined || ent2 === undefined
+		|| !ent1.IsValid || !ent2.IsValid
+		|| ent1.IsVisible || ent2.IsVisible
+		|| (!(ent1 instanceof Hero) && !(ent2 instanceof Hero))
+		|| (!(ent1 instanceof Roshan) && !(ent2 instanceof Roshan))
+	)
+		return
+	let hero = ent1 instanceof Hero ? ent1 : ent2
+	let ar = Units.find(ar_ => ar_[0] === hero)
+	if (ar === undefined)
+		Units.push([ent1 instanceof Hero ? ent1 : ent2, Game.RawGameTime])
+	else
+		ar[1] = Game.RawGameTime
 }
 
 export function RoshanGameEnded() {
