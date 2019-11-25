@@ -26,6 +26,7 @@ import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/BitsExtensions"
 import EventsSDK from "./EventsSDK"
 import ExecuteOrder from "../Native/ExecuteOrder"
+import Roshan from "../Objects/Units/Roshan"
 
 export { PlayerResource, Game }
 
@@ -39,7 +40,19 @@ export function SetLocalPlayer(player: Player) {
 	LocalPlayer = player
 }
 
-class EntityManager {
+const EntityManager = new (class EntityManager {
+	private Roshan_: Entity | number
+	get Roshan(): Entity | number {
+		if (this.Roshan_ instanceof Entity) {
+			if (!this.Roshan_.IsValid || !(this.Roshan_ instanceof Roshan))
+				return this.Roshan_ = undefined
+			return this.Roshan_
+		}
+		return this.Roshan_ = (this.EntityByIndex(this.Roshan_) ?? this.Roshan_ ?? AllEntities.find(ent => ent instanceof Roshan))
+	}
+	set Roshan(ent: Entity | number) {
+		this.Roshan_ = ent
+	}
 	get LocalPlayer(): Player {
 		return LocalPlayer
 	}
@@ -111,11 +124,9 @@ class EntityManager {
 			return true
 		})
 	}
-}
+})()
 
-const entityManager = new EntityManager()
-
-export default global.EntityManager = entityManager
+export default global.EntityManager = EntityManager
 
 Events.on("EntityCreated", (ent, index) => {
 	{ // add globals
@@ -155,6 +166,16 @@ Events.on("EntityDestroyed", (ent, index) => {
 	}
 
 	DeleteFromCache(ent, index)
+})
+
+let last_event_ent = -1
+Events.on("GameEvent", (name, obj) => {
+	if (name === "npc_spawned")
+		last_event_ent = obj.entindex
+	else if (name === "dota_item_spawned" && obj.player_id === -1 && last_event_ent !== -1 && EntityManager.Roshan === undefined)
+		EntityManager.Roshan = last_event_ent
+	else
+		last_event_ent = -1
 })
 
 /* ================ RUNTIME CACHE ================ */

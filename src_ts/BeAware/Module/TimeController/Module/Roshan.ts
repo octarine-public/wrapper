@@ -177,20 +177,18 @@ export function DrawRoshan() {
 export function RoshanGameEvent(name: string, obj: any) {
 	if (name !== "entity_hurt" && name !== "entity_killed")
 		return
-	let ent1 = EntityManager.EntityByIndex(obj.entindex_killed),
-		ent2 = EntityManager.EntityByIndex(obj.entindex_attacker)
+	let ent1: Entity | number = EntityManager.EntityByIndex(obj.entindex_killed) || obj.entindex_killed,
+		ent2: Entity | number = EntityManager.EntityByIndex(obj.entindex_attacker) || obj.entindex_attacker
 	if (
 		ent1 === undefined || ent2 === undefined
-		|| !ent1.IsValid || !ent2.IsValid
-		|| ent1.IsVisible || ent2.IsVisible
-		|| (!(ent1 instanceof Hero) && !(ent2 instanceof Hero))
-		|| (!(ent1 instanceof Roshan) && !(ent2 instanceof Roshan))
+		|| (!(ent1 instanceof Hero && ent1.IsValid && !ent1.IsVisible) && !(ent2 instanceof Hero && ent2.IsValid && !ent2.IsVisible))
+		|| (!(ent1 instanceof Roshan || ent1 === EntityManager.Roshan) && !(ent2 instanceof Roshan || ent2 === EntityManager.Roshan))
 	)
 		return
 	let hero = ent1 instanceof Hero ? ent1 : ent2
 	let ar = Units.find(ar_ => ar_[0] === hero)
 	if (ar === undefined)
-		Units.push([ent1 instanceof Hero ? ent1 : ent2, Game.RawGameTime])
+		Units.push([ent1 instanceof Hero ? ent1 : ent2 as Entity, Game.RawGameTime])
 	else
 		ar[1] = Game.RawGameTime
 }
