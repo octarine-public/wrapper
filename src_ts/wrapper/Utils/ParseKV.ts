@@ -3,6 +3,7 @@
 /// tokenize ///
 function tokenizeKV(data) {
 	data = data.toString()
+	data = (data as string).replace("}\t\t}", "}\n\t\t}")
 	return data
 		.split("\n")
 		.map((s, i) => {
