@@ -118,15 +118,16 @@ EventsSDK.on("PrepareUnitOrders", (orders) => {
 	}
 	let units_ = Units.filter(unit => !unit.IsEnemy() && unit.IsAlive
 		&& unit.IsHero && unit.IsControllable && !unit.IsMoving)
-	if (units_.map(unit => {
+	if (!units_.some(x => x.FindRotationAngle(orders.Position) > 0.4))
+		return true
+	units_.map(unit => {
 		if (abils.CastRange + unit.CastRangeBonus < (orders.Position.Distance2D(unit.Position))) {
 			return false
 		}
-		unit.OrderStop()
 		unit.CastPosition(abils, unit.Position.Add((orders.Position.Subtract(unit.Position)).Normalize().ScaleTo(1.3)))
 		return true
-	}))
-		return false
+	})
+	return false
 })
 EventsSDK.on("GameEnded", () => {
 	Units = []

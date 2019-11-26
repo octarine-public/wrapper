@@ -7,6 +7,14 @@ let Sleep = new TickSleeper(),
 	GameSleep = new GameSleeper()
 export let ComboActived = false
 ComboKey.OnRelease(() => ComboActived = !ComboActived);
+// const orig = Ability.prototype.UseAbility;
+// Ability.prototype.UseAbility = function (...args) {
+// 	if (args[0] instanceof Entity) {
+// 		console.log(args[0].Name, this.Name);
+// 		console.log(new Error().stack)
+// 	}
+// 	orig.call(this, ...args);
+// };
 export function InitCombo() {
 	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
@@ -285,8 +293,7 @@ export function InitCombo() {
 			return
 		}
 		if (AutoAttackTarget.value && MyHero.CanAttack(target)
-			&& !GameSleep.Sleeping("Attack")
-			&& !Base.CancelAbilityRealm(target)) {
+			&& !GameSleep.Sleeping("Attack")) {
 			MyHero.AttackTarget(target)
 			GameSleep.Sleep(MyHero.SecondsPerAttack * 1000, "Attack")
 			return
