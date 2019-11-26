@@ -58,7 +58,7 @@ export default class Player extends Entity {
 
 	public readonly m_pBaseEntity: C_DOTAPlayer
 	public PlayerID = this.m_pBaseEntity.m_iPlayerID
-	private Hero_: Hero | C_BaseEntity | number
+	public Hero_: Hero | C_BaseEntity | number
 	private m_Name: string
 	private m_PlayerData: PlayerResourcePlayerData_t
 	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t
