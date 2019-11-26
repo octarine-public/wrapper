@@ -1,4 +1,4 @@
-import { arrayRemove } from "../Utils/ArrayExtensions"
+import * as ArrayExtensions from "../Utils/ArrayExtensions"
 
 // import * as Debug from "../Utils/Debug"
 
@@ -31,9 +31,9 @@ import Roshan from "../Objects/Units/Roshan"
 export { PlayerResource, Game }
 
 let AllEntities: Entity[] = []
-let EntitiesIDs = new Map<number, Entity>()
+let EntitiesIDs = new Map<number, C_BaseEntity>()
 let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
-let InStage = new Map<C_BaseEntity, Entity>()
+let InStage: C_BaseEntity[] = []
 
 export let LocalPlayer: Player
 export function SetLocalPlayer(player: Player) {
@@ -63,7 +63,13 @@ const EntityManager = new (class EntityManager {
 		return AllEntities.slice()
 	}
 	public EntityByIndex(index: number): Entity {
-		return EntitiesIDs.get(index)
+		return this.GetEntityByNative(EntitiesIDs.get(index))
+	}
+	public IndexByNative(ent: C_BaseEntity): number {
+		for (let [index, ent_] of EntitiesIDs.entries())
+			if (ent === ent_)
+				return index
+		return undefined
 	}
 	public GetPlayerByID(playerID: number): Player {
 		if (playerID === -1)
@@ -71,34 +77,17 @@ const EntityManager = new (class EntityManager {
 		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player
 	}
 
-	public GetEntityByNative(ent: C_BaseEntity | number, inStage: boolean = false): Entity {
+	public GetEntityByNative(ent: C_BaseEntity | number): Entity {
 		if (ent === undefined)
 			return undefined
 		if (!(ent instanceof C_BaseEntity))
 			return this.EntityByIndex(ent)
 
-		let entityFind = AllEntitiesAsMap.get(ent)
-		if (inStage)
-			entityFind = entityFind || InStage.get(ent)
-
-		return entityFind
+		return AllEntitiesAsMap.get(ent)
 	}
 
-	public GetEntityByFilter(filter: (ent: Entity) => boolean, inStage: boolean = false): Entity {
-		let found = AllEntities.find(filter)
-		if (found !== undefined)
-			return found
-
-		if (!inStage)
-			return undefined
-
-		// loop-optimizer: KEEP
-		InStage.forEach((ent, _) => {
-			if (found === undefined && filter(ent))
-				found = ent
-		})
-
-		return found
+	public GetEntityByFilter(filter: (ent: Entity) => boolean): Entity {
+		return AllEntities.find(filter)
 	}
 
 	public GetEntitiesByNative(ents: (C_BaseEntity | Entity | number)[], inStage: boolean = false): (Entity | any)[] {
@@ -108,10 +97,7 @@ const EntityManager = new (class EntityManager {
 				return ent
 			if (!(ent instanceof C_BaseEntity))
 				return this.EntityByIndex(ent)
-			let ent_ = AllEntitiesAsMap.get(ent)
-			if (inStage)
-				ent_ = ent_ || InStage.get(ent)
-			return ent_ || ent
+			return AllEntitiesAsMap.get(ent) || ent
 		})
 	}
 
@@ -143,8 +129,8 @@ Events.on("EntityCreated", (ent, index) => {
 			Game.m_GameManager = ent.m_pGameManager
 	}
 
-	const entity = ClassFromNative(ent, index)
-	AddToCache(entity)
+	EntitiesIDs.set(index, ent)
+	AddToCache(ent)
 })
 
 Events.on("EntityDestroyed", (ent, index) => {
@@ -165,7 +151,8 @@ Events.on("EntityDestroyed", (ent, index) => {
 			LocalPlayer = undefined
 	}
 
-	DeleteFromCache(ent, index)
+	DeleteFromCache(ent)
+	EntitiesIDs.delete(index)
 })
 
 let last_event_ent = -1
@@ -186,32 +173,30 @@ function CheckIsInStagingEntity(ent: C_BaseEntity) {
 }
 
 setInterval(() => {
-	// loop-optimizer: KEEP
-	InStage.forEach((entity, baseEntity) => {
-		if (CheckIsInStagingEntity(baseEntity))
+	InStage.forEach(ent => {
+		if (CheckIsInStagingEntity(ent))
 			return
-		InStage.delete(baseEntity)
-		AddToCache(entity)
+		ArrayExtensions.arrayRemove(InStage, ent)
+		AddToCache(ent, true)
 	})
 }, 5)
 
-function AddToCache(entity: Entity) {
-	const index = entity.Index
-	EntitiesIDs.set(index, entity)
-	if (CheckIsInStagingEntity(entity.m_pBaseEntity)) {
-		InStage.set(entity.m_pBaseEntity, entity)
+function AddToCache(ent: C_BaseEntity, already_valid = false) {
+	if (!already_valid && CheckIsInStagingEntity(ent)) {
+		InStage.push(ent)
 		return
 	}
+
+	let entity = ClassFromNative(ent)
 	if (entity instanceof Player && entity.m_pBaseEntity.m_bIsLocalPlayer)
 		LocalPlayer = entity as Player
-
 	entity.OnCreated()
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
 	AllEntities.push(entity)
 
-	// console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity, index);
+	// console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity);
 	InitEntityFields(entity)
-	EventsSDK.emit("EntityCreated", false, entity, index)
+	EventsSDK.emit("EntityCreated", false, entity)
 	FireEntityEvents(entity)
 }
 
@@ -230,10 +215,10 @@ setInterval(() => {
 	}
 }, 20)
 
-function DeleteFromCache(entNative: C_BaseEntity, index: number) {
+function DeleteFromCache(entNative: C_BaseEntity) {
 	{
 		let is_queued_entity = false
-		is_queued_entity = InStage.delete(entNative) || is_queued_entity
+		is_queued_entity = ArrayExtensions.arrayRemove(InStage, entNative) || is_queued_entity
 		if (is_queued_entity)
 			return
 	}
@@ -243,45 +228,44 @@ function DeleteFromCache(entNative: C_BaseEntity, index: number) {
 	entity.IsValid = false
 
 	AllEntitiesAsMap.delete(entNative)
-	EntitiesIDs.delete(index)
-	arrayRemove(AllEntities, entity)
+	ArrayExtensions.arrayRemove(AllEntities, entity)
 
 	// console.log("onEntityDestroyed SDK", entity, entity.m_pBaseEntity, index);
-	EventsSDK.emit("EntityDestroyed", false, entity, index)
+	EventsSDK.emit("EntityDestroyed", false, entity)
 }
 
-function ClassFromNative(ent: C_BaseEntity, index: number) {
+function ClassFromNative(ent: C_BaseEntity): Entity {
 	{
 		let constructor = NativeToSDK[ent.constructor.name]
 		if (constructor !== undefined)
-			return new constructor(ent, index)
+			return new constructor(ent)
 	}
 
 	if (ent instanceof C_DOTA_BaseNPC_Tower)
-		return new Tower(ent, index)
+		return new Tower(ent)
 
 	if (ent instanceof C_DOTA_BaseNPC_Building)
-		return new Building(ent, index)
+		return new Building(ent)
 
 	if (ent instanceof C_DOTA_BaseNPC_Hero)
-		return new Hero(ent, index)
+		return new Hero(ent)
 
 	if (ent instanceof C_DOTA_BaseNPC_Creep)
-		return new Creep(ent, index)
+		return new Creep(ent)
 
 	if (ent instanceof C_DOTA_BaseNPC)
-		return new Unit(ent, index)
+		return new Unit(ent)
 
 	if (ent instanceof C_DOTA_Item)
-		return new Item(ent, index)
+		return new Item(ent)
 
 	if (ent instanceof C_DOTABaseAbility)
-		return new Ability(ent, index)
+		return new Ability(ent)
 
 	if (ent instanceof C_DOTA_Item_Physical)
-		return new PhysicalItem(ent, index)
+		return new PhysicalItem(ent)
 
-	return new Entity(ent, index)
+	return new Entity(ent)
 }
 
 /* ================ CHANGE FIELDS ================ */

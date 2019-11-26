@@ -525,13 +525,13 @@ function OnTick(): void {
 	})
 }
 
-EventsSDK.on("EntityCreated", (npc: Unit) => {
-	if (npc instanceof Creep || (npc instanceof Hero && !npc.IsIllusion))
-		possibleTargets.push(npc)
+EventsSDK.on("EntityCreated", ent => {
+	if (ent instanceof Creep || (ent instanceof Hero && !ent.IsIllusion))
+		possibleTargets.push(ent)
 })
 EventsSDK.on("Tick", OnTick)
 
-EventsSDK.on("EntityDestroyed", (unit, unit_id) => {
+EventsSDK.on("EntityDestroyed", unit => {
 	if (unit instanceof Unit)
 		ArrayExtensions.arrayRemove(possibleTargets, unit)
 })

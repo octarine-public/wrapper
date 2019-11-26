@@ -47,7 +47,7 @@ export default class Hero extends Unit {
 		return this.m_pBaseEntity.m_iRecentDamage
 	}
 	get ReplicateFrom(): Hero {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hReplicatingOtherHeroModel, true) as Hero
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hReplicatingOtherHeroModel) as Hero
 	}
 	get RespawnTime(): number {
 		return this.m_pBaseEntity.m_flRespawnTime

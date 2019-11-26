@@ -168,9 +168,9 @@ EventsSDK.on("Update", () => {
 		return
 })
 
-EventsSDK.on("EntityCreated", (npc: Unit) => {
-	if (npc.IsHero && npc.IsEnemy && !npc.IsIllusion)
-		heroes.push(npc)
+EventsSDK.on("EntityCreated", ent => {
+	if (ent instanceof Hero && ent.IsEnemy() && !ent.IsIllusion)
+		heroes.push(ent)
 })
 
 EventsSDK.on("EntityDestroyed", npc => npc instanceof Unit && ArrayExtensions.arrayRemove(heroes, npc))

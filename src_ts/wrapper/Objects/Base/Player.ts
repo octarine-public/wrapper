@@ -58,10 +58,15 @@ export default class Player extends Entity {
 
 	public readonly m_pBaseEntity: C_DOTAPlayer
 	public PlayerID = this.m_pBaseEntity.m_iPlayerID
-	public Hero_: Hero | C_BaseEntity | number
+	private Hero_: Hero | C_BaseEntity | number
 	private m_Name: string
 	private m_PlayerData: PlayerResourcePlayerData_t
 	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t
+	constructor(m_pBaseEntity: C_BaseEntity) {
+		super(m_pBaseEntity)
+		this.Hero_ = this.m_pBaseEntity.m_hAssignedHero
+	}
+
 	/**
 	 * Only for LocalPlayer
 	 */
@@ -104,7 +109,7 @@ export default class Player extends Entity {
 	// HasRepicked 				=> PlayerResourcePlayerTeamData_t
 	// Healing					=> NonSpectator
 	get Hero(): Hero {
-		return this.Hero_ instanceof Entity ? this.Hero_ : (this.Hero_ = EntityManager.GetEntityByNative(this.Hero_, true) as Hero || EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hAssignedHero, true) as Hero)
+		return this.Hero_ instanceof Entity ? this.Hero_ : (this.Hero_ = EntityManager.GetEntityByNative(this.Hero_) as Hero)
 	}
 	get HeroAssigned(): boolean {
 		return this.Hero !== undefined && this.Hero.IsValid

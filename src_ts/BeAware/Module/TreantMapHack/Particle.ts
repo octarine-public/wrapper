@@ -2,11 +2,11 @@ import { ArrayExtensions, Entity, LocalPlayer, ParticlesSDK, Unit, Vector3 } fro
 import { State } from "./Menu"
 
 var treant_eyes: Unit[] = [], pars = new Map<Entity, number>()
-export function Destroy(ent: Entity, id: number) {
+export function Destroy(ent: Entity) {
 	if (ArrayExtensions.arrayRemove(treant_eyes, ent))
 		pars.delete(ent)
 }
-export function Create(ent: Entity, id: number) {
+export function Create(ent: Entity) {
 	if (ent instanceof Unit && ent.m_pBaseEntity instanceof C_DOTA_NPC_Treant_EyesInTheForest) {
 		treant_eyes.push(ent)
 		if (!State.value)

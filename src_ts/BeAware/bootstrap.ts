@@ -90,20 +90,20 @@ EventsSDK.on("TeamVisibilityChanged", npc => {
 	VBE.TeamVisibilityChanged(npc)
 })
 
-EventsSDK.on("EntityCreated", (ent, index) => {
+EventsSDK.on("EntityCreated", ent => {
 	Camp.onEntityAdded(ent)
-	Treant.Create(ent, index)
+	Treant.Create(ent)
 	TowerRange.Create(ent)
 	ParicleMapHack.EntityCreated(ent)
 	TimeControllerEnt.EntityCreated(ent)
 	// TopHud.entityCreate(ent)
 })
 
-EventsSDK.on("EntityDestroyed", (ent, index) => {
+EventsSDK.on("EntityDestroyed", ent => {
 	VBS.EntityDestroyed(ent)
 	VBE.EntityDestroyed(ent)
 	Camp.EntityDestroyed(ent)
-	Treant.Destroy(ent, index)
+	Treant.Destroy(ent)
 	TowerRange.Destroy(ent)
 	// TopHud.entityDestroy(ent)
 	Techies.EntityDestroyed(ent)

@@ -2,7 +2,7 @@ import EntityManager from "../../Managers/EntityManager"
 import Courier from "../Base/Courier"
 import Player from "../Base/Player"
 
-class PlayerResource {
+export default global.PlayerResource = new (class PlayerResource {
 	public m_pBaseEntity: C_DOTA_PlayerResource
 
 	public get Names(): string[] {
@@ -49,7 +49,7 @@ class PlayerResource {
 	public GetPlayerByPlayerID(playerID: number): Player {
 		if (this.m_pBaseEntity === undefined)
 			return undefined
-		return EntityManager.GetEntityByFilter(ent => ent instanceof Player && ent.PlayerID === playerID, true) as Player
+		return EntityManager.GetEntityByFilter(ent => ent instanceof Player && ent.PlayerID === playerID) as Player
 	}
 	public GetPlayerCouriersByPlayerID(playerID: number): Courier {
 		if (this.m_pBaseEntity === undefined)
@@ -66,6 +66,4 @@ class PlayerResource {
 	public GetPlayerNameByPlayerID(playerID: number): string {
 		return this.PlayerNames[playerID]
 	}
-}
-
-export default global.PlayerResource = new PlayerResource()
+})()

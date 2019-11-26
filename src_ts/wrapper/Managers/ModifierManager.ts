@@ -22,7 +22,7 @@ let ModifierManager = new (class ModifierManager {
 export default ModifierManager
 
 Events.on("BuffAdded", (npc, buffNative) => {
-	const unit = EntityManager.GetEntityByNative(npc, true) as Unit
+	const unit = EntityManager.GetEntityByNative(npc) as Unit
 
 	if (unit === undefined)
 		throw "onBuffAdded. entity undefined. " + npc + " " + buffNative
@@ -42,7 +42,7 @@ Events.on("BuffRemoved", (npc, buffNative) => {
 
 	ModifierManager.AllModifier.delete(buffNative)
 
-	const unit = EntityManager.GetEntityByNative(npc, true) as Unit
+	const unit = EntityManager.GetEntityByNative(npc) as Unit
 
 	if (unit === undefined)
 		throw "onBuffRemoved. entity undefined. " + npc + " " + buffNative

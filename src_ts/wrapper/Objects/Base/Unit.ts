@@ -93,8 +93,8 @@ export default class Unit extends Entity {
 		"modifier_treant_natures_guise_invis",
 	]
 
-	constructor(m_pBaseEntity: C_BaseEntity, Index: number) {
-		super(m_pBaseEntity, Index)
+	constructor(m_pBaseEntity: C_BaseEntity) {
+		super(m_pBaseEntity)
 		this.AbilitiesBook = new AbilitiesBook(this)
 		this.Inventory = new Inventory(this)
 		this.ModifiersBook = new ModifiersBook(this)

@@ -6,10 +6,10 @@ export default class PhysicalItem extends Entity {
 	public readonly m_pBaseEntity: C_DOTA_Item_Physical
 
 	get Item(): Item {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hItem, true) as Item
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hItem) as Item
 	}
 	get OldItem(): Item {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOldItem, true) as Item
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOldItem) as Item
 	}
 	get ShowingTooltip(): boolean {
 		return this.m_pBaseEntity.m_bShowingTooltip

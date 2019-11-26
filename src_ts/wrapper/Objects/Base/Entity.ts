@@ -138,6 +138,7 @@ export default class Entity {
 	public IsValid: boolean = false
 	public Name_: string = ""
 	public readonly Entity: CEntityIdentity
+	public readonly Index: number
 	public Owner_: Entity | C_BaseEntity | number
 	public Team = Team.None
 	public LifeState = LifeState_t.LIFE_ALIVE
@@ -148,8 +149,9 @@ export default class Entity {
 	private readonly NetworkAngles_ = new QAngle().Invalidate()// cached network angles
 
 	/* ================================ BASE ================================ */
-	constructor(public m_pBaseEntity: C_BaseEntity, public readonly Index: number) {
+	constructor(public m_pBaseEntity: C_BaseEntity) {
 		this.Entity = this.m_pBaseEntity.m_pEntity
+		this.Index = EntityManager.IndexByNative(m_pBaseEntity)
 	}
 
 	/* ================ GETTERS ================ */
@@ -157,7 +159,7 @@ export default class Entity {
 		return this.Name_
 	}
 	public get Owner(): Entity { // trick to make it public ro, and protected rw
-		return this.Owner_ instanceof Entity ? this.Owner_ : (this.Owner_ = EntityManager.GetEntityByNative(this.Owner_, true) || EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity, true))
+		return this.Owner_ instanceof Entity ? this.Owner_ : (this.Owner_ = EntityManager.GetEntityByNative(this.Owner_) || EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity))
 	}
 	public get GameSceneNode(): CGameSceneNode {
 		return this.m_pBaseEntity.m_pGameSceneNode

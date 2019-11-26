@@ -37,8 +37,8 @@ interface EventsSDK extends EventEmitter {
 	 *
 	 * Emitted ONLY after LocalPlayer created
 	 */
-	on(name: "EntityCreated", callback: (ent: Entity, index: number) => void): EventEmitter
-	on(name: "EntityDestroyed", callback: (ent: Entity, index: number) => void): EventEmitter
+	on(name: "EntityCreated", callback: (ent: Entity) => void): EventEmitter
+	on(name: "EntityDestroyed", callback: (ent: Entity) => void): EventEmitter
 	/**
 	 * Analog (w/o hwnd) - https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms633573(v%3Dvs.85)
 	 *
@@ -296,7 +296,7 @@ Events.on("InputCaptured", is_captured => EventsSDK.emit(
 Events.on("NetworkFieldsChanged", map => {
 	// loop-optimizer: KEEP
 	map.forEach((map2, native_ent) => {
-		let entity = EntityManager.GetEntityByNative(native_ent, true)
+		let entity = EntityManager.GetEntityByNative(native_ent)
 		if (entity === undefined)
 			return
 		// loop-optimizer: KEEP
