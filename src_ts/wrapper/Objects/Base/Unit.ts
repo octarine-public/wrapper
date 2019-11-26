@@ -938,6 +938,7 @@ export default class Unit extends Entity {
 			&& !target.IsDormant
 			&& target.IsSpawned
 			&& !target.IsAttackImmune
+			&& !this.IsEthereal
 			&& (this.IsEnemy(target) || target.IsDeniable)
 		)
 	}
