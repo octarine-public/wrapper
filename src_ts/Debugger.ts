@@ -72,7 +72,10 @@ const debugProjectiles = debugEventsMenu.AddToggle("Debug projectiles", false, "
 EventsSDK.on("GameEvent", (name, obj) => {
 	if (!debugEvents.value)
 		return
-	console.log(name, obj)
+	let my_obj = {}
+	for (let [key, value] of Object.entries(obj))
+		my_obj[key] = typeof value === "bigint" ? value.toString() : value
+	console.log(name, my_obj)
 })
 
 EventsSDK.on("Draw", () => {

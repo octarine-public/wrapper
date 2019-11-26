@@ -20,7 +20,6 @@ export { Menu }
 
 export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
 
-export { default as ModifierManager } from "./Managers/ModifierManager"
 export { default as ParticlesSDK } from "./Managers/Particles"
 export { default as Events, EventEmitter } from "./Managers/Events"
 export {
@@ -79,7 +78,6 @@ export { default as ProjectileManager } from "./Managers/ProjectileManager"
 	- wrapper:
 		C_DOTA_DataNonSpectator -> DataNonSpectator
 		C_DOTA_UnitInventory 	-> Inventory
-		CDOTA_ModifierManager 	-> Modifiers
 
 	TODO Native:
 

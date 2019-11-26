@@ -1,5 +1,4 @@
 import { arrayRemove } from "../Utils/ArrayExtensions"
-import { addArrayInMap, removeArrayInMap } from "../Utils/MapExtensions"
 
 import Events from "./Events"
 
@@ -8,73 +7,73 @@ import Unit from "../Objects/Base/Unit"
 import { default as EntityManager } from "./EntityManager"
 import EventsSDK from "./EventsSDK"
 
-let ModifierManager = new (class ModifierManager {
-	public readonly AllModifiersUnit = new Map<Unit, Modifier[]>()
-	public readonly AllModifier = new Map<CDOTA_Buff, Modifier>()
+let ModifierCache = new Map<CDOTA_Buff, C_BaseEntity>()
+let AllModifiers = new Map<CDOTA_Buff, Modifier>()
 
-	public GetBuffsByUnit(ent: Unit): Modifier[] {
-		if (!ent.IsValid)
-			return []
-
-		return this.AllModifiersUnit.get(ent) || []
-	}
-})()
-export default ModifierManager
-
-Events.on("BuffAdded", (npc, buffNative) => {
-	const unit = EntityManager.GetEntityByNative(npc) as Unit
-
-	if (unit === undefined)
-		throw "onBuffAdded. entity undefined. " + npc + " " + buffNative
-
+function AddBuff(buffNative: CDOTA_Buff, unit: Unit) {
 	const buff = new Modifier(buffNative, unit)
+	AllModifiers.set(buffNative, buff)
+	unit.ModifiersBook.Buffs.push(buff)
+	changeFieldsByEvents(unit)
+	EventsSDK.emit("BuffAdded", false, unit, buff)
+}
 
-	ModifierManager.AllModifier.set(buffNative, buff)
+EventsSDK.on("EntityCreated", ent => {
+	if (!(ent instanceof Unit))
+		return
+	let native_ent = ent.m_pBaseEntity
+	for (let [buff, ent_] of ModifierCache.entries()) {
+		if (ent_ !== native_ent)
+			continue
+		ModifierCache.delete(buff)
+		AddBuff(buff, ent)
+	}
+})
 
-	addAndEmitModifier(unit, buff)
+EventsSDK.on("EntityDestroyed", ent => {
+	if (!(ent instanceof Unit))
+		return
+	let native_ent = ent.m_pBaseEntity
+	for (let [buff, ent_] of ModifierCache.entries())
+		if (ent_ === native_ent)
+			ModifierCache.delete(buff)
+})
+Events.on("EntityDestroyed", ent => {
+	for (let [buff, ent_] of ModifierCache.entries())
+		if (ent_ === ent)
+			ModifierCache.delete(buff)
+})
+
+global.DebugModifierLeak = () => console.log(ModifierCache.size)
+
+Events.on("BuffAdded", (ent, buffNative) => {
+	const unit = EntityManager.GetEntityByNative(ent) as Unit
+	if (unit === undefined) {
+		ModifierCache.set(buffNative, ent)
+		return
+	}
+	AddBuff(buffNative, unit)
 })
 
 Events.on("BuffRemoved", (npc, buffNative) => {
-	const buff = ModifierManager.AllModifier.get(buffNative)
-
-	if (buff === undefined)
+	let buff = AllModifiers.get(buffNative)
+	if (buff === undefined) {
+		ModifierCache.delete(buffNative)
 		return
+	}
 
-	ModifierManager.AllModifier.delete(buffNative)
+	AllModifiers.delete(buffNative)
 
 	const unit = EntityManager.GetEntityByNative(npc) as Unit
 
 	if (unit === undefined)
 		throw "onBuffRemoved. entity undefined. " + npc + " " + buffNative
 
-	DeleteFromCache(unit, buff)
-
+	buff.IsValid = false
+	arrayRemove(unit.ModifiersBook.Buffs, buff)
 	changeFieldsByEvents(unit)
-
 	EventsSDK.emit("BuffRemoved", false, unit, buff)
 })
-
-function AddToCache(buff: Modifier, unit: Unit) {
-	addArrayInMap(ModifierManager.AllModifiersUnit, unit, buff)
-
-	unit.ModifiersBook.Buffs.push(buff)
-}
-
-function DeleteFromCache(unit: Unit, buff: Modifier) {
-	buff.IsValid = false
-
-	removeArrayInMap(ModifierManager.AllModifiersUnit, unit, buff)
-
-	arrayRemove(unit.ModifiersBook.Buffs, buff)
-}
-
-function addAndEmitModifier(unit: Unit, buff: Modifier) {
-	AddToCache(buff, unit)
-
-	changeFieldsByEvents(unit)
-
-	EventsSDK.emit("BuffAdded", false, unit, buff)
-}
 
 function changeFieldsByEvents(unit: Unit) {
 	const buffs = unit.ModifiersBook.Buffs

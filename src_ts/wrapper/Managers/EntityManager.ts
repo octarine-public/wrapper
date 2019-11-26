@@ -147,7 +147,7 @@ Events.on("EntityDestroyed", (ent, index) => {
 		if (ent instanceof C_DOTAGameManagerProxy)
 			Game.m_GameManager = undefined
 
-		if (ent instanceof C_DOTAPlayer && LocalPlayer !== undefined && LocalPlayer.m_pBaseEntity === ent)
+		if (ent instanceof C_DOTAPlayer && LocalPlayer?.m_pBaseEntity === ent)
 			LocalPlayer = undefined
 	}
 

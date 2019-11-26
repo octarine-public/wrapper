@@ -27,7 +27,7 @@ EventsSDK.on("GameEnded", () => {
 	ProjectileManager.AllTrackingProjectilesMap.clear()
 })
 
-const TrackingProjectileCreated = (proj: number, projectile: TrackingProjectile) => {
+function TrackingProjectileCreated(proj: number, projectile: TrackingProjectile) {
 	projectile.Position.Extend(projectile.TargetLoc, (Game.CurrentServerTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
 	EventsSDK.emit("TrackingProjectileCreated", false, projectile);
 	ProjectileManager.AllTrackingProjectiles.push(projectile);
@@ -160,8 +160,7 @@ Events.on("LinearProjectileDestroyed", proj => {
 EventsSDK.on("Tick", () => {
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
 		let cur_time = Game.RawGameTime
-		proj.Position.x += proj.Velocity.x * (cur_time - proj.LastUpdate)
-		proj.Position.y += proj.Velocity.y * (cur_time - proj.LastUpdate)
+		proj.Position.AddForThis(proj.Velocity.MultiplyScalar(cur_time - proj.LastUpdate).toVector3())
 		proj.LastUpdate = cur_time
 		proj.Position.z = RendererSDK.GetPositionHeight(proj.Position.toVector2())
 	})

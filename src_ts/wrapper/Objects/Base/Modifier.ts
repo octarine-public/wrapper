@@ -50,8 +50,6 @@ export default class Modifier {
 	}
 
 	/* =================== Fields =================== */
-
-	public readonly m_pBuff: CDOTA_Buff
 	public readonly Index: number
 	public IsValid: boolean = true
 
@@ -59,7 +57,6 @@ export default class Modifier {
 	public readonly Class: string
 	public readonly ModifierAura: string
 
-	public readonly Owner: Unit
 	public readonly Ability: Ability
 	public readonly Caster: Entity
 	public readonly Parent: Entity
@@ -72,15 +69,13 @@ export default class Modifier {
 	public readonly AuraSearchType: number
 	public readonly CreationTime: number
 
-	constructor(buff: CDOTA_Buff, owner: Unit) {
-		this.m_pBuff = buff
+	constructor(public readonly m_pBuff: CDOTA_Buff, public readonly Owner: Unit) {
 		this.Index = this.m_pBuff.m_iIndex
 
-		this.Name = buff.m_name || ""
+		this.Name = this.m_pBuff.m_name || ""
 		this.Class = this.m_pBuff.m_class || ""
-		this.ModifierAura = buff.m_szModifierAura || ""
+		this.ModifierAura = this.m_pBuff.m_szModifierAura || ""
 
-		this.Owner = owner
 		this.Ability = EntityManager.GetEntityByNative(this.m_pBuff.m_hAbility) as Ability
 		this.Caster = EntityManager.GetEntityByNative(this.m_pBuff.m_hCaster)
 		this.Parent = EntityManager.GetEntityByNative(this.m_pBuff.m_hParent)
