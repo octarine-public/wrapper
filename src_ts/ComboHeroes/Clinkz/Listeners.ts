@@ -1,4 +1,4 @@
-import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils, Unit } from "wrapper/Imports"
+import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils, Unit, Creep } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { GameEndedCombo } from "./Module/Combo"
@@ -9,6 +9,7 @@ import HitAndRun from "./Extends/HitAndRun";
 import InitAbilities from "./Extends/Abilities"
 
 export let Heroes: Hero[] = []
+export let Creeps: Creep[] = []
 export let Owner: Hero
 export let MouseTarget: Hero
 
@@ -57,11 +58,15 @@ export function GameStarted(hero: Hero) {
 export function EntityCreated(x: Entity) {
 	if (x instanceof Hero && !x.IsIllusion)
 		Heroes.push(x)
+	if (x instanceof Creep)
+		Creeps.push(x)
 }
 
 export function EntityDestroyed(x: Entity) {
 	if (x instanceof Hero)
 		ArrayExtensions.arrayRemove(Heroes, x)
+	if (x instanceof Creep)
+		ArrayExtensions.arrayRemove(Creeps, x)
 }
 
 export function TrackingProjectileCreated(proj: TrackingProjectile) {

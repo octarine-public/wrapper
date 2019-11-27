@@ -3,6 +3,7 @@ import { Base } from "./Extends/Helper"
 import { InitCombo } from "./Module/Combo"
 import { InitHarass } from "./Module/Harras"
 import { Draw } from "./Renderer"
+import { InitAutoDeathPact } from "./Module/AutoDeathPact"
 
 EventsSDK.on("Draw", Draw)
 EventsSDK.on("GameEnded", GameEnded)
@@ -15,6 +16,7 @@ EventsSDK.on("EntityDestroyed", EntityDestroyed)
 EventsSDK.on("Tick", () => {
 	Tick()
 	InitMouse()
+	InitAutoDeathPact()
 	if (!Base.DeadInSide) {
 		InitHarass()
 		InitCombo()
@@ -28,3 +30,4 @@ import {
 	InitMouse,
 	Tick, //, LinearProjectileDestroyed, TrackingProjectileCreated,
 } from "./Listeners"
+

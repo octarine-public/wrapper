@@ -186,16 +186,16 @@ export function InitCombo() {
 			return
 		}
 		// Strafe
-		if (
-			Abilities.Strafe !== undefined
-			&& СomboAbility.IsEnabled(Abilities.Strafe.Name)
-			&& Abilities.Strafe.CanBeCasted()
-			&& !comboBreaker
-		) {
-			Abilities.Strafe.UseAbility()
-			Sleep.Sleep(Abilities.Tick)
-			return
-		}
+		// if (
+		// 	Abilities.Strafe !== undefined
+		// 	&& СomboAbility.IsEnabled(Abilities.Strafe.Name)
+		// 	&& Abilities.Strafe.CanBeCasted()
+		// 	&& !comboBreaker
+		// ) {
+		// 	Abilities.Strafe.UseAbility()
+		// 	Sleep.Sleep(Abilities.Tick)
+		// 	return
+		// }
 		// BurningArmy
 		if (
 			Abilities.BurningArmy !== undefined

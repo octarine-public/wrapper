@@ -138,12 +138,15 @@ function AutoUseItems(unit: Unit) {
 		return false
 	}
 	let Items = new InitItems(unit)
-
-	//unit.Inventory.Items.map(e => console.log(e.Name))
-	// console.log(unit.ModifiersBook.Buffs.map(e => e.Name))
-	// if (IsValidItem(Items.Jelly)) {
-
-	// }
+	if (IsValidItem(Items.Jelly)) {
+		if (LocalPlayer !== undefined && unit === LocalPlayer.Hero) {
+			if (!unit.HasBuffByName("modifier_royal_jelly")) {
+				unit.CastTarget(Items.Jelly, unit)
+				TickSleep.Sleep(GetDelayCast())
+				return true
+			}
+		}
+	}
 	if (IsValidItem(Items.PhaseBoots)) {
 		if (Key.is_pressed || Keys.is_pressed) {
 			return false
@@ -431,7 +434,7 @@ function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
 		if (Creep !== undefined
 			&& Unit.CanAttack(Creep)
 			&& !Creep.IsMagicImmune
-			&& Creep.IsEnemy
+			&& Creep.IsEnemy()
 			&& !Creep.IsAncient
 			&& Creep.IsValid
 			&& Creep.IsAlive
