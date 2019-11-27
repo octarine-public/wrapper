@@ -1,14 +1,22 @@
 import {
-	Ability, ArrayExtensions,
-	Creep, Entity, ExecuteOrder, Game,
-	Item, LocalPlayer, TickSleeper, TreeTemp, Unit, Vector3,
+	Ability,
+	ArrayExtensions,
+	Creep,
+	Entity,
+	ExecuteOrder,
+	Game,
+	Item,
+	LocalPlayer,
+	TickSleeper,
+	TreeTemp,
+	Unit,
+	Vector3,
 } from "wrapper/Imports"
 
 import {
 	AutoUseItemsArcane_val,
 	AutoUseItemsBloodHP_val,
 	AutoUseItemsBloodMP_val,
-	AutoUseItemsBluker_val,
 	AutoUseItemsCheese_val,
 	AutoUseItemsFaerieFire_val,
 	AutoUseItemsMG_val,
@@ -21,12 +29,19 @@ import {
 	AutoUseItemsSouringInvis,
 	AutoUseItemsSouringMP_val,
 	AutoUseItemsSouringMPUse_val,
-	AutoUseItemsSticks_val, AutoUseItemsUrnAlies,
+	AutoUseItemsSticks_val,
+	AutoUseItemsUrnAlies,
 	AutoUseItemsUrnAliesAlliesHP,
 	AutoUseItemsUrnAliesEnemyHP,
 	AutoUseItemsTango_val,
 	AutoUseItemsUrnEnemy,
 	ItemsForUse, State,
+	// settings items neutrals
+	AutoUseItemsTalon_val,
+	AutoUseItemsArcanering_val,
+	AutoUseItemsEssenceRing_val,
+	AutoUseItemsBigFaerieFire_val,
+	AutoUseItemsTalonCreepHP,
 } from "./Menu"
 
 import ItemManagerBase from "../../abstract/Base"
@@ -122,8 +137,13 @@ function AutoUseItems(unit: Unit) {
 	if (!IsValidUnit(unit)) {
 		return false
 	}
-
 	let Items = new InitItems(unit)
+
+	//unit.Inventory.Items.map(e => console.log(e.Name))
+	// console.log(unit.ModifiersBook.Buffs.map(e => e.Name))
+	// if (IsValidItem(Items.Jelly)) {
+
+	// }
 	if (IsValidItem(Items.PhaseBoots)) {
 		if (Key.is_pressed || Keys.is_pressed) {
 			return false
@@ -176,8 +196,18 @@ function AutoUseItems(unit: Unit) {
 
 	if (IsValidItem(Items.FaerieFire)) {
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
-			if (unit.HP < AutoUseItemsFaerieFire_val.value) {
+			if (unit.HP <= AutoUseItemsFaerieFire_val.value) {
 				unit.CastNoTarget(Items.FaerieFire)
+				TickSleep.Sleep(GetDelayCast())
+				return true
+			}
+		}
+	}
+
+	if (IsValidItem(Items.GreaterFaerieFire)) {
+		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
+			if (unit.HP <= AutoUseItemsBigFaerieFire_val.value) {
+				unit.CastNoTarget(Items.GreaterFaerieFire)
 				TickSleep.Sleep(GetDelayCast())
 				return true
 			}
@@ -194,8 +224,28 @@ function AutoUseItems(unit: Unit) {
 		}
 	}
 
-	if (IsValidItem(Items.ArcaneBoots)) {
+	if (IsValidItem(Items.EssenceRing)) {
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
+			if (unit.HPPercent <= AutoUseItemsEssenceRing_val.value) {
+				unit.CastNoTarget(Items.EssenceRing)
+				TickSleep.Sleep(GetDelayCast())
+				return true
+			}
+		}
+	}
+
+	if (IsValidItem(Items.ArcaneRing)) {
+		if (!unit.ModifiersBook.HasBuffByName(Buffs.NotHeal[0])) {
+			if (unit.Mana < AutoUseItemsArcanering_val.value) {
+				unit.CastNoTarget(Items.ArcaneRing)
+				TickSleep.Sleep(GetDelayCast())
+				return true
+			}
+		}
+	}
+
+	if (IsValidItem(Items.ArcaneBoots)) {
+		if (!unit.ModifiersBook.HasBuffByName(Buffs.NotHeal[0])) {
 			if (unit.ManaPercent < AutoUseItemsArcane_val.value) {
 				unit.CastNoTarget(Items.ArcaneBoots)
 				TickSleep.Sleep(GetDelayCast())
@@ -252,16 +302,6 @@ function AutoUseItems(unit: Unit) {
 		}
 	}
 
-	if (IsValidItem(Items.Buckler)) {
-		let enemy_bluker = AllUnitsHero.some(enemy => enemy !== undefined && enemy.IsEnemy(unit) && enemy.IsAlive && enemy.IsVisible
-			&& unit.Distance2D(enemy.Position) <= AutoUseItemsBluker_val.value)
-		if (enemy_bluker) {
-			unit.CastNoTarget(Items.Buckler)
-			TickSleep.Sleep(GetDelayCast())
-			return true
-		}
-	}
-
 	if (IsValidItem(Items.Midas)) {
 		if (AutoUseItemsMidas_CheckBIG.value) {
 			let Creep = GetAllCreepsForMidas(unit, Items.Midas)
@@ -305,7 +345,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.Dust)) {
-		if (!Items.Gem) {
+		if (Items.Gem === undefined || Items.ThirdEye === undefined) {
 			let glimer_cape = Particle.find(e => {
 				if (e[0] && e[1] !== undefined && unit.Distance2D(e[1]) <= Items.Dust.CastRange)
 					return e[0]
@@ -322,7 +362,8 @@ function AutoUseItems(unit: Unit) {
 					|| glimer_cape !== undefined
 					|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
 				)
-				&& !AllUnitsHero.some(allies => allies !== undefined && !unit.IsEnemy(enemy) && allies.IsAlive && allies.GetItemByName("item_gem")
+				&& !AllUnitsHero.some(allies => allies !== undefined && !unit.IsEnemy(enemy) && allies.IsAlive
+					&& (allies.GetItemByName("item_gem") || allies.GetItemByName("item_third_eye"))
 					&& allies.Distance2D(enemy.Position) < 800))
 
 			if (IsVisible) {
@@ -361,7 +402,7 @@ function AutoUseItems(unit: Unit) {
 			return true
 		})
 	}
-
+	// Power treads
 	if (lastStat !== undefined && Game.RawGameTime >= nextTick) {
 		if (Items.PowerTreads !== undefined
 			&& ItemsForUse.IsEnabled(Items.PowerTreads.Name)) {
@@ -496,6 +537,17 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 					&& !unit.HasBuffByName("modifier_item_ancient_janggo_active")
 				) {
 					unit.CastNoTarget(Items.Janggo)
+					TickSleep.Sleep(GetDelayCast())
+				}
+				if (target.IsCreep
+					&& (target.IsNeutral || (target.IsLaneCreep && AutoUseItemsTalon_val.selected_id === 1))
+					&& !target.IsHero
+					&& !target.IsAncient
+					&& target.HPPercent <= AutoUseItemsTalonCreepHP.value
+					&& IsValidItem(Items.Talon)
+					&& unit.IsInRange(target, Items.Talon.CastRange)
+				) {
+					unit.CastTarget(Items.Talon, target)
 					TickSleep.Sleep(GetDelayCast())
 				}
 				if (target.IsHero && !target.IsMagicImmune

@@ -3,13 +3,13 @@
 /// tokenize ///
 function tokenizeKV(data) {
 	data = data.toString()
+	data = (data as string).replace("}\t\t}", "}\n\t\t}")
 	return data
 		.split("\n")
 		.map((s, i) => {
 			return { text: s.trim(), line: i + 1 }
 		}).filter(s => s.text.length).filter(s => s.text.substr(0, 2) !== "//").map(tokenizeLine)
 }
-
 function tokenizeLine(entry) {
 	var tokens = []
 	entry.text

@@ -1,7 +1,7 @@
 import { ArrayExtensions, Entity, Hero, Utils, Unit, Creep } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { Menu_Settings_FindTargetRadius, State } from "./Menu"
-import { ComboGameEnded } from "./Module/Combo"
+// import { ComboGameEnded } from "./Module/Combo"
 export let Heroes: Hero[] = []
 export let Owner: Hero
 export let Creeps: Creep[] = []
@@ -46,7 +46,7 @@ export function GameEnded() {
 	Heroes = []
 	Owner = undefined
 	MouseTarget = undefined
-	ComboGameEnded()
+	// ComboGameEnded()
 	HarassGameEdned()
 	MyNameHero = "npc_dota_hero_nevermore"
 }

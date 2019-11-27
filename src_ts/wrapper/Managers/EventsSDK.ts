@@ -427,8 +427,8 @@ Events.on("NetworkFieldsChanged", map => {
 						break
 					case "m_name":
 						if (trigger instanceof CEntityIdentity) {
-							entity.Name_ = trigger.m_name
-							if (entity instanceof Ability)
+							entity.Name_ = entity.Entity?.m_name
+							if (entity.Name_ !== undefined && entity instanceof Ability)
 								entity.AbilityData = new AbilityData(entity.m_pBaseEntity.m_pAbilityData)
 						}
 						break

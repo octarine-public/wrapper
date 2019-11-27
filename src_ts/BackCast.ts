@@ -23,6 +23,7 @@ const Abilities: string[] = [
 	"jakiro_macropyre",
 	"lina_dragon_slave",
 	"lion_impale",
+	"snapfire_scatterblast",
 	"magnataur_shockwave",
 	"phoenix_icarus_dive",
 	"puck_illusory_orb",
@@ -48,7 +49,8 @@ const DrawingColorText = Drawing.AddColorPicker("Text Color", new Color(0, 255, 
 
 let Units: Unit[] = []
 let SpellsReady: boolean = false
-
+// let casted = false
+// let order_pos = new Vector3
 function IsReadyUnit(x: Unit): boolean {
 	return x.IsEnemy() || !x.IsAlive || !x.IsHero || x.IsMoving
 		|| !x.IsControllable || x.HasBuffByName("modifier_teleporting")
@@ -106,7 +108,7 @@ EventsSDK.on("Draw", () => {
 	})
 })
 EventsSDK.on("PrepareUnitOrders", (orders) => {
-	if (Units.length <= 0 || !State.value || !SpellsReady || orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION) {
+	if (Units.length <= 0 || !State.value || orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION) {
 		return true
 	}
 	let abils = orders.Ability as Ability
@@ -118,11 +120,12 @@ EventsSDK.on("PrepareUnitOrders", (orders) => {
 	}
 	let units_ = Units.filter(unit => !unit.IsEnemy() && unit.IsAlive
 		&& unit.IsHero && unit.IsControllable && !unit.IsMoving)
+	if (!units_.some(x => x.FindRotationAngle(orders.Position) > 0.4))
+		return true
 	if (units_.map(unit => {
 		if (abils.CastRange + unit.CastRangeBonus < (orders.Position.Distance2D(unit.Position))) {
 			return false
 		}
-		unit.OrderStop()
 		unit.CastPosition(abils, unit.Position.Add((orders.Position.Subtract(unit.Position)).Normalize().ScaleTo(1.3)))
 		return true
 	}))

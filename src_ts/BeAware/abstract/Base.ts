@@ -5,7 +5,7 @@ export default class ManagerBase {
 		return Number.MAX_SAFE_INTEGER
 	}
 	public get RoshanPosition(): Vector3 {
-		return new Vector3(-2407.3125, 1856.90625, 159.96875)
+		return new Vector3(-2756.71875, 2215.6875, 160.09375)
 	}
 	public IsShrine(x: Unit): boolean {
 		return x.Name !== "dota_fountain" && !x.IsShop && x.IsAlive && x.IsBuilding && !x.IsTower && !x.IsFort && !x.IsShrine && !x.IsBarrack
