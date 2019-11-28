@@ -88,10 +88,6 @@ let Buffs = {
 let Base = new ItemManagerBase(),
 	TickSleep = new TickSleeper()
 
-function GetDelayCast() {
-	return 250
-}
-
 export function Tick() {
 	if (!StateBase.value || TickSleep.Sleeping || !State.value) {
 		return false
@@ -103,7 +99,7 @@ export function Tick() {
 		&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double"))
 		&& !x.IsEnemy()
 		&& x.IsAlive,
-	).some(ent => AutoUseItems(ent))
+	).some(ent => AutoUseItems(ent, Units.length))
 }
 
 export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
@@ -133,7 +129,7 @@ function IsValidItem(Items: Item) {
 		&& Items.CanBeCasted()
 }
 
-function AutoUseItems(unit: Unit) {
+function AutoUseItems(unit: Unit, length: number) {
 	if (!IsValidUnit(unit)) {
 		return false
 	}
@@ -142,7 +138,7 @@ function AutoUseItems(unit: Unit) {
 		if (LocalPlayer !== undefined && unit === LocalPlayer.Hero) {
 			if (!unit.HasBuffByName("modifier_royal_jelly")) {
 				unit.CastTarget(Items.Jelly, unit)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 		}
@@ -162,7 +158,7 @@ function AutoUseItems(unit: Unit) {
 
 			if (!AutoUseItemsPhaseBootsState.value || enemy_phase_in_position) {
 				unit.CastNoTarget(Items.PhaseBoots)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 		}
@@ -174,7 +170,7 @@ function AutoUseItems(unit: Unit) {
 
 		if (enemy_mjolnir) {
 			unit.CastTarget(Items.Mjollnir, unit)
-			TickSleep.Sleep(GetDelayCast())
+			TickSleep.Sleep(length * 5)
 			return true
 		}
 	}
@@ -186,12 +182,12 @@ function AutoUseItems(unit: Unit) {
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
 				unit.CastNoTarget(item)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
 				unit.CastNoTarget(item)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 		}
@@ -201,7 +197,7 @@ function AutoUseItems(unit: Unit) {
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HP <= AutoUseItemsFaerieFire_val.value) {
 				unit.CastNoTarget(Items.FaerieFire)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 		}
@@ -211,7 +207,7 @@ function AutoUseItems(unit: Unit) {
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HP <= AutoUseItemsBigFaerieFire_val.value) {
 				unit.CastNoTarget(Items.GreaterFaerieFire)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 		}
@@ -221,7 +217,7 @@ function AutoUseItems(unit: Unit) {
 		if (unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsCheese_val.value) {
 				unit.CastNoTarget(Items.Cheese)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 		}
@@ -231,7 +227,7 @@ function AutoUseItems(unit: Unit) {
 		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent <= AutoUseItemsEssenceRing_val.value) {
 				unit.CastNoTarget(Items.EssenceRing)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 		}
@@ -241,7 +237,7 @@ function AutoUseItems(unit: Unit) {
 		if (!unit.ModifiersBook.HasBuffByName(Buffs.NotHeal[0])) {
 			if (unit.Mana < AutoUseItemsArcanering_val.value) {
 				unit.CastNoTarget(Items.ArcaneRing)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 		}
@@ -251,7 +247,7 @@ function AutoUseItems(unit: Unit) {
 		if (!unit.ModifiersBook.HasBuffByName(Buffs.NotHeal[0])) {
 			if (unit.ManaPercent < AutoUseItemsArcane_val.value) {
 				unit.CastNoTarget(Items.ArcaneBoots)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 		}
@@ -269,7 +265,7 @@ function AutoUseItems(unit: Unit) {
 					) {
 						Item.UseAbility(unit)
 						unit.CastNoTarget(Item)
-						TickSleep.Sleep(GetDelayCast())
+						TickSleep.Sleep(length * 5)
 						return true
 					}
 				}
@@ -286,7 +282,7 @@ function AutoUseItems(unit: Unit) {
 							if (!allies.IsInvulnerable && !unit.Buffs.some(buff => buff.Name === "modifier_bottle_regeneration")
 								&& (allies.Mana !== allies.MaxMana || allies.HP !== allies.MaxHP)) {
 								unit.CastTarget(Items.Bottle, allies)
-								TickSleep.Sleep(GetDelayCast())
+								TickSleep.Sleep(length * 5)
 								return true
 							}
 						}
@@ -300,7 +296,7 @@ function AutoUseItems(unit: Unit) {
 		if (unit.HPPercent < AutoUseItemsBloodHP_val.value
 			&& unit.ManaPercent > AutoUseItemsBloodMP_val.value) {
 			unit.CastNoTarget(Items.Bloodstone)
-			TickSleep.Sleep(GetDelayCast())
+			TickSleep.Sleep(length * 5)
 			return true
 		}
 	}
@@ -312,7 +308,7 @@ function AutoUseItems(unit: Unit) {
 				Creep = Creep.sort((a, b) => b.MaxHP - a.MaxHP) // less MaxHP => first
 				if (unit.Distance2D(Creep[0].Position) <= ((Items.Midas.CastRange + unit.CastRangeBonus) + 100) && unit.CanAttack(Creep[0])) {
 					unit.CastTarget(Items.Midas, Creep[0])
-					TickSleep.Sleep(GetDelayCast())
+					TickSleep.Sleep(length * 5)
 					return true
 				}
 			}
@@ -371,7 +367,7 @@ function AutoUseItems(unit: Unit) {
 
 			if (IsVisible) {
 				unit.CastNoTarget(Items.Dust)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 				return true
 			}
 		}
@@ -389,7 +385,7 @@ function AutoUseItems(unit: Unit) {
 			tr = Trees.find(x => x.IsInRange(unit, Tango.CastRange))
 		if (tr !== undefined && unit.HP <= AutoUseItemsTango_val.value) {
 			unit.CastTargetTree(Tango, tr)
-			TickSleep.Sleep(GetDelayCast())
+			TickSleep.Sleep(length * 5)
 			return true
 		}
 	}
@@ -401,7 +397,7 @@ function AutoUseItems(unit: Unit) {
 				return false
 			}
 			unit.CastTarget(Items.Abyssal, x)
-			TickSleep.Sleep(GetDelayCast())
+			TickSleep.Sleep(length * 5)
 			return true
 		})
 	}
@@ -412,7 +408,7 @@ function AutoUseItems(unit: Unit) {
 			if (Items.ActiveAttribute !== lastStat && !changed) {
 				unit.CastNoTarget(Items.PowerTreads)
 				nextTick = nextTick + 0.15 + GetAvgLatency(Flow_t.OUT)
-				TickSleep.Sleep(GetDelayCast())
+				TickSleep.Sleep(length * 5)
 			}
 			if (Items.ActiveAttribute === lastStat) {
 				lastStat = undefined
@@ -446,12 +442,12 @@ function GetAllCreepsForMidas(Unit: Unit, Item: Item): Creep[] {
 				if (AutoUseItemsMidas_range.value) {
 					if (!Creep.IsMelee) {
 						Unit.CastTarget(Item, Creep)
-						TickSleep.Sleep(GetDelayCast())
+						TickSleep.Sleep(length * 5)
 						return true
 					}
 				} else {
 					Unit.CastTarget(Item, Creep)
-					TickSleep.Sleep(GetDelayCast())
+					TickSleep.Sleep(length * 5)
 					return true
 				}
 				return false
@@ -472,7 +468,7 @@ function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true
 					&& !target.ModifiersBook.GetAnyBuffByNames(["modifier_item_urn_heal", "modifier_item_spirit_vessel_heal"])
 				) {
 					unit.CastTarget(Item, target)
-					TickSleep.Sleep(GetDelayCast())
+					TickSleep.Sleep(length * 5)
 					return true
 				}
 			}
@@ -533,14 +529,14 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 					&& unit.IsInRange(target, _Item.CastRange)
 					&& !target.IsMagicImmune) {
 					unit.CastTarget(_Item, target)
-					TickSleep.Sleep(GetDelayCast())
+					TickSleep.Sleep(length * 5)
 				}
 				if (target.IsHero && IsValidItem(Items.Janggo)
 					&& unit.IsInRange(target, Items.Janggo.CastRange / 2)
 					&& !unit.HasBuffByName("modifier_item_ancient_janggo_active")
 				) {
 					unit.CastNoTarget(Items.Janggo)
-					TickSleep.Sleep(GetDelayCast())
+					TickSleep.Sleep(length * 5)
 				}
 				if (target.IsCreep
 					&& (target.IsNeutral || (target.IsLaneCreep && AutoUseItemsTalon_val.selected_id === 1))
@@ -551,7 +547,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 					&& unit.IsInRange(target, Items.Talon.CastRange)
 				) {
 					unit.CastTarget(Items.Talon, target)
-					TickSleep.Sleep(GetDelayCast())
+					TickSleep.Sleep(length * 5)
 				}
 				if (target.IsHero && !target.IsMagicImmune
 					&& IsValidItem(Items.DiffusalBlade)
@@ -562,7 +558,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 					if ((hex_debuff === undefined || !hex_debuff.IsValid
 						|| hex_debuff.RemainingTime <= 0.3)) {
 						unit.CastTarget(Items.DiffusalBlade, target)
-						TickSleep.Sleep(GetDelayCast())
+						TickSleep.Sleep(length * 5)
 					}
 				}
 				break;
@@ -607,8 +603,8 @@ function UseSoulRing(Me: Unit, Items: InitItems, ability: Ability, args: Execute
 	}
 	Me.CastNoTarget(Items.SoulRing)
 	let Delay = ability.CastPoint <= 0
-		? GetDelayCast()
-		: (ability.CastPoint * 1000) + GetDelayCast()
+		? 250
+		: (ability.CastPoint * 1000) + 250
 	TickSleep.Sleep(Delay)
 	if (TickSleep.Sleeping) {
 		args.Execute()
@@ -639,11 +635,11 @@ function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit, Items:
 		}
 		if (Items.ActiveAttribute === 0) {
 			unit.CastNoTarget(Items.PowerTreads)
-			TickSleep.Sleep(GetDelayCast())
+			TickSleep.Sleep(length * 5)
 		} else if (Items.ActiveAttribute === 2) {
 			unit.CastNoTarget(Items.PowerTreads)
 			unit.CastNoTarget(Items.PowerTreads)
-			TickSleep.Sleep(GetDelayCast())
+			TickSleep.Sleep(length * 5)
 		}
 		changed = false
 		nextTick = ((Game.RawGameTime + ability.CastPoint) + (0.45 + GetAvgLatency(Flow_t.OUT)))

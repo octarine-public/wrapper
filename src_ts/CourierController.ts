@@ -33,7 +33,7 @@ const autoShieldState = courCtlrMenu.AddToggle("Auto Shield").SetTooltip("Auto u
 const StateBestPos = courCtlrMenu.AddToggle("Courier best position", true)
 
 function GetDelayCast() {
-	return (((Game.Ping / 2) + 30) + 350)
+	return ((2 * 1.1) + (Game.Ping / 2))
 }
 
 function checkCourSelf(stateEnt: Hero) {
@@ -42,10 +42,14 @@ function checkCourSelf(stateEnt: Hero) {
 
 let CastCourAbility = (num: number) => allyCourier.IsControllable && allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
 function MoveCourier() {
-	if (LocalPlayer === undefined)
+	if (LocalPlayer === undefined || Owner === undefined)
 		return
 	let Team_ = LocalPlayer.Team === Team.Dire
+	// Humanize Select
+	allyCourier.Select()
 	allyCourier.MoveTo(Team_ ? CourierBestPosition[0] : CourierBestPosition[1])
+	// Humanize unSelect courier
+	Owner.Select()
 }
 function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: Vector3) {
 	if (!enemy.IsEnemy() || !enemy.IsVisible) {
