@@ -41,12 +41,17 @@ function checkCourSelf(stateEnt: Hero) {
 }
 
 let CastCourAbility = (num: number) => allyCourier.IsControllable && allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
-
+function MoveCourier() {
+	if (LocalPlayer === undefined)
+		return
+	let Team_ = LocalPlayer.Team === Team.Dire
+	allyCourier.MoveTo(Team_ ? CourierBestPosition[0] : CourierBestPosition[1])
+}
 function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: Vector3) {
 	if (!enemy.IsEnemy() || !enemy.IsVisible) {
 		return false
 	}
-	if (enemy.IsInRange(Position, (enemy.AttackRange + 250))) {
+	if (enemy.IsInRange(Position, (enemy.AttackRange + 350))) {
 		if (StateCourier.State !== CourierState_t.COURIER_STATE_AT_BASE
 			&& StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE
 		) {
@@ -60,7 +65,7 @@ function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: 
 	) {
 		if (StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE
 		) {
-			allyCourier.MoveTo(Position)
+			MoveCourier()
 			DELIVER_DISABLE = false
 			Sleep.Sleep(GetDelayCast())
 			return true
@@ -89,7 +94,7 @@ function CourierBestPos() {
 				}
 			case CourierState_t.COURIER_STATE_MOVING:
 			case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
-				if (enemy.IsEnemy() && enemy.IsVisible && enemy.IsInRange(Position, (enemy.AttackRange + 250))) {
+				if (enemy.IsEnemy() && enemy.IsVisible && enemy.IsInRange(Position, (enemy.AttackRange + 350))) {
 					DELIVER_DISABLE = true
 					CastCourAbility(0)
 					Sleep.Sleep(GetDelayCast())
@@ -200,7 +205,6 @@ function Deliver(): boolean {
 	}
 	return false
 }
-
 EventsSDK.on("Tick", () => {
 	if (!State.value
 		|| Owner === undefined
@@ -226,8 +230,7 @@ EventsSDK.on("EntityCreated", ent => {
 	if (ent instanceof Courier && !ent.IsEnemy()) {
 		allyCourier = ent
 		if (State.value && StateBestPos.value && LocalPlayer !== undefined) {
-			let Team_ = LocalPlayer.Team === Team.Dire
-			allyCourier.MoveTo(Team_ ? CourierBestPosition[0] : CourierBestPosition[1])
+			setTimeout(MoveCourier, 1000);
 		}
 	}
 	if (ent instanceof Hero) {
