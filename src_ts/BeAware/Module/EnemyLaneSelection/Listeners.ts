@@ -65,7 +65,7 @@ export function Draw() {
 	if (!State.value || !Game.IsConnected || Game.GameState >= DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME)
 		return false
 
-	let enemy_team_id = (LocalPlayer.Team - Team.Radiant) ^ 1,
+	let enemy_team_id = LocalPlayer.Team === Team.Radiant ? Team.Dire : Team.Radiant,
 		wSize = RendererSDK.WindowSize,
 		ratio = RendererSDK.GetAspectRatio()
 	switch (ratio) {
