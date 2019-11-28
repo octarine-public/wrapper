@@ -55,11 +55,11 @@ export let arrayBreakLinkItems = [
 	Items.Cyclone.toString(),
 ];
 
-const ComboMenu = Menu.AddNode("Combo")
-export const ComboKeyItem = ComboMenu.AddKeybind("Key bind")
-export const StyleCombo = ComboMenu.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"])
-export const СomboItems = ComboMenu.AddImageSelector("Items", array_items, new Map(array_items.map(name => [name, true])))
-export const СomboAbility = ComboMenu.AddImageSelector("Ability", array_ability, new Map(array_ability.map(name => [name, true])))
+// const ComboMenu = Menu.AddNode("Combo")
+// export const ComboKeyItem = ComboMenu.AddKeybind("Key bind")
+// export const StyleCombo = ComboMenu.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"])
+// export const СomboItems = ComboMenu.AddImageSelector("Items", array_items, new Map(array_items.map(name => [name, true])))
+// export const СomboAbility = ComboMenu.AddImageSelector("Ability", array_ability, new Map(array_ability.map(name => [name, true])))
 
 const HarrasMenu = Menu.AddNode("Harras")
 export const HarrasKeyItem = HarrasMenu.AddKeybind("Key bind")

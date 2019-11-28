@@ -86,6 +86,13 @@ export class ItemBase extends ItemsHelper {
 		}
 		return this.unit.GetItemByName(name)
 	}
+	public get ClumsyNet(): Item {
+		let name = "item_clumsy_net"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
 	public get Discord(): Item {
 		let name = "item_veil_of_discord"
 		if (this.unit === undefined) {

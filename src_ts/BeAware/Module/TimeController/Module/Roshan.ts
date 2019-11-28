@@ -38,7 +38,7 @@ var Timer = 0,
 	IsAlive = true
 
 
-export function RoshanParticleCreate(Handle: bigint) {
+export function RoshanParticleCreate(Handle: bigint, entity: Entity) {
 	if (Handle === 7431777948785381669n) {
 		if (NotificationRoshanStateChat.value && Game.GameTime > 0) {
 			Game.ExecuteCommand("chatwheel_say 53")
@@ -127,6 +127,8 @@ export function DrawRoshan() {
 	if (!drawStatus.value || !Game.IsInGame || Game.LevelNameShort === "hero_demo_main") {
 		return
 	}
+	// if (LocalPlayer !== undefined)
+	// 	console.log(LocalPlayer.Hero.Position)
 	if (!IsAlive) {
 		let time = Game.RawGameTime
 		if (time >= checkTick) {
@@ -185,11 +187,12 @@ export function RoshanGameEvent(name: string, obj: any) {
 		|| (!(ent1 instanceof Roshan || ent1 === EntityManager.Roshan) && !(ent2 instanceof Roshan || ent2 === EntityManager.Roshan))
 	)
 		return
+
 	let hero = ent1 instanceof Hero ? ent1 : ent2
 	let ar = Units.find(ar_ => ar_[0] === hero)
-	if (ar === undefined)
+	if (ar === undefined) {
 		Units.push([ent1 instanceof Hero ? ent1 : ent2 as Entity, Game.RawGameTime])
-	else
+	} else
 		ar[1] = Game.RawGameTime
 }
 

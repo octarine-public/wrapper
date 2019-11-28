@@ -46,10 +46,11 @@ export function AutoCombo() {
 		return
 	}
 
-	let RodofAtosDelay = ProjList.find(x => x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
+	let ClumsyDelay = ProjList.find(x => x.ParticlePath === "particles/items5_fx/clumsy_net_proj.vpcf"),
+		RodofAtosDelay = ProjList.find(x => x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
 		EtherealDelay = ProjList.find(x => x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),
 		ConcussiveShotDelay = ProjList.find(x => x.ParticlePath === "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf")
-
+	//console.log(ClumsyDelay.IsDodged)
 	if (IsValid(Items.Sheeps, target, AutoComboItems)) {
 		Items.Sheeps.UseAbility(target)
 		Sleep.Sleep(Items.Tick)
@@ -82,7 +83,12 @@ export function AutoCombo() {
 		Sleep.Sleep(Items.Tick)
 		return
 	}
-
+	// ClumsyNet
+	if (IsValid(Items.ClumsyNet, target, AutoComboItems)) {
+		Items.ClumsyNet.UseAbility(target)
+		Sleep.Sleep(Items.Tick)
+		return
+	}
 	// MysticFlare
 	if (IsValid(Abilities.MysticFlare, target, AutoComboAbility)) {
 		if (Items.RodofAtos === undefined
@@ -102,6 +108,9 @@ export function AutoCombo() {
 			Abilities.UseMysticFlare(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare))
 			return
+		} else if (Items.RodofAtos === undefined && ClumsyDelay !== undefined && target.Distance2D(ClumsyDelay.Position) <= 100 || target.IsStunned) {
+			Abilities.UseMysticFlare(target)
+			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare))
 		} else if (Items.RodofAtos !== undefined && RodofAtosDelay !== undefined && target.Distance2D(RodofAtosDelay.Position) <= 100 || target.IsStunned) {
 			Abilities.UseMysticFlare(target)
 			Sleep.Sleep(Abilities.CastDelay(Abilities.MysticFlare))

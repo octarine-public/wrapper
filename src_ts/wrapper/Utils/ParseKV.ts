@@ -10,7 +10,6 @@ function tokenizeKV(data) {
 			return { text: s.trim(), line: i + 1 }
 		}).filter(s => s.text.length).filter(s => s.text.substr(0, 2) !== "//").map(tokenizeLine)
 }
-
 function tokenizeLine(entry) {
 	var tokens = []
 	entry.text

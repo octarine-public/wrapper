@@ -73,6 +73,6 @@ export function ParticleUpdateEnt(id: number, entity: Entity, vector: Vector3) {
 }
 
 export function ParticleCreated(id: number, entity: Entity, path: string, handle: bigint) {
-	RoshanParticleCreate(handle)
+	RoshanParticleCreate(handle, entity)
 	RuneParticleCreate(id, entity, handle)
 }

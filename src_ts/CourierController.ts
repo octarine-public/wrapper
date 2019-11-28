@@ -1,4 +1,4 @@
-import { Courier, EntityManager, EventsSDK, Game, Hero, LocalPlayer, Menu, Player, Unit, Vector3, Team, TickSleeper } from "wrapper/Imports"
+import { Courier, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Vector3, Team, TickSleeper, Ability } from "wrapper/Imports"
 
 let allyCourier: Courier,
 	Sleep = new TickSleeper,
@@ -7,7 +7,10 @@ let allyCourier: Courier,
 	Owner: Hero,
 	DELIVER_DISABLE = false
 
-const CourierBestPosition = [new Vector3(6199.96875, 5822.375, 384), new Vector3(-6301.0625, -5868.59375, 384)]
+const CourierBestPosition = [
+	new Vector3(6199.96875, 5822.375, 384),
+	new Vector3(-6301.0625, -5868.59375, 384)
+]
 
 // use ability courier
 const per_ability_kill: string[] = [
@@ -26,20 +29,11 @@ const per_ability_kill: string[] = [
 const courCtlrMenu = Menu.AddEntry(["Utility", "Courier Controller"])
 const State = courCtlrMenu.AddToggle("State")
 const deliverState = courCtlrMenu.AddToggle("Auto deliver")
-const antiReuseState = courCtlrMenu.AddToggle("Anti Reuse")
 const autoShieldState = courCtlrMenu.AddToggle("Auto Shield").SetTooltip("Auto use shield to try to save courier")
 const StateBestPos = courCtlrMenu.AddToggle("Courier best position", true)
-const playersBlockList = courCtlrMenu.AddImageSelector("Players for block", [])
-
-function UpdateMenu() {
-	playersBlockList.values = EntityManager.AllEntities
-		.filter(ent => ent instanceof Player && ent !== LocalPlayer && ent.HeroAssigned && !ent.IsEnemy())
-		.map((pl: Player) => pl.Hero.Name)
-	playersBlockList.Update()
-}
 
 function GetDelayCast() {
-	return (((Game.Ping / 2) + 30) + 350)
+	return ((2 * 1.1) + (Game.Ping / 2))
 }
 
 function checkCourSelf(stateEnt: Hero) {
@@ -47,12 +41,21 @@ function checkCourSelf(stateEnt: Hero) {
 }
 
 let CastCourAbility = (num: number) => allyCourier.IsControllable && allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
-
+function MoveCourier() {
+	if (LocalPlayer === undefined || Owner === undefined)
+		return
+	let Team_ = LocalPlayer.Team === Team.Dire
+	// Humanize Select
+	allyCourier.Select()
+	allyCourier.MoveTo(Team_ ? CourierBestPosition[0] : CourierBestPosition[1])
+	// Humanize unSelect courier
+	Owner.Select()
+}
 function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: Vector3) {
 	if (!enemy.IsEnemy() || !enemy.IsVisible) {
 		return false
 	}
-	if (enemy.IsInRange(Position, (enemy.AttackRange + 250))) {
+	if (enemy.IsInRange(Position, (enemy.AttackRange + 350))) {
 		if (StateCourier.State !== CourierState_t.COURIER_STATE_AT_BASE
 			&& StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE
 		) {
@@ -66,7 +69,7 @@ function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: 
 	) {
 		if (StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE
 		) {
-			allyCourier.MoveTo(Position)
+			MoveCourier()
 			DELIVER_DISABLE = false
 			Sleep.Sleep(GetDelayCast())
 			return true
@@ -81,7 +84,10 @@ function CourierBestPos() {
 	if (allyCourier === undefined || !allyCourier.IsControllable) {
 		return false
 	}
-	let Position = LocalPlayer.Team === Team.Dire ? CourierBestPosition[0] : CourierBestPosition[1]
+	let Position = LocalPlayer !== undefined
+		&& LocalPlayer.Team === Team.Dire
+		? CourierBestPosition[0]
+		: CourierBestPosition[1]
 	return Enemy.some(enemy => {
 		switch (allyCourier.State) {
 			case CourierState_t.COURIER_STATE_IDLE:
@@ -92,7 +98,7 @@ function CourierBestPos() {
 				}
 			case CourierState_t.COURIER_STATE_MOVING:
 			case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
-				if (enemy.IsEnemy() && enemy.IsVisible && enemy.IsInRange(Position, (enemy.AttackRange + 250))) {
+				if (enemy.IsEnemy() && enemy.IsVisible && enemy.IsInRange(Position, (enemy.AttackRange + 350))) {
 					DELIVER_DISABLE = true
 					CastCourAbility(0)
 					Sleep.Sleep(GetDelayCast())
@@ -103,6 +109,7 @@ function CourierBestPos() {
 		}
 	})
 }
+
 function CourierState(courier: Courier) {
 	if (courier === undefined || courier.IsEnemy() || !courier.IsControllable) {
 		return false
@@ -116,33 +123,31 @@ function CourierState(courier: Courier) {
 		case CourierState_t.COURIER_STATE_IDLE:
 		case CourierState_t.COURIER_STATE_AT_BASE:
 		case CourierState_t.COURIER_STATE_RETURNING_TO_BASE:
-			if (!Deliver()) {
-				return false
-			}
-			break
 		case CourierState_t.COURIER_STATE_MOVING:
 		case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
-			if (IsBlocked(StateCourEnt)) {
-				CastCourAbility(0)
+			if (!Deliver()) {
 				return false
-			}
-			if (ItemsChecking() && antiReuseState.value) {
-				CastCourAbility(4)
-				Sleep.Sleep(GetDelayCast())
-				return true
 			}
 			break
 	}
 	return false
 }
 
-function AutoShiled(): boolean {
-	//console.log(unit_anim.toString())
+function AbilityTypeReady(): Ability {
+	return allyCourier.GetAbilityByName("courier_shield")
+		?.IsCooldownReady
+		? (!allyCourier.HasBuffByName("modifier_courier_burst")
+			&& allyCourier.GetAbilityByName("courier_shield"))
+		: (!allyCourier.HasBuffByName("modifier_courier_shield")
+			&& allyCourier.GetAbilityByName("courier_burst"))
+}
+
+function AutoSafe(): boolean {
 	if (!autoShieldState.value || allyCourier === undefined || unit_anim.length <= 0) {
 		return false
 	}
-	let shield = allyCourier.GetAbilityByName("courier_shield")
-	if (shield === undefined || shield.Level === 0) {
+	let ability = AbilityTypeReady()
+	if (ability === undefined || ability.Level === 0) {
 		return false
 	}
 	let attack_courier = unit_anim.some(unit =>
@@ -155,34 +160,19 @@ function AutoShiled(): boolean {
 			&& unit.AttackDamage(allyCourier, true) > allyCourier.HP
 		)
 	)
-	//console.log(attack_courier)
-	if (!attack_courier && unit_anim.length !== 0 || !shield.IsCooldownReady) {
+	if (!attack_courier && unit_anim.length !== 0 || !ability.IsCooldownReady) {
 		unit_anim = []
 		return false
 	}
 	unit_anim = []
-	shield.UseAbility()
+	if (ability.Name === "courier_burst") {
+		CastCourAbility(0)
+		ability.UseAbility()
+	} else {
+		ability.UseAbility()
+	}
 	Sleep.Sleep(GetDelayCast())
 	return true
-}
-
-function ItemsChecking(): boolean {
-	if (Owner === undefined || !Owner.IsAlive || !Owner.Inventory.HasFreeSlot(0, 9)) {
-		return false
-	}
-	if (allyCourier === undefined || allyCourier.IsEnemy()) {
-		return false
-	}
-	let free_slots_local = Owner.Inventory.GetFreeSlots(0, 8).length,
-		cour_slots_local = allyCourier.Inventory.CountItemByOtherPlayer()
-	let items_in_stash = Owner.Inventory.Stash.reduce((prev, cur) => prev + (cur !== undefined ? 1 : 0), 0)
-	if (items_in_stash > 0 && allyCourier.Inventory.GetFreeSlots(0, 8).length >= items_in_stash && free_slots_local >= items_in_stash + cour_slots_local) {
-		return true
-	}
-	if (cour_slots_local > 0 && free_slots_local >= cour_slots_local) {
-		return true
-	}
-	return false
 }
 
 function Deliver(): boolean {
@@ -219,14 +209,6 @@ function Deliver(): boolean {
 	}
 	return false
 }
-
-function IsBlocked(npc: Hero) {
-	if (npc === undefined) {
-		return false
-	}
-	return playersBlockList.enabled_values.get(npc.Name)
-}
-
 EventsSDK.on("Tick", () => {
 	if (!State.value
 		|| Owner === undefined
@@ -237,7 +219,7 @@ EventsSDK.on("Tick", () => {
 	) {
 		return
 	}
-	if (AutoShiled()) {
+	if (AutoSafe()) {
 		return
 	}
 	if (CourierState(allyCourier)) {
@@ -251,16 +233,11 @@ EventsSDK.on("Tick", () => {
 EventsSDK.on("EntityCreated", ent => {
 	if (ent instanceof Courier && !ent.IsEnemy()) {
 		allyCourier = ent
-		if (State.value) {
-			allyCourier.MoveTo(Owner !== undefined &&
-				Owner.Team === Team.Dire
-				? CourierBestPosition[0]
-				: CourierBestPosition[1]
-			)
+		if (State.value && StateBestPos.value && LocalPlayer !== undefined) {
+			setTimeout(MoveCourier, 1000);
 		}
 	}
 	if (ent instanceof Hero) {
-		UpdateMenu()
 		Enemy.push(ent)
 	}
 })
@@ -269,20 +246,12 @@ EventsSDK.on("EntityDestroyed", ent => {
 	if (allyCourier === ent) {
 		allyCourier = undefined
 	}
-	if (ent instanceof Hero) {
-		UpdateMenu()
-	}
 })
 
 EventsSDK.on("GameStarted", (hero) => {
 	if (Owner === undefined) {
 		Owner = hero
 	}
-	if (playersBlockList.enabled_values.size <= 0) {
-		return
-	}
-	// loop-optimizer: KEEP
-	playersBlockList.enabled_values.forEach((_, key) => playersBlockList.enabled_values.set(key, false))
 })
 
 EventsSDK.on("GameEnded", () => {
@@ -290,11 +259,8 @@ EventsSDK.on("GameEnded", () => {
 	Owner = undefined
 	DELIVER_DISABLE = false
 	unit_anim = []
-	// loop-optimizer: KEEP
-	playersBlockList.enabled_values.forEach((_, key) => playersBlockList.enabled_values.set(key, false))
-	playersBlockList.values = []
-	playersBlockList.Update()
 })
+
 EventsSDK.on("UnitAnimation", unit => {
 	if (unit.IsEnemy()) {
 		unit_anim.push(unit)

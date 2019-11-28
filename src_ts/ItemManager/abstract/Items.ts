@@ -27,13 +27,6 @@ export default class ItemBase extends ItemManagerBase {
 		}
 		return this.unit.GetItemByName(name)
 	}
-	public get Buckler(): Item {
-		let name = "item_buckler"
-		if (this.unit === undefined) {
-			return name as any
-		}
-		return this.unit.GetItemByName(name)
-	}
 	public get Dust(): Item {
 		let name = "item_dust"
 		if (this.unit === undefined) {
@@ -64,6 +57,48 @@ export default class ItemBase extends ItemManagerBase {
 	}
 	public get FaerieFire(): Item {
 		let name = "item_faerie_fire"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get Jelly(): Item {
+		let name = "item_royal_jelly"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get Talon(): Item {
+		let name = "item_iron_talon"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get ArcaneRing(): Item {
+		let name = "item_arcane_ring"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get EssenceRing(): Item {
+		let name = "item_essence_ring"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get GreaterFaerieFire(): Item {
+		let name = "item_greater_faerie_fire"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
+	public get ThirdEye(): Item {
+		let name = "item_third_eye"
 		if (this.unit === undefined) {
 			return name as any
 		}

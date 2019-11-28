@@ -66,6 +66,7 @@ class BaseHelper {
 	]
 
 	private readonly ModifiersTrigger: string[] = [
+		"modifier_clumsy_net_ensnare",
 		"modifier_rod_of_atos_debuff",
 		"modifier_skywrath_mage_concussive_shot_slow",
 		"modifier_skywrath_mage_ancient_seal",

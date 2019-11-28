@@ -8,6 +8,7 @@ const Items = new InitItems(undefined)
 // loop-optimizer: KEEP
 const Items_array: string[] = [
 	Items.Abyssal.toString(),
+	Items.ArcaneRing.toString(),
 	Items.PhaseBoots.toString(),
 	Items.MagicStick.toString(),
 	Items.MagicWand.toString(),
@@ -24,12 +25,14 @@ const Items_array: string[] = [
 	Items.TangoSingle.toString(),
 	Items.FaerieFire.toString(),
 	Items.Dust.toString(),
-	Items.Buckler.toString(),
 	Items.Cheese.toString(),
 	Items.Mjollnir.toString(),
 	Items.SolarCrest.toString(),
 	Items.Medallion.toString(),
 	Items.Janggo.toString(),
+	Items.Jelly.toString(),
+	Items.EssenceRing.toString(),
+	Items.Talon.toString(),
 	// Items.Armlet.toString(),
 	Items.DiffusalBlade.toString(),
 	Items.PowerTreads.toString(),
@@ -44,6 +47,10 @@ export const AutoUseItemsSticks_val = AutoUseItemsSticks.AddSlider("HP precent (
 const AutoUseItemsTango = SettingsAutoItems.AddNode("Tango")
 export const AutoUseItemsTango_val = AutoUseItemsTango.AddSlider("HP (min) for use", 450, 1, 1000)
 
+const AutoUseItemsTalon = SettingsAutoItems.AddNode("Talon")
+export const AutoUseItemsTalon_val = AutoUseItemsTalon.AddSwitcher("Mode", ["Only neutrals", "All Creeps"], 0)
+export const AutoUseItemsTalonCreepHP = AutoUseItemsTalon.AddSlider("Creep min HP (%)", 100, 1, 100)
+
 const AutoUseItemsPhaseBoots = SettingsAutoItems.AddNode("Phase Boots")
 export const AutoUseItemsPhaseBootsState = AutoUseItemsPhaseBoots.AddToggle("Check from enemy")
 export const AutoUseItemsPhase_val = AutoUseItemsPhaseBoots.AddSlider("Distance", 300, 150, 2000)
@@ -51,11 +58,20 @@ export const AutoUseItemsPhase_val = AutoUseItemsPhaseBoots.AddSlider("Distance"
 const AutoUseItemsFaerieFire = SettingsAutoItems.AddNode("Faerie Fire")
 export const AutoUseItemsFaerieFire_val = AutoUseItemsFaerieFire.AddSlider("HP (min) for use", 100, 1, 1000)
 
+const AutoUseItemsBigFaerieFire = SettingsAutoItems.AddNode("Greater Faerie Fire")
+export const AutoUseItemsBigFaerieFire_val = AutoUseItemsBigFaerieFire.AddSlider("HP precent (%)", 5, 1, 99)
+
+const AutoUseItemsEssenceRing = SettingsAutoItems.AddNode("Essence Ring")
+export const AutoUseItemsEssenceRing_val = AutoUseItemsEssenceRing.AddSlider("HP precent (%)", 5, 1, 99)
+
 const AutoUseItemsCheese = SettingsAutoItems.AddNode("Cheese")
 export const AutoUseItemsCheese_val = AutoUseItemsCheese.AddSlider("HP precent (%)", 10, 1, 99)
 
 const AutoUseItemsArcane = SettingsAutoItems.AddNode("Arcane Boots")
 export const AutoUseItemsArcane_val = AutoUseItemsArcane.AddSlider("MP precent (%)", 10, 1, 99)
+
+const AutoUseItemsArcaneRing = SettingsAutoItems.AddNode("Arcane Ring")
+export const AutoUseItemsArcanering_val = AutoUseItemsArcaneRing.AddSlider("MP (min) for use", 150, 1, 500)
 
 const AutoUseItemsMG = SettingsAutoItems.AddNode("Mekansm / Graves")
 export const AutoUseItemsMG_val = AutoUseItemsMG.AddSlider("HP precent (%)", 10, 1, 99)
@@ -82,6 +98,3 @@ export const AutoUseItemsUrnAliesEnemyHP = AutoUseItemsUrn.AddSlider("HP for use
 
 const AutoUseItemsMjollnir = SettingsAutoItems.AddNode("Mjollnir")
 export const AutoUseItemsMjollnir_val = AutoUseItemsMjollnir.AddSlider("Distance from enemy", 600, 150, 2000)
-
-const AutoUseItemsBluker = SettingsAutoItems.AddNode("Buckler")
-export const AutoUseItemsBluker_val = AutoUseItemsBluker.AddSlider("Distance from enemy", 1000, 150, 2000)

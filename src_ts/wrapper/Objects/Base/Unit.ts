@@ -933,6 +933,7 @@ export default class Unit extends Entity {
 			this.IsAlive
 			&& this.IsVisible
 			&& this.IsSpawned
+			&& !this.IsEthereal
 			&& target.IsAlive
 			&& !target.IsInvulnerable
 			&& !target.IsDormant

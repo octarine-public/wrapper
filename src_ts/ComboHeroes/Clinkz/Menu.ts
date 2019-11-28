@@ -10,7 +10,6 @@ const Menu = MenuSDK.AddEntry(["Heroes", "Clinkz"])
 export const State = Menu.AddToggle("Enable")
 
 let arrayAbility: string[] = [
-	Abilities.Strafe.toString(),
 	Abilities.SearingArrows.toString(),
 	Abilities.BurningArmy.toString(),
 ]
@@ -34,6 +33,15 @@ let arrayItems: string[] = [
 	Items.Armlet.toString(),
 	Items.Blink.toString(),
 ]
+
+const array_AutoDeathPact: string[] = [
+	Items.Soulring.toString(),
+	Abilities.DeathPact.toString()
+]
+const AutoDeathPact = Menu.AddNode("Auto Death Pact")
+export const AutoDeathPactState = AutoDeathPact.AddToggle("Enable", true)
+export const AutoDeathPactCreepHP = AutoDeathPact.AddSlider("HP min for use (%)", 100, 1, 100)
+export const AutoDeathPactAbility = AutoDeathPact.AddImageSelector("Select", array_AutoDeathPact, new Map(array_AutoDeathPact.map(name => [name, true])))
 
 const Combo = Menu.AddNode("Combo")
 export const ComboKeyItem = Combo.AddKeybind("Bind Key", "D")

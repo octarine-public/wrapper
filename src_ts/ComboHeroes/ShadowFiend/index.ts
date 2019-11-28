@@ -1,6 +1,6 @@
 import { EventsSDK } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
-import { InitCombo } from "./Module/Combo"
+// import { InitCombo } from "./Module/Combo"
 import { Draw } from "./Renderer"
 import { Tick, EntityCreated, EntityDestroyed, GameEnded, GameStarted, InitMouse } from "./Listeners"
 import { OnExecuteOrder } from "./Module/WithoutFail"
@@ -9,7 +9,7 @@ function Init() {
 	Tick()
 	InitMouse()
 	if (!Base.DeadInSide) {
-		InitCombo()
+		// InitCombo()
 		InitHarras()
 	}
 }

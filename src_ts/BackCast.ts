@@ -23,6 +23,7 @@ const Abilities: string[] = [
 	"jakiro_macropyre",
 	"lina_dragon_slave",
 	"lion_impale",
+	"snapfire_scatterblast",
 	"magnataur_shockwave",
 	"phoenix_icarus_dive",
 	"puck_illusory_orb",
