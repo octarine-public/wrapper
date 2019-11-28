@@ -19,6 +19,7 @@ let Combo = MenuCombo.AddNode("Combo"),
 	Items = Combo.AddImageSelector(
 		"Items", [
 		"item_rod_of_atos",
+		"item_clumsy_net",
 		"item_sheepstick",
 		"item_ethereal_blade",
 		"item_veil_of_discord",
@@ -30,6 +31,7 @@ let Combo = MenuCombo.AddNode("Combo"),
 		"item_blink",
 	], new Map<string, boolean>([
 		["item_rod_of_atos", true],
+		["item_clumsy_net", true],
 		["item_sheepstick", true],
 		["item_ethereal_blade", true],
 		["item_veil_of_discord", true],
@@ -75,6 +77,7 @@ let AutoCombo = MenuCombo.AddNode("Auto Combo"),
 	AutoComboItems = AutoCombo.AddImageSelector(
 		"Items", [
 		"item_rod_of_atos",
+		"item_clumsy_net",
 		"item_sheepstick",
 		"item_ethereal_blade",
 		"item_veil_of_discord",
@@ -85,6 +88,7 @@ let AutoCombo = MenuCombo.AddNode("Auto Combo"),
 		"item_nullifier",
 	], new Map<string, boolean>([
 		["item_rod_of_atos", true],
+		["item_clumsy_net", true],
 		["item_sheepstick", true],
 		["item_ethereal_blade", true],
 		["item_veil_of_discord", true],

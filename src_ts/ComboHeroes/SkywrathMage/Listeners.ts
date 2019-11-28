@@ -96,7 +96,7 @@ export function TrackingProjectileCreated(proj: TrackingProjectile) {
 }
 
 export function LinearProjectileDestroyed(proj: TrackingProjectile) {
-	if (proj instanceof TrackingProjectile) {
+	if (proj instanceof TrackingProjectile && !proj.IsAttack) {
 		ArrayExtensions.arrayRemove(ProjList, proj)
 	}
 }

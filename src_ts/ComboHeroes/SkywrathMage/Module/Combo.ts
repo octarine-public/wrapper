@@ -21,14 +21,14 @@ export function InitCombo() {
 	}
 	if (BladeMailCancelCombo.value && target.HasBuffByName("modifier_item_blade_mail_reflect"))
 		return
-
 	let ItemsInit = initItemsMap.get(MyHero),
 		Abilities = initAbilityMap.get(MyHero),
 		ItemsTarget = initItemsTargetMap.get(target)
 	if (Items === undefined || Abilities === undefined || ItemsTarget === undefined)
 		return
 
-	let RodofAtosDelay = ProjList.find(x => x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
+	let ClumsyDelay = ProjList.find(x => x.ParticlePath === "particles/items5_fx/clumsy_net_proj.vpcf"),
+		RodofAtosDelay = ProjList.find(x => x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
 		EtherealDelay = ProjList.find(x => x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),
 		ConcussiveShotDelay = ProjList.find(x => x.ParticlePath === "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf")
 
@@ -125,6 +125,19 @@ export function InitCombo() {
 			Sleep.Sleep(ItemsInit.Tick)
 			return
 		}
+		// Clumsy net
+		let ClumsyDebuff = target.Buffs.some(x => x.IsValid && x.Name === "modifier_clumsy_net_ensnare" && x.RemainingTime > 0.5)
+		if (ItemsInit.ClumsyNet !== undefined
+			&& !Base.CancelAbilityRealm(target)
+			&& Items.IsEnabled(ItemsInit.ClumsyNet.Name)
+			&& ItemsInit.ClumsyNet.CanBeCasted()
+			&& MyHero.Distance2D(target) <= ItemsInit.ClumsyNet.CastRange
+			&& !ClumsyDebuff
+		) {
+			ItemsInit.ClumsyNet.UseAbility(target)
+			Sleep.Sleep(ItemsInit.Tick)
+			return
+		}
 
 		// MysticFlare
 		if (Abilities.MysticFlare !== undefined
@@ -150,6 +163,10 @@ export function InitCombo() {
 				Sleep.Sleep(Abilities.Tick)
 				return
 			} else if (ItemsInit.RodofAtos === undefined && !ConcussiveShotAwait.value) {
+				Abilities.UseMysticFlare(target)
+				Sleep.Sleep(Abilities.Tick)
+				return
+			} else if (ItemsInit.RodofAtos === undefined && ClumsyDelay !== undefined && target.Distance2D(ClumsyDelay.Position) <= 100) {
 				Abilities.UseMysticFlare(target)
 				Sleep.Sleep(Abilities.Tick)
 				return
