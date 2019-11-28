@@ -69,13 +69,20 @@ const debugEvents = debugEventsMenu.AddToggle("Debugging events")
 
 const debugProjectiles = debugEventsMenu.AddToggle("Debug projectiles", false, "Visual only")
 
+function SafeLog(...args) {
+	// loop-optimizer: KEEP
+	console.log(...args.map(arg => JSON.parse(JSON.stringify(arg, (key, value) => typeof value === 'bigint' ? value.toString() + 'n' : value))))
+}
+
 EventsSDK.on("GameEvent", (name, obj) => {
 	if (!debugEvents.value)
 		return
-	let my_obj = {}
-	for (let [key, value] of Object.entries(obj))
-		my_obj[key] = typeof value === "bigint" ? value.toString() : value
-	console.log(name, my_obj)
+	SafeLog(name, obj)
+})
+Events.on("ServerInfo", obj => {
+	if (!debugEvents.value)
+		return
+	SafeLog(obj)
 })
 
 EventsSDK.on("Draw", () => {

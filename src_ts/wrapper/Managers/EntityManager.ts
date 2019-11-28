@@ -36,9 +36,9 @@ let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 let InStage: C_BaseEntity[] = []
 
 export let LocalPlayer: Player
-export function SetLocalPlayer(player: Player) {
-	LocalPlayer = player
-}
+
+let player_slot = NaN
+Events.on("ServerInfo", info => player_slot = info.player_slot)
 
 const EntityManager = new (class EntityManager {
 	private Roshan_: Entity | number
@@ -188,7 +188,7 @@ function AddToCache(ent: C_BaseEntity, already_valid = false) {
 	}
 
 	let entity = ClassFromNative(ent)
-	if (entity instanceof Player && entity.m_pBaseEntity.m_bIsLocalPlayer)
+	if (entity.Index === player_slot + 1 /* skip worldent */)
 		LocalPlayer = entity as Player
 	entity.OnCreated()
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)

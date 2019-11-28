@@ -1,4 +1,4 @@
-import Events, { EventEmitter } from "./Events"
+import Events, { EventEmitter, IServerInfo } from "./Events"
 import UserCmd from "../Native/UserCmd"
 import { EntityManager } from "../Imports"
 import * as WASM from "../Native/WASM"
@@ -8,7 +8,7 @@ import Ability from "../Objects/Base/Ability"
 import Unit from "../Objects/Base/Unit"
 import AbilityData from "../Objects/DataBook/AbilityData"
 import Game from "../Objects/GameResources/GameRules"
-import { LocalPlayer, SetLocalPlayer } from "./EntityManager"
+import { LocalPlayer } from "./EntityManager"
 import Player from "../Objects/Base/Player"
 import Entity from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
@@ -119,6 +119,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "LifeStateChanged", listener: (ent: Entity) => void): EventEmitter
 	// on(name: "NetworkFieldChanged", listener: (args: NetworkFieldChanged) => void): EventEmitter
 	on(name: "NetworkActivityChanged", listener: (npc: Unit) => void): EventEmitter
+	on(name: "ServerInfo", listener: (info: IServerInfo) => void): EventEmitter
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()
@@ -318,11 +319,8 @@ Events.on("NetworkFieldsChanged", map => {
 						entity.Owner_ = entity.m_pBaseEntity.m_hOwnerEntity
 						break
 					case "m_iPlayerID":
-						if (entity instanceof Player) {
+						if (entity instanceof Player)
 							entity.PlayerID = entity.m_pBaseEntity.m_iPlayerID
-							if (entity.PlayerID !== -1 && entity.m_pBaseEntity.m_bIsLocalPlayer)
-								SetLocalPlayer(entity)
-						}
 						break
 					case "m_hAssignedHero":
 						if (entity instanceof Player)

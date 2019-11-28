@@ -63,6 +63,43 @@ export class EventEmitter {
 	}
 }
 
+export interface IServerInfo {
+	protocol?: number
+	server_count?: number
+	is_dedicated?: boolean
+	is_hltv?: boolean
+	is_replay?: boolean
+	c_os?: number
+	max_clients?: number
+	max_classes?: number
+	player_slot?: number
+	tick_interval?: number
+	game_dir?: string
+	map_name?: string
+	sky_name?: string
+	host_name?: string
+	addon_name?: string
+	game_session_config?: {
+		is_loadsavegame?: boolean
+		is_background_map?: boolean
+		is_headless?: boolean
+		min_client_limit?: number
+		max_client_limit?: number
+		max_clients?: number
+		tick_interval?: number
+		hostname?: string
+		savegamename?: string
+		s1_mapname?: string
+		gamemode?: string
+		server_ip_address?: string
+		data?: any
+		is_localonly?: boolean
+		is_transition?: boolean
+		previouslevel?: string
+		landmarkname?: string
+	}
+	game_session_manifest?: string
+}
 declare interface Events extends EventEmitter {
 	on(name: "UIStateChanged", callback: (new_state: number) => void): EventEmitter
 	/**
@@ -227,6 +264,7 @@ declare interface Events extends EventEmitter {
 		map: Map<C_BaseEntity, Map<any, [string, string, number][]>> // 1st key: entity, 2nd: trigger, values: [field_name, field_type, array_index]
 	) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (id: number, reason: number, uuid: bigint, obj: any) => void): EventEmitter
+	on(name: "ServerInfo", listener: (info: IServerInfo) => void): EventEmitter
 }
 const Events: Events = new EventEmitter()
 global.Events = Events

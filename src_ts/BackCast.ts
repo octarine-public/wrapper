@@ -1,4 +1,4 @@
-import { Menu as MenuSDK, EventsSDK, Ability, LocalPlayer, Entity, Game } from "wrapper/Imports";
+import { Menu as MenuSDK, EventsSDK, Ability, LocalPlayer, Entity } from "wrapper/Imports";
 const Abilities: string[] = [
 	"magnataur_skewer",
 	"pudge_meat_hook",
