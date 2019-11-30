@@ -60,11 +60,7 @@ function MoveCourier() {
 	if (LocalPlayer === undefined || Owner === undefined)
 		return
 	let Team_ = LocalPlayer.Team === Team.Dire
-	// Humanize Select
-	allyCourier.Select()
 	allyCourier.MoveTo(Team_ ? CourierBestPosition[0] : CourierBestPosition[1])
-	// Humanize unSelect courier
-	Owner.Select()
 	Sleep.Sleep(GetDelayCast())
 }
 
@@ -246,15 +242,14 @@ EventsSDK.on("Tick", () => {
 })
 
 EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof Courier && !ent.IsEnemy()) {
-		allyCourier = ent
-		if (State.value && StateBestPos.value && LocalPlayer !== undefined) {
-			setTimeout(MoveCourier, 1000);
-		}
-	}
-	if (ent instanceof Hero) {
+	if (ent instanceof Hero)
 		Enemy.push(ent)
-	}
+	if (!(ent instanceof Courier) || ent.IsEnemy() || !ent.IsControllable)
+		return
+	if (!State.value || !StateBestPos.value)
+		return
+	allyCourier = ent
+	setTimeout(MoveCourier, 1000)
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
