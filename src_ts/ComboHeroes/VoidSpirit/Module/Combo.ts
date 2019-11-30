@@ -78,6 +78,8 @@ export function InitCombo() {
 		Abilities.AstralStep,
 		Items.BlackKingBar,
 		Items.DiffusalBlade,
+		Items.Medallion,
+		Items.SolarCrest,
 		Items.BladeMail,
 		Items.LotusOrb,
 		Items.Satanic,
