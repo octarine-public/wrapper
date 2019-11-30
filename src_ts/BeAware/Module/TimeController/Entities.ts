@@ -13,6 +13,7 @@ import {
 } from "./Module/Roshan";
 
 import { State } from "./Menu";
+
 import {
 	EntityCreatedRune,
 	EntityDestroyedRune,
@@ -20,18 +21,30 @@ import {
 	RuneParticleCreate,
 	RuneParticleCreateUpdateEnt,
 	RuneParticleDestroyed,
-} from "./Module/Runes";
+} from "./Module/Runes"
+
 import { ScanGameEnded } from "./Module/Scan";
 
 export let Units: Unit[] = []
+export let RoshanPosition: Vector3 = new Vector3
 export let OtherRadius = new Map<Entity, number>()
 
 function BaseCreateUnits(x: Entity) {
 	if (x instanceof Unit && !x.IsHero)
 		Units.push(x)
+	if (x.m_pBaseEntity instanceof C_DOTA_RoshanSpawner) {
+		if (!RoshanPosition.IsZero())
+			return
+		RoshanPosition = x.Position
+	}
 }
 
 function BaseDestroyedUnits(x: Entity) {
+	if (x.m_pBaseEntity instanceof C_DOTA_RoshanSpawner) {
+		if (RoshanPosition.IsZero())
+			return
+		RoshanPosition = new Vector3
+	}
 	if (x instanceof Unit)
 		ArrayExtensions.arrayRemove(Units, x)
 }
@@ -48,6 +61,7 @@ export function Init() {
 	ScanGameEnded()
 	RuneGameEnded()
 	RoshanGameEnded()
+	RoshanPosition = new Vector3
 }
 
 export function EntityCreated(x: Entity) {

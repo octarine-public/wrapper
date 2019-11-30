@@ -99,15 +99,6 @@ export function DrawRunes() {
 					}
 				}
 			}
-			// Bounty Rune
-			let rune = allRunes.some(rune_ => rune_.IsAlive && val.IsInRange(rune_.Position, 430))
-			// loop-optimizer: FORWARD
-			Heroes.filter((x, i) => {
-				if (rune === undefined && x.IsInRange(val, 430)) {
-					bountyAlreadySeted = false
-					bountyRunesAr[key] = false
-				}
-			})
 			if (bountyRunesAr[key]) {
 				RendererSDK.DrawMiniMapIcon("minimap_rune_bounty", val, PMH_Show_bounty_size.value * 14, PMH_Show_bountyRGBA.Color)
 				DrawIcon(val, PMH_Show_bountyRGBA_mark.Color)
@@ -135,27 +126,39 @@ export function DrawRunes() {
 }
 
 export function EntityCreatedRune(x: Entity) {
-	if (x.Name === "dota_item_rune_spawner_bounty") {
-		bountyRunesPos.push(x.Position);
+	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Bounty) {
+		bountyRunesPos.push(x.Position)
 	}
-	if (x.Name === "dota_item_rune_spawner_powerup") {
-		PowerRunesPos.push(x.Position);
+	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup) {
+		PowerRunesPos.push(x.Position)
 	}
 	if (x instanceof Hero)
 		Heroes.push(x)
-	if (x instanceof Rune)
+	if (x instanceof Rune) {
 		allRunes.push(x)
+	}
 }
 
 export function EntityDestroyedRune(x: Entity) {
-	if (x.Name === "dota_item_rune_spawner_bounty") {
-		ArrayExtensions.arrayRemove(bountyRunesPos, x.Position);
+	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Bounty) {
+		ArrayExtensions.arrayRemove(bountyRunesPos, x.Position)
 	}
-	if (x.Name === "dota_item_rune_spawner_powerup") {
-		ArrayExtensions.arrayRemove(PowerRunesPos, x.Position);
+	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup) {
+		ArrayExtensions.arrayRemove(PowerRunesPos, x.Position)
 	}
-	if (x instanceof Rune)
+	if (x instanceof Rune) {
+		// loop-optimizer: KEEP
+		bountyRunesPos.some((val, key) => {
+			let distance = val.Distance2D(x.Position)
+			if (distance > 300)
+				return false
+			bountyAlreadySeted = false
+			bountyRunesAr[key] = false
+			setTimeout(() => Particle.clear(), 1500)
+			return true
+		})
 		ArrayExtensions.arrayRemove(allRunes, x)
+	}
 	if (x instanceof Hero)
 		ArrayExtensions.arrayRemove(Heroes, x)
 }

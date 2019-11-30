@@ -65,7 +65,7 @@ function MoveCourier() {
 }
 
 function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: Vector3) {
-	if (!enemy.IsEnemy() || !enemy.IsVisible) {
+	if (!enemy.IsEnemy() || !enemy.IsVisible || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO) {
 		return false
 	}
 	if (enemy.IsInRange(Position, (enemy.AttackRange + 350))) {
@@ -249,6 +249,8 @@ EventsSDK.on("EntityCreated", ent => {
 	if (!State.value || !StateBestPos.value)
 		return
 	allyCourier = ent
+	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
+		return
 	setTimeout(MoveCourier, 1000)
 })
 

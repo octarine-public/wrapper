@@ -22,6 +22,7 @@ import {
 	PingForAllies,
 	drawImageHeroWorld
 } from "../Menu"
+import { RoshanPosition } from "../Entities"
 
 var Timer = 0,
 	Units: Array<[Entity, number]> = [],
@@ -110,10 +111,10 @@ export function RoshanTick() {
 				? Game.ScanCooldownRadiant
 				: Game.ScanCooldownDire
 			if (cd === 0) {
-				Player.Scan(Base.RoshanPosition)
+				Player.Scan(RoshanPosition)
 			}
 			if (PingForAllies.value) {
-				Base.RoshanPosition.toIOBuffer();
+				RoshanPosition.toIOBuffer();
 				Minimap.SendPing(PingType_t.DANGER, false);
 			}
 		}
@@ -161,8 +162,8 @@ export function DrawRoshan() {
 		}
 	}
 	if (Units.length > 0) {
-		RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Units[0][0].Name}`, Base.RoshanPosition, 900)
-		let screen_pos = RendererSDK.WorldToScreen(Base.RoshanPosition)
+		RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Units[0][0].Name}`, RoshanPosition, 900)
+		let screen_pos = RendererSDK.WorldToScreen(RoshanPosition)
 		if (screen_pos !== undefined) {
 			RendererSDK.Image(
 				`panorama/images/heroes/icons/${Units[0][0].Name}_png.vtex_c`,

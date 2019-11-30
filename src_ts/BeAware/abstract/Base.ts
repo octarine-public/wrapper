@@ -1,11 +1,8 @@
-import { Color, Menu, RendererSDK, Unit, Vector2, Vector3 } from "../../wrapper/Imports";
+import { Color, Menu, RendererSDK, Unit, Vector2 } from "../../wrapper/Imports";
 
 export default class ManagerBase {
 	public get MaxMoveSpeed(): number {
 		return Number.MAX_SAFE_INTEGER
-	}
-	public get RoshanPosition(): Vector3 {
-		return new Vector3(-2756.71875, 2215.6875, 160.09375)
 	}
 	public IsShrine(x: Unit): boolean {
 		return x.Name !== "dota_fountain" && !x.IsShop && x.IsAlive && x.IsBuilding && !x.IsTower && !x.IsFort && !x.IsShrine && !x.IsBarrack
