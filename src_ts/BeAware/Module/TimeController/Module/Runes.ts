@@ -14,16 +14,8 @@ let allRunes: Rune[] = [],
 	checkTick: number = 0,
 	checkTickPower: number = 0,
 	bountyRunesAr = [false, false, false, false],
-	bountyRunesPos = [
-		new Vector3(4033.6875, -2522.4375, 128),
-		new Vector3(7390.96875, -4140.6875, 256),
-		new Vector3(-3854.25, 2574.625, 128),
-		new Vector3(-7172.15625, 4384.6875, 256),
-	],
-	PowerRunesPos = [
-		new Vector3(-1640.845947265625, 989.7515258789062, 128),
-		new Vector3(1165.6549072265625, -1233.0914306640625, 128),
-	],
+	bountyRunesPos: Vector3[] = [],
+	PowerRunesPos: Vector3[] = [],
 	bountyAlreadySeted = false,
 	RunePowerTimer: boolean = true,
 	RuneBountyTimerBool: boolean = true,
@@ -143,6 +135,12 @@ export function DrawRunes() {
 }
 
 export function EntityCreatedRune(x: Entity) {
+	if (x.Name === "dota_item_rune_spawner_bounty") {
+		bountyRunesPos.push(x.Position);
+	}
+	if (x.Name === "dota_item_rune_spawner_powerup") {
+		PowerRunesPos.push(x.Position);
+	}
 	if (x instanceof Hero)
 		Heroes.push(x)
 	if (x instanceof Rune)
@@ -150,6 +148,12 @@ export function EntityCreatedRune(x: Entity) {
 }
 
 export function EntityDestroyedRune(x: Entity) {
+	if (x.Name === "dota_item_rune_spawner_bounty") {
+		ArrayExtensions.arrayRemove(bountyRunesPos, x.Position);
+	}
+	if (x.Name === "dota_item_rune_spawner_powerup") {
+		ArrayExtensions.arrayRemove(PowerRunesPos, x.Position);
+	}
 	if (x instanceof Rune)
 		ArrayExtensions.arrayRemove(allRunes, x)
 	if (x instanceof Hero)
