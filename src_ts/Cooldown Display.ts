@@ -87,19 +87,19 @@ function DrawAbilityLevels(ability: Ability, x, y) {
 function DrawAbilitySquare(hero: Hero, ability: Ability, x, y, index) {
 	let real_x = x + (index * optionBoxSize.value) + 2
 	// default colors = can cast
-	let imageColor = new Color(255, 255, 255)
+	let imageColor = Color.White
 	let outlineColor = new Color(0, 255, 0)
 
 	if (!IsCastable(ability, hero.Mana)) {
 		if (ability.Level === 0) {
 			imageColor = new Color(125, 125, 125)
-			outlineColor = new Color(255, 0, 0)
+			outlineColor = Color.Red
 		} else if (ability.ManaCost > hero.Mana) {
 			imageColor = new Color(150, 150, 255)
-			outlineColor = new Color(0, 0, 255)
+			outlineColor = Color.Blue
 		} else {
 			imageColor = new Color(255, 150, 150)
-			outlineColor = new Color(255, 0, 0)
+			outlineColor = Color.Red
 		}
 	}
 

@@ -1,5 +1,6 @@
-import { Courier, EntityManager, LocalPlayer, Unit } from "wrapper/Imports"
+import { Courier, LocalPlayer, Unit } from "wrapper/Imports"
 import { ControllablesMode, ModeSpinner, SpinnerKey, State } from "./Menu"
+import { AllUnits } from "../Base/ListenersBase";
 
 function MoveUnit(x: Unit) {
 	switch (ModeSpinner.selected_id) {
@@ -18,7 +19,7 @@ export function Tick() {
 	if (!State.value || !SpinnerKey.is_pressed)
 		return
 	var ar = ControllablesMode.selected_id !== 0
-		? EntityManager.AllEntities.filter(ent => ent instanceof Unit && ent.IsControllable) as Unit[]
+		? AllUnits.filter(x => x.IsControllable)
 		: [LocalPlayer.Hero] as Unit[]
 	ar = ar.filter(ent => ent.IsAlive && ent.IsVisible && !ent.IsStunned && !ent.IsHexed)
 	if (ControllablesMode.selected_id === 2)

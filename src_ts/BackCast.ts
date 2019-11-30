@@ -1,4 +1,4 @@
-import { Menu as MenuSDK, EventsSDK, Ability, LocalPlayer, Entity } from "wrapper/Imports";
+import { Menu as MenuSDK, EventsSDK, Ability, LocalPlayer, Unit, ArrayExtensions } from "wrapper/Imports";
 const Abilities: string[] = [
 	"magnataur_skewer",
 	"pudge_meat_hook",
@@ -41,14 +41,72 @@ const State = Menu.AddToggle("Enable")
 const StateMiltiUnit = Menu.AddSwitcher("Multi units", ["Only your hero", "All Heroes"], 0)
 const SuppAbils = Menu.AddImageSelector("Ability", Abilities, new Map(Abilities.map(name => [name, true])))
 
-EventsSDK.on("PrepareUnitOrders", order => {
-	if (!State.value || (StateMiltiUnit.selected_id !== 1 && order.Unit !== LocalPlayer?.Hero))
+let Units: Unit[] = []
+let SpellsReady: boolean = false
+// let casted = false
+// let order_pos = new Vector3
+function IsReadyUnit(x: Unit): boolean {
+	return x.IsEnemy() || !x.IsAlive || !x.IsHero || x.IsMoving
+		|| !x.IsControllable || x.HasBuffByName("modifier_teleporting")
+		|| x.IsStunned || x.IsHexed || x.IsIllusion || x.IsInvulnerable
+}
+EventsSDK.on("Tick", () => {
+	if (!State.value || Units.length <= 0 || LocalPlayer === undefined) {
+		return
+	}
+	Units.filter(x => {
+		if (IsReadyUnit(x)) {
+			return
+		}
+		if (StateMiltiUnit.selected_id === 0) {
+			if (LocalPlayer.Hero !== x && Units.length >= 5) {
+				ArrayExtensions.arrayRemove(Units, x)
+				x = LocalPlayer.Hero
+			}
+		} else {
+			if (LocalPlayer.Hero !== x && Units.length < 5) {
+				Units.push(x)
+			}
+		}
+	})
+	SpellsReady = Units.some(unit => !unit.IsEnemy() && unit.IsAlive && unit.IsHero
+		&& unit.IsControllable && !unit.IsMoving
+		&& unit.Spells.filter(abil => abil !== undefined
+			&& abil.CanBeCasted()
+			&& SuppAbils.IsEnabled(abil.Name)
+			&& Abilities.includes(abil.Name)).length > 0)
+})
+EventsSDK.on("PrepareUnitOrders", (orders) => {
+	if (Units.length <= 0 || !State.value || !SpellsReady || orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION) {
 		return true
-
-	let abil = order.Ability as Ability
-	if (abil === undefined || !SuppAbils.IsEnabled(abil.Name))
+	}
+	let abils = orders.Ability as Ability
+	if (abils === undefined) {
 		return true
-	let target_pos = order.Target instanceof Entity ? order.Target.Position : order.Position
-	order.Unit.CastPosition(abil, order.Unit.Position.Extend(target_pos, 1.3))
+	}
+	if (!SuppAbils.IsEnabled(abils.Name)) {
+		return true
+	}
+	let units_ = Units.filter(unit => !unit.IsEnemy() && unit.IsAlive
+		&& unit.IsHero && unit.IsControllable && !unit.IsMoving)
+	if (!units_.some(x => x.FindRotationAngle(orders.Position) > 0.4))
+		return true
+	units_.map(unit => {
+		if (abils.CastRange + unit.CastRangeBonus < (orders.Position.Distance2D(unit.Position))) {
+			return false
+		}
+		unit.CastPosition(abils, unit.Position.Add((orders.Position.Subtract(unit.Position)).Normalize().ScaleTo(1.3)))
+		return true
+	})
 	return false
+})
+EventsSDK.on("EntityCreated", x => {
+	if (x instanceof Unit) {
+		Units.push(x)
+	}
+})
+EventsSDK.on("EntityDestroyed", x => {
+	if (x instanceof Unit) {
+		ArrayExtensions.arrayRemove(Units, x)
+	}
 })

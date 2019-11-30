@@ -1,4 +1,4 @@
-import { Courier, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Vector3, Team, TickSleeper, Ability } from "wrapper/Imports"
+import { Courier, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Vector3, Team, TickSleeper, Ability, ArrayExtensions } from "wrapper/Imports"
 
 let allyCourier: Courier,
 	Sleep = new TickSleeper,
@@ -9,9 +9,11 @@ let allyCourier: Courier,
 
 const CourierBestPosition = [
 	new Vector3(6199.96875, 5822.375, 384),
-	new Vector3(-6301.0625, -5868.59375, 384)
+	new Vector3(-6301.0625, -5868.59375, 384),
+	// safe base
+	new Vector3(6662.376953125, 6042.126953125, 512),
+	new Vector3(-6683.90625, -6216.75, 512)
 ]
-
 // use ability courier
 const per_ability_kill: string[] = [
 	"axe_culling_blade",
@@ -33,7 +35,7 @@ const autoShieldState = courCtlrMenu.AddToggle("Auto Shield").SetTooltip("Auto u
 const StateBestPos = courCtlrMenu.AddToggle("Courier best position", true)
 
 function GetDelayCast() {
-	return ((2 * 1.1) + (Game.Ping / 2))
+	return ((2 * 1.5) + (Game.Ping / 2))
 }
 
 function checkCourSelf(stateEnt: Hero) {
@@ -41,6 +43,19 @@ function checkCourSelf(stateEnt: Hero) {
 }
 
 let CastCourAbility = (num: number) => allyCourier.IsControllable && allyCourier.AbilitiesBook.GetSpell(num).UseAbility()
+
+function MoveCourierSafePos() {
+	if (LocalPlayer === undefined || Owner === undefined || allyCourier === undefined)
+		return
+	let PositionCourierSafe = LocalPlayer.Team === Team.Dire ? CourierBestPosition[2] : CourierBestPosition[3]
+	if (!allyCourier.IsInRange(PositionCourierSafe !== undefined && PositionCourierSafe, 150)) {
+		allyCourier.Select()
+		allyCourier.MoveTo(PositionCourierSafe)
+		Owner.Select()
+		Sleep.Sleep(GetDelayCast())
+	}
+}
+
 function MoveCourier() {
 	if (LocalPlayer === undefined || Owner === undefined)
 		return
@@ -50,7 +65,9 @@ function MoveCourier() {
 	allyCourier.MoveTo(Team_ ? CourierBestPosition[0] : CourierBestPosition[1])
 	// Humanize unSelect courier
 	Owner.Select()
+	Sleep.Sleep(GetDelayCast())
 }
+
 function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: Vector3) {
 	if (!enemy.IsEnemy() || !enemy.IsVisible) {
 		return false
@@ -59,9 +76,8 @@ function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: 
 		if (StateCourier.State !== CourierState_t.COURIER_STATE_AT_BASE
 			&& StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE
 		) {
-			CastCourAbility(0)
+			MoveCourierSafePos()
 			DELIVER_DISABLE = true
-			Sleep.Sleep(GetDelayCast())
 			return false
 		}
 	} else if (!allyCourier.IsInRange(Position, 50)
@@ -71,7 +87,6 @@ function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: 
 		) {
 			MoveCourier()
 			DELIVER_DISABLE = false
-			Sleep.Sleep(GetDelayCast())
 			return true
 		}
 	}
@@ -88,6 +103,7 @@ function CourierBestPos() {
 		&& LocalPlayer.Team === Team.Dire
 		? CourierBestPosition[0]
 		: CourierBestPosition[1]
+
 	return Enemy.some(enemy => {
 		switch (allyCourier.State) {
 			case CourierState_t.COURIER_STATE_IDLE:
@@ -99,9 +115,8 @@ function CourierBestPos() {
 			case CourierState_t.COURIER_STATE_MOVING:
 			case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
 				if (enemy.IsEnemy() && enemy.IsVisible && enemy.IsInRange(Position, (enemy.AttackRange + 350))) {
+					MoveCourierSafePos()
 					DELIVER_DISABLE = true
-					CastCourAbility(0)
-					Sleep.Sleep(GetDelayCast())
 					return true
 				}
 				DELIVER_DISABLE = false
@@ -209,12 +224,12 @@ function Deliver(): boolean {
 	}
 	return false
 }
+
 EventsSDK.on("Tick", () => {
 	if (!State.value
 		|| Owner === undefined
 		|| allyCourier === undefined
 		|| !allyCourier.IsAlive
-		|| LocalPlayer.IsSpectator
 		|| Sleep.Sleeping
 	) {
 		return
@@ -243,9 +258,12 @@ EventsSDK.on("EntityCreated", ent => {
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (allyCourier === ent) {
+
+	if (allyCourier === ent)
 		allyCourier = undefined
-	}
+
+	if (ent instanceof Hero)
+		ArrayExtensions.arrayRemove(Enemy, ent)
 })
 
 EventsSDK.on("GameStarted", (hero) => {

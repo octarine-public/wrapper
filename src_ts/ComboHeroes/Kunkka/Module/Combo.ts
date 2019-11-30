@@ -72,7 +72,7 @@ function ComboInit() {
 		ComboTimer = Time + 3.08
 		Sleep.Sleep(Abilities.CastDelay(R))
 	}
-	if (ComboTimer - Time <= 0.65) { // after Ghostship
+	if (ComboTimer - Time <= (XMarkType !== 2 ? 0.65 : 2.06)) { // after Ghostship
 		if (XMarkPos.LengthSqr === 0 || X.CanBeCasted())
 			return
 		if (CheckAbility(Q, XMarkPos)) {
