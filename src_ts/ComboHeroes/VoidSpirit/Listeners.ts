@@ -34,8 +34,8 @@ export function InitMouse() {
 		x => x.Distance(Utils.CursorWorldVec),
 	)[0]
 	if (MouseTarget !== undefined) {
-		AetherRemnanPluse = MouseTarget.Position.Extend(MouseTarget.InFront(1000), 300)
-		AetherRemnanMinus = MouseTarget.Position.Extend(MouseTarget.InFront(-1000), 1000 + 300)
+		AetherRemnanPluse = MouseTarget.Position.Extend(MouseTarget.InFront(1000), MouseTarget.IsMoving ? 800 : 300)
+		AetherRemnanMinus = MouseTarget.Position.Extend(MouseTarget.InFront(-1000), 1000 + (MouseTarget.IsMoving ? 800 : 300))
 	}
 }
 

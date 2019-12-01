@@ -76,6 +76,7 @@ export function InitCombo() {
 		return
 	let array_ability: Ability[] = [
 		Abilities.AstralStep,
+		Abilities.AetherRemnan,
 		Items.BlackKingBar,
 		Items.DiffusalBlade,
 		Items.Medallion,
@@ -92,8 +93,7 @@ export function InitCombo() {
 		Items.Shivas,
 		Items.Nullifier,
 		Abilities.ResonantPulse,
-		Abilities.Dissimilate,
-		Abilities.AetherRemnan
+		Abilities.Dissimilate
 	]
 	if (array_ability.some(abil => abil !== undefined && abil.CanBeCasted() && Combo(abil, target, array_ability.length)))
 		return

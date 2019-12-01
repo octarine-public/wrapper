@@ -35,7 +35,7 @@ const autoShieldState = courCtlrMenu.AddToggle("Auto Shield").SetTooltip("Auto u
 const StateBestPos = courCtlrMenu.AddToggle("Courier best position", true)
 
 function GetDelayCast() {
-	return ((2 * 1.5) + (Game.Ping / 2))
+	return (((Game.Ping / 2) + 30) + 250)
 }
 
 function checkCourSelf(stateEnt: Hero) {
