@@ -11563,7 +11563,7 @@ declare class C_LightGlow extends C_BaseModelEntity {
 	m_nOuterMaxDist: number
 	m_flGlowProxySize: number
 	m_flHDRColorScale: number
-	readonly m_Glow: C_LightGlowOverlay
+	// readonly m_Glow: C_LightGlowOverlay // actually it's this, as C++ allows us replacing types, but .d.ts doesn't
 }
 
 declare class C_DOTA_Item_Recipe_Kaya extends C_DOTA_Item {}
@@ -14463,7 +14463,7 @@ declare class C_PlayerResource extends C_BaseEntity {
 	readonly m_bConnected: boolean[]
 	readonly m_iTeam: number[]
 	readonly m_bAlive: boolean[]
-	readonly m_iHealth: number[]
+	// readonly m_iHealth: number[] // actually it's this, as C++ allows us replacing types, but .d.ts doesn't
 	readonly m_bIsFakePlayer: boolean[]
 	m_nEventPlayerInfo: number
 }
