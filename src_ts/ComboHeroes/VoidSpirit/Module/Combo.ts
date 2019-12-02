@@ -13,7 +13,7 @@ function Combo(abil: Ability, target: Hero, length: number) {
 	}
 	if (length === undefined || (!СomboAbility.IsEnabled(abil.Name) && !СomboItems.IsEnabled(abil.Name)))
 		return false
-	let SetSleeping = Math.max(150, ((Game.Ping * 2) - (abil.CastPoint + length)))
+	let SetSleeping = Math.max(150, ((Game.Ping * 2) + (abil.CastPoint + length)))
 	if (abil.Name === "void_spirit_astral_step" && !Owner.IsRooted) {
 		Owner.CastPosition(abil, target.IsMoving ? target.InFront(250) : target.Position)
 		Sleep.Sleep(SetSleeping, abil)
