@@ -327,7 +327,6 @@ EventsSDK.on("EntityCreated", ent => {
 			return;
 
 		let rad = 0
-
 		switch (owner.Name) {
 			case "npc_dota_hero_invoker":
 				rad = ReturnAOERadius(owner, "invoker_sun_strike")

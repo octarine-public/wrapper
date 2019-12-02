@@ -17,6 +17,7 @@ export function InitAutoDeathPact() {
 		&& x.IsAlive
 		&& !x.IsAncient
 		&& !x.IsMagicImmune
+		&& x.IsEnemy()
 		&& x.Distance(Owner) <= Abilities.DeathPact.CastRange
 		&& x.IsVisible), x => x.HPPercent <= AutoDeathPactCreepHP.value).sort((a, b) => b.MaxHP - a.MaxHP)[0]
 	if (Creep === undefined)

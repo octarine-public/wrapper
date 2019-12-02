@@ -49,9 +49,8 @@ function MoveCourierSafePos() {
 		return
 	let PositionCourierSafe = LocalPlayer.Team === Team.Dire ? CourierBestPosition[2] : CourierBestPosition[3]
 	if (!allyCourier.IsInRange(PositionCourierSafe !== undefined && PositionCourierSafe, 150)) {
-		allyCourier.Select()
+		// allyCourier.Select() - Крашит
 		allyCourier.MoveTo(PositionCourierSafe)
-		Owner.Select()
 		Sleep.Sleep(GetDelayCast())
 	}
 }

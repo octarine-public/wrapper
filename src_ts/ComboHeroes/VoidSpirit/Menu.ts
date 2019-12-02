@@ -18,6 +18,7 @@ let arrayAbility: string[] = [
 let arrayItems: string[] = [
 	Items.DiffusalBlade.toString(),
 	Items.BladeMail.toString(),
+	//Items.Cyclone.toString(),
 	Items.LotusOrb.toString(),
 	Items.BlackKingBar.toString(),
 	Items.Mjollnir.toString(),
@@ -35,6 +36,7 @@ let arrayItems: string[] = [
 ]
 const Combo = Menu.AddNode("Combo")
 export const ComboKeyItem = Combo.AddKeybind("Bind Key", "D")
+//export const ComboMode = Combo.AddSwitcher("Combo mode", ["Fast", "Cyclone (is tested)"])
 export const NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000)
 const ComboHitAndRunTree = Combo.AddNode("HitAndRun")
 export const ComboHitAndRunAttack = ComboHitAndRunTree.AddToggle("Auto attack", true)

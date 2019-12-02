@@ -8,7 +8,7 @@ class VoidSpiritHelper {
 	public get DeadInSide(): boolean {
 		return Heroes.length === 0
 			|| Owner === undefined
-			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
+			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive)
 			|| !Owner.IsAlive
 	}
 }

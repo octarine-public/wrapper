@@ -1,64 +1,62 @@
 import { Base } from "../Extends/Helper"
-import { TickSleeper, Utils, Ability, Item, Hero, Game } from "wrapper/Imports"
+import { Utils, Ability, Hero, Game, GameSleeper } from "wrapper/Imports"
 import { ComboKeyItem, State, СomboAbility, СomboItems, StyleCombo, ComboHitAndRunAttack, TypeHitAndRun } from "../Menu"
 import { MouseTarget, Owner, initAbilityMap, initItemsMap, initHitAndRunMap, AetherRemnanPluse, AetherRemnanMinus } from "../Listeners"
-let Sleep = new TickSleeper
+let Sleep = new GameSleeper
 
 export let ComboActived = false
 ComboKeyItem.OnRelease(() => ComboActived = !ComboActived)
 
-function Combo(abil: Ability | Item, target: Hero, length: number) {
+function Combo(abil: Ability, target: Hero, length: number) {
+	if (Sleep.Sleeping(abil) || Owner.IsInvulnerable || Owner.IsSilenced) {
+		return false
+	}
 	if (length === undefined || (!СomboAbility.IsEnabled(abil.Name) && !СomboItems.IsEnabled(abil.Name)))
 		return false
-	let SetSleeping = (length + (Game.Ping / 2000)) * 10
-	if (abil.Name === "void_spirit_astral_step" && !Owner.IsInRange(target, abil.AOERadius - (Owner.HullRadius * 2))) {
-		Owner.MoveTo(target.Position)
-		Sleep.Sleep(SetSleeping)
+	let SetSleeping = Math.max(150, ((Game.Ping * 2) - (abil.CastPoint + length)))
+	if (abil.Name === "void_spirit_astral_step" && !Owner.IsRooted) {
+		Owner.CastPosition(abil, target.IsMoving ? target.InFront(250) : target.Position)
+		Sleep.Sleep(SetSleeping, abil)
 		return true
-	} else {
-		if (abil.Name === "void_spirit_astral_step" && !Owner.IsRooted) {
-			Owner.CastPosition(abil, target.IsMoving ? target.InFront(250) : target.Position)
-			Sleep.Sleep(SetSleeping)
-			return true
-		}
-		if (abil.Name === "void_spirit_aether_remnant") {
-			Owner.CastVectorTargetPosition(abil, AetherRemnanPluse, AetherRemnanMinus)
-			Sleep.Sleep(SetSleeping)
-			return true
-		}
-		if (abil.Name === "void_spirit_dissimilate" && Owner.IsInRange(target, 785) && !Owner.IsRooted) {
-			Owner.CastNoTarget(abil)
-			Sleep.Sleep(SetSleeping)
-			return true
-		}
-		if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
-			if (abil.Name === "void_spirit_dissimilate" && Owner.IsRooted) {
-				return false
-			}
-			Owner.CastNoTarget(abil)
-			Sleep.Sleep(SetSleeping)
-			return true
-		}
-		if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT) && !Owner.IsRooted) {
-			Owner.CastPosition(abil, target.Position)
-			Sleep.Sleep(SetSleeping)
-			return true
-		}
-		if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {
-			if (abil.Name === "item_lotus_orb") {
-				Owner.CastTarget(abil, Owner)
-				Sleep.Sleep(SetSleeping)
-				return true
-			}
-			Owner.CastTarget(abil, target)
-			Sleep.Sleep(SetSleeping)
-			return true
-		}
 	}
+	if (abil.Name === "void_spirit_aether_remnant") {
+		Owner.CastVectorTargetPosition(abil, AetherRemnanPluse, AetherRemnanMinus)
+		Sleep.Sleep(SetSleeping, abil)
+		return true
+	}
+	if (abil.Name === "void_spirit_dissimilate" && Owner.IsInRange(target, 785) && !Owner.IsRooted) {
+		Owner.CastNoTarget(abil)
+		Sleep.Sleep(SetSleeping, abil)
+		return true
+	}
+	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
+		if (abil.Name === "void_spirit_dissimilate" && Owner.IsRooted) {
+			return false
+		}
+		Owner.CastNoTarget(abil)
+		Sleep.Sleep(SetSleeping, abil)
+		return true
+	}
+	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT) && !Owner.IsRooted) {
+		Owner.CastPosition(abil, target.Position)
+		Sleep.Sleep(SetSleeping, abil)
+		return true
+	}
+	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {
+		if (abil.Name === "item_lotus_orb") {
+			Owner.CastTarget(abil, Owner)
+			Sleep.Sleep(SetSleeping, abil)
+			return true
+		}
+		Owner.CastTarget(abil, target)
+		Sleep.Sleep(SetSleeping, abil)
+		return true
+	}
+	return false
 }
 
 export function InitCombo() {
-	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
+	if (!Base.IsRestrictions(State) || Sleep.Sleeping("Move"))
 		return
 	if ((StyleCombo.selected_id === 1 && !ComboActived) || (StyleCombo.selected_id === 0 && !ComboKeyItem.is_pressed)) {
 		return
@@ -66,7 +64,7 @@ export function InitCombo() {
 	let target = MouseTarget
 	if (target === undefined) {
 		Owner.MoveTo(Utils.CursorWorldVec)
-		Sleep.Sleep(350)
+		Sleep.Sleep(350, "Move")
 		return
 	}
 	let Items = initItemsMap.get(Owner),
@@ -95,6 +93,11 @@ export function InitCombo() {
 		Abilities.ResonantPulse,
 		Abilities.Dissimilate
 	]
+	if (!Owner.IsInRange(target, Abilities.AstralStep.AOERadius + (Owner.HullRadius * 2))) {
+		Owner.MoveTo(target.Position)
+		Sleep.Sleep(350, "Move")
+		return
+	}
 	if (array_ability.some(abil => abil !== undefined && abil.CanBeCasted() && Combo(abil, target, array_ability.length)))
 		return
 	if (!Owner.CanAttack(target) || (!HitAndRun_Unit.ExecuteTo(target, TypeHitAndRun.selected_id)
