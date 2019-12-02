@@ -19,7 +19,7 @@ export default class Hero extends Unit {
 	get CurrentXP(): number {
 		return this.m_pBaseEntity.m_iCurrentXP
 	}
-	get HeroID(): HeroID_t {
+	get HeroID(): number {
 		return this.m_pBaseEntity.m_iHeroID
 	}
 	get IsBuybackDisabled(): boolean {

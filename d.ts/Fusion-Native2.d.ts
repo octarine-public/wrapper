@@ -16,19 +16,19 @@ declare enum ConnectionState {
 declare enum ArmorType {
 	Structure,
 	Hero,
-	Basic
+	Basic,
 }
 
 declare enum AttackDamageType {
 	Hero,
 	Basic,
 	Pierce,
-	Siege
+	Siege,
 }
 
 declare enum Flow_t {
 	IN = 0,
-	OUT = 1
+	OUT = 1,
 }
 
 declare enum FontFlags_t {
@@ -44,7 +44,6 @@ declare enum FontFlags_t {
 	ADDITIVE = 1 << 8,
 	OUTLINE = 1 << 9,
 	CUSTOM = 1 << 10, // custom generated font - never fallback to asian compatibility mode
-	BITMAP = 1 << 11 // compiled bitmap font - no fallbacks
 }
 
 declare enum DOTA_GameMode {
@@ -72,7 +71,8 @@ declare enum DOTA_GameMode {
 	DOTA_GAMEMODE_1V1MID = 21,
 	DOTA_GAMEMODE_ALL_DRAFT = 22,
 	DOTA_GAMEMODE_TURBO = 23,
-	DOTA_GAMEMODE_MUTATION = 24
+	DOTA_GAMEMODE_MUTATION = 24,
+	DOTA_GAMEMODE_COACHES_CHALLENGE = 25,
 }
 
 declare enum DOTA_GameState {
@@ -87,7 +87,7 @@ declare enum DOTA_GameState {
 	DOTA_GAMERULES_STATE_TEAM_SHOWCASE = 8,
 	DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP = 9,
 	DOTA_GAMERULES_STATE_WAIT_FOR_MAP_TO_LOAD = 10,
-	DOTA_GAMERULES_STATE_LAST = 11
+	DOTA_GAMERULES_STATE_LAST = 11,
 }
 
 declare enum dotaunitorder_t {
@@ -127,128 +127,7 @@ declare enum dotaunitorder_t {
 	DOTA_UNIT_ORDER_CONTINUE = 33,
 	DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED = 34,
 	DOTA_UNIT_ORDER_CAST_RIVER_PAINT = 35,
-	DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT = 36
-}
-
-declare enum HeroID_t {
-	npc_dota_hero_antimage = 1,
-	npc_dota_hero_axe = 2,
-	npc_dota_hero_bane = 3,
-	npc_dota_hero_bloodseeker = 4,
-	npc_dota_hero_crystal_maiden = 5,
-	npc_dota_hero_drow_ranger = 6,
-	npc_dota_hero_earthshaker = 7,
-	npc_dota_hero_juggernaut = 8,
-	npc_dota_hero_mirana = 9,
-	npc_dota_hero_nevermore = 11,
-	npc_dota_hero_morphling = 10,
-	npc_dota_hero_phantom_lancer = 12,
-	npc_dota_hero_puck = 13,
-	npc_dota_hero_pudge = 14,
-	npc_dota_hero_razor = 15,
-	npc_dota_hero_sand_king = 16,
-	npc_dota_hero_storm_spirit = 17,
-	npc_dota_hero_sven = 18,
-	npc_dota_hero_tiny = 19,
-	npc_dota_hero_vengefulspirit = 20,
-	npc_dota_hero_windrunner = 21,
-	npc_dota_hero_zuus = 22,
-	npc_dota_hero_kunkka = 23,
-	npc_dota_hero_lina = 25,
-	npc_dota_hero_lich = 31,
-	npc_dota_hero_lion = 26,
-	npc_dota_hero_shadow_shaman = 27,
-	npc_dota_hero_slardar = 28,
-	npc_dota_hero_tidehunter = 29,
-	npc_dota_hero_witch_doctor = 30,
-	npc_dota_hero_riki = 32,
-	npc_dota_hero_enigma = 33,
-	npc_dota_hero_tinker = 34,
-	npc_dota_hero_sniper = 35,
-	npc_dota_hero_necrolyte = 36,
-	npc_dota_hero_warlock = 37,
-	npc_dota_hero_beastmaster = 38,
-	npc_dota_hero_queenofpain = 39,
-	npc_dota_hero_venomancer = 40,
-	npc_dota_hero_faceless_void = 41,
-	npc_dota_hero_skeleton_king = 42,
-	npc_dota_hero_death_prophet = 43,
-	npc_dota_hero_phantom_assassin = 44,
-	npc_dota_hero_pugna = 45,
-	npc_dota_hero_templar_assassin = 46,
-	npc_dota_hero_viper = 47,
-	npc_dota_hero_luna = 48,
-	npc_dota_hero_dragon_knight = 49,
-	npc_dota_hero_dazzle = 50,
-	npc_dota_hero_rattletrap = 51,
-	npc_dota_hero_leshrac = 52,
-	npc_dota_hero_furion = 53,
-	npc_dota_hero_life_stealer = 54,
-	npc_dota_hero_dark_seer = 55,
-	npc_dota_hero_clinkz = 56,
-	npc_dota_hero_omniknight = 57,
-	npc_dota_hero_enchantress = 58,
-	npc_dota_hero_huskar = 59,
-	npc_dota_hero_night_stalker = 60,
-	npc_dota_hero_broodmother = 61,
-	npc_dota_hero_bounty_hunter = 62,
-	npc_dota_hero_weaver = 63,
-	npc_dota_hero_jakiro = 64,
-	npc_dota_hero_batrider = 65,
-	npc_dota_hero_chen = 66,
-	npc_dota_hero_spectre = 67,
-	npc_dota_hero_doom_bringer = 69,
-	npc_dota_hero_ancient_apparition = 68,
-	npc_dota_hero_ursa = 70,
-	npc_dota_hero_spirit_breaker = 71,
-	npc_dota_hero_gyrocopter = 72,
-	npc_dota_hero_alchemist = 73,
-	npc_dota_hero_invoker = 74,
-	npc_dota_hero_silencer = 75,
-	npc_dota_hero_obsidian_destroyer = 76,
-	npc_dota_hero_lycan = 77,
-	npc_dota_hero_brewmaster = 78,
-	npc_dota_hero_shadow_demon = 79,
-	npc_dota_hero_lone_druid = 80,
-	npc_dota_hero_chaos_knight = 81,
-	npc_dota_hero_meepo = 82,
-	npc_dota_hero_treant = 83,
-	npc_dota_hero_ogre_magi = 84,
-	npc_dota_hero_undying = 85,
-	npc_dota_hero_rubick = 86,
-	npc_dota_hero_disruptor = 87,
-	npc_dota_hero_nyx_assassin = 88,
-	npc_dota_hero_naga_siren = 89,
-	npc_dota_hero_keeper_of_the_light = 90,
-	npc_dota_hero_wisp = 91,
-	npc_dota_hero_visage = 92,
-	npc_dota_hero_slark = 93,
-	npc_dota_hero_medusa = 94,
-	npc_dota_hero_troll_warlord = 95,
-	npc_dota_hero_centaur = 96,
-	npc_dota_hero_magnataur = 97,
-	npc_dota_hero_shredder = 98,
-	npc_dota_hero_bristleback = 99,
-	npc_dota_hero_tusk = 100,
-	npc_dota_hero_skywrath_mage = 101,
-	npc_dota_hero_abaddon = 102,
-	npc_dota_hero_elder_titan = 103,
-	npc_dota_hero_legion_commander = 104,
-	npc_dota_hero_ember_spirit = 106,
-	npc_dota_hero_earth_spirit = 107,
-	npc_dota_hero_terrorblade = 109,
-	npc_dota_hero_phoenix = 110,
-	npc_dota_hero_oracle = 111,
-	npc_dota_hero_techies = 105,
-	npc_dota_hero_target_dummy = 127,
-	npc_dota_hero_winter_wyvern = 112,
-	npc_dota_hero_arc_warden = 113,
-	npc_dota_hero_abyssal_underlord = 108,
-	npc_dota_hero_monkey_king = 114,
-	npc_dota_hero_pangolier = 120,
-	npc_dota_hero_dark_willow = 119,
-	npc_dota_hero_grimstroke = 121,
-	npc_dota_hero_mars = 129
+	DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT = 36,
 }
 
 declare enum PingType_t {
@@ -258,14 +137,14 @@ declare enum PingType_t {
 	RETREAT = 3,
 	ATTACK = 4,
 	ENEMY_VISION = 5,
-	OWN_VISION = 6
+	OWN_VISION = 6,
 }
 
 declare enum DOTAGameUIState_t {
 	DOTA_GAME_UI_STATE_INVALID,
 	DOTA_GAME_UI_STATE_LOADING_SCREEN,
 	DOTA_GAME_UI_DOTA_INGAME,
-	DOTA_GAME_UI_STATE_DASHBOARD
+	DOTA_GAME_UI_STATE_DASHBOARD,
 }
 
 /// GLOBAL OBJECTS

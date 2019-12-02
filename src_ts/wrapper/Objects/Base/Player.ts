@@ -187,7 +187,7 @@ export default class Player extends Entity {
 	}
 	// RoshanKills				=> NonSpectator
 	// RunePickups				=> NonSpectator
-	get SelectedHeroId(): HeroID_t {
+	get SelectedHeroId(): number {
 		return this.PlayerTeamData.m_nSelectedHeroID
 	}
 	get SelectedUnits(): Entity[] {
