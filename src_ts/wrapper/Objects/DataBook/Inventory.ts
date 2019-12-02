@@ -27,37 +27,37 @@ export default class Inventory {
 		return this.GetItems(0, 5)
 	}
 	get Backpack(): Item[] {
-		return this.GetItems(6, 8)
+		return this.GetItems(6, 9)
 	}
 	get Stash(): Item[] {
-		return this.GetItems(9, 14)
+		return this.GetItems(10, 15)
 	}
 	get FreeSlotsInventory(): DOTAScriptInventorySlot_t[] {
 		return this.GetFreeSlots(0, 5)
 	}
 	get FreeSlotsBackpack(): DOTAScriptInventorySlot_t[] {
-		return this.GetFreeSlots(6, 8)
+		return this.GetFreeSlots(6, 9)
 	}
 	get FreeSlotsStash(): DOTAScriptInventorySlot_t[] {
-		return this.GetFreeSlots(9, 14)
+		return this.GetFreeSlots(10, 15)
 	}
 	get HasAnyItemInventory(): boolean {
 		return this.HasAnyItem(0, 5)
 	}
 	get HasAnyItemBackpack(): boolean {
-		return this.HasAnyItem(6, 8)
+		return this.HasAnyItem(6, 9)
 	}
 	get HasAnyItemStash(): boolean {
-		return this.HasAnyItem(9, 14)
+		return this.HasAnyItem(10, 15)
 	}
 	get HasFreeSlotsInventory(): boolean {
 		return this.HasFreeSlot(0, 5)
 	}
 	get HasFreeSlotsBackpack(): boolean {
-		return this.HasFreeSlot(6, 8)
+		return this.HasFreeSlot(6, 9)
 	}
 	get HasFreeSlotsStash(): boolean {
-		return this.HasFreeSlot(9, 14)
+		return this.HasFreeSlot(10, 15)
 	}
 	get IsStashEnabled(): boolean {
 		return this.Owner.m_pBaseEntity.m_Inventory.m_bStashEnabled

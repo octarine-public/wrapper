@@ -195,14 +195,14 @@ function Deliver(): boolean {
 	if (allyCourier === undefined || allyCourier.IsEnemy()) {
 		return false
 	}
-	let free_slots_local = Owner.Inventory.GetFreeSlots(0, 8).length,
+	let free_slots_local = Owner.Inventory.GetFreeSlots(0, 9).length,
 		cour_slots_local = allyCourier.IsControllable && allyCourier.Inventory.CountItemByOtherPlayer()
 	let items_in_stash = Owner.Inventory.Stash.reduce((prev, cur) => prev + (cur !== undefined ? 1 : 0), 0)
-
+	//console.log("cour_slots_local: ", cour_slots_local, "items_in_stash: ", items_in_stash)
 	if (
 		items_in_stash > 0
 		&& allyCourier.IsControllable
-		&& allyCourier.Inventory.GetFreeSlots(0, 8).length >= items_in_stash
+		&& allyCourier.Inventory.GetFreeSlots(0, 9).length >= items_in_stash
 		&& free_slots_local >= (items_in_stash + cour_slots_local)
 	) {
 		CastCourAbility(7) // courier_take_stash_and_transfer_items
