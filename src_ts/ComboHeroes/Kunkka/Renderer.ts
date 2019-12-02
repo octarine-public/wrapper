@@ -1,6 +1,6 @@
 import { Base } from "./Extends/Helper"
 import { XMarkPos, XMarkType } from "./Module/Combo"
-import { Hero, RendererSDK, LocalPlayer, Game } from "wrapper/Imports"
+import { Hero, RendererSDK, LocalPlayer, Game, DOTAGameUIState_t } from "wrapper/Imports"
 import { AutoStakerGameEnded, InitDrawStaker } from "./Module/AutoStacker"
 import { MouseTarget, Owner, initDrawMap, initItemsMap, initAbilityMap } from "./Listeners"
 import {

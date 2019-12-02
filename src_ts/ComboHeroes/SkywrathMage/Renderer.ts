@@ -15,7 +15,7 @@ import {
 	ConcussiveShotRadiusColor,
 	StyleCombo
 } from "./Menu"
-import { Color, Game, LocalPlayer, RendererSDK, Vector2 } from "wrapper/Imports"
+import { Color, Game, LocalPlayer, RendererSDK, Vector2, FontFlags_t, DOTAGameUIState_t } from "wrapper/Imports"
 import { MouseTarget, MyHero, initDrawMap, initItemsMap, initAbilityMap } from "./Listeners"
 import { ComboActived } from "./Module/Combo"
 

@@ -10,6 +10,7 @@ import Menu from "./Menu"
 import Slider from "./Slider"
 import Switcher from "./Switcher"
 import Toggle from "./Toggle"
+import { FontFlags_t } from "../Enums/FontFlags_t"
 
 export default class Node extends Base {
 	public entries: Base[] = []

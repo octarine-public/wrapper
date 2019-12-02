@@ -4,7 +4,7 @@ import { Utils } from "../Imports"
 import Creep from "../Objects/Base/Creep"
 import Unit from "../Objects/Base/Unit"
 import { MapArea } from "./MapArea"
-import { Team } from "./Team"
+import { Team } from "../Enums/Team"
 
 export class DotaMap {
 

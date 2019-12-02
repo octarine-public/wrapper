@@ -7,6 +7,7 @@ import Unit from "../Objects/Base/Unit"
 import UserCmd from "./UserCmd"
 import RendererSDK from "./RendererSDK"
 import Events from "../Managers/Events"
+import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,

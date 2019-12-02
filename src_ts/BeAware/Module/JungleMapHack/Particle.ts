@@ -1,7 +1,7 @@
 import { RendererSDK, Vector3, EntityManager, Hero, Creep, Team, Game, Vector2 } from "wrapper/Imports"
 import { State, ImageSizeMinimap, ImageSizeWorld } from "./Menu"
 
-let jungle_units: Array<[Hero, Vector3[], number]> = []
+let jungle_units: [Hero, Vector3[], number][] = []
 export function GameEvent(name: string, obj: any) {
 	if (name !== "entity_hurt" && name !== "entity_killed")
 		return

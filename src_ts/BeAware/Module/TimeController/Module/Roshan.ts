@@ -1,4 +1,4 @@
-import { Color, Game, Menu, RendererSDK, Vector2, Player, LocalPlayer, Team, Roshan, Hero, EntityManager, Entity } from "wrapper/Imports"
+import { Color, Game, Menu, RendererSDK, Vector2, Player, LocalPlayer, Team, Roshan, Hero, EntityManager, Entity, FontFlags_t, PingType_t } from "wrapper/Imports"
 import ManagerBase from "../../../abstract/Base"
 import {
 	AegisdrawStatusSize,
@@ -25,7 +25,7 @@ import {
 import { RoshanPosition } from "../Entities"
 
 var Timer = 0,
-	Units: Array<[Entity, number]> = [],
+	Units: [Entity, number][] = [],
 	checkTick = 0,
 	roshanKillTime = 0,
 	// aegisPickUpTime = 0, // TODO for fireEvents

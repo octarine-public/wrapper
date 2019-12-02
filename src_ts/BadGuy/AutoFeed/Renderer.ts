@@ -1,4 +1,4 @@
-import { Color, RendererSDK, Unit } from "wrapper/Imports";
+import { Color, RendererSDK, Unit, FontFlags_t } from "wrapper/Imports";
 import { AllUnits } from "../Base/ListenersBase";
 import { DrawTextSize, Swhicher } from "./Menu";
 

@@ -1,4 +1,4 @@
-import { EventsSDK, Game, RendererSDK } from "wrapper/Imports"
+import { EventsSDK, Game, RendererSDK, DOTAGameUIState_t } from "wrapper/Imports"
 
 import * as DrawParticle from "./base/DrawParticle"
 import { stateMain } from "./base/MenuBase"

@@ -1,4 +1,4 @@
-import { Ability, ExecuteOrder, Unit } from "wrapper/Imports"
+import { Ability, ExecuteOrder, Unit, dotaunitorder_t } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { Heroes, initAbilityMap, Owner, Creeps } from "../Listeners"
 import { State, WithoutFailsState } from "../Menu"

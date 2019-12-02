@@ -1,152 +1,6 @@
 // TYPEDEFS
 type CEntityIndex = C_BaseEntity | number | undefined
 
-/// ENUMS
-
-declare enum ConnectionState {
-	Unknown,
-	NotYetConnected,
-	Connected,
-	Disconnected,
-	Abandoned,
-	Loading ,
-	Failed,
-}
-
-declare enum ArmorType {
-	Structure,
-	Hero,
-	Basic,
-}
-
-declare enum AttackDamageType {
-	Hero,
-	Basic,
-	Pierce,
-	Siege,
-}
-
-declare enum Flow_t {
-	IN = 0,
-	OUT = 1,
-}
-
-declare enum FontFlags_t {
-	NONE = 0,
-	ITALIC = 1 << 0,
-	UNDERLINE = 1 << 1,
-	STRIKEOUT = 1 << 2,
-	SYMBOL = 1 << 3,
-	ANTIALIAS = 1 << 4,
-	GAUSSIANBLUR = 1 << 5,
-	ROTARY = 1 << 6,
-	DROPSHADOW = 1 << 7,
-	ADDITIVE = 1 << 8,
-	OUTLINE = 1 << 9,
-	CUSTOM = 1 << 10, // custom generated font - never fallback to asian compatibility mode
-}
-
-declare enum DOTA_GameMode {
-	DOTA_GAMEMODE_NONE = 0,
-	DOTA_GAMEMODE_AP = 1,
-	DOTA_GAMEMODE_CM = 2,
-	DOTA_GAMEMODE_RD = 3,
-	DOTA_GAMEMODE_SD = 4,
-	DOTA_GAMEMODE_AR = 5,
-	DOTA_GAMEMODE_INTRO = 6,
-	DOTA_GAMEMODE_HW = 7,
-	DOTA_GAMEMODE_REVERSE_CM = 8,
-	DOTA_GAMEMODE_XMAS = 9,
-	DOTA_GAMEMODE_TUTORIAL = 10,
-	DOTA_GAMEMODE_MO = 11,
-	DOTA_GAMEMODE_LP = 12,
-	DOTA_GAMEMODE_POOL1 = 13,
-	DOTA_GAMEMODE_FH = 14,
-	DOTA_GAMEMODE_CUSTOM = 15,
-	DOTA_GAMEMODE_CD = 16,
-	DOTA_GAMEMODE_BD = 17,
-	DOTA_GAMEMODE_ABILITY_DRAFT = 18,
-	DOTA_GAMEMODE_EVENT = 19,
-	DOTA_GAMEMODE_ARDM = 20,
-	DOTA_GAMEMODE_1V1MID = 21,
-	DOTA_GAMEMODE_ALL_DRAFT = 22,
-	DOTA_GAMEMODE_TURBO = 23,
-	DOTA_GAMEMODE_MUTATION = 24,
-	DOTA_GAMEMODE_COACHES_CHALLENGE = 25,
-}
-
-declare enum DOTA_GameState {
-	DOTA_GAMERULES_STATE_INIT = 0,
-	DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD = 1,
-	DOTA_GAMERULES_STATE_HERO_SELECTION = 2,
-	DOTA_GAMERULES_STATE_STRATEGY_TIME = 3,
-	DOTA_GAMERULES_STATE_PRE_GAME = 4,
-	DOTA_GAMERULES_STATE_GAME_IN_PROGRESS = 5,
-	DOTA_GAMERULES_STATE_POST_GAME = 6,
-	DOTA_GAMERULES_STATE_DISCONNECT = 7,
-	DOTA_GAMERULES_STATE_TEAM_SHOWCASE = 8,
-	DOTA_GAMERULES_STATE_CUSTOM_GAME_SETUP = 9,
-	DOTA_GAMERULES_STATE_WAIT_FOR_MAP_TO_LOAD = 10,
-	DOTA_GAMERULES_STATE_LAST = 11,
-}
-
-declare enum dotaunitorder_t {
-	DOTA_UNIT_ORDER_NONE = 0,
-	DOTA_UNIT_ORDER_MOVE_TO_POSITION = 1,
-	DOTA_UNIT_ORDER_MOVE_TO_TARGET = 2,
-	DOTA_UNIT_ORDER_ATTACK_MOVE = 3,
-	DOTA_UNIT_ORDER_ATTACK_TARGET = 4,
-	DOTA_UNIT_ORDER_CAST_POSITION = 5,
-	DOTA_UNIT_ORDER_CAST_TARGET = 6,
-	DOTA_UNIT_ORDER_CAST_TARGET_TREE = 7,
-	DOTA_UNIT_ORDER_CAST_NO_TARGET = 8,
-	DOTA_UNIT_ORDER_CAST_TOGGLE = 9,
-	DOTA_UNIT_ORDER_HOLD_POSITION = 10,
-	DOTA_UNIT_ORDER_TRAIN_ABILITY = 11,
-	DOTA_UNIT_ORDER_DROP_ITEM = 12,
-	DOTA_UNIT_ORDER_GIVE_ITEM = 13,
-	DOTA_UNIT_ORDER_PICKUP_ITEM = 14,
-	DOTA_UNIT_ORDER_PICKUP_RUNE = 15,
-	DOTA_UNIT_ORDER_PURCHASE_ITEM = 16,
-	DOTA_UNIT_ORDER_SELL_ITEM = 17,
-	DOTA_UNIT_ORDER_DISASSEMBLE_ITEM = 18,
-	DOTA_UNIT_ORDER_MOVE_ITEM = 19,
-	DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO = 20,
-	DOTA_UNIT_ORDER_STOP = 21,
-	DOTA_UNIT_ORDER_TAUNT = 22,
-	DOTA_UNIT_ORDER_BUYBACK = 23,
-	DOTA_UNIT_ORDER_GLYPH = 24,
-	DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH = 25,
-	DOTA_UNIT_ORDER_CAST_RUNE = 26,
-	DOTA_UNIT_ORDER_PING_ABILITY = 27,
-	DOTA_UNIT_ORDER_MOVE_TO_DIRECTION = 28,
-	DOTA_UNIT_ORDER_PATROL = 29,
-	DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION = 30,
-	DOTA_UNIT_ORDER_RADAR = 31,
-	DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK = 32,
-	DOTA_UNIT_ORDER_CONTINUE = 33,
-	DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED = 34,
-	DOTA_UNIT_ORDER_CAST_RIVER_PAINT = 35,
-	DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT = 36,
-}
-
-declare enum PingType_t {
-	NORMAL = 0,
-	DANGER = 1,
-	HEADING = 2,
-	RETREAT = 3,
-	ATTACK = 4,
-	ENEMY_VISION = 5,
-	OWN_VISION = 6,
-}
-
-declare enum DOTAGameUIState_t {
-	DOTA_GAME_UI_STATE_INVALID,
-	DOTA_GAME_UI_STATE_LOADING_SCREEN,
-	DOTA_GAME_UI_DOTA_INGAME,
-	DOTA_GAME_UI_STATE_DASHBOARD,
-}
-
 /// GLOBAL OBJECTS
 declare var IOBuffer: Float32Array // 64 floats in size
 declare var global: any
@@ -159,7 +13,7 @@ declare var Renderer: Renderer
 declare var Camera: Camera
 
 declare class CUnitOrder {
-	readonly order_type: dotaunitorder_t
+	readonly order_type: number
 	readonly queue: boolean
 	readonly issuer: PlayerOrderIssuer_t
 	readonly position: boolean // returns Vector3 to IOBuffer offset 0 on get
@@ -215,7 +69,7 @@ declare interface GameEvents {
 }
 
 declare interface Minimap {
-	SendPing(type?: PingType_t, direct_ping?: boolean, target?: C_BaseEntity): void // pass location: Vector2 at IOBuffer offset 0
+	SendPing(type?: number, direct_ping?: boolean, target?: C_BaseEntity): void // pass location: Vector2 at IOBuffer offset 0
 	SendLine(x: number, y: number, initial: boolean): void
 	/**
 	 * Draws icon at minimap
@@ -288,7 +142,7 @@ declare function IsInGame(): boolean
 declare function GetLevelName(): string
 declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer offset 0
-	OrderType: dotaunitorder_t,
+	OrderType: number,
 	Target?: C_BaseEntity | number,
 	Ability?: C_BaseEntity | number,
 	OrderIssuer?: PlayerOrderIssuer_t,
@@ -297,9 +151,9 @@ declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer 
 	ShowEffects?: boolean
 }): void
 declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
-declare function GetLatency(flow: Flow_t): number
-declare function GetAvgLatency(flow: Flow_t): number
-declare function GetUIState(): DOTAGameUIState_t
+declare function GetLatency(flow: number): number
+declare function GetAvgLatency(flow: number): number
+declare function GetUIState(): number
 declare function GetServerTickCount(): number
 declare function GetPreviousServerTickCount(): number
 declare function GetClientTickCount(): number

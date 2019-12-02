@@ -1,4 +1,4 @@
-import { Ability, Creep, ExecuteOrder, Hero, LocalPlayer, Menu, Unit } from "wrapper/Imports"
+import { Ability, Creep, ExecuteOrder, Hero, LocalPlayer, Menu, Unit, dotaunitorder_t } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { Creeps, Heroes, MyHero, initAbilityMap } from "../Listeners"
 import { SmartConShotFail, SmartConShotOnlyTarget, SmartConShotRadius, State } from "../Menu"

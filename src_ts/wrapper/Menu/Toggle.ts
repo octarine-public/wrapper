@@ -3,6 +3,7 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
+import { FontFlags_t } from "../Enums/FontFlags_t"
 
 export default class Toggle extends Base {
 	public value = true

@@ -18,11 +18,14 @@ import Item from "./Item"
 import ModifiersBook from "../DataBook/ModifiersBook"
 import Modifier from "./Modifier"
 
-import { Team } from "../../Helpers/Team"
+import { Team } from "../../Enums/Team"
 import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
 import Tree from "./Tree"
 import TreeTemp from "./TreeTemp"
+import { dotaunitorder_t } from "../../Enums/dotaunitorder_t";
+import { ArmorType } from "../../Enums/ArmorType";
+import { AttackDamageType } from "../../Enums/AttackDamageType";
 
 const attackAnimationPoint = new Map<string, number>();
 

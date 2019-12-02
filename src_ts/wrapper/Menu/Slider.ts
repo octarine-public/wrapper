@@ -2,6 +2,7 @@ import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
+import { FontFlags_t } from "../Enums/FontFlags_t"
 
 export default class Slider extends Base {
 	public min = -200

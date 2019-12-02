@@ -1,7 +1,7 @@
 import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import { Team } from "../../Helpers/Team"
+import { Team } from "../../Enums/Team"
 import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager"
 import { DegreesToRadian } from "../../Utils/Math"
 

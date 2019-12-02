@@ -1,4 +1,4 @@
-import { Menu as MenuSDK, EventsSDK, Ability, LocalPlayer, Unit, ArrayExtensions } from "wrapper/Imports";
+import { Menu as MenuSDK, EventsSDK, Ability, LocalPlayer, Unit, ArrayExtensions, Entity } from "wrapper/Imports";
 const Abilities: string[] = [
 	"magnataur_skewer",
 	"pudge_meat_hook",
@@ -76,28 +76,14 @@ EventsSDK.on("Tick", () => {
 			&& SuppAbils.IsEnabled(abil.Name)
 			&& Abilities.includes(abil.Name)).length > 0)
 })
-EventsSDK.on("PrepareUnitOrders", (orders) => {
-	if (Units.length <= 0 || !State.value || !SpellsReady || orders.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION) {
+EventsSDK.on("PrepareUnitOrders", order => {
+	if (!State.value || !SpellsReady || (StateMiltiUnit.selected_id !== 1 && order.Unit !== LocalPlayer?.Hero))
 		return true
-	}
-	let abils = orders.Ability as Ability
-	if (abils === undefined) {
+	let abil = order.Ability as Ability
+	if (abil === undefined || !SuppAbils.IsEnabled(abil.Name))
 		return true
-	}
-	if (!SuppAbils.IsEnabled(abils.Name)) {
-		return true
-	}
-	let units_ = Units.filter(unit => !unit.IsEnemy() && unit.IsAlive
-		&& unit.IsHero && unit.IsControllable && !unit.IsMoving)
-	if (!units_.some(x => x.FindRotationAngle(orders.Position) > 0.4))
-		return true
-	units_.map(unit => {
-		if (abils.CastRange + unit.CastRangeBonus < (orders.Position.Distance2D(unit.Position))) {
-			return false
-		}
-		unit.CastPosition(abils, unit.Position.Add((orders.Position.Subtract(unit.Position)).Normalize().ScaleTo(1.3)))
-		return true
-	})
+	let target_pos = order.Target instanceof Entity ? order.Target.Position : order.Position
+	order.Unit.CastPosition(abil, order.Unit.Position.Extend(target_pos, 1.3))
 	return false
 })
 EventsSDK.on("EntityCreated", x => {

@@ -4,6 +4,7 @@ import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
+import { FontFlags_t } from "../Enums/FontFlags_t"
 
 // every icon: 32x32, 1x1 border
 export default class ImageSelector extends Base {

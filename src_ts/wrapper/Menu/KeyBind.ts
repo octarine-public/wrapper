@@ -7,6 +7,7 @@ import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
 import Events from "../Managers/Events"
+import { FontFlags_t } from "../Enums/FontFlags_t"
 
 export default class KeyBind extends Base {
 	public static readonly KeyNames = [

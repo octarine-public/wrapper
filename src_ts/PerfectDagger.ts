@@ -1,4 +1,4 @@
-import { Ability, EventsSDK, Game, Menu, Vector3 } from "wrapper/Imports"
+import { Ability, EventsSDK, Game, Menu, Vector3, dotaunitorder_t } from "wrapper/Imports"
 let blink_range: number
 const menu = Menu.AddEntry(["Utility", "Perfect Dagger"]),
 	active = menu.AddToggle("Active")

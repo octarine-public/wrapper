@@ -1,3 +1,16 @@
+// enums
+export { ArmorType } from "./Enums/ArmorType"
+export { AttackDamageType } from "./Enums/AttackDamageType"
+export { ConnectionState } from "./Enums/ConnectionState"
+export { DOTAGameUIState_t } from "./Enums/DOTAGameUIState_t"
+export { DOTA_GameMode } from "./Enums/DOTA_GameMode"
+export { DOTA_GameState } from "./Enums/DOTA_GameState"
+export { Flow_t } from "./Enums/Flow_t"
+export { FontFlags_t } from "./Enums/FontFlags_t"
+export { PingType_t } from "./Enums/PingType_t"
+export { Team } from "./Enums/Team"
+export { dotaunitorder_t } from "./Enums/dotaunitorder_t"
+
 import * as ArrayExtensions from "./Utils/ArrayExtensions"
 import * as BitsExtensions from "./Utils/BitsExtensions"
 import * as Debug from "./Utils/Debug"
@@ -6,7 +19,6 @@ import * as MathSDK from "./Utils/Math"
 import * as Parse from "./Utils/ParseKV"
 import * as Utils from "./Utils/Utils"
 export { default as Benchmark } from "./Utils/BenchMark"
-export { Team } from "./Helpers/Team"
 export { Utils, MathSDK, Debug, ArrayExtensions, BitsExtensions, MapExtensions, Parse }
 
 export { default as Vector2 } from "./Base/Vector2"

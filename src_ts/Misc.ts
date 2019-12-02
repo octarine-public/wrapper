@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder } from "./wrapper/Imports"
+import { EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t } from "./wrapper/Imports"
 
 let Menu = MenuSDK.AddEntry("Misc");
 

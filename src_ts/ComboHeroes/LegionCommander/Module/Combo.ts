@@ -1,7 +1,7 @@
 import { Base } from "../Extends/Helper"
 import { BreakInit } from "./LinkenBreaker"
 
-import { Utils, Ability, Item, TickSleeper, Menu, Hero } from "wrapper/Imports"
+import { Utils, Ability, Item, TickSleeper, Menu, Hero, Flow_t } from "wrapper/Imports"
 import { MouseTarget, Owner, initAbilityMap, initItemsMap, initHitAndRunMap } from "../Listeners"
 
 import InitItems from "../Extends/Items"

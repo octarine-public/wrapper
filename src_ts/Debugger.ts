@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color, Events } from "./wrapper/Imports"
+import { EventsSDK, Game, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color, Events, DOTAGameUIState_t } from "./wrapper/Imports"
 
 let setConVar = (toggle: Menu.Toggle) =>
 	ConVars.Set(toggle.tooltip, toggle.value)

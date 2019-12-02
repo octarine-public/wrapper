@@ -1,5 +1,5 @@
 
-import { Game, LocalPlayer, RendererSDK, Team, Unit, Vector2 } from "wrapper/Imports"
+import { Game, LocalPlayer, RendererSDK, Team, Unit, Vector2, FontFlags_t } from "wrapper/Imports"
 import ManagerBase from "../../../abstract/Base"
 import { Units } from "../Entities"
 import {

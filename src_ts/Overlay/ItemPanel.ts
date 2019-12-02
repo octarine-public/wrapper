@@ -1,7 +1,7 @@
 import {
 	ArrayExtensions, Color, EventsSDK, Game,
 	Hero, Input, Item, LocalPlayer, Meepo, Menu as MenuSDK,
-	Rectangle, RendererSDK, Vector2, VMouseKeys,
+	Rectangle, RendererSDK, Vector2, VMouseKeys, DOTAGameUIState_t,
 } from "wrapper/Imports";
 
 // ["Visual", "Overlay", "Item Panel"]

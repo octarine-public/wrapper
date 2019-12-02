@@ -1,12 +1,14 @@
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import { Team } from "../../Helpers/Team"
+import { Team } from "../../Enums/Team"
 import { default as EntityManager, LocalPlayer, PlayerResource } from "../../Managers/EntityManager"
 import { default as ExecuteOrder } from "../../Native/ExecuteOrder"
 import Ability from "./Ability"
 import Entity from "./Entity"
 import Hero from "./Hero"
 import Unit from "./Unit"
+import { ConnectionState } from "../../Enums/ConnectionState"
+import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 
 export default class Player extends Entity {
 	static get QuickBuyItems(): number[] {

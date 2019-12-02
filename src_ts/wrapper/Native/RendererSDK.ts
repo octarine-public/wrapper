@@ -5,6 +5,7 @@ import { QAngle } from "../Imports"
 import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
 import Events from "../Managers/Events"
+import { FontFlags_t } from "../Enums/FontFlags_t"
 
 let WindowSize = new Vector2().Invalidate()
 

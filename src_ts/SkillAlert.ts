@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Color, Entity, EntityManager, EventsSDK, Game, Hero, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3 } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Color, Entity, EntityManager, EventsSDK, Game, Hero, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, DOTAGameUIState_t } from "wrapper/Imports"
 
 const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	active = menu.AddToggle("Active", true),

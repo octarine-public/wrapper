@@ -13,6 +13,7 @@ import {
 	Rune,
 	Unit,
 	Vector3,
+	DOTAGameUIState_t,
 } from "wrapper/Imports"
 
 // import { PickupItem, PickupRune } from "../Orders"

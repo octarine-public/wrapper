@@ -1,5 +1,5 @@
 
-import { EventsSDK, Game, LocalPlayer } from "wrapper/Imports";
+import { EventsSDK, Game, LocalPlayer, DOTAGameUIState_t } from "wrapper/Imports";
 import * as AutoFeed from "./AutoFeed/Listeners";
 import * as AutoLaugh from "./AutoLaugh/Listeners";
 import * as AutoSpinner from "./AutoSpinner/Listeners";

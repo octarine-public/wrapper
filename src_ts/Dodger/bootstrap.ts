@@ -29,7 +29,7 @@
 // 	// Medusa
 // 	"particles/units/heroes/hero_medusa/medusa_mystic_snake_projectile.vpcf",
 // 	"particles/units/heroes/hero_medusa/medusa_mystic_snake_projectile_initial.vpcf",
-// 	// Queen 
+// 	// Queen
 // 	"particles/units/heroes/hero_queenofpain/queen_shadow_strike.vpcf",
 // 	"particles/econ/items/queen_of_pain/qop_ti8_immortal/queen_ti8_shadow_strike.vpcf",
 // 	"particles/econ/items/queen_of_pain/qop_ti8_immortal/queen_ti8_golden_shadow_strike.vpcf",

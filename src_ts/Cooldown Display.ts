@@ -9,6 +9,8 @@ import {
 	Menu as MenuSDK,
 	RendererSDK,
 	Vector2,
+	DOTAGameUIState_t,
+	FontFlags_t,
 } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Visual", "Cooldown Display"]),

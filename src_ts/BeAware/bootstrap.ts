@@ -3,6 +3,7 @@ import {
 	EventsSDK,
 	Game,
 	LocalPlayer,
+	DOTAGameUIState_t,
 } from "wrapper/Imports"
 
 import { stateMain } from "./abstract/Menu.Base"

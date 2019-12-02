@@ -1,4 +1,4 @@
-import { Game, LocalPlayer, RendererSDK, Team, Vector2, Events } from "wrapper/Imports"
+import { Game, LocalPlayer, RendererSDK, Team, Vector2, Events, DOTA_GameState } from "wrapper/Imports"
 import {
 	//ShowAfterGameStart,
 	ChatTimeOutSend,

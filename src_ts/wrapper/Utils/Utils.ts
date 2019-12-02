@@ -3,6 +3,7 @@ import EventsSDK from "../Managers/EventsSDK"
 import ProjectileManager from "../Managers/ProjectileManager"
 import Unit from "../Objects/Base/Unit"
 import { parseKV } from "./ParseKV"
+import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 
 export const DamageIgnoreBuffs = [
 	[], // DAMAGE_TYPES.DAMAGE_TYPE_NONE = 0

@@ -11,6 +11,8 @@ import {
 	RendererSDK,
 	Vector2,
 	Vector3,
+	PingType_t,
+	DOTAGameUIState_t,
 } from "wrapper/Imports"
 
 //font = Renderer.LoadFont("Tahoma", 22, Enum.FontWeight.EXTRABOLD)

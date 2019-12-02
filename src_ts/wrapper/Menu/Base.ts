@@ -3,6 +3,7 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
+import { FontFlags_t } from "../Enums/FontFlags_t"
 
 export interface IMenu {
 	entries: Base[]

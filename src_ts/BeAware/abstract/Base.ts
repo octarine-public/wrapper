@@ -1,4 +1,4 @@
-import { Color, Menu, RendererSDK, Unit, Vector2 } from "../../wrapper/Imports";
+import { Color, Menu, RendererSDK, Unit, Vector2, FontFlags_t } from "../../wrapper/Imports";
 
 export default class ManagerBase {
 	public get MaxMoveSpeed(): number {

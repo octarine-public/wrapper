@@ -1,4 +1,4 @@
-import { Team } from "../../Helpers/Team"
+import { Team } from "../../Enums/Team"
 
 /* import EntityManager from "../../Managers/EntityManager";
 import AbilityData from "../DataBook/AbilityData";

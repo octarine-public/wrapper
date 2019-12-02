@@ -1,4 +1,4 @@
-import { Ability, Game, Hero, TickSleeper } from "wrapper/Imports"
+import { Ability, Game, Hero, TickSleeper, Flow_t } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { Heroes, Owner, initAbilityMap } from "../Listeners"
 import { State, СomboAbility } from "../Menu"

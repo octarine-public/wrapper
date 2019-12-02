@@ -1,7 +1,7 @@
-import { Courier, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Vector3, Team, TickSleeper, Ability, ArrayExtensions } from "wrapper/Imports"
+import { Courier, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Vector3, Team, TickSleeper, Ability, ArrayExtensions, DOTA_GameMode } from "wrapper/Imports"
 
 let allyCourier: Courier,
-	Sleep = new TickSleeper,
+	Sleep = new TickSleeper(),
 	unit_anim: Unit[] = [],
 	Enemy: Hero[] = [],
 	Owner: Hero,
@@ -262,7 +262,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 		ArrayExtensions.arrayRemove(Enemy, ent)
 })
 
-EventsSDK.on("GameStarted", (hero) => {
+EventsSDK.on("GameStarted", hero => {
 	if (Owner === undefined) {
 		Owner = hero
 	}

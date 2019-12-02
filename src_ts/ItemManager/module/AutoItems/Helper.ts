@@ -11,6 +11,8 @@ import {
 	TreeTemp,
 	Unit,
 	Vector3,
+	dotaunitorder_t,
+	Flow_t,
 } from "wrapper/Imports"
 
 import {

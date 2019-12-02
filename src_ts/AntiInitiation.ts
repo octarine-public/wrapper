@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit } from "wrapper/Imports"
+import { Ability, ArrayExtensions, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Flow_t } from "wrapper/Imports"
 
 // Menu
 const MenuEntry = Menu.AddEntry(["Utility", "AntiInitiation"])
