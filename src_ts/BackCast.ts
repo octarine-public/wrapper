@@ -87,12 +87,14 @@ EventsSDK.on("PrepareUnitOrders", order => {
 	return false
 })
 EventsSDK.on("EntityCreated", x => {
-	if (x instanceof Unit) {
+	if (x instanceof Unit)
 		Units.push(x)
-	}
 })
 EventsSDK.on("EntityDestroyed", x => {
-	if (x instanceof Unit) {
+	if (x instanceof Unit)
 		ArrayExtensions.arrayRemove(Units, x)
-	}
+})
+EventsSDK.on("GameEnded", () => {
+	Units = []
+	SpellsReady = false
 })

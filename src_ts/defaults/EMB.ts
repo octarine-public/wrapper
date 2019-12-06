@@ -25,7 +25,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 		ArrayExtensions.arrayRemove(heroes, ent)
 })
 
-EventsSDK.on("Update", () => {
+EventsSDK.on("Tick", () => {
 	if (LocalPlayer === undefined || !stateMain.value || Game.IsPaused || LocalPlayer.IsSpectator)
 		return
 	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible && npc.IsEnemy())

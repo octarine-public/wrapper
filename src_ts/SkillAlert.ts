@@ -92,14 +92,7 @@ let phaseSpells = [
 	"lion_impale",
 ]
 
-EventsSDK.on("GameEnded", () => {
-	arTimers.clear()
-	arHeroMods.clear()
-	direct_part_list.clear()
-	circle_part_list.clear()
 
-	line_table = []
-})
 
 EventsSDK.on("BuffAdded", (ent, buff) => {
 	if (!active.value)
@@ -190,19 +183,6 @@ EventsSDK.on("BuffRemoved", (ent, buff) => {
 		ParticlesSDK.Destroy(part, false)
 	}
 })
-// EventsSDK.on("Tick", () => {
-// 	if (!active.value)
-// 		return
-
-// 		// loop-optimizer: KEEP
-// 		arHeroMods.forEach((part, buff) => {
-// 			if (buff.RemainingTime === null) {
-// 				console.log("removeaaaa")
-// 				arHeroMods.delete(buff)
-// 				ParticlesSDK.Destroy(part, false)
-// 			}
-// 		})
-// })
 
 EventsSDK.on("Draw", () => {
 	if (!active.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
@@ -444,7 +424,7 @@ EventsSDK.on("ParticleUpdatedEnt", (id, controlPoint, ent, attach, attachment, f
 
 EventsSDK.on("ParticleDestroyed", id => particles_table.delete(id))
 
-EventsSDK.on("Update", () => {
+EventsSDK.on("Tick", () => {
 	if (!active.value)
 		return
 
@@ -501,4 +481,14 @@ EventsSDK.on("Update", () => {
 			}
 		})
 	})
+})
+
+EventsSDK.on("GameEnded", () => {
+	line_table = []
+	abils_list = []
+	arTimers.clear()
+	arHeroMods.clear()
+	particles_table.clear()
+	circle_part_list.clear()
+	direct_part_list.clear()
 })

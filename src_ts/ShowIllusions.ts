@@ -34,3 +34,7 @@ EventsSDK.on("Draw", () => {
 		illus.m_pBaseEntity.OnColorChanged()
 	})
 })
+
+EventsSDK.on("GameEnded", () => {
+	illusions = []
+})

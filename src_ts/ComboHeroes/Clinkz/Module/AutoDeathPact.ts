@@ -1,7 +1,7 @@
 import { Base } from "../Extends/Helper"
 import { Owner, Creeps, initAbilityMap, initItemsMap } from "../Listeners";
-import { ArrayExtensions, TickSleeper } from "wrapper/Imports";
-import { State, AutoDeathPactState, AutoDeathPactCreepHP } from "../Menu";
+import { TickSleeper } from "wrapper/Imports";
+import { State, AutoDeathPactState } from "../Menu";
 let Sleep = new TickSleeper
 export function InitAutoDeathPact() {
 	if (!Base.IsRestrictions(State) || Owner.IsInvulnerable || Owner.InvisibleLevel > 0 || !AutoDeathPactState.value || Sleep.Sleeping)
@@ -11,17 +11,14 @@ export function InitAutoDeathPact() {
 	if (Abilities === undefined || Items === undefined || Abilities.DeathPact === undefined
 		|| !Abilities.DeathPact.CanBeCasted())
 		return
-	let Creep = ArrayExtensions.orderBy(Creeps.filter(x =>
-		x.IsValid
-		&& x.IsSpawned
-		&& x.IsAlive
-		&& !x.IsAncient
-		&& !x.IsMagicImmune
-		&& x.IsEnemy()
-		&& x.Distance(Owner) <= Abilities.DeathPact.CastRange
-		&& x.IsVisible), x => x.HPPercent <= AutoDeathPactCreepHP.value).sort((a, b) => b.MaxHP - a.MaxHP)[0]
+	let Creep = Creeps.find(x => x.IsValid && x.IsSpawned
+		&& x.IsVisible && !x.IsAncient && !x.IsMagicImmune
+		&& Abilities.DeathPact.GetSpecialValue("neutral_level") >= x.Level
+		&& x.IsEnemy() && x.Distance(Owner) <= Abilities.DeathPact.CastRange)
 	if (Creep === undefined)
 		return
+	// modifier_clinkz_death_pact
+	// console.log(Owner.ModifiersBook.Buffs.map(e => e.Name))
 	Abilities.DeathPact.UseAbility(Creep)
 	Sleep.Sleep(Creeps.length * 1.2)
 	return

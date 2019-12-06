@@ -31,3 +31,10 @@ EventsSDK.on("EntityDestroyed", ent => {
 	else if (ent instanceof Creep)
 		ArrayExtensions.arrayRemove(allCreeps, ent)
 })
+
+export function AllClearArray() {
+	allNPCs = []
+	allCreeps = []
+	allTowers = []
+	allHeroes = []
+}

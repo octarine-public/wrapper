@@ -11,7 +11,7 @@ export function MenuBase(root: MenuSDK.Node, name: string, defaultKey = "") {
 		State: BaseTree.AddToggle("State"),
 		Key: BaseTree.AddKeybind("Key", defaultKey),
 		KeyStyle: BaseTree.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"]),
-		Sensitivity: BaseTree.AddSliderFloat("Sensitivity", 16, 0, 35)
+		Sensitivity: BaseTree.AddSlider("Sensitivity", 16, 0, 35)
 			.SetTooltip("Biggest value to smaller blocks but more accurately. Default for many heroes - 16"),
 	}
 }

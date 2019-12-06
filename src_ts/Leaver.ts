@@ -2,7 +2,7 @@ import { Game, Menu, PlayerResource } from "wrapper/Imports"
 
 const tree = Menu.AddEntry(["Utility", "Bait leave"]),
 	autodisconnect = tree.AddToggle("Auto Disconnect"),
-	Additionaldelay = tree.AddSliderFloat("Delay auto disconnect", 1, 1, 10),
+	Additionaldelay = tree.AddSlider("Delay auto disconnect", 1, 1, 10),
 	playersList = tree.AddSwitcher("Player ID", ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8", "Player 9", "Player 10"]),
 	colors = ["#415fff", "#83ffda", "#c3009c", "#d5ff16", "#f16900", "#ff6ca5", "#85c83b", "#74d6f9", "#009e31", "#8f6f00"],
 	gap = "<br>".repeat(75),

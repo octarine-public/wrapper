@@ -3,6 +3,7 @@ import {
 	Entity,
 	Unit,
 	Vector3,
+	Building,
 } from "wrapper/Imports"
 
 import {
@@ -26,12 +27,15 @@ import {
 import { ScanGameEnded } from "./Module/Scan";
 
 export let Units: Unit[] = []
+export let Shrine: Building[] = []
 export let RoshanPosition: Vector3 = new Vector3
 export let OtherRadius = new Map<Entity, number>()
 
 function BaseCreateUnits(x: Entity) {
 	if (x instanceof Unit && !x.IsHero)
 		Units.push(x)
+	if (x instanceof Building && x.Name.includes("healer"))
+		Shrine.push(x)
 	if (x.m_pBaseEntity instanceof C_DOTA_RoshanSpawner) {
 		if (!RoshanPosition.IsZero())
 			return
@@ -40,13 +44,15 @@ function BaseCreateUnits(x: Entity) {
 }
 
 function BaseDestroyedUnits(x: Entity) {
+	if (x instanceof Unit)
+		ArrayExtensions.arrayRemove(Units, x)
+	if (x instanceof Building && x.Name.includes("healer"))
+		ArrayExtensions.arrayRemove(Shrine, x)
 	if (x.m_pBaseEntity instanceof C_DOTA_RoshanSpawner) {
 		if (RoshanPosition.IsZero())
 			return
 		RoshanPosition = new Vector3
 	}
-	if (x instanceof Unit)
-		ArrayExtensions.arrayRemove(Units, x)
 }
 
 export function Tick() {
@@ -57,6 +63,7 @@ export function Tick() {
 
 export function Init() {
 	Units = []
+	Shrine = []
 	OtherRadius.clear()
 	ScanGameEnded()
 	RuneGameEnded()

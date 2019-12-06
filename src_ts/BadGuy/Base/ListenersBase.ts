@@ -13,6 +13,8 @@ export function EntityCreated(x: Entity) {
 export function EntityDestroyed(x: Entity) {
 	if (x instanceof Unit)
 		ArrayExtensions.arrayRemove(AllUnits, x)
+	if (x instanceof Building && x.Name === "dota_fountain")
+		ArrayExtensions.arrayRemove(EnemyBase, x)
 }
 
 export function GameEnded() {

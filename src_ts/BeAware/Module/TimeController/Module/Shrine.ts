@@ -1,6 +1,6 @@
 import { RendererSDK, Unit, Vector2, FontFlags_t } from "wrapper/Imports";
 import ManagerBase from "../../../abstract/Base";
-import { Units } from "../Entities";
+import { Shrine } from "../Entities";
 import {
 	DrawEnemyOrAllies,
 	DrawTextColorShrine,
@@ -25,11 +25,11 @@ function RenderIcon(position_unit: Vector2, path_icon: string) {
 function DrawShrineTime(unit: Unit) {
 	let abil = unit.GetAbilityByName("filler_ability");
 	if (abil === undefined)
-		return false
+		return
 	let Time = Base.TimeSecondToMin(abil.Cooldown),
 		position_unit = RendererSDK.WorldToScreen(unit.Position)
 	if (position_unit === undefined)
-		return false
+		return
 	if (abil.Cooldown <= 0) {
 		if (ShrineStateIcon.value)
 			RenderIcon(position_unit, `panorama/images/control_icons/check_png.vtex_c`)
@@ -42,15 +42,11 @@ function DrawShrineTime(unit: Unit) {
 }
 
 export function DrawShrine() {
-	if (Units.length === 0)
-		return false
-
+	if (Shrine.length === 0)
+		return
 	if (ShrineState.value) {
 		// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
-		Units.filter(x => {
-			if (!x.Name.includes("healers"))
-				return false
-
+		Shrine.filter(x => {
 			switch (DrawEnemyOrAllies.selected_id) {
 				case 0:
 					return Base.IsShrine(x)

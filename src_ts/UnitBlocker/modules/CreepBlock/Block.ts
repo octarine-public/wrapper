@@ -72,6 +72,7 @@ export function GameStarted() {
 export function GameEnded() {
 	turnStateBlock = false
 	sleeper.FullReset()
+	ControllablesUnitsDraw.clear()
 }
 
 export function Update() {

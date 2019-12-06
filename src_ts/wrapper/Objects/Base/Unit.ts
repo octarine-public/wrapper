@@ -27,7 +27,9 @@ import { dotaunitorder_t } from "../../Enums/dotaunitorder_t";
 import { ArmorType } from "../../Enums/ArmorType";
 import { AttackDamageType } from "../../Enums/AttackDamageType";
 
+
 const attackAnimationPoint = new Map<string, number>();
+const attackprojectileSpeed = new Map<string, number>();
 
 let parseHeroes = parseKVFile("scripts/npc/npc_heroes.txt");
 
@@ -38,11 +40,12 @@ let heroesNames = Object.keys(parseHeroes.DOTAHeroes).filter(hero =>
 // loop-optimizer: KEEP
 heroesNames.forEach(hero => {
 	const heroFields = parseHeroes.DOTAHeroes[hero].values;
-
 	if (heroFields.AttackAnimationPoint !== undefined) {
 		attackAnimationPoint.set(hero, parseFloat(heroFields.AttackAnimationPoint));
 	}
-
+	if (heroFields.ProjectileSpeed !== undefined) {
+		attackprojectileSpeed.set(hero, parseFloat(heroFields.ProjectileSpeed));
+	}
 	// another values from script files. (i.e AttackRate, AttackRate)
 })
 
@@ -460,6 +463,9 @@ export default class Unit extends Entity {
 	public get AttackAnimationPoint(): number {
 		return attackAnimationPoint.get(this.Name) || 0;
 	}
+	public get AttackProjectileSpeed(): number {
+		return attackprojectileSpeed.get(this.Name) || 0;
+	}
 	public get IsRotating(): boolean {
 		return this.RotationDifference !== 0
 	}
@@ -757,53 +763,53 @@ export default class Unit extends Entity {
 				if (!this.HasBuffByName("modifier_blight_stone_buff")) {
 					let item = source.GetItemByName("item_blight_stone")
 					if (item !== undefined)
-						armor += item[0].GetSpecialValue("corruption_armor")
+						armor += item.GetSpecialValue("corruption_armor")
 				}
 			}
 			{
 				if (!this.HasBuffByName("modifier_desolator_buff")) {
 					let item = source.GetItemByName("item_desolator")
 					if (item !== undefined)
-						armor += item[0].GetSpecialValue("corruption_armor")
+						armor += item.GetSpecialValue("corruption_armor")
 				}
 			}
 			{
 				let item = source.GetItemByName("item_quelling_blade")
 				if (item !== undefined)
-					damage += item[0].GetSpecialValue(source.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
+					damage += item.GetSpecialValue(source.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
 			}
 			{
 				let item = source.GetItemByName("item_bfury")
 				if (item !== undefined)
-					damage += item[0].GetSpecialValue(source.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
+					damage += item.GetSpecialValue(source.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
 			}
 			{
 				let abil = source.GetAbilityByName("clinkz_searing_arrows")
-				if (abil !== undefined && abil[0].m_bAutoCastState && abil.IsManaEnough())
-					damage += abil[0].GetSpecialValue("damage_bonus")
+				if (abil !== undefined && abil.m_pBaseEntity.m_bAutoCastState && abil.IsManaEnough())
+					damage += abil.GetSpecialValue("damage_bonus")
 			}
 			{
 				let abil = source.GetAbilityByName("antimage_mana_break")
 				if (abil !== undefined && this.MaxMana > 0)
-					damage += Math.min(this.Mana, abil[0].GetSpecialValue("mana_per_hit")) * abil[0].GetSpecialValue("damage_per_burn")
+					damage += Math.min(this.Mana, abil.GetSpecialValue("mana_per_hit")) * abil.GetSpecialValue("damage_per_burn")
 			}
 			{
 				let abil = source.GetAbilityByName("ursa_fury_swipes")
 				if (abil !== undefined) {
 					let buff = this.GetBuffByName("modifier_ursa_fury_swipes_damage_increase")
-					damage += abil[0].GetSpecialValue("damage_per_stack") * (1 + (buff !== undefined ? buff[0].m_iStackCount : 0))
+					damage += abil.GetSpecialValue("damage_per_stack") * (1 + (buff !== undefined ? buff[0].m_iStackCount : 0))
 				}
 			}
 			{
 				let abil = source.GetAbilityByName("bounty_hunter_jinada")
-				if (abil !== undefined && abil[0].m_fCooldown === 0)
-					damage += abil[0].GetSpecialValue("bonus_damage")
+				if (abil !== undefined && abil.Cooldown === 0)
+					damage += abil.GetSpecialValue("bonus_damage")
 			}
 		}
 		{
 			let abil = source.GetAbilityByName("kunkka_tidebringer")
-			if (abil !== undefined && abil[0].m_bAutoCastState && abil[0].m_fCooldown === 0)
-				damage += abil[0].GetSpecialValue("damage_bonus")
+			if (abil !== undefined && abil.m_pBaseEntity.m_bAutoCastState && abil.Cooldown === 0)
+				damage += abil.GetSpecialValue("damage_bonus")
 		}
 		{
 			let buff = source.GetBuffByName("modifier_storm_spirit_overload_passive")
@@ -815,26 +821,26 @@ export default class Unit extends Entity {
 		}
 		{
 			let abil = source.GetAbilityByName("riki_permanent_invisibility")
-			if (abil !== undefined && (source.Forward.AngleBetweenFaces(this.Forward) * 180 / Math.PI) < abil[0].GetSpecialValue("backstab_angle"))
-				damage += abil[0].GetSpecialValue("damage_multiplier") * source.TotalAgility
+			if (abil !== undefined && (source.Forward.AngleBetweenFaces(this.Forward) * 180 / Math.PI) < abil.GetSpecialValue("backstab_angle"))
+				damage += abil.GetSpecialValue("damage_multiplier") * source.TotalAgility
 		}
 		damage *= 1 - (armor * 0.05) / (1 + Math.abs(armor) * 0.05)
 		if (is_enemy) {
 			{
 				let abil = source.GetAbilityByName("silencer_glaives_of_wisdom")
-				if (abil !== undefined && abil[0].m_bAutoCastState && abil.IsManaEnough())
-					damage += abil[0].GetSpecialValue("intellect_damage_pct") * source.TotalIntellect / 100
+				if (abil !== undefined && abil.m_pBaseEntity.m_bAutoCastState && abil.IsManaEnough())
+					damage += abil.GetSpecialValue("intellect_damage_pct") * source.TotalIntellect / 100
 			}
 			{
 				let abil = source.GetAbilityByName("obsidian_destroyer_arcane_orb")
 				if (abil !== undefined && abil.IsAutoCastEnebled && abil.IsManaEnough())
-					damage += abil[0].GetSpecialValue("mana_pool_damage_pct") * source.MaxMana / 100
+					damage += abil.GetSpecialValue("mana_pool_damage_pct") * source.MaxMana / 100
 			}
 		}
 		{
 			let abil = source.GetAbilityByName("spectre_desolate")
 			if (abil !== undefined)
-				damage += abil[0].GetSpecialValue("bonus_damage")
+				damage += abil.GetSpecialValue("bonus_damage")
 		}
 		{
 			let buff = source.GetBuffByName("modifier_bloodseeker_bloodrage")

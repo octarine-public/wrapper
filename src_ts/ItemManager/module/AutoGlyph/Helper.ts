@@ -44,11 +44,11 @@ export function EntityCreate(x: Entity) {
 }
 
 export function EntityDestroy(x: Entity) {
-	if (Towers !== undefined || Towers.length > 0)
+	if (x instanceof Building && !x.IsShop && !x.IsShrine)
 		ArrayExtensions.arrayRemove(Towers, x)
 }
 
-export function Init() {
+export function GameEnded() {
 	Towers = []
 	Sleep.FullReset()
 }

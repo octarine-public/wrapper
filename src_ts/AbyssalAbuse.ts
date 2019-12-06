@@ -80,5 +80,5 @@ EventsSDK.on("GameEnded", () => {
 	bashC = false
 	vanguardC = false
 	checkAbys = false
-	arModifiers = new Map()
+	arModifiers.clear()
 })

@@ -13,7 +13,7 @@ EventsSDK.on("Tick", () => {
 })
 
 EventsSDK.on("GameEnded", () => {
-	AutoGlyph.Init()
-	AutoItems.Init()
-	AutoDeward.Init()
+	AutoGlyph.GameEnded()
+	AutoItems.GameEnded()
+	AutoDeward.GameEnded()
 })

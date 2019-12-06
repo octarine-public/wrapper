@@ -170,7 +170,13 @@ export class ItemBase extends ItemsHelper {
 		}
 		return this.unit.GetItemByName(name)
 	}
-
+	public get Manta(): Item {
+		let name = "item_manta"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
 	public get BladeMail(): Item {
 		let name = "item_blade_mail"
 		if (this.unit === undefined) {

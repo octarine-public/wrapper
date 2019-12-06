@@ -8,6 +8,7 @@ export default class Slider extends Base {
 	public min = -200
 	public max = 200
 	public value = 50
+	public float = false
 	public is_mouse_down = false
 	protected readonly text_offset = new Vector2(8, 8)
 	protected readonly slider_width = 4
@@ -16,11 +17,12 @@ export default class Slider extends Base {
 	protected readonly value_text_offset = new Vector2(10, 10)
 	protected readonly MousePosition = new Vector2()
 
-	constructor(parent: IMenu, name: string, default_value = 0, min = 0, max = 100, tooltip?: string) {
+	constructor(parent: IMenu, name: string, default_value = 0, min = 0, max = 100, float?: boolean, tooltip?: string) {
 		super(parent, name)
 		this.value = default_value
 		this.min = min
 		this.max = max
+		this.float = float
 		this.tooltip = tooltip
 		this.TotalSize_.x =
 			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS).x
@@ -40,7 +42,7 @@ export default class Slider extends Base {
 		let node_position = this.NodeRect.pos1,
 			total = this.TotalSize
 		let node_height = total.y - this.border_size.y * 2
-		let slider_pos = node_position.Clone().AddScalarX((total.x - this.border_size.x * 2 - this.slider_width) / (this.max - this.min) * (this.value - this.min))
+		let slider_pos = node_position.Clone().AddScalarX((total.x - this.border_size.x * 2 - this.slider_width) / (this.max - this.min) * (this.value as number - this.min))
 		RendererSDK.FilledRect(node_position, slider_pos.Subtract(node_position).AddScalarY(node_height), this.slider_filler_color)
 		RendererSDK.FilledRect(slider_pos, new Vector2(this.slider_width, node_height), this.slider_color)
 		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
@@ -51,7 +53,8 @@ export default class Slider extends Base {
 	}
 	public OnValueChanged(): void {
 		let off = Math.max(this.NodeRect.GetOffset(this.MousePosition).x, 0)
-		this.value = Math.floor(Math.min(this.max, this.min + (off / (this.TotalSize.x - this.border_size.x * 2)) * (this.max - this.min)))
+		let num = Math.min(this.max, this.min + (off / (this.TotalSize.x - this.border_size.x * 2)) * (this.max - this.min))
+		this.value = this.float ? Number(num.toFixed(2)) : Math.round(num)
 		this.OnValueChangedCBs.forEach(f => f(this))
 	}
 

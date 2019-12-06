@@ -67,7 +67,7 @@ function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: 
 	if (!enemy.IsEnemy() || !enemy.IsVisible || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO) {
 		return false
 	}
-	if (enemy.IsInRange(Position, (enemy.AttackRange + 350))) {
+	if (enemy.IsInRange(Position, (enemy.AttackRange + 450))) {
 		if (StateCourier.State !== CourierState_t.COURIER_STATE_AT_BASE
 			&& StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE
 		) {
@@ -109,7 +109,7 @@ function CourierBestPos() {
 				}
 			case CourierState_t.COURIER_STATE_MOVING:
 			case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
-				if (enemy.IsEnemy() && enemy.IsVisible && enemy.IsInRange(Position, (enemy.AttackRange + 350))) {
+				if (enemy.IsEnemy() && enemy.IsVisible && enemy.IsInRange(Position, (enemy.AttackRange + 450))) {
 					MoveCourierSafePos()
 					DELIVER_DISABLE = true
 					return true
@@ -254,10 +254,8 @@ EventsSDK.on("EntityCreated", ent => {
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-
 	if (allyCourier === ent)
 		allyCourier = undefined
-
 	if (ent instanceof Hero)
 		ArrayExtensions.arrayRemove(Enemy, ent)
 })
@@ -273,6 +271,8 @@ EventsSDK.on("GameEnded", () => {
 	Owner = undefined
 	DELIVER_DISABLE = false
 	unit_anim = []
+	Enemy = []
+	Sleep.ResetTimer()
 })
 
 EventsSDK.on("UnitAnimation", unit => {

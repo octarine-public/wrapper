@@ -119,10 +119,10 @@ export default class Node extends Base {
 		return this.AddEntry(new Toggle(this, name, default_value, tooltip))
 	}
 	public AddSlider(name: string, default_value = 0, min = 0, max = 100, tooltip?: string): Slider {
-		return this.AddEntry(new Slider(this, name, default_value, min, max, tooltip))
+		return this.AddEntry(new Slider(this, name, default_value, min, max, false, tooltip))
 	}
 	public AddSliderFloat(name: string, default_value = 0, min = 0, max = 100, tooltip?: string): Slider {
-		return this.AddSlider(name, default_value, min, max, tooltip)
+		return this.AddEntry(new Slider(this, name, default_value, min, max, true, tooltip))
 	}
 	public AddNode(name: string, tooltip?: string): Node {
 		let node = this.entries.find(entry => entry instanceof Node && entry.name === name) as Node
@@ -164,7 +164,7 @@ export default class Node extends Base {
 		return {
 			node, X, Y,
 			get Vector() {
-				return new Vector2(X.value, Y.value);
+				return new Vector2(X.value as number, Y.value as number);
 			},
 			set Vector(vector: Vector2) {
 				X.value = vector.x;
@@ -194,7 +194,7 @@ export default class Node extends Base {
 		return {
 			node, X, Y, Z,
 			get Vector() {
-				return new Vector3(X.value, Y.value, Z.value);
+				return new Vector3(X.value as number, Y.value as number, Z.value as number);
 			},
 			set Vector(vector: Vector3) {
 				X.value = vector.x;
@@ -212,7 +212,7 @@ export default class Node extends Base {
 		return {
 			R, G, B, A,
 			get Color(): Color {
-				return new Color(R.value, G.value, B.value, A.value)
+				return new Color(R.value as number, G.value as number, B.value as number, A.value as number)
 			},
 			OnValue(this: Color) { return this },
 		}

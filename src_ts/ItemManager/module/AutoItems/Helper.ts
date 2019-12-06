@@ -61,17 +61,6 @@ let Units: Unit[] = [],
 	changed = true,
 	lastStat: Attributes
 
-export function Init() {
-	Units = []
-	Trees = []
-	nextTick = undefined
-	lastStat = undefined
-	AllCreeps = []
-	AllUnitsHero = []
-	Particle = []
-	changed = true
-	TickSleep.ResetTimer()
-}
 
 let Buffs = {
 	NotHeal: [
@@ -656,4 +645,16 @@ function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit, Items:
 		return false
 	}
 	return true
+}
+
+export function GameEnded() {
+	Units = []
+	Trees = []
+	nextTick = undefined
+	lastStat = undefined
+	AllCreeps = []
+	AllUnitsHero = []
+	Particle = []
+	changed = true
+	TickSleep.ResetTimer()
 }

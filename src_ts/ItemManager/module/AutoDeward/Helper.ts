@@ -8,9 +8,9 @@ let ward_list: Entity[] = []
 
 function IsValidHero(Hero: Hero) {
 	return Hero === undefined
-	|| !Hero.IsAlive
-	|| Hero.IsStunned
-	|| LocalPlayer.ActiveAbility !== undefined
+		|| !Hero.IsAlive
+		|| Hero.IsStunned
+		|| LocalPlayer.ActiveAbility !== undefined
 }
 
 function IsDewardable(ent: Entity) {
@@ -33,8 +33,11 @@ export function EntityCreate(ent: Entity) {
 }
 
 export function EntityDestroyed(ent: Entity) {
-	if (IsDewardable(ent))
+	if (ent.m_pBaseEntity instanceof CDOTA_NPC_Observer_Ward
+		|| ent.m_pBaseEntity instanceof CDOTA_NPC_Observer_Ward_TrueSight
+	) {
 		ArrayExtensions.arrayRemove(ward_list, ent)
+	}
 }
 
 export function Tick() {
@@ -56,6 +59,6 @@ export function Tick() {
 	}))
 }
 
-export function Init() {
+export function GameEnded() {
 	ward_list = []
 }

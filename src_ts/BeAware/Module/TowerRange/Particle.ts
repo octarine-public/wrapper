@@ -23,9 +23,8 @@ function DrawTarget(ent: Tower, Owner: Unit) {
 }
 
 export function Create(ent: Entity) {
-	if (ent instanceof Tower) {
+	if (ent instanceof Tower)
 		Towers.push(ent)
-	}
 }
 function CreateTowerRange(ent: Tower) {
 	var par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)

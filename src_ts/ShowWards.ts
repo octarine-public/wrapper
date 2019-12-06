@@ -57,14 +57,8 @@ EventsSDK.on("EntityCreated", ent => {
 EventsSDK.on("GameEnded", ClearAll)
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof Hero) {
-		ArrayExtensions.arrayRemove(heroes, ent)
-		return
-	}
-
-	let is_observer = ent.Name === "npc_dota_ward_base"
-	let is_sentry = ent.Name === "npc_dota_ward_base_truesight"
-
+	let is_observer = ent.Name === "npc_dota_observer_wards"
+	let is_sentry = ent.Name === "npc_dota_sentry_wards"
 	if (is_observer || is_sentry) {
 		// loop-optimizer: KEEP
 		let nearest_ward = ArrayExtensions.orderBy(
@@ -73,6 +67,10 @@ EventsSDK.on("EntityDestroyed", ent => {
 		)[0]
 		if (nearest_ward !== undefined && ent.Distance(nearest_ward.pos) < 1500)
 			ArrayExtensions.arrayRemove(wardProcessingTable, nearest_ward)
+	}
+	if (ent instanceof Hero) {
+		ArrayExtensions.arrayRemove(heroes, ent)
+		return
 	}
 })
 

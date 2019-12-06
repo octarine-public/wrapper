@@ -103,7 +103,9 @@ function onDeactivateItems() {
 }
 
 EventsSDK.on("GameEnded", () => {
+	npcs = []
 	Sleep.FullReset()
+	ground_items = []
 	picking_up.clear()
 })
 
@@ -136,7 +138,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 		ArrayExtensions.arrayRemove(npcs, ent)
 })
 
-EventsSDK.on("Update", () => {
+EventsSDK.on("Tick", () => {
 	if (
 		LocalPlayer === undefined
 		|| LocalPlayer.IsSpectator

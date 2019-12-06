@@ -1,4 +1,6 @@
 import { EventsSDK, Game, RendererSDK, DOTAGameUIState_t } from "wrapper/Imports"
+import { AllClearArray } from "./base/Listeners"
+import { RemoveParticles } from "./modules/CreepBlock/ParticleHelp"
 
 import * as DrawParticle from "./base/DrawParticle"
 import { stateMain } from "./base/MenuBase"
@@ -14,6 +16,8 @@ EventsSDK.on("GameEnded", () => {
 	DrawParticle.GameEnded()
 	CreepBlock.GameEnded()
 	HeroBlock.GameEnded()
+	AllClearArray()
+	RemoveParticles()
 })
 
 EventsSDK.on("Tick", () => {

@@ -1,12 +1,20 @@
 import { ArrayExtensions, Color, Entity, Game, Hero, RendererSDK, Rune, Vector2, Vector3, Unit } from "wrapper/Imports";
 import {
-	NotifyPowerRuneMax, NotifyPowerRuneMin,
-	NotifyTimeBountyMax, NotifyTimeBountyMin,
-	PMH_Show_bounty, PMH_Show_bounty_size,
-	PMH_Show_bountyRGBA, PMH_Show_bountyRGBA_mark, TreeNotificationBountyChat, TreeNotificationBountyDrawMap,
-	TreeNotificationBountySound, TreeNotificationPowerChat, TreeNotificationPowerDrawMap,
+	NotifyPowerRuneMax,
+	NotifyPowerRuneMin,
+	NotifyTimeBountyMax,
+	NotifyTimeBountyMin,
+	PMH_Show_bounty,
+	PMH_Show_bounty_size,
+	PMH_Show_bountyRGBA,
+	PMH_Show_bountyRGBA_mark,
+	TreeNotificationBountyChat,
+	TreeNotificationBountyDrawMap,
+	TreeNotificationBountySound,
+	TreeNotificationPowerChat,
+	TreeNotificationPowerDrawMap,
 	TreeNotificationPowerSound,
-	TreeRuneState,
+	TreeRuneState
 } from "../Menu";
 
 let allRunes: Rune[] = [],
@@ -41,6 +49,7 @@ export function DrawRunes() {
 			if (mt_rand_power === undefined)
 				mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
 			if (mt_rand_power !== undefined && RunePowerTime >= (120 - mt_rand_power)) {
+
 				if (TreeNotificationPowerDrawMap.value)
 					RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
 
@@ -126,17 +135,14 @@ export function DrawRunes() {
 }
 
 export function EntityCreatedRune(x: Entity) {
-	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Bounty) {
-		bountyRunesPos.push(x.Position)
-	}
-	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup) {
-		PowerRunesPos.push(x.Position)
-	}
 	if (x instanceof Hero)
 		Heroes.push(x)
-	if (x instanceof Rune) {
+	if (x instanceof Rune)
 		allRunes.push(x)
-	}
+	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Bounty)
+		bountyRunesPos.push(x.Position)
+	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup)
+		PowerRunesPos.push(x.Position)
 }
 
 export function EntityDestroyedRune(x: Entity) {
@@ -146,6 +152,8 @@ export function EntityDestroyedRune(x: Entity) {
 	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup) {
 		ArrayExtensions.arrayRemove(PowerRunesPos, x.Position)
 	}
+	if (x instanceof Hero)
+		ArrayExtensions.arrayRemove(Heroes, x)
 	if (x instanceof Rune) {
 		// loop-optimizer: KEEP
 		bountyRunesPos.some((val, key) => {
@@ -159,14 +167,16 @@ export function EntityDestroyedRune(x: Entity) {
 		})
 		ArrayExtensions.arrayRemove(allRunes, x)
 	}
-	if (x instanceof Hero)
-		ArrayExtensions.arrayRemove(Heroes, x)
 }
 
 export function RuneGameEnded() {
 	Heroes = []
 	allRunes = []
 	Particle.clear()
+	PowerRunesPos = []
+	bountyRunesAr = []
+	bountyRunesPos = []
+	mt_rand_power = undefined
 }
 
 function DrawIcon(position: Vector3, color?: Color) {

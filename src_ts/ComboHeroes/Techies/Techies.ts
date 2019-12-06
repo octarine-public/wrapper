@@ -7,7 +7,7 @@ let TechiesMenu = Menu.AddEntry(["Heroes", "Techies"]),
 	safe_mode = TechiesMenu.AddToggle("Safe mode").SetTooltip("Reduces explosion radius based on hero speed"),
 	use_prediction = TechiesMenu.AddToggle("Use prediction"),
 	auto_stack = TechiesMenu.AddToggle("Autostack mines").SetTooltip("Automatically stacks mines in place"),
-	auto_stack_range = TechiesMenu.AddSliderFloat("Autostack range", 300, 50, 1000).SetTooltip("Range where autostack will try to find other mines")
+	auto_stack_range = TechiesMenu.AddSlider("Autostack range", 300, 50, 1000).SetTooltip("Range where autostack will try to find other mines")
 
 const RMineTriggerRadius = 425,
 	RMineBlowDelay = .25,

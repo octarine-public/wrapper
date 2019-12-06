@@ -144,7 +144,7 @@ function Disable(Me: Hero, hero: Unit, DisableAr: [string, boolean, boolean?][],
 	return true
 }
 
-EventsSDK.on("Update", () => {
+EventsSDK.on("Tick", () => {
 	if (!MenuState.value || Game.IsPaused || LocalPlayer === undefined)
 		return
 	const Me = LocalPlayer,
@@ -184,4 +184,7 @@ function TransformToAvailable(hero: Hero, abil_arrays: [string, boolean, boolean
 EventsSDK.on("GameStarted", hero => {
 	Abils = TransformToAvailable(hero, Abils_)
 	BuffsDisablers = TransformToAvailable(hero, BuffsDisablers_)
+})
+EventsSDK.on("GameEnded", () => {
+	heroes = []
 })

@@ -92,6 +92,8 @@ KeyAlly.OnValue(caller => {
 export function GameEnded() {
 	turnStateBlock = false
 	sleeper.FullReset()
+	targetBlock = undefined
+	ControllablesUnitsDraw.clear()
 }
 
 export function Update(): number {

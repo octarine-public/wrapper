@@ -400,7 +400,7 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	}
 	// puck | shift
 	if (part[0] === 7547411452476548145n) {
-		Particle.set(id, [part[0], ent.Name, part[2], position])
+		Particle.set(id, [part[0], ent, part[2], position])
 		return
 	}
 	// Items Scroll
@@ -543,14 +543,16 @@ export function ParticleDestroyed(id: number) {
 }
 
 export function EntityCreated(x: Entity) {
-	if (x instanceof Entity)
-		if (x.Name !== undefined)
-			if (x.Name.includes("npc_dota_pugna_nether_ward_") || x.Name.includes("npc_dota_templar_assassin_psionic_trap"))
-				OtherAbility.push(x)
 	if (x instanceof Hero)
 		Heroes.push(x)
 	if (x instanceof Unit)
 		Units.push(x)
+	if (x instanceof Entity) {
+		if (x.Name === undefined)
+			return
+		if (x.Name.includes("npc_dota_pugna_nether_ward_") || x.Name.includes("npc_dota_templar_assassin_psionic_trap"))
+			OtherAbility.push(x)
+	}
 }
 
 export function EntityDestroyed(x: Entity) {
@@ -558,7 +560,8 @@ export function EntityDestroyed(x: Entity) {
 		ArrayExtensions.arrayRemove(Heroes, x)
 	if (x instanceof Unit)
 		ArrayExtensions.arrayRemove(Units, x)
-	ArrayExtensions.arrayRemove(OtherAbility, x)
+	if (x instanceof Entity)
+		ArrayExtensions.arrayRemove(OtherAbility, x)
 }
 
 export function Init() {
