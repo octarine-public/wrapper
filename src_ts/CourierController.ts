@@ -64,7 +64,7 @@ function MoveCourier() {
 }
 
 function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: Vector3) {
-	if (!enemy.IsEnemy() || !enemy.IsVisible || Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO) {
+	if (!enemy.IsEnemy() || !enemy.IsVisible) {
 		return false
 	}
 	if (enemy.IsInRange(Position, (enemy.AttackRange + 450))) {
@@ -221,11 +221,12 @@ function Deliver(): boolean {
 }
 
 EventsSDK.on("Tick", () => {
-	if (!State.value
+	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO
+		|| !State.value
+		|| Sleep.Sleeping
 		|| Owner === undefined
 		|| allyCourier === undefined
 		|| !allyCourier.IsAlive
-		|| Sleep.Sleeping
 	) {
 		return
 	}

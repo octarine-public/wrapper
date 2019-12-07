@@ -482,7 +482,6 @@ EventsSDK.on("Tick", () => {
 		})
 	})
 })
-
 EventsSDK.on("GameEnded", () => {
 	line_table = []
 	abils_list = []

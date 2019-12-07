@@ -29,7 +29,7 @@ function RenderIcon(position_unit: Vector2, path_icon: string, ShrineStateIconCo
 
 function SelectedGlyph(unit: Unit) {
 	let buff = unit.GetBuffByName("modifier_fountain_glyph")
-	if (buff === undefined)
+	if (buff === undefined || LocalPlayer === undefined || LocalPlayer.Hero === undefined)
 		return
 	let time = buff.RemainingTime
 	if (!unit.IsInRange(LocalPlayer.Hero, GlyphInRange.value) || time <= 0)
@@ -37,8 +37,7 @@ function SelectedGlyph(unit: Unit) {
 	let position_unit = RendererSDK.WorldToScreen(unit.Position)
 	if (position_unit === undefined)
 		return
-
-	let pos_unit_text = unit.Name.includes("healers")
+	let pos_unit_text = unit.Name.includes("healer")
 		? position_unit.Clone().AddScalarY(25)
 		: position_unit
 	if (GlyphStateIcon.value)
@@ -64,8 +63,9 @@ function SelectedBuilding(x: Unit) {
 export function DrawGlyph() {
 	if (GlyphState.value) {
 		// ============================== Glyph ============================ //
-		// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
-		Units.filter(x => x.IsAlive).forEach(x => {
+		Units.forEach(x => {
+			if (x === undefined || !x.IsAlive)
+				return
 			switch (GlyphSwitcher.selected_id) {
 				case 0: return SelectedBuilding(x)
 				case 1: return x.IsLaneCreep && SelectedBuilding(x)

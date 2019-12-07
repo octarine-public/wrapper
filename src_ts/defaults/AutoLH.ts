@@ -97,7 +97,6 @@ EventsSDK.on("Draw", () => {
 		ent.m_pBaseEntity.m_Glow.m_iGlowType = 0
 	})
 	glow_ents.filter(ent => ent.IsValid).forEach(ent => {
-		console.log("glow_ents", ent.Name)
 		let position_unit = RendererSDK.WorldToScreen(ent.Position.AddScalarZ(ent.HealthBarOffset))
 		if (position_unit !== undefined)
 			RenderIcon(position_unit, `panorama/images/icon_star_png.vtex_c`)
