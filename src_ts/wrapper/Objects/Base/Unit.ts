@@ -504,7 +504,7 @@ export default class Unit extends Entity {
 	}
 	public get Name(): string {
 		if (this.UnitName_ === undefined)
-			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName // GetString("EntityNames", this.m_pBaseEntity.m_iUnitNameIndex)
+			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
 		return this.UnitName_ || super.Name
 	}
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
