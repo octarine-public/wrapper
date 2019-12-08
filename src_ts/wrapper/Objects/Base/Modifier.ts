@@ -5,6 +5,7 @@ import Unit from "./Unit"
 import Game from "../GameResources/GameRules"
 import { IModifier } from "../../Managers/Events"
 import * as StringTables from "../../Managers/StringTables"
+import Vector3 from "../../Base/Vector3"
 
 // AllowIllusionDuplicate
 // CanParentBeAutoAttacked
@@ -123,6 +124,18 @@ export default class Modifier {
 		if (this.Name_ === undefined)
 			this.Name_ = StringTables.GetString("ModifierNames", this.m_pBuff.modifier_class)
 		return this.Name_
+	}
+	public get vStart(): Vector3 {
+		let vec = this.m_pBuff.v_start
+		if (vec === undefined)
+			return undefined
+		return new Vector3(vec.x, vec.y, vec.z)
+	}
+	public get vEnd(): Vector3 {
+		let vec = this.m_pBuff.v_end
+		if (vec === undefined)
+			return undefined
+		return new Vector3(vec.x, vec.y, vec.z)
 	}
 
 	public toString(): string {
