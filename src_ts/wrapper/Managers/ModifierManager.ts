@@ -1,78 +1,102 @@
-import { arrayRemove } from "../Utils/ArrayExtensions"
-
-import Events from "./Events"
+import Events, { IModifier } from "./Events"
 
 import Modifier from "../Objects/Base/Modifier"
 import Unit from "../Objects/Base/Unit"
-import { default as EntityManager } from "./EntityManager"
 import EventsSDK from "./EventsSDK"
+import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
+import Game from "../Objects/GameResources/GameRules"
+import * as ArrayExtensions from "../Utils/ArrayExtensions"
+import EntityManager from "./EntityManager"
 
-let ModifierCache = new Map<CDOTA_Buff, C_BaseEntity>()
-let AllModifiers = new Map<CDOTA_Buff, Modifier>()
+let ActiveModifiersRaw = new Map<number, IModifier>(),
+	ActiveModifiers = new Map<number, Modifier>()
 
-function AddBuff(buffNative: CDOTA_Buff, unit: Unit) {
-	const buff = new Modifier(buffNative, unit)
-	AllModifiers.set(buffNative, buff)
-	unit.ModifiersBook.Buffs.push(buff)
-	changeFieldsByEvents(unit)
-	EventsSDK.emit("BuffAdded", false, unit, buff)
+function AddModifier(parent: Unit, mod: Modifier) {
+	parent.Buffs.push(mod)
+	changeFieldsByEvents(parent)
+	EventsSDK.emit("ModifierCreated", false, mod)
 }
 
+function EmitModifierCreated(mod: IModifier) {
+	if (mod.index === undefined || mod.serial_num === undefined || mod.parent === undefined)
+		return
+	if (mod.creation_time === undefined)
+		mod.creation_time = Game.RawGameTime
+	let mod_ = new Modifier(mod)
+	if (mod_.Duration !== 0 && mod_.DieTime < Game.RawGameTime)
+		return
+	ActiveModifiers.set(mod_.SerialNumber, mod_)
+	//console.log("Created " + mod_.SerialNumber)
+	let parent = mod_.Parent
+	if (parent !== undefined)
+		AddModifier(parent, mod_)
+	EventsSDK.emit("ModifierCreatedRaw", false, mod_)
+}
 EventsSDK.on("EntityCreated", ent => {
 	if (!(ent instanceof Unit))
 		return
-	let native_ent = ent.m_pBaseEntity
-	for (let [buff, ent_] of ModifierCache.entries()) {
-		if (ent_ !== native_ent)
-			continue
-		ModifierCache.delete(buff)
-		AddBuff(buff, ent)
+	// loop-optimizer: KEEP
+	ActiveModifiers.forEach(mod => {
+		if (mod.Parent !== ent)
+			return
+		AddModifier(ent, mod)
+	})
+})
+function EmitModifierRemoved(mod: Modifier) {
+	ActiveModifiers.delete(mod.SerialNumber)
+	let parent = mod.Parent
+	if (parent !== undefined) {
+		ArrayExtensions.arrayRemove(parent.Buffs, mod)
+		changeFieldsByEvents(parent)
+		EventsSDK.emit("ModifierRemoved", false, mod)
 	}
-})
-
-EventsSDK.on("EntityDestroyed", ent => {
-	if (!(ent instanceof Unit))
-		return
-	let native_ent = ent.m_pBaseEntity
-	for (let [buff, ent_] of ModifierCache.entries())
-		if (ent_ === native_ent)
-			ModifierCache.delete(buff)
-})
+	EventsSDK.emit("ModifierRemovedRaw", false, mod)
+}
 Events.on("EntityDestroyed", ent => {
-	for (let [buff, ent_] of ModifierCache.entries())
-		if (ent_ === ent)
-			ModifierCache.delete(buff)
+	// loop-optimizer: KEEP
+	ActiveModifiers.forEach(mod => {
+		if (mod.Parent?.m_pBaseEntity !== ent)
+			return
+		EmitModifierRemoved(mod)
+	})
 })
-
-global.DebugModifierLeak = () => console.log(ModifierCache.size)
-
-Events.on("BuffAdded", (ent, buffNative) => {
-	const unit = EntityManager.GetEntityByNative(ent) as Unit
-	if (unit === undefined) {
-		ModifierCache.set(buffNative, ent)
-		return
-	}
-	AddBuff(buffNative, unit)
+function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
+	old_mod.m_pBuff = mod
+	if (old_mod.Parent !== undefined)
+		EventsSDK.emit("ModifierChanged", false, old_mod)
+	EventsSDK.emit("ModifierChangedRaw", false, old_mod)
+}
+Events.on("ActiveModifiersChanged", map => {
+	// loop-optimizer: KEEP
+	map.forEach((mod, index) => {
+		let replaced = ActiveModifiersRaw.get(index)
+		if (replaced?.serial_num !== undefined && replaced.serial_num !== mod.serial_num) {
+			let replaced_mod = ActiveModifiers.get(replaced.serial_num)
+			if (replaced_mod !== undefined)
+				EmitModifierRemoved(replaced_mod)
+		}
+		ActiveModifiersRaw.set(index, mod)
+		let old_mod = ActiveModifiers.get(mod.serial_num)
+		if (mod.entry_type === DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE) {
+			if (old_mod === undefined)
+				EmitModifierCreated(mod)
+			else
+				EmitModifierChanged(old_mod, mod)
+		} else if (old_mod !== undefined)
+			EmitModifierRemoved(old_mod)
+	})
 })
-
-Events.on("BuffRemoved", (npc, buffNative) => {
-	let buff = AllModifiers.get(buffNative)
-	if (buff === undefined) {
-		ModifierCache.delete(buffNative)
-		return
-	}
-
-	AllModifiers.delete(buffNative)
-
-	const unit = EntityManager.GetEntityByNative(npc) as Unit
-
-	if (unit === undefined)
-		throw "onBuffRemoved. entity undefined. " + npc + " " + buffNative
-
-	buff.IsValid = false
-	arrayRemove(unit.ModifiersBook.Buffs, buff)
-	changeFieldsByEvents(unit)
-	EventsSDK.emit("BuffRemoved", false, unit, buff)
+Events.on("RemoveAllStringTables", () => {
+	// loop-optimizer: KEEP
+	ActiveModifiers.forEach(mod => EmitModifierRemoved(mod))
+	ActiveModifiers.clear()
+})
+EventsSDK.on("Tick", () => {
+	// loop-optimizer: KEEP
+	ActiveModifiers.forEach(mod => {
+		if (mod.Duration !== 0 && mod.DieTime < Game.RawGameTime) // TODO: should it be <=?
+			EmitModifierRemoved(mod)
+	})
 })
 
 function changeFieldsByEvents(unit: Unit) {
@@ -97,4 +121,21 @@ function changeFieldsByEvents(unit: Unit) {
 			EventsSDK.emit("HasScepterChanged", false, unit)
 		}
 	}
+}
+
+global.DebugBuffsParents = () => {
+	// loop-optimizer: KEEP
+	ActiveModifiers.forEach(mod => {
+		let parent = EntityManager.EntityByHandle(mod.m_pBuff.parent)
+		if (parent instanceof Unit)
+			return
+		console.log(parent?.m_pBaseEntity?.constructor?.name, mod.m_pBuff.parent, mod.Name, mod.ElapsedTime, mod.m_pBuff.entry_type)
+	})
+}
+
+global.DebugBuffs = () => {
+	// loop-optimizer: KEEP
+	ActiveModifiers.forEach(mod => {
+		console.log(mod.Parent?.m_pBaseEntity?.constructor?.name, mod.Name, mod.ElapsedTime, mod.Duration, mod.m_pBuff.entry_type)
+	})
 }

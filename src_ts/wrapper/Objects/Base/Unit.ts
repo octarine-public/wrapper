@@ -4,7 +4,7 @@ import Vector3 from "../../Base/Vector3"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils";
 
-import { Game, LocalPlayer } from "../../Managers/EntityManager"
+import { LocalPlayer } from "../../Managers/EntityManager"
 
 import Entity, { rotation_speed } from "./Entity"
 import Player from "./Player"
@@ -26,6 +26,7 @@ import TreeTemp from "./TreeTemp"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t";
 import { ArmorType } from "../../Enums/ArmorType";
 import { AttackDamageType } from "../../Enums/AttackDamageType";
+import { GetString } from "../../Managers/StringTables";
 
 
 const attackAnimationPoint = new Map<string, number>();
@@ -503,7 +504,7 @@ export default class Unit extends Entity {
 	}
 	public get Name(): string {
 		if (this.UnitName_ === undefined)
-			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
+			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName // GetString("EntityNames", this.m_pBaseEntity.m_iUnitNameIndex)
 		return this.UnitName_ || super.Name
 	}
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
@@ -621,7 +622,7 @@ export default class Unit extends Entity {
 	public AbsorbedDamage(dmg: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
 		this.Buffs.forEach(buff => {
 			let abil = buff.Ability
-			if (abil === undefined)
+			if (!(abil instanceof Ability))
 				return
 			if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
 				switch (buff.Name) {
@@ -815,7 +816,7 @@ export default class Unit extends Entity {
 			let buff = source.GetBuffByName("modifier_storm_spirit_overload_passive")
 			if (buff !== undefined) {
 				let abil = buff.Ability
-				if (abil !== undefined)
+				if (abil instanceof Ability)
 					damage += abil.AbilityDamage
 			}
 		}
@@ -846,7 +847,7 @@ export default class Unit extends Entity {
 			let buff = source.GetBuffByName("modifier_bloodseeker_bloodrage")
 			if (buff !== undefined) {
 				let abil = buff.Ability
-				if (abil !== undefined)
+				if (abil instanceof Ability)
 					mult *= 1 + abil.GetSpecialValue("damage_increase_pct") / 100
 			}
 		}
@@ -854,7 +855,7 @@ export default class Unit extends Entity {
 			let buff = this.GetBuffByName("modifier_bloodseeker_bloodrage")
 			if (buff !== undefined) {
 				let abil = buff.Ability
-				if (abil !== undefined)
+				if (abil instanceof Ability)
 					mult *= 1 + abil.GetSpecialValue("damage_increase_pct") / 100
 			}
 		}
@@ -891,7 +892,7 @@ export default class Unit extends Entity {
 			sphere.Cooldown - time <= 0
 		) || (
 				this.GetBuffByName("modifier_item_sphere_target") !== undefined
-				&& this.GetBuffByName("modifier_item_sphere_target").DieTime - Game.RawGameTime - time <= 0
+				&& this.GetBuffByName("modifier_item_sphere_target").RemainingTime - time <= 0
 			)
 	}
 
@@ -974,11 +975,6 @@ export default class Unit extends Entity {
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {
 			return this.CastTarget(ability, target as Entity, showEffects)
 		}
-	}
-
-	public OnCreated() {
-		super.OnCreated()
-		this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
 	}
 
 	/* ORDERS */

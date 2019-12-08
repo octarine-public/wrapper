@@ -1,3 +1,5 @@
+import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
+
 type Listener = (...args: any) => false | any
 export class EventEmitter {
 	private readonly events = new Map<string, Listener[]>()
@@ -64,6 +66,7 @@ export class EventEmitter {
 }
 
 export interface IServerInfo {
+	type_name: "CSVCMsg_ServerInfo"
 	protocol?: number
 	server_count?: number
 	is_dedicated?: boolean
@@ -80,6 +83,7 @@ export interface IServerInfo {
 	host_name?: string
 	addon_name?: string
 	game_session_config?: {
+		type_name: "CSVCMsg_GameSessionConfiguration"
 		is_loadsavegame?: boolean
 		is_background_map?: boolean
 		is_headless?: boolean
@@ -100,6 +104,53 @@ export interface IServerInfo {
 	}
 	game_session_manifest?: string
 }
+export interface IModifier {
+	type_name: "CDOTAModifierBuffTableEntry"
+	entry_type?: DOTA_MODIFIER_ENTRY_TYPE
+	parent?: number
+	index?: number
+	serial_num?: number
+	modifier_class?: number
+	ability_level?: number
+	stack_count?: number
+	creation_time?: number
+	duration?: number
+	caster?: number
+	ability?: number
+	armor?: number
+	fade_time?: number
+	subtle?: boolean
+	channel_time?: number
+	v_start?: {
+		type_name: "CMsgVector"
+		x: number
+		y: number
+		z: number
+	}
+	v_end?: {
+		type_name: "CMsgVector"
+		x: number
+		y: number
+		z: number
+	}
+	portal_loop_appear?: string
+	portal_loop_disappear?: string
+	hero_loop_appear?: string
+	hero_loop_disappear?: string
+	movement_speed?: number
+	aura?: boolean
+	activity?: number
+	damage?: number
+	range?: number
+	dd_modifier_index?: number
+	dd_ability_id?: number
+	illusion_label?: string
+	active?: boolean
+	player_ids?: string
+	lua_name?: string
+	attack_speed?: number
+	aura_owner?: number
+}
 declare interface Events extends EventEmitter {
 	on(name: "UIStateChanged", callback: (new_state: number) => void): EventEmitter
 	/**
@@ -107,6 +158,10 @@ declare interface Events extends EventEmitter {
 	 */
 	on(name: "EntityCreated", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
 	on(name: "EntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
+	/**
+	 * That's analog of https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms633573(v%3Dvs.85 (w/o hwnd)
+	 * message_type: https://www.autoitscript.com/autoit3/docs/appendix/WinMsgCodes.htm
+	 */
 	on(name: "WndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
 	on(name: "Tick", callback: () => void): EventEmitter
 	on(name: "Update", callback: (cmd: CUserCmd) => void): EventEmitter
@@ -173,9 +228,6 @@ declare interface Events extends EventEmitter {
 		npc: C_DOTA_BaseNPC,
 		snap: boolean
 	) => void): EventEmitter
-	on(name: "BuffAdded", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): EventEmitter
-	on(name: "BuffRemoved", listener: (npc: C_DOTA_BaseNPC, buff: CDOTA_Buff) => void): EventEmitter
-	on(name: "BuffStackCountChanged", listener: (buff: CDOTA_Buff) => void): EventEmitter
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "UnitSpeech", listener: (
@@ -265,6 +317,10 @@ declare interface Events extends EventEmitter {
 	) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (id: number, reason: number, uuid: bigint, obj: any) => void): EventEmitter
 	on(name: "ServerInfo", listener: (info: IServerInfo) => void): EventEmitter
+	on(name: "RemoveAllStringTables", listener: () => void): EventEmitter
+	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, string]>) => void): EventEmitter
+	// it's named ActiveModifiersChanged not because it's active modifiers, but because of it's managed by stringtable ActiveModifiers
+	on(name: "ActiveModifiersChanged", listener: (update: Map<number, IModifier>) => void): EventEmitter
 }
 const Events: Events = new EventEmitter()
 global.Events = Events

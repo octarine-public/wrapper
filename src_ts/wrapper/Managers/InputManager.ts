@@ -596,9 +596,7 @@ interface InputEventSDK extends EventEmitter {
 	 * @param callback returns keyMask. You can use HasMask from Utils
 	 */
 	on(name: "KeyUp", callback: (keyMask: VKeys) => boolean | any): EventEmitter
-	/**
-	 * For get mouse position - you can use RendererSDK
-	 */
+	/** @deprecated */
 	on(name: "MouseMove", callback: (position: Vector2) => boolean | any): EventEmitter
 	on(name: "MouseKeyDown", callback: (keyMask: VMouseKeys) => boolean | any): EventEmitter
 	on(name: "MouseKeyUp", callback: (keyMask: VMouseKeys) => boolean | any): EventEmitter

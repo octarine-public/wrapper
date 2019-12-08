@@ -8,7 +8,7 @@
 		"noUnusedLocals": true
 	},
 	"include": [
-		"d.ts/**/*.d.ts",
+		"*.d.ts",
 		"src_ts/**/*.ts"
 	],
 	"compileOnSave": true

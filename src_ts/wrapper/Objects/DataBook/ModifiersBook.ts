@@ -2,16 +2,12 @@ import Modifier from "../Base/Modifier"
 import Unit from "../Base/Unit"
 
 export default class ModifiersBook {
-	private m_Buffs: Modifier[] = []
+	public readonly Buffs: Modifier[] = []
 
-	constructor(public readonly Owner: Unit) {}
-
-	get Buffs(): Modifier[] {
-		return this.m_Buffs // .filter(buff => !buff.m_pBuff.m_bMarkedForDeletion);
-	}
+	constructor(public readonly Owner: Unit) { }
 
 	public GetBuffByID(id: number): Modifier {
-		return this.m_Buffs.find(buff => buff.Index === id)
+		return this.Buffs.find(buff => buff.Index === id)
 	}
 	public GetBuffByName(name: string): Modifier {
 		return this.Buffs.find(buff => buff.Name === name)

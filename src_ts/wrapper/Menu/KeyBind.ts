@@ -2,12 +2,12 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import { ArrayExtensions } from "../Imports"
-import { Game } from "../Managers/EntityManager"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
-import Events from "../Managers/Events"
 import { FontFlags_t } from "../Enums/FontFlags_t"
+import Game from "../Objects/GameResources/GameRules"
+import { InputEventSDK } from "../Managers/InputManager"
 
 export default class KeyBind extends Base {
 	public static readonly KeyNames = [
@@ -278,12 +278,8 @@ export default class KeyBind extends Base {
 }
 
 let IsPressing = new Map<number, boolean>()
-Events.on("WndProc", (msg, wParam) => {
-	if (!(msg === 0x101 || msg === 0x100))
-		return true
-
-	let key = parseInt(wParam as any),
-		changing_now = KeyBind.changing_now,
+function KeyHandler(key: number, pressed: boolean): boolean {
+	let changing_now = KeyBind.changing_now,
 		ret = true
 	if (changing_now !== undefined) {
 		changing_now.assigned_key = key !== 0x1B ? key : -1 // VK_ESCAPE === 0x1B
@@ -297,20 +293,21 @@ Events.on("WndProc", (msg, wParam) => {
 	if (onExecute === undefined)
 		return true
 
-	let isPressed = (msg === 0x100) // WM_KEYDOWN
-	if (IsPressing.get(key) === isPressed)
+	if (IsPressing.get(key) === pressed)
 		return true
 
-	IsPressing.set(key, isPressed)
+	IsPressing.set(key, pressed)
 
 	onExecute.forEach(keybind => {
 		if (!Game.IsInGame && !keybind.activates_in_menu)
 			return
 		if (!Menu.trigger_on_chat && Game.IsInputCaptured && !keybind.trigger_on_chat)
 			return
-		keybind.is_pressed = isPressed
+		keybind.is_pressed = pressed
 		keybind.OnValueChangedCBs.forEach(cb => cb(keybind))
 	})
 
 	return ret
-})
+}
+InputEventSDK.on("KeyDown", key => KeyHandler(key, true))
+InputEventSDK.on("KeyUp", key => KeyHandler(key, false))

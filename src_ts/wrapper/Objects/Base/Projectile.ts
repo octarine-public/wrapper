@@ -1,8 +1,9 @@
 import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import EntityManager, { Game } from "../../Managers/EntityManager"
+import EntityManager from "../../Managers/EntityManager"
 import Entity from "./Entity"
+import Game from "../GameResources/GameRules"
 
 export class Projectile {
 	public IsValid = true

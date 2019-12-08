@@ -40,12 +40,6 @@ interface EventsSDK extends EventEmitter {
 	on(name: "EntityCreated", callback: (ent: Entity) => void): EventEmitter
 	on(name: "EntityDestroyed", callback: (ent: Entity) => void): EventEmitter
 	/**
-	 * Analog (w/o hwnd) - https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms633573(v%3Dvs.85)
-	 *
-	 * messageType: https://www.autoitscript.com/autoit3/docs/appendix/WinMsgCodes.htm
-	 */
-	on(name: "WndProc", callback: (messageType: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
-	/**
 	 * Every ~33ms. Emitted after LocalPlayer has been created
 	 */
 	on(name: "Tick", callback: () => void): EventEmitter
@@ -87,12 +81,6 @@ interface EventsSDK extends EventEmitter {
 		npc: Unit,
 		snap: boolean,
 	) => void): EventEmitter
-	/**
-	 * Also, this event emitted about ALL buffs(modifiers) that have already been created (and valids) before reloading scripts
-	 */
-	on(name: "BuffAdded", listener: (npc: Unit, buff: Modifier) => void): EventEmitter
-	on(name: "BuffRemoved", listener: (npc: Unit, buff: Modifier) => void): EventEmitter
-	on(name: "BuffStackCountChanged", listener: (buff: Modifier) => void): EventEmitter
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "UnitSpeech", listener: (
@@ -120,13 +108,17 @@ interface EventsSDK extends EventEmitter {
 	// on(name: "NetworkFieldChanged", listener: (args: NetworkFieldChanged) => void): EventEmitter
 	on(name: "NetworkActivityChanged", listener: (npc: Unit) => void): EventEmitter
 	on(name: "ServerInfo", listener: (info: IServerInfo) => void): EventEmitter
+	on(name: "ModifierCreatedRaw", listener: (mod: Modifier) => void): EventEmitter
+	on(name: "ModifierChangedRaw", listener: (mod: Modifier) => void): EventEmitter
+	on(name: "ModifierRemovedRaw", listener: (mod: Modifier) => void): EventEmitter
+	on(name: "ModifierCreated", listener: (mod: Modifier) => void): EventEmitter
+	on(name: "ModifierChanged", listener: (mod: Modifier) => void): EventEmitter
+	on(name: "ModifierRemoved", listener: (mod: Modifier) => void): EventEmitter
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()
 global.EventsSDK = EventsSDK
 export default EventsSDK
-
-Events.on("WndProc", (...args) => EventsSDK.emit("WndProc", true, ...args))
 
 Events.on("Update", cmd => {
 	let cmd_ = new UserCmd(cmd)

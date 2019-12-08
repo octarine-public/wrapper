@@ -1,5 +1,4 @@
-// This is temporary solution of updateManager.
-import { Game } from "../Managers/EntityManager"
+import Game from "../Objects/GameResources/GameRules"
 
 class SleeperBase {
 	protected SleepDB = new Map<any, number>()

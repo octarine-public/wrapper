@@ -4,6 +4,7 @@ import Base from "./Base"
 import Header from "./Header"
 import Node from "./Node"
 import Events from "../Managers/Events"
+import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
 
 let Menu = new (class Menu {
 	public entries: Node[] = []
@@ -124,45 +125,21 @@ let Menu = new (class Menu {
 	}
 })()
 
-// Menu.rootNodes.push(new Node("test"))
-// Menu.rootNodes[0].entries.push(new Node("lol"));
-// (Menu.rootNodes[0].entries[0] as Node).entries.push(new Node("lol"));
-// ((Menu.rootNodes[0].entries[0] as Node).entries[0] as Node).entries.push(new Toggle("test"))
-// Menu.rootNodes.push(new Node("test2"));
-// (Menu.rootNodes[0].entries[0] as Node).entries.push(new Slider("Slider"));
-// (Menu.rootNodes[0].entries[0] as Node).entries.push(new Switcher("Switcher"));
-// Menu.rootNodes[1].entries.push(new Node("lol2"))
-// Menu.rootNodes[1].entries.push(new Node("lol3"));
-// Menu.rootNodes.push(new Node("test3"))
 Events.after("Draw", () => {
 	Menu.Render()
 	RendererSDK.EmitDraw()
 })
 
-function LParamToScreenCoords(lParam: bigint): Vector2 {
-	let buf = new ArrayBuffer(8)
-	let view = new DataView(buf)
-	view.setBigUint64(0, lParam, true)
-	return new Vector2(
-		view.getInt16(0, true),
-		view.getInt16(2, true),
-	)
-}
-
-let last_click_ret = true
-Events.on("WndProc", (msg_type, wParam, lParam) => {
-	switch (msg_type) {
-		case 0x201: // WM_LBUTTONDOWN
-			return last_click_ret = Menu.OnMouseLeftDown()
-		case 0x202: // WM_LBUTTONUP
-			return Menu.OnMouseLeftUp()
-		case 0x203: // WM_MBUTTONDBLCLK
-			return last_click_ret
-		case 0x200: // WM_MOUSEMOVE
-			return Menu.OnMousePositionChanged(LParamToScreenCoords(lParam))
-		default:
-			return true
-	}
+InputEventSDK.on("MouseKeyDown", key => {
+	if (key === VMouseKeys.MK_LBUTTON)
+		return Menu.OnMouseLeftDown()
+	return true
 })
+InputEventSDK.on("MouseKeyUp", key => {
+	if (key === VMouseKeys.MK_LBUTTON)
+		return Menu.OnMouseLeftUp()
+	return true
+})
+InputEventSDK.on("MouseMove", pos => Menu.OnMousePositionChanged(pos))
 
 export default global.Menu = Menu

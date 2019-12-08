@@ -94,9 +94,10 @@ let phaseSpells = [
 
 
 
-EventsSDK.on("BuffAdded", (ent, buff) => {
+EventsSDK.on("ModifierCreated", buff => {
 	if (!active.value)
 		return
+	let ent = buff.Parent
 	if (ent.Name === "npc_dota_thinker") {
 		if (!ent.IsEnemy())
 			return
@@ -175,7 +176,7 @@ EventsSDK.on("BuffAdded", (ent, buff) => {
 
 	}
 })
-EventsSDK.on("BuffRemoved", (ent, buff) => {
+EventsSDK.on("ModifierRemoved", buff => {
 	arTimers.delete(buff)
 	if (arHeroMods.has(buff)) {
 		let part = arHeroMods.get(buff)
@@ -296,11 +297,9 @@ EventsSDK.on("EntityCreated", ent => {
 
 		if (owner === undefined) {
 			let buff = (ent as Unit).Buffs[0];
-
-			if (buff === undefined || buff.Owner === undefined)
+			if (buff === undefined)
 				return;
-
-			owner = buff.Owner;
+			owner = buff.Parent;
 		}
 
 		if (owner === undefined || !owner.IsEnemy())

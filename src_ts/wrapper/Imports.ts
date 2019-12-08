@@ -34,12 +34,9 @@ export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
 
 export { default as ParticlesSDK } from "./Managers/Particles"
 export { default as Events, EventEmitter } from "./Managers/Events"
-export {
-	default as EntityManager,
-	LocalPlayer,
-	Game,
-	PlayerResource
-} from "./Managers/EntityManager"
+export { default as Game } from "./Objects/GameResources/GameRules"
+export { default as PlayerResource } from "./Objects/GameResources/PlayerResource"
+export { default as EntityManager, LocalPlayer } from "./Managers/EntityManager"
 export { default as EventsSDK } from "./Managers/EventsSDK"
 export {
 	default as Input,

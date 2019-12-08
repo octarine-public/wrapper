@@ -28,8 +28,6 @@ import EventsSDK from "./EventsSDK"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Roshan from "../Objects/Units/Roshan"
 
-export { PlayerResource, Game }
-
 let AllEntities: Entity[] = []
 let EntitiesIDs = new Map<number, C_BaseEntity>()
 let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
@@ -65,6 +63,14 @@ const EntityManager = new (class EntityManager {
 	}
 	public EntityByIndex(index: number): Entity {
 		return this.GetEntityByNative(EntitiesIDs.get(index))
+	}
+	public EntityByHandle(handle: number): Entity {
+		if (handle === undefined || handle === 0)
+			return undefined
+		let index = handle & 0x3FFF
+		if (index === 0x3FFF || index === 0)
+			return undefined
+		return this.EntityByIndex(index)
 	}
 	public IndexByNative(ent: C_BaseEntity): number {
 		for (let [index, ent_] of EntitiesIDs.entries())

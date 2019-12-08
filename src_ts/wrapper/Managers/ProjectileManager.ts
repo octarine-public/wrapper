@@ -4,11 +4,12 @@ import Entity from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import Unit from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
-import EntityManager, { Game } from "./EntityManager"
+import EntityManager from "./EntityManager"
 import Events from "./Events"
 import EventsSDK from "./EventsSDK"
 import Color from "../Base/Color"
 import RendererSDK from "../Native/RendererSDK"
+import Game from "../Objects/GameResources/GameRules"
 
 let ProjectileManager = new (class ProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []

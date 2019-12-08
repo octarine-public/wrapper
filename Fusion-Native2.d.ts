@@ -2029,10 +2029,6 @@ declare class CFootLockItem {
 }
 
 declare class CDOTA_Buff {
-	readonly m_bIsDebuff: boolean
-	readonly m_bIsHidden: boolean
-	readonly m_iszTextureName: string
-	
 	readonly m_name: string
 	readonly m_class: string
 	readonly m_szModifierAura: string

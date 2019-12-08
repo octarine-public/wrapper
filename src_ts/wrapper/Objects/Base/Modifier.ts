@@ -1,7 +1,10 @@
-import { default as EntityManager, Game } from "../../Managers/EntityManager"
+import EntityManager from "../../Managers/EntityManager"
 import Ability from "./Ability"
 import Entity from "./Entity"
 import Unit from "./Unit"
+import Game from "../GameResources/GameRules"
+import { IModifier } from "../../Managers/Events"
+import * as StringTables from "../../Managers/StringTables"
 
 // AllowIllusionDuplicate
 // CanParentBeAutoAttacked
@@ -40,80 +43,86 @@ const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scept
 
 export default class Modifier {
 	/* ================== Static ================== */
-
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => TRUESIGHT_MODIFIERS.some(nameBuff => nameBuff === buff.Name))
 	}
-
 	public static HasScepterBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => ScepterRegExp.test(buff.Name))
 	}
 
 	/* =================== Fields =================== */
 	public readonly Index: number
-	public IsValid: boolean = true
-
-	public readonly Name: string
-	public readonly Class: string
-	public readonly ModifierAura: string
-
-	public readonly Ability: Ability
-	public readonly Caster: Entity
-	public readonly Parent: Entity
-	public readonly Team: number
-	public readonly IsPurgable: boolean
+	public readonly SerialNumber: number
+	private Parent_: Unit
+	public IsValid = true
+	public readonly AbilityLevel: number
 	public readonly IsAura: boolean
-	public readonly AuraRadius: number
-	public readonly AuraSearchFlags: number
-	public readonly AuraSearchTeam: number
-	public readonly AuraSearchType: number
 	public readonly CreationTime: number
 
-	constructor(public readonly m_pBuff: CDOTA_Buff, public readonly Owner: Unit) {
-		this.Index = this.m_pBuff.m_iIndex
+	private Ability_: Ability
+	private Caster_: Entity
+	private AuraOwner_: Entity
+	private Name_: string
 
-		this.Name = this.m_pBuff.m_name || ""
-		this.Class = this.m_pBuff.m_class || ""
-		this.ModifierAura = this.m_pBuff.m_szModifierAura || ""
-
-		this.Ability = EntityManager.GetEntityByNative(this.m_pBuff.m_hAbility) as Ability
-		this.Caster = EntityManager.GetEntityByNative(this.m_pBuff.m_hCaster)
-		this.Parent = EntityManager.GetEntityByNative(this.m_pBuff.m_hParent)
-		this.Team = this.m_pBuff.m_iTeam
-		this.IsPurgable = this.m_pBuff.m_bPurgedDestroy
-		this.IsAura = this.m_pBuff.m_bIsAura
-		this.AuraRadius = this.m_pBuff.m_iAuraRadius
-		this.AuraSearchFlags = this.m_pBuff.m_iAuraSearchFlags
-		this.AuraSearchTeam = this.m_pBuff.m_iAuraSearchTeam
-		this.AuraSearchType = this.m_pBuff.m_iAuraSearchType
-		this.CreationTime = this.m_pBuff.m_flCreationTime
+	constructor(public m_pBuff: IModifier) {
+		this.Index = this.m_pBuff.index
+		this.SerialNumber = this.m_pBuff.serial_num
+		this.AbilityLevel = this.m_pBuff.ability_level
+		this.Caster_ = EntityManager.EntityByHandle(this.m_pBuff.caster)
+		this.IsAura = this.m_pBuff.aura
+		this.AuraOwner_ = EntityManager.EntityByHandle(this.m_pBuff.aura_owner)
+		this.CreationTime = this.m_pBuff.creation_time
 	}
 
-	get Attributes(): DOTAModifierAttribute_t {
-		return this.m_pBuff.m_iAttributes
+	public get Attributes(): DOTAModifierAttribute_t {
+		return DOTAModifierAttribute_t.MODIFIER_ATTRIBUTE_NONE
 	}
-	get DieTime(): number {
-		return this.m_pBuff.m_flDieTime
+	public get DieTime(): number {
+		return this.CreationTime + this.Duration
 	}
-	get Duration(): number {
-		return this.m_pBuff.m_flDuration
+	public get Duration(): number {
+		return this.m_pBuff.duration ?? 0
 	}
-	get ElapsedTime(): number {
-		return Math.max(this.CreationTime - Game.RawGameTime, 0)
+	public get ElapsedTime(): number {
+		return Math.max(Game.RawGameTime - this.CreationTime, 0)
 	}
-	get LastAppliedTime(): number {
-		return this.m_pBuff.m_flLastAppliedTime
+	public get Parent(): Unit {
+		if (this.Parent_ === undefined) {
+			let ent = EntityManager.EntityByHandle(this.m_pBuff.parent)
+			if (ent !== undefined) {
+				if (ent instanceof Unit)
+					this.Parent_ = ent
+				/*else
+					console.log(ent.m_pBaseEntity.constructor.name, this.m_pBuff.parent, this.Name)*/
+			}
+		}
+		return this.Parent_
 	}
-
-	/*get Particles() {
-		return this.m_pBuff.m_iParticles
-	}*/
-
-	get RemainingTime(): number {
+	public get Ability(): Ability {
+		if (this.Ability_ === undefined)
+			this.Ability_ = EntityManager.EntityByHandle(this.m_pBuff.ability) as Ability
+		return this.Ability_
+	}
+	public get Caster(): Entity {
+		if (this.Caster_ === undefined)
+			this.Caster_ = EntityManager.EntityByHandle(this.m_pBuff.caster)
+		return this.Caster_
+	}
+	public get AuraOwner(): Entity {
+		if (this.AuraOwner_ === undefined)
+			this.AuraOwner_ = EntityManager.EntityByHandle(this.m_pBuff.aura_owner)
+		return this.AuraOwner_
+	}
+	public get RemainingTime(): number {
 		return Math.max(this.DieTime - Game.RawGameTime, 0)
 	}
-	get StackCount(): number {
-		return this.m_pBuff.m_iStackCount
+	public get StackCount(): number {
+		return this.m_pBuff.stack_count
+	}
+	public get Name(): string {
+		if (this.Name_ === undefined)
+			this.Name_ = StringTables.GetString("ModifierNames", this.m_pBuff.modifier_class)
+		return this.Name_
 	}
 
 	public toString(): string {
