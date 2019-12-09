@@ -26,7 +26,6 @@ import TreeTemp from "./TreeTemp"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t";
 import { ArmorType } from "../../Enums/ArmorType";
 import { AttackDamageType } from "../../Enums/AttackDamageType";
-import { GetString } from "../../Managers/StringTables";
 
 
 const attackAnimationPoint = new Map<string, number>();
