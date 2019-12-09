@@ -15,7 +15,7 @@ class CourierData {
 		return (((Game.Ping / 2) + 30) + 250)
 	}
 
-	public IsValidCourier = (cour: Courier) => cour !== undefined || !cour.IsControllable || !cour.IsAlive
+	public IsValidCourier = (cour: Courier) => cour !== undefined && cour.IsControllable && cour.IsAlive
 
 	public CastCourAbility = (num: number, cour: Courier) => cour.IsControllable && cour.AbilitiesBook.GetSpell(num).UseAbility()
 
