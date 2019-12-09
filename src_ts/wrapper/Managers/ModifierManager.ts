@@ -91,13 +91,13 @@ Events.on("RemoveAllStringTables", () => {
 	ActiveModifiers.forEach(mod => EmitModifierRemoved(mod))
 	ActiveModifiers.clear()
 })
-EventsSDK.on("Tick", () => {
+/*EventsSDK.on("Tick", () => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
 		if (mod.Duration !== 0 && mod.DieTime < Game.RawGameTime) // TODO: should it be <=?
 			EmitModifierRemoved(mod)
 	})
-})
+})*/
 
 function changeFieldsByEvents(unit: Unit) {
 	const buffs = unit.ModifiersBook.Buffs
