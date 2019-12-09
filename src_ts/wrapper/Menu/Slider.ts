@@ -15,7 +15,6 @@ export default class Slider extends Base {
 	protected readonly slider_color = new Color(64, 128, 255)
 	protected readonly slider_filler_color = new Color(14, 99, 152)
 	protected readonly value_text_offset = new Vector2(10, 10)
-	protected readonly MousePosition = new Vector2()
 
 	constructor(parent: IMenu, name: string, default_value = 0, min = 0, max = 100, float?: boolean, tooltip?: string) {
 		super(parent, name)
@@ -38,6 +37,8 @@ export default class Slider extends Base {
 
 	public Render(): void {
 		super.Render()
+		if (this.is_mouse_down)
+			this.OnValueChanged()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
 		let node_position = this.NodeRect.pos1,
 			total = this.TotalSize
@@ -53,27 +54,20 @@ export default class Slider extends Base {
 	}
 	public OnValueChanged(): void {
 		let off = Math.max(this.NodeRect.GetOffset(this.MousePosition).x, 0)
-		let num = Math.min(this.max, this.min + (off / (this.TotalSize.x - this.border_size.x * 2)) * (this.max - this.min))
-		this.value = this.float ? Number(num.toFixed(2)) : Math.round(num)
-		this.OnValueChangedCBs.forEach(f => f(this))
+		let old_value = this.value
+		this.value = Math.floor(Math.min(this.max, this.min + (off / (this.TotalSize.x - this.border_size.x * 2)) * (this.max - this.min)))
+		if (this.value !== old_value)
+			this.OnValueChangedCBs.forEach(f => f(this))
 	}
 
 	public OnMouseLeftDown(): boolean {
 		if (!this.NodeRect.Contains(this.MousePosition))
 			return true
 		this.is_mouse_down = true
-		this.OnValueChanged()
 		return false
 	}
 	public OnMouseLeftUp(): boolean {
 		this.is_mouse_down = false
 		return false
-	}
-	public OnMousePositionChanged(MousePosition: Vector2): boolean {
-		super.OnMousePositionChanged(MousePosition)
-		let node_rect = this.NodeRect
-		if (this.is_mouse_down)
-			this.OnValueChanged()
-		return !node_rect.Contains(this.MousePosition) && !this.is_mouse_down
 	}
 }

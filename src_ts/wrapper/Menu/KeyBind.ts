@@ -191,7 +191,6 @@ export default class KeyBind extends Base {
 	protected readonly keybind_size = new Vector2(40, 20)
 	protected readonly keybind_offset = new Vector2(3, 8)
 	protected readonly keybind_color = new Color(14, 99, 152)
-	protected readonly MousePosition = new Vector2()
 	protected readonly execute_on_add = false
 
 	constructor(parent: IMenu, name: string, default_key = "None", tooltip?: string) {

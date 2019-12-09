@@ -24,7 +24,6 @@ export default class Node extends Base {
 	protected readonly node_arrow_color = new Color(68, 68, 68)
 	protected readonly node_selected_arrow_color = new Color(0x40, 0x80, 0xff)
 	protected active_element: Base
-	protected readonly MousePosition = new Vector2()
 
 	constructor(parent: IMenu, name: string, tooltip?: string) {
 		super(parent, name)
@@ -52,6 +51,7 @@ export default class Node extends Base {
 
 	public Render(): void {
 		super.Render()
+		this.is_hovered = this.Rect.Contains(this.MousePosition)
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.is_open ? this.node_selected_color : this.is_hovered ? this.node_hovered_color : this.background_color)
 		RendererSDK.Text(this.name, this.Position.Add(this.border_size).AddForThis(this.text_offset), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
 		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
@@ -87,18 +87,6 @@ export default class Node extends Base {
 		this.active_element = undefined
 		Menu.UpdateConfig()
 		return ret
-	}
-	public OnMousePositionChanged(MousePosition: Vector2): boolean {
-		this.is_hovered = this.Rect.Contains(this.MousePosition)
-		super.OnMousePositionChanged(MousePosition)
-		if (this.active_element !== undefined)
-			return this.active_element.OnMousePositionChanged(MousePosition)
-		if (!this.is_open)
-			return !this.is_hovered
-		let entry_contains = false
-		// loop-optimizer: KEEP
-		this.entries.forEach(entry => entry_contains = !entry.OnMousePositionChanged(MousePosition) || entry_contains)
-		return !entry_contains && !this.is_hovered
 	}
 	public UpdateEntriesPositions(): void {
 		let max_width = this.entries.reduce((prev, entry) => Math.max(prev, entry.TotalSize_.x), 0)

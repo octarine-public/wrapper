@@ -13,7 +13,6 @@ export default class Toggle extends Base {
 	protected readonly toggle_activated_offset = new Vector2(2, 2)
 	protected readonly toggle_color = new Color(36, 40, 50)
 	protected readonly toggle_activated_color = new Color(14, 99, 152)
-	protected readonly MousePosition = new Vector2()
 
 	constructor(parent: IMenu, name: string, default_value: boolean, tooltip?: string) {
 		super(parent, name)

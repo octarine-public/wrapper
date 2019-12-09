@@ -3,8 +3,6 @@ import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import Events, { EventEmitter } from "./Events"
 
-const CursorOnScreen: Vector2 = new Vector2()
-
 const KeysDown = new Map<VKeys, boolean>()
 const MouseDown = new Map<VMouseKeys, boolean>()
 
@@ -26,7 +24,7 @@ class Input {
 		this.CursorOnWorld_.CopyFrom(vec)
 	}
 	get CursorOnScreen(): Vector2 {
-		return CursorOnScreen.Clone()
+		return new Vector2(CursorPosition[0], CursorPosition[1])
 	}
 	public IsKeyDown(key: VKeys): boolean {
 		return KeysDown.get(key) === true
@@ -36,30 +34,23 @@ class Input {
 	}
 }
 
-Events.on("WndProc", (msg, wParam, lParam) => {
-	if (wParam === undefined || lParam === undefined)
-		return true
-
+Events.on("WndProc", (msg, wParam) => {
 	let mKey: VMouseKeys = 0
 	switch (msg) {
 		case InputMessage.WM_LBUTTONUP:
-		case InputMessage.WM_LBUTTONDOWN:
-		case InputMessage.WM_LBUTTONDBLCLK:
+		case InputMessage.WM_LBUTTONDOWN: case InputMessage.WM_LBUTTONDBLCLK:
 			mKey = VMouseKeys.MK_LBUTTON
 			break
 		case InputMessage.WM_RBUTTONUP:
-		case InputMessage.WM_RBUTTONDOWN:
-		case InputMessage.WM_RBUTTONDBLCLK:
+		case InputMessage.WM_RBUTTONDOWN: case InputMessage.WM_RBUTTONDBLCLK:
 			mKey = VMouseKeys.MK_RBUTTON
 			break
 		case InputMessage.WM_MBUTTONUP:
-		case InputMessage.WM_MBUTTONDOWN:
-		case InputMessage.WM_MBUTTONDBLCLK:
+		case InputMessage.WM_MBUTTONDOWN: case InputMessage.WM_MBUTTONDBLCLK:
 			mKey = VMouseKeys.MK_MBUTTON
 			break
 		case InputMessage.WM_XBUTTONUP:
-		case InputMessage.WM_XBUTTONDOWN:
-		case InputMessage.WM_XBUTTONDBLCLK:
+		case InputMessage.WM_XBUTTONDOWN: case InputMessage.WM_XBUTTONDBLCLK:
 			mKey = XMouseKey(wParam)
 			break
 	}
@@ -77,10 +68,6 @@ Events.on("WndProc", (msg, wParam, lParam) => {
 		case InputMessage.WM_SYSKEYUP:
 			KeysDown.delete(LOWORD(wParam))
 			return InputEventSDK.emit("KeyUp", true, LOWORD(wParam))
-
-		case InputMessage.WM_MOUSEMOVE:
-			CursorOnScreen.SetVector(LOWORD(lParam), HIWORD(lParam))
-			return InputEventSDK.emit("MouseMove", true, CursorOnScreen.Clone())
 
 		case InputMessage.WM_LBUTTONDOWN: case InputMessage.WM_LBUTTONDBLCLK:
 		case InputMessage.WM_RBUTTONDOWN: case InputMessage.WM_RBUTTONDBLCLK:
@@ -596,8 +583,6 @@ interface InputEventSDK extends EventEmitter {
 	 * @param callback returns keyMask. You can use HasMask from Utils
 	 */
 	on(name: "KeyUp", callback: (keyMask: VKeys) => boolean | any): EventEmitter
-	/** @deprecated */
-	on(name: "MouseMove", callback: (position: Vector2) => boolean | any): EventEmitter
 	on(name: "MouseKeyDown", callback: (keyMask: VMouseKeys) => boolean | any): EventEmitter
 	on(name: "MouseKeyUp", callback: (keyMask: VMouseKeys) => boolean | any): EventEmitter
 	on(name: "MouseWheel", callback: (wheel: MouseWheel) => boolean | any): EventEmitter

@@ -31,42 +31,37 @@ export default class Header extends Base {
 	}
 
 	public Render(): void {
+		if (this.dragging) {
+			this.position_dirty = true
+			this.MousePosition.Subtract(this.dragging_offset).CopyTo(this.Position)
+			let window_size = RendererSDK.WindowSize
+			if (this.Position.x < 0)
+				this.Position.x = 0
+			let total_entries_x = this.parent.entries.reduce((prev, cur) => Math.max(prev, cur.TotalSize.x), this.TotalSize.x)
+			if (this.Position.x + total_entries_x > window_size.x)
+				this.Position.x = window_size.x - total_entries_x
+			if (this.Position.y < 0)
+				this.Position.y = 0
+			let total_entries_y = this.parent.entries.reduce((prev, cur) => prev + cur.TotalSize.y, 0) + this.TotalSize.y
+			if (this.Position.y + total_entries_y > window_size.y)
+				this.Position.y = window_size.y - total_entries_y
+		}
 		super.Render()
 		RendererSDK.Text(this.name, this.Position.Add(new Vector2(this.TotalSize.x / 2 - this.text_size.x / 2, 3)), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
 		RendererSDK.FilledRect(this.Position.Clone().AddScalarY(this.background_size.y), new Vector2(this.TotalSize.x, this.underline_width), this.underline_color)
 	}
 
 	public OnMouseLeftDown(): boolean {
-		let header_ = this.Rect
-		if (!header_.Contains(this.MousePosition))
+		if (!this.Rect.Contains(this.MousePosition))
 			return true
 		this.dragging = true
-		header_.GetOffset(this.MousePosition).CopyTo(this.dragging_offset)
+		this.MousePosition.Subtract(this.Position).CopyTo(this.dragging_offset)
 		return false
 	}
 	public OnMouseLeftUp(): boolean {
 		if (!this.dragging)
-			return true
+			return !this.Rect.Contains(this.MousePosition)
 		this.dragging = false
 		return false
-	}
-	public OnMousePositionChanged_(MousePosition: Vector2, parent: IMenu): boolean {
-		super.OnMousePositionChanged(MousePosition)
-		if (this.dragging) {
-			this.position_dirty = true
-			MousePosition.Subtract(this.dragging_offset).CopyTo(this.Position)
-			let window_size = RendererSDK.WindowSize
-			if (this.Position.x < 0)
-				this.Position.x = 0
-			let total_entries_x = parent.entries.reduce((prev, cur) => Math.max(prev, cur.TotalSize.x), this.TotalSize.x)
-			if (this.Position.x + total_entries_x > window_size.x)
-				this.Position.x = window_size.x - total_entries_x
-			if (this.Position.y < 0)
-				this.Position.y = 0
-			let total_entries_y = parent.entries.reduce((prev, cur) => prev + cur.TotalSize.y, 0) + this.TotalSize.y
-			if (this.Position.y + total_entries_y > window_size.y)
-				this.Position.y = window_size.y - total_entries_y
-		}
-		return !this.Rect.Contains(this.MousePosition)
 	}
 }

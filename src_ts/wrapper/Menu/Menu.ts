@@ -1,4 +1,3 @@
-import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import Base from "./Base"
 import Header from "./Header"
@@ -10,7 +9,6 @@ let Menu = new (class Menu {
 	public entries: Node[] = []
 	public config: any
 	public is_open = true
-	public block_mouse_position = true
 	public trigger_on_chat = false
 	private readonly header = new Header(this, "Fusion")
 	private active_element: Base
@@ -47,6 +45,9 @@ let Menu = new (class Menu {
 		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.name])
 	}
 	public Render(): void {
+		if (!this.is_open)
+			return
+		this.header.Render()
 		if (this.header.position_dirty) {
 			let current_pos = this.Position.Clone().AddScalarY(this.header.TotalSize.y)
 			let max_width = this.entries.reduce((prev, node) => Math.max(prev, node.TotalSize_.x), this.header.TotalSize_.x)
@@ -60,9 +61,6 @@ let Menu = new (class Menu {
 			})
 			this.header.position_dirty = false
 		}
-		if (!this.is_open)
-			return
-		this.header.Render()
 		// loop-optimizer: KEEP
 		this.entries.forEach(node => node.Render())
 	}
@@ -89,16 +87,6 @@ let Menu = new (class Menu {
 			this.UpdateConfig()
 		this.active_element = undefined
 		return ret
-	}
-	public OnMousePositionChanged(MousePosition: Vector2): boolean {
-		if (!this.is_open)
-			return true
-		if (!this.header.OnMousePositionChanged_(MousePosition, this))
-			return false
-		let ret = true
-		// loop-optimizer: KEEP
-		this.entries.forEach(node => ret = node.OnMousePositionChanged(MousePosition) && ret)
-		return ret || !this.block_mouse_position
 	}
 	public AddEntry(name: string | string[]): Node {
 		if (name instanceof Array) {
@@ -140,6 +128,5 @@ InputEventSDK.on("MouseKeyUp", key => {
 		return Menu.OnMouseLeftUp()
 	return true
 })
-InputEventSDK.on("MouseMove", pos => Menu.OnMousePositionChanged(pos))
 
 export default global.Menu = Menu

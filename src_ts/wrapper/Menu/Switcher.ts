@@ -16,7 +16,6 @@ export default class Switcher extends Base {
 	protected readonly separator_size = 3
 	protected readonly arrow_separator_color = new Color(14, 14, 14)
 	protected readonly arrow_background_color = new Color(14, 99, 152)
-	protected readonly MousePosition = new Vector2()
 	protected name_size: Vector2
 	protected longest_value_size: Vector2
 

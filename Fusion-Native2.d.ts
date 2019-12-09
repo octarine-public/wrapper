@@ -3,6 +3,7 @@ type CEntityIndex = C_BaseEntity | number | undefined
 
 /// GLOBAL OBJECTS
 declare var IOBuffer: Float32Array // 64 floats in size
+declare var CursorPosition: Int32Array // 2 ints in size
 declare var global: any
 
 declare var ConVars: ConVars

@@ -4,6 +4,7 @@ import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { FontFlags_t } from "../Enums/FontFlags_t"
+import InputManager from "../Managers/InputManager"
 
 export interface IMenu {
 	entries: Base[]
@@ -24,7 +25,6 @@ export default class Base {
 	protected readonly background_color = new Color(19, 19, 19, 249)
 	protected readonly text_offset = new Vector2(8, 8)
 	protected hovered = false
-	protected readonly MousePosition = new Vector2()
 	protected readonly execute_on_add: boolean = true
 
 	constructor(public parent: IMenu, public name: string = "") { this.name = name }
@@ -56,10 +56,6 @@ export default class Base {
 	}
 	public OnMouseLeftDown(): boolean { return true }
 	public OnMouseLeftUp(): boolean { return true }
-	public OnMousePositionChanged(MousePosition: Vector2): boolean {
-		MousePosition.CopyTo(this.MousePosition)
-		return !this.Rect.Contains(this.MousePosition)
-	}
 	public RenderTooltip(): void {
 		if (this.tooltip === undefined || this.tooltip.length === 0 || !this.Rect.Contains(this.MousePosition))
 			return
@@ -74,5 +70,9 @@ export default class Base {
 			return false
 		this.parent = undefined
 		return ArrayExtensions.arrayRemove(parent.entries, this)
+	}
+
+	protected get MousePosition(): Vector2 {
+		return InputManager.CursorOnScreen
 	}
 }
