@@ -58,7 +58,6 @@ export default class Modifier {
 	public IsValid = true
 	public readonly AbilityLevel: number
 	public readonly IsAura: boolean
-	public readonly CreationTime: number
 
 	private Ability_: Ability
 	private Caster_: Entity
@@ -72,11 +71,13 @@ export default class Modifier {
 		this.Caster_ = EntityManager.EntityByHandle(this.m_pBuff.caster)
 		this.IsAura = this.m_pBuff.aura
 		this.AuraOwner_ = EntityManager.EntityByHandle(this.m_pBuff.aura_owner)
-		this.CreationTime = this.m_pBuff.creation_time
 	}
 
 	public get Attributes(): DOTAModifierAttribute_t {
 		return DOTAModifierAttribute_t.MODIFIER_ATTRIBUTE_NONE
+	}
+	public get CreationTime(): number {
+		return this.m_pBuff.creation_time
 	}
 	public get DieTime(): number {
 		return this.CreationTime + this.Duration
