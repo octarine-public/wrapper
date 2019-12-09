@@ -3,34 +3,31 @@ import { EventsSDK, Game, Hero, LocalPlayer, Menu, Modifier } from "wrapper/Impo
 const menu = Menu.AddEntry(["Utility", "Abyssal Abuser"]),
 	active = menu.AddToggle("Active")
 
-let lock = false,
-	recipeC = false,
-	bashC = false,
-	vanguardC = false,
-	checkAbys = false,
-	arModifiers: Map<Modifier, number> = new Map(),
-	myHero: Hero
+let waiting_to_reassemble = false,
+	unlocked_items = 0,
+	arModifiers: Map<Modifier, number> = new Map()
 EventsSDK.on("ModifierCreated", buff => {
-	if (active.value && buff.Name === "modifier_bashed" && buff.Ability !== undefined && buff.Ability.Owner === myHero) {
+	if (active.value && buff.Name === "modifier_bashed" && buff.Ability?.Owner === LocalPlayer?.Hero) {
 		arModifiers.set(buff, buff.DieTime)
 		checkAbyss()
 	}
 })
+EventsSDK.on("ModifierRemoved", buff => arModifiers.delete(buff))
 function checkAbyss() {
-	const abys = myHero.GetItemByName("item_abyssal_blade")
-	if (!lock && abys !== undefined && myHero.Inventory.HasFreeSlots(0, 8, 2)) {
+	if (waiting_to_reassemble)
+		return
+	let myHero = LocalPlayer?.Hero
+	const abys = myHero?.GetItemByName("item_abyssal_blade")
+	if (abys !== undefined && myHero.Inventory.HasFreeSlots(0, 8, 2)) {
 		myHero.DisassembleItem(abys, false)
-		lock = true
-		recipeC = true
-		bashC = true
-		vanguardC = true
-		checkAbys = false
-	} else if (abys === undefined)
-		checkAbys = recipeC !== undefined && bashC !== undefined && vanguardC !== undefined
+		waiting_to_reassemble = true
+	}
 }
+const abyss_recipe = ["item_basher", "item_vanguard", "item_recipe_abyssal_blade"]
 EventsSDK.on("Tick", () => {
-	if (!active.value || !Game.IsInGame || LocalPlayer.Hero === undefined || !LocalPlayer.Hero.IsAlive)
-		return false
+	let myHero = LocalPlayer?.Hero
+	if (!active.value || !Game.IsInGame || !myHero?.IsAlive)
+		return
 	// loop-optimizer: KEEP
 	arModifiers.forEach((time, buff) => {
 		if (!time || !buff.DieTime)
@@ -40,45 +37,23 @@ EventsSDK.on("Tick", () => {
 			checkAbyss()
 		}
 	})
-	if (!lock && !checkAbys)
-		return false
-	if (checkAbys) {
-		checkAbyss()
-		return false
+	if (waiting_to_reassemble && unlocked_items === 3) {
+		unlocked_items = 0
+		waiting_to_reassemble = myHero.GetItemByName("item_abyssal_blade") === undefined
 	}
-	if (lock) {
-		if (recipeC) {
-			const recipe = myHero.GetItemByName("item_recipe_abyssal_blade", true)
-			if (recipe !== undefined) {
-				myHero.ItemSetCombineLock(recipe, false)
-				recipeC = false
-			}
-		}
-		if (bashC) {
-			const bash = myHero.GetItemByName("item_basher", true)
-			if (bash !== undefined) {
-				myHero.ItemSetCombineLock(bash, false)
-				bashC = false
-			}
-		}
-		if (vanguardC) {
-			const vanguard = myHero.GetItemByName("item_vanguard", true)
-			if (vanguard !== undefined) {
-				myHero.ItemSetCombineLock(vanguard, false)
-				vanguardC = false
-			}
-		}
-		lock = recipeC !== undefined || bashC !== undefined || vanguardC !== undefined
-	}
-	return false
+	if (!waiting_to_reassemble)
+		return
+	unlocked_items = 0
+	abyss_recipe.forEach(name => {
+		let item = myHero.GetItemByName(name, true)
+		if (item === undefined)
+			return
+		if (item.IsCombineLocked)
+			myHero.ItemSetCombineLock(item, false)
+		unlocked_items++
+	})
 })
-EventsSDK.on("GameStarted", hero => myHero = hero)
 EventsSDK.on("GameEnded", () => {
-	myHero = undefined
-	lock = false
-	recipeC = false
-	bashC = false
-	vanguardC = false
-	checkAbys = false
-	arModifiers.clear()
+	waiting_to_reassemble = false
+	unlocked_items = 0
 })
