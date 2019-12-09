@@ -5,8 +5,7 @@ import * as AutoItems from "./module/AutoItems/Helper"
 
 EventsSDK.on("Tick", () => {
 	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || !Game.IsInGame)
-		return false
-
+		return
 	AutoGlyph.Tick()
 	AutoItems.Tick()
 	AutoDeward.Tick()

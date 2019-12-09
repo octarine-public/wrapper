@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState } from "wrapper/Imports";
+import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player } from "wrapper/Imports";
 
 const Menu = MenuSDK.AddEntry(["Debugger", "SX.Utils"])
 const MenuTreeColor = Menu.AddNode("Enemy color")
@@ -7,6 +7,7 @@ const color_r = MenuTreeColor.AddSlider("R-Color", 1, 0, 100)
 const color_g = MenuTreeColor.AddSlider("G-Color", 0, 0, 100)
 const color_b = MenuTreeColor.AddSlider("B-Color", 0, 0, 100)
 const State = Menu.AddToggle("State")
+const BuybackBind = Menu.AddKeybind("Buyback key")
 const StateAutoDisconnect = Menu.AddToggle("Auto disconnect after game", true)
 
 color_r.OnValue((call) => {
@@ -27,6 +28,12 @@ const auto_pause_disconnect = "dota_pause_same_team_resume_time_disconnected"
 
 // cmdrate 20-40 lock server
 const cl_cmdrate = "cl_cmdrate", cl_updaterate = "cl_updaterate"
+
+BuybackBind.OnRelease(() => {
+	if (Player === undefined || LocalPlayer === undefined || LocalPlayer.Hero === undefined || LocalPlayer.Hero.IsAlive)
+		return
+	Player.Buyback()
+})
 
 EventsSDK.on("Tick", () => {
 	if (!State.value)

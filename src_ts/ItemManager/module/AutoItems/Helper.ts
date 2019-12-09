@@ -79,22 +79,19 @@ let Buffs = {
 let Base = new ItemManagerBase(),
 	TickSleep = new TickSleeper()
 
-function GetDelayCast() {
-	return (((Game.Ping / 2) + 30) + 250)
-}
+let GetDelayCast = () => (((Game.Ping / 2) + 30) + 250)
+let IsValidPlayer = () => LocalPlayer !== undefined && LocalPlayer.Hero !== undefined
+
+let filterUnits = (x: Unit) => x !== undefined && x.IsAlive
+	&& !x.IsEnemy() && x.IsControllable
+	&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double"))
 
 export function Tick() {
 	if (!StateBase.value || TickSleep.Sleeping || !State.value) {
-		return false
+		return
 	}
-	// loop-optimizer: FORWARD
-	Units.filter(x =>
-		x !== undefined
-		&& x.IsControllable
-		&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double"))
-		&& !x.IsEnemy()
-		&& x.IsAlive,
-	).some(ent => AutoUseItems(ent, Units.length))
+	if (Units.some(AutoUseItems))
+		return
 }
 
 export function ParticleCreate(id: number, handle: bigint, entity: Entity) {
@@ -124,13 +121,14 @@ function IsValidItem(Items: Item) {
 		&& Items.CanBeCasted()
 }
 
-function AutoUseItems(unit: Unit, length: number) {
-	if (!IsValidUnit(unit)) {
+function AutoUseItems(unit: Unit) {
+	if (!filterUnits(unit) || !IsValidUnit(unit)) {
 		return false
 	}
 	let Items = new InitItems(unit)
+
 	if (IsValidItem(Items.Jelly)) {
-		if (LocalPlayer !== undefined && unit === LocalPlayer.Hero) {
+		if (IsValidPlayer() && LocalPlayer.Hero === unit) {
 			if (!unit.HasBuffByName("modifier_royal_jelly")) {
 				unit.CastTarget(Items.Jelly, unit)
 				TickSleep.Sleep(GetDelayCast())
@@ -138,6 +136,7 @@ function AutoUseItems(unit: Unit, length: number) {
 			}
 		}
 	}
+
 	if (IsValidItem(Items.PhaseBoots)) {
 		if (Key.is_pressed || Keys.is_pressed) {
 			return false
@@ -317,7 +316,7 @@ function AutoUseItems(unit: Unit, length: number) {
 			? Items.UrnOfShadows
 			: Items.SpiritVesel
 
-		if (CheckUnitForUrn(LocalPlayer.Hero, AutoUseItemsUrnAliesAlliesHP.value)
+		if (IsValidPlayer() && CheckUnitForUrn(LocalPlayer.Hero, AutoUseItemsUrnAliesAlliesHP.value)
 			&& unit.Index === LocalPlayer.Hero.Index
 			&& !unit.IsIllusion
 			&& LocalPlayer.Hero !== unit

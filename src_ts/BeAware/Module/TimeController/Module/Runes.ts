@@ -41,14 +41,15 @@ export function DrawRunes() {
 	// power
 	let Time = Game.RawGameTime;
 	if (TreeRuneState.value) {
-		let RunePowerTime = Game.GameTime % 120;
-		if (TreeNotificationPowerChat.value && RunePowerTime >= 120 || RunePowerTime === 0)
+		let percent = 120
+		let RunePowerTime = Game.GameTime % percent;
+		if (TreeNotificationPowerChat.value && RunePowerTime >= percent || RunePowerTime === 0)
 			RunePowerTimer = true
 		// loop-optimizer: KEEP
 		PowerRunesPos.forEach(val => {
 			if (mt_rand_power === undefined)
 				mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
-			if (mt_rand_power !== undefined && RunePowerTime >= (120 - mt_rand_power)) {
+			if (mt_rand_power !== undefined && RunePowerTime >= (percent - mt_rand_power)) {
 
 				if (TreeNotificationPowerDrawMap.value)
 					RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
@@ -73,9 +74,10 @@ export function DrawRunes() {
 	}
 	// bounty
 	if (PMH_Show_bounty.value) {
-		let RuneBountyTime = Game.GameTime % 300
+		let percent = 300
+		let RuneBountyTime = Game.GameTime % percent
 		if (!bountyAlreadySeted) {
-			if (RuneBountyTime >= 299 || RuneBountyTime <= 1) {
+			if (RuneBountyTime >= percent || RuneBountyTime <= 1) {
 				bountyRunesAr = [true, true, true, true]
 				bountyAlreadySeted = true
 				if (TreeNotificationBountyChat.value) {
@@ -88,12 +90,12 @@ export function DrawRunes() {
 			if (mt_rand_bounty === undefined) {
 				mt_rand_bounty = mt_rand(NotifyTimeBountyMin.value, NotifyTimeBountyMax.value)
 			}
-			if (mt_rand_bounty !== undefined && RuneBountyTime >= (300 - mt_rand_bounty)) {
+			if (mt_rand_bounty !== undefined && RuneBountyTime >= (percent - mt_rand_bounty)) {
 				if (TreeNotificationBountyDrawMap.value) {
 					RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
 				}
 				if (Time >= checkTick) {
-					if (RuneBountyTime <= 299) {
+					if (RuneBountyTime <= percent) {
 						if (TreeNotificationBountySound.value > 0) {
 							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
 							checkTick = Time + (NotifyTimeBountyMax.value / 3)
