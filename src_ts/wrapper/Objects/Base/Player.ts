@@ -112,7 +112,12 @@ export default class Player extends Entity {
 	// HasRepicked 				=> PlayerResourcePlayerTeamData_t
 	// Healing					=> NonSpectator
 	get Hero(): Hero {
-		return this.Hero_ instanceof Entity ? this.Hero_ : (this.Hero_ = EntityManager.GetEntityByNative(this.Hero_) as Hero)
+		if (this.Hero_ instanceof Entity)
+			return this.Hero_
+		this.Hero_ = EntityManager.GetEntityByNative(this.Hero_) as Hero || this.Hero_
+		if (this.Hero_ instanceof Entity)
+			return this.Hero_
+		return undefined
 	}
 	get HeroAssigned(): boolean {
 		return this.Hero !== undefined && this.Hero.IsValid
