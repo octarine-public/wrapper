@@ -18,7 +18,7 @@ function checkAbyss() {
 		return
 	let myHero = LocalPlayer?.Hero
 	const abys = myHero?.GetItemByName("item_abyssal_blade")
-	if (abys !== undefined && myHero.Inventory.HasFreeSlots(0, 8, 2)) {
+	if (abys !== undefined && myHero.Inventory.HasFreeSlots(0, 9, 2)) {
 		myHero.DisassembleItem(abys, false)
 		waiting_to_reassemble = true
 	}
