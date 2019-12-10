@@ -1,6 +1,6 @@
 import { EventsSDK } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
-import { InitFindCyclone } from "./Module/AutoArray"
+import { InitFindCyclone, OnExecuteOrder } from "./Module/AutoArray"
 import { InitAutoSteal } from "./Module/AutoSteal"
 import { InitCombo } from "./Module/Combo"
 import { Draw } from "./Renderer"
@@ -15,6 +15,7 @@ EventsSDK.on("GameEnded", GameEnded)
 EventsSDK.on("GameStarted", GameStarted)
 EventsSDK.on("EntityCreated", EntityCreated)
 EventsSDK.on("EntityDestroyed", EntityDestroyed)
+EventsSDK.on("PrepareUnitOrders", OnExecuteOrder)
 EventsSDK.on("Tick", () => {
 	Tick()
 	InitMouse()
