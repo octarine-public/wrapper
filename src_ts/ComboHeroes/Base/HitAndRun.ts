@@ -1,6 +1,7 @@
-import { Unit, Game, Utils } from "wrapper/Imports";
+import { Unit, Game, Utils, TickSleeper } from "wrapper/Imports";
 let TurnEndTime = 0;
 let LastAttackTime = 0;
+let Sleep = new TickSleeper
 export class HitAndRun {
 	constructor(public Unit?: Unit) { }
 	/**
@@ -21,13 +22,15 @@ export class HitAndRun {
 		if (TurnEndTime > time) {
 			return false;
 		}
-		if ((!target.IsValid || !this.CanAttack(target, time)) && this.CanMove(time)) {
+		if ((!target.IsValid || !this.CanAttack(target, time)) && this.CanMove(time) && !Sleep.Sleeping) {
 			switch (type) {
 				case 0:
-					this.Unit.MoveTo(target.Position);
+					this.Unit.MoveTo(target.Position)
+					Sleep.Sleep(150)
 					break;
 				case 1:
-					this.Unit.MoveTo(Utils.CursorWorldVec);
+					this.Unit.MoveTo(Utils.CursorWorldVec)
+					Sleep.Sleep(150)
 					break;
 				default: break;
 			}

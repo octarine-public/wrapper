@@ -1,8 +1,11 @@
 import { Base } from "../Extends/Helper"
-import { Utils, Ability, Hero, Game, GameSleeper } from "wrapper/Imports"
+import { Utils, Ability, Hero, Game, GameSleeper, TickSleeper } from "wrapper/Imports"
 import { ComboKeyItem, State, СomboAbility, СomboItems, StyleCombo, ComboHitAndRunAttack, TypeHitAndRun } from "../Menu"
 import { MouseTarget, Owner, initAbilityMap, initItemsMap, initHitAndRunMap, AetherRemnanPluse, AetherRemnanMinus } from "../Listeners"
+
 let Sleep = new GameSleeper
+let TickSleep = new TickSleeper
+let SetSleeping = Math.max(185, ((Game.Ping / 2) + 130))
 
 export let ComboActived = false
 ComboKeyItem.OnRelease(() => ComboActived = !ComboActived)
@@ -13,7 +16,6 @@ function Combo(abil: Ability, target: Hero, length: number) {
 	}
 	if (length === undefined || (!СomboAbility.IsEnabled(abil.Name) && !СomboItems.IsEnabled(abil.Name)))
 		return false
-	let SetSleeping = Math.max(150, ((Game.Ping * 2) + (abil.CastPoint + length)))
 	if (abil.Name === "void_spirit_astral_step" && !Owner.IsRooted) {
 		Owner.CastPosition(abil, target.IsMoving ? target.InFront(250) : target.Position)
 		Sleep.Sleep(SetSleeping, abil)
@@ -56,7 +58,7 @@ function Combo(abil: Ability, target: Hero, length: number) {
 }
 
 export function InitCombo() {
-	if (!Base.IsRestrictions(State) || Sleep.Sleeping("Move"))
+	if (!Base.IsRestrictions(State) || Sleep.Sleeping("Move") || TickSleep.Sleeping)
 		return
 	if ((StyleCombo.selected_id === 1 && !ComboActived) || (StyleCombo.selected_id === 0 && !ComboKeyItem.is_pressed)) {
 		return
@@ -64,7 +66,7 @@ export function InitCombo() {
 	let target = MouseTarget
 	if (target === undefined) {
 		Owner.MoveTo(Utils.CursorWorldVec)
-		Sleep.Sleep(350, "Move")
+		TickSleep.Sleep(SetSleeping)
 		return
 	}
 	let Items = initItemsMap.get(Owner),
@@ -93,15 +95,14 @@ export function InitCombo() {
 		Abilities.ResonantPulse,
 		Abilities.Dissimilate
 	]
-	if (!Owner.IsInRange(target, Abilities.AstralStep.AOERadius + (Owner.HullRadius * 2))) {
+	if (!Owner.IsInRange(target, Abilities.AstralStep.AOERadius + (Owner.HullRadius * 2)) || !Owner.CanAttack(target)) {
 		Owner.MoveTo(target.Position)
-		Sleep.Sleep(350, "Move")
+		TickSleep.Sleep(SetSleeping)
 		return
 	}
 	if (array_ability.some(abil => abil !== undefined && abil.CanBeCasted() && Combo(abil, target, array_ability.length)))
 		return
-	if (!Owner.CanAttack(target) || (!HitAndRun_Unit.ExecuteTo(target, TypeHitAndRun.selected_id)
-		&& ComboHitAndRunAttack.value) || !ComboHitAndRunAttack.value)
+	if ((!HitAndRun_Unit.ExecuteTo(target, TypeHitAndRun.selected_id) && ComboHitAndRunAttack.value) || !ComboHitAndRunAttack.value)
 		return
 	Owner.AttackTarget(target)
 	return
