@@ -4,24 +4,19 @@ import { CourierBase } from "../Data/Helper"
 import { Sleep, allyCourier, EnemyHero } from "../bootstrap"
 
 function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: Vector3) {
-	if (!enemy.IsEnemy() || !enemy.IsVisible) {
+	if (!enemy.IsEnemy()) {
 		return false
 	}
-	if (enemy.IsInRange(Position, (enemy.AttackRange + 450))) {
-		if (StateCourier.State !== CourierState_t.COURIER_STATE_AT_BASE
-			&& StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE
-		) {
+	CourierBase.DELIVER_DISABLE = CourierBase.IsRangeCourier(enemy, Position) ? true : false
+	if (CourierBase.IsRangeCourier(enemy, Position)) {
+		if (StateCourier.State !== CourierState_t.COURIER_STATE_AT_BASE && StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE) {
 			MoveCourier(true)
-			CourierBase.DELIVER_DISABLE = true
 			return false
 		}
-	} else if (!allyCourier.IsInRange(Position, 50)
-		&& StateCourier.StateHero === undefined // if courier not busy (none control)
-	) {
-		if (StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE
-		) {
+	}
+	else if (!CourierBase.IsRangeCourier(allyCourier, Position, 50) && StateCourier.StateHero === undefined) {
+		if (StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE) {
 			MoveCourier()
-			CourierBase.DELIVER_DISABLE = false
 			return true
 		}
 	}
@@ -41,7 +36,7 @@ export function CourierBestPosition() {
 				}
 			case CourierState_t.COURIER_STATE_MOVING:
 			case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
-				if (enemy.IsEnemy() && enemy.IsVisible && enemy.IsInRange(CourierBase.Position(), (enemy.AttackRange + 450))) {
+				if (enemy.IsEnemy() && enemy.IsVisible && CourierBase.IsRangeCourier(enemy)) {
 					MoveCourier(true)
 					CourierBase.DELIVER_DISABLE = true
 					return true
@@ -58,7 +53,7 @@ export function MoveCourier(BestOrSafe: boolean = false) {
 		Sleep.Sleep(CourierBase.CastDelay)
 		return
 	}
-	if (!allyCourier.IsInRange(CourierBase.Position(BestOrSafe), 150)) {
+	if (!CourierBase.IsRangeCourier(allyCourier, CourierBase.Position(BestOrSafe), 150)) {
 		allyCourier.MoveTo(CourierBase.Position(BestOrSafe))
 		Sleep.Sleep(CourierBase.CastDelay)
 		return

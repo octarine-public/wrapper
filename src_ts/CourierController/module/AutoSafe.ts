@@ -1,7 +1,8 @@
 import { Ability, Game, DOTA_GameMode } from "wrapper/Imports"
 import { CourierBase } from "../Data/Helper"
-import { autoShieldState } from "../Menu"
-import { unit_anim, allyCourier, Sleep } from "../bootstrap"
+import { autoShieldState, autoShieldTimer } from "../Menu"
+import { unit_anim, allyCourier, Sleep, EnemyHero } from "../bootstrap"
+import { MoveCourier } from "./BestPosition"
 
 // use ability courier
 const per_ability_kill: string[] = [
@@ -27,14 +28,35 @@ function AbilityTypeReady(): Ability {
 			&& allyCourier.GetAbilityByName("courier_burst"))
 }
 
+
+function SafePosDeliver(): boolean {
+	return EnemyHero.some(enemy => {
+		if (!enemy.IsEnemy() && enemy.IsVisible)
+			return false
+		if (!Sleep.Sleeping && (CourierBase.IsRangeCourier(enemy, allyCourier) || CourierBase.IsRangeCourier(enemy)))
+			CourierBase.DELIVER_DISABLE = true
+		if (CourierBase.DELIVER_DISABLE) {
+			if (!CourierBase.IsRangeCourier(enemy, allyCourier) || !CourierBase.IsRangeCourier(enemy)) {
+				MoveCourier(true)
+				CourierBase.DELIVER_DISABLE = false
+			}
+			Sleep.Sleep(autoShieldTimer.value * 1000)
+			return true
+		}
+		return false
+	})
+}
+
 export function AutoSafe(): boolean {
-	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !autoShieldState.value || unit_anim.length <= 0) {
+	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !autoShieldState.value) {
 		return false
 	}
 	let ability = AbilityTypeReady()
-	if (ability === undefined || ability.Level === 0) {
-		return false
+	if (ability === undefined || ability.Level === 0 || ability.Cooldown) {
+		return SafePosDeliver()
 	}
+	if (unit_anim.length <= 0)
+		return false
 	let attack_courier = unit_anim.some(unit =>
 		per_ability_kill.some(abil => unit.GetAbilityByName(abil) !== undefined
 			&& unit.IsInRange(allyCourier, unit.GetAbilityByName(abil).CastRange)

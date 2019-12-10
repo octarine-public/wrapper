@@ -1,5 +1,5 @@
 
-import { Game, Vector3, Team, Courier } from "wrapper/Imports"
+import { Game, Vector3, Team, Courier, Unit } from "wrapper/Imports"
 import { Owner } from "../bootstrap"
 
 class CourierData {
@@ -34,7 +34,9 @@ class CourierData {
 	public set AUTO_USE_ITEMS(set: boolean) {
 		this._AUTO_USE_ITEMS = set
 	}
-
+	public IsRangeCourier(unit: Unit, unit2: Courier | Vector3 = this.Position(), range: number = (unit.AttackRange + 450)) {
+		return unit.IsInRange(unit2, range)
+	}
 	public Position(BestOrSafe: boolean = false) {
 		return !BestOrSafe ? this.Team
 			? this.CourierBestPosition[0]

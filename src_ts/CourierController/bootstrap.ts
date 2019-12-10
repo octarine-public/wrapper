@@ -21,13 +21,13 @@ export let OwnerIsValid = () => Owner !== undefined && Owner.IsAlive
 EventsSDK.on("Tick", () => {
 	if (!State.value || Sleep.Sleeping || !OwnerIsValid() || !CourierBase.IsValidCourier(allyCourier))
 		return
-	if (AutoSafe())
-		return
 	if (AutoDeliver())
 		return
 	// if (AutoUseItems())
 	// 	return
 	if (CourierBestPosition())
+		return
+	if (AutoSafe())
 		return
 })
 // EventsSDK.on("Draw", () => {

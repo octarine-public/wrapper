@@ -3,7 +3,6 @@ import { deliverState } from "../Menu"
 import { CourierBase } from "../Data/Helper"
 import { allyCourier, Sleep, Owner } from "../bootstrap"
 
-
 function Deliver(): boolean {
 	if (CourierBase.DELIVER_DISABLE) {
 		return false
