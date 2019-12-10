@@ -33,16 +33,12 @@ export default class Header extends Base {
 	public Render(): void {
 		if (this.dragging) {
 			this.position_dirty = true
-			this.MousePosition.Subtract(this.dragging_offset).CopyTo(this.Position)
+			this.MousePosition.Subtract(this.dragging_offset).Max(0).CopyTo(this.Position)
 			let window_size = RendererSDK.WindowSize
-			if (this.Position.x < 0)
-				this.Position.x = 0
 			let total_entries_x = this.parent.entries.reduce((prev, cur) => Math.max(prev, cur.TotalSize.x), this.TotalSize.x)
 			if (this.Position.x + total_entries_x > window_size.x)
 				this.Position.x = window_size.x - total_entries_x
-			if (this.Position.y < 0)
-				this.Position.y = 0
-			let total_entries_y = this.parent.entries.reduce((prev, cur) => prev + cur.TotalSize.y, 0) + this.TotalSize.y
+			let total_entries_y = this.parent.entries.reduce((prev, cur) => prev + cur.TotalSize.y, this.TotalSize.y)
 			if (this.Position.y + total_entries_y > window_size.y)
 				this.Position.y = window_size.y - total_entries_y
 		}
