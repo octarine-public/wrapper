@@ -183,12 +183,11 @@ export default class Player extends Entity {
 			? (this.m_PlayerTeamData = PlayerResource.GetPlayerTeamDataByPlayerID(this.PlayerID)) : undefined
 	}
 	get PlayerSteamID(): bigint {
-		return this.m_PlayerData.m_iPlayerSteamID
+		return this.PlayerData.m_iPlayerSteamID
 	}
 	get QueryUnit(): Unit {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hQueryUnit) as Unit
 	}
-
 	// ReliableGold				=> NonSpectator
 	get RespawnSeconds(): number {
 		return this.PlayerTeamData.m_iRespawnSeconds

@@ -48,13 +48,11 @@ function SafePosDeliver(): boolean {
 }
 
 export function AutoSafe(): boolean {
-	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !autoShieldState.value) {
+	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !autoShieldState.value)
 		return false
-	}
 	let ability = AbilityTypeReady()
-	if (ability === undefined || ability.Level === 0 || ability.Cooldown) {
+	if (ability === undefined || ability.Level === 0 || ability.Cooldown)
 		return SafePosDeliver()
-	}
 	if (unit_anim.length <= 0)
 		return false
 	let attack_courier = unit_anim.some(unit =>
@@ -67,9 +65,9 @@ export function AutoSafe(): boolean {
 			&& unit.AttackDamage(allyCourier, true) > allyCourier.HP
 		)
 	)
-	if (!attack_courier && unit_anim.length !== 0 || !ability.IsCooldownReady) {
+	if (!attack_courier && unit_anim.length !== 0 || !ability.IsCooldownReady)
 		return false
-	}
+
 	if (ability.Name === "courier_burst") {
 		CourierBase.CastCourAbility(0, allyCourier)
 		ability.UseAbility()

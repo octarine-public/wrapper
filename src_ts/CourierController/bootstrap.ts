@@ -1,11 +1,11 @@
 
-import { EventsSDK, Hero, Courier, TickSleeper, Unit, ArrayExtensions, DOTA_GameMode, Game } from "wrapper/Imports"
-import { CourierBase } from "./Data/Helper"
+import { EventsSDK, Hero, Courier, TickSleeper, Unit, ArrayExtensions, DOTA_GameMode, Game, Events, LocalPlayer } from "wrapper/Imports"
 import { State, StateBestPos } from "./Menu"
-
 import { AutoSafe } from "./module/AutoSafe"
 import { AutoDeliver } from "./module/AutoDeliver"
 //import { AutoUseItems } from "./module/AutoUseItems"
+import { CSODOTALobby } from "./Data/Data"
+import { CourierBase } from "./Data/Helper"
 import { MoveCourier, CourierBestPosition } from "./module/BestPosition"
 
 export let Owner: Hero
@@ -29,6 +29,7 @@ EventsSDK.on("Tick", () => {
 		return
 	if (AutoSafe())
 		return
+
 })
 // EventsSDK.on("Draw", () => {
 // 	// loop-optimizer: KEEP
@@ -41,6 +42,16 @@ EventsSDK.on("Tick", () => {
 // 	})
 
 // })
+
+Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
+	if (id !== 2004 || !State.value || LocalPlayer === undefined || Game.RawGameTime >= 700)
+		return
+	// loop-optimizer: KEEP
+	CourierBase.roles[0] = (obj as CSODOTALobby).members.filter(member => member.id === LocalPlayer.PlayerSteamID).map(member => member.lane_selection_flags)
+	// loop-optimizer: KEEP
+	CourierBase.roles[1] = (obj as CSODOTALobby).members.filter(member => member.id === LocalPlayer.PlayerSteamID).map(member => member.lane_selection_flags)
+})
+
 EventsSDK.on("GameStarted", hero => {
 	if (Owner === undefined)
 		Owner = hero

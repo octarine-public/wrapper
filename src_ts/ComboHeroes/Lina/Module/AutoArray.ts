@@ -40,10 +40,7 @@ export function InitFindCyclone() {
 }
 
 export function OnExecuteOrder(order: ExecuteOrder): boolean {
-	if (!State.value)
-		return true
-	order.Execute()
-	return CancelOredr
+	return !Base.IsRestrictions(State) || CancelOredr
 }
 export function FindCycloneGameEnded() {
 	Sleep.ResetTimer()

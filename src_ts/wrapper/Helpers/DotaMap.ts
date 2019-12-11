@@ -7,7 +7,7 @@ import { MapArea } from "./MapArea"
 import { Team } from "../Enums/Team"
 
 export class DotaMap {
-
+	constructor(public unit: Unit) { }
 	private static Load(name: string): Vector3[] {
 		let ar: [number, number, number][] = JSON.parse(Utils.Utf8ArrayToStr(new Uint8Array(readFile(`Map/${name}.json`))))
 		// loop-optimizer: FORWARD
@@ -35,8 +35,8 @@ export class DotaMap {
 	public readonly DireMiddleRoute = DotaMap.Load("DireMiddleRoute")
 	public readonly DireBottomRoute = DotaMap.Load("DireBottomRoute")
 
-	public GetLane(unit: Unit): MapArea {
-		let pos = unit.Position
+	public get GetLane(): MapArea {
+		let pos = this.unit.Position
 		if (this.Top.IsInside(pos))
 			return MapArea.Top
 		if (this.Middle.IsInside(pos))
@@ -61,7 +61,7 @@ export class DotaMap {
 			return MapArea.RadiantTopJungle
 		return MapArea.Unknown
 	}
-	public GetCreepRoute(unit: Creep, lane: MapArea = this.GetLane(unit)): Vector3[] {
+	public GetCreepRoute(unit: Creep, lane: MapArea = this.GetLane): Vector3[] {
 		switch (unit.Team) {
 			case Team.Dire:
 				switch (lane) {

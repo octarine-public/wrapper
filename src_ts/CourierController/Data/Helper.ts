@@ -1,54 +1,50 @@
 
-import { Game, Vector3, Team, Courier, Unit } from "wrapper/Imports"
-import { Owner } from "../bootstrap"
+import { Game, Vector3, Team, Courier, Unit } from "wrapper/Imports";
+import { LaneSelectionFlags_t, Data } from "./Data";
+import { Owner } from "../bootstrap";
 
-class CourierData {
-	// safe base
-	private readonly CourierBestPosition = [
-		new Vector3(6199.96875, 5822.375, 384),
-		new Vector3(-6301.0625, -5868.59375, 384),
-		new Vector3(6662.376953125, 6042.126953125, 512),
-		new Vector3(-6683.90625, -6216.75, 512)
-	]
-
+class CourierData extends Data {
+	public roles = new Array<LaneSelectionFlags_t[]>(2).fill(new Array<LaneSelectionFlags_t>(5).fill(LaneSelectionFlags_t.MID_LANE))
+	public AUTO_USE_ITEMS = false
+	public DELIVER_DISABLE = false
 	public get CastDelay() {
 		return (((Game.Ping / 2) + 30) + 250)
 	}
-
 	public IsValidCourier = (cour: Courier) => cour !== undefined && cour.IsControllable && cour.IsAlive
-
 	public CastCourAbility = (num: number, cour: Courier) => cour.IsControllable && cour.AbilitiesBook.GetSpell(num).UseAbility()
-
-	public get DELIVER_DISABLE() {
-		return this._DELIVER_DISABLE
-	}
-
-	public set DELIVER_DISABLE(set: boolean) {
-		this._DELIVER_DISABLE = set
-	}
-
-	public get AUTO_USE_ITEMS() {
-		return this._AUTO_USE_ITEMS
-	}
-
-	public set AUTO_USE_ITEMS(set: boolean) {
-		this._AUTO_USE_ITEMS = set
-	}
 	public IsRangeCourier(unit: Unit, unit2: Courier | Vector3 = this.Position(), range: number = (unit.AttackRange + 450)) {
 		return unit.IsInRange(unit2, range)
 	}
-	public Position(BestOrSafe: boolean = false) {
-		return !BestOrSafe ? this.Team
-			? this.CourierBestPosition[0]
-			: this.CourierBestPosition[1]
-			: this.Team
-				? this.CourierBestPosition[2]
-				: this.CourierBestPosition[3]
+	public Position(BestOrSafe: boolean = false, custom_line?: LaneSelectionFlags_t): Vector3 {
+		let num = 2, team_id = this.Team ? 1 : 0,
+			roles = !custom_line ? this.roles[team_id].find((role, i) => role !== undefined) : custom_line
+		return !BestOrSafe ? Game.RawGameTime < 700
+			? this.CourierBestPosition[team_id][roles]
+			: this.CourierBestPosition[team_id][!custom_line ? num * 2 : custom_line]
+			: this.CourierBestPosition[num][team_id]
 	}
 	private get Team() {
-		return Owner !== undefined && Owner.Team === Team.Dire
+		return Owner?.Team === Team.Dire
 	}
-	private _AUTO_USE_ITEMS: boolean = false
-	private _DELIVER_DISABLE: boolean = false
+	private readonly CourierBestPosition = {
+		0: { // team_id
+			1: this.SAFE_LANE_RADDIANT,
+			2: this.OFFLANE_LANE_RADDIANT,
+			4: this.MIDDLE_LANE_RADDIANT,
+			8: this.SOFT_SUPPORT_RADDIANT,
+			16: this.HARD_SUPPORT_RADDIANT,
+		},
+		1: { // team_id
+			1: this.SAFE_LANE_DIRE,
+			2: this.OFFLANE_LANE_DIRE,
+			4: this.MIDDLE_LANE_DIRE,
+			8: this.SOFT_SUPPORT_DIRE,
+			16: this.HARD_SUPPORT_DIRE,
+		},
+		2: { // team_id
+			0: this.SAFE_POSITION_RADDIANT,
+			1: this.SAFE_POSITION_DIRE,
+		}
+	}
 }
 export let CourierBase = new CourierData

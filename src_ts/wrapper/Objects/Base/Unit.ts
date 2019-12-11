@@ -26,7 +26,7 @@ import TreeTemp from "./TreeTemp"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t";
 import { ArmorType } from "../../Enums/ArmorType";
 import { AttackDamageType } from "../../Enums/AttackDamageType";
-
+//import { DotaMap } from "../../Helpers/DotaMap";
 
 const attackAnimationPoint = new Map<string, number>();
 const attackprojectileSpeed = new Map<string, number>();
@@ -74,6 +74,7 @@ export default class Unit extends Entity {
 	public readonly AbilitiesBook: AbilitiesBook
 	public readonly Inventory: Inventory
 	public readonly ModifiersBook: ModifiersBook
+	//public readonly DotaMap: DotaMap
 	public IsVisibleForTeamMask = 0
 	public IsVisibleForEnemies = false
 	public IsTrueSightedForEnemies = false
@@ -86,7 +87,6 @@ export default class Unit extends Entity {
 	public LastVisibleTime = 0
 
 	private UnitName_: string
-
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
 		"modifier_item_ethereal_blade_ethereal",
@@ -104,6 +104,7 @@ export default class Unit extends Entity {
 		this.AbilitiesBook = new AbilitiesBook(this)
 		this.Inventory = new Inventory(this)
 		this.ModifiersBook = new ModifiersBook(this)
+		//this.DotaMap = new DotaMap(this)
 	}
 	/* ================ GETTERS ================ */
 	public get IsHero(): boolean {
