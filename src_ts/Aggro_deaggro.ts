@@ -1,8 +1,8 @@
-import { EventsSDK, Game, Menu as MenuSDK, LocalPlayer, Unit, TickSleeper, ArrayExtensions, Utils, Tower } from "wrapper/Imports";
+import { EventsSDK, Game, Menu as MenuSDK, LocalPlayer, Unit, TickSleeper, ArrayExtensions, Tower } from "wrapper/Imports";
 
 const Menu = MenuSDK.AddEntry(["Utility", "Aggro/deaggro Creeps"])
 //const AutoTowerTree = Menu.AddNode("Tower deaggro")
-const AutoTowerState = Menu.AddToggle("Auto tower deaggro", true)
+const AutoTowerState = Menu.AddToggle("Auto tower deaggro")
 //const MePositionCheck = AutoTowerTree.AddToggle("Check my position")
 
 const aggroKey = Menu.AddKeybind("Aggro Key")
@@ -23,7 +23,7 @@ function Use(x: Unit) {
 	if (!IsValidUnit(x))
 		return false
 	LocalPlayer.Hero.AttackTarget(x)
-	LocalPlayer.Hero.MoveTo(Utils.CursorWorldVec)
+	//LocalPlayer.Hero.MoveTo(Utils.CursorWorldVec)
 	Sleep.Sleep(GetDelayCast())
 	return true
 }
