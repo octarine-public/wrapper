@@ -92,39 +92,25 @@ export default class Inventory {
 		return items
 	}
 	public HasAnyItem(start: number, end: number): boolean {
-		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end) {
-			for (let i = end + 1; i-- > start;) {
-				if (i > MAX_ITEMS)
-					break
-
+		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end)
+			for (let i = Math.min(end + 1, MAX_ITEMS); i-- > start;)
 				if (this.GetItem(i) !== undefined)
 					return true
-			}
-		}
 		return false
 	}
 	public HasFreeSlot(start: number, end: number): boolean {
-		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end) {
-			for (let i = end + 1; i-- > start;) {
-				if (i > MAX_ITEMS)
-					break
-
+		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end)
+			for (let i = Math.min(end + 1, MAX_ITEMS); i-- > start;)
 				if (this.GetItem(i) === undefined)
 					return true
-			}
-		}
 		return false
 	}
 	public HasFreeSlots(start: number, end: number, howMany: number): boolean {
 		if (this.Owner.IsValid && start <= MAX_ITEMS && start <= end) {
 			let man = 0
-			for (let i = end + 1; i-- > start;) {
-				if (i > MAX_ITEMS)
-					break
-
+			for (let i = Math.min(end + 1, MAX_ITEMS); i-- > start;)
 				if (this.GetItem(i) === undefined)
 					man++
-			}
 			return man >= howMany
 		}
 		return false
