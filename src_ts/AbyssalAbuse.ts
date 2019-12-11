@@ -37,20 +37,20 @@ EventsSDK.on("Tick", () => {
 			checkAbyss()
 		}
 	})
-	if (waiting_to_reassemble && unlocked_items === 3) {
-		unlocked_items = 0
+	if (waiting_to_reassemble && unlocked_items >= 3)
 		waiting_to_reassemble = myHero.GetItemByName("item_abyssal_blade") === undefined
-	}
-	if (!waiting_to_reassemble)
+	if (!waiting_to_reassemble) {
+		unlocked_items = 0
 		return
-	unlocked_items = 0
+	}
 	abyss_recipe.forEach(name => {
 		let item = myHero.GetItemByName(name, true)
 		if (item === undefined)
 			return
-		if (item.IsCombineLocked)
+		if (item.IsCombineLocked) {
 			myHero.ItemSetCombineLock(item, false)
-		unlocked_items++
+			unlocked_items++
+		}
 	})
 })
 EventsSDK.on("GameEnded", () => {
