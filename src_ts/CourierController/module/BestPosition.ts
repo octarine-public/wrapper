@@ -4,7 +4,7 @@ import { CourierBase } from "../Data/Helper"
 import { Sleep, allyCourier, EnemyHero, OwnerIsValid } from "../bootstrap"
 
 function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: Vector3) {
-	if (!enemy.IsEnemy())
+	if (!enemy.IsEnemy() || enemy.IsDormant || !enemy.IsAlive)
 		return false
 	CourierBase.DELIVER_DISABLE = CourierBase.IsRangeCourier(enemy, Position)
 	if (CourierBase.IsRangeCourier(enemy, Position)) {
@@ -33,7 +33,7 @@ export function CourierBestPosition() {
 					return false
 			case CourierState_t.COURIER_STATE_MOVING:
 			case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
-				if (enemy.IsEnemy() && enemy.IsVisible && CourierBase.IsRangeCourier(enemy)) {
+				if (enemy.IsEnemy() && enemy.IsAlive && !enemy.IsDormant && CourierBase.IsRangeCourier(enemy)) {
 					MoveCourier(true)
 					CourierBase.DELIVER_DISABLE = true
 					return true
