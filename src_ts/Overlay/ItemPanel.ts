@@ -316,7 +316,7 @@ EventsSDK.on("Draw", () => {
 
 		if (panelTP.value) {
 
-			let tpScroll = hero.Inventory.GetItem(15);
+			let tpScroll = hero.Inventory.TotalItems.find(item => item?.Name.includes("item_tpscroll"));
 
 			const posOfTP = posPanelOnLine.Clone();
 
@@ -350,7 +350,7 @@ EventsSDK.on("Draw", () => {
 
 			// change to Circle Image
 			RendererSDK.Image(
-				GetPathToItemIcon(tpScroll && tpScroll.Name),
+				GetPathToItemIcon(tpScroll?.Name),
 				posOfTP, sizeOfTP, colorTP.Clone().SetA(Math.min(colorTP.a + 50, 255)));
 
 			if (tpScroll) {
