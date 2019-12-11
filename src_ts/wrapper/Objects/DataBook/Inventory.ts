@@ -140,7 +140,7 @@ export default class Inventory {
 	}
 	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Item {
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
 
 			for (let i = 0; i < len; i++) {
 				let item = this.GetItem(i)
@@ -152,7 +152,7 @@ export default class Inventory {
 	}
 	public GetItemByRegexp(regex: RegExp, includeBackpack: boolean = false): Item {
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
 
 			for (let i = 0; i < len; i++) {
 				let item = this.GetItem(i)
@@ -178,7 +178,7 @@ export default class Inventory {
 	}
 	public GetItemByNameInBackpack(name: string): Item {
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, 9)
+			let len = Math.min(this.TotalItems.length, 10)
 
 			for (let i = 6; i < len; i++) {
 				let item = this.GetItem(i)
