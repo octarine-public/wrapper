@@ -38,7 +38,7 @@ humanizer.AddToggle("debug_orders", false).OnValue(toggle => ExecuteOrder.debug_
 
 function ReloadScripts() {
 	EventsSDK.emit("GameEnded", false)
-	global.reload("eTE9Te5rgBYThsO", true)
+	globalThis.reload("eTE9Te5rgBYThsO", true)
 }
 
 Menu.AddButton("Reload Scripts").OnValue(ReloadScripts)

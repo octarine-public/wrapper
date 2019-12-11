@@ -34,7 +34,7 @@ let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 let InStage: C_BaseEntity[] = []
 
 export let LocalPlayer: Player
-global.LocalPlayer = undefined
+globalThis.LocalPlayer = undefined
 
 let player_slot = NaN
 Events.on("ServerInfo", info => player_slot = info.player_slot)
@@ -119,7 +119,7 @@ const EntityManager = new (class EntityManager {
 	}
 })()
 
-export default global.EntityManager = EntityManager
+export default globalThis.EntityManager = EntityManager
 
 Events.on("EntityCreated", (ent, index) => {
 	{ // add globals
@@ -155,7 +155,7 @@ Events.on("EntityDestroyed", (ent, index) => {
 			Game.m_GameManager = undefined
 
 		if (ent instanceof C_DOTAPlayer && LocalPlayer?.m_pBaseEntity === ent)
-			global.LocalPlayer = LocalPlayer = undefined
+			globalThis.LocalPlayer = LocalPlayer = undefined
 	}
 
 	DeleteFromCache(ent)
@@ -196,7 +196,7 @@ function AddToCache(ent: C_BaseEntity, already_valid = false) {
 
 	let entity = ClassFromNative(ent)
 	if (entity.Index === player_slot + 1 /* skip worldent */)
-		global.LocalPlayer = LocalPlayer = entity as Player
+		globalThis.LocalPlayer = LocalPlayer = entity as Player
 	entity.OnCreated()
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
 	AllEntities.push(entity)

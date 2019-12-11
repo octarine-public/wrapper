@@ -157,7 +157,7 @@ function ProfileEmit(name: string, cancellable?: boolean, ...args: any[]) {
 }
 Events.emit = ProfileEmit
 
-global.dump_stats = () => {
+globalThis.dump_stats = () => {
 	console.log("Average: ")
 	for (let [name, [took]] of avg_map.entries())
 		console.log(`${name}: ${took}ms`)

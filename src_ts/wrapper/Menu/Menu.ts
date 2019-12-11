@@ -129,4 +129,4 @@ InputEventSDK.on("MouseKeyUp", key => {
 	return true
 })
 
-export default global.Menu = Menu
+export default globalThis.Menu = Menu

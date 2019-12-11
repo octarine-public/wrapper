@@ -134,4 +134,4 @@ export default class Color {
 		return true
 	}
 }
-global.Color = Color
+globalThis.Color = Color

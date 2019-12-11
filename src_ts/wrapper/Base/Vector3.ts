@@ -830,4 +830,4 @@ export default class Vector3 {
 		return true
 	}
 }
-global.Vector3 = Vector3
+globalThis.Vector3 = Vector3

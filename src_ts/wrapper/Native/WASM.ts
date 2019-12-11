@@ -16,11 +16,11 @@ var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("~/wrapper.w
 	my_free: (ptr: number) => void,
 	ParseImage: (ptr: number, size: number) => number
 }
-global.wasm = wasm
+globalThis.wasm = wasm
 wasm._start()
 
 var IOBuffer = new Float32Array(wasm.memory.buffer, wasm.GetIOBuffer())
-global.WASMIOBuffer = IOBuffer
+globalThis.WASMIOBuffer = IOBuffer
 
 export function OnDraw() {
 	let camera_position = Vector3.fromIOBuffer(Camera.Position) || new Vector3()

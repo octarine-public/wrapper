@@ -123,7 +123,7 @@ function changeFieldsByEvents(unit: Unit) {
 	}
 }
 
-global.DebugBuffsParents = () => {
+globalThis.DebugBuffsParents = () => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
 		let parent = EntityManager.EntityByHandle(mod.m_pBuff.parent)
@@ -133,7 +133,7 @@ global.DebugBuffsParents = () => {
 	})
 }
 
-global.DebugBuffs = () => {
+globalThis.DebugBuffs = () => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
 		console.log(mod.Parent?.m_pBaseEntity?.constructor?.name, mod.Name, mod.ElapsedTime, mod.Duration, mod.m_pBuff.entry_type)

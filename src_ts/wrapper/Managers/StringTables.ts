@@ -1,6 +1,6 @@
 import Events from "./Events"
 
-let StringTables = global.StringTables = new Map<string, Map<number, [string, string]>>()
+let StringTables = globalThis.StringTables = new Map<string, Map<number, [string, string]>>()
 Events.on("RemoveAllStringTables", () => {
 	StringTables.clear()
 })
@@ -12,7 +12,7 @@ Events.on("UpdateStringTable", (name, update) => {
 	update.forEach((val, key) => table.set(key, val))
 })
 
-global.DumpStringTables = () => {
+globalThis.DumpStringTables = () => {
 	// loop-optimizer: KEEP
 	StringTables.forEach((map, name) => {
 		console.log(name)

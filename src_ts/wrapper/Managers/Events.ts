@@ -322,7 +322,6 @@ declare interface Events extends EventEmitter {
 	// it's named ActiveModifiersChanged not because it's active modifiers, but because of it's managed by stringtable ActiveModifiers
 	on(name: "ActiveModifiersChanged", listener: (update: Map<number, IModifier>) => void): EventEmitter
 }
-const Events: Events = new EventEmitter()
-global.Events = Events
+const Events: Events = globalThis.Events = new EventEmitter()
 export default Events
 setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))

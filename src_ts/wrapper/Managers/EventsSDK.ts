@@ -116,8 +116,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "ModifierRemoved", listener: (mod: Modifier) => void): EventEmitter
 }
 
-const EventsSDK: EventsSDK = new EventEmitter()
-global.EventsSDK = EventsSDK
+const EventsSDK: EventsSDK = globalThis.EventsSDK = new EventEmitter()
 export default EventsSDK
 
 Events.on("Update", cmd => {

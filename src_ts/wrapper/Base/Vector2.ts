@@ -759,4 +759,4 @@ export default class Vector2 {
 		return true
 	}
 }
-global.Vector2 = Vector2
+globalThis.Vector2 = Vector2

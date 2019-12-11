@@ -2,7 +2,7 @@ import EntityManager from "../../Managers/EntityManager"
 import Courier from "../Base/Courier"
 import Player from "../Base/Player"
 
-export default global.PlayerResource = new (class PlayerResource {
+export default globalThis.PlayerResource = new (class PlayerResource {
 	public m_pBaseEntity: C_DOTA_PlayerResource
 
 	public get Names(): string[] {

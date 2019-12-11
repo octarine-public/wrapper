@@ -4,7 +4,7 @@ import { Flow_t } from "../../Enums/Flow_t"
 import { DOTA_GameState } from "../../Enums/DOTA_GameState"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 
-let Game = global.Game = new (class Game {
+let Game = globalThis.Game = new (class Game {
 	public m_GameRules: C_DOTAGamerules
 	public m_GameManager: C_DOTAGameManager
 	public m_StockInfo: StockInfo[]

@@ -402,4 +402,4 @@ let RendererSDK_ = new (class RendererSDK {
 
 Events.after("Draw", () => WindowSize = Vector2.fromIOBuffer(Renderer.WindowSize))
 
-export default global.RendererSDK = RendererSDK_
+export default globalThis.RendererSDK = RendererSDK_
