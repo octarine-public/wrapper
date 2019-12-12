@@ -293,17 +293,6 @@ Events.on("NetworkFieldsChanged", map => {
 			return
 		// loop-optimizer: KEEP
 		map2.forEach((ar, trigger) => ar.forEach(([field_name, field_type, array_index]) => {
-			/*EventsSDK.emit (
-				"NetworkFieldChanged",
-				false,
-				new NetworkFieldChanged (
-					entity,
-					trigger,
-					field_name,
-					field_type,
-					array_index,
-				),
-			)*/
 			if (array_index === -1)
 				switch (field_name) {
 					case "m_hOwnerEntity":
@@ -415,7 +404,7 @@ Events.on("NetworkFieldsChanged", map => {
 						Game.IsPaused = Game.m_GameRules.m_bGamePaused
 						break
 					case "m_name":
-						entity.Name_ = entity.Entity?.m_name
+						entity.Name_ = entity.Entity?.m_name ?? entity.Name_
 						if (entity.Name_ !== undefined && entity instanceof Ability)
 							entity.AbilityData = new AbilityData(entity.m_pBaseEntity.m_pAbilityData)
 						break
