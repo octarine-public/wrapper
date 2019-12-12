@@ -44,7 +44,6 @@ interface EventsSDK extends EventEmitter {
 	 */
 	on(name: "Tick", callback: () => void): EventEmitter
 	on(name: "Update", callback: (cmd: UserCmd) => void): EventEmitter
-	on(name: "UnitStateChanged", callback: (npc: Unit) => void): EventEmitter
 	on(name: "TeamVisibilityChanged", callback: (npc: Unit) => void): EventEmitter
 	on(name: "TrueSightedChanged", callback: (npc: Unit) => void): EventEmitter
 	on(name: "HasScepterChanged", callback: (npc: Unit) => void): EventEmitter
@@ -380,10 +379,6 @@ Events.on("NetworkFieldsChanged", map => {
 							EventsSDK.emit("TeamVisibilityChanged", false, entity)
 						}
 						break
-					case "m_nUnitState64":
-						if (entity instanceof Unit)
-							EventsSDK.emit("UnitStateChanged", false, entity)
-						break
 
 					// manually whitelisted
 					case "m_angRotation":
@@ -415,18 +410,14 @@ Events.on("NetworkFieldsChanged", map => {
 			else
 				switch (field_name) {
 					case "m_hAbilities":
-						if (entity instanceof Unit) {
-							let abil = entity.m_pBaseEntity.m_hAbilities[array_index]
-							entity.AbilitiesBook.Spells_[array_index] = abil
-						}
+						if (entity instanceof Unit)
+							entity.AbilitiesBook.Spells_[array_index] = entity.m_pBaseEntity.m_hAbilities[array_index]
 						break
 
 					// manually whitelisted
 					case "m_hItems":
-						if (entity instanceof Unit) {
-							let item = entity.m_pBaseEntity.m_Inventory.m_hItems[array_index]
-							entity.Inventory.TotalItems_[array_index] = item
-						}
+						if (entity instanceof Unit)
+							entity.Inventory.TotalItems_[array_index] = entity.m_pBaseEntity.m_Inventory.m_hItems[array_index]
 						break
 
 					default:
