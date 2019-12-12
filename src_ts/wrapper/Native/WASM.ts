@@ -3,7 +3,11 @@ import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { RendererSDK } from "../Imports"
 
-var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("~/wrapper.wasm")), {}).exports as any as {
+var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("~/wrapper.wasm")), {
+	env: {
+		emscripten_notify_memory_growth: emscripten_notify_memory_growth
+	}
+}).exports as any as {
 	_start: () => void,
 	CacheFrame: () => void,
 	GetIOBuffer: () => number,
@@ -19,8 +23,11 @@ var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("~/wrapper.w
 globalThis.wasm = wasm
 wasm._start()
 
-var IOBuffer = new Float32Array(wasm.memory.buffer, wasm.GetIOBuffer())
-globalThis.WASMIOBuffer = IOBuffer
+var IOBuffer: Float32Array
+function emscripten_notify_memory_growth(memoryIndex) {
+	IOBuffer = globalThis.WASMIOBuffer = new Float32Array(wasm.memory.buffer, wasm.GetIOBuffer())
+}
+emscripten_notify_memory_growth(0)
 
 export function OnDraw() {
 	let camera_position = Vector3.fromIOBuffer(Camera.Position) || new Vector3()
