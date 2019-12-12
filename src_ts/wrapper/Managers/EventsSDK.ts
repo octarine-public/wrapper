@@ -287,12 +287,12 @@ Events.on("InputCaptured", is_captured => EventsSDK.emit(
 
 Events.on("NetworkFieldsChanged", map => {
 	// loop-optimizer: KEEP
-	map.forEach((map2, native_ent) => {
+	map.forEach((ar, native_ent) => {
 		let entity = EntityManager.GetEntityByNative(native_ent)
 		if (entity === undefined)
 			return
 		// loop-optimizer: KEEP
-		map2.forEach((ar, trigger) => ar.forEach(([field_name, field_type, array_index]) => {
+		ar.forEach(([field_name, array_index]) => {
 			if (array_index === -1)
 				switch (field_name) {
 					case "m_hOwnerEntity":
@@ -432,6 +432,6 @@ Events.on("NetworkFieldsChanged", map => {
 					default:
 						break
 				}
-		}))
+		})
 	})
 })
