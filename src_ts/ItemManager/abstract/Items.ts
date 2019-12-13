@@ -27,6 +27,13 @@ export default class ItemBase extends ItemManagerBase {
 		}
 		return this.unit.GetItemByName(name)
 	}
+	public get Sphere(): Item {
+		let name = "item_sphere"
+		if (this.unit === undefined) {
+			return name as any
+		}
+		return this.unit.GetItemByName(name)
+	}
 	public get Dust(): Item {
 		let name = "item_dust"
 		if (this.unit === undefined) {

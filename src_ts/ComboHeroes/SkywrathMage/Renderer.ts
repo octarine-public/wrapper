@@ -20,7 +20,7 @@ import { MouseTarget, MyHero, initDrawMap, initItemsMap, initAbilityMap } from "
 import { ComboActived } from "./Module/Combo"
 
 export function Draw() {
-	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || MyHero === undefined)
+	if (!Base.IsRestrictions(State) || LocalPlayer === undefined || LocalPlayer.IsSpectator || MyHero === undefined)
 		return
 
 	let Particle = initDrawMap.get(MyHero),

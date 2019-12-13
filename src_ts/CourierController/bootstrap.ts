@@ -1,48 +1,28 @@
 
-import { EventsSDK, Hero, Courier, TickSleeper, Unit, ArrayExtensions, DOTA_GameMode, Game, Events, LocalPlayer } from "wrapper/Imports"
-import { State, StateBestPos } from "./Menu"
-import { AutoSafe } from "./module/AutoSafe"
-import { AutoDeliver } from "./module/AutoDeliver"
+import { EventsSDK, Hero, TickSleeper, Game, Events, LocalPlayer } from "wrapper/Imports"
+import { State, StateBestPos } from "Menu"
+import { CSODOTALobby } from "Data/Data"
+import { CourierBase } from "Data/Helper"
+import { AutoSafe } from "module/AutoSafe"
+import { AlliesCouriers } from "Core/Listeners"
+import { AutoDeliver } from "module/AutoDeliver"
 //import { AutoUseItems } from "./module/AutoUseItems"
-import { CSODOTALobby } from "./Data/Data"
-import { CourierBase } from "./Data/Helper"
-import { MoveCourier, CourierBestPosition } from "./module/BestPosition"
-
+import { MoveCourier, CourierBestPosition } from "module/BestPosition"
 export let Owner: Hero
-export let allyCourier: Courier
-export let EnemyHero: Hero[] = []
-export let unit_anim: Unit[] = []
-
 export const Sleep = new TickSleeper
 
 export let OwnerIsValid = () => Owner !== undefined && Owner.IsAlive
 //export let AutoUseCourierPosition: Map<number, Vector3> = new Map()
 
 EventsSDK.on("Tick", () => {
-	if (!State.value || Sleep.Sleeping || !OwnerIsValid() || !CourierBase.IsValidCourier(allyCourier))
+	if (!State.value || Sleep.Sleeping || !OwnerIsValid())
 		return
-	if (AutoDeliver())
+	if (AlliesCouriers.some(courier => !CourierBase.IsValidCourier(courier) || AutoDeliver(courier)
+		|| CourierBestPosition(courier) || AutoSafe(courier)))
 		return
 	// if (AutoUseItems())
 	// 	return
-	if (CourierBestPosition())
-		return
-	if (AutoSafe())
-		return
-
 })
-// EventsSDK.on("Draw", () => {
-// 	// loop-optimizer: KEEP
-// 	AutoUseCourierPosition.forEach(position => {
-// 		let screen_pos = RendererSDK.WorldToScreen(position)
-// 		if (screen_pos === undefined)
-// 			return
-// 		RendererSDK.Text("Spot", screen_pos, new Color(0, 255, 0))
-// 		return
-// 	})
-
-// })
-
 Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 	if (id !== 2004 || !State.value || LocalPlayer === undefined || Game.RawGameTime >= 700)
 		return
@@ -55,35 +35,29 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 EventsSDK.on("GameStarted", hero => {
 	if (Owner === undefined)
 		Owner = hero
+	if (!StateBestPos.value)
+		return
+	setTimeout(() => AlliesCouriers.some(courier => MoveCourier(false, courier)), 1000)
 })
 EventsSDK.on("GameEnded", () => {
-	unit_anim = []
-	EnemyHero = []
 	Owner = undefined
 	Sleep.ResetTimer()
-	allyCourier = undefined
 	//AutoUseCourierPosition.clear()
 	CourierBase.AUTO_USE_ITEMS = false
 	CourierBase.DELIVER_DISABLE = false
 })
-EventsSDK.on("EntityCreated", entity => {
-	if (entity instanceof Hero)
-		EnemyHero.push(entity)
-	if (!(entity instanceof Courier) || entity.IsEnemy() || !entity.IsControllable)
-		return
-	if (!State.value)
-		return
-	allyCourier = entity
-	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !StateBestPos.value)
-		return
-	setTimeout(() => MoveCourier(), 1000)
-})
-EventsSDK.on("EntityDestroyed", ent => {
-	if (allyCourier === ent)
-		allyCourier = undefined
-	if (ent instanceof Hero)
-		ArrayExtensions.arrayRemove(EnemyHero, ent)
-})
+
+// EventsSDK.on("Draw", () => {
+// 	// loop-optimizer: KEEP
+// 	AutoUseCourierPosition.forEach(position => {
+// 		let screen_pos = RendererSDK.WorldToScreen(position)
+// 		if (screen_pos === undefined)
+// 			return
+// 		RendererSDK.Text("Spot", screen_pos, new Color(0, 255, 0))
+// 		return
+// 	})
+
+// })
 // EventsSDK.on("ParticleCreated", (id: number, path: string, handle: bigint) => {
 // 	if (!OwnerIsValid() || AutoUseCourierPosition.size !== 0)
 // 		return
@@ -100,5 +74,3 @@ EventsSDK.on("EntityDestroyed", ent => {
 // 		return
 // 	AutoUseCourierPosition.set(id, position)
 // })
-EventsSDK.on("UnitAnimation", unit => unit.IsEnemy() && unit_anim.push(unit))
-EventsSDK.on("UnitAnimationEnd", unit => unit.IsEnemy() && ArrayExtensions.arrayRemove(unit_anim, unit))

@@ -1,34 +1,40 @@
-import { Entity, EventsSDK } from "wrapper/Imports"
-import * as AutoDeward from "../module/AutoDeward/Helper"
-import * as AutoGlyph from "../module/AutoGlyph/Helper"
-import * as AutoItems from "../module/AutoItems/Helper"
+import { EventsSDK, Unit, Vector3 } from "wrapper/Imports"
+import InitItems from "./Items"
 import { StateBase } from "./MenuBase"
+import * as AutoItems from "../module/AutoItems/Helper"
 
 //import * as Shrine from "../module/Shrine/Helper"
+export const initItemsMap = new Map<Unit, InitItems>()
+export let glimer: Map<Vector3, InitItems> = new Map()
+export let ParticleGlimer: Map<number, Vector3> = new Map()
 
-EventsSDK.on("EntityCreated", ent => {
-	//Shrine.EntityCreate(ent)
-	AutoGlyph.EntityCreate(ent)
-	AutoItems.EntityCreate(ent)
-	AutoDeward.EntityCreate(ent)
-})
+export function GlimerClear() {
+	ParticleGlimer.clear()
+	glimer.clear()
+}
 
-EventsSDK.on("EntityDestroyed", ent => {
-	AutoGlyph.EntityDestroy(ent)
-	AutoItems.EntityDestroy(ent)
-})
+export function MapClear() {
+	glimer.clear()
+	initItemsMap.clear()
+	ParticleGlimer.clear()
+}
 
 EventsSDK.on("PrepareUnitOrders", args => {
-	if (!StateBase.value) {
+	if (!StateBase.value)
 		return true
-	}
 	AutoItems.UseMouseItemTarget(args)
-	if (!AutoItems.OnExecuteOrder(args)) {
+	if (!AutoItems.OnExecuteOrder(args))
 		return false
-	}
 	return true
 })
+
 EventsSDK.on("ParticleCreated", (id, path, handle, attach, entity) => {
-	AutoItems.ParticleCreate(id, handle, entity instanceof Entity ? entity : undefined)
+	if (handle === 1954660700683781942n)
+		ParticleGlimer.set(id, new Vector3)
 })
-EventsSDK.on("ParticleUpdated", AutoItems.ParticleCreateUpdate)
+
+EventsSDK.on("ParticleUpdated", (id, controlPoint, position) => {
+	let part = ParticleGlimer.get(id)
+	if (part !== undefined)
+		ParticleGlimer.set(id, position)
+})

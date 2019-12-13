@@ -232,11 +232,54 @@ export default class Ability extends Entity {
 	public HasTargetType(flag: DOTA_UNIT_TARGET_TYPE): boolean {
 		return HasMask(this.AbilityData.m_pAbilityData.m_iAbilityTargetType, flag)
 	}
+	public CanHit(target: Unit) {
+		let range = 0
+		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) || this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
+			if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) && !target)
+				return false
+			switch (this.Name) {
+				case "lion_impale":
+					range += this.CastRange + this.GetSpecialValue("width") + this.GetSpecialValue("length_buffer")
+					break
+				case "nyx_assassin_impale":
+					range += this.CastRange + this.GetSpecialValue("width")
+					break
+				case "queenofpain_scream_of_pain":
+					range += this.CastRange + this.GetSpecialValue("area_of_effect")
+					break
+				case "vengefulspirit_wave_of_terror":
+					range += this.CastRange + this.GetSpecialValue("wave_width")
+					break
+				case "venomancer_venomous_gale":
+					range += this.CastRange + this.GetSpecialValue("radius")
+					break
+				case "monkey_king_boundless_strike":
+					range += this.CastRange + this.GetSpecialValue("strike_radius")
+					break
+				case "magnataur_shockwave":
+					range += this.CastRange + this.GetSpecialValue("shock_width")
+					break
+				case "tusk_ice_shards":
+					range += this.CastRange + this.GetSpecialValue("shard_width")
+					break
+				default:
+					range += this.CastRange
+					break
+			}
+			range += this.Owner.HullRadius
+		} else {
+			range = this.CastRange
+			if (range === 0)
+				range = this.AOERadius
+		}
+		if (range > 0)
+			range += target.HullRadius;
+		return this.Owner.Distance2D(target) < range
+	}
 	public CanBeCasted(bonusMana: number = 0): boolean {
 		if (!this.IsValid || !this.IsReady) {
 			return false
 		}
-
 		return this.Level > 0
 			&& !this.Owner.IsSilenced
 			&& this.IsManaEnough(bonusMana)

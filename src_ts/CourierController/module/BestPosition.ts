@@ -1,40 +1,43 @@
-import { Hero, Courier, Vector3, DOTA_GameMode, Game } from "wrapper/Imports"
-import { StateBestPos } from "../Menu"
-import { CourierBase } from "../Data/Helper"
-import { Sleep, allyCourier, EnemyHero, OwnerIsValid } from "../bootstrap"
+import { Courier, Vector3, DOTA_GameMode, Game, Unit, Creep, Hero } from "wrapper/Imports"
+import { StateBestPos } from "Menu"
+import { CourierBase } from "Data/Helper"
+import { EnemyUnits } from "Core/Listeners"
+import { Sleep, OwnerIsValid } from "bootstrap"
 
-function CourierLogicBestPosition(enemy: Hero, StateCourier: Courier, Position: Vector3) {
-	if (!enemy.IsEnemy() || enemy.IsDormant || !enemy.IsAlive)
+function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector3) {
+	if (!unit.IsAlive || unit.IsDormant)
 		return false
-	CourierBase.DELIVER_DISABLE = CourierBase.IsRangeCourier(enemy, Position)
-	if (CourierBase.IsRangeCourier(enemy, Position)) {
-		if (StateCourier.State !== CourierState_t.COURIER_STATE_AT_BASE && StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE) {
-			MoveCourier(true)
+	CourierBase.DELIVER_DISABLE = CourierBase.IsRangeCourier(unit, Position)
+	if (CourierBase.IsRangeCourier(unit, Position)) {
+		if (courier.State !== CourierState_t.COURIER_STATE_AT_BASE && courier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE) {
+			MoveCourier(true, courier)
 			return false
 		}
 	}
-	else if (!CourierBase.IsRangeCourier(allyCourier, Position, 50) && StateCourier.StateHero === undefined) {
-		if (StateCourier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE) {
-			MoveCourier()
+	else if (!CourierBase.IsRangeCourier(courier, Position, 50) && courier.StateHero === undefined) {
+		if (courier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE) {
+			MoveCourier(false, courier)
 			return true
 		}
 	}
 }
 
-export function CourierBestPosition() {
+export function CourierBestPosition(courier: Courier) {
 	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !StateBestPos.value)
 		return false
-	return EnemyHero.some(enemy => {
-		switch (allyCourier.State) {
+	return EnemyUnits.some(unit => {
+		if (!(unit instanceof Creep) && !(unit instanceof Hero))
+			return false
+		switch (courier.State) {
 			case CourierState_t.COURIER_STATE_IDLE:
 			case CourierState_t.COURIER_STATE_AT_BASE:
 			case CourierState_t.COURIER_STATE_RETURNING_TO_BASE:
-				if (!CourierLogicBestPosition(enemy, allyCourier, CourierBase.Position()))
+				if (!CourierLogicBestPosition(unit, courier, CourierBase.Position()))
 					return false
 			case CourierState_t.COURIER_STATE_MOVING:
 			case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
-				if (enemy.IsEnemy() && enemy.IsAlive && !enemy.IsDormant && CourierBase.IsRangeCourier(enemy)) {
-					MoveCourier(true)
+				if (unit.IsAlive && !unit.IsDormant && CourierBase.IsRangeCourier(unit)) {
+					MoveCourier(true, courier)
 					CourierBase.DELIVER_DISABLE = true
 					return true
 				}
@@ -44,16 +47,16 @@ export function CourierBestPosition() {
 	})
 }
 
-export function MoveCourier(Safe: boolean = false, line?: number) {
-	if (Game.IsPaused || !OwnerIsValid() || !CourierBase.IsValidCourier(allyCourier))
+export function MoveCourier(Safe: boolean = false, courier: Courier, line?: number) {
+	if (Game.IsPaused || !OwnerIsValid() || !CourierBase.IsValidCourier(courier))
 		return
 	if (!Safe) {
-		allyCourier.MoveTo(CourierBase.Position(false, line))
+		courier.MoveTo(CourierBase.Position(false, line))
 		Sleep.Sleep(CourierBase.CastDelay)
 		return
 	}
-	if (!CourierBase.IsRangeCourier(allyCourier, CourierBase.Position(Safe, line), 150)) {
-		allyCourier.MoveTo(CourierBase.Position(Safe, line))
+	if (!CourierBase.IsRangeCourier(courier, CourierBase.Position(Safe, line), 150)) {
+		courier.MoveTo(CourierBase.Position(Safe, line))
 		Sleep.Sleep(CourierBase.CastDelay)
 		return
 	}
