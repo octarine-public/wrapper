@@ -195,14 +195,12 @@ function CheckIsInStagingEntity(ent: C_BaseEntity) {
 	return ent_ === undefined || HasBit(ent_.m_flags, 2) || (ent instanceof C_DOTABaseAbility && ent_.m_name === undefined)
 }
 
-setInterval(() => {
-	InStage.forEach(ent => {
-		if (CheckIsInStagingEntity(ent))
-			return
-		ArrayExtensions.arrayRemove(InStage, ent)
-		AddToCache(ent, true)
-	})
-}, 5)
+setInterval(() => InStage = InStage.filter(ent => {
+	if (CheckIsInStagingEntity(ent))
+		return true
+	AddToCache(ent, true)
+	return false
+}), 5)
 
 function AddToCache(ent: C_BaseEntity, already_valid = false) {
 	if (!already_valid && CheckIsInStagingEntity(ent)) {
