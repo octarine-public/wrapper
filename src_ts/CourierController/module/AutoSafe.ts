@@ -1,4 +1,4 @@
-import { Ability, Game, DOTA_GameMode, Creep, Hero, Courier } from "wrapper/Imports"
+import { Ability, Game, DOTA_GameMode, Creep, Hero, Courier, Tower } from "wrapper/Imports"
 import { CourierBase } from "Data/Helper"
 import { autoShieldState, autoShieldTimer } from "Menu"
 import { Sleep } from "bootstrap"
@@ -30,7 +30,7 @@ function AbilityTypeReady(courier: Courier): Ability {
 }
 function SafePosDeliver(courier: Courier): boolean {
 	return EnemyUnits.some(unit => {
-		if (!(unit instanceof Creep) && !(unit instanceof Hero))
+		if (!(unit instanceof Creep) && !(unit instanceof Hero) && !(unit instanceof Tower))
 			return false
 		if (!unit.IsAlive || !unit.IsVisible)
 			return false
