@@ -6,3 +6,6 @@ export default class item_abyssal_blade extends Item {
 
 	public readonly m_pBaseEntity: C_DOTA_Item_AbyssalBlade
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("item_abyssal_blade", item_abyssal_blade)

@@ -21,3 +21,6 @@ export default class Courier extends Unit {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hCourierStateEntity) as Hero
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_Unit_Courier", Courier)

@@ -23,3 +23,6 @@ export default class item_bottle extends Item {
 		return this.CurrentCharges > 0 && this.StoredRune === DOTA_RUNES.DOTA_RUNE_INVALID && super.CanBeCasted(bonusMana)
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("item_bottle", item_bottle)

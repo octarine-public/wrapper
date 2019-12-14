@@ -9,3 +9,6 @@ export default class item_armlet extends Item {
 		return this.m_pBaseEntity.toggle_cooldown
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("item_armlet", item_armlet)

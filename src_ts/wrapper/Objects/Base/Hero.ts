@@ -83,3 +83,6 @@ export default class Hero extends Unit {
 		return super.SpellAmplification + (this.TotalIntellect * DamageAmplifyPerIntellectPrecent / 100)
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_BaseNPC_Hero", Hero)

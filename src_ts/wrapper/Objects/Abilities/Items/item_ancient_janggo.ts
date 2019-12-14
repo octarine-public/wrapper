@@ -17,3 +17,6 @@ export default class item_ancient_janggo extends Item {
 		return this.CurrentCharges > 0 && super.CanBeCasted(bonusMana)
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("item_ancient_janggo", item_ancient_janggo)

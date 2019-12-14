@@ -5,3 +5,6 @@ export default class item_aeon_disk extends Item {
 
 	public readonly m_pBaseEntity: C_DOTA_Item_AeonDisk
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("item_aeon_disk", item_aeon_disk)

@@ -6,7 +6,6 @@ import ExecuteOrder from "../Native/ExecuteOrder"
 import Vector3 from "../Base/Vector3"
 import Ability from "../Objects/Base/Ability"
 import Unit from "../Objects/Base/Unit"
-import AbilityData from "../Objects/DataBook/AbilityData"
 import Game from "../Objects/GameResources/GameRules"
 import { LocalPlayer } from "./EntityManager"
 import Player from "../Objects/Base/Player"
@@ -397,11 +396,6 @@ Events.on("NetworkFieldsChanged", map => {
 						break
 					case "m_bGamePaused":
 						Game.IsPaused = Game.m_GameRules.m_bGamePaused
-						break
-					case "m_name":
-						entity.Name_ = entity.Entity?.m_name ?? entity.Name_
-						if (entity.Name_ !== undefined && entity instanceof Ability)
-							entity.AbilityData = new AbilityData(entity.m_pBaseEntity.m_pAbilityData)
 						break
 
 					default:

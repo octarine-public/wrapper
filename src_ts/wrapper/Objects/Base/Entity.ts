@@ -152,6 +152,13 @@ export default class Entity {
 	constructor(public m_pBaseEntity: C_BaseEntity) {
 		this.Entity = this.m_pBaseEntity.m_pEntity
 		this.Index = EntityManager.IndexByNative(m_pBaseEntity)
+		this.MaxHP = this.m_pBaseEntity.m_iMaxHealth
+		this.HP = this.m_pBaseEntity.m_iHealth
+		this.LifeState = this.m_pBaseEntity.m_lifeState
+		this.Team = this.m_pBaseEntity.m_iTeamNum
+		this.Owner_ = this.m_pBaseEntity.m_hOwnerEntity
+		if (this.Entity !== undefined)
+			this.Name_ = this.Entity.m_name ?? this.Entity.m_designerName ?? ""
 	}
 
 	/* ================ GETTERS ================ */
@@ -376,3 +383,6 @@ export default class Entity {
 		return this.Name
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_BaseEntity", Entity)

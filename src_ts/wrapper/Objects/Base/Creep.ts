@@ -10,3 +10,6 @@ export default class Creep extends Unit {
 		return this.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_BaseNPC_Creep", Creep)

@@ -10,3 +10,6 @@ export default class Shop extends Building {
 		return true
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_BaseNPC_Shop", Shop)

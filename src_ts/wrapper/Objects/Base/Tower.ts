@@ -12,3 +12,6 @@ export default class Tower extends Building {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hTowerAttackTarget) as Unit
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_BaseNPC_Tower", Tower)

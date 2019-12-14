@@ -6,7 +6,8 @@
 		"@babel/plugin-syntax-bigint",
 		"./babel-plugin-loop-optimizer",
 		"@babel/plugin-syntax-optional-chaining",
-		"@babel/plugin-syntax-nullish-coalescing-operator"
+		"@babel/plugin-syntax-nullish-coalescing-operator",
+		"@babel/plugin-syntax-dynamic-import"
 	],
 	"comments": false,
 	"ignore": [

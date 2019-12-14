@@ -101,10 +101,18 @@ export default class Unit extends Entity {
 
 	constructor(m_pBaseEntity: C_BaseEntity) {
 		super(m_pBaseEntity)
+		this.RotationDifference = this.m_pBaseEntity.m_anglediff
+		this.ManaRegen = this.m_pBaseEntity.m_flManaThinkRegen
+		this.HPRegen = this.m_pBaseEntity.m_flHealthThinkRegen
+		this.IsControllableByPlayerMask = this.m_pBaseEntity.m_iIsControllableByPlayer64
+		this.IsVisibleForTeamMask = this.m_pBaseEntity.m_iTaggedAsVisibleByTeam
+		this.IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
+		this.NetworkActivity = this.m_pBaseEntity.m_NetworkActivity
+		this.LastVisibleTime = Game.RawGameTime
+
 		this.AbilitiesBook = new AbilitiesBook(this)
 		this.Inventory = new Inventory(this)
 		this.ModifiersBook = new ModifiersBook(this)
-		//this.DotaMap = new DotaMap(this)
 	}
 	/* ================ GETTERS ================ */
 	public get IsHero(): boolean {
@@ -1085,3 +1093,7 @@ export default class Unit extends Entity {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED, unit: this, position, queue, showEffects })
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+import Game from "../GameResources/GameRules";
+RegisterClass("C_DOTA_BaseNPC", Unit)

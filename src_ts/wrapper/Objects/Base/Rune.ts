@@ -17,3 +17,6 @@ export default class Rune extends Entity {
 		return this.Type === type
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_Item_Rune", Rune)

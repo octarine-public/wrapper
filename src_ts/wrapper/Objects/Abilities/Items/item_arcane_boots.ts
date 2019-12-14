@@ -10,3 +10,6 @@ export default class item_arcane_boots extends Item {
 		return this.AuraRadius
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("item_arcane_boots", item_arcane_boots)

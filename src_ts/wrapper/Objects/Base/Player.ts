@@ -227,3 +227,6 @@ export default class Player extends Entity {
 	// WardsPurchased			=> NonSpectator
 	// StickyItemId ??
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTAPlayer", Player)

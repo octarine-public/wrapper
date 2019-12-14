@@ -5,3 +5,6 @@ export default class item_assault extends Item {
 
 	public readonly m_pBaseEntity: C_DOTA_Item_Assault_Cuirass
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("item_assault", item_assault)

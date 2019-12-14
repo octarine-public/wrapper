@@ -17,6 +17,19 @@ export default class Ability extends Entity {
 	public LastCastClickTime = 0
 	public IsToggled = false
 
+	constructor(m_pBaseEntity: C_BaseEntity) {
+		super(m_pBaseEntity)
+		this.LastCastClickTime = this.m_pBaseEntity.m_flLastCastClickTime
+		this.IsToggled = this.m_pBaseEntity.m_bToggleState
+		this.ChannelStartTime = this.m_pBaseEntity.m_flChannelStartTime
+		this.CastStartTime = this.m_pBaseEntity.m_flCastStartTime
+		this.IsInAbilityPhase = this.m_pBaseEntity.m_bInAbilityPhase
+		this.CooldownLength = this.m_pBaseEntity.m_flCooldownLength
+		this.Cooldown = this.m_pBaseEntity.m_fCooldown
+		this.Level = this.m_pBaseEntity.m_iLevel
+		this.AbilityData = new AbilityData(this.m_pBaseEntity.m_pAbilityData)
+	}
+
 	/* ============ BASE  ============ */
 
 	get Owner(): Unit {
@@ -286,3 +299,6 @@ export default class Ability extends Entity {
 			&& this.IsCooldownReady
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTABaseAbility", Ability)

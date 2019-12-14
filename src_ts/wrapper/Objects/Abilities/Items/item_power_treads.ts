@@ -7,3 +7,6 @@ export default class item_power_treads extends Item {
 		return this.m_pBaseEntity.m_iStat
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("item_power_treads", item_power_treads)

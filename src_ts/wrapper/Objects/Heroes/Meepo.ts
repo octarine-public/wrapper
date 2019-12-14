@@ -1,7 +1,7 @@
 import Hero from "../Base/Hero";
 
 export default class Meepo extends Hero {
-	public readonly m_pBaseEntity: C_DOTA_Unit_Hero_Meepo;
+	public readonly m_pBaseEntity: C_DOTA_Unit_Hero_Meepo
 
 	public get UnitIndex(): number {
 		// move it when we_stand will be wrapped as Ability
@@ -22,3 +22,6 @@ export default class Meepo extends Hero {
 		return this.m_pBaseEntity.m_bIsIllusion;
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_Unit_Hero_Meepo", Meepo)

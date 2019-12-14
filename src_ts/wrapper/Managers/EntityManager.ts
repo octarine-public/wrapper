@@ -20,7 +20,6 @@ import Building from "../Objects/Base/Building"
 import PhysicalItem from "../Objects/Base/PhysicalItem"
 import Tower from "../Objects/Base/Tower"
 
-import AbilityData from "../Objects/DataBook/AbilityData"
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/BitsExtensions"
@@ -193,7 +192,7 @@ Events.on("GameEvent", (name, obj) => {
 
 function CheckIsInStagingEntity(ent: C_BaseEntity) {
 	let ent_ = ent.m_pEntity
-	return ent_ === undefined || HasBit(ent_.m_flags, 2)
+	return ent_ === undefined || HasBit(ent_.m_flags, 2) || (ent instanceof C_DOTABaseAbility && ent_.m_name === undefined)
 }
 
 setInterval(() => {
@@ -212,14 +211,12 @@ function AddToCache(ent: C_BaseEntity, already_valid = false) {
 	}
 
 	let entity = ClassFromNative(ent)
-	if (entity.Index === player_slot + 1 /* skip worldent */)
+	if (entity.Index === player_slot + 1 /* skip worldent at index 0 */)
 		globalThis.LocalPlayer = LocalPlayer = entity as Player
 	entity.OnCreated()
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
 	AllEntities.push(entity)
 
-	// console.log("onEntityCreated SDK", entity, entity.m_pBaseEntity);
-	InitEntityFields(entity)
 	EventsSDK.emit("EntityCreated", false, entity)
 	FireEntityEvents(entity)
 }
@@ -260,10 +257,11 @@ function DeleteFromCache(entNative: C_BaseEntity) {
 
 function ClassFromNative(ent: C_BaseEntity): Entity {
 	{
-		let constructor = NativeToSDK[ent.constructor.name]
+		let constructor = NativeToSDK(ent instanceof C_DOTABaseAbility ? ent.m_pEntity.m_name : ent.constructor.name)
 		if (constructor !== undefined)
 			return new constructor(ent)
 	}
+	// TODO: automatically use Entity#Name/instanceof (instead of just comparing class names) here
 
 	if (ent instanceof C_DOTA_BaseNPC_Tower)
 		return new Tower(ent)
@@ -293,39 +291,6 @@ function ClassFromNative(ent: C_BaseEntity): Entity {
 }
 
 /* ================ CHANGE FIELDS ================ */
-
-function InitEntityFields(ent: Entity) {
-	ent.MaxHP = ent.m_pBaseEntity.m_iMaxHealth
-	ent.HP = ent.m_pBaseEntity.m_iHealth
-	ent.LifeState = ent.m_pBaseEntity.m_lifeState
-	ent.Team = ent.m_pBaseEntity.m_iTeamNum
-	ent.Owner_ = ent.m_pBaseEntity.m_hOwnerEntity
-	if (ent.Entity !== undefined)
-		ent.Name_ = ent.Entity.m_name || ent.Entity.m_designerName || ""
-	if (ent instanceof Unit) {
-		ent.RotationDifference = ent.m_pBaseEntity.m_anglediff
-		ent.ManaRegen = ent.m_pBaseEntity.m_flManaThinkRegen
-		ent.HPRegen = ent.m_pBaseEntity.m_flHealthThinkRegen
-		ent.IsControllableByPlayerMask = ent.m_pBaseEntity.m_iIsControllableByPlayer64
-		ent.IsVisibleForTeamMask = ent.m_pBaseEntity.m_iTaggedAsVisibleByTeam
-		ent.IsVisibleForEnemies = Unit.IsVisibleForEnemies(ent)
-		ent.NetworkActivity = ent.m_pBaseEntity.m_NetworkActivity
-		ent.LastVisibleTime = Game.RawGameTime;
-	}
-	if (ent instanceof Ability) {
-		ent.LastCastClickTime = ent.m_pBaseEntity.m_flLastCastClickTime
-		ent.IsToggled = ent.m_pBaseEntity.m_bToggleState
-		ent.ChannelStartTime = ent.m_pBaseEntity.m_flChannelStartTime
-		ent.CastStartTime = ent.m_pBaseEntity.m_flCastStartTime
-		ent.IsInAbilityPhase = ent.m_pBaseEntity.m_bInAbilityPhase
-		ent.CooldownLength = ent.m_pBaseEntity.m_flCooldownLength
-		ent.Cooldown = ent.m_pBaseEntity.m_fCooldown
-		ent.Level = ent.m_pBaseEntity.m_iLevel
-		let m_pAbilityData = ent.m_pBaseEntity.m_pAbilityData
-		if (m_pAbilityData !== undefined)
-			ent.AbilityData = new AbilityData(m_pAbilityData)
-	}
-}
 function FireEntityEvents(ent: Entity) {
 	EventsSDK.emit("LifeStateChanged", false, ent)
 	if (ent instanceof Unit) {

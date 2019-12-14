@@ -27,3 +27,6 @@ export default class PhysicalItem extends Entity {
 		return this.Name
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_Item_Physical", PhysicalItem)

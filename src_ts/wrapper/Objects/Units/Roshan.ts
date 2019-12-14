@@ -10,3 +10,6 @@ export default class Roshan extends Unit {
 		return this.m_pBaseEntity.m_iLastHealthPercent
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_Unit_Roshan", Roshan)

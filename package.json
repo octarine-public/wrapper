@@ -9,6 +9,7 @@
 		"@babel/plugin-syntax-nullish-coalescing-operator": "latest",
 		"@babel/plugin-syntax-bigint": "latest",
 		"@babel/preset-typescript": "latest",
+		"@babel/plugin-syntax-dynamic-import": "latest",
 		"tslint": "beta",
 		"typescript": "next"
 	},

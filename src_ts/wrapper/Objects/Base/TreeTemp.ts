@@ -10,3 +10,6 @@ export default class TempTree extends Entity {
 		return this.m_pBaseEntity.m_vecTreeCircleCenter
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_TempTree", TempTree)

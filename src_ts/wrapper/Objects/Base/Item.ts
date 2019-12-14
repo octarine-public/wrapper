@@ -147,3 +147,6 @@ export default class Item extends Ability {
 			&& this.IsCooldownReady
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_Item", Item)

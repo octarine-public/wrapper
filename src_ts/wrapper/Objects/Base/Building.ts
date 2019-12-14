@@ -13,3 +13,6 @@ export default class Building extends Unit {
 		return this.m_pBaseEntity.m_bHeroStatue
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_BaseNPC_Building", Building)

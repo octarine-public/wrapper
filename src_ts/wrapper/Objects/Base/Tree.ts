@@ -10,3 +10,6 @@ export default class Tree extends Entity {
 		return this.m_pBaseEntity.m_nBinaryID
 	}
 }
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("C_DOTA_MapTree", Tree)
