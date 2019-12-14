@@ -11,6 +11,12 @@ constructors.C_DOTA_MapTree = Tree
 import TreeTemp from "../Objects/Base/TreeTemp"
 constructors.C_DOTA_TempTree = TreeTemp
 
+import WardObserver from "../Objects/Base/WardObserver"
+constructors.C_DOTA_TempTree = WardObserver
+
+import WardTrueSight from "../Objects/Base/WardTrueSight"
+constructors.C_DOTA_TempTree = WardTrueSight
+
 import Shop from "../Objects/Base/Shop"
 constructors.C_DOTA_BaseNPC_Shop = Shop
 

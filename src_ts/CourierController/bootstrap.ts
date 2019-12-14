@@ -1,24 +1,24 @@
 
-import { EventsSDK, Hero, TickSleeper, Game, Events, LocalPlayer } from "wrapper/Imports"
+import { EventsSDK, Hero, TickSleeper, Game, Events, LocalPlayer, Courier, EntityManager, ArrayExtensions, Unit } from "wrapper/Imports"
 import { State, StateBestPos } from "Menu"
 import { CSODOTALobby } from "Data/Data"
 import { CourierBase } from "Data/Helper"
 import { AutoSafe } from "module/AutoSafe"
-import { AlliesCouriers } from "Core/Listeners"
 import { AutoDeliver } from "module/AutoDeliver"
 //import { AutoUseItems } from "./module/AutoUseItems"
 import { MoveCourier, CourierBestPosition } from "module/BestPosition"
 export let Owner: Hero
 export const Sleep = new TickSleeper
-
+export let UnitAnimation: Unit[] = []
 export let OwnerIsValid = () => Owner !== undefined && Owner.IsAlive
 //export let AutoUseCourierPosition: Map<number, Vector3> = new Map()
 
 EventsSDK.on("Tick", () => {
 	if (!State.value || Sleep.Sleeping || !OwnerIsValid())
 		return
-	if (AlliesCouriers.some(courier => !CourierBase.IsValidCourier(courier) || AutoDeliver(courier)
-		|| CourierBestPosition(courier) || AutoSafe(courier)))
+	if (EntityManager.GetEntitiesByClass<Courier>(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
+		.some(courier => !courier.IsEnemy() || !CourierBase.IsValidCourier(courier) || AutoDeliver(courier)
+			|| CourierBestPosition(courier) || AutoSafe(courier)))
 		return
 	// if (AutoUseItems())
 	// 	return
@@ -37,7 +37,9 @@ EventsSDK.on("GameStarted", hero => {
 		Owner = hero
 	if (!StateBestPos.value)
 		return
-	setTimeout(() => AlliesCouriers.some(courier => MoveCourier(false, courier)), 1000)
+	setTimeout(() =>
+		EntityManager.GetEntitiesByClass<Courier>(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(courier =>
+			!courier.IsEnemy() && MoveCourier(false, courier)), 1000)
 })
 EventsSDK.on("GameEnded", () => {
 	Owner = undefined
@@ -46,7 +48,14 @@ EventsSDK.on("GameEnded", () => {
 	CourierBase.AUTO_USE_ITEMS = false
 	CourierBase.DELIVER_DISABLE = false
 })
-
+EventsSDK.on("UnitAnimation", unit => {
+	if (unit.IsEnemy())
+		UnitAnimation.push(unit)
+})
+EventsSDK.on("UnitAnimationEnd", unit => {
+	if (unit.IsEnemy())
+		ArrayExtensions.arrayRemove(UnitAnimation, unit)
+})
 // EventsSDK.on("Draw", () => {
 // 	// loop-optimizer: KEEP
 // 	AutoUseCourierPosition.forEach(position => {

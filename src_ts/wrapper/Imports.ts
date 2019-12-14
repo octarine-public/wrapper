@@ -77,6 +77,8 @@ export { default as TreeTemp } from "./Objects/Base/TreeTemp"
 export { default as Building } from "./Objects/Base/Building"
 export { default as Tower } from "./Objects/Base/Tower"
 export { default as Shop } from "./Objects/Base/Shop"
+export { default as WardObserver } from "./Objects/Base/WardObserver"
+export { default as WardTrueSight } from "./Objects/Base/WardTrueSight"
 
 export { LinearProjectile, TrackingProjectile } from "./Objects/Base/Projectile"
 export { default as ProjectileManager } from "./Managers/ProjectileManager"

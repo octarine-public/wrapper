@@ -1,9 +1,8 @@
-import { Ability, Game, DOTA_GameMode, Creep, Hero, Courier, Tower } from "wrapper/Imports"
+import { Ability, Game, DOTA_GameMode, Creep, Hero, Courier, Tower, EntityManager, Unit } from "wrapper/Imports"
 import { CourierBase } from "Data/Helper"
 import { autoShieldState, autoShieldTimer } from "Menu"
-import { Sleep } from "bootstrap"
+import { Sleep, UnitAnimation } from "bootstrap"
 import { MoveCourier } from "BestPosition"
-import { EnemyUnits, EnemyUnitAnim } from "Core/Listeners"
 
 // use ability courier
 const per_ability_kill: string[] = [
@@ -29,7 +28,7 @@ function AbilityTypeReady(courier: Courier): Ability {
 			&& courier.GetAbilityByName("courier_burst"))
 }
 function SafePosDeliver(courier: Courier): boolean {
-	return EnemyUnits.some(unit => {
+	return EntityManager.GetEntitiesByClass<Unit>(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit => {
 		if (!(unit instanceof Creep) && !(unit instanceof Hero) && !(unit instanceof Tower))
 			return false
 		if (!unit.IsAlive || !unit.IsVisible)
@@ -54,19 +53,19 @@ export function AutoSafe(courier: Courier): boolean {
 	let ability = AbilityTypeReady(courier)
 	if (ability === undefined || ability.Level === 0 || ability.Cooldown)
 		return SafePosDeliver(courier)
-	if (EnemyUnitAnim.length <= 0)
+	if (UnitAnimation.length <= 0)
 		return false
-	let attack_courier = EnemyUnitAnim.some(unit =>
-		per_ability_kill.some(abil => unit.GetAbilityByName(abil) !== undefined
+	let attack_courier = UnitAnimation.some(unit =>
+		per_ability_kill.some(abil =>
+			unit.GetAbilityByName(abil) !== undefined
 			&& unit.IsInRange(courier, unit.GetAbilityByName(abil).CastRange)
 			&& !unit.GetAbilityByName(abil).IsInAbilityPhase
-		) ||
-		(
+		) || (
 			unit.IsInRange(courier, (unit.AttackRange + unit.HullRadius))
 			&& unit.AttackDamage(courier, true) > courier.HP
 		)
 	)
-	if (!attack_courier && EnemyUnitAnim.length !== 0 || !ability.IsCooldownReady)
+	if (!attack_courier && UnitAnimation.length !== 0 || !ability.IsCooldownReady)
 		return false
 
 	if (ability.Name === "courier_burst") {
