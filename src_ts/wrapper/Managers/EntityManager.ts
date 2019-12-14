@@ -117,6 +117,23 @@ const EntityManager = new (class EntityManager {
 			return true
 		})
 	}
+	public GetEntitiesByClass<T = Entity>(class_: any, flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
+		switch (flags) {
+			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY:
+				// loop-optimizer: FORWARD
+				return AllEntities.filter(ent => ent instanceof class_ && !ent.IsEnemy()) as any as T[]
+			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY:
+				// loop-optimizer: FORWARD
+				return AllEntities.filter(ent => ent instanceof class_ && ent.IsEnemy()) as any as T[]
+			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH:
+				// loop-optimizer: FORWARD
+				return AllEntities.filter(ent => ent instanceof class_) as any as T[]
+			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_CUSTOM:
+			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE:
+			default:
+				return []
+		}
+	}
 })()
 
 export default globalThis.EntityManager = EntityManager
