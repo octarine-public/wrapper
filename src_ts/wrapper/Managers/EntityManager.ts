@@ -27,6 +27,8 @@ import EventsSDK from "./EventsSDK"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Roshan from "../Objects/Units/Roshan"
 
+type Constructor<T> = { new(...args: any[]): T }
+
 let AllEntities: Entity[] = []
 let EntitiesIDs = new Map<number, C_BaseEntity>()
 let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
@@ -116,34 +118,34 @@ const EntityManager = new (class EntityManager {
 			return true
 		})
 	}
-	public GetEntitiesByClass<T = Entity>(class_: any, flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
+	public GetEntitiesByClass<T>(class_: Constructor<T>, flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
 		switch (flags) {
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY:
 				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => ent instanceof class_ && !ent.IsEnemy()) as any as T[]
+				return AllEntities.filter(ent => ent instanceof class_ && !ent.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY:
 				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => ent instanceof class_ && ent.IsEnemy()) as any as T[]
+				return AllEntities.filter(ent => ent instanceof class_ && ent.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH:
 				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => ent instanceof class_) as any as T[]
+				return AllEntities.filter(ent => ent instanceof class_) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_CUSTOM:
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE:
 			default:
 				return []
 		}
 	}
-	public GetEntitiesByClasses<T = Entity>(classes: any[], flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
+	public GetEntitiesByClasses<T>(classes: Constructor<T>[], flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
 		switch (flags) {
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY:
 				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => classes.some(class_ => ent instanceof class_) && !ent.IsEnemy()) as any as T[]
+				return AllEntities.filter(ent => classes.some(class_ => ent instanceof class_) && !ent.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY:
 				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => classes.some(class_ => ent instanceof class_) && ent.IsEnemy()) as any as T[]
+				return AllEntities.filter(ent => classes.some(class_ => ent instanceof class_) && ent.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH:
 				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => classes.some(class_ => ent instanceof class_)) as any as T[]
+				return AllEntities.filter(ent => classes.some(class_ => ent instanceof class_)) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_CUSTOM:
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE:
 			default:

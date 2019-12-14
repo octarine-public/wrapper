@@ -24,7 +24,8 @@ function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector
 export function CourierBestPosition(courier: Courier) {
 	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !StateBestPos.value)
 		return false
-	return EntityManager.GetEntitiesByClass<Unit>(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit => {
+	return EntityManager.GetEntitiesByClass(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit => {
+
 		if (!(unit instanceof Creep) && !(unit instanceof Hero))
 			return false
 		switch (courier.State) {

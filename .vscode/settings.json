@@ -1,4 +1,5 @@
 {
     "editor.formatOnSave": true,
-    "editor.insertSpaces": false
+    "editor.insertSpaces": false,
+    "typescript.format.semicolons": "remove",
 }
