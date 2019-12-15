@@ -1,7 +1,6 @@
-import ItemManagerBase from "abstract/Base";
-import { AlliesUnits, EnemyHeroes } from "Core/Listeners"
-import { Unit, Ability, Game, TickSleeper } from "wrapper/Imports"
-import { StateBase } from "abstract/MenuBase"
+import { Unit, Ability, Game, TickSleeper, EntityManager, Hero } from "wrapper/Imports"
+import ItemManagerBase from "../../abstract/Base"
+import { StateBase } from "../../abstract/MenuBase"
 import {
 	State,
 	ItemsOfDisable,
@@ -12,8 +11,8 @@ import {
 	AntiChannelingState,
 	ItemsOfDisableState,
 	ScrollDisableItemsState,
-} from "Menu";
-import { Disabler_Abilities, Disable_Items, Disable_Important } from "./Data";
+} from "./Menu"
+import { Disabler_Abilities, Disable_Items, Disable_Important } from "./Data"
 
 
 let Disable = false
@@ -32,7 +31,7 @@ function UseDisable(unit: Unit, enemy: Unit, abil: Ability) {
 	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)
 		&& enemy.IsMagicImmune && enemy.IsInvulnerable)
 		return false
-	unit.UseSmartAbility(abil, enemy);
+	unit.UseSmartAbility(abil, enemy)
 	Sleep.Sleep(Base.GetDelayCast + 50)
 	return Disable = true
 }
@@ -61,6 +60,7 @@ function filter(unit: Unit, enemy: Unit, items: string[] = []) {
 function AutoDisable(unit: Unit) {
 	if (!unit.IsAlive || !unit.IsControllable)
 		return false
+	let EnemyHeroes = EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
 	for (var i = 0, len = EnemyHeroes.length; i < len; i++) {
 		let enemy = EnemyHeroes[i]
 		if (enemy.IsStunned || enemy.IsHexed || enemy.IsSilenced)
@@ -77,7 +77,7 @@ function AutoDisable(unit: Unit) {
 			return
 		if (AntiChannelingState.value) {
 			if (enemy.IsChanneling)
-				filter(unit, enemy);
+				filter(unit, enemy)
 			continue
 		}
 		Disable_Important.some(abil => {
@@ -95,7 +95,7 @@ function AutoDisable(unit: Unit) {
 export function Init() {
 	if (!StateBase.value || !State.value || Game.IsPaused || Sleep.Sleeping)
 		return
-	if (AlliesUnits.some(AutoDisable))
+	if (EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(AutoDisable))
 		return
 }
 export function GameEnded() {

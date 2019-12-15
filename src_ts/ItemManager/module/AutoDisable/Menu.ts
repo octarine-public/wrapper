@@ -1,6 +1,6 @@
-import { GetItemsBy } from "Helper"
-import { Menu, MenuBase } from "abstract/MenuBase"
-import { Disable_Items, Disabler_Abilities, Disable_Important } from "Data"
+import { GetItemsBy } from "./Helper"
+import { Menu, MenuBase } from "../../abstract/MenuBase"
+import { Disable_Items, Disabler_Abilities, Disable_Important } from "./Data"
 export const { BaseTree, State } = MenuBase(Menu, "Auto Disable")
 
 export const AngryDisablerState = BaseTree.AddToggle("Angry Disabler")

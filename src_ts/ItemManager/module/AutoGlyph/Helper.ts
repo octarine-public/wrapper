@@ -1,13 +1,9 @@
-import { Game, TickSleeper, LocalPlayer, Player, Team } from "wrapper/Imports"
-import { EnemyUnits, AlliesBuildings } from "Core/Listeners"
-import ItemManagerBase from "abstract/Base"
-import { StateBase } from "abstract/MenuBase"
-import { State, TowerHP, TowerSwitcher } from "Menu"
-
-
+import { Game, TickSleeper, LocalPlayer, Player, Team, EntityManager, Unit, Building } from "wrapper/Imports"
+import ItemManagerBase from "../../abstract/Base"
+import { StateBase } from "../../abstract/MenuBase"
+import { State, TowerHP, TowerSwitcher } from "./Menu"
 let Sleep: TickSleeper = new TickSleeper
 let Base: ItemManagerBase = new ItemManagerBase
-
 export function Init() {
 	if (!StateBase.value || !State.value || Sleep.Sleeping
 		|| LocalPlayer === undefined || Player === undefined || LocalPlayer.IsSpectator) {
@@ -21,16 +17,18 @@ export function Init() {
 	}
 	let include_name = "tower1"
 	switch (TowerSwitcher.selected_id) {
-		case 0: include_name = "tower1"; break;
-		case 1: include_name = "tower2"; break;
-		case 2: include_name = "tower3"; break;
-		case 3: include_name = "tower4"; break;
-		case 4: include_name = "tower"; break;
-		case 5: include_name = "npc_dota_"; break;
+		case 0: include_name = "tower1"; break
+		case 1: include_name = "tower2"; break
+		case 2: include_name = "tower3"; break
+		case 3: include_name = "tower4"; break
+		case 4: include_name = "tower"; break
+		case 5: include_name = "npc_dota_"; break
 	}
-	if (!AlliesBuildings.some(x => !x.IsShop && !x.IsShrine && x.IsAlive && x.HP <= TowerHP.value
+	if (!EntityManager.GetEntitiesByClass(Building, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(x => !x.IsShop
+		&& !x.IsShrine && x.IsAlive && x.HP <= TowerHP.value
 		&& x.Name.includes(include_name)
-		&& EnemyUnits.some(unit => unit.IsVisible
+		&& EntityManager.GetEntitiesByClass<Unit>(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit =>
+			unit.IsVisible
 			&& unit.IsAlive && (unit.IsCreep || unit.IsHero)
 			&& unit.IsInRange(x, unit.AttackRange + (unit.HullRadius * 2)))))
 		return

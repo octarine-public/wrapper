@@ -1,6 +1,6 @@
-import { Ability, Entity, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
+import { Ability, Entity, Hero, Item, Menu, TickSleeper, EntityManager } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { Heroes, MyHero, initItemsMap, initAbilityMap } from "../Listeners"
+import { MyHero, initItemsMap, initAbilityMap } from "../Listeners"
 import { AutoDisableAbilityItems, AutoDisableState, ComboKey, State } from "../Menu"
 
 let Sleep = new TickSleeper(),
@@ -26,8 +26,13 @@ export function AutoDisable() {
 	}
 	let ParticleTaget = ParticleHandler as Hero,
 		target = ParticleHandler === undefined
-			? Heroes.find(x => x.IsEnemy() && x.IsVisible && x.IsAlive && !x.IsIllusion && x.IsValid && Base.Disable(x) && !x.IsMagicImmune)
-			: ParticleTaget.IsEnemy() && !ParticleTaget.IsMagicImmune && ParticleTaget.IsVisible && ParticleTaget.IsAlive ? ParticleTaget : undefined
+			? EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).find(x =>
+				x.IsValid && x.IsVisible && x.IsAlive
+				&& !x.IsIllusion
+				&& Base.Disable(x) && !x.IsMagicImmune)
+			: ParticleTaget.IsEnemy() && !ParticleTaget.IsMagicImmune
+				&& ParticleTaget.IsVisible
+				&& ParticleTaget.IsAlive ? ParticleTaget : undefined
 
 	if (ParticleHandler) {
 		setTimeout(() => ClearParticleHandler, 1000)

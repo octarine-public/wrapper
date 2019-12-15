@@ -1,5 +1,6 @@
-import { Ability, Creep, ExecuteOrder, Game, Item, LocalPlayer, TickSleeper, Unit, dotaunitorder_t, Flow_t } from "wrapper/Imports"
-import { Units, TTree, EnemyHeroes, Heroes, AlliesHeroes, AlliesUnits, EnemyCreeps } from "Core/Listeners"
+import { Ability, Creep, ExecuteOrder, Game, Item, LocalPlayer, TickSleeper, Unit, dotaunitorder_t, Flow_t, EntityManager, Hero, Courier } from "wrapper/Imports"
+import TempTree from "../../../wrapper/Objects/Base/TreeTemp"
+
 import {
 	AutoUseItemsArcane_val,
 	AutoUseItemsBloodHP_val,
@@ -31,12 +32,12 @@ import {
 	AutoUseItemsTalonCreepHP,
 } from "./Menu"
 
-import InitItems from "abstract/Items"
-import ItemManagerBase from "abstract/Base"
-import { StateBase } from "abstract/MenuBase"
-import { Key as HeroBlockKey } from "UnitBlocker/modules/HeroBlock/Menu"
-import { Key as CreepBlockKey } from "UnitBlocker/modules/CreepBlock/Menu"
-import { ParticleGlimer, initItemsMap, GlimerClear, glimer } from "abstract/Listeners"
+import InitItems from "../../abstract/Items"
+import ItemManagerBase from "../../abstract/Base"
+import { StateBase } from "../../abstract/MenuBase"
+import { Key as HeroBlockKey } from "../../../UnitBlocker/modules/HeroBlock/Menu"
+import { Key as CreepBlockKey } from "../../../UnitBlocker/modules/CreepBlock/Menu"
+import { ParticleGlimer, initItemsMap, GlimerClear, glimer } from "../../abstract/Listeners"
 
 let nextTick = 0,
 	changed = true,
@@ -99,7 +100,7 @@ function AutoUseItems(unit: Unit) {
 				return false
 
 			let enemy_phase_in_position = AutoUseItemsPhaseBootsState.value
-				? EnemyHeroes.some(enemy => enemy.IsVisible && enemy.IsAlive
+				? EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(enemy => enemy.IsVisible && enemy.IsAlive
 					&& unit.Distance2D(enemy.Position) <= AutoUseItemsPhase_val.value)
 				: AutoUseItemsPhaseBootsState.value
 
@@ -112,7 +113,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.Mjollnir)) {
-		let enemy_mjolnir = EnemyHeroes.some(enemy => enemy.IsAlive && enemy.IsVisible
+		let enemy_mjolnir = EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(enemy => enemy.IsAlive && enemy.IsVisible
 			&& unit.Distance2D(enemy.Position) <= AutoUseItemsMjollnir_val.value)
 		if (enemy_mjolnir) {
 			unit.CastTarget(Items.Mjollnir, unit)
@@ -201,7 +202,7 @@ function AutoUseItems(unit: Unit) {
 
 	if (IsValidItem(Items.Mekansm) || IsValidItem(Items.GuardianGreaves)) {
 		let Item = !Items.Mekansm ? Items.GuardianGreaves : Items.Mekansm
-		AlliesHeroes.some(allies => {
+		EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(allies => {
 			if (unit.IsInRange(allies.Position, Item.AOERadius)) {
 				if (!unit.Buffs.some(buff => buff.Name === "modifier_item_mekansm_noheal")
 					&& (allies.HPPercent <= AutoUseItemsMG_val.value
@@ -220,7 +221,7 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.Bottle)) {
 		if (Items.Bottle.CurrentCharges === 3) {
 			if (unit.Buffs.some(buff => buff.Name === "modifier_fountain_aura_buff")) {
-				AlliesHeroes.some(allies => {
+				EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(allies => {
 					if (unit.IsInRange(allies.Position, Items.Bottle.CastRange)) {
 						if (!allies.IsInvulnerable && !unit.Buffs.some(buff => buff.Name === "modifier_bottle_regeneration")
 							&& (allies.Mana !== allies.MaxMana || allies.HP !== allies.MaxHP)) {
@@ -293,14 +294,14 @@ function AutoUseItems(unit: Unit) {
 					return
 				glimer.set(val, Items)
 			})
-			let IsVisible = EnemyHeroes.some(enemy => enemy.IsAlive
+			let IsVisible = EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(enemy => enemy.IsAlive
 				&& unit.IsInRange(enemy.Position, Items.Dust.CastRange)
 				&& !enemy.ModifiersBook.HasAnyBuffByNames(Buffs.InvisDebuff)
 				&& (enemy.InvisibleLevel > 0
 					|| glimer.size !== 0
 					|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
 				)
-				&& !AlliesUnits.some(allies => allies.IsAlive
+				&& !EntityManager.GetEntitiesByClasses<Unit>([Hero, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(allies => allies.IsAlive
 					&& (allies.GetItemByName("item_gem") || allies.GetItemByName("item_third_eye"))
 					&& allies.Distance2D(enemy.Position) < 800))
 
@@ -320,7 +321,8 @@ function AutoUseItems(unit: Unit) {
 		]
 	) && (IsValidItem(Items.Tango) || IsValidItem(Items.TangoSingle))) {
 		let Tango = !Items.Tango ? Items.TangoSingle : Items.Tango,
-			tr = TTree.find(x => x.IsInRange(unit, Tango.CastRange))
+			tr = EntityManager.GetEntitiesByClass(TempTree, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH)
+				.find(x => x.IsInRange(unit, Tango.CastRange))
 		if (tr !== undefined && unit.HP <= AutoUseItemsTango_val.value) {
 			unit.CastTargetTree(Tango, tr)
 			TickSleep.Sleep(Base.GetDelayCast)
@@ -382,11 +384,12 @@ function CheckCreeps(creep: Creep, unit: Unit, Item: Item): boolean {
 }
 
 function GetAllCreepsForMidas(Unit: Unit, Item: Item) {
-	return EnemyCreeps.filter(creep => CheckCreeps(creep, Unit, Item))
+	return EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+		.filter(creep => CheckCreeps(creep, Unit, Item))
 }
 
 function UnitCheckForAlliesEnemy(unit: Unit, Item: Item, IsEnemy: boolean = true) {
-	Heroes.map(enemy => {
+	EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH).map(enemy => {
 		let target = IsEnemy ? enemy : unit
 		if (unit.IsInRange(target.Position, Item.CastRange)) {
 			if (CheckUnitForUrn(target, IsEnemy ? AutoUseItemsUrnAliesEnemyHP.value : AutoUseItemsUrnAliesAlliesHP.value) && !enemy.IsIllusion
@@ -520,7 +523,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 						TickSleep.Sleep(Base.GetDelayCast)
 					}
 				}
-				break;
+				break
 		}
 	}
 }
@@ -553,11 +556,12 @@ export function Init() {
 		return
 	if (!_InitItems())
 		return
-	if (AlliesUnits.some(AutoUseItems))
+	if (EntityManager.GetEntitiesByClasses<Unit>([Hero, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(AutoUseItems))
 		return
 }
 
 export function _InitItems() {
+	let Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
 	if (Units.length === 0)
 		return false
 	if (ParticleGlimer.size !== 0 || glimer.size !== 0)

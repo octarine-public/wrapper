@@ -1,5 +1,5 @@
-import { Game, Hero, Menu } from "wrapper/Imports"
-import { Heroes, Owner, initItemsTargetMap } from "../Listeners"
+import { Game, Hero, Menu, EntityManager } from "wrapper/Imports"
+import { Owner, initItemsTargetMap } from "../Listeners"
 import { AeonDiscItem } from "../Menu"
 class LegionHelper {
 	private CancelModifiers: string[] = [
@@ -8,6 +8,7 @@ class LegionHelper {
 		"modifier_oracle_fates_edict",
 	]
 	public get DeadInSide(): boolean {
+		let Heroes = EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
 		return Heroes.length === 0
 			|| Owner === undefined
 			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
@@ -40,9 +41,8 @@ class LegionHelper {
 	}
 	public IsLinkensProtected(target: Hero): boolean {
 		let Items = initItemsTargetMap.get(target)
-		if (Items === undefined) {
+		if (Items === undefined)
 			return false
-		}
 		return target.HasBuffByName("modifier_item_sphere_target") || (Items.Sphere !== undefined && Items.Sphere.Cooldown === 0)
 	}
 	public IsBlockingAbilities(target: Hero, checkReflecting: boolean = false): boolean {

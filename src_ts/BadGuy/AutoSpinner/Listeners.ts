@@ -1,11 +1,10 @@
-import { Courier, LocalPlayer, Unit } from "wrapper/Imports"
+import { Courier, LocalPlayer, Unit, EntityManager, Creep, Hero } from "wrapper/Imports"
 import { ControllablesMode, ModeSpinner, SpinnerKey, State } from "./Menu"
-import { AllUnits } from "../Base/ListenersBase";
 
 function MoveUnit(x: Unit) {
 	switch (ModeSpinner.selected_id) {
-		case 0: x.MoveTo(x.InFrontFromAngle(300, 1), false, true); break;
-		case 1: x.MoveTo(x.InFrontFromAngle(250, 50), false, true); break;
+		case 0: x.MoveTo(x.InFrontFromAngle(300, 1), false, true); break
+		case 1: x.MoveTo(x.InFrontFromAngle(250, 50), false, true); break
 	}
 }
 
@@ -18,8 +17,9 @@ export function Tick() {
 	b = false
 	if (!State.value || !SpinnerKey.is_pressed)
 		return
-	var ar = ControllablesMode.selected_id !== 0
-		? AllUnits.filter(x => x.IsControllable)
+	let Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
+	let ar = ControllablesMode.selected_id !== 0
+		? Units.filter(x => x.IsControllable)
 		: [LocalPlayer.Hero] as Unit[]
 	ar = ar.filter(ent => ent.IsAlive && ent.IsVisible && !ent.IsStunned && !ent.IsHexed)
 	if (ControllablesMode.selected_id === 2)

@@ -1,7 +1,6 @@
 
 import { Game, LocalPlayer, RendererSDK, Team, Unit, Vector2, FontFlags_t } from "wrapper/Imports"
 import ManagerBase from "../../../abstract/Base"
-import { Units } from "../Entities"
 import {
 	DrawTextColor,
 	DrawTextSize,
@@ -16,6 +15,7 @@ import {
 	GlyphSwitcher,
 	GlyphSwitcherTeam,
 } from "../Menu"
+import { Units } from "../Entities"
 
 let Base = new ManagerBase()
 
@@ -63,9 +63,9 @@ function SelectedBuilding(x: Unit) {
 export function DrawGlyph() {
 	if (GlyphState.value) {
 		// ============================== Glyph ============================ //
-		Units.forEach(x => {
-			if (x === undefined || !x.IsAlive)
-				return
+		Units.some(x => {
+			if (x.IsHero)
+				return false
 			switch (GlyphSwitcher.selected_id) {
 				case 0: return SelectedBuilding(x)
 				case 1: return x.IsLaneCreep && SelectedBuilding(x)

@@ -113,7 +113,6 @@ function ComboInit() {
 export function InitCombo() {
 	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
-
 	let target = MouseTarget,
 		Time = Game.RawGameTime
 	let Items = initItemsMap.get(Owner),

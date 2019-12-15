@@ -1,6 +1,6 @@
-import { Ability, Creep, ExecuteOrder, Hero, LocalPlayer, Menu, Unit, dotaunitorder_t } from "wrapper/Imports"
+import { Ability, Creep, ExecuteOrder, Hero, LocalPlayer, Menu, Unit, dotaunitorder_t, EntityManager } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { Creeps, Heroes, MyHero, initAbilityMap } from "../Listeners"
+import { MyHero, initAbilityMap } from "../Listeners"
 import { SmartConShotFail, SmartConShotOnlyTarget, SmartConShotRadius, State } from "../Menu"
 
 function IChecking(x: Hero | Creep, rad: Menu.Slider) {
@@ -25,8 +25,13 @@ export function OnExecuteOrder(order: ExecuteOrder): boolean {
 		return true
 	if (ability !== undefined && ability.Name === Abilities.ConcussiveShot.Name) {
 		target = SmartConShotOnlyTarget.value
-			? Heroes.find(x => x.IsEnemy() && IChecking(x, SmartConShotRadius))
-			: Creeps.find(x => x.IsEnemy() && IChecking(x, SmartConShotRadius)) || Heroes.find(x => x.IsEnemy() && IChecking(x, SmartConShotRadius))
+			? EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+				.find(x => IChecking(x, SmartConShotRadius))
+			: EntityManager.GetEntitiesByClass<Creep>(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+				.find(x => IChecking(x, SmartConShotRadius))
+			|| EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+				.find(x => IChecking(x, SmartConShotRadius))
+
 		if (target === undefined)
 			return false
 	}

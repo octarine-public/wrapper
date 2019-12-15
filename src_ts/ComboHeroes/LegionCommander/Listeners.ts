@@ -1,4 +1,4 @@
-import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils, Unit } from "wrapper/Imports"
+import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils, Unit, EntityManager } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { GameEndedCombo } from "./Module/Combo"
@@ -7,8 +7,6 @@ import InitDraw from "./Extends/Draw"
 import InitItems from "./Extends/Items"
 import InitAbilities from "./Extends/Abilities"
 import HitAndRun from "./Extends/HitAndRun"
-
-export let Heroes: Hero[] = []
 export let Owner: Hero
 export let MouseTarget: Hero
 
@@ -26,7 +24,8 @@ export function InitMouse() {
 		return false
 	}
 	MouseTarget = ArrayExtensions.orderBy(
-		Heroes.filter(x => x.IsEnemy() && x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
+		EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).filter(x =>
+			x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
 		x => x.Distance(Utils.CursorWorldVec),
 	)[0]
 }
@@ -41,7 +40,6 @@ function MapClear() {
 }
 export function GameEnded() {
 	MapClear()
-	Heroes = []
 	ProjList = []
 	GameEndedCombo()
 	Owner = undefined
@@ -50,16 +48,6 @@ export function GameEnded() {
 export function GameStarted(hero: Hero) {
 	if (Owner === undefined && hero.Name === MyNameHero) {
 		Owner = hero
-	}
-}
-export function EntityCreated(x: Entity) {
-	if (x instanceof Hero && !x.IsIllusion) {
-		Heroes.push(x)
-	}
-}
-export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero) {
-		ArrayExtensions.arrayRemove(Heroes, x)
 	}
 }
 export function TrackingProjectileCreated(proj: TrackingProjectile) {

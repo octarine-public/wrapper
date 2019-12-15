@@ -1,27 +1,22 @@
-import { ArrayExtensions, Color, Creep, Entity, RendererSDK, Team, Vector2 } from "wrapper/Imports"
-import { alpha, ComboBox, Size, State } from "./Menu"
+import { Color, Creep, RendererSDK, Vector2, EntityManager, Team, LocalPlayer } from "wrapper/Imports"
+import { alpha, ComboBox, Size, State, OtimizeState, OtimizeSlider } from "./Menu"
 let allNeutrals: Creep[] = []
-
-export function onEntityAdded(ent: Entity) {
-	if (ent instanceof Creep && !ent.IsLaneCreep && ent.Team === Team.Neutral)
-		allNeutrals.push(ent)
+export function Tick() {
+	if (!State.value)
+		return
+	allNeutrals = EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+		.filter(x => !x.IsLaneCreep && x.Team === Team.Neutral && (OtimizeState.value && LocalPlayer?.Hero?.IsInRange(x, OtimizeSlider.value)))
 }
-
-export function EntityDestroyed(ent: Entity) {
-	if (ent instanceof Creep)
-		ArrayExtensions.arrayRemove(allNeutrals, ent)
-}
-
 export function OnDraw() {
 	if (!State.value)
 		return
-	allNeutrals.forEach(creep => {
+	if (allNeutrals.map(creep => {
 		let isWaitSpawn = creep.IsWaitingToSpawn
 		if ((!isWaitSpawn && creep.IsVisible))
-			return
+			return false
 		let wts = RendererSDK.WorldToScreen(creep.Position)
 		if (wts === undefined)
-			return
+			return false
 		switch (ComboBox.selected_id) {
 			case 0:
 				let name = creep.Name.replace("npc_dota_neutral_", "").split("_").join(" ")
@@ -33,10 +28,10 @@ export function OnDraw() {
 					wts.SubtractScalar(Size.value / 4),
 					new Vector2(Size.value / 2, Size.value / 2), new Color(255, 255, 255, alpha.value))
 				break
-			default:
-				break
 		}
-	})
+		return true
+	}))
+		return
 }
 
 export function Init() {

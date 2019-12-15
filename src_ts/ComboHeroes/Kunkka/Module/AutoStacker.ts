@@ -1,6 +1,6 @@
-import { Ability, ArrayExtensions, Color, Game, RendererSDK, Vector2 } from "wrapper/Imports";
+import { Ability, ArrayExtensions, Color, Game, RendererSDK, Vector2, EntityManager, Creep } from "wrapper/Imports";
 import { Base } from "../Extends/Helper";
-import { CreepsNeutrals, Owner, initAbilityMap } from "../Listeners";
+import { Owner, initAbilityMap } from "../Listeners";
 import { AutoStakerState, AutoStakerVisuals, State } from "../Menu";
 export let is_stacking = false
 export function InitStaker() {
@@ -27,7 +27,7 @@ export function InitStaker() {
 	let my_vec = Owner.Position, cast_range = Q.CastRange + Owner.CastRangeBonus
 	// loop-optimizer: KEEP
 	ArrayExtensions.orderBy(Base.Spots.filter(spot => spot.Distance2D(my_vec) < cast_range), spot => spot.Distance2D(my_vec)).every(spot => {
-		let CreepIsInside = CreepsNeutrals.some(x => x.IsValid && x.IsNeutral && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
+		let CreepIsInside = EntityManager.GetEntitiesByClass<Creep>(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(x => x.IsValid && x.IsNeutral && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
 		if (CreepIsInside && Q.CanBeCasted()) {
 			Owner.CastPosition(Q, spot)
 			is_stacking = true
@@ -43,7 +43,7 @@ export function InitDrawStaker() {
 
 	Base.Spots.forEach((spot, i) => {
 		let screen_pos = RendererSDK.WorldToScreen(spot),
-			CreepIsInside = CreepsNeutrals.some(x => x.IsValid && x.IsNeutral && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
+			CreepIsInside = EntityManager.GetEntitiesByClass<Creep>(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(x => x.IsValid && x.IsNeutral && ((x.IsAlive && !x.IsVisible) || (!x.IsWaitingToSpawn && x.IsVisible)) && x.IsInRange(spot, 250))
 		if (screen_pos === undefined || !CreepIsInside)
 			return
 

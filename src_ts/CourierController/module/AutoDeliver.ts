@@ -1,7 +1,7 @@
 import { DOTA_GameMode, Game, Courier } from "wrapper/Imports"
-import { deliverState } from "Menu"
-import { Sleep, Owner } from "bootstrap"
-import { CourierBase } from "Data/Helper"
+import { deliverState } from "../Menu"
+import { Sleep, Owner } from "../bootstrap"
+import { CourierBase } from "../Data/Helper"
 
 function Deliver(courier: Courier): boolean {
 	if (CourierBase.DELIVER_DISABLE)

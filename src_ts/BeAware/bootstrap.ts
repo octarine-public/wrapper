@@ -1,13 +1,6 @@
-import {
-	Entity,
-	EventsSDK,
-	Game,
-	LocalPlayer,
-	DOTAGameUIState_t,
-} from "wrapper/Imports"
+import { Entity, EventsSDK, Game, LocalPlayer, DOTAGameUIState_t } from "wrapper/Imports"
 
 import { stateMain } from "./abstract/Menu.Base"
-
 import * as Camp from "./Module/CampInformer/Entity"
 import * as EnemyLaneSelection from "./Module/EnemyLaneSelection/Listeners"
 import * as JungleMapHack from "./Module/JungleMapHack/Particle"
@@ -27,10 +20,12 @@ import * as Wisp from "./Module/WispMapHack/Particle"
 
 EventsSDK.on("Tick", () => {
 	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || !stateMain.value)
-		return false
+		return
+	Camp.Tick()
 	Treant.Tick()
-	TimeControllerEnt.Tick()
+	TowerRange.Tick()
 	JungleMapHack.Tick()
+	TimeControllerEnt.Tick()
 })
 
 EventsSDK.on("Draw", () => {
@@ -42,25 +37,24 @@ EventsSDK.on("Draw", () => {
 	Camp.OnDraw()
 	Wisp.OnDraw()
 	// TopHud.Draw()
-	JungleMapHack.OnDraw()
 	Techies.OnDraw()
 	TowerRange.OnDraw()
 	TimeController.Draw()
+	JungleMapHack.OnDraw()
 	ParicleMapHack.OnDraw()
 })
 EventsSDK.on("GameEnded", () => {
 	// TopHud.gameStarted()?
 	// TopHud.gameEnded()?
-	Wisp.Init()
-	JungleMapHack.Init()
-	Techies.Init()
-	ParicleMapHack.Init()
-	EnemyLaneSelection.Init()
-	TimeControllerEnt.Init()
-	Treant.Init()
-	Camp.Init()
 	VBE.Init()
 	VBS.Init()
+	Wisp.Init()
+	Treant.Init()
+	Techies.Init()
+	JungleMapHack.Init()
+	ParicleMapHack.Init()
+	TimeControllerEnt.Init()
+	EnemyLaneSelection.Init()
 })
 EventsSDK.on("GameEvent", (name, obj) => {
 	JungleMapHack.GameEvent(name, obj)
@@ -92,10 +86,7 @@ EventsSDK.on("TeamVisibilityChanged", npc => {
 })
 
 EventsSDK.on("EntityCreated", ent => {
-	Camp.onEntityAdded(ent)
 	Treant.Create(ent)
-	TowerRange.Create(ent)
-	ParicleMapHack.EntityCreated(ent)
 	TimeControllerEnt.EntityCreated(ent)
 	// TopHud.entityCreate(ent)
 })
@@ -103,12 +94,9 @@ EventsSDK.on("EntityCreated", ent => {
 EventsSDK.on("EntityDestroyed", ent => {
 	VBS.EntityDestroyed(ent)
 	VBE.EntityDestroyed(ent)
-	Camp.EntityDestroyed(ent)
 	Treant.Destroy(ent)
-	TowerRange.Destroy(ent)
 	// TopHud.entityDestroy(ent)
 	Techies.EntityDestroyed(ent)
-	ParicleMapHack.EntityDestroyed(ent)
 	TimeControllerEnt.EntityDestroyed(ent)
 })
 

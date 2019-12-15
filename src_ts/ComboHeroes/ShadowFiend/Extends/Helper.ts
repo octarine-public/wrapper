@@ -1,12 +1,13 @@
-import { Game, Menu, Unit } from "wrapper/Imports"
-import { Heroes, Owner } from "../Listeners"
+import { Game, Menu, Unit, EntityManager, Hero } from "wrapper/Imports"
+import { Owner } from "../Listeners"
 class ShadowFiendHelper {
 	constructor(public unit?: Unit) { }
 
 	public get DeadInSide(): boolean {
+		let Heroes = EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
 		return Heroes.length === 0
 			|| Owner === undefined
-			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive)
+			|| !Heroes.some(x => x.IsAlive)
 			|| !Owner.IsAlive
 	}
 	public IsRestrictions(State: Menu.Toggle) {

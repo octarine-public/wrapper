@@ -1,4 +1,4 @@
-import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils, Unit, Creep, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Hero, Utils, Unit, Vector3, EntityManager } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 // import { GameEndedCombo } from "./Module/Combo"
@@ -8,8 +8,6 @@ import InitItems from "./Extends/Items"
 import HitAndRun from "./Extends/HitAndRun";
 import InitAbilities from "./Extends/Abilities"
 
-export let Heroes: Hero[] = []
-export let Creeps: Creep[] = []
 export let Owner: Hero
 export let MouseTarget: Hero
 
@@ -18,10 +16,7 @@ export const initItemsTargetMap = new Map<Unit, InitItems>()
 export const initHitAndRunMap = new Map<Unit, HitAndRun>()
 export const initAbilityMap = new Map<Unit, InitAbilities>()
 export const initDrawBaseMap = new Map<Unit, InitDraw>()
-
-
-export let ProjList: TrackingProjectile[] = []
-export let MyNameHero: string = "npc_dota_hero_void_spirit"
+export const MyNameHero: string = "npc_dota_hero_void_spirit"
 
 export let AetherRemnanPluse: Vector3 = new Vector3
 export let AetherRemnanMinus: Vector3 = new Vector3
@@ -30,7 +25,8 @@ export function InitMouse() {
 	if (!Base.IsRestrictions(State))
 		return false
 	MouseTarget = ArrayExtensions.orderBy(
-		Heroes.filter(x => x.IsEnemy() && x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
+		EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).filter(x =>
+			x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
 		x => x.Distance(Utils.CursorWorldVec),
 	)[0]
 	if (MouseTarget !== undefined) {
@@ -52,7 +48,6 @@ function MapClear() {
 
 export function GameEnded() {
 	MapClear()
-	Heroes = []
 	//GameEndedCombo()
 	Owner = undefined
 	MouseTarget = undefined
@@ -61,41 +56,6 @@ export function GameEnded() {
 export function GameStarted(hero: Hero) {
 	if (Owner === undefined && hero.Name === MyNameHero)
 		Owner = hero
-}
-
-export function EntityCreated(x: Entity) {
-	if (x instanceof Hero && !x.IsIllusion)
-		Heroes.push(x)
-	if (x instanceof Creep)
-		Creeps.push(x)
-}
-
-export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero)
-		ArrayExtensions.arrayRemove(Heroes, x)
-	if (x instanceof Creep)
-		ArrayExtensions.arrayRemove(Creeps, x)
-}
-
-export function TrackingProjectileCreated(proj: TrackingProjectile) {
-	if (!Base.IsRestrictions(State)) {
-		return
-	}
-	let entity = proj.Source as Entity
-	if (
-		proj instanceof TrackingProjectile
-		&& entity instanceof Hero
-		&& !entity.IsEnemy()
-		&& entity.Name === MyNameHero
-	) {
-		ProjList.push(proj)
-	}
-}
-
-export function LinearProjectileDestroyed(proj: TrackingProjectile) {
-	if (proj instanceof TrackingProjectile) {
-		ArrayExtensions.arrayRemove(ProjList, proj)
-	}
 }
 
 export function Tick() {

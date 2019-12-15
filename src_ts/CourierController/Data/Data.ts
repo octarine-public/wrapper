@@ -1,4 +1,4 @@
-import { Vector3 } from "../../wrapper/Imports"
+import { Vector3 } from "wrapper/Imports"
 export enum LaneSelectionFlags_t {
 	SAFE_LANE = 1 << 0,
 	OFF_LANE = 1 << 1,

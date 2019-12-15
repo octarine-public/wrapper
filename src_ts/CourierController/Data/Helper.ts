@@ -1,7 +1,7 @@
 
-import { Game, Vector3, Team, Courier, Unit, DOTA_GameMode } from "wrapper/Imports";
-import { LaneSelectionFlags_t, Data } from "./Data";
-import { Owner } from "bootstrap";
+import { Game, Vector3, Team, Courier, Unit, DOTA_GameMode } from "wrapper/Imports"
+import { LaneSelectionFlags_t, Data } from "./Data"
+import { Owner } from "../bootstrap"
 
 class CourierData extends Data {
 	public roles = new Array<LaneSelectionFlags_t[]>(2).fill(new Array<LaneSelectionFlags_t>(5).fill(LaneSelectionFlags_t.MID_LANE))

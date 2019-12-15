@@ -1,9 +1,12 @@
 import {
-	ArrayExtensions,
 	Entity,
-	Unit,
 	Vector3,
 	Building,
+	EntityManager,
+	Unit,
+	Creep,
+	Rune,
+	Hero,
 } from "wrapper/Imports"
 
 import {
@@ -11,9 +14,9 @@ import {
 	RoshanParticleCreate,
 	RoshanTick,
 	RoshanGameEvent,
-} from "./Module/Roshan";
+} from "./Module/Roshan"
 
-import { State } from "./Menu";
+import { State } from "./Menu"
 
 import {
 	EntityCreatedRune,
@@ -24,18 +27,14 @@ import {
 	RuneParticleDestroyed,
 } from "./Module/Runes"
 
-import { ScanGameEnded } from "./Module/Scan";
+import { ScanGameEnded } from "./Module/Scan"
 
 export let Units: Unit[] = []
-export let Shrine: Building[] = []
+export let Runes: Rune[] = []
 export let RoshanPosition: Vector3 = new Vector3
 export let OtherRadius = new Map<Entity, number>()
 
 function BaseCreateUnits(x: Entity) {
-	if (x instanceof Unit && !x.IsHero)
-		Units.push(x)
-	if (x instanceof Building && x.Name.includes("healer"))
-		Shrine.push(x)
 	if (x.m_pBaseEntity instanceof C_DOTA_RoshanSpawner) {
 		if (!RoshanPosition.IsZero())
 			return
@@ -44,30 +43,27 @@ function BaseCreateUnits(x: Entity) {
 }
 
 function BaseDestroyedUnits(x: Entity) {
-	if (x instanceof Unit)
-		ArrayExtensions.arrayRemove(Units, x)
-	if (x instanceof Building && x.Name.includes("healer"))
-		ArrayExtensions.arrayRemove(Shrine, x)
 	if (x.m_pBaseEntity instanceof C_DOTA_RoshanSpawner) {
 		if (RoshanPosition.IsZero())
 			return
 		RoshanPosition = new Vector3
 	}
 }
-
 export function Tick() {
 	if (!State.value)
 		return
 	RoshanTick()
+	Runes = EntityManager.GetEntitiesByClass(Rune, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH).filter(x => x.IsValid && x.IsAlive)
+	Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Building], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH).filter(x => x.IsValid && x.IsAlive)
 }
 
 export function Init() {
 	Units = []
-	Shrine = []
-	OtherRadius.clear()
+	Runes = []
 	ScanGameEnded()
 	RuneGameEnded()
 	RoshanGameEnded()
+	OtherRadius.clear()
 	RoshanPosition = new Vector3
 }
 

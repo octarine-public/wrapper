@@ -4,12 +4,11 @@ import { InitStaker } from "./Module/AutoStacker"
 import { InitCombo } from "./Module/Combo"
 import { OnExecuteOrder } from "./Module/WithoutFail"
 import { Draw } from "./Renderer"
+import { Tick, GameEnded, GameStarted, InitMouse } from "./Listeners"
 
 EventsSDK.on("Draw", Draw)
 EventsSDK.on("GameEnded", GameEnded)
 EventsSDK.on("GameStarted", GameStarted)
-EventsSDK.on("EntityCreated", EntityCreated)
-EventsSDK.on("EntityDestroyed", EntityDestroyed)
 EventsSDK.on("PrepareUnitOrders", OnExecuteOrder)
 
 EventsSDK.on("Tick", () => {
@@ -19,11 +18,3 @@ EventsSDK.on("Tick", () => {
 		InitCombo()
 	InitStaker()
 })
-
-import {
-	Tick,
-	EntityCreated,
-	EntityDestroyed,
-	GameEnded, GameStarted,
-	InitMouse
-} from "./Listeners"

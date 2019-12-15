@@ -15,17 +15,14 @@ function ItemCast(abil: Ability, target: Hero) {
 	}
 }
 export function BreakInit() {
-	if (!Base.IsRestrictions(State)) {
+	if (!Base.IsRestrictions(State))
 		return
-	}
 	let target = MouseTarget
-	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune) {
+	if (target === undefined || target.IsInvulnerable || target.IsMagicImmune)
 		return
-	}
 	let Items = initItemsMap.get(Owner)
-	if (Items === undefined) {
+	if (Items === undefined)
 		return
-	}
 	let arr_linken: Ability[] = [
 		Items.DiffusalBlade,
 		Items.Cyclone,
@@ -38,7 +35,6 @@ export function BreakInit() {
 		Items.RodofAtos,
 		Items.Sheeps
 	]
-	if (arr_linken.some(item => ItemCast(item, target))) {
+	if (arr_linken.some(item => ItemCast(item, target)))
 		return
-	}
 }

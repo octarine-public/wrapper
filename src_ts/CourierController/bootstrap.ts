@@ -1,23 +1,23 @@
 
 import { EventsSDK, Hero, TickSleeper, Game, Events, LocalPlayer, Courier, EntityManager, ArrayExtensions, Unit } from "wrapper/Imports"
-import { State, StateBestPos } from "Menu"
-import { CSODOTALobby } from "Data/Data"
-import { CourierBase } from "Data/Helper"
-import { AutoSafe } from "module/AutoSafe"
-import { AutoDeliver } from "module/AutoDeliver"
+import { State, StateBestPos } from "./Menu"
+import { CSODOTALobby } from "./Data/Data"
+import { CourierBase } from "./Data/Helper"
+import { AutoSafe } from "./module/AutoSafe"
+import { AutoDeliver } from "./module/AutoDeliver"
 //import { AutoUseItems } from "./module/AutoUseItems"
-import { MoveCourier, CourierBestPosition } from "module/BestPosition"
+import { MoveCourier, CourierBestPosition } from "./module/BestPosition"
 export let Owner: Hero
 export const Sleep = new TickSleeper
 export let UnitAnimation: Unit[] = []
-export let OwnerIsValid = () => Owner !== undefined && Owner.IsAlive
+export let OwnerIsValid = () => Owner?.IsAlive
 //export let AutoUseCourierPosition: Map<number, Vector3> = new Map()
 
 EventsSDK.on("Tick", () => {
 	if (!State.value || Sleep.Sleeping || !OwnerIsValid())
 		return
-	if (EntityManager.GetEntitiesByClass<Courier>(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
-		.some(courier => !courier.IsEnemy() || !CourierBase.IsValidCourier(courier) || AutoDeliver(courier)
+	if (EntityManager.GetEntitiesByClass(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
+		.some(courier => !CourierBase.IsValidCourier(courier) || AutoDeliver(courier)
 			|| CourierBestPosition(courier) || AutoSafe(courier)))
 		return
 	// if (AutoUseItems())
@@ -38,9 +38,10 @@ EventsSDK.on("GameStarted", hero => {
 	if (!StateBestPos.value)
 		return
 	setTimeout(() =>
-		EntityManager.GetEntitiesByClass<Courier>(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(courier =>
-			!courier.IsEnemy() && MoveCourier(false, courier)), 1000)
+		EntityManager.GetEntitiesByClass(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
+			.some(courier => MoveCourier(false, courier)), 1000)
 })
+
 EventsSDK.on("GameEnded", () => {
 	Owner = undefined
 	Sleep.ResetTimer()
@@ -48,10 +49,12 @@ EventsSDK.on("GameEnded", () => {
 	CourierBase.AUTO_USE_ITEMS = false
 	CourierBase.DELIVER_DISABLE = false
 })
+
 EventsSDK.on("UnitAnimation", unit => {
 	if (unit.IsEnemy())
 		UnitAnimation.push(unit)
 })
+
 EventsSDK.on("UnitAnimationEnd", unit => {
 	if (unit.IsEnemy())
 		ArrayExtensions.arrayRemove(UnitAnimation, unit)

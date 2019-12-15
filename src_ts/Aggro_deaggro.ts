@@ -1,18 +1,13 @@
-import { EventsSDK, Game, Menu as MenuSDK, LocalPlayer, Unit, TickSleeper, ArrayExtensions, Tower } from "wrapper/Imports";
+import { EventsSDK, Game, Menu as MenuSDK, LocalPlayer, Unit, TickSleeper, Tower, EntityManager, Creep, Hero } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Utility", "Aggro/deaggro Creeps"])
 //const AutoTowerTree = Menu.AddNode("Tower deaggro")
 const AutoTowerState = Menu.AddToggle("Auto tower deaggro")
 //const MePositionCheck = AutoTowerTree.AddToggle("Check my position")
-
+const Sleep = new TickSleeper
 const aggroKey = Menu.AddKeybind("Aggro Key")
 const deaggroKey = Menu.AddKeybind("Deaggro Key")
-
-let Units: Unit[] = []
-let Towers: Tower[] = []
-let GetDelayCast = () => (((Game.Ping / 2) + 30) + 250)
-
-const Sleep = new TickSleeper
+const GetDelayCast = () => (((Game.Ping / 2) + 30) + 250)
 const IsValidUnit = (x: Unit) => x.IsValid && x.IsAlive && x.IsVisible
 const IsValidPlayerAttack = (x: Tower) => LocalPlayer !== undefined && x.TowerAttackTarget === LocalPlayer.Hero
 const IsValidPlayer = () => LocalPlayer !== undefined && LocalPlayer.Hero !== undefined && !LocalPlayer.IsSpectator && LocalPlayer.Hero.IsAlive
@@ -32,11 +27,10 @@ EventsSDK.on("Tick", () => {
 	if (!Game.IsInGame || !IsValidPlayer() || Sleep.Sleeping)
 		return
 	if (AutoTowerState.value) {
-		Towers.forEach(tower => {
+		EntityManager.GetEntitiesByClass(Tower, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).forEach(tower => {
 			if (!IsValidTower(tower) || !IsValidPlayerAttack(tower))
 				return
-			if (Units.some(x => !x.IsEnemy()
-				&& x.IsLaneCreep
+			if (EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(x => x.IsAlive && x.IsLaneCreep
 				&& x.Distance2D(IsValidPlayer() && LocalPlayer.Hero.Position) < (x.AttackRange + x.HullRadius + 25)
 				//&& DistanceToTowerMe(tower, x)
 				&& Use(x)))
@@ -44,31 +38,15 @@ EventsSDK.on("Tick", () => {
 		})
 	}
 	if (aggroKey.is_pressed) {
-		if (Units.some(x => x.IsEnemy() && x.IsHero && Use(x)))
+		if (EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(Use))
 			return
 	}
 	if (deaggroKey.is_pressed) {
-		if (Units.some(x => !x.IsEnemy() && x.IsLaneCreep && Use(x)))
+		if (EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(x => x.IsLaneCreep && Use(x)))
 			return
 	}
 })
 
-EventsSDK.on("EntityCreated", x => {
-	if (x instanceof Unit)
-		Units.push(x)
-	if (x instanceof Tower)
-		Towers.push(x)
-})
-
-EventsSDK.on("EntityDestroyed", x => {
-	if (x instanceof Unit)
-		ArrayExtensions.arrayRemove(Units, x)
-	if (x instanceof Tower)
-		ArrayExtensions.arrayRemove(Towers, x)
-})
-
 EventsSDK.on("GameEnded", () => {
-	Units = []
-	Towers = []
 	Sleep.ResetTimer()
 })

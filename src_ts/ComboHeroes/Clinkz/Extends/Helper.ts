@@ -1,7 +1,8 @@
 
-import { Game, Hero, Menu } from "wrapper/Imports"
-import { Heroes, Owner, initItemsTargetMap } from "../Listeners"
+import { Game, Hero, Menu, EntityManager } from "wrapper/Imports"
+import { Owner, initItemsTargetMap } from "../Listeners"
 import { AeonDiscItem } from "../Menu"
+
 class ClinkzHelper {
 	private CancelModifiers: string[] = [
 		"modifier_item_blade_mail_reflect",
@@ -14,9 +15,10 @@ class ClinkzHelper {
 		"modifier_item_lotus_orb_active",
 	]
 	public get DeadInSide(): boolean {
+		let Heroes = EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
 		return Heroes.length === 0
 			|| Owner === undefined
-			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
+			|| !Heroes.some(x => x.IsAlive && !x.IsInvulnerable)
 			|| !Owner.IsAlive
 	}
 	public IsRestrictions(State: Menu.Toggle) {

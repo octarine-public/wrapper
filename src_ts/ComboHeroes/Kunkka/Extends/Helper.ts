@@ -1,6 +1,7 @@
 
-import { Game, Hero, Menu, Vector3 } from "wrapper/Imports"
-import { Heroes, Owner, initItemsTargetMap } from "../Listeners"
+import { Game, Hero, Menu, Vector3, EntityManager } from "wrapper/Imports"
+import { Owner, initItemsTargetMap } from "../Listeners"
+
 class KunkkaHelper {
 	// loop-optimizer: KEEP
 	public Spots: Vector3[] = [
@@ -47,9 +48,10 @@ class KunkkaHelper {
 	]
 
 	public get DeadInSide(): boolean {
+		let Heroes = EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
 		return Heroes.length === 0
 			|| Owner === undefined
-			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
+			|| !Heroes.some(x => x.IsAlive && !x.IsInvulnerable)
 			|| !Owner.IsAlive
 	}
 	public get CanCastSpells(): boolean {

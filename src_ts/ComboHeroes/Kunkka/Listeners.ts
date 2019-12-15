@@ -1,13 +1,11 @@
-import { ArrayExtensions, Creep, Entity, Hero, Utils, Unit } from "wrapper/Imports"
+import { ArrayExtensions, Hero, Utils, Unit, EntityManager } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { ComboGameEnded } from "./Module/Combo"
 import { DrawDeleteTempAllVars } from "./Renderer"
 
-export let Heroes: Hero[] = []
 export let Owner: Hero
 export let MouseTarget: Hero
-export let CreepsNeutrals: Creep[] = []
 export let MyNameHero: string = "npc_dota_hero_kunkka"
 
 import InitDraw from "./Extends/Draw"
@@ -23,7 +21,8 @@ export function InitMouse() {
 	if (!Base.IsRestrictions(State))
 		return false
 	MouseTarget = ArrayExtensions.orderBy(
-		Heroes.filter(x => x.IsEnemy() && x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
+		EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+			.filter(x => x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
 		x => x.Distance(Utils.CursorWorldVec),
 	)[0]
 }
@@ -41,27 +40,11 @@ function MapClear() {
 }
 export function GameEnded() {
 	MapClear()
-	Heroes = []
 	ComboGameEnded()
 	Owner = undefined
-	CreepsNeutrals = []
 	MouseTarget = undefined
 	DrawDeleteTempAllVars()
 	MyNameHero = "npc_dota_hero_kunkka"
-}
-
-export function EntityCreated(x: Entity) {
-	if (x instanceof Hero && !x.IsIllusion)
-		Heroes.push(x)
-	if (x instanceof Creep)
-		CreepsNeutrals.push(x)
-}
-
-export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero)
-		ArrayExtensions.arrayRemove(Heroes, x)
-	if (x instanceof Creep)
-		ArrayExtensions.arrayRemove(CreepsNeutrals, x)
 }
 
 export function Tick() {

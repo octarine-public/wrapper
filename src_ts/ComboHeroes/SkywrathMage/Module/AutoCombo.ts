@@ -1,6 +1,6 @@
 import { Base } from "../Extends/Helper"
-import { Heroes, MyHero, ProjList, initItemsMap, initAbilityMap } from "../Listeners"
-import { Ability, ArrayExtensions, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
+import { MyHero, ProjList, initItemsMap, initAbilityMap } from "../Listeners"
+import { Ability, ArrayExtensions, Hero, Item, Menu, TickSleeper, EntityManager } from "wrapper/Imports"
 import {
 	AutoComboAbility,
 	AutoComboDisableWhen, AutoComboItems,
@@ -26,8 +26,12 @@ export function AutoCombo() {
 	if (AutoComboDisableWhen.value && ComboKey.is_pressed) {
 		return
 	}
-	let target = ArrayExtensions.orderBy(Heroes.filter(x => x.IsEnemy() && (Base.Active(x) && x.IsStunned
-		&& !x.IsMagicImmune && x.IsAlive || Base.TriggerAutoCombo(x))), x => x.Distance2D(MyHero))[0]
+	let target = ArrayExtensions.orderBy(
+		EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).filter(x =>
+			Base.Active(x) && x.IsStunned
+			&& !x.IsIllusion
+			&& !x.IsMagicImmune && x.IsAlive || Base.TriggerAutoCombo(x)),
+		x => x.Distance2D(MyHero))[0]
 
 	if (target === undefined || !Base.Cancel(target) || Base.AeonDisc(target, false) || (BladeMailCancelCombo.value && target.HasBuffByName("modifier_item_blade_mail_reflect"))) {
 		return

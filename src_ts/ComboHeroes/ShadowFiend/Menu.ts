@@ -73,7 +73,7 @@ export const TypeHitAndRun = ComboHitAndRunTree.AddSwitcher("Type Run", ["Run to
 
 export const Menu_Settings_FindTargetRadius = SettingTarget.AddSlider("Near Mouse (Range)", 800, 100, 1000)
 export const Menu_Combo_BlinkDistance = SettingTarget.AddSlider("Blink Distance From Enemy", 300, 100, 1200)
-export const BladeMailCancel = SettingTarget.AddToggle("Cancel Combo in blade mail")
+export const BladeMailCancel = SettingTarget.AddToggle("Cancel Harras in blade mail")
 export const WithoutFailsState = SettingTarget.AddToggle("Without fails shadow raze", true)
 export const Menu_Combo_LinkenBreaker_Items = SettingTarget.AddImageSelector("Linken Break", arrayBreakLinkItems, new Map(arrayBreakLinkItems.map(name => [name, true])))
 

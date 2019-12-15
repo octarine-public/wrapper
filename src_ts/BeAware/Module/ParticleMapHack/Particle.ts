@@ -1,4 +1,4 @@
-import { ArrayExtensions, Color, Entity, Game, Hero, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, LocalPlayer } from "wrapper/Imports"
+import { Color, Entity, Game, Hero, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, LocalPlayer, EntityManager, Courier } from "wrapper/Imports"
 import { ucFirst } from "../../abstract/Function"
 import {
 	ComboBox,
@@ -12,9 +12,6 @@ let npc_hero: string = "npc_dota_hero_",
 	END_SCROLL = new Map<number, number>(),
 	OtherRadius = new Map<Entity, number>(),
 	LAST_ID_SCROLL: number,
-	Heroes: Hero[] = [],
-	Units: Unit[] = [],
-	OtherAbility: Entity[] = [],
 	_Size = Size.value * 20
 
 function ClassChecking(entity: Entity) {
@@ -65,23 +62,17 @@ export function ParticleCreate(id: number, handle: bigint, path: string, entity:
 		END_SCROLL.set(id, LAST_ID_SCROLL)
 		LAST_ID_SCROLL = undefined
 	}
-	//
-	// console.log(handle.toString() + " | " + entity + " | " + path)
-	// blink
-	// if (handle === 6400371855556675384n) {
-	// 	Particle.set(id, [handle, entity, undefined])
-	// }
-
 	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined, Game.RawGameTime])
 }
 
 function IsEnemyUse(position: Vector3) {
-	return Units.some(x => x !== undefined
-		&& (x.IsHero || x.IsCourier) && x.IsAlive
-		&& x.IsEnemy() && x.Distance2D(position) < 900)
+	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some
+		(x => x.IsAlive && x.Distance2D(position) < 900)
 }
+
 function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: string, name_hero: string, color?: Color, Time?: number) {
-	let hero = Heroes.find(x => x !== undefined && x.IsEnemy() && !x.IsVisible && x.Name === name_hero)
+	let hero = EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+		.find(x => !x.IsVisible && x.Name === name_hero)
 	if (hero !== undefined) {
 		let abil = hero.GetAbilityByName(name_ability)
 		if (abil !== undefined && abil.IsValid)
@@ -426,20 +417,18 @@ function DrawIconAbilityHero(position: Vector3, name: string) {
 }
 
 function CreateAbilityRadius(ent: Entity, radius: number) {
+	if (OtherRadius.has(ent))
+		return
 	var par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
 	ParticlesSDK.SetControlPoint(par, 1, new Vector3(radius, 0, 0))
 	OtherRadius.set(ent, par)
 }
 
 function DrawingOtherAbility(x: Entity, name: string, ability_name: string, radius?: number) {
-	if (x.Name.includes(name)) {
-		if (!OtherRadius.has(x)) {
-			CreateAbilityRadius(x, radius)
-		}
-		if (!x.IsVisible) {
-			DrawIconAbilityHero(x.Position, ability_name)
-		}
-	}
+	if (!x.Name.includes(name))
+		return
+	CreateAbilityRadius(x, radius)
+	DrawIconAbilityHero(x.Position, ability_name)
 }
 
 function RenderTeleportMap(handle: bigint, position: Vector3) {
@@ -454,16 +443,9 @@ function RenderTeleportMap(handle: bigint, position: Vector3) {
 export function OnDraw() {
 	if (!Game.IsInGame)
 		return
-
-	// loop-optimizer: KEEP
-	OtherAbility.forEach(x => {
-		if (x === undefined) {
-			return
-		}
-		if (x.IsEnemy()) {
-			DrawingOtherAbility(x, "nether_ward", "pugna_nether_ward", 1600)
-			DrawingOtherAbility(x, "psionic_trap", "templar_assassin_trap", 400)
-		}
+	EntityManager.GetEntitiesByClass(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(x => {
+		DrawingOtherAbility(x, "nether_ward", "pugna_nether_ward", 1600)
+		DrawingOtherAbility(x, "psionic_trap", "templar_assassin_trap", 400)
 	})
 
 	if (Particle === undefined || Particle.size <= 0 || !State.value)
@@ -537,37 +519,10 @@ export function ParticleDestroyed(id: number) {
 		END_SCROLL.delete(id)
 		_Size = Size.value * 20
 	}
-	if (Particle.has(id)) {
+	if (Particle.has(id))
 		Particle.delete(id)
-	}
 }
-
-export function EntityCreated(x: Entity) {
-	if (x instanceof Hero)
-		Heroes.push(x)
-	if (x instanceof Unit)
-		Units.push(x)
-	if (x instanceof Entity) {
-		if (x.Name === undefined)
-			return
-		if (x.Name.includes("npc_dota_pugna_nether_ward_") || x.Name.includes("npc_dota_templar_assassin_psionic_trap"))
-			OtherAbility.push(x)
-	}
-}
-
-export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero)
-		ArrayExtensions.arrayRemove(Heroes, x)
-	if (x instanceof Unit)
-		ArrayExtensions.arrayRemove(Units, x)
-	if (x instanceof Entity)
-		ArrayExtensions.arrayRemove(OtherAbility, x)
-}
-
 export function Init() {
-	Heroes = []
-	Units = []
-	OtherAbility = []
 	Particle.clear()
 	END_SCROLL.clear()
 	LAST_ID_SCROLL = undefined

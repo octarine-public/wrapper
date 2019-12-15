@@ -1,6 +1,6 @@
-import { Ability, ExecuteOrder, Unit, dotaunitorder_t } from "wrapper/Imports"
+import { Ability, ExecuteOrder, Unit, dotaunitorder_t, EntityManager, Hero, Creep } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { Heroes, initAbilityMap, Owner, Creeps } from "../Listeners"
+import { initAbilityMap, Owner } from "../Listeners"
 import { State, WithoutFailsState } from "../Menu"
 import { PredictionRize } from "./Combo"
 
@@ -27,9 +27,9 @@ export function OnExecuteOrder(order: ExecuteOrder): boolean {
 	if (Abilities === undefined || ability.Level <= 0) {
 		return true
 	}
-	return [...Heroes, ...Creeps].some(enemy => {
-		if (!enemy.IsEnemy() || !enemy.IsVisible)
-			return false;
+	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(enemy => {
+		if (!enemy.IsVisible)
+			return false
 		switch (ability.Name) {
 			case Abilities.Shadowraze1.Name:
 				return prdictPos(Abilities.Shadowraze1, enemy)

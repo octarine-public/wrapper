@@ -1,6 +1,5 @@
-import { Unit, ParticlesSDK, Vector3, Menu, Ability, ArrayExtensions, Color } from "wrapper/Imports"
+import { Unit, ParticlesSDK, Vector3, Menu, Ability, ArrayExtensions, Color, EntityManager, Hero } from "wrapper/Imports"
 import { DrawBase } from "../../Base/DrawBase"
-import { Heroes } from "../Listeners"
 export default class Draw extends DrawBase {
 	constructor(unit?: Unit) {
 		super(unit)
@@ -16,7 +15,7 @@ export default class Draw extends DrawBase {
 	}
 	public RenderConShot(ability: Ability, PosShot: Menu.Slider, State: Menu.Toggle) {
 		let Enemy = ArrayExtensions.orderBy(
-			Heroes.filter(
+			EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).filter(
 				x => x.IsEnemy()
 					&& x.IsAlive && x.IsVisible
 					&& x.Distance(this.unit) <= ability.CastRange

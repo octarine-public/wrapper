@@ -1,8 +1,8 @@
 import { Ability, Game, DOTA_GameMode, Creep, Hero, Courier, Tower, EntityManager, Unit } from "wrapper/Imports"
-import { CourierBase } from "Data/Helper"
-import { autoShieldState, autoShieldTimer } from "Menu"
-import { Sleep, UnitAnimation } from "bootstrap"
-import { MoveCourier } from "BestPosition"
+import { CourierBase } from "../Data/Helper"
+import { autoShieldState, autoShieldTimer } from "../Menu"
+import { Sleep, UnitAnimation } from "../bootstrap"
+import { MoveCourier } from "./BestPosition"
 
 // use ability courier
 const per_ability_kill: string[] = [
@@ -28,9 +28,7 @@ function AbilityTypeReady(courier: Courier): Ability {
 			&& courier.GetAbilityByName("courier_burst"))
 }
 function SafePosDeliver(courier: Courier): boolean {
-	return EntityManager.GetEntitiesByClass<Unit>(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit => {
-		if (!(unit instanceof Creep) && !(unit instanceof Hero) && !(unit instanceof Tower))
-			return false
+	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Tower], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit => {
 		if (!unit.IsAlive || !unit.IsVisible)
 			return false
 		if (!Sleep.Sleeping && (CourierBase.IsRangeCourier(unit, courier) || CourierBase.IsRangeCourier(unit)))

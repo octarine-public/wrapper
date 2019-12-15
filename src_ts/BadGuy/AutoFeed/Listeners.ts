@@ -1,38 +1,34 @@
-import { Building, GameSleeper, Unit } from "wrapper/Imports";
-import { AllUnits, EnemyBase } from "../Base/ListenersBase";
-import { DrawState, State, Swhicher } from "./Menu";
-import { Renderer } from "./Renderer";
-
-export let Sleep: GameSleeper = new GameSleeper()
-
+import { Building, Unit, TickSleeper, EntityManager, Hero, Creep, Courier } from "wrapper/Imports"
+import { DrawState, State, Swhicher } from "./Menu"
+import { Renderer } from "./Renderer"
+let Sleep: TickSleeper = new TickSleeper
 function MoveUnit(x: Unit, to: Building) {
 	x.MoveTo(to.Position)
-	Sleep.Sleep(250, "FeedTime")
+	Sleep.Sleep(250)
+}
+function Switch(unit: Unit, building: Building) {
+	if (!unit.IsVisible || !unit.IsAlive || !unit.IsControllable)
+		return false
+	switch (Swhicher.selected_id) {
+		case 0:
+			if (unit.IsHero) {
+				MoveUnit(unit, building)
+				return true
+			}
+			break
+		case 1:
+			MoveUnit(unit, building)
+			break
+	}
 }
 
 export function Tick() {
-	if (!State.value || Sleep.Sleeping("FeedTime"))
+	if (!State.value || Sleep.Sleeping)
 		return
-
-	let fontain = EnemyBase.find(x => x.IsEnemy())
-	// loop-optimizer: FORWARD
-	AllUnits
-		.filter(x => x.IsAlive && x.IsControllable)
-		.some(x => {
-			if (!x.IsVisible)
-				return false
-			switch (Swhicher.selected_id) {
-				case 0:
-					if (x.IsHero) {
-						MoveUnit(x, fontain)
-						return true
-					}
-					break
-				case 1:
-					MoveUnit(x, fontain)
-					break
-			}
-		})
+	if (!EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(x =>
+		Switch(x, EntityManager.GetEntitiesByClass(Building, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+			.find(x => x.Name === "dota_fountain"))))
+		return
 }
 
 export function Draw() {
@@ -41,5 +37,5 @@ export function Draw() {
 }
 
 export function GameEnded() {
-	Sleep.FullReset()
+	Sleep.ResetTimer()
 }

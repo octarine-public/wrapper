@@ -1,5 +1,5 @@
-import { Game, Hero, Menu } from "wrapper/Imports"
-import { Heroes, MyHero, initAbilityMap, initItemsMap, initItemsTargetMap } from "../Listeners"
+import { Game, Hero, Menu, EntityManager } from "wrapper/Imports"
+import { MyHero, initAbilityMap, initItemsMap, initItemsTargetMap } from "../Listeners"
 import { AbilityMenu, BadUltItem, BadUltMovementSpeedItem, ComboBreak, ComboStartWith, Items as ItemsSDK, SmartConShotOnlyTarget } from "../Menu"
 
 class BaseHelper {
@@ -84,9 +84,10 @@ class BaseHelper {
 	}
 
 	public get DeadInSide(): boolean {
+		let Heroes = EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
 		return Heroes.length === 0
 			|| MyHero === undefined
-			|| !Heroes.some(x => x !== undefined && x.IsEnemy() && x.IsAlive && !x.IsInvulnerable)
+			|| !Heroes.some(x => x.IsAlive && !x.IsInvulnerable)
 			|| !MyHero.IsAlive
 	}
 
@@ -127,13 +128,12 @@ class BaseHelper {
 
 	public DuelAghanimsScepter(target: Hero): boolean {
 		return target.HasBuffByName("modifier_legion_commander_duel")
-			&& Heroes.some(x =>
-				!x.IsEnemy()
-				&& x.Name === "npc_dota_hero_legion_commander"
-				&& x.IsValid
+			&& EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(x =>
+				x.IsValid
 				&& x.IsVisible
 				&& x.IsAlive
-				&& x.HasScepter,
+				&& x.Name === "npc_dota_hero_legion_commander"
+				&& x.HasScepter
 			)
 	}
 

@@ -1,7 +1,4 @@
-import {
-	ArrayExtensions, Creep, Entity,
-	Hero, TrackingProjectile, Utils, Unit,
-} from "wrapper/Imports"
+import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils, Unit, EntityManager } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 import { AutoComboDeleteVars } from "./Module/AutoCombo"
@@ -10,9 +7,6 @@ import { ComboDeleteVarsTemp } from "./Module/Combo"
 import { LinkenBreakerDeleteVars } from "./Module/LinkenBreaker"
 import { AutoModeDeleteVars } from "./Module/SpamMode"
 import { WithoutFailDestroy } from "./Module/WithoutFail"
-
-export let Heroes: Hero[] = []
-export let Creeps: Creep[] = []
 
 export let MyHero: Hero
 export let MouseTarget: Hero
@@ -30,11 +24,11 @@ export const initDrawMap = new Map<Unit, InitDraw>()
 
 
 export function InitMouse() {
-	if (!Base.IsRestrictions(State)) {
+	if (!Base.IsRestrictions(State))
 		return
-	}
 	MouseTarget = ArrayExtensions.orderBy(
-		Heroes.filter(x => x.IsEnemy() && x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
+		EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).filter(x =>
+			x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
 		x => x.Distance(Utils.CursorWorldVec),
 	)[0]
 }
@@ -47,8 +41,6 @@ function MapClear() {
 }
 export function GameEnded() {
 	MapClear()
-	Heroes = []
-	Creeps = []
 	ProjList = []
 	MyHero = undefined
 	MouseTarget = undefined
@@ -62,23 +54,8 @@ export function GameEnded() {
 }
 
 export function GameStarted(hero: Hero) {
-	if (MyHero === undefined && hero.Name === MyNameHero) {
+	if (MyHero === undefined && hero.Name === MyNameHero)
 		MyHero = hero
-	}
-}
-
-export function EntityCreated(x: Entity) {
-	if (x instanceof Hero && !x.IsIllusion)
-		Heroes.push(x)
-	if (x instanceof Creep)
-		Creeps.push(x)
-}
-
-export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero)
-		ArrayExtensions.arrayRemove(Heroes, x)
-	if (x instanceof Creep)
-		ArrayExtensions.arrayRemove(Creeps, x)
 }
 
 export function TrackingProjectileCreated(proj: TrackingProjectile) {

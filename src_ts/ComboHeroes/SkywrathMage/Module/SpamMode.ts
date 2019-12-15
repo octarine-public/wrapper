@@ -1,17 +1,15 @@
-import { TickSleeper } from "wrapper/Imports"
+import { TickSleeper, EntityManager, Hero } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { Heroes, MouseTarget, MyHero, initItemsMap, initAbilityMap } from "../Listeners"
+import { MouseTarget, MyHero, initItemsMap, initAbilityMap } from "../Listeners"
 import { BladeMailUseCyclone, ComboKey, SmartArcaneAutoBoltState, SmartArcaneBoltKey, SmartArcaneOwnerHP, State } from "../Menu"
-let Sleep = new TickSleeper()
-
+let Sleep = new TickSleeper
 export function AutoUsage() {
 	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
 	if (
 		BladeMailUseCyclone.value
-		&& Heroes.some(x =>
-			x.IsEnemy()
-			&& x.HasBuffByName("modifier_item_blade_mail_reflect")
+		&& EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(x =>
+			x.HasBuffByName("modifier_item_blade_mail_reflect")
 			&& x.HasBuffByName("modifier_skywrath_mystic_flare_aura_effect")
 			&& x.IsAlive && x.IsVisible && !x.IsInvulnerable
 		)

@@ -1,7 +1,7 @@
 import { Courier, Vector3, DOTA_GameMode, Game, Unit, Creep, Hero, EntityManager } from "wrapper/Imports"
-import { StateBestPos } from "Menu"
-import { CourierBase } from "Data/Helper"
-import { Sleep, OwnerIsValid } from "bootstrap"
+import { StateBestPos } from "../Menu"
+import { CourierBase } from "../Data/Helper"
+import { Sleep, OwnerIsValid } from "../bootstrap"
 
 function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector3) {
 	if (!unit.IsAlive || unit.IsDormant)
@@ -24,10 +24,7 @@ function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector
 export function CourierBestPosition(courier: Courier) {
 	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !StateBestPos.value)
 		return false
-	return EntityManager.GetEntitiesByClass(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit => {
-
-		if (!(unit instanceof Creep) && !(unit instanceof Hero))
-			return false
+	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit => {
 		switch (courier.State) {
 			case CourierState_t.COURIER_STATE_IDLE:
 			case CourierState_t.COURIER_STATE_AT_BASE:

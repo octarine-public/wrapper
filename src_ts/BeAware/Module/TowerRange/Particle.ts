@@ -1,17 +1,16 @@
-import { ArrayExtensions, Entity, ParticlesSDK, Tower, Unit, Vector3 } from "wrapper/Imports"
+import { Entity, ParticlesSDK, Tower, Unit, Vector3, EntityManager } from "wrapper/Imports"
 import { State, TowerOnlyTarget, TowerSwitcher } from "./Menu"
 
-let Towers: Tower[] = [],
-	pars = new Map<Entity, number>(),
+let pars = new Map<Entity, number>(),
 	TowerRange = new Map<Entity, number>(),
-	FirstCreate: boolean = false
+	FirstCreate: boolean = false,
+	Towers: Tower[] = []
 
 export function Destroy(ent: Entity) {
-	if (ent instanceof Tower) {
-		pars.delete(ent)
-		TowerRange.delete(ent)
-		ArrayExtensions.arrayRemove(Towers, ent)
-	}
+	if (!(ent instanceof Tower))
+		return
+	pars.delete(ent)
+	TowerRange.delete(ent)
 }
 
 function DrawTarget(ent: Tower, Owner: Unit) {
@@ -22,10 +21,6 @@ function DrawTarget(ent: Tower, Owner: Unit) {
 	}
 }
 
-export function Create(ent: Entity) {
-	if (ent instanceof Tower)
-		Towers.push(ent)
-}
 function CreateTowerRange(ent: Tower) {
 	var par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
 	ParticlesSDK.SetControlPoint(par, 1, new Vector3(ent.AttackRange + ent.HullRadius + 25, 0, 0))
@@ -33,10 +28,10 @@ function CreateTowerRange(ent: Tower) {
 	return par
 }
 function SwicthTowers(particle_range: number, tower: Tower) {
-	if (particle_range !== undefined) {
-		ParticlesSDK.Destroy(particle_range)
-		TowerRange.delete(tower)
-	}
+	if (particle_range === undefined)
+		return
+	ParticlesSDK.Destroy(particle_range)
+	TowerRange.delete(tower)
 }
 function RemoveTarget(particle: number, tower: Tower) {
 	if (particle !== undefined) {
@@ -44,12 +39,17 @@ function RemoveTarget(particle: number, tower: Tower) {
 		pars.delete(tower)
 	}
 }
-export function OnDraw() {
-	if (!State.value || Towers.length <= 0) {
+export function Tick() {
+	if (!State.value)
 		return
-	}
+	Towers = EntityManager.GetEntitiesByClass(Tower, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH).filter(x => x.IsAlive)
+}
+
+export function OnDraw() {
+	if (!State.value || Towers.length <= 0)
+		return
 	// loop-optimizer: KEEP
-	Towers.forEach((tower: Tower, i) => {
+	Towers.some((tower: Tower, i) => {
 		if (tower === undefined || i === undefined) {
 			return
 		}

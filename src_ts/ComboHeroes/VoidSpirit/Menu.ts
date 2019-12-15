@@ -3,8 +3,8 @@ import { Menu as MenuSDK, Color } from "wrapper/Imports"
 import InitAbility from "./Extends/Abilities"
 import InitItems from "./Extends/Items"
 
-let Items = new InitItems(),
-	Abilities = new InitAbility()
+let Items = new InitItems,
+	Abilities = new InitAbility
 
 const Menu = MenuSDK.AddEntry(["Heroes", "Void Spirit"])
 export const State = Menu.AddToggle("Enable")

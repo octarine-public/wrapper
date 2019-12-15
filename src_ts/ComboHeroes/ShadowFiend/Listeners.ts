@@ -1,10 +1,9 @@
-import { ArrayExtensions, Entity, Hero, Utils, Unit, Creep } from "wrapper/Imports"
+import { ArrayExtensions, Hero, Utils, Unit, EntityManager } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { Menu_Settings_FindTargetRadius, State } from "./Menu"
 // import { ComboGameEnded } from "./Module/Combo"
-export let Heroes: Hero[] = []
+
 export let Owner: Hero
-export let Creeps: Creep[] = []
 export let MouseTarget: Hero
 export let MyNameHero: string = "npc_dota_hero_nevermore"
 
@@ -22,9 +21,9 @@ export const initAbilityMap = new Map<Unit, InitAbilities>()
 export function InitMouse() {
 	if (!Base.IsRestrictions(State))
 		return
-
 	MouseTarget = ArrayExtensions.orderBy(
-		Heroes.filter(x => x.IsEnemy() && x.Distance(Utils.CursorWorldVec) <= Menu_Settings_FindTargetRadius.value && x.IsAlive),
+		EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).filter(x =>
+			x.Distance(Utils.CursorWorldVec) <= Menu_Settings_FindTargetRadius.value && x.IsAlive),
 		x => x.Distance(Utils.CursorWorldVec),
 	)[0]
 }
@@ -43,7 +42,6 @@ function MapClear() {
 }
 export function GameEnded() {
 	MapClear()
-	Heroes = []
 	Owner = undefined
 	MouseTarget = undefined
 	// ComboGameEnded()
@@ -51,23 +49,6 @@ export function GameEnded() {
 	MyNameHero = "npc_dota_hero_nevermore"
 }
 
-export function EntityCreated(x: Entity) {
-	if (x instanceof Hero && !x.IsIllusion) {
-		Heroes.push(x)
-	}
-	if (x instanceof Creep) {
-		Creeps.push(x)
-	}
-}
-
-export function EntityDestroyed(x: Entity) {
-	if (x instanceof Hero) {
-		ArrayExtensions.arrayRemove(Heroes, x)
-	}
-	if (x instanceof Creep) {
-		ArrayExtensions.arrayRemove(Creeps, x)
-	}
-}
 export function Tick() {
 	let initItems = initItemsMap.get(Owner)
 	if (initItems === undefined) {

@@ -1,6 +1,6 @@
 import { Base } from "./Extends/Helper"
-import { LocalPlayer, Color, Ability, Hero } from "wrapper/Imports"
-import { MouseTarget, Owner, initDrawMap, initItemsMap, initAbilityMap, Heroes } from "./Listeners"
+import { LocalPlayer, Color, Ability, Hero, EntityManager } from "wrapper/Imports"
+import { MouseTarget, Owner, initDrawMap, initItemsMap, initAbilityMap } from "./Listeners"
 import { PredictionRize } from "./Module/Combo"
 // import ShadowFiendAbility from "./Extends/Abilities"
 
@@ -39,9 +39,7 @@ export function Draw() {
 	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius + Owner.CastRangeBonus, Radius, State, BlinkRadiusItemColor.Color)
 	Particle.Render(Items.Cyclone, "item_cyclone", Items.Cyclone && Items.Cyclone.CastRange + Owner.CastRangeBonus, Radius, State, CycloneRadiusItemColor.Color)
 
-	Heroes.some(enemy => {
-		if (!enemy.IsEnemy())
-			return;
+	EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(enemy => {
 		//DrawAutoSteal(Abilities, enemy)
 		let raze_1 = prdictPos(Abilities.Shadowraze1, enemy),
 			raze_2 = prdictPos(Abilities.Shadowraze2, enemy),
