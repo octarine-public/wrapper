@@ -76,7 +76,7 @@ Events.on("ActiveModifiersChanged", map => {
 				EmitModifierRemoved(replaced_mod)
 		}
 		ActiveModifiersRaw.set(index, mod)
-		let old_mod = ActiveModifiers.get(mod.serial_num)
+		let old_mod = ActiveModifiers.get(mod.serial_num as number)
 		if (mod.entry_type === DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE) {
 			if (old_mod === undefined)
 				EmitModifierCreated(mod)
@@ -123,10 +123,16 @@ function changeFieldsByEvents(unit: Unit) {
 	}
 }
 
+declare namespace globalThis {
+	var DebugBuffsParents: () => void
+	var DebugBuffs: () => void
+}
+
+
 globalThis.DebugBuffsParents = () => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
-		let parent = EntityManager.EntityByHandle(mod.m_pBuff.parent)
+		let parent = EntityManager.EntityByHandle(mod.m_pBuff.parent as number)
 		if (parent instanceof Unit)
 			return
 		console.log(parent?.m_pBaseEntity?.constructor?.name, mod.m_pBuff.parent, mod.Name, mod.ElapsedTime, mod.m_pBuff.entry_type)

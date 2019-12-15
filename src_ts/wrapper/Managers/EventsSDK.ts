@@ -114,6 +114,11 @@ interface EventsSDK extends EventEmitter {
 	on(name: "ModifierRemoved", listener: (mod: Modifier) => void): EventEmitter
 }
 
+declare namespace globalThis {
+	var EventsSDK: EventsSDK
+}
+
+
 const EventsSDK: EventsSDK = globalThis.EventsSDK = new EventEmitter()
 export default EventsSDK
 
@@ -287,10 +292,17 @@ Events.on("NetworkFieldsChanged", map => {
 	// loop-optimizer: KEEP
 	map.forEach((ar, native_ent) => {
 		let entity = EntityManager.GetEntityByNative(native_ent)
+
 		if (entity === undefined)
 			return
+
 		// loop-optimizer: KEEP
 		ar.forEach(([field_name, array_index]) => {
+
+			// NOTICE: WTF??. Try remove this and u get error in entity: Entity | undefined
+			if (entity === undefined)
+				return
+
 			if (array_index === -1)
 				switch (field_name) {
 					case "m_hOwnerEntity":
@@ -384,7 +396,7 @@ Events.on("NetworkFieldsChanged", map => {
 						entity.OnNetworkRotationChanged()
 						break
 					case "m_fGameTime":
-						Game.RawGameTime = Game.m_GameRules.m_fGameTime
+						Game.RawGameTime = Game.m_GameRules?.m_fGameTime ?? 0
 
 						EntityManager.AllEntities.forEach(ent => {
 							if (ent instanceof Unit && ent.IsVisible)
@@ -395,7 +407,7 @@ Events.on("NetworkFieldsChanged", map => {
 							EventsSDK.emit("Tick", false)
 						break
 					case "m_bGamePaused":
-						Game.IsPaused = Game.m_GameRules.m_bGamePaused
+						Game.IsPaused = Game.m_GameRules?.m_bGamePaused ?? false
 						break
 
 					default:

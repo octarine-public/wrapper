@@ -25,7 +25,7 @@ export class EventEmitter {
 	public removeListener(name: string, listener: Listener): EventEmitter {
 		let listeners = this.events.get(name)
 		if (listeners === undefined)
-			return
+			return this
 
 		const idx = listeners.indexOf(listener)
 		if (idx > -1)
@@ -322,6 +322,11 @@ declare interface Events extends EventEmitter {
 	// it's named ActiveModifiersChanged not because it's active modifiers, but because of it's managed by stringtable ActiveModifiers
 	on(name: "ActiveModifiersChanged", listener: (update: Map<number, IModifier>) => void): EventEmitter
 }
+
+declare namespace globalThis {
+	var Events: EventEmitter
+}
+
 const Events: Events = globalThis.Events = new EventEmitter()
 export default Events
 setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))
