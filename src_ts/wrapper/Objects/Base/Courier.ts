@@ -3,7 +3,7 @@ import Hero from "./Hero"
 import Unit from "./Unit"
 
 export default class Courier extends Unit {
-	public readonly m_pBaseEntity: C_DOTA_Unit_Courier
+	public readonly m_pBaseEntity!: C_DOTA_Unit_Courier
 
 	get IsCourier(): boolean {
 		return true

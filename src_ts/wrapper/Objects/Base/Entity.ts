@@ -8,7 +8,7 @@ import { DegreesToRadian } from "../../Utils/Math"
 export type EntityNullable = Entity | undefined
 export type CEntityNullable = EntityNullable | number
 
-export const rotation_speed = {
+export const rotation_speed: { [name: string]: number } = {
 	npc_dota_hero_base: 0.5,
 	npc_dota_hero_antimage: 0.5,
 	npc_dota_hero_axe: 0.6,
@@ -168,8 +168,16 @@ export default class Entity {
 	public get Name(): string {
 		return this.Name_
 	}
-	public get Owner(): Entity { // trick to make it public ro, and protected rw
-		return this.Owner_ instanceof Entity ? this.Owner_ : (this.Owner_ = EntityManager.GetEntityByNative(this.Owner_) || EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity))
+	public get Owner(): EntityNullable { // trick to make it public ro, and protected rw
+		if (this.Owner_ instanceof Entity)
+			return this.Owner_
+
+		this.Owner_ = EntityManager.GetEntityByNative(this.Owner_) as Entity || this.Owner_
+
+		if (this.Owner_ instanceof Entity)
+			return this.Owner_
+
+		return undefined
 	}
 	public get GameSceneNode(): CGameSceneNode {
 		return this.m_pBaseEntity.m_pGameSceneNode
@@ -316,7 +324,7 @@ export default class Entity {
 	public Closest(ents: Entity[]): Entity {
 		let thisPos = this.Position
 
-		let entity: Entity
+		let entity: Entity | undefined
 		let distance = Number.POSITIVE_INFINITY
 
 		ents.forEach(ent => {
@@ -326,7 +334,8 @@ export default class Entity {
 				entity = ent
 			}
 		})
-		return entity
+
+		return entity as Entity
 	}
 	/**
 	 * @example
@@ -354,7 +363,7 @@ export default class Entity {
 	/**
 	 * @param ent if undefined => this compare with LocalPlayer
 	 */
-	public IsEnemy(ent: Entity = LocalPlayer): boolean {
+	public IsEnemy(ent: EntityNullable = LocalPlayer): boolean {
 		return ent === undefined || ent.Team !== this.Team
 	}
 

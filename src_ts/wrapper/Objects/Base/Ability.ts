@@ -6,7 +6,7 @@ import Entity from "./Entity"
 import Unit from "./Unit"
 
 export default class Ability extends Entity {
-	public readonly m_pBaseEntity: C_DOTABaseAbility
+	public readonly m_pBaseEntity!: C_DOTABaseAbility
 	public AbilityData: AbilityData
 	public Level = 0
 	public Cooldown = 0
@@ -195,7 +195,7 @@ export default class Ability extends Entity {
 		return ((this.CastPoint + this.Owner.TurnTime(position)) + Game.Ping / 2000)
 	}
 
-	public GetHitTime(position: Vector3, ActivationDelay?: number): number {
+	public GetHitTime(position: Vector3, ActivationDelay: number = 0): number {
 		if (this.Owner.IdealSpeed === Number.MAX_VALUE || this.Owner.IdealSpeed === 0) {
 			return this.GetCastDelay(position) + (ActivationDelay * 1000)
 		}
@@ -286,7 +286,7 @@ export default class Ability extends Entity {
 				range = this.AOERadius
 		}
 		if (range > 0)
-			range += target.HullRadius;
+			range += target.HullRadius
 		return this.Owner.Distance2D(target) < range
 	}
 	public CanBeCasted(bonusMana: number = 0): boolean {

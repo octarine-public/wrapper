@@ -6,7 +6,7 @@ import Player from "./Player"
 import Unit from "./Unit"
 
 export default class Item extends Ability {
-	public readonly m_pBaseEntity: C_DOTA_Item
+	public readonly m_pBaseEntity!: C_DOTA_Item
 
 	get IsReady(): boolean {
 		const unit = this.Owner
@@ -109,7 +109,7 @@ export default class Item extends Ability {
 		return this.m_pBaseEntity.m_iSharability
 	}
 	get ShouldDisplayCharges(): boolean {
-		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges;
+		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges
 	}
 
 	public DisassembleItem(queue?: boolean) {
