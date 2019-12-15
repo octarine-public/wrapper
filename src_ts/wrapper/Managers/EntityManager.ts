@@ -27,45 +27,57 @@ import EventsSDK from "./EventsSDK"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Roshan from "../Objects/Units/Roshan"
 
-type Constructor<T> = { new(...args: any[]): T }
+type Constructor<T> = new (...args: any[]) => T
+
+declare namespace globalThis {
+	var LocalPlayer: Player | undefined
+	var EntityManager: EntityManagerClass
+}
 
 let AllEntities: Entity[] = []
 let EntitiesIDs = new Map<number, C_BaseEntity>()
 let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 let InStage: C_BaseEntity[] = []
 
-export let LocalPlayer: Player
+
+export var LocalPlayer: Player | undefined
 globalThis.LocalPlayer = undefined
 
 let player_slot = NaN
-Events.on("ServerInfo", info => player_slot = info.player_slot)
+Events.on("ServerInfo", info => player_slot = info.player_slot ?? NaN)
 
-const EntityManager = new (class EntityManager {
-	private Roshan_: Entity | number
-	get Roshan(): Entity | number {
+
+// NOTICE: because shadow name + need for globalThis. idk another way
+class EntityManagerClass {
+
+	private Roshan_: Entity | number | undefined
+
+	get Roshan(): Entity | number | undefined {
 		if (this.Roshan_ instanceof Entity) {
 			if (!this.Roshan_.IsValid || !(this.Roshan_ instanceof Roshan))
 				return this.Roshan_ = undefined
 			return this.Roshan_
 		}
-		return this.Roshan_ = (this.EntityByIndex(this.Roshan_) ?? this.Roshan_ ?? AllEntities.find(ent => ent instanceof Roshan))
+		return this.Roshan_ = (this.EntityByIndex(this.Roshan_ as number)
+			?? this.Roshan_
+			?? AllEntities.find(ent => ent instanceof Roshan))
 	}
-	set Roshan(ent: Entity | number) {
+	set Roshan(ent: Entity | number | undefined) {
 		this.Roshan_ = ent
 	}
-	get LocalPlayer(): Player {
+	get LocalPlayer(): Player | undefined {
 		return LocalPlayer
 	}
-	get LocalHero(): Hero {
+	get LocalHero(): Hero | undefined {
 		return LocalPlayer !== undefined ? LocalPlayer.Hero : undefined
 	}
 	get AllEntities(): Entity[] {
 		return AllEntities.slice()
 	}
-	public EntityByIndex(index: number): Entity {
+	public EntityByIndex(index: number): Entity | undefined {
 		return this.GetEntityByNative(EntitiesIDs.get(index))
 	}
-	public EntityByHandle(handle: number): Entity {
+	public EntityByHandle(handle: number): Entity | undefined {
 		if (handle === undefined || handle === 0)
 			return undefined
 		let index = handle & 0x3FFF
@@ -77,15 +89,15 @@ const EntityManager = new (class EntityManager {
 		for (let [index, ent_] of EntitiesIDs.entries())
 			if (ent === ent_)
 				return index
-		return undefined
+		return -1
 	}
-	public GetPlayerByID(playerID: number): Player {
+	public GetPlayerByID(playerID: number): Player | undefined {
 		if (playerID === -1)
 			return undefined
 		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player
 	}
 
-	public GetEntityByNative(ent: C_BaseEntity | number): Entity {
+	public GetEntityByNative(ent: CEntityIndex): Entity | undefined {
 		if (ent === undefined)
 			return undefined
 		if (!(ent instanceof C_BaseEntity))
@@ -94,18 +106,21 @@ const EntityManager = new (class EntityManager {
 		return AllEntitiesAsMap.get(ent)
 	}
 
-	public GetEntityByFilter(filter: (ent: Entity) => boolean): Entity {
+	public GetEntityByFilter(filter: (ent: Entity) => boolean): Entity | undefined {
 		return AllEntities.find(filter)
 	}
 
-	public GetEntitiesByNative(ents: (C_BaseEntity | Entity | number)[], inStage: boolean = false): (Entity | any)[] {
+	public GetEntitiesByNative(ents: (CEntityIndex | Entity)[]): (Entity | C_BaseEntity | undefined)[] {
 		// loop-optimizer: FORWARD
 		return ents.map(ent => {
-			if (ent instanceof Entity)
+
+			if (ent === undefined || ent instanceof Entity)
 				return ent
+
 			if (!(ent instanceof C_BaseEntity))
 				return this.EntityByIndex(ent)
-			return AllEntitiesAsMap.get(ent) || ent
+
+			return AllEntitiesAsMap.get(ent) ?? ent
 		})
 	}
 
@@ -152,9 +167,12 @@ const EntityManager = new (class EntityManager {
 				return []
 		}
 	}
-})()
+}
 
-export default globalThis.EntityManager = EntityManager
+// NOTICE: because shadow name + need for globalThis. idk another way
+const _EntityManager = new EntityManagerClass()
+
+export default globalThis.EntityManager = _EntityManager
 
 Events.on("EntityCreated", (ent, index) => {
 	{ // add globals
@@ -201,8 +219,8 @@ let last_event_ent = -1
 Events.on("GameEvent", (name, obj) => {
 	if (name === "npc_spawned")
 		last_event_ent = obj.entindex
-	else if (name === "dota_item_spawned" && obj.player_id === -1 && last_event_ent !== -1 && EntityManager.Roshan === undefined)
-		EntityManager.Roshan = last_event_ent
+	else if (name === "dota_item_spawned" && obj.player_id === -1 && last_event_ent !== -1 && _EntityManager.Roshan === undefined)
+		_EntityManager.Roshan = last_event_ent
 	else
 		last_event_ent = -1
 })
@@ -262,6 +280,10 @@ function DeleteFromCache(entNative: C_BaseEntity) {
 	}
 
 	const entity = AllEntitiesAsMap.get(entNative)
+
+	if (entity === undefined) {
+		return
+	}
 
 	entity.IsValid = false
 

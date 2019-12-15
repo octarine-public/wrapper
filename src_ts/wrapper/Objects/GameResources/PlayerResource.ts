@@ -2,8 +2,13 @@ import EntityManager from "../../Managers/EntityManager"
 import Courier from "../Base/Courier"
 import Player from "../Base/Player"
 
-export default globalThis.PlayerResource = new (class PlayerResource {
-	public m_pBaseEntity: C_DOTA_PlayerResource
+declare namespace globalThis {
+	var PlayerResource: PlayerResourceClass
+}
+
+// NOTICE: because shadow name + need for globalThis. idk another way
+class PlayerResourceClass {
+	public m_pBaseEntity: C_DOTA_PlayerResource | undefined
 
 	public get Names(): string[] {
 		if (this.m_pBaseEntity === undefined)
@@ -48,24 +53,24 @@ export default globalThis.PlayerResource = new (class PlayerResource {
 			return ""
 		return this.m_pBaseEntity.m_iszName[playerID]
 	}
-	public GetPlayerByPlayerID(playerID: number): Player {
-		if (this.m_pBaseEntity === undefined)
-			return undefined
-		return EntityManager.GetEntityByFilter(ent => ent instanceof Player && ent.PlayerID === playerID) as Player
-	}
 	public GetPlayerCouriersByPlayerID(playerID: number): Courier[] {
 		if (this.m_pBaseEntity === undefined)
 			return []
 		return EntityManager.GetEntitiesByNative(this.m_pBaseEntity.m_hPlayerCouriers[playerID]) as Courier[]
 	}
 
-	public GetPlayerTeamDataByPlayerID(playerID: number): PlayerResourcePlayerTeamData_t {
+	public GetPlayerTeamDataByPlayerID(playerID: number): PlayerResourcePlayerTeamData_t | undefined {
 		return this.PlayerTeamData[playerID]
 	}
-	public GetPlayerDataByPlayerID(playerID: number): PlayerResourcePlayerData_t {
+	public GetPlayerDataByPlayerID(playerID: number): PlayerResourcePlayerData_t | undefined {
 		return this.PlayerData[playerID]
 	}
 	public GetPlayerNameByPlayerID(playerID: number): string {
-		return this.PlayerNames[playerID]
+		return this.PlayerNames[playerID] ?? ""
 	}
-})()
+}
+
+// NOTICE: because shadow name + need for globalThis. idk another way
+const _PlayerResource = new PlayerResourceClass()
+
+export default globalThis.PlayerResource = _PlayerResource

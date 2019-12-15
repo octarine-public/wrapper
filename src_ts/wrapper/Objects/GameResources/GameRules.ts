@@ -4,10 +4,15 @@ import { Flow_t } from "../../Enums/Flow_t"
 import { DOTA_GameState } from "../../Enums/DOTA_GameState"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 
-let Game = globalThis.Game = new (class Game {
-	public m_GameRules: C_DOTAGamerules
-	public m_GameManager: C_DOTAGameManager
-	public m_StockInfo: StockInfo[]
+declare namespace globalThis {
+	var Game: GameClass
+}
+
+// NOTICE: because shadow name + need for globalThis. idk another way
+class GameClass {
+	public m_GameRules: C_DOTAGamerules | undefined
+	public m_GameManager: C_DOTAGameManager | undefined
+	public m_StockInfo: StockInfo[] = [];
 	public readonly Language = ConVars.GetString("cl_language")
 	public CurrentServerTick = -1
 	public IsInputCaptured = false
@@ -95,7 +100,7 @@ let Game = globalThis.Game = new (class Game {
 	public get IsLobbyGame(): boolean {
 		let gameRules = this.m_GameRules
 
-		return gameRules && (gameRules.m_lobbyGameName !== null || gameRules.m_lobbyLeagueID !== null)
+		return gameRules !== undefined && (gameRules.m_lobbyGameName !== null || gameRules.m_lobbyLeagueID !== null)
 	}
 	public get IsNight(): boolean {
 		let gameRules = this.m_GameRules
@@ -140,8 +145,15 @@ let Game = globalThis.Game = new (class Game {
 	public get StockInfo(): StockInfo[] {
 		let stockInfo = this.m_StockInfo
 
-		if (stockInfo === undefined)
-			stockInfo = this.m_StockInfo = this.m_GameRules.m_vecItemStockInfo.map(info => new StockInfo(info))
+		if (stockInfo === undefined) {
+
+			let gameRules = this.m_GameRules
+
+			if (gameRules === undefined)
+				return []
+
+			stockInfo = this.m_StockInfo = gameRules.m_vecItemStockInfo.map(info => new StockInfo(info))
+		}
 
 		return stockInfo
 	}
@@ -155,9 +167,13 @@ let Game = globalThis.Game = new (class Game {
 	public ExecuteCommand(command: string) {
 		return SendToConsole(command)
 	}
-})()
-export default Game
+}
 
-Events.on("ServerTick", tick => Game.CurrentServerTick = tick)
-Events.on("InputCaptured", is_captured => Game.IsInputCaptured = is_captured)
-Events.on("UIStateChanged", new_state => Game.UIState = new_state)
+// NOTICE: because shadow name + need for globalThis. idk another way
+const _Game = new GameClass()
+
+export default globalThis.Game = _Game
+
+Events.on("ServerTick", tick => _Game.CurrentServerTick = tick)
+Events.on("InputCaptured", is_captured => _Game.IsInputCaptured = is_captured)
+Events.on("UIStateChanged", new_state => _Game.UIState = new_state)
