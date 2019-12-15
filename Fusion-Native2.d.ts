@@ -135,7 +135,7 @@ declare function readFile(path: string): ArrayBuffer
  * @param path pass empty to read from confings/../settings.json
  */
 declare function readConfig(path: string): string
-declare function writeConfig(path: string, data: string)
+declare function writeConfig(path: string, data: string): void
 declare function sleep(ms: number): void
 declare function usleep(ns: number): void
 declare function IsInGame(): boolean
