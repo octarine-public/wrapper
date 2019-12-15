@@ -9,11 +9,6 @@ import { MainState } from "./Base/MenuBase"
 EventsSDK.on("Tick", () => {
 	if (!MainState.value || LocalPlayer === undefined || LocalPlayer.IsSpectator || !Game.IsInGame)
 		return
-	// Game.StockInfo.filter(x => {
-	// 	if (x.AbilityID !== 257)
-	// 		return
-	// 	console.log(x.Count)
-	// })
 	AutoFeed.Tick()
 	AutoLaugh.Tick()
 	AutoTaunt.Tick()

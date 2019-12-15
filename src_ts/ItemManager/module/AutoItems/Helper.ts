@@ -556,17 +556,17 @@ export function Init() {
 		return
 	if (!_InitItems())
 		return
-	if (EntityManager.GetEntitiesByClasses<Unit>([Hero, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(AutoUseItems))
+	if (EntityManager.GetEntitiesByClass(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(AutoUseItems))
 		return
 }
 
 export function _InitItems() {
-	let Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
+	let Units = EntityManager.GetEntitiesByClass(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
 	if (Units.length === 0)
 		return false
 	if (ParticleGlimer.size !== 0 || glimer.size !== 0)
 		setTimeout(() => GlimerClear(), 2000)
-	let unit = Units.filter(x => x !== undefined && x.IsAlive && x.IsControllable)
+	let unit = Units.filter(x => x.IsAlive && x.IsControllable)
 	unit.forEach(x => {
 		let initItems = initItemsMap.get(x)
 		if (initItems === undefined) {
