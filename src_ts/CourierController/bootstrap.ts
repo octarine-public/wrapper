@@ -35,7 +35,7 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 EventsSDK.on("GameStarted", hero => {
 	if (Owner === undefined)
 		Owner = hero
-	if (!StateBestPos.value)
+	if (!State.value || !StateBestPos.value)
 		return
 	setTimeout(() =>
 		EntityManager.GetEntitiesByClass(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)

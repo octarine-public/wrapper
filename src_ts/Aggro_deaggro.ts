@@ -27,7 +27,8 @@ EventsSDK.on("Tick", () => {
 	if (!Game.IsInGame || !IsValidPlayer() || Sleep.Sleeping)
 		return
 	if (AutoTowerState.value) {
-		EntityManager.GetEntitiesByClass(Tower, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).forEach(tower => {
+		let Towers = EntityManager.GetEntitiesByClass(Tower, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+		Towers.forEach(tower => {
 			if (!IsValidTower(tower) || !IsValidPlayerAttack(tower))
 				return
 			if (EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(x => x.IsAlive && x.IsLaneCreep
