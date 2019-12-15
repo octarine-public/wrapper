@@ -11,6 +11,8 @@ import { ConnectionState } from "../../Enums/ConnectionState"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import PlayerResource from "../GameResources/PlayerResource"
 
+export type PlayerNullable = Player | undefined
+
 export default class Player extends Entity {
 	static get QuickBuyItems(): number[] {
 		return LocalPlayer !== undefined ? LocalPlayer.m_pBaseEntity.m_quickBuyItems : []
@@ -61,7 +63,7 @@ export default class Player extends Entity {
 
 	public readonly m_pBaseEntity: C_DOTAPlayer
 	public PlayerID = this.m_pBaseEntity.m_iPlayerID
-	public Hero_: Hero | C_BaseEntity | number
+	public Hero_: Hero | CEntityIndex
 	private m_Name: string
 	private m_PlayerData: PlayerResourcePlayerData_t
 	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t

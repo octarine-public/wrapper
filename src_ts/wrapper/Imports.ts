@@ -50,7 +50,7 @@ export {
 export { default as RendererSDK } from "./Native/RendererSDK"
 export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
 
-export { default as Entity } from "./Objects/Base/Entity"
+export { default as Entity, EntityNullable, CEntityNullable } from "./Objects/Base/Entity"
 export { default as Unit } from "./Objects/Base/Unit"
 export { default as Hero } from "./Objects/Base/Hero"
 export { default as Player } from "./Objects/Base/Player"

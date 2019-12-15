@@ -7,9 +7,9 @@ import Events from "./Events"
 import Vector3 from "../Base/Vector3"
 
 import Creep from "../Objects/Base/Creep"
-import Entity from "../Objects/Base/Entity"
+import Entity, { CEntityNullable, EntityNullable } from "../Objects/Base/Entity"
 import Hero from "../Objects/Base/Hero"
-import Player from "../Objects/Base/Player"
+import Player, { PlayerNullable } from "../Objects/Base/Player"
 import Unit from "../Objects/Base/Unit"
 
 import Ability from "../Objects/Base/Ability"
@@ -30,7 +30,7 @@ import Roshan from "../Objects/Units/Roshan"
 type Constructor<T> = new (...args: any[]) => T
 
 declare namespace globalThis {
-	var LocalPlayer: Player | undefined
+	var LocalPlayer: PlayerNullable
 	var EntityManager: EntityManagerClass
 }
 
@@ -40,7 +40,7 @@ let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 let InStage: C_BaseEntity[] = []
 
 
-export var LocalPlayer: Player | undefined
+export var LocalPlayer: PlayerNullable
 globalThis.LocalPlayer = undefined
 
 let player_slot = NaN
@@ -50,9 +50,9 @@ Events.on("ServerInfo", info => player_slot = info.player_slot ?? NaN)
 // NOTICE: because shadow name + need for globalThis. idk another way
 class EntityManagerClass {
 
-	private Roshan_: Entity | number | undefined
+	private Roshan_: CEntityNullable
 
-	get Roshan(): Entity | number | undefined {
+	get Roshan(): CEntityNullable {
 		if (this.Roshan_ instanceof Entity) {
 			if (!this.Roshan_.IsValid || !(this.Roshan_ instanceof Roshan))
 				return this.Roshan_ = undefined
@@ -62,10 +62,10 @@ class EntityManagerClass {
 			?? this.Roshan_
 			?? AllEntities.find(ent => ent instanceof Roshan))
 	}
-	set Roshan(ent: Entity | number | undefined) {
+	set Roshan(ent: CEntityNullable) {
 		this.Roshan_ = ent
 	}
-	get LocalPlayer(): Player | undefined {
+	get LocalPlayer(): PlayerNullable {
 		return LocalPlayer
 	}
 	get LocalHero(): Hero | undefined {
@@ -74,10 +74,10 @@ class EntityManagerClass {
 	get AllEntities(): Entity[] {
 		return AllEntities.slice()
 	}
-	public EntityByIndex(index: number): Entity | undefined {
+	public EntityByIndex(index: number): EntityNullable {
 		return this.GetEntityByNative(EntitiesIDs.get(index))
 	}
-	public EntityByHandle(handle: number): Entity | undefined {
+	public EntityByHandle(handle: number): EntityNullable {
 		if (handle === undefined || handle === 0)
 			return undefined
 		let index = handle & 0x3FFF
@@ -97,7 +97,7 @@ class EntityManagerClass {
 		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player
 	}
 
-	public GetEntityByNative(ent: CEntityIndex): Entity | undefined {
+	public GetEntityByNative(ent: CEntityIndex): EntityNullable {
 		if (ent === undefined)
 			return undefined
 		if (!(ent instanceof C_BaseEntity))
@@ -106,7 +106,7 @@ class EntityManagerClass {
 		return AllEntitiesAsMap.get(ent)
 	}
 
-	public GetEntityByFilter(filter: (ent: Entity) => boolean): Entity | undefined {
+	public GetEntityByFilter(filter: (ent: Entity) => boolean): EntityNullable {
 		return AllEntities.find(filter)
 	}
 

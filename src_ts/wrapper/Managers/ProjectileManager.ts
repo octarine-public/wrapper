@@ -30,8 +30,8 @@ EventsSDK.on("GameEnded", () => {
 
 function TrackingProjectileCreated(proj: number, projectile: TrackingProjectile) {
 	projectile.Position.Extend(projectile.TargetLoc, (Game.CurrentServerTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
-	EventsSDK.emit("TrackingProjectileCreated", false, projectile);
-	ProjectileManager.AllTrackingProjectiles.push(projectile);
+	EventsSDK.emit("TrackingProjectileCreated", false, projectile)
+	ProjectileManager.AllTrackingProjectiles.push(projectile)
 	ProjectileManager.AllTrackingProjectilesMap.set(proj, projectile)
 }
 
@@ -55,9 +55,9 @@ Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceA
 		launch_tick,
 		Vector3.fromIOBuffer(),
 		Color.fromIOBuffer(3),
-	);
+	)
 
-	TrackingProjectileCreated(proj, projectile);
+	TrackingProjectileCreated(proj, projectile)
 })
 
 Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particleSystemHandle, dodgeable, isAttack, expireTime, launch_tick) => {
@@ -81,10 +81,10 @@ Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particle
 			launch_tick,
 			Vector3.fromIOBuffer(true, 3),
 			Color.fromIOBuffer(6),
-		);
+		)
 		projectile.Position.CopyFrom(Vector3.fromIOBuffer())
 
-		TrackingProjectileCreated(proj, projectile);
+		TrackingProjectileCreated(proj, projectile)
 	}
 
 	projectile.Update(

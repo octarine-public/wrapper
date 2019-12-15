@@ -5,6 +5,9 @@ import { Team } from "../../Enums/Team"
 import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager"
 import { DegreesToRadian } from "../../Utils/Math"
 
+export type EntityNullable = Entity | undefined
+export type CEntityNullable = EntityNullable | number
+
 export const rotation_speed = {
 	npc_dota_hero_base: 0.5,
 	npc_dota_hero_antimage: 0.5,
@@ -139,7 +142,7 @@ export default class Entity {
 	public Name_: string = ""
 	public readonly Entity: CEntityIdentity
 	public readonly Index: number
-	public Owner_: Entity | C_BaseEntity | number
+	public Owner_: Entity | CEntityIndex
 	public Team = Team.None
 	public LifeState = LifeState_t.LIFE_ALIVE
 	public HP = 0
