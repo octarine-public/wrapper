@@ -22,6 +22,7 @@ declare global {
 	var LocalPlayer: Nullable<Player>
 
 	var EntityManager: typeof _EntityManager
+	var GetEntityClassByName: (name: string) => any[]
 	var Events: typeof EventEmitter
 
 	var PlayerResource: typeof _PlayerResource

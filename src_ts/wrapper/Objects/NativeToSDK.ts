@@ -1,5 +1,5 @@
 let constructors = new Map<string, any>(),
-	sdk_classes = []
+	sdk_classes: any[] = []
 
 export function RegisterClass(name: string, constructor: any) {
 	constructors.set(name, constructor)

@@ -130,10 +130,10 @@ class EntityManager {
 		switch (flags) {
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY:
 				// loop-optimizer: FORWARD
-				return ClassToEntities.get(class_).filter(e => !e.IsEnemy()) as []
+				return ClassToEntities.get(class_)!.filter(e => !e.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY:
 				// loop-optimizer: FORWARD
-				return ClassToEntities.get(class_).filter(e => e.IsEnemy()) as []
+				return ClassToEntities.get(class_)!.filter(e => e.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH:
 				return ClassToEntities.get(class_) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_CUSTOM:
@@ -154,11 +154,11 @@ class EntityManager {
 	}
 }
 
-globalThis.GetEntityClassByName = name => GetSDKClasses().find(c => (c as Function).name === name)
-
-export default globalThis.EntityManager = EntityManager
+const _EntityManager = new EntityManager()
 
 export default _EntityManager
+
+globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Function).name === name)
 
 Events.on("EntityCreated", (ent, index) => {
 	{ // add globals
@@ -243,7 +243,8 @@ function AddToCache(ent: C_BaseEntity, already_valid = false) {
 			return
 		if (!ClassToEntities.has(class_))
 			ClassToEntities.set(class_, [])
-		ClassToEntities.get(class_).push(entity)
+
+		ClassToEntities.get(class_)!.push(entity)
 	})
 	EventsSDK.emit("EntityCreated", false, entity)
 	FireEntityEvents(entity)
@@ -288,9 +289,12 @@ function DeleteFromCache(entNative: C_BaseEntity) {
 	GetSDKClasses().forEach(class_ => {
 		if (!(entity instanceof class_))
 			return
-		if (!ClassToEntities.has(class_))
+
+		let classToEnt = ClassToEntities.get(class_)
+
+		if (!classToEnt)
 			return
-		ArrayExtensions.arrayRemove(ClassToEntities.get(class_), entity)
+		ArrayExtensions.arrayRemove(classToEnt, entity)
 	})
 }
 
