@@ -7,6 +7,8 @@ import { IModifier } from "../../Managers/Events"
 import * as StringTables from "../../Managers/StringTables"
 import Vector3 from "../../Base/Vector3"
 
+export type ModifierNullable = Modifier | undefined
+
 // AllowIllusionDuplicate
 // CanParentBeAutoAttacked
 // IsDebuff

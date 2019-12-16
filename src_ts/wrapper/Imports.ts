@@ -13,13 +13,12 @@ export { dotaunitorder_t } from "./Enums/dotaunitorder_t"
 
 import * as ArrayExtensions from "./Utils/ArrayExtensions"
 import * as BitsExtensions from "./Utils/BitsExtensions"
-import * as Debug from "./Utils/Debug"
 import * as MapExtensions from "./Utils/MapExtensions"
 import * as MathSDK from "./Utils/Math"
 import * as Parse from "./Utils/ParseKV"
 import * as Utils from "./Utils/Utils"
 export { default as Benchmark } from "./Utils/BenchMark"
-export { Utils, MathSDK, Debug, ArrayExtensions, BitsExtensions, MapExtensions, Parse }
+export { Utils, MathSDK, ArrayExtensions, BitsExtensions, MapExtensions, Parse }
 
 export { default as Vector2 } from "./Base/Vector2"
 export { default as Rectangle } from "./Base/Rectangle"
@@ -51,18 +50,19 @@ export { default as RendererSDK } from "./Native/RendererSDK"
 export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
 
 export { default as Entity, EntityNullable, CEntityNullable } from "./Objects/Base/Entity"
-export { default as Unit } from "./Objects/Base/Unit"
-export { default as Hero } from "./Objects/Base/Hero"
-export { default as Player } from "./Objects/Base/Player"
+export { default as Unit, UnitNullable } from "./Objects/Base/Unit"
+export { default as Hero, HeroNullable } from "./Objects/Base/Hero"
+export { default as Player, PlayerNullable } from "./Objects/Base/Player"
 export { default as Courier } from "./Objects/Base/Courier"
 export { default as Creep } from "./Objects/Base/Creep"
 export { default as Meepo } from "./Objects/Heroes/Meepo"
 export { default as Roshan } from "./Objects/Units/Roshan"
 
-export { default as Ability } from "./Objects/Base/Ability"
-export { default as Item } from "./Objects/Base/Item"
+export { default as Ability, AbilityNullable } from "./Objects/Base/Ability"
+export { default as Item, ItemNullable } from "./Objects/Base/Item"
 export {
 	default as Modifier,
+	ModifierNullable,
 	TRUESIGHT_MODIFIERS,
 	SCEPTER_MODIFIERS,
 	BLOCKING_DAMAGE_MODIFIERS,

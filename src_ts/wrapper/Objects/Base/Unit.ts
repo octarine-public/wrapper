@@ -28,11 +28,12 @@ import { ArmorType } from "../../Enums/ArmorType";
 import { AttackDamageType } from "../../Enums/AttackDamageType";
 //import { DotaMap } from "../../Helpers/DotaMap";
 
-const attackAnimationPoint = new Map<string, number>();
-const attackprojectileSpeed = new Map<string, number>();
+export type UnitNullable = Unit | undefined
 
-let parseHeroes = parseKVFile("scripts/npc/npc_heroes.txt");
+const attackAnimationPoint = new Map<string, number>()
+const attackprojectileSpeed = new Map<string, number>()
 
+let parseHeroes = parseKVFile("scripts/npc/npc_heroes.txt")
 // loop-optimizer: KEEP
 let heroesNames = Object.keys(parseHeroes.DOTAHeroes).filter(hero =>
 	!(hero.includes("values") || hero.includes("hero_base")));
