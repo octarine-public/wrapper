@@ -1,7 +1,8 @@
 import EntityManager, { LocalPlayer } from "../../Managers/EntityManager"
-import Item, { ItemNullable } from "../Base/Item"
-import Player, { PlayerNullable } from "../Base/Player"
+import Item from "../Base/Item"
+import Player from "../Base/Player"
 import Unit from "../Base/Unit"
+
 
 const MAX_ITEMS = 16
 
@@ -19,7 +20,7 @@ export default class Inventory {
 	}
 
 	// NOTICE: idk...
-	get TotalItems(): ItemNullable[] {
+	get TotalItems(): Nullable<Item>[] {
 		// loop-optimizer: FORWARD
 		return (this.TotalItems_ = EntityManager.GetEntitiesByNative(this.TotalItems_)).map(item => item instanceof Item ? item : undefined)
 	}
@@ -64,7 +65,7 @@ export default class Inventory {
 		return this.Owner.m_pBaseEntity.m_Inventory.m_bStashEnabled
 	}
 
-	public GetItem(slot: DOTAScriptInventorySlot_t): ItemNullable {
+	public GetItem(slot: DOTAScriptInventorySlot_t): Nullable<Item> {
 		return this.TotalItems[slot]
 	}
 	public GetItems(start: number, end: number): Item[] {
@@ -116,7 +117,10 @@ export default class Inventory {
 		}
 		return false
 	}
-	public CountItemByOtherPlayer(player: PlayerNullable = LocalPlayer): number {
+	public HasItemInInventory(name: string | RegExp, includeBackpack: boolean = false): boolean {
+		return this.GetItemByName(name, includeBackpack) !== undefined
+	}
+	public CountItemByOtherPlayer(player: Nullable<Player> = LocalPlayer): number {
 		let counter = 0
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.TotalItems.forEach(item => {
@@ -125,7 +129,7 @@ export default class Inventory {
 		})
 		return counter
 	}
-	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): ItemNullable {
+	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Nullable<Item> {
 		if (this.Owner.IsValid) {
 			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
 
@@ -161,7 +165,7 @@ export default class Inventory {
 		}
 		return items
 	}
-	public GetItemByNameInBackpack(name: string): ItemNullable {
+	public GetItemByNameInBackpack(name: string): Nullable<Item> {
 		if (this.Owner.IsValid) {
 			let len = Math.min(this.TotalItems.length, 10)
 

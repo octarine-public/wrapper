@@ -1,15 +1,13 @@
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 
-// import * as Debug from "../Utils/Debug"
-
 import Events from "./Events"
 
 import Vector3 from "../Base/Vector3"
 
 import Creep from "../Objects/Base/Creep"
-import Entity, { CEntityNullable, EntityNullable } from "../Objects/Base/Entity"
-import Hero, { HeroNullable } from "../Objects/Base/Hero"
-import Player, { PlayerNullable } from "../Objects/Base/Player"
+import Entity from "../Objects/Base/Entity"
+import Hero from "../Objects/Base/Hero"
+import Player from "../Objects/Base/Player"
 import Unit from "../Objects/Base/Unit"
 
 import Ability from "../Objects/Base/Ability"
@@ -27,14 +25,12 @@ import EventsSDK from "./EventsSDK"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Roshan from "../Objects/Units/Roshan"
 
-type Constructor<T> = new (...args: any[]) => T
-
 let AllEntities: Entity[] = []
 let EntitiesIDs = new Map<number, C_BaseEntity>()
 let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 let InStage: C_BaseEntity[] = []
 
-export var LocalPlayer: PlayerNullable
+export var LocalPlayer: Nullable<Player>
 
 let player_slot = NaN
 Events.on("ServerInfo", info => player_slot = info.player_slot ?? NaN)
@@ -42,9 +38,9 @@ Events.on("ServerInfo", info => player_slot = info.player_slot ?? NaN)
 // NOTICE: because shadow name. idk another way
 class EntityManager {
 
-	private Roshan_: CEntityNullable
+	private Roshan_: Nullable<Entity | number>
 
-	get Roshan(): CEntityNullable {
+	get Roshan(): Nullable<Entity | number> {
 		if (this.Roshan_ instanceof Entity) {
 			if (!this.Roshan_.IsValid || !(this.Roshan_ instanceof Roshan))
 				return this.Roshan_ = undefined
@@ -54,22 +50,22 @@ class EntityManager {
 			?? this.Roshan_
 			?? AllEntities.find(ent => ent instanceof Roshan))
 	}
-	set Roshan(ent: CEntityNullable) {
+	set Roshan(ent: Nullable<Entity | number>) {
 		this.Roshan_ = ent
 	}
-	get LocalPlayer(): PlayerNullable {
+	get LocalPlayer(): Nullable<Player> {
 		return LocalPlayer
 	}
-	get LocalHero(): HeroNullable {
+	get LocalHero(): Nullable<Hero> {
 		return LocalPlayer !== undefined ? LocalPlayer.Hero : undefined
 	}
 	get AllEntities(): Entity[] {
 		return AllEntities.slice()
 	}
-	public EntityByIndex(index: number): EntityNullable {
+	public EntityByIndex(index: number): Nullable<Entity> {
 		return this.GetEntityByNative(EntitiesIDs.get(index))
 	}
-	public EntityByHandle(handle: number | undefined): EntityNullable {
+	public EntityByHandle(handle: number | undefined): Nullable<Entity> {
 		if (handle === undefined || handle === 0)
 			return undefined
 		let index = handle & 0x3FFF
@@ -83,13 +79,13 @@ class EntityManager {
 				return index
 		return -1
 	}
-	public GetPlayerByID(playerID: number): PlayerNullable {
+	public GetPlayerByID(playerID: number): Nullable<Player> {
 		if (playerID === -1)
 			return undefined
 		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player
 	}
 
-	public GetEntityByNative(ent: CEntityIndex): EntityNullable {
+	public GetEntityByNative(ent: CEntityIndex): Nullable<Entity> {
 		if (ent === undefined)
 			return undefined
 
@@ -99,7 +95,7 @@ class EntityManager {
 		return AllEntitiesAsMap.get(ent)
 	}
 
-	public GetEntityByFilter(filter: (ent: Entity) => boolean): EntityNullable {
+	public GetEntityByFilter(filter: (ent: Entity) => boolean): Nullable<Entity> {
 		return AllEntities.find(filter)
 	}
 

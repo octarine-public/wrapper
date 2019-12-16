@@ -4,8 +4,6 @@ import EntityManager from "../../Managers/EntityManager"
 import Player from "./Player"
 import Unit from "./Unit"
 
-export type HeroNullable = Hero | undefined
-
 export default class Hero extends Unit {
 	public readonly m_pBaseEntity!: C_DOTA_BaseNPC_Hero
 

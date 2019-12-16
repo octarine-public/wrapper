@@ -5,8 +5,6 @@ import Entity from "./Entity"
 import Player from "./Player"
 import Unit from "./Unit"
 
-export type ItemNullable = Item | undefined
-
 export default class Item extends Ability {
 	public readonly m_pBaseEntity!: C_DOTA_Item
 

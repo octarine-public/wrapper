@@ -5,9 +5,6 @@ import { Team } from "../../Enums/Team"
 import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager"
 import { DegreesToRadian } from "../../Utils/Math"
 
-export type EntityNullable = Entity | undefined
-export type CEntityNullable = EntityNullable | number
-
 export const rotation_speed: { [name: string]: number } = {
 	npc_dota_hero_base: 0.5,
 	npc_dota_hero_antimage: 0.5,
@@ -168,7 +165,7 @@ export default class Entity {
 	public get Name(): string {
 		return this.Name_
 	}
-	public get Owner(): EntityNullable { // trick to make it public ro, and protected rw
+	public get Owner(): Nullable<Entity> { // trick to make it public ro, and protected rw
 		if (this.Owner_ instanceof Entity)
 			return this.Owner_
 
@@ -363,7 +360,7 @@ export default class Entity {
 	/**
 	 * @param ent if undefined => this compare with LocalPlayer
 	 */
-	public IsEnemy(ent: EntityNullable = LocalPlayer): boolean {
+	public IsEnemy(ent: Nullable<Entity> = LocalPlayer): boolean {
 		return ent === undefined || ent.Team !== this.Team
 	}
 

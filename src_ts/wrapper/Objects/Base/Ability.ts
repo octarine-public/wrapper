@@ -5,8 +5,6 @@ import Game from "../GameResources/GameRules"
 import Entity from "./Entity"
 import Unit from "./Unit"
 
-export type AbilityNullable = Ability | undefined
-
 export default class Ability extends Entity {
 	public readonly m_pBaseEntity!: C_DOTABaseAbility
 	public AbilityData: AbilityData

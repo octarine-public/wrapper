@@ -1,13 +1,11 @@
 import EntityManager from "../../Managers/EntityManager"
 import Ability from "./Ability"
-import { EntityNullable } from "./Entity"
-import Unit, { UnitNullable } from "./Unit"
+import Entity from "./Entity"
+import Unit from "./Unit"
 import Game from "../GameResources/GameRules"
 import { IModifier } from "../../Managers/Events"
 import * as StringTables from "../../Managers/StringTables"
 import Vector3 from "../../Base/Vector3"
-
-export type ModifierNullable = Modifier | undefined
 
 // AllowIllusionDuplicate
 // CanParentBeAutoAttacked
@@ -56,14 +54,14 @@ export default class Modifier {
 	/* =================== Fields =================== */
 	public readonly Index: number
 	public readonly SerialNumber: number
-	private Parent_: UnitNullable
+	private Parent_: Nullable<Unit>
 	public IsValid = true
 	public readonly AbilityLevel: number
 	public readonly IsAura: boolean
 
 	private Ability_!: Ability
-	private Caster_: EntityNullable
-	private AuraOwner_: EntityNullable
+	private Caster_: Nullable<Entity>
+	private AuraOwner_: Nullable<Entity>
 	private Name_: string = ""
 
 	constructor(public m_pBuff: IModifier) {
@@ -90,7 +88,7 @@ export default class Modifier {
 	public get ElapsedTime(): number {
 		return Math.max(Game.RawGameTime - this.CreationTime, 0)
 	}
-	public get Parent(): UnitNullable {
+	public get Parent(): Nullable<Unit> {
 		if (this.Parent_ === undefined) {
 			let ent = EntityManager.EntityByHandle(this.m_pBuff.parent)
 			if (ent !== undefined) {
@@ -107,12 +105,12 @@ export default class Modifier {
 			this.Ability_ = EntityManager.EntityByHandle(this.m_pBuff.ability) as Ability
 		return this.Ability_
 	}
-	public get Caster(): EntityNullable {
+	public get Caster(): Nullable<Entity> {
 		if (this.Caster_ === undefined)
 			this.Caster_ = EntityManager.EntityByHandle(this.m_pBuff.caster)
 		return this.Caster_
 	}
-	public get AuraOwner(): EntityNullable {
+	public get AuraOwner(): Nullable<Entity> {
 		if (this.AuraOwner_ === undefined)
 			this.AuraOwner_ = EntityManager.EntityByHandle(this.m_pBuff.aura_owner)
 		return this.AuraOwner_

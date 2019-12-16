@@ -2,7 +2,7 @@ import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
-import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils";
+import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
 
 import { LocalPlayer } from "../../Managers/EntityManager"
 
@@ -23,29 +23,29 @@ import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
 import Tree from "./Tree"
 import TreeTemp from "./TreeTemp"
-import { dotaunitorder_t } from "../../Enums/dotaunitorder_t";
-import { ArmorType } from "../../Enums/ArmorType";
-import { AttackDamageType } from "../../Enums/AttackDamageType";
+import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
+import { ArmorType } from "../../Enums/ArmorType"
+import { AttackDamageType } from "../../Enums/AttackDamageType"
+import Game from "../GameResources/GameRules"
 //import { DotaMap } from "../../Helpers/DotaMap";
-
-export type UnitNullable = Unit | undefined
 
 const attackAnimationPoint = new Map<string, number>()
 const attackprojectileSpeed = new Map<string, number>()
 
 let parseHeroes = parseKVFile("scripts/npc/npc_heroes.txt")
+
 // loop-optimizer: KEEP
 let heroesNames = Object.keys(parseHeroes.DOTAHeroes).filter(hero =>
-	!(hero.includes("values") || hero.includes("hero_base")));
+	!(hero.includes("values") || hero.includes("hero_base")))
 
 // loop-optimizer: KEEP
 heroesNames.forEach(hero => {
-	const heroFields = parseHeroes.DOTAHeroes[hero].values;
+	const heroFields = parseHeroes.DOTAHeroes[hero].values
 	if (heroFields.AttackAnimationPoint !== undefined) {
-		attackAnimationPoint.set(hero, parseFloat(heroFields.AttackAnimationPoint));
+		attackAnimationPoint.set(hero, parseFloat(heroFields.AttackAnimationPoint))
 	}
 	if (heroFields.ProjectileSpeed !== undefined) {
-		attackprojectileSpeed.set(hero, parseFloat(heroFields.ProjectileSpeed));
+		attackprojectileSpeed.set(hero, parseFloat(heroFields.ProjectileSpeed))
 	}
 	// another values from script files. (i.e AttackRate, AttackRate)
 })
@@ -71,7 +71,7 @@ export default class Unit extends Entity {
 	}
 
 	/* ================================ Fields ================================ */
-	public readonly m_pBaseEntity: C_DOTA_BaseNPC
+	public readonly m_pBaseEntity!: C_DOTA_BaseNPC
 	public readonly AbilitiesBook: AbilitiesBook
 	public readonly Inventory: Inventory
 	public readonly ModifiersBook: ModifiersBook
@@ -87,7 +87,7 @@ export default class Unit extends Entity {
 	public HasScepterModifier = false
 	public LastVisibleTime = 0
 
-	private UnitName_: string
+	private UnitName_: string = ""
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
 		"modifier_item_ethereal_blade_ethereal",
@@ -326,21 +326,21 @@ export default class Unit extends Entity {
 		return this.m_pBaseEntity.m_fIncreasedAttackSpeed
 	}
 	public get AttackSpeedBonus() {
-		let attackSpeed = this.AttackSpeed;
+		let attackSpeed = this.AttackSpeed
 		// TODO
 		if (this.IsHero) {
 			switch (this.Name) {
 				case "npc_dota_hero_ursa":
-					let overpPower = this.GetAbilityByName("ursa_overpower");
+					let overpPower = this.GetAbilityByName("ursa_overpower")
 					if (overpPower && this.GetAbilityByName("modifier_ursa_overpower"))
-						attackSpeed += overpPower.GetSpecialValue("attack_speed_bonus_pct");
-					break;
+						attackSpeed += overpPower.GetSpecialValue("attack_speed_bonus_pct")
+					break
 			}
 		}
-		return Math.min(Math.max(20, attackSpeed * 100), 600);
+		return Math.min(Math.max(20, attackSpeed * 100), 600)
 	}
 	public get AttackPoint(): number {
-		return this.AttackAnimationPoint / (1 + ((this.AttackSpeedBonus - 100) / 100));
+		return this.AttackAnimationPoint / (1 + ((this.AttackSpeedBonus - 100) / 100))
 	}
 	public get InvisibleLevel(): number {
 		return this.m_pBaseEntity.m_flInvisibilityLevel
@@ -454,9 +454,9 @@ export default class Unit extends Entity {
 		return this.ModifiersBook.HasAnyBuffByNames(this.EtherealModifiers)
 	}
 	public get CanUseAbilitiesInInvisibility(): boolean {
-		return this.ModifiersBook.HasAnyBuffByNames(this.CanUseAbilitiesInInvis);
+		return this.ModifiersBook.HasAnyBuffByNames(this.CanUseAbilitiesInInvis)
 	}
-	public get Spells(): Ability[] {
+	public get Spells(): Nullable<Ability>[] {
 		return this.AbilitiesBook.Spells
 	}
 	public get Items(): Item[] {
@@ -471,10 +471,10 @@ export default class Unit extends Entity {
 
 	/* ================ GETTERS ================ */
 	public get AttackAnimationPoint(): number {
-		return attackAnimationPoint.get(this.Name) || 0;
+		return attackAnimationPoint.get(this.Name) ?? 0
 	}
 	public get AttackProjectileSpeed(): number {
-		return attackprojectileSpeed.get(this.Name) || 0;
+		return attackprojectileSpeed.get(this.Name) ?? 0
 	}
 	public get IsRotating(): boolean {
 		return this.RotationDifference !== 0
@@ -505,25 +505,25 @@ export default class Unit extends Entity {
 
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
-			if (spell.Level > 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
+			if (spell !== undefined && spell.Level > 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
 				spellAmp += spell.GetSpecialValue("value") / 100
 		})
 
 		return spellAmp
 	}
 	public get Name(): string {
-		if (this.UnitName_ === undefined)
+		if (!this.UnitName_)
 			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
 		return this.UnitName_ || super.Name
 	}
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
 		return this.InFront(movespeed * time)
 	}
-	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Item {
+	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false) {
 		return this.Inventory.GetItemByName(name, includeBackpack)
 	}
 	public HasItemInInventory(name: string | RegExp, includeBackpack: boolean = false): boolean {
-		return this.GetItemByName(name, includeBackpack) !== undefined
+		return this.Inventory.GetItemByName(name, includeBackpack) !== undefined
 	}
 	/* ================ METHODS ================ */
 
@@ -807,7 +807,7 @@ export default class Unit extends Entity {
 				let abil = source.GetAbilityByName("ursa_fury_swipes")
 				if (abil !== undefined) {
 					let buff = this.GetBuffByName("modifier_ursa_fury_swipes_damage_increase")
-					damage += abil.GetSpecialValue("damage_per_stack") * (1 + (buff !== undefined ? buff[0].m_iStackCount : 0))
+					damage += abil.GetSpecialValue("damage_per_stack") * (1 + (buff !== undefined ? buff.StackCount : 0))
 				}
 			}
 			{
@@ -896,13 +896,12 @@ export default class Unit extends Entity {
 	public HasLinkenAtTime(time: number = 0): boolean {
 		const sphere = this.GetItemByName("item_sphere")
 
-		return (
-			sphere !== undefined &&
-			sphere.Cooldown - time <= 0
-		) || (
-				this.GetBuffByName("modifier_item_sphere_target") !== undefined
-				&& this.GetBuffByName("modifier_item_sphere_target").RemainingTime - time <= 0
-			)
+		if (sphere !== undefined && sphere.Cooldown - time <= 0)
+			return true
+
+		const sphereTarget = this.GetBuffByName("modifier_item_sphere_target")
+
+		return sphereTarget !== undefined && sphereTarget.RemainingTime - time <= 0
 	}
 
 	public AttackDamage(target: Unit, useMinDamage: boolean = true, damageAmplifier: number = 0): number {
@@ -978,7 +977,7 @@ export default class Unit extends Entity {
 				target = target.Position
 			}
 
-			return this.CastPosition(ability, target, queue, showEffects)
+			return this.CastPosition(ability, target as Vector3, queue, showEffects)
 		}
 
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {
@@ -1096,5 +1095,4 @@ export default class Unit extends Entity {
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-import Game from "../GameResources/GameRules";
 RegisterClass("C_DOTA_BaseNPC", Unit)

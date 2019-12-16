@@ -3,7 +3,7 @@ import { default as _QAngle } from "./Base/QAngle"
 import { default as _Vector2 } from "./Base/Vector2"
 import { default as _Vector3 } from "./Base/Vector3"
 
-import { PlayerNullable } from "./Objects/Base/Player"
+import Player from "./Objects/Base/Player"
 
 import { default as _EntityManager } from "./Managers/EntityManager"
 import { EventEmitter } from "./Managers/Events"
@@ -17,7 +17,7 @@ declare global {
 	var Vector2: typeof _Vector2
 	var Vector3: typeof _Vector3
 
-	var LocalPlayer: PlayerNullable
+	var LocalPlayer: Nullable<Player>
 
 	var EntityManager: typeof _EntityManager
 	var Events: typeof EventEmitter

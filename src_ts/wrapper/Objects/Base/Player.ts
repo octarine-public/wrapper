@@ -5,13 +5,11 @@ import { default as EntityManager, LocalPlayer } from "../../Managers/EntityMana
 import ExecuteOrder from "../../Native/ExecuteOrder"
 import Ability from "./Ability"
 import Entity from "./Entity"
-import Hero, { HeroNullable } from "./Hero"
+import Hero from "./Hero"
 import Unit from "./Unit"
 import { ConnectionState } from "../../Enums/ConnectionState"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import PlayerResource from "../GameResources/PlayerResource"
-
-export type PlayerNullable = Player | undefined
 
 export default class Player extends Entity {
 	static get QuickBuyItems(): number[] {
@@ -114,7 +112,7 @@ export default class Player extends Entity {
 	}
 	// HasRepicked 				=> PlayerResourcePlayerTeamData_t
 	// Healing					=> NonSpectator
-	get Hero(): HeroNullable {
+	get Hero(): Nullable<Hero> {
 		if (this.Hero_ instanceof Hero)
 			return this.Hero_
 
