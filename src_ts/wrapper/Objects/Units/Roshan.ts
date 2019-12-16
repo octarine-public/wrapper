@@ -1,7 +1,7 @@
 import Unit from "../Base/Unit"
 
 export default class Roshan extends Unit {
-	public readonly m_pBaseEntity: C_DOTA_Unit_Roshan
+	public readonly m_pBaseEntity!: C_DOTA_Unit_Roshan
 
 	public get GoldenRoshan(): boolean {
 		return this.m_pBaseEntity.m_bGoldenRoshan

@@ -162,11 +162,11 @@ export function parseKVFile(path: string) {
 	return parseKV(Utf8ArrayToStr(new Uint8Array(buf)))
 }
 
-export function parseKVFileToMap(path: string): Map<string, any> {
-	let parsed = parseKVFile(path)
+export function parseKVFileToMap(path: string): Map<string, any> | undefined {
+	let parsed = parseKVFile(path) as { [names: string]: string }
 	if (parsed === undefined)
 		return undefined
-	return new Map<string, string>(Object.entries(parsed[Object.keys(parsed).find(key => key !== "values" && key !== "comments")]))
+	return new Map<string, string>(Object.entries(parsed[Object.keys(parsed).find(key => key !== "values" && key !== "comments")!]))
 }
 
 export function GetHealthAfter(unit: Unit, delay: number, allow_overflow = false, include_projectiles: boolean = false, attacker?: Unit, melee_time_offset: number = 0): number {

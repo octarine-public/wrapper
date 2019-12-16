@@ -1,18 +1,19 @@
 import EntityManager from "../../Managers/EntityManager"
-import Ability from "../Base/Ability"
+import Ability, { AbilityNullable } from "../Base/Ability"
 import Unit from "../Base/Unit"
 
 const MAX_SKILLS = 31
 
 export default class AbilitiesBook {
-	public Spells_: (Ability | C_BaseEntity | number)[]
+	public Spells_: (Ability | CEntityIndex)[]
 
 	constructor(public readonly Owner: Unit) {
 		// loop-optimizer: FORWARD
 		this.Spells_ = this.Owner.m_pBaseEntity.m_hAbilities.map(abil => EntityManager.GetEntityByNative(abil) as Ability || abil)
 	}
 
-	get Spells(): Ability[] {
+	// NOTICE: idk...
+	get Spells(): AbilityNullable[] {
 		// loop-optimizer: FORWARD
 		return (this.Spells_ = EntityManager.GetEntitiesByNative(this.Spells_)).map(abil => abil instanceof Ability ? abil : undefined)
 	}
@@ -33,14 +34,14 @@ export default class AbilitiesBook {
 		return spells;
 	} */
 
-	public GetSpell(slot: number): Ability {
+	public GetSpell(slot: number): AbilityNullable {
 		if (!this.Owner.IsValid || slot > MAX_SKILLS)
 			return undefined
 
 		return this.Spells[slot]
 	}
 
-	public GetAbilityByName(name: string | RegExp): Ability {
+	public GetAbilityByName(name: string | RegExp): AbilityNullable {
 		return this.Spells.find(abil =>
 			abil !== undefined
 			&& (

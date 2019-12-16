@@ -1,4 +1,4 @@
-import Modifier from "../Base/Modifier"
+import Modifier, { ModifierNullable } from "../Base/Modifier"
 import Unit from "../Base/Unit"
 
 export default class ModifiersBook {
@@ -6,17 +6,17 @@ export default class ModifiersBook {
 
 	constructor(public readonly Owner: Unit) { }
 
-	public GetBuffByID(id: number): Modifier {
+	public GetBuffByID(id: number): ModifierNullable {
 		return this.Buffs.find(buff => buff.Index === id)
 	}
-	public GetBuffByName(name: string): Modifier {
+	public GetBuffByName(name: string): ModifierNullable {
 		return this.Buffs.find(buff => buff.Name === name)
 	}
-	public GetBuffByRegexp(regex: RegExp): Modifier {
+	public GetBuffByRegexp(regex: RegExp): ModifierNullable {
 		return this.Buffs.find(buff => regex.test(buff.Name))
 	}
-	public GetAnyBuffByNames(names: string[]): Modifier {
-		let buff: Modifier
+	public GetAnyBuffByNames(names: string[]): ModifierNullable {
+		let buff: ModifierNullable
 		names.some(name => (buff = this.GetBuffByName(name)) !== undefined)
 		return buff
 	}

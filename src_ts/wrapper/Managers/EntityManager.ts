@@ -8,7 +8,7 @@ import Vector3 from "../Base/Vector3"
 
 import Creep from "../Objects/Base/Creep"
 import Entity, { CEntityNullable, EntityNullable } from "../Objects/Base/Entity"
-import Hero from "../Objects/Base/Hero"
+import Hero, { HeroNullable } from "../Objects/Base/Hero"
 import Player, { PlayerNullable } from "../Objects/Base/Player"
 import Unit from "../Objects/Base/Unit"
 
@@ -68,7 +68,7 @@ class EntityManagerClass {
 	get LocalPlayer(): PlayerNullable {
 		return LocalPlayer
 	}
-	get LocalHero(): Hero | undefined {
+	get LocalHero(): HeroNullable {
 		return LocalPlayer !== undefined ? LocalPlayer.Hero : undefined
 	}
 	get AllEntities(): Entity[] {
@@ -77,7 +77,7 @@ class EntityManagerClass {
 	public EntityByIndex(index: number): EntityNullable {
 		return this.GetEntityByNative(EntitiesIDs.get(index))
 	}
-	public EntityByHandle(handle: number): EntityNullable {
+	public EntityByHandle(handle: number | undefined): EntityNullable {
 		if (handle === undefined || handle === 0)
 			return undefined
 		let index = handle & 0x3FFF
@@ -91,7 +91,7 @@ class EntityManagerClass {
 				return index
 		return -1
 	}
-	public GetPlayerByID(playerID: number): Player | undefined {
+	public GetPlayerByID(playerID: number): PlayerNullable {
 		if (playerID === -1)
 			return undefined
 		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player
@@ -100,6 +100,7 @@ class EntityManagerClass {
 	public GetEntityByNative(ent: CEntityIndex): EntityNullable {
 		if (ent === undefined)
 			return undefined
+
 		if (!(ent instanceof C_BaseEntity))
 			return this.EntityByIndex(ent)
 

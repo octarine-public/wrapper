@@ -132,7 +132,7 @@ declare namespace globalThis {
 globalThis.DebugBuffsParents = () => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
-		let parent = EntityManager.EntityByHandle(mod.m_pBuff.parent as number)
+		let parent = EntityManager.EntityByHandle(mod.m_pBuff.parent)
 		if (parent instanceof Unit)
 			return
 		console.log(parent?.m_pBaseEntity?.constructor?.name, mod.m_pBuff.parent, mod.Name, mod.ElapsedTime, mod.m_pBuff.entry_type)

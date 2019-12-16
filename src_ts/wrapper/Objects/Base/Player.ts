@@ -5,7 +5,7 @@ import { default as EntityManager, LocalPlayer } from "../../Managers/EntityMana
 import ExecuteOrder from "../../Native/ExecuteOrder"
 import Ability from "./Ability"
 import Entity from "./Entity"
-import Hero from "./Hero"
+import Hero, { HeroNullable } from "./Hero"
 import Unit from "./Unit"
 import { ConnectionState } from "../../Enums/ConnectionState"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
@@ -61,12 +61,13 @@ export default class Player extends Entity {
 		return this.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects })
 	}
 
-	public readonly m_pBaseEntity: C_DOTAPlayer
+	public readonly m_pBaseEntity!: C_DOTAPlayer
 	public PlayerID = this.m_pBaseEntity.m_iPlayerID
 	public Hero_: Hero | CEntityIndex
-	private m_Name: string
-	private m_PlayerData: PlayerResourcePlayerData_t
-	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t
+	private m_Name: string = ""
+	private m_PlayerData: PlayerResourcePlayerData_t | undefined
+	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t | undefined
+
 	constructor(m_pBaseEntity: C_BaseEntity) {
 		super(m_pBaseEntity)
 		this.Hero_ = this.m_pBaseEntity.m_hAssignedHero
@@ -79,13 +80,13 @@ export default class Player extends Entity {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hActiveAbility) as Ability
 	}
 	get Assists(): number {
-		return this.PlayerTeamData.m_iAssists
+		return this.PlayerTeamData?.m_iAssists ?? 0
 	}
 	get IsSpectator(): boolean {
 		return this.Team === Team.Observer || this.Team === Team.Neutral || this.Team === Team.None || this.Team === Team.Undefined
 	}
 	get ButtleBonusRate(): number {
-		return this.PlayerTeamData.m_iBattleBonusRate
+		return this.PlayerTeamData?.m_iBattleBonusRate ?? 0
 	}
 	// BuybackCooldownTime 		=> NonSpectator
 	// BuybackCostTime			=> NonSpectator
@@ -95,30 +96,33 @@ export default class Player extends Entity {
 	// ClaimedDenyCount			=> NonSpectator
 	// ClaimedMissCount 		=> NonSpectator
 	get CompendiumLevel(): number {
-		return this.PlayerTeamData.m_unCompendiumLevel
+		return this.PlayerTeamData?.m_unCompendiumLevel ?? 0
 	}
 	get ConnectionState(): ConnectionState {
-		return this.PlayerData.m_iConnectionState
+		return this.PlayerData?.m_iConnectionState ?? ConnectionState.Unknown
 	}
 	// CreepKillGold			=> NonSpectator
 	// CreepsStacked			=> NonSpectator
 	// CustomBuybackCooldown	=> NonSpectator
 	get Deaths(): number {
-		return this.PlayerTeamData.m_iDeaths
+		return this.PlayerTeamData?.m_iDeaths ?? 0
 	}
 	// DenyCount				=> NonSpectator
 	// GoldSpentOnSupport		=> NonSpectator
 	get HasRandomed(): boolean {
-		return this.PlayerTeamData.m_bHasRandomed
+		return this.PlayerTeamData?.m_bHasRandomed ?? false
 	}
 	// HasRepicked 				=> PlayerResourcePlayerTeamData_t
 	// Healing					=> NonSpectator
-	get Hero(): Hero {
-		if (this.Hero_ instanceof Entity)
+	get Hero(): HeroNullable {
+		if (this.Hero_ instanceof Hero)
 			return this.Hero_
+
 		this.Hero_ = EntityManager.GetEntityByNative(this.Hero_) as Hero || this.Hero_
+
 		if (this.Hero_ instanceof Entity)
 			return this.Hero_
+
 		return undefined
 	}
 	get HeroAssigned(): boolean {
@@ -128,43 +132,43 @@ export default class Player extends Entity {
 	// HeroKillGold				=> NonSpectator
 	// IncomeGold				=> NonSpectator
 	get IsAFK(): boolean {
-		return this.PlayerTeamData.m_bAFK
+		return this.PlayerTeamData?.m_bAFK ?? false
 	}
 	get IsBattleBonusActive(): boolean {
-		return this.PlayerTeamData.m_bBattleBonusActive
+		return this.PlayerTeamData?.m_bBattleBonusActive ?? false
 	}
 	get IsBroadcaster(): boolean {
-		return this.PlayerData.m_bIsBroadcaster
+		return this.PlayerData?.m_bIsBroadcaster ?? false
 	}
 	get IsFakeClient(): boolean {
-		return this.PlayerData.m_bFakeClient
+		return this.PlayerData?.m_bFakeClient ?? false
 	}
 	get IsFullyJoinedServer(): boolean {
-		return this.PlayerData.m_bFullyJoinedServer
+		return this.PlayerData?.m_bFullyJoinedServer ?? false
 	}
 	get IsPredictingVictory(): boolean {
-		return this.PlayerTeamData.m_bHasPredictedVictory
+		return this.PlayerTeamData?.m_bHasPredictedVictory ?? false
 	}
 	get IsVoiceChatBanned(): boolean {
-		return this.PlayerTeamData.m_bVoiceChatBanned
+		return this.PlayerTeamData?.m_bVoiceChatBanned ?? false
 	}
 	get Kills(): number {
-		return this.PlayerTeamData.m_iKills
+		return this.PlayerTeamData?.m_iKills ?? 0
 	}
 	get KillStreak(): number {
-		return this.PlayerTeamData.m_iStreak
+		return this.PlayerTeamData?.m_iStreak ?? 0
 	}
 	get LastBuybackTime(): number {
-		return this.PlayerTeamData.m_iLastBuybackTime
+		return this.PlayerTeamData?.m_iLastBuybackTime ?? 0
 	}
 	// LastHitCount				=> NonSpectator
 	// LastHitMultikill			=> NonSpectator
 	// LastHitStreak			=> NonSpectator
 	get Level(): number {
-		return this.PlayerTeamData.m_iLevel
+		return this.PlayerTeamData?.m_iLevel ?? 0
 	}
 	get GameName(): string {
-		return this.PlayerData.m_iszPlayerName
+		return this.PlayerData?.m_iszPlayerName ?? ""
 	}
 	// MissCount				=> NonSpectator
 	get Name(): string {
@@ -174,42 +178,45 @@ export default class Player extends Entity {
 	}
 	// NearbyCreepDeathCount	=> NonSpectator
 	// ObserverWardsPlaced		=> NonSpectator
-	get PlayerData(): PlayerResourcePlayerData_t {
+	get PlayerData(): PlayerResourcePlayerData_t | undefined {
 		return this.m_PlayerData
 			|| this.IsValid
 			? (this.m_PlayerData = PlayerResource.GetPlayerDataByPlayerID(this.PlayerID)) : undefined
 	}
-	get PlayerTeamData(): PlayerResourcePlayerTeamData_t {
+	get PlayerTeamData(): PlayerResourcePlayerTeamData_t | undefined {
 		return this.m_PlayerTeamData
 			|| this.IsValid && PlayerResource
 			? (this.m_PlayerTeamData = PlayerResource.GetPlayerTeamDataByPlayerID(this.PlayerID)) : undefined
 	}
 	get PlayerSteamID(): bigint {
-		return this.PlayerData.m_iPlayerSteamID
+		return this.PlayerData?.m_iPlayerSteamID ?? 0n
 	}
 	get QueryUnit(): Unit {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hQueryUnit) as Unit
 	}
 	// ReliableGold				=> NonSpectator
 	get RespawnSeconds(): number {
-		return this.PlayerTeamData.m_iRespawnSeconds
+		return this.PlayerTeamData?.m_iRespawnSeconds ?? 0
 	}
 	// RoshanKills				=> NonSpectator
 	// RunePickups				=> NonSpectator
 	get SelectedHeroId(): number {
-		return this.PlayerTeamData.m_nSelectedHeroID
+		return this.PlayerTeamData?.m_nSelectedHeroID ?? 0
 	}
 	get SelectedUnits(): Entity[] {
 
 		let selected: Entity[] = []
 
 		let selUnits = this.m_pBaseEntity.m_nSelectedUnits
-		if (selUnits !== undefined && selUnits.length > 0)
-			selUnits.forEach(unitNative => {
-				let unit = EntityManager.GetEntityByNative(unitNative)
-				if (unit !== undefined)
-					selected.push(unit)
-			})
+		// NOTICE: need test w/o check undefined
+
+		// loop-optimizer: FORWARD
+		selUnits.forEach(unitNative => {
+			let unit = EntityManager.GetEntityByNative(unitNative)
+			if (unit !== undefined)
+				selected.push(unit)
+		})
+
 		return selected
 	}
 	// SentryWardsPlaced		=> NonSpectator
