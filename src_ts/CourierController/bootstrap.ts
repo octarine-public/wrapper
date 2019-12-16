@@ -10,26 +10,37 @@ import { MoveCourier, CourierBestPosition } from "./module/BestPosition"
 export let Owner: Hero
 export const Sleep = new TickSleeper
 export let UnitAnimation: Unit[] = []
-export let OwnerIsValid = () => Owner?.IsAlive
+export let OwnerIsValid = () => Game.IsInGame && Owner?.IsAlive
 //export let AutoUseCourierPosition: Map<number, Vector3> = new Map()
 
+function SharedFilter(number: number, obj: any) {
+	// loop-optimizer: KEEP
+	return CourierBase.roles[number] = (obj as CSODOTALobby).members
+		.filter(member => member.id === LocalPlayer?.PlayerSteamID && LocalPlayer.PlayerSteamID >= 0)
+		.map(member => member.lane_selection_flags)
+}
 EventsSDK.on("Tick", () => {
 	if (!State.value || Sleep.Sleeping || !OwnerIsValid())
 		return
-	if (EntityManager.GetEntitiesByClass(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
-		.some(courier => !CourierBase.IsValidCourier(courier) || AutoDeliver(courier)
-			|| CourierBestPosition(courier) || AutoSafe(courier)))
+	let Couriers = EntityManager.GetEntitiesByClass(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
+	let IsValid = Couriers.some(CourierBase.IsValidCourier)
+	if (!IsValid)
+		return
+	if (Couriers.some(AutoDeliver))
+		return
+	if (Couriers.some(CourierBestPosition))
+		return
+	if (Couriers.some(AutoSafe))
 		return
 	// if (AutoUseItems())
 	// 	return
 })
+
 Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 	if (id !== 2004 || !State.value || LocalPlayer === undefined || Game.RawGameTime >= 700)
 		return
-	// loop-optimizer: KEEP
-	CourierBase.roles[0] = (obj as CSODOTALobby).members.filter(member => member.id === LocalPlayer.PlayerSteamID).map(member => member.lane_selection_flags)
-	// loop-optimizer: KEEP
-	CourierBase.roles[1] = (obj as CSODOTALobby).members.filter(member => member.id === LocalPlayer.PlayerSteamID).map(member => member.lane_selection_flags)
+	SharedFilter(0, obj)
+	SharedFilter(1, obj)
 })
 
 EventsSDK.on("GameStarted", hero => {

@@ -30,6 +30,7 @@ import {
 	AutoUseItemsEssenceRing_val,
 	AutoUseItemsBigFaerieFire_val,
 	AutoUseItemsTalonCreepHP,
+	AutoUseItemsMedal_val
 } from "./Menu"
 
 import InitItems from "../../abstract/Items"
@@ -428,9 +429,9 @@ function UseSoulRing(Me: Unit, Items: InitItems, ability: Ability, args: Execute
 }
 
 function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit, Items: InitItems): boolean {
-	if (ability.ManaCost < 1 || unit.IsInvisible || TickSleep.Sleeping) {
+	if (ability.ManaCost < 1 || unit.IsInvisible || TickSleep.Sleeping)
 		return true
-	}
+
 	if (ability.Name === "item_manta"
 		|| ability.Name === "item_invis_sword"
 		|| ability.Name === "item_silver_edge"
@@ -439,25 +440,22 @@ function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit, Items:
 	) {
 		return true
 	}
-	if (Items.PowerTreads !== undefined
-		&& ItemsForUse.IsEnabled(Items.PowerTreads.Name)) {
-		if (unit.IsStunned || unit.IsHexed || unit.IsInvulnerable) {
-			return true
-		}
-		if (changed) {
-			lastStat = Items.ActiveAttribute
-		}
-		if (Items.ActiveAttribute === 0) {
-			unit.CastNoTarget(Items.PowerTreads)
-			TickSleep.Sleep(Base.GetDelayCast)
-		} else if (Items.ActiveAttribute === 2) {
-			unit.CastNoTarget(Items.PowerTreads)
-			unit.CastNoTarget(Items.PowerTreads)
-			TickSleep.Sleep(Base.GetDelayCast)
-		}
-		changed = false
-		nextTick = ((Game.RawGameTime + ability.CastPoint) + (0.45 + GetAvgLatency(Flow_t.OUT)))
+	if (Items.PowerTreads === undefined || !ItemsForUse.IsEnabled(Items.PowerTreads.Name))
+		return true
+	if (unit.IsStunned || unit.IsHexed || unit.IsInvulnerable)
+		return true
+	if (changed)
+		lastStat = Items.ActiveAttribute
+	if (Items.ActiveAttribute == Attributes.DOTA_ATTRIBUTE_STRENGTH) {
+		unit.CastNoTarget(Items.PowerTreads)
+		TickSleep.Sleep(Base.GetDelayCast)
+	} else if (Items.ActiveAttribute == Attributes.DOTA_ATTRIBUTE_INTELLECT) {
+		unit.CastNoTarget(Items.PowerTreads)
+		unit.CastNoTarget(Items.PowerTreads)
+		TickSleep.Sleep(Base.GetDelayCast)
 	}
+	changed = false
+	nextTick = ((Game.RawGameTime + ability.CastPoint) + (0.45 + GetAvgLatency(Flow_t.OUT)))
 	TickSleep.Sleep(nextTick)
 	if (TickSleep.Sleeping) {
 		args.Execute()
@@ -476,55 +474,59 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 	if (target === undefined || unit === undefined) {
 		return true
 	}
-	if (!target.IsBuilding) {
-		switch (args.OrderType) {
-			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-				if (!target.IsEnemy()) {
+	if (target.IsBuilding)
+		return true
+	switch (args.OrderType) {
+		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
+			let Items = initItemsMap.get(unit)
+			if (Items === undefined)
+				return
+			let _Item = Items.SolarCrest === undefined
+				? Items.Medallion
+				: Items.SolarCrest
+			// console.log(unit.Buffs.map(e => e.Name))
+			if (IsValidItem(Items.SolarCrest) || IsValidItem(Items.Medallion)
+				&& unit.IsInRange(target, _Item.CastRange)
+				&& !target.IsMagicImmune) {
+				if (AutoUseItemsMedal_val.selected_id === 1 && target.IsEnemy()
+					|| AutoUseItemsMedal_val.selected_id === 2 && !target.IsEnemy())
 					return true
-				}
-				let Items = new InitItems(unit),
-					_Item = Items.SolarCrest === undefined
-						? Items.Medallion
-						: Items.SolarCrest
-				// console.log(unit.Buffs.map(e => e.Name))
-				if (IsValidItem(Items.SolarCrest) || IsValidItem(Items.Medallion)
-					&& unit.IsInRange(target, _Item.CastRange)
-					&& !target.IsMagicImmune) {
-					unit.CastTarget(_Item, target)
+				unit.CastTarget(_Item, target)
+				TickSleep.Sleep(Base.GetDelayCast)
+			}
+			if (!target.IsEnemy())
+				return true
+			if (target.IsHero && IsValidItem(Items.Janggo)
+				&& unit.IsInRange(target, Items.Janggo.CastRange / 2)
+				&& !unit.HasBuffByName("modifier_item_ancient_janggo_active")
+			) {
+				unit.CastNoTarget(Items.Janggo)
+				TickSleep.Sleep(Base.GetDelayCast)
+			}
+			if (target.IsCreep
+				&& (target.IsNeutral || (target.IsLaneCreep && AutoUseItemsTalon_val.selected_id === 1))
+				&& !target.IsHero
+				&& !target.IsAncient
+				&& target.HPPercent <= AutoUseItemsTalonCreepHP.value
+				&& IsValidItem(Items.Talon)
+				&& unit.IsInRange(target, Items.Talon.CastRange)
+			) {
+				unit.CastTarget(Items.Talon, target)
+				TickSleep.Sleep(Base.GetDelayCast)
+			}
+			if (target.IsHero && !target.IsMagicImmune
+				&& IsValidItem(Items.DiffusalBlade)
+				&& unit.IsInRange(target, Items.DiffusalBlade.CastRange)
+				&& !target.HasBuffByName("modifier_item_diffusal_blade_slow")
+			) {
+				let hex_debuff = target.GetBuffByName("modifier_sheepstick_debuff")
+				if ((hex_debuff === undefined || !hex_debuff.IsValid
+					|| hex_debuff.RemainingTime <= 0.3)) {
+					unit.CastTarget(Items.DiffusalBlade, target)
 					TickSleep.Sleep(Base.GetDelayCast)
 				}
-				if (target.IsHero && IsValidItem(Items.Janggo)
-					&& unit.IsInRange(target, Items.Janggo.CastRange / 2)
-					&& !unit.HasBuffByName("modifier_item_ancient_janggo_active")
-				) {
-					unit.CastNoTarget(Items.Janggo)
-					TickSleep.Sleep(Base.GetDelayCast)
-				}
-				if (target.IsCreep
-					&& (target.IsNeutral || (target.IsLaneCreep && AutoUseItemsTalon_val.selected_id === 1))
-					&& !target.IsHero
-					&& !target.IsAncient
-					&& target.HPPercent <= AutoUseItemsTalonCreepHP.value
-					&& IsValidItem(Items.Talon)
-					&& unit.IsInRange(target, Items.Talon.CastRange)
-				) {
-					unit.CastTarget(Items.Talon, target)
-					TickSleep.Sleep(Base.GetDelayCast)
-				}
-				if (target.IsHero && !target.IsMagicImmune
-					&& IsValidItem(Items.DiffusalBlade)
-					&& unit.IsInRange(target, Items.DiffusalBlade.CastRange)
-					&& !target.HasBuffByName("modifier_item_diffusal_blade_slow")
-				) {
-					let hex_debuff = target.GetBuffByName("modifier_sheepstick_debuff")
-					if ((hex_debuff === undefined || !hex_debuff.IsValid
-						|| hex_debuff.RemainingTime <= 0.3)) {
-						unit.CastTarget(Items.DiffusalBlade, target)
-						TickSleep.Sleep(Base.GetDelayCast)
-					}
-				}
-				break
-		}
+			}
+			break
 	}
 }
 
@@ -533,10 +535,11 @@ export function OnExecuteOrder(args: ExecuteOrder): boolean {
 		return true
 	}
 	let unit = args.Unit as Unit
-	if (unit === undefined) {
+	if (unit === undefined)
 		return true
-	}
 	let Items = new InitItems(unit)
+	if (Items === undefined)
+		return true
 	let ability = args.Ability as Ability
 	if (args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION
 		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET
@@ -545,36 +548,33 @@ export function OnExecuteOrder(args: ExecuteOrder): boolean {
 		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE) {
 		return true
 	}
-	if (!UseSoulRing(unit, Items, ability, args) || !UsePowerTreads(args, ability, unit, Items)) {
+	if (!UseSoulRing(unit, Items, ability, args) || !UsePowerTreads(args, ability, unit, Items))
 		return false
-	}
+
 	return true
 }
 
 export function Init() {
 	if (!StateBase.value || TickSleep.Sleeping || !State.value)
 		return
-	if (!_InitItems())
-		return
+	_InitItems()
 	if (EntityManager.GetEntitiesByClass(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(AutoUseItems))
 		return
 }
 
 export function _InitItems() {
 	let Units = EntityManager.GetEntitiesByClass(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
-	if (Units.length === 0)
-		return false
 	if (ParticleGlimer.size !== 0 || glimer.size !== 0)
 		setTimeout(() => GlimerClear(), 2000)
-	let unit = Units.filter(x => x.IsAlive && x.IsControllable)
-	unit.forEach(x => {
+	Units.forEach(x => {
+		if (!x.IsAlive || !x.IsControllable)
+			return
 		let initItems = initItemsMap.get(x)
 		if (initItems === undefined) {
 			initItems = new InitItems(x)
 			initItemsMap.set(x, initItems)
 		}
 	})
-	return true
 }
 
 export function GameEnded() {

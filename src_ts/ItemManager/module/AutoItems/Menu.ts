@@ -41,6 +41,9 @@ export const ItemsForUse = BaseTree.AddImageSelector("Select items for use", Ite
 
 // Settings Items
 const SettingsAutoItems = BaseTree.AddNode("Items settings")
+export const AutoUseItemsMedal = SettingsAutoItems.AddNode("SolarCrest / Medallion")
+export const AutoUseItemsMedal_val = AutoUseItemsMedal.AddSwitcher("Select", ["All units", "Only allies", "Only enemy"])
+
 export const AutoUseItemsSticks = SettingsAutoItems.AddNode("Stick")
 export const AutoUseItemsSticks_val = AutoUseItemsSticks.AddSlider("HP precent (%)", 10, 1, 99)
 

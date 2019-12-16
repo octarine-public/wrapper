@@ -74,7 +74,8 @@ function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: 
 	let hero = EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
 		.find(x => !x.IsVisible && x.Name === name_hero)
 	if (hero !== undefined) {
-		let abil = hero.GetAbilityByName(name_ability)
+		let is = name_ability.startsWith("item_")
+		let abil = !is ? hero.GetAbilityByName(name_ability) : hero.GetItemByName(name_ability)
 		if (abil !== undefined && abil.IsValid)
 			Particle.set(id, [part[0], hero.Name, part[2], position, color, Time, name_ability])
 	}
@@ -277,6 +278,8 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		}
 		// smoke
 		if (part[0] === 14221266834388661971n && IsEnemyUse(position)) {
+			//FindAbilitySet(id, part, position, "item_smoke_of_deceit", npc_hero + "witch_doctor", new Color(255, 17, 0), + 5)
+
 			Particle.set(id, [part[0], "Smoke", part[2], position, new Color(255, 17, 0), + 5])
 			Game.ExecuteCommand("playvol ui/ping " + PMH_Smoke_snd.value / 1000)
 		}
@@ -290,25 +293,27 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// 	Particle.set(id, [part[0], "Blink", part[2], position, new Color(255, 255, 255)])
 	}
 	if (control_point === 1) {
+		// void
+		if (part[0] === 15862585917379413836n)
+			FindAbilitySet(id, part, position, "faceless_void_time_walk", npc_hero + "faceless_void")
 		// furion
 		if (part[0] === 8570169123090060667n)
 			Particle.set(id, [part[0], npc_hero + "furion", part[2], position])
 		// enigma demonic
 		if (part[0] === 10009481603386975411n)
-			Particle.set(id, [part[0], npc_hero + "enigma", part[2], position])
+			FindAbilitySet(id, part, position, "enigma_demonic_conversion", npc_hero + "enigma")
 		// void chrone
 		if (part[0] === 15862585917379413836n)
 			Particle.set(id, [part[0], npc_hero + "faceless_void", part[2], position])
 		// Tusk
 		if (part[0] === 11494335841746008496n)
-			Particle.set(id, [part[0], npc_hero + "tusk", part[2], position])
+			FindAbilitySet(id, part, position, "tusk_ice_shards", npc_hero + "tusk")
 		// timber chain
 		if (part[0] === 7382801540246882042n)
-			Particle.set(id, [part[0], part[1], part[2], position])
+			FindAbilitySet(id, part, position, "shredder_timber_chain", npc_hero + "shredder")
 		// burrow strike
-		if (part[0] === 13866368357606948277n) {
+		if (part[0] === 13866368357606948277n)
 			FindAbilitySet(id, part, position, "sandking_burrowstrike", npc_hero + "sand_king")
-		}
 		// alchemist_lasthit_coins
 		if (part[0] === 9631112814295870874n)
 			Particle.set(id, [part[0], npc_hero + "alchemist", part[2], position])
@@ -317,7 +322,8 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 			Particle.set(id, [part[0], npc_hero + "phantom_assassin", part[2], position])
 		// phantom_lancer dopel
 		if (part[0] === 7462196558402771530n)
-			Particle.set(id, [part[0], npc_hero + "phantom_lancer", part[2], position])
+			FindAbilitySet(id, part, position, "phantom_lancer_doppelwalk", npc_hero + "phantom_lancer")
+
 	}
 	if (control_point === 2) {
 		// shadow demon | catcher
@@ -522,6 +528,7 @@ export function ParticleDestroyed(id: number) {
 	if (Particle.has(id))
 		Particle.delete(id)
 }
+
 export function Init() {
 	Particle.clear()
 	END_SCROLL.clear()

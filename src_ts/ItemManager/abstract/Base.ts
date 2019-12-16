@@ -8,7 +8,7 @@ export default class ItemManagerBase {
 		return Number.MAX_SAFE_INTEGER
 	}
 	public get GetDelayCast() {
-		return (((Game.Ping / 2) + 30) + 150)
+		return (((Game.Ping / 2) + 30) + 250)
 	}
 	// public GetNetWorth() {
 	// 	return (from x in owner.Hero.Abilities where x.IsItem select x).Sum((Ability9 x) => x.Id.GetPrice()) + owner.Player.ReliableGold + owner.Player.UnreliableGold

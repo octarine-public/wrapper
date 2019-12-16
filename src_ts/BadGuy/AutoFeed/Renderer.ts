@@ -1,6 +1,10 @@
-import { Color, RendererSDK, Unit, FontFlags_t, EntityManager, Hero, Creep, Courier } from "wrapper/Imports"
+import { Color, RendererSDK, Unit, FontFlags_t } from "wrapper/Imports"
 import { DrawTextSize, Swhicher } from "./Menu"
+import { Units } from "./Listeners"
+
 function DrawText(unit: Unit): boolean {
+	if (!unit.IsAlive || !unit.IsControllable || !unit.IsVisible || !(Swhicher.selected_id !== 1 && !unit.IsHero))
+		return
 	let position_unit = RendererSDK.WorldToScreen(unit.Position)
 	if (position_unit === undefined)
 		return false
@@ -9,13 +13,5 @@ function DrawText(unit: Unit): boolean {
 	return true
 }
 export function Renderer() {
-	let Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
-	if (Units.length <= 0)
-		return
-	Units.filter(x =>
-		x.IsAlive
-		&& x.IsControllable
-		&& x.IsVisible
-		&& !(Swhicher.selected_id !== 1 && !x.IsHero)
-	).forEach(DrawText)
+	Units.forEach(DrawText)
 }
