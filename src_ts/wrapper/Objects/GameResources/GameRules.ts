@@ -4,12 +4,8 @@ import { Flow_t } from "../../Enums/Flow_t"
 import { DOTA_GameState } from "../../Enums/DOTA_GameState"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 
-declare namespace globalThis {
-	var Game: GameClass
-}
-
-// NOTICE: because shadow name + need for globalThis. idk another way
-class GameClass {
+// NOTICE: because shadow name. idk another way
+class Game {
 	public m_GameRules: C_DOTAGamerules | undefined
 	public m_GameManager: C_DOTAGameManager | undefined
 	public m_StockInfo: StockInfo[] = [];
@@ -169,10 +165,10 @@ class GameClass {
 	}
 }
 
-// NOTICE: because shadow name + need for globalThis. idk another way
-const _Game = new GameClass()
+// NOTICE: because shadow name. idk another way
+const _Game = new Game()
 
-export default globalThis.Game = _Game
+export default _Game
 
 Events.on("ServerTick", tick => _Game.CurrentServerTick = tick)
 Events.on("InputCaptured", is_captured => _Game.IsInputCaptured = is_captured)

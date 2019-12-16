@@ -323,10 +323,6 @@ declare interface Events extends EventEmitter {
 	on(name: "ActiveModifiersChanged", listener: (update: Map<number, IModifier>) => void): EventEmitter
 }
 
-declare namespace globalThis {
-	var Events: EventEmitter
-}
-
-const Events: Events = globalThis.Events = new EventEmitter()
+const Events: Events = new EventEmitter()
 export default Events
 setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))

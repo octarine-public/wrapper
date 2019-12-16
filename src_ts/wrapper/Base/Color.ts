@@ -1,17 +1,17 @@
 export default class Color {
-	public static get Black() { return new Color(0, 0, 0); }
-	public static get Red() { return new Color(255); }
-	public static get Green() { return new Color(0, 255); }
-	public static get Blue() { return new Color(0, 0, 255); }
-	public static get RoyalBlue() { return new Color(78, 121, 248); }
-	public static get Yellow() { return new Color(255, 255); }
-	public static get Orange() { return new Color(255, 128); }
-	public static get Fuchsia() { return new Color(255, 0, 255); }
-	public static get Aqua() { return new Color(0, 255, 255); }
-	public static get BlackGray() { return new Color(90, 90, 90); }
-	public static get Gray() { return new Color(128, 128, 128); }
-	public static get LightGray() { return new Color(190, 190, 190); }
-	public static get White() { return new Color(255, 255, 255); }
+	public static get Black() { return new Color(0, 0, 0) }
+	public static get Red() { return new Color(255) }
+	public static get Green() { return new Color(0, 255) }
+	public static get Blue() { return new Color(0, 0, 255) }
+	public static get RoyalBlue() { return new Color(78, 121, 248) }
+	public static get Yellow() { return new Color(255, 255) }
+	public static get Orange() { return new Color(255, 128) }
+	public static get Fuchsia() { return new Color(255, 0, 255) }
+	public static get Aqua() { return new Color(0, 255, 255) }
+	public static get BlackGray() { return new Color(90, 90, 90) }
+	public static get Gray() { return new Color(128, 128, 128) }
+	public static get LightGray() { return new Color(190, 190, 190) }
+	public static get White() { return new Color(255, 255, 255) }
 
 	/* ================== Static ================== */
 	public static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): Color {
@@ -28,7 +28,7 @@ export default class Color {
 		return new Color(IOBuffer[bufferOrOffset + 0], IOBuffer[bufferOrOffset + 1], IOBuffer[bufferOrOffset + 2], IOBuffer[bufferOrOffset + 3])
 	}
 	public static CopyFrom(color: Color): Color {
-		return new Color(color.r, color.g, color.b, color.a);
+		return new Color(color.r, color.g, color.b, color.a)
 	}
 	/* ================ Constructors ================ */
 	/**
@@ -84,7 +84,7 @@ export default class Color {
 	}
 
 	public Clone(): Color {
-		return new Color(this.r, this.g, this.b, this.a);
+		return new Color(this.r, this.g, this.b, this.a)
 	}
 
 	/**
@@ -93,9 +93,9 @@ export default class Color {
 	 * @returns another color
 	 */
 	public CopyTo(color: Color): Color {
-		color.r = this.r;
-		color.g = this.g;
-		color.b = this.b;
+		color.r = this.r
+		color.g = this.g
+		color.b = this.b
 		return color
 	}
 	/**
@@ -104,11 +104,11 @@ export default class Color {
 	 * @returns this color
 	 */
 	public CopyFrom(color: Color): Color {
-		this.r = color.r;
-		this.g = color.g;
-		this.b = color.b;
-		this.a = color.a;
-		return this;
+		this.r = color.r
+		this.g = color.g
+		this.b = color.b
+		this.a = color.a
+		return this
 	}
 
 	/* ================== To ================== */
@@ -134,4 +134,3 @@ export default class Color {
 		return true
 	}
 }
-globalThis.Color = Color

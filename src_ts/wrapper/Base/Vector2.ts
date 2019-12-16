@@ -3,7 +3,7 @@ import Vector3 from "./Vector3"
 
 export default class Vector2 {
 	/* ================== Static ================== */
-	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Vector2 {
+	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Vector2 | undefined {
 		if (buffer !== true)
 			return undefined
 		return new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1])
@@ -192,19 +192,19 @@ export default class Vector2 {
 		)
 	}
 	public Round(count: number = 0): Vector2 {
-		const pow = Math.pow(10, count);
+		const pow = Math.pow(10, count)
 		return new Vector2(
 			Math.round(this.x * pow) / pow,
 			Math.round(this.y * pow) / pow
 		)
 	}
 	public RoundForThis(count: number = 0): Vector2 {
-		const pow = Math.pow(10, count);
+		const pow = Math.pow(10, count)
 
-		this.x = Math.round(this.x * pow) / pow;
-		this.y = Math.round(this.y * pow) / pow;
+		this.x = Math.round(this.x * pow) / pow
+		this.y = Math.round(this.y * pow) / pow
 
-		return this;
+		return this
 	}
 	/**
 	 * Returns a vector whose elements are the square root of each of the source vector's elements
@@ -759,4 +759,3 @@ export default class Vector2 {
 		return true
 	}
 }
-globalThis.Vector2 = Vector2

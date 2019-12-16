@@ -2,12 +2,8 @@ import EntityManager from "../../Managers/EntityManager"
 import Courier from "../Base/Courier"
 import Player from "../Base/Player"
 
-declare namespace globalThis {
-	var PlayerResource: PlayerResourceClass
-}
-
-// NOTICE: because shadow name + need for globalThis. idk another way
-class PlayerResourceClass {
+// NOTICE: because shadow name. idk another way
+class PlayerResource {
 	public m_pBaseEntity: C_DOTA_PlayerResource | undefined
 
 	public get Names(): string[] {
@@ -70,7 +66,7 @@ class PlayerResourceClass {
 	}
 }
 
-// NOTICE: because shadow name + need for globalThis. idk another way
-const _PlayerResource = new PlayerResourceClass()
+// NOTICE: because shadow name. idk another way
+const _PlayerResource = new PlayerResource()
 
-export default globalThis.PlayerResource = _PlayerResource
+export default _PlayerResource

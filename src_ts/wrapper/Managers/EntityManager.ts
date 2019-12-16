@@ -29,26 +29,18 @@ import Roshan from "../Objects/Units/Roshan"
 
 type Constructor<T> = new (...args: any[]) => T
 
-declare namespace globalThis {
-	var LocalPlayer: PlayerNullable
-	var EntityManager: EntityManagerClass
-}
-
 let AllEntities: Entity[] = []
 let EntitiesIDs = new Map<number, C_BaseEntity>()
 let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 let InStage: C_BaseEntity[] = []
 
-
 export var LocalPlayer: PlayerNullable
-globalThis.LocalPlayer = undefined
 
 let player_slot = NaN
 Events.on("ServerInfo", info => player_slot = info.player_slot ?? NaN)
 
-
-// NOTICE: because shadow name + need for globalThis. idk another way
-class EntityManagerClass {
+// NOTICE: because shadow name. idk another way
+class EntityManager {
 
 	private Roshan_: CEntityNullable
 
@@ -171,9 +163,9 @@ class EntityManagerClass {
 }
 
 // NOTICE: because shadow name + need for globalThis. idk another way
-const _EntityManager = new EntityManagerClass()
+const _EntityManager = new EntityManager()
 
-export default globalThis.EntityManager = _EntityManager
+export default _EntityManager
 
 Events.on("EntityCreated", (ent, index) => {
 	{ // add globals

@@ -27,7 +27,7 @@ export class Sleeper extends SleeperBase {
 			return this.setTime(key, Date.now())
 
 		if (extend && this.updateTime(key, Date.now(), ms))
-			return
+			return ms
 
 		return this.setTime(key, Date.now() + ms)
 	}
@@ -51,7 +51,7 @@ export class GameSleeper extends SleeperBase {
 			return this.setTime(key, Game.RawGameTime)
 
 		if (extend && this.updateTime(key, Game.RawGameTime, ms / 1000))
-			return
+			return ms
 
 		return this.setTime(key, Game.RawGameTime + ms / 1000)
 	}
