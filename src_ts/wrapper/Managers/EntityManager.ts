@@ -12,7 +12,7 @@ import Unit from "../Objects/Base/Unit"
 
 import Ability from "../Objects/Base/Ability"
 import Item from "../Objects/Base/Item"
-import NativeToSDK from "../Objects/NativeToSDK"
+import NativeToSDK, { GetSDKClasses } from "../Objects/NativeToSDK"
 
 import Building from "../Objects/Base/Building"
 import PhysicalItem from "../Objects/Base/PhysicalItem"
@@ -28,6 +28,8 @@ import Roshan from "../Objects/Units/Roshan"
 let AllEntities: Entity[] = []
 let EntitiesIDs = new Map<number, C_BaseEntity>()
 let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
+let ClassToEntities = new Map<Constructor<any>, Entity[]>()
+
 let InStage: C_BaseEntity[] = []
 
 export var LocalPlayer: Nullable<Player>
@@ -60,7 +62,7 @@ class EntityManager {
 		return LocalPlayer !== undefined ? LocalPlayer.Hero : undefined
 	}
 	get AllEntities(): Entity[] {
-		return AllEntities.slice()
+		return AllEntities
 	}
 	public EntityByIndex(index: number): Nullable<Entity> {
 		return this.GetEntityByNative(EntitiesIDs.get(index))
@@ -123,43 +125,38 @@ class EntityManager {
 		})
 	}
 	public GetEntitiesByClass<T>(class_: Constructor<T>, flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
+		if (class_ === undefined || !ClassToEntities.has(class_))
+			return []
 		switch (flags) {
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY:
 				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => ent instanceof class_ && !ent.IsEnemy()) as []
+				return ClassToEntities.get(class_).filter(e => !e.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY:
 				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => ent instanceof class_ && ent.IsEnemy()) as []
+				return ClassToEntities.get(class_).filter(e => e.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH:
-				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => ent instanceof class_) as []
+				return ClassToEntities.get(class_) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_CUSTOM:
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE:
 			default:
 				return []
 		}
 	}
+	/**
+	 * @deprecated USE IT ONLY IF YOU REALLY NEED IT \
+	 * GetEntitiesByClasses is 60 times slower than GetEntitiesByClass
+	 */
 	public GetEntitiesByClasses<T>(classes: Constructor<T>[], flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
-		switch (flags) {
-			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY:
-				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => classes.some(class_ => ent instanceof class_) && !ent.IsEnemy()) as []
-			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY:
-				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => classes.some(class_ => ent instanceof class_) && ent.IsEnemy()) as []
-			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH:
-				// loop-optimizer: FORWARD
-				return AllEntities.filter(ent => classes.some(class_ => ent instanceof class_)) as []
-			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_CUSTOM:
-			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE:
-			default:
-				return []
-		}
+		let ar: T[] = []
+		// loop-optimizer: FORWARD
+		classes.forEach(class_ => ar.push(...this.GetEntitiesByClass(class_, flags)))
+		return [...new Set(ar)]
 	}
 }
 
-// NOTICE: because shadow name + need for globalThis. idk another way
-const _EntityManager = new EntityManager()
+globalThis.GetEntityClassByName = name => GetSDKClasses().find(c => (c as Function).name === name)
+
+export default globalThis.EntityManager = EntityManager
 
 export default _EntityManager
 
@@ -241,6 +238,13 @@ function AddToCache(ent: C_BaseEntity, already_valid = false) {
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
 	AllEntities.push(entity)
 
+	GetSDKClasses().forEach(class_ => {
+		if (!(entity instanceof class_))
+			return
+		if (!ClassToEntities.has(class_))
+			ClassToEntities.set(class_, [])
+		ClassToEntities.get(class_).push(entity)
+	})
 	EventsSDK.emit("EntityCreated", false, entity)
 	FireEntityEvents(entity)
 }
@@ -281,6 +285,13 @@ function DeleteFromCache(entNative: C_BaseEntity) {
 
 	// console.log("onEntityDestroyed SDK", entity, entity.m_pBaseEntity, index);
 	EventsSDK.emit("EntityDestroyed", false, entity)
+	GetSDKClasses().forEach(class_ => {
+		if (!(entity instanceof class_))
+			return
+		if (!ClassToEntities.has(class_))
+			return
+		ArrayExtensions.arrayRemove(ClassToEntities.get(class_), entity)
+	})
 }
 
 function ClassFromNative(ent: C_BaseEntity): Entity {

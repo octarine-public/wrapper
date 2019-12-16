@@ -10,8 +10,7 @@ const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"]),
 	embText = emb.AddToggle("Show numbers", false),
 	embSize = emb.AddSlider("Size", 14, 10, 30),
 	ehbText = ehb.AddToggle("Show numbers", false),
-	ehbSize = ehb.AddSlider("Size", 14, 10, 30),
-	floor = Math.floor
+	ehbSize = ehb.AddSlider("Size", 14, 10, 30)
 
 EventsSDK.on("EntityCreated", npc => {
 	if (
@@ -86,10 +85,10 @@ EventsSDK.on("Draw", () => {
 		}
 		wts.AddScalarX(addx).AddScalarY(addy)
 		if (embText.value) {
-			RendererSDK.Text(`${floor(hero.Mana)}/${floor(hero.MaxMana)}`, wts, Color.White, "Calibri", new Vector2(embSize.value, 200))
+			RendererSDK.Text(`${Math.floor(hero.Mana)}/${Math.floor(hero.MaxMana)}`, wts, Color.White, "Calibri", new Vector2(embSize.value, 200))
 		}
 		if (ehbText.value) {
-			RendererSDK.Text(`${floor(hero.HP)}/${floor(hero.MaxHP)}`, wts.AddScalarY(addyehb), Color.White, "Calibri", new Vector2(ehbSize.value, 200))
+			RendererSDK.Text(`${Math.floor(hero.HP)}/${Math.floor(hero.MaxHP)}`, wts.AddScalarY(addyehb), Color.White, "Calibri", new Vector2(ehbSize.value, 200))
 		}
 		// let mana: any = Math.round(hero.Mana);
 		// wts.AddScalarX(off_x_text).AddScalarY(off_y_text);

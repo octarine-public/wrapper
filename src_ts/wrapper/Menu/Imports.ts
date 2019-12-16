@@ -12,5 +12,7 @@ import Node from "./Node"
 export { Node }
 
 import MenuManager from "./Menu"
-let AddEntry = (name: string | string[]): Node => MenuManager.AddEntry(name)
+function AddEntry(name: string | string[]): Node {
+	return MenuManager.AddEntry(name)
+}
 export { MenuManager, AddEntry }
