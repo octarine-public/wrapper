@@ -20,8 +20,10 @@ enum CommandID {
 	IMAGE,
 	TEXT,
 }
+// NOTICE: moofMonkey, need fix fromIOBuffer
+
 let RendererSDK_ = new (class RendererSDK {
-	private static StringToUTF16(str): Uint8Array {
+	private static StringToUTF16(str: string): Uint8Array {
 		let buf = new Uint16Array(str.length)
 		for (let i = str.length; i--;)
 			buf[i] = str.charCodeAt(i)
@@ -211,7 +213,7 @@ let RendererSDK_ = new (class RendererSDK {
 
 		let texture_id = this.GetTexture(path) // better put it BEFORE new command
 		if (vecSize.x <= 0 || vecSize.y <= 0) {
-			let size = this.tex2size.get(texture_id)
+			let size = this.tex2size.get(texture_id)!
 			if (vecSize.x <= 0)
 				vecSize.x = size.x
 			if (vecSize.y <= 0)
@@ -367,7 +369,7 @@ let RendererSDK_ = new (class RendererSDK {
 		}
 		let font_id = weight_map.get(flags)
 		if (font_id === undefined) {
-			let font_id = Renderer.CreateFontID()
+			font_id = Renderer.CreateFontID()
 			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
 			weight_map.set(flags, font_id)
 		}
@@ -400,6 +402,6 @@ let RendererSDK_ = new (class RendererSDK {
 	}
 })()
 
-Events.after("Draw", () => WindowSize = Vector2.fromIOBuffer(Renderer.WindowSize))
+Events.after("Draw", () => WindowSize = Vector2.fromIOBuffer(Renderer.WindowSize)!)
 
-export default globalThis.RendererSDK = RendererSDK_
+export default RendererSDK_

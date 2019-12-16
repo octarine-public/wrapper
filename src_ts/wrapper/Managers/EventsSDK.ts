@@ -257,8 +257,8 @@ Events.on("EntityPositionsChanged", ents => ents.forEach(ent_ => {
 	if (ent === undefined || !ent_.m_VisualData)
 		return // probably ent.m_pGameSceneNode === undefined
 
-	let m_vecOrigin = Vector3.fromIOBuffer()
-	let m_angAbsRotation = QAngle.fromIOBuffer(true, 3)
+	let m_vecOrigin = Vector3.fromIOBuffer()!
+	let m_angAbsRotation = QAngle.fromIOBuffer(true, 3)!
 	ent.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation)
 }))
 

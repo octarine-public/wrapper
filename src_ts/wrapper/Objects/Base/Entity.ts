@@ -199,7 +199,7 @@ export default class Entity {
 			let gameSceneNode = this.GameSceneNode
 			if (gameSceneNode === undefined)
 				return new QAngle()
-			QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation).CopyTo(this.Angles_)
+			QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation)?.CopyTo(this.Angles_)
 		}
 		return this.Angles_.Clone()
 	}
@@ -382,7 +382,7 @@ export default class Entity {
 		let gameSceneNode = this.GameSceneNode
 		if (gameSceneNode === undefined)
 			return
-		QAngle.fromIOBuffer(gameSceneNode.m_angRotation).CopyTo(this.NetworkAngles_).CopyTo(this.Angles_)
+		QAngle.fromIOBuffer(gameSceneNode.m_angRotation)?.CopyTo(this.NetworkAngles_).CopyTo(this.Angles_)
 	}
 	public OnCreated() {
 		this.IsValid = true

@@ -57,9 +57,6 @@ export default class ExecuteOrder {
 			? EntityManager.GetEntityByNative(order.unit) as Unit
 			: EntityManager.LocalHero
 
-		if (unit === undefined)
-			return undefined
-
 		return new ExecuteOrder(
 			order.order_type,
 			order.target instanceof C_BaseEntity
@@ -77,11 +74,11 @@ export default class ExecuteOrder {
 	}
 
 	private m_OrderType: dotaunitorder_t
-	private m_Target: Entity | number
+	private m_Target: Nullable<Entity | number>
 	private m_Position: Vector3
-	private m_Ability: Ability | number
+	private m_Ability: Nullable<Ability | number>
 	private m_OrderIssuer: PlayerOrderIssuer_t
-	private m_Unit: Unit
+	private m_Unit: Nullable<Unit>
 	private m_Queue: boolean
 	private m_ShowEffects: boolean
 
@@ -92,11 +89,11 @@ export default class ExecuteOrder {
 	 */
 	constructor(
 		orderType: dotaunitorder_t,
-		target: Entity | number,
+		target: Nullable<Entity | number>,
 		position: Vector3 | Vector2 = new Vector3(),
-		ability: Ability | number,
+		ability: Nullable<Ability | number>,
 		issuer: PlayerOrderIssuer_t = PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
-		unit: Unit,
+		unit: Nullable<Unit>,
 		queue: boolean = false,
 		showEffects: boolean = false,
 	) {
@@ -113,19 +110,19 @@ export default class ExecuteOrder {
 	get OrderType(): dotaunitorder_t {
 		return this.m_OrderType
 	}
-	get Target(): Entity | number {
+	get Target(): Nullable<Entity | number> {
 		return this.m_Target
 	}
 	get Position(): Vector3 {
 		return this.m_Position
 	}
-	get Ability(): Ability | number {
+	get Ability(): Nullable<Ability | number> {
 		return this.m_Ability
 	}
 	get OrderIssuer(): PlayerOrderIssuer_t {
 		return this.m_OrderIssuer
 	}
-	get Unit(): Unit {
+	get Unit(): Nullable<Unit> {
 		return this.m_Unit
 	}
 	get Queue(): boolean {
@@ -173,11 +170,11 @@ export default class ExecuteOrder {
 	}
 	public toObject(): {
 		OrderType: dotaunitorder_t,
-		Target: Entity | number,
+		Target: Nullable<Entity | number>,
 		Position: Vector3,
-		Ability: Ability | number,
+		Ability: Nullable<Ability | number>,
 		OrderIssuer: PlayerOrderIssuer_t
-		Unit: Unit,
+		Unit: Nullable<Unit>,
 		Queue: boolean,
 		ShowEffects: boolean,
 	} {

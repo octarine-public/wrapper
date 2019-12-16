@@ -35,6 +35,8 @@ function TrackingProjectileCreated(proj: number, projectile: TrackingProjectile)
 	ProjectileManager.AllTrackingProjectilesMap.set(proj, projectile)
 }
 
+// NOTICE: moofMonkey, need fix fromIOBuffer
+
 Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceAttachment, path, particleSystemHandle, dodgeable, isAttack, expireTime, maximpacttime, launch_tick) => {
 	let projectile = new TrackingProjectile(
 		proj,
@@ -54,7 +56,7 @@ Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceA
 		maximpacttime,
 		launch_tick,
 		Vector3.fromIOBuffer(),
-		Color.fromIOBuffer(3),
+		Color.fromIOBuffer(true, 3),
 	)
 
 	TrackingProjectileCreated(proj, projectile)
@@ -80,7 +82,7 @@ Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particle
 			undefined,
 			launch_tick,
 			Vector3.fromIOBuffer(true, 3),
-			Color.fromIOBuffer(6),
+			Color.fromIOBuffer(true, 6),
 		)
 		projectile.Position.CopyFrom(Vector3.fromIOBuffer())
 
@@ -139,10 +141,10 @@ Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max
 		fow_radius,
 		sticky_fow_reveal,
 		distance,
-		Vector3.fromIOBuffer(),
+		Vector3.fromIOBuffer()!,
 		Vector2.fromIOBuffer(true, 3),
 		Vector2.fromIOBuffer(true, 5),
-		Color.fromIOBuffer(7),
+		Color.fromIOBuffer(true, 7),
 	)
 	EventsSDK.emit("LinearProjectileCreated", false, projectile)
 	ProjectileManager.AllLinearProjectiles.push(projectile)

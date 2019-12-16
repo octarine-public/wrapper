@@ -14,18 +14,10 @@ export default class Color {
 	public static get White() { return new Color(255, 255, 255) }
 
 	/* ================== Static ================== */
-	public static fromIOBuffer(bufferOrOffset?: boolean | number, offset: number = 0): Color {
-		if (bufferOrOffset === undefined)
-			return new Color(IOBuffer[0], IOBuffer[1], IOBuffer[2], IOBuffer[3])
-
-		if (typeof bufferOrOffset === "boolean") {
-			if (!bufferOrOffset)
-				return new Color()
-
-			bufferOrOffset = offset
-		}
-
-		return new Color(IOBuffer[bufferOrOffset + 0], IOBuffer[bufferOrOffset + 1], IOBuffer[bufferOrOffset + 2], IOBuffer[bufferOrOffset + 3])
+	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Color | undefined {
+		if (buffer !== true)
+			return undefined
+		return new Color(IOBuffer[offset + 0], IOBuffer[offset + 1])
 	}
 	public static CopyFrom(color: Color): Color {
 		return new Color(color.r, color.g, color.b, color.a)

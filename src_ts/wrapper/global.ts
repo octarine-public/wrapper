@@ -11,6 +11,8 @@ import { EventEmitter } from "./Managers/Events"
 import { default as _PlayerResource } from "./Objects/GameResources/PlayerResource"
 import { default as _Game } from "./Objects/GameResources/GameRules"
 
+import { default as _RendererSDK } from "./Native/RendererSDK"
+
 declare global {
 	var Color: typeof _Color
 	var QAngle: typeof _QAngle
@@ -24,6 +26,10 @@ declare global {
 
 	var PlayerResource: typeof _PlayerResource
 	var Game: typeof _Game
+
+	var RendererSDK: typeof _RendererSDK
+
+	var WASMIOBuffer: Float32Array
 }
 
 globalThis.Color = _Color
@@ -38,3 +44,5 @@ globalThis.Events = EventEmitter
 
 globalThis.PlayerResource = _PlayerResource
 globalThis.Game = _Game
+
+globalThis.RendererSDK = _RendererSDK

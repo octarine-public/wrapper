@@ -70,7 +70,7 @@ export class TrackingProjectile extends Projectile {
 		private expireTime: number,
 		public readonly maximpacttime: number | undefined,
 		public LaunchTick: number,
-		private readonly TargetLoc_: Vector3,
+		private readonly TargetLoc_: Vector3 = new Vector3,
 		colorgemcolor: Color,
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
