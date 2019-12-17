@@ -2,7 +2,7 @@ import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
-import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
+import { DamageIgnoreBuffs } from "../../Utils/Utils"
 
 import { LocalPlayer } from "../../Managers/EntityManager"
 
@@ -27,29 +27,23 @@ import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import Game from "../GameResources/GameRules"
+import { Utils, Parse } from "../../Imports"
 //import { DotaMap } from "../../Helpers/DotaMap"
 
 const attackAnimationPoint = new Map<string, number>()
 const attackprojectileSpeed = new Map<string, number>()
 
-let parseHeroes = parseKVFile("scripts/npc/npc_heroes.txt")
-
-// loop-optimizer: KEEP
-let heroesNames = Object.keys(parseHeroes.DOTAHeroes).filter(hero =>
-	!(hero.includes("values") || hero.includes("hero_base")))
-
-// loop-optimizer: KEEP
-heroesNames.forEach(hero => {
-	const heroFields = parseHeroes.DOTAHeroes[hero].values
-	if (heroFields.AttackAnimationPoint !== undefined) {
-		attackAnimationPoint.set(hero, parseFloat(heroFields.AttackAnimationPoint))
-	}
-	if (heroFields.ProjectileSpeed !== undefined) {
-		attackprojectileSpeed.set(hero, parseFloat(heroFields.ProjectileSpeed))
-	}
+let parseHeroes = Utils.parseKVFile("scripts/npc/npc_heroes.txt").get("DOTAHeroes") as Parse.RecursiveMap
+for (let hero of parseHeroes.keys()) {
+	const heroFields = parseHeroes.get(hero)
+	if (!(heroFields instanceof Map))
+		continue
+	if (heroFields.has("AttackAnimationPoint"))
+		attackAnimationPoint.set(hero, parseFloat(heroFields.get("AttackAnimationPoint") as string))
+	if (heroFields.has("ProjectileSpeed"))
+		attackprojectileSpeed.set(hero, parseFloat(heroFields.get("ProjectileSpeed") as string))
 	// another values from script files. (i.e AttackRate, AttackRate)
-})
-
+}
 
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */

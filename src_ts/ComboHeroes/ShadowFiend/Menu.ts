@@ -1,9 +1,8 @@
-import { Menu as MenuSDK, Color } from "wrapper/Imports"
+import { Menu as MenuSDK, Color, Parse, Utils } from "wrapper/Imports"
 
 import InitItems from "./Extends/Items"
 import InitAbility from "./Extends/Abilities"
-import { parseKVFile } from "../../wrapper/Utils/Utils"
-let parseSpells = parseKVFile("scripts/npc/npc_abilities.txt");
+let parseSpells = Utils.parseKVFile("scripts/npc/npc_abilities.txt").get("DOTAAbilities") as Parse.RecursiveMap
 
 let Items = new InitItems()
 let Abilities = new InitAbility()
@@ -53,7 +52,7 @@ export let arrayBreakLinkItems = [
 	Items.Nullifier.toString(),
 	Items.Sheeps.toString(),
 	Items.Cyclone.toString(),
-];
+]
 
 // const ComboMenu = Menu.AddNode("Combo")
 // export const ComboKeyItem = ComboMenu.AddKeybind("Key bind")
@@ -88,23 +87,20 @@ export const CycloneRadiusItemColor = Drawing.AddColorPicker("Cyclone", Color.Wh
 
 const ShadowRaze1RadiusCustom = Drawing.AddNode("Shadow Raze")
 
-// loop-optimizer: KEEP
-let abils = Object.keys(parseSpells.DOTAAbilities).filter(abil => abil.includes("nevermore_shadowraze"));
-const razeRadius = [];
-// loop-optimizer: KEEP
-abils.forEach(abil => {
-	const abilValues = parseSpells.DOTAAbilities[abil];
-	const abilSpec = abilValues.AbilitySpecial;
-	if (abilSpec === undefined)
-		return;
-	for (var count in abilSpec) {
-		if (count === "values")
-			continue;
-		const abilSpecVal = abilSpec[count].values;
-		if (abilSpecVal.shadowraze_radius !== undefined)
-			razeRadius.push(parseFloat(abilSpecVal.shadowraze_radius));
+const razeRadius = []
+for (let val of parseSpells.values()) {
+	if (!(val instanceof Map))
+		continue
+	const abilSpec = val.get("AbilitySpecia")
+	if (!(abilSpec instanceof Map))
+		continue
+	for (var val2 of abilSpec.values()) {
+		if (!(val2 instanceof Map))
+			continue
+		if (val2.has("shadowraze_radius"))
+			razeRadius.push(parseFloat(val2.get("shadowraze_radius") as string))
 	}
-})
+}
 
 export const ShadowRaze1Radius = ShadowRaze1RadiusCustom.AddSlider("Radius Raze 1", razeRadius[0], 10, razeRadius[0])
 export const ShadowRaze2Radius = ShadowRaze1RadiusCustom.AddSlider("Radius Raze 2", razeRadius[1], 10, razeRadius[1])
