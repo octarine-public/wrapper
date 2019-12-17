@@ -114,7 +114,7 @@ export default class Player extends Entity {
 	get Hero(): Hero {
 		if (this.Hero_ instanceof Entity)
 			return this.Hero_
-		this.Hero_ = EntityManager.GetEntityByNative(this.Hero_) as Hero || this.Hero_
+		this.Hero_ = (EntityManager.GetEntityByNative(this.Hero_) as Hero) ?? this.Hero_
 		if (this.Hero_ instanceof Entity)
 			return this.Hero_
 		return undefined
@@ -198,7 +198,6 @@ export default class Player extends Entity {
 		return this.PlayerTeamData.m_nSelectedHeroID
 	}
 	get SelectedUnits(): Entity[] {
-
 		let selected: Entity[] = []
 
 		let selUnits = this.m_pBaseEntity.m_nSelectedUnits

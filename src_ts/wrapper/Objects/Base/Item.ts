@@ -7,6 +7,16 @@ import Unit from "./Unit"
 
 export default class Item extends Ability {
 	public readonly m_pBaseEntity: C_DOTA_Item
+	public EnableTime = 0
+	public Shareability: EShareAbility = EShareAbility.ITEM_NOT_SHAREABLE
+	public CurrentCharges = 0
+
+	constructor(m_pBaseEntity: C_BaseEntity) {
+		super(m_pBaseEntity)
+		this.EnableTime = this.m_pBaseEntity.m_flEnableTime
+		this.Shareability = this.m_pBaseEntity.m_iSharability
+		this.CurrentCharges = this.m_pBaseEntity.m_iCurrentCharges
+	}
 
 	get IsReady(): boolean {
 		const unit = this.Owner
@@ -21,14 +31,8 @@ export default class Item extends Ability {
 	get Cost(): number {
 		return this.AbilityData.Cost
 	}
-	get CurrentCharges(): number {
-		return this.m_pBaseEntity.m_iCurrentCharges
-	}
 	get EffectName(): string {
 		return this.AbilityData.EffectName
-	}
-	get EnableTime(): number {
-		return Math.max(this.m_pBaseEntity.m_flEnableTime - Game.RawGameTime, 0)
 	}
 	get InitialCharges(): number {
 		return this.m_pBaseEntity.m_iInitialCharges
@@ -53,9 +57,6 @@ export default class Item extends Ability {
 	}
 	get IsDroppable(): boolean {
 		return this.m_pBaseEntity.m_bDroppable
-	}
-	get IsEnabled(): boolean {
-		return this.m_pBaseEntity.m_bItemEnabled
 	}
 	get IsHidingCharges(): boolean {
 		return this.m_pBaseEntity.m_bHideCharges
@@ -94,7 +95,7 @@ export default class Item extends Ability {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOldOwnerEntity) as Entity
 	}
 	get Purchaser(): Player {
-		return EntityManager.EntityByIndex(this.PurchaserID) as Player
+		return EntityManager.GetPlayerByID(this.PurchaserID)
 	}
 	get PurchaserID(): number {
 		return this.m_pBaseEntity.m_iPlayerOwnerID
@@ -105,11 +106,8 @@ export default class Item extends Ability {
 	get SecondaryCharges(): number {
 		return this.m_pBaseEntity.m_iSecondaryCharges
 	}
-	get Shareability(): EShareAbility {
-		return this.m_pBaseEntity.m_iSharability
-	}
 	get ShouldDisplayCharges(): boolean {
-		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges;
+		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges
 	}
 
 	public DisassembleItem(queue?: boolean) {
@@ -134,6 +132,10 @@ export default class Item extends Ability {
 	public CanBeCasted(bonusMana: number = 0): boolean {
 		if (!this.IsValid)
 			return false
+		if (this.EnableTime !== 0 && this.EnableTime > Game.RawGameTime)
+			return false
+		if (this.Shareability == EShareAbility.ITEM_NOT_SHAREABLE && this.Owner?.Owner !== this.Purchaser)
+			return false
 
 		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled)
 			return false
@@ -141,7 +143,7 @@ export default class Item extends Ability {
 		if (this.RequiresCharges && this.CurrentCharges < 1)
 			return false
 
-		return this.Level > 0 && !this.IsEnabled
+		return this.Level > 0
 			&& !(this.Owner as Unit).IsMuted
 			&& this.IsManaEnough(bonusMana)
 			&& this.IsCooldownReady

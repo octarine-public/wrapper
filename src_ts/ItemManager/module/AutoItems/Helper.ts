@@ -332,7 +332,7 @@ function AutoUseItems(unit: Unit) {
 	}
 	// if (IsValidItem(Items.Abyssal)) {
 	// 	Units.some(x => {
-	// 		if (x === undefined || !x.IsHero || !x.IsValid || !x.IsAlive || x.IsInvulnerable || !x.IsEnemy(unit) || x.IsDormant)
+	// 		if (x === undefined || !x.IsHero || !x.IsValid || !x.IsAlive || x.IsInvulnerable || !x.IsEnemy(unit) || !x.IsVisible)
 	// 			return false
 	// 		let enemy_items = initItemsMap.get(x)
 	// 		if (enemy_items === undefined || !x.IsInRange(unit, Items.Abyssal.CastRange) || IsLinkensProtected(x, enemy_items))

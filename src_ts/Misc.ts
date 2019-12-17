@@ -1,6 +1,6 @@
-import { EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t } from "./wrapper/Imports"
+import { EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, RendererSDK } from "./wrapper/Imports"
 
-let Menu = MenuSDK.AddEntry("Misc");
+let Menu = MenuSDK.AddEntry("Misc")
 
 let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 	AutoAccept_State = AutoAcceptTree.AddToggle("Auto Accept", true),
@@ -30,6 +30,7 @@ let keybind = Menu.AddKeybind("Menu (Open/Close)", "Insert").OnPressed(() => Men
 keybind.activates_in_menu = true
 keybind.trigger_on_chat = true
 Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.MenuManager.trigger_on_chat = toggle.value)
+Menu.AddToggle("Alternate WorldToScreen", false).OnValue(toggle => RendererSDK.AlternateW2S = toggle.value)
 Menu.AddToggle("Team chat mute fix", false).OnValue(toggle => ToggleFakeChat(toggle.value))
 let humanizer = Menu.AddNode("Humanizer")
 humanizer.AddToggle("wait_next_usercmd", false).OnValue(toggle => ExecuteOrder.wait_next_usercmd = toggle.value)
@@ -65,23 +66,23 @@ setInterval(UpdateVisuals, 100)
 InputEventSDK.on("MouseWheel", wheel => {
 	if (!CamMouseState.value || !Game.IsInGame
 		|| Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
-		return;
+		return
 
 	if (CamMouseStateCtrl.value && !Input.IsKeyDown(VKeys.CONTROL))
-		return;
+		return
 
-	let camDist = CamDist.value;
+	let camDist = CamDist.value
 
 	if (wheel === MouseWheel.DOWN)
-		camDist += CamStep.value;
+		camDist += CamStep.value
 	else
-		camDist -= CamStep.value;
+		camDist -= CamStep.value
 
-	CamDist.value = Math.min(Math.max(camDist, CamDist.min), CamDist.max);
+	CamDist.value = Math.min(Math.max(camDist, CamDist.min), CamDist.max)
 
 	MenuSDK.MenuManager.UpdateConfig()
 	UpdateVisuals()
-	return false;
+	return false
 })
 
 enum CSODOTALobby_State {
@@ -98,22 +99,22 @@ interface CSODOTALobby {
 	state: CSODOTALobby_State
 }
 
-let timeCreate = -1;
+let timeCreate = -1
 
 function waitAcceptOn() {
 	if (timeCreate === -1) {
-		return;
+		return
 	}
 
-	let elepsedTime = (Date.now() - timeCreate) / 1000;
+	let elepsedTime = (Date.now() - timeCreate) / 1000
 
 	if (elepsedTime > AutoAccept_delay.max) {
-		timeCreate = -1;
-		return;
+		timeCreate = -1
+		return
 	}
 
 	if (!AutoAccept_State.value || AutoAccept_delay.value - elepsedTime > 0) {
-		return setTimeout(waitAcceptOn, 0);
+		return setTimeout(waitAcceptOn, 0)
 	}
 
 	AcceptMatch()
@@ -127,9 +128,9 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 
 	if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1) {
 
-		timeCreate = Date.now();
-		waitAcceptOn();
+		timeCreate = Date.now()
+		waitAcceptOn()
 	} else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1) {
-		timeCreate = -1;
+		timeCreate = -1
 	}
 })

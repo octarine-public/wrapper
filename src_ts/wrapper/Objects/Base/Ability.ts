@@ -16,6 +16,7 @@ export default class Ability extends Entity {
 	public ChannelStartTime = 0
 	public LastCastClickTime = 0
 	public IsToggled = false
+	public IsHidden = false
 
 	constructor(m_pBaseEntity: C_BaseEntity) {
 		super(m_pBaseEntity)
@@ -27,6 +28,7 @@ export default class Ability extends Entity {
 		this.CooldownLength = this.m_pBaseEntity.m_flCooldownLength
 		this.Cooldown = this.m_pBaseEntity.m_fCooldown
 		this.Level = this.m_pBaseEntity.m_iLevel
+		this.IsHidden = this.m_pBaseEntity.m_bHidden
 		this.AbilityData = new AbilityData(this.m_pBaseEntity.m_pAbilityData)
 	}
 
@@ -89,9 +91,6 @@ export default class Ability extends Entity {
 	}
 	get IsGrantedByScepter(): boolean {
 		return this.AbilityData.IsGrantedByScepter
-	}
-	get IsHidden(): boolean {
-		return this.m_pBaseEntity.m_bHidden
 	}
 	get IsItem(): boolean {
 		return this.AbilityData.IsItem
@@ -231,7 +230,10 @@ export default class Ability extends Entity {
 		return cache[level] || (cache[level] = this.m_pBaseEntity.GetSpecialValue(special_name, level))
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
-		return (this.Owner.Mana + bonusMana) >= this.ManaCost
+		let owner = this.Owner
+		if (owner === undefined)
+			return true
+		return (owner.Mana + bonusMana) >= this.ManaCost
 	}
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
 		return HasMaskBigInt(this.AbilityData.m_pAbilityData.m_iAbilityBehavior, BigInt(flag))
@@ -286,14 +288,13 @@ export default class Ability extends Entity {
 				range = this.AOERadius
 		}
 		if (range > 0)
-			range += target.HullRadius;
+			range += target.HullRadius
 		return this.Owner.Distance2D(target) < range
 	}
 	public CanBeCasted(bonusMana: number = 0): boolean {
-		if (!this.IsValid || !this.IsReady) {
-			return false
-		}
-		return this.Level > 0
+		return this.IsValid
+			&& this.Level > 0
+			&& this.IsCooldownReady
 			&& !this.Owner.IsSilenced
 			&& this.IsManaEnough(bonusMana)
 			&& this.IsCooldownReady

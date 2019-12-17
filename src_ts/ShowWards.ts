@@ -76,8 +76,8 @@ EventsSDK.on("EntityDestroyed", ent => {
 
 function PingEnemyWard(hero: Entity) {
 	if (optionPingTeam.value) {
-		hero.InFront(200).toIOBuffer();
-		Minimap.SendPing(PingType_t.ENEMY_VISION, false, hero.m_pBaseEntity);
+		hero.InFront(200).toIOBuffer()
+		Minimap.SendPing(PingType_t.ENEMY_VISION, false, hero.m_pBaseEntity)
 	}
 
 	let map_ping = ParticlesSDK.Create(
@@ -112,7 +112,7 @@ EventsSDK.on("Tick", () => {
 	heroes.forEach(hero => {
 		if (!hero.IsEnemy())
 			return
-		if (hero.IsAlive && !hero.IsDormant) {
+		if (hero.IsAlive && hero.IsVisible) {
 			let sentry = hero.GetItemByName("item_ward_sentry"),
 				observer = hero.GetItemByName("item_ward_observer"),
 				dispenser = hero.GetItemByName("item_ward_dispenser")
@@ -195,7 +195,7 @@ EventsSDK.on("Tick", () => {
 				}
 				wardCaptureTiming = Game.GameTime
 			}
-		} else if (hero !== undefined && hero.IsDormant) {
+		} else if (hero !== undefined && !hero.IsVisible) {
 			wardDispenserCount[hero.Index] = undefined
 			wardCaptureTiming = Game.GameTime
 		}

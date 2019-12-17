@@ -104,7 +104,7 @@ export function Update(): number {
 		if (!targetBlock.IsAlive) {
 			targetStatus = TargetStatus.DEAD
 			return
-		} else if (targetBlock.IsDormant) {
+		} else if (!targetBlock.IsVisible) {
 			targetStatus = TargetStatus.DORMANT
 			return
 		}

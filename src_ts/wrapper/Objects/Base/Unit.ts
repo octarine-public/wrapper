@@ -26,7 +26,8 @@ import TreeTemp from "./TreeTemp"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
-//import { DotaMap } from "../../Helpers/DotaMap";
+import Game from "../GameResources/GameRules"
+//import { DotaMap } from "../../Helpers/DotaMap"
 
 const attackAnimationPoint = new Map<string, number>()
 const attackprojectileSpeed = new Map<string, number>()
@@ -954,7 +955,7 @@ export default class Unit extends Entity {
 			&& !this.IsEthereal
 			&& target.IsAlive
 			&& !target.IsInvulnerable
-			&& !target.IsDormant
+			&& target.IsVisible
 			&& target.IsSpawned
 			&& !target.IsAttackImmune
 			&& !this.IsEthereal
@@ -1095,5 +1096,4 @@ export default class Unit extends Entity {
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-import Game from "../GameResources/GameRules"
 RegisterClass("C_DOTA_BaseNPC", Unit)

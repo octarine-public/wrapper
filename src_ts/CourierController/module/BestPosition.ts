@@ -4,7 +4,7 @@ import { CourierBase } from "../Data/Helper"
 import { Sleep, OwnerIsValid } from "../bootstrap"
 
 function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector3) {
-	if (!unit.IsAlive || unit.IsDormant)
+	if (!unit.IsAlive || !unit.IsVisible)
 		return false
 	CourierBase.DELIVER_DISABLE = CourierBase.IsRangeCourier(unit, Position)
 	if (CourierBase.IsRangeCourier(unit, Position)) {
@@ -33,7 +33,7 @@ export function CourierBestPosition(courier: Courier) {
 					return false
 			case CourierState_t.COURIER_STATE_MOVING:
 			case CourierState_t.COURIER_STATE_DELIVERING_ITEMS:
-				if (unit.IsAlive && !unit.IsDormant && CourierBase.IsRangeCourier(unit)) {
+				if (unit.IsAlive && unit.IsVisible && CourierBase.IsRangeCourier(unit)) {
 					MoveCourier(true, courier)
 					CourierBase.DELIVER_DISABLE = true
 					return true
