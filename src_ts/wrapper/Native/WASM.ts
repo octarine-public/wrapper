@@ -30,7 +30,9 @@ function emscripten_notify_memory_growth(memoryIndex) {
 emscripten_notify_memory_growth(0)
 
 export function OnDraw() {
-	let camera_position = Vector3.fromIOBuffer(Camera.Position) || new Vector3()
+	if (!RendererSDK.AlternateW2S)
+		return
+	let camera_position = Vector3.fromIOBuffer(Camera.Position) ?? new Vector3()
 	IOBuffer[0] = camera_position.x
 	IOBuffer[1] = camera_position.y
 	IOBuffer[2] = camera_position.z
@@ -40,7 +42,7 @@ export function OnDraw() {
 	IOBuffer[4] = camera_angles.y
 	IOBuffer[5] = camera_angles.z
 
-	IOBuffer[6] = Camera.Distance || 1134
+	IOBuffer[6] = Camera.Distance ?? 1134
 
 	IOBuffer[7] = RendererSDK.WindowSize.x
 	IOBuffer[8] = RendererSDK.WindowSize.y
@@ -49,6 +51,8 @@ export function OnDraw() {
 }
 
 export function WorldToScreenCached(position: Vector3 | Vector2) {
+	if (!RendererSDK.AlternateW2S)
+		return WorldToScreen(position, Vector3.fromIOBuffer(Camera.Position), Camera.Distance ?? 1134, QAngle.fromIOBuffer(Camera.Angles), RendererSDK.WindowSize)
 	IOBuffer[0] = position.x
 	IOBuffer[1] = position.y
 	IOBuffer[2] = position instanceof Vector2 ? RendererSDK.GetPositionHeight(position) : position.z
@@ -57,6 +61,8 @@ export function WorldToScreenCached(position: Vector3 | Vector2) {
 }
 
 export function ScreenToWorldCached(screen: Vector2): Vector3 {
+	if (!RendererSDK.AlternateW2S)
+		return ScreenToWorld(screen, Vector3.fromIOBuffer(Camera.Position), Camera.Distance ?? 1134, QAngle.fromIOBuffer(Camera.Angles), RendererSDK.WindowSize)
 	IOBuffer[0] = screen.x
 	IOBuffer[1] = screen.y
 	wasm.ScreenToWorldCached()
