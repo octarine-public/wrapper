@@ -87,7 +87,7 @@ export function Update() {
 
 	switch (StateUnits.selected_id) {
 		case 0: { // local
-			let localHero = LocalPlayer.Hero
+			let localHero = LocalPlayer?.Hero
 			if (localHero === undefined || !baseCheckUnit(localHero))
 				return
 
@@ -116,7 +116,7 @@ export function Update() {
 			if (controllables.length === 0)
 				return
 
-			let localHero = LocalPlayer.Hero
+			let localHero = LocalPlayer?.Hero
 
 			if (localHero !== undefined && baseCheckUnit(localHero))
 				ArrayExtensions.arrayRemove(controllables, localHero)
@@ -135,7 +135,7 @@ export function Update() {
 	sleeper.Sleep(countUnits * 25, "tick")
 }
 
-export function Draw(): string {
+export function Draw(): string | undefined {
 	if (!State.value || !DrawState.value)
 		return
 
@@ -208,7 +208,7 @@ function GoingToBestPosition(unit: Unit): boolean {
 function PreparingUnits(controllables: Unit[]) {
 
 	if (controllables.length === 0)
-		return
+		return 0
 
 	controllables.splice(CountUnits.value)
 

@@ -12,12 +12,12 @@ export function AddOrUpdateParticle(name: string, unit: Unit, pos: Vector3, rang
 		particle = allParticles.get(nameOfParticle)
 
 	if (particle === undefined) {
-		allParticles.set(nameOfParticle, ParticlesSDK.Create("particles/ui_mouseactions/drag_selected_ring.vpcf", 0, unit))
-
-		particle = allParticles.get(nameOfParticle)
+		particle = ParticlesSDK.Create("particles/ui_mouseactions/drag_selected_ring.vpcf", 0, unit)
 
 		ParticlesSDK.SetControlPoint(particle, 1, new Vector3(0, 255, 255))
 		ParticlesSDK.SetControlPoint(particle, 2, new Vector3(range * 1.1, 255, 0))
+
+		allParticles.set(nameOfParticle, particle)
 	}
 
 	ParticlesSDK.SetControlPoint(particle, 0, pos)
