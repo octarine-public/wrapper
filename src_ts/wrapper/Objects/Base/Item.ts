@@ -15,6 +15,9 @@ export default class Item extends Ability {
 		const unit = this.Owner
 		return this.IsCooldownReady && this.Level > 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
 	}
+	get IsMuted(): boolean {
+		return this.EnableTime !== 0 && this.EnableTime > Game.RawGameTime
+	}
 	get AssembledTime(): number {
 		return this.m_pBaseEntity.m_flAssembledTime
 	}
@@ -123,10 +126,9 @@ export default class Item extends Ability {
 	}
 
 	public CanBeCasted(bonusMana: number = 0): boolean {
-		if (!this.IsValid)
+		if (!this.IsValid || this.IsMuted)
 			return false
-		if (this.EnableTime !== 0 && this.EnableTime > Game.RawGameTime)
-			return false
+
 		if (this.Shareability == EShareAbility.ITEM_NOT_SHAREABLE && this.Owner?.Owner !== this.Purchaser)
 			return false
 
