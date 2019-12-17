@@ -72,20 +72,22 @@ export default class Unit extends Entity {
 
 	/* ================================ Fields ================================ */
 	public readonly m_pBaseEntity!: C_DOTA_BaseNPC
-	public readonly AbilitiesBook: AbilitiesBook
-	public readonly Inventory: Inventory
-	public readonly ModifiersBook: ModifiersBook
+
+	public readonly AbilitiesBook = new AbilitiesBook(this)
+	public readonly Inventory = new Inventory(this)
+	public readonly ModifiersBook = new ModifiersBook(this)
+
 	//public readonly DotaMap: DotaMap
-	public IsVisibleForTeamMask = 0
-	public IsVisibleForEnemies = false
+	public IsVisibleForTeamMask = this.m_pBaseEntity.m_iTaggedAsVisibleByTeam
+	public IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
 	public IsTrueSightedForEnemies = false
-	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
-	public IsControllableByPlayerMask = 0n
-	public HPRegen = 0
-	public ManaRegen = 0
-	public RotationDifference = 0
+	public NetworkActivity: GameActivity_t = this.m_pBaseEntity.m_NetworkActivity;
+	public IsControllableByPlayerMask = this.m_pBaseEntity.m_iIsControllableByPlayer64
+	public HPRegen = this.m_pBaseEntity.m_flHealthThinkRegen
+	public ManaRegen = this.m_pBaseEntity.m_flManaThinkRegen
+	public RotationDifference = this.m_pBaseEntity.m_anglediff
 	public HasScepterModifier = false
-	public LastVisibleTime = 0
+	public LastVisibleTime = Game.RawGameTime
 
 	private UnitName_: string = ""
 	private EtherealModifiers: string[] = [
@@ -100,21 +102,6 @@ export default class Unit extends Entity {
 		"modifier_treant_natures_guise_invis",
 	]
 
-	constructor(m_pBaseEntity: C_BaseEntity) {
-		super(m_pBaseEntity)
-		this.RotationDifference = this.m_pBaseEntity.m_anglediff
-		this.ManaRegen = this.m_pBaseEntity.m_flManaThinkRegen
-		this.HPRegen = this.m_pBaseEntity.m_flHealthThinkRegen
-		this.IsControllableByPlayerMask = this.m_pBaseEntity.m_iIsControllableByPlayer64
-		this.IsVisibleForTeamMask = this.m_pBaseEntity.m_iTaggedAsVisibleByTeam
-		this.IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
-		this.NetworkActivity = this.m_pBaseEntity.m_NetworkActivity
-		this.LastVisibleTime = Game.RawGameTime
-
-		this.AbilitiesBook = new AbilitiesBook(this)
-		this.Inventory = new Inventory(this)
-		this.ModifiersBook = new ModifiersBook(this)
-	}
 	/* ================ GETTERS ================ */
 	public get IsHero(): boolean {
 		return HasBit(this.UnitType, 0)

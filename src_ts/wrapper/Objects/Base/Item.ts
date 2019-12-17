@@ -6,16 +6,10 @@ import Player from "./Player"
 
 export default class Item extends Ability {
 	public readonly m_pBaseEntity!: C_DOTA_Item
-	public EnableTime = 0
-	public Shareability: EShareAbility = EShareAbility.ITEM_NOT_SHAREABLE
-	public CurrentCharges = 0
 
-	constructor(m_pBaseEntity: C_BaseEntity) {
-		super(m_pBaseEntity)
-		this.EnableTime = this.m_pBaseEntity.m_flEnableTime
-		this.Shareability = this.m_pBaseEntity.m_iSharability
-		this.CurrentCharges = this.m_pBaseEntity.m_iCurrentCharges
-	}
+	public EnableTime = this.m_pBaseEntity.m_flEnableTime
+	public Shareability: EShareAbility = this.m_pBaseEntity.m_iSharability
+	public CurrentCharges = this.m_pBaseEntity.m_iCurrentCharges
 
 	get IsReady(): boolean {
 		const unit = this.Owner

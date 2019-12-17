@@ -6,31 +6,19 @@ import Entity from "./Entity"
 import Unit from "./Unit"
 
 export default class Ability extends Entity {
-	public readonly m_pBaseEntity!: C_DOTABaseAbility
-	public AbilityData: AbilityData
-	public Level = 0
-	public Cooldown = 0
-	public CooldownLength = 0
-	public IsInAbilityPhase = false
-	public CastStartTime = 0
-	public ChannelStartTime = 0
-	public LastCastClickTime = 0
-	public IsToggled = false
-	public IsHidden = false
 
-	constructor(m_pBaseEntity: C_BaseEntity) {
-		super(m_pBaseEntity)
-		this.LastCastClickTime = this.m_pBaseEntity.m_flLastCastClickTime
-		this.IsToggled = this.m_pBaseEntity.m_bToggleState
-		this.ChannelStartTime = this.m_pBaseEntity.m_flChannelStartTime
-		this.CastStartTime = this.m_pBaseEntity.m_flCastStartTime
-		this.IsInAbilityPhase = this.m_pBaseEntity.m_bInAbilityPhase
-		this.CooldownLength = this.m_pBaseEntity.m_flCooldownLength
-		this.Cooldown = this.m_pBaseEntity.m_fCooldown
-		this.Level = this.m_pBaseEntity.m_iLevel
-		this.IsHidden = this.m_pBaseEntity.m_bHidden
-		this.AbilityData = new AbilityData(this.m_pBaseEntity.m_pAbilityData)
-	}
+	public readonly m_pBaseEntity!: C_DOTABaseAbility
+
+	public AbilityData = new AbilityData(this.m_pBaseEntity.m_pAbilityData)
+	public Level = this.m_pBaseEntity.m_iLevel
+	public Cooldown = this.m_pBaseEntity.m_fCooldown
+	public CooldownLength = this.m_pBaseEntity.m_flCooldownLength
+	public IsInAbilityPhase = this.m_pBaseEntity.m_bInAbilityPhase
+	public CastStartTime = this.m_pBaseEntity.m_flCastStartTime
+	public ChannelStartTime = this.m_pBaseEntity.m_flChannelStartTime
+	public LastCastClickTime = this.m_pBaseEntity.m_flLastCastClickTime;
+	public IsToggled = this.m_pBaseEntity.m_bToggleState
+	public IsHidden = this.m_pBaseEntity.m_bHidden
 
 	/* ============ BASE  ============ */
 

@@ -135,31 +135,25 @@ m_pEntity.m_flags
 */
 export default class Entity {
 	/* ================================ Fields ================================ */
+
 	public IsValid: boolean = false
-	public Name_: string = ""
-	public readonly Entity: CEntityIdentity
-	public readonly Index: number
-	public Owner_: Entity | CEntityIndex
-	public Team = Team.None
-	public LifeState = LifeState_t.LIFE_ALIVE
-	public HP = 0
-	public MaxHP = 0
+
+	public readonly Entity: CEntityIdentity | undefined = this.m_pBaseEntity.m_pEntity
+	public readonly Index = EntityManager.IndexByNative(this.m_pBaseEntity)
+	public Owner_: Entity | CEntityIndex = this.m_pBaseEntity.m_hOwnerEntity
+
+	public Name_ = this.Entity?.m_name ?? this.Entity?.m_designerName ?? ""
+
+	public Team: Team = this.m_pBaseEntity.m_iTeamNum
+	public LifeState: LifeState_t = this.m_pBaseEntity.m_lifeState
+	public HP = this.m_pBaseEntity.m_iHealth
+	public MaxHP = this.m_pBaseEntity.m_iMaxHealth
+
 	private readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
 	private readonly Angles_ = new QAngle().Invalidate() // cached angles
 	private readonly NetworkAngles_ = new QAngle().Invalidate()// cached network angles
 
-	/* ================================ BASE ================================ */
-	constructor(public m_pBaseEntity: C_BaseEntity) {
-		this.Entity = this.m_pBaseEntity.m_pEntity
-		this.Index = EntityManager.IndexByNative(m_pBaseEntity)
-		this.MaxHP = this.m_pBaseEntity.m_iMaxHealth
-		this.HP = this.m_pBaseEntity.m_iHealth
-		this.LifeState = this.m_pBaseEntity.m_lifeState
-		this.Team = this.m_pBaseEntity.m_iTeamNum
-		this.Owner_ = this.m_pBaseEntity.m_hOwnerEntity
-		if (this.Entity !== undefined)
-			this.Name_ = this.Entity.m_name ?? this.Entity.m_designerName ?? ""
-	}
+	constructor(public readonly m_pBaseEntity: C_BaseEntity) { }
 
 	/* ================ GETTERS ================ */
 	public get Name(): string {
@@ -245,12 +239,12 @@ export default class Entity {
 		return this.m_pBaseEntity.m_flSpeed
 	}
 	public get Flags(): number {
-		if (!this.IsValid)
+		if (!this.IsValid || this.Entity === undefined)
 			return -1
 		return this.Entity.m_flags
 	}
 	public set Flags(value: number) {
-		if (!this.IsValid)
+		if (!this.IsValid || this.Entity === undefined)
 			return
 		this.Entity.m_flags = value
 	}

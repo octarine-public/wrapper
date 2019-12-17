@@ -132,62 +132,62 @@ export default class Node extends Base {
 	}
 
 	public AddVector2(name: string, vector: Vector2, minVector?: Vector2, maxVector?: Vector2) {
-		let node = this.AddNode(name);
+		let node = this.AddNode(name)
 
 		if (typeof minVector === "number")
-			minVector = new Vector2(minVector, minVector);
+			minVector = new Vector2(minVector, minVector)
 
 		if (!(minVector instanceof Vector2))
-			minVector = new Vector2(0, 0);
+			minVector = new Vector2(0, 0)
 
 		if (typeof maxVector === "number")
-			maxVector = new Vector2(maxVector, maxVector);
+			maxVector = new Vector2(maxVector, maxVector)
 
 		if (!(maxVector instanceof Vector2))
-			maxVector = new Vector2(95, 95);
+			maxVector = new Vector2(95, 95)
 
-		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x);
-		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y);
+		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
+		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
 
 		return {
 			node, X, Y,
 			get Vector() {
-				return new Vector2(X.value as number, Y.value as number);
+				return new Vector2(X.value as number, Y.value as number)
 			},
-			set Vector(vector: Vector2) {
-				X.value = vector.x;
-				Y.value = vector.y;
+			set Vector({ x, y }: Vector2) {
+				X.value = x
+				Y.value = y
 			},
 		}
 	}
 	public AddVector3(name: string, vector: Vector3, minVector?: Vector3, maxVector?: Vector3) {
-		let node = this.AddNode(name);
+		let node = this.AddNode(name)
 
 		if (typeof minVector === "number")
-			minVector = new Vector3(minVector, minVector, minVector);
+			minVector = new Vector3(minVector, minVector, minVector)
 
 		if (!(minVector instanceof Vector3))
-			minVector = new Vector3(0, 0);
+			minVector = new Vector3(0, 0)
 
 		if (typeof maxVector === "number")
-			maxVector = new Vector3(maxVector, maxVector, maxVector);
+			maxVector = new Vector3(maxVector, maxVector, maxVector)
 
 		if (!(maxVector instanceof Vector3))
-			maxVector = new Vector3(95, 95);
+			maxVector = new Vector3(95, 95)
 
-		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x);
-		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y);
-		const Z = node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z);
+		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
+		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
+		const Z = node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z)
 
 		return {
 			node, X, Y, Z,
 			get Vector() {
-				return new Vector3(X.value as number, Y.value as number, Z.value as number);
+				return new Vector3(X.value as number, Y.value as number, Z.value as number)
 			},
 			set Vector(vector: Vector3) {
-				X.value = vector.x;
-				Y.value = vector.y;
-				Z.value = vector.z;
+				X.value = vector.x
+				Y.value = vector.y
+				Z.value = vector.z
 			},
 		}
 	}

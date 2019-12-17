@@ -61,15 +61,10 @@ export default class Player extends Entity {
 
 	public readonly m_pBaseEntity!: C_DOTAPlayer
 	public PlayerID = this.m_pBaseEntity.m_iPlayerID
-	public Hero_: Hero | CEntityIndex
+	public Hero_: Hero | CEntityIndex = this.m_pBaseEntity.m_hAssignedHero;
 	private m_Name: string = ""
 	private m_PlayerData: PlayerResourcePlayerData_t | undefined
 	private m_PlayerTeamData: PlayerResourcePlayerTeamData_t | undefined
-
-	constructor(m_pBaseEntity: C_BaseEntity) {
-		super(m_pBaseEntity)
-		this.Hero_ = this.m_pBaseEntity.m_hAssignedHero
-	}
 
 	/**
 	 * Only for LocalPlayer
@@ -115,7 +110,9 @@ export default class Player extends Entity {
 	get Hero(): Nullable<Hero> {
 		if (this.Hero_ instanceof Hero)
 			return this.Hero_
+
 		this.Hero_ = (EntityManager.GetEntityByNative(this.Hero_) as Hero) ?? this.Hero_
+
 		if (this.Hero_ instanceof Entity)
 			return this.Hero_
 
