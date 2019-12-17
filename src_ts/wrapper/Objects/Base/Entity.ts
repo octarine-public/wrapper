@@ -217,9 +217,6 @@ export default class Entity {
 	public get IsAlive(): boolean {
 		return this.LifeState === LifeState_t.LIFE_ALIVE
 	}
-	public get IsDormant(): boolean {
-		return !this.IsVisible
-	}
 	public get IsDOTANPC(): boolean {
 		return this.m_pBaseEntity.m_bIsDOTANPC
 	}

@@ -95,7 +95,7 @@
 // 		if(penalty === 25 && buyBacks[id] === undefined)
 // 			buyBacks[id] = Game.GameTime+BuybackCooldown
 // 		if(vision[id]===undefined) {
-// 			if(hero.IsDormant)
+// 			if(!hero.IsVisible)
 // 				vision[id] = Game.GameTime
 // 		} else {
 // 			if (hero.IsVisible)

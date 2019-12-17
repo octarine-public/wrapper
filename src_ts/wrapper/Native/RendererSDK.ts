@@ -42,6 +42,8 @@ let RendererSDK_ = new (class RendererSDK {
 	 */
 	public readonly DefaultShapeSize: Vector2 = new Vector2(5, 5)
 
+	public AlternateW2S = false
+
 	private commandCache = new Uint8Array()
 	private commandCacheSize = 0
 	private font_cache = new Map</* name */string, Map</* size */number, Map</* weight */number, Map</* flags */number, /* font_id */number>>>>()
@@ -61,14 +63,17 @@ let RendererSDK_ = new (class RendererSDK {
 	 * @returns screen position, or undefined
 	 */
 	public WorldToScreen(position: Vector2 | Vector3): Vector2 {
-		/*let vec = WASM.WorldToScreenCached(position)
-		if (vec !== undefined)
-			vec.MultiplyForThis(this.WindowSize)
-		return vec*/
-		position.toIOBuffer()
-		if (position instanceof Vector2)
-			IOBuffer[2] = this.GetPositionHeight(position)
-		return Vector2.fromIOBuffer(Renderer.WorldToScreen())
+		if (this.AlternateW2S) {
+			let vec = WASM.WorldToScreenCached(position)
+			if (vec !== undefined)
+				vec.MultiplyForThis(this.WindowSize)
+			return vec
+		} else {
+			position.toIOBuffer()
+			if (position instanceof Vector2)
+				IOBuffer[2] = this.GetPositionHeight(position)
+			return Vector2.fromIOBuffer(Renderer.WorldToScreen())
+		}
 	}
 	/**
 	 * @returns screen position with x and y in range {0, 1}, or undefined

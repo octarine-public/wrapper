@@ -1,7 +1,4 @@
-import { ArrayExtensions, Color, EventsSDK, Game, Hero, LocalPlayer, Menu, RendererSDK, Vector2, DOTAGameUIState_t } from "wrapper/Imports"
-
-var manabars: Hero[] = [],
-	heroes: Hero[] = []
+import { Color, EventsSDK, Game, Hero, LocalPlayer, Menu, RendererSDK, Vector2, DOTAGameUIState_t, EntityManager } from "wrapper/Imports"
 
 const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"]),
 	emb = EMBMenu.AddNode("Mana Bars"),
@@ -11,24 +8,6 @@ const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"]),
 	embSize = emb.AddSlider("Size", 14, 10, 30),
 	ehbText = ehb.AddToggle("Show numbers", false),
 	ehbSize = ehb.AddSlider("Size", 14, 10, 30)
-
-EventsSDK.on("EntityCreated", npc => {
-	if (
-		npc instanceof Hero
-		&& !npc.IsIllusion
-	)
-		heroes.push(npc)
-})
-EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof Hero)
-		ArrayExtensions.arrayRemove(heroes, ent)
-})
-
-EventsSDK.on("Tick", () => {
-	if (LocalPlayer === undefined || !stateMain.value || Game.IsPaused || LocalPlayer.IsSpectator)
-		return
-	manabars = heroes.filter(npc => npc.IsAlive && npc.IsVisible && npc.IsEnemy())
-})
 
 EventsSDK.on("Draw", () => {
 	if (LocalPlayer === undefined || !stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator)
@@ -69,7 +48,9 @@ EventsSDK.on("Draw", () => {
 		}
 	}
 
-	manabars.forEach(hero => {
+	EntityManager.GetEntitiesByClass(Hero).forEach(hero => {
+		if (!hero.IsEnemy() || hero.IsIllusion || !hero.IsAlive || !hero.IsVisible)
+			return
 		let wts = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(hero.HealthBarOffset))
 		if (wts === undefined)
 			return

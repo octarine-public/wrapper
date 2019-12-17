@@ -15,6 +15,7 @@ import Hero from "../Objects/Base/Hero"
 import QAngle from "../Base/QAngle"
 import Modifier from "../Objects/Base/Modifier"
 import InputManager from "./InputManager"
+import Item from "../Objects/Base/Item"
 
 interface EventsSDK extends EventEmitter {
 	/**
@@ -389,6 +390,26 @@ Events.on("NetworkFieldsChanged", map => {
 							entity.IsVisibleForEnemies = Unit.IsVisibleForEnemies(entity)
 							EventsSDK.emit("TeamVisibilityChanged", false, entity)
 						}
+						break
+					case "m_hReplicatingOtherHeroModel":
+						if (entity instanceof Hero)
+							entity.ReplicatingOtherHeroModel_ = entity.m_pBaseEntity.m_hReplicatingOtherHeroModel
+						break
+					case "m_bHidden":
+						if (entity instanceof Ability)
+							entity.IsHidden = entity.m_pBaseEntity.m_bHidden
+						break
+					case "m_flEnableTime":
+						if (entity instanceof Item)
+							entity.EnableTime = entity.m_pBaseEntity.m_flEnableTime
+						break
+					case "m_iSharability":
+						if (entity instanceof Item)
+							entity.Shareability = entity.m_pBaseEntity.m_iSharability
+						break
+					case "m_iCurrentCharges":
+						if (entity instanceof Item)
+							entity.CurrentCharges = entity.m_pBaseEntity.m_iCurrentCharges
 						break
 
 					// manually whitelisted

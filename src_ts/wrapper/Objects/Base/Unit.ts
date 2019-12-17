@@ -954,7 +954,7 @@ export default class Unit extends Entity {
 			&& !this.IsEthereal
 			&& target.IsAlive
 			&& !target.IsInvulnerable
-			&& !target.IsDormant
+			&& target.IsVisible
 			&& target.IsSpawned
 			&& !target.IsAttackImmune
 			&& !this.IsEthereal

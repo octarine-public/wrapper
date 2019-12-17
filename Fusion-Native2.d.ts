@@ -3496,7 +3496,6 @@ declare class IHandleEntity {}
 
 declare class CEntityIdentity {
 	readonly m_pEntity: C_BaseEntity
-	readonly m_iIndex: number
 	
 	m_nameStringableIndex: number
 	readonly m_name: string
@@ -8473,9 +8472,7 @@ declare class C_INIT_CodeDriven extends CParticleFunctionInitializer {
 	m_bSequence1: boolean
 }
 
-declare class IParticleCollection {
-	readonly m_iMaxControlPointID: number
-	}
+declare class IParticleCollection {}
 
 declare class InfoForResourceTypeWorld_t {}
 
@@ -10368,7 +10365,6 @@ declare class C_DOTABaseAbility extends C_BaseEntity {
 	readonly m_fChannelTime: number
 	readonly m_iAbilityDamage: number
 	readonly m_fAOERadius: number
-	readonly m_bIsHidden: boolean
 	
 	m_bAltCastState: boolean
 	m_iEnemyLevel: number
@@ -10409,8 +10405,6 @@ declare class C_DOTA_Ability_Clinkz_WindWalk extends C_DOTABaseAbility {}
 declare class C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_2 extends C_DOTABaseAbility {}
 
 declare class C_DOTA_Item extends C_DOTABaseAbility {
-	readonly m_bIsMuted: boolean
-	
 	m_bCombinable: boolean
 	m_bPermanent: boolean
 	m_bStackable: boolean

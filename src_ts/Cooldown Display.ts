@@ -1,17 +1,4 @@
-import {
-	Ability,
-	ArrayExtensions,
-	Color,
-	EventsSDK,
-	Game,
-	Hero,
-	LocalPlayer,
-	Menu as MenuSDK,
-	RendererSDK,
-	Vector2,
-	DOTAGameUIState_t,
-	FontFlags_t,
-} from "wrapper/Imports"
+import { Ability, Color, EventsSDK, Game, Hero, LocalPlayer, Menu as MenuSDK, RendererSDK, Vector2, DOTAGameUIState_t, FontFlags_t, EntityManager } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Visual", "Cooldown Display"]),
 	optionEnable = Menu.AddToggle("Enable"),
@@ -40,25 +27,6 @@ let ignore_abils = [
 	"rubick_hidden2",
 	"rubick_hidden3",
 ]
-
-let heroes: Hero[] = []
-EventsSDK.on("EntityCreated", npc => {
-	if (npc instanceof Hero && !npc.IsIllusion)
-		heroes.push(npc)
-})
-
-EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof Hero)
-		ArrayExtensions.arrayRemove(heroes, ent)
-})
-
-function IsCastable(ability: Ability, mana): boolean {
-	return (
-		ability.ManaCost <= mana &&
-		ability.Level > 0 &&
-		ability.Cooldown <= 0
-	)
-}
 
 function DrawAbilityLevels(ability: Ability, x, y) {
 	let level = ability.Level
@@ -92,25 +60,22 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x, y, index) {
 	let imageColor = Color.White
 	let outlineColor = new Color(0, 255, 0)
 
-	if (!IsCastable(ability, hero.Mana)) {
-		if (ability.Level === 0) {
-			imageColor = new Color(125, 125, 125)
-			outlineColor = Color.Red
-		} else if (ability.ManaCost > hero.Mana) {
-			imageColor = new Color(150, 150, 255)
-			outlineColor = Color.Blue
-		} else {
-			imageColor = new Color(255, 150, 150)
-			outlineColor = Color.Red
-		}
+	if (ability.Level === 0) {
+		imageColor = new Color(125, 125, 125)
+		outlineColor = Color.Red
+	} else if (ability.ManaCost > hero.Mana) {
+		imageColor = new Color(150, 150, 255)
+		outlineColor = Color.Blue
+	} else if (!ability.IsCooldownReady) {
+		imageColor = new Color(255, 150, 150)
+		outlineColor = Color.Red
 	}
 
 	imageColor.SetA(optionBoxAlpha.value)
 
 	let box_size = new Vector2(optionBoxSize.value, optionBoxSize.value)
-
 	RendererSDK.Image(
-		"panorama/images/spellicons/" + ability.Name + "_png.vtex_c",
+		`panorama/images/spellicons/${ability.Name}_png.vtex_c`,
 		new Vector2(real_x, y),
 		box_size,
 		imageColor,
@@ -122,7 +87,6 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x, y, index) {
 	let cooldown = ability.Cooldown
 
 	if (cooldown > 0.0 && cooldown_length > 0.0) {
-
 		let inner_box_size = optionBoxSize.value - 2
 
 		let cooldown_ratio = cooldown / cooldown_length
@@ -163,64 +127,47 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x, y, index) {
 	DrawAbilityLevels(ability, real_x, y)
 }
 
-function DrawDisplay(hero: Hero) {
-	let pos = hero.Position.AddScalarZ(optionBoxWorldOffset.value)
-
-	let screen_pos = RendererSDK.WorldToScreen(pos)
-
-	if (screen_pos === undefined)
-		return
-	// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
-	let abilities = hero.Spells.filter((abil, i) => {
-		let name = abil.Name
-		return i < 6 &&
-			!ignore_abils.some(ignore_name => name === ignore_name) &&
-			!abil.IsHidden
-	})
-
-	let start_x = screen_pos.x - Math.floor((abilities.length / 2) * optionBoxSize.value)
-	let start_y = screen_pos.y + optionBoxPixelOffset.value
-
-	RendererSDK.FilledRect(
-		new Vector2(start_x + 1, start_y - 1),
-		new Vector2((optionBoxSize.value * abilities.length) + 2, optionBoxSize.value + 2),
-		new Color(0, 0, 0, 160),
-	)
-
-	abilities.forEach(((ability, i) => {
-		DrawAbilitySquare(hero, ability, start_x, start_y, i)
-	}))
-
-	RendererSDK.OutlinedRect(
-		new Vector2(start_x + 1, start_y - 1),
-		new Vector2(
-			(optionBoxSize.value * abilities.length) + 2,
-			optionBoxSize.value + 2,
-		),
-		new Color(0, 0, 0),
-	)
-}
-
 EventsSDK.on("Draw", () => {
-	if (LocalPlayer === undefined) {
-		return false
-	}
-	if (!optionEnable.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator)
+	if (!optionEnable.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer?.IsSpectator)
 		return
-	heroes.forEach(hero => {
-		if (hero.IsAlive && !hero.IsDormant) {
-			let is_local = LocalPlayer !== undefined && hero === LocalPlayer.Hero
+	let local_hero = LocalPlayer?.Hero
+	EntityManager.GetEntitiesByClass(Hero).forEach(hero => {
+		if (hero.IsIllusion || !hero.IsAlive || !hero.IsVisible)
+			return
+		let is_local = local_hero === hero
+		if (!optionSelf.value && is_local)
+			return
+		if (is_local || (optionAlly.value && !hero.IsEnemy()))
+			return
 
-			if (
-				(optionSelf.value || !is_local) &&
-				(optionAlly.value || hero.IsEnemy() || is_local)
-			) {
-				DrawDisplay(hero)
-			}
-		}
+		let screen_pos = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(optionBoxWorldOffset.value))
+		if (screen_pos === undefined)
+			return
+
+		// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
+		let abilities = hero.Spells.filter((abil, i) => {
+			return i < 6 &&
+				!ignore_abils.some(ignore_name => abil.Name === ignore_name) &&
+				!abil.IsHidden
+		})
+
+		let start_x = screen_pos.x - Math.floor((abilities.length / 2) * optionBoxSize.value)
+		let start_y = screen_pos.y + optionBoxPixelOffset.value
+
+		RendererSDK.FilledRect(
+			new Vector2(start_x + 1, start_y - 1),
+			new Vector2((optionBoxSize.value * abilities.length) + 2, optionBoxSize.value + 2),
+			new Color(0, 0, 0, 160),
+		)
+
+		abilities.forEach(((ability, i) => DrawAbilitySquare(hero, ability, start_x, start_y, i)))
+		RendererSDK.OutlinedRect(
+			new Vector2(start_x + 1, start_y - 1),
+			new Vector2(
+				(optionBoxSize.value * abilities.length) + 2,
+				optionBoxSize.value + 2,
+			),
+			new Color(0, 0, 0),
+		)
 	})
-})
-
-EventsSDK.on("GameEnded", () => {
-	heroes = []
 })

@@ -115,9 +115,7 @@ export default class Player extends Entity {
 	get Hero(): Nullable<Hero> {
 		if (this.Hero_ instanceof Hero)
 			return this.Hero_
-
-		this.Hero_ = EntityManager.GetEntityByNative(this.Hero_) as Hero || this.Hero_
-
+		this.Hero_ = (EntityManager.GetEntityByNative(this.Hero_) as Hero) ?? this.Hero_
 		if (this.Hero_ instanceof Entity)
 			return this.Hero_
 
