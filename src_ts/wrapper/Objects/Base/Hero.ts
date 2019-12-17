@@ -7,12 +7,7 @@ import Entity from "./Entity"
 
 export default class Hero extends Unit {
 	public readonly m_pBaseEntity!: C_DOTA_BaseNPC_Hero
-	public ReplicatingOtherHeroModel_: Entity | C_BaseEntity | number
-
-	constructor(m_pBaseEntity: C_BaseEntity) {
-		super(m_pBaseEntity)
-		this.ReplicatingOtherHeroModel_ = this.m_pBaseEntity.m_hReplicatingOtherHeroModel
-	}
+	public ReplicatingOtherHeroModel_: Entity | CEntityIndex = this.m_pBaseEntity.m_hReplicatingOtherHeroModel
 
 	get IsHero(): boolean {
 		return true
@@ -32,16 +27,22 @@ export default class Hero extends Unit {
 	get IsBuybackDisabled(): boolean {
 		return this.m_pBaseEntity.m_bBuybackDisabled
 	}
-	get ReplicatingOtherHeroModel(): Entity {
+	get ReplicatingOtherHeroModel(): Nullable<Entity> {
 		if (this.ReplicatingOtherHeroModel_ instanceof Entity)
 			return this.ReplicatingOtherHeroModel_
+
 		this.ReplicatingOtherHeroModel_ = EntityManager.GetEntityByNative(this.ReplicatingOtherHeroModel_) ?? this.ReplicatingOtherHeroModel_
+
 		if (this.ReplicatingOtherHeroModel_ instanceof Entity)
 			return this.ReplicatingOtherHeroModel_
+
 		return undefined
 	}
 	get IsIllusion(): boolean {
-		return this.ReplicatingOtherHeroModel_ instanceof Entity || this.ReplicatingOtherHeroModel_ instanceof C_BaseEntity || this.ReplicatingOtherHeroModel_ > 0
+		// NOTICE: check this in game
+		return this.ReplicatingOtherHeroModel_ !== undefined
+
+		/* return this.ReplicatingOtherHeroModel_ instanceof Entity || this.ReplicatingOtherHeroModel_ instanceof C_BaseEntity || this.ReplicatingOtherHeroModel_ > 0 || false; */
 	}
 	get IsReincarnating(): boolean {
 		return this.m_pBaseEntity.m_bReincarnating
@@ -52,8 +53,8 @@ export default class Hero extends Unit {
 	get PlayerID(): number {
 		return this.m_pBaseEntity.m_iPlayerID
 	}
-	get Player(): Player {
-		return EntityManager.GetPlayerByID(this.PlayerID) as Player
+	get Player(): Nullable<Player> {
+		return EntityManager.GetPlayerByID(this.PlayerID)
 	}
 	get PrimaryAtribute(): Attributes {
 		return this.m_pBaseEntity.m_iPrimaryAttribute

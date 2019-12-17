@@ -34,8 +34,8 @@ export default class Ability extends Entity {
 
 	/* ============ BASE  ============ */
 
-	get Owner(): Unit {
-		return super.Owner as Unit
+	get Owner(): Nullable<Unit> {
+		return super.Owner as Nullable<Unit>
 	}
 	get AbilityBehavior(): DOTA_ABILITY_BEHAVIOR[] {
 		return this.AbilityData.AbilityBehavior
@@ -144,7 +144,10 @@ export default class Ability extends Entity {
 	/**
 	 * In real time cooldown (in fog)
 	 */
-	get CooldownTimeRemaining() {
+	get CooldownTimeRemaining(): number {
+		if (this.Owner === undefined)
+			return 0
+
 		return Math.max(0, this.Cooldown - (Game.RawGameTime - this.Owner.LastVisibleTime))
 	}
 	get CastRange(): number {
@@ -158,27 +161,27 @@ export default class Ability extends Entity {
 				break
 			}
 			case "skywrath_mage_concussive_shot": {
-				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4")
+				let unique = owner?.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4")
 				if (unique !== undefined && unique.Level > 0)
 					return Number.MAX_SAFE_INTEGER
 
 				break
 			}
 			case "gyrocopter_call_down": {
-				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_gyrocopter_5")
+				let unique = owner?.AbilitiesBook.GetAbilityByName("special_bonus_unique_gyrocopter_5")
 				if (unique !== undefined && unique.Level > 0)
 					return Number.MAX_SAFE_INTEGER
 
 				break
 			}
 			case "lion_impale": {
-				castrange -= owner.GetTalentValue("special_bonus_unique_lion_2")
+				castrange -= owner?.GetTalentValue("special_bonus_unique_lion_2") ?? 0
 				break
 			}
 			case "lina_dragon_slave":
 			case "lina_laguna_blade":
 			case "lina_light_strike_array": {
-				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_cast_range_125")
+				let unique = owner?.AbilitiesBook.GetAbilityByName("special_bonus_cast_range_125")
 				if (unique !== undefined && unique.Level > 0)
 					castrange += 125
 				break
@@ -191,10 +194,16 @@ export default class Ability extends Entity {
 	}
 
 	public GetCastDelay(position: Vector3): number {
+		if (this.Owner === undefined)
+			return 0
+
 		return ((this.CastPoint + this.Owner.TurnTime(position)) + Game.Ping / 2000)
 	}
 
 	public GetHitTime(position: Vector3, ActivationDelay: number = 0): number {
+		if (this.Owner === undefined)
+			return 0
+
 		if (this.Owner.IdealSpeed === Number.MAX_VALUE || this.Owner.IdealSpeed === 0) {
 			return this.GetCastDelay(position) + (ActivationDelay * 1000)
 		}
@@ -207,15 +216,15 @@ export default class Ability extends Entity {
 	}
 
 	public UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
-		this.Owner.UseSmartAbility(this, target, checkToggled, queue, showEffects)
+		return this.Owner?.UseSmartAbility(this, target, checkToggled, queue, showEffects)
 	}
 
 	public UpgradeAbility() {
-		return this.Owner.TrainAbility(this)
+		return this.Owner?.TrainAbility(this)
 	}
 
 	public PingAbility() {
-		return this.Owner.PingAbility(this)
+		return this.Owner?.PingAbility(this)
 	}
 
 	public GetSpecialValue(special_name: string, level: number = this.Level - 1): number {
@@ -247,7 +256,10 @@ export default class Ability extends Entity {
 	public HasTargetType(flag: DOTA_UNIT_TARGET_TYPE): boolean {
 		return HasMask(this.AbilityData.m_pAbilityData.m_iAbilityTargetType, flag)
 	}
-	public CanHit(target: Unit) {
+	public CanHit(target: Unit): boolean {
+		if (this.Owner === undefined)
+			return false
+
 		let range = 0
 		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) || this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
 			if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) && !target)
@@ -295,7 +307,7 @@ export default class Ability extends Entity {
 		return this.IsValid
 			&& this.Level > 0
 			&& this.IsCooldownReady
-			&& !this.Owner.IsSilenced
+			&& !this.Owner?.IsSilenced
 			&& this.IsManaEnough(bonusMana)
 			&& this.IsCooldownReady
 	}
