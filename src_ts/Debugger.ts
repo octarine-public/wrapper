@@ -85,7 +85,11 @@ Events.on("ServerInfo", obj => {
 	SafeLog(obj)
 })
 
+// let config = (Utils.parseKVFile("resource/ui/hud_base.res").get("Resource/UI/HUD_Base.res") as Parse.RecursiveMap).get("MiniMap") as Parse.RecursiveMap
 EventsSDK.on("Draw", () => {
+	/*let size = parseInt(config.get("tall") as string)
+	let vec_size = Utils.GetProportionalScaledVector(new Vector2(size, size), true, 1.15)
+	RendererSDK.Line(new Vector2(0, RendererSDK.WindowSize.y - vec_size.y), new Vector2(vec_size.x, 0))*/
 	if (!debugEvents.value || !debugProjectiles.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
