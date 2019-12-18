@@ -2,7 +2,7 @@ import { RendererSDK } from "../Imports"
 import EventsSDK from "../Managers/EventsSDK"
 import ProjectileManager from "../Managers/ProjectileManager"
 import Unit from "../Objects/Base/Unit"
-import { parseKV } from "./ParseKV"
+import { parseKV, RecursiveMap } from "./ParseKV"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
@@ -157,18 +157,11 @@ export function Utf8ArrayToStr(array: Uint8Array): string {
 	return out
 }
 
-export function parseKVFile(path: string) {
+export function parseKVFile(path: string): RecursiveMap {
 	let buf = readFile(path)
 	if (buf === undefined)
-		return undefined
+		return new Map()
 	return parseKV(Utf8ArrayToStr(new Uint8Array(buf)))
-}
-
-export function parseKVFileToMap(path: string): Map<string, any> | undefined {
-	let parsed = parseKVFile(path) as { [names: string]: string }
-	if (parsed === undefined)
-		return undefined
-	return new Map<string, string>(Object.entries(parsed[Object.keys(parsed).find(key => key !== "values" && key !== "comments")!]))
 }
 
 export function GetHealthAfter(unit: Unit, delay: number, allow_overflow = false, include_projectiles: boolean = false, attacker?: Unit, melee_time_offset: number = 0): number {
