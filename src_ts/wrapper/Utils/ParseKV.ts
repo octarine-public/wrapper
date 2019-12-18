@@ -78,9 +78,9 @@ function _unquotedtostr(stream: Stream): string {
 }
 
 function _parse(stream: Stream, map = new Map<string, any>()): Map<string, any> {
-	var laststr: string,
-		lasttok: string,
-		lastbrk: string,
+	var laststr = "",
+		lasttok = "",
+		lastbrk = "",
 		next_is_value = false
 
 	while (!stream.Empty()) {
@@ -114,8 +114,8 @@ function _parse(stream: Stream, map = new Map<string, any>()): Map<string, any> 
 			}
 
 			if (lasttok === STRING && next_is_value) {
-				if (map.has(laststr) && lastbrk !== undefined)
-					lastbrk = undefined  // Ignore this sentry if it's the second bracketed expression
+				if (map.has(laststr) && lastbrk !== "")
+					lastbrk = ""  // Ignore this sentry if it's the second bracketed expression
 				else
 					map.set(laststr, string)
 			}
