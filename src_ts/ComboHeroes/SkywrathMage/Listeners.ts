@@ -9,6 +9,7 @@ import { WithoutFailDestroy } from "./Module/WithoutFail"
 
 export let MyHero: Hero
 export let MouseTarget: Hero
+export let ProjectileTrigger: boolean = false
 export let ProjList: TrackingProjectile[] = []
 export let MyNameHero: string = "npc_dota_hero_skywrath_mage"
 
@@ -27,10 +28,18 @@ export function InitMouse() {
 	if (!Base.IsRestrictions(State))
 		return
 	MouseTarget = ArrayExtensions.orderBy(
-		EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).filter(x =>
-			x.Distance(Utils.CursorWorldVec) <= NearMouse.value && x.IsAlive),
-		x => x.Distance(Utils.CursorWorldVec),
+		EntityManager.GetEntitiesByClass
+			(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).filter(x =>
+				x.IsAlive && x.Distance(Utils.CursorWorldVec) <= NearMouse.value),
+		x => x.Distance(Utils.CursorWorldVec)
 	)[0]
+	ProjectileTrigger = EntityManager.GetEntitiesByClass
+		(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(x =>
+			x.IsAlive
+			&& x.Distance(MyHero) <= 1200
+			&& !Base.ProjectileActive.IsZero()
+			&& x.Distance(Base.ProjectileActive) <= (x.HullRadius * 2) + 100
+		)
 }
 function MapClear() {
 	initItemsMap.clear()

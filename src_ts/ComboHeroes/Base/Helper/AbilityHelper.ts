@@ -12,9 +12,9 @@ export class AbilityHelper {
 		return ((ability.GetCastDelay(this.unit.Position) * 1000) + this.Tick)
 	}
 
-	public UseAbility(abil: Ability, owner: boolean = false, unit?: Unit | Vector3): boolean {
-		if (unit instanceof Unit) {
-			if (!unit.IsAlive)
+	public UseAbility(abil: Ability, owner: boolean = false, HitAndRun: boolean = false, unit?: Unit | Vector3): boolean {
+		if (unit instanceof Unit && !HitAndRun) {
+			if (!unit?.IsAlive)
 				return false
 			if (this.unit.TurnTime(unit?.Position) > 0.2) {
 				if (SleepTick.Sleeping)
@@ -32,10 +32,8 @@ export class AbilityHelper {
 			Sleep.Sleep(castDelay, abil.Index)
 			return true
 		}
-		else {
-			owner ? abil.UseAbility(this.unit) : abil.UseAbility()
-			Sleep.Sleep(castDelay, abil.Index)
-			return true
-		}
+		owner ? abil.UseAbility(this.unit) : abil.UseAbility()
+		Sleep.Sleep(castDelay, abil.Index)
+		return true
 	}
 }

@@ -1,7 +1,10 @@
 import { GameSleeper, TickSleeper, Utils, Ability, Hero, Menu } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { MouseTarget, MyHero, ProjList, initItemsMap, initAbilityMap, initItemsTargetMap, initHitAndRunMap } from "../Listeners"
-import { AbilityMenu, BladeMailCancelCombo, BlinkRadius, TypeHitAndRun, ComboHitAndRunAttack, ComboKey, ConcussiveShotAwait, Items as ItemsMenu, State, StyleCombo } from "../Menu"
+import { MouseTarget, MyHero, initItemsMap, initAbilityMap, initItemsTargetMap, initHitAndRunMap, ProjectileTrigger } from "../Listeners"
+import {
+	AbilityMenu, BladeMailCancelCombo, BlinkRadius, TypeHitAndRun, ComboHitAndRunAttack, ComboKey,
+	ConcussiveShotAwait, Items as ItemsMenu, State, StyleCombo, DoubleUltimateState
+} from "../Menu"
 import { BreakInit } from "./LinkenBreaker"
 
 import ItemsX from "../Extends/Items"
@@ -20,17 +23,14 @@ export function Combo(
 	ItemsX: ItemsX,
 	ItemsEnemy: ItemsX,
 	ItemsMenu: Menu.ImageSelector,
-	AbilityMenu: Menu.ImageSelector
+	AbilityMenu: Menu.ImageSelector,
+	HitAndRun: boolean = true
 ) {
 
-	if (abil === undefined || (!ItemsMenu.IsEnabled(abil.Name) && !AbilityMenu.IsEnabled(abil.Name) && !ItemsMenu.IsEnabled("item_dagon_5")))
+	if (abil === undefined || ((!ItemsMenu.IsEnabled(abil.Name) || !ItemsMenu.IsEnabled("item_dagon_5")) && !AbilityMenu.IsEnabled(abil.Name)))
 		return false
 
 	let abilName = abil.Name
-	let ClumsyDelay = ProjList.find(x => x.ParticlePath === "particles/items5_fx/clumsy_net_proj.vpcf"),
-		RodofAtosDelay = ProjList.find(x => x.ParticlePath === "particles/items2_fx/rod_of_atos_attack.vpcf"),
-		EtherealDelay = ProjList.find(x => x.ParticlePath === "particles/items_fx/ethereal_blade.vpcf"),
-		ConcussiveShotDelay = ProjList.find(x => x.ParticlePath === "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf")
 	let comboBreaker = Base.AeonDisc(enemyLoser),
 		sheepDebuff = enemyLoser.GetBuffByName("modifier_sheepstick_debuff"),
 		atosDebuff = enemyLoser.GetBuffByName("modifier_rod_of_atos_debuff"),
@@ -38,7 +38,8 @@ export function Combo(
 
 	if (abilName === ItemsX?.Blink?.Name) {
 		let castRange = abil.GetSpecialValue("blink_range") + MyHero.CastRangeBonus
-		if (!Abilities.UseAbility(abil, false, MyHero.Position.Extend(enemyLoser.Position, Math.min(castRange, MyHero.Distance(enemyLoser) - BlinkRadius.value) - 1)))
+		if (!Abilities.UseAbility(abil, false, HitAndRun,
+			MyHero.Position.Extend(enemyLoser.Position, Math.min(castRange, MyHero.Distance(enemyLoser) - BlinkRadius.value) - 1)))
 			return false
 	}
 
@@ -48,21 +49,21 @@ export function Combo(
 	if (abilName === ItemsX?.ClumsyNet?.Name) {
 		if (ClumsyDebuff?.IsValid && ClumsyDebuff?.RemainingTime >= 0.5)
 			return false
-		if (!Abilities.UseAbility(abil, false, enemyLoser))
+		if (!Abilities.UseAbility(abil, false, HitAndRun, enemyLoser))
 			return false
 	}
 
 	if (abilName === ItemsX?.RodofAtos?.Name) {
 		if (atosDebuff?.IsValid && atosDebuff?.RemainingTime >= 0.5)
 			return false
-		if (!Abilities.UseAbility(abil, false, enemyLoser))
+		if (!Abilities.UseAbility(abil, false, HitAndRun, enemyLoser))
 			return false
 	}
 
 	if (abilName === ItemsX?.Sheeps?.Name) {
 		if (sheepDebuff?.IsValid && sheepDebuff?.RemainingTime >= 0.3)
 			return false
-		if (!Abilities.UseAbility(abil, false, enemyLoser) && comboBreaker)
+		if (!Abilities.UseAbility(abil, false, HitAndRun, enemyLoser) && comboBreaker)
 			return false
 	}
 
@@ -70,62 +71,51 @@ export function Combo(
 		if (comboBreaker && (!Base.BadUlt(enemyLoser) || !Base.Active(enemyLoser)))
 			return false
 		if (ItemsX.RodofAtos === undefined
-			&& ConcussiveShotAwait.value
 			&& Abilities.ConcussiveShot !== undefined
-			&& (ConcussiveShotDelay !== undefined && enemyLoser.Distance2D(ConcussiveShotDelay.Position) <= 100
-				|| EtherealDelay !== undefined && enemyLoser.Distance2D(EtherealDelay.Position) <= 100
-				|| enemyLoser.Buffs.some(x => x.Name === "modifier_skywrath_mage_concussive_shot_slow"))
-			|| enemyLoser.IsEthereal
+			&& ConcussiveShotAwait.value
+			&& ProjectileTrigger
+			&& (enemyLoser.IsEthereal || enemyLoser.HasBuffByName("modifier_skywrath_mage_concussive_shot_slow"))
 		) {
-			if (!Abilities.UseMysticFlare(abil, enemyLoser))
+			if (!Abilities.UseMysticFlare(abil, enemyLoser, HitAndRun, DoubleUltimateState.value))
 				return false
 		} else if (ItemsX.RodofAtos === undefined
-			&& !ConcussiveShotAwait.value) {
-			if (!Abilities.UseMysticFlare(abil, enemyLoser))
+			&& !ConcussiveShotAwait.value
+		) {
+			if (!Abilities.UseMysticFlare(abil, enemyLoser, HitAndRun, DoubleUltimateState.value))
 				return false
 		} else if (ItemsX.RodofAtos === undefined
-			&& ClumsyDelay !== undefined
-			&& enemyLoser.Distance2D(ClumsyDelay.Position) <= 100
+			&& ProjectileTrigger
 		) {
-			if (!Abilities.UseMysticFlare(abil, enemyLoser))
+			if (!Abilities.UseMysticFlare(abil, enemyLoser, HitAndRun, DoubleUltimateState.value))
 				return false
-		} else if (ItemsX.RodofAtos !== undefined
-			&& RodofAtosDelay !== undefined
-			&& enemyLoser.Distance2D(RodofAtosDelay.Position) <= 100
-		) {
-			if (!Abilities.UseMysticFlare(abil, enemyLoser))
-				return false
-		} else if (ItemsX.RodofAtos !== undefined
-			&& (ItemsX.RodofAtos.Cooldown - 1)
-			&& RodofAtosDelay === undefined
-		) {
-			if (!Abilities.UseMysticFlare(abil, enemyLoser))
+		} else if (ItemsX.RodofAtos !== undefined && ProjectileTrigger) {
+			if (!Abilities.UseMysticFlare(abil, enemyLoser, HitAndRun, DoubleUltimateState.value))
 				return false
 		}
 	}
 
 	if (abilName === ItemsX?.Nullifier?.Name) {
 		if (ItemsEnemy.AeonDisk === undefined) {
-			if (!Abilities.UseAbility(abil, false, enemyLoser) && comboBreaker)
+			if (!Abilities.UseAbility(abil, false, HitAndRun, enemyLoser) && comboBreaker)
 				return false
 		} else if (ItemsEnemy.AeonDisk !== undefined && enemyLoser.HPPercent <= 70) {
-			if (!Abilities.UseAbility(abil, false, enemyLoser) && comboBreaker)
+			if (!Abilities.UseAbility(abil, false, HitAndRun, enemyLoser) && comboBreaker)
 				return false
 		} else {
-			if (!Abilities.UseAbility(abil, false, enemyLoser) && comboBreaker)
+			if (!Abilities.UseAbility(abil, false, HitAndRun, enemyLoser) && comboBreaker)
 				return false
 		}
 	}
 
 	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
-		if (!Abilities.UseAbility(abil, true))
+		if (!Abilities.UseAbility(abil, true, HitAndRun))
 			return false
 	}
 	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_OPTIONAL_UNIT_TARGET)) {
-		if (!Abilities.UseAbility(abil, false, enemyLoser))
+		if (!Abilities.UseAbility(abil, false, HitAndRun, enemyLoser))
 			return false
 	}
-	if (!Abilities.UseAbility(abil, false, enemyLoser))
+	if (abilName !== Abilities?.MysticFlare?.Name && !Abilities.UseAbility(abil, false, HitAndRun, enemyLoser))
 		return false
 }
 
@@ -161,6 +151,7 @@ export function InitCombo() {
 		Items.Blink,
 		Items.Sheeps,
 		Items.RodofAtos,
+		Items.ClumsyNet,
 		Items.Orchid,
 		Items.Bloodthorn,
 		Items.Discord,
@@ -181,7 +172,6 @@ export function InitCombo() {
 			BreakInit()
 			return
 		}
-
 		if (AbilityArray.some(x => x?.CanBeCasted() && Combo(x, enemyLoser, Abilities, Items, ItemsTarget, ItemsMenu, AbilityMenu)))
 			return
 

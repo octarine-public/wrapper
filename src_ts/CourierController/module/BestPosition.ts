@@ -1,8 +1,8 @@
-import { Courier, Vector3, DOTA_GameMode, Game, Unit, Creep, Hero, EntityManager } from "wrapper/Imports"
-import { StateBestPos } from "../Menu"
+import { Courier, Vector3, DOTA_GameMode, Game, Unit, Creep, Hero, EntityManager, EventsSDK, TickSleeper } from "wrapper/Imports"
+import { StateBestPos, State } from "../Menu"
 import { CourierBase } from "../Data/Helper"
 import { Sleep, OwnerIsValid } from "../bootstrap"
-
+let BestPosSleep = new TickSleeper
 function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector3) {
 	if (!unit.IsAlive || !unit.IsVisible)
 		return false
@@ -43,17 +43,28 @@ export function CourierBestPosition(courier: Courier) {
 		}
 	})
 }
+EventsSDK.on("Tick", () => {
+	if (!State.value || BestPosSleep.Sleeping || Game.IsPaused || !OwnerIsValid())
+		return
+	BestPositionClickUpdate()
+	BestPosSleep.Sleep(2000)
+})
+function BestPositionClickUpdate() {
+	CourierBase.LAST_CLICK = false
+}
 
 export function MoveCourier(Safe: boolean = false, courier: Courier, line?: number) {
-	if (Game.IsPaused || !OwnerIsValid() || !CourierBase.IsValidCourier(courier))
+	if (Game.IsPaused || !OwnerIsValid() || !CourierBase.IsValidCourier(courier) || CourierBase.LAST_CLICK)
 		return
 	if (!Safe) {
 		courier.MoveTo(CourierBase.Position(false, line))
+		CourierBase.LAST_CLICK = true
 		Sleep.Sleep(CourierBase.CastDelay)
 		return
 	}
 	if (!CourierBase.IsRangeCourier(courier, CourierBase.Position(Safe, line), 150)) {
 		courier.MoveTo(CourierBase.Position(Safe, line))
+		CourierBase.LAST_CLICK = true
 		Sleep.Sleep(CourierBase.CastDelay)
 		return
 	}

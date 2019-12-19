@@ -19,10 +19,10 @@ export default class AbilityX extends AbilityBase {
 	public get MysticFlare(): AbilitySDK {
 		return this.unit.GetAbilityByName("skywrath_mage_mystic_flare")
 	}
-	public UseMysticFlare(abil: Ability, unit: Hero): boolean {
+	public UseMysticFlare(abil: Ability, unit: Hero, HitAndRun: boolean = false, double_ult: boolean = false): boolean {
 		if (abil === undefined || unit === undefined)
 			return false
-		if (this.unit.HasScepter) {
+		if (this.unit.HasScepter && double_ult) {
 			if (unit.IsRooted || unit.IsStunned) {
 				this.MysticFlareDelayScepter = 610
 			} else if (unit.IsMoving) {
@@ -34,7 +34,7 @@ export default class AbilityX extends AbilityBase {
 			this.MysticFlareDelay = 300
 		}
 
-		let delay = this.unit.HasScepter
+		let delay = this.unit.HasScepter && double_ult
 			? this.MysticFlareDelayScepter
 			: this.MysticFlareDelay,
 
@@ -43,7 +43,7 @@ export default class AbilityX extends AbilityBase {
 				: unit.IdealSpeed,
 			Predict = unit.InFront(delay / 1000 * Speed)
 
-		this.UseAbility(abil, false, Predict)
+		this.UseAbility(abil, false, HitAndRun, Predict)
 		return true
 	}
 }

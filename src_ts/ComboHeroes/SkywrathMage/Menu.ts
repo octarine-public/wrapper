@@ -40,6 +40,7 @@ export const TypeHitAndRun = ComboHitAndRunTree.AddSwitcher("Type Run", ["Run to
 
 export const NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000)
 export const BlinkRadius = Combo.AddSlider("Blink distance from enemy", 400, 0, 1200)
+export const DoubleUltimateState = Combo.AddToggle("Double ultimate scepter", true)
 export const ConcussiveShotAwait = Combo.AddToggle("Await Concussive shot for MysticFlare", true)
 export const ComboStartWith = Combo.AddToggle("Start Combo With Mute")
 	.SetTooltip("Start Combo With Hex or Ancient Steal")
@@ -53,6 +54,7 @@ export const BadUltMovementSpeedItem = BadUltNode.AddSlider("Bad Ult Movement Sp
 
 const AutoCombo = MenuCombo.AddNode("Auto Combo")
 export const AutoComboState = AutoCombo.AddToggle("Enable")
+export const HitAndRunAutoCombo = AutoCombo.AddToggle("HitAndRun")
 export const AutoComboDisableWhen = AutoCombo.AddToggle("Disable When Combo", true)
 export const AutoComboMinHPpercent = AutoCombo.AddSlider("Min HP % To Auto Combo", 0, 0, 100)
 

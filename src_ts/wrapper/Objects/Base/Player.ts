@@ -183,7 +183,7 @@ export default class Player extends Entity {
 			? (this.m_PlayerTeamData = PlayerResource.GetPlayerTeamDataByPlayerID(this.PlayerID)) : undefined
 	}
 	get PlayerSteamID(): bigint {
-		return this.PlayerData.m_iPlayerSteamID
+		return this.PlayerData.m_iPlayerSteamID ?? 0n
 	}
 	get QueryUnit(): Unit {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hQueryUnit) as Unit
