@@ -1,7 +1,6 @@
 import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils, Unit, EntityManager } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
-import { AutoComboDeleteVars } from "./Module/AutoCombo"
 import { AutoDisableDeleteVars } from "./Module/AutoDisable"
 import { ComboDeleteVarsTemp } from "./Module/Combo"
 import { LinkenBreakerDeleteVars } from "./Module/LinkenBreaker"
@@ -14,14 +13,15 @@ export let ProjList: TrackingProjectile[] = []
 export let MyNameHero: string = "npc_dota_hero_skywrath_mage"
 
 import InitDraw from "./Extends/Draw"
-import InitItems from "./Extends/Items"
-import InitAbilities from "./Extends/Abilities"
+import ItemsX from "./Extends/Items"
+import AbilityX from "./Extends/Abilities"
+import HitAndRun from "./Extends/HitAndRun"
 
-export const initItemsMap = new Map<Unit, InitItems>()
-export const initItemsTargetMap = new Map<Unit, InitItems>()
-export const initAbilityMap = new Map<Unit, InitAbilities>()
+export const initItemsMap = new Map<Unit, ItemsX>()
+export const initItemsTargetMap = new Map<Unit, ItemsX>()
+export const initAbilityMap = new Map<Unit, AbilityX>()
 export const initDrawMap = new Map<Unit, InitDraw>()
-
+export const initHitAndRunMap = new Map<Unit, HitAndRun>()
 
 export function InitMouse() {
 	if (!Base.IsRestrictions(State))
@@ -47,7 +47,6 @@ export function GameEnded() {
 	WithoutFailDestroy()
 	AutoModeDeleteVars()
 	ComboDeleteVarsTemp()
-	AutoComboDeleteVars()
 	AutoDisableDeleteVars()
 	LinkenBreakerDeleteVars()
 	MyNameHero = "npc_dota_hero_skywrath_mage"
@@ -81,22 +80,27 @@ export function LinearProjectileDestroyed(proj: TrackingProjectile) {
 export function Tick() {
 	let initItemsTarget = initItemsTargetMap.get(MouseTarget)
 	if (initItemsTarget === undefined) {
-		initItemsTarget = new InitItems(MouseTarget)
+		initItemsTarget = new ItemsX(MouseTarget)
 		initItemsTargetMap.set(MouseTarget, initItemsTarget)
 	}
 	let initItems = initItemsMap.get(MyHero)
 	if (initItems === undefined) {
-		initItems = new InitItems(MyHero)
+		initItems = new ItemsX(MyHero)
 		initItemsMap.set(MyHero, initItems)
 	}
 	let initAbility = initAbilityMap.get(MyHero)
 	if (initAbility === undefined) {
-		initAbility = new InitAbilities(MyHero)
+		initAbility = new AbilityX(MyHero)
 		initAbilityMap.set(MyHero, initAbility)
 	}
 	let initDrawBase = initDrawMap.get(MyHero)
 	if (initDrawBase === undefined) {
 		initDrawBase = new InitDraw(MyHero)
 		initDrawMap.set(MyHero, initDrawBase)
+	}
+	let initinitHitAndRun = initHitAndRunMap.get(MyHero)
+	if (initinitHitAndRun === undefined) {
+		initinitHitAndRun = new HitAndRun(MyHero)
+		initHitAndRunMap.set(MyHero, initinitHitAndRun)
 	}
 }

@@ -71,6 +71,11 @@ class BaseHelper {
 		"modifier_skywrath_mage_concussive_shot_slow",
 		"modifier_skywrath_mage_ancient_seal",
 	]
+	private readonly AnyModifiers: string[] = [
+		"modifier_dazzle_shallow_grave",
+		"modifier_spirit_breaker_charge_of_darkness",
+		"modifier_pugna_nether_ward_aura"
+	]
 	constructor() {
 		this.PermitPressing = false
 	}
@@ -102,7 +107,7 @@ class BaseHelper {
 			return false
 		}
 
-		if (target.ModifiersBook.HasAnyBuffByNames(["modifier_dazzle_shallow_grave", "modifier_spirit_breaker_charge_of_darkness", "modifier_pugna_nether_ward_aura"])) {
+		if (target.ModifiersBook.HasAnyBuffByNames(this.AnyModifiers)) {
 			return false
 		}
 

@@ -1,104 +1,86 @@
 import { Menu, Color } from "wrapper/Imports"
-let MenuCombo = Menu.AddEntry(["Heroes", "SkyWrath Mage"]),
-	State = MenuCombo.AddToggle("Enable")
+const MenuCombo = Menu.AddEntry(["Heroes", "SkyWrath Mage"])
+export const State = MenuCombo.AddToggle("Enable")
 
-let Combo = MenuCombo.AddNode("Combo"),
-	AbilityMenu = Combo.AddImageSelector(
-		"Abilities", [
-		"skywrath_mage_arcane_bolt",
-		"skywrath_mage_concussive_shot",
-		"skywrath_mage_ancient_seal",
-		"skywrath_mage_mystic_flare",
-	], new Map<string, boolean>([
-		["skywrath_mage_arcane_bolt", true],
-		["skywrath_mage_concussive_shot", true],
-		["skywrath_mage_ancient_seal", true],
-		["skywrath_mage_mystic_flare", true],
-	]),
-	),
-	Items = Combo.AddImageSelector(
-		"Items", [
-		"item_rod_of_atos",
-		"item_clumsy_net",
-		"item_sheepstick",
-		"item_ethereal_blade",
-		"item_veil_of_discord",
-		"item_dagon_5",
-		"item_orchid",
-		"item_bloodthorn",
-		"item_shivas_guard",
-		"item_nullifier",
-		"item_blink",
-	], new Map<string, boolean>([
-		["item_rod_of_atos", true],
-		["item_clumsy_net", true],
-		["item_sheepstick", true],
-		["item_ethereal_blade", true],
-		["item_veil_of_discord", true],
-		["item_dagon_5", true],
-		["item_orchid", true],
-		["item_bloodthorn", true],
-		["item_shivas_guard", true],
-		["item_nullifier", true],
-	]),
-	),
-	ComboKey = Combo.AddKeybind("Combo Key"),
-	StyleCombo = Combo.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"]),
-	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000),
-	BlinkRadius = Combo.AddSlider("Blink distance from enemy", 400, 0, 1200),
-	AutoAttackTarget = Combo.AddToggle("Auto Attack Target", true),
-	ConcussiveShotAwait = Combo.AddToggle("Await Concussive shot for MysticFlare", true),
-	//ComboTarget = Combo.AddSwitcher("Target", ["Defualt", "Lock"]),
-	ComboStartWith = Combo.AddToggle("Start Combo With Mute").SetTooltip("Start Combo With Hex or Ancient Steal"),
-	MinHealthToUltItem = Combo.AddSlider("Target Min Health % To Auto Combo", 0, 0, 70),
-	ComboBreak = Combo.AddToggle("Cancel Important Items and Abilities").SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities")
+const Combo = MenuCombo.AddNode("Combo")
 
-let BadUltNode = Combo.AddNode("Bad Ult"),
-	BadUltItem = BadUltNode.AddToggle("Bad Ult"),
-	BadUltMovementSpeedItem = BadUltNode.AddSlider("Bad Ult Movement Speed", 500, 240, 500)
+let ability_array: string[] = [
+	"skywrath_mage_arcane_bolt",
+	"skywrath_mage_concussive_shot",
+	"skywrath_mage_ancient_seal",
+	"skywrath_mage_mystic_flare",
+]
 
-let AutoCombo = MenuCombo.AddNode("Auto Combo"),
-	AutoComboState = AutoCombo.AddToggle("Enable"),
-	AutoComboDisableWhen = AutoCombo.AddToggle("Disable When Combo", true),
-	AutoComboMinHPpercent = AutoCombo.AddSlider("Min HP % To Auto Combo", 0, 0, 100),
-	AutoComboAbility = AutoCombo.AddImageSelector(
-		"Abilities", [
-		"skywrath_mage_arcane_bolt",
-		"skywrath_mage_concussive_shot",
-		"skywrath_mage_ancient_seal",
-		"skywrath_mage_mystic_flare",
-	], new Map<string, boolean>([
-		["skywrath_mage_arcane_bolt", true],
-		["skywrath_mage_concussive_shot", true],
-		["skywrath_mage_ancient_seal", true],
-		["skywrath_mage_mystic_flare", true],
-	]),
-	),
-	AutoComboItems = AutoCombo.AddImageSelector(
-		"Items", [
-		"item_rod_of_atos",
-		"item_clumsy_net",
-		"item_sheepstick",
-		"item_ethereal_blade",
-		"item_veil_of_discord",
-		"item_dagon_5",
-		"item_orchid",
-		"item_bloodthorn",
-		"item_shivas_guard",
-		"item_nullifier",
-	], new Map<string, boolean>([
-		["item_rod_of_atos", true],
-		["item_clumsy_net", true],
-		["item_sheepstick", true],
-		["item_ethereal_blade", true],
-		["item_veil_of_discord", true],
-		["item_dagon_5", true],
-		["item_orchid", true],
-		["item_bloodthorn", true],
-		["item_shivas_guard", true],
-		["item_nullifier", true],
-	]),
-	)
+export const AbilityMenu = Combo.AddImageSelector(
+	"Abilities", ability_array, new Map(ability_array.map(name => [name, true])))
+
+let items_array: string[] = [
+	"item_rod_of_atos",
+	"item_clumsy_net",
+	"item_sheepstick",
+	"item_ethereal_blade",
+	"item_veil_of_discord",
+	"item_dagon_5",
+	"item_orchid",
+	"item_bloodthorn",
+	"item_shivas_guard",
+	"item_nullifier",
+	"item_blink",
+]
+
+export const Items = Combo.AddImageSelector("Items", items_array,
+	new Map(items_array.map(name => [name, name !== "item_blink"])))
+
+export const ComboKey = Combo.AddKeybind("Combo Key")
+export const StyleCombo = Combo.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"])
+
+const ComboHitAndRunTree = Combo.AddNode("HitAndRun")
+export const ComboHitAndRunAttack = ComboHitAndRunTree.AddToggle("Auto attack", true)
+export const TypeHitAndRun = ComboHitAndRunTree.AddSwitcher("Type Run", ["Run to target", "Run to cursor", "None"])
+
+export const NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000)
+export const BlinkRadius = Combo.AddSlider("Blink distance from enemy", 400, 0, 1200)
+export const ConcussiveShotAwait = Combo.AddToggle("Await Concussive shot for MysticFlare", true)
+export const ComboStartWith = Combo.AddToggle("Start Combo With Mute")
+	.SetTooltip("Start Combo With Hex or Ancient Steal")
+export const MinHealthToUltItem = Combo.AddSlider("Target Min Health % To Auto Combo", 0, 0, 70)
+export const ComboBreak = Combo.AddToggle("Cancel Important Items and Abilities")
+	.SetTooltip("If Combo Breaker is ready then it will not use Important Items and Abilities")
+
+export const BadUltNode = Combo.AddNode("Bad Ult")
+export const BadUltItem = BadUltNode.AddToggle("Bad Ult")
+export const BadUltMovementSpeedItem = BadUltNode.AddSlider("Bad Ult Movement Speed", 500, 240, 500)
+
+const AutoCombo = MenuCombo.AddNode("Auto Combo")
+export const AutoComboState = AutoCombo.AddToggle("Enable")
+export const AutoComboDisableWhen = AutoCombo.AddToggle("Disable When Combo", true)
+export const AutoComboMinHPpercent = AutoCombo.AddSlider("Min HP % To Auto Combo", 0, 0, 100)
+
+let ability_acombo_array: string[] = [
+	"skywrath_mage_arcane_bolt",
+	"skywrath_mage_concussive_shot",
+	"skywrath_mage_ancient_seal",
+	"skywrath_mage_mystic_flare",
+]
+
+export const AutoComboAbility = AutoCombo.AddImageSelector("Abilities", ability_acombo_array,
+	new Map(ability_acombo_array.map(name => [name, true])))
+
+let items_acombo_array: string[] = [
+	"item_rod_of_atos",
+	"item_clumsy_net",
+	"item_sheepstick",
+	"item_ethereal_blade",
+	"item_veil_of_discord",
+	"item_dagon_5",
+	"item_orchid",
+	"item_bloodthorn",
+	"item_shivas_guard",
+	"item_nullifier",
+]
+
+export const AutoComboItems = AutoCombo.AddImageSelector("Items", items_acombo_array,
+	new Map(items_acombo_array.map(name => [name, true])))
 
 // TODO
 // let AutoKillSteal = MenuCombo.AddNode("Auto Kill Steal"),
@@ -124,62 +106,47 @@ let AutoCombo = MenuCombo.AddNode("Auto Combo"),
 // 		])
 // 	)
 
-let AutoDisable = MenuCombo.AddNode("Auto Disable"),
-	AutoDisableState = AutoDisable.AddToggle("Enable", true),
-	AutoDisableAbilityItems = AutoDisable.AddImageSelector(
-		"Use", [
-		"item_sheepstick",
-		"item_orchid",
-		"item_bloodthorn",
-		"skywrath_mage_ancient_seal",
-	], new Map<string, boolean>([
-		["item_sheepstick", true],
-		["item_orchid", true],
-		["item_bloodthorn", true],
-		["skywrath_mage_ancient_seal", true],
-	]),
-	)
-let LinkenBreak = MenuCombo.AddNode("Linken Break"),
-	LinkenBreakAbilityItems = LinkenBreak.AddImageSelector(
-		"Use",
-		[
-			"item_force_staff",
-			"item_cyclone",
-			"item_orchid",
-			"item_bloodthorn",
-			"item_nullifier",
-			"item_rod_of_atos",
-			"item_sheepstick",
-			"skywrath_mage_arcane_bolt",
-			"skywrath_mage_ancient_seal",
-		], new Map<string, boolean>([
-			["item_force_staff", true],
-			["item_cyclone", true],
-			["item_orchid", true],
-			["item_bloodthorn", true],
-			["item_nullifier", true],
-			["item_rod_of_atos", true],
-			["item_sheepstick", true],
-			["skywrath_mage_arcane_bolt", true],
-			["skywrath_mage_ancient_seal", true],
-		]),
-	),
-	LinkenBreakOnlyFromRange = LinkenBreak.AddToggle("Use Only From Range")
+const AutoDisable = MenuCombo.AddNode("Auto Disable")
+export const AutoDisableState = AutoDisable.AddToggle("Enable", true)
 
-let SmartArcaneBolt = MenuCombo.AddNode("Smart Arcane Bolt"),
-	SmartArcaneBoltKey = SmartArcaneBolt.AddKeybind("Spam Arcane Bolt"),
-	SmartArcaneAutoBolt = SmartArcaneBolt.AddNode("Auto Spam Arcane Bolt"),
-	SmartArcaneAutoBoltState = SmartArcaneAutoBolt.AddToggle("Enable", true),
-	SmartArcaneOwnerHP = SmartArcaneAutoBolt.AddSlider("Min HP % To Auto Bolt", 20, 0, 100)
+let array_auto_disable: string[] = [
+	"item_sheepstick",
+	"item_orchid",
+	"item_bloodthorn",
+	"skywrath_mage_ancient_seal",
+]
 
-let SmartConShot = MenuCombo.AddNode("Smart Concussive Shot"),
-	SmartConShotFail = SmartConShot.AddToggle("Without Fail", true),
-	SmartConShotOnlyTarget = SmartConShot.AddToggle("Without Fail Target", true),
-	SmartConShotRadius = SmartConShot.AddSlider("Use in Radius", 1600, 800, 10000)
+export const AutoDisableAbilityItems = AutoDisable.AddImageSelector("Use", array_auto_disable, new Map(array_auto_disable.map(name => [name, true])))
+const LinkenBreak = MenuCombo.AddNode("Linken Break")
 
-let BladeMail = MenuCombo.AddNode("Blade Mail"),
-	BladeMailCancelCombo = BladeMail.AddToggle("Cancel Combo", true),
-	BladeMailUseCyclone = BladeMail.AddToggle("Use Eul", true)
+let array_linken: string[] = [
+	"item_force_staff",
+	"item_cyclone",
+	"item_orchid",
+	"item_bloodthorn",
+	"item_nullifier",
+	"item_rod_of_atos",
+	"item_sheepstick",
+	"skywrath_mage_arcane_bolt",
+	"skywrath_mage_ancient_seal",
+]
+
+export const LinkenBreakAbilityItems = LinkenBreak.AddImageSelector("Use", array_linken, new Map(array_linken.map(name => [name, true])))
+export const LinkenBreakOnlyFromRange = LinkenBreak.AddToggle("Use Only From Range")
+const SmartArcaneBolt = MenuCombo.AddNode("Smart Arcane Bolt")
+export const SmartArcaneBoltKey = SmartArcaneBolt.AddKeybind("Spam Arcane Bolt")
+const SmartArcaneAutoBolt = SmartArcaneBolt.AddNode("Auto Spam Arcane Bolt")
+export const SmartArcaneAutoBoltState = SmartArcaneAutoBolt.AddToggle("Enable", true)
+export const SmartArcaneOwnerHP = SmartArcaneAutoBolt.AddSlider("Min HP % To Auto Bolt", 20, 0, 100)
+
+const SmartConShot = MenuCombo.AddNode("Smart Concussive Shot")
+export const SmartConShotFail = SmartConShot.AddToggle("Without Fail", true)
+export const SmartConShotOnlyTarget = SmartConShot.AddToggle("Without Fail Target", true)
+export const SmartConShotRadius = SmartConShot.AddSlider("Use in Radius", 1600, 800, 10000)
+
+const BladeMail = MenuCombo.AddNode("Blade Mail")
+export const BladeMailCancelCombo = BladeMail.AddToggle("Cancel Combo", true)
+export const BladeMailUseCyclone = BladeMail.AddToggle("Use Eul", true)
 
 let array_radius: string[] = [
 	"skywrath_mage_arcane_bolt",
@@ -188,79 +155,24 @@ let array_radius: string[] = [
 	"skywrath_mage_mystic_flare",
 	"item_blink",
 ]
-let Drawing = MenuCombo.AddNode("Drawing"),
-	RadiusTree = Drawing.AddNode("Radius"),
 
-	Radius = RadiusTree.AddImageSelector("Select", array_radius),
-	AttackRangeRadiusTree = RadiusTree.AddNode("Attack Range"),
-	AttackRangeRadius = AttackRangeRadiusTree.AddToggle("Enable"),
-	RadiusColorAttackRange = AttackRangeRadiusTree.AddColorPicker("Color", new Color(255, 255, 0)),
-	BlinkRadiusItemColor = RadiusTree.AddColorPicker("Blink", new Color(255, 255, 255)),
-	ArcaneBoltRadiusColor = RadiusTree.AddColorPicker("Arcane Bolt", new Color(255, 255, 255)),
-	ConcussiveShotRadiusColor = RadiusTree.AddColorPicker("Concussive Shot", new Color(255, 255, 255)),
-	AncientSealRadiusColor = RadiusTree.AddColorPicker("Ancient Seal", new Color(255, 255, 255)),
-	MysticFlareRadiusColor = RadiusTree.AddColorPicker("Mystic Flare", new Color(255, 255, 255)),
-	DrawingtargetMenu = Drawing.AddNode("Target"),
-	DrawingtargetState = DrawingtargetMenu.AddToggle("Draw line to target"),
-	DrawingtargetStateShot = DrawingtargetMenu.AddToggle("Draw Concusive Shot Indicator"),
-	ConShotPoaitionPosShot = DrawingtargetMenu.AddSlider("Concusive Shot: Z", 310, 310, 1000),
-	DrawingtextMenu = Drawing.AddNode("Text"),
-	TextItem = DrawingtextMenu.AddToggle("Enable", true),
-	TextSize = DrawingtextMenu.AddSlider("Size", 18, 8, 100),
-	TextXItem = DrawingtextMenu.AddSlider("X", 18, 1, 100),
-	TextYItem = DrawingtextMenu.AddSlider("Y", 87, 1, 100)
-
-export {
-	Radius,
-	BlinkRadiusItemColor,
-	AttackRangeRadius,
-	RadiusColorAttackRange,
-	ArcaneBoltRadiusColor,
-	MysticFlareRadiusColor,
-	AncientSealRadiusColor,
-	ConcussiveShotRadiusColor
-}
-export {
-	State,
-	Items,
-	AbilityMenu,
-	ComboKey,
-	NearMouse,
-	StyleCombo,
-	//ComboTarget,
-	ComboStartWith,
-	ComboBreak,
-	BadUltItem,
-	TextSize,
-	TextItem,
-	TextXItem,
-	TextYItem,
-	BadUltMovementSpeedItem,
-	BlinkRadius,
-	MinHealthToUltItem,
-	AutoComboState,
-	AutoComboDisableWhen,
-	AutoComboMinHPpercent,
-	//AutoKillStealState,
-	//AutoKillStealDisableWhen,
-	//AutoKillStealAbilityItems,
-	ConcussiveShotAwait,
-	AutoDisableState,
-	AutoDisableAbilityItems,
-	LinkenBreakAbilityItems,
-	LinkenBreakOnlyFromRange,
-	SmartArcaneBoltKey,
-	SmartConShotFail,
-	SmartConShotOnlyTarget,
-	SmartConShotRadius,
-	BladeMailCancelCombo,
-	BladeMailUseCyclone,
-	AutoComboItems,
-	DrawingtargetState,
-	AutoComboAbility,
-	DrawingtargetStateShot,
-	SmartArcaneOwnerHP,
-	SmartArcaneAutoBoltState,
-	ConShotPoaitionPosShot,
-	AutoAttackTarget,
-}
+const Drawing = MenuCombo.AddNode("Drawing")
+const RadiusTree = Drawing.AddNode("Radius")
+export const Radius = RadiusTree.AddImageSelector("Select", array_radius)
+const AttackRangeRadiusTree = RadiusTree.AddNode("Attack Range")
+export const AttackRangeRadius = AttackRangeRadiusTree.AddToggle("Enable")
+export const RadiusColorAttackRange = AttackRangeRadiusTree.AddColorPicker("Color", Color.Yellow)
+export const BlinkRadiusItemColor = RadiusTree.AddColorPicker("Blink", Color.White)
+export const ArcaneBoltRadiusColor = RadiusTree.AddColorPicker("Arcane Bolt", Color.White)
+export const ConcussiveShotRadiusColor = RadiusTree.AddColorPicker("Concussive Shot", Color.White)
+export const AncientSealRadiusColor = RadiusTree.AddColorPicker("Ancient Seal", Color.White)
+export const MysticFlareRadiusColor = RadiusTree.AddColorPicker("Mystic Flare", Color.White)
+const DrawingtargetMenu = Drawing.AddNode("Target")
+export const DrawingtargetState = DrawingtargetMenu.AddToggle("Draw line to target")
+export const DrawingtargetStateShot = DrawingtargetMenu.AddToggle("Draw Concusive Shot Indicator")
+export const ConShotPoaitionPosShot = DrawingtargetMenu.AddSlider("Concusive Shot: Z", 310, 310, 1000)
+export const DrawingtextMenu = Drawing.AddNode("Text")
+export const TextItem = DrawingtextMenu.AddToggle("Enable", true)
+export const TextSize = DrawingtextMenu.AddSlider("Size", 18, 8, 100)
+export const TextXItem = DrawingtextMenu.AddSlider("X", 18, 1, 100)
+export const TextYItem = DrawingtextMenu.AddSlider("Y", 87, 1, 100)

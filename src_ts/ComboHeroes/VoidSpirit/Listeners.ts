@@ -5,7 +5,7 @@ import { NearMouse, State } from "./Menu"
 
 import InitDraw from "./Extends/Draw"
 import InitItems from "./Extends/Items"
-import HitAndRun from "./Extends/HitAndRun";
+import HitAndRun from "./Extends/HitAndRun"
 import InitAbilities from "./Extends/Abilities"
 
 export let Owner: Hero
