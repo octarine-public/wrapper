@@ -297,9 +297,9 @@ let RendererSDK_ = new (class RendererSDK {
 	public EmitDraw() {
 		if (this.commandCacheSize === 0)
 			return
-		Renderer.ExecuteCommandBuffer(this.commandCache.slice(0, this.commandCacheSize))
+		Renderer.ExecuteCommandBuffer(this.commandCache.buffer, this.commandCacheSize)
 		if (this.commandCacheSize < this.commandCache.byteLength / 3)
-			this.commandCache = new Uint8Array()
+			this.commandCache = new Uint8Array(this.commandCache.byteLength / 3)
 		this.commandCacheSize = 0
 		this.last_color = new Color(-1, -1, -1, -1)
 	}
