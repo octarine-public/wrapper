@@ -157,6 +157,11 @@ export function Utf8ArrayToStr(array: Uint8Array): string {
 	return out
 }
 
+export function Uint8ArrayToHex(array: Uint8Array): string {
+	// loop-optimizer: KEEP
+	return array.reduce((memo, i) => memo + ("0" + i.toString(16)).slice(-2), "")
+}
+
 export function parseKVFile(path: string) {
 	let buf = readFile(path)
 	if (buf === undefined)

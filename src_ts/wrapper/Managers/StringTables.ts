@@ -1,4 +1,5 @@
 import Events from "./Events"
+import { OnActiveModifiersChanged } from "./ModifierManager"
 
 let StringTables = globalThis.StringTables = new Map<string, Map<number, [string, string]>>()
 Events.on("RemoveAllStringTables", () => {
@@ -7,9 +8,12 @@ Events.on("RemoveAllStringTables", () => {
 Events.on("UpdateStringTable", (name, update) => {
 	if (!StringTables.has(name))
 		StringTables.set(name, new Map())
-	let table = StringTables.get(name)
-	// loop-optimizer: KEEP
-	update.forEach((val, key) => table.set(key, val))
+	if (name !== "ActiveModifiers") {
+		let table = StringTables.get(name)
+		// loop-optimizer: KEEP
+		update.forEach((val, key) => table.set(key, val))
+	} else
+		OnActiveModifiersChanged(update)
 })
 
 globalThis.DumpStringTables = () => {
@@ -25,6 +29,10 @@ export function GetTable(table_name: string) {
 	return StringTables.get(table_name)
 }
 export function GetString(table_name: string, index: number): string {
-	let ar = StringTables.get(table_name)?.get(index)
+	let ar = GetTable(table_name)?.get(index)
 	return ar !== undefined ? ar[0] : undefined
+}
+export function GetValue(table_name: string, index: number): string {
+	let ar = GetTable(table_name)?.get(index)
+	return ar !== undefined ? ar[1] : undefined
 }

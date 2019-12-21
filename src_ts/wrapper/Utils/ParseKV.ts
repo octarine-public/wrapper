@@ -1,3 +1,5 @@
+import Stream from "./Stream"
+
 const STRING = '"'
 const NODE_OPEN = '{'
 const NODE_CLOSE = '}'
@@ -9,33 +11,6 @@ const LF = '\n'
 const SPACE = ' '
 const TAB = '\t'
 const WHITESPACE = [SPACE, '\t', '\r', '\n', '=']
-
-class Stream {
-	constructor(public readonly buf: string, public pos = 0) { }
-
-	public RelativeSeek(s: number): Stream {
-		this.pos += s
-		return this
-	}
-	public SeekLine(): Stream {
-		let found = this.buf.indexOf("\n", this.pos)
-		if (found === -1)
-			found = this.buf.length - 1
-		this.pos = found + 1
-		return this
-	}
-	public Next(): string {
-		return this.buf.charAt(this.pos++)
-	}
-	public ReadString(size: number): string {
-		let str = this.buf.substring(this.pos, this.pos + size)
-		this.RelativeSeek(size)
-		return str
-	}
-	public Empty(): boolean {
-		return this.pos >= this.buf.length
-	}
-}
 
 function _symtostr(stream: Stream, token: string): string {
 	if (stream.buf.indexOf(token, stream.pos) === -1)
