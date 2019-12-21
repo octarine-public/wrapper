@@ -209,7 +209,7 @@ Events.on("GameEvent", (name, obj) => {
 
 function CheckIsInStagingEntity(ent: C_BaseEntity) {
 	let ent_ = ent.m_pEntity
-	return ent_ === undefined || HasBit(ent_.m_flags, 2) || (ent instanceof C_DOTABaseAbility && ent_.m_name === undefined)
+	return ent_ === undefined || HasBit(ent_.m_flags, 2) || (ent instanceof C_DOTABaseAbility && ent.m_pAbilityData === undefined)
 }
 
 setInterval(() => InStage = InStage.filter(ent => {
