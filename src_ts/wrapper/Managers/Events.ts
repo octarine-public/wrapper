@@ -270,6 +270,7 @@ declare interface Events extends EventEmitter {
 	on(name: "ServerInfo", listener: (info: IServerInfo) => void): EventEmitter
 	on(name: "RemoveAllStringTables", listener: () => void): EventEmitter
 	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, string]>) => void): EventEmitter
+	on(name: "EntitiesVisiblityChanged", listener: (update: Map<C_BaseEntity, boolean>) => void): EventEmitter
 }
 const Events: Events = globalThis.Events = new EventEmitter()
 export default Events

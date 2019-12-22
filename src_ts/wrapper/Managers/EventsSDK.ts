@@ -258,6 +258,15 @@ Events.on("EntityPositionsChanged", ents => ents.forEach(ent_ => {
 	ent.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation)
 }))
 
+Events.on("EntitiesVisiblityChanged", ents => {
+	for (let [ent_, is_visible] of ents.entries()) {
+		let ent = EntityManager.GetEntityByNative(ent_)
+		if (ent === undefined)
+			continue
+		ent.IsVisible = is_visible
+	}
+})
+
 Events.on("InputCaptured", is_captured => EventsSDK.emit(
 	"InputCaptured", false,
 	is_captured,
@@ -407,9 +416,11 @@ Events.on("NetworkFieldsChanged", map => {
 					case "m_fGameTime":
 						Game.RawGameTime = Game.m_GameRules.m_fGameTime
 
-						EntityManager.AllEntities.forEach(ent => {
-							if (ent instanceof Unit && ent.IsVisible)
+						EntityManager.GetEntitiesByClass(Unit).forEach(ent => {
+							if (ent.IsVisible)
 								ent.LastVisibleTime = Game.RawGameTime
+							else
+								ent.LastDormantTime = Game.RawGameTime
 						})
 
 						if (LocalPlayer !== undefined)
