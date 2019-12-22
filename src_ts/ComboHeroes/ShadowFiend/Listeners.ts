@@ -8,15 +8,15 @@ export let MouseTarget: Hero
 export let MyNameHero: string = "npc_dota_hero_nevermore"
 
 import InitDraw from "./Extends/Draw"
-import InitItems from "./Extends/Items"
+import ItemsX from "./Extends/Items"
+import AbilityX from "./Extends/Abilities"
 import HitAndRun from "./Extends/HitAndRun"
-import InitAbilities from "./Extends/Abilities"
 import { HarassGameEdned } from "./Module/Harras"
 
 export const initDrawMap = new Map<Unit, InitDraw>()
-export const initItemsMap = new Map<Unit, InitItems>()
+export const initItemsMap = new Map<Unit, ItemsX>()
 export const initHitAndRunMap = new Map<Unit, HitAndRun>()
-export const initAbilityMap = new Map<Unit, InitAbilities>()
+export const initAbilityMap = new Map<Unit, AbilityX>()
 
 export function InitMouse() {
 	if (!Base.IsRestrictions(State))
@@ -28,9 +28,8 @@ export function InitMouse() {
 	)[0]
 }
 export function GameStarted(hero: Hero) {
-	if (Owner === undefined && hero.Name === MyNameHero) {
+	if (Owner === undefined && hero.Name === MyNameHero)
 		Owner = hero
-	}
 }
 function MapClear() {
 	initItemsMap.clear()
@@ -52,12 +51,12 @@ export function GameEnded() {
 export function Tick() {
 	let initItems = initItemsMap.get(Owner)
 	if (initItems === undefined) {
-		initItems = new InitItems(Owner)
+		initItems = new ItemsX(Owner)
 		initItemsMap.set(Owner, initItems)
 	}
 	let initAbility = initAbilityMap.get(Owner)
 	if (initAbility === undefined) {
-		initAbility = new InitAbilities(Owner)
+		initAbility = new AbilityX(Owner)
 		initAbilityMap.set(Owner, initAbility)
 	}
 	let initDrawBase = initDrawMap.get(Owner)

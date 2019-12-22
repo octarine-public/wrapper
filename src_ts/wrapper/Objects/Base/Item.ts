@@ -134,8 +134,9 @@ export default class Item extends Ability {
 			return false
 		if (this.EnableTime !== 0 && this.EnableTime > Game.RawGameTime)
 			return false
-		if (this.Shareability == EShareAbility.ITEM_NOT_SHAREABLE && this.Owner?.Owner !== this.Purchaser)
-			return false
+
+		// if (this.Shareability == EShareAbility.ITEM_NOT_SHAREABLE && this.Owner?.Owner !== this.Purchaser) // don't work for bear lone druid
+		// 	return false
 
 		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled)
 			return false

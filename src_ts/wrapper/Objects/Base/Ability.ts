@@ -297,7 +297,6 @@ export default class Ability extends Entity {
 			&& this.IsCooldownReady
 			&& !this.Owner.IsSilenced
 			&& this.IsManaEnough(bonusMana)
-			&& this.IsCooldownReady
 	}
 }
 

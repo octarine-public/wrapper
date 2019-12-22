@@ -111,7 +111,7 @@ export function Combo(
 		if (!Abilities.UseAbility(abil, true, HitAndRun))
 			return false
 	}
-	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_OPTIONAL_UNIT_TARGET)) {
+	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {
 		if (!Abilities.UseAbility(abil, false, HitAndRun, enemyLoser))
 			return false
 	}

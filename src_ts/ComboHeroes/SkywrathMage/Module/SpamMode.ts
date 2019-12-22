@@ -11,7 +11,7 @@ export function AutoUsage() {
 		&& EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(x =>
 			x.HasBuffByName("modifier_item_blade_mail_reflect")
 			&& x.HasBuffByName("modifier_skywrath_mystic_flare_aura_effect")
-			&& x.IsAlive && x.IsVisible && !x.IsInvulnerable
+			&& x.IsAlive && x.IsVisible && !x.IsInvulnerable && !x.IsIllusion
 		)
 	) {
 		let Items = initItemsMap.get(MyHero)

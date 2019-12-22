@@ -1,5 +1,5 @@
-import { Game, Vector3, Ability, Unit } from "wrapper/Imports";
-import { Owner } from "../Listeners";
+import { Game, Vector3, Ability, Unit } from "wrapper/Imports"
+import { Owner } from "../Listeners"
 // import { Base } from "../Extends/Helper";
 // import InitItems from "../Extends/Items"
 
@@ -39,24 +39,20 @@ import { Owner } from "../Listeners";
 // 	}
 // }
 
-// function GetDelayCast() {
-// 	return ((Game.Ping / 2) + 380)
-// }
-
 function GetPosition(unit: Unit, delay: number) {
 	if (!delay || !unit.IsMoving || unit.IsRooted)
 		return unit.Position
-	return unit.InFront(unit.Speed * ((delay + Game.Ping / 1000) || 1));
+	return unit.InFront(unit.Speed * ((delay + Game.Ping / 1000) || 1))
 }
 
 function GetCastDelay(abil: Ability, pos: Unit | Vector3) {
 	if (pos instanceof Unit)
-		return abil.CastPoint + Owner.TurnTime(pos.Position) + (Game.Ping / 1000);
-	return abil.CastPoint + Owner.TurnTime(pos) + (Game.Ping / 1000);
+		return abil.CastPoint + Owner.TurnTime(pos.Position) + (Game.Ping / 1000)
+	return abil.CastPoint + Owner.TurnTime(pos) + (Game.Ping / 1000)
 }
 
 export function PredictionRize(ability: Ability, enemy: Unit, RazeRadius: number) {
-	return enemy.IsAlive && GetPosition(enemy, GetCastDelay(ability, enemy)).IsInRange(Owner.InFront(ability.CastRange), RazeRadius + enemy.HullRadius * 1.1); // * 1.1 wtf
+	return enemy.IsAlive && GetPosition(enemy, GetCastDelay(ability, enemy)).IsInRange(Owner.InFront(ability.CastRange), RazeRadius + enemy.HullRadius * 1.1) // * 1.1 wtf
 }
 
 // function InitCast(ability: Ability, array: Menu.ImageSelector, name: string) {

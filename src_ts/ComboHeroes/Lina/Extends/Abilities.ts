@@ -1,6 +1,6 @@
 import { Ability, Hero, Unit } from "wrapper/Imports"
 import { AbilityBase } from "../../Base/Abilities"
-export default class LinaAbility extends AbilityBase {
+export default class AbilityX extends AbilityBase {
 	constructor(unit?: Hero | Unit) {
 		super(unit)
 	}
