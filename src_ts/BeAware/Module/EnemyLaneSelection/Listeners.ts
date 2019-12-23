@@ -44,14 +44,17 @@ function GetLaneName(lane_selection_flags: LaneSelectionFlags_t) {
 	}
 }
 
-Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
+/* Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 	if (id === 2004) {
 		// loop-optimizer: KEEP
 		roles[0] = (obj as CSODOTALobby).members.filter(member => member.team === 0).map(member => member.lane_selection_flags)
 		// loop-optimizer: KEEP
 		roles[1] = (obj as CSODOTALobby).members.filter(member => member.team === 1).map(member => member.lane_selection_flags)
 	}
-})
+}) */
+
+roles[0] = [LaneSelectionFlags_t.HARD_SUPPORT, LaneSelectionFlags_t.MID_LANE, LaneSelectionFlags_t.OFF_LANE, LaneSelectionFlags_t.SAFE_LANE, LaneSelectionFlags_t.SOFT_SUPPORT]
+roles[1] = [LaneSelectionFlags_t.SOFT_SUPPORT, LaneSelectionFlags_t.OFF_LANE, LaneSelectionFlags_t.HARD_SUPPORT, LaneSelectionFlags_t.MID_LANE, LaneSelectionFlags_t.SAFE_LANE]
 
 ChatTimeOutSendRepeat.OnValue(x => {
 	is_send_chat = 0
@@ -79,7 +82,9 @@ export function Draw() {
 	}
 	let base_enemy_pos = new Vector2(first_offset + (DrawPositionGap.value * 5 + team_offset) * enemy_team_id + wSize.x / 100, DrawPositionY.value)
 	roles[enemy_team_id].forEach((role, i) => {
+
 		let role_str = GetLaneName(role)
+
 		if (role_str === undefined)
 			return
 		RendererSDK.Text(

@@ -298,7 +298,7 @@ function KeyHandler(key: number, pressed: boolean): boolean {
 	IsPressing.set(key, pressed)
 
 	onExecute.forEach(keybind => {
-		if (!Game.IsInGame && !keybind.activates_in_menu)
+		if (!Game.IsConnected && !keybind.activates_in_menu)
 			return
 		if (!Menu.trigger_on_chat && Game.IsInputCaptured && !keybind.trigger_on_chat)
 			return

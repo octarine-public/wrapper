@@ -265,7 +265,7 @@ export default class Vector2 {
 		var length = this.Length
 
 		if (length !== 0)
-			this.DivideScalar(scalar !== undefined ? length * scalar : length)
+			this.DivideScalarForThis(scalar !== undefined ? length * scalar : length)
 
 		return this
 	}
