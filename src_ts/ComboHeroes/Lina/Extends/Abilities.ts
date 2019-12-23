@@ -1,4 +1,4 @@
-import { Ability, Hero, Unit, EntityManager } from "wrapper/Imports"
+import { Ability, Hero, Unit } from "wrapper/Imports"
 import { AbilityBase } from "../../Base/Abilities"
 export default class AbilityX extends AbilityBase {
 	constructor(unit?: Hero | Unit) {

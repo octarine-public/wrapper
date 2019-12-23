@@ -29,6 +29,7 @@ let array_items: string[] = [
 ]
 let array_ability_steal: string[] = [
 	Abilities.DragonSlave.toString(),
+	Abilities.LightStrikeArray.toString(),
 	Abilities.LagunaBlade.toString(),
 ]
 
@@ -43,6 +44,7 @@ let AutoStealTree = Menu.AddNode("Auto Steal"),
 	AutoStealState = AutoStealTree.AddToggle("Enable", true),
 	AutoStealAbility = AutoStealTree.AddImageSelector("Ability", array_ability_steal, new Map(array_ability_steal.map(name => [name, true]))),
 	Combo = Menu.AddNode("Combo")
+
 const ComboHitAndRunTree = Combo.AddNode("HitAndRun")
 export const ComboHitAndRunAttack = ComboHitAndRunTree.AddToggle("Auto attack", true)
 export const TypeHitAndRun = ComboHitAndRunTree.AddSwitcher("Type Run", ["Run to target", "Run to cursor", "None"])

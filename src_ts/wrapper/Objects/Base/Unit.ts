@@ -590,7 +590,7 @@ export default class Unit extends Entity {
 			let name = buff.Name
 			if (name === undefined)
 				return false
-			return ignore_buffs.includes(name)
+			return ignore_buffs?.includes(name)
 		})
 	}
 
@@ -678,9 +678,9 @@ export default class Unit extends Entity {
 				case "bristleback_bristleback": {
 					if (source !== undefined) {
 						let rot_angle = source.FindRotationAngle(this)
-						if (rot_angle > 1.90)
+						if (rot_angle <= 1.90)
 							dmg *= 1 - abil.GetSpecialValue("back_damage_reduction") / 100
-						else if (rot_angle > 1.20)
+						else if (rot_angle <= 1.20)
 							dmg *= 1 - abil.GetSpecialValue("side_damage_reduction") / 100
 					}
 					return

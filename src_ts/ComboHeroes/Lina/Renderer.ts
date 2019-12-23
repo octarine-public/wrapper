@@ -89,13 +89,21 @@ function DrawAutoSteal(Ability: LinaAbility) {
 				? DAMAGE_TYPES.DAMAGE_TYPE_PURE
 				: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
 			Laguna = Abilities.LagunaBlade,
+			StrikeArray = Abilities.LightStrikeArray,
 			DraGonSlave = Abilities.DragonSlave,
-			StealDMDraGonSlave = Owner.CalculateDamage(DraGonSlave.AbilityDamage, DraGonSlave.DamageType, hero),
-			StealDMGLaguna = Owner.CalculateDamage(Laguna.AbilityDamage, DMG_TYPE_LAGUNA, hero)
+			StealDMStrikeArray = hero.CalculateDamage(StrikeArray.GetSpecialValue("light_strike_array_damage"), StrikeArray.DamageType, hero),
+			StealDMDraGonSlave = hero.CalculateDamage(DraGonSlave.AbilityDamage, DraGonSlave.DamageType, hero),
+			StealDMGLaguna = hero.CalculateDamage(Laguna.AbilityDamage, DMG_TYPE_LAGUNA, hero)
+
+
+		if (!StrikeArray.CanBeCasted() || !AutoStealAbility.IsEnabled(StrikeArray.Name)) {
+			StealDMStrikeArray = 0
+		}
 
 		if (!Laguna.CanBeCasted() || !AutoStealAbility.IsEnabled(Laguna.Name)) {
 			StealDMGLaguna = 0
 		}
+
 		if (!DraGonSlave.CanBeCasted() || !AutoStealAbility.IsEnabled(DraGonSlave.Name)) {
 			StealDMDraGonSlave = 0
 		}
@@ -105,7 +113,7 @@ function DrawAutoSteal(Ability: LinaAbility) {
 			return
 		}
 		wts.AddScalarX(off_x).AddScalarY(off_y)
-		let SizeSteal = (StealDMDraGonSlave + StealDMGLaguna) / hero.HP
+		let SizeSteal = (StealDMDraGonSlave + StealDMGLaguna + StealDMStrikeArray) / hero.HP
 		if (SizeSteal === 0)
 			return
 
@@ -113,7 +121,7 @@ function DrawAutoSteal(Ability: LinaAbility) {
 
 		if (SizeSteal < 1) {
 			colorBar.SetColor(74, 177, 48)
-			SizeSteal = (StealDMDraGonSlave + StealDMGLaguna) / hero.MaxHP
+			SizeSteal = (StealDMDraGonSlave + StealDMGLaguna + StealDMStrikeArray) / hero.MaxHP
 			sizeBarX += bar_w * SizeSteal
 		} else {
 			colorBar.SetColor(0, 255, 0)
