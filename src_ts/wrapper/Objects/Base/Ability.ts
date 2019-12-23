@@ -236,7 +236,7 @@ export default class Ability extends Entity {
 			for (let i = 0; i <= this.MaxLevel; i++)
 				cache[i] = this.m_pBaseEntity.GetSpecialValue(special_name, i)
 		}
-		return cache[level] || (cache[level] = this.m_pBaseEntity.GetSpecialValue(special_name, level))
+		return cache[level] ?? (cache[level] = this.m_pBaseEntity.GetSpecialValue(special_name, level))
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
 		let owner = this.Owner

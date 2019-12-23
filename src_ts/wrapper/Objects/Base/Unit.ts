@@ -586,11 +586,11 @@ export default class Unit extends Entity {
 			return true
 
 		let ignore_buffs = DamageIgnoreBuffs[damage_type]
-		return this.Buffs.some(buff => {
+		return ignore_buffs !== undefined && this.Buffs.some(buff => {
 			let name = buff.Name
 			if (name === undefined)
 				return false
-			return ignore_buffs?.includes(name)
+			return ignore_buffs.includes(name)
 		})
 	}
 
