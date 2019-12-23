@@ -46,7 +46,7 @@ export function CourierBestPosition(courier: Courier) {
 	})
 }
 EventsSDK.on("Tick", () => {
-	if (!State.value || BestPosSleep.Sleeping || Game.IsPaused || !OwnerIsValid())
+	if (!State.value || BestPosSleep.Sleeping || !OwnerIsValid())
 		return
 	BestPositionClickUpdate()
 	BestPosSleep.Sleep(2000)

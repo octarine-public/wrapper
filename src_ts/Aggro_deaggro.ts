@@ -26,7 +26,7 @@ function Use(x: Unit) {
 }
 
 EventsSDK.on("Tick", () => {
-	if (!Game.IsInGame || !IsValidPlayer() || Sleep.Sleeping)
+	if (!IsValidPlayer() || Sleep.Sleeping)
 		return
 	if (AutoTowerState.value) {
 		let Towers = EntityManager.GetEntitiesByClass(Tower, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)

@@ -7,7 +7,7 @@ import * as AutoTaunt from "./AutoTaunt/Listeners"
 import { MainState } from "./Base/MenuBase"
 
 EventsSDK.on("Tick", () => {
-	if (!MainState.value || LocalPlayer === undefined || LocalPlayer.IsSpectator || !Game.IsInGame)
+	if (!MainState.value || LocalPlayer.IsSpectator)
 		return
 	AutoFeed.Tick()
 	AutoLaugh.Tick()

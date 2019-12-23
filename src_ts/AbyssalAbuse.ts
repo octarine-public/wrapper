@@ -25,7 +25,7 @@ function checkAbyss() {
 }
 const abyss_recipe = ["item_basher", "item_vanguard", "item_recipe_abyssal_blade"]
 EventsSDK.on("Tick", () => {
-	let myHero = LocalPlayer?.Hero
+	let myHero = LocalPlayer.Hero
 	if (!active.value || !Game.IsInGame || !myHero?.IsAlive)
 		return
 	// loop-optimizer: KEEP
