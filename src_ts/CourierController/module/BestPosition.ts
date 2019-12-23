@@ -2,6 +2,8 @@ import { Courier, Vector3, DOTA_GameMode, Game, Unit, Creep, Hero, EntityManager
 import { StateBestPos, State } from "../Menu"
 import { CourierBase } from "../Data/Helper"
 import { Sleep, OwnerIsValid } from "../bootstrap"
+import { LaneSelectionFlags_t } from "../Data/Data"
+
 let BestPosSleep = new TickSleeper
 function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector3) {
 	if (!unit.IsAlive || !unit.IsVisible)
@@ -53,7 +55,7 @@ function BestPositionClickUpdate() {
 	CourierBase.LAST_CLICK = false
 }
 
-export function MoveCourier(Safe: boolean = false, courier: Courier, line?: number) {
+export function MoveCourier(Safe: boolean = false, courier: Courier, line?: LaneSelectionFlags_t) {
 	if (Game.IsPaused || !OwnerIsValid() || !CourierBase.IsValidCourier(courier) || CourierBase.LAST_CLICK)
 		return
 	if (!Safe) {

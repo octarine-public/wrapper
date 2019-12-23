@@ -46,8 +46,15 @@ export default class Ability extends Entity {
 	get AbilityType(): ABILITY_TYPES {
 		return this.AbilityData.AbilityType
 	}
+	get GadgetCastRange(): number {
+		let gadgetRange = EntityManager.GetEntitiesByClass(Unit,
+			DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(x =>
+				x.HasBuffByName("modifier_item_spy_gadget_aura") && x.IsAlive && (x.IsHero || x.Name.includes("bear"))
+				&& x.Distance2D(this.Owner) <= 1200)
+		return (gadgetRange ? 125 : 0)
+	}
 	get AOERadius(): number {
-		return this.m_pBaseEntity.m_fAOERadius
+		return this.m_pBaseEntity.m_fAOERadius + this.GadgetCastRange
 	}
 	get CastPoint(): number {
 		return this.m_pBaseEntity.m_fCastPoint
@@ -147,6 +154,7 @@ export default class Ability extends Entity {
 	get CooldownTimeRemaining() {
 		return Math.max(0, this.Cooldown - (Game.RawGameTime - this.Owner.LastVisibleTime))
 	}
+
 	get CastRange(): number {
 		let owner = this.Owner,
 			castrange = this.m_pBaseEntity.m_fCastRange
@@ -176,18 +184,19 @@ export default class Ability extends Entity {
 				break
 			}
 			case "lina_dragon_slave":
+				castrange += this.GetSpecialValue("dragon_slave_width_initial")
+				break
 			case "lina_laguna_blade":
 			case "lina_light_strike_array": {
-				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_cast_range_125")
+				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_cast_range_100")
 				if (unique !== undefined && unique.Level > 0)
-					castrange += 125
+					castrange += 100
 				break
 			}
 			default:
 				break
 		}
-
-		return castrange + (owner !== undefined ? owner.CastRangeBonus : 0)
+		return castrange + (owner !== undefined ? owner.CastRangeBonus : 0) + this.GadgetCastRange
 	}
 
 	public GetCastDelay(position: Vector3): number {
@@ -301,4 +310,5 @@ export default class Ability extends Entity {
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+import EntityManager from "../../Managers/EntityManager"
 RegisterClass("C_DOTABaseAbility", Ability)

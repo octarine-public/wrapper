@@ -27,6 +27,7 @@ function AbilityTypeReady(courier: Courier): Ability {
 		: (!courier.HasBuffByName("modifier_courier_shield")
 			&& courier.GetAbilityByName("courier_burst"))
 }
+
 function SafePosDeliver(courier: Courier): boolean {
 	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Tower], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit => {
 		if (!unit.IsAlive || !unit.IsVisible)

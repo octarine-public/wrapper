@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player } from "wrapper/Imports";
+import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Debugger", "SX.Utils"])
 const MenuTreeColor = Menu.AddNode("Enemy color")
@@ -34,7 +34,6 @@ BuybackBind.OnRelease(() => {
 		return
 	Player.Buyback()
 })
-
 EventsSDK.on("Tick", () => {
 	if (!State.value)
 		return
