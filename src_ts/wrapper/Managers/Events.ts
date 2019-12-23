@@ -2,8 +2,10 @@ type Listener = (...args: any) => false | any
 export class EventEmitter {
 	private readonly events = new Map<string, Listener[]>()
 	private readonly events_after = new Map<string, Listener[]>()
+	private readonly listener2line = new Map<Listener, string>()
 
 	public on(name: string, listener: Listener): EventEmitter {
+		this.listener2line.set(listener, new Error().stack.split("\n")[2])
 		let listeners = this.events.get(name)
 		if (listeners === undefined)
 			this.events.set(name, listeners = [])
