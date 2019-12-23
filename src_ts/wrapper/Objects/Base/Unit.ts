@@ -496,7 +496,7 @@ export default class Unit extends Entity {
 
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
-			if (spell.Level !== 0 && spell.Name.startsWith("special_bonus_cast_range_"))
+			if (spell.Level !== 0 && spell.Name.startsWith("special_bonus_cast_range"))
 				castrange += spell.GetSpecialValue("value")
 		})
 		return castrange
@@ -508,7 +508,7 @@ export default class Unit extends Entity {
 
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
-			if (spell.Level > 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
+			if (spell.Level !== 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
 				spellAmp += spell.GetSpecialValue("value") / 100
 		})
 
@@ -571,7 +571,7 @@ export default class Unit extends Entity {
 	}
 	public GetTalentValue(name: string | RegExp) {
 		let talent = this.AbilitiesBook.GetAbilityByName(name)
-		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
+		return talent !== undefined && talent.Level !== 0 ? talent.GetSpecialValue("value") : 0
 	}
 	/**
 	 * faster (Distance <= range)
@@ -639,9 +639,7 @@ export default class Unit extends Entity {
 			if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
 				switch (buff.Name) {
 					case "modifier_ember_spirit_flame_guard": {
-						let talent = this.AbilitiesBook.GetAbilityByName("special_bonus_unique_ember_spirit_1")
-						if (talent !== undefined && talent.Level > 0)
-							dmg -= talent.GetSpecialValue("value")
+						dmg -= this.GetTalentValue("special_bonus_unique_ember_spirit_1")
 						dmg -= abil.GetSpecialValue("absorb_amount")
 						return
 					}
@@ -655,9 +653,7 @@ export default class Unit extends Entity {
 				}
 			switch (abil.Name) {
 				case "abaddon_aphotic_shield": {
-					let talent = this.AbilitiesBook.GetAbilityByName("special_bonus_unique_abaddon")
-					if (talent !== undefined && talent.Level > 0)
-						dmg -= talent.GetSpecialValue("value")
+					dmg -= this.GetTalentValue("special_bonus_unique_abaddon")
 					dmg -= abil.GetSpecialValue("damage_absorb")
 					return
 				}

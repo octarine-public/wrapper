@@ -103,7 +103,7 @@ class BaseHelper {
 	public Active(target: Hero): boolean {
 
 		var borrowedTime = target.GetAbilityByName("abaddon_borrowed_time")
-		if (borrowedTime !== undefined && borrowedTime.Owner.HP <= 2000 && borrowedTime.Cooldown <= 0 && borrowedTime.Level > 0) {
+		if (borrowedTime !== undefined && borrowedTime.Owner.HP <= 2000 && borrowedTime.Cooldown <= 0 && borrowedTime.Level !== 0) {
 			return false
 		}
 

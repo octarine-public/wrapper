@@ -87,7 +87,7 @@ export default class Ability extends Entity {
 	}
 	get IsReady(): boolean {
 		const unit = this.Owner
-		return this.IsCooldownReady && this.Level > 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsSilenced))
+		return this.IsCooldownReady && this.Level !== 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsSilenced))
 	}
 	get IsGrantedByScepter(): boolean {
 		return this.AbilityData.IsGrantedByScepter
@@ -160,16 +160,14 @@ export default class Ability extends Entity {
 			}
 			case "skywrath_mage_concussive_shot": {
 				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4")
-				if (unique !== undefined && unique.Level > 0)
+				if (unique !== undefined && unique.Level !== 0)
 					return Number.MAX_SAFE_INTEGER
-
 				break
 			}
 			case "gyrocopter_call_down": {
 				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_gyrocopter_5")
-				if (unique !== undefined && unique.Level > 0)
+				if (unique !== undefined && unique.Level !== 0)
 					return Number.MAX_SAFE_INTEGER
-
 				break
 			}
 			case "lion_impale": {
@@ -179,13 +177,6 @@ export default class Ability extends Entity {
 			case "lina_dragon_slave":
 				castrange += this.GetSpecialValue("dragon_slave_width_initial")
 				break
-			case "lina_laguna_blade":
-			case "lina_light_strike_array": {
-				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_cast_range_100")
-				if (unique !== undefined && unique.Level > 0)
-					castrange += 100
-				break
-			}
 			default:
 				break
 		}
@@ -295,7 +286,7 @@ export default class Ability extends Entity {
 	}
 	public CanBeCasted(bonusMana: number = 0): boolean {
 		return this.IsValid
-			&& this.Level > 0
+			&& this.Level !== 0
 			&& this.IsCooldownReady
 			&& !this.Owner.IsSilenced
 			&& this.IsManaEnough(bonusMana)
