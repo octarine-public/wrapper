@@ -46,15 +46,8 @@ export default class Ability extends Entity {
 	get AbilityType(): ABILITY_TYPES {
 		return this.AbilityData.AbilityType
 	}
-	get GadgetCastRange(): number {
-		let gadgetRange = EntityManager.GetEntitiesByClass(Unit,
-			DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(x =>
-				x.HasBuffByName("modifier_item_spy_gadget_aura") && x.IsAlive && (x.IsHero || x.Name.includes("bear"))
-				&& x.Distance2D(this.Owner) <= 1200)
-		return (gadgetRange ? 125 : 0)
-	}
 	get AOERadius(): number {
-		return this.m_pBaseEntity.m_fAOERadius + this.GadgetCastRange
+		return this.m_pBaseEntity.m_fAOERadius
 	}
 	get CastPoint(): number {
 		return this.m_pBaseEntity.m_fCastPoint
@@ -196,7 +189,7 @@ export default class Ability extends Entity {
 			default:
 				break
 		}
-		return castrange + (owner !== undefined ? owner.CastRangeBonus : 0) + this.GadgetCastRange
+		return castrange + (owner !== undefined ? owner.CastRangeBonus : 0)
 	}
 
 	public GetCastDelay(position: Vector3): number {
@@ -310,5 +303,4 @@ export default class Ability extends Entity {
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-import EntityManager from "../../Managers/EntityManager"
 RegisterClass("C_DOTABaseAbility", Ability)

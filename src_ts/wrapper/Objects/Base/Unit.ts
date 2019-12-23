@@ -487,10 +487,18 @@ export default class Unit extends Entity {
 		if (lens !== undefined)
 			castrange += lens.GetSpecialValue("cast_range_bonus")
 
-		/*this.Spells.forEach(spell => {
-			if (spell.Level > 0 && /special_bonus_cast_range_/.test(spell.Name))
-				castrange -= spell.GetSpecialValue("value")
-		})*/
+		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget_aura")
+		if (gadget_aura !== undefined) {
+			let gadget = gadget_aura.Ability
+			if (gadget !== undefined)
+				castrange += gadget.GetSpecialValue("cast_range")
+		}
+
+		// loop-optimizer: POSSIBLE_UNDEFINED
+		this.Spells.forEach(spell => {
+			if (spell.Level !== 0 && spell.Name.startsWith("special_bonus_cast_range_"))
+				castrange += spell.GetSpecialValue("value")
+		})
 		return castrange
 	}
 	public get SpellAmplification(): number {
