@@ -13,7 +13,7 @@ let AbilityAbuser = Menu.AddEntry(["Utility", "Ability Abuse"]),
 setInterval(() => {
 	if (!ability_abuse.is_pressed)
 		return false
-	EntityManager.AllEntities.filter(ent => ent instanceof Hero && ent.IsControllable).forEach((MyEnt: Hero) => {
+	EntityManager.GetEntitiesByClass(Hero).filter(ent => ent.IsControllable).forEach(MyEnt => {
 		if (MyEnt.IsStunned)
 			return
 		let repeated_unit = new Array<C_BaseEntity>(0x80/*0x80*//*max: 0x3FFF*/).fill(MyEnt.m_pBaseEntity)
