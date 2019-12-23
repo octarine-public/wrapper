@@ -1,187 +1,137 @@
-/* tslint:disable */
-// @ts-nocheck
+const STRING = '"'
+const NODE_OPEN = '{'
+const NODE_CLOSE = '}'
+const BR_OPEN = '['
+const BR_CLOSE = ']'
+const COMMENT = '/'
+const CR = '\r'
+const LF = '\n'
+const SPACE = ' '
+const TAB = '\t'
+const WHITESPACE = [SPACE, '\t', '\r', '\n', '=']
 
-/// tokenize ///
-function tokenizeKV(data) {
-	data = data.toString()
-	data = (data as string).replace("}\t\t}", "}\n\t\t}")
-	return data
-		.split("\n")
-		.map((s, i) => {
-			return { text: s.trim(), line: i + 1 }
-		}).filter(s => s.text.length).filter(s => s.text.substr(0, 2) !== "//").map(tokenizeLine)
+class Stream {
+	constructor(public readonly buf: string, public pos = 0) { }
+
+	public RelativeSeek(s: number): Stream {
+		this.pos += s
+		return this
+	}
+	public SeekLine(): Stream {
+		let found = this.buf.indexOf("\n", this.pos)
+		if (found === -1)
+			found = this.buf.length - 1
+		this.pos = found + 1
+		return this
+	}
+	public Next(): string {
+		return this.buf.charAt(this.pos++)
+	}
+	public ReadString(size: number): string {
+		let str = this.buf.substring(this.pos, this.pos + size)
+		this.RelativeSeek(size)
+		return str
+	}
+	public Empty(): boolean {
+		return this.pos >= this.buf.length
+	}
 }
-function tokenizeLine(entry) {
-	var tokens = []
-	entry.text
-		.split(/(["\\\\])/g)
-		.filter(s => s.length)
-		.map(token => {
-			var tparts = token.split("//")
-			token = tparts.shift()
 
-			tokens.push(token)
-			if (tparts.length) {
-				tokens.push("//" + tparts.join("//"))
+function _symtostr(stream: Stream, token: string): string {
+	if (stream.buf.indexOf(token, stream.pos) === -1)
+		return ""
+	let str = "",
+		escape_next_char = false,
+		start_pos = stream.pos
+	while (!stream.Empty()) {
+		let ch = stream.Next()
+		if (escape_next_char) {
+			escape_next_char = false
+			try {
+				str += JSON.parse(`"\\${ch}"`)
+			} catch {
+				str += ch
 			}
-			return token
-		})
-	entry.tokens = tokens
-	return entry
+			continue
+		}
+		if (ch === "\\") {
+			escape_next_char = true
+			continue
+		}
+		if (ch === token)
+			return str
+		str += ch
+	}
+	stream.pos = start_pos
+	return ""
 }
 
-/// Index ///
-export function parseKV(data) {
-	var lines = tokenizeKV(data)
-	var result = Object.create(null)
-	result.values = Object.create(null)
-	var currentResult = result
-	var popStack = rootPopStack
+function _unquotedtostr(stream: Stream): string {
+	let str = ""
+	while (!stream.Empty()) {
+		let ch = stream.Next()
+		if (WHITESPACE.includes(ch))
+			break
+		str += ch
+	}
+	return str
+}
 
-	Object.defineProperty(currentResult, "comments", {
-		enumerable: false,
-		value: Object.create(null),
-	})
+function _parse(stream: Stream, map = new Map<string, any>()): Map<string, any> {
+	var laststr = "",
+		lasttok = "",
+		lastbrk = "",
+		next_is_value = false
 
-	// state variables
-	var stack = []
-	var key = null
-	var value = null
-	var temporaryStack = ""
-	var isInQuotes = false
-	var isInComment = false
-	var isEscaping = false
-	// loop-optimizer: KEEP
-	lines.forEach(entry => {
-		var line = entry.tokens
-		var comment = ""
-		// loop-optimizer: KEEP
-		line.forEach(token => {
-			if (isInComment) {
-				if (token[0] === '"') {
-					comment += " "
-				}
-				comment += token
-				return
-			}
-			if (!isInQuotes) {
-				token = token.trim()
-				if (!token.length) {
-					return
-				}
-			}
-			switch (token) {
-				case "\\":
-					isEscaping = true
-					return
-				case '"':
-					if (isEscaping) {
-						isEscaping = false
-						break
-					}
-					isInQuotes = !isInQuotes
-					if (!isInQuotes) {
-						if (!key) {
-							key = temporaryStack
-						} else if (value === null) {
-							value = temporaryStack
-						} else if (isInComment) {
-							// do nothing, this a comment
-							comment += token
-						} else if (key && value) {
-							currentResult.values[key] = value
-							key = temporaryStack
-							value = null
-						} else {
-							throw new Error("Too many values on line " + entry.line)
-						}
-						temporaryStack = ""
-					}
-					return
-				case "{":
-					if (!temporaryStack) {
-						if (key && !value) {
-							temporaryStack = key
-							key = ""
-						} else {
-							throw new Error('Unexpected "{" character on line ' + entry.line)
-						}
-					}
-					pushStack(temporaryStack)
-					temporaryStack = ""
-					return
-				case "}":
-					return popStack()
-			}
-			if (isInQuotes) {
-				if (isEscaping) {
-					isEscaping = false
-					temporaryStack += "\\"
-				}
-				temporaryStack += token
-			} else if (token.substr(0, 2) === "//") {
-				isInComment = true
-				comment = token.substr(2)
-			} else if (isInComment) {
-				comment += token
+	while (!stream.Empty()) {
+		var c = stream.Next()
+
+		if (c === NODE_OPEN) {
+			next_is_value = false  // Make sure the next string is interpreted as a key.
+			if (!map.has(laststr))
+				map.set(laststr, new Map<string, any>())
+			_parse(stream, map.get(laststr))
+		} else if (c === NODE_CLOSE) {
+			return map
+		} else if (c === BR_OPEN)
+			lastbrk = _symtostr(stream, BR_CLOSE)
+		else if (c === COMMENT) {
+			if (stream.Next() === COMMENT)
+				stream.SeekLine()
+			else
+				stream.RelativeSeek(-1) // cancel read
+		} else if (c === CR) {
+			stream.SeekLine()
+			c = LF
+		} else if (c === LF) {
+		} else if (c !== SPACE && c !== TAB && c !== "=") {
+			let string: string
+			if (c === STRING) {
+				string = _symtostr(stream, STRING)
 			} else {
-				throw new Error('Unexpected token "' + token + '" on line ' + entry.line)
+				stream.RelativeSeek(-1)
+				string = _unquotedtostr(stream)
 			}
-		})
-		if (isInQuotes) {
-			console.log("Invalid line: ", entry)
-			// throw new Error('Unmatched close quotation on line ' + entry.line);
-			return
-		}
-		if (temporaryStack.length) {
-			console.log("leftover stack", temporaryStack)
-		}
-		temporaryStack = ""
-		if (key && value === null) {
-			temporaryStack = key
-			currentResult.comments[key] = comment.trim()
-		} else if (key !== null && value !== null) {
-			currentResult.values[key] = value
-			if (comment.length) {
-				// console.log(key, comment);
-				currentResult.comments[key] = comment.trim()
+
+			if (lasttok === STRING && next_is_value) {
+				if (map.has(laststr) && lastbrk !== "")
+					lastbrk = ""  // Ignore this sentry if it's the second bracketed expression
+				else
+					map.set(laststr, string)
 			}
-			// Object.defineProperty(  , 'comment', {
-			//   enumerable: false,
-			//   value: comment
-			// });
-		}
-		key = null
-		value = null
-		isInComment = false
-		comment = ""
-	})
+			c = STRING  // Force c == string so lasttok will be set properly.
+			laststr = string
+			next_is_value = !next_is_value
+		} else
+			c = lasttok
 
-	return result
-
-	function pushStack(title) {
-		var _popStack = popStack
-		var parentResult = currentResult
-
-		stack.push(title)
-
-		currentResult[title] = {
-			values: {},
-		}
-		currentResult = currentResult[title]
-
-		Object.defineProperty(currentResult, "comments", {
-			enumerable: false,
-			value: {},
-		})
-
-		popStack = () => {
-			popStack = _popStack
-			currentResult = parentResult
-		}
+		lasttok = c
 	}
 
-	function rootPopStack() {
-		throw new Error('Unexpected "}"')
-	}
+	return map
+}
+
+export type RecursiveMap = Map<string, RecursiveMap | string>
+export function parseKV(data: string): RecursiveMap {
+	return _parse(new Stream(data))
 }

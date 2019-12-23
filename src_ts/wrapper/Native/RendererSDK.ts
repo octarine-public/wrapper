@@ -148,7 +148,7 @@ let RendererSDK_ = new (class RendererSDK {
 			if (!(vec.x > 0 && vec.y > 0))
 				return
 		}
-		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize).SubtractForThis(vecPos)
+		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize)
 		if (vecSize.x <= 0 || vecSize.y <= 0)
 			return
 		this.SetColor(color)

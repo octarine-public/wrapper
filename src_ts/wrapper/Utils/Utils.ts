@@ -1,9 +1,11 @@
-import { Vector3 } from "../Imports"
+import { RendererSDK } from "../Imports"
 import EventsSDK from "../Managers/EventsSDK"
 import ProjectileManager from "../Managers/ProjectileManager"
 import Unit from "../Objects/Base/Unit"
-import { parseKV } from "./ParseKV"
+import { parseKV, RecursiveMap } from "./ParseKV"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
+import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
 
 export const DamageIgnoreBuffs = [
 	[], // DAMAGE_TYPES.DAMAGE_TYPE_NONE = 0
@@ -155,18 +157,11 @@ export function Utf8ArrayToStr(array: Uint8Array): string {
 	return out
 }
 
-export function parseKVFile(path: string) {
+export function parseKVFile(path: string): RecursiveMap {
 	let buf = readFile(path)
 	if (buf === undefined)
-		return undefined
+		return new Map()
 	return parseKV(Utf8ArrayToStr(new Uint8Array(buf)))
-}
-
-export function parseKVFileToMap(path: string): Map<string, any> | undefined {
-	let parsed = parseKVFile(path) as { [names: string]: string }
-	if (parsed === undefined)
-		return undefined
-	return new Map<string, string>(Object.entries(parsed[Object.keys(parsed).find(key => key !== "values" && key !== "comments")!]))
 }
 
 export function GetHealthAfter(unit: Unit, delay: number, allow_overflow = false, include_projectiles: boolean = false, attacker?: Unit, melee_time_offset: number = 0): number {
@@ -198,6 +193,16 @@ export function GetHealthAfter(unit: Unit, delay: number, allow_overflow = false
 		})
 	hpafter += unit.HPRegen * delay
 	return Math.max(allow_overflow ? hpafter : Math.min(hpafter, unit.MaxHP), 0)
+}
+
+export function GetProportionalScaledVector(vec: Vector2, apply_screen_scaling = true, magic: number = 1, parent_size: Vector2 = RendererSDK.WindowSize): Vector2 {
+	vec = vec.Clone()
+	let h = parent_size.y
+	vec.y = Math.floor(h / 0x300 * vec.y / magic)
+	if (apply_screen_scaling && parent_size.x === 1280 && h === 1024)
+		h = 960
+	vec.x = Math.floor(h / 0x300 * vec.x / magic)
+	return vec
 }
 
 export const CursorWorldVec: Vector3 = new Vector3()

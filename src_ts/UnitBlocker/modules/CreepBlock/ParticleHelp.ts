@@ -4,10 +4,10 @@ import { AddOrUpdateParticle, RemoveParticle } from "../../base/DrawParticle"
 import { stateMain } from "../../base/MenuBase"
 import { DrawHelpPosition, DrawState, State } from "./Menu"
 
-let lastHero: Hero
+let lastHero: Nullable<Hero>
 let particles: string[] = []
 
-let timeout: TimeoutData
+let timeout: TimeoutData | undefined
 
 export const BestPosition = [
 	[
@@ -32,8 +32,10 @@ export function DrawParticles() {
 		|| !Game.IsInGame
 	)
 		return
+
 	lastHero = EntityManager.LocalHero
-	if (lastHero === undefined)
+
+	if (lastHero === undefined || LocalPlayer === undefined)
 		return
 
 	const teamParticles = BestPosition[LocalPlayer.Team - 2]
@@ -45,7 +47,7 @@ export function DrawParticles() {
 	teamParticles.forEach(vec => {
 		const name = vec.toString()
 
-		AddOrUpdateParticle(name, lastHero, vec, 100)
+		AddOrUpdateParticle(name, lastHero!, vec, 100)
 
 		particles.push(name)
 	})
@@ -62,6 +64,6 @@ export function RemoveParticles() {
 	if (lastHero === undefined)
 		return
 
-	particles.forEach(partcl => RemoveParticle(partcl, lastHero))
+	particles.forEach(partcl => RemoveParticle(partcl, lastHero!))
 	particles = []
 }

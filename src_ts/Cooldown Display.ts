@@ -137,7 +137,7 @@ EventsSDK.on("Draw", () => {
 		let is_local = local_hero === hero
 		if (!optionSelf.value && is_local)
 			return
-		if (is_local || (optionAlly.value && !hero.IsEnemy()))
+		if (!is_local && !optionAlly.value && !hero.IsEnemy())
 			return
 
 		let screen_pos = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(optionBoxWorldOffset.value))

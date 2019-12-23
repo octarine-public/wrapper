@@ -10,9 +10,9 @@ export let baseCheckUnit = (ent: Unit) =>
 export let checkControllable = (ent: Unit) =>
 	baseCheckUnit(ent) && ent.IsControllable
 
-export let SelectedStopping = (): Unit[] =>
-	LocalPlayer.SelectedUnits.filter(ent =>
-		ent instanceof Unit && checkControllable(ent)) as Unit[]
+export let SelectedStopping = () =>
+	LocalPlayer?.SelectedUnits.filter(ent =>
+		ent instanceof Unit && checkControllable(ent)) ?? [] as Unit[]
 
 export let Controllables = () => allNPCs.filter(checkControllable)
 
