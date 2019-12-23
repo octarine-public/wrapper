@@ -37,6 +37,7 @@ EventsSDK.on("Tick", () => {
 					&& (
 						abil_.Name === "bane_nightmare"
 						|| abil_.Name === "shadow_demon_disruption"
+						|| abil_.Name === "obsidian_destroyer_astral_imprisonment"
 					)
 					&& techies.IsInRange(hero, abil_.CastRange)
 				) {
@@ -48,7 +49,11 @@ EventsSDK.on("Tick", () => {
 	)
 		return
 	techies.CastPosition(abil, techies.InFront(50), false, true)
-	sleeper.Sleep((last_abil.CastPoint + (last_abil.GetSpecialValue("disruption_duration") || last_abil.GetSpecialValue("duration"))) * 1000 + 30, last_abil)
+	sleeper.Sleep((last_abil.CastPoint + (
+		last_abil.GetSpecialValue("disruption_duration")
+		|| last_abil.GetSpecialValue("duration")
+		|| last_abil.GetSpecialValue("prison_duration")
+	)) * 1000 + 30, last_abil)
 })
 
 EventsSDK.on("GameStarted", () => sleeper.FullReset())
