@@ -24,14 +24,14 @@ function RenderIcon(position_unit: Vector2, path_icon: string) {
 
 function DrawShrineTime(unit: Unit) {
 	if (unit.IsEnemy() && !unit.IsVisibleForEnemies) // TODO improve on particle create
-		return false
+		return
 	let abil = unit.GetAbilityByName("filler_ability")
 	if (abil === undefined)
-		return false
+		return
 	let Time = Base.TimeSecondToMin(abil.Cooldown),
 		position_unit = RendererSDK.WorldToScreen(unit.Position)
 	if (position_unit === undefined)
-		return false
+		return
 	if (abil.Cooldown <= 0) {
 
 		if (ShrineStateIcon.value)
@@ -45,27 +45,23 @@ function DrawShrineTime(unit: Unit) {
 
 		RendererSDK.Text(Time, position_unit, DrawTextColorShrine.Color, "Verdana", DrawTextSizeShrine.value, FontFlags_t.ANTIALIAS)
 	}
-	return true
 }
 
 function Switching(x: Unit) {
-	if (!x.Name.includes("healer"))
-		return false
+	if (!x.Name.includes("healer") || !x.IsAlive)
+		return
 	switch (DrawEnemyOrAllies.selected_id) {
 		case 0:
-			return Base.IsShrine(x) && DrawShrineTime(x)
+			return DrawShrineTime(x)
 		case 1:
-			return Base.IsShrine(x) && !x.IsEnemy() && DrawShrineTime(x)
+			return !x.IsEnemy() && DrawShrineTime(x)
 		case 2:
-			return Base.IsShrine(x) && x.IsEnemy() && DrawShrineTime(x)
+			return x.IsEnemy() && DrawShrineTime(x)
 	}
 }
 
 export function DrawShrine() {
 	if (!ShrineState.value)
 		return
-	if (Units.length === 0)
-		return
-	if (Units.some(Switching))
-		return
+	Units.forEach(Switching)
 }

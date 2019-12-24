@@ -66,13 +66,12 @@ export function ParticleCreate(id: number, handle: bigint, path: string, entity:
 }
 
 function IsEnemyUse(position: Vector3) {
-	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some
-		(x => x.IsAlive && x.Distance2D(position) < 900)
+	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Courier])
+		.some(x => x.IsEnemy() && x.IsAlive && x.Distance2D(position) < 900)
 }
 
 function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: string, name_hero: string, color?: Color, Time?: number) {
-	let hero = EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
-		.find(x => !x.IsVisible && x.Name === name_hero)
+	let hero = EntityManager.GetEntitiesByClass(Hero).find(x => x.IsEnemy() && !x.IsVisible && x.Name === name_hero)
 	if (hero !== undefined) {
 		let is = name_ability.startsWith("item_")
 		let abil = !is ? hero.GetAbilityByName(name_ability) : hero.GetItemByName(name_ability)
@@ -449,7 +448,9 @@ function RenderTeleportMap(handle: bigint, position: Vector3) {
 export function OnDraw() {
 	if (!Game.IsInGame)
 		return
-	EntityManager.GetEntitiesByClass(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(x => {
+	EntityManager.GetEntitiesByClass(Unit).forEach(x => {
+		if (!x.IsEnemy())
+			return
 		DrawingOtherAbility(x, "nether_ward", "pugna_nether_ward", 1600)
 		DrawingOtherAbility(x, "psionic_trap", "templar_assassin_trap", 400)
 	})

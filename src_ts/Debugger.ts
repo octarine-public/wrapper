@@ -45,7 +45,7 @@ addUnitMenu.AddKeybind("Add full Sven")
 			for (var i = 6; i--;)
 				Game.ExecuteCommand("dota_bot_give_item item_heart")
 
-			Game.ExecuteCommand("dota_bot_give_level 25")
+			Game.ExecuteCommand("dota_bot_give_level 30")
 		}, 1000)
 	})
 
@@ -73,6 +73,7 @@ function SafeLog(...args) {
 	// loop-optimizer: KEEP
 	console.log(...args.map(arg => JSON.parse(JSON.stringify(arg, (key, value) => typeof value === 'bigint' ? value.toString() + 'n' : value))))
 }
+globalThis.SafeLog = SafeLog
 
 EventsSDK.on("GameEvent", (name, obj) => {
 	if (!debugEvents.value)
@@ -129,22 +130,22 @@ EventsSDK.on("Draw", () => {
 		avg_ar[0] /= avg_ar[1]
 		max_map.set(name, Math.max(max_map.get(name), took))
 		frame_buffer_map.set(name, frame_buffer_map.get(name) + took)
-		counter_map.get(name).push(Date.now())
+		counter_map.get(name).push(hrtime())
 	}
 
 	setInterval(() => {
 		// loop-optimizer: KEEP
 		counter_map.forEach((ar, name) => {
-			let cur_date = Date.now()
+			let cur_date = hrtime()
 			// loop-optimizer: FORWARD
 			counter_map.set(name, ar.filter(date => cur_date - date < 30 * 1000))
 		})
 	}, 10)
 
 	function ProfileEmit(name: string, cancellable?: boolean, ...args: any[]) {
-		let t = Date.now()
+		let t = hrtime()
 		let ret = old_emit.apply(Events, [name, cancellable, ...args])
-		t = Date.now() - t
+		t = hrtime() - t
 		RegisterStats(name, t)
 		if (name === "Draw") {
 			// loop-optimizer: KEEP
@@ -211,10 +212,10 @@ EventsSDK.on("Draw", () => {
 		let listeners = this.events.get(name)
 
 		let ret = listeners === undefined || !listeners.some(listener => {
-			let t = Date.now()
+			let t = hrtime()
 			try {
 				let ret = listener.apply(this, args)
-				t = Date.now() - t
+				t = hrtime() - t
 				RegisterStats(this.listener2line.get(listener), t)
 				return ret === false && cancellable
 			} catch (e) {
@@ -238,3 +239,11 @@ EventsSDK.on("Draw", () => {
 			console.log(`${name}: ${took}ms`)
 	}
 }
+
+let last_time = 0
+setInterval(() => {
+	if (Date.now() - last_time < 10000 || GetHeapStatistics().total_heap_size < 200n * 1024n * 1024n)
+		return
+	TakeHeapSnapshot("dumps/" + Math.random().toString().substring(2, 8) + ".heapsnapshot")
+	last_time = Date.now()
+}, 100)

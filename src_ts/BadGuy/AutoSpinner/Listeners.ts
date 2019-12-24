@@ -17,9 +17,9 @@ export function Tick() {
 	b = false
 	if (!State.value || !SpinnerKey.is_pressed)
 		return
-	let Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
+	let Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Courier])
 	let ar = ControllablesMode.selected_id !== 0
-		? Units.filter(x => x.IsControllable)
+		? Units.filter(x => !x.IsEnemy() && x.IsControllable)
 		: [LocalPlayer.Hero] as Unit[]
 	ar = ar.filter(ent => ent.IsAlive && ent.IsVisible && !ent.IsStunned && !ent.IsHexed)
 	if (ControllablesMode.selected_id === 2)

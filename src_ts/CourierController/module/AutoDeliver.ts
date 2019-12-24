@@ -1,4 +1,4 @@
-import { DOTA_GameMode, Game, Courier } from "wrapper/Imports"
+import { Courier } from "wrapper/Imports"
 import { deliverState } from "../Menu"
 import { Sleep, Owner } from "../bootstrap"
 import { CourierBase } from "../Data/Helper"
@@ -34,7 +34,7 @@ function Deliver(courier: Courier): boolean {
 }
 
 export function AutoDeliver(courier: Courier): boolean {
-	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !deliverState.value || CourierBase.LAST_CLICK)
+	if (!deliverState.value || CourierBase.LAST_CLICK)
 		return false
 	let StateCourEnt = courier.StateHero,
 		StateCourEnum = courier.State

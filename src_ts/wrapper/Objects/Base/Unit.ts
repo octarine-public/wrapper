@@ -474,7 +474,7 @@ export default class Unit extends Entity {
 		if (lens !== undefined)
 			castrange += lens.GetSpecialValue("cast_range_bonus")
 
-		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget_aura")
+		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget")
 		if (gadget_aura !== undefined) {
 			let gadget = gadget_aura.Ability
 			if (gadget !== undefined)
@@ -632,8 +632,10 @@ export default class Unit extends Entity {
 					}
 					case "modifier_item_pipe_barrier":
 					case "modifier_item_hood_of_defiance_barrier":
-					case "modifier_item_infused_raindrop":
 						dmg -= abil.GetSpecialValue("barrier_block")
+						return
+					case "modifier_item_infused_raindrop":
+						dmg -= abil.GetSpecialValue("magic_damage_block")
 						return
 					default:
 						break
@@ -645,7 +647,7 @@ export default class Unit extends Entity {
 					return
 				}
 				case "bloodseeker_bloodrage":
-					dmg *= abil.GetSpecialValue("damage_increase_pct") / 100
+					dmg *= 1 + abil.GetSpecialValue("damage_increase_incoming_pct") / 100
 					return
 				case "spectre_dispersion":
 					dmg *= 1 - (abil.GetSpecialValue("damage_reflection_pct") / 100)
@@ -656,9 +658,6 @@ export default class Unit extends Entity {
 					return
 				case "kunkka_ghostship":
 					dmg *= 1 - (abil.GetSpecialValue("ghostship_absorb") / 100)
-					return
-				case "wisp_overcharge":
-					dmg *= 1 + (abil.GetSpecialValue("bonus_damage_pct") / 100)
 					return
 				case "medusa_mana_shield": {
 					let max_absorbed_dmg = this.Mana * abil.GetSpecialValue("damage_per_mana"),

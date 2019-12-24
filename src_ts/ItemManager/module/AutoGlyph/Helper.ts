@@ -4,9 +4,8 @@ import { StateBase } from "../../abstract/MenuBase"
 import { State, TowerHP, TowerSwitcher } from "./Menu"
 let Sleep: TickSleeper = new TickSleeper
 let Base: ItemManagerBase = new ItemManagerBase
-export function Init() {
-	if (!StateBase.value || !State.value || Sleep.Sleeping
-		|| LocalPlayer === undefined || Player === undefined || LocalPlayer.IsSpectator) {
+export function Tick() {
+	if (!StateBase.value || !State.value || Sleep.Sleeping || Player === undefined) {
 		return
 	}
 	let Time = LocalPlayer.Team === Team.Radiant
@@ -24,11 +23,16 @@ export function Init() {
 		case 4: include_name = "tower"; break
 		case 5: include_name = "npc_dota_"; break
 	}
-	if (!EntityManager.GetEntitiesByClass(Building, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(x => !x.IsShop
-		&& !x.IsShrine && x.IsAlive && x.HP <= TowerHP.value
+	if (!EntityManager.GetEntitiesByClass(Building).some(x =>
+		!x.IsEnemy()
+		&& !x.IsShop
+		&& !x.IsShrine
+		&& x.IsAlive
+		&& x.HP <= TowerHP.value
 		&& x.Name.includes(include_name)
-		&& EntityManager.GetEntitiesByClass(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit =>
-			unit.IsVisible
+		&& EntityManager.GetEntitiesByClass(Unit).some(unit =>
+			unit.IsEnemy()
+			&& unit.IsVisible
 			&& unit.IsAlive && (unit.IsCreep || unit.IsHero)
 			&& unit.IsInRange(x, unit.AttackRange + (unit.HullRadius * 2)))))
 		return

@@ -42,17 +42,24 @@ function RemoveTarget(particle: number, tower: Tower) {
 export function Tick() {
 	if (!State.value)
 		return
-	Towers = EntityManager.GetEntitiesByClass(Tower, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH).filter(x => x.IsAlive)
+	Towers = EntityManager.GetEntitiesByClass(Tower).filter(x => x.IsAlive)
 }
+
+State.OnValue(x => {
+	if (x.value)
+		return
+	// loop-optimizer: KEEP
+	Towers.forEach((tower, particle_range) => {
+		SwicthTowers(particle_range, tower)
+		RemoveTarget(pars.get(tower), tower)
+	})
+})
 
 export function OnDraw() {
 	if (!State.value || Towers.length <= 0)
 		return
 	// loop-optimizer: KEEP
-	Towers.some((tower: Tower, i) => {
-		if (tower === undefined || i === undefined) {
-			return
-		}
+	Towers.forEach((tower, i) => {
 		if (!FirstCreate) { // shit, in ent create don'n work
 			CreateTowerRange(tower)
 			FirstCreate = true
@@ -83,12 +90,6 @@ export function OnDraw() {
 					break
 			}
 		} else SwicthTowers(particle_range, tower)
-		State.OnValue(x => {
-			if (!x.value) {
-				SwicthTowers(particle_range, tower)
-				RemoveTarget(particle, tower)
-			}
-		})
 		let particle = pars.get(tower)
 		if (tower.TowerAttackTarget === undefined || !tower.IsAlive ||
 			tower.Distance2D(tower.TowerAttackTarget.Position) >= tower.AttackRange + tower.HullRadius + 25) {
