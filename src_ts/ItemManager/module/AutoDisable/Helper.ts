@@ -1,4 +1,4 @@
-import { Unit, Ability, Game, TickSleeper, EntityManager, Hero } from "wrapper/Imports"
+import { Unit, Ability, TickSleeper, EntityManager, Hero } from "wrapper/Imports"
 import ItemManagerBase from "../../abstract/Base"
 import { StateBase } from "../../abstract/MenuBase"
 import {
@@ -61,40 +61,40 @@ function filter(unit: Unit, enemy: Unit, items: string[] = []) {
 function AutoDisable(unit: Unit) {
 	if (!unit.IsAlive || !unit.IsControllable)
 		return false
-	let EnemyHeroes = EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+	let EnemyHeroes = EntityManager.GetEntitiesByClass(Hero)
 	for (var i = 0, len = EnemyHeroes.length; i < len; i++) {
-		let enemy = EnemyHeroes[i]
-		if (enemy.IsStunned || enemy.IsHexed || enemy.IsSilenced)
+		let hero = EnemyHeroes[i]
+		if (!hero.IsEnemy() || hero.IsStunned || hero.IsHexed || hero.IsSilenced)
 			continue
 		Disable = false
 		if (AngryDisablerState.value) {
-			filter(unit, enemy)
+			filter(unit, hero)
 			continue
 		}
-		if (ScrollDisableItemsState.value && enemy.HasBuffByName("modifier_teleporting"))
-			filter(unit, enemy, ScrollDisableItems.values)
+		if (ScrollDisableItemsState.value && hero.HasBuffByName("modifier_teleporting"))
+			filter(unit, hero, ScrollDisableItems.values)
 
 		if (Disable)
 			return
 		if (AntiChannelingState.value) {
-			if (enemy.IsChanneling)
-				filter(unit, enemy)
+			if (hero.IsChanneling)
+				filter(unit, hero)
 			continue
 		}
 		Disable_Important.some(abil => {
 			if (!ImportantAbility.IsEnabled(abil))
 				return false
-			let ability = enemy.GetAbilityByName(abil)
+			let ability = hero.GetAbilityByName(abil)
 			if (ability?.IsChanneling || ability?.IsInAbilityPhase) {
-				filter(unit, enemy)
+				filter(unit, hero)
 				return false
 			}
 		})
 	}
 }
 
-export function Init() {
-	if (!StateBase.value || !State.value || Game.IsPaused || Sleep.Sleeping)
+export function Tick() {
+	if (!StateBase.value || !State.value || Sleep.Sleeping)
 		return
 	if (EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(AutoDisable))
 		return

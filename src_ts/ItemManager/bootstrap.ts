@@ -9,10 +9,10 @@ EventsSDK.on("Tick", () => {
 	if (LocalPlayer.IsSpectator)
 		return
 	//AutoBuy.Init()
-	AutoGlyph.Init()
+	AutoGlyph.Tick()
 	AutoItems.Tick()
-	AutoDeward.Init()
-	AutoDisable.Init()
+	AutoDeward.Tick()
+	AutoDisable.Tick()
 })
 
 EventsSDK.on("GameEnded", () => {

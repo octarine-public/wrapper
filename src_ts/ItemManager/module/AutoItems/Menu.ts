@@ -44,10 +44,10 @@ export const AutoUseItemsMedal = SettingsAutoItems.AddNode("SolarCrest / Medalli
 export const AutoUseItemsMedal_val = AutoUseItemsMedal.AddSwitcher("Select", ["All units", "Only allies", "Only enemy"])
 
 export const AutoUseItemsSticks = SettingsAutoItems.AddNode("Stick")
-export const AutoUseItemsSticks_val = AutoUseItemsSticks.AddSlider("HP precent (%)", 10, 1, 99)
+export const AutoUseItemsSticks_val = AutoUseItemsSticks.AddSlider("HP (%)", 10, 1, 99)
 
 const AutoUseItemsTango = SettingsAutoItems.AddNode("Tango")
-export const AutoUseItemsTango_val = AutoUseItemsTango.AddSlider("HP (min) for use", 450, 1, 1000)
+export const AutoUseItemsTango_val = AutoUseItemsTango.AddSlider("HP (%)", 2, 2, 100)
 
 const AutoUseItemsTalon = SettingsAutoItems.AddNode("Talon")
 export const AutoUseItemsTalon_val = AutoUseItemsTalon.AddSwitcher("Mode", ["Only neutrals", "All Creeps"], 0)
@@ -61,16 +61,16 @@ const AutoUseItemsFaerieFire = SettingsAutoItems.AddNode("Faerie Fire")
 export const AutoUseItemsFaerieFire_val = AutoUseItemsFaerieFire.AddSlider("HP (min) for use", 100, 1, 1000)
 
 const AutoUseItemsBigFaerieFire = SettingsAutoItems.AddNode("Greater Faerie Fire")
-export const AutoUseItemsBigFaerieFire_val = AutoUseItemsBigFaerieFire.AddSlider("HP precent (%)", 5, 1, 99)
+export const AutoUseItemsBigFaerieFire_val = AutoUseItemsBigFaerieFire.AddSlider("HP (%)", 5, 1, 99)
 
 const AutoUseItemsEssenceRing = SettingsAutoItems.AddNode("Essence Ring")
-export const AutoUseItemsEssenceRing_val = AutoUseItemsEssenceRing.AddSlider("HP precent (%)", 5, 1, 99)
+export const AutoUseItemsEssenceRing_val = AutoUseItemsEssenceRing.AddSlider("HP (%)", 5, 1, 99)
 
 const AutoUseItemsCheese = SettingsAutoItems.AddNode("Cheese")
-export const AutoUseItemsCheese_val = AutoUseItemsCheese.AddSlider("HP precent (%)", 10, 1, 99)
+export const AutoUseItemsCheese_val = AutoUseItemsCheese.AddSlider("HP (%)", 10, 1, 99)
 
 const AutoUseItemsArcane = SettingsAutoItems.AddNode("Arcane Boots")
-export const AutoUseItemsArcane_val = AutoUseItemsArcane.AddSlider("MP precent (%)", 10, 1, 99)
+export const AutoUseItemsArcane_val = AutoUseItemsArcane.AddSlider("MP (%)", 10, 1, 99)
 
 const AutoUseItemsArcaneRing = SettingsAutoItems.AddNode("Arcane Ring")
 export const AutoUseItemsArcanering_val = AutoUseItemsArcaneRing.AddSlider("MP (min) for use", 150, 1, 500)

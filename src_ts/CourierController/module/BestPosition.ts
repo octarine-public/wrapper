@@ -1,10 +1,9 @@
-import { Courier, Vector3, DOTA_GameMode, Game, Unit, Creep, Hero, EntityManager, EventsSDK, TickSleeper } from "wrapper/Imports"
-import { StateBestPos, State } from "../Menu"
+import { Courier, Vector3, Game, Unit, Creep, Hero, EntityManager } from "wrapper/Imports"
+import { StateBestPos } from "../Menu"
 import { CourierBase } from "../Data/Helper"
 import { Sleep, OwnerIsValid } from "../bootstrap"
 import { LaneSelectionFlags_t } from "../Data/Data"
 
-let BestPosSleep = new TickSleeper
 function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector3) {
 	if (!unit.IsAlive || !unit.IsVisible)
 		return false
@@ -24,9 +23,11 @@ function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector
 }
 
 export function CourierBestPosition(courier: Courier) {
-	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !StateBestPos.value)
+	if (!StateBestPos.value)
 		return false
-	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit => {
+	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep]).some(unit => {
+		if (!unit.IsEnemy())
+			return false
 		switch (courier.State) {
 			case CourierState_t.COURIER_STATE_IDLE:
 			case CourierState_t.COURIER_STATE_AT_BASE:
@@ -44,15 +45,6 @@ export function CourierBestPosition(courier: Courier) {
 				return false
 		}
 	})
-}
-EventsSDK.on("Tick", () => {
-	if (!State.value || BestPosSleep.Sleeping || !OwnerIsValid())
-		return
-	BestPositionClickUpdate()
-	BestPosSleep.Sleep(2000)
-})
-function BestPositionClickUpdate() {
-	CourierBase.LAST_CLICK = false
 }
 
 export function MoveCourier(Safe: boolean = false, courier: Courier, line?: LaneSelectionFlags_t) {

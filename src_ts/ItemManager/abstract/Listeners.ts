@@ -32,6 +32,5 @@ EventsSDK.on("ParticleUpdated", (id, controlPoint, position) => {
 })
 
 EventsSDK.on("GameEnded", () => {
-	glimer.clear()
-	ParticleGlimer.clear()
+	GlimerClear()
 })

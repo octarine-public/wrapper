@@ -42,7 +42,7 @@ function RemoveTarget(particle: number, tower: Tower) {
 export function Tick() {
 	if (!State.value)
 		return
-	Towers = EntityManager.GetEntitiesByClass(Tower, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH).filter(x => x.IsAlive)
+	Towers = EntityManager.GetEntitiesByClass(Tower).filter(x => x.IsAlive)
 }
 
 export function OnDraw() {

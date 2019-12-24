@@ -9,8 +9,9 @@ import { AutoDeliver } from "./module/AutoDeliver"
 import { MoveCourier, CourierBestPosition } from "./module/BestPosition"
 export let Owner: Hero
 export const Sleep = new TickSleeper
+export const BestPosSleep = new TickSleeper
 export let UnitAnimation: Unit[] = []
-export let OwnerIsValid = () => Game.IsInGame && Owner?.IsAlive
+export let OwnerIsValid = () => Game.IsInGame && Owner?.IsAlive && !LocalPlayer.IsSpectator
 //export let AutoUseCourierPosition: Map<number, Vector3> = new Map()
 
 function SharedFilter(number: number, obj: any) {
@@ -19,10 +20,11 @@ function SharedFilter(number: number, obj: any) {
 		.filter(member => member.id === LocalPlayer?.PlayerSteamID && LocalPlayer?.PlayerSteamID >= 0)
 		.map(member => member.lane_selection_flags)
 }
+
 EventsSDK.on("Tick", () => {
 	if (!State.value || Sleep.Sleeping || !OwnerIsValid())
 		return
-	let Couriers = EntityManager.GetEntitiesByClass(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
+	let Couriers = EntityManager.GetEntitiesByClass(Courier)
 	let IsValid = Couriers.some(CourierBase.IsValidCourier)
 	if (!IsValid)
 		return
@@ -34,6 +36,13 @@ EventsSDK.on("Tick", () => {
 		return
 	// if (AutoUseItems())
 	// 	return
+})
+
+EventsSDK.on("Tick", () => {
+	if (!State.value || BestPosSleep.Sleeping || !OwnerIsValid())
+		return
+	CourierBase.LAST_CLICK = false
+	BestPosSleep.Sleep(2000)
 })
 
 Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
@@ -49,14 +58,17 @@ EventsSDK.on("GameStarted", hero => {
 	if (!State.value || !StateBestPos.value)
 		return
 	setTimeout(() =>
-		EntityManager.GetEntitiesByClass(Courier, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
-			.some(courier => MoveCourier(false, courier)), 1000)
+		EntityManager.GetEntitiesByClass(Courier)
+			.some(courier => !courier.IsEnemy() && MoveCourier(false, courier)), 1000)
 })
 
 EventsSDK.on("GameEnded", () => {
 	Owner = undefined
 	Sleep.ResetTimer()
+	CourierBase.roles = []
+	BestPosSleep.ResetTimer()
 	//AutoUseCourierPosition.clear()
+	CourierBase.LAST_CLICK = false
 	CourierBase.AUTO_USE_ITEMS = false
 	CourierBase.DELIVER_DISABLE = false
 })

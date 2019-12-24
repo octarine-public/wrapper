@@ -8,14 +8,24 @@ class CourierData extends Data {
 	public AUTO_USE_ITEMS = false
 	public DELIVER_DISABLE = false
 	public roles = new Array<LaneSelectionFlags_t[]>(2).fill(new Array<LaneSelectionFlags_t>(5).fill(LaneSelectionFlags_t.MID_LANE))
+
 	public get CastDelay() {
 		return (((Game.Ping / 2) + 30) + 250)
 	}
-	public IsValidCourier = (cour: Courier) => Game.GameMode !== DOTA_GameMode.DOTA_GAMEMODE_TURBO && cour !== undefined && cour.IsControllable && cour.IsAlive
-	public CastCourAbility = (num: number, cour: Courier) => cour.IsControllable && cour.AbilitiesBook.GetSpell(num).UseAbility()
+
+	public IsValidCourier = (cour: Courier) => Game.GameMode !== DOTA_GameMode.DOTA_GAMEMODE_TURBO
+		&& cour !== undefined
+		&& cour.IsAlive
+		&& !cour.IsEnemy()
+		&& cour.IsControllable
+
+	public CastCourAbility = (num: number, cour: Courier) =>
+		cour.IsControllable
+		&& cour.AbilitiesBook.GetSpell(num).UseAbility()
+
 	public Position(BestOrSafe: boolean = false, custom_line?: LaneSelectionFlags_t): Vector3 {
 		let num = 2, team_id = this.Team ? 1 : 0,
-			roles = !custom_line ? this.roles[team_id].find((role, i) => role !== undefined) : custom_line
+			roles = !custom_line && this.roles.length !== 0 ? this.roles[team_id].find((role, i) => role !== undefined) : custom_line
 		return roles === undefined
 			? this.CourierBestPosition[team_id][num * 2]
 			: !BestOrSafe

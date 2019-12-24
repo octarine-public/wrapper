@@ -1,6 +1,4 @@
-import { Ability, Creep, ExecuteOrder, Game, Item, LocalPlayer, TickSleeper, Unit, dotaunitorder_t, Flow_t, EntityManager, Hero, Courier } from "wrapper/Imports"
-
-
+import { Ability, Creep, ExecuteOrder, Game, Item, LocalPlayer, TickSleeper, Unit, dotaunitorder_t, Flow_t, EntityManager, Hero } from "wrapper/Imports"
 import {
 	AutoUseItemsArcane_val,
 	AutoUseItemsBloodHP_val,
@@ -55,7 +53,8 @@ const BuffsTango = [
 ]
 
 const SmokeDetected = [
-	"modifier_smoke_of_deceit"
+	"modifier_smoke_of_deceit",
+	"modifier_phantom_assassin_blur_active"
 ]
 
 const BuffsNotHeal = [
@@ -79,7 +78,7 @@ const BuffsInvisDebuff = [
 const filterUnits = (x: Unit) => x.IsAlive && x.IsControllable
 	&& (
 		x.Name === "npc_dota_hero_riki"
-		|| x.InvisibleLevel <= 0
+		|| x.InvisibleLevel <= 1
 		|| x.ModifiersBook.HasAnyBuffByNames(SmokeDetected)
 	) // TODO blur
 	&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double")) &&
@@ -105,11 +104,22 @@ function AutoUseItems(unit: Unit) {
 	unit.Items.some(item => {
 		if (!IsValidItem(item))
 			return false
+
 		switch (item.Name) {
 			case "item_royal_jelly": {
 				if (LocalPlayer?.Hero !== unit || unit.HasBuffByName("modifier_royal_jelly"))
 					return false
 				unit.CastTarget(item, unit)
+				TickSleep.Sleep(Base.GetDelayCast)
+				return true
+			}
+
+			case "item_faerie_fire": {
+				if (unit.Buffs.some(buff => BuffsNotHeal.some(notHeal => buff.Name === notHeal)))
+					return false
+				if (unit.HP > AutoUseItemsFaerieFire_val.value)
+					return false
+				unit.CastNoTarget(item)
 				TickSleep.Sleep(Base.GetDelayCast)
 				return true
 			}
@@ -126,6 +136,131 @@ function AutoUseItems(unit: Unit) {
 				if (AutoUseItemsPhaseBootsState.value && !enemy_phase_in_position)
 					return false
 				unit.CastNoTarget(item)
+				TickSleep.Sleep(Base.GetDelayCast)
+				return true
+			}
+
+			case "item_arcane_boots": {
+				if (unit.ModifiersBook.HasBuffByName(BuffsNotHeal[0]))
+					return false
+				if (unit.ManaPercent > AutoUseItemsArcane_val.value)
+					return false
+				unit.CastNoTarget(item)
+				TickSleep.Sleep(Base.GetDelayCast)
+				return true
+
+			}
+
+			case "item_tango":
+			case "item_tango_single": {
+				if (unit.ModifiersBook.GetAnyBuffByNames(BuffsTango))
+					return false
+				let tr = EntityManager.GetEntitiesByClass(TempTree).find(x => x.IsInRange(unit, item.CastRange))
+				if (tr === undefined || unit.HPPercent > AutoUseItemsTango_val.value)
+					return false
+				unit.CastTargetTree(item, tr)
+				TickSleep.Sleep(Base.GetDelayCast)
+				return true
+			}
+
+			case "item_power_treads": {
+				if (lastStat === undefined || Game.RawGameTime <= nextTick)
+					return false
+
+				let Treads = item as item_power_treads
+				if (Treads.ActiveAttribute !== lastStat && !changed) {
+					unit.CastNoTarget(item)
+					nextTick = nextTick + 0.15 + GetAvgLatency(Flow_t.OUT)
+					TickSleep.Sleep(nextTick)
+				}
+				if (Treads.ActiveAttribute === lastStat) {
+					lastStat = undefined
+					changed = true
+				}
+				return true
+			}
+
+			case "item_bottle": {
+				if (item.CurrentCharges !== 3)
+					return false
+				let bottleRune = item as item_bottle
+				if (bottleRune.StoredRune === DOTA_RUNES.DOTA_RUNE_BOUNTY) {
+					if (!AutoUseItemsBottleState.value)
+						return false
+					unit.CastTarget(item, unit)
+					TickSleep.Sleep(Base.GetDelayCast)
+					return true
+				}
+				if (!unit.HasBuffByName('modifier_fountain_aura_buff'))
+					return false
+				return EntityManager.GetEntitiesByClass(Hero).some(hero => {
+					if (hero.IsEnemy() || !unit.IsInRange(hero.Position, item.CastRange))
+						return false
+					if (!hero.IsInvulnerable
+						&& hero.IsAlive
+						&& !unit.HasBuffByName("modifier_bottle_regeneration")
+						&&
+						(
+							hero.HP != hero.MaxHP
+							|| hero.Mana != hero.MaxMana
+						)
+					) {
+						unit.CastTarget(item, hero)
+						TickSleep.Sleep(Base.GetDelayCast)
+						return true
+					}
+					return false
+				})
+			}
+
+			case "item_dust": {
+				if (unit.GetItemByName("item_gem") !== undefined || unit.GetItemByName("item_third_eye") !== undefined)
+					return false
+				// loop-optimizer: KEEP
+				ParticleGlimer.forEach(val => {
+					if (val.IsZero() || unit.Distance2D(val) > item.CastRange)
+						return
+					glimer.set(val, unit)
+				})
+
+				if (
+					!EntityManager.GetEntitiesByClass(Hero).some(hero =>
+						hero.IsEnemy()
+						&& hero.IsAlive
+						&& unit.IsInRange(hero.Position, item.CastRange)
+						&& !hero.ModifiersBook.HasAnyBuffByNames(BuffsInvisDebuff)
+						&& (
+							hero.InvisibleLevel > 0
+							|| glimer.size !== 0
+							|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
+							// TODO riki last time Position
+						)
+						&& !EntityManager.GetEntitiesByClass(Hero).some(ent =>
+							!ent.IsEnemy()
+							&& ent.IsAlive
+							&& (ent.GetItemByName("item_gem") !== undefined || ent.GetItemByName("item_third_eye") !== undefined)
+							&& ent.Distance2D(hero.Position) < 800
+						)
+					)
+				)
+					return false
+				unit.CastNoTarget(item)
+				TickSleep.Sleep(Base.GetDelayCast)
+				return true
+			}
+
+			case "item_hand_of_midas": {
+				if (!AutoUseItemsMidas_CheckBIG.value) {
+					GetAllCreepsForMidas(unit, item)
+					return true
+				}
+				let Creep = GetAllCreepsForMidas(unit, item)
+				if (Creep.length <= 0)
+					return false
+				Creep = Creep.sort((a, b) => b.MaxHP - a.MaxHP) // less MaxHP => first
+				if (!unit.IsInRange(Creep[0].Position, ((item.CastRange + unit.CastRangeBonus) + 100)) || !unit.CanAttack(Creep[0]))
+					return false
+				unit.CastTarget(item, Creep[0])
 				TickSleep.Sleep(Base.GetDelayCast)
 				return true
 			}
@@ -157,10 +292,8 @@ function AutoUseItems(unit: Unit) {
 				return false
 			}
 
-			case "item_faerie_fire": {
-				if (unit.Buffs.some(buff => BuffsNotHeal.some(notHeal => buff.Name === notHeal)))
-					return false
-				if (unit.HP > AutoUseItemsFaerieFire_val.value)
+			case "item_bloodstone": {
+				if (unit.HPPercent > AutoUseItemsBloodHP_val.value && unit.ManaPercent < AutoUseItemsBloodMP_val.value)
 					return false
 				unit.CastNoTarget(item)
 				TickSleep.Sleep(Base.GetDelayCast)
@@ -197,17 +330,6 @@ function AutoUseItems(unit: Unit) {
 				return true
 			}
 
-			case "item_arcane_boots": {
-				if (unit.ModifiersBook.HasBuffByName(BuffsNotHeal[0]))
-					return false
-				if (unit.ManaPercent > AutoUseItemsArcane_val.value)
-					return false
-				unit.CastNoTarget(item)
-				TickSleep.Sleep(Base.GetDelayCast)
-				return true
-
-			}
-
 			case "item_arcane_ring": {
 				if (unit.ModifiersBook.HasBuffByName(BuffsNotHeal[0]))
 					return false
@@ -233,63 +355,6 @@ function AutoUseItems(unit: Unit) {
 				})
 			}
 
-			case "item_bottle": {
-				if (item.CurrentCharges !== 3)
-					return false
-				let bottleRune = item as item_bottle
-				if (bottleRune.StoredRune === DOTA_RUNES.DOTA_RUNE_BOUNTY) {
-					if (!AutoUseItemsBottleState.value)
-						return false
-					unit.CastTarget(item, unit)
-					TickSleep.Sleep(Base.GetDelayCast)
-					return true
-				}
-				if (!unit.HasBuffByName('modifier_fountain_aura_buff'))
-					return false
-				return EntityManager.GetEntitiesByClass(Hero).some(hero => {
-					if (hero.IsEnemy() || !unit.IsInRange(hero.Position, item.CastRange))
-						return false
-					if (!hero.IsInvulnerable
-						&& hero.IsAlive
-						&& !unit.HasBuffByName("modifier_bottle_regeneration")
-						&&
-						(
-							hero.HP != hero.MaxHP
-							|| hero.Mana != hero.MaxMana
-						)
-					) {
-						unit.CastTarget(item, hero)
-						TickSleep.Sleep(Base.GetDelayCast)
-						return true
-					}
-					return false
-				})
-			}
-
-			case "item_bloodstone": {
-				if (unit.HPPercent > AutoUseItemsBloodHP_val.value && unit.ManaPercent < AutoUseItemsBloodMP_val.value)
-					return false
-				unit.CastNoTarget(item)
-				TickSleep.Sleep(Base.GetDelayCast)
-				return true
-			}
-
-			case "item_hand_of_midas": {
-				if (!AutoUseItemsMidas_CheckBIG.value) {
-					GetAllCreepsForMidas(unit, item)
-					return true
-				}
-				let Creep = GetAllCreepsForMidas(unit, item)
-				if (Creep.length <= 0)
-					return false
-				Creep = Creep.sort((a, b) => b.MaxHP - a.MaxHP) // less MaxHP => first
-				if (!unit.IsInRange(Creep[0].Position, ((item.CastRange + unit.CastRangeBonus) + 100)) || !unit.CanAttack(Creep[0]))
-					return false
-				unit.CastTarget(item, Creep[0])
-				TickSleep.Sleep(Base.GetDelayCast)
-				return true
-			}
-
 			case "item_urn_of_shadows":
 			case "item_spirit_vessel": {
 				if (CheckUnitForUrn(unit, AutoUseItemsUrnAliesAlliesHP.value)) {
@@ -308,69 +373,6 @@ function AutoUseItems(unit: Unit) {
 				return false
 			}
 
-			case "item_dust": {
-				if (unit.GetItemByName("item_gem") !== undefined || unit.GetItemByName("item_third_eye") !== undefined)
-					return false
-				// loop-optimizer: KEEP
-				ParticleGlimer.forEach(val => {
-					if (val.IsZero() || unit.Distance2D(val) > item.CastRange)
-						return
-					glimer.set(val, unit)
-				})
-
-				if (
-					!EntityManager.GetEntitiesByClass(Hero).some(hero =>
-						hero.IsEnemy()
-						&& hero.IsAlive
-						&& unit.IsInRange(hero.Position, item.CastRange)
-						&& !hero.ModifiersBook.HasAnyBuffByNames(BuffsInvisDebuff)
-						&& (
-							hero.InvisibleLevel > 0
-							|| glimer.size !== 0
-							|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
-						)
-						&& !EntityManager.GetEntitiesByClasses<Unit>([Hero, Courier]).some(ent =>
-							!ent.IsEnemy()
-							&& ent.IsAlive
-							&& (ent.GetItemByName("item_gem") !== undefined || ent.GetItemByName("item_third_eye") !== undefined)
-							&& ent.Distance2D(hero.Position) < 800
-						)
-					)
-				)
-					return false
-				unit.CastNoTarget(item)
-				TickSleep.Sleep(Base.GetDelayCast)
-				return true
-			}
-
-			case "item_tango":
-			case "item_tango_single": {
-				if (unit.ModifiersBook.GetAnyBuffByNames(BuffsTango))
-					return false
-				let tr = EntityManager.GetEntitiesByClass(TempTree).find(x => x.IsInRange(unit, item.CastRange))
-				if (tr === undefined || unit.HP > AutoUseItemsTango_val.value)
-					return false
-				unit.CastTargetTree(item, tr)
-				TickSleep.Sleep(Base.GetDelayCast)
-				return true
-			}
-
-			case "item_power_treads": {
-				if (lastStat === undefined || Game.RawGameTime <= nextTick)
-					return false
-
-				let Treads = item as item_power_treads
-				if (Treads.ActiveAttribute !== lastStat && !changed) {
-					unit.CastNoTarget(item)
-					nextTick = nextTick + 0.15 + GetAvgLatency(Flow_t.OUT)
-					TickSleep.Sleep(Base.GetDelayCast)
-				}
-				if (Treads.ActiveAttribute === lastStat) {
-					lastStat = undefined
-					changed = true
-				}
-				return true
-			}
 			default:
 				return false
 		}
@@ -456,12 +458,10 @@ function UsePowerTreads(ability: Ability, unit: Unit): boolean {
 	switch (power_treads.ActiveAttribute) {
 		case 0: // str
 			unit.CastNoTarget(power_treads)
-			TickSleep.Sleep(Base.GetDelayCast)
 			break
 		case 2: // agi
 			unit.CastNoTarget(power_treads)
 			unit.CastNoTarget(power_treads)
-			TickSleep.Sleep(Base.GetDelayCast)
 			break
 		case 3: // int
 			return true

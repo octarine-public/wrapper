@@ -78,6 +78,8 @@ export function Draw() {
 			break
 	}
 	let base_enemy_pos = new Vector2(first_offset + (DrawPositionGap.value * 5 + team_offset) * enemy_team_id + wSize.x / 100, DrawPositionY.value)
+	if (roles.length === 0)
+		return
 	roles[enemy_team_id].forEach((role, i) => {
 		let role_str = GetLaneName(role)
 		if (role_str === undefined)
@@ -98,5 +100,6 @@ export function Draw() {
 	})
 }
 export function Init() {
+	roles = []
 	is_send_chat = 0
 }

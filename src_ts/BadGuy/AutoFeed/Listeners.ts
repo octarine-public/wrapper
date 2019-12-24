@@ -23,10 +23,9 @@ function Switch(unit: Unit, building: Building) {
 export function Tick() {
 	if (!State.value || Sleep.Sleeping)
 		return
-	Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Courier], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY)
-	if (!Units.some(x =>
-		Switch(x, EntityManager.GetEntitiesByClass(Building, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
-			.find(x => x.Name === "dota_fountain"))))
+	Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Courier])
+	if (!Units.some(x => !x.IsEnemy() && Switch(x, EntityManager.GetEntitiesByClass(Building)
+		.find(x => x.IsEnemy() && x.Name === "dota_fountain"))))
 		return
 }
 

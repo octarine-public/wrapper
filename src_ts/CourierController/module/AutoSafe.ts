@@ -29,8 +29,8 @@ function AbilityTypeReady(courier: Courier): Ability {
 }
 
 function SafePosDeliver(courier: Courier): boolean {
-	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Tower], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit => {
-		if (!unit.IsAlive || !unit.IsVisible)
+	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Tower]).some(unit => {
+		if (!unit.IsEnemy() || !unit.IsAlive || !unit.IsVisible)
 			return false
 		if (!Sleep.Sleeping && (CourierBase.IsRangeCourier(unit, courier) || CourierBase.IsRangeCourier(unit)))
 			CourierBase.DELIVER_DISABLE = true

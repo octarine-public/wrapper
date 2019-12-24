@@ -7,7 +7,11 @@ let Sleep = new TickSleeper
 let Base = new ItemManagerBase
 let ward_list: Entity[] = []
 
-let IsValidUnit = (unit: Unit) => unit.IsControllable && unit.IsAlive && !unit.IsIllusion && !unit.IsInvulnerable && !unit.IsStunned && !unit.IsHexed
+let IsValidUnit = (unit: Unit) => !unit.IsEnemy()
+	&& unit.IsAlive
+	&& unit.IsControllable
+	&& !unit.IsIllusion
+	&& !unit.IsInvulnerable && !unit.IsStunned && !unit.IsHexed
 
 function EntityCreate(ent: Entity) {
 	return ent instanceof WardObserver || (ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines
@@ -17,10 +21,10 @@ function EntityCreate(ent: Entity) {
 	)
 }
 
-export function Init() {
+export function Tick() {
 	if (LocalPlayer.IsSpectator || !StateBase.value || !State.value || !Game.IsInGame || Sleep.Sleeping)
 		return
-	EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(hero => IsValidUnit(hero)
+	EntityManager.GetEntitiesByClass(Hero).some(hero => IsValidUnit(hero)
 		&& hero.Inventory.GetItemsByNames(Items).filter(item =>
 			item !== undefined
 			&& !item.IsEnemy()
