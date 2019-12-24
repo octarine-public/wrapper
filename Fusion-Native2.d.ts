@@ -188,6 +188,7 @@ declare function GetHeapStatistics(): {
 	number_of_detached_contexts: bigint
 	does_zap_garbage: bigint
 }
+declare function TakeHeapSnapshot(path: string): void
 
 /// AUTOMATICALLY GENERATED
 
