@@ -73,6 +73,7 @@ function SafeLog(...args) {
 	// loop-optimizer: KEEP
 	console.log(...args.map(arg => JSON.parse(JSON.stringify(arg, (key, value) => typeof value === 'bigint' ? value.toString() + 'n' : value))))
 }
+globalThis.SafeLog = SafeLog
 
 EventsSDK.on("GameEvent", (name, obj) => {
 	if (!debugEvents.value)

@@ -174,6 +174,20 @@ declare function ToggleFakeChat(state: boolean): void
 declare function GetEntityByVecOrigin(vec: CNetworkOriginCellCoordQuantizedVector): C_BaseEntity
 declare function setFireEvent(func: (event_name: string, cancellable: boolean, ...args: any) => boolean): void
 declare function require(absolute_path: string): any
+declare function GetHeapStatistics(): {
+	total_heap_size: bigint
+	total_heap_size_executable: bigint
+	total_physical_size: bigint
+	total_available_size: bigint
+	used_heap_size: bigint
+	heap_size_limit: bigint
+	malloced_memory: bigint
+	external_memory: bigint
+	peak_malloced_memory: bigint
+	number_of_native_contexts: bigint
+	number_of_detached_contexts: bigint
+	does_zap_garbage: bigint
+}
 
 /// AUTOMATICALLY GENERATED
 
