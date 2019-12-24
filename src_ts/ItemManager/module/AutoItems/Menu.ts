@@ -5,6 +5,7 @@ State.SetTooltip("Auto use items")
 // loop-optimizer: KEEP
 const Items_array: string[] = [
 	"item_arcane_ring",
+	"item_blink",
 	"item_phase_boots",
 	"item_magic_stick",
 	"item_magic_wand",
@@ -30,7 +31,7 @@ const Items_array: string[] = [
 	"item_essence_ring",
 	"item_iron_talon",
 	"item_diffusal_blade",
-	"item_power_treads"
+	"item_power_treads",
 ]
 export const ItemsForUse = BaseTree.AddImageSelector("Items for use", Items_array)
 

@@ -414,7 +414,6 @@ function UseSoulRing(Me: Unit, ability: Ability, args: ExecuteOrder): boolean {
 	let soul_ring = Me.GetItemByName("item_soul_ring")
 	if (!IsValidItem(soul_ring))
 		return true
-
 	if (Me.HPPercent < AutoUseItemsSouringHP_val.value || Me.ManaPercent > AutoUseItemsSouringMP_val.value
 		|| (Me.IsInvisible && !Me.CanUseAbilitiesInInvisibility && !AutoUseItemsSouringInvis.value)
 	) {
@@ -433,10 +432,29 @@ function UseSoulRing(Me: Unit, ability: Ability, args: ExecuteOrder): boolean {
 	return false
 }
 
+function UsePerfectDagger(args: ExecuteOrder, ability: Ability, unit: Unit): boolean {
+	if (ability.Name !== "item_blink")
+		return true
+	let blink = unit.GetItemByName("item_blink")
+	if (!IsValidItem(blink))
+		return true
+	let blink_range = (blink.AOERadius + unit.CastRangeBonus)
+	if (args.Position.IsInRange(unit.Position, blink_range))
+		return true
+	let vec = unit.Position
+	if (unit.IsMoving) {
+		vec = unit.Position
+			.Add(unit.Forward.MultiplyScalar(unit.IdealSpeed * Game.GetLatency()))
+			.Extend(args.Position, blink_range - 30)
+	} else
+		vec = unit.Position.Extend(args.Position, blink_range - 1)
+	unit.CastPosition(blink, vec)
+	return false
+}
+
 function UsePowerTreads(ability: Ability, unit: Unit): boolean {
 	if (ability.ManaCost === 0 || unit.IsInvisible || TickSleep.Sleeping)
 		return true
-
 	if (
 		ability.Name === "item_manta"
 		|| ability.Name === "item_invis_sword"
@@ -559,11 +577,13 @@ export function OnExecuteOrder(args: ExecuteOrder): boolean {
 		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE) {
 		return true
 	}
+	if (!UsePerfectDagger(args, ability, unit)) {
+		return false
+	}
 	if (!UseSoulRing(unit, ability, args) || !UsePowerTreads(ability, unit)) {
 		args.ExecuteQueued()
 		return false
 	}
-
 	return true
 }
 
