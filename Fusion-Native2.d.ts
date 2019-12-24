@@ -189,6 +189,7 @@ declare function GetHeapStatistics(): {
 	does_zap_garbage: bigint
 }
 declare function TakeHeapSnapshot(path: string): void
+declare function hrtime(): number
 
 /// AUTOMATICALLY GENERATED
 
