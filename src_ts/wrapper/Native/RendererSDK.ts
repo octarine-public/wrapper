@@ -1,7 +1,7 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import { QAngle } from "../Imports"
+import QAngle from "../Base/QAngle"
 import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
 import Events from "../Managers/Events"

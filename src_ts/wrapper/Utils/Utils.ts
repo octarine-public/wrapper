@@ -1,4 +1,4 @@
-import { RendererSDK } from "../Imports"
+import RendererSDK from "../Native/RendererSDK"
 import EventsSDK from "../Managers/EventsSDK"
 import ProjectileManager from "../Managers/ProjectileManager"
 import Unit from "../Objects/Base/Unit"

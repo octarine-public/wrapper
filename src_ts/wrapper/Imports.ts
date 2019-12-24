@@ -82,6 +82,8 @@ export { default as WardTrueSight } from "./Objects/Base/WardTrueSight"
 export { LinearProjectile, TrackingProjectile } from "./Objects/Base/Projectile"
 export { default as ProjectileManager } from "./Managers/ProjectileManager"
 
+import "./global"
+
 /*
 	TODO:
 

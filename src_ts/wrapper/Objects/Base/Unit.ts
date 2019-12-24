@@ -8,7 +8,6 @@ import { LocalPlayer } from "../../Managers/EntityManager"
 
 import Entity, { rotation_speed } from "./Entity"
 import Player from "./Player"
-// import Creep from "./Creep";
 
 import AbilitiesBook from "../DataBook/AbilitiesBook"
 import Inventory from "../DataBook/Inventory"
@@ -26,14 +25,14 @@ import TreeTemp from "./TreeTemp"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
-import { Utils, Parse } from "../../Imports"
+import { parseKVFile } from "../../Utils/Utils"
+import { RecursiveMap } from "../../Utils/ParseKV"
 import Game from "../GameResources/GameRules"
-//import { DotaMap } from "../../Helpers/DotaMap"
 
 const attackAnimationPoint = new Map<string, number>()
 const attackprojectileSpeed = new Map<string, number>()
 
-let parseHeroes = Utils.parseKVFile("scripts/npc/npc_heroes.txt").get("DOTAHeroes") as Parse.RecursiveMap
+let parseHeroes = parseKVFile("scripts/npc/npc_heroes.txt").get("DOTAHeroes") as RecursiveMap
 for (let hero of parseHeroes.keys()) {
 	const heroFields = parseHeroes.get(hero)
 	if (!(heroFields instanceof Map))
@@ -474,7 +473,7 @@ export default class Unit extends Entity {
 		if (lens !== undefined)
 			castrange += lens.GetSpecialValue("cast_range_bonus")
 
-		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget")
+		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget_aura")
 		if (gadget_aura !== undefined) {
 			let gadget = gadget_aura.Ability
 			if (gadget !== undefined)
@@ -632,10 +631,8 @@ export default class Unit extends Entity {
 					}
 					case "modifier_item_pipe_barrier":
 					case "modifier_item_hood_of_defiance_barrier":
-						dmg -= abil.GetSpecialValue("barrier_block")
-						return
 					case "modifier_item_infused_raindrop":
-						dmg -= abil.GetSpecialValue("magic_damage_block")
+						dmg -= abil.GetSpecialValue("barrier_block")
 						return
 					default:
 						break
@@ -647,7 +644,7 @@ export default class Unit extends Entity {
 					return
 				}
 				case "bloodseeker_bloodrage":
-					dmg *= 1 + abil.GetSpecialValue("damage_increase_incoming_pct") / 100
+					dmg *= abil.GetSpecialValue("damage_increase_pct") / 100
 					return
 				case "spectre_dispersion":
 					dmg *= 1 - (abil.GetSpecialValue("damage_reflection_pct") / 100)
@@ -658,6 +655,9 @@ export default class Unit extends Entity {
 					return
 				case "kunkka_ghostship":
 					dmg *= 1 - (abil.GetSpecialValue("ghostship_absorb") / 100)
+					return
+				case "wisp_overcharge":
+					dmg *= 1 + (abil.GetSpecialValue("bonus_damage_pct") / 100)
 					return
 				case "medusa_mana_shield": {
 					let max_absorbed_dmg = this.Mana * abil.GetSpecialValue("damage_per_mana"),

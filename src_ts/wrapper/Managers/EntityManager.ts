@@ -4,11 +4,12 @@ import Events from "./Events"
 
 import Vector3 from "../Base/Vector3"
 
-import Creep from "../Objects/Base/Creep"
 import Entity from "../Objects/Base/Entity"
+import Unit from "../Objects/Base/Unit"
 import Hero from "../Objects/Base/Hero"
 import Player from "../Objects/Base/Player"
-import Unit from "../Objects/Base/Unit"
+
+import Creep from "../Objects/Base/Creep"
 
 import Ability from "../Objects/Base/Ability"
 import Item from "../Objects/Base/Item"
@@ -22,7 +23,6 @@ import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/BitsExtensions"
 import EventsSDK from "./EventsSDK"
-import ExecuteOrder from "../Native/ExecuteOrder"
 import Roshan from "../Objects/Units/Roshan"
 
 let AllEntities: Entity[] = []
@@ -257,7 +257,6 @@ setInterval(() => {
 	if (old_val && !Game.IsConnected) {
 		gameInProgress = false
 		EventsSDK.emit("GameEnded", false)
-		ExecuteOrder.order_queue = []
 		Particles.DeleteAll()
 	} else if (!gameInProgress && Game.IsConnected && Game.IsInGame && LocalPlayer !== undefined && LocalPlayer.HeroAssigned) {
 		gameInProgress = true

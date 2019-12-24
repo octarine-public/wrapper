@@ -1,7 +1,7 @@
 import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
-import { ArrayExtensions } from "../Imports"
+import { arrayRemove } from "../Utils/ArrayExtensions"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
@@ -226,7 +226,7 @@ export default class KeyBind extends Base {
 	public Update(assign_key_str = true): void {
 		// loop-optimizer: KEEP
 		KeyBind.callbacks.forEach((keybinds, key) => {
-			if (ArrayExtensions.arrayRemove(keybinds, this) && keybinds.length === 0)
+			if (arrayRemove(keybinds, this) && keybinds.length === 0)
 				KeyBind.callbacks.delete(key)
 		})
 		if (this.assigned_key > 0) {

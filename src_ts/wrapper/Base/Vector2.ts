@@ -3,7 +3,7 @@ import Vector3 from "./Vector3"
 
 export default class Vector2 {
 	/* ================== Static ================== */
-	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Vector2 | undefined {
+	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Nullable<Vector2> {
 		if (buffer !== true)
 			return undefined
 		return new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1])

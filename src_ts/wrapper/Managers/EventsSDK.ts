@@ -1,17 +1,21 @@
 import Events, { EventEmitter, IServerInfo } from "./Events"
 import UserCmd from "../Native/UserCmd"
-import { EntityManager } from "../Imports"
+import { default as EntityManager, LocalPlayer } from "./EntityManager"
 import * as WASM from "../Native/WASM"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Vector3 from "../Base/Vector3"
-import Ability from "../Objects/Base/Ability"
-import Unit from "../Objects/Base/Unit"
-import Game from "../Objects/GameResources/GameRules"
-import { LocalPlayer } from "./EntityManager"
-import Player from "../Objects/Base/Player"
+
 import Entity from "../Objects/Base/Entity"
-import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
+import Unit from "../Objects/Base/Unit"
 import Hero from "../Objects/Base/Hero"
+import Player from "../Objects/Base/Player"
+
+import Ability from "../Objects/Base/Ability"
+
+import Game from "../Objects/GameResources/GameRules"
+
+import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
+
 import QAngle from "../Base/QAngle"
 import Modifier from "../Objects/Base/Modifier"
 import InputManager from "./InputManager"
@@ -464,3 +468,7 @@ Events.on("NetworkFieldsChanged", map => {
 		})
 	})
 })
+
+
+
+EventsSDK.on("GameEnded", () => ExecuteOrder.order_queue = [])

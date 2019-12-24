@@ -1,6 +1,6 @@
 import Vector3 from "../Base/Vector3"
 import { WorldPolygon } from "../Geometry/WorldPolygon"
-import { Utils } from "../Imports"
+import { Utf8ArrayToStr } from "../Utils/Utils"
 import Creep from "../Objects/Base/Creep"
 import Unit from "../Objects/Base/Unit"
 import { MapArea } from "./MapArea"
@@ -9,7 +9,7 @@ import { Team } from "../Enums/Team"
 export class DotaMap {
 	constructor(public unit: Unit) { }
 	private static Load(name: string): Vector3[] {
-		let ar: [number, number, number][] = JSON.parse(Utils.Utf8ArrayToStr(new Uint8Array(readFile(`Map/${name}.json`))))
+		let ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(new Uint8Array(readFile(`Map/${name}.json`))))
 		// loop-optimizer: FORWARD
 		return ar.map(([x, y, z]) => new Vector3(x, y, z))
 	}
