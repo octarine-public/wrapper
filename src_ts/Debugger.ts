@@ -239,3 +239,11 @@ EventsSDK.on("Draw", () => {
 			console.log(`${name}: ${took}ms`)
 	}
 }
+
+let last_time = 0
+setInterval(() => {
+	if (Date.now() - last_time < 10000 || GetHeapStatistics().total_heap_size < 200n * 1024n * 1024n)
+		return
+	TakeHeapSnapshot("dumps/" + Math.random().toString().substring(2, 8) + ".heapsnapshot")
+	last_time = Date.now()
+}, 100)
