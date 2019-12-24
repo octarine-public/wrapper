@@ -487,7 +487,7 @@ export default class Unit extends Entity {
 		if (lens !== undefined)
 			castrange += lens.GetSpecialValue("cast_range_bonus")
 
-		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget_aura")
+		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget")
 		if (gadget_aura !== undefined) {
 			let gadget = gadget_aura.Ability
 			if (gadget !== undefined)
