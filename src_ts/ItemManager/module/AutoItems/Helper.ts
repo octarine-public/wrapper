@@ -428,11 +428,10 @@ function UseSoulRing(Me: Unit, ability: Ability, args: ExecuteOrder): boolean {
 	)
 		return true
 	Me.CastNoTarget(soul_ring)
-	args.Execute()
 	return false
 }
 
-function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit): boolean {
+function UsePowerTreads(ability: Ability, unit: Unit): boolean {
 	if (ability.ManaCost === 0 || unit.IsInvisible || TickSleep.Sleeping)
 		return true
 
@@ -453,27 +452,24 @@ function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit): boole
 		return true
 	if (changed)
 		lastStat = power_treads.ActiveAttribute
+
 	switch (power_treads.ActiveAttribute) {
-		case Attributes.DOTA_ATTRIBUTE_STRENGTH:
+		case 0: // str
 			unit.CastNoTarget(power_treads)
 			TickSleep.Sleep(Base.GetDelayCast)
 			break
-		case Attributes.DOTA_ATTRIBUTE_INTELLECT:
+		case 2: // agi
 			unit.CastNoTarget(power_treads)
 			unit.CastNoTarget(power_treads)
 			TickSleep.Sleep(Base.GetDelayCast)
 			break
-		default:
-			break
+		case 3: // int
+			return true
 	}
 	changed = false
 	nextTick = ((Game.RawGameTime + ability.CastPoint) + (0.45 + GetAvgLatency(Flow_t.OUT)))
 	TickSleep.Sleep(nextTick)
-	if (TickSleep.Sleeping) {
-		args.Execute()
-		return false
-	}
-	return true
+	return false
 }
 
 export function UseMouseItemTarget(args: ExecuteOrder) {
@@ -563,8 +559,10 @@ export function OnExecuteOrder(args: ExecuteOrder): boolean {
 		&& args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE) {
 		return true
 	}
-	if (!UseSoulRing(unit, ability, args) || !UsePowerTreads(args, ability, unit))
+	if (!UseSoulRing(unit, ability, args) || !UsePowerTreads(ability, unit)) {
+		args.ExecuteQueued()
 		return false
+	}
 
 	return true
 }
