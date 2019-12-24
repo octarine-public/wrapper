@@ -20,7 +20,7 @@ export default class item_bottle extends Item {
 	}
 
 	public CanBeCasted(bonusMana: number = 0): boolean {
-		return this.CurrentCharges > 0 && this.StoredRune === DOTA_RUNES.DOTA_RUNE_INVALID && super.CanBeCasted(bonusMana)
+		return this.CurrentCharges !== 0 && super.CanBeCasted(bonusMana)
 	}
 }
 

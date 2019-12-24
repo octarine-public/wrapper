@@ -10,7 +10,7 @@ EventsSDK.on("Tick", () => {
 		return
 	//AutoBuy.Init()
 	AutoGlyph.Init()
-	AutoItems.Init()
+	AutoItems.Tick()
 	AutoDeward.Init()
 	AutoDisable.Init()
 })

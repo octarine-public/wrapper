@@ -1,46 +1,45 @@
-import InitItems from "../../abstract/Items"
 import { Menu, MenuBase } from "../../abstract/MenuBase"
 export const { BaseTree, State } = MenuBase(Menu, "Auto Items")
 State.SetTooltip("Auto use items")
 
-const Items = new InitItems(undefined)
-
 // loop-optimizer: KEEP
 const Items_array: string[] = [
-	Items.Abyssal.toString(),
-	Items.ArcaneRing.toString(),
-	Items.PhaseBoots.toString(),
-	Items.MagicStick.toString(),
-	Items.MagicWand.toString(),
-	Items.SoulRing.toString(),
-	Items.Midas.toString(),
-	Items.ArcaneBoots.toString(),
-	Items.Mekansm.toString(),
-	Items.GuardianGreaves.toString(),
-	Items.Bottle.toString(),
-	Items.UrnOfShadows.toString(),
-	Items.SpiritVesel.toString(),
-	Items.Bloodstone.toString(),
-	Items.Tango.toString(),
-	Items.TangoSingle.toString(),
-	Items.FaerieFire.toString(),
-	Items.Dust.toString(),
-	Items.Cheese.toString(),
-	Items.Mjollnir.toString(),
-	Items.SolarCrest.toString(),
-	Items.Medallion.toString(),
-	Items.Janggo.toString(),
-	Items.Jelly.toString(),
-	Items.EssenceRing.toString(),
-	Items.Talon.toString(),
-	// Items.Armlet.toString(),
-	Items.DiffusalBlade.toString(),
-	Items.PowerTreads.toString(),
+	"item_arcane_ring",
+	"item_phase_boots",
+	"item_magic_stick",
+	"item_magic_wand",
+	"item_soul_ring",
+	"item_hand_of_midas",
+	"item_arcane_boots",
+	"item_mekansm",
+	"item_guardian_greaves",
+	"item_bottle",
+	"item_urn_of_shadows",
+	"item_spirit_vessel",
+	"item_bloodstone",
+	"item_tango",
+	"item_faerie_fire",
+	"item_greater_faerie_fire",
+	"item_dust",
+	"item_cheese",
+	"item_mjollnir",
+	"item_solar_crest",
+	"item_medallion_of_courage",
+	"item_ancient_janggo",
+	"item_royal_jelly",
+	"item_essence_ring",
+	"item_iron_talon",
+	"item_diffusal_blade",
+	"item_power_treads"
 ]
-export const ItemsForUse = BaseTree.AddImageSelector("Select items for use", Items_array)
+export const ItemsForUse = BaseTree.AddImageSelector("Items for use", Items_array)
 
 // Settings Items
 const SettingsAutoItems = BaseTree.AddNode("Items settings")
+export const AutoUseItemsBottle = SettingsAutoItems.AddNode("Bottle")
+export const AutoUseItemsBottleAllies = AutoUseItemsBottle.AddToggle("Allies after tp/base")
+export const AutoUseItemsBottleState = AutoUseItemsBottle.AddToggle("Activate bounty runes", true)
+
 export const AutoUseItemsMedal = SettingsAutoItems.AddNode("SolarCrest / Medallion")
 export const AutoUseItemsMedal_val = AutoUseItemsMedal.AddSwitcher("Select", ["All units", "Only allies", "Only enemy"])
 

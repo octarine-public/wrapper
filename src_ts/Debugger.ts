@@ -45,7 +45,7 @@ addUnitMenu.AddKeybind("Add full Sven")
 			for (var i = 6; i--;)
 				Game.ExecuteCommand("dota_bot_give_item item_heart")
 
-			Game.ExecuteCommand("dota_bot_give_level 25")
+			Game.ExecuteCommand("dota_bot_give_level 30")
 		}, 1000)
 	})
 

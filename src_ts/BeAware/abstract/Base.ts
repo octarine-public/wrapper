@@ -1,20 +1,17 @@
-import { Color, Menu, RendererSDK, Unit, Vector2, FontFlags_t } from "../../wrapper/Imports";
+import { Color, Menu, RendererSDK, Vector2, FontFlags_t } from "wrapper/Imports"
 
 export default class ManagerBase {
 	public get MaxMoveSpeed(): number {
 		return Number.MAX_SAFE_INTEGER
 	}
-	public IsShrine(x: Unit): boolean {
-		return x.Name !== "dota_fountain" && !x.IsShop && x.IsAlive && x.IsBuilding && !x.IsTower && !x.IsFort && !x.IsShrine && !x.IsBarrack
-	}
 	public strZero(sec: number) {
-		return sec < 10 ? "0" + sec : sec;
+		return sec < 10 ? "0" + sec : sec
 	}
 	public TimeSecondToMin(sec: number) {
-		return Math.floor(sec / 60) + ":" + this.strZero(Math.floor(sec) % 60);
+		return Math.floor(sec / 60) + ":" + this.strZero(Math.floor(sec) % 60)
 	}
 	public GetTime(time: number) {
-		return this.TimeSecondToMin(time) + ", " + this.TimeSecondToMin(time + 180);
+		return this.TimeSecondToMin(time) + ", " + this.TimeSecondToMin(time + 180)
 	}
 	public ucFirst(str: string): string {
 		if (!str) return str

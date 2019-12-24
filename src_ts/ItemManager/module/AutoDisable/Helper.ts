@@ -35,6 +35,7 @@ function UseDisable(unit: Unit, enemy: Unit, abil: Ability) {
 	Sleep.Sleep(Base.GetDelayCast + 50)
 	return Disable = true
 }
+
 function IsReady(unit: Unit, enemy: Unit, abil: Ability | undefined) {
 	if (abil === undefined || !abil.CanBeCasted() || (AngryDisablerState.value && abil.Name === "silencer_global_silence"))
 		return false
@@ -60,7 +61,7 @@ function filter(unit: Unit, enemy: Unit, items: string[] = []) {
 function AutoDisable(unit: Unit) {
 	if (!unit.IsAlive || !unit.IsControllable)
 		return false
-	let EnemyHeroes = EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+	let EnemyHeroes = EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
 	for (var i = 0, len = EnemyHeroes.length; i < len; i++) {
 		let enemy = EnemyHeroes[i]
 		if (enemy.IsStunned || enemy.IsHexed || enemy.IsSilenced)
