@@ -1,10 +1,2 @@
 node_modules/
 configs/
-wasm_source/
-
-Fusion-Native2-Loader.exe
-Fusion-Native2-Loader.exe - Shortcut.lnk
-icudtl.dat
-natives_blob.bin
-/settings.json
-snapshot_blob.bin

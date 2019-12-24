@@ -6,6 +6,7 @@ let Items = [
 	"item_bfury",
 	"item_tango",
 	"item_tango_single",
+	"item_iron_talon"
 ]
 const StateItems = BaseTree.AddImageSelector("Items", Items)
 export { State, StateItems, Items }

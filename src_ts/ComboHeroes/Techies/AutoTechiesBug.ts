@@ -13,9 +13,8 @@ let root = Menu.AddEntry(["Heroes", "Techies", "5 year old bug"]),
 EventsSDK.on("Tick", () => {
 	if (!state.value)
 		return
-	let techies = EntityManager.AllEntities.find(ent =>
-		ent instanceof Hero
-		&& ent.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Techies
+	let techies = EntityManager.GetEntitiesByClass(Hero).find(ent =>
+		ent.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Techies
 		&& ent.IsAlive
 		&& ent.IsControllable,
 	) as Hero
@@ -28,9 +27,9 @@ EventsSDK.on("Tick", () => {
 	}
 	let abil = techies.GetAbilityByName(selected_ability.values[selected_ability.selected_id])
 	if (
-		!EntityManager.AllEntities
-			.filter(ent => ent !== techies && ent instanceof Hero && ent.FindRotationAngle(techies) <= 0.1)
-			.some((hero: Hero) => hero.Spells.some(abil_ => {
+		!EntityManager.GetEntitiesByClass(Hero)
+			.filter(hero => hero !== techies && hero.FindRotationAngle(techies) <= 0.1)
+			.some(hero => hero.Spells.some(abil_ => {
 				if (
 					abil_ !== undefined
 					&& !sleeper.Sleeping(abil_)
@@ -38,6 +37,7 @@ EventsSDK.on("Tick", () => {
 					&& (
 						abil_.Name === "bane_nightmare"
 						|| abil_.Name === "shadow_demon_disruption"
+						|| abil_.Name === "obsidian_destroyer_astral_imprisonment"
 					)
 					&& techies.IsInRange(hero, abil_.CastRange)
 				) {
@@ -49,7 +49,11 @@ EventsSDK.on("Tick", () => {
 	)
 		return
 	techies.CastPosition(abil, techies.InFront(50), false, true)
-	sleeper.Sleep((last_abil.CastPoint + (last_abil.GetSpecialValue("disruption_duration") || last_abil.GetSpecialValue("duration"))) * 1000 + 30, last_abil)
+	sleeper.Sleep((last_abil.CastPoint + (
+		last_abil.GetSpecialValue("disruption_duration")
+		|| last_abil.GetSpecialValue("duration")
+		|| last_abil.GetSpecialValue("prison_duration")
+	)) * 1000 + 30, last_abil)
 })
 
 EventsSDK.on("GameStarted", () => sleeper.FullReset())

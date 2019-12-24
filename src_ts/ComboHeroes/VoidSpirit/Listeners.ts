@@ -3,18 +3,18 @@ import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
 // import { GameEndedCombo } from "./Module/Combo"
 
+import ItemsX from "./Extends/Items"
 import InitDraw from "./Extends/Draw"
-import InitItems from "./Extends/Items"
-import HitAndRun from "./Extends/HitAndRun";
-import InitAbilities from "./Extends/Abilities"
+import AbilityX from "./Extends/Abilities"
+import HitAndRun from "./Extends/HitAndRun"
 
 export let Owner: Hero
 export let MouseTarget: Hero
 
-export const initItemsMap = new Map<Unit, InitItems>()
-export const initItemsTargetMap = new Map<Unit, InitItems>()
+export const initItemsMap = new Map<Unit, ItemsX>()
+export const initItemsTargetMap = new Map<Unit, ItemsX>()
 export const initHitAndRunMap = new Map<Unit, HitAndRun>()
-export const initAbilityMap = new Map<Unit, InitAbilities>()
+export const initAbilityMap = new Map<Unit, AbilityX>()
 export const initDrawBaseMap = new Map<Unit, InitDraw>()
 export const MyNameHero: string = "npc_dota_hero_void_spirit"
 
@@ -61,17 +61,17 @@ export function GameStarted(hero: Hero) {
 export function Tick() {
 	let initItemsTarget = initItemsTargetMap.get(MouseTarget)
 	if (initItemsTarget === undefined) {
-		initItemsTarget = new InitItems(MouseTarget)
+		initItemsTarget = new ItemsX(MouseTarget)
 		initItemsTargetMap.set(MouseTarget, initItemsTarget)
 	}
 	let initItems = initItemsMap.get(Owner)
 	if (initItems === undefined) {
-		initItems = new InitItems(Owner)
+		initItems = new ItemsX(Owner)
 		initItemsMap.set(Owner, initItems)
 	}
 	let initAbility = initAbilityMap.get(Owner)
 	if (initAbility === undefined) {
-		initAbility = new InitAbilities(Owner)
+		initAbility = new AbilityX(Owner)
 		initAbilityMap.set(Owner, initAbility)
 	}
 	let initDrawBase = initDrawBaseMap.get(Owner)

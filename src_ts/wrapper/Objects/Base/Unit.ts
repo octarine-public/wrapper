@@ -26,8 +26,8 @@ import TreeTemp from "./TreeTemp"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
-import Game from "../GameResources/GameRules"
 import { Utils, Parse } from "../../Imports"
+import Game from "../GameResources/GameRules"
 //import { DotaMap } from "../../Helpers/DotaMap"
 
 const attackAnimationPoint = new Map<string, number>()
@@ -81,7 +81,8 @@ export default class Unit extends Entity {
 	public ManaRegen = this.m_pBaseEntity.m_flManaThinkRegen
 	public RotationDifference = this.m_pBaseEntity.m_anglediff
 	public HasScepterModifier = false
-	public LastVisibleTime = Game.RawGameTime
+	public LastVisibleTime = 0
+	public LastDormantTime = 0
 
 	private UnitName_: string = ""
 	private EtherealModifiers: string[] = [
@@ -473,10 +474,18 @@ export default class Unit extends Entity {
 		if (lens !== undefined)
 			castrange += lens.GetSpecialValue("cast_range_bonus")
 
-		/*this.Spells.forEach(spell => {
-			if (spell.Level > 0 && /special_bonus_cast_range_/.test(spell.Name))
-				castrange -= spell.GetSpecialValue("value")
-		})*/
+		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget_aura")
+		if (gadget_aura !== undefined) {
+			let gadget = gadget_aura.Ability
+			if (gadget !== undefined)
+				castrange += gadget.GetSpecialValue("cast_range")
+		}
+
+		// loop-optimizer: POSSIBLE_UNDEFINED
+		this.Spells.forEach(spell => {
+			if (spell.Level !== 0 && spell.Name.startsWith("special_bonus_cast_range"))
+				castrange += spell.GetSpecialValue("value")
+		})
 		return castrange
 	}
 	public get SpellAmplification(): number {
@@ -486,7 +495,7 @@ export default class Unit extends Entity {
 
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
-			if (spell !== undefined && spell.Level > 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
+			if (spell.Level !== 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
 				spellAmp += spell.GetSpecialValue("value") / 100
 		})
 
@@ -549,7 +558,7 @@ export default class Unit extends Entity {
 	}
 	public GetTalentValue(name: string | RegExp) {
 		let talent = this.AbilitiesBook.GetAbilityByName(name)
-		return talent !== undefined && talent.Level > 0 ? talent.GetSpecialValue("value") : 0
+		return talent !== undefined && talent.Level !== 0 ? talent.GetSpecialValue("value") : 0
 	}
 	/**
 	 * faster (Distance <= range)
@@ -572,7 +581,7 @@ export default class Unit extends Entity {
 			return true
 
 		let ignore_buffs = DamageIgnoreBuffs[damage_type]
-		return this.Buffs.some(buff => {
+		return ignore_buffs !== undefined && this.Buffs.some(buff => {
 			let name = buff.Name
 			if (name === undefined)
 				return false
@@ -617,9 +626,7 @@ export default class Unit extends Entity {
 			if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
 				switch (buff.Name) {
 					case "modifier_ember_spirit_flame_guard": {
-						let talent = this.AbilitiesBook.GetAbilityByName("special_bonus_unique_ember_spirit_1")
-						if (talent !== undefined && talent.Level > 0)
-							dmg -= talent.GetSpecialValue("value")
+						dmg -= this.GetTalentValue("special_bonus_unique_ember_spirit_1")
 						dmg -= abil.GetSpecialValue("absorb_amount")
 						return
 					}
@@ -633,9 +640,7 @@ export default class Unit extends Entity {
 				}
 			switch (abil.Name) {
 				case "abaddon_aphotic_shield": {
-					let talent = this.AbilitiesBook.GetAbilityByName("special_bonus_unique_abaddon")
-					if (talent !== undefined && talent.Level > 0)
-						dmg -= talent.GetSpecialValue("value")
+					dmg -= this.GetTalentValue("special_bonus_unique_abaddon")
 					dmg -= abil.GetSpecialValue("damage_absorb")
 					return
 				}
@@ -664,9 +669,9 @@ export default class Unit extends Entity {
 				case "bristleback_bristleback": {
 					if (source !== undefined) {
 						let rot_angle = source.FindRotationAngle(this)
-						if (rot_angle > 1.90)
+						if (rot_angle <= 1.90)
 							dmg *= 1 - abil.GetSpecialValue("back_damage_reduction") / 100
-						else if (rot_angle > 1.20)
+						else if (rot_angle <= 1.20)
 							dmg *= 1 - abil.GetSpecialValue("side_damage_reduction") / 100
 					}
 					return

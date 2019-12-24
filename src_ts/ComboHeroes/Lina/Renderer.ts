@@ -18,23 +18,24 @@ import {
 } from "./Menu"
 
 export function Draw() {
-	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || Owner === undefined) {
+	if (!Base.IsRestrictions(State) || LocalPlayer === undefined || LocalPlayer.IsSpectator || Owner === undefined)
 		return
-	}
+
 	let Particle = initDrawMap.get(Owner),
 		Items = initItemsMap.get(Owner),
 		Abilities = initAbilityMap.get(Owner)
-	if (Items === undefined || Abilities === undefined || Particle === undefined) {
+
+	if (Items === undefined || Abilities === undefined || Particle === undefined)
 		return
-	}
+
 	// Particle Render
 	Particle.RenderLineTarget(Base, DrawingStatus, State, MouseTarget)
 	Particle.RenderAttackRange(State, AttackRangeRadius, Owner.AttackRange, RadiusColorAttackRange.Color)
 	Particle.Render(Abilities.LagunaBlade, "lina_laguna_blade", Abilities.LagunaBlade.CastRange, Radius, State, LagunaBladeColor.Color)
 	Particle.Render(Abilities.DragonSlave, "lina_dragon_slave", Abilities.DragonSlave.CastRange, Radius, State, DragonSlaveRadiusColor.Color)
-	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius + Owner.CastRangeBonus, Radius, State, BlinkRadiusItemColor.Color)
 	Particle.Render(Abilities.LightStrikeArray, "lina_light_strike_array", Abilities.LightStrikeArray.CastRange, Radius, State, LightStrikeArrayColor.Color)
 
+	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius + Owner.CastRangeBonus, Radius, State, BlinkRadiusItemColor.Color)
 	if (Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
 		return
 	}
@@ -44,7 +45,7 @@ export function Draw() {
 	}
 }
 
-const colorBar = Color.Green;
+const colorBar = Color.Green
 
 function DrawAutoSteal(Ability: LinaAbility) {
 	// c + v
@@ -88,13 +89,21 @@ function DrawAutoSteal(Ability: LinaAbility) {
 				? DAMAGE_TYPES.DAMAGE_TYPE_PURE
 				: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
 			Laguna = Abilities.LagunaBlade,
+			StrikeArray = Abilities.LightStrikeArray,
 			DraGonSlave = Abilities.DragonSlave,
-			StealDMDraGonSlave = Owner.CalculateDamage(DraGonSlave.AbilityDamage, DraGonSlave.DamageType, hero),
-			StealDMGLaguna = Owner.CalculateDamage(Laguna.AbilityDamage, DMG_TYPE_LAGUNA, hero)
+			StealDMStrikeArray = hero.CalculateDamage(StrikeArray.GetSpecialValue("light_strike_array_damage"), StrikeArray.DamageType, hero),
+			StealDMDraGonSlave = hero.CalculateDamage(DraGonSlave.AbilityDamage, DraGonSlave.DamageType, hero),
+			StealDMGLaguna = hero.CalculateDamage(Laguna.AbilityDamage, DMG_TYPE_LAGUNA, hero)
+
+
+		if (!StrikeArray.CanBeCasted() || !AutoStealAbility.IsEnabled(StrikeArray.Name)) {
+			StealDMStrikeArray = 0
+		}
 
 		if (!Laguna.CanBeCasted() || !AutoStealAbility.IsEnabled(Laguna.Name)) {
 			StealDMGLaguna = 0
 		}
+
 		if (!DraGonSlave.CanBeCasted() || !AutoStealAbility.IsEnabled(DraGonSlave.Name)) {
 			StealDMDraGonSlave = 0
 		}
@@ -104,21 +113,21 @@ function DrawAutoSteal(Ability: LinaAbility) {
 			return
 		}
 		wts.AddScalarX(off_x).AddScalarY(off_y)
-		let SizeSteal = (StealDMDraGonSlave + StealDMGLaguna) / hero.HP
+		let SizeSteal = (StealDMDraGonSlave + StealDMGLaguna + StealDMStrikeArray) / hero.HP
 		if (SizeSteal === 0)
-			return;
+			return
 
-		let sizeBarX = 0;
+		let sizeBarX = 0
 
 		if (SizeSteal < 1) {
-			colorBar.SetColor(74, 177, 48);
-			SizeSteal = (StealDMDraGonSlave + StealDMGLaguna) / hero.MaxHP;
-			sizeBarX += bar_w * SizeSteal;
+			colorBar.SetColor(74, 177, 48)
+			SizeSteal = (StealDMDraGonSlave + StealDMGLaguna + StealDMStrikeArray) / hero.MaxHP
+			sizeBarX += bar_w * SizeSteal
 		} else {
-			colorBar.SetColor(0, 255, 0);
-			sizeBarX += hero.HP / hero.MaxHP * bar_w;
+			colorBar.SetColor(0, 255, 0)
+			sizeBarX += hero.HP / hero.MaxHP * bar_w
 		}
-		sizeBarX = Math.min(sizeBarX, bar_w);
+		sizeBarX = Math.min(sizeBarX, bar_w)
 
 		// colorBar ??? new color quest in moof
 		RendererSDK.FilledRect(wts, new Vector2(sizeBarX, bar_h), colorBar)

@@ -21,7 +21,7 @@ EventsSDK.on("GameEnded", () => {
 })
 
 EventsSDK.on("Tick", () => {
-	if (!stateMain.value || !Game.IsInGame)
+	if (!stateMain.value)
 		return
 
 	CreepBlock.Update()

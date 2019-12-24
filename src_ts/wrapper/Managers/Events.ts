@@ -1,11 +1,11 @@
-import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
-
 type Listener = (...args: any) => false | any
 export class EventEmitter {
 	private readonly events = new Map<string, Listener[]>()
 	private readonly events_after = new Map<string, Listener[]>()
+	private readonly listener2line = new Map<Listener, string>()
 
 	public on(name: string, listener: Listener): EventEmitter {
+		this.listener2line.set(listener, new Error().stack.split("\n")[2])
 		let listeners = this.events.get(name)
 		if (listeners === undefined)
 			this.events.set(name, listeners = [])
@@ -103,53 +103,6 @@ export interface IServerInfo {
 		landmarkname?: string
 	}
 	game_session_manifest?: string
-}
-export interface IModifier {
-	type_name: "CDOTAModifierBuffTableEntry"
-	entry_type?: DOTA_MODIFIER_ENTRY_TYPE
-	parent?: number
-	index?: number
-	serial_num?: number
-	modifier_class?: number
-	ability_level?: number
-	stack_count?: number
-	creation_time?: number
-	duration?: number
-	caster?: number
-	ability?: number
-	armor?: number
-	fade_time?: number
-	subtle?: boolean
-	channel_time?: number
-	v_start?: {
-		type_name: "CMsgVector"
-		x: number
-		y: number
-		z: number
-	}
-	v_end?: {
-		type_name: "CMsgVector"
-		x: number
-		y: number
-		z: number
-	}
-	portal_loop_appear?: string
-	portal_loop_disappear?: string
-	hero_loop_appear?: string
-	hero_loop_disappear?: string
-	movement_speed?: number
-	aura?: boolean
-	activity?: number
-	damage?: number
-	range?: number
-	dd_modifier_index?: number
-	dd_ability_id?: number
-	illusion_label?: string
-	active?: boolean
-	player_ids?: string
-	lua_name?: string
-	attack_speed?: number
-	aura_owner?: number
 }
 declare interface Events extends EventEmitter {
 	on(name: "UIStateChanged", callback: (new_state: number) => void): EventEmitter
@@ -319,8 +272,7 @@ declare interface Events extends EventEmitter {
 	on(name: "ServerInfo", listener: (info: IServerInfo) => void): EventEmitter
 	on(name: "RemoveAllStringTables", listener: () => void): EventEmitter
 	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, string]>) => void): EventEmitter
-	// it's named ActiveModifiersChanged not because it's active modifiers, but because of it's managed by stringtable ActiveModifiers
-	on(name: "ActiveModifiersChanged", listener: (update: Map<number, IModifier>) => void): EventEmitter
+	on(name: "EntitiesVisiblityChanged", listener: (update: Map<C_BaseEntity, boolean>) => void): EventEmitter
 }
 
 const Events: Events = new EventEmitter()

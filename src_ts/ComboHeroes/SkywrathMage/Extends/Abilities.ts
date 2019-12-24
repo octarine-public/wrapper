@@ -1,7 +1,7 @@
-import { Ability as AbilitySDK, Hero } from "wrapper/Imports"
+import { Ability as AbilitySDK, Hero, Ability } from "wrapper/Imports"
 import { AbilityBase } from "../../Base/Abilities"
 
-export default class SkywrathMageAbility extends AbilityBase {
+export default class AbilityX extends AbilityBase {
 	private MysticFlareDelay: number = 300
 	private MysticFlareDelayScepter: number = 610
 	constructor(unit: Hero) {
@@ -19,8 +19,10 @@ export default class SkywrathMageAbility extends AbilityBase {
 	public get MysticFlare(): AbilitySDK {
 		return this.unit.GetAbilityByName("skywrath_mage_mystic_flare")
 	}
-	public UseMysticFlare(unit: Hero): void {
-		if (this.unit.HasScepter) {
+	public UseMysticFlare(abil: Ability, unit: Hero, HitAndRun: boolean = false, double_ult: boolean = false): boolean {
+		if (abil === undefined || unit === undefined)
+			return false
+		if (this.unit.HasScepter && double_ult) {
 			if (unit.IsRooted || unit.IsStunned) {
 				this.MysticFlareDelayScepter = 610
 			} else if (unit.IsMoving) {
@@ -32,7 +34,7 @@ export default class SkywrathMageAbility extends AbilityBase {
 			this.MysticFlareDelay = 300
 		}
 
-		let delay = this.unit.HasScepter
+		let delay = this.unit.HasScepter && double_ult
 			? this.MysticFlareDelayScepter
 			: this.MysticFlareDelay,
 
@@ -41,6 +43,7 @@ export default class SkywrathMageAbility extends AbilityBase {
 				: unit.IdealSpeed,
 			Predict = unit.InFront(delay / 1000 * Speed)
 
-		this.MysticFlare.UseAbility(Predict)
+		this.UseAbility(abil, false, HitAndRun, Predict)
+		return true
 	}
 }

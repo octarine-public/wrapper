@@ -106,81 +106,135 @@ EventsSDK.on("Draw", () => {
 	})
 })
 
-let old_emit = Events.emit,
-	avg_map = new Map<string, [number, number]>(),
-	frame_avg_map = new Map<string, [number, number]>(),
-	frame_buffer_map = new Map<string, number>(),
-	counter_map = new Map<string, number[]>(),
-	max_map = new Map<string, number>()
+{
+	let old_emit = Events.emit,
+		avg_map = new Map<string, [number, number]>(),
+		frame_avg_map = new Map<string, [number, number]>(),
+		frame_buffer_map = new Map<string, number>(),
+		counter_map = new Map<string, number[]>(),
+		max_map = new Map<string, number>()
 
-function RegisterStats(name: string, took: number) {
-	if (!avg_map.has(name)) {
-		avg_map.set(name, [0, 0])
-		max_map.set(name, 0)
-		frame_avg_map.set(name, [0, 0])
-		frame_buffer_map.set(name, 0)
-		counter_map.set(name, [])
+	function RegisterStats(name: string, took: number) {
+		if (!avg_map.has(name)) {
+			avg_map.set(name, [0, 0])
+			max_map.set(name, 0)
+			frame_avg_map.set(name, [0, 0])
+			frame_buffer_map.set(name, 0)
+			counter_map.set(name, [])
+		}
+		let avg_ar = avg_map.get(name)
+		avg_ar[0] *= avg_ar[1]
+		avg_ar[0] += took
+		avg_ar[1]++
+		avg_ar[0] /= avg_ar[1]
+		max_map.set(name, Math.max(max_map.get(name), took))
+		frame_buffer_map.set(name, frame_buffer_map.get(name) + took)
+		counter_map.get(name).push(Date.now())
 	}
-	let avg_ar = avg_map.get(name)
-	avg_ar[0] *= avg_ar[1]
-	avg_ar[0] += took
-	avg_ar[1]++
-	avg_ar[0] /= avg_ar[1]
-	max_map.set(name, Math.max(max_map.get(name), took))
-	frame_buffer_map.set(name, frame_buffer_map.get(name) + took)
-	counter_map.get(name).push(Date.now())
-}
 
-setInterval(() => {
-	// loop-optimizer: KEEP
-	counter_map.forEach((ar, name) => {
-		let cur_date = Date.now()
-		// loop-optimizer: FORWARD
-		counter_map.set(name, ar.filter(date => cur_date - date < 30 * 1000))
-	})
-}, 10)
-
-function ProfileEmit(name: string, cancellable?: boolean, ...args: any[]) {
-	let t = Date.now()
-	let ret = old_emit.apply(Events, [name, cancellable, ...args])
-	t = Date.now() - t
-	RegisterStats(name, t)
-	if (name === "Draw") {
+	setInterval(() => {
 		// loop-optimizer: KEEP
-		frame_buffer_map.forEach((took, name_) => {
-			let avg_ar = frame_avg_map.get(name_)
-			avg_ar[0] *= avg_ar[1]
-			avg_ar[0] += took
-			avg_ar[1]++
-			avg_ar[0] /= avg_ar[1]
-			frame_buffer_map.set(name_, 0)
+		counter_map.forEach((ar, name) => {
+			let cur_date = Date.now()
+			// loop-optimizer: FORWARD
+			counter_map.set(name, ar.filter(date => cur_date - date < 30 * 1000))
 		})
+	}, 10)
+
+	function ProfileEmit(name: string, cancellable?: boolean, ...args: any[]) {
+		let t = Date.now()
+		let ret = old_emit.apply(Events, [name, cancellable, ...args])
+		t = Date.now() - t
+		RegisterStats(name, t)
+		if (name === "Draw") {
+			// loop-optimizer: KEEP
+			frame_buffer_map.forEach((took, name_) => {
+				let avg_ar = frame_avg_map.get(name_)
+				avg_ar[0] *= avg_ar[1]
+				avg_ar[0] += took
+				avg_ar[1]++
+				avg_ar[0] /= avg_ar[1]
+				frame_buffer_map.set(name_, 0)
+			})
+		}
+
+		return ret
+	}
+	Events.emit = ProfileEmit
+
+	globalThis.dump_stats = () => {
+		console.log("Average: ")
+		for (let [name, [took]] of avg_map.entries())
+			console.log(`${name}: ${took}ms`)
+
+		console.log("-".repeat(10))
+
+		console.log("Average per frame: ")
+		for (let [name, [took]] of frame_avg_map.entries())
+			console.log(`${name}: ${took}ms`)
+
+		console.log("-".repeat(10))
+
+		console.log("Calls per second for last 30 seconds: ")
+		for (let [name, ar] of counter_map.entries())
+			console.log(`${name}: ${ar.length / 30}`)
+
+		console.log("-".repeat(10))
+
+		console.log("Max: ")
+		for (let [name, took] of max_map.entries())
+			console.log(`${name}: ${took}ms`)
+	}
+}
+
+{
+	let old_emit = EventsSDK.emit,
+		avg_map = new Map<string, [number, number]>(),
+		max_map = new Map<string, number>()
+
+	function RegisterStats(name: string, took: number) {
+		if (!avg_map.has(name)) {
+			avg_map.set(name, [0, 0])
+			max_map.set(name, 0)
+		}
+		let avg_ar = avg_map.get(name)
+		avg_ar[0] *= avg_ar[1]
+		avg_ar[0] += took
+		avg_ar[1]++
+		avg_ar[0] /= avg_ar[1]
+		max_map.set(name, Math.max(max_map.get(name), took))
 	}
 
-	return ret
-}
-Events.emit = ProfileEmit
+	function ProfileEmit(name: string, cancellable: boolean, ...args: any) {
+		if (name !== "Tick")
+			return old_emit.apply(EventsSDK, [name, cancellable, ...args])
+		let listeners = this.events.get(name)
 
-globalThis.dump_stats = () => {
-	console.log("Average: ")
-	for (let [name, [took]] of avg_map.entries())
-		console.log(`${name}: ${took}ms`)
+		let ret = listeners === undefined || !listeners.some(listener => {
+			let t = Date.now()
+			try {
+				let ret = listener.apply(this, args)
+				t = Date.now() - t
+				RegisterStats(this.listener2line.get(listener), t)
+				return ret === false && cancellable
+			} catch (e) {
+				console.log(e.stack || new Error(e).stack)
+				return false
+			}
+		})
+		return ret
+	}
+	EventsSDK.emit = ProfileEmit
 
-	console.log("-".repeat(10))
+	globalThis.dump_stats_tick = () => {
+		console.log("Average: ")
+		for (let [name, [took]] of avg_map.entries())
+			console.log(`${name}: ${took}ms`)
 
-	console.log("Average per frame: ")
-	for (let [name, [took]] of frame_avg_map.entries())
-		console.log(`${name}: ${took}ms`)
+		console.log("-".repeat(10))
 
-	console.log("-".repeat(10))
-
-	console.log("Calls per second for last 30 seconds: ")
-	for (let [name, ar] of counter_map.entries())
-		console.log(`${name}: ${ar.length / 30}`)
-
-	console.log("-".repeat(10))
-
-	console.log("Max: ")
-	for (let [name, took] of max_map.entries())
-		console.log(`${name}: ${took}ms`)
+		console.log("Max: ")
+		for (let [name, took] of max_map.entries())
+			console.log(`${name}: ${took}ms`)
+	}
 }

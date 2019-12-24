@@ -75,7 +75,7 @@ export default class Ability extends Entity {
 	}
 	get IsReady(): boolean {
 		const unit = this.Owner
-		return this.IsCooldownReady && this.Level > 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsSilenced))
+		return this.IsCooldownReady && this.Level !== 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsSilenced))
 	}
 	get IsGrantedByScepter(): boolean {
 		return this.AbilityData.IsGrantedByScepter
@@ -138,6 +138,7 @@ export default class Ability extends Entity {
 
 		return Math.max(0, this.Cooldown - (Game.RawGameTime - this.Owner.LastVisibleTime))
 	}
+
 	get CastRange(): number {
 		let owner = this.Owner,
 			castrange = this.m_pBaseEntity.m_fCastRange
@@ -149,17 +150,15 @@ export default class Ability extends Entity {
 				break
 			}
 			case "skywrath_mage_concussive_shot": {
-				let unique = owner?.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4")
-				if (unique !== undefined && unique.Level > 0)
+				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4")
+				if (unique !== undefined && unique.Level !== 0)
 					return Number.MAX_SAFE_INTEGER
-
 				break
 			}
 			case "gyrocopter_call_down": {
-				let unique = owner?.AbilitiesBook.GetAbilityByName("special_bonus_unique_gyrocopter_5")
-				if (unique !== undefined && unique.Level > 0)
+				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_gyrocopter_5")
+				if (unique !== undefined && unique.Level !== 0)
 					return Number.MAX_SAFE_INTEGER
-
 				break
 			}
 			case "lion_impale": {
@@ -167,17 +166,11 @@ export default class Ability extends Entity {
 				break
 			}
 			case "lina_dragon_slave":
-			case "lina_laguna_blade":
-			case "lina_light_strike_array": {
-				let unique = owner?.AbilitiesBook.GetAbilityByName("special_bonus_cast_range_125")
-				if (unique !== undefined && unique.Level > 0)
-					castrange += 125
+				castrange += this.GetSpecialValue("dragon_slave_width_initial")
 				break
-			}
 			default:
 				break
 		}
-
 		return castrange + (owner !== undefined ? owner.CastRangeBonus : 0)
 	}
 
@@ -224,7 +217,7 @@ export default class Ability extends Entity {
 			for (let i = 0; i <= this.MaxLevel; i++)
 				cache[i] = this.m_pBaseEntity.GetSpecialValue(special_name, i)
 		}
-		return cache[level] || (cache[level] = this.m_pBaseEntity.GetSpecialValue(special_name, level))
+		return cache[level] ?? (cache[level] = this.m_pBaseEntity.GetSpecialValue(special_name, level))
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
 		let owner = this.Owner
@@ -293,11 +286,10 @@ export default class Ability extends Entity {
 	}
 	public CanBeCasted(bonusMana: number = 0): boolean {
 		return this.IsValid
-			&& this.Level > 0
+			&& this.Level !== 0
 			&& this.IsCooldownReady
 			&& !this.Owner?.IsSilenced
 			&& this.IsManaEnough(bonusMana)
-			&& this.IsCooldownReady
 	}
 }
 

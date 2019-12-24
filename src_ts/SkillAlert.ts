@@ -293,17 +293,17 @@ EventsSDK.on("EntityCreated", ent => {
 
 	if (ent.Name === "npc_dota_thinker") {
 
-		let owner = ent.Owner as Unit;
+		let owner = ent.Owner as Unit
 
 		if (owner === undefined) {
-			let buff = (ent as Unit).Buffs[0];
+			let buff = (ent as Unit).Buffs[0]
 			if (buff === undefined)
-				return;
-			owner = buff.Parent;
+				return
+			owner = buff.Parent
 		}
 
 		if (owner === undefined || !owner.IsEnemy())
-			return;
+			return
 
 		let rad = 0
 		switch (owner.Name) {
@@ -471,7 +471,7 @@ EventsSDK.on("Tick", () => {
 				if (abil.IsInAbilityPhase || (owner.IsChanneling && spell === "windrunner_powershot"))
 					DrawDirectional(
 						owner.Position,
-						owner.Position.Add(Vector3.FromAngle(owner.RotationRad).MultiplyScalarForThis(abil.CastRange)),
+						owner.InFront(abil.CastRange),
 						abil.ID + 100000,
 						true,
 					)

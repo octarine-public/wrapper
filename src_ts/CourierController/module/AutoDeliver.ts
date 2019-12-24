@@ -4,7 +4,7 @@ import { Sleep, Owner } from "../bootstrap"
 import { CourierBase } from "../Data/Helper"
 
 function Deliver(courier: Courier): boolean {
-	if (CourierBase.DELIVER_DISABLE)
+	if (CourierBase.DELIVER_DISABLE || CourierBase.LAST_CLICK)
 		return false
 	if (!Owner.IsAlive || !Owner.Inventory.HasFreeSlot(0, 9))
 		return false
@@ -34,7 +34,7 @@ function Deliver(courier: Courier): boolean {
 }
 
 export function AutoDeliver(courier: Courier): boolean {
-	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !deliverState.value)
+	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !deliverState.value || CourierBase.LAST_CLICK)
 		return false
 	let StateCourEnt = courier.StateHero,
 		StateCourEnum = courier.State

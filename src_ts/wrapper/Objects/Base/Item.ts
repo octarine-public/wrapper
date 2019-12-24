@@ -13,7 +13,7 @@ export default class Item extends Ability {
 
 	get IsReady(): boolean {
 		const unit = this.Owner
-		return this.IsCooldownReady && this.Level > 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
+		return this.IsCooldownReady && this.Level !== 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
 	}
 	get IsMuted(): boolean {
 		return this.EnableTime !== 0 && this.EnableTime > Game.RawGameTime
@@ -129,7 +129,8 @@ export default class Item extends Ability {
 		if (!this.IsValid || this.IsMuted)
 			return false
 
-		if (this.Shareability == EShareAbility.ITEM_NOT_SHAREABLE && this.Owner?.Owner !== this.Purchaser)
+		let root_owner = this.RootOwner
+		if (root_owner !== undefined && this.Shareability == EShareAbility.ITEM_NOT_SHAREABLE && root_owner !== this.Purchaser)
 			return false
 
 		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled)
@@ -138,7 +139,7 @@ export default class Item extends Ability {
 		if (this.RequiresCharges && this.CurrentCharges < 1)
 			return false
 
-		return this.Level > 0
+		return this.Level !== 0
 			&& !this.Owner?.IsMuted
 			&& this.IsManaEnough(bonusMana)
 			&& this.IsCooldownReady

@@ -40,44 +40,54 @@ import { Key as HeroBlockKey } from "../../../UnitBlocker/modules/HeroBlock/Menu
 import { Key as CreepBlockKey } from "../../../UnitBlocker/modules/CreepBlock/Menu"
 import { ParticleGlimer, initItemsMap, GlimerClear, glimer } from "../../abstract/Listeners"
 
-let nextTick = 0,
-	changed = true,
-	lastStat: Attributes,
-	Base = new ItemManagerBase,
-	TickSleep = new TickSleeper,
-	Buffs = {
-		NotHeal: [
-			"modifier_fountain_aura_buff",
-			"modifier_item_armlet_unholy_strength",
-		],
-		InvisDebuff: [
-			"modifier_bounty_hunter_track",
-			"modifier_bloodseeker_thirst_vision",
-			"modifier_slardar_amplify_damage",
-			"modifier_item_dustofappearance",
-			"modifier_truesight",
-		]
-	}
 
-let IsValidPlayer = () => LocalPlayer !== undefined && LocalPlayer.Hero !== undefined
+const Base = new ItemManagerBase
+const TickSleep = new TickSleeper
 
-// let IsLinkensProtected = (unit: Unit, Items: InitItems) => unit.HasBuffByName("modifier_item_sphere")
-// 	&& Items?.Sphere?.Cooldown === 0
+const BuffsTango = [
+	"modifier_tango_heal",
+	"modifier_item_urn_heal",
+	"modifier_item_spirit_vessel_heal"
+]
 
-let filterUnits = (x: Unit) => x.IsAlive && x.IsControllable
+const BuffsNotHeal = [
+	"modifier_fountain_aura_buff",
+	"modifier_item_armlet_unholy_strength",
+]
+
+const BuffsInvisDebuff = [
+	"modifier_bounty_hunter_track",
+	"modifier_bloodseeker_thirst_vision",
+	"modifier_slardar_amplify_damage",
+	"modifier_item_dustofappearance",
+	"modifier_truesight",
+]
+
+
+const IsValidPlayer = () => LocalPlayer !== undefined && LocalPlayer.Hero !== undefined
+
+const filterUnits = (x: Unit) => x.IsAlive && x.IsControllable
 	&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double"))
 
-let IsValidItem = (Items: Item) => Items !== undefined && Items.IsReady
-	&& ItemsForUse.IsEnabled(Items.Name) && Items.CanBeCasted()
+const IsValidItem = (Items: Item) =>
+	Items !== undefined
+	&& ItemsForUse.IsEnabled(Items.Name)
+	&& Items.IsReady
+	&& Items.CanBeCasted()
 
-let IsValidCreep = (creep: Creep) => creep.IsValid && creep.IsAlive && creep.IsVisible && !creep.IsMagicImmune && !creep.IsAncient
+const IsValidCreep = (creep: Creep) => creep.IsValid && creep.IsAlive && creep.IsVisible && !creep.IsMagicImmune && !creep.IsAncient
 
-let IsValidUnit = (unit: Unit) => unit.IsAlive && !unit.IsStunned && !unit.IsChanneling && !unit.IsInvulnerable
+const IsValidUnit = (unit: Unit) => unit.IsAlive && !unit.IsStunned && !unit.IsChanneling && !unit.IsInvulnerable
 	&& (unit.Name === "npc_dota_hero_riki" || unit.InvisibleLevel <= 0 || unit.Buffs.some(buff => buff.Name === "modifier_smoke_of_deceit"))
+
+let nextTick = 0,
+	changed = true,
+	lastStat: Attributes
 
 function AutoUseItems(unit: Unit) {
 	if (!filterUnits(unit) || !IsValidUnit(unit))
 		return false
+
 	let Items = initItemsMap.get(unit)
 	if (Items === undefined)
 		return false
@@ -95,16 +105,13 @@ function AutoUseItems(unit: Unit) {
 	if (IsValidItem(Items.PhaseBoots)) {
 		if (HeroBlockKey.is_pressed || CreepBlockKey.is_pressed)
 			return false
-
 		if (unit.IsMoving || unit.IdealSpeed >= Base.MaxMoveSpeed) {
 			if (unit.HasBuffByName("modifier_monkey_king_transform"))
 				return false
-
 			let enemy_phase_in_position = AutoUseItemsPhaseBootsState.value
 				? EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(enemy => enemy.IsVisible && enemy.IsAlive
 					&& unit.Distance2D(enemy.Position) <= AutoUseItemsPhase_val.value)
 				: AutoUseItemsPhaseBootsState.value
-
 			if (!AutoUseItemsPhaseBootsState.value || enemy_phase_in_position) {
 				unit.CastNoTarget(Items.PhaseBoots)
 				TickSleep.Sleep(Base.GetDelayCast)
@@ -127,7 +134,7 @@ function AutoUseItems(unit: Unit) {
 		let item = Items.MagicWand !== undefined
 			? Items.MagicWand
 			: Items.MagicStick
-		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
+		if (!unit.Buffs.some(buff => BuffsNotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsSticks_val.value) {
 				unit.CastNoTarget(item)
 				TickSleep.Sleep(Base.GetDelayCast)
@@ -142,7 +149,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.FaerieFire)) {
-		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
+		if (!unit.Buffs.some(buff => BuffsNotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HP <= AutoUseItemsFaerieFire_val.value) {
 				unit.CastNoTarget(Items.FaerieFire)
 				TickSleep.Sleep(Base.GetDelayCast)
@@ -152,7 +159,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.GreaterFaerieFire)) {
-		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
+		if (!unit.Buffs.some(buff => BuffsNotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HP <= AutoUseItemsBigFaerieFire_val.value) {
 				unit.CastNoTarget(Items.GreaterFaerieFire)
 				TickSleep.Sleep(Base.GetDelayCast)
@@ -162,7 +169,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.Cheese)) {
-		if (unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
+		if (unit.Buffs.some(buff => BuffsNotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent < AutoUseItemsCheese_val.value) {
 				unit.CastNoTarget(Items.Cheese)
 				TickSleep.Sleep(Base.GetDelayCast)
@@ -172,7 +179,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.EssenceRing)) {
-		if (!unit.Buffs.some(buff => Buffs.NotHeal.some(notHeal => buff.Name === notHeal))) {
+		if (!unit.Buffs.some(buff => BuffsNotHeal.some(notHeal => buff.Name === notHeal))) {
 			if (unit.HPPercent <= AutoUseItemsEssenceRing_val.value) {
 				unit.CastNoTarget(Items.EssenceRing)
 				TickSleep.Sleep(Base.GetDelayCast)
@@ -182,7 +189,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.ArcaneRing)) {
-		if (!unit.ModifiersBook.HasBuffByName(Buffs.NotHeal[0])) {
+		if (!unit.ModifiersBook.HasBuffByName(BuffsNotHeal[0])) {
 			if (unit.Mana < AutoUseItemsArcanering_val.value) {
 				unit.CastNoTarget(Items.ArcaneRing)
 				TickSleep.Sleep(Base.GetDelayCast)
@@ -192,7 +199,7 @@ function AutoUseItems(unit: Unit) {
 	}
 
 	if (IsValidItem(Items.ArcaneBoots)) {
-		if (!unit.ModifiersBook.HasBuffByName(Buffs.NotHeal[0])) {
+		if (!unit.ModifiersBook.HasBuffByName(BuffsNotHeal[0])) {
 			if (unit.ManaPercent < AutoUseItemsArcane_val.value) {
 				unit.CastNoTarget(Items.ArcaneBoots)
 				TickSleep.Sleep(Base.GetDelayCast)
@@ -297,7 +304,7 @@ function AutoUseItems(unit: Unit) {
 			})
 			let IsVisible = EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(enemy => enemy.IsAlive
 				&& unit.IsInRange(enemy.Position, Items.Dust.CastRange)
-				&& !enemy.ModifiersBook.HasAnyBuffByNames(Buffs.InvisDebuff)
+				&& !enemy.ModifiersBook.HasAnyBuffByNames(BuffsInvisDebuff)
 				&& (enemy.InvisibleLevel > 0
 					|| glimer.size !== 0
 					|| unit.ModifiersBook.HasBuffByName("modifier_invoker_ghost_walk_enemy")
@@ -314,13 +321,7 @@ function AutoUseItems(unit: Unit) {
 		}
 	}
 
-	if (!unit.ModifiersBook.GetAnyBuffByNames(
-		[
-			"modifier_tango_heal",
-			"modifier_item_urn_heal",
-			"modifier_item_spirit_vessel_heal"
-		]
-	) && (IsValidItem(Items.Tango) || IsValidItem(Items.TangoSingle))) {
+	if (!unit.ModifiersBook.GetAnyBuffByNames(BuffsTango) && (IsValidItem(Items.Tango) || IsValidItem(Items.TangoSingle))) {
 		let Tango = !Items.Tango ? Items.TangoSingle : Items.Tango,
 			tr = EntityManager.GetEntitiesByClass(TempTree, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH)
 				.find(x => x.IsInRange(unit, Tango.CastRange))
@@ -330,18 +331,7 @@ function AutoUseItems(unit: Unit) {
 			return true
 		}
 	}
-	// if (IsValidItem(Items.Abyssal)) {
-	// 	Units.some(x => {
-	// 		if (x === undefined || !x.IsHero || !x.IsValid || !x.IsAlive || x.IsInvulnerable || !x.IsEnemy(unit) || !x.IsVisible)
-	// 			return false
-	// 		let enemy_items = initItemsMap.get(x)
-	// 		if (enemy_items === undefined || !x.IsInRange(unit, Items.Abyssal.CastRange) || IsLinkensProtected(x, enemy_items))
-	// 			return false
-	// 		unit.CastTarget(Items.Abyssal, x)
-	// 		TickSleep.Sleep(Base.GetDelayCast)
-	// 		return true
-	// 	})
-	// }
+
 	// Power treads
 	if (lastStat !== undefined && Game.RawGameTime >= nextTick) {
 		if (Items.PowerTreads !== undefined
@@ -358,11 +348,12 @@ function AutoUseItems(unit: Unit) {
 			return true
 		}
 	}
+
 }
 
 function CheckUnitForUrn(Unit: Unit, MaxHP: number) {
 	return Unit.IsAlive && Unit.HP <= MaxHP && !Unit.IsInvulnerable
-		&& !Unit.ModifiersBook.GetAnyBuffByNames(Buffs.NotHeal)
+		&& !Unit.ModifiersBook.GetAnyBuffByNames(BuffsNotHeal)
 }
 
 function CheckCreeps(creep: Creep, unit: Unit, Item: Item): boolean {
@@ -465,17 +456,18 @@ function UsePowerTreads(args: ExecuteOrder, ability: Ability, unit: Unit, Items:
 }
 
 export function UseMouseItemTarget(args: ExecuteOrder) {
-	if (!StateBase.value || !State.value || TickSleep.Sleeping) {
+	if (!StateBase.value || !State.value || TickSleep.Sleeping)
 		return true
-	}
+
 	let unit = args.Unit as Unit,
 		target = args.Target as Unit
 
-	if (target === undefined || unit === undefined) {
+	if (target === undefined || unit === undefined)
 		return true
-	}
+
 	if (target.IsBuilding)
 		return true
+
 	switch (args.OrderType) {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
 			let Items = initItemsMap.get(unit)
@@ -503,6 +495,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 				unit.CastNoTarget(Items.Janggo)
 				TickSleep.Sleep(Base.GetDelayCast)
 			}
+
 			if (target.IsCreep
 				&& (target.IsNeutral || (target.IsLaneCreep && AutoUseItemsTalon_val.selected_id === 1))
 				&& !target.IsHero

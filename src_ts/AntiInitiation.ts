@@ -145,7 +145,7 @@ function Disable(Me: Hero, hero: Unit, DisableAr: [string, boolean, boolean?][],
 }
 
 EventsSDK.on("Tick", () => {
-	if (!MenuState.value || Game.IsPaused || LocalPlayer === undefined)
+	if (!MenuState.value)
 		return
 	const Me = LocalPlayer,
 		hero = Me.Hero

@@ -148,6 +148,7 @@ export default class Entity {
 	public LifeState: LifeState_t = this.m_pBaseEntity.m_lifeState
 	public HP = this.m_pBaseEntity.m_iHealth
 	public MaxHP = this.m_pBaseEntity.m_iMaxHealth
+	public IsVisible = true
 
 	private readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
 	private readonly Angles_ = new QAngle().Invalidate() // cached angles
@@ -170,6 +171,18 @@ export default class Entity {
 
 		return undefined
 	}
+	public get RootOwner(): Entity | undefined {
+		let owner = this.Owner
+		if (owner === undefined) // special case since we don't want to return this as owner
+			return undefined
+		while (true) {
+			let root_owner = owner.Owner
+			if (root_owner === undefined)
+				break
+			owner = root_owner
+		}
+		return owner
+	}
 	public get GameSceneNode(): CGameSceneNode {
 		return this.m_pBaseEntity.m_pGameSceneNode
 	}
@@ -182,24 +195,10 @@ export default class Entity {
 		}
 		return this.Position_.Clone()
 	}
-	public get Rotation(): number {
-		return this.Angles.y
-	}
 	public get NetworkRotation(): number {
 		return this.NetworkAngles.y
 	}
-	public get Angles(): QAngle {
-		if (!this.Angles_.IsValid) {
-			let gameSceneNode = this.GameSceneNode
-			if (gameSceneNode === undefined)
-				return new QAngle()
-			QAngle.fromIOBuffer(gameSceneNode.m_angAbsRotation)?.CopyTo(this.Angles_)
-		}
-		return this.Angles_.Clone()
-	}
 	public get NetworkAngles(): QAngle {
-		if (!this.NetworkAngles_.IsValid)
-			this.Angles.CopyTo(this.NetworkAngles_)
 		return this.NetworkAngles_.Clone()
 	}
 	public get CreateTime(): number {
@@ -217,17 +216,11 @@ export default class Entity {
 	public get IsNPC(): boolean {
 		return this.m_pBaseEntity.m_bIsNPC
 	}
-	public get IsVisible(): boolean {
-		return (this.Flags & (1 << 7)) === 0
-	}
 	/**
 	 * as Direction
 	 */
 	public get Forward(): Vector3 {
 		return Vector3.FromAngle(this.NetworkRotationRad)
-	}
-	public get RotationRad(): number {
-		return DegreesToRadian(this.Rotation)
 	}
 	public get NetworkRotationRad(): number {
 		return DegreesToRadian(this.NetworkRotation)

@@ -29,6 +29,7 @@ let array_items: string[] = [
 ]
 let array_ability_steal: string[] = [
 	Abilities.DragonSlave.toString(),
+	Abilities.LightStrikeArray.toString(),
 	Abilities.LagunaBlade.toString(),
 ]
 
@@ -42,8 +43,13 @@ let array_radius: string[] = [
 let AutoStealTree = Menu.AddNode("Auto Steal"),
 	AutoStealState = AutoStealTree.AddToggle("Enable", true),
 	AutoStealAbility = AutoStealTree.AddImageSelector("Ability", array_ability_steal, new Map(array_ability_steal.map(name => [name, true]))),
-	Combo = Menu.AddNode("Combo"),
-	ModeInvisCombo = Combo.AddSwitcher("Invis Mode", ["Stuned and Combo", "Attack + Combo"], 0),
+	Combo = Menu.AddNode("Combo")
+
+const ComboHitAndRunTree = Combo.AddNode("HitAndRun")
+export const ComboHitAndRunAttack = ComboHitAndRunTree.AddToggle("Auto attack", true)
+export const TypeHitAndRun = ComboHitAndRunTree.AddSwitcher("Type Run", ["Run to target", "Run to cursor", "None"])
+
+let ModeInvisCombo = Combo.AddSwitcher("Invis Mode", ["Stuned and Combo", "Attack + Combo"], 0),
 	ComboKeyItem = Combo.AddKeybind("Combo Key"),
 	StyleCombo = Combo.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"]),
 	NearMouse = Combo.AddSlider("Near Mouse (Range)", 800, 100, 1000),

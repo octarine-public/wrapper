@@ -96,9 +96,6 @@ function PingEnemyWard(hero: Entity) {
 }
 
 EventsSDK.on("Tick", () => {
-	if (LocalPlayer === undefined) {
-		return
-	}
 	if (!optionEnable.value || LocalPlayer.IsSpectator) {
 		return
 	}

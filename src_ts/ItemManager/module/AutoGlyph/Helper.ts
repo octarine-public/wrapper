@@ -27,7 +27,7 @@ export function Init() {
 	if (!EntityManager.GetEntitiesByClass(Building, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(x => !x.IsShop
 		&& !x.IsShrine && x.IsAlive && x.HP <= TowerHP.value
 		&& x.Name.includes(include_name)
-		&& EntityManager.GetEntitiesByClass<Unit>(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit =>
+		&& EntityManager.GetEntitiesByClass(Unit, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(unit =>
 			unit.IsVisible
 			&& unit.IsAlive && (unit.IsCreep || unit.IsHero)
 			&& unit.IsInRange(x, unit.AttackRange + (unit.HullRadius * 2)))))

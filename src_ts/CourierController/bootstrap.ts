@@ -16,7 +16,7 @@ export let OwnerIsValid = () => Game.IsInGame && Owner?.IsAlive
 function SharedFilter(number: number, obj: any) {
 	// loop-optimizer: KEEP
 	return CourierBase.roles[number] = (obj as CSODOTALobby).members
-		.filter(member => member.id === LocalPlayer?.PlayerSteamID && LocalPlayer.PlayerSteamID >= 0)
+		.filter(member => member.id === LocalPlayer?.PlayerSteamID && LocalPlayer?.PlayerSteamID >= 0)
 		.map(member => member.lane_selection_flags)
 }
 EventsSDK.on("Tick", () => {

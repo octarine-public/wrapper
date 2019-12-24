@@ -112,8 +112,6 @@ EventsSDK.on("Draw", () => {
 })
 
 EventsSDK.on("Tick", () => {
-	if (Game.IsPaused)
-		return
 	if ((hotkey_style.selected_id === 1 && !Key) || (hotkey_style.selected_id === 0 && !hotkey.is_pressed)) {
 		return
 	}

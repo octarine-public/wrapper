@@ -4,9 +4,10 @@ import { LaneSelectionFlags_t, Data } from "./Data"
 import { Owner } from "../bootstrap"
 
 class CourierData extends Data {
-	public roles = new Array<LaneSelectionFlags_t[]>(2).fill(new Array<LaneSelectionFlags_t>(5).fill(LaneSelectionFlags_t.MID_LANE))
+	public LAST_CLICK = false
 	public AUTO_USE_ITEMS = false
 	public DELIVER_DISABLE = false
+	public roles = new Array<LaneSelectionFlags_t[]>(2).fill(new Array<LaneSelectionFlags_t>(5).fill(LaneSelectionFlags_t.MID_LANE))
 	public get CastDelay() {
 		return (((Game.Ping / 2) + 30) + 250)
 	}

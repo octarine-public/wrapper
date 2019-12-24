@@ -1,6 +1,6 @@
 import { Hero, Item } from "wrapper/Imports"
 import { ItemBase } from "../../Base/Items"
-export default class LinaItems extends ItemBase {
+export default class ItemsX extends ItemBase {
 	constructor(unit?: Hero) {
 		super(unit)
 	}
