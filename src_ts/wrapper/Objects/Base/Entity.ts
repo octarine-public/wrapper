@@ -136,25 +136,35 @@ m_pEntity.m_flags
 export default class Entity {
 	/* ================================ Fields ================================ */
 
+	public readonly Entity: Nullable<CEntityIdentity>
+	public readonly Index: number
+	public Owner_: Entity | CEntityIndex
+
 	public IsValid: boolean = false
-
-	public readonly Entity: CEntityIdentity | undefined = this.m_pBaseEntity.m_pEntity
-	public readonly Index = EntityManager.IndexByNative(this.m_pBaseEntity)
-	public Owner_: Entity | CEntityIndex = this.m_pBaseEntity.m_hOwnerEntity
-
-	public Name_ = this.Entity?.m_name ?? this.Entity?.m_designerName ?? ""
-
-	public Team: Team = this.m_pBaseEntity.m_iTeamNum
-	public LifeState: LifeState_t = this.m_pBaseEntity.m_lifeState
-	public HP = this.m_pBaseEntity.m_iHealth
-	public MaxHP = this.m_pBaseEntity.m_iMaxHealth
 	public IsVisible = true
+	public Name_ = ""
+
+	public Team = Team.None;
+	public LifeState = LifeState_t.LIFE_ALIVE;
+	public HP = 0
+	public MaxHP = 0
 
 	private readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
 	private readonly Angles_ = new QAngle().Invalidate() // cached angles
 	private readonly NetworkAngles_ = new QAngle().Invalidate()// cached network angles
 
-	constructor(public readonly m_pBaseEntity: C_BaseEntity) { }
+	constructor(public readonly m_pBaseEntity: C_BaseEntity) {
+		this.Entity = this.m_pBaseEntity.m_pEntity
+		this.Index = EntityManager.IndexByNative(this.m_pBaseEntity)
+		this.Owner_ = this.m_pBaseEntity.m_hOwnerEntity
+
+		this.MaxHP = this.m_pBaseEntity.m_iMaxHealth
+		this.HP = this.m_pBaseEntity.m_iHealth
+		this.LifeState = this.m_pBaseEntity.m_lifeState
+		this.Team = this.m_pBaseEntity.m_iTeamNum
+
+		this.Name_ = this.Entity?.m_name ?? this.Entity?.m_designerName ?? ""
+	}
 
 	/* ================ GETTERS ================ */
 	public get Name(): string {

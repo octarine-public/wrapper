@@ -37,7 +37,7 @@ globalThis.Color = _Color
 globalThis.QAngle = _QAngle
 globalThis.Vector2 = _Vector2
 globalThis.Vector2 = _Vector2
-globalThis.Vector3 = Vector3
+globalThis.Vector3 = _Vector3
 
 globalThis.LocalPlayer = undefined
 globalThis.EntityManager = _EntityManager

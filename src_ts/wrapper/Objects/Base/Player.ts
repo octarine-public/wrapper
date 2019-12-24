@@ -108,7 +108,7 @@ export default class Player extends Entity {
 	// HasRepicked 				=> PlayerResourcePlayerTeamData_t
 	// Healing					=> NonSpectator
 	get Hero(): Nullable<Hero> {
-		if (this.Hero_ instanceof Hero)
+		if (this.Hero_ instanceof Entity)
 			return this.Hero_
 
 		this.Hero_ = (EntityManager.GetEntityByNative(this.Hero_) as Hero) ?? this.Hero_

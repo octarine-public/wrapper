@@ -3,27 +3,47 @@ import AbilitySpecialData from "./AbilitySpecialData"
 
 export default class AbilityData {
 
-	public readonly Name = this.m_pAbilityData.m_pszAbilityName ?? "";
-	public readonly AbilityBehavior: DOTA_ABILITY_BEHAVIOR[] = MaskToArrayBigInt(this.m_pAbilityData.m_iAbilityBehavior)
-	public readonly AbilitySpecialData = new AbilitySpecialData(this.m_pAbilityData.m_pSpecialAbilities)
-	public readonly AbilityType: ABILITY_TYPES = this.m_pAbilityData.m_iAbilityType
-	public readonly MaxLevel = this.m_pAbilityData.m_iMaxLevel
-	public readonly TextureName = this.m_pAbilityData.m_pszTextureName
-	public readonly TargetFlags: DOTA_UNIT_TARGET_FLAGS[] = MaskToArrayNumber(this.m_pAbilityData.m_iAbilityTargetFlags)
-	public readonly TargetTeam: DOTA_UNIT_TARGET_TEAM[] = MaskToArrayNumber(this.m_pAbilityData.m_iAbilityTargetTeam)
-	public readonly TargetType: DOTA_UNIT_TARGET_TYPE[] = MaskToArrayNumber(this.m_pAbilityData.m_iAbilityTargetType)
-	public readonly SharedCooldownName = this.m_pAbilityData.m_pszSharedCooldownName
-	public readonly ModelName = this.m_pAbilityData.m_pModelName
-	public readonly ItemRecipeName = this.m_pAbilityData.m_pszItemRecipeName
-	public readonly IsItem = this.Name.startsWith("item_") // m_pAbilityData.m_bIsItem
-	public readonly IsGrantedByScepter = this.m_pAbilityData.m_bIsGrantedByScepter
-	public readonly ID = this.m_pAbilityData.m_iAbilityID
-	public readonly EffectName = this.m_pAbilityData.m_pEffectName
-	public readonly Cost = this.m_pAbilityData.m_iItemCost
-	public readonly AlternateModelName = this.m_pAbilityData.m_pModelAlternateName
+	public readonly Name: string
+	public readonly AbilityBehavior: DOTA_ABILITY_BEHAVIOR[]
+	public readonly AbilitySpecialData: AbilitySpecialData
+	public readonly AbilityType: ABILITY_TYPES
+	public readonly MaxLevel: number
+	public readonly TextureName: string
+	public readonly TargetFlags: DOTA_UNIT_TARGET_FLAGS[]
+	public readonly TargetTeam: DOTA_UNIT_TARGET_TEAM[]
+	public readonly TargetType: DOTA_UNIT_TARGET_TYPE[]
+	public readonly SharedCooldownName: string
+	public readonly ModelName: string
+	public readonly ItemRecipeName: string
+	public readonly IsItem: boolean
+	public readonly IsGrantedByScepter: boolean
+	public readonly ID: number
+	public readonly EffectName: string
+	public readonly Cost: number
+	public readonly AlternateModelName: string
+
 	public readonly SpecialValueCache = Object.create(null)
 
-	constructor(public readonly m_pAbilityData: DOTAAbilityDefinition_t) { }
+	constructor(public readonly m_pAbilityData: DOTAAbilityDefinition_t) {
+		this.Name = m_pAbilityData.m_pszAbilityName ?? ""
+		this.AbilityBehavior = MaskToArrayBigInt(m_pAbilityData.m_iAbilityBehavior)
+		this.AbilitySpecialData = new AbilitySpecialData(m_pAbilityData.m_pSpecialAbilities)
+		this.AbilityType = m_pAbilityData.m_iAbilityType
+		this.MaxLevel = m_pAbilityData.m_iMaxLevel
+		this.TextureName = m_pAbilityData.m_pszTextureName
+		this.TargetFlags = MaskToArrayNumber(m_pAbilityData.m_iAbilityTargetFlags)
+		this.TargetTeam = MaskToArrayNumber(m_pAbilityData.m_iAbilityTargetTeam)
+		this.TargetType = MaskToArrayNumber(m_pAbilityData.m_iAbilityTargetType)
+		this.SharedCooldownName = m_pAbilityData.m_pszSharedCooldownName
+		this.ModelName = m_pAbilityData.m_pModelName
+		this.ItemRecipeName = m_pAbilityData.m_pszItemRecipeName
+		this.IsItem = this.Name.startsWith("item_") // m_pAbilityData.m_bIsItem
+		this.IsGrantedByScepter = m_pAbilityData.m_bIsGrantedByScepter
+		this.ID = m_pAbilityData.m_iAbilityID
+		this.EffectName = m_pAbilityData.m_pEffectName
+		this.Cost = m_pAbilityData.m_iItemCost
+		this.AlternateModelName = m_pAbilityData.m_pModelAlternateName
+	}
 
 	get DamageType(): DAMAGE_TYPES {
 		return this.m_pAbilityData.m_iAbilityDamageType

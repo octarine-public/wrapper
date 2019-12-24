@@ -54,20 +54,29 @@ export default class Modifier {
 	/* =================== Fields =================== */
 	public IsValid = true
 
-	public readonly Index = this.m_pBuff.Index;
-	public readonly SerialNumber = this.m_pBuff.SerialNum as number;
+	public readonly Index: number
+	public readonly SerialNumber: number
 
-	public readonly AbilityLevel = this.m_pBuff.AbilityLevel as number;
-	public readonly IsAura = this.m_pBuff.IsAura as boolean;
+	public readonly AbilityLevel: number
+	public readonly IsAura: boolean
 
 	private Parent_: Nullable<Unit>
 	private Ability_: Nullable<Ability>
 
-	private Caster_: Nullable<Entity> = EntityManager.EntityByHandle(this.m_pBuff.Caster)
-	private AuraOwner_: Nullable<Entity> = EntityManager.EntityByHandle(this.m_pBuff.AuraOwner)
+	private Caster_: Nullable<Entity>
+	private AuraOwner_: Nullable<Entity>
 	private Name_: string = ""
 
-	constructor(public m_pBuff: IModifier) { }
+	constructor(public m_pBuff: IModifier) {
+		this.Index = this.m_pBuff.Index as number
+		this.SerialNumber = this.m_pBuff.SerialNum as number
+
+		this.AbilityLevel = this.m_pBuff.AbilityLevel as number
+		this.IsAura = this.m_pBuff.IsAura as boolean
+
+		this.Caster_ = EntityManager.EntityByHandle(this.m_pBuff.Caster)
+		this.AuraOwner_ = EntityManager.EntityByHandle(this.m_pBuff.AuraOwner)
+	}
 
 	public get Attributes(): DOTAModifierAttribute_t {
 		return DOTAModifierAttribute_t.MODIFIER_ATTRIBUTE_NONE

@@ -6,12 +6,17 @@ import Ability from "../Base/Ability"; */
 
 export default class StockInfo {
 	// public readonly m_AbilityData: AbilityData
-	public readonly AbilityID = this.m_StockInfo.nItemAbilityID
-	public readonly InitStockDuration = this.m_StockInfo.fInitialStockDuration
-	public readonly MaxCount = this.m_StockInfo.iMaxCount
-	public readonly Team: Team = this.m_StockInfo.iTeamNumber
+	public readonly AbilityID: number
+	public readonly InitStockDuration: number
+	public readonly MaxCount: number
+	public readonly Team: Team
 
-	constructor(public readonly m_StockInfo: CDOTA_ItemStockInfo) { }
+	constructor(public readonly m_StockInfo: CDOTA_ItemStockInfo) {
+		this.AbilityID = m_StockInfo.nItemAbilityID
+		this.InitStockDuration = m_StockInfo.fInitialStockDuration
+		this.MaxCount = m_StockInfo.iMaxCount
+		this.Team = m_StockInfo.iTeamNumber
+	}
 
 	/* get AbilityData(): AbilityData {
 		let data = this.m_AbilityData;
