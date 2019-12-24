@@ -22,7 +22,7 @@ const Menu = MenuSDK.AddEntry(["Visual", "Show Wards"]),
 	optionPingTeam = Menu.AddToggle("Ping for team", true),
 	optionPlaySound = Menu.AddToggle("Play sound")
 
-optionEnable.OnValueChangedCBs.push(() => {
+optionEnable.OnValue(() => {
 	if (!optionEnable.value)
 		ClearAll()
 })
