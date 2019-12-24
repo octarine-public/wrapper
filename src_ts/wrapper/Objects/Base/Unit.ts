@@ -81,7 +81,7 @@ export default class Unit extends Entity {
 	public ManaRegen = this.m_pBaseEntity.m_flManaThinkRegen
 	public RotationDifference = this.m_pBaseEntity.m_anglediff
 	public HasScepterModifier = false
-	public LastVisibleTime = 0
+	public LastVisibleTime = Game.RawGameTime
 	public LastDormantTime = 0
 
 	private UnitName_: string = ""
@@ -483,8 +483,8 @@ export default class Unit extends Entity {
 
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
-			if (spell.Level !== 0 && spell.Name.startsWith("special_bonus_cast_range"))
-				castrange += spell.GetSpecialValue("value")
+			if (spell!.Level !== 0 && spell!.Name.startsWith("special_bonus_cast_range"))
+				castrange += spell!.GetSpecialValue("value")
 		})
 		return castrange
 	}
@@ -495,8 +495,8 @@ export default class Unit extends Entity {
 
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
-			if (spell.Level !== 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
-				spellAmp += spell.GetSpecialValue("value") / 100
+			if (spell!.Level !== 0 && spell!.Name.startsWith("special_bonus_spell_amplify"))
+				spellAmp += spell!.GetSpecialValue("value") / 100
 		})
 
 		return spellAmp

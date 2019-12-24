@@ -15,11 +15,11 @@ export class IModifier {
 		if (!this.m_Protobuf.has("creation_time"))
 			this.m_Protobuf.set("creation_time", Game.RawGameTime)
 	}
-	public GetProperty<T>(name: string): T | undefined {
+	public GetProperty<T>(name: string): Nullable<T> {
 		return this.m_Protobuf.get(name) as any as T
 	}
-	public GetVector(name: string): Vector3 | undefined {
-		let vec: Map<string, number> = this.GetProperty(name)
+	public GetVector(name: string): Nullable<Vector3> {
+		let vec = this.GetProperty<Map<string, number>>(name)
 		if (vec === undefined)
 			return undefined
 		return new Vector3(vec.get("x"), vec.get("y"), vec.get("z"))
@@ -236,7 +236,7 @@ export function OnActiveModifiersChanged(map: Map<number, [string, string]>) {
 				EmitModifierRemoved(replaced_mod)
 		}
 		ActiveModifiersRaw.set(index, mod)
-		let old_mod = ActiveModifiers.get(mod.SerialNum)
+		let old_mod = ActiveModifiers.get(mod.SerialNum as number)
 		if (mod.EntryType === DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE) {
 			if (old_mod === undefined)
 				EmitModifierCreated(mod)

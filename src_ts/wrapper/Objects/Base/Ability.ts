@@ -150,13 +150,13 @@ export default class Ability extends Entity {
 				break
 			}
 			case "skywrath_mage_concussive_shot": {
-				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4")
+				let unique = owner?.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4")
 				if (unique !== undefined && unique.Level !== 0)
 					return Number.MAX_SAFE_INTEGER
 				break
 			}
 			case "gyrocopter_call_down": {
-				let unique = owner.AbilitiesBook.GetAbilityByName("special_bonus_unique_gyrocopter_5")
+				let unique = owner?.AbilitiesBook.GetAbilityByName("special_bonus_unique_gyrocopter_5")
 				if (unique !== undefined && unique.Level !== 0)
 					return Number.MAX_SAFE_INTEGER
 				break

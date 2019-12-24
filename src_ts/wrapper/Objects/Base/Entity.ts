@@ -171,14 +171,19 @@ export default class Entity {
 
 		return undefined
 	}
-	public get RootOwner(): Entity | undefined {
+	public get RootOwner(): Nullable<Entity> {
 		let owner = this.Owner
-		if (owner === undefined) // special case since we don't want to return this as owner
+
+		// special case since we don't want to return this as owner
+		if (owner === undefined)
 			return undefined
+
 		while (true) {
-			let root_owner = owner.Owner
+			let root_owner = owner.Owner as Nullable<Entity>
+
 			if (root_owner === undefined)
 				break
+
 			owner = root_owner
 		}
 		return owner
@@ -305,7 +310,7 @@ export default class Entity {
 	public Closest(ents: Entity[]): Entity {
 		let thisPos = this.Position
 
-		let entity: Entity | undefined
+		let entity: Nullable<Entity>
 		let distance = Number.POSITIVE_INFINITY
 
 		ents.forEach(ent => {

@@ -54,23 +54,17 @@ export default class Modifier {
 	/* =================== Fields =================== */
 	public IsValid = true
 
-	public readonly Index: number = this.m_pBuff.index as number;
-	public readonly SerialNumber: number = this.m_pBuff.serial_num as number
+	public readonly Index = this.m_pBuff.Index;
+	public readonly SerialNumber = this.m_pBuff.SerialNum as number;
 
-	constructor(public m_pBuff: IModifier) {
-		this.Index = this.m_pBuff.Index
-		this.SerialNumber = this.m_pBuff.SerialNum
-		this.AbilityLevel = this.m_pBuff.AbilityLevel
-		this.Caster_ = EntityManager.EntityByHandle(this.m_pBuff.Caster)
-		this.IsAura = this.m_pBuff.IsAura
-		this.AuraOwner_ = EntityManager.EntityByHandle(this.m_pBuff.AuraOwner)
-	}
+	public readonly AbilityLevel = this.m_pBuff.AbilityLevel as number;
+	public readonly IsAura = this.m_pBuff.IsAura as boolean;
 
 	private Parent_: Nullable<Unit>
 	private Ability_: Nullable<Ability>
 
-	private Caster_: Nullable<Entity> = EntityManager.EntityByHandle(this.m_pBuff.caster)
-	private AuraOwner_: Nullable<Entity> = EntityManager.EntityByHandle(this.m_pBuff.aura_owner)
+	private Caster_: Nullable<Entity> = EntityManager.EntityByHandle(this.m_pBuff.Caster)
+	private AuraOwner_: Nullable<Entity> = EntityManager.EntityByHandle(this.m_pBuff.AuraOwner)
 	private Name_: string = ""
 
 	constructor(public m_pBuff: IModifier) { }
@@ -78,6 +72,7 @@ export default class Modifier {
 	public get Attributes(): DOTAModifierAttribute_t {
 		return DOTAModifierAttribute_t.MODIFIER_ATTRIBUTE_NONE
 	}
+	// NOTICE: as number || number | undefined => DieTime: NaN (undefined + number)
 	public get CreationTime(): number {
 		return this.m_pBuff.CreationTime
 	}
@@ -120,19 +115,30 @@ export default class Modifier {
 	public get RemainingTime(): number {
 		return Math.max(this.DieTime - Game.RawGameTime, 0)
 	}
+	// NOTICE: as number || number | undefined
 	public get StackCount(): number {
 		return this.m_pBuff.StackCount
 	}
 	public get Name(): string {
 		if (this.Name_ === undefined)
-			this.Name_ = StringTables.GetString("ModifierNames", this.m_pBuff.ModifierClass)
+			this.Name_ = StringTables.GetString("ModifierNames", this.m_pBuff.ModifierClass as number)
 		return this.Name_
 	}
 	public get vStart(): Vector3 {
-		return this.m_pBuff.vStart
+		let vec = this.m_pBuff.vStart
+
+		if (vec === undefined)
+			return new Vector3().Invalidate()
+
+		return new Vector3(vec.x, vec.y, vec.z)
 	}
 	public get vEnd(): Vector3 {
-		return this.m_pBuff.vEnd
+		let vec = this.m_pBuff.vEnd
+
+		if (vec === undefined)
+			return new Vector3().Invalidate()
+
+		return new Vector3(vec.x, vec.y, vec.z)
 	}
 
 	public toString(): string {
