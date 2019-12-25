@@ -1,17 +1,18 @@
-import { default as _Color } from "./Base/Color"
-import { default as _QAngle } from "./Base/QAngle"
-import { default as _Vector2 } from "./Base/Vector2"
-import { default as _Vector3 } from "./Base/Vector3"
+import _Color from "./Base/Color"
+import _QAngle from "./Base/QAngle"
+import _Vector2 from "./Base/Vector2"
+import _Vector3 from "./Base/Vector3"
 
 import Player from "./Objects/Base/Player"
 
-import { default as _EntityManager } from "./Managers/EntityManager"
+import _EntityManager from "./Managers/EntityManager"
 import { EventEmitter } from "./Managers/Events"
 
-import { default as _PlayerResource } from "./Objects/GameResources/PlayerResource"
-import { default as _Game } from "./Objects/GameResources/GameRules"
+import _PlayerResource from "./Objects/GameResources/PlayerResource"
+import _Game from "./Objects/GameResources/GameRules"
 
-import { default as _RendererSDK } from "./Native/RendererSDK"
+import _RendererSDK from "./Native/RendererSDK"
+import _EventsSDK from "./Managers/EventsSDK"
 
 import _Menu from "./Menu/Menu"
 
@@ -31,6 +32,7 @@ declare global {
 	var Game: typeof _Game
 
 	var RendererSDK: typeof _RendererSDK
+	var EventsSDK: typeof _EventsSDK
 
 	var WASMIOBuffer: Float32Array
 
@@ -50,6 +52,7 @@ globalThis.Events = EventEmitter
 globalThis.PlayerResource = _PlayerResource
 globalThis.Game = _Game
 
+globalThis.EventsSDK = _EventsSDK
 globalThis.RendererSDK = _RendererSDK
 
 globalThis.Menu = _Menu

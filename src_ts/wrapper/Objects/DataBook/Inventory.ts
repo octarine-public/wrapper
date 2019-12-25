@@ -143,11 +143,8 @@ export default class Inventory {
 				if (name instanceof RegExp) {
 					if (name.test(item.Name))
 						return item
-
-				}
-				else if (item.Name === name) {
+				} else if (item.Name === name)
 					return item
-				}
 			}
 		}
 		return undefined

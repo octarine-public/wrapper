@@ -2,7 +2,7 @@ import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
-import { DamageIgnoreBuffs } from "../../Utils/Utils"
+import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
 
 import { LocalPlayer } from "../../Managers/EntityManager"
 
@@ -25,7 +25,6 @@ import TreeTemp from "./TreeTemp"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
-import { parseKVFile } from "../../Utils/Utils"
 import { RecursiveMap } from "../../Utils/ParseKV"
 import Game from "../GameResources/GameRules"
 

@@ -7,7 +7,6 @@ import { MapArea } from "./MapArea"
 import { Team } from "../Enums/Team"
 
 export class DotaMap {
-	constructor(public unit: Unit) { }
 	private static Load(name: string): Vector3[] {
 		let ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(new Uint8Array(readFile(`Map/${name}.json`))))
 		// loop-optimizer: FORWARD
@@ -34,6 +33,7 @@ export class DotaMap {
 	public readonly DireTopRoute = DotaMap.Load("DireTopRoute")
 	public readonly DireMiddleRoute = DotaMap.Load("DireMiddleRoute")
 	public readonly DireBottomRoute = DotaMap.Load("DireBottomRoute")
+	constructor(public unit: Unit) { }
 
 	public get GetLane(): MapArea {
 		let pos = this.unit.Position

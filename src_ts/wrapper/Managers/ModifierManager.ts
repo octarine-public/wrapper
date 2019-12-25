@@ -15,15 +15,6 @@ export class IModifier {
 		if (!this.m_Protobuf.has("creation_time"))
 			this.m_Protobuf.set("creation_time", Game.RawGameTime)
 	}
-	public GetProperty<T>(name: string): Nullable<T> {
-		return this.m_Protobuf.get(name) as any as T
-	}
-	public GetVector(name: string): Nullable<Vector3> {
-		let vec = this.GetProperty<Map<string, number>>(name)
-		if (vec === undefined)
-			return undefined
-		return new Vector3(vec.get("x"), vec.get("y"), vec.get("z"))
-	}
 	public get EntryType(): DOTA_MODIFIER_ENTRY_TYPE | undefined {
 		return this.GetProperty("entry_type")
 	}
@@ -125,6 +116,15 @@ export class IModifier {
 	}
 	public get AuraOwner(): number | undefined {
 		return this.GetProperty("aura_owner")
+	}
+	public GetProperty<T>(name: string): Nullable<T> {
+		return this.m_Protobuf.get(name) as any as T
+	}
+	public GetVector(name: string): Nullable<Vector3> {
+		let vec = this.GetProperty<Map<string, number>>(name)
+		if (vec === undefined)
+			return undefined
+		return new Vector3(vec.get("x"), vec.get("y"), vec.get("z"))
 	}
 }
 
@@ -283,11 +283,10 @@ function changeFieldsByEvents(unit: Unit) {
 	}
 }
 
-declare namespace globalThis {
+declare global {
 	var DebugBuffsParents: () => void
 	var DebugBuffs: () => void
 }
-
 
 globalThis.DebugBuffsParents = () => {
 	// loop-optimizer: KEEP

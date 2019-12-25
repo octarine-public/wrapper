@@ -5,7 +5,6 @@
 	],
 	"jsRules": {},
 	"rules": {
-		"strict": true,
 		"semicolon": [
 			false,
 			"never"

@@ -36,6 +36,10 @@ export default class Base {
 	protected get NodeRect() {
 		return new Rectangle(this.Position.Add(this.border_size), this.Position.Add(this.TotalSize).Subtract(this.border_size.MultiplyScalar(2)))
 	}
+
+	protected get MousePosition(): Vector2 {
+		return InputManager.CursorOnScreen
+	}
 	public OnValue(func: (caller: this) => void): this {
 		this.OnValueChangedCBs.push(func as any)
 		if (this.execute_on_add)
@@ -66,9 +70,5 @@ export default class Base {
 	 */
 	public DetachFromParent(): boolean {
 		return ArrayExtensions.arrayRemove(this.parent.entries, this)
-	}
-
-	protected get MousePosition(): Vector2 {
-		return InputManager.CursorOnScreen
 	}
 }

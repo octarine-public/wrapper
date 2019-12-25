@@ -5,7 +5,7 @@ import RendererSDK from "../Native/RendererSDK"
 
 var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("~/wrapper.wasm")), {
 	env: {
-		emscripten_notify_memory_growth: emscripten_notify_memory_growth
+		emscripten_notify_memory_growth
 	}
 }).exports as any as {
 	_start: () => void,
