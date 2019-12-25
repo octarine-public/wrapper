@@ -4,6 +4,7 @@ declare global {
 	var dump_stats: Function
 	var dump_stats_listeners: Function
 	var SafeLog: Function
+	var reset_avg_mult: Function
 }
 
 let setConVar = (self: Menu.Toggle) => ConVars.Set(self.tooltip!, self.value)
@@ -250,6 +251,14 @@ globalThis.dump_stats_listeners = () => {
 		// loop-optimizer: FORWARD
 		ar.forEach(([name, took]) => console.log(`${name}: ${took}ms`))
 	}
+}
+
+globalThis.reset_avg_mult = () => {
+	for (let [_, map] of avg_map_listeners.entries())
+		for (let [, ar] of map.entries())
+			ar[1] = 1
+	for (let [, ar] of avg_map_events.entries())
+		ar[1] = 1
 }
 
 let last_time = 0

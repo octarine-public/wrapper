@@ -9,7 +9,7 @@ export default class AbilitiesBook {
 
 	constructor(public readonly Owner: Unit) {
 		// loop-optimizer: FORWARD
-		this.Spells_ = this.Owner.m_pBaseEntity.m_hAbilities.map(abil => EntityManager.GetEntityByNative(abil) as Ability ?? abil)
+		this.Spells_ = this.Owner.m_pBaseEntity.m_hAbilities.map(abil => (EntityManager.GetEntityByNative(abil) as Ability) ?? abil)
 	}
 
 	// NOTICE: idk...
