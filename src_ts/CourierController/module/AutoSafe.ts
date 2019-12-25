@@ -20,8 +20,7 @@ const per_ability_kill: string[] = [
 ]
 
 function AbilityTypeReady(courier: Courier): Ability {
-	return courier.GetAbilityByName("courier_shield")
-		?.IsCooldownReady
+	return courier.GetAbilityByName("courier_shield")?.IsCooldownReady
 		? (!courier.HasBuffByName("modifier_courier_burst")
 			&& courier.GetAbilityByName("courier_shield"))
 		: (!courier.HasBuffByName("modifier_courier_shield")
@@ -57,7 +56,7 @@ export function AutoSafe(courier: Courier): boolean {
 	let attack_courier = UnitAnimation.some(unit =>
 		per_ability_kill.some(abil => abil !== undefined
 			&& unit.GetAbilityByName(abil)
-			&& unit.IsInRange(courier, unit.GetAbilityByName(abil)?.CastRange)
+			&& unit.IsInRange(courier, unit.GetAbilityByName(abil)?.CastRange ?? 0)
 			&& !unit.GetAbilityByName(abil)?.IsInAbilityPhase
 		) || (
 			unit.IsInRange(courier, (unit.AttackRange + unit.HullRadius))

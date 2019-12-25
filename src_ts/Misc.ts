@@ -37,9 +37,13 @@ humanizer.AddToggle("wait_next_usercmd", false).OnValue(toggle => ExecuteOrder.w
 humanizer.AddToggle("wait_near_cursor", false).OnValue(toggle => ExecuteOrder.wait_near_cursor = toggle.value)
 humanizer.AddToggle("debug_orders", false).OnValue(toggle => ExecuteOrder.debug_orders = toggle.value)
 
+declare global {
+	var reload: (a1: string, a2: boolean) => void
+}
+
 function ReloadScripts() {
 	EventsSDK.emit("GameEnded", false)
-	globalThis.reload("eTE9Te5rgBYThsO", true)
+	reload("eTE9Te5rgBYThsO", true)
 }
 
 Menu.AddButton("Reload Scripts").OnValue(ReloadScripts)

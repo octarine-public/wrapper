@@ -18,8 +18,8 @@ export default class Draw extends DrawBase {
 			EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).filter(
 				x => x.IsEnemy()
 					&& x.IsAlive && x.IsVisible
-					&& x.Distance(this.unit) <= ability.CastRange
-			), ent => ent.Distance(this.unit)
+					&& x.Distance(this.unit!) <= ability.CastRange
+			), ent => ent.Distance(this.unit!)
 		)[0]
 		Enemy !== undefined && State.value && ability.IsReady
 			? this.UpdateConShot(ability.Name + "_" + this.unit, Enemy, PosShot)

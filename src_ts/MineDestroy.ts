@@ -18,7 +18,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 EventsSDK.on("Tick", () => {
 	if (!menuState.value)
 		return
-	let hero = LocalPlayer.Hero
+	let hero = LocalPlayer!.Hero
 	if (hero === undefined || !hero.IsAlive || hero.IsChanneling || hero.IsInFadeTime)
 		return
 	let mine = mines.find(mine_ =>

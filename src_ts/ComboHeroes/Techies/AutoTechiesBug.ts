@@ -29,6 +29,8 @@ EventsSDK.on("Tick", () => {
 		return
 	}
 	let abil = techies.GetAbilityByName(selected_ability.values[selected_ability.selected_id])
+	if (abil === undefined)
+		return
 	if (
 		!EntityManager.GetEntitiesByClass(Hero)
 			.filter(hero => hero !== techies && hero.FindRotationAngle(techies) <= 0.1)

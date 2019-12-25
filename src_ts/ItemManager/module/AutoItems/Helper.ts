@@ -84,7 +84,7 @@ const filterUnits = (x: Unit) => x.IsAlive && x.IsControllable
 	&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double")) &&
 	!x.IsStunned && !x.IsChanneling && !x.IsInvulnerable
 
-const IsValidItem = (item: Item) => item !== undefined
+const IsValidItem = (item: Nullable<Item>): item is Item => item !== undefined
 	&& ItemsForUse.IsEnabled(item.Name) && item.CanBeCasted()
 
 const IsValidCreep = (creep: Creep) => creep.IsValid && creep.IsAlive
@@ -96,7 +96,7 @@ const CheckUnitForUrn = (unit: Unit, MaxHP: number) => !unit.IsIllusion
 
 let nextTick = 0,
 	changed = true,
-	lastStat: Attributes
+	lastStat: Attributes | undefined
 
 
 function AutoUseItems(unit: Unit) {
@@ -496,8 +496,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 
 	let unit = args.Unit,
 		target = args.Target
-
-	if (!(target instanceof Unit))
+	if (unit === undefined || !(target instanceof Unit))
 		return true
 
 	if (target.IsBuilding)
@@ -597,7 +596,7 @@ export function Tick() {
 
 export function GameEnded() {
 	changed = true
-	nextTick = undefined
+	nextTick = 0
 	lastStat = undefined
 	TickSleep.ResetTimer()
 }
