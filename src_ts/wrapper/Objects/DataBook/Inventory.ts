@@ -23,6 +23,7 @@ export default class Inventory {
 	get TotalItems(): Nullable<Item>[] {
 		// loop-optimizer: FORWARD
 		this.TotalItems_ = this.TotalItems_.map(item => item instanceof Item ? item : EntityManager.GetEntityByNative(item) ?? item) as (Item | CEntityIndex)[]
+		// loop-optimizer: FORWARD
 		return this.TotalItems_.map(item => item instanceof Item ? item : undefined)
 	}
 

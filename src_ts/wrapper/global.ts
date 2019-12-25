@@ -6,7 +6,7 @@ import _Vector3 from "./Base/Vector3"
 import Player from "./Objects/Base/Player"
 
 import _EntityManager from "./Managers/EntityManager"
-import { EventEmitter } from "./Managers/Events"
+import _Events from "./Managers/Events"
 
 import _PlayerResource from "./Objects/GameResources/PlayerResource"
 import _Game from "./Objects/GameResources/GameRules"
@@ -26,7 +26,7 @@ declare global {
 
 	var EntityManager: typeof _EntityManager
 	var GetEntityClassByName: (name: string) => any[]
-	var Events: typeof EventEmitter
+	var Events: typeof _Events
 
 	var PlayerResource: typeof _PlayerResource
 	var Game: typeof _Game
@@ -47,7 +47,7 @@ globalThis.Vector3 = _Vector3
 
 globalThis.LocalPlayer = undefined
 globalThis.EntityManager = _EntityManager
-globalThis.Events = EventEmitter
+globalThis.Events = _Events
 
 globalThis.PlayerResource = _PlayerResource
 globalThis.Game = _Game

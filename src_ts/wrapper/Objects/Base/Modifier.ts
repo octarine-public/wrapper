@@ -65,7 +65,7 @@ export default class Modifier {
 
 	private Caster_: Nullable<Entity>
 	private AuraOwner_: Nullable<Entity>
-	private Name_: string = ""
+	private Name_ = ""
 
 	constructor(public m_pBuff: IModifier) {
 		this.Index = this.m_pBuff.Index as number
@@ -129,7 +129,7 @@ export default class Modifier {
 		return this.m_pBuff.StackCount ?? 0
 	}
 	public get Name(): string {
-		if (this.Name_ === undefined)
+		if (!this.Name_)
 			this.Name_ = StringTables.GetString("ModifierNames", this.m_pBuff.ModifierClass as number)
 		return this.Name_
 	}
