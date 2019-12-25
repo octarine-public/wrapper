@@ -1,9 +1,6 @@
-import { Menu, MenuBase, MenuDrawBase } from "../../abstract/Menu.Base"
+import { Menu, MenuBase } from "../../abstract/Menu.Base"
 let MapHack = Menu.AddNode("MapHack")
-const { BaseTree, State } = MenuBase(MapHack, "Techies Mines")
-const { DrawRGBA, Size, ComboBox } = MenuDrawBase(BaseTree,
-	"Text Color", null, [],
-	"Text Size", 32, 14, 100,
-)
+export const { BaseTree, State } = MenuBase(MapHack, "Techies Mines")
+export const Size = BaseTree.AddSlider("Image/Text Size", 42, 42, 300)
+export const DrawRGBA = BaseTree.AddColorPicker("Text Color")
 State.SetTooltip("Display position enemy heroes if use ability")
-export { State, DrawRGBA, Size, ComboBox };

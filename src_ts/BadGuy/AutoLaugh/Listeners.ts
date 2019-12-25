@@ -2,7 +2,7 @@ import { Game, Hero } from "wrapper/Imports"
 import { Interval, State } from "./Menu"
 
 let Sleep = 0,
-	MyHero: Hero | undefined
+	MyHero: Nullable<Hero>
 
 export function Tick() {
 	if (!State.value || MyHero === undefined)

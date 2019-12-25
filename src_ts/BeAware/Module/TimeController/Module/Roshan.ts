@@ -39,7 +39,7 @@ var Timer = 0,
 	IsAlive = true
 
 
-export function RoshanParticleCreate(Handle: bigint, entity: Entity) {
+export function RoshanParticleCreate(Handle: bigint) {
 	if (Handle === 7431777948785381669n) {
 		if (NotificationRoshanStateChat.value && Game.GameTime > 0) {
 			Game.ExecuteCommand("chatwheel_say 53")
@@ -114,8 +114,8 @@ export function RoshanTick() {
 				Player.Scan(RoshanPosition)
 			}
 			if (PingForAllies.value) {
-				RoshanPosition.toIOBuffer();
-				Minimap.SendPing(PingType_t.DANGER, false);
+				RoshanPosition.toIOBuffer()
+				Minimap.SendPing(PingType_t.DANGER, false)
 			}
 		}
 		if (NotificationRoshanStateChat.value)
@@ -149,7 +149,7 @@ export function DrawRoshan() {
 			}
 			checkTick = time + 1
 		}
-		if (TimersOne !== undefined && TimersTwo !== undefined) {
+		if (TimersOne && TimersTwo) {
 			let VectorSize = RendererSDK.WindowSize.DivideScalar(100).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value).Clone().AddScalarX(+drawStatusSize.value * 4.7)
 			RendererSDK.Text(TimersOne + ", " + TimersTwo, VectorSize, new Color(255, 255, 255, 255), "Calibri", drawStatusSize.value, FontFlags_t.ANTIALIAS)
 		}
@@ -200,8 +200,8 @@ export function RoshanGameEvent(name: string, obj: any) {
 export function RoshanGameEnded() {
 	checkTick = 0
 	AegisTime = 0
-	TimersOne = undefined
-	TimersTwo = undefined
+	TimersOne = ""
+	TimersTwo = ""
 	// aegisPickUpTime = 0
 	checkTickMessage = 0
 	// RoshanAttack = false

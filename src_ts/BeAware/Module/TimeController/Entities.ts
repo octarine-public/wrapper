@@ -53,8 +53,8 @@ export function Tick() {
 	if (!State.value)
 		return
 	RoshanTick()
-	Runes = EntityManager.GetEntitiesByClass(Rune, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH).filter(x => x.IsValid && x.IsAlive)
-	Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Building], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH).filter(x => x.IsValid && x.IsAlive)
+	Runes = EntityManager.GetEntitiesByClass(Rune).filter(x => x.IsValid && x.IsAlive)
+	Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Building]).filter(x => x.IsValid && x.IsAlive)
 }
 
 export function Init() {
@@ -89,7 +89,7 @@ export function ParticleUpdateEnt(id: number, entity: Entity, vector: Vector3) {
 	RuneParticleCreateUpdateEnt(id, entity, vector)
 }
 
-export function ParticleCreated(id: number, entity: Entity, path: string, handle: bigint) {
-	RoshanParticleCreate(handle, entity)
+export function ParticleCreated(id: number, entity: Entity | number | undefined, handle: bigint) {
+	RoshanParticleCreate(handle)
 	RuneParticleCreate(id, entity, handle)
 }

@@ -1,7 +1,7 @@
 import { Color, RendererSDK, Vector3, Entity } from "wrapper/Imports"
 import { State } from "./Menu"
 
-let wisp: Entity | number,
+let wisp: Entity | number | undefined,
 	pos = new Vector3().Invalidate(),
 	par_id = -1
 

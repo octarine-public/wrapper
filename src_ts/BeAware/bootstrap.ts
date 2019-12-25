@@ -1,25 +1,23 @@
 import { Entity, EventsSDK, Game, LocalPlayer, DOTAGameUIState_t } from "wrapper/Imports"
-
 import { stateMain } from "./abstract/Menu.Base"
+
 import * as Camp from "./Module/CampInformer/Entity"
-import * as EnemyLaneSelection from "./Module/EnemyLaneSelection/Listeners"
-import * as JungleMapHack from "./Module/JungleMapHack/Particle"
-import * as ParicleMapHack from "./Module/ParticleMapHack/Particle"
-import * as Techies from "./Module/TechiesMapHack/Particle"
-import * as TimeControllerEnt from "./Module/TimeController/Entities"
-import * as TimeController from "./Module/TimeController/Renderer"
-import * as TowerRange from "./Module/TowerRange/Particle"
-import * as Treant from "./Module/TreantMapHack/Particle"
 import * as VBS from "./Module/TrueSight/Entities"
 import * as VBE from "./Module/VisibleByEnemy/Entities"
 import * as Wisp from "./Module/WispMapHack/Particle"
+import * as Treant from "./Module/TreantMapHack/Particle"
+import * as TowerRange from "./Module/TowerRange/Particle"
+import * as Techies from "./Module/TechiesMapHack/Particle"
+import * as JungleMapHack from "./Module/JungleMapHack/Particle"
+import * as TimeController from "./Module/TimeController/Renderer"
+import * as ParicleMapHack from "./Module/ParticleMapHack/Particle"
+import * as TimeControllerEnt from "./Module/TimeController/Entities"
+import * as EnemyLaneSelection from "./Module/EnemyLaneSelection/Listeners"
 
-// import * as TopHud from "../Module/TopHud/Entities"
-// import * as TopHud from "./Module/TopHud/Entities"
 // Something's wrong with reading file "panorama/images/spellicons/monkey_king_primal_spring_early_png.vtex_c"
 
 EventsSDK.on("Tick", () => {
-	if (LocalPlayer.IsSpectator || !stateMain.value)
+	if (LocalPlayer!.IsSpectator || !stateMain.value)
 		return
 	Camp.Tick()
 	Treant.Tick()
@@ -29,7 +27,7 @@ EventsSDK.on("Tick", () => {
 })
 
 EventsSDK.on("Draw", () => {
-	if (!stateMain.value || LocalPlayer === undefined || LocalPlayer.IsSpectator || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!stateMain.value || LocalPlayer?.IsSpectator || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	EnemyLaneSelection.Draw()
 	if (!Game.IsInGame)
@@ -43,9 +41,8 @@ EventsSDK.on("Draw", () => {
 	JungleMapHack.OnDraw()
 	ParicleMapHack.OnDraw()
 })
+
 EventsSDK.on("GameEnded", () => {
-	// TopHud.gameStarted()?
-	// TopHud.gameEnded()?
 	VBE.Init()
 	VBS.Init()
 	Wisp.Init()
@@ -90,14 +87,12 @@ EventsSDK.on("TeamVisibilityChanged", npc => {
 EventsSDK.on("EntityCreated", ent => {
 	Treant.Create(ent)
 	TimeControllerEnt.EntityCreated(ent)
-	// TopHud.entityCreate(ent)
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
 	VBS.EntityDestroyed(ent)
 	VBE.EntityDestroyed(ent)
 	Treant.Destroy(ent)
-	// TopHud.entityDestroy(ent)
 	Techies.EntityDestroyed(ent)
 	TimeControllerEnt.EntityDestroyed(ent)
 })
@@ -110,19 +105,23 @@ EventsSDK.on("ParticleUpdated", (id, control_point, position) => {
 })
 
 EventsSDK.on("ParticleCreated", (id, path, handle, attach, entity) => {
-	if (stateMain.value) {
-		Wisp.ParticleCreate(id, handle)
-		Techies.ParticleCreated(id, entity instanceof Entity ? entity : undefined, path)
-		ParicleMapHack.ParticleCreate(id, handle, path, entity instanceof Entity ? entity : undefined)
-		TimeControllerEnt.ParticleCreated(id, entity instanceof Entity ? entity : undefined, path, handle)
-	}
+	if (stateMain.value)
+		return
+	Wisp.ParticleCreate(id, handle)
+	if (!(entity instanceof Entity))
+		return
+	Techies.ParticleCreated(id, entity, path)
+	ParicleMapHack.ParticleCreate(id, handle, path, entity)
+	TimeControllerEnt.ParticleCreated(id, entity, handle)
 })
 
 EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachment, vector) => {
 	if (!stateMain.value)
 		return
 	Techies.ParticleUpdatedEnt(id, control_point, attach, vector)
-	Wisp.ParticleUpdated(id, entity instanceof Entity ? entity : undefined, vector)
-	ParicleMapHack.ParticleUpdatedEnt(id, entity instanceof Entity ? entity : undefined, vector)
-	TimeControllerEnt.ParticleUpdateEnt(id, entity instanceof Entity ? entity : undefined, vector)
+	if (!(entity instanceof Entity))
+		return
+	Wisp.ParticleUpdated(id, entity, vector)
+	ParicleMapHack.ParticleUpdatedEnt(id, entity, vector)
+	TimeControllerEnt.ParticleUpdateEnt(id, entity, vector)
 })

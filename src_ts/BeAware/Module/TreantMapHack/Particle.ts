@@ -19,7 +19,7 @@ export function Create(ent: Entity) {
 export function Tick() {
 	if (!State.value)
 		return
-	var local_team_flag = 1 << LocalPlayer.Team
+	var local_team_flag = 1 << LocalPlayer!.Team
 	// loop-optimizer: KEEP
 	treant_eyes.forEach((ent, i) => {
 		if (ent.IsAlive) {
@@ -37,8 +37,11 @@ export function Tick() {
 			ent.Flags |= 1 << 7
 			ent.Flags &= ~(1 << 3)
 			treant_eyes.splice(i, 1)
-			ParticlesSDK.Destroy(pars.get(ent), true)
-			pars.delete(ent)
+			let par = pars.get(ent)
+			if (par !== undefined) {
+				ParticlesSDK.Destroy(par, true)
+				pars.delete(ent)
+			}
 			return true
 		}
 	})
