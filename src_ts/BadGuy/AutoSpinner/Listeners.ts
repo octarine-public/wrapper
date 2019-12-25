@@ -20,7 +20,7 @@ export function Tick() {
 	let Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep, Courier])
 	let ar = ControllablesMode.selected_id !== 0
 		? Units.filter(x => !x.IsEnemy() && x.IsControllable)
-		: [LocalPlayer.Hero] as Unit[]
+		: [LocalPlayer?.Hero] as Unit[]
 	ar = ar.filter(ent => ent.IsAlive && ent.IsVisible && !ent.IsStunned && !ent.IsHexed)
 	if (ControllablesMode.selected_id === 2)
 		ar = ar.filter(ent => ent instanceof Courier)

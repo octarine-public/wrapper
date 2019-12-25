@@ -1,9 +1,9 @@
 import { Color, RendererSDK, Unit, FontFlags_t } from "wrapper/Imports"
 import { DrawTextSize, SwitchUnit } from "./Menu"
-import { Units } from "./Listeners"
+import { Units, filterUnits } from "./Listeners"
 
-function DrawText(unit: Unit): boolean {
-	if (!unit.IsAlive || !unit.IsControllable || !unit.IsVisible || (SwitchUnit.selected_id !== 1 && !unit.IsHero))
+function DrawText(unit: Unit) {
+	if (!filterUnits(unit) || !unit.IsVisible || (SwitchUnit.selected_id !== 1 && !unit.IsHero))
 		return
 	let position_unit = RendererSDK.WorldToScreen(unit.Position)
 	if (position_unit === undefined)

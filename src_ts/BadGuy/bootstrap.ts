@@ -7,7 +7,7 @@ import * as AutoTaunt from "./AutoTaunt/Listeners"
 import { MainState } from "./Base/MenuBase"
 
 EventsSDK.on("Tick", () => {
-	if (!MainState.value || LocalPlayer.IsSpectator)
+	if (!MainState.value || LocalPlayer!.IsSpectator)
 		return
 	AutoFeed.Tick()
 	AutoLaugh.Tick()
@@ -37,5 +37,9 @@ EventsSDK.on("GameEnded", () => {
 	AutoLaugh.GameEnded()
 })
 
-EventsSDK.on("EntityCreated", AutoFeed.EntityCreate)
-EventsSDK.on("EntityDestroyed", AutoFeed.EntityDestroyed)
+EventsSDK.on("EntityCreated", x => {
+	AutoFeed.EntityCreate(x)
+})
+EventsSDK.on("EntityDestroyed", x => {
+	AutoFeed.EntityDestroyed(x)
+})

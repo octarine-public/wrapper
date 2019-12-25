@@ -1,7 +1,9 @@
 import { Game, Hero } from "wrapper/Imports"
 import { Interval, State } from "./Menu"
-let MyHero: Hero,
-	Sleep = 0
+
+let Sleep = 0,
+	MyHero: Hero | undefined
+
 export function Tick() {
 	if (!State.value || MyHero === undefined)
 		return false
@@ -12,10 +14,12 @@ export function Tick() {
 		Sleep = Timer + Interval.value
 	}
 }
+
 export function GameStarted(hero: Hero) {
 	if (MyHero === undefined)
 		MyHero = hero
 }
+
 export function GameEnded() {
 	Sleep = 0
 	MyHero = undefined
