@@ -254,7 +254,7 @@ globalThis.dump_stats_listeners = () => {
 }
 
 globalThis.reset_avg_mult = () => {
-	for (let [_, map] of avg_map_listeners.entries())
+	for (let [, map] of avg_map_listeners.entries())
 		for (let [, ar] of map.entries())
 			ar[1] = 1
 	for (let [, ar] of avg_map_events.entries())
@@ -263,8 +263,8 @@ globalThis.reset_avg_mult = () => {
 
 let last_time = 0
 setInterval(() => {
-	if (Date.now() - last_time < 10000 || GetHeapStatistics().total_heap_size < 200n * 1024n * 1024n)
+	if (hrtime() - last_time < 10000 || GetHeapStatistics().total_heap_size < 200n * 1024n * 1024n)
 		return
 	TakeHeapSnapshot("dumps/" + Math.random().toString().substring(2, 8) + ".heapsnapshot")
-	last_time = Date.now()
+	last_time = hrtime()
 }, 100)

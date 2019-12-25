@@ -110,7 +110,7 @@ function waitAcceptOn() {
 		return
 	}
 
-	let elepsedTime = (Date.now() - timeCreate) / 1000
+	let elepsedTime = (hrtime() - timeCreate) / 1000
 
 	if (elepsedTime > AutoAccept_delay.max) {
 		timeCreate = -1
@@ -131,8 +131,7 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 	let lobby = obj as CSODOTALobby
 
 	if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1) {
-
-		timeCreate = Date.now()
+		timeCreate = hrtime()
 		waitAcceptOn()
 	} else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1) {
 		timeCreate = -1

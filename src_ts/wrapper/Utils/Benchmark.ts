@@ -27,7 +27,7 @@ export default class Benchmark {
 		if (!Array.isArray(callbacks))
 			callbacks = [callbacks]
 		callbacks.forEach(callback => {
-			this.callbacks.push ({
+			this.callbacks.push({
 				timeStart: 0,
 				timeEnd: 0,
 				time: 0,
@@ -47,12 +47,12 @@ export default class Benchmark {
 
 			let callbackFunc = this.callbacks[number].callback
 
-			let time = Date.now()
+			let time = hrtime()
 
 			for (let m = this.iterations; m--;)
 				callbackFunc(m)
 
-			let timeEnd = Date.now()
+			let timeEnd = hrtime()
 
 			this.callbacks[number].timeStart = time
 			this.callbacks[number].timeEnd = timeEnd
@@ -61,12 +61,12 @@ export default class Benchmark {
 			for (let i = 0, len = this.callbacks.length; i < len; i++) {
 				let callbackFunc = this.callbacks[i].callback
 
-				let time = Date.now()
+				let time = hrtime()
 
 				for (let m = this.iterations; m--;)
 					callbackFunc(m)
 
-				let timeEnd = Date.now()
+				let timeEnd = hrtime()
 
 				this.callbacks[i].timeStart = time
 				this.callbacks[i].timeEnd = timeEnd

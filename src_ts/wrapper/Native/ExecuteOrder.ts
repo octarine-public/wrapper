@@ -203,7 +203,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 		let order = ExecuteOrder.order_queue[0]
 		order.Execute()
 		if (ExecuteOrder.debug_orders)
-			console.log("Executing order " + order.OrderType + " after " + (Date.now() - last_order_click_update) + "ms")
+			console.log("Executing order " + order.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
 		ExecuteOrder.order_queue.splice(0, 1)
 		execute_current = false
 	}
@@ -219,7 +219,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
 				last_order_click.CopyFrom(order.Position)
-				last_order_click_update = Date.now()
+				last_order_click_update = hrtime()
 				break
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
@@ -237,7 +237,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 					last_order_click.CopyFrom(order.Position)
 				else
 					last_order_click.toZero()
-				last_order_click_update = Date.now()
+				last_order_click_update = hrtime()
 				break
 			default:
 				order.Execute()
@@ -248,8 +248,8 @@ Events.after("Update", (cmd_: CUserCmd) => {
 		}
 	}
 	let CursorWorldVec = cmd.VectorUnderCursor,
-		mult = Math.sin(Date.now() - last_order_click_update)
-	if (last_order_click_update + 450 >= Date.now()) {
+		mult = Math.sin(hrtime() - last_order_click_update)
+	if (last_order_click_update + 450 >= hrtime()) {
 		CursorWorldVec = last_order_click.Extend(CursorWorldVec, Math.min(last_order_click.Distance(CursorWorldVec), 200 * mult)).CopyTo(last_order_click)
 		cmd.CameraX = latest_camera_x
 		cmd.CameraY = latest_camera_y
@@ -259,7 +259,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 		if (!ExecuteOrder.wait_next_usercmd) {
 			order.Execute()
 			if (ExecuteOrder.debug_orders)
-				console.log("Executing order " + order.OrderType + " after " + (Date.now() - last_order_click_update) + "ms")
+				console.log("Executing order " + order.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
 			ExecuteOrder.order_queue.splice(0, 1)
 		}
 		execute_current = ExecuteOrder.wait_next_usercmd
@@ -267,7 +267,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 	let camera_vec = new Vector3(cmd.CameraX, cmd.CameraY)
 	camera_vec = camera_vec.Clone().AddScalarY(1134 / 2).Distance2D(CursorWorldVec) > 1300
 		? CursorWorldVec.Clone().SubtractScalarY(1134 / 2)
-		: camera_vec = camera_vec.AddScalarY(1134 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= Date.now() ? mult : 1))).SubtractScalarY(1134 / 2)
+		: camera_vec = camera_vec.AddScalarY(1134 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= hrtime() ? mult : 1))).SubtractScalarY(1134 / 2)
 	latest_camera_x = cmd.CameraX = camera_vec.x
 	latest_camera_y = cmd.CameraY = camera_vec.y
 
