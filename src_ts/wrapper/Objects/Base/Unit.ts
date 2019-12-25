@@ -1038,7 +1038,6 @@ export default class Unit extends Entity {
 	public SellItem(item: Item) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM, unit: this, ability: item })
 	}
-	// check
 	public DisassembleItem(item: Item, queue?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM, unit: this, ability: item, queue })
 	}

@@ -70,26 +70,23 @@ export function OnDraw() {
 				case 0:
 					if (!tower.IsEnemy()) {
 						SwicthTowers(particle_range, tower)
-					} else {
-						if (particle_range === undefined)
-							CreateTowerRange(tower)
-					}
+					} else if (particle_range === undefined)
+						CreateTowerRange(tower)
 					break
 				case 1:
 					if (tower.IsEnemy()) {
 						SwicthTowers(particle_range, tower)
-					} else {
-						if (particle_range === undefined)
-							CreateTowerRange(tower)
-					}
+					} else if (particle_range === undefined)
+						CreateTowerRange(tower)
 					break
 				case 2:
-					if (particle_range === undefined) {
+					if (particle_range === undefined)
 						CreateTowerRange(tower)
-					}
 					break
+				default: break
 			}
-		} else SwicthTowers(particle_range, tower)
+		} else
+			SwicthTowers(particle_range, tower)
 		let particle = pars.get(tower)
 		if (tower.TowerAttackTarget === undefined || !tower.IsAlive ||
 			tower.Distance2D(tower.TowerAttackTarget.Position) >= tower.AttackRange + tower.HullRadius + 25) {
@@ -118,7 +115,7 @@ export function OnDraw() {
 			DrawTarget(tower, tower.TowerAttackTarget)
 	})
 }
-export function GameEnded() {
+export function Init() {
 	Towers = []
 	pars.clear()
 	TowerRange.clear()
