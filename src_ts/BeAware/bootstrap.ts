@@ -51,11 +51,13 @@ EventsSDK.on("GameEnded", () => {
 	Wisp.Init()
 	Treant.Init()
 	Techies.Init()
+	TowerRange.Init()
 	JungleMapHack.Init()
 	ParicleMapHack.Init()
 	TimeControllerEnt.Init()
 	EnemyLaneSelection.Init()
 })
+
 EventsSDK.on("GameEvent", (name, obj) => {
 	JungleMapHack.GameEvent(name, obj)
 	TimeControllerEnt.GameEvent(name, obj)

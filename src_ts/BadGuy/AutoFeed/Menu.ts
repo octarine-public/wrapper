@@ -1,15 +1,7 @@
 import { Menu, MenuBase } from "../Base/MenuBase"
-let { BaseTree, State } = MenuBase(Menu, "Auto Feed")
+export const { BaseTree, State } = MenuBase(Menu, "Auto Feed")
 
-let Swhicher = BaseTree.AddSwitcher("Select Controllable", ["Only Hero", "All Controllable unit"], 1),
-	DrawStatus = BaseTree.AddNode("Draw Status"),
-	DrawState = DrawStatus.AddToggle("Enable", true),
-	DrawTextSize = DrawStatus.AddSlider("Text Size", 20, 14, 60)
-
-export {
-	State,
-	BaseTree,
-	Swhicher,
-	DrawState,
-	DrawTextSize
-}
+export const SwitchUnit = BaseTree.AddSwitcher("Select", ["Only heroes", "All controllable unit"], 1)
+export const DrawStatus = BaseTree.AddNode("Draw Status")
+export const DrawState = DrawStatus.AddToggle("Enable", true)
+export const DrawTextSize = DrawStatus.AddSlider("Text Size", 20, 14, 60)

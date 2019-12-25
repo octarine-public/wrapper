@@ -25,12 +25,17 @@ EventsSDK.on("Draw", () => {
 		return
 	AutoFeed.Draw()
 })
+
 EventsSDK.on("GameStarted", hero => {
 	AutoLaugh.GameStarted(hero)
 	AutoTaunt.GameStarted(hero)
 })
+
 EventsSDK.on("GameEnded", () => {
 	AutoFeed.GameEnded()
 	AutoTaunt.GameEnded()
 	AutoLaugh.GameEnded()
 })
+
+EventsSDK.on("EntityCreated", AutoFeed.EntityCreate)
+EventsSDK.on("EntityDestroyed", AutoFeed.EntityDestroyed)
