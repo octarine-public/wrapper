@@ -92,12 +92,10 @@ let phaseSpells = [
 	"lion_impale",
 ]
 
-
-
 EventsSDK.on("ModifierCreated", buff => {
 	if (!active.value)
 		return
-	let ent = buff.Parent
+	let ent = buff.Parent!
 	if (ent.Name === "npc_dota_thinker") {
 		if (!ent.IsEnemy())
 			return
@@ -466,7 +464,7 @@ EventsSDK.on("Tick", () => {
 		// loop-optimizer: FORWARD
 		phaseSpells.forEach(spell => {
 			if (spell === abil.Name) {
-				let owner = abil.Owner
+				let owner = abil.Owner!
 
 				if (abil.IsInAbilityPhase || (owner.IsChanneling && spell === "windrunner_powershot"))
 					DrawDirectional(

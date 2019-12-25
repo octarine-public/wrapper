@@ -23,7 +23,7 @@ export default class Node extends Base {
 	protected readonly arrow_offset = this.text_offset.Clone().AddScalarX(15).AddScalarY(this.node_arrow_size.y).AddForThis(this.border_size)
 	protected readonly node_arrow_color = new Color(68, 68, 68)
 	protected readonly node_selected_arrow_color = new Color(0x40, 0x80, 0xff)
-	protected active_element: Base
+	protected active_element?: Base
 
 	constructor(parent: IMenu, name: string, tooltip?: string) {
 		super(parent, name)
@@ -78,7 +78,10 @@ export default class Node extends Base {
 		if (this.Rect.Contains(this.MousePosition)) {
 			this.is_open = !this.is_open
 			if (this.is_open)
-				this.parent.entries.filter(entry => entry !== this && entry instanceof Node).forEach((node: Node) => node.is_open = false)
+				this.parent.entries.forEach(entry => {
+					if (entry instanceof Node && entry !== this)
+						entry.is_open = false
+				})
 			return false
 		}
 		if (this.active_element === undefined)

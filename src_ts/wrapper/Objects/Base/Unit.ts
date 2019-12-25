@@ -294,7 +294,7 @@ export default class Unit extends Entity {
 	public get HealthBarOffset(): number {
 		return this.m_pBaseEntity.m_iHealthBarOffset
 	}
-	public get HealthBarHighlightColor(): Color {
+	public get HealthBarHighlightColor(): Nullable<Color> {
 		return Color.fromIOBuffer(this.m_pBaseEntity.m_iHealthBarHighlightColor)
 	}
 	public get HullRadius(): number {

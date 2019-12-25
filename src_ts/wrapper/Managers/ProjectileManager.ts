@@ -55,8 +55,8 @@ Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceA
 		expireTime,
 		maximpacttime,
 		launch_tick,
-		Vector3.fromIOBuffer(),
-		Color.fromIOBuffer(true, 3),
+		Vector3.fromIOBuffer()!,
+		Color.fromIOBuffer(true, 3)!,
 	)
 
 	TrackingProjectileCreated(proj, projectile)
@@ -81,12 +81,12 @@ Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particle
 			expireTime,
 			undefined,
 			launch_tick,
-			Vector3.fromIOBuffer(true, 3),
-			Color.fromIOBuffer(true, 6),
+			Vector3.fromIOBuffer(true, 3)!,
+			Color.fromIOBuffer(true, 6)!
 		)
-		projectile.Position.CopyFrom(Vector3.fromIOBuffer())
+		projectile!.Position.CopyFrom(Vector3.fromIOBuffer()!)
 
-		TrackingProjectileCreated(proj, projectile)
+		TrackingProjectileCreated(proj, projectile!)
 	}
 
 	projectile.Update(
@@ -100,7 +100,7 @@ Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particle
 		isAttack,
 		expireTime,
 		launch_tick,
-		Vector3.fromIOBuffer(true, 3),
+		Vector3.fromIOBuffer(true, 3)!,
 	)
 	EventsSDK.emit("TrackingProjectileUpdated", false, projectile)
 })
@@ -142,9 +142,9 @@ Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max
 		sticky_fow_reveal,
 		distance,
 		Vector3.fromIOBuffer()!,
-		Vector2.fromIOBuffer(true, 3),
-		Vector2.fromIOBuffer(true, 5),
-		Color.fromIOBuffer(true, 7),
+		Vector2.fromIOBuffer(true, 3)!,
+		Vector2.fromIOBuffer(true, 5)!,
+		Color.fromIOBuffer(true, 7)!,
 	)
 	EventsSDK.emit("LinearProjectileCreated", false, projectile)
 	ProjectileManager.AllLinearProjectiles.push(projectile)

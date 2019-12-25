@@ -55,14 +55,14 @@ let RendererSDK_ = new (class RendererSDK {
 	 */
 	public get WindowSize(): Vector2 {
 		if (!WindowSize.IsValid)
-			Vector2.fromIOBuffer(Renderer.WindowSize).CopyTo(WindowSize)
+			Vector2.fromIOBuffer(Renderer.WindowSize)!.CopyTo(WindowSize)
 		return WindowSize.Clone()
 	}
 	/**
 	 * @param pos world position that needs to be turned to screen position
 	 * @returns screen position, or undefined
 	 */
-	public WorldToScreen(position: Vector2 | Vector3): Vector2 {
+	public WorldToScreen(position: Vector2 | Vector3): Nullable<Vector2> {
 		if (this.AlternateW2S) {
 			let vec = WASM.WorldToScreenCached(position)
 			if (vec !== undefined)
@@ -78,7 +78,7 @@ let RendererSDK_ = new (class RendererSDK {
 	/**
 	 * @returns screen position with x and y in range {0, 1}, or undefined
 	 */
-	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1134, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Vector2 {
+	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1134, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Nullable<Vector2> {
 		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)
 	}
 	/**
@@ -259,7 +259,7 @@ let RendererSDK_ = new (class RendererSDK {
 	public GetTextSize(text: string, font_name = "Calibri", font: Vector2 | number = this.DefaultTextSize, flags = FontFlags_t.OUTLINE): Vector2 {
 		if (!(font instanceof Vector2))
 			font = new Vector2(font, this.DefaultTextSize.y)
-		return Vector2.fromIOBuffer(Renderer.GetTextSize(text, this.GetFont(font_name, font, flags)))
+		return Vector2.fromIOBuffer(Renderer.GetTextSize(text, this.GetFont(font_name, font, flags)))!
 	}
 	/**
 	 * @param color default: Yellow

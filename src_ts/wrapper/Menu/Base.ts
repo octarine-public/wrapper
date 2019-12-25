@@ -11,15 +11,15 @@ export interface IMenu {
 }
 
 export default class Base {
-	public tooltip: string = ""
-	public OnValueChangedCBs: ((caller: this) => void)[] = []
+	public tooltip?: string = ""
+	public OnValueChangedCBs: ((caller: Base) => void)[] = []
 	public readonly Position = new Vector2()
 	public FontSize = 20
 	public FontColor = new Color(255, 255, 255, 255)
 	public FontName = "Consolas"
 	public readonly TotalSize_ = new Vector2(750 / 5, 40)
 	public readonly TotalSize = this.TotalSize_.Clone()
-	protected tooltip_size: Vector2
+	protected tooltip_size = new Vector2()
 	protected readonly border_size = new Vector2(1, 1)
 	protected readonly border_color = new Color(14, 14, 14, 254)
 	protected readonly background_color = new Color(19, 19, 19, 249)
@@ -37,7 +37,7 @@ export default class Base {
 		return new Rectangle(this.Position.Add(this.border_size), this.Position.Add(this.TotalSize).Subtract(this.border_size.MultiplyScalar(2)))
 	}
 	public OnValue(func: (caller: this) => void): this {
-		this.OnValueChangedCBs.push(func)
+		this.OnValueChangedCBs.push(func as any)
 		if (this.execute_on_add)
 			func(this)
 		return this
@@ -65,11 +65,7 @@ export default class Base {
 	 * @returns true on success
 	 */
 	public DetachFromParent(): boolean {
-		let parent = this.parent
-		if (parent === undefined)
-			return false
-		this.parent = undefined
-		return ArrayExtensions.arrayRemove(parent.entries, this)
+		return ArrayExtensions.arrayRemove(this.parent.entries, this)
 	}
 
 	protected get MousePosition(): Vector2 {

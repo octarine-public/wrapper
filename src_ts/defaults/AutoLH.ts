@@ -115,7 +115,7 @@ EventsSDK.on("Tick", () => {
 	if ((hotkey_style.selected_id === 1 && !Key) || (hotkey_style.selected_id === 0 && !hotkey.is_pressed)) {
 		return
 	}
-	let pl_ent = LocalPlayer.Hero
+	let pl_ent = LocalPlayer!.Hero
 	if (pl_ent === undefined || !pl_ent.IsAlive)
 		return
 	let attack_range = pl_ent.AttackRange * (pl_ent.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? 1 : 1.5) + pl_ent.HullRadius,

@@ -9,13 +9,14 @@ export default class AbilitiesBook {
 
 	constructor(public readonly Owner: Unit) {
 		// loop-optimizer: FORWARD
-		this.Spells_ = this.Owner.m_pBaseEntity.m_hAbilities.map(abil => EntityManager.GetEntityByNative(abil) as Ability || abil)
+		this.Spells_ = this.Owner.m_pBaseEntity.m_hAbilities.map(abil => EntityManager.GetEntityByNative(abil) as Ability ?? abil)
 	}
 
 	// NOTICE: idk...
 	get Spells(): Nullable<Ability>[] {
 		// loop-optimizer: FORWARD
-		return (this.Spells_ = EntityManager.GetEntitiesByNative(this.Spells_)).map(abil => abil instanceof Ability ? abil : undefined)
+		this.Spells_ = this.Spells_.map(abil => abil instanceof Ability ? abil : EntityManager.GetEntityByNative(abil) ?? abil) as (Ability | CEntityIndex)[]
+		return this.Spells_.map(abil => abil instanceof Ability ? abil : undefined)
 	}
 
 	/* get ValidSpells(): Ability[] {

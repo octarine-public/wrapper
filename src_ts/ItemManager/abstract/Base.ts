@@ -1,9 +1,6 @@
 import { Unit, Game } from "wrapper/Imports"
 export default class ItemManagerBase {
-	public readonly unit: Unit
-	constructor(unit?: Unit) {
-		this.unit = unit
-	}
+	constructor(public readonly unit?: Unit) { }
 	public get MaxMoveSpeed(): number {
 		return Number.MAX_SAFE_INTEGER
 	}

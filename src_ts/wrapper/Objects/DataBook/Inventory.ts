@@ -14,7 +14,7 @@ export default class Inventory {
 		// tslint:disable-next-line:prefer-conditional-expression
 		if (ar !== undefined) {
 			// loop-optimizer: FORWARD
-			this.TotalItems_ = ar.map(abil => EntityManager.GetEntityByNative(abil) as Item || abil)
+			this.TotalItems_ = ar.map(item => (EntityManager.GetEntityByNative(item) as Item) ?? item)
 		} else
 			this.TotalItems_ = new Array(MAX_ITEMS)
 	}
@@ -22,7 +22,8 @@ export default class Inventory {
 	// NOTICE: idk...
 	get TotalItems(): Nullable<Item>[] {
 		// loop-optimizer: FORWARD
-		return (this.TotalItems_ = EntityManager.GetEntitiesByNative(this.TotalItems_)).map(item => item instanceof Item ? item : undefined)
+		this.TotalItems_ = this.TotalItems_.map(item => item instanceof Item ? item : EntityManager.GetEntityByNative(item) ?? item) as (Item | CEntityIndex)[]
+		return this.TotalItems_.map(item => item instanceof Item ? item : undefined)
 	}
 
 	get Items(): Item[] {

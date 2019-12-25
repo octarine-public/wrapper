@@ -8,7 +8,6 @@ import UserCmd from "./UserCmd"
 import RendererSDK from "./RendererSDK"
 import Events from "../Managers/Events"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
-import EventsSDK from "../Managers/EventsSDK"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -197,7 +196,7 @@ let last_order_click = new Vector3(),
 	latest_camera_x = 0,
 	latest_camera_y = 0,
 	execute_current = false,
-	current_order: ExecuteOrder
+	current_order: Nullable<ExecuteOrder>
 Events.after("Update", (cmd_: CUserCmd) => {
 	let cmd = new UserCmd(cmd_)
 	if (execute_current) {
@@ -208,7 +207,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 		ExecuteOrder.order_queue.splice(0, 1)
 		execute_current = false
 	}
-	let order = ExecuteOrder.order_queue[0]
+	let order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
 	if (order !== undefined && order !== current_order) {
 		current_order = order
 		switch (order.OrderType) {

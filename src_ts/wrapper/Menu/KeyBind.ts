@@ -179,7 +179,7 @@ export default class KeyBind extends Base {
 		"Right Menu key", // VK_RMENU
 	]
 	public static readonly callbacks = new Map<number, KeyBind[]>()
-	public static changing_now: KeyBind
+	public static changing_now?: KeyBind
 
 	public is_pressed = false
 	public activates_in_menu = false
@@ -235,7 +235,7 @@ export default class KeyBind extends Base {
 				KeyBind.callbacks.set(this.assigned_key, [])
 				ar = KeyBind.callbacks.get(this.assigned_key)
 			}
-			ar.push(this)
+			ar!.push(this)
 		}
 		if (assign_key_str)
 			this.assigned_key_str = this.assigned_key >= KeyBind.KeyNames.length ? "Unknown" : KeyBind.KeyNames[Math.max(this.assigned_key, 0)]

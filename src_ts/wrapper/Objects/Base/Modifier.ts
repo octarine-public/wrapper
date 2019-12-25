@@ -83,7 +83,7 @@ export default class Modifier {
 	}
 	// NOTICE: as number || number | undefined => DieTime: NaN (undefined + number)
 	public get CreationTime(): number {
-		return this.m_pBuff.CreationTime
+		return this.m_pBuff.CreationTime ?? 0
 	}
 	public get DieTime(): number {
 		return this.CreationTime + this.Duration
@@ -126,7 +126,7 @@ export default class Modifier {
 	}
 	// NOTICE: as number || number | undefined
 	public get StackCount(): number {
-		return this.m_pBuff.StackCount
+		return this.m_pBuff.StackCount ?? 0
 	}
 	public get Name(): string {
 		if (this.Name_ === undefined)

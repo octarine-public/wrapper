@@ -13,6 +13,8 @@ import { default as _Game } from "./Objects/GameResources/GameRules"
 
 import { default as _RendererSDK } from "./Native/RendererSDK"
 
+import _Menu from "./Menu/Menu"
+
 declare global {
 	var Color: typeof _Color
 	var QAngle: typeof _QAngle
@@ -31,6 +33,8 @@ declare global {
 	var RendererSDK: typeof _RendererSDK
 
 	var WASMIOBuffer: Float32Array
+
+	var Menu: typeof _Menu
 }
 
 globalThis.Color = _Color
@@ -47,3 +51,5 @@ globalThis.PlayerResource = _PlayerResource
 globalThis.Game = _Game
 
 globalThis.RendererSDK = _RendererSDK
+
+globalThis.Menu = _Menu

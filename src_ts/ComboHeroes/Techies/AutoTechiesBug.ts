@@ -21,8 +21,11 @@ EventsSDK.on("Tick", () => {
 	if (techies === undefined)
 		return
 	if (techies.IsStunned && !sleeper.Sleeping("detonate")) {
-		techies.CastPosition(techies.GetAbilityByName("techies_focused_detonate"), new Vector3(-5000, -5000), false, true)
-		sleeper.Sleep(100, "detonate")
+		let abil = techies.GetAbilityByName("techies_focused_detonate")
+		if (abil !== undefined && abil.CanBeCasted()) {
+			techies.CastPosition(abil, new Vector3(-5000, -5000), false, true)
+			sleeper.Sleep(100, "detonate")
+		}
 		return
 	}
 	let abil = techies.GetAbilityByName(selected_ability.values[selected_ability.selected_id])
