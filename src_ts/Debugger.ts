@@ -1,7 +1,13 @@
-import { EventsSDK, Game, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color, Events, DOTAGameUIState_t } from "./wrapper/Imports"
+import { EventsSDK, Game, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color, Events, DOTAGameUIState_t, EventEmitter } from "./wrapper/Imports"
 
-let setConVar = (toggle: Menu.Toggle) =>
-	ConVars.Set(toggle.tooltip, toggle.value)
+declare global {
+	var dump_stats: Function
+	var dump_stats_listeners: Function
+	var SafeLog: Function
+}
+
+let setConVar = (self: Menu.Toggle) => ConVars.Set(self.tooltip!, self.value)
+let exec = (self: Menu.Base) => Game.ExecuteCommand(self.tooltip!)
 
 let debuggerMenu = Menu.AddEntry("Debugger")
 
@@ -25,15 +31,15 @@ let creepsNoSpawn = sv_cheatsMenu.AddToggle("Creeps no spawning")
 
 sv_cheatsMenu.AddKeybind("Refresh")
 	.SetTooltip("dota_hero_refresh")
-	.OnRelease(self => Game.ExecuteCommand(self.tooltip))
+	.OnRelease(exec)
 
 sv_cheatsMenu.AddButton("Local lvl max")
 	.SetTooltip("dota_hero_level 25")
-	.OnValue(self => Game.ExecuteCommand(self.tooltip))
+	.OnValue(exec)
 
 sv_cheatsMenu.AddButton("Get Rapier God")
 	.SetTooltip("dota_rap_god")
-	.OnValue(self => Game.ExecuteCommand(self.tooltip))
+	.OnValue(exec)
 
 let addUnitMenu = debuggerMenu.AddNode("add unit")
 
@@ -51,7 +57,7 @@ addUnitMenu.AddKeybind("Add full Sven")
 
 addUnitMenu.AddKeybind("Add creep")
 	.SetTooltip("dota_create_unit npc_dota_creep_badguys_melee enemy")
-	.OnRelease(self => Game.ExecuteCommand(self.tooltip))
+	.OnRelease(exec)
 
 EventsSDK.on("GameStarted", () => {
 	ConVars.Set("sv_cheats", ConVars.GetInt("sv_cheats") || sv_cheats.value)
@@ -69,7 +75,7 @@ const debugEvents = debugEventsMenu.AddToggle("Debugging events")
 
 const debugProjectiles = debugEventsMenu.AddToggle("Debug projectiles", false, "Visual only")
 
-function SafeLog(...args) {
+function SafeLog(...args: any[]) {
 	// loop-optimizer: KEEP
 	console.log(...args.map(arg => JSON.parse(JSON.stringify(arg, (key, value) => typeof value === 'bigint' ? value.toString() + 'n' : value))))
 }
@@ -107,136 +113,142 @@ EventsSDK.on("Draw", () => {
 	})
 })
 
-{
-	let old_emit = Events.emit,
-		avg_map = new Map<string, [number, number]>(),
-		frame_avg_map = new Map<string, [number, number]>(),
-		frame_buffer_map = new Map<string, number>(),
-		counter_map = new Map<string, number[]>(),
-		max_map = new Map<string, number>()
+let avg_map_events = new Map<string, [number, number]>(),
+	counter_map_events = new Map<string, number[]>(),
+	max_map_events = new Map<string, number>(),
+	avg_map_listeners = new Map<string, Map<string, [number, number]>>(),
+	max_map_listeners = new Map<string, Map<string, number>>()
 
-	function RegisterStats(name: string, took: number) {
-		if (!avg_map.has(name)) {
-			avg_map.set(name, [0, 0])
-			max_map.set(name, 0)
-			frame_avg_map.set(name, [0, 0])
-			frame_buffer_map.set(name, 0)
-			counter_map.set(name, [])
-		}
-		let avg_ar = avg_map.get(name)
-		avg_ar[0] *= avg_ar[1]
-		avg_ar[0] += took
-		avg_ar[1]++
-		avg_ar[0] /= avg_ar[1]
-		max_map.set(name, Math.max(max_map.get(name), took))
-		frame_buffer_map.set(name, frame_buffer_map.get(name) + took)
-		counter_map.get(name).push(hrtime())
+function RegisterStatsEvent(name: string, took: number): void {
+	if (!avg_map_events.has(name)) {
+		avg_map_events.set(name, [0, 0])
+		max_map_events.set(name, 0)
+		counter_map_events.set(name, [])
 	}
-
-	setInterval(() => {
-		// loop-optimizer: KEEP
-		counter_map.forEach((ar, name) => {
-			let cur_date = hrtime()
-			// loop-optimizer: FORWARD
-			counter_map.set(name, ar.filter(date => cur_date - date < 30 * 1000))
-		})
-	}, 10)
-
-	function ProfileEmit(name: string, cancellable?: boolean, ...args: any[]) {
-		let t = hrtime()
-		let ret = old_emit.apply(Events, [name, cancellable, ...args])
-		t = hrtime() - t
-		RegisterStats(name, t)
-		if (name === "Draw") {
-			// loop-optimizer: KEEP
-			frame_buffer_map.forEach((took, name_) => {
-				let avg_ar = frame_avg_map.get(name_)
-				avg_ar[0] *= avg_ar[1]
-				avg_ar[0] += took
-				avg_ar[1]++
-				avg_ar[0] /= avg_ar[1]
-				frame_buffer_map.set(name_, 0)
-			})
-		}
-
-		return ret
-	}
-	Events.emit = ProfileEmit
-
-	globalThis.dump_stats = () => {
-		console.log("Average: ")
-		for (let [name, [took]] of avg_map.entries())
-			console.log(`${name}: ${took}ms`)
-
-		console.log("-".repeat(10))
-
-		console.log("Average per frame: ")
-		for (let [name, [took]] of frame_avg_map.entries())
-			console.log(`${name}: ${took}ms`)
-
-		console.log("-".repeat(10))
-
-		console.log("Calls per second for last 30 seconds: ")
-		for (let [name, ar] of counter_map.entries())
-			console.log(`${name}: ${ar.length / 30}`)
-
-		console.log("-".repeat(10))
-
-		console.log("Max: ")
-		for (let [name, took] of max_map.entries())
-			console.log(`${name}: ${took}ms`)
-	}
+	let avg_ar = avg_map_events.get(name)!
+	avg_ar[0] *= avg_ar[1]
+	avg_ar[0] += took
+	avg_ar[1]++
+	avg_ar[0] /= avg_ar[1]
+	max_map_events.set(name, Math.max(max_map_events.get(name)!, took))
+	counter_map_events.get(name)!.push(hrtime())
 }
 
-{
-	let old_emit = EventsSDK.emit,
-		avg_map = new Map<string, [number, number]>(),
-		max_map = new Map<string, number>()
-
-	function RegisterStats(name: string, took: number) {
-		if (!avg_map.has(name)) {
-			avg_map.set(name, [0, 0])
-			max_map.set(name, 0)
-		}
-		let avg_ar = avg_map.get(name)
-		avg_ar[0] *= avg_ar[1]
-		avg_ar[0] += took
-		avg_ar[1]++
-		avg_ar[0] /= avg_ar[1]
-		max_map.set(name, Math.max(max_map.get(name), took))
+function RegisterStatsListener(event_name: string, name: string, took: number) {
+	if (!avg_map_listeners.has(event_name)) {
+		avg_map_listeners.set(event_name, new Map())
+		max_map_listeners.set(event_name, new Map())
 	}
+	let avg_map = avg_map_listeners.get(event_name)!,
+		max_map = max_map_listeners.get(event_name)!
+	if (!avg_map.has(name)) {
+		avg_map.set(name, [0, 0])
+		max_map.set(name, 0)
+	}
+	let avg_ar = avg_map.get(name)!
+	avg_ar[0] *= avg_ar[1]
+	avg_ar[0] += took
+	avg_ar[1]++
+	avg_ar[0] /= avg_ar[1]
+	max_map.set(name, Math.max(max_map.get(name)!, took))
+}
 
-	function ProfileEmit(name: string, cancellable: boolean, ...args: any) {
-		if (name !== "Tick")
-			return old_emit.apply(EventsSDK, [name, cancellable, ...args])
-		let listeners = this.events.get(name)
+class ProfilingEventEmitter extends EventEmitter {
+	emit(name: string, cancellable: boolean, ...args: any[]) {
+		let start_time = hrtime()
+		let listeners = this.events.get(name),
+			listeners_after = this.events_after.get(name)
 
 		let ret = listeners === undefined || !listeners.some(listener => {
-			let t = hrtime()
 			try {
+				let t = hrtime()
 				let ret = listener.apply(this, args)
-				t = hrtime() - t
-				RegisterStats(this.listener2line.get(listener), t)
+				RegisterStatsListener(name, this.listener2line.get(listener)!, hrtime() - t)
 				return ret === false && cancellable
 			} catch (e) {
 				console.log(e.stack || new Error(e).stack)
 				return false
 			}
 		})
+		if (listeners_after !== undefined && ret)
+			listeners_after.forEach(listener => {
+				try {
+					let t = hrtime()
+					listener.apply(this, args)
+					RegisterStatsListener(name, this.listener2line.get(listener)!, hrtime() - t)
+				} catch (e) {
+					console.log(e.stack || new Error(e).stack)
+				}
+			})
+		RegisterStatsEvent(name, hrtime() - start_time)
 		return ret
 	}
-	EventsSDK.emit = ProfileEmit
+}
+EventsSDK.emit = ProfilingEventEmitter.prototype.emit
 
-	globalThis.dump_stats_tick = () => {
-		console.log("Average: ")
-		for (let [name, [took]] of avg_map.entries())
-			console.log(`${name}: ${took}ms`)
+setInterval(() => {
+	// loop-optimizer: KEEP
+	counter_map_events.forEach((ar, name) => {
+		let cur_date = hrtime()
+		// loop-optimizer: FORWARD
+		counter_map_events.set(name, ar.filter(date => cur_date - date < 30 * 1000))
+	})
+}, 10)
 
-		console.log("-".repeat(10))
+globalThis.dump_stats = () => {
+	console.log("Average: ")
+	for (let [name, [took]] of avg_map_events.entries())
+		console.log(`${name}: ${took}ms`)
 
-		console.log("Max: ")
-		for (let [name, took] of max_map.entries())
-			console.log(`${name}: ${took}ms`)
+	console.log("-".repeat(10))
+
+	console.log("Calls per second for last 30 seconds: ")
+	for (let [name, ar] of counter_map_events.entries())
+		console.log(`${name}: ${ar.length / 30}`)
+
+	console.log("-".repeat(10))
+
+	console.log("Max: ")
+	for (let [name, took] of max_map_events.entries())
+		console.log(`${name}: ${took}ms`)
+}
+
+function filter_avg(map: Map<string, Map<string, [number, number]>>) {
+	let filtered: [string, [string, number][]][] = []
+	for (let [event_name, map_] of map.entries()) {
+		let ar: [string, number][] = []
+		for (let [listener_name, times] of map_.entries())
+			ar.push([listener_name, times[0] / times[1]])
+		filtered.push([event_name, ar.sort((a, b) => b[1] - a[1])])
+	}
+	return filtered.sort((a, b) => b[1].reduce((c, d) => c + d[1], 0) - a[1].reduce((c, d) => c + d[1], 0))
+}
+function filter_max(map: Map<string, Map<string, number>>) {
+	let filtered: [string, [string, number][]][] = []
+	for (let [event_name, map_] of map.entries()) {
+		filtered.push([event_name, [...map_.entries()].sort((a, b) => b[1] - a[1])])
+	}
+	return filtered.sort((a, b) => b[1].reduce((c, d) => c + d[1], 0) - a[1].reduce((c, d) => c + d[1], 0))
+}
+
+globalThis.dump_stats_listeners = () => {
+	console.log("Average: ")
+	let avg = filter_avg(avg_map_listeners)
+	for (let i = 0; i < Math.min(3, avg.length); i++) {
+		let [event_name, ar] = avg[i]
+		console.log(event_name + ": ")
+		// loop-optimizer: FORWARD
+		ar.forEach(([name, took]) => console.log(`${name}: ${took}ms`))
+	}
+	console.log("-".repeat(10))
+
+	console.log("Max: ")
+	let max = filter_max(max_map_listeners)
+	for (let i = 0; i < Math.min(3, max.length); i++) {
+		let [event_name, ar] = max[i]
+		console.log(event_name + ": ")
+		// loop-optimizer: FORWARD
+		ar.forEach(([name, took]) => console.log(`${name}: ${took}ms`))
 	}
 }
 
