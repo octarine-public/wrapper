@@ -1,4 +1,5 @@
 
+//@ts-nocheck
 import { Game, Hero, Menu, Vector3, EntityManager } from "wrapper/Imports"
 import { Owner, initItemsTargetMap } from "../Listeners"
 
@@ -61,10 +62,10 @@ class KunkkaHelper {
 		return State.value && !Game.IsPaused && Game.IsInGame && Owner !== undefined && Owner.IsAlive
 	}
 	public Cancel(target: Hero): boolean {
-		return !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiers);
+		return !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiers)
 	}
 	public CancelItems(target: Hero): boolean {
-		return !target.IsMagicImmune && !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiersItems);
+		return !target.IsMagicImmune && !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiersItems)
 	}
 	public IsLinkensProtected(target: Hero): boolean {
 		let Items = initItemsTargetMap.get(target)

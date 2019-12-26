@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Game, Menu } from "wrapper/Imports"
 import { Heroes, Owner } from "../Listeners"
 class LinaHelper {

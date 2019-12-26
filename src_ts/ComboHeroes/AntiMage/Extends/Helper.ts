@@ -1,4 +1,4 @@
-
+//@ts-nocheck
 import { Game, Hero, Menu } from "wrapper/Imports"
 import { Heroes, Owner, initItemsTargetMap } from "../Listeners"
 class Helper {
@@ -30,10 +30,10 @@ class Helper {
 		return false
 	}
 	public Cancel(target: Hero): boolean {
-		return !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiers);
+		return !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiers)
 	}
 	public CancelItems(target: Hero): boolean {
-		return !target.IsMagicImmune && !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiersItems);
+		return !target.IsMagicImmune && !target.IsInvulnerable && !target.ModifiersBook.GetAnyBuffByNames(this.CancelModifiersItems)
 	}
 	public IsLinkensProtected(target: Hero): boolean {
 		let Items = initItemsTargetMap.get(target)

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Hero, Unit, TickSleeper, GameSleeper, Game, Vector3 } from "wrapper/Imports"
 let Sleep = new GameSleeper
 let SleepTick = new TickSleeper

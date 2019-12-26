@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Base } from "../Extends/Helper"
 import { Utils, Ability, Hero, Game, GameSleeper, TickSleeper } from "wrapper/Imports"
 import { ComboKeyItem, State, СomboAbility, СomboItems, StyleCombo, ComboHitAndRunAttack, TypeHitAndRun } from "../Menu"

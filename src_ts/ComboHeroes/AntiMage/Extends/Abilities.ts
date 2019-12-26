@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Unit } from "wrapper/Imports"
 import { AbilityBase } from "../../Base/Abilities"
 export default class AntiMageAbility extends AbilityBase {

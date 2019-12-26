@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Unit, ParticlesSDK, Vector3, Menu, Ability, ArrayExtensions, Color, EntityManager, Hero } from "wrapper/Imports"
 import { DrawBase } from "../../Base/DrawBase"
 export default class Draw extends DrawBase {

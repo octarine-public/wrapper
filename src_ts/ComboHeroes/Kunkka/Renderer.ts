@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Base } from "./Extends/Helper"
 import { XMarkPos, XMarkType } from "./Module/Combo"
 import { Hero, RendererSDK, LocalPlayer, Game, DOTAGameUIState_t } from "wrapper/Imports"
@@ -51,10 +52,10 @@ export function Draw() {
 			switch (XMarkType) {
 				case 0:
 				case 1:
-					textAroundMouse = "Combo: (" + TargetName + ")";
+					textAroundMouse = "Combo: (" + TargetName + ")"
 					break
 				default:
-					textAroundMouse = "Torrent: (" + TargetName + ")";
+					textAroundMouse = "Torrent: (" + TargetName + ")"
 					break
 			}
 			RendererSDK.TextAroundMouse(textAroundMouse, false, DrawRadiusMouseColor.Color)

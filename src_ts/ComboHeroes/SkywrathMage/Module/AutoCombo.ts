@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Combo } from "./Combo"
 import { Base } from "../Extends/Helper"
 import { BreakInit } from "./LinkenBreaker"

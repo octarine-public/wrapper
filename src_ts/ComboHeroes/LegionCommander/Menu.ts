@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Color, Menu as MenuSDK } from "wrapper/Imports"
 
 import InitAbility from "./Extends/Abilities"

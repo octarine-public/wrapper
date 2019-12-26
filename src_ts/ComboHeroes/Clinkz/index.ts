@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { EventsSDK } from "wrapper/Imports"
 import { Draw } from "./Renderer"
 import { Base } from "./Extends/Helper"

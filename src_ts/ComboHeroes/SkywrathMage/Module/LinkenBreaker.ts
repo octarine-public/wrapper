@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Hero, Item, Menu, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, MyHero, initItemsMap, initAbilityMap } from "../Listeners"

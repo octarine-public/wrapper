@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Unit } from "wrapper/Imports"
 import { HitAndRun } from "../../Base/HitAndRun"
 export default class HitAndRunExtend extends HitAndRun {

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Game, Hero, ExecuteOrder } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { Heroes, Owner, initAbilityMap } from "../Listeners"

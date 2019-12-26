@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { ArrayExtensions, Hero, Utils, Unit, EntityManager } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"

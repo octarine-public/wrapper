@@ -1,4 +1,4 @@
-
+//@ts-nocheck
 import { Base } from "./Extends/Helper"
 import { LocalPlayer } from "wrapper/Imports"
 import { Owner, initItemsMap, initAbilityMap, initDrawMap, MouseTarget } from "./Listeners"

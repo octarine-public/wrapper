@@ -1,10 +1,11 @@
-import { Utils, TickSleeper } from "wrapper/Imports";
-import { Base } from "../Extends/Helper";
-import { MouseTarget, Owner, initAbilityMap, initHitAndRunMap } from "../Listeners";
-import { BladeMailItem, HarrasKey, State, HarrasTypeHitAndRun, HarrasHitAndRunAttack, StyleHarras } from "../Menu";
+//@ts-nocheck
+import { Utils, TickSleeper } from "wrapper/Imports"
+import { Base } from "../Extends/Helper"
+import { MouseTarget, Owner, initAbilityMap, initHitAndRunMap } from "../Listeners"
+import { BladeMailItem, HarrasKey, State, HarrasTypeHitAndRun, HarrasHitAndRunAttack, StyleHarras } from "../Menu"
 
 export let HarrasActived = false
-HarrasKey.OnRelease(() => HarrasActived = !HarrasActived);
+HarrasKey.OnRelease(() => HarrasActived = !HarrasActived)
 let Sleep = new TickSleeper()
 
 export function InitHarass() {
@@ -20,7 +21,7 @@ export function InitHarass() {
 		return
 	}
 	let Abilities = initAbilityMap.get(Owner),
-		HitAndRun_Unit = initHitAndRunMap.get(Owner);
+		HitAndRun_Unit = initHitAndRunMap.get(Owner)
 
 	if (Abilities === undefined || HitAndRun_Unit === undefined)
 		return
@@ -28,7 +29,7 @@ export function InitHarass() {
 
 	if (!Owner.CanAttack(target) || (!HitAndRun_Unit.ExecuteTo(target, HarrasTypeHitAndRun.selected_id)
 		&& HarrasHitAndRunAttack.value) || !HarrasHitAndRunAttack.value)
-		return;
+		return
 
 	// SearingArrows
 	if (

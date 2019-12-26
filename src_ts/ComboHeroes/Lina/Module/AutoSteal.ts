@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Hero, Flow_t } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { Heroes, Owner, initAbilityMap } from "../Listeners"

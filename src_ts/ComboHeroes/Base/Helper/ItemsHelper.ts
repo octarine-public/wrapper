@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Entity, Item, TrackingProjectile } from "wrapper/Imports"
 import { AbilityHelper } from "./AbilityHelper"
 

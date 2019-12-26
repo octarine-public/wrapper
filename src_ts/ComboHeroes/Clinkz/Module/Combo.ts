@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { GameSleeper, TickSleeper, Utils } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, Owner, initAbilityMap, initItemsMap, initHitAndRunMap } from "../Listeners"
@@ -7,7 +8,7 @@ import { BreakInit } from "./LinkenBreaker"
 let Sleep = new TickSleeper(),
 	GameSleep = new GameSleeper()
 export let ComboActived = false
-ComboKeyItem.OnRelease(() => ComboActived = !ComboActived);
+ComboKeyItem.OnRelease(() => ComboActived = !ComboActived)
 
 export function InitCombo() {
 	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
@@ -24,7 +25,7 @@ export function InitCombo() {
 	let hexDebuff = target.GetBuffByName("modifier_sheepstick_debuff"),
 		Items = initItemsMap.get(Owner),
 		Abilities = initAbilityMap.get(Owner),
-		HitAndRun_Unit = initHitAndRunMap.get(Owner);
+		HitAndRun_Unit = initHitAndRunMap.get(Owner)
 
 	if (Abilities === undefined || Items === undefined || HitAndRun_Unit === undefined)
 		return
@@ -205,8 +206,8 @@ export function InitCombo() {
 		) {
 			let castRange = Abilities.BurningArmy.CastRange,
 				plus = target.Position.Extend(target.InFront(castRange), castRange / 2),
-				minus = target.Position.Extend(target.InFront(-castRange), castRange);
-			Owner.CastVectorTargetPosition(Abilities.BurningArmy, plus, minus);
+				minus = target.Position.Extend(target.InFront(-castRange), castRange)
+			Owner.CastVectorTargetPosition(Abilities.BurningArmy, plus, minus)
 			Sleep.Sleep(Abilities.Tick)
 			return
 		}
@@ -218,7 +219,7 @@ export function InitCombo() {
 
 	if (!Owner.CanAttack(target) || (!HitAndRun_Unit.ExecuteTo(target, TypeHitAndRun.selected_id)
 		&& ComboHitAndRunAttack.value) || !ComboHitAndRunAttack.value)
-		return;
+		return
 
 	// SearingArrows
 	if (

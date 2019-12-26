@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Game, Vector3, Ability, Unit } from "wrapper/Imports"
 import { Owner } from "../Listeners"
 // import { Base } from "../Extends/Helper";

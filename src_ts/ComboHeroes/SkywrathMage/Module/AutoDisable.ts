@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Entity, Hero, Item, Menu, TickSleeper, EntityManager } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MyHero, initItemsMap, initAbilityMap } from "../Listeners"

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Menu, Hero, Utils, Unit, Sleeper, Game } from "wrapper/Imports"
 import { PredictionRize } from "./Combo"
 import { Owner, MouseTarget, initAbilityMap, initHitAndRunMap, initItemsMap } from "../Listeners"

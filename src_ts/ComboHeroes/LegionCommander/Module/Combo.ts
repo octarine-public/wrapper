@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Base } from "../Extends/Helper"
 import { BreakInit } from "./LinkenBreaker"
 
@@ -26,7 +27,7 @@ import {
 let GameSleep = new TickSleeper(),
 	ComboActived = false
 
-ComboKeyItem.OnRelease(() => ComboActived = !ComboActived);
+ComboKeyItem.OnRelease(() => ComboActived = !ComboActived)
 
 function IsValid(item: Ability | Item, Selector: Menu.ImageSelector) {
 	return item && Selector.IsEnabled(item.Name) && item.CanBeCasted()
@@ -87,7 +88,7 @@ function PressTheAttack(Abilities: InitAbility, Items: InitItems, target: Hero) 
 function AttackTargetHitAndRun(target: Hero, HitAndRun_Unit: HitAndRun) {
 	if (!Owner.CanAttack(target) || (!HitAndRun_Unit.ExecuteTo(target, TypeHitAndRun.selected_id)
 		&& ComboHitAndRunAttack.value) || !ComboHitAndRunAttack.value)
-		return;
+		return
 	Owner.AttackTarget(target)
 }
 function AttackTargetCustom(target: Hero) {
@@ -243,7 +244,7 @@ export function InitCombo() {
 		blockingAbilities = Base.IsBlockingAbilities(target),
 		Items = initItemsMap.get(Owner),
 		Abilities = initAbilityMap.get(Owner),
-		HitAndRun_Unit = initHitAndRunMap.get(Owner);
+		HitAndRun_Unit = initHitAndRunMap.get(Owner)
 
 	if (Abilities === undefined || Items === undefined || HitAndRun_Unit === undefined) {
 		return

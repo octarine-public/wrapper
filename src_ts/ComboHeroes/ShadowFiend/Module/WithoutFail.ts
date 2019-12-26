@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, ExecuteOrder, Unit, dotaunitorder_t, EntityManager, Hero, Creep } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { initAbilityMap, Owner } from "../Listeners"
