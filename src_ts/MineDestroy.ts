@@ -18,14 +18,17 @@ EventsSDK.on("EntityDestroyed", ent => {
 EventsSDK.on("Tick", () => {
 	if (!menuState.value)
 		return
+
 	let hero = LocalPlayer!.Hero
+
 	if (hero === undefined || !hero.IsAlive || hero.IsChanneling || hero.IsInFadeTime)
 		return
+
 	let mine = mines.find(mine_ =>
 		mine_.IsEnemy()
 		&& mine_.IsAlive
-		&& hero.CanAttack(mine_)
-		&& mine_.IsInRange(hero, hero.AttackRange)
+		&& hero!.CanAttack(mine_)
+		&& mine_.IsInRange(hero!, hero!.AttackRange)
 	)
 	if (mine !== undefined)
 		hero.AttackTarget(mine)
