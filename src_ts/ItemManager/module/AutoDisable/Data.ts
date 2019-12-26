@@ -120,4 +120,3 @@ export const Disabler_Abilities = [
 	"witch_doctor_paralyzing_cask",
 	"zuus_lightning_bolt"
 ]
-

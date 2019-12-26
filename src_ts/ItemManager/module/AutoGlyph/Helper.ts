@@ -2,8 +2,8 @@ import { Game, TickSleeper, LocalPlayer, Player, Team, EntityManager, Unit, Buil
 import ItemManagerBase from "../../abstract/Base"
 import { StateBase } from "../../abstract/MenuBase"
 import { State, TowerHP, TowerSwitcher } from "./Menu"
-let Sleep: TickSleeper = new TickSleeper
-let Base: ItemManagerBase = new ItemManagerBase
+let Sleep = new TickSleeper()
+let Base = new ItemManagerBase()
 export function Tick() {
 	if (!StateBase.value || !State.value || Sleep.Sleeping || Player === undefined) {
 		return

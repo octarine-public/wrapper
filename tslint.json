@@ -66,7 +66,9 @@
 		],
 		"comment-format": false,
 		"no-implicit-dependencies": false,
-		"no-submodule-imports": false
+		"no-submodule-imports": false,
+		"eofline": true,
+		"no-consecutive-blank-lines": true
 	},
 	"rulesDirectory": [],
 	"linterOptions": {

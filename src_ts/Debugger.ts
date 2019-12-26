@@ -155,7 +155,7 @@ function RegisterStatsListener(event_name: string, name: string, took: number) {
 }
 
 class ProfilingEventEmitter extends EventEmitter {
-	emit(name: string, cancellable: boolean, ...args: any[]) {
+	public emit(name: string, cancellable: boolean, ...args: any[]) {
 		let start_time = hrtime()
 		let listeners = this.events.get(name),
 			listeners_after = this.events_after.get(name)

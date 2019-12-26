@@ -37,9 +37,7 @@ export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
 Events.on("ServerInfo", info => player_slot = info.player_slot ?? NaN)
 
-// NOTICE: because shadow name. idk another way
 class EntityManager {
-
 	private Roshan_: Nullable<Entity | number>
 
 	get Roshan(): Nullable<Entity | number> {
@@ -155,10 +153,9 @@ class EntityManager {
 }
 
 const _EntityManager = new EntityManager()
-
 export default _EntityManager
 
-globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Function).name === name)
+globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Constructor<any>).name === name)
 
 Events.on("EntityCreated", (ent, index) => {
 	{ // add globals

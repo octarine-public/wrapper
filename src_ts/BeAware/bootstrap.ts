@@ -123,4 +123,3 @@ EventsSDK.on("ParticleDestroyed", id => {
 	ParicleMapHack.ParticleDestroyed(id)
 	TimeControllerEnt.ParticleDestroyed(id)
 })
-

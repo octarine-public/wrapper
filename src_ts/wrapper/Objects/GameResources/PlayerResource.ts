@@ -2,8 +2,7 @@ import EntityManager from "../../Managers/EntityManager"
 import Courier from "../Base/Courier"
 import Player from "../Base/Player"
 
-// NOTICE: because shadow name. idk another way
-class PlayerResource {
+export default new (class PlayerResource {
 	public m_pBaseEntity: C_DOTA_PlayerResource | undefined
 
 	public get Names(): string[] {
@@ -64,9 +63,4 @@ class PlayerResource {
 	public GetPlayerNameByPlayerID(playerID: number): string {
 		return this.PlayerNames[playerID] ?? ""
 	}
-}
-
-// NOTICE: because shadow name. idk another way
-const _PlayerResource = new PlayerResource()
-
-export default _PlayerResource
+})()

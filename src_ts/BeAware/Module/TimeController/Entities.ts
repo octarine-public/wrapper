@@ -31,7 +31,7 @@ import { ScanGameEnded } from "./Module/Scan"
 
 export let Units: Unit[] = []
 export let Runes: Rune[] = []
-export let RoshanPosition: Vector3 = new Vector3
+export let RoshanPosition = new Vector3()
 export let OtherRadius = new Map<Entity, number>()
 
 function BaseCreateUnits(x: Entity) {
@@ -46,7 +46,7 @@ function BaseDestroyedUnits(x: Entity) {
 	if (x.m_pBaseEntity instanceof C_DOTA_RoshanSpawner) {
 		if (RoshanPosition.IsZero())
 			return
-		RoshanPosition = new Vector3
+		RoshanPosition = new Vector3()
 	}
 }
 export function Tick() {
@@ -64,7 +64,7 @@ export function Init() {
 	RuneGameEnded()
 	RoshanGameEnded()
 	OtherRadius.clear()
-	RoshanPosition = new Vector3
+	RoshanPosition = new Vector3()
 }
 
 export function EntityCreated(x: Entity) {

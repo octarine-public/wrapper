@@ -4,7 +4,7 @@ import { Base } from "../Extends/Helper"
 import { State, AutoDeathPactState } from "../Menu"
 import { Owner, initAbilityMap, initItemsMap } from "../Listeners"
 
-let Sleep = new TickSleeper
+let Sleep = new TickSleeper()
 export function InitAutoDeathPact() {
 	if (!Base.IsRestrictions(State) || Owner.IsInvulnerable || Owner.InvisibleLevel > 0 || !AutoDeathPactState.value || Sleep.Sleeping)
 		return

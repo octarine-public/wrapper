@@ -15,106 +15,106 @@ export class IModifier {
 		if (!this.m_Protobuf.has("creation_time"))
 			this.m_Protobuf.set("creation_time", Game.RawGameTime)
 	}
-	public get EntryType(): DOTA_MODIFIER_ENTRY_TYPE | undefined {
+	public get EntryType(): Nullable<DOTA_MODIFIER_ENTRY_TYPE> {
 		return this.GetProperty("entry_type")
 	}
-	public get Parent(): number | undefined {
+	public get Parent(): Nullable<number> {
 		return this.GetProperty("parent")
 	}
-	public get Index(): number | undefined {
+	public get Index(): Nullable<number> {
 		return this.GetProperty("index")
 	}
-	public get SerialNum(): number | undefined {
+	public get SerialNum(): Nullable<number> {
 		return this.GetProperty("serial_num")
 	}
-	public get ModifierClass(): number | undefined {
+	public get ModifierClass(): Nullable<number> {
 		return this.GetProperty("modifier_class")
 	}
-	public get AbilityLevel(): number | undefined {
+	public get AbilityLevel(): Nullable<number> {
 		return this.GetProperty("ability_level")
 	}
-	public get StackCount(): number | undefined {
+	public get StackCount(): Nullable<number> {
 		return this.GetProperty("stack_count")
 	}
-	public get CreationTime(): number | undefined {
+	public get CreationTime(): Nullable<number> {
 		return this.GetProperty("creation_time")
 	}
-	public get Duration(): number | undefined {
+	public get Duration(): Nullable<number> {
 		return this.GetProperty("duration")
 	}
-	public get Caster(): number | undefined {
+	public get Caster(): Nullable<number> {
 		return this.GetProperty("caster")
 	}
-	public get Ability(): number | undefined {
+	public get Ability(): Nullable<number> {
 		return this.GetProperty("ability")
 	}
-	public get Armor(): number | undefined {
+	public get Armor(): Nullable<number> {
 		return this.GetProperty("armor")
 	}
-	public get FadeTime(): number | undefined {
+	public get FadeTime(): Nullable<number> {
 		return this.GetProperty("fade_time")
 	}
-	public get Subtle(): boolean | undefined {
+	public get Subtle(): Nullable<boolean> {
 		return this.GetProperty("subtle")
 	}
-	public get ChannelTime(): number | undefined {
+	public get ChannelTime(): Nullable<number> {
 		return this.GetProperty("channel_time")
 	}
-	public get vStart(): Vector3 | undefined {
+	public get vStart(): Nullable<Vector3> {
 		return this.GetVector("v_start")
 	}
-	public get vEnd(): Vector3 | undefined {
+	public get vEnd(): Nullable<Vector3> {
 		return this.GetVector("v_end")
 	}
-	public get PortalLoopAppear(): string | undefined {
+	public get PortalLoopAppear(): Nullable<string> {
 		return this.GetProperty("portal_loop_appear")
 	}
-	public get PortalLoopDisappear(): string | undefined {
+	public get PortalLoopDisappear(): Nullable<string> {
 		return this.GetProperty("portal_loop_disappear")
 	}
-	public get HeroLoopAppear(): string | undefined {
+	public get HeroLoopAppear(): Nullable<string> {
 		return this.GetProperty("hero_loop_appear")
 	}
-	public get HeroLoopDisappear(): string | undefined {
+	public get HeroLoopDisappear(): Nullable<string> {
 		return this.GetProperty("hero_loop_disappear")
 	}
-	public get MovementSpeed(): number | undefined {
+	public get MovementSpeed(): Nullable<number> {
 		return this.GetProperty("movement_speed")
 	}
-	public get IsAura(): boolean | undefined {
+	public get IsAura(): Nullable<boolean> {
 		return this.GetProperty("aura")
 	}
-	public get Activity(): number | undefined {
+	public get Activity(): Nullable<number> {
 		return this.GetProperty("activity")
 	}
-	public get Damage(): number | undefined {
+	public get Damage(): Nullable<number> {
 		return this.GetProperty("damage")
 	}
-	public get Range(): number | undefined {
+	public get Range(): Nullable<number> {
 		return this.GetProperty("range")
 	}
-	public get DDModifierIndex(): number | undefined {
+	public get DDModifierIndex(): Nullable<number> {
 		return this.GetProperty("dd_modifier_index")
 	}
-	public get DDAbilityID(): number | undefined {
+	public get DDAbilityID(): Nullable<number> {
 		return this.GetProperty("dd_ability_id")
 	}
-	public get IllusionLevel(): number | undefined {
+	public get IllusionLevel(): Nullable<number> {
 		return this.GetProperty("illusion_level")
 	}
-	public get IsActive(): boolean | undefined {
+	public get IsActive(): Nullable<boolean> {
 		return this.GetProperty("active")
 	}
-	public get PlayerIDs(): string | undefined {
+	public get PlayerIDs(): Nullable<string> {
 		return this.GetProperty("player_ids")
 	}
-	public get LuaName(): string | undefined {
+	public get LuaName(): Nullable<string> {
 		return this.GetProperty("lua_name")
 	}
-	public get AttackSpeed(): number | undefined {
+	public get AttackSpeed(): Nullable<number> {
 		return this.GetProperty("attack_speed")
 	}
-	public get AuraOwner(): number | undefined {
+	public get AuraOwner(): Nullable<number> {
 		return this.GetProperty("aura_owner")
 	}
 	public GetProperty<T>(name: string): Nullable<T> {

@@ -38,7 +38,6 @@ var Timer = 0,
 	AegisTextTime: string,
 	IsAlive = true
 
-
 export function RoshanParticleCreate(Handle: bigint) {
 	if (Handle === 7431777948785381669n) {
 		if (NotificationRoshanStateChat.value && Game.GameTime > 0) {

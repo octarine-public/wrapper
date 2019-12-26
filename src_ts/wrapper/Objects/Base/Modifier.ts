@@ -81,9 +81,8 @@ export default class Modifier {
 	public get Attributes(): DOTAModifierAttribute_t {
 		return DOTAModifierAttribute_t.MODIFIER_ATTRIBUTE_NONE
 	}
-	// NOTICE: as number || number | undefined => DieTime: NaN (undefined + number)
 	public get CreationTime(): number {
-		return this.m_pBuff.CreationTime ?? 0
+		return this.m_pBuff.CreationTime!
 	}
 	public get DieTime(): number {
 		return this.CreationTime + this.Duration
@@ -97,12 +96,8 @@ export default class Modifier {
 	public get Parent(): Nullable<Unit> {
 		if (this.Parent_ === undefined) {
 			let ent = EntityManager.EntityByHandle(this.m_pBuff.Parent)
-			if (ent !== undefined) {
-				if (ent instanceof Unit)
-					this.Parent_ = ent
-				/*else
-					console.log(ent.m_pBaseEntity.constructor.name, this.m_pBuff.parent, this.Name)*/
-			}
+			if (ent !== undefined && ent instanceof Unit)
+				this.Parent_ = ent
 		}
 		return this.Parent_
 	}
@@ -124,7 +119,6 @@ export default class Modifier {
 	public get RemainingTime(): number {
 		return Math.max(this.DieTime - Game.RawGameTime, 0)
 	}
-	// NOTICE: as number || number | undefined
 	public get StackCount(): number {
 		return this.m_pBuff.StackCount ?? 0
 	}

@@ -7,7 +7,7 @@ import { BladeMailCancel, ComboKeyItem, ModeInvisCombo, State, СomboAbility, С
 import ItemsX from "../Extends/Items"
 import AbilityX from "../Extends/Abilities"
 
-let Sleep: TickSleeper = new TickSleeper
+let Sleep = new TickSleeper()
 let ComboActived = false
 ComboKeyItem.OnRelease(() => ComboActived = !ComboActived)
 
@@ -76,7 +76,6 @@ export function InitCombo() {
 
 	if (Abilities === undefined || Items === undefined || HitAndRun_Unit === undefined)
 		return
-
 
 	if (Owner.Distance2D(target) > Items?.Cyclone?.CastRange) {
 		Owner.MoveTo(target.Position)

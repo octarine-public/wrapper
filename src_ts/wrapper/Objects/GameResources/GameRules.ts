@@ -1,10 +1,8 @@
 import StockInfo from "./StockInfo"
-import Events from "../../Managers/Events"
 import { Flow_t } from "../../Enums/Flow_t"
 import { DOTA_GameState } from "../../Enums/DOTA_GameState"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 
-// NOTICE: because shadow name. idk another way
 class Game {
 	public m_GameRules: C_DOTAGamerules | undefined
 	public m_GameManager: C_DOTAGameManager | undefined
@@ -165,11 +163,5 @@ class Game {
 	}
 }
 
-// NOTICE: because shadow name. idk another way
 const _Game = new Game()
-
 export default _Game
-
-Events.on("ServerTick", tick => _Game.CurrentServerTick = tick)
-Events.on("InputCaptured", is_captured => _Game.IsInputCaptured = is_captured)
-Events.on("UIStateChanged", new_state => _Game.UIState = new_state)

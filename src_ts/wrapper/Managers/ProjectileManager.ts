@@ -35,8 +35,6 @@ function TrackingProjectileCreated(proj: number, projectile: TrackingProjectile)
 	ProjectileManager.AllTrackingProjectilesMap.set(proj, projectile)
 }
 
-// NOTICE: moofMonkey, need fix fromIOBuffer
-
 Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceAttachment, path, particleSystemHandle, dodgeable, isAttack, expireTime, maximpacttime, launch_tick) => {
 	let projectile = new TrackingProjectile(
 		proj,

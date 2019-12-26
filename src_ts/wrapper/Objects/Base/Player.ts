@@ -197,7 +197,6 @@ export default class Player extends Entity {
 		return this.PlayerTeamData?.m_nSelectedHeroID ?? 0
 	}
 	get SelectedUnits(): Entity[] {
-
 		let selected: Entity[] = []
 
 		let selUnits = this.m_pBaseEntity.m_nSelectedUnits

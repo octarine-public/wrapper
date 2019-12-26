@@ -42,9 +42,8 @@ import TempTree from "../../../wrapper/Objects/Base/TreeTemp"
 import item_bottle from "../../../wrapper/Objects/Abilities/Items/item_bottle"
 import item_power_treads from "../../../wrapper/Objects/Abilities/Items/item_power_treads"
 
-
-const Base = new ItemManagerBase
-const TickSleep = new TickSleeper
+const Base = new ItemManagerBase()
+const TickSleep = new TickSleeper()
 
 const BuffsTango = [
 	"modifier_tango_heal",
@@ -97,7 +96,6 @@ const CheckUnitForUrn = (unit: Unit, MaxHP: number) => !unit.IsIllusion
 let nextTick = 0,
 	changed = true,
 	lastStat: Attributes | undefined
-
 
 function AutoUseItems(unit: Unit) {
 	// loop-optimizer: FORWARD
@@ -199,11 +197,7 @@ function AutoUseItems(unit: Unit) {
 					if (!hero.IsInvulnerable
 						&& hero.IsAlive
 						&& !unit.HasBuffByName("modifier_bottle_regeneration")
-						&&
-						(
-							hero.HP != hero.MaxHP
-							|| hero.Mana != hero.MaxMana
-						)
+						&& (hero.HPPercent !== 100 || hero.ManaPercent !== 100)
 					) {
 						unit.CastTarget(item, hero)
 						TickSleep.Sleep(Base.GetDelayCast)

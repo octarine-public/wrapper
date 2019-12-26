@@ -4,8 +4,8 @@ import { Menu as MenuSDK, Color } from "wrapper/Imports"
 import InitAbility from "./Extends/Abilities"
 import InitItems from "./Extends/Items"
 
-let Items = new InitItems,
-	Abilities = new InitAbility
+let Items = new InitItems(),
+	Abilities = new InitAbility()
 
 const Menu = MenuSDK.AddEntry(["Heroes", "Clinkz"])
 export const State = Menu.AddToggle("Enable")
@@ -55,7 +55,6 @@ export const HarrasTypeHitAndRun = HarrasHitAndRunTree.AddSwitcher("Type Run", [
 //@ts-nocheck
 export const HarrasKey = Harras.AddKeybind("Bind key")
 export const StyleHarras = Harras.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"])
-
 
 const arrayLinkenBreak: string[] = [
 	Items.DiffusalBlade.toString(),

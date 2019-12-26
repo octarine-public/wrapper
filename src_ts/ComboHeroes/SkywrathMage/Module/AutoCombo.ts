@@ -10,7 +10,6 @@ import {
 	HitAndRunAutoCombo
 } from "../Menu"
 
-
 export function AutoCombo() {
 
 	if (!Base.IsRestrictions(State) || !AutoComboState.value)

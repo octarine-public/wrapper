@@ -9,7 +9,6 @@ import InitItems from "../Extends/Items"
 import HitAndRun from "../Extends/HitAndRun"
 import InitAbility from "../Extends/Abilities"
 
-
 import {
 	BladeMailItem,
 	ComboKeyItem,

@@ -14,11 +14,9 @@
 // 	if (!State.value || Game.IsPaused)
 // 		return
 
-
 // 	let Items = Game.StockInfo.filter(x => x.AbilityID === 257)
 // 	if (Items.length <= 0 || Items.some(AutoBuy))
 // 		return
-
 
 // }
 

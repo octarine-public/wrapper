@@ -8,7 +8,6 @@ const creep_hp_offset = Menu.AddSlider("Creep HP offset", 15, -15)
 const melee_time_offset = Menu.AddSliderFloat("Melee attack time offset", -0.2, -0.2)
 const delay_multiplier = Menu.AddSliderFloat("Melee attack time offset", -2.5, -2.5)
 
-
 const draw = Menu.AddNode("Drawing")
 const glow_enabled = draw.AddToggle("Glow mode", true)
 const glow_finder_range = draw.AddSlider("Glow finder range", 0, 0, 1500)
@@ -131,7 +130,7 @@ EventsSDK.on("Tick", () => {
 		if (use_ally && !ent.IsEnemy(pl_ent) && ent.IsDeniable)
 			return true
 		return false
-	}).map(ent => [ent, ent.Position.Distance2D(pl_ent!.Position)]) as Array<[Creep, number]>).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent!, ent)), ([creep]) => creep.HP)
+	}).map(ent => [ent, ent.Position.Distance2D(pl_ent!.Position)]) as [Creep, number][]).filter(([ent, dist]) => dist <= max_range).filter(([ent, dist]) => EnoughDamage(pl_ent!, ent)), ([creep]) => creep.HP)
 	glow_ents = (glow_enabled.value && glow_finder_range.value !== 0 ? filtered.filter(([ent, dist]) => dist <= glow_finder_range.value) : filtered).map(a => a[0])
 	if (!glow_only.value && !block_orders) {
 		let ent_pair = filtered.filter(([ent, dist]) => dist <= (attack_range + ent.HullRadius))[0]

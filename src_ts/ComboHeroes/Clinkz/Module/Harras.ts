@@ -26,7 +26,6 @@ export function InitHarass() {
 	if (Abilities === undefined || HitAndRun_Unit === undefined)
 		return
 
-
 	if (!Owner.CanAttack(target) || (!HitAndRun_Unit.ExecuteTo(target, HarrasTypeHitAndRun.selected_id)
 		&& HarrasHitAndRunAttack.value) || !HarrasHitAndRunAttack.value)
 		return

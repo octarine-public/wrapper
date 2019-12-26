@@ -3,7 +3,6 @@ import Item from "../Base/Item"
 import Player from "../Base/Player"
 import Unit from "../Base/Unit"
 
-
 const MAX_ITEMS = 16
 
 export default class Inventory {
@@ -19,7 +18,6 @@ export default class Inventory {
 			this.TotalItems_ = new Array(MAX_ITEMS)
 	}
 
-	// NOTICE: idk...
 	get TotalItems(): Nullable<Item>[] {
 		// loop-optimizer: FORWARD
 		this.TotalItems_ = this.TotalItems_.map(item => item instanceof Item ? item : EntityManager.GetEntityByNative(item) ?? item) as (Item | CEntityIndex)[]

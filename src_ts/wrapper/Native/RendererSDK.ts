@@ -7,7 +7,7 @@ import * as WASM from "./WASM"
 import Events from "../Managers/Events"
 import { FontFlags_t } from "../Enums/FontFlags_t"
 
-let WindowSize = new Vector2().Invalidate()
+let WindowSize = new Vector2()
 
 enum CommandID {
 	SET_COLOR = 0,
@@ -20,7 +20,6 @@ enum CommandID {
 	IMAGE,
 	TEXT,
 }
-// NOTICE: moofMonkey, need fix fromIOBuffer
 
 let RendererSDK_ = new (class RendererSDK {
 	private static StringToUTF16(str: string): Uint8Array {
@@ -54,8 +53,6 @@ let RendererSDK_ = new (class RendererSDK {
 	 * Cached. Updating every 5 sec
 	 */
 	public get WindowSize(): Vector2 {
-		if (!WindowSize.IsValid)
-			Vector2.fromIOBuffer(Renderer.WindowSize)!.CopyTo(WindowSize)
 		return WindowSize.Clone()
 	}
 	/**

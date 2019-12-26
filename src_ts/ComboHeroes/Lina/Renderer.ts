@@ -96,7 +96,6 @@ function DrawAutoSteal(Ability: LinaAbility) {
 			StealDMDraGonSlave = hero.CalculateDamage(DraGonSlave.AbilityDamage, DraGonSlave.DamageType, hero),
 			StealDMGLaguna = hero.CalculateDamage(Laguna.AbilityDamage, DMG_TYPE_LAGUNA, hero)
 
-
 		if (!StrikeArray.CanBeCasted() || !AutoStealAbility.IsEnabled(StrikeArray.Name)) {
 			StealDMStrikeArray = 0
 		}

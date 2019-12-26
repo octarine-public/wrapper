@@ -1,10 +1,10 @@
-import { ArrayExtensions, Entity, Game, LocalPlayer, EventsSDK, TickSleeper, WardObserver, EntityManager, Hero, Unit } from "wrapper/Imports"
+import { ArrayExtensions, Entity, LocalPlayer, EventsSDK, TickSleeper, WardObserver, EntityManager, Hero, Unit } from "wrapper/Imports"
 import { StateBase } from "../../abstract/MenuBase"
 import ItemManagerBase from "../../abstract/Base"
 import { Items, State, StateItems } from "./Menu"
 
-let Sleep = new TickSleeper
-let Base = new ItemManagerBase
+let Sleep = new TickSleeper()
+let Base = new ItemManagerBase()
 let ward_list: Entity[] = []
 
 let IsValidUnit = (unit: Unit) => !unit.IsEnemy()

@@ -39,10 +39,9 @@ export default class Hero extends Unit {
 		return undefined
 	}
 	get IsIllusion(): boolean {
-		// NOTICE: check this in game
-		return this.ReplicatingOtherHeroModel_ !== undefined
-
-		/* return this.ReplicatingOtherHeroModel_ instanceof Entity || this.ReplicatingOtherHeroModel_ instanceof C_BaseEntity || this.ReplicatingOtherHeroModel_ > 0 || false; */
+		if (this.ReplicatingOtherHeroModel_ === undefined)
+			return false
+		return (this.ReplicatingOtherHeroModel_ instanceof Entity) || (this.ReplicatingOtherHeroModel_ instanceof C_BaseEntity) || (this.ReplicatingOtherHeroModel_ > 0)
 	}
 	get IsReincarnating(): boolean {
 		return this.m_pBaseEntity.m_bReincarnating

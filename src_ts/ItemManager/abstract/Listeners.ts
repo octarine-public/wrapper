@@ -22,7 +22,7 @@ EventsSDK.on("PrepareUnitOrders", args => {
 
 EventsSDK.on("ParticleCreated", (id, path, handle, attach, entity) => {
 	if (handle === 1954660700683781942n)
-		ParticleGlimer.set(id, new Vector3)
+		ParticleGlimer.set(id, new Vector3())
 })
 
 EventsSDK.on("ParticleUpdated", (id, controlPoint, position) => {

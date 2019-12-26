@@ -79,6 +79,7 @@ function _parse(stream: Stream, map = new Map<string, any>()): Map<string, any> 
 			stream.SeekLine()
 			c = LF
 		} else if (c === LF) {
+			// just skip it
 		} else if (c !== SPACE && c !== TAB && c !== "=") {
 			let string: string
 			if (c === STRING) {

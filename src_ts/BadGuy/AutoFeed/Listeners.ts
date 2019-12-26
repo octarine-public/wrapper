@@ -2,18 +2,19 @@ import { Building, Unit, EntityManager, Entity, ArrayExtensions, GameSleeper, Ve
 import { DrawState, State, SwitchUnit, LogicFeedHeroState } from "./Menu"
 import { Renderer } from "./Renderer"
 import { Utility } from "../Base/Utils"
-let Sleeper: GameSleeper = new GameSleeper
+
+let Sleeper = new GameSleeper()
 let Fountains: Building[] = []
 export let Units: Unit[] = []
 
 function UseAbilites(unit: Unit, name: string, Position?: Vector3): boolean {
 	let abil = unit.GetAbilityByName(name)
-	if (abil === undefined || Sleeper.Sleeping(abil.Index))
+	if (abil === undefined || Sleeper.Sleeping(abil))
 		return false
 
 	if (abil.Level <= 0) {
 		abil.UpgradeAbility()
-		Sleeper.Sleeping(abil.Index)
+		Sleeper.Sleeping(abil)
 	}
 
 	if (!abil.CanBeCasted() || abil.IsChanneling || abil.IsInAbilityPhase)
@@ -21,12 +22,12 @@ function UseAbilites(unit: Unit, name: string, Position?: Vector3): boolean {
 
 	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
 		abil.UseAbility()
-		Sleeper.Sleep(Utility.GetDelayCast, abil.Index)
+		Sleeper.Sleep(Utility.GetDelayCast, abil)
 	}
 
 	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT) || abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {
 		abil.UseAbility(Position)
-		Sleeper.Sleep(Utility.GetDelayCast, abil.Index)
+		Sleeper.Sleep(Utility.GetDelayCast, abil)
 	}
 	return true
 }
@@ -49,7 +50,7 @@ function Feedlogic(unit: Unit, enemy_base: Building) {
 }
 
 function MoveUnit(unit: Unit) {
-	if (Sleeper.Sleeping(unit.Index))
+	if (Sleeper.Sleeping(unit))
 		return false
 	return Fountains.some(fnt => {
 		if (fnt === undefined || !fnt.Name.includes("fountain"))
@@ -65,7 +66,7 @@ function MoveUnit(unit: Unit) {
 
 		} else if (fnt.IsEnemy() && tp?.CanBeCasted()) {
 			unit.CastPosition(tp, fnt.Position)
-			Sleeper.Sleep(Utility.GetDelayCast, unit.Index)
+			Sleeper.Sleep(Utility.GetDelayCast, unit)
 		}
 		if (!fnt.IsEnemy())
 			return false
@@ -76,7 +77,7 @@ function MoveUnit(unit: Unit) {
 		if (unit.IsMoving)
 			return false
 		unit.MoveTo(fnt.Position)
-		Sleeper.Sleep(Utility.GetDelayCast, unit.Index)
+		Sleeper.Sleep(Utility.GetDelayCast, unit)
 		return true
 	})
 }

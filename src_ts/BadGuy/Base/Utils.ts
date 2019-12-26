@@ -4,4 +4,4 @@ export default class Base {
 		return (((Game.Ping / 2) + 30) + 350)
 	}
 }
-export let Utility = new Base
+export let Utility = new Base()

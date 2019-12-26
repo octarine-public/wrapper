@@ -11,8 +11,8 @@ import { BreakInit } from "./LinkenBreaker"
 import ItemsX from "../Extends/Items"
 import AbilityX from "../Extends/Abilities"
 
-let Sleep = new TickSleeper
-let GameSleep = new GameSleeper
+let Sleep = new TickSleeper()
+let GameSleep = new GameSleeper()
 
 export let ComboActived = false
 ComboKey.OnRelease(() => ComboActived = !ComboActived)

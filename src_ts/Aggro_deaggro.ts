@@ -1,6 +1,6 @@
 import { EventsSDK, Game, Menu as MenuSDK, LocalPlayer, Unit, TickSleeper, Tower, EntityManager, Creep, Hero } from "wrapper/Imports"
 
-const Sleep = new TickSleeper
+const Sleep = new TickSleeper()
 const Menu = MenuSDK.AddEntry(["Utility", "Aggro/deaggro Creeps"])
 const AutoTowerState = Menu.AddToggle("Auto tower deaggro")
 const aggroKey = Menu.AddKeybind("Aggro Key")

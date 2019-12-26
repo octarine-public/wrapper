@@ -12,7 +12,6 @@ export default class AbilitiesBook {
 		this.Spells_ = this.Owner.m_pBaseEntity.m_hAbilities.map(abil => (EntityManager.GetEntityByNative(abil) as Ability) ?? abil)
 	}
 
-	// NOTICE: idk...
 	get Spells(): Nullable<Ability>[] {
 		// loop-optimizer: FORWARD
 		this.Spells_ = this.Spells_.map(abil => abil instanceof Ability ? abil : EntityManager.GetEntityByNative(abil) ?? abil) as (Ability | CEntityIndex)[]

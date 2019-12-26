@@ -2,7 +2,7 @@ import { Game, Hero, ArrayExtensions, PingType_t, Entity } from "wrapper/Imports
 import { Interval_val, State, HeroesList, DebugPing } from "./Menu"
 let Sleep = 0
 let Heroes: Hero[] = []
-let Pos = new Vector3
+let Pos = new Vector3()
 
 export function Tick() {
 	if (!State.value || LocalPlayer!.Hero === undefined)
@@ -13,7 +13,7 @@ export function Tick() {
 		let Timer = Game.RawGameTime
 		if (!HeroPing(x)) {
 			if (DebugPing.value)
-				Pos = new Vector3
+				Pos = new Vector3()
 			return false
 		}
 		if (Timer <= Sleep)
@@ -43,7 +43,7 @@ function HeroPing(hero: Hero) {
 
 export function UpdateMenu() {
 	HeroesList.values = EntityManager.GetEntitiesByClass(Hero)
-		.filter(x => x.Index !== LocalPlayer?.Hero?.Index && !x.IsEnemy())
+		.filter(x => x !== LocalPlayer?.Hero && !x.IsEnemy())
 		.map(z => z.Name)
 	HeroesList.Update()
 }
@@ -67,7 +67,7 @@ export function GameStarted() {
 }
 export function GameEnded() {
 	Sleep = 0
-	Pos = new Vector3
+	Pos = new Vector3()
 	Heroes = []
 	// loop-optimizer: KEEP
 	HeroesList.enabled_values.forEach((_, key) => HeroesList.enabled_values.set(key, false))

@@ -2,7 +2,7 @@
 import { Unit, Game, Utils, TickSleeper } from "wrapper/Imports"
 let TurnEndTime = 0
 let LastAttackTime = 0
-let Sleep = new TickSleeper
+let Sleep = new TickSleeper()
 export class HitAndRun {
 	constructor(public Unit?: Unit) { }
 	/**

@@ -10,16 +10,16 @@ const State = Menu.AddToggle("State")
 const BuybackBind = Menu.AddKeybind("Buyback key")
 const StateAutoDisconnect = Menu.AddToggle("Auto disconnect after game", true)
 
-color_r.OnValue((call) => {
+color_r.OnValue(call => {
 	Game.ExecuteCommand("dota_enemy_color_r " + call.value)
 })
-color_g.OnValue((call) => {
+color_g.OnValue(call => {
 	Game.ExecuteCommand("dota_enemy_color_g " + call.value)
 })
-color_b.OnValue((call) => {
+color_b.OnValue(call => {
 	Game.ExecuteCommand("dota_enemy_color_b " + call.value)
 })
-range_display.OnValue((call) => {
+range_display.OnValue(call => {
 	Game.ExecuteCommand("dota_range_display " + call.value)
 })
 

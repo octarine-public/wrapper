@@ -5,8 +5,8 @@ import { ComboKeyItem, State, СomboAbility, СomboItems, StyleCombo, ComboHitAn
 import { MouseTarget, Owner, initAbilityMap, initItemsMap, initHitAndRunMap, AetherRemnanPluse, AetherRemnanMinus } from "../Listeners"
 import AbilityX from "../Extends/Abilities"
 
-let Sleep = new GameSleeper
-let TickSleep = new TickSleeper
+let Sleep = new GameSleeper()
+let TickSleep = new TickSleeper()
 let SetSleeping = Math.max(185, ((Game.Ping / 2) + 130))
 
 export let ComboActived = false

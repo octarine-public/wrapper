@@ -19,8 +19,8 @@ export const initAbilityMap = new Map<Unit, AbilityX>()
 export const initDrawBaseMap = new Map<Unit, InitDraw>()
 export const MyNameHero: string = "npc_dota_hero_void_spirit"
 
-export let AetherRemnanPluse: Vector3 = new Vector3
-export let AetherRemnanMinus: Vector3 = new Vector3
+export let AetherRemnanPluse = new Vector3()
+export let AetherRemnanMinus = new Vector3()
 
 export function InitMouse() {
 	if (!Base.IsRestrictions(State))

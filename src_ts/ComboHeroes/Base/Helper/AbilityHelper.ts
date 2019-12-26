@@ -1,7 +1,9 @@
 //@ts-nocheck
 import { Ability, Hero, Unit, TickSleeper, GameSleeper, Game, Vector3 } from "wrapper/Imports"
-let Sleep = new GameSleeper
-let SleepTick = new TickSleeper
+
+let Sleep = new GameSleeper(),
+	SleepTick = new TickSleeper()
+
 export class AbilityHelper {
 	constructor(public readonly unit?: Hero | Unit) { }
 
@@ -25,16 +27,19 @@ export class AbilityHelper {
 				return false
 			}
 		}
-		if (abil === undefined || Sleep.Sleeping(abil.Index))
+		if (abil === undefined || Sleep.Sleeping(abil))
 			return false
 		let castDelay = !abil.IsItem ? (((abil.CastPoint * 2) * 1000) + this.Tick) : this.Tick
 		if (unit !== undefined) {
 			abil.UseAbility(unit)
-			Sleep.Sleep(castDelay, abil.Index)
+			Sleep.Sleep(castDelay, abil)
 			return true
 		}
-		owner ? abil.UseAbility(this.unit) : abil.UseAbility()
-		Sleep.Sleep(castDelay, abil.Index)
+		if (owner)
+			abil.UseAbility(this.unit)
+		else
+			abil.UseAbility()
+		Sleep.Sleep(castDelay, abil)
 		return true
 	}
 }

@@ -8,8 +8,8 @@ import { AutoDeliver } from "./module/AutoDeliver"
 //import { AutoUseItems } from "./module/AutoUseItems"
 import { MoveCourier, CourierBestPosition } from "./module/BestPosition"
 export let Owner: Nullable<Hero>
-export const Sleep = new TickSleeper
-export const BestPosSleep = new TickSleeper
+export const Sleep = new TickSleeper()
+export const BestPosSleep = new TickSleeper()
 export let UnitAnimation: Unit[] = []
 export let OwnerIsValid = () => Game.IsInGame && Owner?.IsAlive && !LocalPlayer!.IsSpectator
 //export let AutoUseCourierPosition: Map<number, Vector3> = new Map()

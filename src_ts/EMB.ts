@@ -15,7 +15,7 @@ EventsSDK.on("Draw", () => {
 	if (LocalPlayer === undefined || !stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator)
 		return false
 	let screen_size = RendererSDK.WindowSize
-	if (screen_size.x == 1280 && screen_size.y == 1024)
+	if (screen_size.x === 1280 && screen_size.y === 1024)
 		screen_size.y = 960
 	let manabar_size = Utils.GetProportionalScaledVector(new Vector2(parseInt(config.get("xpos") as string) * 2.25, parseInt(config.get("ypos") as string)), false).SubtractScalarX(1)
 

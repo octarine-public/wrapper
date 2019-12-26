@@ -18,7 +18,6 @@ export const initHitAndRunMap = new Map<Unit, HitAndRun>()
 export const initAbilityMap = new Map<Unit, InitAbilities>()
 export const initDrawBaseMap = new Map<Unit, InitDraw>()
 
-
 export let ProjList: TrackingProjectile[] = []
 export let MyNameHero: string = "npc_dota_hero_clinkz"
 

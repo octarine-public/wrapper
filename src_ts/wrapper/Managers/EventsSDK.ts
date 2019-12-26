@@ -271,10 +271,7 @@ Events.on("EntitiesVisiblityChanged", ents => {
 	}
 })
 
-Events.on("InputCaptured", is_captured => EventsSDK.emit(
-	"InputCaptured", false,
-	is_captured,
-))
+Events.on("InputCaptured", is_captured => EventsSDK.emit("InputCaptured", false, is_captured))
 
 /*class NetworkFieldChanged {
 	private value: any
@@ -300,18 +297,12 @@ Events.on("InputCaptured", is_captured => EventsSDK.emit(
 Events.on("NetworkFieldsChanged", map => {
 	// loop-optimizer: KEEP
 	map.forEach((ar, native_ent) => {
-		let entity = EntityManager.GetEntityByNative(native_ent)
-
+		const entity = EntityManager.GetEntityByNative(native_ent)
 		if (entity === undefined)
 			return
 
 		// loop-optimizer: KEEP
 		ar.forEach(([field_name, array_index]) => {
-
-			// NOTICE: WTF??. Try remove this and u get error in entity: Entity | undefined
-			if (entity === undefined)
-				return
-
 			if (array_index === -1)
 				switch (field_name) {
 					case "m_hOwnerEntity":
@@ -464,6 +455,7 @@ Events.on("NetworkFieldsChanged", map => {
 	})
 })
 
-
-
 EventsSDK.on("GameEnded", () => ExecuteOrder.order_queue = [])
+EventsSDK.on("InputCaptured", is_captured => Game.IsInputCaptured = is_captured)
+Events.on("ServerTick", tick => Game.CurrentServerTick = tick)
+Events.on("UIStateChanged", new_state => Game.UIState = new_state)

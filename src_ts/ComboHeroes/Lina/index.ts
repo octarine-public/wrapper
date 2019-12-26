@@ -26,4 +26,3 @@ EventsSDK.on("Tick", () => {
 		InitAutoSteal()
 	}
 })
-

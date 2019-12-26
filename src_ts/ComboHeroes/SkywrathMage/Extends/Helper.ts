@@ -97,6 +97,28 @@ class BaseHelper {
 			|| !MyHero.IsAlive
 	}
 
+	public get ProjectileActive(): Vector3 | undefined {
+
+		let name_clusmy = "particles/items5_fx/clumsy_net_proj.vpcf",
+			atos_attack = "particles/items2_fx/rod_of_atos_attack.vpcf",
+			ethereal_blade = "particles/items_fx/ethereal_blade.vpcf",
+			concussive_shot = "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf"
+
+		if (!this.ValidProjectile(name_clusmy).IsZero())
+			return this.ValidProjectile(name_clusmy)
+
+		if (!this.ValidProjectile(atos_attack).IsZero())
+			return this.ValidProjectile(atos_attack)
+
+		if (!this.ValidProjectile(ethereal_blade).IsZero())
+			return this.ValidProjectile(ethereal_blade)
+
+		if (!this.ValidProjectile(concussive_shot).IsZero())
+			return this.ValidProjectile(concussive_shot)
+
+		return new Vector3()
+	}
+
 	public IsRestrictions(State: Menu.Toggle) {
 		return State.value && !Game.IsPaused && Game.IsInGame && MyHero !== undefined && MyHero.IsAlive
 	}
@@ -201,28 +223,6 @@ class BaseHelper {
 		return false
 	}
 
-	public get ProjectileActive(): Vector3 | undefined {
-
-		let name_clusmy = "particles/items5_fx/clumsy_net_proj.vpcf",
-			atos_attack = "particles/items2_fx/rod_of_atos_attack.vpcf",
-			ethereal_blade = "particles/items_fx/ethereal_blade.vpcf",
-			concussive_shot = "particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf"
-
-		if (!this.ValidProjectile(name_clusmy).IsZero())
-			return this.ValidProjectile(name_clusmy)
-
-		if (!this.ValidProjectile(atos_attack).IsZero())
-			return this.ValidProjectile(atos_attack)
-
-		if (!this.ValidProjectile(ethereal_blade).IsZero())
-			return this.ValidProjectile(ethereal_blade)
-
-		if (!this.ValidProjectile(concussive_shot).IsZero())
-			return this.ValidProjectile(concussive_shot)
-
-		return new Vector3
-	}
-
 	public TriggerAutoCombo(target: Hero): boolean {
 
 		return target.ModifiersBook.HasAnyBuffByNames(this.ModifiersTrigger) || target.IsEthereal || target.IsHexed
@@ -247,10 +247,6 @@ class BaseHelper {
 
 		return false
 	}
-
-	private ValidProjectile(name: string): Vector3 {
-		return ProjList.find(x => x.ParticlePath === name)?.Position ?? new Vector3
-	}
 	public AeonDisc(target: Hero, menu: boolean = true): boolean {
 		if (!ComboBreak.value && menu) {
 			return false
@@ -261,6 +257,10 @@ class BaseHelper {
 		}
 
 		return false
+	}
+
+	private ValidProjectile(name: string): Vector3 {
+		return ProjList.find(x => x.ParticlePath === name)?.Position ?? new Vector3()
 	}
 }
 export let Base = new BaseHelper()

@@ -14,10 +14,9 @@ import {
 } from "./Menu"
 import { Disabler_Abilities, Disable_Items, Disable_Important } from "./Data"
 
-
 let Disable = false
-let Sleep = new TickSleeper
-let Base: ItemManagerBase = new ItemManagerBase
+let Sleep = new TickSleeper()
+let Base = new ItemManagerBase()
 
 export function GetItemsBy(items: any, key: string) {
 	let array = []
@@ -48,11 +47,14 @@ function IsReady(unit: Unit, enemy: Unit, abil: Ability | undefined) {
 function filter(unit: Unit, enemy: Unit, items: string[] = []) {
 	if (Disable)
 		return
-	items.length !== 0
-		? items.some(item => ScrollDisableItems.IsEnabled(item)
+	// dafuq
+	if (items.length !== 0) {
+		items.some(item => ScrollDisableItems.IsEnabled(item)
 			&& IsReady(unit, enemy, unit.GetItemByName(item)))
-		: ItemsOfDisableState.value && GetItemsBy(Disable_Items, "abil").some(item => ItemsOfDisable.IsEnabled(item)
+	} else if (ItemsOfDisableState.value) {
+		GetItemsBy(Disable_Items, "abil").some(item => ItemsOfDisable.IsEnabled(item)
 			&& IsReady(unit, enemy, unit.GetItemByName(item)))
+	}
 	if (Disable /*|| enemy.HasBuffByName("modifier_teleporting") */)
 		return
 	Disabler_Abilities.some(abil => AbilityOfDisable.IsEnabled(abil) && IsReady(unit, enemy, unit.GetAbilityByName(abil)))

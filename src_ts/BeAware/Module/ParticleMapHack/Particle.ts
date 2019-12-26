@@ -24,13 +24,14 @@ function DrawIconWorldHero(position: Vector3, Target: Entity, color?: Color, ite
 	if (pos_particle === undefined)
 		return
 	switch (ComboBox!.selected_id) {
-		case 0: RendererSDK.Image
-			(
+		case 0:
+			RendererSDK.Image(
 				items === undefined
 					? `panorama/images/heroes/icons/${Target}_png.vtex_c`
 					: `panorama/images/items/${items}`,
 				pos_particle.SubtractScalar(Size.value / 4),
-				new Vector2(Size.value / 2, Size.value / 2), color,
+				new Vector2(Size.value / 2, Size.value / 2),
+				color,
 			)
 			break
 		case 1:

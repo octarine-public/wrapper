@@ -3,7 +3,9 @@ import { TickSleeper, EntityManager, Hero } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, MyHero, initItemsMap, initAbilityMap } from "../Listeners"
 import { BladeMailUseCyclone, ComboKey, SmartArcaneAutoBoltState, SmartArcaneBoltKey, SmartArcaneOwnerHP, State } from "../Menu"
-let Sleep = new TickSleeper
+
+let Sleep = new TickSleeper()
+
 export function AutoUsage() {
 	if (!Base.IsRestrictions(State) || Sleep.Sleeping)
 		return
@@ -44,6 +46,7 @@ export function AutoUsage() {
 	}
 	return
 }
+
 export function AutoModeDeleteVars() {
 	Sleep.ResetTimer()
 }

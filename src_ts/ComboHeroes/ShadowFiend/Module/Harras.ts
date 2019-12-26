@@ -33,7 +33,7 @@ function ChasingReady(selector: Menu.ImageSelector, ability: Ability, enemy: Uni
 	return false
 }
 export function InitHarras() {
-	if (!Base.IsRestrictions(State) || (Target = MouseTarget) === undefined || !Target.IsAlive || Sleep.Sleeping(Target.Index))
+	if (!Base.IsRestrictions(State) || (Target = MouseTarget) === undefined || !Target.IsAlive || Sleep.Sleeping(Target))
 		return
 
 	if ((StyleHarras.selected_id === 1 && !HarrasActived) || (StyleHarras.selected_id === 0 && !HarrasKeyItem.is_pressed))
@@ -41,7 +41,7 @@ export function InitHarras() {
 
 	if (Owner.Distance2D(Target) >= (1175 + 0.75 * (Owner.Speed * 0.5))) { // !isInRange
 		Owner.MoveTo(Target.Position)
-		Sleep.Sleep(CastDelay, Target.Index)
+		Sleep.Sleep(CastDelay, Target)
 		return
 	}
 
