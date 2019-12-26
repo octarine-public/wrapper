@@ -6,11 +6,11 @@ import { CourierBase } from "../Data/Helper"
 function Deliver(courier: Courier): boolean {
 	if (CourierBase.DELIVER_DISABLE || CourierBase.LAST_CLICK)
 		return false
-	if (!Owner.IsAlive || !Owner.Inventory.HasFreeSlot(0, 9))
+	if (!Owner!.IsAlive || !Owner!.Inventory.HasFreeSlot(0, 9))
 		return false
-	let free_slots_local = Owner.Inventory.GetFreeSlots(0, 9).length,
-		cour_slots_local = courier.IsControllable && courier.Inventory.CountItemByOtherPlayer()
-	let items_in_stash = Owner.Inventory.Stash.reduce((prev, cur) => prev + (cur !== undefined ? 1 : 0), 0)
+	let free_slots_local = Owner!.Inventory.GetFreeSlots(0, 9).length,
+		cour_slots_local = courier.Inventory.CountItemByOtherPlayer()
+	let items_in_stash = Owner!.Inventory.Stash.reduce((prev, cur) => prev + (cur !== undefined ? 1 : 0), 0)
 	//console.log("cour_slots_local: ", cour_slots_local, "items_in_stash: ", items_in_stash)
 	if (
 		items_in_stash > 0

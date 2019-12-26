@@ -19,12 +19,12 @@ const per_ability_kill: string[] = [
 	"shadow_demon_demonic_purge"
 ]
 
-function AbilityTypeReady(courier: Courier): Ability {
-	return courier.GetAbilityByName("courier_shield")?.IsCooldownReady
-		? (!courier.HasBuffByName("modifier_courier_burst")
-			&& courier.GetAbilityByName("courier_shield"))
-		: (!courier.HasBuffByName("modifier_courier_shield")
-			&& courier.GetAbilityByName("courier_burst"))
+function AbilityTypeReady(courier: Courier): Nullable<Ability> {
+	let IsCooldownReady = courier.GetAbilityByName("courier_shield")?.IsCooldownReady
+	if (IsCooldownReady && !courier.HasBuffByName("modifier_courier_burst"))
+		return courier.GetAbilityByName("courier_shield")
+	else if (!IsCooldownReady && !courier.HasBuffByName("modifier_courier_shield"))
+		return courier.GetAbilityByName("courier_burst")
 }
 
 function SafePosDeliver(courier: Courier): boolean {

@@ -1,58 +1,50 @@
 import { EventsSDK, Game, Menu as MenuSDK, LocalPlayer, Unit, TickSleeper, Tower, EntityManager, Creep, Hero } from "wrapper/Imports"
 
-const Menu = MenuSDK.AddEntry(["Utility", "Aggro/deaggro Creeps"])
-//const AutoTowerTree = Menu.AddNode("Tower deaggro")
-const AutoTowerState = Menu.AddToggle("Auto tower deaggro")
-//const MePositionCheck = AutoTowerTree.AddToggle("Check my position")
 const Sleep = new TickSleeper
+const Menu = MenuSDK.AddEntry(["Utility", "Aggro/deaggro Creeps"])
+const AutoTowerState = Menu.AddToggle("Auto tower deaggro")
 const aggroKey = Menu.AddKeybind("Aggro Key")
 const deaggroKey = Menu.AddKeybind("Deaggro Key")
 
-let Owner: Hero
 const GetDelayCast = () => (((Game.Ping / 2) + 30) + 450)
 const IsValidUnit = (x: Unit) => x.IsValid && x.IsAlive && x.IsVisible
-const IsValidPlayerAttack = (x: Tower) => Owner !== undefined && Owner === x.TowerAttackTarget
-const IsValidPlayer = () => !LocalPlayer.IsSpectator && Owner?.IsAlive
+const IsValidPlayerAttack = (x: Tower) => LocalPlayer!.Hero === x.TowerAttackTarget
 const IsValidTower = (x: Tower) => x.TowerAttackTarget && x.IsAlive && x.Distance2D(x.TowerAttackTarget.Position) <= (x.AttackRange + x.HullRadius + 25)
-//const DistanceToTowerMe = (tower: Tower, creep: Unit) => creep.Distance2D(tower) <= (IsValidPlayer() && LocalPlayer.Hero.Distance2D(tower))
 
 function Use(x: Unit) {
 	if (!IsValidUnit(x))
 		return false
-	Owner.AttackTarget(x)
+	LocalPlayer!.Hero?.AttackTarget(x)
 	//LocalPlayer.Hero.MoveTo(Utils.CursorWorldVec)
 	Sleep.Sleep(GetDelayCast())
 	return true
 }
 
 EventsSDK.on("Tick", () => {
-	if (!IsValidPlayer() || Sleep.Sleeping)
+	if (!LocalPlayer!.IsSpectator || LocalPlayer!.Hero === undefined || !LocalPlayer!.Hero.IsAlive || Sleep.Sleeping)
 		return
 	if (AutoTowerState.value) {
-		let Towers = EntityManager.GetEntitiesByClass(Tower, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+		let Towers = EntityManager.GetEntitiesByClass(Tower)
 		Towers.forEach(tower => {
-			if (!IsValidTower(tower) || !IsValidPlayerAttack(tower))
+			if (!tower.IsEnemy() || !IsValidTower(tower) || !IsValidPlayerAttack(tower))
 				return
-			if (EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(x => x.IsAlive
+			if (EntityManager.GetEntitiesByClass(Creep).some(x =>
+				!x.IsEnemy()
+				&& x.IsAlive
 				&& x.IsLaneCreep
-				&& x.Distance2D(Owner?.Position) < (x.AttackRange + x.HullRadius + 25)
-				//&& DistanceToTowerMe(tower, x)
+				&& x.Distance2D(LocalPlayer!.Hero!.Position) < (x.AttackRange + x.HullRadius + 25)
 				&& Use(x)))
 				return
 		})
 	}
 	if (aggroKey.is_pressed)
-		if (EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(Use))
+		if (EntityManager.GetEntitiesByClass(Hero).some(x => x.IsEnemy() && Use(x)))
 			return
 	if (deaggroKey.is_pressed)
-		if (EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY).some(x => x.IsLaneCreep && Use(x)))
+		if (EntityManager.GetEntitiesByClass(Creep).some(x => !x.IsEnemy() && x.IsLaneCreep && Use(x)))
 			return
 })
 
-EventsSDK.on("GameStarted", (hero) => {
-	if (Owner === undefined)
-		Owner = hero
-})
 EventsSDK.on("GameEnded", () => {
 	Sleep.ResetTimer()
 })

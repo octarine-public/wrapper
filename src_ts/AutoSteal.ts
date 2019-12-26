@@ -429,11 +429,11 @@ var abils: {
 	sleeper = new GameSleeper()
 
 function GetAvailableAbils() {
-	var MyEnt = LocalPlayer.Hero
+	var MyEnt = LocalPlayer!.Hero
 	return abils.filter(
 		abilData => abilData.abilName instanceof RegExp
 			|| abilData.abilName.startsWith("item_")
-			|| MyEnt.GetAbilityByName(abilData.abilName) !== undefined,
+			|| MyEnt!.GetAbilityByName(abilData.abilName) !== undefined,
 	)
 }
 
@@ -451,9 +451,9 @@ function OnTick(): void {
 	if (!state.value)
 		return
 
-	var MyEnt = LocalPlayer.Hero/*,
+	var MyEnt = LocalPlayer!.Hero/*,
 		selectedHero = /^npc_dota_hero_(.*)$/.exec(MyEnt.UnitName)[1]*/
-	if (MyEnt === undefined || MyEnt.IsStunned || !MyEnt.IsAlive || flag || LocalPlayer.ActiveAbility !== undefined/* || (MyEnt.CanBeVisible && selectedHero !== "riki" && selectedHero !== "treant_protector")*/)
+	if (MyEnt === undefined || MyEnt.IsStunned || !MyEnt.IsAlive || flag || LocalPlayer!.ActiveAbility !== undefined/* || (MyEnt.CanBeVisible && selectedHero !== "riki" && selectedHero !== "treant_protector")*/)
 		return
 	latest_spellamp = 1 + MyEnt.SpellAmplification
 	{
@@ -462,7 +462,7 @@ function OnTick(): void {
 			latest_spellamp *= bs_buff.Ability.GetSpecialValue("damage_increase_pct") / 100
 	}
 	var availableAbils = GetAvailableAbils().filter(abilData => {
-		var abil = abilData.abil = MyEnt.GetAbilityByName(abilData.abilName) || MyEnt.GetItemByName(abilData.abilName)
+		var abil = abilData.abil = MyEnt!.GetAbilityByName(abilData.abilName) || MyEnt!.GetItemByName(abilData.abilName)
 		return abil !== undefined && !abil.IsHidden && abil.CanBeCasted()
 	}),
 		zuus_passive = MyEnt.GetAbilityByName("zuus_static_field"),
@@ -478,46 +478,46 @@ function OnTick(): void {
 			!sleeper.Sleeping(ent),
 		)
 	availableAbils.some(abilData => {
-		var abil = abilData.abil,
-			range = abilData.abilRadiusF ? abilData.abilRadiusF(abil) : abil.CastRange
+		var abil = abilData?.abil,
+			range = abilData.abilRadiusF ? abilData.abilRadiusF(abil!) : abil!.CastRange
 		if (range > 0)
 			range += 75
 		return targets.some(ent => {
 			if (
-				ent.HasLinkenAtTime(abil.CastPoint) ||
+				ent.HasLinkenAtTime(abil!.CastPoint) ||
 				(ent.IsCreep && !BitsExtensions.HasMaskBigInt(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP))) ||
 				(ent.IsHero && !BitsExtensions.HasMaskBigInt(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO)))
 			)
 				return false
 			var needBlink = false
 			if (range > 0)
-				if (MyEnt.Distance2D(ent) > range)
+				if (MyEnt!.Distance2D(ent) > range)
 					if (
 						!blinkFlag
 						&& blink !== undefined
 						&& blink.Cooldown === 0
 						&& ent.IsHero
-						&& MyEnt.Distance2D(ent) < range + blink.GetSpecialValue("blink_range")
+						&& MyEnt!.Distance2D(ent) < range + blink.GetSpecialValue("blink_range")
 					)
 						needBlink = true
 					else return false
-			var damage = (abilData.abilDamageF || getDamage)(abil, MyEnt, ent)
+			var damage = (abilData.abilDamageF || getDamage)(abil!, MyEnt!, ent)
 			if (zuus_passive !== undefined)
-				damage += (abil.GetSpecialValue("damage_health_pct") + zuus_talent) / 100 * ent.HP
-			if (damage < Utils.GetHealthAfter(ent, abil.CastPoint))
+				damage += (abil!.GetSpecialValue("damage_health_pct") + zuus_talent) / 100 * ent.HP
+			if (damage < Utils.GetHealthAfter(ent, abil!.CastPoint))
 				return false
 
 			let ping = Game.Ping / 1000
 			if ((blinkFlag = !(flag = !needBlink))) { // tslint:disable-line:no-conditional-assignment
-				MyEnt.CastPosition(blink, ent.Position.Extend(MyEnt.Position, range - 100), false)
-				setTimeout(() => blinkFlag = false, (blink.CastPoint + ping) * 1000)
+				MyEnt!.CastPosition(blink!, ent.Position.Extend(MyEnt!.Position, range - 100), false)
+				setTimeout(() => blinkFlag = false, (blink!.CastPoint + ping) * 1000)
 			} else {
-				sleeper.Sleep(((abilData.abilDelayF ? abilData.abilDelayF(abil, MyEnt, ent) + abil.CastPoint : 0) + ping) * 1000, ent)
+				sleeper.Sleep(((abilData.abilDelayF ? abilData.abilDelayF(abil!, MyEnt!, ent) + abil!.CastPoint : 0) + ping) * 1000, ent)
 				if (abilData.abilCastF)
-					abilData.abilCastF(abil, MyEnt, ent)
+					abilData.abilCastF(abil!, MyEnt!, ent)
 				else
-					MyEnt.UseSmartAbility(abil, ent)
-				setTimeout(() => flag = false, (abil.CastPoint + ping) * 1000)
+					MyEnt!.UseSmartAbility(abil!, ent)
+				setTimeout(() => flag = false, (abil!.CastPoint + ping) * 1000)
 			}
 
 			return true
