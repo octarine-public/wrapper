@@ -10,12 +10,13 @@ function UseAbilites(unit: Unit, name: string, Position?: Vector3): boolean {
 	let abil = unit.GetAbilityByName(name)
 	if (abil === undefined || Sleeper.Sleeping(abil.Index))
 		return false
+
 	if (abil.Level <= 0) {
-		abil?.UpgradeAbility()
+		abil.UpgradeAbility()
 		Sleeper.Sleeping(abil.Index)
 	}
 
-	if (!abil.CanBeCasted())
+	if (!abil.CanBeCasted() || abil.IsChanneling || abil.IsInAbilityPhase)
 		return false
 
 	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
@@ -51,12 +52,9 @@ function MoveUnit(unit: Unit) {
 	if (Sleeper.Sleeping(unit.Index))
 		return false
 	return Fountains.some(fnt => {
-
 		if (fnt === undefined || !fnt.Name.includes("fountain"))
 			return false
-
 		let tp = unit.Inventory.TotalItems.find(item => item?.Name === "item_tpscroll")
-
 		if (tp === undefined
 			&& unit.HasBuffByName("modifier_fountain_aura_buff")
 			&& !fnt.IsEnemy() && unit.IsInRange(fnt.Position, 1000)
@@ -84,7 +82,7 @@ function MoveUnit(unit: Unit) {
 }
 
 function Switch(unit: Unit) {
-	if (!unit.IsVisible)
+	if (!unit.IsVisible || unit.HasBuffByName("modifier_teleporting"))
 		return false
 	switch (SwitchUnit.selected_id) {
 		case 0: return unit.IsHero && MoveUnit(unit)
@@ -95,6 +93,7 @@ export const filterUnits = (x: Unit) =>
 	!x.IsEnemy()
 	&& x.IsAlive
 	&& x.IsControllable
+	&& !x.IsHexed
 	&& !x.IsStunned && !x.IsChanneling
 
 export function Tick() {
