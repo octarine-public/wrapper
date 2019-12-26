@@ -3,7 +3,7 @@ import { Interval, State } from "./Menu"
 let Sleep = 0
 export function Tick() {
 	if (!State.value || LocalPlayer!.Hero === undefined)
-		return false
+		return
 
 	let Timer = Game.RawGameTime
 	if (Timer >= Sleep && LocalPlayer!.Hero.IsAlive) {
