@@ -196,9 +196,9 @@ EventsSDK.on("Draw", () => {
 	})
 })
 
-let direct_part_list = new Map<number, [number, number, number]>()
-function DrawDirectional(v1: Vector3, v2: Vector3, id: number) {
-	let part_table = direct_part_list.get(id)
+let direct_part_list = new Map<any, [number, number, number]>()
+function DrawDirectional(v1: Vector3, v2: Vector3, key: any) {
+	let part_table = direct_part_list.get(key)
 
 	if (part_table === undefined) {
 		let index1 = ParticlesSDK.Create("particles/ui_mouseactions/range_finder_directional.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
@@ -210,7 +210,7 @@ function DrawDirectional(v1: Vector3, v2: Vector3, id: number) {
 		ParticlesSDK.SetControlPoint(index3, 2, v2)
 
 		part_table = [index1, index2, index3]
-		direct_part_list.set(id, part_table)
+		direct_part_list.set(key, part_table)
 	}
 
 	ParticlesSDK.SetControlPoint(part_table[0], 0, v1)
@@ -222,14 +222,14 @@ function DrawDirectional(v1: Vector3, v2: Vector3, id: number) {
 	ParticlesSDK.SetControlPoint(part_table[2], 2, v2)
 }
 
-function DestroyDirectional(id: number) {
-	let part_table = direct_part_list.get(id)
-	if (part_table !== undefined) {
-		ParticlesSDK.Destroy(part_table[0])
-		ParticlesSDK.Destroy(part_table[1])
-		ParticlesSDK.Destroy(part_table[2])
-		direct_part_list.delete(id)
-	}
+function DestroyDirectional(key: any) {
+	let part_table = direct_part_list.get(key)
+	if (part_table === undefined)
+		return
+	ParticlesSDK.Destroy(part_table[0])
+	ParticlesSDK.Destroy(part_table[1])
+	ParticlesSDK.Destroy(part_table[2])
+	direct_part_list.delete(key)
 }
 
 let circle_part_list = new Map<Entity, [number]>()
@@ -329,7 +329,7 @@ EventsSDK.on("LinearProjectileCreated", proj => {
 })
 
 EventsSDK.on("LinearProjectileDestroyed", proj => {
-	DestroyDirectional(proj.ID)
+	DestroyDirectional(proj)
 	ArrayExtensions.arrayRemove(line_table, proj)
 })
 
@@ -398,7 +398,7 @@ EventsSDK.on("Tick", () => {
 		DrawDirectional(
 			proj.Position,
 			proj.TargetLoc,
-			proj.ID,
+			proj,
 		)
 	})
 
@@ -415,10 +415,10 @@ EventsSDK.on("Tick", () => {
 					DrawDirectional(
 						owner.Position,
 						owner.InFront(abil.CastRange),
-						abil.ID + 100000,
+						abil,
 					)
 				else
-					DestroyDirectional(abil.ID + 100000)
+					DestroyDirectional(abil)
 			}
 		})
 	})
