@@ -41,7 +41,7 @@ const State = Menu.AddToggle("Enable")
 const StateMiltiUnit = Menu.AddSwitcher("Multi units", ["Only your hero", "All Heroes"], 0)
 const SuppAbils = Menu.AddImageSelector("Ability", Abilities, new Map(Abilities.map(name => [name, true])))
 EventsSDK.on("PrepareUnitOrders", order => {
-	if (!State.value || (StateMiltiUnit.selected_id !== 1 && order.Unit !== LocalPlayer?.Hero) || order.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY)
+	if (!State.value || (StateMiltiUnit.selected_id !== 1 && order.Unit !== LocalPlayer!.Hero) || order.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY)
 		return true
 	let abil = order.Ability as Ability
 	if (abil === undefined || !SuppAbils.IsEnabled(abil.Name))

@@ -1,4 +1,4 @@
-import { EventsSDK, Game, LocalPlayer, Menu, Modifier } from "wrapper/Imports"
+import { EventsSDK, LocalPlayer, Menu, Modifier } from "wrapper/Imports"
 
 const menu = Menu.AddEntry(["Utility", "Abyssal Abuser"]),
 	active = menu.AddToggle("Active")
@@ -17,16 +17,20 @@ function checkAbyss() {
 	if (waiting_to_reassemble)
 		return
 	let myHero = LocalPlayer?.Hero
-	const abys = myHero?.GetItemByName("item_abyssal_blade")
-	if (abys !== undefined && myHero!.Inventory.HasFreeSlots(0, 9, 2)) {
+	if (myHero === undefined)
+		return
+	const abys = myHero.GetItemByName("item_abyssal_blade")
+	if (abys !== undefined && myHero.Inventory.HasFreeSlots(0, 9, 2)) {
 		myHero!.DisassembleItem(abys, false)
 		waiting_to_reassemble = true
 	}
 }
 const abyss_recipe = ["item_basher", "item_vanguard", "item_recipe_abyssal_blade"]
 EventsSDK.on("Tick", () => {
-	let myHero = LocalPlayer?.Hero
-	if (!active.value || !Game.IsInGame || !myHero?.IsAlive)
+	if (!active.value)
+		return
+	let myHero = LocalPlayer!.Hero
+	if (myHero === undefined || !myHero.IsAlive)
 		return
 	// loop-optimizer: KEEP
 	arModifiers.forEach((time, buff) => {

@@ -107,7 +107,7 @@ function AutoUseItems(unit: Unit) {
 
 		switch (item.Name) {
 			case "item_royal_jelly": {
-				if (LocalPlayer?.Hero !== unit || unit.HasBuffByName("modifier_royal_jelly"))
+				if (LocalPlayer!.Hero !== unit || unit.HasBuffByName("modifier_royal_jelly"))
 					return false
 				unit.CastTarget(item, unit)
 				TickSleep.Sleep(Base.GetDelayCast)

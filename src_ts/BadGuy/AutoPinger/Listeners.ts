@@ -8,7 +8,7 @@ export function Tick() {
 	if (!State.value || LocalPlayer!.Hero === undefined)
 		return
 	Heroes.some(x => {
-		if (x.IsEnemy() || x.Index === LocalPlayer?.Hero?.Index)
+		if (x.IsEnemy() || x === LocalPlayer!.Hero)
 			return false
 		let Timer = Game.RawGameTime
 		if (!HeroPing(x)) {
