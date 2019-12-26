@@ -192,13 +192,13 @@ export function RuneParticleDestroyed(id: number) {
 	Particle.delete(id)
 }
 
-export function RuneParticleCreate(id: number, entity: Entity | number | undefined, handle: bigint) {
+export function RuneParticleCreate(id: number, entity: Nullable<Entity>, handle: bigint) {
 	if (handle !== 17096352592726237548n && handle !== 16517413739925325824n)
 		return
 	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined])
 }
 
-export function RuneParticleCreateUpdateEnt(id: number, ent: Entity, position: Vector3) {
+export function RuneParticleCreateUpdateEnt(id: number, ent: Nullable<Entity>, position: Vector3) {
 	let part = Particle.get(id)
 	if (part === undefined)
 		return

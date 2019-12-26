@@ -15,9 +15,12 @@ export let OwnerIsValid = () => Game.IsInGame && Owner?.IsAlive && !LocalPlayer!
 //export let AutoUseCourierPosition: Map<number, Vector3> = new Map()
 
 function SharedFilter(number: number, obj: any) {
-	// loop-optimizer: KEEP
+	if (CourierBase.roles.length === 0)
+		return
 	return CourierBase.roles[number] = (obj as CSODOTALobby).members
+		// loop-optimizer: KEEP
 		.filter(member => member.id === LocalPlayer?.PlayerSteamID && LocalPlayer?.PlayerSteamID >= 0)
+		// loop-optimizer: KEEP
 		.map(member => member.lane_selection_flags)
 }
 

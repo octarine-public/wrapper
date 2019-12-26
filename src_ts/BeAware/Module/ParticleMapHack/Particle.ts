@@ -4,13 +4,13 @@ import { ignoreListCreate, ignoreListCreateUpdate, ignoreListCreateUpdateEnt } f
 import { ucFirst } from "../../abstract/Function"
 
 let npc_hero: string = "npc_dota_hero_",
-	Particle: Map<number, [bigint, string | Entity | undefined, number, Vector3?, Color?, number?, string?]> = new Map(), // TODO Radius for ability
+	Particle: Map<number, [bigint, Nullable<Entity | string>, number, Vector3?, Color?, number?, string?]> = new Map(), // TODO Radius for ability
 	END_SCROLL = new Map<number, number>(),
 	OtherRadius = new Map<Entity, number>(),
 	LAST_ID_SCROLL: number,
 	_Size = Size.value * 20
 
-function ClassChecking(entity: Entity) {
+function ClassChecking(entity: Nullable<Entity>) {
 	return entity !== undefined && (
 		entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane
 		|| entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Neutral
@@ -19,7 +19,7 @@ function ClassChecking(entity: Entity) {
 	)
 }
 
-function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: Color, items?: string) {
+function DrawIconWorldHero(position: Vector3, Target: Entity, color?: Color, items?: string) {
 	let pos_particle = RendererSDK.WorldToScreen(position)
 	if (pos_particle === undefined)
 		return
@@ -48,7 +48,7 @@ function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: C
 	}
 }
 
-export function ParticleCreate(id: number, handle: bigint, path: string, entity: Entity) {
+export function ParticleCreate(id: number, handle: bigint, path: string, entity: Nullable<Entity>) {
 	if (!State.value || !Game.IsInGame || ClassChecking(entity) || ignoreListCreate.includes(handle))
 		return
 
@@ -59,8 +59,7 @@ export function ParticleCreate(id: number, handle: bigint, path: string, entity:
 		END_SCROLL.set(id, LAST_ID_SCROLL)
 		LAST_ID_SCROLL = 0
 	}
-
-	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined!, Game.RawGameTime])
+	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined, Game.RawGameTime])
 }
 
 function IsEnemyUse(position: Vector3) {
@@ -289,6 +288,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// if (part[0] === 6400371855556675384n || part[0] === 10753307352412363396n)
 		// 	Particle.set(id, [part[0], "Blink", part[2], position, new Color(255, 255, 255)])
 	}
+
 	if (control_point === 1) {
 		// void
 		if (part[0] === 15862585917379413836n)
@@ -299,9 +299,6 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// enigma demonic
 		if (part[0] === 10009481603386975411n)
 			FindAbilitySet(id, part, position, "enigma_demonic_conversion", npc_hero + "enigma")
-		// void chrone
-		if (part[0] === 15862585917379413836n)
-			Particle.set(id, [part[0], npc_hero + "faceless_void", part[2], position])
 		// Tusk
 		if (part[0] === 11494335841746008496n)
 			FindAbilitySet(id, part, position, "tusk_ice_shards", npc_hero + "tusk")
@@ -350,7 +347,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 	// }
 }
 
-export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
+export function ParticleUpdatedEnt(id: number, ent: Nullable<Entity>, position: Vector3) {
 	if (!State.value || !Game.IsInGame || ClassChecking(ent))
 		return
 	let part = Particle.get(id)
@@ -358,7 +355,7 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	if (part === undefined || ignoreListCreateUpdateEnt.includes(part[0]))
 		return
 	// ursa
-	if (part[0] === 16250734879025969559n && ent.Name === npc_hero + "roshan") {
+	if (part[0] === 16250734879025969559n && ent?.Name === npc_hero + "roshan") {
 		Particle.set(id, [part[0], npc_hero + "ursa", part[2], position])
 		return
 	}

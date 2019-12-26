@@ -68,12 +68,6 @@ EventsSDK.on("LifeStateChanged", ent => {
 	VBS.LifeStateChanged(ent)
 })
 
-EventsSDK.on("ParticleDestroyed", id => {
-	Techies.ParticleDestroyed(id)
-	ParicleMapHack.ParticleDestroyed(id)
-	TimeControllerEnt.ParticleDestroyed(id)
-})
-
 EventsSDK.on("TrueSightedChanged", npc => {
 	VBS.TrueSightedChanged(npc)
 })
@@ -105,23 +99,28 @@ EventsSDK.on("ParticleUpdated", (id, control_point, position) => {
 })
 
 EventsSDK.on("ParticleCreated", (id, path, handle, attach, entity) => {
-	if (stateMain.value)
+	if (!stateMain.value)
 		return
+	let ent = entity instanceof Entity ? entity : undefined
 	Wisp.ParticleCreate(id, handle)
-	if (!(entity instanceof Entity))
-		return
-	Techies.ParticleCreated(id, entity, path)
-	ParicleMapHack.ParticleCreate(id, handle, path, entity)
-	TimeControllerEnt.ParticleCreated(id, entity, handle)
+	Techies.ParticleCreated(id, ent, path)
+	ParicleMapHack.ParticleCreate(id, handle, path, ent)
+	TimeControllerEnt.ParticleCreated(id, ent, handle)
 })
 
 EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachment, vector) => {
 	if (!stateMain.value)
 		return
 	Techies.ParticleUpdatedEnt(id, control_point, attach, vector)
-	if (!(entity instanceof Entity))
-		return
-	Wisp.ParticleUpdated(id, entity, vector)
-	ParicleMapHack.ParticleUpdatedEnt(id, entity, vector)
-	TimeControllerEnt.ParticleUpdateEnt(id, entity, vector)
+	let ent = entity instanceof Entity ? entity : undefined
+	Wisp.ParticleUpdated(id, ent, vector)
+	ParicleMapHack.ParticleUpdatedEnt(id, ent, vector)
+	TimeControllerEnt.ParticleUpdateEnt(id, ent, vector)
 })
+
+EventsSDK.on("ParticleDestroyed", id => {
+	Techies.ParticleDestroyed(id)
+	ParicleMapHack.ParticleDestroyed(id)
+	TimeControllerEnt.ParticleDestroyed(id)
+})
+

@@ -33,7 +33,7 @@ export function LifeStateChanged(ent: Entity) {
 	EntityDestroyed(ent)
 }
 
-export function ParticleCreated(id: number, target: Entity, path: string) {
+export function ParticleCreated(id: number, target: Nullable<Entity>, path: string) {
 	if (!State.value)
 		return
 	let mine_name: RegExpExecArray | null

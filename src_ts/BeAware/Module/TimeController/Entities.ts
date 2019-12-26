@@ -85,11 +85,11 @@ export function GameEvent(name: string, obj: any) {
 	RoshanGameEvent(name, obj)
 }
 
-export function ParticleUpdateEnt(id: number, entity: Entity, vector: Vector3) {
+export function ParticleUpdateEnt(id: number, entity: Nullable<Entity>, vector: Vector3) {
 	RuneParticleCreateUpdateEnt(id, entity, vector)
 }
 
-export function ParticleCreated(id: number, entity: Entity | number | undefined, handle: bigint) {
+export function ParticleCreated(id: number, entity: Nullable<Entity>, handle: bigint) {
 	RoshanParticleCreate(handle)
 	RuneParticleCreate(id, entity, handle)
 }
