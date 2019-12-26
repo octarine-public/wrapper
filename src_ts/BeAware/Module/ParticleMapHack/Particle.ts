@@ -1,20 +1,16 @@
 import { Color, Entity, Game, Hero, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, LocalPlayer, EntityManager, Courier } from "wrapper/Imports"
-import { ucFirst } from "../../abstract/Function"
-import {
-	ComboBox,
-	DrawRGBA,
-	PMH_Smoke_snd, Size, State, PMH_RenderStateMouseSmoke,
-} from "./Menu"
+import { ComboBox, DrawRGBA, PMH_Smoke_snd, Size, State, PMH_RenderStateMouseSmoke } from "./Menu"
 import { ignoreListCreate, ignoreListCreateUpdate, ignoreListCreateUpdateEnt } from "./DataHandle"
+import { ucFirst } from "../../abstract/Function"
 
 let npc_hero: string = "npc_dota_hero_",
-	Particle: Map<number, [bigint, string | Entity, number, Vector3?, Color?, number?, string?]> = new Map(), // TODO Radius for ability
+	Particle: Map<number, [bigint, Nullable<Entity | string>, number, Vector3?, Color?, number?, string?]> = new Map(), // TODO Radius for ability
 	END_SCROLL = new Map<number, number>(),
 	OtherRadius = new Map<Entity, number>(),
 	LAST_ID_SCROLL: number,
 	_Size = Size.value * 20
 
-function ClassChecking(entity: Entity) {
+function ClassChecking(entity: Nullable<Entity>) {
 	return entity !== undefined && (
 		entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane
 		|| entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Neutral
@@ -23,27 +19,26 @@ function ClassChecking(entity: Entity) {
 	)
 }
 
-function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: Color, items?: string) {
+function DrawIconWorldHero(position: Vector3, Target: Entity, color?: Color, items?: string) {
 	let pos_particle = RendererSDK.WorldToScreen(position)
 	if (pos_particle === undefined)
 		return
-	switch (ComboBox.selected_id) {
-		case 0:
-			RendererSDK.Image
-				(
-					items === undefined
-						? `panorama/images/heroes/icons/${Target}_png.vtex_c`
-						: `panorama/images/items/${items}`,
-					pos_particle.SubtractScalar(Size.value / 4),
-					new Vector2(Size.value / 2, Size.value / 2), color,
-				)
+	switch (ComboBox!.selected_id) {
+		case 0: RendererSDK.Image
+			(
+				items === undefined
+					? `panorama/images/heroes/icons/${Target}_png.vtex_c`
+					: `panorama/images/items/${items}`,
+				pos_particle.SubtractScalar(Size.value / 4),
+				new Vector2(Size.value / 2, Size.value / 2), color,
+			)
 			break
 		case 1:
 			let NameRenderUnit = Target.toString().split("_").splice(3, 3).join(" ")
 			RendererSDK.Text(
 				ucFirst(NameRenderUnit),
 				pos_particle,
-				DrawRGBA.Color,
+				DrawRGBA!.Color,
 				"Arial",
 				Size.value / 4,
 			)
@@ -53,14 +48,16 @@ function DrawIconWorldHero(position: Vector3, Target: Entity | string, color?: C
 	}
 }
 
-export function ParticleCreate(id: number, handle: bigint, path: string, entity: Entity) {
+export function ParticleCreate(id: number, handle: bigint, path: string, entity: Nullable<Entity>) {
 	if (!State.value || !Game.IsInGame || ClassChecking(entity) || ignoreListCreate.includes(handle))
 		return
+
 	if (handle === 16169843851719108633n)		// "particles/items2_fx/teleport_start.vpcf"
 		LAST_ID_SCROLL = id
+
 	if (handle === 9908905996079864839n) { 		// "particles/items2_fx/teleport_end.vpcf"
 		END_SCROLL.set(id, LAST_ID_SCROLL)
-		LAST_ID_SCROLL = undefined
+		LAST_ID_SCROLL = 0
 	}
 	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined, Game.RawGameTime])
 }
@@ -291,6 +288,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// if (part[0] === 6400371855556675384n || part[0] === 10753307352412363396n)
 		// 	Particle.set(id, [part[0], "Blink", part[2], position, new Color(255, 255, 255)])
 	}
+
 	if (control_point === 1) {
 		// void
 		if (part[0] === 15862585917379413836n)
@@ -301,9 +299,6 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 		// enigma demonic
 		if (part[0] === 10009481603386975411n)
 			FindAbilitySet(id, part, position, "enigma_demonic_conversion", npc_hero + "enigma")
-		// void chrone
-		if (part[0] === 15862585917379413836n)
-			Particle.set(id, [part[0], npc_hero + "faceless_void", part[2], position])
 		// Tusk
 		if (part[0] === 11494335841746008496n)
 			FindAbilitySet(id, part, position, "tusk_ice_shards", npc_hero + "tusk")
@@ -352,7 +347,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 	// }
 }
 
-export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
+export function ParticleUpdatedEnt(id: number, ent: Nullable<Entity>, position: Vector3) {
 	if (!State.value || !Game.IsInGame || ClassChecking(ent))
 		return
 	let part = Particle.get(id)
@@ -360,7 +355,7 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	if (part === undefined || ignoreListCreateUpdateEnt.includes(part[0]))
 		return
 	// ursa
-	if (part[0] === 16250734879025969559n && ent.Name === npc_hero + "roshan") {
+	if (part[0] === 16250734879025969559n && ent?.Name === npc_hero + "roshan") {
 		Particle.set(id, [part[0], npc_hero + "ursa", part[2], position])
 		return
 	}
@@ -402,8 +397,12 @@ export function ParticleUpdatedEnt(id: number, ent: Entity, position: Vector3) {
 	// Items Scroll
 	if (part[0] === 9908905996079864839n) { // "particles/items2_fx/teleport_end.vpcf"
 		Particle.set(id, [part[0], ent, part[2], position, new Color(100, 100, 100)])
-		let ID_START_SCROLL = END_SCROLL.get(id),
-			_part = Particle.get(ID_START_SCROLL)
+		let ID_START_SCROLL = END_SCROLL.get(id)
+		if (ID_START_SCROLL === undefined)
+			return
+		let _part = Particle.get(ID_START_SCROLL)
+		if (_part === undefined)
+			return
 		if (part[1] === "Scroll")
 			Particle.set(ID_START_SCROLL, [_part[0], ent, _part[2], part[3]])
 		return
@@ -432,7 +431,7 @@ function CreateAbilityRadius(ent: Entity, radius: number) {
 function DrawingOtherAbility(x: Entity, name: string, ability_name: string, radius?: number) {
 	if (!x.Name.includes(name))
 		return
-	CreateAbilityRadius(x, radius)
+	CreateAbilityRadius(x, radius || 100)
 	DrawIconAbilityHero(x.Position, ability_name)
 }
 
@@ -446,8 +445,10 @@ function RenderTeleportMap(handle: bigint, position: Vector3) {
 }
 
 export function OnDraw() {
+
 	if (!Game.IsInGame)
 		return
+
 	EntityManager.GetEntitiesByClass(Unit).forEach(x => {
 		if (!x.IsEnemy())
 			return
@@ -459,21 +460,28 @@ export function OnDraw() {
 		return
 	// loop-optimizer: KEEP
 	Particle.forEach(([handle, target, Time, position, color, delete_time, ability_string], i) => {
-		// particle mapHack
+
 		if (delete_time === undefined)
 			delete_time = + 3 // def time for del.
-		// console.log("Position: " + position + " | Color: " + color)
+
 		if (position === undefined || Time + delete_time <= Game.RawGameTime) {
 			Particle.delete(i)
 			return
 		}
+
 		let Target = target as Unit
 		if (Target === undefined || Target.Name === undefined) {
 			if (target === "Smoke") {
 				RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 20, color)
 				DrawIconWorldHero(position, Target, new Color(255, 255, 255), "smoke_of_deceit_png.vtex_c")
 				if (LocalPlayer !== undefined && PMH_RenderStateMouseSmoke.value) {
-					RendererSDK.TextAroundMouse("Enemy used smoke, distance from you (" + Math.round(LocalPlayer.Hero.Distance2D(position)) + ") units", false, new Color(255, 255, 0, 155), "Calibri", new Vector2(18))
+					RendererSDK.TextAroundMouse(
+						"Enemy used smoke, distance from you (" + Math.round(LocalPlayer.Hero!.Distance2D(position)) + ") units",
+						false,
+						new Color(255, 255, 0, 155),
+						"Calibri",
+						new Vector2(18)
+					)
 				}
 			} else if (target === "Dust") {
 				RendererSDK.DrawMiniMapIcon("minimap_ping_shop", position, Size.value * 14, color)
@@ -490,27 +498,32 @@ export function OnDraw() {
 			}
 		} else if (Target !== undefined && Target.IsEnemy() && target !== "Smoke" && !Target.IsVisible) {
 			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
-			if (handle === 9908905996079864839n) {
+
+			if (handle === 9908905996079864839n)
 				RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, Size.value * 20, color)
-			}
+
 			RenderTeleportMap(handle, position)
 			DrawIconWorldHero(position, Target, color)
-		} else if (Target !== undefined && Target.IsEnemy()
-			&& target !== "Smoke" && (handle === 9908905996079864839n || handle === 16169843851719108633n)
+
+		} else if (
+			Target !== undefined
+			&& Target.IsEnemy()
+			&& target !== "Smoke"
+			&& (handle === 9908905996079864839n || handle === 16169843851719108633n)
 		) {
 			RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Target.Name}`, position, Size.value * 12, color)
-			if (handle === 9908905996079864839n) {
+
+			if (handle === 9908905996079864839n)
 				RendererSDK.DrawMiniMapIcon("minimap_ping_teleporting", position, _Size, color)
-			}
+
 			RenderTeleportMap(handle, position)
 			if (ability_string !== undefined) {
 				let add_pos = position.Clone().AddScalarY(-80)
 				DrawIconAbilityHero(add_pos, ability_string)
 			}
 			DrawIconWorldHero(position, Target, color)
-			if (handle !== 16169843851719108633n && handle !== 9908905996079864839n) {
+			if (handle !== 16169843851719108633n && handle !== 9908905996079864839n)
 				return
-			}
 			let BuffDieTime = Target.GetBuffByName("modifier_teleporting"),
 				screen_pos = RendererSDK.WorldToScreen(position)
 			if (BuffDieTime === undefined || screen_pos !== undefined)
@@ -533,6 +546,6 @@ export function ParticleDestroyed(id: number) {
 export function Init() {
 	Particle.clear()
 	END_SCROLL.clear()
-	LAST_ID_SCROLL = undefined
+	LAST_ID_SCROLL = 0
 	_Size = Size.value * 20
 }

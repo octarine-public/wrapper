@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability as AbilitySDK, Hero, Ability } from "wrapper/Imports"
 import { AbilityBase } from "../../Base/Abilities"
 

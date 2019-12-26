@@ -2,13 +2,12 @@ import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
-import { DamageIgnoreBuffs } from "../../Utils/Utils"
+import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
 
 import { LocalPlayer } from "../../Managers/EntityManager"
 
 import Entity, { rotation_speed } from "./Entity"
 import Player from "./Player"
-// import Creep from "./Creep";
 
 import AbilitiesBook from "../DataBook/AbilitiesBook"
 import Inventory from "../DataBook/Inventory"
@@ -26,14 +25,13 @@ import TreeTemp from "./TreeTemp"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
-import { Utils, Parse } from "../../Imports"
+import { RecursiveMap } from "../../Utils/ParseKV"
 import Game from "../GameResources/GameRules"
-//import { DotaMap } from "../../Helpers/DotaMap"
 
 const attackAnimationPoint = new Map<string, number>()
 const attackprojectileSpeed = new Map<string, number>()
 
-let parseHeroes = Utils.parseKVFile("scripts/npc/npc_heroes.txt").get("DOTAHeroes") as Parse.RecursiveMap
+let parseHeroes = parseKVFile("scripts/npc/npc_heroes.txt").get("DOTAHeroes") as RecursiveMap
 for (let hero of parseHeroes.keys()) {
 	const heroFields = parseHeroes.get(hero)
 	if (!(heroFields instanceof Map))
@@ -65,24 +63,26 @@ export default class Unit extends Entity {
 	}
 
 	/* ================================ Fields ================================ */
-	public readonly m_pBaseEntity: C_DOTA_BaseNPC
-	public readonly AbilitiesBook: AbilitiesBook
-	public readonly Inventory: Inventory
-	public readonly ModifiersBook: ModifiersBook
+	public readonly m_pBaseEntity!: C_DOTA_BaseNPC
+
+	public readonly AbilitiesBook = new AbilitiesBook(this)
+	public readonly Inventory = new Inventory(this)
+	public readonly ModifiersBook = new ModifiersBook(this)
+
 	//public readonly DotaMap: DotaMap
-	public IsVisibleForTeamMask = 0
-	public IsVisibleForEnemies = false
+	public IsVisibleForTeamMask = this.m_pBaseEntity.m_iTaggedAsVisibleByTeam
+	public IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
 	public IsTrueSightedForEnemies = false
-	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
-	public IsControllableByPlayerMask = 0n
-	public HPRegen = 0
-	public ManaRegen = 0
-	public RotationDifference = 0
+	public NetworkActivity: GameActivity_t = this.m_pBaseEntity.m_NetworkActivity;
+	public IsControllableByPlayerMask = this.m_pBaseEntity.m_iIsControllableByPlayer64
+	public HPRegen = this.m_pBaseEntity.m_flHealthThinkRegen
+	public ManaRegen = this.m_pBaseEntity.m_flManaThinkRegen
+	public RotationDifference = this.m_pBaseEntity.m_anglediff
 	public HasScepterModifier = false
-	public LastVisibleTime = 0
+	public LastVisibleTime = Game.RawGameTime
 	public LastDormantTime = 0
 
-	private UnitName_: string
+	private UnitName_: string = ""
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
 		"modifier_item_ethereal_blade_ethereal",
@@ -95,21 +95,6 @@ export default class Unit extends Entity {
 		"modifier_treant_natures_guise_invis",
 	]
 
-	constructor(m_pBaseEntity: C_BaseEntity) {
-		super(m_pBaseEntity)
-		this.RotationDifference = this.m_pBaseEntity.m_anglediff
-		this.ManaRegen = this.m_pBaseEntity.m_flManaThinkRegen
-		this.HPRegen = this.m_pBaseEntity.m_flHealthThinkRegen
-		this.IsControllableByPlayerMask = this.m_pBaseEntity.m_iIsControllableByPlayer64
-		this.IsVisibleForTeamMask = this.m_pBaseEntity.m_iTaggedAsVisibleByTeam
-		this.IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
-		this.NetworkActivity = this.m_pBaseEntity.m_NetworkActivity
-		this.LastVisibleTime = Game.RawGameTime
-
-		this.AbilitiesBook = new AbilitiesBook(this)
-		this.Inventory = new Inventory(this)
-		this.ModifiersBook = new ModifiersBook(this)
-	}
 	/* ================ GETTERS ================ */
 	public get IsHero(): boolean {
 		return HasBit(this.UnitType, 0)
@@ -308,7 +293,7 @@ export default class Unit extends Entity {
 	public get HealthBarOffset(): number {
 		return this.m_pBaseEntity.m_iHealthBarOffset
 	}
-	public get HealthBarHighlightColor(): Color {
+	public get HealthBarHighlightColor(): Nullable<Color> {
 		return Color.fromIOBuffer(this.m_pBaseEntity.m_iHealthBarHighlightColor)
 	}
 	public get HullRadius(): number {
@@ -451,7 +436,7 @@ export default class Unit extends Entity {
 	public get CanUseAbilitiesInInvisibility(): boolean {
 		return this.ModifiersBook.HasAnyBuffByNames(this.CanUseAbilitiesInInvis)
 	}
-	public get Spells(): Ability[] {
+	public get Spells(): Nullable<Ability>[] {
 		return this.AbilitiesBook.Spells
 	}
 	public get Items(): Item[] {
@@ -466,10 +451,10 @@ export default class Unit extends Entity {
 
 	/* ================ GETTERS ================ */
 	public get AttackAnimationPoint(): number {
-		return attackAnimationPoint.get(this.Name) || 0
+		return attackAnimationPoint.get(this.Name) ?? 0
 	}
 	public get AttackProjectileSpeed(): number {
-		return attackprojectileSpeed.get(this.Name) || 0
+		return attackprojectileSpeed.get(this.Name) ?? 0
 	}
 	public get IsRotating(): boolean {
 		return this.RotationDifference !== 0
@@ -487,7 +472,7 @@ export default class Unit extends Entity {
 		if (lens !== undefined)
 			castrange += lens.GetSpecialValue("cast_range_bonus")
 
-		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget")
+		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget_aura")
 		if (gadget_aura !== undefined) {
 			let gadget = gadget_aura.Ability
 			if (gadget !== undefined)
@@ -496,8 +481,8 @@ export default class Unit extends Entity {
 
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
-			if (spell.Level !== 0 && spell.Name.startsWith("special_bonus_cast_range"))
-				castrange += spell.GetSpecialValue("value")
+			if (spell!.Level !== 0 && spell!.Name.startsWith("special_bonus_cast_range"))
+				castrange += spell!.GetSpecialValue("value")
 		})
 		return castrange
 	}
@@ -508,25 +493,25 @@ export default class Unit extends Entity {
 
 		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
-			if (spell.Level !== 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
-				spellAmp += spell.GetSpecialValue("value") / 100
+			if (spell!.Level !== 0 && spell!.Name.startsWith("special_bonus_spell_amplify"))
+				spellAmp += spell!.GetSpecialValue("value") / 100
 		})
 
 		return spellAmp
 	}
 	public get Name(): string {
-		if (this.UnitName_ === undefined)
+		if (!this.UnitName_)
 			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
 		return this.UnitName_ || super.Name
 	}
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
 		return this.InFront(movespeed * time)
 	}
-	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Item {
+	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false) {
 		return this.Inventory.GetItemByName(name, includeBackpack)
 	}
 	public HasItemInInventory(name: string | RegExp, includeBackpack: boolean = false): boolean {
-		return this.GetItemByName(name, includeBackpack) !== undefined
+		return this.Inventory.GetItemByName(name, includeBackpack) !== undefined
 	}
 	/* ================ METHODS ================ */
 
@@ -645,10 +630,8 @@ export default class Unit extends Entity {
 					}
 					case "modifier_item_pipe_barrier":
 					case "modifier_item_hood_of_defiance_barrier":
-						dmg -= abil.GetSpecialValue("barrier_block")
-						return
 					case "modifier_item_infused_raindrop":
-						dmg -= abil.GetSpecialValue("magic_damage_block")
+						dmg -= abil.GetSpecialValue("barrier_block")
 						return
 					default:
 						break
@@ -660,7 +643,7 @@ export default class Unit extends Entity {
 					return
 				}
 				case "bloodseeker_bloodrage":
-					dmg *= 1 + abil.GetSpecialValue("damage_increase_incoming_pct") / 100
+					dmg *= abil.GetSpecialValue("damage_increase_pct") / 100
 					return
 				case "spectre_dispersion":
 					dmg *= 1 - (abil.GetSpecialValue("damage_reflection_pct") / 100)
@@ -671,6 +654,9 @@ export default class Unit extends Entity {
 					return
 				case "kunkka_ghostship":
 					dmg *= 1 - (abil.GetSpecialValue("ghostship_absorb") / 100)
+					return
+				case "wisp_overcharge":
+					dmg *= 1 + (abil.GetSpecialValue("bonus_damage_pct") / 100)
 					return
 				case "medusa_mana_shield": {
 					let max_absorbed_dmg = this.Mana * abil.GetSpecialValue("damage_per_mana"),
@@ -805,7 +791,7 @@ export default class Unit extends Entity {
 				let abil = source.GetAbilityByName("ursa_fury_swipes")
 				if (abil !== undefined) {
 					let buff = this.GetBuffByName("modifier_ursa_fury_swipes_damage_increase")
-					damage += abil.GetSpecialValue("damage_per_stack") * (1 + (buff !== undefined ? buff[0].m_iStackCount : 0))
+					damage += abil.GetSpecialValue("damage_per_stack") * (1 + (buff !== undefined ? buff.StackCount : 0))
 				}
 			}
 			{
@@ -894,13 +880,12 @@ export default class Unit extends Entity {
 	public HasLinkenAtTime(time: number = 0): boolean {
 		const sphere = this.GetItemByName("item_sphere")
 
-		return (
-			sphere !== undefined &&
-			sphere.Cooldown - time <= 0
-		) || (
-				this.GetBuffByName("modifier_item_sphere_target") !== undefined
-				&& this.GetBuffByName("modifier_item_sphere_target").RemainingTime - time <= 0
-			)
+		if (sphere !== undefined && sphere.Cooldown - time <= 0)
+			return true
+
+		const sphereTarget = this.GetBuffByName("modifier_item_sphere_target")
+
+		return sphereTarget !== undefined && sphereTarget.RemainingTime - time <= 0
 	}
 
 	public AttackDamage(target: Unit, useMinDamage: boolean = true, damageAmplifier: number = 0): number {
@@ -976,7 +961,7 @@ export default class Unit extends Entity {
 				target = target.Position
 			}
 
-			return this.CastPosition(ability, target, queue, showEffects)
+			return this.CastPosition(ability, target as Vector3, queue, showEffects)
 		}
 
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {

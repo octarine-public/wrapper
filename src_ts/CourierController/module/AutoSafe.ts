@@ -19,13 +19,12 @@ const per_ability_kill: string[] = [
 	"shadow_demon_demonic_purge"
 ]
 
-function AbilityTypeReady(courier: Courier): Ability {
-	return courier.GetAbilityByName("courier_shield")
-		?.IsCooldownReady
-		? (!courier.HasBuffByName("modifier_courier_burst")
-			&& courier.GetAbilityByName("courier_shield"))
-		: (!courier.HasBuffByName("modifier_courier_shield")
-			&& courier.GetAbilityByName("courier_burst"))
+function AbilityTypeReady(courier: Courier): Nullable<Ability> {
+	let IsCooldownReady = courier.GetAbilityByName("courier_shield")?.IsCooldownReady
+	if (IsCooldownReady && !courier.HasBuffByName("modifier_courier_burst"))
+		return courier.GetAbilityByName("courier_shield")
+	else if (!IsCooldownReady && !courier.HasBuffByName("modifier_courier_shield"))
+		return courier.GetAbilityByName("courier_burst")
 }
 
 function SafePosDeliver(courier: Courier): boolean {
@@ -57,7 +56,7 @@ export function AutoSafe(courier: Courier): boolean {
 	let attack_courier = UnitAnimation.some(unit =>
 		per_ability_kill.some(abil => abil !== undefined
 			&& unit.GetAbilityByName(abil)
-			&& unit.IsInRange(courier, unit.GetAbilityByName(abil)?.CastRange)
+			&& unit.IsInRange(courier, unit.GetAbilityByName(abil)?.CastRange ?? 0)
 			&& !unit.GetAbilityByName(abil)?.IsInAbilityPhase
 		) || (
 			unit.IsInRange(courier, (unit.AttackRange + unit.HullRadius))

@@ -4,14 +4,17 @@ import * as AutoFeed from "./AutoFeed/Listeners"
 import * as AutoLaugh from "./AutoLaugh/Listeners"
 import * as AutoSpinner from "./AutoSpinner/Listeners"
 import * as AutoTaunt from "./AutoTaunt/Listeners"
+import * as AutoPinger from "./AutoPinger/Listeners"
+
 import { MainState } from "./Base/MenuBase"
 
 EventsSDK.on("Tick", () => {
-	if (!MainState.value || LocalPlayer.IsSpectator)
+	if (!MainState.value || LocalPlayer!.IsSpectator)
 		return
 	AutoFeed.Tick()
 	AutoLaugh.Tick()
 	AutoTaunt.Tick()
+	AutoPinger.Tick()
 	AutoSpinner.Tick()
 })
 EventsSDK.on("Draw", () => {
@@ -24,18 +27,26 @@ EventsSDK.on("Draw", () => {
 	)
 		return
 	AutoFeed.Draw()
+	AutoPinger.Draw()
 })
 
-EventsSDK.on("GameStarted", hero => {
-	AutoLaugh.GameStarted(hero)
-	AutoTaunt.GameStarted(hero)
+EventsSDK.on("GameStarted", () => {
+	AutoPinger.GameStarted()
 })
 
 EventsSDK.on("GameEnded", () => {
 	AutoFeed.GameEnded()
 	AutoTaunt.GameEnded()
 	AutoLaugh.GameEnded()
+	AutoPinger.GameEnded()
 })
 
-EventsSDK.on("EntityCreated", AutoFeed.EntityCreate)
-EventsSDK.on("EntityDestroyed", AutoFeed.EntityDestroyed)
+EventsSDK.on("EntityCreated", x => {
+	AutoFeed.EntityCreate(x)
+	AutoPinger.EntityCreated(x)
+})
+
+EventsSDK.on("EntityDestroyed", x => {
+	AutoFeed.EntityDestroyed(x)
+	AutoPinger.EntityDestroyed(x)
+})

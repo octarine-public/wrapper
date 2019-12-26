@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Hero } from "wrapper/Imports"
 import { AbilityBase } from "../../Base/Abilities"
 export default class LegionCommanderAbility extends AbilityBase {

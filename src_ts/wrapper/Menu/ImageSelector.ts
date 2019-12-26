@@ -16,7 +16,7 @@ export default class ImageSelector extends Base {
 	protected readonly image_border_color = new Color(64, 128, 255, 80)
 	protected readonly image_color = new Color(255, 255, 255, 40)
 	protected readonly image_activated_color = new Color(255, 255, 255)
-	protected name_size: Vector2
+	protected name_size = new Vector2()
 
 	constructor(parent: IMenu, name: string, values: string[], default_values = new Map<string, boolean>(), tooltip?: string) {
 		super(parent, name)
@@ -67,7 +67,7 @@ export default class ImageSelector extends Base {
 	}
 
 	public IsEnabled(value: string): boolean {
-		return this.enabled_values.get(value)
+		return this.enabled_values.get(value) ?? false
 	}
 	public IsEnabledID(id: number): boolean {
 		return this.IsEnabled(this.values[id])

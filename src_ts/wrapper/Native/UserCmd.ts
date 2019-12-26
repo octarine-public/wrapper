@@ -107,13 +107,13 @@ export default class UserCmd {
 		this.m_CUserCmd.impulse = value
 	}
 	public get VectorUnderCursor(): Vector3 {
-		return Vector3.fromIOBuffer(this.m_CUserCmd.vec_under_cursor)
+		return Vector3.fromIOBuffer(this.m_CUserCmd.vec_under_cursor)!
 	}
 	public set VectorUnderCursor(value: Vector3) {
 		this.m_CUserCmd.vec_under_cursor = value.toIOBuffer()
 	}
 	public get ViewAngles(): QAngle {
-		return QAngle.fromIOBuffer(this.m_CUserCmd.viewangles)
+		return QAngle.fromIOBuffer(this.m_CUserCmd.viewangles)!
 	}
 	public set ViewAngles(value: QAngle) {
 		this.m_CUserCmd.viewangles = value.toIOBuffer()

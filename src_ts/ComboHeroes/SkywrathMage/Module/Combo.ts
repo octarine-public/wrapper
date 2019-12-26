@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { GameSleeper, TickSleeper, Utils, Ability, Hero, Menu } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, MyHero, initItemsMap, initAbilityMap, initItemsTargetMap, initHitAndRunMap, ProjectileTrigger } from "../Listeners"

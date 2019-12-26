@@ -2,6 +2,7 @@ import { MaskToArrayBigInt, MaskToArrayNumber } from "../../Utils/BitsExtensions
 import AbilitySpecialData from "./AbilitySpecialData"
 
 export default class AbilityData {
+
 	public readonly Name: string
 	public readonly AbilityBehavior: DOTA_ABILITY_BEHAVIOR[]
 	public readonly AbilitySpecialData: AbilitySpecialData
@@ -20,10 +21,11 @@ export default class AbilityData {
 	public readonly EffectName: string
 	public readonly Cost: number
 	public readonly AlternateModelName: string
+
 	public readonly SpecialValueCache = Object.create(null)
 
 	constructor(public readonly m_pAbilityData: DOTAAbilityDefinition_t) {
-		this.Name = m_pAbilityData.m_pszAbilityName || ""
+		this.Name = m_pAbilityData.m_pszAbilityName ?? ""
 		this.AbilityBehavior = MaskToArrayBigInt(m_pAbilityData.m_iAbilityBehavior)
 		this.AbilitySpecialData = new AbilitySpecialData(m_pAbilityData.m_pSpecialAbilities)
 		this.AbilityType = m_pAbilityData.m_iAbilityType

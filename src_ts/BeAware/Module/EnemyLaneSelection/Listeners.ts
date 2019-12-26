@@ -1,4 +1,4 @@
-import { Game, LocalPlayer, RendererSDK, Team, Vector2, Events, DOTA_GameState } from "wrapper/Imports"
+import { Game, LocalPlayer, RendererSDK, Team, Vector2, DOTA_GameState } from "wrapper/Imports"
 import {
 	//ShowAfterGameStart,
 	ChatTimeOutSend,
@@ -62,10 +62,9 @@ let team_offset = 250,
 	is_send_chat = 0
 
 export function Draw() {
-	if (!State.value || !Game.IsConnected || Game.GameState >= DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME)
+	if (!State.value || !Game.IsConnected || Game.GameState >= DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME || roles.length === 0)
 		return
-
-	let enemy_team_id = LocalPlayer.Team === Team.Radiant ? 1 : 0
+	let enemy_team_id = LocalPlayer?.Team === Team.Radiant ? 1 : 0
 	let wSize = RendererSDK.WindowSize,
 		ratio = RendererSDK.GetAspectRatio()
 	switch (ratio) {
@@ -78,16 +77,12 @@ export function Draw() {
 			break
 	}
 	let base_enemy_pos = new Vector2(first_offset + (DrawPositionGap.value * 5 + team_offset) * enemy_team_id + wSize.x / 100, DrawPositionY.value)
-	if (roles.length === 0)
-		return
+
 	roles[enemy_team_id].forEach((role, i) => {
 		let role_str = GetLaneName(role)
 		if (role_str === undefined)
 			return
-		RendererSDK.Text(
-			role_str,
-			base_enemy_pos.Clone().AddScalarX(i * DrawPositionGap.value + DrawPositionX.value),
-		)
+		RendererSDK.Text(role_str, base_enemy_pos.Clone().AddScalarX(i * DrawPositionGap.value + DrawPositionX.value))
 		if (SendAlliesChat.value)
 			setTimeout(() => {
 				if (is_send_chat >= 5)

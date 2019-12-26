@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Unit, LocalPlayer, Menu, ParticlesSDK, Vector3, Color, Hero, Ability } from "wrapper/Imports"
 let CircleParticles = new Map<string, number>()
 let LineDotParticles = new Map<string, number>()

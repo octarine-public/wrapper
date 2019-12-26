@@ -10,7 +10,7 @@ export default class Button extends Base {
 	protected readonly button_color = new Color(14, 99, 152)
 	protected readonly buttom_activated_color = new Color(36, 40, 50) // while not MouseLeftUp
 	protected readonly execute_on_add = false
-	protected name_size: Vector2
+	protected name_size = new Vector2()
 
 	constructor(parent: IMenu, name: string, tooltip?: string) {
 		super(parent, name)

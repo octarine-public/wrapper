@@ -1,16 +1,15 @@
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 
-// import * as Debug from "../Utils/Debug"
-
 import Events from "./Events"
 
 import Vector3 from "../Base/Vector3"
 
-import Creep from "../Objects/Base/Creep"
 import Entity from "../Objects/Base/Entity"
+import Unit from "../Objects/Base/Unit"
 import Hero from "../Objects/Base/Hero"
 import Player from "../Objects/Base/Player"
-import Unit from "../Objects/Base/Unit"
+
+import Creep from "../Objects/Base/Creep"
 
 import Ability from "../Objects/Base/Ability"
 import Item from "../Objects/Base/Item"
@@ -24,10 +23,7 @@ import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import { HasBit } from "../Utils/BitsExtensions"
 import EventsSDK from "./EventsSDK"
-import ExecuteOrder from "../Native/ExecuteOrder"
 import Roshan from "../Objects/Units/Roshan"
-
-type Constructor<T> = { new(...args: any[]): T }
 
 let AllEntities: Entity[] = []
 let EntitiesIDs = new Map<number, C_BaseEntity>()
@@ -36,38 +32,42 @@ let ClassToEntities = new Map<Constructor<any>, Entity[]>()
 
 let InStage: C_BaseEntity[] = []
 
-export let LocalPlayer: Player
-globalThis.LocalPlayer = undefined
+export var LocalPlayer: Nullable<Player>
 
 let player_slot = NaN
-Events.on("ServerInfo", info => player_slot = info.player_slot)
+Events.on("ServerInfo", info => player_slot = info.player_slot ?? NaN)
 
-const EntityManager = new (class EntityManager {
-	private Roshan_: Entity | number
-	get Roshan(): Entity | number {
+// NOTICE: because shadow name. idk another way
+class EntityManager {
+
+	private Roshan_: Nullable<Entity | number>
+
+	get Roshan(): Nullable<Entity | number> {
 		if (this.Roshan_ instanceof Entity) {
 			if (!this.Roshan_.IsValid || !(this.Roshan_ instanceof Roshan))
 				return this.Roshan_ = undefined
 			return this.Roshan_
 		}
-		return this.Roshan_ = (this.EntityByIndex(this.Roshan_) ?? this.Roshan_ ?? AllEntities.find(ent => ent instanceof Roshan))
+		return this.Roshan_ = (this.EntityByIndex(this.Roshan_ as number)
+			?? this.Roshan_
+			?? AllEntities.find(ent => ent instanceof Roshan))
 	}
-	set Roshan(ent: Entity | number) {
+	set Roshan(ent: Nullable<Entity | number>) {
 		this.Roshan_ = ent
 	}
-	get LocalPlayer(): Player {
+	get LocalPlayer(): Nullable<Player> {
 		return LocalPlayer
 	}
-	get LocalHero(): Hero {
+	get LocalHero(): Nullable<Hero> {
 		return LocalPlayer !== undefined ? LocalPlayer.Hero : undefined
 	}
 	get AllEntities(): Entity[] {
 		return AllEntities
 	}
-	public EntityByIndex(index: number): Entity {
+	public EntityByIndex(index: number): Nullable<Entity> {
 		return this.GetEntityByNative(EntitiesIDs.get(index))
 	}
-	public EntityByHandle(handle: number): Entity {
+	public EntityByHandle(handle: number | undefined): Nullable<Entity> {
 		if (handle === undefined || handle === 0)
 			return undefined
 		let index = handle & 0x3FFF
@@ -79,35 +79,39 @@ const EntityManager = new (class EntityManager {
 		for (let [index, ent_] of EntitiesIDs.entries())
 			if (ent === ent_)
 				return index
-		return undefined
+		return -1
 	}
-	public GetPlayerByID(playerID: number): Player {
+	public GetPlayerByID(playerID: number): Nullable<Player> {
 		if (playerID === -1)
 			return undefined
 		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player
 	}
 
-	public GetEntityByNative(ent: C_BaseEntity | number): Entity {
+	public GetEntityByNative(ent: CEntityIndex): Nullable<Entity> {
 		if (ent === undefined)
 			return undefined
+
 		if (!(ent instanceof C_BaseEntity))
 			return this.EntityByIndex(ent)
 
 		return AllEntitiesAsMap.get(ent)
 	}
 
-	public GetEntityByFilter(filter: (ent: Entity) => boolean): Entity {
+	public GetEntityByFilter(filter: (ent: Entity) => boolean): Nullable<Entity> {
 		return AllEntities.find(filter)
 	}
 
-	public GetEntitiesByNative(ents: (C_BaseEntity | Entity | number)[], inStage: boolean = false): (Entity | any)[] {
+	public GetEntitiesByNative(ents: (CEntityIndex | Entity)[]): (Entity | C_BaseEntity | undefined)[] {
 		// loop-optimizer: FORWARD
 		return ents.map(ent => {
-			if (ent instanceof Entity)
+
+			if (ent === undefined || ent instanceof Entity)
 				return ent
+
 			if (!(ent instanceof C_BaseEntity))
 				return this.EntityByIndex(ent)
-			return AllEntitiesAsMap.get(ent) || ent
+
+			return AllEntitiesAsMap.get(ent) ?? ent
 		})
 	}
 
@@ -126,10 +130,10 @@ const EntityManager = new (class EntityManager {
 		switch (flags) {
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY:
 				// loop-optimizer: FORWARD
-				return ClassToEntities.get(class_).filter(e => !e.IsEnemy()) as []
+				return ClassToEntities.get(class_)!.filter(e => !e.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY:
 				// loop-optimizer: FORWARD
-				return ClassToEntities.get(class_).filter(e => e.IsEnemy()) as []
+				return ClassToEntities.get(class_)!.filter(e => e.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH:
 				return ClassToEntities.get(class_) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_CUSTOM:
@@ -148,11 +152,13 @@ const EntityManager = new (class EntityManager {
 		classes.forEach(class_ => ar.push(...this.GetEntitiesByClass(class_, flags)))
 		return [...new Set(ar)]
 	}
-})()
+}
 
-globalThis.GetEntityClassByName = name => GetSDKClasses().find(c => (c as Function).name === name)
+const _EntityManager = new EntityManager()
 
-export default globalThis.EntityManager = EntityManager
+export default _EntityManager
+
+globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Function).name === name)
 
 Events.on("EntityCreated", (ent, index) => {
 	{ // add globals
@@ -199,8 +205,8 @@ let last_event_ent = -1
 Events.on("GameEvent", (name, obj) => {
 	if (name === "npc_spawned")
 		last_event_ent = obj.entindex
-	else if (name === "dota_item_spawned" && obj.player_id === -1 && last_event_ent !== -1 && EntityManager.Roshan === undefined)
-		EntityManager.Roshan = last_event_ent
+	else if (name === "dota_item_spawned" && obj.player_id === -1 && last_event_ent !== -1 && _EntityManager.Roshan === undefined)
+		_EntityManager.Roshan = last_event_ent
 	else
 		last_event_ent = -1
 })
@@ -237,7 +243,8 @@ function AddToCache(ent: C_BaseEntity, already_valid = false) {
 			return
 		if (!ClassToEntities.has(class_))
 			ClassToEntities.set(class_, [])
-		ClassToEntities.get(class_).push(entity)
+
+		ClassToEntities.get(class_)!.push(entity)
 	})
 	EventsSDK.emit("EntityCreated", false, entity)
 	FireEntityEvents(entity)
@@ -250,7 +257,6 @@ setInterval(() => {
 	if (old_val && !Game.IsConnected) {
 		gameInProgress = false
 		EventsSDK.emit("GameEnded", false)
-		ExecuteOrder.order_queue = []
 		Particles.DeleteAll()
 	} else if (!gameInProgress && Game.IsConnected && Game.IsInGame && LocalPlayer !== undefined && LocalPlayer.HeroAssigned) {
 		gameInProgress = true
@@ -268,6 +274,10 @@ function DeleteFromCache(entNative: C_BaseEntity) {
 
 	const entity = AllEntitiesAsMap.get(entNative)
 
+	if (entity === undefined) {
+		return
+	}
+
 	entity.IsValid = false
 
 	AllEntitiesAsMap.delete(entNative)
@@ -278,9 +288,12 @@ function DeleteFromCache(entNative: C_BaseEntity) {
 	GetSDKClasses().forEach(class_ => {
 		if (!(entity instanceof class_))
 			return
-		if (!ClassToEntities.has(class_))
+
+		let classToEnt = ClassToEntities.get(class_)
+
+		if (!classToEnt)
 			return
-		ArrayExtensions.arrayRemove(ClassToEntities.get(class_), entity)
+		ArrayExtensions.arrayRemove(classToEnt, entity)
 	})
 }
 

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Base } from "./Extends/Helper"
 import LinaAbility from "./Extends/Abilities"
 import { Color, RendererSDK, Vector2, LocalPlayer, Game, DOTAGameUIState_t } from "wrapper/Imports"

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Hero, Item } from "wrapper/Imports"
 import { ItemBase } from "../../Base/Items"
 export default class ShadowFiendItems extends ItemBase {
@@ -5,7 +6,10 @@ export default class ShadowFiendItems extends ItemBase {
 		super(unit)
 	}
 	// tested
-	public get AeonDisc(): Item {
-		return this.unit.GetItemByName("item_combo_breaker")
+	public get AeonDisc(): Nullable<Item> {
+		let name = "item_combo_breaker"
+		if (this.unit === undefined)
+			return name as any
+		return this.unit.GetItemByName(name)
 	}
 }

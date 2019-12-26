@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Game, Hero, Menu, EntityManager, Vector3 } from "wrapper/Imports"
 import { MyHero, initAbilityMap, initItemsMap, initItemsTargetMap, ProjList } from "../Listeners"
 import { AbilityMenu, BadUltItem, BadUltMovementSpeedItem, ComboBreak, ComboStartWith, Items as ItemsSDK, SmartConShotOnlyTarget } from "../Menu"

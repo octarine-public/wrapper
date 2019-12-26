@@ -113,7 +113,7 @@ function GetAbilArray(abilNameToSearch: string) {
 
 function Disable(Me: Hero, hero: Unit, DisableAr: [string, boolean, boolean?][], Abil?: Ability): boolean {
 	let delta = Me.GetRotationTime(hero.Position) / 1000 + Additionaldelay.value
-	let AbilAr: [string, boolean, boolean?]
+	let AbilAr: [string, boolean, boolean?] | undefined
 	if (hero === Me)
 		return false
 	if (
@@ -147,8 +147,7 @@ function Disable(Me: Hero, hero: Unit, DisableAr: [string, boolean, boolean?][],
 EventsSDK.on("Tick", () => {
 	if (!MenuState.value)
 		return
-	const Me = LocalPlayer,
-		hero = Me.Hero
+	let hero = LocalPlayer!.Hero
 	if (hero === undefined || !hero.IsAlive || hero.IsStunned)
 		return
 	let current_time = Game.RawGameTime
@@ -161,8 +160,8 @@ EventsSDK.on("Tick", () => {
 	if (needed_heroes.some(hero_ =>
 		!ignore_heroes.has(hero_)
 		&& (
-			hero_.Spells.some(abil => abil && Disable(hero, hero_, Abils, abil))
-			|| hero_.Buffs.some(buff => DisableBuffs.includes(buff.Name) && Disable(Me.Hero, hero_, BuffsDisablers))
+			hero_.Spells.some(abil => abil && Disable(hero!, hero_, Abils, abil))
+			|| hero_.Buffs.some(buff => DisableBuffs.includes(buff.Name) && Disable(hero!, hero_, BuffsDisablers))
 		),
 	))
 		return

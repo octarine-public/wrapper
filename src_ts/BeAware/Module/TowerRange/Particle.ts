@@ -15,9 +15,12 @@ export function Destroy(ent: Entity) {
 
 function DrawTarget(ent: Tower, Owner: Unit) {
 	if (Owner !== undefined && ent.IsAlive) {
-		ParticlesSDK.SetControlPoint(pars.get(ent), 2, ent.Position)
-		ParticlesSDK.SetControlPoint(pars.get(ent), 6, new Vector3(10))
-		ParticlesSDK.SetControlPoint(pars.get(ent), 7, Owner.Position)
+		let par = pars.get(ent)
+		if (par === undefined)
+			return
+		ParticlesSDK.SetControlPoint(par, 2, ent.Position)
+		ParticlesSDK.SetControlPoint(par, 6, new Vector3(10))
+		ParticlesSDK.SetControlPoint(par, 7, Owner.Position)
 	}
 }
 
@@ -27,7 +30,7 @@ function CreateTowerRange(ent: Tower) {
 	TowerRange.set(ent, par)
 	return par
 }
-function SwicthTowers(particle_range: number, tower: Tower) {
+function SwicthTowers(particle_range: number | undefined, tower: Tower) {
 	if (particle_range === undefined)
 		return
 	ParticlesSDK.Destroy(particle_range)
@@ -51,7 +54,9 @@ State.OnValue(x => {
 	// loop-optimizer: KEEP
 	Towers.forEach((tower, particle_range) => {
 		SwicthTowers(particle_range, tower)
-		RemoveTarget(pars.get(tower), tower)
+		let par = pars.get(tower)
+		if (par !== undefined)
+			RemoveTarget(par, tower)
 	})
 })
 
@@ -90,11 +95,12 @@ export function OnDraw() {
 		let particle = pars.get(tower)
 		if (tower.TowerAttackTarget === undefined || !tower.IsAlive ||
 			tower.Distance2D(tower.TowerAttackTarget.Position) >= tower.AttackRange + tower.HullRadius + 25) {
-			RemoveTarget(particle, tower)
+			if (particle !== undefined)
+				RemoveTarget(particle, tower)
 			return
 		}
 		if (particle === undefined) {
-			let par: number
+			let par: number | undefined
 			switch (TowerSwitcher.selected_id) {
 				case 0:
 					if (tower.IsEnemy())
@@ -115,6 +121,7 @@ export function OnDraw() {
 			DrawTarget(tower, tower.TowerAttackTarget)
 	})
 }
+
 export function Init() {
 	Towers = []
 	pars.clear()

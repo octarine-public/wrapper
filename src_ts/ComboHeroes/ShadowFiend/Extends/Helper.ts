@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Game, Menu, Unit, EntityManager, Hero } from "wrapper/Imports"
 import { Owner } from "../Listeners"
 class ShadowFiendHelper {
@@ -29,7 +30,7 @@ class ShadowFiendHelper {
 		return target.HasBuffByName("modifier_item_aeon_disk_buff")
 	}
 	public IsLinkensProtected(target: Unit) {
-		var Linken = target.GetItemByName("item_sphere");
+		var Linken = target.GetItemByName("item_sphere")
 		return (Linken && Linken.IsCooldownReady) || target.HasBuffByName("modifier_item_sphere_target")
 	}
 	public IsBlockingAbilities(target: Unit, checkReflecting: boolean = false): boolean {

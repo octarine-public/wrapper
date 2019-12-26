@@ -1,7 +1,7 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import { QAngle } from "../Imports"
+import QAngle from "../Base/QAngle"
 import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
 import Events from "../Managers/Events"
@@ -20,8 +20,10 @@ enum CommandID {
 	IMAGE,
 	TEXT,
 }
+// NOTICE: moofMonkey, need fix fromIOBuffer
+
 let RendererSDK_ = new (class RendererSDK {
-	private static StringToUTF16(str): Uint8Array {
+	private static StringToUTF16(str: string): Uint8Array {
 		let buf = new Uint16Array(str.length)
 		for (let i = str.length; i--;)
 			buf[i] = str.charCodeAt(i)
@@ -53,14 +55,14 @@ let RendererSDK_ = new (class RendererSDK {
 	 */
 	public get WindowSize(): Vector2 {
 		if (!WindowSize.IsValid)
-			Vector2.fromIOBuffer(Renderer.WindowSize).CopyTo(WindowSize)
+			Vector2.fromIOBuffer(Renderer.WindowSize)!.CopyTo(WindowSize)
 		return WindowSize.Clone()
 	}
 	/**
 	 * @param pos world position that needs to be turned to screen position
 	 * @returns screen position, or undefined
 	 */
-	public WorldToScreen(position: Vector2 | Vector3): Vector2 {
+	public WorldToScreen(position: Vector2 | Vector3): Nullable<Vector2> {
 		if (this.AlternateW2S) {
 			let vec = WASM.WorldToScreenCached(position)
 			if (vec !== undefined)
@@ -76,7 +78,7 @@ let RendererSDK_ = new (class RendererSDK {
 	/**
 	 * @returns screen position with x and y in range {0, 1}, or undefined
 	 */
-	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1134, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Vector2 {
+	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1134, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Nullable<Vector2> {
 		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)
 	}
 	/**
@@ -216,7 +218,7 @@ let RendererSDK_ = new (class RendererSDK {
 
 		let texture_id = this.GetTexture(path) // better put it BEFORE new command
 		if (vecSize.x <= 0 || vecSize.y <= 0) {
-			let size = this.tex2size.get(texture_id)
+			let size = this.tex2size.get(texture_id)!
 			if (vecSize.x <= 0)
 				vecSize.x = size.x
 			if (vecSize.y <= 0)
@@ -257,7 +259,7 @@ let RendererSDK_ = new (class RendererSDK {
 	public GetTextSize(text: string, font_name = "Calibri", font: Vector2 | number = this.DefaultTextSize, flags = FontFlags_t.OUTLINE): Vector2 {
 		if (!(font instanceof Vector2))
 			font = new Vector2(font, this.DefaultTextSize.y)
-		return Vector2.fromIOBuffer(Renderer.GetTextSize(text, this.GetFont(font_name, font, flags)))
+		return Vector2.fromIOBuffer(Renderer.GetTextSize(text, this.GetFont(font_name, font, flags)))!
 	}
 	/**
 	 * @param color default: Yellow
@@ -372,7 +374,7 @@ let RendererSDK_ = new (class RendererSDK {
 		}
 		let font_id = weight_map.get(flags)
 		if (font_id === undefined) {
-			let font_id = Renderer.CreateFontID()
+			font_id = Renderer.CreateFontID()
 			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
 			weight_map.set(flags, font_id)
 		}
@@ -405,6 +407,6 @@ let RendererSDK_ = new (class RendererSDK {
 	}
 })()
 
-Events.after("Draw", () => WindowSize = Vector2.fromIOBuffer(Renderer.WindowSize))
+Events.after("Draw", () => WindowSize = Vector2.fromIOBuffer(Renderer.WindowSize)!)
 
-export default globalThis.RendererSDK = RendererSDK_
+export default RendererSDK_

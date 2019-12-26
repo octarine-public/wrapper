@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Menu as MenuSDK, Color, Parse, Utils } from "wrapper/Imports"
 
 import InitItems from "./Extends/Items"

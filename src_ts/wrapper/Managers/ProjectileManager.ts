@@ -30,10 +30,12 @@ EventsSDK.on("GameEnded", () => {
 
 function TrackingProjectileCreated(proj: number, projectile: TrackingProjectile) {
 	projectile.Position.Extend(projectile.TargetLoc, (Game.CurrentServerTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
-	EventsSDK.emit("TrackingProjectileCreated", false, projectile);
-	ProjectileManager.AllTrackingProjectiles.push(projectile);
+	EventsSDK.emit("TrackingProjectileCreated", false, projectile)
+	ProjectileManager.AllTrackingProjectiles.push(projectile)
 	ProjectileManager.AllTrackingProjectilesMap.set(proj, projectile)
 }
+
+// NOTICE: moofMonkey, need fix fromIOBuffer
 
 Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceAttachment, path, particleSystemHandle, dodgeable, isAttack, expireTime, maximpacttime, launch_tick) => {
 	let projectile = new TrackingProjectile(
@@ -53,11 +55,11 @@ Events.on("TrackingProjectileCreated", (proj, source, target, moveSpeed, sourceA
 		expireTime,
 		maximpacttime,
 		launch_tick,
-		Vector3.fromIOBuffer(),
-		Color.fromIOBuffer(3),
-	);
+		Vector3.fromIOBuffer()!,
+		Color.fromIOBuffer(true, 3)!,
+	)
 
-	TrackingProjectileCreated(proj, projectile);
+	TrackingProjectileCreated(proj, projectile)
 })
 
 Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particleSystemHandle, dodgeable, isAttack, expireTime, launch_tick) => {
@@ -79,12 +81,12 @@ Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particle
 			expireTime,
 			undefined,
 			launch_tick,
-			Vector3.fromIOBuffer(true, 3),
-			Color.fromIOBuffer(6),
-		);
-		projectile.Position.CopyFrom(Vector3.fromIOBuffer())
+			Vector3.fromIOBuffer(true, 3)!,
+			Color.fromIOBuffer(true, 6)!
+		)
+		projectile!.Position.CopyFrom(Vector3.fromIOBuffer()!)
 
-		TrackingProjectileCreated(proj, projectile);
+		TrackingProjectileCreated(proj, projectile!)
 	}
 
 	projectile.Update(
@@ -98,7 +100,7 @@ Events.on("TrackingProjectileUpdated", (proj, hTarget, moveSpeed, path, particle
 		isAttack,
 		expireTime,
 		launch_tick,
-		Vector3.fromIOBuffer(true, 3),
+		Vector3.fromIOBuffer(true, 3)!,
 	)
 	EventsSDK.emit("TrackingProjectileUpdated", false, projectile)
 })
@@ -139,10 +141,10 @@ Events.on("LinearProjectileCreated", (proj, ent, path, particleSystemHandle, max
 		fow_radius,
 		sticky_fow_reveal,
 		distance,
-		Vector3.fromIOBuffer(),
-		Vector2.fromIOBuffer(true, 3),
-		Vector2.fromIOBuffer(true, 5),
-		Color.fromIOBuffer(7),
+		Vector3.fromIOBuffer()!,
+		Vector2.fromIOBuffer(true, 3)!,
+		Vector2.fromIOBuffer(true, 5)!,
+		Color.fromIOBuffer(true, 7)!,
 	)
 	EventsSDK.emit("LinearProjectileCreated", false, projectile)
 	ProjectileManager.AllLinearProjectiles.push(projectile)

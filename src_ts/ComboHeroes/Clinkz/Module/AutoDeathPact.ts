@@ -1,7 +1,8 @@
-import { TickSleeper, EntityManager, Creep } from "wrapper/Imports";
+//@ts-nocheck
+import { TickSleeper, EntityManager, Creep } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { State, AutoDeathPactState } from "../Menu";
-import { Owner, initAbilityMap, initItemsMap } from "../Listeners";
+import { State, AutoDeathPactState } from "../Menu"
+import { Owner, initAbilityMap, initItemsMap } from "../Listeners"
 
 let Sleep = new TickSleeper
 export function InitAutoDeathPact() {

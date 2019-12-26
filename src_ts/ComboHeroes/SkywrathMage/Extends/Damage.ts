@@ -1,3 +1,4 @@
+//@ts-nocheck
 class Damage {
 	public GetSpellDamage(damage: number, amplify: number = 0, reduction: number = 0): number {
 		return damage * (1 + amplify) * (1 - reduction)

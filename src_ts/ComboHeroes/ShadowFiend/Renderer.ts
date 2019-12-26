@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Base } from "./Extends/Helper"
 import { LocalPlayer, Color, Ability, Hero, EntityManager } from "wrapper/Imports"
 import { MouseTarget, Owner, initDrawMap, initItemsMap, initAbilityMap } from "./Listeners"
@@ -68,7 +69,7 @@ export function Draw() {
 			raze_3 ? Color.Green : ShadowRaze3RadiusColor.Color,
 			Owner.InFront(Abilities.Shadowraze3.CastRange)
 		)
-		return raze_1 || raze_2 || raze_3;
+		return raze_1 || raze_2 || raze_3
 	})
 }
 /*

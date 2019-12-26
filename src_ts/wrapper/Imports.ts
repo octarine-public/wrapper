@@ -13,13 +13,12 @@ export { dotaunitorder_t } from "./Enums/dotaunitorder_t"
 
 import * as ArrayExtensions from "./Utils/ArrayExtensions"
 import * as BitsExtensions from "./Utils/BitsExtensions"
-import * as Debug from "./Utils/Debug"
 import * as MapExtensions from "./Utils/MapExtensions"
 import * as MathSDK from "./Utils/Math"
 import * as Parse from "./Utils/ParseKV"
 import * as Utils from "./Utils/Utils"
 export { default as Benchmark } from "./Utils/BenchMark"
-export { Utils, MathSDK, Debug, ArrayExtensions, BitsExtensions, MapExtensions, Parse }
+export { Utils, MathSDK, ArrayExtensions, BitsExtensions, MapExtensions, Parse }
 
 export { default as Vector2 } from "./Base/Vector2"
 export { default as Rectangle } from "./Base/Rectangle"
@@ -82,6 +81,8 @@ export { default as WardTrueSight } from "./Objects/Base/WardTrueSight"
 
 export { LinearProjectile, TrackingProjectile } from "./Objects/Base/Projectile"
 export { default as ProjectileManager } from "./Managers/ProjectileManager"
+
+import "./global"
 
 /*
 	TODO:

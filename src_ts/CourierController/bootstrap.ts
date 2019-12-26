@@ -7,17 +7,20 @@ import { AutoSafe } from "./module/AutoSafe"
 import { AutoDeliver } from "./module/AutoDeliver"
 //import { AutoUseItems } from "./module/AutoUseItems"
 import { MoveCourier, CourierBestPosition } from "./module/BestPosition"
-export let Owner: Hero
+export let Owner: Nullable<Hero>
 export const Sleep = new TickSleeper
 export const BestPosSleep = new TickSleeper
 export let UnitAnimation: Unit[] = []
-export let OwnerIsValid = () => Game.IsInGame && Owner?.IsAlive && !LocalPlayer.IsSpectator
+export let OwnerIsValid = () => Game.IsInGame && Owner?.IsAlive && !LocalPlayer!.IsSpectator
 //export let AutoUseCourierPosition: Map<number, Vector3> = new Map()
 
 function SharedFilter(number: number, obj: any) {
-	// loop-optimizer: KEEP
+	if (CourierBase.roles.length === 0)
+		return
 	return CourierBase.roles[number] = (obj as CSODOTALobby).members
+		// loop-optimizer: KEEP
 		.filter(member => member.id === LocalPlayer?.PlayerSteamID && LocalPlayer?.PlayerSteamID >= 0)
+		// loop-optimizer: KEEP
 		.map(member => member.lane_selection_flags)
 }
 

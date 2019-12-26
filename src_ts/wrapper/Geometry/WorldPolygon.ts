@@ -16,10 +16,13 @@ export class WorldPolygon {
 			this.AddPoint(polygon)
 	}
 	public Draw(color: Color, width = 1): void {
+		let cam_pos = Vector3.fromIOBuffer(Camera.Position)!,
+			cam_ang = QAngle.fromIOBuffer(Camera.Angles)!,
+			cam_dist = Camera.Distance ?? 1134
 		for (let i = 0, end = this.Points.length; i < end; i++) {
 			let j = i + 1 % end
-			let pos1 = RendererSDK.WorldToScreen(this.Points[i]),
-				pos2 = RendererSDK.WorldToScreen(this.Points[j])
+			let pos1 = RendererSDK.WorldToScreenCustom(this.Points[i], cam_pos, cam_dist, cam_ang)!,
+				pos2 = RendererSDK.WorldToScreenCustom(this.Points[j], cam_pos, cam_dist, cam_ang)!
 			RendererSDK.Line(pos1, pos2.Subtract(pos1), color)
 		}
 	}

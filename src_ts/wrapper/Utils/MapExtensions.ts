@@ -6,7 +6,7 @@ export function addArrayInMap<K, V>(map: Map<K, V[]>, key: K, value: V): void {
 	map.set(key, values)
 }
 
-export function findArrayInMap<K, V>(map: Map<K, V[]>, key: K, find: V | ((value: V) => boolean)): V {
+export function findArrayInMap<K, V>(map: Map<K, V[]>, key: K, find: V | ((value: V) => boolean)): V | undefined {
 	const values = map.get(key)
 
 	if (values === undefined)

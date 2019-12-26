@@ -8,7 +8,7 @@ export function Tick() {
 	if (!StateBase.value || !State.value || Sleep.Sleeping || Player === undefined) {
 		return
 	}
-	let Time = LocalPlayer.Team === Team.Radiant
+	let Time = LocalPlayer!.Team === Team.Radiant
 		? Game.GlyphCooldownRediant
 		: Game.GlyphCooldownDire
 	if (Time !== 0) {

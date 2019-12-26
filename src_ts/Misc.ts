@@ -37,9 +37,13 @@ humanizer.AddToggle("wait_next_usercmd", false).OnValue(toggle => ExecuteOrder.w
 humanizer.AddToggle("wait_near_cursor", false).OnValue(toggle => ExecuteOrder.wait_near_cursor = toggle.value)
 humanizer.AddToggle("debug_orders", false).OnValue(toggle => ExecuteOrder.debug_orders = toggle.value)
 
+declare global {
+	var reload: (a1: string, a2: boolean) => void
+}
+
 function ReloadScripts() {
 	EventsSDK.emit("GameEnded", false)
-	globalThis.reload("eTE9Te5rgBYThsO", true)
+	reload("eTE9Te5rgBYThsO", true)
 }
 
 Menu.AddButton("Reload Scripts").OnValue(ReloadScripts)
@@ -106,7 +110,7 @@ function waitAcceptOn() {
 		return
 	}
 
-	let elepsedTime = (Date.now() - timeCreate) / 1000
+	let elepsedTime = (hrtime() - timeCreate) / 1000
 
 	if (elepsedTime > AutoAccept_delay.max) {
 		timeCreate = -1
@@ -127,8 +131,7 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 	let lobby = obj as CSODOTALobby
 
 	if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1) {
-
-		timeCreate = Date.now()
+		timeCreate = hrtime()
 		waitAcceptOn()
 	} else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1) {
 		timeCreate = -1

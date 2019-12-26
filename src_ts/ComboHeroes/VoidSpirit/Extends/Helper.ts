@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Game, Menu, EntityManager, Hero } from "wrapper/Imports"
 import { Owner } from "../Listeners"
 

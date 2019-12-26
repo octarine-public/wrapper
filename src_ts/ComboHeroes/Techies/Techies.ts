@@ -42,7 +42,10 @@ function RemoveMine(rmine: Unit) {
 }
 
 function ExplodeMine(rmine: Unit) {
-	rmine.CastNoTarget(rmine.GetAbilityByName("techies_remote_mines_self_detonate"), false)
+	let self_detonate = rmine.GetAbilityByName("techies_remote_mines_self_detonate")
+	if (self_detonate === undefined)
+		return
+	rmine.CastNoTarget(self_detonate, false)
 	RemoveMine(rmine)
 }
 
@@ -144,7 +147,7 @@ EventsSDK.on("Tick", () => {
 			CallMines(
 				ent,
 				rmine => NeedToTriggerMine(rmine, ent, true),
-				() => techies.CastTarget(force, ent, false),
+				() => techies.CastTarget(force!, ent, false),
 			)
 	})
 })
@@ -205,7 +208,7 @@ EventsSDK.on("PrepareUnitOrders", args => {
 	)
 		return true
 	const ents = EntityManager.GetEntitiesInRange(args.Position, auto_stack_range.value)
-	var minePos: Vector3
+	var minePos = new Vector3()
 	if (ents.some(ent => {
 		const isMine = ent instanceof Unit && ent.Name === "npc_dota_techies_remote_mine" && ent.IsAlive
 		if (isMine)
@@ -214,7 +217,7 @@ EventsSDK.on("PrepareUnitOrders", args => {
 	})) {
 		if (minePos.Equals(args.Position))
 			return true
-		args.Unit.CastPosition(args.Ability, minePos, args.Queue, args.ShowEffects)
+		args.Unit!.CastPosition(args.Ability, minePos!, args.Queue, args.ShowEffects)
 		return false
 	}
 	return true
@@ -236,7 +239,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 		ArrayExtensions.arrayRemove(heroes, ent)
 	else if (ent instanceof Unit && ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines && ent.Name === "npc_dota_techies_remote_mine") {
 		if (particles.has(ent))
-			ParticlesSDK.Destroy(particles.get(ent), true)
+			ParticlesSDK.Destroy(particles.get(ent)!, true)
 		RemoveMine(ent)
 	}
 })

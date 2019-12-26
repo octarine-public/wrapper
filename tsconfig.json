@@ -5,7 +5,8 @@
 		"baseUrl": "src",
 		// Don't emit; allow Babel to transform files.
 		"noEmit": true,
-		"noUnusedLocals": true
+		"noUnusedLocals": true,
+		"strict": true
 	},
 	"include": [
 		"*.d.ts",

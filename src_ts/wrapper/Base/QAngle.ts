@@ -5,4 +5,3 @@ export default class QAngle extends Vector3 {
 		return "QAngle(" + this.x + "," + this.y + "," + this.z + ")"
 	}
 }
-globalThis.QAngle = QAngle

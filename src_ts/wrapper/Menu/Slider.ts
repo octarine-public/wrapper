@@ -16,7 +16,7 @@ export default class Slider extends Base {
 	protected readonly slider_filler_color = new Color(14, 99, 152)
 	protected readonly value_text_offset = new Vector2(10, 10)
 
-	constructor(parent: IMenu, name: string, default_value = 0, min = 0, max = 100, float?: boolean, tooltip?: string) {
+	constructor(parent: IMenu, name: string, default_value = 0, min = 0, max = 100, float: boolean = false, tooltip?: string) {
 		super(parent, name)
 		this.value = default_value
 		this.min = min

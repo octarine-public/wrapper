@@ -5,7 +5,7 @@ import { Team } from "../../Enums/Team"
 import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager"
 import { DegreesToRadian } from "../../Utils/Math"
 
-export const rotation_speed = {
+export const rotation_speed: { [name: string]: number } = {
 	npc_dota_hero_base: 0.5,
 	npc_dota_hero_antimage: 0.5,
 	npc_dota_hero_axe: 0.6,
@@ -135,48 +135,65 @@ m_pEntity.m_flags
 */
 export default class Entity {
 	/* ================================ Fields ================================ */
-	public IsValid: boolean = false
-	public Name_: string = ""
-	public readonly Entity: CEntityIdentity
+
+	public readonly Entity: Nullable<CEntityIdentity>
 	public readonly Index: number
-	public Owner_: Entity | C_BaseEntity | number
-	public Team = Team.None
-	public LifeState = LifeState_t.LIFE_ALIVE
+	public Owner_: Entity | CEntityIndex
+
+	public IsValid: boolean = false
+	public IsVisible = true
+	public Name_ = ""
+
+	public Team = Team.None;
+	public LifeState = LifeState_t.LIFE_ALIVE;
 	public HP = 0
 	public MaxHP = 0
-	public IsVisible = true
+
 	private readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
 	private readonly Angles_ = new QAngle().Invalidate() // cached angles
 	private readonly NetworkAngles_ = new QAngle().Invalidate()// cached network angles
 
-	/* ================================ BASE ================================ */
-	constructor(public m_pBaseEntity: C_BaseEntity) {
+	constructor(public readonly m_pBaseEntity: C_BaseEntity) {
 		this.Entity = this.m_pBaseEntity.m_pEntity
-		this.Index = EntityManager.IndexByNative(m_pBaseEntity)
+		this.Index = EntityManager.IndexByNative(this.m_pBaseEntity)
+		this.Owner_ = this.m_pBaseEntity.m_hOwnerEntity
+
 		this.MaxHP = this.m_pBaseEntity.m_iMaxHealth
 		this.HP = this.m_pBaseEntity.m_iHealth
 		this.LifeState = this.m_pBaseEntity.m_lifeState
 		this.Team = this.m_pBaseEntity.m_iTeamNum
-		this.Owner_ = this.m_pBaseEntity.m_hOwnerEntity
-		if (this.Entity !== undefined)
-			this.Name_ = this.Entity.m_name ?? this.Entity.m_designerName ?? ""
+
+		this.Name_ = this.Entity?.m_name ?? this.Entity?.m_designerName ?? ""
 	}
 
 	/* ================ GETTERS ================ */
 	public get Name(): string {
 		return this.Name_
 	}
-	public get Owner(): Entity | undefined { // trick to make it public ro, and protected rw
-		return this.Owner_ instanceof Entity ? this.Owner_ : (this.Owner_ = EntityManager.GetEntityByNative(this.Owner_) || EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOwnerEntity))
+	public get Owner(): Nullable<Entity> { // trick to make it public ro, and protected rw
+		if (this.Owner_ instanceof Entity)
+			return this.Owner_
+
+		this.Owner_ = EntityManager.GetEntityByNative(this.Owner_) as Entity || this.Owner_
+
+		if (this.Owner_ instanceof Entity)
+			return this.Owner_
+
+		return undefined
 	}
-	public get RootOwner(): Entity | undefined {
+	public get RootOwner(): Nullable<Entity> {
 		let owner = this.Owner
-		if (owner === undefined) // special case since we don't want to return this as owner
+
+		// special case since we don't want to return this as owner
+		if (owner === undefined)
 			return undefined
+
 		while (true) {
-			let root_owner = owner.Owner
+			let root_owner = owner.Owner as Nullable<Entity>
+
 			if (root_owner === undefined)
 				break
+
 			owner = root_owner
 		}
 		return owner
@@ -230,12 +247,12 @@ export default class Entity {
 		return this.m_pBaseEntity.m_flSpeed
 	}
 	public get Flags(): number {
-		if (!this.IsValid)
+		if (!this.IsValid || this.Entity === undefined)
 			return -1
 		return this.Entity.m_flags
 	}
 	public set Flags(value: number) {
-		if (!this.IsValid)
+		if (!this.IsValid || this.Entity === undefined)
 			return
 		this.Entity.m_flags = value
 	}
@@ -303,7 +320,7 @@ export default class Entity {
 	public Closest(ents: Entity[]): Entity {
 		let thisPos = this.Position
 
-		let entity: Entity
+		let entity: Nullable<Entity>
 		let distance = Number.POSITIVE_INFINITY
 
 		ents.forEach(ent => {
@@ -313,7 +330,8 @@ export default class Entity {
 				entity = ent
 			}
 		})
-		return entity
+
+		return entity as Entity
 	}
 	/**
 	 * @example
@@ -341,7 +359,7 @@ export default class Entity {
 	/**
 	 * @param ent if undefined => this compare with LocalPlayer
 	 */
-	public IsEnemy(ent: Entity = LocalPlayer): boolean {
+	public IsEnemy(ent: Nullable<Entity> = LocalPlayer): boolean {
 		return ent === undefined || ent.Team !== this.Team
 	}
 
@@ -363,7 +381,7 @@ export default class Entity {
 		let gameSceneNode = this.GameSceneNode
 		if (gameSceneNode === undefined)
 			return
-		QAngle.fromIOBuffer(gameSceneNode.m_angRotation).CopyTo(this.NetworkAngles_).CopyTo(this.Angles_)
+		QAngle.fromIOBuffer(gameSceneNode.m_angRotation)?.CopyTo(this.NetworkAngles_).CopyTo(this.Angles_)
 	}
 	public OnCreated() {
 		this.IsValid = true

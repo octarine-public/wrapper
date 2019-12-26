@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Game, Hero, Menu, EntityManager } from "wrapper/Imports"
 import { Owner, initItemsTargetMap } from "../Listeners"
 import { AeonDiscItem } from "../Menu"

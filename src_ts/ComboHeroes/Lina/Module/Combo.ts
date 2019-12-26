@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Hero, Flow_t, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, Owner, initItemsMap, initAbilityMap, initHitAndRunMap } from "../Listeners"

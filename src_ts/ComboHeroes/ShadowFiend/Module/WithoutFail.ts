@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, ExecuteOrder, Unit, dotaunitorder_t, EntityManager, Hero, Creep } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { initAbilityMap, Owner } from "../Listeners"
@@ -24,9 +25,9 @@ export function OnExecuteOrder(order: ExecuteOrder): boolean {
 		return true
 	}
 	let Abilities = initAbilityMap.get(Owner)
-	if (Abilities === undefined || ability.Level <= 0) {
+	if (Abilities === undefined || ability.Level === 0)
 		return true
-	}
+
 	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(enemy => {
 		if (!enemy.IsVisible)
 			return false

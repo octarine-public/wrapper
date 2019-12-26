@@ -1,7 +1,7 @@
 import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
-import { ArrayExtensions } from "../Imports"
+import { arrayRemove } from "../Utils/ArrayExtensions"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
@@ -179,7 +179,7 @@ export default class KeyBind extends Base {
 		"Right Menu key", // VK_RMENU
 	]
 	public static readonly callbacks = new Map<number, KeyBind[]>()
-	public static changing_now: KeyBind
+	public static changing_now?: KeyBind
 
 	public is_pressed = false
 	public activates_in_menu = false
@@ -226,7 +226,7 @@ export default class KeyBind extends Base {
 	public Update(assign_key_str = true): void {
 		// loop-optimizer: KEEP
 		KeyBind.callbacks.forEach((keybinds, key) => {
-			if (ArrayExtensions.arrayRemove(keybinds, this) && keybinds.length === 0)
+			if (arrayRemove(keybinds, this) && keybinds.length === 0)
 				KeyBind.callbacks.delete(key)
 		})
 		if (this.assigned_key > 0) {
@@ -235,7 +235,7 @@ export default class KeyBind extends Base {
 				KeyBind.callbacks.set(this.assigned_key, [])
 				ar = KeyBind.callbacks.get(this.assigned_key)
 			}
-			ar.push(this)
+			ar!.push(this)
 		}
 		if (assign_key_str)
 			this.assigned_key_str = this.assigned_key >= KeyBind.KeyNames.length ? "Unknown" : KeyBind.KeyNames[Math.max(this.assigned_key, 0)]
@@ -298,7 +298,7 @@ function KeyHandler(key: number, pressed: boolean): boolean {
 	IsPressing.set(key, pressed)
 
 	onExecute.forEach(keybind => {
-		if (!Game.IsInGame && !keybind.activates_in_menu)
+		if (!Game.IsConnected && !keybind.activates_in_menu)
 			return
 		if (!Menu.trigger_on_chat && Game.IsInputCaptured && !keybind.trigger_on_chat)
 			return

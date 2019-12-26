@@ -3,7 +3,7 @@ import Item from "../../Base/Item"
 export default class item_armlet extends Item {
 	public static readonly ModifierName: string = "modifier_item_armlet_unholy_strength"
 
-	public readonly m_pBaseEntity: C_DOTA_Item_Armlet
+	public readonly m_pBaseEntity!: C_DOTA_Item_Armlet
 
 	public get ToggleCooldown(): number {
 		return this.m_pBaseEntity.toggle_cooldown

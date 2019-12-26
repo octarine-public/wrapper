@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Menu as MenuSDK, Color } from "wrapper/Imports"
 
 import InitAbility from "./Extends/Abilities"
@@ -51,6 +52,7 @@ const Harras = Menu.AddNode("Harass arrow")
 const HarrasHitAndRunTree = Harras.AddNode("HitAndRun")
 export const HarrasHitAndRunAttack = HarrasHitAndRunTree.AddToggle("Auto orb arrow", true)
 export const HarrasTypeHitAndRun = HarrasHitAndRunTree.AddSwitcher("Type Run", ["Run to target", "Run to cursor", "None"])
+//@ts-nocheck
 export const HarrasKey = Harras.AddKeybind("Bind key")
 export const StyleHarras = Harras.AddSwitcher("Key Style", ["Hold key", "Turn on / Turn off"])
 

@@ -1,4 +1,4 @@
-import { Game, Menu, PlayerResource } from "wrapper/Imports"
+import { Game, Menu, EntityManager } from "wrapper/Imports"
 
 const tree = Menu.AddEntry(["Utility", "Bait leave"]),
 	autodisconnect = tree.AddToggle("Auto Disconnect"),
@@ -8,7 +8,7 @@ const tree = Menu.AddEntry(["Utility", "Bait leave"]),
 	gap = "<br>".repeat(75),
 	Language = tree.AddSwitcher("Language", ["Russian", "English"]),
 	button = tree.AddButton("Leave button"),
-	heroes = {
+	heroes: { [name: string]: string } = {
 		npc_dota_hero_queenofpain: "Queen of Pain",
 		npc_dota_hero_antimage: "Anti-Mage",
 		npc_dota_hero_kunkka: "Kunkka",
@@ -128,13 +128,18 @@ const tree = Menu.AddEntry(["Utility", "Bait leave"]),
 
 button.OnValue(() => {
 	let PlayerID = playersList.selected_id,
-		player = PlayerResource.GetPlayerByPlayerID(PlayerID)
-	if (player === undefined)
+		player = EntityManager.GetPlayerByID(PlayerID)
+	if (player === undefined || player.Hero === undefined)
 		return false
 
 	let PlayerName = player.GameName,
 		PlayerHero = heroes[player.Hero.Name],
-		switch_language: string
+		switch_language: string = ""
+
+	if (!PlayerHero) {
+		console.log("[Leaver] Hero name not found")
+		return
+	}
 
 	switch (Language.selected_id) {
 		case 0:

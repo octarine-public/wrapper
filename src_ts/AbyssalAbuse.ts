@@ -18,14 +18,14 @@ function checkAbyss() {
 		return
 	let myHero = LocalPlayer?.Hero
 	const abys = myHero?.GetItemByName("item_abyssal_blade")
-	if (abys !== undefined && myHero.Inventory.HasFreeSlots(0, 9, 2)) {
-		myHero.DisassembleItem(abys, false)
+	if (abys !== undefined && myHero!.Inventory.HasFreeSlots(0, 9, 2)) {
+		myHero!.DisassembleItem(abys, false)
 		waiting_to_reassemble = true
 	}
 }
 const abyss_recipe = ["item_basher", "item_vanguard", "item_recipe_abyssal_blade"]
 EventsSDK.on("Tick", () => {
-	let myHero = LocalPlayer.Hero
+	let myHero = LocalPlayer?.Hero
 	if (!active.value || !Game.IsInGame || !myHero?.IsAlive)
 		return
 	// loop-optimizer: KEEP
@@ -44,11 +44,11 @@ EventsSDK.on("Tick", () => {
 		return
 	}
 	abyss_recipe.forEach(name => {
-		let item = myHero.GetItemByName(name, true)
+		let item = myHero!.GetItemByName(name, true)
 		if (item === undefined)
 			return
 		if (item.IsCombineLocked) {
-			myHero.ItemSetCombineLock(item, false)
+			myHero!.ItemSetCombineLock(item, false)
 			unlocked_items++
 		}
 	})

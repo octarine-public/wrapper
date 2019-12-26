@@ -22,7 +22,7 @@ function EntityCreate(ent: Entity) {
 }
 
 export function Tick() {
-	if (LocalPlayer.IsSpectator || !StateBase.value || !State.value || !Game.IsInGame || Sleep.Sleeping)
+	if (LocalPlayer!.IsSpectator || !StateBase.value || !State.value || !Game.IsInGame || Sleep.Sleeping)
 		return
 	EntityManager.GetEntitiesByClass(Hero).some(hero => IsValidUnit(hero)
 		&& hero.Inventory.GetItemsByNames(Items).filter(item =>

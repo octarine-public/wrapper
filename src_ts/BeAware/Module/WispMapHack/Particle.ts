@@ -1,7 +1,7 @@
 import { Color, RendererSDK, Vector3, Entity } from "wrapper/Imports"
 import { State } from "./Menu"
 
-let wisp: Entity | number,
+let wisp: Entity | number | undefined,
 	pos = new Vector3().Invalidate(),
 	par_id = -1
 
@@ -10,7 +10,7 @@ export function ParticleCreate(id: number, handle: BigInt) {
 		par_id = id
 }
 
-export function ParticleUpdated(id: number, ent: Entity, vector: Vector3) {
+export function ParticleUpdated(id: number, ent: Nullable<Entity>, vector: Vector3) {
 	if (id === par_id || (ent !== undefined && ent.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Wisp && ent.IsEnemy())) {
 		pos = vector
 		wisp = ent as Entity | number

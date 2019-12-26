@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Game, Hero, Item, TickSleeper, Vector3 } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { MouseTarget, Owner, initAbilityMap, initItemsMap } from "../Listeners"

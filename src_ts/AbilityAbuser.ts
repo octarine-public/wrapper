@@ -17,7 +17,7 @@ setInterval(() => {
 		if (MyEnt.IsStunned)
 			return
 		let repeated_unit = new Array<C_BaseEntity>(0x80/*0x80*//*max: 0x3FFF*/).fill(MyEnt.m_pBaseEntity)
-		let ability: Ability
+		let ability: Nullable<Ability>
 		if (ability_abuse_selector.IsEnabled("invoker_invoke"))
 			ability = MyEnt.GetAbilityByName("invoker_invoke")
 		if (ability !== undefined && ability.CanBeCasted()) {

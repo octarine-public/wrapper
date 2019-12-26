@@ -47,7 +47,7 @@ const runeMenu = snatcherMenu.AddNode("Rune settings")
 const stateRune = runeMenu.AddToggle("Snatch Rune", true).OnDeactivate(destroyRuneAllParticles)
 
 const typesSelect = runeMenu.AddSwitcher("Runes for snatch", ["All", "Only Bounty", "Only PowerUps"])
-typesSelect.OnValue(onTypeSelected)
+typesSelect.OnValue(self => selectedRuneType = self.selected_id)
 
 runeMenu.AddKeybind("Rune toogle").OnRelease(() => stateRune.value = !stateRune.value)
 
@@ -139,12 +139,12 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 EventsSDK.on("Tick", () => {
-	if (LocalPlayer.IsSpectator || !stateMain.value)
+	if (LocalPlayer!.IsSpectator || !stateMain.value)
 		return false
 
 	let controllables: Unit[] = stateControllables.value
 		? GetControllables()
-		: LocalPlayer.HeroAssigned ? [LocalPlayer.Hero] : []
+		: LocalPlayer!.HeroAssigned ? [LocalPlayer!.Hero!] : []
 
 	snatchRunes(controllables)
 	snatchItems(controllables)
@@ -179,10 +179,6 @@ function GetControllables() {
 }
 
 // ------- Rune
-
-function onTypeSelected(value) {
-	selectedRuneType = value
-}
 
 function snatchRunes(controllables: Unit[]) {
 	if (!stateRune.value && !runeHoldKey.is_pressed)
@@ -256,7 +252,7 @@ function createRuneParticle(ent: Rune, color: Color, radius: number) {
 	ParticlesSDK.SetControlPoint(particleID, 1, new Vector3(color.r, color.g, color.b))
 	ParticlesSDK.SetControlPoint(particleID, 2, new Vector3(radius * 1.1, 255))
 
-	allRunesParticles.get(ent).push(particleID)
+	allRunesParticles.get(ent)!.push(particleID)
 }
 
 function updateRuneAllParticle() {
@@ -267,9 +263,9 @@ function updateRuneAllParticle() {
 }
 
 function destroyRuneParticles(rune: Rune) {
-	if (!allRunesParticles.has(rune))
-		return
 	var particles = allRunesParticles.get(rune)
+	if (particles === undefined)
+		return
 	// loop-optimizer: POSSIBLE_UNDEFINED
 	particles.forEach(particleID => ParticlesSDK.Destroy(particleID, true))
 	allRunesParticles.delete(rune)

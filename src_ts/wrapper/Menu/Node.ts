@@ -23,7 +23,7 @@ export default class Node extends Base {
 	protected readonly arrow_offset = this.text_offset.Clone().AddScalarX(15).AddScalarY(this.node_arrow_size.y).AddForThis(this.border_size)
 	protected readonly node_arrow_color = new Color(68, 68, 68)
 	protected readonly node_selected_arrow_color = new Color(0x40, 0x80, 0xff)
-	protected active_element: Base
+	protected active_element?: Base
 
 	constructor(parent: IMenu, name: string, tooltip?: string) {
 		super(parent, name)
@@ -78,7 +78,10 @@ export default class Node extends Base {
 		if (this.Rect.Contains(this.MousePosition)) {
 			this.is_open = !this.is_open
 			if (this.is_open)
-				this.parent.entries.filter(entry => entry !== this && entry instanceof Node).forEach((node: Node) => node.is_open = false)
+				this.parent.entries.forEach(entry => {
+					if (entry instanceof Node && entry !== this)
+						entry.is_open = false
+				})
 			return false
 		}
 		if (this.active_element === undefined)
@@ -132,62 +135,62 @@ export default class Node extends Base {
 	}
 
 	public AddVector2(name: string, vector: Vector2, minVector?: Vector2, maxVector?: Vector2) {
-		let node = this.AddNode(name);
+		let node = this.AddNode(name)
 
 		if (typeof minVector === "number")
-			minVector = new Vector2(minVector, minVector);
+			minVector = new Vector2(minVector, minVector)
 
 		if (!(minVector instanceof Vector2))
-			minVector = new Vector2(0, 0);
+			minVector = new Vector2(0, 0)
 
 		if (typeof maxVector === "number")
-			maxVector = new Vector2(maxVector, maxVector);
+			maxVector = new Vector2(maxVector, maxVector)
 
 		if (!(maxVector instanceof Vector2))
-			maxVector = new Vector2(95, 95);
+			maxVector = new Vector2(95, 95)
 
-		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x);
-		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y);
+		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
+		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
 
 		return {
 			node, X, Y,
 			get Vector() {
-				return new Vector2(X.value as number, Y.value as number);
+				return new Vector2(X.value as number, Y.value as number)
 			},
-			set Vector(vector: Vector2) {
-				X.value = vector.x;
-				Y.value = vector.y;
+			set Vector({ x, y }: Vector2) {
+				X.value = x
+				Y.value = y
 			},
 		}
 	}
 	public AddVector3(name: string, vector: Vector3, minVector?: Vector3, maxVector?: Vector3) {
-		let node = this.AddNode(name);
+		let node = this.AddNode(name)
 
 		if (typeof minVector === "number")
-			minVector = new Vector3(minVector, minVector, minVector);
+			minVector = new Vector3(minVector, minVector, minVector)
 
 		if (!(minVector instanceof Vector3))
-			minVector = new Vector3(0, 0);
+			minVector = new Vector3(0, 0)
 
 		if (typeof maxVector === "number")
-			maxVector = new Vector3(maxVector, maxVector, maxVector);
+			maxVector = new Vector3(maxVector, maxVector, maxVector)
 
 		if (!(maxVector instanceof Vector3))
-			maxVector = new Vector3(95, 95);
+			maxVector = new Vector3(95, 95)
 
-		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x);
-		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y);
-		const Z = node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z);
+		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
+		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
+		const Z = node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z)
 
 		return {
 			node, X, Y, Z,
 			get Vector() {
-				return new Vector3(X.value as number, Y.value as number, Z.value as number);
+				return new Vector3(X.value as number, Y.value as number, Z.value as number)
 			},
 			set Vector(vector: Vector3) {
-				X.value = vector.x;
-				Y.value = vector.y;
-				Z.value = vector.z;
+				X.value = vector.x
+				Y.value = vector.y
+				Z.value = vector.z
 			},
 		}
 	}

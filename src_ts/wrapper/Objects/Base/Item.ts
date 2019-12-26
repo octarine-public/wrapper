@@ -3,24 +3,20 @@ import Game from "../../Objects/GameResources/GameRules"
 import Ability from "./Ability"
 import Entity from "./Entity"
 import Player from "./Player"
-import Unit from "./Unit"
 
 export default class Item extends Ability {
-	public readonly m_pBaseEntity: C_DOTA_Item
-	public EnableTime = 0
-	public Shareability: EShareAbility = EShareAbility.ITEM_NOT_SHAREABLE
-	public CurrentCharges = 0
+	public readonly m_pBaseEntity!: C_DOTA_Item
 
-	constructor(m_pBaseEntity: C_BaseEntity) {
-		super(m_pBaseEntity)
-		this.EnableTime = this.m_pBaseEntity.m_flEnableTime
-		this.Shareability = this.m_pBaseEntity.m_iSharability
-		this.CurrentCharges = this.m_pBaseEntity.m_iCurrentCharges
-	}
+	public EnableTime = this.m_pBaseEntity.m_flEnableTime
+	public Shareability: EShareAbility = this.m_pBaseEntity.m_iSharability
+	public CurrentCharges = this.m_pBaseEntity.m_iCurrentCharges
 
 	get IsReady(): boolean {
 		const unit = this.Owner
 		return this.IsCooldownReady && this.Level !== 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
+	}
+	get IsMuted(): boolean {
+		return this.EnableTime !== 0 && this.EnableTime > Game.RawGameTime
 	}
 	get AssembledTime(): number {
 		return this.m_pBaseEntity.m_flAssembledTime
@@ -91,10 +87,10 @@ export default class Item extends Ability {
 	get ModelName(): string {
 		return this.AbilityData.ModelName
 	}
-	get OldOwner(): Entity {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOldOwnerEntity) as Entity
+	get OldOwner(): Nullable<Entity> {
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOldOwnerEntity)
 	}
-	get Purchaser(): Player {
+	get Purchaser(): Nullable<Player> {
 		return EntityManager.GetPlayerByID(this.PurchaserID)
 	}
 	get PurchaserID(): number {
@@ -111,32 +107,30 @@ export default class Item extends Ability {
 	}
 
 	public DisassembleItem(queue?: boolean) {
-		return (this.Owner as Unit).DisassembleItem(this, queue)
+		return this.Owner?.DisassembleItem(this, queue)
 	}
 	public MoveItem(slot: DOTAScriptInventorySlot_t) {
-		return (this.Owner as Unit).MoveItem(this, slot)
+		return this.Owner?.MoveItem(this, slot)
 	}
 	public ItemFromStash() {
-		return (this.Owner as Unit).ItemFromStash(this)
+		return this.Owner?.ItemFromStash(this)
 	}
 	public SellItem() {
-		return (this.Owner as Unit).SellItem(this)
+		return this.Owner?.SellItem(this)
 	}
 	public ItemLock() {
-		return (this.Owner as Unit).ItemLock(this)
+		return this.Owner?.ItemLock(this)
 	}
 	public ItemUnlock() {
-		return (this.Owner as Unit).ItemLock(this, false)
+		return this.Owner?.ItemLock(this, false)
 	}
 
 	public CanBeCasted(bonusMana: number = 0): boolean {
-		if (!this.IsValid)
-			return false
-		if (this.EnableTime !== 0 && this.EnableTime > Game.RawGameTime)
+		if (!this.IsValid || this.IsMuted)
 			return false
 
 		let root_owner = this.RootOwner
-		if (root_owner !== undefined && this.Shareability == EShareAbility.ITEM_NOT_SHAREABLE && root_owner !== this.Purchaser)
+		if (root_owner !== undefined && this.Shareability === EShareAbility.ITEM_NOT_SHAREABLE && root_owner !== this.Purchaser)
 			return false
 
 		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled)
@@ -146,7 +140,7 @@ export default class Item extends Ability {
 			return false
 
 		return this.Level !== 0
-			&& !(this.Owner as Unit).IsMuted
+			&& !this.Owner?.IsMuted
 			&& this.IsManaEnough(bonusMana)
 			&& this.IsCooldownReady
 	}

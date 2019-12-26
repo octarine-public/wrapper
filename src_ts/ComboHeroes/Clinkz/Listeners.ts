@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { ArrayExtensions, Entity, Hero, TrackingProjectile, Utils, Unit, EntityManager } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { NearMouse, State } from "./Menu"
@@ -5,7 +6,7 @@ import { GameEndedCombo } from "./Module/Combo"
 
 import InitDraw from "./Extends/Draw"
 import InitItems from "./Extends/Items"
-import HitAndRun from "./Extends/HitAndRun";
+import HitAndRun from "./Extends/HitAndRun"
 import InitAbilities from "./Extends/Abilities"
 
 export let Owner: Hero

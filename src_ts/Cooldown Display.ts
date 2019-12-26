@@ -28,7 +28,7 @@ let ignore_abils = [
 	"rubick_hidden3",
 ]
 
-function DrawAbilityLevels(ability: Ability, x, y) {
+function DrawAbilityLevels(ability: Ability, x: number, y: number) {
 	let level = ability.Level
 
 	let level_box_size = Math.floor(optionBoxSize.value * 0.1875)
@@ -54,7 +54,7 @@ function DrawAbilityLevels(ability: Ability, x, y) {
 	}
 }
 
-function DrawAbilitySquare(hero: Hero, ability: Ability, x, y, index) {
+function DrawAbilitySquare(hero: Hero, ability: Ability, x: number, y: number, index: number) {
 	let real_x = x + (index * optionBoxSize.value) + 2
 	// default colors = can cast
 	let imageColor = Color.White
@@ -147,9 +147,9 @@ EventsSDK.on("Draw", () => {
 		// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
 		let abilities = hero.Spells.filter((abil, i) => {
 			return i < 6 &&
-				!ignore_abils.some(ignore_name => abil.Name === ignore_name) &&
-				!abil.IsHidden
-		})
+				!ignore_abils.some(ignore_name => abil!.Name === ignore_name) &&
+				!abil!.IsHidden
+		}) as Ability[]
 
 		let start_x = screen_pos.x - Math.floor((abilities.length / 2) * optionBoxSize.value)
 		let start_y = screen_pos.y + optionBoxPixelOffset.value

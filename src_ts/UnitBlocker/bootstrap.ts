@@ -34,9 +34,9 @@ EventsSDK.on("Draw", () => {
 
 	let textAroundMouse = ""
 
-	textAroundMouse += CreepBlock.Draw() || ""
+	textAroundMouse += CreepBlock.Draw() ?? ""
 
-	textAroundMouse += HeroBlock.Draw() || ""
+	textAroundMouse += HeroBlock.Draw() ?? ""
 
 	if (textAroundMouse === "")
 		return

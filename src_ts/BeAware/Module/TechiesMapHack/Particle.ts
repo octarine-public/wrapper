@@ -33,16 +33,17 @@ export function LifeStateChanged(ent: Entity) {
 	EntityDestroyed(ent)
 }
 
-export function ParticleCreated(id: number, target: Entity, path: string) {
+export function ParticleCreated(id: number, target: Nullable<Entity>, path: string) {
 	if (!State.value)
 		return
-	let mine_name: RegExpExecArray
+	let mine_name: RegExpExecArray | null
 	if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)_plant.vpcf$/.exec(path)) !== null) {
 		if (/*mine_name !== "particles/units/heroes/hero_techies/techies_stasis_trap_plant.vpcf" && */(target === undefined || target.IsEnemy()))
 			waiting_spawn.push([id, mine_name[1]])
 	} else if ((mine_name = /^particles\/units\/heroes\/hero_techies\/(techies_remote_mine|techies_stasis_trap)(s_detonate|_explode).vpcf$/.exec(path)) !== null)
 		waiting_explode.push([id, mine_name[1]])
 }
+
 export function ParticleUpdated(id: number, control_point: number, position: Vector3) {
 	if (!State.value)
 		return

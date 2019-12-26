@@ -96,8 +96,9 @@ export function ScanEntityCreated(x: Entity) {
 		}
 	}
 }
+
 export function ScanEntityDestroyed(x: Entity) {
-	if (x instanceof Entity) {
-		ArrayExtensions.arrayRemove(RadarDetect, x)
-	}
+	if (x instanceof Entity)
+		if (x.Name.includes("npc_dota_thinker"))
+			ArrayExtensions.arrayRemove(RadarDetect, x)
 }

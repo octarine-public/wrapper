@@ -52,32 +52,38 @@ export default class Modifier {
 	}
 
 	/* =================== Fields =================== */
+	public IsValid = true
+
 	public readonly Index: number
 	public readonly SerialNumber: number
-	private Parent_: Unit
-	public IsValid = true
+
 	public readonly AbilityLevel: number
 	public readonly IsAura: boolean
 
-	private Ability_: Ability
-	private Caster_: Entity
-	private AuraOwner_: Entity
-	private Name_: string
+	private Parent_: Nullable<Unit>
+	private Ability_: Nullable<Ability>
+
+	private Caster_: Nullable<Entity>
+	private AuraOwner_: Nullable<Entity>
+	private Name_ = ""
 
 	constructor(public m_pBuff: IModifier) {
-		this.Index = this.m_pBuff.Index
-		this.SerialNumber = this.m_pBuff.SerialNum
-		this.AbilityLevel = this.m_pBuff.AbilityLevel
+		this.Index = this.m_pBuff.Index as number
+		this.SerialNumber = this.m_pBuff.SerialNum as number
+
+		this.AbilityLevel = this.m_pBuff.AbilityLevel as number
+		this.IsAura = this.m_pBuff.IsAura as boolean
+
 		this.Caster_ = EntityManager.EntityByHandle(this.m_pBuff.Caster)
-		this.IsAura = this.m_pBuff.IsAura
 		this.AuraOwner_ = EntityManager.EntityByHandle(this.m_pBuff.AuraOwner)
 	}
 
 	public get Attributes(): DOTAModifierAttribute_t {
 		return DOTAModifierAttribute_t.MODIFIER_ATTRIBUTE_NONE
 	}
+	// NOTICE: as number || number | undefined => DieTime: NaN (undefined + number)
 	public get CreationTime(): number {
-		return this.m_pBuff.CreationTime
+		return this.m_pBuff.CreationTime ?? 0
 	}
 	public get DieTime(): number {
 		return this.CreationTime + this.Duration
@@ -88,7 +94,7 @@ export default class Modifier {
 	public get ElapsedTime(): number {
 		return Math.max(Game.RawGameTime - this.CreationTime, 0)
 	}
-	public get Parent(): Unit {
+	public get Parent(): Nullable<Unit> {
 		if (this.Parent_ === undefined) {
 			let ent = EntityManager.EntityByHandle(this.m_pBuff.Parent)
 			if (ent !== undefined) {
@@ -105,12 +111,12 @@ export default class Modifier {
 			this.Ability_ = EntityManager.EntityByHandle(this.m_pBuff.Ability) as Ability
 		return this.Ability_
 	}
-	public get Caster(): Entity {
+	public get Caster(): Nullable<Entity> {
 		if (this.Caster_ === undefined)
 			this.Caster_ = EntityManager.EntityByHandle(this.m_pBuff.Caster)
 		return this.Caster_
 	}
-	public get AuraOwner(): Entity {
+	public get AuraOwner(): Nullable<Entity> {
 		if (this.AuraOwner_ === undefined)
 			this.AuraOwner_ = EntityManager.EntityByHandle(this.m_pBuff.AuraOwner)
 		return this.AuraOwner_
@@ -118,19 +124,30 @@ export default class Modifier {
 	public get RemainingTime(): number {
 		return Math.max(this.DieTime - Game.RawGameTime, 0)
 	}
+	// NOTICE: as number || number | undefined
 	public get StackCount(): number {
-		return this.m_pBuff.StackCount
+		return this.m_pBuff.StackCount ?? 0
 	}
 	public get Name(): string {
-		if (this.Name_ === undefined)
-			this.Name_ = StringTables.GetString("ModifierNames", this.m_pBuff.ModifierClass)
+		if (!this.Name_)
+			this.Name_ = StringTables.GetString("ModifierNames", this.m_pBuff.ModifierClass as number)
 		return this.Name_
 	}
 	public get vStart(): Vector3 {
-		return this.m_pBuff.vStart
+		let vec = this.m_pBuff.vStart
+
+		if (vec === undefined)
+			return new Vector3().Invalidate()
+
+		return new Vector3(vec.x, vec.y, vec.z)
 	}
 	public get vEnd(): Vector3 {
-		return this.m_pBuff.vEnd
+		let vec = this.m_pBuff.vEnd
+
+		if (vec === undefined)
+			return new Vector3().Invalidate()
+
+		return new Vector3(vec.x, vec.y, vec.z)
 	}
 
 	public toString(): string {

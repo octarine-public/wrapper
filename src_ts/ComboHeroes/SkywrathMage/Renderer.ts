@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Base } from "./Extends/Helper"
 import {
 	Radius,

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Menu, Color } from "wrapper/Imports"
 const MenuCombo = Menu.AddEntry(["Heroes", "SkyWrath Mage"])
 export const State = MenuCombo.AddToggle("Enable")

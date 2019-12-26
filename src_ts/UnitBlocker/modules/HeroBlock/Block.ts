@@ -48,7 +48,7 @@ let sleeper = new GameSleeper()
 let turnStateBlock: boolean = false
 let stateBlock = StateBlock.Enemy
 let ControllablesUnitsDraw = new Map<Unit, string>()
-let targetBlock: Hero
+let targetBlock: Nullable<Hero>
 let targetStatus = TargetStatus.NOT_VALID
 
 CountUnits.OnValue(() => ControllablesUnitsDraw.clear())
@@ -96,7 +96,7 @@ export function GameEnded() {
 	ControllablesUnitsDraw.clear()
 }
 
-export function Update(): number {
+export function Update() {
 	if (!IsOn() || sleeper.Sleeping("tick"))
 		return
 
@@ -117,7 +117,7 @@ export function Update(): number {
 
 	switch (StateUnits.selected_id) {
 		case 0: { // local
-			let localHero = LocalPlayer.Hero
+			let localHero = LocalPlayer?.Hero
 
 			if (localHero === undefined || !baseCheckUnit(localHero))
 				return
@@ -154,7 +154,7 @@ export function Update(): number {
 			if (controllables.length === 0)
 				return
 
-			let localHero = LocalPlayer.Hero
+			let localHero = LocalPlayer?.Hero
 
 			if (localHero !== undefined && baseCheckUnit(localHero))
 				ArrayExtensions.arrayRemove(controllables, localHero)
@@ -196,7 +196,7 @@ export function Update(): number {
 	sleeper.Sleep(countUnits * 100, "tick")
 }
 
-export function Draw(): string {
+export function Draw(): string | undefined {
 	if (!DrawState.value || !IsOn())
 		return
 
@@ -258,14 +258,14 @@ let GetSensitivity = () => ((stateBlock === StateBlock.Enemy ? Sensitivity.value
 
 function Block(unit: Unit) {
 
-	if (!unit.IsInRange(targetBlock, 1000)) {
+	if (!unit.IsInRange(targetBlock!, 1000)) {
 		ControllablesUnitsDraw.delete(unit)
 		return
 	}
 
 	ControllablesUnitsDraw.set(unit, TargetStatus.VALID)
 
-	let angle = targetBlock.FindRotationAngle(unit)
+	let angle = targetBlock!.FindRotationAngle(unit)
 
 	let blockPos: Vector3
 
@@ -273,20 +273,20 @@ function Block(unit: Unit) {
 
 		let delta = angle * 0.6
 
-		let vecRight = targetBlock.InFrontFromAngle(delta, Math.max(GetSensitivity(), 150))
+		let vecRight = targetBlock!.InFrontFromAngle(delta, Math.max(GetSensitivity(), 150))
 
-		let vecLeft = targetBlock.InFrontFromAngle(-delta, Math.max(GetSensitivity(), 150))
+		let vecLeft = targetBlock!.InFrontFromAngle(-delta, Math.max(GetSensitivity(), 150))
 
 		blockPos = unit.Distance2D(vecRight) < unit.Distance2D(vecLeft) ? vecRight : vecLeft
 
 	} else {
 
-		if (targetBlock.IsMoving && angle < 0.3 && unit.IsMoving) {
+		if (targetBlock!.IsMoving && angle < 0.3 && unit.IsMoving) {
 			StopUnit(unit)
 			return
 		}
 
-		blockPos = targetBlock.InFront(GetSensitivity())
+		blockPos = targetBlock!.InFront(GetSensitivity())
 	}
 
 	MoveUnit(unit, blockPos)
@@ -295,7 +295,7 @@ function Block(unit: Unit) {
 function BlockMulty(units: Unit[]) {
 
 	units = units.filter(unit => {
-		if (unit.IsInRange(targetBlock, 1000))
+		if (unit.IsInRange(targetBlock!, 1000))
 			return true
 
 		ControllablesUnitsDraw.delete(unit)
@@ -303,7 +303,7 @@ function BlockMulty(units: Unit[]) {
 	})
 
 	if (units.length === 0)
-		return
+		return 0
 
 	units.splice(CountUnits.value)
 
@@ -317,25 +317,25 @@ function BlockMulty(units: Unit[]) {
 			? Math.ceil(index / 2) * (index % 2 === 0 ? -1 + countUnits * 0.06 : -1 - countUnits * 0.06)
 			: 0
 
-		let blockPos = targetBlock.InFrontFromAngle(angleForUnit, GetSensitivity())
+		let blockPos = targetBlock!.InFrontFromAngle(angleForUnit, GetSensitivity())
 
 		ArrayExtensions.arrayRemove(units, unit)
 
-		let angle = targetBlock.FindRotationAngle(unit)
+		let angle = targetBlock!.FindRotationAngle(unit)
 
 		if (angle > 1.1 + index * 0.5) {
 			let delta = angle * 0.6
-			let vecRight = targetBlock.InFrontFromAngle(delta, Math.max(GetSensitivity(), 150)),
-				vecLeft = targetBlock.InFrontFromAngle(-delta, Math.max(GetSensitivity(), 150))
+			let vecRight = targetBlock!.InFrontFromAngle(delta, Math.max(GetSensitivity(), 150)),
+				vecLeft = targetBlock!.InFrontFromAngle(-delta, Math.max(GetSensitivity(), 150))
 
 			blockPos = unit.Distance(vecRight) < unit.Distance(vecLeft) ? vecRight : vecLeft
 		} else {
-			if (targetBlock.IsMoving && angle < 0.3 && unit.IsMoving) {
+			if (targetBlock!.IsMoving && angle < 0.3 && unit.IsMoving) {
 				StopUnit(unit)
 				return
 			}
 
-			blockPos = targetBlock.InFront(GetSensitivity())
+			blockPos = targetBlock!.InFront(GetSensitivity())
 		}
 
 		MoveUnit(unit, blockPos)

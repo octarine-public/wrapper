@@ -1,4 +1,4 @@
-import { Menu as MenuSDK, EventsSDK, Ability, LocalPlayer, Entity, dotaunitorder_t } from "wrapper/Imports";
+import { Menu as MenuSDK, EventsSDK, Ability, LocalPlayer, Entity, dotaunitorder_t } from "wrapper/Imports"
 const Abilities: string[] = [
 	"magnataur_skewer",
 	"pudge_meat_hook",
@@ -47,6 +47,6 @@ EventsSDK.on("PrepareUnitOrders", order => {
 	if (abil === undefined || !SuppAbils.IsEnabled(abil.Name))
 		return true
 	let target_pos = order.Target instanceof Entity ? order.Target.Position : order.Position
-	order.Unit.CastPosition(abil, order.Unit.Position.Extend(target_pos, 1.3))
+	order.Unit?.CastPosition(abil, order.Unit.Position.Extend(target_pos, 1.3))
 	return false
 })

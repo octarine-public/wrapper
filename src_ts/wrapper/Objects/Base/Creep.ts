@@ -1,7 +1,7 @@
 import Unit from "./Unit"
 
 export default class Creep extends Unit {
-	public readonly m_pBaseEntity: C_DOTA_BaseNPC_Creep
+	public readonly m_pBaseEntity!: C_DOTA_BaseNPC_Creep
 
 	get IsCreep(): boolean {
 		return true

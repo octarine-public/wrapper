@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Ability, Hero, Unit } from "wrapper/Imports"
 import { AbilityBase } from "../../Base/Abilities"
 export default class KunkkaAbility extends AbilityBase {
@@ -11,14 +12,14 @@ export default class KunkkaAbility extends AbilityBase {
 		}
 		return this.unit.GetAbilityByName(name)
 	}
-	public get Tidebringer(): Ability  {
+	public get Tidebringer(): Ability {
 		let name = "kunkka_tidebringer"
 		if (this.unit === undefined) {
 			return name as any
 		}
 		return this.unit.GetAbilityByName(name)
 	}
-	public get MarksSpot(): Ability  {
+	public get MarksSpot(): Ability {
 		let name = "kunkka_x_marks_the_spot"
 		if (this.unit === undefined) {
 			return name as any

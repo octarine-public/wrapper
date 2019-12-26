@@ -1,6 +1,7 @@
-import { ExecuteOrder, Game } from "wrapper/Imports";
-import { Owner, initAbilityMap } from "../Listeners";
-import { ComboTimer, XMarkCastTime } from "./Combo";
+//@ts-nocheck
+import { ExecuteOrder, Game } from "wrapper/Imports"
+import { Owner, initAbilityMap } from "../Listeners"
+import { ComboTimer, XMarkCastTime } from "./Combo"
 
 export function OnExecuteOrder(order: ExecuteOrder): boolean {
 	let Time = Game.RawGameTime

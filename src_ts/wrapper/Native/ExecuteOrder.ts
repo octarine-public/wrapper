@@ -57,9 +57,6 @@ export default class ExecuteOrder {
 			? EntityManager.GetEntityByNative(order.unit) as Unit
 			: EntityManager.LocalHero
 
-		if (unit === undefined)
-			return undefined
-
 		return new ExecuteOrder(
 			order.order_type,
 			order.target instanceof C_BaseEntity
@@ -77,11 +74,11 @@ export default class ExecuteOrder {
 	}
 
 	private m_OrderType: dotaunitorder_t
-	private m_Target: Entity | number
+	private m_Target: Nullable<Entity | number>
 	private m_Position: Vector3
-	private m_Ability: Ability | number
+	private m_Ability: Nullable<Ability | number>
 	private m_OrderIssuer: PlayerOrderIssuer_t
-	private m_Unit: Unit
+	private m_Unit: Nullable<Unit>
 	private m_Queue: boolean
 	private m_ShowEffects: boolean
 
@@ -92,11 +89,11 @@ export default class ExecuteOrder {
 	 */
 	constructor(
 		orderType: dotaunitorder_t,
-		target: Entity | number,
+		target: Nullable<Entity | number>,
 		position: Vector3 | Vector2 = new Vector3(),
-		ability: Ability | number,
+		ability: Nullable<Ability | number>,
 		issuer: PlayerOrderIssuer_t = PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
-		unit: Unit,
+		unit: Nullable<Unit>,
 		queue: boolean = false,
 		showEffects: boolean = false,
 	) {
@@ -113,19 +110,19 @@ export default class ExecuteOrder {
 	get OrderType(): dotaunitorder_t {
 		return this.m_OrderType
 	}
-	get Target(): Entity | number {
+	get Target(): Nullable<Entity | number> {
 		return this.m_Target
 	}
 	get Position(): Vector3 {
 		return this.m_Position
 	}
-	get Ability(): Ability | number {
+	get Ability(): Nullable<Ability | number> {
 		return this.m_Ability
 	}
 	get OrderIssuer(): PlayerOrderIssuer_t {
 		return this.m_OrderIssuer
 	}
-	get Unit(): Unit {
+	get Unit(): Nullable<Unit> {
 		return this.m_Unit
 	}
 	get Queue(): boolean {
@@ -173,11 +170,11 @@ export default class ExecuteOrder {
 	}
 	public toObject(): {
 		OrderType: dotaunitorder_t,
-		Target: Entity | number,
+		Target: Nullable<Entity | number>,
 		Position: Vector3,
-		Ability: Ability | number,
+		Ability: Nullable<Ability | number>,
 		OrderIssuer: PlayerOrderIssuer_t
-		Unit: Unit,
+		Unit: Nullable<Unit>,
 		Queue: boolean,
 		ShowEffects: boolean,
 	} {
@@ -199,18 +196,18 @@ let last_order_click = new Vector3(),
 	latest_camera_x = 0,
 	latest_camera_y = 0,
 	execute_current = false,
-	current_order: ExecuteOrder
+	current_order: Nullable<ExecuteOrder>
 Events.after("Update", (cmd_: CUserCmd) => {
 	let cmd = new UserCmd(cmd_)
 	if (execute_current) {
 		let order = ExecuteOrder.order_queue[0]
 		order.Execute()
 		if (ExecuteOrder.debug_orders)
-			console.log("Executing order " + order.OrderType + " after " + (Date.now() - last_order_click_update) + "ms")
+			console.log("Executing order " + order.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
 		ExecuteOrder.order_queue.splice(0, 1)
 		execute_current = false
 	}
-	let order = ExecuteOrder.order_queue[0]
+	let order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
 	if (order !== undefined && order !== current_order) {
 		current_order = order
 		switch (order.OrderType) {
@@ -222,7 +219,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
 				last_order_click.CopyFrom(order.Position)
-				last_order_click_update = Date.now()
+				last_order_click_update = hrtime()
 				break
 			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
@@ -240,7 +237,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 					last_order_click.CopyFrom(order.Position)
 				else
 					last_order_click.toZero()
-				last_order_click_update = Date.now()
+				last_order_click_update = hrtime()
 				break
 			default:
 				order.Execute()
@@ -251,8 +248,8 @@ Events.after("Update", (cmd_: CUserCmd) => {
 		}
 	}
 	let CursorWorldVec = cmd.VectorUnderCursor,
-		mult = Math.sin(Date.now() - last_order_click_update)
-	if (last_order_click_update + 450 >= Date.now()) {
+		mult = Math.sin(hrtime() - last_order_click_update)
+	if (last_order_click_update + 450 >= hrtime()) {
 		CursorWorldVec = last_order_click.Extend(CursorWorldVec, Math.min(last_order_click.Distance(CursorWorldVec), 200 * mult)).CopyTo(last_order_click)
 		cmd.CameraX = latest_camera_x
 		cmd.CameraY = latest_camera_y
@@ -262,7 +259,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 		if (!ExecuteOrder.wait_next_usercmd) {
 			order.Execute()
 			if (ExecuteOrder.debug_orders)
-				console.log("Executing order " + order.OrderType + " after " + (Date.now() - last_order_click_update) + "ms")
+				console.log("Executing order " + order.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
 			ExecuteOrder.order_queue.splice(0, 1)
 		}
 		execute_current = ExecuteOrder.wait_next_usercmd
@@ -270,7 +267,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 	let camera_vec = new Vector3(cmd.CameraX, cmd.CameraY)
 	camera_vec = camera_vec.Clone().AddScalarY(1134 / 2).Distance2D(CursorWorldVec) > 1300
 		? CursorWorldVec.Clone().SubtractScalarY(1134 / 2)
-		: camera_vec = camera_vec.AddScalarY(1134 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= Date.now() ? mult : 1))).SubtractScalarY(1134 / 2)
+		: camera_vec = camera_vec.AddScalarY(1134 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= hrtime() ? mult : 1))).SubtractScalarY(1134 / 2)
 	latest_camera_x = cmd.CameraX = camera_vec.x
 	latest_camera_y = cmd.CameraY = camera_vec.y
 

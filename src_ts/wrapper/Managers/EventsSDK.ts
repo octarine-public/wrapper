@@ -1,17 +1,21 @@
 import Events, { EventEmitter, IServerInfo } from "./Events"
 import UserCmd from "../Native/UserCmd"
-import { EntityManager } from "../Imports"
+import { default as EntityManager, LocalPlayer } from "./EntityManager"
 import * as WASM from "../Native/WASM"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Vector3 from "../Base/Vector3"
-import Ability from "../Objects/Base/Ability"
-import Unit from "../Objects/Base/Unit"
-import Game from "../Objects/GameResources/GameRules"
-import { LocalPlayer } from "./EntityManager"
-import Player from "../Objects/Base/Player"
+
 import Entity from "../Objects/Base/Entity"
-import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
+import Unit from "../Objects/Base/Unit"
 import Hero from "../Objects/Base/Hero"
+import Player from "../Objects/Base/Player"
+
+import Ability from "../Objects/Base/Ability"
+
+import Game from "../Objects/GameResources/GameRules"
+
+import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
+
 import QAngle from "../Base/QAngle"
 import Modifier from "../Objects/Base/Modifier"
 import InputManager from "./InputManager"
@@ -115,7 +119,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "ModifierRemoved", listener: (mod: Modifier) => void): EventEmitter
 }
 
-const EventsSDK: EventsSDK = globalThis.EventsSDK = new EventEmitter()
+const EventsSDK: EventsSDK = new EventEmitter()
 export default EventsSDK
 
 Events.on("Update", cmd => {
@@ -253,8 +257,8 @@ Events.on("EntityPositionsChanged", ents => ents.forEach(ent_ => {
 	if (ent === undefined || !ent_.m_VisualData)
 		return // probably ent.m_pGameSceneNode === undefined
 
-	let m_vecOrigin = Vector3.fromIOBuffer()
-	let m_angAbsRotation = QAngle.fromIOBuffer(true, 3)
+	let m_vecOrigin = Vector3.fromIOBuffer()!
+	let m_angAbsRotation = QAngle.fromIOBuffer(true, 3)!
 	ent.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation)
 }))
 
@@ -297,10 +301,17 @@ Events.on("NetworkFieldsChanged", map => {
 	// loop-optimizer: KEEP
 	map.forEach((ar, native_ent) => {
 		let entity = EntityManager.GetEntityByNative(native_ent)
+
 		if (entity === undefined)
 			return
+
 		// loop-optimizer: KEEP
 		ar.forEach(([field_name, array_index]) => {
+
+			// NOTICE: WTF??. Try remove this and u get error in entity: Entity | undefined
+			if (entity === undefined)
+				return
+
 			if (array_index === -1)
 				switch (field_name) {
 					case "m_hOwnerEntity":
@@ -414,7 +425,7 @@ Events.on("NetworkFieldsChanged", map => {
 						entity.OnNetworkRotationChanged()
 						break
 					case "m_fGameTime":
-						Game.RawGameTime = Game.m_GameRules.m_fGameTime
+						Game.RawGameTime = Game.m_GameRules?.m_fGameTime ?? 0
 
 						EntityManager.GetEntitiesByClass(Unit).forEach(ent => {
 							if (ent.IsVisible)
@@ -427,7 +438,7 @@ Events.on("NetworkFieldsChanged", map => {
 							EventsSDK.emit("Tick", false)
 						break
 					case "m_bGamePaused":
-						Game.IsPaused = Game.m_GameRules.m_bGamePaused
+						Game.IsPaused = Game.m_GameRules?.m_bGamePaused ?? false
 						break
 
 					default:
@@ -452,3 +463,7 @@ Events.on("NetworkFieldsChanged", map => {
 		})
 	})
 })
+
+
+
+EventsSDK.on("GameEnded", () => ExecuteOrder.order_queue = [])

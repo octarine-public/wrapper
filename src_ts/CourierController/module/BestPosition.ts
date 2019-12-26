@@ -15,10 +15,10 @@ function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector
 		}
 	}
 	else if (!CourierBase.IsRangeCourier(courier, Position, 50) && courier.StateHero === undefined) {
-		if (courier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE) {
-			MoveCourier(false, courier)
-			return true
-		}
+		if (courier.State === CourierState_t.COURIER_STATE_RETURNING_TO_BASE)
+			return false
+		MoveCourier(false, courier)
+		return true
 	}
 }
 

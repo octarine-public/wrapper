@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { EventsSDK } from "wrapper/Imports"
 import { Base } from "./Extends/Helper"
 import { InitFindCyclone, OnExecuteOrder } from "./Module/AutoArray"

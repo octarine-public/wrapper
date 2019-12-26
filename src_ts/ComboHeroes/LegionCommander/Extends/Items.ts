@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { Hero, Item } from "wrapper/Imports"
 import { ItemBase } from "../../Base/Items"
 import { ProjList } from "../Listeners"

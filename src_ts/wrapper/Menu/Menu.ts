@@ -11,7 +11,7 @@ let Menu = new (class Menu {
 	public is_open = true
 	public trigger_on_chat = false
 	private readonly header = new Header(this, "Fusion")
-	private active_element: Base
+	private active_element?: Base
 
 	constructor() {
 		this.ConfigValue = JSON.parse(readConfig("default.json") || "{}")
@@ -129,4 +129,4 @@ InputEventSDK.on("MouseKeyUp", key => {
 	return true
 })
 
-export default globalThis.Menu = Menu
+export default Menu

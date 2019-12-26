@@ -19,21 +19,18 @@ class SleeperBase {
 }
 
 /**
- * Sleeper by Date.now()
+ * Sleeper by hrtime()
  */
 export class Sleeper extends SleeperBase {
 	public Sleep(ms: number, key: any, extend: boolean = false): number {
-		if (typeof ms !== "number")
-			return this.setTime(key, Date.now())
+		if (extend && this.updateTime(key, hrtime(), ms))
+			return ms
 
-		if (extend && this.updateTime(key, Date.now(), ms))
-			return
-
-		return this.setTime(key, Date.now() + ms)
+		return this.setTime(key, hrtime() + ms)
 	}
 	public Sleeping(key: any): boolean {
 		let sleepID = this.SleepDB.get(key)
-		return sleepID !== undefined && Date.now() < sleepID
+		return sleepID !== undefined && hrtime() < sleepID
 	}
 
 	public FullReset(): Sleeper {
@@ -51,7 +48,7 @@ export class GameSleeper extends SleeperBase {
 			return this.setTime(key, Game.RawGameTime)
 
 		if (extend && this.updateTime(key, Game.RawGameTime, ms / 1000))
-			return
+			return ms
 
 		return this.setTime(key, Game.RawGameTime + ms / 1000)
 	}
@@ -74,7 +71,7 @@ export class TickSleeper {
 	}
 	private get TickCount(): number {
 		if (!Game.IsInGame)
-			return Date.now()
+			return hrtime()
 		return Game.RawGameTime * 1000
 	}
 	public Sleep(duration: number): void {

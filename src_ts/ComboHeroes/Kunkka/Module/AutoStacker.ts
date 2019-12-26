@@ -1,7 +1,8 @@
-import { Ability, ArrayExtensions, Color, Game, RendererSDK, Vector2, EntityManager, Creep } from "wrapper/Imports";
-import { Base } from "../Extends/Helper";
-import { Owner, initAbilityMap } from "../Listeners";
-import { AutoStakerState, AutoStakerVisuals, State } from "../Menu";
+//@ts-nocheck
+import { Ability, ArrayExtensions, Color, Game, RendererSDK, Vector2, EntityManager, Creep } from "wrapper/Imports"
+import { Base } from "../Extends/Helper"
+import { Owner, initAbilityMap } from "../Listeners"
+import { AutoStakerState, AutoStakerVisuals, State } from "../Menu"
 export let is_stacking = false
 export function InitStaker() {
 	if (!Base.IsRestrictions(State) || !AutoStakerState.value || is_stacking)

@@ -20,7 +20,9 @@ showOnWards.OnValue(OnOptionToggle)
 showOnCreeps.OnValue(OnOptionToggle)
 switcher.OnValue(OnOptionToggle)
 
-function Destroy(unit: Unit, particleID: number = allUnits.get(unit)) {
+function Destroy(unit: Unit, particleID: number | undefined = allUnits.get(unit)) {
+	if (particleID === undefined)
+		return
 	ParticlesSDK.Destroy(particleID, true)
 	allUnits.delete(unit)
 }

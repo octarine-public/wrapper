@@ -27,13 +27,14 @@ let checkTick: number = 0,
 	bountyAlreadySeted = false,
 	RunePowerTimer: boolean = true,
 	RuneBountyTimerBool: boolean = true,
-	Particle: Map<number, [bigint, string | Entity, Vector3?]> = new Map(), // TODO Radius for ability
+	Particle: Map<number, [bigint, undefined | Entity, Vector3?]> = new Map(), // TODO Radius for ability
 	mt_rand_power: number,
 	mt_rand_bounty: number
 
 function mt_rand(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1) + min)
 }
+
 export function DrawRunes() {
 	if (Game.GameTime <= 0 || Game.LevelNameShort === "hero_demo_main")
 		return
@@ -46,9 +47,9 @@ export function DrawRunes() {
 			RunePowerTimer = true
 		// loop-optimizer: KEEP
 		PowerRunesPos.forEach(val => {
-			if (mt_rand_power === undefined)
+			if (mt_rand_power === 0)
 				mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
-			if (mt_rand_power !== undefined && RunePowerTime >= (percent - mt_rand_power)) {
+			if (mt_rand_power !== 0 && RunePowerTime >= (percent - mt_rand_power)) {
 
 				if (TreeNotificationPowerDrawMap.value)
 					RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
@@ -65,7 +66,7 @@ export function DrawRunes() {
 								RunePowerTimer = false
 							}
 						}
-						mt_rand_power = undefined
+						mt_rand_power = 0
 					}
 				}
 			}
@@ -86,10 +87,10 @@ export function DrawRunes() {
 		}
 		// loop-optimizer: KEEP
 		bountyRunesPos.forEach((val, key) => {
-			if (mt_rand_bounty === undefined) {
+			if (mt_rand_bounty === 0) {
 				mt_rand_bounty = mt_rand(NotifyTimeBountyMin.value, NotifyTimeBountyMax.value)
 			}
-			if (mt_rand_bounty !== undefined && RuneBountyTime >= (percent - mt_rand_bounty)) {
+			if (mt_rand_bounty !== 0 && RuneBountyTime >= (percent - mt_rand_bounty)) {
 				if (TreeNotificationBountyDrawMap.value) {
 					RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
 				}
@@ -99,7 +100,7 @@ export function DrawRunes() {
 							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
 							checkTick = Time + (NotifyTimeBountyMax.value / 3)
 						}
-						mt_rand_bounty = undefined
+						mt_rand_bounty = 0
 					}
 					if (RuneBountyTimerBool) {
 						if (TreeNotificationBountyChat.value) {
@@ -118,6 +119,8 @@ export function DrawRunes() {
 			return
 		// loop-optimizer: KEEP
 		Particle.forEach(([handle, target, position], i) => {
+			if (position === undefined)
+				return
 			// loop-optimizer: KEEP
 			bountyRunesPos.forEach((val, key) => {
 				//Bounty Rune
@@ -143,12 +146,13 @@ export function EntityCreatedRune(x: Entity) {
 }
 
 export function EntityDestroyedRune(x: Entity) {
-	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Bounty) {
+
+	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Bounty)
 		ArrayExtensions.arrayRemove(bountyRunesPos, x.Position)
-	}
-	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup) {
+
+	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup)
 		ArrayExtensions.arrayRemove(PowerRunesPos, x.Position)
-	}
+
 	if (x instanceof Rune) {
 		// loop-optimizer: KEEP
 		bountyRunesPos.some((val, key) => {
@@ -169,7 +173,7 @@ export function RuneGameEnded() {
 	PowerRunesPos = []
 	bountyRunesAr = []
 	bountyRunesPos = []
-	mt_rand_power = undefined
+	mt_rand_power = 0
 }
 
 function DrawIcon(position: Vector3, color?: Color) {
@@ -188,13 +192,13 @@ export function RuneParticleDestroyed(id: number) {
 	Particle.delete(id)
 }
 
-export function RuneParticleCreate(id: number, entity: Entity, handle: bigint) {
+export function RuneParticleCreate(id: number, entity: Nullable<Entity>, handle: bigint) {
 	if (handle !== 17096352592726237548n && handle !== 16517413739925325824n)
 		return
 	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined])
 }
 
-export function RuneParticleCreateUpdateEnt(id: number, ent: Entity, position: Vector3) {
+export function RuneParticleCreateUpdateEnt(id: number, ent: Nullable<Entity>, position: Vector3) {
 	let part = Particle.get(id)
 	if (part === undefined)
 		return

@@ -13,15 +13,15 @@ export class Projectile {
 		public readonly ID: number,
 		protected path: string,
 		protected particleSystemHandle: bigint,
-		protected SourceUnit: Entity | number,
+		protected SourceUnit: Nullable<Entity | number>,
 		public readonly colorgemcolor: Color,
 		protected speed: number,
 	) { }
 
-	public get Source(): Entity | number {
+	public get Source(): Nullable<Entity | number> {
 		if (this.SourceUnit instanceof Entity)
 			return this.SourceUnit
-		return EntityManager.EntityByIndex(this.SourceUnit) || this.SourceUnit
+		return EntityManager.EntityByIndex(this.SourceUnit as number) || this.SourceUnit
 	}
 	public get ParticlePath(): string { return this.path }
 	public get ParticleSystemHandle(): string { return this.ParticleSystemHandle }
@@ -35,7 +35,7 @@ export class LinearProjectile extends Projectile {
 
 	constructor(
 		projID: number,
-		ent: Entity | number,
+		ent: Nullable<Entity | number>,
 		path: string,
 		particleSystemHandle: bigint,
 		public readonly MaxSpeed: number,
@@ -59,18 +59,18 @@ export class TrackingProjectile extends Projectile {
 
 	constructor(
 		projID: number,
-		source: Entity | number,
-		private TargetEntity: Entity | number,
+		source: Nullable<Entity | number>,
+		private TargetEntity: Nullable<Entity | number>,
 		speed: number,
-		public readonly sourceAttachment: number,
+		public readonly sourceAttachment: number | undefined,
 		path: string,
 		particleSystemHandle: bigint,
 		private dodgeable: boolean,
 		private isAttack: boolean,
 		private expireTime: number,
-		public readonly maximpacttime: number,
+		public readonly maximpacttime: number | undefined,
 		public LaunchTick: number,
-		private readonly TargetLoc_: Vector3,
+		private readonly TargetLoc_ = new Vector3(),
 		colorgemcolor: Color,
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
@@ -90,18 +90,18 @@ export class TrackingProjectile extends Projectile {
 		return this.TargetLoc_
 	}
 
-	public get Target(): Entity | number {
+	public get Target(): Nullable<Entity | number> {
 		if (this.IsDodged)
 			return undefined
 		if (!(this.TargetEntity instanceof Entity)) {
-			let ent = EntityManager.EntityByIndex(this.TargetEntity)
+			let ent = EntityManager.EntityByIndex(this.TargetEntity as number)
 			if (ent !== undefined)
 				return this.TargetEntity = ent
 		}
 		return this.TargetEntity
 	}
 
-	public Update(TargetEntity: Entity | number, Speed: number, path: string, particleSystemHandle: bigint, dodgeable: boolean, isAttack: boolean, expireTime: number, launchTick: number, targetLoc: Vector3) {
+	public Update(TargetEntity: Nullable<Entity | number>, Speed: number, path: string, particleSystemHandle: bigint, dodgeable: boolean, isAttack: boolean, expireTime: number, launchTick: number, targetLoc: Vector3) {
 		this.TargetEntity = TargetEntity
 		this.speed = Speed
 		this.path = path

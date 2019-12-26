@@ -6,7 +6,7 @@ import * as AutoItems from "./module/AutoItems/Helper"
 import * as AutoDisable from "./module/AutoDisable/Helper"
 
 EventsSDK.on("Tick", () => {
-	if (LocalPlayer.IsSpectator)
+	if (LocalPlayer!.IsSpectator)
 		return
 	//AutoBuy.Init()
 	AutoGlyph.Tick()

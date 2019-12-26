@@ -19,9 +19,7 @@ class CourierData extends Data {
 		&& !cour.IsEnemy()
 		&& cour.IsControllable
 
-	public CastCourAbility = (num: number, cour: Courier) =>
-		cour.IsControllable
-		&& cour.AbilitiesBook.GetSpell(num).UseAbility()
+	public CastCourAbility = (num: number, cour: Courier) => cour.AbilitiesBook.GetSpell(num)?.UseAbility()
 
 	public Position(BestOrSafe: boolean = false, custom_line?: LaneSelectionFlags_t): Vector3 {
 		let num = 2, team_id = this.Team ? 1 : 0,
@@ -40,25 +38,25 @@ class CourierData extends Data {
 	private get Team() {
 		return Owner?.Team === Team.Dire
 	}
-	private readonly CourierBestPosition = {
-		0: { // team_id
+	private readonly CourierBestPosition: { [teamid: number]: Vector3 }[] = [
+		{ // team_id
 			1: this.SAFE_LANE_RADDIANT,
 			2: this.OFFLANE_LANE_RADDIANT,
 			4: this.MIDDLE_LANE_RADDIANT,
 			8: this.SOFT_SUPPORT_RADDIANT,
 			16: this.HARD_SUPPORT_RADDIANT,
 		},
-		1: { // team_id
+		{ // team_id
 			1: this.SAFE_LANE_DIRE,
 			2: this.OFFLANE_LANE_DIRE,
 			4: this.MIDDLE_LANE_DIRE,
 			8: this.SOFT_SUPPORT_DIRE,
 			16: this.HARD_SUPPORT_DIRE,
 		},
-		2: { // team_id
+		{ // team_id
 			0: this.SAFE_POSITION_RADDIANT,
 			1: this.SAFE_POSITION_DIRE,
 		}
-	}
+	]
 }
 export let CourierBase = new CourierData
