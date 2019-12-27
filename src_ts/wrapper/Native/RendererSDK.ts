@@ -4,10 +4,7 @@ import Vector3 from "../Base/Vector3"
 import QAngle from "../Base/QAngle"
 import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
-import Events from "../Managers/Events"
 import { FontFlags_t } from "../Enums/FontFlags_t"
-
-let WindowSize = new Vector2()
 
 enum CommandID {
 	SET_COLOR = 0,
@@ -42,6 +39,7 @@ let RendererSDK_ = new (class RendererSDK {
 	public readonly DefaultShapeSize: Vector2 = new Vector2(5, 5)
 
 	public AlternateW2S = false
+	public WindowSize_ = new Vector2()
 
 	private commandCache = new Uint8Array()
 	private commandCacheSize = 0
@@ -53,7 +51,7 @@ let RendererSDK_ = new (class RendererSDK {
 	 * Cached. Updating every 5 sec
 	 */
 	public get WindowSize(): Vector2 {
-		return WindowSize.Clone()
+		return this.WindowSize_.Clone()
 	}
 	/**
 	 * @param pos world position that needs to be turned to screen position
@@ -403,7 +401,5 @@ let RendererSDK_ = new (class RendererSDK {
 		view.setUint8(off += 1, Math.min(color.a, 255))
 	}
 })()
-
-Events.after("Draw", () => WindowSize = Vector2.fromIOBuffer(Renderer.WindowSize)!)
 
 export default RendererSDK_

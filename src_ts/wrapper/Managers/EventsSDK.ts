@@ -129,6 +129,7 @@ Events.on("Update", cmd => {
 })
 
 Events.on("Draw", () => {
+	Vector2.fromIOBuffer(Renderer.WindowSize)!.CopyTo(RendererSDK.WindowSize_)
 	WASM.OnDraw()
 	EventsSDK.emit("Draw")
 })
