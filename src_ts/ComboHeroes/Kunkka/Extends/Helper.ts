@@ -6,14 +6,17 @@ import { Owner, initItemsTargetMap } from "../Listeners"
 class KunkkaHelper {
 	// loop-optimizer: KEEP
 	public Spots: Vector3[] = [
-		new Vector3(4205.449707, -399.444458, 384.000000),
-		new Vector3(-2533.218750, -552.533875, 385.125000), // calibrated
-		new Vector3(-1865.487549, 4438.296875, 386.390900), // calibrated
-		new Vector3(2546.226563, 41.390625, 384.000000), // calibrated
-		new Vector3(-4255.669922, 3469.897461, 256.000000), // calibrated
-		new Vector3(-255.859379, -3266.130127, 384.000000), // calibrated
-		new Vector3(424.332947, -4665.735352, 396.747070), // calibrated
-		new Vector3(-3744.976563, 853.449219, 385.992188), // calibrated
+		new Vector3(-3959.96875, 1293.75, 384),
+		new Vector3(1271.53125, -5256.375, 384), // calibrated
+		new Vector3(-347.375, -3343.46875, 256), // calibrated
+		new Vector3(-4367.71875, 3553.1875, 256), // calibrated
+		new Vector3(1213.28125, 3383.34375, 256), // calibrated
+		new Vector3(-2487.4375, 4847.375, 256), // calibrated
+		new Vector3(-2664.1875, -528.28125, 256),
+		new Vector3(-1828.3125, 4413.78125, 384),
+		new Vector3(2124.75, -336, 256),
+		new Vector3(4213.1875, -286.625, 384),
+		new Vector3(4851.40625, -4262.03125, 256)
 	]
 	private ModifierCanCastAbility: string[] = [
 		"modifier_bashed",

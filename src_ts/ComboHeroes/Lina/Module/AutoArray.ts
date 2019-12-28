@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { Ability, Game, Hero, ExecuteOrder } from "wrapper/Imports"
+import { Ability, Game, Hero, ExecuteOrder, TickSleeper } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
 import { Heroes, Owner, initAbilityMap } from "../Listeners"
 import { State, СomboAbility } from "../Menu"
@@ -9,6 +9,7 @@ function IsValidAbility(ability: Ability, target: Hero) {
 		&& Owner.Distance2D(target) <= ability.CastRange
 }
 let CancelOredr = true
+let Sleep = new TickSleeper
 function GetTarget(): Hero | undefined {
 	return Heroes.sort((a, b) => b.Distance2D(Owner) - a.Distance2D(Owner))
 		.filter(x => x.IsValid && x.IsAlive && x.IsEnemy() && !x.IsMagicImmune)
@@ -29,18 +30,20 @@ export function InitFindCyclone() {
 			+ (Owner.TurnTime(target.Position)) + (Game.Ping / 1000),
 		RemainingTime = (cycloneDebuff !== undefined && cycloneDebuff.RemainingTime)
 	if (RemainingTime <= CastTime) {
-		setTimeout(() => CancelOredr = true, (CastTime * 1000))
-		CancelOredr = false
+		CancelOredr = true
+		Sleep.Sleep(CastTime * 1000)
 	}
 	if (!IsValidAbility(Abilities.LightStrikeArray, target) || RemainingTime > CastTime)
 		return
-	Abilities.UseAbility(Abilities.LightStrikeArray, false, true, target.Position)
-	return
+	if (!Abilities.UseAbility(Abilities.LightStrikeArray, false, true, target.Position) || !Sleep.Sleeping) {
+		CancelOredr = false
+		return
+	}
 }
 
 export function OnExecuteOrder(order: ExecuteOrder): boolean {
 	return !Base.IsRestrictions(State) || CancelOredr
 }
 export function FindCycloneGameEnded() {
-	// Sleep.ResetTimer()
+	Sleep.ResetTimer()
 }

@@ -131,7 +131,8 @@ export function DrawRunes() {
 				if (distance <= 500 || (hero !== undefined && hero.Name === "npc_dota_hero_pudge" && hero.Distance2D(val) <= 10)) {
 					bountyAlreadySeted = false
 					bountyRunesAr[key] = false
-					setTimeout(() => Particle.clear(), 1500)
+					if (Particle.size !== 0)
+						Particle.clear()
 				}
 			})
 		})
@@ -161,7 +162,8 @@ export function EntityDestroyedRune(x: Entity) {
 				return false
 			bountyAlreadySeted = false
 			bountyRunesAr[key] = false
-			setTimeout(() => Particle.clear(), 1500)
+			if (Particle.size !== 0)
+				Particle.clear()
 			return true
 		})
 		ArrayExtensions.arrayRemove(Runes, x)

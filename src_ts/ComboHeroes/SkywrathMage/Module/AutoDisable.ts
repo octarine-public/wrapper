@@ -13,41 +13,34 @@ function IsValidDisable(Name: Ability | Item, target: Hero, Selectror: Menu.Imag
 		&& !Base.CancelAbilityRealm(target)
 		&& Name.CanBeCasted() && MyHero.Distance2D(target) <= Name.CastRange
 }
-function ClearParticleHandler() {
-	if (ParticleHandler !== undefined) {
-		ParticleHandler = undefined
-	}
-}
 export function AutoDisable() {
-	if (!Base.IsRestrictions(State) || !AutoDisableState.value || ComboKey.is_pressed || Sleep.Sleeping) {
+	if (!Base.IsRestrictions(State) || !AutoDisableState.value || ComboKey.is_pressed || Sleep.Sleeping)
 		return
-	}
-	if (MyHero === undefined) {
+
+	if (MyHero === undefined)
 		return
-	}
 	let ParticleTaget = ParticleHandler as Hero,
 		target = ParticleHandler === undefined
-			? EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).find(x =>
-				x.IsValid && x.IsVisible && x.IsAlive
+			? EntityManager.GetEntitiesByClass(Hero).find(x =>
+				x.IsValid
+				&& x.IsEnemy()
+				&& x.IsAlive
+				&& x.IsVisible
 				&& !x.IsIllusion
 				&& Base.Disable(x) && !x.IsMagicImmune)
 			: ParticleTaget.IsEnemy() && !ParticleTaget.IsMagicImmune
 				&& ParticleTaget.IsVisible
 				&& ParticleTaget.IsAlive ? ParticleTaget : undefined
 
-	if (ParticleHandler) {
-		setTimeout(() => ClearParticleHandler, 1000)
-	}
-
-	if (target === undefined) {
+	if (target === undefined)
 		return
-	}
+
 	let Items = initItemsMap.get(MyHero),
 		Abilities = initAbilityMap.get(MyHero)
 
-	if (Items === undefined || Abilities === undefined) {
+	if (Items === undefined || Abilities === undefined)
 		return
-	}
+
 	if (IsValidDisable(Items.Sheeps, target, AutoDisableAbilityItems)) {
 		MyHero.CastTarget(Items.Sheeps, target)
 		ParticleHandler = undefined
@@ -78,9 +71,8 @@ export function AutoDisable() {
 	return
 }
 export function ParticleCreated(id: number, path: string, handle: bigint, attach: ParticleAttachment_t, target?: Entity | number) {
-	if (target !== undefined && handle === 6400371855556675384n) {
+	if (target !== undefined && handle === 6400371855556675384n) // blink_end
 		ParticleHandler = target
-	}
 }
 export function AutoDisableDeleteVars() {
 	Sleep.ResetTimer()

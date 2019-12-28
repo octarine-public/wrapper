@@ -60,9 +60,7 @@ EventsSDK.on("GameStarted", hero => {
 		Owner = hero
 	if (!State.value || !StateBestPos.value)
 		return
-	setTimeout(() =>
-		EntityManager.GetEntitiesByClass(Courier)
-			.some(courier => !courier.IsEnemy() && MoveCourier(false, courier)), 1000)
+	EntityManager.GetEntitiesByClass(Courier).some(courier => !courier.IsEnemy() && MoveCourier(false, courier))
 })
 
 EventsSDK.on("GameEnded", () => {

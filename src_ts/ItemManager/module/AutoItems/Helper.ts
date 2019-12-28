@@ -43,6 +43,7 @@ import item_bottle from "../../../wrapper/Objects/Abilities/Items/item_bottle"
 import item_power_treads from "../../../wrapper/Objects/Abilities/Items/item_power_treads"
 
 const Base = new ItemManagerBase()
+const SleepCape = new TickSleeper()
 const TickSleep = new TickSleeper()
 
 const BuffsTango = [
@@ -215,6 +216,7 @@ function AutoUseItems(unit: Unit) {
 					if (val.IsZero() || unit.Distance2D(val) > item.CastRange)
 						return
 					glimer.set(val, unit)
+					SleepCape.Sleep(1500)
 				})
 
 				if (
@@ -583,8 +585,8 @@ export function OnExecuteOrder(args: ExecuteOrder): boolean {
 export function Tick() {
 	if (!StateBase.value || TickSleep.Sleeping || !State.value)
 		return
-	if (ParticleGlimer.size !== 0 || glimer.size !== 0)
-		setTimeout(() => GlimerClear(), 2000)
+	if (SleepCape.Sleeping && (ParticleGlimer.size !== 0 || glimer.size !== 0))
+		GlimerClear()
 	EntityManager.GetEntitiesByClass(Unit).some(x => !x.IsEnemy() && filterUnits(x) && AutoUseItems(x))
 }
 

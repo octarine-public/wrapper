@@ -21,7 +21,7 @@ import {
 
 let TargetCombo: Hero
 export function Draw() {
-	if (LocalPlayer === undefined || LocalPlayer.IsSpectator || Owner === undefined)
+	if (LocalPlayer === undefined || LocalPlayer?.IsSpectator || Owner === undefined)
 		return
 
 	let Particle = initDrawMap.get(Owner),
@@ -37,31 +37,35 @@ export function Draw() {
 	Particle.Render(Abilities.MarksSpot, "kunkka_x_marks_the_spot", Abilities.MarksSpot.CastRange, Radius, State, DrawingColorAbilityXMarks.Color)
 	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius, Radius, State, BlinkRadiusItemColor.Color)
 	Particle.Render(Abilities.Tidebringer, "kunkka_tidebringer", Abilities.Tidebringer.GetSpecialValue("cleave_distance"), Radius, State, DrawingColorAbilityBringer.Color)
+
 	if (Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
-	// TODO recode..
-	if (!DrawRadiusMouse.value)
-		return
-	if (!XMarkPos.IsZero()) {
-		if (TargetCombo === undefined)
-			TargetCombo = MouseTarget
 
-		if (TargetCombo !== undefined) {
-			let textAroundMouse = "",
-				TargetName = TargetCombo.Name.toString().split("_").splice(3, 3).join(" ")
-			switch (XMarkType) {
-				case 0:
-				case 1:
-					textAroundMouse = "Combo: (" + TargetName + ")"
-					break
-				default:
-					textAroundMouse = "Torrent: (" + TargetName + ")"
-					break
+
+	// TODO recode..
+	if (DrawRadiusMouse.value) {
+		if (!XMarkPos.IsZero()) {
+			if (TargetCombo === undefined)
+				TargetCombo = MouseTarget
+
+			if (TargetCombo !== undefined) {
+				let textAroundMouse = "",
+					TargetName = TargetCombo.Name.toString().split("_").splice(3, 3).join(" ")
+				switch (XMarkType) {
+					case 0:
+					case 1:
+						textAroundMouse = "Combo: (" + TargetName + ")"
+						break
+					default:
+						textAroundMouse = "Torrent: (" + TargetName + ")"
+						break
+				}
+				RendererSDK.TextAroundMouse(textAroundMouse, false, DrawRadiusMouseColor.Color)
 			}
-			RendererSDK.TextAroundMouse(textAroundMouse, false, DrawRadiusMouseColor.Color)
-		}
-	} else if (XMarkPos.IsZero())
-		TargetCombo = undefined
+		} else if (XMarkPos.IsZero())
+			TargetCombo = undefined
+	}
+
 	InitDrawStaker()
 }
 
