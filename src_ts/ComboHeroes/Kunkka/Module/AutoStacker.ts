@@ -17,7 +17,6 @@ function IsInRangeCreepSpot(spot: Vector3) {
 export function InitStaker() {
 	if (!Base.IsRestrictions(State) || !AutoStakerState.value)
 		return
-	console.log(LocalPlayer?.Hero?.Position)
 	let Abilities = initAbilityMap.get(Owner)
 	if (Abilities === undefined)
 		return

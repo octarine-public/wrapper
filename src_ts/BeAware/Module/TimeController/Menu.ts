@@ -1,5 +1,5 @@
-import { Color } from "wrapper/Imports";
-import { Menu, MenuBase } from "../../abstract/Menu.Base";
+import { Color } from "wrapper/Imports"
+import { Menu, MenuBase } from "../../abstract/Menu.Base"
 const { BaseTree, State } = MenuBase(Menu, "Time Controller")
 
 let TreeRune = BaseTree.AddNode("Runes"),
@@ -57,6 +57,7 @@ let RoshanTree = BaseTree.AddNode("Roshan"),
 	UseScanForAlies = RoshanTree.AddToggle("Use scan in roshpit", true),
 	PingForAllies = RoshanTree.AddToggle("Ping for allies in roshpit", true),
 	NotificationRoshanStateChat = RoshanTree.AddToggle("Chat").SetTooltip("Send notification to chat alies"),
+	NotificationRoshanInterval = RoshanTree.AddSlider("Interval send chat/ping", 5, 3, 30),
 	NotificationRoshanStateSound = RoshanTree.AddSlider("Sound volume%", 1, 0, 100),
 
 	drawMenu = RoshanTree.AddNode("Draw Settings"),
@@ -194,5 +195,6 @@ export {
 	DrawTimerRadarX,
 	DrawTimerRadarY,
 	RadarTreeSettingsState,
-	DrawTimerRadarSize
+	DrawTimerRadarSize,
+	NotificationRoshanInterval
 }

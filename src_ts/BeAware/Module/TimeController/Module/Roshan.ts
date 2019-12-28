@@ -20,7 +20,8 @@ import {
 	statusPosY,
 	UseScanForAlies,
 	PingForAllies,
-	drawImageHeroWorld
+	drawImageHeroWorld,
+	NotificationRoshanInterval
 } from "../Menu"
 import { RoshanPosition } from "../Entities"
 
@@ -119,7 +120,7 @@ export function RoshanTick() {
 		}
 		if (NotificationRoshanStateChat.value)
 			Game.ExecuteCommand("chatwheel_say 53")
-		checkTickMessage = Time + 5
+		checkTickMessage = Time + NotificationRoshanInterval.value
 	}
 }
 
