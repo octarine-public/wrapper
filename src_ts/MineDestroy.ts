@@ -6,7 +6,7 @@ const menuState = menu.AddToggle("State", true)
 let mines: Unit[] = [] // C_DOTA_NPC_TechiesMines
 
 EventsSDK.on("EntityCreated", ent => {
-	if (ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines && ent.Name === "npc_dota_techies_land_mine")
+	if (ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines)
 		mines.push(ent as Unit)
 })
 
@@ -29,11 +29,8 @@ EventsSDK.on("Tick", () => {
 		&& mine_.IsAlive
 		&& hero!.CanAttack(mine_)
 		&& mine_.IsInRange(hero!, hero!.AttackRange)
+		&& mine_.Name === "npc_dota_techies_land_mine"
 	)
 	if (mine !== undefined)
 		hero.AttackTarget(mine)
-})
-
-EventsSDK.on("GameEnded", () => {
-	mines = []
 })

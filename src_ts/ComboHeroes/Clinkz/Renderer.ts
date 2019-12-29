@@ -17,5 +17,5 @@ export function Draw() {
 	Particle.RenderLineTarget(Base, DrawTargetItem, State, MouseTarget)
 	Particle.RenderAttackRange(State, AttackRangeRadius, Owner.AttackRange, RadiusColorAttackRange.Color)
 	Particle.Render(Abilities.BurningArmy, "clinkz_burning_army", Abilities.BurningArmy.CastRange, Radius, State, BurningArmyRadiusColor.Color)
-	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius + Owner.CastRangeBonus, Radius, State, BlinkRadiusItemColor.Color)
+	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.CastRange, Radius, State, BlinkRadiusItemColor.Color)
 }

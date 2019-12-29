@@ -22,8 +22,8 @@ import {
 let checkTick: number = 0,
 	checkTickPower: number = 0,
 	bountyRunesAr = [false, false, false, false],
-	bountyRunesPos: Vector3[] = [],
-	PowerRunesPos: Vector3[] = [],
+	bountyRunesSpawners: Entity[] = [],
+	powerRunesSpawners: Entity[] = [],
 	bountyAlreadySeted = false,
 	RunePowerTimer: boolean = true,
 	RuneBountyTimerBool: boolean = true,
@@ -31,12 +31,20 @@ let checkTick: number = 0,
 	mt_rand_power: number,
 	mt_rand_bounty: number
 
+function GetBountyRunesPos(): Vector3[] {
+	return bountyRunesSpawners.map(x => x.Position)
+}
+
+function GetPowerRunesPos(): Vector3[] {
+	return powerRunesSpawners.map(x => x.Position)
+}
+
 function mt_rand(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 export function DrawRunes() {
-	if (Game.GameTime <= 0 || Game.LevelNameShort === "hero_demo_main")
+	if (Game.GameTime <= 0 || Game.MapName.startsWith("hero_demo"))
 		return
 	// power
 	let Time = Game.RawGameTime
@@ -46,7 +54,7 @@ export function DrawRunes() {
 		if (TreeNotificationPowerChat.value && RunePowerTime >= percent || RunePowerTime === 0)
 			RunePowerTimer = true
 		// loop-optimizer: KEEP
-		PowerRunesPos.forEach(val => {
+		GetPowerRunesPos().forEach(val => {
 			if (mt_rand_power === 0)
 				mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
 			if (mt_rand_power !== 0 && RunePowerTime >= (percent - mt_rand_power)) {
@@ -86,7 +94,7 @@ export function DrawRunes() {
 			}
 		}
 		// loop-optimizer: KEEP
-		bountyRunesPos.forEach((val, key) => {
+		GetBountyRunesPos().forEach((val, key) => {
 			if (mt_rand_bounty === 0) {
 				mt_rand_bounty = mt_rand(NotifyTimeBountyMin.value, NotifyTimeBountyMax.value)
 			}
@@ -122,7 +130,7 @@ export function DrawRunes() {
 			if (position === undefined)
 				return
 			// loop-optimizer: KEEP
-			bountyRunesPos.forEach((val, key) => {
+			GetBountyRunesPos().forEach((val, key) => {
 				//Bounty Rune
 				if (handle !== 17096352592726237548n && handle !== 16517413739925325824n)
 					return
@@ -141,22 +149,21 @@ export function DrawRunes() {
 
 export function EntityCreatedRune(x: Entity) {
 	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Bounty)
-		bountyRunesPos.push(x.Position)
+		bountyRunesSpawners.push(x)
 	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup)
-		PowerRunesPos.push(x.Position)
+		powerRunesSpawners.push(x)
 }
 
 export function EntityDestroyedRune(x: Entity) {
-
 	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Bounty)
-		ArrayExtensions.arrayRemove(bountyRunesPos, x.Position)
+		ArrayExtensions.arrayRemove(bountyRunesSpawners, x)
 
 	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup)
-		ArrayExtensions.arrayRemove(PowerRunesPos, x.Position)
+		ArrayExtensions.arrayRemove(powerRunesSpawners, x)
 
 	if (x instanceof Rune) {
 		// loop-optimizer: KEEP
-		bountyRunesPos.some((val, key) => {
+		GetBountyRunesPos().some((val, key) => {
 			let distance = val.Distance2D(x.Position)
 			if (distance > 300)
 				return false
@@ -172,9 +179,7 @@ export function EntityDestroyedRune(x: Entity) {
 
 export function RuneGameEnded() {
 	Particle.clear()
-	PowerRunesPos = []
 	bountyRunesAr = []
-	bountyRunesPos = []
 	mt_rand_power = 0
 }
 

@@ -14,7 +14,6 @@ function Deliver(courier: Courier): boolean {
 	//console.log("cour_slots_local: ", cour_slots_local, "items_in_stash: ", items_in_stash)
 	if (
 		items_in_stash > 0
-		&& courier.IsControllable
 		&& courier.Inventory.GetFreeSlots(0, 9).length >= items_in_stash
 		&& free_slots_local >= (items_in_stash + cour_slots_local)
 	) {

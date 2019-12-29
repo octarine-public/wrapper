@@ -65,10 +65,6 @@ Key.OnValue(caller => {
 		ControllablesUnitsDraw.clear()
 })
 
-export function GameStarted() {
-	setTimeout(DrawParticles, 150)
-}
-
 export function GameEnded() {
 	turnStateBlock = false
 	sleeper.FullReset()

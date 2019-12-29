@@ -144,8 +144,8 @@ export default class Entity {
 	public IsVisible = true
 	public Name_ = ""
 
-	public Team = Team.None;
-	public LifeState = LifeState_t.LIFE_ALIVE;
+	public Team = Team.None
+	public LifeState = LifeState_t.LIFE_ALIVE
 	public HP = 0
 	public MaxHP = 0
 

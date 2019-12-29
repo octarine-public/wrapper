@@ -37,7 +37,7 @@ export function Draw() {
 	Particle.Render(Abilities.ArcaneBolt, Abilities.ArcaneBolt.Name, Abilities.ArcaneBolt.CastRange, Radius, State, ArcaneBoltRadiusColor.Color)
 	Particle.Render(Abilities.AncientSeal, Abilities.AncientSeal.Name, Abilities.AncientSeal.CastRange, Radius, State, AncientSealRadiusColor.Color)
 	Particle.Render(Abilities.MysticFlare, Abilities.MysticFlare.Name, Abilities.MysticFlare.CastRange, Radius, State, MysticFlareRadiusColor.Color)
-	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius + MyHero.CastRangeBonus, Radius, State, BlinkRadiusItemColor.Color)
+	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.CastRange, Radius, State, BlinkRadiusItemColor.Color)
 	Particle.RenderConShotRadius(Abilities.ConcussiveShot, Radius, State, ConcussiveShotRadiusColor.Color)
 
 	if (Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || !TextItem.value)

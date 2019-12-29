@@ -7,8 +7,6 @@ import { DrawHelpPosition, DrawState, State } from "./Menu"
 let lastHero: Nullable<Hero>
 let particles: string[] = []
 
-let timeout: TimeoutData | undefined
-
 export const BestPosition = [
 	[
 		new Vector3(-6526, -1450), // top
@@ -24,7 +22,8 @@ export const BestPosition = [
 
 export function DrawParticles() {
 	if (
-		Game.LevelNameShort === "hero_demo_main"
+		particles.length > 0
+		|| Game.MapName.startsWith("hero_demo")
 		|| !stateMain.value
 		|| !State.value
 		|| !DrawState.value
@@ -51,16 +50,9 @@ export function DrawParticles() {
 
 		particles.push(name)
 	})
-
-	timeout = setTimeout(RemoveParticles, 5 * 60 * 1000)
 }
 
 export function RemoveParticles() {
-	if (timeout !== undefined) {
-		timeout.Destroy()
-		timeout = undefined
-	}
-
 	if (lastHero === undefined)
 		return
 

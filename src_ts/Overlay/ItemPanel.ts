@@ -1,5 +1,5 @@
 import {
-	ArrayExtensions, Color, EventsSDK, Game,
+	Color, EventsSDK, Game,
 	Hero, Input, Item, LocalPlayer, Meepo, Menu as MenuSDK,
 	Rectangle, RendererSDK, Vector2, VMouseKeys, DOTAGameUIState_t,
 } from "wrapper/Imports"
@@ -31,7 +31,6 @@ const panelItemsCD = panelItems.AddToggle("Show Cooldown", true)
 const panelItemsCharges = panelItems.AddToggle("Show Charges", true)
 const panelItemsBackpack = panelItems.AddToggle("Show Backpack")
 
-let heroes: Hero[] = []
 let toggledByKey = true
 let isDraggingPanel = true
 
@@ -172,22 +171,6 @@ function DrawCoolDown(position: Vector2, itemCoolDown: string, isTP = false) {
 		colorPanel, undefined, new Vector2(panelSettingsSize.value / (isTP ? 1.6 : 1.4), 700))
 }
 
-EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof Hero && !ent.IsIllusion) {
-		heroes.push(ent)
-	}
-})
-
-EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof Hero) {
-		ArrayExtensions.arrayRemove(heroes, ent)
-	}
-})
-
-EventsSDK.on("GameEnded", () => {
-	heroes = []
-})
-
 EventsSDK.on("Draw", () => {
 
 	if (!menuEnable.value || !toggledByKey || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
@@ -203,7 +186,7 @@ EventsSDK.on("Draw", () => {
 
 	const isHorizontal = IsHorizontal()
 
-	const filteredHeroes = heroes.filter(hero => (!(hero instanceof Meepo) || (hero.UnitIndex === 0))
+	const filteredHeroes = EntityManager.GetEntitiesByClass(Hero).filter(hero => !(hero instanceof Meepo && hero.IsClone)
 		&& (panelAllies.value || hero.IsEnemy()))
 
 	{ // Touch Panel

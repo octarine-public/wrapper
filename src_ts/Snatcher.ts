@@ -25,10 +25,7 @@ enum ESelectedType {
 	ONLY_POWER = 2,
 }
 
-let allRunes: Rune[] = [],
-	allRunesParticles = new Map<Rune, number[]>(),
-	ground_items: PhysicalItem[] = [],
-	npcs: Unit[] = [],
+let allRunesParticles = new Map<Rune, number[]>(),
 	picking_up = new Map<Unit, Rune>(),
 	selectedRuneType: ESelectedType = ESelectedType.ALL,
 	Sleep = new GameSleeper()
@@ -37,7 +34,6 @@ const snatcherMenu = Menu.AddEntry(["Utility", "Snatcher"])
 const stateMain = snatcherMenu.AddToggle("State", true)
 	.OnValue(() => {
 		destroyRuneAllParticles()
-		onDeactivateItems()
 	})
 
 // ----- Rune
@@ -74,11 +70,11 @@ const drawParticleKill = drawParticles.AddToggle("Kill rune")
 
 const itemsMenu = snatcherMenu.AddNode("Items settings")
 
-const stateItems = itemsMenu.AddToggle("Snatch Items", true).OnDeactivate(onDeactivateItems)
+const stateItems = itemsMenu.AddToggle("Snatch Items", true)
 
 itemsMenu.AddKeybind("Items toogle").OnRelease(() => stateItems.value = !stateItems.value)
 
-const itemsHoldKey = itemsMenu.AddKeybind("Items hold key").OnRelease(() => !stateItems.value && onDeactivateItems())
+const itemsHoldKey = itemsMenu.AddKeybind("Items hold key").OnRelease(() => !stateItems.value)
 
 const takeRadius = snatcherMenu.AddSlider("Pickup radius", 150, 50, 500, "Default range is 150, that one don't require rotating unit to pickup something")
 
@@ -98,44 +94,14 @@ const drawStatus = drawMenu.AddToggle("Draw status"),
 	statusPosX = drawMenu.AddSlider("Position X (%)", 0, 0, 100),
 	statusPosY = drawMenu.AddSlider("Position Y (%)", 75, 0, 100)
 
-function onDeactivateItems() {
-	ground_items = []
-}
-
 EventsSDK.on("GameEnded", () => {
-	npcs = []
 	Sleep.FullReset()
-	ground_items = []
 	picking_up.clear()
-})
-
-EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof Rune) {
-		allRunes.push(ent)
-		return
-	}
-
-	if (ent instanceof PhysicalItem) {
-		let m_hItem = ent.Item
-		if (m_hItem !== undefined && listOfItems.IsEnabled(m_hItem.Name))
-			ground_items.push(ent)
-
-		return
-	}
-
-	if (ent instanceof Unit) {
-		npcs.push(ent)
-		return
-	}
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof Rune)
 		removedIDRune(ent)
-	else if (ent instanceof PhysicalItem)
-		ArrayExtensions.arrayRemove(ground_items, ent)
-	else if (ent instanceof Unit)
-		ArrayExtensions.arrayRemove(npcs, ent)
 })
 
 EventsSDK.on("Tick", () => {
@@ -170,11 +136,11 @@ EventsSDK.on("Draw", () => {
 EventsSDK.on("PrepareUnitOrders", order => !picking_up.has(order.Unit as Unit))
 
 function GetControllables() {
-	return npcs.filter(npc =>
+	return EntityManager.GetEntitiesByClass(Unit).filter(npc =>
 		(npc instanceof Hero || npc.m_pBaseEntity instanceof C_DOTA_Unit_SpiritBear)
 		&& !npc.IsIllusion
+		&& npc.IsControllable
 		&& npc.IsRealUnit
-		&& npc.IsControllable,
 	)
 }
 
@@ -184,7 +150,7 @@ function snatchRunes(controllables: Unit[]) {
 	if (!stateRune.value && !runeHoldKey.is_pressed)
 		return
 
-	allRunes.forEach(rune => {
+	EntityManager.GetEntitiesByClass(Rune).forEach(rune => {
 		if (selectedRuneType === ESelectedType.ONLY_BOUNTY && !rune.HasType(DOTA_RUNES.DOTA_RUNE_BOUNTY))
 			return
 		if (selectedRuneType === ESelectedType.ONLY_POWER && rune.HasType(DOTA_RUNES.DOTA_RUNE_BOUNTY))
@@ -237,9 +203,7 @@ function removedIDRune(rune: Rune) {
 		picking_up.delete(unit)
 		break
 	}
-
-	if (ArrayExtensions.arrayRemove(allRunes, rune))
-		destroyRuneParticles(rune)
+	destroyRuneParticles(rune)
 }
 
 function createRuneParticle(ent: Rune, color: Color, radius: number) {
@@ -285,10 +249,13 @@ function snatchItems(controllables: Unit[]) {
 		return
 
 	let free_controllables = controllables
+	EntityManager.GetEntitiesByClass(PhysicalItem).forEach(item => {
+		let m_hItem = item.Item
+		if (m_hItem === undefined || !listOfItems.IsEnabled(m_hItem.Name))
+			return
 
-	ground_items.forEach(item => {
-		let itemOwner = item.Item.OldOwner,
-			can_take_backpack = item.Item.Name === "item_cheese"
+		let itemOwner = m_hItem.OldOwner,
+			can_take_backpack = m_hItem.Name === "item_cheese"
 
 		free_controllables.some((npc, index) => {
 			if (itemOwner === npc || !npc.IsAlive || !npc.IsInRange(item, takeRadius.value) || !(npc.Inventory.HasFreeSlotsInventory || (can_take_backpack && npc.Inventory.HasFreeSlotsBackpack)))

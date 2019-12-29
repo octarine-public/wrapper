@@ -13,12 +13,8 @@ let IsValidUnit = (unit: Unit) => !unit.IsEnemy()
 	&& !unit.IsIllusion
 	&& !unit.IsInvulnerable && !unit.IsStunned && !unit.IsHexed
 
-function EntityCreate(ent: Entity) {
-	return ent instanceof WardObserver || (ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines
-		&& (ent.Name === "npc_dota_techies_remote_mine"
-			|| ent.Name === "npc_dota_techies_stasis_trap"
-		)
-	)
+function IsInvalidMine(ent: Entity) {
+	return ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines && ent.Name !== "npc_dota_techies_remote_mine" && ent.Name !== "npc_dota_techies_stasis_trap"
 }
 
 export function Tick() {
@@ -31,7 +27,7 @@ export function Tick() {
 			&& StateItems.IsEnabled(item.Name)
 			&& item.IsReady
 			&& item.CanBeCasted(),
-		).some(item => ward_list.filter(ent => ent.IsEnemy() && ent.IsAlive && ent.IsVisible && ent.IsInRange(hero, item.CastRange)
+		).some(item => ward_list.filter(ent => !IsInvalidMine(ent) && ent.IsEnemy() && ent.IsAlive && ent.IsVisible && ent.IsInRange(hero, item.CastRange)
 		).some(ent => {
 			if (ent.Name === "npc_dota_techies_remote_mine" && (item.Name === "item_tango" || item.Name === "item_tango_single"))
 				return false
@@ -41,13 +37,13 @@ export function Tick() {
 		})))
 }
 
-EventsSDK.on("EntityCreated", x => {
-	if (EntityCreate(x))
-		ward_list.push(x)
+EventsSDK.on("EntityCreated", ent => {
+	if (ent instanceof WardObserver || ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines)
+		ward_list.push(ent)
 })
-EventsSDK.on("EntityDestroyed", x => {
-	if (EntityCreate(x))
-		ArrayExtensions.arrayRemove(ward_list, x)
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent instanceof WardObserver || ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines)
+		ArrayExtensions.arrayRemove(ward_list, ent)
 })
 
 export function GameEnded() {

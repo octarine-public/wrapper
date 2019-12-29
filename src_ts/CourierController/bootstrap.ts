@@ -1,12 +1,12 @@
 
 import { EventsSDK, Hero, TickSleeper, Game, Events, LocalPlayer, Courier, EntityManager, ArrayExtensions, Unit } from "wrapper/Imports"
-import { State, StateBestPos } from "./Menu"
+import { State } from "./Menu"
 import { CSODOTALobby } from "./Data/Data"
 import { CourierBase } from "./Data/Helper"
 import { AutoSafe } from "./module/AutoSafe"
 import { AutoDeliver } from "./module/AutoDeliver"
 //import { AutoUseItems } from "./module/AutoUseItems"
-import { MoveCourier, CourierBestPosition } from "./module/BestPosition"
+import { CourierBestPosition } from "./module/BestPosition"
 export let Owner: Nullable<Hero>
 export const Sleep = new TickSleeper()
 export const BestPosSleep = new TickSleeper()
@@ -58,9 +58,6 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 EventsSDK.on("GameStarted", hero => {
 	if (Owner === undefined)
 		Owner = hero
-	if (!State.value || !StateBestPos.value)
-		return
-	EntityManager.GetEntitiesByClass(Courier).some(courier => !courier.IsEnemy() && MoveCourier(false, courier))
 })
 
 EventsSDK.on("GameEnded", () => {

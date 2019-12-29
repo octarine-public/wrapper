@@ -7,9 +7,9 @@ export default class item_ancient_janggo extends Item {
 	public readonly m_pBaseEntity!: C_DOTA_Item_Ancient_Janggo
 
 	public get AuraRadius(): number {
-		return this.m_pBaseEntity.radius
+		return this.GetSpecialValue("radius")
 	}
-	public get Radius(): number {
+	public get AOERadius(): number {
 		return this.AuraRadius
 	}
 

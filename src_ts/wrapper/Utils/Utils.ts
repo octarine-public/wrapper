@@ -133,7 +133,7 @@ DamageIgnoreBuffs.map((ar, i) => { // optimization & beauty trick
 export function Utf8ArrayToStr(array: Uint8Array): string {
 	var out = ""
 
-	for (let i = 0, end = array.byteLength, c = array[i], char2, char3; i < end; i++ , c = array[i])
+	for (let i = 0, end = array.byteLength, c = array[i], char2, char3; i < end; i++, c = array[i])
 		switch (c >> 4) {
 			case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
 				// 0xxxxxxx
@@ -208,6 +208,36 @@ export function GetProportionalScaledVector(vec: Vector2, apply_screen_scaling =
 		h = 960
 	vec.x = Math.floor(h / 0x300 * vec.x / magic)
 	return vec
+}
+
+export function parseEnumString(enum_object: any /* { [key: string]: number } */, str: string): number {
+	let re = /(\w+)\s?(\||\&|\+|\-)?/g,
+		last_tok = "",
+		res = 0
+	while (true) {
+		const regex_res = re.exec(str)
+		if (regex_res === null)
+			return res
+		let parsed_name = (enum_object[regex_res[1]] as number | undefined) ?? 0
+		switch (last_tok) {
+			case "&":
+				res &= parsed_name
+				break
+			case "|":
+				res |= parsed_name
+				break
+			case "+":
+				res += parsed_name
+				break
+			case "-":
+				res -= parsed_name
+				break
+			default:
+				res = parsed_name
+				break
+		}
+		last_tok = regex_res[2] || ""
+	}
 }
 
 export const CursorWorldVec: Vector3 = new Vector3()

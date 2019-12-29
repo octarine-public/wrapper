@@ -59,6 +59,7 @@ export { default as Meepo } from "./Objects/Heroes/Meepo"
 export { default as Roshan } from "./Objects/Units/Roshan"
 
 export { default as Ability } from "./Objects/Base/Ability"
+export { default as AbilityData } from "./Objects/DataBook/AbilityData"
 export { default as Item } from "./Objects/Base/Item"
 export {
 	default as Modifier,

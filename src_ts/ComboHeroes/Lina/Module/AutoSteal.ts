@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { Ability, Hero, Flow_t } from "wrapper/Imports"
 import { Base } from "../Extends/Helper"
-import { Heroes, Owner, initAbilityMap } from "../Listeners"
+import { Owner, initAbilityMap } from "../Listeners"
 import { AutoStealAbility, AutoStealState, BladeMailCancel, State } from "../Menu"
 
 function IsReadySteal(ability: Ability, target: Hero) {
@@ -13,19 +13,14 @@ function IsReadySteal(ability: Ability, target: Hero) {
 export function InitAutoSteal() {
 	if (!Base.IsRestrictions(State) || !AutoStealState.value)
 		return
-	let target = Heroes.sort((a, b) => b.Distance2D(Owner) - a.Distance2D(Owner))
-		.filter(x => x.IsValid && x.IsAlive && x.IsEnemy())
-		.find(e => !e.IsMagicImmune && !e.IsInvulnerable)
-
-	if (target === undefined || target.ModifiersBook.GetAnyBuffByNames(
-		["modifier_item_helm_of_the_undying", "modifier_skeleton_king_reincarnation_scepter_active"]
-	) || (BladeMailCancel.value && target.HasBuffByName("modifier_item_blade_mail_reflect")))
+	let target = EntityManager.GetEntitiesByClass(Hero).sort((a, b) => a.Distance2D(Owner) - b.Distance2D(Owner))
+		.find(x => !x.IsIllusion && x.IsAlive && x.IsEnemy() && !x.IsMagicImmune && !x.IsInvulnerable)
+	if (target === undefined || target.HasBuffByName("modifier_skeleton_king_reincarnation_scepter_active")
+		|| (BladeMailCancel.value && target.HasBuffByName("modifier_item_blade_mail_reflect")))
 		return
-
 	let Abilities = initAbilityMap.get(Owner)
 	if (Abilities === undefined)
 		return
-
 	let DMG_TYPE_LAGUNA = Owner.HasScepter
 		? DAMAGE_TYPES.DAMAGE_TYPE_PURE
 		: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,

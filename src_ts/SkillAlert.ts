@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Color, Entity, EntityManager, EventsSDK, Game, Hero, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, DOTAGameUIState_t } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Color, Entity, EventsSDK, Game, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, DOTAGameUIState_t } from "wrapper/Imports"
 
 const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	active = menu.AddToggle("Active", true),
@@ -8,10 +8,6 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	icons = spellIcons.AddToggle("Show spell icons", false),
 	size = spellIcons.AddSlider("Size", 30, 3, 100),
 	opacity = spellIcons.AddSlider("Opacity", 255, 0, 255),
-	chat = menu.AddNode("Send to chat"),
-	// pick = chat.AddCheckBox("Pick on position"),
-	chatActive = chat.AddToggle("Chat say", false),
-	chatRangeCheck = chat.AddSlider("Range Check", 1300, 200, 5000),
 	arModifiers = [
 		"modifier_invoker_sun_strike",
 		"modifier_kunkka_torrent_thinker",
@@ -63,16 +59,6 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		"impact_radius",
 	],
 	talent: any[] = [false, "special_bonus_unique_kunkka"],
-	arMessages = [
-		"SunStrike near ",
-		"Torrent near ",
-		"Light Strike Array near ",
-		"Split Earth near ",
-		"Spirit Breaker charged on ",
-		"Tusk snowballed on ",
-		"LifeStealer sit in ",
-		"Primal Spring near ",
-	],
 	arNames = new Map<string, string>([
 		["invoker_sun_strike", "Sun Strike"],
 		["kunkka_torrent", "Torrent"],
@@ -80,7 +66,7 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		["leshrac_split_earth", "Split Earth"],
 		["monkey_king_primal_spring", "Primal Spring"],
 	])
-let arTimers = new Map<Modifier, [number, number, string, Vector3]>(),
+let arTimers = new Map<Modifier, [number, number, string, Entity]>(),
 	arHeroMods = new Map<Modifier, number>()
 
 let phaseSpells = [
@@ -92,63 +78,49 @@ let phaseSpells = [
 	"lion_impale",
 ]
 
+let remove_list: Array<[number, number]> = []
 EventsSDK.on("ModifierCreated", buff => {
 	let ent = buff.Parent!
-	if (ent.Name === "npc_dota_thinker") {
-		if (!ent.IsEnemy())
-			return
-		let index = arModifiers.indexOf(buff.Name)
-		if (index !== -1) {
-			let radius = 175,
-				delay = arDurations[index]
-			let ability = buff.Ability
-			if (ability !== undefined) {
-				if (arSpecialValues[index])
-					radius = ability.GetSpecialValue(arSpecialValues[index])
-				if (arSpecialDuration[index])
-					delay = ability.GetSpecialValue(arSpecialDuration[index])
-				else if (ability.ChannelStartTime)
-					delay = ability.ChannelStartTime
-				let talent_class = talent[index]
-				if (talent_class !== undefined && talent_class !== false)
-					radius += ability.Owner!.GetTalentValue(talent_class)
-			}
-			let abPart: number
-			if (arParticles[index]) {
-				abPart = ParticlesSDK.Create(arParticles[index][0], ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
-				arParticles[index][1].forEach((val, i) => {
-					let pos: Vector3
-					switch (val) {
-						case "pos":
-							pos = ent.Position
-							break
-						case "rad":
-							pos = new Vector3(radius, radius, radius)
-							break
-						default:
-							pos = new Vector3()
-							break
-					}
-					ParticlesSDK.SetControlPoint(abPart, i, pos)
-				})
-			}
-			arTimers.set(buff, [Game.GameTime, delay, ability?.Name ?? arAbilities[index], ent.Position])
-			if (active.value && chatActive.value && arMessages[index]) {
-				let heroes = EntityManager.GetEntitiesInRange(ent.Position, chatRangeCheck.value, ent_ => ent_ instanceof Hero && !ent_.IsEnemy()),
-					names: string[] = [],
-					string = ""
-				heroes.forEach(hero => names.push(hero.Name.substring(14) + ` in ${Math.floor(hero.Distance2D(ent))} range`))
-				string = names.join(", ")
-				if (!string)
-					string = "no one, lul"
-				Game.ExecuteCommand(`say_team ${arMessages[index] + string}`)
-			}
-			setTimeout(() => {
-				if (abPart)
-					ParticlesSDK.Destroy(abPart)
-			}, delay * 1000)
+	let index = arModifiers.indexOf(buff.Name)
+	if (index !== -1) {
+		let radius = 175,
+			delay = arDurations[index]
+		let ability = buff.Ability
+		if (ability !== undefined) {
+			if (arSpecialValues[index])
+				radius = ability.GetSpecialValue(arSpecialValues[index])
+			if (arSpecialDuration[index])
+				delay = ability.GetSpecialValue(arSpecialDuration[index])
+			else if (ability.ChannelStartTime)
+				delay = ability.ChannelStartTime
+			let talent_class = talent[index]
+			if (talent_class !== undefined && talent_class !== false)
+				radius += ability.Owner!.GetTalentValue(talent_class)
 		}
+		let abPart = -1
+		if (arParticles[index]) {
+			abPart = ParticlesSDK.Create(arParticles[index][0], ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
+			arParticles[index][1].forEach((val, i) => {
+				let pos: Vector3
+				switch (val) {
+					case "pos":
+						pos = ent.Position
+						break
+					case "rad":
+						pos = new Vector3(radius, radius, radius)
+						break
+					default:
+						pos = new Vector3()
+						break
+				}
+				ParticlesSDK.SetControlPoint(abPart, i, pos)
+			})
+		}
+		arTimers.set(buff, [Game.GameTime, delay, ability?.Name ?? arAbilities[index], ent])
+		if (abPart !== -1)
+			remove_list.push([Game.RawGameTime + delay, abPart])
 	}
+
 	let mod = arHeroModifiers.get(buff.Name)
 	if (mod !== undefined) {
 		if (mod[0] && !ent.IsHero)
@@ -157,9 +129,6 @@ EventsSDK.on("ModifierCreated", buff => {
 			return
 		const part = ParticlesSDK.Create(mod[2], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent)
 		arHeroMods.set(buff, part)
-		//console.log(buff.Index)
-		if (chatActive.value && arMessages[mod[3]])
-			Game.ExecuteCommand(`say_team ${arMessages[mod[3]] + ent.Name.substring(9)}`)
 	}
 })
 EventsSDK.on("ModifierRemoved", buff => {
@@ -181,7 +150,7 @@ EventsSDK.on("Draw", () => {
 			arTimers.delete(buff)
 			return
 		}
-		let vector = RendererSDK.WorldToScreen(val[3])
+		let vector = RendererSDK.WorldToScreen(val[3].Position)
 		if (!vector)
 			return
 		if (names.value) {
@@ -257,54 +226,59 @@ function ReturnAOERadius(owner: Unit, name_ability: string): number {
 	return owner.GetAbilityByName(name_ability)?.AOERadius ?? 0
 }
 
+function OnEntityNameChanged(ent: Entity) {
+	if (!(ent instanceof Unit) || ent.Name !== "npc_dota_thinker" || circle_part_list.has(ent))
+		return
+	let owner = ent.Owner as Nullable<Unit>
+	if (owner === undefined) {
+		let buff = (ent as Unit).Buffs[0]
+		if (buff === undefined)
+			return
+		owner = buff.Parent
+	}
+
+	if (owner === undefined || !owner.IsEnemy())
+		return
+
+	let rad = 0
+	switch (owner.Name) {
+		case "npc_dota_hero_invoker":
+			rad = ReturnAOERadius(owner, "invoker_sun_strike")
+			break
+		case "npc_dota_hero_kunkka":
+			rad = ReturnAOERadius(owner, "kunkka_torrent")
+			break
+		case "npc_dota_hero_lina":
+			rad = ReturnAOERadius(owner, "lina_light_strike_array")
+			break
+		case "npc_dota_hero_leshrac":
+			rad = ReturnAOERadius(owner, "leshrac_split_earth")
+			break
+		case "npc_dota_hero_enigma":
+			rad = ReturnAOERadius(owner, "enigma_black_hole")
+			break
+		case "npc_dota_hero_arc_warden":
+			rad = ReturnAOERadius(owner, "arc_warden_spark_wraith")
+			break
+		case "npc_dota_hero_alchemist":
+			rad = ReturnAOERadius(owner, "alchemist_acid_spray")
+			break
+		case "npc_dota_hero_abyssal_underlord":
+			rad = ReturnAOERadius(owner, "abyssal_underlord_pit_of_malice")
+			break
+	}
+	if (rad !== 0)
+		DrawParticleCirclePos(ent.Position, rad, ent)
+}
+
 let abils_list: Ability[] = []
 EventsSDK.on("EntityCreated", ent => {
 	if (ent instanceof Ability)
 		abils_list.push(ent)
 
-	if (ent.Name === "npc_dota_thinker") {
-		let owner = ent.Owner as Nullable<Unit>
-		if (owner === undefined) {
-			let buff = (ent as Unit).Buffs[0]
-			if (buff === undefined)
-				return
-			owner = buff.Parent
-		}
-
-		if (owner === undefined || !owner.IsEnemy())
-			return
-
-		let rad = 0
-		switch (owner.Name) {
-			case "npc_dota_hero_invoker":
-				rad = ReturnAOERadius(owner, "invoker_sun_strike")
-				break
-			case "npc_dota_hero_kunkka":
-				rad = ReturnAOERadius(owner, "kunkka_torrent")
-				break
-			case "npc_dota_hero_lina":
-				rad = ReturnAOERadius(owner, "lina_light_strike_array")
-				break
-			case "npc_dota_hero_leshrac":
-				rad = ReturnAOERadius(owner, "leshrac_split_earth")
-				break
-			case "npc_dota_hero_enigma":
-				rad = ReturnAOERadius(owner, "enigma_black_hole")
-				break
-			case "npc_dota_hero_arc_warden":
-				rad = ReturnAOERadius(owner, "arc_warden_spark_wraith")
-				break
-			case "npc_dota_hero_alchemist":
-				rad = ReturnAOERadius(owner, "alchemist_acid_spray")
-				break
-			case "npc_dota_hero_abyssal_underlord":
-				rad = ReturnAOERadius(owner, "abyssal_underlord_pit_of_malice")
-				break
-		}
-		if (rad !== 0)
-			DrawParticleCirclePos(ent.Position, rad, ent)
-	}
+	OnEntityNameChanged(ent)
 })
+EventsSDK.on("EntityNameChanged", OnEntityNameChanged)
 
 EventsSDK.on("EntityDestroyed", ent => {
 	if (!active.value)
@@ -374,6 +348,10 @@ EventsSDK.on("ParticleUpdatedEnt", (id, controlPoint, ent, attach, attachment, f
 EventsSDK.on("ParticleDestroyed", id => particles_table.delete(id))
 
 EventsSDK.on("Tick", () => {
+	remove_list.filter(([time]) => time < Game.RawGameTime).forEach(ar => {
+		ArrayExtensions.arrayRemove(remove_list, ar)
+		ParticlesSDK.Destroy(ar[1])
+	})
 	if (!active.value)
 		return
 

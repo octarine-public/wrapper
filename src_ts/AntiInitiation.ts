@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Flow_t } from "wrapper/Imports"
+import { Ability, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Flow_t } from "wrapper/Imports"
 
 // Menu
 const MenuEntry = Menu.AddEntry(["Utility", "AntiInitiation"])
@@ -104,7 +104,6 @@ var Abils_ = [
 	],
 	Abils: [string, boolean, boolean?][] = [],
 	BuffsDisablers: [string, boolean, boolean?][] = [],
-	heroes: Unit[] = [],
 	ignore_heroes = new Map<Unit, number>()
 
 function GetAbilArray(abilNameToSearch: string) {
@@ -156,7 +155,7 @@ EventsSDK.on("Tick", () => {
 		if (current_time > until)
 			ignore_heroes.delete(hero_)
 	})
-	let needed_heroes = heroes.filter(hero_ => hero_.IsVisible && hero_.IsAlive)
+	let needed_heroes = EntityManager.GetEntitiesByClass(Hero).filter(hero_ => hero_.IsEnemy() && !hero_.IsIllusion && hero_.IsVisible && hero_.IsAlive)
 	if (needed_heroes.some(hero_ =>
 		!ignore_heroes.has(hero_)
 		&& (
@@ -167,13 +166,6 @@ EventsSDK.on("Tick", () => {
 		return
 })
 
-EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof Hero && ent.IsEnemy() && !ent.IsIllusion)
-		heroes.push(ent)
-})
-
-EventsSDK.on("EntityDestroyed", npc => npc instanceof Unit && ArrayExtensions.arrayRemove(heroes, npc))
-
 function TransformToAvailable(hero: Hero, abil_arrays: [string, boolean, boolean?][]): [string, boolean, boolean?][] {
 	if (hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Rubick || hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Morphling)
 		return abil_arrays
@@ -183,7 +175,4 @@ function TransformToAvailable(hero: Hero, abil_arrays: [string, boolean, boolean
 EventsSDK.on("GameStarted", hero => {
 	Abils = TransformToAvailable(hero, Abils_)
 	BuffsDisablers = TransformToAvailable(hero, BuffsDisablers_)
-})
-EventsSDK.on("GameEnded", () => {
-	heroes = []
 })

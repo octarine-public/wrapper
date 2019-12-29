@@ -1,16 +1,12 @@
 import { EventsSDK, Game, RendererSDK, DOTAGameUIState_t } from "wrapper/Imports"
 import { AllClearArray } from "./base/Listeners"
-import { RemoveParticles } from "./modules/CreepBlock/ParticleHelp"
+import { RemoveParticles, DrawParticles } from "./modules/CreepBlock/ParticleHelp"
 
 import * as DrawParticle from "./base/DrawParticle"
 import { stateMain } from "./base/MenuBase"
 
 import * as CreepBlock from "./modules/CreepBlock/Block"
 import * as HeroBlock from "./modules/HeroBlock/Block"
-
-EventsSDK.on("GameStarted", () => {
-	CreepBlock.GameStarted()
-})
 
 EventsSDK.on("GameEnded", () => {
 	DrawParticle.GameEnded()
@@ -21,6 +17,10 @@ EventsSDK.on("GameEnded", () => {
 })
 
 EventsSDK.on("Tick", () => {
+	if (Game.RawGameTime > 300)
+		RemoveParticles()
+	else
+		DrawParticles()
 	if (!stateMain.value)
 		return
 

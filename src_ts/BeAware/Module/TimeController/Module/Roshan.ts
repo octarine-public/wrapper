@@ -23,7 +23,7 @@ import {
 	drawImageHeroWorld,
 	NotificationRoshanInterval
 } from "../Menu"
-import { RoshanPosition } from "../Entities"
+import { GetRoshanPosition } from "../Entities"
 
 var Timer = 0,
 	Units: [Entity, number][] = [],
@@ -111,10 +111,10 @@ export function RoshanTick() {
 				? Game.ScanCooldownRadiant
 				: Game.ScanCooldownDire
 			if (cd === 0) {
-				Player.Scan(RoshanPosition)
+				Player.Scan(GetRoshanPosition())
 			}
 			if (PingForAllies.value) {
-				RoshanPosition.toIOBuffer()
+				GetRoshanPosition().toIOBuffer()
 				Minimap.SendPing(PingType_t.DANGER, false)
 			}
 		}
@@ -125,7 +125,7 @@ export function RoshanTick() {
 }
 
 export function DrawRoshan() {
-	if (!drawStatus.value || !Game.IsInGame || Game.LevelNameShort === "hero_demo_main") {
+	if (!drawStatus.value || !Game.IsInGame || Game.MapName.startsWith("hero_demo")) {
 		return
 	}
 	// if (LocalPlayer !== undefined)
@@ -162,8 +162,8 @@ export function DrawRoshan() {
 		}
 	}
 	if (Units.length > 0) {
-		RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Units[0][0].Name}`, RoshanPosition, 900)
-		let screen_pos = RendererSDK.WorldToScreen(RoshanPosition)
+		RendererSDK.DrawMiniMapIcon(`minimap_heroicon_${Units[0][0].Name}`, GetRoshanPosition(), 900)
+		let screen_pos = RendererSDK.WorldToScreen(GetRoshanPosition())
 		if (screen_pos !== undefined) {
 			RendererSDK.Image(
 				`panorama/images/heroes/icons/${Units[0][0].Name}_png.vtex_c`,

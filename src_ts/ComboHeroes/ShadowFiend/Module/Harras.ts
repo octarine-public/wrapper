@@ -56,8 +56,8 @@ export function InitHarras() {
 		let blink = Items.Blink
 		if (blink && blink.CanBeCasted()) {
 			let blinkPos = Target.Position.Extend(Utils.CursorWorldVec, Menu_Combo_BlinkDistance.value)
-			if (Owner.Distance2D(blinkPos) > blink.AOERadius)
-				blinkPos = Owner.Position.Extend(blinkPos, blink.AOERadius - 1)
+			if (Owner.Distance2D(blinkPos) > blink.CastRange)
+				blinkPos = Owner.Position.Extend(blinkPos, blink.CastRange - 1)
 			if (Owner.Distance2D(Target) >= Owner.AttackRange)
 				Owner.CastPosition(blink, blinkPos)
 		}

@@ -88,14 +88,21 @@ export function ScanGameEnded() {
 }
 
 export function ScanEntityCreated(x: Entity) {
-	if (x instanceof Entity) {
+	if (x instanceof Unit) {
 		if (x.Name === undefined)
 			return
-		if (x.Name.includes("npc_dota_thinker")) {
+		if (x.Name.includes("npc_dota_thinker"))
 			RadarDetect.push(x)
-		}
 	}
 }
+EventsSDK.on("EntityNameChanged", x => {
+	if (x instanceof Unit) {
+		if (x.Name === undefined)
+			return
+		if (x.Name.includes("npc_dota_thinker") && !RadarDetect.includes(x))
+			RadarDetect.push(x)
+	}
+})
 
 export function ScanEntityDestroyed(x: Entity) {
 	if (x instanceof Entity)

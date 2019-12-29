@@ -65,7 +65,7 @@ function UpdateVisuals() {
 	ConVars.Set("dota_unit_orders_rate", 512)
 }
 
-setInterval(UpdateVisuals, 100)
+EventsSDK.on("Draw", UpdateVisuals)
 
 InputEventSDK.on("MouseWheel", wheel => {
 	if (!CamMouseState.value || !Game.IsInGame
@@ -104,11 +104,21 @@ interface CSODOTALobby {
 }
 
 let timeCreate = -1
-
-function waitAcceptOn() {
-	if (timeCreate === -1) {
+Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
+	if (id !== 2004)
 		return
-	}
+
+	let lobby = obj as CSODOTALobby
+
+	if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1)
+		timeCreate = hrtime()
+	else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1)
+		timeCreate = -1
+})
+
+EventsSDK.on("Draw", () => {
+	if (timeCreate === -1)
+		return
 
 	let elepsedTime = (hrtime() - timeCreate) / 1000
 
@@ -117,23 +127,9 @@ function waitAcceptOn() {
 		return
 	}
 
-	if (!AutoAccept_State.value || AutoAccept_delay.value - elepsedTime > 0) {
-		return setTimeout(waitAcceptOn, 0)
-	}
-
-	AcceptMatch()
-}
-
-Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
-	if (id !== 2004)
+	if (!AutoAccept_State.value || AutoAccept_delay.value - elepsedTime > 0)
 		return
 
-	let lobby = obj as CSODOTALobby
-
-	if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1) {
-		timeCreate = hrtime()
-		waitAcceptOn()
-	} else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1) {
-		timeCreate = -1
-	}
+	AcceptMatch()
+	timeCreate = -1
 })

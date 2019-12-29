@@ -434,7 +434,7 @@ function UsePerfectDagger(args: ExecuteOrder, ability: Ability, unit: Unit): boo
 	let blink = unit.GetItemByName("item_blink")
 	if (!IsValidItem(blink))
 		return true
-	let blink_range = (blink.AOERadius + unit.CastRangeBonus)
+	let blink_range = blink.CastRange
 	if (args.Position.IsInRange(unit.Position, blink_range))
 		return true
 	let vec = unit.Position

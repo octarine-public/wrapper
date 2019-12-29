@@ -13,7 +13,9 @@ let exec = (self: Menu.Base) => Game.ExecuteCommand(self.tooltip!)
 let debuggerMenu = Menu.AddEntry("Debugger")
 
 let sv_cheatsMenu = debuggerMenu.AddNode("Concommands")
-
+debuggerMenu.AddKeybind("Manual take heap snapshot").OnRelease(() => {
+	TakeHeapSnapshot("dumps/manual_heap_" + Math.random().toString().substring(2, 8) + ".heapsnapshot")
+})
 let sv_cheats = sv_cheatsMenu.AddToggle("sv_cheats")
 	.SetTooltip("sv_cheats")
 	.OnValue(setConVar)
@@ -44,7 +46,7 @@ sv_cheatsMenu.AddButton("Get Rapier God")
 
 let addUnitMenu = debuggerMenu.AddNode("add unit")
 
-addUnitMenu.AddKeybind("Add full Sven")
+/*addUnitMenu.AddKeybind("Add full Sven")
 	.OnRelease(() => {
 		Game.ExecuteCommand("dota_create_unit npc_dota_hero_sven enemy")
 
@@ -54,7 +56,7 @@ addUnitMenu.AddKeybind("Add full Sven")
 
 			Game.ExecuteCommand("dota_bot_give_level 30")
 		}, 1000)
-	})
+	})*/
 
 addUnitMenu.AddKeybind("Add creep")
 	.SetTooltip("dota_create_unit npc_dota_creep_badguys_melee enemy")
@@ -187,14 +189,14 @@ class ProfilingEventEmitter extends EventEmitter {
 }
 EventsSDK.emit = ProfilingEventEmitter.prototype.emit
 
-setInterval(() => {
+EventsSDK.on("Draw", () => {
 	// loop-optimizer: KEEP
 	counter_map_events.forEach((ar, name) => {
 		let cur_date = hrtime()
 		// loop-optimizer: FORWARD
 		counter_map_events.set(name, ar.filter(date => cur_date - date < 30 * 1000))
 	})
-}, 10)
+})
 
 globalThis.dump_stats = () => {
 	console.log("Average: ")
@@ -262,9 +264,9 @@ globalThis.reset_avg_mult = () => {
 }
 
 let last_time = 0
-setInterval(() => {
+EventsSDK.on("Draw", () => {
 	if (hrtime() - last_time < 10000 || GetHeapStatistics().total_heap_size < 200n * 1024n * 1024n)
 		return
 	TakeHeapSnapshot("dumps/" + Math.random().toString().substring(2, 8) + ".heapsnapshot")
 	last_time = hrtime()
-}, 100)
+})

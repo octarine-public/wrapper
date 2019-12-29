@@ -1,9 +1,8 @@
 //@ts-nocheck
-import { Menu as MenuSDK, Color, Parse, Utils } from "wrapper/Imports"
+import { Menu as MenuSDK, Color, Parse, Utils, AbilityData } from "wrapper/Imports"
 
 import InitItems from "./Extends/Items"
 import InitAbility from "./Extends/Abilities"
-let parseSpells = Utils.parseKVFile("scripts/npc/npc_abilities.txt").get("DOTAAbilities") as Parse.RecursiveMap
 
 let Items = new InitItems()
 let Abilities = new InitAbility()
@@ -89,7 +88,7 @@ export const CycloneRadiusItemColor = Drawing.AddColorPicker("Cyclone", Color.Wh
 const ShadowRaze1RadiusCustom = Drawing.AddNode("Shadow Raze")
 
 const razeRadius = []
-for (let val of parseSpells.values()) {
+for (let val of AbilityData.global_storage.values()) {
 	if (!(val instanceof Map))
 		continue
 	const abilSpec = val.get("AbilitySpecia")

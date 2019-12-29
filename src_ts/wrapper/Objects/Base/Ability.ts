@@ -1,15 +1,14 @@
 import Vector3 from "../../Base/Vector3"
-import { HasMask, HasMaskBigInt } from "../../Utils/BitsExtensions"
+import { HasMask, MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import AbilityData from "../DataBook/AbilityData"
 import Game from "../GameResources/GameRules"
 import Entity from "./Entity"
 import Unit from "./Unit"
 
 export default class Ability extends Entity {
-
 	public readonly m_pBaseEntity!: C_DOTABaseAbility
 
-	public AbilityData = new AbilityData(this.m_pBaseEntity.m_pAbilityData)
+	public AbilityData: AbilityData
 	public Level = this.m_pBaseEntity.m_iLevel
 	public Cooldown = this.m_pBaseEntity.m_fCooldown
 	public CooldownLength = this.m_pBaseEntity.m_flCooldownLength
@@ -20,27 +19,33 @@ export default class Ability extends Entity {
 	public IsToggled = this.m_pBaseEntity.m_bToggleState
 	public IsHidden = this.m_pBaseEntity.m_bHidden
 
+	constructor(m_pBaseEntity: C_DOTABaseAbility, name: string) {
+		super(m_pBaseEntity)
+		this.Name_ = name
+		this.AbilityData = new AbilityData(this.Name)
+	}
+
 	/* ============ BASE  ============ */
 
-	get Owner(): Nullable<Unit> {
+	public get Owner(): Nullable<Unit> {
 		return super.Owner as Nullable<Unit>
 	}
-	get AbilityBehavior(): DOTA_ABILITY_BEHAVIOR[] {
-		return this.AbilityData.AbilityBehavior
+	public get AbilityBehavior(): DOTA_ABILITY_BEHAVIOR[] {
+		return MaskToArrayNumber(this.AbilityData.AbilityBehavior)
 	}
-	get AbilityDamage(): number {
-		return this.m_pBaseEntity.m_iAbilityDamage
+	public get AbilityDamage(): number {
+		return this.AbilityData.GetAbilityDamage(this.Level)
 	}
-	get AbilityType(): ABILITY_TYPES {
+	public get AbilityType(): ABILITY_TYPES {
 		return this.AbilityData.AbilityType
 	}
-	get AOERadius(): number {
-		return this.m_pBaseEntity.m_fAOERadius
+	public get AOERadius(): number {
+		return this.GetSpecialValue("radius")
 	}
-	get CastPoint(): number {
-		return this.m_pBaseEntity.m_fCastPoint
+	public get CastPoint(): number {
+		return this.AbilityData.GetCastPoint(this.Level)
 	}
-	get ChannelTime(): number {
+	public get ChannelTime(): number {
 		return Math.max(Game.RawGameTime - this.ChannelStartTime, 0)
 	}
 	get DamageType(): DAMAGE_TYPES {
@@ -90,7 +95,7 @@ export default class Ability extends Entity {
 		return this.m_pBaseEntity.m_bStolen
 	}
 	get LevelsBetweenUpgrades(): number {
-		return this.AbilityData.LevelsBeetweenUpgrades
+		return this.AbilityData.LevelsBetweenUpgrades
 	}
 	get ManaCost(): number {
 		return this.m_pBaseEntity.m_iManaCost
@@ -111,13 +116,13 @@ export default class Ability extends Entity {
 		return this.AbilityData.AbilityImmunityType
 	}
 	get TargetFlags(): DOTA_UNIT_TARGET_FLAGS[] {
-		return this.AbilityData.TargetFlags
+		return MaskToArrayNumber(this.AbilityData.TargetFlags)
 	}
 	get TargetTeam(): DOTA_UNIT_TARGET_TEAM[] {
-		return this.AbilityData.TargetTeam
+		return MaskToArrayNumber(this.AbilityData.TargetTeam)
 	}
 	get TargetType(): DOTA_UNIT_TARGET_TYPE[] {
-		return this.AbilityData.TargetType
+		return MaskToArrayNumber(this.AbilityData.TargetType)
 	}
 	get TextureName(): string {
 		return this.AbilityData.TextureName
@@ -139,9 +144,13 @@ export default class Ability extends Entity {
 		return Math.max(0, this.Cooldown - (Game.RawGameTime - this.Owner.LastVisibleTime))
 	}
 
-	get CastRange(): number {
+	public get BaseCastRange(): number {
+		return this.AbilityData.GetCastRange(this.Level)
+	}
+
+	public get CastRange(): number {
 		let owner = this.Owner,
-			castrange = this.m_pBaseEntity.m_fCastRange
+			castrange = this.BaseCastRange
 
 		switch (this.Name) {
 			case "item_tango":
@@ -208,16 +217,8 @@ export default class Ability extends Entity {
 		return this.Owner?.PingAbility(this)
 	}
 
-	public GetSpecialValue(special_name: string, level: number = this.Level - 1): number {
-		if (level < 0)
-			return 0
-		let cache = this.AbilityData.SpecialValueCache[special_name]
-		if (cache === undefined) {
-			cache = this.AbilityData.SpecialValueCache[special_name] = []
-			for (let i = 0; i <= this.MaxLevel; i++)
-				cache[i] = this.m_pBaseEntity.GetSpecialValue(special_name, i)
-		}
-		return cache[level] ?? (cache[level] = this.m_pBaseEntity.GetSpecialValue(special_name, level))
+	public GetSpecialValue(special_name: string, level = this.Level): number {
+		return this.AbilityData.GetSpecialValue(special_name, level)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
 		let owner = this.Owner
@@ -226,16 +227,16 @@ export default class Ability extends Entity {
 		return (owner.Mana + bonusMana) >= this.ManaCost
 	}
 	public HasBehavior(flag: DOTA_ABILITY_BEHAVIOR): boolean {
-		return HasMaskBigInt(this.AbilityData.m_pAbilityData.m_iAbilityBehavior, BigInt(flag))
+		return HasMask(this.AbilityData.AbilityBehavior, flag)
 	}
 	public HasTargetFlags(flag: DOTA_UNIT_TARGET_FLAGS): boolean {
-		return HasMask(this.AbilityData.m_pAbilityData.m_iAbilityTargetFlags, flag)
+		return HasMask(this.AbilityData.TargetFlags, flag)
 	}
 	public HasTargetTeam(flag: DOTA_UNIT_TARGET_TEAM): boolean {
-		return HasMask(this.AbilityData.m_pAbilityData.m_iAbilityTargetTeam, flag)
+		return HasMask(this.AbilityData.TargetTeam, flag)
 	}
 	public HasTargetType(flag: DOTA_UNIT_TARGET_TYPE): boolean {
-		return HasMask(this.AbilityData.m_pAbilityData.m_iAbilityTargetType, flag)
+		return HasMask(this.AbilityData.TargetType, flag)
 	}
 	public CanHit(target: Unit): boolean {
 		if (this.Owner === undefined)

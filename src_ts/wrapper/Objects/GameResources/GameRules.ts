@@ -10,10 +10,15 @@ class Game {
 	public readonly Language = ConVars.GetString("cl_language")
 	public CurrentServerTick = -1
 	public IsInputCaptured = false
-	public IsConnected = false
+	public SignonState = SignonState_t.SIGNONSTATE_NONE
 	public UIState = GetUIState()
 	public RawGameTime = 0
 	public IsPaused = false
+	public MapName = "<empty>"
+
+	public get IsConnected() {
+		return this.MapName !== "<empty>" && this.SignonState === SignonState_t.SIGNONSTATE_FULL
+	}
 	public get ExpectedPlayers(): number {
 		let gameRules = this.m_GameRules
 
@@ -163,5 +168,4 @@ class Game {
 	}
 }
 
-const _Game = new Game()
-export default _Game
+export default new Game()

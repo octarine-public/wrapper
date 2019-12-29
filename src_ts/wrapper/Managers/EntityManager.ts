@@ -21,16 +21,13 @@ import Tower from "../Objects/Base/Tower"
 
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
-import { HasBit } from "../Utils/BitsExtensions"
-import EventsSDK from "./EventsSDK"
+import EventsSDK, { gameInProgress, ToggleGameInProgress } from "./EventsSDK"
 import Roshan from "../Objects/Units/Roshan"
 
 let AllEntities: Entity[] = []
 let EntitiesIDs = new Map<number, C_BaseEntity>()
 let AllEntitiesAsMap = new Map<C_BaseEntity, Entity>()
 let ClassToEntities = new Map<Constructor<any>, Entity[]>()
-
-let InStage: C_BaseEntity[] = []
 
 export var LocalPlayer: Nullable<Player>
 
@@ -209,26 +206,12 @@ Events.on("GameEvent", (name, obj) => {
 })
 
 /* ================ RUNTIME CACHE ================ */
-
-function CheckIsInStagingEntity(ent: C_BaseEntity) {
-	let ent_ = ent.m_pEntity
-	return ent_ === undefined || HasBit(ent_.m_flags, 2) || (ent instanceof C_DOTABaseAbility && ent.m_pAbilityData === undefined)
-}
-
-setInterval(() => InStage = InStage.filter(ent => {
-	if (CheckIsInStagingEntity(ent))
-		return true
-	AddToCache(ent, true)
-	return false
-}), 5)
-
-function AddToCache(ent: C_BaseEntity, already_valid = false) {
-	if (!already_valid && CheckIsInStagingEntity(ent)) {
-		InStage.push(ent)
+export function AddToCache(ent: C_BaseEntity) {
+	let name = ent.m_pEntity?.m_name
+	if (ent instanceof C_DOTABaseAbility && name === undefined)
 		return
-	}
 
-	let entity = ClassFromNative(ent)
+	let entity = ClassFromNative(ent, name)
 	if (entity.Index === player_slot + 1 /* skip worldent at index 0 */)
 		globalThis.LocalPlayer = LocalPlayer = entity as Player
 	entity.OnCreated()
@@ -245,35 +228,16 @@ function AddToCache(ent: C_BaseEntity, already_valid = false) {
 	})
 	EventsSDK.emit("EntityCreated", false, entity)
 	FireEntityEvents(entity)
-}
-
-let gameInProgress = false
-setInterval(() => {
-	let old_val = Game.IsConnected
-	Game.IsConnected = IsInGame()
-	if (old_val && !Game.IsConnected) {
-		gameInProgress = false
-		EventsSDK.emit("GameEnded", false)
-		Particles.DeleteAll()
-	} else if (!gameInProgress && Game.IsConnected && Game.IsInGame && LocalPlayer !== undefined && LocalPlayer.HeroAssigned) {
-		gameInProgress = true
+	if (entity === LocalPlayer && LocalPlayer.Hero !== undefined && !gameInProgress) {
+		ToggleGameInProgress()
 		EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
 	}
-}, 20)
+}
 
 function DeleteFromCache(entNative: C_BaseEntity) {
-	{
-		let is_queued_entity = false
-		is_queued_entity = ArrayExtensions.arrayRemove(InStage, entNative) || is_queued_entity
-		if (is_queued_entity)
-			return
-	}
-
 	const entity = AllEntitiesAsMap.get(entNative)
-
-	if (entity === undefined) {
+	if (entity === undefined)
 		return
-	}
 
 	entity.IsValid = false
 
@@ -294,11 +258,11 @@ function DeleteFromCache(entNative: C_BaseEntity) {
 	})
 }
 
-function ClassFromNative(ent: C_BaseEntity): Entity {
+function ClassFromNative(ent: C_BaseEntity, name: string): Entity {
 	{
-		let constructor = NativeToSDK(ent instanceof C_DOTABaseAbility ? ent.m_pEntity.m_name : ent.constructor.name)
+		let constructor = NativeToSDK(ent instanceof C_DOTABaseAbility ? name : ent.constructor.name)
 		if (constructor !== undefined)
-			return new constructor(ent)
+			return new constructor(ent, name)
 	}
 	// TODO: automatically use Entity#Name/instanceof (instead of just comparing class names) here
 
@@ -318,10 +282,10 @@ function ClassFromNative(ent: C_BaseEntity): Entity {
 		return new Unit(ent)
 
 	if (ent instanceof C_DOTA_Item)
-		return new Item(ent)
+		return new Item(ent, name)
 
 	if (ent instanceof C_DOTABaseAbility)
-		return new Ability(ent)
+		return new Ability(ent, name)
 
 	if (ent instanceof C_DOTA_Item_Physical)
 		return new PhysicalItem(ent)

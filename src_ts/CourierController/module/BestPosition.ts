@@ -5,7 +5,7 @@ import { Sleep, OwnerIsValid } from "../bootstrap"
 import { LaneSelectionFlags_t } from "../Data/Data"
 
 function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector3) {
-	if (!unit.IsAlive || !unit.IsVisible)
+	if (!unit.IsAlive)
 		return false
 	CourierBase.DELIVER_DISABLE = CourierBase.IsRangeCourier(unit, Position)
 	if (CourierBase.IsRangeCourier(unit, Position)) {
@@ -21,12 +21,15 @@ function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector
 	}
 }
 
-export function CourierBestPosition(courier: Courier) {
+export function CourierBestPosition(courier: Courier): boolean {
 	if (!StateBestPos.value)
 		return false
-	return EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep]).some(unit => {
-		if (!unit.IsEnemy())
-			return false
+	let ar = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+	if (ar.length === 0) {
+		MoveCourier(false, courier)
+		return true
+	}
+	return ar.some(unit => {
 		switch (courier.State) {
 			case CourierState_t.COURIER_STATE_IDLE:
 			case CourierState_t.COURIER_STATE_AT_BASE:

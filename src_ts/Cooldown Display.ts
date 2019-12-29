@@ -75,7 +75,7 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x: number, y: number, i
 
 	let box_size = new Vector2(optionBoxSize.value, optionBoxSize.value)
 	RendererSDK.Image(
-		`panorama/images/spellicons/${ability.Name}_png.vtex_c`,
+		`panorama/images/spellicons/${ability.AbilityData.TextureName}_png.vtex_c`,
 		new Vector2(real_x, y),
 		box_size,
 		imageColor,

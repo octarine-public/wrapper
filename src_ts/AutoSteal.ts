@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, BitsExtensions, Creep, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, Utils } from "wrapper/Imports"
+import { Ability, BitsExtensions, Creep, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, Utils, TickSleeper } from "wrapper/Imports"
 
 let root = Menu.AddEntry(["Utility", "AutoSteal"]),
 	state = root.AddToggle("State", false),
@@ -422,9 +422,8 @@ var abils: {
 		},
 		// TODO: mars_gods_rebuke
 	],
-	flag: boolean = false,
-	possibleTargets: Unit[] = [],
-	blinkFlag: boolean = false,
+	scriptSleeper = new TickSleeper(),
+	blinkSleeper = new TickSleeper(),
 	latest_spellamp: number = 1,
 	sleeper = new GameSleeper()
 
@@ -441,19 +440,23 @@ function getDamage(abil: Ability, entFrom: Unit, entTo: Unit): number {
 	return entTo.CalculateDamage((abil.AbilityDamage || abil.GetSpecialValue("damage")) * latest_spellamp, abil.DamageType, entFrom)
 }
 
-function OnTick(): void {
-	/*// attack sanitizer
-	let time = GameRules.GameTime
-	// loop-optimizer: KEEP
-	attacks = attacks.filter(([end_time, end_time_2, attack_target]) => time - end_time_2 <= Unit.melee_end_time_delta)
-	// loop-optimizer: KEEP
-	attacks.forEach((data, attacker_id) => data[2] = FindAttackingUnit((EntityManager.EntityByIndex(attacker_id) as Unit)))*/
+function filter_func(unit: Unit): boolean {
+	return (
+		unit.IsEnemy()
+		&& unit.IsVisible
+		&& !unit.IsWaitingToSpawn
+		&& unit.IsAlive
+		&& !sleeper.Sleeping(unit)
+	)
+}
+
+EventsSDK.on("Tick", () => {
 	if (!state.value)
 		return
 
 	var MyEnt = LocalPlayer!.Hero/*,
 		selectedHero = /^npc_dota_hero_(.*)$/.exec(MyEnt.UnitName)[1]*/
-	if (MyEnt === undefined || MyEnt.IsStunned || !MyEnt.IsAlive || flag || LocalPlayer!.ActiveAbility !== undefined/* || (MyEnt.CanBeVisible && selectedHero !== "riki" && selectedHero !== "treant_protector")*/)
+	if (MyEnt === undefined || MyEnt.IsStunned || !MyEnt.IsAlive || scriptSleeper.Sleeping || LocalPlayer!.ActiveAbility !== undefined/* || (MyEnt.CanBeVisible && selectedHero !== "riki" && selectedHero !== "treant_protector")*/)
 		return
 	latest_spellamp = 1 + MyEnt.SpellAmplification
 	{
@@ -468,15 +471,11 @@ function OnTick(): void {
 		zuus_passive = MyEnt.GetAbilityByName("zuus_static_field"),
 		zuus_talent = MyEnt.GetTalentValue("special_bonus_unique_zeus"),
 		blink = MyEnt.GetItemByName("item_blink") || MyEnt.GetAbilityByName("antimage_blink"),
-		targets = possibleTargets.filter(ent =>
-			ent.IsEnemy() &&
-			ent.IsVisible &&
-			!ent.IsWaitingToSpawn &&
-			ent.IsAlive &&
-			(!ent.IsCreep || kill_creeps.value) &&
-			(!ent.IsHero || kill_heroes.value) &&
-			!sleeper.Sleeping(ent),
-		)
+		targets: Unit[] = []
+	if (kill_creeps.value)
+		targets.push(...EntityManager.GetEntitiesByClass(Creep).filter(filter_func))
+	if (kill_heroes.value)
+		targets.push(...EntityManager.GetEntitiesByClass(Hero).filter(hero => !hero.IsIllusion && filter_func(hero)))
 	availableAbils.some(abilData => {
 		var abil = abilData?.abil,
 			range = abilData.abilRadiusF ? abilData.abilRadiusF(abil!) : abil!.CastRange
@@ -493,7 +492,7 @@ function OnTick(): void {
 			if (range > 0)
 				if (MyEnt!.Distance2D(ent) > range)
 					if (
-						!blinkFlag
+						!blinkSleeper.Sleeping
 						&& blink !== undefined
 						&& blink.Cooldown === 0
 						&& ent.IsHero
@@ -508,35 +507,19 @@ function OnTick(): void {
 				return false
 
 			let ping = Game.Ping / 1000
-			if ((blinkFlag = !(flag = !needBlink))) { // tslint:disable-line:no-conditional-assignment
+			if (needBlink) {
 				MyEnt!.CastPosition(blink!, ent.Position.Extend(MyEnt!.Position, range - 100), false)
-				setTimeout(() => blinkFlag = false, (blink!.CastPoint + ping) * 1000)
+				blinkSleeper.Sleep((blink!.CastPoint + ping) * 1000)
 			} else {
 				sleeper.Sleep(((abilData.abilDelayF ? abilData.abilDelayF(abil!, MyEnt!, ent) + abil!.CastPoint : 0) + ping) * 1000, ent)
 				if (abilData.abilCastF)
 					abilData.abilCastF(abil!, MyEnt!, ent)
 				else
 					MyEnt!.UseSmartAbility(abil!, ent)
-				setTimeout(() => flag = false, (abil!.CastPoint + ping) * 1000)
+				scriptSleeper.Sleep((abil!.CastPoint + ping) * 1000)
 			}
 
 			return true
 		})
 	})
-}
-
-EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof Creep || (ent instanceof Hero && !ent.IsIllusion))
-		possibleTargets.push(ent)
-})
-EventsSDK.on("Tick", OnTick)
-
-EventsSDK.on("EntityDestroyed", unit => {
-	if (unit instanceof Unit)
-		ArrayExtensions.arrayRemove(possibleTargets, unit)
-})
-
-EventsSDK.on("GameEnded", () => {
-	// attacks = []
-	possibleTargets = []
 })

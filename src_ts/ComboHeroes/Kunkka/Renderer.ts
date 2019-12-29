@@ -35,7 +35,7 @@ export function Draw() {
 	Particle.Render(Abilities.Torrent, "kunkka_torrent", Abilities.Torrent.CastRange, Radius, State, DrawingColorAbilityTorrent.Color)
 	Particle.Render(Abilities.Ghostship, "kunkka_ghostship", Abilities.Ghostship.CastRange, Radius, State, DrawingColorAbilityGhostship.Color)
 	Particle.Render(Abilities.MarksSpot, "kunkka_x_marks_the_spot", Abilities.MarksSpot.CastRange, Radius, State, DrawingColorAbilityXMarks.Color)
-	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius, Radius, State, BlinkRadiusItemColor.Color)
+	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.CastRange, Radius, State, BlinkRadiusItemColor.Color)
 	Particle.Render(Abilities.Tidebringer, "kunkka_tidebringer", Abilities.Tidebringer.GetSpecialValue("cleave_distance"), Radius, State, DrawingColorAbilityBringer.Color)
 
 	if (Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)

@@ -60,6 +60,10 @@ export function EntityDestroyed(x: Entity) {
 		ArrayExtensions.arrayRemove(Heroes, x)
 	}
 }
+EventsSDK.on("EntityNameChanged", x => {
+	if (x instanceof Hero)
+		UpdateMenu()
+})
 
 export function GameStarted() {
 	// loop-optimizer: KEEP

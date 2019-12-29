@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Entity, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, ParticlesSDK, Unit, Utils, Vector3, dotaunitorder_t, Flow_t } from "wrapper/Imports"
+import { Ability, Entity, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, ParticlesSDK, Unit, Utils, Vector3, dotaunitorder_t, Flow_t } from "wrapper/Imports"
 
 let TechiesMenu = Menu.AddEntry(["Heroes", "Techies"]),
 	State = TechiesMenu.AddToggle("State"),
@@ -20,7 +20,6 @@ var particles = new Map<Unit, number>(),
 		/* will setup after Game.RawGameTime */number,
 		/* will become invis after Game.RawGameTime */number,
 	][] = [],
-	heroes: Hero[] = [],
 	techies: Hero,
 	latest_techies_spellamp: number = 1,
 	sleeper = new GameSleeper()
@@ -121,12 +120,13 @@ EventsSDK.on("Tick", () => {
 		if (bs_buff !== undefined)
 			latest_techies_spellamp *= bs_buff.Ability.GetSpecialValue("damage_increase_pct") / 100
 	}
-	heroes.filter(ent =>
+	EntityManager.GetEntitiesByClass(Hero).filter(ent =>
 		ent.IsEnemy()
+		&& !ent.IsIllusion
 		&& ent.IsAlive
 		&& ent.IsVisible
 		&& !ent.IsMagicImmune
-		&& !sleeper.Sleeping(ent),
+		&& !sleeper.Sleeping(ent)
 	).forEach(ent => {
 		var callbackCalled = false
 		CallMines(
@@ -189,12 +189,10 @@ EventsSDK.on("GameStarted", pl_ent => {
 })
 EventsSDK.on("GameEnded", () => {
 	rmines = []
-	if (IsInGame())
-		// loop-optimizer: KEEP
-		particles.forEach(particle => { ParticlesSDK.Destroy(particle, true) })
+	// loop-optimizer: KEEP
+	particles.forEach(particle => ParticlesSDK.Destroy(particle, true))
 	particles = new Map<Unit, number>()
 	sleeper.FullReset()
-	heroes = []
 	techies = undefined as any
 })
 EventsSDK.on("PrepareUnitOrders", args => {
@@ -225,21 +223,24 @@ EventsSDK.on("PrepareUnitOrders", args => {
 EventsSDK.on("EntityCreated", npc => {
 	if (!(npc instanceof Unit) || LocalPlayer === undefined)
 		return
-	if (npc instanceof Hero)
-		if (!npc.IsIllusion)
-			heroes.push(npc)
 	if (npc.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines) {
 		CreateParticleFor(npc)
 		if (npc.Name === "npc_dota_techies_remote_mine")
 			RegisterMine(npc)
 	}
 })
+EventsSDK.on("EntityNameChanged", npc => {
+	if (!(npc instanceof Unit) || LocalPlayer === undefined)
+		return
+	if (npc.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines && npc.Name === "npc_dota_techies_remote_mine")
+		RegisterMine(npc)
+})
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof Hero)
-		ArrayExtensions.arrayRemove(heroes, ent)
-	else if (ent instanceof Unit && ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines && ent.Name === "npc_dota_techies_remote_mine") {
-		if (particles.has(ent))
+	if (ent instanceof Unit && ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines && ent.Name === "npc_dota_techies_remote_mine") {
+		if (particles.has(ent)) {
 			ParticlesSDK.Destroy(particles.get(ent)!, true)
+			particles.delete(ent)
+		}
 		RemoveMine(ent)
 	}
 })

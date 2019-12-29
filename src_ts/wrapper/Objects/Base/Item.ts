@@ -81,9 +81,9 @@ export default class Item extends Ability {
 	get IsStackable(): boolean {
 		return this.m_pBaseEntity.m_bStackable
 	}
-	get ItemRecipeName(): string {
+	/*get ItemRecipeName(): string {
 		return this.AbilityData.ItemRecipeName
-	}
+	}*/
 	get ModelName(): string {
 		return this.AbilityData.ModelName
 	}

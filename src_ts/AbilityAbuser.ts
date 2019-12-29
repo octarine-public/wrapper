@@ -8,13 +8,15 @@ let AbilityAbuser = Menu.AddEntry(["Utility", "Ability Abuse"]),
 		"invoker_wex",
 		"skywrath_mage_concussive_shot",
 		"item_shivas_guard",
-	])
+	]),
+	c = 0
 
-setInterval(() => {
-	if (!ability_abuse.is_pressed)
-		return false
-	EntityManager.GetEntitiesByClass(Hero).filter(ent => ent.IsControllable).forEach(MyEnt => {
-		if (MyEnt.IsStunned)
+EventsSDK.on("Tick", () => {
+	if (!ability_abuse.is_pressed || c++ < 3)
+		return
+	c = 0
+	EntityManager.GetEntitiesByClass(Hero).forEach(MyEnt => {
+		if (!MyEnt.IsControllable || MyEnt.IsStunned)
 			return
 		let repeated_unit = new Array<C_BaseEntity>(0x80/*0x80*//*max: 0x3FFF*/).fill(MyEnt.m_pBaseEntity)
 		let ability: Nullable<Ability>
@@ -97,4 +99,4 @@ setInterval(() => {
 			return false
 		}
 	})
-}, 100)
+})

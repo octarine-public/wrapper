@@ -54,17 +54,32 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 })
 
 ChatTimeOutSendRepeat.OnValue(x => {
-	is_send_chat = 0
+	chat_start = hrtime()
+	chat_id = 0
+	need_chat = false
 })
 
 let team_offset = 250,
 	first_offset = 125,
-	is_send_chat = 0
-
+	chat_start = 0,
+	chat_id = 0,
+	need_chat = true
 export function Draw() {
+	let enemy_team_id = LocalPlayer?.Team === Team.Radiant ? 1 : 0
+	if (chat_start !== 0 && chat_start < hrtime()) {
+		if (SendAlliesChat.value) {
+			let role_str = GetLaneName(roles[enemy_team_id][chat_id])
+			Game.ExecuteCommand("say_team " + (chat_id + 1) + " slot " + role_str)
+			chat_id++
+			if (chat_id < 5)
+				chat_start = hrtime() + 0.5
+			else
+				chat_start = 0
+		} else
+			chat_start = 0
+	}
 	if (!State.value || !Game.IsConnected || Game.GameState >= DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME || roles.length === 0)
 		return
-	let enemy_team_id = LocalPlayer?.Team === Team.Radiant ? 1 : 0
 	let wSize = RendererSDK.WindowSize,
 		ratio = RendererSDK.GetAspectRatio()
 	switch (ratio) {
@@ -83,18 +98,15 @@ export function Draw() {
 		if (role_str === undefined)
 			return
 		RendererSDK.Text(role_str, base_enemy_pos.Clone().AddScalarX(i * DrawPositionGap.value + DrawPositionX.value))
-		if (SendAlliesChat.value)
-			setTimeout(() => {
-				if (is_send_chat >= 5)
-					return
-				setTimeout(() => {
-					Game.ExecuteCommand("say_team " + (i + 1) + " slot " + role_str)
-					++is_send_chat
-				}, i * 500)
-			}, ChatTimeOutSend.value * 1000)
 	})
+	if (need_chat) {
+		chat_start = hrtime() + ChatTimeOutSend.value * 1000
+		need_chat = false
+	}
 }
 export function Init() {
 	roles = []
-	is_send_chat = 0
+	chat_start = 0
+	chat_id = 0
+	need_chat = true
 }

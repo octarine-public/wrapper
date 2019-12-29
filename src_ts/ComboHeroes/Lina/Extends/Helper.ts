@@ -1,11 +1,10 @@
 //@ts-nocheck
-import { Game, Menu } from "wrapper/Imports"
-import { Heroes, Owner } from "../Listeners"
+import { Game, Menu, Hero } from "wrapper/Imports"
+import { Owner } from "../Listeners"
 class LinaHelper {
 	public get DeadInSide(): boolean {
-		return Heroes.length === 0
-			|| Owner === undefined
-			|| !Heroes.some(x => x.IsEnemy() && x.IsAlive)
+		return Owner === undefined
+			|| !EntityManager.GetEntitiesByClass(Hero).some(x => !x.IsIllusion && x.IsEnemy() && x.IsAlive)
 			|| !Owner.IsAlive
 	}
 	public IsRestrictions(State: Menu.Toggle) {

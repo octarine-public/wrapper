@@ -1,6 +1,6 @@
 import Events, { EventEmitter, IServerInfo } from "./Events"
 import UserCmd from "../Native/UserCmd"
-import { default as EntityManager, LocalPlayer } from "./EntityManager"
+import { default as EntityManager, LocalPlayer, AddToCache } from "./EntityManager"
 import * as WASM from "../Native/WASM"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Vector3 from "../Base/Vector3"
@@ -20,6 +20,7 @@ import QAngle from "../Base/QAngle"
 import Modifier from "../Objects/Base/Modifier"
 import InputManager from "./InputManager"
 import Item from "../Objects/Base/Item"
+import { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
 
 interface EventsSDK extends EventEmitter {
 	/**
@@ -108,6 +109,8 @@ interface EventsSDK extends EventEmitter {
 	on(name: "UnitFadeGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 	on(name: "LifeStateChanged", listener: (ent: Entity) => void): EventEmitter
+	on(name: "EntityNameChanged", listener: (ent: Entity) => void): EventEmitter
+	on(name: "EntityTeamChanged", listener: (ent: Entity) => void): EventEmitter
 	// on(name: "NetworkFieldChanged", listener: (args: NetworkFieldChanged) => void): EventEmitter
 	on(name: "NetworkActivityChanged", listener: (npc: Unit) => void): EventEmitter
 	on(name: "ServerInfo", listener: (info: IServerInfo) => void): EventEmitter
@@ -298,10 +301,18 @@ Events.on("InputCaptured", is_captured => EventsSDK.emit("InputCaptured", false,
 Events.on("NetworkFieldsChanged", map => {
 	// loop-optimizer: KEEP
 	map.forEach((ar, native_ent) => {
-		const entity = EntityManager.GetEntityByNative(native_ent)
-		if (entity === undefined)
-			return
+		let entity_ = EntityManager.GetEntityByNative(native_ent)
+		if (entity_ === undefined) {
+			if (native_ent instanceof C_DOTABaseAbility && ar.some(([field_name]) => field_name === "m_name")) {
+				AddToCache(native_ent)
+				entity_ = EntityManager.GetEntityByNative(native_ent)
+				if (entity_ === undefined)
+					return
+			} else
+				return
+		}
 
+		const entity = entity_
 		// loop-optimizer: KEEP
 		ar.forEach(([field_name, array_index]) => {
 			if (array_index === -1)
@@ -314,11 +325,17 @@ Events.on("NetworkFieldsChanged", map => {
 							entity.PlayerID = entity.m_pBaseEntity.m_iPlayerID
 						break
 					case "m_hAssignedHero":
-						if (entity instanceof Player)
+						if (entity instanceof Player) {
 							entity.Hero_ = entity.m_pBaseEntity.m_hAssignedHero
+							if (entity === LocalPlayer && LocalPlayer.Hero !== undefined && !gameInProgress) {
+								ToggleGameInProgress()
+								EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
+							}
+						}
 						break
 					case "m_iTeamNum":
 						entity.Team = entity.m_pBaseEntity.m_iTeamNum
+						EventsSDK.emit("EntityTeamChanged", false, entity)
 						break
 					case "m_lifeState":
 						entity.LifeState = entity.m_pBaseEntity.m_lifeState
@@ -432,6 +449,10 @@ Events.on("NetworkFieldsChanged", map => {
 					case "m_bGamePaused":
 						Game.IsPaused = Game.m_GameRules?.m_bGamePaused ?? false
 						break
+					case "m_name":
+						entity.Name_ = entity.Entity?.m_name ?? entity.m_pBaseEntity.m_pEntity.m_name!
+						EventsSDK.emit("EntityNameChanged", false, entity)
+						break
 
 					default:
 						break
@@ -460,3 +481,43 @@ EventsSDK.on("GameEnded", () => ExecuteOrder.order_queue = [])
 EventsSDK.on("InputCaptured", is_captured => Game.IsInputCaptured = is_captured)
 Events.on("ServerTick", tick => Game.CurrentServerTick = tick)
 Events.on("UIStateChanged", new_state => Game.UIState = new_state)
+
+export let gameInProgress = false
+export function ToggleGameInProgress() {
+	gameInProgress = !gameInProgress
+}
+Events.on("SignonStateChanged", new_state => {
+	let old_val = Game.IsConnected
+
+	Game.SignonState = new_state
+	let new_val = Game.IsConnected
+
+	if (!old_val && new_val)
+		ReloadGlobalAbilityStorage()
+	if (old_val && !new_val) {
+		gameInProgress = false
+		EventsSDK.emit("GameEnded", false)
+		Particles.DeleteAll()
+	} else if (!gameInProgress && new_val && LocalPlayer?.Hero !== undefined) {
+		gameInProgress = true
+		EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
+	}
+})
+
+Events.on("ServerInfo", info => {
+	let old_val = Game.IsConnected
+
+	Game.MapName = info.map_name!
+	let new_val = Game.IsConnected
+
+	if (!old_val && new_val)
+		ReloadGlobalAbilityStorage()
+	if (old_val && !new_val) {
+		gameInProgress = false
+		EventsSDK.emit("GameEnded", false)
+		Particles.DeleteAll()
+	} else if (!gameInProgress && new_val && LocalPlayer?.Hero !== undefined) {
+		gameInProgress = true
+		EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
+	}
+})

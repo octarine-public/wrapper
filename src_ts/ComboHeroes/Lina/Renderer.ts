@@ -1,8 +1,8 @@
 //@ts-nocheck
 import { Base } from "./Extends/Helper"
 import LinaAbility from "./Extends/Abilities"
-import { Color, RendererSDK, Vector2, LocalPlayer, Game, DOTAGameUIState_t } from "wrapper/Imports"
-import { Heroes, MouseTarget, Owner, initDrawMap, initItemsMap, initAbilityMap } from "./Listeners"
+import { Color, RendererSDK, Vector2, LocalPlayer, Game, DOTAGameUIState_t, Hero } from "wrapper/Imports"
+import { MouseTarget, Owner, initDrawMap, initItemsMap, initAbilityMap } from "./Listeners"
 
 import {
 	State,
@@ -19,7 +19,7 @@ import {
 } from "./Menu"
 
 export function Draw() {
-	if (!Base.IsRestrictions(State) || LocalPlayer === undefined || LocalPlayer.IsSpectator || Owner === undefined)
+	if (!Base.IsRestrictions(State) || LocalPlayer?.IsSpectator || Owner === undefined)
 		return
 
 	let Particle = initDrawMap.get(Owner),
@@ -36,7 +36,7 @@ export function Draw() {
 	Particle.Render(Abilities.DragonSlave, "lina_dragon_slave", Abilities.DragonSlave.CastRange, Radius, State, DragonSlaveRadiusColor.Color)
 	Particle.Render(Abilities.LightStrikeArray, "lina_light_strike_array", Abilities.LightStrikeArray.CastRange, Radius, State, LightStrikeArrayColor.Color)
 
-	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius + Owner.CastRangeBonus, Radius, State, BlinkRadiusItemColor.Color)
+	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.CastRange, Radius, State, BlinkRadiusItemColor.Color)
 	if (Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
 		return
 	}
@@ -81,8 +81,8 @@ function DrawAutoSteal(Ability: LinaAbility) {
 		}
 	}
 
-	Heroes.forEach(hero => {
-		if (Owner === undefined || !hero.IsEnemy() || !hero.IsAlive || !hero.IsVisible) {
+	EntityManager.GetEntitiesByClass(Hero).forEach(hero => {
+		if (Owner === undefined || !hero.IsEnemy() || !hero.IsAlive || !hero.IsVisible || hero.IsIllusion) {
 			return
 		}
 		let Abilities = Ability,

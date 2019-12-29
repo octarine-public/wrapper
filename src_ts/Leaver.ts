@@ -126,6 +126,7 @@ const tree = Menu.AddEntry(["Utility", "Bait leave"]),
 		npc_dota_hero_lycan: "Lycan",
 	}
 
+let dc_time = 0
 button.OnValue(() => {
 	let PlayerID = playersList.selected_id,
 		player = EntityManager.GetPlayerByID(PlayerID)
@@ -158,5 +159,12 @@ button.OnValue(() => {
 	ChatWheelAbuse(gap + switch_language)
 
 	if (autodisconnect.value)
-		setTimeout(() => Game.ExecuteCommand("disconnect"), Additionaldelay.value * 1000)
+		dc_time = hrtime()
+})
+
+EventsSDK.on("Draw", () => {
+	if (dc_time !== 0 && dc_time + Additionaldelay.value * 1000 < hrtime()) {
+		Game.ExecuteCommand("disconnect")
+		dc_time = 0
+	}
 })

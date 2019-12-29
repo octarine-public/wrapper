@@ -67,8 +67,11 @@ export function TrueSightedChanged(npc: Unit) {
 }
 
 function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsTrueSightedForEnemies) {
-	if (!State.value || unit.IsEnemy())
+	if (!State.value || unit.IsEnemy()) {
+		if (allUnits.has(unit))
+			Destroy(unit, allUnits.get(unit))
 		return
+	}
 
 	let isAlive = unit.IsAlive,
 		particleID = allUnits.get(unit)
@@ -78,6 +81,12 @@ function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsTrueSighted
 	else if ((!isVisibleForEnemies || !isAlive) && particleID !== undefined)
 		Destroy(unit, particleID)
 }
+EventsSDK.on("EntityTeamChanged", ent => {
+	if (ent instanceof Unit)
+		CheckUnit(ent)
+	if (LocalPlayer === ent)
+		EntityManager.GetEntitiesByClass(Unit).forEach(unit => CheckUnit(unit))
+})
 
 export function EntityDestroyed(ent: Entity) {
 	if (!(ent instanceof Unit) || !allUnits.has(ent))

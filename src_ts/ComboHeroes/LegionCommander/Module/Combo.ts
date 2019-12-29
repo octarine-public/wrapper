@@ -264,7 +264,7 @@ export function InitCombo() {
 			} else if (Items.Blink
 				&& Items.Blink.CanBeCasted()
 				&& СomboItems.IsEnabled(Items.Blink.Name)
-				&& Owner.IsInRange(target, Items.Blink.AOERadius - (Abilities.Duel.CastRange + (Owner.HullRadius + target.HullRadius)))
+				&& Owner.IsInRange(target, Items.Blink.CastRange - (Abilities.Duel.CastRange + (Owner.HullRadius + target.HullRadius)))
 			) {
 				Init(HitAndRun_Unit, target, Items, Abilities, blockingAbilities, true)
 				return

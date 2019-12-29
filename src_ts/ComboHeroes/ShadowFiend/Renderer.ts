@@ -37,8 +37,8 @@ export function Draw() {
 	Particle.RenderLineTarget(Base, DrawingStatus, State, MouseTarget)
 	Particle.RenderAttackRange(State, AttackRangeRadius, Owner.AttackRange, RadiusColorAttackRange.Color)
 
-	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.AOERadius + Owner.CastRangeBonus, Radius, State, BlinkRadiusItemColor.Color)
-	Particle.Render(Items.Cyclone, "item_cyclone", Items.Cyclone && Items.Cyclone.CastRange + Owner.CastRangeBonus, Radius, State, CycloneRadiusItemColor.Color)
+	Particle.Render(Items.Blink, "item_blink", Items.Blink && Items.Blink.CastRange, Radius, State, BlinkRadiusItemColor.Color)
+	Particle.Render(Items.Cyclone, "item_cyclone", Items.Cyclone && Items.Cyclone.CastRange, Radius, State, CycloneRadiusItemColor.Color)
 
 	EntityManager.GetEntitiesByClass<Hero>(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY).some(enemy => {
 		//DrawAutoSteal(Abilities, enemy)
