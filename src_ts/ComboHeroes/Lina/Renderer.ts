@@ -82,33 +82,29 @@ function DrawAutoSteal(Ability: LinaAbility) {
 	}
 
 	EntityManager.GetEntitiesByClass(Hero).forEach(hero => {
-		if (Owner === undefined || !hero.IsEnemy() || !hero.IsAlive || !hero.IsVisible || hero.IsIllusion) {
+		if (Owner === undefined || !hero.IsEnemy() || !hero.IsAlive || !hero.IsVisible || hero.IsIllusion)
 			return
-		}
+
 		let Abilities = Ability,
-			DMG_TYPE_LAGUNA = Owner.HasScepter
-				? DAMAGE_TYPES.DAMAGE_TYPE_PURE
-				: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
 			Laguna = Abilities.LagunaBlade,
 			StrikeArray = Abilities.LightStrikeArray,
-			DraGonSlave = Abilities.DragonSlave,
-			StealDMStrikeArray = hero.CalculateDamage(StrikeArray.GetSpecialValue("light_strike_array_damage"), StrikeArray.DamageType, hero),
-			StealDMDraGonSlave = hero.CalculateDamage(DraGonSlave.AbilityDamage, DraGonSlave.DamageType, hero),
-			StealDMGLaguna = hero.CalculateDamage(Laguna.AbilityDamage, DMG_TYPE_LAGUNA, hero)
+			DraGonSlave = Abilities.DragonSlave
 
-		if (!StrikeArray.CanBeCasted() || !AutoStealAbility.IsEnabled(StrikeArray.Name)) {
+		let StealDMStrikeArray = hero.CalculateDamage(StrikeArray?.AbilityDamage, StrikeArray?.DamageType, hero),
+			StealDMDraGonSlave = hero.CalculateDamage(DraGonSlave?.AbilityDamage, DraGonSlave?.DamageType, hero),
+			StealDMGLaguna = hero.CalculateDamage(Laguna?.AbilityDamage, Laguna?.DamageType, hero)
+
+		if (!StrikeArray.CanBeCasted() || !AutoStealAbility.IsEnabled(StrikeArray.Name))
 			StealDMStrikeArray = 0
-		}
 
-		if (!Laguna.CanBeCasted() || !AutoStealAbility.IsEnabled(Laguna.Name)) {
+		if (!Laguna.CanBeCasted() || !AutoStealAbility.IsEnabled(Laguna.Name))
 			StealDMGLaguna = 0
-		}
 
-		if (!DraGonSlave.CanBeCasted() || !AutoStealAbility.IsEnabled(DraGonSlave.Name)) {
+		if (!DraGonSlave.CanBeCasted() || !AutoStealAbility.IsEnabled(DraGonSlave.Name))
 			StealDMDraGonSlave = 0
-		}
 
 		let wts = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(hero.HealthBarOffset))
+
 		if (wts === undefined) {
 			return
 		}

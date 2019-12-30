@@ -21,40 +21,90 @@ export function InitAutoSteal() {
 	let Abilities = initAbilityMap.get(Owner)
 	if (Abilities === undefined)
 		return
-	let DMG_TYPE_LAGUNA = Owner.HasScepter
-		? DAMAGE_TYPES.DAMAGE_TYPE_PURE
-		: DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
-		Laguna = Abilities.LagunaBlade,
+
+	let Laguna = Abilities.LagunaBlade,
 		StrikeArray = Abilities.LightStrikeArray,
-		DraGonSlave = Abilities.DragonSlave,
-		StealDMGStrike = target.CalculateDamage(StrikeArray.GetSpecialValue("light_strike_array_damage"), DraGonSlave.AbilityDamage, target),
-		StealDMDraGonSlave = target.CalculateDamage(DraGonSlave.AbilityDamage, DraGonSlave.DamageType, target),
-		StealDMGLaguna = target.CalculateDamage(Laguna.AbilityDamage, DMG_TYPE_LAGUNA, target)
+		DraGonSlave = Abilities.DragonSlave
 
-	let PredictionSlave = target.VelocityWaypoint((DraGonSlave.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
-	let PredictionArray = target.VelocityWaypoint((Abilities.LightStrikeArray.CastPoint * 2) + GetAvgLatency(Flow_t.OUT))
+	let StealDMGStrike = target.CalculateDamage(StrikeArray?.AbilityDamage, DraGonSlave?.AbilityDamage, target),
+		StealDMDraGonSlave = target.CalculateDamage(DraGonSlave?.AbilityDamage, DraGonSlave?.DamageType, target),
+		StealDMGLaguna = target.CalculateDamage(Laguna?.AbilityDamage, Laguna?.DamageType, target)
 
-	if (!target.IsMagicImmune && target.HP < StealDMGStrike && IsReadySteal(StrikeArray, target)) {
-		Abilities.UseAbility(StrikeArray, false, false, PredictionArray)
-		return
+	let THP = target.HP
+	let PredictionSlave = target.VelocityWaypoint(DraGonSlave.CastPoint * 2 + GetAvgLatency(Flow_t.OUT))
+	let PredictionArray = target.VelocityWaypoint(StrikeArray.CastPoint * 2 + GetAvgLatency(Flow_t.OUT))
+
+	if (!target.IsMagicImmune
+		&& THP < StealDMDraGonSlave
+		&& IsReadySteal(DraGonSlave, target)
+	) {
+		if (!Abilities.UseAbility(DraGonSlave, false, true, PredictionSlave))
+			return
 	}
 
-	if (!target.IsMagicImmune && target.HP < StealDMDraGonSlave && IsReadySteal(DraGonSlave, target)) {
-		Abilities.UseAbility(DraGonSlave, false, false, PredictionSlave)
-		return
+	if (!target.IsMagicImmune
+		&& THP < StealDMGStrike
+		&& IsReadySteal(StrikeArray, target)) {
+		if (!Abilities.UseAbility(StrikeArray, false, true, PredictionArray)) {
+			return
+		}
 	}
 
-	if (target.HP < StealDMGLaguna
-		&& IsReadySteal(Laguna, target) && Owner.Distance2D(target) <= Laguna.CastRange) {
-		Abilities.UseAbility(Laguna, false, false, target)
-		return
+	if (THP < StealDMGLaguna
+		&& IsReadySteal(Laguna, target)
+		&& Owner.Distance2D(target) <= Laguna.CastRange
+	) {
+		if (!Abilities.UseAbility(Laguna, false, true, target))
+			return
 	}
 
-	if (target.HP < (StealDMDraGonSlave + StealDMGLaguna + StealDMGStrike)
-		&& Owner.Mana >= (DraGonSlave.ManaCost + StrikeArray.ManaCost + Laguna.ManaCost)
-		&& IsReadySteal(DraGonSlave, target) && IsReadySteal(Laguna, target)) {
-		Abilities.UseAbility(Laguna, false, false, target)
-		return
+	if (THP < StealDMDraGonSlave + StealDMGStrike
+		&& Owner.Mana >= DraGonSlave.ManaCost + StrikeArray.ManaCost
+		&& IsReadySteal(DraGonSlave, target)
+		&& IsReadySteal(StrikeArray, target)
+	) {
+		if (!Abilities.UseAbility(StrikeArray, false, true, PredictionArray))
+			return
+		if (!Abilities.UseAbility(DraGonSlave, false, true, PredictionSlave))
+			return
+	}
+
+	if (THP < StealDMGLaguna + StealDMGStrike
+		&& Owner.Mana >= StrikeArray.ManaCost + Laguna.ManaCost
+		&& IsReadySteal(Laguna, target)
+		&& IsReadySteal(StrikeArray, target)
+	) {
+		if (!Abilities.UseAbility(StrikeArray, false, true, PredictionArray))
+			return
+
+		if (!Abilities.UseAbility(Laguna, false, true, target))
+			return
+	}
+
+	if (THP < StealDMDraGonSlave + StealDMGLaguna
+		&& Owner.Mana >= DraGonSlave.ManaCost + Laguna.ManaCost
+		&& IsReadySteal(DraGonSlave, target) && IsReadySteal(Laguna, target)
+	) {
+		if (!Abilities.UseAbility(Laguna, false, true, target))
+			return
+
+		if (!Abilities.UseAbility(DraGonSlave, false, true, PredictionSlave))
+			return
+	}
+
+	if (THP < StealDMDraGonSlave + StealDMGLaguna + StealDMGStrike
+		&& Owner.Mana >= DraGonSlave.ManaCost + StrikeArray.ManaCost + Laguna.ManaCost
+		&& IsReadySteal(Laguna, target)
+		&& IsReadySteal(DraGonSlave, target)
+		&& IsReadySteal(StrikeArray, target)
+	) {
+		if (!Abilities.UseAbility(Laguna, false, true, target))
+			return
+
+		if (!Abilities.UseAbility(StrikeArray, false, true, target))
+			return
+		if (!Abilities.UseAbility(DraGonSlave, false, true, target))
+			return
 	}
 }
 

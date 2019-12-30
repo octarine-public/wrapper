@@ -289,7 +289,7 @@ function AutoUseItems(unit: Unit) {
 			}
 
 			case "item_bloodstone": {
-				if (unit.HPPercent > AutoUseItemsBloodHP_val.value && unit.ManaPercent < AutoUseItemsBloodMP_val.value)
+				if (unit.HPPercent > AutoUseItemsBloodHP_val.value || unit.ManaPercent < AutoUseItemsBloodMP_val.value)
 					return false
 				unit.CastNoTarget(item)
 				TickSleep.Sleep(Base.GetDelayCast)
