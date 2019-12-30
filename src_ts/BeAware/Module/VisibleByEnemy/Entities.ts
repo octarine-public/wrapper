@@ -1,4 +1,4 @@
-import { Entity, LocalPlayer, ParticlesSDK, Unit } from "wrapper/Imports"
+import { Entity, LocalPlayer, ParticlesSDK, Unit, Hero, WardObserver, Creep } from "wrapper/Imports"
 import { showOnAll, showOnAllies, showOnCreeps, showOnSelf, showOnWards, State, switcher } from "./Menu"
 
 let allUnits = new Map<Unit, number>(), // <Unit, Particle>
@@ -20,16 +20,9 @@ showOnWards.OnValue(OnOptionToggle)
 showOnCreeps.OnValue(OnOptionToggle)
 switcher.OnValue(OnOptionToggle)
 
-function Destroy(unit: Unit, particleID: number | undefined = allUnits.get(unit)) {
-	if (particleID === undefined)
-		return
-	ParticlesSDK.Destroy(particleID, true)
+function Destroy(unit: Unit, particleID = allUnits.get(unit)!) {
+	ParticlesSDK.Destroy(particleID)
 	allUnits.delete(unit)
-}
-
-function DestroyAll() {
-	// loop-optimizer: KEEP	// because this is Map
-	allUnits.forEach((particle, unit) => Destroy(unit, particle))
 }
 
 export function Init() {
@@ -37,16 +30,12 @@ export function Init() {
 }
 
 function OnOptionToggle() {
-	DestroyAll()
-
-	if (State.value) {
-		// loop-optimizer: KEEP	// because this is Map
-		allUnits.forEach((particle, unit) => CheckUnit(unit))
-	}
+	// loop-optimizer: KEEP
+	allUnits.forEach((particle, unit) => CheckUnit(unit))
 }
 
 function IsUnitShouldBeHighlighted(unit: Unit) {
-	if (unit.IsHero) {
+	if (unit instanceof Hero) {
 		if (showOnSelf.value && unit.Owner === LocalPlayer)
 			return true
 
@@ -54,10 +43,10 @@ function IsUnitShouldBeHighlighted(unit: Unit) {
 			return true
 	}
 
-	if (unit.IsCreep && showOnCreeps.value)
+	if (unit instanceof Creep && showOnCreeps.value)
 		return true
 
-	if (unit.IsWard && showOnWards.value)
+	if (unit instanceof WardObserver && showOnWards.value)
 		return true
 
 	return showOnAll.value
@@ -68,18 +57,16 @@ export function TeamVisibilityChanged(npc: Unit) {
 }
 
 function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsVisibleForEnemies) {
-	if (!State.value || unit.IsEnemy()) {
+	if (!State.value || unit.IsEnemy() || !unit.IsAlive || !IsUnitShouldBeHighlighted(unit)) {
 		if (allUnits.has(unit))
-			Destroy(unit, allUnits.get(unit))
+			Destroy(unit)
 		return
 	}
 
-	let isAlive = unit.IsAlive,
-		particleID = allUnits.get(unit)
-
-	if (isVisibleForEnemies && particleID === undefined && isAlive && IsUnitShouldBeHighlighted(unit))
+	let particleID = allUnits.get(unit)
+	if (isVisibleForEnemies && particleID === undefined)
 		allUnits.set(unit, ParticlesSDK.Create(particlePath[switcher.selected_id], ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit))
-	else if ((!isVisibleForEnemies || !isAlive) && particleID !== undefined)
+	else if (!isVisibleForEnemies && particleID !== undefined)
 		Destroy(unit, particleID)
 }
 EventsSDK.on("EntityTeamChanged", ent => {
@@ -96,7 +83,6 @@ export function EntityDestroyed(ent: Entity) {
 }
 
 export function LifeStateChanged(ent: Entity) {
-	if (ent.IsAlive)
-		return
-	EntityDestroyed(ent)
+	if (ent instanceof Unit)
+		CheckUnit(ent)
 }
