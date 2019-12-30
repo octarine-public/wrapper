@@ -4,12 +4,12 @@ export default class storm_spirit_ball_lightning extends Ability {
 	public readonly m_pBaseEntity!: C_DOTA_Ability_StormSpirit_BallLightning
 
 	public get CastRange(): number {
-		let mana = this.Owner?.Mana! - this.ManaCost
+		let mana = (this.Owner?.Mana ?? 0) - this.ManaCost
 		if (mana <= 0)
 			return 0
 
 		let travelCost = this.GetSpecialValue("ball_lightning_travel_cost_base")
-			+ (this.Owner?.MaxMana! * (this.GetSpecialValue("ball_lightning_travel_cost_percent") / 100))
+			+ ((this.Owner?.MaxMana ?? 0) * (this.GetSpecialValue("ball_lightning_travel_cost_percent") / 100))
 
 		return travelCost !== 0 ? Math.ceil(mana / travelCost) * 100 : 0
 

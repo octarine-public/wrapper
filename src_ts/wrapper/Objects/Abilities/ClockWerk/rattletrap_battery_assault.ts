@@ -2,6 +2,7 @@ import Ability from "../../Base/Ability"
 
 export default class rattletrap_battery_assault extends Ability {
 	public readonly m_pBaseEntity!: C_DOTA_Ability_Rattletrap_BatteryAssault
+
 	public get AOERadius(): number {
 		return this.GetSpecialValue("radius")
 	}

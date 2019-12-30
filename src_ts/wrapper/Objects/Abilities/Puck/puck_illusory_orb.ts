@@ -5,10 +5,10 @@ export default class puck_illusory_orb extends Ability {
 
 	private get CaclculateOrb(): number {
 		let speed = this.GetSpecialValue("max_distance")
-		let talent = this.Owner?.GetTalentValue("special_bonus_unique_puck")
+		let talent = this.Owner?.GetTalentValue("special_bonus_unique_puck") ?? 0
 
 		if (talent !== 0)
-			speed *= (talent! / 100) + 1
+			speed *= (talent / 100) + 1
 
 		return speed
 	}

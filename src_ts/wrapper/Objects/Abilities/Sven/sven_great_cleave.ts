@@ -2,6 +2,7 @@ import Ability from "../../Base/Ability"
 
 export default class sven_great_cleave extends Ability {
 	public readonly m_pBaseEntity!: C_DOTA_Ability_Sven_GreatCleave
+
 	public get AOERadius(): number {
 		return this.GetSpecialValue("cleave_distance")
 	}
