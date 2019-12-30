@@ -211,7 +211,7 @@ export default class Entity {
 		return this.Position_.Clone()
 	}
 	public get NetworkRotation(): number {
-		return this.NetworkAngles.y
+		return this.NetworkAngles_.y
 	}
 	public get NetworkAngles(): QAngle {
 		return this.NetworkAngles_.Clone()
@@ -385,6 +385,8 @@ export default class Entity {
 	}
 	public OnCreated() {
 		this.IsValid = true
+
+		this.OnNetworkRotationChanged()
 	}
 
 	public toString(): string {
