@@ -336,13 +336,12 @@ Events.on("NetworkFieldsChanged", map => {
 					case "m_iTeamNum":
 						entity.Team = entity.m_pBaseEntity.m_iTeamNum
 						EventsSDK.emit("EntityTeamChanged", false, entity)
-						if (LocalPlayer === entity)
-							EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
-								let old_visibility = unit.IsVisibleForEnemies
-								unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
-								if (unit.IsVisibleForEnemies !== old_visibility)
-									EventsSDK.emit("EntityTeamChanged", false, unit)
-							})
+						if (entity instanceof Unit) {
+							let old_visibility = entity.IsVisibleForEnemies
+							entity.IsVisibleForEnemies = Unit.IsVisibleForEnemies(entity)
+							if (entity.IsVisibleForEnemies !== old_visibility)
+								EventsSDK.emit("EntityTeamChanged", false, entity)
+						}
 						break
 					case "m_lifeState":
 						entity.LifeState = entity.m_pBaseEntity.m_lifeState
