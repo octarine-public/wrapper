@@ -1,7 +1,4 @@
-import { ArrayExtensions, Creep, Game, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit } from "wrapper/Imports"
-
-import { allCreeps, allTowers } from "../../base/Listeners"
-
+import { ArrayExtensions, Creep, Game, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit, Tower } from "wrapper/Imports"
 import { stateMain } from "../../base/MenuBase"
 
 import {
@@ -154,8 +151,8 @@ export function Draw(): string | undefined {
 }
 
 function GetCreeps(unit?: Unit): Creep[] {
-	return allCreeps.filter(creep => {
-		if (creep.IsEnemy())
+	return EntityManager.GetEntitiesByClass(Creep).filter(creep => {
+		if (!creep.IsLaneCreep || creep.IsEnemy())
 			return false
 		if (SkipRange.value && creep.IsRangeAttacker)
 			return false
@@ -184,9 +181,11 @@ function GetGroupsCreeps() {
 }
 
 function CheckTowerNear(unit: Unit): boolean {
-	return allTowers.some(tower => tower.IsAlive
+	return EntityManager.GetEntitiesByClass(Tower).some(tower =>
+		tower.IsAlive
 		&& tower.Name === "npc_dota_badguys_tower2_mid"
-		&& tower.IsInRange(unit, 200))
+		&& tower.IsInRange(unit, 200)
+	)
 }
 
 function GoingToBestPosition(unit: Unit): boolean {

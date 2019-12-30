@@ -1,7 +1,5 @@
 import { ArrayExtensions, Game, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Utils, Vector3 } from "wrapper/Imports"
 
-import { allHeroes } from "../../base/Listeners"
-
 import {
 	baseCheckUnit,
 	Controllables,
@@ -94,6 +92,14 @@ export function GameEnded() {
 	sleeper.FullReset()
 	targetBlock = undefined
 	ControllablesUnitsDraw.clear()
+}
+
+function GetClosestHero(exclude: (unit: Hero) => boolean): Nullable<Hero> {
+	let mouseCursor = Utils.CursorWorldVec
+
+	return ArrayExtensions.orderBy(EntityManager.GetEntitiesByClass(Hero), hero => hero.Distance2D(mouseCursor))
+		.find(hero => baseCheckUnit(hero) && hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.IsInRange(mouseCursor, 1000)
+			&& (stateBlock === StateBlock.Enemy) === hero.IsEnemy() && exclude(hero))
 }
 
 export function Update() {
@@ -226,14 +232,6 @@ function TurnOff() {
 	Game.ExecuteCommand("-dota_camera_center_on_hero")
 	targetBlock = undefined
 	ControllablesUnitsDraw.clear()
-}
-
-function GetClosestHero(exclude: (unit: Hero) => boolean) {
-	let mouseCursor = Utils.CursorWorldVec
-
-	return ArrayExtensions.orderBy(allHeroes, hero => hero.Distance2D(mouseCursor))
-		.find(hero => hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.IsInRange(mouseCursor, 1000)
-			&& (stateBlock === StateBlock.Enemy) === hero.IsEnemy() && exclude(hero))
 }
 
 function IsOn() {

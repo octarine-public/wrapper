@@ -1,7 +1,5 @@
 import { Entity, LocalPlayer, Menu as MenuSDK, Unit, Vector3 } from "wrapper/Imports"
 
-import { allNPCs } from "../base/Listeners"
-
 export let baseCheckUnit = (ent: Unit) =>
 	ent.IsAlive
 	&& !ent.HasNoCollision
@@ -14,7 +12,7 @@ export let SelectedStopping = () =>
 	LocalPlayer?.SelectedUnits.filter(ent =>
 		ent instanceof Unit && checkControllable(ent)) ?? [] as Unit[]
 
-export let Controllables = () => allNPCs.filter(checkControllable)
+export let Controllables = () => EntityManager.GetEntitiesByClass(Unit).filter(unit => baseCheckUnit(unit) && checkControllable(unit))
 
 export let getCenterDirection = (units: Entity[]) =>
 	Vector3.GetCenterType(units, unit => unit.InFront(350))
