@@ -8,7 +8,7 @@ function DrawText(unit: Unit) {
 	let position_unit = RendererSDK.WorldToScreen(unit.Position)
 	if (position_unit === undefined)
 		return
-	RendererSDK.Text("Feeding" + (!unit.HasBuffByName("modifier_teleporting") ?? ": teleporting..."),
+	RendererSDK.Text("Feeding" + (unit.HasBuffByName("modifier_teleporting") ? ": teleporting..." : ""),
 		position_unit, new Color(255, 255, 255), "Calibri", DrawTextSize.value, FontFlags_t.ANTIALIAS)
 }
 export function Renderer() {

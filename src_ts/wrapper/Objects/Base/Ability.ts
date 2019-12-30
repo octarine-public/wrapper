@@ -39,6 +39,9 @@ export default class Ability extends Entity {
 	public get AbilityType(): ABILITY_TYPES {
 		return this.AbilityData.AbilityType
 	}
+	public get EndRadius(): number {
+		return this.GetSpecialValue("final_aoe")
+	}
 	public get AOERadius(): number {
 		return this.GetSpecialValue("radius")
 	}
@@ -194,7 +197,7 @@ export default class Ability extends Entity {
 		if (this.Owner === undefined)
 			return 0
 
-		if (this.Owner.IdealSpeed === Number.MAX_VALUE || this.Owner.IdealSpeed === 0) {
+		if (this.Owner.IdealSpeed === Number.MAX_SAFE_INTEGER || this.Owner.IdealSpeed === 0) {
 			return this.GetCastDelay(position) + (ActivationDelay * 1000)
 		}
 		let time = this.Owner.Distance2D(position) / this.Owner.IdealSpeed

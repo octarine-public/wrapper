@@ -6,6 +6,9 @@ export default class void_spirit_astral_step extends Ability {
 	public get AOERadius(): number {
 		return this.GetSpecialValue("radius")
 	}
+	public get Speed(): number {
+		return Number.MAX_SAFE_INTEGER
+	}
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

@@ -338,10 +338,10 @@ function AutoUseItems(unit: Unit) {
 
 			case "item_mekansm":
 			case "item_guardian_greaves": {
+				if (unit.HasBuffByName("modifier_item_mekansm_noheal"))
+					return false
 				return EntityManager.GetEntitiesByClass(Hero).some(hero => {
 					if (hero.IsEnemy() || !unit.IsInRange(hero.Position, item.AOERadius))
-						return false
-					if (unit.HasBuffByName("modifier_item_mekansm_noheal"))
 						return false
 					if ((hero.IsAlive && hero.HPPercent > AutoUseItemsMG_val.value) || (unit.IsAlive && unit.HPPercent > AutoUseItemsMG_val.value))
 						return false
