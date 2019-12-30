@@ -4,7 +4,7 @@ export default class drow_ranger_multishot extends Ability {
 	public readonly m_pBaseEntity!: C_DOTA_Ability_DrowRanger_Multishot
 
 	public get CastRange(): number {
-		return super.Owner?.AttackRange! * this.GetSpecialValue("arrow_range_multiplier")
+		return this.Owner?.AttackRange! * this.GetSpecialValue("arrow_range_multiplier")
 	}
 }
 

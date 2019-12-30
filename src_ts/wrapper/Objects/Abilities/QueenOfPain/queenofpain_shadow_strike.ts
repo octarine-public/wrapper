@@ -4,8 +4,7 @@ export default class queenofpain_shadow_strike extends Ability {
 	public readonly m_pBaseEntity!: C_DOTA_Ability_QueenOfPain_ShadowStrike
 
 	public get AOERadius(): number {
-		let talent = this.Owner?.GetTalentValue("special_bonus_unique_queen_of_pain")
-		return talent !== 0 ? talent! : 0
+		return this.Owner?.GetTalentValue("special_bonus_unique_queen_of_pain") ?? 0
 	}
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")

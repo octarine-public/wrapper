@@ -8,9 +8,7 @@ export default class lina_light_strike_array extends Ability {
 	}
 
 	public get AbilityDamage(): number {
-		let range = this.GetSpecialValue("light_strike_array_damage")
-		let talant = this.Owner?.GetTalentValue("special_bonus_unique_lina_3")!
-		return range += talant !== 0 ? talant : 0
+		return this.GetSpecialValue("light_strike_array_damage") + (this.Owner?.GetTalentValue("special_bonus_unique_lina_3") ?? 0)
 	}
 }
 
