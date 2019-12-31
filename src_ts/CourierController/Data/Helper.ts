@@ -1,7 +1,6 @@
 
 import { Game, Vector3, Team, Courier, Unit, DOTA_GameMode } from "wrapper/Imports"
 import { LaneSelectionFlags_t, Data } from "./Data"
-import { Owner } from "../bootstrap"
 
 class CourierData extends Data {
 	public LAST_CLICK = false
@@ -33,7 +32,7 @@ class CourierData extends Data {
 		return (((Game.Ping / 2) + 30) + 250)
 	}
 	private get Team() {
-		return Owner?.Team === Team.Dire
+		return LocalPlayer?.Team === Team.Dire
 	}
 
 	public IsValidCourier = (cour: Courier) => Game.GameMode !== DOTA_GameMode.DOTA_GAMEMODE_TURBO
@@ -47,13 +46,13 @@ class CourierData extends Data {
 	public Position(BestOrSafe: boolean = false, custom_line?: LaneSelectionFlags_t): Vector3 {
 		let num = 2, team_id = this.Team ? 1 : 0,
 			roles = !custom_line && this.roles.length !== 0 ? this.roles[team_id].find((role, i) => role !== undefined) : custom_line
-		return roles === undefined
-			? this.CourierBestPosition[team_id][num * 2]
-			: !BestOrSafe
-				? Game.RawGameTime < 700
-					? this.CourierBestPosition[team_id][roles]
-					: this.CourierBestPosition[team_id][!custom_line ? num * 2 : custom_line]
-				: this.CourierBestPosition[num][team_id]
+		return !BestOrSafe
+			? Game.RawGameTime < 700
+				? roles === undefined
+					? this.CourierBestPosition[team_id][num * 2]
+					: this.CourierBestPosition[team_id][roles]
+				: this.CourierBestPosition[team_id][!custom_line ? num * 2 : custom_line]
+			: this.CourierBestPosition[num][team_id]
 	}
 	public IsRangeCourier(unit: Unit, unit2: Courier | Vector3 = this.Position(), range: number = (unit.AttackRange + 450)) {
 		return unit.IsInRange(unit2, range)

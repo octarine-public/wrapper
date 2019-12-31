@@ -1,17 +1,16 @@
 
-import { EventsSDK, Hero, TickSleeper, Game, Events, LocalPlayer, Courier, EntityManager, ArrayExtensions, Unit } from "wrapper/Imports"
+import { EventsSDK, TickSleeper, Game, Events, LocalPlayer, Courier, EntityManager, ArrayExtensions, Unit } from "wrapper/Imports"
 import { State } from "./Menu"
 import { CSODOTALobby } from "./Data/Data"
 import { CourierBase } from "./Data/Helper"
 import { AutoSafe } from "./module/AutoSafe"
 import { AutoDeliver } from "./module/AutoDeliver"
 //import { AutoUseItems } from "./module/AutoUseItems"
-import { CourierBestPosition } from "./module/BestPosition"
-export let Owner: Nullable<Hero>
+import { CourierBestPosition, GameEndDeliver } from "./module/BestPosition"
 export const Sleep = new TickSleeper()
 export const BestPosSleep = new TickSleeper()
 export let UnitAnimation: Unit[] = []
-export let OwnerIsValid = () => Game.IsInGame && Owner?.IsAlive && !LocalPlayer!.IsSpectator
+export let OwnerIsValid = () => Game.IsInGame && LocalPlayer!.Hero?.IsAlive && !LocalPlayer!.IsSpectator
 //export let AutoUseCourierPosition: Map<number, Vector3> = new Map()
 
 function SharedFilter(number: number, obj: any) {
@@ -25,7 +24,7 @@ function SharedFilter(number: number, obj: any) {
 }
 
 EventsSDK.on("Tick", () => {
-	if (!State.value || Sleep.Sleeping || !OwnerIsValid())
+	if (!State.value || Sleep.Sleeping || LocalPlayer!.Hero === undefined)
 		return
 	let Couriers = EntityManager.GetEntitiesByClass(Courier)
 	let IsValid = Couriers.some(CourierBase.IsValidCourier)
@@ -55,15 +54,10 @@ Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
 	SharedFilter(1, obj)
 })
 
-EventsSDK.on("GameStarted", hero => {
-	if (Owner === undefined)
-		Owner = hero
-})
-
 EventsSDK.on("GameEnded", () => {
-	Owner = undefined
 	Sleep.ResetTimer()
 	CourierBase.roles = []
+	GameEndDeliver()
 	BestPosSleep.ResetTimer()
 	//AutoUseCourierPosition.clear()
 	CourierBase.LAST_CLICK = false

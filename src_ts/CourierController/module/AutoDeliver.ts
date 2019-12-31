@@ -1,16 +1,16 @@
 import { Courier } from "wrapper/Imports"
 import { deliverState } from "../Menu"
-import { Sleep, Owner } from "../bootstrap"
+import { Sleep, OwnerIsValid } from "../bootstrap"
 import { CourierBase } from "../Data/Helper"
 
 function Deliver(courier: Courier): boolean {
 	if (CourierBase.DELIVER_DISABLE || CourierBase.LAST_CLICK)
 		return false
-	if (!Owner!.IsAlive || !Owner!.Inventory.HasFreeSlot(0, 9))
+	if (!LocalPlayer!.Hero!.IsAlive || !LocalPlayer!.Hero!.Inventory.HasFreeSlot(0, 9))
 		return false
-	let free_slots_local = Owner!.Inventory.GetFreeSlots(0, 9).length,
+	let free_slots_local = LocalPlayer!.Hero!.Inventory.GetFreeSlots(0, 9).length,
 		cour_slots_local = courier.Inventory.CountItemByOtherPlayer()
-	let items_in_stash = Owner!.Inventory.Stash.reduce((prev, cur) => prev + (cur !== undefined ? 1 : 0), 0)
+	let items_in_stash = LocalPlayer!.Hero!.Inventory.Stash.reduce((prev, cur) => prev + (cur !== undefined ? 1 : 0), 0)
 	//console.log("cour_slots_local: ", cour_slots_local, "items_in_stash: ", items_in_stash)
 	if (
 		items_in_stash > 0
@@ -33,11 +33,11 @@ function Deliver(courier: Courier): boolean {
 }
 
 export function AutoDeliver(courier: Courier): boolean {
-	if (!deliverState.value || CourierBase.LAST_CLICK)
+	if (!deliverState.value || CourierBase.LAST_CLICK || !OwnerIsValid())
 		return false
 	let StateCourEnt = courier.StateHero,
 		StateCourEnum = courier.State
-	if (Owner === StateCourEnt && Deliver(courier))
+	if (LocalPlayer!.Hero === StateCourEnt && Deliver(courier))
 		return false
 	switch (StateCourEnum) {
 		case CourierState_t.COURIER_STATE_IDLE:

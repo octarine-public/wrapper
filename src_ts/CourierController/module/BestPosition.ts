@@ -1,9 +1,9 @@
 import { Courier, Vector3, Game, Unit, Creep, Hero, EntityManager } from "wrapper/Imports"
 import { StateBestPos } from "../Menu"
 import { CourierBase } from "../Data/Helper"
-import { Sleep, OwnerIsValid } from "../bootstrap"
+import { Sleep } from "../bootstrap"
 import { LaneSelectionFlags_t } from "../Data/Data"
-
+let start_game_position_map = false
 function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector3) {
 	if (!unit.IsAlive)
 		return false
@@ -24,12 +24,15 @@ function CourierLogicBestPosition(unit: Unit, courier: Courier, Position: Vector
 export function CourierBestPosition(courier: Courier): boolean {
 	if (!StateBestPos.value)
 		return false
-	let ar = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
-	if (ar.length === 0) {
+
+	if (!start_game_position_map) {
 		MoveCourier(false, courier)
+		start_game_position_map = true
 		return true
 	}
-	return ar.some(unit => {
+
+	let arr_unit = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep], DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+	return arr_unit.some(unit => {
 		switch (courier.State) {
 			case CourierState_t.COURIER_STATE_IDLE:
 			case CourierState_t.COURIER_STATE_AT_BASE:
@@ -50,7 +53,7 @@ export function CourierBestPosition(courier: Courier): boolean {
 }
 
 export function MoveCourier(Safe: boolean = false, courier: Courier, line?: LaneSelectionFlags_t) {
-	if (Game.IsPaused || !OwnerIsValid() || !CourierBase.IsValidCourier(courier) || CourierBase.LAST_CLICK)
+	if (Game.IsPaused || !CourierBase.IsValidCourier(courier) || CourierBase.LAST_CLICK)
 		return
 	if (!Safe) {
 		courier.MoveTo(CourierBase.Position(false, line))
@@ -64,4 +67,8 @@ export function MoveCourier(Safe: boolean = false, courier: Courier, line?: Lane
 		Sleep.Sleep(CourierBase.CastDelay)
 		return
 	}
+}
+
+export function GameEndDeliver() {
+	start_game_position_map = false
 }
