@@ -1,4 +1,4 @@
-import { ArrayExtensions, Color, Entity, Game, Hero, RendererSDK, Rune, Vector2, Vector3, Unit } from "wrapper/Imports"
+import { ArrayExtensions, Color, Entity, Game, Hero, RendererSDK, Rune, Vector2, Vector3, Unit, TickSleeper } from "wrapper/Imports"
 import { Runes } from "../Entities"
 
 import {
@@ -43,9 +43,17 @@ function mt_rand(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
+let Sleeper = new TickSleeper
 export function DrawRunes() {
-	if (Game.GameTime <= 0 || Game.MapName.startsWith("hero_demo"))
+	if (Game.MapName.startsWith("hero_demo"))
 		return
+
+	if (Number.isInteger(Game.GameTime) || Sleeper.Sleeping)
+		Particle.clear()
+
+	if (Game.GameTime <= 0)
+		return
+
 	// power
 	let Time = Game.RawGameTime
 	if (TreeRuneState.value) {
@@ -85,7 +93,7 @@ export function DrawRunes() {
 		let percent = 300
 		let RuneBountyTime = Game.GameTime % percent
 		if (!bountyAlreadySeted) {
-			if (RuneBountyTime >= percent || RuneBountyTime <= 1) {
+			if (RuneBountyTime >= 299 || RuneBountyTime <= 0.1) {
 				bountyRunesAr = [true, true, true, true]
 				bountyAlreadySeted = true
 				if (TreeNotificationBountyChat.value) {
@@ -123,7 +131,7 @@ export function DrawRunes() {
 				DrawIcon(val, PMH_Show_bountyRGBA_mark.Color)
 			}
 		})
-		if (Particle === undefined || Particle.size <= 0)
+		if (Particle.size <= 0)
 			return
 		// loop-optimizer: KEEP
 		Particle.forEach(([handle, target, position], i) => {
@@ -139,8 +147,7 @@ export function DrawRunes() {
 				if (distance <= 500 || (hero !== undefined && hero.Name === "npc_dota_hero_pudge" && hero.Distance2D(val) <= 10)) {
 					bountyAlreadySeted = false
 					bountyRunesAr[key] = false
-					if (Particle.size !== 0)
-						Particle.clear()
+					Sleeper.Sleep(1500)
 				}
 			})
 		})
@@ -169,8 +176,7 @@ export function EntityDestroyedRune(x: Entity) {
 				return false
 			bountyAlreadySeted = false
 			bountyRunesAr[key] = false
-			if (Particle.size !== 0)
-				Particle.clear()
+			Sleeper.Sleep(1500)
 			return true
 		})
 		ArrayExtensions.arrayRemove(Runes, x)
