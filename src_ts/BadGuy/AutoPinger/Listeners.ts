@@ -32,7 +32,7 @@ export function Tick() {
 export function Draw() {
 	if (!State.value || !DebugPing.value || Pos.IsZero() || LocalPlayer?.IsSpectator)
 		return
-	RendererSDK.DrawMiniMapIcon("minimap_ping", Pos, 1200, Color.Green)
+	RendererSDK.DrawMiniMapPing(Pos, Color.Green, Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration"))
 }
 
 function HeroPing(hero: Hero) {

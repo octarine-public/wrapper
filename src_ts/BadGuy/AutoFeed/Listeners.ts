@@ -1,5 +1,5 @@
 import { Building, Unit, EntityManager, Entity, ArrayExtensions, GameSleeper, Vector3 } from "wrapper/Imports"
-import { DrawState, State, SwitchUnit, LogicFeedHeroState } from "./Menu"
+import { DrawState, State, SwitchUnit, LogicFeedHeroState, arr_hero } from "./Menu"
 import { Renderer } from "./Renderer"
 import { Utility } from "../Base/Utils"
 
@@ -7,14 +7,14 @@ let Sleeper = new GameSleeper()
 let Fountains: Building[] = []
 export let Units: Unit[] = []
 
-function UseAbilites(unit: Unit, name: string, Position?: Vector3): boolean {
+function UseAbilites(unit: Unit, name: string, Position?: Vector3 | Unit): boolean {
 	let abil = unit.GetAbilityByName(name)
 	if (abil === undefined || Sleeper.Sleeping(abil))
 		return false
 
 	if (abil.Level <= 0) {
 		abil.UpgradeAbility()
-		Sleeper.Sleeping(abil)
+		Sleeper.Sleep(Utility.GetDelayCast, abil)
 	}
 
 	if (!abil.CanBeCasted() || abil.IsChanneling || abil.IsInAbilityPhase)
@@ -22,6 +22,11 @@ function UseAbilites(unit: Unit, name: string, Position?: Vector3): boolean {
 
 	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
 		abil.UseAbility()
+		Sleeper.Sleep(Utility.GetDelayCast, abil)
+	}
+
+	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE)) {
+		abil.UseAbility(unit, true)
 		Sleeper.Sleep(Utility.GetDelayCast, abil)
 	}
 
@@ -34,15 +39,44 @@ function UseAbilites(unit: Unit, name: string, Position?: Vector3): boolean {
 
 function Feedlogic(unit: Unit, enemy_base: Building) {
 	switch (unit.Name) {
-		case "npc_dota_hero_lycan":
+		case arr_hero[0]:
 			if (!UseAbilites(unit, "lycan_summon_wolves"))
 				return
-		case "npc_dota_hero_lone_druid":
+			break
+		case arr_hero[1]:
 			if (!UseAbilites(unit, "lone_druid_spirit_bear"))
 				return
 			break
-		case "npc_dota_hero_furion":
+		case arr_hero[2]:
 			if (!UseAbilites(unit, "furion_teleportation", enemy_base.Position))
+				return
+			break
+		case arr_hero[3]:
+			if (!UseAbilites(unit, "windrunner_windrun"))
+				return
+			break
+		case arr_hero[4]:
+			if (!UseAbilites(unit, "beastmaster_call_of_the_wild_boar"))
+				return
+			break
+		case arr_hero[5]:
+			if (!UseAbilites(unit, "brewmaster_drunken_brawler"))
+				return
+			break
+		case arr_hero[6]:
+			if (!UseAbilites(unit, "pudge_rot"))
+				return
+			break
+		case arr_hero[7]:
+			if (!UseAbilites(unit, "queenofpain_blink", enemy_base.Position))
+				return
+			break
+		case arr_hero[8]:
+			if (!UseAbilites(unit, "antimage_blink", enemy_base.Position))
+				return
+			break
+		case arr_hero[9]:
+			if (!UseAbilites(unit, "grimstroke_spirit_walk", unit))
 				return
 			break
 		default: return

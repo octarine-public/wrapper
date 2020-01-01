@@ -31,8 +31,8 @@ export function InitAutoSteal() {
 		StealDMGLaguna = target.CalculateDamage(Laguna?.AbilityDamage, Laguna?.DamageType, target)
 
 	let THP = target.HP
-	let PredictionSlave = target.VelocityWaypoint(DraGonSlave.CastPoint * 2 + GetAvgLatency(Flow_t.OUT))
-	let PredictionArray = target.VelocityWaypoint(StrikeArray.CastPoint * 2 + GetAvgLatency(Flow_t.OUT))
+	let PredictionSlave = target.VelocityWaypoint(DraGonSlave?.CastPoint * 2 + GetAvgLatency(Flow_t.OUT))
+	let PredictionArray = target.VelocityWaypoint(StrikeArray?.CastPoint * 2 + GetAvgLatency(Flow_t.OUT))
 
 	if (!target.IsMagicImmune
 		&& THP < StealDMDraGonSlave

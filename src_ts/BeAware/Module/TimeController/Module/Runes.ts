@@ -56,6 +56,7 @@ export function DrawRunes() {
 
 	// power
 	let Time = Game.RawGameTime
+
 	if (TreeRuneState.value) {
 		let percent = 120
 		let RunePowerTime = Game.GameTime % percent
@@ -66,11 +67,11 @@ export function DrawRunes() {
 			if (mt_rand_power === 0)
 				mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
 			if (mt_rand_power !== 0 && RunePowerTime >= (percent - mt_rand_power)) {
-
-				if (TreeNotificationPowerDrawMap.value)
-					RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
-
 				if (Time >= checkTickPower) {
+
+					if (TreeNotificationPowerDrawMap.value)
+						RendererSDK.DrawMiniMapPing(val, Color.White, Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration"))
+
 					if (RunePowerTime <= 119) {
 						if (TreeNotificationBountySound.value > 0) {
 							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
@@ -88,6 +89,7 @@ export function DrawRunes() {
 			}
 		})
 	}
+
 	// bounty
 	if (PMH_Show_bounty.value) {
 		let percent = 300
@@ -107,10 +109,11 @@ export function DrawRunes() {
 				mt_rand_bounty = mt_rand(NotifyTimeBountyMin.value, NotifyTimeBountyMax.value)
 			}
 			if (mt_rand_bounty !== 0 && RuneBountyTime >= (percent - mt_rand_bounty)) {
-				if (TreeNotificationBountyDrawMap.value) {
-					RendererSDK.DrawMiniMapIcon("minimap_ping", val, 900)
-				}
 				if (Time >= checkTick) {
+
+					if (TreeNotificationBountyDrawMap.value)
+						RendererSDK.DrawMiniMapPing(val, Color.White, Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration"))
+
 					if (RuneBountyTime <= percent) {
 						if (TreeNotificationBountySound.value > 0) {
 							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)

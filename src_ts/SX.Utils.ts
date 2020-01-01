@@ -60,7 +60,6 @@ EventsSDK.on("Tick", () => {
 		Game.ExecuteCommand("disconnect")
 	}
 })
-
 EventsSDK.on("Draw", () => {
 	if (!State.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || !DrawMosePos.value)
 		return
@@ -69,4 +68,5 @@ EventsSDK.on("Draw", () => {
 		return
 	let text = Math.ceil(MousePosition.x) + ", " + Math.ceil(MousePosition.y) + ", " + Math.ceil(MousePosition.z)
 	RendererSDK.TextAroundMouse(text, false, mouse_color.Color, "Calibri", new Vector2(mouse_size.value))
+
 })
