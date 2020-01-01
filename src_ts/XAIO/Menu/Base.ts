@@ -12,19 +12,15 @@ export function XMenu(rootTree: MenuSDK.Node, name: string, tooltip?: string) {
 
 	const DrawingTree = BaseTree.AddNode("Drawing")
 
-	const OrbWalkerTree = ComboTree.AddNode("OrbWalker")
-	const ComboOrbWalkerAttack = OrbWalkerTree.AddToggle("Auto attack", true)
-	const ComboTypeOrbWalker = OrbWalkerTree.AddSwitcher("Type Run", ["Run to target", "Run to cursor", "None"])
+	const OrbWalkerState = ComboTree.AddToggle("OrbWalker")
 
 	return {
 		BaseTree,
 		ComboTree,
 		DrawingTree,
 		stateGlobal,
-		OrbWalkerTree,
 		ComboKey,
-		ComboOrbWalkerAttack,
-		ComboTypeOrbWalker,
+		OrbWalkerState,
 		State: tooltip !== undefined
 			? SettingsMenu.AddToggle("Enable").SetTooltip(tooltip)
 			: SettingsMenu.AddToggle("Enable"),

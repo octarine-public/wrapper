@@ -1,6 +1,6 @@
 import { Unit } from "wrapper/Imports"
 import { OrbWalker } from "../../../Helper/OrbWalker"
-import { ComboTypeOrbWalker, ComboOrbWalkerAttack, ComboKey } from "../Menu"
+import { ComboKey, OrbWalkerState } from "../Menu"
 
 // function UseAbility(unit: Unit, abil: Ability) {
 
@@ -16,8 +16,6 @@ export function InitCombo(unit: Unit, enemy: Nullable<Unit>) {
 
 	let orb_walker = new OrbWalker(unit)
 
-	if ((!orb_walker.ExecuteTo(enemy, ComboTypeOrbWalker.selected_id) && ComboOrbWalkerAttack.value) || !ComboOrbWalkerAttack.value)
+	if (!orb_walker.Execute(enemy) && OrbWalkerState.value)
 		return
-
-	unit.AttackTarget(enemy)
 }

@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player } from "wrapper/Imports"
+import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, Utils } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Debugger", "SX.Utils"])
 const MenuTreeColor = Menu.AddNode("Enemy color")
@@ -7,8 +7,14 @@ const color_r = MenuTreeColor.AddSlider("R-Color", 1, 0, 100)
 const color_g = MenuTreeColor.AddSlider("G-Color", 0, 0, 100)
 const color_b = MenuTreeColor.AddSlider("B-Color", 0, 0, 100)
 const State = Menu.AddToggle("State")
+
 const BuybackBind = Menu.AddKeybind("Buyback key")
 const StateAutoDisconnect = Menu.AddToggle("Auto disconnect after game", true)
+
+const DrawMosePosTree = Menu.AddNode("Draw mouse")
+const DrawMosePos = DrawMosePosTree.AddToggle("Draw mouse position V3", true)
+const mouse_color = DrawMosePosTree.AddColorPicker("R-Color", new Color(90, 255, 0, 255))
+const mouse_size = DrawMosePosTree.AddSlider("Size", 19, 12, 64)
 
 color_r.OnValue(call => {
 	Game.ExecuteCommand("dota_enemy_color_r " + call.value)
@@ -34,6 +40,7 @@ BuybackBind.OnRelease(() => {
 		return
 	Player.Buyback()
 })
+
 EventsSDK.on("Tick", () => {
 	if (!State.value)
 		return
@@ -52,4 +59,14 @@ EventsSDK.on("Tick", () => {
 	if (StateAutoDisconnect.value && Game.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_POST_GAME) {
 		Game.ExecuteCommand("disconnect")
 	}
+})
+
+EventsSDK.on("Draw", () => {
+	if (!State.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || !DrawMosePos.value)
+		return
+	let MousePosition = Utils.CursorWorldVec
+	if (MousePosition.IsZero())
+		return
+	let text = Math.ceil(MousePosition.x) + ", " + Math.ceil(MousePosition.y) + ", " + Math.ceil(MousePosition.z)
+	RendererSDK.TextAroundMouse(text, false, mouse_color.Color, "Calibri", new Vector2(mouse_size.value))
 })
