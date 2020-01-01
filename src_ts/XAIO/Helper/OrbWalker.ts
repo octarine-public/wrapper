@@ -12,10 +12,10 @@ export class OrbWalker {
 	constructor(public Unit: Unit) {
 
 		EventsSDK.on("NetworkActivityChanged", (npc) => {
-			if (LocalPlayer === undefined && LocalPlayer!.Hero === undefined)
+			if (LocalPlayer === undefined || LocalPlayer.Hero === undefined)
 				return
 
-			if (npc !== LocalPlayer!.Hero)
+			if (npc !== LocalPlayer.Hero)
 				return
 
 			let newNetworkActivity = npc.NetworkActivity
