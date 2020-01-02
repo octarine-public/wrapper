@@ -3,10 +3,7 @@ import Entity from "../Objects/Base/Entity"
 
 let ParticlesSDK = new (class ParticlesSDK {
 	public Create(path: string, attach: ParticleAttachment_t, ent?: Entity): number {
-		if (ent !== undefined && ent.IsValid)
-			return Particles.Create(path, attach, ent.m_pBaseEntity)
-		else
-			return Particles.Create(path, attach)
+		return Particles.Create(path, attach, ent?.IsValid ? ent.Index : -1)
 	}
 	public Destroy(particle_id: number, immediate: boolean = true): void {
 		Particles.Destroy(particle_id, immediate)

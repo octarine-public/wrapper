@@ -145,10 +145,10 @@ export default class ExecuteOrder {
 
 		return {
 			OrderType: this.m_OrderType,
-			Target: target instanceof Entity ? target.m_pBaseEntity instanceof C_DOTA_BinaryObject ? target.m_pBaseEntity.m_nBinaryID : target.m_pBaseEntity : target,
+			Target: target instanceof Entity ? target.m_pBaseEntity instanceof C_DOTA_BinaryObject ? target.m_pBaseEntity.m_nBinaryID : target.Index : target,
 			Ability: ability instanceof Ability ? ability.Index : ability,
 			OrderIssuer: this.m_OrderIssuer,
-			Unit: unit !== undefined ? unit.Index : undefined,
+			Unit: unit?.Index,
 			Queue: this.m_Queue,
 			ShowEffects: this.m_ShowEffects,
 		}

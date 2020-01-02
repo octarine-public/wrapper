@@ -52,8 +52,8 @@ declare class CUserCmd {
 	impulse: number
 	vec_under_cursor: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	viewangles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
-	weaponselect: C_BaseEntity | number
-	weaponsubtype: C_BaseEntity | number
+	weaponselect: number
+	weaponsubtype: number
 }
 
 declare interface ConVars {
@@ -69,7 +69,7 @@ declare interface GameEvents {
 }
 
 declare interface Minimap {
-	SendPing(type?: number, direct_ping?: boolean, target?: C_BaseEntity): void // pass location: Vector2 at IOBuffer offset 0
+	SendPing(type?: number, direct_ping?: boolean, target?: number): void // pass location: Vector2 at IOBuffer offset 0
 	SendLine(x: number, y: number, initial: boolean): void
 	/**
 	 * Draws icon at minimap
@@ -92,7 +92,7 @@ declare interface Minimap {
 }
 
 declare interface Particles {
-	Create(path: string, attach: ParticleAttachment_t, ent?: C_BaseEntity): number
+	Create(path: string, attach: ParticleAttachment_t, ent: number): number
 	Destroy(particle_id: number, immediate: boolean): void
 	SetControlPoint(particle_id: number, control_point: number): void // pass vec: Vector3 at IOBuffer offset 0
 	SetControlPointForward(particle_id: number, control_point: number): void // pass vec: Vector3 at IOBuffer offset 0
@@ -141,14 +141,14 @@ declare function GetLevelName(): string
 declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer offset 0
 	OrderType: number,
-	Target?: C_BaseEntity | number,
-	Ability?: C_BaseEntity | number,
+	Target?: number,
+	Ability?: number,
 	OrderIssuer?: PlayerOrderIssuer_t,
-	Unit?: Array<C_BaseEntity | number> | C_BaseEntity | number,
+	Unit?: Array<number> | number,
 	Queue?: boolean,
 	ShowEffects?: boolean
 }): void
-declare function SelectUnit(ent: C_BaseEntity, bAddToGroup: boolean): boolean
+declare function SelectUnit(ent: number, bAddToGroup: boolean): boolean
 declare function GetLatency(flow: number): number
 declare function GetAvgLatency(flow: number): number
 declare function GetUIState(): number

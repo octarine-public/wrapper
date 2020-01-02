@@ -23,7 +23,7 @@ export function Tick() {
 			Game.ExecuteCommand("playvol ui/ping " + (1 / 200))
 		}
 		x.Position.toIOBuffer()
-		Minimap.SendPing(PingType_t.NORMAL, false, x.m_pBaseEntity)
+		Minimap.SendPing(PingType_t.NORMAL, false, x.Index)
 		Sleep = Timer + (Interval_val.value / 100)
 		return true
 	})

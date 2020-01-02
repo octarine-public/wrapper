@@ -77,7 +77,7 @@
 // function PingEnemyWard(hero: Entity) {
 // 	if (optionPingTeam.value) {
 // 		hero.InFront(200).toIOBuffer()
-// 		Minimap.SendPing(PingType_t.ENEMY_VISION, false, hero.m_pBaseEntity)
+// 		Minimap.SendPing(PingType_t.ENEMY_VISION, false, hero.Index)
 // 	}
 
 // 	let map_ping = ParticlesSDK.Create(

@@ -364,7 +364,7 @@ export default class Entity {
 	}
 
 	public Select(bAddToGroup: boolean = false): boolean {
-		return SelectUnit(this.m_pBaseEntity, bAddToGroup)
+		return SelectUnit(this.Index, bAddToGroup)
 	}
 
 	public GetRotationTime(vec: Vector3): number {

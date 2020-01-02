@@ -18,14 +18,14 @@ EventsSDK.on("Tick", () => {
 	EntityManager.GetEntitiesByClass(Hero).forEach(MyEnt => {
 		if (!MyEnt.IsControllable || MyEnt.IsStunned)
 			return
-		let repeated_unit = new Array<C_BaseEntity>(0x80/*0x80*//*max: 0x3FFF*/).fill(MyEnt.m_pBaseEntity)
+		let repeated_unit = new Array<number>(0x80/*0x80*//*max: 0x3FFF*/).fill(MyEnt.Index)
 		let ability: Nullable<Ability>
 		if (ability_abuse_selector.IsEnabled("invoker_invoke"))
 			ability = MyEnt.GetAbilityByName("invoker_invoke")
 		if (ability !== undefined && ability.CanBeCasted()) {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
-				Ability: ability.m_pBaseEntity,
+				Ability: ability.Index,
 				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
@@ -38,7 +38,7 @@ EventsSDK.on("Tick", () => {
 		if (ability !== undefined && ability.CanBeCasted()) {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
-				Ability: ability.m_pBaseEntity,
+				Ability: ability.Index,
 				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
@@ -51,7 +51,7 @@ EventsSDK.on("Tick", () => {
 		if (ability !== undefined && ability.CanBeCasted()) {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
-				Ability: ability.m_pBaseEntity,
+				Ability: ability.Index,
 				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
@@ -64,7 +64,7 @@ EventsSDK.on("Tick", () => {
 		if (ability !== undefined && ability.CanBeCasted()) {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
-				Ability: ability.m_pBaseEntity,
+				Ability: ability.Index,
 				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
@@ -77,7 +77,7 @@ EventsSDK.on("Tick", () => {
 		if (ability !== undefined && ability.CanBeCasted()) {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
-				Ability: ability.m_pBaseEntity,
+				Ability: ability.Index,
 				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,
@@ -90,7 +90,7 @@ EventsSDK.on("Tick", () => {
 		if (ability !== undefined && ability.CanBeCasted()) {
 			PrepareUnitOrders({
 				OrderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET,
-				Ability: ability.m_pBaseEntity,
+				Ability: ability.Index,
 				OrderIssuer: PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_SELECTED_UNITS,
 				Unit: repeated_unit,
 				Queue: false,

@@ -1,5 +1,6 @@
 import QAngle from "../Base/QAngle"
 import Vector3 from "../Base/Vector3"
+import Entity from "../Objects/Base/Entity"
 
 export default class UserCmd {
 	constructor(public readonly m_CUserCmd: CUserCmd) { }
@@ -118,17 +119,17 @@ export default class UserCmd {
 	public set ViewAngles(value: QAngle) {
 		this.m_CUserCmd.viewangles = value.toIOBuffer()
 	}
-	public get WeaponSelect(): number {
-		return this.m_CUserCmd.spectator_stats_category_id
+	public get WeaponSelect(): Nullable<Entity> {
+		return EntityManager.EntityByIndex(this.m_CUserCmd.weaponselect)
 	}
-	public set WeaponSelect(value: number) {
-		this.m_CUserCmd.spectator_stats_category_id = value
+	public set WeaponSelect(value: Nullable<Entity>) {
+		this.m_CUserCmd.weaponselect = value?.Index ?? -1
 	}
-	public get WeaponSubType(): number {
-		return this.m_CUserCmd.spectator_stats_category_id
+	public get WeaponSubType(): Nullable<Entity> {
+		return EntityManager.EntityByIndex(this.m_CUserCmd.weaponsubtype)
 	}
-	public set WeaponSubType(value: number) {
-		this.m_CUserCmd.spectator_stats_category_id = value
+	public set WeaponSubType(value: Nullable<Entity>) {
+		this.m_CUserCmd.weaponsubtype = value?.Index ?? -1
 	}
 
 	public toString(): string {
