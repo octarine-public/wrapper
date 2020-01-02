@@ -26,9 +26,9 @@ declare global {
 globalThis.wasm_ = wasm
 wasm._start()
 
-var IOBuffer: Float32Array
+var WASMIOBuffer: Float32Array
 function emscripten_notify_memory_growth(memoryIndex: number) {
-	IOBuffer = globalThis.WASMIOBuffer = new Float32Array(wasm.memory.buffer, wasm.GetIOBuffer())
+	WASMIOBuffer = globalThis.WASMIOBuffer = new Float32Array(wasm.memory.buffer, wasm.GetIOBuffer())
 }
 emscripten_notify_memory_growth(0)
 
@@ -36,19 +36,19 @@ export function OnDraw() {
 	if (!RendererSDK.AlternateW2S)
 		return
 	let camera_position = Vector3.fromIOBuffer(Camera.Position) ?? new Vector3()
-	IOBuffer[0] = camera_position.x
-	IOBuffer[1] = camera_position.y
-	IOBuffer[2] = camera_position.z
+	WASMIOBuffer[0] = camera_position.x
+	WASMIOBuffer[1] = camera_position.y
+	WASMIOBuffer[2] = camera_position.z
 
 	let camera_angles = QAngle.fromIOBuffer(Camera.Angles)!
-	IOBuffer[3] = camera_angles.x
-	IOBuffer[4] = camera_angles.y
-	IOBuffer[5] = camera_angles.z
+	WASMIOBuffer[3] = camera_angles.x
+	WASMIOBuffer[4] = camera_angles.y
+	WASMIOBuffer[5] = camera_angles.z
 
-	IOBuffer[6] = Camera.Distance ?? 1134
+	WASMIOBuffer[6] = Camera.Distance ?? 1134
 
-	IOBuffer[7] = RendererSDK.WindowSize.x
-	IOBuffer[8] = RendererSDK.WindowSize.y
+	WASMIOBuffer[7] = RendererSDK.WindowSize.x
+	WASMIOBuffer[8] = RendererSDK.WindowSize.y
 
 	wasm.CacheFrame()
 }
@@ -56,20 +56,22 @@ export function OnDraw() {
 export function WorldToScreenCached(position: Vector3 | Vector2): Nullable<Vector2> {
 	if (!RendererSDK.AlternateW2S)
 		return WorldToScreen(position, Vector3.fromIOBuffer(Camera.Position)!, Camera.Distance ?? 1134, QAngle.fromIOBuffer(Camera.Angles)!, RendererSDK.WindowSize)
-	IOBuffer[0] = position.x
-	IOBuffer[1] = position.y
-	IOBuffer[2] = position instanceof Vector2 ? RendererSDK.GetPositionHeight(position) : position.z
+	WASMIOBuffer[0] = position.x
+	WASMIOBuffer[1] = position.y
+	WASMIOBuffer[2] = position instanceof Vector2 ? RendererSDK.GetPositionHeight(position) : position.z
 
-	return Vector2.fromIOBuffer(wasm.WorldToScreenCached())
+	if (!wasm.WorldToScreenCached())
+		return undefined
+	return new Vector2(WASMIOBuffer[0], WASMIOBuffer[1])
 }
 
 export function ScreenToWorldCached(screen: Vector2): Vector3 {
 	if (!RendererSDK.AlternateW2S)
 		return ScreenToWorld(screen, Vector3.fromIOBuffer(Camera.Position)!, Camera.Distance ?? 1134, QAngle.fromIOBuffer(Camera.Angles)!, RendererSDK.WindowSize)
-	IOBuffer[0] = screen.x
-	IOBuffer[1] = screen.y
+	WASMIOBuffer[0] = screen.x
+	WASMIOBuffer[1] = screen.y
 	wasm.ScreenToWorldCached()
-	return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2])
+	return new Vector3(WASMIOBuffer[0], WASMIOBuffer[1], WASMIOBuffer[2])
 }
 
 export function WorldToScreen(
@@ -79,26 +81,28 @@ export function WorldToScreen(
 	camera_angles: QAngle,
 	window_size: Vector2,
 ): Nullable<Vector2> {
-	IOBuffer[0] = position.x
-	IOBuffer[1] = position.y
-	IOBuffer[2] = position instanceof Vector2 ? RendererSDK.GetPositionHeight(position) : position.z
+	WASMIOBuffer[0] = position.x
+	WASMIOBuffer[1] = position.y
+	WASMIOBuffer[2] = position instanceof Vector2 ? RendererSDK.GetPositionHeight(position) : position.z
 
-	IOBuffer[3] = camera_position.x
-	IOBuffer[4] = camera_position.y
-	IOBuffer[5] = camera_position instanceof Vector2
+	WASMIOBuffer[3] = camera_position.x
+	WASMIOBuffer[4] = camera_position.y
+	WASMIOBuffer[5] = camera_position instanceof Vector2
 		? Vector3.fromIOBuffer(Camera.Position)!.z - Math.sin(camera_angles.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
 		: camera_position.z
 
-	IOBuffer[6] = camera_angles.x
-	IOBuffer[7] = camera_angles.y
-	IOBuffer[8] = camera_angles.z
+	WASMIOBuffer[6] = camera_angles.x
+	WASMIOBuffer[7] = camera_angles.y
+	WASMIOBuffer[8] = camera_angles.z
 
-	IOBuffer[9] = camera_distance
+	WASMIOBuffer[9] = camera_distance
 
-	IOBuffer[10] = window_size.x
-	IOBuffer[11] = window_size.y
+	WASMIOBuffer[10] = window_size.x
+	WASMIOBuffer[11] = window_size.y
 
-	return Vector2.fromIOBuffer(wasm.WorldToScreen())
+	if (!wasm.WorldToScreen())
+		return undefined
+	return new Vector2(WASMIOBuffer[0], WASMIOBuffer[1])
 }
 
 export function ScreenToWorld(
@@ -108,26 +112,26 @@ export function ScreenToWorld(
 	camera_angles: QAngle,
 	window_size: Vector2,
 ): Vector3 {
-	IOBuffer[0] = screen.x
-	IOBuffer[1] = screen.y
+	WASMIOBuffer[0] = screen.x
+	WASMIOBuffer[1] = screen.y
 
-	IOBuffer[2] = camera_position.x
-	IOBuffer[3] = camera_position.y
-	IOBuffer[4] = camera_position instanceof Vector2
+	WASMIOBuffer[2] = camera_position.x
+	WASMIOBuffer[3] = camera_position.y
+	WASMIOBuffer[4] = camera_position instanceof Vector2
 		? Vector3.fromIOBuffer(Camera.Position)!.z - Math.sin(camera_angles.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
 		: camera_position.z
 
-	IOBuffer[5] = camera_angles.x
-	IOBuffer[6] = camera_angles.y
-	IOBuffer[7] = camera_angles.z
+	WASMIOBuffer[5] = camera_angles.x
+	WASMIOBuffer[6] = camera_angles.y
+	WASMIOBuffer[7] = camera_angles.z
 
-	IOBuffer[8] = camera_distance
+	WASMIOBuffer[8] = camera_distance
 
-	IOBuffer[9] = window_size.x
-	IOBuffer[10] = window_size.y
+	WASMIOBuffer[9] = window_size.x
+	WASMIOBuffer[10] = window_size.y
 
 	wasm.ScreenToWorld()
-	return new Vector3(IOBuffer[0], IOBuffer[1], IOBuffer[2])
+	return new Vector3(WASMIOBuffer[0], WASMIOBuffer[1], WASMIOBuffer[2])
 }
 
 export function ParseImage(buf: ArrayBuffer): [Uint8Array, Vector2] {
@@ -141,7 +145,7 @@ export function ParseImage(buf: ArrayBuffer): [Uint8Array, Vector2] {
 	addr = wasm.ParseImage(addr, buf.byteLength)
 	if (addr === 0)
 		throw "Image conversion failed"
-	let image_size = new Vector2(IOBuffer[0], IOBuffer[1])
+	let image_size = new Vector2(WASMIOBuffer[0], WASMIOBuffer[1])
 	let copy = new Uint8Array(image_size.x * image_size.y * 4)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
 	wasm.my_free(addr)
