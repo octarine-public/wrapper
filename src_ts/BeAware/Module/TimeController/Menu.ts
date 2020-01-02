@@ -1,5 +1,6 @@
 import { Color } from "wrapper/Imports"
 import { Menu, MenuBase } from "../../abstract/Menu.Base"
+import { OnNotifyTimingsChanged } from "./Module/Runes"
 const { BaseTree, State } = MenuBase(Menu, "Time Controller")
 
 let TreeRune = BaseTree.AddNode("Runes"),
@@ -25,6 +26,11 @@ let TreeRune = BaseTree.AddNode("Runes"),
 	TreeNotificationBountyDrawMap = DrawTreeBounty.AddToggle("Draw minimap", true),
 	PMH_Show_bountyRGBA = DrawTreeBounty.AddColorPicker("Color image", new Color(255, 255, 0, 255)),
 	PMH_Show_bountyRGBA_mark = DrawTreeBounty.AddColorPicker("Mark Color", new Color(0, 255, 0, 255))
+
+NotifyPowerRuneMin.OnValue(OnNotifyTimingsChanged)
+NotifyPowerRuneMax.OnValue(OnNotifyTimingsChanged)
+NotifyTimeBountyMin.OnValue(OnNotifyTimingsChanged)
+NotifyTimeBountyMax.OnValue(OnNotifyTimingsChanged)
 
 export {
 	// Size,

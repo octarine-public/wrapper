@@ -293,10 +293,10 @@ let RendererSDK_ = new (class RendererSDK {
 	 * @param end_time If it's <= 0 it'll be infinity for DotA.
 	 * @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
 	 */
-	public DrawMiniMapPing(worldPos: Vector3, color = new Color(255, 255, 255), end_time = 1) {
+	public DrawMiniMapPing(worldPos: Vector3, color = new Color(255, 255, 255), end_time = 1, key = Math.round(Math.random() * 1000)) {
 		worldPos.toIOBuffer(0)
 		color.toIOBuffer(3)
-		Minimap.DrawPing(end_time, 0x80000000)
+		Minimap.DrawPing(end_time, -key)
 	}
 	public GetPositionHeight(position: Vector2) {
 		position.toIOBuffer()

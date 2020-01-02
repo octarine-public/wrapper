@@ -1,4 +1,4 @@
-import { ArrayExtensions, Color, Entity, Game, Hero, RendererSDK, Rune, Vector2, Vector3, Unit, TickSleeper } from "wrapper/Imports"
+import { ArrayExtensions, Color, Entity, Game, RendererSDK, Rune, Vector2, Vector3, GameSleeper } from "wrapper/Imports"
 import { Runes } from "../Entities"
 
 import {
@@ -19,17 +19,13 @@ import {
 	TreeRuneState
 } from "../Menu"
 
-let checkTick: number = 0,
-	checkTickPower: number = 0,
-	bountyRunesAr = [false, false, false, false],
+let bountyRunesAr = [false, false, false, false],
 	bountyRunesSpawners: Entity[] = [],
 	powerRunesSpawners: Entity[] = [],
-	bountyAlreadySeted = false,
-	RunePowerTimer: boolean = true,
-	RuneBountyTimerBool: boolean = true,
-	Particle: Map<number, [bigint, undefined | Entity, Vector3?]> = new Map(), // TODO Radius for ability
-	mt_rand_power: number,
-	mt_rand_bounty: number
+	Particle: Map<number, [bigint, Nullable<Entity>, Vector3?]> = new Map(), // TODO Radius for ability
+	game_sleeper = new GameSleeper(),
+	mt_rand_bounty = 0,
+	mt_rand_power = 0
 
 function GetBountyRunesPos(): Vector3[] {
 	return bountyRunesSpawners.map(x => x.Position)
@@ -40,121 +36,94 @@ function GetPowerRunesPos(): Vector3[] {
 }
 
 function mt_rand(min: number, max: number) {
-	return Math.floor(Math.random() * (max - min + 1) + min)
+	return Math.random() * (max - min) + min
 }
 
-let Sleeper = new TickSleeper()
 export function DrawRunes() {
-	if (Game.MapName.startsWith("hero_demo"))
+	if (Game.MapName.startsWith("hero_demo") || Game.GameTime <= 0)
 		return
 
-	if (Number.isInteger(Game.GameTime) || Sleeper.Sleeping)
-		Particle.clear()
-
-	if (Game.GameTime <= 0)
-		return
+	let dota_minimap_ping_duration = ConVars.GetInt("dota_minimap_ping_duration")
 
 	// power
-	let Time = Game.RawGameTime
-
 	if (TreeRuneState.value) {
-		let percent = 120
-		let RunePowerTime = Game.GameTime % percent
-		if (TreeNotificationPowerChat.value && RunePowerTime >= percent || RunePowerTime === 0)
-			RunePowerTimer = true
-		// loop-optimizer: KEEP
-		GetPowerRunesPos().forEach(val => {
-			if (mt_rand_power === 0)
-				mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
-			if (mt_rand_power !== 0 && RunePowerTime >= (percent - mt_rand_power)) {
-				if (Time >= checkTickPower) {
-
-					if (TreeNotificationPowerDrawMap.value)
-						RendererSDK.DrawMiniMapPing(val, Color.White, Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration"))
-
-					if (RunePowerTime <= 119) {
-						if (TreeNotificationBountySound.value > 0) {
-							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
-							checkTickPower = Time + (NotifyPowerRuneMax.value / 3)
-						}
-						if (RunePowerTimer) {
-							if (TreeNotificationPowerChat.value) {
-								Game.ExecuteCommand("chatwheel_say 57")
-								RunePowerTimer = false
-							}
-						}
-						mt_rand_power = 0
-					}
+		let spawns_every = 120
+		let RunePowerTime = Game.GameTime % spawns_every
+		if (mt_rand_power === 0)
+			mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
+		if (RunePowerTime >= (spawns_every - mt_rand_power)) {
+			// loop-optimizer: KEEP
+			GetPowerRunesPos().forEach(val => {
+				if (TreeNotificationPowerDrawMap.value && !game_sleeper.Sleeping(val.Length)) {
+					RendererSDK.DrawMiniMapPing(val, Color.White, Game.RawGameTime + dota_minimap_ping_duration * 2, val.Length)
+					game_sleeper.Sleep(dota_minimap_ping_duration * 1000, val.Length)
 				}
-			}
-		})
+
+				if (RunePowerTime > 119)
+					return
+				if (TreeNotificationBountySound.value > 0 && !game_sleeper.Sleeping("power_sound")) {
+					Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
+					game_sleeper.Sleep(dota_minimap_ping_duration * 1000, "power_sound")
+				}
+				if (TreeNotificationPowerChat.value && !game_sleeper.Sleeping("chat_wheel")) {
+					Game.ExecuteCommand("chatwheel_say 57")
+					game_sleeper.Sleep(NotifyPowerRuneMax.value * 1000, "chat_wheel")
+				}
+			})
+		}
 	}
 
 	// bounty
 	if (PMH_Show_bounty.value) {
-		let percent = 300
-		let RuneBountyTime = Game.GameTime % percent
-		if (!bountyAlreadySeted) {
-			if (RuneBountyTime >= 299 || RuneBountyTime <= 0.1) {
-				bountyRunesAr = [true, true, true, true]
-				bountyAlreadySeted = true
-				if (TreeNotificationBountyChat.value) {
-					RuneBountyTimerBool = true
-				}
-			}
+		let spawns_every = 300
+		let RuneBountyTime = Game.GameTime % spawns_every
+		if (RuneBountyTime < 1 && !game_sleeper.Sleeping("bounty_spawn")) {
+			bountyRunesAr = [true, true, true, true]
+			game_sleeper.Sleep(1500, "bounty_spawn")
 		}
 		// loop-optimizer: KEEP
 		GetBountyRunesPos().forEach((val, key) => {
-			if (mt_rand_bounty === 0) {
-				mt_rand_bounty = mt_rand(NotifyTimeBountyMin.value, NotifyTimeBountyMax.value)
-			}
-			if (mt_rand_bounty !== 0 && RuneBountyTime >= (percent - mt_rand_bounty)) {
-				if (Time >= checkTick) {
-
-					if (TreeNotificationBountyDrawMap.value)
-						RendererSDK.DrawMiniMapPing(val, Color.White, Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration"))
-
-					if (RuneBountyTime <= percent) {
-						if (TreeNotificationBountySound.value > 0) {
-							Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
-							checkTick = Time + (NotifyTimeBountyMax.value / 3)
-						}
-						mt_rand_bounty = 0
-					}
-					if (RuneBountyTimerBool) {
-						if (TreeNotificationBountyChat.value) {
-							Game.ExecuteCommand("chatwheel_say 57")
-							RuneBountyTimerBool = false
-						}
-					}
-				}
-			}
 			if (bountyRunesAr[key]) {
 				RendererSDK.DrawMiniMapIcon("minimap_rune_bounty", val, PMH_Show_bounty_size.value * 14, PMH_Show_bountyRGBA.Color)
 				DrawIcon(val, PMH_Show_bountyRGBA_mark.Color)
 			}
 		})
-		if (Particle.size <= 0)
-			return
-		// loop-optimizer: KEEP
-		Particle.forEach(([handle, target, position], i) => {
-			if (position === undefined)
-				return
+		if (mt_rand_bounty === 0)
+			mt_rand_bounty = mt_rand(NotifyTimeBountyMin.value, NotifyTimeBountyMax.value)
+		if (RuneBountyTime >= (spawns_every - mt_rand_bounty)) {
+			mt_rand_bounty = mt_rand(NotifyTimeBountyMin.value, NotifyTimeBountyMax.value)
 			// loop-optimizer: KEEP
 			GetBountyRunesPos().forEach((val, key) => {
-				//Bounty Rune
-				if (handle !== 17096352592726237548n && handle !== 16517413739925325824n)
-					return
-				let hero = (target as Unit),
-					distance = val.Distance2D(position)
-				if (distance <= 500 || (hero !== undefined && hero.Name === "npc_dota_hero_pudge" && hero.Distance2D(val) <= 10)) {
-					bountyAlreadySeted = false
-					bountyRunesAr[key] = false
-					Sleeper.Sleep(1500)
+				if (TreeNotificationBountyDrawMap.value && !game_sleeper.Sleeping(val.Length)) {
+					RendererSDK.DrawMiniMapPing(val, Color.White, Game.RawGameTime + dota_minimap_ping_duration * 2, val.Length)
+					game_sleeper.Sleep(dota_minimap_ping_duration * 1000, val.Length)
+				}
+				if (TreeNotificationBountySound.value > 0 && !game_sleeper.Sleeping("bounty_sound")) {
+					Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
+					game_sleeper.Sleep(dota_minimap_ping_duration * 1000, "bounty_sound")
+				}
+				if (TreeNotificationBountyChat.value && !game_sleeper.Sleeping("chat_wheel")) {
+					Game.ExecuteCommand("chatwheel_say 57")
+					game_sleeper.Sleep(NotifyTimeBountyMax.value * 1000, "chat_wheel")
 				}
 			})
-		})
+		}
 	}
+
+	// loop-optimizer: KEEP
+	Particle.forEach(([handle, target, position], i) => {
+		if (position === undefined)
+			return
+		if (handle !== 17096352592726237548n && handle !== 16517413739925325824n)
+			return
+		// loop-optimizer: KEEP
+		GetBountyRunesPos().forEach((val, key) => {
+			if (val.Distance2D(position) <= 500 || (target !== undefined && target.Distance2D(val) <= 10)) {
+				bountyRunesAr[key] = false
+				Particle.delete(i)
+			}
+		})
+	})
 }
 
 export function EntityCreatedRune(x: Entity) {
@@ -177,9 +146,7 @@ export function EntityDestroyedRune(x: Entity) {
 			let distance = val.Distance2D(x.Position)
 			if (distance > 300)
 				return false
-			bountyAlreadySeted = false
 			bountyRunesAr[key] = false
-			Sleeper.Sleep(1500)
 			return true
 		})
 		ArrayExtensions.arrayRemove(Runes, x)
@@ -188,35 +155,37 @@ export function EntityDestroyedRune(x: Entity) {
 
 export function RuneGameEnded() {
 	Particle.clear()
-	bountyRunesAr = []
-	mt_rand_power = 0
+	bountyRunesAr = [false, false, false, false]
+	game_sleeper.FullReset()
 }
 
 function DrawIcon(position: Vector3, color?: Color) {
-	let pos_particle = RendererSDK.WorldToScreen(position)
-	if (pos_particle === undefined)
+	let w2s = RendererSDK.WorldToScreen(position)
+	if (w2s === undefined)
 		return
 	RendererSDK.Image(`panorama/images/control_icons/check_png.vtex_c`,
-		pos_particle.SubtractScalar(PMH_Show_bounty_size.value / 4),
+		w2s.SubtractScalar(PMH_Show_bounty_size.value / 4),
 		new Vector2(PMH_Show_bounty_size.value / 2, PMH_Show_bounty_size.value / 2), color,
 	)
 }
 
 export function RuneParticleDestroyed(id: number) {
-	if (!Particle.has(id))
-		return
 	Particle.delete(id)
 }
 
 export function RuneParticleCreate(id: number, entity: Nullable<Entity>, handle: bigint) {
 	if (handle !== 17096352592726237548n && handle !== 16517413739925325824n)
 		return
-	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined])
+	Particle.set(id, [handle, entity])
 }
 
 export function RuneParticleCreateUpdateEnt(id: number, ent: Nullable<Entity>, position: Vector3) {
 	let part = Particle.get(id)
 	if (part === undefined)
 		return
-	Particle.set(id, [part[0], ent instanceof Hero ? ent : part[1], position])
+	part[2] = position
+}
+
+export function OnNotifyTimingsChanged() {
+	mt_rand_bounty = mt_rand_power = 0
 }
