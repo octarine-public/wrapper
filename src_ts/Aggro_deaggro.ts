@@ -21,7 +21,7 @@ function Use(x: Unit) {
 }
 
 EventsSDK.on("Tick", () => {
-	if (!LocalPlayer!.IsSpectator || LocalPlayer!.Hero === undefined || !LocalPlayer!.Hero.IsAlive || Sleep.Sleeping)
+	if (LocalPlayer!.IsSpectator || !LocalPlayer!.Hero?.IsAlive || Sleep.Sleeping)
 		return
 	if (AutoTowerState.value) {
 		let Towers = EntityManager.GetEntitiesByClass(Tower)
