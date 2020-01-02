@@ -43,7 +43,7 @@ function mt_rand(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-let Sleeper = new TickSleeper
+let Sleeper = new TickSleeper()
 export function DrawRunes() {
 	if (Game.MapName.startsWith("hero_demo"))
 		return

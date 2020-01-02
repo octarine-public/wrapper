@@ -9,7 +9,7 @@ function IsValidAbility(ability: Ability, target: Hero) {
 		&& Owner.Distance2D(target) <= ability.CastRange
 }
 let CancelOredr = true
-let Sleep = new GameSleeper
+let Sleep = new GameSleeper()
 function GetTarget(): Hero | undefined {
 	return EntityManager.GetEntitiesByClass(Hero).sort((a, b) => b.Distance2D(Owner) - a.Distance2D(Owner))
 		.find(x => !x.IsIllusion && x.IsAlive && x.IsEnemy() && !x.IsMagicImmune && x.HasBuffByName("modifier_eul_cyclone"))

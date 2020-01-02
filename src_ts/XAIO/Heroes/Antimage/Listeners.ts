@@ -5,7 +5,7 @@ import { RegisterHeroModule, Units } from "XAIO/bootstrap"
 
 RegisterHeroModule("npc_dota_hero_antimage", { InitTick })
 
-let near_enemy: Nullable<Unit> = undefined
+let near_enemy: Nullable<Unit>
 
 export function InitTick(unit: Unit) {
 	near_enemy = ArrayExtensions.orderBy(
@@ -20,5 +20,4 @@ export function InitTick(unit: Unit) {
 
 	InitCombo(unit, near_enemy)
 }
-
-
+

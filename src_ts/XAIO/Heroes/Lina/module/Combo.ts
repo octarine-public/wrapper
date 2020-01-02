@@ -6,7 +6,6 @@ import { UnitsOrbWalker } from "../../../Helper/OrbWalker"
 
 // }
 
-
 export function InitCombo(unit: Unit, enemy: Nullable<Unit>) {
 
 	if (enemy === undefined || !ComboKey.is_pressed)

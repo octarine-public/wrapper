@@ -4,9 +4,8 @@ import { execute_ability } from "../Data"
 import { AbilitiesHelper } from "../../../Helper/Abilities"
 import { AbilityMenu, ItemsMenu } from "../Menu"
 
-
 let Sleep = new GameSleeper()
-let AbilityHelper = new AbilitiesHelper
+let AbilityHelper = new AbilitiesHelper()
 let SetSleeping = Math.max(185, ((Game.Ping / 2) + 130))
 
 function Combo(

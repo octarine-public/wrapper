@@ -78,7 +78,7 @@ let phaseSpells = [
 	"lion_impale",
 ]
 
-let remove_list: Array<[number, number]> = []
+let remove_list: [number, number][] = []
 EventsSDK.on("ModifierCreated", buff => {
 	let ent = buff.Parent!
 	let index = arModifiers.indexOf(buff.Name)

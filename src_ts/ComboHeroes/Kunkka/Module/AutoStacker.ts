@@ -4,7 +4,7 @@ import { Base } from "../Extends/Helper"
 import { Owner, initAbilityMap } from "../Listeners"
 import { AutoStakerState, AutoStakerVisuals, State } from "../Menu"
 export let is_stacking = false
-let Sleep = new TickSleeper
+let Sleep = new TickSleeper()
 
 function IsInRangeCreepSpot(spot: Vector3) {
 	return EntityManager.GetEntitiesByClass(Creep).some(x => x.IsEnemy()

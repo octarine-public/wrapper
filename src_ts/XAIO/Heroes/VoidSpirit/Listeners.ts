@@ -24,5 +24,3 @@ export function InitTick(unit: Unit) {
 		)[0]
 	)
 }
-
-

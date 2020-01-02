@@ -3,7 +3,7 @@ import { AbilitiesHelper } from "../../../Helper/Abilities"
 import { UnitsOrbWalker } from "../../../Helper/OrbWalker"
 import { ComboKey } from "../Menu"
 
-let AbilityHelper = new AbilitiesHelper
+let AbilityHelper = new AbilitiesHelper()
 
 function abil_use(str: string, unit: Unit, enemy: Unit, Abilities: AbilitiesHelper) {
 	if (str === undefined || unit.IsIllusion)

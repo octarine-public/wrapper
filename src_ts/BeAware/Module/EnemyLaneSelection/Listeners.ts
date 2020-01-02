@@ -71,10 +71,7 @@ export function Draw() {
 			let role_str = GetLaneName(roles[enemy_team_id][chat_id])
 			Game.ExecuteCommand("say_team " + (chat_id + 1) + " slot " + role_str)
 			chat_id++
-			if (chat_id < 5)
-				chat_start = hrtime() + 0.5
-			else
-				chat_start = 0
+			chat_start = chat_id < 5 ? hrtime() + 0.5 : 0
 		} else
 			chat_start = 0
 	}

@@ -287,12 +287,12 @@ let RendererSDK_ = new (class RendererSDK {
 		Minimap.DrawIcon(name, size, end_time, 0x80000000)
 	}
 	/**
-	* Draws ping at minimap
-	* @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
-	* @param end_time Changing it to 1 will hide icon from minimap if you're not calling it repeatedly in Draw event.
-	* @param end_time If it's <= 0 it'll be infinity for DotA.
-	* @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
-	*/
+	 * Draws ping at minimap
+	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
+	 * @param end_time Changing it to 1 will hide icon from minimap if you're not calling it repeatedly in Draw event.
+	 * @param end_time If it's <= 0 it'll be infinity for DotA.
+	 * @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
+	 */
 	public DrawMiniMapPing(worldPos: Vector3, color = new Color(255, 255, 255), end_time = 1) {
 		worldPos.toIOBuffer(0)
 		color.toIOBuffer(3)

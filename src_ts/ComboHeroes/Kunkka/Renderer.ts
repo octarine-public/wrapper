@@ -41,7 +41,6 @@ export function Draw() {
 	if (Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 
-
 	// TODO recode..
 	if (DrawRadiusMouse.value) {
 		if (!XMarkPos.IsZero()) {

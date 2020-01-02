@@ -41,7 +41,7 @@ BuybackBind.OnRelease(() => {
 	Player.Buyback()
 })
 
-let Sleep = new TickSleeper
+let Sleep = new TickSleeper()
 
 let prees = false
 Menu.AddKeybind("Full sven").OnRelease(() => {
@@ -49,7 +49,6 @@ Menu.AddKeybind("Full sven").OnRelease(() => {
 	prees = true
 	Sleep.Sleep(1000 + Game.Ping / 2)
 })
-
 
 EventsSDK.on("Tick", () => {
 	if (!State.value)
@@ -72,7 +71,6 @@ EventsSDK.on("Tick", () => {
 	if (ConVars.GetInt(cl_updaterate) === 30)
 		Game.ExecuteCommand(cl_updaterate + " 40")
 
-
 	if (ConVars.GetInt(auto_pause_disconnect) === 30)
 		Game.ExecuteCommand(auto_pause_disconnect + " 3")
 
@@ -80,8 +78,6 @@ EventsSDK.on("Tick", () => {
 		Game.ExecuteCommand("disconnect")
 
 })
-
-
 
 EventsSDK.on("Draw", () => {
 	if (!State.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || !DrawMosePos.value)
