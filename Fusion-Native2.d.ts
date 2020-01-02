@@ -23889,7 +23889,6 @@ declare enum modifierfunction {
 }
 
 declare enum DOTATeam_t {
-	DOTA_TEAM_SPECTATOR = 1,
 	DOTA_TEAM_FIRST = 2,
 	DOTA_TEAM_GOODGUYS = 2,
 	DOTA_TEAM_BADGUYS = 3,
