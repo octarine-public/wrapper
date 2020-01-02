@@ -15,6 +15,8 @@ function Combo(
 	target: Unit,
 	Abilities: AbilitiesHelper
 ) {
+	if (Owner.IsIllusion)
+		return
 
 	let abil = Owner.GetAbilityByName(exec_str_abil) ?? Owner.GetItemByName(exec_str_abil)
 
