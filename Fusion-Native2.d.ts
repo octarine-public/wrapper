@@ -3498,8 +3498,6 @@ declare class CEntityInstance extends IHandleEntity {
 declare class IHandleEntity { }
 
 declare class CEntityIdentity {
-	readonly m_pEntity: C_BaseEntity
-
 	m_nameStringableIndex: number
 	readonly m_name: string
 	readonly m_designerName: string
