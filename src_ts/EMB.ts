@@ -35,10 +35,34 @@ EventsSDK.on("Draw", () => {
 		}
 		RendererSDK.FilledRect(wts, manabar_size, Color.Black)
 		RendererSDK.FilledRect(wts, new Vector2(manabar_size.x * hero.Mana / hero.MaxMana, manabar_size.y), Color.RoyalBlue)
-		if (embText.value)
-			RendererSDK.Text(`${Math.floor(hero.Mana)}/${Math.floor(hero.MaxMana)}`, wts, Color.White, "Calibri", new Vector2(embSize.value, 200))
-		if (ehbText.value)
-			RendererSDK.Text(`${Math.floor(hero.HP)}/${Math.floor(hero.MaxHP)}`, wts, Color.White, "Calibri", new Vector2(ehbSize.value, 200))
+		if (embText.value) {
+			let text = `${Math.floor(hero.Mana)}/${Math.floor(hero.MaxMana)}`,
+				size = new Vector2(embSize.value, 200)
+			RendererSDK.Text(
+				text,
+				wts
+					.Clone()
+					.AddScalarX((manabar_size.x - RendererSDK.GetTextSize(text, "Calibri", size).x) / 2)
+					.SubtractScalarY(manabar_size.y / 2),
+				Color.White,
+				"Calibri",
+				size
+			)
+		}
+		if (ehbText.value) {
+			let text = `${Math.floor(hero.HP)}/${Math.floor(hero.MaxHP)}`,
+				size = new Vector2(ehbSize.value, 200)
+			RendererSDK.Text(
+				text,
+				wts
+					.Clone()
+					.AddScalarX((manabar_size.x - RendererSDK.GetTextSize(text, "Calibri", size).x) / 2)
+					.SubtractScalarY(manabar_size.y * 1.75),
+				Color.White,
+				"Calibri",
+				size
+			)
+		}
 		// let mana: any = Math.round(hero.Mana);
 		// wts.AddScalarX(off_x_text).AddScalarY(off_y_text);
 		// RendererSDK.Text(mana + "/" + Math.round(hero.MaxMana), wts, Color.White, "Calibri", new Vector2(14, 100))
