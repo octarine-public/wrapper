@@ -1,43 +1,42 @@
 import { Unit } from "wrapper/Imports"
-import { OrbWalker } from "../../../Helper/OrbWalker"
-import { ComboKey, OrbWalkerState } from "../Menu"
-// import { AbilitiesHelper } from "../../../Helper/Abilities"
+import { AbilitiesHelper } from "../../../Helper/Abilities"
+import { UnitsOrbWalker } from "../../../Helper/OrbWalker"
+import { ComboKey } from "../Menu"
 
-// let AbilityHelper = new AbilitiesHelper
+let AbilityHelper = new AbilitiesHelper
 
-// function abil_someF(str: string, unit: Unit, enemy: Unit, Abilities: AbilitiesHelper) {
-// 	if (str === undefined || unit.IsIllusion)
-// 		return false
+function abil_use(str: string, unit: Unit, enemy: Unit, Abilities: AbilitiesHelper) {
+	if (str === undefined || unit.IsIllusion)
+		return false
 
-// 	let abil = unit.GetAbilityByName(str) ?? unit.GetItemByName(str)
+	let abil = unit.GetAbilityByName(str) ?? unit.GetItemByName(str)
 
-// 	if (abil === undefined || !abil.CanBeCasted())
-// 		return false
+	if (abil === undefined || !abil.CanBeCasted())
+		return false
 
-// 	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
-// 		if (!Abilities.UseAbility(abil, true))
-// 			return false
-// 	}
+	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
+		if (!Abilities.UseAbility(abil, true))
+			return false
+	}
 
-// 	if (!Abilities.UseAbility(abil, false, enemy))
-// 		return false
-// }
+	if (!Abilities.UseAbility(abil, true, enemy))
+		return false
+}
 
 export function InitCombo(unit: Unit, enemy: Nullable<Unit>) {
 
 	if (enemy === undefined || !ComboKey.is_pressed)
 		return
 
-	// let abil_some = [
-	// 	"antimage_mana_void",
-	// 	"item_manta"
-	// ]
+	let abil_arr = [
+		"antimage_blink",
+		"item_manta"
+	]
 
-	// if (abil_some.some(x => !enemy.IsInvulnerable && abil_someF(x, unit, enemy, AbilityHelper)))
-	// 	return
-
-	let orb_walker = new OrbWalker(unit)
-
-	if (!orb_walker.Execute(enemy) && OrbWalkerState.value)
+	if (abil_arr.some(x => !enemy.IsInvulnerable && abil_use(x, unit, enemy, AbilityHelper)))
 		return
+
+	if (!UnitsOrbWalker[unit.Index]?.Execute(enemy))
+		return
+
 }

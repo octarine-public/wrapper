@@ -3,11 +3,11 @@ import { InitCombo } from "./module/Combo"
 import { Unit, Utils, ArrayExtensions } from "wrapper/Imports"
 import { RegisterHeroModule, Units } from "XAIO/bootstrap"
 
-RegisterHeroModule("npc_dota_hero_antimage", { Init })
+RegisterHeroModule("npc_dota_hero_antimage", { InitTick })
 
 let near_enemy: Nullable<Unit> = undefined
 
-export function Init(unit: Unit) {
+export function InitTick(unit: Unit) {
 	near_enemy = ArrayExtensions.orderBy(
 		Units.filter(x => x.IsHero
 			&& x.IsEnemy()

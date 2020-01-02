@@ -24,7 +24,7 @@ function SharedFilter(number: number, obj: any) {
 }
 
 EventsSDK.on("Tick", () => {
-	if (!State.value || Sleep.Sleeping || LocalPlayer!.Hero === undefined)
+	if (!State.value || LocalPlayer!.Hero === undefined)
 		return
 	let Couriers = EntityManager.GetEntitiesByClass(Courier)
 	let IsValid = Couriers.some(CourierBase.IsValidCourier)
@@ -44,7 +44,7 @@ EventsSDK.on("Tick", () => {
 	if (!State.value || BestPosSleep.Sleeping || !OwnerIsValid())
 		return
 	CourierBase.LAST_CLICK = false
-	BestPosSleep.Sleep(2000)
+	BestPosSleep.Sleep(CourierBase.CastDelay + 180)
 })
 
 Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {

@@ -1,21 +1,24 @@
-import { Unit, Game, Utils, dotaunitorder_t, Vector3 } from "wrapper/Imports"
+import { Unit, Game, Utils, dotaunitorder_t, Vector3, GameSleeper } from "wrapper/Imports"
+import { Units } from "../bootstrap"
+import { stateGlobal, OrbWalkerState } from "../Menu/Base"
 
 let TurnEndTime = 0
 let LastAttackTime = 0
+let Sleep = new GameSleeper
+export let UnitsOrbWalker: OrbWalker[] = []
 
-export class OrbWalker {
+
+class OrbWalker {
 
 	public OrbwalkingPoint: Vector3 = new Vector3
 	public LastMoveOrderIssuedTime = 0
 	public LastAttackOrderIssuedTime = 0
 
-	constructor(public Unit: Unit) {
+	constructor(public unit: Unit) {
 
 		EventsSDK.on("NetworkActivityChanged", (npc) => {
-			if (LocalPlayer === undefined || LocalPlayer.Hero === undefined)
-				return
 
-			if (npc !== LocalPlayer.Hero)
+			if (this.unit === undefined || npc !== this.unit)
 				return
 
 			let newNetworkActivity = npc.NetworkActivity
@@ -28,7 +31,7 @@ export class OrbWalker {
 		})
 
 		EventsSDK.on("PrepareUnitOrders", (args) => {
-			if (args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET && args.Unit !== this.Unit)
+			if (args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET && args.Unit !== this.unit)
 				return
 
 			let target = args.Target as Unit
@@ -42,12 +45,15 @@ export class OrbWalker {
 	}
 
 	public Execute(target: Unit): boolean {
+		if (Sleep.Sleeping(this.unit.Index))
+			return false
+
 		let time = Game.RawGameTime
 
 		if (TurnEndTime > time)
 			return false
 
-		if (this.Unit.IsChanneling || !this.Unit.IsAlive || this.Unit.IsStunned)
+		if (this.unit.IsChanneling || !this.unit.IsAlive || this.unit.IsStunned)
 			return false
 
 		if ((target !== undefined && this.CanAttack(target, time)) || !this.CanMove(time))
@@ -60,22 +66,23 @@ export class OrbWalker {
 	}
 
 	public Move(position: Vector3, time: number): boolean {
-		if (!this.Unit.IsMoving) {
-			this.Unit.MoveTo(position)
-			this.LastMoveOrderIssuedTime = time
-			return true
-		}
+		if (this.unit.IsMoving)
+			return false
 
-		return false
+		this.unit.MoveTo(position)
+		this.LastMoveOrderIssuedTime = time
+		Sleep.Sleep(this.LastMoveOrderIssuedTime / 5, this.unit.Index)
+		return true
 	}
 
 	public Attack(unit: Unit, time: number) {
 		if (time - this.LastAttackOrderIssuedTime < 5 / 1000)
 			return false
 		TurnEndTime = this.GetTurnTime(unit, time)
-		if (this.Unit.CanAttack(unit)) {
-			this.Unit.AttackTarget(unit)
+		if (this.unit.CanAttack(unit)) {
+			this.unit.AttackTarget(unit)
 			this.LastAttackOrderIssuedTime = time
+			Sleep.Sleep(this.LastAttackOrderIssuedTime / 5, this.unit.Index)
 			return true
 		}
 		return false
@@ -88,15 +95,15 @@ export class OrbWalker {
 	 */
 
 	public CanAttack(target: Unit, time: number) {
-		return this.Unit.CanAttack && this.GetTurnTime(target, time) - LastAttackTime > 1 / this.Unit.AttacksPerSecond
+		return this.unit.CanAttack && this.GetTurnTime(target, time) - LastAttackTime > 1 / this.unit.AttacksPerSecond
 	}
 
 	public GetTurnTime(unit: Unit, time: number): number {
-		return time + this.PingTime + this.Unit.TurnTime(unit.Position) + 0.1 / 1000
+		return time + this.PingTime + this.unit.TurnTime(unit.Position) + 0.1 / 1000
 	}
 
 	public CanMove(time: number) {
-		return ((time - 0.1) + this.PingTime) - LastAttackTime > this.Unit.AttackPoint
+		return ((time - 0.1) + this.PingTime) - LastAttackTime > this.unit.AttackPoint
 	}
 
 
@@ -118,7 +125,23 @@ export class OrbWalker {
 }
 
 
+EventsSDK.on("Tick", () => {
+	if (!stateGlobal.value || !OrbWalkerState.value)
+		return
+
+	Units.forEach(unit =>
+		unit.Name !== "npc_dota_courier"
+		&& unit.IsAlive
+		&& !unit.IsEnemy()
+		&& unit.IsControllable
+		&& (UnitsOrbWalker[unit.Index] = new OrbWalker(unit)))
+
+	UnitsOrbWalker.some(x => !x.unit.IsAlive && (UnitsOrbWalker = []))
+})
+
+
 EventsSDK.on("GameEnded", () => {
 	TurnEndTime = 0
 	LastAttackTime = 0
+	UnitsOrbWalker = []
 })

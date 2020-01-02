@@ -6,5 +6,4 @@ export const {
 	ComboKey,
 	NearMouse,
 	ComboTree,
-	OrbWalkerState
 } = XMenu(Menu, "AntiMage")

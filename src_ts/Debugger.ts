@@ -13,7 +13,7 @@ let exec = (self: Menu.Base) => Game.ExecuteCommand(self.tooltip!)
 let debuggerMenu = Menu.AddEntry("Debugger")
 
 let sv_cheatsMenu = debuggerMenu.AddNode("Concommands")
-debuggerMenu.AddKeybind("Manual take heap snapshot").OnRelease(() => {
+debuggerMenu.AddKeybind("Snapshot").OnRelease(() => {
 	TakeHeapSnapshot("dumps/manual_heap_" + Math.random().toString().substring(2, 8) + ".heapsnapshot")
 })
 let sv_cheats = sv_cheatsMenu.AddToggle("sv_cheats")

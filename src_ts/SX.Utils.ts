@@ -1,12 +1,12 @@
-import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, Utils } from "wrapper/Imports"
+import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, Utils, TickSleeper } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Debugger", "SX.Utils"])
+const State = Menu.AddToggle("State")
 const MenuTreeColor = Menu.AddNode("Enemy color")
 const range_display = Menu.AddSliderFloat("Range display", 0, 0, 10000)
 const color_r = MenuTreeColor.AddSlider("R-Color", 1, 0, 100)
 const color_g = MenuTreeColor.AddSlider("G-Color", 0, 0, 100)
 const color_b = MenuTreeColor.AddSlider("B-Color", 0, 0, 100)
-const State = Menu.AddToggle("State")
 
 const BuybackBind = Menu.AddKeybind("Buyback key")
 const StateAutoDisconnect = Menu.AddToggle("Auto disconnect after game", true)
@@ -41,25 +41,48 @@ BuybackBind.OnRelease(() => {
 	Player.Buyback()
 })
 
+let Sleep = new TickSleeper
+
+let prees = false
+Menu.AddKeybind("Full sven").OnRelease(() => {
+	Game.ExecuteCommand("dota_create_unit npc_dota_hero_sven enemy")
+	prees = true
+	Sleep.Sleep(1000 + Game.Ping / 2)
+})
+
+
 EventsSDK.on("Tick", () => {
 	if (!State.value)
 		return
-	if (ConVars.GetInt(Server_log) === 1) {
+
+	if (prees) {
+		for (var i = 6; i--;)
+			Game.ExecuteCommand("dota_bot_give_item item_heart")
+		Game.ExecuteCommand("dota_bot_give_level 30")
+		if (!Sleep.Sleeping)
+			prees = false
+	}
+
+	if (ConVars.GetInt(Server_log) === 1)
 		Game.ExecuteCommand(Server_log + " 0")
-	}
-	if (ConVars.GetInt(cl_cmdrate) === 30) {
+
+	if (ConVars.GetInt(cl_cmdrate) === 30)
 		Game.ExecuteCommand(cl_cmdrate + " 40")
-	}
-	if (ConVars.GetInt(cl_updaterate) === 30) {
+
+	if (ConVars.GetInt(cl_updaterate) === 30)
 		Game.ExecuteCommand(cl_updaterate + " 40")
-	}
-	if (ConVars.GetInt(auto_pause_disconnect) === 30) {
+
+
+	if (ConVars.GetInt(auto_pause_disconnect) === 30)
 		Game.ExecuteCommand(auto_pause_disconnect + " 3")
-	}
-	if (StateAutoDisconnect.value && Game.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_POST_GAME) {
+
+	if (StateAutoDisconnect.value && Game.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_POST_GAME)
 		Game.ExecuteCommand("disconnect")
-	}
+
 })
+
+
+
 EventsSDK.on("Draw", () => {
 	if (!State.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || !DrawMosePos.value)
 		return

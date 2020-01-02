@@ -8,7 +8,6 @@ export const {
 	ComboKey,
 	NearMouse,
 	ComboTree,
-	OrbWalkerState
 } = XMenu(Menu, "Lina")
 
 const AutoStealTree = BaseTree.AddNode("Auto Steal")
