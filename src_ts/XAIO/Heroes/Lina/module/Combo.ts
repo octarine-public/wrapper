@@ -12,6 +12,6 @@ export function InitCombo(unit: Unit, enemy: Nullable<Unit>) {
 	if (enemy === undefined || !ComboKey.is_pressed)
 		return
 
-	if (!UnitsOrbWalker[unit.Index].Execute(enemy))
+	if (!UnitsOrbWalker.get(unit)?.Execute(enemy))
 		return
 }

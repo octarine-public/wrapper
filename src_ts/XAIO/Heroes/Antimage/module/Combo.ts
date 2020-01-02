@@ -36,7 +36,7 @@ export function InitCombo(unit: Unit, enemy: Nullable<Unit>) {
 	if (abil_arr.some(x => !enemy.IsInvulnerable && abil_use(x, unit, enemy, AbilityHelper)))
 		return
 
-	if (!UnitsOrbWalker[unit.Index]?.Execute(enemy))
+	if (!UnitsOrbWalker.get(unit)?.Execute(enemy))
 		return
 
 }

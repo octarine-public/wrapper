@@ -1,51 +1,33 @@
 import { Unit, Game, Utils, dotaunitorder_t, Vector3, GameSleeper } from "wrapper/Imports"
-import { Units } from "../bootstrap"
-import { stateGlobal, OrbWalkerState } from "../Menu/Base"
 
 let TurnEndTime = 0
 let LastAttackTime = 0
-let Sleep = new GameSleeper
-export let UnitsOrbWalker: OrbWalker[] = []
-
+let Sleep = new GameSleeper()
+export let UnitsOrbWalker: Map<Unit, OrbWalker> = new Map()
 
 class OrbWalker {
+	public static readonly attackActivities: GameActivity_t[] = [
+		GameActivity_t.ACT_DOTA_ATTACK,
+		GameActivity_t.ACT_DOTA_ATTACK2,
+		GameActivity_t.ACT_DOTA_ATTACK_EVENT
+	]
+	public static readonly attackCancelActivities: GameActivity_t[] = [
+		GameActivity_t.ACT_DOTA_IDLE,
+		GameActivity_t.ACT_DOTA_IDLE_RARE,
+		GameActivity_t.ACT_DOTA_RUN
+	]
+	public static get PingTime() {
+		return Game.Ping / 2000
+	}
 
-	public OrbwalkingPoint: Vector3 = new Vector3
+	public OrbwalkingPoint = new Vector3()
 	public LastMoveOrderIssuedTime = 0
 	public LastAttackOrderIssuedTime = 0
 
-	constructor(public unit: Unit) {
-
-		EventsSDK.on("NetworkActivityChanged", (npc) => {
-
-			if (this.unit === undefined || npc !== this.unit)
-				return
-
-			let newNetworkActivity = npc.NetworkActivity
-			if (!this.attackActivities.includes(newNetworkActivity)) {
-				if (this.attackCancelActivities.includes(newNetworkActivity) && !this.CanMove(Game.RawGameTime + 0.05))
-					LastAttackTime = 0
-				return
-			}
-			LastAttackTime = Game.RawGameTime - this.PingTime
-		})
-
-		EventsSDK.on("PrepareUnitOrders", (args) => {
-			if (args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET && args.Unit !== this.unit)
-				return
-
-			let target = args.Target as Unit
-
-			if (target === undefined || !target.IsValid)
-				return
-
-			if (this.CanMove(Game.RawGameTime))
-				LastAttackTime = this.GetTurnTime(target, Game.RawGameTime) - this.PingTime
-		})
-	}
+	constructor(public unit: Unit) { }
 
 	public Execute(target: Unit): boolean {
-		if (Sleep.Sleeping(this.unit.Index))
+		if (Sleep.Sleeping(this.unit))
 			return false
 
 		let time = Game.RawGameTime
@@ -71,7 +53,7 @@ class OrbWalker {
 
 		this.unit.MoveTo(position)
 		this.LastMoveOrderIssuedTime = time
-		Sleep.Sleep(this.LastMoveOrderIssuedTime / 5, this.unit.Index)
+		Sleep.Sleep(this.LastMoveOrderIssuedTime / 5, this.unit)
 		return true
 	}
 
@@ -82,7 +64,7 @@ class OrbWalker {
 		if (this.unit.CanAttack(unit)) {
 			this.unit.AttackTarget(unit)
 			this.LastAttackOrderIssuedTime = time
-			Sleep.Sleep(this.LastAttackOrderIssuedTime / 5, this.unit.Index)
+			Sleep.Sleep(this.LastAttackOrderIssuedTime / 5, this.unit)
 			return true
 		}
 		return false
@@ -99,49 +81,58 @@ class OrbWalker {
 	}
 
 	public GetTurnTime(unit: Unit, time: number): number {
-		return time + this.PingTime + this.unit.TurnTime(unit.Position) + 0.1 / 1000
+		return time + OrbWalker.PingTime + this.unit.TurnTime(unit.Position) + 0.1 / 1000
 	}
 
 	public CanMove(time: number) {
-		return ((time - 0.1) + this.PingTime) - LastAttackTime > this.unit.AttackPoint
+		return ((time - 0.1) + OrbWalker.PingTime) - LastAttackTime > this.unit.AttackPoint
 	}
-
-
-	private attackActivities: GameActivity_t[] = [
-		GameActivity_t.ACT_DOTA_ATTACK,
-		GameActivity_t.ACT_DOTA_ATTACK2,
-		GameActivity_t.ACT_DOTA_ATTACK_EVENT
-	]
-
-	private get PingTime() {
-		return Game.Ping / 2000
-	}
-
-	private attackCancelActivities: GameActivity_t[] = [
-		GameActivity_t.ACT_DOTA_IDLE,
-		GameActivity_t.ACT_DOTA_IDLE_RARE,
-		GameActivity_t.ACT_DOTA_RUN
-	]
 }
 
-
-EventsSDK.on("Tick", () => {
-	if (!stateGlobal.value || !OrbWalkerState.value)
+EventsSDK.on("EntityCreated", ent => {
+	if (!(ent instanceof Unit))
 		return
-
-	Units.forEach(unit =>
-		unit.Name !== "npc_dota_courier"
-		&& unit.IsAlive
-		&& !unit.IsEnemy()
-		&& unit.IsControllable
-		&& (UnitsOrbWalker[unit.Index] = new OrbWalker(unit)))
-
-	UnitsOrbWalker.some(x => !x.unit.IsAlive && (UnitsOrbWalker = []))
+	UnitsOrbWalker.set(ent, new OrbWalker(ent))
 })
 
+EventsSDK.on("EntityDestroyed", ent => {
+	if (!(ent instanceof Unit))
+		return
+	UnitsOrbWalker.delete(ent)
+})
 
 EventsSDK.on("GameEnded", () => {
 	TurnEndTime = 0
 	LastAttackTime = 0
-	UnitsOrbWalker = []
+})
+
+EventsSDK.on("NetworkActivityChanged", unit => {
+	let orbwalker = UnitsOrbWalker.get(unit)
+	if (orbwalker === undefined)
+		return
+
+	let newNetworkActivity = unit.NetworkActivity
+	if (!OrbWalker.attackActivities.includes(newNetworkActivity)) {
+		if (OrbWalker.attackCancelActivities.includes(newNetworkActivity) && !orbwalker.CanMove(Game.RawGameTime + 0.05))
+			LastAttackTime = 0
+		return
+	}
+	LastAttackTime = Game.RawGameTime - OrbWalker.PingTime
+})
+
+EventsSDK.on("PrepareUnitOrders", args => {
+	if (args.OrderType !== dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET)
+		return
+
+	let orbwalker = UnitsOrbWalker.get(args.Unit!)
+	if (orbwalker === undefined)
+		return
+
+	let target = args.Target as Unit
+
+	if (target === undefined || !target.IsValid)
+		return
+
+	if (orbwalker.CanMove(Game.RawGameTime))
+		LastAttackTime = orbwalker.GetTurnTime(target, Game.RawGameTime) - OrbWalker.PingTime
 })

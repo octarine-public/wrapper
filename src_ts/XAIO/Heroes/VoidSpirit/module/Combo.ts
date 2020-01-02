@@ -77,6 +77,6 @@ export function InitCombo(unit: Unit, enemy: Unit) {
 		Sleep.Sleep(SetSleeping, enemy)
 		return
 	}
-	if (!UnitsOrbWalker[unit.Index]?.Execute(enemy))
+	if (!UnitsOrbWalker.get(unit)?.Execute(enemy))
 		return
 }
