@@ -59,13 +59,9 @@ export default class ExecuteOrder {
 
 		return new ExecuteOrder(
 			order.order_type,
-			order.target instanceof C_BaseEntity
-				? EntityManager.GetEntityByNative(order.target) as Entity
-				: order.target,
+			order.target !== 0 ? EntityManager.GetEntityByNative(order.target) : undefined,
 			Vector3.fromIOBuffer(order.position !== undefined),
-			order.ability instanceof C_DOTABaseAbility
-				? EntityManager.GetEntityByNative(order.ability) as Ability
-				: order.ability,
+			EntityManager.GetEntityByNative(order.ability) as Ability,
 			order.issuer,
 			unit,
 			order.queue,
