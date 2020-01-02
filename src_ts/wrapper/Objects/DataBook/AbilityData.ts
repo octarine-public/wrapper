@@ -44,9 +44,7 @@ export default class AbilityData {
 	constructor(name: string) {
 		{
 			let storage = AbilityData.global_storage.get(name)
-			if (!(storage instanceof Map))
-				throw "Invalid storage type for ability name " + name
-			this.m_Storage = storage
+			this.m_Storage = storage instanceof Map ? storage : new Map()
 		}
 		this.AbilityBehavior = this.m_Storage.has("AbilityBehavior")
 			? parseEnumString(DOTA_ABILITY_BEHAVIOR, this.m_Storage.get("AbilityBehavior") as string)

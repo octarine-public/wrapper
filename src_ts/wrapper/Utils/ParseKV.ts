@@ -65,6 +65,9 @@ function _parse(stream: Stream, map = new Map<string, any>()): Map<string, any> 
 			next_is_value = false  // Make sure the next string is interpreted as a key.
 			if (!map.has(laststr))
 				map.set(laststr, new Map<string, any>())
+			let x = map.get(laststr)
+			if (!(x instanceof Map))
+				map.set(laststr, x = new Map<string, any>())
 			_parse(stream, map.get(laststr))
 		} else if (c === NODE_CLOSE) {
 			return map
