@@ -62,6 +62,10 @@ EventsSDK.on("Tick", () => {
 	midPosition = midPosition.DivideScalarForThis(unitCount)
 
 	illusions.forEach(illusion => {
+
+		if (illusion.UnitState.some(x => x & 524288)) // Anti mage restrict talant 
+			return
+
 		let randomAngle = Math.floor(Math.random() * Math.floor(angleUnit / unitCount) + 1)
 
 		Direction = AngleRandomizer.value
