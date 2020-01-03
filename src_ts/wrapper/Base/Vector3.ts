@@ -683,7 +683,7 @@ export default class Vector3 {
 
 		return new Vector3(
 			(this.x * cos) - (this.y * sin),
-			(this.y * cos) + (this.x * sin),
+			(this.y * cos) + (this.x * sin), this.z
 		)
 	}
 	/**
