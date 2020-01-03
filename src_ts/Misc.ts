@@ -160,14 +160,18 @@ EventsSDK.on("Draw", () => {
 let guard = false,
 	clear_list: string[] = []
 Events.on("AddSearchPath", path => {
-	if (map_name.selected_id !== 0 && path.endsWith("dota.vpk") && !guard) {
-		guard = true
-		AddSearchPath(path)
-		let new_path = path.substring(0, path.length - 8) + map_name.values[map_name.selected_id] + ".vpk"
-		AddSearchPath(new_path)
-		clear_list.push(new_path)
-		guard = false
-		return false
+	if (!guard) {
+		if (map_name.selected_id !== 0 && path.endsWith("dota.vpk")) {
+			guard = true
+			AddSearchPath(path)
+			let new_path = path.substring(0, path.length - 8) + map_name.values[map_name.selected_id] + ".vpk"
+			AddSearchPath(new_path)
+			clear_list.push(new_path)
+			guard = false
+			return false
+		}
+		if (map_name.values.some(name => path.endsWith(name + ".vpk")))
+			return false
 	}
 	return true
 })
