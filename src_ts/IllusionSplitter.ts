@@ -38,7 +38,7 @@ EventsSDK.on("Tick", () => {
 		x.IsIllusion
 		&& x.IsAlive
 		&& x.IsControllable
-		&& (x.Distance2D(LocalPlayer?.Hero!) < IllusionsRange.value)
+		&& (x.Distance2D(Owner) < IllusionsRange.value)
 	)
 
 	const unitCount = illusions.length + 1
@@ -53,7 +53,7 @@ EventsSDK.on("Tick", () => {
 
 	Direction = MoveMainHero.value
 		? Utils.CursorWorldVec.Subtract(Owner.Position)
-		: LocalPlayer?.Hero.InFront(250).Subtract(Owner.Position)
+		: Owner.InFront(250).Subtract(Owner.Position)
 
 	let midPosition = illusions.reduce((current, illusion) =>
 		illusion.Position.AddForThis(current), Owner.Position)
@@ -114,7 +114,7 @@ EventsSDK.on("Tick", () => {
 			: Delay
 
 		if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
-			let pos = Utils.CursorWorldVec.Subtract(LocalPlayer!.Hero!.Position)
+			let pos = Utils.CursorWorldVec.Subtract(Owner.Position)
 			if (pos.Length > abil.CastRange)
 				pos.Normalize().MultiplyScalarForThis(abil.CastRange)
 
