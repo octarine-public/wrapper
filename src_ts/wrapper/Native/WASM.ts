@@ -3,7 +3,7 @@ import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import RendererSDK from "../Native/RendererSDK"
 
-var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("~/wrapper.wasm")), {
+var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("wrapper.wasm")), {
 	env: {
 		emscripten_notify_memory_growth
 	}

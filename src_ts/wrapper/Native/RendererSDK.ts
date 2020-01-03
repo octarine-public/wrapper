@@ -5,6 +5,8 @@ import QAngle from "../Base/QAngle"
 import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
 import { FontFlags_t } from "../Enums/FontFlags_t"
+import { HeightMap, ParseHeightMap } from "../Utils/ParseVHCG"
+import Events from "../Managers/Events"
 
 enum CommandID {
 	SET_COLOR = 0,
@@ -40,6 +42,7 @@ let RendererSDK_ = new (class RendererSDK {
 
 	public AlternateW2S = false
 	public WindowSize_ = new Vector2()
+	public HeightMap: Nullable<HeightMap>
 
 	private commandCache = new Uint8Array()
 	private commandCacheSize = 0
@@ -205,8 +208,7 @@ let RendererSDK_ = new (class RendererSDK {
 		view.setInt32(off += 4, vecPos.y + vecSize.y, true)
 	}
 	/**
-	 * @param path start it with "~/" (without double-quotes) to load image from "%loader_path%/scripts_files/path"
-	 * @param path also must end with "_c" (without double-quotes), if that's vtex_c
+	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
 	 */
 	public Image(path: string, vecPos: Vector2 | Vector3 = new Vector2(), vecSize = new Vector2(-1, -1), color = new Color(255, 255, 255)): void {
 		this.SetColor(color)
@@ -298,9 +300,12 @@ let RendererSDK_ = new (class RendererSDK {
 		color.toIOBuffer(3)
 		Minimap.DrawPing(end_time, -key)
 	}
-	public GetPositionHeight(position: Vector2) {
-		position.toIOBuffer()
-		return Renderer.GetPositionHeight()
+	public GetPositionHeight(position: Vector2): number {
+		if (this.HeightMap === undefined) {
+			position.toIOBuffer()
+			return Renderer.GetPositionHeight()
+		} else
+			return this.HeightMap.GetHeightForLocation(position)
 	}
 
 	public EmitDraw() {
@@ -413,5 +418,30 @@ let RendererSDK_ = new (class RendererSDK {
 		view.setUint8(off += 1, Math.min(color.a, 255))
 	}
 })()
+
+try {
+	let buf = readFile(`maps/${GetLevelNameShort()}.vhcg`)
+	if (buf !== undefined)
+		RendererSDK_.HeightMap = ParseHeightMap(buf)
+} catch (e) {
+	console.log("Error in RendererSDK.HeightMap static init: " + e)
+}
+
+Events.on("PostAddSearchPath", path => {
+	let res = /maps(\/|\\)(.+).vpk/.exec(path)
+	if (res === null)
+		return
+
+	let buf = readFile(`maps/${res[2]}.vhcg`)
+	if (buf === undefined)
+		return
+
+	try {
+		RendererSDK_.HeightMap = ParseHeightMap(buf)
+	} catch (e) {
+		console.log("Error in RendererSDK.HeightMap dynamic init: " + e)
+		RendererSDK_.HeightMap = undefined
+	}
+})
 
 export default RendererSDK_

@@ -127,9 +127,6 @@ declare interface Camera {
 /// GLOBAL FUNCTIONS
 
 declare function SendToConsole(command: string): void
-/**
- * @param path start it with "~/" (without double-quotes) to load file from "%loader_path%/scripts_files/%path%"
- */
 declare function readFile(path: string): ArrayBuffer
 /**
  * @param path pass empty to read from confings/../settings.json
@@ -177,6 +174,8 @@ declare function GetHeapStatistics(): {
 }
 declare function TakeHeapSnapshot(path: string): void
 declare function hrtime(): number
+declare function AddSearchPath(path: string): boolean
+declare function RemoveSearchPath(path: string): boolean
 
 /// AUTOMATICALLY GENERATED
 

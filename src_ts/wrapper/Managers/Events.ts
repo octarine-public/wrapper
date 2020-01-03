@@ -275,6 +275,10 @@ declare interface Events extends EventEmitter {
 	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, string]>) => void): EventEmitter
 	on(name: "EntitiesVisiblityChanged", listener: (update: Map<C_BaseEntity, boolean>) => void): EventEmitter
 	on(name: "SignonStateChanged", listener: (new_state: SignonState_t) => void): EventEmitter
+	on(name: "AddSearchPath", listener: (path: string) => boolean): EventEmitter
+	on(name: "PostAddSearchPath", listener: (path: string) => void): EventEmitter
+	on(name: "RemoveSearchPath", listener: (path: string) => boolean): EventEmitter
+	on(name: "PostRemoveSearchPath", listener: (path: string) => void): EventEmitter
 }
 
 const Events: Events = new EventEmitter()

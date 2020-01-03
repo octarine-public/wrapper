@@ -166,7 +166,7 @@ export default class Vector2 {
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
 	 * @param The another vector
 	 */
-	public Min(vec: Vector2): Vector2 {
+	public Min(vec: Vector2 | number): Vector2 {
 		return new Vector2(
 			Math.min(this.x, vec instanceof Vector2 ? vec.x : vec),
 			Math.min(this.y, vec instanceof Vector2 ? vec.y : vec),
@@ -203,6 +203,21 @@ export default class Vector2 {
 
 		this.x = Math.round(this.x * pow) / pow
 		this.y = Math.round(this.y * pow) / pow
+
+		return this
+	}
+	public Floor(count: number = 0): Vector2 {
+		const pow = Math.pow(10, count)
+		return new Vector2(
+			Math.floor(this.x * pow) / pow,
+			Math.floor(this.y * pow) / pow
+		)
+	}
+	public FloorForThis(count: number = 0): Vector2 {
+		const pow = Math.pow(10, count)
+
+		this.x = Math.floor(this.x * pow) / pow
+		this.y = Math.floor(this.y * pow) / pow
 
 		return this
 	}

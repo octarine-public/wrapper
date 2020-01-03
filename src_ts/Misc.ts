@@ -22,7 +22,24 @@ let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 		"Spring",
 		"Ash",
 		"Aurora",
-	], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id))
+	], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id)),
+	map_name = Menu.AddSwitcher("Custom Map", [
+		"None",
+		"dota_autumn",
+		"dota_cavern",
+		"dota_coloseum",
+		"dota_desert",
+		"dota_journey",
+		"dota_jungle",
+		"dota_reef",
+		"dota_spring",
+		"dota_summer",
+		"dota_winter",
+		"dota_719",
+		"dota_706",
+		"dota_688",
+		"dota_685",
+	], 0)
 
 CamDist.OnValue(UpdateVisuals)
 
@@ -138,4 +155,24 @@ EventsSDK.on("Draw", () => {
 
 	AcceptMatch()
 	timeCreate = -1
+})
+
+let guard = false,
+	clear_list: string[] = []
+Events.on("AddSearchPath", path => {
+	if (map_name.selected_id !== 0 && path.endsWith("dota.vpk") && !guard) {
+		guard = true
+		AddSearchPath(path)
+		let new_path = path.substring(0, path.length - 8) + map_name.values[map_name.selected_id] + ".vpk"
+		AddSearchPath(new_path)
+		clear_list.push(new_path)
+		guard = false
+		return false
+	}
+	return true
+})
+
+Events.on("PostRemoveSearchPath", path => {
+	if (path.endsWith("dota.vpk"))
+		clear_list.forEach(path_ => RemoveSearchPath(path_))
 })

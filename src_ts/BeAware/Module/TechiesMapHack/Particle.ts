@@ -136,7 +136,7 @@ export function OnDraw() {
 	allTechiesMines.forEach(([allMines, pos, name]) => {
 		let wts = RendererSDK.WorldToScreen(pos)
 		if (wts !== undefined && name !== undefined) {
-			RendererSDK.Image(`~/other/npc_dota_${name}.png`, wts.SubtractScalarX(64 / 4).SubtractScalarY(87 / 4), new Vector2(64 / 2, 87 / 2))
+			RendererSDK.Image(`other/npc_dota_${name}.png`, wts.SubtractScalarX(64 / 4).SubtractScalarY(87 / 4), new Vector2(64 / 2, 87 / 2))
 			RendererSDK.Text(
 				"x" + allMines.length,
 				wts.AddScalarX(Size.value / 4),
