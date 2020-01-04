@@ -3456,6 +3456,8 @@ declare class CSkeletonInstance extends CGameSceneNode {
 }
 
 declare class CGameSceneNode {
+	SetLocalScale(scale: number): void
+
 	readonly m_pOwner: CEntityInstance
 	readonly m_pParent: CGameSceneNode
 	readonly m_pChild: CGameSceneNode
@@ -6406,6 +6408,7 @@ declare class C_BaseAnimating extends C_BaseModelEntity {
 
 declare class C_BaseModelEntity extends C_BaseEntity {
 	OnColorChanged(): void
+	m_sModel: string
 
 	readonly m_CRenderComponent: CRenderComponent
 	m_iViewerID: number
