@@ -7,6 +7,7 @@ import * as WASM from "./WASM"
 import { FontFlags_t } from "../Enums/FontFlags_t"
 import { HeightMap, ParseHeightMap } from "../Utils/ParseVHCG"
 import Events from "../Managers/Events"
+import Game from "../Objects/GameResources/GameRules"
 
 enum CommandID {
 	SET_COLOR = 0,
@@ -301,11 +302,7 @@ let RendererSDK_ = new (class RendererSDK {
 		Minimap.DrawPing(end_time, -key)
 	}
 	public GetPositionHeight(position: Vector2): number {
-		if (this.HeightMap === undefined) {
-			position.toIOBuffer()
-			return Renderer.GetPositionHeight()
-		} else
-			return this.HeightMap.GetHeightForLocation(position)
+		return this.HeightMap?.GetHeightForLocation(position) ?? 0
 	}
 
 	public EmitDraw() {
@@ -419,29 +416,56 @@ let RendererSDK_ = new (class RendererSDK {
 	}
 })()
 
+let last_loaded_map_name = "<empty>"
 try {
-	let buf = readFile(`maps/${GetLevelNameShort()}.vhcg`)
-	if (buf !== undefined)
+	let map_name = GetLevelNameShort()
+	if (map_name === "start")
+		map_name = "dota"
+	let buf = readFile(`maps/${map_name}.vhcg`)
+	if (buf !== undefined) {
 		RendererSDK_.HeightMap = ParseHeightMap(buf)
+		Game.MapName = last_loaded_map_name = map_name
+	}
 } catch (e) {
 	console.log("Error in RendererSDK.HeightMap static init: " + e)
 }
 
-Events.on("PostAddSearchPath", path => {
-	let res = /maps(\/|\\)(.+).vpk/.exec(path)
+function ParseMapName(str: string): string | undefined {
+	let res = /maps(\/|\\)(.+)\.vpk$/.exec(str)
 	if (res === null)
+		return undefined
+
+	let map_name = res[2]
+	if (map_name.startsWith("scenes") || map_name.startsWith("prefabs")) // that must not be loaded as main map, so we must ignore it
+		return undefined
+	return map_name
+}
+
+Events.on("PostAddSearchPath", path => {
+	let map_name = ParseMapName(path)
+	if (map_name === undefined)
 		return
 
-	let buf = readFile(`maps/${res[2]}.vhcg`)
+	let buf = readFile(`maps/${map_name}.vhcg`)
 	if (buf === undefined)
 		return
 
 	try {
 		RendererSDK_.HeightMap = ParseHeightMap(buf)
+		Game.MapName = last_loaded_map_name = map_name
 	} catch (e) {
 		console.log("Error in RendererSDK.HeightMap dynamic init: " + e)
 		RendererSDK_.HeightMap = undefined
 	}
+})
+
+Events.on("PostRemoveSearchPath", path => {
+	let map_name = ParseMapName(path)
+	if (map_name === undefined || last_loaded_map_name !== map_name)
+		return
+
+	RendererSDK_.HeightMap = undefined
+	last_loaded_map_name = "<empty>"
 })
 
 export default RendererSDK_

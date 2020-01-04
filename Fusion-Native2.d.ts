@@ -114,7 +114,6 @@ declare interface Renderer {
 	FreeFontID(font_id: number): void
 	EditFont(font_id: number, font_name: string, font_size: number, font_weight: number, flags: number): boolean
 	GetTextSize(text: string, font_id: number): boolean // returns Vector2 to IOBuffer offset 0 on get
-	GetPositionHeight(): number // pass Position: Vector2 at IOBuffer offset 0
 	ExecuteCommandBuffer(buf: ArrayBuffer, buf_size: number): void
 }
 
