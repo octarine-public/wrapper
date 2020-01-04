@@ -206,7 +206,7 @@ Events.on("AddSearchPath", path => {
 			guard = false
 			return false
 		}
-		if (map_name.values.some(name => path.endsWith(name + ".vpk")))
+		if (map_name.values.some((name, i) => i !== 0 && path.endsWith(name + ".vpk")))
 			return false
 	}
 	return true
