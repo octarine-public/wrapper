@@ -2,7 +2,7 @@ import { Entity, ParticlesSDK, Tower, Unit, Vector3, EntityManager } from "wrapp
 import { State, TowerOnlyTarget, TowerSwitcher } from "./Menu"
 
 let pars = new Map<Entity, number>(),
-	TowerRange = new Map<Entity, number>(),
+	TowerRange = new Map<Tower, number>(),
 	FirstCreate: boolean = false,
 	Towers: Tower[] = []
 
@@ -52,7 +52,7 @@ State.OnValue(x => {
 	if (x.value)
 		return
 	// loop-optimizer: KEEP
-	Towers.forEach((tower, particle_range) => {
+	TowerRange.forEach((particle_range, tower) => {
 		SwicthTowers(particle_range, tower)
 		let par = pars.get(tower)
 		if (par !== undefined)
@@ -61,10 +61,10 @@ State.OnValue(x => {
 })
 
 export function OnDraw() {
-	if (!State.value || Towers.length <= 0)
+	if (!State.value)
 		return
 	// loop-optimizer: KEEP
-	Towers.forEach((tower, i) => {
+	Towers.forEach(tower => {
 		if (!FirstCreate) { // shit, in ent create don'n work
 			CreateTowerRange(tower)
 			FirstCreate = true
