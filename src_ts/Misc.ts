@@ -39,6 +39,7 @@ let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 		"dota_706",
 		"dota_688",
 		"dota_685",
+		"dota_vr",
 	], 0)
 
 CamDist.OnValue(UpdateVisuals)
