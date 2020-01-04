@@ -6389,6 +6389,8 @@ declare class C_BaseFlex extends C_BaseAnimatingOverlay {
 declare class C_BaseAnimatingOverlay extends C_BaseAnimating { }
 
 declare class C_BaseAnimating extends C_BaseModelEntity {
+	SetSkin(skin_id: number): void
+
 	readonly m_CHitboxComponent: CHitboxComponent
 	m_vecForce: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	m_nForceBone: number

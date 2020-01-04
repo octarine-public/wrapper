@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, RendererSDK } from "./wrapper/Imports"
+import { EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, RendererSDK, Tree } from "./wrapper/Imports"
 
 let Menu = MenuSDK.AddEntry("Misc")
 
@@ -24,7 +24,7 @@ let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 		"Aurora",
 	], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id)),
 	map_name = Menu.AddSwitcher("Custom Map", [
-		"None",
+		"dota",
 		"dota_autumn",
 		"dota_cavern",
 		"dota_coloseum",
@@ -40,7 +40,40 @@ let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 		"dota_688",
 		"dota_685",
 		"dota_vr",
-	], 0)
+	], 0),
+	tree_model = Menu.AddSwitcher("Tree Model", [
+		"Default",
+		"Crystal",
+		"Pumpkins",
+		"Pumpkin Buckets",
+	], 0),
+	tree2origmodel = new Map<Tree, [string, number]>(),
+	tree2modelid = new Map<Tree, number>()
+
+let tree_models: [string, number][] = [
+	["models/props_foliage/draft_tree001.vmdl", 1],
+	["models/props_structures/crystal003_refract.vmdl", 1],
+	["models/props_structures/pumpkin003.vmdl", 3],
+	["models/props_gameplay/pumpkin_bucket.vmdl", 1],
+]
+function ChangeTreeModels(self: MenuSDK.Switcher) {
+	let selected_tree_model_id = self.selected_id
+	let selected_tree_model = tree_models[selected_tree_model_id]
+	EntityManager.GetEntitiesByClass(Tree)
+		.filter(tree => tree.IsVisible)
+		.forEach(tree => {
+			if (tree2modelid.get(tree) === selected_tree_model_id)
+				return
+			if (!tree2origmodel.has(tree))
+				tree2origmodel.set(tree, [tree.m_pBaseEntity.m_sModel || tree_models[0][0], tree.GameSceneNode?.m_flAbsScale || tree_models[0][1]])
+			if (selected_tree_model_id === 0)
+				selected_tree_model = tree2origmodel.get(tree)!
+			tree.m_pBaseEntity.m_sModel = selected_tree_model[0]
+			tree.GameSceneNode.SetLocalScale(selected_tree_model[1])
+			tree2modelid.set(tree, selected_tree_model_id)
+		})
+}
+tree_model.OnValue(ChangeTreeModels)
 
 CamDist.OnValue(UpdateVisuals)
 
@@ -180,4 +213,30 @@ Events.on("AddSearchPath", path => {
 Events.on("PostRemoveSearchPath", path => {
 	if (path.endsWith("dota.vpk"))
 		clear_list.forEach(path_ => RemoveSearchPath(path_))
+})
+
+EventsSDK.on("Tick", () => {
+	if (tree_model.selected_id === 0)
+		return
+	ChangeTreeModels(tree_model)
+})
+
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent instanceof Tree) {
+		tree2modelid.delete(ent)
+		tree2origmodel.delete(ent)
+	}
+})
+
+EventsSDK.on("GameEnded", () => {
+	EntityManager.GetEntitiesByClass(Tree)
+		.filter(tree => tree.IsVisible)
+		.forEach(tree => {
+			if (tree2modelid.get(tree) === 0 || !tree2origmodel.has(tree))
+				return
+			let [model, scale] = tree2origmodel.get(tree)!
+			tree.m_pBaseEntity.m_sModel = model
+			tree.GameSceneNode.SetLocalScale(scale)
+			tree2modelid.set(tree, 0)
+		})
 })
