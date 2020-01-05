@@ -87,5 +87,4 @@ EventsSDK.on("Draw", () => {
 		return
 	let text = Math.ceil(MousePosition.x) + ", " + Math.ceil(MousePosition.y) + ", " + Math.ceil(MousePosition.z)
 	RendererSDK.TextAroundMouse(text, false, mouse_color.Color, "Calibri", new Vector2(mouse_size.value))
-
 })

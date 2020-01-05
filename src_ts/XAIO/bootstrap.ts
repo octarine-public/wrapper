@@ -37,4 +37,4 @@ EventsSDK.on("Draw", () => {
 	EventsSDK.emit("GameEnded", false)
 	reload("eTE9Te5rgBYThsO", true)
 })
-
+

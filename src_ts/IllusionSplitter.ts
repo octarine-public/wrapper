@@ -1,4 +1,4 @@
-import { Menu as MenuSDK, Hero, GameSleeper, Vector3, Utils } from "wrapper/Imports"
+import { Menu as MenuSDK, Hero, GameSleeper, Utils } from "wrapper/Imports"
 import item_bottle from "./wrapper/Objects/Abilities/Items/item_bottle"
 
 const Menu = MenuSDK.AddEntry(["Utility", "Illusion Splitter"])
@@ -22,8 +22,6 @@ const Delay = (((Game.Ping / 2) + 30) + 250)
 
 const DegreesToRadians = (deg: number) => deg * 0.0174532924
 
-let Direction: Nullable<Vector3> = new Vector3
-
 EventsSDK.on("Tick", () => {
 
 	if (LocalPlayer!.Hero === undefined || !Hotkey.is_pressed)
@@ -38,39 +36,34 @@ EventsSDK.on("Tick", () => {
 		x.IsIllusion
 		&& x.IsAlive
 		&& x.IsControllable
+		&& !x.UnitState.some(x => x & 524288) // Anti mage restrict talant 
 		&& (x.Distance2D(Owner) < IllusionsRange.value)
 	)
 
 	const unitCount = illusions.length + 1
-	const angleUnit = 360.0 / unitCount
+	const angleUnit = 360 / unitCount
 
-	if (MoveMainHero.value) {
-		if (!Sleep.Sleeping("owner_move")) {
-			Owner.MoveTo(Utils.CursorWorldVec)
-			Sleep.Sleep(Delay, "owner_move")
-		}
+	if (MoveMainHero.value && !Sleep.Sleeping("owner_move")) {
+		Owner.MoveTo(Utils.CursorWorldVec)
+		Sleep.Sleep(Delay, "owner_move")
 	}
 
-	Direction = MoveMainHero.value
-		? Utils.CursorWorldVec.Subtract(Owner.Position)
-		: Owner.InFront(250).Subtract(Owner.Position)
+	let Direction = MoveMainHero.value
+		? Utils.CursorWorldVec.SubtractForThis(Owner.Position)
+		: Owner.InFront(250).SubtractForThis(Owner.Position)
 
 	let midPosition = illusions.reduce((current, illusion) =>
 		illusion.Position.AddForThis(current), Owner.Position)
 
-
-	midPosition = midPosition.DivideScalarForThis(unitCount)
+	midPosition.DivideScalarForThis(unitCount)
 
 	illusions.forEach(illusion => {
-
-		if (illusion.UnitState.some(x => x & 524288)) // Anti mage restrict talant 
-			return
 
 		let randomAngle = Math.floor(Math.random() * Math.floor(angleUnit / unitCount) + 1)
 
 		Direction = AngleRandomizer.value
-			? Direction!.Rotated(DegreesToRadians(angleUnit + randomAngle))
-			: Direction!.Rotated(DegreesToRadians(angleUnit))
+			? Direction.Rotated(DegreesToRadians(angleUnit + randomAngle))
+			: Direction.Rotated(DegreesToRadians(angleUnit))
 
 		let movePos = midPosition.Add(
 			Direction.Normalize().MultiplyScalarForThis(IllusionsMinMoveRange.value)

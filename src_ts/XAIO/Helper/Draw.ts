@@ -10,7 +10,6 @@ export class Draw {
 	private get IsOwnerValid(): boolean {
 		return LocalPlayer !== undefined && !LocalPlayer.IsSpectator && this.unit !== undefined
 	}
-
 	public Render(
 		Items: Ability,
 		name: string,

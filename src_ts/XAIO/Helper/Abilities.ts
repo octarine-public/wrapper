@@ -41,7 +41,6 @@ export class AbilitiesHelper {
 		AbilitySleep.Sleep(castDelay, abil)
 		return true
 	}
-
 }
 
 EventsSDK.on("GameEnded", () => {
