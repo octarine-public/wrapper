@@ -1,5 +1,6 @@
 import { Entity, ParticlesSDK, Tower, Unit, Vector3, EntityManager } from "wrapper/Imports"
 import { State, TowerOnlyTarget, TowerSwitcher } from "./Menu"
+import { stateMain } from "../../abstract/Menu.Base"
 
 let pars = new Map<Entity, number>(),
 	TowerRange = new Map<Tower, number>(),
@@ -60,8 +61,20 @@ State.OnValue(x => {
 	})
 })
 
+stateMain.OnValue(x => {
+	if (x.value)
+		return
+	// loop-optimizer: KEEP
+	TowerRange.forEach((particle_range, tower) => {
+		SwicthTowers(particle_range, tower)
+		let par = pars.get(tower)
+		if (par !== undefined)
+			RemoveTarget(par, tower)
+	})
+})
+
 export function OnDraw() {
-	if (!State.value)
+	if (!State.value || !stateMain.value)
 		return
 	// loop-optimizer: KEEP
 	Towers.forEach(tower => {
