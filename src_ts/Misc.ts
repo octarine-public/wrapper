@@ -54,7 +54,7 @@ let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 let tree_models: [string, number][] = [
 	["models/props_foliage/draft_tree001.vmdl", 1],
 	["models/props_structures/crystal003_refract.vmdl", 1],
-	["models/props_structures/pumpkin003.vmdl", 3],
+	["models/props_structures/pumpkin001.vmdl", 1.08],
 	["models/props_gameplay/pumpkin_bucket.vmdl", 1],
 	["maps/journey_assets/props/trees/journey_armandpine/journey_armandpine_02_stump.vmdl", 4.5],
 ]
