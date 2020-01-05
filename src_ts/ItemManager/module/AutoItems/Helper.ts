@@ -78,7 +78,7 @@ const BuffsInvisDebuff = [
 const filterUnits = (x: Unit) => x.IsAlive && x.IsControllable
 	&& (
 		x.Name === "npc_dota_hero_riki"
-		|| x.InvisibleLevel <= 1
+		|| (x.InvisibleLevel <= 1 && !x.HasBuffByName("modifier_templar_assassin_meld") /** hack for power treads */)
 		|| x.ModifiersBook.HasAnyBuffByNames(SmokeDetected)
 	) // TODO blur
 	&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double")) &&
@@ -99,6 +99,7 @@ let nextTick = 0,
 	lastStat: Attributes | undefined
 
 function AutoUseItems(unit: Unit) {
+	console.log(unit.Buffs.map(e => e.Name))
 	// loop-optimizer: FORWARD
 	unit.Items.some(item => {
 		if (!IsValidItem(item))
