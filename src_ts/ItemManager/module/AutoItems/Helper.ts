@@ -99,7 +99,6 @@ let nextTick = 0,
 	lastStat: Attributes | undefined
 
 function AutoUseItems(unit: Unit) {
-	console.log(unit.Buffs.map(e => e.Name))
 	// loop-optimizer: FORWARD
 	unit.Items.some(item => {
 		if (!IsValidItem(item))
