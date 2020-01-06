@@ -232,7 +232,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 	}
 })
 
-EventsSDK.on("GameEnded", () => {
+/*EventsSDK.on("GameEnded", () => {
 	EntityManager.GetEntitiesByClass(Tree)
 		.filter(tree => tree.IsVisible)
 		.forEach(tree => {
@@ -243,4 +243,4 @@ EventsSDK.on("GameEnded", () => {
 			tree.GameSceneNode.SetLocalScale(scale)
 			tree2modelid.set(tree, 0)
 		})
-})
+})*/
