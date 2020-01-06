@@ -186,8 +186,11 @@ EventsSDK.on("Draw", () => {
 
 	const isHorizontal = IsHorizontal()
 
-	const filteredHeroes = EntityManager.GetEntitiesByClass(Hero).filter(hero => !(hero instanceof Meepo && hero.IsClone)
-		&& (panelAllies.value || hero.IsEnemy()))
+	const filteredHeroes = EntityManager.GetEntitiesByClass(Hero).filter(hero =>
+		!(hero instanceof Meepo && hero.IsClone)
+		&& !hero.IsIllusion
+		&& (panelAllies.value || hero.IsEnemy())
+	)
 
 	{ // Touch Panel
 
