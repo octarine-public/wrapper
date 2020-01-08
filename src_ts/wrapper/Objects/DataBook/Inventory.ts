@@ -148,30 +148,48 @@ export default class Inventory {
 		}
 		return undefined
 	}
-	public GetItemsByNames(names: string[], includeBackpack: boolean = false): Item[] {
-		let items: Item[] = []
-
+	public GetItemByClass<T>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
 		if (this.Owner.IsValid) {
-			// loop-optimizer: FORWARD
-			names.forEach(name => {
-				let item = this.GetItemByName(name, includeBackpack)
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
 
-				if (item !== undefined)
-					items.push(item)
-			})
-		}
-		return items
-	}
-	public GetItemByNameInBackpack(name: string): Nullable<Item> {
-		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, 10)
-
-			for (let i = 6; i < len; i++) {
+			for (let i = 0; i < len; i++) {
 				let item = this.GetItem(i)
-				if (item !== undefined && item.Name === name)
+				if (item instanceof class_)
 					return item
 			}
 		}
 		return undefined
+	}
+	public GetItemsByNames(names: string[], includeBackpack: boolean = false): Item[] {
+		let items: Item[] = []
+		if (this.Owner.IsValid) {
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
+
+			for (let i = 0; i < len; i++) {
+				const item = this.GetItem(i)
+				if (item === undefined)
+					continue
+
+				if (names.some(name => item.Name === name))
+					items.push(item)
+			}
+		}
+		return items
+	}
+	public GetItemsByClasses(classes: Constructor<Item>[], includeBackpack: boolean = false): Item[] {
+		let items: Item[] = []
+		if (this.Owner.IsValid) {
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
+
+			for (let i = 0; i < len; i++) {
+				const item = this.GetItem(i)
+				if (item === undefined)
+					continue
+
+				if (classes.some(class_ => item instanceof class_))
+					items.push(item)
+			}
+		}
+		return items
 	}
 }
