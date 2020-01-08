@@ -22,7 +22,7 @@ import Tower from "../Objects/Base/Tower"
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
 import EventsSDK, { gameInProgress, ToggleGameInProgress } from "./EventsSDK"
-import Roshan from "../Objects/Units/Roshan"
+import Roshan from "../Objects/Roshan/npc_dota_roshan"
 
 let AllEntities: Entity[] = []
 let EntitiesIDs = new Map<number, C_BaseEntity>()

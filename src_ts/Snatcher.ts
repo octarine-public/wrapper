@@ -102,6 +102,8 @@ EventsSDK.on("GameEnded", () => {
 EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof Rune)
 		removedIDRune(ent)
+	if (ent instanceof Unit)
+		picking_up.delete(ent)
 })
 
 EventsSDK.on("Tick", () => {

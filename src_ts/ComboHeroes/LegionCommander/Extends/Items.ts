@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { Hero, Item } from "wrapper/Imports"
-import { ItemBase } from "../../Base/Items"
+import { ItemBase } from "../Base/Items"
 import { ProjList } from "../Listeners"
 
 export default class LegionCommanderItems extends ItemBase {

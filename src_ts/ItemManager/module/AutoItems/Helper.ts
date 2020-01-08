@@ -1,4 +1,4 @@
-import { Ability, Creep, ExecuteOrder, Game, Item, LocalPlayer, TickSleeper, Unit, dotaunitorder_t, Flow_t, EntityManager, Hero } from "wrapper/Imports"
+import { Ability, Creep, ExecuteOrder, Game, Item, LocalPlayer, TickSleeper, Unit, dotaunitorder_t, Flow_t, EntityManager, Hero, item_power_treads, item_bottle, TreeTemp } from "wrapper/Imports"
 import {
 	AutoUseItemsArcane_val,
 	AutoUseItemsBloodHP_val,
@@ -37,10 +37,6 @@ import { StateBase } from "../../abstract/MenuBase"
 import { Key as HeroBlockKey } from "../../../UnitBlocker/modules/HeroBlock/Menu"
 import { Key as CreepBlockKey } from "../../../UnitBlocker/modules/CreepBlock/Menu"
 import { ParticleGlimer, GlimerClear, glimer } from "../../abstract/Listeners"
-
-import TempTree from "../../../wrapper/Objects/Base/TreeTemp"
-import item_bottle from "../../../wrapper/Objects/Abilities/Items/item_bottle"
-import item_power_treads from "../../../wrapper/Objects/Abilities/Items/item_power_treads"
 
 const Base = new ItemManagerBase()
 const SleepCape = new TickSleeper()
@@ -154,7 +150,7 @@ function AutoUseItems(unit: Unit) {
 			case "item_tango_single": {
 				if (unit.ModifiersBook.GetAnyBuffByNames(BuffsTango))
 					return false
-				let tr = EntityManager.GetEntitiesByClass(TempTree).find(x => x.IsInRange(unit, item.CastRange))
+				let tr = EntityManager.GetEntitiesByClass(TreeTemp).find(x => x.IsInRange(unit, item.CastRange))
 				if (tr === undefined || unit.HPPercent > AutoUseItemsTango_val.value)
 					return false
 				unit.CastTargetTree(item, tr)

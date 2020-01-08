@@ -1,7 +1,7 @@
 import {
 	Color, EventsSDK, Game,
-	Hero, Input, Item, LocalPlayer, Meepo, Menu as MenuSDK,
-	Rectangle, RendererSDK, Vector2, VMouseKeys, DOTAGameUIState_t,
+	Hero, Input, Item, LocalPlayer, Menu as MenuSDK,
+	Rectangle, RendererSDK, Vector2, VMouseKeys, DOTAGameUIState_t, npc_dota_hero_meepo,
 } from "wrapper/Imports"
 
 // ["Visual", "Overlay", "Item Panel"]
@@ -187,7 +187,7 @@ EventsSDK.on("Draw", () => {
 	const isHorizontal = IsHorizontal()
 
 	const filteredHeroes = EntityManager.GetEntitiesByClass(Hero).filter(hero =>
-		!(hero instanceof Meepo && hero.IsClone)
+		!(hero instanceof npc_dota_hero_meepo && hero.IsClone)
 		&& !hero.IsIllusion
 		&& (panelAllies.value || hero.IsEnemy())
 	)

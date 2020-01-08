@@ -1,4 +1,4 @@
-import { Color, Game, Menu, RendererSDK, Vector2, Player, LocalPlayer, Team, Roshan, Hero, EntityManager, Entity, FontFlags_t, PingType_t } from "wrapper/Imports"
+import { Color, Game, Menu, RendererSDK, Vector2, Player, LocalPlayer, Team, npc_dota_roshan, Hero, EntityManager, Entity, FontFlags_t, PingType_t } from "wrapper/Imports"
 import ManagerBase from "../../../abstract/Base"
 import {
 	AegisdrawStatusSize,
@@ -185,7 +185,7 @@ export function RoshanGameEvent(name: string, obj: any) {
 	if (
 		ent1 === undefined || ent2 === undefined
 		|| (!(ent1 instanceof Hero && ent1.IsValid && !ent1.IsVisible) && !(ent2 instanceof Hero && ent2.IsValid && !ent2.IsVisible))
-		|| (!(ent1 instanceof Roshan || ent1 === EntityManager.Roshan) && !(ent2 instanceof Roshan || ent2 === EntityManager.Roshan))
+		|| (!(ent1 instanceof npc_dota_roshan || ent1 === EntityManager.Roshan) && !(ent2 instanceof npc_dota_roshan || ent2 === EntityManager.Roshan))
 	)
 		return
 

@@ -1,5 +1,4 @@
-import { Menu as MenuSDK, Hero, GameSleeper, Utils } from "wrapper/Imports"
-import item_bottle from "./wrapper/Objects/Abilities/Items/item_bottle"
+import { Menu as MenuSDK, Hero, GameSleeper, Utils, item_bottle } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Utility", "Illusion Splitter"])
 const AngleRandomizer = Menu.AddToggle("Random Split Angle", true)

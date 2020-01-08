@@ -189,9 +189,7 @@ EventsSDK.on("GameStarted", pl_ent => {
 })
 EventsSDK.on("GameEnded", () => {
 	rmines = []
-	// loop-optimizer: KEEP
-	particles.forEach(particle => ParticlesSDK.Destroy(particle, true))
-	particles = new Map<Unit, number>()
+	particles.clear()
 	sleeper.FullReset()
 	techies = undefined as any
 })

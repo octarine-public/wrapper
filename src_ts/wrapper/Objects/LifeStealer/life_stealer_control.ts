@@ -1,0 +1,8 @@
+import Ability from "../Base/Ability"
+
+export default class life_stealer_control extends Ability {
+	public readonly m_pBaseEntity!: CDOTA_Ability_Life_Stealer_Control
+}
+
+import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+RegisterClass("life_stealer_control", life_stealer_control)
