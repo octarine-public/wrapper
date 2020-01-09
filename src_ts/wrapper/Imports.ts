@@ -1228,6 +1228,10 @@ export { default as WardTrueSight } from "./Objects/Base/WardTrueSight"
 export { LinearProjectile, TrackingProjectile } from "./Objects/Base/Projectile"
 export { default as ProjectileManager } from "./Managers/ProjectileManager"
 
+export { default as Obstacle } from "./Prediction/NavMesh/Obstacle"
+export { default as MovingObstacle } from "./Prediction/NavMesh/MovingObstacle"
+export { default as NavMeshPathfinding } from "./Prediction/NavMesh/NavMeshPathfinding"
+
 import "./global"
 
 /*

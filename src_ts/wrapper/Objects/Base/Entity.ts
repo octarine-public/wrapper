@@ -311,6 +311,9 @@ export default class Entity {
 			vec = vec.Position
 		return this.Position.FindRotationAngle(vec, this.NetworkRotationRad)
 	}
+	public get CollisionRadius(): number {
+		return Math.sqrt(this.m_pBaseEntity.m_pCollision?.m_flRadius ?? 0)
+	}
 	/**
 	 * faster (Distance <= range)
 	 */

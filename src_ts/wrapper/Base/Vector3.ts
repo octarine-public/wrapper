@@ -609,16 +609,16 @@ export default class Vector3 {
 	}
 
 	/**
-	 * Multiply, add, and assign to this vector
+	 * Multiply, add, and return new vector
 	 */
 	public MultiplyAdd(vec2: Vector3, scalar: number): Vector3 {
-		return this.Add(vec2).MultiplyScalar(scalar)
+		return this.MultiplyScalar(scalar).AddForThis(vec2)
 	}
 	/**
-	 * Multiply, add, and assign to this vector and return new vector
+	 * Multiply, add, and assign to this vector
 	 */
 	public MultiplyAddForThis(vec2: Vector3, scalar: number): Vector3 {
-		return this.AddForThis(vec2).MultiplyScalarForThis(scalar)
+		return this.MultiplyScalarForThis(scalar).AddForThis(vec2)
 	}
 
 	/* ======== Distance ======== */

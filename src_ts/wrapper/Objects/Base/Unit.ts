@@ -510,7 +510,7 @@ export default class Unit extends Entity {
 	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false) {
 		return this.Inventory.GetItemByName(name, includeBackpack)
 	}
-	public GetItemByClass<T>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
+	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
 		return this.Inventory.GetItemByClass(class_, includeBackpack)
 	}
 	public HasItemInInventory(name: string | RegExp, includeBackpack: boolean = false): boolean {
@@ -551,7 +551,7 @@ export default class Unit extends Entity {
 	public GetAbilityByName(name: string | RegExp) {
 		return this.AbilitiesBook.GetAbilityByName(name)
 	}
-	public GetAbilityByClass<T>(class_: Constructor<T>): Nullable<T> {
+	public GetAbilityByClass<T extends Ability>(class_: Constructor<T>): Nullable<T> {
 		return this.AbilitiesBook.GetAbilityByClass(class_)
 	}
 	public GetBuffByName(name: string) {
