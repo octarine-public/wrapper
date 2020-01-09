@@ -148,7 +148,7 @@ export default class Inventory {
 		}
 		return undefined
 	}
-	public GetItemByClass<T>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
+	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
 		if (this.Owner.IsValid) {
 			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
 
@@ -176,8 +176,8 @@ export default class Inventory {
 		}
 		return items
 	}
-	public GetItemsByClasses(classes: Constructor<Item>[], includeBackpack: boolean = false): Item[] {
-		let items: Item[] = []
+	public GetItemsByClasses<T extends Item>(classes: Constructor<T>[], includeBackpack: boolean = false): T[] {
+		let items: T[] = []
 		if (this.Owner.IsValid) {
 			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
 
@@ -187,7 +187,7 @@ export default class Inventory {
 					continue
 
 				if (classes.some(class_ => item instanceof class_))
-					items.push(item)
+					items.push(item as T)
 			}
 		}
 		return items

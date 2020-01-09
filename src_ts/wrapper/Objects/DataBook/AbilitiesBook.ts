@@ -52,7 +52,10 @@ export default class AbilitiesBook {
 			),
 		)
 	}
-	public GetAbilityByClass<T>(class_: Constructor<T>): Nullable<T> {
+	public GetAbilityByClass<T extends Ability>(class_: Constructor<T>): Nullable<T> {
 		return this.Spells.find(abil => abil instanceof class_) as Nullable<T>
+	}
+	public GetAbilitiesByClasses<T extends Ability>(classes: Constructor<T>[]): T[] {
+		return this.Spells.filter(abil => classes.some(class_ => abil instanceof class_)) as T[]
 	}
 }
