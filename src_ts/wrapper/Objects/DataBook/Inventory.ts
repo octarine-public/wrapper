@@ -148,7 +148,7 @@ export default class Inventory {
 		}
 		return undefined
 	}
-	public GetItemByClass<T>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
+	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
 		if (this.Owner.IsValid) {
 			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
 

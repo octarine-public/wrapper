@@ -8,7 +8,7 @@ export default class pudge_meat_hook extends Ability {
 	}
 
 	public get Speed(): number {
-		return this.GetSpecialValue("hook_width")
+		return this.GetSpecialValue("hook_speed")
 	}
 }
 

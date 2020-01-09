@@ -310,7 +310,7 @@ EventsSDK.on("LinearProjectileDestroyed", proj => {
 let particles_table = new Map<number, [/* path */string, /* start */Vector3, /* end */Vector3, /* start game time */number, /* speed */number]>()
 EventsSDK.on("ParticleCreated", (id, path) => {
 	if (path === "particles/units/heroes/hero_pudge/pudge_meathook.vpcf")
-		particles_table.set(id, [path, new Vector3().Invalidate(), new Vector3().Invalidate(), Game.RawGameTime, 1450])
+		particles_table.set(id, [path, new Vector3().Invalidate(), new Vector3().Invalidate(), Game.RawGameTime, 1450 /* hook_speed */])
 })
 
 EventsSDK.on("ParticleUpdated", (id, controlPoint, position) => {
@@ -357,10 +357,10 @@ EventsSDK.on("Tick", () => {
 
 	// loop-optimizer: KEEP
 	particles_table.forEach((part, i) => {
-		let start_pos = part[1]
 		let end_pos = part[2]
+		let start_pos = part[1]
 		if (part[0] === "particles/units/heroes/hero_pudge/pudge_meathook.vpcf" && part[1].IsValid && part[2].IsValid) {
-			let calc_pos = start_pos.Extend(end_pos, 200 + (Game.RawGameTime - part[3]) * part[4])
+			let calc_pos = start_pos.Extend(end_pos, (Game.RawGameTime - part[3]) * part[4])
 
 			DrawDirectional(start_pos, calc_pos, i)
 

@@ -1231,6 +1231,7 @@ export { default as ProjectileManager } from "./Managers/ProjectileManager"
 export { default as Obstacle } from "./Prediction/NavMesh/Obstacle"
 export { default as MovingObstacle } from "./Prediction/NavMesh/MovingObstacle"
 export { default as NavMeshPathfinding } from "./Prediction/NavMesh/NavMeshPathfinding"
+export { default as Prediction } from "./Prediction/Prediction"
 
 import "./global"
 

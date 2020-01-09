@@ -1,4 +1,4 @@
-import { ArrayExtensions, EventsSDK, LocalPlayer, Menu, Unit } from "./wrapper/Imports"
+import { ArrayExtensions, EventsSDK, LocalPlayer, Menu, Unit, MovingObstacle, Obstacle, npc_dota_hero_pudge, pudge_meat_hook, Prediction } from "./wrapper/Imports"
 
 const menu = Menu.AddEntry(["Utility", "Mine Destroyer"])
 const menuState = menu.AddToggle("State", true)
@@ -18,7 +18,14 @@ EventsSDK.on("EntityDestroyed", ent => {
 EventsSDK.on("Tick", () => {
 	if (!menuState.value)
 		return
+	let pudge = EntityManager.GetEntitiesByClass(npc_dota_hero_pudge)[0]
+	if (pudge !== undefined) {
+		let meat_hook = pudge.GetAbilityByClass(pudge_meat_hook)
+		if (meat_hook !== undefined)
+			console.log(new Prediction(pudge).GetFirstHitTarget(meat_hook.CastRange, meat_hook.AOERadius, meat_hook.Speed)?.Name)
+	}
 
+	EntityManager.GetEntitiesInRange(new Vector3(), 120 * 2).map(ent => ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent))
 	let hero = LocalPlayer!.Hero
 
 	if (hero === undefined || !hero.IsAlive || hero.IsChanneling || hero.IsInFadeTime)
