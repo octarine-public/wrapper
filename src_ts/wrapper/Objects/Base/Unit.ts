@@ -78,6 +78,8 @@ export default class Unit extends Entity {
 	public HPRegen = this.m_pBaseEntity.m_flHealthThinkRegen
 	public ManaRegen = this.m_pBaseEntity.m_flManaThinkRegen
 	public RotationDifference = this.m_pBaseEntity.m_anglediff
+	public HullRadius = this.m_pBaseEntity.m_flHullRadius
+	public CollisionPadding = this.m_pBaseEntity.m_flCollisionPadding
 	public HasScepterModifier = false
 	public LastVisibleTime = Game.RawGameTime
 	public LastDormantTime = 0
@@ -259,9 +261,6 @@ export default class Unit extends Entity {
 		let armor = this.Armor
 		return (0.052 * armor) / (0.9 + 0.048 * Math.abs(armor))
 	}
-	public get CollisionPadding(): number {
-		return this.m_pBaseEntity.m_flCollisionPadding
-	}
 	public get DayVision(): number {
 		return this.m_pBaseEntity.m_iDayTimeVisionRange
 	}
@@ -295,9 +294,6 @@ export default class Unit extends Entity {
 	}
 	public get HealthBarHighlightColor(): Nullable<Color> {
 		return Color.fromIOBuffer(this.m_pBaseEntity.m_iHealthBarHighlightColor)
-	}
-	public get HullRadius(): number {
-		return this.m_pBaseEntity.m_flHullRadius
 	}
 	public get AttackSpeed(): number {
 		return this.m_pBaseEntity.m_fAttackSpeed
@@ -623,7 +619,7 @@ export default class Unit extends Entity {
 		if (angle <= 0.2)
 			return 0
 
-		return (0.03 / this.TurnRate()) * angle
+		return this.TurnRate() / 30 * angle
 	}
 
 	public AbsorbedDamage(dmg: number, damage_type: DAMAGE_TYPES, source?: Unit): number {

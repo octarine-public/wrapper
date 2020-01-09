@@ -1,20 +1,14 @@
 import { State } from "../Menu"
-import { ParticlesSDK, pudge_meat_hook } from "wrapper/Imports"
-
-import {
-	XAIOInput,
-	XAIOHitChance,
-	XAIOPrediction,
-	XAIOSkillshotType,
-	XAIOCollisionTypes,
-} from "../../../Helper/bootstrap"
+import { ParticlesSDK, pudge_meat_hook, Vector3, MathSDK, Entity, Creep, Hero, Obstacle, Unit, MovingObstacle, NavMeshPathfinding, Menu, TickSleeper } from "wrapper/Imports"
 
 import { _Unit, _Target } from "./Combo"
+
+let bind = Menu.AddEntry(["XAIO", "Pudge", "Test"]).AddKeybind("Test")
+let bind_sleeper = new TickSleeper()
 
 // TESTED =>>>>>>>>>>>>>
 let par: Nullable<number>
 let par2: Nullable<number>
-let xAIOPrediction = new XAIOPrediction()
 
 function DestroyParticle() {
 	if (par !== undefined) {
@@ -36,48 +30,49 @@ EventsSDK.on("Draw", () => {
 
 	let HitChanceColor = new Vector3()
 
-	if (!hook || !_Target.IsVisible || !_Target.IsAlive || hook.Level === 0 || !hook.CanHit(_Target) || !hook.CanBeCasted()) {
+	if (hook === undefined || !_Target.IsVisible || !_Target.IsAlive || hook.Level === 0 || !hook.CanHit(_Target) || !hook.CanBeCasted()) {
 		DestroyParticle()
 		return
 	}
 
-	let InputDataHook = new XAIOInput(
-		_Target,
-		_Unit,
-		hook.CastRange,
-		hook.CastPoint,
-		_Target.HullRadius,
-		hook.AOERadius,
-		XAIOCollisionTypes.AllUnits,
-		0,
-		false,
-		XAIOSkillshotType.Line,
-		hook.Speed,
-		false
-	)
+	let predicted_pos: Nullable<Vector3>
+	let obs2ent = new Map<Obstacle, Entity>()
+	let start_pos = _Unit.Position.toVector2()
+	EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).forEach(ent => {
+		if (ent !== _Unit && ent.IsInRange(_Unit!, hook.CastRange * 2))
+			obs2ent.set(MovingObstacle.FromUnit(ent), ent)
+	})
+	let obstacles = [...obs2ent.keys()]
+	for (let deg = 0; deg < 360; deg++) {
+		let angle = Vector3.FromAngle(MathSDK.DegreesToRadian(deg))
+		let predicted_hit = obs2ent.get(
+			new NavMeshPathfinding(
+				new MovingObstacle(
+					start_pos.Add(angle.toVector2().MultiplyScalar(hook.AOERadius * 2)),
+					hook.AOERadius,
+					angle.toVector2().MultiplyScalarForThis(hook.Speed),
+					(hook.CastRange / hook.Speed) + 0.03
+				),
+				obstacles,
+				hook.CastPoint + _Unit.TurnTime(angle) + 0.03,
+			).GetFirstHitObstacle()!
+		)
+		if (predicted_hit !== _Target)
+			continue
 
-	let predictionOutput = xAIOPrediction.GetPrediction(InputDataHook)
+		predicted_pos = _Unit.Position.AddForThis(angle.MultiplyScalarForThis(300))
+	}
+	if (bind.is_pressed && predicted_pos !== undefined && !bind_sleeper.Sleeping) {
+		_Unit.CastPosition(hook, predicted_pos)
+		bind_sleeper.Sleep(hook.CastPoint + 0.03)
+	}
 
-	var pos = _Unit.Position.Extend(predictionOutput.CastPosition, _Unit.Distance2D(_Target, true))
+	var pos = predicted_pos ?? _Unit.Position
 
 	if (par === undefined)
 		par = ParticlesSDK.Create("XAIO/particles/fat_ring.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, _Target)
 
-	switch (predictionOutput.HitChance) {
-		case XAIOHitChance.Low:
-			HitChanceColor = new Vector3(255, 119, 0)
-			break
-		case XAIOHitChance.Medium:
-			HitChanceColor = new Vector3(255, 255, 0)
-			break
-		case XAIOHitChance.High:
-		case XAIOHitChance.Immobile:
-			HitChanceColor = new Vector3(0, 255, 0)
-			break
-		default:
-			HitChanceColor = new Vector3(255, 0, 0)
-			break
-	}
+	HitChanceColor = predicted_pos !== undefined ? new Vector3(0, 255, 0) : new Vector3(255, 0, 0)
 
 	if (par !== undefined) {
 		ParticlesSDK.SetControlPoint(par, 0, pos)

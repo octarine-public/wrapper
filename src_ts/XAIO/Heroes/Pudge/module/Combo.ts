@@ -107,12 +107,12 @@ export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 	_Unit = Owner
 	_Target = target
 
-	let ShouldCast = false
+	let ShouldCast = true
 
 	const hook = Owner.GetAbilityByClass(pudge_meat_hook)
 
-	if (hook)
-		ShouldCast = ShouldCastHook(hook, target, AbilitiesHelper)
+	// if (hook)
+	// 	ShouldCast = ShouldCastHook(hook, target, AbilitiesHelper)
 
 	if (Owner.IsChanneling || !ComboKey.is_pressed)
 		return

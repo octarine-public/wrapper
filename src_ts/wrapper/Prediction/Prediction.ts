@@ -5,6 +5,7 @@ import Obstacle from "./NavMesh/Obstacle"
 import MovingObstacle from "./NavMesh/MovingObstacle"
 import Creep from "../Objects/Base/Creep"
 import Hero from "../Objects/Base/Hero"
+import EntityManager from "../Managers/EntityManager"
 
 // import Unit from "../Objects/Base/Unit"
 
@@ -17,13 +18,10 @@ export default class Prediction {
 		speed = this.Owner.IdealSpeed,
 		angle = this.Owner.Forward.toVector2(),
 		delay = 0,
-		filter = (ent: Entity) => ent !== this.Owner && (ent instanceof Hero || ent instanceof Creep)
+		obstacles: Entity[] = EntityManager.GetEntitiesByClasses<Entity>([Creep, Hero]).filter(ent => ent !== this.Owner && ent.Distance(this.Owner) <= radius * 2)
 	): Nullable<Entity> {
 		let obs2ent = new Map<Obstacle, Entity>()
-		EntityManager.GetEntitiesInRange(this.Owner.Position, radius * 2).forEach(ent => {
-			if (filter(ent))
-				obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent)
-		})
+		obstacles.forEach(ent => obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent))
 		return obs2ent.get(
 			new NavMeshPathfinding(
 				new MovingObstacle(
@@ -43,13 +41,10 @@ export default class Prediction {
 		speed = this.Owner.IdealSpeed,
 		angle = this.Owner.Forward.toVector2(),
 		delay = 0,
-		filter = (ent: Entity) => ent !== this.Owner && (ent instanceof Hero || ent instanceof Creep)
+		obstacles: Entity[] = EntityManager.GetEntitiesByClasses<Entity>([Creep, Hero]).filter(ent => ent !== this.Owner && ent.Distance(this.Owner) <= radius * 2)
 	): Entity[] {
 		let obs2ent = new Map<Obstacle, Entity>()
-		EntityManager.GetEntitiesInRange(this.Owner.Position, radius * 2).forEach(ent => {
-			if (filter(ent))
-				obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent)
-		})
+		obstacles.forEach(ent => obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent))
 		return new NavMeshPathfinding(
 			new MovingObstacle(
 				this.Owner.Position.toVector2(),

@@ -673,7 +673,7 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 * @param vecAngleRadian Angle of this vector
 	 */
-	public FindRotationAngle(vec: Vector2, vecAngleRadian: number): number {
+	public FindRotationAngle(vec: Vector2, vecAngleRadian = 0): number {
 		let angle = Math.abs(Math.atan2(vec.y - this.y, vec.x - this.x) - vecAngleRadian)
 
 		if (angle > Math.PI)
@@ -707,12 +707,15 @@ export default class Vector2 {
 	public AngleBetweenFronts(front: Vector2): number {
 		return Math.acos((this.x * front.x) + (this.y * front.y))
 	}
+	public GetDirectionTo(target: Vector2): Vector2 {
+		return target.Subtract(this).Normalize()
+	}
 	/**
 	 * Extends this vector in the direction of 2nd vector for given distance
 	 * @param vec The another vector
 	 */
 	public Extend(vec: Vector2, distance: number): Vector2 {
-		return vec.Subtract(this).Normalize().MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).Normalize())
+		return this.GetDirectionTo(vec).MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).Normalize())
 	}
 	public Clone(): Vector2 {
 		return new Vector2(this.x, this.y)
