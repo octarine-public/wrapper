@@ -5,6 +5,7 @@ export default class NavMeshPathfinding {
 	constructor(
 		public readonly PredictionTarget: MovingObstacle,
 		public readonly Obstacles: Obstacle[],
+		public readonly Delay = 0,
 	) { }
 
 	public GetHitObstacles(): Obstacle[] {
@@ -13,8 +14,8 @@ export default class NavMeshPathfinding {
 			return hit_obstacles
 		let end_time = this.Obstacles.some(obs => obs instanceof MovingObstacle) ? this.PredictionTarget.EndTime : 0.03
 		for (let time = 0; time < end_time; time += 0.03) {
-			let target_pos = this.PredictionTarget.PositionAtTime(time)
-			let result = (this.Obstacles.map(obs => [obs.PositionAtTime(time).Distance(target_pos) - obs.Radius, obs]) as [number, Obstacle][])
+			let target_pos = this.PredictionTarget.PositionAtTime(this.Delay + time)
+			let result = (this.Obstacles.map(obs => [obs.PositionAtTime(this.Delay + time).Distance(target_pos) - obs.Radius, obs]) as [number, Obstacle][])
 				.filter(obs => obs[0] <= this.PredictionTarget.Radius)
 				.map(obs => obs[1])
 
@@ -27,8 +28,8 @@ export default class NavMeshPathfinding {
 			return undefined
 		let end_time = this.Obstacles.some(obs => obs instanceof MovingObstacle) ? this.PredictionTarget.EndTime : 0.03
 		for (let time = 0; time < end_time; time += 0.03) {
-			let target_pos = this.PredictionTarget.PositionAtTime(time)
-			let result = (this.Obstacles.map(obs => [obs, obs.PositionAtTime(time).Distance(target_pos) - obs.Radius]) as [Obstacle, number][]).sort(([, dst1], [, dst2]) => dst1 - dst2)
+			let target_pos = this.PredictionTarget.PositionAtTime(this.Delay + time)
+			let result = (this.Obstacles.map(obs => [obs, obs.PositionAtTime(this.Delay + time).Distance(target_pos) - obs.Radius]) as [Obstacle, number][]).sort(([, dst1], [, dst2]) => dst1 - dst2)
 			if (result[0][1] <= this.PredictionTarget.Radius)
 				return result[0][0]
 		}

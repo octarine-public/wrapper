@@ -16,6 +16,7 @@ export default class Prediction {
 		collision_size: number,
 		speed = this.Owner.IdealSpeed,
 		angle = this.Owner.Forward.toVector2(),
+		delay = 0,
 		filter = (ent: Entity) => ent !== this.Owner && (ent instanceof Hero || ent instanceof Creep)
 	): Nullable<Entity> {
 		let obs2ent = new Map<Obstacle, Entity>()
@@ -31,7 +32,8 @@ export default class Prediction {
 					angle.MultiplyScalarForThis(speed),
 					(radius / speed) + 0.03
 				),
-				[...obs2ent.keys()]
+				[...obs2ent.keys()],
+				delay,
 			).GetFirstHitObstacle()!
 		)
 	}
@@ -40,6 +42,7 @@ export default class Prediction {
 		collision_size: number,
 		speed = this.Owner.IdealSpeed,
 		angle = this.Owner.Forward.toVector2(),
+		delay = 0,
 		filter = (ent: Entity) => ent !== this.Owner && (ent instanceof Hero || ent instanceof Creep)
 	): Entity[] {
 		let obs2ent = new Map<Obstacle, Entity>()
@@ -54,7 +57,8 @@ export default class Prediction {
 				angle.MultiplyScalarForThis(speed),
 				(radius / speed) + 0.03
 			),
-			[...obs2ent.keys()]
+			[...obs2ent.keys()],
+			delay,
 		).GetHitObstacles().map(obs => obs2ent.get(obs)!)
 	}
 }

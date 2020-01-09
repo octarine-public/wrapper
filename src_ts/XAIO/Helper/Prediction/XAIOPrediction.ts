@@ -61,21 +61,14 @@ export default class XAIOPrediction {
 		predictionOutput.TargetPosition = predictedPosition
 		predictionOutput.CastPosition = predictedPosition
 
-		if (!target.IsVisible) {
+		if (!target.IsVisible)
 			predictionOutput.HitChance = XAIOHitChance.Low
-			return predictionOutput
-		}
-
-		if (target.IsStunned || target.IsRooted || target.IsHexed) {
+		else if (target.IsStunned || target.IsRooted)
 			predictionOutput.HitChance = XAIOHitChance.Immobile
-			return predictionOutput
-		}
-		if (target.NetworkActivity !== GameActivity_t.ACT_DOTA_RUN && !caster.IsVisibleForEnemies) {
+		else if (target.NetworkActivity !== GameActivity_t.ACT_DOTA_RUN && !caster.IsVisibleForEnemies)
 			predictionOutput.HitChance = XAIOHitChance.High
-			return predictionOutput
-		}
-
-		predictionOutput.HitChance = ((num > 0.5) ? XAIOHitChance.Medium : XAIOHitChance.High)
+		else
+			predictionOutput.HitChance = ((num > 0.5) ? XAIOHitChance.Medium : XAIOHitChance.High)
 
 		return predictionOutput
 	}
