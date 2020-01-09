@@ -16,10 +16,8 @@ export function RegisterHeroModule(name: string, module: HeroModule) {
 }
 
 EventsSDK.on("Tick", () => {
-
 	if (!stateGlobal.value || LocalPlayer!.IsSpectator)
 		return
-
 	Units = EntityManager.GetEntitiesByClass(Unit)
 	Units.some(unit =>
 		unit.IsAlive
@@ -32,7 +30,6 @@ EventsSDK.on("Tick", () => {
 EventsSDK.on("Draw", () => {
 	if (temp_lang === LanguageState.selected_id)
 		return
-
 	temp_lang = LanguageState.selected_id
 	EventsSDK.emit("GameEnded", false)
 	reload("eTE9Te5rgBYThsO", true)

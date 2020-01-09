@@ -465,6 +465,9 @@ export default class Unit extends Entity {
 
 		return this.Spells.some(spell => spell !== undefined && spell.IsChanneling)
 	}
+	public get IsInAbilityPhase(): boolean {
+		return this.Spells.some(spell => spell !== undefined && spell.IsInAbilityPhase)
+	}
 	public get CastRangeBonus(): number {
 		let castrange = 0
 
@@ -619,6 +622,7 @@ export default class Unit extends Entity {
 
 		if (angle <= 0.2)
 			return 0
+
 		return (0.03 / this.TurnRate()) * angle
 	}
 

@@ -1,13 +1,11 @@
-import { Unit, Creep, Hero } from "wrapper/Imports"
+import { Hero, Unit, Creep, Collision, CollisionObject } from "wrapper/Imports"
 
 import {
 	XAIOInput,
 	XAIOutput,
-	XAIOCollision,
 	XAIOHitChance,
 	XAIOSkillshotType,
 	XAIOCollisionTypes,
-	XAIOCollisionObject,
 } from "../bootstrap"
 
 export default class XAIOPrediction {
@@ -34,11 +32,12 @@ export default class XAIOPrediction {
 
 	public GetSimplePrediction(input: XAIOInput) {
 
+		let predictionOutput = new XAIOutput()
+
 		let num = input.Delay
 		let caster = input.Caster
 		let target = input.Target
 		let position = input.Target.Position
-		let predictionOutput = new XAIOutput()
 
 		predictionOutput.Target = target
 
@@ -55,6 +54,8 @@ export default class XAIOPrediction {
 		if (input.Speed > 0)
 			num += caster.Distance(position) / input.Speed
 
+		// new Prediction(pudge).GetFirstHitTarget(meat_hook.CastRange, meat_hook.AOERadius, meat_hook.Speed)
+
 		let predictedPosition = target.VelocityWaypoint(num)
 
 		predictionOutput.TargetPosition = predictedPosition
@@ -64,14 +65,16 @@ export default class XAIOPrediction {
 			predictionOutput.HitChance = XAIOHitChance.Low
 			return predictionOutput
 		}
+
 		if (target.IsStunned || target.IsRooted || target.IsHexed) {
 			predictionOutput.HitChance = XAIOHitChance.Immobile
 			return predictionOutput
 		}
-		if (!target.IsMoving && !caster.IsVisibleForEnemies) {
+		if (target.NetworkActivity !== GameActivity_t.ACT_DOTA_RUN && !caster.IsVisibleForEnemies) {
 			predictionOutput.HitChance = XAIOHitChance.High
 			return predictionOutput
 		}
+
 		predictionOutput.HitChance = ((num > 0.5) ? XAIOHitChance.Medium : XAIOHitChance.High)
 
 		return predictionOutput
@@ -114,7 +117,7 @@ export default class XAIOPrediction {
 	}
 
 	private CheckRange(input: XAIOInput, output: XAIOutput): boolean {
-		if (input.Radius >= 9999999 || input.Range >= 9999999) {
+		if (input.Radius >= Number.MAX_SAFE_INTEGER || input.Range >= Number.MAX_SAFE_INTEGER) {
 			return true
 		}
 		if (input.SkillShotType == XAIOSkillshotType.AreaOfEffect) {
@@ -141,58 +144,56 @@ export default class XAIOPrediction {
 	}
 
 	private CheckCollision(input: XAIOInput, output: XAIOutput): void {
-		if (input.CollisionTypes !== XAIOCollisionTypes.None) {
+		if (input.CollisionTypes === XAIOCollisionTypes.None)
+			return
+		let list: Unit[] = []
+		let list2: CollisionObject[] = []
 
-			let list: Unit[] = []
-			let list2: XAIOCollisionObject[] = []
+		let caster = input.Caster
+		let scanRange = caster.Distance(output.CastPosition)
 
-			let caster = input.Caster
-			let scanRange = caster.Distance(output.CastPosition)
+		let source: Unit[] = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep]).filter(x =>
+			x !== caster
+			&& x !== input.Target
+			&& x.IsAlive
+			&& x.IsVisible
+			&& x.Distance2D(caster) < scanRange
+		)
 
-			let source: Unit[] = EntityManager.GetEntitiesByClasses<Unit>([Hero, Creep]).filter(x =>
-				x !== caster
-				&& x !== input.Target
-				&& x.IsAlive
-				&& x.IsVisible
-				&& x.Distance2D(caster) < scanRange
+		if ((input.CollisionTypes & XAIOCollisionTypes.AllyCreeps) == XAIOCollisionTypes.AllyCreeps)
+			source.some(x => x.IsCreep && !x.IsEnemy(caster) && list.push(x))
+
+		if ((input.CollisionTypes & XAIOCollisionTypes.EnemyCreeps) == XAIOCollisionTypes.EnemyCreeps)
+			source.some(x => x.IsCreep && x.IsEnemy(caster) && list.push(x))
+
+		if ((input.CollisionTypes & XAIOCollisionTypes.AllyHeroes) == XAIOCollisionTypes.AllyHeroes)
+			source.some(x => x.IsHero && !x.IsEnemy(caster) && list.push(x))
+
+
+		if ((input.CollisionTypes & XAIOCollisionTypes.EnemyHeroes) == XAIOCollisionTypes.EnemyHeroes)
+			source.some(x => x.IsHero && x.IsEnemy(caster) && list.push(x))
+
+
+		list.forEach(unit => {
+			let input2 = new XAIOInput(
+				unit,
+				input.Caster,
+				input.CastRange,
+				input.Delay,
+				input.EndRadius,
+				input.Radius,
+				input.CollisionTypes,
+				input.Range,
+				input.RequiresToTurn,
+				input.SkillShotType,
+				input.Speed,
+				input.UseBlink,
+				input.AreaOfEffect,
+				input.AreaOfEffectTargets
 			)
-
-			if ((input.CollisionTypes & XAIOCollisionTypes.AllyCreeps) == XAIOCollisionTypes.AllyCreeps)
-				source.some(x => x.IsCreep && !x.IsEnemy(caster) && list.push(x))
-
-			if ((input.CollisionTypes & XAIOCollisionTypes.EnemyCreeps) == XAIOCollisionTypes.EnemyCreeps)
-				source.some(x => x.IsCreep && x.IsEnemy(caster) && list.push(x))
-
-			if ((input.CollisionTypes & XAIOCollisionTypes.AllyHeroes) == XAIOCollisionTypes.AllyHeroes)
-				source.some(x => x.IsHero && !x.IsEnemy(caster) && list.push(x))
-
-
-			if ((input.CollisionTypes & XAIOCollisionTypes.EnemyHeroes) == XAIOCollisionTypes.EnemyHeroes)
-				source.some(x => x.IsHero && x.IsEnemy(caster) && list.push(x))
-
-
-			list.forEach(unit => {
-				let input2 = new XAIOInput(
-					unit,
-					input.Caster,
-					input.CastRange,
-					input.Delay,
-					input.EndRadius,
-					input.Radius,
-					input.CollisionTypes,
-					input.Range,
-					input.RequiresToTurn,
-					input.SkillShotType,
-					input.Speed,
-					input.UseBlink,
-					input.AreaOfEffect,
-					input.AreaOfEffectTargets
-				)
-				list2.push(new XAIOCollisionObject(unit, this.GetSimplePrediction(input2).TargetPosition?.toVector2(), unit.HullRadius + 10))
-			})
-			if (XAIOCollision.GetCollision(caster.Position, output.CastPosition.toVector2(), input.Radius, list2))
-				output.HitChance = XAIOHitChance.Impossible
-
-		}
+			list2.push(new CollisionObject(unit, this.GetSimplePrediction(input2).TargetPosition?.toVector2(), unit.HullRadius))
+		})
+		if (Collision.GetCollision(caster.Position.toVector2(), output.CastPosition.toVector2(), input.Radius, list2).Collides)
+			output.HitChance = XAIOHitChance.Impossible
 	}
 }

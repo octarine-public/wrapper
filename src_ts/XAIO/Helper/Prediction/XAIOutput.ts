@@ -1,13 +1,13 @@
 import { Vector3, Unit } from "wrapper/Imports"
-import { XAIOHitChance } from "./Enum"
+import { XAIOHitChance } from "../bootstrap"
 
 export default class XAIOutput {
 	constructor(
-		public BlinkLinePosition: Vector3 = new Vector3,
+		public Target?: Unit,
 		public CastPosition: Vector3 = new Vector3,
-		public HitChance: XAIOHitChance = XAIOHitChance.Impossible,
-		public Target?: Nullable<Unit>,
 		public TargetPosition: Vector3 = new Vector3,
-		public AoeTargetsHit: Array<XAIOutput> = [],
+		public HitChance: XAIOHitChance = XAIOHitChance.Impossible,
+		public BlinkLinePosition: Vector3 = new Vector3,
+		public AoeTargetsHit: Array<XAIOutput> = []
 	) { }
 }

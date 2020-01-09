@@ -7,7 +7,7 @@ function SelectLanguage(ru: string, en: string) {
 }
 
 export const Menu = MenuSDK.AddEntry("XAIO")
-export const GeneralSettings = Menu.AddNode(" Home settings ")
+export const GeneralSettings = Menu.AddNode(" General Settings")
 export const LanguageState = GeneralSettings.AddSwitcher("Language", ["Русский", "English"], 1) //
 
 export const stateGlobal = GeneralSettings.AddToggle(SelectLanguage("Вкл/Выкл скрипт", "Turn on / Turn off script"), true)

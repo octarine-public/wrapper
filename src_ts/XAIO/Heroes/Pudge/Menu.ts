@@ -7,6 +7,7 @@ export const {
 	NearMouse,
 	ComboTree,
 	ComboKey,
+	SettingsMenu
 } = XMenu(Menu, "Pudge")
 
 export const AbilityMenu = ComboTree.AddImageSelector(
@@ -20,3 +21,5 @@ export const ItemsMenu = ComboTree.AddImageSelector(
 	menu_items,
 	new Map(menu_items.map(name => [name, true]))
 )
+
+export const HookDelay = SettingsMenu.AddSliderFloat("Hook delay", 100, 0, 500)

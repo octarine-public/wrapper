@@ -169,7 +169,7 @@ function CreateParticleFor(npc: Unit) {
 
 function RegisterMine(npc: Unit) {
 	if (rmines.some(([rmine2]) => rmine2 === npc)) {
-		console.log(`Tried to register existing mine ${npc.Index}`)
+		//console.log(`Tried to register existing mine ${npc.Index}`)
 		return
 	}
 	const Ulti = techies !== undefined ? techies.GetAbilityByName("techies_remote_mines") : undefined
