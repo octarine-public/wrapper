@@ -138,7 +138,7 @@ EventsSDK.on("Draw", () => {
 		return
 	let local_hero = LocalPlayer.Hero
 	EntityManager.GetEntitiesByClass(Hero).forEach(hero => {
-		if (hero.IsIllusion || !hero.IsAlive || !hero.IsVisible)
+		if (hero.IsIllusion || !hero.IsAlive || !hero.IsVisible || hero.IsInvulnerable)
 			return
 		let is_local = local_hero === hero
 		if (!optionSelf.value && is_local)

@@ -20,7 +20,7 @@ EventsSDK.on("Draw", () => {
 	let manabar_size = Utils.GetProportionalScaledVector(new Vector2(parseInt(config.get("xpos") as string) * 2.25, parseInt(config.get("ypos") as string)), false).SubtractScalarX(1)
 
 	EntityManager.GetEntitiesByClass(Hero).forEach(hero => {
-		if (!hero.IsEnemy() || hero.IsIllusion || !hero.IsAlive || !hero.IsVisible)
+		if (!hero.IsEnemy() || hero.IsIllusion || !hero.IsAlive || !hero.IsVisible || hero.IsInvulnerable)
 			return
 		let wts = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(hero.HealthBarOffset))
 		if (wts === undefined)

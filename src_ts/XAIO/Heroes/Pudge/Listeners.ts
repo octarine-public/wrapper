@@ -16,7 +16,9 @@ export function InitTick(unit: Unit) {
 			Units.filter(x => x.IsHero
 				&& x.IsEnemy()
 				&& x.Distance(Utils.CursorWorldVec) <= NearMouse.value
-				&& x.IsAlive),
+				&& x.IsAlive
+				&& !x.IsInvulnerable
+				&& x.IsVisible),
 			x => x.Distance(Utils.CursorWorldVec)
 		)[0]
 	)

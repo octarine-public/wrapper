@@ -163,7 +163,7 @@ export default class Entity {
 		this.LifeState = this.m_pBaseEntity.m_lifeState
 		this.Team = this.m_pBaseEntity.m_iTeamNum
 
-		this.Name_ = this.Entity?.m_name ?? this.Entity?.m_designerName ?? ""
+		this.Name_ = this.Entity?.m_name || this.Entity?.m_designerName || ""
 	}
 
 	/* ================ GETTERS ================ */

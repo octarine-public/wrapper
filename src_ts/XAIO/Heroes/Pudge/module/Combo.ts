@@ -199,7 +199,7 @@ export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 		let obs2ent = new Map<Obstacle, Entity>()
 		let start_pos = Owner.Position.toVector2()
 		EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).forEach(ent => {
-			if (ent !== Owner && ent.IsAlive && ent.IsInRange(Owner!, hook.CastRange * 2))
+			if (ent !== Owner && ent.IsAlive && ent.IsInRange(Owner!, hook.CastRange * 2) && !ent.IsInvulnerable && ent.IsVisible)
 				obs2ent.set(MovingObstacle.FromUnit(ent), ent)
 		})
 		let obstacles = [...obs2ent.keys()]
