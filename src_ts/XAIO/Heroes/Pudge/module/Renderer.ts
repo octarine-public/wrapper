@@ -1,5 +1,5 @@
 import { State } from "../Menu"
-import { ParticlesSDK, pudge_meat_hook, Vector3, MathSDK, Entity, Creep, Hero, Obstacle, Unit, MovingObstacle, NavMeshPathfinding, Menu, TickSleeper } from "wrapper/Imports"
+import { ParticlesSDK, pudge_meat_hook, Vector3, MathSDK, Entity, Creep, Hero, Obstacle, Unit, MovingObstacle, NavMeshPathfinding, Menu, TickSleeper, Prediction } from "wrapper/Imports"
 
 import { _Unit, _Target } from "./Combo"
 
@@ -49,7 +49,7 @@ EventsSDK.on("Draw", () => {
 			obs2ent.set(MovingObstacle.FromUnit(ent), ent)
 	})
 	let obstacles = [...obs2ent.keys()]
-	for (let deg = 0; deg < 360; deg++) {
+	for (let deg = 0; deg < 360; deg += 2) {
 		let angle = Vector3.FromAngle(MathSDK.DegreesToRadian(deg))
 		let predicted_hit = obs2ent.get(
 			new NavMeshPathfinding(

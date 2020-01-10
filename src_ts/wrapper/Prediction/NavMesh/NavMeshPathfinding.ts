@@ -57,7 +57,7 @@ export default class NavMeshPathfinding {
 		for (let time = 0; time < this.PredictionSource.EndTime; time += 1 / 30) {
 			let target_pos = target.PositionAtTime(time)
 			let ang = MathSDK.RadianToDegrees(this.PredictionSource.PositionAtTime(0).GetDirectionTo(target_pos).Angle)
-			for (let i = -5; i <= 5; i += 0.1) {
+			for (let i = -5; i <= 5; i += 1) {
 				let new_ang = MathSDK.DegreesToRadian(ang + i)
 				if (blocked_spots.includes(new_ang))
 					continue
