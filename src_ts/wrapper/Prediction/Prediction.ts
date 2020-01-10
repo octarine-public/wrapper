@@ -30,7 +30,7 @@ export default class Prediction {
 				this.Owner.Position.toVector2(),
 				collision_size,
 				angle.MultiplyScalarForThis(speed),
-				(radius / speed) + 0.03
+				radius / speed
 			),
 			[...obs2ent.keys()],
 			delay,
@@ -54,7 +54,7 @@ export default class Prediction {
 					this.Owner.Position.toVector2(),
 					collision_size,
 					angle.MultiplyScalarForThis(speed),
-					(radius / speed) + 0.03
+					radius / speed
 				),
 				[...obs2ent.keys()],
 				delay,
@@ -67,6 +67,7 @@ export default class Prediction {
 		target: Entity,
 		speed = this.Owner.IdealSpeed,
 		delay = 0,
+		dynamic_delay_func = (ang: number) => 0,
 		obstacles?: Entity[]
 	): Nullable<number> {
 		if (obstacles === undefined)
@@ -78,10 +79,10 @@ export default class Prediction {
 				this.Owner.Position.toVector2(),
 				collision_size,
 				new Vector2(speed, speed),
-				(radius / speed) + 0.03
+				radius / speed
 			),
 			[...ent2obs.values()],
 			delay,
-		).GetAngleForObstacleFirstHit(ent2obs.get(target)!)
+		).GetAngleForObstacleFirstHit(ent2obs.get(target)!, dynamic_delay_func)
 	}
 }
