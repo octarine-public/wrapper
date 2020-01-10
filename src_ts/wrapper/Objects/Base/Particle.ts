@@ -1,6 +1,11 @@
 import Entity from "./Entity"
 import { Vector3, Vector2, Color } from "../../Imports"
 
+/**
+ * Use string for better unique values 
+ */
+export type ParticleKeyType = string | number | Entity
+
 export type ControlPoints = Array<boolean | number | Entity | Vector3 | Vector2 | Color | [number?, number?, number?]>
 
 // from Native:
@@ -16,7 +21,7 @@ export default class Particle {
 	private effectIndex: number = -1;
 
 	constructor(
-		public Name: string,
+		public Key: ParticleKeyType,
 		public Path: string,
 		public Attachment: ParticleAttachment_t,
 		public Entity?: Entity,
@@ -113,4 +118,7 @@ export default class Particle {
 		return this
 	}
 
+	public toString() {
+		return this.Path.replace(/^.*(\\|\/|\:)/, "")
+	}
 }
