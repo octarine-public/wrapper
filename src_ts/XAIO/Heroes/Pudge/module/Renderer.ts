@@ -1,5 +1,5 @@
 import { State } from "../Menu"
-import { ParticlesSDK, pudge_meat_hook, Vector3, MathSDK, Entity, Creep, Hero, Obstacle, Unit, MovingObstacle, NavMeshPathfinding, Menu, TickSleeper } from "wrapper/Imports"
+import { ParticlesSDK, pudge_meat_hook, Vector3, MathSDK, Entity, Creep, Hero, Obstacle, Unit, MovingObstacle, NavMeshPathfinding, Menu, TickSleeper, Prediction } from "wrapper/Imports"
 
 import { _Unit, _Target } from "./Combo"
 
@@ -35,8 +35,9 @@ EventsSDK.on("Draw", () => {
 		return
 	}
 
-	let predicted_pos: Nullable<Vector3>
-	let obs2ent = new Map<Obstacle, Entity>()
+	let predicted_ang = new Prediction(_Unit).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, _Target, hook.Speed, hook.CastPoint)
+	let predicted_pos: Nullable<Vector3> = predicted_ang !== undefined ? _Unit.Position.AddForThis(Vector3.FromAngle(predicted_ang).MultiplyScalarForThis(300)) : undefined
+	/*let obs2ent = new Map<Obstacle, Entity>()
 	let start_pos = _Unit.Position.toVector2()
 	EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).forEach(ent => {
 		if (ent !== _Unit && ent.IsInRange(_Unit!, hook.CastRange * 2))
@@ -48,7 +49,7 @@ EventsSDK.on("Draw", () => {
 		let predicted_hit = obs2ent.get(
 			new NavMeshPathfinding(
 				new MovingObstacle(
-					start_pos.Add(angle.toVector2().MultiplyScalar(hook.AOERadius * 2)),
+					start_pos.Add(angle.toVector2().MultiplyScalar(hook.AOERadius * 1.5)),
 					hook.AOERadius,
 					angle.toVector2().MultiplyScalarForThis(hook.Speed),
 					(hook.CastRange / hook.Speed) + 0.03
@@ -61,7 +62,7 @@ EventsSDK.on("Draw", () => {
 			continue
 
 		predicted_pos = _Unit.Position.AddForThis(angle.MultiplyScalarForThis(300))
-	}
+	}*/
 	if (bind.is_pressed && predicted_pos !== undefined && !bind_sleeper.Sleeping) {
 		_Unit.CastPosition(hook, predicted_pos)
 		bind_sleeper.Sleep(hook.CastPoint + 0.03)
