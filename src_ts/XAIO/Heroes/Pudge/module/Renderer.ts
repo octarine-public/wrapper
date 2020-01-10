@@ -44,10 +44,7 @@ function TryPredict(
 			),
 			obstacles,
 			hook.CastPoint + _Unit!.TurnTime(angle),
-		).GetFirstHitObstacle((res, a) => {
-			if (par !== undefined && obs2ent.get(res) === _Target)
-				ParticlesSDK.SetControlPoint(par, 0, new Vector3(a.x, a.y, RendererSDK.GetPositionHeight(a)))
-		})!
+		).GetFirstHitObstacle()!
 	)
 	if (predicted_hit === _Target)
 		return angle

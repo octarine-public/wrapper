@@ -8,7 +8,7 @@ export default class MovingObstacle extends Obstacle {
 			unit.Position.toVector2(),
 			unit.HullRadius + unit.CollisionPadding,
 			unit.IsMoving
-				? unit.Forward.toVector2().MultiplyScalarForThis(unit.IdealSpeed * 1.2)
+				? unit.Forward.toVector2().MultiplyScalarForThis(unit.IdealSpeed * 1.15)
 				: new Vector2()
 		)
 	}

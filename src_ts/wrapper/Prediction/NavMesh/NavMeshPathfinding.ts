@@ -27,20 +27,18 @@ export default class NavMeshPathfinding {
 		let src_pos = this.PredictionSource.PositionAtTime(time)
 		let result = (this.Obstacles.map(obs => [obs.PositionAtTime(this.Delay + time).Distance(src_pos) - obs.Radius, obs]) as [number, Obstacle][]).sort(([dst1], [dst2]) => dst1 - dst2)
 		if (result[0][0] < this.PredictionSource.Radius) {
-			console.log(this.Delay, time, result[0][0], EntityManager.AllEntities.find(e => e.Position.toVector2().LengthSqr === result[0][1].PositionAtTime(0).LengthSqr)!.Name)
+			//console.log(this.Delay, time, result[0][0], EntityManager.AllEntities.find(e => e.Position.toVector2().LengthSqr === result[0][1].PositionAtTime(0).LengthSqr)!.Name)
 			return result[0][1]
 		}
 		return undefined
 	}
-	public GetFirstHitObstacle(a: (rse: Obstacle, vec: Vector2) => void = () => { }): Nullable<Obstacle> {
+	public GetFirstHitObstacle(): Nullable<Obstacle> {
 		if (this.Obstacles.length === 0)
 			return undefined
 		for (let time = 0; time < this.PredictionSource.EndTime; time += 1 / 30) {
 			let result = this.RayTraceFirstHit(time)
-			if (result !== undefined) {
-				a(result, result.PositionAtTime(time))
+			if (result !== undefined)
 				return result
-			}
 		}
 		return undefined
 	}
