@@ -272,22 +272,20 @@ function GetPositions(): Vector3[] {
 let last_time = 0
 EventsSDK.on("Draw", () => {
 	let positions = GetPositions()
-	let next_spawn = Math.floor(positions.length / 2)
+	let next_spawn = 4 + PlayerResource.PlayerData.filter(data => data.m_iPlayerTeam !== LocalPlayer?.Team).length
 	for (let i = 0; i < PlayerResource.PlayerData.length; i++) {
 		let team_data = PlayerResource.PlayerTeamData[i]
 		if (PlayerResource.PlayerData[i].m_iPlayerTeam !== LocalPlayer?.Team)
 			next_spawn += team_data.m_iDeaths
 	}
-	let i = 0
-	// loop-optimizer: FORWARD
-	positions.forEach(e => {
-		i++
+	/*// loop-optimizer: FORWARD
+	positions.forEach((e, i) => {
 		let screen_pos = RendererSDK.WorldToScreen(e)
 		if (screen_pos === undefined)
 			return
 		RendererSDK.FilledRect(screen_pos.SubtractScalar(2).AddScalarX(-4), new Vector2(20, 23), new Color(255, 0, 0))
-		RendererSDK.Text((i + 1).toString(), screen_pos, new Color(0, 255, 0))
-	})
+		RendererSDK.Text(i.toString(), screen_pos, new Color(0, 255, 0))
+	})*/
 	// loop-optimizer: FORWARD
 	EntityManager.GetEntitiesByClass(Hero)
 		.filter(hero => hero.IsEnemy() && !hero.IsIllusion && (!(hero instanceof npc_dota_hero_meepo) || !hero.IsClone))
