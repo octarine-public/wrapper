@@ -1,5 +1,5 @@
 import { State } from "../Menu"
-import { ParticlesSDK, pudge_meat_hook, Vector3, MathSDK, Entity, Creep, Hero, Obstacle, Unit, MovingObstacle, NavMeshPathfinding, Menu, TickSleeper, Prediction } from "wrapper/Imports"
+import { ParticlesSDK, pudge_meat_hook, Vector3, MathSDK, Entity, Creep, Hero, Obstacle, Unit, MovingObstacle, NavMeshPathfinding, Menu, TickSleeper, Prediction, Vector2 } from "wrapper/Imports"
 
 import { _Unit, _Target } from "./Combo"
 
@@ -26,6 +26,49 @@ function DestroyParticle() {
 	}
 }
 
+function TryPredict(
+	start_pos: Vector2,
+	hook: pudge_meat_hook,
+	rad: number,
+	obstacles: Obstacle[],
+	obs2ent: Map<Obstacle, Entity>
+): Nullable<Vector3> {
+	let angle = Vector3.FromAngle(rad)
+	let predicted_hit = obs2ent.get(
+		new NavMeshPathfinding(
+			new MovingObstacle(
+				start_pos/*.Add(angle.toVector2().MultiplyScalar(hook.AOERadius * 1.5))*/,
+				hook.AOERadius,
+				angle.toVector2().MultiplyScalarForThis(hook.Speed),
+				hook.CastRange / hook.Speed
+			),
+			obstacles,
+			hook.CastPoint + _Unit!.TurnTime(angle),
+		).GetFirstHitObstacle((res, a) => {
+			if (par !== undefined && obs2ent.get(res) === _Target)
+				ParticlesSDK.SetControlPoint(par, 0, new Vector3(a.x, a.y, RendererSDK.GetPositionHeight(a)))
+		})!
+	)
+	if (predicted_hit === _Target)
+		return angle
+	return undefined
+}
+
+function TryPredictInAngles(
+	base_ang: number,
+	min: number, max: number,
+	start_pos: Vector2,
+	hook: pudge_meat_hook,
+	obstacles: Obstacle[],
+	obs2ent: Map<Obstacle, Entity>
+): Nullable<Vector3> {
+	for (let deg = min; deg < max; deg++) {
+		let predicted_angle = TryPredict(start_pos, hook, base_ang + MathSDK.DegreesToRadian(deg), obstacles, obs2ent)
+		if (predicted_angle !== undefined)
+			return predicted_angle
+	}
+	return undefined
+}
 
 EventsSDK.on("Draw", () => {
 	if (!State.value || _Unit === undefined || _Target === undefined || _Unit.Name !== "npc_dota_hero_pudge")
@@ -49,28 +92,16 @@ EventsSDK.on("Draw", () => {
 			obs2ent.set(MovingObstacle.FromUnit(ent), ent)
 	})
 	let obstacles = [...obs2ent.keys()]
-	for (let deg = 0; deg < 360; deg += 2) {
-		let angle = Vector3.FromAngle(MathSDK.DegreesToRadian(deg))
-		let predicted_hit = obs2ent.get(
-			new NavMeshPathfinding(
-				new MovingObstacle(
-					start_pos/*.Add(angle.toVector2().MultiplyScalar(hook.AOERadius * 1.5))*/,
-					hook.AOERadius,
-					angle.toVector2().MultiplyScalarForThis(hook.Speed),
-					hook.CastRange / hook.Speed
-				),
-				obstacles,
-				hook.CastPoint + _Unit.TurnTime(angle),
-			).GetFirstHitObstacle((res, a) => {
-				if (par !== undefined && obs2ent.get(res) === _Target)
-					ParticlesSDK.SetControlPoint(par, 0, new Vector3(a.x, a.y, RendererSDK.GetPositionHeight(a)))
-			})!
-		)
-		if (predicted_hit === _Target) {
-			predicted_pos = _Unit.Position.Rotation(angle, _Unit.Distance(_Target))
-			break
-		}
-	}
+	let base_ang = _Unit.Position.GetDirectionTo(_Target.Position).Angle
+	let predicted_angle = TryPredictInAngles(base_ang, -90, 90, start_pos, hook, obstacles, obs2ent)
+	if (predicted_angle === undefined)
+		predicted_angle = TryPredictInAngles(base_ang, -180, -90, start_pos, hook, obstacles, obs2ent)
+	if (predicted_angle === undefined)
+		predicted_angle = TryPredictInAngles(base_ang, -270, -180, start_pos, hook, obstacles, obs2ent)
+	if (predicted_angle === undefined)
+		predicted_angle = TryPredictInAngles(base_ang, -360, -270, start_pos, hook, obstacles, obs2ent)
+	if (predicted_angle !== undefined)
+		predicted_pos = _Unit.Position.Rotation(predicted_angle, _Unit.Distance(_Target))
 	if (bind.is_pressed && predicted_pos !== undefined && !bind_sleeper.Sleeping) {
 		_Unit.CastPosition(hook, predicted_pos)
 		bind_sleeper.Sleep(hook.CastPoint * 1000 + 33)
