@@ -193,17 +193,17 @@ export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 	const urn = Owner.GetItemByClass(item_urn_of_shadows)
 	const vessel = Owner.GetItemByClass(item_spirit_vessel)
 
-	if (hook !== undefined) {
-		//let predicted_ang = new Prediction(_Unit).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, _Target, hook.Speed, hook.CastPoint, ang => _Unit!.TurnTime(ang))
-		let predicted_pos: Nullable<Vector3> //= predicted_ang !== undefined ? _Unit.Position.AddForThis(Vector3.FromAngle(predicted_ang).MultiplyScalarForThis(_Unit.Distance(_Target))) : undefined
+	if (hook !== undefined && bind.is_pressed && !bind_sleeper.Sleeping) {
+		//let predicted_ang = new Prediction(Owner).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, target, hook.Speed, hook.CastPoint, ang => Owner!.TurnTime(ang))
+		let predicted_pos: Nullable<Vector3> //= predicted_ang !== undefined ? Owner.Position.AddForThis(Vector3.FromAngle(predicted_ang).MultiplyScalarForThis(Owner.Distance(target))) : undefined
 		let obs2ent = new Map<Obstacle, Entity>()
-		let start_pos = _Unit.Position.toVector2()
+		let start_pos = Owner.Position.toVector2()
 		EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).forEach(ent => {
-			if (ent !== _Unit && ent.IsAlive && ent.IsInRange(_Unit!, hook.CastRange * 2))
+			if (ent !== Owner && ent.IsAlive && ent.IsInRange(Owner!, hook.CastRange * 2))
 				obs2ent.set(MovingObstacle.FromUnit(ent), ent)
 		})
 		let obstacles = [...obs2ent.keys()]
-		let base_ang = _Unit.Position.GetDirectionTo(_Target.Position).Angle
+		let base_ang = Owner.Position.GetDirectionTo(target.Position).Angle
 		let predicted_angle = TryPredictInAngles(base_ang, -90, 90, start_pos, hook, obstacles, obs2ent)
 		// if (predicted_angle === undefined)
 		// 	predicted_angle = TryPredictInAngles(base_ang, -180, -90, start_pos, hook, obstacles, obs2ent)
@@ -211,10 +211,9 @@ export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 		// 	predicted_angle = TryPredictInAngles(base_ang, -270, -180, start_pos, hook, obstacles, obs2ent)
 		// if (predicted_angle === undefined)
 		// 	predicted_angle = TryPredictInAngles(base_ang, -360, -270, start_pos, hook, obstacles, obs2ent)
-		if (predicted_angle !== undefined)
-			predicted_pos = _Unit.Position.Rotation(predicted_angle, _Unit.Distance(_Target))
-		if (bind.is_pressed && predicted_pos !== undefined && !bind_sleeper.Sleeping) {
-			_Unit.CastPosition(hook, predicted_pos)
+		if (predicted_angle !== undefined) {
+			predicted_pos = Owner.Position.Rotation(predicted_angle, Owner.Distance(target))
+			Owner.CastPosition(hook, predicted_pos)
 			bind_sleeper.Sleep(hook.CastPoint * 1000 + 33)
 		}
 	}
