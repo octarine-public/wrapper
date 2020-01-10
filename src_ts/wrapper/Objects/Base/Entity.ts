@@ -162,13 +162,11 @@ export default class Entity {
 		this.HP = this.m_pBaseEntity.m_iHealth
 		this.LifeState = this.m_pBaseEntity.m_lifeState
 		this.Team = this.m_pBaseEntity.m_iTeamNum
-
-		this.Name_ = this.Entity?.m_name || this.Entity?.m_designerName || ""
 	}
 
 	/* ================ GETTERS ================ */
 	public get Name(): string {
-		return this.Name_
+		return (this.Name_ = this.Name_ || this.Entity?.m_name || this.Entity?.m_designerName || "")
 	}
 	public get Owner(): Nullable<Entity> { // trick to make it public ro, and protected rw
 		if (this.Owner_ instanceof Entity)
