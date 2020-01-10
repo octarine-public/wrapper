@@ -8,8 +8,8 @@ export default class Vector2 {
 			return undefined
 		return new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1])
 	}
-	public static fromArray(array: [number, number]): Vector2 {
-		return new Vector2(array[0] || 0, array[1] || 0)
+	public static fromArray(array: [number?, number?]): Vector2 {
+		return new Vector2(array[0] ?? 0, array[1] ?? 0)
 	}
 	public static FromAngle(angle: number): Vector2 {
 		return new Vector2(Math.cos(angle), Math.sin(angle))
