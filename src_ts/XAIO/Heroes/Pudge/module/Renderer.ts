@@ -3,8 +3,8 @@ import { ParticlesSDK, pudge_meat_hook, Vector3, MathSDK, Entity, Creep, Hero, O
 
 import { _Unit, _Target } from "./Combo"
 
-let bind = Menu.AddEntry(["XAIO", "Pudge", "Test"]).AddKeybind("Test")
-let bind_sleeper = new TickSleeper()
+// let bind = Menu.AddEntry(["XAIO", "Pudge", "Test"]).AddKeybind("Test")
+// let bind_sleeper = new TickSleeper()
 
 // TESTED =>>>>>>>>>>>>>
 let par: Nullable<number>
@@ -81,63 +81,65 @@ EventsSDK.on("Draw", () => {
 	}
 
 	//let predicted_ang = new Prediction(_Unit).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, _Target, hook.Speed, hook.CastPoint, ang => _Unit!.TurnTime(ang))
-	let predicted_pos: Nullable<Vector3> //= predicted_ang !== undefined ? _Unit.Position.AddForThis(Vector3.FromAngle(predicted_ang).MultiplyScalarForThis(_Unit.Distance(_Target))) : undefined
-	let obs2ent = new Map<Obstacle, Entity>()
-	let start_pos = _Unit.Position.toVector2()
-	EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).forEach(ent => {
-		if (ent !== _Unit && ent.IsInRange(_Unit!, hook.CastRange * 2))
-			obs2ent.set(MovingObstacle.FromUnit(ent), ent)
-	})
-	let obstacles = [...obs2ent.keys()]
-	let base_ang = _Unit.Position.GetDirectionTo(_Target.Position).Angle
-	let predicted_angle = TryPredictInAngles(base_ang, -90, 90, start_pos, hook, obstacles, obs2ent)
-	if (predicted_angle === undefined)
-		predicted_angle = TryPredictInAngles(base_ang, -180, -90, start_pos, hook, obstacles, obs2ent)
-	if (predicted_angle === undefined)
-		predicted_angle = TryPredictInAngles(base_ang, -270, -180, start_pos, hook, obstacles, obs2ent)
-	if (predicted_angle === undefined)
-		predicted_angle = TryPredictInAngles(base_ang, -360, -270, start_pos, hook, obstacles, obs2ent)
-	if (predicted_angle !== undefined)
-		predicted_pos = _Unit.Position.Rotation(predicted_angle, _Unit.Distance(_Target))
-	if (bind.is_pressed && predicted_pos !== undefined && !bind_sleeper.Sleeping) {
-		_Unit.CastPosition(hook, predicted_pos)
-		bind_sleeper.Sleep(hook.CastPoint * 1000 + 33)
-	}
+	// let predicted_pos: Nullable<Vector3> //= predicted_ang !== undefined ? _Unit.Position.AddForThis(Vector3.FromAngle(predicted_ang).MultiplyScalarForThis(_Unit.Distance(_Target))) : undefined
+	// let obs2ent = new Map<Obstacle, Entity>()
+	// let start_pos = _Unit.Position.toVector2()
+	// EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).forEach(ent => {
+	// 	if (ent !== _Unit && ent.IsInRange(_Unit!, hook.CastRange * 2))
+	// 		obs2ent.set(MovingObstacle.FromUnit(ent), ent)
+	// })
+	// let obstacles = [...obs2ent.keys()]
+	// let base_ang = _Unit.Position.GetDirectionTo(_Target.Position).Angle
+	// let predicted_angle = TryPredictInAngles(base_ang, -90, 90, start_pos, hook, obstacles, obs2ent)
+	// // if (predicted_angle === undefined)
+	// // 	predicted_angle = TryPredictInAngles(base_ang, -180, -90, start_pos, hook, obstacles, obs2ent)
+	// // if (predicted_angle === undefined)
+	// // 	predicted_angle = TryPredictInAngles(base_ang, -270, -180, start_pos, hook, obstacles, obs2ent)
+	// // if (predicted_angle === undefined)
+	// // 	predicted_angle = TryPredictInAngles(base_ang, -360, -270, start_pos, hook, obstacles, obs2ent)
+	// if (predicted_angle !== undefined)
+	// 	predicted_pos = _Unit.Position.Rotation(predicted_angle, _Unit.Distance(_Target))
+	// if (bind.is_pressed && predicted_pos !== undefined && !bind_sleeper.Sleeping) {
+	// 	_Unit.CastPosition(hook, predicted_pos)
+	// 	bind_sleeper.Sleep(hook.CastPoint * 1000 + 33)
+	// }
 
-	var pos = predicted_pos ?? _Unit.Position
+	// var pos = predicted_pos ?? _Unit.Position
 
-	if (par === undefined)
-		par = ParticlesSDK.Create("XAIO/particles/fat_ring.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, _Target)
-	if (par3 === undefined)
-		par3 = ParticlesSDK.Create("XAIO/particles/fat_ring.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, _Target)
+	// if (par === undefined)
+	// 	par = ParticlesSDK.Create("XAIO/particles/fat_ring.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, _Target)
+	// if (par3 === undefined)
+	// 	par3 = ParticlesSDK.Create("XAIO/particles/fat_ring.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, _Target)
 
-	HitChanceColor = predicted_pos !== undefined ? new Vector3(0, 255, 0) : new Vector3(255, 0, 0)
+	// HitChanceColor = predicted_pos !== undefined ? new Vector3(0, 255, 0) : new Vector3(255, 0, 0)
 
-	if (par !== undefined) {
-		// ParticlesSDK.SetControlPoint(par, 0, pos)
-		ParticlesSDK.SetControlPoint(par, 1, HitChanceColor)
-		ParticlesSDK.SetControlPoint(par, 2, new Vector3(80, 255, 20))
-	}
-	if (par3 !== undefined) {
-		ParticlesSDK.SetControlPoint(par3, 0, _Target.VelocityWaypoint(hook.CastPoint + (_Target.Distance(_Unit) / hook.Speed)))
-		ParticlesSDK.SetControlPoint(par3, 1, new Vector3(255, 0, 0))
-		ParticlesSDK.SetControlPoint(par3, 2, new Vector3(80, 255, 20))
-	}
+	// if (par !== undefined) {
+	// 	// ParticlesSDK.SetControlPoint(par, 0, pos)
+	// 	ParticlesSDK.SetControlPoint(par, 1, HitChanceColor)
+	// 	ParticlesSDK.SetControlPoint(par, 2, new Vector3(80, 255, 20))
+	// }
+	// if (par3 !== undefined) {
+	// 	ParticlesSDK.SetControlPoint(par3, 0, _Target.VelocityWaypoint(hook.CastPoint + (_Target.Distance(_Unit) / hook.Speed)))
+	// 	ParticlesSDK.SetControlPoint(par3, 1, new Vector3(255, 0, 0))
+	// 	ParticlesSDK.SetControlPoint(par3, 2, new Vector3(80, 255, 20))
+	// }
 
-	if (par2 === undefined)
-		par2 = ParticlesSDK.Create("XAIO/particles/line.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, _Target)
+	// if (par2 === undefined)
+	// 	par2 = ParticlesSDK.Create("XAIO/particles/line.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN, _Target)
 
-	if (par2 !== undefined) {
-		ParticlesSDK.SetControlPoint(par2, 1, pos.Extend(_Target.Position, 80))
-		ParticlesSDK.SetControlPoint(par2, 2, _Target.Position.Extend(pos, 80))
-		ParticlesSDK.SetControlPoint(par2, 3, new Vector3(_Target.Distance2D(pos) > 80 ? 255 : 0, 30, 0))
-		ParticlesSDK.SetControlPoint(par2, 4, new Vector3(255, 255, 255))
-	}
+	// if (par2 !== undefined) {
+	// 	ParticlesSDK.SetControlPoint(par2, 1, pos.Extend(_Target.Position, 80))
+	// 	ParticlesSDK.SetControlPoint(par2, 2, _Target.Position.Extend(pos, 80))
+	// 	ParticlesSDK.SetControlPoint(par2, 3, new Vector3(_Target.Distance2D(pos) > 80 ? 255 : 0, 30, 0))
+	// 	ParticlesSDK.SetControlPoint(par2, 4, new Vector3(255, 255, 255))
+	// }
 })
 
 EventsSDK.on("GameEnded", () => {
 	par = undefined
 	par2 = undefined
 })
+
+
 
 //<====================

@@ -17,7 +17,17 @@ import {
 	item_ethereal_blade,
 	item_shivas_guard,
 	item_urn_of_shadows,
-	item_spirit_vessel
+	item_spirit_vessel,
+	Vector3,
+	Entity,
+	Obstacle,
+	Creep,
+	Hero,
+	Vector2,
+	MathSDK,
+	MovingObstacle,
+	NavMeshPathfinding,
+	TickSleeper
 } from "wrapper/Imports"
 
 import {
@@ -99,6 +109,51 @@ function ShouldCastHook(abil: Ability, target: Unit, AbilitiesHelper: AbilityHel
 	return predictionOutput.HitChance <= XAIOHitChance.Impossible
 }
 
+
+function TryPredict(
+	start_pos: Vector2,
+	hook: pudge_meat_hook,
+	rad: number,
+	obstacles: Obstacle[],
+	obs2ent: Map<Obstacle, Entity>
+): Nullable<Vector3> {
+	let angle = Vector3.FromAngle(rad)
+	let predicted_hit = obs2ent.get(
+		new NavMeshPathfinding(
+			new MovingObstacle(
+				start_pos/*.Add(angle.toVector2().MultiplyScalar(hook.AOERadius * 1.5))*/,
+				hook.AOERadius,
+				angle.toVector2().MultiplyScalarForThis(hook.Speed),
+				hook.CastRange / hook.Speed
+			),
+			obstacles,
+			hook.CastPoint + _Unit!.TurnTime(angle) + (Game.Ping / 2000),
+		).GetFirstHitObstacle()!
+	)
+	if (predicted_hit === _Target)
+		return angle
+	return undefined
+}
+
+function TryPredictInAngles(
+	base_ang: number,
+	min: number, max: number,
+	start_pos: Vector2,
+	hook: pudge_meat_hook,
+	obstacles: Obstacle[],
+	obs2ent: Map<Obstacle, Entity>
+): Nullable<Vector3> {
+	for (let deg = min; deg < max; deg++) {
+		let predicted_angle = TryPredict(start_pos, hook, base_ang + MathSDK.DegreesToRadian(deg), obstacles, obs2ent)
+		if (predicted_angle !== undefined)
+			return predicted_angle
+	}
+	return undefined
+}
+
+let bind = Menu.AddEntry(["XAIO", "Pudge", "Test"]).AddKeybind("Test")
+let bind_sleeper = new TickSleeper()
+
 export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 
 	if (target === undefined || !Owner.IsVisible || GameSleep.Sleeping(target))
@@ -114,8 +169,6 @@ export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 	// if (hook)
 	// 	ShouldCast = ShouldCastHook(hook, target, AbilitiesHelper)
 
-	if (Owner.IsChanneling || !ComboKey.is_pressed)
-		return
 
 	// Init Ability logic
 	const rot = Owner.GetAbilityByClass(pudge_rot)
@@ -134,6 +187,34 @@ export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 	const urn = Owner.GetItemByClass(item_urn_of_shadows)
 	const vessel = Owner.GetItemByClass(item_spirit_vessel)
 
+
+
+	if (hook) {
+		//let predicted_ang = new Prediction(_Unit).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, _Target, hook.Speed, hook.CastPoint, ang => _Unit!.TurnTime(ang))
+
+		let predicted_pos: Nullable<Vector3> //= predicted_ang !== undefined ? _Unit.Position.AddForThis(Vector3.FromAngle(predicted_ang).MultiplyScalarForThis(_Unit.Distance(_Target))) : undefined
+		let obs2ent = new Map<Obstacle, Entity>()
+		let start_pos = _Unit.Position.toVector2()
+
+		EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).forEach(ent => {
+			if (ent !== _Unit && ent.IsInRange(_Unit!, hook.CastRange * 2))
+				obs2ent.set(MovingObstacle.FromUnit(ent), ent)
+		})
+
+		let obstacles = [...obs2ent.keys()]
+		let base_ang = _Unit.Position.GetDirectionTo(_Target.Position).Angle
+		let predicted_angle = TryPredictInAngles(base_ang, -90, 90, start_pos, hook, obstacles, obs2ent)
+
+		if (predicted_angle !== undefined)
+			predicted_pos = _Unit.Position.Rotation(predicted_angle, _Unit.Distance(_Target))
+		if (bind.is_pressed && predicted_pos !== undefined && !bind_sleeper.Sleeping) {
+			_Unit.CastPosition(hook, predicted_pos)
+			bind_sleeper.Sleep(hook.CastPoint * 1000 + 33)
+		}
+	}
+
+	if (Owner.IsChanneling || !ComboKey.is_pressed)
+		return
 
 	if (rot && AbilityMenu.IsEnabled(rot.Name)
 		&& !rot.IsToggled
