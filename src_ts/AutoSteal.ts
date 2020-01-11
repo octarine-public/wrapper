@@ -211,8 +211,9 @@ var abils: {
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(
 				abil.GetSpecialValue("damage_per_unit")
 				* Math.min(
-					EntityManager.GetEntitiesInRange(entTo.Position, abil.GetSpecialValue("radius"), ent =>
-						ent instanceof Unit && (ent.IsCreep || ent.IsHero) && !ent.IsEnemy(entFrom),
+					EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).filter(unit =>
+						!unit.IsEnemy(entFrom)
+						&& unit.IsInRange(entTo, abil.GetSpecialValue("radius"))
 					).length,
 					abil.GetSpecialValue("max_units"),
 				) * latest_spellamp,
@@ -257,9 +258,8 @@ var abils: {
 			abilName: "legion_commander_overwhelming_odds",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
-				const ents = entTo.AbsOrigin.GetEntitiesInRange(abil.GetSpecialValue("radius")),
-					creeps = ents.filter(ent => ent.IsCreep && ent.IsEnemy()),
-					heroes = ents.filter(ent => ent.IsHero && ent.IsEnemy())
+				let creeps = EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY),
+					heroes = EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
 				return Utils.CalculateDamage(entTo, (abil.GetSpecialValue("damage") * heroes.length + abil.GetSpecialValue("damage_per_unit") * creeps.length) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
 			}
 		},*/
@@ -268,6 +268,7 @@ var abils: {
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
+
 				var damage = abil.GetSpecialValue("damage") + entFrom.GetTalentValue("special_bonus_unique_broodmother_3")
 
 				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)

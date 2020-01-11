@@ -17,11 +17,7 @@ export class PredictionInput {
 		public AreaOfEffectHitMainTarget = true,
 	) {
 		if (AreaOfEffect && AreaOfEffectTargets.length === 0)
-			AreaOfEffectTargets = EntityManager.GetEntitiesInRange(
-				Target_.Position,
-				Range + (Radius / 2),
-				ent => ent instanceof Hero && ent.IsEnemy(Target_),
-			) as Unit[]
+			AreaOfEffectTargets = EntityManager.GetEntitiesByClass(Hero).filter(hero => hero.IsEnemy(Target_) && hero.IsInRange(Target_, Range + (Radius / 2)))
 	}
 
 	public get Target() {

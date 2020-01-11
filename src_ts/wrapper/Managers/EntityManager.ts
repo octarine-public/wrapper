@@ -99,7 +99,6 @@ class EntityManager {
 	public GetEntitiesByNative(ents: (CEntityIndex | Entity)[]): (Entity | C_BaseEntity | undefined)[] {
 		// loop-optimizer: FORWARD
 		return ents.map(ent => {
-
 			if (ent === undefined || ent instanceof Entity)
 				return ent
 
@@ -110,15 +109,6 @@ class EntityManager {
 		})
 	}
 
-	public GetEntitiesInRange(vec: Vector3, range: number, filter?: (value: Entity) => boolean): Entity[] {
-		return AllEntities.filter(entity => {
-			if (entity.Position.Distance(vec) > range)
-				return false
-			if (filter !== undefined)
-				return filter(entity) === true
-			return true
-		})
-	}
 	public GetEntitiesByClass<T>(class_: Constructor<T>, flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
 		if (class_ === undefined || !ClassToEntities.has(class_))
 			return []

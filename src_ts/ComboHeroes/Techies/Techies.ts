@@ -203,12 +203,11 @@ EventsSDK.on("PrepareUnitOrders", args => {
 		|| !(args.Ability instanceof Ability && args.Ability.Name === "techies_remote_mines")
 	)
 		return true
-	const ents = EntityManager.GetEntitiesInRange(args.Position, auto_stack_range.value)
 	var minePos = new Vector3()
-	if (ents.some(ent => {
-		const isMine = ent instanceof Unit && ent.Name === "npc_dota_techies_remote_mine" && ent.IsAlive
+	if (EntityManager.GetEntitiesByClass(Unit).some(unit => {
+		const isMine = unit.IsAlive && !unit.IsEnemy() && unit.IsInRange(args.Position, auto_stack_range.value) && unit.Name === "npc_dota_techies_remote_mine"
 		if (isMine)
-			minePos = ent.Position
+			minePos = unit.Position
 		return isMine
 	})) {
 		if (minePos.Equals(args.Position))
