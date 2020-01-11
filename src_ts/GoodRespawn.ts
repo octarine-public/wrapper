@@ -1,4 +1,4 @@
-import { Vector3, Team, Hero, pudge_meat_hook, Obstacle, Vector2, Entity, Unit, MovingObstacle, NavMeshPathfinding, MathSDK, Creep, GameSleeper, npc_dota_hero_meepo, ArrayExtensions } from "./wrapper/Imports"
+import { Vector3, Team, Hero, pudge_meat_hook, Obstacle, Vector2, Entity, Unit, MovingObstacle, NavMeshPathfinding, MathSDK, Creep, GameSleeper } from "./wrapper/Imports"
 
 let menu = Menu.AddEntry(["Utility", "Good Respawn"])
 let visuals_state = menu.AddToggle("Visuals State", true)
@@ -112,7 +112,7 @@ function GetEnemyDeaths() {
 	return deaths
 }
 function GetNextSpawn() {
-	return manual_fix.value + 4 + PlayerResource.PlayerData.filter(data => data.m_iPlayerTeam !== LocalPlayer?.Team && data.m_iConnectionState === SignonState_t.SIGNONSTATE_FULL).length + GetEnemyDeaths()
+	return manual_fix.value + 4 + PlayerResource.PlayerData.filter(data => data.m_iPlayerTeam !== LocalPlayer?.Team).length + GetEnemyDeaths()
 }
 
 let hook_sleeper = new GameSleeper()
