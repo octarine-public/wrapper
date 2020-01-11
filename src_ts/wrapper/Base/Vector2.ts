@@ -752,7 +752,15 @@ export default class Vector2 {
 	public DegreesToRadians(): Vector2 {
 		return this.MultiplyScalar(Math.PI).DivideScalar(180)
 	}
-	/* ================== Geometric ================== */
+	/* ================== to ================== */
+	/**
+	 * Get hash code of vector
+	 */
+	public GetHashCode(): number {
+		let hash = this.x
+		hash = (hash * 397) ^ this.y
+		return hash
+	}
 	/**
 	 * Vector2 to String Vector2
 	 * @return new Vector2(x,y,z)

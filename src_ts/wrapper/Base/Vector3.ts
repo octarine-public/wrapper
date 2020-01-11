@@ -809,6 +809,15 @@ export default class Vector3 {
 	}
 	/* ================== To ================== */
 	/**
+	 * Get hash code of vector
+	 */
+	public GetHashCode(): number {
+		let hash = this.x
+		hash = (hash * 397) ^ this.y
+		hash = (hash * 397) ^ this.z
+		return hash
+	}
+	/**
 	 * Vector3 to String Vector3
 	 * @return new Vector3(x,y,z)
 	 */

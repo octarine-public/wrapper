@@ -105,6 +105,16 @@ export default class Color {
 
 	/* ================== To ================== */
 	/**
+	 * Get hash code of color
+	 */
+	public GetHashCode(): number {
+		let hash = this.r
+		hash = (hash * 397) ^ this.g
+		hash = (hash * 397) ^ this.b
+		hash = (hash * 397) ^ this.a
+		return hash
+	}
+	/**
 	 * Color to String Color
 	 * @return Color(r,g,b,a)
 	 */
