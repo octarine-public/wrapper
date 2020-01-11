@@ -173,7 +173,7 @@ export default new (class ParticlesSDK {
 			entity,
 			0, position,
 			1, color,
-			2, range * 1.1
+			2, new Vector3(range * 1.1, 255)
 		)
 	}
 	/**

@@ -68,7 +68,7 @@ export default class Particle {
 		this.attachment = attachment
 		this.entity = entity
 
-		this.ControlPoints = points
+		this.controlPoints = points
 
 		this.Create()
 	}
@@ -153,11 +153,9 @@ export default class Particle {
 			else if (typeof point === "number" || typeof point === "boolean")
 				point = new Vector3((point as number) + 0, 0, 0)
 
-			//console.log(index, point)
-
 			point.toIOBuffer()
 
-			Particles.SetControlPoint(this.EffectIndex, index)
+			Particles.SetControlPoint(this.effectIndex, index)
 		}
 
 		this.controlPointsHashCode = Particle.GetHashCodeControlPoints(...this.controlPoints)
