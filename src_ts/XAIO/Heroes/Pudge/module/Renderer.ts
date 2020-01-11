@@ -1,5 +1,5 @@
 import { State } from "../Menu"
-import { ParticlesSDK, pudge_meat_hook, Vector3, MathSDK, Entity, Creep, Hero, Obstacle, Unit, MovingObstacle, NavMeshPathfinding, Menu, TickSleeper, Prediction, Vector2 } from "wrapper/Imports"
+import { ParticlesSDK, pudge_meat_hook } from "wrapper/Imports"
 
 import { _Unit, _Target } from "./Combo"
 
@@ -29,7 +29,7 @@ EventsSDK.on("Draw", () => {
 
 	const hook = _Unit.GetAbilityByClass(pudge_meat_hook)
 
-	let HitChanceColor = new Vector3()
+	// let HitChanceColor = new Vector3()
 
 	if (hook === undefined || !_Target.IsVisible || !_Target.IsAlive || hook.Level === 0 || !hook.CanHit(_Target) || !hook.CanBeCasted()) {
 		DestroyParticle()
