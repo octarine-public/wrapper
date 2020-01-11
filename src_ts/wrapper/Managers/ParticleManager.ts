@@ -188,7 +188,7 @@ export default new (class ParticlesSDK {
 	public DrawLine(
 		key: any,
 		entity: Entity,
-		range: number = 50,
+		endPosition: Entity | Vector3,
 		options: IDrawLineOptions = {}
 	) {
 		return this.AddOrUpdate(key,
@@ -196,7 +196,7 @@ export default new (class ParticlesSDK {
 			options.Attachment ?? ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
 			entity,
 			0, options.Position ?? entity,
-			1, range,
+			1, endPosition,
 			2, options.Color ?? Color.Aqua,
 			3, options.Width ?? 10,
 			4, options.Alpha ?? 255
