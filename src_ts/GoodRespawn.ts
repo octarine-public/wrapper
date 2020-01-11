@@ -168,7 +168,7 @@ EventsSDK.on("Tick", () => {
 			})
 			let obstacles = [...obs2ent.keys()]
 			let result = TryPredictInAngles(base_ang, -90, 90, start_pos, hook, obstacles, obs2ent, unit, target)
-			if (result !== undefined && respawn_time - hook.CastPoint <= result[1] + (autohook_delay.value / 60) + (Game.Ping / 2000)) {
+			if (result !== undefined && respawn_time - hook.CastPoint <= result[1] + (autohook_delay.value / 60)) {
 				unit.CastPosition(hook, unit.Position.Rotation(result[0], 300))
 				hook_sleeper.Sleep(Game.Ping + (hook.CastPoint + result[1]) * 1000, unit)
 				if (lock_position.value)
