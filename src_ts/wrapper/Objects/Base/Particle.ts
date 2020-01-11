@@ -1,5 +1,6 @@
 import Entity from "./Entity"
 import { Vector3, Vector2, Color } from "../../Imports"
+import ParticlesSDK from "../../Managers/ParticleManager"
 
 /**
  * Use string for better unique values 
@@ -14,26 +15,93 @@ export type ControlPoints = Array<boolean | number | Entity | Vector3 | Vector2 
 
 export default class Particle {
 
-	ControlPoints: ControlPoints = [];
+	/* ================== Static ================== */
 
-	IsValid = false
+	static GetHashCodeControlPoints(...controlPoints: ControlPoints): number {
 
-	private effectIndex: number = -1;
+		let hash = 0
+
+		controlPoints.forEach(value => {
+
+			if (value instanceof Entity)
+				value = value.Position
+
+			if (value instanceof Vector2 || value instanceof Vector3 || value instanceof Color) {
+				hash += value.GetHashCode()
+
+			} else if (Array.isArray(value)) {
+				var hashArray = 0
+
+				for (var length = value.length, i = (length >= 8 ? length - 8 : 0); i < length; i++) {
+					hashArray = ((hashArray << 5) + hashArray) ^ (value[i] ?? 0)
+				}
+
+				hash += hashArray
+			}
+			else {
+				hash += (value as number) + 0
+			}
+		})
+
+		return hash
+	}
+
+	/* ================ Fields ================ */
+
+	public IsValid = false
+
+	private key: ParticleKeyType
+	private path: string
+	private attachment: ParticleAttachment_t
+	private entity: Nullable<Entity>
+	private controlPoints: ControlPoints = [];
+
+	private effectIndex = -1;
+	private controlPointsHashCode = -1;
+
+	/* ================ Constructor ================ */
 
 	constructor(
-		public Key: ParticleKeyType,
-		public Path: string,
-		public Attachment: ParticleAttachment_t,
-		public Entity?: Entity,
+		key: ParticleKeyType,
+		path: string,
+		attachment: ParticleAttachment_t,
+		entity?: Entity,
 		...points: ControlPoints) {
+
+		this.key = key
+		this.path = path
+		this.attachment = attachment
+		this.entity = entity
 
 		this.ControlPoints = points
 
 		this.Create()
 	}
 
+	public get Key(): ParticleKeyType {
+		return this.key
+	}
+	public get Path(): string {
+		return this.path
+	}
+	public get Attachment(): ParticleAttachment_t {
+		return this.attachment
+	}
+	public get Entity(): Nullable<Entity> {
+		return this.entity
+	}
+	public get ControlPoints(): ControlPoints {
+		return this.controlPoints
+	}
+	public set ControlPoints(value: ControlPoints) {
+		this.SetControlPoints(...value)
+	}
+
 	public get EffectIndex(): number {
 		return this.effectIndex
+	}
+	public get GetHashCodeControlPoints(): number {
+		return this.controlPointsHashCode
 	}
 
 	private Create(): this {
@@ -41,7 +109,9 @@ export default class Particle {
 			return this
 
 		this.effectIndex = Particles.Create(this.Path,
-			this.Attachment, this.Entity?.IsValid ? this.Entity.Index : -1)
+			this.attachment, this.entity?.IsValid ? this.entity.Index : -1)
+
+		this.IsValid = true
 
 		this.SetControlPoints()
 
@@ -67,13 +137,13 @@ export default class Particle {
 			return
 
 		if (points.length > 0) {
-			this.ControlPoints = points
+			this.controlPoints = points
 		}
 
-		for (let i = 0; i < this.ControlPoints.length; i += 2) {
+		for (let i = 0; i < this.controlPoints.length; i += 2) {
 
-			let index = this.ControlPoints[i] as number
-			let point = this.ControlPoints[i + 1]
+			let index = this.controlPoints[i] as number
+			let point = this.controlPoints[i + 1]
 
 			if (typeof index !== "number") {
 				throw new Error("Control Point Index is not number")
@@ -92,6 +162,8 @@ export default class Particle {
 
 			Particles.SetControlPoint(this.EffectIndex, index)
 		}
+
+		this.controlPointsHashCode = Particle.GetHashCodeControlPoints(...this.controlPoints)
 	}
 
 	public Restart() {
@@ -113,7 +185,7 @@ export default class Particle {
 
 		this.IsValid = false
 
-
+		ParticlesSDK.Remove(this.key)
 
 		return this
 	}
