@@ -1,7 +1,7 @@
 import Vector3 from "../Base/Vector3"
 import Color from "../Base/Color"
 import Entity from "../Objects/Base/Entity"
-import Particle, { ParticleKeyType, ControlPoints } from "../Objects/Base/Particle"
+import Particle, { ControlPoints } from "../Objects/Base/Particle"
 
 const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
 const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`
@@ -68,7 +68,7 @@ export interface IDrawBoundingAreaOptions {
 }
 
 
-let ParticlesSDK = new (class ParticlesSDK {
+export default new (class ParticlesSDK {
 	/**
 	 * @deprecated Will be removed after changed all scripts
 	 */
@@ -97,10 +97,10 @@ let ParticlesSDK = new (class ParticlesSDK {
 	}
 
 
-	private readonly allParticles = new Map<ParticleKeyType, Particle>();
+	private readonly allParticles = new Map<any, Particle>();
 
 	public AddOrUpdate(
-		key: ParticleKeyType,
+		key: any,
 		path: string,
 		attachment: ParticleAttachment_t,
 		entity: Entity,
@@ -143,7 +143,7 @@ let ParticlesSDK = new (class ParticlesSDK {
 	 * 	4: Alpha
 	 */
 	public DrawCircle(
-		key: ParticleKeyType,
+		key: any,
 		entity: Entity,
 		range: number = 50,
 		options: IDrawCircleOptions = {}
@@ -160,7 +160,7 @@ let ParticlesSDK = new (class ParticlesSDK {
 		)
 	}
 	public DrawSelectedRing(
-		key: ParticleKeyType,
+		key: any,
 		entity: Entity,
 		range: number = 50,
 		position: Entity | Vector3 = entity,
@@ -186,7 +186,7 @@ let ParticlesSDK = new (class ParticlesSDK {
 	 * 	4: Alpha
 	 */
 	public DrawLine(
-		key: ParticleKeyType,
+		key: any,
 		entity: Entity,
 		range: number = 50,
 		options: IDrawLineOptions = {}
@@ -203,7 +203,7 @@ let ParticlesSDK = new (class ParticlesSDK {
 		)
 	}
 	public DrawRangeLine(
-		key: ParticleKeyType,
+		key: any,
 		entity: Entity,
 		endPosition: Entity | Vector3,
 		isRed?: boolean,
@@ -219,7 +219,7 @@ let ParticlesSDK = new (class ParticlesSDK {
 		)
 	}
 	public DrawLineToTarget(
-		key: ParticleKeyType,
+		key: any,
 		entity: Entity,
 		target: Entity,
 		color = Color.Red
@@ -246,7 +246,7 @@ let ParticlesSDK = new (class ParticlesSDK {
 	 * 	4: Alpha
 	 */
 	public DrawBoundingArea(
-		key: ParticleKeyType,
+		key: any,
 		entity: Entity,
 		endPosition: Entity | Vector3,
 		startPos: Entity | Vector3 = entity,
@@ -265,7 +265,7 @@ let ParticlesSDK = new (class ParticlesSDK {
 	}
 
 
-	public Remove(key: ParticleKeyType) {
+	public Remove(key: any) {
 
 		var particle = this.allParticles.get(key)
 
@@ -284,4 +284,3 @@ let ParticlesSDK = new (class ParticlesSDK {
 	}
 
 })()
-export default ParticlesSDK

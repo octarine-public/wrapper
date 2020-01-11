@@ -2,11 +2,6 @@ import Entity from "./Entity"
 import { Vector3, Vector2, Color } from "../../Imports"
 import ParticlesSDK from "../../Managers/ParticleManager"
 
-/**
- * Use string for better unique values 
- */
-export type ParticleKeyType = string | number | Entity
-
 export type ControlPoints = Array<boolean | number | Entity | Vector3 | Vector2 | Color | [number?, number?, number?]>
 
 // from Native:
@@ -50,7 +45,7 @@ export default class Particle {
 
 	public IsValid = false
 
-	private key: ParticleKeyType
+	private key: any
 	private path: string
 	private attachment: ParticleAttachment_t
 	private entity: Nullable<Entity>
@@ -62,7 +57,7 @@ export default class Particle {
 	/* ================ Constructor ================ */
 
 	constructor(
-		key: ParticleKeyType,
+		key: any,
 		path: string,
 		attachment: ParticleAttachment_t,
 		entity?: Entity,
@@ -78,7 +73,7 @@ export default class Particle {
 		this.Create()
 	}
 
-	public get Key(): ParticleKeyType {
+	public get Key(): any {
 		return this.key
 	}
 	public get Path(): string {
@@ -146,7 +141,7 @@ export default class Particle {
 			let point = this.controlPoints[i + 1]
 
 			if (typeof index !== "number") {
-				throw new Error("Control Point Index is not number")
+				throw new Error("Control Point Index is not a number")
 			}
 
 			if (point instanceof Entity)
@@ -157,6 +152,8 @@ export default class Particle {
 
 			else if (typeof point === "number" || typeof point === "boolean")
 				point = new Vector3((point as number) + 0, 0, 0)
+
+			//console.log(index, point)
 
 			point.toIOBuffer()
 
