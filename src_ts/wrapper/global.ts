@@ -13,6 +13,7 @@ import _Game from "./Objects/GameResources/GameRules"
 
 import _RendererSDK from "./Native/RendererSDK"
 import _EventsSDK from "./Managers/EventsSDK"
+import _ParticlesSDK from "./Managers/ParticleManager"
 
 import _Menu from "./Menu/Menu"
 
@@ -33,6 +34,7 @@ declare global {
 
 	var RendererSDK: typeof _RendererSDK
 	var EventsSDK: typeof _EventsSDK
+	var ParticlesSDK: typeof _ParticlesSDK
 
 	var WASMIOBuffer: Float32Array
 
@@ -54,5 +56,6 @@ globalThis.Game = _Game
 
 globalThis.EventsSDK = _EventsSDK
 globalThis.RendererSDK = _RendererSDK
+globalThis.ParticlesSDK = _ParticlesSDK
 
 globalThis.Menu = _Menu
