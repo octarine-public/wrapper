@@ -122,12 +122,11 @@ let ParticlesSDK = new (class ParticlesSDK {
 			this.allParticles.set(key, particle)
 		}
 		else {
-			// check changed control points
-			for (let i = 0; i < points.length; i += 2) {
-				if (particle.ControlPoints[i + 1] !== points[i + 1]) {
-					particle.SetControlPoints(...points)
-					break
-				}
+
+			let hash = Particle.GetHashCodeControlPoints(...points)
+
+			if (hash !== particle.GetHashCodeControlPoints) {
+				particle.SetControlPoints(...points)
 			}
 		}
 
@@ -151,7 +150,7 @@ let ParticlesSDK = new (class ParticlesSDK {
 	) {
 		return this.AddOrUpdate(key,
 			RangeRenderPath(options.RenderStyle),
-			options.Attachment ?? ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
+			options.Attachment ?? ParticleAttachment_t.PATTACH_ABSORIGIN,
 			entity,
 			0, options.Position ?? entity,
 			1, range,
@@ -265,6 +264,17 @@ let ParticlesSDK = new (class ParticlesSDK {
 		)
 	}
 
+
+	public Remove(key: ParticleKeyType) {
+
+		var particle = this.allParticles.get(key)
+
+		if (particle === undefined)
+			return
+
+		particle.Destroy()
+		this.allParticles.delete(key)
+	}
 
 	public DestroyAll(particleDestroy?: boolean, immediate = true) {
 
