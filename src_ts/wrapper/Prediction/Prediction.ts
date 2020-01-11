@@ -43,23 +43,24 @@ export default class Prediction {
 		angle = this.Owner.Forward.toVector2(),
 		delay = 0,
 		obstacles?: Entity[]
-	): Nullable<Entity> {
+	): Nullable<[Entity, number]> {
 		if (obstacles === undefined)
 			obstacles = EntityManager.GetEntitiesByClasses<Entity>([Creep, Hero]).filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
 		let obs2ent = new Map<Obstacle, Entity>()
 		obstacles.forEach(ent => obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent))
-		return obs2ent.get(
-			new NavMeshPathfinding(
-				new MovingObstacle(
-					this.Owner.Position.toVector2(),
-					collision_size,
-					angle.MultiplyScalarForThis(speed),
-					radius / speed
-				),
-				[...obs2ent.keys()],
-				delay,
-			).GetFirstHitObstacle()!
-		)
+		let predict_res = new NavMeshPathfinding(
+			new MovingObstacle(
+				this.Owner.Position.toVector2(),
+				collision_size,
+				angle.MultiplyScalarForThis(speed),
+				radius / speed
+			),
+			[...obs2ent.keys()],
+			delay,
+		).GetFirstHitObstacle()
+		if (predict_res === undefined)
+			return undefined
+		return [obs2ent.get(predict_res[0])!, predict_res[1]]
 	}
 	public GetAngleForObstacleFirstHit(
 		radius: number,
@@ -69,7 +70,7 @@ export default class Prediction {
 		delay = 0,
 		dynamic_delay_func = (ang: number) => 0,
 		obstacles?: Entity[]
-	): Nullable<number> {
+	): Nullable<[number, number]> {
 		if (obstacles === undefined)
 			obstacles = EntityManager.GetEntitiesByClasses<Entity>([Creep, Hero]).filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
 		let ent2obs = new Map<Entity, Obstacle>()

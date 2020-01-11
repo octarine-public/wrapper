@@ -113,13 +113,14 @@ function ShouldCastHook(abil: pudge_meat_hook, target: Unit, AbilitiesHelper: Ab
 	let owner = abil.Owner
 	if (owner === undefined)
 		return true
-	return new Prediction(owner).GetFirstHitTarget( // stop
+	let result = new Prediction(owner).GetFirstHitTarget(
 		abil.CastRange,
 		abil.AOERadius,
 		abil.Speed,
 		owner.Forward.toVector2(),
 		abil.CastPoint + (Game.Ping / 2000)
-	) === target
+	)
+	return result !== undefined && result[0] === target
 }
 
 
@@ -131,19 +132,19 @@ function TryPredict(
 	obs2ent: Map<Obstacle, Entity>
 ): Nullable<Vector3> {
 	let angle = Vector3.FromAngle(rad)
-	let predicted_hit = obs2ent.get(
-		new NavMeshPathfinding(
-			new MovingObstacle(
-				start_pos/*.Add(angle.toVector2().MultiplyScalar(hook.AOERadius * 1.5))*/,
-				hook.AOERadius,
-				angle.toVector2().MultiplyScalarForThis(hook.Speed),
-				hook.CastRange / hook.Speed
-			),
-			obstacles,
-			hook.CastPoint + _Unit!.TurnTime(angle) + (Game.Ping / 2000),
-		).GetFirstHitObstacle()!
-	)
-	if (predicted_hit === _Target)
+	let predict_res = new NavMeshPathfinding(
+		new MovingObstacle(
+			start_pos/*.Add(angle.toVector2().MultiplyScalar(hook.AOERadius * 1.5))*/,
+			hook.AOERadius,
+			angle.toVector2().MultiplyScalarForThis(hook.Speed),
+			hook.CastRange / hook.Speed
+		),
+		obstacles,
+		hook.CastPoint + _Unit!.FindRotationAngle(_Unit!.Position.Rotation(angle, 100)) + (Game.Ping / 2000),
+	).GetFirstHitObstacle()
+	if (predict_res === undefined)
+		return undefined
+	if (obs2ent.get(predict_res[0]) === _Target)
 		return angle
 	return undefined
 }
@@ -194,8 +195,8 @@ export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 	const vessel = Owner.GetItemByClass(item_spirit_vessel)
 
 	if (hook !== undefined && bind.is_pressed && !bind_sleeper.Sleeping) {
-		//let predicted_ang = new Prediction(Owner).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, target, hook.Speed, hook.CastPoint, ang => Owner!.TurnTime(ang))
-		let predicted_pos: Nullable<Vector3> //= predicted_ang !== undefined ? Owner.Position.AddForThis(Vector3.FromAngle(predicted_ang).MultiplyScalarForThis(Owner.Distance(target))) : undefined
+		// let predicted_ang = new Prediction(Owner).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, target, hook.Speed, hook.CastPoint, ang => Owner!.TurnTime(_Unit!.Position.Rotation(Vector3.FromAngle(ang), 100)))
+		let predicted_pos: Nullable<Vector3> // = predicted_ang !== undefined ? Owner.Position.AddForThis(Vector3.FromAngle(predicted_ang[0]).MultiplyScalarForThis(Owner.Distance(target))) : undefined
 		let obs2ent = new Map<Obstacle, Entity>()
 		let start_pos = Owner.Position.toVector2()
 		EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).forEach(ent => {
@@ -335,8 +336,8 @@ export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 				) return
 
 				if (hook && AbilityMenu.IsEnabled(hook.Name) && hook.CanBeCasted() && hook.CanHit(target)) {
-					//let predicted_ang = new Prediction(Owner).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, target, hook.Speed, hook.CastPoint, ang => Owner!.TurnTime(ang))
-					let predicted_pos: Nullable<Vector3> //= predicted_ang !== undefined ? Owner.Position.AddForThis(Vector3.FromAngle(predicted_ang).MultiplyScalarForThis(Owner.Distance(target))) : undefined
+					//let predicted_ang = new Prediction(Owner).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, target, hook.Speed, hook.CastPoint, ang => Owner!.TurnTime(_Unit!.Position.Rotation(Vector3.FromAngle(ang), 100)))
+					let predicted_pos: Nullable<Vector3> //= predicted_ang !== undefined ? Owner.Position.AddForThis(Vector3.FromAngle(predicted_ang[0]).MultiplyScalarForThis(Owner.Distance(target))) : undefined
 					let obs2ent = new Map<Obstacle, Entity>()
 					let start_pos = Owner.Position.toVector2()
 
@@ -412,8 +413,8 @@ export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 
 		if (!hook || !AbilityMenu.IsEnabled(hook.Name) || !hook.CanBeCasted() || !hook.CanHit(target))
 			return
-		//let predicted_ang = new Prediction(Owner).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, target, hook.Speed, hook.CastPoint, ang => Owner!.TurnTime(ang))
-		let predicted_pos: Nullable<Vector3> //= predicted_ang !== undefined ? Owner.Position.AddForThis(Vector3.FromAngle(predicted_ang).MultiplyScalarForThis(Owner.Distance(target))) : undefined
+		//let predicted_ang = new Prediction(Owner).GetAngleForObstacleFirstHit(hook.CastRange, hook.AOERadius, target, hook.Speed, hook.CastPoint, ang => Owner!.TurnTime(_Unit!.Position.Rotation(Vector3.FromAngle(ang), 100)))
+		let predicted_pos: Nullable<Vector3> //= predicted_ang !== undefined ? Owner.Position.AddForThis(Vector3.FromAngle(predicted_ang[0]).MultiplyScalarForThis(Owner.Distance(target))) : undefined
 		let obs2ent = new Map<Obstacle, Entity>()
 		let start_pos = Owner.Position.toVector2()
 

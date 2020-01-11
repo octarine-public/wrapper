@@ -221,7 +221,7 @@ export default class Entity {
 		return Math.floor(this.HP / this.MaxHP * 100) || 0
 	}
 	public get IsAlive(): boolean {
-		return this.LifeState === LifeState_t.LIFE_ALIVE
+		return this.LifeState === LifeState_t.LIFE_ALIVE || this.LifeState === LifeState_t.LIFE_RESPAWNING
 	}
 	public get IsDOTANPC(): boolean {
 		return this.m_pBaseEntity.m_bIsDOTANPC

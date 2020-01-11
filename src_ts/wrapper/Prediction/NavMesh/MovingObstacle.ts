@@ -6,7 +6,7 @@ export default class MovingObstacle extends Obstacle {
 	public static FromUnit(unit: Unit): MovingObstacle {
 		return new MovingObstacle(
 			unit.Position.toVector2(),
-			unit.HullRadius + unit.CollisionPadding,
+			unit.HullRadius,
 			unit.IsMoving
 				? unit.Forward.toVector2().MultiplyScalarForThis(unit.IdealSpeed * 1.15)
 				: new Vector2()

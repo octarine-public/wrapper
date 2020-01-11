@@ -54,8 +54,6 @@ export default class XAIOPrediction {
 		if (input.Speed > 0)
 			num += caster.Distance(position) / input.Speed
 
-		// new Prediction(pudge).GetFirstHitTarget(meat_hook.CastRange, meat_hook.AOERadius, meat_hook.Speed)
-
 		let predictedPosition = target.VelocityWaypoint(num)
 
 		predictionOutput.TargetPosition = predictedPosition

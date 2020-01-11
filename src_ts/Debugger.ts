@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color, Events, DOTAGameUIState_t, EventEmitter, Vector3, Hero, Team, npc_dota_hero_meepo } from "./wrapper/Imports"
+import { EventsSDK, Game, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color, Events, DOTAGameUIState_t, EventEmitter } from "./wrapper/Imports"
 
 declare global {
 	var dump_stats: Function
@@ -263,42 +263,8 @@ globalThis.reset_avg_mult = () => {
 		ar[1] = 1
 }
 
-function GetPositions(): Vector3[] {
-	return EntityManager.AllEntities
-		.filter(e => e.Name === (LocalPlayer?.Team === Team.Dire ? "info_player_start_goodguys" : "info_player_start_badguys"))
-		.map(a => a.Position)
-}
-
 let last_time = 0
 EventsSDK.on("Draw", () => {
-	let positions = GetPositions()
-	let next_spawn = 4 + PlayerResource.PlayerData.filter(data => data.m_iPlayerTeam !== LocalPlayer?.Team).length
-	for (let i = 0; i < PlayerResource.PlayerData.length; i++) {
-		let team_data = PlayerResource.PlayerTeamData[i]
-		if (PlayerResource.PlayerData[i].m_iPlayerTeam !== LocalPlayer?.Team)
-			next_spawn += team_data.m_iDeaths
-	}
-	/*// loop-optimizer: FORWARD
-	positions.forEach((e, i) => {
-		let screen_pos = RendererSDK.WorldToScreen(e)
-		if (screen_pos === undefined)
-			return
-		RendererSDK.FilledRect(screen_pos.SubtractScalar(2).AddScalarX(-4), new Vector2(20, 23), new Color(255, 0, 0))
-		RendererSDK.Text(i.toString(), screen_pos, new Color(0, 255, 0))
-	})*/
-	// loop-optimizer: FORWARD
-	EntityManager.GetEntitiesByClass(Hero)
-		.filter(hero => hero.IsEnemy() && !hero.IsIllusion && (!(hero instanceof npc_dota_hero_meepo) || !hero.IsClone))
-		.map(a => a.RespawnTime - Game.RawGameTime)
-		.filter(a => a > 0)
-		.sort((a, b) => b - a)
-		.forEach((secs, i) => {
-			let screen_pos = RendererSDK.WorldToScreen(positions[positions.length !== 0 ? (next_spawn - i) % positions.length : 0])
-			if (screen_pos !== undefined) {
-				RendererSDK.FilledRect(screen_pos.SubtractScalar(2).AddScalarX(-4), new Vector2(20, 23), new Color(0, 255, 0))
-				RendererSDK.Text(secs.toFixed(1), screen_pos, new Color(255, 0, 0))
-			}
-		})
 	if (hrtime() - last_time < 10000 || GetHeapStatistics().total_heap_size < 200n * 1024n * 1024n)
 		return
 	TakeHeapSnapshot("dumps/" + Math.random().toString().substring(2, 8) + ".heapsnapshot")

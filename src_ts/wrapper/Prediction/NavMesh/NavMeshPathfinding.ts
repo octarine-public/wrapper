@@ -32,13 +32,13 @@ export default class NavMeshPathfinding {
 		}
 		return undefined
 	}
-	public GetFirstHitObstacle(): Nullable<Obstacle> {
+	public GetFirstHitObstacle(): Nullable<[Obstacle, number]> {
 		if (this.Obstacles.length === 0)
 			return undefined
 		for (let time = 0; time < this.PredictionSource.EndTime; time += 1 / 30) {
 			let result = this.RayTraceFirstHit(time)
 			if (result !== undefined)
-				return result
+				return [result, time]
 		}
 		return undefined
 	}
@@ -46,7 +46,7 @@ export default class NavMeshPathfinding {
 	 * Pass ONLY speed to PredictionSource#Velocity vector
 	 * @param target MUST be passed in this#Obstacles
 	 */
-	public GetAngleForObstacleFirstHit(target: Obstacle, dynamic_delay_func = (ang: number) => 0): Nullable<number> {
+	public GetAngleForObstacleFirstHit(target: Obstacle, dynamic_delay_func = (ang: number) => 0): Nullable<[number, number]> {
 		if (this.Obstacles.length === 0 || !this.Obstacles.some(obs => obs === target))
 			return undefined
 		let orig_velocity = this.PredictionSource.Velocity.Clone()
@@ -63,7 +63,7 @@ export default class NavMeshPathfinding {
 				this.Delay = orig_delay + dynamic_delay_func(new_ang)
 				let result = this.RayTraceFirstHit(time)
 				if (result === target)
-					return new_ang
+					return [new_ang, time]
 				if (result !== undefined)
 					blocked_spots.push(new_ang)
 				this.PredictionSource.Velocity.CopyFrom(orig_velocity)
