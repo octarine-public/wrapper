@@ -1,4 +1,4 @@
-import { Ability, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Flow_t } from "wrapper/Imports"
+import { Ability, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Flow_t, EntityManager } from "wrapper/Imports"
 
 // Menu
 const MenuEntry = Menu.AddEntry(["Utility", "AntiInitiation"])

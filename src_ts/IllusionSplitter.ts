@@ -1,4 +1,4 @@
-import { Menu as MenuSDK, Hero, GameSleeper, Utils, item_bottle } from "wrapper/Imports"
+import { Menu as MenuSDK, Hero, GameSleeper, Utils, item_bottle, EntityManager, Game, EventsSDK, LocalPlayer } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Utility", "Illusion Splitter"])
 const AngleRandomizer = Menu.AddToggle("Random Split Angle", true)
@@ -16,7 +16,7 @@ let arr_abil: string[] = [
 ]
 const UseAbility = Menu.AddImageSelector("Usage", arr_abil, new Map(arr_abil.map(name => [name, true])))
 
-const Sleep = new GameSleeper
+const Sleep = new GameSleeper()
 const Delay = (((Game.Ping / 2) + 30) + 250)
 
 const DegreesToRadians = (deg: number) => deg * 0.0174532924

@@ -1,4 +1,4 @@
-import { Hero, Unit, Creep, Collision, CollisionObject } from "wrapper/Imports"
+import { Hero, Unit, Creep, Collision, CollisionObject, EntityManager } from "wrapper/Imports"
 
 import {
 	XAIOInput,

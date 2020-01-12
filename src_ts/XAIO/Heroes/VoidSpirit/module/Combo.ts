@@ -1,6 +1,6 @@
 import { execute_ability } from "../Data"
 import { AbilityMenu, ItemsMenu } from "../Menu"
-import { Unit, GameSleeper } from "wrapper/Imports"
+import { Unit, GameSleeper, Game } from "wrapper/Imports"
 import { UnitsOrbWalker, AbilityHelper } from "../../../Helper/bootstrap"
 
 let Sleep = new GameSleeper()

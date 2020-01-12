@@ -1,4 +1,4 @@
-import { ArrayExtensions, Game, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Utils, Vector3 } from "wrapper/Imports"
+import { ArrayExtensions, Game, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Utils, Vector3, EntityManager } from "wrapper/Imports"
 
 import {
 	baseCheckUnit,

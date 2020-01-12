@@ -272,7 +272,7 @@ declare interface Events extends EventEmitter {
 	on(name: "SharedObjectChanged", listener: (id: number, reason: number, uuid: bigint, obj: any) => void): EventEmitter
 	on(name: "ServerInfo", listener: (info: IServerInfo) => void): EventEmitter
 	on(name: "RemoveAllStringTables", listener: () => void): EventEmitter
-	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, string]>) => void): EventEmitter
+	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, ArrayBuffer]>) => void): EventEmitter
 	on(name: "EntitiesVisiblityChanged", listener: (update: Map<C_BaseEntity, boolean>) => void): EventEmitter
 	on(name: "SignonStateChanged", listener: (new_state: SignonState_t) => void): EventEmitter
 	on(name: "AddSearchPath", listener: (path: string) => boolean): EventEmitter

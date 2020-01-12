@@ -1,6 +1,7 @@
 import QAngle from "../Base/QAngle"
 import Vector3 from "../Base/Vector3"
 import Entity from "../Objects/Base/Entity"
+import EntityManager from "../Managers/EntityManager"
 
 export default class UserCmd {
 	constructor(public readonly m_CUserCmd: CUserCmd) { }

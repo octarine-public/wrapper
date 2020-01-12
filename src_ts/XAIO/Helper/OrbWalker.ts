@@ -1,4 +1,4 @@
-import { Unit, Game, Utils, dotaunitorder_t, Vector3, GameSleeper } from "wrapper/Imports"
+import { Unit, Game, Utils, dotaunitorder_t, Vector3, GameSleeper, EventsSDK } from "wrapper/Imports"
 
 let TurnEndTime = 0
 let LastAttackTime = 0

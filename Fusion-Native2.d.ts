@@ -23,15 +23,6 @@ declare class CUnitOrder {
 	readonly show_effects: boolean
 }
 
-declare class TimeoutData {
-	Destroy(): void
-
-	start_time: bigint
-	wait_time: bigint
-	is_interval: boolean
-	readonly callback: (self: TimeoutData) => void
-}
-
 declare class CUserCmd {
 	command_number: number
 	tick_count: number

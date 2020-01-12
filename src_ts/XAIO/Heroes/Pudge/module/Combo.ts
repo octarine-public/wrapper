@@ -1,4 +1,4 @@
-import { Unit, GameSleeper } from "wrapper/Imports"
+import { Unit, GameSleeper, EventsSDK } from "wrapper/Imports"
 
 let GameSleep = new GameSleeper()
 

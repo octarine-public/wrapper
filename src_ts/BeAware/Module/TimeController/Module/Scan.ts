@@ -1,5 +1,5 @@
 
-import { ArrayExtensions, Entity, Game, LocalPlayer, ParticlesSDK, RendererSDK, Team, Unit, Vector2, Vector3, FontFlags_t } from "wrapper/Imports"
+import { ArrayExtensions, Entity, Game, LocalPlayer, ParticlesSDK, RendererSDK, Team, Unit, Vector2, Vector3, FontFlags_t, EventsSDK } from "wrapper/Imports"
 import {
 	DrawTimerRadarSize,
 	DrawTimerRadarX,

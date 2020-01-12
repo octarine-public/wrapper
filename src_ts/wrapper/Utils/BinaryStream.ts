@@ -48,6 +48,11 @@ export default class BinaryStream {
 	public ReadBoolean(): boolean {
 		return this.Next() !== 0
 	}
+	public ReadSlice(size: number): ArrayBuffer {
+		let slice = this.view.buffer.slice(this.pos, this.pos + size)
+		this.RelativeSeek(size)
+		return slice
+	}
 	public Empty(): boolean {
 		return this.pos >= this.view.byteLength
 	}

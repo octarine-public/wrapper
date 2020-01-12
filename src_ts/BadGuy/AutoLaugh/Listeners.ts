@@ -1,4 +1,4 @@
-import { Game } from "wrapper/Imports"
+import { Game, LocalPlayer } from "wrapper/Imports"
 import { Interval, State } from "./Menu"
 let Sleep = 0
 export function Tick() {

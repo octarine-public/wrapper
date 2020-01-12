@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, Game, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit, Tower } from "wrapper/Imports"
+import { ArrayExtensions, Creep, Game, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit, Tower, EntityManager } from "wrapper/Imports"
 import { stateMain } from "../../base/MenuBase"
 
 import {

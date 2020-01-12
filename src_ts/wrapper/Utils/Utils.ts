@@ -131,9 +131,9 @@ DamageIgnoreBuffs.map((ar, i) => { // optimization & beauty trick
 })
 
 export function Utf8ArrayToStr(array: Uint8Array): string {
-	var out = ""
+	let out = ""
 
-	for (let i = 0, end = array.byteLength, c = array[i], char2, char3; i < end; i++, c = array[i])
+	for (let i = 0, end = array.byteLength, c = array[i], char2, char3; i < end; c = array[++i])
 		switch (c >> 4) {
 			case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
 				// 0xxxxxxx
@@ -160,6 +160,13 @@ export function Utf8ArrayToStr(array: Uint8Array): string {
 export function Uint8ArrayToHex(array: Uint8Array): string {
 	// loop-optimizer: KEEP
 	return array.reduce((memo, i) => memo + ("0" + i.toString(16)).slice(-2), "")
+}
+
+export function StringToUTF16(str: string): Uint8Array {
+	let buf = new Uint16Array(str.length)
+	for (let i = str.length; i--;)
+		buf[i] = str.charCodeAt(i)
+	return new Uint8Array(buf.buffer)
 }
 
 export function parseKVFile(path: string): RecursiveMap {

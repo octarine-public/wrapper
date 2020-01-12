@@ -1,4 +1,4 @@
-import { Courier } from "wrapper/Imports"
+import { Courier, LocalPlayer } from "wrapper/Imports"
 import { deliverState } from "../Menu"
 import { Sleep, OwnerIsValid } from "../bootstrap"
 import { CourierBase } from "../Data/Helper"

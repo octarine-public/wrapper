@@ -1,4 +1,4 @@
-import { Game, Hero, ArrayExtensions, PingType_t, Entity } from "wrapper/Imports"
+import { Game, Hero, ArrayExtensions, PingType_t, Entity, Vector3, LocalPlayer, Color, RendererSDK, EntityManager, EventsSDK } from "wrapper/Imports"
 import { Interval_val, State, HeroesList, DebugPing } from "./Menu"
 let Sleep = 0
 let Heroes: Hero[] = []

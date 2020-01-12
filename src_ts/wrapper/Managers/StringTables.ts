@@ -1,7 +1,8 @@
 import Events from "./Events"
 import { OnActiveModifiersChanged } from "./ModifierManager"
+import { Utf8ArrayToStr } from "../Utils/Utils"
 
-let StringTables = new Map<string, Map<number, [string, string]>>()
+let StringTables = new Map<string, Map<number, [string, ArrayBuffer]>>()
 declare global {
 	var DumpStringTables: () => void
 	var StringTables_: typeof StringTables
@@ -40,5 +41,5 @@ export function GetString(table_name: string, index: number): string {
 }
 export function GetValue(table_name: string, index: number): string {
 	let ar = GetTable(table_name)?.get(index)
-	return ar !== undefined ? ar[1] : ""
+	return ar !== undefined ? Utf8ArrayToStr(new Uint8Array(ar[1])) : ""
 }

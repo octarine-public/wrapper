@@ -1,4 +1,4 @@
-import { Entity, LocalPlayer, Menu as MenuSDK, Unit, Vector3 } from "wrapper/Imports"
+import { Entity, LocalPlayer, Menu as MenuSDK, Unit, Vector3, EntityManager } from "wrapper/Imports"
 
 export let baseCheckUnit = (ent: Unit) =>
 	ent.IsAlive

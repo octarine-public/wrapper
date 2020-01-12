@@ -1,16 +1,12 @@
-import { Color, EventsSDK, Game, Hero, LocalPlayer, Menu as MenuSDK } from "wrapper/Imports"
+import { Color, EventsSDK, Game, Hero, LocalPlayer, Menu as MenuSDK, EntityManager } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Visual", "Show Illusions"]),
 	illus_color = new Color(0, 0, 255),
 	stateMain = Menu.AddToggle("State", true)
 
 EventsSDK.on("Draw", () => {
-	if (LocalPlayer === undefined) {
-		return false
-	}
-	if (!stateMain.value || !Game.IsInGame || LocalPlayer.IsSpectator) {
-		return false
-	}
+	if (!stateMain.value || !Game.IsInGame || LocalPlayer === undefined || LocalPlayer.IsSpectator)
+		return
 	EntityManager.GetEntitiesByClass(Hero).forEach(illus => {
 		if (!illus.IsIllusion || !illus.IsEnemy())
 			return

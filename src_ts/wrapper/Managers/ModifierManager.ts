@@ -7,7 +7,7 @@ import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
 import Game from "../Objects/GameResources/GameRules"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import EntityManager from "./EntityManager"
-import { ParseProtobuf, ProtoType, ProtoDescription, ParseProtobufDescLine, RecursiveProtobuf } from "../Utils/ParseProtobuf"
+import { ParseProtobufNamed, RecursiveProtobuf, ParseProtobufDesc } from "../Utils/ParseProtobuf"
 import Vector3 from "../Base/Vector3"
 
 export class IModifier {
@@ -184,51 +184,53 @@ function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
 		EventsSDK.emit("ModifierChanged", false, old_mod)
 	EventsSDK.emit("ModifierChangedRaw", false, old_mod)
 }
-const CMsgVector_desc = new Map<number, [/* name */ string, /* type */ ProtoType, /* proto description */ ProtoDescription?]>([
-	ParseProtobufDescLine("optional float x = 1"),
-	ParseProtobufDescLine("optional float y = 2"),
-	ParseProtobufDescLine("optional float z = 3"),
-])
-const CDOTAModifierBuffTableEntry_desc = new Map<number, [/* name */ string, /* type */ ProtoType, /* proto description */ ProtoDescription?]>([
-	[1, ["entry_type", ProtoType.ENUM]], // ParseProtobufDescLine("required .DOTA_MODIFIER_ENTRY_TYPE entry_type = 1"),
-	ParseProtobufDescLine("required int32 parent = 2"),
-	ParseProtobufDescLine("required int32 index = 3"),
-	ParseProtobufDescLine("required int32 serial_num = 4"),
-	ParseProtobufDescLine("optional int32 modifier_class = 5"),
-	ParseProtobufDescLine("optional int32 ability_level = 6"),
-	ParseProtobufDescLine("optional int32 stack_count = 7"),
-	ParseProtobufDescLine("optional float creation_time = 8"),
-	ParseProtobufDescLine("optional float duration = 9 [default = -1]"),
-	ParseProtobufDescLine("optional int32 caster = 10"),
-	ParseProtobufDescLine("optional int32 ability = 11"),
-	ParseProtobufDescLine("optional int32 armor = 12"),
-	ParseProtobufDescLine("optional float fade_time = 13"),
-	ParseProtobufDescLine("optional bool subtle = 14"),
-	ParseProtobufDescLine("optional float channel_time = 15"),
-	[16, ["v_start", ProtoType.PROTO, CMsgVector_desc]], // ParseProtobufDescLine("optional .CMsgVector v_start = 16"),
-	[17, ["v_end", ProtoType.PROTO, CMsgVector_desc]], // ParseProtobufDescLine("optional .CMsgVector v_end = 17"),
-	ParseProtobufDescLine("optional string portal_loop_appear = 18"),
-	ParseProtobufDescLine("optional string portal_loop_disappear = 19"),
-	ParseProtobufDescLine("optional string hero_loop_appear = 20"),
-	ParseProtobufDescLine("optional string hero_loop_disappear = 21"),
-	ParseProtobufDescLine("optional int32 movement_speed = 22"),
-	ParseProtobufDescLine("optional bool aura = 23"),
-	ParseProtobufDescLine("optional int32 activity = 24"),
-	ParseProtobufDescLine("optional int32 damage = 25"),
-	ParseProtobufDescLine("optional int32 range = 26"),
-	ParseProtobufDescLine("optional int32 dd_modifier_index = 27"),
-	ParseProtobufDescLine("optional int32 dd_ability_id = 28"),
-	ParseProtobufDescLine("optional string illusion_label = 29"),
-	ParseProtobufDescLine("optional bool active = 30"),
-	ParseProtobufDescLine("optional string player_ids = 31"),
-	ParseProtobufDescLine("optional string lua_name = 32"),
-	ParseProtobufDescLine("optional int32 attack_speed = 33"),
-	ParseProtobufDescLine("optional int32 aura_owner = 34"),
-])
-export function OnActiveModifiersChanged(map: Map<number, [string, string]>) {
+ParseProtobufDesc(`
+enum DOTA_MODIFIER_ENTRY_TYPE {
+	DOTA_MODIFIER_ENTRY_TYPE_ACTIVE = 1;
+	DOTA_MODIFIER_ENTRY_TYPE_REMOVED = 2;
+}
+
+message CDOTAModifierBuffTableEntry {
+	required .DOTA_MODIFIER_ENTRY_TYPE entry_type = 1;
+	required int32 parent = 2;
+	required int32 index = 3;
+	required int32 serial_num = 4;
+	optional int32 modifier_class = 5;
+	optional int32 ability_level = 6;
+	optional int32 stack_count = 7;
+	optional float creation_time = 8;
+	optional float duration = 9;
+	optional int32 caster = 10;
+	optional int32 ability = 11;
+	optional int32 armor = 12;
+	optional float fade_time = 13;
+	optional bool subtle = 14;
+	optional float channel_time = 15;
+	optional .CMsgVector v_start = 16;
+	optional .CMsgVector v_end = 17;
+	optional string portal_loop_appear = 18;
+	optional string portal_loop_disappear = 19;
+	optional string hero_loop_appear = 20;
+	optional string hero_loop_disappear = 21;
+	optional int32 movement_speed = 22;
+	optional bool aura = 23;
+	optional int32 activity = 24;
+	optional int32 damage = 25;
+	optional int32 range = 26;
+	optional int32 dd_modifier_index = 27;
+	optional int32 dd_ability_id = 28;
+	optional string illusion_label = 29;
+	optional bool active = 30;
+	optional string player_ids = 31;
+	optional string lua_name = 32;
+	optional int32 attack_speed = 33;
+	optional int32 aura_owner = 34;
+}
+`)
+export function OnActiveModifiersChanged(map: Map<number, [string, ArrayBuffer]>) {
 	// loop-optimizer: KEEP
 	map.forEach(([_, mod_serialized], index) => {
-		let mod = new IModifier(ParseProtobuf(mod_serialized, CDOTAModifierBuffTableEntry_desc))
+		let mod = new IModifier(ParseProtobufNamed(mod_serialized, "CDOTAModifierBuffTableEntry"))
 		let replaced = ActiveModifiersRaw.get(index)
 		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {
 			let replaced_mod = ActiveModifiers.get(replaced.SerialNum)

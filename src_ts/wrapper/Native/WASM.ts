@@ -22,11 +22,12 @@ var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("wrapper.was
 }
 declare global {
 	var wasm_: typeof wasm
+	var WASMIOBuffer: Float32Array
 }
 globalThis.wasm_ = wasm
 wasm._start()
 
-var WASMIOBuffer: Float32Array
+let WASMIOBuffer: Float32Array
 function emscripten_notify_memory_growth(memoryIndex: number) {
 	WASMIOBuffer = globalThis.WASMIOBuffer = new Float32Array(wasm.memory.buffer, wasm.GetIOBuffer())
 }

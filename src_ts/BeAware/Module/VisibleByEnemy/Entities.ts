@@ -1,4 +1,4 @@
-import { Entity, LocalPlayer, ParticlesSDK, Unit, Hero, WardObserver, Creep } from "wrapper/Imports"
+import { Entity, LocalPlayer, ParticlesSDK, Unit, Hero, WardObserver, Creep, EventsSDK, EntityManager } from "wrapper/Imports"
 import { showOnAll, showOnAllies, showOnCreeps, showOnSelf, showOnWards, State, switcher } from "./Menu"
 
 let allUnits = new Map<Unit, number>(), // <Unit, Particle>

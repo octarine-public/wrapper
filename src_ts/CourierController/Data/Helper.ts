@@ -1,5 +1,5 @@
 
-import { Game, Vector3, Team, Courier, Unit, DOTA_GameMode } from "wrapper/Imports"
+import { Game, Vector3, Team, Courier, Unit, DOTA_GameMode, LocalPlayer } from "wrapper/Imports"
 import { LaneSelectionFlags_t, Data } from "./Data"
 
 class CourierData extends Data {

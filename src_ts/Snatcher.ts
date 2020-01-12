@@ -14,6 +14,7 @@ import {
 	Unit,
 	Vector3,
 	DOTAGameUIState_t,
+	EntityManager,
 } from "wrapper/Imports"
 
 // import { PickupItem, PickupRune } from "../Orders"

@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, Utils, TickSleeper } from "wrapper/Imports"
+import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, Utils, TickSleeper, Color, RendererSDK, Vector2 } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Debugger", "SX.Utils"])
 const State = Menu.AddToggle("State")

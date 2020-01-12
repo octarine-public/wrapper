@@ -1,4 +1,4 @@
-import { Ability, Unit, TickSleeper, GameSleeper, Game, Vector3, Hero } from "wrapper/Imports"
+import { Ability, Unit, TickSleeper, GameSleeper, Game, Vector3, Hero, EntityManager, EventsSDK } from "wrapper/Imports"
 import { XAIOInput, XAIOCollisionTypes, XAIOSkillshotType, XAIOPrediction, XAIOHitChance, Sleeper } from "./bootstrap"
 
 let SleepTick = new TickSleeper(),

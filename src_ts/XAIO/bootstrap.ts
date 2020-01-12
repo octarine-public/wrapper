@@ -1,5 +1,5 @@
 
-import { Unit } from "wrapper/Imports"
+import { Unit, EventsSDK, LocalPlayer, EntityManager } from "wrapper/Imports"
 import { stateGlobal, LanguageState } from "./Menu/Base"
 
 export let Units: Unit[] = []

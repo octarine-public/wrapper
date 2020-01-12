@@ -22,6 +22,8 @@ import InputManager from "./InputManager"
 import Item from "../Objects/Base/Item"
 import { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
 import ParticlesSDK from "./ParticleManager"
+import RendererSDK from "../Native/RendererSDK"
+import Vector2 from "../Base/Vector2"
 
 interface EventsSDK extends EventEmitter {
 	/**

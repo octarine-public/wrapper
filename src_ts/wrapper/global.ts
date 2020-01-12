@@ -1,11 +1,10 @@
+// @ts-nocheck
 import _Color from "./Base/Color"
 import _QAngle from "./Base/QAngle"
 import _Vector2 from "./Base/Vector2"
 import _Vector3 from "./Base/Vector3"
 
-import Player from "./Objects/Base/Player"
-
-import _EntityManager from "./Managers/EntityManager"
+import _EntityManager, { LocalPlayer } from "./Managers/EntityManager"
 import _Events from "./Managers/Events"
 
 import _PlayerResource from "./Objects/GameResources/PlayerResource"
@@ -16,30 +15,8 @@ import _EventsSDK from "./Managers/EventsSDK"
 import _ParticlesSDK from "./Managers/ParticleManager"
 
 import _Menu from "./Menu/Menu"
-
-declare global {
-	var Color: typeof _Color
-	var QAngle: typeof _QAngle
-	var Vector2: typeof _Vector2
-	var Vector3: typeof _Vector3
-
-	var LocalPlayer: Nullable<Player>
-
-	var EntityManager: typeof _EntityManager
-	var GetEntityClassByName: (name: string) => any[]
-	var Events: typeof _Events
-
-	var PlayerResource: typeof _PlayerResource
-	var Game: typeof _Game
-
-	var RendererSDK: typeof _RendererSDK
-	var EventsSDK: typeof _EventsSDK
-	var ParticlesSDK: typeof _ParticlesSDK
-
-	var WASMIOBuffer: Float32Array
-
-	var Menu: typeof _Menu
-}
+import { GetSDKClasses } from "./Objects/NativeToSDK"
+import Player from "./Objects/Base/Player"
 
 globalThis.Color = _Color
 globalThis.QAngle = _QAngle
@@ -47,7 +24,13 @@ globalThis.Vector2 = _Vector2
 globalThis.Vector2 = _Vector2
 globalThis.Vector3 = _Vector3
 
-globalThis.LocalPlayer = undefined
+Object.defineProperty(globalThis, "LocalPlayer", {
+	get: () => {
+		return LocalPlayer
+	},
+	configurable: false,
+	enumerable: true,
+})
 globalThis.EntityManager = _EntityManager
 globalThis.Events = _Events
 
@@ -59,3 +42,5 @@ globalThis.RendererSDK = _RendererSDK
 globalThis.ParticlesSDK = _ParticlesSDK
 
 globalThis.Menu = _Menu
+globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Constructor<any>).name === name)
+

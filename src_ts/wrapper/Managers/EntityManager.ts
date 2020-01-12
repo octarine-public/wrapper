@@ -2,8 +2,6 @@ import * as ArrayExtensions from "../Utils/ArrayExtensions"
 
 import Events from "./Events"
 
-import Vector3 from "../Base/Vector3"
-
 import Entity from "../Objects/Base/Entity"
 import Unit from "../Objects/Base/Unit"
 import Hero from "../Objects/Base/Hero"
@@ -34,7 +32,7 @@ export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
 Events.on("ServerInfo", info => player_slot = info.player_slot ?? NaN)
 
-class EntityManager {
+class CEntityManager {
 	private Roshan_: Nullable<Entity | number>
 
 	get Roshan(): Nullable<Entity | number> {
@@ -139,10 +137,8 @@ class EntityManager {
 	}
 }
 
-const _EntityManager = new EntityManager()
-export default _EntityManager
-
-globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Constructor<any>).name === name)
+const EntityManager = new CEntityManager()
+export default EntityManager
 
 Events.on("EntityCreated", (ent, index) => {
 	{ // add globals
@@ -178,7 +174,7 @@ Events.on("EntityDestroyed", (ent, index) => {
 			Game.m_GameManager = undefined
 
 		if (ent instanceof C_DOTAPlayer && LocalPlayer?.m_pBaseEntity === ent)
-			globalThis.LocalPlayer = LocalPlayer = undefined
+			LocalPlayer = undefined
 	}
 
 	DeleteFromCache(ent)
@@ -189,8 +185,8 @@ let last_event_ent = -1
 Events.on("GameEvent", (name, obj) => {
 	if (name === "npc_spawned")
 		last_event_ent = obj.entindex
-	else if (name === "dota_item_spawned" && obj.player_id === -1 && last_event_ent !== -1 && _EntityManager.Roshan === undefined)
-		_EntityManager.Roshan = last_event_ent
+	else if (name === "dota_item_spawned" && obj.player_id === -1 && last_event_ent !== -1 && EntityManager.Roshan === undefined)
+		EntityManager.Roshan = last_event_ent
 	else
 		last_event_ent = -1
 })
@@ -203,7 +199,7 @@ export function AddToCache(ent: C_BaseEntity) {
 
 	let entity = ClassFromNative(ent, name)
 	if (entity.Index === player_slot + 1 /* skip worldent at index 0 */)
-		globalThis.LocalPlayer = LocalPlayer = entity as Player
+		LocalPlayer = entity as Player
 	entity.OnCreated()
 	AllEntitiesAsMap.set(entity.m_pBaseEntity, entity)
 	AllEntities.push(entity)

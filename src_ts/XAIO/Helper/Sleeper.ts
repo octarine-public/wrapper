@@ -1,3 +1,5 @@
+import { Game } from "../../wrapper/Imports"
+
 export default class XAIOSleeper {
 	// ms seconds sleeper
 	private sleepTime: number = 0

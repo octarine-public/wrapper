@@ -1,4 +1,4 @@
-import { Vector3, Team, Hero, pudge_meat_hook, Obstacle, Vector2, Entity, Unit, MovingObstacle, NavMeshPathfinding, Creep, GameSleeper } from "./wrapper/Imports"
+import { Vector3, Team, Hero, pudge_meat_hook, Obstacle, Vector2, Entity, Unit, MovingObstacle, NavMeshPathfinding, Creep, GameSleeper, EventsSDK, LocalPlayer, EntityManager, Menu, RendererSDK, Color, PlayerResource, Game } from "./wrapper/Imports"
 
 let menu = Menu.AddEntry(["Utility", "Good Respawn"])
 let visuals_state = menu.AddToggle("Visuals State", true),

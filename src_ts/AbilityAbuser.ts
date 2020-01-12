@@ -1,4 +1,4 @@
-import { Ability, EntityManager, Hero, Menu, dotaunitorder_t, item_blade_mail, puck_phase_shift } from "./wrapper/Imports"
+import { Ability, EntityManager, Hero, Menu, dotaunitorder_t, item_blade_mail, puck_phase_shift, EventsSDK } from "./wrapper/Imports"
 let AbilityAbuser = Menu.AddEntry(["Utility", "Ability Abuse"]),
 	ability_abuse = AbilityAbuser.AddKeybind("Hold key"),
 	ability_abuse_selector = AbilityAbuser.AddImageSelector("Ability Abuse Selector", [

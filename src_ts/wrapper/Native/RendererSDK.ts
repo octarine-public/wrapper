@@ -5,6 +5,7 @@ import QAngle from "../Base/QAngle"
 import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
 import { FontFlags_t } from "../Enums/FontFlags_t"
+import { StringToUTF16 } from "../Utils/Utils"
 import { HeightMap, ParseHeightMap } from "../Utils/ParseVHCG"
 import Events from "../Managers/Events"
 import Game from "../Objects/GameResources/GameRules"
@@ -21,13 +22,7 @@ enum CommandID {
 	TEXT,
 }
 
-let RendererSDK_ = new (class RendererSDK {
-	private static StringToUTF16(str: string): Uint8Array {
-		let buf = new Uint16Array(str.length)
-		for (let i = str.length; i--;)
-			buf[i] = str.charCodeAt(i)
-		return new Uint8Array(buf.buffer)
-	}
+let RendererSDK = new (class CRendererSDK {
 	/**
 	 * Default Size of Text = Size 18 x Weight 200
 	 * @param font Size as X | default: 18
@@ -244,7 +239,7 @@ let RendererSDK_ = new (class RendererSDK {
 		if (!(font instanceof Vector2))
 			font = new Vector2(font, this.DefaultTextSize.y)
 		let font_id = this.GetFont(font_name, font, flags)
-		let text_buf = RendererSDK.StringToUTF16(text)
+		let text_buf = StringToUTF16(text)
 		let view = this.AllocateCommandSpace(4 * 4 + text_buf.byteLength)
 		let off = 0
 		view.setUint8(off, CommandID.TEXT)
@@ -423,7 +418,7 @@ try {
 		map_name = "dota"
 	let buf = readFile(`maps/${map_name}.vhcg`)
 	if (buf !== undefined) {
-		RendererSDK_.HeightMap = ParseHeightMap(buf)
+		RendererSDK.HeightMap = ParseHeightMap(buf)
 		Game.MapName = last_loaded_map_name = map_name
 	}
 } catch (e) {
@@ -451,11 +446,11 @@ Events.on("PostAddSearchPath", path => {
 		return
 
 	try {
-		RendererSDK_.HeightMap = ParseHeightMap(buf)
+		RendererSDK.HeightMap = ParseHeightMap(buf)
 		Game.MapName = last_loaded_map_name = map_name
 	} catch (e) {
 		console.log("Error in RendererSDK.HeightMap dynamic init: " + e)
-		RendererSDK_.HeightMap = undefined
+		RendererSDK.HeightMap = undefined
 	}
 })
 
@@ -464,8 +459,8 @@ Events.on("PostRemoveSearchPath", path => {
 	if (map_name === undefined || last_loaded_map_name !== map_name)
 		return
 
-	RendererSDK_.HeightMap = undefined
+	RendererSDK.HeightMap = undefined
 	last_loaded_map_name = "<empty>"
 })
 
-export default RendererSDK_
+export default RendererSDK
