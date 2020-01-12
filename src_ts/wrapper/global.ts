@@ -17,6 +17,7 @@ import _ParticlesSDK from "./Managers/ParticleManager"
 import _Menu from "./Menu/Menu"
 import { GetSDKClasses } from "./Objects/NativeToSDK"
 import Player from "./Objects/Base/Player"
+import { WASMIOBuffer } from "./Native/WASM"
 
 globalThis.Color = _Color
 globalThis.QAngle = _QAngle
@@ -27,6 +28,13 @@ globalThis.Vector3 = _Vector3
 Object.defineProperty(globalThis, "LocalPlayer", {
 	get: () => {
 		return LocalPlayer
+	},
+	configurable: false,
+	enumerable: true,
+})
+Object.defineProperty(globalThis, "WASMIOBuffer", {
+	get: () => {
+		return WASMIOBuffer
 	},
 	configurable: false,
 	enumerable: true,
