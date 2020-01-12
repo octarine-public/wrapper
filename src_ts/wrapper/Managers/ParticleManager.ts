@@ -273,7 +273,7 @@ export default new (class ParticlesSDK {
 		if (particle === undefined)
 			return
 
-		particle.Destroy()
+		particle.Destroy(true)
 		this.allParticles.delete(key)
 	}
 
