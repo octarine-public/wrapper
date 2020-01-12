@@ -129,14 +129,14 @@ EventsSDK.on("Tick", () => {
 					hook.CastRange / hook.Speed,
 				),
 				[...obs2ent.keys()],
-				hook.CastPoint + unit.TurnTime(pos) + (autohook_delay.value / 60),
+				hook.CastPoint + unit.TurnTime(pos) + (autohook_delay.value / 60) + (Game.Ping / 2000),
 			).GetFirstHitObstacle()
-			if (predict_res === undefined || predict_res[0] !== target_obs || respawn_time > predict_res[1])
+			if (predict_res === undefined || predict_res[0] !== target_obs || respawn_time > predict_res[1] - (Game.Ping / 2000))
 				return false
 			unit.CastPosition(hook, unit.Position.Extend(pos, hook.CastRange / 1.5))
-			hook_sleeper.Sleep(Game.Ping + hook.CastPoint * 1000, unit)
+			hook_sleeper.Sleep((Game.Ping / 2) + (hook.CastPoint * 1000), unit)
 			if (lock_position.value)
-				hook_sleeper.Sleep(Game.Ping + hook.CastPoint * 1000, pos.LengthSqr)
+				hook_sleeper.Sleep((Game.Ping / 2) + (hook.CastPoint * 1000), pos.LengthSqr)
 			return true
 		})
 	})
