@@ -1,4 +1,4 @@
-import { Menu as MenuSDK, Hero, GameSleeper, Utils, item_bottle, EntityManager, Game, EventsSDK, LocalPlayer } from "wrapper/Imports"
+import { Menu as MenuSDK, Hero, GameSleeper, Utils, item_bottle, EntityManager, Game, EventsSDK, LocalPlayer, MathSDK } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Utility", "Illusion Splitter"])
 const AngleRandomizer = Menu.AddToggle("Random Split Angle", true)
@@ -14,12 +14,11 @@ let arr_abil: string[] = [
 	"terrorblade_conjure_image",
 	"phantom_lancer_doppelwalk"
 ]
-const UseAbility = Menu.AddImageSelector("Usage", arr_abil, new Map(arr_abil.map(name => [name, true])))
+let UseAbility = Menu.AddImageSelector("Usage", arr_abil, new Map(arr_abil.map(name => [name, true])))
 
-const Sleep = new GameSleeper()
-const Delay = (((Game.Ping / 2) + 30) + 250)
 
-const DegreesToRadians = (deg: number) => deg * 0.0174532924
+let Sleep = new GameSleeper
+let Delay = () => (((Game.Ping / 2) + 30) + 250)
 
 EventsSDK.on("Tick", () => {
 
@@ -44,7 +43,7 @@ EventsSDK.on("Tick", () => {
 
 	if (MoveMainHero.value && !Sleep.Sleeping("owner_move")) {
 		Owner.MoveTo(Utils.CursorWorldVec)
-		Sleep.Sleep(Delay, "owner_move")
+		Sleep.Sleep(Delay(), "owner_move")
 	}
 
 	let Direction = MoveMainHero.value
@@ -61,8 +60,8 @@ EventsSDK.on("Tick", () => {
 		let randomAngle = Math.floor(Math.random() * Math.floor(angleUnit / unitCount) + 1)
 
 		Direction = AngleRandomizer.value
-			? Direction.Rotated(DegreesToRadians(angleUnit + randomAngle))
-			: Direction.Rotated(DegreesToRadians(angleUnit))
+			? Direction.Rotated(MathSDK.DegreesToRadian(angleUnit + randomAngle))
+			: Direction.Rotated(MathSDK.DegreesToRadian(angleUnit))
 
 		let movePos = midPosition.Add(
 			Direction.Normalize().MultiplyScalarForThis(IllusionsMinMoveRange.value)
@@ -72,7 +71,7 @@ EventsSDK.on("Tick", () => {
 			return
 
 		illusion.MoveTo(movePos)
-		Sleep.Sleep(Delay, illusion)
+		Sleep.Sleep(Delay(), illusion)
 		return
 	})
 
@@ -93,7 +92,7 @@ EventsSDK.on("Tick", () => {
 			let bottleStored = bottle as item_bottle
 			if (bottleStored.StoredRune === DOTA_RUNES.DOTA_RUNE_ILLUSION) {
 				Owner.CastNoTarget(bottle)
-				Sleep.Sleep(Delay, Owner)
+				Sleep.Sleep(Delay(), Owner)
 				return true
 			}
 		}
@@ -106,8 +105,8 @@ EventsSDK.on("Tick", () => {
 			return false
 
 		let delay_defualt = !x.startsWith("item_")
-			? abil.CastPoint * 1000 + Delay
-			: Delay
+			? abil.CastPoint * 1000 + Delay()
+			: Delay()
 
 		if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
 			let pos = Utils.CursorWorldVec.Subtract(Owner.Position)
@@ -115,13 +114,13 @@ EventsSDK.on("Tick", () => {
 				pos.Normalize().MultiplyScalarForThis(abil.CastRange)
 
 			Owner.CastPosition(abil, Owner.Position.AddForThis(pos))
-			Sleep.Sleep((abil.CastPoint + abil.GetSpecialValue("delay")) * 1000 + Delay, Owner)
+			Sleep.Sleep((abil.CastPoint + abil.GetSpecialValue("delay")) * 1000 + Delay(), Owner)
 			return true
 		}
 
 		if (x.startsWith("naga_")) {
 			Owner.CastNoTarget(abil)
-			Sleep.Sleep((abil.CastPoint + abil.GetSpecialValue("invuln_duration")) * 1000 + Delay, Owner)
+			Sleep.Sleep((abil.CastPoint + abil.GetSpecialValue("invuln_duration")) * 1000 + Delay(), Owner)
 			return true
 		}
 

@@ -6,8 +6,8 @@ import { CollisionResult } from "./CollisionResult"
 export default new (class Collision {
 	public GetCollision(startPosition: Vector2, endPosition: Vector2, radius: number, collisionObjects: CollisionObject[]): CollisionResult {
 		return new CollisionResult(ArrayExtensions.orderBy(
-			collisionObjects.filter(obj => obj.Position.DistanceSegment(startPosition, endPosition, true) < radius + obj.Radius),
-			obj => obj.Position.Distance(startPosition),
+			collisionObjects.filter(obj => obj.Position.DistanceSegment(startPosition, endPosition, true) < (radius + obj.Radius) + obj.Entity.CollisionRadius),
+			obj => obj.Position.DistanceSqr(startPosition),
 		))
 	}
 })()
