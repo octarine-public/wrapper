@@ -101,7 +101,7 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 			case ProtoType.TYPE_SINT64:
 				if (value instanceof ArrayBuffer)
 					throw "Invalid proto [4]"
-				map.set(field_name, (value >> 1n) ^ -(value & 1n)) // zigzag todo
+				map.set(field_name, (value >> 1n) ^ -(value & 1n))
 				break
 			case ProtoType.TYPE_FIXED32: case ProtoType.TYPE_UINT32:
 				if (value instanceof ArrayBuffer || value > 0xFFFFFFFFn)
