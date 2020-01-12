@@ -61,7 +61,6 @@ export interface IDrawBoundingAreaOptions {
 	 * from 0 to 1
 	 */
 	Render?: number,
-	Position?: Entity | Vector3,
 	Color?: Color,
 	Width?: number,
 	Alpha?: number
@@ -145,7 +144,7 @@ export default new (class ParticlesSDK {
 	public DrawCircle(
 		key: any,
 		entity: Entity,
-		range: number = 50,
+		range: number = 100,
 		options: IDrawCircleOptions = {}
 	) {
 		return this.AddOrUpdate(key,
@@ -162,7 +161,7 @@ export default new (class ParticlesSDK {
 	public DrawSelectedRing(
 		key: any,
 		entity: Entity,
-		range: number = 50,
+		range: number = 100,
 		position: Entity | Vector3 = entity,
 		color = Color.Aqua
 	) {
@@ -202,19 +201,21 @@ export default new (class ParticlesSDK {
 			4, options.Alpha ?? 255
 		)
 	}
+	/**
+	 * 
+	 * red line not worked :(
+	 */
 	public DrawRangeLine(
 		key: any,
 		entity: Entity,
-		endPosition: Entity | Vector3,
-		isRed?: boolean,
-		startPosition: Entity | Vector3 = entity
+		endPosition: Entity | Vector3
 	) {
 		return this.AddOrUpdate(key,
 			"particles/ui_mouseactions/range_finder_line.vpcf",
 			ParticleAttachment_t.PATTACH_ABSORIGIN,
 			entity,
-			0, startPosition,
-			1, !isRed ? startPosition : endPosition,
+			0, entity,
+			1, entity,
 			2, endPosition
 		)
 	}
