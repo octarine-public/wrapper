@@ -21,6 +21,7 @@ import Modifier from "../Objects/Base/Modifier"
 import InputManager from "./InputManager"
 import Item from "../Objects/Base/Item"
 import { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
+import ParticlesSDK from "./ParticleManager"
 
 interface EventsSDK extends EventEmitter {
 	/**
@@ -511,6 +512,7 @@ Events.on("SignonStateChanged", new_state => {
 	if (old_val && !new_val) {
 		gameInProgress = false
 		EventsSDK.emit("GameEnded", false)
+		ParticlesSDK.DestroyAll()
 		Particles.DeleteAll()
 	} else if (!gameInProgress && new_val && LocalPlayer?.Hero !== undefined) {
 		gameInProgress = true

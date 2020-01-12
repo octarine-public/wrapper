@@ -7,8 +7,8 @@ export default class Vector3 {
 			return undefined
 		return new Vector3(IOBuffer[offset + 0], IOBuffer[offset + 1], IOBuffer[offset + 2])
 	}
-	public static fromArray(array: [number, number, number]): Vector3 {
-		return new Vector3(array[0] || 0, array[1] || 0, array[2] || 0)
+	public static fromArray(array: [number?, number?, number?]): Vector3 {
+		return new Vector3(array[0] ?? 0, array[1] ?? 0, array[2] ?? 0)
 	}
 	public static FromAngle(angle: number): Vector3 {
 		return new Vector3(Math.cos(angle), Math.sin(angle))
@@ -808,6 +808,15 @@ export default class Vector3 {
 		return this.MultiplyScalar(Math.PI).DivideScalar(180)
 	}
 	/* ================== To ================== */
+	/**
+	 * Get hash code of vector
+	 */
+	public GetHashCode(): number {
+		let hash = this.x
+		hash = (hash * 397) ^ this.y
+		hash = (hash * 397) ^ this.z
+		return hash
+	}
 	/**
 	 * Vector3 to String Vector3
 	 * @return new Vector3(x,y,z)
