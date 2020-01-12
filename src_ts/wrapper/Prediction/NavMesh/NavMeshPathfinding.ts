@@ -38,7 +38,7 @@ export default class NavMeshPathfinding {
 		for (let time = 0; time < this.PredictionSource.EndTime; time += 1 / 30) {
 			let result = this.RayTraceFirstHit(time)
 			if (result !== undefined)
-				return [result, time]
+				return [result, this.Delay + time]
 		}
 		return undefined
 	}
@@ -63,7 +63,7 @@ export default class NavMeshPathfinding {
 				this.Delay = orig_delay + dynamic_delay_func(new_ang)
 				let result = this.RayTraceFirstHit(time)
 				if (result === target)
-					return [new_ang, time]
+					return [new_ang, this.Delay + time]
 				if (result !== undefined)
 					blocked_spots.push(new_ang)
 				this.PredictionSource.Velocity.CopyFrom(orig_velocity)

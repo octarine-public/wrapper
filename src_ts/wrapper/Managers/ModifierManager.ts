@@ -185,9 +185,9 @@ function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
 	EventsSDK.emit("ModifierChangedRaw", false, old_mod)
 }
 const CMsgVector_desc = new Map<number, [/* name */ string, /* type */ ProtoType, /* proto description */ ProtoDescription?]>([
-	[1, ["x", ProtoType.FLOAT32]],
-	[2, ["y", ProtoType.FLOAT32]],
-	[3, ["z", ProtoType.FLOAT32]],
+	ParseProtobufDescLine("optional float x = 1"),
+	ParseProtobufDescLine("optional float y = 2"),
+	ParseProtobufDescLine("optional float z = 3"),
 ])
 const CDOTAModifierBuffTableEntry_desc = new Map<number, [/* name */ string, /* type */ ProtoType, /* proto description */ ProtoDescription?]>([
 	[1, ["entry_type", ProtoType.ENUM]], // ParseProtobufDescLine("required .DOTA_MODIFIER_ENTRY_TYPE entry_type = 1"),

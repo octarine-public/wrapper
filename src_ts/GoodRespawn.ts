@@ -75,7 +75,7 @@ function TryPredict(
 			hook.CastRange / hook.Speed
 		),
 		obstacles,
-		hook.CastPoint + owner!.TurnTime(owner!.Position.Rotation(angle, 100)) + (Game.Ping / 2000),
+		hook.CastPoint + owner!.TurnTime(owner!.Position.Rotation(angle, 100)) + (autohook_delay.value / 60),
 	).GetFirstHitObstacle()
 	if (predict_res === undefined)
 		return undefined
@@ -168,11 +168,11 @@ EventsSDK.on("Tick", () => {
 			})
 			let obstacles = [...obs2ent.keys()]
 			let result = TryPredictInAngles(base_ang, -90, 90, start_pos, hook, obstacles, obs2ent, unit, target)
-			if (result !== undefined && respawn_time - hook.CastPoint <= result[1] + (autohook_delay.value / 60)) {
+			if (result !== undefined && respawn_time <= result[1]) {
 				unit.CastPosition(hook, unit.Position.Rotation(result[0], 300))
-				hook_sleeper.Sleep(Game.Ping + (hook.CastPoint + result[1]) * 1000, unit)
+				hook_sleeper.Sleep(Game.Ping + hook.CastPoint * 1000, unit)
 				if (lock_position.value)
-					hook_sleeper.Sleep(Game.Ping + (hook.CastPoint + result[1]) * 1000, pos.LengthSqr)
+					hook_sleeper.Sleep(Game.Ping + hook.CastPoint * 1000, pos.LengthSqr)
 				return true
 			}
 		})
