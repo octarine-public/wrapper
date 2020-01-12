@@ -27,7 +27,7 @@ function DrawTarget(ent: Tower, Owner: Unit) {
 
 function CreateTowerRange(ent: Tower) {
 	var par = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
-	ParticlesSDK.SetControlPoint(par, 1, new Vector3(ent.AttackRange + ent.HullRadius + 25, 0, 0))
+	ParticlesSDK.SetControlPoint(par, 1, new Vector3(ent.AttackRange + ent.HullRadius + 25 * 1.1, 0, 0))
 	TowerRange.set(ent, par)
 	return par
 }
