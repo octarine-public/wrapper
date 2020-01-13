@@ -3,23 +3,13 @@ import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import Events from "./Events"
 
 import Entity from "../Objects/Base/Entity"
-import Unit from "../Objects/Base/Unit"
-import Hero from "../Objects/Base/Hero"
 import Player from "../Objects/Base/Player"
 
-import Creep from "../Objects/Base/Creep"
-
-import Ability from "../Objects/Base/Ability"
-import Item from "../Objects/Base/Item"
 import NativeToSDK, { GetSDKClasses } from "../Objects/NativeToSDK"
-
-import Building from "../Objects/Base/Building"
-import PhysicalItem from "../Objects/Base/PhysicalItem"
-import Tower from "../Objects/Base/Tower"
 
 import Game from "../Objects/GameResources/GameRules"
 import PlayerResource from "../Objects/GameResources/PlayerResource"
-import EventsSDK, { gameInProgress, ToggleGameInProgress } from "./EventsSDK"
+import EventsSDK from "./EventsSDK"
 import Roshan from "../Objects/Roshan/npc_dota_roshan"
 
 let AllEntities: Entity[] = []
@@ -30,7 +20,7 @@ let ClassToEntities = new Map<Constructor<any>, Entity[]>()
 export var LocalPlayer: Nullable<Player>
 
 let player_slot = NaN
-Events.on("ServerInfo", info => player_slot = info.player_slot ?? NaN)
+EventsSDK.on("ServerInfo", info => player_slot = (info.get("player_slot") as number) ?? NaN)
 
 class CEntityManager {
 	private Roshan_: Nullable<Entity | number>
@@ -48,12 +38,6 @@ class CEntityManager {
 	set Roshan(ent: Nullable<Entity | number>) {
 		this.Roshan_ = ent
 	}
-	get LocalPlayer(): Nullable<Player> {
-		return LocalPlayer
-	}
-	get LocalHero(): Nullable<Hero> {
-		return LocalPlayer !== undefined ? LocalPlayer.Hero : undefined
-	}
 	get AllEntities(): Entity[] {
 		return AllEntities
 	}
@@ -63,8 +47,8 @@ class CEntityManager {
 	public EntityByHandle(handle: number | undefined): Nullable<Entity> {
 		if (handle === undefined || handle === 0)
 			return undefined
-		let index = handle & 0x3FFF
-		if (index === 0x3FFF || index === 0)
+		let index = handle & 0x7FFF
+		if (index === 0x7FFF || index === 0)
 			return undefined
 		return this.EntityByIndex(index)
 	}
@@ -73,11 +57,6 @@ class CEntityManager {
 			if (ent === ent_)
 				return index
 		return -1
-	}
-	public GetPlayerByID(playerID: number): Nullable<Player> {
-		if (playerID === -1)
-			return undefined
-		return AllEntities.find(entity => entity instanceof Player && entity.PlayerID === playerID) as Player
 	}
 
 	public GetEntityByNative(ent: CEntityIndex): Nullable<Entity> {
@@ -213,11 +192,6 @@ export function AddToCache(ent: C_BaseEntity) {
 		ClassToEntities.get(class_)!.push(entity)
 	})
 	EventsSDK.emit("EntityCreated", false, entity)
-	FireEntityEvents(entity)
-	if (entity === LocalPlayer && LocalPlayer.Hero !== undefined && !gameInProgress) {
-		ToggleGameInProgress()
-		EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
-	}
 }
 
 function DeleteFromCache(entNative: C_BaseEntity) {
@@ -245,45 +219,9 @@ function DeleteFromCache(entNative: C_BaseEntity) {
 }
 
 function ClassFromNative(ent: C_BaseEntity, name: string): Entity {
-	{
-		let constructor = NativeToSDK(ent instanceof C_DOTABaseAbility ? name : ent.constructor.name)
-		if (constructor !== undefined)
-			return new constructor(ent, name)
-	}
-	// TODO: automatically use Entity#Name/instanceof (instead of just comparing class names) here
+	let constructor = NativeToSDK(ent, ent instanceof C_DOTABaseAbility ? name : ent.constructor.name)
+	if (constructor === undefined)
+		throw "Can't find constructor for entity class " + ent.constructor.name + ", Entity#Name === " + name
 
-	if (ent instanceof C_DOTA_BaseNPC_Tower)
-		return new Tower(ent)
-
-	if (ent instanceof C_DOTA_BaseNPC_Building)
-		return new Building(ent)
-
-	if (ent instanceof C_DOTA_BaseNPC_Hero)
-		return new Hero(ent)
-
-	if (ent instanceof C_DOTA_BaseNPC_Creep)
-		return new Creep(ent)
-
-	if (ent instanceof C_DOTA_BaseNPC)
-		return new Unit(ent)
-
-	if (ent instanceof C_DOTA_Item)
-		return new Item(ent, name)
-
-	if (ent instanceof C_DOTABaseAbility)
-		return new Ability(ent, name)
-
-	if (ent instanceof C_DOTA_Item_Physical)
-		return new PhysicalItem(ent)
-
-	return new Entity(ent)
-}
-
-/* ================ CHANGE FIELDS ================ */
-function FireEntityEvents(ent: Entity) {
-	EventsSDK.emit("LifeStateChanged", false, ent)
-	if (ent instanceof Unit) {
-		EventsSDK.emit("TeamVisibilityChanged", false, ent)
-		EventsSDK.emit("NetworkActivityChanged", false, ent)
-	}
+	return new constructor(ent, name)
 }

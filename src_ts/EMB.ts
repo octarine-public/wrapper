@@ -17,7 +17,7 @@ EventsSDK.on("Draw", () => {
 	let screen_size = RendererSDK.WindowSize
 	if (screen_size.x === 1280 && screen_size.y === 1024)
 		screen_size.y = 960
-	let manabar_size = Utils.GetProportionalScaledVector(new Vector2(parseInt(config.get("xpos") as string) * 2.25, parseInt(config.get("ypos") as string)), false).SubtractScalarX(1)
+	let manabar_size = RendererSDK.GetProportionalScaledVector(new Vector2(parseInt(config.get("xpos") as string) * 2.25, parseInt(config.get("ypos") as string)), false).SubtractScalarX(1)
 
 	EntityManager.GetEntitiesByClass(Hero).forEach(hero => {
 		if (!hero.IsEnemy() || hero.IsIllusion || !hero.IsAlive || !hero.IsVisible || hero.IsInvulnerable)

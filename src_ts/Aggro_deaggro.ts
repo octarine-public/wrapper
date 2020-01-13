@@ -15,7 +15,7 @@ function Use(x: Unit) {
 	if (!IsValidUnit(x))
 		return false
 	LocalPlayer!.Hero?.AttackTarget(x)
-	//LocalPlayer.Hero.MoveTo(Utils.CursorWorldVec)
+	//LocalPlayer.Hero.MoveTo(Input.CursorOnWorld)
 	Sleep.Sleep(GetDelayCast())
 	return true
 }

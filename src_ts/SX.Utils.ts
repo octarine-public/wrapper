@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, Utils, TickSleeper, Color, RendererSDK, Vector2 } from "wrapper/Imports"
+import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, TickSleeper, Color, RendererSDK, Vector2, Input } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Debugger", "SX.Utils"])
 const State = Menu.AddToggle("State")
@@ -82,7 +82,7 @@ EventsSDK.on("Tick", () => {
 EventsSDK.on("Draw", () => {
 	if (!State.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || !DrawMosePos.value)
 		return
-	let MousePosition = Utils.CursorWorldVec
+	let MousePosition = Input.CursorOnWorld
 	if (MousePosition.IsZero())
 		return
 	let text = Math.ceil(MousePosition.x) + ", " + Math.ceil(MousePosition.y) + ", " + Math.ceil(MousePosition.z)

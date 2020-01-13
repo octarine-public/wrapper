@@ -1,6 +1,6 @@
 import { NearMouse } from "./Menu"
 import { InitCombo } from "./module/Combo"
-import { Unit, Utils, ArrayExtensions } from "wrapper/Imports"
+import { Unit, ArrayExtensions, Input } from "wrapper/Imports"
 import { RegisterHeroModule, Units } from "XAIO/bootstrap"
 
 RegisterHeroModule("npc_dota_hero_lina", { InitTick })
@@ -11,9 +11,9 @@ export function InitTick(unit: Unit) {
 	near_enemy = ArrayExtensions.orderBy(
 		Units.filter(x => x.IsHero
 			&& x.IsEnemy()
-			&& x.Distance(Utils.CursorWorldVec) <= NearMouse.value
+			&& x.Distance(Input.CursorOnWorld) <= NearMouse.value
 			&& x.IsAlive),
-		x => x.Distance(Utils.CursorWorldVec)
+		x => x.Distance(Input.CursorOnWorld)
 	)[0]
 
 	// console.log(unit.Name)

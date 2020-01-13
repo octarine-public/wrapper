@@ -1,4 +1,4 @@
-import { EntityManager, Game, Hero, LocalPlayer, Vector3 } from "wrapper/Imports"
+import { Game, Hero, LocalPlayer, Vector3 } from "wrapper/Imports"
 
 import { AddOrUpdateParticle, RemoveParticle } from "../../base/DrawParticle"
 import { stateMain } from "../../base/MenuBase"
@@ -32,8 +32,7 @@ export function DrawParticles() {
 	)
 		return
 
-	lastHero = EntityManager.LocalHero
-
+	lastHero = LocalPlayer?.Hero
 	if (lastHero === undefined || LocalPlayer === undefined)
 		return
 

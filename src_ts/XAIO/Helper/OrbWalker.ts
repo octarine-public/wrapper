@@ -1,4 +1,4 @@
-import { Unit, Game, Utils, dotaunitorder_t, Vector3, GameSleeper, EventsSDK } from "wrapper/Imports"
+import { Unit, Game, dotaunitorder_t, Vector3, GameSleeper, EventsSDK, Input } from "wrapper/Imports"
 
 let TurnEndTime = 0
 let LastAttackTime = 0
@@ -44,7 +44,7 @@ class OrbWalker {
 		if (!this.OrbwalkingPoint.IsZero())
 			return this.Move(this.OrbwalkingPoint, time)
 
-		return this.Move(Utils.CursorWorldVec, time)
+		return this.Move(Input.CursorOnWorld, time)
 	}
 
 	public Move(position: Vector3, time: number): boolean {

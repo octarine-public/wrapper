@@ -1,6 +1,6 @@
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import EntityManager from "../Managers/EntityManager"
+import EntityManager, { LocalPlayer } from "../Managers/EntityManager"
 import Ability from "../Objects/Base/Ability"
 import Entity from "../Objects/Base/Entity"
 import Unit from "../Objects/Base/Unit"
@@ -8,6 +8,7 @@ import UserCmd from "./UserCmd"
 import RendererSDK from "./RendererSDK"
 import Events from "../Managers/Events"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
+import EventsSDK from "../Managers/EventsSDK"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -53,7 +54,7 @@ export default class ExecuteOrder {
 	}
 
 	public static fromNative(order: CUnitOrder): ExecuteOrder {
-		let unit = (EntityManager.GetEntityByNative(order.unit) as Unit) ?? EntityManager.LocalHero
+		let unit = (EntityManager.GetEntityByNative(order.unit) as Unit) ?? LocalPlayer?.Hero
 
 		return new ExecuteOrder(
 			order.order_type,
@@ -270,4 +271,13 @@ Events.after("Update", (cmd_: CUserCmd) => {
 		cmd.MouseX = cur_pos.x
 		cmd.MouseY = cur_pos.y
 	}
+})
+
+//EventsSDK.on("GameEnded", () => ExecuteOrder.order_queue = [])
+Events.on("PrepareUnitOrders", order => {
+	const ordersSDK = ExecuteOrder.fromNative(order)
+	if (ordersSDK === undefined)
+		return true
+
+	return EventsSDK.emit("PrepareUnitOrders", true, ordersSDK)
 })

@@ -1,4 +1,9 @@
-// enums
+export { default as Vector2 } from "./Base/Vector2"
+export { default as Rectangle } from "./Base/Rectangle"
+export { default as Vector3 } from "./Base/Vector3"
+export { default as QAngle } from "./Base/QAngle"
+export { default as Color } from "./Base/Color"
+
 export { ArmorType } from "./Enums/ArmorType"
 export { AttackDamageType } from "./Enums/AttackDamageType"
 export { ConnectionState } from "./Enums/ConnectionState"
@@ -19,12 +24,6 @@ import * as Parse from "./Utils/ParseKV"
 import * as Utils from "./Utils/Utils"
 export { default as Benchmark } from "./Utils/BenchMark"
 export { Utils, MathSDK, ArrayExtensions, BitsExtensions, MapExtensions, Parse }
-
-export { default as Vector2 } from "./Base/Vector2"
-export { default as Rectangle } from "./Base/Rectangle"
-export { default as Vector3 } from "./Base/Vector3"
-export { default as QAngle } from "./Base/QAngle"
-export { default as Color } from "./Base/Color"
 
 import * as Menu from "./Menu/Imports"
 export { Menu }

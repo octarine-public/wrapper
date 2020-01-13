@@ -3,7 +3,7 @@ import { Flow_t } from "../../Enums/Flow_t"
 import { DOTA_GameState } from "../../Enums/DOTA_GameState"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 
-class Game {
+export default new (class Game {
 	public m_GameRules: C_DOTAGamerules | undefined
 	public m_GameManager: C_DOTAGameManager | undefined
 	public m_StockInfo: StockInfo[] = [];
@@ -166,6 +166,4 @@ class Game {
 	public ExecuteCommand(command: string) {
 		return SendToConsole(command)
 	}
-}
-
-export default new Game()
+})()

@@ -89,16 +89,16 @@ EventsSDK.on("GameEvent", (name, obj) => {
 		return
 	SafeLog(name, obj)
 })
-Events.on("ServerInfo", obj => {
+EventsSDK.on("ServerInfo", obj => {
 	if (!debugEvents.value)
 		return
-	SafeLog(obj)
+	SafeLog(obj) // TODO: that's map, and maps doesn't have serialization
 })
 
 // let config = (Utils.parseKVFile("resource/ui/hud_base.res").get("Resource/UI/HUD_Base.res") as Parse.RecursiveMap).get("MiniMap") as Parse.RecursiveMap
 EventsSDK.on("Draw", () => {
 	/*let size = parseInt(config.get("tall") as string)
-	let vec_size = Utils.GetProportionalScaledVector(new Vector2(size, size), true, 1.15)
+	let vec_size = RendererSDK.GetProportionalScaledVector(new Vector2(size, size), true, 1.15)
 	RendererSDK.Line(new Vector2(0, RendererSDK.WindowSize.y - vec_size.y), new Vector2(vec_size.x, 0))*/
 	if (!debugEvents.value || !debugProjectiles.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
@@ -187,7 +187,7 @@ class ProfilingEventEmitter extends EventEmitter {
 		return ret
 	}
 }
-EventsSDK.emit = ProfilingEventEmitter.prototype.emit
+Events.emit = ProfilingEventEmitter.prototype.emit
 
 EventsSDK.on("Draw", () => {
 	// loop-optimizer: KEEP

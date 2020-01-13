@@ -166,6 +166,7 @@ declare function TakeHeapSnapshot(path: string): void
 declare function hrtime(): number
 declare function AddSearchPath(path: string): boolean
 declare function RemoveSearchPath(path: string): boolean
+declare function HashToPath(hash: bigint): string | undefined
 
 /// AUTOMATICALLY GENERATED
 

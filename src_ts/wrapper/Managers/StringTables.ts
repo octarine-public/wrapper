@@ -1,5 +1,4 @@
 import Events from "./Events"
-import { OnActiveModifiersChanged } from "./ModifierManager"
 import { Utf8ArrayToStr } from "../Utils/Utils"
 
 let StringTables = new Map<string, Map<number, [string, ArrayBuffer]>>()
@@ -15,12 +14,9 @@ Events.on("RemoveAllStringTables", () => {
 Events.on("UpdateStringTable", (name, update) => {
 	if (!StringTables.has(name))
 		StringTables.set(name, new Map())
-	if (name !== "ActiveModifiers") {
-		let table = StringTables.get(name)!
-		// loop-optimizer: KEEP
-		update.forEach((val, key) => table.set(key, val))
-	} else
-		OnActiveModifiersChanged(update)
+	let table = StringTables.get(name)!
+	// loop-optimizer: KEEP
+	update.forEach((val, key) => table.set(key, val))
 })
 
 globalThis.DumpStringTables = () => {

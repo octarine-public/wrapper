@@ -2,6 +2,7 @@ import Vector3 from "../Base/Vector3"
 import Color from "../Base/Color"
 import Entity from "../Objects/Base/Entity"
 import Particle, { ControlPoints } from "../Objects/Base/Particle"
+import EventsSDK from "./EventsSDK"
 
 const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
 const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`
@@ -66,7 +67,7 @@ export interface IDrawBoundingAreaOptions {
 	Alpha?: number
 }
 
-export default new (class ParticlesSDK {
+let ParticlesSDK = new (class CParticlesSDK {
 	private readonly allParticles = new Map<any, Particle>()
 
 	/**
@@ -273,5 +274,8 @@ export default new (class ParticlesSDK {
 		this.allParticles.forEach(particle => particle.Destroy(particleDestroy, immediate))
 		this.allParticles.clear()
 	}
-
 })()
+
+EventsSDK.on("GameEnded", () => ParticlesSDK.DestroyAll())
+
+export default ParticlesSDK

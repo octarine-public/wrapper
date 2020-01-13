@@ -1,4 +1,4 @@
-import { ArrayExtensions, Game, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Utils, Vector3, EntityManager } from "wrapper/Imports"
+import { ArrayExtensions, Game, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Vector3, EntityManager, Input } from "wrapper/Imports"
 
 import {
 	baseCheckUnit,
@@ -95,7 +95,7 @@ export function GameEnded() {
 }
 
 function GetClosestHero(exclude: (unit: Hero) => boolean): Nullable<Hero> {
-	let mouseCursor = Utils.CursorWorldVec
+	let mouseCursor = Input.CursorOnWorld
 
 	return ArrayExtensions.orderBy(EntityManager.GetEntitiesByClass(Hero), hero => hero.Distance2D(mouseCursor))
 		.find(hero => baseCheckUnit(hero) && hero.IsAlive && !hero.IsIllusion && hero.IsVisible && hero.IsInRange(mouseCursor, 1000)

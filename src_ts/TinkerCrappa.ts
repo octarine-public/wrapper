@@ -415,7 +415,7 @@
 // function fastBlink() {
 // 	if (!r.IsChanneling) {
 // 		if (blink.IsReady) {
-// 			tinker.CastPosition(blink, Utils.CursorWorldVec, false, true)
+// 			tinker.CastPosition(blink, Input.CursorOnWorld, false, true)
 
 // 		}
 // 		else {
@@ -478,7 +478,7 @@
 // 			{
 // 				if (helpF)
 // 				{
-// 					let xxxtentacion = ArrayExtensions.orderBy(fheroes.filter(hero => hero.Distance(tinker) <= 900+tinker.CastRangeBonus && hero.IsAlive && !hero.ModifiersBook.HasBuffByName("modifier_item_lotus_orb_active") ), ent => ent.Distance(Utils.CursorWorldVec))[0]
+// 					let xxxtentacion = ArrayExtensions.orderBy(fheroes.filter(hero => hero.Distance(tinker) <= 900+tinker.CastRangeBonus && hero.IsAlive && !hero.ModifiersBook.HasBuffByName("modifier_item_lotus_orb_active") ), ent => ent.Distance(Input.CursorOnWorld))[0]
 // 					let cast = (xxxtentacion != undefined)?tinker.CastTarget(lotus, xxxtentacion):tinker.CastTarget(lotus, tinker)
 
 // 				}
@@ -635,7 +635,7 @@
 // 	ncreeps = ncreeps.filter(e=>e.IsAlive&&e.IsSpawned)*/
 // 	if (!active.value || !Game.IsInGame || tinker === undefined || !tinker.IsAlive || sleeper.Sleeping("blinker") || sleeper.Sleeping("spam") || sleeper.Sleeping("r") )
 // 		return false;
-// 	nearest = ArrayExtensions.orderBy(heroes.filter(hero => hero.Distance(Utils.CursorWorldVec) <= cursorRadius.value && hero.IsAlive), ent => ent.Distance(Utils.CursorWorldVec))[0]
+// 	nearest = ArrayExtensions.orderBy(heroes.filter(hero => hero.Distance(Input.CursorOnWorld) <= cursorRadius.value && hero.IsAlive), ent => ent.Distance(Input.CursorOnWorld))[0]
 
 // 	latency= GetLatency(0)+GetLatency(1)
 // 	getAbils()
@@ -736,7 +736,7 @@
 // 		{
 // 			suc = ""
 // 		}
-// 		let text = ["tinker", `Target: ${nearest !== undefined ? nearest.Name : tar}`, `${model}: ${nearest !== undefined ? disp[0].toFixed(3) : sec}`,`Mana: ${(nearest !== undefined)?suc : thr}`,`${Utils.CursorWorldVec.x}`, `${Utils.CursorWorldVec.y}`, `${Utils.CursorWorldVec.z}`,`pushstat${pushstat}`,`status: ${status}` ]
+// 		let text = ["tinker", `Target: ${nearest !== undefined ? nearest.Name : tar}`, `${model}: ${nearest !== undefined ? disp[0].toFixed(3) : sec}`,`Mana: ${(nearest !== undefined)?suc : thr}`,`${Input.CursorOnWorld.x}`, `${Input.CursorOnWorld.y}`, `${Input.CursorOnWorld.z}`,`pushstat${pushstat}`,`status: ${status}` ]
 // 		const wSize = RendererSDK.WindowSize
 // 		for (var _i = 0; _i < text.length; _i++) {
 // 			let kal = (_i==3)?col:new Color(255, 255, 255, 255)
@@ -1099,7 +1099,7 @@
 // 	{
 // 		return
 // 	}
-// 	let mousePos = Utils.CursorWorldVec
+// 	let mousePos = Input.CursorOnWorld
 // 	if (!tpboots )
 // 	{
 // 		console.log("return 1279, rawgt: "+Game.RawGameTime)

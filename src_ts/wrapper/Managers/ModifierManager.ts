@@ -6,8 +6,7 @@ import EventsSDK from "./EventsSDK"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
 import Game from "../Objects/GameResources/GameRules"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
-import EntityManager from "./EntityManager"
-import { ParseProtobufNamed, RecursiveProtobuf, ParseProtobufDesc } from "../Utils/ParseProtobuf"
+import { ParseProtobufNamed, RecursiveProtobuf, ParseProtobufDesc, ServerHandleToEntity } from "../Utils/ParseProtobuf"
 import Vector3 from "../Base/Vector3"
 
 export class IModifier {
@@ -199,7 +198,7 @@ message CDOTAModifierBuffTableEntry {
 	optional int32 ability_level = 6;
 	optional int32 stack_count = 7;
 	optional float creation_time = 8;
-	optional float duration = 9;
+	optional float duration = 9 [default = -1];
 	optional int32 caster = 10;
 	optional int32 ability = 11;
 	optional int32 armor = 12;
@@ -227,9 +226,11 @@ message CDOTAModifierBuffTableEntry {
 	optional int32 aura_owner = 34;
 }
 `)
-export function OnActiveModifiersChanged(map: Map<number, [string, ArrayBuffer]>) {
+Events.on("UpdateStringTable", (name, update) => {
+	if (name !== "ActiveModifiers")
+		return
 	// loop-optimizer: KEEP
-	map.forEach(([_, mod_serialized], index) => {
+	update.forEach(([_, mod_serialized], index) => {
 		let mod = new IModifier(ParseProtobufNamed(mod_serialized, "CDOTAModifierBuffTableEntry"))
 		let replaced = ActiveModifiersRaw.get(index)
 		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {
@@ -247,7 +248,7 @@ export function OnActiveModifiersChanged(map: Map<number, [string, ArrayBuffer]>
 		} else if (old_mod !== undefined)
 			EmitModifierRemoved(old_mod)
 	})
-}
+})
 Events.on("RemoveAllStringTables", () => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => EmitModifierRemoved(mod))
@@ -293,7 +294,7 @@ declare global {
 globalThis.DebugBuffsParents = () => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
-		let parent = EntityManager.EntityByHandle(mod.m_pBuff.Parent)
+		let parent = ServerHandleToEntity(mod.m_pBuff.Parent)
 		if (parent instanceof Unit)
 			return
 		console.log(parent?.m_pBaseEntity?.constructor?.name, mod.m_pBuff.Parent, mod.Name, mod.ElapsedTime, mod.m_pBuff.EntryType)

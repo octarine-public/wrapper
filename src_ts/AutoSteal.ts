@@ -1,4 +1,35 @@
-import { Ability, BitsExtensions, Creep, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, Utils, TickSleeper } from "wrapper/Imports"
+import { Ability, BitsExtensions, Creep, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, TickSleeper, ProjectileManager } from "wrapper/Imports"
+
+function GetHealthAfter(unit: Unit, delay: number, allow_overflow = false, include_projectiles: boolean = false, attacker?: Unit, melee_time_offset: number = 0): number {
+	let hpafter = unit.HP/*,
+		cur_time = Game.RawGameTime
+	// loop-optimizer: KEEP
+	attacks.forEach(([end_time, end_time_2, attack_target], attacker_ent) => {
+		if (attacker_ent !== attacker && attack_target === unit) {
+			let end_time_delta = end_time - (cur_time + delay + melee_time_offset),
+				dmg = attacker_ent.AttackDamage(unit)
+			if (end_time_delta <= 0 && end_time_delta >= -melee_end_time_delta)
+				hpafter -= dmg
+			let end_time_2_delta = end_time_2 - (cur_time + delay + melee_time_offset)
+			if (end_time_2_delta <= 0 && end_time_2_delta >= -melee_end_time_delta)
+				hpafter -= dmg
+		}
+	})*/
+	if (include_projectiles)
+		ProjectileManager.AllTrackingProjectiles.forEach(proj => {
+			let source = proj.Source
+			if (
+				proj.Target === unit
+				&& source instanceof Unit
+				&& proj.IsAttack
+				&& !proj.IsDodged
+				&& (proj.Position.Distance(proj.TargetLoc) / proj.Speed) <= delay
+			)
+				hpafter -= unit.AttackDamage(source)
+		})
+	hpafter += unit.HPRegen * delay
+	return Math.max(allow_overflow ? hpafter : Math.min(hpafter, unit.MaxHP), 0)
+}
 
 let root = Menu.AddEntry(["Utility", "AutoSteal"]),
 	state = root.AddToggle("State", false),
@@ -19,7 +50,7 @@ var abils: {
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
 				var killThreshold = abil.GetSpecialValue("kill_threshold"),
-					hp = Utils.GetHealthAfter(entTo, abil.CastPoint)
+					hp = GetHealthAfter(entTo, abil.CastPoint)
 				return hp > killThreshold
 					? entTo.CalculateDamage(abil.GetSpecialValue("damage") * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 					: killThreshold
@@ -30,7 +61,7 @@ var abils: {
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
 				var DamagePerMissHP = abil.GetSpecialValue("damage_per_health"),
-					delta = Utils.GetHealthAfter(entTo, 3)
+					delta = GetHealthAfter(entTo, 3)
 				return entTo.CalculateDamage((entTo.MaxHP - delta) * DamagePerMissHP, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 			},
 		},
@@ -504,7 +535,7 @@ EventsSDK.on("Tick", () => {
 			var damage = (abilData.abilDamageF || getDamage)(abil!, MyEnt!, ent)
 			if (zuus_passive !== undefined)
 				damage += (abil!.GetSpecialValue("damage_health_pct") + zuus_talent) / 100 * ent.HP
-			if (damage < Utils.GetHealthAfter(ent, abil!.CastPoint))
+			if (damage < GetHealthAfter(ent, abil!.CastPoint))
 				return false
 
 			let ping = Game.Ping / 1000

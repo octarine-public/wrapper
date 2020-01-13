@@ -90,9 +90,6 @@ export default class Item extends Ability {
 	get OldOwner(): Nullable<Entity> {
 		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOldOwnerEntity)
 	}
-	get Purchaser(): Nullable<Player> {
-		return EntityManager.GetPlayerByID(this.PurchaserID)
-	}
 	get PurchaserID(): number {
 		return this.m_pBaseEntity.m_iPlayerOwnerID
 	}
@@ -130,7 +127,7 @@ export default class Item extends Ability {
 			return false
 
 		let root_owner = this.RootOwner
-		if (root_owner !== undefined && this.Shareability === EShareAbility.ITEM_NOT_SHAREABLE && root_owner !== this.Purchaser)
+		if (root_owner instanceof Player && this.Shareability === EShareAbility.ITEM_NOT_SHAREABLE && root_owner.PlayerID !== this.PurchaserID)
 			return false
 
 		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled)

@@ -1,6 +1,7 @@
 import Obstacle from "./Obstacle"
 import MovingObstacle from "./MovingObstacle"
-import { Vector2, MathSDK } from "../../Imports"
+import Vector2 from "../../Base/Vector2"
+import * as MathSDK from "../../Utils/Math"
 
 export default class NavMeshPathfinding {
 	constructor(

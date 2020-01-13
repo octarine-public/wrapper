@@ -1,7 +1,6 @@
 import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import RendererSDK from "../Native/RendererSDK"
 
 var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("wrapper.wasm")), {
 	env: {
@@ -32,9 +31,7 @@ function emscripten_notify_memory_growth(memoryIndex: number) {
 }
 emscripten_notify_memory_growth(0)
 
-export function OnDraw() {
-	if (!RendererSDK.AlternateW2S)
-		return
+export function OnDraw(window_size: Vector2) {
 	let camera_position = Vector3.fromIOBuffer(Camera.Position) ?? new Vector3()
 	WASMIOBuffer[0] = camera_position.x
 	WASMIOBuffer[1] = camera_position.y
@@ -47,18 +44,16 @@ export function OnDraw() {
 
 	WASMIOBuffer[6] = Camera.Distance ?? 1134
 
-	WASMIOBuffer[7] = RendererSDK.WindowSize.x
-	WASMIOBuffer[8] = RendererSDK.WindowSize.y
+	WASMIOBuffer[7] = window_size.x
+	WASMIOBuffer[8] = window_size.y
 
 	wasm.CacheFrame()
 }
 
-export function WorldToScreenCached(position: Vector3 | Vector2): Nullable<Vector2> {
-	if (!RendererSDK.AlternateW2S)
-		return WorldToScreen(position, Vector3.fromIOBuffer(Camera.Position)!, Camera.Distance ?? 1134, QAngle.fromIOBuffer(Camera.Angles)!, RendererSDK.WindowSize)
+export function WorldToScreenCached(position: Vector3): Nullable<Vector2> {
 	WASMIOBuffer[0] = position.x
 	WASMIOBuffer[1] = position.y
-	WASMIOBuffer[2] = position instanceof Vector2 ? RendererSDK.GetPositionHeight(position) : position.z
+	WASMIOBuffer[2] = position.z
 
 	if (!wasm.WorldToScreenCached())
 		return undefined
@@ -66,8 +61,6 @@ export function WorldToScreenCached(position: Vector3 | Vector2): Nullable<Vecto
 }
 
 export function ScreenToWorldCached(screen: Vector2): Vector3 {
-	if (!RendererSDK.AlternateW2S)
-		return ScreenToWorld(screen, Vector3.fromIOBuffer(Camera.Position)!, Camera.Distance ?? 1134, QAngle.fromIOBuffer(Camera.Angles)!, RendererSDK.WindowSize)
 	WASMIOBuffer[0] = screen.x
 	WASMIOBuffer[1] = screen.y
 	wasm.ScreenToWorldCached()
@@ -75,7 +68,7 @@ export function ScreenToWorldCached(screen: Vector2): Vector3 {
 }
 
 export function WorldToScreen(
-	position: Vector3 | Vector2,
+	position: Vector3,
 	camera_position: Vector3 | Vector2,
 	camera_distance: number,
 	camera_angles: QAngle,
@@ -83,7 +76,7 @@ export function WorldToScreen(
 ): Nullable<Vector2> {
 	WASMIOBuffer[0] = position.x
 	WASMIOBuffer[1] = position.y
-	WASMIOBuffer[2] = position instanceof Vector2 ? RendererSDK.GetPositionHeight(position) : position.z
+	WASMIOBuffer[2] = position.z
 
 	WASMIOBuffer[3] = camera_position.x
 	WASMIOBuffer[4] = camera_position.y

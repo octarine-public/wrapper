@@ -1,15 +1,23 @@
-let constructors = new Map<string, any>(),
-	sdk_classes: any[] = []
+import Entity from "./Base/Entity"
 
-export function RegisterClass(name: string, constructor: any) {
+let constructors = new Map<string, Constructor<Entity>>(),
+	sdk_classes: Constructor<Entity>[] = []
+
+export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	constructors.set(name, constructor)
 	sdk_classes.push(constructor)
 }
 
-export function GetSDKClasses(): any[] {
+export function GetSDKClasses(): Constructor<Entity>[] {
 	return sdk_classes
 }
 
-export default function GetConstructor(name: string) {
-	return constructors.get(name)
+export default function GetConstructor(ent: C_BaseEntity, constructor_name_hint: string) {
+	if (constructors.has(constructor_name_hint))
+		return constructors.get(constructor_name_hint)
+
+	let constructor = ent.constructor
+	while (constructor.name !== "Object" && !constructors.has(constructor.name))
+		constructor = constructor.prototype.__proto__.constructor
+	return constructors.get(constructor.name)
 }

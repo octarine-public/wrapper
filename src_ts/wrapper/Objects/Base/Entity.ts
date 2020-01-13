@@ -181,14 +181,8 @@ export default class Entity {
 	}
 	public get RootOwner(): Nullable<Entity> {
 		let owner = this.Owner
-
-		// special case since we don't want to return this as owner
-		if (owner === undefined)
-			return undefined
-
 		while (true) {
-			let root_owner = owner.Owner as Nullable<Entity>
-
+			let root_owner = owner?.Owner as Nullable<Entity>
 			if (root_owner === undefined)
 				break
 

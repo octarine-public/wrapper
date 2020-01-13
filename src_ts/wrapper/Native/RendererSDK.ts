@@ -9,6 +9,7 @@ import { StringToUTF16 } from "../Utils/Utils"
 import { HeightMap, ParseHeightMap } from "../Utils/ParseVHCG"
 import Events from "../Managers/Events"
 import Game from "../Objects/GameResources/GameRules"
+import EventsSDK from "../Managers/EventsSDK"
 
 enum CommandID {
 	SET_COLOR = 0,
@@ -58,6 +59,8 @@ let RendererSDK = new (class CRendererSDK {
 	 */
 	public WorldToScreen(position: Vector2 | Vector3): Nullable<Vector2> {
 		if (this.AlternateW2S) {
+			if (position instanceof Vector2)
+				position = position.toVector3().SetZ(this.GetPositionHeight(position))
 			let vec = WASM.WorldToScreenCached(position)
 			if (vec !== undefined)
 				vec.MultiplyForThis(this.WindowSize)
@@ -73,16 +76,25 @@ let RendererSDK = new (class CRendererSDK {
 	 * @returns screen position with x and y in range {0, 1}, or undefined
 	 */
 	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1134, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Nullable<Vector2> {
+		if (position instanceof Vector2)
+			position = position.toVector3().SetZ(this.GetPositionHeight(position))
 		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)
 	}
 	/**
 	 * @param screen screen position
 	 */
 	public ScreenToWorld(screen: Vector2): Vector3 {
-		let vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
-		vec.x = vec.x - 1
-		vec.y = 1 - vec.y
-		return WASM.ScreenToWorldCached(vec)
+		if (this.AlternateW2S) {
+			let vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
+			vec.x = vec.x - 1
+			vec.y = 1 - vec.y
+			return WASM.ScreenToWorldCached(vec)
+		} else {
+			let vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
+			vec.x = vec.x - 1
+			vec.y = 1 - vec.y
+			return WASM.ScreenToWorld(vec, Vector3.fromIOBuffer(Camera.Position)!, Camera.Distance ?? 1134, QAngle.fromIOBuffer(Camera.Angles)!, this.WindowSize)
+		}
 	}
 	/**
 	 * @param screen screen position with x and y in range {0, 1}
@@ -320,6 +332,15 @@ let RendererSDK = new (class CRendererSDK {
 		else if (res >= 2.2 && res <= 2.4)
 			return "21x9"
 	}
+	public GetProportionalScaledVector(vec: Vector2, apply_screen_scaling = true, magic: number = 1, parent_size = this.WindowSize): Vector2 {
+		vec = vec.Clone()
+		let h = parent_size.y
+		vec.y = Math.floor(h / 0x300 * vec.y / magic)
+		if (apply_screen_scaling && parent_size.x === 1280 && h === 1024)
+			h = 960
+		vec.x = Math.floor(h / 0x300 * vec.x / magic)
+		return vec
+	}
 	private SetTextureData(texture_id: number, rgba: Uint8Array, size: Vector2) {
 		if (rgba.byteLength !== size.x * size.y * 4)
 			throw "Invalid RGBA buffer or size"
@@ -461,6 +482,13 @@ Events.on("PostRemoveSearchPath", path => {
 
 	RendererSDK.HeightMap = undefined
 	last_loaded_map_name = "<empty>"
+})
+
+Events.on("Draw", () => {
+	Vector2.fromIOBuffer(Renderer.WindowSize)!.CopyTo(RendererSDK.WindowSize_)
+	if (RendererSDK.AlternateW2S)
+		WASM.OnDraw(RendererSDK.WindowSize)
+	EventsSDK.emit("Draw")
 })
 
 export default RendererSDK

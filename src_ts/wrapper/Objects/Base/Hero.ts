@@ -1,7 +1,6 @@
 import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 
 import EntityManager from "../../Managers/EntityManager"
-import Player from "./Player"
 import Unit from "./Unit"
 import Entity from "./Entity"
 
@@ -51,9 +50,6 @@ export default class Hero extends Unit {
 	}
 	get PlayerID(): number {
 		return this.m_pBaseEntity.m_iPlayerID
-	}
-	get Player(): Nullable<Player> {
-		return EntityManager.GetPlayerByID(this.PlayerID)
 	}
 	get PrimaryAtribute(): Attributes {
 		return this.m_pBaseEntity.m_iPrimaryAttribute

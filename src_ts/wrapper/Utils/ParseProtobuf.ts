@@ -1,5 +1,10 @@
 import BinaryStream from "./BinaryStream"
 import { Utf8ArrayToStr } from "../Utils/Utils"
+import Vector3 from "../Base/Vector3"
+import Vector2 from "../Base/Vector2"
+import Color from "../Base/Color"
+import Entity from "../Objects/Base/Entity"
+import EntityManager from "../Managers/EntityManager"
 
 export enum ProtoType {
 	// 0 is reserved for errors.
@@ -43,6 +48,7 @@ export { ProtoCache }
 
 let convert_buf = new ArrayBuffer(8)
 let convert_uint32 = new Uint32Array(convert_buf),
+	convert_int32 = new Int32Array(convert_buf),
 	convert_int64 = new BigInt64Array(convert_buf),
 	convert_uint64 = new BigUint64Array(convert_buf),
 	convert_float32 = new Float32Array(convert_buf),
@@ -85,12 +91,20 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 				map.set(field_name, value !== 0n)
 				break
 			case ProtoType.TYPE_ENUM:
-			case ProtoType.TYPE_INT32: case ProtoType.TYPE_INT64:
-			case ProtoType.TYPE_SFIXED64: case ProtoType.TYPE_SFIXED32: {
+			case ProtoType.TYPE_INT32:
+			case ProtoType.TYPE_SFIXED32: {
 				if (value instanceof ArrayBuffer)
 					throw "Invalid proto [2]"
 				convert_uint64[0] = value
-				map.set(field_name, Number(convert_int64[0]))
+				map.set(field_name, Number(convert_int32[0]))
+				break
+			}
+			case ProtoType.TYPE_INT64:
+			case ProtoType.TYPE_SFIXED64: {
+				if (value instanceof ArrayBuffer)
+					throw "Invalid proto [2]"
+				convert_uint64[0] = value
+				map.set(field_name, convert_int64[0])
 				break
 			}
 			case ProtoType.TYPE_SINT32:
@@ -251,7 +265,7 @@ export function ParseProtobufDesc(str: string): void {
 			ProtoCache.set(current_name.join("."), [ProtoType.TYPE_MESSAGE, current_map])
 		} else if (line.startsWith("enum ")) {
 			if (current_map !== undefined && current_is_enum)
-				throw `Unexpected message declaration at line ${i} (declaration inside enum)`
+				throw `Unexpected enum declaration at line ${i} (declaration inside enum)`
 
 			let match = /^enum ([^\s]+) {$/.exec(line)
 			if (match === null)
@@ -286,7 +300,7 @@ export function ParseProtobufDesc(str: string): void {
 	})
 }
 
-// "used frequently"
+// common stuff
 ParseProtobufDesc(`
 message CMsgVector {
 	optional float x = 1;
@@ -305,3 +319,35 @@ message CMsgQAngle {
 	optional float z = 3;
 }
 `)
+
+export function CMsgVectorToVector3(vec: Nullable<RecursiveProtobuf>): Vector3 {
+	if (vec === undefined)
+		return new Vector3()
+	return new Vector3((vec.get("x") as number) ?? 0, (vec.get("y") as number) ?? 0, (vec.get("z") as number) ?? 0)
+}
+
+export function CMsgVector2DToVector2(vec: Nullable<RecursiveProtobuf>): Vector2 {
+	if (vec === undefined)
+		return new Vector2()
+	return new Vector2((vec.get("x") as number) ?? 0, (vec.get("y") as number) ?? 0)
+}
+
+export function NumberToColor(num: Nullable<number>): Color {
+	if (num === undefined)
+		return new Color()
+	return new Color((num >> 24) & 0xFF, (num >> 16) & 0xFF, (num >> 8) & 0xFF, num & 0xFF)
+}
+
+export function ServerHandleToIndex(handle: Nullable<number>): number {
+	if (handle === undefined)
+		return -1
+	handle &= 0x3FFF
+	if (handle === 0x3FFF || handle === 0)
+		return -1
+	return handle
+}
+
+export function ServerHandleToEntity(handle: Nullable<number>): Nullable<Entity> {
+	let index = ServerHandleToIndex(handle)
+	return index !== -1 ? EntityManager.EntityByIndex(index) : undefined
+}

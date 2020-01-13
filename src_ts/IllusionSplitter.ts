@@ -1,4 +1,4 @@
-import { Menu as MenuSDK, Hero, GameSleeper, Utils, item_bottle, EntityManager, Game, EventsSDK, LocalPlayer, MathSDK } from "wrapper/Imports"
+import { Menu as MenuSDK, Hero, GameSleeper, item_bottle, EntityManager, Game, EventsSDK, LocalPlayer, MathSDK, Input } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Utility", "Illusion Splitter"])
 const AngleRandomizer = Menu.AddToggle("Random Split Angle", true)
@@ -41,12 +41,12 @@ EventsSDK.on("Tick", () => {
 	const angleUnit = 360 / unitCount
 
 	if (MoveMainHero.value && !Sleep.Sleeping("owner_move")) {
-		Owner.MoveTo(Utils.CursorWorldVec)
+		Owner.MoveTo(Input.CursorOnWorld)
 		Sleep.Sleep(Delay(), "owner_move")
 	}
 
 	let Direction = MoveMainHero.value
-		? Utils.CursorWorldVec.SubtractForThis(Owner.Position)
+		? Input.CursorOnWorld.SubtractForThis(Owner.Position)
 		: Owner.InFront(250).SubtractForThis(Owner.Position)
 
 	let midPosition = illusions.reduce((current, illusion) =>
@@ -108,7 +108,7 @@ EventsSDK.on("Tick", () => {
 			: Delay()
 
 		if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
-			let pos = Utils.CursorWorldVec.Subtract(Owner.Position)
+			let pos = Input.CursorOnWorld.Subtract(Owner.Position)
 			if (pos.Length > abil.CastRange)
 				pos.Normalize().MultiplyScalarForThis(abil.CastRange)
 

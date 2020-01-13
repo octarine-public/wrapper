@@ -1,6 +1,8 @@
 import Entity from "./Entity"
-import { Vector3, Vector2, Color } from "../../Imports"
 import ParticlesSDK from "../../Managers/ParticleManager"
+import Vector2 from "../../Base/Vector2"
+import Vector3 from "../../Base/Vector3"
+import Color from "../../Base/Color"
 
 export type ControlPoints = (boolean | number | Entity | Vector3 | Vector2 | Color | [number?, number?, number?])[]
 
