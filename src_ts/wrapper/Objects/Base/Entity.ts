@@ -273,6 +273,9 @@ export default class Entity {
 	public get TotalStrength(): number {
 		return 0
 	}
+	public get CollisionRadius(): number {
+		return Math.sqrt(this.m_pBaseEntity.m_pCollision?.m_flRadius ?? 0)
+	}
 
 	/* ================ METHODS ================ */
 	public Distance(vec: Vector3 | Entity): number {
@@ -308,9 +311,6 @@ export default class Entity {
 		if (vec instanceof Entity)
 			vec = vec.Position
 		return this.Position.FindRotationAngle(vec, this.NetworkRotationRad)
-	}
-	public get CollisionRadius(): number {
-		return Math.sqrt(this.m_pBaseEntity.m_pCollision?.m_flRadius ?? 0)
 	}
 	/**
 	 * faster (Distance <= range)

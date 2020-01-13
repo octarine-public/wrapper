@@ -5,7 +5,6 @@ let GameSleep = new GameSleeper()
 export let _Unit: Nullable<Unit>
 export let _Target: Nullable<Unit>
 
-
 export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
 
 	if (target === undefined || !Owner.IsVisible || GameSleep.Sleeping(target))

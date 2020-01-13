@@ -108,7 +108,6 @@ EventsSDK.on("Draw", () => {
 	// if (predicted_angle === undefined)
 	// 	predicted_angle = TryPredictInAngles(base_ang, -360, -270, start_pos, hook, obstacles, obs2ent)
 
-
 	var pos = _Unit.Position.Extend(predicted_angle ?? _Unit.Position, _Unit.Distance2D(_Target, true))
 
 	if (bind.is_pressed && !bind_sleeper.Sleeping) {
@@ -149,7 +148,5 @@ EventsSDK.on("GameEnded", () => {
 	par = undefined
 	par2 = undefined
 })
-
-
 
 //<====================

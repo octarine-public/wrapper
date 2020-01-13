@@ -159,8 +159,7 @@ export class XAIOParticle {
 			if (target !== undefined && this.unit.IsAlive) {
 				ParticlesSDK.SetControlPoint(particle, 2, this.unit.Position)
 				ParticlesSDK.SetControlPoint(particle, 7, target.Position)
-			}
-			else {
+			} else {
 				this.RemoveParticle(name)
 			}
 		}

@@ -136,4 +136,3 @@ EventsSDK.on("PrepareUnitOrders", args => {
 	if (orbwalker.CanMove(Game.RawGameTime))
 		LastAttackTime = orbwalker.GetTurnTime(target, Game.RawGameTime) - OrbWalker.PingTime
 })
-

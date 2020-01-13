@@ -23,15 +23,6 @@ export default class NavMeshPathfinding {
 		}
 		return [...new Set(hit_obstacles)]
 	}
-	protected RayTraceFirstHit(time: number): Nullable<Obstacle> {
-		let src_pos = this.PredictionSource.PositionAtTime(time)
-		let result = (this.Obstacles.map(obs => [obs.PositionAtTime(this.Delay + time).Distance(src_pos) - obs.Radius, obs]) as [number, Obstacle][]).sort(([dst1], [dst2]) => dst1 - dst2)
-		if (result[0][0] < this.PredictionSource.Radius) {
-			//console.log(this.Delay, time, result[0][0], EntityManager.AllEntities.find(e => e.Position.toVector2().LengthSqr === result[0][1].PositionAtTime(0).LengthSqr)!.Name)
-			return result[0][1]
-		}
-		return undefined
-	}
 	public GetFirstHitObstacle(): Nullable<[Obstacle, number]> {
 		if (this.Obstacles.length === 0)
 			return undefined
@@ -68,6 +59,15 @@ export default class NavMeshPathfinding {
 					blocked_spots.push(new_ang)
 				this.PredictionSource.Velocity.CopyFrom(orig_velocity)
 			}
+		}
+		return undefined
+	}
+	protected RayTraceFirstHit(time: number): Nullable<Obstacle> {
+		let src_pos = this.PredictionSource.PositionAtTime(time)
+		let result = (this.Obstacles.map(obs => [obs.PositionAtTime(this.Delay + time).Distance(src_pos) - obs.Radius, obs]) as [number, Obstacle][]).sort(([dst1], [dst2]) => dst1 - dst2)
+		if (result[0][0] < this.PredictionSource.Radius) {
+			//console.log(this.Delay, time, result[0][0], EntityManager.AllEntities.find(e => e.Position.toVector2().LengthSqr === result[0][1].PositionAtTime(0).LengthSqr)!.Name)
+			return result[0][1]
 		}
 		return undefined
 	}

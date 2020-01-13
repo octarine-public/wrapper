@@ -2,22 +2,19 @@ import Entity from "./Entity"
 import { Vector3, Vector2, Color } from "../../Imports"
 import ParticlesSDK from "../../Managers/ParticleManager"
 
-export type ControlPoints = Array<boolean | number | Entity | Vector3 | Vector2 | Color | [number?, number?, number?]>
+export type ControlPoints = (boolean | number | Entity | Vector3 | Vector2 | Color | [number?, number?, number?])[]
 
 // from Native:
 // 		Restart()
 // 		FullRestart()
 
 export default class Particle {
-
 	/* ================== Static ================== */
 
-	static GetHashCodeControlPoints(...controlPoints: ControlPoints): number {
-
+	public static GetHashCodeControlPoints(...controlPoints: ControlPoints): number {
 		let hash = 0
 
 		controlPoints.forEach(value => {
-
 			if (value instanceof Entity)
 				value = value.Position
 
@@ -27,13 +24,11 @@ export default class Particle {
 			} else if (Array.isArray(value)) {
 				var hashArray = 0
 
-				for (var length = value.length, i = (length >= 8 ? length - 8 : 0); i < length; i++) {
+				for (var length = value.length, i = (length >= 8 ? length - 8 : 0); i < length; i++)
 					hashArray = ((hashArray << 5) + hashArray) ^ (value[i] ?? 0)
-				}
 
 				hash += hashArray
-			}
-			else {
+			} else {
 				hash += (value as number) + 0
 			}
 		})
@@ -99,31 +94,17 @@ export default class Particle {
 		return this.controlPointsHashCode
 	}
 
-	private Create(): this {
-		if (this.IsValid)
-			return this
-
-		this.effectIndex = Particles.Create(this.Path,
-			this.attachment, this.entity?.IsValid ? this.entity.Index : -1)
-
-		this.IsValid = true
-
-		this.SetControlPoints()
-
-		return this
-	}
-
 	/**
 	 * @param points (indes as number, point as Vector)
-	 * 
+	 *
 	 * @example
-	 * 
+	 *
 	 * particle.SetControlPoints(
 	 * 	1, new Vector3(1, 2, 3),
 	 * 	2, new Vector2(1, 2, 3),
-	 * 	3, new Color(1, 2, 3), 
-	 * 	4, false, 
-	 * 	5, [1, 2], 
+	 * 	3, new Color(1, 2, 3),
+	 * 	4, false,
+	 * 	5, [1, 2],
 	 * 	6, 646
 	 * )
 	 */
@@ -136,13 +117,11 @@ export default class Particle {
 		}
 
 		for (let i = 0; i < this.controlPoints.length; i += 2) {
-
 			let index = this.controlPoints[i] as number
 			let point = this.controlPoints[i + 1]
 
-			if (typeof index !== "number") {
-				throw new Error("Control Point Index is not a number")
-			}
+			if (typeof index !== "number")
+				throw "Control Point Index is not a number"
 
 			if (point instanceof Entity)
 				point = point.Position
@@ -187,5 +166,19 @@ export default class Particle {
 
 	public toString() {
 		return this.Path.replace(/^.*(\\|\/|\:)/, "")
+	}
+
+	private Create(): this {
+		if (this.IsValid)
+			return this
+
+		this.effectIndex = Particles.Create(this.Path,
+			this.attachment, this.entity?.IsValid ? this.entity.Index : -1)
+
+		this.IsValid = true
+
+		this.SetControlPoints()
+
+		return this
 	}
 }

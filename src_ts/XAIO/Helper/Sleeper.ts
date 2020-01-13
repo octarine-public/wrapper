@@ -5,15 +5,6 @@ export default class XAIOSleeper {
 	private sleepTime: number = 0
 	private sleeping: boolean = false
 
-	public Sleeper(seconds: number) {
-		this.Sleep(seconds)
-	}
-
-	public Sleep(seconds: number) {
-		this.sleepTime = Game.RawGameTime + seconds
-		this.sleeping = true
-	}
-
 	public get IsSleeping(): boolean {
 		if (this.sleeping)
 			this.sleeping = (Game.RawGameTime < this.sleepTime)
@@ -25,6 +16,15 @@ export default class XAIOSleeper {
 		if (!this.sleeping)
 			return 0
 		return this.sleepTime - Game.RawGameTime
+	}
+
+	public Sleeper(seconds: number) {
+		this.Sleep(seconds)
+	}
+
+	public Sleep(seconds: number) {
+		this.sleepTime = Game.RawGameTime + seconds
+		this.sleeping = true
 	}
 
 	public SleepUntil(rawGameTime: number) {
@@ -41,8 +41,7 @@ export default class XAIOSleeper {
 		let rawGameTime = Game.RawGameTime
 		if (this.sleepTime > rawGameTime) {
 			this.sleepTime += seconds
-		}
-		else {
+		} else {
 			this.sleepTime = rawGameTime + seconds
 		}
 		this.sleeping = true

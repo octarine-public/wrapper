@@ -16,7 +16,7 @@ export default class XAIOPrediction {
 
 		this.GetProperCastPosition(input, simplePrediction)
 
-		if (input.SkillShotType == XAIOSkillshotType.Line && !input.AreaOfEffect && input.UseBlink) {
+		if (input.SkillShotType === XAIOSkillshotType.Line && !input.AreaOfEffect && input.UseBlink) {
 			let tar_pos = simplePrediction.TargetPosition
 			simplePrediction.BlinkLinePosition = tar_pos.Extend(input.Caster.Position.Subtract(tar_pos), 200)
 			simplePrediction.CastPosition = simplePrediction.TargetPosition
@@ -76,7 +76,7 @@ export default class XAIOPrediction {
 		if (input.SkillShotType === XAIOSkillshotType.RangedAreaOfEffect || input.SkillShotType === XAIOSkillshotType.AreaOfEffect)
 			return
 
-		if (input.SkillShotType == XAIOSkillshotType.Line && input.UseBlink)
+		if (input.SkillShotType === XAIOSkillshotType.Line && input.UseBlink)
 			return
 
 		let radius = input.Radius
@@ -111,20 +111,19 @@ export default class XAIOPrediction {
 		if (input.Radius >= Number.MAX_SAFE_INTEGER || input.Range >= Number.MAX_SAFE_INTEGER) {
 			return true
 		}
-		if (input.SkillShotType == XAIOSkillshotType.AreaOfEffect) {
+		if (input.SkillShotType === XAIOSkillshotType.AreaOfEffect) {
 			if (output.TargetPosition!.Distance2D(output.CastPosition) > input.Radius) {
 				output.HitChance = XAIOHitChance.Impossible
 				return false
 			}
 			return true
-		} else if (input.UseBlink && input.SkillShotType == XAIOSkillshotType.Line) {
+		} else if (input.UseBlink && input.SkillShotType === XAIOSkillshotType.Line) {
 			if (input.Caster.Distance(output.CastPosition) > input.CastRange + input.Range) {
 				output.HitChance = XAIOHitChance.Impossible
 				return false
 			}
 			return true
-		}
-		else {
+		} else {
 			if (input.Caster.Distance(output.CastPosition) > input.CastRange && (input.SkillShotType == XAIOSkillshotType.RangedAreaOfEffect
 				|| input.Caster.Distance(output.TargetPosition!) > input.Range)) {
 				output.HitChance = XAIOHitChance.Impossible
@@ -151,19 +150,17 @@ export default class XAIOPrediction {
 			&& x.Distance2D(caster) < scanRange
 		)
 
-		if ((input.CollisionTypes & XAIOCollisionTypes.AllyCreeps) == XAIOCollisionTypes.AllyCreeps)
+		if ((input.CollisionTypes & XAIOCollisionTypes.AllyCreeps) === XAIOCollisionTypes.AllyCreeps)
 			source.some(x => x.IsCreep && !x.IsEnemy(caster) && list.push(x))
 
-		if ((input.CollisionTypes & XAIOCollisionTypes.EnemyCreeps) == XAIOCollisionTypes.EnemyCreeps)
+		if ((input.CollisionTypes & XAIOCollisionTypes.EnemyCreeps) === XAIOCollisionTypes.EnemyCreeps)
 			source.some(x => x.IsCreep && x.IsEnemy(caster) && list.push(x))
 
-		if ((input.CollisionTypes & XAIOCollisionTypes.AllyHeroes) == XAIOCollisionTypes.AllyHeroes)
+		if ((input.CollisionTypes & XAIOCollisionTypes.AllyHeroes) === XAIOCollisionTypes.AllyHeroes)
 			source.some(x => x.IsHero && !x.IsEnemy(caster) && list.push(x))
 
-
-		if ((input.CollisionTypes & XAIOCollisionTypes.EnemyHeroes) == XAIOCollisionTypes.EnemyHeroes)
+		if ((input.CollisionTypes & XAIOCollisionTypes.EnemyHeroes) === XAIOCollisionTypes.EnemyHeroes)
 			source.some(x => x.IsHero && x.IsEnemy(caster) && list.push(x))
-
 
 		list.forEach(unit => {
 			let input2 = new XAIOInput(

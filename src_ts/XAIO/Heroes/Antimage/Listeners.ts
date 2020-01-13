@@ -20,4 +20,3 @@ export function InitTick(unit: Unit) {
 
 	InitCombo(unit, near_enemy)
 }
-

@@ -51,4 +51,3 @@ globalThis.ParticlesSDK = _ParticlesSDK
 
 globalThis.Menu = _Menu
 globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Constructor<any>).name === name)
-

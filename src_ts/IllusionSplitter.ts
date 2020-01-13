@@ -16,8 +16,7 @@ let arr_abil: string[] = [
 ]
 let UseAbility = Menu.AddImageSelector("Usage", arr_abil, new Map(arr_abil.map(name => [name, true])))
 
-
-let Sleep = new GameSleeper
+let Sleep = new GameSleeper()
 let Delay = () => (((Game.Ping / 2) + 30) + 250)
 
 EventsSDK.on("Tick", () => {
@@ -34,7 +33,7 @@ EventsSDK.on("Tick", () => {
 		x.IsIllusion
 		&& x.IsAlive
 		&& x.IsControllable
-		&& !x.UnitState.some(x => x & 524288) // Anti mage restrict talant 
+		&& !x.UnitState.some(x => x & 524288) // Anti mage restrict talant
 		&& (x.Distance2D(Owner) < IllusionsRange.value)
 	)
 

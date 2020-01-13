@@ -66,8 +66,9 @@ export interface IDrawBoundingAreaOptions {
 	Alpha?: number
 }
 
-
 export default new (class ParticlesSDK {
+	private readonly allParticles = new Map<any, Particle>()
+
 	/**
 	 * @deprecated Will be removed after changed all scripts
 	 */
@@ -80,7 +81,7 @@ export default new (class ParticlesSDK {
 	public Destroy(particle_id: number, immediate: boolean = true): void {
 		Particles.Destroy(particle_id, immediate)
 	}
-	/** 
+	/**
 	 * @deprecated Will be removed after changed all scripts
 	 */
 	public SetControlPoint(particle_id: number, control_point: number, vec: Vector3): void {
@@ -95,9 +96,6 @@ export default new (class ParticlesSDK {
 		Particles.SetControlPointForward(particle_id, control_point)
 	}
 
-
-	private readonly allParticles = new Map<any, Particle>();
-
 	public AddOrUpdate(
 		key: any,
 		path: string,
@@ -105,23 +103,19 @@ export default new (class ParticlesSDK {
 		entity: Entity,
 		...points: ControlPoints
 	): Particle {
-
 		let particle = this.allParticles.get(key)
 
 		if (particle === undefined
 			|| (particle.Entity !== entity || particle.Path !== path
 				|| particle.Attachment !== attachment)
 		) {
-
 			if (particle !== undefined)
 				particle.Destroy(true)
 
 			particle = new Particle(key, path, attachment, entity, ...points)
 
 			this.allParticles.set(key, particle)
-		}
-		else {
-
+		} else {
 			let hash = Particle.GetHashCodeControlPoints(...points)
 
 			if (hash !== particle.GetHashCodeControlPoints) {
@@ -133,7 +127,7 @@ export default new (class ParticlesSDK {
 	}
 
 	/**
-	 * 
+	 *
 	 * ControlPoints:
 	 * 	0: Position
 	 * 	1: range
@@ -176,7 +170,7 @@ export default new (class ParticlesSDK {
 		)
 	}
 	/**
-	 * 
+	 *
 	 * ControlPoints:
 	 * 	0: Position
 	 * 	1: End Position
@@ -202,7 +196,7 @@ export default new (class ParticlesSDK {
 		)
 	}
 	/**
-	 * 
+	 *
 	 * red line not worked :(
 	 */
 	public DrawRangeLine(
@@ -225,7 +219,6 @@ export default new (class ParticlesSDK {
 		target: Entity,
 		color = Color.Red
 	) {
-
 		color.SetR(Math.max(color.r, 1))
 
 		return this.AddOrUpdate(key,
@@ -265,9 +258,7 @@ export default new (class ParticlesSDK {
 		)
 	}
 
-
 	public Remove(key: any) {
-
 		var particle = this.allParticles.get(key)
 
 		if (particle === undefined)
@@ -278,7 +269,6 @@ export default new (class ParticlesSDK {
 	}
 
 	public DestroyAll(particleDestroy?: boolean, immediate = true) {
-
 		// loop-optimizer: KEEP
 		this.allParticles.forEach(particle => particle.Destroy(particleDestroy, immediate))
 		this.allParticles.clear()

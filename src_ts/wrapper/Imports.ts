@@ -1237,8 +1237,6 @@ export { default as Prediction } from "./Prediction/Prediction"
 export { default as Collision } from "./Prediction/Collision/Collision"
 export { CollisionObject } from "./Prediction/Collision/CollisionObject"
 
-
-
 import "./global"
 
 /*
