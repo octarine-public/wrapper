@@ -190,24 +190,12 @@ export default class Ability extends Entity {
 	}
 
 	/**
-	 * @param unit Unit | Vector3
-	 * @description
-	 * if Unit return includes castpoint and ping.
-	 * if Vector3 return includes turnrate, castpoint and ping.
+	 * @param position Vector3
+	 * @param turnRate boolean
 	 * @returns Time in ms until the cast.
 	 */
-
-	public GetCastDelay(unit: Unit | Vector3): number {
-		if (this.Owner === undefined)
-			return 0
-
-		if (unit instanceof Unit)
-			return ((this.CastPoint * 1000) + (Game.Ping / 2))
-
-		if (unit instanceof Vector3)
-			return ((this.CastPoint + this.Owner.TurnTime(unit) * 1000) + (Game.Ping / 2))
-
-		return 0
+	public GetCastDelay(position: Vector3, turnRate: boolean = true): number {
+		return this?.Owner ? ((this.CastPoint + (turnRate ? this.Owner.TurnTime(position) : 0) * 1000) + (Game.Ping / 2)) : 0
 	}
 	/**
 	 * @param position Vector3
