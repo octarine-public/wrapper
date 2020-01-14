@@ -14,8 +14,6 @@ export default class BinaryStream {
 			b: bigint
 		do {
 			b = BigInt(this.Next())
-			if (b > 0xFFn)
-				throw "Invalid string at charCodeAt"
 			val |= (b & 0x7Fn) << shift
 			shift += 7n
 		} while ((b & 0x80n) !== 0n)
@@ -28,8 +26,6 @@ export default class BinaryStream {
 			b: bigint
 		do {
 			b = BigInt(this.Next())
-			if (b > 0xFFn)
-				throw "Invalid string at charCodeAt"
 			val |= b << shift
 			shift += 8n
 		} while (shift !== limit)

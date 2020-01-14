@@ -186,9 +186,9 @@ export function AddToCache(ent: C_BaseEntity) {
 	GetSDKClasses().forEach(class_ => {
 		if (!(entity instanceof class_))
 			return
+
 		if (!ClassToEntities.has(class_))
 			ClassToEntities.set(class_, [])
-
 		ClassToEntities.get(class_)!.push(entity)
 	})
 	EventsSDK.emit("EntityCreated", false, entity)
@@ -211,9 +211,9 @@ function DeleteFromCache(entNative: C_BaseEntity) {
 			return
 
 		let classToEnt = ClassToEntities.get(class_)
-
-		if (!classToEnt)
+		if (classToEnt === undefined)
 			return
+
 		ArrayExtensions.arrayRemove(classToEnt, entity)
 	})
 }

@@ -18,6 +18,6 @@ export default function GetConstructor(ent: C_BaseEntity, constructor_name_hint:
 
 	let constructor = ent.constructor
 	while (constructor.name !== "Object" && !constructors.has(constructor.name))
-		constructor = constructor.prototype.__proto__.constructor
+		constructor = Object.getPrototypeOf(constructor.prototype).constructor
 	return constructors.get(constructor.name)
 }

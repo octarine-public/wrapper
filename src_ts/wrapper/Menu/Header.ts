@@ -26,7 +26,7 @@ export default class Header extends Base {
 	public set ConfigValue(value) {
 		if (value === undefined)
 			return
-		Vector2.fromArray(value).CopyTo(this.Position)
+		Vector2.fromArray(value).Max(0).CopyTo(this.Position)
 		this.position_dirty = true
 	}
 
