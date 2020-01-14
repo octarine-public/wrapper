@@ -16,10 +16,10 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		false, false, false,
 		"modifier_monkey_king_spring_thinker",
 	],
-	arHeroModifiers = new Map<string, [boolean, boolean, string, number]>([
-		["modifier_spirit_breaker_charge_of_darkness_vision", [true, true, "particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_target_mark.vpcf", 4]],
-		["modifier_tusk_snowball_target", [true, true, "particles/units/heroes/hero_tusk/tusk_snowball_target.vpcf", 5]],
-		["modifier_life_stealer_infest_effect", [false, false, "particles/units/heroes/hero_life_stealer/life_stealer_infested_unit_icon.vpcf", 6]],
+	arHeroModifiers = new Map<string, [string, number]>([
+		["modifier_spirit_breaker_charge_of_darkness_vision", ["particles/units/heroes/hero_spirit_breaker/spirit_breaker_charge_target_mark.vpcf", 4]],
+		["modifier_tusk_snowball_target", ["particles/units/heroes/hero_tusk/tusk_snowball_target.vpcf", 5]],
+		["modifier_life_stealer_infest_effect", ["particles/units/heroes/hero_life_stealer/life_stealer_infested_unit_icon.vpcf", 6]],
 	]),
 	arDurations = [1.7, 1.6, 0.5, 0.35, 0, 0, 0, 1.7],
 	arSpecialDuration = [
@@ -80,6 +80,9 @@ let phaseSpells = [
 
 let remove_list: [number, number][] = []
 EventsSDK.on("ModifierCreated", buff => {
+	if (!active.value)
+		return
+
 	let ent = buff.Parent!
 	let index = arModifiers.indexOf(buff.Name)
 	if (index !== -1) {
@@ -122,14 +125,8 @@ EventsSDK.on("ModifierCreated", buff => {
 	}
 
 	let mod = arHeroModifiers.get(buff.Name)
-	if (mod !== undefined) {
-		if (mod[0] && !ent.IsHero)
-			return
-		if (mod[1] && ent.IsEnemy())
-			return
-		const part = ParticlesSDK.Create(mod[2], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent)
-		arHeroMods.set(buff, part)
-	}
+	if (mod !== undefined)
+		arHeroMods.set(buff, ParticlesSDK.Create(mod[0], ParticleAttachment_t.PATTACH_OVERHEAD_FOLLOW, ent))
 })
 EventsSDK.on("ModifierRemoved", buff => {
 	arTimers.delete(buff)
