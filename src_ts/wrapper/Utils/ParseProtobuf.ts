@@ -40,11 +40,28 @@ export enum ProtoType {
 }
 
 export type RecursiveProtobuf = Map<string, RecursiveProtobuf | string | number | bigint | boolean>
-export type ProtoFieldDescription = [/* name */ string, /* type */ ProtoType, /* proto description */ ProtoDescription?]
+export type ProtoFieldData = {
+	proto_desc?: ProtoDescription,
+	default_value?: boolean | number | bigint
+}
+export type ProtoFieldDescription = [/* name */ string, /* type */ ProtoType, ProtoFieldData]
 export type ProtoDescription = Map<number, ProtoFieldDescription>
 
 let ProtoCache = new Map<string, [ProtoType, /* message */ProtoDescription | /* enum */Map<string, number>]>()
 export { ProtoCache }
+
+function FillMessageDefaults(msg: RecursiveProtobuf, desc: ProtoDescription): RecursiveProtobuf {
+	// loop-optimizer: FORWARD
+	[...desc.values()].forEach(([field_name, field_type, field_data]) => {
+		if (msg.has(field_name))
+			return
+		if (field_type === ProtoType.TYPE_MESSAGE)
+			msg.set(field_name, FillMessageDefaults(new Map(), field_data.proto_desc!))
+		else if (field_data.default_value !== undefined)
+			msg.set(field_name, field_data.default_value)
+	})
+	return msg
+}
 
 let convert_buf = new ArrayBuffer(8)
 let convert_uint32 = new Uint32Array(convert_buf),
@@ -142,10 +159,10 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 			case ProtoType.TYPE_MESSAGE: {
 				if (!(value instanceof ArrayBuffer))
 					throw "Invalid proto [9]"
-				let proto_desc2 = field_data[2]
-				if (proto_desc2 === undefined)
+				let data = field_data[2]
+				if (data === undefined)
 					throw "Invalid proto description (no proto specified for ProtoType.PROTO)"
-				map.set(field_name, ParseProtobuf(value, proto_desc2))
+				map.set(field_name, ParseProtobuf(value, data.proto_desc!))
 				break
 			}
 			case ProtoType.TYPE_STRING: case ProtoType.TYPE_BYTES:
@@ -155,7 +172,7 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 				break
 		}
 	}
-	return map
+	return FillMessageDefaults(map, proto_desc)
 }
 export function ParseProtobufNamed(proto_buf: ArrayBuffer, name: string): RecursiveProtobuf {
 	let ProtoCache_entry = ProtoCache.get(name)
@@ -170,8 +187,11 @@ export function ParseProtobufDescLine(str: string): [/* field number */ number, 
 	let exec = /^\s*\w+\s+([^\s]+)\s+([^\s]+)\s*=\s*(\d+)/.exec(str)
 	if (exec === null)
 		throw "Invalid protobuf description line: " + str
+	let others = str.substring(exec[0].length)
 	let type_str = exec[1]
 	let type: ProtoType
+	let data: ProtoFieldData = {}
+	let enum_mapping: Nullable<Map<string, number>>
 	switch (type_str) {
 		case "uint32":
 			type = ProtoType.TYPE_UINT32
@@ -224,15 +244,46 @@ export function ParseProtobufDescLine(str: string): [/* field number */ number, 
 			let message_type = ProtoCache.get(type_str)
 			if (message_type === undefined)
 				throw `Invalid protobuf description type: ${type_str}`
-			if (message_type[0] === ProtoType.TYPE_MESSAGE)
-				return [parseInt(exec[3]), [exec[2], ProtoType.TYPE_MESSAGE, message_type[1] as ProtoDescription]]
-			else if (message_type[0] === ProtoType.TYPE_ENUM)
-				return [parseInt(exec[3]), [exec[2], message_type[0]]]
-			else
+			if (message_type[0] === ProtoType.TYPE_MESSAGE) {
+				type = ProtoType.TYPE_MESSAGE
+				data.proto_desc = message_type[1] as ProtoDescription
+			} else if (message_type[0] === ProtoType.TYPE_ENUM) {
+				type = ProtoType.TYPE_ENUM
+				enum_mapping = message_type[1] as Map<string, number>
+			} else
 				throw `Unknown ProtoType for ProtoCache entry ${type_str}`
 		}
 	}
-	return [parseInt(exec[3]), [exec[2], type]]
+	let default_ = /\s*\[default\s*=\s*([^\s]+)\]/.exec(others)
+	if (default_ !== null) {
+		switch (type) {
+			case ProtoType.TYPE_INT32:
+			case ProtoType.TYPE_UINT32:
+			case ProtoType.TYPE_FIXED32:
+			case ProtoType.TYPE_SFIXED32:
+			case ProtoType.TYPE_SINT32:
+				data.default_value = parseInt(default_[1])
+				break
+			case ProtoType.TYPE_INT64:
+			case ProtoType.TYPE_UINT64:
+			case ProtoType.TYPE_FIXED64:
+			case ProtoType.TYPE_SFIXED64:
+			case ProtoType.TYPE_SINT64:
+				data.default_value = BigInt(default_[1])
+				break
+			case ProtoType.TYPE_FLOAT:
+			case ProtoType.TYPE_DOUBLE:
+				data.default_value = parseFloat(default_[1])
+				break
+			case ProtoType.TYPE_BOOL:
+				data.default_value = default_[1] !== "false"
+				break
+			case ProtoType.TYPE_ENUM:
+				data.default_value = enum_mapping?.get(default_[1])
+				break
+		}
+	}
+	return [parseInt(exec[3]), [exec[2], type, data]]
 }
 
 export function ParseProtobufDesc(str: string): void {

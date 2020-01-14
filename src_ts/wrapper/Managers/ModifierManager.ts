@@ -38,8 +38,8 @@ export class IModifier {
 	public get CreationTime(): Nullable<number> {
 		return this.GetProperty("creation_time")
 	}
-	public get Duration(): Nullable<number> {
-		return this.GetProperty("duration")
+	public get Duration(): number {
+		return this.GetProperty("duration") as number
 	}
 	public get Caster(): Nullable<number> {
 		return this.GetProperty("caster")
@@ -140,7 +140,7 @@ function EmitModifierCreated(mod: IModifier) {
 	if (mod.Index === undefined || mod.SerialNum === undefined || mod.Parent === undefined)
 		return
 	let mod_ = new Modifier(mod)
-	if (mod_.Duration !== 0 && mod_.DieTime < Game.RawGameTime)
+	if (mod_.Duration !== -1 && mod_.DieTime < Game.RawGameTime)
 		return
 	ActiveModifiers.set(mod_.SerialNumber, mod_)
 	//console.log("Created " + mod_.SerialNumber)

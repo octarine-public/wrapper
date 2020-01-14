@@ -88,7 +88,7 @@ export default class Modifier {
 		return this.CreationTime + this.Duration
 	}
 	public get Duration(): number {
-		return this.m_pBuff.Duration ?? 0
+		return this.m_pBuff.Duration
 	}
 	public get ElapsedTime(): number {
 		return Math.max(Game.RawGameTime - this.CreationTime, 0)
