@@ -78,8 +78,6 @@ export default class Unit extends Entity {
 	public HPRegen = this.m_pBaseEntity.m_flHealthThinkRegen
 	public ManaRegen = this.m_pBaseEntity.m_flManaThinkRegen
 	public RotationDifference = this.m_pBaseEntity.m_anglediff
-	public HullRadius = this.m_pBaseEntity.m_flHullRadius
-	public CollisionPadding = this.m_pBaseEntity.m_flCollisionPadding
 	public HasScepterModifier = false
 	public LastVisibleTime = Game.RawGameTime
 	public LastDormantTime = 0
@@ -441,6 +439,13 @@ export default class Unit extends Entity {
 
 	public get Buffs(): Modifier[] {
 		return this.ModifiersBook.Buffs
+	}
+
+	public get HullRadius(): number {
+		return this.m_pBaseEntity.m_flHullRadius
+	}
+	public get CollisionPadding(): number {
+		return this.m_pBaseEntity.m_flCollisionPadding
 	}
 
 	/* ================================ EXTENSIONS ================================ */

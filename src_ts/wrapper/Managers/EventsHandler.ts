@@ -777,14 +777,6 @@ Events.on("NetworkFieldsChanged", map => {
 						if (entity instanceof Item)
 							entity.CurrentCharges = entity.m_pBaseEntity.m_iCurrentCharges
 						break
-					case "m_flHullRadius":
-						if (entity instanceof Unit)
-							entity.HullRadius = entity.m_pBaseEntity.m_flHullRadius
-						break
-					case "m_flCollisionPadding":
-						if (entity instanceof Unit)
-							entity.CollisionPadding = entity.m_pBaseEntity.m_flCollisionPadding
-						break
 
 					// manually whitelisted
 					case "m_angRotation":
