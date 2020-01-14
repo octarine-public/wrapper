@@ -45,6 +45,9 @@ export default class Ability extends Entity {
 	public get AOERadius(): number {
 		return this.GetSpecialValue("radius")
 	}
+	public get ActivationDelay() {
+		return this.GetSpecialValue("activation_delay")
+	}
 	public get CastPoint(): number {
 		return this.AbilityData.GetCastPoint(this.Level)
 	}
@@ -186,22 +189,39 @@ export default class Ability extends Entity {
 		return castrange + (owner !== undefined ? owner.CastRangeBonus : 0)
 	}
 
-	public GetCastDelay(position: Vector3): number {
+	/**
+	 * @param unit Unit | Vector3
+	 * @description
+	 * if Unit return includes castpoint and ping.
+	 * if Vector3 return includes turnrate, castpoint and ping.
+	 * @returns Time in ms until the cast.
+	 */
+
+	public GetCastDelay(unit: Unit | Vector3): number {
 		if (this.Owner === undefined)
 			return 0
 
-		return ((this.CastPoint + this.Owner.TurnTime(position)) + Game.Ping / 2000)
+		if (unit instanceof Unit)
+			return ((this.CastPoint * 1000) + (Game.Ping / 2))
+
+		if (unit instanceof Vector3)
+			return ((this.CastPoint + this.Owner.TurnTime(unit) * 1000) + (Game.Ping / 2))
+
+		return 0
 	}
-
-	public GetHitTime(position: Vector3, ActivationDelay: number = 0): number {
+	/**
+	 * @param position Vector3
+	 * @returns Time in ms until the cast.
+	 */
+	public GetHitTime(position: Vector3): number {
 		if (this.Owner === undefined)
 			return 0
 
-		if (this.Owner.IdealSpeed === Number.MAX_SAFE_INTEGER || this.Owner.IdealSpeed === 0) {
-			return this.GetCastDelay(position) + (ActivationDelay * 1000)
-		}
-		let time = this.Owner.Distance2D(position) / this.Owner.IdealSpeed
-		return this.GetCastDelay(position) + ((time + ActivationDelay) * 1000)
+		if (this.Owner.IdealSpeed === Number.MAX_SAFE_INTEGER || this.Owner.IdealSpeed === 0)
+			return this.GetCastDelay(position) + (this.ActivationDelay * 1000)
+
+		let time = this.Owner.Distance2D(position) / this.Speed
+		return this.GetCastDelay(position) + ((time + this.ActivationDelay) * 1000)
 	}
 
 	public GetDamage(target: Unit): number {
