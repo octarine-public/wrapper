@@ -101,9 +101,9 @@ export default class Modifier {
 		}
 		return this.Parent_
 	}
-	public get Ability(): Ability {
+	public get Ability(): Nullable<Ability> {
 		if (this.Ability_ === undefined)
-			this.Ability_ = ServerHandleToEntity(this.m_pBuff.Ability) as Ability
+			this.Ability_ = EntityManager.EntityByHandle(this.m_pBuff.Ability) as Nullable<Ability>
 		return this.Ability_
 	}
 	public get Caster(): Nullable<Entity> {
