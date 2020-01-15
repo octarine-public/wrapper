@@ -942,7 +942,7 @@ export default class Unit extends Entity {
 	}
 
 	public AttackRangeBonus(ent?: Unit) {
-		return this.AttackRange + this.HullRadius + (ent?.HullRadius ?? 0)
+		return (ent?.HullRadius ?? 0) + this.AttackRange + this.HullRadius
 	}
 
 	public CanAttack(target: Unit): boolean {
