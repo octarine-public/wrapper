@@ -8,8 +8,8 @@ export default class Tower extends Building {
 	get IsTower(): boolean {
 		return true
 	}
-	get TowerAttackTarget(): Unit {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hTowerAttackTarget) as Unit
+	get TowerAttackTarget(): Nullable<Unit> {
+		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hTowerAttackTarget) as Nullable<Unit>
 	}
 }
 
