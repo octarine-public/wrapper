@@ -14,7 +14,7 @@ let arr_abil: string[] = [
 	"terrorblade_conjure_image",
 	"phantom_lancer_doppelwalk"
 ]
-let UseAbility = Menu.AddImageSelector("Usage", arr_abil, new Map(arr_abil.map(name => [name, true])))
+let AbilityMenu = Menu.AddImageSelector("Usage", arr_abil, new Map(arr_abil.map(name => [name, true])))
 
 let Sleep = new GameSleeper()
 let Delay = () => (((Game.Ping / 2) + 30) + 250)
@@ -86,7 +86,7 @@ EventsSDK.on("Tick", () => {
 		if (
 			bottle !== undefined
 			&& bottle.CanBeCasted()
-			&& UseAbility.IsEnabled("item_bottle_illusion")
+			&& AbilityMenu.IsEnabled("item_bottle_illusion")
 		) {
 			let bottleStored = bottle as item_bottle
 			if (bottleStored.StoredRune === DOTA_RUNES.DOTA_RUNE_ILLUSION) {
@@ -99,7 +99,7 @@ EventsSDK.on("Tick", () => {
 		if (
 			abil === undefined
 			|| !abil.CanBeCasted()
-			|| !UseAbility.IsEnabled(x)
+			|| !AbilityMenu.IsEnabled(x)
 		)
 			return false
 
@@ -113,13 +113,13 @@ EventsSDK.on("Tick", () => {
 				pos.Normalize().MultiplyScalarForThis(abil.CastRange)
 
 			Owner.CastPosition(abil, Owner.Position.AddForThis(pos))
-			Sleep.Sleep((abil.CastPoint + abil.GetSpecialValue("delay")) * 1000 + Delay(), Owner)
+			Sleep.Sleep((abil.CastPoint + abil.ActivationDelay) * 1000 + Delay(), Owner)
 			return true
 		}
 
 		if (x.startsWith("naga_")) {
 			Owner.CastNoTarget(abil)
-			Sleep.Sleep((abil.CastPoint + abil.GetSpecialValue("invuln_duration")) * 1000 + Delay(), Owner)
+			Sleep.Sleep((abil.CastPoint + abil.ActivationDelay) * 1000 + Delay(), Owner)
 			return true
 		}
 
