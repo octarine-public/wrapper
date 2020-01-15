@@ -12,5 +12,6 @@
 	"comments": false,
 	"ignore": [
 		"src_ts/**/*.d.ts"
-	]
+	],
+	"sourceMaps": "inline"
 }
