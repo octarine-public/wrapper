@@ -334,10 +334,10 @@ export default class Unit extends Entity {
 	public get IsIllusion(): boolean {
 		return this.m_pBaseEntity.m_bIsIllusion
 	}
-	get MoveCapabilities() {
+	public get MoveCapabilities() {
 		return this.m_pBaseEntity.m_iMoveCapabilities
 	}
-	get AttackCapabilities() {
+	public get AttackCapabilities() {
 		return this.m_pBaseEntity.m_iAttackCapabilities
 	}
 	public get IsMelee(): boolean {
@@ -939,6 +939,10 @@ export default class Unit extends Entity {
 		mult *= (1 + damageAmplifier)
 
 		return damage * mult
+	}
+
+	public AttackRangeBonus(ent?: Unit) {
+		return this.AttackRange + this.HullRadius + (ent?.HullRadius ?? 0)
 	}
 
 	public CanAttack(target: Unit): boolean {
