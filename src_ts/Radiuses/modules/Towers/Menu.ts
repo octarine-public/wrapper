@@ -10,6 +10,8 @@ export const ShowAttackTarget = Towers.Node.AddToggle("Show Tower Target")
 
 export const Shrines = BuildingPattern("Shrines")
 
+export const Outposts = BuildingPattern("Outposts")
+
 export interface IBuildingPattern {
 	Node: MenuSDK.Node
 	State: MenuSDK.Toggle

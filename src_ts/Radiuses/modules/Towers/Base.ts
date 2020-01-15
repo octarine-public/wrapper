@@ -19,8 +19,8 @@ function ParticleCreate(
 		return
 
 	if (!pattern.State.value
-		|| (pattern.Team.selected_id === 0 && !ent.IsEnemy())
-		|| (pattern.Team.selected_id === 1 && ent.IsEnemy()))
+		|| (pattern.Team.selected_id === 1 && !ent.IsEnemy())
+		|| (pattern.Team.selected_id === 2 && ent.IsEnemy()))
 		return
 
 	particle = ParticlesSDK.Create(pathParticle, attachmentParticle, ent)
