@@ -2,3 +2,4 @@ node_modules/
 configs/
 dumps/
 wrapper_autogen/**/*.ts
+scripts/
