@@ -4,42 +4,52 @@ import { stateMain } from "../../base/MenuBase"
 import { RegisterModule } from "../../base/RegisterModule"
 import { ParticleUpdatePattern } from "../../base/MenuRangeParticle"
 
-import { Towers } from "./Menu"
+import { Towers as TowersMenu, ShowAttackTarget } from "./Menu"
 import {
 	OnStateBase,
 	ParticleDestroy,
 	ParticleSetRadius,
-	ParticlesSetControls
+	ParticlesSetRanges,
+	ParticleCreateTarget,
+	ParticleUpdateTarget
 } from "./Base"
 
 
 // --------
 const towersParticles = new Map<Tower, number>()
+const towersAttackParticles = new Map<Tower, number>()
+
+let Towers: Tower[] = []
+
+// --------
 
 // --------
 
 const OnStateMenu = (state: boolean) =>
-	OnStateBase(state, Tower, towersParticles, Towers)
+	OnStateBase(state, Tower, towersParticles, TowersMenu)
 
 const RestartParticles = () => {
 	OnState(false)
 	OnState(true)
 }
 
+const IsShowAttackTarget = () => stateMain.value
+	&& TowersMenu.State.value && ShowAttackTarget.value
+
 // --------
 
-Towers.State.OnValue(self => OnState(self.value && stateMain.value))
+TowersMenu.State.OnValue(self => OnState(self.value && stateMain.value))
 
-Towers.Team.OnValue(RestartParticles)
+TowersMenu.Team.OnValue(RestartParticles)
 
-ParticleUpdatePattern(Towers.Style,
-	() => ParticlesSetControls(towersParticles, Towers),
+ParticleUpdatePattern(TowersMenu.Style,
+	() => ParticlesSetRanges(towersParticles, TowersMenu),
 	RestartParticles)
 
 // --------
 
 function OnState(state: boolean) {
-	state = state && Towers.State.value
+	state = state && TowersMenu.State.value
 
 	OnStateMenu(state)
 
@@ -48,11 +58,55 @@ function OnState(state: boolean) {
 	}
 }
 
-const EntityDestroyed = (ent: Entity) => ParticleDestroy(towersParticles, ent as Tower)
+function Tick() {
+	if (!IsShowAttackTarget())
+		return
+
+	Towers = EntityManager.GetEntitiesByClass(Tower).filter(x => x.IsAlive)
+}
+
+function Draw() {
+	if (!IsShowAttackTarget())
+		return
+
+	Towers.forEach(tower => {
+
+		let particle = towersAttackParticles.get(tower)
+
+		let target = tower.TowerAttackTarget
+
+		if (target === undefined
+			|| !target.IsAlive
+			|| !tower.IsInRange(target.Position, tower.AttackRangeBonus())) {
+
+			if (particle !== undefined)
+				ParticleDestroy(towersAttackParticles, tower)
+
+			return
+		}
+
+		if (particle === undefined) {
+			particle = ParticleCreateTarget(towersAttackParticles, tower, TowersMenu)
+		}
+
+		if (particle === undefined)
+			return
+
+		ParticleUpdateTarget(particle, tower, target)
+	})
+}
+
+const EntityDestroyed = (ent: Entity) => {
+	ParticleDestroy(towersParticles, ent as Tower)
+	ParticleDestroy(towersAttackParticles, ent as Tower)
+}
+
 
 // --------
 
 RegisterModule({
 	OnState,
+	Tick,
+	Draw,
 	EntityDestroyed
 })

@@ -16,3 +16,4 @@ EventsSDK.on("GameStarted", () => stateMain.value
 EventsSDK.on("GameEnded", () => Modules.forEach(module => module.OnState(false)))
 
 EventsSDK.on("Draw", () => Modules.forEach(module => module.Draw?.()))
+EventsSDK.on("Tick", () => Modules.forEach(module => module.Tick?.()))

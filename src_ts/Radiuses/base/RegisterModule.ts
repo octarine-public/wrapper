@@ -6,6 +6,7 @@ export interface Module {
 	EntityCreated?: (ent: Entity) => void
 	EntityDestroyed?: (ent: Entity) => void
 
+	Tick?: () => void
 	Draw?: () => void
 }
 

@@ -9,7 +9,7 @@ import {
 	OnStateBase,
 	ParticleDestroy,
 	ParticleSetRadius,
-	ParticlesSetControls
+	ParticlesSetRanges
 } from "./Base"
 
 
@@ -45,7 +45,7 @@ Shrines.State.OnValue(self => OnState(self.value && stateMain.value))
 Shrines.Team.OnValue(RestartParticles)
 
 ParticleUpdatePattern(Shrines.Style,
-	() => ParticlesSetControls(shrinesParticles, Shrines),
+	() => ParticlesSetRanges(shrinesParticles, Shrines),
 	RestartParticles)
 
 // --------
