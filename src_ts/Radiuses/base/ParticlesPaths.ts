@@ -1,5 +1,5 @@
-const ParticleRangePath = "panorama/crutches/particles/range_display/range_display_"
-const ParticleLinePath = "panorama/crutches/particles/range_line/"
+const ParticleRangePath = (name: string) => "particles/range_display/range_display_" + name.toLowerCase() + ".vpcf"
+const ParticleLinePath = (name: string) => "particles/range_line/" + name.toLowerCase() + ".vpcf"
 
 export enum PARTICLE_RENDER_NAME {
 	NORMAL = "Normal",
@@ -13,12 +13,15 @@ export enum PARTICLE_RENDER {
 	ANIMATION
 }
 
-const RenderPath = (basePath: string, render = PARTICLE_RENDER.NORMAL) => {
+const RenderPath = (basePath: (name: string) => string, render = PARTICLE_RENDER.NORMAL) => {
 	switch (render) {
 		default:
-		case PARTICLE_RENDER.NORMAL: return basePath + PARTICLE_RENDER_NAME.NORMAL
-		case PARTICLE_RENDER.ROPE: return basePath + PARTICLE_RENDER_NAME.ROPE
-		case PARTICLE_RENDER.ANIMATION: return basePath + PARTICLE_RENDER_NAME.ANIMATION
+		case PARTICLE_RENDER.NORMAL:
+			return basePath(PARTICLE_RENDER_NAME.NORMAL.toLowerCase())
+		case PARTICLE_RENDER.ROPE:
+			return basePath(PARTICLE_RENDER_NAME.ROPE.toLowerCase())
+		case PARTICLE_RENDER.ANIMATION:
+			return basePath(PARTICLE_RENDER_NAME.ANIMATION.toLowerCase())
 	}
 }
 
