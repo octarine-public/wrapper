@@ -55,6 +55,20 @@ Menu.AddKeybind("Full sven").OnRelease(() => {
 	Sleep.Sleep(1000 + Game.Ping / 2)
 })
 
+State.OnDeactivate(() => {
+	if (ConVars.GetInt(draw_selection_boxes) !== 0)
+		Game.ExecuteCommand(draw_selection_boxes + " 0")
+
+	if (ConVars.GetInt(draw_collision_radius) !== 0)
+		Game.ExecuteCommand(draw_collision_radius + " 0")
+
+	if (ConVars.GetInt(draw__bounding_radius) !== 0)
+		Game.ExecuteCommand(draw__bounding_radius + " 0")
+
+	if (ConVars.GetInt(draw_path) !== 0)
+		Game.ExecuteCommand(draw_path + " 0")
+})
+
 EventsSDK.on("Tick", () => {
 	if (!State.value)
 		return
