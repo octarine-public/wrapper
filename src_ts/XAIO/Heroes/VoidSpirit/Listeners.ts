@@ -1,26 +1,19 @@
-import { NearMouse, ComboKey, State } from "./Menu"
-import { InitCombo } from "./module/Combo"
-import { Unit, ArrayExtensions, Input } from "wrapper/Imports"
-import { RegisterHeroModule, Units } from "XAIO/bootstrap"
+// import { XAIONearMouse, XAIOState } from "./Menu"
+// import { InitCombo } from "./module/Combo"
+// import { RegisterHeroModule, orderByFromUnit } from "../bootstrap"
+// import { Unit } from "wrapper/Imports"
 
-RegisterHeroModule("npc_dota_hero_void_spirit", { InitTick })
+// RegisterHeroModule("npc_dota_hero_void_spirit", {
+// 	InitTick,
+// 	InitDraw
+// })
 
-export function InitTick(unit: Unit) {
+// function InitTick(unit: Unit) {
+// 	if (!XAIOState.value)
+// 		return
+// 	InitCombo(unit, orderByFromUnit(XAIONearMouse))
+// }
 
-	if (!State.value)
-		return
+// function InitDraw(unit: Unit) {
 
-	if (!ComboKey.is_pressed)
-		return
-
-	InitCombo(
-		unit,
-		ArrayExtensions.orderBy(
-			Units.filter(x => x.IsHero
-				&& x.IsEnemy()
-				&& x.Distance(Input.CursorOnWorld) <= NearMouse.value
-				&& x.IsAlive),
-			x => x.Distance(Input.CursorOnWorld)
-		)[0]
-	)
-}
+// }

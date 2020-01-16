@@ -1,22 +1,46 @@
-import { Ability, Unit, TickSleeper, GameSleeper, Game, Vector3, Hero, EntityManager, EventsSDK } from "wrapper/Imports"
-import { XAIOInput, XAIOCollisionTypes, XAIOSkillshotType, XAIOPrediction, XAIOHitChance, Sleeper } from "./bootstrap"
+import {
+	Hero,
+	Unit,
+	Ability,
+	Vector3,
+	EventsSDK,
+	item_sphere,
+	EntityManager,
+	TickSleeper,
+	GameSleeper,
+	antimage_spell_shield,
+	Menu,
+	Item
+} from "wrapper/Imports"
 
-let SleepTick = new TickSleeper(),
-	ActionSleeper = new Sleeper(),
-	AbilitySleep = new GameSleeper()
+import { Sleeper, XAIOGame } from "./bootstrap"
+
+let GameData = new XAIOGame()
+
+let SleepTick = new TickSleeper() 		// tick ms
+let ActionSleeper = new Sleeper() 		// sleep sec
+let AbilitySleep = new GameSleeper() 	// sleep name
 
 export default class AbilitiesHelper {
 
-	private CancelModifiers = [
+	private readonly CancelModifiers: string[] = [
 		"modifier_abaddon_borrowed_time",
 		"modifier_item_combo_breaker_buff",
 		"modifier_winter_wyvern_winters_curse_aura",
 		"modifier_winter_wyvern_winters_curse",
-		"modifier_oracle_fates_edict"
+		"modifier_oracle_fates_edict",
+		"modifier_item_lotus_orb_active",
+		"modifier_antimage_counterspell",
+	]
+
+	private readonly AnyModifiers: string[] = [
+		"modifier_dazzle_shallow_grave",
+		"modifier_spirit_breaker_charge_of_darkness",
+		"modifier_pugna_nether_ward_aura"
 	]
 
 	public get OrderCastDelay() {
-		return (((Game.Ping / 2) / 1000) + 230)
+		return ((GameData.Ping / 1000) + 200)
 	}
 
 	public Stop(unit: Unit) {
@@ -50,7 +74,7 @@ export default class AbilitiesHelper {
 	public UseAbility(abil: Ability, HitAndRun: boolean = false, toogle: boolean = false, unit?: Unit | Vector3): boolean {
 		let owner = abil.Owner
 
-		if (owner === undefined || owner.IsChanneling || owner.IsInAbilityPhase)
+		if (owner === undefined || !abil.CanBeCasted() || owner.IsChanneling || owner.IsInAbilityPhase)
 			return false
 
 		if (unit instanceof Unit && !HitAndRun) {
@@ -89,60 +113,6 @@ export default class AbilitiesHelper {
 		return true
 	}
 
-	public UseHook(abil: Ability, target: Unit) {
-		let owner = abil.Owner
-		if (owner === undefined)
-			return false
-
-		let InputDataHook = new XAIOInput(
-			target,
-			owner,
-			abil.CastRange,
-			abil.CastPoint,
-			target.HullRadius,
-			abil.AOERadius,
-			XAIOCollisionTypes.AllUnits,
-			0,
-			true,
-			XAIOSkillshotType.Line,
-			abil.Speed, abil ? true : false
-		)
-
-		let xAIOPrediction = new XAIOPrediction(),
-			prediction = xAIOPrediction.GetPrediction(InputDataHook)
-
-		if (prediction.HitChance <= XAIOHitChance.Impossible)
-			return false
-
-		return !this.UseAbility(abil, true, false, prediction.CastPosition)
-	}
-
-	public UseBlinkLineCombo(blink: Ability, target: Unit) {
-
-		let Owner = blink.Owner
-		if (Owner === undefined)
-			return false
-
-		let InputDataBlink = new XAIOInput(
-			target,
-			Owner,
-			blink.CastRange,
-			0, 0, 0,
-			XAIOCollisionTypes.None,
-			blink.CastRange,
-			true,
-			XAIOSkillshotType.Line, 0, true
-		)
-
-		let xAIOPrediction = new XAIOPrediction(),
-			predictionOutput = xAIOPrediction.GetPrediction(InputDataBlink)
-
-		if (predictionOutput.HitChance <= XAIOHitChance.Impossible)
-			return false
-
-		return !this.UseAbility(blink, true, false, predictionOutput.BlinkLinePosition)
-	}
-
 	public AbilityForCancel(target: Unit): boolean {
 		return !target.IsInvulnerable && !target.ModifiersBook.HasAnyBuffByNames(this.CancelModifiers)
 	}
@@ -152,29 +122,37 @@ export default class AbilitiesHelper {
 	}
 
 	public IsLinkensProtected(unit: Unit) {
-		var linkens = unit.GetItemByName("item_sphere") ?? false
-		return linkens && linkens?.Cooldown <= 0 || unit.HasBuffByName("modifier_item_sphere_target")
+		let itemSphere = unit.GetItemByClass(item_sphere)
+		return itemSphere && itemSphere?.Cooldown <= 0 || unit.HasBuffByName("modifier_item_sphere_target")
 	}
 
 	public IsSpellShieldProtected(unit: Unit): boolean {
-		var spellShield = unit.GetAbilityByName("antimage_spell_shield") ?? false
-		return spellShield && spellShield?.Cooldown <= 0
+		let spellShield = unit.GetAbilityByClass(antimage_spell_shield)
+		return spellShield && spellShield.Cooldown <= 0 || false
 	}
 
-	public IsBlockingAbilities(unit: Unit, checkReflecting: boolean = false) {
-		if (checkReflecting && unit.HasBuffByName("modifier_item_lotus_orb_active")) {
+	public IsBlockingAbilities(owner: Unit, target: Unit, arr_linken: Constructor<Ability>[], LinkenSelectror: Menu.ImageSelector, checkReflecting: boolean = false) {
+		if (checkReflecting && target.HasBuffByName("modifier_item_lotus_orb_active")) {
 			return true
 		}
 
-		if (this.IsLinkensProtected(unit)) {
+		if (this.IsLinkensProtected(target)) {
+			this.UseLinkenBreaker(owner, target, arr_linken, LinkenSelectror)
 			return true
 		}
 
-		if (this.IsSpellShieldProtected(unit)) {
+		if (this.IsSpellShieldProtected(target)) {
 			return true
 		}
 
 		return false
+	}
+
+	public UseLinkenBreaker(owner: Unit, target: Unit, arr_linken: Constructor<Ability>[], LinkenSelectror: Menu.ImageSelector) {
+		if (target === undefined || target.IsInvulnerable || target.IsMagicImmune)
+			return
+		if (arr_linken.some(item => this.LinkenBreaker(owner, item, target, LinkenSelectror)))
+			return
 	}
 
 	private DuelAghanimsScepter(target: Unit): boolean {
@@ -186,6 +164,20 @@ export default class AbilitiesHelper {
 				&& x.Name === "npc_dota_hero_legion_commander"
 				&& x.HasScepter
 			)
+	}
+
+	private IsValidLinkenBreaker(abil: Ability, target: Unit, Selectror: Menu.ImageSelector) {
+		return abil !== undefined && abil.CanBeCasted()
+			&& Selectror.IsEnabled(abil.Name)
+			&& abil.CanHit(target)
+	}
+
+	private LinkenBreaker(owner: Unit, abil: Constructor<Ability>, target: Unit, LinkenSelectror: Menu.ImageSelector) {
+		let ability = owner.GetAbilityByClass(abil) ?? owner.GetItemByClass(abil as Constructor<Item>)
+		if (!this.IsValidLinkenBreaker(ability!, target, LinkenSelectror))
+			return false
+		if (this.UseAbility(ability!, false, false, target))
+			return true
 	}
 
 }

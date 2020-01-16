@@ -1,8 +1,10 @@
-import { Unit, Game, dotaunitorder_t, Vector3, GameSleeper, EventsSDK, Input } from "wrapper/Imports"
-
+import { Unit, Utils, dotaunitorder_t, Vector3, GameSleeper, Game, EventsSDK, Input } from "wrapper/Imports"
+import { XAIOGame } from "./bootstrap"
 let TurnEndTime = 0
 let LastAttackTime = 0
 let Sleep = new GameSleeper()
+let GameData = new XAIOGame()
+
 export let UnitsOrbWalker: Map<Unit, OrbWalker> = new Map()
 
 class OrbWalker {
@@ -17,7 +19,11 @@ class OrbWalker {
 		GameActivity_t.ACT_DOTA_RUN
 	]
 	public static get PingTime() {
-		return Game.Ping / 2000
+		return GameData.Ping / 2000
+	}
+
+	private get IsValidUnit() {
+		return this.unit !== undefined
 	}
 
 	public OrbwalkingPoint = new Vector3()
@@ -27,6 +33,9 @@ class OrbWalker {
 	constructor(public unit: Unit) { }
 
 	public Execute(target: Unit): boolean {
+		if (!this.IsValidUnit)
+			return false
+
 		if (Sleep.Sleeping(this.unit))
 			return false
 
@@ -48,6 +57,9 @@ class OrbWalker {
 	}
 
 	public Move(position: Vector3, time: number): boolean {
+		if (!this.IsValidUnit)
+			return false
+
 		if (this.unit.IsMoving)
 			return false
 
@@ -58,6 +70,9 @@ class OrbWalker {
 	}
 
 	public Attack(unit: Unit, time: number) {
+		if (!this.IsValidUnit)
+			return false
+
 		if (time - this.LastAttackOrderIssuedTime < 5 / 1000)
 			return false
 		TurnEndTime = this.GetTurnTime(unit, time)
@@ -77,14 +92,23 @@ class OrbWalker {
 	 */
 
 	public CanAttack(target: Unit, time: number) {
+		if (!this.IsValidUnit)
+			return false
+
 		return this.unit.CanAttack && this.GetTurnTime(target, time) - LastAttackTime > 1 / this.unit.AttacksPerSecond
 	}
 
 	public GetTurnTime(unit: Unit, time: number): number {
+		if (!this.IsValidUnit)
+			return 0
+
 		return time + OrbWalker.PingTime + this.unit.TurnTime(unit.Position) + 0.1 / 1000
 	}
 
 	public CanMove(time: number) {
+		if (!this.IsValidUnit)
+			return false
+
 		return ((time - 0.1) + OrbWalker.PingTime) - LastAttackTime > this.unit.AttackPoint
 	}
 }
@@ -136,3 +160,4 @@ EventsSDK.on("PrepareUnitOrders", args => {
 	if (orbwalker.CanMove(Game.RawGameTime))
 		LastAttackTime = orbwalker.GetTurnTime(target, Game.RawGameTime) - OrbWalker.PingTime
 })
+

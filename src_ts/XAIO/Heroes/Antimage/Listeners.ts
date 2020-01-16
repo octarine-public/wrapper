@@ -1,22 +1,20 @@
-import { NearMouse } from "./Menu"
-import { InitCombo } from "./module/Combo"
-import { Unit, ArrayExtensions, Input } from "wrapper/Imports"
-import { RegisterHeroModule, Units } from "XAIO/bootstrap"
+// import { Unit, ExecuteOrder } from "wrapper/Imports"
+// // import { XAIONearMouse, XAIOState } from "./Menu"
+// // import { InitCombo } from "./module/Combo"
+// import { RegisterHeroModule, orderByFromUnit } from "../bootstrap"
 
-RegisterHeroModule("npc_dota_hero_antimage", { InitTick })
+// RegisterHeroModule("npc_dota_hero_antimage", { InitTick, InitDraw, InitOrder })
 
-let near_enemy: Nullable<Unit>
+// function InitTick(unit: Unit) {
+// 	// if (!XAIOState.value)
+// 	// 	return
+// 	//InitCombo(unit, orderByFromUnit(XAIONearMouse))
+// }
 
-export function InitTick(unit: Unit) {
-	near_enemy = ArrayExtensions.orderBy(
-		Units.filter(x => x.IsHero
-			&& x.IsEnemy()
-			&& x.Distance(Input.CursorOnWorld) <= NearMouse.value
-			&& x.IsAlive),
-		x => x.Distance(Input.CursorOnWorld)
-	)[0]
+// function InitDraw(unit: Unit) {
 
-	// console.log(unit.Name)
+// }
 
-	InitCombo(unit, near_enemy)
-}
+// function InitOrder(order: ExecuteOrder, unit: Unit) {
+// 	return true
+// }

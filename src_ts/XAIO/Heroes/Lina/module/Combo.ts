@@ -1,16 +1,16 @@
-import { Unit } from "wrapper/Imports"
-import { ComboKey } from "../Menu"
-import { UnitsOrbWalker } from "../../../Helper/OrbWalker"
+// import { Unit } from "wrapper/Imports"
+// import { XAIOComboKey } from "../Menu"
+// import { UnitsOrbWalker } from "../../bootstrap"
 
-// function UseAbility(unit: Unit, abil: Ability) {
+// // function UseAbility(unit: Unit, abil: Ability) {
 
+// // }
+
+// export function InitCombo(unit: Unit, enemy: Nullable<Unit>) {
+
+// 	if (enemy === undefined || !XAIOComboKey.is_pressed)
+// 		return
+
+// 	if (!UnitsOrbWalker.get(unit)?.Execute(enemy))
+// 		return
 // }
-
-export function InitCombo(unit: Unit, enemy: Nullable<Unit>) {
-
-	if (enemy === undefined || !ComboKey.is_pressed)
-		return
-
-	if (!UnitsOrbWalker.get(unit)?.Execute(enemy))
-		return
-}

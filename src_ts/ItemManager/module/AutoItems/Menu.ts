@@ -91,7 +91,7 @@ export const AutoUseItemsBloodMP_val = AutoUseItemsBlood.AddSlider("Min mana pre
 
 const AutoUseItemsMidas = SettingsAutoItems.AddNode("Midas")
 export const AutoUseItemsMidas_range = AutoUseItemsMidas.AddToggle("Only range-creeps")
-export const AutoUseItemsMidas_CheckBIG = AutoUseItemsMidas.AddToggle("Check on big creeps")
+export const AutoUseItemsMidas_CheckBIG = AutoUseItemsMidas.AddToggle("Check on big creeps", true)
 
 const AutoUseItemsUrn = SettingsAutoItems.AddNode("Urn / Vessel")
 export const AutoUseItemsUrnAlies = AutoUseItemsUrn.AddToggle("Use Urn for Allies")

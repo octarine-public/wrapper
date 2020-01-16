@@ -1,9 +1,9 @@
-import { XMenu, Menu } from "../../Menu/Base"
+// import { XAIOMenuHero, XAIOSelectLanguage, XAIOMenuHeroesTree } from "XAIO/Menu/Menu"
 
-export const {
-	State,
-	BaseTree,
-	ComboKey,
-	NearMouse,
-	ComboTree,
-} = XMenu(Menu, "AntiMage")
+// export const {
+// 	XAIOState,
+// 	XAIOBaseTree,
+// 	XAIOComboKey,
+// 	XAIONearMouse,
+// 	XAIOComboTree,
+// } = XAIOMenuHero(XAIOMenuHeroesTree, "AntiMage")
