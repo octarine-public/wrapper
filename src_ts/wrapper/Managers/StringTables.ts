@@ -1,5 +1,5 @@
-import Events from "./Events"
 import { Utf8ArrayToStr } from "../Utils/Utils"
+import EventsSDK from "./EventsSDK"
 
 let StringTables = new Map<string, Map<number, [string, ArrayBuffer]>>()
 declare global {
@@ -8,10 +8,8 @@ declare global {
 }
 globalThis.StringTables_ = StringTables
 
-Events.on("RemoveAllStringTables", () => {
-	StringTables.clear()
-})
-Events.on("UpdateStringTable", (name, update) => {
+EventsSDK.on("RemoveAllStringTables", () => StringTables.clear())
+EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (!StringTables.has(name))
 		StringTables.set(name, new Map())
 	let table = StringTables.get(name)!

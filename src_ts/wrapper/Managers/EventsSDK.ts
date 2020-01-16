@@ -119,6 +119,8 @@ interface EventsSDK extends EventEmitter {
 		host_loss: number
 	) => void): EventEmitter
 	on(name: "ServerInfo", listener: (map: RecursiveProtobuf) => void): EventEmitter
+	on(name: "RemoveAllStringTables", listener: () => void): EventEmitter
+	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, ArrayBuffer]>) => void): EventEmitter
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()
