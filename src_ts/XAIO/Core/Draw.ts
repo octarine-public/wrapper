@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { Unit, LocalPlayer, Menu, ParticlesSDK, Vector3, Color, Hero, Ability, EventsSDK, Particle, ArrayExtensions } from "wrapper/Imports"
-import { XAIOEvents } from "../bootstrap"
+import { XAIOEvents } from "./Events"
 
 export let XAIOparKey: Map<Unit, Particle[]> = new Map()
 

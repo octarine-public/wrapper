@@ -1,4 +1,5 @@
 import {
+	Item,
 	item_heavens_halberd,
 	item_diffusal_blade,
 	item_hurricane_pike,
@@ -23,10 +24,10 @@ export let XIAOlinkenItemsMenu: string[] = [
 	"item_bloodthorn",
 	"item_nullifier",
 	"item_rod_of_atos",
-	"item_sheepstick",
+	"item_sheepstick"
 ]
 
-export let XIAOlinkenItems: (typeof item_heavens_halberd)[] = [
+export let XIAOlinkenItems: (typeof Item)[] = [
 	item_heavens_halberd,
 	item_diffusal_blade,
 	item_hurricane_pike,
@@ -37,5 +38,5 @@ export let XIAOlinkenItems: (typeof item_heavens_halberd)[] = [
 	item_bloodthorn,
 	item_nullifier,
 	item_rod_of_atos,
-	item_sheepstick,
+	item_sheepstick
 ]

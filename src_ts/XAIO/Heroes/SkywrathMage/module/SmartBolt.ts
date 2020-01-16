@@ -4,7 +4,7 @@ import { XAIOComboKey, SmartArcaneBoltKey, SmartArcaneAutoBoltState, SmartArcane
 
 let Helper = new SkyAbilitiesHelper()
 
-export function XIAOSKYSmartBolt(unit: Unit, mouse_target: Unit) {
+export function XIAOSKYSmartBolt(unit: Unit, mouse_target: Nullable<Unit>) {
 
 	if (XAIOComboKey.is_pressed || mouse_target === undefined || (!SmartArcaneBoltKey.is_pressed && !SmartArcaneAutoBoltState.value))
 		return

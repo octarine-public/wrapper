@@ -1,4 +1,5 @@
 export { XIAOlinkenItems, XIAOlinkenItemsMenu } from "./Data"
+export { XAIOEvents } from "./Events"
 export { default as XAIOGame } from "./XAIOGame"
 export { default as Sleeper } from "./Sleeper"
 export { UnitsOrbWalker } from "./OrbWalker"

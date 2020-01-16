@@ -27,9 +27,10 @@ let Helper = new SkyAbilitiesHelper()
 XAIOComboKey.OnRelease(() => ComboActived = !ComboActived)
 
 
-let LinkenBreakClassItems: (typeof skywrath_mage_ancient_seal)[] = [
-	...XIAOlinkenItems,
-	...[skywrath_mage_arcane_bolt, skywrath_mage_ancient_seal]
+let LinkenBreakClassItems: (typeof Ability)[] = [
+	skywrath_mage_arcane_bolt,
+	skywrath_mage_ancient_seal,
+	...XIAOlinkenItems
 ]
 
 export function XAIOSKYSmartCast(
@@ -87,7 +88,7 @@ export function XAIOSKYSmartCast(
 			GameSleep.Sleep(abil.GetHitTime(target.Position) + 30, "await_ethereal", true)
 			if (!SkyProjectileItems.IsEnabled(abil.Name))
 				return true
-			GameSleep.Sleep((Owner.Distance2D(target) / abil.Speed) * 1000, "await_projectile", true)
+			GameSleep.Sleep(abil.GetHitTime(target.Position), "await_projectile", true)
 			return true
 		}
 	}

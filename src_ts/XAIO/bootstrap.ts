@@ -1,6 +1,7 @@
 
-import { Unit, EventsSDK, LocalPlayer, EntityManager, EventEmitter } from "wrapper/Imports"
+import { Unit, EventsSDK, LocalPlayer, EntityManager } from "wrapper/Imports"
 import { XAIOStateGlobal, XAIOLanguageState, XAIOGeneralSettings } from "XAIO/Menu/Menu"
+import { XAIOEvents } from "./Core/bootstrap"
 export { XAIOStateGlobal } from "XAIO/Menu/Menu"
 let XAIOversion = XAIOGeneralSettings.AddNode("XAIO Verison: 1.0")
 
@@ -8,13 +9,8 @@ XAIOversion.FontSize = 20
 XAIOversion.is_open = true
 XAIOversion.FontColor.SetColor(3, 127, 252, 255)
 
-interface XAIOEvents extends EventEmitter {
-	on(name: "removeControllable", callback: (unit: Unit) => void): EventEmitter
-}
-
 export let Units: Unit[] = []
 export let UnitsIsControllable: Unit[] = []
-export const XAIOEvents: XAIOEvents = new EventEmitter()
 
 let XIAOTempLanguage = XAIOLanguageState.selected_id
 
