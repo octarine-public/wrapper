@@ -1,66 +1,34 @@
 
 import { EnemyMouse } from "./index"
 import { ComboActived } from "./Combo"
-
+import { array_sky_radiuses } from "../Data"
+import { XAIOParticle } from "../../../Core/bootstrap"
 import { Units, XAIOStateGlobal } from "../../../bootstrap"
-import { XAIOParticle, XAIOparKey } from "../../../Core/bootstrap"
 
 import {
-	Game,
-	Item,
-	Color,
-	Vector2,
-	item_blink,
-	RendererSDK,
-	FontFlags_t,
-	DOTAGameUIState_t,
-	skywrath_mage_arcane_bolt,
-	skywrath_mage_concussive_shot,
-	skywrath_mage_ancient_seal,
-	skywrath_mage_mystic_flare,
-	ParticlesSDK,
+	Game, Color, Vector2, Ability,
+	RendererSDK, FontFlags_t,
+	DOTAGameUIState_t, skywrath_mage_concussive_shot,
 } from "wrapper/Imports"
 
 import {
-	XAIOState,
-	XAIOComboKey,
-	XAIOStyleCombo,
-	SkyAutoComboState,
-	BlinkRadiusItemColor,
-	XAIORangeRadiusesStyle,
-	ArcaneBoltRadiusColor,
-	AncientSealRadiusColor,
-	MysticFlareRadiusColor,
-	SkyRangeRadiusesSelector,
-	ConcussiveShotRadiusColor,
-	XIAORadiusColorAttackRange,
-	SkyConShotPositionZ,
-	XAIOAttackRadiusesStyle,
-	SkyDrawingtargetStateShot,
-	XIAODrawingtargetState,
-	XIAODrawingtargetLineActive,
-	XIAODrawingtargetLineDeactive,
-	XAIOAttackRangeRadiusState,
-	SkyAutoComboDisableWhen,
-	SkyPanelTextItem,
-	SkyPanelTextXItem,
-	SkyPanelTextYItem,
-	SkyPanelTextSize,
-	XAIORenderBindKey,
-	XAIORenderBindKeyStyle,
-	SmartArcaneAutoBoltState,
+	XAIOState, XAIOComboKey, XAIOStyleCombo,
+	SkyAutoComboState, BlinkRadiusItemColor,
+	XAIORangeRadiusesStyle, ArcaneBoltRadiusColor,
+	AncientSealRadiusColor, MysticFlareRadiusColor,
+	SkyRangeRadiusesSelector, ConcussiveShotRadiusColor,
+	XIAORadiusColorAttackRange, SkyConShotPositionZ,
+	XAIOAttackRadiusesStyle, SkyDrawingtargetStateShot,
+	XIAODrawingtargetState, XIAODrawingtargetLineActive,
+	XIAODrawingtargetLineDeactive, XAIOAttackRangeRadiusState,
+	SkyAutoComboDisableWhen, SkyPanelTextItem,
+	SkyPanelTextXItem, SkyPanelTextYItem,
+	SkyPanelTextSize, XAIORenderBindKey,
+	XAIORenderBindKeyStyle, SmartArcaneAutoBoltState,
 } from "../Menu"
 
 export let RenderActived: boolean = true
 let classParticle = new XAIOParticle()
-
-let array_ability = [
-	item_blink,
-	skywrath_mage_arcane_bolt,
-	skywrath_mage_ancient_seal,
-	skywrath_mage_mystic_flare,
-	skywrath_mage_concussive_shot,
-]
 
 
 XAIOState.OnDeactivate(classParticle.removePartsAllByName)
@@ -69,12 +37,7 @@ XAIOStateGlobal.OnDeactivate(classParticle.removePartsAllByName)
 
 XAIORenderBindKey.OnRelease(() => {
 	RenderActived = !RenderActived
-	if (!RenderActived) {
-		// loop-optimizer: KEEP
-		XAIOparKey.forEach(key =>
-			key.forEach(x => x.Destroy(true))
-		)
-	}
+	classParticle.removePartsAllByName()
 })
 
 export function InfoPanel() {
@@ -154,51 +117,19 @@ export function ParticleRadius(Particle: XAIOParticle) {
 	if ((XAIORenderBindKeyStyle.selected_id === 1 && !RenderActived) || (XAIORenderBindKeyStyle.selected_id === 0 && !XAIORenderBindKey.is_pressed))
 		return
 
-	array_ability.forEach(class_name => {
-		let abil = Particle.unit!.GetAbilityByClass(class_name) ?? Particle.unit!.GetItemByClass(class_name as Constructor<Item>)
-
-		let nameAbil = class_name.name
-
-		if (abil === undefined || !SkyRangeRadiusesSelector.IsEnabled(nameAbil)) {
-			ParticlesSDK.Remove(Particle.unit + nameAbil)
-			return
-		}
-
-		let color = Color.Red
-
+	Particle.RenderAbilityItems(array_sky_radiuses, SkyRangeRadiusesSelector, XAIORangeRadiusesStyle, (abil: Ability, defColor: Color) => {
 		switch (abil.Name) {
 			case "item_blink":
-				color = BlinkRadiusItemColor.Color
-				break
+				return BlinkRadiusItemColor.Color
 			case "skywrath_mage_arcane_bolt":
-				color = ArcaneBoltRadiusColor.Color
-				break
+				return ArcaneBoltRadiusColor.Color
 			case "skywrath_mage_ancient_seal":
-				color = AncientSealRadiusColor.Color
-				break
+				return AncientSealRadiusColor.Color
 			case "skywrath_mage_mystic_flare":
-				color = MysticFlareRadiusColor.Color
-				break
+				return MysticFlareRadiusColor.Color
 			case "skywrath_mage_concussive_shot":
-				color = ConcussiveShotRadiusColor.Color
-				break
+				return ConcussiveShotRadiusColor.Color
+			default: return defColor
 		}
-
-		let Radius = abil.CastRange
-
-		if (Radius <= 0)
-			Radius = abil.AOERadius
-
-		if (Radius <= 0 || Radius === Number.MAX_SAFE_INTEGER)
-			return
-
-		let par = ParticlesSDK.DrawCircle(Particle.unit + nameAbil, Particle.unit!, Radius, {
-			Width: 10,
-			Color: color,
-			Position: Particle.unit!.Position,
-			RenderStyle: XAIORangeRadiusesStyle.selected_id,
-		})
-
-		Particle.addPartToUnit(par)
 	})
 }

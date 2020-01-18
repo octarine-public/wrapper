@@ -1,19 +1,34 @@
-// import { XAIONearMouse, XAIOState } from "./Menu"
-// import { InitCombo } from "./module/Combo"
-// import { RegisterHeroModule, orderByFromUnit } from "../bootstrap"
-// import { Unit } from "wrapper/Imports"
+import { Unit } from "wrapper/Imports"
+import { InitModuleDraw, InitModuleTick } from "./module/index"
+import { XAIONearMouse, XAIOState, XAIORenderOptimizeType } from "./Menu"
+import { RegisterHeroModule, orderByFromUnit, XAIOParticleMap } from "../bootstrap"
 
-// RegisterHeroModule("npc_dota_hero_void_spirit", {
-// 	InitTick,
-// 	InitDraw
-// })
+RegisterHeroModule("npc_dota_hero_void_spirit", {
+	InitTick,
+	InitDraw
+})
 
-// function InitTick(unit: Unit) {
-// 	if (!XAIOState.value)
-// 		return
-// 	InitCombo(unit, orderByFromUnit(XAIONearMouse))
-// }
+function XAIOParticleMapGet(unit: Unit) {
+	let XAIOParticleMapGet = XAIOParticleMap.get(unit)
+	if (XAIOParticleMapGet === undefined)
+		return
+	InitModuleDraw(XAIOParticleMapGet)
+}
 
-// function InitDraw(unit: Unit) {
+function InitTick(unit: Unit) {
+	if (unit === undefined || !unit.IsAlive)
+		return
 
-// }
+	if (XAIORenderOptimizeType.selected_id === 1)
+		XAIOParticleMapGet(unit)
+
+	if (!XAIOState.value)
+		return
+
+	InitModuleTick(unit, orderByFromUnit(XAIONearMouse.value))
+}
+
+function InitDraw(unit: Unit) {
+	if (XAIORenderOptimizeType.selected_id === 0)
+		XAIOParticleMapGet(unit)
+}

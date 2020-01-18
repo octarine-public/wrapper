@@ -1,5 +1,5 @@
 import {
-	Item,
+	Ability,
 	item_heavens_halberd,
 	item_diffusal_blade,
 	item_hurricane_pike,
@@ -27,7 +27,7 @@ export let XIAOlinkenItemsMenu: string[] = [
 	"item_sheepstick"
 ]
 
-export let XIAOlinkenItems: (typeof Item)[] = [
+export let XIAOlinkenItems: (typeof Ability)[] = [
 	item_heavens_halberd,
 	item_diffusal_blade,
 	item_hurricane_pike,

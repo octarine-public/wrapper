@@ -16,7 +16,9 @@ import {
 	SkyAutoComboDisableWhen,
 	SkyAutoComboMinHPpercent,
 	LinkenBreakAbilityItems,
-	SkyAutoComboState
+	SkyAutoComboState,
+	XAIOOrbWalkerState,
+	XAIOOrbWalkerSwitchState
 } from "../Menu"
 
 export let ComboActived: boolean = false
@@ -174,7 +176,19 @@ export function XIAOSKYCombo(unit: Unit, target: Unit) {
 	if (execute_ability.some(abil_str => XAIOSKYSmartCast(unit, target, Helper, abil_str, ItemsMenu, AbilityMenu)))
 		return
 
-	if (!UnitsOrbWalker.get(unit)?.Execute(target))
+	if (!XAIOOrbWalkerState.value)
+		return
+
+	let orbWalker = UnitsOrbWalker.get(unit)
+
+	if (orbWalker === undefined)
+		return
+
+	orbWalker.OrbwalkingPoint = XAIOOrbWalkerSwitchState.selected_id === 0
+		? target.Position
+		: Input.CursorOnWorld
+
+	if (!orbWalker.Execute(target))
 		return
 }
 

@@ -1,4 +1,5 @@
 import {
+	Ability,
 	item_blink,
 	item_sheepstick,
 	item_rod_of_atos,
@@ -53,6 +54,18 @@ export let menu_projectile: string[] = [
 	"item_rod_of_atos",
 	"item_clumsy_net",
 	"item_ethereal_blade",
+]
+
+export let array_sky_radiuses_menu: string[] = [
+	...menu_ability, "item_blink"
+]
+
+export let array_sky_radiuses: (typeof Ability[]) = [
+	item_blink,
+	skywrath_mage_arcane_bolt,
+	skywrath_mage_ancient_seal,
+	skywrath_mage_mystic_flare,
+	skywrath_mage_concussive_shot,
 ]
 
 export let execute_ability = [

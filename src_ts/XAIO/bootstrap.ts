@@ -3,7 +3,7 @@ import { Unit, EventsSDK, LocalPlayer, EntityManager } from "wrapper/Imports"
 import { XAIOStateGlobal, XAIOLanguageState, XAIOGeneralSettings } from "XAIO/Menu/Menu"
 import { XAIOEvents } from "./Core/bootstrap"
 export { XAIOStateGlobal } from "XAIO/Menu/Menu"
-let XAIOversion = XAIOGeneralSettings.AddNode("XAIO Verison: 1.0")
+let XAIOversion = XAIOGeneralSettings.AddNode("XAIO Verison: 1.1")
 
 XAIOversion.FontSize = 20
 XAIOversion.is_open = true
@@ -20,7 +20,7 @@ EventsSDK.on("Tick", () => {
 
 	Units = EntityManager.GetEntitiesByClass(Unit)
 
-	let newUnitsCtrl = Units.filter(x => x.IsControllable && x.IsAlive && !x.IsInvulnerable)
+	let newUnitsCtrl = Units.filter(x => x.IsControllable && x.IsAlive)
 
 	UnitsIsControllable.forEach(unit => {
 		if (!newUnitsCtrl.includes(unit))
@@ -40,5 +40,6 @@ EventsSDK.on("Draw", () => {
 
 EventsSDK.on("GameEnded", () => {
 	Units = []
+	UnitsIsControllable = []
 })
 

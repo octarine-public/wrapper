@@ -1,5 +1,4 @@
-//@ts-nocheck
-import { Unit, LocalPlayer, Menu, ParticlesSDK, Vector3, Color, Hero, Ability, EventsSDK, Particle, ArrayExtensions } from "wrapper/Imports"
+import { Unit, LocalPlayer, Menu, ParticlesSDK, Vector3, Color, Ability, EventsSDK, Particle, ArrayExtensions, Item } from "wrapper/Imports"
 import { XAIOEvents } from "./Events"
 
 export let XAIOparKey: Map<Unit, Particle[]> = new Map()
@@ -8,32 +7,29 @@ export default class XAIOParticle {
 
 	constructor(public unit?: Unit) { }
 
-
 	private get IsOwnerValid(): boolean {
-		return LocalPlayer !== undefined && LocalPlayer.Hero !== undefined && !LocalPlayer.IsSpectator && this.unit !== undefined
+		return LocalPlayer !== undefined
+			&& LocalPlayer.Hero !== undefined
+			&& !LocalPlayer.IsSpectator
+			&& this.unit !== undefined
 	}
 
 	public DrawCircle(
-		name: string,
-		range: number = 0,
-		selector?: Menu.ImageSelector | undefined,
-		colors?: Color = Color.White,
-		renderStyle?: number = 0,
-		width?: number = 10,
-		infrontUnit?: Vector3 = new Vector3
+		abil: string,
+		patern_name: string,
+		range_radius: number = 0,
+		selector?: Nullable<Menu.ImageSelector>,
+		colors: Color = Color.White,
+		renderStyle: number = 0,
+		width: number = 10,
+		infrontUnit: Vector3 = new Vector3
 	) {
-		if (!this.IsOwnerValid
-			|| !this.unit.IsAlive
-			|| range === 0
-			|| range === Number.MAX_SAFE_INTEGER
-			|| !this.unit.IsAlive
-			|| renderStyle === undefined
-			|| (selector !== undefined && !selector.IsEnabled(name))
-		) {
-			return this.RemoveParticle(name)
+		if (!this.IsOwnerValid || !this.unit!.IsAlive || (selector !== undefined && !selector.IsEnabled(abil))) {
+			this.RemoveParticle(patern_name)
+			return
 		}
 
-		return this.RenderCircle(name, range, width, renderStyle, colors, infrontUnit)
+		return this.RenderCircle(patern_name, range_radius, width, renderStyle, colors, infrontUnit)
 	}
 
 	public RenderCircle(
@@ -41,12 +37,12 @@ export default class XAIOParticle {
 		range: number = 0,
 		width: number = 10,
 		renderStyle: number = 0,
-		Colors?: Color = Color.White,
-		infrontUnit?: Vector3 = new Vector3
+		Colors: Color = Color.White,
+		infrontUnit: Vector3 = new Vector3
 	) {
 		if (!this.IsOwnerValid)
 			return
-		return ParticlesSDK.DrawCircle(name + "_" + this.unit, this.unit, range, {
+		return ParticlesSDK.DrawCircle(name + "_" + this.unit, this.unit!, range, {
 			Width: width,
 			Color: Colors,
 			Position: infrontUnit.IsZero ? this.unit : infrontUnit,
@@ -54,30 +50,78 @@ export default class XAIOParticle {
 		})
 	}
 
-	public DrawAttackRange(stateDraw: Menu.Toggle, color: Color, swither: Menu.Switcher): Nullable<Particle> {
-		if (!this.unit.IsAlive || !stateDraw.value)
-			return this.RemoveParticle("attack_range")
+	public RenderAbilityItems(
+		class_abilityItems: Constructor<Ability>[],
+		RadiusesSelector: Menu.ImageSelector,
+		XAIORangeRadiusesStyle: Menu.Switcher,
+		changeColor: (abil: Ability, defColor: Color) => Color
+	) {
+		if (!this.IsOwnerValid)
+			return
 
-		return this.DrawCircle("attack_range", this.unit.AttackRange, undefined, color, swither)
+		class_abilityItems.forEach(class_name => {
+			let abil = this.unit!.GetAbilityByClass(class_name) ?? this.unit!.GetItemByClass(class_name as Constructor<Item>)
+
+			let nameAbil = class_name.name
+
+			if (abil === undefined) {
+				this.RemoveParticle(this.unit + nameAbil)
+				return
+			}
+
+			let Radius = abil.CastRange
+
+			if (Radius <= 0)
+				Radius = abil.AOERadius
+
+			if (Radius <= 0 || Radius === Number.MAX_SAFE_INTEGER)
+				return
+
+			let par = this.DrawCircle(
+				nameAbil,
+				this.unit + nameAbil,
+				Radius,
+				RadiusesSelector,
+				changeColor(abil, Color.Red),
+				XAIORangeRadiusesStyle.selected_id
+			)
+
+			if (par === undefined)
+				return
+
+			this.addPartToUnit(par!)
+		})
+	}
+
+	public DrawAttackRange(stateDraw: Menu.Toggle, color: Color, swither: Menu.Switcher): Nullable<Particle> {
+		if (!this.IsOwnerValid)
+			return
+		if (!this.unit!.IsAlive || !stateDraw.value) {
+			this.RemoveParticle("attack_range")
+			return
+		}
+		return this.DrawCircle("attack_range", "attack_range", this.unit!.AttackRange, undefined, color, swither.selected_id)
 	}
 
 	public RenderLineTarget(stateDraw: Menu.Toggle, enemy: Nullable<Unit>, color: Color) {
-		if (!stateDraw.value || !this.unit.IsAlive || enemy === undefined) {
+		if (!this.IsOwnerValid)
+			return
+		if (!stateDraw.value || !this.unit!.IsAlive || enemy === undefined) {
 			ParticlesSDK.Remove(this.unit + "_target")
 			return
 		}
-		return ParticlesSDK.DrawLineToTarget(this.unit + "_target", this.unit, enemy, color)
+		return ParticlesSDK.DrawLineToTarget(this.unit + "_target", this.unit!, enemy, color)
 	}
 
-
 	public RenderConShot(State: Menu.Toggle, ability: Ability, PosShot: Menu.Slider, Units: Unit[]) {
-
+		if (!this.IsOwnerValid)
+			return
 		let Enemy: Unit = ArrayExtensions.orderBy(Units.filter(
 			x => x.IsEnemy() && x.IsVisible
-				&& x.IsHero && x.IsAlive && x.Distance(this.unit) <= (ability.CastRange === Number.MAX_SAFE_INTEGER ? 3000 : ability.CastRange)
-		), ent => ent.Distance(this.unit))[0]
+				&& x.IsHero && x.IsAlive && x.Distance(this.unit!) <= (ability.CastRange === Number.MAX_SAFE_INTEGER ? 3000 : ability.CastRange)
+		), ent => ent.Distance(this.unit!))[0]
 
-		if (Enemy === undefined || !this.unit.IsAlive || !State.value || !Enemy.IsVisible || !ability.CanBeCasted())
+		if (Enemy === undefined || !this.unit!.IsAlive || !State.value || !Enemy.IsVisible || !ability.CanBeCasted())
 			return this.RemoveParticle(ability.Name + ability.Index)
 
 		return this.CreateConShot(ability.Name + ability.Index, Enemy, PosShot)
@@ -94,13 +138,9 @@ export default class XAIOParticle {
 		)
 	}
 
-	public readonly removePartsAllByName = () => {
-		if (!this.IsOwnerValid)
-			return
+	public removePartsAllByName() {
 		// loop-optimizer: KEEP
-		XAIOparKey.forEach((key, unit) => {
-			if (unit.Name !== this.unit.Name)
-				return
+		XAIOparKey.forEach(key => {
 			key.forEach(x => x.Destroy(true))
 		})
 	}
@@ -109,13 +149,18 @@ export default class XAIOParticle {
 		if (!this.IsOwnerValid)
 			return
 
-		let particles = XAIOparKey.get(this.unit)
+		let particles = XAIOparKey.get(this.unit!)
 
-		particles === undefined
-			? particles = [par]
-			: particles.push(par)
+		if (particles === undefined) {
+			particles = [par]
+		}
+		else {
+			if (particles.includes(par))
+				return
+			particles.push(par)
+		}
 
-		XAIOparKey.set(this.unit, particles)
+		XAIOparKey.set(this.unit!, particles)
 	}
 
 	public RemoveParticle(name: string) {
@@ -130,4 +175,8 @@ XAIOEvents.on("removeControllable", (unit) => {
 		return
 	// loop-optimizer: KEEP
 	XAIOparKey.get(unit)?.forEach(x => x.Destroy(true))
+})
+
+EventsSDK.on("GameEnded", () => {
+	XAIOparKey.clear()
 })

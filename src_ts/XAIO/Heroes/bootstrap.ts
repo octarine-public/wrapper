@@ -13,9 +13,6 @@ import { Units, UnitsIsControllable, XAIOStateGlobal } from "../bootstrap"
 
 export const XAIOParticleMap = new Map<Unit, XAIOParticle>()
 
-// import { OrderSkywrathMage } from "../Heroes/SkywrathMage/Listeners"
-
-
 export function orderByFromUnit(range: number = 1200, unit?: Nullable<Unit>) {
 	let input = unit === undefined ? Input.CursorOnWorld : unit
 	return ArrayExtensions.orderBy(Units.filter(x =>
@@ -29,8 +26,6 @@ interface HeroModule {
 }
 
 let hero_modules = new Map<string, HeroModule>()
-
-export let oldUnits: Unit[] = []
 
 export function RegisterHeroModule(name: string, module: HeroModule) {
 	hero_modules.set(name, module)
@@ -68,4 +63,8 @@ EventsSDK.on("Draw", () => {
 		!unit.IsEnemy()
 		&& hero_modules.get(unit.Name)?.InitDraw(unit)
 	)
+})
+
+EventsSDK.on("GameEnded", () => {
+	XAIOParticleMap.clear()
 })

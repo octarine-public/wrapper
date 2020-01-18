@@ -94,7 +94,19 @@ export default class AbilitiesHelper {
 		if (abil === undefined || AbilitySleep.Sleeping(abil))
 			return false
 
-		let castDelay = !abil.IsItem ? (((abil.CastPoint * 2) * 1000) + this.OrderCastDelay) : this.OrderCastDelay
+		let delayPosition = 0
+
+		if (unit instanceof Unit)
+			delayPosition = abil.GetCastDelay(unit.Position)
+
+		if (unit instanceof Vector3)
+			delayPosition = abil.GetCastDelay(unit)
+
+		let logic_castDelay = abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AOE)
+			? delayPosition
+			: (abil.CastPoint * 2)
+
+		let castDelay = !abil.IsItem ? ((logic_castDelay * 1000) + this.OrderCastDelay) : this.OrderCastDelay
 
 		if (toogle) {
 			abil.UseAbility(owner, true)

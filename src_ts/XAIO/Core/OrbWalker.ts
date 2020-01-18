@@ -18,6 +18,7 @@ class OrbWalker {
 		GameActivity_t.ACT_DOTA_IDLE_RARE,
 		GameActivity_t.ACT_DOTA_RUN
 	]
+
 	public static get PingTime() {
 		return GameData.Ping / 2000
 	}
@@ -27,8 +28,6 @@ class OrbWalker {
 	}
 
 	public OrbwalkingPoint = new Vector3()
-	public LastMoveOrderIssuedTime = 0
-	public LastAttackOrderIssuedTime = 0
 
 	constructor(public unit: Unit) { }
 
@@ -64,8 +63,7 @@ class OrbWalker {
 			return false
 
 		this.unit.MoveTo(position)
-		this.LastMoveOrderIssuedTime = time
-		Sleep.Sleep(this.LastMoveOrderIssuedTime / 5, this.unit)
+		Sleep.Sleep(((GameData.Ping / 1000) + 200), this.unit)
 		return true
 	}
 
@@ -73,23 +71,14 @@ class OrbWalker {
 		if (!this.IsValidUnit)
 			return false
 
-		if (time - this.LastAttackOrderIssuedTime < 5 / 1000)
-			return false
 		TurnEndTime = this.GetTurnTime(unit, time)
 		if (this.unit.CanAttack(unit)) {
 			this.unit.AttackTarget(unit)
-			this.LastAttackOrderIssuedTime = time
-			Sleep.Sleep(this.LastAttackOrderIssuedTime / 5, this.unit)
+			Sleep.Sleep(((GameData.Ping / 1000) + 200), this.unit)
 			return true
 		}
 		return false
 	}
-
-	/**
-	 * CanAttack
-	 * @param target | Enemy
-	 * @param time | ms
-	 */
 
 	public CanAttack(target: Unit, time: number) {
 		if (!this.IsValidUnit)
@@ -128,6 +117,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 EventsSDK.on("GameEnded", () => {
 	TurnEndTime = 0
 	LastAttackTime = 0
+	Sleep.FullReset()
 })
 
 EventsSDK.on("NetworkActivityChanged", unit => {

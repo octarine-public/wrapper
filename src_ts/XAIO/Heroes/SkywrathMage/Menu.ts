@@ -1,6 +1,6 @@
 import { Color } from "wrapper/Imports"
 import { XIAOlinkenItemsMenu } from "../../Core/bootstrap"
-import { menu_ability, menu_items, menu_projectile } from "./Data"
+import { menu_ability, menu_items, menu_projectile, array_sky_radiuses_menu } from "./Data"
 import { XAIOMenuHero, XAIOSelectLanguage, XAIOMenuHeroesTree } from "XAIO/Menu/Menu"
 
 export const {
@@ -29,7 +29,9 @@ export const {
 	XAIORenderBindKeyStyle,
 	XAIORenderOptimizeType,
 	XAIOSettingsBladMailTree,
-	XAIOSettingsBladMailState
+	XAIOSettingsBladMailState,
+	XAIOOrbWalkerState,
+	XAIOOrbWalkerSwitchState,
 } = XAIOMenuHero(XAIOMenuHeroesTree, "Skywrath Mage")
 
 /**
@@ -49,7 +51,7 @@ export const ItemsMenu = XAIOComboTree.AddImageSelector(
 
 const SmartArcaneBolt = XAIOBaseTree.AddNode(XAIOSelectLanguage("Умный Arcane Bolt", "Smart Arcane Bolt"))
 export const SmartArcaneBoltKey = SmartArcaneBolt.AddKeybind("Spam Arcane Bolt")
-export const SmartArcaneAutoBoltState = SmartArcaneBolt.AddToggle(XAIOSelectLanguage("Авто Arcane Bolt - Вкл/выкл", "Auto Arcane Bolt - On/off"), true)
+export const SmartArcaneAutoBoltState = SmartArcaneBolt.AddToggle(XAIOSelectLanguage("Авто Arcane Bolt - Вкл | выкл", "Auto Arcane Bolt - On | off"), true)
 export const SmartArcaneOwnerHP = SmartArcaneBolt.AddSlider("Min HP % To Auto Bolt", 20, 0, 100)
 
 const SmartConShot = XAIOBaseTree.AddNode(XAIOSelectLanguage("Умный Concussive Shot", "Smart Concussive Shot"))
@@ -61,7 +63,7 @@ export const SmartConShotRadius = SmartConShot.AddSlider(XAIOSelectLanguage("И�
  * @____________MenuAutoCombo____________
 */
 const SkyAutoCombo = XAIOBaseTree.AddNode(XAIOSelectLanguage("Авто комбо", "Auto Combo"))
-export const SkyAutoComboState = SkyAutoCombo.AddToggle(XAIOSelectLanguage("Вкл/выкл", "On/off"), true)
+export const SkyAutoComboState = SkyAutoCombo.AddToggle(XAIOSelectLanguage("Вкл | выкл", "On | off"), true)
 export const SkyAutoComboDisableWhen = SkyAutoCombo.AddToggle(XAIOSelectLanguage("Отключить при комбо", "Disable When Combo"), true)
 export const SkyAutoComboMinHPpercent = SkyAutoCombo.AddSlider(XAIOSelectLanguage("Мин. ХП% для авто комбо", "Min HP % To Auto Combo"), 0, 0, 100)
 
@@ -87,7 +89,7 @@ export let XIAOSkylinkenAbility: string[] = [
 ]
 
 export const LinkenBreakAbilityItems = XAIOLinkenBreakTree.AddImageSelector(
-	XAIOSelectLanguage("Cпособности/Предметы", "Ability/Items"),
+	XAIOSelectLanguage("Cпособности & Предметы", "Ability & Items"),
 	[...XIAOlinkenItemsMenu, ...XIAOSkylinkenAbility],
 	new Map([...XIAOlinkenItemsMenu, ...XIAOSkylinkenAbility].map(name => [name, true]))
 )
@@ -96,17 +98,9 @@ export const LinkenBreakAbilityItems = XAIOLinkenBreakTree.AddImageSelector(
  * @____________MenuVisual____________
 */
 
-let array_sky_radiuses: string[] = [
-	"skywrath_mage_arcane_bolt",
-	"skywrath_mage_concussive_shot",
-	"skywrath_mage_ancient_seal",
-	"skywrath_mage_mystic_flare",
-	"item_blink"
-]
-
 export const SkyRangeRadiusesSelector = XAIORadiusesTree.AddImageSelector(
-	XAIOSelectLanguage("Радиусы", "Radiuses"), array_sky_radiuses,
-	new Map(array_sky_radiuses.map(name => [name, true]))
+	XAIOSelectLanguage("Радиусы", "Radiuses"), array_sky_radiuses_menu,
+	new Map(array_sky_radiuses_menu.map(name => [name, true]))
 )
 
 export const BlinkRadiusItemColor = XAIORadiusesTree.AddColorPicker("Blink", Color.RoyalBlue)
@@ -119,7 +113,7 @@ export const SkyDrawingtargetStateShot = XAIODrawingtargetTree.AddToggle(XAIOSel
 export const SkyConShotPositionZ = XAIODrawingtargetTree.AddSlider("Concusive: " + XAIOSelectLanguage("Высота", "height"), 310, 310, 1000)
 
 export const DrawingtextMenu = XAIODrawingTree.AddNode(XAIOSelectLanguage("Информационная панель", "Info Panel"))
-export const SkyPanelTextItem = DrawingtextMenu.AddToggle(XAIOSelectLanguage("Вкл/выкл", "On/off"), true)
+export const SkyPanelTextItem = DrawingtextMenu.AddToggle(XAIOSelectLanguage("Вкл | выкл", "On | off"), true)
 export const SkyPanelTextSize = DrawingtextMenu.AddSlider(XAIOSelectLanguage("Размер шрифта", "Size text"), 18, 8, 100)
 export const SkyPanelTextXItem = DrawingtextMenu.AddSlider(XAIOSelectLanguage("Позиция: X", "Position: X"), 18, 1, 100)
 export const SkyPanelTextYItem = DrawingtextMenu.AddSlider(XAIOSelectLanguage("Позиция: Y", "Position: Y"), 87, 1, 100)
