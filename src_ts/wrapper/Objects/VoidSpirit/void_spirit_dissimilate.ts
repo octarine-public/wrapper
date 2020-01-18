@@ -4,7 +4,7 @@ export default class void_spirit_dissimilate extends Ability {
 	public readonly m_pBaseEntity!: CDOTA_Ability_VoidSpirit_Dissimilate
 
 	public get AOERadius(): number {
-		return 800
+		return this.GetSpecialValue("first_ring_distance_offset") * 1.5
 	}
 }
 
