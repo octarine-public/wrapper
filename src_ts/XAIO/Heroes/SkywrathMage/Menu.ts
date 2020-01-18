@@ -97,7 +97,6 @@ export const LinkenBreakAbilityItems = XAIOLinkenBreakTree.AddImageSelector(
 /**
  * @____________MenuVisual____________
 */
-
 export const SkyRangeRadiusesSelector = XAIORadiusesTree.AddImageSelector(
 	XAIOSelectLanguage("Радиусы", "Radiuses"), array_sky_radiuses_menu,
 	new Map(array_sky_radiuses_menu.map(name => [name, true]))
@@ -121,7 +120,6 @@ export const SkyPanelTextYItem = DrawingtextMenu.AddSlider(XAIOSelectLanguage("�
 /**
  * @______________Settings________________
  */
-
 export const SkyBlink = XAIOSettingsMenu.AddSlider(XAIOSelectLanguage("Blink расстояние от врага", "Blink distance from enemy"), 400, 0, 1200)
 
 export const SkyProjectileItems = XAIOSettingsMenu.AddImageSelector(

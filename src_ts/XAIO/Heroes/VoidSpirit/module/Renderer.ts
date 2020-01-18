@@ -1,7 +1,7 @@
 import { array_ability_render } from "../Data"
 import { ComboActived } from "./Combo"
 import { EnemyMouse } from "./index"
-import XAIOParticle from "../../../Core/Draw"
+import XAIOParticle from "XAIO/Core/Draw"
 import { Color, Ability } from "wrapper/Imports"
 import {
 	XAIOState, XAIOStateGlobal, XAIOComboKey,
@@ -21,6 +21,7 @@ XAIORenderBindKey.OnRelease(() => {
 	RenderActived = !RenderActived
 	classParticle.removePartsAllByName()
 })
+
 
 XAIOState.OnDeactivate(classParticle.removePartsAllByName)
 XAIOStateGlobal.OnDeactivate(classParticle.removePartsAllByName)

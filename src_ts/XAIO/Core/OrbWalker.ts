@@ -1,13 +1,15 @@
-import { Unit, dotaunitorder_t, Vector3, GameSleeper, Game, EventsSDK, Input } from "wrapper/Imports"
+import { Unit, dotaunitorder_t, GameSleeper, Game, EventsSDK, Input } from "wrapper/Imports"
 import { XAIOGame } from "./bootstrap"
-let TurnEndTime = 0
-let LastAttackTime = 0
 let Sleep = new GameSleeper()
 let GameData = new XAIOGame()
 
 export let UnitsOrbWalker: Map<Unit, OrbWalker> = new Map()
 
 class OrbWalker {
+
+	public TurnEndTime = 0
+	public LastAttackTime = 0
+
 	public static readonly attackActivities: GameActivity_t[] = [
 		GameActivity_t.ACT_DOTA_ATTACK,
 		GameActivity_t.ACT_DOTA_ATTACK2,
@@ -19,87 +21,41 @@ class OrbWalker {
 		GameActivity_t.ACT_DOTA_RUN
 	]
 
-	public static get PingTime() {
-		return GameData.Ping / 2000
-	}
-
-	private get IsValidUnit() {
-		return this.unit !== undefined
-	}
-
-	public OrbwalkingPoint = new Vector3()
-
 	constructor(public unit: Unit) { }
 
-	public Execute(target: Unit): boolean {
-		if (!this.IsValidUnit)
-			return false
-
-		if (Sleep.Sleeping(this.unit))
-			return false
-
-		let time = Game.RawGameTime
-
-		if (TurnEndTime > time)
-			return false
-
-		if (this.unit.IsChanneling || !this.unit.IsAlive || this.unit.IsStunned)
-			return false
-
-		if ((target !== undefined && this.CanAttack(target, time)) || !this.CanMove(time))
-			return this.CanAttack(target, time) && this.Attack(target, time)
-
-		if (!this.OrbwalkingPoint.IsZero())
-			return this.Move(this.OrbwalkingPoint, time)
-
-		return this.Move(Input.CursorOnWorld, time)
-	}
-
-	public Move(position: Vector3, time: number): boolean {
-		if (!this.IsValidUnit)
-			return false
-
-		if (this.unit.IsMoving)
-			return false
-
-		this.unit.MoveTo(position)
-		Sleep.Sleep(((GameData.Ping / 1000) + 200), this.unit)
-		return true
-	}
-
-	public Attack(unit: Unit, time: number) {
-		if (!this.IsValidUnit)
-			return false
-
-		TurnEndTime = this.GetTurnTime(unit, time)
-		if (this.unit.CanAttack(unit)) {
-			this.unit.AttackTarget(unit)
-			Sleep.Sleep(((GameData.Ping / 1000) + 200), this.unit)
-			return true
-		}
-		return false
+	public GetTurnTime(target: Unit, time: number) {
+		return time + (GameData.Ping / 2000) + this.unit.TurnTime(target.Position) + 0.2
 	}
 
 	public CanAttack(target: Unit, time: number) {
-		if (!this.IsValidUnit)
-			return false
-
-		return this.unit.CanAttack && this.GetTurnTime(target, time) - LastAttackTime > 1 / this.unit.AttacksPerSecond
-	}
-
-	public GetTurnTime(unit: Unit, time: number): number {
-		if (!this.IsValidUnit)
-			return 0
-
-		return time + OrbWalker.PingTime + this.unit.TurnTime(unit.Position) + 0.1 / 1000
+		return this.unit.CanAttack(target) && (this.GetTurnTime(target, time) - this.LastAttackTime) > (1 / this.unit.AttacksPerSecond)
 	}
 
 	public CanMove(time: number) {
-		if (!this.IsValidUnit)
+		return (((time - 0.1) + (GameData.Ping / 2000)) - this.LastAttackTime) > this.unit.AttackPoint
+	}
+
+	public Execute(target: Unit, type: number) {
+
+		let time = Game.RawGameTime
+
+		if (this.TurnEndTime > time)
 			return false
 
-		return ((time - 0.1) + OrbWalker.PingTime) - LastAttackTime > this.unit.AttackPoint
+		if ((!target.IsValid || !this.CanAttack(target, time)) && this.CanMove(time) && !Sleep.Sleeping("sleep_move")) {
+			this.unit.MoveTo(type === 0 ? target.InFront((GameData.Ping / 1000) + 200) : Input.CursorOnWorld)
+			Sleep.Sleep((GameData.Ping / 1000) + 100, "sleep_move")
+			return false
+		}
+
+		if (!this.CanAttack(target, time))
+			return false
+
+		this.TurnEndTime = this.GetTurnTime(target, time)
+		this.LastAttackTime = this.TurnEndTime - (GameData.Ping / 2000)
+		return true
 	}
+
 }
 
 EventsSDK.on("EntityCreated", ent => {
@@ -115,8 +71,6 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 EventsSDK.on("GameEnded", () => {
-	TurnEndTime = 0
-	LastAttackTime = 0
 	Sleep.FullReset()
 })
 
@@ -128,10 +82,10 @@ EventsSDK.on("NetworkActivityChanged", unit => {
 	let newNetworkActivity = unit.NetworkActivity
 	if (!OrbWalker.attackActivities.includes(newNetworkActivity)) {
 		if (OrbWalker.attackCancelActivities.includes(newNetworkActivity) && !orbwalker.CanMove(Game.RawGameTime + 0.05))
-			LastAttackTime = 0
+			orbwalker.LastAttackTime = 0
 		return
 	}
-	LastAttackTime = Game.RawGameTime - OrbWalker.PingTime
+	orbwalker.LastAttackTime = Game.RawGameTime - (GameData.Ping / 2000)
 })
 
 EventsSDK.on("PrepareUnitOrders", args => {
@@ -148,6 +102,6 @@ EventsSDK.on("PrepareUnitOrders", args => {
 		return
 
 	if (orbwalker.CanMove(Game.RawGameTime))
-		LastAttackTime = orbwalker.GetTurnTime(target, Game.RawGameTime) - OrbWalker.PingTime
+		orbwalker.LastAttackTime = orbwalker.GetTurnTime(target, Game.RawGameTime) - (GameData.Ping / 2000)
 })
 

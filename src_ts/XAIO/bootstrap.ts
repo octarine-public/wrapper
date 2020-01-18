@@ -3,7 +3,7 @@ import { Unit, EventsSDK, LocalPlayer, EntityManager } from "wrapper/Imports"
 import { XAIOStateGlobal, XAIOLanguageState, XAIOGeneralSettings } from "XAIO/Menu/Menu"
 import { XAIOEvents } from "./Core/bootstrap"
 export { XAIOStateGlobal } from "XAIO/Menu/Menu"
-let XAIOversion = XAIOGeneralSettings.AddNode("XAIO Verison: 1.1")
+let XAIOversion = XAIOGeneralSettings.AddNode("XAIO Verison: 1.2")
 
 XAIOversion.FontSize = 20
 XAIOversion.is_open = true

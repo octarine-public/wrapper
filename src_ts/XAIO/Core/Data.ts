@@ -10,10 +10,12 @@ import {
 	item_nullifier,
 	item_cyclone,
 	item_rod_of_atos,
-	item_sheepstick
+	item_sheepstick,
+	item_abyssal_blade
 } from "wrapper/Imports"
 
 export let XIAOlinkenItemsMenu: string[] = [
+	"item_abyssal_blade",
 	"item_heavens_halberd",
 	"item_diffusal_blade",
 	"item_hurricane_pike",
@@ -28,6 +30,7 @@ export let XIAOlinkenItemsMenu: string[] = [
 ]
 
 export let XIAOlinkenItems: (typeof Ability)[] = [
+	item_abyssal_blade,
 	item_heavens_halberd,
 	item_diffusal_blade,
 	item_hurricane_pike,

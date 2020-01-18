@@ -33,14 +33,17 @@ export default class AbilitiesHelper {
 		"modifier_antimage_counterspell",
 	]
 	// TODO
-	private readonly AnyModifiers: string[] = [
-		"modifier_dazzle_shallow_grave",
-		"modifier_spirit_breaker_charge_of_darkness",
-		"modifier_pugna_nether_ward_aura"
-	]
+	// private readonly AnyModifiers: string[] = [
+	// 	"modifier_dazzle_shallow_grave",
+	// 	"modifier_spirit_breaker_charge_of_darkness",
+	// 	"modifier_pugna_nether_ward_aura"
+	// ]
 
+	public get TickDelay(): number {
+		return 30
+	}
 	public get OrderCastDelay() {
-		return ((GameData.Ping / 1000) + 200)
+		return ((GameData.Ping / 1000) + 150) + this.TickDelay
 	}
 
 	public Stop(unit: Unit) {
@@ -71,7 +74,7 @@ export default class AbilitiesHelper {
 
 	}
 
-	public UseAbility(abil: Ability, HitAndRun: boolean = false, toogle: boolean = false, unit?: Unit | Vector3): boolean {
+	public UseAbility(abil: Ability, HitAndRun: boolean = false, toogle: boolean = false, unit?: Unit | Vector3, vec_pos?: boolean): boolean {
 		let owner = abil.Owner
 
 		if (owner === undefined || !abil.CanBeCasted() || owner.IsChanneling || owner.IsInAbilityPhase)
@@ -97,16 +100,12 @@ export default class AbilitiesHelper {
 		let delayPosition = 0
 
 		if (unit instanceof Unit)
-			delayPosition = abil.GetCastDelay(unit.Position)
+			delayPosition += abil.GetCastDelay(unit.Position)
 
 		if (unit instanceof Vector3)
-			delayPosition = abil.GetCastDelay(unit)
+			delayPosition += abil.GetCastDelay(unit)
 
-		let logic_castDelay = abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AOE)
-			? delayPosition
-			: (abil.CastPoint * 2)
-
-		let castDelay = !abil.IsItem ? ((logic_castDelay * 1000) + this.OrderCastDelay) : this.OrderCastDelay
+		let castDelay = delayPosition + this.OrderCastDelay
 
 		if (toogle) {
 			abil.UseAbility(owner, true)
@@ -115,6 +114,14 @@ export default class AbilitiesHelper {
 		}
 
 		if (unit !== undefined) {
+			if (unit instanceof Unit && vec_pos) {
+				let Speed = unit.IdealSpeed < 400 ? 500 : 700
+				owner.CastVectorTargetPosition(abil,
+					unit.Position.Extend(unit.InFront(1000), unit.IsMoving ? Speed : 300),
+					unit.Position.Extend(unit.InFront(-1000), 1000 + (unit.IsMoving ? Speed : 300)))
+				AbilitySleep.Sleep(castDelay, abil, false)
+				return true
+			}
 			abil.UseAbility(unit)
 			AbilitySleep.Sleep(castDelay, abil)
 			return true

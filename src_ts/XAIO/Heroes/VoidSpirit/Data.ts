@@ -20,13 +20,17 @@ import {
 	void_spirit_dissimilate,
 	item_ethereal_blade,
 	item_veil_of_discord,
-	item_dagon
+	item_dagon,
+	item_abyssal_blade,
+	item_cyclone
 } from "wrapper/Imports"
 
 export let execute_ability: (typeof Ability[]) = [
+	item_cyclone,
 	void_spirit_aether_remnant,
 	void_spirit_astral_step,
 	item_diffusal_blade,
+	item_abyssal_blade,
 	item_medallion_of_courage,
 	item_solar_crest,
 	item_blade_mail,
@@ -55,6 +59,8 @@ export let array_ability_render: (typeof Ability[]) = [
 ]
 
 export let menu_items: string[] = [
+	"item_cyclone",
+	"item_abyssal_blade",
 	"item_diffusal_blade",
 	"item_medallion_of_courage",
 	"item_solar_crest",

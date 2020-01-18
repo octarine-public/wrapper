@@ -184,12 +184,10 @@ export function XIAOSKYCombo(unit: Unit, target: Unit) {
 	if (orbWalker === undefined)
 		return
 
-	orbWalker.OrbwalkingPoint = XAIOOrbWalkerSwitchState.selected_id === 0
-		? target.Position
-		: Input.CursorOnWorld
-
-	if (!orbWalker.Execute(target))
+	if (!orbWalker.Execute(target, XAIOOrbWalkerSwitchState.selected_id))
 		return
+
+	unit.AttackTarget(target)
 }
 
 export function XIAOSKYAutoCombo(unit: Unit, target: Unit) {
@@ -216,4 +214,5 @@ export function XIAOSKYAutoCombo(unit: Unit, target: Unit) {
 
 EventsSDK.on("GameEnded", () => {
 	GameSleep.FullReset()
+	ComboActived = false
 })
