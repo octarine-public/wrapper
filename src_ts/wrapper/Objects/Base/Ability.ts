@@ -195,7 +195,7 @@ export default class Ability extends Entity {
 	 * @returns Time in ms until the cast.
 	 */
 	public GetCastDelay(position: Vector3, turnRate: boolean = true): number {
-		return this?.Owner ? ((this.CastPoint + (turnRate ? this.Owner.TurnTime(position) : 0) * 1000) + (Game.Ping / 2)) : 0
+		return this?.Owner ? (((Game.Ping / 2) / 1000) + (this.CastPoint + (turnRate ? this.Owner.TurnTime(position) : 0) * 1000)) : 0
 	}
 	/**
 	 * @param position Vector3
@@ -205,7 +205,7 @@ export default class Ability extends Entity {
 		if (this.Owner === undefined)
 			return 0
 
-		if (this.Owner.IdealSpeed === Number.MAX_SAFE_INTEGER || this.Owner.IdealSpeed === 0)
+		if (this.Speed === Number.MAX_SAFE_INTEGER || this.Speed === 0)
 			return this.GetCastDelay(position) + (this.ActivationDelay * 1000)
 
 		let time = this.Owner.Distance2D(position) / this.Speed
