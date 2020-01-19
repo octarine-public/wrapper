@@ -21,12 +21,10 @@ import {
 	item_ethereal_blade,
 	item_veil_of_discord,
 	item_dagon,
-	item_abyssal_blade,
-	item_cyclone
+	item_abyssal_blade
 } from "wrapper/Imports"
 
 export let execute_ability: (typeof Ability[]) = [
-	item_cyclone,
 	void_spirit_aether_remnant,
 	void_spirit_astral_step,
 	item_diffusal_blade,

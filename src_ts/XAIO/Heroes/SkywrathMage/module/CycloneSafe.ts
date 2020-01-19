@@ -7,6 +7,7 @@ let Helper = new SkyAbilitiesHelper()
 export function XIAOSKYSafeCyclone(unit: Unit, targetInRange: Unit) {
 	if (XAIOSettingsBladMailState.value
 		&& targetInRange !== undefined
+		&& !targetInRange.IsInvulnerable
 		&& targetInRange.HasBuffByName("modifier_item_blade_mail_reflect")
 		&& targetInRange.HasBuffByName("modifier_skywrath_mystic_flare_aura_effect")) {
 		let cyclone = unit.GetItemByClass(item_cyclone)

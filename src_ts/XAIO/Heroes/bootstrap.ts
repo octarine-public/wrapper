@@ -16,8 +16,10 @@ export const XAIOParticleMap = new Map<Unit, XAIOParticle>()
 export function orderByFromUnit(range: number = 1200, unit?: Nullable<Unit>) {
 	let input = unit === undefined ? Input.CursorOnWorld : unit
 	return ArrayExtensions.orderBy(Units.filter(x =>
-		x.IsEnemy() && !x.IsIllusion && !x.IsInvulnerable
-		&& x.IsAlive && x.IsHero && x.Distance(input) <= range), x => x.Distance2D(input))[0]
+		x.IsEnemy() && !x.IsIllusion && x.IsAlive
+		&& x.IsHero && x.Distance(input) <= range),
+		x => x.Distance2D(input)
+	)[0]
 }
 
 interface HeroModule {

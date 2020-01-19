@@ -1,6 +1,6 @@
 import { execute_ability } from "../Data"
-import { Unit, GameSleeper, Ability, Item, void_spirit_dissimilate, item_aeon_disk, EventsSDK, item_cyclone, void_spirit_aether_remnant, Menu } from "wrapper/Imports"
-import { UnitsOrbWalker, AbilityHelper, XIAOlinkenItems, XAIOPrediction, XAIOSkillshotType, XAIOCollisionTypes } from "../../../Core/bootstrap"
+import { UnitsOrbWalker, AbilityHelper, XIAOlinkenItems, XAIOPrediction, XAIOSkillshotType, XAIOCollisionTypes } from "XAIO/Core/bootstrap"
+import { Unit, GameSleeper, Ability, Item, void_spirit_dissimilate, item_aeon_disk, EventsSDK, item_cyclone, void_spirit_aether_remnant, Menu, } from "wrapper/Imports"
 import { AbilityMenu, ItemsMenu, XAIOStyleCombo, XAIOOrbWalkerSwitchState, XAIOOrbWalkerState, XAIOComboKey, LinkenBreakAbilityItems, XAIOSettingsBladMailState } from "../Menu"
 
 let Sleep = new GameSleeper()
@@ -10,8 +10,13 @@ let InitPrediction = new XAIOPrediction()
 export let ComboActived: boolean = false
 XAIOComboKey.OnRelease(() => ComboActived = !ComboActived)
 
+let ModifiersBlade = ["modifier_item_ethereal_blade_slow", "modifier_item_ethereal_blade_ethereal"]
+
 function IsValidCycloneCombo(abil: Ability, enemy: Unit, selector: Menu.ImageSelector) {
-	return abil !== undefined && abil.CanHit(enemy) && abil.CanBeCasted()
+	return abil !== undefined
+		&& enemy !== undefined
+		&& abil.CanHit(enemy)
+		&& abil.CanBeCasted()
 		&& selector.IsEnabled(abil.Name)
 }
 
@@ -19,8 +24,7 @@ function Combo(
 	Owner: Unit,
 	target: Unit,
 	class_name: (typeof Ability),
-	Helper: AbilityHelper,
-	cyclone: Ability,
+	Helper: AbilityHelper
 ) {
 
 	if (Owner.IsIllusion)
@@ -31,53 +35,46 @@ function Combo(
 	if (abil === undefined || !abil.CanBeCasted())
 		return false
 
-	if (Owner.IsInvulnerable || Owner.IsSilenced)
-		return false
-
 	if (!AbilityMenu.IsEnabled(abil.Name) && !ItemsMenu.IsEnabled(abil.Name.includes("item_dagon") ? "item_dagon_5" : abil.Name))
 		return false
 
-	let etherealbuff = target.ModifiersBook.GetAnyBuffByNames(["modifier_item_ethereal_blade_slow", "modifier_item_ethereal_blade_ethereal"])
+	let etherealbuff = target.ModifiersBook.GetAnyBuffByNames(ModifiersBlade)
 
 	if (!abil.CanHit(target))
 		return false
 
-	if (abil.Name === "void_spirit_astral_step" && !Owner.IsRooted && !Sleep.Sleeping("cycloneCombo")) {
+	if (abil.Name === "void_spirit_astral_step" && !Owner.IsRooted && !target.IsInvulnerable)
 		if (Helper.UseAbility(abil, false, false,
 			InitPrediction.GetPrediction(abil, Owner, target, true, XAIOSkillshotType.None, XAIOCollisionTypes.None).CastPosition))
 			return true
-	}
 
 	if (abil.Name === "void_spirit_aether_remnant" && !Sleep.Sleeping(abil))
-		if (Helper.UseAbility(abil, false, false, target, true))
+		if (!target.IsMagicImmune && Helper.UseAbility(abil, false, false, target, true))
 			return true
 
-	if (cyclone && cyclone.CanBeCasted() && ItemsMenu.IsEnabled(cyclone.Name))
+	if (Sleep.Sleeping("cycloneCombo") || target.IsInvulnerable)
 		return false
-
 	if (abil.Name === "void_spirit_dissimilate" && Owner.IsInRange(target, abil.AOERadius / 2) && !Owner.IsRooted) {
-		if (Helper.UseAbility(abil))
+		if (!target.IsMagicImmune && Helper.UseAbility(abil))
 			return true
 	}
 
-	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
+	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET) && !target.IsMagicImmune) {
 		if (abil.Name === "void_spirit_dissimilate" && Owner.IsRooted)
 			return false
 		if (abil.Name !== "void_spirit_dissimilate" && Helper.UseAbility(abil))
 			return
 	}
 
-	if (abil.Name !== "void_spirit_aether_remnant" && abil.Name === "void_spirit_astral_step"
+	if (abil.Name !== "void_spirit_aether_remnant" && abil.Name !== "void_spirit_astral_step"
+		&& !target.IsMagicImmune
 		&& abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)
 		&& !Sleep.Sleeping(abil)
 		&& !Owner.IsRooted
-	) {
-		Owner.CastPosition(abil, target.Position)
-		Sleep.Sleep(Helper.OrderCastDelay, abil)
+		&& Helper.UseAbility(abil, false, false, target.Position))
 		return true
-	}
 
-	if (abil.Name === "item_ethereal_blade") {
+	if (abil.Name === "item_ethereal_blade" && !target.IsMagicImmune) {
 		if (etherealbuff?.IsValid && etherealbuff.RemainingTime >= 0.8)
 			return false
 		if (Helper.UseAbility(abil, false, false, target)) {
@@ -86,14 +83,14 @@ function Combo(
 		}
 	}
 
-	if (abil.Name.includes("item_dagon")) {
+	if (abil.Name.includes("item_dagon") && !target.IsMagicImmune) {
 		if (!Sleep.Sleeping("await_ethereal"))
 			if (Helper.UseAbility(abil, false, false, target))
 				return true
 	}
 
 
-	if (abil.Name === "item_nullifier") {
+	if (abil.Name === "item_nullifier" && !target.IsMagicImmune) {
 		let AeonDisk = target.GetItemByClass(item_aeon_disk)
 		if (AeonDisk === undefined) {
 			if (Helper.UseAbility(abil, false, false, target))
@@ -104,7 +101,10 @@ function Combo(
 		}
 	}
 
-	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {
+	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) && !target.IsMagicImmune) {
+		if (abil.Name === "item_nullifier" || abil.Name === "item_ethereal_blade" || abil.Name.includes("item_dagon"))
+			return false
+
 		if (abil.Name === "item_lotus_orb" && target.IsInRange(Owner, 800))
 			if (Helper.UseAbility(abil, false))
 				return true
@@ -131,7 +131,9 @@ export function XAIOvoidSpiritCombo(unit: Unit, enemy: Nullable<Unit>) {
 	let cyclone = unit.GetItemByClass(item_cyclone),
 		remenat = unit.GetAbilityByClass(void_spirit_aether_remnant)
 
-	if (IsValidCycloneCombo(cyclone!, enemy, ItemsMenu)
+
+	if (!Sleep.Sleeping("cycloneCombo")
+		&& IsValidCycloneCombo(cyclone!, enemy, ItemsMenu)
 		&& IsValidCycloneCombo(remenat!, enemy, AbilityMenu)
 		&& Helper.UseAbility(cyclone!, false, false, enemy)
 		&& Helper.UseAbility(remenat!, false, false, enemy, true)) {
@@ -139,7 +141,7 @@ export function XAIOvoidSpiritCombo(unit: Unit, enemy: Nullable<Unit>) {
 		return
 	}
 
-	if (execute_ability.some(class_name => Combo(unit, enemy, class_name, Helper, cyclone!)))
+	if (execute_ability.some(class_name => Combo(unit, enemy, class_name, Helper)))
 		return
 
 	let dissimilate = unit.GetAbilityByClass(void_spirit_dissimilate)

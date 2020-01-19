@@ -40,7 +40,6 @@ export default class SkyAbilitiesHelper extends AbilityHelper {
 			Speed = delay === 610 ? 300 : unit.IdealSpeed,
 			Predict = unit.InFront(delay / 1000 * Speed)
 
-		this.UseAbility(abil, false, HitAndRun, Predict)
-		return true
+		return this.UseAbility(abil, false, HitAndRun, Predict)
 	}
 }

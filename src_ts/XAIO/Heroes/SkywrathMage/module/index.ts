@@ -2,7 +2,7 @@
 import { Unit, EventsSDK } from "wrapper/Imports"
 import { ParticleRadius } from "./Renderer"
 
-import XAIOParticle from "../../../Core/Draw"
+import XAIOParticle from "XAIO/Core/Draw"
 import { XIAOSKYSmartBolt } from "./SmartBolt"
 import { XIAOSKYSafeCyclone } from "./CycloneSafe"
 import { SkyUseCycloneBladMailState } from "../Menu"
@@ -14,7 +14,7 @@ export let InitVisual = (Particle: XAIOParticle) => ParticleRadius(Particle)
 export function InitModuleTick(unit: Unit, targetMouse: Unit, targetInRange: Unit) {
 	EnemyMouse = targetMouse
 
-	XIAOSKYSafeCyclone(unit, targetMouse)
+	XIAOSKYSafeCyclone(unit, targetInRange)
 
 	if (targetMouse
 		&& SkyUseCycloneBladMailState.value

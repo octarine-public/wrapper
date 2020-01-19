@@ -32,12 +32,11 @@ export default class AbilitiesHelper {
 		"modifier_item_lotus_orb_active",
 		"modifier_antimage_counterspell",
 	]
-	// TODO
-	// private readonly AnyModifiers: string[] = [
-	// 	"modifier_dazzle_shallow_grave",
-	// 	"modifier_spirit_breaker_charge_of_darkness",
-	// 	"modifier_pugna_nether_ward_aura"
-	// ]
+
+	private readonly CounterBlockSpells: string[] = [
+		"modifier_item_lotus_orb_active",
+		"modifier_antimage_counterspell",
+	]
 
 	public get TickDelay(): number {
 		return 30
@@ -94,7 +93,7 @@ export default class AbilitiesHelper {
 			}
 		}
 
-		if (abil === undefined || AbilitySleep.Sleeping(abil))
+		if (AbilitySleep.Sleeping(abil))
 			return false
 
 		let delayPosition = 0
@@ -114,15 +113,27 @@ export default class AbilitiesHelper {
 		}
 
 		if (unit !== undefined) {
-			if (unit instanceof Unit && vec_pos) {
-				let Speed = unit.IdealSpeed < 400 ? 500 : 700
-				owner.CastVectorTargetPosition(abil,
-					unit.Position.Extend(unit.InFront(1000), unit.IsMoving ? Speed : 300),
-					unit.Position.Extend(unit.InFront(-1000), 1000 + (unit.IsMoving ? Speed : 300)))
-				AbilitySleep.Sleep(castDelay, abil, false)
+
+			if (unit instanceof Vector3) {
+				abil.UseAbility(unit)
+				AbilitySleep.Sleep(castDelay, abil)
 				return true
 			}
-			abil.UseAbility(unit)
+
+			if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) && unit.ModifiersBook.HasAnyBuffByNames(this.CounterBlockSpells))
+				return false
+
+			if (!vec_pos) {
+				abil.UseAbility(unit)
+				AbilitySleep.Sleep(castDelay, abil)
+				return true
+			}
+
+			let Speed = unit.IdealSpeed < 400 ? 500 : 700
+			owner.CastVectorTargetPosition(abil,
+				unit.Position.Extend(unit.InFront(1000), unit.IsMoving ? Speed : 300),
+				unit.Position.Extend(unit.InFront(-1000), 1000 + (unit.IsMoving ? Speed : 300)))
+
 			AbilitySleep.Sleep(castDelay, abil)
 			return true
 		}

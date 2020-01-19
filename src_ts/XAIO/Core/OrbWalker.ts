@@ -28,7 +28,7 @@ class OrbWalker {
 	}
 
 	public CanAttack(target: Unit, time: number) {
-		return this.unit.CanAttack(target) && (this.GetTurnTime(target, time) - this.LastAttackTime) > (1 / this.unit.AttacksPerSecond)
+		return this.unit.CanAttack(target) && !this.unit.UnitState.some(x => x & 524288) && (this.GetTurnTime(target, time) - this.LastAttackTime) > (1 / this.unit.AttacksPerSecond)
 	}
 
 	public CanMove(time: number) {

@@ -149,9 +149,10 @@ export function XAIOSKYSmartCast(
 		}
 	}
 
-	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET))
+	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
 		if (Helper.UseAbility(abil, true, false))
 			return true
+	}
 
 	if (!abil.Name.includes("item_dagon") && abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
 		if (Helper.UseAbility(abil, false, false, target))
@@ -162,9 +163,9 @@ export function XAIOSKYSmartCast(
 			return true
 }
 
-export function XIAOSKYCombo(unit: Unit, target: Unit) {
+export function XIAOSKYCombo(unit: Unit, target: Nullable<Unit>) {
 
-	if (target === undefined)
+	if (target === undefined || target.IsMagicImmune || unit.IsInvulnerable || target.IsInvulnerable)
 		return
 
 	if ((XAIOStyleCombo.selected_id === 1 && !ComboActived) || (XAIOStyleCombo.selected_id === 0 && !XAIOComboKey.is_pressed))
@@ -173,7 +174,7 @@ export function XIAOSKYCombo(unit: Unit, target: Unit) {
 	if (Helper.IsBlockingAbilities(unit, target, LinkenBreakClassItems, LinkenBreakAbilityItems))
 		return
 
-	if (execute_ability.some(abil_str => XAIOSKYSmartCast(unit, target, Helper, abil_str, ItemsMenu, AbilityMenu)))
+	if (execute_ability.some(class_name => XAIOSKYSmartCast(unit, target, Helper, class_name, ItemsMenu, AbilityMenu)))
 		return
 
 	if (!XAIOOrbWalkerState.value)
