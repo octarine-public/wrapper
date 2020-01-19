@@ -32,34 +32,26 @@ const movementTurnRate = new Map<string, number>()
 const attackAnimationPoint = new Map<string, number>()
 const attackprojectileSpeed = new Map<string, number>()
 
-let parseUnits = parseKVFile("scripts/npc/npc_units.txt").get("DOTAUnits") as RecursiveMap
-let parseHeroes = parseKVFile("scripts/npc/npc_heroes.txt").get("DOTAHeroes") as RecursiveMap
+const parseScriptUnits = (path: string, field: string) => {
 
-for (let unit of parseUnits.keys()) {
-	const unitFields = parseUnits.get(unit)
-	if (!(unitFields instanceof Map))
-		continue
-	if (unitFields.has("MovementTurnRate"))
-		movementTurnRate.set(unit, parseFloat(unitFields.get("MovementTurnRate") as string))
-	if (unitFields.has("AttackAnimationPoint"))
-		attackAnimationPoint.set(unit, parseFloat(unitFields.get("AttackAnimationPoint") as string))
-	if (unitFields.has("ProjectileSpeed"))
-		attackprojectileSpeed.set(unit, parseFloat(unitFields.get("ProjectileSpeed") as string))
-	// another values from script files. (i.e AttackRate, AttackRate)
+	const parsed = parseKVFile(path).get(field) as RecursiveMap
+
+	for (let unit of parsed.keys()) {
+		const unitFields = parsed.get(unit)
+		if (!(unitFields instanceof Map))
+			continue
+		if (unitFields.has("MovementTurnRate"))
+			movementTurnRate.set(unit, parseFloat(unitFields.get("MovementTurnRate") as string))
+		if (unitFields.has("AttackAnimationPoint"))
+			attackAnimationPoint.set(unit, parseFloat(unitFields.get("AttackAnimationPoint") as string))
+		if (unitFields.has("ProjectileSpeed"))
+			attackprojectileSpeed.set(unit, parseFloat(unitFields.get("ProjectileSpeed") as string))
+		// another values from script files. (i.e AttackRate, AttackRate)
+	}
 }
 
-for (let hero of parseHeroes.keys()) {
-	const heroFields = parseHeroes.get(hero)
-	if (!(heroFields instanceof Map))
-		continue
-	if (heroFields.has("MovementTurnRate"))
-		movementTurnRate.set(hero, parseFloat(heroFields.get("MovementTurnRate") as string))
-	if (heroFields.has("AttackAnimationPoint"))
-		attackAnimationPoint.set(hero, parseFloat(heroFields.get("AttackAnimationPoint") as string))
-	if (heroFields.has("ProjectileSpeed"))
-		attackprojectileSpeed.set(hero, parseFloat(heroFields.get("ProjectileSpeed") as string))
-	// another values from script files. (i.e AttackRate, AttackRate)
-}
+parseScriptUnits("scripts/npc/npc_heroes.txt", "DOTAHeroes")
+parseScriptUnits("scripts/npc/npc_units.txt", "DOTAUnits")
 
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
