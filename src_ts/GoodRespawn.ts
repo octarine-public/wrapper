@@ -61,7 +61,7 @@ function GetEnemyDeaths() {
 	let deaths = 0
 	for (let i = 0; i < PlayerResource.PlayerData.length; i++) {
 		let team_data = PlayerResource.PlayerTeamData[i]
-		if (PlayerResource.PlayerData[i].m_iPlayerTeam !== LocalPlayer?.Team)
+		if (team_data !== undefined && PlayerResource.PlayerData[i].m_iPlayerTeam !== LocalPlayer?.Team)
 			deaths += team_data.m_iDeaths
 	}
 	return deaths
