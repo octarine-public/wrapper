@@ -2,7 +2,7 @@ import { Unit, EventsSDK } from "wrapper/Imports"
 import { InfoPanel } from "./module/Renderer"
 import { InitVisual, InitModuleTick } from "./module/index"
 import { RegisterHeroModule, orderByFromUnit, XAIOParticleMap } from "../bootstrap"
-import { XAIONearMouse, XAIOState, XAIORenderOptimizeType } from "./Menu"
+import { XAIONearMouse, XAIOState, XAIORenderOptimizeType, SkyAutoComboInRadius } from "./Menu"
 import { WithoutFail } from "./module/WithoutFail"
 
 RegisterHeroModule("npc_dota_hero_skywrath_mage", {
@@ -25,7 +25,7 @@ function InitTick(unit: Unit) {
 
 	InitModuleTick(unit,
 		orderByFromUnit(XAIONearMouse.value),
-		orderByFromUnit(1200, unit)
+		orderByFromUnit(SkyAutoComboInRadius.value, unit)
 	)
 }
 

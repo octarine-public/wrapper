@@ -1,7 +1,7 @@
 import { array_ability_render } from "../Data"
 import { ComboActived } from "./Combo"
 import { EnemyMouse } from "./index"
-import XAIOParticle from "XAIO/Core/Draw"
+import XAIOParticle from "XAIO/Core/Draw/Draw"
 import { Color, Ability } from "wrapper/Imports"
 import {
 	XAIOState, XAIOStateGlobal, XAIOComboKey,

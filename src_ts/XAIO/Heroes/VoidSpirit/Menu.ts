@@ -1,7 +1,7 @@
 import { menu_ability, menu_items, array_void_radiuses_menu } from "./Data"
 import { XAIOMenuHero, XAIOSelectLanguage, XAIOMenuHeroesTree } from "XAIO/Menu/Menu"
-import { Color } from "../../../wrapper/Imports"
-import { XIAOlinkenItemsMenu } from "../../Core/Data"
+import { Color } from "wrapper/Imports"
+import { XIAOlinkenItemsMenu } from "XAIO/Core/Game/Data"
 
 export const {
 	XAIOState,

@@ -64,8 +64,7 @@ export const SmartConShotRadius = SmartConShot.AddSlider(XAIOSelectLanguage("И�
 */
 const SkyAutoCombo = XAIOBaseTree.AddNode(XAIOSelectLanguage("Авто комбо", "Auto Combo"))
 export const SkyAutoComboState = SkyAutoCombo.AddToggle(XAIOSelectLanguage("Вкл | выкл", "On | off"), true)
-export const SkyAutoComboDisableWhen = SkyAutoCombo.AddToggle(XAIOSelectLanguage("Отключить при комбо", "Disable When Combo"), true)
-export const SkyAutoComboMinHPpercent = SkyAutoCombo.AddSlider(XAIOSelectLanguage("Мин. ХП% для авто комбо", "Min HP % To Auto Combo"), 0, 0, 100)
+
 
 export const ACAbilityMenu = SkyAutoCombo.AddImageSelector(
 	XAIOSelectLanguage("Cпособности", "Ability"),
@@ -120,6 +119,17 @@ export const SkyPanelTextYItem = DrawingtextMenu.AddSlider(XAIOSelectLanguage("�
 /**
  * @______________Settings________________
  */
+let AutoComboSettings = XAIOSettingsMenu.AddNode("Auto Combo")
+export const SkyAutoComboTargetSelector = AutoComboSettings.AddSwitcher(XAIOSelectLanguage("Поиск цели", "Find target"), [
+	XAIOSelectLanguage("по мышки", "by mouse"),
+	XAIOSelectLanguage("в радиусе героя", "in radius hero")
+], 1)
+
+export const SkyAutoComboInRadius = AutoComboSettings.AddSlider(XAIOSelectLanguage("Радиус поиска", "Radius search"), 1200, 200, 1200)
+export const SkyAutoComboDisableWhen = AutoComboSettings.AddToggle(XAIOSelectLanguage("Отключить при комбо", "Disable When Combo"), true)
+export const SkyAutoComboMinHPpercent = AutoComboSettings.AddSlider(XAIOSelectLanguage("Мин. ХП% для авто комбо", "Min HP % To Auto Combo"), 0, 0, 100)
+
+
 export const SkyBlink = XAIOSettingsMenu.AddSlider(XAIOSelectLanguage("Blink расстояние от врага", "Blink distance from enemy"), 400, 0, 1200)
 
 export const SkyProjectileItems = XAIOSettingsMenu.AddImageSelector(

@@ -8,7 +8,7 @@ import {
 	DOTAGameUIState_t
 } from "wrapper/Imports"
 
-import XAIOParticle from "../Core/Draw"
+import XAIOParticle from "XAIO/Core/Draw/Draw"
 import { Units, UnitsIsControllable, XAIOStateGlobal } from "../bootstrap"
 
 export const XAIOParticleMap = new Map<Unit, XAIOParticle>()

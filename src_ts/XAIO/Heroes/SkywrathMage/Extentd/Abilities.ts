@@ -16,7 +16,7 @@ export default class SkyAbilitiesHelper extends AbilityHelper {
 		return target.ModifiersBook.HasAnyBuffByNames(this.ModifiersTrigger) || target.IsEthereal
 	}
 
-	public UseMysticFlare(abil: Ability, unit: Unit, HitAndRun: boolean = false, double_ult: boolean = false): boolean {
+	public UseAbilityExtend(abil: Ability, unit: Unit, OrbWallkerState: boolean = false, double_ult: boolean = false): boolean {
 		let owner = abil.Owner
 
 		if (abil === undefined || owner === undefined || unit === undefined || !abil.CanBeCasted())
@@ -40,6 +40,6 @@ export default class SkyAbilitiesHelper extends AbilityHelper {
 			Speed = delay === 610 ? 300 : unit.IdealSpeed,
 			Predict = unit.InFront(delay / 1000 * Speed)
 
-		return this.UseAbility(abil, false, HitAndRun, Predict)
+		return this.UseAbility(abil, OrbWallkerState, Predict)
 	}
 }

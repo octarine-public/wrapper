@@ -1,8 +1,9 @@
 import { Unit, dotaunitorder_t, GameSleeper, Game, EventsSDK, Input } from "wrapper/Imports"
-import { XAIOGame } from "./bootstrap"
-let Sleep = new GameSleeper()
+import { XAIOGame } from "../bootstrap"
+
 let GameData = new XAIOGame()
 
+export let OrbWalkerSleep = new GameSleeper() // extend time for ability
 export let UnitsOrbWalker: Map<Unit, OrbWalker> = new Map()
 
 class OrbWalker {
@@ -42,9 +43,9 @@ class OrbWalker {
 		if (this.TurnEndTime > time)
 			return false
 
-		if ((!target.IsValid || !this.CanAttack(target, time)) && this.CanMove(time) && !Sleep.Sleeping("sleep_move")) {
+		if ((!target.IsValid || !this.CanAttack(target, time)) && this.CanMove(time) && !OrbWalkerSleep.Sleeping("sleep_move")) {
 			this.unit.MoveTo(type === 0 ? target.InFront((GameData.Ping / 1000) + 200) : Input.CursorOnWorld)
-			Sleep.Sleep((GameData.Ping / 1000) + 100, "sleep_move")
+			OrbWalkerSleep.Sleep((GameData.Ping / 1000) + 100, "sleep_move")
 			return false
 		}
 
@@ -71,7 +72,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 EventsSDK.on("GameEnded", () => {
-	Sleep.FullReset()
+	OrbWalkerSleep.FullReset()
 })
 
 EventsSDK.on("NetworkActivityChanged", unit => {

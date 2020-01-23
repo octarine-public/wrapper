@@ -1,5 +1,5 @@
-import { Unit, LocalPlayer, Menu, ParticlesSDK, Vector3, Color, Ability, EventsSDK, Particle, ArrayExtensions, Item } from "wrapper/Imports"
-import { XAIOEvents } from "./Events"
+import { XAIOEvents } from "../Events/Events"
+import { Unit, LocalPlayer, Menu, ParticlesSDK, Vector3, Color, Ability, EventsSDK, Particle, ArrayExtensions, Item, Hero, RendererSDK, Vector2 } from "wrapper/Imports"
 
 export let XAIOparKey: Map<Unit, Particle[]> = new Map()
 
@@ -168,6 +168,81 @@ export default class XAIOParticle {
 			return
 		ParticlesSDK.Remove(name + "_" + this.unit)
 	}
+
+	// TODO: in dev
+
+	public RenderDamage(owner: Unit, Units: Unit[], filter_class: Constructor<Ability>[]) {
+		const colorBar = Color.Green
+
+		let off_x: number,
+			off_y: number,
+			bar_w: number,
+			bar_h: number,
+			screen_size = RendererSDK.WindowSize,
+			ratio = RendererSDK.GetAspectRatio()
+		{ // 
+			if (ratio === "16x9") {
+				off_x = screen_size.x * -0.0270
+				off_y = screen_size.y * -0.02215
+				bar_w = screen_size.x * 0.053
+				bar_h = screen_size.y * 0.005
+			} else if (ratio === "16x10") {
+				off_x = screen_size.x * -0.02950
+				off_y = screen_size.y * -0.02315
+				bar_w = screen_size.x * 0.0583
+				bar_h = screen_size.y * 0.0047
+			} else if (ratio === "21x9") {
+				off_x = screen_size.x * -0.020
+				off_y = screen_size.y * -0.01715
+				bar_w = screen_size.x * 0.039
+				bar_h = screen_size.y * 0.007
+			} else {
+				off_x = screen_size.x * -0.038
+				off_y = screen_size.y * -0.01715
+				bar_w = screen_size.x * 0.075
+				bar_h = screen_size.y * 0.0067
+			}
+		}
+		Units.forEach(hero => {
+			if (!(hero instanceof Hero) || !hero.IsEnemy() || !hero.IsAlive || !hero.IsVisible || hero.IsIllusion)
+				return
+
+			let TotalDamage = filter_class.map(class_name => {
+				let ability = owner.GetAbilityByClass(class_name) ?? owner.GetItemByClass(class_name as Constructor<Item>)
+				if (ability === undefined || ability.IsPassive || !ability.CanBeCasted() || ability.AbilityDamage <= 0)
+					return
+				return ability
+			}).map(ability => hero.CalculateDamage((ability?.AbilityDamage || ability?.GetSpecialValue("damage")) ?? 0, ability?.DamageType ?? 0, hero))
+				.reduce((prev, curr) => prev + curr)
+
+
+			let wts = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(hero.HealthBarOffset))
+			if (wts === undefined)
+				return
+
+			wts.AddScalarX(off_x).AddScalarY(off_y)
+			let SizeSteal = TotalDamage / hero.HP
+
+			if (SizeSteal === 0)
+				return
+
+			let sizeBarX = 0
+
+			if (SizeSteal < 1) {
+				colorBar.SetColor(74, 177, 48)
+				SizeSteal = TotalDamage / hero.MaxHP
+				sizeBarX += bar_w * SizeSteal
+			} else {
+				colorBar.SetColor(0, 255, 0)
+				sizeBarX += hero.HP / hero.MaxHP * bar_w
+			}
+			sizeBarX = Math.min(sizeBarX, bar_w)
+
+			RendererSDK.FilledRect(wts, new Vector2(sizeBarX, bar_h), colorBar)
+		})
+	}
+
+
 }
 
 XAIOEvents.on("removeControllable", (unit) => {

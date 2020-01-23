@@ -1,5 +1,5 @@
 import { Unit, EventsSDK } from "wrapper/Imports"
-import XAIOParticle from "XAIO/Core/Draw"
+import XAIOParticle from "XAIO/Core/Draw/Draw"
 import { ParticleRadius } from "../module/Renderer"
 import { XAIOvoidSpiritCombo } from "./Combo"
 

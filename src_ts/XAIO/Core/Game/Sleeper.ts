@@ -1,4 +1,4 @@
-import { Game } from "../../wrapper/Imports"
+import { Game } from "wrapper/Imports"
 
 export default class XAIOSleeper {
 	// ms seconds sleeper

@@ -2,7 +2,7 @@
 import { Unit, EventsSDK } from "wrapper/Imports"
 import { ParticleRadius } from "./Renderer"
 
-import XAIOParticle from "XAIO/Core/Draw"
+import XAIOParticle from "XAIO/Core/Draw/Draw"
 import { XIAOSKYSmartBolt } from "./SmartBolt"
 import { XIAOSKYSafeCyclone } from "./CycloneSafe"
 import { SkyUseCycloneBladMailState } from "../Menu"
@@ -23,7 +23,7 @@ export function InitModuleTick(unit: Unit, targetMouse: Unit, targetInRange: Uni
 
 	XIAOSKYCombo(unit, targetMouse)
 	XIAOSKYSmartBolt(unit, targetMouse)
-	XIAOSKYAutoCombo(unit, targetInRange)
+	XIAOSKYAutoCombo(unit, targetMouse, targetInRange)
 
 }
 

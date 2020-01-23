@@ -18,7 +18,8 @@ import {
 	LinkenBreakAbilityItems,
 	SkyAutoComboState,
 	XAIOOrbWalkerState,
-	XAIOOrbWalkerSwitchState
+	XAIOOrbWalkerSwitchState,
+	SkyAutoComboTargetSelector
 } from "../Menu"
 
 export let ComboActived: boolean = false
@@ -34,6 +35,15 @@ let LinkenBreakClassItems: (typeof Ability)[] = [
 	skywrath_mage_ancient_seal,
 	...XIAOlinkenItems
 ]
+let custom_item: string[] = [
+	"item_dagon_",
+	"item_rod_of_atos",
+	"item_clumsy_net",
+	"item_ethereal_blade",
+	"item_blink",
+	"item_sheepstick",
+	"item_nullifier"
+]
 
 export function XAIOSKYSmartCast(
 	Owner: Unit,
@@ -42,8 +52,9 @@ export function XAIOSKYSmartCast(
 	abil_class: Constructor<Ability>,
 	ItemMenu: Menu.ImageSelector,
 	AbilitiesMenu: Menu.ImageSelector,
+	OrbWalkerState: boolean,
 ) {
-	if (Owner.IsIllusion)
+	if (Owner.IsIllusion || target.IsMagicImmune)
 		return false
 
 	let abil = Owner.GetAbilityByClass(abil_class) ?? Owner.GetItemByClass(abil_class as Constructor<Item>)
@@ -65,7 +76,7 @@ export function XAIOSKYSmartCast(
 		if (Owner.Distance2D(blinkPos) > castRange)
 			blinkPos = Owner.Position.Extend(blinkPos, castRange - 1)
 
-		if (Helper.UseAbility(abil, false, false, blinkPos))
+		if (Helper.UseAbility(abil, OrbWalkerState, blinkPos))
 			return true
 	}
 
@@ -75,7 +86,7 @@ export function XAIOSKYSmartCast(
 	if (abil.Name === "item_clumsy_net") {
 		if (clumsybuff?.IsValid && clumsybuff.RemainingTime >= 0.5)
 			return false
-		if (Helper.UseAbility(abil, false, false, target)) {
+		if (Helper.UseAbility(abil, OrbWalkerState, target)) {
 			if (!SkyProjectileItems.IsEnabled(abil.Name))
 				return true
 			GameSleep.Sleep(abil.GetHitTime(target.Position) + 30, "await_projectile")
@@ -86,7 +97,7 @@ export function XAIOSKYSmartCast(
 	if (abil.Name === "item_ethereal_blade") {
 		if (etherealbuff?.IsValid && etherealbuff.RemainingTime >= 0.8)
 			return false
-		if (Helper.UseAbility(abil, false, false, target)) {
+		if (Helper.UseAbility(abil, OrbWalkerState, target)) {
 			GameSleep.Sleep(abil.GetHitTime(target.Position) + 30, "await_ethereal", true)
 			if (!SkyProjectileItems.IsEnabled(abil.Name))
 				return true
@@ -97,12 +108,12 @@ export function XAIOSKYSmartCast(
 
 	if (abil.Name.includes("item_dagon")) {
 		if (!GameSleep.Sleeping("await_ethereal"))
-			if (Helper.UseAbility(abil, false, false, target))
+			if (Helper.UseAbility(abil, OrbWalkerState, target))
 				return true
 	}
 
 	if (abil.Name === "skywrath_mage_concussive_shot") {
-		if (Helper.UseAbility(abil, false, false)) {
+		if (Helper.UseAbility(abil)) {
 			if (!SkyProjectileItems.IsEnabled(abil.Name))
 				return true
 			GameSleep.Sleep(abil.GetHitTime(target.Position) + 30, "await_projectile", true)
@@ -113,7 +124,7 @@ export function XAIOSKYSmartCast(
 	if (abil.Name === "item_rod_of_atos") {
 		if (atosbuff?.IsValid && atosbuff.RemainingTime >= 0.5)
 			return false
-		if (Helper.UseAbility(abil, false, false, target)) {
+		if (Helper.UseAbility(abil, OrbWalkerState, target)) {
 			if (!SkyProjectileItems.IsEnabled(abil.Name))
 				return true
 
@@ -128,53 +139,52 @@ export function XAIOSKYSmartCast(
 	if (abil.Name === "item_sheepstick") {
 		if (sheepbuff?.IsValid && sheepbuff?.RemainingTime >= 0.3)
 			return false
-		if (Helper.UseAbility(abil, false, false, target))
+		if (Helper.UseAbility(abil, OrbWalkerState, target))
 			return true
 	}
 
 	if (abil.Name === "skywrath_mage_mystic_flare") {
 		if (!GameSleep.Sleeping("await_projectile") || (atosbuff?.IsValid && atosbuff.RemainingTime >= 1))
-			if (Helper.UseMysticFlare(abil, target, false, ItemMenu.IsEnabled("item_ultimate_scepter")))
+			if (Helper.UseAbilityExtend(abil, target, ItemMenu.IsEnabled("item_ultimate_scepter")))
 				return true
 	}
 
 	if (abil.Name === "item_nullifier") {
 		let AeonDisk = target.GetItemByClass(item_aeon_disk)
 		if (AeonDisk === undefined) {
-			if (Helper.UseAbility(abil, false, false, target))
+			if (Helper.UseAbility(abil, OrbWalkerState, target))
 				return true
 		} else if (AeonDisk !== undefined && target.HPPercent <= 70) {
-			if (Helper.UseAbility(abil, false, false, target))
+			if (Helper.UseAbility(abil, OrbWalkerState, target))
 				return true
 		}
 	}
 
-	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
-		if (Helper.UseAbility(abil, true, false))
+	if (abil.Name !== "skywrath_mage_concussive_shot" && abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET))
+		if (Helper.UseAbility(abil))
 			return true
-	}
 
-	if (!abil.Name.includes("item_dagon") && abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
-		if (Helper.UseAbility(abil, false, false, target))
+	if (abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) && !custom_item.some(name => name.includes(abil!.Name)))
+		if (Helper.UseAbility(abil, OrbWalkerState, target))
 			return true
 
 	if (abil.Name !== "skywrath_mage_mystic_flare" && abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT))
-		if (Helper.UseAbility(abil, false, false, target))
+		if (Helper.UseAbility(abil, OrbWalkerState, target))
 			return true
 }
 
 export function XIAOSKYCombo(unit: Unit, target: Nullable<Unit>) {
 
-	if (target === undefined || target.IsMagicImmune || unit.IsInvulnerable || target.IsInvulnerable)
+	if (target === undefined || unit.IsInvulnerable || target.IsInvulnerable)
 		return
 
 	if ((XAIOStyleCombo.selected_id === 1 && !ComboActived) || (XAIOStyleCombo.selected_id === 0 && !XAIOComboKey.is_pressed))
 		return
 
-	if (Helper.IsBlockingAbilities(unit, target, LinkenBreakClassItems, LinkenBreakAbilityItems))
+	if (Helper.IsBlockingAbilities(unit, target, LinkenBreakClassItems, XAIOOrbWalkerState.value, LinkenBreakAbilityItems))
 		return
 
-	if (execute_ability.some(class_name => XAIOSKYSmartCast(unit, target, Helper, class_name, ItemsMenu, AbilityMenu)))
+	if (execute_ability.some(class_name => XAIOSKYSmartCast(unit, target, Helper, class_name, ItemsMenu, AbilityMenu, XAIOOrbWalkerState.value)))
 		return
 
 	if (!XAIOOrbWalkerState.value)
@@ -191,24 +201,26 @@ export function XIAOSKYCombo(unit: Unit, target: Nullable<Unit>) {
 	unit.AttackTarget(target)
 }
 
-export function XIAOSKYAutoCombo(unit: Unit, target: Unit) {
+export function XIAOSKYAutoCombo(unit: Unit, targetMouse: Unit, targetInRange: Unit) {
 
-	if (!SkyAutoComboState.value)
+	if (!SkyAutoComboState.value || (unit.InvisibleLevel !== 0 && !unit.IsVisibleForEnemies))
 		return
+
+	let target = SkyAutoComboTargetSelector.selected_id === 0 ? targetMouse : targetInRange
 
 	if (SkyAutoComboDisableWhen.value && (XAIOStyleCombo.selected_id === 1 && ComboActived) || (XAIOStyleCombo.selected_id === 0 && XAIOComboKey.is_pressed))
 		return
 
-	if (target === undefined || !Helper.TriggerAutoCombo(target))
+	if (target === undefined || !target.IsVisible || target.IsInvulnerable || !Helper.TriggerAutoCombo(target))
 		return
 
 	if (target.HPPercent > SkyAutoComboMinHPpercent.value && SkyAutoComboMinHPpercent.value !== 0)
 		return
 
-	if (Helper.IsBlockingAbilities(unit, target, XIAOlinkenItems, LinkenBreakAbilityItems))
+	if (Helper.IsBlockingAbilities(unit, target, XIAOlinkenItems, false, LinkenBreakAbilityItems))
 		return
 
-	if (execute_ability.some(abil_str => XAIOSKYSmartCast(unit, target, Helper, abil_str, ACItemsMenu, ACAbilityMenu)))
+	if (execute_ability.some(abil_str => XAIOSKYSmartCast(unit, target, Helper, abil_str, ACItemsMenu, ACAbilityMenu, false)))
 		return
 
 }

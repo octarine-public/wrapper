@@ -44,12 +44,12 @@ function Combo(
 		return false
 
 	if (abil.Name === "void_spirit_astral_step" && !Owner.IsRooted && !target.IsInvulnerable)
-		if (Helper.UseAbility(abil, false, false,
+		if (Helper.UseAbility(abil, XAIOOrbWalkerState.value,
 			InitPrediction.GetPrediction(abil, Owner, target, true, XAIOSkillshotType.None, XAIOCollisionTypes.None).CastPosition))
 			return true
 
 	if (abil.Name === "void_spirit_aether_remnant" && !Sleep.Sleeping(abil))
-		if (!target.IsMagicImmune && Helper.UseAbility(abil, false, false, target, true))
+		if (!target.IsMagicImmune && Helper.UseAbility(abil, XAIOOrbWalkerState.value, target, true))
 			return true
 
 	if (Sleep.Sleeping("cycloneCombo") || target.IsInvulnerable)
@@ -71,13 +71,13 @@ function Combo(
 		&& abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)
 		&& !Sleep.Sleeping(abil)
 		&& !Owner.IsRooted
-		&& Helper.UseAbility(abil, false, false, target.Position))
+		&& Helper.UseAbility(abil, XAIOOrbWalkerState.value, target.Position))
 		return true
 
 	if (abil.Name === "item_ethereal_blade" && !target.IsMagicImmune) {
 		if (etherealbuff?.IsValid && etherealbuff.RemainingTime >= 0.8)
 			return false
-		if (Helper.UseAbility(abil, false, false, target)) {
+		if (Helper.UseAbility(abil, XAIOOrbWalkerState.value, target)) {
 			Sleep.Sleep(abil.GetHitTime(target.Position) + 30, "await_ethereal", true)
 			return true
 		}
@@ -85,7 +85,7 @@ function Combo(
 
 	if (abil.Name.includes("item_dagon") && !target.IsMagicImmune) {
 		if (!Sleep.Sleeping("await_ethereal"))
-			if (Helper.UseAbility(abil, false, false, target))
+			if (Helper.UseAbility(abil, XAIOOrbWalkerState.value, target))
 				return true
 	}
 
@@ -93,10 +93,10 @@ function Combo(
 	if (abil.Name === "item_nullifier" && !target.IsMagicImmune) {
 		let AeonDisk = target.GetItemByClass(item_aeon_disk)
 		if (AeonDisk === undefined) {
-			if (Helper.UseAbility(abil, false, false, target))
+			if (Helper.UseAbility(abil, XAIOOrbWalkerState.value, target))
 				return true
 		} else if (AeonDisk !== undefined && target.HPPercent <= 70) {
-			if (Helper.UseAbility(abil, false, false, target))
+			if (Helper.UseAbility(abil, XAIOOrbWalkerState.value, target))
 				return true
 		}
 	}
@@ -109,7 +109,7 @@ function Combo(
 			if (Helper.UseAbility(abil, false))
 				return true
 
-		if (Helper.UseAbility(abil, false, false, target))
+		if (Helper.UseAbility(abil, XAIOOrbWalkerState.value, target))
 			return true
 	}
 }
@@ -125,7 +125,7 @@ export function XAIOvoidSpiritCombo(unit: Unit, enemy: Nullable<Unit>) {
 	if ((XAIOStyleCombo.selected_id === 1 && !ComboActived) || (XAIOStyleCombo.selected_id === 0 && !XAIOComboKey.is_pressed))
 		return
 
-	if (Helper.IsBlockingAbilities(unit, enemy, XIAOlinkenItems, LinkenBreakAbilityItems))
+	if (Helper.IsBlockingAbilities(unit, enemy, XIAOlinkenItems, XAIOOrbWalkerState.value, LinkenBreakAbilityItems))
 		return
 
 	let cyclone = unit.GetItemByClass(item_cyclone),
@@ -135,8 +135,8 @@ export function XAIOvoidSpiritCombo(unit: Unit, enemy: Nullable<Unit>) {
 	if (!Sleep.Sleeping("cycloneCombo")
 		&& IsValidCycloneCombo(cyclone!, enemy, ItemsMenu)
 		&& IsValidCycloneCombo(remenat!, enemy, AbilityMenu)
-		&& Helper.UseAbility(cyclone!, false, false, enemy)
-		&& Helper.UseAbility(remenat!, false, false, enemy, true)) {
+		&& Helper.UseAbility(cyclone!, XAIOOrbWalkerState.value, enemy)
+		&& Helper.UseAbility(remenat!, XAIOOrbWalkerState.value, enemy, true)) {
 		Sleep.Sleep(600, "cycloneCombo")
 		return
 	}
@@ -147,7 +147,7 @@ export function XAIOvoidSpiritCombo(unit: Unit, enemy: Nullable<Unit>) {
 	let dissimilate = unit.GetAbilityByClass(void_spirit_dissimilate)
 	if (dissimilate && unit.HasBuffByName("modifier_void_spirit_dissimilate_phase") && !Sleep.Sleeping(enemy)) {
 		unit.MoveTo(InitPrediction.GetPrediction(dissimilate, unit, enemy, true, XAIOSkillshotType.None, XAIOCollisionTypes.None).CastPosition)
-		Sleep.Sleep(Helper.OrderCastDelay, enemy)
+		Sleep.Sleep(Helper.AttackMoveDelay + Helper.InputLag, enemy)
 		return
 	}
 

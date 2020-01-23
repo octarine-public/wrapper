@@ -34,7 +34,7 @@ export default class Ability extends Entity {
 		return MaskToArrayNumber(this.AbilityData.AbilityBehavior)
 	}
 	public get AbilityDamage(): number {
-		return this.AbilityData.GetAbilityDamage(this.Level)
+		return this.AbilityData.GetAbilityDamage(this.Level) || this.GetSpecialValue("damage")
 	}
 	public get AbilityType(): ABILITY_TYPES {
 		return this.AbilityData.AbilityType
