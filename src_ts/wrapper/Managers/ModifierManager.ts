@@ -1,18 +1,17 @@
-import Events from "./Events"
-
 import Modifier from "../Objects/Base/Modifier"
 import Unit from "../Objects/Base/Unit"
 import EventsSDK from "./EventsSDK"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
-import Game from "../Objects/GameResources/GameRules"
+import { GameRules } from "../Objects/Base/GameRules"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
-import { ParseProtobufNamed, RecursiveProtobuf, ParseProtobufDesc, ServerHandleToEntity } from "../Utils/ParseProtobuf"
+import { ParseProtobufNamed, RecursiveProtobuf, ParseProtobufDesc } from "../Utils/ParseProtobuf"
 import Vector3 from "../Base/Vector3"
+import EntityManager from "./EntityManager"
 
 export class IModifier {
 	constructor(public readonly m_Protobuf: RecursiveProtobuf) {
 		if (!this.m_Protobuf.has("creation_time"))
-			this.m_Protobuf.set("creation_time", Game.RawGameTime)
+			this.m_Protobuf.set("creation_time", GameRules?.RawGameTime ?? 0)
 	}
 	public get EntryType(): Nullable<DOTA_MODIFIER_ENTRY_TYPE> {
 		return this.GetProperty("entry_type")
@@ -140,7 +139,8 @@ function EmitModifierCreated(mod: IModifier) {
 	if (mod.Index === undefined || mod.SerialNum === undefined || mod.Parent === undefined)
 		return
 	let mod_ = new Modifier(mod)
-	if (mod_.Duration !== -1 && mod_.DieTime < Game.RawGameTime)
+	let time = GameRules?.RawGameTime ?? 0
+	if (mod_.Duration !== -1 && mod_.DieTime < time)
 		return
 	ActiveModifiers.set(mod_.SerialNumber, mod_)
 	//console.log("Created " + mod_.SerialNumber)
@@ -169,10 +169,10 @@ function EmitModifierRemoved(mod: Modifier) {
 	}
 	EventsSDK.emit("ModifierRemovedRaw", false, mod)
 }
-Events.on("EntityDestroyed", ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
-		if (mod.Parent?.m_pBaseEntity !== ent)
+		if (mod.Parent !== ent)
 			return
 		EmitModifierRemoved(mod)
 	})
@@ -294,16 +294,16 @@ declare global {
 globalThis.DebugBuffsParents = () => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
-		let parent = ServerHandleToEntity(mod.m_pBuff.Parent)
+		let parent = EntityManager.EntityByIndex(mod.m_pBuff.Parent)
 		if (parent instanceof Unit)
 			return
-		console.log(parent?.m_pBaseEntity?.constructor?.name, mod.m_pBuff.Parent, mod.Name, mod.ElapsedTime, mod.m_pBuff.EntryType)
+		console.log(parent?.NativeEntity?.constructor?.name, mod.m_pBuff.Parent, mod.Name, mod.ElapsedTime, mod.m_pBuff.EntryType)
 	})
 }
 
 globalThis.DebugBuffs = () => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
-		console.log(mod.Parent?.m_pBaseEntity?.constructor?.name, mod.Name, mod.ElapsedTime, mod.Duration, mod.m_pBuff.EntryType)
+		console.log(mod.Parent?.constructor?.name, mod.Name, mod.ElapsedTime, mod.Duration, mod.m_pBuff.EntryType)
 	})
 }

@@ -14,7 +14,7 @@ let IsValidUnit = (unit: Unit) => !unit.IsEnemy()
 	&& !unit.IsInvulnerable && !unit.IsStunned && !unit.IsHexed
 
 function IsInvalidMine(ent: Entity) {
-	return ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines && ent.Name !== "npc_dota_techies_remote_mine" && ent.Name !== "npc_dota_techies_stasis_trap"
+	return ent.ClassName === "CDOTA_NPC_TechiesMines" && ent.Name !== "npc_dota_techies_remote_mine" && ent.Name !== "npc_dota_techies_stasis_trap"
 }
 
 export function Tick() {
@@ -38,11 +38,11 @@ export function Tick() {
 }
 
 EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof WardObserver || ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines)
+	if (ent instanceof WardObserver || ent.ClassName === "CDOTA_NPC_TechiesMines")
 		ward_list.push(ent)
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof WardObserver || ent.m_pBaseEntity instanceof C_DOTA_NPC_TechiesMines)
+	if (ent instanceof WardObserver || ent.ClassName === "CDOTA_NPC_TechiesMines")
 		ArrayExtensions.arrayRemove(ward_list, ent)
 })
 

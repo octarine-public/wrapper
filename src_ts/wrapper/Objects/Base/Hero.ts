@@ -5,92 +5,70 @@ import Unit from "./Unit"
 import Entity from "./Entity"
 
 export default class Hero extends Unit {
-	public readonly m_pBaseEntity!: C_DOTA_BaseNPC_Hero
-	public ReplicatingOtherHeroModel_: Entity | CEntityIndex = this.m_pBaseEntity.m_hReplicatingOtherHeroModel
-
-	get IsHero(): boolean {
-		return true
-	}
+	public NativeEntity: Nullable<C_DOTA_BaseNPC_Hero>
+	public AbilityPoints = 0
+	public CurrentXP = 0
+	public IsReincarnating = false
+	public PlayerID = 0
+	public PrimaryAtribute = Attributes.DOTA_ATTRIBUTE_INVALID
+	public RecentDamage = 0
+	public RespawnTime = 0
+	public RespawnTimePenalty = 0
+	public SpawnedAt = 0
+	public Agility = 0
+	public Intellect = 0
+	public Strength = 0
+	public TotalAgility = 0
+	public TotalIntellect = 0
+	public TotalStrength = 0
+	public m_hReplicatingOtherHeroModel = 0x3FFF
 
 	/* ============ BASE  ============ */
-
-	get AbilityPoint(): number {
-		return this.m_pBaseEntity.m_iAbilityPoints
-	}
-	get CurrentXP(): number {
-		return this.m_pBaseEntity.m_iCurrentXP
+	public get ReplicatingOtherHeroModel_(): C_BaseEntity | number {
+		let id = this.m_hReplicatingOtherHeroModel
+		if (id === 0x3FFF)
+			return 0
+		return EntityManager.NativeByIndex(id) ?? id
 	}
 	get HeroID(): number {
-		return this.m_pBaseEntity.m_iHeroID
+		return this.UnitData.HeroID
 	}
 	get IsBuybackDisabled(): boolean {
-		return this.m_pBaseEntity.m_bBuybackDisabled
+		return this.NativeEntity?.m_bBuybackDisabled ?? false
 	}
 	get ReplicatingOtherHeroModel(): Nullable<Entity> {
-		if (this.ReplicatingOtherHeroModel_ instanceof Entity)
-			return this.ReplicatingOtherHeroModel_
-
-		this.ReplicatingOtherHeroModel_ = EntityManager.GetEntityByNative(this.ReplicatingOtherHeroModel_) ?? this.ReplicatingOtherHeroModel_
-
-		if (this.ReplicatingOtherHeroModel_ instanceof Entity)
-			return this.ReplicatingOtherHeroModel_
-
-		return undefined
+		return EntityManager.EntityByIndex(this.m_hReplicatingOtherHeroModel)
 	}
 	get IsIllusion(): boolean {
 		if (this.ReplicatingOtherHeroModel_ === undefined)
 			return false
-		return (this.ReplicatingOtherHeroModel_ instanceof Entity) || (this.ReplicatingOtherHeroModel_ instanceof C_BaseEntity) || (this.ReplicatingOtherHeroModel_ > 0)
-	}
-	get IsReincarnating(): boolean {
-		return this.m_pBaseEntity.m_bReincarnating
+		return (this.ReplicatingOtherHeroModel_ instanceof C_BaseEntity) || (this.ReplicatingOtherHeroModel_ > 0)
 	}
 	get LastHurtTime(): number {
-		return this.m_pBaseEntity.m_flLastHurtTime
-	}
-	get PlayerID(): number {
-		return this.m_pBaseEntity.m_iPlayerID
-	}
-	get PrimaryAtribute(): Attributes {
-		return this.m_pBaseEntity.m_iPrimaryAttribute
-	}
-	get RecentDamage(): number {
-		return this.m_pBaseEntity.m_iRecentDamage
-	}
-	get RespawnTime(): number {
-		return this.m_pBaseEntity.m_flRespawnTime
-	}
-	get RespawnTimePenalty(): number {
-		return this.m_pBaseEntity.m_flRespawnTimePenalty
-	}
-	get SpawnedAt(): number {
-		return this.m_pBaseEntity.m_flSpawnedAt
-	}
-	get Agility(): number {
-		return this.m_pBaseEntity.m_flAgility
-	}
-	get Intellect(): number {
-		return this.m_pBaseEntity.m_flIntellect
-	}
-	get Strength(): number {
-		return this.m_pBaseEntity.m_flStrength
-	}
-	get TotalAgility(): number {
-		return this.m_pBaseEntity.m_flAgilityTotal
-	}
-	get TotalIntellect(): number {
-		return this.m_pBaseEntity.m_flIntellectTotal
-	}
-	get TotalStrength(): number {
-		return this.m_pBaseEntity.m_flStrengthTotal
+		return this.NativeEntity?.m_flLastHurtTime ?? 0
 	}
 
 	/* ============ EXTENSIONS ============ */
-
 	get SpellAmplification(): number {
 		return super.SpellAmplification + (this.TotalIntellect * DamageAmplifyPerIntellectPrecent / 100)
 	}
 }
 
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTA_BaseNPC_Hero", Hero)
+RegisterFieldHandler(Hero, "m_iAbilityPoints", (ent, new_val) => ent.AbilityPoints = new_val as number)
+RegisterFieldHandler(Hero, "m_iCurrentXP", (ent, new_val) => ent.CurrentXP = new_val as number)
+RegisterFieldHandler(Hero, "m_bReincarnating", (ent, new_val) => ent.IsReincarnating = new_val as boolean)
+RegisterFieldHandler(Hero, "m_iPlayerID", (ent, new_val) => ent.PlayerID = new_val as number)
+RegisterFieldHandler(Hero, "m_iPrimaryAttribute", (ent, new_val) => ent.PrimaryAtribute = new_val as Attributes)
+RegisterFieldHandler(Hero, "m_iRecentDamage", (ent, new_val) => ent.RecentDamage = new_val as number)
+RegisterFieldHandler(Hero, "m_flRespawnTime", (ent, new_val) => ent.RespawnTime = new_val as number)
+RegisterFieldHandler(Hero, "m_flRespawnTimePenalty", (ent, new_val) => ent.RespawnTimePenalty = new_val as number)
+RegisterFieldHandler(Hero, "m_flSpawnedAt", (ent, new_val) => ent.SpawnedAt = new_val as number)
+RegisterFieldHandler(Hero, "m_flAgility", (ent, new_val) => ent.Agility = new_val as number)
+RegisterFieldHandler(Hero, "m_flIntellect", (ent, new_val) => ent.Intellect = new_val as number)
+RegisterFieldHandler(Hero, "m_flStrength", (ent, new_val) => ent.Strength = new_val as number)
+RegisterFieldHandler(Hero, "m_flAgilityTotal", (ent, new_val) => ent.TotalAgility = new_val as number)
+RegisterFieldHandler(Hero, "m_flIntellectTotal", (ent, new_val) => ent.TotalIntellect = new_val as number)
+RegisterFieldHandler(Hero, "m_flStrengthTotal", (ent, new_val) => ent.TotalStrength = new_val as number)
+RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, new_val) => ent.m_hReplicatingOtherHeroModel = (new_val as number) & 0x3FFF)

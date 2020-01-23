@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Color, Entity, EventsSDK, Game, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, DOTAGameUIState_t } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Color, Entity, EventsSDK, GameRules, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, DOTAGameUIState_t, GameState } from "wrapper/Imports"
 
 const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	active = menu.AddToggle("Active", true),
@@ -119,9 +119,10 @@ EventsSDK.on("ModifierCreated", buff => {
 				ParticlesSDK.SetControlPoint(abPart, i, pos)
 			})
 		}
-		arTimers.set(buff, [Game.GameTime, delay, ability?.Name ?? arAbilities[index], ent])
+		let time = GameRules?.RawGameTime ?? 0
+		arTimers.set(buff, [GameRules?.RawGameTime ?? 0, delay, ability?.Name ?? arAbilities[index], ent])
 		if (abPart !== -1)
-			remove_list.push([Game.RawGameTime + delay, abPart])
+			remove_list.push([time + delay, abPart])
 	}
 
 	let mod = arHeroModifiers.get(buff.Name)
@@ -138,11 +139,12 @@ EventsSDK.on("ModifierRemoved", buff => {
 })
 
 EventsSDK.on("Draw", () => {
-	if (!active.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!active.value || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	// loop-optimizer: KEEP
 	arTimers.forEach((val, buff) => {
-		let rend = val[0] - Game.GameTime + val[1]
+		let time = GameRules?.RawGameTime ?? 0
+		let rend = val[0] - time + val[1]
 		if (rend <= 0) {
 			arTimers.delete(buff)
 			return
@@ -307,7 +309,7 @@ EventsSDK.on("LinearProjectileDestroyed", proj => {
 let particles_table = new Map<number, [/* path */string, /* start */Vector3, /* end */Vector3, /* start game time */number, /* speed */number]>()
 EventsSDK.on("ParticleCreated", (id, path) => {
 	if (path === "particles/units/heroes/hero_pudge/pudge_meathook.vpcf")
-		particles_table.set(id, [path, new Vector3().Invalidate(), new Vector3().Invalidate(), Game.RawGameTime, 1450 /* hook_speed */])
+		particles_table.set(id, [path, new Vector3().Invalidate(), new Vector3().Invalidate(), GameRules?.RawGameTime ?? 0, 1450 /* hook_speed */])
 })
 
 EventsSDK.on("ParticleUpdated", (id, controlPoint, position) => {
@@ -345,7 +347,7 @@ EventsSDK.on("ParticleUpdatedEnt", (id, controlPoint, ent, attach, attachment, f
 EventsSDK.on("ParticleDestroyed", id => particles_table.delete(id))
 
 EventsSDK.on("Tick", () => {
-	remove_list.filter(([time]) => time < Game.RawGameTime).forEach(ar => {
+	remove_list.filter(([time]) => time < GameRules!.RawGameTime).forEach(ar => {
 		ArrayExtensions.arrayRemove(remove_list, ar)
 		ParticlesSDK.Destroy(ar[1])
 	})
@@ -357,7 +359,7 @@ EventsSDK.on("Tick", () => {
 		let end_pos = part[2]
 		let start_pos = part[1]
 		if (part[0] === "particles/units/heroes/hero_pudge/pudge_meathook.vpcf" && part[1].IsValid && part[2].IsValid) {
-			let calc_pos = start_pos.Extend(end_pos, (Game.RawGameTime - part[3]) * part[4])
+			let calc_pos = start_pos.Extend(end_pos, (GameRules!.RawGameTime - part[3]) * part[4])
 
 			DrawDirectional(start_pos, calc_pos, i)
 

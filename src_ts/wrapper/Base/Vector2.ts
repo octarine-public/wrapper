@@ -52,9 +52,7 @@ export default class Vector2 {
 	 * var vector = new Vector2(1, 2)
 	 * vector.Normalize();
 	 */
-	constructor(public x: number = 0, public y: number = 0) {
-		this.SetVector(x, y)
-	}
+	constructor(public x: number = 0, public y: number = 0) { }
 
 	/* ================== Getters ================== */
 	/**
@@ -762,11 +760,10 @@ export default class Vector2 {
 		return hash
 	}
 	/**
-	 * Vector2 to String Vector2
-	 * @return new Vector2(x,y,z)
+	 * @return Vector2(x,y)
 	 */
 	public toString(): string {
-		return "Vector2(" + this.x + "," + this.y + ")"
+		return `Vector2(${this.x},${this.y})`
 	}
 	/**
 	 * @return [x, y, z]

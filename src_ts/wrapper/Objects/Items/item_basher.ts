@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_basher extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_CraniumBasher
+	public NativeEntity: Nullable<C_DOTA_Item_CraniumBasher>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

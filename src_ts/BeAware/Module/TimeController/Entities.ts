@@ -39,12 +39,12 @@ export function GetRoshanPosition(): Vector3 {
 }
 
 function BaseCreateUnits(x: Entity) {
-	if (x.m_pBaseEntity instanceof C_DOTA_RoshanSpawner)
+	if (x.ClassName === "CDOTA_RoshanSpawner")
 		RoshanSpawner = x
 }
 
 function BaseDestroyedUnits(x: Entity) {
-	if (x.m_pBaseEntity instanceof C_DOTA_RoshanSpawner)
+	if (x.ClassName === "CDOTA_RoshanSpawner")
 		RoshanSpawner = undefined
 }
 export function Tick() {

@@ -1,4 +1,4 @@
-import { Entity, EventsSDK, Game, LocalPlayer, DOTAGameUIState_t } from "wrapper/Imports"
+import { Entity, EventsSDK, GameState, LocalPlayer, DOTAGameUIState_t, GameRules } from "wrapper/Imports"
 import { stateMain } from "./abstract/Menu.Base"
 
 import * as Camp from "./Module/CampInformer/Entity"
@@ -27,10 +27,10 @@ EventsSDK.on("Tick", () => {
 })
 
 EventsSDK.on("Draw", () => {
-	if (!stateMain.value || LocalPlayer?.IsSpectator || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!stateMain.value || LocalPlayer?.IsSpectator || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	EnemyLaneSelection.Draw()
-	if (!Game.IsInGame)
+	if (!GameRules?.IsInGame)
 		return
 	Camp.OnDraw()
 	Wisp.OnDraw()
@@ -73,7 +73,7 @@ EventsSDK.on("TrueSightedChanged", npc => {
 })
 
 EventsSDK.on("TeamVisibilityChanged", npc => {
-	if (!stateMain.value || Game.IsPaused)
+	if (!stateMain.value || GameRules?.IsPaused)
 		return
 	VBE.TeamVisibilityChanged(npc)
 })

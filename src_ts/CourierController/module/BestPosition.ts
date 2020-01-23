@@ -1,4 +1,4 @@
-import { Courier, Vector3, Game, Unit, Creep, Hero, EntityManager } from "wrapper/Imports"
+import { Courier, Vector3, GameRules, Unit, Creep, Hero, EntityManager } from "wrapper/Imports"
 import { StateBestPos } from "../Menu"
 import { CourierBase } from "../Data/Helper"
 import { Sleep } from "../bootstrap"
@@ -53,7 +53,7 @@ export function CourierBestPosition(courier: Courier): boolean {
 }
 
 export function MoveCourier(Safe: boolean = false, courier: Courier, line?: LaneSelectionFlags_t) {
-	if (Game.IsPaused || !CourierBase.IsValidCourier(courier) || CourierBase.LAST_CLICK)
+	if (GameRules?.IsPaused || !CourierBase.IsValidCourier(courier) || CourierBase.LAST_CLICK)
 		return
 	if (!Safe) {
 		courier.MoveTo(CourierBase.Position(false, line))

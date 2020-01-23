@@ -49,9 +49,7 @@ export default class Vector3 {
 	 * var vector = new Vector3(1, 2, 3)
 	 * vector.Normalize();
 	 */
-	constructor(public x: number = 0, public y: number = 0, public z: number = 0) {
-		this.SetVector(x, y, z)
-	}
+	constructor(public x: number = 0, public y: number = 0, public z: number = 0) { }
 
 	/* ================== Getters ================== */
 	/**
@@ -818,11 +816,10 @@ export default class Vector3 {
 		return hash
 	}
 	/**
-	 * Vector3 to String Vector3
-	 * @return new Vector3(x,y,z)
+	 * @return Vector3(x,y,z)
 	 */
 	public toString(): string {
-		return "Vector3(" + this.x + "," + this.y + "," + this.z + ")"
+		return `Vector3(${this.x},${this.y},${this.z})`
 	}
 	/**
 	 * @return [x, y, z]

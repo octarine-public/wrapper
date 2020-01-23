@@ -21,7 +21,19 @@ export default class BinaryStream {
 		} while ((b & 0x80n) !== 0n)
 		return val
 	}
-	public ReadNumber(n: number): bigint {
+	public ReadNumber(n: number): number {
+		const limit = n * 8
+		let val = 0,
+			shift = 0,
+			b: number
+		do {
+			b = this.Next()
+			val |= b << shift
+			shift += 8
+		} while (shift !== limit)
+		return val
+	}
+	public ReadBigInt(n: number): bigint {
 		const limit = BigInt(n) * 8n
 		let val = 0n,
 			shift = 0n,

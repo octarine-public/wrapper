@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_iron_talon extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_Iron_Talon
+	public NativeEntity: Nullable<C_DOTA_Item_Iron_Talon>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

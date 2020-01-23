@@ -1,4 +1,4 @@
-import { Color, RendererSDK, Vector3, Entity } from "wrapper/Imports"
+import { Color, RendererSDK, Vector3, Entity, npc_dota_hero_wisp } from "wrapper/Imports"
 import { State } from "./Menu"
 
 let wisp: Entity | number | undefined,
@@ -11,7 +11,7 @@ export function ParticleCreate(id: number, handle: BigInt) {
 }
 
 export function ParticleUpdated(id: number, ent: Nullable<Entity>, vector: Vector3) {
-	if (id === par_id || (ent !== undefined && ent.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Wisp && ent.IsEnemy())) {
+	if (id === par_id || (ent !== undefined && ent instanceof npc_dota_hero_wisp && ent.IsEnemy())) {
 		pos = vector
 		wisp = ent as Entity | number
 	}

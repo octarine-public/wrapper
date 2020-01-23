@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_arcane_ring extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_Arcane_Ring
+	public NativeEntity: Nullable<C_DOTA_Item_Arcane_Ring>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

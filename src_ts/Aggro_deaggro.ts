@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu as MenuSDK, LocalPlayer, Unit, TickSleeper, Tower, EntityManager, Creep, Hero } from "wrapper/Imports"
+import { EventsSDK, GameState, Menu as MenuSDK, LocalPlayer, Unit, TickSleeper, Tower, EntityManager, Creep, Hero } from "wrapper/Imports"
 
 const Sleep = new TickSleeper()
 const Menu = MenuSDK.AddEntry(["Utility", "Aggro/deaggro Creeps"])
@@ -6,7 +6,7 @@ const AutoTowerState = Menu.AddToggle("Auto tower deaggro")
 const aggroKey = Menu.AddKeybind("Aggro Key")
 const deaggroKey = Menu.AddKeybind("Deaggro Key")
 
-const GetDelayCast = () => (((Game.Ping / 2) + 30) + 450)
+const GetDelayCast = () => (((GameState.Ping / 2) + 30) + 450)
 const IsValidUnit = (x: Unit) => x.IsValid && x.IsAlive && x.IsVisible
 const IsValidPlayerAttack = (x: Tower) => LocalPlayer!.Hero === x.TowerAttackTarget
 const IsValidTower = (x: Tower) => x.TowerAttackTarget && x.IsAlive && x.Distance2D(x.TowerAttackTarget.Position) <= (x.AttackRange + x.HullRadius + 25)

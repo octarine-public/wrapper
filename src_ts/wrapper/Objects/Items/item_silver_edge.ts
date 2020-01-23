@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_silver_edge extends Item {
-	public readonly m_pBaseEntity!: CDOTA_Item_Silver_Edge
+	public NativeEntity: Nullable<CDOTA_Item_Silver_Edge>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

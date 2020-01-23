@@ -7,7 +7,7 @@ export function Destroy(ent: Entity) {
 		pars.delete(ent)
 }
 export function Create(ent: Entity) {
-	if (ent instanceof Unit && ent.m_pBaseEntity instanceof C_DOTA_NPC_Treant_EyesInTheForest) {
+	if (ent instanceof Unit && ent.ClassName === "CDOTA_NPC_Treant_EyesInTheForest") {
 		treant_eyes.push(ent)
 		if (!State.value)
 			return
@@ -22,30 +22,32 @@ export function Tick() {
 	var local_team_flag = 1 << LocalPlayer!.Team
 	// loop-optimizer: KEEP
 	treant_eyes.forEach((ent, i) => {
+		let native_ent = ent.NativeEntity
+		if (native_ent === undefined)
+			return
+		let m_pEntity = native_ent.m_pEntity
+		if (m_pEntity === undefined)
+			return
 		if (ent.IsAlive) {
-			ent.IsVisibleForTeamMask |= local_team_flag
-			ent.m_pBaseEntity.m_iTaggedAsVisibleByTeam |= local_team_flag
+			native_ent.m_iTaggedAsVisibleByTeam |= local_team_flag
 			// |= 1 << 2 is EF_IN_STAGING_LIST
 			// |= 1 << 4 is EF_DELETE_IN_PROGRESS
 			// 1 << 5 is EF_NODRAW
 			// &= ~(1 << 7) is trigger
 			// 1 << 9 is EF_NODRAW???
-			ent.Flags &= ~(1 << 7)
-			ent.Flags |= 1 << 3
-			return true
+			m_pEntity.m_flags &= ~(1 << 7)
+			m_pEntity.m_flags |= 1 << 3
 		} else {
-			ent.Flags |= 1 << 7
-			ent.Flags &= ~(1 << 3)
+			m_pEntity.m_flags |= 1 << 7
+			m_pEntity.m_flags &= ~(1 << 3)
 			treant_eyes.splice(i, 1)
 			let par = pars.get(ent)
 			if (par !== undefined) {
 				ParticlesSDK.Destroy(par, true)
 				pars.delete(ent)
 			}
-			return true
 		}
 	})
-	return false
 }
 export function Init() {
 	treant_eyes = []

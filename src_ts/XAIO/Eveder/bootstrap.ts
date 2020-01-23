@@ -101,7 +101,7 @@
 // function UseProjectile(unit: Unit, length: number) {
 // 	// if (LocalPlayer !== undefined)
 // 	// 	if (unit === LocalPlayer.Hero)
-// 	// 		unit.AbilitiesBook.Spells.map(e => {
+// 	// 		unit.Spells.map(e => {
 // 	// 			if (e === undefined || e.IsHidden || e.IsPassive)
 // 	// 				return false
 // 	// 			console.log(e.Name)

@@ -1,4 +1,4 @@
-import { ArrayExtensions, Game, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Vector3, EntityManager, Input } from "wrapper/Imports"
+import { ArrayExtensions, GameSleeper, Hero, LocalPlayer, RendererSDK, Unit, Vector3, EntityManager, Input, GameState } from "wrapper/Imports"
 
 import {
 	baseCheckUnit,
@@ -60,7 +60,7 @@ function OnPressed() {
 	}
 
 	if (KeyStyle.selected_id === 1)
-		Game.ExecuteCommand((turnStateBlock ? "+" : "-") + "dota_camera_center_on_hero")
+		GameState.ExecuteCommand((turnStateBlock ? "+" : "-") + "dota_camera_center_on_hero")
 }
 
 function OnExecute(isPressed: boolean) {
@@ -225,11 +225,11 @@ export function Draw(): string | undefined {
 
 function TurnOn() {
 	if (CenterCamera.value)
-		Game.ExecuteCommand("+dota_camera_center_on_hero")
+		GameState.ExecuteCommand("+dota_camera_center_on_hero")
 }
 
 function TurnOff() {
-	Game.ExecuteCommand("-dota_camera_center_on_hero")
+	GameState.ExecuteCommand("-dota_camera_center_on_hero")
 	targetBlock = undefined
 	ControllablesUnitsDraw.clear()
 }

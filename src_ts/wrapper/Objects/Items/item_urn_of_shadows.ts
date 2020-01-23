@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_urn_of_shadows extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_Urn_Of_Shadows
+	public NativeEntity: Nullable<C_DOTA_Item_Urn_Of_Shadows>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

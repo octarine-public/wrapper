@@ -1,4 +1,4 @@
-import { Ability, Creep, ExecuteOrder, Game, Item, LocalPlayer, TickSleeper, Unit, dotaunitorder_t, Flow_t, EntityManager, Hero, item_power_treads, item_bottle, TreeTemp } from "wrapper/Imports"
+import { Ability, Creep, ExecuteOrder, GameRules, Item, LocalPlayer, TickSleeper, Unit, dotaunitorder_t, Flow_t, EntityManager, Hero, item_power_treads, item_bottle, TreeTemp, Building, GameState } from "wrapper/Imports"
 import {
 	AutoUseItemsArcane_val,
 	AutoUseItemsBloodHP_val,
@@ -159,7 +159,7 @@ function AutoUseItems(unit: Unit) {
 			}
 
 			case "item_power_treads": {
-				if (lastStat === undefined || Game.RawGameTime <= nextTick)
+				if (lastStat === undefined || GameRules!.RawGameTime <= nextTick)
 					return false
 
 				let Treads = item as item_power_treads
@@ -434,7 +434,7 @@ function UsePerfectDagger(args: ExecuteOrder, ability: Ability, unit: Unit): boo
 	let vec = unit.Position
 	if (unit.IsMoving) {
 		vec = unit.Position
-			.Add(unit.Forward.MultiplyScalar(unit.IdealSpeed * Game.GetLatency()))
+			.Add(unit.Forward.MultiplyScalar(unit.IdealSpeed * GameState.GetLatency()))
 			.Extend(args.Position, blink_range - 30)
 	} else
 		vec = unit.Position.Extend(args.Position, blink_range - 1)
@@ -475,7 +475,7 @@ function UsePowerTreads(ability: Ability, unit: Unit): boolean {
 			return true
 	}
 	changed = false
-	nextTick = ((Game.RawGameTime + ability.CastPoint) + (0.45 + GetAvgLatency(Flow_t.OUT)))
+	nextTick = ((GameRules!.RawGameTime + ability.CastPoint) + (0.45 + GetAvgLatency(Flow_t.OUT)))
 	TickSleep.Sleep(nextTick)
 	return false
 }
@@ -489,7 +489,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 	if (unit === undefined || !(target instanceof Unit))
 		return true
 
-	if (target.IsBuilding)
+	if (target instanceof Building)
 		return true
 
 	switch (args.OrderType) {
@@ -511,7 +511,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 			let janggo = unit.GetItemByName("item_ancient_janggo")
 			if (
 				IsValidItem(janggo)
-				&& target.IsHero
+				&& target instanceof Hero
 				&& unit.IsInRange(target, janggo.CastRange / 2)
 				&& !unit.HasBuffByName("modifier_item_ancient_janggo_active")
 			) {
@@ -523,7 +523,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 			if (
 				IsValidItem(talon)
 				&& unit.IsInRange(target, talon.CastRange)
-				&& target.IsCreep
+				&& target instanceof Creep
 				&& (target.IsNeutral || (target.IsLaneCreep && AutoUseItemsTalon_val.selected_id === 1))
 				&& !target.IsAncient
 				&& target.HPPercent <= AutoUseItemsTalonCreepHP.value
@@ -536,7 +536,7 @@ export function UseMouseItemTarget(args: ExecuteOrder) {
 			if (
 				IsValidItem(diffusal)
 				&& unit.IsInRange(target, diffusal.CastRange)
-				&& target.IsHero
+				&& target instanceof Hero
 				&& !target.IsMagicImmune
 				&& !target.HasBuffByName("modifier_item_diffusal_blade_slow")
 			) {

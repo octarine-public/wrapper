@@ -1,14 +1,15 @@
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import EntityManager, { LocalPlayer } from "../Managers/EntityManager"
+import EntityManager from "../Managers/EntityManager"
 import Ability from "../Objects/Base/Ability"
-import Entity from "../Objects/Base/Entity"
+import Entity, { LocalPlayer } from "../Objects/Base/Entity"
 import Unit from "../Objects/Base/Unit"
 import UserCmd from "./UserCmd"
 import RendererSDK from "./RendererSDK"
 import Events from "../Managers/Events"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import EventsSDK from "../Managers/EventsSDK"
+import Tree from "../Objects/Base/Tree"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -140,7 +141,7 @@ export default class ExecuteOrder {
 
 		return {
 			OrderType: this.m_OrderType,
-			Target: target instanceof Entity ? target.m_pBaseEntity instanceof C_DOTA_BinaryObject ? target.m_pBaseEntity.m_nBinaryID : target.Index : target,
+			Target: target instanceof Entity ? target instanceof Tree ? target.NativeEntity?.m_nBinaryID ?? target.Index : target.Index : target,
 			Ability: ability instanceof Ability ? ability.Index : ability,
 			OrderIssuer: this.m_OrderIssuer,
 			Unit: unit?.Index,

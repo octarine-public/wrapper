@@ -1,4 +1,4 @@
-import { Color, Entity, Game, Hero, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, LocalPlayer, EntityManager, Courier } from "wrapper/Imports"
+import { Color, Entity, GameRules, Hero, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, LocalPlayer, EntityManager, Courier, GameState, Tower, Creep } from "wrapper/Imports"
 import { ComboBox, DrawRGBA, PMH_Smoke_snd, Size, State, PMH_RenderStateMouseSmoke } from "./Menu"
 import { ignoreListCreate, ignoreListCreateUpdate, ignoreListCreateUpdateEnt } from "./DataHandle"
 import { ucFirst } from "../../abstract/Function"
@@ -12,10 +12,8 @@ let npc_hero: string = "npc_dota_hero_",
 
 function ClassChecking(entity: Nullable<Entity>) {
 	return entity !== undefined && (
-		entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Lane
-		|| entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep_Neutral
-		|| entity.m_pBaseEntity instanceof C_DOTA_BaseNPC_Tower
-		//|| entity.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Wisp
+		entity instanceof Creep || entity instanceof Tower
+		//|| entity instanceof npc_dota_hero_wisp
 	)
 }
 
@@ -50,7 +48,7 @@ function DrawIconWorldHero(position: Vector3, Target: Entity, color?: Color, ite
 }
 
 export function ParticleCreate(id: number, handle: bigint, path: string, entity: Nullable<Entity>) {
-	if (!State.value || !Game.IsInGame || ClassChecking(entity) || ignoreListCreate.includes(handle))
+	if (!State.value || !GameRules?.IsInGame || ClassChecking(entity) || ignoreListCreate.includes(handle))
 		return
 
 	if (handle === 16169843851719108633n)		// "particles/items2_fx/teleport_start.vpcf"
@@ -60,7 +58,7 @@ export function ParticleCreate(id: number, handle: bigint, path: string, entity:
 		END_SCROLL.set(id, LAST_ID_SCROLL)
 		LAST_ID_SCROLL = 0
 	}
-	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined, Game.RawGameTime])
+	Particle.set(id, [handle, entity instanceof Hero ? entity : undefined, GameRules!.RawGameTime])
 }
 
 function IsEnemyUse(position: Vector3) {
@@ -80,7 +78,7 @@ function FindAbilitySet(id: number, part: any, position: Vector3, name_ability: 
 
 export function ParticleCreateUpdate(id: number, control_point: number, position: Vector3) {
 	let part = Particle.get(id)
-	if (!State.value || !Game.IsInGame || part === undefined || ignoreListCreateUpdate.includes(part[0]))
+	if (!State.value || !GameRules?.IsInGame || part === undefined || ignoreListCreateUpdate.includes(part[0]))
 		return
 
 	// console.log("ParticleCreateUpdate  | " + position + " | " + control_point + " | " + id)
@@ -278,7 +276,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 			//FindAbilitySet(id, part, position, "item_smoke_of_deceit", npc_hero + "witch_doctor", new Color(255, 17, 0), + 5)
 
 			Particle.set(id, [part[0], "Smoke", part[2], position, new Color(255, 17, 0), + 5])
-			Game.ExecuteCommand("playvol ui/ping " + PMH_Smoke_snd.value / 1000)
+			GameState.ExecuteCommand("playvol ui/ping " + PMH_Smoke_snd.value / 1000)
 		}
 		// dust
 		if (part[0] === 2930661440000609946n && IsEnemyUse(position)) {
@@ -349,7 +347,7 @@ export function ParticleCreateUpdate(id: number, control_point: number, position
 }
 
 export function ParticleUpdatedEnt(id: number, ent: Nullable<Entity>, position: Vector3) {
-	if (!State.value || !Game.IsInGame || ClassChecking(ent))
+	if (!State.value || !GameRules?.IsInGame || ClassChecking(ent))
 		return
 	let part = Particle.get(id)
 	//console.log("ParticleUpdatedEnt  | " + position + " | " + ent + " | " + id)
@@ -447,7 +445,7 @@ function RenderTeleportMap(handle: bigint, position: Vector3) {
 
 export function OnDraw() {
 
-	if (!Game.IsInGame)
+	if (!GameRules?.IsInGame)
 		return
 
 	EntityManager.GetEntitiesByClass(Unit).forEach(x => {
@@ -465,7 +463,7 @@ export function OnDraw() {
 		if (delete_time === undefined)
 			delete_time = + 3 // def time for del.
 
-		if (position === undefined || Time + delete_time <= Game.RawGameTime) {
+		if (position === undefined || Time + delete_time <= GameRules!.RawGameTime) {
 			Particle.delete(i)
 			return
 		}
@@ -529,7 +527,7 @@ export function OnDraw() {
 				screen_pos = RendererSDK.WorldToScreen(position)
 			if (BuffDieTime === undefined || screen_pos !== undefined)
 				return
-			RendererSDK.Text((-(Game.RawGameTime - BuffDieTime.DieTime)).toFixed(1).toString(), screen_pos, new Color(255, 255, 255), "Consoles", Size.value / 3)
+			RendererSDK.Text((-(GameRules!.RawGameTime - BuffDieTime.DieTime)).toFixed(1).toString(), screen_pos, new Color(255, 255, 255), "Consoles", Size.value / 3)
 		}
 	})
 

@@ -1,5 +1,5 @@
 
-import { ArrayExtensions, Entity, Game, LocalPlayer, ParticlesSDK, RendererSDK, Team, Unit, Vector2, Vector3, FontFlags_t, EventsSDK } from "wrapper/Imports"
+import { ArrayExtensions, Entity, GameRules, LocalPlayer, ParticlesSDK, RendererSDK, Team, Unit, Vector2, Vector3, FontFlags_t, EventsSDK, GameState } from "wrapper/Imports"
 import {
 	DrawTimerRadarSize,
 	DrawTimerRadarX,
@@ -32,8 +32,8 @@ export function DrawScan() {
 	if (RadarTreeSettingsState.value && LocalPlayer !== undefined)
 		Base.DrawTimer(
 			LocalPlayer.Team !== Team.Radiant
-				? Game.ScanCooldownRadiant
-				: Game.ScanCooldownDire,
+				? (GameRules?.ScanCooldownRadiant ?? 0)
+				: (GameRules?.ScanCooldownDire ?? 0),
 			DrawTimerRadarX,
 			DrawTimerRadarY,
 			DrawTimerRadarSize,
@@ -44,7 +44,7 @@ export function DrawScan() {
 		RadarDetect.forEach(x => {
 			if (x === undefined || x.Name === undefined || !x.IsEnemy())
 				return
-			let Time = Game.RawGameTime
+			let Time = GameRules?.RawGameTime ?? 0
 			if (x.Name === "npc_dota_thinker") {
 				let ent = x as Unit
 				if (ent.HasBuffByName("modifier_radar_thinker")) {
@@ -74,7 +74,7 @@ export function DrawScan() {
 						)
 					}
 					if (Time >= checkTick) {
-						Game.ExecuteCommand("playvol sounds\\ui\\scan.vsnd " + RadarStateInWorldSound.value / 100)
+						GameState.ExecuteCommand("playvol sounds\\ui\\scan.vsnd " + RadarStateInWorldSound.value / 100)
 						checkTick = Time + 5
 					}
 				}

@@ -1,5 +1,4 @@
-
-import { EventsSDK, TickSleeper, Game, Events, LocalPlayer, Courier, EntityManager, ArrayExtensions, Unit } from "wrapper/Imports"
+import { EventsSDK, TickSleeper, GameRules, Events, LocalPlayer, Courier, EntityManager, ArrayExtensions, Unit, PlayerResource } from "wrapper/Imports"
 import { State } from "./Menu"
 import { CSODOTALobby } from "./Data/Data"
 import { CourierBase } from "./Data/Helper"
@@ -10,15 +9,16 @@ import { CourierBestPosition, GameEndDeliver } from "./module/BestPosition"
 export const Sleep = new TickSleeper()
 export const BestPosSleep = new TickSleeper()
 export let UnitAnimation: Unit[] = []
-export let OwnerIsValid = () => Game.IsInGame && LocalPlayer!.Hero?.IsAlive && !LocalPlayer!.IsSpectator
+export let OwnerIsValid = () => GameRules?.IsInGame && LocalPlayer!.Hero?.IsAlive && !LocalPlayer!.IsSpectator
 //export let AutoUseCourierPosition: Map<number, Vector3> = new Map()
 
 function SharedFilter(number: number, obj: any) {
 	if (CourierBase.roles.length === 0)
 		return
-	return CourierBase.roles[number] = (obj as CSODOTALobby).members
+	let local_steamid = LocalPlayer !== undefined && PlayerResource !== undefined ? PlayerResource.PlayerData[LocalPlayer.PlayerID]?.SteamID ?? -1n : -1n
+	CourierBase.roles[number] = (obj as CSODOTALobby).members
 		// loop-optimizer: KEEP
-		.filter(member => member.id === LocalPlayer?.PlayerSteamID && LocalPlayer?.PlayerSteamID >= 0)
+		.filter(member => member.id === local_steamid && local_steamid >= 0)
 		// loop-optimizer: KEEP
 		.map(member => member.lane_selection_flags)
 }
@@ -48,7 +48,8 @@ EventsSDK.on("Tick", () => {
 })
 
 Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
-	if (id !== 2004 || !State.value || LocalPlayer === undefined || Game.RawGameTime >= 700)
+	let time = GameRules?.RawGameTime ?? 0
+	if (id !== 2004 || !State.value || LocalPlayer === undefined || time >= 700)
 		return
 	SharedFilter(0, obj)
 	SharedFilter(1, obj)

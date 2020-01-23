@@ -15,5 +15,5 @@ export function XIAOSKYSmartBolt(unit: Unit, mouse_target: Nullable<Unit>) {
 		&& arcane_bolt.CanBeCasted()
 		&& Helper.CancelMagicImmune(mouse_target)
 		&& (SmartArcaneBoltKey.is_pressed || mouse_target.HPPercent <= SmartArcaneOwnerHP.value || SmartArcaneOwnerHP.value === 0))
-		Helper.UseAbility(arcane_bolt, false, false, mouse_target)
+		Helper.UseAbility(arcane_bolt, false, mouse_target)
 }

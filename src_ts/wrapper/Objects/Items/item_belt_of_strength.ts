@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_belt_of_strength extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_BeltOfStrength
+	public NativeEntity: Nullable<C_DOTA_Item_BeltOfStrength>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

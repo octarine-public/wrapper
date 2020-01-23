@@ -1,4 +1,4 @@
-import { ArrayExtensions, Color, Entity, Game, RendererSDK, Rune, Vector2, Vector3, GameSleeper } from "wrapper/Imports"
+import { ArrayExtensions, Color, Entity, GameRules, RendererSDK, Rune, Vector2, Vector3, GameSleeper, GameState } from "wrapper/Imports"
 import { Runes } from "../Entities"
 
 import {
@@ -40,7 +40,8 @@ function mt_rand(min: number, max: number) {
 }
 
 export function DrawRunes() {
-	if (Game.MapName.startsWith("hero_demo") || Game.GameTime <= 0)
+	let time = GameRules?.GameTime ?? 0
+	if (GameState.MapName.startsWith("hero_demo") || time <= 0)
 		return
 
 	let dota_minimap_ping_duration = ConVars.GetInt("dota_minimap_ping_duration")
@@ -48,25 +49,25 @@ export function DrawRunes() {
 	// power
 	if (TreeRuneState.value) {
 		let spawns_every = 120
-		let RunePowerTime = Game.GameTime % spawns_every
+		let RunePowerTime = time % spawns_every
 		if (mt_rand_power === 0)
 			mt_rand_power = mt_rand(NotifyPowerRuneMin.value, NotifyPowerRuneMax.value)
 		if (RunePowerTime >= (spawns_every - mt_rand_power)) {
 			// loop-optimizer: KEEP
 			GetPowerRunesPos().forEach(val => {
 				if (TreeNotificationPowerDrawMap.value && !game_sleeper.Sleeping(val.Length)) {
-					RendererSDK.DrawMiniMapPing(val, Color.White, Game.RawGameTime + dota_minimap_ping_duration * 2, val.Length)
+					RendererSDK.DrawMiniMapPing(val, Color.White, GameRules!.RawGameTime + dota_minimap_ping_duration * 2, val.Length)
 					game_sleeper.Sleep(dota_minimap_ping_duration * 1000, val.Length)
 				}
 
 				if (RunePowerTime > 119)
 					return
 				if (TreeNotificationBountySound.value > 0 && !game_sleeper.Sleeping("power_sound")) {
-					Game.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
+					GameState.ExecuteCommand("playvol ui/ping " + TreeNotificationPowerSound.value / 100)
 					game_sleeper.Sleep(dota_minimap_ping_duration * 1000, "power_sound")
 				}
 				if (TreeNotificationPowerChat.value && !game_sleeper.Sleeping("chat_wheel")) {
-					Game.ExecuteCommand("chatwheel_say 57")
+					GameState.ExecuteCommand("chatwheel_say 57")
 					game_sleeper.Sleep(NotifyPowerRuneMax.value * 1000, "chat_wheel")
 				}
 			})
@@ -76,7 +77,7 @@ export function DrawRunes() {
 	// bounty
 	if (PMH_Show_bounty.value) {
 		let spawns_every = 300
-		let RuneBountyTime = Game.GameTime % spawns_every
+		let RuneBountyTime = time % spawns_every
 		if (RuneBountyTime < 1 && !game_sleeper.Sleeping("bounty_spawn")) {
 			bountyRunesAr = [true, true, true, true]
 			game_sleeper.Sleep(1500, "bounty_spawn")
@@ -95,15 +96,15 @@ export function DrawRunes() {
 			// loop-optimizer: KEEP
 			GetBountyRunesPos().forEach((val, key) => {
 				if (TreeNotificationBountyDrawMap.value && !game_sleeper.Sleeping(val.Length)) {
-					RendererSDK.DrawMiniMapPing(val, Color.White, Game.RawGameTime + dota_minimap_ping_duration * 2, val.Length)
+					RendererSDK.DrawMiniMapPing(val, Color.White, GameRules!.RawGameTime + dota_minimap_ping_duration * 2, val.Length)
 					game_sleeper.Sleep(dota_minimap_ping_duration * 1000, val.Length)
 				}
 				if (TreeNotificationBountySound.value > 0 && !game_sleeper.Sleeping("bounty_sound")) {
-					Game.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
+					GameState.ExecuteCommand("playvol ui/ping " + TreeNotificationBountySound.value / 100)
 					game_sleeper.Sleep(dota_minimap_ping_duration * 1000, "bounty_sound")
 				}
 				if (TreeNotificationBountyChat.value && !game_sleeper.Sleeping("chat_wheel")) {
-					Game.ExecuteCommand("chatwheel_say 57")
+					GameState.ExecuteCommand("chatwheel_say 57")
 					game_sleeper.Sleep(NotifyTimeBountyMax.value * 1000, "chat_wheel")
 				}
 			})
@@ -127,17 +128,17 @@ export function DrawRunes() {
 }
 
 export function EntityCreatedRune(x: Entity) {
-	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Bounty)
+	if (x.ClassName === "CDOTA_Item_RuneSpawner_Bounty")
 		bountyRunesSpawners.push(x)
-	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup)
+	if (x.ClassName === "CDOTA_Item_RuneSpawner_Powerup")
 		powerRunesSpawners.push(x)
 }
 
 export function EntityDestroyedRune(x: Entity) {
-	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Bounty)
+	if (x.ClassName === "CDOTA_Item_RuneSpawner_Bounty")
 		ArrayExtensions.arrayRemove(bountyRunesSpawners, x)
 
-	if (x.m_pBaseEntity instanceof C_DOTA_Item_RuneSpawner_Powerup)
+	if (x.ClassName === "CDOTA_Item_RuneSpawner_Powerup")
 		ArrayExtensions.arrayRemove(powerRunesSpawners, x)
 
 	if (x instanceof Rune) {

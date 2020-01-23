@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_mjollnir extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_Mjollnir
+	public NativeEntity: Nullable<C_DOTA_Item_Mjollnir>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

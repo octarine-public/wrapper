@@ -2,8 +2,23 @@ import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { Team } from "../../Enums/Team"
-import { default as EntityManager, LocalPlayer } from "../../Managers/EntityManager"
+import { default as EntityManager, EntityPropertyType } from "../../Managers/EntityManager"
 import { DegreesToRadian } from "../../Utils/Math"
+import EventsSDK from "../../Managers/EventsSDK"
+import Player from "../../Objects/Base/Player"
+import * as StringTables from "../../Managers/StringTables"
+
+export var LocalPlayer: Nullable<Player>
+let player_slot = NaN
+EventsSDK.on("ServerInfo", info => player_slot = (info.get("player_slot") as number) ?? NaN)
+EventsSDK.on("EntityCreated", ent => {
+	if (ent.Index === player_slot + 1 /* skip worldent at index 0 */)
+		LocalPlayer = ent as Player
+})
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent === LocalPlayer)
+		LocalPlayer = undefined
+})
 
 /*
 m_pEntity.m_flags
@@ -13,49 +28,67 @@ m_pEntity.m_flags
 */
 export default class Entity {
 	/* ================================ Fields ================================ */
+	public NativeEntity: Nullable<C_BaseEntity>
 
-	public readonly Entity: Nullable<CEntityIdentity>
-	public readonly Index: number
-	public Owner_: Entity | CEntityIndex
-
-	public IsValid: boolean = false
-	public IsVisible = true
+	public IsValid = true
 	public Name_ = ""
-
+	public CreateTime = 0
 	public Team = Team.None
-	public LifeState = LifeState_t.LIFE_ALIVE
+	public LifeState = LifeState_t.LIFE_DEAD
 	public HP = 0
 	public MaxHP = 0
+	public Owner_ = 0
+	public ClassName = ""
+	public BecameDormantTime = 0
 
-	private readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
-	private readonly Angles_ = new QAngle().Invalidate() // cached angles
+	public readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
+	public readonly Angles_ = new QAngle().Invalidate() // cached angles
 	private readonly NetworkAngles_ = new QAngle().Invalidate()// cached network angles
+	private readonly PersonalProps: Nullable<Map<string, EntityPropertyType>>
 
-	constructor(public readonly m_pBaseEntity: C_BaseEntity) {
-		this.Entity = this.m_pBaseEntity.m_pEntity
-		this.Index = EntityManager.IndexByNative(this.m_pBaseEntity)
-		this.Owner_ = this.m_pBaseEntity.m_hOwnerEntity
-
-		this.MaxHP = this.m_pBaseEntity.m_iMaxHealth
-		this.HP = this.m_pBaseEntity.m_iHealth
-		this.LifeState = this.m_pBaseEntity.m_lifeState
-		this.Team = this.m_pBaseEntity.m_iTeamNum
+	constructor(public readonly Index: number) {
+		this.NativeEntity = EntityManager.NativeByIndex(this.Index)
+		this.PersonalProps = EntityManager.GetEntityProperties(this.Index) as Map<string, EntityPropertyType>
 	}
 
 	/* ================ GETTERS ================ */
-	public get Name(): string {
-		return (this.Name_ = this.Name_ || this.Entity?.m_name || this.Entity?.m_designerName || "")
+	public GetPropertyByName(name: string): Nullable<EntityPropertyType> {
+		return this.PersonalProps?.get(name)
 	}
-	public get Owner(): Nullable<Entity> { // trick to make it public ro, and protected rw
-		if (this.Owner_ instanceof Entity)
-			return this.Owner_
+	public GetPropertyByPath(path: (string | number)[]): Nullable<EntityPropertyType> {
+		let node = this.PersonalProps as Nullable<EntityPropertyType>
+		if (node === undefined)
+			return undefined
 
-		this.Owner_ = EntityManager.GetEntityByNative(this.Owner_) as Entity || this.Owner_
-
-		if (this.Owner_ instanceof Entity)
-			return this.Owner_
-
-		return undefined
+		// loop-optimizer: FORWARD
+		if (
+			path.some(a => {
+				if (typeof a === "number") {
+					if (!(node instanceof Array))
+						return true
+					node = node[a]
+				} else {
+					if (!(node instanceof Map))
+						return true
+					node = node.get(a)
+				}
+				return false
+			})
+		)
+			return undefined
+		return node
+	}
+	public get IsVisible(): boolean {
+		return EntityManager.IsEntityVisible(this.Index)
+	}
+	public get Name(): string {
+		if (this.Name_)
+			return this.Name_
+		this.Name_ = this.NativeEntity?.m_pEntity?.m_designerName || ""
+		return this.Name_
+	}
+	public get Owner(): Nullable<Entity> {
+		return EntityManager.EntityByIndex(this.Owner_)
 	}
 	public get RootOwner(): Nullable<Entity> {
 		let owner = this.Owner
@@ -68,12 +101,12 @@ export default class Entity {
 		}
 		return owner
 	}
-	public get GameSceneNode(): CGameSceneNode {
-		return this.m_pBaseEntity.m_pGameSceneNode
+	public get GameSceneNode(): Nullable<CGameSceneNode> {
+		return this.NativeEntity?.m_pGameSceneNode
 	}
-	public get Position(): Vector3 { // trick to make it public ro, and protected rw
+	public get Position(): Vector3 {
 		if (!this.Position_.IsValid) {
-			let vec = Vector3.fromIOBuffer(this.m_pBaseEntity.m_VisualData)
+			let vec = Vector3.fromIOBuffer(this.NativeEntity?.m_VisualData ?? false)
 			if (vec === undefined)
 				return new Vector3()
 			vec.CopyTo(this.Position_)
@@ -86,20 +119,11 @@ export default class Entity {
 	public get NetworkAngles(): QAngle {
 		return this.NetworkAngles_.Clone()
 	}
-	public get CreateTime(): number {
-		return this.m_pBaseEntity.m_flCreateTime
-	}
 	public get HPPercent(): number {
 		return Math.floor(this.HP / this.MaxHP * 100) || 0
 	}
 	public get IsAlive(): boolean {
 		return this.LifeState === LifeState_t.LIFE_ALIVE || this.LifeState === LifeState_t.LIFE_RESPAWNING
-	}
-	public get IsDOTANPC(): boolean {
-		return this.m_pBaseEntity.m_bIsDOTANPC
-	}
-	public get IsNPC(): boolean {
-		return this.m_pBaseEntity.m_bIsNPC
 	}
 	/**
 	 * as Direction
@@ -109,22 +133,6 @@ export default class Entity {
 	}
 	public get NetworkRotationRad(): number {
 		return DegreesToRadian(this.NetworkRotation)
-	}
-	/**
-	 * Buffs/debuffs are not taken
-	 */
-	public get Speed(): number {
-		return this.m_pBaseEntity.m_flSpeed
-	}
-	public get Flags(): number {
-		if (!this.IsValid || this.Entity === undefined)
-			return -1
-		return this.Entity.m_flags
-	}
-	public set Flags(value: number) {
-		if (!this.IsValid || this.Entity === undefined)
-			return
-		this.Entity.m_flags = value
 	}
 
 	public get Agility(): number {
@@ -145,8 +153,11 @@ export default class Entity {
 	public get TotalStrength(): number {
 		return 0
 	}
+	public get Speed(): number {
+		return 0
+	}
 	public get CollisionRadius(): number {
-		return Math.sqrt(this.m_pBaseEntity.m_pCollision?.m_flRadius ?? 0)
+		return Math.sqrt(this.NativeEntity?.m_pCollision?.m_flRadius ?? 0)
 	}
 
 	/* ================ METHODS ================ */
@@ -233,27 +244,15 @@ export default class Entity {
 	 * @param ent if undefined => this compare with LocalPlayer
 	 */
 	public IsEnemy(ent: Nullable<Entity> = LocalPlayer): boolean {
-		return ent === undefined || ent.Team !== this.Team
+		return ent?.Team !== this.Team
 	}
 
 	public Select(bAddToGroup: boolean = false): boolean {
 		return SelectUnit(this.Index, bAddToGroup)
 	}
 
-	public OnGameSceneNodeChanged(m_vecOrigin: Vector3, m_angAbsRotation: QAngle) {
-		m_vecOrigin.CopyTo(this.Position_)
-		m_angAbsRotation.CopyTo(this.Angles_)
-	}
-	public OnNetworkRotationChanged() {
-		let gameSceneNode = this.GameSceneNode
-		if (gameSceneNode === undefined)
-			return
-		QAngle.fromIOBuffer(gameSceneNode.m_angRotation)?.CopyTo(this.NetworkAngles_).CopyTo(this.Angles_)
-	}
-	public OnCreated() {
-		this.IsValid = true
-
-		this.OnNetworkRotationChanged()
+	public OnNetworkRotationChanged(m_angAbsRotation: QAngle) {
+		m_angAbsRotation.CopyTo(this.NetworkAngles_).CopyTo(this.Angles_)
 	}
 
 	public toString(): string {
@@ -261,5 +260,47 @@ export default class Entity {
 	}
 }
 
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+function QuantitizedVecCoordToCoord(cell: number, inside: number): number {
+	return (cell - 128) * 128 + inside
+}
+
+import { RegisterClass, RegisterFieldHandler, RegisterEventFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_BaseEntity", Entity)
+RegisterFieldHandler(Entity, "m_flCreateTime", (ent, new_val) => ent.CreateTime = new_val as number)
+RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => ent.Team = new_val as Team)
+RegisterEventFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => EventsSDK.emit("EntityTeamChanged", false, ent))
+RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => ent.LifeState = new_val as LifeState_t)
+RegisterEventFieldHandler(Entity, "m_lifeState", (ent, new_val) => EventsSDK.emit("LifeStateChanged", false, ent))
+RegisterFieldHandler(Entity, "m_iHealth", (ent, new_val) => ent.HP = new_val as number)
+RegisterFieldHandler(Entity, "m_iMaxHealth", (ent, new_val) => ent.MaxHP = new_val as number)
+RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => ent.Owner_ = new_val as number)
+RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => ent.OnNetworkRotationChanged(new_val as QAngle))
+RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
+	ent.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? ent.Name_
+	EventsSDK.emit("EntityNameChanged", false, ent)
+})
+
+RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => ent.Position_.x = QuantitizedVecCoordToCoord(
+	new_val as number,
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_vecX") as number
+))
+RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => ent.Position_.x = QuantitizedVecCoordToCoord(
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_cellX") as number,
+	new_val as number
+))
+RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => ent.Position_.y = QuantitizedVecCoordToCoord(
+	new_val as number,
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_vecY") as number
+))
+RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => ent.Position_.y = QuantitizedVecCoordToCoord(
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_cellY") as number,
+	new_val as number
+))
+RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => ent.Position_.z = QuantitizedVecCoordToCoord(
+	new_val as number,
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_vecZ") as number
+))
+RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => ent.Position_.z = QuantitizedVecCoordToCoord(
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_cellZ") as number,
+	new_val as number
+))

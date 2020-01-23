@@ -1,4 +1,4 @@
-import { Building, Unit, EntityManager, Entity, ArrayExtensions, GameSleeper, Vector3 } from "wrapper/Imports"
+import { Building, Unit, EntityManager, Entity, ArrayExtensions, GameSleeper, Vector3, Hero } from "wrapper/Imports"
 import { DrawState, State, SwitchUnit, LogicFeedHeroState, arr_hero } from "./Menu"
 import { Renderer } from "./Renderer"
 import { Utility } from "../Base/Utils"
@@ -120,7 +120,7 @@ function Switch(unit: Unit) {
 	if (!unit.IsVisible || unit.HasBuffByName("modifier_teleporting"))
 		return false
 	switch (SwitchUnit.selected_id) {
-		case 0: return unit.IsHero && MoveUnit(unit)
+		case 0: return unit instanceof Hero && MoveUnit(unit)
 		case 1: return MoveUnit(unit)
 	}
 }

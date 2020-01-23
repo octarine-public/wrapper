@@ -21,9 +21,9 @@
 // }
 
 // EventsSDK.on("EntityCreated", ent => {
-// 	if (ent.m_pBaseEntity instanceof C_DOTA_DataNonSpectator) {
+// 	if (ent.NativeEntity instanceof C_DOTA_DataNonSpectator) {
 // 		//console.log(1)
-// 		NonSpec = ent.m_pBaseEntity
+// 		NonSpec = ent.NativeEntity
 // 	}
 // })
 

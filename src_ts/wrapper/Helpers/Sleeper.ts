@@ -1,4 +1,4 @@
-import Game from "../Objects/GameResources/GameRules"
+import { GameRules } from "../Objects/Base/GameRules"
 
 class SleeperBase {
 	protected SleepDB = new Map<any, number>()
@@ -45,16 +45,18 @@ export class Sleeper extends SleeperBase {
 export class GameSleeper extends SleeperBase {
 	public Sleep(ms: number, key: any, extend: boolean = false): number {
 		if (typeof ms !== "number")
-			return this.setTime(key, Game.RawGameTime)
+			return this.setTime(key, GameRules?.RawGameTime ?? 0)
 
-		if (extend && this.updateTime(key, Game.RawGameTime, ms / 1000))
+		let time = GameRules?.RawGameTime ?? 0
+		if (extend && this.updateTime(key, time, ms / 1000))
 			return ms
 
-		return this.setTime(key, Game.RawGameTime + ms / 1000)
+		return this.setTime(key, time + ms / 1000)
 	}
 	public Sleeping(key: any): boolean {
 		let sleepID = this.SleepDB.get(key)
-		return sleepID !== undefined && Game.RawGameTime < sleepID
+		let time = GameRules?.RawGameTime ?? 0
+		return sleepID !== undefined && time < sleepID
 	}
 
 	public FullReset(): GameSleeper {
@@ -70,9 +72,9 @@ export class TickSleeper {
 		return this.TickCount < this.lastSleepTickCount
 	}
 	private get TickCount(): number {
-		if (!Game.IsInGame)
+		if (!GameRules?.IsInGame)
 			return hrtime()
-		return Game.RawGameTime * 1000
+		return GameRules!.RawGameTime * 1000
 	}
 	public Sleep(duration: number): void {
 		this.lastSleepTickCount = this.TickCount + duration

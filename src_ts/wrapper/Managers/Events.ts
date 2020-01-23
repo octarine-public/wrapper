@@ -84,13 +84,9 @@ declare interface Events extends EventEmitter {
 	on(name: "PrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
-	on(name: "EntityPositionsChanged", listener: (ents: C_BaseEntity[]) => void): EventEmitter
+	on(name: "EntityPositionsChanged", listener: (buf: ArrayBuffer) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
-	on(name: "NetworkFieldsChanged", listener: (
-		map: Map<C_BaseEntity, [string, number][]> // 1st key: entity, 2nd: trigger, values: [field_name, field_type, array_index]
-	) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (id: number, reason: number, uuid: bigint, obj: any) => void): EventEmitter
-	on(name: "EntitiesVisiblityChanged", listener: (update: Map<C_BaseEntity, boolean>) => void): EventEmitter
 	on(name: "SignonStateChanged", listener: (new_state: SignonState_t) => void): EventEmitter
 	on(name: "AddSearchPath", listener: (path: string) => boolean): EventEmitter
 	on(name: "PostAddSearchPath", listener: (path: string) => void): EventEmitter

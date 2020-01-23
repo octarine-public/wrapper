@@ -13,6 +13,16 @@ export default class AbilityData {
 			throw "Invalid storage type for ability name " + name
 		return storage.has("ID") ? parseInt(storage.get("ID") as string) : 0
 	}
+	public static GetAbilityNameByID(id: number): string {
+		let id_str = id.toString()
+		for (let [name, map] of AbilityData.global_storage) {
+			if (!(map instanceof Map))
+				continue
+			if (id_str === (map.get("ID") as string))
+				return name
+		}
+		return ""
+	}
 
 	public readonly m_Storage: RecursiveMap
 	public readonly AbilityBehavior: number // DOTA_ABILITY_BEHAVIOR bitmask
@@ -36,6 +46,8 @@ export default class AbilityData {
 	public readonly LevelsBetweenUpgrades: number
 	public readonly RequiredLevel: number
 	public readonly AbilityImmunityType: SPELL_IMMUNITY_TYPES
+	public readonly ItemDisplayCharges: boolean
+	public readonly ItemHideCharges: boolean
 	private readonly SpecialValueCache = new Map<string, number[]>()
 	private readonly CastRangeCache: number[]
 	private readonly AbilityDamageCache: number[]
@@ -99,6 +111,12 @@ export default class AbilityData {
 		this.AbilityImmunityType = this.m_Storage.has("SpellImmunityType")
 			? parseEnumString(SPELL_IMMUNITY_TYPES, this.m_Storage.get("SpellImmunityType") as string)
 			: SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE
+		this.ItemDisplayCharges = this.m_Storage.has("ItemDisplayCharges")
+			? parseInt(this.m_Storage.get("ItemDisplayCharges") as string) !== 0
+			: false
+		this.ItemHideCharges = this.m_Storage.has("ItemHideCharges")
+			? parseInt(this.m_Storage.get("ItemHideCharges") as string) !== 0
+			: true
 		this.CastRangeCache = this.GetLevelArray("AbilityCastRange")
 		this.AbilityDamageCache = this.GetLevelArray("AbilityDamage")
 		this.CastPointCache = this.GetLevelArray("AbilityCastPoint")
@@ -119,7 +137,7 @@ export default class AbilityData {
 				continue
 			let str = special.get(name) as string
 			// loop-optimizer: FORWARD
-			ar = str.split(" ").map(parseFloat)
+			ar = str.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
 			this.ExtendLevelArray(ar)
 			this.SpecialValueCache.set(name, ar)
 			return ar[level]

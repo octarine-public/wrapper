@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_force_staff extends Item {
-	public readonly m_pBaseEntity!: CDOTA_Item_ForceStaff
+	public NativeEntity: Nullable<CDOTA_Item_ForceStaff>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

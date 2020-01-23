@@ -1,4 +1,4 @@
-import { Color, Game, Menu, RendererSDK, Vector2, Player, LocalPlayer, Team, npc_dota_roshan, Hero, EntityManager, Entity, FontFlags_t, PingType_t } from "wrapper/Imports"
+import { Color, GameRules, Menu, RendererSDK, Vector2, Player, LocalPlayer, Team, Roshan, Hero, EntityManager, Entity, FontFlags_t, PingType_t, GameState } from "wrapper/Imports"
 import ManagerBase from "../../../abstract/Base"
 import {
 	AegisdrawStatusSize,
@@ -40,9 +40,10 @@ var Timer = 0,
 	IsAlive = true
 
 export function RoshanParticleCreate(Handle: bigint) {
+	let time = GameRules?.RawGameTime ?? 0
 	if (Handle === 7431777948785381669n) {
-		if (NotificationRoshanStateChat.value && Game.GameTime > 0) {
-			Game.ExecuteCommand("chatwheel_say 53")
+		if (NotificationRoshanStateChat.value && time > 0) {
+			GameState.ExecuteCommand("chatwheel_say 53")
 			Timer = 0
 		}
 		IsAlive = true
@@ -50,14 +51,14 @@ export function RoshanParticleCreate(Handle: bigint) {
 	if (
 		Handle === 13891217767486593796n
 		&& NotificationRoshanStateChat.value
-		&& Timer < Game.GameTime
+		&& Timer < time
 	) {
-		Game.ExecuteCommand("chatwheel_say 53")
-		Timer += (Game.GameTime + 10)
+		GameState.ExecuteCommand("chatwheel_say 53")
+		Timer += time + 10
 	}
 	if (Handle === 14219564939631888289n) {
 		if (NotificationRoshanStateChat.value)
-			Game.ExecuteCommand("chatwheel_say 53; chatwheel_say 57;") // > Roshan and time
+			GameState.ExecuteCommand("chatwheel_say 53; chatwheel_say 57;") // > Roshan and time
 		Timer = 0
 		roshanKillTime = 480
 		AegisTime = 300 // transfer on fire events (Game events)
@@ -97,19 +98,19 @@ function RoshanDrawAliveDied(Text: string, color?: Color) {
 }
 
 export function RoshanTick() {
-	let Time = Game.RawGameTime
+	let Time = GameRules!.RawGameTime
 	Units = Units.filter(ar => Time - ar[1] < 2)
 	if (Units.length === 0)
 		return
 	if (Time >= checkTick) {
-		Game.ExecuteCommand("playvol sounds\\ui\\ping_attack " + NotificationRoshanStateSound.value / 100)
+		GameState.ExecuteCommand("playvol sounds\\ui\\ping_attack " + NotificationRoshanStateSound.value / 100)
 		checkTick = Time + 4
 	}
 	if (Time >= checkTickMessage) {
 		if (LocalPlayer !== undefined && Player !== undefined && UseScanForAlies.value) {
 			let cd = LocalPlayer.Team === Team.Radiant
-				? Game.ScanCooldownRadiant
-				: Game.ScanCooldownDire
+				? GameRules!.ScanCooldownRadiant
+				: GameRules!.ScanCooldownDire
 			if (cd === 0) {
 				Player.Scan(GetRoshanPosition())
 			}
@@ -119,19 +120,19 @@ export function RoshanTick() {
 			}
 		}
 		if (NotificationRoshanStateChat.value)
-			Game.ExecuteCommand("chatwheel_say 53")
+			GameState.ExecuteCommand("chatwheel_say 53")
 		checkTickMessage = Time + NotificationRoshanInterval.value
 	}
 }
 
 export function DrawRoshan() {
-	if (!drawStatus.value || !Game.IsInGame || Game.MapName.startsWith("hero_demo")) {
+	if (!drawStatus.value || !GameRules?.IsInGame || GameState.MapName.startsWith("hero_demo")) {
 		return
 	}
 	// if (LocalPlayer !== undefined)
 	// 	console.log(LocalPlayer.Hero.Position)
 	if (!IsAlive) {
-		let time = Game.RawGameTime
+		let time = GameRules?.RawGameTime ?? 0
 		if (time >= checkTick) {
 			let RoshTimeOne = --roshanKillTime,
 				RoshTimeTwo = RoshTimeOne + 180
@@ -185,16 +186,16 @@ export function RoshanGameEvent(name: string, obj: any) {
 	if (
 		ent1 === undefined || ent2 === undefined
 		|| (!(ent1 instanceof Hero && ent1.IsValid && !ent1.IsVisible) && !(ent2 instanceof Hero && ent2.IsValid && !ent2.IsVisible))
-		|| (!(ent1 instanceof npc_dota_roshan || ent1 === EntityManager.Roshan) && !(ent2 instanceof npc_dota_roshan || ent2 === EntityManager.Roshan))
+		|| (!(ent1 instanceof Roshan || ent1 === Roshan.Instance) && !(ent2 instanceof Roshan || ent2 === Roshan.Instance))
 	)
 		return
 
 	let hero = ent1 instanceof Hero ? ent1 : ent2
 	let ar = Units.find(ar_ => ar_[0] === hero)
 	if (ar === undefined) {
-		Units.push([ent1 instanceof Hero ? ent1 : ent2 as Entity, Game.RawGameTime])
+		Units.push([ent1 instanceof Hero ? ent1 : ent2 as Entity, GameRules?.RawGameTime ?? 0])
 	} else
-		ar[1] = Game.RawGameTime
+		ar[1] = GameRules?.RawGameTime ?? 0
 }
 
 export function RoshanGameEnded() {

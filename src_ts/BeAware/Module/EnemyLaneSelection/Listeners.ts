@@ -1,4 +1,4 @@
-import { Game, LocalPlayer, RendererSDK, Team, Vector2, DOTA_GameState, Events } from "wrapper/Imports"
+import { GameRules, GameState, LocalPlayer, RendererSDK, Team, Vector2, DOTA_GameState, Events } from "wrapper/Imports"
 import {
 	//ShowAfterGameStart,
 	ChatTimeOutSend,
@@ -69,13 +69,13 @@ export function Draw() {
 	if (chat_start !== 0 && chat_start < hrtime()) {
 		if (SendAlliesChat.value) {
 			let role_str = GetLaneName(roles[enemy_team_id][chat_id])
-			Game.ExecuteCommand("say_team " + (chat_id + 1) + " slot " + role_str)
+			GameState.ExecuteCommand("say_team " + (chat_id + 1) + " slot " + role_str)
 			chat_id++
 			chat_start = chat_id < 5 ? hrtime() + 0.5 : 0
 		} else
 			chat_start = 0
 	}
-	if (!State.value || !Game.IsConnected || Game.GameState >= DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME || roles.length === 0)
+	if (!State.value || !GameState.IsConnected || (GameRules !== undefined && GameRules.GameState >= DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME) || roles.length === 0)
 		return
 	let wSize = RendererSDK.WindowSize,
 		ratio = RendererSDK.GetAspectRatio()

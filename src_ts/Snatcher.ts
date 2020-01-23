@@ -2,7 +2,7 @@ import {
 	ArrayExtensions,
 	Color,
 	EventsSDK,
-	Game,
+	GameRules,
 	GameSleeper,
 	Hero,
 	LocalPlayer,
@@ -15,6 +15,7 @@ import {
 	Vector3,
 	DOTAGameUIState_t,
 	EntityManager,
+	GameState,
 } from "wrapper/Imports"
 
 // import { PickupItem, PickupRune } from "../Orders"
@@ -113,14 +114,14 @@ EventsSDK.on("Tick", () => {
 
 	let controllables: Unit[] = stateControllables.value
 		? GetControllables()
-		: LocalPlayer!.HeroAssigned ? [LocalPlayer!.Hero!] : []
+		: LocalPlayer!.Hero !== undefined ? [LocalPlayer!.Hero] : []
 
 	snatchRunes(controllables)
 	snatchItems(controllables)
 })
 
 EventsSDK.on("Draw", () => {
-	if (!drawStatus.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!drawStatus.value || !GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 
 	let text = ""
@@ -140,7 +141,7 @@ EventsSDK.on("PrepareUnitOrders", order => !picking_up.has(order.Unit as Unit))
 
 function GetControllables() {
 	return EntityManager.GetEntitiesByClass(Unit).filter(npc =>
-		(npc instanceof Hero || npc.m_pBaseEntity instanceof C_DOTA_Unit_SpiritBear)
+		(npc instanceof Hero || npc.ClassName === "CDOTA_Unit_SpiritBear")
 		&& !npc.IsIllusion
 		&& npc.IsControllable
 		&& npc.IsRealUnit
@@ -154,9 +155,9 @@ function snatchRunes(controllables: Unit[]) {
 		return
 
 	EntityManager.GetEntitiesByClass(Rune).forEach(rune => {
-		if (selectedRuneType === ESelectedType.ONLY_BOUNTY && !rune.HasType(DOTA_RUNES.DOTA_RUNE_BOUNTY))
+		if (selectedRuneType === ESelectedType.ONLY_BOUNTY && rune.Type !== DOTA_RUNES.DOTA_RUNE_BOUNTY)
 			return
-		if (selectedRuneType === ESelectedType.ONLY_POWER && rune.HasType(DOTA_RUNES.DOTA_RUNE_BOUNTY))
+		if (selectedRuneType === ESelectedType.ONLY_POWER && rune.Type === DOTA_RUNES.DOTA_RUNE_BOUNTY)
 			return
 		let near = ArrayExtensions.orderBy(controllables, unit => unit.Distance(rune)).some(npc => snatchRuneByUnit(npc, rune))
 		if (!near && (drawParticleTake.value || drawParticleKill.value))

@@ -1,4 +1,4 @@
-import { Menu as MenuSDK, Hero, GameSleeper, item_bottle, EntityManager, Game, EventsSDK, LocalPlayer, MathSDK, Input } from "wrapper/Imports"
+import { Menu as MenuSDK, Hero, GameSleeper, item_bottle, EntityManager, GameState, EventsSDK, LocalPlayer, MathSDK, Input } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Utility", "Illusion Splitter"])
 const AngleRandomizer = Menu.AddToggle("Random Split Angle", true)
@@ -17,7 +17,7 @@ let arr_abil: string[] = [
 let AbilityMenu = Menu.AddImageSelector("Usage", arr_abil, new Map(arr_abil.map(name => [name, true])))
 
 let Sleep = new GameSleeper()
-let Delay = () => (((Game.Ping / 2) + 30) + 250)
+let Delay = () => (((GameState.Ping / 2) + 30) + 250)
 
 EventsSDK.on("Tick", () => {
 

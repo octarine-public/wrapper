@@ -1,11 +1,11 @@
-import { Unit, Game } from "wrapper/Imports"
+import { Unit, GameState } from "wrapper/Imports"
 export default class ItemManagerBase {
 	constructor(public readonly unit?: Unit) { }
 	public get MaxMoveSpeed(): number {
 		return Number.MAX_SAFE_INTEGER
 	}
 	public get GetDelayCast() {
-		return (((Game.Ping / 2) + 30) + 250)
+		return (((GameState.Ping / 2) + 30) + 250)
 	}
 	// public GetNetWorth() {
 	// 	return (from x in owner.Hero.Abilities where x.IsItem select x).Sum((Ability9 x) => x.Id.GetPrice()) + owner.Player.ReliableGold + owner.Player.UnreliableGold

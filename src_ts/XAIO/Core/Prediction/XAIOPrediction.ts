@@ -31,7 +31,7 @@ export default class XAIOPrediction {
 			abil.CastPoint + this.ActivationDelay(abil) + (GameData.Ping / 1000),
 			abil.AOERadius,
 			collisionTypes,
-			abil.CastRange + target.HullRadius + target.CollisionPadding + (!linePadding ? 0 : abil.AOERadius),
+			abil.CastRange + target.HullRadius + (!linePadding ? 0 : abil.AOERadius),
 			!abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET),
 			skillShotType,
 			abil.Speed,
@@ -187,16 +187,16 @@ export default class XAIOPrediction {
 		)
 
 		if (HasMask(input.CollisionTypes, XAIOCollisionTypes.AllyCreeps))
-			source.map(x => x.IsCreep && !x.IsEnemy(caster) && list.push(x))
+			source.map(x => x instanceof Creep && !x.IsEnemy(caster) && list.push(x))
 
 		if (HasMask(input.CollisionTypes, XAIOCollisionTypes.EnemyCreeps))
-			source.map(x => x.IsCreep && x.IsEnemy(caster) && list.push(x))
+			source.map(x => x instanceof Creep && x.IsEnemy(caster) && list.push(x))
 
 		if (HasMask(input.CollisionTypes, XAIOCollisionTypes.AllyHeroes))
-			source.map(x => x.IsHero && !x.IsEnemy(caster) && list.push(x))
+			source.map(x => x instanceof Hero && !x.IsEnemy(caster) && list.push(x))
 
 		if (HasMask(input.CollisionTypes, XAIOCollisionTypes.EnemyHeroes))
-			source.map(x => x.IsHero && x.IsEnemy(caster) && list.push(x))
+			source.map(x => x instanceof Hero && x.IsEnemy(caster) && list.push(x))
 
 
 		list.forEach(unit => {

@@ -1,4 +1,4 @@
-import { Unit, dotaunitorder_t, GameSleeper, Game, EventsSDK, Input } from "wrapper/Imports"
+import { Unit, dotaunitorder_t, GameSleeper, GameRules, EventsSDK, Input } from "wrapper/Imports"
 import { XAIOGame } from "../bootstrap"
 
 let GameData = new XAIOGame()
@@ -38,7 +38,7 @@ class OrbWalker {
 
 	public Execute(target: Unit, type: number) {
 
-		let time = Game.RawGameTime
+		let time = GameRules?.RawGameTime ?? 0
 
 		if (this.TurnEndTime > time)
 			return false
@@ -80,13 +80,14 @@ EventsSDK.on("NetworkActivityChanged", unit => {
 	if (orbwalker === undefined)
 		return
 
-	let newNetworkActivity = unit.NetworkActivity
+	let newNetworkActivity = unit.NetworkActivity,
+		time = GameRules?.RawGameTime ?? 0
 	if (!OrbWalker.attackActivities.includes(newNetworkActivity)) {
-		if (OrbWalker.attackCancelActivities.includes(newNetworkActivity) && !orbwalker.CanMove(Game.RawGameTime + 0.05))
+		if (OrbWalker.attackCancelActivities.includes(newNetworkActivity) && !orbwalker.CanMove(time + 0.05))
 			orbwalker.LastAttackTime = 0
 		return
 	}
-	orbwalker.LastAttackTime = Game.RawGameTime - (GameData.Ping / 2000)
+	orbwalker.LastAttackTime = time - (GameData.Ping / 2000)
 })
 
 EventsSDK.on("PrepareUnitOrders", args => {
@@ -102,7 +103,7 @@ EventsSDK.on("PrepareUnitOrders", args => {
 	if (target === undefined || !target.IsValid)
 		return
 
-	if (orbwalker.CanMove(Game.RawGameTime))
-		orbwalker.LastAttackTime = orbwalker.GetTurnTime(target, Game.RawGameTime) - (GameData.Ping / 2000)
+	let time = GameRules?.RawGameTime ?? 0
+	if (orbwalker.CanMove(time))
+		orbwalker.LastAttackTime = orbwalker.GetTurnTime(target, time) - (GameData.Ping / 2000)
 })
-

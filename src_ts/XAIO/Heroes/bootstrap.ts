@@ -1,11 +1,13 @@
 import {
-	Game,
+	GameRules,
 	Unit,
 	Input,
 	EventsSDK,
 	LocalPlayer,
 	ArrayExtensions,
-	DOTAGameUIState_t
+	DOTAGameUIState_t,
+	Hero,
+	GameState
 } from "wrapper/Imports"
 
 import XAIOParticle from "XAIO/Core/Draw/Draw"
@@ -17,7 +19,7 @@ export function orderByFromUnit(range: number = 1200, unit?: Nullable<Unit>) {
 	let input = unit === undefined ? Input.CursorOnWorld : unit
 	return ArrayExtensions.orderBy(Units.filter(x =>
 		x.IsEnemy() && !x.IsIllusion && x.IsAlive
-		&& x.IsHero && x.Distance(input) <= range),
+		&& x instanceof Hero && x.Distance(input) <= range),
 		x => x.Distance2D(input)
 	)[0]
 }
@@ -34,7 +36,7 @@ export function RegisterHeroModule(name: string, module: HeroModule) {
 }
 
 let ValidPlayerStateGame = () => LocalPlayer === undefined
-	|| LocalPlayer!.IsSpectator || !Game.IsInGame
+	|| LocalPlayer!.IsSpectator || !GameRules?.IsInGame
 
 EventsSDK.on("Tick", () => {
 	if (ValidPlayerStateGame() || !XAIOStateGlobal.value)
@@ -48,7 +50,7 @@ EventsSDK.on("Tick", () => {
 
 EventsSDK.on("Tick", () => {
 	UnitsIsControllable.forEach(unit => {
-		if (!unit.IsHero)
+		if (!(unit instanceof Hero))
 			return
 		let initItemsTarget = XAIOParticleMap.get(unit)
 		if (initItemsTarget === undefined) {
@@ -59,7 +61,7 @@ EventsSDK.on("Tick", () => {
 })
 
 EventsSDK.on("Draw", () => {
-	if (ValidPlayerStateGame() || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (ValidPlayerStateGame() || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	UnitsIsControllable.some(unit =>
 		!unit.IsEnemy()

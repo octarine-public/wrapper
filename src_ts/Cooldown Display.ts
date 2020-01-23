@@ -1,4 +1,4 @@
-import { Ability, Color, EventsSDK, Game, Hero, LocalPlayer, Menu as MenuSDK, RendererSDK, Vector2, DOTAGameUIState_t, FontFlags_t, EntityManager } from "wrapper/Imports"
+import { Ability, Color, EventsSDK, GameRules, Hero, LocalPlayer, Menu as MenuSDK, RendererSDK, Vector2, DOTAGameUIState_t, FontFlags_t, EntityManager, GameState } from "wrapper/Imports"
 
 const Menu = MenuSDK.AddEntry(["Visual", "Cooldown Display"]),
 	optionEnable = Menu.AddToggle("Enable"),
@@ -130,8 +130,8 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x: number, y: number, i
 EventsSDK.on("Draw", () => {
 	if (
 		!optionEnable.value
-		|| !Game.IsInGame
-		|| Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME
+		|| !GameRules?.IsInGame
+		|| GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME
 		|| LocalPlayer === undefined
 		|| LocalPlayer.IsSpectator
 	)

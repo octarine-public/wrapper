@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_tome_of_knowledge extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_Tome_Of_Knowledge
+	public NativeEntity: Nullable<C_DOTA_Item_Tome_Of_Knowledge>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

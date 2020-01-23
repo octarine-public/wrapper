@@ -1,28 +1,25 @@
-import EntityManager, { LocalPlayer } from "../../Managers/EntityManager"
+import EntityManager from "../../Managers/EntityManager"
 import Item from "../Base/Item"
 import Player from "../Base/Player"
 import Unit from "../Base/Unit"
+import { LocalPlayer } from "../Base/Entity"
 
 const MAX_ITEMS = 16
 
 export default class Inventory {
-	public TotalItems_: (Item | CEntityIndex)[] = []
-
-	constructor(public readonly Owner: Unit) {
-		let ar = this.Owner.m_pBaseEntity.m_Inventory.m_hItems
-		// tslint:disable-next-line:prefer-conditional-expression
-		if (ar !== undefined) {
-			// loop-optimizer: FORWARD
-			this.TotalItems_ = ar.map(item => (EntityManager.GetEntityByNative(item) as Item) ?? item)
-		} else
-			this.TotalItems_ = new Array(MAX_ITEMS)
-	}
+	constructor(public readonly Owner: Unit) { }
 
 	get TotalItems(): Nullable<Item>[] {
+		let items = this.Owner.GetPropertyByName("m_hItems") as Nullable<number[]>
+		if (items === undefined)
+			return new Array<Item>(MAX_ITEMS)
 		// loop-optimizer: FORWARD
-		this.TotalItems_ = this.TotalItems_.map(item => item instanceof Item ? item : EntityManager.GetEntityByNative(item) ?? item) as (Item | CEntityIndex)[]
-		// loop-optimizer: FORWARD
-		return this.TotalItems_.map(item => item instanceof Item ? item : undefined)
+		return items.map(abil => {
+			let ent = EntityManager.EntityByIndex(abil)
+			if (ent instanceof Item)
+				return ent
+			return undefined
+		})
 	}
 
 	get Items(): Item[] {
@@ -62,7 +59,7 @@ export default class Inventory {
 		return this.HasFreeSlot(10, 15)
 	}
 	get IsStashEnabled(): boolean {
-		return this.Owner.m_pBaseEntity.m_Inventory.m_bStashEnabled
+		return this.Owner.NativeEntity?.m_Inventory?.m_bStashEnabled ?? true
 	}
 
 	public GetItem(slot: DOTAScriptInventorySlot_t): Nullable<Item> {
@@ -122,9 +119,8 @@ export default class Inventory {
 	}
 	public CountItemByOtherPlayer(player: Nullable<Player> = LocalPlayer): number {
 		let counter = 0
-		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.TotalItems.forEach(item => {
-			if (item?.m_pBaseEntity.m_iPlayerOwnerID === player?.PlayerID)
+			if (item?.PurchaserID === player?.PlayerID)
 				counter++
 		})
 		return counter

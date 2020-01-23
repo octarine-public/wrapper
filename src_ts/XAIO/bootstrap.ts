@@ -2,6 +2,7 @@
 import { Unit, EventsSDK, LocalPlayer, EntityManager } from "wrapper/Imports"
 import { XAIOStateGlobal, XAIOLanguageState, XAIOGeneralSettings } from "XAIO/Menu/Menu"
 import { XAIOEvents } from "./Core/bootstrap"
+import { SetGameInProgress } from "../wrapper/Managers/EventsHandler"
 export { XAIOStateGlobal } from "XAIO/Menu/Menu"
 let XAIOversion = XAIOGeneralSettings.AddNode("XAIO Verison: 1.3")
 
@@ -34,7 +35,7 @@ EventsSDK.on("Draw", () => {
 	if (XIAOTempLanguage === XAIOLanguageState.selected_id)
 		return
 	XIAOTempLanguage = XAIOLanguageState.selected_id
-	EventsSDK.emit("GameEnded", false)
+	SetGameInProgress(false)
 	reload("eTE9Te5rgBYThsO", true)
 })
 

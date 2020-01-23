@@ -3,11 +3,11 @@ import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import EntityManager from "../../Managers/EntityManager"
 import Entity from "./Entity"
-import Game from "../GameResources/GameRules"
+import { GameRules } from "../Base/GameRules"
 
 export class Projectile {
 	public IsValid = true
-	public LastUpdate = Game.RawGameTime
+	public LastUpdate = GameRules?.RawGameTime ?? 0
 
 	constructor(
 		public readonly ID: number,

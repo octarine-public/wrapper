@@ -1,5 +1,5 @@
 
-import { EventsSDK, Game, LocalPlayer, DOTAGameUIState_t } from "wrapper/Imports"
+import { EventsSDK, GameState, LocalPlayer, DOTAGameUIState_t, GameRules } from "wrapper/Imports"
 import * as AutoFeed from "./AutoFeed/Listeners"
 import * as AutoLaugh from "./AutoLaugh/Listeners"
 import * as AutoSpinner from "./AutoSpinner/Listeners"
@@ -22,8 +22,8 @@ EventsSDK.on("Draw", () => {
 		!MainState.value
 		|| LocalPlayer === undefined
 		|| LocalPlayer.IsSpectator
-		|| Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME
-		|| !Game.IsInGame
+		|| GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME
+		|| !GameRules?.IsInGame
 	)
 		return
 	AutoFeed.Draw()

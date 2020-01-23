@@ -2,19 +2,14 @@ import EventsSDK from "./EventsSDK"
 import InputManager from "./InputManager"
 import Events from "./Events"
 import UserCmd from "../Native/UserCmd"
-import { ParseProtobufDesc, RecursiveProtobuf, CMsgVectorToVector3, ParseProtobufNamed, ServerHandleToEntity, ServerHandleToIndex } from "../Utils/ParseProtobuf"
-import EntityManager, { AddToCache, LocalPlayer } from "./EntityManager"
+import { ParseProtobufDesc, RecursiveProtobuf, CMsgVectorToVector3, ParseProtobufNamed, ServerHandleToIndex } from "../Utils/ParseProtobuf"
+import EntityManager from "./EntityManager"
 import Unit from "../Objects/Base/Unit"
-import Vector3 from "../Base/Vector3"
-import QAngle from "../Base/QAngle"
-import Player from "../Objects/Base/Player"
-import Ability from "../Objects/Base/Ability"
-import Hero from "../Objects/Base/Hero"
-import Item from "../Objects/Base/Item"
-import Game from "../Objects/GameResources/GameRules"
 import { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
-import Entity from "../Objects/Base/Entity"
+import { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
+import Entity, { LocalPlayer } from "../Objects/Base/Entity"
 import BinaryStream from "../Utils/BinaryStream"
+import GameState from "../Utils/GameState"
 
 Events.on("Update", cmd => {
 	let cmd_ = new UserCmd(cmd)
@@ -63,6 +58,31 @@ message CNETMsg_Tick {
 	optional uint32 host_computationtime_std_deviation = 5;
 	optional uint32 host_framestarttime_std_deviation = 6;
 	optional uint32 host_loss = 7;
+}
+
+message ProtoFlattenedSerializerField_t {
+	optional int32 var_type_sym = 1;
+	optional int32 var_name_sym = 2;
+	optional int32 bit_count = 3;
+	optional float low_value = 4;
+	optional float high_value = 5;
+	optional int32 encode_flags = 6;
+	optional int32 field_serializer_name_sym = 7;
+	optional int32 field_serializer_version = 8;
+	optional int32 send_node_sym = 9;
+	optional int32 var_encoder_sym = 10;
+}
+
+message ProtoFlattenedSerializer_t {
+	optional int32 serializer_name_sym = 1;
+	optional int32 serializer_version = 2;
+	repeated int32 fields_index = 3;
+}
+
+message CSVCMsg_FlattenedSerializer {
+	repeated .ProtoFlattenedSerializer_t serializers = 1;
+	repeated string symbols = 2;
+	repeated .ProtoFlattenedSerializerField_t fields = 3;
 }
 
 message CSVCMsg_GameSessionConfiguration {
@@ -402,7 +422,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE: {
 					let submsg = msg.get("create_particle") as RecursiveProtobuf
 					let particleSystemHandle = submsg.get("particle_name_index") as bigint
-					let ent = ServerHandleToEntity(submsg.get("entity_handle") as number),
+					let ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number),
 						path = HashToPath(particleSystemHandle ?? 0n)
 					if (path === undefined)
 						break
@@ -443,7 +463,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 				// }
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENT: {
 					let submsg = msg.get("update_particle_ent") as RecursiveProtobuf
-					let ent = ServerHandleToEntity(submsg.get("entity_handle") as number)
+					let ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number)
 					EventsSDK.emit(
 						"ParticleUpdatedEnt", false,
 						index,
@@ -524,7 +544,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 		case 488: {
 			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_UnitEvent")
 			let handle = msg.get("entity_index") as number
-			let ent: Entity | number | undefined = ServerHandleToEntity(handle)
+			let ent: Entity | number | undefined = EntityManager.EntityByIndex(handle)
 			if (ent === undefined)
 				ent = ServerHandleToIndex(handle)
 			else if (!(ent instanceof Unit))
@@ -589,7 +609,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 		}
 		case 520: {
 			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_DotaBloodImpact")
-			let ent = ServerHandleToEntity(msg.get("entity") as number)
+			let ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (ent === undefined)
 				break
 			EventsSDK.emit(
@@ -603,7 +623,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 		}
 		case 521: {
 			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_UnitAnimation")
-			let ent = ServerHandleToEntity(msg.get("entity") as number)
+			let ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
 			EventsSDK.emit(
@@ -619,7 +639,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 		}
 		case 522: {
 			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_UnitAnimationEnd")
-			let ent = ServerHandleToEntity(msg.get("entity") as number)
+			let ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
 			EventsSDK.emit("UnitAnimationEnd", false, ent, msg.get("snap") as boolean)
@@ -633,261 +653,66 @@ Events.on("ServerMessage", (msg_id, buf) => {
 Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
 Events.on("CustomGameEvent", (name, obj) => EventsSDK.emit("CustomGameEvent", false, name, obj))
 
-Events.on("EntityPositionsChanged", ents => ents.forEach(ent_ => {
-	let ent = EntityManager.GetEntityByNative(ent_)
-	if (ent === undefined || !ent_.m_VisualData)
-		return // probably ent.m_pGameSceneNode === undefined
-
-	let m_vecOrigin = Vector3.fromIOBuffer()!
-	let m_angAbsRotation = QAngle.fromIOBuffer(true, 3)!
-	ent.OnGameSceneNodeChanged(m_vecOrigin, m_angAbsRotation)
-}))
-
-Events.on("EntitiesVisiblityChanged", ents => {
-	for (let [ent_, is_visible] of ents.entries()) {
-		let ent = EntityManager.GetEntityByNative(ent_)
+Events.on("EntityPositionsChanged", buf => {
+	let stream = new BinaryStream(new DataView(buf))
+	while (!stream.Empty()) {
+		let ent_id = stream.ReadNumber(2)
+		let ent = EntityManager.EntityByIndex(ent_id, true)
 		if (ent === undefined)
 			continue
-		ent.IsVisible = is_visible
+
+		ent.Position_.x = stream.ReadFloat32()
+		ent.Position_.y = stream.ReadFloat32()
+		ent.Position_.z = stream.ReadFloat32()
+
+		ent.Angles_.x = stream.ReadFloat32()
+		ent.Angles_.y = stream.ReadFloat32()
+		ent.Angles_.z = stream.ReadFloat32()
 	}
 })
 
 Events.on("InputCaptured", is_captured => EventsSDK.emit("InputCaptured", false, is_captured))
 
-Events.on("NetworkFieldsChanged", map => {
-	// loop-optimizer: KEEP
-	map.forEach((ar, native_ent) => {
-		let entity_ = EntityManager.GetEntityByNative(native_ent)
-		if (entity_ === undefined) {
-			if (native_ent instanceof C_DOTABaseAbility && ar.some(([field_name]) => field_name === "m_name")) {
-				AddToCache(native_ent)
-				entity_ = EntityManager.GetEntityByNative(native_ent)
-				if (entity_ === undefined)
-					return
-			} else
-				return
-		}
+EventsSDK.on("InputCaptured", is_captured => GameState.IsInputCaptured = is_captured)
+EventsSDK.on("ServerTick", tick => GameState.CurrentServerTick = tick)
+Events.on("UIStateChanged", new_state => GameState.UIState = new_state)
 
-		const entity = entity_
-		// loop-optimizer: KEEP
-		ar.forEach(([field_name, array_index]) => {
-			if (array_index === -1)
-				switch (field_name) {
-					case "m_hOwnerEntity":
-						entity.Owner_ = entity.m_pBaseEntity.m_hOwnerEntity
-						break
-					case "m_iPlayerID":
-						if (entity instanceof Player)
-							entity.PlayerID = entity.m_pBaseEntity.m_iPlayerID
-						break
-					case "m_hAssignedHero":
-						if (entity instanceof Player) {
-							entity.Hero_ = entity.m_pBaseEntity.m_hAssignedHero
-							if (entity === LocalPlayer && LocalPlayer.Hero !== undefined && !gameInProgress) {
-								gameInProgress = true
-								EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
-							}
-						}
-						break
-					case "m_iTeamNum":
-						entity.Team = entity.m_pBaseEntity.m_iTeamNum
-						EventsSDK.emit("EntityTeamChanged", false, entity)
-						if (entity instanceof Unit) {
-							let old_visibility = entity.IsVisibleForEnemies
-							entity.IsVisibleForEnemies = Unit.IsVisibleForEnemies(entity)
-							if (entity.IsVisibleForEnemies !== old_visibility)
-								EventsSDK.emit("EntityTeamChanged", false, entity)
-						}
-						break
-					case "m_lifeState":
-						entity.LifeState = entity.m_pBaseEntity.m_lifeState
-						EventsSDK.emit("LifeStateChanged", false, entity)
-						break
-					case "m_NetworkActivity":
-						if (entity instanceof Unit) {
-							entity.NetworkActivity = entity.m_pBaseEntity.m_NetworkActivity
-							EventsSDK.emit("NetworkActivityChanged", false, entity)
-						}
-						break
-					case "m_iIsControllableByPlayer64":
-						if (entity instanceof Unit)
-							entity.IsControllableByPlayerMask = entity.m_pBaseEntity.m_iIsControllableByPlayer64
-						break
-					case "m_iHealth":
-						entity.HP = entity.m_pBaseEntity.m_iHealth
-						break
-					case "m_iMaxHealth":
-						entity.MaxHP = entity.m_pBaseEntity.m_iMaxHealth
-						break
-					case "m_flHealthThinkRegen":
-						if (entity instanceof Unit)
-							entity.HPRegen = entity.m_pBaseEntity.m_flHealthThinkRegen
-						break
-					case "m_flManaThinkRegen":
-						if (entity instanceof Unit)
-							entity.ManaRegen = entity.m_pBaseEntity.m_flManaThinkRegen
-						break
-					case "m_anglediff":
-						if (entity instanceof Unit)
-							entity.RotationDifference = entity.m_pBaseEntity.m_anglediff
-						break
-					case "m_iLevel":
-						if (entity instanceof Ability)
-							entity.Level = entity.m_pBaseEntity.m_iLevel
-						break
-					case "m_fCooldown":
-						if (entity instanceof Ability)
-							entity.Cooldown = entity.m_pBaseEntity.m_fCooldown
-						break
-					case "m_flCooldownLength":
-						if (entity instanceof Ability)
-							entity.CooldownLength = entity.m_pBaseEntity.m_flCooldownLength
-						break
-					case "m_bInAbilityPhase":
-						if (entity instanceof Ability)
-							entity.IsInAbilityPhase = entity.m_pBaseEntity.m_bInAbilityPhase
-						break
-					case "m_flCastStartTime":
-						if (entity instanceof Ability)
-							entity.CastStartTime = entity.m_pBaseEntity.m_flCastStartTime
-						break
-					case "m_flChannelStartTime":
-						if (entity instanceof Ability)
-							entity.ChannelStartTime = entity.m_pBaseEntity.m_flChannelStartTime
-						break
-					case "m_bToggleState":
-						if (entity instanceof Ability)
-							entity.IsToggled = entity.m_pBaseEntity.m_bToggleState
-						break
-					case "m_flLastCastClickTime":
-						if (entity instanceof Ability)
-							entity.LastCastClickTime = entity.m_pBaseEntity.m_flLastCastClickTime
-						break
-					case "m_iTaggedAsVisibleByTeam":
-						if (entity instanceof Unit) {
-							entity.IsVisibleForTeamMask = entity.m_pBaseEntity.m_iTaggedAsVisibleByTeam
-							entity.IsVisibleForEnemies = Unit.IsVisibleForEnemies(entity)
-							EventsSDK.emit("TeamVisibilityChanged", false, entity)
-						}
-						break
-					case "m_hReplicatingOtherHeroModel":
-						if (entity instanceof Hero)
-							entity.ReplicatingOtherHeroModel_ = entity.m_pBaseEntity.m_hReplicatingOtherHeroModel
-						break
-					case "m_bHidden":
-						if (entity instanceof Ability)
-							entity.IsHidden = entity.m_pBaseEntity.m_bHidden
-						break
-					case "m_flEnableTime":
-						if (entity instanceof Item)
-							entity.EnableTime = entity.m_pBaseEntity.m_flEnableTime
-						break
-					case "m_iSharability":
-						if (entity instanceof Item)
-							entity.Shareability = entity.m_pBaseEntity.m_iSharability
-						break
-					case "m_iCurrentCharges":
-						if (entity instanceof Item)
-							entity.CurrentCharges = entity.m_pBaseEntity.m_iCurrentCharges
-						break
-
-					// manually whitelisted
-					case "m_angRotation":
-						entity.OnNetworkRotationChanged()
-						break
-					case "m_fGameTime":
-						Game.RawGameTime = Game.m_GameRules?.m_fGameTime ?? 0
-
-						EntityManager.GetEntitiesByClass(Unit).forEach(ent => {
-							if (ent.IsVisible)
-								ent.LastVisibleTime = Game.RawGameTime
-							else
-								ent.LastDormantTime = Game.RawGameTime
-						})
-
-						if (LocalPlayer !== undefined)
-							EventsSDK.emit("Tick", false)
-						break
-					case "m_bGamePaused":
-						Game.IsPaused = Game.m_GameRules?.m_bGamePaused ?? false
-						break
-					case "m_name":
-						entity.Name_ = entity.Entity?.m_name ?? entity.m_pBaseEntity.m_pEntity.m_name!
-						EventsSDK.emit("EntityNameChanged", false, entity)
-						break
-
-					default:
-						break
-				}
-			else
-				switch (field_name) {
-					case "m_hAbilities":
-						if (entity instanceof Unit)
-							entity.AbilitiesBook.Spells_[array_index] = entity.m_pBaseEntity.m_hAbilities[array_index]
-						break
-
-					// manually whitelisted
-					case "m_hItems":
-						if (entity instanceof Unit)
-							entity.Inventory.TotalItems_[array_index] = entity.m_pBaseEntity.m_Inventory.m_hItems[array_index]
-						break
-
-					default:
-						break
-				}
-		})
-	})
-})
-
-EventsSDK.on("InputCaptured", is_captured => Game.IsInputCaptured = is_captured)
-EventsSDK.on("ServerTick", tick => Game.CurrentServerTick = tick)
-Events.on("UIStateChanged", new_state => Game.UIState = new_state)
-
-let gameInProgress = false
+export let gameInProgress = false
+export function SetGameInProgress(new_val: boolean) {
+	if (!gameInProgress && new_val)
+		EventsSDK.emit("GameStarted", false, LocalPlayer!.Hero)
+	else if (gameInProgress && !new_val) {
+		EventsSDK.emit("GameEnded", false)
+		Particles.DeleteAll()
+	}
+	gameInProgress = new_val
+}
 EventsSDK.on("EntityCreated", ent => {
 	EventsSDK.emit("LifeStateChanged", false, ent)
 	if (ent instanceof Unit) {
 		EventsSDK.emit("TeamVisibilityChanged", false, ent)
 		EventsSDK.emit("NetworkActivityChanged", false, ent)
 	}
-
-	if (ent !== LocalPlayer || !LocalPlayer.HeroAssigned || gameInProgress)
-		return
-	gameInProgress = true
-	EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
 })
-Events.on("SignonStateChanged", new_state => {
-	let old_val = Game.IsConnected
 
-	Game.SignonState = new_state
-	let new_val = Game.IsConnected
+Events.on("SignonStateChanged", new_state => {
+	let old_val = GameState.IsConnected
+
+	GameState.SignonState = new_state
+	let new_val = GameState.IsConnected
 
 	if (!old_val && new_val)
 		ReloadGlobalAbilityStorage()
-	if (old_val && !new_val) {
-		gameInProgress = false
-		EventsSDK.emit("GameEnded", false)
-		Particles.DeleteAll()
-	} else if (!gameInProgress && new_val && LocalPlayer?.Hero !== undefined) {
-		gameInProgress = true
-		EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
-	}
 })
 
 EventsSDK.on("ServerInfo", info => {
-	let old_val = Game.IsConnected
+	let old_val = GameState.IsConnected
 
-	Game.MapName = info.get("map_name")! as string
-	let new_val = Game.IsConnected
+	GameState.MapName = info.get("map_name")! as string
+	let new_val = GameState.IsConnected
 
-	if (!old_val && new_val)
+	if (!old_val && new_val) {
+		ReloadGlobalUnitStorage()
 		ReloadGlobalAbilityStorage()
-	if (old_val && !new_val) {
-		gameInProgress = false
-		EventsSDK.emit("GameEnded", false)
-		Particles.DeleteAll()
-	} else if (!gameInProgress && new_val && LocalPlayer?.Hero !== undefined) {
-		gameInProgress = true
-		EventsSDK.emit("GameStarted", false, LocalPlayer.Hero)
 	}
 })

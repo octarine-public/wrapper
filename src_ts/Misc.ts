@@ -1,4 +1,5 @@
-import { EventsSDK, Game, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, RendererSDK, Tree, EntityManager } from "./wrapper/Imports"
+import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, RendererSDK, Tree, EntityManager, GameState } from "./wrapper/Imports"
+import { SetGameInProgress } from "./wrapper/Managers/EventsHandler"
 
 let Menu = MenuSDK.AddEntry("Misc")
 
@@ -64,16 +65,18 @@ function ChangeTreeModels(self: MenuSDK.Switcher) {
 	let selected_tree_model_id = self.selected_id
 	let selected_tree_model = tree_models[selected_tree_model_id]
 	EntityManager.GetEntitiesByClass(Tree)
-		.filter(tree => tree.IsVisible)
 		.forEach(tree => {
 			if (tree2modelid.get(tree) === selected_tree_model_id)
 				return
+			let native_entity = tree.NativeEntity
+			if (native_entity === undefined)
+				return
 			if (!tree2origmodel.has(tree))
-				tree2origmodel.set(tree, [tree.m_pBaseEntity.m_sModel || tree_models[0][0], tree.GameSceneNode?.m_flAbsScale || tree_models[0][1]])
+				tree2origmodel.set(tree, [native_entity.m_sModel || tree_models[0][0], tree.GameSceneNode?.m_flAbsScale || tree_models[0][1]])
 			if (selected_tree_model_id === 0)
 				selected_tree_model = tree2origmodel.get(tree)!
-			tree.m_pBaseEntity.m_sModel = selected_tree_model[0]
-			tree.GameSceneNode.SetLocalScale(selected_tree_model[1])
+			native_entity.m_sModel = selected_tree_model[0]
+			native_entity.m_pGameSceneNode.SetLocalScale(selected_tree_model[1])
 			tree2modelid.set(tree, selected_tree_model_id)
 		})
 }
@@ -97,7 +100,7 @@ declare global {
 }
 
 function ReloadScripts() {
-	EventsSDK.emit("GameEnded", false)
+	SetGameInProgress(false)
 	reload("eTE9Te5rgBYThsO", true)
 }
 
@@ -129,8 +132,8 @@ EventsSDK.on("Draw", () => {
 })
 
 InputEventSDK.on("MouseWheel", wheel => {
-	if (!CamMouseState.value || !Game.IsInGame
-		|| Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!CamMouseState.value || !GameRules?.IsInGame
+		|| GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 
 	if (CamMouseStateCtrl.value && !Input.IsKeyDown(VKeys.CONTROL))
@@ -239,7 +242,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 			if (tree2modelid.get(tree) === 0 || !tree2origmodel.has(tree))
 				return
 			let [model, scale] = tree2origmodel.get(tree)!
-			tree.m_pBaseEntity.m_sModel = model
+			tree.NativeEntity.m_sModel = model
 			tree.GameSceneNode.SetLocalScale(scale)
 			tree2modelid.set(tree, 0)
 		})

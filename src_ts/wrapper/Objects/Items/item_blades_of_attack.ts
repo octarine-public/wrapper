@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_blades_of_attack extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_BladesOfAttack
+	public NativeEntity: Nullable<C_DOTA_Item_BladesOfAttack>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

@@ -6,8 +6,8 @@ import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
 import { FontFlags_t } from "../Enums/FontFlags_t"
-import Game from "../Objects/GameResources/GameRules"
 import { InputEventSDK } from "../Managers/InputManager"
+import GameState from "../Utils/GameState"
 
 export default class KeyBind extends Base {
 	public static readonly KeyNames = [
@@ -298,9 +298,9 @@ function KeyHandler(key: number, pressed: boolean): boolean {
 	IsPressing.set(key, pressed)
 
 	onExecute.forEach(keybind => {
-		if (!Game.IsConnected && !keybind.activates_in_menu)
+		if (!GameState.IsConnected && !keybind.activates_in_menu)
 			return
-		if (!Menu.trigger_on_chat && Game.IsInputCaptured && !keybind.trigger_on_chat)
+		if (!Menu.trigger_on_chat && GameState.IsInputCaptured && !keybind.trigger_on_chat)
 			return
 		keybind.is_pressed = pressed
 		keybind.OnValueChangedCBs.forEach(cb => cb(keybind))

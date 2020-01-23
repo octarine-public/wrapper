@@ -38,7 +38,7 @@
 // 	let predict = Prediction.GetPrediction(hook, Owner, Enemy, true)
 
 // 	let pos = Owner.Position.Extend(predict.CastPosition, Owner.Distance2D(Enemy, true))
-// 	let castRange = (hook.CastRange + hook.AOERadius + (Enemy.HullRadius + Enemy.CollisionPadding))
+// 	let castRange = (hook.CastRange + hook.AOERadius + Enemy.HullRadius)
 
 // 	if (Owner.Distance2D(pos) <= castRange && hook.CanBeCasted()) {
 

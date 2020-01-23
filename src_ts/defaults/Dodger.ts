@@ -7,7 +7,7 @@
 // let enabled = false
 
 // function Dodge(pl_ent: Unit, delay: number, target_pos?: Vector3, aoe: number = 0) {
-// 	pl_ent.AbilitiesBook.GetSpell(2).UseAbility()
+// 	pl_ent.Spells[2].UseAbility()
 // }
 
 // function TryDodge(pl_ent: Unit, proj: TrackingProjectile | LinearProjectile) {

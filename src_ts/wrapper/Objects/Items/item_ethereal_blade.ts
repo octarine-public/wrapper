@@ -2,26 +2,27 @@ import Item from "../Base/Item"
 import Hero from "../Base/Hero"
 
 export default class item_ethereal_blade extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_Ethereal_Blade
+	public NativeEntity: Nullable<C_DOTA_Item_Ethereal_Blade>
 
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}
 	public get AbilityDamage(): number {
+		let damage = this.GetSpecialValue("blast_damage_base")
+		let owner = this.Owner
+		if (owner === undefined || !(owner instanceof Hero))
+			return damage
 
-		let hero = this.Owner as Hero,
-			damage = this.GetSpecialValue("blast_damage_base"),
-			multiplier = this.GetSpecialValue("blast_agility_multiplier")
-
-		switch (hero.PrimaryAtribute) {
+		let multiplier = this.GetSpecialValue("blast_agility_multiplier")
+		switch (owner.PrimaryAtribute) {
 			case Attributes.DOTA_ATTRIBUTE_STRENGTH:
-				damage += multiplier * hero.TotalStrength
+				damage += multiplier * owner.TotalStrength
 				break
 			case Attributes.DOTA_ATTRIBUTE_AGILITY:
-				damage += multiplier * hero.TotalAgility
+				damage += multiplier * owner.TotalAgility
 				break
 			case Attributes.DOTA_ATTRIBUTE_INTELLECT:
-				damage += multiplier * hero.TotalIntellect
+				damage += multiplier * owner.TotalIntellect
 				break
 		}
 		return damage

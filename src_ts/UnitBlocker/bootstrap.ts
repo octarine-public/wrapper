@@ -1,4 +1,4 @@
-import { EventsSDK, Game, RendererSDK, DOTAGameUIState_t } from "wrapper/Imports"
+import { EventsSDK, GameState, RendererSDK, DOTAGameUIState_t, GameRules } from "wrapper/Imports"
 import { RemoveParticles, DrawParticles } from "./modules/CreepBlock/ParticleHelp"
 
 import * as DrawParticle from "./base/DrawParticle"
@@ -15,7 +15,7 @@ EventsSDK.on("GameEnded", () => {
 })
 
 EventsSDK.on("Tick", () => {
-	if (Game.RawGameTime > 300)
+	if (GameRules!.RawGameTime > 300)
 		RemoveParticles()
 	else
 		DrawParticles()
@@ -27,7 +27,7 @@ EventsSDK.on("Tick", () => {
 })
 
 EventsSDK.on("Draw", () => {
-	if (!stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!stateMain.value || !GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 
 	let textAroundMouse = ""

@@ -1,4 +1,4 @@
-import { RendererSDK, Vector3, EntityManager, Hero, Creep, Team, Game, Vector2 } from "wrapper/Imports"
+import { RendererSDK, Vector3, EntityManager, Hero, Creep, Team, GameRules, Vector2 } from "wrapper/Imports"
 import { State, ImageSizeMinimap, ImageSizeWorld } from "./Menu"
 
 let jungle_units: [Hero, Vector3[], number][] = []
@@ -22,13 +22,13 @@ export function GameEvent(name: string, obj: any) {
 		if (Vector3.GetCenter(ar[1]).Distance2D(creep.Position) > 300)
 			ar[1] = []
 		ar[1].push(creep.Position)
-		ar[2] = Game.RawGameTime
+		ar[2] = GameRules?.RawGameTime ?? 0
 	} else
-		jungle_units.push([hero, [creep.Position], Game.RawGameTime])
+		jungle_units.push([hero, [creep.Position], GameRules?.RawGameTime ?? 0])
 }
 
 export function Tick() {
-	let time = Game.RawGameTime
+	let time = GameRules!.RawGameTime
 	jungle_units = jungle_units.filter(ar => time - ar[2] < 3)
 }
 

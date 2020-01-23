@@ -1,22 +1,15 @@
 import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import { HasBit, HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
-import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
-
-import { LocalPlayer } from "../../Managers/EntityManager"
-
-import Entity from "./Entity"
+import { HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
+import { DamageIgnoreBuffs } from "../../Utils/Utils"
+import Entity, { LocalPlayer } from "./Entity"
 import Player from "./Player"
-
-import AbilitiesBook from "../DataBook/AbilitiesBook"
 import Inventory from "../DataBook/Inventory"
 import Ability from "./Ability"
 import Item from "./Item"
-
 import ModifiersBook from "../DataBook/ModifiersBook"
 import Modifier from "./Modifier"
-
 import { Team } from "../../Enums/Team"
 import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
@@ -25,33 +18,10 @@ import TreeTemp from "./TreeTemp"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
-import { RecursiveMap } from "../../Utils/ParseKV"
-import Game from "../GameResources/GameRules"
+import UnitData from "../DataBook/UnitData"
+import EntityManager from "../../Managers/EntityManager"
 
-const movementTurnRate = new Map<string, number>()
-const attackAnimationPoint = new Map<string, number>()
-const attackprojectileSpeed = new Map<string, number>()
-
-const parseScriptUnits = (path: string, field: string) => {
-
-	const parsed = parseKVFile(path).get(field) as RecursiveMap
-
-	for (let unit of parsed.keys()) {
-		const unitFields = parsed.get(unit)
-		if (!(unitFields instanceof Map))
-			continue
-		if (unitFields.has("MovementTurnRate"))
-			movementTurnRate.set(unit, parseFloat(unitFields.get("MovementTurnRate") as string))
-		if (unitFields.has("AttackAnimationPoint"))
-			attackAnimationPoint.set(unit, parseFloat(unitFields.get("AttackAnimationPoint") as string))
-		if (unitFields.has("ProjectileSpeed"))
-			attackprojectileSpeed.set(unit, parseFloat(unitFields.get("ProjectileSpeed") as string))
-		// another values from script files. (i.e AttackRate, AttackRate)
-	}
-}
-
-parseScriptUnits("scripts/npc/npc_heroes.txt", "DOTAHeroes")
-parseScriptUnits("scripts/npc/npc_units.txt", "DOTAUnits")
+const MAX_SPELLS = 31
 
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
@@ -73,26 +43,54 @@ export default class Unit extends Entity {
 	}
 
 	/* ================================ Fields ================================ */
-	public readonly m_pBaseEntity!: C_DOTA_BaseNPC
+	public NativeEntity: Nullable<C_DOTA_BaseNPC>
+	public UnitData = new UnitData("")
 
-	public readonly AbilitiesBook = new AbilitiesBook(this)
 	public readonly Inventory = new Inventory(this)
 	public readonly ModifiersBook = new ModifiersBook(this)
 
 	//public readonly DotaMap: DotaMap
-	public IsVisibleForTeamMask = this.m_pBaseEntity.m_iTaggedAsVisibleByTeam
 	public IsVisibleForEnemies = Unit.IsVisibleForEnemies(this)
 	public IsTrueSightedForEnemies = false
-	public NetworkActivity: GameActivity_t = this.m_pBaseEntity.m_NetworkActivity;
-	public IsControllableByPlayerMask = this.m_pBaseEntity.m_iIsControllableByPlayer64
-	public HPRegen = this.m_pBaseEntity.m_flHealthThinkRegen
-	public ManaRegen = this.m_pBaseEntity.m_flManaThinkRegen
-	public RotationDifference = this.m_pBaseEntity.m_anglediff
 	public HasScepterModifier = false
-	public LastVisibleTime = Game.RawGameTime
-	public LastDormantTime = 0
+	public UnitName_ = ""
+	public IsVisibleForTeamMask = 0
+	public RotationDifference = 0
+	public IsControllableByPlayerMask = 0n
+	public NetworkActivity = 0
+	public HPRegen = 0
+	public ManaRegen = 0
+	public IsAncient = false
+	public Armor = 0
+	public CurrentShop = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
+	public BaseMoveSpeed = 0
+	public BKBChargesUsed = 0
+	public MinDamage = 0
+	public MaxDamage = 0
+	public BonusDamage = 0
+	public DayVision = 0
+	public DeathTime = 0
+	public ArcanaLevel = 0
+	public HasStolenScepter = false
+	public HasUpgradeableAbilities = false
+	public IsDominatable = false
+	public IsIllusion = false
+	public AttackCapabilities = 0
+	public IsMoving = false
+	public IsPhantom = false
+	public IsSummoned = false
+	public IsWaitingToSpawn = false
+	public Level = 0
+	public BaseMagicDamageResist = 0
+	public Mana = 0
+	public MaxMana = 0
+	public NightVision = 0
+	public TauntCooldown = 0
+	public TotalDamageTaken = 0n
+	public UnitStateNetworked = 0n
+	public HealthBarOffsetOverride = 0
+	public Spells_ = new Array<number>(MAX_SPELLS).fill(0)
 
-	private UnitName_: string = ""
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
 		"modifier_item_ethereal_blade_ethereal",
@@ -105,44 +103,6 @@ export default class Unit extends Entity {
 		"modifier_treant_natures_guise_invis",
 	]
 
-	/* ================ GETTERS ================ */
-	public get IsHero(): boolean {
-		return HasBit(this.UnitType, 0)
-	}
-	public get IsTower(): boolean {
-		return HasBit(this.UnitType, 2)
-	}
-	public get IsConsideredHero(): boolean {
-		return HasBit(this.UnitType, 3)
-	}
-	public get IsBuilding(): boolean {
-		return HasBit(this.UnitType, 4)
-	}
-	public get IsFort(): boolean {
-		return HasBit(this.UnitType, 5)
-	}
-	public get IsBarrack(): boolean {
-		return HasBit(this.UnitType, 6)
-	}
-	public get IsCreep(): boolean {
-		return HasBit(this.UnitType, 7)
-	}
-	public get IsCourier(): boolean {
-		return HasBit(this.UnitType, 8)
-	}
-	public get IsShop(): boolean {
-		return HasBit(this.UnitType, 9)
-	}
-	public get IsLaneCreep(): boolean {
-		return HasBit(this.UnitType, 10)
-	}
-	public get IsShrine(): boolean {
-		return HasBit(this.UnitType, 12)
-	}
-	public get IsWard(): boolean {
-		return HasBit(this.UnitType, 17)
-	}
-
 	/* ======== modifierstate ======== */
 	public get IsRooted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
@@ -151,7 +111,7 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_DISARMED)
 	}
 	public get IsAttackImmune(): boolean {
-		// return this.m_pBaseEntity.m_bIsAttackImmune
+		// return this.NativeEntity.m_bIsAttackImmune
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ATTACK_IMMUNE)
 	}
 	public get IsSilenced(): boolean {
@@ -173,21 +133,12 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
 	}
 	public get IsMagicImmune(): boolean {
-		return this.m_pBaseEntity.m_bIsMagicImmune
-		// return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE);
+		return this.NativeEntity?.m_bIsMagicImmune ?? false
 	}
 	public get IsDeniable(): boolean {
 		if (this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE))
 			return true
-		let hp_percent = this.HPPercent
-		if (hp_percent > 50) // nothing can be denied w/o losing half of max HP, so we'd skip unnecessary checks
-			return false
-		if (this.m_pBaseEntity instanceof C_DOTA_BaseNPC_Creep)
-			return hp_percent <= 50
-		if (this.m_pBaseEntity instanceof C_DOTA_BaseNPC_Tower)
-			return hp_percent <= 10
-
-		return hp_percent < 25 && this.Buffs.some(buff =>
+		return this.HPPercent < 25 && this.Buffs.some(buff =>
 			buff.Name === "modifier_doom_bringer_doom"
 			|| buff.Name === "modifier_queenofpain_shadow_strike"
 			|| buff.Name === "modifier_venomancer_venomous_gale",
@@ -207,7 +158,7 @@ export default class Unit extends Entity {
 	}
 	//
 	public get IsRealUnit(): boolean {
-		return this.UnitType !== 0 && !this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY)
+		return this.NativeEntity?.m_iUnitType !== 0 && !this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY)
 	}
 	//
 	public get IsTrueSightImmune(): boolean {
@@ -215,7 +166,7 @@ export default class Unit extends Entity {
 	}
 	/* ======== base ======== */
 	public get IsInFadeTime(): boolean {
-		return this.m_pBaseEntity.m_flInvisibilityLevel > 0
+		return this.InvisibleLevel > 0
 	}
 	public get IsControllableByAnyPlayer(): boolean {
 		return this.IsControllableByPlayerMask !== 0n
@@ -226,41 +177,27 @@ export default class Unit extends Entity {
 	public get HasScepter(): boolean {
 		return this.HasScepterModifier || this.HasStolenScepter
 	}
-	public get Armor(): number {
-		return this.m_pBaseEntity.m_flPhysicalArmorValue
+	public get AttackDamageType(): AttackDamageType {
+		return this.UnitData.AttackDamageType
 	}
 	public get ArmorType(): ArmorType {
-		return this.m_pBaseEntity.m_iCombatClassDefend
+		return this.UnitData.ArmorType
 	}
-	public get AttackDamageType(): AttackDamageType {
-		return this.m_pBaseEntity.m_iCombatClassAttack
-	}
+	// TODO: parse from KV + use buffs + items
 	public get AttackRange(): number {
-		return this.m_pBaseEntity.m_fAttackRange
+		return this.NativeEntity?.m_fAttackRange ?? 0
 	}
 	public get AttacksPerSecond(): number {
-		return this.m_pBaseEntity.m_fAttacksPerSecond
-	}
-	public get AvailableShops(): DOTA_SHOP_TYPE /*Enums.ShopFlags*/ {
-		return this.m_pBaseEntity.m_iNearShopMask
+		return this.NativeEntity?.m_fAttacksPerSecond ?? 0
 	}
 	// BaseArmor
 	public get BaseAttackTime(): number {
-		return this.m_pBaseEntity.m_flBaseAttackTime
+		return this.NativeEntity?.m_flBaseAttackTime ?? 0
 	}
 	// BaseHealthRegeneration
 	// BaseManaRegeneration
-	public get BaseMoveSpeed(): number {
-		return this.m_pBaseEntity.m_iMoveSpeed
-	}
-	public get BKBChargesUsed(): number {
-		return this.m_pBaseEntity.m_iBKBChargesUsed
-	}
 	public get DamageAverage(): number {
 		return (this.MinDamage + this.MaxDamage) / 2
-	}
-	public get DamageBonus(): number {
-		return this.m_pBaseEntity.m_iDamageBonus
 	}
 	/**
 	 * https://dota2.gamepedia.com/Armor
@@ -269,68 +206,48 @@ export default class Unit extends Entity {
 		let armor = this.Armor
 		return (0.052 * armor) / (0.9 + 0.048 * Math.abs(armor))
 	}
-	public get DayVision(): number {
-		return this.m_pBaseEntity.m_iDayTimeVisionRange
-	}
-	public get DeathTime(): number {
-		return this.m_pBaseEntity.m_flDeathTime
-	}
-	public get DebuffState(): modifierstate[] {
-		return MaskToArrayBigInt(this.m_pBaseEntity.m_nUnitDebuffState)
-	}
-	// check
 	public get HasArcana(): boolean {
-		return this.m_pBaseEntity.m_nArcanaLevel > 0
+		return this.ArcanaLevel > 0
 	}
 	public get BaseStatsChanged(): boolean {
-		return this.m_pBaseEntity.m_bBaseStatsChanged
+		return this.NativeEntity?.m_bBaseStatsChanged ?? true
 	}
 	public get HasInventory(): boolean {
-		return this.m_pBaseEntity.m_bHasInventory
+		return this.UnitData.HasInventory
 	}
 	public get HasSharedAbilities(): boolean {
-		return this.m_pBaseEntity.m_bHasSharedAbilities
-	}
-	public get HasStolenScepter(): boolean {
-		return this.m_pBaseEntity.m_bStolenScepter
-	}
-	public get HasUpgradeableAbilities(): boolean {
-		return this.m_pBaseEntity.m_bHasUpgradeableAbilities
+		return this.NativeEntity?.m_bHasSharedAbilities ?? false
 	}
 	public get HealthBarOffset(): number {
-		return this.m_pBaseEntity.m_iHealthBarOffset
+		let offset = this.HealthBarOffsetOverride
+		if (offset === -1)
+			offset = this.UnitData.HealthBarOffset
+		// TODO: smoothing by Buff#Think
+		if (this.HasBuffByName("modifier_winter_wyvern_arctic_burn_flight"))
+			offset += 150
+		return offset
 	}
 	public get HealthBarHighlightColor(): Nullable<Color> {
-		return Color.fromIOBuffer(this.m_pBaseEntity.m_iHealthBarHighlightColor)
+		return Color.fromIOBuffer(this.NativeEntity?.m_iHealthBarHighlightColor ?? false)
 	}
+	// TODO: parse KV, use buffs and items for calculation
 	public get AttackSpeed(): number {
-		return this.m_pBaseEntity.m_fAttackSpeed
+		return this.NativeEntity?.m_fAttackSpeed ?? 0
 	}
 	public get IncreasedAttackSpeed(): number {
-		return this.m_pBaseEntity.m_fIncreasedAttackSpeed
+		return this.NativeEntity?.m_fIncreasedAttackSpeed ?? 0
 	}
 	public get AttackSpeedBonus() {
 		let attackSpeed = this.AttackSpeed
-		// TODO
-		if (this.IsHero) {
-			switch (this.Name) {
-				case "npc_dota_hero_ursa":
-					let overpPower = this.GetAbilityByName("ursa_overpower")
-					if (overpPower && this.GetAbilityByName("modifier_ursa_overpower"))
-						attackSpeed += overpPower.GetSpecialValue("attack_speed_bonus_pct")
-					break
-			}
-		}
+		attackSpeed += this.GetBuffByName("modifier_ursa_overpower")?.Ability?.GetSpecialValue("attack_speed_bonus_pct") ?? 0
 		return Math.min(Math.max(20, attackSpeed * 100), 600)
 	}
 	public get AttackPoint(): number {
 		return this.AttackAnimationPoint / (1 + ((this.AttackSpeedBonus - 100) / 100))
 	}
+	// TODO: use Buffs for that
 	public get InvisibleLevel(): number {
-		return this.m_pBaseEntity.m_flInvisibilityLevel
-	}
-	public get IsAncient(): boolean {
-		return this.m_pBaseEntity.m_bIsAncient
+		return this.NativeEntity?.m_flInvisibilityLevel ?? 0
 	}
 	/**
 	 * IsControllable by LocalPlayer
@@ -338,29 +255,12 @@ export default class Unit extends Entity {
 	public get IsControllable(): boolean {
 		return LocalPlayer !== undefined && this.IsControllableByPlayer(LocalPlayer.PlayerID)
 	}
-	public get IsDominatable(): boolean {
-		return this.m_pBaseEntity.m_bCanBeDominated
-	}
-	public get IsIllusion(): boolean {
-		return this.m_pBaseEntity.m_bIsIllusion
-	}
+	// TODO: parse KV, use buffs for this
 	get MoveCapabilities() {
-		return this.m_pBaseEntity.m_iMoveCapabilities
-	}
-	get AttackCapabilities() {
-		return this.m_pBaseEntity.m_iAttackCapabilities
+		return this.NativeEntity?.m_iMoveCapabilities ?? 0
 	}
 	public get IsMelee(): boolean {
 		return this.AttackCapabilities === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK
-	}
-	public get IsMoving(): boolean {
-		return this.m_pBaseEntity.m_bIsMoving
-	}
-	public get IsNeutral(): boolean {
-		return this.m_pBaseEntity.m_bIsNeutralUnitType
-	}
-	public get IsPhantom(): boolean {
-		return this.m_pBaseEntity.m_bIsPhantom
 	}
 	public get IsRanged(): boolean {
 		return this.AttackCapabilities === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK
@@ -368,71 +268,39 @@ export default class Unit extends Entity {
 	public get IsSpawned(): boolean {
 		return !this.IsWaitingToSpawn
 	}
-	public get IsSummoned(): boolean {
-		return this.m_pBaseEntity.m_bIsSummoned
-	}
-	public get IsWaitingToSpawn(): boolean {
-		return this.m_pBaseEntity.m_bIsWaitingToSpawn
-	}
-	public get Level(): number {
-		return this.m_pBaseEntity.m_iCurrentLevel
-	}
-	public get BaseMagicDamageResist(): number {
-		return this.m_pBaseEntity.m_flMagicalResistanceValue
-	}
 	public get MagicDamageResist(): number {
-		return this.m_pBaseEntity.m_flMagicalResistanceValueReal
-	}
-	public get Mana(): number {
-		return this.m_pBaseEntity.m_flMana
+		return this.NativeEntity?.m_flMagicalResistanceValueReal ?? this.BaseMagicDamageResist
 	}
 	public get ManaPercent(): number {
 		return Math.floor(this.Mana / this.MaxMana * 100) || 0
 	}
-	public get MaxDamage(): number {
-		return this.m_pBaseEntity.m_iDamageMax
-	}
-	public get MaxMana(): number {
-		return this.m_pBaseEntity.m_flMaxMana
-	}
 	public get MinimapIcon(): string {
-		return this.m_pBaseEntity.m_iszMinimapIcon
+		return this.UnitData.MinimapIcon
 	}
 	public get MinimapIconSize(): number {
-		return this.m_pBaseEntity.m_flMinimapIconSize
+		return this.UnitData.MinimapIconSize
 	}
-	public get MinDamage(): number {
-		return this.m_pBaseEntity.m_iDamageMin
-	}
+	// TODO: parse KV, use buffs & items to calculate this
 	public get IdealSpeed(): number {
-		return this.m_pBaseEntity.m_fIdealSpeed
-	}
-	public get NightVision(): number {
-		return this.m_pBaseEntity.m_iNightTimeVisionRange
+		return this.NativeEntity?.m_fIdealSpeed ?? this.BaseMoveSpeed
 	}
 	public get ProjectileCollisionSize(): number {
-		return this.m_pBaseEntity.m_flProjectileCollisionSize
+		return this.NativeEntity?.m_flProjectileCollisionSize ?? 0
 	}
 	public get RingRadius(): number {
-		return this.m_pBaseEntity.m_flRingRadius
+		return this.UnitData.RingRadius
 	}
 	public get SecondsPerAttack(): number {
-		return 1 / this.m_pBaseEntity.m_fAttacksPerSecond
-	}
-	public get TauntCooldown(): number {
-		return this.m_pBaseEntity.m_flTauntCooldown
-	}
-	public get TotalDamageTaken(): bigint {
-		return this.m_pBaseEntity.m_nTotalDamageTaken
+		return 1 / (this.NativeEntity?.m_fAttacksPerSecond ?? 0)
 	}
 	public get UnitStateMask(): bigint {
-		return this.m_pBaseEntity.m_nUnitState64 | this.m_pBaseEntity.m_nUnitDebuffState
+		if (this.NativeEntity === undefined)
+			return this.UnitStateNetworked
+		// TODO: use buffs to calculate this
+		return this.NativeEntity.m_nUnitState64 | this.NativeEntity.m_nUnitDebuffState
 	}
 	public get UnitState(): modifierstate[] {
 		return MaskToArrayBigInt(this.UnitStateMask)
-	}
-	public get UnitType(): number {
-		return this.m_pBaseEntity.m_iUnitType
 	}
 	public get IsEthereal(): boolean {
 		return this.ModifiersBook.HasAnyBuffByNames(this.EtherealModifiers)
@@ -441,7 +309,11 @@ export default class Unit extends Entity {
 		return this.ModifiersBook.HasAnyBuffByNames(this.CanUseAbilitiesInInvis)
 	}
 	public get Spells(): Nullable<Ability>[] {
-		return this.AbilitiesBook.Spells
+		// loop-optimizer: FORWARD
+		return this.Spells_.map(abil => {
+			let ent = EntityManager.EntityByIndex(abil)
+			return ent instanceof Ability ? ent : undefined
+		})
 	}
 	public get Items(): Item[] {
 		return this.Inventory.Items
@@ -452,23 +324,20 @@ export default class Unit extends Entity {
 	}
 
 	public get HullRadius(): number {
-		return this.m_pBaseEntity.m_flHullRadius
-	}
-	public get CollisionPadding(): number {
-		return this.m_pBaseEntity.m_flCollisionPadding
+		return this.UnitData.BoundsHull
 	}
 
 	/* ================================ EXTENSIONS ================================ */
 
 	/* ================ GETTERS ================ */
 	public get MovementTurnRate(): number {
-		return movementTurnRate.get(this.Name) ?? 0
+		return this.UnitData.MovementTurnRate
 	}
 	public get AttackAnimationPoint(): number {
-		return attackAnimationPoint.get(this.Name) ?? 0
+		return this.UnitData.AttackAnimationPoint
 	}
 	public get AttackProjectileSpeed(): number {
-		return attackprojectileSpeed.get(this.Name) ?? 0
+		return this.UnitData.ProjectileSpeed
 	}
 	public get IsRotating(): boolean {
 		return this.RotationDifference !== 0
@@ -517,8 +386,6 @@ export default class Unit extends Entity {
 		return spellAmp
 	}
 	public get Name(): string {
-		if (!this.UnitName_)
-			this.UnitName_ = this.m_pBaseEntity.m_iszUnitName
 		return this.UnitName_ || super.Name
 	}
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
@@ -549,7 +416,7 @@ export default class Unit extends Entity {
 	}
 
 	public IsUnitStateFlagSet(flag: modifierstate): boolean {
-		return HasBitBigInt((this.UnitStateMask), BigInt(flag))
+		return HasBitBigInt(this.UnitStateMask, BigInt(flag))
 	}
 	public IsControllableByPlayer(playerID: number): boolean {
 		return HasBitBigInt(this.IsControllableByPlayerMask, BigInt(playerID))
@@ -565,11 +432,18 @@ export default class Unit extends Entity {
 
 		return super.Distance2D(vec) - (fromCenterToCenter ? 0 : this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0))
 	}
-	public GetAbilityByName(name: string | RegExp) {
-		return this.AbilitiesBook.GetAbilityByName(name)
+	public GetAbilityByName(name: string | RegExp): Nullable<Ability> {
+		return this.Spells.find(abil =>
+			abil !== undefined
+			&& (
+				name instanceof RegExp
+					? name.test(abil.Name)
+					: abil.Name === name
+			),
+		)
 	}
 	public GetAbilityByClass<T extends Ability>(class_: Constructor<T>): Nullable<T> {
-		return this.AbilitiesBook.GetAbilityByClass(class_)
+		return this.Spells.find(abil => abil instanceof class_) as Nullable<T>
 	}
 	public GetBuffByName(name: string) {
 		return this.ModifiersBook.GetBuffByName(name)
@@ -578,7 +452,7 @@ export default class Unit extends Entity {
 		return this.ModifiersBook.GetBuffByName(name) !== undefined
 	}
 	public GetTalentValue(name: string | RegExp) {
-		let talent = this.AbilitiesBook.GetAbilityByName(name)
+		let talent = this.GetAbilityByName(name)
 		return talent !== undefined && talent.Level !== 0 ? talent.GetSpecialValue("value") : 0
 	}
 	/**
@@ -774,7 +648,7 @@ export default class Unit extends Entity {
 			else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Structure)
 				mult *= 2.5
 		}
-		let damage = source.MinDamage + source.DamageBonus
+		let damage = source.MinDamage + source.BonusDamage
 		damage = this.AbsorbedDamage(damage, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL)
 		if (damage <= 0)
 			return 0
@@ -807,7 +681,7 @@ export default class Unit extends Entity {
 			}
 			{
 				let abil = source.GetAbilityByName("clinkz_searing_arrows")
-				if (abil !== undefined && abil.m_pBaseEntity.m_bAutoCastState && abil.IsManaEnough())
+				if (abil !== undefined && abil.IsAutoCastEnebled && abil.IsManaEnough())
 					damage += abil.GetSpecialValue("damage_bonus")
 			}
 			{
@@ -830,7 +704,7 @@ export default class Unit extends Entity {
 		}
 		{
 			let abil = source.GetAbilityByName("kunkka_tidebringer")
-			if (abil !== undefined && abil.m_pBaseEntity.m_bAutoCastState && abil.Cooldown === 0)
+			if (abil !== undefined && abil.IsAutoCastEnebled && abil.Cooldown === 0)
 				damage += abil.GetSpecialValue("damage_bonus")
 		}
 		{
@@ -850,7 +724,7 @@ export default class Unit extends Entity {
 		if (is_enemy) {
 			{
 				let abil = source.GetAbilityByName("silencer_glaives_of_wisdom")
-				if (abil !== undefined && abil.m_pBaseEntity.m_bAutoCastState && abil.IsManaEnough())
+				if (abil !== undefined && abil.IsAutoCastEnebled && abil.IsManaEnough())
 					damage += abil.GetSpecialValue("intellect_damage_pct") * source.TotalIntellect / 100
 			}
 			{
@@ -917,7 +791,7 @@ export default class Unit extends Entity {
 	}
 
 	public AttackDamage(target: Unit, useMinDamage: boolean = true, damageAmplifier: number = 0): number {
-		let damage = (useMinDamage ? this.MinDamage : this.DamageAverage) + this.DamageBonus,
+		let damage = (useMinDamage ? this.MinDamage : this.DamageAverage) + this.BonusDamage,
 			damageType = this.AttackDamageType,
 			armorType = target.ArmorType,
 			mult = 1
@@ -939,23 +813,19 @@ export default class Unit extends Entity {
 		else if (damageType === AttackDamageType.Siege && armorType === ArmorType.Structure)
 			mult *= 2.5
 
-		if (target.IsNeutral || (target.IsCreep && this.IsEnemy(target))) {
-			let isMelee = this.IsMelee,
-				inventory = this.Inventory
-
-			let quellingBlade = inventory.GetItemByName("item_quelling_blade")
-			if (quellingBlade !== undefined)
-				damage += quellingBlade.GetSpecialValue(isMelee ? "damage_bonus" : "damage_bonus_ranged")
-
-			let battleFury = inventory.GetItemByName("item_bfury")
-			if (battleFury !== undefined)
-				mult *= battleFury.GetSpecialValue(isMelee ? "quelling_bonus" : "quelling_bonus_ranged") / 100
-		}
+		damage += target.GetAdditionalAttackDamageMultiplier(this)
+		mult *= target.GetAdditionalAttackDamageMultiplier(this)
 
 		mult *= 1 - this.DamageResist
 		mult *= (1 + damageAmplifier)
 
 		return damage * mult
+	}
+	public GetAdditionalAttackDamage(source: Unit): number {
+		return 0
+	}
+	public GetAdditionalAttackDamageMultiplier(source: Unit): number {
+		return 1
 	}
 
 	public CanAttack(target: Unit): boolean {
@@ -1105,5 +975,63 @@ export default class Unit extends Entity {
 	}
 }
 
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler, RegisterEventFieldHandler } from "wrapper/Objects/NativeToSDK"
+import EventsSDK from "../../Managers/EventsSDK"
 RegisterClass("C_DOTA_BaseNPC", Unit)
+RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
+	unit.UnitName_ = new_value >= 0 ? (UnitNameIndexToString(new_value as number) ?? "") : ""
+	unit.UnitData = new UnitData(unit.Name)
+})
+RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => {
+	unit.IsVisibleForTeamMask = new_value as number
+	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
+})
+RegisterEventFieldHandler(Unit, "m_iTeamNum", (unit, new_val) => {
+	EventsSDK.emit("EntityTeamChanged", false, unit)
+	let old_visibility = unit.IsVisibleForEnemies
+	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
+	if (unit.IsVisibleForEnemies !== old_visibility)
+		EventsSDK.emit("TeamVisibilityChanged", false, unit)
+})
+RegisterEventFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => EventsSDK.emit("TeamVisibilityChanged", false, unit))
+RegisterFieldHandler(Unit, "m_anglediff", (unit, new_value) => unit.RotationDifference = new_value as number)
+RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, new_value) => unit.IsControllableByPlayerMask = new_value as bigint)
+RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => unit.NetworkActivity = new_value as number)
+RegisterEventFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => EventsSDK.emit("NetworkActivityChanged", false, unit))
+RegisterFieldHandler(Unit, "m_flHealthThinkRegen", (unit, new_value) => unit.HPRegen = new_value as number)
+RegisterFieldHandler(Unit, "m_flManaThinkRegen", (unit, new_value) => unit.ManaRegen = new_value as number)
+RegisterFieldHandler(Unit, "m_bIsAncient", (unit, new_value) => unit.IsAncient = new_value as boolean)
+RegisterFieldHandler(Unit, "m_flPhysicalArmorValue", (unit, new_value) => unit.Armor = new_value as number)
+RegisterFieldHandler(Unit, "m_iCurShop", (unit, new_value) => unit.CurrentShop = Number(new_value) as DOTA_SHOP_TYPE)
+RegisterFieldHandler(Unit, "m_iMoveSpeed", (unit, new_value) => unit.BaseMoveSpeed = new_value as number)
+RegisterFieldHandler(Unit, "m_iBKBChargesUsed", (unit, new_value) => unit.BKBChargesUsed = new_value as number)
+RegisterFieldHandler(Unit, "m_iDamageMin", (unit, new_value) => unit.MinDamage = new_value as number)
+RegisterFieldHandler(Unit, "m_iDamageMax", (unit, new_value) => unit.MaxDamage = new_value as number)
+RegisterFieldHandler(Unit, "m_iDamageBonus", (unit, new_value) => unit.BonusDamage = new_value as number)
+RegisterFieldHandler(Unit, "m_iDayTimeVisionRange", (unit, new_value) => unit.DayVision = new_value as number)
+RegisterFieldHandler(Unit, "m_flDeathTime", (unit, new_value) => unit.DeathTime = new_value as number)
+RegisterFieldHandler(Unit, "m_nArcanaLevel", (unit, new_value) => unit.ArcanaLevel = new_value as number)
+RegisterFieldHandler(Unit, "m_bStolenScepter", (unit, new_value) => unit.HasStolenScepter = new_value as boolean)
+RegisterFieldHandler(Unit, "m_bHasUpgradeableAbilities", (unit, new_value) => unit.HasUpgradeableAbilities = new_value as boolean)
+RegisterFieldHandler(Unit, "m_bCanBeDominated", (unit, new_value) => unit.IsDominatable = new_value as boolean)
+RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, new_value) => unit.IsIllusion = new_value as boolean)
+RegisterFieldHandler(Unit, "m_iAttackCapabilities", (unit, new_value) => unit.AttackCapabilities = new_value as number)
+RegisterFieldHandler(Unit, "m_bIsMoving", (unit, new_value) => unit.IsMoving = new_value as boolean)
+RegisterFieldHandler(Unit, "m_bIsPhantom", (unit, new_value) => unit.IsPhantom = new_value as boolean)
+RegisterFieldHandler(Unit, "m_bIsSummoned", (unit, new_value) => unit.IsSummoned = new_value as boolean)
+RegisterFieldHandler(Unit, "m_bIsWaitingToSpawn", (unit, new_value) => unit.IsWaitingToSpawn = new_value as boolean)
+RegisterFieldHandler(Unit, "m_iCurrentLevel", (unit, new_value) => unit.Level = new_value as number)
+RegisterFieldHandler(Unit, "m_flMagicalResistanceValue", (unit, new_value) => unit.BaseMagicDamageResist = new_value as number)
+RegisterFieldHandler(Unit, "m_flMana", (unit, new_value) => unit.Mana = new_value as number)
+RegisterFieldHandler(Unit, "m_flMaxMana", (unit, new_value) => unit.MaxMana = new_value as number)
+RegisterFieldHandler(Unit, "m_iNightTimeVisionRange", (unit, new_value) => unit.NightVision = new_value as number)
+RegisterFieldHandler(Unit, "m_flTauntCooldown", (unit, new_value) => unit.TauntCooldown = new_value as number)
+RegisterFieldHandler(Unit, "m_nTotalDamageTaken", (unit, new_value) => unit.TotalDamageTaken = new_value as bigint)
+RegisterFieldHandler(Unit, "m_nUnitState64", (unit, new_value) => unit.UnitStateNetworked = new_value as bigint)
+RegisterFieldHandler(Unit, "m_nHealthBarOffsetOverride", (unit, new_value) => unit.HealthBarOffsetOverride = new_value as number)
+RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
+	let ar = new_value as number[]
+	while (ar.length < unit.Spells_.length)
+		ar.push(0)
+	unit.Spells_ = new_value as number[]
+})

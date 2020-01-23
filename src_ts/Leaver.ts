@@ -1,4 +1,4 @@
-import { Game, Menu, EventsSDK, PlayerResource, Utils } from "wrapper/Imports"
+import { Menu, EventsSDK, PlayerResource, Utils, GameState } from "wrapper/Imports"
 import { RecursiveMap } from "./wrapper/Utils/ParseKV"
 
 const tree = Menu.AddEntry(["Utility", "Bait leave"]),
@@ -13,10 +13,12 @@ const tree = Menu.AddEntry(["Utility", "Bait leave"]),
 
 let dc_time = 0
 button.OnValue(() => {
+	if (PlayerResource === undefined)
+		return
 	let PlayerID = playersList.selected_id
 
-	let PlayerName = PlayerResource.GetNameByPlayerID(PlayerID),
-		PlayerHeroID = (PlayerResource.PlayerTeamData[PlayerID]?.m_nSelectedHeroID ?? 0).toString(),
+	let PlayerName = PlayerResource.PlayerData[PlayerID]?.Name ?? "",
+		PlayerHeroID = (PlayerResource.PlayerTeamData[PlayerID]?.SelectedHeroID ?? 0).toString(),
 		switch_language: string = ""
 
 	let PlayerHero = heroes.find(hero => (hero.get("HeroID") as string) === PlayerHeroID)?.get("workshop_guide_name") ?? ""
@@ -43,6 +45,6 @@ button.OnValue(() => {
 EventsSDK.on("Draw", () => {
 	if (dc_time === 0 || dc_time + Additionaldelay.value * 1000 > hrtime())
 		return
-	Game.ExecuteCommand("disconnect")
+	GameState.ExecuteCommand("disconnect")
 	dc_time = 0
 })

@@ -1,4 +1,4 @@
-import { Game, TickSleeper, LocalPlayer, Player, Team, EntityManager, Unit, Building } from "wrapper/Imports"
+import { GameRules, TickSleeper, LocalPlayer, Player, Team, EntityManager, Unit, Building, Shop, Shrine, Creep, Hero } from "wrapper/Imports"
 import ItemManagerBase from "../../abstract/Base"
 import { StateBase } from "../../abstract/MenuBase"
 import { State, TowerHP, TowerSwitcher } from "./Menu"
@@ -9,8 +9,8 @@ export function Tick() {
 		return
 	}
 	let Time = LocalPlayer!.Team === Team.Radiant
-		? Game.GlyphCooldownRediant
-		: Game.GlyphCooldownDire
+		? (GameRules?.GlyphCooldownRadiant ?? 0)
+		: (GameRules?.GlyphCooldownDire ?? 0)
 	if (Time !== 0) {
 		return
 	}
@@ -25,15 +25,15 @@ export function Tick() {
 	}
 	if (!EntityManager.GetEntitiesByClass(Building).some(x =>
 		!x.IsEnemy()
-		&& !x.IsShop
-		&& !x.IsShrine
+		&& !(x instanceof Shop)
+		&& !(x instanceof Shrine)
 		&& x.IsAlive
 		&& x.HP <= TowerHP.value
 		&& x.Name.includes(include_name)
 		&& EntityManager.GetEntitiesByClass(Unit).some(unit =>
 			unit.IsEnemy()
 			&& unit.IsVisible
-			&& unit.IsAlive && (unit.IsCreep || unit.IsHero)
+			&& unit.IsAlive && (unit instanceof Creep || unit instanceof Hero)
 			&& unit.IsInRange(x, unit.AttackRange + (unit.HullRadius * 2)))))
 		return
 

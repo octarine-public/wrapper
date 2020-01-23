@@ -1,5 +1,5 @@
 
-import { Game, Vector3, Team, Courier, Unit, DOTA_GameMode, LocalPlayer } from "wrapper/Imports"
+import { GameRules, Vector3, Team, Courier, Unit, DOTA_GameMode, LocalPlayer, GameState } from "wrapper/Imports"
 import { LaneSelectionFlags_t, Data } from "./Data"
 
 class CourierData extends Data {
@@ -29,25 +29,25 @@ class CourierData extends Data {
 	]
 
 	public get CastDelay() {
-		return (((Game.Ping / 2) + 30) + 250)
+		return (((GameState.Ping / 2) + 30) + 250)
 	}
 	private get Team() {
 		return LocalPlayer?.Team === Team.Dire
 	}
 
-	public IsValidCourier = (cour: Courier) => Game.GameMode !== DOTA_GameMode.DOTA_GAMEMODE_TURBO
+	public IsValidCourier = (cour: Courier) => GameRules?.GameMode !== DOTA_GameMode.DOTA_GAMEMODE_TURBO
 		&& cour !== undefined
 		&& cour.IsAlive
 		&& !cour.IsEnemy()
 		&& cour.IsControllable
 
-	public CastCourAbility = (num: number, cour: Courier) => cour.AbilitiesBook.GetSpell(num)?.UseAbility()
+	public CastCourAbility = (num: number, cour: Courier) => cour.Spells[num]?.UseAbility()
 
 	public Position(BestOrSafe: boolean = false, custom_line?: LaneSelectionFlags_t): Vector3 {
 		let num = 2, team_id = this.Team ? 1 : 0,
-			roles = !custom_line && this.roles.length !== 0 ? this.roles[team_id].find((role, i) => role !== undefined) : custom_line
+			roles = !custom_line && this.roles.length !== 0 ? this.roles[team_id].find(role => role !== undefined) : custom_line
 		return !BestOrSafe
-			? Game.RawGameTime < 700
+			? (GameRules?.RawGameTime ?? 0) < 700
 				? roles === undefined
 					? this.CourierBestPosition[team_id][num * 2]
 					: this.CourierBestPosition[team_id][roles]

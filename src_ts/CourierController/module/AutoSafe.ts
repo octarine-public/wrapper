@@ -1,4 +1,4 @@
-import { Ability, Game, DOTA_GameMode, Creep, Hero, Courier, Tower, EntityManager, Unit } from "wrapper/Imports"
+import { Ability, GameRules, DOTA_GameMode, Creep, Hero, Courier, Tower, EntityManager, Unit } from "wrapper/Imports"
 import { CourierBase } from "../Data/Helper"
 import { autoShieldState, autoShieldTimer } from "../Menu"
 import { Sleep, UnitAnimation } from "../bootstrap"
@@ -46,7 +46,7 @@ function SafePosDeliver(courier: Courier): boolean {
 }
 
 export function AutoSafe(courier: Courier): boolean {
-	if (Game.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !autoShieldState.value)
+	if (GameRules?.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO || !autoShieldState.value)
 		return false
 	let ability = AbilityTypeReady(courier)
 	if (ability === undefined || ability.Level === 0 || ability.Cooldown)

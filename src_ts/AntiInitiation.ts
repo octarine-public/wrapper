@@ -1,4 +1,4 @@
-import { Ability, EventsSDK, Game, Hero, LocalPlayer, Menu, Unit, Flow_t, EntityManager } from "wrapper/Imports"
+import { Ability, EventsSDK, GameRules, Hero, LocalPlayer, Menu, Unit, Flow_t, EntityManager, npc_dota_hero_rubick, npc_dota_hero_morphling } from "wrapper/Imports"
 
 // Menu
 const MenuEntry = Menu.AddEntry(["Utility", "AntiInitiation"])
@@ -119,7 +119,7 @@ function Disable(Me: Hero, hero: Unit, DisableAr: [string, boolean, boolean?][],
 		Abil !== undefined
 		&& (
 			!Abil.IsInAbilityPhase
-			|| Game.RawGameTime - Abil.CastStartTime < Abil.CastPoint - (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT) + delta)
+			|| GameRules!.RawGameTime - Abil.CastStartTime < Abil.CastPoint - (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT) + delta)
 			|| (AbilAr = GetAbilArray(Abil.Name)) === undefined
 			|| AbilAr[2]
 		)
@@ -139,7 +139,7 @@ function Disable(Me: Hero, hero: Unit, DisableAr: [string, boolean, boolean?][],
 	if (disable_abil === undefined)
 		return false
 	Me.UseSmartAbility(disable_abil, hero)
-	ignore_heroes.set(hero, Game.RawGameTime + delta + GetLatency(Flow_t.OUT))
+	ignore_heroes.set(hero, GameRules!.RawGameTime + delta + GetLatency(Flow_t.OUT))
 	return true
 }
 
@@ -149,7 +149,7 @@ EventsSDK.on("Tick", () => {
 	let hero = LocalPlayer!.Hero
 	if (hero === undefined || !hero.IsAlive || hero.IsStunned)
 		return
-	let current_time = Game.RawGameTime
+	let current_time = GameRules!.RawGameTime
 	// loop-optimizer: KEEP
 	ignore_heroes.forEach((until, hero_) => {
 		if (current_time > until)
@@ -167,7 +167,7 @@ EventsSDK.on("Tick", () => {
 })
 
 function TransformToAvailable(hero: Hero, abil_arrays: [string, boolean, boolean?][]): [string, boolean, boolean?][] {
-	if (hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Rubick || hero.m_pBaseEntity instanceof C_DOTA_Unit_Hero_Morphling)
+	if (hero instanceof npc_dota_hero_rubick || hero instanceof npc_dota_hero_morphling)
 		return abil_arrays
 	return abil_arrays.filter(abilData => abilData[0].startsWith("item_") || hero.GetAbilityByName(abilData[0]) !== undefined)
 }

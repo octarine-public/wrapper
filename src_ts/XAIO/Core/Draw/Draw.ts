@@ -118,7 +118,7 @@ export default class XAIOParticle {
 			return
 		let Enemy: Unit = ArrayExtensions.orderBy(Units.filter(
 			x => x.IsEnemy() && x.IsVisible
-				&& x.IsHero && x.IsAlive && x.Distance(this.unit!) <= (ability.CastRange === Number.MAX_SAFE_INTEGER ? 3000 : ability.CastRange)
+				&& x instanceof Hero && x.IsAlive && x.Distance(this.unit!) <= (ability.CastRange === Number.MAX_SAFE_INTEGER ? 3000 : ability.CastRange)
 		), ent => ent.Distance(this.unit!))[0]
 
 		if (Enemy === undefined || !this.unit!.IsAlive || !State.value || !Enemy.IsVisible || !ability.CanBeCasted())
@@ -246,7 +246,7 @@ export default class XAIOParticle {
 }
 
 XAIOEvents.on("removeControllable", (unit) => {
-	if (!unit.IsHero)
+	if (!(unit instanceof Hero))
 		return
 	// loop-optimizer: KEEP
 	XAIOparKey.get(unit)?.forEach(x => x.Destroy(true))

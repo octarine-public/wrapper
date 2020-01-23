@@ -1,32 +1,38 @@
 import Vector3 from "../../Base/Vector3"
 import { HasMask, MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import AbilityData from "../DataBook/AbilityData"
-import Game from "../GameResources/GameRules"
+import { GameRules } from "../Base/GameRules"
 import Entity from "./Entity"
 import Unit from "./Unit"
+import GameState from "../../Utils/GameState"
 
 export default class Ability extends Entity {
-	public readonly m_pBaseEntity!: C_DOTABaseAbility
-
+	public NativeEntity: Nullable<C_DOTABaseAbility>
 	public AbilityData: AbilityData
-	public Level = this.m_pBaseEntity.m_iLevel
-	public Cooldown = this.m_pBaseEntity.m_fCooldown
-	public CooldownLength = this.m_pBaseEntity.m_flCooldownLength
-	public IsInAbilityPhase = this.m_pBaseEntity.m_bInAbilityPhase
-	public CastStartTime = this.m_pBaseEntity.m_flCastStartTime
-	public ChannelStartTime = this.m_pBaseEntity.m_flChannelStartTime
-	public LastCastClickTime = this.m_pBaseEntity.m_flLastCastClickTime;
-	public IsToggled = this.m_pBaseEntity.m_bToggleState
-	public IsHidden = this.m_pBaseEntity.m_bHidden
+	public IsInIndefiniteCooldown = false
+	public IsActivated = false
+	public IsAutoCastEnebled = false
+	public IsCooldownFrozen = false
+	public IsReplicated = false
+	public IsStolen = false
+	public ManaCost = 0
+	public OverrideCastPoint = 0
+	public Level = 0
+	public Cooldown = 0
+	public CooldownLength = 0
+	public IsInAbilityPhase = false
+	public CastStartTime = 0
+	public ChannelStartTime = 0
+	public IsToggled = false
+	public IsHidden = false
 
-	constructor(m_pBaseEntity: C_DOTABaseAbility, name: string) {
-		super(m_pBaseEntity)
+	constructor(Index: number, name: string) {
+		super(Index)
 		this.Name_ = name
 		this.AbilityData = new AbilityData(this.Name)
 	}
 
 	/* ============ BASE  ============ */
-
 	public get Owner(): Nullable<Unit> {
 		return super.Owner as Nullable<Unit>
 	}
@@ -52,34 +58,16 @@ export default class Ability extends Entity {
 		return this.AbilityData.GetCastPoint(this.Level)
 	}
 	public get ChannelTime(): number {
-		return Math.max(Game.RawGameTime - this.ChannelStartTime, 0)
+		return Math.max(GameRules!.RawGameTime - this.ChannelStartTime, 0)
 	}
 	get DamageType(): DAMAGE_TYPES {
 		return this.AbilityData.DamageType
 	}
-	get EnemyLevel(): number {
-		return this.m_pBaseEntity.m_iEnemyLevel
-	}
-	get HasAltCastState(): boolean {
-		return this.m_pBaseEntity.m_bAltCastState
-	}
-	get HasInIndefiniteCooldown(): boolean {
-		return this.m_pBaseEntity.m_bInIndefiniteCooldown
-	}
 	get ID(): number {
 		return this.AbilityData.ID
 	}
-	get IsActivated(): boolean {
-		return this.m_pBaseEntity.m_bActivated
-	}
-	get IsAutoCastEnebled(): boolean {
-		return this.m_pBaseEntity.m_bAutoCastState
-	}
 	get IsChanneling(): boolean {
 		return this.ChannelStartTime > 0
-	}
-	get IsCooldownFrozen(): boolean {
-		return this.m_pBaseEntity.m_bFrozenCooldown
 	}
 	get IsCooldownReady(): boolean {
 		return this.Cooldown === 0
@@ -94,23 +82,11 @@ export default class Ability extends Entity {
 	get IsItem(): boolean {
 		return this.AbilityData.IsItem
 	}
-	get IsReplicated(): boolean {
-		return this.m_pBaseEntity.m_bReplicated
-	}
-	get IsStolen(): boolean {
-		return this.m_pBaseEntity.m_bStolen
-	}
 	get LevelsBetweenUpgrades(): number {
 		return this.AbilityData.LevelsBetweenUpgrades
 	}
-	get ManaCost(): number {
-		return this.m_pBaseEntity.m_iManaCost
-	}
 	get MaxLevel(): number {
 		return this.AbilityData.MaxLevel
-	}
-	get OverrideCastPoint(): number {
-		return this.m_pBaseEntity.m_flOverrideCastPoint
 	}
 	get RequiredLevel(): number {
 		return this.AbilityData.RequiredLevel
@@ -144,10 +120,10 @@ export default class Ability extends Entity {
 	 * In real time cooldown (in fog)
 	 */
 	get CooldownTimeRemaining(): number {
-		if (this.Owner === undefined)
-			return 0
-
-		return Math.max(0, this.Cooldown - (Game.RawGameTime - this.Owner.LastVisibleTime))
+		let cd = this.Cooldown
+		if (this.Owner !== undefined && !this.Owner.IsVisible)
+			cd -= this.Owner.BecameDormantTime
+		return Math.max(0, this.Cooldown - cd)
 	}
 
 	public get BaseCastRange(): number {
@@ -165,13 +141,13 @@ export default class Ability extends Entity {
 				break
 			}
 			case "skywrath_mage_concussive_shot": {
-				let unique = owner?.AbilitiesBook.GetAbilityByName("special_bonus_unique_skywrath_4")
+				let unique = owner?.GetAbilityByName("special_bonus_unique_skywrath_4")
 				if (unique !== undefined && unique.Level !== 0)
 					return Number.MAX_SAFE_INTEGER
 				break
 			}
 			case "gyrocopter_call_down": {
-				let unique = owner?.AbilitiesBook.GetAbilityByName("special_bonus_unique_gyrocopter_5")
+				let unique = owner?.GetAbilityByName("special_bonus_unique_gyrocopter_5")
 				if (unique !== undefined && unique.Level !== 0)
 					return Number.MAX_SAFE_INTEGER
 				break
@@ -195,7 +171,7 @@ export default class Ability extends Entity {
 	 * @returns Time in ms until the cast.
 	 */
 	public GetCastDelay(position: Vector3, turnRate: boolean = true): number {
-		return this?.Owner ? ((this.CastPoint + (turnRate ? this.Owner.TurnTime(position) : 0)) * 1000 + Game.Ping / 2) : 0
+		return this?.Owner ? ((this.CastPoint + (turnRate ? this.Owner.TurnTime(position) : 0)) * 1000 + GameState.Ping / 2) : 0
 	}
 	/**
 	 * @param position Vector3
@@ -305,5 +281,21 @@ export default class Ability extends Entity {
 	}
 }
 
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTABaseAbility", Ability)
+RegisterFieldHandler(Ability, "m_bInIndefiniteCooldown", (abil, new_value) => abil.IsInIndefiniteCooldown = new_value as boolean)
+RegisterFieldHandler(Ability, "m_bActivated", (abil, new_value) => abil.IsActivated = new_value as boolean)
+RegisterFieldHandler(Ability, "m_bAutoCastState", (abil, new_value) => abil.IsAutoCastEnebled = new_value as boolean)
+RegisterFieldHandler(Ability, "m_bFrozenCooldown", (abil, new_value) => abil.IsCooldownFrozen = new_value as boolean)
+RegisterFieldHandler(Ability, "m_bReplicated", (abil, new_value) => abil.IsReplicated = new_value as boolean)
+RegisterFieldHandler(Ability, "m_bStolen", (abil, new_value) => abil.IsStolen = new_value as boolean)
+RegisterFieldHandler(Ability, "m_iManaCost", (abil, new_value) => abil.ManaCost = new_value as number)
+RegisterFieldHandler(Ability, "m_flOverrideCastPoint", (abil, new_value) => abil.OverrideCastPoint = new_value as number)
+RegisterFieldHandler(Ability, "m_iLevel", (abil, new_value) => abil.Level = new_value as number)
+RegisterFieldHandler(Ability, "m_fCooldown", (abil, new_value) => abil.Cooldown = new_value as number)
+RegisterFieldHandler(Ability, "m_flCooldownLength", (abil, new_value) => abil.CooldownLength = new_value as number)
+RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, new_value) => abil.IsInAbilityPhase = new_value as boolean)
+RegisterFieldHandler(Ability, "m_flCastStartTime", (abil, new_value) => abil.CastStartTime = new_value as number)
+RegisterFieldHandler(Ability, "m_flChannelStartTime", (abil, new_value) => abil.ChannelStartTime = new_value as number)
+RegisterFieldHandler(Ability, "m_bToggleState", (abil, new_value) => abil.IsToggled = new_value as boolean)
+RegisterFieldHandler(Ability, "m_bHidden", (abil, new_value) => abil.IsHidden = new_value as boolean)

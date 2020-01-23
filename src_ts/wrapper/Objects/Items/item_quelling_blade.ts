@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_quelling_blade extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_QuellingBlade
+	public NativeEntity: Nullable<C_DOTA_Item_QuellingBlade>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

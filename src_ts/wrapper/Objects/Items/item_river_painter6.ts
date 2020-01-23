@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_river_painter6 extends Item {
-	public readonly m_pBaseEntity!: CDOTA_Item_RiverPainter6
+	public NativeEntity: Nullable<CDOTA_Item_RiverPainter6>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

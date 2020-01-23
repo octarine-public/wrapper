@@ -1,4 +1,4 @@
-import { Ability, BitsExtensions, Creep, EntityManager, EventsSDK, Game, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, TickSleeper, ProjectileManager } from "wrapper/Imports"
+import { Ability, BitsExtensions, Creep, EntityManager, EventsSDK, GameRules, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, TickSleeper, ProjectileManager, GameState } from "wrapper/Imports"
 
 function GetHealthAfter(unit: Unit, delay: number, allow_overflow = false, include_projectiles: boolean = false, attacker?: Unit, melee_time_offset: number = 0): number {
 	let hpafter = unit.HP/*,
@@ -195,9 +195,9 @@ var abils: {
 					buff = buffs[0]
 				else
 					return 0
-				var elapsed = Math.min(buff.DieTime - Game.GameTime, brewTime) - minStun,
+				var elapsed = Math.min(buff.DieTime - GameRules!.GameTime, brewTime) - minStun,
 					charged = Math.max(elapsed, 0) / brewTime
-				if (buff.DieTime - Game.GameTime > brewExplosion - (abil.CastPoint + 1.5 / 30))
+				if (buff.DieTime - GameRules!.GameTime > brewExplosion - (abil.CastPoint + 1.5 / 30))
 					return 99999999 // we don't need to be self-stunned, ye?
 
 				return entTo.CalculateDamage(charged * maxDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL, entFrom)
@@ -464,7 +464,7 @@ function GetAvailableAbils() {
 	return abils.filter(
 		abilData => abilData.abilName instanceof RegExp
 			|| abilData.abilName.startsWith("item_")
-			|| MyEnt!.GetAbilityByName(abilData.abilName) !== undefined,
+			|| MyEnt?.GetAbilityByName(abilData.abilName) !== undefined,
 	)
 }
 
@@ -486,9 +486,9 @@ EventsSDK.on("Tick", () => {
 	if (!state.value)
 		return
 
-	var MyEnt = LocalPlayer!.Hero/*,
+	const MyEnt = LocalPlayer!.Hero/*,
 		selectedHero = /^npc_dota_hero_(.*)$/.exec(MyEnt.UnitName)[1]*/
-	if (MyEnt === undefined || MyEnt.IsStunned || !MyEnt.IsAlive || scriptSleeper.Sleeping || LocalPlayer!.ActiveAbility !== undefined/* || (MyEnt.CanBeVisible && selectedHero !== "riki" && selectedHero !== "treant_protector")*/)
+	if (MyEnt === undefined || MyEnt.IsStunned || !MyEnt.IsAlive || scriptSleeper.Sleeping || MyEnt.IsChanneling /* || (MyEnt.CanBeVisible && selectedHero !== "riki" && selectedHero !== "treant_protector")*/)
 		return
 	latest_spellamp = 1 + MyEnt.SpellAmplification
 	{
@@ -497,7 +497,7 @@ EventsSDK.on("Tick", () => {
 			latest_spellamp *= bs_buff.Ability.GetSpecialValue("damage_increase_pct") / 100
 	}
 	var availableAbils = GetAvailableAbils().filter(abilData => {
-		var abil = abilData.abil = MyEnt!.GetAbilityByName(abilData.abilName) || MyEnt!.GetItemByName(abilData.abilName)
+		var abil = abilData.abil = MyEnt.GetAbilityByName(abilData.abilName) || MyEnt.GetItemByName(abilData.abilName)
 		return abil !== undefined && !abil.IsHidden && abil.CanBeCasted()
 	}),
 		zuus_passive = MyEnt.GetAbilityByName("zuus_static_field"),
@@ -516,38 +516,38 @@ EventsSDK.on("Tick", () => {
 		return targets.some(ent => {
 			if (
 				ent.HasLinkenAtTime(abil!.CastPoint) ||
-				(ent.IsCreep && !BitsExtensions.HasMaskBigInt(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP))) ||
-				(ent.IsHero && !BitsExtensions.HasMaskBigInt(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO)))
+				(ent instanceof Creep && !BitsExtensions.HasMaskBigInt(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP))) ||
+				(ent instanceof Hero && !BitsExtensions.HasMaskBigInt(abilData.targets, BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO)))
 			)
 				return false
 			var needBlink = false
 			if (range > 0)
-				if (MyEnt!.Distance2D(ent) > range)
+				if (MyEnt.Distance2D(ent) > range)
 					if (
 						!blinkSleeper.Sleeping
 						&& blink !== undefined
 						&& blink.Cooldown === 0
-						&& ent.IsHero
-						&& MyEnt!.Distance2D(ent) < range + blink.GetSpecialValue("blink_range")
+						&& ent instanceof Hero
+						&& MyEnt.Distance2D(ent) < range + blink.GetSpecialValue("blink_range")
 					)
 						needBlink = true
 					else return false
-			var damage = (abilData.abilDamageF || getDamage)(abil!, MyEnt!, ent)
+			var damage = (abilData.abilDamageF || getDamage)(abil!, MyEnt, ent)
 			if (zuus_passive !== undefined)
 				damage += (abil!.GetSpecialValue("damage_health_pct") + zuus_talent) / 100 * ent.HP
 			if (damage < GetHealthAfter(ent, abil!.CastPoint))
 				return false
 
-			let ping = Game.Ping / 1000
+			let ping = GameState.Ping / 1000
 			if (needBlink) {
-				MyEnt!.CastPosition(blink!, ent.Position.Extend(MyEnt!.Position, range - 100), false)
+				MyEnt.CastPosition(blink!, ent.Position.Extend(MyEnt.Position, range - 100), false)
 				blinkSleeper.Sleep((blink!.CastPoint + ping) * 1000)
 			} else {
-				sleeper.Sleep(((abilData.abilDelayF ? abilData.abilDelayF(abil!, MyEnt!, ent) + abil!.CastPoint : 0) + ping) * 1000, ent)
+				sleeper.Sleep(((abilData.abilDelayF ? abilData.abilDelayF(abil!, MyEnt, ent) + abil!.CastPoint : 0) + ping) * 1000, ent)
 				if (abilData.abilCastF)
-					abilData.abilCastF(abil!, MyEnt!, ent)
+					abilData.abilCastF(abil!, MyEnt, ent)
 				else
-					MyEnt!.UseSmartAbility(abil!, ent)
+					MyEnt.UseSmartAbility(abil!, ent)
 				scriptSleeper.Sleep((abil!.CastPoint + ping) * 1000)
 			}
 

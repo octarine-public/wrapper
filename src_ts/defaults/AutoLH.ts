@@ -37,7 +37,7 @@
 // let attackable_ents: Creep[] = []
 
 // let HasAttackCapability = (ent: Unit, flag?: DOTAUnitAttackCapability_t) => {
-// 	let attackCap = ent.m_pBaseEntity.m_iAttackCapabilities
+// 	let attackCap = ent.NativeEntity.m_iAttackCapabilities
 // 	if (flag !== undefined)
 // 		return (attackCap & flag) === flag
 // 	return (attackCap & (
@@ -91,21 +91,21 @@
 // 		glow_ents = []
 // 	}
 // 	glow_ents_old.filter(ent => ent.IsValid && !glow_ents.includes(ent)).forEach(ent => {
-// 		ent.m_pBaseEntity.m_bSuppressGlow = true
-// 		ent.m_pBaseEntity.m_Glow.m_bGlowing = false
-// 		ent.m_pBaseEntity.m_Glow.m_iGlowType = 0
+// 		ent.NativeEntity.m_bSuppressGlow = true
+// 		ent.NativeEntity.m_Glow.m_bGlowing = false
+// 		ent.NativeEntity.m_Glow.m_iGlowType = 0
 // 	})
 // 	glow_ents.filter(ent => ent.IsValid).forEach(ent => {
 // 		let position_unit = RendererSDK.WorldToScreen(ent.Position.AddScalarZ(ent.HealthBarOffset))
 // 		if (position_unit !== undefined)
 // 			RenderIcon(position_unit, `panorama/images/icon_star_png.vtex_c`)
-// 		ent.m_pBaseEntity.m_bSuppressGlow = false
-// 		ent.m_pBaseEntity.m_Glow.m_bFlashing = false
-// 		ent.m_pBaseEntity.m_Glow.m_bGlowing = true
-// 		ent.m_pBaseEntity.m_Glow.m_iGlowType = 1
+// 		ent.NativeEntity.m_bSuppressGlow = false
+// 		ent.NativeEntity.m_Glow.m_bFlashing = false
+// 		ent.NativeEntity.m_Glow.m_bGlowing = true
+// 		ent.NativeEntity.m_Glow.m_iGlowType = 1
 // 		IOBuffer[0] = 255
 // 		IOBuffer[1] = IOBuffer[2] = 0
-// 		ent.m_pBaseEntity.m_Glow.m_glowColorOverride = true
+// 		ent.NativeEntity.m_Glow.m_glowColorOverride = true
 // 	})
 // 	glow_ents_old = glow_ents
 // })

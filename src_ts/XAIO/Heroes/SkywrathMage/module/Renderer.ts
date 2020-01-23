@@ -1,13 +1,13 @@
 
 import { EnemyMouse } from "./index"
 import { ComboActived } from "./Combo"
-import { array_sky_radiuses, execute_ability } from "../Data"
+import { array_sky_radiuses } from "../Data"
 import { XAIOParticle } from "XAIO/Core/bootstrap"
 import { Units, XAIOStateGlobal } from "XAIO/bootstrap"
 
 import {
-	Ability, Game, Color,
-	RendererSDK, FontFlags_t, Vector2,
+	GameState, Color, Vector2, Ability,
+	RendererSDK, FontFlags_t,
 	DOTAGameUIState_t, skywrath_mage_concussive_shot,
 } from "wrapper/Imports"
 
@@ -42,7 +42,7 @@ XAIORenderBindKey.OnRelease(() => {
 
 export function InfoPanel() {
 
-	if (SkyPanelTextItem.value && Game.UIState === DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
+	if (SkyPanelTextItem.value && GameState.UIState === DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME) {
 
 		let Combo = (XAIOStyleCombo.selected_id === 1 && ComboActived) || (XAIOStyleCombo.selected_id === 0 && XAIOComboKey.is_pressed),
 			autoArcaneBolt = !Combo && SmartArcaneAutoBoltState.value,

@@ -1,4 +1,4 @@
-import { Game } from "wrapper/Imports"
+import { GameRules } from "wrapper/Imports"
 
 export default class XAIOSleeper {
 	// ms seconds sleeper
@@ -10,13 +10,15 @@ export default class XAIOSleeper {
 	}
 
 	public Sleep(seconds: number) {
-		this.sleepTime = Game.RawGameTime + seconds
+		this.sleepTime = (GameRules?.RawGameTime ?? 0) + seconds
 		this.sleeping = true
 	}
 
 	public get IsSleeping(): boolean {
-		if (this.sleeping)
-			this.sleeping = (Game.RawGameTime < this.sleepTime)
+		if (this.sleeping) {
+			let time = GameRules?.RawGameTime ?? 0
+			this.sleeping = time < this.sleepTime
+		}
 
 		return this.sleeping
 	}
@@ -24,7 +26,8 @@ export default class XAIOSleeper {
 	public get RemainingSleepTime(): number {
 		if (!this.sleeping)
 			return 0
-		return this.sleepTime - Game.RawGameTime
+		let time = GameRules?.RawGameTime ?? 0
+		return this.sleepTime - time
 	}
 
 	public SleepUntil(rawGameTime: number) {
@@ -38,7 +41,7 @@ export default class XAIOSleeper {
 	}
 
 	public ExtendSleep(seconds: number) {
-		let rawGameTime = Game.RawGameTime
+		let rawGameTime = GameRules?.RawGameTime ?? 0
 		if (this.sleepTime > rawGameTime) {
 			this.sleepTime += seconds
 		}

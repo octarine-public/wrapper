@@ -1,14 +1,15 @@
-import { EventsSDK, Game, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color, Events, DOTAGameUIState_t, EventEmitter } from "./wrapper/Imports"
+import { EventsSDK, GameState, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color, DOTAGameUIState_t, EventEmitter, Events } from "./wrapper/Imports"
 
 declare global {
 	var dump_stats: Function
 	var dump_stats_listeners: Function
 	var SafeLog: Function
 	var reset_avg_mult: Function
+	var dump_total: Function
 }
 
 let setConVar = (self: Menu.Toggle) => ConVars.Set(self.tooltip!, self.value)
-let exec = (self: Menu.Base) => Game.ExecuteCommand(self.tooltip!)
+let exec = (self: Menu.Base) => GameState.ExecuteCommand(self.tooltip!)
 
 let debuggerMenu = Menu.AddEntry("Debugger")
 
@@ -66,7 +67,7 @@ EventsSDK.on("GameStarted", () => {
 	ConVars.Set("sv_cheats", ConVars.GetInt("sv_cheats") || sv_cheats.value)
 	ConVars.Set("dota_ability_debug", wtf.value)
 
-	if (PlayerResource.AllPlayers.length <= 1)
+	if ((PlayerResource?.AllPlayers?.length ?? 0) <= 1)
 		ConVars.Set("dota_all_vision", vision.value)
 
 	ConVars.Set("dota_creeps_no_spawning", creepsNoSpawn.value)
@@ -100,7 +101,7 @@ EventsSDK.on("Draw", () => {
 	/*let size = parseInt(config.get("tall") as string)
 	let vec_size = RendererSDK.GetProportionalScaledVector(new Vector2(size, size), true, 1.15)
 	RendererSDK.Line(new Vector2(0, RendererSDK.WindowSize.y - vec_size.y), new Vector2(vec_size.x, 0))*/
-	if (!debugEvents.value || !debugProjectiles.value || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!debugEvents.value || !debugProjectiles.value || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
 		let w2s = RendererSDK.WorldToScreen(proj.Position)
@@ -215,6 +216,18 @@ globalThis.dump_stats = () => {
 	for (let [name, took] of max_map_events.entries())
 		console.log(`${name}: ${took}ms`)
 }
+globalThis.dump_total = () => {
+	let total = 0
+	console.log("Average: ")
+	for (let [name, [took]] of avg_map_events.entries())
+		for (let [name2, ar] of counter_map_events.entries())
+			if (name === name2) {
+				total += took * ar.length / 30
+				break
+			}
+
+	console.log(total)
+}
 
 function filter_avg(map: Map<string, Map<string, [number, number]>>) {
 	let filtered: [string, [string, number][]][] = []
@@ -237,7 +250,7 @@ function filter_max(map: Map<string, Map<string, number>>) {
 globalThis.dump_stats_listeners = () => {
 	console.log("Average: ")
 	let avg = filter_avg(avg_map_listeners)
-	for (let i = 0; i < Math.min(3, avg.length); i++) {
+	for (let i = 0; i < Math.min(5, avg.length); i++) {
 		let [event_name, ar] = avg[i]
 		console.log(event_name + ": ")
 		// loop-optimizer: FORWARD
@@ -247,7 +260,7 @@ globalThis.dump_stats_listeners = () => {
 
 	console.log("Max: ")
 	let max = filter_max(max_map_listeners)
-	for (let i = 0; i < Math.min(3, max.length); i++) {
+	for (let i = 0; i < Math.min(5, max.length); i++) {
 		let [event_name, ar] = max[i]
 		console.log(event_name + ": ")
 		// loop-optimizer: FORWARD
@@ -265,7 +278,7 @@ globalThis.reset_avg_mult = () => {
 
 let last_time = 0
 EventsSDK.on("Draw", () => {
-	if (hrtime() - last_time < 10000 || GetHeapStatistics().total_heap_size < 200n * 1024n * 1024n)
+	if (hrtime() - last_time < 10000 || GetHeapStatistics().total_heap_size < 300n * 1024n * 1024n)
 		return
 	TakeHeapSnapshot("dumps/" + Math.random().toString().substring(2, 8) + ".heapsnapshot")
 	last_time = hrtime()

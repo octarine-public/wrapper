@@ -133,3 +133,15 @@ export function parseEnumString(enum_object: any /* { [key: string]: number } */
 		last_tok = regex_res[2] || ""
 	}
 }
+
+function FixArray(ar: any[]): any {
+	// loop-optimizer: KEEP
+	return ar.map(v => v instanceof Map ? MapToObject(v) : v instanceof Array ? FixArray(v) : v)
+}
+
+export function MapToObject(map: Map<any, any>): any {
+	let obj: any = {}
+	// loop-optimizer: KEEP
+	map.forEach((v, k) => obj[k] = v instanceof Map ? MapToObject(v) : v instanceof Array ? FixArray(v) : v)
+	return obj
+}

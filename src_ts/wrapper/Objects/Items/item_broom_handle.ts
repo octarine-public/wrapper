@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_broom_handle extends Item {
-	public readonly m_pBaseEntity!: CDOTA_Item_Broom_Handle
+	public NativeEntity: Nullable<CDOTA_Item_Broom_Handle>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

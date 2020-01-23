@@ -8,8 +8,8 @@ import { FontFlags_t } from "../Enums/FontFlags_t"
 import { StringToUTF16 } from "../Utils/Utils"
 import { HeightMap, ParseHeightMap } from "../Utils/ParseVHCG"
 import Events from "../Managers/Events"
-import Game from "../Objects/GameResources/GameRules"
 import EventsSDK from "../Managers/EventsSDK"
+import GameState from "../Utils/GameState"
 
 enum CommandID {
 	SET_COLOR = 0,
@@ -440,7 +440,7 @@ try {
 	let buf = readFile(`maps/${map_name}.vhcg`)
 	if (buf !== undefined) {
 		RendererSDK.HeightMap = ParseHeightMap(buf)
-		Game.MapName = last_loaded_map_name = map_name
+		GameState.MapName = last_loaded_map_name = map_name
 	}
 } catch (e) {
 	console.log("Error in RendererSDK.HeightMap static init: " + e)
@@ -468,7 +468,7 @@ Events.on("PostAddSearchPath", path => {
 
 	try {
 		RendererSDK.HeightMap = ParseHeightMap(buf)
-		Game.MapName = last_loaded_map_name = map_name
+		GameState.MapName = last_loaded_map_name = map_name
 	} catch (e) {
 		console.log("Error in RendererSDK.HeightMap dynamic init: " + e)
 		RendererSDK.HeightMap = undefined

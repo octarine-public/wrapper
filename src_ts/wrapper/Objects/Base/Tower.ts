@@ -3,15 +3,17 @@ import Building from "./Building"
 import Unit from "./Unit"
 
 export default class Tower extends Building {
-	public readonly m_pBaseEntity!: C_DOTA_BaseNPC_Tower
+	public NativeEntity: Nullable<C_DOTA_BaseNPC_Tower>
+	public TowerAttackTarget_ = 0
 
-	get IsTower(): boolean {
-		return true
+	public get TowerAttackTarget(): Nullable<Unit> {
+		return EntityManager.EntityByIndex(this.TowerAttackTarget_) as Nullable<Unit>
 	}
-	get TowerAttackTarget(): Unit {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hTowerAttackTarget) as Unit
+	public get IsDeniable(): boolean {
+		return super.IsDeniable || this.HPPercent <= 10
 	}
 }
 
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTA_BaseNPC_Tower", Tower)
+RegisterFieldHandler(Tower, "m_hTowerAttackTarget", (tower, new_value) => tower.TowerAttackTarget_ = new_value as number)

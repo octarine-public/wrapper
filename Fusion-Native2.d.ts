@@ -171,6 +171,7 @@ declare function hrtime(): number
 declare function AddSearchPath(path: string): boolean
 declare function RemoveSearchPath(path: string): boolean
 declare function HashToPath(hash: bigint): string | undefined
+declare function UnitNameIndexToString(index: number): string | undefined
 
 /// AUTOMATICALLY GENERATED
 

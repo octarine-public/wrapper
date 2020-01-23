@@ -1,4 +1,4 @@
-import { Game, Hero, LocalPlayer, Vector3 } from "wrapper/Imports"
+import { GameRules, GameState, Hero, LocalPlayer, Vector3 } from "wrapper/Imports"
 
 import { AddOrUpdateParticle, RemoveParticle } from "../../base/DrawParticle"
 import { stateMain } from "../../base/MenuBase"
@@ -23,12 +23,12 @@ export const BestPosition = [
 export function DrawParticles() {
 	if (
 		particles.length > 0
-		|| Game.MapName.startsWith("hero_demo")
+		|| GameState.MapName.startsWith("hero_demo")
 		|| !stateMain.value
 		|| !State.value
 		|| !DrawState.value
 		|| !DrawHelpPosition.value
-		|| !Game.IsInGame
+		|| !GameRules?.IsInGame
 	)
 		return
 

@@ -1,4 +1,4 @@
-import { Game, Hero, ArrayExtensions, PingType_t, Entity, Vector3, LocalPlayer, Color, RendererSDK, EntityManager, EventsSDK } from "wrapper/Imports"
+import { GameRules, Hero, ArrayExtensions, PingType_t, Entity, Vector3, LocalPlayer, Color, RendererSDK, EntityManager, EventsSDK, GameState } from "wrapper/Imports"
 import { Interval_val, State, HeroesList, DebugPing } from "./Menu"
 let Sleep = 0
 let Heroes: Hero[] = []
@@ -7,10 +7,10 @@ let Pos = new Vector3()
 export function Tick() {
 	if (!State.value || LocalPlayer!.Hero === undefined)
 		return
+	let Timer = GameRules?.RawGameTime ?? 0
 	Heroes.some(x => {
 		if (x.IsEnemy() || x === LocalPlayer!.Hero)
 			return false
-		let Timer = Game.RawGameTime
 		if (!HeroPing(x)) {
 			if (DebugPing.value)
 				Pos = new Vector3()
@@ -20,7 +20,7 @@ export function Tick() {
 			return false
 		if (DebugPing.value) {
 			Pos = x.Position
-			Game.ExecuteCommand("playvol ui/ping " + (1 / 200))
+			GameState.ExecuteCommand("playvol ui/ping " + (1 / 200))
 		}
 		x.Position.toIOBuffer()
 		Minimap.SendPing(PingType_t.NORMAL, false, x.Index)
@@ -32,7 +32,8 @@ export function Tick() {
 export function Draw() {
 	if (!State.value || !DebugPing.value || Pos.IsZero() || LocalPlayer?.IsSpectator)
 		return
-	RendererSDK.DrawMiniMapPing(Pos, Color.Green, Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration"))
+	let time = GameRules?.RawGameTime ?? 0
+	RendererSDK.DrawMiniMapPing(Pos, Color.Green, time + ConVars.GetInt("dota_minimap_ping_duration"))
 }
 
 function HeroPing(hero: Hero) {

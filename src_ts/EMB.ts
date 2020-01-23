@@ -1,4 +1,4 @@
-import { Color, EventsSDK, Hero, Game, LocalPlayer, Menu, RendererSDK, Vector2, DOTAGameUIState_t, EntityManager, Utils, Parse } from "wrapper/Imports"
+import { Color, EventsSDK, GameRules, Hero, LocalPlayer, Menu, RendererSDK, Vector2, DOTAGameUIState_t, EntityManager, Utils, Parse, GameState } from "wrapper/Imports"
 
 const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"])
 const stateMain = EMBMenu.AddToggle("State", true)
@@ -35,7 +35,7 @@ function ShowNumber(selector: Menu.Switcher, num: number, max_num: number) {
 }
 
 EventsSDK.on("Draw", () => {
-	if (LocalPlayer === undefined || !stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator)
+	if (LocalPlayer === undefined || !stateMain.value || !GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator)
 		return false
 	let screen_size = RendererSDK.WindowSize
 	if (screen_size.x === 1280 && screen_size.y === 1024)

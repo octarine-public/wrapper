@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_mithril_hammer extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_MithrilHammer
+	public NativeEntity: Nullable<C_DOTA_Item_MithrilHammer>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

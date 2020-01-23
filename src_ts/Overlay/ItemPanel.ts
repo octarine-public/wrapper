@@ -1,7 +1,7 @@
 import {
-	Color, EventsSDK, Game,
+	Color, EventsSDK, GameRules,
 	Hero, Input, Item, LocalPlayer, Menu as MenuSDK,
-	Rectangle, RendererSDK, Vector2, VMouseKeys, DOTAGameUIState_t, npc_dota_hero_meepo, EntityManager,
+	Rectangle, RendererSDK, Vector2, VMouseKeys, DOTAGameUIState_t, npc_dota_hero_meepo, EntityManager, GameState,
 } from "wrapper/Imports"
 
 // ["Visual", "Overlay", "Item Panel"]
@@ -173,7 +173,7 @@ function DrawCoolDown(position: Vector2, itemCoolDown: string, isTP = false) {
 
 EventsSDK.on("Draw", () => {
 
-	if (!menuEnable.value || !toggledByKey || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!menuEnable.value || !toggledByKey || !GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 
 	if (LocalPlayer === undefined || (!panelSettingsSpectator.value && LocalPlayer.IsSpectator))

@@ -17,6 +17,7 @@
 		"watch": "npx babel --watch src_ts --extensions \".ts\" --out-dir scripts",
 		"build": "npx babel src_ts --extensions \".ts\" --out-dir scripts",
 		"check-types": "npx tsc",
+		"check-circular": "npx madge --circular scripts/wrapper",
 		"lint": "npx tslint --fix 'src_ts/**/*.ts'"
 	},
 	"contributors": [

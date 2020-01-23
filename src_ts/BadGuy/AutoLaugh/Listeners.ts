@@ -1,13 +1,13 @@
-import { Game, LocalPlayer } from "wrapper/Imports"
+import { GameRules, LocalPlayer, GameState } from "wrapper/Imports"
 import { Interval, State } from "./Menu"
 let Sleep = 0
 export function Tick() {
 	if (!State.value || LocalPlayer!.Hero === undefined)
 		return
 
-	let Timer = Game.RawGameTime
+	let Timer = GameRules?.RawGameTime ?? 0
 	if (Timer >= Sleep && LocalPlayer!.Hero.IsAlive) {
-		Game.ExecuteCommand("say /laugh")
+		GameState.ExecuteCommand("say /laugh")
 		Sleep = Timer + Interval.value
 	}
 }

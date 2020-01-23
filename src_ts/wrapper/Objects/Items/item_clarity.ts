@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_clarity extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_Clarity
+	public NativeEntity: Nullable<C_DOTA_Item_Clarity>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

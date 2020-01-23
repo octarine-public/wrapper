@@ -1,5 +1,5 @@
 
-import { Game, LocalPlayer, RendererSDK, Team, Unit, Vector2, FontFlags_t } from "wrapper/Imports"
+import { GameRules, LocalPlayer, RendererSDK, Team, Unit, Vector2, FontFlags_t, Hero, Creep, Building } from "wrapper/Imports"
 import ManagerBase from "../../../abstract/Base"
 import {
 	DrawTextColor,
@@ -62,19 +62,19 @@ function SelectedBuilding(x: Unit) {
 export function DrawGlyph() {
 	if (GlyphState.value) {
 		Units.forEach(x => {
-			if (x.IsHero)
+			if (x instanceof Hero)
 				return
 			switch (GlyphSwitcher.selected_id) {
 				case 0: return SelectedBuilding(x)
-				case 1: return x.IsLaneCreep && SelectedBuilding(x)
-				case 2: return x.IsBuilding && SelectedBuilding(x)
+				case 1: return x instanceof Creep && x.IsLaneCreep && SelectedBuilding(x)
+				case 2: return x instanceof Building && SelectedBuilding(x)
 			}
 		})
 		if (DrawTimerGlyphState.value && LocalPlayer !== undefined)
 			Base.DrawTimer(
 				LocalPlayer.Team !== Team.Radiant
-					? Game.GlyphCooldownRediant
-					: Game.GlyphCooldownDire,
+					? (GameRules?.GlyphCooldownRadiant ?? 0)
+					: (GameRules?.GlyphCooldownDire ?? 0),
 				DrawTimerGlyphX,
 				DrawTimerGlyphY,
 				DrawTimerGlyphSize,

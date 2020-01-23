@@ -1,11 +1,11 @@
 import Ability from "./Ability"
 import Entity from "./Entity"
 import Unit from "./Unit"
-import Game from "../GameResources/GameRules"
+import { GameRules } from "../Base/GameRules"
 import { IModifier } from "../../Managers/ModifierManager"
 import * as StringTables from "../../Managers/StringTables"
 import Vector3 from "../../Base/Vector3"
-import { ServerHandleToEntity } from "../../Utils/ParseProtobuf"
+import EntityManager from "../../Managers/EntityManager"
 
 // AllowIllusionDuplicate
 // CanParentBeAutoAttacked
@@ -74,8 +74,8 @@ export default class Modifier {
 		this.AbilityLevel = this.m_pBuff.AbilityLevel as number
 		this.IsAura = this.m_pBuff.IsAura as boolean
 
-		this.Caster_ = ServerHandleToEntity(this.m_pBuff.Caster)
-		this.AuraOwner_ = ServerHandleToEntity(this.m_pBuff.AuraOwner)
+		this.Caster_ = EntityManager.EntityByIndex(this.m_pBuff.Caster)
+		this.AuraOwner_ = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner)
 	}
 
 	public get Attributes(): DOTAModifierAttribute_t {
@@ -91,11 +91,11 @@ export default class Modifier {
 		return this.m_pBuff.Duration
 	}
 	public get ElapsedTime(): number {
-		return Math.max(Game.RawGameTime - this.CreationTime, 0)
+		return Math.max((GameRules?.RawGameTime ?? 0) - this.CreationTime, 0)
 	}
 	public get Parent(): Nullable<Unit> {
 		if (this.Parent_ === undefined) {
-			let ent = ServerHandleToEntity(this.m_pBuff.Parent)
+			let ent = EntityManager.EntityByIndex(this.m_pBuff.Parent)
 			if (ent !== undefined && ent instanceof Unit)
 				this.Parent_ = ent
 		}
@@ -103,21 +103,21 @@ export default class Modifier {
 	}
 	public get Ability(): Ability {
 		if (this.Ability_ === undefined)
-			this.Ability_ = ServerHandleToEntity(this.m_pBuff.Ability) as Ability
+			this.Ability_ = EntityManager.EntityByIndex(this.m_pBuff.Ability) as Ability
 		return this.Ability_
 	}
 	public get Caster(): Nullable<Entity> {
 		if (this.Caster_ === undefined)
-			this.Caster_ = ServerHandleToEntity(this.m_pBuff.Caster)
+			this.Caster_ = EntityManager.EntityByIndex(this.m_pBuff.Caster)
 		return this.Caster_
 	}
 	public get AuraOwner(): Nullable<Entity> {
 		if (this.AuraOwner_ === undefined)
-			this.AuraOwner_ = ServerHandleToEntity(this.m_pBuff.AuraOwner)
+			this.AuraOwner_ = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner)
 		return this.AuraOwner_
 	}
 	public get RemainingTime(): number {
-		return Math.max(this.DieTime - Game.RawGameTime, 0)
+		return Math.max(this.DieTime - (GameRules?.RawGameTime ?? 0), 0)
 	}
 	public get StackCount(): number {
 		return this.m_pBuff.StackCount ?? 0

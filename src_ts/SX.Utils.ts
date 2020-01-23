@@ -1,4 +1,4 @@
-import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, TickSleeper, Color, RendererSDK, Vector2, Input } from "wrapper/Imports"
+import { EventsSDK, GameRules, GameState, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, TickSleeper, Color, RendererSDK, Vector2, Input } from "wrapper/Imports"
 declare global {
 	var clear: CallableFunction
 }
@@ -19,16 +19,16 @@ const mouse_color = DrawMosePosTree.AddColorPicker("R-Color", new Color(90, 255,
 const mouse_size = DrawMosePosTree.AddSlider("Size", 19, 12, 64)
 
 color_r.OnValue(call => {
-	Game.ExecuteCommand("dota_enemy_color_r " + call.value)
+	GameState.ExecuteCommand("dota_enemy_color_r " + call.value)
 })
 color_g.OnValue(call => {
-	Game.ExecuteCommand("dota_enemy_color_g " + call.value)
+	GameState.ExecuteCommand("dota_enemy_color_g " + call.value)
 })
 color_b.OnValue(call => {
-	Game.ExecuteCommand("dota_enemy_color_b " + call.value)
+	GameState.ExecuteCommand("dota_enemy_color_b " + call.value)
 })
 range_display.OnValue(call => {
-	Game.ExecuteCommand("dota_range_display " + call.value)
+	GameState.ExecuteCommand("dota_range_display " + call.value)
 })
 
 const Server_log = "dota_log_server_connection"
@@ -57,23 +57,23 @@ let Sleep = new TickSleeper()
 
 let prees = false
 Menu.AddKeybind("Full sven").OnRelease(() => {
-	Game.ExecuteCommand("dota_create_unit npc_dota_hero_sven enemy")
+	GameState.ExecuteCommand("dota_create_unit npc_dota_hero_sven enemy")
 	prees = true
-	Sleep.Sleep(1000 + Game.Ping / 2)
+	Sleep.Sleep(1000 + GameState.Ping / 2)
 })
 
 State.OnDeactivate(() => {
 	// if (ConVars.GetInt(draw_selection_boxes) !== 0)
-	// 	Game.ExecuteCommand(draw_selection_boxes + " 0")
+	// 	GameState.ExecuteCommand(draw_selection_boxes + " 0")
 
 	if (ConVars.GetInt(draw_collision_radius) !== 0)
-		Game.ExecuteCommand(draw_collision_radius + " 0")
+		GameState.ExecuteCommand(draw_collision_radius + " 0")
 
 	if (ConVars.GetInt(draw__bounding_radius) !== 0)
-		Game.ExecuteCommand(draw__bounding_radius + " 0")
+		GameState.ExecuteCommand(draw__bounding_radius + " 0")
 
 	if (ConVars.GetInt(draw_path) !== 0)
-		Game.ExecuteCommand(draw_path + " 0")
+		GameState.ExecuteCommand(draw_path + " 0")
 })
 
 EventsSDK.on("Tick", () => {
@@ -82,45 +82,45 @@ EventsSDK.on("Tick", () => {
 
 	if (prees) {
 		for (var i = 6; i--;)
-			Game.ExecuteCommand("dota_bot_give_item item_heart")
-		Game.ExecuteCommand("dota_bot_give_level 30")
+			GameState.ExecuteCommand("dota_bot_give_item item_heart")
+		GameState.ExecuteCommand("dota_bot_give_level 30")
 		if (!Sleep.Sleeping)
 			prees = false
 	}
 
 	if (ConVars.GetInt(Server_log) === 1)
-		Game.ExecuteCommand(Server_log + " 0")
+		GameState.ExecuteCommand(Server_log + " 0")
 
 	if (ConVars.GetInt(draw_path_short) === 1)
-		Game.ExecuteCommand(Server_log + " 0")
+		GameState.ExecuteCommand(Server_log + " 0")
 
 	// if (ConVars.GetInt(draw_selection_boxes) !== 1)
-	// 	Game.ExecuteCommand(draw_selection_boxes + " 1")
+	// 	GameState.ExecuteCommand(draw_selection_boxes + " 1")
 
 	if (ConVars.GetInt(draw_collision_radius) !== 1)
-		Game.ExecuteCommand(draw_collision_radius + " 1")
+		GameState.ExecuteCommand(draw_collision_radius + " 1")
 
 	if (ConVars.GetInt(draw__bounding_radius) !== 1)
-		Game.ExecuteCommand(draw__bounding_radius + " 1")
+		GameState.ExecuteCommand(draw__bounding_radius + " 1")
 
 	if (ConVars.GetInt(draw_path) !== 1)
-		Game.ExecuteCommand(draw_path + " 1")
+		GameState.ExecuteCommand(draw_path + " 1")
 
 	if (ConVars.GetInt(cl_cmdrate) === 30)
-		Game.ExecuteCommand(cl_cmdrate + " 40")
+		GameState.ExecuteCommand(cl_cmdrate + " 40")
 
 	if (ConVars.GetInt(cl_updaterate) === 30)
-		Game.ExecuteCommand(cl_updaterate + " 40")
+		GameState.ExecuteCommand(cl_updaterate + " 40")
 
 	if (ConVars.GetInt(auto_pause_disconnect) === 30)
-		Game.ExecuteCommand(auto_pause_disconnect + " 3")
+		GameState.ExecuteCommand(auto_pause_disconnect + " 3")
 
-	if (StateAutoDisconnect.value && Game.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_POST_GAME)
-		Game.ExecuteCommand("disconnect")
+	if (StateAutoDisconnect.value && GameRules?.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_POST_GAME)
+		GameState.ExecuteCommand("disconnect")
 })
 
 EventsSDK.on("Draw", () => {
-	if (!State.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || !DrawMosePos.value)
+	if (!State.value || !GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || !DrawMosePos.value)
 		return
 	let MousePosition = Input.CursorOnWorld
 	if (MousePosition.IsZero())

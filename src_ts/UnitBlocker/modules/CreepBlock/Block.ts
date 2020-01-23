@@ -1,4 +1,4 @@
-import { ArrayExtensions, Creep, Game, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit, Tower, EntityManager } from "wrapper/Imports"
+import { ArrayExtensions, Creep, GameState, GameSleeper, LocalPlayer, Menu, RendererSDK, Unit, Tower, EntityManager } from "wrapper/Imports"
 import { stateMain } from "../../base/MenuBase"
 
 import {
@@ -48,7 +48,7 @@ Key.OnPressed(() => {
 		ControllablesUnitsDraw.clear()
 
 	if (KeyStyle.selected_id === 1)
-		Game.ExecuteCommand((turnStateBlock ? "+" : "-") + "dota_camera_center_on_hero")
+		GameState.ExecuteCommand((turnStateBlock ? "+" : "-") + "dota_camera_center_on_hero")
 })
 
 Key.OnValue(caller => {
@@ -56,7 +56,7 @@ Key.OnValue(caller => {
 	if (!CenterCamera.value || StateUnits.selected_id !== 0 || KeyStyle.selected_id !== 0)
 		return
 
-	Game.ExecuteCommand((isPressed ? "+" : "-") + "dota_camera_center_on_hero")
+	GameState.ExecuteCommand((isPressed ? "+" : "-") + "dota_camera_center_on_hero")
 
 	if (!isPressed)
 		ControllablesUnitsDraw.clear()

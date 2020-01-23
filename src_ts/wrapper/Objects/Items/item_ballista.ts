@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_ballista extends Item {
-	public readonly m_pBaseEntity!: CDOTA_Item_Ballista
+	public NativeEntity: Nullable<CDOTA_Item_Ballista>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

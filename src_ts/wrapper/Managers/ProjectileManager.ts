@@ -6,8 +6,10 @@ import Events from "./Events"
 import EventsSDK from "./EventsSDK"
 import Color from "../Base/Color"
 import RendererSDK from "../Native/RendererSDK"
-import Game from "../Objects/GameResources/GameRules"
-import { ParseProtobufDesc, ParseProtobufNamed, CMsgVectorToVector3, RecursiveProtobuf, CMsgVector2DToVector2, NumberToColor, ServerHandleToEntity, ServerHandleToIndex } from "../Utils/ParseProtobuf"
+import { GameRules } from "../Objects/Base/GameRules"
+import { ParseProtobufDesc, ParseProtobufNamed, CMsgVectorToVector3, RecursiveProtobuf, CMsgVector2DToVector2, NumberToColor, ServerHandleToIndex } from "../Utils/ParseProtobuf"
+import EntityManager from "./EntityManager"
+import GameState from "../Utils/GameState"
 
 let ProjectileManager = new (class CProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
@@ -27,7 +29,7 @@ EventsSDK.on("GameEnded", () => {
 })
 
 function TrackingProjectileCreated(projectile: TrackingProjectile) {
-	projectile.Position.Extend(projectile.TargetLoc, (Game.CurrentServerTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
+	projectile.Position.Extend(projectile.TargetLoc, (GameState.CurrentServerTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
 	EventsSDK.emit("TrackingProjectileCreated", false, projectile)
 	ProjectileManager.AllTrackingProjectiles.push(projectile)
 	ProjectileManager.AllTrackingProjectilesMap.set(projectile.ID, projectile)
@@ -42,7 +44,7 @@ function DestroyTrackingProjectile(proj: TrackingProjectile) {
 
 EventsSDK.on("Tick", () => {
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
-		let cur_time = Game.RawGameTime
+		let cur_time = GameRules!.RawGameTime
 		proj.Position.AddForThis(proj.Velocity.MultiplyScalar(cur_time - proj.LastUpdate).toVector3())
 		proj.LastUpdate = cur_time
 		proj.Position.z = RendererSDK.GetPositionHeight(proj.Position.toVector2())
@@ -51,11 +53,11 @@ EventsSDK.on("Tick", () => {
 		if (!proj.Position.IsValid)
 			if (proj.Target instanceof Entity && proj.Source instanceof Entity && !proj.IsDodged)
 				proj.Source.Position
-					.Extend(proj.TargetLoc, (Game.CurrentServerTick - proj.LaunchTick) / 30 * proj.Speed)
+					.Extend(proj.TargetLoc, (GameState.CurrentServerTick - proj.LaunchTick) / 30 * proj.Speed)
 					.CopyTo(proj.Position)
 			else
 				return
-		let cur_time = Game.RawGameTime
+		let cur_time = GameRules!.RawGameTime
 		proj.Position.Extend(proj.TargetLoc, proj.Speed * (cur_time - proj.LastUpdate)).CopyTo(proj.Position)
 		proj.LastUpdate = cur_time
 		if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30 + (proj.Target instanceof Unit ? proj.Target.HullRadius : 0))
@@ -128,7 +130,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			let particle_system_handle = msg.get("particle_index") as bigint
 			let projectile = new LinearProjectile(
 				msg.get("handle") as number,
-				ServerHandleToEntity(msg.get("entindex") as number),
+				EntityManager.EntityByIndex(msg.get("entindex") as number),
 				(particle_system_handle !== undefined ? HashToPath(particle_system_handle) : undefined)!,
 				particle_system_handle ?? 0,
 				msg.get("max_speed") as number,
@@ -158,7 +160,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 		case 473: {
 			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_DodgeTrackingProjectiles")
 			let handle = msg.get("entindex") as number
-			let ent = ServerHandleToEntity(handle)
+			let ent = EntityManager.EntityByIndex(handle)
 			EventsSDK.emit("TrackingProjectilesDodged", false, ent ?? ServerHandleToIndex(handle))
 			if (ent === undefined)
 				break
@@ -175,8 +177,8 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			let particle_system_handle = msg.get("particleSystemHandle") as bigint
 			let projectile = new TrackingProjectile(
 				msg.get("handle") as number,
-				ServerHandleToEntity(msg.get("hSource") as number),
-				ServerHandleToEntity(msg.get("hTarget") as number),
+				EntityManager.EntityByIndex(msg.get("hSource") as number),
+				EntityManager.EntityByIndex(msg.get("hTarget") as number),
 				msg.get("moveSpeed") as number,
 				msg.get("sourceAttachment") as number,
 				(particle_system_handle !== undefined ? HashToPath(particle_system_handle) : undefined)!,
@@ -195,7 +197,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 		}
 		case 519: {
 			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_ProjectileLoc")
-			let target = ServerHandleToEntity(msg.get("hTarget") as number)
+			let target = EntityManager.EntityByIndex(msg.get("hTarget") as number)
 			let handle = msg.get("handle") as number,
 				launch_tick = msg.get("launch_tick") as number,
 				expire_time = msg.get("expireTime") as number,

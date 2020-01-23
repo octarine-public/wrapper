@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_spider_legs extends Item {
-	public readonly m_pBaseEntity!: CDOTA_Item_Spider_Legs
+	public NativeEntity: Nullable<CDOTA_Item_Spider_Legs>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

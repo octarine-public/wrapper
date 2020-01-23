@@ -1,7 +1,7 @@
 import Item from "../Base/Item"
 
 export default class item_sange_and_yasha extends Item {
-	public readonly m_pBaseEntity!: C_DOTA_Item_SangeAndYasha
+	public NativeEntity: Nullable<C_DOTA_Item_SangeAndYasha>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

@@ -1,28 +1,41 @@
 import EntityManager from "../../Managers/EntityManager"
-import Game from "../../Objects/GameResources/GameRules"
+import { GameRules } from "../../Objects/Base/GameRules"
 import Ability from "./Ability"
 import Entity from "./Entity"
 import Player from "./Player"
 
 export default class Item extends Ability {
-	public readonly m_pBaseEntity!: C_DOTA_Item
-
-	public EnableTime = this.m_pBaseEntity.m_flEnableTime
-	public Shareability: EShareAbility = this.m_pBaseEntity.m_iSharability
-	public CurrentCharges = this.m_pBaseEntity.m_iCurrentCharges
+	public NativeEntity: Nullable<C_DOTA_Item>
+	public EnableTime = 0
+	public Shareability = EShareAbility.ITEM_NOT_SHAREABLE
+	public CurrentCharges = 0
+	public IsDroppable = true
+	public AssembledTime = 0
+	public CanBeUsedOutOfInventory = false
+	public InitialCharges = 0
+	public IsAlertable = true
+	public IsCastedOnPickup = false
+	public IsCombinable = true
+	public IsCombineLocked = false
+	public IsDisassemblable = false
+	public IsKillable = false
+	public IsPermanent = false
+	public IsPurchasable = true
+	public IsPurchasedWhileDead = false
+	public IsRecipe = false
+	public RequiresCharges = false
+	public IsSellable = true
+	public IsStackable = false
+	public PurchaserID = -1
+	public PurchaseTime = 0
+	public SecondaryCharges = 0
 
 	get IsReady(): boolean {
 		const unit = this.Owner
 		return this.IsCooldownReady && this.Level !== 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsMuted))
 	}
 	get IsMuted(): boolean {
-		return this.EnableTime !== 0 && this.EnableTime > Game.RawGameTime
-	}
-	get AssembledTime(): number {
-		return this.m_pBaseEntity.m_flAssembledTime
-	}
-	get CanBeUsedOutOfInventory(): boolean {
-		return this.m_pBaseEntity.m_bCanBeUsedOutOfInventory
+		return this.EnableTime !== 0 && this.EnableTime > GameRules!.RawGameTime
 	}
 	get Cost(): number {
 		return this.AbilityData.Cost
@@ -30,76 +43,19 @@ export default class Item extends Ability {
 	get EffectName(): string {
 		return this.AbilityData.EffectName
 	}
-	get InitialCharges(): number {
-		return this.m_pBaseEntity.m_iInitialCharges
-	}
-	get IsAlertable(): boolean {
-		return this.m_pBaseEntity.m_bAlertable
-	}
-	get IsCastedOnPickup(): boolean {
-		return this.m_pBaseEntity.m_bCastOnPickup
-	}
-	get IsCombinable(): boolean {
-		return this.m_pBaseEntity.m_bCombinable
-	}
-	get IsCombineLocked(): boolean {
-		return this.m_pBaseEntity.m_bCombineLocked
-	}
-	get IsDisassemblable(): boolean {
-		return this.m_pBaseEntity.m_bDisassemblable
-	}
 	get IsDisplayingCharges(): boolean {
-		return this.m_pBaseEntity.m_bDisplayCharges
-	}
-	get IsDroppable(): boolean {
-		return this.m_pBaseEntity.m_bDroppable
+		return this.AbilityData.ItemDisplayCharges
 	}
 	get IsHidingCharges(): boolean {
-		return this.m_pBaseEntity.m_bHideCharges
+		return this.AbilityData.ItemHideCharges
 	}
-	get IsKillable(): boolean {
-		return this.m_pBaseEntity.m_bKillable
-	}
-	get IsPermanent(): boolean {
-		return this.m_pBaseEntity.m_bPermanent
-	}
-	get IsPurchasable(): boolean {
-		return this.m_pBaseEntity.m_bPurchasable
-	}
-	get IsPurchasedWhileDead(): boolean {
-		return this.m_pBaseEntity.m_bPurchasedWhileDead
-	}
-	get IsRecipe(): boolean {
-		return this.m_pBaseEntity.m_bRecipe
-	}
-	get RequiresCharges(): boolean {
-		return this.m_pBaseEntity.m_bRequiresCharges
-	}
-	get IsSellable(): boolean {
-		return this.m_pBaseEntity.m_bSellable
-	}
-	get IsStackable(): boolean {
-		return this.m_pBaseEntity.m_bStackable
-	}
-	/*get ItemRecipeName(): string {
-		return this.AbilityData.ItemRecipeName
-	}*/
-	get ModelName(): string {
+	public get ModelName(): string {
 		return this.AbilityData.ModelName
 	}
-	get OldOwner(): Nullable<Entity> {
-		return EntityManager.GetEntityByNative(this.m_pBaseEntity.m_hOldOwnerEntity)
+	public get OldOwner(): Nullable<Entity> {
+		return EntityManager.GetEntityByNative(this.NativeEntity?.m_hOldOwnerEntity ?? 0)
 	}
-	get PurchaserID(): number {
-		return this.m_pBaseEntity.m_iPlayerOwnerID
-	}
-	get PurchaseTime(): number {
-		return this.m_pBaseEntity.m_flPurchaseTime
-	}
-	get SecondaryCharges(): number {
-		return this.m_pBaseEntity.m_iSecondaryCharges
-	}
-	get ShouldDisplayCharges(): boolean {
+	public get ShouldDisplayCharges(): boolean {
 		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges
 	}
 
@@ -143,5 +99,27 @@ export default class Item extends Ability {
 	}
 }
 
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTA_Item", Item)
+RegisterFieldHandler(Item, "m_flEnableTime", (item, new_val) => item.EnableTime = new_val as number)
+RegisterFieldHandler(Item, "m_iSharability", (item, new_val) => item.Shareability = new_val as EShareAbility)
+RegisterFieldHandler(Item, "m_iCurrentCharges", (item, new_val) => item.CurrentCharges = new_val as number)
+RegisterFieldHandler(Item, "m_flAssembledTime", (item, new_val) => item.AssembledTime = new_val as number)
+RegisterFieldHandler(Item, "m_bCanBeUsedOutOfInventory", (item, new_val) => item.CanBeUsedOutOfInventory = new_val as boolean)
+RegisterFieldHandler(Item, "m_iInitialCharges", (item, new_val) => item.InitialCharges = new_val as number)
+RegisterFieldHandler(Item, "m_bAlertable", (item, new_val) => item.IsAlertable = new_val as boolean)
+RegisterFieldHandler(Item, "m_bCastOnPickup", (item, new_val) => item.IsCastedOnPickup = new_val as boolean)
+RegisterFieldHandler(Item, "m_bCombinable", (item, new_val) => item.IsCombinable = new_val as boolean)
+RegisterFieldHandler(Item, "m_bCombineLocked", (item, new_val) => item.IsCombineLocked = new_val as boolean)
+RegisterFieldHandler(Item, "m_bDisassemblable", (item, new_val) => item.IsDisassemblable = new_val as boolean)
+RegisterFieldHandler(Item, "m_bKillable", (item, new_val) => item.IsKillable = new_val as boolean)
+RegisterFieldHandler(Item, "m_bPermanent", (item, new_val) => item.IsPermanent = new_val as boolean)
+RegisterFieldHandler(Item, "m_bPurchasable", (item, new_val) => item.IsPurchasable = new_val as boolean)
+RegisterFieldHandler(Item, "m_bPurchasedWhileDead", (item, new_val) => item.IsPurchasedWhileDead = new_val as boolean)
+RegisterFieldHandler(Item, "m_bRecipe", (item, new_val) => item.IsRecipe = new_val as boolean)
+RegisterFieldHandler(Item, "m_bRequiresCharges", (item, new_val) => item.RequiresCharges = new_val as boolean)
+RegisterFieldHandler(Item, "m_bSellable", (item, new_val) => item.IsSellable = new_val as boolean)
+RegisterFieldHandler(Item, "m_bStackable", (item, new_val) => item.IsStackable = new_val as boolean)
+RegisterFieldHandler(Item, "m_iPlayerOwnerID", (item, new_val) => item.PurchaserID = new_val as number)
+RegisterFieldHandler(Item, "m_flPurchaseTime", (item, new_val) => item.PurchaseTime = new_val as number)
+RegisterFieldHandler(Item, "m_iSecondaryCharges", (item, new_val) => item.SecondaryCharges = new_val as number)

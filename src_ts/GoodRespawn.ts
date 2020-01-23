@@ -1,4 +1,4 @@
-import { Vector3, Team, Hero, pudge_meat_hook, Obstacle, Vector2, Entity, Unit, MovingObstacle, NavMeshPathfinding, Creep, GameSleeper, EventsSDK, LocalPlayer, EntityManager, Menu, RendererSDK, Color, PlayerResource, Game } from "./wrapper/Imports"
+import { Vector3, Team, Hero, pudge_meat_hook, Obstacle, Vector2, Entity, Unit, MovingObstacle, NavMeshPathfinding, Creep, GameSleeper, EventsSDK, LocalPlayer, EntityManager, Menu, RendererSDK, Color, PlayerResource, GameRules, GameState, DOTAGameUIState_t } from "./wrapper/Imports"
 
 let menu = Menu.AddEntry(["Utility", "Good Respawn"])
 let visuals_state = menu.AddToggle("Visuals State", true),
@@ -15,7 +15,7 @@ function GetPositions(): Vector3[] {
 }
 
 EventsSDK.on("Draw", () => {
-	if (!visuals_state.value)
+	if (!visuals_state.value || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || PlayerResource === undefined)
 		return
 	let positions = GetPositions(),
 		next_spawn = GetNextSpawn()
@@ -32,16 +32,16 @@ EventsSDK.on("Draw", () => {
 	let ar: number[] = []
 	for (let i = 0; i < PlayerResource.PlayerTeamData.length; i++) {
 		let team_data = PlayerResource.PlayerTeamData[i]
-		if (PlayerResource.PlayerData[i].m_iPlayerTeam === LocalPlayer?.Team)
+		if (PlayerResource.PlayerData[i].Team === LocalPlayer?.Team)
 			continue
 
-		let ent = EntityManager.GetEntityByNative(team_data.m_hSelectedHero)
+		let ent = EntityManager.EntityByIndex(team_data.SelectedHeroIndex)
 		if (!(ent instanceof Hero))
 			continue
 
-		let respawn_time = ent.RespawnTime - Game.RawGameTime
+		let respawn_time = ent.RespawnTime - GameRules!.RawGameTime
 		if (respawn_time <= 0)
-			respawn_time = team_data.m_iRespawnSeconds
+			respawn_time = team_data.RespawnSeconds
 		if (respawn_time <= 0)
 			continue
 
@@ -59,36 +59,36 @@ EventsSDK.on("Draw", () => {
 
 function GetEnemyDeaths() {
 	let deaths = 0
-	for (let i = 0; i < PlayerResource.PlayerData.length; i++) {
-		let team_data = PlayerResource.PlayerTeamData[i]
-		if (team_data !== undefined && PlayerResource.PlayerData[i].m_iPlayerTeam !== LocalPlayer?.Team)
-			deaths += team_data.m_iDeaths
+	for (let i = 0; i < PlayerResource!.PlayerData.length; i++) {
+		let team_data = PlayerResource!.PlayerTeamData[i]
+		if (team_data !== undefined && PlayerResource!.PlayerData[i].Team !== LocalPlayer?.Team)
+			deaths += team_data.Deaths
 	}
 	return deaths
 }
 function GetNextSpawn() {
-	return manual_fix.value + 4 + PlayerResource.PlayerData.filter(data => data.m_iPlayerTeam !== LocalPlayer?.Team).length + GetEnemyDeaths()
+	return manual_fix.value + 4 + PlayerResource!.PlayerData.filter(data => data.Team !== LocalPlayer?.Team).length + GetEnemyDeaths()
 }
 
 let hook_sleeper = new GameSleeper()
 EventsSDK.on("Tick", () => {
-	if (!autohook_state.value)
+	if (!autohook_state.value || PlayerResource === undefined)
 		return
 	let positions = GetPositions(),
 		next_spawn = GetNextSpawn()
 	let ar: [number, Hero][] = []
 	for (let i = 0; i < PlayerResource.PlayerTeamData.length; i++) {
 		let team_data = PlayerResource.PlayerTeamData[i]
-		if (PlayerResource.PlayerData[i].m_iPlayerTeam === LocalPlayer?.Team)
+		if (PlayerResource.PlayerData[i].Team === LocalPlayer?.Team)
 			continue
 
-		let ent = EntityManager.GetEntityByNative(team_data.m_hSelectedHero)
+		let ent = EntityManager.EntityByIndex(team_data.SelectedHeroIndex)
 		if (!(ent instanceof Hero))
 			continue
 
-		let respawn_time = ent.RespawnTime - Game.RawGameTime
+		let respawn_time = ent.RespawnTime - GameRules!.RawGameTime
 		if (respawn_time <= 0)
-			respawn_time = team_data.m_iRespawnSeconds
+			respawn_time = team_data.RespawnSeconds
 		if (respawn_time <= 0)
 			continue
 
@@ -129,14 +129,14 @@ EventsSDK.on("Tick", () => {
 					hook.CastRange / hook.Speed,
 				),
 				[...obs2ent.keys()],
-				hook.CastPoint + unit.TurnTime(pos) + (autohook_delay.value / 60) + (Game.Ping / 2000),
+				hook.CastPoint + unit.TurnTime(pos) + (autohook_delay.value / 60) + (GameState.Ping / 2000),
 			).GetFirstHitObstacle()
-			if (predict_res === undefined || predict_res[0] !== target_obs || respawn_time > predict_res[1] - (Game.Ping / 2000))
+			if (predict_res === undefined || predict_res[0] !== target_obs || respawn_time > predict_res[1] - (GameState.Ping / 2000))
 				return false
 			unit.CastPosition(hook, unit.Position.Extend(pos, hook.CastRange / 1.5))
-			hook_sleeper.Sleep((Game.Ping / 2) + (hook.CastPoint * 1000), unit)
+			hook_sleeper.Sleep((GameState.Ping / 2) + (hook.CastPoint * 1000), unit)
 			if (lock_position.value)
-				hook_sleeper.Sleep((Game.Ping / 2) + (hook.CastPoint * 1000), pos.LengthSqr)
+				hook_sleeper.Sleep((GameState.Ping / 2) + (hook.CastPoint * 1000), pos.LengthSqr)
 			return true
 		})
 	})

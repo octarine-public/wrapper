@@ -3,8 +3,6 @@ import { Utf8ArrayToStr } from "../Utils/Utils"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
 import Color from "../Base/Color"
-import Entity from "../Objects/Base/Entity"
-import EntityManager from "../Managers/EntityManager"
 
 export enum ProtoType {
 	// 0 is reserved for errors.
@@ -89,19 +87,17 @@ function ParseField(field: ProtoFieldDescription, value: ArrayBuffer | bigint): 
 			return value !== 0n
 		case ProtoType.TYPE_ENUM:
 		case ProtoType.TYPE_INT32:
-		case ProtoType.TYPE_SFIXED32: {
+		case ProtoType.TYPE_SFIXED32:
 			if (value instanceof ArrayBuffer)
 				throw "Invalid proto [2]"
 			convert_uint64[0] = value
-			return Number(convert_int32[0])
-		}
+			return convert_int32[0]
 		case ProtoType.TYPE_INT64:
-		case ProtoType.TYPE_SFIXED64: {
+		case ProtoType.TYPE_SFIXED64:
 			if (value instanceof ArrayBuffer)
 				throw "Invalid proto [2]"
 			convert_uint64[0] = value
 			return convert_int64[0]
-		}
 		case ProtoType.TYPE_SINT32:
 			if (value instanceof ArrayBuffer || value > 0xFFFFFFFFn)
 				throw "Invalid proto [3]"
@@ -113,7 +109,8 @@ function ParseField(field: ProtoFieldDescription, value: ArrayBuffer | bigint): 
 		case ProtoType.TYPE_FIXED32: case ProtoType.TYPE_UINT32:
 			if (value instanceof ArrayBuffer || value > 0xFFFFFFFFn)
 				throw "Invalid proto [5]"
-			return Number(value)
+			convert_uint64[0] = value
+			return convert_uint32[0]
 		case ProtoType.TYPE_FIXED64: case ProtoType.TYPE_UINT64:
 			if (value instanceof ArrayBuffer)
 				throw "Invalid proto [6]"
@@ -121,18 +118,17 @@ function ParseField(field: ProtoFieldDescription, value: ArrayBuffer | bigint): 
 		case ProtoType.TYPE_FLOAT:
 			if (value instanceof ArrayBuffer || value > 0xFFFFFFFFn)
 				throw "Invalid proto [7]"
-			convert_uint32[0] = Number(value)
+			convert_uint64[0] = value
 			return convert_float32[0]
 		case ProtoType.TYPE_DOUBLE:
 			if (value instanceof ArrayBuffer)
 				throw "Invalid proto [8]"
 			convert_int64[0] = value
 			return convert_float64[0]
-		case ProtoType.TYPE_MESSAGE: {
+		case ProtoType.TYPE_MESSAGE:
 			if (!(value instanceof ArrayBuffer))
 				throw "Invalid proto [9]"
 			return ParseProtobuf(value, field.proto_desc!)
-		}
 		case ProtoType.TYPE_STRING: case ProtoType.TYPE_BYTES:
 			if (!(value instanceof ArrayBuffer))
 				throw "Invalid proto [10]"
@@ -161,7 +157,7 @@ function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): Map<number
 			case ProtoType.TYPE_FIXED64: // 64-bit: fixed64, sfixed64, double
 			case ProtoType.TYPE_SFIXED64:
 			case ProtoType.TYPE_DOUBLE:
-				value2 = stream.ReadNumber(8)
+				value2 = stream.ReadBigInt(8)
 				break
 			case ProtoType.TYPE_STRING: // Length-delimited: string, bytes, embedded messages
 			case ProtoType.TYPE_BYTES:
@@ -173,7 +169,7 @@ function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): Map<number
 			case ProtoType.TYPE_FIXED32: // 32-bit: fixed32, sfixed32, float32
 			case ProtoType.TYPE_SFIXED32:
 			case ProtoType.TYPE_FLOAT:
-				value2 = stream.ReadNumber(4)
+				value2 = stream.ReadBigInt(4)
 				break
 		}
 		repeated_map.set(repeated_map.size, ParseField(field, value2))
@@ -215,7 +211,7 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 				value = stream.ReadVarUint()
 				break
 			case 1: // 64-bit: fixed64, sfixed64, double
-				value = stream.ReadNumber(8)
+				value = stream.ReadBigInt(8)
 				break
 			case 2: // Length-delimited: string, bytes, embedded messages, packed repeated fields
 				value = stream.ReadSlice(Number(stream.ReadVarUint()))
@@ -224,7 +220,7 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 			case 4: // end group
 				throw "Groups are deprecated"
 			case 5: // 32-bit: fixed32, sfixed32, float32
-				value = stream.ReadNumber(4)
+				value = stream.ReadBigInt(4)
 				break
 			default:
 				throw `Unknown wire type ${wire_type}`
@@ -484,9 +480,4 @@ export function ServerHandleToIndex(handle: Nullable<number>): number {
 	if (handle === 0x3FFF || handle === 0)
 		return -1
 	return handle
-}
-
-export function ServerHandleToEntity(handle: Nullable<number>): Nullable<Entity> {
-	let index = ServerHandleToIndex(handle)
-	return index !== -1 ? EntityManager.EntityByIndex(index) : undefined
 }

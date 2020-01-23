@@ -1,13 +1,13 @@
 import Entity from "./Entity"
 
 export default class Tree extends Entity {
-	public readonly m_pBaseEntity!: C_DOTA_MapTree
+	public NativeEntity: Nullable<C_DOTA_MapTree>
 
 	get IsAlive(): boolean {
-		return this.m_pBaseEntity.m_bActive
+		return this.NativeEntity?.m_bActive ?? true
 	}
 	get BinaryID(): number {
-		return this.m_pBaseEntity.m_nBinaryID
+		return this.NativeEntity?.m_nBinaryID ?? 0
 	}
 }
 
