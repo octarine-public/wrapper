@@ -6,4 +6,5 @@ export {
 	XAIOGeneralSettings,
 } from "./Base"
 
+export { XAIOAutoUse } from "./Usage"
 export { XAIOMenuHero, XAIOMenuHeroesTree } from "./Heroes"

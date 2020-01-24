@@ -1,7 +1,7 @@
 import { Color } from "wrapper/Imports"
 import { XIAOlinkenItemsMenu } from "../../Core/bootstrap"
 import { menu_ability, menu_items, menu_projectile, array_sky_radiuses_menu } from "./Data"
-import { XAIOMenuHero, XAIOSelectLanguage, XAIOMenuHeroesTree } from "XAIO/Menu/Menu"
+import { XAIOMenuHero, XAIOSelectLanguage, XAIOMenuHeroesTree } from "XAIO/Menu/bootstrap"
 
 export const {
 	XAIOState,

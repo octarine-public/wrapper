@@ -216,9 +216,9 @@ globalThis.dump_stats = () => {
 	for (let [name, took] of max_map_events.entries())
 		console.log(`${name}: ${took}ms`)
 }
+
 globalThis.dump_total = () => {
 	let total = 0
-	console.log("Average: ")
 	for (let [name, [took]] of avg_map_events.entries())
 		for (let [name2, ar] of counter_map_events.entries())
 			if (name === name2) {

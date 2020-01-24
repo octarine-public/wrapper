@@ -1,11 +1,12 @@
 
-import { Unit, EventsSDK, LocalPlayer, EntityManager } from "wrapper/Imports"
-import { XAIOStateGlobal, XAIOLanguageState, XAIOGeneralSettings } from "XAIO/Menu/Menu"
 import { XAIOEvents } from "./Core/bootstrap"
+export { XAIOStateGlobal } from "XAIO/Menu/bootstrap"
 import { SetGameInProgress } from "../wrapper/Managers/EventsHandler"
-export { XAIOStateGlobal } from "XAIO/Menu/Menu"
-let XAIOversion = XAIOGeneralSettings.AddNode("XAIO Verison: 1.3")
+import { Unit, EventsSDK, LocalPlayer, EntityManager } from "wrapper/Imports"
+import { XAIOStateGlobal, XAIOLanguageState, XAIOGeneralSettings } from "XAIO/Menu/bootstrap"
 
+
+let XAIOversion = XAIOGeneralSettings.AddNode("XAIO Verison: 1.4")
 XAIOversion.FontSize = 20
 XAIOversion.is_open = true
 XAIOversion.FontColor.SetColor(3, 127, 252, 255)
