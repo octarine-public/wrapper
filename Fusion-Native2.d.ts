@@ -186,6 +186,10 @@ declare class CParticleFloatInput {
 	m_flRandomMin: number
 	m_flRandomMax: number
 	m_nRandomMode: ParticleFloatRandomMode_t
+	m_flLOD0: number
+	m_flLOD1: number
+	m_flLOD2: number
+	m_flLOD3: number
 	m_nInputMode: ParticleFloatInputMode_t
 	m_flMultFactor: number
 	m_flInput0: number
@@ -5653,6 +5657,7 @@ declare class ParticleChildrenInfo_t {
 	m_flDelay: number
 	m_bEndCap: boolean
 	m_bDisableChild: boolean
+	m_nDetailLevel: ParticleDetailLevel_t
 }
 
 declare class C_OP_SetCPOrientationToDirection extends CParticleFunctionOperator {
@@ -8625,6 +8630,7 @@ declare class sPendingTreeRemoval {
 
 declare class CollisionGroupContext_t {
 	m_nCollisionGroupNumber: number
+	m_nCollisionModeInternal: ParticleCollisionMode_t
 }
 
 declare class CAnimData {
@@ -8787,7 +8793,8 @@ declare class CShatterGlassShard {
 
 declare class C_OP_WorldTraceConstraint extends CParticleFunctionConstraint {
 	m_vecCpOffset: IOBuffer_Vector3
-	m_nCollisionMode: number
+	m_nCollisionMode: ParticleCollisionMode_t
+	m_nCollisionModeMin: ParticleCollisionMode_t
 	readonly m_flBounceAmount: CPerParticleFloatInput
 	readonly m_flSlideAmount: CPerParticleFloatInput
 	m_flRadiusScale: number
@@ -11337,71 +11344,6 @@ declare class C_IngameEvent_Base extends C_BaseEntity {
 declare class C_DOTA_Ability_Healing_Campfire extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Death_Prophet_4 extends C_DOTABaseAbility { }
-
-declare class C_DOTABaseGameMode extends C_BaseEntity {
-	m_nCustomGameForceHeroSelectionId: number
-	m_bAlwaysShowPlayerInventory: boolean
-	m_bGoldSoundDisabled: boolean
-	m_bRecommendedItemsDisabled: boolean
-	m_bStickyItemDisabled: boolean
-	m_bStashPurchasingDisabled: boolean
-	m_bFogOfWarDisabled: boolean
-	m_bUseUnseenFOW: boolean
-	m_bUseCustomBuybackCost: boolean
-	m_bUseCustomBuybackCooldown: boolean
-	m_bBuybackEnabled: boolean
-	m_flCameraDistanceOverride: number
-	m_nCameraSmoothCountOverride: number
-	m_hOverrideSelectionEntity: CEntityIndex<C_DOTA_BaseNPC>
-	m_bTopBarTeamValuesOverride: boolean
-	m_bTopBarTeamValuesVisible: boolean
-	m_nTeamGoodGuysTopBarValue: number
-	m_nTeamBadGuysTopBarValue: number
-	m_bAlwaysShowPlayerNames: boolean
-	m_bUseCustomHeroLevels: boolean
-	readonly m_nCustomXPRequiredToReachNextLevel: number[]
-	m_bTowerBackdoorProtectionEnabled: boolean
-	m_bBotThinkingEnabled: boolean
-	m_bAnnouncerDisabled: boolean
-	m_bKillingSpreeAnnouncerDisabled: boolean
-	m_flFixedRespawnTime: number
-	m_flBuybackCostScale: number
-	m_flRespawnTimeScale: number
-	m_bLoseGoldOnDeath: boolean
-	m_bKillableTombstones: boolean
-	m_nHUDVisibilityBits: number
-	m_flMinimumAttackSpeed: number
-	m_flMaximumAttackSpeed: number
-	m_bIsDaynightCycleDisabled: boolean
-	m_bAreWeatherEffectsDisabled: boolean
-	m_bDisableHudFlip: boolean
-	m_bEnableFriendlyBuildingMoveTo: boolean
-	m_bIsDeathOverlayDisabled: boolean
-	m_bIsHudCombatEventsDisabled: boolean
-	readonly m_sCustomTerrainWeatherEffect: string
-	m_flStrengthDamage: number
-	m_flStrengthHP: number
-	m_flStrengthHPRegen: number
-	m_flAgilityDamage: number
-	m_flAgilityArmor: number
-	m_flAgilityAttackSpeed: number
-	m_flAgilityMovementSpeedPercent: number
-	m_flIntelligenceDamage: number
-	m_flIntelligenceMana: number
-	m_flIntelligenceManaRegen: number
-	m_flIntelligenceSpellAmpPercent: number
-	m_flStrengthMagicResistancePercent: number
-	m_flDraftingHeroPickSelectTimeOverride: number
-	m_flDraftingBanningTimeOverride: number
-	m_bPauseEnabled: boolean
-	m_flCustomScanCooldown: number
-	m_flCustomGlyphCooldown: number
-	m_flCustomBackpackSwapCooldown: number
-	m_flCustomBackpackCooldownPercent: number
-	m_bDefaultRuneSpawnLogic: boolean
-	m_bEnableFreeCourierMode: boolean
-	m_nHUDVisibilityBitsPrevious: number
-}
 
 declare class C_DOTA_Unit_Hero_NightStalker extends C_DOTA_BaseNPC_Hero { }
 
@@ -14415,6 +14357,8 @@ declare class C_DOTA_CDOTA_Item_BagOfGold_Caster_Only extends C_DOTA_Item {
 	m_hThinker: CEntityIndex
 }
 
+declare class C_IngameEvent_NB2020 extends C_IngameEvent_Base { }
+
 declare class C_DOTA_Ability_Special_Bonus_Unique_Witch_Doctor_2 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Armor_9 extends C_DOTABaseAbility { }
@@ -15728,7 +15672,70 @@ declare class C_DOTA_Ability_Special_Bonus_HP_200 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Undefined extends C_DOTABaseAbility { }
 
-declare class C_DOTATurboGameMode extends C_DOTABaseGameMode { }
+declare class C_DOTABaseGameMode extends C_BaseEntity {
+	m_nCustomGameForceHeroSelectionId: number
+	m_bAlwaysShowPlayerInventory: boolean
+	m_bGoldSoundDisabled: boolean
+	m_bRecommendedItemsDisabled: boolean
+	m_bStickyItemDisabled: boolean
+	m_bStashPurchasingDisabled: boolean
+	m_bFogOfWarDisabled: boolean
+	m_bUseUnseenFOW: boolean
+	m_bUseCustomBuybackCost: boolean
+	m_bUseCustomBuybackCooldown: boolean
+	m_bBuybackEnabled: boolean
+	m_flCameraDistanceOverride: number
+	m_nCameraSmoothCountOverride: number
+	m_hOverrideSelectionEntity: CEntityIndex<C_DOTA_BaseNPC>
+	m_bTopBarTeamValuesOverride: boolean
+	m_bTopBarTeamValuesVisible: boolean
+	m_nTeamGoodGuysTopBarValue: number
+	m_nTeamBadGuysTopBarValue: number
+	m_bAlwaysShowPlayerNames: boolean
+	m_bUseCustomHeroLevels: boolean
+	readonly m_nCustomXPRequiredToReachNextLevel: number[]
+	m_bTowerBackdoorProtectionEnabled: boolean
+	m_bBotThinkingEnabled: boolean
+	m_bAnnouncerDisabled: boolean
+	m_bKillingSpreeAnnouncerDisabled: boolean
+	m_flFixedRespawnTime: number
+	m_flBuybackCostScale: number
+	m_flRespawnTimeScale: number
+	m_bLoseGoldOnDeath: boolean
+	m_bKillableTombstones: boolean
+	m_nHUDVisibilityBits: number
+	m_flMinimumAttackSpeed: number
+	m_flMaximumAttackSpeed: number
+	m_bIsDaynightCycleDisabled: boolean
+	m_bAreWeatherEffectsDisabled: boolean
+	m_bDisableHudFlip: boolean
+	m_bEnableFriendlyBuildingMoveTo: boolean
+	m_bIsDeathOverlayDisabled: boolean
+	m_bIsHudCombatEventsDisabled: boolean
+	readonly m_sCustomTerrainWeatherEffect: string
+	m_flStrengthDamage: number
+	m_flStrengthHP: number
+	m_flStrengthHPRegen: number
+	m_flAgilityDamage: number
+	m_flAgilityArmor: number
+	m_flAgilityAttackSpeed: number
+	m_flAgilityMovementSpeedPercent: number
+	m_flIntelligenceDamage: number
+	m_flIntelligenceMana: number
+	m_flIntelligenceManaRegen: number
+	m_flIntelligenceSpellAmpPercent: number
+	m_flStrengthMagicResistancePercent: number
+	m_flDraftingHeroPickSelectTimeOverride: number
+	m_flDraftingBanningTimeOverride: number
+	m_bPauseEnabled: boolean
+	m_flCustomScanCooldown: number
+	m_flCustomGlyphCooldown: number
+	m_flCustomBackpackSwapCooldown: number
+	m_flCustomBackpackCooldownPercent: number
+	m_bDefaultRuneSpawnLogic: boolean
+	m_bEnableFreeCourierMode: boolean
+	m_nHUDVisibilityBitsPrevious: number
+}
 
 declare class CDOTA_VR_BodyPart extends C_BaseAnimating {
 	m_nBodyPart: number
@@ -16656,7 +16663,7 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Zeus extends C_DOTABaseAbility
 
 declare class C_DOTA_Ability_Special_Bonus_HP_Regen_5 extends C_DOTABaseAbility { }
 
-declare class C_DOTAAbilityDraftGameMode extends C_DOTATurboGameMode { }
+declare class C_DOTATurboGameMode extends C_DOTABaseGameMode { }
 
 declare class C_PointClientUIHUD extends C_BaseClientUIEntity {
 	m_bCheckCSSClasses: boolean
@@ -20281,14 +20288,15 @@ declare enum ParticleFloatType_t {
 	PF_TYPE_COLLECTION_AGE = 3,
 	PF_TYPE_ENDCAP_AGE = 4,
 	PF_TYPE_CONTROL_POINT_COMPONENT = 5,
-	PF_TYPE_PARTICLE_AGE = 6,
-	PF_TYPE_PARTICLE_AGE_NORMALIZED = 7,
-	PF_TYPE_PARTICLE_FLOAT = 8,
-	PF_TYPE_PARTICLE_VECTOR_COMPONENT = 9,
-	PF_TYPE_PARTICLE_SPEED = 10,
-	PF_TYPE_PARTICLE_NUMBER = 11,
-	PF_TYPE_PARTICLE_NUMBER_NORMALIZED = 12,
-	PF_TYPE_COUNT = 13,
+	PF_TYPE_PARTICLE_DETAIL_LEVEL = 6,
+	PF_TYPE_PARTICLE_AGE = 7,
+	PF_TYPE_PARTICLE_AGE_NORMALIZED = 8,
+	PF_TYPE_PARTICLE_FLOAT = 9,
+	PF_TYPE_PARTICLE_VECTOR_COMPONENT = 10,
+	PF_TYPE_PARTICLE_SPEED = 11,
+	PF_TYPE_PARTICLE_NUMBER = 12,
+	PF_TYPE_PARTICLE_NUMBER_NORMALIZED = 13,
+	PF_TYPE_COUNT = 14,
 }
 
 declare enum EconEntityParticleDisableMode_t {
@@ -22626,6 +22634,13 @@ declare enum RenderBufferFlags_t {
 	RENDER_BUFFER_UAV_COUNTER = 128,
 }
 
+declare enum ParticleDetailLevel_t {
+	PARTICLEDETAIL_LOW = 0,
+	PARTICLEDETAIL_MEDIUM = 1,
+	PARTICLEDETAIL_HIGH = 2,
+	PARTICLEDETAIL_ULTRA = 3,
+}
+
 declare enum DOTA_UNIT_TARGET_FLAGS {
 	DOTA_UNIT_TARGET_FLAG_NONE = 0,
 	DOTA_UNIT_TARGET_FLAG_RANGED_ONLY = 2,
@@ -23344,6 +23359,14 @@ declare enum AnimationSnapshotType_t {
 declare enum ValueRemapperRatchetType_t {
 	RatchetType_Absolute = 0,
 	RatchetType_EachEngage = 1,
+}
+
+declare enum ParticleCollisionMode_t {
+	COLLISION_MODE_PER_PARTICLE_TRACE = 3,
+	COLLISION_MODE_USE_NEAREST_TRACE = 2,
+	COLLISION_MODE_PER_FRAME_PLANESET = 1,
+	COLLISION_MODE_INITIAL_TRACE_DOWN = 0,
+	COLLISION_MODE_DISABLED = -1,
 }
 
 declare enum PermModelInfo_t__FlagEnum {
