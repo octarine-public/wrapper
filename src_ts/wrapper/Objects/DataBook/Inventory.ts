@@ -10,11 +10,8 @@ export default class Inventory {
 	constructor(public readonly Owner: Unit) { }
 
 	get TotalItems(): Nullable<Item>[] {
-		let items = this.Owner.GetPropertyByName("m_hItems") as Nullable<number[]>
-		if (items === undefined)
-			return new Array<Item>(MAX_ITEMS)
 		// loop-optimizer: FORWARD
-		return items.map(abil => {
+		return this.Owner.TotalItems_.map(abil => {
 			let ent = EntityManager.EntityByIndex(abil)
 			if (ent instanceof Item)
 				return ent

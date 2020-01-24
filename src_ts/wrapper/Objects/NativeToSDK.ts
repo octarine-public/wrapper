@@ -37,7 +37,7 @@ export function RegisterFieldHandler<T extends Entity>(constructor: Constructor<
 		if (constructor_.prototype instanceof constructor)
 			map.set(field_name, handler_)
 }
-export function RegisterEventFieldHandler<T extends Entity>(constructor: Constructor<T>, field_name: string, handler: (entity: T, new_value: EntityPropertyType) => void) {
+export function RegisterFieldEventHandler<T extends Entity>(constructor: Constructor<T>, field_name: string, handler: (entity: T, new_value: EntityPropertyType) => void) {
 	let handler_ = handler as FieldHandler
 	field_event_handlers.get(constructor)!.set(field_name, handler_)
 	for (let [constructor_, map] of field_event_handlers)

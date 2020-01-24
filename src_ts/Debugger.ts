@@ -6,6 +6,7 @@ declare global {
 	var SafeLog: Function
 	var reset_avg_mult: Function
 	var dump_total: Function
+	var dump_total: Function
 }
 
 let setConVar = (self: Menu.Toggle) => ConVars.Set(self.tooltip!, self.value)
@@ -229,6 +230,19 @@ globalThis.dump_total = () => {
 	console.log(total)
 }
 
+globalThis.dump_total = () => {
+	let total = 0
+	console.log("Average: ")
+	for (let [name, [took]] of avg_map_events.entries())
+		for (let [name2, ar] of counter_map_events.entries())
+			if (name === name2) {
+				total += took * ar.length / 30
+				break
+			}
+
+	console.log(total)
+}
+
 function filter_avg(map: Map<string, Map<string, [number, number]>>) {
 	let filtered: [string, [string, number][]][] = []
 	for (let [event_name, map_] of map.entries()) {
@@ -250,7 +264,7 @@ function filter_max(map: Map<string, Map<string, number>>) {
 globalThis.dump_stats_listeners = () => {
 	console.log("Average: ")
 	let avg = filter_avg(avg_map_listeners)
-	for (let i = 0; i < Math.min(5, avg.length); i++) {
+	for (let i = 0; i < Math.min(10, avg.length); i++) {
 		let [event_name, ar] = avg[i]
 		console.log(event_name + ": ")
 		// loop-optimizer: FORWARD
@@ -260,7 +274,7 @@ globalThis.dump_stats_listeners = () => {
 
 	console.log("Max: ")
 	let max = filter_max(max_map_listeners)
-	for (let i = 0; i < Math.min(5, max.length); i++) {
+	for (let i = 0; i < Math.min(10, max.length); i++) {
 		let [event_name, ar] = max[i]
 		console.log(event_name + ": ")
 		// loop-optimizer: FORWARD

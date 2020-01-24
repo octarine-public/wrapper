@@ -25,6 +25,8 @@ export default class CGameRules extends Entity {
 	public IsTemporaryNight = false
 	public LoadedPlayers = 0
 	public MatchID = 0n
+	public NeutralSpawnBoxes: NeutralSpawnBox[] = []
+	public StockInfo: StockInfo[] = []
 
 	public get GameTime(): number {
 		const time = this.RawGameTime,
@@ -57,32 +59,12 @@ export default class CGameRules extends Entity {
 		return this.IsNightstalkerNight || this.IsTemporaryNight
 			|| (this.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS && (this.GameTime / 60) / 5 % 2 === 1)
 	}
-	public get NeutralSpawnBoxes(): NeutralSpawnBox[] {
-		let map = this.GetPropertyByName("m_pGameRules") as Nullable<Map<string, EntityPropertyType>>
-		if (map === undefined)
-			return []
-		let ar = map.get("m_NeutralSpawnBoxes") as Map<string, EntityPropertyType>[]
-		if (ar === undefined)
-			return []
-		// loop-optimizer: FORWARD
-		return ar.map(info => new NeutralSpawnBox(info))
-	}
-	public get StockInfo(): StockInfo[] {
-		let map = this.GetPropertyByName("m_pGameRules") as Nullable<Map<string, EntityPropertyType>>
-		if (map === undefined)
-			return []
-		let ar = map.get("m_vecItemStockInfo") as Map<string, EntityPropertyType>[]
-		if (ar === undefined)
-			return []
-		// loop-optimizer: FORWARD
-		return ar.map(info => new StockInfo(info))
-	}
 }
 
-import { RegisterClass, RegisterFieldHandler, RegisterEventFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler, RegisterFieldEventHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTAGamerulesProxy", CGameRules)
 RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => game.RawGameTime = new_val as number)
-RegisterEventFieldHandler(CGameRules, "m_fGameTime", () => {
+RegisterFieldEventHandler(CGameRules, "m_fGameTime", () => {
 	if (LocalPlayer !== undefined)
 		EventsSDK.emit("Tick", false)
 })
@@ -101,6 +83,14 @@ RegisterFieldHandler(CGameRules, "m_bIsNightstalkerNight", (game, new_val) => ga
 RegisterFieldHandler(CGameRules, "m_bIsTemporaryNight", (game, new_val) => game.IsTemporaryNight = new_val as boolean)
 RegisterFieldHandler(CGameRules, "m_nLoadedPlayers", (game, new_val) => game.LoadedPlayers = new_val as number)
 RegisterFieldHandler(CGameRules, "m_unMatchID64", (game, new_val) => game.MatchID = new_val as bigint)
+RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, new_val) => {
+	// loop-optimizer: FORWARD
+	game.NeutralSpawnBoxes = (new_val as Map<string, EntityPropertyType>[]).map(map => new NeutralSpawnBox(map))
+})
+RegisterFieldHandler(CGameRules, "m_vecItemStockInfo", (game, new_val) => {
+	// loop-optimizer: FORWARD
+	game.StockInfo = (new_val as Map<string, EntityPropertyType>[]).map(map => new StockInfo(map))
+})
 
 export let GameRules: Nullable<CGameRules>
 EventsSDK.on("EntityCreated", ent => {

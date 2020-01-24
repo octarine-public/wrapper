@@ -264,13 +264,13 @@ function QuantitizedVecCoordToCoord(cell: number, inside: number): number {
 	return (cell - 128) * 128 + inside
 }
 
-import { RegisterClass, RegisterFieldHandler, RegisterEventFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler, RegisterFieldEventHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_BaseEntity", Entity)
 RegisterFieldHandler(Entity, "m_flCreateTime", (ent, new_val) => ent.CreateTime = new_val as number)
 RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => ent.Team = new_val as Team)
-RegisterEventFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => EventsSDK.emit("EntityTeamChanged", false, ent))
+RegisterFieldEventHandler(Entity, "m_iTeamNum", (ent, new_val) => EventsSDK.emit("EntityTeamChanged", false, ent))
 RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => ent.LifeState = new_val as LifeState_t)
-RegisterEventFieldHandler(Entity, "m_lifeState", (ent, new_val) => EventsSDK.emit("LifeStateChanged", false, ent))
+RegisterFieldEventHandler(Entity, "m_lifeState", (ent, new_val) => EventsSDK.emit("LifeStateChanged", false, ent))
 RegisterFieldHandler(Entity, "m_iHealth", (ent, new_val) => ent.HP = new_val as number)
 RegisterFieldHandler(Entity, "m_iMaxHealth", (ent, new_val) => ent.MaxHP = new_val as number)
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => ent.Owner_ = new_val as number)

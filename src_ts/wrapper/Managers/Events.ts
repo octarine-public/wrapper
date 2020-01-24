@@ -40,7 +40,7 @@ export class EventEmitter {
 
 		let ret = listeners === undefined || !listeners.some(listener => {
 			try {
-				return listener.apply(this, args) === false && cancellable
+				return listener(...args) === false && cancellable
 			} catch (e) {
 				console.log(e.stack || new Error(e).stack)
 				return false
@@ -49,7 +49,7 @@ export class EventEmitter {
 		if (listeners_after !== undefined && ret)
 			listeners_after.forEach(listener => {
 				try {
-					listener.apply(this, args)
+					listener(...args)
 				} catch (e) {
 					console.log(e.stack || new Error(e).stack)
 				}

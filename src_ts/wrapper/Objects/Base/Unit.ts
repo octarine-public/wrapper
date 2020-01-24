@@ -22,6 +22,7 @@ import UnitData from "../DataBook/UnitData"
 import EntityManager from "../../Managers/EntityManager"
 
 const MAX_SPELLS = 31
+const MAX_ITEMS = 16
 
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
@@ -90,6 +91,7 @@ export default class Unit extends Entity {
 	public UnitStateNetworked = 0n
 	public HealthBarOffsetOverride = 0
 	public Spells_ = new Array<number>(MAX_SPELLS).fill(0)
+	public TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
 
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
@@ -975,7 +977,7 @@ export default class Unit extends Entity {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler, RegisterEventFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler, RegisterFieldEventHandler } from "wrapper/Objects/NativeToSDK"
 import EventsSDK from "../../Managers/EventsSDK"
 RegisterClass("C_DOTA_BaseNPC", Unit)
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
@@ -986,18 +988,18 @@ RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => {
 	unit.IsVisibleForTeamMask = new_value as number
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
 })
-RegisterEventFieldHandler(Unit, "m_iTeamNum", (unit, new_val) => {
+RegisterFieldEventHandler(Unit, "m_iTeamNum", (unit, new_val) => {
 	EventsSDK.emit("EntityTeamChanged", false, unit)
 	let old_visibility = unit.IsVisibleForEnemies
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
 	if (unit.IsVisibleForEnemies !== old_visibility)
 		EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
-RegisterEventFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => EventsSDK.emit("TeamVisibilityChanged", false, unit))
+RegisterFieldEventHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => EventsSDK.emit("TeamVisibilityChanged", false, unit))
 RegisterFieldHandler(Unit, "m_anglediff", (unit, new_value) => unit.RotationDifference = new_value as number)
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, new_value) => unit.IsControllableByPlayerMask = new_value as bigint)
 RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => unit.NetworkActivity = new_value as number)
-RegisterEventFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => EventsSDK.emit("NetworkActivityChanged", false, unit))
+RegisterFieldEventHandler(Unit, "m_NetworkActivity", (unit, new_value) => EventsSDK.emit("NetworkActivityChanged", false, unit))
 RegisterFieldHandler(Unit, "m_flHealthThinkRegen", (unit, new_value) => unit.HPRegen = new_value as number)
 RegisterFieldHandler(Unit, "m_flManaThinkRegen", (unit, new_value) => unit.ManaRegen = new_value as number)
 RegisterFieldHandler(Unit, "m_bIsAncient", (unit, new_value) => unit.IsAncient = new_value as boolean)
@@ -1027,11 +1029,17 @@ RegisterFieldHandler(Unit, "m_flMaxMana", (unit, new_value) => unit.MaxMana = ne
 RegisterFieldHandler(Unit, "m_iNightTimeVisionRange", (unit, new_value) => unit.NightVision = new_value as number)
 RegisterFieldHandler(Unit, "m_flTauntCooldown", (unit, new_value) => unit.TauntCooldown = new_value as number)
 RegisterFieldHandler(Unit, "m_nTotalDamageTaken", (unit, new_value) => unit.TotalDamageTaken = new_value as bigint)
-RegisterFieldHandler(Unit, "m_nUnitState64", (unit, new_value) => unit.UnitStateNetworked = new_value as bigint)
+RegisterFieldHandler(Unit, "m_nUnitState64", (unit, new_value) => unit.UnitStateNetworked = BigInt(new_value as bigint))
 RegisterFieldHandler(Unit, "m_nHealthBarOffsetOverride", (unit, new_value) => unit.HealthBarOffsetOverride = new_value as number)
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 	let ar = new_value as number[]
 	while (ar.length < unit.Spells_.length)
 		ar.push(0)
 	unit.Spells_ = new_value as number[]
+})
+RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
+	let ar = new_value as number[]
+	while (ar.length < unit.TotalItems_.length)
+		ar.push(0)
+	unit.TotalItems_ = new_value as number[]
 })
