@@ -4,12 +4,11 @@ import { Courier, GameRules, GameSleeper, EventsSDK } from "wrapper/Imports"
 
 let Sleep: GameSleeper = new GameSleeper()
 
-export function MoveCourier(Safe: boolean = false, courier: Courier, line?: LaneSelectionFlags_t) {
+export function MoveCourier(courier: Courier, Safe: boolean = false, line?: LaneSelectionFlags_t) {
 
 	if (GameRules?.IsPaused
 		|| CourierHelper.LAST_CLICK
 		|| Sleep.Sleeping(courier)
-		//|| CourierHelper.IsRestricted(courier)
 		|| !CourierHelper.IsValidCourier(courier))
 		return
 

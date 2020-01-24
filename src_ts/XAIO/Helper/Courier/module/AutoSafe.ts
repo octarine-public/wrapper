@@ -2,7 +2,7 @@ import { Units } from "XAIO/bootstrap"
 import { CourierHelper } from "../Helper"
 import { MoveCourier } from "./MoveCourier"
 import { XAIOAutoSafeState, XAIOAutoSafeValue } from "../Menu"
-import { Courier, Ability, Unit, EventsSDK, ArrayExtensions, GameSleeper, Creep, Tower, Hero } from "wrapper/Imports"
+import { Courier, Ability, Unit, EventsSDK, ArrayExtensions, GameSleeper, Creep, Tower, Hero, GameState } from "wrapper/Imports"
 
 let UnitAnimation: Unit[] = []
 let Sleep: GameSleeper = new GameSleeper()
@@ -15,39 +15,51 @@ function AbilityTypeReady(courier: Courier): Nullable<Ability> {
 		return courier.GetAbilityByName("courier_burst")
 }
 
-function SafePosDeliver(courier: Courier): boolean {
-	return Units.some(unit => {
+function SafePosDeliver(courier: Courier) {
+	Units.forEach(unit => {
 		if (!(unit instanceof Creep || unit instanceof Hero || unit instanceof Tower))
-			return false
+			return
 
 		if (!unit.IsEnemy() || !unit.IsAlive || !unit.IsVisible)
-			return false
+			return
 
 		if (!Sleep.Sleeping(courier) && (CourierHelper.IsRangeCourier(unit, courier) || CourierHelper.IsRangeCourier(unit)))
 			CourierHelper.DELIVER_DISABLE = true
 
-		if (CourierHelper.DELIVER_DISABLE) {
-			if (!CourierHelper.IsRangeCourier(unit, courier) || !CourierHelper.IsRangeCourier(unit)) {
+		if (!CourierHelper.DELIVER_DISABLE)
+			return
 
-				if (courier.State !== 8 && courier.State !== CourierState_t.COURIER_STATE_RETURNING_TO_BASE)
-					MoveCourier(true, courier)
-			}
+		if (courier.State !== CourierHelper.ATBASE)
+			CourierHelper.DELIVER_DISABLE = false
+
+		if (!CourierHelper.AllowMap.some(x => x.includes(GameState.MapName))) {
+
+			if (courier.State !== CourierHelper.TOBASE)
+				CourierHelper.CastCourAbility(0, courier)
 
 			Sleep.Sleep(XAIOAutoSafeValue.value * 1000, courier)
-			return true
+			return
 		}
-		return false
+
+		if (!CourierHelper.IsRangeCourier(unit, courier) || !CourierHelper.IsRangeCourier(unit)) {
+
+			if (courier.State !== CourierHelper.TOBASE)
+				MoveCourier(courier, true)
+
+			Sleep.Sleep(XAIOAutoSafeValue.value * 1000, courier)
+			return
+		}
 	})
 }
 
 export function AutoSafe(courier: Courier) {
-	if (!XAIOAutoSafeState.value /* || CourierHelper.IsRestricted(courier)*/)
+	if (!XAIOAutoSafeState.value || CourierHelper.IsTurbo)
 		return
+
 	let ability = AbilityTypeReady(courier)
 
 	if (ability === undefined || ability.Level === 0 || ability.Cooldown) {
 		SafePosDeliver(courier)
-		//console.log(Sleep.Sleeping(courier), CourierHelper.DELIVER_DISABLE)
 		return
 	}
 
@@ -73,11 +85,11 @@ export function AutoSafe(courier: Courier) {
 		ability.UseAbility()
 		Sleep.Sleep(CourierHelper.CastDelay, courier)
 		return
-	} else {
-		ability.UseAbility()
-		Sleep.Sleep(CourierHelper.CastDelay, courier)
-		return
 	}
+
+	ability.UseAbility()
+	Sleep.Sleep(CourierHelper.CastDelay, courier)
+	return
 }
 
 EventsSDK.on("GameEnded", () => {

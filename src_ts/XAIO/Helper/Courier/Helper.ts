@@ -1,16 +1,32 @@
-
-import { GameRules, Vector3, Team, Courier, Unit, LocalPlayer, GameState } from "wrapper/Imports"
 import { LaneSelectionFlags_t, CourierData } from "XAIO/Core/bootstrap"
+import { GameRules, Vector3, Team, Courier, Unit, LocalPlayer, GameState, DOTA_GameMode, DOTA_GameState } from "wrapper/Imports"
 
 export class CourierHelper {
+
 	public static LAST_CLICK = false
 	public static AUTO_USE_ITEMS = false
 	public static DELIVER_DISABLE = false
-	public static roles = new Array<LaneSelectionFlags_t[]>(2).fill(new Array<LaneSelectionFlags_t>(5).fill(LaneSelectionFlags_t.MID_LANE))
-	public static AllowMap: string[] = [
-		"dota",
-		"start"
-	]
+
+	public static get TOBASE(): CourierState_t {
+		return CourierState_t.COURIER_STATE_RETURNING_TO_BASE
+	}
+
+	public static get ATBASE(): CourierState_t {
+		return CourierState_t.COURIER_STATE_AT_BASE
+	}
+
+	public static get DELIVERING(): CourierState_t {
+		return CourierState_t.COURIER_STATE_DELIVERING_ITEMS
+	}
+
+	public static get IsTurbo(): boolean {
+		return GameRules?.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO
+	}
+
+	public static get IsPreGame(): boolean {
+		return GameRules?.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME
+	}
+
 	public static readonly WARNING_ABILITY: string[] = [
 		"axe_culling_blade",
 		"bane_brain_sap",
@@ -24,6 +40,18 @@ export class CourierHelper {
 		"viper_viper_strike",
 		"shadow_demon_demonic_purge"
 	]
+
+	public static get CastDelay() {
+		return (((GameState.Ping / 2) + 30) + 250)
+	}
+
+	public static roles = new Array<LaneSelectionFlags_t[]>(2).fill(new Array<LaneSelectionFlags_t>(5).fill(LaneSelectionFlags_t.MID_LANE))
+
+	public static AllowMap: string[] = [
+		"dota",
+		"start"
+	]
+
 	private static readonly CourierBestPosition: { [teamid: number]: Vector3 }[] = [
 		{ // team_id
 			1: CourierData.SAFE_LANE_RADDIANT,
@@ -45,15 +73,10 @@ export class CourierHelper {
 		}
 	]
 
-	public static get CastDelay() {
-		return (((GameState.Ping / 2) + 30) + 250)
-	}
-	public static IsRestricted(courier: Courier): boolean {
-		return courier.UnitState.some(x => x & 8388608)
-	}
 	private static get Team() {
 		return LocalPlayer?.Team === Team.Dire
 	}
+
 
 	public static get OwnerIsValid(): Nullable<boolean> {
 		return GameRules?.IsInGame && LocalPlayer!.Hero?.IsAlive && !LocalPlayer!.IsSpectator
@@ -77,6 +100,7 @@ export class CourierHelper {
 				: this.CourierBestPosition[team_id][!custom_line ? num * 2 : custom_line]
 			: this.CourierBestPosition[num][team_id]
 	}
+
 	public static IsRangeCourier(unit: Unit, unit2: Courier | Vector3 = this.Position(), range: number = (unit.AttackRange + 450)) {
 		return unit.IsInRange(unit2, range)
 	}

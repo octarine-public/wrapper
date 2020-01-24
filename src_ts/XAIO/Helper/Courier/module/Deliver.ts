@@ -26,7 +26,7 @@ export function Deliver(courier: Courier) {
 		&& courierInventory.GetFreeSlots(0, 9).length >= items_in_stash
 		&& free_slots_local >= (items_in_stash + cour_slots_local)) {
 
-		if (courier.State === CourierState_t.COURIER_NUM_STATES /** don't work */ && items_in_stash === 0)
+		if (courier.State === CourierHelper.DELIVERING && items_in_stash === 0)
 			return
 
 		CourierHelper.CastCourAbility(7, courier) // transfer_items
