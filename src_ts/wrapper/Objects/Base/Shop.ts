@@ -7,4 +7,4 @@ export default class Shop extends Building {
 
 import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTA_BaseNPC_Shop", Shop)
-RegisterFieldHandler(Shop, "m_ShopType", (shop, new_val) => shop.ShopType = Number(new_val) as DOTA_SHOP_TYPE)
+RegisterFieldHandler(Shop, "m_ShopType", (shop, new_val) => shop.ShopType = new_val as DOTA_SHOP_TYPE)

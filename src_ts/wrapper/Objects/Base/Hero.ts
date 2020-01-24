@@ -39,10 +39,9 @@ export default class Hero extends Unit {
 	get ReplicatingOtherHeroModel(): Nullable<Entity> {
 		return EntityManager.EntityByIndex(this.m_hReplicatingOtherHeroModel)
 	}
-	get IsIllusion(): boolean {
-		if (this.ReplicatingOtherHeroModel_ === undefined)
-			return false
-		return (this.ReplicatingOtherHeroModel_ instanceof C_BaseEntity) || (this.ReplicatingOtherHeroModel_ > 0)
+	public get IsIllusion(): boolean {
+		let ReplicatingOtherHeroModel_ = this.ReplicatingOtherHeroModel_
+		return (ReplicatingOtherHeroModel_ instanceof C_BaseEntity) || (ReplicatingOtherHeroModel_ > 0)
 	}
 	get LastHurtTime(): number {
 		return this.NativeEntity?.m_flLastHurtTime ?? 0
