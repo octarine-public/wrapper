@@ -11,7 +11,7 @@ export const InputEventSDK: InputEventSDK = new EventEmitter()
 const LOWORD = (_dw: bigint) => Number(_dw & 0xffffn)
 const HIWORD = (_dw: bigint) => Number((_dw >> 16n) & 0xffffn)
 
-const XMouseKey = (wParam: bigint) => HIWORD(wParam) === VMouseKeys.MK_XBUTTON1
+const XMouseKey = (wParam: bigint) => HIWORD(wParam) === VXMouseKeys.XBUTTON1
 	? VMouseKeys.MK_XBUTTON1 : VMouseKeys.MK_XBUTTON2
 
 class Input {

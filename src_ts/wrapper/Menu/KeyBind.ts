@@ -6,7 +6,7 @@ import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
 import { FontFlags_t } from "../Enums/FontFlags_t"
-import { InputEventSDK } from "../Managers/InputManager"
+import { InputEventSDK, VMouseKeys, VKeys } from "../Managers/InputManager"
 import GameState from "../Utils/GameState"
 
 export default class KeyBind extends Base {
@@ -16,8 +16,8 @@ export default class KeyBind extends Base {
 		"Right mouse", // VK_RBUTTON
 		"Control-break processing", // VK_CANCEL
 		"Middle mouse", // VK_MBUTTON
-		"Mouse5", // VK_XBUTTON1
-		"Mouse6", // VK_XBUTTON2
+		"Mouse4", // VK_XBUTTON1
+		"Mouse5", // VK_XBUTTON2
 		"Unknown",
 		"Backspace", // VK_BACK
 		"Tab", // VK_TAB
@@ -276,8 +276,8 @@ export default class KeyBind extends Base {
 	}
 }
 
-let IsPressing = new Map<number, boolean>()
-function KeyHandler(key: number, pressed: boolean): boolean {
+let IsPressing = new Map<VKeys, boolean>()
+function KeyHandler(key: VKeys, pressed: boolean): boolean {
 	let changing_now = KeyBind.changing_now,
 		ret = true
 	if (changing_now !== undefined) {
@@ -289,10 +289,7 @@ function KeyHandler(key: number, pressed: boolean): boolean {
 	}
 
 	let onExecute = KeyBind.callbacks.get(key)
-	if (onExecute === undefined)
-		return true
-
-	if (IsPressing.get(key) === pressed)
+	if (onExecute === undefined || IsPressing.get(key) === pressed)
 		return true
 
 	IsPressing.set(key, pressed)
@@ -308,5 +305,19 @@ function KeyHandler(key: number, pressed: boolean): boolean {
 
 	return ret
 }
+
+function MouseKeyHandler(key: VMouseKeys, pressed: boolean): boolean {
+	switch (key) {
+		case VMouseKeys.MK_XBUTTON1:
+			return KeyHandler(VKeys.XBUTTON1, pressed)
+		case VMouseKeys.MK_XBUTTON2:
+			return KeyHandler(VKeys.XBUTTON2, pressed)
+		default:
+			return true
+	}
+}
+
 InputEventSDK.on("KeyDown", key => KeyHandler(key, true))
 InputEventSDK.on("KeyUp", key => KeyHandler(key, false))
+InputEventSDK.on("MouseKeyDown", key => MouseKeyHandler(key, true))
+InputEventSDK.on("MouseKeyUp", key => MouseKeyHandler(key, false))
