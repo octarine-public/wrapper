@@ -75,7 +75,7 @@ export default class Unit extends Entity {
 	public HasStolenScepter = false
 	public HasUpgradeableAbilities = false
 	public IsDominatable = false
-	public IsIllusion = false
+	public IsIllusion_ = false
 	public AttackCapabilities = 0
 	public IsMoving = false
 	public IsPhantom = false
@@ -106,6 +106,9 @@ export default class Unit extends Entity {
 	]
 
 	/* ======== modifierstate ======== */
+	public get IsIllusion(): boolean {
+		return this.IsIllusion_
+	}
 	public get IsRooted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
 	}
@@ -1016,7 +1019,7 @@ RegisterFieldHandler(Unit, "m_nArcanaLevel", (unit, new_value) => unit.ArcanaLev
 RegisterFieldHandler(Unit, "m_bStolenScepter", (unit, new_value) => unit.HasStolenScepter = new_value as boolean)
 RegisterFieldHandler(Unit, "m_bHasUpgradeableAbilities", (unit, new_value) => unit.HasUpgradeableAbilities = new_value as boolean)
 RegisterFieldHandler(Unit, "m_bCanBeDominated", (unit, new_value) => unit.IsDominatable = new_value as boolean)
-RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, new_value) => unit.IsIllusion = new_value as boolean)
+RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, new_value) => unit.IsIllusion_ = new_value as boolean)
 RegisterFieldHandler(Unit, "m_iAttackCapabilities", (unit, new_value) => unit.AttackCapabilities = new_value as number)
 RegisterFieldHandler(Unit, "m_bIsMoving", (unit, new_value) => unit.IsMoving = new_value as boolean)
 RegisterFieldHandler(Unit, "m_bIsPhantom", (unit, new_value) => unit.IsPhantom = new_value as boolean)
