@@ -1,6 +1,6 @@
-import Item from "../Base/Item"
+import item_travel_boots from "./item_travel_boots"
 
-export default class item_travel_boots_2 extends Item {
+export default class item_travel_boots_2 extends item_travel_boots {
 	public NativeEntity: Nullable<CDOTA_Item_Recipe_BootsOfTravel_2>
 }
 

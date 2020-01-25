@@ -1,6 +1,6 @@
-import Item from "../Base/Item"
+import item_necronomicon from "./item_necronomicon"
 
-export default class item_necronomicon_2 extends Item {
+export default class item_necronomicon_2 extends item_necronomicon {
 	public NativeEntity: Nullable<C_DOTA_Item_Necronomicon_Level2>
 }
 
