@@ -108,7 +108,7 @@ Menu.AddButton("Reload Scripts").OnValue(ReloadScripts)
 Menu.AddKeybind("Reload keybind").OnPressed(ReloadScripts)
 
 CameraTree.AddButton("Reset camera").OnValue(() => {
-	Camera.Distance = CamDist.value = 1134
+	Camera.Distance = CamDist.value = 1200
 	ConVars.Set("r_farz", -1)
 })
 
