@@ -23,37 +23,37 @@ export default class Inventory {
 		return this.GetItems(0, 5)
 	}
 	get Backpack(): Item[] {
-		return this.GetItems(6, 9)
+		return this.GetItems(6, 8)
 	}
 	get Stash(): Item[] {
-		return this.GetItems(10, 15)
+		return this.GetItems(9, 14)
 	}
 	get FreeSlotsInventory(): DOTAScriptInventorySlot_t[] {
 		return this.GetFreeSlots(0, 5)
 	}
 	get FreeSlotsBackpack(): DOTAScriptInventorySlot_t[] {
-		return this.GetFreeSlots(6, 9)
+		return this.GetFreeSlots(6, 8)
 	}
 	get FreeSlotsStash(): DOTAScriptInventorySlot_t[] {
-		return this.GetFreeSlots(10, 15)
+		return this.GetFreeSlots(9, 14)
 	}
 	get HasAnyItemInventory(): boolean {
 		return this.HasAnyItem(0, 5)
 	}
 	get HasAnyItemBackpack(): boolean {
-		return this.HasAnyItem(6, 9)
+		return this.HasAnyItem(6, 8)
 	}
 	get HasAnyItemStash(): boolean {
-		return this.HasAnyItem(10, 15)
+		return this.HasAnyItem(9, 14)
 	}
 	get HasFreeSlotsInventory(): boolean {
 		return this.HasFreeSlot(0, 5)
 	}
 	get HasFreeSlotsBackpack(): boolean {
-		return this.HasFreeSlot(6, 9)
+		return this.HasFreeSlot(6, 8)
 	}
 	get HasFreeSlotsStash(): boolean {
-		return this.HasFreeSlot(10, 15)
+		return this.HasFreeSlot(9, 14)
 	}
 	get IsStashEnabled(): boolean {
 		return this.Owner.NativeEntity?.m_Inventory?.m_bStashEnabled ?? true
@@ -124,7 +124,7 @@ export default class Inventory {
 	}
 	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Nullable<Item> {
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
 
 			for (let i = 0; i < len; i++) {
 				let item = this.GetItem(i)
@@ -143,7 +143,7 @@ export default class Inventory {
 	}
 	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
 
 			for (let i = 0; i < len; i++) {
 				let item = this.GetItem(i)
@@ -156,7 +156,7 @@ export default class Inventory {
 	public GetItemsByNames(names: string[], includeBackpack: boolean = false): Item[] {
 		let items: Item[] = []
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
 
 			for (let i = 0; i < len; i++) {
 				const item = this.GetItem(i)
@@ -172,7 +172,7 @@ export default class Inventory {
 	public GetItemsByClasses<T extends Item>(classes: Constructor<T>[], includeBackpack: boolean = false): T[] {
 		let items: T[] = []
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, includeBackpack ? 10 : 6)
+			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
 
 			for (let i = 0; i < len; i++) {
 				const item = this.GetItem(i)
