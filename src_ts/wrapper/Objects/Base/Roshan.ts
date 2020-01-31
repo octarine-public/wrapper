@@ -4,7 +4,6 @@ import Events from "../../Managers/Events"
 import EntityManager from "../../Managers/EntityManager"
 
 export default class Roshan extends Unit {
-	private static Instance_: Nullable<Entity | number>
 	public static get Instance(): Nullable<Entity | number> {
 		if (this.Instance_ instanceof Entity) {
 			if (!(this.Instance_ instanceof Entity) || !this.Instance_.IsValid)
@@ -18,6 +17,7 @@ export default class Roshan extends Unit {
 	public static set Instance(ent: Nullable<Entity | number>) {
 		this.Instance_ = ent
 	}
+	private static Instance_: Nullable<Entity | number>
 
 	public NativeEntity: Nullable<C_DOTA_Unit_Roshan>
 	public GoldenRoshan = false

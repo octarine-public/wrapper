@@ -47,7 +47,7 @@ export default class Vector3 {
 	 *
 	 * @example
 	 * var vector = new Vector3(1, 2, 3)
-	 * vector.Normalize();
+	 * vector.Normalize()
 	 */
 	constructor(public x: number = 0, public y: number = 0, public z: number = 0) { }
 
@@ -805,16 +805,7 @@ export default class Vector3 {
 	public DegreesToRadians(): Vector3 {
 		return this.MultiplyScalar(Math.PI).DivideScalar(180)
 	}
-	/* ================== To ================== */
-	/**
-	 * Get hash code of vector
-	 */
-	public GetHashCode(): number {
-		let hash = this.x
-		hash = (hash * 397) ^ this.y
-		hash = (hash * 397) ^ this.z
-		return hash
-	}
+
 	/**
 	 * @return Vector3(x,y,z)
 	 */
@@ -826,6 +817,9 @@ export default class Vector3 {
 	 */
 	public toArray(): [number, number, number] {
 		return [this.x, this.y, this.z]
+	}
+	public toJSON() {
+		return this.toArray()
 	}
 
 	public toVector2(): Vector2 {

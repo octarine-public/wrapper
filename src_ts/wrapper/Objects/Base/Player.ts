@@ -68,14 +68,14 @@ export default class Player extends Entity {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler, RegisterFieldEventHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTAPlayer", Player)
 RegisterFieldHandler(Player, "m_quickBuyItems", (player, new_value) => player.QuickBuyItems = new_value as number[])
 RegisterFieldHandler(Player, "m_iTotalEarnedGold", (player, new_value) => player.TotalEarnedGold = new_value as number)
 RegisterFieldHandler(Player, "m_iTotalEarnedXP", (player, new_value) => player.TotalEarnedXP = new_value as number)
-RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => player.Hero_ = new_value as number)
 RegisterFieldHandler(Player, "m_iPlayerID", (player, new_value) => player.PlayerID = new_value as number)
-RegisterFieldEventHandler(Player, "m_hAssignedHero", player => {
+RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => {
+	player.Hero_ = new_value as number
 	if (player === LocalPlayer && player.Hero !== undefined)
 		SetGameInProgress(true)
 })

@@ -13,7 +13,6 @@ export default class Color {
 	public static get LightGray() { return new Color(190, 190, 190) }
 	public static get White() { return new Color(255, 255, 255) }
 
-	/* ================== Static ================== */
 	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Color | undefined {
 		if (buffer !== true)
 			return undefined
@@ -22,7 +21,7 @@ export default class Color {
 	public static CopyFrom(color: Color): Color {
 		return new Color(color.r, color.g, color.b, color.a)
 	}
-	/* ================ Constructors ================ */
+
 	/**
 	 * Create new Color with r, g, b, a
 	 *
@@ -31,7 +30,6 @@ export default class Color {
 	 */
 	constructor(public r: number = 0, public g: number = 0, public b: number = 0, public a: number = 255) { }
 
-	/* ================== Methods ================== */
 	/**
 	 * Set Color by numbers
 	 */
@@ -42,6 +40,7 @@ export default class Color {
 		this.a = a
 		return this
 	}
+
 	/**
 	 * Set R of color by number
 	 */
@@ -49,6 +48,7 @@ export default class Color {
 		this.r = r
 		return this
 	}
+
 	/**
 	 * Set G of color by number
 	 */
@@ -56,6 +56,7 @@ export default class Color {
 		this.g = g
 		return this
 	}
+
 	/**
 	 * Set B of color by number
 	 */
@@ -63,6 +64,7 @@ export default class Color {
 		this.b = b
 		return this
 	}
+
 	/**
 	 * Set A of color by number
 	 */
@@ -90,6 +92,7 @@ export default class Color {
 		color.b = this.b
 		return color
 	}
+
 	/**
 	 * Copy from another color to this color and return it
 	 * @param vec The another color
@@ -103,17 +106,6 @@ export default class Color {
 		return this
 	}
 
-	/* ================== To ================== */
-	/**
-	 * Get hash code of color
-	 */
-	public GetHashCode(): number {
-		let hash = this.r
-		hash = (hash * 397) ^ this.g
-		hash = (hash * 397) ^ this.b
-		hash = (hash * 397) ^ this.a
-		return hash
-	}
 	/**
 	 * Color to String Color
 	 * @return Color(r,g,b,a)
@@ -121,11 +113,15 @@ export default class Color {
 	public toString(): string {
 		return "Color(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")"
 	}
+
 	/**
 	 * @return [r, g, b, a]
 	 */
 	public toArray(): [number, number, number, number] {
 		return [this.r, this.g, this.b, this.a]
+	}
+	public toJSON() {
+		return this.toArray()
 	}
 
 	public toIOBuffer(offset: number = 0): true {

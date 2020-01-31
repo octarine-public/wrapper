@@ -363,7 +363,7 @@ export function ParseProtobufDescLine(str: string): [/* field number */ number, 
 	}
 	return [parseInt(exec[4]), {
 		name: exec[3],
-		type: type,
+		type,
 		default_value,
 		proto_type,
 		proto_desc

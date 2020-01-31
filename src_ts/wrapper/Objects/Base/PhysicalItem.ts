@@ -7,13 +7,13 @@ export default class PhysicalItem extends Entity {
 	public Item_ = 0
 	public OldItem_ = 0
 
-	get Item(): Nullable<Item> {
+	public get Item(): Nullable<Item> {
 		return EntityManager.EntityByIndex(this.Item_) as Nullable<Item>
 	}
-	get OldItem(): Nullable<Item> {
-		return EntityManager.EntityByIndex(this.OldItem_) as Nullable<Item>
+	public get OldItem(): Nullable<Item> {
+		return EntityManager.GetEntityByNative(this.NativeEntity?.m_hOldItem) as Nullable<Item>
 	}
-	get ShowingTooltip(): boolean {
+	public get ShowingTooltip(): boolean {
 		return this.NativeEntity?.m_bShowingTooltip ?? false
 	}
 
@@ -33,4 +33,3 @@ export default class PhysicalItem extends Entity {
 import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTA_Item_Physical", PhysicalItem)
 RegisterFieldHandler(PhysicalItem, "m_hItem", (item, new_value) => item.Item_ = new_value as number)
-RegisterFieldHandler(PhysicalItem, "m_hOldItem", (item, new_value) => item.OldItem_ = new_value as number)

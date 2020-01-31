@@ -494,7 +494,7 @@ EventsSDK.on("Tick", () => {
 	{
 		let bs_buff = MyEnt.GetBuffByName("modifier_bloodseeker_bloodrage")
 		if (bs_buff !== undefined)
-			latest_spellamp *= bs_buff.Ability.GetSpecialValue("damage_increase_pct") / 100
+			latest_spellamp *= (bs_buff.Ability?.GetSpecialValue("damage_increase_pct") ?? 100) / 100
 	}
 	var availableAbils = GetAvailableAbils().filter(abilData => {
 		var abil = abilData.abil = MyEnt.GetAbilityByName(abilData.abilName) || MyEnt.GetItemByName(abilData.abilName)

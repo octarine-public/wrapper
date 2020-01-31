@@ -980,7 +980,7 @@ export default class Unit extends Entity {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler, RegisterFieldEventHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 import EventsSDK from "../../Managers/EventsSDK"
 RegisterClass("C_DOTA_BaseNPC", Unit)
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
@@ -990,19 +990,20 @@ RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
 RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => {
 	unit.IsVisibleForTeamMask = new_value as number
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
+	EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
-RegisterFieldEventHandler(Unit, "m_iTeamNum", (unit, new_val) => {
-	EventsSDK.emit("EntityTeamChanged", false, unit)
+RegisterFieldHandler(Unit, "m_iTeamNum", (unit, new_val) => {
 	let old_visibility = unit.IsVisibleForEnemies
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
 	if (unit.IsVisibleForEnemies !== old_visibility)
 		EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
-RegisterFieldEventHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => EventsSDK.emit("TeamVisibilityChanged", false, unit))
 RegisterFieldHandler(Unit, "m_anglediff", (unit, new_value) => unit.RotationDifference = new_value as number)
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, new_value) => unit.IsControllableByPlayerMask = new_value as bigint)
-RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => unit.NetworkActivity = new_value as number)
-RegisterFieldEventHandler(Unit, "m_NetworkActivity", (unit, new_value) => EventsSDK.emit("NetworkActivityChanged", false, unit))
+RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => {
+	unit.NetworkActivity = new_value as number
+	EventsSDK.emit("NetworkActivityChanged", false, unit)
+})
 RegisterFieldHandler(Unit, "m_flHealthThinkRegen", (unit, new_value) => unit.HPRegen = new_value as number)
 RegisterFieldHandler(Unit, "m_flManaThinkRegen", (unit, new_value) => unit.ManaRegen = new_value as number)
 RegisterFieldHandler(Unit, "m_bIsAncient", (unit, new_value) => unit.IsAncient = new_value as boolean)

@@ -187,10 +187,10 @@ export default class Node extends Base {
 			get Vector() {
 				return new Vector3(X.value as number, Y.value as number, Z.value as number)
 			},
-			set Vector(vector: Vector3) {
-				X.value = vector.x
-				Y.value = vector.y
-				Z.value = vector.z
+			set Vector(new_vec: Vector3) {
+				X.value = new_vec.x
+				Y.value = new_vec.y
+				Z.value = new_vec.z
 			},
 		}
 	}

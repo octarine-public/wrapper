@@ -20,6 +20,9 @@ export default new (class GameState {
 	public get AvgPing() {
 		return (GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000
 	}
+	public get IsConnected(): boolean {
+		return this.MapName !== "<empty>" && this.SignonState === SignonState_t.SIGNONSTATE_FULL
+	}
 	public GetLatency(flow: Flow_t = Flow_t.IN) {
 		return GetLatency(flow)
 	}
@@ -28,8 +31,5 @@ export default new (class GameState {
 	}
 	public ExecuteCommand(command: string) {
 		return SendToConsole(command)
-	}
-	public get IsConnected(): boolean {
-		return this.MapName !== "<empty>" && this.SignonState === SignonState_t.SIGNONSTATE_FULL
 	}
 })()

@@ -161,10 +161,7 @@ export default class ExecuteOrder {
 		return this
 	}
 
-	public toString(): string {
-		return JSON.stringify(this.toObject())
-	}
-	public toObject(): {
+	public toJSON(): {
 		OrderType: dotaunitorder_t,
 		Target: Nullable<Entity | number>,
 		Position: Vector3,
@@ -194,16 +191,16 @@ let last_order_click = new Vector3(),
 	execute_current = false,
 	current_order: Nullable<ExecuteOrder>
 Events.after("Update", (cmd_: CUserCmd) => {
-	let cmd = new UserCmd(cmd_)
+	let cmd = new UserCmd(cmd_),
+		order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
 	if (execute_current) {
-		let order = ExecuteOrder.order_queue[0]
-		order.Execute()
+		order!.Execute()
 		if (ExecuteOrder.debug_orders)
-			console.log("Executing order " + order.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
+			console.log("Executing order " + order!.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
 		ExecuteOrder.order_queue.splice(0, 1)
 		execute_current = false
+		order = ExecuteOrder.order_queue[0]
 	}
-	let order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
 	if (order !== undefined && order !== current_order) {
 		current_order = order
 		switch (order.OrderType) {

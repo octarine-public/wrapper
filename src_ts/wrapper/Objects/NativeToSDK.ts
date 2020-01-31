@@ -1,58 +1,43 @@
 import Entity from "./Base/Entity"
 import { EntityPropertyType } from "../Managers/EntityManager"
 
-type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => void
+export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => void
 let constructors = new Map<string, Constructor<Entity>>(),
 	field_handlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>(),
-	field_event_handlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>(),
 	sdk_classes: Constructor<Entity>[] = []
 
 export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	constructors.set(name, constructor)
 	sdk_classes.push(constructor)
 
-	{
-		let map = new Map<string, FieldHandler>()
-		let prototype = constructor.prototype
-		for (let [constructor_, map_] of field_handlers)
-			if (prototype instanceof constructor_)
-				for (let [k, v] of map_)
-					map.set(k, v)
-		field_handlers.set(constructor, map)
-	}
-	{
-		let map = new Map<string, FieldHandler>()
-		let prototype = constructor.prototype
-		for (let [constructor_, map_] of field_event_handlers)
-			if (prototype instanceof constructor_)
-				for (let [k, v] of map_)
-					map.set(k, v)
-		field_event_handlers.set(constructor, map)
+	let map = new Map<string, FieldHandler>()
+	let prototype = constructor.prototype
+	for (let [constructor_, map_] of field_handlers)
+		if (prototype instanceof constructor_)
+			for (let [k, v] of map_)
+				map.set(k, v)
+	field_handlers.set(constructor, map)
+}
+
+function GenerateChaninedFieldHandler(old: FieldHandler, new_: FieldHandler) {
+	return (ent: Entity, new_val: EntityPropertyType) => {
+		old(ent, new_val)
+		new_(ent, new_val)
 	}
 }
 export function RegisterFieldHandler<T extends Entity>(constructor: Constructor<T>, field_name: string, handler: (entity: T, new_value: EntityPropertyType) => void) {
-	let handler_ = handler as FieldHandler
-	field_handlers.get(constructor)!.set(field_name, handler_)
-	for (let [constructor_, map] of field_handlers)
-		if (constructor_.prototype instanceof constructor)
-			map.set(field_name, handler_)
-}
-export function RegisterFieldEventHandler<T extends Entity>(constructor: Constructor<T>, field_name: string, handler: (entity: T, new_value: EntityPropertyType) => void) {
-	let handler_ = handler as FieldHandler
-	field_event_handlers.get(constructor)!.set(field_name, handler_)
-	for (let [constructor_, map] of field_event_handlers)
-		if (constructor_.prototype instanceof constructor)
-			map.set(field_name, handler_)
+	let handler_ = handler as FieldHandler,
+		map = field_handlers.get(constructor)!
+	if (map.has(field_name))
+		handler_ = GenerateChaninedFieldHandler(map.get(field_name)!, handler_)
+	map.set(field_name, handler_)
 }
 
 export function GetSDKClasses(): Constructor<Entity>[] {
 	return sdk_classes
 }
-export function GetFieldHandlers(constructor: Constructor<Entity>): Map<string, FieldHandler> {
-	return field_handlers.get(constructor)!
-}
-export function GetFieldEventHandlers(constructor: Constructor<Entity>): Map<string, FieldHandler> {
-	return field_event_handlers.get(constructor)!
+export function GetFieldHandlers(): Map<Constructor<Entity>, Map<string, FieldHandler>> {
+	return field_handlers
 }
 
 export default function GetConstructor(constructor: Constructor<any>, constructor_name_hint: string) {

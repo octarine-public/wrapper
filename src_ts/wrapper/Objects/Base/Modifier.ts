@@ -101,9 +101,9 @@ export default class Modifier {
 		}
 		return this.Parent_
 	}
-	public get Ability(): Ability {
+	public get Ability(): Nullable<Ability> {
 		if (this.Ability_ === undefined)
-			this.Ability_ = EntityManager.EntityByIndex(this.m_pBuff.Ability) as Ability
+			this.Ability_ = EntityManager.EntityByIndex(this.m_pBuff.Ability) as Nullable<Ability>
 		return this.Ability_
 	}
 	public get Caster(): Nullable<Entity> {
@@ -146,5 +146,27 @@ export default class Modifier {
 
 	public toString(): string {
 		return this.Name
+	}
+	public toJSON() {
+		return {
+			IsValid: this.IsValid,
+			Index: this.Index,
+			SerialNumber: this.SerialNumber,
+			AbilityLevel: this.AbilityLevel,
+			IsAura: this.IsAura,
+			CreationTime: this.CreationTime,
+			DieTime: this.DieTime,
+			Duration: this.Duration,
+			ElapsedTime: this.ElapsedTime,
+			Parent: this.Parent?.Index,
+			Ability: this.Ability?.Index,
+			Caster: this.Caster?.Index,
+			AuraOwner: this.AuraOwner?.Index,
+			RemainingTime: this.RemainingTime,
+			StackCount: this.StackCount,
+			Name: this.Name,
+			vStart: this.vStart.toJSON(),
+			vEnd: this.vEnd.toJSON(),
+		}
 	}
 }

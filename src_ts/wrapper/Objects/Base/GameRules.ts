@@ -61,10 +61,10 @@ export default class CGameRules extends Entity {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler, RegisterFieldEventHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTAGamerulesProxy", CGameRules)
-RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => game.RawGameTime = new_val as number)
-RegisterFieldEventHandler(CGameRules, "m_fGameTime", () => {
+RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
+	game.RawGameTime = new_val as number
 	if (LocalPlayer !== undefined)
 		EventsSDK.emit("Tick", false)
 })

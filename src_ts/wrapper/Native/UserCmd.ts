@@ -133,15 +133,7 @@ export default class UserCmd {
 		this.m_CUserCmd.weaponsubtype = value?.Index ?? -1
 	}
 
-	public toString(): string {
-		const string = Object.assign(this.toObject())
-
-		string.Buttons = Number(string.Buttons)
-
-		return JSON.stringify(string, null, "\t")
-	}
-
-	public toObject() {
+	public toJSON() {
 		return {
 			ComandNumber: this.ComandNumber,
 			TickCount: this.TickCount,

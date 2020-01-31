@@ -14,7 +14,6 @@ const ehbText = ehb.AddToggle("Show numbers", false)
 const ehbSize = ehb.AddSlider("Size", 14, 10, 30)
 const number_mode_ehb = ehb.AddSwitcher("numbers Mode", ["Only mana", "Mana/MaxMana", "Only Percent", "Mana/Percent", "Mana/MaxMana/Percent"], 1)
 
-
 let br = " "
 let config = (Utils.parseKVFile("resource/ui/unithealthbar_hero.res").get("Resource/UI/UnitHealthBar_Hero.res") as Parse.RecursiveMap).get("UnitManaBar") as Parse.RecursiveMap
 

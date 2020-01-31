@@ -246,13 +246,13 @@ function AutoUseItems(unit: Unit) {
 					GetAllCreepsForMidas(unit, item)
 					return true
 				}
-				let Creep = GetAllCreepsForMidas(unit, item)
-				if (Creep.length <= 0)
+				let creep = GetAllCreepsForMidas(unit, item)
+				if (creep.length <= 0)
 					return false
-				Creep = Creep.sort((a, b) => b.MaxHP - a.MaxHP) // less MaxHP => first
-				if (!unit.IsInRange(Creep[0].Position, ((item.CastRange + unit.CastRangeBonus) + 100)) || !unit.CanAttack(Creep[0]))
+				creep = creep.sort((a, b) => b.MaxHP - a.MaxHP) // less MaxHP => first
+				if (!unit.IsInRange(creep[0].Position, ((item.CastRange + unit.CastRangeBonus) + 100)) || !unit.CanAttack(creep[0]))
 					return false
-				unit.CastTarget(item, Creep[0])
+				unit.CastTarget(item, creep[0])
 				TickSleep.Sleep(Base.GetDelayCast)
 				return true
 			}
@@ -385,19 +385,19 @@ function UrnUseAnyUnits(
 	})
 }
 
-function CheckCreeps(creep: Creep, unit: Unit, Item: Item): boolean {
-	if (!IsValidCreep(creep) || !unit.IsInRange(creep.Position, (Item.CastRange + unit.CastRangeBonus) + 100))
+function CheckCreeps(creep: Creep, unit: Unit, item: Item): boolean {
+	if (!IsValidCreep(creep) || !unit.IsInRange(creep.Position, (item.CastRange + unit.CastRangeBonus) + 100))
 		return false
 	if (AutoUseItemsMidas_range.value && creep.IsMelee)
 		return false
-	unit.CastTarget(Item, creep)
+	unit.CastTarget(item, creep)
 	TickSleep.Sleep(Base.GetDelayCast)
 	return true
 }
 
-function GetAllCreepsForMidas(Unit: Unit, Item: Item) {
+function GetAllCreepsForMidas(unit: Unit, item: Item) {
 	return EntityManager.GetEntitiesByClass(Creep).filter(creep =>
-		creep.IsEnemy() && CheckCreeps(creep, Unit, Item))
+		creep.IsEnemy() && CheckCreeps(creep, unit, item))
 }
 
 function UseSoulRing(Me: Unit, ability: Ability, args: ExecuteOrder): boolean {

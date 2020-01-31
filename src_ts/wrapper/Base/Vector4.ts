@@ -2,13 +2,12 @@ import Vector2 from "./Vector2"
 import Vector3 from "./Vector3"
 
 export default class Vector4 {
-	/* ================ Constructors ================ */
 	/**
-	 * Create new Vector3 with x, y, z
+	 * Create new Vector4 with x, y, z, w
 	 *
 	 * @example
-	 * var vector = new Vector3(1, 2, 3)
-	 * vector.Normalize();
+	 * var vector = new Vector4(1, 2, 3, 4)
+	 * vector.Normalize()
 	 */
 	constructor(public x: number = 0, public y: number = 0, public z: number = 0, public w: number = 0) { }
 
@@ -29,5 +28,8 @@ export default class Vector4 {
 	 */
 	public toArray(): [number, number, number] {
 		return [this.x, this.y, this.z]
+	}
+	public toJSON() {
+		return this.toArray()
 	}
 }

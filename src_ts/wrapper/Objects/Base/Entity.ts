@@ -27,7 +27,6 @@ m_pEntity.m_flags
 1 << 4 is EF_DELETE_IN_PROGRESS
 */
 export default class Entity {
-	/* ================================ Fields ================================ */
 	public NativeEntity: Nullable<C_BaseEntity>
 
 	public IsValid = true
@@ -51,33 +50,6 @@ export default class Entity {
 		this.PersonalProps = EntityManager.GetEntityProperties(this.Index) as Map<string, EntityPropertyType>
 	}
 
-	/* ================ GETTERS ================ */
-	public GetPropertyByName(name: string): Nullable<EntityPropertyType> {
-		return this.PersonalProps?.get(name)
-	}
-	public GetPropertyByPath(path: (string | number)[]): Nullable<EntityPropertyType> {
-		let node = this.PersonalProps as Nullable<EntityPropertyType>
-		if (node === undefined)
-			return undefined
-
-		// loop-optimizer: FORWARD
-		if (
-			path.some(a => {
-				if (typeof a === "number") {
-					if (!(node instanceof Array))
-						return true
-					node = node[a]
-				} else {
-					if (!(node instanceof Map))
-						return true
-					node = node.get(a)
-				}
-				return false
-			})
-		)
-			return undefined
-		return node
-	}
 	public get IsVisible(): boolean {
 		return EntityManager.IsEntityVisible(this.Index)
 	}
@@ -125,9 +97,6 @@ export default class Entity {
 	public get IsAlive(): boolean {
 		return this.LifeState === LifeState_t.LIFE_ALIVE || this.LifeState === LifeState_t.LIFE_RESPAWNING
 	}
-	/**
-	 * as Direction
-	 */
 	public get Forward(): Vector3 {
 		return Vector3.FromAngle(this.NetworkRotationRad)
 	}
@@ -160,7 +129,32 @@ export default class Entity {
 		return Math.sqrt(this.NativeEntity?.m_pCollision?.m_flRadius ?? 0)
 	}
 
-	/* ================ METHODS ================ */
+	public GetPropertyByName(name: string): Nullable<EntityPropertyType> {
+		return this.PersonalProps?.get(name)
+	}
+	public GetPropertyByPath(path: (string | number)[]): Nullable<EntityPropertyType> {
+		let node = this.PersonalProps as Nullable<EntityPropertyType>
+		if (node === undefined)
+			return undefined
+
+		// loop-optimizer: FORWARD
+		if (
+			path.some(a => {
+				if (typeof a === "number") {
+					if (!(node instanceof Array))
+						return true
+					node = node[a]
+				} else {
+					if (!(node instanceof Map))
+						return true
+					node = node.get(a)
+				}
+				return false
+			})
+		)
+			return undefined
+		return node
+	}
 	public Distance(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.Position
@@ -196,7 +190,9 @@ export default class Entity {
 		return this.Position.FindRotationAngle(vec, this.NetworkRotationRad)
 	}
 	/**
-	 * faster (Distance <= range)
+	 * That's a bit faster than just checking this.Distance(ent) < range,
+	 * since square root is omitted, and square of number is easier to calculate
+	 * than square root
 	 */
 	public IsInRange(ent: Vector3 | Vector2 | Entity, range: number): boolean {
 		return this.DistanceSqr2D(ent) < range ** 2
@@ -241,7 +237,7 @@ export default class Entity {
 		return [entities, vec]
 	}
 	/**
-	 * @param ent if undefined => this compare with LocalPlayer
+	 * @param ent optional, defaults to LocalPlayer
 	 */
 	public IsEnemy(ent: Nullable<Entity> = LocalPlayer): boolean {
 		return ent?.Team !== this.Team
@@ -264,13 +260,17 @@ function QuantitizedVecCoordToCoord(cell: number, inside: number): number {
 	return (cell - 128) * 128 + inside
 }
 
-import { RegisterClass, RegisterFieldHandler, RegisterFieldEventHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_BaseEntity", Entity)
 RegisterFieldHandler(Entity, "m_flCreateTime", (ent, new_val) => ent.CreateTime = new_val as number)
-RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => ent.Team = new_val as Team)
-RegisterFieldEventHandler(Entity, "m_iTeamNum", (ent, new_val) => EventsSDK.emit("EntityTeamChanged", false, ent))
-RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => ent.LifeState = new_val as LifeState_t)
-RegisterFieldEventHandler(Entity, "m_lifeState", (ent, new_val) => EventsSDK.emit("LifeStateChanged", false, ent))
+RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => {
+	ent.Team = new_val as Team
+	EventsSDK.emit("EntityTeamChanged", false, ent)
+})
+RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
+	ent.LifeState = new_val as LifeState_t
+	EventsSDK.emit("LifeStateChanged", false, ent)
+})
 RegisterFieldHandler(Entity, "m_iHealth", (ent, new_val) => ent.HP = new_val as number)
 RegisterFieldHandler(Entity, "m_iMaxHealth", (ent, new_val) => ent.MaxHP = new_val as number)
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => ent.Owner_ = new_val as number)

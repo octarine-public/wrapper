@@ -13,6 +13,9 @@ export default class Creep extends Unit {
 	public get IsNeutral(): boolean {
 		return this.Team === Team.Neutral
 	}
+	public get IsDeniable(): boolean {
+		return super.IsDeniable || this.HPPercent <= 50
+	}
 	public GetAdditionalAttackDamage(source: Unit): number {
 		let damage = 0
 		if (this.IsEnemy(source)) {
@@ -30,9 +33,6 @@ export default class Creep extends Unit {
 				multiplier *= battleFury.GetSpecialValue(source.IsMelee ? "quelling_bonus" : "quelling_bonus_ranged")
 		}
 		return multiplier
-	}
-	public get IsDeniable(): boolean {
-		return super.IsDeniable || this.HPPercent <= 50
 	}
 }
 

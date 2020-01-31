@@ -1,11 +1,12 @@
 import { EventsSDK, GameState, Menu, PlayerResource, ProjectileManager, RendererSDK, Vector2, Color, DOTAGameUIState_t, EventEmitter, Events } from "./wrapper/Imports"
+import { MapToObject } from "./wrapper/Utils/Utils"
 
 declare global {
 	var dump_stats: Function
 	var dump_stats_listeners: Function
 	var SafeLog: Function
 	var reset_avg_mult: Function
-	var dump_total: Function
+	var dump_total_avg: Function
 	var dump_total: Function
 }
 
@@ -94,7 +95,7 @@ EventsSDK.on("GameEvent", (name, obj) => {
 EventsSDK.on("ServerInfo", obj => {
 	if (!debugEvents.value)
 		return
-	SafeLog(obj) // TODO: that's map, and maps doesn't have serialization
+	SafeLog(MapToObject(obj))
 })
 
 // let config = (Utils.parseKVFile("resource/ui/hud_base.res").get("Resource/UI/HUD_Base.res") as Parse.RecursiveMap).get("MiniMap") as Parse.RecursiveMap
@@ -119,7 +120,7 @@ EventsSDK.on("Draw", () => {
 })
 
 let avg_map_events = new Map<string, [number, number]>(),
-	counter_map_events = new Map<string, number[]>(),
+	counter_map_events = new Map<string, [number, number][]>(),
 	max_map_events = new Map<string, number>(),
 	avg_map_listeners = new Map<string, Map<string, [number, number]>>(),
 	max_map_listeners = new Map<string, Map<string, number>>()
@@ -136,7 +137,7 @@ function RegisterStatsEvent(name: string, took: number): void {
 	avg_ar[1]++
 	avg_ar[0] /= avg_ar[1]
 	max_map_events.set(name, Math.max(max_map_events.get(name)!, took))
-	counter_map_events.get(name)!.push(hrtime())
+	counter_map_events.get(name)!.push([hrtime(), took])
 }
 
 function RegisterStatsListener(event_name: string, name: string, took: number) {
@@ -196,7 +197,7 @@ EventsSDK.on("Draw", () => {
 	counter_map_events.forEach((ar, name) => {
 		let cur_date = hrtime()
 		// loop-optimizer: FORWARD
-		counter_map_events.set(name, ar.filter(date => cur_date - date < 30 * 1000))
+		counter_map_events.set(name, ar.filter(([date]) => cur_date - date < 30 * 1000))
 	})
 })
 
@@ -218,7 +219,7 @@ globalThis.dump_stats = () => {
 		console.log(`${name}: ${took}ms`)
 }
 
-globalThis.dump_total = () => {
+globalThis.dump_total_avg = () => {
 	let total = 0
 	for (let [name, [took]] of avg_map_events.entries())
 		for (let [name2, ar] of counter_map_events.entries())
@@ -232,14 +233,14 @@ globalThis.dump_total = () => {
 
 globalThis.dump_total = () => {
 	let total = 0
-	console.log("Average: ")
-	for (let [name, [took]] of avg_map_events.entries())
-		for (let [name2, ar] of counter_map_events.entries())
-			if (name === name2) {
-				total += took * ar.length / 30
-				break
-			}
+	console.log("Took per second for last 30 seconds: ")
+	for (let [name, ar] of counter_map_events.entries()) {
+		let took_ = ar.reduce((prevVal, [, took]) => prevVal + took, 0) / 30
+		total += took_
+		console.log(`${name}: ${took_}`)
+	}
 
+	console.log("Total took per second for last 30 seconds: ")
 	console.log(total)
 }
 

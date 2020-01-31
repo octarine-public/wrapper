@@ -5,7 +5,7 @@ import Node from "./Node"
 import Events from "../Managers/Events"
 import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
 
-let Menu = new (class Menu {
+let Menu = new (class MenuManager {
 	public entries: Node[] = []
 	public config: any
 	public is_open = true

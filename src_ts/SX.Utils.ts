@@ -46,7 +46,6 @@ let consoleClear = () => console.clear()
 
 globalThis.clear = consoleClear
 
-
 BuybackBind.OnRelease(() => {
 	if (Player === undefined || LocalPlayer === undefined || LocalPlayer.Hero === undefined || LocalPlayer.Hero.IsAlive)
 		return

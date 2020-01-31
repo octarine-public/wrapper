@@ -26,7 +26,6 @@ import * as MapExtensions from "./Utils/MapExtensions"
 import * as MathSDK from "./Utils/Math"
 import * as Parse from "./Utils/ParseKV"
 import * as Utils from "./Utils/Utils"
-export { default as Benchmark } from "./Utils/BenchMark"
 export { default as GameState } from "./Utils/GameState"
 export { Utils, MathSDK, ArrayExtensions, BitsExtensions, MapExtensions, Parse }
 
@@ -35,7 +34,7 @@ export { Menu }
 
 export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
 
-export { default as Particle } from "./Objects/Base/Particle"
+export { default as Particle } from "./Base/Particle"
 export { default as ParticlesSDK } from "./Managers/ParticleManager"
 
 export { default as Events, EventEmitter } from "./Managers/Events"

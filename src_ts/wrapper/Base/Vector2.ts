@@ -2,7 +2,6 @@ import { ProjectionInfo } from "../Geometry/ProjectionInfo"
 import Vector3 from "./Vector3"
 
 export default class Vector2 {
-	/* ================== Static ================== */
 	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Nullable<Vector2> {
 		if (buffer !== true)
 			return undefined
@@ -23,20 +22,14 @@ export default class Vector2 {
 		return new Vector2(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
 	public static GetCenterType<T>(array: T[], callback: (value: T) => Vector2): Vector2 {
-
 		let newVec = new Vector2()
-
 		array.forEach(vec => newVec.AddForThis(callback(vec)))
-
 		return newVec.DivideScalarForThis(array.length)
 
 	}
 	public static GetCenter(array: Vector2[]): Vector2 {
-
 		let newVec = new Vector2()
-
 		array.forEach(vec => newVec.AddForThis(vec))
-
 		return newVec.DivideScalarForThis(array.length)
 
 	}
@@ -44,24 +37,21 @@ export default class Vector2 {
 		return new Vector2(vec.x, vec.y)
 	}
 
-	/* ================ Constructors ================ */
 	/**
 	 * Create new Vector2 with x, y
 	 *
 	 * @example
 	 * var vector = new Vector2(1, 2)
-	 * vector.Normalize();
+	 * vector.Normalize()
 	 */
 	constructor(public x: number = 0, public y: number = 0) { }
 
-	/* ================== Getters ================== */
 	/**
 	 * Is this vector valid? (every value must not be infinity/NaN)
 	 */
 	get IsValid(): boolean {
 		var x = this.x,
 			y = this.y
-
 		return !Number.isNaN(x) && Number.isFinite(x)
 			&& !Number.isNaN(y) && Number.isFinite(y)
 	}
@@ -750,15 +740,7 @@ export default class Vector2 {
 	public DegreesToRadians(): Vector2 {
 		return this.MultiplyScalar(Math.PI).DivideScalar(180)
 	}
-	/* ================== to ================== */
-	/**
-	 * Get hash code of vector
-	 */
-	public GetHashCode(): number {
-		let hash = this.x
-		hash = (hash * 397) ^ this.y
-		return hash
-	}
+
 	/**
 	 * @return Vector2(x,y)
 	 */
@@ -770,6 +752,9 @@ export default class Vector2 {
 	 */
 	public toArray(): [number, number] {
 		return [this.x, this.y]
+	}
+	public toJSON() {
+		return this.toArray()
 	}
 
 	public toVector3(): Vector3 {

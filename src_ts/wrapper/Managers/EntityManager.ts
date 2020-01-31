@@ -4,7 +4,7 @@ import Events from "./Events"
 
 import Entity from "../Objects/Base/Entity"
 
-import NativeToSDK, { GetSDKClasses, GetFieldHandlers, GetFieldEventHandlers } from "../Objects/NativeToSDK"
+import NativeToSDK, { GetSDKClasses, GetFieldHandlers, FieldHandler } from "../Objects/NativeToSDK"
 
 import EventsSDK from "./EventsSDK"
 import BinaryStream from "../Utils/BinaryStream"
@@ -42,10 +42,9 @@ class bitset {
 	}
 }
 
-let VisibilityMask = new bitset(0x3FFF)
 export type EntityPropertyType = Map<string, EntityPropertyType> | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
-export type NetworkFieldsChangedType = [string[], EntityPropertyType[]]
-let ent_props = new Map<number, EntityPropertyType>()
+let ent_props = new Map<number, EntityPropertyType>(),
+	VisibilityMask = new bitset(0x3FFF)
 class CEntityManager {
 	public get AllEntities(): Entity[] {
 		return AllEntities
@@ -226,24 +225,19 @@ function ClassFromNative(id: number, constructor_name: string, ent_name: Nullabl
 }
 
 /* ================ RUNTIME CACHE ================ */
-function ApplyChanges(ent: Entity, changes: NetworkFieldsChangedType, map1: Map<string, (entity: Entity, new_value: EntityPropertyType) => void>, map2?: Map<string, (entity: Entity, new_value: EntityPropertyType) => void>) {
+let cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
+export type NetworkFieldsChangedType = [number[], EntityPropertyType[]]
+function ApplyChanges(ent: Entity, changes: NetworkFieldsChangedType) {
 	let [changed_paths, changed_paths_values] = changes
 	// loop-optimizer: FORWARD
 	changed_paths.forEach((field_name, i) => {
-		{
-			let cb = map1.get(field_name)
-			if (cb !== undefined)
-				cb(ent, changed_paths_values[i])
-		}
-		if (map2 !== undefined) {
-			let cb = map2.get(field_name)
-			if (cb !== undefined)
-				cb(ent, changed_paths_values[i])
-		}
+		let cb = cached_field_handlers.get(ent.constructor as Constructor<Entity>)?.get(field_name)
+		if (cb !== undefined)
+			cb(ent, changed_paths_values[i])
 	})
 }
 
-function CreateEntity(id: number, class_name: string, entity_name: Nullable<string>, changes: NetworkFieldsChangedType): void {
+function CreateEntity(id: number, class_name: string, entity_name: Nullable<string>): void {
 	let entity = ClassFromNative(id, class_name, entity_name)
 	entity.ClassName = class_name
 	AllEntitiesAsMap.set(id, entity)
@@ -257,9 +251,7 @@ function CreateEntity(id: number, class_name: string, entity_name: Nullable<stri
 			ClassToEntities.set(class_, [])
 		ClassToEntities.get(class_)!.push(entity)
 	})
-	ApplyChanges(entity, changes, GetFieldHandlers(entity.constructor as Constructor<Entity>))
 	EventsSDK.emit("EntityCreated", false, entity)
-	ApplyChanges(entity, changes, GetFieldEventHandlers(entity.constructor as Constructor<Entity>))
 }
 
 function DeleteEntity(id: number) {
@@ -365,14 +357,23 @@ Events.on("ServerMessage", (msg_id, buf) => {
 		case 41: {
 			let msg = ParseProtobufNamed(buf, "CSVCMsg_FlattenedSerializer")
 			entities_symbols = [...(msg.get("symbols") as Map<number, string>).values()]
+			for (let [construct, map] of GetFieldHandlers()) {
+				let map2 = new Map<number, FieldHandler>()
+				for (let [field_name, field_handler] of map) {
+					let id = entities_symbols.indexOf(field_name)
+					if (id === -1)
+						throw `Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`
+					map2.set(id, field_handler)
+				}
+				cached_field_handlers.set(construct, map2)
+			}
 			break
 		}
 		case 55: { // we have custom parsing for CSVCMsg_PacketEntities
-			//let time = hrtime()
 			let stream = new BinaryStream(new DataView(buf)),
 				changes: [number, NetworkFieldsChangedType][] = []
 			let queued_deletion: number[] = [],
-				queued_creation: [number, string, NetworkFieldsChangedType][] = []
+				queued_creation: [number, string][] = []
 			while (!stream.Empty()) {
 				let ent_id = stream.ReadNumber(2)
 				let pvs: EntityPVS = stream.ReadNumber(1)
@@ -390,20 +391,19 @@ Events.on("ServerMessage", (msg_id, buf) => {
 				if (!ent_props.has(ent_id))
 					ent_props.set(ent_id, new Map())
 				let ent_node = ent_props.get(ent_id)!
-				let changed_paths: string[] = []
-				let chaged_paths_results: EntityPropertyType[] = []
-				let path_size: number
-				while ((path_size = stream.ReadNumber(1)) !== 0) {
+				let changed_paths: number[] = [],
+					chaged_paths_results: EntityPropertyType[] = []
+				for (let path_size = 0; (path_size = stream.ReadNumber(1)) !== 0;) {
 					let raw_path = new Uint16Array(stream.ReadSlice(2 * path_size)),
 						prop_node = ent_node
 					for (let i = 0; i < path_size; i++) {
 						let id = raw_path[i]
 						let must_be_array = id & 1
 						id >>= 1
-						if (prop_node instanceof Map && must_be_array)
-							throw `Expected array`
+						if (!(prop_node instanceof Array) && must_be_array)
+							throw "Expected array"
 						if (!(prop_node instanceof Map) && !must_be_array)
-							throw `Expected Map`
+							throw "Expected Map"
 
 						if (must_be_array) {
 							let ar = prop_node as EntityPropertyType[]
@@ -416,7 +416,6 @@ Events.on("ServerMessage", (msg_id, buf) => {
 						} else {
 							let map = prop_node as Map<string, EntityPropertyType>
 							let sym = entities_symbols[id]
-							changed_paths.push(sym)
 							if (i !== path_size - 1) {
 								if (!map.has(sym))
 									map.set(sym, (raw_path[i + 1] & 1) ? [] : new Map())
@@ -427,28 +426,28 @@ Events.on("ServerMessage", (msg_id, buf) => {
 								map.set(sym, prop)
 								chaged_paths_results.push(prop)
 							}
+							changed_paths.push(id)
 						}
 					}
 				}
 				if (pvs === EntityPVS.CREATE)
-					queued_creation.push([ent_id, ent_class, [changed_paths, chaged_paths_results]])
-				else if (changed_paths.length !== 0)
+					queued_creation.push([ent_id, ent_class])
+				if (changed_paths.length !== 0)
 					changes.push([ent_id, [changed_paths, chaged_paths_results]])
 			}
-			//console.log(`Parsing ${changes.length} changes took ${hrtime() - time}ms`)
 			// loop-optimizer: FORWARD
 			queued_deletion.forEach(ent_id => DeleteEntity(ent_id))
 			// loop-optimizer: FORWARD
-			queued_creation.forEach(([ent_id, class_name, ar]) => {
+			queued_creation.forEach(([ent_id, class_name]) => {
 				let stringtables_id = EntityManager.GetEntityPropertyByPath(ent_id, ["m_pEntity", "m_nameStringableIndex"]) as number
-				CreateEntity(ent_id, class_name, StringTables.GetString("EntityNames", stringtables_id), ar)
+				CreateEntity(ent_id, class_name, StringTables.GetString("EntityNames", stringtables_id))
 			})
 			// loop-optimizer: FORWARD
 			changes.forEach(([ent_id, changes_]) => {
 				let ent = EntityManager.EntityByIndex(ent_id)
 				if (ent === undefined)
 					return
-				ApplyChanges(ent, changes_, GetFieldHandlers(ent.constructor as Constructor<Entity>), GetFieldEventHandlers(ent.constructor as Constructor<Entity>))
+				ApplyChanges(ent, changes_)
 			})
 			break
 		}

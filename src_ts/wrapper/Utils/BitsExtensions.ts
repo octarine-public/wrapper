@@ -28,17 +28,17 @@ export function HasMaskBigInt(num: bigint, mask: bigint): boolean {
 
 export function FixInt16(num: number) {
 	if (HasBit(num, 15)) {
-		num &= ~(1 << 15);
-		num = (0xFFFF >> 1) - num + 1;
-		num *= -1;
+		num &= ~(1 << 15)
+		num = (0xFFFF >> 1) - num + 1
+		num *= -1
 	}
-	return num;
+	return num
 }
 export function FixInt16BigInt(num: bigint) {
 	if (HasBitBigInt(num, 15n)) {
-		num &= ~(1n << 15n);
-		num = (0xFFFFn >> 1n) - num + 1n;
-		num *= -1n;
+		num &= ~(1n << 15n)
+		num = (0xFFFFn >> 1n) - num + 1n
+		num *= -1n
 	}
-	return num;
+	return num
 }
