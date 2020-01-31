@@ -125,7 +125,7 @@ class CEntityManager {
 		if (
 			path.some(a => {
 				if (typeof a === "number") {
-					if (!(node instanceof Array))
+					if (!Array.isArray(node))
 						return true
 					node = node[a]
 				} else {
@@ -400,7 +400,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 						let id = raw_path[i]
 						let must_be_array = id & 1
 						id >>= 1
-						if (!(prop_node instanceof Array) && must_be_array)
+						if (!Array.isArray(prop_node) && must_be_array)
 							throw "Expected array"
 						if (!(prop_node instanceof Map) && !must_be_array)
 							throw "Expected Map"

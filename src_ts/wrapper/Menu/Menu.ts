@@ -89,7 +89,7 @@ let Menu = new (class MenuManager {
 		return ret
 	}
 	public AddEntry(name: string | string[]): Node {
-		if (name instanceof Array) {
+		if (Array.isArray(name)) {
 			if (name.length === 0)
 				throw "Invalid name array passed to Menu.AddEntry"
 			else if (name.length === 1)

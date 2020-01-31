@@ -141,7 +141,7 @@ export default class Entity {
 		if (
 			path.some(a => {
 				if (typeof a === "number") {
-					if (!(node instanceof Array))
+					if (!Array.isArray(node))
 						return true
 					node = node[a]
 				} else {

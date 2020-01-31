@@ -34,7 +34,7 @@ export default class Particle {
 
 		if (param instanceof Entity)
 			param = param.Position
-		else if (param instanceof Array)
+		else if (Array.isArray(param))
 			param = Vector3.fromArray(param)
 		else if (typeof param === "number" || typeof param === "boolean")
 			param = new Vector3((param as number) + 0, 0, 0)

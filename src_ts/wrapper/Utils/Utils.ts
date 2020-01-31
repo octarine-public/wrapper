@@ -136,12 +136,12 @@ export function parseEnumString(enum_object: any /* { [key: string]: number } */
 
 function FixArray(ar: any[]): any {
 	// loop-optimizer: KEEP
-	return ar.map(v => v instanceof Map ? MapToObject(v) : v instanceof Array ? FixArray(v) : v)
+	return ar.map(v => v instanceof Map ? MapToObject(v) : Array.isArray(v) ? FixArray(v) : v)
 }
 
 export function MapToObject(map: Map<any, any>): any {
 	let obj: any = {}
 	// loop-optimizer: KEEP
-	map.forEach((v, k) => obj[k] = v instanceof Map ? MapToObject(v) : v instanceof Array ? FixArray(v) : v)
+	map.forEach((v, k) => obj[k] = v instanceof Map ? MapToObject(v) : Array.isArray(v) ? FixArray(v) : v)
 	return obj
 }
