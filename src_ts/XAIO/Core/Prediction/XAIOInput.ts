@@ -5,9 +5,7 @@ export default class XAIOInput {
 	constructor(
 		public Target: Unit,
 		public Caster: Unit,
-		public CastRange: number,
 		public Delay: number,
-		public EndRadius: number,
 		public Radius: number,
 		public CollisionTypes: XAIOCollisionTypes,
 		public Range: number,

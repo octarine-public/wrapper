@@ -1,16 +1,39 @@
-import { Color, EventsSDK, Game, Hero, LocalPlayer, Menu, RendererSDK, Vector2, DOTAGameUIState_t, EntityManager, Utils, Parse } from "wrapper/Imports"
+import { Color, EventsSDK, Hero, Game, LocalPlayer, Menu, RendererSDK, Vector2, DOTAGameUIState_t, EntityManager, Utils, Parse } from "wrapper/Imports"
 
-const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"]),
-	emb = EMBMenu.AddNode("Mana Bars"),
-	ehb = EMBMenu.AddNode("HP Bars"),
-	stateMain = EMBMenu.AddToggle("State", true),
-	round_mode = EMBMenu.AddSwitcher("Rounding Mode", ["round", "floor"], 1),
-	embText = emb.AddToggle("Show numbers", false),
-	embSize = emb.AddSlider("Size", 14, 10, 30),
-	ehbText = ehb.AddToggle("Show numbers", false),
-	ehbSize = ehb.AddSlider("Size", 14, 10, 30)
+const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"])
+const stateMain = EMBMenu.AddToggle("State", true)
+const round_mode = EMBMenu.AddSwitcher("Rounding Mode", ["round", "floor"], 1)
 
+const emb = EMBMenu.AddNode("Mana Bars")
+const embText = emb.AddToggle("Show numbers", false)
+const embSize = emb.AddSlider("Size", 14, 10, 30)
+const number_mode_emb = emb.AddSwitcher("numbers Mode", ["Only HP", "HP/MaxHP", "Only Percent", "HP/Percent", "HP/MaxHP/Percent"], 1)
+
+const ehb = EMBMenu.AddNode("HP Bars")
+const ehbText = ehb.AddToggle("Show numbers", false)
+const ehbSize = ehb.AddSlider("Size", 14, 10, 30)
+const number_mode_ehb = ehb.AddSwitcher("numbers Mode", ["Only mana", "Mana/MaxMana", "Only Percent", "Mana/Percent", "Mana/MaxMana/Percent"], 1)
+
+
+let br = " "
 let config = (Utils.parseKVFile("resource/ui/unithealthbar_hero.res").get("Resource/UI/UnitHealthBar_Hero.res") as Parse.RecursiveMap).get("UnitManaBar") as Parse.RecursiveMap
+
+function ShowNumber(selector: Menu.Switcher, num: number, max_num: number) {
+	switch (selector.selected_id) {
+		case 0:
+			return `${Math.floor(num)}`
+		case 1:
+			return `${Math.floor(num)}/${Math.floor(max_num)}`
+		case 2:
+			return `${Math.floor(Math.floor(num) / Math.floor(max_num) * 100)}%`
+		case 3:
+			return `${Math.floor(num)}${br.repeat(3)} | ${br.repeat(3)}${Math.floor(Math.floor(num) / Math.floor(max_num) * 100)}%`
+		case 4:
+			return `${Math.floor(num)}/${Math.floor(max_num)}${br.repeat(2)} | ${br.repeat(2)}${Math.floor(Math.floor(num) / Math.floor(max_num) * 100)}%`
+	}
+	return ""
+}
+
 EventsSDK.on("Draw", () => {
 	if (LocalPlayer === undefined || !stateMain.value || !Game.IsInGame || Game.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME || LocalPlayer.IsSpectator)
 		return false
@@ -25,7 +48,7 @@ EventsSDK.on("Draw", () => {
 		let wts = RendererSDK.WorldToScreen(hero.Position.AddScalarZ(hero.HealthBarOffset))
 		if (wts === undefined)
 			return
-		wts.SubtractForThis(manabar_size.Divide(new Vector2(1.9, 0.4)))
+		wts.SubtractForThis(manabar_size.Divide(new Vector2(1.95, 0.42)))
 		if (round_mode.selected_id === 1) {
 			wts.x = Math.floor(wts.x)
 			wts.y = Math.floor(wts.y)
@@ -36,7 +59,7 @@ EventsSDK.on("Draw", () => {
 		RendererSDK.FilledRect(wts, manabar_size, Color.Black)
 		RendererSDK.FilledRect(wts, new Vector2(manabar_size.x * hero.Mana / hero.MaxMana, manabar_size.y), Color.RoyalBlue)
 		if (embText.value) {
-			let text = `${Math.floor(hero.Mana)}/${Math.floor(hero.MaxMana)}`,
+			let text = ShowNumber(number_mode_emb, hero.Mana, hero.MaxMana),
 				size = new Vector2(embSize.value, 200)
 			RendererSDK.Text(
 				text,
@@ -50,7 +73,7 @@ EventsSDK.on("Draw", () => {
 			)
 		}
 		if (ehbText.value) {
-			let text = `${Math.floor(hero.HP)}/${Math.floor(hero.MaxHP)}`,
+			let text = ShowNumber(number_mode_ehb, hero.HP, hero.MaxHP),
 				size = new Vector2(ehbSize.value, 200)
 			RendererSDK.Text(
 				text,

@@ -1,5 +1,7 @@
 import { EventsSDK, Game, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, TickSleeper, Color, RendererSDK, Vector2, Input } from "wrapper/Imports"
-
+declare global {
+	var clear: CallableFunction
+}
 const Menu = MenuSDK.AddEntry(["Debugger", "SX.Utils"])
 const State = Menu.AddToggle("State")
 const MenuTreeColor = Menu.AddNode("Enemy color")
@@ -31,9 +33,19 @@ range_display.OnValue(call => {
 
 const Server_log = "dota_log_server_connection"
 const auto_pause_disconnect = "dota_pause_same_team_resume_time_disconnected"
+const draw_path = "dota_unit_draw_paths"
+const draw_path_short = "dota_unit_short_path_search_debug"
+//const draw_selection_boxes = "dota_unit_show_selection_boxes"
+const draw_collision_radius = "dota_unit_show_collision_radius"
+const draw__bounding_radius = "dota_unit_show_bounding_radius"
 
 // cmdrate 20-40 lock server
 const cl_cmdrate = "cl_cmdrate", cl_updaterate = "cl_updaterate"
+
+let consoleClear = () => console.clear()
+
+globalThis.clear = consoleClear
+
 
 BuybackBind.OnRelease(() => {
 	if (Player === undefined || LocalPlayer === undefined || LocalPlayer.Hero === undefined || LocalPlayer.Hero.IsAlive)
@@ -48,6 +60,20 @@ Menu.AddKeybind("Full sven").OnRelease(() => {
 	Game.ExecuteCommand("dota_create_unit npc_dota_hero_sven enemy")
 	prees = true
 	Sleep.Sleep(1000 + Game.Ping / 2)
+})
+
+State.OnDeactivate(() => {
+	// if (ConVars.GetInt(draw_selection_boxes) !== 0)
+	// 	Game.ExecuteCommand(draw_selection_boxes + " 0")
+
+	if (ConVars.GetInt(draw_collision_radius) !== 0)
+		Game.ExecuteCommand(draw_collision_radius + " 0")
+
+	if (ConVars.GetInt(draw__bounding_radius) !== 0)
+		Game.ExecuteCommand(draw__bounding_radius + " 0")
+
+	if (ConVars.GetInt(draw_path) !== 0)
+		Game.ExecuteCommand(draw_path + " 0")
 })
 
 EventsSDK.on("Tick", () => {
@@ -65,6 +91,21 @@ EventsSDK.on("Tick", () => {
 	if (ConVars.GetInt(Server_log) === 1)
 		Game.ExecuteCommand(Server_log + " 0")
 
+	if (ConVars.GetInt(draw_path_short) === 1)
+		Game.ExecuteCommand(Server_log + " 0")
+
+	// if (ConVars.GetInt(draw_selection_boxes) !== 1)
+	// 	Game.ExecuteCommand(draw_selection_boxes + " 1")
+
+	if (ConVars.GetInt(draw_collision_radius) !== 1)
+		Game.ExecuteCommand(draw_collision_radius + " 1")
+
+	if (ConVars.GetInt(draw__bounding_radius) !== 1)
+		Game.ExecuteCommand(draw__bounding_radius + " 1")
+
+	if (ConVars.GetInt(draw_path) !== 1)
+		Game.ExecuteCommand(draw_path + " 1")
+
 	if (ConVars.GetInt(cl_cmdrate) === 30)
 		Game.ExecuteCommand(cl_cmdrate + " 40")
 
@@ -76,7 +117,6 @@ EventsSDK.on("Tick", () => {
 
 	if (StateAutoDisconnect.value && Game.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_POST_GAME)
 		Game.ExecuteCommand("disconnect")
-
 })
 
 EventsSDK.on("Draw", () => {

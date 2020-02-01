@@ -1,36 +1,45 @@
 
 import { Unit, EventsSDK, LocalPlayer, EntityManager } from "wrapper/Imports"
-import { stateGlobal, LanguageState } from "./Menu/Base"
+import { XAIOStateGlobal, XAIOLanguageState, XAIOGeneralSettings } from "XAIO/Menu/Menu"
+import { XAIOEvents } from "./Core/bootstrap"
+export { XAIOStateGlobal } from "XAIO/Menu/Menu"
+let XAIOversion = XAIOGeneralSettings.AddNode("XAIO Verison: 1.3")
+
+XAIOversion.FontSize = 20
+XAIOversion.is_open = true
+XAIOversion.FontColor.SetColor(3, 127, 252, 255)
 
 export let Units: Unit[] = []
+export let UnitsIsControllable: Unit[] = []
 
-interface HeroModule {
-	InitTick(unit: Unit): void
-}
-
-let hero_modules = new Map<string, HeroModule>()
-let temp_lang = LanguageState.selected_id
-
-export function RegisterHeroModule(name: string, module: HeroModule) {
-	hero_modules.set(name, module)
-}
+let XIAOTempLanguage = XAIOLanguageState.selected_id
 
 EventsSDK.on("Tick", () => {
-	if (!stateGlobal.value || LocalPlayer!.IsSpectator)
+	if (!XAIOStateGlobal.value || LocalPlayer!.IsSpectator)
 		return
+
 	Units = EntityManager.GetEntitiesByClass(Unit)
-	Units.some(unit =>
-		unit.IsAlive
-		&& !unit.IsEnemy()
-		&& unit.IsControllable
-		&& hero_modules.has(unit.Name)
-		&& hero_modules.get(unit.Name)!.InitTick(unit))
+
+	let newUnitsCtrl = Units.filter(x => x.IsControllable && x.IsAlive)
+
+	UnitsIsControllable.forEach(unit => {
+		if (!newUnitsCtrl.includes(unit))
+			XAIOEvents.emit("removeControllable", false, unit)
+	})
+	UnitsIsControllable = newUnitsCtrl
 })
 
 EventsSDK.on("Draw", () => {
-	if (temp_lang === LanguageState.selected_id)
+	XAIOversion.is_open = true
+	if (XIAOTempLanguage === XAIOLanguageState.selected_id)
 		return
-	temp_lang = LanguageState.selected_id
+	XIAOTempLanguage = XAIOLanguageState.selected_id
 	EventsSDK.emit("GameEnded", false)
 	reload("eTE9Te5rgBYThsO", true)
 })
+
+EventsSDK.on("GameEnded", () => {
+	Units = []
+	UnitsIsControllable = []
+})
+

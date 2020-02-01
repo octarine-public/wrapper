@@ -174,7 +174,7 @@ function snatchRuneByUnit(npc: Unit, rune: Rune) {
 		if (Distance <= takeRadius.value && !(npc.IsInvulnerable && Distance > 100)) {
 			picking_up.set(npc, rune)
 			npc.PickupRune(rune)
-			Sleep.Sleep(30, "PickupRune")
+			Sleep.Sleep(150, "PickupRune")
 			return false
 		}
 

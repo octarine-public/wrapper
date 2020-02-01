@@ -1,3 +1,5 @@
+import { Utf8ArrayToStr } from "./Utils"
+
 export default class BinaryStream {
 	constructor(public readonly view: DataView, public pos = 0) { }
 
@@ -48,6 +50,12 @@ export default class BinaryStream {
 		let slice = this.view.buffer.slice(this.pos, this.pos + size)
 		this.RelativeSeek(size)
 		return slice
+	}
+	public ReadVarSlice(): ArrayBuffer {
+		return this.ReadSlice(Number(this.ReadVarUint()))
+	}
+	public ReadVarString(): string {
+		return Utf8ArrayToStr(new Uint8Array(this.ReadVarSlice()))
 	}
 	public Empty(): boolean {
 		return this.pos >= this.view.byteLength

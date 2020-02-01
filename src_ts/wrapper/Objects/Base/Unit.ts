@@ -6,7 +6,7 @@ import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
 
 import { LocalPlayer } from "../../Managers/EntityManager"
 
-import Entity, { rotation_speed } from "./Entity"
+import Entity from "./Entity"
 import Player from "./Player"
 
 import AbilitiesBook from "../DataBook/AbilitiesBook"
@@ -28,20 +28,30 @@ import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { RecursiveMap } from "../../Utils/ParseKV"
 import Game from "../GameResources/GameRules"
 
+const movementTurnRate = new Map<string, number>()
 const attackAnimationPoint = new Map<string, number>()
 const attackprojectileSpeed = new Map<string, number>()
 
-let parseHeroes = parseKVFile("scripts/npc/npc_heroes.txt").get("DOTAHeroes") as RecursiveMap
-for (let hero of parseHeroes.keys()) {
-	const heroFields = parseHeroes.get(hero)
-	if (!(heroFields instanceof Map))
-		continue
-	if (heroFields.has("AttackAnimationPoint"))
-		attackAnimationPoint.set(hero, parseFloat(heroFields.get("AttackAnimationPoint") as string))
-	if (heroFields.has("ProjectileSpeed"))
-		attackprojectileSpeed.set(hero, parseFloat(heroFields.get("ProjectileSpeed") as string))
-	// another values from script files. (i.e AttackRate, AttackRate)
+const parseScriptUnits = (path: string, field: string) => {
+
+	const parsed = parseKVFile(path).get(field) as RecursiveMap
+
+	for (let unit of parsed.keys()) {
+		const unitFields = parsed.get(unit)
+		if (!(unitFields instanceof Map))
+			continue
+		if (unitFields.has("MovementTurnRate"))
+			movementTurnRate.set(unit, parseFloat(unitFields.get("MovementTurnRate") as string))
+		if (unitFields.has("AttackAnimationPoint"))
+			attackAnimationPoint.set(unit, parseFloat(unitFields.get("AttackAnimationPoint") as string))
+		if (unitFields.has("ProjectileSpeed"))
+			attackprojectileSpeed.set(unit, parseFloat(unitFields.get("ProjectileSpeed") as string))
+		// another values from script files. (i.e AttackRate, AttackRate)
+	}
 }
+
+parseScriptUnits("scripts/npc/npc_heroes.txt", "DOTAHeroes")
+parseScriptUnits("scripts/npc/npc_units.txt", "DOTAUnits")
 
 export default class Unit extends Entity {
 	/* ================================ Static ================================ */
@@ -451,6 +461,9 @@ export default class Unit extends Entity {
 	/* ================================ EXTENSIONS ================================ */
 
 	/* ================ GETTERS ================ */
+	public get MovementTurnRate(): number {
+		return movementTurnRate.get(this.Name) ?? 0
+	}
 	public get AttackAnimationPoint(): number {
 		return attackAnimationPoint.get(this.Name) ?? 0
 	}
@@ -597,8 +610,14 @@ export default class Unit extends Entity {
 		})
 	}
 
+	public GetRotationTime(vec: Vector3): number {
+		const turn_rad = Math.PI - 0.25
+		let ang = this.FindRotationAngle(vec)
+		return ang <= turn_rad ? 30 * ang / this.MovementTurnRate : 0
+	}
+
 	public TurnRate(currentTurnRate: boolean = true): number {
-		let turnRate = rotation_speed[this.Name] || 0.5
+		let turnRate = this.MovementTurnRate || 0.5
 
 		if (currentTurnRate) {
 			if (this.HasBuffByName("modifier_medusa_stone_gaze_slow"))
@@ -612,11 +631,9 @@ export default class Unit extends Entity {
 	}
 
 	public TurnTime(angle: number | Vector3) {
-		if (angle instanceof Vector3) {
+		if (angle instanceof Vector3)
 			angle = this.FindRotationAngle(angle)
-			if (isNaN(angle)) // face palm
-				return 0
-		}
+
 		let name = this.Name
 		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier" || name === "npc_dota_hero_clinkz")
 			return 0
@@ -624,7 +641,7 @@ export default class Unit extends Entity {
 		if (angle <= 0.2)
 			return 0
 
-		return this.TurnRate() / 30 * angle
+		return (0.03 / this.TurnRate()) * angle
 	}
 
 	public AbsorbedDamage(dmg: number, damage_type: DAMAGE_TYPES, source?: Unit): number {

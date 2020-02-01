@@ -1,32 +1,59 @@
-import { Unit, GameSleeper, EventsSDK } from "wrapper/Imports"
+// import { Unit, GameSleeper, pudge_meat_hook, EventsSDK } from "wrapper/Imports"
 
-let GameSleep = new GameSleeper()
+// import { XAIOComboKey } from "../Menu"
 
-export let _Unit: Nullable<Unit>
-export let _Target: Nullable<Unit>
+// import {
+// 	AbilityHelper,
+// 	XAIOHitChance,
+// 	//UnitsOrbWalker,
+// 	XAIOPrediction,
+// } from "../../bootstrap"
 
-export function InitCombo(Owner: Unit, target: Nullable<Unit>) {
+// let Helper = new AbilityHelper()
+// let GameSleep = new GameSleeper()
+// let Prediction = new XAIOPrediction()
 
-	if (target === undefined || !Owner.IsVisible || GameSleep.Sleeping(target))
-		return
+// export let Owner: Nullable<Unit>
+// export let Enemy: Nullable<Unit>
 
-	_Unit = Owner
-	_Target = target
 
-	//const hook = Owner.GetAbilityByClass(pudge_meat_hook)
-
-	// if (!UnitsOrbWalker.get(Owner)?.Execute(target))
-	// 	return
-}
-
-EventsSDK.on("GameEnded", () => {
-	_Unit = undefined
-	_Target = undefined
-})
-
-// EventsSDK.on("UnitAddGesture", (npc, activity) => {
-// 	let unit = npc as Unit
-// 	if (unit.Name !== "npc_dota_hero_pudge" || !unit.IsControllable)
+// export function InitCombo(unit: Unit, target: Nullable<Unit>) {
+// 	if (!unit.IsVisible || GameSleep.Sleeping(target))
 // 		return
 
+// 	Owner = unit
+// 	Enemy = target
+
+// 	const hook = Owner.GetAbilityByClass(pudge_meat_hook)
+
+// 	if (!XAIOComboKey.is_pressed || target === undefined || hook === undefined)
+// 		return
+
+// 	let predict = Prediction.GetPrediction(hook, Owner, target, true)
+
+// 	if (!hook.CanBeCasted())
+// 		return
+
+// 	if (predict.HitChance <= XAIOHitChance.Impossible)
+// 		return
+
+// 	if (!Helper.UseAbility(hook, false, false, predict.CastPosition))
+// 		return
+
+// 	// if (!UnitsOrbWalker.get(Owner)?.Execute(target))
+// 	// 	return
+
+// }
+
+
+// EventsSDK.on("GameEnded", () => {
+// 	Owner = undefined
+// 	Enemy = undefined
 // })
+
+// // EventsSDK.on("UnitAddGesture", (npc, activity) => {
+// // 	let unit = npc as Unit
+// // 	if (unit.Name !== "npc_dota_hero_pudge" || !unit.IsControllable)
+// // 		return
+
+// // })

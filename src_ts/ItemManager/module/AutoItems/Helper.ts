@@ -388,9 +388,7 @@ function UrnUseAnyUnits(
 function CheckCreeps(creep: Creep, unit: Unit, Item: Item): boolean {
 	if (!IsValidCreep(creep) || !unit.IsInRange(creep.Position, (Item.CastRange + unit.CastRangeBonus) + 100))
 		return false
-	if (AutoUseItemsMidas_CheckBIG.value)
-		return AutoUseItemsMidas_range.value ? !creep.IsMelee : true
-	if (!AutoUseItemsMidas_range.value || creep.IsMelee)
+	if (AutoUseItemsMidas_range.value && creep.IsMelee)
 		return false
 	unit.CastTarget(Item, creep)
 	TickSleep.Sleep(Base.GetDelayCast)

@@ -58,13 +58,13 @@ export function MoveCourier(Safe: boolean = false, courier: Courier, line?: Lane
 	if (!Safe) {
 		courier.MoveTo(CourierBase.Position(false, line))
 		CourierBase.LAST_CLICK = true
-		Sleep.Sleep(CourierBase.CastDelay)
+		Sleep.Sleep(CourierBase.CastDelay + 100)
 		return
 	}
 	if (!CourierBase.IsRangeCourier(courier, CourierBase.Position(Safe, line), 150)) {
 		courier.MoveTo(CourierBase.Position(Safe, line))
 		CourierBase.LAST_CLICK = true
-		Sleep.Sleep(CourierBase.CastDelay)
+		Sleep.Sleep(CourierBase.CastDelay + 100)
 		return
 	}
 }

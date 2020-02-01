@@ -1,26 +1,34 @@
-import { NearMouse, ComboKey, State } from "./Menu"
-import { InitCombo } from "./module/Combo"
-import { Unit, ArrayExtensions, Input } from "wrapper/Imports"
-import { RegisterHeroModule, Units } from "XAIO/bootstrap"
+import { Unit } from "wrapper/Imports"
+import { InitModuleDraw, InitModuleTick } from "./module/index"
+import { XAIONearMouse, XAIOState, XAIORenderOptimizeType } from "./Menu"
+import { RegisterHeroModule, orderByFromUnit, XAIOParticleMap } from "../bootstrap"
 
-RegisterHeroModule("npc_dota_hero_void_spirit", { InitTick })
+RegisterHeroModule("npc_dota_hero_void_spirit", {
+	InitTick,
+	InitDraw
+})
 
-export function InitTick(unit: Unit) {
+function XAIOParticleMapGet(unit: Unit) {
+	let XAIOParticleMapGet = XAIOParticleMap.get(unit)
+	if (XAIOParticleMapGet === undefined)
+		return
+	InitModuleDraw(XAIOParticleMapGet)
+}
 
-	if (!State.value)
+function InitTick(unit: Unit) {
+	if (unit === undefined || !unit.IsAlive)
 		return
 
-	if (!ComboKey.is_pressed)
+	if (XAIORenderOptimizeType.selected_id === 1)
+		XAIOParticleMapGet(unit)
+
+	if (!XAIOState.value)
 		return
 
-	InitCombo(
-		unit,
-		ArrayExtensions.orderBy(
-			Units.filter(x => x.IsHero
-				&& x.IsEnemy()
-				&& x.Distance(Input.CursorOnWorld) <= NearMouse.value
-				&& x.IsAlive),
-			x => x.Distance(Input.CursorOnWorld)
-		)[0]
-	)
+	InitModuleTick(unit, orderByFromUnit(XAIONearMouse.value))
+}
+
+function InitDraw(unit: Unit) {
+	if (XAIORenderOptimizeType.selected_id === 0)
+		XAIOParticleMapGet(unit)
 }

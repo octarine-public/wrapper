@@ -226,7 +226,7 @@ message CDOTAModifierBuffTableEntry {
 	optional int32 aura_owner = 34;
 }
 `)
-Events.on("UpdateStringTable", (name, update) => {
+EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (name !== "ActiveModifiers")
 		return
 	// loop-optimizer: KEEP
@@ -249,7 +249,7 @@ Events.on("UpdateStringTable", (name, update) => {
 			EmitModifierRemoved(old_mod)
 	})
 })
-Events.on("RemoveAllStringTables", () => {
+EventsSDK.on("RemoveAllStringTables", () => {
 	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => EmitModifierRemoved(mod))
 	ActiveModifiers.clear()

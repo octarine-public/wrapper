@@ -14,6 +14,7 @@ import Item from "../Objects/Base/Item"
 import Game from "../Objects/GameResources/GameRules"
 import { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
 import Entity from "../Objects/Base/Entity"
+import BinaryStream from "../Utils/BinaryStream"
 
 Events.on("Update", cmd => {
 	let cmd_ = new UserCmd(cmd)
@@ -381,6 +382,18 @@ Events.on("ServerMessage", (msg_id, buf) => {
 		}
 		case 40:
 			EventsSDK.emit('ServerInfo', false, ParseProtobufNamed(buf, "CSVCMsg_ServerInfo"))
+			break
+		case 45: { // we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
+			let stream = new BinaryStream(new DataView(buf))
+			let table_name = stream.ReadVarString(),
+				update = new Map<number, [string, ArrayBuffer]>()
+			while (!stream.Empty())
+				update.set(Number(stream.ReadVarUint()), [stream.ReadVarString(), stream.ReadVarSlice()])
+			EventsSDK.emit("UpdateStringTable", false, table_name, update)
+			break
+		}
+		case 51:
+			EventsSDK.emit("RemoveAllStringTables", false)
 			break
 		case 145: {
 			let msg = ParseProtobufNamed(buf, "CUserMsg_ParticleManager")

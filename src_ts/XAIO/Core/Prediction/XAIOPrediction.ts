@@ -1,6 +1,8 @@
-import { Hero, Unit, Creep, Collision, CollisionObject, EntityManager } from "wrapper/Imports"
+import { Hero, Unit, Creep, Collision, CollisionObject, Ability, item_blink, EntityManager } from "wrapper/Imports"
+import { HasMask } from "wrapper/Utils/BitsExtensions"
 
 import {
+	XAIOGame,
 	XAIOInput,
 	XAIOutput,
 	XAIOHitChance,
@@ -8,15 +10,46 @@ import {
 	XAIOCollisionTypes,
 } from "../bootstrap"
 
+let GameData = new XAIOGame()
+
 export default class XAIOPrediction {
 
-	public GetPrediction(input: XAIOInput) {
+	public GetPrediction(
+		abil: Ability,
+		owner: Unit,
+		target: Unit,
+		linePadding: boolean = false,
+		skillShotType: XAIOSkillshotType = XAIOSkillshotType.Line,
+		collisionTypes: XAIOCollisionTypes = XAIOCollisionTypes.AllUnits,
+		AreaOfEffect: boolean = false,
+		AreaOfEffectTargets: Unit[] = []
+	): XAIOutput {
+
+		return this.PredictionInit(new XAIOInput(
+			target,
+			owner,
+			abil.CastPoint + this.ActivationDelay(abil) + (GameData.Ping / 1000),
+			abil.AOERadius,
+			collisionTypes,
+			abil.CastRange + target.HullRadius + target.CollisionPadding + (!linePadding ? 0 : abil.AOERadius),
+			!abil.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET),
+			skillShotType,
+			abil.Speed,
+			abil instanceof item_blink
+		))
+	}
+
+	private ActivationDelay(abil: Ability) {
+		return abil.GetSpecialValue("activation_delay") ?? 0
+	}
+
+	private PredictionInit(input: XAIOInput) {
 
 		let simplePrediction = this.GetSimplePrediction(input)
 
 		this.GetProperCastPosition(input, simplePrediction)
 
-		if (input.SkillShotType === XAIOSkillshotType.Line && !input.AreaOfEffect && input.UseBlink) {
+		if (input.SkillShotType == XAIOSkillshotType.Line && !input.AreaOfEffect && input.UseBlink) {
 			let tar_pos = simplePrediction.TargetPosition
 			simplePrediction.BlinkLinePosition = tar_pos.Extend(input.Caster.Position.Subtract(tar_pos), 200)
 			simplePrediction.CastPosition = simplePrediction.TargetPosition
@@ -30,7 +63,7 @@ export default class XAIOPrediction {
 
 	}
 
-	public GetSimplePrediction(input: XAIOInput) {
+	private GetSimplePrediction(input: XAIOInput) {
 
 		let predictionOutput = new XAIOutput()
 
@@ -54,6 +87,7 @@ export default class XAIOPrediction {
 		if (input.Speed > 0)
 			num += caster.Distance(position) / input.Speed
 
+
 		let predictedPosition = target.VelocityWaypoint(num)
 
 		predictionOutput.TargetPosition = predictedPosition
@@ -76,7 +110,7 @@ export default class XAIOPrediction {
 		if (input.SkillShotType === XAIOSkillshotType.RangedAreaOfEffect || input.SkillShotType === XAIOSkillshotType.AreaOfEffect)
 			return
 
-		if (input.SkillShotType === XAIOSkillshotType.Line && input.UseBlink)
+		if (input.SkillShotType == XAIOSkillshotType.Line && input.UseBlink)
 			return
 
 		let radius = input.Radius
@@ -87,7 +121,7 @@ export default class XAIOPrediction {
 		let position = input.Caster.Position,
 			castPosition = output.CastPosition,
 			num = position.Distance(castPosition),
-			castRange = input.CastRange
+			castRange = input.Range
 
 		if (castRange >= num)
 			return
@@ -111,20 +145,21 @@ export default class XAIOPrediction {
 		if (input.Radius >= Number.MAX_SAFE_INTEGER || input.Range >= Number.MAX_SAFE_INTEGER) {
 			return true
 		}
-		if (input.SkillShotType === XAIOSkillshotType.AreaOfEffect) {
+		if (input.SkillShotType == XAIOSkillshotType.AreaOfEffect) {
 			if (output.TargetPosition!.Distance2D(output.CastPosition) > input.Radius) {
 				output.HitChance = XAIOHitChance.Impossible
 				return false
 			}
 			return true
-		} else if (input.UseBlink && input.SkillShotType === XAIOSkillshotType.Line) {
-			if (input.Caster.Distance(output.CastPosition) > input.CastRange + input.Range) {
+		} else if (input.UseBlink && input.SkillShotType == XAIOSkillshotType.Line) {
+			if (input.Caster.Distance(output.CastPosition) > input.Range + input.Range) {
 				output.HitChance = XAIOHitChance.Impossible
 				return false
 			}
 			return true
-		} else {
-			if (input.Caster.Distance(output.CastPosition) > input.CastRange && (input.SkillShotType == XAIOSkillshotType.RangedAreaOfEffect
+		}
+		else {
+			if (input.Caster.Distance(output.CastPosition) > input.Range && (input.SkillShotType == XAIOSkillshotType.RangedAreaOfEffect
 				|| input.Caster.Distance(output.TargetPosition!) > input.Range)) {
 				output.HitChance = XAIOHitChance.Impossible
 				return false
@@ -136,6 +171,7 @@ export default class XAIOPrediction {
 	private CheckCollision(input: XAIOInput, output: XAIOutput): void {
 		if (input.CollisionTypes === XAIOCollisionTypes.None)
 			return
+
 		let list: Unit[] = []
 		let list2: CollisionObject[] = []
 
@@ -150,25 +186,24 @@ export default class XAIOPrediction {
 			&& x.Distance2D(caster) < scanRange
 		)
 
-		if ((input.CollisionTypes & XAIOCollisionTypes.AllyCreeps) === XAIOCollisionTypes.AllyCreeps)
-			source.some(x => x.IsCreep && !x.IsEnemy(caster) && list.push(x))
+		if (HasMask(input.CollisionTypes, XAIOCollisionTypes.AllyCreeps))
+			source.map(x => x.IsCreep && !x.IsEnemy(caster) && list.push(x))
 
-		if ((input.CollisionTypes & XAIOCollisionTypes.EnemyCreeps) === XAIOCollisionTypes.EnemyCreeps)
-			source.some(x => x.IsCreep && x.IsEnemy(caster) && list.push(x))
+		if (HasMask(input.CollisionTypes, XAIOCollisionTypes.EnemyCreeps))
+			source.map(x => x.IsCreep && x.IsEnemy(caster) && list.push(x))
 
-		if ((input.CollisionTypes & XAIOCollisionTypes.AllyHeroes) === XAIOCollisionTypes.AllyHeroes)
-			source.some(x => x.IsHero && !x.IsEnemy(caster) && list.push(x))
+		if (HasMask(input.CollisionTypes, XAIOCollisionTypes.AllyHeroes))
+			source.map(x => x.IsHero && !x.IsEnemy(caster) && list.push(x))
 
-		if ((input.CollisionTypes & XAIOCollisionTypes.EnemyHeroes) === XAIOCollisionTypes.EnemyHeroes)
-			source.some(x => x.IsHero && x.IsEnemy(caster) && list.push(x))
+		if (HasMask(input.CollisionTypes, XAIOCollisionTypes.EnemyHeroes))
+			source.map(x => x.IsHero && x.IsEnemy(caster) && list.push(x))
+
 
 		list.forEach(unit => {
 			let input2 = new XAIOInput(
 				unit,
 				input.Caster,
-				input.CastRange,
 				input.Delay,
-				input.EndRadius,
 				input.Radius,
 				input.CollisionTypes,
 				input.Range,
