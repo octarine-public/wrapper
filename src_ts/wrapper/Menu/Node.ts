@@ -13,7 +13,16 @@ import Toggle from "./Toggle"
 import { FontFlags_t } from "../Enums/FontFlags_t"
 import { PARTICLE_RENDER_NAME } from "../Managers/ParticleManager"
 
-export interface MenuRangeParticle {
+export interface IMenuColorPicker {
+	Node: Node
+	R: Slider
+	G: Slider
+	B: Slider
+	A: Slider
+	Color: Color
+}
+
+export interface IMenuRangeParticle {
 	Node: Node
 	State: Nullable<Toggle>
 	R: Slider
@@ -204,10 +213,10 @@ export default class Node extends Base {
 				X.value = x
 				Y.value = y
 				Z.value = z
-			},
+			}
 		}
 	}
-	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip?: string) {
+	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip?: string): IMenuColorPicker {
 		const Node = this.AddNode(name) as Node
 
 		const R = Node.AddSlider("Red", color.r, 0, 255)
@@ -225,8 +234,7 @@ export default class Node extends Base {
 				G.value = g
 				B.value = b
 				A.value = a
-			},
-			OnValue(this: Color) { return this },
+			}
 		}
 	}
 
@@ -237,7 +245,7 @@ export default class Node extends Base {
 			PARTICLE_RENDER_NAME.ANIMATION
 		],
 		addStateToTree?: boolean
-	): MenuRangeParticle {
+	): IMenuRangeParticle {
 
 		const Node = this.AddNode(name)
 
