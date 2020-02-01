@@ -8,8 +8,8 @@ export { default as Toggle } from "./Toggle"
 export { default as Button } from "./Button"
 export { default as KeyBind } from "./KeyBind"
 
-import Node from "./Node"
-export { Node }
+import Node, { MenuRangeParticle } from "./Node"
+export { Node, MenuRangeParticle }
 
 import MenuManager from "./Menu"
 function AddEntry(name: string | string[]): Node {

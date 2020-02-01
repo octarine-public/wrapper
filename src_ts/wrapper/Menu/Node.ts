@@ -11,6 +11,19 @@ import Slider from "./Slider"
 import Switcher from "./Switcher"
 import Toggle from "./Toggle"
 import { FontFlags_t } from "../Enums/FontFlags_t"
+import { PARTICLE_RENDER_NAME } from "../Managers/ParticleManager"
+
+export interface MenuRangeParticle {
+	Node: Node
+	State: Nullable<Toggle>
+	R: Slider
+	G: Slider
+	B: Slider
+	A: Slider
+	Width: Slider
+	Style: Switcher
+	Color: Color
+}
 
 export default class Node extends Base {
 	public entries: Base[] = []
@@ -214,6 +227,51 @@ export default class Node extends Base {
 				A.value = a
 			},
 			OnValue(this: Color) { return this },
+		}
+	}
+
+	AddRangeParticle(name: string, color: Color | number = new Color(0, 255, 0),
+		render: PARTICLE_RENDER_NAME[] = [
+			PARTICLE_RENDER_NAME.NORMAL,
+			PARTICLE_RENDER_NAME.ROPE,
+			PARTICLE_RENDER_NAME.ANIMATION
+		],
+		addStateToTree?: boolean
+	): MenuRangeParticle {
+
+		const Node = this.AddNode(name)
+
+		let State: Nullable<Toggle>
+
+		if (addStateToTree) {
+			State = Node.AddToggle("State")
+		}
+
+		if (typeof color === "number")
+			color = new Color(color, color, color)
+
+		const R = Node.AddSlider("Color: R (red)", color.r, 0, 255)
+		const G = Node.AddSlider("Color: G (green)", color.g, 0, 255)
+		const B = Node.AddSlider("Color: B (blue)", color.b, 0, 255)
+		const A = Node.AddSlider("Opacity (alpha)", color.a, 1, 255)
+
+		const Width = Node.AddSlider("Width", 15, 1, 150)
+		const Style = Node.AddSwitcher("Style", render)
+
+		return {
+			Node,
+			State,
+			R, G, B, A,
+			Width, Style,
+			get Color(): Color {
+				return new Color(R.value, G.value, B.value, A.value)
+			},
+			set Color({ r, g, b, a }: Color) {
+				R.value = r
+				G.value = g
+				B.value = b
+				A.value = a
+			}
 		}
 	}
 
