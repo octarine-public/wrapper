@@ -24,6 +24,7 @@ let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 		"Ash",
 		"Aurora",
 	], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id)),
+	// special for redditors: https://lwss.github.io/Dota-Strain/
 	meme_ = Menu.AddSwitcher("Meme (c) LWSS", [
 		"None",
 		"TOP",
