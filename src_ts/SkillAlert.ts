@@ -386,7 +386,9 @@ EventsSDK.on("Tick", () => {
 		// loop-optimizer: FORWARD
 		phaseSpells.forEach(spell => {
 			if (spell === abil.Name) {
-				let owner = abil.Owner!
+				let owner = abil.Owner
+				if (owner === undefined)
+					return
 
 				if (abil.IsInAbilityPhase || (owner.IsChanneling && spell === "windrunner_powershot"))
 					DrawDirectional(
