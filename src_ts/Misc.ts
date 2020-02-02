@@ -24,16 +24,6 @@ let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 		"Ash",
 		"Aurora",
 	], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id)),
-	// special for redditors: https://lwss.github.io/Dota-Strain/
-	meme_ = Menu.AddSwitcher("Meme (c) LWSS", [
-		"None",
-		"TOP",
-		"MID",
-		"BOT",
-	], 0).OnValue(caller => {
-		if (GameRules !== undefined)
-			meme(caller.selected_id)
-	}),
 	map_name = Menu.AddSwitcher("Custom Map", [
 		"dota",
 		"dota_autumn",
@@ -233,8 +223,6 @@ Events.on("PostRemoveSearchPath", path => {
 })
 
 EventsSDK.on("Tick", () => {
-	if (GameRules !== undefined && meme_.selected_id !== 0)
-		meme(meme_.selected_id)
 	if (tree_model.selected_id === 0)
 		return
 	ChangeTreeModels(tree_model)
