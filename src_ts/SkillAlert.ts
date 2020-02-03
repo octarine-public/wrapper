@@ -200,33 +200,12 @@ function DestroyDirectional(key: any) {
 	direct_part_list.delete(key)
 }
 
-let circle_part_list = new Map<Entity, [number]>()
-function DrawParticleCirclePos(pos: Vector3, radius: number, ent: Entity) {
-	let part_table = circle_part_list.get(ent)
-	if (part_table === undefined) {
-		let index1 = ParticlesSDK.Create("particles/ui_mouseactions/range_display.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN)
-		ParticlesSDK.SetControlPoint(index1, 1, new Vector3(radius))
-		part_table = [index1]
-		circle_part_list.set(ent, part_table)
-	}
-
-	ParticlesSDK.SetControlPoint(part_table[0], 0, pos)
-}
-
-function DestroyCircle(ent: Entity) {
-	let part_table = circle_part_list.get(ent)
-	if (part_table !== undefined) {
-		ParticlesSDK.Destroy(part_table[0])
-		circle_part_list.delete(ent)
-	}
-}
-
 function ReturnAOERadius(owner: Unit, name_ability: string): number {
 	return owner.GetAbilityByName(name_ability)?.AOERadius ?? 0
 }
 
 function OnEntityNameChanged(ent: Entity) {
-	if (!(ent instanceof Unit) || ent.Name !== "npc_dota_thinker" || circle_part_list.has(ent))
+	if (!(ent instanceof Unit) || ent.Name !== "npc_dota_thinker")
 		return
 	let owner = ent.Owner as Nullable<Unit>
 	if (owner === undefined) {
@@ -266,8 +245,11 @@ function OnEntityNameChanged(ent: Entity) {
 			rad = ReturnAOERadius(owner, "abyssal_underlord_pit_of_malice")
 			break
 	}
-	if (rad !== 0)
-		DrawParticleCirclePos(ent.Position, rad, ent)
+	if (rad === 0)
+		return
+	ParticlesSDK.DrawCircle(`TSkillAlertThinker${ent.Index}`, ent, rad, {
+		Color: Color.Green
+	})
 }
 
 let abils_list: Ability[] = []
@@ -285,7 +267,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 	if (ent instanceof Ability)
 		ArrayExtensions.arrayRemove(abils_list, ent)
 	if (ent.Name === "npc_dota_thinker")
-		DestroyCircle(ent)
+		ParticlesSDK.DestroyKey(`TSkillAlertThinker${ent.Index}`)
 })
 
 let line_table: LinearProjectile[] = []
@@ -409,6 +391,5 @@ EventsSDK.on("GameEnded", () => {
 	arTimers.clear()
 	arHeroMods.clear()
 	particles_table.clear()
-	circle_part_list.clear()
 	direct_part_list.clear()
 })

@@ -127,7 +127,6 @@ declare function readFile(path: string): ArrayBuffer
  */
 declare function readConfig(path: string): string
 declare function writeConfig(path: string, data: string): void
-declare function IsInGame(): boolean
 declare function GetLevelName(): string
 declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer offset 0
@@ -143,9 +142,6 @@ declare function SelectUnit(ent: number, bAddToGroup: boolean): boolean
 declare function GetLatency(flow: number): number
 declare function GetAvgLatency(flow: number): number
 declare function GetUIState(): number
-declare function GetServerTickCount(): number
-declare function GetPreviousServerTickCount(): number
-declare function GetClientTickCount(): number
 declare function ChatWheelAbuse(str: string): void
 declare function StopFindingMatch(): void
 declare function AcceptMatch(): void
