@@ -1226,6 +1226,7 @@ export { default as TreeTemp } from "./Objects/Base/TreeTemp"
 
 export { default as Building } from "./Objects/Base/Building"
 export { default as Tower } from "./Objects/Base/Tower"
+export { default as Fort } from "./Objects/Base/Fort"
 export { default as Shrine } from "./Objects/Base/Shrine"
 export { default as Outpost } from "./Objects/Base/Outpost"
 export { default as Shop } from "./Objects/Base/Shop"
