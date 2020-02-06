@@ -658,8 +658,10 @@ Events.on("EntityPositionsChanged", buf => {
 	while (!stream.Empty()) {
 		let ent_id = stream.ReadNumber(2)
 		let ent = EntityManager.EntityByIndex(ent_id, true)
-		if (ent === undefined)
+		if (ent === undefined) {
+			stream.RelativeSeek(6 * 4) // 6 floats below
 			continue
+		}
 
 		ent.Position_.x = stream.ReadFloat32()
 		ent.Position_.y = stream.ReadFloat32()
