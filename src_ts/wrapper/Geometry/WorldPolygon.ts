@@ -19,7 +19,7 @@ export class WorldPolygon {
 	public Draw(color: Color, width = 1): void {
 		let cam_pos = Vector3.fromIOBuffer(Camera.Position)!,
 			cam_ang = QAngle.fromIOBuffer(Camera.Angles)!,
-			cam_dist = Camera.Distance ?? 1134
+			cam_dist = Camera.Distance ?? 1200
 		for (let i = 0, end = this.Points.length; i < end; i++) {
 			let j = i + 1 % end
 			let pos1 = RendererSDK.WorldToScreenCustom(this.Points[i], cam_pos, cam_dist, cam_ang)!,

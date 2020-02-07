@@ -42,7 +42,7 @@ export function OnDraw(window_size: Vector2) {
 	WASMIOBuffer[4] = camera_angles.y
 	WASMIOBuffer[5] = camera_angles.z
 
-	WASMIOBuffer[6] = Camera.Distance ?? 1134
+	WASMIOBuffer[6] = Camera.Distance ?? 1200
 
 	WASMIOBuffer[7] = window_size.x
 	WASMIOBuffer[8] = window_size.y

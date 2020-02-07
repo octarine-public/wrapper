@@ -75,7 +75,7 @@ let RendererSDK = new (class CRendererSDK {
 	/**
 	 * @returns screen position with x and y in range {0, 1}, or undefined
 	 */
-	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1134, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Nullable<Vector2> {
+	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1200, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Nullable<Vector2> {
 		if (position instanceof Vector2)
 			position = position.toVector3().SetZ(this.GetPositionHeight(position))
 		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)
@@ -93,13 +93,13 @@ let RendererSDK = new (class CRendererSDK {
 			let vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
 			vec.x = vec.x - 1
 			vec.y = 1 - vec.y
-			return WASM.ScreenToWorld(vec, Vector3.fromIOBuffer(Camera.Position)!, Camera.Distance ?? 1134, QAngle.fromIOBuffer(Camera.Angles)!, this.WindowSize)
+			return WASM.ScreenToWorld(vec, Vector3.fromIOBuffer(Camera.Position)!, Camera.Distance ?? 1200, QAngle.fromIOBuffer(Camera.Angles)!, this.WindowSize)
 		}
 	}
 	/**
 	 * @param screen screen position with x and y in range {0, 1}
 	 */
-	public ScreenToWorldCustom(screen: Vector2, camera_position: Vector2 | Vector3, camera_distance = 1134, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Vector3 {
+	public ScreenToWorldCustom(screen: Vector2, camera_position: Vector2 | Vector3, camera_distance = 1200, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Vector3 {
 		return WASM.ScreenToWorld(screen, camera_position, camera_distance, camera_angles, window_size)
 	}
 	public FilledCircle(vecPos: Vector2 = new Vector2(), radius: number, color = new Color(255, 255, 255)): void {

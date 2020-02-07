@@ -258,9 +258,9 @@ Events.after("Update", (cmd_: CUserCmd) => {
 		execute_current = ExecuteOrder.wait_next_usercmd
 	}
 	let camera_vec = new Vector3(cmd.CameraX, cmd.CameraY)
-	camera_vec = camera_vec.Clone().AddScalarY(1134 / 2).Distance2D(CursorWorldVec) > 1300
-		? CursorWorldVec.Clone().SubtractScalarY(1134 / 2)
-		: camera_vec = camera_vec.AddScalarY(1134 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= hrtime() ? mult : 1))).SubtractScalarY(1134 / 2)
+	camera_vec = camera_vec.Clone().AddScalarY(1200 / 2).Distance2D(CursorWorldVec) > 1400
+		? CursorWorldVec.Clone().SubtractScalarY(1200 / 2)
+		: camera_vec = camera_vec.AddScalarY(1200 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= hrtime() ? mult : 1))).SubtractScalarY(1200 / 2)
 	latest_camera_x = cmd.CameraX = camera_vec.x
 	latest_camera_y = cmd.CameraY = camera_vec.y
 
