@@ -8,7 +8,7 @@ import NativeToSDK, { GetSDKClasses, GetFieldHandlers, FieldHandler } from "../O
 
 import EventsSDK from "./EventsSDK"
 import BinaryStream from "../Utils/BinaryStream"
-import { ParseProtobufNamed } from "../Utils/ParseProtobuf"
+import { ParseProtobufNamed } from "../Utils/Protobuf"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
 import { Utf8ArrayToStr } from "../Utils/Utils"

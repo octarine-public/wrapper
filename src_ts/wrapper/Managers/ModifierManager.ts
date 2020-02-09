@@ -4,7 +4,7 @@ import EventsSDK from "./EventsSDK"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
 import { GameRules } from "../Objects/Base/GameRules"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
-import { ParseProtobufNamed, RecursiveProtobuf, ParseProtobufDesc } from "../Utils/ParseProtobuf"
+import { ParseProtobufNamed, RecursiveProtobuf, ParseProtobufDesc } from "../Utils/Protobuf"
 import Vector3 from "../Base/Vector3"
 import EntityManager from "./EntityManager"
 

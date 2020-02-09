@@ -1,5 +1,5 @@
 import BinaryStream from "./BinaryStream"
-import { Utf8ArrayToStr } from "../Utils/Utils"
+import { Utf8ArrayToStr } from "./Utils"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
 import Color from "../Base/Color"

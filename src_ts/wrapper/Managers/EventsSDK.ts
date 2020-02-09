@@ -10,7 +10,7 @@ import Hero from "../Objects/Base/Hero"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 
 import Modifier from "../Objects/Base/Modifier"
-import { RecursiveProtobuf } from "../Utils/ParseProtobuf"
+import { RecursiveProtobuf } from "../Utils/Protobuf"
 
 interface EventsSDK extends EventEmitter {
 	/**
