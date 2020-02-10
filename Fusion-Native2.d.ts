@@ -5446,6 +5446,12 @@ declare class TimedHeroStats_t {
 	m_nRangeCreepUpgradeGold: number
 	m_nReliableGoldEarned: number
 	m_nGoldLossPrevented: number
+	m_nHeroKillGold: number
+	m_nCreepKillGold: number
+	m_nBuildingGold: number
+	m_nOtherGold: number
+	m_nComebackGold: number
+	m_nExperimentalGold: number
 }
 
 declare class audioparams_t {
@@ -12592,6 +12598,7 @@ declare class C_DOTA_DataNonSpectator extends C_BaseEntity {
 	readonly m_bSuggestedLaneJungle: boolean[]
 	readonly m_vecNeutralItemsEarned: number[]
 	readonly m_vecNeutralStashItems: CEntityIndex[]
+	readonly m_vecNeutralItemsConsumed: number[]
 }
 
 declare class DataTeamPlayer_t {
@@ -12603,6 +12610,10 @@ declare class DataTeamPlayer_t {
 	m_iSharedGold: number
 	m_iHeroKillGold: number
 	m_iCreepKillGold: number
+	m_iBuildingGold: number
+	m_iOtherGold: number
+	m_iComebackGold: number
+	m_iExperimentalGold: number
 	m_iIncomeGold: number
 	m_iNetWorth: number
 	m_iDenyCount: number
