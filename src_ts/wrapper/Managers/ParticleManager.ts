@@ -96,6 +96,23 @@ class ParticlesSDK {
 
 	public readonly allParticles = new Map<any, Particle>();
 
+	private readonly allParticlesRange = new Map<any, number>();
+
+	private CheckChangedRange(key: any, range: number) {
+		let particleRange = this.allParticlesRange.get(key)
+
+		if (particleRange !== undefined && particleRange !== range) {
+			this.RemoveKey(key)
+			this.allParticlesRange.set(key, range)
+			return
+		}
+
+		if (particleRange === undefined)
+			this.allParticlesRange.set(key, range)
+
+		return
+	}
+
 	public AddOrUpdate(
 		key: any,
 		path: string,
@@ -141,6 +158,8 @@ class ParticlesSDK {
 		range: number = 100,
 		options: IDrawCircleOptions = {}
 	) {
+		this.CheckChangedRange(key, range)
+
 		return this.AddOrUpdate(key,
 			RangeRenderPath(options.RenderStyle),
 			options.Attachment ?? ParticleAttachment_t.PATTACH_ABSORIGIN,
@@ -159,6 +178,7 @@ class ParticlesSDK {
 		position: Entity | Vector3 = entity,
 		color = Color.Aqua
 	) {
+		this.CheckChangedRange(key, range)
 
 		return this.AddOrUpdate(key,
 			"particles/ui_mouseactions/drag_selected_ring.vpcf",
@@ -260,11 +280,13 @@ class ParticlesSDK {
 
 	public RemoveKey(key: any, immediate = true) {
 		this.allParticles.get(key)?.Destroy(immediate, this.allParticles)
+		this.allParticlesRange.delete(key)
 	}
 
 	public DestroyAll(immediate = true) {
 		// loop-optimizer: KEEP
 		this.allParticles.forEach(particle => particle.Destroy(immediate, this.allParticles))
+		this.allParticlesRange.clear()
 	}
 }
 
