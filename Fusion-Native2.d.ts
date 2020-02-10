@@ -326,7 +326,6 @@ declare class FeSphereRigid_t {
 
 declare class CDrawCullingData {
 	m_vConeApex: IOBuffer_Vector3
-	readonly m_ConeAxis: number[]
 	m_ConeCutoff: number
 }
 
@@ -427,7 +426,6 @@ declare class CAnimStateConditionBase {
 }
 
 declare class RnCapsule_t {
-	readonly m_vCenter: IOBuffer_Vector3[]
 	m_flRadius: number
 }
 
@@ -436,7 +434,6 @@ declare class AnimNodeID {
 }
 
 declare class PostProcessParameters_t {
-	readonly m_flParameters: number[]
 }
 
 declare class C_OP_MovementLoopInsideSphere extends CParticleFunctionOperator {
@@ -490,8 +487,6 @@ declare class LightDesc_t {
 	m_nShadowWidth: number
 	m_nShadowHeight: number
 	m_nShadowCascadeCount: number
-	readonly m_flShadowCascadeDistance: number[]
-	readonly m_nShadowCascadeResolution: number[]
 	m_bUsesIndexedBakedLighting: boolean
 	m_nBakeLightIndex: number
 	m_flBakeLightIndexScale: number
@@ -637,7 +632,6 @@ declare class VPhysXConstraintParams_t {
 	m_nTranslateMotion: number
 	m_nRotateMotion: number
 	m_nFlags: number
-	readonly m_anchor: IOBuffer_Vector3[]
 	m_maxForce: number
 	m_maxTorque: number
 	m_linearLimitValue: number
@@ -705,7 +699,6 @@ declare class InfoForResourceTypeIParticleSnapshot { }
 
 declare class CBaseServerVehicle__entryanim_t {
 	iHitboxGroup: number
-	readonly szAnimName: number[]
 }
 
 declare class C_OP_PercentageBetweenCPsVector extends CParticleFunctionOperator {
@@ -723,9 +716,7 @@ declare class C_OP_PercentageBetweenCPsVector extends CParticleFunctionOperator 
 declare class CParticleFunctionPreEmission extends CParticleFunctionOperator { }
 
 declare class FeKelagerBend2_t {
-	readonly flWeight: number[]
 	flHeight0: number
-	readonly nNode: number[]
 	nReserved: number
 }
 
@@ -851,7 +842,6 @@ declare class C_OP_MoveToHitbox extends CParticleFunctionOperator {
 	m_flLifeTimeLerpStart: number
 	m_flLifeTimeLerpEnd: number
 	m_flPrevPosScale: number
-	readonly m_HitboxSetName: number[]
 	m_bUseBones: boolean
 	m_nLerpType: HitboxLerpType_t
 	readonly m_flInterpolation: CPerParticleFloatInput
@@ -912,7 +902,6 @@ declare class PurchasedItem_t {
 
 declare class C_OP_SetControlPointPositionToTimeOfDayValue extends CParticleFunctionPreEmission {
 	m_nControlPointNumber: number
-	readonly m_pszTimeOfDayParameter: number[]
 	m_vecDefaultValue: IOBuffer_Vector3
 }
 
@@ -946,9 +935,7 @@ declare class CBaseRendererSource2 extends CParticleFunctionRenderer {
 	m_nRefractBlurRadius: number
 	m_nRefractBlurType: BlurFilterType_t
 	m_bOnlyRenderInEffectsBloomPass: boolean
-	readonly m_stencilTestID: number[]
 	m_bStencilTestExclude: boolean
-	readonly m_stencilWriteID: number[]
 	m_bWriteStencilOnDepthPass: boolean
 	m_bWriteStencilOnDepthFail: boolean
 	m_bReverseZBuffering: boolean
@@ -1011,7 +998,6 @@ declare class C_INIT_CreateFromParentParticles extends CParticleFunctionInitiali
 }
 
 declare class FeSimdRodConstraint_t {
-	readonly nNode: number[][]
 }
 
 declare class C_OP_RenderStatusEffect extends CParticleFunctionRenderer {
@@ -1259,7 +1245,6 @@ declare class C_INIT_ModelCull extends CParticleFunctionInitializer {
 	m_bBoundBox: boolean
 	m_bCullOutside: boolean
 	m_bUseBones: boolean
-	readonly m_HitboxSetName: number[]
 }
 
 declare class CModelConfig {
@@ -1313,7 +1298,6 @@ declare class C_OP_DistanceBetweenCPsToCP extends CParticleFunctionPreEmission {
 	m_flMaxTraceLength: number
 	m_flLOSScale: number
 	m_bLOS: boolean
-	readonly m_CollisionGroupName: number[]
 }
 
 declare class CBlend2DItem {
@@ -1627,7 +1611,6 @@ declare class InfoForResourceTypeCTextureBase { }
 
 declare class FeNodeBase_t {
 	nNode: number
-	readonly nDummy: number[]
 	nNodeX0: number
 	nNodeX1: number
 	nNodeY0: number
@@ -1669,7 +1652,6 @@ declare class C_OP_SetCPOrientationToGroundNormal extends CParticleFunctionOpera
 	m_flMaxTraceLength: number
 	m_flTolerance: number
 	m_flTraceOffset: number
-	readonly m_CollisionGroupName: number[]
 	m_nInputCP: number
 	m_nOutputCP: number
 	m_bIncludeWater: boolean
@@ -1755,8 +1737,6 @@ declare class FeAxialEdgeBend_t {
 	te: number
 	tv: number
 	flDist: number
-	readonly flWeight: number[]
-	readonly nNode: number[]
 }
 
 declare class AnimStateID {
@@ -1786,7 +1766,6 @@ declare class CProjectedTextureBase {
 	m_flPlaneOffset: number
 	m_flColorTransitionTime: number
 	m_flAmbient: number
-	readonly m_SpotlightTextureName: number[]
 	m_nSpotlightTextureFrame: number
 	m_nShadowQuality: number
 	m_flNearZ: number
@@ -1857,7 +1836,6 @@ declare class CSelectorAnimNode extends CAnimNodeBase {
 }
 
 declare class RenderInputLayoutField_t {
-	readonly m_pSemanticName: number[]
 	m_nSemanticIndex: number
 	m_Format: number
 	m_nOffset: number
@@ -1883,12 +1861,9 @@ declare class HeroPersona_t {
 }
 
 declare class sControlGroupElem {
-	readonly m_UnitName: number[]
-	readonly m_UnitLabel: number[]
 	m_unUnitLabelIndex: number
 	m_hEntity: CEntityIndex
 	m_bIsIllusion: boolean
-	readonly m_IllusionLabel: number[]
 }
 
 declare class CSeqPoseSetting {
@@ -1911,8 +1886,6 @@ declare class C_INIT_GlobalScale extends CParticleFunctionInitializer {
 declare class FeTaperedCapsuleRigid_t {
 	nNode: number
 	nCollisionMask: number
-	readonly vCenter: IOBuffer_Vector3[]
-	readonly flRadius: number[]
 	flStickiness: number
 }
 
@@ -1971,7 +1944,6 @@ declare class C_OP_MovementPlaceOnGround extends CParticleFunctionOperator {
 	m_flTolerance: number
 	m_flTraceOffset: number
 	m_flLerpRate: number
-	readonly m_CollisionGroupName: number[]
 	m_nRefCP1: number
 	m_nRefCP2: number
 	m_nLerpCP: number
@@ -2030,11 +2002,6 @@ declare class CDOTAGameManager {
 	m_bEventGame: boolean
 	m_bGameModeWantsDefaultNeutralItemSchema: boolean
 	m_bGameModeFilteredAbilities: boolean
-	readonly m_szAddOnGame: number[]
-	readonly m_szAddOnMap: number[]
-	readonly m_StableHeroAvailable: boolean[]
-	readonly m_CurrentHeroAvailable: boolean[]
-	readonly m_CulledHeroes: boolean[]
 }
 
 declare class C_INIT_NormalOffset extends CParticleFunctionInitializer {
@@ -2075,7 +2042,6 @@ declare class C_OP_MovementRigidAttachToCP extends CParticleFunctionOperator {
 }
 
 declare class RnTriangle_t {
-	readonly m_nIndex: number[]
 }
 
 declare class CSeqTransition {
@@ -2142,7 +2108,6 @@ declare class C_OP_RadiusDecay extends CParticleFunctionOperator {
 }
 
 declare class FeAnimStrayRadius_t {
-	readonly nNode: number[]
 	flMaxDist: number
 	flRelaxationFactor: number
 }
@@ -2229,7 +2194,6 @@ declare class C_OP_RenderSound extends CParticleFunctionRenderer {
 	m_flVolumeScale: number
 	m_nChannel: number
 	m_nCPReference: number
-	readonly m_pszSoundName: number[]
 	m_bSuppressStopSoundEvent: boolean
 }
 
@@ -2244,7 +2208,6 @@ declare class C_INIT_RtEnvCull extends CParticleFunctionInitializer {
 	m_bUseVelocity: boolean
 	m_bCullOnMiss: boolean
 	m_bLifeAdjust: boolean
-	readonly m_RtEnvName: number[]
 }
 
 declare class C_OP_RemapScalarEndCap extends CParticleFunctionOperator {
@@ -2305,7 +2268,6 @@ declare class CBaseTrailRenderer extends CBaseRendererSource2 {
 declare class FeBandBendLimit_t {
 	flDistMin: number
 	flDistMax: number
-	readonly nNode: number[]
 }
 
 declare class EventClientAdvanceTick_t extends EventAdvanceTick_t { }
@@ -2322,8 +2284,6 @@ declare class MaterialOverride_t extends BaseSceneObjectOverride_t {
 }
 
 declare class SheetFrameImage_t {
-	readonly uvCropped: IOBuffer_Vector2[]
-	readonly uvUncropped: IOBuffer_Vector2[]
 }
 
 declare class MaterialParam_t {
@@ -2405,17 +2365,9 @@ declare class C_DOTASpectatorGraphManager {
 	m_bTrackingTeamStats: boolean
 	m_flStartTime: number
 	m_nNextUpdatePlayer: number
-	readonly m_rgPlayerGraphData: CEntityIndex<C_DOTASpecGraphPlayerData>[]
-	readonly m_rgRadiantTotalEarnedGold: number[]
-	readonly m_rgDireTotalEarnedGold: number[]
-	readonly m_rgRadiantTotalEarnedXP: number[]
-	readonly m_rgDireTotalEarnedXP: number[]
-	readonly m_rgRadiantNetWorth: number[]
-	readonly m_rgDireNetWorth: number[]
 	m_flTotalEarnedGoldStartTime: number
 	m_flTotalEarnedGoldEndTime: number
 	m_nGoldGraphVersion: number
-	readonly m_rgRadiantWinChance: number[]
 	readonly m_TeamStatsUpdateTimer: CountdownTimer
 	readonly m_HeroInventorySnapshotTimer: CountdownTimer
 	m_unDataChangedCount: number
@@ -2476,7 +2428,6 @@ declare class CNavVolumeVector extends CNavVolume {
 }
 
 declare class CSpeechBubbleInfo {
-	readonly m_LocalizationStr: number[]
 	m_hNPC: CEntityIndex
 	m_flDuration: number
 	m_unOffsetX: number
@@ -2489,7 +2440,6 @@ declare class C_OP_ModelCull extends CParticleFunctionOperator {
 	m_bBoundBox: boolean
 	m_bCullOutside: boolean
 	m_bUseBones: boolean
-	readonly m_HitboxSetName: number[]
 }
 
 declare class CPathParameters {
@@ -2505,10 +2455,6 @@ declare class CPathParameters {
 
 declare class CAttachment {
 	readonly m_name: string
-	readonly m_influenceNames: string[]
-	readonly m_vInfluenceOffsets: IOBuffer_Vector3[]
-	readonly m_influenceWeights: number[]
-	readonly m_bInfluenceRootTransform: boolean[]
 	m_nInfluences: number
 	m_bIgnoreRotation: boolean
 }
@@ -2687,9 +2633,7 @@ declare class CModelConfigElement_RandomPick extends CModelConfigElement {
 }
 
 declare class RnSoftbodyCapsule_t {
-	readonly m_vCenter: IOBuffer_Vector3[]
 	m_flRadius: number
-	readonly m_nParticle: number[]
 }
 
 declare class IEconItemInterface { }
@@ -2904,11 +2848,9 @@ declare class C_OP_RampScalarSpline extends CParticleFunctionOperator {
 }
 
 declare class Dop26_t {
-	readonly m_flSupport: number[]
 }
 
 declare class CGameRules {
-	readonly m_szQuestName: number[]
 	m_nQuestPhase: number
 }
 
@@ -3040,7 +2982,6 @@ declare class CDeferredLightBase {
 	m_flStartFalloff: number
 	m_flDistanceFalloff: number
 	m_nFlags: number
-	readonly m_ProjectedTextureName: number[]
 }
 
 declare class C_OP_SetControlPointToHMD extends CParticleFunctionPreEmission {
@@ -3093,7 +3034,6 @@ declare class C_INIT_SetHitboxToModel extends CParticleFunctionInitializer {
 	m_vecDirectionBias: IOBuffer_Vector3
 	m_bMaintainHitbox: boolean
 	m_bUseBones: boolean
-	readonly m_HitboxSetName: number[]
 }
 
 declare class C_OP_RemapNamedModelSequenceOnceTimed extends C_OP_RemapNamedModelElementOnceTimed { }
@@ -3201,7 +3141,6 @@ declare class CGlowOverlay {
 	m_vDirection: IOBuffer_Vector3
 	m_bInSky: boolean
 	m_skyObstructionScale: number
-	readonly m_Sprites: CGlowSprite[]
 	m_nSprites: number
 	m_flProxyRadius: number
 	m_flHDRColorScale: number
@@ -3224,25 +3163,8 @@ declare class CDOTA_TeamCommander {
 	readonly m_ChatThrottleTimer: CountdownTimer
 	m_eTeam: DOTATeam_t
 	m_bLateGame: boolean
-	readonly m_LaneLengths: number[]
-	readonly m_LaneFrontCreepsAmounts: number[][]
-	readonly m_LaneFrontTowersAmounts: number[][]
-	readonly m_fNextPotentialLocationTick: number[]
-	readonly m_iPotentialLocationBuffer: number[]
 	m_hRoamingUnit: CEntityIndex
 	m_RoamTargetLane: DOTA_LANE
-	readonly m_fRuneDibsDesire: number[]
-	readonly m_iRuneTypes: number[]
-	readonly m_fLastSeenRuneTime: number[]
-	readonly m_Buildings: CEntityIndex[][]
-	readonly m_LaneNodes: CEntityIndex[][]
-	readonly m_fPushLaneDesire: number[]
-	readonly m_fPushLaneRawDesire: number[]
-	readonly m_fPushLaneConvenienceDesire: number[]
-	readonly m_fDefendLaneDesire: number[]
-	readonly m_fDefendLaneUrgencyDesire: number[]
-	readonly m_fDefendLanePowerDesire: number[]
-	readonly m_fFarmLaneDesire: number[]
 	m_iLastSeenRoshanHealth: number
 	m_fRoshanDesire: number
 	m_fRoamDesire: number
@@ -3251,17 +3173,14 @@ declare class CDOTA_TeamCommander {
 	m_fRoamPositionFactor: number
 	m_hRoamTarget: CEntityIndex
 	m_vRoamTargetLoc: IOBuffer_Vector3
-	readonly m_fHeroSelectionTimes: number[]
 	m_vBaseLocation: IOBuffer_Vector3
 	m_fGoodLuckFlavorTextTime: number
 	m_fTeamfightFlavorTextTime: number
 	m_fCongratulateHeroFlavorTextTime: number
 	m_fLastAliveHeroHistorySnapshotTime: number
 	m_iAliveHeroHistoryIndex: number
-	readonly m_iAliveHeroHistory: number[]
 	readonly m_sScriptDirectory: string
 	m_nScriptPathAvoidanceUpdateTick: number
-	readonly m_fExecutionTime: number[]
 	m_iCurExecutionTime: number
 }
 
@@ -3295,7 +3214,6 @@ declare class C_INIT_InitialVelocityFromHitbox extends CParticleFunctionInitiali
 	m_flVelocityMin: number
 	m_flVelocityMax: number
 	m_nControlPointNumber: number
-	readonly m_HitboxSetName: number[]
 	m_bUseBones: boolean
 }
 
@@ -3316,9 +3234,6 @@ declare class CSeqSynthAnimDesc {
 declare class CVariantDefaultAllocator { }
 
 declare class FeEdgeDesc_t {
-	readonly nEdge: number[]
-	readonly nSide: number[][]
-	readonly nVirtElem: number[]
 }
 
 declare class DOTAAbilityDefinition_t {
@@ -3455,10 +3370,6 @@ declare class ModelSkeletonData_t {
 }
 
 declare class handposepair_t {
-	readonly m_vMaxExtentOrigin: IOBuffer_Vector3[]
-	readonly m_vMinExtentOrigin: IOBuffer_Vector3[]
-	readonly m_vRotationAxisEndpoints: IOBuffer_Vector3[]
-	readonly m_flHandPoseParams: number[]
 	readonly m_poseSequenceName: string
 	m_nUseRange: number
 	m_flUseAnglesRange: number
@@ -3495,7 +3406,6 @@ declare class FeCtrlOffset_t {
 }
 
 declare class FeTri_t {
-	readonly nNode: number[]
 	w1: number
 	w2: number
 	v1x: number
@@ -3551,7 +3461,6 @@ declare class C_INIT_LifespanFromVelocity extends CParticleFunctionInitializer {
 	m_flMaxTraceLength: number
 	m_flTraceTolerance: number
 	m_nMaxPlanes: number
-	readonly m_CollisionGroupName: number[]
 	m_bIncludeWater: boolean
 }
 
@@ -3647,7 +3556,6 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_flCreepMinimapIconScale: number
 	m_bCreepSpawningEnabled: boolean
 	m_flRuneMinimapIconScale: number
-	readonly m_CustomVictoryMessage: number[]
 	m_flCustomGameEndDelay: number
 	m_flCustomGameSetupAutoLaunchDelay: number
 	m_flCustomGameSetupTimeout: number
@@ -3666,19 +3574,13 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_nGGTeam: number
 	m_flGGEndsAtTime: number
 	m_bWhiteListEnabled: boolean
-	readonly m_bItemWhiteList: bigint[]
 	m_nLastHitUIMode: number
 	m_bHUDTimerTutorialMode: boolean
 	readonly m_HeroPickMiscTimer: CountdownTimer
 	readonly m_ExtraTimeTimer: CountdownTimer
-	readonly m_fExtraTimeRemaining: number[]
 	m_bRDFirstThink: boolean
-	readonly m_RDMessageSent: boolean[]
 	m_bHeroRespawnEnabled: boolean
 	m_bIsRandomingEnabled: boolean
-	readonly m_iCaptainPlayerIDs: number[]
-	readonly m_BannedHeroes: number[]
-	readonly m_SelectedHeroes: number[]
 	m_iActiveTeam: number
 	m_iStartingTeam: number
 	m_iPenaltyLevelRadiant: number
@@ -3687,7 +3589,6 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_nSeriesType: number
 	m_nRadiantSeriesWins: number
 	m_nDireSeriesWins: number
-	readonly m_CustomGameForceSelectHero: number[]
 	m_flGoldTime: number
 	m_flXPTime: number
 	m_flCreepSpawntime: number
@@ -3698,25 +3599,19 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_flGameStartTime: number
 	m_flGameEndTime: number
 	m_flGameLoadTime: number
-	readonly m_iCustomGameScore: number[]
 	m_nCustomGameDifficulty: number
 	m_bEnemyModifiersEnabled: boolean
 	m_iWaves: number
 	m_iCreepUpgradeState: number
 	m_fGoodGlyphCooldown: number
 	m_fBadGlyphCooldown: number
-	readonly m_flGlyphCooldowns: number[]
 	m_fGoodRadarCooldown: number
 	m_fBadRadarCooldown: number
-	readonly m_flRadarCooldowns: number[]
-	readonly m_flOutpostTimes: number[]
 	m_bIsNightstalkerNight: boolean
 	m_bIsTemporaryNight: boolean
 	m_bIsTemporaryDay: boolean
 	m_nRiverType: number
-	readonly m_nTeamFeaturedPlayerID: number[]
 	m_flGoldRedistributeTime: number
-	readonly m_nGoldToRedistribute: number[]
 	m_flNextPreGameThink: number
 	m_flNextAllDraftGoldThink: number
 	m_flTimeEnteredState: number
@@ -3730,9 +3625,6 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_hSideShop2: CEntityIndex
 	m_hSecretShop1: CEntityIndex
 	m_hSecretShop2: CEntityIndex
-	readonly m_hTeamFountains: CEntityIndex[]
-	readonly m_hTeamForts: CEntityIndex[]
-	readonly m_hTeamShops: CEntityIndex[]
 	m_hAnnouncerGood: CEntityIndex
 	m_hAnnouncerBad: CEntityIndex
 	m_hAnnouncerSpectator: CEntityIndex
@@ -3757,12 +3649,6 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_bUseAlternateABRules: boolean
 	m_bLobbyIsAssociatedWithGame: boolean
 	readonly m_BotDebugTimer: CountdownTimer
-	readonly m_BotDebugPushLane: number[]
-	readonly m_BotDebugDefendLane: number[]
-	readonly m_BotDebugFarmLane: number[]
-	readonly m_BotDebugRoam: number[]
-	readonly m_hBotDebugRoamTarget: CEntityIndex[]
-	readonly m_BotDebugRoshan: number[]
 	m_nRoshanRespawnPhase: ERoshanSpawnPhase
 	m_flRoshanRespawnPhaseEndTime: number
 	m_bAbilityDraftCurrentPlayerHasPicked: boolean
@@ -3770,20 +3656,15 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_nAbilityDraftRoundNumber: number
 	m_nAbilityDraftAdvanceSteps: number
 	m_nAbilityDraftPhase: number
-	readonly m_nAbilityDraftHeroesChosen: number[]
 	m_nARDMHeroesPrecached: number
 	m_fLastARDMPrecache: number
 	m_nAllDraftPhase: number
 	m_bAllDraftRadiantFirst: boolean
 	m_bAllowOverrideVPK: boolean
-	readonly m_nARDMHeroesRemaining: number[]
 	m_BAbilityDraftHeroesChosenChanged: boolean
 	m_bUpdateHeroStatues: boolean
 	m_lobbyType: number
 	m_lobbyLeagueID: number
-	readonly m_lobbyGameName: number[]
-	readonly m_CustomGameTeamMaxPlayers: number[]
-	readonly m_iMutations: number[]
 	m_nPrimaryIngameEventIndex: number
 	m_hObsoleteIngameEvent: CEntityIndex<C_IngameEvent_Base>
 }
@@ -3847,7 +3728,6 @@ declare class FeBoxRigid_t {
 	nCollisionMask: number
 	vSize: IOBuffer_Vector3
 	flStickiness: number
-	readonly flReserved: number[]
 }
 
 declare class CBlendAnimNode extends CAnimNodeBase {
@@ -3887,12 +3767,6 @@ declare class CPhysSurfacePropertiesAudio {
 }
 
 declare class FeSimdNodeBase_t {
-	readonly nNode: number[]
-	readonly nNodeX0: number[]
-	readonly nNodeX1: number[]
-	readonly nNodeY0: number[]
-	readonly nNodeY1: number[]
-	readonly nDummy: number[]
 	readonly qAdjust: FourQuaternions
 }
 
@@ -3958,7 +3832,6 @@ declare class CFlashlightEffect {
 	m_flLinearAtten: number
 	m_bCastsShadows: boolean
 	m_flCurrentPullBackDist: number
-	readonly m_textureName: number[]
 }
 
 declare class FeBuildSphereRigid_t extends FeSphereRigid_t {
@@ -4014,7 +3887,6 @@ declare class EventSetTime_t {
 declare class InfoForResourceTypeCVPhysXSurfacePropertiesList { }
 
 declare class OldFeEdge_t {
-	readonly m_flK: number[]
 	invA: number
 	t: number
 	flThetaRelaxed: number
@@ -4024,15 +3896,12 @@ declare class OldFeEdge_t {
 	c03: number
 	c04: number
 	flAxialModelDist: number
-	readonly flAxialModelWeights: number[]
-	readonly m_nNode: number[]
 }
 
 declare class constraint_breakableparams_t {
 	strength: number
 	forceLimit: number
 	torqueLimit: number
-	readonly bodyMassScale: number[]
 	isActive: boolean
 }
 
@@ -4115,7 +3984,6 @@ declare class CSSDSMsg_ViewTargetList {
 }
 
 declare class FeSimdAnimStrayRadius_t {
-	readonly nNode: number[][]
 }
 
 declare class CAnimUser {
@@ -4146,7 +4014,6 @@ declare class CModelConfigElement_UserPick extends CModelConfigElement {
 }
 
 declare class FeSpringIntegrator_t {
-	readonly nNode: number[]
 	flSpringRestLength: number
 	flSpringConstant: number
 	flSpringDamping: number
@@ -4166,8 +4033,6 @@ declare class AnimationDecodeDebugDump_t {
 
 declare class CRR_Response {
 	m_Type: number
-	readonly m_szResponseName: number[]
-	readonly m_szMatchingRule: number[]
 	readonly m_Params: ResponseParams
 	m_fMatchScore: number
 	readonly m_szSpeakerContext: string
@@ -4274,10 +4139,7 @@ declare class C_TeamplayRoundBasedRules extends C_TeamplayRules {
 	m_bAwaitingReadyRestart: boolean
 	m_flRestartRoundTime: number
 	m_flMapResetTime: number
-	readonly m_flNextRespawnWave: number[]
-	readonly m_bTeamReady: boolean[]
 	m_bStopWatch: boolean
-	readonly m_TeamRespawnWaveTimes: number[]
 	m_flStartBalancingTeamsAt: number
 	m_flNextBalanceTeamsTime: number
 	m_bPrintedUnbalanceWarning: boolean
@@ -4338,11 +4200,6 @@ declare class CFourWheelVehiclePhysics {
 	m_flMaxSpeed: number
 	m_actionSpeed: number
 	m_wheelCount: number
-	readonly m_wheelPosition: IOBuffer_Vector3[]
-	readonly m_wheelRotation: IOBuffer_QAngle[]
-	readonly m_wheelBaseHeight: number[]
-	readonly m_wheelTotalHeight: number[]
-	readonly m_poseParameters: number[]
 	m_actionValue: number
 	m_actionScale: number
 	m_debugRadius: number
@@ -4386,9 +4243,6 @@ declare class IServerVehicle extends IVehicle { }
 declare class IVehicle { }
 
 declare class vehiclesounds_t {
-	readonly iszSound: string[]
-	readonly iszStateSounds: string[]
-	readonly minStateTime: number[]
 }
 
 declare class ViewSmoothingData_t {
@@ -4502,7 +4356,6 @@ declare class C_INIT_DistanceToCPInit extends CParticleFunctionInitializer {
 	m_flOutputMax: number
 	m_nStartCP: number
 	m_bLOS: boolean
-	readonly m_CollisionGroupName: number[]
 	m_flMaxTraceLength: number
 	m_flLOSScale: number
 	m_nSetMethod: ParticleSetMethod_t
@@ -4596,7 +4449,6 @@ declare class C_OP_DistanceToCP extends CParticleFunctionOperator {
 	m_flOutputMax: number
 	m_nStartCP: number
 	m_bLOS: boolean
-	readonly m_CollisionGroupName: number[]
 	m_flMaxTraceLength: number
 	m_flLOSScale: number
 	m_nSetMethod: ParticleSetMethod_t
@@ -4639,7 +4491,6 @@ declare class C_OP_MovementMaintainOffset extends CParticleFunctionOperator {
 declare class InfoForResourceTypeCPanoramaDynamicImages { }
 
 declare class sPlayerSnapshot {
-	readonly m_nItemAbilityID: number[]
 	m_fGameTime: number
 	unKills: number
 	unDeaths: number
@@ -4670,7 +4521,6 @@ declare class TimedHeroStats_t {
 }
 
 declare class audioparams_t {
-	readonly localSound: IOBuffer_Vector3[]
 	soundscapeIndex: number
 	localBits: number
 	soundscapeEntityListIndex: number
@@ -4690,7 +4540,6 @@ declare class FeRigidColliderIndices_t {
 	m_nTaperedCapsuleRigidIndex: number
 	m_nSphereRigidIndex: number
 	m_nBoxRigidIndex: number
-	readonly m_nCollisionSphereIndex: number[]
 	m_nCollisionPlaneIndex: number
 }
 
@@ -4729,7 +4578,6 @@ declare class WorldBuilderParams_t {
 declare class VPhysXDiskMesh2_t extends VPhysXDiskShapeHeader_t {
 	m_flSkinWidth: number
 	m_flMaxVelocity: number
-	readonly m_nReserved2: number[]
 }
 
 declare class C_OP_RemapNamedModelMeshGroupOnceTimed extends C_OP_RemapNamedModelElementOnceTimed { }
@@ -4756,7 +4604,6 @@ declare class C_OP_SetAttributeToScalarExpression extends CParticleFunctionOpera
 }
 
 declare class FeRodConstraint_t {
-	readonly nNode: number[]
 	flMaxDist: number
 	flMinDist: number
 	flWeight0: number
@@ -4875,7 +4722,6 @@ declare class CGlobalLightBase {
 	m_ViewOrigin: IOBuffer_Vector3
 	m_ViewAngles: IOBuffer_QAngle
 	m_flViewFoV: number
-	readonly m_WorldPoints: IOBuffer_Vector3[]
 	m_vFogOffsetLayer0: IOBuffer_Vector2
 	m_vFogOffsetLayer1: IOBuffer_Vector2
 	m_hEnvWind: CEntityIndex
@@ -4973,7 +4819,6 @@ declare class CSceneObjectExtraData_t {
 	m_nCurrentMeshGroupMask: bigint
 	m_vLightingOrigin: IOBuffer_Vector3
 	m_flDepthSortBias: number
-	readonly m_nVisibleToPlayer: number[]
 	m_nAlphaFade: number
 	m_nViewProducerIndex: number
 	m_bLightingOriginIsInWorldSpace: boolean
@@ -5007,8 +4852,6 @@ declare class C_OP_GlobalLight extends CParticleFunctionOperator {
 }
 
 declare class C_OP_SetControlPointsToModelParticles extends CParticleFunctionOperator {
-	readonly m_HitboxSetName: number[]
-	readonly m_AttachmentName: number[]
 	m_nFirstControlPoint: number
 	m_nNumControlPoints: number
 	m_nFirstSourcePoint: number
@@ -5051,12 +4894,6 @@ declare class C_DOTAGameManager {
 	m_bEventGame: boolean
 	m_bGameModeWantsDefaultNeutralItemSchema: boolean
 	m_bGameModeFilteredAbilities: boolean
-	readonly m_szAddOnGame: number[]
-	readonly m_szAddOnMap: number[]
-	readonly m_bLoadedPortraits: boolean[]
-	readonly m_StableHeroAvailable: boolean[]
-	readonly m_CurrentHeroAvailable: boolean[]
-	readonly m_CulledHeroes: boolean[]
 }
 
 declare class ResponseContext_t {
@@ -5209,7 +5046,6 @@ declare class CDampedPathAnimMotor extends CBasePathAnimMotor {
 }
 
 declare class C_INIT_InitialRepulsionVelocity extends CParticleFunctionInitializer {
-	readonly m_CollisionGroupName: number[]
 	m_vecOutputMin: IOBuffer_Vector3
 	m_vecOutputMax: IOBuffer_Vector3
 	m_nControlPointNumber: number
@@ -5227,7 +5063,6 @@ declare class EventClientPauseSimulate_t extends EventSimulate_t { }
 
 declare class CFireOverlay extends CGlowOverlay {
 	readonly m_pOwner: C_FireSmoke
-	readonly m_vBaseColors: IOBuffer_Vector3[]
 	m_flScale: number
 	m_nGUID: number
 }
@@ -5286,8 +5121,6 @@ declare class C_BaseEntity extends C_GameEntity {
 	m_bHasSuccessfullyInterpolated: boolean
 	m_bHasAddedVarsToInterpolation: boolean
 	m_bRenderEvenWhenNotSuccessfullyInterpolated: boolean
-	readonly m_nInterpolationLatchDirtyFlags: number[]
-	readonly m_ListEntry: number[]
 	m_flCreateTime: number
 	m_flSpeed: number
 	m_EntClientFlags: number
@@ -5317,7 +5150,6 @@ declare class C_BaseEntity extends C_GameEntity {
 	m_nMaxGPULevel: number
 	m_flNavIgnoreUntilTime: number
 	m_iTextureFrameIndex: number
-	readonly m_ShadowBits: number[]
 	m_flFirstReceivedTime: number
 	m_flLastMessageTime: number
 	m_hThink: number
@@ -5473,7 +5305,6 @@ declare class C_INIT_CreateOnModel extends CParticleFunctionInitializer {
 	m_flBoneVelocity: number
 	m_flMaxBoneVelocity: number
 	m_vecDirectionBias: IOBuffer_Vector3
-	readonly m_HitboxSetName: number[]
 	m_bLocalCoords: boolean
 	m_bUseBones: boolean
 }
@@ -5543,11 +5374,6 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_nBehindLocalPlayerFrame: number
 	readonly m_CurrentFog: fogparams_t
 	m_hOldFogController: CEntityIndex<C_FogController>
-	readonly m_bOverrideFogColor: boolean[]
-	readonly m_OverrideFogColor: IOBuffer_Color[]
-	readonly m_bOverrideFogStartEnd: boolean[]
-	readonly m_fOverrideFogStart: number[]
-	readonly m_fOverrideFogEnd: number[]
 	m_StuckLast: number
 	readonly m_Local: C_PlayerLocalData
 	m_hTonemapController: CEntityIndex
@@ -5566,7 +5392,6 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_flSwimSoundTime: number
 	m_flStepSoundTime: number
 	m_vecLadderNormal: IOBuffer_Vector3
-	readonly m_szAnimExtension: number[]
 	m_nOldTickBase: number
 	m_iBonusProgress: number
 	m_iBonusChallenge: number
@@ -5574,7 +5399,6 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_hZoomOwner: CEntityIndex
 	m_hVehicle: CEntityIndex
 	m_hLastWeapon: CEntityIndex<C_BaseCombatWeapon>
-	readonly m_hViewModel: CEntityIndex<C_BaseViewModel>[]
 	m_hPropHMDAvatar: CEntityIndex<C_PropHMDAvatar>
 	m_hPointHMDAnchor: CEntityIndex<C_PointHMDAnchor>
 	m_VRControllerType: number
@@ -5607,7 +5431,6 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_bWasFrozen: boolean
 	m_nTickBase: number
 	m_nFinalPredictedTick: number
-	readonly m_bFlashlightEnabled: boolean[]
 	m_flOldPlayerZ: number
 	m_flOldPlayerViewOffsetZ: number
 	m_vecVehicleViewOrigin: IOBuffer_Vector3
@@ -5629,7 +5452,6 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_vecPredictionError: IOBuffer_Vector3
 	m_flPredictionErrorTime: number
 	m_vecPreviouslyPredictedOrigin: IOBuffer_Vector3
-	readonly m_szLastPlaceName: number[]
 	m_chTextureType: number
 	m_bSentFreezeFrame: boolean
 	m_flFreezeZOffset: number
@@ -5650,7 +5472,6 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 
 declare class C_BaseCombatCharacter extends C_BaseFlex {
 	m_flNextAttack: number
-	readonly m_iAmmo: number[]
 	m_hActiveWeapon: CEntityIndex<C_BaseCombatWeapon>
 	m_bloodColor: number
 	m_leftFootAttachment: number
@@ -5752,18 +5573,8 @@ declare class CNetworkViewOffsetVector {
 
 declare class CHitboxComponent extends CEntityComponent { }
 
-declare class C_BaseFlex__Emphasized_Phoneme {
-	readonly m_sClassName: string
-	m_flAmount: number
-	m_bRequired: boolean
-	m_bBasechecked: boolean
-	m_bValid: boolean
-}
-
 declare class C_PlayerLocalData {
 	readonly m_NetworkVar_PathIndex: ChangeAccessorFieldPathIndex_t
-	readonly m_chAreaBits: number[]
-	readonly m_chAreaPortalBits: number[]
 	m_nStepside: number
 	m_nOldButtons: number
 	m_flFOVRate: number
@@ -5798,13 +5609,11 @@ declare class CTeamplayRules extends CMultiplayRules {
 	m_DisableDeathMessages: boolean
 	m_DisableDeathPenalty: boolean
 	m_teamLimit: boolean
-	readonly m_szTeamList: number[]
 	m_bSwitchTeams: boolean
 	m_bScrambleTeams: boolean
 }
 
 declare class FeQuad_t {
-	readonly nNode: number[]
 	flSlack: number
 }
 
@@ -5879,8 +5688,6 @@ declare class CSSDSEndFrameViewInfo {
 declare class CDOTA_Modifier_Lua_Horizontal_Motion extends CDOTA_Modifier_Lua/*, CHorizontalMotionController*/ { }
 
 declare class CTimeline extends IntervalTimer {
-	readonly m_flValues: number[]
-	readonly m_nValueCounts: number[]
 	m_nBucketCount: number
 	m_flInterval: number
 	m_flFinalValue: number
@@ -5908,33 +5715,7 @@ declare class InfoForResourceTypeVSound_t { }
 
 declare class CLightInfoBase {
 	m_origin2D: IOBuffer_Vector2
-	readonly m_Color: IOBuffer_Color[]
-	readonly m_LightScale: number[]
-	readonly m_AmbientColor: IOBuffer_Color[]
-	readonly m_AmbientScale: number[]
-	readonly m_ShadowColor: IOBuffer_Color[]
-	readonly m_ShadowSecondaryColor: IOBuffer_Color[]
-	readonly m_ShadowScale: number[]
-	readonly m_ShadowGroundScale: number[]
-	readonly m_SpecularColor: IOBuffer_Color[]
-	readonly m_flSpecularPower: number[]
-	readonly m_flSpecularIndependence: number[]
-	readonly m_SpecularDirection: IOBuffer_Vector3[]
-	readonly m_InspectorSpecularDirection: IOBuffer_Vector3[]
-	readonly m_LightDirection: IOBuffer_Vector3[]
-	readonly m_AmbientDirection: IOBuffer_Vector3[]
-	readonly m_FogColor: IOBuffer_Color[]
-	readonly m_FogStart: number[]
-	readonly m_FogEnd: number[]
-	readonly m_HeightFogValue: number[]
-	readonly m_HeightFogColor: IOBuffer_Color[]
-	readonly m_FoWDarkness: number[]
-	readonly m_FoWColorR: number[]
-	readonly m_FoWColorG: number[]
-	readonly m_FoWColorB: number[]
-	readonly m_InspectorViewFogColor: IOBuffer_Color[]
 	m_windAngle: IOBuffer_QAngle
-	readonly m_flWindAmount: number[]
 	m_flMinWind: number
 	m_flMaxWind: number
 	m_flMinGust: number
@@ -5943,25 +5724,17 @@ declare class CLightInfoBase {
 	m_flMaxGustDelay: number
 	m_flGustDuration: number
 	m_flGustDirChange: number
-	readonly m_skyboxAngle: IOBuffer_QAngle[]
-	readonly m_vSkyboxTintColor: IOBuffer_Color[]
 	m_nSkyboxFogType: number
 	m_flSkyboxAngularFogMaxEnd: number
 	m_flSkyboxAngularFogMaxStart: number
 	m_flSkyboxAngularFogMinStart: number
 	m_flSkyboxAngularFogMinEnd: number
-	readonly m_vHeightFogColor: IOBuffer_Color[]
 	m_flFogMaxZ: number
-	readonly m_flFogDensity: number[]
 	m_flFogFalloff: number
 	m_flFogLayer0Rotation: number
 	m_flFogLayer0Scale: number
-	readonly m_flFoglayer0ScrollU: number[]
-	readonly m_flFoglayer0ScrollV: number[]
 	m_flFogLayer1Rotation: number
 	m_flFogLayer1Scale: number
-	readonly m_flFoglayer1ScrollU: number[]
-	readonly m_flFoglayer1ScrollV: number[]
 	m_flFogExclusionInnerRadius: number
 	m_flFogExclusionHeightBias: number
 	m_flCausticSpeedScale: number
@@ -5986,7 +5759,6 @@ declare class CLightInfoBase {
 	m_flLightning_duration_max: number
 	m_flLightning_fluctuation_min: number
 	m_flLightning_fluctuation_max: number
-	readonly m_pszLightningSound: number[]
 	m_flNextLightningStartTime: number
 	m_flNextLightningEndTime: number
 	m_flLightningFluctuationTimeStart: number
@@ -6155,7 +5927,6 @@ declare class C_DOTA_CombatLogQueryProgress {
 	m_nQueryID: number
 	m_nQueryRank: number
 	m_nMultiQueryID: number
-	readonly m_szRankIdentifier: number[]
 }
 
 declare class CStopwatchBase extends CSimpleSimTimer {
@@ -6168,7 +5939,6 @@ declare class CSequenceTransitioner2 {
 	readonly m_currentOp: CNetworkedSequenceOperation
 	m_flCurrentPlaybackRate: number
 	m_flCurrentAnimTime: number
-	readonly m_transitioningLayers: TransitioningLayer_t[]
 	readonly m_pOwner: CBaseAnimatingController
 }
 
@@ -6179,7 +5949,6 @@ declare class CBaseAnimatingController extends CSkeletonAnimationController {
 	m_flLastEventCycle: number
 	m_flLastEventAnimTime: number
 	m_flPrevAnimTime: number
-	readonly m_flPoseParameter: number[]
 	m_bClientSideAnimation: boolean
 	m_bNetworkedAnimationInputsChanged: boolean
 	m_nNewSequenceParity: number
@@ -6287,7 +6056,6 @@ declare class CSosSoundEventGroupSchema {
 	m_bInvertMatch: boolean
 	readonly m_matchPattern: CSosGroupMatchPattern
 	readonly m_branchPattern: CSosGroupBranchPattern
-	readonly m_vActions: CSosGroupActionSchema[]
 }
 
 declare class CFootMotion {
@@ -6333,8 +6101,6 @@ declare class CVRHandAttachmentInput {
 
 declare class CPlayerLocalData {
 	readonly m_NetworkVar_PathIndex: ChangeAccessorFieldPathIndex_t
-	readonly m_chAreaBits: number[]
-	readonly m_chAreaPortalBits: number[]
 	m_nStepside: number
 	m_nOldButtons: number
 	m_iHideHUD: number
@@ -6479,9 +6245,6 @@ declare class EventClientProcessGameInput_t {
 }
 
 declare class VsInputSignatureElement_t {
-	readonly m_pName: number[]
-	readonly m_pSemantic: number[]
-	readonly m_pD3DSemanticName: number[]
 	m_nD3DSemanticIndex: number
 }
 
@@ -6574,8 +6337,6 @@ declare class PostProcessingBloomParameters_t {
 	m_flBloomThresholdWidth: number
 	m_flSkyboxBloomStrength: number
 	m_flBloomStartValue: number
-	readonly m_flBlurWeight: number[]
-	readonly m_vBlurTint: IOBuffer_Vector3[]
 }
 
 declare class CDOTA_Bot {
@@ -6583,7 +6344,6 @@ declare class CDOTA_Bot {
 	m_iBlock: number
 	m_bForceIdle: boolean
 	m_bForceCreepAttack: boolean
-	readonly m_fExecutionTime: number[]
 	m_iCurExecutionTime: number
 	m_iPlayerID: number
 	m_hUnit: CEntityIndex
@@ -6617,7 +6377,6 @@ declare class CDOTA_Bot {
 	readonly m_AbilityMutedTimer: CountdownTimer
 	readonly m_AbilityMutedCheckTimer: CountdownTimer
 	m_HitByTowerTime: number
-	readonly m_HitByHeroTime: number[]
 	m_HitByCreepTime: number
 	m_nEstimatedDamageUpdatedTick: number
 	m_nNearbyUnitsUpdatedTick: number
@@ -6637,7 +6396,6 @@ declare class CDOTA_Bot {
 	m_vRequestedBlinkLoc: IOBuffer_Vector3
 	m_fRequestedBlinkStart: number
 	m_fRequestedBlinkExpire: number
-	readonly m_fModeDesires: number[]
 	m_iPreviousBotModeType: number
 	m_fPendingActionExecuteTime: number
 	m_bPendingActionBypass: boolean
@@ -6658,8 +6416,6 @@ declare class CBoneConstraintPoseSpaceMorph extends CBoneConstraintBase {
 
 declare class CSeqMultiFetch {
 	readonly m_flags: CSeqMultiFetchFlag
-	readonly m_nGroupSize: number[]
-	readonly m_nLocalPose: number[]
 	m_nLocalCyclePoseParameter: number
 	m_bCalculatePoseParameters: boolean
 }
@@ -6703,7 +6459,6 @@ declare class CHeroStatueLiked {
 }
 
 declare class CEffectScriptElement {
-	readonly m_szEffectName: number[]
 	m_bTrailActive: boolean
 	m_pSprite: CEntityIndex<C_Sprite>
 	m_iType: number
@@ -6712,8 +6467,6 @@ declare class CEffectScriptElement {
 	m_iG: number
 	m_iB: number
 	m_iA: number
-	readonly m_szAttachment: number[]
-	readonly m_szMaterial: number[]
 	m_flScale: number
 	m_flFadeTime: number
 	m_flTextureRes: number
@@ -6845,7 +6598,6 @@ declare class C_OP_DampenToCP extends CParticleFunctionOperator {
 }
 
 declare class RnSoftbodySpring_t {
-	readonly m_nParticle: number[]
 	m_flLength: number
 }
 
@@ -6877,7 +6629,6 @@ declare class C_OP_RemapCPtoScalar extends CParticleFunctionOperator {
 declare class EventClientSendInput_t { }
 
 declare class C_SpeechBubbleInfo {
-	readonly m_LocalizationStr: number[]
 	m_hNPC: CEntityIndex
 	m_flDuration: number
 	m_unOffsetX: number
@@ -7051,17 +6802,9 @@ declare class CDOTASpectatorGraphManager {
 	m_bTrackingTeamStats: boolean
 	m_flStartTime: number
 	m_nNextUpdatePlayer: number
-	readonly m_rgPlayerGraphData: CEntityIndex<C_DOTASpecGraphPlayerData>[]
-	readonly m_rgRadiantTotalEarnedGold: number[]
-	readonly m_rgDireTotalEarnedGold: number[]
-	readonly m_rgRadiantTotalEarnedXP: number[]
-	readonly m_rgDireTotalEarnedXP: number[]
-	readonly m_rgRadiantNetWorth: number[]
-	readonly m_rgDireNetWorth: number[]
 	m_flTotalEarnedGoldStartTime: number
 	m_flTotalEarnedGoldEndTime: number
 	m_nGoldGraphVersion: number
-	readonly m_rgRadiantWinChance: number[]
 	readonly m_TeamStatsUpdateTimer: CountdownTimer
 	readonly m_HeroInventorySnapshotTimer: CountdownTimer
 	m_event_dota_player_killed: number
@@ -7128,7 +6871,6 @@ declare class C_CSequenceTransitioner2 {
 	readonly m_currentOp: CNetworkedSequenceOperation
 	m_flCurrentPlaybackRate: number
 	m_flCurrentAnimTime: number
-	readonly m_transitioningLayers: TransitioningLayer_t[]
 	readonly m_pOwner: C_BaseAnimatingController
 }
 
@@ -7139,7 +6881,6 @@ declare class C_BaseAnimatingController extends CSkeletonAnimationController {
 	m_flLastEventCycle: number
 	m_flLastEventAnimTime: number
 	m_flPrevAnimTime: number
-	readonly m_flPoseParameter: number[]
 	m_bClientSideAnimation: boolean
 	m_bNetworkedAnimationInputsChanged: boolean
 	m_nPrevNewSequenceParity: number
@@ -7160,7 +6901,6 @@ declare class ModelBoneFlexDriver_t {
 }
 
 declare class FeSimdSpringIntegrator_t {
-	readonly nNode: number[][]
 }
 
 declare class CSetFacingAnimNode extends CAnimNodeBase {
@@ -7234,8 +6974,6 @@ declare class CUnitOrders {
 declare class InfoForResourceTypeVMapResourceData_t { }
 
 declare class SimpleConstraintSoundProfile {
-	readonly m_keyPoints: number[]
-	readonly m_reversalSoundThresholds: number[]
 }
 
 declare class CPassengerRole {
@@ -7424,7 +7162,6 @@ declare class CSceneObjectData {
 }
 
 declare class FeTreeChildren_t {
-	readonly nChild: number[]
 }
 
 declare class CMoverAnimNode extends CAnimNodeBase {
@@ -7502,7 +7239,6 @@ declare class CAnimSequenceParams {
 }
 
 declare class SlideMaterialList_t {
-	readonly szSlideKeyword: number[]
 }
 
 declare class C_INIT_VelocityRandom extends CParticleFunctionInitializer {
@@ -7641,8 +7377,6 @@ declare class PlayerResourcePlayerData_t {
 	m_eLiveSpectatorTeam: DOTATeam_t
 	m_bIsPlusSubscriber: boolean
 	m_bWasMVPLastGame: boolean
-	readonly m_eAccoladeType: number[]
-	readonly m_unAccoladeData: bigint[]
 }
 
 declare class C_OP_RenderRopes extends CBaseRendererSource2 {
@@ -7757,7 +7491,6 @@ declare class C_OP_EndCapTimedFreeze extends CParticleFunctionOperator {
 declare class C_INIT_PositionPlaceOnGround extends CParticleFunctionInitializer {
 	m_flOffset: number
 	m_flMaxTraceLength: number
-	readonly m_CollisionGroupName: number[]
 	m_bKill: boolean
 	m_bIncludeWater: boolean
 	m_bSetNormal: boolean
@@ -8058,7 +7791,6 @@ declare class CSeqBoneMaskList {
 declare class CBaseServerVehicle__exitanim_t {
 	bUpright: boolean
 	bEscapeExit: boolean
-	readonly szAnimName: number[]
 	vecExitPointLocal: IOBuffer_Vector3
 	vecExitAnglesLocal: IOBuffer_QAngle
 }
@@ -8132,8 +7864,6 @@ declare class sAbilityHistory {
 }
 
 declare class C_OP_RenderModels extends CParticleFunctionRenderer {
-	readonly m_ActivityName: number[]
-	readonly m_EconSlotName: number[]
 	m_bIgnoreNormal: boolean
 	m_bIgnoreRadius: boolean
 	m_bOrientZ: boolean
@@ -8155,7 +7885,6 @@ declare class C_OP_RenderModels extends CParticleFunctionRenderer {
 	m_bSuppressTint: boolean
 	m_bUseRawMeshGroup: boolean
 	m_bDisableShadows: boolean
-	readonly m_szRenderAttribute: number[]
 	readonly m_flRadiusScale: CParticleCollectionFloatInput
 	readonly m_flAlphaScale: CParticleCollectionFloatInput
 	readonly m_vecColorScale: CParticleCollectionVecInput
@@ -8209,7 +7938,6 @@ declare class C_INIT_InitVec extends CParticleFunctionInitializer {
 }
 
 declare class FeSimdQuad_t {
-	readonly nNode: number[][]
 }
 
 declare class C_SingleplayRules extends C_GameRules { }
@@ -8276,7 +8004,6 @@ declare class C_OP_WorldTraceConstraint extends CParticleFunctionConstraint {
 	readonly m_flStopSpeed: CPerParticleFloatInput
 	m_bWorldOnly: boolean
 	m_nIgnoreCP: number
-	readonly m_CollisionGroupName: number[]
 	m_bBrushOnly: boolean
 }
 
@@ -8356,7 +8083,6 @@ declare class ConstraintSoundInfo {
 	m_forwardAxis: IOBuffer_Vector3
 	readonly m_iszTravelSoundFwd: string
 	readonly m_iszTravelSoundBack: string
-	readonly m_iszReversalSounds: string[]
 	m_bPlayTravelSound: boolean
 	m_bPlayReversalSound: boolean
 }
@@ -8388,7 +8114,6 @@ declare class C_OP_LockToBone extends CParticleFunctionOperator {
 	m_flLifeTimeFadeEnd: number
 	m_flJumpThreshold: number
 	m_flPrevPosScale: number
-	readonly m_HitboxSetName: number[]
 	m_bRigid: boolean
 	m_bUseBones: boolean
 }
@@ -8573,7 +8298,6 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_iBotDebugData: number
 	m_bIsIllusion: boolean
 	m_bHasClientSeenIllusionModifier: boolean
-	readonly m_hAbilities: CEntityIndex[]
 	m_flInvisibilityLevel: number
 	m_flHullRadius: number
 	m_flCollisionPadding: number
@@ -8620,7 +8344,6 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_ClickedTime: CountdownTimer
 	readonly m_IdleRunTransitionTimer: CountdownTimer
 	m_bAnimationTransitionActive: boolean
-	readonly m_nAnimationTransitionPoseParameters: number[]
 	m_flTimeSinceLastAbilityNag: number
 	m_iAttackCapabilities: number
 	m_iSpecialAbility: number
@@ -8682,7 +8405,6 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_flStartSequenceCycle: number
 	m_hBackgroundSceneEnt: CEntityIndex
 	m_hSpeakingSceneEnt: CEntityIndex
-	readonly m_CustomHealthLabel: number[]
 	m_CustomHealthLabelColor: IOBuffer_Color
 	m_gibTintColor: IOBuffer_Color
 	m_bForceMaterialCombine: boolean
@@ -8714,8 +8436,6 @@ declare class CDOTA_ModifierManager {
 }
 
 declare class C_DOTA_UnitInventory {
-	readonly m_hItems: CEntityIndex[]
-	readonly m_bItemQueried: boolean[]
 	m_iParity: number
 	m_hInventoryParent: CEntityIndex
 	m_bIsActive: boolean
@@ -8867,7 +8587,6 @@ declare class C_INIT_RemapCPtoVector extends CParticleFunctionInitializer {
 }
 
 declare class C_INIT_RandomModelSequence extends CParticleFunctionInitializer {
-	readonly m_ActivityName: number[]
 }
 
 declare class CVoxelVisibility {
@@ -9013,7 +8732,6 @@ declare class C_OP_DistanceBetweenCPs extends CParticleFunctionOperator {
 	readonly m_flOutputMax: CPerParticleFloatInput
 	m_flMaxTraceLength: number
 	m_flLOSScale: number
-	readonly m_CollisionGroupName: number[]
 	m_bLOS: boolean
 	m_nSetMethod: ParticleSetMethod_t
 }
@@ -9054,7 +8772,6 @@ declare class C_INIT_StatusEffect extends CParticleFunctionInitializer {
 }
 
 declare class FeSimdTri_t {
-	readonly nNode: number[][]
 	readonly v2: FourVectors2D
 }
 
@@ -9083,7 +8800,6 @@ declare class CDOTA_CombatLogQueryProgress {
 	m_nQueryID: number
 	m_nQueryRank: number
 	m_nMultiQueryID: number
-	readonly m_szRankIdentifier: number[]
 }
 
 declare class sSpiritInfo {
@@ -9262,20 +8978,16 @@ declare class C_OP_SetControlPointToImpactPoint extends CParticleFunctionPreEmis
 	m_flTraceLength: number
 	m_flOffset: number
 	m_vecTraceDir: IOBuffer_Vector3
-	readonly m_CollisionGroupName: number[]
 	m_bSetToEndpoint: boolean
 }
 
 declare class FeTaperedCapsuleStretch_t {
-	readonly nNode: number[]
 	nCollisionMask: number
 	nDummy: number
-	readonly flRadius: number[]
 	flStickiness: number
 }
 
 declare class VPhysXDiskCapsule_t extends VPhysXDiskShapeHeader_t {
-	readonly m_vEnds: IOBuffer_Vector3[]
 	m_flRadius: number
 }
 
@@ -9331,7 +9043,6 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_flCreepMinimapIconScale: number
 	m_bCreepSpawningEnabled: boolean
 	m_flRuneMinimapIconScale: number
-	readonly m_CustomVictoryMessage: number[]
 	m_flCustomGameEndDelay: number
 	m_flCustomGameSetupAutoLaunchDelay: number
 	m_flCustomGameSetupTimeout: number
@@ -9350,20 +9061,13 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_nGGTeam: number
 	m_flGGEndsAtTime: number
 	m_bWhiteListEnabled: boolean
-	readonly m_bItemWhiteList: bigint[]
 	m_nLastHitUIMode: number
 	m_bHUDTimerTutorialMode: boolean
 	readonly m_HeroPickMiscTimer: CountdownTimer
 	readonly m_ExtraTimeTimer: CountdownTimer
-	readonly m_fExtraTimeRemaining: number[]
 	m_bRDFirstThink: boolean
-	readonly m_RDMessageSent: boolean[]
 	m_bHeroRespawnEnabled: boolean
 	m_bIsRandomingEnabled: boolean
-	readonly m_bHasSwapped: boolean[]
-	readonly m_iCaptainPlayerIDs: number[]
-	readonly m_BannedHeroes: number[]
-	readonly m_SelectedHeroes: number[]
 	m_iActiveTeam: number
 	m_iStartingTeam: number
 	m_iPenaltyLevelRadiant: number
@@ -9372,7 +9076,6 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_nSeriesType: number
 	m_nRadiantSeriesWins: number
 	m_nDireSeriesWins: number
-	readonly m_CustomGameForceSelectHero: number[]
 	m_flGoldTime: number
 	m_flXPTime: number
 	m_flCreepSpawntime: number
@@ -9383,25 +9086,19 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_flGameStartTime: number
 	m_flGameEndTime: number
 	m_flGameLoadTime: number
-	readonly m_iCustomGameScore: number[]
 	m_nCustomGameDifficulty: number
 	m_bEnemyModifiersEnabled: boolean
 	m_iWaves: number
 	m_iCreepUpgradeState: number
 	m_fGoodGlyphCooldown: number
 	m_fBadGlyphCooldown: number
-	readonly m_flGlyphCooldowns: number[]
 	m_fGoodRadarCooldown: number
 	m_fBadRadarCooldown: number
-	readonly m_flRadarCooldowns: number[]
-	readonly m_flOutpostTimes: number[]
 	m_bIsNightstalkerNight: boolean
 	m_bIsTemporaryNight: boolean
 	m_bIsTemporaryDay: boolean
 	m_nRiverType: number
-	readonly m_nTeamFeaturedPlayerID: number[]
 	m_flGoldRedistributeTime: number
-	readonly m_nGoldToRedistribute: number[]
 	m_flNextPreGameThink: number
 	m_flNextAllDraftGoldThink: number
 	m_flTimeEnteredState: number
@@ -9415,9 +9112,6 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_hSideShop2: CEntityIndex
 	m_hSecretShop1: CEntityIndex
 	m_hSecretShop2: CEntityIndex
-	readonly m_hTeamFountains: CEntityIndex[]
-	readonly m_hTeamForts: CEntityIndex[]
-	readonly m_hTeamShops: CEntityIndex[]
 	m_hAnnouncerGood: CEntityIndex
 	m_hAnnouncerBad: CEntityIndex
 	m_hAnnouncerSpectator: CEntityIndex
@@ -9443,12 +9137,6 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_bUseAlternateABRules: boolean
 	m_bLobbyIsAssociatedWithGame: boolean
 	readonly m_BotDebugTimer: CountdownTimer
-	readonly m_BotDebugPushLane: number[]
-	readonly m_BotDebugDefendLane: number[]
-	readonly m_BotDebugFarmLane: number[]
-	readonly m_BotDebugRoam: number[]
-	readonly m_hBotDebugRoamTarget: CEntityIndex[]
-	readonly m_BotDebugRoshan: number[]
 	m_nRoshanRespawnPhase: ERoshanSpawnPhase
 	m_flRoshanRespawnPhaseEndTime: number
 	m_bAbilityDraftCurrentPlayerHasPicked: boolean
@@ -9456,13 +9144,11 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_nAbilityDraftRoundNumber: number
 	m_nAbilityDraftAdvanceSteps: number
 	m_nAbilityDraftPhase: number
-	readonly m_nAbilityDraftHeroesChosen: number[]
 	m_nARDMHeroesPrecached: number
 	m_fLastARDMPrecache: number
 	m_nAllDraftPhase: number
 	m_bAllDraftRadiantFirst: boolean
 	m_bAllowOverrideVPK: boolean
-	readonly m_nARDMHeroesRemaining: number[]
 	m_iPreviousRune1: number
 	m_iPreviousRune2: number
 	m_fNextPowerupRuneSpawnTime: number
@@ -9478,32 +9164,24 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_hRoshanSpawner: CEntityIndex
 	m_iPreviousSpectators: number
 	m_bTeammateEvaluationMatch: boolean
-	readonly m_rgAssignedPlayerID: number[]
 	m_nMaxSpectators: number
 	m_hGameEvents: CEntityIndex
 	readonly m_TempDayTimer: CountdownTimer
 	readonly m_TempNightTimer: CountdownTimer
 	readonly m_NightstalkerNightTimer: CountdownTimer
 	readonly m_TempRiverTimer: CountdownTimer
-	readonly m_bUseLenientAFK: boolean[]
 	m_bFirstBlood: boolean
 	m_nFirstBloodTime: number
 	readonly m_CheckIdleTimer: CountdownTimer
 	m_nAnnounceHeroPickRadiantPlayerID: number
 	m_nAnnounceHeroPickDirePlayerID: number
-	readonly m_pszLastUsedAbility: string[]
-	readonly m_bTeamHasAbandonedPlayer: boolean[]
 	m_bLobbyHasLeaverDetected: boolean
 	m_bGameIsForcedSafeToLeave: boolean
 	m_bLobbyHasDicardMatchResults: boolean
-	readonly m_nTeamRoshanKills: number[]
 	m_iGameEndReason: number
 	m_flPauseTime: number
 	m_pausingPlayerId: number
 	m_unpausingPlayerId: number
-	readonly m_nPausesRemaining: number[]
-	readonly m_nLastPauseTime: number[]
-	readonly m_bNotifiedPlayerLeaverStatus: boolean[]
 	m_bUploadedReplay: boolean
 	m_flLobbyWaitTime: number
 	m_bGameWasLoaded: boolean
@@ -9515,11 +9193,7 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_dotaMapSpawnGroup: number
 	m_lobbyType: number
 	m_lobbyLeagueID: number
-	readonly m_lobbyGameName: number[]
-	readonly m_CustomGameTeamMaxPlayers: number[]
-	readonly m_iMutations: number[]
 	m_nPrimaryIngameEventIndex: number
-	readonly m_flLastItemSuggestionRequestTime: number[]
 }
 
 declare class C_INIT_RandomTrailLength extends CParticleFunctionInitializer {
@@ -9699,8 +9373,6 @@ declare class c_vehicleview_t {
 }
 
 declare class FeSimdFitMatrices_t {
-	readonly nEnd: number[]
-	readonly nCtrl: number[]
 	readonly AqqInv: FourCovMatrices3
 }
 
@@ -9864,7 +9536,6 @@ declare class C_INIT_ColorLitPerParticle extends CParticleFunctionInitializer {
 }
 
 declare class FeSourceEdge_t {
-	readonly nNode: number[]
 }
 
 declare class C_OP_FadeOutSimple extends CParticleFunctionOperator {
@@ -9903,7 +9574,6 @@ declare class C_INIT_SetHitboxToClosest extends CParticleFunctionInitializer {
 	m_nControlPointNumber: number
 	m_nDesiredHitbox: number
 	m_flHitBoxScale: number
-	readonly m_HitboxSetName: number[]
 	m_bUseBones: boolean
 }
 
@@ -9931,11 +9601,9 @@ declare class C_INIT_CreateOnModelAtHeight extends CParticleFunctionInitializer 
 	m_bUseWaterHeight: boolean
 	m_flDesiredHeight: number
 	m_flHitBoxScale: number
-	readonly m_HitboxSetName: number[]
 }
 
 declare class vmix_eq8_desc_t {
-	readonly m_stages: vmix_filter_desc_t[]
 }
 
 declare class VPhysXJoint_t {
@@ -10138,6 +9806,14 @@ declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_80 extends C_DOTABaseAbi
 
 declare class C_DOTA_Ability_Special_Bonus_HP_700 extends C_DOTABaseAbility { }
 
+declare class C_BaseFlex__Emphasized_Phoneme {
+	readonly m_sClassName: string
+	m_flAmount: number
+	m_bRequired: boolean
+	m_bBasechecked: boolean
+	m_bValid: boolean
+}
+
 declare class C_DOTA_Ability_MonkeyKing_Spring_Early extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Invoker_Empty1 extends C_DOTABaseAbility { }
@@ -10287,33 +9963,7 @@ declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_140 extends C_DOTABaseAb
 declare class C_DOTA_LightInfo extends C_BaseEntity/*, CLightInfoBase*/ {
 	// Low-priority parent definition [CLightInfoBase]
 	m_origin2D: IOBuffer_Vector2
-	readonly m_Color: IOBuffer_Color[]
-	readonly m_LightScale: number[]
-	readonly m_AmbientColor: IOBuffer_Color[]
-	readonly m_AmbientScale: number[]
-	readonly m_ShadowColor: IOBuffer_Color[]
-	readonly m_ShadowSecondaryColor: IOBuffer_Color[]
-	readonly m_ShadowScale: number[]
-	readonly m_ShadowGroundScale: number[]
-	readonly m_SpecularColor: IOBuffer_Color[]
-	readonly m_flSpecularPower: number[]
-	readonly m_flSpecularIndependence: number[]
-	readonly m_SpecularDirection: IOBuffer_Vector3[]
-	readonly m_InspectorSpecularDirection: IOBuffer_Vector3[]
-	readonly m_LightDirection: IOBuffer_Vector3[]
-	readonly m_AmbientDirection: IOBuffer_Vector3[]
-	readonly m_FogColor: IOBuffer_Color[]
-	readonly m_FogStart: number[]
-	readonly m_FogEnd: number[]
-	readonly m_HeightFogValue: number[]
-	readonly m_HeightFogColor: IOBuffer_Color[]
-	readonly m_FoWDarkness: number[]
-	readonly m_FoWColorR: number[]
-	readonly m_FoWColorG: number[]
-	readonly m_FoWColorB: number[]
-	readonly m_InspectorViewFogColor: IOBuffer_Color[]
 	m_windAngle: IOBuffer_QAngle
-	readonly m_flWindAmount: number[]
 	m_flMinWind: number
 	m_flMaxWind: number
 	m_flMinGust: number
@@ -10322,25 +9972,17 @@ declare class C_DOTA_LightInfo extends C_BaseEntity/*, CLightInfoBase*/ {
 	m_flMaxGustDelay: number
 	m_flGustDuration: number
 	m_flGustDirChange: number
-	readonly m_skyboxAngle: IOBuffer_QAngle[]
-	readonly m_vSkyboxTintColor: IOBuffer_Color[]
 	m_nSkyboxFogType: number
 	m_flSkyboxAngularFogMaxEnd: number
 	m_flSkyboxAngularFogMaxStart: number
 	m_flSkyboxAngularFogMinStart: number
 	m_flSkyboxAngularFogMinEnd: number
-	readonly m_vHeightFogColor: IOBuffer_Color[]
 	m_flFogMaxZ: number
-	readonly m_flFogDensity: number[]
 	m_flFogFalloff: number
 	m_flFogLayer0Rotation: number
 	m_flFogLayer0Scale: number
-	readonly m_flFoglayer0ScrollU: number[]
-	readonly m_flFoglayer0ScrollV: number[]
 	m_flFogLayer1Rotation: number
 	m_flFogLayer1Scale: number
-	readonly m_flFoglayer1ScrollU: number[]
-	readonly m_flFoglayer1ScrollV: number[]
 	m_flFogExclusionInnerRadius: number
 	m_flFogExclusionHeightBias: number
 	m_flCausticSpeedScale: number
@@ -10365,7 +10007,6 @@ declare class C_DOTA_LightInfo extends C_BaseEntity/*, CLightInfoBase*/ {
 	m_flLightning_duration_max: number
 	m_flLightning_fluctuation_min: number
 	m_flLightning_fluctuation_max: number
-	readonly m_pszLightningSound: number[]
 	m_flNextLightningStartTime: number
 	m_flNextLightningEndTime: number
 	m_flLightningFluctuationTimeStart: number
@@ -10435,7 +10076,6 @@ declare class C_DOTA_Ability_Special_Bonus_Attack_Damage_150 extends C_DOTABaseA
 
 declare class C_FlexCycler extends C_BaseFlex {
 	m_flextime: number
-	readonly m_flextarget: number[]
 	m_blinktime: number
 	m_looktime: number
 	m_lookTarget: IOBuffer_Vector3
@@ -10626,8 +10266,6 @@ declare class C_GenericFlexCycler extends C_FlexCycler {
 	m_nTestIndex: number
 	readonly m_poseParameterName: string
 	m_bDoClientSideAnimation: boolean
-	readonly m_layerSequence: string[]
-	readonly m_nLayerIndex: number[]
 	m_nBoneOverrideIndex: number
 	m_flLastSimTime: number
 }
@@ -10791,17 +10429,13 @@ declare class C_RopeKeyframe__CPhysicsDelegate {
 }
 
 declare class C_RopeKeyframe extends C_BaseModelEntity {
-	readonly m_LinksTouchingSomething: number[]
 	m_nLinksTouchingSomething: number
 	m_bApplyWind: boolean
 	m_fPrevLockedPoints: number
 	m_iForcePointMoveCounter: number
-	readonly m_bPrevEndPointPos: boolean[]
-	readonly m_vPrevEndPointPos: IOBuffer_Vector3[]
 	m_flCurScroll: number
 	m_flScrollSpeed: number
 	m_RopeFlags: number
-	readonly m_LightValues: IOBuffer_Vector3[]
 	m_nSegments: number
 	m_hStartPoint: CEntityIndex
 	m_hEndPoint: CEntityIndex
@@ -10822,8 +10456,6 @@ declare class C_RopeKeyframe extends C_BaseModelEntity {
 	m_flTimeToNextGust: number
 	m_vWindDir: IOBuffer_Vector3
 	m_vColorMod: IOBuffer_Vector3
-	readonly m_vCachedEndPointAttachmentPos: IOBuffer_Vector3[]
-	readonly m_vCachedEndPointAttachmentAngle: IOBuffer_QAngle[]
 	m_bConstrainBetweenEndpoints: boolean
 	readonly m_bEndPointAttachmentPositionsDirty: boolean
 	readonly m_bEndPointAttachmentAnglesDirty: boolean
@@ -10927,26 +10559,8 @@ declare class C_DOTA_Ability_AntiMage_Blink_Fake extends C_DOTABaseAbility { }
 
 declare class C_IngameEvent_Base extends C_BaseEntity {
 	m_bInitialized: boolean
-	readonly m_CompendiumChallengeEventID: number[]
-	readonly m_CompendiumChallengeSequenceID: number[]
-	readonly m_CompendiumChallengeCoinReward: number[]
-	readonly m_CompendiumChallengeCoinSplash: number[]
-	readonly m_CompendiumChallengePointReward: number[]
-	readonly m_CompendiumChallengeCompleted: boolean[]
-	readonly m_CompendiumChallengeFailed: boolean[]
-	readonly m_CompendiumChallengeProgress: number[]
-	readonly m_QueryIDForProgress: number[]
-	readonly m_CompendiumCoinWager: number[]
-	readonly m_CompendiumTokenWagerAmount: number[]
-	readonly m_CompendiumCoinWagerResults: number[]
-	readonly m_CompendiumRankWagers: number[]
 	m_flWagerTimer: number
 	m_flWagerEndTime: number
-	readonly m_ProgressForQueryID: number[]
-	readonly m_GoalForQueryID: number[]
-	readonly m_PlayerQuestRankPreviouslyCompleted: number[]
-	readonly m_PlayerQuestRankCompleted: number[]
-	readonly m_QueryIndexForProgress: number[]
 }
 
 declare class C_DOTA_Ability_Healing_Campfire extends C_DOTABaseAbility { }
@@ -10998,9 +10612,6 @@ declare class C_ClientRagdoll extends C_BaseAnimating {
 	m_bReleaseRagdoll: boolean
 	m_iEyeAttachment: number
 	m_bFadingOut: boolean
-	readonly m_flScaleEnd: number[]
-	readonly m_flScaleTimeStart: number[]
-	readonly m_flScaleTimeEnd: number[]
 	m_bForceShadowCastType: boolean
 	m_forcedShadowCastType: ShadowType_t
 }
@@ -11021,13 +10632,10 @@ declare class C_DOTA_Ability_Nyx_Assassin_Impale extends C_DOTABaseAbility {
 declare class C_DOTA_Ability_Nian_Tail_Swipe extends C_DOTA_Ability_Animation_Attack { }
 
 declare class C_DotaSubquestBase extends C_BaseEntity {
-	readonly m_pszSubquestText: number[]
 	m_bHidden: boolean
 	m_bCompleted: boolean
 	m_bShowProgressBar: boolean
 	m_nProgressBarHueShift: number
-	readonly m_pnTextReplaceValuesCDotaSubquestBase: number[]
-	readonly m_pszTextReplaceString: number[]
 	m_nTextReplaceValueVersion: number
 	m_bWasCompleted: boolean
 }
@@ -11078,7 +10686,6 @@ declare class C_GlobalLight extends C_BaseEntity/*, CGlobalLightBase*/ {
 	m_ViewOrigin: IOBuffer_Vector3
 	m_ViewAngles: IOBuffer_QAngle
 	m_flViewFoV: number
-	readonly m_WorldPoints: IOBuffer_Vector3[]
 	m_vFogOffsetLayer0: IOBuffer_Vector2
 	m_vFogOffsetLayer1: IOBuffer_Vector2
 	m_hEnvWind: CEntityIndex
@@ -11213,7 +10820,6 @@ declare class C_DOTA_Ability_Special_Bonus_Intelligence_16 extends C_DOTABaseAbi
 
 declare class C_DOTA_BaseNPC_Building extends C_DOTA_BaseNPC {
 	m_iDamageLevel: number
-	readonly m_szDamageModelName: number[]
 	readonly m_nAmbientFXIndex: ParticleIndex_t
 	readonly m_nTPFXIndex: ParticleIndex_t
 	readonly m_nStatusFXIndex: ParticleIndex_t
@@ -11222,7 +10828,6 @@ declare class C_DOTA_BaseNPC_Building extends C_DOTA_BaseNPC {
 	m_iHeroStatueStatusEffectIndex: number
 	m_bHeroStatue: boolean
 	m_bBattleCup: boolean
-	readonly m_HeroStatueInscription: number[]
 	m_iHeroStatueOwnerPlayerID: number
 	m_ParticleTintColor: IOBuffer_Color
 }
@@ -11316,7 +10921,6 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Techies_4 extends C_DOTABaseAb
 declare class C_Team extends C_BaseEntity {
 	m_iScore: number
 	m_iRoundsWon: number
-	readonly m_szTeamname: number[]
 	m_iDeaths: number
 	m_iPing: number
 	m_iPacketloss: number
@@ -11721,32 +11325,6 @@ declare class C_BaseTeamObjectiveResource extends C_BaseEntity {
 	m_bOldControlPointsReset: boolean
 	m_iUpdateCapHudParity: number
 	m_iOldUpdateCapHudParity: number
-	readonly m_vCPPositions: IOBuffer_Vector3[]
-	readonly m_bCPIsVisible: boolean[]
-	readonly m_flLazyCapPerc: number[]
-	readonly m_flOldLazyCapPerc: number[]
-	readonly m_iTeamIcons: number[]
-	readonly m_iTeamOverlays: number[]
-	readonly m_iTeamReqCappers: number[]
-	readonly m_flTeamCapTime: number[]
-	readonly m_iPreviousPoints: number[]
-	readonly m_bTeamCanCap: boolean[]
-	readonly m_iTeamBaseIcons: number[]
-	readonly m_iBaseControlPoints: number[]
-	readonly m_bInMiniRound: boolean[]
-	readonly m_iWarnOnCap: number[]
-	readonly m_iszWarnSound: string[]
-	readonly m_flPathDistance: number[]
-	readonly m_iNumTeamMembers: number[]
-	readonly m_iCappingTeam: number[]
-	readonly m_iTeamInZone: number[]
-	readonly m_bBlocked: boolean[]
-	readonly m_iOwner: number[]
-	readonly m_pszCapLayoutInHUD: number[]
-	readonly m_flCapTimeLeft: number[]
-	readonly m_flCapLastThinkTime: number[]
-	readonly m_bWarnedOnFinalCap: boolean[]
-	readonly m_flLastCapWarningTime: number[]
 }
 
 declare class C_DOTATeam extends C_Team {
@@ -11760,7 +11338,6 @@ declare class C_DOTATeam extends C_Team {
 	m_bTeamComplete: boolean
 	m_bTeamIsHomeTeam: boolean
 	m_CustomHealthbarColor: IOBuffer_Color
-	readonly m_szTag: number[]
 }
 
 declare class CDOTA_BaseNPC_Seasonal_CNY_Balloon extends C_DOTA_BaseNPC_Additive { }
@@ -12130,18 +11707,9 @@ declare class C_IngameEvent_WM2017 extends C_IngameEvent_Base { }
 declare class C_DOTA_Ability_Special_Bonus_Cast_Range_350 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_DataNonSpectator extends C_BaseEntity {
-	readonly m_bWorldTreeState: bigint[]
-	readonly m_vDesiredWardPlacement: IOBuffer_Vector2[]
-	readonly m_nEnemyStartingPosition: number[]
 	m_nTotalEventPoints: number
 	m_nCaptainInspectedHeroID: number
 	m_nFeaturedPlayerID: number
-	readonly m_flSuggestedWardWeights: number[]
-	readonly m_nSuggestedWardIndexes: number[]
-	readonly m_iSuggestedLanes: number[]
-	readonly m_iSuggestedLaneWeights: number[]
-	readonly m_bSuggestedLaneRoam: boolean[]
-	readonly m_bSuggestedLaneJungle: boolean[]
 }
 
 declare class C_TeamRoundTimer extends C_BaseEntity {
@@ -12233,7 +11801,6 @@ declare class C_EnvProjectedTexture extends C_ModelPointEntity/*, CProjectedText
 	m_flPlaneOffset: number
 	m_flColorTransitionTime: number
 	m_flAmbient: number
-	readonly m_SpotlightTextureName: number[]
 	m_nSpotlightTextureFrame: number
 	m_nShadowQuality: number
 	m_flNearZ: number
@@ -12306,16 +11873,6 @@ declare class DataTeamPlayer_t {
 	m_iWardsPurchased: number
 	m_iWardsDestroyed: number
 	readonly m_PreGameInventory: C_DOTA_UnitInventory
-	readonly m_nKillsPerOpposingTeamMember: number[]
-	readonly m_iSuggestedAbilities: number[]
-	readonly m_fSuggestedAbilityWeights: number[]
-	readonly m_iSuggestedPregameItems: number[]
-	readonly m_iSuggestedItemSequences: number[]
-	readonly m_iSuggestedWeightedItems: WeightedSuggestion_t[]
-	readonly m_iSuggestedHeroes: number[]
-	readonly m_flSuggestedHeroesWeights: number[]
-	readonly m_iDamageByTypeReceivedPreReduction: number[]
-	readonly m_iDamageByTypeReceivedPostReduction: number[]
 	m_iCommandsIssued: number
 	m_iGoldSpentOnConsumables: number
 	m_iGoldSpentOnItems: number
@@ -12339,7 +11896,6 @@ declare class CBodyComponentBaseModelEntity extends CBodyComponentSkeletonInstan
 }
 
 declare class C_DOTA_Ability_Visage_SummonFamiliars extends C_DOTABaseAbility {
-	readonly szUnitName: number[]
 }
 
 declare class C_DOTA_Ability_Frostivus2018_DarkWillow_Bedlam extends C_DOTABaseAbility { }
@@ -12363,7 +11919,6 @@ declare class C_DOTA_BaseNPC_RotatableBuilding extends C_DOTA_BaseNPC {
 	m_iHeroStatueStatusEffectIndex: number
 	m_bHeroStatue: boolean
 	m_bBattleCup: boolean
-	readonly m_HeroStatueInscription: number[]
 	m_iHeroStatueOwnerPlayerID: number
 	m_ParticleTintColor: IOBuffer_Color
 }
@@ -12490,20 +12045,12 @@ declare class C_DOTA_Ability_Special_Bonus_MP_300 extends C_DOTABaseAbility { }
 declare class C_DOTA_PlayerResource extends C_BaseEntity {
 	m_bWasDataUpdateCreated: boolean
 	m_nPrimaryEventIndex: number
-	readonly m_iEstimatedMatchDurationRadiant: number[]
-	readonly m_iEstimatedMatchDurationDire: number[]
 	m_nObsoleteEventIDAssociatedWithEventData: number
-	readonly m_playerIDToPlayer: CEntityIndex[]
-	readonly m_iszName: string[]
-	readonly m_iszHTMLSafeName: string[]
-	readonly m_iszFilteredHTMLSafeName: string[]
 	m_bDirtySuggestedItems: boolean
 	m_bDirtyEstimatedMatchDuration: boolean
 	m_bDirtySelection: boolean
 	m_bHasWorldTreesChanged: boolean
 	m_bWorldTreeModelsChanged: boolean
-	readonly m_bSwapWillingness: boolean[]
-	readonly m_pPlayerIDToOnstageSlot: PlayerSeatAssignment_t[]
 	m_nEventNPCReplaced: number
 	m_nEventPlayerInfo: number
 	m_nInventoryUpdated: number
@@ -12789,8 +12336,6 @@ declare class PlayerResourcePlayerTeamData_t {
 	m_iLastBuybackTime: number
 	m_hSelectedHero: CEntityIndex
 	m_bAFK: boolean
-	readonly m_nSuggestedHeroes: number[]
-	readonly m_bBanSuggestedHeroes: boolean[]
 	m_bVoiceChatBanned: boolean
 	m_iTimedRewardDrops: number
 	m_iTimedRewardDropOrigins: number
@@ -12839,7 +12384,6 @@ declare class C_DOTA_NPC_Techies_Minefield_Sign extends C_DOTA_BaseNPC_Additive 
 
 declare class C_DOTA_Unit_LoopingSound extends C_DOTA_BaseNPC_Additive {
 	m_nPrevLoopingSoundParity: number
-	readonly m_pszNetworkedSoundLoop: number[]
 	m_nLoopingSoundParity: number
 }
 
@@ -13095,7 +12639,6 @@ declare class C_Fish extends C_BaseAnimating {
 	m_y: number
 	m_z: number
 	m_angle: number
-	readonly m_errorHistory: number[]
 	m_errorHistoryIndex: number
 	m_errorHistoryCount: number
 	m_averageError: number
@@ -13501,7 +13044,6 @@ declare class C_EnvDeferredLight extends C_ModelPointEntity/*, CDeferredLightBas
 	m_flStartFalloff: number
 	m_flDistanceFalloff: number
 	m_nFlags: number
-	readonly m_ProjectedTextureName: number[]
 }
 
 declare class C_DOTA_Item_Recipe_Black_King_Bar extends C_DOTA_Item { }
@@ -13659,16 +13201,6 @@ declare class C_DOTA_Ability_Special_Bonus_MP_100 extends C_DOTABaseAbility { }
 declare class C_DOTA_Ability_Special_Bonus_HP_350 extends C_DOTABaseAbility { }
 
 declare class C_PlayerResource extends C_BaseEntity {
-	readonly m_szName: string[]
-	readonly m_Colors: IOBuffer_Color[]
-	readonly m_iPing: number[]
-	readonly m_iScore: number[]
-	readonly m_iDeaths: number[]
-	readonly m_bConnected: boolean[]
-	readonly m_iTeam: number[]
-	readonly m_bAlive: boolean[]
-	// readonly m_iHealth: number[] // actually it's this, but TS doesn't allow overriding types
-	readonly m_bIsFakePlayer: boolean[]
 	m_nEventPlayerInfo: number
 }
 
@@ -14037,17 +13569,12 @@ declare class C_DOTA_Unit_Courier extends C_DOTA_BaseNPC_Additive {
 }
 
 declare class C_ParticleSystem extends C_BaseModelEntity {
-	readonly m_szSnapshotFileName: number[]
 	m_bActive: boolean
 	m_nStopType: number
 	m_flStartTime: number
-	readonly m_vServerControlPoints: IOBuffer_Vector3[]
-	readonly m_iServerControlPointAssignments: number[]
-	readonly m_hControlPointEnts: CEntityIndex[]
 	m_bNoSave: boolean
 	m_bStartActive: boolean
 	readonly m_iszEffectName: string
-	readonly m_iszControlPointNames: string[]
 	m_bOldActive: boolean
 }
 
@@ -14064,9 +13591,6 @@ declare class C_DOTA_Ability_Special_Bonus_Exp_Boost_10 extends C_DOTABaseAbilit
 declare class C_DOTA_Ability_Special_Bonus_MP_150 extends C_DOTABaseAbility { }
 
 declare class C_MaterialModifyControl extends C_BaseEntity {
-	readonly m_szMaterialName: number[]
-	readonly m_szMaterialVar: number[]
-	readonly m_szMaterialVarValue: number[]
 	m_bHasNewAnimationCommands: boolean
 	m_iFrameStart: number
 	m_iFrameEnd: number
@@ -14303,17 +13827,10 @@ declare class C_ColorCorrection extends C_BaseEntity {
 	m_flFadeOutDuration: number
 	m_flMaxWeight: number
 	m_flCurWeight: number
-	readonly m_netlookupFilename: number[]
 	m_bEnabled: boolean
 	m_bMaster: boolean
 	m_bClientSide: boolean
 	m_bExclusive: boolean
-	readonly m_bEnabledOnClient: boolean[]
-	readonly m_flCurWeightOnClient: number[]
-	readonly m_bFadingIn: boolean[]
-	readonly m_flFadeStartWeight: number[]
-	readonly m_flFadeStartTime: number[]
-	readonly m_flFadeDuration: number[]
 }
 
 declare class C_AI_BaseNPC extends C_BaseCombatCharacter {
@@ -14728,7 +14245,6 @@ declare class C_DOTA_Unit_Hero_Beastmaster extends C_DOTA_BaseNPC_Hero { }
 declare class C_DOTA_Unit_Hero_Lich extends C_DOTA_BaseNPC_Hero { }
 
 declare class C_PointClientUIWorldTextPanel extends C_PointClientUIWorldPanel {
-	readonly m_messageText: number[]
 }
 
 declare class C_DOTA_Item_Mantle extends C_DOTA_Item { }
@@ -14936,7 +14452,6 @@ declare class C_DOTA_Item_PoorMansShield extends C_DOTA_Item { }
 declare class C_DOTA_Ability_EmberSpirit_SearingChains extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Rubick_SpellSteal extends C_DOTABaseAbility {
-	readonly m_ActivityModifier: number[]
 	m_fStolenCastPoint: number
 	m_hStealTarget: CEntityIndex
 	m_hStealAbility: CEntityIndex<C_DOTABaseAbility>
@@ -15110,9 +14625,6 @@ declare class C_Gib extends C_BaseAnimating {
 declare class C_DOTA_Unit_Hero_VengefulSpirit extends C_DOTA_BaseNPC_Hero { }
 
 declare class C_PropHMDAvatar extends C_PropVRTrackedObject {
-	readonly m_hLiteralControllerSlots: number[]
-	readonly m_hLogicalControllerSlots: number[]
-	readonly m_hVRControllers: CEntityIndex<C_PropVRHand>[]
 	m_hCloseCaption: CEntityIndex<C_PointWorldText>
 	m_bLocalHMDPoseValid: boolean
 	m_flLastZPos: number
@@ -15127,7 +14639,6 @@ declare class C_ColorCorrectionVolume extends C_BaseTrigger {
 	m_MaxWeight: number
 	m_FadeDuration: number
 	m_Weight: number
-	readonly m_lookupFilename: number[]
 }
 
 declare class C_PrecipitationBlocker extends C_BaseModelEntity { }
@@ -15436,7 +14947,6 @@ declare class C_PropVRHand extends C_PropVRTrackedObject {
 	m_bVrSkeletonActive: boolean
 	m_nVrBoneCount: number
 	m_unVrCompressedBoneTransformsSize: number
-	readonly m_vrCompressedBoneTransforms: number[]
 	m_bInitialized: boolean
 	m_bIsInView: boolean
 	m_nHandID: number
@@ -15534,7 +15044,6 @@ declare class C_DOTA_Unit_Hero_Beastmaster_Beasts extends C_DOTA_BaseNPC_Creep_T
 declare class C_DOTA_Item_Recipe_Soul_Ring extends C_DOTA_Item { }
 
 declare class C_DOTA_Ability_Lycan_SummonWolves extends C_DOTABaseAbility {
-	readonly szUnitName: number[]
 	wolf_index: number
 	wolf_duration: number
 }
@@ -15687,8 +15196,6 @@ declare class C_DotaTutorialNetworker extends C_BaseEntity {
 	m_TargetLocation: IOBuffer_Vector3
 	m_TargetEntity: CEntityIndex
 	m_nLocationID: number
-	readonly m_GuideStr: number[]
-	readonly m_QuickBuyStr: number[]
 	m_nPreTutorialState: number
 	m_nPreUIState: number
 	m_nPreShopState: number
@@ -15820,7 +15327,6 @@ declare class C_DOTA_Unit_Hero_Lina extends C_DOTA_BaseNPC_Hero { }
 declare class C_PortraitHero extends C_DOTA_BaseNPC {
 	m_nHeroID: number
 	m_actQueuedActivity: number
-	readonly m_szQueuedActivityModifier: number[]
 }
 
 declare class C_EnvVolumetricFogController extends C_BaseEntity {
@@ -15923,13 +15429,11 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Slark_2 extends C_DOTABaseAbil
 
 declare class C_SlideshowDisplay extends C_BaseEntity {
 	m_bEnabled: boolean
-	readonly m_szDisplayText: number[]
 	readonly m_szSlideshowDirectory: string
 	m_fMinSlideTime: number
 	m_fMaxSlideTime: number
 	m_iCycleType: number
 	m_bNoListRepeats: boolean
-	readonly m_chCurrentSlideLists: number[]
 	m_iCurrentSlideIndex: number
 	m_NextSlideTime: number
 	m_iCurrentSlideList: number
@@ -15975,8 +15479,6 @@ declare class C_DOTA_Ability_KeeperOfTheLight_ManaLeak extends C_DOTABaseAbility
 declare class C_DOTA_Ability_Frostivus2018_Omniknight_Repel extends C_DOTABaseAbility { }
 
 declare class C_DOTASpecGraphPlayerData extends C_BaseEntity {
-	readonly m_rgGoldPerMinute: number[]
-	readonly m_rgXPPerMinute: number[]
 	m_nCreatedByPlayerID: number
 }
 
@@ -16734,7 +16236,6 @@ declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_160 extends C_DOTABaseAb
 
 declare class TreeModelReplacement_t {
 	m_nBinaryObjectID: number
-	readonly m_szModel: number[]
 }
 
 declare class C_DOTA_Unit_Hero_Silencer extends C_DOTA_BaseNPC_Hero { }
@@ -16997,7 +16498,6 @@ declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_10 extends C_DOTABaseAbi
 declare class C_DOTA_Ability_Special_Bonus_HP_325 extends C_DOTABaseAbility { }
 
 declare class C_SpeechBubbleManager extends C_BaseEntity {
-	readonly m_nLastCountInQueue: number[]
 }
 
 declare class C_DOTA_Unit_Hero_Winter_Wyvern extends C_DOTA_BaseNPC_Hero {
@@ -17100,8 +16600,6 @@ declare class CClient_Precipitation extends C_BaseModelEntity {
 	readonly m_pParticleInnerNearDef: string
 	readonly m_pParticleInnerFarDef: string
 	readonly m_pParticleOuterDef: string
-	readonly m_tParticlePrecipTraceTimer: TimedEvent[]
-	readonly m_bActiveParticlePrecipEmitter: boolean[]
 	m_bParticlePrecipInitialized: boolean
 	m_bHasSimulatedSinceLastSceneObjectUpdate: boolean
 	m_nAvailableSheetSequencesMaxIndex: number
@@ -17261,7 +16759,6 @@ declare class C_DOTAPlayer extends C_BasePlayer {
 	readonly m_pSmartCastNPC: C_DOTA_BaseNPC
 	readonly m_nTeamSprayParticleIndex: ParticleIndex_t
 	m_bIsNextCastOrderFromMouseClick: boolean
-	readonly m_iCursor: number[]
 	m_iSpectatorClickBehavior: number
 	m_flAspectRatio: number
 	m_hSpectatorQueryUnit: CEntityIndex
@@ -17270,19 +16767,13 @@ declare class C_DOTAPlayer extends C_BasePlayer {
 	m_iShopViewMode: ShopItemViewMode_t
 	m_iStatsDropdownCategory: number
 	m_iStatsDropdownSort: number
-	readonly m_szShopString: number[]
 	m_bInShowCaseMode: boolean
 	m_flCameraZoomAmount: number
 	m_iHighPriorityScore: number
-	readonly m_quickBuyItems: number[]
-	readonly m_quickBuyIsPurchasable: boolean[]
-	readonly m_iPrevCursor: number[]
 	m_iPositionHistoryTail: number
 	m_iMusicStatus: number
 	m_iPreviousMusicStatus: number
 	m_bRequestedInventory: boolean
-	readonly m_flMusicOperatorVals: number[]
-	readonly m_iMusicOperatorVals: number[]
 	m_flAltHeldStartTime: number
 }
 
@@ -17745,7 +17236,6 @@ declare class C_ShatterGlassShardPhysics extends C_PhysicsProp {
 declare class C_PlayerCosmeticPropClientside extends C_DynamicPropClientside {
 	m_iPlayerNum: number
 	m_iCosmeticType: number
-	readonly m_szProxyTextureName: number[]
 	m_bGeneratedShowcaseProps: boolean
 	readonly m_pShowcaseItem: C_EconItemView
 }
@@ -17773,8 +17263,6 @@ declare class C_Beam extends C_BaseModelEntity {
 	m_queryHandleHalo: number
 	m_nBeamType: BeamType_t
 	m_nBeamFlags: number
-	readonly m_hAttachEntity: CEntityIndex[]
-	readonly m_nAttachIndex: number[]
 	m_fWidth: number
 	m_fEndWidth: number
 	m_fFadeLength: number
@@ -17821,14 +17309,11 @@ declare class C_DOTA_Item_Rune extends C_BaseAnimating {
 	m_iRuneType: number
 	m_flRuneTime: number
 	m_nMapLocationTeam: number
-	readonly m_szLocation: number[]
 	m_iOldRuneType: number
 	m_bShowingTooltip: boolean
 }
 
 declare class C_DOTAAmbientCreatureParticleZone extends C_FuncBrush {
-	readonly m_szModelName: number[]
-	readonly m_szAreaName: number[]
 }
 
 declare class C_DOTA_Item_Recipe_Heart extends C_DOTA_Item { }
@@ -17901,8 +17386,6 @@ declare class C_DOTAGamerulesProxy extends C_GameRulesProxy {
 declare class C_DynamicPropAlias_prop_dynamic_override extends C_DynamicProp { }
 
 declare class C_EnvScreenOverlay extends C_PointEntity {
-	readonly m_iszOverlayNames: string[]
-	readonly m_flOverlayTimes: number[]
 	m_flStartTime: number
 	m_iDesiredOverlay: number
 	m_bIsActive: boolean
@@ -17932,8 +17415,6 @@ declare class C_DOTA_Unit_Hero_TemplarAssassin extends C_DOTA_BaseNPC_Hero { }
 
 declare class C_PointWorldText extends C_ModelPointEntity {
 	m_bForceRecreateNextUpdate: boolean
-	readonly m_messageText: number[]
-	readonly m_FontName: number[]
 	m_bEnabled: boolean
 	m_bFullbright: boolean
 	m_flWorldUnitsPerPx: number
@@ -18107,17 +17588,11 @@ declare class C_DOTA_Ability_SandKing_Epicenter extends C_DOTABaseAbility {
 declare class C_DotaSubquestPlayerStat extends C_DotaSubquestBase { }
 
 declare class C_DotaQuest extends C_BaseEntity {
-	readonly m_pszQuestTitle: number[]
-	readonly m_pszQuestText: number[]
 	m_nQuestType: number
-	readonly m_hSubquests: CEntityIndex<C_DotaSubquestBase>[]
 	m_bHidden: boolean
 	m_bCompleted: boolean
 	m_bWinIfCompleted: boolean
 	m_bLoseIfCompleted: boolean
-	readonly m_pszGameEndText: number[]
-	readonly m_pnTextReplaceValuesCDotaQuest: number[]
-	readonly m_pszTextReplaceString: number[]
 	m_nTextReplaceValueVersion: number
 	m_bWasCompleted: boolean
 }
@@ -18330,8 +17805,6 @@ declare class C_PoseController extends C_BaseEntity {
 	m_fFModTimeOffset: number
 	m_fFModRate: number
 	m_fFModAmplitude: number
-	readonly m_hProps: CEntityIndex[]
-	readonly m_chPoseIndex: number[]
 	m_bOldPoseValueParity: boolean
 	m_fCurrentPoseValue: number
 	m_fCurrentFMod: number
@@ -18454,15 +17927,7 @@ declare class C_DOTA_DataSpectator extends C_DOTA_DataNonSpectator {
 	m_hBountyRune_2: CEntityIndex
 	m_hBountyRune_3: CEntityIndex
 	m_hBountyRune_4: CEntityIndex
-	readonly m_iNetWorth: number[]
 	m_fRadiantWinProbability: number
-	readonly m_iGoldSpentOnSupport: number[]
-	readonly m_iHeroDamage: number[]
-	readonly m_nWardsPurchased: number[]
-	readonly m_nWardsPlaced: number[]
-	readonly m_nWardsDestroyed: number[]
-	readonly m_nRunesActivated: number[]
-	readonly m_nCampsStacked: number[]
 }
 
 declare class C_DOTA_Unit_Hero_Razor extends C_DOTA_BaseNPC_Hero { }
