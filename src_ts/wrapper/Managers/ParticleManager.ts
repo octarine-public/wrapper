@@ -2,7 +2,6 @@ import Vector3 from "../Base/Vector3"
 import Color from "../Base/Color"
 import Entity from "../Objects/Base/Entity"
 import Particle, { ControlPoints } from "../Objects/Base/Particle"
-import EventsSDK from "./EventsSDK"
 
 const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
 const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`
@@ -67,35 +66,35 @@ export interface IDrawBoundingAreaOptions {
 	Alpha?: number
 }
 
-let ParticlesSDK = new (class CParticlesSDK {
-	private readonly allParticles = new Map<any, Particle>()
-
+class ParticlesSDK {
 	/**
 	 * @deprecated Will be removed after changed all scripts
 	 */
-	public Create(path: string, attach: ParticleAttachment_t, ent?: Entity): number {
+	public static Create(path: string, attach: ParticleAttachment_t, ent?: Entity): number {
 		return Particles.Create(path, attach, ent?.IsValid ? ent.Index : -1)
 	}
 	/**
 	 * @deprecated Will be removed after changed all scripts
 	 */
-	public Destroy(particle_id: number, immediate: boolean = true): void {
+	public static Destroy(particle_id: number, immediate: boolean = true): void {
 		Particles.Destroy(particle_id, immediate)
 	}
 	/**
 	 * @deprecated Will be removed after changed all scripts
 	 */
-	public SetControlPoint(particle_id: number, control_point: number, vec: Vector3): void {
+	public static SetControlPoint(particle_id: number, control_point: number, vec: Vector3): void {
 		vec.toIOBuffer()
 		Particles.SetControlPoint(particle_id, control_point)
 	}
 	/**
 	 * @deprecated Will be removed after changed all scripts
 	 */
-	public SetControlPointForward(particle_id: number, control_point: number, vec: Vector3): void {
+	public static SetControlPointForward(particle_id: number, control_point: number, vec: Vector3): void {
 		vec.toIOBuffer()
 		Particles.SetControlPointForward(particle_id, control_point)
 	}
+
+	public readonly allParticles = new Map<any, Particle>();
 
 	public AddOrUpdate(
 		key: any,
@@ -259,23 +258,14 @@ let ParticlesSDK = new (class CParticlesSDK {
 		)
 	}
 
-	public Remove(key: any) {
-		var particle = this.allParticles.get(key)
-
-		if (particle === undefined)
-			return
-
-		particle.Destroy(true)
-		this.allParticles.delete(key)
+	public RemoveKey(key: any, immediate = true) {
+		this.allParticles.get(key)?.Destroy(immediate, this.allParticles)
 	}
 
-	public DestroyAll(particleDestroy?: boolean, immediate = true) {
+	public DestroyAll(immediate = true) {
 		// loop-optimizer: KEEP
-		this.allParticles.forEach(particle => particle.Destroy(particleDestroy, immediate))
-		this.allParticles.clear()
+		this.allParticles.forEach(particle => particle.Destroy(immediate, this.allParticles))
 	}
-})()
-
-EventsSDK.on("GameEnded", () => ParticlesSDK.DestroyAll())
+}
 
 export default ParticlesSDK

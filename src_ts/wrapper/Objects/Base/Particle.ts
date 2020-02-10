@@ -150,18 +150,19 @@ export default class Particle {
 			.Create()
 	}
 
-	public Destroy(particleDestroy?: boolean, immediate = true) {
+	/**
+	 * 
+	 * @param particleManager removing from all particles in manager
+	 */
+	public Destroy(immediate = true, particleManager?: Map<any, Particle>) {
 		if (!this.IsValid)
 			return this
 
-		if (particleDestroy) {
-			Particles.Destroy(this.effectIndex, immediate)
-			this.effectIndex = -1
-		}
-
+		Particles.Destroy(this.effectIndex, immediate)
+		this.effectIndex = -1
 		this.IsValid = false
 
-		ParticlesSDK.Remove(this.key)
+		particleManager?.delete(this.key)
 
 		return this
 	}
