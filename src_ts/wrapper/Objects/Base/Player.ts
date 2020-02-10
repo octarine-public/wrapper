@@ -50,19 +50,6 @@ export default class Player extends Entity {
 	public get IsSpectator(): boolean {
 		return this.Team === Team.Observer || this.Team === Team.Neutral || this.Team === Team.None || this.Team === Team.Undefined
 	}
-	public get SelectedUnits(): Entity[] {
-		let selUnits = this.NativeEntity?.m_nSelectedUnits,
-			selected: Entity[] = []
-		if (selUnits !== undefined) {
-			// loop-optimizer: FORWARD
-			selUnits.forEach(unitNative => {
-				let unit = EntityManager.GetEntityByNative(unitNative)
-				if (unit !== undefined)
-					selected.push(unit)
-			})
-		}
-		return selected
-	}
 	public get Hero(): Nullable<Hero> {
 		return EntityManager.EntityByIndex(this.Hero_) as Nullable<Hero>
 	}

@@ -1,4 +1,4 @@
-import { Entity, LocalPlayer, Menu as MenuSDK, Unit, Vector3, EntityManager } from "wrapper/Imports"
+import { Entity, Menu as MenuSDK, Unit, Vector3, EntityManager } from "wrapper/Imports"
 
 export let baseCheckUnit = (ent: Unit) =>
 	ent.IsAlive
@@ -7,10 +7,6 @@ export let baseCheckUnit = (ent: Unit) =>
 
 export let checkControllable = (ent: Unit) =>
 	baseCheckUnit(ent) && ent.IsControllable
-
-export let SelectedStopping = () =>
-	LocalPlayer?.SelectedUnits.filter(ent =>
-		ent instanceof Unit && checkControllable(ent)) ?? [] as Unit[]
 
 export let Controllables = () => EntityManager.GetEntitiesByClass(Unit).filter(unit => baseCheckUnit(unit) && checkControllable(unit))
 
