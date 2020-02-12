@@ -1,7 +1,7 @@
 import Vector3 from "../Base/Vector3"
 import Color from "../Base/Color"
 import Entity from "../Objects/Base/Entity"
-import Particle, { ControlPointsType } from "../Objects/Base/Particle"
+import Particle, { ControlPointsType, ControlPoint } from "../Objects/Base/Particle"
 
 const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
 const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`
@@ -261,6 +261,15 @@ class ParticlesSDK {
 		)
 	}
 
+	public SetConstrolPointByKey(key: any, id: number, point: ControlPoint) {
+		this.AllParticles.get(key)?.SetControlPoint(id, point)
+	}
+	public SetConstrolPointsByKey(key: any, ...points: ControlPointsType[]) {
+		this.AllParticles.get(key)?.SetControlPoints(...points)
+	}
+	public RestartByKey(key: any) {
+		this.AllParticles.get(key)?.Restart()
+	}
 	public DestroyByKey(key: any, immediate = true) {
 		this.AllParticles.get(key)?.Destroy(immediate)
 		this.allParticlesRange.delete(key)
