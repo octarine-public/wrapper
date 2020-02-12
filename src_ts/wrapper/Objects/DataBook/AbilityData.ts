@@ -52,6 +52,7 @@ export default class AbilityData {
 	private readonly CastRangeCache: number[]
 	private readonly AbilityDamageCache: number[]
 	private readonly CastPointCache: number[]
+	private readonly AbilityChargesCache: number[]
 
 	constructor(name: string) {
 		{
@@ -120,6 +121,7 @@ export default class AbilityData {
 		this.CastRangeCache = this.GetLevelArray("AbilityCastRange")
 		this.AbilityDamageCache = this.GetLevelArray("AbilityDamage")
 		this.CastPointCache = this.GetLevelArray("AbilityCastPoint")
+		this.AbilityChargesCache = this.GetLevelArray("AbilityCharges")
 	}
 
 	public GetSpecialValue(name: string, level = 0): number {
@@ -167,6 +169,13 @@ export default class AbilityData {
 		if (level < 0)
 			return 0
 		return this.CastPointCache[level]
+	}
+
+	public AbilityCharges(level: number): number {
+		level = Math.min(this.MaxLevel, level) - 1
+		if (level < 0)
+			return 0
+		return this.AbilityChargesCache[level]
 	}
 
 	private ExtendLevelArray(ar: number[]): number[] {
