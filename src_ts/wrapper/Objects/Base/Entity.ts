@@ -268,8 +268,10 @@ RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => {
 	EventsSDK.emit("EntityTeamChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
+	let old_state = ent.LifeState
 	ent.LifeState = new_val as LifeState_t
-	EventsSDK.emit("LifeStateChanged", false, ent)
+	if (old_state !== ent.LifeState)
+		EventsSDK.emit("LifeStateChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_iHealth", (ent, new_val) => ent.HP = new_val as number)
 RegisterFieldHandler(Entity, "m_iMaxHealth", (ent, new_val) => ent.MaxHP = new_val as number)
