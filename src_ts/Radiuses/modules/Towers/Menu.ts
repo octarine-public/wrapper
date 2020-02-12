@@ -1,35 +1,44 @@
-import { Menu as MenuSDK, PARTICLE_RENDER_NAME } from "wrapper/Imports"
-import { IMenuParticlePicker, IMenuColorPicker } from "wrapper/Menu/ITypes"
+import { Menu as MenuSDK, Unit } from "wrapper/Imports"
 
 import { Menu } from "../../base/MenuBase"
+import {
+	IMenuPattern,
+	IParticlePattern,
+	IColorPattern,
+	MenuPattternBase,
+	MenuPatternParticle,
+	MenuPatternColor
+} from "../../base/MenuParticle"
 
 
-export const Buildings = Menu.AddNode("Buildings")
+// -------
 
-const Towers = Buildings.AddNode("Towers")
-export const TowersRange = BuildingPatternParticle("Range", Towers)
-export const ShowAttackTarget = BuildingPatternColor("Show Tower Target", Towers)
+export const BuildingsMenu = Menu.AddNode("Buildings")
 
-export const Outposts = BuildingPatternParticle("Outposts")
+// ---
+const TowersMenu = BuildingsMenu.AddNode("Towers")
 
-export interface IBuildingPattern {
-	Node: MenuSDK.Node
-	State: MenuSDK.Toggle
-	Team: MenuSDK.Switcher
-}
-export interface IBuildingParticlePattern extends IBuildingPattern {
-	Style: IMenuParticlePicker
-}
-export interface IBuildingColorPattern extends IBuildingPattern {
-	Style: IMenuColorPicker
-}
+export const TowersRangeMenu = BuildingPatternParticle("Towers Range", TowersMenu)
+export const ShowAttackTargetMenu = BuildingPatternColor("Show Tower Target", TowersMenu)
+// ---
+export const OutpostsMenu = BuildingPatternParticle("Outposts")
 
-function BuildingPatternBase(name: string, Node?: MenuSDK.Node) {
-	Node = (Node ?? Buildings).AddNode(name)
+
+// ---
+
+export const MenuCheckTeam = (pattern: IBuildingPattern, ent: Unit) => (
+	!pattern.State.value
+	|| (pattern.Team.selected_id === 1 && !ent.IsEnemy())
+	|| (pattern.Team.selected_id === 2 && ent.IsEnemy())
+)
+
+// -------
+
+function BuildingPatternBase(name: string, Node?: MenuSDK.Node): IBuildingPattern {
+	const menu = MenuPattternBase(name, (Node ?? BuildingsMenu))
 	return {
-		Node,
-		State: Node.AddToggle("State"),
-		Team: Node.AddSwitcher("Team", ["Allies and Enemy", "Only Enemy", "Only Allies"])
+		...menu,
+		Team: menu.Node.AddSwitcher("Team", ["Allies and Enemy", "Only Enemy", "Only Allies"])
 	}
 }
 
@@ -37,11 +46,7 @@ function BuildingPatternParticle(name: string, Node?: MenuSDK.Node): IBuildingPa
 	const pattern = BuildingPatternBase(name, Node)
 	return {
 		...pattern,
-		Style: pattern.Node.AddParticlePicker("Style", undefined, [
-			PARTICLE_RENDER_NAME.NORMAL,
-			PARTICLE_RENDER_NAME.ROPE,
-			PARTICLE_RENDER_NAME.ANIMATION
-		])
+		...MenuPatternParticle(pattern.Node),
 	}
 }
 
@@ -49,6 +54,16 @@ function BuildingPatternColor(name: string, Node?: MenuSDK.Node): IBuildingColor
 	const pattern = BuildingPatternBase(name, Node)
 	return {
 		...pattern,
-		Style: pattern.Node.AddColorPicker("Style")
+		...MenuPatternColor(pattern.Node),
 	}
 }
+
+// -------
+
+export interface IBuildingPattern extends IMenuPattern {
+	Team: MenuSDK.Switcher
+}
+export interface IBuildingParticlePattern extends IBuildingPattern, IParticlePattern { }
+export interface IBuildingColorPattern extends IBuildingPattern, IColorPattern { }
+
+// -------

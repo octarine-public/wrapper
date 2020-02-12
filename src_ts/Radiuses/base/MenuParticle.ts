@@ -1,8 +1,44 @@
-import { Unit } from "wrapper/Imports"
+import { Menu as MenuSDK, PARTICLE_RENDER_NAME } from "wrapper/Imports"
 import { IMenuParticlePicker, IMenuColorPicker } from "wrapper/Menu/ITypes"
 
-import { IBuildingPattern } from "../modules/Towers/Menu"
 
+// -------
+
+export interface IMenuPattern {
+	Node: MenuSDK.Node
+	State: MenuSDK.Toggle
+}
+export interface IParticlePattern {
+	Style: IMenuParticlePicker
+}
+export interface IColorPattern {
+	Style: IMenuColorPicker
+}
+
+// -------
+
+export const MenuPattternBase = (name: string, Node: MenuSDK.Node): IMenuPattern => {
+	Node = Node.AddNode(name)
+	return {
+		Node,
+		State: Node.AddToggle("State")
+	}
+}
+
+export const MenuPatternParticle = (Node: MenuSDK.Node): IParticlePattern => ({
+	Style: Node.AddParticlePicker("Style", undefined, [
+		PARTICLE_RENDER_NAME.NORMAL,
+		PARTICLE_RENDER_NAME.ROPE,
+		PARTICLE_RENDER_NAME.ANIMATION
+	])
+})
+
+export const MenuPatternColor = (Node: MenuSDK.Node): IColorPattern => ({
+	Style: Node.AddColorPicker("Style")
+})
+
+
+// -------
 
 export function ParticleUpdatePattern(
 	style: IMenuParticlePicker | IMenuColorPicker,
@@ -17,9 +53,3 @@ export function ParticleUpdatePattern(
 	(style as IMenuParticlePicker).Width?.OnValue(updateCallback);
 	(style as IMenuParticlePicker).Style?.OnValue(restartCallback)
 }
-
-export let MenuCheckTeam = (pattern: IBuildingPattern, ent: Unit) => (
-	!pattern.State.value
-	|| (pattern.Team.selected_id === 1 && !ent.IsEnemy())
-	|| (pattern.Team.selected_id === 2 && ent.IsEnemy())
-)

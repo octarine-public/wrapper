@@ -1,12 +1,10 @@
 import { ParticlesSDK, Unit, Particle, EntityManager, Vector3, } from "wrapper/Imports"
 
-import { IBuildingParticlePattern } from "./Menu"
-import { MenuCheckTeam } from "../../base/MenuParticle"
-
+import { IParticlePattern } from "./MenuParticle"
 
 // -------
 
-function ParticleUpdateRange(particle: Particle, pattern: IBuildingParticlePattern) {
+function ParticleUpdateRange(particle: Particle, pattern: IParticlePattern) {
 	particle.SetControlPoints(
 		[2, pattern.Style.Color],
 		[3, new Vector3(pattern.Style.Width.value)],
@@ -16,17 +14,19 @@ function ParticleUpdateRange(particle: Particle, pattern: IBuildingParticlePatte
 
 // -------
 
-export function ParticleCreateRange(particleManager: ParticlesSDK, ent: Unit, pattern: IBuildingParticlePattern) {
-
-	let particle = particleManager.AllParticles.get(ent)
-
-	if (particle !== undefined)
+export function ParticleCreateRange(
+	particleManager: ParticlesSDK,
+	ent: Unit,
+	pattern: IParticlePattern,
+	onBeforeCreate?: (ent: Unit) => boolean
+) {
+	if (particleManager.AllParticles.has(ent))
 		return
 
-	if (MenuCheckTeam(pattern, ent))
+	if (onBeforeCreate?.(ent))
 		return
 
-	particle = particleManager.DrawCircle(ent, ent, undefined, {
+	let particle = particleManager.DrawCircle(ent, ent, undefined, {
 		RenderStyle: pattern.Style.Style.selected_id
 	})
 
@@ -39,7 +39,7 @@ export function ParticleSetRadiusByRadius(particleManager: ParticlesSDK, getRang
 	particleManager.AllParticles.forEach((particle, ent) => particle.SetControlPoint(1, getRange(ent)))
 }
 
-export function ParticlesSetRanges(particleManager: ParticlesSDK, pattern: IBuildingParticlePattern) {
+export function ParticlesSetRanges(particleManager: ParticlesSDK, pattern: IParticlePattern) {
 	// loop-optimizer: KEEP
 	particleManager.AllParticles.forEach(particle => ParticleUpdateRange(particle, pattern))
 }
@@ -48,15 +48,14 @@ export function OnStateBase(
 	particleManager: ParticlesSDK,
 	state: boolean,
 	class_: Constructor<Unit>,
-	pattern: IBuildingParticlePattern) {
+	pattern: IParticlePattern,
+	onBeforeCreate?: (ent: Unit) => boolean
+) {
 
 	if (state) {
 
 		EntityManager.GetEntitiesByClass(class_)
-			.forEach(building => ParticleCreateRange(particleManager, building, pattern))
+			.forEach(unit => ParticleCreateRange(particleManager, unit, pattern, onBeforeCreate))
 	}
-	else {
-		// loop-optimizer: KEEP
-		particleManager.AllParticles.forEach((_particle, building) => particleManager.DestroyByKey(building))
-	}
+	else particleManager.DestroyAll()
 }

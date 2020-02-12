@@ -1,14 +1,14 @@
 import { Tower, EntityManager, EventsSDK, ParticlesSDK } from "wrapper/Imports"
 
 import { stateMain } from "../../base/MenuBase"
-import { ParticleUpdatePattern, MenuCheckTeam } from "../../base/MenuParticle"
+import { ParticleUpdatePattern } from "../../base/MenuParticle"
 
-import { TowersRange, ShowAttackTarget } from "./Menu"
+import { TowersRangeMenu, ShowAttackTargetMenu, MenuCheckTeam } from "./Menu"
 import {
 	OnStateBase,
 	ParticleSetRadiusByRadius,
 	ParticlesSetRanges
-} from "./Base"
+} from "../../base/UseParticles"
 
 
 // --------
@@ -20,17 +20,11 @@ let Towers: Tower[] = []
 // --------
 
 const OnStateMenu = (state: boolean) =>
-	OnStateBase(towersParticles, state, Tower, TowersRange)
+	OnStateBase(towersParticles, state, Tower, TowersRangeMenu,
+		(ent) => MenuCheckTeam(TowersRangeMenu, ent))
 
-const RestartParticles = () => {
-	OnState(false)
-	OnState(true)
-}
-
-const IsShowAttackTarget = () => stateMain.value && ShowAttackTarget.State.value
-
-const OnState = (state: boolean) => {
-	state = state && TowersRange.State.value
+const OnState = (newState: boolean = true) => {
+	const state = stateMain.value && TowersRangeMenu.State.value && newState
 
 	OnStateMenu(state)
 
@@ -39,25 +33,30 @@ const OnState = (state: boolean) => {
 	}
 }
 
+const IsShowAttackTarget = () => stateMain.value && ShowAttackTargetMenu.State.value
+
+const RestartParticles = () => {
+	OnState(false)
+	OnState(true)
+}
 
 
 // -------- Menu
 
-stateMain.OnValue(self => OnState(self.value))
+stateMain.OnValue(() => OnState())
 
 // -------- Tower Range
 
-TowersRange.State.OnValue(self => OnState(self.value && stateMain.value))
+TowersRangeMenu.State.OnValue(() => OnState())
+TowersRangeMenu.Team.OnValue(RestartParticles)
 
-TowersRange.Team.OnValue(RestartParticles)
-
-ParticleUpdatePattern(TowersRange.Style,
-	() => ParticlesSetRanges(towersParticles, TowersRange),
+ParticleUpdatePattern(TowersRangeMenu.Style,
+	() => ParticlesSetRanges(towersParticles, TowersRangeMenu),
 	RestartParticles)
 
 // -------- Tower Attack Target
 
-ShowAttackTarget.Team.OnValue(() => towersAttackParticles.DestroyAll())
+ShowAttackTargetMenu.Team.OnValue(() => towersAttackParticles.DestroyAll())
 
 // -------- EventsSDK
 
@@ -85,11 +84,11 @@ EventsSDK.on("Draw", () => {
 			return
 		}
 
-		if (MenuCheckTeam(ShowAttackTarget, tower))
+		if (MenuCheckTeam(ShowAttackTargetMenu, tower))
 			return
 
 		towersAttackParticles.DrawLineToTarget(tower, tower, target,
-			ShowAttackTarget.Style.Color)
+			ShowAttackTargetMenu.Style.Color)
 	})
 })
 
@@ -97,3 +96,6 @@ EventsSDK.on("EntityDestroyed", ent => {
 	towersParticles.DestroyByKey(ent)
 	towersAttackParticles.DestroyByKey(ent)
 })
+
+EventsSDK.on("GameStarted", () => OnState(true))
+EventsSDK.on("GameEnded", () => OnState(false))

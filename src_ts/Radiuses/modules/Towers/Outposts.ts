@@ -3,41 +3,26 @@ import { Entity, Outpost, EventsSDK, ParticlesSDK } from "wrapper/Imports"
 import { stateMain } from "../../base/MenuBase"
 import { ParticleUpdatePattern } from "../../base/MenuParticle"
 
-import { Outposts } from "./Menu"
+import { OutpostsMenu, MenuCheckTeam } from "./Menu"
 import {
 	OnStateBase,
 	ParticleSetRadiusByRadius,
 	ParticlesSetRanges
-} from "./Base"
+} from "../../base/UseParticles"
 
 
 // --------
+
 const outpostsParticles = new ParticlesSDK()
 
 // --------
 
 const OnStateMenu = (state: boolean) =>
-	OnStateBase(outpostsParticles, state, Outpost, Outposts)
+	OnStateBase(outpostsParticles, state, Outpost, OutpostsMenu,
+		(ent) => MenuCheckTeam(OutpostsMenu, ent))
 
-const RestartParticles = () => {
-	OnState(false)
-	OnState(true && stateMain.value)
-}
-
-// --------
-
-Outposts.State.OnValue(self => OnState(self.value && stateMain.value))
-
-Outposts.Team.OnValue(RestartParticles)
-
-ParticleUpdatePattern(Outposts.Style,
-	() => ParticlesSetRanges(outpostsParticles, Outposts),
-	RestartParticles)
-
-// --------
-
-function OnState(state: boolean) {
-	state = state && Outposts.State.value
+const OnState = (newState: boolean = true) => {
+	let state = stateMain.value && OutpostsMenu.State.value && newState
 
 	OnStateMenu(state)
 
@@ -46,14 +31,27 @@ function OnState(state: boolean) {
 	}
 }
 
+const RestartParticles = () => {
+	OnState(false)
+	OnState(true)
+}
+
+// -------- Menu
+
+stateMain.OnValue(() => OnState())
+
+// -------- Outpost
+
+OutpostsMenu.State.OnValue(() => OnState())
+OutpostsMenu.Team.OnValue(RestartParticles)
+
+ParticleUpdatePattern(OutpostsMenu.Style,
+	() => ParticlesSetRanges(outpostsParticles, OutpostsMenu),
+	RestartParticles)
+
 // --------
 
-stateMain.OnValue(self => OnState(self.value))
-
-EventsSDK.on("EntityTeamChanged", ent => {
-	if (ent instanceof Outpost) {
-		RestartParticles()
-	}
-})
-
+EventsSDK.on("EntityTeamChanged", ent => ent instanceof Outpost && RestartParticles())
 EventsSDK.on("EntityDestroyed", (ent: Entity) => outpostsParticles.DestroyByKey(ent))
+EventsSDK.on("GameStarted", () => OnState(true))
+EventsSDK.on("GameEnded", () => OnState(false))
