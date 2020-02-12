@@ -129,6 +129,7 @@ export default class Particle {
 		if (!this.IsValid)
 			return
 
+		this.controlPoints = points
 		points.forEach(([id, point]) => this.SetControlPoint(id, point))
 	}
 
