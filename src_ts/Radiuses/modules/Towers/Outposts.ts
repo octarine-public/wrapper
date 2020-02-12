@@ -1,25 +1,23 @@
-import { Entity, Outpost } from "wrapper/Imports"
+import { Entity, Outpost, EventsSDK, ParticlesSDK } from "wrapper/Imports"
 
 import { stateMain } from "../../base/MenuBase"
-import { RegisterModule } from "../../base/RegisterModule"
-import { ParticleUpdatePattern } from "../../base/MenuRangeParticle"
+import { ParticleUpdatePattern } from "../../base/MenuParticle"
 
 import { Outposts } from "./Menu"
 import {
 	OnStateBase,
-	ParticleDestroy,
-	ParticleSetRadius,
+	ParticleSetRadiusByRadius,
 	ParticlesSetRanges
 } from "./Base"
 
 
 // --------
-const outpostsParticles = new Map<Outpost, number>()
+const outpostsParticles = new ParticlesSDK()
 
 // --------
 
 const OnStateMenu = (state: boolean) =>
-	OnStateBase(state, Outpost, outpostsParticles, Outposts)
+	OnStateBase(outpostsParticles, state, Outpost, Outposts)
 
 const RestartParticles = () => {
 	OnState(false)
@@ -44,13 +42,13 @@ function OnState(state: boolean) {
 	OnStateMenu(state)
 
 	if (state) {
-		ParticleSetRadius(outpostsParticles, ent => ent.DayVision)
+		ParticleSetRadiusByRadius(outpostsParticles, ent => ent.DayVision)
 	}
 }
 
-const EntityDestroyed = (ent: Entity) => ParticleDestroy(outpostsParticles, ent as Outpost)
-
 // --------
+
+stateMain.OnValue(self => OnState(self.value))
 
 EventsSDK.on("EntityTeamChanged", ent => {
 	if (ent instanceof Outpost) {
@@ -58,7 +56,4 @@ EventsSDK.on("EntityTeamChanged", ent => {
 	}
 })
 
-RegisterModule({
-	OnState,
-	EntityDestroyed
-})
+EventsSDK.on("EntityDestroyed", (ent: Entity) => outpostsParticles.DestroyByKey(ent))

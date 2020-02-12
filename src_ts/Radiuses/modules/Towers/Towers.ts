@@ -1,112 +1,99 @@
-import { Entity, Tower } from "wrapper/Imports"
+import { Tower, EntityManager, EventsSDK, ParticlesSDK } from "wrapper/Imports"
 
 import { stateMain } from "../../base/MenuBase"
-import { RegisterModule } from "../../base/RegisterModule"
-import { ParticleUpdatePattern } from "../../base/MenuRangeParticle"
+import { ParticleUpdatePattern, MenuCheckTeam } from "../../base/MenuParticle"
 
-import { Towers as TowersMenu, ShowAttackTarget } from "./Menu"
+import { TowersRange, ShowAttackTarget } from "./Menu"
 import {
 	OnStateBase,
-	ParticleDestroy,
-	ParticleSetRadius,
-	ParticlesSetRanges,
-	ParticleCreateTarget,
-	ParticleUpdateTarget
+	ParticleSetRadiusByRadius,
+	ParticlesSetRanges
 } from "./Base"
 
 
 // --------
-const towersParticles = new Map<Tower, number>()
-const towersAttackParticles = new Map<Tower, number>()
+const towersParticles = new ParticlesSDK()
+const towersAttackParticles = new ParticlesSDK()
 
 let Towers: Tower[] = []
 
 // --------
 
-// --------
-
 const OnStateMenu = (state: boolean) =>
-	OnStateBase(state, Tower, towersParticles, TowersMenu)
+	OnStateBase(towersParticles, state, Tower, TowersRange)
 
 const RestartParticles = () => {
 	OnState(false)
 	OnState(true)
 }
 
-const IsShowAttackTarget = () => stateMain.value
-	&& TowersMenu.State.value && ShowAttackTarget.value
+const IsShowAttackTarget = () => stateMain.value && ShowAttackTarget.State.value
 
-// --------
-
-TowersMenu.State.OnValue(self => OnState(self.value && stateMain.value))
-
-TowersMenu.Team.OnValue(RestartParticles)
-
-ParticleUpdatePattern(TowersMenu.Style,
-	() => ParticlesSetRanges(towersParticles, TowersMenu),
-	RestartParticles)
-
-// --------
-
-function OnState(state: boolean) {
-	state = state && TowersMenu.State.value
+const OnState = (state: boolean) => {
+	state = state && TowersRange.State.value
 
 	OnStateMenu(state)
 
 	if (state) {
-		ParticleSetRadius(towersParticles, ent => ent.AttackRangeBonus())
+		ParticleSetRadiusByRadius(towersParticles, ent => ent.AttackRangeBonus())
 	}
 }
 
-function Tick() {
+
+
+// -------- Menu
+
+stateMain.OnValue(self => OnState(self.value))
+
+// -------- Tower Range
+
+TowersRange.State.OnValue(self => OnState(self.value && stateMain.value))
+
+TowersRange.Team.OnValue(RestartParticles)
+
+ParticleUpdatePattern(TowersRange.Style,
+	() => ParticlesSetRanges(towersParticles, TowersRange),
+	RestartParticles)
+
+// -------- Tower Attack Target
+
+ShowAttackTarget.Team.OnValue(() => towersAttackParticles.DestroyAll())
+
+// -------- EventsSDK
+
+EventsSDK.on("Tick", () => {
 	if (!IsShowAttackTarget())
 		return
 
 	Towers = EntityManager.GetEntitiesByClass(Tower).filter(x => x.IsAlive)
-}
+})
 
-function Draw() {
+EventsSDK.on("Draw", () => {
 	if (!IsShowAttackTarget())
 		return
 
 	Towers.forEach(tower => {
-
-		let particle = towersAttackParticles.get(tower)
-
 		let target = tower.TowerAttackTarget
 
 		if (target === undefined
 			|| !target.IsAlive
 			|| !tower.IsInRange(target.Position, tower.AttackRangeBonus())) {
 
-			if (particle !== undefined)
-				ParticleDestroy(towersAttackParticles, tower)
+			if (towersAttackParticles.AllParticles.has(tower))
+				towersAttackParticles.DestroyByKey(tower)
 
 			return
 		}
 
-		if (particle === undefined) {
-			particle = ParticleCreateTarget(towersAttackParticles, tower, TowersMenu)
-		}
-
-		if (particle === undefined)
+		if (MenuCheckTeam(ShowAttackTarget, tower))
 			return
 
-		ParticleUpdateTarget(particle, tower, target)
+		towersAttackParticles.DrawLineToTarget(tower, tower, target,
+			ShowAttackTarget.Style.Color)
 	})
-}
+})
 
-const EntityDestroyed = (ent: Entity) => {
-	ParticleDestroy(towersParticles, ent as Tower)
-	ParticleDestroy(towersAttackParticles, ent as Tower)
-}
-
-
-// --------
-
-RegisterModule({
-	OnState,
-	Tick,
-	Draw,
-	EntityDestroyed
+EventsSDK.on("EntityDestroyed", ent => {
+	towersParticles.DestroyByKey(ent)
+	towersAttackParticles.DestroyByKey(ent)
 })
