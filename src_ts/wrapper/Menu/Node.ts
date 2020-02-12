@@ -22,7 +22,7 @@ export interface IMenuColorPicker {
 	Color: Color
 }
 
-export interface IMenuRangeParticle {
+export interface IMenuParticlePicker {
 	Node: Node
 	State: Nullable<Toggle>
 	R: Slider
@@ -238,14 +238,14 @@ export default class Node extends Base {
 		}
 	}
 
-	AddRangeParticle(name: string, color: Color | number = new Color(0, 255, 0),
+	AddParticlePicker(name: string, color: Color | number = new Color(0, 255, 0),
 		render: PARTICLE_RENDER_NAME[] = [
 			PARTICLE_RENDER_NAME.NORMAL,
 			PARTICLE_RENDER_NAME.ROPE,
 			PARTICLE_RENDER_NAME.ANIMATION
 		],
 		addStateToTree?: boolean
-	): IMenuRangeParticle {
+	): IMenuParticlePicker {
 
 		const Node = this.AddNode(name)
 
