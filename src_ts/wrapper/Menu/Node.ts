@@ -12,27 +12,7 @@ import Switcher from "./Switcher"
 import Toggle from "./Toggle"
 import { FontFlags_t } from "../Enums/FontFlags_t"
 import { PARTICLE_RENDER_NAME } from "../Managers/ParticleManager"
-
-export interface IMenuColorPicker {
-	Node: Node
-	R: Slider
-	G: Slider
-	B: Slider
-	A: Slider
-	Color: Color
-}
-
-export interface IMenuParticlePicker {
-	Node: Node
-	State: Nullable<Toggle>
-	R: Slider
-	G: Slider
-	B: Slider
-	A: Slider
-	Width: Slider
-	Style: Switcher
-	Color: Color
-}
+import { IMenuColorPicker, IMenuParticlePicker } from "./ITypes"
 
 export default class Node extends Base {
 	public entries: Base[] = []
@@ -239,11 +219,7 @@ export default class Node extends Base {
 	}
 
 	AddParticlePicker(name: string, color: Color | number = new Color(0, 255, 0),
-		render: PARTICLE_RENDER_NAME[] = [
-			PARTICLE_RENDER_NAME.NORMAL,
-			PARTICLE_RENDER_NAME.ROPE,
-			PARTICLE_RENDER_NAME.ANIMATION
-		],
+		render: PARTICLE_RENDER_NAME[],
 		addStateToTree?: boolean
 	): IMenuParticlePicker {
 
