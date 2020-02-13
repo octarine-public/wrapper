@@ -94,6 +94,7 @@ function CreateOrUpdateCustomRadius(style: IMenuRangeParticle) {
 	customRadiusePartManager.DrawCircle(style,
 		LocalPlayer.Hero, style.Range.value,
 		{
+			Attachment: ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
 			RenderStyle: style.Style.selected_id,
 			Color: style.Color,
 			Width: style.Width.value,
@@ -122,7 +123,7 @@ EventsSDK.on("LifeStateChanged", (ent: Entity) => {
 
 	if (ent.LifeState === LifeState_t.LIFE_ALIVE)
 		CustomRadiusDraw()
-	else if (ent.LifeState === LifeState_t.LIFE_DEAD)
+	else if (ent.LifeState === LifeState_t.LIFE_DYING || ent.LifeState === LifeState_t.LIFE_DEAD)
 		CustomRadiusDestroy()
 })
 
