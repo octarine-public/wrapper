@@ -5,7 +5,8 @@ import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 import Entity, { LocalPlayer } from "../Base/Entity"
 import EventsSDK from "../../Managers/EventsSDK"
 import GameState from "../../Utils/GameState"
-import { EntityPropertyType } from "../../Managers/EntityManager"
+import EntityManager, { EntityPropertyType } from "../../Managers/EntityManager"
+import Hero from "./Hero"
 
 export default class CGameRules extends Entity {
 	public NativeEntity: Nullable<C_DOTAGamerulesProxy>
@@ -65,6 +66,14 @@ import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK
 RegisterClass("C_DOTAGamerulesProxy", CGameRules)
 RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 	game.RawGameTime = new_val as number
+	EntityManager.GetEntitiesByClass(Hero).forEach(hero => {
+		if (hero.IsAlive || hero.RespawnTime > game.RawGameTime)
+			return
+		let old_state = hero.LifeState
+		hero.LifeState = LifeState_t.LIFE_ALIVE
+		if (old_state !== hero.LifeState)
+			EventsSDK.emit("LifeStateChanged", false, hero)
+	})
 	if (LocalPlayer !== undefined)
 		EventsSDK.emit("Tick", false)
 })
