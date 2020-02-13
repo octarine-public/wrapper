@@ -1,7 +1,6 @@
 import Vector2 from "./Vector2"
 
 export default class Vector3 {
-	/* ================== Static ================== */
 	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Nullable<Vector3> {
 		if (buffer !== true)
 			return undefined
@@ -22,26 +21,15 @@ export default class Vector3 {
 		return new Vector3(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
 	public static GetCenterType<T>(array: T[], callback: (value: T) => Vector3): Vector3 {
-
-		let newVec = new Vector3()
-
-		array.forEach(vec => newVec.AddForThis(callback(vec)))
-
-		return newVec.DivideScalarForThis(array.length)
+		return array.reduce((prev, cur) => prev.AddForThis(callback(cur)), new Vector3()).DivideScalarForThis(array.length)
 	}
 	public static GetCenter(array: Vector3[]): Vector3 {
-
-		let newVec = new Vector3()
-
-		array.forEach(vec => newVec.AddForThis(vec))
-
-		return newVec.DivideScalarForThis(array.length)
+		return array.reduce((prev, cur) => prev.AddForThis(cur), new Vector3()).DivideScalarForThis(array.length)
 	}
 	public static CopyFrom(vec: Vector3): Vector3 {
 		return new Vector3(vec.x, vec.y, vec.z)
 	}
 
-	/* ================ Constructors ================ */
 	/**
 	 * Create new Vector3 with x, y, z
 	 *
@@ -51,7 +39,6 @@ export default class Vector3 {
 	 */
 	constructor(public x: number = 0, public y: number = 0, public z: number = 0) { }
 
-	/* ================== Getters ================== */
 	/**
 	 * Is this vector valid? (every value must not be infinity/NaN)
 	 */
@@ -87,7 +74,6 @@ export default class Vector3 {
 	 * Returns the polar for vector angle (in Degrees).
 	 */
 	get Polar(): number {
-
 		if (Math.abs(this.x - 0) <= 1e-9)
 			return this.y > 0 ? 90 : this.y < 0 ? 270 : 0
 
@@ -101,7 +87,7 @@ export default class Vector3 {
 
 		return theta
 	}
-	/* ================== Methods ================== */
+
 	public Equals(vec: Vector3): boolean {
 		return this.x === vec.x
 			&& this.y === vec.y
@@ -653,7 +639,6 @@ export default class Vector3 {
 		return Math.sqrt(this.DistanceSqr2D(vec))
 	}
 
-	/* ================== Geometric ================== */
 	/**
 	 *
 	 * @param {number} offset Axis Offset (0 = X, 1 = Y)
@@ -773,12 +758,10 @@ export default class Vector3 {
 		return this.DistanceSqr(vec) < range * range
 	}
 	public Closest(vecs: Vector3[]): Vector3 {
-
 		let minVec = new Vector3()
 		let distance = Number.POSITIVE_INFINITY
 
 		vecs.forEach(vec => {
-
 			let tempDist = this.Distance(vec)
 			if (tempDist < distance) {
 				distance = tempDist

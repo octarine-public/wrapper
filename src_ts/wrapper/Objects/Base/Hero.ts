@@ -23,7 +23,6 @@ export default class Hero extends Unit {
 	public TotalStrength = 0
 	public m_hReplicatingOtherHeroModel = 0x3FFF
 
-	/* ============ BASE  ============ */
 	public get ReplicatingOtherHeroModel_(): C_BaseEntity | number {
 		let id = this.m_hReplicatingOtherHeroModel
 		if (id === 0x3FFF)
@@ -47,7 +46,6 @@ export default class Hero extends Unit {
 		return this.NativeEntity?.m_flLastHurtTime ?? 0
 	}
 
-	/* ============ EXTENSIONS ============ */
 	public get SpellAmplification(): number {
 		return super.SpellAmplification + (this.TotalIntellect * DamageAmplifyPerIntellectPrecent / 100)
 	}

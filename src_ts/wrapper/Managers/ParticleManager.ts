@@ -67,7 +67,6 @@ export interface IDrawBoundingAreaOptions {
 }
 
 class ParticlesSDK {
-	/* ================== Static ================== */
 	/**
 	 * @deprecated Will be removed after changed all scripts
 	 */
@@ -95,8 +94,6 @@ class ParticlesSDK {
 		Particles.SetControlPointForward(particle_id, control_point)
 	}
 
-	/* ================ Constructors ================ */
-
 	public readonly AllParticles = new Map<any, Particle>()
 	private readonly allParticlesRange = new Map<any, number>()
 
@@ -109,9 +106,11 @@ class ParticlesSDK {
 	): Particle {
 		let particle = this.AllParticles.get(key)
 
-		if (particle === undefined
-			|| (particle.Entity !== entity || particle.Path !== path
-				|| particle.Attachment !== attachment)
+		if (
+			particle === undefined
+			|| particle.Entity !== entity
+			|| particle.Path !== path
+			|| particle.Attachment !== attachment
 		) {
 			if (particle !== undefined)
 				particle.Destroy(true)
@@ -119,15 +118,13 @@ class ParticlesSDK {
 			particle = new Particle(this, key, path, attachment, entity, ...points)
 
 			this.AllParticles.set(key, particle)
-		} else if (points !== undefined) {
+		} else if (points !== undefined)
 			particle.SetControlPoints(...points)
-		}
 
 		return particle
 	}
 
 	/**
-	 *
 	 * ControlPoints:
 	 * 	0: Position
 	 * 	1: range

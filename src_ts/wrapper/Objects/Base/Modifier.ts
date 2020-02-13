@@ -43,7 +43,6 @@ export const REFLECTING_DAMAGE_MODIFIERS = [
 const ScepterRegExp = /modifier_item_ultimate_scepter|modifier_wisp_tether_scepter/
 
 export default class Modifier {
-	/* ================== Static ================== */
 	public static HasTrueSightBuff(buffs: Modifier[]): boolean {
 		return buffs.some(buff => TRUESIGHT_MODIFIERS.some(nameBuff => nameBuff === buff.Name))
 	}
@@ -51,7 +50,6 @@ export default class Modifier {
 		return buffs.some(buff => ScepterRegExp.test(buff.Name))
 	}
 
-	/* =================== Fields =================== */
 	public IsValid = true
 
 	public readonly Index: number

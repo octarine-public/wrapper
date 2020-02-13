@@ -25,7 +25,6 @@ const MAX_SPELLS = 31
 const MAX_ITEMS = 16
 
 export default class Unit extends Entity {
-	/* ================================ Static ================================ */
 	public static IsVisibleForEnemies(unit: Unit): boolean {
 		const valid_teams = ~(// don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
 			(1 << Team.None)
@@ -43,7 +42,6 @@ export default class Unit extends Entity {
 		return false
 	}
 
-	/* ================================ Fields ================================ */
 	public NativeEntity: Nullable<C_DOTA_BaseNPC>
 	public UnitData = new UnitData("")
 
@@ -332,9 +330,6 @@ export default class Unit extends Entity {
 		return this.UnitData.BoundsHull
 	}
 
-	/* ================================ EXTENSIONS ================================ */
-
-	/* ================ GETTERS ================ */
 	public get MovementTurnRate(): number {
 		return this.UnitData.MovementTurnRate
 	}
@@ -405,7 +400,6 @@ export default class Unit extends Entity {
 	public HasItemInInventory(name: string | RegExp, includeBackpack: boolean = false): boolean {
 		return this.Inventory.GetItemByName(name, includeBackpack) !== undefined
 	}
-	/* ================ METHODS ================ */
 
 	/**
 	 * @param flag if not exists => is Melee or Range attack
@@ -427,7 +421,6 @@ export default class Unit extends Entity {
 		return HasBitBigInt(this.IsControllableByPlayerMask, BigInt(playerID))
 	}
 
-	/* ================ METHODS ================ */
 	/**
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */

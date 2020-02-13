@@ -224,7 +224,6 @@ function ClassFromNative(id: number, constructor_name: string, ent_name: Nullabl
 	return new constructor(id, ent_name)
 }
 
-/* ================ RUNTIME CACHE ================ */
 let cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
 export type NetworkFieldsChangedType = [number[], EntityPropertyType[]]
 function ApplyChanges(ent: Entity, changes: NetworkFieldsChangedType) {

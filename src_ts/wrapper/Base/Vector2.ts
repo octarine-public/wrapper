@@ -92,7 +92,6 @@ export default class Vector2 {
 		return theta
 	}
 
-	/* ================== Methods ================== */
 	public Equals(vec: Vector2): boolean {
 		return this.x === vec.x
 			&& this.y === vec.y
@@ -598,9 +597,7 @@ export default class Vector2 {
 		return Math.sqrt(this.DistanceSegmentSqr(segmentStart, segmentEnd, onlyIfOnSegment))
 	}
 
-	/* ================== Geometric ================== */
 	/**
-	 *
 	 * @param {number} offset Axis Offset (0 = X, 1 = Y)
 	 */
 	public Perpendicular(is_x: boolean = true): Vector2 {

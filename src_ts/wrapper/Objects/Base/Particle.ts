@@ -9,8 +9,6 @@ export type ControlPoint = boolean | number | Entity | Vector3 | Vector2 | Color
 export type ControlPointsType = [number, ControlPoint]
 
 export default class Particle {
-	/* ================ Fields ================ */
-
 	public IsValid = false
 
 	private particleManager: ParticlesSDK | undefined
@@ -21,8 +19,6 @@ export default class Particle {
 	private controlPoints: ControlPointsType[] = []
 	private constolPointsAsMap = new Map<number, Vector3>()
 	private effectIndex = -1
-
-	/* ================ Constructor ================ */
 
 	/**
 	 * @param particleManager Particle Manager. Adding or removing particle entity in that Manager
@@ -38,7 +34,8 @@ export default class Particle {
 		path: string,
 		attachment: ParticleAttachment_t,
 		entity?: Entity,
-		...points: ControlPointsType[]) {
+		...points: ControlPointsType[]
+	) {
 
 		this.particleManager = particleManager
 		this.key = key
@@ -70,7 +67,6 @@ export default class Particle {
 	 * Set ControlPoints as array
 	 * 
 	 * @example
-	 *
 	 * particle.ControlPoints = [
 	 * 	[1, new Vector3(1, 2, 3)],
 	 * 	[2, new Vector2(1, 2, 3)],

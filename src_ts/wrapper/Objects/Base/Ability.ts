@@ -32,7 +32,6 @@ export default class Ability extends Entity {
 		this.AbilityData = new AbilityData(this.Name)
 	}
 
-	/* ============ BASE  ============ */
 	public get Owner(): Nullable<Unit> {
 		return super.Owner as Nullable<Unit>
 	}
@@ -116,8 +115,6 @@ export default class Ability extends Entity {
 	get IsPassive(): boolean {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 	}
-
-	/* ============ EXTENSIONS ============ */
 
 	/**
 	 * In real time cooldown (in fog)
