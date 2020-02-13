@@ -21,7 +21,7 @@ const panelSettingsFlow = panelSettings.AddSwitcher("Style", ["Horizontal", "Ver
 const panelSettingsOutline = panelSettings.AddToggle("Outline", true)
 const panelSettingsOpacity = panelSettings.AddSlider("Opacity", 60, 5, 100)
 const panelSettingsPosition = panelSettings.AddVector2("Position", new Vector2(0, 60))
-const panelSettingsTurnTouch = panelSettingsPosition.node.AddToggle("Touch panel", true)
+const panelSettingsTurnTouch = panelSettingsPosition.Node.AddToggle("Touch panel", true)
 const panelSettingsGapIcon = panelSettings.AddSlider("Gap between Icons", 1, 0, 10)
 const panelSettingsSpectator = panelSettings.AddToggle("Turn on when spectating")
 

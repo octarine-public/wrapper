@@ -34,8 +34,12 @@ export { Menu }
 
 export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
 
-export { default as Particle } from "./Base/Particle"
-export { default as ParticlesSDK } from "./Managers/ParticleManager"
+export { default as Particle } from "./Objects/Base/Particle"
+export {
+	default as ParticlesSDK,
+	PARTICLE_RENDER_NAME,
+	PARTICLE_RENDER
+} from "./Managers/ParticleManager"
 
 export { default as Events, EventEmitter } from "./Managers/Events"
 export { default as CGameRules, GameRules } from "./Objects/Base/GameRules"
@@ -1226,7 +1230,6 @@ export { default as TreeTemp } from "./Objects/Base/TreeTemp"
 
 export { default as Building } from "./Objects/Base/Building"
 export { default as Tower } from "./Objects/Base/Tower"
-export { default as Fort } from "./Objects/Base/Fort"
 export { default as Shrine } from "./Objects/Base/Shrine"
 export { default as Outpost } from "./Objects/Base/Outpost"
 export { default as Shop } from "./Objects/Base/Shop"

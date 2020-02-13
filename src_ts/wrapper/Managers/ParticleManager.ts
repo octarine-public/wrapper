@@ -1,8 +1,7 @@
 import Vector3 from "../Base/Vector3"
 import Color from "../Base/Color"
 import Entity from "../Objects/Base/Entity"
-import Particle, { ControlPointParam } from "../Base/Particle"
-import EventsSDK from "./EventsSDK"
+import Particle, { ControlPointsType, ControlPoint } from "../Objects/Base/Particle"
 
 const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
 const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`
@@ -67,30 +66,46 @@ export interface IDrawBoundingAreaOptions {
 	Alpha?: number
 }
 
-let ParticlesSDK = new (class CParticlesSDK {
-	public readonly AllParticles = new Map<any, Particle>()
-
-	public Create(path: string, attach: ParticleAttachment_t, ent?: Entity): number {
+class ParticlesSDK {
+	/* ================== Static ================== */
+	/**
+	 * @deprecated Will be removed after changed all scripts
+	 */
+	public static Create(path: string, attach: ParticleAttachment_t, ent?: Entity): number {
 		return Particles.Create(path, attach, ent?.IsValid ? ent.Index : -1)
 	}
-	public Destroy(particle_id: number, immediate: boolean = true): void {
+	/**
+	 * @deprecated Will be removed after changed all scripts
+	 */
+	public static Destroy(particle_id: number, immediate: boolean = true): void {
 		Particles.Destroy(particle_id, immediate)
 	}
-	public SetControlPoint(particle_id: number, control_point: number, vec: Vector3): void {
+	/**
+	 * @deprecated Will be removed after changed all scripts
+	 */
+	public static SetControlPoint(particle_id: number, control_point: number, vec: Vector3): void {
 		vec.toIOBuffer()
 		Particles.SetControlPoint(particle_id, control_point)
 	}
-	public SetControlPointForward(particle_id: number, control_point: number, vec: Vector3): void {
+	/**
+	 * @deprecated Will be removed after changed all scripts
+	 */
+	public static SetControlPointForward(particle_id: number, control_point: number, vec: Vector3): void {
 		vec.toIOBuffer()
 		Particles.SetControlPointForward(particle_id, control_point)
 	}
+
+	/* ================ Constructors ================ */
+
+	public readonly AllParticles = new Map<any, Particle>()
+	private readonly allParticlesRange = new Map<any, number>()
 
 	public AddOrUpdate(
 		key: any,
 		path: string,
 		attachment: ParticleAttachment_t,
 		entity: Entity,
-		points?: Map<number, ControlPointParam>
+		...points: ControlPointsType[]
 	): Particle {
 		let particle = this.AllParticles.get(key)
 
@@ -101,9 +116,12 @@ let ParticlesSDK = new (class CParticlesSDK {
 			if (particle !== undefined)
 				particle.Destroy(true)
 
-			particle = new Particle(key, path, attachment, entity, points)
-		} else if (points !== undefined)
-			particle.SetControlPoints(points)
+			particle = new Particle(this, key, path, attachment, entity, ...points)
+
+			this.AllParticles.set(key, particle)
+		} else if (points !== undefined) {
+			particle.SetControlPoints(...points)
+		}
 
 		return particle
 	}
@@ -123,17 +141,17 @@ let ParticlesSDK = new (class CParticlesSDK {
 		range: number = 100,
 		options: IDrawCircleOptions = {}
 	) {
+		this.CheckChangedRange(key, range)
+
 		return this.AddOrUpdate(key,
 			RangeRenderPath(options.RenderStyle),
 			options.Attachment ?? ParticleAttachment_t.PATTACH_ABSORIGIN,
 			entity,
-			new Map<number, ControlPointParam>([
-				[0, options.Position ?? entity],
-				[1, range],
-				[2, options.Color ?? Color.Aqua],
-				[3, options.Width ?? 10],
-				[4, options.Alpha ?? 255],
-			])
+			[0, options.Position ?? entity],
+			[1, range],
+			[2, options.Color ?? Color.Aqua],
+			[3, options.Width ?? 10],
+			[4, options.Alpha ?? 255],
 		)
 	}
 	public DrawSelectedRing(
@@ -143,16 +161,15 @@ let ParticlesSDK = new (class CParticlesSDK {
 		position: Entity | Vector3 = entity,
 		color = Color.Aqua
 	) {
+		this.CheckChangedRange(key, range)
 
 		return this.AddOrUpdate(key,
 			"particles/ui_mouseactions/drag_selected_ring.vpcf",
 			ParticleAttachment_t.PATTACH_ABSORIGIN,
 			entity,
-			new Map<number, ControlPointParam>([
-				[0, position],
-				[1, color],
-				[2, [range * 1.1, 255]],
-			])
+			[0, position],
+			[1, color],
+			[2, new Vector3(range * 1.1, 255)]
 		)
 	}
 	/**
@@ -174,13 +191,11 @@ let ParticlesSDK = new (class CParticlesSDK {
 			ParticleLinePath("line"),
 			options.Attachment ?? ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
 			entity,
-			new Map<number, ControlPointParam>([
-				[0, options.Position ?? entity],
-				[1, endPosition],
-				[2, options.Color ?? Color.Aqua],
-				[3, options.Width ?? 10],
-				[4, options.Alpha ?? 255],
-			])
+			[0, options.Position ?? entity],
+			[1, endPosition],
+			[2, options.Color ?? Color.Aqua],
+			[3, options.Width ?? 10],
+			[4, options.Alpha ?? 255]
 		)
 	}
 	/**
@@ -196,11 +211,9 @@ let ParticlesSDK = new (class CParticlesSDK {
 			"particles/ui_mouseactions/range_finder_line.vpcf",
 			ParticleAttachment_t.PATTACH_ABSORIGIN,
 			entity,
-			new Map<number, ControlPointParam>([
-				[0, entity],
-				[1, entity],
-				[2, endPosition],
-			])
+			[0, entity],
+			[1, entity],
+			[2, endPosition]
 		)
 	}
 	public DrawLineToTarget(
@@ -215,11 +228,9 @@ let ParticlesSDK = new (class CParticlesSDK {
 			ParticleTargetPath(),
 			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
 			target,
-			new Map<number, ControlPointParam>([
-				[2, entity],
-				[6, color],
-				[7, target],
-			])
+			[2, entity],
+			[6, color],
+			[7, target]
 		)
 	}
 	/**
@@ -242,25 +253,48 @@ let ParticlesSDK = new (class CParticlesSDK {
 			BoundingAreaRenderPath(options.Render),
 			ParticleAttachment_t.PATTACH_ABSORIGIN,
 			entity,
-			new Map<number, ControlPointParam>([
-				[0, startPos],
-				[1, endPosition],
-				[2, options.Color ?? Color.Aqua],
-				[3, options.Width ?? 10],
-				[4, options.Alpha ?? 255],
-			])
+			[0, startPos],
+			[1, endPosition],
+			[2, options.Color ?? Color.Aqua],
+			[3, options.Width ?? 10],
+			[4, options.Alpha ?? 255]
 		)
 	}
 
-	public DestroyKey(key: any, immediate = true) {
-		this.AllParticles.get(key)?.Destroy(immediate)
+	public SetConstrolPointByKey(key: any, id: number, point: ControlPoint) {
+		this.AllParticles.get(key)?.SetControlPoint(id, point)
 	}
+	public SetConstrolPointsByKey(key: any, ...points: ControlPointsType[]) {
+		this.AllParticles.get(key)?.SetControlPoints(...points)
+	}
+	public RestartByKey(key: any) {
+		this.AllParticles.get(key)?.Restart()
+	}
+	public DestroyByKey(key: any, immediate = true) {
+		this.AllParticles.get(key)?.Destroy(immediate)
+		this.allParticlesRange.delete(key)
+	}
+
 	public DestroyAll(immediate = true) {
 		// loop-optimizer: KEEP
 		this.AllParticles.forEach(particle => particle.Destroy(immediate))
+		this.allParticlesRange.clear()
 	}
-})()
 
-EventsSDK.on("GameEnded", () => ParticlesSDK.DestroyAll())
+	private CheckChangedRange(key: any, range: number) {
+		let particleRange = this.allParticlesRange.get(key)
+
+		if (particleRange !== undefined && particleRange !== range) {
+			this.DestroyByKey(key)
+			this.allParticlesRange.set(key, range)
+			return
+		}
+
+		if (particleRange === undefined)
+			this.allParticlesRange.set(key, range)
+
+		return
+	}
+}
 
 export default ParticlesSDK

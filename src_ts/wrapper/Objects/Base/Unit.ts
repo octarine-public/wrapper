@@ -833,6 +833,10 @@ export default class Unit extends Entity {
 		return 1
 	}
 
+	public AttackRangeBonus(ent?: Unit) {
+		return (ent?.HullRadius ?? 0) + this.AttackRange + this.HullRadius
+	}
+
 	public CanAttack(target: Unit): boolean {
 		return (
 			this.IsAlive

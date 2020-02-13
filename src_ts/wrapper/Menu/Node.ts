@@ -11,6 +11,8 @@ import Slider from "./Slider"
 import Switcher from "./Switcher"
 import Toggle from "./Toggle"
 import { FontFlags_t } from "../Enums/FontFlags_t"
+import { PARTICLE_RENDER_NAME } from "../Managers/ParticleManager"
+import { IMenuColorPicker, IMenuParticlePicker } from "./ITypes"
 
 export default class Node extends Base {
 	public entries: Base[] = []
@@ -134,8 +136,8 @@ export default class Node extends Base {
 		return this.AddEntry(new Button(this, name, tooltip))
 	}
 
-	public AddVector2(name: string, vector: Vector2, minVector?: Vector2, maxVector?: Vector2) {
-		let node = this.AddNode(name)
+	public AddVector2(name: string, vector: Vector2, minVector?: Vector2 | number, maxVector?: Vector2 | number) {
+		const Node = this.AddNode(name)
 
 		if (typeof minVector === "number")
 			minVector = new Vector2(minVector, minVector)
@@ -149,13 +151,13 @@ export default class Node extends Base {
 		if (!(maxVector instanceof Vector2))
 			maxVector = new Vector2(95, 95)
 
-		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
-		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
+		const X = Node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
+		const Y = Node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
 
 		return {
-			node, X, Y,
+			Node, X, Y,
 			get Vector() {
-				return new Vector2(X.value as number, Y.value as number)
+				return new Vector2(X.value, Y.value)
 			},
 			set Vector({ x, y }: Vector2) {
 				X.value = x
@@ -163,8 +165,8 @@ export default class Node extends Base {
 			},
 		}
 	}
-	public AddVector3(name: string, vector: Vector3, minVector?: Vector3, maxVector?: Vector3) {
-		let node = this.AddNode(name)
+	public AddVector3(name: string, vector: Vector3, minVector?: Vector3 | number, maxVector?: Vector3 | number) {
+		const Node = this.AddNode(name)
 
 		if (typeof minVector === "number")
 			minVector = new Vector3(minVector, minVector, minVector)
@@ -178,34 +180,82 @@ export default class Node extends Base {
 		if (!(maxVector instanceof Vector3))
 			maxVector = new Vector3(95, 95)
 
-		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
-		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
-		const Z = node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z)
+		const X = Node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
+		const Y = Node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
+		const Z = Node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z)
 
 		return {
-			node, X, Y, Z,
+			Node, X, Y, Z,
 			get Vector() {
-				return new Vector3(X.value as number, Y.value as number, Z.value as number)
+				return new Vector3(X.value, Y.value, Z.value)
 			},
-			set Vector(new_vec: Vector3) {
-				X.value = new_vec.x
-				Y.value = new_vec.y
-				Z.value = new_vec.z
-			},
+			set Vector({ x, y, z }: Vector3) {
+				X.value = x
+				Y.value = y
+				Z.value = z
+			}
 		}
 	}
-	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip?: string) {
-		let node = this.AddNode(name) as Node
-		const R = node.AddSlider("Red", color.r, 0, 255)
-		const G = node.AddSlider("Green", color.g, 0, 255)
-		const B = node.AddSlider("Blue", color.b, 0, 255)
-		const A = node.AddSlider("Alpha", color.a, 0, 255)
+	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip?: string): IMenuColorPicker {
+		const Node = this.AddNode(name) as Node
+
+		const R = Node.AddSlider("Red", color.r, 0, 255)
+		const G = Node.AddSlider("Green", color.g, 0, 255)
+		const B = Node.AddSlider("Blue", color.b, 0, 255)
+		const A = Node.AddSlider("Alpha", color.a, 0, 255)
+
 		return {
-			R, G, B, A,
+			Node, R, G, B, A,
 			get Color(): Color {
-				return new Color(R.value as number, G.value as number, B.value as number, A.value as number)
+				return new Color(R.value, G.value, B.value, A.value)
 			},
-			OnValue(this: Color) { return this },
+			set Color({ r, g, b, a }: Color) {
+				R.value = r
+				G.value = g
+				B.value = b
+				A.value = a
+			}
+		}
+	}
+
+	AddParticlePicker(name: string, color: Color | number = new Color(0, 255, 0),
+		render: PARTICLE_RENDER_NAME[],
+		addStateToTree?: boolean
+	): IMenuParticlePicker {
+
+		const Node = this.AddNode(name)
+
+		let State: Nullable<Toggle>
+
+		if (addStateToTree) {
+			State = Node.AddToggle("State")
+		}
+
+		if (typeof color === "number")
+			color = new Color(color, color, color)
+
+		const R = Node.AddSlider("Color: R (red)", color.r, 0, 255)
+		const G = Node.AddSlider("Color: G (green)", color.g, 0, 255)
+		const B = Node.AddSlider("Color: B (blue)", color.b, 0, 255)
+		const A = Node.AddSlider("Opacity (alpha)", color.a, 1, 255)
+
+		const Width = Node.AddSlider("Width", 15, 1, 150)
+		const Style = Node.AddSwitcher("Style", render)
+
+		return {
+			Node,
+			State,
+			R, G, B, A,
+			Width, Style,
+			get Color(): Color {
+				return new Color(R.value, G.value, B.value, A.value)
+			},
+			set Color({ r, g, b, a }: Color) {
+				R.value = r
+				G.value = g
+				B.value = b
+				A.value = a
+			}
 		}
 	}
 
