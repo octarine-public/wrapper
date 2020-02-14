@@ -1,24 +1,14 @@
 import Vector3 from "../Base/Vector3"
 import Color from "../Base/Color"
 import Entity from "../Objects/Base/Entity"
-import Particle, { ControlPointsType, ControlPoint } from "../Objects/Base/Particle"
+import Particle, { ControlPointParam, ControlPoint } from "../Base/Particle"
 
 const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
 const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`
 const ParticleTargetPath = () => `particles/target/range_finder_tower_aoe.vpcf`
 
-const RenderPath = (render = PARTICLE_RENDER.NORMAL) => {
-	switch (render) {
-		default:
-		case PARTICLE_RENDER.NORMAL:
-			return PARTICLE_RENDER_NAME.NORMAL.toLowerCase()
-		case PARTICLE_RENDER.ROPE:
-			return PARTICLE_RENDER_NAME.ROPE.toLowerCase()
-		case PARTICLE_RENDER.ANIMATION:
-			return PARTICLE_RENDER_NAME.ANIMATION.toLowerCase()
-	}
-}
-
+const RenderPath = (render: PARTICLE_RENDER) =>
+	(PARTICLE_RENDER[render] ?? PARTICLE_RENDER_NAME.NORMAL).toLowerCase()
 const RangeRenderPath = (render = PARTICLE_RENDER.NORMAL) =>
 	ParticleRangePath(RenderPath(render))
 const BoundingAreaRenderPath = (render = PARTICLE_RENDER.NORMAL) =>
@@ -95,14 +85,14 @@ class ParticlesSDK {
 	}
 
 	public readonly AllParticles = new Map<any, Particle>()
-	private readonly allParticlesRange = new Map<any, number>()
+	private readonly AllParticlesRange = new Map<Particle, number>()
 
 	public AddOrUpdate(
 		key: any,
 		path: string,
 		attachment: ParticleAttachment_t,
 		entity: Entity,
-		...points: ControlPointsType[]
+		...points: ControlPointParam[]
 	): Particle {
 		let particle = this.AllParticles.get(key)
 
@@ -124,14 +114,6 @@ class ParticlesSDK {
 		return particle
 	}
 
-	/**
-	 * ControlPoints:
-	 * 	0: Position
-	 * 	1: range
-	 * 	2: Color
-	 * 	3: Width
-	 * 	4: Alpha
-	 */
 	public DrawCircle(
 		key: any,
 		entity: Entity,
@@ -151,6 +133,7 @@ class ParticlesSDK {
 			[4, options.Alpha ?? 255],
 		)
 	}
+
 	public DrawSelectedRing(
 		key: any,
 		entity: Entity,
@@ -169,15 +152,7 @@ class ParticlesSDK {
 			[2, new Vector3(range * 1.1, 255)]
 		)
 	}
-	/**
-	 *
-	 * ControlPoints:
-	 * 	0: Position
-	 * 	1: End Position
-	 * 	2: Color
-	 * 	3: Width
-	 * 	4: Alpha
-	 */
+
 	public DrawLine(
 		key: any,
 		entity: Entity,
@@ -195,10 +170,7 @@ class ParticlesSDK {
 			[4, options.Alpha ?? 255]
 		)
 	}
-	/**
-	 *
-	 * red line not worked :(
-	 */
+
 	public DrawRangeLine(
 		key: any,
 		entity: Entity,
@@ -213,20 +185,19 @@ class ParticlesSDK {
 			[2, endPosition]
 		)
 	}
+
 	public DrawLineToTarget(
 		key: any,
 		entity: Entity,
 		target: Entity,
 		color = Color.Red
 	) {
-		color.SetR(Math.max(color.r, 1))
-
 		return this.AddOrUpdate(key,
 			ParticleTargetPath(),
 			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
 			target,
 			[2, entity],
-			[6, color],
+			[6, color.Clone().SetR(Math.max(color.r, 1))],
 			[7, target]
 		)
 	}
@@ -261,7 +232,7 @@ class ParticlesSDK {
 	public SetConstrolPointByKey(key: any, id: number, point: ControlPoint) {
 		this.AllParticles.get(key)?.SetControlPoint(id, point)
 	}
-	public SetConstrolPointsByKey(key: any, ...points: ControlPointsType[]) {
+	public SetConstrolPointsByKey(key: any, ...points: ControlPointParam[]) {
 		this.AllParticles.get(key)?.SetControlPoints(...points)
 	}
 	public RestartByKey(key: any) {
@@ -269,26 +240,26 @@ class ParticlesSDK {
 	}
 	public DestroyByKey(key: any, immediate = true) {
 		this.AllParticles.get(key)?.Destroy(immediate)
-		this.allParticlesRange.delete(key)
+		this.AllParticlesRange.delete(key)
 	}
 
 	public DestroyAll(immediate = true) {
 		// loop-optimizer: KEEP
 		this.AllParticles.forEach(particle => particle.Destroy(immediate))
-		this.allParticlesRange.clear()
+		this.AllParticlesRange.clear()
 	}
 
 	private CheckChangedRange(key: any, range: number) {
-		let particleRange = this.allParticlesRange.get(key)
+		let particleRange = this.AllParticlesRange.get(key)
 
 		if (particleRange !== undefined && particleRange !== range) {
 			this.DestroyByKey(key)
-			this.allParticlesRange.set(key, range)
+			this.AllParticlesRange.set(key, range)
 			return
 		}
 
 		if (particleRange === undefined)
-			this.allParticlesRange.set(key, range)
+			this.AllParticlesRange.set(key, range)
 
 		return
 	}

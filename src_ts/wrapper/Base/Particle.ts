@@ -4,96 +4,115 @@ import Vector2 from "./Vector2"
 import Vector3 from "./Vector3"
 import Color from "./Color"
 
-export type ControlPointParam = boolean | number | Entity | Vector3 | Vector2 | Color | [number?, number?, number?]
+export type ControlPoint = boolean | number | Entity | Vector3 | Vector2 | Color | [number?, number?, number?]
+export type ControlPointParam = [number, ControlPoint]
 
 export default class Particle {
 	public IsValid = false
 	public readonly ControlPoints = new Map<number, Vector3>()
-	private effectIndex = -1
+	private EffectIndex = -1
 
 	constructor(
+		public readonly parent: ParticlesSDK,
 		public readonly Key: any,
 		public readonly Path: string,
-		private attachment: ParticleAttachment_t,
-		private entity?: Entity,
-		controlPoints?: Map<number, ControlPointParam>,
+		public readonly Attachment: ParticleAttachment_t,
+		public readonly Entity?: Entity,
+		...controlPoints: ControlPointParam[]
 	) {
-		this.Create(controlPoints)
+		this.Create(...controlPoints)
 	}
 
-	public get Attachment(): ParticleAttachment_t {
-		return this.attachment
-	}
-	public get Entity(): Nullable<Entity> {
-		return this.entity
-	}
-
-	public SetControlPoint(id: number, param: ControlPointParam): void {
+	public SetControlPoint(id: number, param: ControlPoint): void {
 		if (!this.IsValid)
 			return
 
-		if (param instanceof Entity)
-			param = param.Position
-		else if (Array.isArray(param))
+		if (Array.isArray(param))
 			param = Vector3.fromArray(param)
-		else if (typeof param === "number" || typeof param === "boolean")
-			param = new Vector3((param as number) + 0, 0, 0)
+		else if (param instanceof Entity)
+			param = param.Position
 		else if (param instanceof Vector2)
 			param = param.toVector3()
 		else if (param instanceof Color)
 			param = new Vector3(param.r, param.g, param.b)
+		else if (typeof param === "number")
+			param = new Vector3(param, 0, 0)
+		else if (typeof param === "boolean")
+			param = new Vector3(param ? 1 : 0, 0, 0)
+		else
+			param = param.Clone()
 
+		console.log(`Setting ${id} control point of ${this.EffectIndex} ${this.Path} to ${param}`)
 		if (this.ControlPoints.get(id)?.Equals(param))
 			return
 		this.ControlPoints.set(id, param)
 		param.toIOBuffer()
-		Particles.SetControlPoint(this.effectIndex, id)
+		Particles.SetControlPoint(this.EffectIndex, id)
+		console.log(1)
 	}
 
-	public SetControlPoints(controlPoints: Map<number, ControlPointParam>): void {
-		// loop-optimizer: KEEP
-		controlPoints.forEach((param, id) => this.SetControlPoint(id, param))
+	/**
+	 * @param points rest params (index as number, point as Vector)
+	 *
+	 * @example
+	 * particle.SetControlPoints(
+	 * 	[1, new Vector3(1, 2, 3)],
+	 * 	[2, new Vector2(1, 2, 3)],
+	 * 	[3, new Color(1, 2, 3)],
+	 * 	[4, false],
+	 * 	[5, [1, 2]],
+	 * 	[6, 646]
+	 * )
+	 */
+	public SetControlPoints(...controlPoints: ControlPointParam[]): void {
+		if (!this.IsValid)
+			return
+		controlPoints.forEach(([id, param]) => this.SetControlPoint(id, param))
 	}
 
 	public Restart() {
 		if (!this.IsValid)
 			return
-
-		let save = new Map(this.ControlPoints.entries())
-		this.ControlPoints.clear()
-		this.Destroy(true).Create(save)
+		let save = [...this.ControlPoints.entries()] // TODO: Is saving needed?
+		this.Destroy().Create(...save)
 	}
 
 	public Destroy(immediate = true) {
 		if (this.IsValid) {
-			Particles.Destroy(this.effectIndex, immediate)
-			this.effectIndex = -1
+			Particles.Destroy(this.EffectIndex, immediate)
+			this.EffectIndex = -1
 			this.IsValid = false
-			ParticlesSDK.AllParticles.delete(this.Key)
+			this.ControlPoints.clear()
+			this.parent.AllParticles.delete(this.Key)
 		}
 		return this
 	}
 
-	public toString(): string {
-		return this.Path
+	public toJSON() {
+		return {
+			Key: this.Key,
+			Path: this.Path,
+			Attachment: this.Attachment,
+			Entity: this.Entity,
+			ControlPoints: [...this.ControlPoints.entries()],
+			EffectIndex: this.EffectIndex
+		}
 	}
-	// TODO: toJSON
 
-	private Create(controlPoints?: Map<number, ControlPointParam>): this {
+	private Create(...controlPoints: ControlPointParam[]): this {
 		if (this.IsValid)
 			return this
 
-		this.effectIndex = Particles.Create(
+		this.EffectIndex = Particles.Create(
 			this.Path,
-			this.attachment,
-			this.entity?.IsValid
-				? this.entity.Index
+			this.Attachment,
+			this.Entity?.IsValid
+				? this.Entity.Index
 				: -1
 		)
 		this.IsValid = true
-		if (controlPoints !== undefined)
-			this.SetControlPoints(controlPoints)
-		ParticlesSDK.AllParticles.set(this.Key, this)
+		this.SetControlPoints(...controlPoints)
+		this.parent.AllParticles.set(this.Key, this)
 
 		return this
 	}

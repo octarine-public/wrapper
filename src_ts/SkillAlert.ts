@@ -67,7 +67,10 @@ const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 		["monkey_king_primal_spring", "Primal Spring"],
 	])
 let arTimers = new Map<Modifier, [number, number, string, Entity]>(),
-	arHeroMods = new Map<Modifier, number>()
+	arHeroMods = new Map<Modifier, number>(),
+	thinkers = new Map<Unit, number>(),
+	thinkers_particles: [number, number, Entity, Vector3, number[]][] = [],
+	particleManager = new ParticlesSDK()
 
 let phaseSpells = [
 	"lina_dragon_slave",
@@ -78,7 +81,6 @@ let phaseSpells = [
 	"lion_impale",
 ]
 
-let remove_list: [number, number][] = []
 EventsSDK.on("ModifierCreated", buff => {
 	if (!active.value)
 		return
@@ -98,16 +100,19 @@ EventsSDK.on("ModifierCreated", buff => {
 				delay = ability.ChannelStartTime
 			let talent_class = talent[index]
 			if (talent_class !== undefined && talent_class !== false)
-				radius += ability.Owner!.GetTalentValue(talent_class)
+				radius += ability.Owner?.GetTalentValue(talent_class) ?? 0
 		}
-		let abPart = -1
+		let time = GameRules?.RawGameTime ?? 0
 		if (arParticles[index]) {
-			abPart = ParticlesSDK.Create(arParticles[index][0], ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
+			let abPart = ParticlesSDK.Create(arParticles[index][0], ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, ent)
+			console.log(arParticles[index][0])
+			let ar: number[] = []
 			arParticles[index][1].forEach((val, i) => {
 				let pos: Vector3
 				switch (val) {
 					case "pos":
 						pos = ent.Position
+						ar.push(i)
 						break
 					case "rad":
 						pos = new Vector3(radius, radius, radius)
@@ -118,11 +123,9 @@ EventsSDK.on("ModifierCreated", buff => {
 				}
 				ParticlesSDK.SetControlPoint(abPart, i, pos)
 			})
+			thinkers_particles.push([abPart, time + delay, ent, ent.Position, ar])
 		}
-		let time = GameRules?.RawGameTime ?? 0
-		arTimers.set(buff, [GameRules?.RawGameTime ?? 0, delay, ability?.Name ?? arAbilities[index], ent])
-		if (abPart !== -1)
-			remove_list.push([time + delay, abPart])
+		arTimers.set(buff, [time, delay, ability?.Name ?? arAbilities[index], ent])
 	}
 
 	let mod = arHeroModifiers.get(buff.Name)
@@ -141,6 +144,9 @@ EventsSDK.on("ModifierRemoved", buff => {
 EventsSDK.on("Draw", () => {
 	if (!active.value || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
+	thinkers.forEach((rad, ent) => particleManager.DrawCircle(`Thinker${ent.Index}`, ent, rad, {
+		Color: Color.Green
+	}))
 	// loop-optimizer: KEEP
 	arTimers.forEach((val, buff) => {
 		let time = GameRules?.RawGameTime ?? 0
@@ -247,9 +253,7 @@ function OnEntityNameChanged(ent: Entity) {
 	}
 	if (rad === 0)
 		return
-	ParticlesSDK.DrawCircle(`TSkillAlertThinker${ent.Index}`, ent, rad, {
-		Color: Color.Green
-	})
+	thinkers.set(ent, rad)
 }
 
 let abils_list: Ability[] = []
@@ -262,12 +266,12 @@ EventsSDK.on("EntityCreated", ent => {
 EventsSDK.on("EntityNameChanged", OnEntityNameChanged)
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (!active.value)
-		return
 	if (ent instanceof Ability)
 		ArrayExtensions.arrayRemove(abils_list, ent)
-	if (ent.Name === "npc_dota_thinker")
-		ParticlesSDK.DestroyKey(`TSkillAlertThinker${ent.Index}`)
+	if (ent instanceof Unit && ent.Name === "npc_dota_thinker") {
+		particleManager.DestroyByKey(`Thinker${ent.Index}`)
+		thinkers.delete(ent)
+	}
 })
 
 let line_table: LinearProjectile[] = []
@@ -329,9 +333,14 @@ EventsSDK.on("ParticleUpdatedEnt", (id, controlPoint, ent, attach, attachment, f
 EventsSDK.on("ParticleDestroyed", id => particles_table.delete(id))
 
 EventsSDK.on("Tick", () => {
-	remove_list.filter(([time]) => time < GameRules!.RawGameTime).forEach(ar => {
-		ArrayExtensions.arrayRemove(remove_list, ar)
+	thinkers_particles.filter(([, time]) => time < GameRules!.RawGameTime).forEach(ar => {
+		ArrayExtensions.arrayRemove(thinkers_particles, ar)
 		ParticlesSDK.Destroy(ar[1])
+	})
+	thinkers_particles.forEach(([par_id, , ent, last_pos, cp_list]) => {
+		if (ent.Position_.Equals(last_pos))
+			return
+		cp_list.forEach(cp => ParticlesSDK.SetControlPoint(par_id, cp, ent.Position_))
 	})
 	if (!active.value)
 		return

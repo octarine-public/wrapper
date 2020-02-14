@@ -34,7 +34,7 @@ export { Menu }
 
 export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
 
-export { default as Particle } from "./Objects/Base/Particle"
+export { default as Particle } from "./Base/Particle"
 export {
 	default as ParticlesSDK,
 	PARTICLE_RENDER_NAME,
