@@ -2,10 +2,6 @@ import Ability from "../../Base/Ability"
 
 export default class death_prophet_silence extends Ability {
 	public readonly NativeEntity!: C_DOTA_Ability_DeathProphet_Silence
-
-	public get AOERadius(): number {
-		return this.GetSpecialValue("radius")
-	}
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

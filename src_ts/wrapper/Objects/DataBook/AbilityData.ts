@@ -48,7 +48,7 @@ export default class AbilityData {
 	public readonly AbilityImmunityType: SPELL_IMMUNITY_TYPES
 	public readonly ItemDisplayCharges: boolean
 	public readonly ItemHideCharges: boolean
-	private readonly SpecialValueCache = new Map<string, number[]>()
+	private readonly SpecialValueCache = new Map<string, [number[], string | undefined]>()
 	private readonly CastRangeCache: number[]
 	private readonly AbilityDamageCache: number[]
 	private readonly CastPointCache: number[]
@@ -124,30 +124,52 @@ export default class AbilityData {
 		this.AbilityChargesCache = this.GetLevelArray("AbilityCharges")
 	}
 
-	public GetSpecialValue(name: string, level = 0): number {
-		level = Math.min(this.MaxLevel, level) - 1
-		if (level < 0)
-			return 0
-		let ar = this.SpecialValueCache.get(name)
-		if (ar !== undefined)
-			return ar[level]
+	private CacheSpecialValue(name: string): Nullable<[number[], string | undefined]> {
+		{
+			let ar = this.SpecialValueCache.get(name)
+			if (ar !== undefined)
+				return ar
+		}
 		let AbilitySpecial = this.m_Storage.get("AbilitySpecial") as RecursiveMap
 		if (AbilitySpecial === undefined)
-			return 0
+			return undefined
 		for (let special of AbilitySpecial.values()) {
 			if (!(special instanceof Map) || !special.has(name))
 				continue
 			let str = special.get(name) as string
 			// loop-optimizer: FORWARD
-			ar = str.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
+			let ar = str.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
 			this.ExtendLevelArray(ar)
-			this.SpecialValueCache.set(name, ar)
-			return ar[level]
+			let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
+			if (LinkedSpecialBonus instanceof Map)
+				LinkedSpecialBonus = undefined
+			let ar2 = [ar, LinkedSpecialBonus] as [number[], string | undefined]
+			this.SpecialValueCache.set(name, ar2)
+			return ar2
 		}
 
 		// there's no such special - prevent further tries to find it since cache is static
-		this.SpecialValueCache.set(name, new Array<number>(this.MaxLevel).fill(0))
-		return 0
+		let ar = [new Array<number>(this.MaxLevel).fill(0), undefined] as [number[], string | undefined]
+		this.SpecialValueCache.set(name, ar)
+		return ar
+	}
+
+	public GetSpecialValue(name: string, level = 0): number {
+		level = Math.min(this.MaxLevel, level) - 1
+		if (level < 0)
+			return 0
+
+		let ar = this.CacheSpecialValue(name)
+		if (ar === undefined)
+			return 0
+		return ar[0][level]
+	}
+
+	public GetLinkedSpecialBonus(name: string): string | undefined {
+		let ar = this.CacheSpecialValue(name)
+		if (ar === undefined)
+			return undefined
+		return ar[1]
 	}
 
 	public GetCastRange(level: number): number {

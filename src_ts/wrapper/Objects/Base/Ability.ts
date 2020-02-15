@@ -51,7 +51,7 @@ export default class Ability extends Entity {
 		return this.GetSpecialValue("radius")
 	}
 	public get ActivationDelay() {
-		return this.GetSpecialValue("activation_delay")
+		return this.GetSpecialValue("delay")
 	}
 	public get CurrentCharges(): number {
 		return this.AbilityData.AbilityCharges(this.Level)
@@ -205,7 +205,11 @@ export default class Ability extends Entity {
 	}
 
 	public GetSpecialValue(special_name: string, level = this.Level): number {
-		return this.AbilityData.GetSpecialValue(special_name, level)
+		let ret = this.AbilityData.GetSpecialValue(special_name, level),
+			linked_special_bonus = this.AbilityData.GetLinkedSpecialBonus(special_name)
+		if (linked_special_bonus !== undefined)
+			ret += (this.Owner?.GetTalentValue(linked_special_bonus) ?? 0)
+		return ret
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
 		let owner = this.Owner

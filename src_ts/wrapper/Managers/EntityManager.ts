@@ -186,7 +186,7 @@ Events.on("EntityDestroyed", (ent, id) => {
 	NativeEntities.delete(id)
 	if (AllEntitiesAsMap.has(id))
 		AllEntitiesAsMap.get(id)!.NativeEntity = undefined
-	else if ((id & 0x4000) !== 0)
+	if ((id & 0x4000) !== 0)
 		DeleteEntity(id)
 })
 
@@ -351,6 +351,54 @@ function ParseProperty(stream: BinaryStream): string | bigint | number | boolean
 }
 
 let entities_symbols: string[] = []
+function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], EntityPropertyType[], string] {
+	let ent_class = entities_symbols[stream.ReadNumber(2)]
+	VisibilityMask.set(ent_id, true)
+	if (!ent_props.has(ent_id))
+		ent_props.set(ent_id, new Map())
+	let ent_node = ent_props.get(ent_id)!,
+		changed_paths: number[] = [],
+		chaged_paths_results: EntityPropertyType[] = []
+	for (let path_size = 0; (path_size = stream.ReadNumber(1)) !== 0;) {
+		let raw_path = new Uint16Array(stream.ReadSlice(2 * path_size)),
+			prop_node = ent_node
+		for (let i = 0; i < path_size; i++) {
+			let id = raw_path[i]
+			let must_be_array = id & 1
+			id >>= 1
+			if (!Array.isArray(prop_node) && must_be_array)
+				throw "Expected array"
+			if (!(prop_node instanceof Map) && !must_be_array)
+				throw "Expected Map"
+
+			if (must_be_array) {
+				let ar = prop_node as EntityPropertyType[]
+				if (i !== path_size - 1) {
+					if (!ar[id])
+						ar[id] = (raw_path[i + 1] & 1) ? [] : new Map()
+					prop_node = ar[id]
+				} else
+					ar[id] = ParseProperty(stream)
+			} else {
+				let map = prop_node as Map<string, EntityPropertyType>
+				let sym = entities_symbols[id]
+				if (i !== path_size - 1) {
+					if (!map.has(sym))
+						map.set(sym, (raw_path[i + 1] & 1) ? [] : new Map())
+					prop_node = map.get(sym)!
+					chaged_paths_results.push(prop_node)
+				} else {
+					let prop = ParseProperty(stream)
+					map.set(sym, prop)
+					chaged_paths_results.push(prop)
+				}
+				changed_paths.push(id)
+			}
+		}
+	}
+	return [changed_paths, chaged_paths_results, ent_class]
+}
+
 Events.on("ServerMessage", (msg_id, buf) => {
 	switch (msg_id) {
 		case 41: {
@@ -376,63 +424,32 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			while (!stream.Empty()) {
 				let ent_id = stream.ReadNumber(2)
 				let pvs: EntityPVS = stream.ReadNumber(1)
-				if (pvs === EntityPVS.DELETE) {
-					queued_deletion.push(ent_id)
-					continue
-				}
-				if (pvs === EntityPVS.LEAVE) {
-					let ent = EntityManager.EntityByIndex(ent_id)
-					if (ent !== undefined)
-						ent.BecameDormantTime = GameRules?.RawGameTime ?? 0
-				}
-				let ent_class = entities_symbols[stream.ReadNumber(2)]
-				VisibilityMask.set(ent_id, pvs === EntityPVS.CREATE || pvs === EntityPVS.UPDATE)
-				if (!ent_props.has(ent_id))
-					ent_props.set(ent_id, new Map())
-				let ent_node = ent_props.get(ent_id)!
-				let changed_paths: number[] = [],
-					chaged_paths_results: EntityPropertyType[] = []
-				for (let path_size = 0; (path_size = stream.ReadNumber(1)) !== 0;) {
-					let raw_path = new Uint16Array(stream.ReadSlice(2 * path_size)),
-						prop_node = ent_node
-					for (let i = 0; i < path_size; i++) {
-						let id = raw_path[i]
-						let must_be_array = id & 1
-						id >>= 1
-						if (!Array.isArray(prop_node) && must_be_array)
-							throw "Expected array"
-						if (!(prop_node instanceof Map) && !must_be_array)
-							throw "Expected Map"
-
-						if (must_be_array) {
-							let ar = prop_node as EntityPropertyType[]
-							if (i !== path_size - 1) {
-								if (!ar[id])
-									ar[id] = (raw_path[i + 1] & 1) ? [] : new Map()
-								prop_node = ar[id]
-							} else
-								ar[id] = ParseProperty(stream)
-						} else {
-							let map = prop_node as Map<string, EntityPropertyType>
-							let sym = entities_symbols[id]
-							if (i !== path_size - 1) {
-								if (!map.has(sym))
-									map.set(sym, (raw_path[i + 1] & 1) ? [] : new Map())
-								prop_node = map.get(sym)!
-								chaged_paths_results.push(prop_node)
-							} else {
-								let prop = ParseProperty(stream)
-								map.set(sym, prop)
-								chaged_paths_results.push(prop)
-							}
-							changed_paths.push(id)
-						}
+				switch (pvs) {
+					case EntityPVS.DELETE:
+						VisibilityMask.set(ent_id, false)
+						queued_deletion.push(ent_id)
+						break
+					case EntityPVS.LEAVE: {
+						VisibilityMask.set(ent_id, false)
+						let ent = EntityManager.EntityByIndex(ent_id)
+						if (ent !== undefined)
+							ent.BecameDormantTime = GameRules?.RawGameTime ?? 0
+						break
+					}
+					case EntityPVS.CREATE: {
+						let [changed_paths, chaged_paths_results, ent_class] = ParseEntityUpdate(stream, ent_id)
+						queued_creation.push([ent_id, ent_class])
+						if (changed_paths.length !== 0)
+							changes.push([ent_id, [changed_paths, chaged_paths_results]])
+						break
+					}
+					case EntityPVS.UPDATE: {
+						let [changed_paths, chaged_paths_results] = ParseEntityUpdate(stream, ent_id)
+						if (changed_paths.length !== 0)
+							changes.push([ent_id, [changed_paths, chaged_paths_results]])
+						break
 					}
 				}
-				if (pvs === EntityPVS.CREATE)
-					queued_creation.push([ent_id, ent_class])
-				if (changed_paths.length !== 0)
-					changes.push([ent_id, [changed_paths, chaged_paths_results]])
 			}
 			// loop-optimizer: FORWARD
 			queued_deletion.forEach(ent_id => DeleteEntity(ent_id))

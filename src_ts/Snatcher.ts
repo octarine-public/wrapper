@@ -16,6 +16,7 @@ import {
 	DOTAGameUIState_t,
 	EntityManager,
 	GameState,
+	Particle,
 } from "wrapper/Imports"
 
 // import { PickupItem, PickupRune } from "../Orders"
@@ -27,7 +28,8 @@ enum ESelectedType {
 	ONLY_POWER = 2,
 }
 
-let allRunesParticles = new Map<Rune, number[]>(),
+let particleManager = new ParticlesSDK(),
+	allRunesParticles = new Map<Rune, Particle[]>(),
 	picking_up = new Map<Unit, Rune>(),
 	selectedRuneType: ESelectedType = ESelectedType.ALL,
 	Sleep = new GameSleeper()
@@ -211,38 +213,34 @@ function removedIDRune(rune: Rune) {
 }
 
 function createRuneParticle(ent: Rune, color: Color, radius: number) {
-	const particleID = ParticlesSDK.Create(
+	let ar = allRunesParticles.get(ent)!
+	ar.push(particleManager.AddOrUpdate(
+		`Rune_${ent.Index}_${ar.length}`,
 		"particles/ui_mouseactions/drag_selected_ring.vpcf",
 		ParticleAttachment_t.PATTACH_ABSORIGIN,
 		ent,
-	)
-
-	ParticlesSDK.SetControlPoint(particleID, 1, new Vector3(color.r, color.g, color.b))
-	ParticlesSDK.SetControlPoint(particleID, 2, new Vector3(radius * 1.1, 255))
-
-	allRunesParticles.get(ent)!.push(particleID)
+		[1, color],
+		[2, new Vector3(radius * 1.1, 255)],
+	))
 }
 
 function updateRuneAllParticle() {
-	let color = drawParticleTake_Color.Color
-	let color_ = new Vector3(color.r, color.g, color.b)
-	// loop-optimizer: POSSIBLE_UNDEFINED
-	allRunesParticles.forEach(partcl => ParticlesSDK.SetControlPoint(partcl[0], 1, color_))
+	// loop-optimizer: KEEP
+	allRunesParticles.forEach(partcl => partcl[0].SetControlPoint(1, drawParticleTake_Color.Color))
 }
 
 function destroyRuneParticles(rune: Rune) {
 	var particles = allRunesParticles.get(rune)
 	if (particles === undefined)
 		return
+
 	// loop-optimizer: POSSIBLE_UNDEFINED
-	particles.forEach(particleID => ParticlesSDK.Destroy(particleID, true))
+	particles.forEach(particleID => particleID.Destroy())
 	allRunesParticles.delete(rune)
 }
 
 function destroyRuneAllParticles() {
-	// loop-optimizer: POSSIBLE_UNDEFINED
-	allRunesParticles.forEach(particles => particles.forEach(particleID => ParticlesSDK.Destroy(particleID, true)))
-
+	particleManager.DestroyAll()
 	allRunesParticles.clear()
 }
 

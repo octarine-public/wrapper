@@ -196,7 +196,7 @@ import ${extends_class} from "../../Base/${extends_class}"
 export default class ${abil} extends ${extends_class} {
 `
 	if (class_name) {
-		source += `\tpublic readonly NativeEntity: Nullable<`
+		source += `\tpublic NativeEntity: Nullable<`
 		source += class_name
 		source += ">"
 	}
@@ -223,7 +223,7 @@ heroes.forEach(hero => {
 import Hero from "../../Base/Hero"
 
 export default class ${hero} extends Hero {
-	public readonly m_pBaseEntity!: ${class_name}
+	public m_pBaseEntity!: ${class_name}
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

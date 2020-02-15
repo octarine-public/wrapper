@@ -42,13 +42,11 @@ export default class Particle {
 		else
 			param = param.Clone()
 
-		console.log(`Setting ${id} control point of ${this.EffectIndex} ${this.Path} to ${param}`)
 		if (this.ControlPoints.get(id)?.Equals(param))
 			return
 		this.ControlPoints.set(id, param)
 		param.toIOBuffer()
 		Particles.SetControlPoint(this.EffectIndex, id)
-		console.log(1)
 	}
 
 	/**

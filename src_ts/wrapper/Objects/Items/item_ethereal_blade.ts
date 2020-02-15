@@ -8,22 +8,21 @@ export default class item_ethereal_blade extends Item {
 		return this.GetSpecialValue("projectile_speed")
 	}
 	public get AbilityDamage(): number {
-		let damage = this.GetSpecialValue("blast_damage_base")
-		let owner = this.Owner
-		if (owner === undefined || !(owner instanceof Hero))
-			return damage
-
-		let multiplier = this.GetSpecialValue("blast_agility_multiplier")
-		switch (owner.PrimaryAtribute) {
-			case Attributes.DOTA_ATTRIBUTE_STRENGTH:
-				damage += multiplier * owner.TotalStrength
-				break
-			case Attributes.DOTA_ATTRIBUTE_AGILITY:
-				damage += multiplier * owner.TotalAgility
-				break
-			case Attributes.DOTA_ATTRIBUTE_INTELLECT:
-				damage += multiplier * owner.TotalIntellect
-				break
+		let damage = this.GetSpecialValue("blast_damage_base"),
+			owner = this.Owner
+		if (owner instanceof Hero) {
+			let multiplier = this.GetSpecialValue("blast_agility_multiplier")
+			switch (owner.PrimaryAtribute) {
+				case Attributes.DOTA_ATTRIBUTE_STRENGTH:
+					damage += multiplier * owner.TotalStrength
+					break
+				case Attributes.DOTA_ATTRIBUTE_AGILITY:
+					damage += multiplier * owner.TotalAgility
+					break
+				case Attributes.DOTA_ATTRIBUTE_INTELLECT:
+					damage += multiplier * owner.TotalIntellect
+					break
+			}
 		}
 		return damage
 	}

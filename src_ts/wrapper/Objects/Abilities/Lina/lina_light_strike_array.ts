@@ -10,7 +10,7 @@ export default class lina_light_strike_array extends Ability {
 		return this.GetSpecialValue("light_strike_array_delay_time")
 	}
 	public get AbilityDamage(): number {
-		return this.GetSpecialValue("light_strike_array_damage") + (this.Owner?.GetTalentValue("special_bonus_unique_lina_3") ?? 0)
+		return this.GetSpecialValue("light_strike_array_damage")
 	}
 }
 

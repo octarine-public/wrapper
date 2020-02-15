@@ -1,4 +1,4 @@
-import { Ability, BitsExtensions, Creep, EntityManager, EventsSDK, GameRules, GameSleeper, Hero, LocalPlayer, Menu, Modifier, Unit, TickSleeper, ProjectileManager, GameState } from "wrapper/Imports"
+import { Ability, BitsExtensions, Creep, EntityManager, EventsSDK, GameRules, GameSleeper, Hero, LocalPlayer, Menu, Unit, TickSleeper, ProjectileManager, GameState } from "wrapper/Imports"
 
 function GetHealthAfter(unit: Unit, delay: number, allow_overflow = false, include_projectiles: boolean = false, attacker?: Unit, melee_time_offset: number = 0): number {
 	let hpafter = unit.HP/*,
@@ -48,31 +48,26 @@ var abils: {
 		{
 			abilName: "axe_culling_blade",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
+			abilDamageF: (abil, entFrom, entTo) => {
 				var killThreshold = abil.GetSpecialValue("kill_threshold"),
 					hp = GetHealthAfter(entTo, abil.CastPoint)
 				return hp > killThreshold
-					? entTo.CalculateDamage(abil.GetSpecialValue("damage") * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
+					? entTo.CalculateDamage(abil.AbilityDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
 					: killThreshold
 			},
 		},
 		{
 			abilName: "necrolyte_reapers_scythe",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
+			abilDamageF: (abil, entFrom, entTo) => {
 				var DamagePerMissHP = abil.GetSpecialValue("damage_per_health"),
 					delta = GetHealthAfter(entTo, 3)
-				return entTo.CalculateDamage((entTo.MaxHP - delta) * DamagePerMissHP, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
+				return entTo.CalculateDamage((entTo.MaxHP - delta) * DamagePerMissHP, abil.DamageType, entFrom)
 			},
 		},
 		{
 			abilName: "zuus_arc_lightning",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var arcDamage = abil.GetSpecialValue("arc_damage") + entFrom.GetTalentValue("special_bonus_unique_zeus_2")
-
-				return entTo.CalculateDamage(arcDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
-			},
 		},
 		{
 			abilName: "zuus_lightning_bolt",
@@ -85,19 +80,18 @@ var abils: {
 		{
 			abilName: "sniper_assassinate",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.HasScepter ? 0 : entTo.CalculateDamage(abil.AbilityDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.Speed,
 		},
 		{
 			abilName: "visage_soul_assumption",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("bolt_speed"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.Speed,
+			abilDamageF: (abil, entFrom, entTo) => {
 				var baseDamage = abil.GetSpecialValue("soul_base_damage"),
-					stackDamage = abil.GetSpecialValue("soul_charge_damage") + entFrom.GetTalentValue("special_bonus_unique_visage_4"),
+					stackDamage = abil.GetSpecialValue("soul_charge_damage"),
 					stackBuff = entFrom.GetBuffByName("modifier_visage_soul_assumption"),
 					stackBuffDamage = stackBuff ? stackBuff.StackCount * stackDamage : 0
-				return entTo.CalculateDamage((baseDamage + stackBuffDamage) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
+				return entTo.CalculateDamage((baseDamage + stackBuffDamage) * latest_spellamp, abil.DamageType, entFrom)
 			},
 		},
 		{
@@ -107,155 +101,124 @@ var abils: {
 		{
 			abilName: "phantom_assassin_stifling_dagger",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("dagger_speed"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(abil.GetSpecialValue("base_damage"), DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL, entFrom) + ((1 + abil.GetSpecialValue("attack_factor") / 100) * entFrom.AttackDamage(entTo)),
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.GetSpecialValue("dagger_speed"),
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(abil.GetSpecialValue("base_damage"), abil.DamageType, entFrom) + ((1 + abil.GetSpecialValue("attack_factor") / 100) * entFrom.AttackDamage(entTo)),
 		},
 		{
 			abilName: "tinker_laser",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var laserDamage = abil.GetSpecialValue("laser_damage") + entFrom.GetTalentValue("special_bonus_unique_tinker")
-				return entTo.CalculateDamage(laserDamage, DAMAGE_TYPES.DAMAGE_TYPE_PURE, entFrom)
-			},
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(abil.AbilityDamage, abil.DamageType, entFrom),
 		},
 		{
 			abilName: "antimage_mana_void",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(abil.GetSpecialValue("mana_void_damage_per_mana") * (entTo.MaxMana - entTo.Mana) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(abil.GetSpecialValue("mana_void_damage_per_mana") * (entTo.MaxMana - entTo.Mana) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{
 			abilName: "puck_waning_rift",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilRadiusF: abil => abil.GetSpecialValue("radius") / 2 - 25,
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("damage") + entFrom.GetTalentValue("special_bonus_unique_puck_4")
-
-				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
-			},
+			abilRadiusF: abil => abil.AOERadius / 2 - 25,
 		},
 		{
 			abilName: "brewmaster_thunder_clap",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilRadiusF: abil => abil.GetSpecialValue("radius") / 2 - 25,
+			abilRadiusF: abil => abil.AOERadius / 2 - 25,
 		},
 		{
 			abilName: "obsidian_destroyer_astral_imprisonment",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(abil.GetSpecialValue("damage") * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_PURE, entFrom) - Math.min(abil.GetSpecialValue("prison_duration") * entTo.HPRegen * 30 + 1, entTo.MaxHP - entTo.HP),
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(abil.AbilityDamage * latest_spellamp, abil.DamageType, entFrom) - Math.min(abil.GetSpecialValue("prison_duration") * entTo.HPRegen * 30 + 1, entTo.MaxHP - entTo.HP),
 		},
 		{
 			abilName: /item_dagon/,
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(abil.GetSpecialValue("damage") * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{
 			abilName: "bristleback_quill_spray",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_CREEP),
-			abilRadiusF: abil => abil.GetSpecialValue("radius"),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
+			abilRadiusF: abil => abil.AOERadius,
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.Speed,
+			abilDamageF: (abil, entFrom, entTo) => {
 				var baseDamage = abil.GetSpecialValue("quill_base_damage"),
-					stackDamage = abil.GetSpecialValue("quill_stack_damage") + entFrom.GetTalentValue("special_bonus_unique_bristleback_2"),
+					stackDamage = abil.GetSpecialValue("quill_stack_damage"),
 					maxDamage = abil.GetSpecialValue("max_damage"),
 					stackBuff = entTo.GetBuffByName("modifier_bristleback_quill_spray"),
 					stackBuffDamage = stackBuff ? stackBuff.StackCount * stackDamage : 0
-				return entTo.CalculateDamage(Math.min(maxDamage, baseDamage + stackBuffDamage) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL, entFrom)
+				return entTo.CalculateDamage(Math.min(maxDamage, baseDamage + stackBuffDamage) * latest_spellamp, abil.DamageType, entFrom)
 			},
 		},
 		{
 			abilName: "luna_lucent_beam",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var beamDamage = abil.GetSpecialValue("beam_damage") + entFrom.GetTalentValue("special_bonus_unique_luna_1")
-
-				return entTo.CalculateDamage(beamDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
-			},
 		},
 		{
 			abilName: "alchemist_unstable_concoction",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var maxDamage = abil.GetSpecialValue("max_damage") + entFrom.GetTalentValue("special_bonus_unique_alchemist_2")
-
-				return entTo.CalculateDamage(maxDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL, entFrom)
-			},
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(abil.GetSpecialValue("max_damage") * latest_spellamp, abil.DamageType, entFrom),
 		},
 		{
 			abilName: "alchemist_unstable_concoction_throw",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var maxDamage = abil.GetSpecialValue("max_damage") + entFrom.GetTalentValue("special_bonus_unique_alchemist_2"),
-					brewTime = abil.GetSpecialValue("brew_time"),
-					brewExplosion = abil.GetSpecialValue("brew_explosion"),
-					minStun = abil.GetSpecialValue("min_stun"),
-					modifierName = "modifier_alchemist_unstable_concoction"
-				var buffs: Modifier[] = entFrom.Buffs.filter(buff_ => buff_.Name === modifierName),
-					buff: Modifier
-				if (buffs.length > 0)
-					buff = buffs[0]
-				else
+			abilDamageF: (abil, entFrom, entTo) => {
+				let CastPoint = abil.CastPoint
+				abil = entFrom.GetAbilityByName("alchemist_unstable_concoction")!
+				var maxDamage = abil.GetSpecialValue("max_damage"),
+					brew_time = abil.GetSpecialValue("brew_time"),
+					brew_explosion = abil.GetSpecialValue("brew_explosion"),
+					minStun = abil.GetSpecialValue("min_stun")
+
+				var buff = entFrom.GetBuffByName("modifier_alchemist_unstable_concoction")
+				if (buff === undefined)
 					return 0
-				var elapsed = Math.min(buff.DieTime - GameRules!.GameTime, brewTime) - minStun,
-					charged = Math.max(elapsed, 0) / brewTime
-				if (buff.DieTime - GameRules!.GameTime > brewExplosion - (abil.CastPoint + 1.5 / 30))
+
+				let remaining_time = buff.CreationTime + brew_explosion - GameRules!.RawGameTime - (entFrom.GetRotationTime(entTo.Position) / 1000)
+				if (remaining_time <= CastPoint * 2)
 					return 99999999 // we don't need to be self-stunned, ye?
 
-				return entTo.CalculateDamage(charged * maxDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL, entFrom)
+				var elapsed = Math.min(brew_explosion - remaining_time, brew_time) - minStun,
+					charged = Math.max(elapsed, 0) / brew_time
+				return entTo.CalculateDamage(charged * maxDamage * latest_spellamp, abil.DamageType, entFrom)
 			},
 		},
 		{
 			abilName: "abaddon_death_coil",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var targetDamage = abil.GetSpecialValue("target_damage") + entFrom.GetTalentValue("special_bonus_unique_abaddon_2")
-
-				return entTo.CalculateDamage(targetDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
-			},
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(abil.GetSpecialValue("target_damage") * latest_spellamp, abil.DamageType, entFrom),
 		},
 		{
 			abilName: "bounty_hunter_shuriken_toss",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("speed"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("bonus_damage") + entFrom.GetTalentValue("special_bonus_unique_bounty_hunter_2")
-
-				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
-			},
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.GetSpecialValue("speed"),
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(abil.GetSpecialValue("bonus_damage") * latest_spellamp, abil.DamageType, entFrom),
 		},
 		{
 			abilName: "ogre_magi_fireblast",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var fireblastDamage = abil.GetSpecialValue("fireblast_damage") + entFrom.GetTalentValue("special_bonus_unique_ogre_magi_2")
-
-				return entTo.CalculateDamage(fireblastDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
-			},
 		},
 		{
 			abilName: "ogre_magi_unrefined_fireblast",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(abil.GetSpecialValue("fireblast_damage") * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{
 			abilName: "undying_soul_rip",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(
 				abil.GetSpecialValue("damage_per_unit")
 				* Math.min(
 					EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).filter(unit =>
 						!unit.IsEnemy(entFrom)
-						&& unit.IsInRange(entTo, abil.GetSpecialValue("radius"))
+						&& unit.IsInRange(entTo, abil.AOERadius)
 					).length,
 					abil.GetSpecialValue("max_units"),
 				) * latest_spellamp,
-				DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL,
+				abil.DamageType,
 				entFrom,
 			),
 		},
 		{
 			abilName: "queenofpain_scream_of_pain",
-			abilRadiusF: abil => abil.GetSpecialValue("area_of_effect") / 2 - 25,
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
+			abilRadiusF: abil => abil.AOERadius / 2 - 25,
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.Speed,
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 		},
 		{
@@ -265,68 +228,46 @@ var abils: {
 		{
 			abilName: "tusk_walrus_punch",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var critMultiplier = abil.GetSpecialValue("crit_multiplier") + entFrom.GetTalentValue("special_bonus_unique_tusk")
-
-				return entFrom.AttackDamage(entTo) * critMultiplier / 100
-			},
+			abilDamageF: (abil, entFrom, entTo) => entFrom.AttackDamage(entTo) * abil.GetSpecialValue("crit_multiplier") / 100,
 		},
 		{
 			abilName: "centaur_double_edge",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var edgeDamage = abil.GetSpecialValue("edge_damage") + entFrom.GetTalentValue("special_bonus_unique_centaur_4")
-
-				return entTo.CalculateDamage(edgeDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
+			abilDamageF: (abil, entFrom, entTo) => {
+				let edgeDamage = abil.GetSpecialValue("edge_damage") + (abil.GetSpecialValue("strength_damage") / 100 * entFrom.TotalStrength)
+				return entTo.CalculateDamage(edgeDamage * latest_spellamp, abil.DamageType, entFrom)
 			},
 		},
 		{
 			abilName: "legion_commander_duel",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.AttackDamage(entTo) * 2 - 1,
+			abilDamageF: (abil, entFrom, entTo) => entFrom.AttackDamage(entTo) * 2 - 1,
 		}, /*
 		{
 			abilName: "legion_commander_overwhelming_odds",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
+			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC) => {
 				let creeps = EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY),
 					heroes = EntityManager.GetEntitiesByClass(Hero, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
-				return Utils.CalculateDamage(entTo, (abil.GetSpecialValue("damage") * heroes.length + abil.GetSpecialValue("damage_per_unit") * creeps.length) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
+				return Utils.CalculateDamage(entTo, (abil.AbilityDamage * heroes.length + abil.GetSpecialValue("damage_per_unit") * creeps.length) * latest_spellamp, abil.DamageType)
 			}
 		},*/
 		{
 			abilName: "broodmother_spawn_spiderlings",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-
-				var damage = abil.GetSpecialValue("damage") + entFrom.GetTalentValue("special_bonus_unique_broodmother_3")
-
-				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
-			},
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.Speed,
 		},
 		{
 			abilName: "crystal_maiden_crystal_nova",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("nova_damage") + entFrom.GetTalentValue("special_bonus_unique_crystal_maiden_2")
-
-				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
-			},
 		},
 		{
 			abilName: "shadow_shaman_ether_shock",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("damage") + entFrom.GetTalentValue("special_bonus_unique_shadow_shaman_3")
-
-				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
-			},
 		},
 		{
 			abilName: "undying_decay",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(abil.GetSpecialValue("decay_damage") * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{
 			abilName: "oracle_purifying_flames",
@@ -334,17 +275,17 @@ var abils: {
 		},
 		{
 			abilName: "lion_impale",
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("speed"),
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.GetSpecialValue("speed"),
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 		},
 		{
 			abilName: "lion_finger_of_death",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDelayF: abil => abil.GetSpecialValue("damage_delay"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var damage = abil.GetSpecialValue("damage" + (entFrom.HasScepter ? "_scepter" : "")) + entFrom.GetTalentValue("special_bonus_unique_lion_3"),
+			abilDamageF: (abil, entFrom, entTo) => {
+				var damage = abil.GetSpecialValue("damage" + (entFrom.HasScepter ? "_scepter" : "")),
 					buff = entFrom.GetBuffByName("modifier_lion_finger_of_death_kill_counter")
-				if (buff)
+				if (buff !== undefined)
 					damage += buff.StackCount * abil.GetSpecialValue("damage_per_kill")
 
 				return entTo.CalculateDamage(damage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
@@ -354,12 +295,12 @@ var abils: {
 			abilName: "lina_laguna_blade",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
 			abilDelayF: abil => abil.GetSpecialValue("damage_delay"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(abil.GetSpecialValue("damage") * latest_spellamp, entFrom.HasScepter ? DAMAGE_TYPES.DAMAGE_TYPE_PURE : DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(abil.AbilityDamage * latest_spellamp, entFrom.HasScepter ? DAMAGE_TYPES.DAMAGE_TYPE_PURE : DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{
 			abilName: "pudge_dismember",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(abil.GetSpecialValue("dismember_damage") * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(abil.GetSpecialValue("dismember_damage") * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{
 			abilName: "lich_frost_nova",
@@ -372,28 +313,23 @@ var abils: {
 		{
 			abilName: "phantom_lancer_spirit_lance",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("lance_speed"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
-				var lanceDamage = abil.GetSpecialValue("lance_damage") + entFrom.GetTalentValue("special_bonus_unique_phantom_lancer_2")
-
-				return entTo.CalculateDamage(lanceDamage * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
-			},
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.Speed,
 		},
 		{
 			abilName: "skeleton_king_hellfire_blast",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("blast_speed"),
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.Speed,
 		},
 		{
 			abilName: "sven_storm_bolt",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("bolt_speed"),
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.Speed,
 		},
 		/*{
 			abilName: "storm_spirit_ball_lightning",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => Abilities.GetCastPoint(abil) + entFrom.Distance(entTo) / abil.GetSpecialValue("ball_lightning_move_speed"),
-			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC): number => {
+			abilDelayF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC) => Abilities.GetCastPoint(abil) + entFrom.Distance(entTo) / abil.GetSpecialValue("ball_lightning_move_speed"),
+			abilDamageF: (abil: C_DOTABaseAbility, entFrom: C_DOTA_BaseNPC, entTo: C_DOTA_BaseNPC) => {
 				var dist = entFrom.Distance(entTo) / 100
 				if (entFrom.BuffsNames.indexOf("modifier_storm_spirit_ball_lightning") > -1 || entFrom.m_flMana < Abilities.GetManaCost(abil) + abil.GetSpecialValue("ball_lightning_travel_cost_base") * dist + abil.GetSpecialValue("ball_lightning_travel_cost_percent") / 100 * entFrom.m_flMaxMana * dist)
 					return 0
@@ -418,7 +354,7 @@ var abils: {
 		{
 			abilName: "furion_wrath_of_nature",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage(abil.GetSpecialValue("damage" + (entFrom.HasScepter ? "_scepter" : "")) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
+			abilDamageF: (abil, entFrom, entTo) => entTo.CalculateDamage(abil.GetSpecialValue("damage" + (entFrom.HasScepter ? "_scepter" : "")) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{
 			abilName: "beastmaster_primal_roar",
@@ -426,30 +362,24 @@ var abils: {
 		},
 		{
 			abilName: "sandking_burrowstrike",
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("burrow_speed" + (entFrom.HasScepter ? "_scepter" : "")),
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.GetSpecialValue("burrow_speed" + (entFrom.HasScepter ? "_scepter" : "")),
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-		},
-		{
-			abilName: "centaur_double_edge",
-			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage((abil.GetSpecialValue("edge_damage") + [0.6, 0.8, 1, 1.2][abil.Level] * (entFrom as Hero).TotalStrength) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
 		},
 		{ // TODO: improved magresist calculation
 			abilName: "item_ethereal_blade",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entTo.CalculateDamage((abil.GetSpecialValue("blast_damage_base") + abil.GetSpecialValue("blast_agility_multiplier") * (entFrom as Hero).TotalAgility) * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom),
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.Speed,
 		},
 		{
 			abilName: "morphling_adaptive_strike_agi",
 			targets: BigInt(DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_HERO),
-			abilDelayF: (abil: Ability, entFrom: Unit, entTo: Unit): number => entFrom.Distance(entTo) / abil.GetSpecialValue("projectile_speed"),
-			abilDamageF: (abil: Ability, entFrom: Unit, entTo: Unit): number => {
+			abilDelayF: (abil, entFrom, entTo) => entFrom.Distance(entTo) / abil.Speed,
+			abilDamageF: (abil, entFrom, entTo) => {
 				const base = abil.GetSpecialValue("damage_base"),
 					min_mul = abil.GetSpecialValue("damage_min")
 				const mul = abil.GetSpecialValue("damage_max") - min_mul,
-					agi = (entFrom as Hero).TotalAgility
-				return entTo.CalculateDamage(base + (min_mul + mul * (agi / (entFrom as Hero).TotalStrength)) * agi * latest_spellamp, DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL, entFrom)
+					agi = entFrom.TotalAgility
+				return entTo.CalculateDamage(base + (min_mul + mul * (agi / entFrom.TotalStrength)) * agi * latest_spellamp, abil.DamageType, entFrom)
 			},
 		},
 		// TODO: mars_gods_rebuke
@@ -469,7 +399,7 @@ function GetAvailableAbils() {
 }
 
 function getDamage(abil: Ability, entFrom: Unit, entTo: Unit): number {
-	return entTo.CalculateDamage((abil.AbilityDamage || abil.GetSpecialValue("damage")) * latest_spellamp, abil.DamageType, entFrom)
+	return entTo.CalculateDamage(abil.AbilityDamage * latest_spellamp, abil.DamageType, entFrom)
 }
 
 function filter_func(unit: Unit): boolean {
@@ -501,7 +431,6 @@ EventsSDK.on("Tick", () => {
 		return abil !== undefined && !abil.IsHidden && abil.CanBeCasted()
 	}),
 		zuus_passive = MyEnt.GetAbilityByName("zuus_static_field"),
-		zuus_talent = MyEnt.GetTalentValue("special_bonus_unique_zeus"),
 		blink = MyEnt.GetItemByName("item_blink") || MyEnt.GetAbilityByName("antimage_blink"),
 		targets: Unit[] = []
 	if (kill_creeps.value)
@@ -534,7 +463,7 @@ EventsSDK.on("Tick", () => {
 					else return false
 			var damage = (abilData.abilDamageF || getDamage)(abil!, MyEnt, ent)
 			if (zuus_passive !== undefined)
-				damage += (abil!.GetSpecialValue("damage_health_pct") + zuus_talent) / 100 * ent.HP
+				damage += zuus_passive.GetSpecialValue("damage_health_pct") / 100 * ent.HP
 			if (damage < GetHealthAfter(ent, abil!.CastPoint))
 				return false
 

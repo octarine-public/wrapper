@@ -91,7 +91,7 @@ class ParticlesSDK {
 		key: any,
 		path: string,
 		attachment: ParticleAttachment_t,
-		entity: Entity,
+		entity: Nullable<Entity>,
 		...points: ControlPointParam[]
 	): Particle {
 		let particle = this.AllParticles.get(key)
@@ -249,7 +249,7 @@ class ParticlesSDK {
 		this.AllParticlesRange.clear()
 	}
 
-	private CheckChangedRange(key: any, range: number) {
+	public CheckChangedRange(key: any, range: number) {
 		let particleRange = this.AllParticlesRange.get(key)
 
 		if (particleRange !== undefined && particleRange !== range) {

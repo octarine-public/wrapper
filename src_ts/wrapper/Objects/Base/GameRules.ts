@@ -67,7 +67,7 @@ RegisterClass("C_DOTAGamerulesProxy", CGameRules)
 RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 	game.RawGameTime = new_val as number
 	EntityManager.GetEntitiesByClass(Hero).forEach(hero => {
-		if (hero.IsAlive || hero.RespawnTime > game.RawGameTime)
+		if (hero.IsAlive || hero.RespawnTime + (1 / 3) >= game.RawGameTime)
 			return
 		let old_state = hero.LifeState
 		hero.LifeState = LifeState_t.LIFE_ALIVE
