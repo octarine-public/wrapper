@@ -409,8 +409,9 @@ Events.on("ServerMessage", (msg_id, buf) => {
 				for (let [field_name, field_handler] of map) {
 					let id = entities_symbols.indexOf(field_name)
 					if (id === -1)
-						throw `Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`
-					map2.set(id, field_handler)
+						console.log(`[WARNING] Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`)
+					else
+						map2.set(id, field_handler)
 				}
 				cached_field_handlers.set(construct, map2)
 			}
