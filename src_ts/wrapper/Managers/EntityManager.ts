@@ -432,8 +432,11 @@ Events.on("ServerMessage", (msg_id, buf) => {
 					case EntityPVS.LEAVE: {
 						VisibilityMask.set(ent_id, false)
 						let ent = EntityManager.EntityByIndex(ent_id)
-						if (ent !== undefined)
+						if (ent !== undefined) {
 							ent.BecameDormantTime = GameRules?.RawGameTime ?? 0
+							if (ent.ClassName === "CDOTA_BaseNPC") // crtuch for thinkers that'll otherwise leak
+								queued_deletion.push(ent_id)
+						}
 						break
 					}
 					case EntityPVS.CREATE: {
