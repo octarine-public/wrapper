@@ -18,8 +18,10 @@ export default class Node extends Base {
 	public entries: Base[] = []
 	public is_open = false
 	public is_hovered = false
+	protected pathIcon?: Nullable<string>
 	protected readonly node_hovered_color = new Color(21, 24, 22)
 	protected readonly node_selected_color = new Color(14, 14, 14, 249)
+	protected readonly SizeImageNode = new Vector2(24, 24)
 	protected readonly ArrowSize = 36
 	protected readonly node_arrow_size = RendererSDK.GetTextSize("»", this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS).AddScalarY(-6)
 	protected readonly arrow_offset = this.text_offset.Clone().AddScalarX(15).AddScalarY(this.node_arrow_size.y).AddForThis(this.border_size)
@@ -27,15 +29,20 @@ export default class Node extends Base {
 	protected readonly node_selected_arrow_color = new Color(0x40, 0x80, 0xff)
 	protected active_element?: Base
 
-	constructor(parent: IMenu, name: string, tooltip?: string) {
+	constructor(parent: IMenu, name: string, pathIcon?: string, tooltip?: string) {
 		super(parent, name)
 		this.tooltip = tooltip
+		if (pathIcon !== undefined)
+			this.pathIcon = pathIcon
+
 		this.TotalSize_.x =
 			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS).x
 			+ 15
 			+ this.node_arrow_size.x
+			+ this.SizeImageNode.x
 			+ this.border_size.x * 2
 			+ this.text_offset.x * 2
+			+ (this.pathIcon !== undefined ? this.SizeImageNode.x : 0)
 	}
 
 	public get ConfigValue() {
@@ -54,8 +61,16 @@ export default class Node extends Base {
 	public Render(): void {
 		super.Render()
 		this.is_hovered = this.Rect.Contains(this.MousePosition)
+		const SizeText = this.Position.Add(this.border_size).AddForThis(this.text_offset)
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.is_open ? this.node_selected_color : this.is_hovered ? this.node_hovered_color : this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.border_size).AddForThis(this.text_offset), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+
+		if (this.pathIcon !== undefined)
+			SizeText.AddScalarX(this.SizeImageNode.x)
+
+		if (this.pathIcon !== undefined)
+			RendererSDK.Image(this.pathIcon, this.Position.Add(this.border_size).AddForThis(this.text_offset).SubtractScalarX(5), this.SizeImageNode)
+
+		RendererSDK.Text(this.name, SizeText, this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
 		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
 		if (!this.is_open)
 			return
@@ -108,6 +123,10 @@ export default class Node extends Base {
 				entry.UpdateEntriesPositions()
 		})
 	}
+	public SetIcon(pathIcon: string) { // TODO: after Node, add for all (slider, toogle, etc..) 
+		this.pathIcon = pathIcon
+		return this
+	}
 	public AddToggle(name: string, default_value: boolean = false, tooltip?: string): Toggle {
 		return this.AddEntry(new Toggle(this, name, default_value, tooltip))
 	}
@@ -117,11 +136,11 @@ export default class Node extends Base {
 	public AddSliderFloat(name: string, default_value = 0, min = 0, max = 100, tooltip?: string): Slider {
 		return this.AddEntry(new Slider(this, name, default_value, min, max, true, tooltip))
 	}
-	public AddNode(name: string, tooltip?: string): Node {
+	public AddNode(name: string, pathIcon?: string, tooltip?: string): Node {
 		let node = this.entries.find(entry => entry instanceof Node && entry.name === name) as Node
 		if (node !== undefined)
 			return node
-		return this.AddEntry(new Node(this, name, tooltip))
+		return this.AddEntry(new Node(this, name, pathIcon, tooltip))
 	}
 	public AddSwitcher(name: string, values: string[], default_value = 0): Switcher {
 		return this.AddEntry(new Switcher(this, name, values, default_value))
