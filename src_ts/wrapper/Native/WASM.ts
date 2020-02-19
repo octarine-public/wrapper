@@ -81,7 +81,7 @@ export function WorldToScreen(
 	WASMIOBuffer[3] = camera_position.x
 	WASMIOBuffer[4] = camera_position.y
 	WASMIOBuffer[5] = camera_position instanceof Vector2
-		? Vector3.fromIOBuffer(Camera.Position)!.z - Math.sin(camera_angles.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
+		? Vector3.fromIOBuffer(Camera.Position)!.z - Math.sin(Vector3.fromIOBuffer(Camera.Angles)!.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
 		: camera_position.z
 
 	WASMIOBuffer[6] = camera_angles.x
@@ -111,7 +111,7 @@ export function ScreenToWorld(
 	WASMIOBuffer[2] = camera_position.x
 	WASMIOBuffer[3] = camera_position.y
 	WASMIOBuffer[4] = camera_position instanceof Vector2
-		? Vector3.fromIOBuffer(Camera.Position)!.z - Math.sin(camera_angles.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
+		? Vector3.fromIOBuffer(Camera.Position)!.z - Math.sin(Vector3.fromIOBuffer(Camera.Angles)!.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
 		: camera_position.z
 
 	WASMIOBuffer[5] = camera_angles.x
