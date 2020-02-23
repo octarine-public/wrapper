@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#define EXPORT_JS /* avoid C++ mangling */ extern "C" /* export and don't inline */ EMSCRIPTEN_KEEPALIVE
+
 void ComputeViewMatrix(VMatrix* pViewMatrix, const Vector& origin, const QAngle& angles) {
 	static VMatrix baseRotation;
 	static bool bDidInit;
@@ -81,15 +83,11 @@ FORCEINLINE Vector UnwrapVector3(int offset = 0) {
 	return *(Vector*)&JSIOBuffer[offset];
 }
 
-extern "C" // avoid C++ mangling
-EMSCRIPTEN_KEEPALIVE // export and don't inline
-float* GetIOBuffer() {
+EXPORT_JS float* GetIOBuffer() {
 	return &JSIOBuffer[0];
 }
 
 VMatrix worldToProjection;
-extern "C" // avoid C++ mangling
-EMSCRIPTEN_KEEPALIVE // export and don't inline
 void CacheFrame() {
 	auto camera_pos = UnwrapVector3();
 	auto camera_ang = UnwrapVector3(3);
@@ -98,9 +96,7 @@ void CacheFrame() {
 	GetWorldToProjection(worldToProjection, camera_pos, *(QAngle*)&camera_ang, window_size, camera_dist);
 }
 
-extern "C" // avoid C++ mangling
-EMSCRIPTEN_KEEPALIVE // export and don't inline
-bool WorldToScreenCached() {
+EXPORT_JS bool WorldToScreenCached() {
 	auto world_vec = UnwrapVector3();
 	Vector2D screen_vec;
 	if (ScreenTransform(world_vec, screen_vec, worldToProjection)) {
@@ -111,9 +107,7 @@ bool WorldToScreenCached() {
 		return false;
 }
 
-extern "C" // avoid C++ mangling
-EMSCRIPTEN_KEEPALIVE // export and don't inline
-void ScreenToWorldCached() {
+EXPORT_JS void ScreenToWorldCached() {
 	auto screen = Vector2D(JSIOBuffer[0], JSIOBuffer[1]);
 	VMatrix projectionToWorld;
 	MatrixInverseGeneral(worldToProjection, projectionToWorld);
@@ -125,9 +119,7 @@ void ScreenToWorldCached() {
 	JSIOBuffer[2] = point.y;
 }
 
-extern "C" // avoid C++ mangling
-EMSCRIPTEN_KEEPALIVE // export and don't inline
-bool WorldToScreen() {
+EXPORT_JS bool WorldToScreen() {
 	auto world_vec = UnwrapVector3();
 	auto camera_pos = UnwrapVector3(3);
 	auto camera_ang = UnwrapVector3(6);
@@ -144,9 +136,7 @@ bool WorldToScreen() {
 		return false;
 }
 
-extern "C" // avoid C++ mangling
-EMSCRIPTEN_KEEPALIVE // export and don't inline
-void ScreenToWorld() {
+EXPORT_JS void ScreenToWorld() {
 	auto screen = Vector2D(JSIOBuffer[0], JSIOBuffer[1]);
 	auto camera_pos = UnwrapVector3(2);
 	auto camera_ang = UnwrapVector3(5);
@@ -166,21 +156,15 @@ void ScreenToWorld() {
 char* ParseVTex(char* data, size_t data_size, int& w, int& h);
 char* ParsePNG(char* data, size_t data_size, int& w, int& h);
 
-extern "C" // avoid C++ mangling
-EMSCRIPTEN_KEEPALIVE // export and don't inline
-void* my_malloc(size_t data_size) {
+EXPORT_JS void* my_malloc(size_t data_size) {
 	return malloc(data_size);
 }
 
-extern "C" // avoid C++ mangling
-EMSCRIPTEN_KEEPALIVE // export and don't inline
-void my_free(void* ptr) {
+EXPORT_JS void my_free(void* ptr) {
 	return free(ptr);
 }
 
-extern "C" // avoid C++ mangling
-EMSCRIPTEN_KEEPALIVE // export and don't inline
-char* ParseImage(char* data, size_t data_size) {
+EXPORT_JS char* ParseImage(char* data, size_t data_size) {
 	char* res = nullptr;
 	int w, h;
 	// PNG magic: 89 50 4E 47 0D 0A 1A 0A
