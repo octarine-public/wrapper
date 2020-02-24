@@ -120,10 +120,13 @@ export default class Ability extends Entity {
 	 * In real time cooldown (in fog)
 	 */
 	get CooldownTimeRemaining(): number {
-		let cd = this.Cooldown
-		if (this.Owner !== undefined && !this.Owner.IsVisible)
-			cd -= this.Owner.BecameDormantTime
-		return Math.max(0, this.Cooldown - cd)
+		if (this.Owner === undefined)
+			return 0
+		if (this.Owner.IsVisible) {
+			this.BecameDormantTime = (GameRules?.RawGameTime ?? 0)
+			return this.Cooldown
+		}
+		return this.Cooldown - ((GameRules?.RawGameTime ?? 0) - this.BecameDormantTime)
 	}
 
 	public get BaseCastRange(): number {
