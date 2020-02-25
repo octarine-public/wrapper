@@ -25,6 +25,7 @@ export default class Ability extends Entity {
 	public ChannelStartTime = 0
 	public IsToggled = false
 	public IsHidden = false
+	public CurrentCharges = 0
 
 	constructor(Index: number, name: string) {
 		super(Index)
@@ -53,7 +54,7 @@ export default class Ability extends Entity {
 	public get ActivationDelay() {
 		return this.GetSpecialValue("delay")
 	}
-	public get CurrentCharges(): number {
+	public get LevelCharges(): number {
 		return this.AbilityData.AbilityCharges(this.Level)
 	}
 	public get CastPoint(): number {
@@ -291,6 +292,7 @@ export default class Ability extends Entity {
 import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTABaseAbility", Ability)
 RegisterFieldHandler(Ability, "m_bInIndefiniteCooldown", (abil, new_value) => abil.IsInIndefiniteCooldown = new_value as boolean)
+RegisterFieldHandler(Ability, "m_nAbilityCurrentCharges", (abil, new_value) => abil.CurrentCharges = new_value as number)
 RegisterFieldHandler(Ability, "m_bActivated", (abil, new_value) => abil.IsActivated = new_value as boolean)
 RegisterFieldHandler(Ability, "m_bAutoCastState", (abil, new_value) => abil.IsAutoCastEnebled = new_value as boolean)
 RegisterFieldHandler(Ability, "m_bFrozenCooldown", (abil, new_value) => abil.IsCooldownFrozen = new_value as boolean)
