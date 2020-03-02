@@ -302,7 +302,7 @@ RegisterFieldHandler(Ability, "m_iManaCost", (abil, new_value) => abil.ManaCost 
 RegisterFieldHandler(Ability, "m_flOverrideCastPoint", (abil, new_value) => abil.OverrideCastPoint = new_value as number)
 RegisterFieldHandler(Ability, "m_iLevel", (abil, new_value) => abil.Level = new_value as number)
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, new_value) => abil.Cooldown = new_value as number)
-RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => abil.Cooldown = Math.max(new_value as number, 0))
+RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => abil.Cooldown = abil.CurrentCharges !== 0 ? 0 : Math.max(new_value as number, 0))
 RegisterFieldHandler(Ability, "m_flCooldownLength", (abil, new_value) => abil.CooldownLength = new_value as number)
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, new_value) => abil.IsInAbilityPhase = new_value as boolean)
 RegisterFieldHandler(Ability, "m_flCastStartTime", (abil, new_value) => abil.CastStartTime = new_value as number)
