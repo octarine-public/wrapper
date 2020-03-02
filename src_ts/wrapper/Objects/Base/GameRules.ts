@@ -71,6 +71,7 @@ RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 			return
 		let old_state = hero.LifeState
 		hero.LifeState = LifeState_t.LIFE_ALIVE
+		hero.HP = hero.MaxHP
 		if (old_state !== hero.LifeState)
 			EventsSDK.emit("LifeStateChanged", false, hero)
 	})
