@@ -483,6 +483,7 @@ declare class LightDesc_t {
 	m_Attenuation2: number
 	m_Theta: number
 	m_Phi: number
+	m_nLightGroupCount: number
 	m_bCastShadows: boolean
 	m_nShadowWidth: number
 	m_nShadowHeight: number
@@ -493,6 +494,7 @@ declare class LightDesc_t {
 	m_nFogLightingMode: number
 	m_bRenderDiffuse: boolean
 	m_bRenderSpecular: boolean
+	m_bRenderTransmissive: boolean
 	m_nPriority: number
 	m_Shape: LightSourceShape_t
 	m_flLightSourceDim0: number
@@ -599,6 +601,10 @@ declare class CParticleVisibilityInputs {
 
 declare class MaterialGroup_t {
 	readonly m_name: string
+}
+
+declare class CAnimMovementSettings {
+	m_bShouldCalculateSlope: boolean
 }
 
 declare class CAnimMotorList {
@@ -1211,6 +1217,10 @@ declare class RnShapeDesc_t {
 	readonly m_UserFriendlyName: string
 }
 
+declare class CModelConfigElement_Command extends CModelConfigElement {
+	readonly m_Command: string
+}
+
 declare class CAnimParameterBase {
 	readonly m_name: string
 	readonly m_id: AnimParamID
@@ -1255,6 +1265,8 @@ declare class CModelConfig {
 declare class CFlexRule {
 	m_nFlex: number
 }
+
+declare class CAnimGraphSettingsGroup { }
 
 declare class CAnimInputDamping {
 	m_speedFunction: DampingSpeedFunction
@@ -1776,7 +1788,7 @@ declare class CProjectedTextureBase {
 }
 
 declare class C_OP_LerpScalar extends CParticleFunctionOperator {
-	m_flOutput: number
+	readonly m_flOutput: CPerParticleFloatInput
 	m_flStartTime: number
 	m_flEndTime: number
 }
@@ -2142,7 +2154,6 @@ declare class CAnimGraphDebugReplay {
 }
 
 declare class CAnimationGraph {
-	readonly m_motorList: CAnimMotorList
 	readonly m_rootNodeID: AnimNodeID
 	readonly m_filePath: string
 }
@@ -2251,8 +2262,8 @@ declare class CBaseTrailRenderer extends CBaseRendererSource2 {
 	m_nOrientationControlPoint: number
 	m_flMinSize: number
 	m_flMaxSize: number
-	m_flStartFadeSize: number
-	m_flEndFadeSize: number
+	readonly m_flStartFadeSize: CParticleCollectionFloatInput
+	readonly m_flEndFadeSize: CParticleCollectionFloatInput
 	m_flDepthBias: number
 	readonly m_flRadiusScale: CParticleCollectionFloatInput
 	readonly m_flAlphaScale: CParticleCollectionFloatInput
@@ -2277,6 +2288,10 @@ declare class C_OP_DecayClampCount extends CParticleFunctionOperator {
 }
 
 declare class C_OP_SpinYaw extends CGeneralSpin { }
+
+declare class C_OP_SetSimulationRate extends CParticleFunctionPreEmission {
+	readonly m_flSimulationScale: CParticleCollectionFloatInput
+}
 
 declare class MaterialOverride_t extends BaseSceneObjectOverride_t {
 	m_nSubSceneObject: number
@@ -2528,6 +2543,10 @@ declare class CAimConstraint extends CBaseConstraint {
 	m_nUpType: number
 }
 
+declare class CAnimGraphNetworkSettings extends CAnimGraphSettingsGroup {
+	m_bNetworkingEnabled: boolean
+}
+
 declare class CGroundCondition extends CAnimStateConditionBase {
 	m_comparisonValue: boolean
 }
@@ -2776,6 +2795,7 @@ declare class CEntityComponent { }
 
 declare class CModelState {
 	readonly m_ModelName: string
+	m_bClientClothCreationSuppressed: boolean
 	m_MeshGroupMask: bigint
 	m_nIdealMotionType: number
 	m_nForceLOD: number
@@ -3112,6 +3132,7 @@ declare class C_INIT_CreateSequentialPath extends CParticleFunctionInitializer {
 
 declare class PermEntityLumpData_t {
 	readonly m_name: string
+	readonly m_hammerUniqueId: string
 	m_flags: EntityLumpFlags_t
 	readonly m_manifestName: string
 }
@@ -3234,6 +3255,11 @@ declare class CSeqSynthAnimDesc {
 declare class CVariantDefaultAllocator { }
 
 declare class FeEdgeDesc_t {
+}
+
+declare class CAnimMovementManager {
+	readonly m_MotorList: CAnimMotorList
+	readonly m_MovementSettings: CAnimMovementSettings
 }
 
 declare class DOTAAbilityDefinition_t {
@@ -3375,8 +3401,11 @@ declare class handposepair_t {
 	m_flUseAnglesRange: number
 	m_flPivotMin: number
 	m_flPivotMax: number
+	m_flRotateMin: number
+	m_flRotateMax: number
 	m_bHasExtent: boolean
 	m_bHasRotation: boolean
+	m_bAllowFlip: boolean
 	m_bConformFingers: boolean
 	m_bSqueezable: boolean
 	m_bSqueezeTarget: boolean
@@ -4321,6 +4350,8 @@ declare class EventClientPreSimulate_t extends EventSimulate_t { }
 
 declare class CJiggleBones { }
 
+declare class InfoForResourceTypeIVectorGraphic { }
+
 declare class CRagdollAnimTag extends CAnimTagBase {
 	m_nPoseControl: AnimPoseControl
 	m_flFrequency: number
@@ -4518,6 +4549,9 @@ declare class TimedHeroStats_t {
 	m_nOtherGold: number
 	m_nComebackGold: number
 	m_nExperimentalGold: number
+	m_nExperimental2Gold: number
+	m_nTPScrollsPurchased: number
+	m_nCreepDenyGold: number
 }
 
 declare class audioparams_t {
@@ -4752,6 +4786,7 @@ declare class CModelConfigElement_AttachedModel extends CModelConfigElement {
 	m_AttachmentType: ModelConfigAttachmentType_t
 	m_bUserSpecifiedColor: boolean
 	m_bUserSpecifiedMaterialGroup: boolean
+	m_bAcceptParentMaterialDrivenDecals: boolean
 }
 
 declare class AIHullFlags_t {
@@ -5001,8 +5036,6 @@ declare class C_OP_MovementMoveAlongSkinnedCPSnapshot extends CParticleFunctionO
 declare class CMoveHeadingCondition extends CAnimStateConditionBase {
 	m_comparisonValue: number
 }
-
-declare class InfoForResourceTypeCVectorGraphic { }
 
 declare class prevent_interaction_t {
 	m_hEntity: CEntityIndex
@@ -5617,6 +5650,8 @@ declare class FeQuad_t {
 	flSlack: number
 }
 
+declare class CAnimGraphGeneralSettings extends CAnimGraphSettingsGroup { }
+
 declare class dota_minimap_boundary extends CEmptyEntityInstance { }
 
 declare class vehicle_gear_t {
@@ -5979,6 +6014,11 @@ declare class CRenderBufferBinding {
 	m_nBindOffsetBytes: number
 }
 
+declare class CSingleFrameAnimNode extends CAnimNodeBase {
+	readonly m_sequenceName: string
+	m_nFrameIndex: number
+}
+
 declare class CParticleAnimTag extends CAnimTagBase {
 	readonly m_particleSystemName: string
 	readonly m_configName: string
@@ -6190,6 +6230,7 @@ declare class C_OP_SelectivelyEnableChildren extends CParticleFunctionPreEmissio
 	readonly m_nFirstChild: CParticleCollectionFloatInput
 	readonly m_nNumChildrenToEnable: CParticleCollectionFloatInput
 	m_bPlayEndcapOnStop: boolean
+	m_bDestroyImmediately: boolean
 }
 
 declare class InfoForResourceTypeCPanoramaLayout { }
@@ -7377,6 +7418,8 @@ declare class PlayerResourcePlayerData_t {
 	m_eLiveSpectatorTeam: DOTATeam_t
 	m_bIsPlusSubscriber: boolean
 	m_bWasMVPLastGame: boolean
+	m_nCavernCrawlMapVariant: number
+	m_iRankTier: number
 }
 
 declare class C_OP_RenderRopes extends CBaseRendererSource2 {
@@ -7519,8 +7562,8 @@ declare class C_OP_RenderSprites extends CBaseRendererSource2 {
 	m_flMinSize: number
 	m_flMaxSize: number
 	m_flAlphaAdjustWithSizeAdjust: number
-	m_flStartFadeSize: number
-	m_flEndFadeSize: number
+	readonly m_flStartFadeSize: CParticleCollectionFloatInput
+	readonly m_flEndFadeSize: CParticleCollectionFloatInput
 	m_flStartFadeDot: number
 	m_flEndFadeDot: number
 	m_flDepthBias: number
@@ -7916,9 +7959,7 @@ declare class CFacingHeadingCondition extends CAnimStateConditionBase {
 declare class EventClientPollInput_t {
 	readonly m_LoopState: EngineLoopState_t
 	m_flRealTime: number
-	m_bFirstVRInputSample: boolean
-	m_nVRInputSampleID: number
-	m_nVRLastInputSampleIDThisFrame: number
+	m_nVRDisplayID: number
 }
 
 declare class C_INIT_RandomYaw extends CGeneralRandomRotation { }
@@ -8166,6 +8207,9 @@ declare class CParticleSystemDefinition extends IParticleSystemDefinition {
 	m_bShouldHitboxesFallbackToRenderBounds: boolean
 }
 
+declare class CAnimGraphSettingsManager {
+}
+
 declare class EventClientSimulate_t extends EventSimulate_t { }
 
 declare class NeutralSpawnBoxes_t {
@@ -8356,7 +8400,9 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_colorHeroGlow: IOBuffer_Color
 	m_iNearShopMask: number
 	m_nPoseParameterTurn: number
+	m_nPoseParameterRun: number
 	m_flLean: number
+	m_flRun: number
 	m_anglediff: number
 	m_bInfoKeyActive: boolean
 	m_bNewUpdateAssetModifiersNetworked: boolean
@@ -8412,6 +8458,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_bIsClientThinkPending: boolean
 	m_bActivityModifiersDirty: boolean
 	m_bUnitModelVariantChanged: boolean
+	m_bWearablesAreTaunting: boolean
 }
 
 declare class C_NextBotCombatCharacter extends C_BaseCombatCharacter {
@@ -8589,15 +8636,9 @@ declare class C_INIT_RemapCPtoVector extends CParticleFunctionInitializer {
 declare class C_INIT_RandomModelSequence extends CParticleFunctionInitializer {
 }
 
-declare class CVoxelVisibility {
-	m_vMinBounds: IOBuffer_Vector3
-	m_vMaxBounds: IOBuffer_Vector3
-	m_flGridSize: number
-	m_nNodeCount: number
-	m_nRegionCount: number
-	m_nPVSCompression: voxel_vis_compression_t
-	m_nTreeSize: number
-	m_nPVSSizeCompressed: number
+declare class voxel_vis_cluster_t {
+	m_nBlockIndex: number
+	m_nOffsetIntoBlock: number
 }
 
 declare class SelectedEditItemInfo_t {
@@ -9310,6 +9351,7 @@ declare class C_OP_RenderStandardLight extends CParticleFunctionRenderer {
 	m_bRenderDiffuse: boolean
 	m_bRenderSpecular: boolean
 	readonly m_lightCookie: string
+	m_nPriority: number
 }
 
 declare class C_OP_ParentVortices extends CParticleFunctionForce {
@@ -9345,9 +9387,16 @@ declare class C_OP_RemapCPOrientationToRotations extends CParticleFunctionOperat
 	m_bWriteNormal: boolean
 }
 
-declare class voxel_vis_cluster_t {
-	m_nBlockIndex: number
-	m_nOffsetIntoBlock: number
+declare class CVoxelVisibility {
+	m_vMinBounds: IOBuffer_Vector3
+	m_vMaxBounds: IOBuffer_Vector3
+	m_flGridSize: number
+	m_nNodeCount: number
+	m_nRegionCount: number
+	readonly m_skyVisibilityCluster: voxel_vis_cluster_t
+	m_nPVSCompression: voxel_vis_compression_t
+	m_nTreeSize: number
+	m_nPVSSizeCompressed: number
 }
 
 declare class CSosSoundEventGroupListSchema {
@@ -9398,8 +9447,8 @@ declare class C_OP_SetPerChildControlPoint extends CParticleFunctionOperator {
 	m_nChildGroupID: number
 	m_nFirstControlPoint: number
 	m_nNumControlPoints: number
-	m_nParticleIncrement: number
-	m_nFirstSourcePoint: number
+	readonly m_nParticleIncrement: CParticleCollectionFloatInput
+	readonly m_nFirstSourcePoint: CParticleCollectionFloatInput
 	m_bSetOrientation: boolean
 	m_bNumBasedOnParticleCount: boolean
 }
@@ -10108,6 +10157,7 @@ declare class CLightComponent extends CEntityComponent {
 	m_nShadowHeight: number
 	m_bRenderDiffuse: boolean
 	m_nRenderSpecular: number
+	m_bRenderTransmissive: boolean
 	m_flOrthoLightWidth: number
 	m_flOrthoLightHeight: number
 	m_nStyle: number
@@ -10125,6 +10175,7 @@ declare class CLightComponent extends CEntityComponent {
 	m_bUsesIndexedBakedLighting: boolean
 	m_bRenderToCubemaps: boolean
 	m_nPriority: number
+	readonly m_LightGroups: string
 	m_nDirectLight: number
 	m_nIndirectLight: number
 	m_flFadeMinDist: number
@@ -10146,7 +10197,7 @@ declare class CLightComponent extends CEntityComponent {
 	m_flSkyIntensity: number
 	m_bLowerHemisphereIsBlack: boolean
 	m_SkyAmbientBounce: IOBuffer_Color
-	m_bUnlitShadows: boolean
+	m_bMixedShadows: boolean
 	m_flLightStyleStartTime: number
 }
 
@@ -10239,6 +10290,8 @@ declare class C_DOTA_Item_DataDriven extends C_DOTA_Item {
 	m_CastAnimation: number
 }
 
+declare class C_DOTA_Ability_AghsFort_Omniknight_Degen_Aura extends C_DOTABaseAbility { }
+
 declare class C_DOTA_Ability_Special_Bonus_Unique_Underlord_4 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Ursa_6 extends C_DOTABaseAbility { }
@@ -10290,6 +10343,10 @@ declare class C_DOTA_Ability_Leshrac_Diabolic_Edict extends C_DOTABaseAbility { 
 declare class C_DOTA_Ability_Nevermore_Shadowraze extends C_DOTABaseAbility {
 	readonly m_nFXIndex: ParticleIndex_t
 	readonly m_nFXIndexB: ParticleIndex_t
+}
+
+declare class CDOTA_Ability_AghsFort_Luna_LucentBeam extends C_DOTABaseAbility {
+	radius: number
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Lycan_5 extends C_DOTABaseAbility { }
@@ -10638,6 +10695,11 @@ declare class C_DotaSubquestBase extends C_BaseEntity {
 	m_nProgressBarHueShift: number
 	m_nTextReplaceValueVersion: number
 	m_bWasCompleted: boolean
+}
+
+declare class CDOTA_Ability_AghsFort_Spectre_ActiveDispersion extends C_DOTABaseAbility {
+	readonly m_nPreviewFX: ParticleIndex_t
+	duration: number
 }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_DarkWillow_3 extends C_DOTABaseAbility { }
@@ -11436,6 +11498,8 @@ declare class C_DOTA_Item_Recipe_Titan_Sliver extends C_DOTA_Item { }
 
 declare class CDOTA_Item_Recipe_Pirate_Hat extends C_DOTA_Item { }
 
+declare class CDOTA_Ability_AghsFort_Luna_Eclipse extends C_DOTABaseAbility { }
+
 declare class C_DOTA_Ability_Special_Bonus_Unique_Luna_2 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Gyrocopter_4 extends C_DOTABaseAbility { }
@@ -11655,6 +11719,14 @@ declare class C_DOTA_Ability_Nyx_Assassin_SpikedCarapace extends C_DOTABaseAbili
 
 declare class C_DOTA_Ability_Sven_GreatCleave extends C_DOTABaseAbility { }
 
+declare class CDOTA_Ability_AghsFort_Magnataur_Skewer extends C_DOTABaseAbility {
+	skewer_radius: number
+	skewer_speed: number
+	range: number
+	tree_radius: number
+	m_nTargetsHit: number
+}
+
 declare class C_DOTA_Ability_Special_Bonus_Unique_Doom_6 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_2 extends C_DOTABaseAbility { }
@@ -11839,6 +11911,9 @@ declare class DataTeamPlayer_t {
 	m_iOtherGold: number
 	m_iComebackGold: number
 	m_iExperimentalGold: number
+	m_iExperimental2Gold: number
+	m_iCreepDenyGold: number
+	m_iTPScrollsPurchased: number
 	m_iIncomeGold: number
 	m_iNetWorth: number
 	m_iDenyCount: number
@@ -11973,7 +12048,8 @@ declare class C_SkyCamera extends C_BaseEntity {
 declare class C_DOTA_Unit_Hero_ChaosKnight extends C_DOTA_BaseNPC_Hero { }
 
 declare class C_DOTA_BaseNPC_NeutralItemStash extends C_DOTA_BaseNPC_Building {
-	readonly m_nNewItemFXIndex: ParticleIndex_t
+	m_bHasFoundProps: boolean
+	m_bDidHaveNewItems: boolean
 }
 
 declare class C_World extends C_BaseModelEntity {
@@ -12140,6 +12216,7 @@ declare class C_PointHintUi extends C_PointClientUIWorldPanel {
 	readonly m_szTargetAttachmentName: string
 	readonly m_pszCustomLayoutFile: string
 	m_nTrackedDeviceIndex: number
+	m_hHighlightHand: CEntityIndex<C_PropVRHand>
 	readonly m_pszHighlightControllerComponent: string
 	m_vecLocalHighlightPoint: IOBuffer_Vector3
 	readonly m_pszHighlightOtherEntityName: string
@@ -12617,6 +12694,7 @@ declare class C_DOTA_BinaryObject extends C_BaseAnimating {
 declare class C_DOTA_TempTree extends C_BaseAnimating {
 	m_fExpireTime: number
 	m_vecTreeCircleCenter: IOBuffer_Vector3
+	m_bCanApplyTreeCostume: boolean
 }
 
 declare class C_Fish extends C_BaseAnimating {
@@ -12655,6 +12733,8 @@ declare class C_DOTA_Ability_WitchDoctor_VoodooRestoration extends C_DOTABaseAbi
 declare class C_DOTA_Ability_Morphling_Morph_Str extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Jungle_Spirit_Cooldown_Reduction extends C_DOTABaseAbility { }
+
+declare class C_DOTA_Ability_AghsFort_Omniknight_Purification extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Skywrath_2 extends C_DOTABaseAbility { }
 
@@ -12700,9 +12780,6 @@ declare class CHapticRelay extends CLogicalEntity {
 }
 
 declare class CAnimGraphNetworkedVariables {
-	m_NetRootPosition: IOBuffer_Vector3
-	m_PredNetRootPosition: IOBuffer_Vector3
-	m_LocalPredRootPosition: IOBuffer_Vector3
 	m_flLastTeleportTime: number
 }
 
@@ -12772,6 +12849,8 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Windranger_2 extends C_DOTABas
 declare class C_DOTA_Ability_Special_Bonus_All_Stats_15 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Unit_Undying_Tombstone extends C_DOTA_BaseNPC_Additive { }
+
+declare class CDOTA_Unit_AghsFort_SpectralTusk_Tombstone extends C_DOTA_BaseNPC_Additive { }
 
 declare class C_DOTA_Item_Tome_of_aghanim extends C_DOTA_Item { }
 
@@ -13889,6 +13968,9 @@ declare class C_PropVRTrackedObject extends C_BaseAnimating {
 	m_bClientIsAuthoritativeForTransform: boolean
 	m_bIsInContact: boolean
 	m_bIsInContactTeleportClip: boolean
+	m_vTeleportClipPos: IOBuffer_Vector3
+	m_bIsInContactSolidPostTeleportClip: boolean
+	m_vSolidPostTeleportClipPos: IOBuffer_Vector3
 	m_vLocalPosition: IOBuffer_Vector3
 	m_qLocalAngles: IOBuffer_QAngle
 }
@@ -14117,6 +14199,8 @@ declare class CDOTA_Ability_CallOfTheWild_Boar_Poison extends C_DOTABaseAbility 
 
 declare class C_DOTA_Ability_Courier_QueuePickupFromStash extends C_DOTABaseAbility { }
 
+declare class CDOTA_Ability_AghsFort_Omniknight_Repel extends C_DOTABaseAbility { }
+
 declare class C_DOTA_Item_BagOfGold extends C_DOTA_Item {
 	m_hThinker: CEntityIndex
 }
@@ -14211,10 +14295,10 @@ declare class C_DOTA_Unit_Hero_Oracle extends C_DOTA_BaseNPC_Hero {
 }
 
 declare class C_DOTAWearableItem extends C_EconWearable {
-	m_hAdditionalWearable: CEntityIndex<C_BaseAnimating>
 	m_bOwnerModelChanged: boolean
 	m_bIsGeneratingEconItem: boolean
 	m_bIsItemVisibleOnGeneratedEntity: boolean
+	m_hAdditionalWearable: CEntityIndex<C_BaseAnimating>
 	m_hDrawWearable: CEntityIndex<C_DOTAWearableItem>
 	m_bHiddenByCombiner: boolean
 	m_bIsPortrait: boolean
@@ -15538,6 +15622,7 @@ declare class C_DOTA_Unit_Hero_SkeletonKing extends C_DOTA_BaseNPC_Hero {
 
 declare class C_PointHintUIHighlightModel extends C_BaseAnimating {
 	m_nTrackedDeviceIndex: number
+	m_hHighlightHand: CEntityIndex<C_PropVRHand>
 	m_bVisible: boolean
 }
 
@@ -15882,6 +15967,7 @@ declare class CInfoDynamicShadowHint extends C_PointEntity {
 	m_bDisabled: boolean
 	m_flRange: number
 	m_nImportance: number
+	m_nLightChoice: number
 	m_hLight: CEntityIndex
 }
 
@@ -15976,7 +16062,9 @@ declare class C_EnvCubemap extends C_BaseEntity {
 	m_nEnvCubeMapArrayIndex: number
 	m_nIndoorOutdoorLevel: number
 	m_nGgxCubemapBlurAccumulationPassCount: number
+	m_flEdgeFadeDist: number
 	m_bStartDisabled: boolean
+	m_bDefaultEnvMap: boolean
 	m_bEnabled: boolean
 }
 
@@ -17721,6 +17809,7 @@ declare class C_FuncMonitor extends C_FuncBrush {
 	readonly m_brushModelName: string
 	m_hTargetCamera: CEntityIndex
 	m_bEnabled: boolean
+	m_bDraw3DSkybox: boolean
 }
 
 declare class CInfoWorldLayer extends C_BaseEntity {
@@ -20969,12 +21058,11 @@ declare enum AnimVectorSource {
 	Acceleration = 6,
 	SlopeNormal = 7,
 	SlopeNormal_WorldSpace = 8,
-	AverageGroundPosition = 9,
-	LookTarget = 10,
-	LookTarget_WorldSpace = 11,
-	WayPointPosition = 12,
-	GoalPosition = 13,
-	RootMotionVelocity = 14,
+	LookTarget = 9,
+	LookTarget_WorldSpace = 10,
+	WayPointPosition = 11,
+	GoalPosition = 12,
+	RootMotionVelocity = 13,
 }
 
 declare enum TextureRepetitionMode_t {
