@@ -78,6 +78,8 @@ let RendererSDK = new (class CRendererSDK {
 	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1200, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Nullable<Vector2> {
 		if (position instanceof Vector2)
 			position = position.toVector3().SetZ(this.GetPositionHeight(position))
+		if (camera_position instanceof Vector2)
+			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
 		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)
 	}
 	/**
@@ -100,6 +102,8 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param screen screen position with x and y in range {0, 1}
 	 */
 	public ScreenToWorldCustom(screen: Vector2, camera_position: Vector2 | Vector3, camera_distance = 1200, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Vector3 {
+		if (camera_position instanceof Vector2)
+			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
 		return WASM.ScreenToWorld(screen, camera_position, camera_distance, camera_angles, window_size)
 	}
 	public FilledCircle(vecPos: Vector2 = new Vector2(), radius: number, color = new Color(255, 255, 255)): void {

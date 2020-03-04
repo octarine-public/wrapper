@@ -1,3 +1,4 @@
+// https://github.com/EnsageSharp/Ensage.SDK/blob/master/Helpers/Map.cs
 import Vector3 from "../Base/Vector3"
 import { WorldPolygon } from "../Geometry/WorldPolygon"
 import { Utf8ArrayToStr } from "../Utils/Utils"

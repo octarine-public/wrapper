@@ -18,7 +18,7 @@ import _ParticlesSDK from "./Managers/ParticleManager"
 import _Menu from "./Menu/Menu"
 import { GetSDKClasses } from "./Objects/NativeToSDK"
 import { LocalPlayer } from "./Objects/Base/Entity"
-import { WASMIOBuffer } from "./Native/WASM"
+import * as _WASM from "./Native/WASM"
 
 globalThis.Color = _Color
 globalThis.QAngle = _QAngle
@@ -35,7 +35,7 @@ Object.defineProperty(globalThis, "LocalPlayer", {
 })
 Object.defineProperty(globalThis, "WASMIOBuffer", {
 	get: () => {
-		return WASMIOBuffer
+		return _WASM.WASMIOBuffer
 	},
 	configurable: false,
 	enumerable: true,
@@ -62,6 +62,7 @@ globalThis.GameState = _GameState
 globalThis.EventsSDK = _EventsSDK
 globalThis.RendererSDK = _RendererSDK
 globalThis.ParticlesSDK = _ParticlesSDK
+globalThis.WASM = _WASM
 
 globalThis.Menu = _Menu
 globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Constructor<any>).name === name)

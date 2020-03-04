@@ -11,33 +11,33 @@ FORCEINLINE float FastSqrt(float x) {
 }
 
 FORCEINLINE float FastRSqrt(float x) {
-	return 1.f/sqrt(x);
+	return 1.f / sqrt(x);
 }
 
 class Vector {
 public:
 	// Members
-	vec_t x, z, y;
+	vec_t x, y, z;
 
 	// Construction/destruction:
 	FORCEINLINE Vector() {
-		x = z = y = 0;
+		x = y = z = 0;
 	}
 
-	FORCEINLINE Vector(vec_t x, vec_t z, vec_t y) {
+	FORCEINLINE Vector(vec_t x, vec_t y, vec_t z) {
 		this->x = x;
-		this->z = z;
 		this->y = y;
+		this->z = z;
 	}
 
 	// Initialization
 	FORCEINLINE void Init(vec_t x, vec_t y, vec_t z) {
 		this->x = x;
-		this->z = z;
 		this->y = y;
+		this->z = z;
 	}
 	FORCEINLINE void Init(vec_t i = 0.f) {
-		x = z = y = i;
+		x = y = z = i;
 	}
 
 	FORCEINLINE void Invalidate() {
@@ -63,86 +63,86 @@ public:
 
 	// Zero out a vector
 	FORCEINLINE void Zero() {
-		x = z = y = 0;
+		x = y = z = 0;
 	}
 
 	// equality
 	bool operator==(const Vector& v) {
-		return (v.x == x) && (v.z == z) && (v.y == y);
+		return (v.x == x) && (v.y == y) && (v.z == z);
 	}
 	bool operator!=(const Vector& v) {
-		return (v.x != x) || (v.z != z) || (v.y != y);
+		return (v.x != x) || (v.y != y) || (v.z != z);
 	}
 
 	// arithmetic operations
 	FORCEINLINE Vector operator+=(const Vector& v) {
 		x += v.x;
-		z += v.z;
 		y += v.y;
+		z += v.z;
 		return *this;
 	}
 	FORCEINLINE Vector operator-=(const Vector& v) {
 		x -= v.x;
-		z -= v.z;
 		y -= v.y;
+		z -= v.z;
 		return *this;
 	}
 	FORCEINLINE Vector operator*=(const Vector& v) {
 		x *= v.x;
-		z *= v.z;
 		y *= v.y;
+		z *= v.z;
 		return *this;
 	}
 	FORCEINLINE Vector operator/=(const Vector& v) {
 		x /= v.x;
-		z /= v.z;
 		y /= v.y;
+		z /= v.z;
 		return *this;
 	}
 
 	FORCEINLINE Vector operator*=(vec_t fl) {
 		x *= fl;
-		z *= fl;
 		y *= fl;
+		z *= fl;
 		return *this;
 	}
 	FORCEINLINE Vector operator/=(vec_t fl) {
 		x /= fl;
-		z /= fl;
 		y /= fl;
+		z /= fl;
 		return *this;
 	}
 	FORCEINLINE Vector operator+=(vec_t fl) { ///< broadcast add
 		x += fl;
-		z += fl;
 		y += fl;
+		z += fl;
 		return *this;
 	}
 	FORCEINLINE Vector operator-=(vec_t fl) { ///< broadcast sub
 		x -= fl;
-		z -= fl;
 		y -= fl;
+		z -= fl;
 		return *this;
 	}
 
 	FORCEINLINE Vector operator+(const Vector& v) {
-		return Vector(x + v.x, z + v.z, y + v.y);
+		return Vector(x + v.x, y + v.y, z + v.z);
 	}
 	FORCEINLINE Vector operator-(const Vector& v) {
-		return Vector(x - v.x, z - v.z, y - v.y);
+		return Vector(x - v.x, y - v.y, z - v.z);
 	}
 	FORCEINLINE Vector operator*(const Vector& v) {
-		return Vector(x * v.x, z * v.z, y * v.y);
+		return Vector(x * v.x, y * v.y, z * v.z);
 	}
 	FORCEINLINE Vector operator*(const vec_t fl) {
-		return Vector(x * fl, z * fl, y * fl);
+		return Vector(x * fl, y * fl, z * fl);
 	}
 
 	// negate the vector components
 	FORCEINLINE void Negate() {
 		x = -x;
-		z = -z;
 		y = -y;
+		z = -z;
 	}
 
 	// Get the vector's magnitude.
@@ -155,7 +155,7 @@ public:
 
 	// Get the vector's magnitude squared.
 	FORCEINLINE vec_t LengthSqr() {
-		return x * x + z * z + y * y;
+		return x * x + y * y + z * z;
 	}
 
 	// Get one over the vector's length
@@ -176,26 +176,11 @@ public:
 
 		if (len != 0) {
 			x /= len;
-			z /= len;
 			y /= len;
+			z /= len;
 		}
 
 		return len;
-	}
-	FORCEINLINE bool IsLengthGreaterThan(float val) {
-		return LengthSqr() > val* val;
-	}
-	FORCEINLINE bool IsLengthLessThan(float val) {
-		return LengthSqr() < val * val;
-	}
-
-	// check if a vector is within the box defined by two other vectors
-	bool WithinAABox(const Vector& boxmin, const Vector& boxmax) {
-		return (
-			(x >= boxmin.x) && (x <= boxmax.x) &&
-			(y >= boxmin.y) && (y <= boxmax.y) &&
-			(z >= boxmin.z) && (z <= boxmax.z)
-			);
 	}
 
 	// Get the distance from this vector to the other one.
@@ -216,8 +201,8 @@ public:
 	// Copy
 	FORCEINLINE void CopyTo(float* ar) {
 		ar[0] = x;
-		ar[1] = z;
-		ar[2] = y;
+		ar[1] = y;
+		ar[2] = z;
 	}
 
 	// Multiply, add, and assign to this (ie: *this = a + b * scalar). This
@@ -235,28 +220,14 @@ public:
 	// assignment
 	FORCEINLINE Vector& operator=(const Vector& vOther) {
 		x = vOther.x;
-		z = vOther.z;
 		y = vOther.y;
+		z = vOther.z;
 		return *this;
-	}
-
-	// returns 0, 1, 2 corresponding to the component with the largest absolute value
-	int LargestComponent() {
-		if (x > z)
-			if (x > y)
-				return 0;
-			else
-				return 2;
-		else
-			if (z > y)
-				return 1;
-			else
-				return 2;
 	}
 
 	// 2d
 	FORCEINLINE vec_t Length2DSqr() {
-		return x * x + z * z;
+		return x * x + y * y;
 	}
 
 	FORCEINLINE vec_t Length2D() {
@@ -266,28 +237,12 @@ public:
 	// get the component of this vector parallel to some other given vector
 	FORCEINLINE void CopyTo(Vector& onto) {
 		onto.x = x;
-		onto.z = z;
 		onto.y = y;
+		onto.z = z;
 	}
 
-	// Cross product between two vectors.
-	Vector Cross(const Vector& vOther) {
-		return Vector (
-			this->y * vOther.z - this->z * vOther.y,
-			this->z * vOther.x - this->x * vOther.z,
-			this->x * vOther.y - this->y * vOther.x
-		);
-	}
-
-	// Returns a vector with the min or max in X, Y, and Z.
-	FORCEINLINE Vector Min(const Vector& vOther) {
-		return Vector(fmin(x, vOther.x), fmin(z, vOther.z), fmin(y, vOther.z));
-	}
-	FORCEINLINE Vector Max(const Vector& vOther) {
-		return Vector(fmax(x, vOther.x), fmax(z, vOther.z), fmax(y, vOther.z));
-	}
 	FORCEINLINE Vector operator-() const {
-		return Vector(-x, -z, -y);
+		return Vector(-x, -y, -z);
 	}
 };
 
@@ -414,25 +369,25 @@ public:
 	float roll;
 };
 
-inline QAngle operator*(float lhs, const QAngle& rhs) {
+FORCEINLINE QAngle operator*(float lhs, const QAngle& rhs) {
 	return rhs * lhs;
 }
-inline QAngle operator/(float lhs, const QAngle& rhs) {
+FORCEINLINE QAngle operator/(float lhs, const QAngle& rhs) {
 	return rhs / lhs;
 }
 
 class Vector2D {
 public:
 	// Members
-	vec_t x, z;
+	vec_t x, y;
 
 	FORCEINLINE Vector2D() {
-		x = z = 0;
+		x = y = 0;
 	}
 
-	FORCEINLINE Vector2D(vec_t x, vec_t z) {
+	FORCEINLINE Vector2D(vec_t x, vec_t y) {
 		this->x = x;
-		this->z = z;
+		this->y = y;
 	}
 
 	// array access...
@@ -442,51 +397,51 @@ public:
 	}
 
 	FORCEINLINE Vector2D operator-(const Vector2D& v) {
-		return Vector2D(x - v.x, z - v.z);
+		return Vector2D(x - v.x, y - v.y);
 	}
 
 	FORCEINLINE Vector2D& operator=(const Vector2D& vOther) {
 		this->x = vOther.x;
-		this->z = vOther.z;
+		this->y = vOther.y;
 		return *this;
 	}
 	FORCEINLINE Vector2D operator/=(const Vector2D& v) {
 		x /= v.x;
-		z /= v.z;
+		y /= v.y;
 		return *this;
 	}
 	FORCEINLINE Vector2D operator+=(const Vector2D& v) {
 		x += v.x;
-		z += v.z;
+		y += v.y;
 		return *this;
 	}
 	FORCEINLINE Vector2D operator/=(vec_t fl) {
 		x /= fl;
-		z /= fl;
+		y /= fl;
 		return *this;
 	}
 	FORCEINLINE Vector2D operator*=(vec_t fl) {
 		x *= fl;
-		z *= fl;
+		y *= fl;
 		return *this;
 	}
 	FORCEINLINE Vector2D operator+=(vec_t fl) {
 		x += fl;
-		z += fl;
+		y += fl;
 		return *this;
 	}
 	FORCEINLINE Vector2D operator*(const vec_t fl) {
-		return Vector2D(x * fl, z * fl);
+		return Vector2D(x * fl, y * fl);
 	}
 	FORCEINLINE Vector2D operator/(const vec_t fl) {
-		return Vector2D(x / fl, z / fl);
+		return Vector2D(x / fl, y / fl);
 	}
 	FORCEINLINE Vector2D operator+(const Vector2D& v) {
-		return Vector2D(x + v.x, z + v.z);
+		return Vector2D(x + v.x, y + v.y);
 	}
 
 	FORCEINLINE void Zero() {
-		x = z = 0;
+		x = y = 0;
 	}
 
 	// Get the vector's magnitude.
@@ -499,7 +454,7 @@ public:
 
 	// Get the vector's magnitude squared.
 	FORCEINLINE vec_t LengthSqr() {
-		return x * x + z * z;
+		return x * x + y * y;
 	}
 
 	// Get the distance from this vector to the other one.
@@ -508,33 +463,20 @@ public:
 	}
 
 	FORCEINLINE void Invalidate() {
-		x = z = NAN;
+		x = y = NAN;
 	}
 
 	FORCEINLINE void CopyTo(Vector2D& onto) {
 		onto.x = this->x;
-		onto.z = this->z;
+		onto.y = this->y;
 	}
 	FORCEINLINE void CopyTo(float* ar) {
 		ar[0] = this->x;
-		ar[1] = this->z;
-	}
-
-	Vector2D VectorRotation(const Vector2D& rotation, float dist) {
-		return
-#ifdef __FMA__
-			Vector2D(fma(rotation.x, dist, x), fma(rotation.z, dist, z));
-#else
-			Vector2D(rotation.x * dist + x, rotation.z * dist + z);
-#endif
-	}
-
-	FORCEINLINE float AngleBetweenTwoVectors(const Vector2D& vec) {
-		return atan2(vec.z - z, vec.x - x); // TODO: implement intrinsics there
+		ar[1] = this->y;
 	}
 
 	// Base address...
 	FORCEINLINE vec_t* Base() { return (vec_t*)this; }
 
-	FORCEINLINE Vector TransformToVector() { return Vector(x, z, 0); }
+	FORCEINLINE Vector TransformToVector() { return Vector(x, y, 0); }
 };

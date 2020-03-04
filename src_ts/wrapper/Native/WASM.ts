@@ -67,9 +67,22 @@ export function ScreenToWorldCached(screen: Vector2): Vector3 {
 	return new Vector3(WASMIOBuffer[0], WASMIOBuffer[1], WASMIOBuffer[2])
 }
 
+export function GetCameraForward(camera_angles: QAngle): Vector3 {
+	// TODO: should we use Math.cos(DegreesToRadian(camera_angles.y))?
+	return new Vector3(0, Math.cos(DegreesToRadian(camera_angles.y)) - Math.cos(DegreesToRadian(camera_angles.x)), Math.sin(DegreesToRadian(camera_angles.x)))
+}
+
+export function GetCameraPosition(camera_position: Vector2, camera_distance: number, camera_angles: QAngle): Vector3 {
+	return camera_position.toVector3().SetZ(
+		Vector3.fromIOBuffer(Camera.Position)!.z
+		- GetCameraForward(QAngle.fromIOBuffer(Camera.Angles)!).z * Camera.Distance
+		+ GetCameraForward(camera_angles).z * camera_distance
+	)
+}
+
 export function WorldToScreen(
 	position: Vector3,
-	camera_position: Vector3 | Vector2,
+	camera_position: Vector3,
 	camera_distance: number,
 	camera_angles: QAngle,
 	window_size: Vector2,
@@ -80,9 +93,7 @@ export function WorldToScreen(
 
 	WASMIOBuffer[3] = camera_position.x
 	WASMIOBuffer[4] = camera_position.y
-	WASMIOBuffer[5] = camera_position instanceof Vector2
-		? Vector3.fromIOBuffer(Camera.Position)!.z - Math.sin(Vector3.fromIOBuffer(Camera.Angles)!.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
-		: camera_position.z
+	WASMIOBuffer[5] = camera_position.z
 
 	WASMIOBuffer[6] = camera_angles.x
 	WASMIOBuffer[7] = camera_angles.y
@@ -100,7 +111,7 @@ export function WorldToScreen(
 
 export function ScreenToWorld(
 	screen: Vector2,
-	camera_position: Vector3 | Vector2,
+	camera_position: Vector3,
 	camera_distance: number,
 	camera_angles: QAngle,
 	window_size: Vector2,
@@ -110,9 +121,7 @@ export function ScreenToWorld(
 
 	WASMIOBuffer[2] = camera_position.x
 	WASMIOBuffer[3] = camera_position.y
-	WASMIOBuffer[4] = camera_position instanceof Vector2
-		? Vector3.fromIOBuffer(Camera.Position)!.z - Math.sin(Vector3.fromIOBuffer(Camera.Angles)!.x / 180 * Math.PI) * Camera.Distance + Math.sin(camera_angles.x / 180 * Math.PI) * camera_distance
-		: camera_position.z
+	WASMIOBuffer[4] = camera_position.z
 
 	WASMIOBuffer[5] = camera_angles.x
 	WASMIOBuffer[6] = camera_angles.y

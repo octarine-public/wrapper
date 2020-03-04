@@ -62,7 +62,7 @@ bool ScreenTransform(const Vector& point, Vector2D& screen, const VMatrix& world
 	if (!behind) {
 		screen *= 1.f / w;
 		screen.x = 0.5f + screen.x / 2.f;
-		screen.z = 0.5f - screen.z / 2.f;
+		screen.y = 0.5f - screen.y / 2.f;
 	}
 	return !behind/* && (screen.x >= 0.f && screen.x <= 1) && (screen.z >= 0.f && screen.z <= 1)*/;
 }
@@ -79,6 +79,9 @@ void WorldTransform(const Vector2D& screen, Vector& point, const VMatrix& projec
 }
 
 float JSIOBuffer[64];
+FORCEINLINE Vector2D UnwrapVector2(int offset = 0) {
+	return *(Vector2D*)&JSIOBuffer[offset];
+}
 FORCEINLINE Vector UnwrapVector3(int offset = 0) {
 	return *(Vector*)&JSIOBuffer[offset];
 }
@@ -88,7 +91,7 @@ EXPORT_JS float* GetIOBuffer() {
 }
 
 VMatrix worldToProjection;
-void CacheFrame() {
+EXPORT_JS void CacheFrame() {
 	auto camera_pos = UnwrapVector3();
 	auto camera_ang = UnwrapVector3(3);
 	auto camera_dist = JSIOBuffer[6];
@@ -101,7 +104,7 @@ EXPORT_JS bool WorldToScreenCached() {
 	Vector2D screen_vec;
 	if (ScreenTransform(world_vec, screen_vec, worldToProjection)) {
 		JSIOBuffer[0] = screen_vec.x;
-		JSIOBuffer[1] = screen_vec.z;
+		JSIOBuffer[1] = screen_vec.y;
 		return true;
 	} else
 		return false;
@@ -115,8 +118,8 @@ EXPORT_JS void ScreenToWorldCached() {
 	WorldTransform(screen, point, projectionToWorld);
 	
 	JSIOBuffer[0] = point.x;
-	JSIOBuffer[1] = point.z;
-	JSIOBuffer[2] = point.y;
+	JSIOBuffer[1] = point.y;
+	JSIOBuffer[2] = point.z;
 }
 
 EXPORT_JS bool WorldToScreen() {
@@ -124,24 +127,24 @@ EXPORT_JS bool WorldToScreen() {
 	auto camera_pos = UnwrapVector3(3);
 	auto camera_ang = UnwrapVector3(6);
 	auto camera_dist = JSIOBuffer[9];
-	auto window_size = Vector2D(JSIOBuffer[10], JSIOBuffer[11]);
+	auto window_size = UnwrapVector2(10);
 	VMatrix worldToProjection;
 	GetWorldToProjection(worldToProjection, camera_pos, *(QAngle*)&camera_ang, window_size, camera_dist);
 	Vector2D screen_vec;
 	if (ScreenTransform(world_vec, screen_vec, worldToProjection)) {
 		JSIOBuffer[0] = screen_vec.x;
-		JSIOBuffer[1] = screen_vec.z;
+		JSIOBuffer[1] = screen_vec.y;
 		return true;
 	} else
 		return false;
 }
 
 EXPORT_JS void ScreenToWorld() {
-	auto screen = Vector2D(JSIOBuffer[0], JSIOBuffer[1]);
+	auto screen = UnwrapVector2();
 	auto camera_pos = UnwrapVector3(2);
 	auto camera_ang = UnwrapVector3(5);
 	auto camera_dist = JSIOBuffer[8];
-	auto window_size = Vector2D(JSIOBuffer[9], JSIOBuffer[10]);
+	auto window_size = UnwrapVector2(9);
 	VMatrix projectionToWorld;
 	GetWorldToProjection(projectionToWorld, camera_pos, *(QAngle*)&camera_ang, window_size, camera_dist);
 	MatrixInverseGeneral(projectionToWorld, projectionToWorld);
@@ -149,8 +152,8 @@ EXPORT_JS void ScreenToWorld() {
 	WorldTransform(screen, point, projectionToWorld);
 	
 	JSIOBuffer[0] = point.x;
-	JSIOBuffer[1] = point.z;
-	JSIOBuffer[2] = point.y;
+	JSIOBuffer[1] = point.y;
+	JSIOBuffer[2] = point.z;
 }
 
 char* ParseVTex(char* data, size_t data_size, int& w, int& h);

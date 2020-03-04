@@ -75,7 +75,7 @@ EventsSDK.on("GameStarted", () => {
 	ConVars.Set("dota_creeps_no_spawning", creepsNoSpawn.value)
 })
 
-const debugEventsMenu = debuggerMenu.AddNode("Debugging events", "Debugging native events in console")
+const debugEventsMenu = debuggerMenu.AddNode("Debugging events", undefined, "Debugging native events in console")
 
 const debugEvents = debugEventsMenu.AddToggle("Debugging events")
 
