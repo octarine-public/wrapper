@@ -4,6 +4,7 @@
 export function RadianToDegrees(radian: number): number {
 	return radian * 180 / Math.PI
 }
+
 /**
  * x * PI / 180
  */

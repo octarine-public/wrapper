@@ -1,6 +1,5 @@
 #pragma once
 
-#include <emscripten.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h> // for malloc
@@ -29,4 +28,5 @@ template<typename T = void, typename X = T> FORCEINLINE T* GetPointer(X* base, i
 
 #define VECTOR_NO_SLOW_OPERATIONS
 #include "Vector.h"
+#include "vhcg.h"
 #include "vmatrix.h"

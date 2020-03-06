@@ -1,4 +1,7 @@
+// https://github.com/MattRickS/NukeScript/blob/master/ParticleRenderer/ParticleRenderer_SINGLEPIXEL_V01_01.cpp#L35
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays
 #include "stdafx.h"
+#include <emscripten.h> // for EMSCRIPTEN_KEEPALIVE
 
 #define EXPORT_JS /* avoid C++ mangling */ extern "C" /* export and don't inline */ EMSCRIPTEN_KEEPALIVE
 
@@ -20,28 +23,25 @@ void ComputeViewMatrix(VMatrix* pViewMatrix, const Vector& origin, const QAngle&
 }
 
 float ScaleFOVByWidthRatio(float fovDegrees, float ratio) {
-	float halfAngleRadians = fovDegrees * ( 0.5f * M_PI / 180.0f );
-	float t = tan( halfAngleRadians );
-	t *= ratio;
-	float retDegrees = ( 180.0f / M_PI ) * atan( t );
-	return retDegrees * 2.0f;
+	float halfAngleRadians = fovDegrees * DEG2RADf(.5f);
+	return RAD2DEGf(atanf(tanf(halfAngleRadians) * ratio)) * 2.f;
 }
 
 FORCEINLINE int GetOtherMagic(Vector2D window_size, int input) {
-	return floor((double)window_size.z / (double)0x300 * (double)input);
+	return floor((double)window_size.y / (double)0x300 * (double)input);
 }
 
-FORCEINLINE float GetScreenMagicRatio(Vector2D window_size) {
-	if (window_size.x == 1280.f && window_size.z == 1024.f)
-		window_size.z = 960.f;
-	return ScaleFOVByWidthRatio(67.f, window_size.x / (window_size.z - (GetOtherMagic(window_size, 117) + GetOtherMagic(window_size, 31))) * 0.75f) /*(like division by 4:3)*/;
+float GetFOVForWindowSize(Vector2D window_size) {
+	if (window_size.x == 1280.f && window_size.y == 1024.f)
+		window_size.y = 960.f;
+	return ScaleFOVByWidthRatio(67.f, window_size.x / (window_size.y - (GetOtherMagic(window_size, 117) + GetOtherMagic(window_size, 31))) * 0.75f) /*(like division by 4:3)*/;
 }
 
 void ComputeViewMatrices(VMatrix* pWorldToView, VMatrix* pViewToProjection, VMatrix* pWorldToProjection, Vector& camera_pos, QAngle& camera_angles, Vector2D& window_size, double camera_distance) {
 	ComputeViewMatrix(pWorldToView, camera_pos /* viewSetup.origin */, camera_angles /* viewSetup.angles */);
 	// https://stackoverflow.com/a/2831560880.07724875735302
-	float window_ratio = window_size.x / window_size.z;
-	MatrixBuildPerspectiveX(*pViewToProjection, GetScreenMagicRatio(window_size), window_ratio, 7. /* viewSetup.zNear magic */, camera_distance * 2.);
+	float window_ratio = window_size.x / window_size.y;
+	MatrixBuildPerspectiveX(*pViewToProjection, GetFOVForWindowSize(window_size), window_ratio, 7. /* viewSetup.zNear magic */, camera_distance * 2.);
 	MatrixMultiply(*pViewToProjection, *pWorldToView, *pWorldToProjection);
 }
 
@@ -95,7 +95,7 @@ EXPORT_JS void CacheFrame() {
 	auto camera_pos = UnwrapVector3();
 	auto camera_ang = UnwrapVector3(3);
 	auto camera_dist = JSIOBuffer[6];
-	auto window_size = Vector2D(JSIOBuffer[7], JSIOBuffer[8]);
+	auto window_size = UnwrapVector2(7);
 	GetWorldToProjection(worldToProjection, camera_pos, *(QAngle*)&camera_ang, window_size, camera_dist);
 }
 
@@ -111,7 +111,7 @@ EXPORT_JS bool WorldToScreenCached() {
 }
 
 EXPORT_JS void ScreenToWorldCached() {
-	auto screen = Vector2D(JSIOBuffer[0], JSIOBuffer[1]);
+	auto screen = UnwrapVector2();
 	VMatrix projectionToWorld;
 	MatrixInverseGeneral(worldToProjection, projectionToWorld);
 	Vector point;
@@ -132,8 +132,7 @@ EXPORT_JS bool WorldToScreen() {
 	GetWorldToProjection(worldToProjection, camera_pos, *(QAngle*)&camera_ang, window_size, camera_dist);
 	Vector2D screen_vec;
 	if (ScreenTransform(world_vec, screen_vec, worldToProjection)) {
-		JSIOBuffer[0] = screen_vec.x;
-		JSIOBuffer[1] = screen_vec.y;
+		screen_vec.CopyTo(JSIOBuffer);
 		return true;
 	} else
 		return false;
@@ -150,10 +149,91 @@ EXPORT_JS void ScreenToWorld() {
 	MatrixInverseGeneral(projectionToWorld, projectionToWorld);
 	Vector point;
 	WorldTransform(screen, point, projectionToWorld);
+	point.CopyTo(JSIOBuffer);
+}
+
+// https://github.com/ValveSoftware/source-sdk-2013/blob/master/sp/src/mathlib/mathlib_base.cpp#L919-L959
+// slightly modified with forward => dota GetEyeVector
+void CameraAngleVectors(const QAngle& angles, Vector* forward = nullptr, Vector* right = nullptr, Vector* up = nullptr){
+	float sr, sp, sy, cr, cp, cy;
+	sincos(DEG2RADf(angles.pitch), sp, cp);
+	sincos(DEG2RADf(angles.yaw), sy, cy);
+	sincos(DEG2RADf(angles.roll), sr, cr);
+
+	if (forward != nullptr) {
+		forward->x = cp * cy;
+		forward->y = cp - cy;
+		forward->z = -sp;
+	}
+	if (right) {
+		right->x = (-1*sr*sp*cy+-1*cr*-sy);
+		right->y = (-1*sr*sp*sy+-1*cr*cy);
+		right->z = -1*sr*cp;
+	}
+
+	if (up) {
+		up->x = (cr*sp*cy+-sr*-sy);
+		up->y = (cr*sp*sy+-sr*cy);
+		up->z = cr*cp;
+	}
+}
+
+FORCEINLINE Vector2D GetFarSize(Vector2D window_size, float fov) {
+	Vector2D far_size;
+	far_size.x = tanf(DEG2RADf(fov / 2.f));
+	far_size.y = far_size.x / (window_size.x / window_size.y);
+	return far_size;
+}
+
+Vector GetRayDirection(Vector2D screen, const QAngle& camera_angles, const Vector2D& window_size) {
+	Vector vForward, vRight, vUp;
+	CameraAngleVectors(camera_angles, &vForward, &vRight, &vUp);
+
+	screen.x = screen.x * 2.f - 1.f;
+	screen.y = 1.f - screen.y * 2.f;
+	auto far_size = GetFarSize(window_size, GetFOVForWindowSize(window_size));
+	Vector ray = vForward + vRight * (far_size.x * screen.x) + vUp * (far_size.y * screen.y);
+	ray.NormalizeInPlace();
+	return ray;
+}
+
+HeightMap height_map;
+EXPORT_JS int ParseVHCG(uint8_t* data, size_t data_size) {
+	height_map = HeightMap();
+	auto ret = height_map.Parse(data, data_size);
+	free(data);
+	if (ret != HeightMapParseError::NONE)
+		return ret;
+	height_map.GetMinMapCoords().CopyTo(JSIOBuffer);
+	height_map.GetMapSize().CopyTo(&JSIOBuffer[2]);
+	return ret;
+}
+
+EXPORT_JS void GetHeightForLocation() {
+	JSIOBuffer[0] = height_map.GetHeightForLocation(UnwrapVector2());
+}
+
+EXPORT_JS void GetSecondaryHeightForLocation() {
+	JSIOBuffer[0] = height_map.GetSecondaryHeightForLocation(UnwrapVector2());
+}
+
+EXPORT_JS void ScreenToWorldFar() {
+	auto screen = UnwrapVector2();
+	auto window_size = UnwrapVector2(2);
+	auto camera_position = UnwrapVector3(4);
+	auto camera_angles = UnwrapVector3(7);
+	auto camera_distance = JSIOBuffer[10];
+
+	auto ray = GetRayDirection(screen, *(QAngle*)&camera_angles, window_size);
 	
-	JSIOBuffer[0] = point.x;
-	JSIOBuffer[1] = point.y;
-	JSIOBuffer[2] = point.z;
+	auto cur_pos = camera_position;
+	const float max_ray_dist = camera_distance * camera_distance;
+	float cur_height = 0.f;
+	do {
+		cur_pos += ray;
+		cur_height = height_map.GetHeightForLocation(cur_pos.AsVector2D());
+	} while (cur_pos.z > cur_height && cur_pos.Distance(camera_position) <= max_ray_dist);
+	cur_pos.CopyTo(JSIOBuffer);
 }
 
 char* ParseVTex(char* data, size_t data_size, int& w, int& h);

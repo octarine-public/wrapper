@@ -22,9 +22,10 @@ export class WorldPolygon {
 			cam_dist = Camera.Distance ?? 1200
 		for (let i = 0, end = this.Points.length; i < end; i++) {
 			let j = i + 1 % end
-			let pos1 = RendererSDK.WorldToScreenCustom(this.Points[i], cam_pos, cam_dist, cam_ang)!,
-				pos2 = RendererSDK.WorldToScreenCustom(this.Points[j], cam_pos, cam_dist, cam_ang)!
-			RendererSDK.Line(pos1, pos2.Subtract(pos1), color)
+			let pos1 = RendererSDK.WorldToScreenCustom(this.Points[i], cam_pos, cam_dist, cam_ang),
+				pos2 = RendererSDK.WorldToScreenCustom(this.Points[j], cam_pos, cam_dist, cam_ang)
+			if (pos1 !== undefined && pos2 !== undefined)
+				RendererSDK.Line(pos1, pos2, color)
 		}
 	}
 	public IsInside(point: Vector3) {

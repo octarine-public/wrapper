@@ -10,6 +10,7 @@ import Events from "../Managers/Events"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import EventsSDK from "../Managers/EventsSDK"
 import Tree from "../Objects/Base/Tree"
+import Color from "../Base/Color"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -31,6 +32,7 @@ export default class ExecuteOrder {
 	public static wait_next_usercmd = false
 	public static wait_near_cursor = false
 	public static debug_orders = false
+	public static debug_draw = false
 
 	public static fromObject(order: {
 		orderType: dotaunitorder_t,
@@ -189,7 +191,8 @@ let last_order_click = new Vector3(),
 	latest_camera_x = 0,
 	latest_camera_y = 0,
 	execute_current = false,
-	current_order: Nullable<ExecuteOrder>
+	current_order: Nullable<ExecuteOrder>,
+	latest_cursor = new Vector2()
 Events.after("Update", (cmd_: CUserCmd) => {
 	let cmd = new UserCmd(cmd_),
 		order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
@@ -269,6 +272,31 @@ Events.after("Update", (cmd_: CUserCmd) => {
 		cmd.MouseX = cur_pos.x
 		cmd.MouseY = cur_pos.y
 	}
+	latest_cursor.x = cmd.MouseX
+	latest_cursor.y = cmd.MouseY
+})
+
+function DrawLine(startVec: Vector2, endVec: Vector2) {
+	const cam_pos = new Vector2(latest_camera_x, latest_camera_y)
+	let point1 = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(startVec, cam_pos, 1200)),
+		point2 = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(endVec, cam_pos, 1200))
+	if (point1 === undefined || point2 === undefined)
+		return
+	RendererSDK.Line(point1, point2, Color.Red)
+}
+
+Events.on("Draw", () => {
+	if (!ExecuteOrder.debug_draw)
+		return
+	DrawLine(new Vector2(0, 0), new Vector2(0, 1))
+	DrawLine(new Vector2(0, 0), new Vector2(1, 0))
+	DrawLine(new Vector2(1, 1), new Vector2(0, 1))
+	DrawLine(new Vector2(1, 1), new Vector2(1, 0))
+
+	const cam_pos = new Vector2(latest_camera_x, latest_camera_y)
+	let point = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(latest_cursor, cam_pos, 1200))
+	if (point !== undefined)
+		RendererSDK.FilledRect(point.Subtract(new Vector2(5, 5)), new Vector2(10, 10), Color.Fuchsia)
 })
 
 //EventsSDK.on("GameEnded", () => ExecuteOrder.order_queue = [])

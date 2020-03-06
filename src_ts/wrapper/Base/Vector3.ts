@@ -615,7 +615,7 @@ export default class Vector3 {
 		return (this.x - vec.x) ** 2 + (this.y - vec.y) ** 2 + (this.z - vec.z) ** 2
 	}
 	/**
-	 * Returns the squared distance between the this and another vector
+	 * Returns the squared distance 2D between the this and another vector
 	 *
 	 * @param vec The another vector
 	 */

@@ -94,6 +94,7 @@ let humanizer = Menu.AddNode("Humanizer")
 humanizer.AddToggle("wait_next_usercmd", false).OnValue(toggle => ExecuteOrder.wait_next_usercmd = toggle.value)
 humanizer.AddToggle("wait_near_cursor", false).OnValue(toggle => ExecuteOrder.wait_near_cursor = toggle.value)
 humanizer.AddToggle("debug_orders", false).OnValue(toggle => ExecuteOrder.debug_orders = toggle.value)
+humanizer.AddToggle("debug_draw", false).OnValue(toggle => ExecuteOrder.debug_draw = toggle.value)
 
 declare global {
 	var reload: (a1: string, a2: boolean) => void

@@ -219,26 +219,42 @@ public:
 
 	// assignment
 	FORCEINLINE Vector& operator=(const Vector& vOther) {
-		x = vOther.x;
-		y = vOther.y;
-		z = vOther.z;
+		this->x = vOther.x;
+		this->y = vOther.y;
+		this->z = vOther.z;
 		return *this;
 	}
 
 	// 2d
-	FORCEINLINE vec_t Length2DSqr() {
-		return x * x + y * y;
+	FORCEINLINE vec_t Length2DSqr() const {
+		return this->x * this->x + this->y * this->y;
 	}
 
-	FORCEINLINE vec_t Length2D() {
+	FORCEINLINE vec_t Length2D() const {
 		return (vec_t)FastSqrt(Length2DSqr());
 	}
 
+	// Returns the squared distance between the this and another vector
+	FORCEINLINE vec_t DistanceSqr(const Vector& vOther) const {
+		Vector delta;
+
+		delta.x = this->x - vOther.x;
+		delta.y = this->y - vOther.y;
+		delta.z = this->z - vOther.z;
+
+		return delta.LengthSqr();
+	}
+
+	// Returns the distance between the this and another vector
+	FORCEINLINE vec_t Distance(const Vector& vOther) const {
+		return FastSqrt(this->DistanceSqr(vOther));
+	}
+
 	// get the component of this vector parallel to some other given vector
-	FORCEINLINE void CopyTo(Vector& onto) {
-		onto.x = x;
-		onto.y = y;
-		onto.z = z;
+	FORCEINLINE void CopyTo(Vector& onto) const {
+		onto.x = this->x;
+		onto.y = this->y;
+		onto.z = this->z;
 	}
 
 	FORCEINLINE Vector operator-() const {
@@ -473,6 +489,18 @@ public:
 	FORCEINLINE void CopyTo(float* ar) {
 		ar[0] = this->x;
 		ar[1] = this->y;
+	}
+
+	FORCEINLINE Vector2D Floor() {
+		return Vector2D(floorf(this->x), floorf(this->y));
+	}
+	FORCEINLINE Vector2D& FloorForThis() {
+		this->x = floorf(this->x);
+		this->y = floorf(this->y);
+		return *this;
+	}
+	FORCEINLINE Vector2D Min(float num) {
+		return Vector2D(fmin(this->x, num), fmin(this->x, num));
 	}
 
 	// Base address...

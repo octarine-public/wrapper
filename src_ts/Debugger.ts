@@ -102,7 +102,8 @@ EventsSDK.on("ServerInfo", obj => {
 EventsSDK.on("Draw", () => {
 	/*let size = parseInt(config.get("tall") as string)
 	let vec_size = RendererSDK.GetProportionalScaledVector(new Vector2(size, size), true, 1.15)
-	RendererSDK.Line(new Vector2(0, RendererSDK.WindowSize.y - vec_size.y), new Vector2(vec_size.x, 0))*/
+	let start = new Vector2(0, RendererSDK.WindowSize.y - vec_size.y)
+	RendererSDK.Line(start, start.Add(new Vector2(vec_size.x, 0)))*/
 	if (!debugEvents.value || !debugProjectiles.value || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {

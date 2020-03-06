@@ -6,7 +6,6 @@ import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
 import { FontFlags_t } from "../Enums/FontFlags_t"
 import { StringToUTF16 } from "../Utils/Utils"
-import { HeightMap, ParseHeightMap } from "../Utils/ParseVHCG"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import GameState from "../Utils/GameState"
@@ -39,7 +38,7 @@ let RendererSDK = new (class CRendererSDK {
 
 	public AlternateW2S = false
 	public WindowSize_ = new Vector2()
-	public HeightMap: Nullable<HeightMap>
+	public HeightMap: Nullable<WASM.HeightMap>
 
 	private commandCache = new Uint8Array()
 	private commandCacheSize = 0
@@ -83,6 +82,7 @@ let RendererSDK = new (class CRendererSDK {
 		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)
 	}
 	/**
+	 * Projects given screen vector onto camera matrix. Can be used to connect ScreenToWorldFar and camera position dots.
 	 * @param screen screen position
 	 */
 	public ScreenToWorld(screen: Vector2): Vector3 {
@@ -99,12 +99,23 @@ let RendererSDK = new (class CRendererSDK {
 		}
 	}
 	/**
+	 * Projects given screen vector onto camera matrix. Can be used to connect ScreenToWorldFar and camera position dots.
 	 * @param screen screen position with x and y in range {0, 1}
 	 */
 	public ScreenToWorldCustom(screen: Vector2, camera_position: Vector2 | Vector3, camera_distance = 1200, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Vector3 {
 		if (camera_position instanceof Vector2)
 			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
 		return WASM.ScreenToWorld(screen, camera_position, camera_distance, camera_angles, window_size)
+	}
+	/**
+	 * @param screen screen position with x and y in range {0, 1}
+	 */
+	public ScreenToWorldFar(screen: Vector2, camera_position: Vector2 | Vector3, camera_distance = 1200, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Vector3 {
+		if (this.HeightMap === undefined)
+			return new Vector3().Invalidate()
+		if (camera_position instanceof Vector2)
+			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
+		return WASM.ScreenToWorldFar(screen, window_size, camera_position, camera_distance, camera_angles)
 	}
 	public FilledCircle(vecPos: Vector2 = new Vector2(), radius: number, color = new Color(255, 255, 255)): void {
 		let vecSize = new Vector2(radius, radius).MultiplyScalarForThis(2)
@@ -152,24 +163,26 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param vecSize Weight as X from Vector2
 	 * @param vecSize Height as Y from Vector2
 	 */
-	public Line(vecPos: Vector2 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
-		if (!(vecPos.x > 0 && vecPos.y > 0 && vecPos.x <= this.WindowSize.x && vecPos.y <= this.WindowSize.y)) {
-			let vec = vecPos.Add(vecSize)
-			if (!(vec.x > 0 && vec.y > 0))
-				return
-		}
-		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize)
-		if (vecSize.x <= 0 || vecSize.y <= 0)
+	public Line(start: Vector2 = new Vector2(), end = start.Add(this.DefaultShapeSize), color = new Color(255, 255, 255)): void {
+		if (
+			(
+				start.x < 0 && start.y < 0
+				&& end.x < 0 && start.y < 0
+			) || (
+				start.x > this.WindowSize_.x && start.y > this.WindowSize_.y
+				&& end.x > this.WindowSize_.x && start.y > this.WindowSize_.y
+			)
+		)
 			return
 		this.SetColor(color)
 
 		let view = this.AllocateCommandSpace(4 * 4)
 		let off = 0
 		view.setUint8(off, CommandID.LINE)
-		view.setInt32(off += 1, vecPos.x, true)
-		view.setInt32(off += 4, vecPos.y, true)
-		view.setInt32(off += 4, vecSize.x, true)
-		view.setInt32(off += 4, vecSize.y, true)
+		view.setInt32(off += 1, start.x, true)
+		view.setInt32(off += 4, start.y, true)
+		view.setInt32(off += 4, end.x, true)
+		view.setInt32(off += 4, end.y, true)
 	}
 	/**
 	 * @param vecSize default Weight 5 x Height 5
@@ -313,7 +326,7 @@ let RendererSDK = new (class CRendererSDK {
 		Minimap.DrawPing(end_time, -key)
 	}
 	public GetPositionHeight(position: Vector2): number {
-		return this.HeightMap?.GetHeightForLocation(position) ?? 0
+		return this.HeightMap !== undefined ? WASM.GetHeightForLocation(position) : 0
 	}
 
 	public EmitDraw() {
@@ -443,7 +456,7 @@ try {
 		map_name = "dota"
 	let buf = readFile(`maps/${map_name}.vhcg`)
 	if (buf !== undefined) {
-		RendererSDK.HeightMap = ParseHeightMap(buf)
+		RendererSDK.HeightMap = WASM.ParseVHCG(buf)
 		GameState.MapName = last_loaded_map_name = map_name
 	}
 } catch (e) {
@@ -471,7 +484,7 @@ Events.on("PostAddSearchPath", path => {
 		return
 
 	try {
-		RendererSDK.HeightMap = ParseHeightMap(buf)
+		RendererSDK.HeightMap = WASM.ParseVHCG(buf)
 		GameState.MapName = last_loaded_map_name = map_name
 	} catch (e) {
 		console.log("Error in RendererSDK.HeightMap dynamic init: " + e)
