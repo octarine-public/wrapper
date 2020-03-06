@@ -98,12 +98,12 @@ export default class Item extends Ability {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { RegisterClass, RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTA_Item", Item)
 RegisterFieldHandler(Item, "m_flEnableTime", (item, new_val) => item.EnableTime = new_val as number)
 RegisterFieldHandler(Item, "m_iSharability", (item, new_val) => item.Shareability = new_val as EShareAbility)
 RegisterFieldHandler(Item, "m_iCurrentCharges", (item, new_val) => item.CurrentCharges = new_val as number)
-RegisterFieldHandler(Item, "m_nAbilityCurrentCharges", () => { }) // override ability handler
+ReplaceFieldHandler(Item, "m_nAbilityCurrentCharges", () => { }) // override ability handler
 RegisterFieldHandler(Item, "m_flAssembledTime", (item, new_val) => item.AssembledTime = new_val as number)
 RegisterFieldHandler(Item, "m_bCanBeUsedOutOfInventory", (item, new_val) => item.CanBeUsedOutOfInventory = new_val as boolean)
 RegisterFieldHandler(Item, "m_iInitialCharges", (item, new_val) => item.InitialCharges = new_val as number)

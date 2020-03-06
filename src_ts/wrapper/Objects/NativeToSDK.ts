@@ -32,6 +32,9 @@ export function RegisterFieldHandler<T extends Entity>(constructor: Constructor<
 		handler_ = GenerateChaninedFieldHandler(map.get(field_name)!, handler_)
 	map.set(field_name, handler_)
 }
+export function ReplaceFieldHandler<T extends Entity>(constructor: Constructor<T>, field_name: string, handler: (entity: T, new_value: EntityPropertyType) => void) {
+	field_handlers.get(constructor)!.set(field_name, handler as FieldHandler)
+}
 
 export function GetSDKClasses(): Constructor<Entity>[] {
 	return sdk_classes
