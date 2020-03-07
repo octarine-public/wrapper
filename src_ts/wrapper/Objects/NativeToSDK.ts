@@ -19,7 +19,7 @@ export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	field_handlers.set(constructor, map)
 }
 
-function GenerateChaninedFieldHandler(old: FieldHandler, new_: FieldHandler) {
+function GenerateChainedFieldHandler(old: FieldHandler, new_: FieldHandler) {
 	return (ent: Entity, new_val: EntityPropertyType) => {
 		old(ent, new_val)
 		new_(ent, new_val)
@@ -29,7 +29,7 @@ export function RegisterFieldHandler<T extends Entity>(constructor: Constructor<
 	let handler_ = handler as FieldHandler,
 		map = field_handlers.get(constructor)!
 	if (map.has(field_name))
-		handler_ = GenerateChaninedFieldHandler(map.get(field_name)!, handler_)
+		handler_ = GenerateChainedFieldHandler(map.get(field_name)!, handler_)
 	map.set(field_name, handler_)
 }
 export function ReplaceFieldHandler<T extends Entity>(constructor: Constructor<T>, field_name: string, handler: (entity: T, new_value: EntityPropertyType) => void) {
