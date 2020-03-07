@@ -228,11 +228,8 @@ EXPORT_JS void ScreenToWorldFar() {
 	
 	auto cur_pos = camera_position;
 	const float max_ray_dist = camera_distance * camera_distance;
-	float cur_height = 0.f;
-	do {
+	while (cur_pos.z > height_map.GetHeightForLocation(cur_pos.AsVector2D()) && cur_pos.Distance(camera_position) <= max_ray_dist)
 		cur_pos += ray;
-		cur_height = height_map.GetHeightForLocation(cur_pos.AsVector2D());
-	} while (cur_pos.z > cur_height && cur_pos.Distance(camera_position) <= max_ray_dist);
 	cur_pos.CopyTo(JSIOBuffer);
 }
 

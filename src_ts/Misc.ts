@@ -5,7 +5,7 @@ let Menu = MenuSDK.AddEntry("Misc")
 
 let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 	AutoAccept_State = AutoAcceptTree.AddToggle("Auto Accept", true),
-	AutoAccept_delay = AutoAcceptTree.AddSlider("Delay on accept", 5, 0, 42 /* 44 is real maximum */),
+	AutoAccept_delay = AutoAcceptTree.AddSlider("Delay on accept", 5, 0, 28 /* ?? is real maximum */),
 	CameraTree = Menu.AddNode("Camera"),
 	CamDist = CameraTree.AddSlider("Camera Distance", 1300, 0, 10000),
 	CamMouseTree = CameraTree.AddNode("Mouse wheel"),
