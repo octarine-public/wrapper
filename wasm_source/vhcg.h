@@ -54,5 +54,5 @@ private:
 	Vector2D m_vecMinMapCoords = { 0.f, 0.f };
 	int32_t m_CellCountX = 0, m_CellCountY = 0;
 	float m_flHeightMapAccuracy = 0.f;
-	int32_t m_iHeightMapFractionAccuracy = 0;
+	int32_t m_iHeightMapCellAccuracy = 0;
 };

@@ -52,7 +52,7 @@ int HeightMap::Parse(uint8_t* data, uint32_t size) {
 		if (
 			!reader.Read(this->m_CellCountX) || this->m_CellCountX < 0
 			|| !reader.Read(this->m_CellCountY) || this->m_CellCountY < 0
-			|| !reader.Read(this->m_iHeightMapFractionAccuracy)
+			|| !reader.Read(this->m_iHeightMapCellAccuracy)
 			|| !reader.Read(this->m_flHeightMapAccuracy)
 			|| !reader.Read(this->m_vecMinMapCoords.x)
 			|| !reader.Read(this->m_vecMinMapCoords.y)
@@ -66,7 +66,7 @@ int HeightMap::Parse(uint8_t* data, uint32_t size) {
 	if (this->m_pCells == nullptr)
 		return HeightMapParseError::ALLOCATION_ERROR;
 
-	uint32_t height_count_step = this->m_iHeightMapFractionAccuracy * this->m_iHeightMapFractionAccuracy;
+	uint32_t cell_floats = this->m_iHeightMapCellAccuracy * this->m_iHeightMapCellAccuracy;
 	uint32_t height_count = 0;
 	for (uint32_t i = 0; i < cell_count; i++) {
 		auto& cell = this->m_pCells[i];
@@ -84,7 +84,7 @@ int HeightMap::Parse(uint8_t* data, uint32_t size) {
 		}
 		if (use_height_map) {
 			cell.m_iHeightMapID = height_count;
-			height_count += height_count_step;
+			height_count += cell_floats;
 		} else
 			cell.m_iHeightMapID = -1;
 	}
@@ -122,18 +122,18 @@ float HeightMap::GetHeightForLocation(Vector2D loc) {
 	auto fraction_vec = basic_coords - basic_coords.Floor();
 	int32_t fraction_vec_mul_x, fraction_vec_mul_y;
 	{
-		auto fraction_vec_mul = (fraction_vec.Min(0.99999988) * (this->m_iHeightMapFractionAccuracy - 1));
+		auto fraction_vec_mul = fraction_vec.Min(0.99999988) * (this->m_iHeightMapCellAccuracy - 1);
 		fraction_vec_mul_x = (int32_t)floorf(fraction_vec_mul.x);
 		fraction_vec_mul_y = (int32_t)floorf(fraction_vec_mul.y);
 	}
 	auto cell_base = &this->m_pHeightMap[cell.m_iHeightMapID];
-	float a = cell_base[this->m_iHeightMapFractionAccuracy * fraction_vec_mul_y + fraction_vec_mul_x];
-	float b = cell_base[this->m_iHeightMapFractionAccuracy * fraction_vec_mul_y + (fraction_vec_mul_x + 1)];
-	float c = cell_base[this->m_iHeightMapFractionAccuracy * (fraction_vec_mul_y + 1) + fraction_vec_mul_x];
-	float d = cell_base[this->m_iHeightMapFractionAccuracy * (fraction_vec_mul_y + 1) + (fraction_vec_mul_x + 1)];
-	float something = (fraction_vec.x - (fraction_vec_mul_x / (this->m_iHeightMapFractionAccuracy - 1))) * (this->m_iHeightMapFractionAccuracy - 1);
+	float a = cell_base[this->m_iHeightMapCellAccuracy * fraction_vec_mul_y + fraction_vec_mul_x];
+	float b = cell_base[this->m_iHeightMapCellAccuracy * fraction_vec_mul_y + (fraction_vec_mul_x + 1)];
+	float c = cell_base[this->m_iHeightMapCellAccuracy * (fraction_vec_mul_y + 1) + fraction_vec_mul_x];
+	float d = cell_base[this->m_iHeightMapCellAccuracy * (fraction_vec_mul_y + 1) + (fraction_vec_mul_x + 1)];
+	float something = (fraction_vec.x - (fraction_vec_mul_x / (this->m_iHeightMapCellAccuracy - 1))) * (this->m_iHeightMapCellAccuracy - 1);
 	float something2 = ((b - a) * something) + a;
-	return ((d - c) * something + c - something2) * ((fraction_vec.y - (fraction_vec_mul_y / (this->m_iHeightMapFractionAccuracy - 1))) * (this->m_iHeightMapFractionAccuracy - 1)) + something2;
+	return ((d - c) * something + c - something2) * ((fraction_vec.y - (fraction_vec_mul_y / (this->m_iHeightMapCellAccuracy - 1))) * (this->m_iHeightMapCellAccuracy - 1)) + something2;
 }
 
 float HeightMap::GetSecondaryHeightForLocation(Vector2D loc) {
