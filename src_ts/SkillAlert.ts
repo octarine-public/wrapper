@@ -294,7 +294,7 @@ EventsSDK.on("ParticleUpdatedEnt", (id, controlPoint, ent, attach, attachment, f
 EventsSDK.on("ParticleDestroyed", id => particles_table.delete(id))
 
 EventsSDK.on("Tick", () => {
-	thinkers_particles.filter(([time, ent, abil]) => time + abil.ActivationDelay < GameRules!.RawGameTime || !ent.IsValid).forEach(ar => {
+	thinkers_particles.filter(([time, , abil]) => GameRules!.RawGameTime > time + abil.ActivationDelay).forEach(ar => {
 		ArrayExtensions.arrayRemove(thinkers_particles, ar)
 		particleManager.DestroyByKey(`Custom${ar[1].Index}`)
 	})

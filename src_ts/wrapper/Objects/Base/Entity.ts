@@ -15,10 +15,9 @@ EventsSDK.on("EntityCreated", ent => {
 	if (ent.Index === player_slot + 1 /* skip worldent at index 0 */)
 		LocalPlayer = ent as Player
 })
-EventsSDK.on("EntityDestroyed", ent => {
-	if (ent === LocalPlayer)
-		LocalPlayer = undefined
-})
+export function OnLocalPlayerDeleted() {
+	LocalPlayer = undefined
+}
 
 /*
 m_pEntity.m_flags

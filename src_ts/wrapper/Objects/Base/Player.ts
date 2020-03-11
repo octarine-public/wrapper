@@ -1,6 +1,6 @@
 import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
-import Entity, { LocalPlayer } from "./Entity"
+import Entity, { LocalPlayer, OnLocalPlayerDeleted } from "./Entity"
 import Vector3 from "../../Base/Vector3"
 import Vector2 from "../../Base/Vector2"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
@@ -67,6 +67,8 @@ RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => {
 		SetGameInProgress(true)
 })
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent === LocalPlayer)
+	if (ent === LocalPlayer) {
+		OnLocalPlayerDeleted()
 		SetGameInProgress(false)
+	}
 })

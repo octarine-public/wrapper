@@ -263,6 +263,8 @@ function DeleteEntity(id: number) {
 	ArrayExtensions.arrayRemove(AllEntities, entity)
 
 	EventsSDK.emit("EntityDestroyed", false, entity)
+	ent_props.delete(id)
+	VisibilityMask.set(id, false)
 	GetSDKClasses().forEach(class_ => {
 		if (!(entity instanceof class_))
 			return
@@ -477,8 +479,6 @@ Events.on("ServerMessage", (msg_id, buf) => {
 Events.on("SignonStateChanged", new_state => {
 	if (new_state !== SignonState_t.SIGNONSTATE_NONE)
 		return
-	ent_props.clear()
-	VisibilityMask.reset()
 	// loop-optimizer: KEEP
 	AllEntitiesAsMap.forEach((ent, ent_id) => DeleteEntity(ent_id))
 })
