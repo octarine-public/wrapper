@@ -60,6 +60,9 @@ export default class Ability extends Entity {
 	public get CastPoint(): number {
 		return this.AbilityData.GetCastPoint(this.Level)
 	}
+	public get MaxChannelTime(): number {
+		return this.AbilityData.GetChannelTime(this.Level)
+	}
 	public get ChannelTime(): number {
 		return Math.max(GameRules!.RawGameTime - this.ChannelStartTime, 0)
 	}
@@ -70,7 +73,7 @@ export default class Ability extends Entity {
 		return this.AbilityData.ID
 	}
 	get IsChanneling(): boolean {
-		return this.ChannelStartTime > 0
+		return this.ChannelStartTime > 0 && this.ChannelTime <= this.MaxChannelTime
 	}
 	get IsCooldownReady(): boolean {
 		return this.Cooldown === 0

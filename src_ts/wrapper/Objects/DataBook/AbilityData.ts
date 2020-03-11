@@ -50,6 +50,7 @@ export default class AbilityData {
 	public readonly ItemHideCharges: boolean
 	private readonly SpecialValueCache = new Map<string, [number[], string | undefined]>()
 	private readonly CastRangeCache: number[]
+	private readonly ChannelTimeCache: number[]
 	private readonly AbilityDamageCache: number[]
 	private readonly CastPointCache: number[]
 	private readonly AbilityChargesCache: number[]
@@ -119,6 +120,7 @@ export default class AbilityData {
 			? parseInt(this.m_Storage.get("ItemHideCharges") as string) !== 0
 			: true
 		this.CastRangeCache = this.GetLevelArray("AbilityCastRange")
+		this.ChannelTimeCache = this.GetLevelArray("AbilityChannelTime")
 		this.AbilityDamageCache = this.GetLevelArray("AbilityDamage")
 		this.CastPointCache = this.GetLevelArray("AbilityCastPoint")
 		this.AbilityChargesCache = this.GetLevelArray("AbilityCharges")
@@ -177,6 +179,13 @@ export default class AbilityData {
 		if (level < 0)
 			return 0
 		return this.CastRangeCache[level]
+	}
+
+	public GetChannelTime(level: number): number {
+		level = Math.min(this.MaxLevel, level) - 1
+		if (level < 0)
+			return 0
+		return this.ChannelTimeCache[level]
 	}
 
 	public GetAbilityDamage(level: number): number {

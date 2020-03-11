@@ -297,7 +297,7 @@ globalThis.DebugBuffsParents = () => {
 		let parent = EntityManager.EntityByIndex(mod.m_pBuff.Parent)
 		if (parent instanceof Unit)
 			return
-		console.log(parent?.NativeEntity?.constructor?.name, mod.m_pBuff.Parent, mod.Name, mod.ElapsedTime, mod.m_pBuff.EntryType)
+		console.log(parent?.ClassName, mod.m_pBuff.Parent, mod.Name, mod.ElapsedTime, mod.m_pBuff.EntryType)
 	})
 }
 

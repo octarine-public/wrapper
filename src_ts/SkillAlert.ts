@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Color, Entity, EventsSDK, GameRules, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, DOTAGameUIState_t, GameState } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Color, Entity, EventsSDK, GameRules, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, DOTAGameUIState_t, GameState, lina_dragon_slave, pudge_meat_hook, windrunner_powershot, grimstroke_dark_artistry, lion_impale, mirana_arrow } from "wrapper/Imports"
 
 const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	active = menu.AddToggle("Active", true),
@@ -57,12 +57,12 @@ let arTimers = new Map<Modifier, [number, number, string, Entity]>(),
 	particleManager = new ParticlesSDK()
 
 let phaseSpells = [
-	"lina_dragon_slave",
-	"pudge_meat_hook",
-	"mirana_arrow",
-	"windrunner_powershot",
-	"grimstroke_dark_artistry",
-	"lion_impale",
+	lina_dragon_slave,
+	pudge_meat_hook,
+	mirana_arrow,
+	windrunner_powershot,
+	grimstroke_dark_artistry,
+	lion_impale,
 ]
 
 EventsSDK.on("ModifierCreated", buff => {
@@ -219,7 +219,7 @@ function ReturnAOERadius(owner: Unit, name_ability: string): number {
 
 let abils_list: Ability[] = []
 function OnEntityNameChanged(ent: Entity) {
-	if (ent instanceof Ability && phaseSpells.includes(ent.Name) && !abils_list.includes(ent))
+	if (ent instanceof Ability && phaseSpells.some(class_ => ent instanceof class_) && !abils_list.includes(ent))
 		abils_list.push(ent)
 	if (ent instanceof Unit && ent.Name === "npc_dota_thinker")
 		thinkers.push(ent)
@@ -328,10 +328,8 @@ EventsSDK.on("Tick", () => {
 
 	// loop-optimizer: FORWARD
 	abils_list.forEach(abil => {
-		if (!abil.IsEnemy())
-			return
 		let owner = abil.Owner
-		if (owner === undefined)
+		if (owner === undefined || !owner.IsEnemy())
 			return
 
 		if (abil.IsInAbilityPhase || (owner.IsChanneling && abil.Name === "windrunner_powershot"))
