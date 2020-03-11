@@ -20,7 +20,8 @@ export default class Ability extends Entity {
 	public Level = 0
 	public Cooldown = 0
 	public CooldownLength = 0
-	public IsInAbilityPhase = false
+	public IsInAbilityPhase_ = false
+	public IsInAbilityPhase_ChangeTime = 0
 	public CastStartTime = 0
 	public ChannelStartTime = 0
 	public IsToggled = false
@@ -74,6 +75,9 @@ export default class Ability extends Entity {
 	}
 	get IsChanneling(): boolean {
 		return this.ChannelStartTime > 0 && this.ChannelTime <= this.MaxChannelTime
+	}
+	public get IsInAbilityPhase(): boolean {
+		return this.IsInAbilityPhase_ && (GameRules === undefined || GameRules.RawGameTime - this.IsInAbilityPhase_ChangeTime <= this.CastPoint)
 	}
 	get IsCooldownReady(): boolean {
 		return this.Cooldown === 0
@@ -307,7 +311,10 @@ RegisterFieldHandler(Ability, "m_iLevel", (abil, new_value) => abil.Level = new_
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, new_value) => abil.Cooldown = new_value as number)
 RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => abil.Cooldown = abil.CurrentCharges !== 0 ? 0 : Math.max(new_value as number, 0))
 RegisterFieldHandler(Ability, "m_flCooldownLength", (abil, new_value) => abil.CooldownLength = new_value as number)
-RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, new_value) => abil.IsInAbilityPhase = new_value as boolean)
+RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, new_value) => {
+	abil.IsInAbilityPhase_ = new_value as boolean
+	abil.IsInAbilityPhase_ChangeTime = GameRules?.RawGameTime ?? 0
+})
 RegisterFieldHandler(Ability, "m_flCastStartTime", (abil, new_value) => abil.CastStartTime = new_value as number)
 RegisterFieldHandler(Ability, "m_flChannelStartTime", (abil, new_value) => abil.ChannelStartTime = new_value as number)
 RegisterFieldHandler(Ability, "m_bToggleState", (abil, new_value) => abil.IsToggled = new_value as boolean)
