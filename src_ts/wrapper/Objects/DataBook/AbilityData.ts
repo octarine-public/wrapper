@@ -14,6 +14,8 @@ export default class AbilityData {
 		return storage.has("ID") ? parseInt(storage.get("ID") as string) : 0
 	}
 	public static GetAbilityTexturePath(name: string): string {
+		if (name.startsWith("special_"))
+			name = "attribute_bonus"
 		let storage = AbilityData.global_storage.get(name)
 		if (!(storage instanceof Map))
 			throw "Invalid storage type for ability name " + name
