@@ -1,4 +1,4 @@
-import { Color, Entity, GameRules, Hero, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, LocalPlayer, EntityManager, Courier, GameState, Tower, Creep } from "wrapper/Imports"
+import { Color, Entity, GameRules, Hero, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, LocalPlayer, EntityManager, Courier, GameState, Tower, Creep, AbilityData } from "wrapper/Imports"
 import { ComboBox, DrawRGBA, PMH_Smoke_snd, Size, State, PMH_RenderStateMouseSmoke } from "./Menu"
 import { ignoreListCreate, ignoreListCreateUpdate, ignoreListCreateUpdateEnt } from "./DataHandle"
 import { ucFirst } from "../../abstract/Function"
@@ -413,7 +413,7 @@ function DrawIconAbilityHero(position: Vector3, name: string) {
 	let pos_ent = RendererSDK.WorldToScreen(position)
 	if (pos_ent === undefined)
 		return
-	RendererSDK.Image("panorama/images/spellicons/" + name + "_png.vtex_c",
+	RendererSDK.Image(AbilityData.GetAbilityTexturePath(name),
 		pos_ent.SubtractScalar(44 / 4),
 		new Vector2(44 / 2, 44 / 2),
 	)

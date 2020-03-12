@@ -5,6 +5,7 @@ import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
 import { FontFlags_t } from "../Enums/FontFlags_t"
+import AbilityData from "../Objects/DataBook/AbilityData"
 
 // every icon: 32x32, 1x1 border
 export default class ImageSelector extends Base {
@@ -83,12 +84,13 @@ export default class ImageSelector extends Base {
 				path = value,
 				size = this.image_size
 			let pos = new Vector2(i % 8, Math.floor(i / 8)).Multiply(this.image_size.AddScalar(this.image_border_size.x * 2 + 2)).Add(base_pos)
-			if (path.startsWith("npc_dota_hero_"))
+
+			if (!path.startsWith("npc_dota_hero_")) {
+				try {
+					path = AbilityData.GetAbilityTexturePath(path)
+				} catch { }
+			} else
 				path = `panorama/images/heroes/${path}_png.vtex_c`
-			else if (path.startsWith("item_"))
-				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
-			else
-				path = `panorama/images/spellicons/${path}_png.vtex_c`
 			let is_enabled = this.IsEnabled(value)
 			if (is_enabled)
 				RendererSDK.FilledRect(pos.Subtract(this.image_border_size), size.Add(this.image_border_size.MultiplyScalar(2)), this.image_border_color)

@@ -14,8 +14,6 @@ import * as ParicleMapHack from "./Module/ParticleMapHack/Particle"
 import * as TimeControllerEnt from "./Module/TimeController/Entities"
 import * as EnemyLaneSelection from "./Module/EnemyLaneSelection/Listeners"
 
-// Something's wrong with reading file "panorama/images/spellicons/monkey_king_primal_spring_early_png.vtex_c"
-
 EventsSDK.on("Tick", () => {
 	if (LocalPlayer!.IsSpectator || !stateMain.value)
 		return

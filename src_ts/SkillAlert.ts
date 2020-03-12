@@ -1,4 +1,4 @@
-import { Ability, ArrayExtensions, Color, Entity, EventsSDK, GameRules, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, DOTAGameUIState_t, GameState, lina_dragon_slave, pudge_meat_hook, windrunner_powershot, grimstroke_dark_artistry, lion_impale, mirana_arrow } from "wrapper/Imports"
+import { Ability, ArrayExtensions, Color, Entity, EventsSDK, GameRules, LinearProjectile, Menu, Modifier, ParticlesSDK, RendererSDK, Unit, Vector2, Vector3, DOTAGameUIState_t, GameState, lina_dragon_slave, pudge_meat_hook, windrunner_powershot, grimstroke_dark_artistry, lion_impale, mirana_arrow, AbilityData } from "wrapper/Imports"
 
 const menu = Menu.AddEntry(["Visual", "Skill Alert"]),
 	active = menu.AddToggle("Active", true),
@@ -173,7 +173,7 @@ EventsSDK.on("Draw", () => {
 			vector.AddScalarY(-size.value)
 		}
 		if (icons.value) {
-			RendererSDK.Image(`panorama/images/spellicons/${val[2]}_png.vtex_c`, vector, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
+			RendererSDK.Image(AbilityData.GetAbilityTexturePath(val[2]), vector, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
 			vector.AddScalarY(-30)
 		}
 		RendererSDK.Text(rend.toFixed(2), vector, Color.White, "Calibri", new Vector2(textSize.value, 200))

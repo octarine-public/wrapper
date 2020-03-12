@@ -38,7 +38,7 @@ export function DrawParticles() {
 
 	const teamParticles = BestPosition[LocalPlayer.Team - 2]
 	if (teamParticles === undefined) {
-		console.log("[CreepBlock] [Particles] Unsupported team: " + LocalPlayer.Team)
+		// console.log("[CreepBlock] [Particles] Unsupported team: " + LocalPlayer.Team)
 		return
 	}
 

@@ -13,6 +13,21 @@ export default class AbilityData {
 			throw "Invalid storage type for ability name " + name
 		return storage.has("ID") ? parseInt(storage.get("ID") as string) : 0
 	}
+	public static GetAbilityTexturePath(name: string): string {
+		let storage = AbilityData.global_storage.get(name)
+		if (!(storage instanceof Map))
+			throw "Invalid storage type for ability name " + name
+
+		let is_item = name.startsWith("item_")
+		let tex_name = (storage.get("AbilityTextureName") as string)
+		if (tex_name === undefined || tex_name === "")
+			tex_name = is_item ? name.substring(5) : name
+		if (tex_name.startsWith("frostivus"))
+			tex_name = tex_name.split("_").slice(1).join("_")
+		return is_item
+			? `panorama/images/items/${tex_name}_png.vtex_c`
+			: `panorama/images/spellicons/${tex_name}_png.vtex_c`
+	}
 	public static GetAbilityNameByID(id: number): string {
 		let id_str = id.toString()
 		for (let [name, map] of AbilityData.global_storage) {
