@@ -256,7 +256,7 @@ export default class Entity {
 }
 
 function QuantitizedVecCoordToCoord(cell: number, inside: number): number {
-	return (cell - 128) * 128 + inside
+	return ((cell ?? 0) - 128) * 128 + (inside ?? 0)
 }
 
 import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
@@ -283,25 +283,25 @@ RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
 
 RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => ent.Position_.x = QuantitizedVecCoordToCoord(
 	new_val as number,
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_vecX") as number
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_vecX") as number
 ))
 RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => ent.Position_.x = QuantitizedVecCoordToCoord(
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_cellX") as number,
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_cellX") as number,
 	new_val as number
 ))
 RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => ent.Position_.y = QuantitizedVecCoordToCoord(
 	new_val as number,
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_vecY") as number
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_vecY") as number
 ))
 RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => ent.Position_.y = QuantitizedVecCoordToCoord(
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_cellY") as number,
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_cellY") as number,
 	new_val as number
 ))
 RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => ent.Position_.z = QuantitizedVecCoordToCoord(
 	new_val as number,
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_vecZ") as number
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_vecZ") as number
 ))
 RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => ent.Position_.z = QuantitizedVecCoordToCoord(
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>).get("m_cellZ") as number,
+	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_cellZ") as number,
 	new_val as number
 ))
