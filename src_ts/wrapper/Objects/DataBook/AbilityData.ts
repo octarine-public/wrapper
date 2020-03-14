@@ -272,20 +272,24 @@ export function ReloadGlobalAbilityStorage() {
 						let tex_name = map.get("AbilityTextureName")
 						if (typeof tex_name !== "string" || readFile(AbilityNameToPath(tex_name, false)) === undefined)
 							tex_name = abil_name
-						if (readFile(AbilityNameToPath(tex_name)) === undefined)
+						if (readFile(AbilityNameToPath(base_name)) !== undefined)
 							tex_name = base_name
-						if (readFile(AbilityNameToPath(tex_name)) === undefined) {
-							if (tex_name.startsWith("frostivus"))
-								tex_name = abil_name.split("_").slice(1).join("_")
-							else if (tex_name.startsWith("special_"))
-								tex_name = "attribute_bonus"
-							else
-								tex_name = abil_name
-						}
 						map.set("AbilityTextureName", tex_name)
 					}
 				}
 			}
+		}
+		{
+			let tex_name = (map.get("AbilityTextureName") as string) ?? abil_name
+			if (readFile(AbilityNameToPath(tex_name)) === undefined) {
+				if (tex_name.startsWith("frostivus"))
+					tex_name = tex_name.split("_").slice(1).join("_")
+				else if (tex_name.startsWith("special_"))
+					tex_name = "attribute_bonus"
+				else
+					tex_name = tex_name
+			}
+			map.set("AbilityTextureName", tex_name)
 		}
 		AbilityData.global_storage.set(abil_name, map)
 	})
