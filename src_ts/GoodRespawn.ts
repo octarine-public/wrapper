@@ -49,11 +49,14 @@ EventsSDK.on("Draw", () => {
 	}
 	// loop-optimizer: FORWARD
 	ar.sort((a, b) => a - b).forEach((respawn_time, i) => {
-		let screen_pos = RendererSDK.WorldToScreen(positions[positions.length !== 0 ? (next_spawn - (ar.length - i - 1)) % positions.length : 0])
-		if (screen_pos !== undefined) {
-			RendererSDK.FilledRect(screen_pos.SubtractScalar(2).AddScalarX(-4), new Vector2(20, 23), new Color(0, 255, 0))
-			RendererSDK.Text(respawn_time.toFixed(1), screen_pos, new Color(255, 0, 0))
-		}
+		let pos = positions[positions.length !== 0 ? (next_spawn - (ar.length - i - 1)) % positions.length : 0]
+		if (pos === undefined)
+			return
+		let screen_pos = RendererSDK.WorldToScreen(pos)
+		if (screen_pos === undefined)
+			return
+		RendererSDK.FilledRect(screen_pos.SubtractScalar(2).AddScalarX(-4), new Vector2(20, 23), new Color(0, 255, 0))
+		RendererSDK.Text(respawn_time.toFixed(1), screen_pos, new Color(255, 0, 0))
 	})
 })
 

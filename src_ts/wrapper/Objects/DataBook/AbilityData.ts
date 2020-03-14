@@ -2,20 +2,19 @@ import { parseKVFile, parseEnumString } from "../../Utils/Utils"
 import { RecursiveMap } from "../../Utils/ParseKV"
 
 function LoadAbilityFile(path: string): RecursiveMap {
-	return (parseKVFile(path).get("DOTAAbilities") as RecursiveMap) ?? new Map()
+	let res = parseKVFile(path).get("DOTAAbilities")
+	return res instanceof Map ? res : new Map()
 }
 
 export default class AbilityData {
-	public static global_storage: RecursiveMap
+	public static global_storage: Map<string, RecursiveMap>
 	public static GetAbilityID(name: string): number {
 		let storage = AbilityData.global_storage.get(name)
-		if (!(storage instanceof Map))
+		if (storage === undefined)
 			throw "Invalid storage type for ability name " + name
 		return storage.has("ID") ? parseInt(storage.get("ID") as string) : 0
 	}
 	public static GetAbilityTexturePath(name: string): string {
-		if (name.startsWith("special_"))
-			name = "attribute_bonus"
 		let storage = AbilityData.global_storage.get(name)
 		if (!(storage instanceof Map))
 			throw "Invalid storage type for ability name " + name
@@ -24,8 +23,6 @@ export default class AbilityData {
 		let tex_name = (storage.get("AbilityTextureName") as string)
 		if (tex_name === undefined || tex_name === "")
 			tex_name = is_item ? name.substring(5) : name
-		if (tex_name.startsWith("frostivus"))
-			tex_name = tex_name.split("_").slice(1).join("_")
 		return is_item
 			? `panorama/images/items/${tex_name}_png.vtex_c`
 			: `panorama/images/spellicons/${tex_name}_png.vtex_c`
@@ -239,12 +236,58 @@ export default class AbilityData {
 	}
 }
 
+function AbilityNameToPath(name: string, strip = false): string {
+	let is_item = name.startsWith("item_")
+	let tex_name = is_item && strip ? name.substring(5) : name
+	if (tex_name.startsWith("frostivus"))
+		tex_name = tex_name.split("_").slice(1).join("_")
+	return is_item
+		? `panorama/images/items/${tex_name}_png.vtex_c`
+		: `panorama/images/spellicons/${tex_name}_png.vtex_c`
+}
+
 export function ReloadGlobalAbilityStorage() {
-	AbilityData.global_storage = new Map([
+	AbilityData.global_storage = new Map()
+	let tmp = new Map([
 		...LoadAbilityFile("scripts/npc/npc_abilities.txt").entries(),
 		...LoadAbilityFile("scripts/npc/npc_abilities_custom.txt").entries(),
 		...LoadAbilityFile("scripts/npc/items.txt").entries(),
 		...LoadAbilityFile("scripts/npc/npc_items_custom.txt").entries(),
 	]) as RecursiveMap
+	// loop-optimizer: KEEP
+	tmp.forEach((map, abil_name) => {
+		if (!(map instanceof Map))
+			return
+		if (map.has("BaseClass")) {
+			let base_name = map.get("BaseClass")
+			if (typeof base_name === "string") {
+				let base_map = tmp.get(base_name)
+				if (base_map instanceof Map) {
+					let map_ = map
+					map = base_map
+					// loop-optimizer: KEEP
+					map_.forEach((val, key) => (map as RecursiveMap).set(key, val))
+
+					{
+						let tex_name = map.get("AbilityTextureName")
+						if (typeof tex_name !== "string" || readFile(AbilityNameToPath(tex_name, false)) === undefined)
+							tex_name = abil_name
+						if (readFile(AbilityNameToPath(tex_name)) === undefined)
+							tex_name = base_name
+						if (readFile(AbilityNameToPath(tex_name)) === undefined) {
+							if (tex_name.startsWith("frostivus"))
+								tex_name = abil_name.split("_").slice(1).join("_")
+							else if (tex_name.startsWith("special_"))
+								tex_name = "attribute_bonus"
+							else
+								tex_name = abil_name
+						}
+						map.set("AbilityTextureName", tex_name)
+					}
+				}
+			}
+		}
+		AbilityData.global_storage.set(abil_name, map)
+	})
 }
 ReloadGlobalAbilityStorage()
