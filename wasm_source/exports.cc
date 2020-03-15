@@ -260,3 +260,56 @@ EXPORT_JS char* ParseImage(char* data, size_t data_size) {
 	free(data);
 	return res;
 }
+
+// https://github.com/explosion/murmurhash/blob/master/murmurhash/MurmurHash2.cpp#L142
+// https://github.com/skadistats/clarity/blob/master/src/main/java/skadistats/clarity/util/MurmurHash.java
+// someone please port it to JS >_<
+EXPORT_JS void* MurmurHash64B(void* key, int len, uint32_t seed) {
+	const uint32_t m = 0x5bd1e995;
+	const int r = 24;
+
+	uint32_t h1 = seed ^ len;
+	uint32_t h2 = 0;
+
+	const uint32_t* data = (const uint32_t*)key;
+
+	while (len >= 8) {
+		uint32_t k1 = *data++;
+		k1 *= m; k1 ^= k1 >> r; k1 *= m;
+		h1 *= m; h1 ^= k1;
+		len -= 4;
+
+		uint32_t k2 = *data++;
+		k2 *= m; k2 ^= k2 >> r; k2 *= m;
+		h2 *= m; h2 ^= k2;
+		len -= 4;
+	}
+
+	if (len >= 4) {
+		uint32_t k1 = *data++;
+		k1 *= m; k1 ^= k1 >> r; k1 *= m;
+		h1 *= m; h1 ^= k1;
+		len -= 4;
+	}
+
+	switch(len) {
+		case 3:
+			h2 ^= ((unsigned char*)data)[2] << 16;
+		case 2:
+			h2 ^= ((unsigned char*)data)[1] << 8;
+		case 1:
+			h2 ^= ((unsigned char*)data)[0];
+			h2 *= m;
+	}
+
+	h1 ^= h2 >> 18; h1 *= m;
+	h2 ^= h1 >> 22; h2 *= m;
+	h1 ^= h2 >> 17; h1 *= m;
+	h2 ^= h1 >> 19; h2 *= m;
+
+	free(key);
+
+	auto addr = (uint64_t*)malloc(8);
+	*addr = (((uint64_t)h1) << 32) | h2;
+	return addr;
+} 

@@ -90,6 +90,14 @@ export function Uint8ArrayToHex(array: Uint8Array): string {
 	return array.reduce((memo, i) => memo + ("0" + i.toString(16)).slice(-2), "")
 }
 
+// WARNING: it WILL produce incorrect output on unicode strings
+export function StringToUTF8(str: string): Uint8Array {
+	let buf = new Uint8Array(str.length)
+	for (let i = str.length; i--;)
+		buf[i] = str.charCodeAt(i) & 0xFF
+	return buf
+}
+
 export function StringToUTF16(str: string): Uint8Array {
 	let buf = new Uint16Array(str.length)
 	for (let i = str.length; i--;)

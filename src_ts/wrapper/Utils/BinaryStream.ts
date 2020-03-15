@@ -7,6 +7,9 @@ export default class BinaryStream {
 		this.pos += s
 		return this
 	}
+	public get Remaining(): number {
+		return Math.max(this.view.byteLength - this.pos, 0)
+	}
 	public Next(): number {
 		return this.view.getUint8(this.pos++)
 	}

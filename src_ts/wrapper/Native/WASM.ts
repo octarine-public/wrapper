@@ -49,6 +49,7 @@ var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("wrapper.was
 	my_malloc: (size: number) => number
 	my_free: (ptr: number) => void
 	ParseImage: (ptr: number, size: number) => number
+	MurmurHash64B: (ptr: number, size: number, seed: number) => number
 }
 declare global {
 	var wasm_: typeof wasm
@@ -249,4 +250,20 @@ export function GetSecondaryHeightForLocation(loc: Vector2): number {
 
 	wasm.GetSecondaryHeightForLocation()
 	return WASMIOBuffer[0]
+}
+
+export function MurmurHash64(buf: ArrayBuffer, seed = 0xEDABCDEF): bigint {
+	if (buf === undefined)
+		buf = new ArrayBuffer(0)
+
+	let buf_addr = wasm.my_malloc(buf.byteLength)
+	if (buf_addr === 0)
+		throw "Memory allocation for VHCG raw data failed"
+	let memory = new Uint8Array(wasm.memory.buffer, buf_addr)
+	memory.set(new Uint8Array(buf))
+
+	let addr = wasm.MurmurHash64B(buf_addr, buf.byteLength, seed)
+	let hash = new BigUint64Array(wasm.memory.buffer, addr)[0]
+	wasm.my_free(addr)
+	return hash
 }

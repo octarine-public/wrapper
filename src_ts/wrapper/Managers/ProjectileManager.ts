@@ -10,6 +10,7 @@ import { GameRules } from "../Objects/Base/GameRules"
 import { ParseProtobufDesc, ParseProtobufNamed, CMsgVectorToVector3, RecursiveProtobuf, CMsgVector2DToVector2, NumberToColor, ServerHandleToIndex } from "../Utils/Protobuf"
 import EntityManager from "./EntityManager"
 import GameState from "../Utils/GameState"
+import Manifest from "./Manifest"
 
 let ProjectileManager = new (class CProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
@@ -131,7 +132,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			let projectile = new LinearProjectile(
 				msg.get("handle") as number,
 				EntityManager.EntityByIndex(msg.get("entindex") as number),
-				(particle_system_handle !== undefined ? HashToPath(particle_system_handle) : undefined)!,
+				(particle_system_handle !== undefined ? Manifest.GetPathByHash(particle_system_handle) : undefined)!,
 				particle_system_handle ?? 0,
 				msg.get("max_speed") as number,
 				msg.get("fow_radius") as number,
@@ -181,7 +182,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 				EntityManager.EntityByIndex(msg.get("hTarget") as number),
 				msg.get("moveSpeed") as number,
 				msg.get("sourceAttachment") as number,
-				(particle_system_handle !== undefined ? HashToPath(particle_system_handle) : undefined)!,
+				(particle_system_handle !== undefined ? Manifest.GetPathByHash(particle_system_handle) : undefined)!,
 				particle_system_handle ?? 0,
 				msg.get("dodgeable") as boolean,
 				msg.get("isAttack") as boolean,
@@ -207,7 +208,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 				particle_system_handle = msg.get("particleSystemHandle") as bigint,
 				TargetLoc = CMsgVectorToVector3(msg.get("vTargetLoc") as RecursiveProtobuf)
 			let projectile = ProjectileManager.AllTrackingProjectilesMap.get(handle),
-				path = (particle_system_handle !== undefined ? HashToPath(particle_system_handle) : undefined)!
+				path = (particle_system_handle !== undefined ? Manifest.GetPathByHash(particle_system_handle) : undefined)!
 
 			if (projectile === undefined) {
 				projectile = new TrackingProjectile(

@@ -19,6 +19,7 @@ import _Menu from "./Menu/Menu"
 import { GetSDKClasses } from "./Objects/NativeToSDK"
 import { LocalPlayer } from "./Objects/Base/Entity"
 import * as _WASM from "./Native/WASM"
+import _Manifest from "./Managers/Manifest"
 
 globalThis.Color = _Color
 globalThis.QAngle = _QAngle
@@ -63,6 +64,7 @@ globalThis.EventsSDK = _EventsSDK
 globalThis.RendererSDK = _RendererSDK
 globalThis.ParticlesSDK = _ParticlesSDK
 globalThis.WASM = _WASM
+globalThis.Manifest = _Manifest
 
 globalThis.Menu = _Menu
 globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Constructor<any>).name === name)

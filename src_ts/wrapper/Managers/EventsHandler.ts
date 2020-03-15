@@ -10,6 +10,7 @@ import { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
 import Entity, { LocalPlayer } from "../Objects/Base/Entity"
 import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
+import Manifest from "./Manifest"
 
 Events.on("Update", cmd => {
 	let cmd_ = new UserCmd(cmd)
@@ -423,7 +424,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 					let submsg = msg.get("create_particle") as RecursiveProtobuf
 					let particleSystemHandle = submsg.get("particle_name_index") as bigint
 					let ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number),
-						path = HashToPath(particleSystemHandle ?? 0n)
+						path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
 					if (path === undefined)
 						break
 					EventsSDK.emit(
