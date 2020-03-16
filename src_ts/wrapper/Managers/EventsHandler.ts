@@ -409,7 +409,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			let table_name = stream.ReadVarString(),
 				update = new Map<number, [string, ArrayBuffer]>()
 			while (!stream.Empty())
-				update.set(Number(stream.ReadVarUint()), [stream.ReadVarString(), stream.ReadVarSlice()])
+				update.set(stream.ReadVarUintAsNumber(), [stream.ReadVarString(), stream.ReadVarSlice()])
 			EventsSDK.emit("UpdateStringTable", false, table_name, update)
 			break
 		}

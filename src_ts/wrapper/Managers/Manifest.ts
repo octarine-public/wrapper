@@ -27,8 +27,8 @@ function BufferToPathString(buf: ArrayBuffer): string {
 }
 
 function ParseStringFromStream(stream: BinaryStream, ar: string[]) {
-	let id = Number(stream.ReadVarUint()),
-		size = Number(stream.ReadVarUint())
+	let id = stream.ReadVarUintAsNumber(),
+		size = stream.ReadVarUintAsNumber()
 	if (id === ar.length)
 		ar[id] = BufferToPathString(stream.ReadSlice(size))
 	else
@@ -39,16 +39,16 @@ Events.on("ServerMessage", (msg_id, buf) => {
 	switch (msg_id) {
 		case 9: { // we have custom parsing for CNETMsg_SpawnGroup_Load & CNETMsg_SpawnGroup_ManifestUpdate
 			let stream = new BinaryStream(new DataView(buf))
-			for (let i = 0, end = stream.ReadVarUint(); i < end; i++)
+			for (let i = 0, end = stream.ReadVarUintAsNumber(); i < end; i++)
 				ParseStringFromStream(stream, Manifest.Extensions)
-			for (let i = 0, end = stream.ReadVarUint(); i < end; i++)
+			for (let i = 0, end = stream.ReadVarUintAsNumber(); i < end; i++)
 				ParseStringFromStream(stream, Manifest.Directories)
-			for (let i = 0, end = stream.ReadVarUint(); i < end; i++) {
-				let path_id = Number(stream.ReadVarUint()),
-					dir_id = Number(stream.ReadVarUint()),
-					ext_id = Number(stream.ReadVarUint()),
-					file_id = Number(stream.ReadVarUint()),
-					file_size = Number(stream.ReadVarUint())
+			for (let i = 0, end = stream.ReadVarUintAsNumber(); i < end; i++) {
+				let path_id = stream.ReadVarUintAsNumber(),
+					dir_id = stream.ReadVarUintAsNumber(),
+					ext_id = stream.ReadVarUintAsNumber(),
+					file_id = stream.ReadVarUintAsNumber(),
+					file_size = stream.ReadVarUintAsNumber()
 				if (file_id === Manifest.FileNames.length)
 					Manifest.FileNames[file_id] = BufferToPathString(stream.ReadSlice(file_size))
 				else

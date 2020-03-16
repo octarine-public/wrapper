@@ -162,7 +162,7 @@ function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): Map<number
 			case ProtoType.TYPE_STRING: // Length-delimited: string, bytes, embedded messages
 			case ProtoType.TYPE_BYTES:
 			case ProtoType.TYPE_MESSAGE:
-				value2 = stream.ReadSlice(Number(stream.ReadVarUint()))
+				value2 = stream.ReadVarSlice()
 				break
 			case ProtoType.TYPE_GROUP: // group
 				throw "Groups are deprecated"
@@ -202,9 +202,9 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 	let map: RecursiveProtobuf = new Map()
 	let stream = new BinaryStream(new DataView(proto_buf))
 	while (!stream.Empty()) {
-		let tag = stream.ReadVarUint()
-		let field_num = Number(tag >> 3n)
-		let wire_type = Number(tag & 0x7n) // least 3 bits
+		let tag = stream.ReadVarUintAsNumber()
+		let field_num = tag >> 3
+		let wire_type = tag & ((1 << 3) - 1)
 		let value: ArrayBuffer | bigint
 		switch (wire_type) {
 			case 0: // Varint: int32, int64, uint32, uint64, sint32, sint64, bool, enum
@@ -214,7 +214,7 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 				value = stream.ReadBigInt(8)
 				break
 			case 2: // Length-delimited: string, bytes, embedded messages, packed repeated fields
-				value = stream.ReadSlice(Number(stream.ReadVarUint()))
+				value = stream.ReadVarSlice()
 				break
 			case 3: // start group
 			case 4: // end group

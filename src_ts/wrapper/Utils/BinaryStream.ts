@@ -13,6 +13,17 @@ export default class BinaryStream {
 	public Next(): number {
 		return this.view.getUint8(this.pos++)
 	}
+	public ReadVarUintAsNumber(): number {
+		let val = 0,
+			shift = 0,
+			b: number
+		do {
+			b = this.Next()
+			val |= (b & 0x7F) << shift
+			shift += 7
+		} while ((b & 0x80) !== 0)
+		return val
+	}
 	public ReadVarUint(): bigint {
 		let val = 0n,
 			shift = 0n,
@@ -25,15 +36,9 @@ export default class BinaryStream {
 		return val
 	}
 	public ReadNumber(n: number): number {
-		const limit = n * 8
-		let val = 0,
-			shift = 0,
-			b: number
-		do {
-			b = this.Next()
-			val |= b << shift
-			shift += 8
-		} while (shift !== limit)
+		let val = 0
+		for (let i = 0; i < n; i++)
+			val |= this.Next() << (i * 8)
 		return val
 	}
 	public ReadBigInt(n: number): bigint {
@@ -67,7 +72,7 @@ export default class BinaryStream {
 		return slice
 	}
 	public ReadVarSlice(): ArrayBuffer {
-		return this.ReadSlice(Number(this.ReadVarUint()))
+		return this.ReadSlice(this.ReadVarUintAsNumber())
 	}
 	public ReadVarString(): string {
 		return Utf8ArrayToStr(new Uint8Array(this.ReadVarSlice()))

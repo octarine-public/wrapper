@@ -336,7 +336,7 @@ function ParseProperty(stream: BinaryStream): string | bigint | number | boolean
 		case PropertyType.UINT64:
 			return stream.ReadVarUint()
 		case PropertyType.BOOL:
-			return stream.ReadVarUint() !== 0n
+			return stream.ReadVarUintAsNumber() !== 0
 		case PropertyType.FLOAT:
 			return stream.ReadFloat32()
 		case PropertyType.VECTOR2:
@@ -346,7 +346,7 @@ function ParseProperty(stream: BinaryStream): string | bigint | number | boolean
 		case PropertyType.QUATERNION:
 			return new Vector4(stream.ReadFloat32(), stream.ReadFloat32(), stream.ReadFloat32(), stream.ReadFloat32())
 		case PropertyType.STRING:
-			return Utf8ArrayToStr(new Uint8Array(stream.ReadSlice(Number(stream.ReadVarUint()))))
+			return Utf8ArrayToStr(new Uint8Array(stream.ReadSlice(stream.ReadVarUintAsNumber())))
 		default:
 			throw `Unknown PropertyType: ${var_type}`
 	}
