@@ -264,7 +264,7 @@ EXPORT_JS char* ParseImage(char* data, size_t data_size) {
 // https://github.com/explosion/murmurhash/blob/master/murmurhash/MurmurHash2.cpp#L142
 // https://github.com/skadistats/clarity/blob/master/src/main/java/skadistats/clarity/util/MurmurHash.java
 // someone please port it to JS >_<
-EXPORT_JS void* MurmurHash64B(void* key, int len, uint32_t seed) {
+EXPORT_JS void MurmurHash64B(void* key, int len, uint32_t seed) {
 	const uint32_t m = 0x5bd1e995;
 	const int r = 24;
 
@@ -309,7 +309,5 @@ EXPORT_JS void* MurmurHash64B(void* key, int len, uint32_t seed) {
 
 	free(key);
 
-	auto addr = (uint64_t*)malloc(8);
-	*addr = (((uint64_t)h1) << 32) | h2;
-	return addr;
+	*(uint64_t*)JSIOBuffer = (((uint64_t)h1) << 32) | h2;
 } 

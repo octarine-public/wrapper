@@ -58,8 +58,11 @@ globalThis.wasm_ = wasm
 wasm._start()
 
 export let WASMIOBuffer: Float32Array
+export let WASMIOBufferBU64: BigUint64Array
 function emscripten_notify_memory_growth(memoryIndex: number) {
-	WASMIOBuffer = new Float32Array(wasm.memory.buffer, wasm.GetIOBuffer())
+	let off = wasm.GetIOBuffer()
+	WASMIOBuffer = new Float32Array(wasm.memory.buffer, off)
+	WASMIOBufferBU64 = new BigUint64Array(wasm.memory.buffer, off)
 }
 emscripten_notify_memory_growth(0)
 
@@ -262,8 +265,6 @@ export function MurmurHash64(buf: ArrayBuffer, seed = 0xEDABCDEF): bigint {
 	let memory = new Uint8Array(wasm.memory.buffer, buf_addr)
 	memory.set(new Uint8Array(buf))
 
-	let addr = wasm.MurmurHash64B(buf_addr, buf.byteLength, seed)
-	let hash = new BigUint64Array(wasm.memory.buffer, addr)[0]
-	wasm.my_free(addr)
-	return hash
+	wasm.MurmurHash64B(buf_addr, buf.byteLength, seed)
+	return WASMIOBufferBU64[0]
 }
