@@ -102,7 +102,7 @@ EventsSDK.on("Tick", () => {
 		if (respawn_time > 4)
 			return
 		let pos = positions[positions.length !== 0 ? (next_spawn - (ar.length - i - 1)) % positions.length : 0]
-		if (hook_sleeper.Sleeping(pos.LengthSqr))
+		if (pos === undefined || hook_sleeper.Sleeping(pos.LengthSqr))
 			return
 		EntityManager.GetEntitiesByClass(Unit).some(unit => {
 			if (!unit.IsAlive || !unit.IsControllable || unit.IsEnemy() || unit.IsInvulnerable || hook_sleeper.Sleeping(unit) || unit.IsInAbilityPhase)
