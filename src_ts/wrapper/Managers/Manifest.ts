@@ -14,12 +14,8 @@ const Manifest = new (class CManifest {
 		hash = BigInt.asUintN(64, hash)
 		let path = this.Paths.get(hash)
 		if (path === undefined) {
-			let ret = HashToPath(hash)
-			if (ret !== undefined)
-				console.log(`WARNING: Manifest.GetPathByHash failed for ${hash}, but HashToPath didn't, and returned ${ret}`)
-			else
-				console.log(`INFO: Unknown resource hash ${hash} passed to GetPathByHash`)
-			return ret
+			console.log(`Unknown resource hash ${hash} passed to GetPathByHash`)
+			return undefined
 		}
 		return `${this.Directories[path[0]]}${this.FileNames[path[1]]}.${this.Extensions[path[2]]}`
 	}
