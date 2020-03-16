@@ -13,7 +13,6 @@ import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
 import { Utf8ArrayToStr } from "../Utils/Utils"
 import * as StringTables from "./StringTables"
-import QAngle from "../Base/QAngle"
 import Vector4 from "../Base/Vector4"
 import { GameRules } from "../Objects/Base/GameRules"
 
@@ -171,13 +170,6 @@ Events.on("EntityCreated", (ent, id) => {
 				ClassToEntities.set(class_, [])
 			ClassToEntities.get(class_)!.push(wrapper_ent)
 		})
-
-		if (ent.m_VisualData) {
-			let m_vecOrigin = Vector3.fromIOBuffer()!,
-				m_angAbsRotation = QAngle.fromIOBuffer(true, 3)!
-			m_vecOrigin.CopyTo(wrapper_ent.Position_)
-			m_angAbsRotation.CopyTo(wrapper_ent.Angles_)
-		}
 
 		EventsSDK.emit("EntityCreated", false, wrapper_ent)
 	}

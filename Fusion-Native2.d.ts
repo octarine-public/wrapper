@@ -7,6 +7,8 @@ type IOBuffer_QAngle = boolean // returns QAngle to IOBuffer offset 0 on get, se
 
 /// GLOBAL OBJECTS
 declare var IOBuffer: Float32Array // 64 floats in size
+declare var EntityVisualPositions: Float32Array
+declare var EntityVisualRotations: Float32Array
 declare var CursorPosition: Int32Array // 2 ints in size
 
 declare var ConVars: ConVars
@@ -5124,8 +5126,6 @@ declare class C_BaseFire extends C_BaseEntity {
 }
 
 declare class C_BaseEntity extends C_GameEntity {
-	m_VisualData: boolean // returns m_vecOrigin: Vector3 to IOBuffer offset 0, m_angAbsRotation: QAngle to IOBuffer offset 3 on get, sets on set
-	
 	readonly m_CBodyComponent: CBodyComponent
 	readonly m_NetworkTransmitComponent: CNetworkTransmitComponent
 	readonly m_pDummyPhysicsComponent: CPhysicsComponent

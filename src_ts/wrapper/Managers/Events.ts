@@ -83,7 +83,6 @@ declare interface Events extends EventEmitter {
 	on(name: "PrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
-	on(name: "EntityPositionsChanged", listener: (buf: ArrayBuffer) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (id: number, reason: number, uuid: bigint, obj: any) => void): EventEmitter
 	on(name: "SignonStateChanged", listener: (new_state: SignonState_t) => void): EventEmitter

@@ -654,26 +654,6 @@ Events.on("ServerMessage", (msg_id, buf) => {
 Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
 Events.on("CustomGameEvent", (name, obj) => EventsSDK.emit("CustomGameEvent", false, name, obj))
 
-Events.on("EntityPositionsChanged", buf => {
-	let stream = new BinaryStream(new DataView(buf))
-	while (!stream.Empty()) {
-		let ent_id = stream.ReadNumber(2)
-		let ent = EntityManager.EntityByIndex(ent_id, true)
-		if (ent === undefined) {
-			stream.RelativeSeek(6 * 4) // 6 floats below
-			continue
-		}
-
-		ent.Position_.x = stream.ReadFloat32()
-		ent.Position_.y = stream.ReadFloat32()
-		ent.Position_.z = stream.ReadFloat32()
-
-		ent.Angles_.x = stream.ReadFloat32()
-		ent.Angles_.y = stream.ReadFloat32()
-		ent.Angles_.z = stream.ReadFloat32()
-	}
-})
-
 Events.on("InputCaptured", is_captured => EventsSDK.emit("InputCaptured", false, is_captured))
 
 EventsSDK.on("InputCaptured", is_captured => GameState.IsInputCaptured = is_captured)

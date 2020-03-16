@@ -39,9 +39,6 @@ export default class Entity {
 	public ClassName = ""
 	public BecameDormantTime = 0
 
-	public readonly Position_: Vector3 = new Vector3().Invalidate() // cached position
-	public readonly Angles_ = new QAngle().Invalidate() // cached angles
-	private readonly NetworkAngles_ = new QAngle().Invalidate()// cached network angles
 	private readonly PersonalProps: Nullable<Map<string, EntityPropertyType>>
 
 	constructor(public readonly Index: number) {
@@ -76,19 +73,21 @@ export default class Entity {
 		return this.NativeEntity?.m_pGameSceneNode
 	}
 	public get Position(): Vector3 {
-		if (!this.Position_.IsValid) {
-			let vec = Vector3.fromIOBuffer(this.NativeEntity?.m_VisualData ?? false)
-			if (vec === undefined)
-				return new Vector3()
-			vec.CopyTo(this.Position_)
-		}
-		return this.Position_.Clone()
+		return new Vector3(
+			EntityVisualPositions[this.Index * 3 + 0],
+			EntityVisualPositions[this.Index * 3 + 1],
+			EntityVisualPositions[this.Index * 3 + 2]
+		)
 	}
-	public get NetworkRotation(): number {
-		return this.NetworkAngles_.y
+	public get Rotation(): number {
+		return EntityVisualRotations[this.Index * 3 + 1]
 	}
-	public get NetworkAngles(): QAngle {
-		return this.NetworkAngles_.Clone()
+	public get Angles(): QAngle {
+		return new QAngle(
+			EntityVisualRotations[this.Index * 3 + 0],
+			EntityVisualRotations[this.Index * 3 + 1],
+			EntityVisualRotations[this.Index * 3 + 2],
+		)
 	}
 	public get HPPercent(): number {
 		return Math.floor(this.HP / this.MaxHP * 100) || 0
@@ -97,10 +96,10 @@ export default class Entity {
 		return this.LifeState === LifeState_t.LIFE_ALIVE || this.LifeState === LifeState_t.LIFE_RESPAWNING
 	}
 	public get Forward(): Vector3 {
-		return Vector3.FromAngle(this.NetworkRotationRad)
+		return Vector3.FromAngle(this.RotationRad)
 	}
-	public get NetworkRotationRad(): number {
-		return DegreesToRadian(this.NetworkRotation)
+	public get RotationRad(): number {
+		return DegreesToRadian(this.Rotation)
 	}
 
 	public get Agility(): number {
@@ -181,12 +180,12 @@ export default class Entity {
 		return this.Position.Rotation(this.Forward, distance)
 	}
 	public InFrontFromAngle(angle: number, distance: number): Vector3 {
-		return this.Position.InFrontFromAngle(this.NetworkRotationRad + angle, distance)
+		return this.Position.InFrontFromAngle(this.RotationRad + angle, distance)
 	}
 	public FindRotationAngle(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.Position
-		return this.Position.FindRotationAngle(vec, this.NetworkRotationRad)
+		return this.Position.FindRotationAngle(vec, this.RotationRad)
 	}
 	/**
 	 * That's a bit faster than just checking this.Distance(ent) < range,
@@ -246,10 +245,6 @@ export default class Entity {
 		return SelectUnit(this.Index, bAddToGroup)
 	}
 
-	public OnNetworkRotationChanged(m_angAbsRotation: QAngle) {
-		m_angAbsRotation.CopyTo(this.NetworkAngles_).CopyTo(this.Angles_)
-	}
-
 	public toString(): string {
 		return this.Name
 	}
@@ -275,33 +270,38 @@ RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
 RegisterFieldHandler(Entity, "m_iHealth", (ent, new_val) => ent.HP = new_val as number)
 RegisterFieldHandler(Entity, "m_iMaxHealth", (ent, new_val) => ent.MaxHP = new_val as number)
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => ent.Owner_ = new_val as number)
-RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => ent.OnNetworkRotationChanged(new_val as QAngle))
+RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
+	let m_angRotation = new_val as QAngle
+	EntityVisualRotations[ent.Index * 3 + 0] = m_angRotation.x
+	EntityVisualRotations[ent.Index * 3 + 1] = m_angRotation.y
+	EntityVisualRotations[ent.Index * 3 + 2] = m_angRotation.z
+})
 RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
 	ent.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? ent.Name_
 	EventsSDK.emit("EntityNameChanged", false, ent)
 })
 
-RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => ent.Position_.x = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
 	new_val as number,
 	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_vecX") as number
 ))
-RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => ent.Position_.x = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
 	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_cellX") as number,
 	new_val as number
 ))
-RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => ent.Position_.y = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
 	new_val as number,
 	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_vecY") as number
 ))
-RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => ent.Position_.y = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
 	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_cellY") as number,
 	new_val as number
 ))
-RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => ent.Position_.z = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
 	new_val as number,
 	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_vecZ") as number
 ))
-RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => ent.Position_.z = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
 	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_cellZ") as number,
 	new_val as number
 ))
