@@ -305,3 +305,12 @@ RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => EntityVisualPositions[e
 	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_cellZ") as number,
 	new_val as number
 ))
+
+EventsSDK.on("GameEvent", (name, obj) => {
+	if (name !== "entity_hurt")
+		return
+	let ent = EntityManager.EntityByIndex(obj.entindex_killed)
+	if (ent === undefined || !ent.IsAlive)
+		return
+	ent.HP = Math.max(Math.round(ent.HP - obj.damage), 1)
+})

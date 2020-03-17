@@ -5,7 +5,8 @@ import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 import Entity, { LocalPlayer } from "../Base/Entity"
 import EventsSDK from "../../Managers/EventsSDK"
 import GameState from "../../Utils/GameState"
-import { EntityPropertyType } from "../../Managers/EntityManager"
+import EntityManager, { EntityPropertyType } from "../../Managers/EntityManager"
+import Unit from "./Unit"
 
 export default class CGameRules extends Entity {
 	public NativeEntity: Nullable<C_DOTAGamerulesProxy>
@@ -65,6 +66,13 @@ import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK
 RegisterClass("C_DOTAGamerulesProxy", CGameRules)
 RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 	game.RawGameTime = new_val as number
+	EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
+		if (!unit.IsVisible || !unit.IsAlive)
+			return
+		let buff = unit.GetBuffByName("modifier_ice_blast")
+		if (buff === undefined || buff?.RemainingTime === 0)
+			unit.HP = Math.min(Math.round(unit.HP + (unit.HPRegen / 30)), unit.MaxHP)
+	})
 	if (LocalPlayer !== undefined)
 		EventsSDK.emit("Tick", false)
 })
