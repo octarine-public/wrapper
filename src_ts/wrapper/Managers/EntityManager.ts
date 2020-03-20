@@ -11,7 +11,7 @@ import BinaryStream from "../Utils/BinaryStream"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
-import { Utf8ArrayToStr } from "../Utils/Utils"
+import { Utf8ArrayToStr, MapToObject } from "../Utils/Utils"
 import * as StringTables from "./StringTables"
 import Vector4 from "../Base/Vector4"
 import { GameRules } from "../Objects/Base/GameRules"
@@ -393,10 +393,75 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], Ent
 	return [changed_paths, chaged_paths_results, ent_class]
 }
 
+function FixType(symbols: string[], field: any): string {
+	{
+		let field_serializer_name_sym = field.field_serializer_name_sym
+		if (field_serializer_name_sym !== undefined)
+			return symbols[field_serializer_name_sym] + (field.field_serializer_version !== 0 ? field.field_serializer_version : "")
+	}
+	let type = symbols[field.var_type_sym]
+	// types
+	type = type.replace(/CNetworkedQuantizedFloat/g, "float")
+	type = type.replace(/CUtlVector\< (.*) \>/g, "$1[]")
+	type = type.replace(/CHandle\< (.*) \>/g, "CEntityIndex<$1>")
+	type = type.replace(/CStrongHandle\< (.*) \>/g, "CStrongHandle<$1>")
+	type = type.replace(/Vector2D/g, "Vector2")
+	type = type.replace(/Vector4D|Quaternion/g, "Vector4")
+	type = type.replace(/Vector$/g, "Vector3")
+	type = type.replace(/Vector([^\d])/g, "Vector3$1")
+
+	// fix arrays
+	type = type.replace(/\[\d+\]/g, "[]")
+
+	// primitives
+	type = type.replace(/bool/g, "boolean")
+	type = type.replace(/double/g, "number")
+	type = type.replace(/uint64/g, "bigint")
+	type = type.replace(/int64/g, "bigint")
+	type = type.replace(/float(32|64)?/g, "number")
+	type = type.replace(/u?int(\d+)/g, "number")
+	type = type.replace(/CUtlStringToken/g, "CStringToken")
+	type = type.replace(/CUtlString|CUtlSymbolLarge|char(\*|\[\])/g, "string")
+	type = type.replace(/CStringToken/g, "CUtlStringToken")
+
+	// omit pointers
+	type = type.replace(/\*/g, "")
+
+	return type
+}
+
+const dump_d_ts = false
 Events.on("ServerMessage", (msg_id, buf) => {
 	switch (msg_id) {
 		case 41: {
 			let msg = ParseProtobufNamed(buf, "CSVCMsg_FlattenedSerializer")
+			if (dump_d_ts) {
+				let obj = MapToObject(msg)
+				let list = (Object.values(obj.serializers) as any[]).map(ser => [
+					obj.symbols[ser.serializer_name_sym] + (ser.serializer_version !== 0 ? ser.serializer_version : ""),
+					(Object.values(ser.fields_index) as any[]).map(field_id => {
+						let field = obj.fields[field_id]
+						return [
+							FixType(obj.symbols as string[], field),
+							obj.symbols[field.var_name_sym]
+						]
+					})
+				])
+				writeConfig("dump_CSVCMsg_FlattenedSerializer.d.ts", `\
+import { Vector2, Vector3, QAngle, Vector4 } from "./src_ts/wrapper/Imports"
+
+type Color = number // 0xAABBGGRR?
+type HSequence = number
+type item_definition_index_t = number
+type itemid_t = number
+type style_index_t = number
+
+${list.map(([name, fields]) => `\
+declare class ${name} {
+	${(fields as [string, string][]).map(([type, f_name]) => `${f_name}: ${type}`).join("\n\t")}
+}`).join("\n\n")}
+`)
+			}
 			entities_symbols = [...(msg.get("symbols") as Map<number, string>).values()]
 			for (let [construct, map] of GetFieldHandlers()) {
 				let map2 = new Map<number, FieldHandler>()
