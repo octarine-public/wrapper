@@ -1,6 +1,7 @@
 // TYPEDEFS
 type CEntityIndex<T = C_BaseEntity> = T | number | undefined
 type CStrongHandle<T = void> = bigint // you must resolve it manually with Manifest
+type CUtlStringToken = number
 type IOBuffer_Color = boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 type IOBuffer_Vector2 = boolean// returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 type IOBuffer_Vector3 = boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
@@ -486,6 +487,7 @@ declare class LightDesc_t {
 	m_Attenuation2: number
 	m_Theta: number
 	m_Phi: number
+	m_lightCookie: CUtlStringToken
 	m_nLightGroupCount: number
 	m_bCastShadows: boolean
 	m_nShadowWidth: number
@@ -899,6 +901,7 @@ declare class CAnimTagManager {
 
 declare class CGameSceneNodeHandle {
 	m_hOwner: CEntityIndex
+	m_name: CUtlStringToken
 }
 
 declare class CountdownTimer {
@@ -1168,6 +1171,7 @@ declare class DOTA_AssassinMinigameNetworkState {
 }
 
 declare class thinkfunc_t {
+	m_nContext: CUtlStringToken
 	m_nNextThinkTick: number
 	m_nLastThinkTick: number
 }
@@ -1358,12 +1362,14 @@ declare class CEffectData {
 	m_flScale: number
 	m_flMagnitude: number
 	m_flRadius: number
+	m_nSurfaceProp: CUtlStringToken
 	m_nDamageType: number
 	m_nMaterial: number
 	m_nHitBox: number
 	m_nColor: number
 	m_fFlags: number
 	m_nAttachmentIndex: number
+	m_nAttachmentName: CUtlStringToken
 	m_iEffectName: number
 	m_nExplosionType: number
 }
@@ -1426,6 +1432,7 @@ declare class sky3dparams_t {
 	bClip3DSkyBoxNearToWorldFar: boolean
 	flClip3DSkyBoxNearToWorldFarOffset: number
 	readonly fog: fogparams_t
+	m_nWorldGroupID: CUtlStringToken
 }
 
 declare class JiggleData {
@@ -2749,6 +2756,7 @@ declare class CSkeletonInstance extends CGameSceneNode {
 	readonly m_bDirtyMotionType: boolean
 	readonly m_bIsGeneratingLatchedParentSpaceState: boolean
 	m_bEnableIK: boolean
+	m_materialGroup: CUtlStringToken
 	m_nHitboxSet: number
 	m_flIkMasterBlendValueCache: number
 	readonly m_NetworkedIKContext: CNetworkedIKContext
@@ -2784,6 +2792,8 @@ declare class CGameSceneNode {
 	m_nHierarchicalDepth: number
 	m_nHierarchyType: number
 	m_nDoNotSetAnimTimeInInvalidatePhysicsCount: number
+	m_name: CUtlStringToken
+	m_hierarchyAttachName: CUtlStringToken
 	m_flZOffset: number
 	m_vRenderOrigin: IOBuffer_Vector3
 }
@@ -2791,6 +2801,7 @@ declare class CGameSceneNode {
 declare class CEntityInstance extends IHandleEntity {
 	readonly m_iszPrivateVScripts: string
 	readonly m_pEntity: CEntityIdentity
+	m_worldGroupId: CUtlStringToken
 	readonly m_CScriptComponent: CScriptComponent
 }
 
@@ -4885,6 +4896,7 @@ declare class C_OP_CylindricalDistanceToCP extends CParticleFunctionOperator {
 
 declare class CSceneObjectExtraData_t {
 	m_nCurrentMeshGroupMask: bigint
+	m_nLayerForceID: CUtlStringToken
 	m_vLightingOrigin: IOBuffer_Vector3
 	m_flDepthSortBias: number
 	m_nAlphaFade: number
@@ -4943,6 +4955,7 @@ declare class CSceneObject {
 	readonly m_pPVSData: CPVSData
 	m_nOriginalRenderableFlags: bigint
 	m_nRenderableFlags: bigint
+	m_nLayerMatchID: CUtlStringToken
 }
 
 declare class CSceneObjectReference_t {
@@ -5450,6 +5463,7 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_nButtons: bigint
 	m_surfaceFriction: number
 	m_nImpulse: number
+	m_ladderSurfaceProps: CUtlStringToken
 	m_flPhysics: number
 	m_flFOVTime: number
 	m_flWaterJumpTime: number
@@ -5516,6 +5530,7 @@ declare class C_BasePlayer extends C_BaseCombatCharacter {
 	m_vecPredictionError: IOBuffer_Vector3
 	m_flPredictionErrorTime: number
 	m_vecPreviouslyPredictedOrigin: IOBuffer_Vector3
+	m_surfaceProps: CUtlStringToken
 	m_chTextureType: number
 	m_bSentFreezeFrame: boolean
 	m_flFreezeZOffset: number
@@ -5602,6 +5617,7 @@ declare class C_BaseModelEntity extends C_BaseEntity {
 	m_nRenderFX: RenderFx_t
 	m_bAllowFadeInView: boolean
 	m_clrRender: IOBuffer_Color
+	m_LightGroup: CUtlStringToken
 	m_bRenderToCubemaps: boolean
 	readonly m_Collision: CCollisionProperty
 	readonly m_Glow: CGlowProperty
@@ -6074,6 +6090,7 @@ declare class CFootPositionMetric extends CMotionMetricBase {
 
 declare class CBasePortraitData {
 	m_iModelIndex: CStrongHandle<InfoForResourceTypeCModel>
+	m_skin: CUtlStringToken
 	m_bHasSetupView: boolean
 	m_flRotation: number
 }
@@ -6583,6 +6600,8 @@ declare class shard_model_desc_t {
 	m_flGlassHalfThickness: number
 	m_bHasParent: boolean
 	m_bParentFrozen: boolean
+	m_SurfacePropStringToken: CUtlStringToken
+	m_LightGroup: CUtlStringToken
 }
 
 declare class CSimTimer extends CSimpleSimTimer {
@@ -7921,6 +7940,7 @@ declare class CSchemaSystemInternalRegistration {
 	m_QAngle: IOBuffer_QAngle
 	m_Color: IOBuffer_Color
 	readonly m_CUtlString: string
+	m_stringToken: CUtlStringToken
 }
 
 declare class sPendingTreeRemoval {
@@ -10219,6 +10239,7 @@ declare class CLightComponent extends CEntityComponent {
 	m_flAttenuation2: number
 	m_flTheta: number
 	m_flPhi: number
+	m_lightCookie: CUtlStringToken
 	m_nCascades: number
 	m_nCastShadows: number
 	m_nShadowWidth: number
@@ -11127,6 +11148,7 @@ declare class C_DOTA_Ability_Special_Bonus_All_Stats_6 extends C_DOTABaseAbility
 
 declare class C_EconEntity__AttachedParticleInfo_t {
 	readonly m_nAttachedParticleIndex: ParticleIndex_t
+	m_customType: CUtlStringToken
 	m_bShouldDestroyImmediately: boolean
 }
 
@@ -12109,6 +12131,7 @@ declare class C_DOTA_Ability_Special_Bonus_HP_275 extends C_DOTABaseAbility { }
 
 declare class C_SkyCamera extends C_BaseEntity {
 	readonly m_skyboxData: sky3dparams_t
+	m_skyboxSlotToken: CUtlStringToken
 	m_bUseAngles: boolean
 	readonly m_pNext: C_SkyCamera
 }
@@ -13800,11 +13823,13 @@ declare class C_DevtestHierarchy extends C_DynamicProp {
 	m_flRotationSpeed: number
 	m_nTestMode: number
 	m_hChild: CEntityIndex
+	m_attachName: CUtlStringToken
 	m_vDynamicAttachOffset: IOBuffer_Vector3
 	m_nDynamicResetCount: number
 	m_nDynamicDetachCount: number
 	m_bChildIsDynamic: boolean
 	m_bCreateChildSideChild: boolean
+	m_alternateAttachName: CUtlStringToken
 	m_hAlternateParent: CEntityIndex
 	m_hAlternateModel: CStrongHandle<InfoForResourceTypeCModel>
 	m_hOriginalModel: CStrongHandle<InfoForResourceTypeCModel>
