@@ -1,5 +1,6 @@
 // TYPEDEFS
 type CEntityIndex<T = C_BaseEntity> = T | number | undefined
+type CStrongHandle<T = void> = bigint // you must resolve it manually with Manifest
 type IOBuffer_Color = boolean // returns Color to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 type IOBuffer_Vector2 = boolean// returns Vector2 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 type IOBuffer_Vector3 = boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
@@ -552,6 +553,7 @@ declare class EventSimulate_t {
 }
 
 declare class C_INIT_RandomNamedModelElement extends CParticleFunctionInitializer {
+	m_hModel: CStrongHandle<InfoForResourceTypeCModel>
 	m_bShuffle: boolean
 	m_bLinear: boolean
 	m_bModelFromRenderer: boolean
@@ -733,6 +735,7 @@ declare class CMorphSetData {
 	m_nHeight: number
 	m_nLookupType: MorphLookupType_t
 	m_nEncodingType: MorphEncodingType_t
+	m_pTextureAtlas: CStrongHandle<InfoForResourceTypeCTextureBase>
 }
 
 declare class InfoForResourceTypeCVMixListResource { }
@@ -837,6 +840,7 @@ declare class CGlowSprite {
 	m_vColor: IOBuffer_Vector3
 	m_flHorzSize: number
 	m_flVertSize: number
+	m_hMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 }
 
 declare class CNavVolume { }
@@ -955,7 +959,9 @@ declare class CBaseRendererSource2 extends CParticleFunctionRenderer {
 	m_bTintByFOW: boolean
 	m_bFogParticles: boolean
 	m_bTintByGlobalLight: boolean
+	m_hTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_bMotionVectors: boolean
+	m_hMotionVectorsTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_bBlendFramesSeq0: boolean
 	m_nFirstSequenceOffsetForRightEye: number
 	m_nHSVShiftControlPoint: number
@@ -1009,6 +1015,13 @@ declare class FeSimdRodConstraint_t {
 }
 
 declare class C_OP_RenderStatusEffect extends CParticleFunctionRenderer {
+	m_pTextureColorWarp: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_pTextureDetail2: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_pTextureDiffuseWarp: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_pTextureFresnelColorWarp: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_pTextureFresnelWarp: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_pTextureSpecularWarp: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_pTextureEnvMap: CStrongHandle<InfoForResourceTypeCTextureBase>
 }
 
 declare class C_INIT_InitFromCPSnapshot extends CParticleFunctionInitializer {
@@ -1174,6 +1187,7 @@ declare class C_OP_RenderProjected extends CParticleFunctionRenderer {
 	m_bEnableProjectedDepthControls: boolean
 	m_flMinProjectionDepth: number
 	m_flMaxProjectionDepth: number
+	m_hProjectedMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_flAnimationTimeScale: number
 }
 
@@ -1512,6 +1526,7 @@ declare class CDOTA_Buff {
 }
 
 declare class C_OP_RemapNamedModelElementOnceTimed extends CParticleFunctionOperator {
+	m_hModel: CStrongHandle<InfoForResourceTypeCModel>
 	m_bModelFromRenderer: boolean
 	m_bProportional: boolean
 	m_flRemapTime: number
@@ -1592,6 +1607,7 @@ declare class vmix_delay_desc_t {
 }
 
 declare class C_OP_RenderCables extends CParticleFunctionRenderer {
+	m_hMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_nTextureRepetitionMode: TextureRepetitionMode_t
 	readonly m_flTextureRepeatsPerSegment: CParticleCollectionFloatInput
 	readonly m_flTextureRepeatsCircumference: CParticleCollectionFloatInput
@@ -1710,6 +1726,7 @@ declare class CSequenceGroupData {
 }
 
 declare class C_INIT_RemapParticleCountToNamedModelElementScalar extends C_INIT_RemapParticleCountToScalar {
+	m_hModel: CStrongHandle<InfoForResourceTypeCModel>
 	readonly m_outputMinName: string
 	readonly m_outputMaxName: string
 	m_bModelFromRenderer: boolean
@@ -2113,6 +2130,7 @@ declare class CIntAnimParameter extends CAnimParameterBase {
 }
 
 declare class C_INIT_RemapNamedModelElementToScalar extends CParticleFunctionInitializer {
+	m_hModel: CStrongHandle<InfoForResourceTypeCModel>
 	m_nSetMethod: ParticleSetMethod_t
 	m_bModelFromRenderer: boolean
 }
@@ -2141,6 +2159,7 @@ declare class C_OP_LockToPointList extends CParticleFunctionOperator {
 }
 
 declare class ModelReference_t {
+	m_model: CStrongHandle<InfoForResourceTypeCModel>
 	m_flRelativeProbabilityOfSpawn: number
 }
 
@@ -2298,6 +2317,7 @@ declare class C_OP_SetSimulationRate extends CParticleFunctionPreEmission {
 declare class MaterialOverride_t extends BaseSceneObjectOverride_t {
 	m_nSubSceneObject: number
 	m_nDrawCallIndex: number
+	m_pMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 }
 
 declare class SheetFrameImage_t {
@@ -2796,6 +2816,7 @@ declare class CScriptComponent extends CEntityComponent {
 declare class CEntityComponent { }
 
 declare class CModelState {
+	m_hModel: CStrongHandle<InfoForResourceTypeCModel>
 	readonly m_ModelName: string
 	m_bClientClothCreationSuppressed: boolean
 	m_MeshGroupMask: bigint
@@ -2971,6 +2992,7 @@ declare class C_OP_RepeatedTriggerChildGroup extends CParticleFunctionPreEmissio
 }
 
 declare class C_OP_RemapNamedModelElementEndCap extends CParticleFunctionOperator {
+	m_hModel: CStrongHandle<InfoForResourceTypeCModel>
 	m_bModelFromRenderer: boolean
 }
 
@@ -2993,6 +3015,7 @@ declare class C_OP_RenderDeferredLight extends CParticleFunctionRenderer {
 	m_flSpotFoV: number
 	readonly m_vecColorScale: CParticleCollectionVecInput
 	m_nColorBlendType: ParticleColorBlendType_t
+	m_hTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 }
 
 declare class CDeferredLightBase {
@@ -3694,6 +3717,7 @@ declare class C_DOTAGamerules extends C_TeamplayRules {
 	m_bAllowOverrideVPK: boolean
 	m_BAbilityDraftHeroesChosenChanged: boolean
 	m_bUpdateHeroStatues: boolean
+	m_bExperimentalGameplay: boolean
 	m_lobbyType: number
 	m_lobbyLeagueID: number
 	m_nPrimaryIngameEventIndex: number
@@ -3822,6 +3846,7 @@ declare class C_OP_RemapNamedModelBodyPartOnceTimed extends C_OP_RemapNamedModel
 declare class PermModelExtPart_t {
 	readonly m_Name: string
 	m_nParent: number
+	m_refModel: CStrongHandle<InfoForResourceTypeCModel>
 }
 
 declare class SequenceFloatParam_t {
@@ -3863,6 +3888,8 @@ declare class CFlashlightEffect {
 	m_flLinearAtten: number
 	m_bCastsShadows: boolean
 	m_flCurrentPullBackDist: number
+	m_FlashlightTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_MuzzleFlashTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 }
 
 declare class FeBuildSphereRigid_t extends FeSphereRigid_t {
@@ -4026,6 +4053,7 @@ declare class C_OP_RenderBlobs extends CParticleFunctionRenderer {
 	m_cutoffRadius: number
 	m_renderRadius: number
 	m_nScaleCP: number
+	m_hMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 }
 
 declare class C_INIT_CreateOnGrid extends CParticleFunctionInitializer {
@@ -4715,6 +4743,7 @@ declare class AnimationSnapshotBase_t {
 }
 
 declare class MaterialParamTexture_t extends MaterialParam_t {
+	m_pValue: CStrongHandle<InfoForResourceTypeCTextureBase>
 }
 
 declare class InfoForResourceTypeCPanoramaScript { }
@@ -4782,6 +4811,7 @@ declare class CModelConfigElement_SetBodygroup extends CModelConfigElement {
 declare class CModelConfigElement_AttachedModel extends CModelConfigElement {
 	readonly m_InstanceName: string
 	readonly m_EntityClass: string
+	m_hModel: CStrongHandle<InfoForResourceTypeCModel>
 	m_vOffset: IOBuffer_Vector3
 	m_aAngOffset: IOBuffer_QAngle
 	readonly m_AttachmentName: string
@@ -4816,6 +4846,7 @@ declare class C_INIT_RemapSpeedToScalar extends CParticleFunctionInitializer {
 }
 
 declare class ParticleChildrenInfo_t {
+	m_ChildRef: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
 	m_flDelay: number
 	m_bEndCap: boolean
 	m_bDisableChild: boolean
@@ -5766,14 +5797,20 @@ declare class CLightInfoBase {
 	m_flSkyboxAngularFogMinEnd: number
 	m_flFogMaxZ: number
 	m_flFogFalloff: number
+	m_hFogTexture0: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_flFogLayer0Rotation: number
 	m_flFogLayer0Scale: number
+	m_hFogTexture1: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_flFogLayer1Rotation: number
 	m_flFogLayer1Scale: number
+	m_hFogTextureOpacity: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_hWaterFlowMapTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_hFogFlowMapTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_flFogExclusionInnerRadius: number
 	m_flFogExclusionHeightBias: number
 	m_flCausticSpeedScale: number
 	m_flCausticAmplitudeScale: number
+	m_hColorWarp: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_flColorWarpBlendToFull: number
 	m_fInnerRadius: number
 	m_fOuterRadius: number
@@ -5817,6 +5854,7 @@ declare class HeroPickRecord_t {
 declare class IParticleSystemDefinition { }
 
 declare class C_OP_RenderPoints extends CParticleFunctionRenderer {
+	m_hMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 }
 
 declare class C_OP_ScreenForceFromPlayerView extends CParticleFunctionForce {
@@ -6035,6 +6073,7 @@ declare class CFootPositionMetric extends CMotionMetricBase {
 }
 
 declare class CBasePortraitData {
+	m_iModelIndex: CStrongHandle<InfoForResourceTypeCModel>
 	m_bHasSetupView: boolean
 	m_flRotation: number
 }
@@ -6354,6 +6393,8 @@ declare class SceneObject_t {
 	m_nCubeMapPrecomputedHandshake: number
 	m_nLightProbeVolumePrecomputedHandshake: number
 	m_nBoundsGroupIndex: number
+	m_renderableModel: CStrongHandle<InfoForResourceTypeCModel>
+	m_renderable: CStrongHandle<InfoForResourceTypeCRenderMesh>
 }
 
 declare class CSSDSMsg_ViewTarget {
@@ -6533,6 +6574,7 @@ declare class InfoForResourceTypeCRenderMesh { }
 
 declare class shard_model_desc_t {
 	m_nModelID: number
+	m_hMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_solid: ShardSolid_t
 	m_ShatterPanelMode: ShatterPanelMode
 	m_vecPanelSize: IOBuffer_Vector2
@@ -7593,6 +7635,7 @@ declare class C_OP_RenderSprites extends CBaseRendererSource2 {
 	readonly m_flAlphaScale: CParticleCollectionFloatInput
 	readonly m_vecColorScale: CParticleCollectionVecInput
 	m_nColorBlendType: ParticleColorBlendType_t
+	m_hNormalTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_nSortMethod: number
 }
 
@@ -7915,6 +7958,7 @@ declare class C_OP_RenderModels extends CParticleFunctionRenderer {
 	m_bManualAnimFrame: boolean
 	m_nSkin: number
 	m_nLOD: number
+	m_hOverrideMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_bOverrideTranslucentMaterials: boolean
 	m_nSkinCP: number
 	m_nModelCP: number
@@ -7999,6 +8043,7 @@ declare class CStopwatch extends CStopwatchBase {
 declare class CShatterGlassShard {
 	m_hShardHandle: number
 	m_vLocalPanelSpaceOrigin: IOBuffer_Vector2
+	m_hModel: CStrongHandle<InfoForResourceTypeCModel>
 	m_hPhysicsEntity: CEntityIndex<C_ShatterGlassShardPhysics>
 	m_hParentPanel: CEntityIndex
 	m_hParentShard: number
@@ -8167,12 +8212,17 @@ declare class CParticleSystemDefinition extends IParticleSystemDefinition {
 	m_BoundingBoxMin: IOBuffer_Vector3
 	m_BoundingBoxMax: IOBuffer_Vector3
 	m_nSnapshotControlPoint: number
+	m_hSnapshot: CStrongHandle<InfoForResourceTypeIParticleSnapshot>
 	readonly m_pszTargetLayerID: string
 	m_nTopology: ParticleTopology_t
+	m_hReferenceReplacement: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
+	m_pszCullReplacementName: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
 	m_flCullRadius: number
 	m_flCullFillCost: number
 	m_nCullControlPoint: number
+	m_hFallback: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
 	m_nFallbackMaxCount: number
+	m_hLowViolenceDef: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
 	m_ConstantColor: IOBuffer_Color
 	m_ConstantNormal: IOBuffer_Vector3
 	m_flConstantRadius: number
@@ -8421,6 +8471,8 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_flMagicalResistanceValue: number
 	m_nPrevSequenceParity: number
 	m_flPrevInvisLevel: number
+	m_nOriginalModelIndex: CStrongHandle<InfoForResourceTypeCModel>
+	m_nClientOriginalModelIndex: CStrongHandle<InfoForResourceTypeCModel>
 	m_nUnitModelVariant: number
 	m_nUnitModelVariantCount: number
 	m_iPrevSequence: number
@@ -8438,6 +8490,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	m_iXPBountyExtra: number
 	m_iGoldBountyMin: number
 	m_iGoldBountyMax: number
+	m_hClientOverrideMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_bCombinerMaterialOverrideListChanged: boolean
 	m_nBaseModelMeshCount: number
 	m_nArcanaLevel: number
@@ -8599,6 +8652,7 @@ declare class InfoOverlayData_t {
 	m_flDepth: number
 	m_vUVStart: IOBuffer_Vector2
 	m_vUVEnd: IOBuffer_Vector2
+	m_pMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_nRenderOrder: number
 	m_nSequenceOverride: number
 }
@@ -8634,6 +8688,7 @@ declare class C_INIT_RemapCPtoVector extends CParticleFunctionInitializer {
 }
 
 declare class C_INIT_RandomModelSequence extends CParticleFunctionInitializer {
+	m_hModel: CStrongHandle<InfoForResourceTypeCModel>
 }
 
 declare class voxel_vis_cluster_t {
@@ -8735,6 +8790,7 @@ declare class Relationship_t {
 }
 
 declare class C_OP_RenderFogSprites extends C_OP_RenderSprites {
+	m_hMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 }
 
 declare class C_OP_SetFromCPSnapshot extends CParticleFunctionOperator {
@@ -8907,6 +8963,7 @@ declare class CMaterialDrawDescriptor {
 	m_vTintColor: IOBuffer_Vector3
 	m_CullDataIndex: number
 	readonly m_indexBuffer: CRenderBufferBinding
+	m_material: CStrongHandle<InfoForResourceTypeIMaterial2>
 }
 
 declare class CMotionClipGroup {
@@ -9008,6 +9065,7 @@ declare class CFootStride {
 
 declare class CAnimationGroup {
 	m_nFlags: number
+	m_directHSeqGroup_Handle: CStrongHandle<InfoForResourceTypeCSequenceGroupData>
 	readonly m_decodeKey: CAnimKeyData
 	readonly m_retarget: CAnimRetargetData
 }
@@ -9174,6 +9232,7 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_fUnpauseCurTime: number
 	m_vWeatherWindDirection: IOBuffer_Vector3
 	m_bGameTimeFrozen: boolean
+	m_bAllDraftHaveAddedBonusTimeThisRound: boolean
 	m_nCustomGameFowTeamCount: number
 	m_bUseAlternateABRules: boolean
 	m_bLobbyIsAssociatedWithGame: boolean
@@ -9190,6 +9249,7 @@ declare class CDOTAGamerules extends CTeamplayRules {
 	m_nAllDraftPhase: number
 	m_bAllDraftRadiantFirst: boolean
 	m_bAllowOverrideVPK: boolean
+	m_bExperimentalGameplay: boolean
 	m_iPreviousRune1: number
 	m_iPreviousRune2: number
 	m_fNextPowerupRuneSpawnTime: number
@@ -9809,6 +9869,8 @@ declare class CDOTA_Item_RefresherOrb_Shard extends C_DOTA_Item { }
 
 declare class C_DOTA_Item_Reaver extends C_DOTA_Item { }
 
+declare class C_DOTA_Ability_Terrorblade_Terror_Wave extends C_DOTABaseAbility { }
+
 declare class C_DOTA_Ability_TemplarAssassin_SelfTrap extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Frostivus2018_Huskar_Inner_Fire extends C_DOTABaseAbility { }
@@ -10028,14 +10090,20 @@ declare class C_DOTA_LightInfo extends C_BaseEntity/*, CLightInfoBase*/ {
 	m_flSkyboxAngularFogMinEnd: number
 	m_flFogMaxZ: number
 	m_flFogFalloff: number
+	m_hFogTexture0: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_flFogLayer0Rotation: number
 	m_flFogLayer0Scale: number
+	m_hFogTexture1: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_flFogLayer1Rotation: number
 	m_flFogLayer1Scale: number
+	m_hFogTextureOpacity: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_hWaterFlowMapTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_hFogFlowMapTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_flFogExclusionInnerRadius: number
 	m_flFogExclusionHeightBias: number
 	m_flCausticSpeedScale: number
 	m_flCausticAmplitudeScale: number
+	m_hColorWarp: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_flColorWarpBlendToFull: number
 	m_fInnerRadius: number
 	m_fOuterRadius: number
@@ -10465,7 +10533,6 @@ declare class C_DOTA_Ability_Holdout_ScourgeWard extends C_DOTABaseAbility { }
 declare class C_DOTA_Ability_WitchDoctor_DeathWard extends C_DOTABaseAbility {
 	m_iDamage: number
 	m_iBounceRadius: number
-	m_iBounces: number
 	m_iProjectileSpeed: number
 	m_hWard: CEntityIndex
 	m_fWardExpireTime: number
@@ -10493,6 +10560,7 @@ declare class C_RopeKeyframe extends C_BaseModelEntity {
 	m_flCurScroll: number
 	m_flScrollSpeed: number
 	m_RopeFlags: number
+	m_iRopeMaterialModelIndex: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_nSegments: number
 	m_hStartPoint: CEntityIndex
 	m_hEndPoint: CEntityIndex
@@ -10505,6 +10573,7 @@ declare class C_RopeKeyframe extends C_BaseModelEntity {
 	m_fLockedPoints: number
 	m_nChangeCount: number
 	m_Width: number
+	m_hMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_TextureHeight: number
 	m_vecImpulse: IOBuffer_Vector3
 	m_vecPreviousImpulse: IOBuffer_Vector3
@@ -10525,6 +10594,8 @@ declare class C_DOTA_Item_Veil_Of_Discord extends C_DOTA_Item { }
 declare class C_DOTA_Ability_Tiny_TossTree extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Tinker_3 extends C_DOTABaseAbility { }
+
+declare class C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_11 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_7 extends C_DOTABaseAbility { }
 
@@ -10605,10 +10676,6 @@ declare class C_DOTA_Ability_Oracle_PurifyingFlames extends C_DOTABaseAbility {
 declare class C_DOTA_Ability_Rubick_FadeBolt extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Lich_FrostArmor extends C_DOTABaseAbility { }
-
-declare class C_DOTA_Ability_Juggernaut_BladeFury extends C_DOTABaseAbility {
-	blade_fury_damage: number
-}
 
 declare class C_DOTA_Ability_Juggernaut_HealingWard extends C_DOTABaseAbility { }
 
@@ -10885,6 +10952,8 @@ declare class C_DOTA_BaseNPC_Building extends C_DOTA_BaseNPC {
 	readonly m_nAmbientFXIndex: ParticleIndex_t
 	readonly m_nTPFXIndex: ParticleIndex_t
 	readonly m_nStatusFXIndex: ParticleIndex_t
+	m_nFXIndex: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
+	m_nFXIndexDestruction: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
 	m_angInitialAngles: IOBuffer_QAngle
 	m_fHeroStatueCycle: number
 	m_iHeroStatueStatusEffectIndex: number
@@ -11290,6 +11359,10 @@ declare class C_DOTA_Item_RiverPainter extends C_DOTA_Item {
 	m_iRiverPaintColor: number
 }
 
+declare class CDOTA_Ability_Snapfire_GobbleUp extends C_DOTABaseAbility {
+	max_time_in_belly: number
+}
+
 declare class C_DOTA_Ability_Pangolier_Swashbuckle extends C_DOTABaseAbility/*, C_HorizontalMotionController*/ {
 	dash_speed: number
 	start_radius: number
@@ -11370,6 +11443,8 @@ declare class CDOTA_Ability_Special_Bonus_Unique_Morokai_JungleHeal_BeamHeal ext
 declare class C_DOTA_Ability_EnragedWildkin_ToughnessAura extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_2 extends C_DOTABaseAbility { }
+
+declare class C_DOTA_Ability_Special_Bonus_Unique_Ursa_7 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Invoker_2 extends C_DOTABaseAbility { }
 
@@ -11521,6 +11596,7 @@ declare class C_TonemapController2 extends C_BaseEntity {
 declare class C_ModelPointEntity extends C_BaseModelEntity { }
 
 declare class C_BeamSpotLight extends C_BaseModelEntity {
+	m_nHaloIndex: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_bSpotlightOn: boolean
 	m_bHasDynamicLight: boolean
 	m_bNoFog: boolean
@@ -11660,6 +11736,9 @@ declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_60 extends C_DOTABaseAbi
 declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_55 extends C_DOTABaseAbility { }
 
 declare class C_EnvLightProbeVolume extends C_BaseEntity {
+	m_hLightProbeTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_hLightProbeDirectLightIndicesTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_hLightProbeDirectLightScalarsTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_vBoxMins: IOBuffer_Vector3
 	m_vBoxMaxs: IOBuffer_Vector3
 	readonly m_LightGroups: string
@@ -11989,6 +12068,8 @@ declare class C_DOTA_BaseNPC_RotatableBuilding extends C_DOTA_BaseNPC {
 	readonly m_nAmbientFXIndex: ParticleIndex_t
 	readonly m_nTPFXIndex: ParticleIndex_t
 	readonly m_nStatusFXIndex: ParticleIndex_t
+	m_nFXIndex: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
+	m_nFXIndexDestruction: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
 	m_angInitialAngles: IOBuffer_QAngle
 	m_fHeroStatueCycle: number
 	m_iHeroStatueStatusEffectIndex: number
@@ -12016,19 +12097,6 @@ declare class C_DOTA_Ability_TrollWarlord_Whirling_Axes_Melee extends C_DOTABase
 
 declare class C_DOTA_Ability_DrowRanger_FrostArrows extends C_DOTABaseAbility { }
 
-declare class C_DOTA_Ability_Holdout_Omnislash extends C_DOTABaseAbility {
-	image_travel_speed: number
-	image_radius: number
-	jugg_travel_speed: number
-	juggcounter: number
-	range: number
-	m_bFirstProjectileFinished: boolean
-	m_vCastDir: IOBuffer_Vector3
-	m_vPos: IOBuffer_Vector3
-	m_vJuggStartLocation: IOBuffer_Vector3
-	m_flRange: number
-}
-
 declare class C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_3 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Elder_Titan_4 extends C_DOTABaseAbility { }
@@ -12053,6 +12121,8 @@ declare class C_DOTA_BaseNPC_NeutralItemStash extends C_DOTA_BaseNPC_Building {
 }
 
 declare class C_World extends C_BaseModelEntity {
+	m_hHeightFogTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_hHeightFogMaskTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 }
 
 declare class C_EntityDissolve extends C_BaseModelEntity {
@@ -12138,6 +12208,7 @@ declare class C_DOTA_Item_RuneSpawner_Bounty extends C_BaseAnimating {
 }
 
 declare class C_PostProcessingVolume extends C_BaseTrigger {
+	m_hPostSettings: CStrongHandle<InfoForResourceTypeCPostProcessingResource>
 	m_flFadeDuration: number
 	m_flMinLogExposure: number
 	m_flMaxLogExposure: number
@@ -12198,6 +12269,8 @@ declare class C_DOTA_Ability_DrowRanger_Multishot extends C_DOTABaseAbility {
 	arrow_spread: number
 	arrow_count: number
 }
+
+declare class C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_5 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Wisp extends C_DOTABaseAbility { }
 
@@ -12537,6 +12610,7 @@ declare class C_PathParticleRope extends C_BaseEntity {
 	m_flRadius: number
 	m_ColorTint: IOBuffer_Color
 	m_nEffectState: number
+	m_iEffectIndex: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
 }
 
 declare class CDOTA_Item_RiverPainter5 extends C_DOTA_Item_RiverPainter { }
@@ -12937,6 +13011,7 @@ declare class C_DynamicProp extends C_BreakableProp {
 declare class C_DOTA_Item_Recipe_Ring_Of_Basilius extends C_DOTA_Item { }
 
 declare class CDOTA_Ability_VoidSpirit_ResonantPulse extends C_DOTABaseAbility {
+	m_bGrantedScepterCharges: boolean
 	buff_duration: number
 	base_absorb_amount: number
 	absorb_per_hero_hit: number
@@ -13129,6 +13204,11 @@ declare class C_DOTA_Item_Recipe_Black_King_Bar extends C_DOTA_Item { }
 
 declare class C_DOTA_Item_Recipe_BootsOfTravel extends C_DOTA_Item { }
 
+declare class CDOTA_Ability_Snapfire_SpitCreep extends C_DOTABaseAbility {
+	m_nDamagePerProjectile: number
+	m_hGobbledUnit: CEntityIndex
+}
+
 declare class C_DOTA_Ability_Wisp_Spirits_In extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_NagaSiren_SongOfTheSiren_Cancel extends C_DOTABaseAbility { }
@@ -13182,6 +13262,7 @@ declare class C_DOTA_MapTree extends C_DOTA_BinaryObject {
 }
 
 declare class C_Sprite extends C_BaseModelEntity {
+	m_hSpriteMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_hAttachedToEntity: CEntityIndex
 	m_nAttachment: number
 	m_flSpriteFramerate: number
@@ -13209,7 +13290,11 @@ declare class C_Sprite extends C_BaseModelEntity {
 declare class C_EnvCombinedLightProbeVolume extends C_BaseEntity {
 	m_Color: IOBuffer_Color
 	m_flBrightness: number
+	m_hCubemapTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_bCustomCubemapTexture: boolean
+	m_hLightProbeTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_hLightProbeDirectLightIndicesTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
+	m_hLightProbeDirectLightScalarsTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_vBoxMins: IOBuffer_Vector3
 	m_vBoxMaxs: IOBuffer_Vector3
 	readonly m_LightGroups: string
@@ -13310,6 +13395,8 @@ declare class C_BaseCombatWeapon extends C_BaseAnimating {
 	m_flNextSecondaryAttack: number
 	m_nQueuedAttack: number
 	m_flTimeAttackQueued: number
+	m_iViewModelIndex: CStrongHandle<InfoForResourceTypeCModel>
+	m_iWorldModelIndex: CStrongHandle<InfoForResourceTypeCModel>
 	m_iState: WeaponState_t
 	m_iPrimaryAmmoType: number
 	m_iSecondaryAmmoType: number
@@ -13629,6 +13716,8 @@ declare class C_DOTA_Ability_Rubick_Telekinesis extends C_DOTABaseAbility {
 
 declare class C_DOTA_Ability_Rattletrap_Overclocking extends C_DOTABaseAbility { }
 
+declare class CDOTA_Ability_Juggernaut_Swift_Slash extends C_DOTABaseAbility { }
+
 declare class C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_6 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Bristleback_3 extends C_DOTABaseAbility { }
@@ -13650,6 +13739,7 @@ declare class C_DOTA_Unit_Courier extends C_DOTA_BaseNPC_Additive {
 declare class C_ParticleSystem extends C_BaseModelEntity {
 	m_bActive: boolean
 	m_nStopType: number
+	m_iEffectIndex: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
 	m_flStartTime: number
 	m_bNoSave: boolean
 	m_bStartActive: boolean
@@ -13716,6 +13806,9 @@ declare class C_DevtestHierarchy extends C_DynamicProp {
 	m_bChildIsDynamic: boolean
 	m_bCreateChildSideChild: boolean
 	m_hAlternateParent: CEntityIndex
+	m_hAlternateModel: CStrongHandle<InfoForResourceTypeCModel>
+	m_hOriginalModel: CStrongHandle<InfoForResourceTypeCModel>
+	m_hClientSideChildModel: CStrongHandle<InfoForResourceTypeCModel>
 	m_flEntityStartTime: number
 	m_nTestIndex: number
 	m_nCurrType: HierarchyType_t
@@ -13854,6 +13947,7 @@ declare class C_DOTAWorldParticleSystem extends C_BaseModelEntity {
 	readonly m_szEffectName: string
 	readonly m_szTargetName: string
 	readonly m_szControlPoint: string
+	m_hOverrideModel: CStrongHandle<InfoForResourceTypeCModel>
 	m_vModelScale: IOBuffer_Vector3
 	m_nSkinOverride: number
 	m_bDayTime: boolean
@@ -13947,6 +14041,8 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Bane_4 extends C_DOTABaseAbili
 declare class C_DOTA_Ability_Special_Bonus_Unique_Morphling_3 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Beastmaster extends C_DOTABaseAbility { }
+
+declare class C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_5 extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Special_Bonus_Attack_Damage_250 extends C_DOTABaseAbility { }
 
@@ -14445,11 +14541,9 @@ declare class C_DOTA_Ability_Dazzle_ShadowWave extends C_DOTABaseAbility {
 	m_iCurJumpCount: number
 	m_vCurTargetLoc: IOBuffer_Vector3
 	bounce_radius: number
-	bounce_radius_scepter: number
 	damage_radius: number
 	damage: number
 	max_targets: number
-	max_targets_scepter: number
 }
 
 declare class C_DOTA_Ability_Warlock_Shadow_Word extends C_DOTABaseAbility { }
@@ -14624,6 +14718,8 @@ declare class C_Sun extends C_BaseModelEntity {
 	m_bOn: boolean
 	m_nSize: number
 	m_nOverlaySize: number
+	m_nMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
+	m_nOverlayMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_flHDRColorScale: number
 }
 
@@ -15334,6 +15430,8 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_5 extends C_DOTABa
 
 declare class C_DOTA_Ability_Special_Bonus_Unique_Lifestealer_2 extends C_DOTABaseAbility { }
 
+declare class C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_6 extends C_DOTABaseAbility { }
+
 declare class C_DOTA_Ability_Special_Bonus_Attack_Speed_30 extends C_DOTABaseAbility { }
 
 declare class CDOTA_Unit_Hero_Void_Spirit extends C_DOTA_BaseNPC_Hero { }
@@ -15439,6 +15537,7 @@ declare class C_EnvVolumetricFogController extends C_BaseEntity {
 	m_bStartDisabled: boolean
 	m_bEnableIndirect: boolean
 	m_bIsMaster: boolean
+	m_hFogIndirectTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_nForceRefreshCount: number
 	m_bFirstTime: boolean
 }
@@ -15518,6 +15617,7 @@ declare class C_SlideshowDisplay extends C_BaseEntity {
 	m_fMaxSlideTime: number
 	m_iCycleType: number
 	m_bNoListRepeats: boolean
+	m_iCurrentMaterialIndex: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_iCurrentSlideIndex: number
 	m_NextSlideTime: number
 	m_iCurrentSlideList: number
@@ -15762,6 +15862,7 @@ declare class C_DOTA_Ability_Special_Bonus_Spell_Amplify_4 extends C_DOTABaseAbi
 
 declare class C_DOTA_PortraitBuilding extends C_BaseAnimating {
 	readonly m_nAmbientFXIndex: ParticleIndex_t
+	m_nFXIndex: CStrongHandle<InfoForResourceTypeIParticleSystemDefinition>
 	m_ParticleTintColor: IOBuffer_Color
 }
 
@@ -16052,6 +16153,7 @@ declare class CDOTA_BaseNPC_Seasonal_Penguin extends C_DOTA_BaseNPC_Additive { }
 declare class C_LightDirectionalEntity extends C_LightEntity { }
 
 declare class C_EnvCubemap extends C_BaseEntity {
+	m_hCubemapTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_bCustomCubemapTexture: boolean
 	m_flInfluenceRadius: number
 	m_vBoxProjectMins: IOBuffer_Vector3
@@ -16487,6 +16589,7 @@ declare class C_EnvCubemapFog extends C_BaseEntity {
 	m_flLODBias: number
 	m_bActive: boolean
 	m_bStartDisabled: boolean
+	m_hFogCubemapTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_bFirstTime: boolean
 }
 
@@ -16514,7 +16617,9 @@ declare class C_DOTA_Ability_BountyHunter_WindWalk extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Ability_Enigma_BlackHole extends C_DOTABaseAbility { }
 
-declare class C_DOTA_Ability_Holdout_BladeFury extends C_DOTA_Ability_Juggernaut_BladeFury { }
+declare class C_DOTA_Ability_Juggernaut_BladeFury extends C_DOTABaseAbility {
+	blade_fury_damage: number
+}
 
 declare class C_DOTA_Ability_Greevil_Miniboss_Yellow_IonShell extends C_DOTABaseAbility { }
 
@@ -16888,6 +16993,7 @@ declare class C_DOTA_Ability_Special_Bonus_Unique_Meepo_3 extends C_DOTABaseAbil
 declare class C_DOTA_Ability_Special_Bonus_Spell_Block_15 extends C_DOTABaseAbility { }
 
 declare class C_EnvSky extends C_BaseModelEntity {
+	m_hSkyMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_bStartDisabled: boolean
 	m_vTintColor: IOBuffer_Color
 	m_nFogType: number
@@ -16964,6 +17070,7 @@ declare class C_DOTA_Ability_Special_Bonus_HP_Regen_6 extends C_DOTABaseAbility 
 
 declare class CDOTAPropConsumableBanner extends C_DynamicProp {
 	m_nPlayerID: number
+	m_hAvatarTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_bUseAvatar: boolean
 }
 
@@ -17324,6 +17431,7 @@ declare class C_ShatterGlassShardPhysics extends C_PhysicsProp {
 declare class C_PlayerCosmeticPropClientside extends C_DynamicPropClientside {
 	m_iPlayerNum: number
 	m_iCosmeticType: number
+	m_hProxyTexture: CStrongHandle<InfoForResourceTypeCTextureBase>
 	m_bGeneratedShowcaseProps: boolean
 	readonly m_pShowcaseItem: C_EconItemView
 }
@@ -17349,6 +17457,8 @@ declare class C_Beam extends C_BaseModelEntity {
 	m_flDamage: number
 	m_nNumBeamEnts: number
 	m_queryHandleHalo: number
+	m_hBaseMaterial: CStrongHandle<InfoForResourceTypeIMaterial2>
+	m_nHaloIndex: CStrongHandle<InfoForResourceTypeIMaterial2>
 	m_nBeamType: BeamType_t
 	m_nBeamFlags: number
 	m_fWidth: number
@@ -17919,10 +18029,7 @@ declare class C_DOTA_Item_PhaseBoots extends C_DOTA_Item { }
 
 declare class C_DOTA_Ability_Bane_Nightmare extends C_DOTABaseAbility { }
 
-declare class C_DOTA_Ability_SpiritBreaker_NetherStrike extends C_DOTABaseAbility {
-	cooldown_scepter: number
-	cast_range_scepter: number
-}
+declare class C_DOTA_Ability_SpiritBreaker_NetherStrike extends C_DOTABaseAbility { }
 
 declare class C_DOTA_Item_OgreAxe extends C_DOTA_Item { }
 
@@ -17993,6 +18100,7 @@ declare class C_FuncAreaPortalWindow extends C_BaseModelEntity {
 	m_flFadeStartDist: number
 	m_flFadeDist: number
 	m_flTranslucencyLimit: number
+	m_iBackgroundModelIndex: CStrongHandle<InfoForResourceTypeCModel>
 }
 
 declare class CDOTA_Item_Silver_Edge extends C_DOTA_Item { }
@@ -18061,6 +18169,7 @@ declare class C_DOTA_Ability_Tinker_HeatSeekingMissile extends C_DOTABaseAbility
 
 declare class C_BaseVRHandAttachment extends C_BaseAnimating {
 	m_hOldAttachedHand: CEntityIndex<C_PropVRHand>
+	m_hMaterialOverride: CStrongHandle<InfoForResourceTypeIMaterial2>
 	readonly m_OnAttachedToHand: CEntityIOOutput
 	readonly m_OnDetachedFromHand: CEntityIOOutput
 	m_hAttachedHand: CEntityIndex<C_PropVRHand>
