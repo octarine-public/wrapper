@@ -53,6 +53,11 @@ export default class BinaryStream {
 		} while (shift !== limit)
 		return val
 	}
+	public ReadUint32(littleEndian = true): number {
+		let res = this.view.getUint32(this.pos, littleEndian)
+		this.pos += 4
+		return res
+	}
 	public ReadInt32(littleEndian = true): number {
 		let res = this.view.getInt32(this.pos, littleEndian)
 		this.pos += 4
@@ -70,6 +75,9 @@ export default class BinaryStream {
 		let slice = this.view.buffer.slice(this.pos, this.pos + size)
 		this.RelativeSeek(size)
 		return slice
+	}
+	public ReadString(size: number): string {
+		return Utf8ArrayToStr(new Uint8Array(size))
 	}
 	public ReadVarSlice(): ArrayBuffer {
 		return this.ReadSlice(this.ReadVarUintAsNumber())

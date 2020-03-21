@@ -1,24 +1,45 @@
 import Events from "./Events"
 import BinaryStream from "../Utils/BinaryStream"
 import { Utf8ArrayToStr, StringToUTF8 } from "../Utils/Utils"
-import { MurmurHash64 } from "../Native/WASM"
+import { MurmurHash64/*, MurmurHash2*/ } from "../Native/WASM"
 
 const Manifest = new (class CManifest {
 	public readonly Directories: string[] = []
 	public readonly Extensions: string[] = []
 	public readonly FileNames: string[] = []
 	public readonly Paths = new Map<bigint, [number, number, number]>()
+	/*public readonly PathHash32To64 = new Map<number, bigint>()
+	public readonly Hash32ToString = new Map<number, string>()*/
 
 	public GetPathByHash(hash: bigint): Nullable<string> {
 		// it's interpret as signed int64 in protobuf messages, so we need to wrap it into unsigned
 		hash = BigInt.asUintN(64, hash)
 		let path = this.Paths.get(hash)
 		if (path === undefined) {
-			console.log(`Unknown resource hash ${hash} ${HashToPath(hash)} passed to GetPathByHash ${new Error().stack}`)
+			console.log(`Unknown resource hash ${hash} passed to GetPathByHash ${new Error().stack}`)
 			return undefined
 		}
 		return `${this.Directories[path[0]]}${this.FileNames[path[1]]}.${this.Extensions[path[2]]}`
 	}
+	/*public SaveStringToken(str: string): number {
+		let hash = MurmurHash2(StringToUTF8(str.toLowerCase()).buffer)
+		if (!this.PathHash32To64.has(hash) && !this.Hash32ToString.has(hash))
+			this.Hash32ToString.set(hash, str)
+		return hash
+	}
+	public LookupStringByToken(hash: number): Nullable<string> {
+		if (hash === 0)
+			return "<null>"
+		// it's interpret as signed int32 in protobuf messages, so we need to wrap it into unsigned
+		hash = hash >>> 0
+
+		let hash64 = this.PathHash32To64.get(hash)
+		if (hash64 !== undefined) {
+			let path = this.Paths.get(hash64)!
+			return `${this.Directories[path[0]]}${this.FileNames[path[1]]}.${this.Extensions[path[2]]}`
+		}
+		return this.Hash32ToString.get(hash)
+	}*/
 })
 export default Manifest
 
@@ -33,6 +54,14 @@ function ParseStringFromStream(stream: BinaryStream, ar: string[]) {
 		ar[id] = BufferToPathString(stream.ReadSlice(size))
 	else
 		stream.RelativeSeek(size)
+}
+
+function InitManifest() {
+	Manifest.Directories.splice(0)
+	Manifest.Extensions.splice(0)
+	Manifest.FileNames.splice(0)
+	Manifest.Paths.clear()
+	// Manifest.PathHash32To64.clear()
 }
 
 Events.on("ServerMessage", (msg_id, buf) => {
@@ -56,17 +85,39 @@ Events.on("ServerMessage", (msg_id, buf) => {
 				if (path_id !== Manifest.Paths.size)
 					continue
 				let path = `${Manifest.Directories[dir_id]}${Manifest.FileNames[file_id]}.${Manifest.Extensions[ext_id]}`
-				Manifest.Paths.set(MurmurHash64(StringToUTF8(path), 0xEDABCDEF), [dir_id, file_id, ext_id])
+				let hash64 = MurmurHash64(StringToUTF8(path).buffer)
+				Manifest.Paths.set(hash64, [dir_id, file_id, ext_id])
+				// Manifest.PathHash32To64.set(MurmurHash2(StringToUTF8(path.toLowerCase()).buffer), hash64)
 			}
 			break
 		}
 		case 40: // reset Manifest on CSVCMsg_ServerInfo
-			Manifest.Directories.splice(0)
-			Manifest.Extensions.splice(0)
-			Manifest.FileNames.splice(0)
-			Manifest.Paths.clear()
+			InitManifest()
 			break
 		default:
 			break
 	}
 })
+
+InitManifest()
+
+/*
+Manifest.SaveStringToken("")
+Manifest.SaveStringToken("invalid_hitbox")
+Manifest.SaveStringToken("invalid_bone")
+Manifest.SaveStringToken("default")
+
+let buf = readFile("stringtokendatabase.txt")
+if (buf !== undefined) {
+	let stream = new BinaryStream(new DataView(buf))
+	if (stream.Next() === 0x21 && stream.Next() === 0x0A) {
+		while (!stream.Empty()) {
+			stream.RelativeSeek(6)
+			let str = ""
+			for (let i = stream.Next(); i !== 0x0A; i = stream.Next())
+				str += String.fromCharCode(i)
+			Manifest.SaveStringToken(str)
+		}
+	}
+}
+*/

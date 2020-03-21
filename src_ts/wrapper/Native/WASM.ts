@@ -49,7 +49,11 @@ var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("wrapper.was
 	my_malloc: (size: number) => number
 	my_free: (ptr: number) => void
 	ParseImage: (ptr: number, size: number) => number
-	MurmurHash64B: (ptr: number, size: number, seed: number) => number
+	ExtractResourceBlock_DATA: (ptr: number, size: number) => number
+	ExtractResourceBlock_REDI: (ptr: number, size: number) => number
+	ExtractResourceBlock_NTRO: (ptr: number, size: number) => number
+	MurmurHash2: (ptr: number, size: number, seed: number) => number
+	MurmurHash64: (ptr: number, size: number, seed: number) => number
 }
 declare global {
 	var wasm_: typeof wasm
@@ -203,8 +207,7 @@ export function ParseImage(buf: ArrayBuffer): [Uint8Array, Vector2] {
 		return [new Uint8Array(new Array(4).fill(0xFF)), new Vector2(1, 1)]
 
 	let addr = wasm.my_malloc(buf.byteLength)
-	let memory = new Uint8Array(wasm.memory.buffer, addr)
-	memory.set(new Uint8Array(buf))
+	new Uint8Array(wasm.memory.buffer, addr).set(new Uint8Array(buf))
 
 	addr = wasm.ParseImage(addr, buf.byteLength)
 	if (addr === 0)
@@ -215,6 +218,33 @@ export function ParseImage(buf: ArrayBuffer): [Uint8Array, Vector2] {
 	wasm.my_free(addr)
 
 	return [copy, image_size]
+}
+
+export function ExtractResourceBlock(buf: ArrayBuffer, type: string): Uint8Array {
+	let func: (ptr: number, size: number) => number
+	switch (type) {
+		case "DATA":
+			func = wasm.ExtractResourceBlock_DATA
+			break
+		case "REDI":
+			func = wasm.ExtractResourceBlock_REDI
+			break
+		case "NTRO":
+			func = wasm.ExtractResourceBlock_NTRO
+			break
+		default:
+			throw `Unsopported block type: ${type}`
+	}
+	if (buf === undefined)
+		return new Uint8Array()
+
+	let addr = wasm.my_malloc(buf.byteLength)
+	new Uint8Array(wasm.memory.buffer, addr).set(new Uint8Array(buf))
+	let len = func(addr, buf.byteLength)
+	let copy = new Uint8Array(len)
+	copy.set(new Uint8Array(wasm.memory.buffer, addr, len))
+	wasm.my_free(addr)
+	return copy
 }
 
 export function ParseVHCG(buf: ArrayBuffer): Nullable<HeightMap> {
@@ -255,16 +285,27 @@ export function GetSecondaryHeightForLocation(loc: Vector2): number {
 	return WASMIOBuffer[0]
 }
 
+export function MurmurHash2(buf: ArrayBuffer, seed = 0x31415926): number {
+	if (buf === undefined)
+		buf = new ArrayBuffer(0)
+
+	let buf_addr = wasm.my_malloc(buf.byteLength)
+	if (buf_addr === 0)
+		throw "Memory allocation for MurmurHash2 raw data failed"
+	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(new Uint8Array(buf))
+
+	return wasm.MurmurHash2(buf_addr, buf.byteLength, seed)
+}
+
 export function MurmurHash64(buf: ArrayBuffer, seed = 0xEDABCDEF): bigint {
 	if (buf === undefined)
 		buf = new ArrayBuffer(0)
 
 	let buf_addr = wasm.my_malloc(buf.byteLength)
 	if (buf_addr === 0)
-		throw "Memory allocation for VHCG raw data failed"
-	let memory = new Uint8Array(wasm.memory.buffer, buf_addr)
-	memory.set(new Uint8Array(buf))
+		throw "Memory allocation for MurmurHash64 raw data failed"
+	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(new Uint8Array(buf))
 
-	wasm.MurmurHash64B(buf_addr, buf.byteLength, seed)
+	wasm.MurmurHash64(buf_addr, buf.byteLength, seed)
 	return WASMIOBufferBU64[0]
 }

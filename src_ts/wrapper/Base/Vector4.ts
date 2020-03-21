@@ -24,10 +24,10 @@ export default class Vector4 {
 		return `Vector4(${this.x},${this.y},${this.z},${this.w})`
 	}
 	/**
-	 * @return [x, y, z]
+	 * @return [x, y, z, w]
 	 */
-	public toArray(): [number, number, number] {
-		return [this.x, this.y, this.z]
+	public toArray(): [number, number, number, number] {
+		return [this.x, this.y, this.z, this.w]
 	}
 	public toJSON() {
 		return this.toArray()

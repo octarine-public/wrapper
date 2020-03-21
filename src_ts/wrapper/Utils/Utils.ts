@@ -107,9 +107,7 @@ export function StringToUTF16(str: string): Uint8Array {
 
 export function parseKVFile(path: string): RecursiveMap {
 	let buf = readFile(path)
-	if (buf === undefined)
-		return new Map()
-	return parseKV(Utf8ArrayToStr(new Uint8Array(buf)))
+	return buf !== undefined ? parseKV(buf) : new Map()
 }
 
 export function parseEnumString(enum_object: any /* { [key: string]: number } */, str: string): number {

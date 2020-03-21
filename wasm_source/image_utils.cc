@@ -124,27 +124,6 @@ enum class VTexExtraData : uint32_t {
 };
 
 #pragma pack(push, 1)
-struct BlockData {
-	char type[4];
-	uint32_t offset;
-	uint32_t size;
-};
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-struct ResourceHeader {
-	uint32_t file_size;
-	uint16_t header_version;
-	uint16_t version;
-	uint32_t block_offset;
-	uint32_t block_count;
-	// char offset[block_offset - 8];
-	// BlockData[block_count] blocks_data;;
-	// ...
-};
-#pragma pack(pop)
-
-#pragma pack(push, 1)
 struct VTexHeader {
 	uint16_t version;
 	VTexFlags flags;
@@ -197,62 +176,36 @@ extern void ConvertFromDXT5(const uint8_t* src, uint8_t* dst, int width, int hei
  * Adds more crutches & bikes to this project
  */
 char* ParseVTex(char* data, size_t data_size, int& w, int& h) {
+	constexpr uint16_t KnownVTexVersion = 1;
 	auto invalid_vtex = "Invalid VTex file.\n";
-	constexpr uint16_t KnownHeaderVersion = 12,
-		KnownVTexVersion = 1;
-	if (data_size < sizeof(ResourceHeader)) {
+	auto block_data = ExtractBlockFromResource(data, data_size, "DATA");
+	if (block_data == nullptr) {
 		DEBUG_PRINT("%s", invalid_vtex);
 		return nullptr;
 	}
-	auto header = (ResourceHeader*)data;
-	VTexHeader* vtex_header;
-	if (
-		header->file_size == /* VPK magic */ 0x55AA1234
-		|| header->file_size == /* compiled shader magic */ 0x32736376
-		/*|| header->file_size != data_size*/ // TODO: Some real files seem to have different file size
-		|| header->header_version != KnownHeaderVersion
-	) {
+	// TODO: add check that's real VTEX file (lookup https://github.com/SteamDatabase/ValveResourceFormat/blob/master/ValveResourceFormat/Resource/Resource.cs)
+	auto vtex_header = GetPointer<VTexHeader>(&block_data->offset, block_data->offset);
+	if (vtex_header->version != KnownVTexVersion) {
 		DEBUG_PRINT("%s", invalid_vtex);
 		return nullptr;
 	}
-
-	data += header->block_offset + 8;
-	char* image_data = nullptr;
-	size_t image_size = 0;
-	for (uint32_t i = 0, end = header->block_count; i < end; i++, data += sizeof(BlockData)) {
-		auto block_data = (BlockData*)data;
-
-		// TODO: add check that's real VTEX file (lookup https://github.com/SteamDatabase/ValveResourceFormat/blob/master/ValveResourceFormat/Resource/Resource.cs)
-		if (strncmp(block_data->type, "DATA", 4) == 0) {
-			vtex_header = GetPointer<VTexHeader>(&block_data->offset, block_data->offset);
-			if (vtex_header->version != KnownVTexVersion) {
-				DEBUG_PRINT("%s", invalid_vtex);
-				return nullptr;
-			}
-			image_data = GetPointer<char>(vtex_header, block_data->size);
-			image_size = data_size - ((uint64_t)image_data - (uint64_t)header);
-			w = vtex_header->width;
-			h = vtex_header->height;
-			auto extra_data_count = vtex_header->extra_data_count;
-			if (extra_data_count == 0)
+	auto image_data = GetPointer<char>(vtex_header, block_data->size);
+	auto image_size = data_size - ((uint64_t)image_data - (uint64_t)data);
+	w = vtex_header->width;
+	h = vtex_header->height;
+	auto extra_data_count = vtex_header->extra_data_count;
+	if (extra_data_count != 0) {
+		auto extra_data_block = GetPointer<VTexExtraDataBlock>(&vtex_header->extra_data_offset, vtex_header->extra_data_offset);
+		for (uint32_t j = 0; j < extra_data_count; j++, extra_data_block++)
+			if (extra_data_block->type == VTexExtraData::FILL_TO_POWER_OF_TWO) {
+				auto extra_data = GetPointer<uint16_t>(&extra_data_block->offset, extra_data_block->offset);
+				auto nw = extra_data[1], nh = extra_data[2];
+				if (nw > 0 && w >= nw)
+					w = nw;
+				if (h >= nh && nh > 0)
+					h = nh;
 				break;
-			auto extra_data_block = GetPointer<VTexExtraDataBlock>(&vtex_header->extra_data_offset, vtex_header->extra_data_offset);
-			for (uint32_t j = 0; j < extra_data_count; j++, extra_data_block++)
-				if (extra_data_block->type == VTexExtraData::FILL_TO_POWER_OF_TWO) {
-					auto extra_data = GetPointer<uint16_t>(&extra_data_block->offset, extra_data_block->offset);
-					auto nw = extra_data[1], nh = extra_data[2];
-					if (nw > 0 && w >= nw)
-						w = nw;
-					if (h >= nh && nh > 0)
-						h = nh;
-					break;
-				}
-			break;
-		}
-	}
-	if (image_data == nullptr) {
-		DEBUG_PRINT("%s", invalid_vtex);
-		return nullptr;
+			}
 	}
 
 	void* copy = nullptr;

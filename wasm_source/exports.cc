@@ -261,18 +261,83 @@ EXPORT_JS char* ParseImage(char* data, size_t data_size) {
 	return res;
 }
 
-// https://github.com/explosion/murmurhash/blob/master/murmurhash/MurmurHash2.cpp#L142
-// https://github.com/skadistats/clarity/blob/master/src/main/java/skadistats/clarity/util/MurmurHash.java
+#define ExtractResourceBlock(name) \
+EXPORT_JS uint32_t ExtractResourceBlock_##name(char* data, size_t data_size) { \
+	auto block_data = ExtractBlockFromResource(data, data_size, #name); \
+	if (block_data == nullptr) \
+		return 0; \
+	auto block_size = block_data->size; \
+	memmove(data, GetPointer(&block_data->offset, block_data->offset), block_size); \
+	return block_size; \
+}
+
+ExtractResourceBlock(DATA)
+ExtractResourceBlock(NTRO)
+ExtractResourceBlock(REDI)
+
+// https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/tier1/generichash.cpp#L313
 // someone please port it to JS >_<
-EXPORT_JS void MurmurHash64B(void* key, int len, uint32_t seed) {
+EXPORT_JS uint32_t MurmurHash2(void* key, int len, uint32_t seed) {
+	// 'm' and 'r' are mixing constants generated offline.
+	// They're not really 'magic', they just happen to work well.
 	const uint32_t m = 0x5bd1e995;
 	const int r = 24;
 
+	// Initialize the hash to a 'random' value
+	uint32_t h = seed ^ len;
+
+	// Mix 4 bytes at a time into the hash
+	auto data = (const unsigned char*)key;
+	while(len >= 4) {
+		uint32_t k = *(uint32_t*)data;
+
+		k *= m; 
+		k ^= k >> r; 
+		k *= m; 
+
+		h *= m; 
+		h ^= k;
+
+		data += 4;
+		len -= 4;
+	}
+
+	// Handle the last few bytes of the input array
+	switch (len) {
+		case 3:
+			h ^= data[2] << 16;
+		case 2:
+			h ^= data[1] << 8;
+		case 1:
+			h ^= data[0];
+			h *= m;
+	}
+
+	// Do a few final mixes of the hash to ensure the last few
+	// bytes are well-incorporated.
+	h ^= h >> 13;
+	h *= m;
+	h ^= h >> 15;
+
+	free(key);
+
+	return h;
+}
+
+// https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/tier1/generichash.cpp#L380
+// someone please port it to JS >_<
+EXPORT_JS void MurmurHash64(void* key, int len, uint32_t seed) {
+	// 'm' and 'r' are mixing constants generated offline.
+	// They're not really 'magic', they just happen to work well.
+	const uint32_t m = 0x5bd1e995;
+	const int r = 24;
+
+	// Initialize the hash to a 'random' value
 	uint32_t h1 = seed ^ len;
 	uint32_t h2 = 0;
 
-	const uint32_t* data = (const uint32_t*)key;
-
+	// Mix 4 bytes at a time into the hash
+	auto data = (const uint32_t*)key;
 	while (len >= 8) {
 		uint32_t k1 = *data++;
 		k1 *= m; k1 ^= k1 >> r; k1 *= m;
@@ -292,13 +357,14 @@ EXPORT_JS void MurmurHash64B(void* key, int len, uint32_t seed) {
 		len -= 4;
 	}
 
-	switch(len) {
+	// Handle the last few bytes of the input array
+	switch (len) {
 		case 3:
-			h2 ^= ((unsigned char*)data)[2] << 16;
+			h2 ^= ((uint8_t*)data)[2] << 16;
 		case 2:
-			h2 ^= ((unsigned char*)data)[1] << 8;
+			h2 ^= ((uint8_t*)data)[1] << 8;
 		case 1:
-			h2 ^= ((unsigned char*)data)[0];
+			h2 ^= ((uint8_t*)data)[0];
 			h2 *= m;
 	}
 
@@ -310,4 +376,4 @@ EXPORT_JS void MurmurHash64B(void* key, int len, uint32_t seed) {
 	free(key);
 
 	*(uint64_t*)JSIOBuffer = (((uint64_t)h1) << 32) | h2;
-} 
+}

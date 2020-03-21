@@ -1,4 +1,6 @@
 import Stream from "./Stream"
+import { Utf8ArrayToStr } from "./Utils"
+import BinaryStream from "./BinaryStream"
 
 const STRING = '"'
 const NODE_OPEN = '{'
@@ -52,7 +54,8 @@ function _unquotedtostr(stream: Stream): string {
 	return str
 }
 
-function _parse(stream: Stream, map = new Map<string, any>()): Map<string, any> {
+export type RecursiveMap = Map<string, RecursiveMap | string[] | string>
+function _parse(stream: Stream, map = new Map<string, any>()): RecursiveMap {
 	var laststr = "",
 		lasttok = "",
 		lastbrk = "",
@@ -64,10 +67,10 @@ function _parse(stream: Stream, map = new Map<string, any>()): Map<string, any> 
 		if (c === NODE_OPEN) {
 			next_is_value = false  // Make sure the next string is interpreted as a key.
 			if (!map.has(laststr))
-				map.set(laststr, new Map<string, any>())
+				map.set(laststr, new Map())
 			let x = map.get(laststr)
 			if (!(x instanceof Map))
-				map.set(laststr, x = new Map<string, any>())
+				map.set(laststr, x = new Map())
 			_parse(stream, map.get(laststr))
 		} else if (c === NODE_CLOSE) {
 			return map
@@ -110,7 +113,14 @@ function _parse(stream: Stream, map = new Map<string, any>()): Map<string, any> 
 	return map
 }
 
-export type RecursiveMap = Map<string, RecursiveMap | string>
-export function parseKV(data: string): RecursiveMap {
-	return _parse(new Stream(data))
+export function parseKV(buf: ArrayBuffer): RecursiveMap {
+	let stream = new BinaryStream(new DataView(buf))
+	switch (stream.ReadString(4)) {
+		case "VKV\x03":
+			throw "KV3 parsing is currently unsupported."
+		case "KV3\x01":
+			throw "KV2 parsing is currently unsupported."
+		default:
+			return _parse(new Stream(Utf8ArrayToStr(new Uint8Array(buf))))
+	}
 }

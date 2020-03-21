@@ -26,6 +26,15 @@ template<typename T = void, typename X = T> FORCEINLINE T* GetPointer(X* base, i
 	return (T*)(((int8_t*)base) + offset);
 }
 
+#pragma pack(push, 1)
+struct BlockData {
+	char type[4];
+	uint32_t offset;
+	uint32_t size;
+};
+#pragma pack(pop)
+BlockData* ExtractBlockFromResource(char* data, size_t size, const char* name);
+
 #define VECTOR_NO_SLOW_OPERATIONS
 #include "Vector.h"
 #include "vhcg.h"
