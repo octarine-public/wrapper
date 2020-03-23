@@ -61,9 +61,9 @@ export default class ExecuteOrder {
 
 		return new ExecuteOrder(
 			order.order_type,
-			order.target !== 0 ? EntityManager.GetEntityByNative(order.target) : undefined,
+			order.target !== 0 ? (EntityManager.GetEntityByNative(order.target) ?? order.target) : undefined,
 			Vector3.fromIOBuffer(order.position !== undefined),
-			EntityManager.GetEntityByNative(order.ability) as Ability,
+			(EntityManager.GetEntityByNative(order.ability) as Ability) ?? order.ability,
 			order.issuer,
 			unit,
 			order.queue,

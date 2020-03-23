@@ -70,7 +70,7 @@ RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 		if (!unit.IsVisible || !unit.IsAlive)
 			return
 		let buff = unit.GetBuffByName("modifier_ice_blast")
-		if (buff === undefined || buff?.RemainingTime === 0)
+		if (buff === undefined || buff.RemainingTime === 0)
 			unit.HP = Math.min(Math.round(unit.HP + (unit.HPRegen / 30)), unit.MaxHP)
 	})
 	if (LocalPlayer !== undefined)
