@@ -1,13 +1,15 @@
 import Events from "./Events"
 import BinaryStream from "../Utils/BinaryStream"
-import { Utf8ArrayToStr, StringToUTF8 } from "../Utils/Utils"
-import { MurmurHash64/*, MurmurHash2*/ } from "../Native/WASM"
+import { Utf8ArrayToStr, StringToUTF8, ParseExternalReferences } from "../Utils/Utils"
+import { MurmurHash64, MurmurHash2 } from "../Native/WASM"
+import { parseKV } from "../Utils/ParseKV"
 
 const Manifest = new (class CManifest {
 	public readonly Directories: string[] = []
 	public readonly Extensions: string[] = []
 	public readonly FileNames: string[] = []
 	public readonly Paths = new Map<bigint, [number, number, number]>()
+	public readonly SoundHashToString = new Map<number, string>()
 	/*public readonly PathHash32To64 = new Map<number, bigint>()
 	public readonly Hash32ToString = new Map<number, string>()*/
 
@@ -40,6 +42,20 @@ const Manifest = new (class CManifest {
 		}
 		return this.Hash32ToString.get(hash)
 	}*/
+	public LoadSoundFile(path: string): void {
+		let buf = readFile(path)
+		if (buf === undefined) {
+			console.log(`Missing ${path}`)
+			return
+		}
+		// loop-optimizer: KEEP
+		parseKV(buf).forEach((_, name) => this.SoundHashToString.set(MurmurHash2(StringToUTF8(name.toLowerCase()), 0x53524332), name))
+	}
+	public LookupSoundNameByHash(hash: number): Nullable<string> {
+		if (hash === 0)
+			return "<null>"
+		return this.SoundHashToString.get(hash >>> 0)
+	}
 })
 export default Manifest
 
@@ -62,6 +78,17 @@ function InitManifest() {
 	Manifest.FileNames.splice(0)
 	Manifest.Paths.clear()
 	// Manifest.PathHash32To64.clear()
+	Manifest.SoundHashToString.clear()
+
+	let manifest = readFile("soundevents/soundevents_manifest.vrman_c")
+	if (manifest === undefined) {
+		console.log("Sound manifest not found.")
+		return
+	}
+	ParseExternalReferences(manifest).forEach(path => {
+		if (path.endsWith("vsndevts"))
+			Manifest.LoadSoundFile(path + "_c")
+	})
 }
 
 Events.on("ServerMessage", (msg_id, buf) => {
@@ -85,6 +112,8 @@ Events.on("ServerMessage", (msg_id, buf) => {
 				if (path_id !== Manifest.Paths.size)
 					continue
 				let path = `${Manifest.Directories[dir_id]}${Manifest.FileNames[file_id]}.${Manifest.Extensions[ext_id]}`
+				if (Manifest.Extensions[ext_id] === "vsndevts")
+					Manifest.LoadSoundFile(`${path}_c`)
 				let hash64 = MurmurHash64(StringToUTF8(path).buffer)
 				Manifest.Paths.set(hash64, [dir_id, file_id, ext_id])
 				// Manifest.PathHash32To64.set(MurmurHash2(StringToUTF8(path.toLowerCase()).buffer), hash64)

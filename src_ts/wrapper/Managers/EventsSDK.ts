@@ -121,6 +121,13 @@ interface EventsSDK extends EventEmitter {
 	on(name: "ServerInfo", listener: (map: RecursiveProtobuf) => void): EventEmitter
 	on(name: "RemoveAllStringTables", listener: () => void): EventEmitter
 	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, ArrayBuffer]>) => void): EventEmitter
+	on(name: "StartSound", listener: (
+		name: string,
+		source_ent: Nullable<Entity | number>,
+		position: Vector3,
+		seed: number,
+		start_time: number
+	) => void): EventEmitter
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()

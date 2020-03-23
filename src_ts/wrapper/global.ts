@@ -70,6 +70,6 @@ globalThis.Menu = _Menu
 globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Constructor<any>).name === name)
 
 // "Don't know how to serialize bigint" fix
-BigInt.prototype.toJSON = function () {
+/*BigInt.prototype.toJSON = function () {
 	return this.toString() + "n"
-}
+}*/

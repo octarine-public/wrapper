@@ -37,7 +37,7 @@ export enum ProtoType {
 	TYPE_SINT64 = 18,  // Uses ZigZag encoding.
 }
 
-export type ProtobufFieldType = string | number | bigint | boolean | RecursiveProtobuf
+export type ProtobufFieldType = string | number | bigint | boolean | RecursiveProtobuf | Uint8Array
 export type RecursiveProtobuf = Map<string, Map<number, ProtobufFieldType> | ProtobufFieldType>
 export enum ProtoFieldType {
 	OPTIONAL,
@@ -129,10 +129,14 @@ function ParseField(field: ProtoFieldDescription, value: ArrayBuffer | bigint): 
 			if (!(value instanceof ArrayBuffer))
 				throw "Invalid proto [9]"
 			return ParseProtobuf(value, field.proto_desc!)
-		case ProtoType.TYPE_STRING: case ProtoType.TYPE_BYTES:
+		case ProtoType.TYPE_STRING:
 			if (!(value instanceof ArrayBuffer))
 				throw "Invalid proto [10]"
 			return Utf8ArrayToStr(new Uint8Array(value))
+		case ProtoType.TYPE_BYTES:
+			if (!(value instanceof ArrayBuffer))
+				throw "Invalid proto [10]"
+			return new Uint8Array(value)
 		case ProtoType.TYPE_GROUP: // group
 			throw "Groups are deprecated"
 	}

@@ -255,25 +255,26 @@ EXPORT_JS char* ParseImage(char* data, size_t data_size) {
 		// probably vtex?
 		res = ParseVTex(data, data_size, w, h);
 	}
-	JSIOBuffer[0] = w;
-	JSIOBuffer[1] = h;
+	*(uint32_t*)&JSIOBuffer[0] = w;
+	*(uint32_t*)&JSIOBuffer[1] = h;
 	free(data);
 	return res;
 }
 
 #define ExtractResourceBlock(name) \
-EXPORT_JS uint32_t ExtractResourceBlock_##name(char* data, size_t data_size) { \
+EXPORT_JS bool ExtractResourceBlock_##name(char* data, size_t data_size) { \
 	auto block_data = ExtractBlockFromResource(data, data_size, #name); \
 	if (block_data == nullptr) \
-		return 0; \
-	auto block_size = block_data->size; \
-	memmove(data, GetPointer(&block_data->offset, block_data->offset), block_size); \
-	return block_size; \
+		return false; \
+	*(uint32_t*)&JSIOBuffer[0] = (size_t)GetPointer(&block_data->offset, block_data->offset) - (size_t)data; \
+	*(uint32_t*)&JSIOBuffer[1] = block_data->size; \
+	return true; \
 }
 
 ExtractResourceBlock(DATA)
 ExtractResourceBlock(NTRO)
 ExtractResourceBlock(REDI)
+ExtractResourceBlock(RERL)
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/tier1/generichash.cpp#L313
 // someone please port it to JS >_<
@@ -376,4 +377,13 @@ EXPORT_JS void MurmurHash64(void* key, int len, uint32_t seed) {
 	free(key);
 
 	*(uint64_t*)JSIOBuffer = (((uint64_t)h1) << 32) | h2;
+}
+
+EXPORT_JS void* DecompressLZ4(void* data, size_t size) {
+	auto dst_len = *(uint32_t*)data;
+	auto dst = malloc(dst_len);
+	LZ4_decompress_safe(GetPointer<char>(data, 4), (char*)dst, (int)(size - 4), (int)dst_len);
+	free(data);
+	*(uint32_t*)&JSIOBuffer[0] = dst_len;
+	return dst;
 }

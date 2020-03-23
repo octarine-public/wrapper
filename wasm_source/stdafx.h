@@ -36,6 +36,7 @@ struct BlockData {
 BlockData* ExtractBlockFromResource(char* data, size_t size, const char* name);
 
 #define VECTOR_NO_SLOW_OPERATIONS
+#include "lz4.h"
 #include "Vector.h"
 #include "vhcg.h"
 #include "vmatrix.h"

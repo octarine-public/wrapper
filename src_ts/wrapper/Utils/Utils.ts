@@ -1,5 +1,7 @@
 import { parseKV, RecursiveMap } from "./ParseKV"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
+import { ExtractResourceBlock } from "../Native/WASM"
+import BinaryStream from "./BinaryStream"
 
 export const DamageIgnoreBuffs = [
 	[], // DAMAGE_TYPES.DAMAGE_TYPE_NONE = 0
@@ -150,4 +152,58 @@ export function MapToObject(map: Map<any, any>): any {
 	// loop-optimizer: KEEP
 	map.forEach((v, k) => obj[k] = v instanceof Map ? MapToObject(v) : Array.isArray(v) ? FixArray(v) : v)
 	return obj
+}
+
+export function ArrayBuffersEqual(ab1: ArrayBuffer, ab2: ArrayBuffer): boolean {
+	if (ab1.byteLength !== ab2.byteLength)
+		return false
+	let ar1: BigUint64Array | Uint32Array | Uint16Array | Uint8Array,
+		ar2: BigUint64Array | Uint32Array | Uint16Array | Uint8Array
+	if ((ab1.byteLength % 8) === 0) {
+		ar1 = new BigUint64Array(ab1)
+		ar2 = new BigUint64Array(ab2)
+	} else if ((ab1.byteLength % 4) === 0) {
+		ar1 = new Uint32Array(ab1)
+		ar2 = new Uint32Array(ab2)
+	} else if ((ab1.byteLength % 2) === 0) {
+		ar1 = new Uint16Array(ab1)
+		ar2 = new Uint16Array(ab2)
+	} else {
+		ar1 = new Uint8Array(ab1)
+		ar2 = new Uint8Array(ab2)
+	}
+	for (let i = 0; i < ar1.length; i++)
+		if (ar1[i] !== ar2[i])
+			return false
+	return true
+}
+
+export function ParseExternalReferences(buf: ArrayBuffer): string[] {
+	if (buf === undefined)
+		return []
+	let RERL = ExtractResourceBlock(buf, "RERL")
+	if (RERL === undefined)
+		return []
+
+	let list: string[] = [],
+		stream = new BinaryStream(new DataView(buf, RERL[0], RERL[1]))
+	let data_offset = stream.ReadUint32(),
+		size = stream.ReadUint32()
+	if (size === 0)
+		return []
+
+	stream.pos += data_offset - 8 // offset from offset
+	for (let i = 0; i < size; i++) {
+		stream.RelativeSeek(8) // ResourceReferenceInfo.ID
+		let offset = stream.ReadNumber(8),
+			prev = stream.pos
+		stream.pos += offset - 8
+		let str = stream.ReadNullTerminatedString()
+		if (str.endsWith("vrman"))
+			list = [...list, ...ParseExternalReferences(readFile(str + "_c"))]
+		else
+			list.push(str)
+		stream.pos = prev
+	}
+	return list
 }

@@ -12,7 +12,7 @@ export function OnDraw() {
 		return
 	if (allNeutrals.map(creep => {
 		let isWaitSpawn = creep.IsWaitingToSpawn
-		if ((!isWaitSpawn && creep.IsVisible))
+		if (!isWaitSpawn && (!creep.IsAlive || creep.IsVisible))
 			return false
 		let wts = RendererSDK.WorldToScreen(creep.Position)
 		if (wts === undefined)

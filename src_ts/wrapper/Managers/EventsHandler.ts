@@ -11,6 +11,7 @@ import Entity, { LocalPlayer } from "../Objects/Base/Entity"
 import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
 import Manifest from "./Manifest"
+import Vector3 from "../Base/Vector3"
 
 Events.on("Update", cmd => {
 	let cmd_ = new UserCmd(cmd)
@@ -383,6 +384,34 @@ message CDOTAUserMsg_TE_UnitAnimationEnd {
 	optional int32 entity = 1;
 	optional bool snap = 2;
 }
+
+message CMsgSosStartSoundEvent {
+	optional int32 soundevent_guid = 1;
+	optional fixed32 soundevent_hash = 2;
+	optional int32 source_entity_index = 3;
+	optional int32 seed = 4;
+	optional bytes packed_params = 5;
+	optional float start_time = 6;
+}
+
+message CMsgSosStopSoundEvent {
+	optional int32 soundevent_guid = 1;
+}
+
+message CMsgSosStopSoundEventHash {
+	optional fixed32 soundevent_hash = 1;
+	optional int32 source_entity_index = 2;
+}
+
+message CMsgSosSetSoundEventParams {
+	optional int32 soundevent_guid = 1;
+	optional bytes packed_params = 5;
+}
+
+message CMsgSosSetLibraryStackFields {
+	optional fixed32 stack_hash = 1;
+	optional bytes packed_fields = 5;
+}
 `)
 
 Events.on("ServerMessage", (msg_id, buf) => {
@@ -542,14 +571,46 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			}
 			break
 		}
+		case 208: {
+			let msg = ParseProtobufNamed(buf, "CMsgSosStartSoundEvent")
+			let hash = msg.get("soundevent_hash") as number
+			let sound_name = Manifest.LookupSoundNameByHash(hash)
+			if (sound_name === undefined) {
+				console.log(`Unknown soundname hash: ${hash}`)
+				break
+			}
+			let handle = (msg.get("source_entity_index") as number) ?? 0,
+				seed = (msg.get("seed") as number) ?? 0,
+				start_time = (msg.get("start_time") as number) ?? -1,
+				packed_params = msg.get("packed_params") as Nullable<Uint8Array>
+			let ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle)
+			let position = new Vector3()
+			if (packed_params !== undefined) {
+				if (packed_params.byteLength >= 19) {
+					let stream = new BinaryStream(new DataView(packed_params.buffer))
+					stream.RelativeSeek(7)
+					position.x = stream.ReadFloat32()
+					position.y = stream.ReadFloat32()
+					position.z = stream.ReadFloat32()
+				} else
+					console.log(`Something's clearly wrong with CMsgSosStartSoundEvent. ${sound_name} ${packed_params?.byteLength}`)
+			}
+			EventsSDK.emit(
+				"StartSound", false,
+				sound_name,
+				ent,
+				position,
+				seed,
+				start_time,
+			)
+			break
+		}
 		case 488: {
 			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_UnitEvent")
 			let handle = msg.get("entity_index") as number
-			let ent: Entity | number | undefined = EntityManager.EntityByIndex(handle)
-			if (ent === undefined)
-				ent = ServerHandleToIndex(handle)
-			else if (!(ent instanceof Unit))
-				return
+			let ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle)
+			if (ent instanceof Entity && !(ent instanceof Unit))
+				break
 			switch (msg.get("msg_type") as EDotaEntityMessages) {
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH: {
 					let submsg = msg.get("speech") as RecursiveProtobuf

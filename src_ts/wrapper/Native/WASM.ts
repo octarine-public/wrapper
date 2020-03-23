@@ -49,11 +49,13 @@ var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("wrapper.was
 	my_malloc: (size: number) => number
 	my_free: (ptr: number) => void
 	ParseImage: (ptr: number, size: number) => number
-	ExtractResourceBlock_DATA: (ptr: number, size: number) => number
-	ExtractResourceBlock_REDI: (ptr: number, size: number) => number
-	ExtractResourceBlock_NTRO: (ptr: number, size: number) => number
+	ExtractResourceBlock_DATA: (ptr: number, size: number) => boolean
+	ExtractResourceBlock_REDI: (ptr: number, size: number) => boolean
+	ExtractResourceBlock_NTRO: (ptr: number, size: number) => boolean
+	ExtractResourceBlock_RERL: (ptr: number, size: number) => boolean
 	MurmurHash2: (ptr: number, size: number, seed: number) => number
 	MurmurHash64: (ptr: number, size: number, seed: number) => number
+	DecompressLZ4: (ptr: number, size: number) => number
 }
 declare global {
 	var wasm_: typeof wasm
@@ -63,10 +65,12 @@ wasm._start()
 
 export let WASMIOBuffer: Float32Array
 export let WASMIOBufferBU64: BigUint64Array
+export let WASMIOBufferU32: Uint32Array
 function emscripten_notify_memory_growth(memoryIndex: number) {
 	let off = wasm.GetIOBuffer()
 	WASMIOBuffer = new Float32Array(wasm.memory.buffer, off)
 	WASMIOBufferBU64 = new BigUint64Array(wasm.memory.buffer, off)
+	WASMIOBufferU32 = new Uint32Array(wasm.memory.buffer, off)
 }
 emscripten_notify_memory_growth(0)
 
@@ -212,7 +216,7 @@ export function ParseImage(buf: ArrayBuffer): [Uint8Array, Vector2] {
 	addr = wasm.ParseImage(addr, buf.byteLength)
 	if (addr === 0)
 		throw "Image conversion failed"
-	let image_size = new Vector2(WASMIOBuffer[0], WASMIOBuffer[1])
+	let image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
 	let copy = new Uint8Array(image_size.x * image_size.y * 4)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
 	wasm.my_free(addr)
@@ -220,8 +224,8 @@ export function ParseImage(buf: ArrayBuffer): [Uint8Array, Vector2] {
 	return [copy, image_size]
 }
 
-export function ExtractResourceBlock(buf: ArrayBuffer, type: string): Uint8Array {
-	let func: (ptr: number, size: number) => number
+export function ExtractResourceBlock(buf: ArrayBuffer, type: string): Nullable<[number, number]> {
+	let func: (ptr: number, size: number) => boolean
 	switch (type) {
 		case "DATA":
 			func = wasm.ExtractResourceBlock_DATA
@@ -232,19 +236,20 @@ export function ExtractResourceBlock(buf: ArrayBuffer, type: string): Uint8Array
 		case "NTRO":
 			func = wasm.ExtractResourceBlock_NTRO
 			break
+		case "RERL":
+			func = wasm.ExtractResourceBlock_RERL
+			break
 		default:
 			throw `Unsopported block type: ${type}`
 	}
 	if (buf === undefined)
-		return new Uint8Array()
+		return undefined
 
 	let addr = wasm.my_malloc(buf.byteLength)
 	new Uint8Array(wasm.memory.buffer, addr).set(new Uint8Array(buf))
-	let len = func(addr, buf.byteLength)
-	let copy = new Uint8Array(len)
-	copy.set(new Uint8Array(wasm.memory.buffer, addr, len))
-	wasm.my_free(addr)
-	return copy
+	if (!func(addr, buf.byteLength))
+		return undefined
+	return [WASMIOBufferU32[0], WASMIOBufferU32[1]]
 }
 
 export function ParseVHCG(buf: ArrayBuffer): Nullable<HeightMap> {
@@ -294,7 +299,7 @@ export function MurmurHash2(buf: ArrayBuffer, seed = 0x31415926): number {
 		throw "Memory allocation for MurmurHash2 raw data failed"
 	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(new Uint8Array(buf))
 
-	return wasm.MurmurHash2(buf_addr, buf.byteLength, seed)
+	return wasm.MurmurHash2(buf_addr, buf.byteLength, seed) >>> 0
 }
 
 export function MurmurHash64(buf: ArrayBuffer, seed = 0xEDABCDEF): bigint {
@@ -308,4 +313,21 @@ export function MurmurHash64(buf: ArrayBuffer, seed = 0xEDABCDEF): bigint {
 
 	wasm.MurmurHash64(buf_addr, buf.byteLength, seed)
 	return WASMIOBufferBU64[0]
+}
+
+export function DecompressLZ4(buf: ArrayBuffer): Uint8Array {
+	if (buf === undefined)
+		return new Uint8Array()
+
+	let addr = wasm.my_malloc(buf.byteLength)
+	new Uint8Array(wasm.memory.buffer, addr).set(new Uint8Array(buf))
+
+	addr = wasm.DecompressLZ4(addr, buf.byteLength)
+	if (addr === 0)
+		throw "LZ4 decompression failed"
+	let copy = new Uint8Array(WASMIOBufferU32[0])
+	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
+	wasm.my_free(addr)
+
+	return copy
 }

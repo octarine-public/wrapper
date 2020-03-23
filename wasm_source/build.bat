@@ -1,4 +1,5 @@
 @em++ -std=c++17 -nostdlib -O3 -s ALLOW_MEMORY_GROWTH=1 -o ../scripts_files/wrapper.wasm ^
+	lz4.cc ^
 	exports.cc ^
 	vhcg.cc ^
 	vmatrix.cc ^
