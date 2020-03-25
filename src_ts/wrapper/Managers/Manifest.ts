@@ -128,8 +128,6 @@ Events.on("ServerMessage", (msg_id, buf) => {
 	}
 })
 
-InitManifest()
-
 /*
 Manifest.SaveStringToken("")
 Manifest.SaveStringToken("invalid_hitbox")
