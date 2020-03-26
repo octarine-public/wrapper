@@ -216,15 +216,23 @@ function ClassFromNative(id: number, constructor_name: string, ent_name: Nullabl
 	return new constructor(id, ent_name)
 }
 
-let cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
+let cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>(),
+	cached_m_fGameTime: Nullable<[Constructor<Entity>, number, FieldHandler]>,
+	delayed_tick_call: Nullable<[Entity, EntityPropertyType]>
 export type NetworkFieldsChangedType = [number[], EntityPropertyType[]]
 function ApplyChanges(ent: Entity, changes: NetworkFieldsChangedType) {
-	let [changed_paths, changed_paths_values] = changes
+	const [changed_paths, changed_paths_values] = changes,
+		ent_handlers = cached_field_handlers.get(ent.constructor as Constructor<Entity>)
+	if (ent_handlers === undefined)
+		return
 	// loop-optimizer: FORWARD
 	changed_paths.forEach((field_name, i) => {
-		let cb = cached_field_handlers.get(ent.constructor as Constructor<Entity>)?.get(field_name)
-		if (cb !== undefined)
-			cb(ent, changed_paths_values[i])
+		if (cached_m_fGameTime === undefined || field_name !== cached_m_fGameTime[1] || ent.constructor !== cached_m_fGameTime[0]) {
+			let cb = ent_handlers?.get(field_name)
+			if (cb !== undefined)
+				cb(ent, changed_paths_values[i])
+		} else
+			delayed_tick_call = [ent, changed_paths_values[i]]
 	})
 }
 
@@ -467,10 +475,14 @@ declare class ${name} {
 				let map2 = new Map<number, FieldHandler>()
 				for (let [field_name, field_handler] of map) {
 					let id = entities_symbols.indexOf(field_name)
-					if (id === -1)
+					if (id === -1) {
 						console.log(`[WARNING] Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`)
-					else
+						continue
+					}
+					if (field_name !== "m_fGameTime")
 						map2.set(id, field_handler)
+					else
+						cached_m_fGameTime = [construct, id, field_handler]
 				}
 				cached_field_handlers.set(construct, map2)
 			}
@@ -528,6 +540,10 @@ declare class ${name} {
 					return
 				ApplyChanges(ent, changes_)
 			})
+			if (delayed_tick_call !== undefined) {
+				cached_m_fGameTime![2](...delayed_tick_call)
+				delayed_tick_call = undefined
+			}
 			break
 		}
 	}
