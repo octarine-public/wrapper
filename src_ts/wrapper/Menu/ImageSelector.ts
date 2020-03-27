@@ -35,7 +35,7 @@ export default class ImageSelector extends Base {
 
 	public get IconsRect() {
 		let base_pos = this.Position.Add(this.text_offset).AddForThis(this.border_size).AddScalarY(this.name_size.y + 3)
-		return new Rectangle(base_pos, base_pos.Add(this.image_size.AddScalar(this.image_border_size.x * 2 + 2).Multiply(new Vector2(Math.min(this.values.length, 8), Math.ceil(this.values.length / 8)))).SubtractScalar(6))
+		return new Rectangle(base_pos, base_pos.Add(this.image_size.AddScalar(this.image_border_size.x * 2 + 2).Multiply(new Vector2(Math.min(this.values.length, 10), Math.ceil(this.values.length / 10)))).SubtractScalar(6))
 	}
 
 	public get ConfigValue() { return Array.from(this.enabled_values.entries()) }
@@ -58,11 +58,11 @@ export default class ImageSelector extends Base {
 		this.TotalSize_.x =
 			Math.max(
 				this.name_size.x,
-				Math.min(this.values.length, 8) * (this.image_size.x + this.image_border_size.x * 2 + 2),
+				Math.min(this.values.length, 10) * (this.image_size.x + this.image_border_size.x * 2 + 2),
 			)
 			+ this.border_size.x * 2
 			+ this.text_offset.x * 2
-		this.TotalSize.y = this.TotalSize_.y = Math.ceil(this.values.length / 8) * (this.image_size.y + this.image_border_size.x * 2 + 2) + 40
+		this.TotalSize.y = this.TotalSize_.y = Math.ceil(this.values.length / 10) * (this.image_size.y + this.image_border_size.x * 2 + 2) + 40
 		Menu.PositionDirty = true
 		super.Update()
 	}
@@ -83,7 +83,7 @@ export default class ImageSelector extends Base {
 			let value = this.values[i],
 				path = value,
 				size = this.image_size
-			let pos = new Vector2(i % 8, Math.floor(i / 8)).Multiply(this.image_size.AddScalar(this.image_border_size.x * 2 + 2)).Add(base_pos)
+			let pos = new Vector2(i % 10, Math.floor(i / 10)).Multiply(this.image_size.AddScalar(this.image_border_size.x * 2 + 2)).Add(base_pos)
 
 			if (!path.startsWith("npc_dota_hero_")) {
 				try {
@@ -109,7 +109,7 @@ export default class ImageSelector extends Base {
 			return false
 		let off = rect.GetOffset(this.MousePosition)
 		for (let i = 0; i < this.values.length; i++) {
-			let base_pos = new Vector2(i % 8, Math.floor(i / 8)).Multiply(this.image_size.AddScalar(this.image_border_size.x * 2 + 2))
+			let base_pos = new Vector2(i % 10, Math.floor(i / 10)).Multiply(this.image_size.AddScalar(this.image_border_size.x * 2 + 2))
 			if (!new Rectangle(base_pos, base_pos.Add(this.image_size)).Contains(off))
 				continue
 			let value = this.values[i]
