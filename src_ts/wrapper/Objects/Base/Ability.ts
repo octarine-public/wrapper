@@ -116,8 +116,8 @@ export default class Ability extends Entity {
 	get TargetType(): DOTA_UNIT_TARGET_TYPE[] {
 		return MaskToArrayNumber(this.AbilityData.TargetType)
 	}
-	get TextureName(): string {
-		return this.AbilityData.TextureName
+	get TexturePath(): string {
+		return this.AbilityData.TexturePath
 	}
 
 	get IsPassive(): boolean {

@@ -11,21 +11,14 @@ export default class AbilityData {
 	public static GetAbilityID(name: string): number {
 		let storage = AbilityData.global_storage.get(name)
 		if (storage === undefined)
-			throw "Invalid storage type for ability name " + name
+			throw `Invalid storage type for ability name ${name}`
 		return storage.has("ID") ? parseInt(storage.get("ID") as string) : 0
 	}
 	public static GetAbilityTexturePath(name: string): string {
 		let storage = AbilityData.global_storage.get(name)
 		if (!(storage instanceof Map))
-			throw "Invalid storage type for ability name " + name
-
-		let is_item = name.startsWith("item_")
-		let tex_name = (storage.get("AbilityTextureName") as string)
-		if (tex_name === undefined || tex_name === "")
-			tex_name = is_item ? name.substring(5) : name
-		return is_item
-			? `panorama/images/items/${tex_name}_png.vtex_c`
-			: `panorama/images/spellicons/${tex_name}_png.vtex_c`
+			throw `Invalid storage type for ability name ${name}`
+		return storage.get("AbilityTexturePath") as string
 	}
 	public static GetAbilityNameByID(id: number): string {
 		let id_str = id.toString()
@@ -42,7 +35,7 @@ export default class AbilityData {
 	public readonly AbilityBehavior: number // DOTA_ABILITY_BEHAVIOR bitmask
 	public readonly AbilityType: ABILITY_TYPES
 	public readonly MaxLevel: number
-	public readonly TextureName: string
+	public readonly TexturePath: string
 	public readonly TargetFlags: number // DOTA_UNIT_TARGET_FLAGS bitmask
 	public readonly TargetTeam: number // DOTA_UNIT_TARGET_TEAM bitmask
 	public readonly TargetType: number // DOTA_UNIT_TARGET_TYPE bitmask
@@ -85,9 +78,7 @@ export default class AbilityData {
 			: this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
 				? 3
 				: 4
-		this.TextureName = this.m_Storage.has("AbilityTextureName")
-			? this.m_Storage.get("AbilityTextureName") as string
-			: name
+		this.TexturePath = this.m_Storage.get("TexturePath") as string
 		this.TargetFlags = this.m_Storage.has("AbilityUnitTargetFlags")
 			? parseEnumString(DOTA_UNIT_TARGET_FLAGS, this.m_Storage.get("AbilityUnitTargetFlags") as string)
 			: DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_NONE
@@ -270,26 +261,33 @@ export function ReloadGlobalAbilityStorage() {
 
 					{
 						let tex_name = map.get("AbilityTextureName")
-						if (typeof tex_name !== "string" || readFile(AbilityNameToPath(tex_name, false)) === undefined)
-							tex_name = abil_name
-						if (readFile(AbilityNameToPath(base_name)) !== undefined)
-							tex_name = base_name
-						map.set("AbilityTextureName", tex_name)
+						let path = typeof tex_name === "string" ? AbilityNameToPath(tex_name, false) : ""
+						if (path && readFile(path) === undefined)
+							path = AbilityNameToPath(abil_name)
+						let path2 = AbilityNameToPath(base_name)
+						if (readFile(path2) !== undefined)
+							path = path2
+						map.set("AbilityTexturePath", path)
 					}
 				}
 			}
 		}
-		{
+		if (!map.has("AbilityTexturePath") || readFile(map.get("AbilityTexturePath") as string) === undefined) {
 			let tex_name = (map.get("AbilityTextureName") as string) ?? abil_name
-			if (readFile(AbilityNameToPath(tex_name)) === undefined) {
-				if (tex_name.startsWith("frostivus"))
-					tex_name = tex_name.split("_").slice(1).join("_")
-				else if (tex_name.startsWith("special_"))
-					tex_name = "attribute_bonus"
-				else
-					tex_name = tex_name
+			let path = AbilityNameToPath(tex_name)
+			if (readFile(path) === undefined) {
+				path = AbilityNameToPath(tex_name, true)
+				if (readFile(path) === undefined) {
+					if (tex_name.startsWith("frostivus"))
+						tex_name = tex_name.split("_").slice(1).join("_")
+					else if (tex_name.startsWith("special_"))
+						tex_name = "attribute_bonus"
+					else
+						tex_name = tex_name
+					path = AbilityNameToPath(tex_name)
+				}
 			}
-			map.set("AbilityTextureName", tex_name)
+			map.set("AbilityTexturePath", path)
 		}
 		AbilityData.global_storage.set(abil_name, map)
 	})
