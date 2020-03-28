@@ -62,7 +62,7 @@ declare interface ConVars {
 }
 
 declare interface GameEvents {
-	FireEventToClient(name: string, player_id: number, obj: any): void // BROKEN BY VOLVO
+	FireEventToClient(name: string, player_ent_id: number, obj: any): void
 	FireEventToAllClients(name: string, obj: any): void
 	FireEventToServer(name: string, obj: any): void
 }

@@ -77,7 +77,7 @@ const filterUnits = (x: Unit) => x.IsAlive && x.IsControllable
 		|| (x.InvisibleLevel <= 1 && !x.HasBuffByName("modifier_templar_assassin_meld") /** hack for power treads */)
 		|| x.ModifiersBook.HasAnyBuffByNames(SmokeDetected)
 	) // TODO blur
-	&& (!x.IsIllusion || x.ModifiersBook.HasBuffByName("modifier_arc_warden_tempest_double")) &&
+	&& (!x.IsIllusion || x.IsTempestDouble) &&
 	!x.IsStunned && !x.IsChanneling && !x.IsInvulnerable
 
 const IsValidItem = (item: Nullable<Item>): item is Item => item !== undefined

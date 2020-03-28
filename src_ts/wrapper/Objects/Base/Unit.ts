@@ -107,6 +107,9 @@ export default class Unit extends Entity {
 	public get IsIllusion(): boolean {
 		return this.IsIllusion_
 	}
+	public get IsTempestDouble(): boolean {
+		return this.HasBuffByName("modifier_arc_warden_tempest_double")
+	}
 	public get IsRooted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
 	}

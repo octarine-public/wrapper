@@ -90,7 +90,7 @@ keybind.trigger_on_chat = true
 Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.MenuManager.trigger_on_chat = toggle.value)
 Menu.AddToggle("Alternate WorldToScreen", false).OnValue(toggle => RendererSDK.AlternateW2S = toggle.value)
 Menu.AddToggle("Team chat mute fix", false).OnValue(toggle => ToggleFakeChat(toggle.value))
-Menu.AddToggle("Disable loadscreens", false).OnValue(toggle => ToggleLoadScreen(toggle.value))
+Menu.AddToggle("Disable loadscreens", false).OnValue(toggle => ToggleLoadScreen(!toggle.value))
 let humanizer = Menu.AddNode("Humanizer")
 humanizer.AddToggle("wait_next_usercmd", false).OnValue(toggle => ExecuteOrder.wait_next_usercmd = toggle.value)
 humanizer.AddToggle("wait_near_cursor", false).OnValue(toggle => ExecuteOrder.wait_near_cursor = toggle.value)

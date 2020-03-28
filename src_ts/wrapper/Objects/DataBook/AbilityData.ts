@@ -78,7 +78,7 @@ export default class AbilityData {
 			: this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
 				? 3
 				: 4
-		this.TexturePath = this.m_Storage.get("TexturePath") as string
+		this.TexturePath = this.m_Storage.get("AbilityTexturePath") as string
 		this.TargetFlags = this.m_Storage.has("AbilityUnitTargetFlags")
 			? parseEnumString(DOTA_UNIT_TARGET_FLAGS, this.m_Storage.get("AbilityUnitTargetFlags") as string)
 			: DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_NONE

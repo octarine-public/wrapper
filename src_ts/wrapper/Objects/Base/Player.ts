@@ -51,7 +51,20 @@ export default class Player extends Entity {
 		return this.Team === Team.Observer || this.Team === Team.Neutral || this.Team === Team.None || this.Team === Team.Undefined
 	}
 	public get Hero(): Nullable<Hero> {
-		return EntityManager.EntityByIndex(this.Hero_) as Nullable<Hero>
+		let hero = EntityManager.EntityByIndex(this.Hero_) as Nullable<Hero>
+		if (hero !== undefined)
+			return hero
+		// inadequate code because of circular dependency
+		let ent = (EntityManager.GetEntitiesByClass((globalThis as any).GetEntityClassByName("Hero")) as Hero[]).find(hero =>
+			hero.Owner === this
+			&& !hero.IsIllusion
+			&& !hero.IsTempestDouble
+			// inadequate code because of circular dependency
+			&& !(hero.constructor.name === "npc_dota_hero_meepo" && (hero as any).IsClone)
+		)
+		if (ent !== undefined)
+			this.Hero_ = ent.Index
+		return ent
 	}
 }
 
