@@ -56,7 +56,7 @@ export default class Player extends Entity {
 			return hero
 		// inadequate code because of circular dependency
 		let ent = (EntityManager.GetEntitiesByClass((globalThis as any).GetEntityClassByName("Hero")) as Hero[]).find(hero =>
-			hero.Owner === this
+			hero.PlayerID === this.PlayerID
 			&& !hero.IsIllusion
 			&& !hero.IsTempestDouble
 			// inadequate code because of circular dependency
