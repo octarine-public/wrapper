@@ -85,3 +85,10 @@ EventsSDK.on("EntityDestroyed", ent => {
 		SetGameInProgress(false)
 	}
 })
+EventsSDK.on("GameEvent", (name, obj) => {
+	if (name !== "player_connect_full")
+		return
+	let ent = EntityManager.EntityByIndex(obj.index + 1)
+	if (ent instanceof Player)
+		ent.PlayerID = obj.PlayerID
+})
