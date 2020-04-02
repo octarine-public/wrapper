@@ -18,9 +18,9 @@ export default class NeutralSpawnBox {
 	}
 	public toJSON(): any {
 		return {
-			MinBounds: this.MinBounds.toArray(),
-			MaxBounds: this.MaxBounds.toArray(),
-			SpawnBoxOrigin: this.SpawnBoxOrigin.toArray(),
+			MinBounds: this.MinBounds,
+			MaxBounds: this.MaxBounds,
+			SpawnBoxOrigin: this.SpawnBoxOrigin,
 			CampName: this.CampName,
 		}
 	}
