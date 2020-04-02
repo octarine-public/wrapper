@@ -88,6 +88,7 @@ export default class Unit extends Entity {
 	public TotalDamageTaken = 0n
 	public UnitStateNetworked = 0n
 	public HealthBarOffsetOverride = 0
+	public ShouldDoFlyHeightVisual = true
 	public Spells_ = new Array<number>(MAX_SPELLS).fill(0)
 	public TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
 
@@ -228,8 +229,8 @@ export default class Unit extends Entity {
 		let offset = this.HealthBarOffsetOverride
 		if (offset === -1)
 			offset = this.UnitData.HealthBarOffset
-		// TODO: smoothing by Buff#Think
-		if (this.HasBuffByName("modifier_winter_wyvern_arctic_burn_flight"))
+		// TODO: smoothing by Unit#Think
+		if (this.IsFlyingVisually)
 			offset += 150
 		return offset
 	}
@@ -415,6 +416,12 @@ export default class Unit extends Entity {
 	 */
 	public HasMoveCapability(flag: DOTAUnitMoveCapability_t = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_GROUND | DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY): boolean {
 		return (this.MoveCapabilities & flag) !== 0
+	}
+	public get HasFlyingVision(): boolean {
+		return this.HasMoveCapability(DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY) || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
+	}
+	public get IsFlyingVisually(): boolean {
+		return this.ShouldDoFlyHeightVisual && this.HasFlyingVision
 	}
 
 	public IsUnitStateFlagSet(flag: modifierstate): boolean {
@@ -1035,6 +1042,7 @@ RegisterFieldHandler(Unit, "m_flTauntCooldown", (unit, new_value) => unit.TauntC
 RegisterFieldHandler(Unit, "m_nTotalDamageTaken", (unit, new_value) => unit.TotalDamageTaken = new_value as bigint)
 RegisterFieldHandler(Unit, "m_nUnitState64", (unit, new_value) => unit.UnitStateNetworked = BigInt(new_value as bigint))
 RegisterFieldHandler(Unit, "m_nHealthBarOffsetOverride", (unit, new_value) => unit.HealthBarOffsetOverride = new_value as number)
+RegisterFieldHandler(Unit, "m_bShouldDoFlyHeightVisual", (unit, new_value) => unit.ShouldDoFlyHeightVisual = new_value as boolean)
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 	let ar = new_value as number[]
 	while (ar.length < unit.Spells_.length)

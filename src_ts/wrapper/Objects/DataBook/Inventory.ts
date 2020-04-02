@@ -11,12 +11,18 @@ export default class Inventory {
 
 	get TotalItems(): Nullable<Item>[] {
 		// loop-optimizer: FORWARD
-		return this.Owner.TotalItems_.map(abil => {
-			let ent = EntityManager.EntityByIndex(abil)
+		return this.Owner.TotalItems_.map(id => {
+			let ent = EntityManager.EntityByIndex(id)
 			if (ent instanceof Item)
 				return ent
 			return undefined
 		})
+	}
+	get TPScroll(): Nullable<Item> {
+		return this.GetItem(15)
+	}
+	get NeutralItem(): Nullable<Item> {
+		return this.GetItem(16)
 	}
 
 	get Items(): Item[] {
@@ -60,7 +66,11 @@ export default class Inventory {
 	}
 
 	public GetItem(slot: DOTAScriptInventorySlot_t): Nullable<Item> {
-		return this.TotalItems[slot]
+		let id = this.Owner.TotalItems_[slot]
+		let ent = EntityManager.EntityByIndex(id)
+		if (ent instanceof Item)
+			return ent
+		return undefined
 	}
 	public GetItems(start: number, end: number): Item[] {
 		start = Math.min(start, MAX_ITEMS)
