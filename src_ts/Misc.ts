@@ -98,12 +98,12 @@ humanizer.AddToggle("debug_orders", false).OnValue(toggle => ExecuteOrder.debug_
 humanizer.AddToggle("debug_draw", false).OnValue(toggle => ExecuteOrder.debug_draw = toggle.value)
 
 declare global {
-	var reload: (a1: string, a2: boolean) => void
+	var reload: () => void
 }
 
 function ReloadScripts() {
 	SetGameInProgress(false)
-	reload("eTE9Te5rgBYThsO", true)
+	reload()
 }
 
 Menu.AddButton("Reload Scripts").OnValue(ReloadScripts)
