@@ -84,7 +84,7 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x: number, y: number, i
 	RendererSDK.OutlinedRect(new Vector2(real_x, y), box_size, outlineColor)
 
 	let cooldown_length = ability.CooldownLength
-	let cooldown = ability.Cooldown
+	let cooldown = ability.CooldownTimeRemaining
 
 	if (cooldown > 0.0 && cooldown_length > 0.0) {
 		let inner_box_size = optionBoxSize.value - 2
