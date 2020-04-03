@@ -4,7 +4,14 @@ export default class queenofpain_shadow_strike extends Ability {
 	public NativeEntity: Nullable<C_DOTA_Ability_QueenOfPain_ShadowStrike>
 
 	public get AOERadius(): number {
-		return this.Owner?.GetTalentValue("special_bonus_unique_queen_of_pain") ?? 0
+		let radius = 0,
+			owner = this.Owner
+		if (owner !== undefined) {
+			let talent = owner.GetAbilityByName("special_bonus_unique_queen_of_pain")
+			if (talent !== undefined && talent.Level !== 0)
+				radius += talent.GetSpecialValue("value")
+		}
+		return radius
 	}
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")

@@ -163,10 +163,6 @@ export default class Ability extends Entity {
 					return Number.MAX_SAFE_INTEGER
 				break
 			}
-			case "lion_impale": {
-				castrange -= owner?.GetTalentValue("special_bonus_unique_lion_2") ?? 0
-				break
-			}
 			case "lina_dragon_slave":
 				castrange += this.GetSpecialValue("dragon_slave_width_initial")
 				break
@@ -216,11 +212,10 @@ export default class Ability extends Entity {
 	}
 
 	public GetSpecialValue(special_name: string, level = this.Level): number {
-		let ret = this.AbilityData.GetSpecialValue(special_name, level),
-			linked_special_bonus = this.AbilityData.GetLinkedSpecialBonus(special_name)
-		if (linked_special_bonus !== undefined)
-			ret += (this.Owner?.GetTalentValue(linked_special_bonus) ?? 0)
-		return ret
+		let owner = this.Owner
+		if (owner === undefined)
+			return this.AbilityData.GetSpecialValue(special_name, level)
+		return this.AbilityData.GetSpecialValueWithTalent(owner, special_name, level)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
 		let owner = this.Owner

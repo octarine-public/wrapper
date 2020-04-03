@@ -459,10 +459,6 @@ export default class Unit extends Entity {
 	public HasBuffByName(name: string): boolean {
 		return this.ModifiersBook.GetBuffByName(name) !== undefined
 	}
-	public GetTalentValue(name: string | RegExp) {
-		let talent = this.GetAbilityByName(name)
-		return talent !== undefined && talent.Level !== 0 ? talent.GetSpecialValue("value") : 0
-	}
 	/**
 	 * faster (Distance <= range)
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
@@ -533,11 +529,9 @@ export default class Unit extends Entity {
 				return
 			if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
 				switch (buff.Name) {
-					case "modifier_ember_spirit_flame_guard": {
-						dmg -= this.GetTalentValue("special_bonus_unique_ember_spirit_1")
+					case "modifier_ember_spirit_flame_guard":
 						dmg -= abil.GetSpecialValue("absorb_amount")
 						return
-					}
 					case "modifier_item_pipe_barrier":
 					case "modifier_item_hood_of_defiance_barrier":
 					case "modifier_item_infused_raindrop":
@@ -547,11 +541,9 @@ export default class Unit extends Entity {
 						break
 				}
 			switch (abil.Name) {
-				case "abaddon_aphotic_shield": {
-					dmg -= this.GetTalentValue("special_bonus_unique_abaddon")
+				case "abaddon_aphotic_shield":
 					dmg -= abil.GetSpecialValue("damage_absorb")
 					return
-				}
 				case "bloodseeker_bloodrage":
 					dmg *= abil.GetSpecialValue("damage_increase_pct") / 100
 					return

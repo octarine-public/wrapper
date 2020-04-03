@@ -4,9 +4,13 @@ export default class skywrath_mage_concussive_shot extends Ability {
 	public NativeEntity: Nullable<C_DOTA_Ability_Skywrath_Mage_Concussive_Shot>
 
 	public get AOERadius(): number {
-		return (this.Owner?.GetTalentValue("special_bonus_unique_skywrath_4") ?? 0) !== 0
-			? Number.MAX_SAFE_INTEGER
-			: this.GetSpecialValue("launch_radius")
+		let owner = this.Owner
+		if (owner !== undefined) {
+			let talent = owner.GetAbilityByName("special_bonus_unique_skywrath_4")
+			if (talent !== undefined && talent.Level !== 0)
+				return Number.MAX_SAFE_INTEGER
+		}
+		return this.GetSpecialValue("launch_radius")
 	}
 
 	public get Speed(): number {

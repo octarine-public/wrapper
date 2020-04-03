@@ -4,7 +4,14 @@ export default class dark_seer_surge extends Ability {
 	public readonly NativeEntity!: C_DOTA_Ability_DarkSeer_Surge
 
 	public get AOERadius(): number {
-		return this.Owner?.GetTalentValue("special_bonus_unique_dark_seer_3") ?? 0
+		let radius = 0,
+			owner = this.Owner
+		if (owner !== undefined) {
+			let talent = owner.GetAbilityByName("special_bonus_unique_dark_seer_3")
+			if (talent !== undefined && talent.Level !== 0)
+				radius += talent.GetSpecialValue("value")
+		}
+		return radius
 	}
 }
 
