@@ -280,7 +280,7 @@ EventsSDK.on("ParticleUpdatedEnt", (id, controlPoint, ent, attach, attachment, f
 	switch (part[0]) {
 		case "particles/units/heroes/hero_pudge/pudge_meathook.vpcf":
 			if (controlPoint === 0)
-				part[1] = fallbackPosition
+				part[1] = fallbackPosition.Add((ent instanceof Entity ? ent.Forward : new Vector3()).MultiplyScalar(150))
 			else if (controlPoint === 1) {
 				DestroyDirectional(`Hook${id}`)
 				particles_table.delete(id)
