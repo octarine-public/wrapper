@@ -1,4 +1,3 @@
-import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
@@ -164,10 +163,6 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_BLIND)
 	}
 	//
-	public get IsRealUnit(): boolean {
-		return this.NativeEntity?.m_iUnitType !== 0 && !this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FAKE_ALLY)
-	}
-	//
 	public get IsTrueSightImmune(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_TRUESIGHT_IMMUNE)
 	}
@@ -216,9 +211,6 @@ export default class Unit extends Entity {
 	public get HasArcana(): boolean {
 		return this.ArcanaLevel > 0
 	}
-	public get BaseStatsChanged(): boolean {
-		return this.NativeEntity?.m_bBaseStatsChanged ?? true
-	}
 	public get HasInventory(): boolean {
 		return this.UnitData.HasInventory
 	}
@@ -233,9 +225,6 @@ export default class Unit extends Entity {
 		if (this.IsFlyingVisually)
 			offset += 150
 		return offset
-	}
-	public get HealthBarHighlightColor(): Nullable<Color> {
-		return Color.fromIOBuffer(this.NativeEntity?.m_iHealthBarHighlightColor ?? false)
 	}
 	// TODO: parse KV, use buffs and items for calculation
 	public get AttackSpeed(): number {

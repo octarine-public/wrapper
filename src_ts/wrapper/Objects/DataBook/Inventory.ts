@@ -61,9 +61,6 @@ export default class Inventory {
 	get HasFreeSlotsStash(): boolean {
 		return this.HasFreeSlot(9, 14)
 	}
-	get IsStashEnabled(): boolean {
-		return this.Owner.NativeEntity?.m_Inventory?.m_bStashEnabled ?? true
-	}
 
 	public GetItem(slot: DOTAScriptInventorySlot_t): Nullable<Item> {
 		let id = this.Owner.TotalItems_[slot]

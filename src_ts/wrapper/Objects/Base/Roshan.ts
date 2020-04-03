@@ -23,10 +23,6 @@ export default class Roshan extends Unit {
 
 	public NativeEntity: Nullable<C_DOTA_Unit_Roshan>
 	public GoldenRoshan = false
-
-	public get LastHealthPercent(): number {
-		return this.NativeEntity?.m_iLastHealthPercent ?? 100
-	}
 }
 
 import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"

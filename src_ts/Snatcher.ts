@@ -19,9 +19,6 @@ import {
 	Particle,
 } from "wrapper/Imports"
 
-// import { PickupItem, PickupRune } from "../Orders"
-// import * as Utils from "../Utils"
-
 enum ESelectedType {
 	ALL = 0,
 	ONLY_BOUNTY = 1,
@@ -146,7 +143,6 @@ function GetControllables() {
 		(npc instanceof Hero || npc.ClassName === "CDOTA_Unit_SpiritBear")
 		&& !npc.IsIllusion
 		&& npc.IsControllable
-		&& npc.IsRealUnit
 	)
 }
 
@@ -203,12 +199,11 @@ function snatchRuneByUnit(npc: Unit, rune: Rune) {
 }
 
 function removedIDRune(rune: Rune) {
-	for (let [unit, rune_] of picking_up.entries()) {
-		if (rune !== rune_)
-			continue
-		picking_up.delete(unit)
-		break
-	}
+	for (let [unit, rune_] of picking_up.entries())
+		if (rune === rune_) {
+			picking_up.delete(unit)
+			break
+		}
 	destroyRuneParticles(rune)
 }
 

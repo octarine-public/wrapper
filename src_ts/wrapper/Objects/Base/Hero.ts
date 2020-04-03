@@ -32,18 +32,12 @@ export default class Hero extends Unit {
 	public get HeroID(): number {
 		return this.UnitData.HeroID
 	}
-	public get IsBuybackDisabled(): boolean {
-		return this.NativeEntity?.m_bBuybackDisabled ?? false
-	}
 	public get ReplicatingOtherHeroModel(): Nullable<Entity> {
 		return EntityManager.EntityByIndex(this.m_hReplicatingOtherHeroModel)
 	}
 	public get IsIllusion(): boolean {
 		let ReplicatingOtherHeroModel_ = this.ReplicatingOtherHeroModel_
 		return (ReplicatingOtherHeroModel_ instanceof C_BaseEntity) || (ReplicatingOtherHeroModel_ > 0)
-	}
-	public get LastHurtTime(): number {
-		return this.NativeEntity?.m_flLastHurtTime ?? 0
 	}
 
 	public get SpellAmplification(): number {

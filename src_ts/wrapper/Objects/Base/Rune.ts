@@ -6,13 +6,6 @@ export default class Rune extends Entity {
 	public RuneTime = 0
 	public MapLocationTeam = 0
 	public Location = ""
-
-	public get OldType(): DOTA_RUNES {
-		return this.NativeEntity?.m_iOldRuneType ?? DOTA_RUNES.DOTA_RUNE_INVALID
-	}
-	public get ShowingTooltip(): boolean {
-		return this.NativeEntity?.m_bShowingTooltip ?? false
-	}
 }
 
 import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"

@@ -52,7 +52,7 @@ export default class Entity {
 	public get Name(): string {
 		if (this.Name_)
 			return this.Name_
-		this.Name_ = this.NativeEntity?.m_pEntity?.m_designerName || ""
+		this.Name_ = this.NativeEntity?.m_pEntity?.m_designerName ?? ""
 		return this.Name_
 	}
 	public get Owner(): Nullable<Entity> {
