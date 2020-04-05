@@ -2,6 +2,7 @@ import Stream from "./Stream"
 import { Utf8ArrayToStr, ArrayBuffersEqual } from "./Utils"
 import { ExtractResourceBlock, DecompressLZ4 } from "../Native/WASM"
 import BinaryStream from "./BinaryStream"
+import { HasBit } from "./BitsExtensions"
 
 const STRING = '"'
 const NODE_OPEN = '{'
@@ -342,13 +343,41 @@ class KVParser {
 		stream.pos = kv_data_offset
 		return this.ParseBinaryKV(stream, true)
 	}
+	private static BlockDecompress(buf: ArrayBuffer): ArrayBuffer {
+		let stream = new BinaryStream(new DataView(buf))
+		let flags = new Uint8Array(stream.ReadSlice(4))
+		if (HasBit(flags[3], 7))
+			return stream.ReadSlice(buf.byteLength - 4)
+		let out = new Uint8Array((flags[2] << 16) + (flags[1] << 8) + flags[0]),
+			out_pos = 0
+		while (!stream.Empty() && out_pos < out.byteLength)
+			try {
+				let block_mask = stream.ReadUint16()
+				for (let i = 0; i < 16; i++)
+					if (HasBit(block_mask, i)) {
+						let encoded_offset_and_size = stream.ReadUint16()
+						let offset = ((encoded_offset_and_size & 0xFFF0) >> 4) + 1,
+							size = (encoded_offset_and_size & 0x000F) + 3
+
+						let lookup_size = Math.min(offset, size) // If the offset is larger or equal to the size, use the size instead.
+						let data = out.slice(out_pos - offset, lookup_size)
+						while (size > 0) {
+							let write_buf = lookup_size < size ? data : data.slice(0, size)
+							out.set(write_buf, out_pos)
+							out_pos += write_buf.byteLength
+							size -= lookup_size
+						}
+					} else
+						out[out_pos++] = stream.Next()
+			} catch { }
+		return out.buffer
+	}
 	public ParseKV3(buf: ArrayBuffer): RecursiveMap {
 		let stream = new BinaryStream(new DataView(buf))
 		let encoding = stream.ReadSlice(16)
 		stream.RelativeSeek(16) // format
 		if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_COMPRESSED)) {
-			console.log("BlockDecompress is not supported onw.")
-			return new Map()
+			stream = new BinaryStream(new DataView(KVParser.BlockDecompress(stream.ReadSlice(stream.Remaining))))
 		} else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_LZ4))
 			stream = new BinaryStream(new DataView(DecompressLZ4(stream.ReadSlice(stream.Remaining)).buffer))
 		else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_UNCOMPRESSED))
