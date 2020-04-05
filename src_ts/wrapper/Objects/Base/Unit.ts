@@ -117,7 +117,6 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_DISARMED)
 	}
 	public get IsAttackImmune(): boolean {
-		// return this.NativeEntity.m_bIsAttackImmune
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ATTACK_IMMUNE)
 	}
 	public get IsSilenced(): boolean {
@@ -139,7 +138,7 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
 	}
 	public get IsMagicImmune(): boolean {
-		return this.NativeEntity?.m_bIsMagicImmune ?? false
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_MAGIC_IMMUNE)
 	}
 	public get IsDeniable(): boolean {
 		if (this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_SPECIALLY_DENIABLE))

@@ -50,9 +50,6 @@ export default class Entity {
 		return EntityManager.IsEntityVisible(this.Index)
 	}
 	public get Name(): string {
-		if (this.Name_)
-			return this.Name_
-		this.Name_ = this.NativeEntity?.m_pEntity?.m_designerName ?? ""
 		return this.Name_
 	}
 	public get Owner(): Nullable<Entity> {
@@ -68,9 +65,6 @@ export default class Entity {
 			owner = root_owner
 		}
 		return owner
-	}
-	public get GameSceneNode(): Nullable<CGameSceneNode> {
-		return this.NativeEntity?.m_pGameSceneNode
 	}
 	public get Position(): Vector3 {
 		return new Vector3(

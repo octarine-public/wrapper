@@ -209,16 +209,3 @@ EventsSDK.on("EntityDestroyed", ent => {
 		tree2origmodel.delete(ent)
 	}
 })
-
-/*EventsSDK.on("GameEnded", () => {
-	EntityManager.GetEntitiesByClass(Tree)
-		.filter(tree => tree.IsVisible)
-		.forEach(tree => {
-			if (tree2modelid.get(tree) === 0 || !tree2origmodel.has(tree))
-				return
-			let [model, scale] = tree2origmodel.get(tree)!
-			tree.NativeEntity.m_sModel = model
-			tree.GameSceneNode.SetLocalScale(scale)
-			tree2modelid.set(tree, 0)
-		})
-})*/

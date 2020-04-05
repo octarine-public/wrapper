@@ -8363,8 +8363,6 @@ declare class sSpiritDef {
 }
 
 declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
-	readonly m_bIsAttackImmune: boolean
-	readonly m_bIsMagicImmune: boolean
 	readonly m_fAttackSpeed: number
 	readonly m_fIncreasedAttackSpeed: number
 	readonly m_fAttacksPerSecond: number
