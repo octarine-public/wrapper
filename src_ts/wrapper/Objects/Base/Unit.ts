@@ -219,7 +219,7 @@ export default class Unit extends Entity {
 	public get HealthBarOffset(): number {
 		let offset = this.HealthBarOffsetOverride
 		if (offset === -1)
-			offset = this.UnitData.HealthBarOffset
+			offset = this.NativeEntity?.m_iHealthBarOffset ?? this.UnitData.HealthBarOffset
 		// TODO: smoothing by Unit#Think
 		if (this.IsFlyingVisually)
 			offset += 150

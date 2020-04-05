@@ -5171,6 +5171,8 @@ declare class C_BaseFire extends C_BaseEntity {
 }
 
 declare class C_BaseEntity extends C_GameEntity {
+	m_sModel: string
+
 	readonly m_CBodyComponent: CBodyComponent
 	readonly m_NetworkTransmitComponent: CNetworkTransmitComponent
 	readonly m_pDummyPhysicsComponent: CPhysicsComponent
@@ -5606,7 +5608,6 @@ declare class C_BaseAnimating extends C_BaseModelEntity {
 
 declare class C_BaseModelEntity extends C_BaseEntity {
 	OnColorChanged(): void
-	m_sModel: string
 	
 	readonly m_CRenderComponent: CRenderComponent
 	m_iViewerID: number

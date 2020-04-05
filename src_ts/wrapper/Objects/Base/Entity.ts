@@ -7,6 +7,7 @@ import { DegreesToRadian } from "../../Utils/Math"
 import EventsSDK from "../../Managers/EventsSDK"
 import Player from "../../Objects/Base/Player"
 import * as StringTables from "../../Managers/StringTables"
+import Manifest from "../../Managers/Manifest"
 
 export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
@@ -38,6 +39,7 @@ export default class Entity {
 	public Owner_ = 0
 	public ClassName = ""
 	public BecameDormantTime = 0
+	public ModelName = ""
 
 	private readonly PersonalProps: Nullable<Map<string, EntityPropertyType>>
 
@@ -267,6 +269,7 @@ RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
 RegisterFieldHandler(Entity, "m_iHealth", (ent, new_val) => ent.HP = new_val as number)
 RegisterFieldHandler(Entity, "m_iMaxHealth", (ent, new_val) => ent.MaxHP = new_val as number)
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => ent.Owner_ = new_val as number)
+RegisterFieldHandler(Entity, "m_hModel", (ent, new_val) => ent.ModelName = Manifest.GetPathByHash(new_val as bigint) ?? "")
 RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 	let m_angRotation = new_val as QAngle
 	EntityVisualRotations[ent.Index * 3 + 0] = m_angRotation.x

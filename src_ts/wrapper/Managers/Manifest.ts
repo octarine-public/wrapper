@@ -14,6 +14,8 @@ const Manifest = new (class CManifest {
 	public readonly Hash32ToString = new Map<number, string>()*/
 
 	public GetPathByHash(hash: bigint): Nullable<string> {
+		if (hash === 0n)
+			return "<null>"
 		// it's interpret as signed int64 in protobuf messages, so we need to wrap it into unsigned
 		hash = BigInt.asUintN(64, hash)
 		let path = this.Paths.get(hash)
