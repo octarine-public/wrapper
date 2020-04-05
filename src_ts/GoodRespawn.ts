@@ -9,7 +9,8 @@ let visuals_state = menu.AddToggle("Visuals State", true),
 	manual_fix = menu.AddSlider("Manual position fix", 0, 0, 14)
 
 function GetPositions(): Vector3[] {
-	return EntityManager.GetEntitiesByClass(InfoPlayerStartDota).filter(e => e.Team !== LocalPlayer?.Team).map(a => a.Position)
+	let local_team = LocalPlayer?.Team
+	return EntityManager.GetEntitiesByClass(InfoPlayerStartDota).filter(e => e.SpawnerTeam !== local_team).map(a => a.Position)
 }
 
 EventsSDK.on("Draw", () => {
@@ -124,7 +125,7 @@ EventsSDK.on("Tick", () => {
 			})
 			let predict_res = new NavMeshPathfinding(
 				new MovingObstacle(
-					start_pos.Add(unit.Forward.toVector2().MultiplyScalarForThis(hook.AOERadius * 1.5)),
+					start_pos/*.Add(unit.Forward.toVector2().MultiplyScalarForThis(hook.AOERadius * 1.5))*/,
 					hook.AOERadius,
 					unit.Position.GetDirectionTo(pos).toVector2().MultiplyScalarForThis(hook.Speed),
 					hook.CastRange / hook.Speed,

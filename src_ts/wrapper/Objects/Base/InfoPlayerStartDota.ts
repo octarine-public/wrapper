@@ -4,7 +4,7 @@ import { Team } from "../../Enums/Team"
 export default class InfoPlayerStartDota extends Entity {
 	public NativeEntity: Nullable<C_InfoPlayerStartDota>
 
-	public get Team(): Team {
+	public get SpawnerTeam(): Team {
 		return this.ClassName === "CInfoPlayerStartBadGuys" ? Team.Dire : Team.Radiant
 	}
 }
