@@ -6,6 +6,10 @@ export default class Rune extends Entity {
 	public RuneTime = 0
 	public MapLocationTeam = 0
 	public Location = ""
+
+	public get RingRadius(): number {
+		return 40
+	}
 }
 
 import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"

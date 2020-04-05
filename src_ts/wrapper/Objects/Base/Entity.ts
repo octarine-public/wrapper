@@ -120,6 +120,9 @@ export default class Entity {
 	public get CollisionRadius(): number {
 		return Math.sqrt(this.NativeEntity?.m_pCollision?.m_flRadius ?? 0)
 	}
+	public get RingRadius(): number {
+		return 30 // TODO: actually it uses model unless it doesn't have such for C_BaseEntity#GetRingRadius
+	}
 
 	public GetPropertyByName(name: string): Nullable<EntityPropertyType> {
 		return this.PersonalProps?.get(name)

@@ -9,6 +9,9 @@ export default class PhysicalItem extends Entity {
 	public get Item(): Nullable<Item> {
 		return EntityManager.EntityByIndex(this.Item_) as Nullable<Item>
 	}
+	public get RingRadius(): number {
+		return 40
+	}
 
 	public toString(): string {
 		return this.Item?.Name ?? this.Name

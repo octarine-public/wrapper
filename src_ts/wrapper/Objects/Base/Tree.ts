@@ -19,6 +19,9 @@ export default class Tree extends Entity {
 	public get IsAlive() {
 		return EntityManager.IsTreeActive(this.BinaryID)
 	}
+	public get RingRadius(): number {
+		return 100
+	}
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"
