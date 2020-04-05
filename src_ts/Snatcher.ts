@@ -251,7 +251,7 @@ function snatchItems(controllables: Unit[]) {
 		if (m_hItem === undefined || !listOfItems.IsEnabled(m_hItem.Name))
 			return
 
-		let itemOwner = m_hItem.OldOwner,
+		let itemOwner = m_hItem.Owner,
 			can_take_backpack = m_hItem.Name === "item_cheese"
 
 		free_controllables.some((npc, index) => {

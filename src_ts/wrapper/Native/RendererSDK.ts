@@ -5,7 +5,7 @@ import QAngle from "../Base/QAngle"
 import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
 import { FontFlags_t } from "../Enums/FontFlags_t"
-import { StringToUTF16 } from "../Utils/Utils"
+import { StringToUTF16, ParseMapName } from "../Utils/Utils"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import GameState from "../Utils/GameState"
@@ -461,17 +461,6 @@ try {
 	}
 } catch (e) {
 	console.log("Error in RendererSDK.HeightMap static init: " + e)
-}
-
-function ParseMapName(str: string): string | undefined {
-	let res = /maps(\/|\\)(.+)\.vpk$/.exec(str)
-	if (res === null)
-		return undefined
-
-	let map_name = res[2]
-	if (map_name.startsWith("scenes") || map_name.startsWith("prefabs")) // that must not be loaded as main map, so we must ignore it
-		return undefined
-	return map_name
 }
 
 Events.on("PostAddSearchPath", path => {

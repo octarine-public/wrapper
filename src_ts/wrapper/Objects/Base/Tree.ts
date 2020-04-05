@@ -1,13 +1,23 @@
 import Entity from "./Entity"
+import Vector3 from "../../Base/Vector3"
+import QAngle from "../../Base/QAngle"
+import EntityManager from "../../Managers/EntityManager"
 
 export default class Tree extends Entity {
-	public NativeEntity: Nullable<C_DOTA_MapTree>
+	public readonly FakeTreePos = new Vector3()
+	public BinaryID = 0
 
-	get IsAlive(): boolean {
-		return this.NativeEntity?.m_bActive ?? true
+	public get Position() {
+		return this.FakeTreePos.Clone()
 	}
-	get BinaryID(): number {
-		return this.NativeEntity?.m_nBinaryID ?? 0
+	public get Rotation(): number {
+		return 0
+	}
+	public get Angles(): QAngle {
+		return new QAngle()
+	}
+	public get IsAlive() {
+		return EntityManager.IsTreeActive(this.BinaryID)
 	}
 }
 

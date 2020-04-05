@@ -60,7 +60,8 @@ EventsSDK.on("EntityCreated", ent => {
 	if (!(ent instanceof Roshan) || (Roshan.Instance instanceof Entity && Roshan.Instance !== ent))
 		return
 	Roshan.Instance = ent
-	last_minute = Math.max(0, Math.floor(GameRules!.GameTime / 60))
+	let time = GameRules?.GameTime ?? 0
+	last_minute = Math.max(0, Math.floor(time / 60))
 	Roshan.HP = 6000 + (last_minute * 115)
 })
 
@@ -76,7 +77,8 @@ EventsSDK.on("Tick", () => {
 	if (Roshan.HP === 0)
 		return
 	Roshan.HP = Math.min(Math.round(Roshan.HP + (HPRegen / 30)), 6000 + (last_minute * 115))
-	let min = Math.floor(GameRules!.GameTime / 60)
+	let time = GameRules?.GameTime ?? 0
+	let min = Math.floor(time / 60)
 	if (min === last_minute)
 		return
 	Roshan.HP *= (6000 + (min * 115)) / (6000 + (last_minute * 115))

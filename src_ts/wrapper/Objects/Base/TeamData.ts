@@ -1,5 +1,5 @@
 import Entity from "./Entity"
-import { EntityPropertyType } from "../../Managers/EntityManager"
+import EntityManager, { EntityPropertyType } from "../../Managers/EntityManager"
 import TreeModelReplacement from "../../Base/TreeModelReplacement"
 import { Team } from "../../Enums/Team"
 import DataTeamPlayer from "../../Base/DataTeamPlayer"
@@ -66,3 +66,4 @@ RegisterFieldHandler(TeamData, "m_bSuggestedLaneRoam", (data, new_value) => data
 RegisterFieldHandler(TeamData, "m_bSuggestedLaneJungle", (data, new_value) => data.SuggestedLaneJungle = new_value as boolean[])
 RegisterFieldHandler(TeamData, "m_vecNeutralItemsEarned", (data, new_value) => data.NeutralItemsEarned = new_value as number[])
 RegisterFieldHandler(TeamData, "m_vecNeutralItemsConsumed", (data, new_value) => data.NeutralItemsConsumed = new_value as number[])
+RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, new_value) => EntityManager.SetWorldTreeState(new_value as bigint[]))

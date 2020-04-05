@@ -1,7 +1,5 @@
-import EntityManager from "../../Managers/EntityManager"
 import { GameRules } from "../../Objects/Base/GameRules"
 import Ability from "./Ability"
-import Entity from "./Entity"
 import Player from "./Player"
 
 export default class Item extends Ability {
@@ -50,9 +48,6 @@ export default class Item extends Ability {
 	}
 	public get ModelName(): string {
 		return this.AbilityData.ModelName
-	}
-	public get OldOwner(): Nullable<Entity> {
-		return EntityManager.GetEntityByNative(this.NativeEntity?.m_hOldOwnerEntity ?? 0)
 	}
 	public get ShouldDisplayCharges(): boolean {
 		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges

@@ -207,3 +207,14 @@ export function ParseExternalReferences(buf: ArrayBuffer): string[] {
 	}
 	return list
 }
+
+export function ParseMapName(path: string): string | undefined {
+	let res = /maps(\/|\\)(.+)\.vpk$/.exec(path)
+	if (res === null)
+		return undefined
+
+	let map_name = res[2]
+	if (map_name.startsWith("scenes") || map_name.startsWith("prefabs")) // that must not be loaded as main map, so we must ignore it
+		return undefined
+	return map_name
+}

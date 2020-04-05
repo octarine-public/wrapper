@@ -142,11 +142,6 @@ export default class Ability extends Entity {
 			castrange = this.BaseCastRange
 
 		switch (this.Name) {
-			case "item_tango":
-			case "item_tango_single": {
-				castrange = this.GetSpecialValue("cast_range_ward")
-				break
-			}
 			case "skywrath_mage_concussive_shot": {
 				let unique = owner?.GetAbilityByName("special_bonus_unique_skywrath_4")
 				if (unique !== undefined && unique.Level !== 0)
@@ -165,7 +160,7 @@ export default class Ability extends Entity {
 			default:
 				break
 		}
-		return castrange + (owner !== undefined ? owner.CastRangeBonus : 0)
+		return castrange + (owner?.CastRangeBonus ?? 0)
 	}
 
 	/**

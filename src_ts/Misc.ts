@@ -1,11 +1,9 @@
-import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, RendererSDK, Tree, EntityManager, GameState } from "./wrapper/Imports"
+import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, RendererSDK, Tree, GameState } from "./wrapper/Imports"
 import { SetGameInProgress } from "./wrapper/Managers/EventsHandler"
 
 let Menu = MenuSDK.AddEntry("Misc")
 
-let AutoAcceptTree = Menu.AddNode("Auto Accept"),
-	AutoAccept_State = AutoAcceptTree.AddToggle("Auto Accept", true),
-	AutoAccept_delay = AutoAcceptTree.AddSlider("Delay on accept", 5, 0, 28 /* ?? is real maximum */),
+let AutoAccept_delay = Menu.AddSlider("Delay on AutoAccept", 3, 0, 28 /* ?? is real maximum */),
 	CameraTree = Menu.AddNode("Camera"),
 	CamDist = CameraTree.AddSlider("Camera Distance", 1300, 0, 10000),
 	CamMouseTree = CameraTree.AddNode("Mouse wheel"),
@@ -54,33 +52,14 @@ let AutoAcceptTree = Menu.AddNode("Auto Accept"),
 	tree2modelid = new Map<Tree, number>()
 
 let tree_models: [string, number][] = [
-	["models/props_foliage/draft_tree001.vmdl", 1],
+	["", 1],
 	["models/props_structures/crystal003_refract.vmdl", 1],
 	["models/props_structures/pumpkin001.vmdl", 1.08],
 	["models/props_structures/pumpkin003.vmdl", 3],
 	["models/props_gameplay/pumpkin_bucket.vmdl", 1],
 	["maps/journey_assets/props/trees/journey_armandpine/journey_armandpine_02_stump.vmdl", 4.5],
 ]
-function ChangeTreeModels(self: MenuSDK.Switcher) {
-	let selected_tree_model_id = self.selected_id
-	let selected_tree_model = tree_models[selected_tree_model_id]
-	EntityManager.GetEntitiesByClass(Tree)
-		.forEach(tree => {
-			if (tree2modelid.get(tree) === selected_tree_model_id)
-				return
-			let native_entity = tree.NativeEntity
-			if (native_entity === undefined)
-				return
-			if (!tree2origmodel.has(tree))
-				tree2origmodel.set(tree, [native_entity.m_sModel || tree_models[0][0], tree.GameSceneNode?.m_flAbsScale || tree_models[0][1]])
-			if (selected_tree_model_id === 0)
-				selected_tree_model = tree2origmodel.get(tree)!
-			native_entity.m_sModel = selected_tree_model[0]
-			native_entity.m_pGameSceneNode.SetLocalScale(selected_tree_model[1])
-			tree2modelid.set(tree, selected_tree_model_id)
-		})
-}
-tree_model.OnValue(ChangeTreeModels)
+tree_model.OnValue(self => SetTreeModel(...tree_models[self.selected_id]))
 
 CamDist.OnValue(UpdateVisuals)
 
@@ -193,7 +172,7 @@ EventsSDK.on("Draw", () => {
 		return
 	}
 
-	if (!AutoAccept_State.value || AutoAccept_delay.value - elepsedTime > 0)
+	if (AutoAccept_delay.value - elepsedTime > 0)
 		return
 
 	AcceptMatch()
@@ -222,12 +201,6 @@ Events.on("AddSearchPath", path => {
 Events.on("PostRemoveSearchPath", path => {
 	if (path.endsWith("dota.vpk"))
 		clear_list.forEach(path_ => RemoveSearchPath(path_))
-})
-
-EventsSDK.on("Tick", () => {
-	if (tree_model.selected_id === 0)
-		return
-	ChangeTreeModels(tree_model)
 })
 
 EventsSDK.on("EntityDestroyed", ent => {

@@ -11,10 +11,12 @@ import BinaryStream from "../Utils/BinaryStream"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
-import { Utf8ArrayToStr, MapToObject } from "../Utils/Utils"
+import { Utf8ArrayToStr, MapToObject, ParseMapName } from "../Utils/Utils"
 import * as StringTables from "./StringTables"
 import Vector4 from "../Base/Vector4"
 import { GameRules } from "../Objects/Base/GameRules"
+import { ParseTRMP } from "../Utils/ParseTRMP"
+import Tree from "../Objects/Base/Tree"
 
 let AllEntities: Entity[] = []
 let NativeEntities = new Map<number, C_BaseEntity>()
@@ -39,11 +41,16 @@ class bitset {
 		else
 			this.ar[ar_pos] |= mask
 	}
+	public set_buf(buf: ArrayBuffer): void {
+		new Uint8Array(this.ar.buffer).set(new Uint8Array(buf))
+	}
 }
 
 export type EntityPropertyType = Map<string, EntityPropertyType> | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
 let ent_props = new Map<number, EntityPropertyType>(),
-	VisibilityMask = new bitset(0x3FFF)
+	VisibilityMask = new bitset(0x3FFF),
+	TreeActiveMask = new bitset(0x3FFF),
+	cur_local_id = 0x4000
 class CEntityManager {
 	public get AllEntities(): Entity[] {
 		return AllEntities
@@ -113,7 +120,13 @@ class CEntityManager {
 		return [...new Set(ar)]
 	}
 	public IsEntityVisible(ent_id: number): boolean {
-		return VisibilityMask.get(ent_id)
+		return ((ent_id & 0x4000) !== 0) || VisibilityMask.get(ent_id)
+	}
+	public IsTreeActive(binary_id: number): boolean {
+		return TreeActiveMask.get(binary_id)
+	}
+	public SetWorldTreeState(WorldTreeState: bigint[]): void {
+		TreeActiveMask.set_buf(new BigUint64Array(WorldTreeState).buffer)
 	}
 	public GetEntityPropertyByPath(ent_id: number, path: (string | number)[]): Nullable<EntityPropertyType> {
 		let node = ent_props.get(ent_id)
@@ -150,29 +163,6 @@ Events.on("EntityCreated", (ent, id) => {
 	NativeEntities.set(id, ent)
 	if (AllEntitiesAsMap.has(id))
 		AllEntitiesAsMap.get(id)!.NativeEntity = ent
-	else if ((id & 0x4000) !== 0) {
-		let ent_name = ent.m_pEntity?.m_name || ""
-		let constructor = NativeToSDK(ent.constructor as Constructor<any>, ent_name!)
-		if (constructor === undefined)
-			throw `Can't find constructor for entity class ${ent.constructor.name}, Entity#Name === ${ent_name}`
-
-		let wrapper_ent = new constructor(id, ent_name)
-		wrapper_ent.NativeEntity = ent // just in case...
-		wrapper_ent.ClassName = ent.constructor.name
-		AllEntitiesAsMap.set(id, wrapper_ent)
-		AllEntities.push(wrapper_ent)
-
-		GetSDKClasses().forEach(class_ => {
-			if (!(wrapper_ent instanceof class_))
-				return
-
-			if (!ClassToEntities.has(class_))
-				ClassToEntities.set(class_, [])
-			ClassToEntities.get(class_)!.push(wrapper_ent)
-		})
-
-		EventsSDK.emit("EntityCreated", false, wrapper_ent)
-	}
 })
 Events.on("EntityDestroyed", (ent, id) => {
 	NativeEntities.delete(id)
@@ -554,4 +544,70 @@ Events.on("SignonStateChanged", new_state => {
 		return
 	// loop-optimizer: KEEP
 	AllEntitiesAsMap.forEach((ent, ent_id) => DeleteEntity(ent_id))
+	cur_local_id = 0x4000
+})
+
+function LoadTreeMap(buf: ArrayBuffer) {
+	while (cur_local_id > 0x4000)
+		DeleteEntity(--cur_local_id)
+	// loop-optimizer: FORWARD
+	ParseTRMP(buf).forEach((pos, i) => {
+		let id = cur_local_id++
+		let entity = ClassFromNative(id, "C_DOTA_MapTree", "ent_dota_tree") as Tree
+		entity.Name_ = "ent_dota_tree"
+		entity.ClassName = "C_DOTA_MapTree"
+		entity.FakeTreePos.CopyFrom(pos)
+		entity.BinaryID = i
+		AllEntitiesAsMap.set(id, entity)
+		AllEntities.push(entity)
+
+		GetSDKClasses().forEach(class_ => {
+			if (!(entity instanceof class_))
+				return
+
+			if (!ClassToEntities.has(class_))
+				ClassToEntities.set(class_, [])
+			ClassToEntities.get(class_)!.push(entity)
+		})
+
+		EventsSDK.emit("EntityCreated", false, entity)
+	})
+}
+
+let last_loaded_map_name = "<empty>"
+try {
+	let map_name = GetLevelNameShort()
+	if (map_name === "start")
+		map_name = "dota"
+	let buf = readFile(`maps/${map_name}.trm`)
+	if (buf !== undefined)
+		LoadTreeMap(buf)
+} catch (e) {
+	console.log("Error in TreeMap static init: " + e)
+}
+
+Events.on("PostAddSearchPath", path => {
+	let map_name = ParseMapName(path)
+	if (map_name === undefined)
+		return
+
+	let buf = readFile(`maps/${map_name}.trm`)
+	if (buf === undefined)
+		return
+
+	try {
+		LoadTreeMap(buf)
+	} catch (e) {
+		console.log("Error in TreeMap dynamic init: " + e)
+	}
+})
+
+Events.on("PostRemoveSearchPath", path => {
+	let map_name = ParseMapName(path)
+	if (map_name === undefined || last_loaded_map_name !== map_name)
+		return
+
+	last_loaded_map_name = "<empty>"
+	while (cur_local_id > 0x4000)
+		DeleteEntity(--cur_local_id)
 })

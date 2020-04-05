@@ -11,7 +11,7 @@ export default class lina_dragon_slave extends Ability {
 		return this.GetSpecialValue("dragon_slave_width_initial")
 	}
 
-	public get CastRangeBase(): number {
+	public get BaseCastRange(): number {
 		return this.GetSpecialValue("dragon_slave_distance")
 	}
 

@@ -172,6 +172,7 @@ declare function hrtime(): number
 declare function AddSearchPath(path: string): boolean
 declare function RemoveSearchPath(path: string): boolean
 declare function UnitNameIndexToString(index: number): string | undefined
+declare function SetTreeModel(model_name: string, scale: number): void
 
 /// AUTOMATICALLY GENERATED
 

@@ -143,7 +143,7 @@ export default class ExecuteOrder {
 
 		return {
 			OrderType: this.m_OrderType,
-			Target: target instanceof Entity ? target instanceof Tree ? target.NativeEntity?.m_nBinaryID ?? target.Index : target.Index : target,
+			Target: target instanceof Entity ? target instanceof Tree ? target.BinaryID : target.Index : target,
 			Ability: ability instanceof Ability ? ability.Index : ability,
 			OrderIssuer: this.m_OrderIssuer,
 			Unit: unit?.Index,
