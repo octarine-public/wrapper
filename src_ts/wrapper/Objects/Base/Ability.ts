@@ -19,7 +19,7 @@ export default class Ability extends Entity {
 	public OverrideCastPoint = 0
 	public Level = 0
 	public Cooldown = 0
-	public CooldownLength = 0
+	public CooldownLength_ = 0
 	public IsInAbilityPhase_ = false
 	public IsInAbilityPhase_ChangeTime = 0
 	public CastStartTime = 0
@@ -55,9 +55,6 @@ export default class Ability extends Entity {
 	public get ActivationDelay() {
 		return this.GetSpecialValue("delay")
 	}
-	public get LevelCharges(): number {
-		return this.AbilityData.AbilityCharges(this.Level)
-	}
 	public get CastPoint(): number {
 		return this.AbilityData.GetCastPoint(this.Level)
 	}
@@ -67,60 +64,72 @@ export default class Ability extends Entity {
 	public get ChannelTime(): number {
 		return Math.max(GameRules!.RawGameTime - this.ChannelStartTime, 0)
 	}
-	get DamageType(): DAMAGE_TYPES {
+	public get MaxCharges(): number {
+		return this.AbilityData.GetMaxCharges(this.Level) + this.GetSpecialValue("AbilityCharges")
+	}
+	public get ChargeRestoreTime(): number {
+		return this.AbilityData.GetChargeRestoreTime(this.Level) + this.GetSpecialValue("AbilityChargeRestoreTime")
+	}
+	public get DamageType(): DAMAGE_TYPES {
 		return this.AbilityData.DamageType
 	}
-	get ID(): number {
+	public get ID(): number {
 		return this.AbilityData.ID
 	}
-	get IsChanneling(): boolean {
+	public get IsChanneling(): boolean {
 		return this.ChannelStartTime > 0 && this.ChannelTime <= this.MaxChannelTime
 	}
 	public get IsInAbilityPhase(): boolean {
 		return this.IsInAbilityPhase_ && (GameRules === undefined || GameRules.RawGameTime - this.IsInAbilityPhase_ChangeTime <= this.CastPoint)
 	}
-	get IsCooldownReady(): boolean {
+	public get CooldownLength(): number {
+		let charge_restore_time = this.ChargeRestoreTime
+		if (charge_restore_time !== 0)
+			return charge_restore_time // workaround of bad m_flCooldownLength, TODO: use cooldown reductions
+		return this.CooldownLength_
+	}
+	public get IsCooldownReady(): boolean {
 		return this.Cooldown === 0
 	}
-	get IsReady(): boolean {
+	public get IsReady(): boolean {
 		const unit = this.Owner
 		return this.IsCooldownReady && this.Level !== 0 && (unit === undefined || (unit.Mana >= this.ManaCost && !unit.IsSilenced))
 	}
-	get IsGrantedByScepter(): boolean {
+	public get IsGrantedByScepter(): boolean {
 		return this.AbilityData.IsGrantedByScepter
 	}
-	get IsItem(): boolean {
+	public get IsItem(): boolean {
 		return this.AbilityData.IsItem
 	}
-	get LevelsBetweenUpgrades(): number {
+	public get LevelsBetweenUpgrades(): number {
 		return this.AbilityData.LevelsBetweenUpgrades
 	}
-	get MaxLevel(): number {
+	public get MaxLevel(): number {
 		return this.AbilityData.MaxLevel
 	}
-	get RequiredLevel(): number {
+	public get RequiredLevel(): number {
 		return this.AbilityData.RequiredLevel
 	}
-	get SharedCooldownName(): string {
+	public get SharedCooldownName(): string {
 		return this.AbilityData.SharedCooldownName
 	}
-	get AbilityImmunityType(): SPELL_IMMUNITY_TYPES {
+	public get AbilityImmunityType(): SPELL_IMMUNITY_TYPES {
 		return this.AbilityData.AbilityImmunityType
 	}
-	get TargetFlags(): DOTA_UNIT_TARGET_FLAGS[] {
+	public get TargetFlags(): DOTA_UNIT_TARGET_FLAGS[] {
 		return MaskToArrayNumber(this.AbilityData.TargetFlags)
 	}
-	get TargetTeam(): DOTA_UNIT_TARGET_TEAM[] {
+	public get TargetTeam(): DOTA_UNIT_TARGET_TEAM[] {
 		return MaskToArrayNumber(this.AbilityData.TargetTeam)
 	}
-	get TargetType(): DOTA_UNIT_TARGET_TYPE[] {
+	public get TargetType(): DOTA_UNIT_TARGET_TYPE[] {
 		return MaskToArrayNumber(this.AbilityData.TargetType)
 	}
-	get TexturePath(): string {
+	public get TexturePath(): string {
 		return this.AbilityData.TexturePath
 	}
 
-	get IsPassive(): boolean {
+	public get IsPassive(): boolean {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 	}
 
@@ -296,7 +305,7 @@ RegisterFieldHandler(Ability, "m_flOverrideCastPoint", (abil, new_value) => abil
 RegisterFieldHandler(Ability, "m_iLevel", (abil, new_value) => abil.Level = new_value as number)
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, new_value) => abil.Cooldown = new_value as number)
 RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => abil.Cooldown = abil.CurrentCharges !== 0 ? 0 : Math.max(new_value as number, 0))
-RegisterFieldHandler(Ability, "m_flCooldownLength", (abil, new_value) => abil.CooldownLength = new_value as number)
+RegisterFieldHandler(Ability, "m_flCooldownLength", (abil, new_value) => abil.CooldownLength_ = new_value as number)
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, new_value) => {
 	abil.IsInAbilityPhase_ = new_value as boolean
 	abil.IsInAbilityPhase_ChangeTime = GameRules?.RawGameTime ?? 0

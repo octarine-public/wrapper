@@ -61,7 +61,8 @@ export default class AbilityData {
 	private readonly ChannelTimeCache: number[]
 	private readonly AbilityDamageCache: number[]
 	private readonly CastPointCache: number[]
-	private readonly AbilityChargesCache: number[]
+	private readonly ChargesCache: number[]
+	private readonly ChargeRestoreTimeCache: number[]
 
 	constructor(name: string) {
 		{
@@ -129,7 +130,8 @@ export default class AbilityData {
 		this.ChannelTimeCache = this.GetLevelArray("AbilityChannelTime")
 		this.AbilityDamageCache = this.GetLevelArray("AbilityDamage")
 		this.CastPointCache = this.GetLevelArray("AbilityCastPoint")
-		this.AbilityChargesCache = this.GetLevelArray("AbilityCharges")
+		this.ChargesCache = this.GetLevelArray("AbilityCharges")
+		this.ChargeRestoreTimeCache = this.GetLevelArray("AbilityChargeRestoreTime")
 	}
 
 	private CacheSpecialValue(name: string): Nullable<[number[], Nullable<string>, EDOTASpecialBonusOperation]> {
@@ -248,11 +250,17 @@ export default class AbilityData {
 		return this.CastPointCache[level]
 	}
 
-	public AbilityCharges(level: number): number {
+	public GetMaxCharges(level: number): number {
 		level = Math.min(this.MaxLevel, level) - 1
 		if (level < 0)
 			return 0
-		return this.AbilityChargesCache[level]
+		return this.ChargesCache[level]
+	}
+	public GetChargeRestoreTime(level: number): number {
+		level = Math.min(this.MaxLevel, level) - 1
+		if (level < 0)
+			return 0
+		return this.ChargeRestoreTimeCache[level]
 	}
 
 	private ExtendLevelArray(ar: number[]): number[] {
