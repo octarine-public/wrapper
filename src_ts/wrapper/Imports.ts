@@ -690,6 +690,8 @@ export { default as void_spirit_astral_step } from "./Objects/Abilities/VoidSpir
 export { default as void_spirit_resonant_pulse } from "./Objects/Abilities/VoidSpirit/void_spirit_resonant_pulse"
 export { default as snapfire_scatterblast } from "./Objects/Abilities/Snapfire/snapfire_scatterblast"
 export { default as snapfire_mortimer_kisses } from "./Objects/Abilities/Snapfire/snapfire_mortimer_kisses"
+export { default as snapfire_gobble_up } from "./Objects/Abilities/Snapfire/snapfire_gobble_up"
+export { default as snapfire_spit_creep } from "./Objects/Abilities/Snapfire/snapfire_spit_creep"
 export { default as snapfire_firesnap_cookie } from "./Objects/Abilities/Snapfire/snapfire_firesnap_cookie"
 export { default as snapfire_lil_shredder } from "./Objects/Abilities/Snapfire/snapfire_lil_shredder"
 export { default as necronomicon_warrior_last_will } from "./Objects/Abilities/NecronomiconWarrior/necronomicon_warrior_last_will"

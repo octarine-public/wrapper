@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class lina_dragon_slave extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Lina_DragonSlave>
-
 	public get EndRadius(): number {
 		return this.GetSpecialValue("dragon_slave_width_end")
 	}

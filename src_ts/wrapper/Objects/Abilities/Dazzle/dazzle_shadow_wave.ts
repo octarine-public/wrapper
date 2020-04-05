@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class dazzle_shadow_wave extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_Dazzle_ShadowWave
 
 	public get AOERadius(): number {
 		return this.GetSpecialValue("damage_radius")

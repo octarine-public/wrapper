@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class greevil_miniboss_yellow_ion_shell extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Greevil_Miniboss_Yellow_IonShell>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

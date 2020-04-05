@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class clinkz_searing_arrows extends Ability {
-	public readonly NativeEntity!: CDOTA_Ability_Clinkz_SearingArrows
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class grimstroke_dark_artistry extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_Grimstroke_DarkArtistry>
-
 	public get EndRadius(): number {
 		return this.GetSpecialValue("end_radius")
 	}

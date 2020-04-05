@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class silencer_curse_of_the_silent extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Silencer_CurseOfTheSilent>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

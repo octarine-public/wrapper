@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class queenofpain_scream_of_pain extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_QueenOfPain_ScreamOfPain>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("area_of_effect")
 	}

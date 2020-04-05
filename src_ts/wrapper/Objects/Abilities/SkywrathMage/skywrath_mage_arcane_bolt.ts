@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class skywrath_mage_arcane_bolt extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Skywrath_Mage_Arcane_Bolt>
-
 	public get Speed(): number {
 		return this.GetSpecialValue("bolt_speed")
 	}

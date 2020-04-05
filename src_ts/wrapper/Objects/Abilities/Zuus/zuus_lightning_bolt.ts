@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class zuus_lightning_bolt extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Zuus_LightningBolt>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("spread_aoe")
 	}

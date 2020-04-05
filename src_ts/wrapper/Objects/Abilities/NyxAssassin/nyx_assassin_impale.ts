@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class nyx_assassin_impale extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Nyx_Assassin_Impale>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("width")
 	}

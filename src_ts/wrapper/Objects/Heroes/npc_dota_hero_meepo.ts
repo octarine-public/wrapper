@@ -2,7 +2,6 @@ import Hero from "../Base/Hero"
 import meepo_divided_we_stand from "../Abilities/Meepo/meepo_divided_we_stand"
 
 export default class npc_dota_hero_meepo extends Hero {
-	public NativeEntity: Nullable<C_DOTA_Unit_Hero_Meepo>
 	public IsClone = false
 	public WhichMeepo = -1
 

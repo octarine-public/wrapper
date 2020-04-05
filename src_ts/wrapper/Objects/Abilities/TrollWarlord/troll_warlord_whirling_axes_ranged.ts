@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class troll_warlord_whirling_axes_ranged extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_TrollWarlord_WhirlingAxes_Ranged>
-
 	public get EndRadius(): number {
 		return 206.17 // no in special data
 	}

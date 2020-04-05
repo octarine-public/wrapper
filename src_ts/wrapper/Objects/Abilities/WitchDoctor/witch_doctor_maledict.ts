@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class witch_doctor_maledict extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_WitchDoctor_Maledict>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

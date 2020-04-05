@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class elder_titan_earth_splitter extends Ability {
-	public readonly NativeEntity!: CDOTA_Ability_Elder_Titan_EarthSplitter
 
 	public get AOERadius(): number {
 		return this.GetSpecialValue("crack_width")

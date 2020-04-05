@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class chen_hand_of_god extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_Chen_HandOfGod
 
 	public get AOERadius(): number {
 		return Number.MAX_SAFE_INTEGER

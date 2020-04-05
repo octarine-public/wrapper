@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class juggernaut_blade_fury extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Juggernaut_BladeFury>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("blade_fury_radius")
 	}

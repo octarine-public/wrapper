@@ -1,7 +1,6 @@
 import Hero from "../Base/Hero"
 
 export default class npc_dota_hero_crystal_maiden extends Hero {
-	public readonly NativeEntity!: C_DOTA_Unit_Hero_CrystalMaiden
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

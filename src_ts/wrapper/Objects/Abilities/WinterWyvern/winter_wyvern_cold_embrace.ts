@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class winter_wyvern_cold_embrace extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_Winter_Wyvern_Cold_Embrace>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

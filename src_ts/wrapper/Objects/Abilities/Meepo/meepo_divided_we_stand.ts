@@ -2,7 +2,6 @@ import Ability from "../../Base/Ability"
 import EntityManager from "../../../Managers/EntityManager"
 
 export default class meepo_divided_we_stand extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Meepo_DividedWeStand>
 	public WhichDividedWeStand = -1
 	public NumDividedWeStand = -1
 	public PrimeDividedWeStand_ = 0

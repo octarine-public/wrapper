@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class zuus_thundergods_wrath extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Zuus_ThundergodsWrath>
-
 	public get AOERadius(): number {
 		return Number.MAX_SAFE_INTEGER
 	}

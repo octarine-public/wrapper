@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class snapfire_scatterblast extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_Snapfire_Scatterblast>
-
 	public get EndRadius(): number {
 		return this.GetSpecialValue("blast_width_end")
 	}

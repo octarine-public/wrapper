@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class satyr_soulstealer_mana_burn extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_SatyrSoulstealer_ManaBurn>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

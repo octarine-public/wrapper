@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class oracle_purifying_flames extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Oracle_PurifyingFlames>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

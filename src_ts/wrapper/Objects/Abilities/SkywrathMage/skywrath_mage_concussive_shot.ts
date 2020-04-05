@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class skywrath_mage_concussive_shot extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Skywrath_Mage_Concussive_Shot>
-
 	public get AOERadius(): number {
 		let owner = this.Owner
 		if (owner !== undefined) {

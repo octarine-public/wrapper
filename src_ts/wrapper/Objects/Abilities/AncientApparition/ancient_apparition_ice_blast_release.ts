@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class ancient_apparition_ice_blast_release extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_AncientApparition_IceBlast_Release>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

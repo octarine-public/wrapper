@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class faceless_void_backtrack extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_FacelessVoid_Backtrack>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

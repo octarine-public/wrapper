@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class phantom_lancer_spirit_lance extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_PhantomLancer_SpiritLance>
-
 	public get AbilityDamage(): number {
 		return this.GetSpecialValue("lance_damage")
 	}

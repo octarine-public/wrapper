@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class kobold_taskmaster_speed_aura extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_KoboldTaskmaster_SpeedAura>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

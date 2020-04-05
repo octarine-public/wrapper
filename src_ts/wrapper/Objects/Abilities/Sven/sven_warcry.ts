@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class sven_warcry extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Sven_Warcry>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("warcry_radius")
 	}

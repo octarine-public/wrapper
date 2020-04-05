@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class broodmother_incapacitating_bite extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_Broodmother_IncapacitatingBite
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

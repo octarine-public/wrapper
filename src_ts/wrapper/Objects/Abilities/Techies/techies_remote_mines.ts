@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class techies_remote_mines extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_Techies_RemoteMines>
 	// ability special "detonate_delay": 0.25, activation_time "activation_time": 2
 }
 

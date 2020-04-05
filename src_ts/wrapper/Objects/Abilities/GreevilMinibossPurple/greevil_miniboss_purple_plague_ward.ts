@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class greevil_miniboss_purple_plague_ward extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Greevil_Miniboss_Purple_PlagueWard>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

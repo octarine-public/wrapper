@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class drow_ranger_multishot extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_DrowRanger_Multishot
 
 	public get CastRange(): number {
 		return (this.Owner?.AttackRange ?? 0) * this.GetSpecialValue("arrow_range_multiplier")

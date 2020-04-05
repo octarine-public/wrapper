@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class enraged_wildkin_tornado extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_EnragedWildkin_Tornado>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

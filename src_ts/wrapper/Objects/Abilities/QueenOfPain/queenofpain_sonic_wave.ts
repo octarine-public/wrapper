@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class queenofpain_sonic_wave extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_QueenOfPain_SonicWave>
-
 	public get EndRadius(): number {
 		return this.GetSpecialValue("final_aoe")
 	}

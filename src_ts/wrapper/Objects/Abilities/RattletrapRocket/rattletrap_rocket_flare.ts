@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class rattletrap_rocket_flare extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Rattletrap_RocketFlare>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

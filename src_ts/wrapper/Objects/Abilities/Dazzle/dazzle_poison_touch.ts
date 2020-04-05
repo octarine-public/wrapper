@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class dazzle_poison_touch extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_Dazzle_Poison_Touch
 
 	public get AOERadius(): number {
 		return this.GetSpecialValue("start_radius")

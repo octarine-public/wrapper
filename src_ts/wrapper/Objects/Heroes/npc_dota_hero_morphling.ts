@@ -1,7 +1,6 @@
 import Hero from "../Base/Hero"
 
 export default class npc_dota_hero_morphling extends Hero {
-	public NativeEntity: Nullable<C_DOTA_Unit_Hero_Morphling>
 
 	public get IsIllusion(): boolean {
 		if (this.HasBuffByName("modifier_morphling_replicate"))

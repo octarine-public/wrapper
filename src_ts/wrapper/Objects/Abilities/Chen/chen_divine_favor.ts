@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class chen_divine_favor extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_Chen_DivineFavor
 
 	public get AuraRadius(): number {
 		return this.GetSpecialValue("aura_radius")

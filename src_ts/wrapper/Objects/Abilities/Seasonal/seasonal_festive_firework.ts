@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class seasonal_festive_firework extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Seasonal_Festive_Firework>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

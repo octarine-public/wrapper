@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class mars_spear extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_Mars_Spear>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("spear_width")
 	}

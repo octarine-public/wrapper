@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class doom_bringer_doom extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_DoomBringer_Doom
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

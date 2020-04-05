@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class keeper_of_the_light_illuminate_end extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_KeeperOfTheLight_IlluminateEnd>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

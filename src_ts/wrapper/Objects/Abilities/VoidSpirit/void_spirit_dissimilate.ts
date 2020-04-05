@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class void_spirit_dissimilate extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_VoidSpirit_Dissimilate>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("first_ring_distance_offset") * 1.5
 	}

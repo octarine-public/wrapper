@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class bristleback_viscous_nasal_goo extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_Bristleback_ViscousNasalGoo
 
 	public get AOERadius(): number {
 		return this.Owner?.HasScepter

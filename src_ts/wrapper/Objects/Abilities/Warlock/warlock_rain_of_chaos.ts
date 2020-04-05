@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class warlock_rain_of_chaos extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Warlock_RainOfChaos>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("aoe")
 	}

@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class void_spirit_astral_step extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_VoidSpirit_AstralStep>
-
 	public get CastRange(): number {
 		return this.GetSpecialValue("max_travel_distance")
 	}

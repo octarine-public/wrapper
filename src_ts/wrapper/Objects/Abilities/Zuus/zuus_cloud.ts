@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class zuus_cloud extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Zuus_Cloud>
-
 	public get CastRange(): number {
 		return Number.MAX_SAFE_INTEGER
 	}

@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class beastmaster_inner_beast extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Beastmaster_InnerBeast>
-
 	public get AuraRadius(): number {
 		return this.GetSpecialValue("radius")
 	}

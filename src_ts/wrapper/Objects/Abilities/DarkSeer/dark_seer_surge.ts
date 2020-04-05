@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class dark_seer_surge extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_DarkSeer_Surge
 
 	public get AOERadius(): number {
 		let radius = 0,

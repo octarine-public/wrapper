@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class vengefulspirit_wave_of_terror extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_VengefulSpirit_WaveOfTerror>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("wave_width")
 	}

@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class broodmother_spawn_spiderlings extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_Broodmother_SpawnSpiderlings
 
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")

@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class enigma_black_hole extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Enigma_BlackHole>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("pull_radius")
 	}

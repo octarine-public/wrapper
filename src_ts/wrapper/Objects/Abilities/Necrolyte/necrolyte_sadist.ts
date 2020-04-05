@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class necrolyte_sadist extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Necrolyte_Sadist>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

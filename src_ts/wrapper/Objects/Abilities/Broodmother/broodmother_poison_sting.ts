@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class broodmother_poison_sting extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_Broodmother_PoisonSting
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

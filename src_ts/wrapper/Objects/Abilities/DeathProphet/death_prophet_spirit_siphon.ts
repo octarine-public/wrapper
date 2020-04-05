@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class death_prophet_spirit_siphon extends Ability {
-	public readonly NativeEntity!: CDOTA_Ability_DeathProphet_SpiritSiphon
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

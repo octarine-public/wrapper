@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class crystal_maiden_crystal_nova extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_CrystalMaiden_CrystalNova
 
 	public get AbilityDamage(): number {
 		return this.GetSpecialValue("nova_damage")

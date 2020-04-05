@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class storm_spirit_ball_lightning extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_StormSpirit_BallLightning>
-
 	public get CastRange(): number {
 		let mana = (this.Owner?.Mana ?? 0) - this.ManaCost
 		if (mana <= 0)

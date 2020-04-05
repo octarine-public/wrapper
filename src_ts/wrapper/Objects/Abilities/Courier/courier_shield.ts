@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class courier_shield extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_Courier_Shield
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

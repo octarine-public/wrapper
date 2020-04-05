@@ -124,7 +124,7 @@ EventsSDK.on("Tick", () => {
 			})
 			let predict_res = new NavMeshPathfinding(
 				new MovingObstacle(
-					start_pos/*.Add(angle.toVector2().MultiplyScalar(hook.AOERadius * 1.5))*/,
+					start_pos.Add(unit.Forward.toVector2().MultiplyScalarForThis(hook.AOERadius * 1.5)),
 					hook.AOERadius,
 					unit.Position.GetDirectionTo(pos).toVector2().MultiplyScalarForThis(hook.Speed),
 					hook.CastRange / hook.Speed,

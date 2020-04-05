@@ -1,7 +1,6 @@
 import Hero from "../Base/Hero"
 
 export default class npc_dota_hero_shredder extends Hero {
-	public NativeEntity: Nullable<C_DOTA_Unit_Hero_Shredder>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class jakiro_dual_breath extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Jakiro_DualBreath>
-
 	public get EndRadius(): number {
 		return this.GetSpecialValue("end_radius")
 	}

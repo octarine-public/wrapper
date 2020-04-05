@@ -1,7 +1,6 @@
 import Hero from "../Base/Hero"
 
 export default class npc_dota_hero_dragon_knight extends Hero {
-	public readonly NativeEntity!: C_DOTA_Unit_Hero_DragonKnight
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

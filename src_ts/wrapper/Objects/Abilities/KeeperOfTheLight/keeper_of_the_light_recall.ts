@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class keeper_of_the_light_recall extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_KeeperOfTheLight_Recall>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

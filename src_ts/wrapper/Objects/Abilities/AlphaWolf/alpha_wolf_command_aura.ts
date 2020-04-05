@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class alpha_wolf_command_aura extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_AlphaWolf_CommandAura>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

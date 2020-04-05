@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class death_prophet_carrion_swarm extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_DeathProphet_CarrionSwarm
 
 	public get AOERadius(): number {
 		return this.GetSpecialValue("start_radius")

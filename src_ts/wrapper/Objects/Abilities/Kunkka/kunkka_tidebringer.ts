@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class kunkka_tidebringer extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Kunkka_Tidebringer>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("cleave_distance")
 	}

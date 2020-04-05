@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class kunkka_torrent_storm extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Kunkka_Torrent_Storm>
-
 	public get Duration(): number {
 		return this.GetSpecialValue("torrent_duration")
 	}

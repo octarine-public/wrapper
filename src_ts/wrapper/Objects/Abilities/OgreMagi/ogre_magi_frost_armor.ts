@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class ogre_magi_frost_armor extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_OgreMagi_FrostArmor>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

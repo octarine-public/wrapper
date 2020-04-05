@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class abyssal_underlord_dark_rift extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_AbyssalUnderlord_DarkRift>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

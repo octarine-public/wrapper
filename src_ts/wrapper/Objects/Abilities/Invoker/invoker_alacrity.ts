@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class invoker_alacrity extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Invoker_Alacrity>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

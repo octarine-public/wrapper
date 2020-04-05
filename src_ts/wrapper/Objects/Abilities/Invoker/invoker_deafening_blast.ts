@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class invoker_deafening_blast extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Invoker_DeafeningBlast>
-
 	public get EndRadius(): number {
 		return this.GetSpecialValue("radius_end")
 	}

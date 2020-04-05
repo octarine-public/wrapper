@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class razor_unstable_current extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Razor_UnstableCurrent>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

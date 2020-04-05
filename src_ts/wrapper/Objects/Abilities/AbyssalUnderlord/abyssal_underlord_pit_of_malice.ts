@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class abyssal_underlord_pit_of_malice extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_AbyssalUnderlord_PitOfMalice>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

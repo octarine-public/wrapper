@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class arc_warden_scepter extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_ArcWarden_Scepter>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

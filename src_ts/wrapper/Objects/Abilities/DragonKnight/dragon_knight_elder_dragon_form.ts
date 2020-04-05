@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class dragon_knight_elder_dragon_form extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_DragonKnight_ElderDragonForm
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

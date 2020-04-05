@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class ursa_overpower extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Ursa_Overpower>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

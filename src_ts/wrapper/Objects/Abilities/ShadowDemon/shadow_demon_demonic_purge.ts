@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class shadow_demon_demonic_purge extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Shadow_Demon_Demonic_Purge>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class arc_warden_flux extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_ArcWarden_Flux>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("search_radius")
 	}

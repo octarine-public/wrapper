@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class seasonal_summon_ti9_balloon extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_Seasonal_Summon_TI9_Balloon>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

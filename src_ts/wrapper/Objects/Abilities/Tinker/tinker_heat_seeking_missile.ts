@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class tinker_heat_seeking_missile extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Tinker_HeatSeekingMissile>
-
 	public get Speed(): number {
 		return this.GetSpecialValue("speed")
 	}

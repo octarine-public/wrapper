@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class satyr_hellcaller_shockwave extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_SatyrHellcaller_Shockwave>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

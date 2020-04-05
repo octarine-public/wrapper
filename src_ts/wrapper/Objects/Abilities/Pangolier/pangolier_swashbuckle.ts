@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class pangolier_swashbuckle extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Pangolier_Swashbuckle>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("start_radius")
 	}

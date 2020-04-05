@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class seasonal_summon_cny_tree extends Ability {
-	public NativeEntity: Nullable<CDOTA_Ability_Seasonal_Summon_CNY_Tree>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

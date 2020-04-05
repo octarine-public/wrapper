@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class dark_seer_wall_of_replica extends Ability {
-	public readonly NativeEntity!: C_DOTA_Ability_DarkSeer_WallOfReplica
 
 	public get AOERadius(): number {
 		return this.Owner?.HasScepter

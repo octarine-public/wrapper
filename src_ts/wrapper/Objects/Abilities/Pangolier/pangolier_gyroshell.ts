@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class pangolier_gyroshell extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Pangolier_Gyroshell>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("hit_radius")
 	}

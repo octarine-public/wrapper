@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class omniknight_guardian_angel extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Omniknight_GuardianAngel>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

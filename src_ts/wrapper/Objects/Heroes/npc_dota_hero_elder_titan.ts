@@ -1,7 +1,6 @@
 import Hero from "../Base/Hero"
 
 export default class npc_dota_hero_elder_titan extends Hero {
-	public NativeEntity: Nullable<CDOTA_Unit_Hero_Elder_Titan>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

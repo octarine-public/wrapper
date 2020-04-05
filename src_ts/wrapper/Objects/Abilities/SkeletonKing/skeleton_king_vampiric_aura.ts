@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class skeleton_king_vampiric_aura extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_SkeletonKing_VampiricAura>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

@@ -1,8 +1,6 @@
 import Ability from "../../Base/Ability"
 
 export default class juggernaut_healing_ward extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Ability_Juggernaut_HealingWard>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("healing_ward_aura_radius")
 	}
