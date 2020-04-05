@@ -6,6 +6,7 @@ import { GameRules } from "./GameRules"
 
 export default class Roshan extends Unit {
 	public static HP = 0
+	public static MaxHP = 0
 	public static get Instance(): Nullable<Entity | number> {
 		if (this.Instance_ instanceof Entity) {
 			if (!(this.Instance_ instanceof Entity) || !this.Instance_.IsValid)
@@ -39,6 +40,7 @@ EventsSDK.on("GameEvent", (name, obj) => {
 		if (GameRules !== undefined) {
 			last_minute = Math.max(0, Math.floor(GameRules.GameTime / 60))
 			Roshan.HP = 6000 + (last_minute * 115)
+			Roshan.MaxHP = Roshan.HP
 		}
 	} else
 		last_event_ent = -1
@@ -51,6 +53,7 @@ EventsSDK.on("GameEvent", (name, obj) => {
 		let ent = EntityManager.EntityByIndex(obj.entindex_killed) ?? obj.entindex_killed
 		if (ent === Roshan.Instance) {
 			Roshan.HP = 0
+			Roshan.MaxHP = 0
 			Roshan.Instance = undefined
 		}
 	}
@@ -63,6 +66,7 @@ EventsSDK.on("EntityCreated", ent => {
 	let time = GameRules?.GameTime ?? 0
 	last_minute = Math.max(0, Math.floor(time / 60))
 	Roshan.HP = 6000 + (last_minute * 115)
+	Roshan.MaxHP = Roshan.HP
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
@@ -70,6 +74,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 		return
 	Roshan.Instance = undefined
 	Roshan.HP = 0
+	Roshan.MaxHP = 0
 })
 
 const HPRegen = 20
@@ -83,10 +88,12 @@ EventsSDK.on("Tick", () => {
 		return
 	Roshan.HP *= (6000 + (min * 115)) / (6000 + (last_minute * 115))
 	last_minute = min
+	Roshan.MaxHP = Roshan.HP
 })
 
 EventsSDK.on("GameEnded", () => {
 	Roshan.Instance = undefined
 	Roshan.HP = 0
 	last_minute = 0
+	Roshan.MaxHP = 0
 })
