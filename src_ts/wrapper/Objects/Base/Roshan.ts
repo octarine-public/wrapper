@@ -86,9 +86,9 @@ EventsSDK.on("Tick", () => {
 	let min = Math.floor(time / 60)
 	if (min === last_minute)
 		return
-	Roshan.HP *= (6000 + (min * 115)) / (6000 + (last_minute * 115))
+	Roshan.MaxHP = 6000 + (min * 115)
+	Roshan.HP *= Roshan.MaxHP / (6000 + (last_minute * 115))
 	last_minute = min
-	Roshan.MaxHP = Roshan.HP
 })
 
 EventsSDK.on("GameEnded", () => {
