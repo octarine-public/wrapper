@@ -49,4 +49,24 @@ export default class PlayerData {
 	public get IsPlusSubscriber(): boolean {
 		return this.properties.get("m_bIsPlusSubscriber") as boolean
 	}
+
+	public toJSON() {
+		return {
+			IsValid: this.IsValid,
+			Name: this.Name,
+			Team: this.Team,
+			FullyJoinedServer: this.FullyJoinedServer,
+			IsFakeClient: this.IsFakeClient,
+			IsBroadcaster: this.IsBroadcaster,
+			BroadcasterChannel: this.BroadcasterChannel,
+			BroadcasterChannelSlot: this.BroadcasterChannelSlot,
+			IsBroadcasterChannelCameraman: this.IsBroadcasterChannelCameraman,
+			ConnectionState: this.ConnectionState,
+			SteamID: this.SteamID,
+			CoachTeam: this.CoachTeam,
+			CoachRating: this.CoachRating,
+			LiveSpectatorTeam: this.LiveSpectatorTeam,
+			IsPlusSubscriber: this.IsPlusSubscriber,
+		}
+	}
 }
