@@ -70,6 +70,7 @@ Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.Menu
 Menu.AddToggle("Alternate WorldToScreen", false).OnValue(toggle => RendererSDK.AlternateW2S = toggle.value)
 Menu.AddToggle("Team chat mute fix", false).OnValue(toggle => ToggleFakeChat(toggle.value))
 Menu.AddToggle("Disable loadscreens", false).OnValue(toggle => ToggleLoadScreen(!toggle.value))
+Menu.AddToggle("Enable local server hacks", false).OnValue(self => set_enable_custom_hacks(self.value))
 let humanizer = Menu.AddNode("Humanizer")
 humanizer.AddToggle("wait_next_usercmd", false).OnValue(toggle => ExecuteOrder.wait_next_usercmd = toggle.value)
 humanizer.AddToggle("wait_near_cursor", false).OnValue(toggle => ExecuteOrder.wait_near_cursor = toggle.value)
@@ -78,6 +79,7 @@ humanizer.AddToggle("debug_draw", false).OnValue(toggle => ExecuteOrder.debug_dr
 
 declare global {
 	var reload: () => void
+	var set_enable_custom_hacks: (val: boolean) => void
 }
 
 function ReloadScripts() {
