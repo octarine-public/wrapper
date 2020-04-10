@@ -1,7 +1,7 @@
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
-import { DamageIgnoreBuffs } from "../../Utils/Utils"
+import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
 import Entity, { LocalPlayer } from "./Entity"
 import Player from "./Player"
 import Inventory from "../DataBook/Inventory"
@@ -19,9 +19,19 @@ import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import UnitData from "../DataBook/UnitData"
 import EntityManager from "../../Managers/EntityManager"
+import { RecursiveMap } from "../../Utils/ParseKV"
+import EventsSDK from "../../Managers/EventsSDK"
+import RendererSDK from "../../Native/RendererSDK"
 
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
+const UnitHealthBar_Hero = parseKVFile("resource/ui/unithealthbar_hero.res").get("Resource/UI/UnitHealthBar_Hero.res") as RecursiveMap
+
+/*const UnitHealthBar = UnitHealthBar_Hero.get("UnitHealthBar") as RecursiveMap
+const healthbar_size_noscale = new Vector2(parseInt(UnitHealthBar.get("xpos") as string) * 2.25, parseInt(UnitHealthBar.get("ypos") as string) * 1.5)*/
+
+const UnitManaBar = UnitHealthBar_Hero.get("UnitManaBar") as RecursiveMap
+const manabar_size_noscale = new Vector2(parseInt(UnitManaBar.get("xpos") as string) * 2.25, parseInt(UnitManaBar.get("ypos") as string))
 
 export default class Unit extends Entity {
 	public static IsVisibleForEnemies(unit: Unit): boolean {
@@ -224,6 +234,30 @@ export default class Unit extends Entity {
 		if (this.IsFlyingVisually)
 			offset += 150
 		return offset
+	}
+	/**
+	 * @returns [Position: Vector2, Size: Vector2]
+	 */
+	/*public get HealthBarOnScreen(): Nullable<[Vector2, Vector2]> {
+		let wts = RendererSDK.WorldToScreen(this.Position.AddScalarZ(this.HealthBarOffset))
+		if (wts === undefined)
+			return undefined
+
+		let healthbar_size = RendererSDK.GetProportionalScaledVector(healthbar_size_noscale, false).SubtractScalarX(1)
+		wts.SubtractForThis(healthbar_size.Divide(new Vector2(1.95, 0.32))).AddScalarY(healthbar_size.y).FloorForThis()
+		return [wts, healthbar_size]
+	}*/
+	/**
+	 * @returns [Position: Vector2, Size: Vector2]
+	 */
+	public get ManaBarOnScreen(): Nullable<[Vector2, Vector2]> {
+		let wts = RendererSDK.WorldToScreen(this.Position.AddScalarZ(this.HealthBarOffset))
+		if (wts === undefined)
+			return undefined
+
+		let manabar_size = RendererSDK.GetProportionalScaledVector(manabar_size_noscale, false).SubtractScalarX(1)
+		wts.SubtractForThis(manabar_size.Divide(new Vector2(1.95, 0.42))).FloorForThis()
+		return [wts, manabar_size]
 	}
 	// TODO: parse KV, use buffs and items for calculation
 	public get AttackSpeed(): number {
@@ -968,7 +1002,6 @@ export default class Unit extends Entity {
 }
 
 import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-import EventsSDK from "../../Managers/EventsSDK"
 RegisterClass("C_DOTA_BaseNPC", Unit)
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
 	unit.UnitName_ = new_value >= 0 ? (UnitNameIndexToString(new_value as number) ?? "") : ""
