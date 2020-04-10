@@ -107,7 +107,7 @@ export const Disabler_Abilities = [
 	"shadow_shaman_voodoo",
 	"beastmaster_primal_roar",
 	"luna_lucent_beam",
-	"bane_brain_sap",
+	"bane_fiends_grip",
 	"enigma_malefice",
 	"slardar_slithereen_crush",
 	"bane_nightmare",
