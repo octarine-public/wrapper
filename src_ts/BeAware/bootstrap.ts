@@ -46,6 +46,17 @@ EventsSDK.on("GameEnded", () => {
 	TimeControllerEnt.Init()
 })
 
+EventsSDK.on("GameStarted", () => {
+	VBE.Init()
+	VBS.Init()
+	Wisp.Init()
+	Treant.Init()
+	Techies.Init()
+	JungleMapHack.Init()
+	ParicleMapHack.Init()
+	TimeControllerEnt.Init()
+})
+
 EventsSDK.on("GameEvent", (name, obj) => {
 	JungleMapHack.GameEvent(name, obj)
 	TimeControllerEnt.GameEvent(name, obj)
