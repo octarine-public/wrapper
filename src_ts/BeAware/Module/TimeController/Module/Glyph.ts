@@ -1,13 +1,9 @@
 
-import { GameRules, LocalPlayer, RendererSDK, Team, Unit, Vector2, FontFlags_t, Hero, Creep, Building } from "wrapper/Imports"
-import ManagerBase from "../../../abstract/Base"
+import { LocalPlayer, RendererSDK, Unit, Vector2, FontFlags_t, Hero, Creep, Building } from "wrapper/Imports"
+
 import {
 	DrawTextColor,
 	DrawTextSize,
-	DrawTimerGlyphSize,
-	DrawTimerGlyphState,
-	DrawTimerGlyphX,
-	DrawTimerGlyphY,
 	GlyphInRange,
 	GlyphState,
 	GlyphStateIcon,
@@ -16,8 +12,6 @@ import {
 	GlyphSwitcherTeam,
 } from "../Menu"
 import { Units } from "../Entities"
-
-let Base = new ManagerBase()
 
 function RenderIcon(position_unit: Vector2, path_icon: string, ShrineStateIconColor: any) {
 	RendererSDK.Image(
@@ -70,14 +64,5 @@ export function DrawGlyph() {
 				case 2: return x instanceof Building && SelectedBuilding(x)
 			}
 		})
-		if (DrawTimerGlyphState.value && LocalPlayer !== undefined)
-			Base.DrawTimer(
-				LocalPlayer.Team !== Team.Radiant
-					? (GameRules?.GlyphCooldownRadiant ?? 0)
-					: (GameRules?.GlyphCooldownDire ?? 0),
-				DrawTimerGlyphX,
-				DrawTimerGlyphY,
-				DrawTimerGlyphSize,
-			)
 	}
 }

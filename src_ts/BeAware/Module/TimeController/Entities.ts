@@ -27,8 +27,6 @@ import {
 	RuneParticleDestroyed,
 } from "./Module/Runes"
 
-import { ScanGameEnded } from "./Module/Scan"
-
 export let Units: Unit[] = []
 export let Runes: Rune[] = []
 export let OtherRadius = new Map<Entity, number>()
@@ -58,7 +56,6 @@ export function Tick() {
 export function Init() {
 	Units = []
 	Runes = []
-	ScanGameEnded()
 	RuneGameEnded()
 	RoshanGameEnded()
 	OtherRadius.clear()

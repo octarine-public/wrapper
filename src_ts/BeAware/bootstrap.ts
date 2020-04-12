@@ -6,20 +6,17 @@ import * as VBS from "./Module/TrueSight/Entities"
 import * as VBE from "./Module/VisibleByEnemy/Entities"
 import * as Wisp from "./Module/WispMapHack/Particle"
 import * as Treant from "./Module/TreantMapHack/Particle"
-import * as TowerRange from "./Module/TowerRange/Particle"
 import * as Techies from "./Module/TechiesMapHack/Particle"
 import * as JungleMapHack from "./Module/JungleMapHack/Particle"
 import * as TimeController from "./Module/TimeController/Renderer"
 import * as ParicleMapHack from "./Module/ParticleMapHack/Particle"
 import * as TimeControllerEnt from "./Module/TimeController/Entities"
-import * as EnemyLaneSelection from "./Module/EnemyLaneSelection/Listeners"
 
 EventsSDK.on("Tick", () => {
 	if (LocalPlayer!.IsSpectator || !stateMain.value)
 		return
 	Camp.Tick()
 	Treant.Tick()
-	TowerRange.Tick()
 	JungleMapHack.Tick()
 	TimeControllerEnt.Tick()
 })
@@ -27,14 +24,12 @@ EventsSDK.on("Tick", () => {
 EventsSDK.on("Draw", () => {
 	if (!stateMain.value || LocalPlayer?.IsSpectator || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
-	EnemyLaneSelection.Draw()
 	if (!GameRules?.IsInGame)
 		return
 	Camp.OnDraw()
 	Wisp.OnDraw()
 	// TopHud.Draw()
 	Techies.OnDraw()
-	TowerRange.OnDraw()
 	TimeController.Draw()
 	JungleMapHack.OnDraw()
 	ParicleMapHack.OnDraw()
@@ -46,11 +41,9 @@ EventsSDK.on("GameEnded", () => {
 	Wisp.Init()
 	Treant.Init()
 	Techies.Init()
-	TowerRange.Init()
 	JungleMapHack.Init()
 	ParicleMapHack.Init()
 	TimeControllerEnt.Init()
-	EnemyLaneSelection.Init()
 })
 
 EventsSDK.on("GameEvent", (name, obj) => {
