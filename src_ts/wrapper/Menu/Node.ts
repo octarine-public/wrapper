@@ -237,17 +237,17 @@ export default class Node extends Base {
 		}
 	}
 
-	AddParticlePicker(name: string, color: Color | number = new Color(0, 255, 0),
+	public AddParticlePicker(name: string, color: Color | number = new Color(0, 255, 0),
 		render: PARTICLE_RENDER_NAME[],
-		addStateToTree?: boolean
+		addStateToTree?: boolean[]
 	): IMenuParticlePicker {
 
 		const Node = this.AddNode(name)
 
 		let State: Nullable<Toggle>
 
-		if (addStateToTree) {
-			State = Node.AddToggle("State")
+		if (addStateToTree !== undefined && addStateToTree[0]) {
+			State = Node.AddToggle("State", addStateToTree[1])
 		}
 
 		if (typeof color === "number")
