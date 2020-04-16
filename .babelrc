@@ -13,5 +13,5 @@
 	"ignore": [
 		"src_ts/**/*.d.ts"
 	],
-	"sourceMaps": "inline"
+	"compact": true
 }
