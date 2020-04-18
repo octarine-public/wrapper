@@ -1,4 +1,4 @@
-import { Menu, MenuBase } from "../../abstract/Menu.Base"
+import { Menu, MenuBase, stateMain } from "../../abstract/Menu.Base"
 const { BaseTree, State } = MenuBase(Menu, "VisibleByEnemy"),
 	switcher = BaseTree.AddSwitcher("Select Effect", ["Shiva", "Radial", "Beam", "Beam light", "Dark", "Purge", "Timer"], 0),
 	showOnAll = BaseTree.AddToggle("Show on all units", true),
@@ -7,4 +7,4 @@ const { BaseTree, State } = MenuBase(Menu, "VisibleByEnemy"),
 	showOnWards = BaseTree.AddToggle("Show on wards", false),
 	showOnCreeps = BaseTree.AddToggle("Show on creeps", false)
 
-export { State, switcher, showOnAll, showOnSelf, showOnAllies, showOnWards, showOnCreeps };
+export { State, stateMain, switcher, showOnAll, showOnSelf, showOnAllies, showOnWards, showOnCreeps }

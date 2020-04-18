@@ -1,18 +1,19 @@
 import { Entity, LocalPlayer, ParticlesSDK, Unit, Hero, WardObserver, Creep, EventsSDK, EntityManager } from "wrapper/Imports"
-import { showOnAll, showOnAllies, showOnCreeps, showOnSelf, showOnWards, State, switcher } from "./Menu"
+import { showOnAll, showOnAllies, showOnCreeps, showOnSelf, showOnWards, State, switcher, stateMain } from "./Menu"
+let particleManager = new ParticlesSDK()
 
-let allUnits = new Map<Unit, number>(), // <Unit, Particle>
-	particlePath: string[] = [
-		"particles/items_fx/aura_shivas.vpcf",
-		"particles/ui/ui_sweeping_ring.vpcf",
-		"particles/units/heroes/hero_omniknight/omniknight_heavenly_grace_beam.vpcf",
-		"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_status.vpcf",
-		"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_dark.vpcf",
-		"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
-		"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_timer.vpcf",
-	]
-
+const allUnits = new Map<Unit, number>() // <Unit, Particle>
+const particlePath: string[] = [
+	"particles/items_fx/aura_shivas.vpcf",
+	"particles/ui/ui_sweeping_ring.vpcf",
+	"particles/units/heroes/hero_omniknight/omniknight_heavenly_grace_beam.vpcf",
+	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_status.vpcf",
+	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_dark.vpcf",
+	"particles/units/heroes/hero_oracle/oracle_fortune_purge.vpcf",
+	"particles/units/heroes/hero_spirit_breaker/spirit_breaker_haste_owner_timer.vpcf",
+]
 State.OnValue(OnOptionToggle)
+stateMain.OnValue(OnOptionToggle)
 showOnAll.OnValue(OnOptionToggle)
 showOnSelf.OnValue(OnOptionToggle)
 showOnAllies.OnValue(OnOptionToggle)
@@ -20,8 +21,8 @@ showOnWards.OnValue(OnOptionToggle)
 showOnCreeps.OnValue(OnOptionToggle)
 switcher.OnValue(OnOptionToggle)
 
-function Destroy(unit: Unit, particleID = allUnits.get(unit)!) {
-	ParticlesSDK.Destroy(particleID)
+function Destroy(unit: Unit) {
+	particleManager.DestroyByKey(unit)
 	allUnits.delete(unit)
 }
 
@@ -57,17 +58,26 @@ export function TeamVisibilityChanged(npc: Unit) {
 }
 
 function CheckUnit(unit: Unit, isVisibleForEnemies: boolean = unit.IsVisibleForEnemies) {
-	if (!State.value || unit.IsEnemy() || !unit.IsAlive || !IsUnitShouldBeHighlighted(unit)) {
+	if (!stateMain.value || !State.value || unit.IsEnemy() || !unit.IsAlive || !IsUnitShouldBeHighlighted(unit)) {
 		if (allUnits.has(unit))
 			Destroy(unit)
 		return
 	}
 
 	let particleID = allUnits.get(unit)
-	if (isVisibleForEnemies && particleID === undefined)
-		allUnits.set(unit, ParticlesSDK.Create(particlePath[switcher.selected_id], ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW, unit))
-	else if (!isVisibleForEnemies && particleID !== undefined)
-		Destroy(unit, particleID)
+
+	if (isVisibleForEnemies && particleID === undefined) {
+		let par = particleManager.AddOrUpdate(unit,
+			particlePath[switcher.selected_id],
+			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
+			unit
+		)
+
+		allUnits.set(unit, par.Key)
+
+	} else if (!isVisibleForEnemies && particleID !== undefined) {
+		Destroy(unit)
+	}
 }
 EventsSDK.on("EntityTeamChanged", ent => {
 	if (ent instanceof Unit)
