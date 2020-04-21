@@ -1239,6 +1239,7 @@ export { default as Outpost } from "./Objects/Base/Outpost"
 export { default as Shop } from "./Objects/Base/Shop"
 export { default as WardObserver } from "./Objects/Base/WardObserver"
 export { default as WardTrueSight } from "./Objects/Base/WardTrueSight"
+export { default as RoshanSpawner } from "./Objects/Base/RoshanSpawner"
 export { default as RuneSpawnerBounty } from "./Objects/Base/RuneSpawnerBounty"
 export { default as RuneSpawnerPowerup } from "./Objects/Base/RuneSpawnerPowerup"
 
