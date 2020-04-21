@@ -55,6 +55,7 @@ interface EventsSDK extends EventEmitter {
 		includeWearables: boolean,
 	) => void): EventEmitter
 	on(name: "ParticleDestroyed", listener: (id: number, destroy_immediately: boolean) => void): EventEmitter
+	on(name: "ParticleReleased", listener: (id: number) => void): EventEmitter
 	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
 	on(name: "PrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventEmitter
 	on(name: "LinearProjectileCreated", callback: (proj: LinearProjectile) => void): EventEmitter

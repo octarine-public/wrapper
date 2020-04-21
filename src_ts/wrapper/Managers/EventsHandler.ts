@@ -525,9 +525,9 @@ Events.on("ServerMessage", (msg_id, buf) => {
 
 				// 	break
 				// }
-				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_RELEASE: {
-				// 	break
-				// }
+				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_RELEASE:
+					EventsSDK.emit("ParticleReleased", false, index)
+					break
 				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SHOULD_DRAW: {
 				// 	let submsg = msg.get("update_particle_should_draw") as RecursiveProtobuf
 
