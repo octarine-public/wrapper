@@ -40,6 +40,7 @@ export default class Base {
 	protected get MousePosition(): Vector2 {
 		return InputManager.CursorOnScreen
 	}
+
 	public OnValue(func: (caller: this) => void): this {
 		this.OnValueChangedCBs.push(func as any)
 		if (this.execute_on_add)
@@ -60,9 +61,43 @@ export default class Base {
 	}
 	public OnMouseLeftDown(): boolean { return true }
 	public OnMouseLeftUp(): boolean { return true }
+
 	public RenderTooltip(): void {
 		if (this.tooltip === undefined || this.tooltip.length === 0 || !this.Rect.Contains(this.MousePosition))
 			return
+		this.Update()
+
+		const Addscalar = 5
+		const SizeImage = new Vector2(18, 18)
+		const Position = this.Position.Clone()
+			.AddScalarX(this.TotalSize.x + Addscalar)
+
+		let TotalSize = this.tooltip_size.Clone()
+			.AddForThis(this.border_size)
+			.AddScalarX(SizeImage.x + (Addscalar * 2))
+			.AddScalarY(Addscalar)
+
+		RendererSDK.FilledRect(Position, TotalSize, this.background_color)
+		RendererSDK.OutlinedRect(Position, TotalSize, this.border_color)
+
+		RendererSDK.Image(
+			"panorama\\images\\status_icons\\information_psd.vtex_c",
+			Position.Clone().AddScalarX(2).AddScalarY(4),
+			SizeImage,
+			Color.RoyalBlue
+		)
+
+		RendererSDK.Text(
+			this.tooltip,
+			Position
+				.AddForThis(this.border_size)
+				.AddScalarX(SizeImage.x + Addscalar),
+
+			Color.White,
+			this.FontName,
+			this.FontSize,
+			FontFlags_t.ANTIALIAS
+		)
 	}
 
 	/**
