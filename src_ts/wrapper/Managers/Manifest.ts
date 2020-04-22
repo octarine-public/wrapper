@@ -20,7 +20,7 @@ const Manifest = new (class CManifest {
 		hash = BigInt.asUintN(64, hash)
 		let path = this.Paths.get(hash)
 		if (path === undefined) {
-			console.log(`Unknown resource hash ${hash} passed to GetPathByHash ${new Error().stack}`)
+			// console.log(`Unknown resource hash ${hash} passed to GetPathByHash ${new Error().stack}`)
 			return undefined
 		}
 		return `${this.Directories[path[0]]}${this.FileNames[path[1]]}.${this.Extensions[path[2]]}`

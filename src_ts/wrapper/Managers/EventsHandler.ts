@@ -576,7 +576,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			let hash = msg.get("soundevent_hash") as number
 			let sound_name = Manifest.LookupSoundNameByHash(hash)
 			if (sound_name === undefined) {
-				console.log(`Unknown soundname hash: ${hash}`)
+				// console.log(`Unknown soundname hash: ${hash}`)
 				break
 			}
 			let handle = (msg.get("source_entity_index") as number) ?? 0,
