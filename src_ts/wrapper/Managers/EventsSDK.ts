@@ -11,6 +11,7 @@ import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile
 
 import Modifier from "../Objects/Base/Modifier"
 import { RecursiveProtobuf } from "../Utils/Protobuf"
+import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 
 interface EventsSDK extends EventEmitter {
 	/**
@@ -128,6 +129,18 @@ interface EventsSDK extends EventEmitter {
 		position: Vector3,
 		seed: number,
 		start_time: number
+	) => void): EventEmitter
+	on(name: "ChatEvent", listener: (
+		type: DOTA_CHAT_MESSAGE,
+		value: number,
+		playerid_1: number,
+		playerid_2: number,
+		playerid_3: number,
+		playerid_4: number,
+		playerid_5: number,
+		playerid_6: number,
+		value2: number,
+		value3: number
 	) => void): EventEmitter
 }
 
