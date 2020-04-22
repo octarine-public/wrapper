@@ -9,6 +9,7 @@ import { StringToUTF16, ParseMapName } from "../Utils/Utils"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import GameState from "../Utils/GameState"
+import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 
 enum CommandID {
 	SET_COLOR = 0,
@@ -46,6 +47,33 @@ let RendererSDK = new (class CRendererSDK {
 	private texture_cache = new Map</* path */string, number>()
 	private tex2size = new Map</* texture_id */number, Vector2>()
 	private last_color = new Color(-1, -1, -1, -1)
+
+	public EmitChatEvent(
+		type = DOTA_CHAT_MESSAGE.CHAT_MESSAGE_INVALID,
+		value = 0,
+		playerid_1 = -1,
+		playerid_2 = -1,
+		playerid_3 = -1,
+		playerid_4 = -1,
+		playerid_5 = -1,
+		playerid_6 = -1,
+		value2 = 0,
+		value3 = 0
+	): void {
+		EmitChatEvent(
+			type,
+			value,
+			playerid_1,
+			playerid_2,
+			playerid_3,
+			playerid_4,
+			playerid_5,
+			playerid_6,
+			value2,
+			value3
+		)
+	}
+
 	/**
 	 * Cached. Updating every 5 sec
 	 */

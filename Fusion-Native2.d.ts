@@ -173,6 +173,18 @@ declare function AddSearchPath(path: string): boolean
 declare function RemoveSearchPath(path: string): boolean
 declare function UnitNameIndexToString(index: number): string | undefined
 declare function SetTreeModel(model_name: string, scale: number): void
+declare function EmitChatEvent(
+	type: number, // DOTA_CHAT_MESSAGE
+	value: number,
+	playerid_1: number,
+	playerid_2: number,
+	playerid_3: number,
+	playerid_4: number,
+	playerid_5: number,
+	playerid_6: number,
+	value2: number,
+	value3: number
+): void
 
 /// AUTOMATICALLY GENERATED
 
