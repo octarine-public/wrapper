@@ -8,17 +8,13 @@ import * as Wisp from "./Module/WispMapHack/Particle"
 import * as Treant from "./Module/TreantMapHack/Particle"
 import * as Techies from "./Module/TechiesMapHack/Particle"
 import * as JungleMapHack from "./Module/JungleMapHack/Particle"
-import * as TimeController from "./Module/TimeController/Renderer"
 import * as ParicleMapHack from "./Module/ParticleMapHack/Particle"
-import * as TimeControllerEnt from "./Module/TimeController/Entities"
-
 EventsSDK.on("Tick", () => {
 	if (LocalPlayer!.IsSpectator || !stateMain.value)
 		return
 	Camp.Tick()
 	Treant.Tick()
 	JungleMapHack.Tick()
-	TimeControllerEnt.Tick()
 })
 
 EventsSDK.on("Draw", () => {
@@ -30,7 +26,6 @@ EventsSDK.on("Draw", () => {
 	Wisp.OnDraw()
 	// TopHud.Draw()
 	Techies.OnDraw()
-	TimeController.Draw()
 	JungleMapHack.OnDraw()
 	ParicleMapHack.OnDraw()
 })
@@ -43,7 +38,6 @@ EventsSDK.on("GameEnded", () => {
 	Techies.Init()
 	JungleMapHack.Init()
 	ParicleMapHack.Init()
-	TimeControllerEnt.Init()
 })
 
 EventsSDK.on("GameStarted", () => {
@@ -54,12 +48,10 @@ EventsSDK.on("GameStarted", () => {
 	Techies.Init()
 	JungleMapHack.Init()
 	ParicleMapHack.Init()
-	TimeControllerEnt.Init()
 })
 
 EventsSDK.on("GameEvent", (name, obj) => {
 	JungleMapHack.GameEvent(name, obj)
-	TimeControllerEnt.GameEvent(name, obj)
 })
 
 EventsSDK.on("LifeStateChanged", ent => {
@@ -82,7 +74,6 @@ EventsSDK.on("TeamVisibilityChanged", npc => {
 
 EventsSDK.on("EntityCreated", ent => {
 	Treant.Create(ent)
-	TimeControllerEnt.EntityCreated(ent)
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
@@ -90,7 +81,6 @@ EventsSDK.on("EntityDestroyed", ent => {
 	VBE.EntityDestroyed(ent)
 	Treant.Destroy(ent)
 	Techies.EntityDestroyed(ent)
-	TimeControllerEnt.EntityDestroyed(ent)
 })
 
 EventsSDK.on("ParticleUpdated", (id, control_point, position) => {
@@ -107,7 +97,6 @@ EventsSDK.on("ParticleCreated", (id, path, handle, attach, entity) => {
 	Wisp.ParticleCreate(id, handle)
 	Techies.ParticleCreated(id, ent, path)
 	ParicleMapHack.ParticleCreate(id, handle, path, ent)
-	TimeControllerEnt.ParticleCreated(id, ent, handle)
 })
 
 EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachment, vector) => {
@@ -117,11 +106,9 @@ EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachmen
 	let ent = entity instanceof Entity ? entity : undefined
 	Wisp.ParticleUpdated(id, ent, vector)
 	ParicleMapHack.ParticleUpdatedEnt(id, ent, vector)
-	TimeControllerEnt.ParticleUpdateEnt(id, ent, vector)
 })
 
 EventsSDK.on("ParticleDestroyed", id => {
 	Techies.ParticleDestroyed(id)
 	ParicleMapHack.ParticleDestroyed(id)
-	TimeControllerEnt.ParticleDestroyed(id)
 })
