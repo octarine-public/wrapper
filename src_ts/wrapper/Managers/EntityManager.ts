@@ -428,6 +428,17 @@ function FixType(symbols: string[], field: any): string {
 	return type
 }
 
+function QueuedLeave(ent_id: number, queued_leave?: number[]): boolean {
+	let ent = EntityManager.EntityByIndex(ent_id)
+	if (ent !== undefined) {
+		ent.BecameDormantTime = GameRules?.RawGameTime ?? 0
+		if (ent.ClassName === "CDOTA_BaseNPC") // crutch for thinkers that'll otherwise leak
+			return true
+	} else
+		queued_leave?.push(ent_id)
+	return false
+}
+
 const dump_d_ts = false
 Events.on("ServerMessage", (msg_id, buf) => {
 	switch (msg_id) {
@@ -482,7 +493,8 @@ declare class ${name} {
 			let stream = new BinaryStream(new DataView(buf)),
 				changes: [number, NetworkFieldsChangedType][] = []
 			let queued_deletion: number[] = [],
-				queued_creation: [number, string][] = []
+				queued_creation: [number, string][] = [],
+				queued_leave: number[] = []
 			while (!stream.Empty()) {
 				let ent_id = stream.ReadNumber(2)
 				let pvs: EntityPVS = stream.ReadNumber(1)
@@ -493,12 +505,8 @@ declare class ${name} {
 						break
 					case EntityPVS.LEAVE: {
 						VisibilityMask.set(ent_id, false)
-						let ent = EntityManager.EntityByIndex(ent_id)
-						if (ent !== undefined) {
-							ent.BecameDormantTime = GameRules?.RawGameTime ?? 0
-							if (ent.ClassName === "CDOTA_BaseNPC") // crtuch for thinkers that'll otherwise leak
-								queued_deletion.push(ent_id)
-						}
+						if (QueuedLeave(ent_id, queued_leave))
+							queued_deletion.push(ent_id)
 						break
 					}
 					case EntityPVS.CREATE: {
@@ -529,6 +537,10 @@ declare class ${name} {
 				if (ent === undefined)
 					return
 				ApplyChanges(ent, changes_)
+			})
+			queued_leave.forEach(ent_id => {
+				if (QueuedLeave(ent_id))
+					DeleteEntity(ent_id)
 			})
 			if (delayed_tick_call !== undefined) {
 				cached_m_fGameTime![2](...delayed_tick_call)
