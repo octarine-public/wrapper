@@ -43,7 +43,9 @@ const runeMenu = snatcherMenu.AddNode("Rune settings")
 
 const stateRune = runeMenu.AddToggle("Snatch Rune", true).OnDeactivate(destroyRuneAllParticles)
 
-const typesSelect = runeMenu.AddSwitcher("Runes for snatch", ["All", "Only Bounty", "Only PowerUps"])
+const pickupRange = 150
+
+const typesSelect = runeMenu.AddSwitcher("Runes to snatch", ["All", "Bounty", "PowerUps"])
 typesSelect.OnValue(self => selectedRuneType = self.selected_id)
 
 runeMenu.AddKeybind("Rune toogle").OnRelease(() => stateRune.value = !stateRune.value)
@@ -63,10 +65,6 @@ drawParticleTake_Color.G.OnValue(updateRuneAllParticle)
 drawParticleTake_Color.B.OnValue(updateRuneAllParticle)
 drawParticleTake_Color.A.OnValue(updateRuneAllParticle)
 
-const drawParticleKill = drawParticles.AddToggle("Kill rune")
-	.SetTooltip("Color for kill - Red")
-	.OnValue(destroyRuneAllParticles)
-
 // ----- Items
 
 const itemsMenu = snatcherMenu.AddNode("Items settings")
@@ -77,14 +75,17 @@ itemsMenu.AddKeybind("Items toogle").OnRelease(() => stateItems.value = !stateIt
 
 const itemsHoldKey = itemsMenu.AddKeybind("Items hold key").OnRelease(() => !stateItems.value)
 
-const takeRadius = snatcherMenu.AddSlider("Pickup radius", 150, 50, 500, "Default range is 150, that one don't require rotating unit to pickup something")
-
 const listOfItems = itemsMenu.AddImageSelector("Items for snatch", [
 	"item_gem",
 	"item_cheese",
 	"item_rapier",
 	"item_aegis",
-], new Map<string, boolean>([["item_gem", true], ["item_cheese", true], ["item_rapier", true], ["item_aegis", true]]))
+], new Map<string, boolean>([
+	["item_gem", true],
+	["item_cheese", true],
+	["item_rapier", true],
+	["item_aegis", true],
+]))
 
 const stateControllables = snatcherMenu.AddToggle("Use other units")
 
@@ -136,7 +137,14 @@ EventsSDK.on("Draw", () => {
 	RendererSDK.Text(text, RendererSDK.WindowSize.DivideScalar(100).MultiplyScalarX(statusPosX.value).MultiplyScalarY(statusPosY.value))
 })
 
-EventsSDK.on("PrepareUnitOrders", order => !picking_up.has(order.Unit as Unit))
+EventsSDK.on("PrepareUnitOrders", order => {
+	let unit = order.Unit as Unit
+	let rune = picking_up.get(unit)
+	if (rune?.IsValid && rune.IsVisible)
+		return false
+	picking_up.delete(unit)
+	return true
+})
 
 function GetControllables() {
 	return EntityManager.GetEntitiesByClass(Unit).filter(npc =>
@@ -158,41 +166,27 @@ function snatchRunes(controllables: Unit[]) {
 		if (selectedRuneType === ESelectedType.ONLY_POWER && rune.Type === DOTA_RUNES.DOTA_RUNE_BOUNTY)
 			return
 		let near = ArrayExtensions.orderBy(controllables, unit => unit.Distance(rune)).some(npc => snatchRuneByUnit(npc, rune))
-		if (!near && (drawParticleTake.value || drawParticleKill.value))
+		if (!near && drawParticleTake.value)
 			destroyRuneParticles(rune)
 	})
 }
 
-function snatchRuneByUnit(npc: Unit, rune: Rune) {
+function snatchRuneByUnit(npc: Unit, rune: Rune): boolean {
 	if (picking_up.has(npc) && Sleep.Sleeping("PickupRune"))
 		return false
 
 	if (!npc.IsStunned && !npc.IsWaitingToSpawn && npc.IsAlive) {
 		const Distance = npc.Distance2D(rune)
 
-		if (Distance <= takeRadius.value && !(npc.IsInvulnerable && Distance > 100)) {
+		if (Distance <= pickupRange && !(npc.IsInvulnerable && Distance > 100)) {
 			picking_up.set(npc, rune)
 			npc.PickupRune(rune)
 			Sleep.Sleep(150, "PickupRune")
 			return false
 		}
-
-		const attackRange = npc.AttackRange
-
-		if (Distance >= Math.max(500, attackRange) * 2)
-			return false
-
-		if (drawParticleTake.value || drawParticleKill.value) {
-			if (!allRunesParticles.has(rune)) {
-				allRunesParticles.set(rune, [])
-
-				if (drawParticleTake.value)
-					createRuneParticle(rune, new Color(0, 255), takeRadius.value)
-
-				if (drawParticleKill.value)
-					createRuneParticle(rune, new Color(255, 0), attackRange)
-			}
-
+		if (drawParticleTake.value && !allRunesParticles.has(rune)) {
+			allRunesParticles.set(rune, [])
+			createRuneParticle(rune, new Color(0, 255), pickupRange)
 		}
 	}
 	return true
@@ -255,7 +249,7 @@ function snatchItems(controllables: Unit[]) {
 			can_take_backpack = m_hItem.Name === "item_cheese"
 
 		free_controllables.some((npc, index) => {
-			if (itemOwner === npc || !npc.IsAlive || !npc.IsInRange(item, takeRadius.value) || !(npc.Inventory.HasFreeSlotsInventory || (can_take_backpack && npc.Inventory.HasFreeSlotsBackpack)))
+			if (itemOwner === npc || !npc.IsAlive || !npc.IsInRange(item, pickupRange) || !(npc.Inventory.HasFreeSlotsInventory || (can_take_backpack && npc.Inventory.HasFreeSlotsBackpack)))
 				return false
 
 			npc.PickupItem(item)
