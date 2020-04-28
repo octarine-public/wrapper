@@ -9,6 +9,7 @@ import * as Treant from "./Module/TreantMapHack/Particle"
 import * as Techies from "./Module/TechiesMapHack/Particle"
 import * as JungleMapHack from "./Module/JungleMapHack/Particle"
 import * as ParicleMapHack from "./Module/ParticleMapHack/Particle"
+
 EventsSDK.on("Tick", () => {
 	if (LocalPlayer!.IsSpectator || !stateMain.value)
 		return
@@ -52,6 +53,7 @@ EventsSDK.on("GameStarted", () => {
 
 EventsSDK.on("GameEvent", (name, obj) => {
 	JungleMapHack.GameEvent(name, obj)
+	Wisp.GameEvent(name, obj)
 })
 
 EventsSDK.on("LifeStateChanged", ent => {
@@ -94,7 +96,7 @@ EventsSDK.on("ParticleCreated", (id, path, handle, attach, entity) => {
 	if (!stateMain.value)
 		return
 	let ent = entity instanceof Entity ? entity : undefined
-	Wisp.ParticleCreate(id, handle)
+	Wisp.ParticleCreated(id, handle)
 	Techies.ParticleCreated(id, ent, path)
 	ParicleMapHack.ParticleCreate(id, handle, path, ent)
 })
@@ -104,7 +106,7 @@ EventsSDK.on("ParticleUpdatedEnt", (id, control_point, entity, attach, attachmen
 		return
 	Techies.ParticleUpdatedEnt(id, control_point, attach, vector)
 	let ent = entity instanceof Entity ? entity : undefined
-	Wisp.ParticleUpdated(id, ent, vector)
+	Wisp.ParticleUpdated(id, entity, vector)
 	ParicleMapHack.ParticleUpdatedEnt(id, ent, vector)
 })
 

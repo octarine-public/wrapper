@@ -133,61 +133,31 @@ export default class Inventory {
 	}
 	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Nullable<Item> {
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
-
-			for (let i = 0; i < len; i++) {
-				let item = this.GetItem(i)
-
-				if (item === undefined)
-					continue
-
-				if (name instanceof RegExp) {
-					if (name.test(item.Name))
-						return item
-				} else if (item.Name === name)
-					return item
-			}
+			let Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
+			return Items.find(item => name instanceof RegExp ? name.test(item.Name) : item.Name === name)
 		}
 		return undefined
 	}
 	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
 		if (this.Owner.IsValid) {
 			let Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
-			let Item = Items.find(x => x instanceof class_)
-			if (Item !== undefined)
-				return Item as T
+			return Items.find(item => item instanceof class_) as Nullable<T>
 		}
 		return undefined
 	}
 	public GetItemsByNames(names: string[], includeBackpack: boolean = false): Item[] {
 		let items: Item[] = []
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
-
-			for (let i = 0; i < len; i++) {
-				const item = this.GetItem(i)
-				if (item === undefined)
-					continue
-
-				if (names.some(name => item.Name === name))
-					items.push(item)
-			}
+			let Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
+			return Items.filter(item => item.Name === name)
 		}
 		return items
 	}
 	public GetItemsByClasses<T extends Item>(classes: Constructor<T>[], includeBackpack: boolean = false): T[] {
 		let items: T[] = []
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
-
-			for (let i = 0; i < len; i++) {
-				const item = this.GetItem(i)
-				if (item === undefined)
-					continue
-
-				if (classes.some(class_ => item instanceof class_))
-					items.push(item as T)
-			}
+			let Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
+			return Items.filter(item => classes.some(class_ => item instanceof class_)) as T[]
 		}
 		return items
 	}
