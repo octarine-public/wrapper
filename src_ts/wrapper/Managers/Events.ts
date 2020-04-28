@@ -84,7 +84,7 @@ declare interface Events extends EventEmitter {
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
-	on(name: "SharedObjectChanged", listener: (id: number, reason: number, uuid: bigint, obj: any) => void): EventEmitter
+	on(name: "SharedObjectChanged", listener: (id: number, reason: number, obj: any) => void): EventEmitter
 	on(name: "SignonStateChanged", listener: (new_state: SignonState_t) => void): EventEmitter
 	on(name: "AddSearchPath", listener: (path: string) => boolean): EventEmitter
 	on(name: "PostAddSearchPath", listener: (path: string) => void): EventEmitter

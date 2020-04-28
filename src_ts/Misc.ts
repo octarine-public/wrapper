@@ -151,7 +151,7 @@ interface CSODOTALobby {
 }
 
 let timeCreate = -1
-Events.on("SharedObjectChanged", (id, reason, uuid, obj) => {
+Events.on("SharedObjectChanged", (id, reason, obj) => {
 	if (id !== 2004)
 		return
 
