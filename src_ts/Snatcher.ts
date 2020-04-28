@@ -172,7 +172,10 @@ function snatchRunes(controllables: Unit[]) {
 }
 
 function snatchRuneByUnit(npc: Unit, rune: Rune): boolean {
-	if (picking_up.has(npc) && Sleep.Sleeping("PickupRune"))
+	if (rune !== undefined && picking_up.has(npc) && Sleep.Sleeping(rune.Index))
+		return false
+
+	if (!rune.IsVisible)
 		return false
 
 	if (!npc.IsStunned && !npc.IsWaitingToSpawn && npc.IsAlive) {
@@ -181,7 +184,7 @@ function snatchRuneByUnit(npc: Unit, rune: Rune): boolean {
 		if (Distance <= pickupRange && !(npc.IsInvulnerable && Distance > 100)) {
 			picking_up.set(npc, rune)
 			npc.PickupRune(rune)
-			Sleep.Sleep(150, "PickupRune")
+			Sleep.Sleep(300, rune.Index)
 			return false
 		}
 		if (drawParticleTake.value && !allRunesParticles.has(rune)) {
