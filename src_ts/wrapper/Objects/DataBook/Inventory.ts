@@ -149,7 +149,7 @@ export default class Inventory {
 		let items: Item[] = []
 		if (this.Owner.IsValid) {
 			let Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
-			return Items.filter(item => item.Name === name)
+			return Items.filter(item => names.includes(item.Name))
 		}
 		return items
 	}
