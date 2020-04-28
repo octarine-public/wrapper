@@ -51,7 +51,10 @@ const Manifest = new (class CManifest {
 			return
 		}
 		// loop-optimizer: KEEP
-		parseKV(buf).forEach((_, name) => this.SoundHashToString.set(MurmurHash2(StringToUTF8(name.toLowerCase()), 0x53524332), name))
+		parseKV(buf).forEach((_, name) => this.SoundHashToString.set(this.SoundNameToHash(name), name))
+	}
+	public SoundNameToHash(name: string): number {
+		return MurmurHash2(StringToUTF8(name.toLowerCase()), 0x53524332)
 	}
 	public LookupSoundNameByHash(hash: number): Nullable<string> {
 		if (hash === 0)

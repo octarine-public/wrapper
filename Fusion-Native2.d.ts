@@ -185,6 +185,11 @@ declare function EmitChatEvent(
 	value2: number,
 	value3: number
 ): void
+declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offset 0
+	soundevent_hash: number,
+	source_entity_index: number,
+	seed: number
+): void
 
 /// AUTOMATICALLY GENERATED
 

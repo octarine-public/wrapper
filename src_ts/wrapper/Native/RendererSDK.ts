@@ -10,6 +10,8 @@ import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import GameState from "../Utils/GameState"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
+import Entity from "../Objects/Base/Entity"
+import Manifest from "../Managers/Manifest"
 
 enum CommandID {
 	SET_COLOR = 0,
@@ -72,6 +74,16 @@ let RendererSDK = new (class CRendererSDK {
 			value2,
 			value3
 		)
+	}
+
+	public EmitStartSoundEvent(
+		name: string,
+		position = new Vector3(),
+		source_entity?: Entity,
+		seed = ((Math.random() * (2 ** 32 - 1)) | 0)
+	): void {
+		position.toIOBuffer()
+		EmitStartSoundEvent(Manifest.SoundNameToHash(name), source_entity?.Index ?? 0, seed)
 	}
 
 	/**
