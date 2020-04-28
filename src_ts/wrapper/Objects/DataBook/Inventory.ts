@@ -152,13 +152,10 @@ export default class Inventory {
 	}
 	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
 		if (this.Owner.IsValid) {
-			let len = Math.min(this.TotalItems.length, includeBackpack ? 9 : 6)
-
-			for (let i = 0; i < len; i++) {
-				let item = this.GetItem(i)
-				if (item instanceof class_)
-					return item
-			}
+			let Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
+			let Item = Items.find(x => x instanceof class_)
+			if (Item !== undefined)
+				return Item as T
 		}
 		return undefined
 	}
