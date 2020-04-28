@@ -24,9 +24,11 @@ export default class Inventory {
 	get NeutralItem(): Nullable<Item> {
 		return this.GetItem(16)
 	}
-
 	get Items(): Item[] {
-		return this.GetItems(0, 5)
+		return [
+			...this.GetItems(0, 5),
+			...[this.TPScroll!, this.NeutralItem!].filter(x => x !== undefined)
+		]
 	}
 	get Backpack(): Item[] {
 		return this.GetItems(6, 8)
