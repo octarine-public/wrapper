@@ -175,7 +175,7 @@ function snatchRuneByUnit(npc: Unit, rune: Rune): boolean {
 	if (rune !== undefined && picking_up.has(npc) && Sleep.Sleeping(rune.Index))
 		return false
 
-	if (!rune.IsVisible)
+	if (!rune.IsVisible || npc.ModifiersBook.HasBuffByName("modifier_spirit_breaker_charge_of_darkness_target"))
 		return false
 
 	if (!npc.IsStunned && !npc.IsWaitingToSpawn && npc.IsAlive) {
