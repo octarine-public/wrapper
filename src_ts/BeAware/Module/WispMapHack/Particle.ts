@@ -12,7 +12,7 @@ export function ParticleCreated(id: number, handle: BigInt) {
 }
 
 export function ParticleUpdated(id: number, ent: Nullable<Entity | number>, vector: Vector3) {
-	if (id === par_id || (par_id === -1 && (ent === wisp || (ent instanceof npc_dota_hero_wisp && ent.IsEnemy())))) {
+	if (id === par_id || (par_id === -1 && ((ent !== undefined && ent === wisp) || (ent instanceof npc_dota_hero_wisp && ent.IsEnemy())))) {
 		pos = vector
 		wisp = ent as Entity | number
 	}
