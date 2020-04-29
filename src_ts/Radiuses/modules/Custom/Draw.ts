@@ -1,5 +1,6 @@
 import { PARTICLE_RENDER_NAME, ArrayExtensions, ParticlesSDK, LocalPlayer, Menu, EventsSDK, Entity } from "wrapper/Imports"
 import { IMenuParticlePicker } from "wrapper/Menu/ITypes"
+import { stateMain } from "../../base/MenuBase"
 
 import { CustomMenu, CustomCount } from "./Menu"
 import { ParticleUpdatePattern } from "../../base/MenuParticle"
@@ -18,7 +19,6 @@ const customRadiusePartManager = new ParticlesSDK()
 
 CustomCount.OnValue(({ value }) => {
 	var nowCount = customRadiusSliders.length
-
 	if (nowCount < value) {
 		for (var i = nowCount; i < value; i++)
 			customRadiusSliders.push(AddCustomSlider(i))
@@ -31,6 +31,7 @@ CustomCount.OnValue(({ value }) => {
 	}
 })
 
+
 // -------
 
 function AddCustomSlider(index: number): IMenuRangeParticle {
@@ -39,7 +40,7 @@ function AddCustomSlider(index: number): IMenuRangeParticle {
 		PARTICLE_RENDER_NAME.NORMAL,
 		PARTICLE_RENDER_NAME.ROPE,
 		PARTICLE_RENDER_NAME.ANIMATION
-	], true)
+	], [true, true])
 
 	// range slider
 	const Range = Style.Node.AddSlider("Range", 1200 + (index * 50), 50, 5000)
@@ -88,9 +89,8 @@ function RemoveCustomSlider(index: number) {
 // -------
 
 function CreateOrUpdateCustomRadius(style: IMenuRangeParticle) {
-	if (!style.State?.value || !LocalPlayer?.Hero)
+	if (!stateMain.value || !style.State?.value || !LocalPlayer?.Hero)
 		return
-
 	customRadiusePartManager.DrawCircle(style,
 		LocalPlayer.Hero, style.Range.value,
 		{
@@ -120,12 +120,14 @@ function CustomRadiusDestroy() {
 EventsSDK.on("LifeStateChanged", (ent: Entity) => {
 	if (LocalPlayer?.Hero !== ent)
 		return
-
 	if (ent.LifeState === LifeState_t.LIFE_ALIVE)
 		CustomRadiusDraw()
 	else if (ent.LifeState === LifeState_t.LIFE_DYING || ent.LifeState === LifeState_t.LIFE_DEAD)
 		CustomRadiusDestroy()
 })
+
+stateMain.OnActivate(CustomRadiusDraw)
+stateMain.OnDeactivate(CustomRadiusDestroy)
 
 EventsSDK.on("GameStarted", () => CustomRadiusDraw())
 EventsSDK.on("GameEnded", () => CustomRadiusDestroy())

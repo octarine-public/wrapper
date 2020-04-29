@@ -16,6 +16,7 @@ const towersParticles = new ParticlesSDK()
 const towersAttackParticles = new ParticlesSDK()
 
 let Towers: Tower[] = []
+let restartParticle = false
 
 // --------
 
@@ -50,9 +51,10 @@ stateMain.OnValue(() => OnState())
 TowersRangeMenu.State.OnValue(() => OnState())
 TowersRangeMenu.Team.OnValue(RestartParticles)
 
-ParticleUpdatePattern(TowersRangeMenu.Style,
-	() => ParticlesSetRanges(towersParticles, TowersRangeMenu),
-	RestartParticles)
+ParticleUpdatePattern(TowersRangeMenu.Style, () =>
+	ParticlesSetRanges(towersParticles, TowersRangeMenu),
+	RestartParticles
+)
 
 // -------- Tower Attack Target
 
@@ -60,17 +62,23 @@ ShowAttackTargetMenu.Team.OnValue(() => towersAttackParticles.DestroyAll())
 
 // -------- EventsSDK
 
+
 EventsSDK.on("Tick", () => {
 	if (!IsShowAttackTarget())
 		return
 
 	Towers = EntityManager.GetEntitiesByClass(Tower).filter(x => x.IsAlive)
+
 })
+
 
 EventsSDK.on("Draw", () => {
 	if (!IsShowAttackTarget())
 		return
-
+	if (!restartParticle) {
+		RestartParticles()
+		restartParticle = true
+	}
 	Towers.forEach(tower => {
 		let target = tower.TowerAttackTarget
 
@@ -98,4 +106,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 EventsSDK.on("GameStarted", () => OnState(true))
-EventsSDK.on("GameEnded", () => OnState(false))
+EventsSDK.on("GameEnded", () => {
+	OnState(false)
+	restartParticle = false
+})
