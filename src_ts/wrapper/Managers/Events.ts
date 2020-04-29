@@ -91,6 +91,7 @@ declare interface Events extends EventEmitter {
 	on(name: "RemoveSearchPath", listener: (path: string) => boolean): EventEmitter
 	on(name: "PostRemoveSearchPath", listener: (path: string) => void): EventEmitter
 	on(name: "ServerMessage", listener: (msg_id: number, buf: ArrayBuffer) => void): EventEmitter
+	on(name: "GCPingResponse", listener: () => boolean): EventEmitter
 }
 
 const Events: Events = new EventEmitter()

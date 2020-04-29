@@ -147,7 +147,9 @@ declare function GetLatency(flow: number): number
 declare function GetAvgLatency(flow: number): number
 declare function GetUIState(): number
 declare function ChatWheelAbuse(str: string): void
+declare function StartFindingMatch(): void
 declare function StopFindingMatch(): void
+declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
 declare function ToggleFakeChat(state: boolean): void
 declare function ToggleLoadScreen(state: boolean): void
@@ -2782,7 +2784,7 @@ declare class CSkeletonInstance extends CGameSceneNode {
 
 declare class CGameSceneNode {
 	SetLocalScale(scale: number): void
-	
+
 	readonly m_pOwner: CEntityInstance
 	readonly m_pParent: CGameSceneNode
 	readonly m_pChild: CGameSceneNode
@@ -5606,7 +5608,7 @@ declare class C_BaseAnimatingOverlay extends C_BaseAnimating { }
 
 declare class C_BaseAnimating extends C_BaseModelEntity {
 	SetSkin(skin_id: number): void
-	
+
 	readonly m_CHitboxComponent: CHitboxComponent
 	m_vecForce: IOBuffer_Vector3
 	m_nForceBone: number
@@ -5625,7 +5627,7 @@ declare class C_BaseAnimating extends C_BaseModelEntity {
 
 declare class C_BaseModelEntity extends C_BaseEntity {
 	OnColorChanged(): void
-	
+
 	readonly m_CRenderComponent: CRenderComponent
 	m_iViewerID: number
 	m_iTeamVisibilityBitmask: number
@@ -8387,7 +8389,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_fIdealSpeed: number
 	readonly m_fAttackRange: number
 	readonly m_flMagicalResistanceValueReal: number
-	
+
 	m_bIsPhantom: boolean
 	m_iUnitType: number
 	m_bSelectionRingVisible: boolean
