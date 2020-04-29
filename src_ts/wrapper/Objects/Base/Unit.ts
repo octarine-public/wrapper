@@ -100,6 +100,10 @@ export default class Unit extends Entity {
 	public ShouldDoFlyHeightVisual = true
 	public Spells_ = new Array<number>(MAX_SPELLS).fill(0)
 	public TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
+	public XPBounty = 0
+	public XPBountyExtra = 0
+	public GoldBountyMin = 0
+	public GoldBountyMax = 0
 
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
@@ -1071,3 +1075,7 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
 		ar.push(0)
 	unit.TotalItems_ = new_value as number[]
 })
+RegisterFieldHandler(Unit, "m_iXPBounty", (unit, new_value) => unit.XPBounty = new_value as number)
+RegisterFieldHandler(Unit, "m_iXPBountyExtra", (unit, new_value) => unit.XPBountyExtra = new_value as number)
+RegisterFieldHandler(Unit, "m_iGoldBountyMin", (unit, new_value) => unit.GoldBountyMin = new_value as number)
+RegisterFieldHandler(Unit, "m_iGoldBountyMax", (unit, new_value) => unit.GoldBountyMax = new_value as number)
