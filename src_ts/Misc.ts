@@ -1,6 +1,6 @@
 import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, RendererSDK, Tree, GameState } from "./wrapper/Imports"
 import { SetGameInProgress } from "./wrapper/Managers/EventsHandler"
-
+let IsnewPlayer = false
 let Menu = MenuSDK.AddEntry("Misc")
 
 let AutoAccept_delay = Menu.AddSlider("Delay on AutoAccept", 3, 0, 28 /* ?? is real maximum */),
@@ -104,7 +104,10 @@ function UpdateVisuals() {
 	ConVars.Set("dota_use_particle_fow", false)
 	ConVars.Set("demo_recordcommands", false)
 	ConVars.Set("dota_unit_orders_rate", 512)
-	GameState.ExecuteCommand("dota_new_player false")
+	if (!IsnewPlayer) {
+		GameState.ExecuteCommand("dota_new_player false")
+		IsnewPlayer = true
+	}
 }
 
 let c = 0
