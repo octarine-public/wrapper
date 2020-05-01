@@ -26,6 +26,7 @@ export default class Item extends Ability {
 	public PurchaserID = -1
 	public PurchaseTime = 0
 	public SecondaryCharges = 0
+	public IsNeutral = false
 
 	get IsReady(): boolean {
 		const unit = this.Owner
@@ -52,7 +53,6 @@ export default class Item extends Ability {
 	public get ShouldDisplayCharges(): boolean {
 		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges
 	}
-
 	public DisassembleItem(queue?: boolean) {
 		return this.Owner?.DisassembleItem(this, queue)
 	}
@@ -95,6 +95,7 @@ export default class Item extends Ability {
 
 import { RegisterClass, RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterClass("C_DOTA_Item", Item)
+RegisterFieldHandler(Item, "m_bIsNeutralDrop", (item, new_val) => item.IsNeutral = new_val as boolean)
 RegisterFieldHandler(Item, "m_flEnableTime", (item, new_val) => item.EnableTime = new_val as number)
 RegisterFieldHandler(Item, "m_iSharability", (item, new_val) => item.Shareability = new_val as EShareAbility)
 RegisterFieldHandler(Item, "m_iCurrentCharges", (item, new_val) => item.CurrentCharges = new_val as number)
