@@ -914,6 +914,9 @@ export default class Unit extends Entity {
 	public CastPosition(ability: Ability, position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION, unit: this, ability, position, queue, showEffects })
 	}
+	public PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean) {
+		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM, unit: this, ability: itemID, queue, showEffects })
+	}
 	public CastTarget(ability: Ability, target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET, unit: this, target, ability, queue, showEffects })
 	}
@@ -946,10 +949,6 @@ export default class Unit extends Entity {
 	}
 	public PickupRune(rune: Rune | number, queue?: boolean, showEffects?: boolean) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE, unit: this, target: rune, queue, showEffects })
-	}
-	// check
-	public PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM, unit: this, target: itemID, queue, showEffects })
 	}
 	public SellItem(item: Item) {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM, unit: this, ability: item })

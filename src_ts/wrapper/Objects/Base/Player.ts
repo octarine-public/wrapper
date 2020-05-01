@@ -16,7 +16,7 @@ export default class Player extends Entity {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
 		position?: Vector3 | Vector2,
-		ability?: Ability,
+		ability?: Ability | number,
 		orderIssuer?: PlayerOrderIssuer_t,
 		unit?: Unit,
 		queue?: boolean,
