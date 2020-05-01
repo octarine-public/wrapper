@@ -104,6 +104,7 @@ function UpdateVisuals() {
 	ConVars.Set("dota_use_particle_fow", false)
 	ConVars.Set("demo_recordcommands", false)
 	ConVars.Set("dota_unit_orders_rate", 512)
+	GameState.ExecuteCommand("dota_new_player false")
 }
 
 let c = 0
