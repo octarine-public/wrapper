@@ -1,6 +1,5 @@
 import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, Tree, GameState } from "./wrapper/Imports"
 import { SetGameInProgress } from "./wrapper/Managers/EventsHandler"
-let IsnewPlayer = false
 let Menu = MenuSDK.AddEntry("Misc")
 
 let AutoAccept_delay = Menu.AddSlider("Delay on AutoAccept", 3, 0, 28 /* ?? is real maximum */),
@@ -22,6 +21,7 @@ let AutoAccept_delay = Menu.AddSlider("Delay on AutoAccept", 3, 0, 28 /* ?? is r
 		"Ash",
 		"Aurora",
 	], 8).OnValue(caller => ConVars.Set("cl_weather", caller.selected_id)),
+	fow_convars = Menu.AddToggle("FoW hacks", true, "Such as seeing TPs in the world, having no fog, etc"),
 	map_name = Menu.AddSwitcher("Custom Map", [
 		"dota",
 		"dota_autumn",
@@ -70,6 +70,8 @@ Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.Menu
 Menu.AddToggle("Team chat mute fix", false).OnValue(toggle => ToggleFakeChat(toggle.value))
 Menu.AddToggle("Enable local server hacks", false).OnValue(self => set_enable_custom_hacks(self.value))
 let humanizer = Menu.AddNode("Humanizer")
+humanizer.AddToggle("Disable", false, "Disables all scripts' orders, ability to change camera distance")
+	.OnValue(toggle => ExecuteOrder.disable_humanizer = toggle.value)
 humanizer.AddToggle("wait_next_usercmd", false).OnValue(toggle => ExecuteOrder.wait_next_usercmd = toggle.value)
 humanizer.AddToggle("wait_near_cursor", false).OnValue(toggle => ExecuteOrder.wait_near_cursor = toggle.value)
 humanizer.AddToggle("debug_orders", false).OnValue(toggle => ExecuteOrder.debug_orders = toggle.value)
@@ -94,18 +96,13 @@ CameraTree.AddButton("Reset camera").OnValue(() => {
 })
 
 function UpdateVisuals() {
-	Camera.Distance = CamDist.value
-	ConVars.Set("r_farz", CamDist.value * 2)
+	Camera.Distance = ExecuteOrder.disable_humanizer ? -1 : CamDist.value
+	ConVars.Set("r_farz", ExecuteOrder.disable_humanizer ? -1 : CamDist.value * 2)
 	ConVars.Set("cl_weather", weather.selected_id)
-	ConVars.Set("fog_enable", false)
-	ConVars.Set("fow_client_nofiltering", false)
-	ConVars.Set("dota_use_particle_fow", false)
-	ConVars.Set("demo_recordcommands", false)
+	ConVars.Set("fog_enable", !fow_convars.value)
+	ConVars.Set("fow_client_nofiltering", !fow_convars.value)
+	ConVars.Set("dota_use_particle_fow", !fow_convars.value)
 	ConVars.Set("dota_unit_orders_rate", 512)
-	if (!IsnewPlayer) {
-		GameState.ExecuteCommand("dota_new_player false")
-		IsnewPlayer = true
-	}
 }
 
 let c = 0

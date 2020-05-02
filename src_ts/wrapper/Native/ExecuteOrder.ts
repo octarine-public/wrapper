@@ -33,6 +33,7 @@ export default class ExecuteOrder {
 	public static wait_near_cursor = false
 	public static debug_orders = false
 	public static debug_draw = false
+	public static disable_humanizer = false
 
 	public static fromObject(order: {
 		orderType: dotaunitorder_t,
@@ -159,7 +160,8 @@ export default class ExecuteOrder {
 		return this
 	}
 	public ExecuteQueued(): ExecuteOrder {
-		ExecuteOrder.order_queue.push(this)
+		if (!ExecuteOrder.disable_humanizer)
+			ExecuteOrder.order_queue.push(this)
 		return this
 	}
 
@@ -194,6 +196,8 @@ let last_order_click = new Vector3(),
 	current_order: Nullable<ExecuteOrder>,
 	latest_cursor = new Vector2()
 Events.after("Update", (cmd_: CUserCmd) => {
+	if (ExecuteOrder.disable_humanizer)
+		return
 	let cmd = new UserCmd(cmd_),
 		order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
 	if (execute_current) {
@@ -286,7 +290,7 @@ function DrawLine(startVec: Vector2, endVec: Vector2) {
 }
 
 Events.on("Draw", () => {
-	if (!ExecuteOrder.debug_draw)
+	if (!ExecuteOrder.debug_draw || ExecuteOrder.disable_humanizer)
 		return
 	DrawLine(new Vector2(0, 0), new Vector2(0, 1))
 	DrawLine(new Vector2(0, 0), new Vector2(1, 0))

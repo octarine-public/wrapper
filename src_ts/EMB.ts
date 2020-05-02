@@ -1,4 +1,4 @@
-import { Color, EventsSDK, GameRules, Hero, LocalPlayer, Menu, RendererSDK, Vector2, DOTAGameUIState_t, EntityManager, Utils, Parse, GameState } from "wrapper/Imports"
+import { Color, EventsSDK, GameRules, Hero, LocalPlayer, Menu, RendererSDK, Vector2, DOTAGameUIState_t, EntityManager, GameState } from "wrapper/Imports"
 
 const EMBMenu = Menu.AddEntry(["Visual", "Enemy Bars"])
 const stateMain = EMBMenu.AddToggle("State", true)
