@@ -90,38 +90,6 @@ EXPORT_JS float* GetIOBuffer() {
 	return &JSIOBuffer[0];
 }
 
-VMatrix worldToProjection;
-EXPORT_JS void CacheFrame() {
-	auto camera_pos = UnwrapVector3();
-	auto camera_ang = UnwrapVector3(3);
-	auto camera_dist = JSIOBuffer[6];
-	auto window_size = UnwrapVector2(7);
-	GetWorldToProjection(worldToProjection, camera_pos, *(QAngle*)&camera_ang, window_size, camera_dist);
-}
-
-EXPORT_JS bool WorldToScreenCached() {
-	auto world_vec = UnwrapVector3();
-	Vector2D screen_vec;
-	if (ScreenTransform(world_vec, screen_vec, worldToProjection)) {
-		JSIOBuffer[0] = screen_vec.x;
-		JSIOBuffer[1] = screen_vec.y;
-		return true;
-	} else
-		return false;
-}
-
-EXPORT_JS void ScreenToWorldCached() {
-	auto screen = UnwrapVector2();
-	VMatrix projectionToWorld;
-	MatrixInverseGeneral(worldToProjection, projectionToWorld);
-	Vector point;
-	WorldTransform(screen, point, projectionToWorld);
-	
-	JSIOBuffer[0] = point.x;
-	JSIOBuffer[1] = point.y;
-	JSIOBuffer[2] = point.z;
-}
-
 EXPORT_JS bool WorldToScreen() {
 	auto world_vec = UnwrapVector3();
 	auto camera_pos = UnwrapVector3(3);

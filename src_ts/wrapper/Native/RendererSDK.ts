@@ -39,7 +39,6 @@ let RendererSDK = new (class CRendererSDK {
 	 */
 	public readonly DefaultShapeSize: Vector2 = new Vector2(5, 5)
 
-	public AlternateW2S = false
 	public WindowSize_ = new Vector2()
 	public HeightMap: Nullable<WASM.HeightMap>
 
@@ -97,19 +96,10 @@ let RendererSDK = new (class CRendererSDK {
 	 * @returns screen position, or undefined
 	 */
 	public WorldToScreen(position: Vector2 | Vector3): Nullable<Vector2> {
-		if (this.AlternateW2S) {
-			if (position instanceof Vector2)
-				position = position.toVector3().SetZ(this.GetPositionHeight(position))
-			let vec = WASM.WorldToScreenCached(position)
-			if (vec !== undefined)
-				vec.MultiplyForThis(this.WindowSize)
-			return vec
-		} else {
-			position.toIOBuffer()
-			if (position instanceof Vector2)
-				IOBuffer[2] = this.GetPositionHeight(position)
-			return Vector2.fromIOBuffer(Renderer.WorldToScreen())
-		}
+		position.toIOBuffer()
+		if (position instanceof Vector2)
+			IOBuffer[2] = this.GetPositionHeight(position)
+		return Vector2.fromIOBuffer(Renderer.WorldToScreen())
 	}
 	/**
 	 * @returns screen position with x and y in range {0, 1}, or undefined
@@ -126,17 +116,10 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param screen screen position
 	 */
 	public ScreenToWorld(screen: Vector2): Vector3 {
-		if (this.AlternateW2S) {
-			let vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
-			vec.x = vec.x - 1
-			vec.y = 1 - vec.y
-			return WASM.ScreenToWorldCached(vec)
-		} else {
-			let vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
-			vec.x = vec.x - 1
-			vec.y = 1 - vec.y
-			return WASM.ScreenToWorld(vec, Vector3.fromIOBuffer(Camera.Position)!, Camera.Distance ?? 1200, QAngle.fromIOBuffer(Camera.Angles)!, this.WindowSize)
-		}
+		let vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
+		vec.x = vec.x - 1
+		vec.y = 1 - vec.y
+		return WASM.ScreenToWorld(vec, Vector3.fromIOBuffer(Camera.Position)!, Camera.Distance ?? 1200, QAngle.fromIOBuffer(Camera.Angles)!, this.WindowSize)
 	}
 	/**
 	 * Projects given screen vector onto camera matrix. Can be used to connect ScreenToWorldFar and camera position dots.
@@ -532,8 +515,6 @@ Events.on("PostRemoveSearchPath", path => {
 
 Events.on("Draw", () => {
 	Vector2.fromIOBuffer(Renderer.WindowSize)!.CopyTo(RendererSDK.WindowSize_)
-	if (RendererSDK.AlternateW2S)
-		WASM.OnDraw(RendererSDK.WindowSize)
 	EventsSDK.emit("Draw")
 })
 

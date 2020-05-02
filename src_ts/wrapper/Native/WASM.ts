@@ -35,13 +35,10 @@ var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("wrapper.was
 	}
 }).exports as any as {
 	_start: () => void
-	CacheFrame: () => void
 	GetIOBuffer: () => number
 	memory: WebAssembly.Memory
 	ScreenToWorld: () => void
-	ScreenToWorldCached: () => void
 	WorldToScreen: () => boolean
-	WorldToScreenCached: () => boolean
 	ParseVHCG: (ptr: number, size: number) => HeightMapParseError
 	GetHeightForLocation: () => void
 	GetSecondaryHeightForLocation: () => void
@@ -73,42 +70,6 @@ function emscripten_notify_memory_growth(memoryIndex: number) {
 	WASMIOBufferU32 = new Uint32Array(wasm.memory.buffer, off)
 }
 emscripten_notify_memory_growth(0)
-
-export function OnDraw(window_size: Vector2) {
-	let camera_position = Vector3.fromIOBuffer(Camera.Position) ?? new Vector3()
-	WASMIOBuffer[0] = camera_position.x
-	WASMIOBuffer[1] = camera_position.y
-	WASMIOBuffer[2] = camera_position.z
-
-	let camera_angles = QAngle.fromIOBuffer(Camera.Angles)!
-	WASMIOBuffer[3] = camera_angles.x
-	WASMIOBuffer[4] = camera_angles.y
-	WASMIOBuffer[5] = camera_angles.z
-
-	WASMIOBuffer[6] = Camera.Distance ?? 1200
-
-	WASMIOBuffer[7] = window_size.x
-	WASMIOBuffer[8] = window_size.y
-
-	wasm.CacheFrame()
-}
-
-export function WorldToScreenCached(position: Vector3): Nullable<Vector2> {
-	WASMIOBuffer[0] = position.x
-	WASMIOBuffer[1] = position.y
-	WASMIOBuffer[2] = position.z
-
-	if (!wasm.WorldToScreenCached())
-		return undefined
-	return new Vector2(WASMIOBuffer[0], WASMIOBuffer[1])
-}
-
-export function ScreenToWorldCached(screen: Vector2): Vector3 {
-	WASMIOBuffer[0] = screen.x
-	WASMIOBuffer[1] = screen.y
-	wasm.ScreenToWorldCached()
-	return new Vector3(WASMIOBuffer[0], WASMIOBuffer[1], WASMIOBuffer[2])
-}
 
 export function GetEyeVector(camera_angles: QAngle): Vector3 {
 	// TODO: should we use Math.cos(DegreesToRadian(camera_angles.y))?

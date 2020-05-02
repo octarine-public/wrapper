@@ -1,4 +1,4 @@
-import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, RendererSDK, Tree, GameState } from "./wrapper/Imports"
+import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, Tree, GameState } from "./wrapper/Imports"
 import { SetGameInProgress } from "./wrapper/Managers/EventsHandler"
 let IsnewPlayer = false
 let Menu = MenuSDK.AddEntry("Misc")
@@ -67,7 +67,6 @@ let keybind = Menu.AddKeybind("Menu (Open/Close)", "Insert").OnPressed(() => Men
 keybind.activates_in_menu = true
 keybind.trigger_on_chat = true
 Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.MenuManager.trigger_on_chat = toggle.value)
-Menu.AddToggle("Alternate WorldToScreen", false).OnValue(toggle => RendererSDK.AlternateW2S = toggle.value)
 Menu.AddToggle("Team chat mute fix", false).OnValue(toggle => ToggleFakeChat(toggle.value))
 Menu.AddToggle("Disable loadscreens", false).OnValue(toggle => ToggleLoadScreen(!toggle.value))
 Menu.AddToggle("Enable local server hacks", false).OnValue(self => set_enable_custom_hacks(self.value))
