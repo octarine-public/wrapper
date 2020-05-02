@@ -1,6 +1,9 @@
 import Ability from "../../Base/Ability"
 
 export default class invoker_ghost_walk extends Ability {
+	public get IsInvisibilityType() {
+		return true
+	}
 	public get AOERadius(): number {
 		return this.GetSpecialValue("area_of_effect")
 	}

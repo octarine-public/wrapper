@@ -2,6 +2,9 @@ import Item from "../Base/Item"
 
 export default class item_invis_sword extends Item {
 	public NativeEntity: Nullable<C_DOTA_Item_InvisibilityEdge>
+	public get IsInvisibilityType() {
+		return true
+	}
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

@@ -37,6 +37,9 @@ export default class Ability extends Entity {
 	public get Owner(): Nullable<Unit> {
 		return super.Owner as Nullable<Unit>
 	}
+	public get IsInvisibilityType(): boolean {
+		return false
+	}
 	public get AbilityBehavior(): DOTA_ABILITY_BEHAVIOR[] {
 		return MaskToArrayNumber(this.AbilityData.AbilityBehavior)
 	}
