@@ -145,21 +145,61 @@ enum CSODOTALobby_State {
 	SERVERASSIGN = 6,
 }
 
+interface CDOTALobbyMember {
+	id: bigint
+	name: string
+}
+
 interface CSODOTALobby {
 	state: CSODOTALobby_State
+	members: CDOTALobbyMember[]
+}
+
+interface CSODOTAParty {
+	raw_started_matchmaking_time: number
 }
 
 let timeCreate = -1
+let cur_lobby: Nullable<CSODOTALobby>,
+	last_party: Nullable<CSODOTAParty>,
+	restart_finding_match = false
 Events.on("SharedObjectChanged", (id, reason, obj) => {
-	if (id !== 2004)
-		return
+	// console.log(id, obj)
+	switch (id) {
+		case 2003: {
+			let party = obj as CSODOTAParty
+			if (
+				restart_finding_match
+				&& last_party?.raw_started_matchmaking_time !== undefined
+				&& party.raw_started_matchmaking_time === undefined
+			) {
+				StartFindingMatch()
+				restart_finding_match = false
+			}
+			last_party = reason !== 2 ? party : undefined
+			break
+		}
+		case 2004: {
+			let lobby = obj as CSODOTALobby
+			cur_lobby = reason !== 2 ? lobby : undefined
 
-	let lobby = obj as CSODOTALobby
+			if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1)
+				timeCreate = hrtime()
+			else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1)
+				timeCreate = -1
+			break
+		}
+		default:
+			break
+	}
+})
 
-	if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1)
-		timeCreate = hrtime()
-	else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1)
-		timeCreate = -1
+Events.on("GCPingResponse", () => {
+	/*if (cur_lobby?.state === CSODOTALobby_State.SERVERASSIGN) {
+		StopFindingMatch()
+		restart_finding_match = true
+	}*/
+	return true
 })
 
 EventsSDK.on("Draw", () => {

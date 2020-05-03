@@ -2,7 +2,6 @@ import Item from "../Base/Item"
 import { GameRules } from "../Base/GameRules"
 
 export default class item_bottle extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_EmptyBottle>
 	public StoredRune = DOTA_RUNES.DOTA_RUNE_INVALID
 	public LastRuneTypeChangeTime = GameRules?.RawGameTime ?? 0
 

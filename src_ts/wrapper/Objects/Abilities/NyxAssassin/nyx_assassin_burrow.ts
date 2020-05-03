@@ -1,8 +1,9 @@
 import Ability from "../../Base/Ability"
+import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
 
 export default class nyx_assassin_burrow extends Ability {
-	public get IsInvisibilityType() {
-		return this.Owner?.HasScepter ?? false
+	public get AbilityLogicType(): AbilityLogicType {
+		return AbilityLogicType.Invisibility
 	}
 }
 

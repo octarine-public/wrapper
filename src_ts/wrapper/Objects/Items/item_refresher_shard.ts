@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_refresher_shard extends Item {
-	public NativeEntity: Nullable<CDOTA_Item_RefresherOrb_Shard>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

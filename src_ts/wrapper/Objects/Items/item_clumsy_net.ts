@@ -1,8 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_clumsy_net extends Item {
-	public NativeEntity: Nullable<CDOTA_Item_Clumsy_Net>
-
 	public get Speed(): number {
 		return 900
 	}

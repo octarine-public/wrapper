@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_hurricane_pike extends Item {
-	public NativeEntity: Nullable<CDOTA_Item_Hurricane_Pike>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

@@ -49,6 +49,13 @@ let RendererSDK = new (class CRendererSDK {
 	private tex2size = new Map</* texture_id */number, Vector2>()
 	private last_color = new Color(-1, -1, -1, -1)
 
+	/**
+	 * Cached. Updating every 5 sec
+	 */
+	public get WindowSize(): Vector2 {
+		return this.WindowSize_.Clone()
+	}
+
 	public EmitChatEvent(
 		type = DOTA_CHAT_MESSAGE.CHAT_MESSAGE_INVALID,
 		value = 0,
@@ -83,13 +90,6 @@ let RendererSDK = new (class CRendererSDK {
 	): void {
 		position.toIOBuffer()
 		EmitStartSoundEvent(Manifest.SoundNameToHash(name), source_entity?.Index ?? 0, seed)
-	}
-
-	/**
-	 * Cached. Updating every 5 sec
-	 */
-	public get WindowSize(): Vector2 {
-		return this.WindowSize_.Clone()
 	}
 	/**
 	 * @param pos world position that needs to be turned to screen position

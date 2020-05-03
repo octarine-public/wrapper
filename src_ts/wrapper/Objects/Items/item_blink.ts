@@ -1,8 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_blink extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_BlinkDagger>
-
 	public get BaseCastRange(): number {
 		return this.GetSpecialValue("blink_range")
 	}

@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_river_painter5 extends Item {
-	public NativeEntity: Nullable<CDOTA_Item_RiverPainter5>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

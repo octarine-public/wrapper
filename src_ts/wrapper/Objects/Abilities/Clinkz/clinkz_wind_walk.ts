@@ -1,8 +1,9 @@
 import Ability from "../../Base/Ability"
+import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
 
 export default class clinkz_wind_walk extends Ability {
-	public get IsInvisibilityType() {
-		return true
+	public get AbilityLogicType(): AbilityLogicType {
+		return AbilityLogicType.Invisibility
 	}
 }
 

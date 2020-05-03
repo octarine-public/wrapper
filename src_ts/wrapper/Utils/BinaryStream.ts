@@ -2,13 +2,13 @@ import { Utf8ArrayToStr } from "./Utils"
 
 export default class BinaryStream {
 	constructor(public readonly view: DataView, public pos = 0) { }
+	public get Remaining(): number {
+		return Math.max(this.view.byteLength - this.pos, 0)
+	}
 
 	public RelativeSeek(s: number): BinaryStream {
 		this.pos += s
 		return this
-	}
-	public get Remaining(): number {
-		return Math.max(this.view.byteLength - this.pos, 0)
 	}
 	public Next(): number {
 		return this.view.getUint8(this.pos++)

@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_power_treads extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_PowerTreads>
 	public ActiveAttribute = 0
 }
 

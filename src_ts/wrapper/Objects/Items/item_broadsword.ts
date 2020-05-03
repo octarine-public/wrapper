@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_broadsword extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_Broadsword>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

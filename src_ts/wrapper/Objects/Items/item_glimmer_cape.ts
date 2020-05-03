@@ -1,9 +1,9 @@
 import Item from "../Base/Item"
+import { AbilityLogicType } from "../../Enums/AbilityLogicType"
 
 export default class item_glimmer_cape extends Item {
-	public NativeEntity: Nullable<CDOTA_Item_GlimmerCape>
-	public get IsInvisibilityType() {
-		return true
+	public get AbilityLogicType(): AbilityLogicType {
+		return AbilityLogicType.Invisibility
 	}
 }
 

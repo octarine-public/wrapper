@@ -1,8 +1,9 @@
 import Ability from "../../Base/Ability"
+import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
 
 export default class templar_assassin_meld extends Ability {
-	public get IsInvisibilityType() {
-		return true
+	public get AbilityLogicType(): AbilityLogicType {
+		return AbilityLogicType.Invisibility
 	}
 }
 

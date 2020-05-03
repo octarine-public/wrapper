@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_talisman_of_evasion extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_TalismanOfEvasion>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

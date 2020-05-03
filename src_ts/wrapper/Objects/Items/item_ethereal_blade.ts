@@ -2,8 +2,6 @@ import Item from "../Base/Item"
 import Hero from "../Base/Hero"
 
 export default class item_ethereal_blade extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_Ethereal_Blade>
-
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}

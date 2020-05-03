@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_wraith_band extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_WraithBand>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

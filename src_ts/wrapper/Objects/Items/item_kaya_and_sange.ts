@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_kaya_and_sange extends Item {
-	public NativeEntity: Nullable<CDOTA_Item_Kaya_And_Sange>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

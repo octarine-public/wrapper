@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_pocket_roshan extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_PocketRoshan>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

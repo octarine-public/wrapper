@@ -1,3 +1,5 @@
+import { EMatchGroupServerStatus } from "../Enums/EMatchGroupServerStatus"
+
 type Listener = (...args: any) => false | any
 export class EventEmitter {
 	protected readonly events = new Map<string, Listener[]>()
@@ -66,6 +68,18 @@ export class EventEmitter {
 	}
 }
 
+interface CMsgMatchmakingMatchGroupInfo {
+	players_searching: number
+	auto_region_select_ping_penalty: number
+	auto_region_select_ping_penalty_custom: number
+	status: EMatchGroupServerStatus
+}
+
+interface CMsgDOTAMatchmakingStatsResponse {
+	legacy_searching_players_by_group_source2: number[]
+	match_groups: CMsgMatchmakingMatchGroupInfo[]
+}
+
 declare interface Events extends EventEmitter {
 	on(name: "UIStateChanged", callback: (new_state: number) => void): EventEmitter
 	/**
@@ -92,6 +106,7 @@ declare interface Events extends EventEmitter {
 	on(name: "PostRemoveSearchPath", listener: (path: string) => void): EventEmitter
 	on(name: "ServerMessage", listener: (msg_id: number, buf: ArrayBuffer) => void): EventEmitter
 	on(name: "GCPingResponse", listener: () => boolean): EventEmitter
+	on(name: "MatchmakingStatsUpdated", listener: (data: CMsgDOTAMatchmakingStatsResponse) => void): EventEmitter
 }
 
 const Events: Events = new EventEmitter()

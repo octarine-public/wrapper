@@ -123,7 +123,7 @@ export default class Node extends Base {
 				entry.UpdateEntriesPositions()
 		})
 	}
-	public SetIcon(pathIcon: string) { // TODO: after Node, add for all (slider, toogle, etc..) 
+	public SetIcon(pathIcon: string) { // TODO: after Node, add for all (slider, toogle, etc..)
 		this.pathIcon = pathIcon
 		return this
 	}
@@ -237,11 +237,12 @@ export default class Node extends Base {
 		}
 	}
 
-	public AddParticlePicker(name: string, color: Color | number = new Color(0, 255, 0),
+	public AddParticlePicker(
+		name: string,
+		color: Color | number = new Color(0, 255, 0),
 		render: PARTICLE_RENDER_NAME[],
 		addStateToTree?: boolean[]
 	): IMenuParticlePicker {
-
 		const Node = this.AddNode(name)
 
 		let State: Nullable<Toggle>

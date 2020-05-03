@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_havoc_hammer extends Item {
-	public NativeEntity: Nullable<CDOTA_Item_Havoc_Hammer>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

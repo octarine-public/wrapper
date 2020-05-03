@@ -5,6 +5,7 @@ import { GameRules } from "../Base/GameRules"
 import Entity from "./Entity"
 import Unit from "./Unit"
 import GameState from "../../Utils/GameState"
+import { AbilityLogicType } from "../../Enums/AbilityLogicType"
 
 export default class Ability extends Entity {
 	public NativeEntity: Nullable<C_DOTABaseAbility>
@@ -37,11 +38,14 @@ export default class Ability extends Entity {
 	public get Owner(): Nullable<Unit> {
 		return super.Owner as Nullable<Unit>
 	}
-	public get IsInvisibilityType(): boolean {
-		return false
-	}
 	public get AbilityBehavior(): DOTA_ABILITY_BEHAVIOR[] {
 		return MaskToArrayNumber(this.AbilityData.AbilityBehavior)
+	}
+	/**
+	 * @returns AbilityLogicType bitmask
+	 */
+	public get AbilityLogicType(): AbilityLogicType {
+		return AbilityLogicType.None
 	}
 	public get AbilityDamage(): number {
 		return this.AbilityData.GetAbilityDamage(this.Level) || this.GetSpecialValue("damage")

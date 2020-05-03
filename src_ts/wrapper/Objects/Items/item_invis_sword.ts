@@ -1,9 +1,9 @@
 import Item from "../Base/Item"
+import { AbilityLogicType } from "../../Enums/AbilityLogicType"
 
 export default class item_invis_sword extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_InvisibilityEdge>
-	public get IsInvisibilityType() {
-		return true
+	public get AbilityLogicType(): AbilityLogicType {
+		return AbilityLogicType.Invisibility
 	}
 }
 

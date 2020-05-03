@@ -1,4 +1,5 @@
 import Ability from "../../Base/Ability"
+import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
 
 export default class windrunner_windrun extends Ability {
 	public get MaxCharges(): number {
@@ -7,8 +8,10 @@ export default class windrunner_windrun extends Ability {
 	public get ChargeRestoreTime(): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("charge_restore_time") : 0
 	}
-	public get IsInvisibilityType() {
+	public get AbilityLogicType(): AbilityLogicType {
 		return this.Owner?.GetAbilityByName("special_bonus_unique_windranger")?.Level !== 0
+			? AbilityLogicType.Invisibility
+			: AbilityLogicType.None
 	}
 }
 

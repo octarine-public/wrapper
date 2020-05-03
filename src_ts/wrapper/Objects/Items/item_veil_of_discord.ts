@@ -1,8 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_veil_of_discord extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_Veil_Of_Discord>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("debuff_radius")
 	}

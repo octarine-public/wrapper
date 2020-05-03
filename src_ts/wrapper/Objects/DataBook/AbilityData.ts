@@ -134,44 +134,6 @@ export default class AbilityData {
 		this.ChargeRestoreTimeCache = this.GetLevelArray("AbilityChargeRestoreTime")
 	}
 
-	private CacheSpecialValue(name: string): Nullable<[number[], Nullable<string>, EDOTASpecialBonusOperation]> {
-		{
-			let ar = this.SpecialValueCache.get(name)
-			if (ar !== undefined)
-				return ar
-		}
-		let AbilitySpecial = this.m_Storage.get("AbilitySpecial") as RecursiveMap
-		if (AbilitySpecial === undefined)
-			return undefined
-		for (let special of AbilitySpecial.values()) {
-			if (!(special instanceof Map) || !special.has(name))
-				continue
-			let str = special.get(name) as string
-			// loop-optimizer: FORWARD
-			let ar = str.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
-			this.ExtendLevelArray(ar)
-			let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
-			if (typeof LinkedSpecialBonus !== "string")
-				LinkedSpecialBonus = undefined
-			let LinkedSpecialBonusOperation_str = special.get("LinkedSpecialBonusOperation"),
-				LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-			if (typeof LinkedSpecialBonusOperation_str === "string")
-				LinkedSpecialBonusOperation = (EDOTASpecialBonusOperation as any)[LinkedSpecialBonusOperation_str] ?? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-			let ar2 = [ar, LinkedSpecialBonus, LinkedSpecialBonusOperation] as [number[], Nullable<string>, EDOTASpecialBonusOperation]
-			this.SpecialValueCache.set(name, ar2)
-			return ar2
-		}
-
-		// there's no such special - prevent further tries to find it since cache is static
-		let ar = [
-			new Array<number>(this.MaxLevel).fill(0),
-			undefined,
-			EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-		] as [number[], Nullable<string>, EDOTASpecialBonusOperation]
-		this.SpecialValueCache.set(name, ar)
-		return ar
-	}
-
 	public GetSpecialValue(name: string, level = 0): number {
 		level = Math.min(this.MaxLevel, level) - 1
 		if (level < 0)
@@ -261,6 +223,44 @@ export default class AbilityData {
 		if (level < 0)
 			return 0
 		return this.ChargeRestoreTimeCache[level]
+	}
+
+	private CacheSpecialValue(name: string): Nullable<[number[], Nullable<string>, EDOTASpecialBonusOperation]> {
+		{
+			let ar = this.SpecialValueCache.get(name)
+			if (ar !== undefined)
+				return ar
+		}
+		let AbilitySpecial = this.m_Storage.get("AbilitySpecial") as RecursiveMap
+		if (AbilitySpecial === undefined)
+			return undefined
+		for (let special of AbilitySpecial.values()) {
+			if (!(special instanceof Map) || !special.has(name))
+				continue
+			let str = special.get(name) as string
+			// loop-optimizer: FORWARD
+			let ar = str.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
+			this.ExtendLevelArray(ar)
+			let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
+			if (typeof LinkedSpecialBonus !== "string")
+				LinkedSpecialBonus = undefined
+			let LinkedSpecialBonusOperation_str = special.get("LinkedSpecialBonusOperation"),
+				LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+			if (typeof LinkedSpecialBonusOperation_str === "string")
+				LinkedSpecialBonusOperation = (EDOTASpecialBonusOperation as any)[LinkedSpecialBonusOperation_str] ?? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+			let ar2 = [ar, LinkedSpecialBonus, LinkedSpecialBonusOperation] as [number[], Nullable<string>, EDOTASpecialBonusOperation]
+			this.SpecialValueCache.set(name, ar2)
+			return ar2
+		}
+
+		// there's no such special - prevent further tries to find it since cache is static
+		let ar = [
+			new Array<number>(this.MaxLevel).fill(0),
+			undefined,
+			EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+		] as [number[], Nullable<string>, EDOTASpecialBonusOperation]
+		this.SpecialValueCache.set(name, ar)
+		return ar
 	}
 
 	private ExtendLevelArray(ar: number[]): number[] {

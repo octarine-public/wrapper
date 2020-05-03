@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_buckler extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_Buckler>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"

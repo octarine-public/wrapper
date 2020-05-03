@@ -418,6 +418,12 @@ export default class Unit extends Entity {
 	public get Name(): string {
 		return this.UnitName_ || super.Name
 	}
+	public get HasFlyingVision(): boolean {
+		return this.HasMoveCapability(DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY) || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
+	}
+	public get IsFlyingVisually(): boolean {
+		return this.ShouldDoFlyHeightVisual && this.HasFlyingVision
+	}
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
 		return this.InFront(movespeed * time)
 	}
@@ -442,12 +448,6 @@ export default class Unit extends Entity {
 	 */
 	public HasMoveCapability(flag: DOTAUnitMoveCapability_t = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_GROUND | DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY): boolean {
 		return (this.MoveCapabilities & flag) !== 0
-	}
-	public get HasFlyingVision(): boolean {
-		return this.HasMoveCapability(DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY) || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
-	}
-	public get IsFlyingVisually(): boolean {
-		return this.ShouldDoFlyHeightVisual && this.HasFlyingVision
 	}
 
 	public IsUnitStateFlagSet(flag: modifierstate): boolean {

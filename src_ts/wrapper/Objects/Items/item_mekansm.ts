@@ -1,8 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_mekansm extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_Mekansm>
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("heal_radius")
 	}

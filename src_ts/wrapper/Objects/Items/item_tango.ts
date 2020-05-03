@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
 
 export default class item_tango extends Item {
-	public NativeEntity: Nullable<C_DOTA_Item_Tango>
 }
 
 import { RegisterClass } from "wrapper/Objects/NativeToSDK"
