@@ -105,13 +105,7 @@ function UpdateVisuals() {
 	ConVars.Set("dota_unit_orders_rate", 512)
 }
 
-let c = 0
-EventsSDK.on("Draw", () => {
-	if (c++ < 3)
-		return
-	UpdateVisuals()
-	c = 0
-})
+EventsSDK.on("Draw", UpdateVisuals)
 
 InputEventSDK.on("MouseWheel", wheel => {
 	if (!CamMouseState.value || !GameRules?.IsInGame
