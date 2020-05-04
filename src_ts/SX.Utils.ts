@@ -1,4 +1,4 @@
-import { EventsSDK, GameRules, GameState, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, TickSleeper, Color, RendererSDK, Vector2, Input } from "wrapper/Imports"
+import { EventsSDK, GameRules, GameState, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, TickSleeper, Color, RendererSDK, Input } from "wrapper/Imports"
 declare global {
 	var clear: CallableFunction
 }
@@ -125,5 +125,5 @@ EventsSDK.on("Draw", () => {
 	if (MousePosition.IsZero())
 		return
 	let text = Math.ceil(MousePosition.x) + ", " + Math.ceil(MousePosition.y) + ", " + Math.ceil(MousePosition.z)
-	RendererSDK.TextAroundMouse(text, false, mouse_color.Color, "Calibri", new Vector2(mouse_size.value))
+	RendererSDK.TextAroundMouse(text, false, mouse_color.Color, "Calibri", mouse_size.value)
 })

@@ -168,7 +168,7 @@ function DrawCoolDown(position: Vector2, itemCoolDown: string, isTP = false) {
 	}
 
 	RendererSDK.Text(itemCoolDown.toString(), posOfCharges,
-		colorPanel, undefined, new Vector2(panelSettingsSize.value / (isTP ? 1.6 : 1.4), 700))
+		colorPanel, undefined, panelSettingsSize.value / (isTP ? 1.6 : 1.4))
 }
 
 EventsSDK.on("Draw", () => {

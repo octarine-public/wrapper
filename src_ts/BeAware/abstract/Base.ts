@@ -33,6 +33,7 @@ export default class ManagerBase {
 			new Color(255, 255, 255, 255),
 			"Verdana",
 			Size.value,
+			false,
 			FontFlags_t.ANTIALIAS,
 		)
 	}

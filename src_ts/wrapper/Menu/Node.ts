@@ -23,7 +23,7 @@ export default class Node extends Base {
 	protected readonly node_selected_color = new Color(14, 14, 14, 249)
 	protected readonly SizeImageNode = new Vector2(24, 24)
 	protected readonly ArrowSize = 36
-	protected readonly node_arrow_size = RendererSDK.GetTextSize("»", this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS).AddScalarY(-6)
+	protected readonly node_arrow_size = RendererSDK.GetTextSize("»", this.FontName, this.ArrowSize, false, FontFlags_t.ANTIALIAS).AddScalarY(-6)
 	protected readonly arrow_offset = this.text_offset.Clone().AddScalarX(15).AddScalarY(this.node_arrow_size.y).AddForThis(this.border_size)
 	protected readonly node_arrow_color = new Color(68, 68, 68)
 	protected readonly node_selected_arrow_color = new Color(0x40, 0x80, 0xff)
@@ -36,7 +36,7 @@ export default class Node extends Base {
 			this.pathIcon = pathIcon
 
 		this.TotalSize_.x =
-			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS).x
+			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS).x
 			+ 15
 			+ this.node_arrow_size.x
 			+ this.SizeImageNode.x
@@ -70,8 +70,8 @@ export default class Node extends Base {
 		if (this.pathIcon !== undefined)
 			RendererSDK.Image(this.pathIcon, this.Position.Add(this.border_size).AddForThis(this.text_offset).SubtractScalarX(5), this.SizeImageNode)
 
-		RendererSDK.Text(this.name, SizeText, this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
-		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, SizeText, this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize, false, FontFlags_t.ANTIALIAS)
 		if (!this.is_open)
 			return
 

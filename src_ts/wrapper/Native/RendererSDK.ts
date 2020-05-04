@@ -27,11 +27,10 @@ enum CommandID {
 
 let RendererSDK = new (class CRendererSDK {
 	/**
-	 * Default Size of Text = Size 18 x Weight 200
+	 * Default Size of Text = Size 18
 	 * @param font Size as X | default: 18
-	 * @param font Weight as Y | default: 200
 	 */
-	public readonly DefaultTextSize: Vector2 = new Vector2(18, 200)
+	public readonly DefaultTextSize = 18
 	/**
 	 * Default Size of Shape = Weight 5 x Height 5
 	 * @param vecSize Weight as X
@@ -44,7 +43,7 @@ let RendererSDK = new (class CRendererSDK {
 
 	private commandCache = new Uint8Array()
 	private commandCacheSize = 0
-	private font_cache = new Map</* name */string, Map</* size */number, Map</* weight */number, Map</* flags */number, /* font_id */number>>>>()
+	private font_cache = new Map</* name */string, Map</* size */number, Map</* bold */boolean, Map</* flags */number, /* font_id */number>>>>()
 	private texture_cache = new Map</* path */string, number>()
 	private tex2size = new Map</* texture_id */number, Vector2>()
 	private last_color = new Color(-1, -1, -1, -1)
@@ -279,18 +278,15 @@ let RendererSDK = new (class CRendererSDK {
 		view.setInt32(off += 4, texture_id, true)
 	}
 	/**
-	 * @param font Size as X from Vector2 | default: 14
-	 * @param font Weight as Y from Vector2 | default: 200
+	 * @param font_size Size | default: 14
 	 * @param font_name default: "Calibri"
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
 	 * @param flags default: FontFlags_t.OUTLINE
 	 */
-	public Text(text: string, vecPos: Vector2 | Vector3 = new Vector2(), color = new Color(255, 255, 255), font_name = "Calibri", font: Vector2 | number = this.DefaultTextSize, flags = FontFlags_t.OUTLINE): void {
+	public Text(text: string, vecPos: Vector2 | Vector3 = new Vector2(), color = new Color(255, 255, 255), font_name = "Calibri", font_size = this.DefaultTextSize, bold = false, flags = FontFlags_t.OUTLINE): void {
 		this.SetColor(color)
 
-		if (!(font instanceof Vector2))
-			font = new Vector2(font, this.DefaultTextSize.y)
-		let font_id = this.GetFont(font_name, font, flags)
+		let font_id = this.GetFont(font_name, font_size, bold, flags)
 		let text_buf = StringToUTF16(text)
 		let view = this.AllocateCommandSpace(4 * 4 + text_buf.byteLength)
 		let off = 0
@@ -301,10 +297,8 @@ let RendererSDK = new (class CRendererSDK {
 		view.setInt32(off += 4, text.length, true)
 		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(text_buf)
 	}
-	public GetTextSize(text: string, font_name = "Calibri", font: Vector2 | number = this.DefaultTextSize, flags = FontFlags_t.OUTLINE): Vector2 {
-		if (!(font instanceof Vector2))
-			font = new Vector2(font, this.DefaultTextSize.y)
-		return Vector2.fromIOBuffer(Renderer.GetTextSize(text, this.GetFont(font_name, font, flags)))!
+	public GetTextSize(text: string, font_name = "Calibri", font_size = this.DefaultTextSize, bold = false, flags = FontFlags_t.OUTLINE): Vector2 {
+		return Vector2.fromIOBuffer(Renderer.GetTextSize(text, this.GetFont(font_name, font_size, bold, flags)))!
 	}
 	/**
 	 * @param color default: Yellow
@@ -314,13 +308,13 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
 	 * @param flags default: FontFlags_t.ANTIALIAS
 	 */
-	public TextAroundMouse(text: string, vec?: Vector2 | Vector3 | false, color = Color.Yellow, font_name = "Calibri", font = new Vector2(30), flags = FontFlags_t.ANTIALIAS): void {
+	public TextAroundMouse(text: string, vec?: Vector2 | Vector3 | false, color = Color.Yellow, font_name = "Calibri", font_size = 30, bold = false, flags = FontFlags_t.ANTIALIAS): void {
 		let vecMouse = Input.CursorOnScreen.AddScalarX(30).AddScalarY(15)
 
 		if (vec !== undefined && vec !== false)
 			vecMouse = vecMouse.Add(vec as Vector2)
 
-		this.Text(text, vecMouse, color, font_name, font, flags)
+		this.Text(text, vecMouse, color, font_name, font_size, bold, flags)
 	}
 	/**
 	 * Draws icon at minimap
@@ -403,44 +397,46 @@ let RendererSDK = new (class CRendererSDK {
 		}
 		return texture_id
 	}
-	private GetFont(font_name: string, font: Vector2, flags: number): number {
+	private GetFont(font_name: string, font_size: number, bold: boolean, flags: number): number {
+		const weight = bold ? 800 : 200
+
 		let font_name_map = this.font_cache.get(font_name)
 		if (font_name_map === undefined) {
 			font_name_map = new Map()
-			let size_map = new Map</* weight */number, Map</* flags */number, /* font_id */number>>()
+			let size_map = new Map</* bold */boolean, Map</* flags */number, /* font_id */number>>()
 			let weight_map = new Map</* flags */number, /* font_id */number>()
 			let font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
+			Renderer.EditFont(font_id, font_name, font_size, weight, flags)
 			weight_map.set(flags, font_id)
-			size_map.set(font.y, weight_map)
-			font_name_map.set(font.x, size_map)
+			size_map.set(bold, weight_map)
+			font_name_map.set(font_size, size_map)
 			this.font_cache.set(font_name, font_name_map)
 			return font_id
 		}
-		let size_map = font_name_map.get(font.x)
+		let size_map = font_name_map.get(font_size)
 		if (size_map === undefined) {
 			size_map = new Map()
 			let weight_map = new Map</* flags */number, /* font_id */number>()
 			let font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
+			Renderer.EditFont(font_id, font_name, font_size, weight, flags)
 			weight_map.set(flags, font_id)
-			size_map.set(font.y, weight_map)
-			font_name_map.set(font.x, size_map)
+			size_map.set(bold, weight_map)
+			font_name_map.set(font_size, size_map)
 			return font_id
 		}
-		let weight_map = size_map.get(font.y)
+		let weight_map = size_map.get(bold)
 		if (weight_map === undefined) {
 			weight_map = new Map()
 			let font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
+			Renderer.EditFont(font_id, font_name, font_size, weight, flags)
 			weight_map.set(flags, font_id)
-			size_map.set(font.y, weight_map)
+			size_map.set(bold, weight_map)
 			return font_id
 		}
 		let font_id = weight_map.get(flags)
 		if (font_id === undefined) {
 			font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font.x, font.y, flags)
+			Renderer.EditFont(font_id, font_name, font_size, weight, flags)
 			weight_map.set(flags, font_id)
 		}
 		return font_id

@@ -9,7 +9,7 @@ function DrawText(unit: Unit) {
 	if (position_unit === undefined)
 		return
 	RendererSDK.Text("Feeding" + (unit.HasBuffByName("modifier_teleporting") ? ": teleporting..." : ""),
-		position_unit, new Color(255, 255, 255), "Calibri", DrawTextSize.value, FontFlags_t.ANTIALIAS)
+		position_unit, new Color(255, 255, 255), "Calibri", DrawTextSize.value, false, FontFlags_t.ANTIALIAS)
 }
 export function Renderer() {
 	Units.forEach(DrawText)

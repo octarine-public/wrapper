@@ -19,7 +19,7 @@ export default class Toggle extends Base {
 		this.value = default_value
 		this.tooltip = tooltip
 		this.TotalSize_.x =
-			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS).x
+			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS).x
 			+ 10
 			+ this.toggle_size.x
 			+ this.border_size.x * 2
@@ -50,7 +50,7 @@ export default class Toggle extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
 		let toggle_rect = this.ToggleRect
 		RendererSDK.FilledRect(toggle_rect.pos1, this.toggle_size, this.toggle_color)
 		if (this.value)

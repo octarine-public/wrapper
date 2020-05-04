@@ -54,7 +54,7 @@ export default class ImageSelector extends Base {
 			if (!this.enabled_values.has(value))
 				this.enabled_values.set(value, false)
 		})
-		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
 		this.TotalSize_.x =
 			Math.max(
 				this.name_size.x,
@@ -77,7 +77,7 @@ export default class ImageSelector extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
 		let base_pos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
 			let value = this.values[i],

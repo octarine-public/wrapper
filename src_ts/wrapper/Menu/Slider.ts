@@ -24,8 +24,8 @@ export default class Slider extends Base {
 		this.float = float
 		this.tooltip = tooltip
 		this.TotalSize_.x =
-			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS).x
-			+ RendererSDK.GetTextSize(this.max.toFixed(1), this.FontName, this.FontSize, FontFlags_t.ANTIALIAS).x
+			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS).x
+			+ RendererSDK.GetTextSize(this.max.toFixed(1), this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS).x
 			+ 10
 			+ this.border_size.x * 2
 			+ this.text_offset.x * 2
@@ -46,10 +46,10 @@ export default class Slider extends Base {
 		let slider_pos = node_position.Clone().AddScalarX((total.x - this.border_size.x * 2 - this.slider_width) / (this.max - this.min) * (this.value as number - this.min))
 		RendererSDK.FilledRect(node_position, slider_pos.Subtract(node_position).AddScalarY(node_height), this.slider_filler_color)
 		RendererSDK.FilledRect(slider_pos, new Vector2(this.slider_width, node_height), this.slider_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
 		let text = this.value.toString()
 		let text_pos = this.Position.Add(total).SubtractForThis(this.value_text_offset).SubtractScalarX(text.length * this.FontSize / 2).SubtractScalarY(this.FontSize)
-		RendererSDK.Text(text, text_pos, this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(text, text_pos, this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
 		super.RenderTooltip()
 	}
 	public OnValueChanged(): void {

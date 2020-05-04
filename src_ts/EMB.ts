@@ -44,32 +44,30 @@ EventsSDK.on("Draw", () => {
 		RendererSDK.FilledRect(manabar_pos, manabar_size, Color.Black)
 		RendererSDK.FilledRect(manabar_pos, new Vector2(manabar_size.x * hero.Mana / hero.MaxMana, manabar_size.y), Color.RoyalBlue)
 		if (embText.value) {
-			let text = ShowNumber(number_mode_emb, hero.Mana, hero.MaxMana),
-				size = new Vector2(embSize.value, 200)
+			let text = ShowNumber(number_mode_emb, hero.Mana, hero.MaxMana)
 			RendererSDK.Text(
 				text,
 				manabar_pos
 					.Clone()
-					.AddScalarX((manabar_size.x - RendererSDK.GetTextSize(text, "Calibri", size).x) / 2)
+					.AddScalarX((manabar_size.x - RendererSDK.GetTextSize(text, "Calibri", embSize.value).x) / 2)
 					.SubtractScalarY(manabar_size.y / 2),
 				Color.White,
 				"Calibri",
-				size
+				embSize.value
 			)
 		}
 		if (ehbText.value) {
 			let [healthbar_pos, healthbar_size] = manabar_ar
-			let text = ShowNumber(number_mode_ehb, hero.HP, hero.MaxHP),
-				size = new Vector2(ehbSize.value, 200)
+			let text = ShowNumber(number_mode_ehb, hero.HP, hero.MaxHP)
 			RendererSDK.Text(
 				text,
 				healthbar_pos
 					.Clone()
-					.AddScalarX((healthbar_size.x - RendererSDK.GetTextSize(text, "Calibri", size).x) / 2)
+					.AddScalarX((healthbar_size.x - RendererSDK.GetTextSize(text, "Calibri", ehbSize.value).x) / 2)
 					.SubtractScalarY(healthbar_size.y * 1.75),
 				Color.White,
 				"Calibri",
-				size
+				ehbSize.value
 			)
 		}
 	})

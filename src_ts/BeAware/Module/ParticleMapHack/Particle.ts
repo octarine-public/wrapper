@@ -479,7 +479,7 @@ export function OnDraw() {
 						false,
 						new Color(255, 255, 0, 155),
 						"Calibri",
-						new Vector2(18)
+						18
 					)
 				}
 			} else if (target === "Dust") {

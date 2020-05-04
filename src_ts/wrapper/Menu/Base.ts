@@ -50,7 +50,7 @@ export default class Base {
 	public Update(): void {
 		if (this.tooltip === undefined || this.tooltip.length === 0)
 			return
-		this.tooltip_size = RendererSDK.GetTextSize(this.tooltip, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		this.tooltip_size = RendererSDK.GetTextSize(this.tooltip, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
 	}
 	public Render(): void {
 		RendererSDK.FilledRect(this.Position, this.TotalSize, this.border_color)
@@ -96,6 +96,7 @@ export default class Base {
 			Color.White,
 			this.FontName,
 			this.FontSize,
+			false,
 			FontFlags_t.ANTIALIAS
 		)
 	}

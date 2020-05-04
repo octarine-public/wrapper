@@ -19,7 +19,7 @@ export default class Header extends Base {
 
 	constructor(parent: IMenu, name: string) {
 		super(parent, name)
-		this.text_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		this.text_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
 	}
 
 	public get ConfigValue() { return this.Position.toArray() }
@@ -43,7 +43,7 @@ export default class Header extends Base {
 				this.Position.y = window_size.y - total_entries_y
 		}
 		super.Render()
-		RendererSDK.Text(this.name, this.Position.Add(new Vector2(this.TotalSize.x / 2 - this.text_size.x / 2, 3)), this.FontColor, this.FontName, this.FontSize, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, this.Position.Add(new Vector2(this.TotalSize.x / 2 - this.text_size.x / 2, 3)), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
 		RendererSDK.FilledRect(this.Position.Clone().AddScalarY(this.background_size.y), new Vector2(this.TotalSize.x, this.underline_width), this.underline_color)
 	}
 

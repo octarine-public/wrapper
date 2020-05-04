@@ -21,7 +21,7 @@ export function OnDraw() {
 			case 0:
 				let name = creep.Name.replace("npc_dota_neutral_", "").split("_").join(" ")
 				RendererSDK.Text(name, wts, new Color(0, isWaitSpawn ? 0 : 255, isWaitSpawn ? 255 : 0, alpha.value),
-					"Arial", new Vector2(Size.value, 200))
+					"Arial", Size.value)
 				break
 			case 1:
 				RendererSDK.Image(`panorama/images/heroes/${creep.Name}_png.vtex_c`,

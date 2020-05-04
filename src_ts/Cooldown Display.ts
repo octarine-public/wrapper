@@ -117,10 +117,8 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x: number, y: number, i
 			),
 			new Color(255, 255, 255),
 			"Tahoma",
-			new Vector2(
-				font_size,
-				optionFontBold.value ? 800 : 200,
-			),
+			font_size,
+			optionFontBold.value,
 			optionFontOutlined.value ? FontFlags_t.OUTLINE : 0,
 		)
 	}
