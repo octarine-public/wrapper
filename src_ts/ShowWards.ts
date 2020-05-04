@@ -218,7 +218,7 @@
 // 		if (screen_pos === undefined)
 // 			return
 // 		RendererSDK.Image(
-// 			"panorama\\images\\icon_ward_psd.vtex_c",
+// 			"panorama/images/icon_ward_psd.vtex_c",
 // 			new Vector2(screen_pos.x - 15, screen_pos.y - 15),
 // 			new Vector2(30, 30),
 // 			(type === "sentry" ? new Color(15, 0, 221) : new Color(222, 170, 0)), //observer

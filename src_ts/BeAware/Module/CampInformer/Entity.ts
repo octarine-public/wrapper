@@ -24,9 +24,13 @@ export function OnDraw() {
 					"Arial", Size.value)
 				break
 			case 1:
-				RendererSDK.Image(`panorama/images/heroes/${creep.Name}_png.vtex_c`,
+				RendererSDK.Image(
+					`panorama/images/heroes/${creep.Name}_png.vtex_c`,
 					wts.SubtractScalar(Size.value / 4),
-					new Vector2(Size.value / 2, Size.value / 2), new Color(255, 255, 255, alpha.value))
+					-1,
+					new Vector2(Size.value / 2, Size.value / 2),
+					new Color(255, 255, 255, alpha.value)
+				)
 				break
 		}
 		return true

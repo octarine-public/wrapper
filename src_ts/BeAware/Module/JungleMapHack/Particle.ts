@@ -44,6 +44,7 @@ export function OnDraw() {
 		RendererSDK.Image(
 			`panorama/images/heroes/icons/${hero.Name}_png.vtex_c`,
 			screen_pos.SubtractScalar(ImageSizeWorld.value / 4),
+			-1,
 			new Vector2(ImageSizeWorld.value / 2, ImageSizeWorld.value / 2)
 		)
 	})

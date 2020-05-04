@@ -68,7 +68,7 @@ export default class Node extends Base {
 			SizeText.AddScalarX(this.SizeImageNode.x)
 
 		if (this.pathIcon !== undefined)
-			RendererSDK.Image(this.pathIcon, this.Position.Add(this.border_size).AddForThis(this.text_offset).SubtractScalarX(5), this.SizeImageNode)
+			RendererSDK.Image(this.pathIcon, this.Position.Add(this.border_size).AddForThis(this.text_offset).SubtractScalarX(5), -1, this.SizeImageNode)
 
 		RendererSDK.Text(this.name, SizeText, this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
 		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize, false, FontFlags_t.ANTIALIAS)

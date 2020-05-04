@@ -77,6 +77,7 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x: number, y: number, i
 	RendererSDK.Image(
 		ability.TexturePath,
 		new Vector2(real_x, y),
+		-1,
 		box_size,
 		imageColor,
 	)
@@ -90,12 +91,15 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x: number, y: number, i
 		let inner_box_size = optionBoxSize.value - 2
 
 		let cooldown_ratio = cooldown / cooldown_length
-		let cooldown_size = Math.floor(inner_box_size * cooldown_ratio)
-
-		RendererSDK.FilledRect(
-			new Vector2(real_x + 1, y + (inner_box_size - cooldown_size) + 1),
-			new Vector2(inner_box_size, cooldown_size),
-			new Color(255, 255, 255, 50),
+		RendererSDK.Radial(
+			-90,
+			cooldown_ratio * 100,
+			new Color(0, 0, 0, 0),
+			new Color(255, 255, 255, 150),
+			new Vector2(real_x, y),
+			box_size,
+			-1,
+			imageColor,
 		)
 
 		let text_cooldown = (

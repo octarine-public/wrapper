@@ -94,7 +94,7 @@ export default class ImageSelector extends Base {
 			let is_enabled = this.IsEnabled(value)
 			if (is_enabled)
 				RendererSDK.FilledRect(pos.Subtract(this.image_border_size), size.Add(this.image_border_size.MultiplyScalar(2)), this.image_border_color)
-			RendererSDK.Image(path, pos, size, is_enabled ? this.image_activated_color : this.image_color)
+			RendererSDK.Image(path, pos, -1, size, is_enabled ? this.image_activated_color : this.image_color)
 		}
 		if (!this.IconsRect.Contains(this.MousePosition))
 			super.RenderTooltip()

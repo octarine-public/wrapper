@@ -81,8 +81,9 @@ export default class Base {
 		RendererSDK.OutlinedRect(Position, TotalSize, this.border_color)
 
 		RendererSDK.Image(
-			"panorama\\images\\status_icons\\information_psd.vtex_c",
+			"panorama/images/status_icons/information_psd.vtex_c",
 			Position.Clone().AddScalarX(2).AddScalarY(4),
+			-1,
 			SizeImage,
 			Color.RoyalBlue
 		)

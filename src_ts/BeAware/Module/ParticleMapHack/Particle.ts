@@ -28,6 +28,7 @@ function DrawIconWorldHero(position: Vector3, Target: Entity, color?: Color, ite
 					? `panorama/images/heroes/icons/${Target}_png.vtex_c`
 					: `panorama/images/items/${items}`,
 				pos_particle.SubtractScalar(Size.value / 4),
+				-1,
 				new Vector2(Size.value / 2, Size.value / 2),
 				color,
 			)
@@ -413,8 +414,10 @@ function DrawIconAbilityHero(position: Vector3, name: string) {
 	let pos_ent = RendererSDK.WorldToScreen(position)
 	if (pos_ent === undefined)
 		return
-	RendererSDK.Image(AbilityData.GetAbilityTexturePath(name),
+	RendererSDK.Image(
+		AbilityData.GetAbilityTexturePath(name),
 		pos_ent.SubtractScalar(44 / 4),
+		-1,
 		new Vector2(44 / 2, 44 / 2),
 	)
 }

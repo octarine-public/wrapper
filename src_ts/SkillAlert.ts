@@ -173,7 +173,7 @@ EventsSDK.on("Draw", () => {
 			vector.AddScalarY(-size.value)
 		}
 		if (icons.value) {
-			RendererSDK.Image(AbilityData.GetAbilityTexturePath(val[2]), vector, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
+			RendererSDK.Image(AbilityData.GetAbilityTexturePath(val[2]), vector, -1, new Vector2(size.value, size.value), new Color(255, 255, 255, opacity.value))
 			vector.AddScalarY(-30)
 		}
 		RendererSDK.Text(rend.toFixed(2), vector, Color.White, "Calibri", textSize.value)

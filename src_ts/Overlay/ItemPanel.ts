@@ -122,7 +122,11 @@ function DrawItem(item: Item, position: Vector2, isBackPack = false) {
 
 	RendererSDK.Image(
 		GetPathToItemIcon(item.Name),
-		position, itemIconSize, colorItem)
+		position,
+		-1,
+		itemIconSize,
+		colorItem
+	)
 
 	if (panelSettingsOutline.value)
 		RendererSDK.OutlinedRect(position, itemIconSize, isBackPack ? colorDarkGrayPanel : colorGrayPanels)
@@ -249,8 +253,13 @@ EventsSDK.on("Draw", () => {
 
 		const posPanelOnLine = positionPanel.Clone()
 
-		RendererSDK.Image(GetPathToHeroIcon(hero.Name),
-			posPanelOnLine, heroIconSize, colorPanel)
+		RendererSDK.Image(
+			GetPathToHeroIcon(hero.Name),
+			posPanelOnLine,
+			-1,
+			heroIconSize,
+			colorPanel
+		)
 
 		if (panelSettingsOutline.value) {
 			RendererSDK.OutlinedRect(posPanelOnLine, heroIconSize, colorGrayPanels)
@@ -337,7 +346,7 @@ EventsSDK.on("Draw", () => {
 			// change to Circle Image
 			RendererSDK.Image(
 				GetPathToItemIcon(tpScroll?.Name),
-				posOfTP, sizeOfTP, colorTP.Clone().SetA(Math.min(colorTP.a + 50, 255)))
+				posOfTP, -1, sizeOfTP, colorTP.Clone().SetA(Math.min(colorTP.a + 50, 255)))
 
 			if (tpScroll) {
 				DrawCoolDown(posOfTP, itemCoolDown, true)

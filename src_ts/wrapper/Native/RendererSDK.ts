@@ -12,6 +12,8 @@ import GameState from "../Utils/GameState"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import Entity from "../Objects/Base/Entity"
 import Manifest from "../Managers/Manifest"
+import * as ArrayExtensions from "../Utils/ArrayExtensions"
+import { DegreesToRadian } from "../Utils/Math"
 
 enum CommandID {
 	SET_COLOR = 0,
@@ -25,6 +27,7 @@ enum CommandID {
 	TEXT,
 }
 
+let used_temp_textures: number[] = []
 let RendererSDK = new (class CRendererSDK {
 	/**
 	 * Default Size of Text = Size 18
@@ -44,7 +47,8 @@ let RendererSDK = new (class CRendererSDK {
 	private commandCache = new Uint8Array()
 	private commandCacheSize = 0
 	private font_cache = new Map</* name */string, Map</* size */number, Map</* bold */boolean, Map</* flags */number, /* font_id */number>>>>()
-	private texture_cache = new Map</* path */string, number>()
+	private texture_cache = new Map</* path */string, Map</* round */number, number>>()
+	private temp_texture_ids: [number, Uint8Array, /* last time used */number][] = []
 	private tex2size = new Map</* texture_id */number, Vector2>()
 	private last_color = new Color(-1, -1, -1, -1)
 
@@ -139,46 +143,31 @@ let RendererSDK = new (class CRendererSDK {
 			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
 		return WASM.ScreenToWorldFar(screen, window_size, camera_position, camera_distance, camera_angles)
 	}
-	public FilledCircle(vecPos: Vector2 = new Vector2(), radius: number, color = new Color(255, 255, 255)): void {
+	public FilledCircle(vecPos: Vector2, radius: number, color = new Color(255, 255, 255)): void {
 		let vecSize = new Vector2(radius, radius).MultiplyScalarForThis(2)
-		if (!(vecPos.x > 0 && vecPos.y > 0 && vecPos.x <= this.WindowSize.x && vecPos.y <= this.WindowSize.y)) {
-			let vec = vecPos.Add(vecSize)
-			if (!(vec.x > 0 && vec.y > 0))
-				return
-		}
-		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize).SubtractForThis(vecPos)
-		if (vecSize.x <= 0 || vecSize.y <= 0)
-			return
-		this.SetColor(color)
-
-		let view = this.AllocateCommandSpace(3 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.FILLED_CIRCLE)
-		view.setInt32(off += 1, vecPos.x, true)
-		view.setInt32(off += 4, vecPos.y, true)
-		view.setFloat32(off += 4, radius, true)
+		this.TempImage(
+			new Uint8Array(vecSize.x * vecSize.y * 4).fill(255),
+			vecPos,
+			vecSize,
+			0,
+			color
+		)
 	}
 	/**
 	 *
 	 */
-	public OutlinedCircle(vecPos: Vector2 = new Vector2(), radius: number, color = new Color(255, 255, 255)): void {
+	public OutlinedCircle(vecPos: Vector2, radius: number, width = 1, color = new Color(255, 255, 255)): void {
 		let vecSize = new Vector2(radius, radius).MultiplyScalarForThis(2)
-		if (!(vecPos.x > 0 && vecPos.y > 0 && vecPos.x <= this.WindowSize.x && vecPos.y <= this.WindowSize.y)) {
-			let vec = vecPos.Add(vecSize)
-			if (!(vec.x > 0 && vec.y > 0))
-				return
-		}
-		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize).SubtractForThis(vecPos)
-		if (vecSize.x <= 0 || vecSize.y <= 0)
-			return
-		this.SetColor(color)
-
-		let view = this.AllocateCommandSpace(3 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.OUTLINED_CIRCLE)
-		view.setInt32(off += 1, vecPos.x, true)
-		view.setInt32(off += 4, vecPos.y, true)
-		view.setFloat32(off += 4, radius, true)
+		this.Arc(
+			0,
+			100,
+			color,
+			new Color(0, 0, 0, 0),
+			vecPos.Subtract(new Vector2(width, width)),
+			vecSize.Add(new Vector2(width * 2, width * 2)),
+			0,
+			width
+		)
 	}
 	/**
 	 * @param vecSize default Weight 5 x Height 5
@@ -186,16 +175,6 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param vecSize Height as Y from Vector2
 	 */
 	public Line(start: Vector2 = new Vector2(), end = start.Add(this.DefaultShapeSize), color = new Color(255, 255, 255)): void {
-		if (
-			(
-				start.x < 0 && start.y < 0
-				&& end.x < 0 && start.y < 0
-			) || (
-				start.x > this.WindowSize_.x && start.y > this.WindowSize_.y
-				&& end.x > this.WindowSize_.x && start.y > this.WindowSize_.y
-			)
-		)
-			return
 		this.SetColor(color)
 
 		let view = this.AllocateCommandSpace(4 * 4)
@@ -212,14 +191,6 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param vecSize Height as Y from Vector2
 	 */
 	public FilledRect(vecPos: Vector2 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
-		if (!(vecPos.x > 0 && vecPos.y > 0 && vecPos.x <= this.WindowSize.x && vecPos.y <= this.WindowSize.y)) {
-			let vec = vecPos.Add(vecSize)
-			if (!(vec.x > 0 && vec.y > 0))
-				return
-		}
-		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize).SubtractForThis(vecPos)
-		if (vecSize.x <= 0 || vecSize.y <= 0)
-			return
 		this.SetColor(color)
 
 		let view = this.AllocateCommandSpace(4 * 4)
@@ -236,14 +207,6 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param vecSize Height as Y from Vector2
 	 */
 	public OutlinedRect(vecPos: Vector2 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
-		if (!(vecPos.x > 0 && vecPos.y > 0 && vecPos.x <= this.WindowSize.x && vecPos.y <= this.WindowSize.y)) {
-			let vec = vecPos.Add(vecSize)
-			if (!(vec.x > 0 && vec.y > 0))
-				return
-		}
-		vecSize = vecSize.Add(vecPos).Max(0).Min(this.WindowSize).SubtractForThis(vecPos)
-		if (vecSize.x <= 0 || vecSize.y <= 0)
-			return
 		this.SetColor(color)
 
 		let view = this.AllocateCommandSpace(4 * 4)
@@ -257,10 +220,10 @@ let RendererSDK = new (class CRendererSDK {
 	/**
 	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
 	 */
-	public Image(path: string, vecPos: Vector2 | Vector3 = new Vector2(), vecSize = new Vector2(-1, -1), color = new Color(255, 255, 255)): void {
+	public Image(path: string, vecPos: Vector2 | Vector3, round = -1, vecSize = new Vector2(-1, -1), color = new Color(255, 255, 255)): void {
 		this.SetColor(color)
 
-		let texture_id = this.GetTexture(path) // better put it BEFORE new command
+		let texture_id = this.GetTexture(path, round) // better put it BEFORE new command
 		if (vecSize.x <= 0 || vecSize.y <= 0) {
 			let size = this.tex2size.get(texture_id)!
 			if (vecSize.x <= 0)
@@ -276,6 +239,149 @@ let RendererSDK = new (class CRendererSDK {
 		view.setInt32(off += 4, vecSize.x, true)
 		view.setInt32(off += 4, vecSize.y, true)
 		view.setInt32(off += 4, texture_id, true)
+	}
+	private RoundRGBA(rgba: Uint8Array, size: Vector2, round: number): Uint8Array {
+		if (round < 0)
+			return rgba
+		let radius = (size.x - round) / 2
+		for (let x = 0; x < size.x; x++)
+			for (let y = 0; y < size.y; y++) {
+				const ray_x = x - (size.x / 2),
+					ray_y = y - (size.y / 2)
+				if (ray_x ** 2 + ray_y ** 2 > radius ** 2)
+					rgba[(y * size.x + x) * 4 + 3] = 0
+			}
+		return rgba
+	}
+	private GetTempTextureID(rgba: Uint8Array, size: Vector2, round: number): number {
+		rgba = this.RoundRGBA(rgba, size, round)
+		// fast path if all temp textures are taken
+		if (this.temp_texture_ids.length === used_temp_textures.length) {
+			let id = Renderer.CreateTextureID()
+			this.SetTextureData(id, rgba, size)
+			used_temp_textures.push(id)
+			this.tex2size.set(id, size)
+			this.temp_texture_ids.push([id, rgba, hrtime()])
+			return id
+		}
+
+		// try to find exact same size
+		let found_same_size = this.temp_texture_ids.filter(([id]) => !used_temp_textures.includes(id) && this.tex2size.get(id)!.Equals(size))
+		if (found_same_size.length !== 0) {
+			// if there's just one match, replace it
+			if (found_same_size.length === 1) {
+				let tex = found_same_size[0]
+				let id = tex[0]
+				this.SetTextureData(id, rgba, size)
+				tex[1] = rgba
+				tex[2] = hrtime()
+				used_temp_textures.push(id)
+				return id
+			}
+			// otherwise, find texture with least differences
+			let tex = ArrayExtensions.orderBy(
+				found_same_size,
+				([, rgba_]) => rgba_.reduce((prev, cur, id) => prev + (cur !== rgba[id] ? 1 : 0), 0)
+			)[0]
+			let id = tex[0]
+			this.SetTextureData(id, rgba, size)
+			tex[1] = rgba
+			tex[2] = hrtime()
+			used_temp_textures.push(id)
+			return id
+		}
+
+		let id = Renderer.CreateTextureID()
+		this.SetTextureData(id, rgba, size)
+		used_temp_textures.push(id)
+		this.tex2size.set(id, size)
+		this.temp_texture_ids.push([id, rgba, hrtime()])
+		return id
+	}
+	/**
+	 * @param rgba raw image buffer
+	 * @param vecSize image buffer's size
+	 */
+	public TempImage(rgba: Uint8Array, vecPos: Vector2 | Vector3, vecSize: Vector2, round = -1, color = new Color(255, 255, 255)): void {
+		this.SetColor(color)
+
+		let texture_id = this.GetTempTextureID(rgba, vecSize, round)
+		let view = this.AllocateCommandSpace(5 * 4)
+		let off = 0
+		view.setUint8(off, CommandID.IMAGE)
+		view.setInt32(off += 1, vecPos.x, true)
+		view.setInt32(off += 4, vecPos.y, true)
+		view.setInt32(off += 4, vecSize.x, true)
+		view.setInt32(off += 4, vecSize.y, true)
+		view.setInt32(off += 4, texture_id, true)
+	}
+	private SetRGBAPixel(rgba: Uint8Array, vecSize: Vector2, x: number, y: number, color: Color): void {
+		const pixel_pos = (y * vecSize.x + x) * 4
+		rgba[pixel_pos + 0] = color.r
+		rgba[pixel_pos + 1] = color.g
+		rgba[pixel_pos + 2] = color.b
+		rgba[pixel_pos + 3] = color.a
+	}
+	public Radial(
+		baseAngle: number,
+		percent: number,
+		radialColor: Color,
+		backgroundColor: Color,
+		vecPos: Vector2 | Vector3,
+		vecSize: Vector2,
+		round = -1,
+		color = new Color(255, 255, 255)
+	): void {
+		baseAngle = DegreesToRadian(baseAngle)
+		const rgba = new Uint8Array(vecSize.x * vecSize.y * 4),
+			maxAng = 2 * Math.PI * percent / 100 - baseAngle
+		for (let x = 0; x < vecSize.x; x++)
+			for (let y = 0; y < vecSize.y; y++) {
+				const ray_ang = Math.atan2(x - (vecSize.x / 2), y - (vecSize.y / 2)) - baseAngle + Math.PI
+				this.SetRGBAPixel(rgba, vecSize, x, y, ray_ang >= maxAng ? radialColor : backgroundColor)
+			}
+		this.TempImage(rgba, vecPos, vecSize, round, color)
+	}
+	public Arc(
+		baseAngle: number,
+		percent: number,
+		radialColor: Color,
+		backgroundColor: Color,
+		vecPos: Vector2 | Vector3,
+		vecSize: Vector2,
+		round = -1,
+		width = 5,
+		color = new Color(255, 255, 255)
+	): void {
+		baseAngle = DegreesToRadian(baseAngle)
+		const rgba = new Uint8Array(vecSize.x * vecSize.y * 4),
+			maxAng = 2 * Math.PI * percent / 100 - baseAngle
+		const max_dist = (vecSize.x - round) / 2,
+			min_dist = max_dist - width
+		const max_dist_sqr = max_dist ** 2,
+			min_dist_sqr = min_dist ** 2
+		for (let x = 0; x < vecSize.x; x++)
+			for (let y = 0; y < vecSize.y; y++) {
+				const ray_x = x - (vecSize.x / 2),
+					ray_y = y - (vecSize.y / 2)
+				const dist_sqr = ray_x ** 2 + ray_y ** 2
+				if (dist_sqr <= min_dist_sqr || dist_sqr > max_dist_sqr)
+					continue
+				const ray_ang = Math.atan2(ray_x, ray_y) - baseAngle + Math.PI
+				const pixel_pos = (y * vecSize.x + x) * 4
+				if (ray_ang <= maxAng) {
+					rgba[pixel_pos + 0] = radialColor.r
+					rgba[pixel_pos + 1] = radialColor.g
+					rgba[pixel_pos + 2] = radialColor.b
+					rgba[pixel_pos + 3] = radialColor.a
+				} else {
+					rgba[pixel_pos + 0] = backgroundColor.r
+					rgba[pixel_pos + 1] = backgroundColor.g
+					rgba[pixel_pos + 2] = backgroundColor.b
+					rgba[pixel_pos + 3] = backgroundColor.a
+				}
+			}
+		this.TempImage(rgba, vecPos, vecSize, -1, color)
 	}
 	/**
 	 * @param font_size Size | default: 14
@@ -355,6 +461,16 @@ let RendererSDK = new (class CRendererSDK {
 		this.commandCacheSize = 0
 		this.last_color = new Color(-1, -1, -1, -1)
 	}
+	public CleanupUnusedTempTextures() {
+		const cleanup_threshold_ms = 3 * 1000
+		let time = hrtime()
+		this.temp_texture_ids.slice(0).forEach(ar => {
+			if (time - ar[2] < cleanup_threshold_ms)
+				return
+			Renderer.FreeTextureID(ar[0])
+			ArrayExtensions.arrayRemove(this.temp_texture_ids, ar)
+		})
+	}
 	public GetAspectRatio() {
 		let res = this.WindowSize.x / this.WindowSize.y
 		if (res >= 1.25 && res <= 1.35)
@@ -386,16 +502,18 @@ let RendererSDK = new (class CRendererSDK {
 		view.setInt32(off += 4, size.y, true)
 		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(rgba)
 	}
-	private GetTexture(path: string): number {
-		let texture_id = this.texture_cache.get(path)
-		if (texture_id === undefined) {
-			texture_id = Renderer.CreateTextureID()
+	private GetTexture(path: string, round: number): number {
+		if (!this.texture_cache.has(path))
+			this.texture_cache.set(path, new Map())
+		let texture_map = this.texture_cache.get(path)!
+		if (!texture_map.has(round)) {
+			let texture_id = Renderer.CreateTextureID()
 			let [parsed, size] = WASM.ParseImage(readFile(path))
 			this.tex2size.set(texture_id, size)
-			this.SetTextureData(texture_id, parsed, size)
-			this.texture_cache.set(path, texture_id)
+			this.SetTextureData(texture_id, this.RoundRGBA(parsed, size, round), size)
+			texture_map.set(round, texture_id)
 		}
-		return texture_id
+		return texture_map.get(round)!
 	}
 	private GetFont(font_name: string, font_size: number, bold: boolean, flags: number): number {
 		const weight = bold ? 800 : 200
@@ -511,7 +629,9 @@ Events.on("PostRemoveSearchPath", path => {
 
 Events.on("Draw", () => {
 	Vector2.fromIOBuffer(Renderer.WindowSize)!.CopyTo(RendererSDK.WindowSize_)
+	used_temp_textures = []
 	EventsSDK.emit("Draw")
+	RendererSDK.CleanupUnusedTempTextures()
 })
 
 export default RendererSDK
