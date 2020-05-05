@@ -5,7 +5,7 @@ import QAngle from "../Base/QAngle"
 import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
 import { FontFlags_t } from "../Enums/FontFlags_t"
-import { StringToUTF16, ParseMapName } from "../Utils/Utils"
+import { StringToUTF16, ParseMapName, ArrayBuffersEqual } from "../Utils/Utils"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import GameState from "../Utils/GameState"
@@ -286,8 +286,10 @@ let RendererSDK = new (class CRendererSDK {
 				([, rgba_]) => rgba_.reduce((prev, cur, id) => prev + (cur !== rgba[id] ? 1 : 0), 0)
 			)[0]
 			let id = tex[0]
-			this.SetTextureData(id, rgba, size)
-			tex[1] = rgba
+			if (!ArrayBuffersEqual(rgba, tex[1])) {
+				this.SetTextureData(id, rgba, size)
+				tex[1] = rgba
+			}
 			tex[2] = hrtime()
 			used_temp_textures.push(id)
 			return id
