@@ -149,6 +149,7 @@ let RendererSDK = new (class CRendererSDK {
 			new Uint8Array(vecSize.x * vecSize.y * 4).fill(255),
 			vecPos,
 			vecSize,
+			vecSize,
 			0,
 			color
 		)
@@ -240,23 +241,43 @@ let RendererSDK = new (class CRendererSDK {
 		view.setInt32(off += 4, vecSize.y, true)
 		view.setInt32(off += 4, texture_id, true)
 	}
-	private RoundRGBA(rgba: Uint8Array, size: Vector2, round: number): Uint8Array {
+	private DropPixel(pixels: Uint32Array, size: Vector2, x: number, y: number): void {
+		const pixel_pos = y * size.x + x
+		if (pixels.byteLength - pixel_pos < 1)
+			return
+		pixels[pixel_pos] = 0
+	}
+	private DropPixel4(pixels: Uint32Array, size: Vector2, x: number, y: number): void {
+		this.DropPixel(pixels, size, size.x - x - 1, size.y - y - 1)
+		this.DropPixel(pixels, size, size.x - x - 1, y)
+		this.DropPixel(pixels, size, x, size.y - y - 1)
+		this.DropPixel(pixels, size, x, y)
+	}
+	private RoundRGBA(rgba: Uint8Array, size: Vector2, round: number) {
 		if (round < 0)
-			return rgba
-		const radius = (size.x - round) / 2
-		const radius_sqr = radius ** 2
-		for (let x = 0; x < size.x; x++)
-			for (let y = 0; y < size.y; y++) {
-				const ray_x = x - (size.x / 2),
-					ray_y = y - (size.y / 2)
-				const dist_sqr = ray_x ** 2 + ray_y ** 2
-				if (dist_sqr > radius_sqr)
-					rgba[(y * size.x + x) * 4 + 3] = 0
+			return
+		const pixels = new Uint32Array(rgba.buffer)
+		const radius = size.x / 2 - round
+		const radius_sqr = (radius * radius) | 0
+		const x_end = Math.ceil(size.x / 2) | 0,
+			y_end = Math.ceil(size.y / 2) | 0
+		for (let y = 0; y < y_end; y++) {
+			const y_sqr = (y * y) | 0
+			let last_x = Math.floor(Math.sqrt(radius_sqr - y_sqr)),
+				found = false
+			while (last_x < x_end) {
+				if ((last_x * last_x) + y_sqr <= radius_sqr) {
+					found = true
+					break
+				}
+				last_x++
 			}
-		return rgba
+			for (let x = found ? last_x : 0; x < x_end; x++)
+				this.DropPixel4(pixels, size, x + x_end, y + y_end)
+		}
 	}
 	private GetTempTextureID(rgba: Uint8Array, size: Vector2, round: number): number {
-		rgba = this.RoundRGBA(rgba, size, round)
+		this.RoundRGBA(rgba, size, round)
 		// fast path if all temp textures are taken
 		if (this.temp_texture_ids.length === used_temp_textures.length) {
 			let id = Renderer.CreateTextureID()
@@ -270,23 +291,12 @@ let RendererSDK = new (class CRendererSDK {
 		// try to find exact same size
 		let found_same_size = this.temp_texture_ids.filter(([id]) => !used_temp_textures.includes(id) && this.tex2size.get(id)!.Equals(size))
 		if (found_same_size.length !== 0) {
-			// if there's just one match, replace it
-			if (found_same_size.length === 1) {
-				let tex = found_same_size[0]
-				let id = tex[0]
-				this.SetTextureData(id, rgba, size)
-				tex[1] = rgba
-				tex[2] = hrtime()
-				used_temp_textures.push(id)
-				return id
-			}
-			// otherwise, find texture with least differences
 			let tex = ArrayExtensions.orderBy(
 				found_same_size,
 				([, rgba_]) => rgba_.reduce((prev, cur, id) => prev + (cur !== rgba[id] ? 1 : 0), 0)
 			)[0]
 			let id = tex[0]
-			if (!ArrayBuffersEqual(rgba, tex[1])) {
+			if (!ArrayBuffersEqual(rgba.buffer, tex[1].buffer)) {
 				this.SetTextureData(id, rgba, size)
 				tex[1] = rgba
 			}
@@ -306,21 +316,23 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param rgba raw image buffer
 	 * @param vecSize image buffer's size
 	 */
-	public TempImage(rgba: Uint8Array, vecPos: Vector2 | Vector3, vecSize: Vector2, round = -1, color = new Color(255, 255, 255)): void {
+	public TempImage(rgba: Uint8Array, vecPos: Vector2 | Vector3, texSize: Vector2, renderSize: Vector2, round = -1, color = new Color(255, 255, 255)): void {
 		this.SetColor(color)
 
-		let texture_id = this.GetTempTextureID(rgba, vecSize, round)
+		let texture_id = this.GetTempTextureID(rgba, texSize, round)
 		let view = this.AllocateCommandSpace(5 * 4)
 		let off = 0
 		view.setUint8(off, CommandID.IMAGE)
 		view.setInt32(off += 1, vecPos.x, true)
 		view.setInt32(off += 4, vecPos.y, true)
-		view.setInt32(off += 4, vecSize.x, true)
-		view.setInt32(off += 4, vecSize.y, true)
+		view.setInt32(off += 4, renderSize.x, true)
+		view.setInt32(off += 4, renderSize.y, true)
 		view.setInt32(off += 4, texture_id, true)
 	}
 	private SetRGBAPixel(rgba: Uint8Array, vecSize: Vector2, x: number, y: number, color: Color, alpha_mul = 1): void {
 		const pixel_pos = (y * vecSize.x + x) * 4
+		if (rgba.byteLength - pixel_pos < 4)
+			return
 		rgba[pixel_pos + 0] = color.r
 		rgba[pixel_pos + 1] = color.g
 		rgba[pixel_pos + 2] = color.b
@@ -337,8 +349,28 @@ let RendererSDK = new (class CRendererSDK {
 		color2: Color,
 		alpha_mul = 1
 	): void {
-		const ray_ang = Math.atan2(x - (vecSize.x / 2), y - (vecSize.y / 2)) - baseAngle + Math.PI
+		const x0 = Math.ceil(vecSize.x / 2),
+			y0 = Math.ceil(vecSize.y / 2)
+		const ray_ang = Math.atan2(x - x0, y - y0) - baseAngle + Math.PI
 		this.SetRGBAPixel(rgba, vecSize, x, y, ray_ang >= maxAngle ? color : color2, alpha_mul)
+	}
+	private DrawConditionalColorPixel4(
+		rgba: Uint8Array,
+		vecSize: Vector2,
+		x: number,
+		y: number,
+		color: Color,
+		baseAngle: number,
+		maxAngle: number,
+		color2: Color,
+		alpha_mul = 1
+	): void {
+		const x0 = Math.ceil(vecSize.x / 2),
+			y0 = Math.ceil(vecSize.y / 2)
+		this.DrawConditionalColorPixel(rgba, vecSize, x0 + x, y0 + y, color, baseAngle, maxAngle, color2, alpha_mul)
+		this.DrawConditionalColorPixel(rgba, vecSize, x0 + x, y0 - y, color, baseAngle, maxAngle, color2, alpha_mul)
+		this.DrawConditionalColorPixel(rgba, vecSize, x0 - x, y0 + y, color, baseAngle, maxAngle, color2, alpha_mul)
+		this.DrawConditionalColorPixel(rgba, vecSize, x0 - x, y0 - y, color, baseAngle, maxAngle, color2, alpha_mul)
 	}
 	public Radial(
 		baseAngle: number,
@@ -356,7 +388,7 @@ let RendererSDK = new (class CRendererSDK {
 		for (let x = 0; x < vecSize.x; x++)
 			for (let y = 0; y < vecSize.y; y++)
 				this.DrawConditionalColorPixel(rgba, vecSize, x, y, radialColor, baseAngle, maxAngle, backgroundColor)
-		this.TempImage(rgba, vecPos, vecSize, round, color)
+		this.TempImage(rgba, vecPos, vecSize, vecSize, round, color)
 	}
 	/**
 	 * @param round distance in pixels to distant from end of vecSize
@@ -375,22 +407,33 @@ let RendererSDK = new (class CRendererSDK {
 		baseAngle = DegreesToRadian(baseAngle)
 		const rgba = new Uint8Array(vecSize.x * vecSize.y * 4),
 			maxAngle = 2 * Math.PI * percent / 100 - baseAngle
-		const outer = (vecSize.x - round) / 2,
-			inner = outer - width,
-			center = (outer + inner) / 2
-		const outer_sqr = outer ** 2,
-			inner_sqr = inner ** 2
-		for (let x = 0; x < vecSize.x; x++)
-			for (let y = 0; y < vecSize.y; y++) {
-				const ray_x = x - (vecSize.x / 2),
-					ray_y = y - (vecSize.y / 2)
-				const dist_sqr = ray_x ** 2 + ray_y ** 2
-				if (dist_sqr <= inner_sqr || dist_sqr > outer_sqr)
+		const outer = vecSize.x / 2 - round,
+			inner = (outer - width),
+			center = ((outer + inner) / 2)
+		const outer_sqr = Math.round(outer * outer) | 0,
+			inner_sqr = Math.round(inner * inner) | 0,
+			x_end = Math.ceil(vecSize.x / 2) | 0,
+			y_end = Math.ceil(vecSize.y / 2) | 0
+		for (let x = 0; x < x_end; x++) {
+			const x_sqr = x * x
+			for (let y = 0; y < y_end; y++) {
+				const dist_sqr = x_sqr + (y * y)
+				if (dist_sqr > outer_sqr || dist_sqr <= inner_sqr)
 					continue
-				const ray_ang = Math.atan2(ray_x, ray_y) - baseAngle + Math.PI
-				this.SetRGBAPixel(rgba, vecSize, x, y, ray_ang >= maxAngle ? radialColor : backgroundColor, Math.min(1, 1.2 - Math.abs((Math.sqrt(dist_sqr) - center) / width)))
+				this.DrawConditionalColorPixel4(
+					rgba,
+					vecSize,
+					x,
+					y,
+					radialColor,
+					baseAngle,
+					maxAngle,
+					backgroundColor,
+					Math.min(1, 1.2 - Math.abs((Math.sqrt(dist_sqr) - center) / width))
+				)
 			}
-		this.TempImage(rgba, vecPos, vecSize, -1, color)
+		}
+		this.TempImage(rgba, vecPos, vecSize, vecSize, -1, color)
 	}
 	/**
 	 * @param font_size Size | default: 14
@@ -519,7 +562,8 @@ let RendererSDK = new (class CRendererSDK {
 			let texture_id = Renderer.CreateTextureID()
 			let [parsed, size] = WASM.ParseImage(readFile(path))
 			this.tex2size.set(texture_id, size)
-			this.SetTextureData(texture_id, this.RoundRGBA(parsed, size, round), size)
+			this.RoundRGBA(parsed, size, round)
+			this.SetTextureData(texture_id, parsed, size)
 			texture_map.set(round, texture_id)
 		}
 		return texture_map.get(round)!

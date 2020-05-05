@@ -3,7 +3,9 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h> // for malloc
+#include <emscripten.h> // for EMSCRIPTEN_KEEPALIVE
 
+#define EXPORT_JS /* avoid C++ mangling */ extern "C" /* export and don't inline */ EMSCRIPTEN_KEEPALIVE
 #define assert(...) do {} while(false)
 #ifdef _MSC_VER
 #define FORCEINLINE __forceinline
