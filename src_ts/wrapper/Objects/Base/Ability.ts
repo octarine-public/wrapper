@@ -72,12 +72,10 @@ export default class Ability extends Entity {
 		return Math.max(GameRules!.RawGameTime - this.ChannelStartTime, 0)
 	}
 	public get MaxCharges(): number {
-		return this.AbilityData.GetMaxCharges(this.Level)
-			|| this.GetSpecialValue("AbilityCharges")
+		return this.AbilityData.GetMaxCharges(this.Level) + this.GetSpecialValue("AbilityCharges")
 	}
 	public get ChargeRestoreTime(): number {
-		return this.AbilityData.GetChargeRestoreTime(this.Level)
-			|| this.GetSpecialValue("AbilityChargeRestoreTime")
+		return this.AbilityData.GetChargeRestoreTime(this.Level) + this.GetSpecialValue("AbilityChargeRestoreTime")
 	}
 	public get DamageType(): DAMAGE_TYPES {
 		return this.AbilityData.DamageType

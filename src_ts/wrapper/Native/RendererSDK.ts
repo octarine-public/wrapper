@@ -243,12 +243,14 @@ let RendererSDK = new (class CRendererSDK {
 	private RoundRGBA(rgba: Uint8Array, size: Vector2, round: number): Uint8Array {
 		if (round < 0)
 			return rgba
-		let radius = (size.x - round) / 2
+		const radius = (size.x - round) / 2
+		const radius_sqr = radius ** 2
 		for (let x = 0; x < size.x; x++)
 			for (let y = 0; y < size.y; y++) {
 				const ray_x = x - (size.x / 2),
 					ray_y = y - (size.y / 2)
-				if (ray_x ** 2 + ray_y ** 2 > radius ** 2)
+				const dist_sqr = ray_x ** 2 + ray_y ** 2
+				if (dist_sqr > radius_sqr)
 					rgba[(y * size.x + x) * 4 + 3] = 0
 			}
 		return rgba
@@ -315,12 +317,26 @@ let RendererSDK = new (class CRendererSDK {
 		view.setInt32(off += 4, vecSize.y, true)
 		view.setInt32(off += 4, texture_id, true)
 	}
-	private SetRGBAPixel(rgba: Uint8Array, vecSize: Vector2, x: number, y: number, color: Color): void {
+	private SetRGBAPixel(rgba: Uint8Array, vecSize: Vector2, x: number, y: number, color: Color, alpha_mul = 1): void {
 		const pixel_pos = (y * vecSize.x + x) * 4
 		rgba[pixel_pos + 0] = color.r
 		rgba[pixel_pos + 1] = color.g
 		rgba[pixel_pos + 2] = color.b
-		rgba[pixel_pos + 3] = color.a
+		rgba[pixel_pos + 3] = color.a * alpha_mul
+	}
+	private DrawConditionalColorPixel(
+		rgba: Uint8Array,
+		vecSize: Vector2,
+		x: number,
+		y: number,
+		color: Color,
+		baseAngle: number,
+		maxAngle: number,
+		color2: Color,
+		alpha_mul = 1
+	): void {
+		const ray_ang = Math.atan2(x - (vecSize.x / 2), y - (vecSize.y / 2)) - baseAngle + Math.PI
+		this.SetRGBAPixel(rgba, vecSize, x, y, ray_ang >= maxAngle ? color : color2, alpha_mul)
 	}
 	public Radial(
 		baseAngle: number,
@@ -334,14 +350,15 @@ let RendererSDK = new (class CRendererSDK {
 	): void {
 		baseAngle = DegreesToRadian(baseAngle)
 		const rgba = new Uint8Array(vecSize.x * vecSize.y * 4),
-			maxAng = 2 * Math.PI * percent / 100 - baseAngle
+			maxAngle = 2 * Math.PI * percent / 100 - baseAngle
 		for (let x = 0; x < vecSize.x; x++)
-			for (let y = 0; y < vecSize.y; y++) {
-				const ray_ang = Math.atan2(x - (vecSize.x / 2), y - (vecSize.y / 2)) - baseAngle + Math.PI
-				this.SetRGBAPixel(rgba, vecSize, x, y, ray_ang >= maxAng ? radialColor : backgroundColor)
-			}
+			for (let y = 0; y < vecSize.y; y++)
+				this.DrawConditionalColorPixel(rgba, vecSize, x, y, radialColor, baseAngle, maxAngle, backgroundColor)
 		this.TempImage(rgba, vecPos, vecSize, round, color)
 	}
+	/**
+	 * @param round distance in pixels to distant from end of vecSize
+	 */
 	public Arc(
 		baseAngle: number,
 		percent: number,
@@ -349,37 +366,27 @@ let RendererSDK = new (class CRendererSDK {
 		backgroundColor: Color,
 		vecPos: Vector2 | Vector3,
 		vecSize: Vector2,
-		round = -1,
+		round = 0,
 		width = 5,
 		color = new Color(255, 255, 255)
 	): void {
 		baseAngle = DegreesToRadian(baseAngle)
 		const rgba = new Uint8Array(vecSize.x * vecSize.y * 4),
-			maxAng = 2 * Math.PI * percent / 100 - baseAngle
-		const max_dist = (vecSize.x - round) / 2,
-			min_dist = max_dist - width
-		const max_dist_sqr = max_dist ** 2,
-			min_dist_sqr = min_dist ** 2
+			maxAngle = 2 * Math.PI * percent / 100 - baseAngle
+		const outer = (vecSize.x - round) / 2,
+			inner = outer - width,
+			center = (outer + inner) / 2
+		const outer_sqr = outer ** 2,
+			inner_sqr = inner ** 2
 		for (let x = 0; x < vecSize.x; x++)
 			for (let y = 0; y < vecSize.y; y++) {
 				const ray_x = x - (vecSize.x / 2),
 					ray_y = y - (vecSize.y / 2)
 				const dist_sqr = ray_x ** 2 + ray_y ** 2
-				if (dist_sqr <= min_dist_sqr || dist_sqr > max_dist_sqr)
+				if (dist_sqr <= inner_sqr || dist_sqr > outer_sqr)
 					continue
 				const ray_ang = Math.atan2(ray_x, ray_y) - baseAngle + Math.PI
-				const pixel_pos = (y * vecSize.x + x) * 4
-				if (ray_ang <= maxAng) {
-					rgba[pixel_pos + 0] = radialColor.r
-					rgba[pixel_pos + 1] = radialColor.g
-					rgba[pixel_pos + 2] = radialColor.b
-					rgba[pixel_pos + 3] = radialColor.a
-				} else {
-					rgba[pixel_pos + 0] = backgroundColor.r
-					rgba[pixel_pos + 1] = backgroundColor.g
-					rgba[pixel_pos + 2] = backgroundColor.b
-					rgba[pixel_pos + 3] = backgroundColor.a
-				}
+				this.SetRGBAPixel(rgba, vecSize, x, y, ray_ang >= maxAngle ? radialColor : backgroundColor, Math.min(1, 1.2 - Math.abs((Math.sqrt(dist_sqr) - center) / width)))
 			}
 		this.TempImage(rgba, vecPos, vecSize, -1, color)
 	}
