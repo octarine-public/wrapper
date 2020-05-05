@@ -1,7 +1,7 @@
 import {
 	Color, EventsSDK, GameRules,
 	Hero, Input, Item, LocalPlayer, Menu as MenuSDK,
-	Rectangle, RendererSDK, Vector2, VMouseKeys, DOTAGameUIState_t, npc_dota_hero_meepo, EntityManager, GameState,
+	Rectangle, RendererSDK, Vector2, VMouseKeys, DOTAGameUIState_t, npc_dota_hero_meepo, EntityManager, GameState, item_tpscroll,
 } from "wrapper/Imports"
 
 // ["Visual", "Overlay", "Item Panel"]
@@ -104,6 +104,9 @@ function CooldownRound(time: number) {
 
 function DrawItem(item: Item, position: Vector2, isBackPack = false) {
 
+	if (item instanceof item_tpscroll)
+		return
+
 	const isHorizontal = IsHorizontal()
 
 	isHorizontal
@@ -191,10 +194,9 @@ EventsSDK.on("Draw", () => {
 	const isHorizontal = IsHorizontal()
 
 	const filteredHeroes = EntityManager.GetEntitiesByClass(Hero).filter(hero =>
-		!(hero instanceof npc_dota_hero_meepo && hero.IsClone)
-		&& !hero.IsIllusion
-		&& (panelAllies.value || hero.IsEnemy())
-	)
+		!(hero instanceof npc_dota_hero_meepo && (hero.UnitIndex === -1 || hero.UnitIndex !== 0))
+		&& (!hero.IsIllusion || !hero.IsTempestDouble)
+		&& (panelAllies.value || hero.IsEnemy()))
 
 	{ // Touch Panel
 
@@ -311,10 +313,8 @@ EventsSDK.on("Draw", () => {
 
 		if (panelTP.value) {
 
-			let tpScroll = hero.Inventory.TotalItems.find(item => item?.Name.includes("item_tpscroll"))
-
+			let tpScroll = hero.Inventory.TPScroll
 			const posOfTP = posPanelOnLine.Clone()
-
 			const sizeOfTP = itemIconSize.DivideScalar(isHorizontal ? 1.6 : 1.5)
 
 			if (isHorizontal) {
@@ -346,7 +346,7 @@ EventsSDK.on("Draw", () => {
 			// change to Circle Image
 			RendererSDK.Image(
 				GetPathToItemIcon(tpScroll?.Name),
-				posOfTP, -1, sizeOfTP, colorTP.Clone().SetA(Math.min(colorTP.a + 50, 255)))
+				posOfTP, 20, sizeOfTP, colorTP.Clone().SetA(Math.min(colorTP.a + 50, 255)))
 
 			if (tpScroll) {
 				DrawCoolDown(posOfTP, itemCoolDown, true)
