@@ -194,8 +194,9 @@ EventsSDK.on("Draw", () => {
 	const isHorizontal = IsHorizontal()
 
 	const filteredHeroes = EntityManager.GetEntitiesByClass(Hero).filter(hero =>
-		!(hero instanceof npc_dota_hero_meepo && (hero.UnitIndex === -1 || hero.UnitIndex !== 0))
-		&& (!hero.IsIllusion || !hero.IsTempestDouble)
+		!(hero instanceof npc_dota_hero_meepo && hero.IsClone)
+		&& !hero.IsIllusion
+		&& !hero.IsTempestDouble
 		&& (panelAllies.value || hero.IsEnemy()))
 
 	{ // Touch Panel
