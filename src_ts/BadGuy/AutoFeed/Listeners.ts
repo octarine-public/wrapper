@@ -1,10 +1,10 @@
-import { Building, Unit, EntityManager, Entity, ArrayExtensions, GameSleeper, Vector3, Hero } from "wrapper/Imports"
-import { DrawState, State, SwitchUnit, LogicFeedHeroState, arr_hero } from "./Menu"
+import { Unit, EntityManager, Entity, ArrayExtensions, GameSleeper, Vector3, Hero, Courier, SpiritBear } from "wrapper/Imports"
+import { DrawState, State, SwitchUnit, LogicFeedHeroState, arr_hero, MainState } from "./Menu"
 import { Renderer } from "./Renderer"
 import { Utility } from "../Base/Utils"
 
 let Sleeper = new GameSleeper()
-let Fountains: Building[] = []
+let Fountains: Entity[] = []
 export let Units: Unit[] = []
 
 function UseAbilites(unit: Unit, name: string, Position?: Vector3 | Unit): boolean {
@@ -37,7 +37,7 @@ function UseAbilites(unit: Unit, name: string, Position?: Vector3 | Unit): boole
 	return true
 }
 
-function Feedlogic(unit: Unit, enemy_base: Building) {
+function Feedlogic(unit: Unit, enemy_base: Entity) {
 	switch (unit.Name) {
 		case arr_hero[0]:
 			if (!UseAbilites(unit, "lycan_summon_wolves"))
@@ -87,7 +87,7 @@ function MoveUnit(unit: Unit) {
 	if (Sleeper.Sleeping(unit))
 		return false
 	return Fountains.some(fnt => {
-		if (fnt === undefined || !fnt.Name.includes("fountain"))
+		if (fnt === undefined)
 			return false
 		let tp = unit.Inventory.TotalItems.find(item => item?.Name === "item_tpscroll")
 		if (tp === undefined
@@ -124,6 +124,7 @@ function Switch(unit: Unit) {
 		case 1: return MoveUnit(unit)
 	}
 }
+
 export const filterUnits = (x: Unit) =>
 	!x.IsEnemy()
 	&& x.IsAlive
@@ -132,25 +133,25 @@ export const filterUnits = (x: Unit) =>
 	&& !x.IsStunned && !x.IsChanneling
 
 export function Tick() {
-	if (!State.value)
+	if (!MainState.value || !State.value)
 		return
-	Units = EntityManager.GetEntitiesByClass(Unit)
+	Units = EntityManager.GetEntitiesByClasses<Unit>([Hero, Courier, SpiritBear])
 	if (Units.some(x => filterUnits(x) && Switch(x)))
 		return
 }
 
 export function Draw() {
-	if (!State.value || !DrawState.value)
+	if (!MainState.value || !State.value || !DrawState.value)
 		return
 	Renderer()
 }
 
 export function EntityCreate(x: Entity) {
-	if (x instanceof Building)
+	if (x.ClassName === "CDOTA_Unit_Fountain")
 		Fountains.push(x)
 }
 export function EntityDestroyed(x: Entity) {
-	if (x instanceof Building)
+	if (x.ClassName === "CDOTA_Unit_Fountain")
 		ArrayExtensions.arrayRemove(Fountains, x)
 }
 

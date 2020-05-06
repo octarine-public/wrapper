@@ -1,4 +1,4 @@
-import { Menu, MenuBase } from "../Base/MenuBase"
+import { Menu, MenuBase, MainState } from "../Base/MenuBase"
 export const { BaseTree, State } = MenuBase(Menu, "Auto Feed")
 export const SwitchUnit = BaseTree.AddSwitcher("Select", ["Only heroes", "All controllable unit"], 1)
 const LogicFeedTree = BaseTree.AddNode("Logic Feed")
@@ -18,3 +18,7 @@ export const LogicFeedHeroState = LogicFeedTree.AddImageSelector("Hero", arr_her
 export const DrawStatus = BaseTree.AddNode("Draw Status")
 export const DrawState = DrawStatus.AddToggle("Enable", true)
 export const DrawTextSize = DrawStatus.AddSlider("Text Size", 20, 14, 60)
+
+export {
+	MainState
+}

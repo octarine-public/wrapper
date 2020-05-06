@@ -17,6 +17,7 @@ import {
 	EntityManager,
 	GameState,
 	Particle,
+	SpiritBear,
 } from "wrapper/Imports"
 
 enum ESelectedType {
@@ -148,7 +149,7 @@ EventsSDK.on("PrepareUnitOrders", order => {
 
 function GetControllables() {
 	return EntityManager.GetEntitiesByClass(Unit).filter(npc =>
-		(npc instanceof Hero || npc.ClassName === "CDOTA_Unit_SpiritBear")
+		(npc instanceof Hero || npc instanceof SpiritBear)
 		&& !npc.IsIllusion
 		&& npc.IsControllable
 	)

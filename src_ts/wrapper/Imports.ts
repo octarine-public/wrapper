@@ -63,6 +63,7 @@ export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/E
 
 export { default as Entity, LocalPlayer } from "./Objects/Base/Entity"
 export { default as Unit } from "./Objects/Base/Unit"
+export { default as SpiritBear } from "./Objects/Base/SpiritBear"
 export { default as Hero } from "./Objects/Base/Hero"
 export { default as Player } from "./Objects/Base/Player"
 export { default as CPlayerResource, PlayerResource } from "./Objects/Base/PlayerResource"
