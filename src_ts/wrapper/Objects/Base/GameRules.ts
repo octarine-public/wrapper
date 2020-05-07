@@ -58,7 +58,7 @@ export default class CGameRules extends Entity {
 	}
 	public get IsNight(): boolean { // TODO: m_iNetTimeOfDay?
 		return this.IsNightstalkerNight || this.IsTemporaryNight
-			|| (this.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS && (this.GameTime / 60) / 5 % 2 === 1)
+			|| (this.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS && (this.GameTime / 60) / 5 % 2 >= 1)
 	}
 }
 
