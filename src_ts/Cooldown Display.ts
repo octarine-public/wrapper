@@ -90,17 +90,17 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x: number, y: number, i
 	if (cooldown > 0.0 && cooldown_length > 0.0) {
 		let inner_box_size = optionBoxSize.value - 2
 
-		let cooldown_ratio = cooldown / cooldown_length
-		RendererSDK.Radial(
-			-90,
-			cooldown_ratio * 100,
-			new Color(0, 0, 0, 0),
-			new Color(255, 255, 255, 150),
-			new Vector2(real_x, y),
-			box_size,
-			-1,
-			imageColor,
-		)
+		// let cooldown_ratio = cooldown / cooldown_length
+		// RendererSDK.Radial(
+		// 	-90,
+		// 	cooldown_ratio * 100,
+		// 	new Color(0, 0, 0, 0),
+		// 	new Color(255, 255, 255, 150),
+		// 	new Vector2(real_x, y),
+		// 	box_size,
+		// 	-1,
+		// 	imageColor,
+		// )
 
 		let text_cooldown = (
 			cooldown >= 10 ?
