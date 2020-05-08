@@ -66,7 +66,7 @@ export class GameSleeper extends SleeperBase {
 }
 
 export class TickSleeper {
-	private lastSleepTickCount = 0
+	public lastSleepTickCount = 0
 
 	public get Sleeping(): boolean {
 		return this.TickCount < this.lastSleepTickCount
