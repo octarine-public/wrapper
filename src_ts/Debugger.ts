@@ -82,7 +82,6 @@ const debugEvents = debugEventsMenu.AddToggle("Debugging events")
 const debugProjectiles = debugEventsMenu.AddToggle("Debug projectiles", false, "Visual only")
 
 function SafeLog(...args: any[]) {
-	// loop-optimizer: KEEP
 	console.log(...args.map(arg => JSON.parse(JSON.stringify(arg, (key, value) => typeof value === 'bigint' ? value.toString() + 'n' : value))))
 }
 globalThis.SafeLog = SafeLog
@@ -194,10 +193,8 @@ class ProfilingEventEmitter extends EventEmitter {
 Events.emit = ProfilingEventEmitter.prototype.emit
 
 EventsSDK.on("Draw", () => {
-	// loop-optimizer: KEEP
 	counter_map_events.forEach((ar, name) => {
 		let cur_date = hrtime()
-		// loop-optimizer: FORWARD
 		counter_map_events.set(name, ar.filter(([date]) => cur_date - date < 30 * 1000))
 	})
 })
@@ -269,7 +266,6 @@ globalThis.dump_stats_listeners = () => {
 	for (let i = 0; i < Math.min(10, avg.length); i++) {
 		let [event_name, ar] = avg[i]
 		console.log(event_name + ": ")
-		// loop-optimizer: FORWARD
 		ar.forEach(([name, took]) => console.log(`${name}: ${took}ms`))
 	}
 	console.log("-".repeat(10))
@@ -279,7 +275,6 @@ globalThis.dump_stats_listeners = () => {
 	for (let i = 0; i < Math.min(10, max.length); i++) {
 		let [event_name, ar] = max[i]
 		console.log(event_name + ": ")
-		// loop-optimizer: FORWARD
 		ar.forEach(([name, took]) => console.log(`${name}: ${took}ms`))
 	}
 }

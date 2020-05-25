@@ -1,6 +1,8 @@
 import Ability from "../../Base/Ability"
 import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("oracle_false_promise")
 export default class oracle_false_promise extends Ability {
 	public get AbilityLogicType(): AbilityLogicType {
 		return this.Owner?.GetAbilityByName("special_bonus_unique_oracle_4")?.Level !== 0
@@ -8,6 +10,3 @@ export default class oracle_false_promise extends Ability {
 			: AbilityLogicType.None
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("oracle_false_promise", oracle_false_promise)

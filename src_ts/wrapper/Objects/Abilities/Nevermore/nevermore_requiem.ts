@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("nevermore_requiem")
 export default class nevermore_requiem extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("nevermore_requiem", nevermore_requiem)

@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("bristleback_bristleback")
 export default class bristleback_bristleback extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("bristleback_bristleback", bristleback_bristleback)

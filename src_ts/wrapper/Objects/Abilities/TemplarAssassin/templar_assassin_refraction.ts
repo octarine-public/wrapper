@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("templar_assassin_refraction")
 export default class templar_assassin_refraction extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("templar_assassin_refraction", templar_assassin_refraction)

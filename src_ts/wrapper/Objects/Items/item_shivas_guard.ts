@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("item_shivas_guard")
 export default class item_shivas_guard extends Item {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("item_shivas_guard", item_shivas_guard)

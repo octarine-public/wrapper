@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("lycan_shapeshift")
 export default class lycan_shapeshift extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("lycan_shapeshift", lycan_shapeshift)

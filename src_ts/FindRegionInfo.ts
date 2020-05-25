@@ -41,7 +41,6 @@ EventsSDK.on("Draw", () => {
 		TextSize.value,
 		BoldText.value
 	)
-	// loop-optimizer: KEEP
 	LoadMatchGroups().forEach((name_server, key) => {
 		let player_count = group_finder[key] ?? 0
 		if (player_count === 0)

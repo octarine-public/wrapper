@@ -1,6 +1,8 @@
 import Item from "../Base/Item"
 import Hero from "../Base/Hero"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("item_ethereal_blade")
 export default class item_ethereal_blade extends Item {
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")
@@ -28,7 +30,3 @@ export default class item_ethereal_blade extends Item {
 		return DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-
-RegisterClass("item_ethereal_blade", item_ethereal_blade)

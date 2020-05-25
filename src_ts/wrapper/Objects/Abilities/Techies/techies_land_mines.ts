@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("techies_land_mines")
 export default class techies_land_mines extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("techies_land_mines", techies_land_mines)

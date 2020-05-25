@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("vengefulspirit_wave_of_terror")
 export default class vengefulspirit_wave_of_terror extends Ability {
 	public get AOERadius(): number {
 		return this.GetSpecialValue("wave_width")
@@ -9,6 +11,3 @@ export default class vengefulspirit_wave_of_terror extends Ability {
 		return this.GetSpecialValue("wave_speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("vengefulspirit_wave_of_terror", vengefulspirit_wave_of_terror)

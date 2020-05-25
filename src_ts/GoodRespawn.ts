@@ -19,7 +19,6 @@ EventsSDK.on("Draw", () => {
 	let positions = GetPositions(),
 		next_spawn = GetNextSpawn()
 	if (debug_visuals_state.value) {
-		// loop-optimizer: FORWARD
 		positions.forEach((e, i) => {
 			let screen_pos = RendererSDK.WorldToScreen(e)
 			if (screen_pos === undefined)
@@ -46,7 +45,6 @@ EventsSDK.on("Draw", () => {
 
 		ar.push(respawn_time)
 	}
-	// loop-optimizer: FORWARD
 	ar.sort((a, b) => a - b).forEach((respawn_time, i) => {
 		let pos = positions[positions.length !== 0 ? (next_spawn - (ar.length - i - 1)) % positions.length : 0]
 		if (pos === undefined)
@@ -96,7 +94,6 @@ EventsSDK.on("Tick", () => {
 
 		ar.push([respawn_time, ent])
 	}
-	// loop-optimizer: FORWARD
 	ar.sort(([a], [b]) => a - b).forEach(([respawn_time, target], i) => {
 		if (respawn_time > 4)
 			return

@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("alpha_wolf_command_aura")
 export default class alpha_wolf_command_aura extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("alpha_wolf_command_aura", alpha_wolf_command_aura)

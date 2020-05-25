@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("item_wind_lace")
 export default class item_wind_lace extends Item {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("item_wind_lace", item_wind_lace)

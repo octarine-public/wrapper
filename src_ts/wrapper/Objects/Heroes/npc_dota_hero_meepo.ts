@@ -1,6 +1,8 @@
 import Hero from "../Base/Hero"
 import meepo_divided_we_stand from "../Abilities/Meepo/meepo_divided_we_stand"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("C_DOTA_Unit_Hero_Meepo")
 export default class npc_dota_hero_meepo extends Hero {
 	public get WhichMeepo(): number {
 		// move it when we_stand will be wrapped as Ability
@@ -17,6 +19,3 @@ export default class npc_dota_hero_meepo extends Hero {
 		return this.ReplicatingOtherHeroModel_ !== 0 && !this.IsClone
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_Unit_Hero_Meepo", npc_dota_hero_meepo)

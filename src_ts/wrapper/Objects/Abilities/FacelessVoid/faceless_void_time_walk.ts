@@ -1,10 +1,9 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("faceless_void_time_walk")
 export default class faceless_void_time_walk extends Ability {
 	public get BaseCastRange(): number {
 		return this.GetSpecialValue("range")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("faceless_void_time_walk", faceless_void_time_walk)

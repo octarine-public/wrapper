@@ -3,7 +3,9 @@ import Entity from "../Base/Entity"
 import EventsSDK from "../../Managers/EventsSDK"
 import EntityManager from "../../Managers/EntityManager"
 import { GameRules } from "./GameRules"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTA_Unit_Roshan")
 export default class Roshan extends Unit {
 	public static HP = 0
 	public static MaxHP = 0
@@ -22,13 +24,9 @@ export default class Roshan extends Unit {
 	}
 	private static Instance_: Nullable<Entity | number>
 
-	public NativeEntity: Nullable<C_DOTA_Unit_Roshan>
+	@NetworkedBasicField("m_bGoldenRoshan")
 	public GoldenRoshan = false
 }
-
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_Unit_Roshan", Roshan)
-RegisterFieldHandler(Roshan, "m_bGoldenRoshan", (rosh, new_value) => rosh.GoldenRoshan = new_value as boolean)
 
 let last_event_ent = -1,
 	last_minute = 0

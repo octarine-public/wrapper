@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("spectre_spectral_dagger")
 export default class spectre_spectral_dagger extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("spectre_spectral_dagger", spectre_spectral_dagger)

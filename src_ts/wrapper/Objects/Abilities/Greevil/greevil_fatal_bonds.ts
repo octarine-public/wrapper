@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("greevil_fatal_bonds")
 export default class greevil_fatal_bonds extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("greevil_fatal_bonds", greevil_fatal_bonds)

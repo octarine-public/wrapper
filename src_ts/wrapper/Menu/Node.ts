@@ -75,7 +75,6 @@ export default class Node extends Base {
 		if (!this.is_open)
 			return
 
-		// loop-optimizer: KEEP
 		this.entries.forEach(entry => entry.Render())
 	}
 
@@ -114,7 +113,6 @@ export default class Node extends Base {
 		let total_y = this.entries.reduce((prev, cur) => prev + cur.TotalSize.y, 0)
 		if (current_pos.y + total_y > RendererSDK.WindowSize.y)
 			current_pos.y = RendererSDK.WindowSize.y - total_y
-		// loop-optimizer: FORWARD
 		this.entries.forEach(entry => {
 			entry.TotalSize.x = max_width
 			current_pos.CopyTo(entry.Position)

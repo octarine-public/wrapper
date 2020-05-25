@@ -10,7 +10,9 @@ import ExecuteOrder from "../../Native/ExecuteOrder"
 import Hero from "./Hero"
 import { SetGameInProgress } from "../../Managers/EventsHandler"
 import EventsSDK from "../../Managers/EventsSDK"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTAPlayer")
 export default class Player extends Entity {
 	public static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
@@ -40,10 +42,13 @@ export default class Player extends Entity {
 		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects })
 	}
 
-	public NativeEntity: Nullable<C_DOTAPlayer>
+	@NetworkedBasicField("m_iPlayerID")
 	public PlayerID: number = -1
+	@NetworkedBasicField("m_quickBuyItems")
 	public QuickBuyItems: number[] = []
+	@NetworkedBasicField("m_iTotalEarnedGold")
 	public TotalEarnedGold = 0
+	@NetworkedBasicField("m_iTotalEarnedXP")
 	public TotalEarnedXP = 0
 	public Hero_ = 0
 
@@ -69,12 +74,7 @@ export default class Player extends Entity {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTAPlayer", Player)
-RegisterFieldHandler(Player, "m_quickBuyItems", (player, new_value) => player.QuickBuyItems = new_value as number[])
-RegisterFieldHandler(Player, "m_iTotalEarnedGold", (player, new_value) => player.TotalEarnedGold = new_value as number)
-RegisterFieldHandler(Player, "m_iTotalEarnedXP", (player, new_value) => player.TotalEarnedXP = new_value as number)
-RegisterFieldHandler(Player, "m_iPlayerID", (player, new_value) => player.PlayerID = new_value as number)
+import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => {
 	player.Hero_ = new_value as number
 	if (player === LocalPlayer && player.Hero !== undefined)

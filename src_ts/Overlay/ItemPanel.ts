@@ -296,7 +296,6 @@ EventsSDK.on("Draw", () => {
 
 			const posPanelOnItems = posPanelOnLine.Clone()
 
-			// loop-optimizer: FORWARD
 			hero.Items.forEach(item => DrawItem(item, posPanelOnItems))
 
 			if (panelItemsBackpack.value) {
@@ -307,7 +306,6 @@ EventsSDK.on("Draw", () => {
 					? posPanelOnItems.AddScalarX(onTouchPanel.x)
 					: posPanelOnItems.AddScalarY(onTouchPanel.y)
 
-				// loop-optimizer: FORWARD
 				hero.Inventory.Backpack.forEach(item => DrawItem(item, posPanelOnItems, true))
 			}
 		}

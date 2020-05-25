@@ -1,11 +1,9 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("drow_ranger_marksmanship")
 export default class drow_ranger_marksmanship extends Ability {
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("disable_range")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("drow_ranger_marksmanship", drow_ranger_marksmanship)

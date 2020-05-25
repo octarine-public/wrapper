@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("huskar_berserkers_blood")
 export default class huskar_berserkers_blood extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("huskar_berserkers_blood", huskar_berserkers_blood)

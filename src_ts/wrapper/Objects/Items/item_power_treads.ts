@@ -1,9 +1,8 @@
 import Item from "../Base/Item"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("item_power_treads")
 export default class item_power_treads extends Item {
+	@NetworkedBasicField("m_iStat")
 	public ActiveAttribute = 0
 }
-
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("item_power_treads", item_power_treads)
-RegisterFieldHandler(item_power_treads, "m_iStat", (item, new_val) => item.ActiveAttribute = new_val as number)

@@ -13,15 +13,12 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (!StringTables.has(name))
 		StringTables.set(name, new Map())
 	let table = StringTables.get(name)!
-	// loop-optimizer: KEEP
 	update.forEach((val, key) => table.set(key, val))
 })
 
 globalThis.DumpStringTables = () => {
-	// loop-optimizer: KEEP
 	StringTables.forEach((map, name) => {
 		console.log(name)
-		// loop-optimizer: KEEP
 		map.forEach((pair, index) => console.log(index, pair[0], pair[1]))
 	})
 }

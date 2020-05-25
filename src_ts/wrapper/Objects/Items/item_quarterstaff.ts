@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("item_quarterstaff")
 export default class item_quarterstaff extends Item {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("item_quarterstaff", item_quarterstaff)

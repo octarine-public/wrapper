@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("satyr_hellcaller_unholy_aura")
 export default class satyr_hellcaller_unholy_aura extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("satyr_hellcaller_unholy_aura", satyr_hellcaller_unholy_aura)

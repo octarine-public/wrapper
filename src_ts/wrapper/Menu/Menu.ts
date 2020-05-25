@@ -52,7 +52,6 @@ let Menu = new (class MenuManager {
 			let current_pos = this.Position.Clone().AddScalarY(this.header.TotalSize.y)
 			let max_width = this.entries.reduce((prev, node) => Math.max(prev, node.TotalSize_.x), this.header.TotalSize_.x)
 			this.header.TotalSize.x = max_width
-			// loop-optimizer: FORWARD
 			this.entries.forEach(node => {
 				node.TotalSize.x = max_width
 				current_pos.CopyTo(node.Position)
@@ -61,7 +60,6 @@ let Menu = new (class MenuManager {
 			})
 			this.header.position_dirty = false
 		}
-		// loop-optimizer: KEEP
 		this.entries.forEach(node => node.Render())
 	}
 

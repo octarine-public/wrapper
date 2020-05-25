@@ -1,6 +1,8 @@
 import Item from "../Base/Item"
 import { GameRules } from "../Base/GameRules"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("item_bottle")
 export default class item_bottle extends Item {
 	public StoredRune = DOTA_RUNES.DOTA_RUNE_INVALID
 	public LastRuneTypeChangeTime = GameRules?.RawGameTime ?? 0
@@ -26,8 +28,7 @@ export default class item_bottle extends Item {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("item_bottle", item_bottle)
+import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(item_bottle, "m_iStoredRuneType", (bottle, new_val) => {
 	bottle.StoredRune = new_val as DOTA_RUNES
 	bottle.LastRuneTypeChangeTime = GameRules?.RawGameTime ?? 0

@@ -22,6 +22,7 @@ import EntityManager from "../../Managers/EntityManager"
 import { RecursiveMap } from "../../Utils/ParseKV"
 import EventsSDK from "../../Managers/EventsSDK"
 import RendererSDK from "../../Native/RendererSDK"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
@@ -33,6 +34,7 @@ const healthbar_size_noscale = new Vector2(parseInt(UnitHealthBar.get("xpos") as
 const UnitManaBar = UnitHealthBar_Hero.get("UnitManaBar") as RecursiveMap
 const manabar_size_noscale = new Vector2(parseInt(UnitManaBar.get("xpos") as string) * 2.25, parseInt(UnitManaBar.get("ypos") as string))
 
+@WrapperClass("C_DOTA_BaseNPC")
 export default class Unit extends Entity {
 	public static IsVisibleForEnemies(unit: Unit): boolean {
 		const valid_teams = ~(// don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
@@ -63,46 +65,83 @@ export default class Unit extends Entity {
 	public HasScepterModifier = false
 	public UnitName_ = ""
 	public IsVisibleForTeamMask = 0
+	@NetworkedBasicField("m_anglediff")
 	public RotationDifference = 0
+	@NetworkedBasicField("m_iIsControllableByPlayer64")
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = 0
+	@NetworkedBasicField("m_flHealthThinkRegen")
 	public HPRegen = 0
+	@NetworkedBasicField("m_flManaThinkRegen")
 	public ManaRegen = 0
+	@NetworkedBasicField("m_bIsAncient")
 	public IsAncient = false
+	@NetworkedBasicField("m_flPhysicalArmorValue")
 	public Armor = 0
+	@NetworkedBasicField("m_iCurShop")
 	public CurrentShop = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
+	@NetworkedBasicField("m_iMoveSpeed")
 	public BaseMoveSpeed = 0
+	@NetworkedBasicField("m_iBKBChargesUsed")
 	public BKBChargesUsed = 0
+	@NetworkedBasicField("m_iDamageMin")
 	public MinDamage = 0
+	@NetworkedBasicField("m_iDamageMax")
 	public MaxDamage = 0
+	@NetworkedBasicField("m_iDamageBonus")
 	public BonusDamage = 0
+	@NetworkedBasicField("m_iDayTimeVisionRange")
 	public DayVision = 0
+	@NetworkedBasicField("m_flDeathTime")
 	public DeathTime = 0
+	@NetworkedBasicField("m_nArcanaLevel")
 	public ArcanaLevel = 0
+	@NetworkedBasicField("m_bStolenScepter")
 	public HasStolenScepter = false
+	@NetworkedBasicField("m_bHasUpgradeableAbilities")
 	public HasUpgradeableAbilities = false
+	@NetworkedBasicField("m_bCanBeDominated")
 	public IsDominatable = false
+	@NetworkedBasicField("m_bIsIllusion")
 	public IsIllusion_ = false
+	@NetworkedBasicField("m_iAttackCapabilities")
 	public AttackCapabilities = 0
+	@NetworkedBasicField("m_bIsMoving")
 	public IsMoving = false
+	@NetworkedBasicField("m_bIsPhantom")
 	public IsPhantom = false
+	@NetworkedBasicField("m_bIsSummoned")
 	public IsSummoned = false
+	@NetworkedBasicField("m_bIsWaitingToSpawn")
 	public IsWaitingToSpawn = false
+	@NetworkedBasicField("m_iCurrentLevel")
 	public Level = 0
+	@NetworkedBasicField("m_flMagicalResistanceValue")
 	public BaseMagicDamageResist = 0
+	@NetworkedBasicField("m_flMana")
 	public Mana = 0
+	@NetworkedBasicField("m_flMaxMana")
 	public MaxMana = 0
+	@NetworkedBasicField("m_iNightTimeVisionRange")
 	public NightVision = 0
+	@NetworkedBasicField("m_flTauntCooldown")
 	public TauntCooldown = 0
+	@NetworkedBasicField("m_nTotalDamageTaken")
 	public TotalDamageTaken = 0n
 	public UnitStateNetworked = 0n
+	@NetworkedBasicField("m_nHealthBarOffsetOverride")
 	public HealthBarOffsetOverride = 0
+	@NetworkedBasicField("m_bShouldDoFlyHeightVisual")
 	public ShouldDoFlyHeightVisual = true
 	public Spells_ = new Array<number>(MAX_SPELLS).fill(0)
 	public TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
+	@NetworkedBasicField("m_iXPBounty")
 	public XPBounty = 0
+	@NetworkedBasicField("m_iXPBountyExtra")
 	public XPBountyExtra = 0
+	@NetworkedBasicField("m_iGoldBountyMin")
 	public GoldBountyMin = 0
+	@NetworkedBasicField("m_iGoldBountyMax")
 	public GoldBountyMax = 0
 
 	private EtherealModifiers: string[] = [
@@ -342,7 +381,6 @@ export default class Unit extends Entity {
 		return this.ModifiersBook.HasAnyBuffByNames(this.CanUseAbilitiesInInvis)
 	}
 	public get Spells(): Nullable<Ability>[] {
-		// loop-optimizer: FORWARD
 		return this.Spells_.map(abil => {
 			let ent = EntityManager.EntityByIndex(abil)
 			return ent instanceof Ability ? ent : undefined
@@ -395,9 +433,8 @@ export default class Unit extends Entity {
 				castrange += gadget.GetSpecialValue("cast_range")
 		}
 
-		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
-			if (spell!.Level !== 0 && spell!.Name.startsWith("special_bonus_cast_range"))
+			if (spell !== undefined && spell.Level !== 0 && spell!.Name.startsWith("special_bonus_cast_range"))
 				castrange += spell!.GetSpecialValue("value")
 		})
 		return castrange
@@ -407,9 +444,8 @@ export default class Unit extends Entity {
 
 		this.Items.forEach(item => spellAmp += item.GetSpecialValue("spell_amp") / 100)
 
-		// loop-optimizer: POSSIBLE_UNDEFINED
 		this.Spells.forEach(spell => {
-			if (spell!.Level !== 0 && spell!.Name.startsWith("special_bonus_spell_amplify"))
+			if (spell !== undefined && spell.Level !== 0 && spell!.Name.startsWith("special_bonus_spell_amplify"))
 				spellAmp += spell!.GetSpecialValue("value") / 100
 		})
 
@@ -707,7 +743,7 @@ export default class Unit extends Entity {
 			}
 			{
 				let abil = source.GetAbilityByName("clinkz_searing_arrows")
-				if (abil !== undefined && abil.IsAutoCastEnebled && abil.IsManaEnough())
+				if (abil !== undefined && abil.IsAutoCastEnabled && abil.IsManaEnough())
 					damage += abil.GetSpecialValue("damage_bonus")
 			}
 			{
@@ -730,7 +766,7 @@ export default class Unit extends Entity {
 		}
 		{
 			let abil = source.GetAbilityByName("kunkka_tidebringer")
-			if (abil !== undefined && abil.IsAutoCastEnebled && abil.Cooldown === 0)
+			if (abil !== undefined && abil.IsAutoCastEnabled && abil.Cooldown === 0)
 				damage += abil.GetSpecialValue("damage_bonus")
 		}
 		{
@@ -750,12 +786,12 @@ export default class Unit extends Entity {
 		if (is_enemy) {
 			{
 				let abil = source.GetAbilityByName("silencer_glaives_of_wisdom")
-				if (abil !== undefined && abil.IsAutoCastEnebled && abil.IsManaEnough())
+				if (abil !== undefined && abil.IsAutoCastEnabled && abil.IsManaEnough())
 					damage += abil.GetSpecialValue("intellect_damage_pct") * source.TotalIntellect / 100
 			}
 			{
 				let abil = source.GetAbilityByName("obsidian_destroyer_arcane_orb")
-				if (abil !== undefined && abil.IsAutoCastEnebled && abil.IsManaEnough())
+				if (abil !== undefined && abil.IsAutoCastEnabled && abil.IsManaEnough())
 					damage += abil.GetSpecialValue("mana_pool_damage_pct") * source.MaxMana / 100
 			}
 		}
@@ -1007,8 +1043,7 @@ export default class Unit extends Entity {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_BaseNPC", Unit)
+import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
 	unit.UnitName_ = new_value >= 0 ? (UnitNameIndexToString(new_value as number) ?? "") : ""
 	unit.UnitData = new UnitData(unit.Name)
@@ -1024,44 +1059,11 @@ RegisterFieldHandler(Unit, "m_iTeamNum", (unit, new_val) => {
 	if (unit.IsVisibleForEnemies !== old_visibility)
 		EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_anglediff", (unit, new_value) => unit.RotationDifference = new_value as number)
-RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", (unit, new_value) => unit.IsControllableByPlayerMask = new_value as bigint)
 RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => {
 	unit.NetworkActivity = new_value as number
 	EventsSDK.emit("NetworkActivityChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_flHealthThinkRegen", (unit, new_value) => unit.HPRegen = new_value as number)
-RegisterFieldHandler(Unit, "m_flManaThinkRegen", (unit, new_value) => unit.ManaRegen = new_value as number)
-RegisterFieldHandler(Unit, "m_bIsAncient", (unit, new_value) => unit.IsAncient = new_value as boolean)
-RegisterFieldHandler(Unit, "m_flPhysicalArmorValue", (unit, new_value) => unit.Armor = new_value as number)
-RegisterFieldHandler(Unit, "m_iCurShop", (unit, new_value) => unit.CurrentShop = Number(new_value) as DOTA_SHOP_TYPE)
-RegisterFieldHandler(Unit, "m_iMoveSpeed", (unit, new_value) => unit.BaseMoveSpeed = new_value as number)
-RegisterFieldHandler(Unit, "m_iBKBChargesUsed", (unit, new_value) => unit.BKBChargesUsed = new_value as number)
-RegisterFieldHandler(Unit, "m_iDamageMin", (unit, new_value) => unit.MinDamage = new_value as number)
-RegisterFieldHandler(Unit, "m_iDamageMax", (unit, new_value) => unit.MaxDamage = new_value as number)
-RegisterFieldHandler(Unit, "m_iDamageBonus", (unit, new_value) => unit.BonusDamage = new_value as number)
-RegisterFieldHandler(Unit, "m_iDayTimeVisionRange", (unit, new_value) => unit.DayVision = new_value as number)
-RegisterFieldHandler(Unit, "m_flDeathTime", (unit, new_value) => unit.DeathTime = new_value as number)
-RegisterFieldHandler(Unit, "m_nArcanaLevel", (unit, new_value) => unit.ArcanaLevel = new_value as number)
-RegisterFieldHandler(Unit, "m_bStolenScepter", (unit, new_value) => unit.HasStolenScepter = new_value as boolean)
-RegisterFieldHandler(Unit, "m_bHasUpgradeableAbilities", (unit, new_value) => unit.HasUpgradeableAbilities = new_value as boolean)
-RegisterFieldHandler(Unit, "m_bCanBeDominated", (unit, new_value) => unit.IsDominatable = new_value as boolean)
-RegisterFieldHandler(Unit, "m_bIsIllusion", (unit, new_value) => unit.IsIllusion_ = new_value as boolean)
-RegisterFieldHandler(Unit, "m_iAttackCapabilities", (unit, new_value) => unit.AttackCapabilities = new_value as number)
-RegisterFieldHandler(Unit, "m_bIsMoving", (unit, new_value) => unit.IsMoving = new_value as boolean)
-RegisterFieldHandler(Unit, "m_bIsPhantom", (unit, new_value) => unit.IsPhantom = new_value as boolean)
-RegisterFieldHandler(Unit, "m_bIsSummoned", (unit, new_value) => unit.IsSummoned = new_value as boolean)
-RegisterFieldHandler(Unit, "m_bIsWaitingToSpawn", (unit, new_value) => unit.IsWaitingToSpawn = new_value as boolean)
-RegisterFieldHandler(Unit, "m_iCurrentLevel", (unit, new_value) => unit.Level = new_value as number)
-RegisterFieldHandler(Unit, "m_flMagicalResistanceValue", (unit, new_value) => unit.BaseMagicDamageResist = new_value as number)
-RegisterFieldHandler(Unit, "m_flMana", (unit, new_value) => unit.Mana = new_value as number)
-RegisterFieldHandler(Unit, "m_flMaxMana", (unit, new_value) => unit.MaxMana = new_value as number)
-RegisterFieldHandler(Unit, "m_iNightTimeVisionRange", (unit, new_value) => unit.NightVision = new_value as number)
-RegisterFieldHandler(Unit, "m_flTauntCooldown", (unit, new_value) => unit.TauntCooldown = new_value as number)
-RegisterFieldHandler(Unit, "m_nTotalDamageTaken", (unit, new_value) => unit.TotalDamageTaken = new_value as bigint)
-RegisterFieldHandler(Unit, "m_nUnitState64", (unit, new_value) => unit.UnitStateNetworked = BigInt(new_value as bigint))
-RegisterFieldHandler(Unit, "m_nHealthBarOffsetOverride", (unit, new_value) => unit.HealthBarOffsetOverride = new_value as number)
-RegisterFieldHandler(Unit, "m_bShouldDoFlyHeightVisual", (unit, new_value) => unit.ShouldDoFlyHeightVisual = new_value as boolean)
+RegisterFieldHandler(Unit, "m_nUnitState64", (unit, new_value) => unit.UnitStateNetworked = BigInt(new_value as bigint)) // TODO
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 	let ar = new_value as number[]
 	while (ar.length < unit.Spells_.length)
@@ -1074,7 +1076,3 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
 		ar.push(0)
 	unit.TotalItems_ = new_value as number[]
 })
-RegisterFieldHandler(Unit, "m_iXPBounty", (unit, new_value) => unit.XPBounty = new_value as number)
-RegisterFieldHandler(Unit, "m_iXPBountyExtra", (unit, new_value) => unit.XPBountyExtra = new_value as number)
-RegisterFieldHandler(Unit, "m_iGoldBountyMin", (unit, new_value) => unit.GoldBountyMin = new_value as number)
-RegisterFieldHandler(Unit, "m_iGoldBountyMax", (unit, new_value) => unit.GoldBountyMax = new_value as number)

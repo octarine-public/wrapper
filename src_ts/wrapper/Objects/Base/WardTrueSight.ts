@@ -1,8 +1,6 @@
 import WardObserver from "./WardObserver"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("CDOTA_NPC_Observer_Ward_TrueSight")
 export default class WardTrueSight extends WardObserver {
-	public NativeEntity: Nullable<CDOTA_NPC_Observer_Ward_TrueSight>
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("CDOTA_NPC_Observer_Ward_TrueSight", WardTrueSight)

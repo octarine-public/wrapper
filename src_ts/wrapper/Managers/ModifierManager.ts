@@ -152,7 +152,6 @@ function EmitModifierCreated(mod: IModifier) {
 EventsSDK.on("EntityCreated", ent => {
 	if (!(ent instanceof Unit))
 		return
-	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
 		if (mod.Parent !== ent)
 			return
@@ -170,7 +169,6 @@ function EmitModifierRemoved(mod: Modifier) {
 	EventsSDK.emit("ModifierRemovedRaw", false, mod)
 }
 EventsSDK.on("EntityDestroyed", ent => {
-	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
 		if (mod.Parent !== ent)
 			return
@@ -229,7 +227,6 @@ message CDOTAModifierBuffTableEntry {
 EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (name !== "ActiveModifiers")
 		return
-	// loop-optimizer: KEEP
 	update.forEach(([_, mod_serialized], index) => {
 		let mod = new IModifier(ParseProtobufNamed(mod_serialized, "CDOTAModifierBuffTableEntry"))
 		let replaced = ActiveModifiersRaw.get(index)
@@ -250,12 +247,10 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	})
 })
 EventsSDK.on("RemoveAllStringTables", () => {
-	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => EmitModifierRemoved(mod))
 	ActiveModifiers.clear()
 })
 /*EventsSDK.on("Tick", () => {
-	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
 		if (mod.Duration !== 0 && mod.DieTime < Game.RawGameTime) // TODO: should it be <=?
 			EmitModifierRemoved(mod)
@@ -292,7 +287,6 @@ declare global {
 }
 
 globalThis.DebugBuffsParents = () => {
-	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
 		let parent = EntityManager.EntityByIndex(mod.m_pBuff.Parent)
 		if (parent instanceof Unit)
@@ -302,7 +296,6 @@ globalThis.DebugBuffsParents = () => {
 }
 
 globalThis.DebugBuffs = () => {
-	// loop-optimizer: KEEP
 	ActiveModifiers.forEach(mod => {
 		console.log(mod.Parent?.constructor?.name, mod.Name, mod.ElapsedTime, mod.Duration, mod.m_pBuff.EntryType)
 	})

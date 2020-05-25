@@ -1,9 +1,11 @@
 import EntityManager from "../../Managers/EntityManager"
 import Entity from "./Entity"
 import Item from "./Item"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTA_Item_Physical")
 export default class PhysicalItem extends Entity {
-	public NativeEntity: Nullable<C_DOTA_Item_Physical>
+	@NetworkedBasicField("m_hItem")
 	public Item_ = 0
 
 	public get Item(): Nullable<Item> {
@@ -17,7 +19,3 @@ export default class PhysicalItem extends Entity {
 		return this.Item?.Name ?? this.Name
 	}
 }
-
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_Item_Physical", PhysicalItem)
-RegisterFieldHandler(PhysicalItem, "m_hItem", (item, new_value) => item.Item_ = new_value as number)

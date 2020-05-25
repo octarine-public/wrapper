@@ -10,7 +10,6 @@ import { Team } from "../Enums/Team"
 export class DotaMap {
 	private static Load(name: string): Vector3[] {
 		let ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(new Uint8Array(readFile(`Map/${name}.json`))))
-		// loop-optimizer: FORWARD
 		return ar.map(([x, y, z]) => new Vector3(x, y, z))
 	}
 	private static LoadPoly(name: string): WorldPolygon {

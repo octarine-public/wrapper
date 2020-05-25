@@ -1,22 +1,20 @@
 import EntityManager from "../../Managers/EntityManager"
 import Hero from "./Hero"
 import Unit from "./Unit"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTA_Unit_Courier")
 export default class Courier extends Unit {
-	public NativeEntity: Nullable<C_DOTA_Unit_Courier>
+	@NetworkedBasicField("m_bFlyingCourier")
 	public IsFlying = false
+	@NetworkedBasicField("m_flRespawnTime")
 	public RespawnTime = 0
+	@NetworkedBasicField("m_nCourierState")
 	public State = CourierState_t.COURIER_STATE_INIT
+	@NetworkedBasicField("m_hCourierStateEntity")
 	public StateHero_ = 0
 
 	get StateHero(): Nullable<Hero> {
 		return EntityManager.EntityByIndex(this.StateHero_) as Nullable<Hero>
 	}
 }
-
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_Unit_Courier", Courier)
-RegisterFieldHandler(Courier, "m_bFlyingCourier", (cour, new_value) => cour.IsFlying = new_value as boolean)
-RegisterFieldHandler(Courier, "m_flRespawnTime", (cour, new_value) => cour.RespawnTime = new_value as number)
-RegisterFieldHandler(Courier, "m_nCourierState", (cour, new_value) => cour.State = new_value as CourierState_t)
-RegisterFieldHandler(Courier, "m_hCourierStateEntity", (cour, new_value) => cour.StateHero_ = new_value as number)

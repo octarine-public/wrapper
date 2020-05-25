@@ -218,7 +218,6 @@ function createRuneParticle(ent: Rune, color: Color, radius: number) {
 }
 
 function updateRuneAllParticle() {
-	// loop-optimizer: KEEP
 	allRunesParticles.forEach(partcl => partcl[0].SetControlPoint(1, drawParticleTake_Color.Color))
 }
 
@@ -227,7 +226,6 @@ function destroyRuneParticles(rune: Rune) {
 	if (particles === undefined)
 		return
 
-	// loop-optimizer: POSSIBLE_UNDEFINED
 	particles.forEach(particleID => particleID.Destroy())
 	allRunesParticles.delete(rune)
 }

@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("tusk_frozen_sigil")
 export default class tusk_frozen_sigil extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("tusk_frozen_sigil", tusk_frozen_sigil)

@@ -77,7 +77,6 @@ export function ParticleUpdated(id: number, control_point: number, position: Vec
 					return false
 				let mines = obj[0],
 					found = false
-				// loop-optimizer: KEEP
 				mines.some(([vec], k) => {
 					if (vec.Distance(position) > (is_stasis ? 450 : 10))
 						return false

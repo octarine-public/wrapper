@@ -3,7 +3,6 @@ import { Ability, BitsExtensions, Creep, EntityManager, EventsSDK, GameRules, Ga
 function GetHealthAfter(unit: Unit, delay: number, allow_overflow = false, include_projectiles: boolean = false, attacker?: Unit, melee_time_offset: number = 0): number {
 	let hpafter = unit.HP/*,
 		cur_time = Game.RawGameTime
-	// loop-optimizer: KEEP
 	attacks.forEach(([end_time, end_time_2, attack_target], attacker_ent) => {
 		if (attacker_ent !== attacker && attack_target === unit) {
 			let end_time_delta = end_time - (cur_time + delay + melee_time_offset),

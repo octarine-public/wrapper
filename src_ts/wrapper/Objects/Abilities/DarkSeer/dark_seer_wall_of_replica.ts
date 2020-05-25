@@ -1,13 +1,12 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("dark_seer_wall_of_replica")
 export default class dark_seer_wall_of_replica extends Ability {
-
 	public get AOERadius(): number {
-		return this.Owner?.HasScepter
-			? this.GetSpecialValue("width") * this.GetSpecialValue("scepter_length_multiplier")
-			: this.GetSpecialValue("width")
+		let width = this.GetSpecialValue("width")
+		if (!this.Owner?.HasScepter)
+			return width
+		return width * this.GetSpecialValue("scepter_length_multiplier")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("dark_seer_wall_of_replica", dark_seer_wall_of_replica)

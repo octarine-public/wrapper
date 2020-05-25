@@ -157,7 +157,6 @@ EventsSDK.on("Draw", () => {
 			}) as [number, Vector3][])
 		)
 	})
-	// loop-optimizer: KEEP
 	arTimers.forEach((val, buff) => {
 		let time = GameRules?.RawGameTime ?? 0
 		let rend = val[0] - time + val[1]
@@ -301,7 +300,6 @@ EventsSDK.on("Tick", () => {
 	if (!active.value)
 		return
 
-	// loop-optimizer: KEEP
 	particles_table.forEach((part, i) => {
 		let end_pos = part[2]
 		let start_pos = part[1]
@@ -317,7 +315,6 @@ EventsSDK.on("Tick", () => {
 		}
 	})
 
-	// loop-optimizer: KEEP
 	line_table.forEach(proj => {
 		DrawDirectional(
 			proj.Position,
@@ -326,7 +323,6 @@ EventsSDK.on("Tick", () => {
 		)
 	})
 
-	// loop-optimizer: FORWARD
 	abils_list.forEach(abil => {
 		let owner = abil.Owner
 		if (owner === undefined || !owner.IsEnemy())

@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("queenofpain_shadow_strike")
 export default class queenofpain_shadow_strike extends Ability {
 	public get AOERadius(): number {
 		let radius = 0,
@@ -15,6 +17,3 @@ export default class queenofpain_shadow_strike extends Ability {
 		return this.GetSpecialValue("projectile_speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("queenofpain_shadow_strike", queenofpain_shadow_strike)

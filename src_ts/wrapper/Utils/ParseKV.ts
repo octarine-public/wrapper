@@ -2,7 +2,6 @@ import Stream from "./Stream"
 import { Utf8ArrayToStr, ArrayBuffersEqual } from "./Utils"
 import { ExtractResourceBlock, DecompressLZ4 } from "../Native/WASM"
 import BinaryStream from "./BinaryStream"
-import { HasBit } from "./BitsExtensions"
 
 const STRING = '"'
 const NODE_OPEN = '{'
@@ -148,7 +147,7 @@ class KVParser {
 	private static readonly KV3_ENCODING_BINARY_BLOCK_COMPRESSED = new Uint8Array([0x46, 0x1A, 0x79, 0x95, 0xBC, 0x95, 0x6C, 0x4F, 0xA7, 0x0B, 0x05, 0xBC, 0xA1, 0xB7, 0xDF, 0xD2]).buffer
 	private static readonly KV3_ENCODING_BINARY_UNCOMPRESSED = new Uint8Array([0x00, 0x05, 0x86, 0x1B, 0xD8, 0xF7, 0xC1, 0x40, 0xAD, 0x82, 0x75, 0xA4, 0x82, 0x67, 0xE7, 0x14]).buffer
 	private static readonly KV3_ENCODING_BINARY_BLOCK_LZ4 = new Uint8Array([0x8A, 0x34, 0x47, 0x68, 0xA1, 0x63, 0x5C, 0x4F, 0xA1, 0x97, 0x53, 0x80, 0x6F, 0xD9, 0xB1, 0x19]).buffer
-	private static BlockDecompress(buf: ArrayBuffer): ArrayBuffer {
+	/*private static BlockDecompress(buf: ArrayBuffer): ArrayBuffer {
 		let stream = new BinaryStream(new DataView(buf))
 		let flags = new Uint8Array(stream.ReadSlice(4))
 		if (HasBit(flags[3], 7))
@@ -176,7 +175,7 @@ class KVParser {
 						out[out_pos++] = stream.Next()
 			} catch { }
 		return out.buffer
-	}
+	}*/
 	// private static readonly KV3_FORMAT_GENERIC = new Uint8Array([0x7C, 0x16, 0x12, 0x74, 0xE9, 0x06, 0x98, 0x46, 0xAF, 0xF2, 0xE6, 0x3E, 0xB5, 0x90, 0x37, 0xE7]).buffer
 
 	private types: number[] = []
@@ -550,7 +549,6 @@ class C_NTRO {
 		return this.ReadStructure(stream, this.ResourceIntrospectionManifest.ReferencedStructs[0])
 	}
 	private ReadStructure(stream: BinaryStream, struct: ResourceDiskStruct, startingOffset = 0, map: RecursiveMap = new Map()): RecursiveMap {
-		// loop-optimizer: FORWARD
 		struct.FieldIntrospection.forEach(field => {
 			stream.pos = startingOffset + field.OnDiskOffset
 			this.ReadFieldIntrospection(stream, map, field)
@@ -695,7 +693,6 @@ function FixupSoundEventScript(map: RecursiveMap): RecursiveMap {
 		m_SoundEvents = map.get("m_SoundEvents")
 	if (!(m_SoundEvents instanceof Map))
 		return fixed_map
-	// loop-optimizer: KEEP
 	m_SoundEvents.forEach(entry => {
 		if (!(entry instanceof Map))
 			return

@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("lina_dragon_slave")
 export default class lina_dragon_slave extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("dragon_slave_width_end")
@@ -17,6 +19,3 @@ export default class lina_dragon_slave extends Ability {
 		return this.GetSpecialValue("dragon_slave_speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("lina_dragon_slave", lina_dragon_slave)

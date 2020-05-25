@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("necrolyte_sadist_stop")
 export default class necrolyte_sadist_stop extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("necrolyte_sadist_stop", necrolyte_sadist_stop)

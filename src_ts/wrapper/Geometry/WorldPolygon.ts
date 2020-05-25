@@ -10,10 +10,9 @@ export class WorldPolygon {
 		this.Points = points
 	}
 	public Add(polygon: WorldPolygon | Vector3): void {
-		if (polygon instanceof WorldPolygon) {
-			// loop-optimizer: FORWARD
+		if (polygon instanceof WorldPolygon)
 			polygon.Points.forEach(point => this.AddPoint(point))
-		} else
+		else
 			this.AddPoint(polygon)
 	}
 	public Draw(color: Color, width = 1): void {

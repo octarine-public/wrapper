@@ -3,20 +3,14 @@
 	"version": "1.0.0",
 	"description": "Fusion Native 2: Scripts",
 	"devDependencies": {
-		"@babel/cli": "latest",
-		"@babel/core": "latest",
-		"@babel/plugin-syntax-optional-chaining": "latest",
-		"@babel/plugin-syntax-nullish-coalescing-operator": "latest",
-		"@babel/plugin-syntax-bigint": "latest",
-		"@babel/preset-typescript": "latest",
-		"@babel/plugin-syntax-dynamic-import": "latest",
 		"tslint": "beta",
 		"typescript": "next"
 	},
 	"scripts": {
-		"watch": "npx babel --watch src_ts --extensions \".ts\" --out-dir scripts",
-		"build": "npx babel src_ts --extensions \".ts\" --out-dir scripts",
-		"check-types": "npx tsc",
+		"watch": "npx tsc --watch",
+		"build": "npx tsc",
+		"check-types": "npx tsc --noEmit",
+		"check-types-watch": "npx tsc --noEmit --watch",
 		"check-circular": "npx madge --circular scripts/wrapper",
 		"lint": "npx tslint --fix 'src_ts/**/*.ts'"
 	},

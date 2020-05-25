@@ -1,7 +1,8 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("death_prophet_carrion_swarm")
 export default class death_prophet_carrion_swarm extends Ability {
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("start_radius")
 	}
@@ -18,6 +19,3 @@ export default class death_prophet_carrion_swarm extends Ability {
 		return this.GetSpecialValue("speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("death_prophet_carrion_swarm", death_prophet_carrion_swarm)

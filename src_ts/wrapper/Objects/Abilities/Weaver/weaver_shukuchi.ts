@@ -1,11 +1,10 @@
 import Ability from "../../Base/Ability"
 import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("weaver_shukuchi")
 export default class weaver_shukuchi extends Ability {
 	public get AbilityLogicType(): AbilityLogicType {
 		return AbilityLogicType.Invisibility
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("weaver_shukuchi", weaver_shukuchi)

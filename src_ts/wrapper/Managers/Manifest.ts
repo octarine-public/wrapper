@@ -50,7 +50,6 @@ const Manifest = new (class CManifest {
 			console.log(`Missing ${path}`)
 			return
 		}
-		// loop-optimizer: KEEP
 		parseKV(buf).forEach((_, name) => this.SoundHashToString.set(this.SoundNameToHash(name), name))
 	}
 	public SoundNameToHash(name: string): number {

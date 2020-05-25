@@ -1,6 +1,5 @@
 import { Menu, MenuBase } from "../../abstract/MenuBase"
 const { BaseTree, State } = MenuBase(Menu, "Auto Deward")
-// loop-optimizer: KEEP
 let Items = [
 	"item_quelling_blade",
 	"item_bfury",

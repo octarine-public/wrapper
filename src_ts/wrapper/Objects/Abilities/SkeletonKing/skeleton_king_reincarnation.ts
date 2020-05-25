@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("skeleton_king_reincarnation")
 export default class skeleton_king_reincarnation extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("skeleton_king_reincarnation", skeleton_king_reincarnation)

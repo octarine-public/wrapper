@@ -3,23 +3,39 @@ import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 import EntityManager from "../../Managers/EntityManager"
 import Unit from "./Unit"
 import Entity from "./Entity"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTA_BaseNPC_Hero")
 export default class Hero extends Unit {
-	public NativeEntity: Nullable<C_DOTA_BaseNPC_Hero>
+	@NetworkedBasicField("m_iAbilityPoints")
 	public AbilityPoints = 0
+	@NetworkedBasicField("m_iCurrentXP")
 	public CurrentXP = 0
+	@NetworkedBasicField("m_bReincarnating")
 	public IsReincarnating = false
+	@NetworkedBasicField("m_iPlayerID")
 	public PlayerID = 0
+	@NetworkedBasicField("m_iPrimaryAttribute")
 	public PrimaryAtribute = Attributes.DOTA_ATTRIBUTE_INVALID
+	@NetworkedBasicField("m_iRecentDamage")
 	public RecentDamage = 0
+	@NetworkedBasicField("m_flRespawnTime")
 	public RespawnTime = 0
+	@NetworkedBasicField("m_flRespawnTimePenalty")
 	public RespawnTimePenalty = 0
+	@NetworkedBasicField("m_flSpawnedAt")
 	public SpawnedAt = 0
+	@NetworkedBasicField("m_flAgility")
 	public Agility = 0
+	@NetworkedBasicField("m_flIntellect")
 	public Intellect = 0
+	@NetworkedBasicField("m_flStrength")
 	public Strength = 0
+	@NetworkedBasicField("m_flAgilityTotal")
 	public TotalAgility = 0
+	@NetworkedBasicField("m_flIntellectTotal")
 	public TotalIntellect = 0
+	@NetworkedBasicField("m_flStrengthTotal")
 	public TotalStrength = 0
 	public m_hReplicatingOtherHeroModel = 0x3FFF
 
@@ -45,21 +61,5 @@ export default class Hero extends Unit {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_BaseNPC_Hero", Hero)
-RegisterFieldHandler(Hero, "m_iAbilityPoints", (ent, new_val) => ent.AbilityPoints = new_val as number)
-RegisterFieldHandler(Hero, "m_iCurrentXP", (ent, new_val) => ent.CurrentXP = new_val as number)
-RegisterFieldHandler(Hero, "m_bReincarnating", (ent, new_val) => ent.IsReincarnating = new_val as boolean)
-RegisterFieldHandler(Hero, "m_iPlayerID", (ent, new_val) => ent.PlayerID = new_val as number)
-RegisterFieldHandler(Hero, "m_iPrimaryAttribute", (ent, new_val) => ent.PrimaryAtribute = new_val as Attributes)
-RegisterFieldHandler(Hero, "m_iRecentDamage", (ent, new_val) => ent.RecentDamage = new_val as number)
-RegisterFieldHandler(Hero, "m_flRespawnTime", (ent, new_val) => ent.RespawnTime = new_val as number)
-RegisterFieldHandler(Hero, "m_flRespawnTimePenalty", (ent, new_val) => ent.RespawnTimePenalty = new_val as number)
-RegisterFieldHandler(Hero, "m_flSpawnedAt", (ent, new_val) => ent.SpawnedAt = new_val as number)
-RegisterFieldHandler(Hero, "m_flAgility", (ent, new_val) => ent.Agility = new_val as number)
-RegisterFieldHandler(Hero, "m_flIntellect", (ent, new_val) => ent.Intellect = new_val as number)
-RegisterFieldHandler(Hero, "m_flStrength", (ent, new_val) => ent.Strength = new_val as number)
-RegisterFieldHandler(Hero, "m_flAgilityTotal", (ent, new_val) => ent.TotalAgility = new_val as number)
-RegisterFieldHandler(Hero, "m_flIntellectTotal", (ent, new_val) => ent.TotalIntellect = new_val as number)
-RegisterFieldHandler(Hero, "m_flStrengthTotal", (ent, new_val) => ent.TotalStrength = new_val as number)
+import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, new_val) => ent.m_hReplicatingOtherHeroModel = (new_val as number) & 0x3FFF)

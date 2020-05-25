@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("slark_pounce")
 export default class slark_pounce extends Ability {
 	public get MaxCharges(): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("max_charges") : 0
@@ -8,6 +10,3 @@ export default class slark_pounce extends Ability {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("charge_restore_time") : 0
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("slark_pounce", slark_pounce)

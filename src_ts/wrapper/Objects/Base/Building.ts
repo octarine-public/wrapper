@@ -1,12 +1,10 @@
 import Unit from "./Unit"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTA_BaseNPC_Building")
 export default class Building extends Unit {
-	public NativeEntity: Nullable<C_DOTA_BaseNPC_Building>
+	@NetworkedBasicField("m_iHeroStatueOwnerPlayerID")
 	public HeroStatueOwnerPlayerID = -1
+	@NetworkedBasicField("m_bHeroStatue")
 	public IsHeroStatue = false
 }
-
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_BaseNPC_Building", Building)
-RegisterFieldHandler(Building, "m_iHeroStatueOwnerPlayerID", (building, new_val) => building.HeroStatueOwnerPlayerID = new_val as number)
-RegisterFieldHandler(Building, "m_bHeroStatue", (building, new_val) => building.IsHeroStatue = new_val as boolean)

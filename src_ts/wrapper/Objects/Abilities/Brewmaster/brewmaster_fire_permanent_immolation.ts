@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("brewmaster_fire_permanent_immolation")
 export default class brewmaster_fire_permanent_immolation extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("brewmaster_fire_permanent_immolation", brewmaster_fire_permanent_immolation)

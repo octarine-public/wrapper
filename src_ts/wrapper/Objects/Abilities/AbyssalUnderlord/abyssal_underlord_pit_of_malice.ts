@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("abyssal_underlord_pit_of_malice")
 export default class abyssal_underlord_pit_of_malice extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("abyssal_underlord_pit_of_malice", abyssal_underlord_pit_of_malice)

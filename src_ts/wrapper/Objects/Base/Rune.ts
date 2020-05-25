@@ -1,20 +1,18 @@
 import Entity from "./Entity"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTA_Item_Rune")
 export default class Rune extends Entity {
-	public NativeEntity: Nullable<C_DOTA_Item_Rune>
+	@NetworkedBasicField("m_iRuneType")
 	public Type = DOTA_RUNES.DOTA_RUNE_INVALID
+	@NetworkedBasicField("m_flRuneTime")
 	public RuneTime = 0
+	@NetworkedBasicField("m_nMapLocationTeam")
 	public MapLocationTeam = 0
+	@NetworkedBasicField("m_szLocation")
 	public Location = ""
 
 	public get RingRadius(): number {
 		return 40
 	}
 }
-
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_Item_Rune", Rune)
-RegisterFieldHandler(Rune, "m_iRuneType", (rune, new_val) => rune.Type = new_val as DOTA_RUNES)
-RegisterFieldHandler(Rune, "m_flRuneTime", (rune, new_val) => rune.RuneTime = new_val as number)
-RegisterFieldHandler(Rune, "m_nMapLocationTeam", (rune, new_val) => rune.MapLocationTeam = new_val as number)
-RegisterFieldHandler(Rune, "m_szLocation", (rune, new_val) => rune.Location = new_val as string)

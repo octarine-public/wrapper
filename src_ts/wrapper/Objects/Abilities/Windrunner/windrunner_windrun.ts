@@ -1,6 +1,8 @@
 import Ability from "../../Base/Ability"
 import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("windrunner_windrun")
 export default class windrunner_windrun extends Ability {
 	public get MaxCharges(): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("max_charges") : 0
@@ -14,6 +16,3 @@ export default class windrunner_windrun extends Ability {
 			: AbilityLogicType.None
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("windrunner_windrun", windrunner_windrun)

@@ -224,7 +224,6 @@ export default class KeyBind extends Base {
 	}
 
 	public Update(assign_key_str = true): void {
-		// loop-optimizer: KEEP
 		KeyBind.callbacks.forEach((keybinds, key) => {
 			if (arrayRemove(keybinds, this) && keybinds.length === 0)
 				KeyBind.callbacks.delete(key)

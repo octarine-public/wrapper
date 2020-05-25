@@ -244,7 +244,6 @@ class ParticlesSDK {
 	}
 
 	public DestroyAll(immediate = true) {
-		// loop-optimizer: KEEP
 		this.AllParticles.forEach(particle => particle.Destroy(immediate))
 		this.AllParticlesRange.clear()
 	}

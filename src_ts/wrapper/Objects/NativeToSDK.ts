@@ -6,10 +6,8 @@ let constructors = new Map<string, Constructor<Entity>>(),
 	field_handlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>(),
 	sdk_classes: Constructor<Entity>[] = []
 
-export function RegisterClass(name: string, constructor: Constructor<Entity>) {
-	constructors.set(name, constructor)
+function RegisterClassInternal(constructor: Constructor<Entity>) {
 	sdk_classes.push(constructor)
-
 	let map = new Map<string, FieldHandler>()
 	let prototype = constructor.prototype
 	for (let [constructor_, map_] of field_handlers)
@@ -19,6 +17,12 @@ export function RegisterClass(name: string, constructor: Constructor<Entity>) {
 	field_handlers.set(constructor, map)
 }
 
+export function RegisterClass(name: string, constructor: Constructor<Entity>) {
+	constructors.set(name, constructor)
+	if (!field_handlers.has(constructor))
+		RegisterClassInternal(constructor)
+}
+
 function GenerateChainedFieldHandler(old: FieldHandler, new_: FieldHandler) {
 	return (ent: Entity, new_val: EntityPropertyType) => {
 		old(ent, new_val)
@@ -26,6 +30,8 @@ function GenerateChainedFieldHandler(old: FieldHandler, new_: FieldHandler) {
 	}
 }
 export function RegisterFieldHandler<T extends Entity>(constructor: Constructor<T>, field_name: string, handler: (entity: T, new_value: EntityPropertyType) => void) {
+	if (!field_handlers.has(constructor))
+		RegisterClassInternal(constructor)
 	let handler_ = handler as FieldHandler,
 		map = field_handlers.get(constructor)!
 	if (map.has(field_name))

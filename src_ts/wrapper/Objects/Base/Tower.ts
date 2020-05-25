@@ -1,9 +1,11 @@
 import EntityManager from "../../Managers/EntityManager"
 import Building from "./Building"
 import Unit from "./Unit"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTA_BaseNPC_Tower")
 export default class Tower extends Building {
-	public NativeEntity: Nullable<C_DOTA_BaseNPC_Tower>
+	@NetworkedBasicField("m_hTowerAttackTarget")
 	public TowerAttackTarget_ = 0
 
 	public get TowerAttackTarget(): Nullable<Unit> {
@@ -13,7 +15,3 @@ export default class Tower extends Building {
 		return super.IsDeniable || this.HPPercent <= 10
 	}
 }
-
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_BaseNPC_Tower", Tower)
-RegisterFieldHandler(Tower, "m_hTowerAttackTarget", (tower, new_value) => tower.TowerAttackTarget_ = new_value as number)

@@ -31,8 +31,7 @@ export function Init() {
 }
 
 function OnOptionToggle() {
-	// loop-optimizer: KEEP
-	allUnits.forEach((particle, unit) => CheckUnit(unit))
+	allUnits.forEach((_, unit) => CheckUnit(unit))
 }
 
 function IsUnitShouldBeHighlighted(unit: Unit) {

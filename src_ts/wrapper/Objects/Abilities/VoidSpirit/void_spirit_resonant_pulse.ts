@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("void_spirit_resonant_pulse")
 export default class void_spirit_resonant_pulse extends Ability {
 	public get MaxCharges(): number {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("max_charges") : 0
@@ -8,6 +10,3 @@ export default class void_spirit_resonant_pulse extends Ability {
 		return this.Owner?.HasScepter ? this.GetSpecialValue("charge_restore_time") : 0
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("void_spirit_resonant_pulse", void_spirit_resonant_pulse)

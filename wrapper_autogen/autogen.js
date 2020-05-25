@@ -19,6 +19,9 @@ let known_prefixes = new Map([
 
 	// heroes
 	["sandking", "SandKing"],
+	["treant", "Treant"],
+	["phoenix", "Phoenix"],
+	["rattletrap", "Rattletrap"],
 
 	// units
 	["forged_spirit", "ForgedSpirit"],
@@ -187,13 +190,12 @@ ability_list.forEach(abil => {
 	path += abil + ".ts"
 	let extends_class = is_item ? "Item" : "Ability"
 	let source = `\
-import ${extends_class} from "../../Base/${extends_class}"
+import ${extends_class} from "../${!is_item ? "../" : ""}Base/${extends_class}"
+import { WrapperClass } from "../../${!is_item ? "../" : ""}Decorators"
 
+@WrapperClass("${abil}")
 export default class ${abil} extends ${extends_class} {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("${abil}", ${abil})
 `
 	fs.writeFileSync(path, source)
 })
@@ -209,13 +211,12 @@ heroes.forEach(hero => {
 	hero = "npc_dota_hero_" + hero
 	path += hero + ".ts"
 	let source = `\
-import Hero from "../../Base/Hero"
+import Hero from "../Base/Hero"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("${class_name}")
 export default class ${hero} extends Hero {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("${class_name}", ${hero})
 `
 	fs.writeFileSync(path, source)
 })

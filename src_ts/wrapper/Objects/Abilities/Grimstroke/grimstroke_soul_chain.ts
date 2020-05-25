@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("grimstroke_soul_chain")
 export default class grimstroke_soul_chain extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("grimstroke_soul_chain", grimstroke_soul_chain)

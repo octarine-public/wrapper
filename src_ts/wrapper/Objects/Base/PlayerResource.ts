@@ -4,15 +4,15 @@ import Player from "../Base/Player"
 import EventsSDK from "../../Managers/EventsSDK"
 import PlayerData from "../../Base/PlayerData"
 import PlayerTeamData from "../../Base/PlayerTeamData"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("C_DOTA_PlayerResource")
 export default class CPlayerResource extends Entity {
-	public NativeEntity: Nullable<C_DOTA_PlayerResource>
 	public PlayerTeamData: PlayerTeamData[] = []
 	public PlayerData: PlayerData[] = []
 
 	public get AllPlayers(): Nullable<Player>[] {
 		let ar: Nullable<Player>[] = []
-		// loop-optimizer: FORWARD
 		EntityManager.GetEntitiesByClass(Player).forEach(pl => ar[pl.PlayerID] = pl)
 		return ar
 	}
@@ -25,14 +25,11 @@ export default class CPlayerResource extends Entity {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_PlayerResource", CPlayerResource)
+import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (resource, new_val) => {
-	// loop-optimizer: FORWARD
 	resource.PlayerTeamData = (new_val as Map<string, EntityPropertyType>[]).map(map => new PlayerTeamData(map))
 })
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (resource, new_val) => {
-	// loop-optimizer: FORWARD
 	resource.PlayerData = (new_val as Map<string, EntityPropertyType>[]).map(map => new PlayerData(map))
 })
 

@@ -4,9 +4,11 @@
 		"module": "esnext",
 		"baseUrl": "src",
 		// Don't emit; allow Babel to transform files.
-		"noEmit": true,
+		"noEmit": false,
 		"noUnusedLocals": true,
-		"strict": true
+		"strict": true,
+		"experimentalDecorators": true,
+		"outDir": "scripts"
 	},
 	"include": [
 		"*.d.ts",

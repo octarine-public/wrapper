@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("faceless_void_chronosphere")
 export default class faceless_void_chronosphere extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("faceless_void_chronosphere", faceless_void_chronosphere)

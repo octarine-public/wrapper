@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("snapfire_firesnap_cookie")
 export default class snapfire_firesnap_cookie extends Ability {
 	public get AOERadius(): number {
 		return this.GetSpecialValue("impact_radius")
@@ -9,6 +11,3 @@ export default class snapfire_firesnap_cookie extends Ability {
 		return this.GetSpecialValue("projectile_speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("snapfire_firesnap_cookie", snapfire_firesnap_cookie)

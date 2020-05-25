@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("phantom_lancer_spirit_lance")
 export default class phantom_lancer_spirit_lance extends Ability {
 	public get AbilityDamage(): number {
 		return this.GetSpecialValue("lance_damage")
@@ -8,6 +10,3 @@ export default class phantom_lancer_spirit_lance extends Ability {
 		return this.GetSpecialValue("lance_speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("phantom_lancer_spirit_lance", phantom_lancer_spirit_lance)

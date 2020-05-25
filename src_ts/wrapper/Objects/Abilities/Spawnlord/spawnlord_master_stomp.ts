@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("spawnlord_master_stomp")
 export default class spawnlord_master_stomp extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("spawnlord_master_stomp", spawnlord_master_stomp)

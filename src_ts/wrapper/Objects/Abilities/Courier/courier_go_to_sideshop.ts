@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("courier_go_to_sideshop")
 export default class courier_go_to_sideshop extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("courier_go_to_sideshop", courier_go_to_sideshop)

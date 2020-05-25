@@ -1,7 +1,8 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("dark_seer_surge")
 export default class dark_seer_surge extends Ability {
-
 	public get AOERadius(): number {
 		let radius = 0,
 			owner = this.Owner
@@ -13,6 +14,3 @@ export default class dark_seer_surge extends Ability {
 		return radius
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("dark_seer_surge", dark_seer_surge)

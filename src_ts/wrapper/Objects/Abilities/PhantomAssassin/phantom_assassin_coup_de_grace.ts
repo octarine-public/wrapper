@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("phantom_assassin_coup_de_grace")
 export default class phantom_assassin_coup_de_grace extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("phantom_assassin_coup_de_grace", phantom_assassin_coup_de_grace)

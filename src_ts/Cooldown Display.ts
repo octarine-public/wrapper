@@ -152,9 +152,8 @@ EventsSDK.on("Draw", () => {
 		if (screen_pos === undefined)
 			return
 
-		// loop-optimizer: FORWARD, POSSIBLE_UNDEFINED
 		let abilities = hero.Spells.filter((abil, i) => {
-			return i < 6 &&
+			return abil !== undefined && i < 6 &&
 				!ignore_abils.some(ignore_name => abil!.Name === ignore_name) &&
 				!abil!.IsHidden
 		}) as Ability[]

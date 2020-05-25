@@ -67,14 +67,12 @@ EventsSDK.on("EntityNameChanged", x => {
 })
 
 export function GameStarted() {
-	// loop-optimizer: KEEP
 	HeroesList.enabled_values.forEach((_, key) => HeroesList.enabled_values.set(key, false))
 }
 export function GameEnded() {
 	Sleep = 0
 	Pos = new Vector3()
 	Heroes = []
-	// loop-optimizer: KEEP
 	HeroesList.enabled_values.forEach((_, key) => HeroesList.enabled_values.set(key, false))
 	HeroesList.values = []
 	HeroesList.Update()

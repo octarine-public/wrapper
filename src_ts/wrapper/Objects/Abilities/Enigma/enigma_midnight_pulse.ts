@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("enigma_midnight_pulse")
 export default class enigma_midnight_pulse extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("enigma_midnight_pulse", enigma_midnight_pulse)

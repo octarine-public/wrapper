@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("greevil_miniboss_yellow_surge")
 export default class greevil_miniboss_yellow_surge extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("greevil_miniboss_yellow_surge", greevil_miniboss_yellow_surge)

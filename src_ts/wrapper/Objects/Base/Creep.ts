@@ -1,9 +1,9 @@
 import Unit from "./Unit"
 import { Team } from "../../Enums/Team"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("C_DOTA_BaseNPC_Creep")
 export default class Creep extends Unit {
-	public NativeEntity: Nullable<C_DOTA_BaseNPC_Creep>
-
 	get IsCreep(): boolean {
 		return true
 	}
@@ -35,6 +35,3 @@ export default class Creep extends Unit {
 		return multiplier
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_BaseNPC_Creep", Creep)

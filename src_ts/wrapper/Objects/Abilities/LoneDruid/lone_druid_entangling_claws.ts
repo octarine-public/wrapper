@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("lone_druid_entangling_claws")
 export default class lone_druid_entangling_claws extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("lone_druid_entangling_claws", lone_druid_entangling_claws)

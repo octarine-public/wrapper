@@ -8,6 +8,7 @@ import EventsSDK from "../../Managers/EventsSDK"
 import Player from "../../Objects/Base/Player"
 import * as StringTables from "../../Managers/StringTables"
 import Manifest from "../../Managers/Manifest"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 
 export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
@@ -26,20 +27,31 @@ m_pEntity.m_flags
 1 << 2 is EF_IN_STAGING_LIST
 1 << 4 is EF_DELETE_IN_PROGRESS
 */
+@WrapperClass("C_BaseEntity")
 export default class Entity {
 	public NativeEntity: Nullable<C_BaseEntity>
 
 	public IsValid = true
 	public Name_ = ""
+	@NetworkedBasicField("m_flCreateTime")
 	public CreateTime = 0
 	public Team = Team.None
 	public LifeState = LifeState_t.LIFE_DEAD
+	@NetworkedBasicField("m_iHealth")
 	public HP = 0
+	@NetworkedBasicField("m_iMaxHealth")
 	public MaxHP = 0
-	public Owner_ = 0
+	@NetworkedBasicField("m_hOwnerEntity")
+	private Owner_ = 0
 	public ClassName = ""
 	public BecameDormantTime = 0
 	public ModelName = ""
+	public Agility = 0
+	public Intellect = 0
+	public Strength = 0
+	public TotalAgility = 0
+	public TotalIntellect = 0
+	public TotalStrength = 0
 
 	private readonly PersonalProps: Nullable<Map<string, EntityPropertyType>>
 
@@ -98,24 +110,6 @@ export default class Entity {
 		return DegreesToRadian(this.Rotation)
 	}
 
-	public get Agility(): number {
-		return 0
-	}
-	public get Intellect(): number {
-		return 0
-	}
-	public get Strength(): number {
-		return 0
-	}
-	public get TotalAgility(): number {
-		return 0
-	}
-	public get TotalIntellect(): number {
-		return 0
-	}
-	public get TotalStrength(): number {
-		return 0
-	}
 	public get Speed(): number {
 		return 0
 	}
@@ -134,7 +128,6 @@ export default class Entity {
 		if (node === undefined)
 			return undefined
 
-		// loop-optimizer: FORWARD
 		if (
 			path.some(a => {
 				if (typeof a === "number") {
@@ -253,9 +246,7 @@ function QuantitizedVecCoordToCoord(cell: number, inside: number): number {
 	return ((cell ?? 0) - 128) * 128 + (inside ?? 0)
 }
 
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_BaseEntity", Entity)
-RegisterFieldHandler(Entity, "m_flCreateTime", (ent, new_val) => ent.CreateTime = new_val as number)
+import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => {
 	ent.Team = new_val as Team
 	EventsSDK.emit("EntityTeamChanged", false, ent)
@@ -266,9 +257,6 @@ RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
 	if (old_state !== ent.LifeState)
 		EventsSDK.emit("LifeStateChanged", false, ent)
 })
-RegisterFieldHandler(Entity, "m_iHealth", (ent, new_val) => ent.HP = new_val as number)
-RegisterFieldHandler(Entity, "m_iMaxHealth", (ent, new_val) => ent.MaxHP = new_val as number)
-RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => ent.Owner_ = new_val as number)
 RegisterFieldHandler(Entity, "m_hModel", (ent, new_val) => ent.ModelName = Manifest.GetPathByHash(new_val as bigint) ?? "")
 RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 	let m_angRotation = new_val as QAngle

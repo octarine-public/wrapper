@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("item_ultimate_scepter_2")
 export default class item_ultimate_scepter_2 extends Item {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("item_ultimate_scepter_2", item_ultimate_scepter_2)

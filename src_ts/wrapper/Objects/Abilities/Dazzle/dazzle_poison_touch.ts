@@ -1,7 +1,8 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("dazzle_poison_touch")
 export default class dazzle_poison_touch extends Ability {
-
 	public get AOERadius(): number {
 		return this.GetSpecialValue("start_radius")
 	}
@@ -14,6 +15,3 @@ export default class dazzle_poison_touch extends Ability {
 		return this.GetSpecialValue("end_distance")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("dazzle_poison_touch", dazzle_poison_touch)

@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("mars_spear")
 export default class mars_spear extends Ability {
 	public get AOERadius(): number {
 		return this.GetSpecialValue("spear_width")
@@ -8,6 +10,3 @@ export default class mars_spear extends Ability {
 		return this.GetSpecialValue("spear_speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("mars_spear", mars_spear)

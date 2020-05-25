@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("ember_spirit_fire_remnant")
 export default class ember_spirit_fire_remnant extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("ember_spirit_fire_remnant", ember_spirit_fire_remnant)

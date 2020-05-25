@@ -96,10 +96,8 @@ class CEntityManager {
 			return []
 		switch (flags) {
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_FRIENDLY:
-				// loop-optimizer: FORWARD
 				return ClassToEntities.get(class_)!.filter(e => !e.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY:
-				// loop-optimizer: FORWARD
 				return ClassToEntities.get(class_)!.filter(e => e.IsEnemy()) as []
 			case DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH:
 				return ClassToEntities.get(class_) as []
@@ -115,7 +113,6 @@ class CEntityManager {
 	 */
 	public GetEntitiesByClasses<T>(classes: Constructor<T>[], flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
 		let ar: T[] = []
-		// loop-optimizer: FORWARD
 		classes.forEach(class_ => ar.push(...this.GetEntitiesByClass(class_, flags)))
 		return [...new Set(ar)]
 	}
@@ -133,7 +130,6 @@ class CEntityManager {
 		if (node === undefined)
 			return undefined
 
-		// loop-optimizer: FORWARD
 		if (
 			path.some(a => {
 				if (typeof a === "number") {
@@ -215,7 +211,6 @@ function ApplyChanges(ent: Entity, changes: NetworkFieldsChangedType) {
 		ent_handlers = cached_field_handlers.get(ent.constructor as Constructor<Entity>)
 	if (ent_handlers === undefined)
 		return
-	// loop-optimizer: FORWARD
 	changed_paths.forEach((field_name, i) => {
 		if (cached_m_fGameTime === undefined || field_name !== cached_m_fGameTime[1] || ent.constructor !== cached_m_fGameTime[0]) {
 			let cb = ent_handlers?.get(field_name)
@@ -524,14 +519,11 @@ declare class ${name} {
 					}
 				}
 			}
-			// loop-optimizer: FORWARD
 			queued_deletion.forEach(ent_id => DeleteEntity(ent_id))
-			// loop-optimizer: FORWARD
 			queued_creation.forEach(([ent_id, class_name]) => {
 				let stringtables_id = EntityManager.GetEntityPropertyByPath(ent_id, ["m_pEntity", "m_nameStringableIndex"]) as number
 				CreateEntity(ent_id, class_name, StringTables.GetString("EntityNames", stringtables_id))
 			})
-			// loop-optimizer: FORWARD
 			changes.forEach(([ent_id, changes_]) => {
 				let ent = EntityManager.EntityByIndex(ent_id)
 				if (ent === undefined)
@@ -554,7 +546,6 @@ declare class ${name} {
 Events.on("SignonStateChanged", new_state => {
 	if (new_state !== SignonState_t.SIGNONSTATE_NONE)
 		return
-	// loop-optimizer: KEEP
 	AllEntitiesAsMap.forEach((ent, ent_id) => DeleteEntity(ent_id))
 	cur_local_id = 0x4000
 })
@@ -562,7 +553,6 @@ Events.on("SignonStateChanged", new_state => {
 function LoadTreeMap(buf: ArrayBuffer) {
 	while (cur_local_id > 0x4000)
 		DeleteEntity(--cur_local_id)
-	// loop-optimizer: FORWARD
 	ParseTRMP(buf).forEach((pos, i) => {
 		let id = cur_local_id++
 		let entity = ClassFromNative(id, "C_DOTA_MapTree", "ent_dota_tree") as Tree

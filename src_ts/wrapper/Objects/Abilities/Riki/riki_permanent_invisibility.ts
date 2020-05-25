@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("riki_permanent_invisibility")
 export default class riki_permanent_invisibility extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("riki_permanent_invisibility", riki_permanent_invisibility)

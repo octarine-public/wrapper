@@ -58,8 +58,7 @@ let ProtoCache = new Map<string, [ProtoType, /* message */ProtoDescription | /* 
 export { ProtoCache }
 
 function FillMessageDefaults(msg: RecursiveProtobuf, desc: ProtoDescription): RecursiveProtobuf {
-	// loop-optimizer: FORWARD
-	[...desc.values()].forEach(field => {
+	desc.forEach(field => {
 		if (msg.has(field.name))
 			return
 		if (field.type === ProtoType.TYPE_MESSAGE)
@@ -378,7 +377,6 @@ export function ParseProtobufDesc(str: string): void {
 	let current_name: string[] = [],
 		current_map: Nullable<ProtoDescription | Map<string, number>>,
 		current_is_enum = false
-	// loop-optimizer: FORWARD
 	str.replace(/\r/g, "").split("\n").forEach((line, i) => {
 		line = line.trim()
 

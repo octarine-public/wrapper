@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("vengefulspirit_command_aura")
 export default class vengefulspirit_command_aura extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("vengefulspirit_command_aura", vengefulspirit_command_aura)

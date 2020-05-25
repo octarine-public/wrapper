@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("necrolyte_reapers_scythe")
 export default class necrolyte_reapers_scythe extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("necrolyte_reapers_scythe", necrolyte_reapers_scythe)

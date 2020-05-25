@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("lycan_summon_wolves_critical_strike")
 export default class lycan_summon_wolves_critical_strike extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("lycan_summon_wolves_critical_strike", lycan_summon_wolves_critical_strike)

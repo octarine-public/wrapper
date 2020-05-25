@@ -6,27 +6,44 @@ import Entity from "./Entity"
 import Unit from "./Unit"
 import GameState from "../../Utils/GameState"
 import { AbilityLogicType } from "../../Enums/AbilityLogicType"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTABaseAbility")
 export default class Ability extends Entity {
-	public NativeEntity: Nullable<C_DOTABaseAbility>
 	public AbilityData: AbilityData
+	@NetworkedBasicField("m_bInIndefiniteCooldown")
 	public IsInIndefiniteCooldown = false
+	@NetworkedBasicField("m_bActivated")
 	public IsActivated = false
-	public IsAutoCastEnebled = false
+	@NetworkedBasicField("m_bAutoCastState")
+	public IsAutoCastEnabled = false
+	@NetworkedBasicField("m_bFrozenCooldown")
 	public IsCooldownFrozen = false
+	@NetworkedBasicField("m_bReplicated")
 	public IsReplicated = false
+	@NetworkedBasicField("m_bStolen")
 	public IsStolen = false
+	@NetworkedBasicField("m_iManaCost")
 	public ManaCost = 0
+	@NetworkedBasicField("m_flOverrideCastPoint")
 	public OverrideCastPoint = 0
+	@NetworkedBasicField("m_iLevel")
 	public Level = 0
+	@NetworkedBasicField("m_fCooldown")
 	public Cooldown = 0
+	@NetworkedBasicField("m_flCooldownLength")
 	public CooldownLength_ = 0
 	public IsInAbilityPhase_ = false
 	public IsInAbilityPhase_ChangeTime = 0
+	@NetworkedBasicField("m_flCastStartTime")
 	public CastStartTime = 0
+	@NetworkedBasicField("m_flChannelStartTime")
 	public ChannelStartTime = 0
+	@NetworkedBasicField("m_bToggleState")
 	public IsToggled = false
+	@NetworkedBasicField("m_bHidden")
 	public IsHidden = false
+	@NetworkedBasicField("m_nAbilityCurrentCharges")
 	public CurrentCharges = 0
 
 	constructor(Index: number, name: string) {
@@ -298,26 +315,9 @@ export default class Ability extends Entity {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTABaseAbility", Ability)
-RegisterFieldHandler(Ability, "m_bInIndefiniteCooldown", (abil, new_value) => abil.IsInIndefiniteCooldown = new_value as boolean)
-RegisterFieldHandler(Ability, "m_nAbilityCurrentCharges", (abil, new_value) => abil.CurrentCharges = new_value as number)
-RegisterFieldHandler(Ability, "m_bActivated", (abil, new_value) => abil.IsActivated = new_value as boolean)
-RegisterFieldHandler(Ability, "m_bAutoCastState", (abil, new_value) => abil.IsAutoCastEnebled = new_value as boolean)
-RegisterFieldHandler(Ability, "m_bFrozenCooldown", (abil, new_value) => abil.IsCooldownFrozen = new_value as boolean)
-RegisterFieldHandler(Ability, "m_bReplicated", (abil, new_value) => abil.IsReplicated = new_value as boolean)
-RegisterFieldHandler(Ability, "m_bStolen", (abil, new_value) => abil.IsStolen = new_value as boolean)
-RegisterFieldHandler(Ability, "m_iManaCost", (abil, new_value) => abil.ManaCost = new_value as number)
-RegisterFieldHandler(Ability, "m_flOverrideCastPoint", (abil, new_value) => abil.OverrideCastPoint = new_value as number)
-RegisterFieldHandler(Ability, "m_iLevel", (abil, new_value) => abil.Level = new_value as number)
-RegisterFieldHandler(Ability, "m_fCooldown", (abil, new_value) => abil.Cooldown = new_value as number)
+import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => abil.Cooldown = abil.CurrentCharges !== 0 ? 0 : Math.max(new_value as number, 0))
-RegisterFieldHandler(Ability, "m_flCooldownLength", (abil, new_value) => abil.CooldownLength_ = new_value as number)
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, new_value) => {
 	abil.IsInAbilityPhase_ = new_value as boolean
 	abil.IsInAbilityPhase_ChangeTime = GameRules?.RawGameTime ?? 0
 })
-RegisterFieldHandler(Ability, "m_flCastStartTime", (abil, new_value) => abil.CastStartTime = new_value as number)
-RegisterFieldHandler(Ability, "m_flChannelStartTime", (abil, new_value) => abil.ChannelStartTime = new_value as number)
-RegisterFieldHandler(Ability, "m_bToggleState", (abil, new_value) => abil.IsToggled = new_value as boolean)
-RegisterFieldHandler(Ability, "m_bHidden", (abil, new_value) => abil.IsHidden = new_value as boolean)

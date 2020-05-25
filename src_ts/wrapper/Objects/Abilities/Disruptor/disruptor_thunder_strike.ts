@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("disruptor_thunder_strike")
 export default class disruptor_thunder_strike extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("disruptor_thunder_strike", disruptor_thunder_strike)

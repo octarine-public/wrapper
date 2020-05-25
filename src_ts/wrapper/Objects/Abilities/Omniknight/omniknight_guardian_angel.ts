@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("omniknight_guardian_angel")
 export default class omniknight_guardian_angel extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("omniknight_guardian_angel", omniknight_guardian_angel)

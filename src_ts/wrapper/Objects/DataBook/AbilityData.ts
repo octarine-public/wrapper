@@ -238,7 +238,6 @@ export default class AbilityData {
 			if (!(special instanceof Map) || !special.has(name))
 				continue
 			let str = special.get(name) as string
-			// loop-optimizer: FORWARD
 			let ar = str.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
 			this.ExtendLevelArray(ar)
 			let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
@@ -271,7 +270,6 @@ export default class AbilityData {
 		return ar
 	}
 	private GetLevelArray(name: string): number[] {
-		// loop-optimizer: KEEP
 		return this.ExtendLevelArray((this.m_Storage.get(name) as string | undefined)?.split(" ")?.map(parseFloat) ?? [])
 	}
 }
@@ -294,7 +292,6 @@ export function ReloadGlobalAbilityStorage() {
 		...LoadAbilityFile("scripts/npc/items.txt").entries(),
 		...LoadAbilityFile("scripts/npc/npc_items_custom.txt").entries(),
 	]) as RecursiveMap
-	// loop-optimizer: KEEP
 	tmp.forEach((map, abil_name) => {
 		if (!(map instanceof Map))
 			return
@@ -305,7 +302,6 @@ export function ReloadGlobalAbilityStorage() {
 				if (base_map instanceof Map) {
 					let map_ = map
 					map = base_map
-					// loop-optimizer: KEEP
 					map_.forEach((val, key) => (map as RecursiveMap).set(key, val))
 
 					{

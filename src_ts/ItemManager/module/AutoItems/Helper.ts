@@ -95,7 +95,6 @@ let nextTick = 0,
 	lastStat: Attributes | undefined
 
 function AutoUseItems(unit: Unit) {
-	// loop-optimizer: FORWARD
 	unit.Items.some(item => {
 		if (!IsValidItem(item))
 			return false
@@ -207,7 +206,6 @@ function AutoUseItems(unit: Unit) {
 			case "item_dust": {
 				if (unit.GetItemByName("item_gem") !== undefined || unit.GetItemByName("item_third_eye") !== undefined)
 					return false
-				// loop-optimizer: KEEP
 				ParticleGlimer.forEach(val => {
 					if (val.IsZero() || unit.Distance2D(val) > item.CastRange)
 						return

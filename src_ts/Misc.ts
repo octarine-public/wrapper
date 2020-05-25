@@ -154,8 +154,8 @@ interface CSODOTAParty {
 }
 
 let timeCreate = -1
-let cur_lobby: Nullable<CSODOTALobby>,
-	last_party: Nullable<CSODOTAParty>,
+// let cur_lobby: Nullable<CSODOTALobby>
+let last_party: Nullable<CSODOTAParty>,
 	restart_finding_match = false
 Events.on("SharedObjectChanged", (id, reason, obj) => {
 	// console.log(id, obj)
@@ -175,7 +175,7 @@ Events.on("SharedObjectChanged", (id, reason, obj) => {
 		}
 		case 2004: {
 			let lobby = obj as CSODOTALobby
-			cur_lobby = reason !== 2 ? lobby : undefined
+			// cur_lobby = reason !== 2 ? lobby : undefined
 
 			if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1)
 				timeCreate = hrtime()

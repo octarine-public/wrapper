@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("frostivus2018_summon_snowman")
 export default class frostivus2018_summon_snowman extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("frostivus2018_summon_snowman", frostivus2018_summon_snowman)

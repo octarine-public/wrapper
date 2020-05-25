@@ -19,6 +19,9 @@ let known_prefixes = new Map([
 
 	// heroes
 	["sandking", "SandKing"],
+	["treant", "Treant"],
+	["phoenix", "Phoenix"],
+	["rattletrap", "Rattletrap"],
 
 	// units
 	["forged_spirit", "ForgedSpirit"],

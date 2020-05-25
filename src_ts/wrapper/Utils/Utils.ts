@@ -88,7 +88,6 @@ export function Utf8ArrayToStr(array: Uint8Array): string {
 }
 
 export function Uint8ArrayToHex(array: Uint8Array): string {
-	// loop-optimizer: KEEP
 	return array.reduce((memo, i) => memo + ("0" + i.toString(16)).slice(-2), "")
 }
 
@@ -143,13 +142,11 @@ export function parseEnumString(enum_object: any /* { [key: string]: number } */
 }
 
 function FixArray(ar: any[]): any {
-	// loop-optimizer: KEEP
 	return ar.map(v => v instanceof Map ? MapToObject(v) : Array.isArray(v) ? FixArray(v) : v)
 }
 
 export function MapToObject(map: Map<any, any>): any {
 	let obj: any = {}
-	// loop-optimizer: KEEP
 	map.forEach((v, k) => obj[k] = v instanceof Map ? MapToObject(v) : Array.isArray(v) ? FixArray(v) : v)
 	return obj
 }

@@ -5,7 +5,6 @@ const MenuEntry = Menu.AddEntry(["Utility", "AntiInitiation"])
 const MenuState = MenuEntry.AddToggle("State")
 const Additionaldelay = MenuEntry.AddSliderFloat("Additional delay", 0.03, 0.03)
 
-// loop-optimizer: KEEP
 var Abils_ = [
 	[ // HexAbils
 		["lion_voodoo", true, true],
@@ -150,7 +149,6 @@ EventsSDK.on("Tick", () => {
 	if (hero === undefined || !hero.IsAlive || hero.IsStunned)
 		return
 	let current_time = GameRules!.RawGameTime
-	// loop-optimizer: KEEP
 	ignore_heroes.forEach((until, hero_) => {
 		if (current_time > until)
 			ignore_heroes.delete(hero_)

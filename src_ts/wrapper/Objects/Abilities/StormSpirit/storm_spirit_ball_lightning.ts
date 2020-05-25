@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("storm_spirit_ball_lightning")
 export default class storm_spirit_ball_lightning extends Ability {
 	public get CastRange(): number {
 		let mana = (this.Owner?.Mana ?? 0) - this.ManaCost
@@ -21,6 +23,3 @@ export default class storm_spirit_ball_lightning extends Ability {
 		return this.GetSpecialValue("ball_lightning_move_speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("storm_spirit_ball_lightning", storm_spirit_ball_lightning)

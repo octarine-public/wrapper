@@ -1,5 +1,7 @@
 import Item from "../Base/Item"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("item_ancient_janggo")
 export default class item_ancient_janggo extends Item {
 	public static readonly ModifierName: string = "modifier_item_ancient_janggo_active"
 	public static readonly AuraModifierName: string = "modifier_item_ancient_janggo_aura_effect"
@@ -15,6 +17,3 @@ export default class item_ancient_janggo extends Item {
 		return this.CurrentCharges > 0 && super.CanBeCasted(bonusMana)
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("item_ancient_janggo", item_ancient_janggo)

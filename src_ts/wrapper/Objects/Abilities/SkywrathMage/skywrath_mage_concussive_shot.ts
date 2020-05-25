@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("skywrath_mage_concussive_shot")
 export default class skywrath_mage_concussive_shot extends Ability {
 	public get AOERadius(): number {
 		let owner = this.Owner
@@ -15,6 +17,3 @@ export default class skywrath_mage_concussive_shot extends Ability {
 		return this.GetSpecialValue("speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("skywrath_mage_concussive_shot", skywrath_mage_concussive_shot)

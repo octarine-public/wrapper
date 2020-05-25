@@ -1,7 +1,6 @@
 import Hero from "../Base/Hero"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("C_DOTA_Unit_Hero_Bane")
 export default class npc_dota_hero_bane extends Hero {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_Unit_Hero_Bane", npc_dota_hero_bane)

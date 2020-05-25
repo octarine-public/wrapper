@@ -1,12 +1,19 @@
 import Entity from "./Entity"
 import EventsSDK from "../../Managers/EventsSDK"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTAGameManagerProxy")
 export default class CGameManager extends Entity {
 	public NativeEntity: Nullable<C_DOTAGameManagerProxy>
+	@NetworkedBasicField("m_lobbyGameName")
 	public LobbyGameName = ""
+	@NetworkedBasicField("m_lobbyLeagueID")
 	public LobbyLeagueID = 0
+	@NetworkedBasicField("m_StableHeroAvailable")
 	public StableHeroAvailable: boolean[] = []
+	@NetworkedBasicField("m_CurrentHeroAvailable")
 	public CurrentHeroAvailable: boolean[] = []
+	@NetworkedBasicField("m_CulledHeroes")
 	public CulledHeroes: boolean[] = []
 
 	public get IsEventGame(): boolean {
@@ -20,14 +27,6 @@ export default class CGameManager extends Entity {
 		return this.LobbyGameName !== "" || this.LobbyLeagueID !== 0
 	}
 }
-
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTAGameManagerProxy", CGameManager)
-RegisterFieldHandler(CGameManager, "m_lobbyGameName", (manager, new_value) => manager.LobbyGameName = new_value as string)
-RegisterFieldHandler(CGameManager, "m_lobbyLeagueID", (manager, new_value) => manager.LobbyLeagueID = new_value as number)
-RegisterFieldHandler(CGameManager, "m_StableHeroAvailable", (manager, new_value) => manager.StableHeroAvailable = new_value as boolean[])
-RegisterFieldHandler(CGameManager, "m_CurrentHeroAvailable", (manager, new_value) => manager.CurrentHeroAvailable = new_value as boolean[])
-RegisterFieldHandler(CGameManager, "m_CulledHeroes", (manager, new_value) => manager.CulledHeroes = new_value as boolean[])
 
 export let GameManager: Nullable<CGameManager>
 EventsSDK.on("EntityCreated", ent => {

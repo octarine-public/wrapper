@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("skywrath_mage_arcane_bolt")
 export default class skywrath_mage_arcane_bolt extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("bolt_speed")
@@ -11,6 +13,3 @@ export default class skywrath_mage_arcane_bolt extends Ability {
 		return damage
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("skywrath_mage_arcane_bolt", skywrath_mage_arcane_bolt)

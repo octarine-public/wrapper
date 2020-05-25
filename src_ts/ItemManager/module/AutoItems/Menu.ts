@@ -2,7 +2,6 @@ import { Menu, MenuBase } from "../../abstract/MenuBase"
 export const { BaseTree, State } = MenuBase(Menu, "Auto Items")
 State.SetTooltip("Auto use items")
 
-// loop-optimizer: KEEP
 const Items_array: string[] = [
 	"item_arcane_ring",
 	"item_blink",

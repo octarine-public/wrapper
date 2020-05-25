@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("enigma_demonic_conversion")
 export default class enigma_demonic_conversion extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("enigma_demonic_conversion", enigma_demonic_conversion)

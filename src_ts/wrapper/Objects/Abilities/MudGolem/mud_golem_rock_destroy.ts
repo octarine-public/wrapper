@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("mud_golem_rock_destroy")
 export default class mud_golem_rock_destroy extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("mud_golem_rock_destroy", mud_golem_rock_destroy)

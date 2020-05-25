@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("brewmaster_cinder_brew")
 export default class brewmaster_cinder_brew extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("brewmaster_cinder_brew", brewmaster_cinder_brew)

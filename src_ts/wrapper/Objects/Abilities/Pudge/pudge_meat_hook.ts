@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("pudge_meat_hook")
 export default class pudge_meat_hook extends Ability {
 	public get AOERadius(): number {
 		return this.GetSpecialValue("hook_width")
@@ -9,6 +11,3 @@ export default class pudge_meat_hook extends Ability {
 		return this.GetSpecialValue("hook_speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("pudge_meat_hook", pudge_meat_hook)

@@ -1,32 +1,58 @@
 import { GameRules } from "../../Objects/Base/GameRules"
 import Ability from "./Ability"
 import Player from "./Player"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTA_Item")
 export default class Item extends Ability {
-	public NativeEntity: Nullable<C_DOTA_Item>
+	@NetworkedBasicField("m_flEnableTime")
 	public EnableTime = 0
+	@NetworkedBasicField("m_iSharability")
 	public Shareability = EShareAbility.ITEM_NOT_SHAREABLE
+	@NetworkedBasicField("m_bDroppable")
 	public IsDroppable = true
+	@NetworkedBasicField("m_flAssembledTime")
 	public AssembledTime = 0
+	@NetworkedBasicField("m_bCanBeUsedOutOfInventory")
 	public CanBeUsedOutOfInventory = false
+	@NetworkedBasicField("m_iInitialCharges")
 	public InitialCharges = 0
+	@NetworkedBasicField("m_bAlertable")
 	public IsAlertable = true
+	@NetworkedBasicField("m_bCastOnPickup")
 	public IsCastedOnPickup = false
+	@NetworkedBasicField("m_bCombinable")
 	public IsCombinable = true
+	@NetworkedBasicField("m_bCombineLocked")
 	public IsCombineLocked = false
+	@NetworkedBasicField("m_bDisassemblable")
 	public IsDisassemblable = false
+	@NetworkedBasicField("m_bKillable")
 	public IsKillable = false
+	@NetworkedBasicField("m_bPermanent")
 	public IsPermanent = false
+	@NetworkedBasicField("m_bPurchasable")
 	public IsPurchasable = true
+	@NetworkedBasicField("m_bPurchasedWhileDead")
 	public IsPurchasedWhileDead = false
+	@NetworkedBasicField("m_bRecipe")
 	public IsRecipe = false
+	@NetworkedBasicField("m_bRequiresCharges")
 	public RequiresCharges = false
+	@NetworkedBasicField("m_bSellable")
 	public IsSellable = true
+	@NetworkedBasicField("m_bStackable")
 	public IsStackable = false
+	@NetworkedBasicField("m_iPlayerOwnerID")
 	public PurchaserID = -1
+	@NetworkedBasicField("m_flPurchaseTime")
 	public PurchaseTime = 0
+	@NetworkedBasicField("m_iSecondaryCharges")
 	public SecondaryCharges = 0
+	@NetworkedBasicField("m_bIsNeutralDrop")
 	public IsNeutral = false
+	@NetworkedBasicField("m_iCurrentCharges")
+	public CurrentCharges = 0
 
 	get IsReady(): boolean {
 		const unit = this.Owner
@@ -47,7 +73,7 @@ export default class Item extends Ability {
 	get IsHidingCharges(): boolean {
 		return this.AbilityData.ItemHideCharges
 	}
-	public get ModelName(): string {
+	public get GroundModelName(): string {
 		return this.AbilityData.ModelName
 	}
 	public get ShouldDisplayCharges(): boolean {
@@ -93,29 +119,5 @@ export default class Item extends Ability {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_Item", Item)
-RegisterFieldHandler(Item, "m_bIsNeutralDrop", (item, new_val) => item.IsNeutral = new_val as boolean)
-RegisterFieldHandler(Item, "m_flEnableTime", (item, new_val) => item.EnableTime = new_val as number)
-RegisterFieldHandler(Item, "m_iSharability", (item, new_val) => item.Shareability = new_val as EShareAbility)
-RegisterFieldHandler(Item, "m_iCurrentCharges", (item, new_val) => item.CurrentCharges = new_val as number)
+import { ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
 ReplaceFieldHandler(Item, "m_nAbilityCurrentCharges", () => { }) // override ability handler
-RegisterFieldHandler(Item, "m_flAssembledTime", (item, new_val) => item.AssembledTime = new_val as number)
-RegisterFieldHandler(Item, "m_bCanBeUsedOutOfInventory", (item, new_val) => item.CanBeUsedOutOfInventory = new_val as boolean)
-RegisterFieldHandler(Item, "m_iInitialCharges", (item, new_val) => item.InitialCharges = new_val as number)
-RegisterFieldHandler(Item, "m_bAlertable", (item, new_val) => item.IsAlertable = new_val as boolean)
-RegisterFieldHandler(Item, "m_bCastOnPickup", (item, new_val) => item.IsCastedOnPickup = new_val as boolean)
-RegisterFieldHandler(Item, "m_bCombinable", (item, new_val) => item.IsCombinable = new_val as boolean)
-RegisterFieldHandler(Item, "m_bCombineLocked", (item, new_val) => item.IsCombineLocked = new_val as boolean)
-RegisterFieldHandler(Item, "m_bDisassemblable", (item, new_val) => item.IsDisassemblable = new_val as boolean)
-RegisterFieldHandler(Item, "m_bKillable", (item, new_val) => item.IsKillable = new_val as boolean)
-RegisterFieldHandler(Item, "m_bPermanent", (item, new_val) => item.IsPermanent = new_val as boolean)
-RegisterFieldHandler(Item, "m_bPurchasable", (item, new_val) => item.IsPurchasable = new_val as boolean)
-RegisterFieldHandler(Item, "m_bPurchasedWhileDead", (item, new_val) => item.IsPurchasedWhileDead = new_val as boolean)
-RegisterFieldHandler(Item, "m_bRecipe", (item, new_val) => item.IsRecipe = new_val as boolean)
-RegisterFieldHandler(Item, "m_bRequiresCharges", (item, new_val) => item.RequiresCharges = new_val as boolean)
-RegisterFieldHandler(Item, "m_bSellable", (item, new_val) => item.IsSellable = new_val as boolean)
-RegisterFieldHandler(Item, "m_bStackable", (item, new_val) => item.IsStackable = new_val as boolean)
-RegisterFieldHandler(Item, "m_iPlayerOwnerID", (item, new_val) => item.PurchaserID = new_val as number)
-RegisterFieldHandler(Item, "m_flPurchaseTime", (item, new_val) => item.PurchaseTime = new_val as number)
-RegisterFieldHandler(Item, "m_iSecondaryCharges", (item, new_val) => item.SecondaryCharges = new_val as number)

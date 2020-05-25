@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("greevil_miniboss_blue_ice_vortex")
 export default class greevil_miniboss_blue_ice_vortex extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("greevil_miniboss_blue_ice_vortex", greevil_miniboss_blue_ice_vortex)

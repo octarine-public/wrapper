@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("grimstroke_dark_artistry")
 export default class grimstroke_dark_artistry extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("end_radius")
@@ -11,6 +13,3 @@ export default class grimstroke_dark_artistry extends Ability {
 		return this.GetSpecialValue("projectile_speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("grimstroke_dark_artistry", grimstroke_dark_artistry)

@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("broodmother_spin_web_destroy")
 export default class broodmother_spin_web_destroy extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("broodmother_spin_web_destroy", broodmother_spin_web_destroy)

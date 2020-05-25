@@ -20,7 +20,6 @@ export function Tick() {
 	if (!State.value)
 		return
 	var local_team_flag = 1 << LocalPlayer!.Team
-	// loop-optimizer: KEEP
 	treant_eyes.forEach((ent, i) => {
 		let native_ent = ent.NativeEntity
 		if (native_ent === undefined)
@@ -51,7 +50,6 @@ export function Tick() {
 }
 export function Init() {
 	treant_eyes = []
-	// loop-optimizer: POSSIBLE_UNDEFINED
 	pars.forEach(par => ParticlesSDK.Destroy(par, true))
 	pars.clear()
 }

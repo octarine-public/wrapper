@@ -32,7 +32,6 @@ EventsSDK.on("Tick", () => {
 	let myHero = LocalPlayer!.Hero
 	if (myHero === undefined || !myHero.IsAlive)
 		return
-	// loop-optimizer: KEEP
 	arModifiers.forEach((time, buff) => {
 		if (!time || !buff.DieTime)
 			arModifiers.delete(buff)

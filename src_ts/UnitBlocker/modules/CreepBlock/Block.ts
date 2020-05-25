@@ -137,7 +137,6 @@ export function Draw(): string | undefined {
 		return
 
 	if (StatusAroundUnits.value) {
-		// loop-optimizer: KEEP
 		ControllablesUnitsDraw.forEach((text, unit) => {
 
 			let wts = RendererSDK.WorldToScreen(unit.Position)

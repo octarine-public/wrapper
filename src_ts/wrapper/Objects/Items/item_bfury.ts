@@ -1,10 +1,6 @@
 import Item from "../Base/Item"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("item_bfury")
 export default class item_bfury extends Item {
-	public get CastRangeOnWard(): number {
-		return this.GetSpecialValue("cast_range_ward")
-	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("item_bfury", item_bfury)

@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("visage_gravekeepers_cloak")
 export default class visage_gravekeepers_cloak extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("visage_gravekeepers_cloak", visage_gravekeepers_cloak)

@@ -2,7 +2,9 @@ import Entity from "./Entity"
 import Vector3 from "../../Base/Vector3"
 import QAngle from "../../Base/QAngle"
 import EntityManager from "../../Managers/EntityManager"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("C_DOTA_MapTree")
 export default class Tree extends Entity {
 	public readonly FakeTreePos = new Vector3()
 	public BinaryID = 0
@@ -23,6 +25,3 @@ export default class Tree extends Entity {
 		return 100
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_MapTree", Tree)

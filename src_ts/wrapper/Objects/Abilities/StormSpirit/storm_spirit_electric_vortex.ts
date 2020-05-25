@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("storm_spirit_electric_vortex")
 export default class storm_spirit_electric_vortex extends Ability {
 	public get CastRange(): number {
 		return this.Owner?.HasScepter
@@ -13,6 +15,3 @@ export default class storm_spirit_electric_vortex extends Ability {
 			: 0
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("storm_spirit_electric_vortex", storm_spirit_electric_vortex)

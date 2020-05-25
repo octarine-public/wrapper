@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("queenofpain_sonic_wave")
 export default class queenofpain_sonic_wave extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("final_aoe")
@@ -13,6 +15,3 @@ export default class queenofpain_sonic_wave extends Ability {
 		return this.GetSpecialValue("projectile_speed")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("queenofpain_sonic_wave", queenofpain_sonic_wave)

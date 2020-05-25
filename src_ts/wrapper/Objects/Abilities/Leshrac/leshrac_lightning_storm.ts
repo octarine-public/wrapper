@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("leshrac_lightning_storm")
 export default class leshrac_lightning_storm extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("leshrac_lightning_storm", leshrac_lightning_storm)

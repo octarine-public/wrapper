@@ -7,24 +7,40 @@ import EventsSDK from "../../Managers/EventsSDK"
 import GameState from "../../Utils/GameState"
 import EntityManager, { EntityPropertyType } from "../../Managers/EntityManager"
 import Unit from "./Unit"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTAGamerulesProxy")
 export default class CGameRules extends Entity {
-	public NativeEntity: Nullable<C_DOTAGamerulesProxy>
 	public RawGameTime = 0
+	@NetworkedBasicField("m_bGamePaused")
 	public IsPaused = false
+	@NetworkedBasicField("m_nExpectedPlayers")
 	public ExpectedPlayers = 0
+	@NetworkedBasicField("m_iGameMode")
 	public GameMode = DOTA_GameMode.DOTA_GAMEMODE_NONE
+	@NetworkedBasicField("m_nGameState")
 	public GameState = DOTA_GameState.DOTA_GAMERULES_STATE_INIT
+	@NetworkedBasicField("m_flGameStartTime")
 	public GameStartTime = 0
+	@NetworkedBasicField("m_flGameLoadTime")
 	public GameLoadTime = 0
+	@NetworkedBasicField("m_flStateTransitionTime")
 	public StateTransitionTime = 0
+	@NetworkedBasicField("m_fGoodGlyphCooldown")
 	public GlyphCooldownRadiantTime = 0
+	@NetworkedBasicField("m_fBadGlyphCooldown")
 	public GlyphCooldownDireTime = 0
+	@NetworkedBasicField("m_fGoodRadarCooldown")
 	public ScanCooldownRadiantTime = 0
+	@NetworkedBasicField("m_fBadRadarCooldown")
 	public ScanCooldownDireTime = 0
+	@NetworkedBasicField("m_bIsNightstalkerNight")
 	public IsNightstalkerNight = false
+	@NetworkedBasicField("m_bIsTemporaryNight")
 	public IsTemporaryNight = false
+	@NetworkedBasicField("m_nLoadedPlayers")
 	public LoadedPlayers = 0
+	@NetworkedBasicField("m_unMatchID64")
 	public MatchID = 0n
 	public NeutralSpawnBoxes: NeutralSpawnBox[] = []
 	public StockInfo: StockInfo[] = []
@@ -62,8 +78,7 @@ export default class CGameRules extends Entity {
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTAGamerulesProxy", CGameRules)
+import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 	game.RawGameTime = new_val as number
 	EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
@@ -76,27 +91,10 @@ RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 	if (LocalPlayer !== undefined)
 		EventsSDK.emit("Tick", false)
 })
-RegisterFieldHandler(CGameRules, "m_bGamePaused", (game, new_val) => game.IsPaused = new_val as boolean)
-RegisterFieldHandler(CGameRules, "m_nExpectedPlayers", (game, new_val) => game.ExpectedPlayers = new_val as number)
-RegisterFieldHandler(CGameRules, "m_iGameMode", (game, new_val) => game.GameMode = new_val as DOTA_GameMode)
-RegisterFieldHandler(CGameRules, "m_nGameState", (game, new_val) => game.GameState = new_val as DOTA_GameState)
-RegisterFieldHandler(CGameRules, "m_flGameStartTime", (game, new_val) => game.GameStartTime = new_val as number)
-RegisterFieldHandler(CGameRules, "m_flGameLoadTime", (game, new_val) => game.GameLoadTime = new_val as number)
-RegisterFieldHandler(CGameRules, "m_flStateTransitionTime", (game, new_val) => game.StateTransitionTime = new_val as number)
-RegisterFieldHandler(CGameRules, "m_fGoodGlyphCooldown", (game, new_val) => game.GlyphCooldownRadiantTime = new_val as number)
-RegisterFieldHandler(CGameRules, "m_fBadGlyphCooldown", (game, new_val) => game.GlyphCooldownDireTime = new_val as number)
-RegisterFieldHandler(CGameRules, "m_fGoodRadarCooldown", (game, new_val) => game.ScanCooldownRadiantTime = new_val as number)
-RegisterFieldHandler(CGameRules, "m_fBadRadarCooldown", (game, new_val) => game.ScanCooldownDireTime = new_val as number)
-RegisterFieldHandler(CGameRules, "m_bIsNightstalkerNight", (game, new_val) => game.IsNightstalkerNight = new_val as boolean)
-RegisterFieldHandler(CGameRules, "m_bIsTemporaryNight", (game, new_val) => game.IsTemporaryNight = new_val as boolean)
-RegisterFieldHandler(CGameRules, "m_nLoadedPlayers", (game, new_val) => game.LoadedPlayers = new_val as number)
-RegisterFieldHandler(CGameRules, "m_unMatchID64", (game, new_val) => game.MatchID = new_val as bigint)
 RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, new_val) => {
-	// loop-optimizer: FORWARD
 	game.NeutralSpawnBoxes = (new_val as Map<string, EntityPropertyType>[]).map(map => new NeutralSpawnBox(map))
 })
 RegisterFieldHandler(CGameRules, "m_vecItemStockInfo", (game, new_val) => {
-	// loop-optimizer: FORWARD
 	game.StockInfo = (new_val as Map<string, EntityPropertyType>[]).map(map => new StockInfo(map))
 })
 

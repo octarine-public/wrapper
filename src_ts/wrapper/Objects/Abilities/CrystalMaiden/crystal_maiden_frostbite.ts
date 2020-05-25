@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("crystal_maiden_frostbite")
 export default class crystal_maiden_frostbite extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("crystal_maiden_frostbite", crystal_maiden_frostbite)

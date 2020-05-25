@@ -1,7 +1,6 @@
 import Item from "../Base/Item"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("item_helm_of_the_dominator")
 export default class item_helm_of_the_dominator extends Item {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("item_helm_of_the_dominator", item_helm_of_the_dominator)

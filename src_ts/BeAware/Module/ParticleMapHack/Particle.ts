@@ -460,7 +460,6 @@ export function OnDraw() {
 
 	if (Particle === undefined || Particle.size <= 0 || !State.value)
 		return
-	// loop-optimizer: KEEP
 	Particle.forEach(([handle, target, Time, position, color, delete_time, ability_string], i) => {
 
 		if (delete_time === undefined)

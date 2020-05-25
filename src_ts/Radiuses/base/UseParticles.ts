@@ -35,12 +35,10 @@ export function ParticleCreateRange(
 
 
 export function ParticleSetRadiusByRadius(particleManager: ParticlesSDK, getRange: (ent: Unit) => number) {
-	// loop-optimizer: KEEP
 	particleManager.AllParticles.forEach((particle, ent) => particle.SetControlPoint(1, getRange(ent)))
 }
 
 export function ParticlesSetRanges(particleManager: ParticlesSDK, pattern: IParticlePattern) {
-	// loop-optimizer: KEEP
 	particleManager.AllParticles.forEach(particle => ParticleUpdateRange(particle, pattern))
 }
 

@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("satyr_soulstealer_mana_burn")
 export default class satyr_soulstealer_mana_burn extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("satyr_soulstealer_mana_burn", satyr_soulstealer_mana_burn)

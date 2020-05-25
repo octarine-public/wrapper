@@ -1,6 +1,8 @@
 import Ability from "../../Base/Ability"
 import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("invoker_ghost_walk")
 export default class invoker_ghost_walk extends Ability {
 	public get AbilityLogicType(): AbilityLogicType {
 		return AbilityLogicType.Invisibility
@@ -9,6 +11,3 @@ export default class invoker_ghost_walk extends Ability {
 		return this.GetSpecialValue("area_of_effect")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("invoker_ghost_walk", invoker_ghost_walk)

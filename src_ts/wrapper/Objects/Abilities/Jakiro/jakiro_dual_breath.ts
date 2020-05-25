@@ -1,5 +1,7 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("jakiro_dual_breath")
 export default class jakiro_dual_breath extends Ability {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("end_radius")
@@ -11,6 +13,3 @@ export default class jakiro_dual_breath extends Ability {
 		return this.GetSpecialValue("speed_fire")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("jakiro_dual_breath", jakiro_dual_breath)

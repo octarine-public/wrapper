@@ -1,7 +1,6 @@
 import Ability from "../../Base/Ability"
+import { WrapperClass } from "../../../Decorators"
 
+@WrapperClass("phantom_assassin_stifling_dagger")
 export default class phantom_assassin_stifling_dagger extends Ability {
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("phantom_assassin_stifling_dagger", phantom_assassin_stifling_dagger)

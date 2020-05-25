@@ -1,10 +1,8 @@
 import Building from "./Building"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTA_BaseNPC_Watch_Tower")
 export default class Outpost extends Building {
-	public NativeEntity: Nullable<C_DOTA_BaseNPC_Watch_Tower>
+	@NetworkedBasicField("m_szOutpostName")
 	public OutpostName = ""
 }
-
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_BaseNPC_Watch_Tower", Outpost)
-RegisterFieldHandler(Outpost, "m_szOutpostName", (outpost, new_val) => outpost.OutpostName = new_val as string)

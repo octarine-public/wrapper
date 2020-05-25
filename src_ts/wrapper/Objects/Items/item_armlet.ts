@@ -1,5 +1,7 @@
 import Item from "../Base/Item"
+import { WrapperClass } from "../../Decorators"
 
+@WrapperClass("item_armlet")
 export default class item_armlet extends Item {
 	public static readonly ModifierName: string = "modifier_item_armlet_unholy_strength"
 
@@ -7,6 +9,3 @@ export default class item_armlet extends Item {
 		return this.GetSpecialValue("toggle_cooldown")
 	}
 }
-
-import { RegisterClass } from "wrapper/Objects/NativeToSDK"
-RegisterClass("item_armlet", item_armlet)

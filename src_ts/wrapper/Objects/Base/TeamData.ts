@@ -1,31 +1,40 @@
 import Entity from "./Entity"
 import EntityManager, { EntityPropertyType } from "../../Managers/EntityManager"
 import TreeModelReplacement from "../../Base/TreeModelReplacement"
-import { Team } from "../../Enums/Team"
 import DataTeamPlayer from "../../Base/DataTeamPlayer"
 import Vector2 from "../../Base/Vector2"
+import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
+@WrapperClass("C_DOTA_DataNonSpectator")
 export default class TeamData extends Entity {
-	public NativeEntity: Nullable<C_DOTA_DataNonSpectator>
-	public TeamNum = Team.None
 	public DataTeam: DataTeamPlayer[] = []
 	public WorldTreeModelReplacements: TreeModelReplacement[] = []
+	@NetworkedBasicField("m_vDesiredWardPlacement")
 	public DesiredWardPlacement: Vector2[] = []
+	@NetworkedBasicField("m_nEnemyStartingPosition")
 	public EnemyStartingPosition: number[] = []
+	@NetworkedBasicField("m_nCaptainInspectedHeroID")
 	public CaptainInspectedHeroID = 0
+	@NetworkedBasicField("m_flSuggestedWardWeights")
 	public SuggestedWardWeights: number[] = []
+	@NetworkedBasicField("m_nSuggestedWardIndexes")
 	public SuggestedWardIndexes: number[] = []
+	@NetworkedBasicField("m_iSuggestedLanes")
 	public SuggestedLanes: number[] = []
+	@NetworkedBasicField("m_iSuggestedLaneWeights")
 	public SuggestedLaneWeights: number[] = []
+	@NetworkedBasicField("m_bSuggestedLaneRoam")
 	public SuggestedLaneRoam: boolean[] = []
+	@NetworkedBasicField("m_bSuggestedLaneJungle")
 	public SuggestedLaneJungle: boolean[] = []
+	@NetworkedBasicField("m_vecNeutralItemsEarned")
 	public NeutralItemsEarned: number[] = []
-	public NeutralStashItems: number[] = []
+	@NetworkedBasicField("m_vecNeutralItemsConsumed")
 	public NeutralItemsConsumed: number[] = []
 
 	public toJSON() {
 		return {
-			TeamNum: this.TeamNum,
+			Team: this.Team,
 			DataTeam: this.DataTeam,
 			WorldTreeModelReplacements: this.WorldTreeModelReplacements,
 			DesiredWardPlacement: this.DesiredWardPlacement,
@@ -38,32 +47,16 @@ export default class TeamData extends Entity {
 			SuggestedLaneRoam: this.SuggestedLaneRoam,
 			SuggestedLaneJungle: this.SuggestedLaneJungle,
 			NeutralItemsEarned: this.NeutralItemsEarned,
-			NeutralStashItems: this.NeutralStashItems,
 			NeutralItemsConsumed: this.NeutralItemsConsumed,
 		}
 	}
 }
 
-import { RegisterClass, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterClass("C_DOTA_DataNonSpectator", TeamData)
-RegisterFieldHandler(TeamData, "m_iTeamNum", (data, new_value) => data.TeamNum = new_value as number)
+import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, new_val) => {
-	// loop-optimizer: FORWARD
 	data.DataTeam = (new_val as Map<string, EntityPropertyType>[]).map(map => new DataTeamPlayer(map))
 })
 RegisterFieldHandler(TeamData, "m_vecWorldTreeModelReplacements", (data, new_val) => {
-	// loop-optimizer: FORWARD
 	data.WorldTreeModelReplacements = (new_val as Map<string, EntityPropertyType>[]).map(map => new TreeModelReplacement(map))
 })
-RegisterFieldHandler(TeamData, "m_vDesiredWardPlacement", (data, new_value) => data.DesiredWardPlacement = new_value as Vector2[])
-RegisterFieldHandler(TeamData, "m_nEnemyStartingPosition", (data, new_value) => data.EnemyStartingPosition = new_value as number[])
-RegisterFieldHandler(TeamData, "m_nCaptainInspectedHeroID", (data, new_value) => data.CaptainInspectedHeroID = new_value as number)
-RegisterFieldHandler(TeamData, "m_flSuggestedWardWeights", (data, new_value) => data.SuggestedWardWeights = new_value as number[])
-RegisterFieldHandler(TeamData, "m_nSuggestedWardIndexes", (data, new_value) => data.SuggestedWardIndexes = new_value as number[])
-RegisterFieldHandler(TeamData, "m_iSuggestedLanes", (data, new_value) => data.SuggestedLanes = new_value as number[])
-RegisterFieldHandler(TeamData, "m_iSuggestedLaneWeights", (data, new_value) => data.SuggestedLaneWeights = new_value as number[])
-RegisterFieldHandler(TeamData, "m_bSuggestedLaneRoam", (data, new_value) => data.SuggestedLaneRoam = new_value as boolean[])
-RegisterFieldHandler(TeamData, "m_bSuggestedLaneJungle", (data, new_value) => data.SuggestedLaneJungle = new_value as boolean[])
-RegisterFieldHandler(TeamData, "m_vecNeutralItemsEarned", (data, new_value) => data.NeutralItemsEarned = new_value as number[])
-RegisterFieldHandler(TeamData, "m_vecNeutralItemsConsumed", (data, new_value) => data.NeutralItemsConsumed = new_value as number[])
 RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, new_value) => EntityManager.SetWorldTreeState(new_value as bigint[]))
