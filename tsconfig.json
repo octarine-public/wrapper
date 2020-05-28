@@ -8,11 +8,9 @@
 		"noUnusedLocals": true,
 		"strict": true,
 		"experimentalDecorators": true,
-		"outDir": "scripts"
+		"outDir": "scripts",
+		"removeComments": true
 	},
-	"include": [
-		"*.d.ts",
-		"src_ts/**/*.ts"
-	],
+	"include": ["*.d.ts", "src_ts/**/*.ts"],
 	"compileOnSave": true
 }
