@@ -56,6 +56,7 @@ export default class AbilityData {
 	public readonly AbilityImmunityType: SPELL_IMMUNITY_TYPES
 	public readonly ItemDisplayCharges: boolean
 	public readonly ItemHideCharges: boolean
+	public readonly Duration: number[]
 	private readonly SpecialValueCache = new Map<string, [number[], Nullable<string>, EDOTASpecialBonusOperation]>()
 	private readonly CastRangeCache: number[]
 	private readonly ChannelTimeCache: number[]
@@ -126,6 +127,7 @@ export default class AbilityData {
 		this.ItemHideCharges = this.m_Storage.has("ItemHideCharges")
 			? parseInt(this.m_Storage.get("ItemHideCharges") as string) !== 0
 			: true
+		this.Duration = this.GetLevelArray("AbilityDuration")
 		this.CastRangeCache = this.GetLevelArray("AbilityCastRange")
 		this.ChannelTimeCache = this.GetLevelArray("AbilityChannelTime")
 		this.AbilityDamageCache = this.GetLevelArray("AbilityDamage")
@@ -189,6 +191,13 @@ export default class AbilityData {
 		if (level < 0)
 			return 0
 		return this.CastRangeCache[level]
+	}
+
+	public GetDuration(level: number): number {
+		level = Math.min(this.MaxLevel, level) - 1
+		if (level < 0)
+			return 0
+		return this.Duration[level]
 	}
 
 	public GetChannelTime(level: number): number {

@@ -157,6 +157,7 @@ export default class Ability extends Entity {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 	}
 
+
 	/**
 	 * In real time cooldown (in fog)
 	 */
@@ -164,6 +165,10 @@ export default class Ability extends Entity {
 		if (this.Owner === undefined || this.Owner.IsVisible)
 			return this.Cooldown
 		return this.Cooldown - ((GameRules?.RawGameTime ?? 0) - this.BecameDormantTime)
+	}
+
+	public get Duration(): number {
+		return this.AbilityData.GetDuration(this.Level)
 	}
 
 	public get BaseCastRange(): number {

@@ -9,6 +9,7 @@ import Player from "../../Objects/Base/Player"
 import * as StringTables from "../../Managers/StringTables"
 import Manifest from "../../Managers/Manifest"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { GameRules } from "./GameRules"
 
 export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
@@ -52,6 +53,7 @@ export default class Entity {
 	public TotalAgility = 0
 	public TotalIntellect = 0
 	public TotalStrength = 0
+	private rawCreateTime = 0
 
 	private readonly PersonalProps: Nullable<Map<string, EntityPropertyType>>
 
@@ -96,6 +98,15 @@ export default class Entity {
 			EntityVisualRotations[this.Index * 3 + 1],
 			EntityVisualRotations[this.Index * 3 + 2],
 		)
+	}
+	public get RawCreateTime() {
+		if (this.CreateTime !== 0)
+			return this.CreateTime
+
+		if (this.rawCreateTime === 0)
+			this.rawCreateTime = (GameRules?.RawGameTime ?? 0)
+
+		return this.rawCreateTime
 	}
 	public get HPPercent(): number {
 		return Math.floor(this.HP / this.MaxHP * 100) || 0
