@@ -11,6 +11,9 @@
 		"outDir": "scripts",
 		"removeComments": true
 	},
-	"include": ["*.d.ts", "src_ts/**/*.ts"],
+	"include": [
+		"*.d.ts",
+		"src_ts/**/*.ts"
+	],
 	"compileOnSave": true
 }

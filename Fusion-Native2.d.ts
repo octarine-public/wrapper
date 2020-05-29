@@ -2807,7 +2807,7 @@ declare class CSkeletonInstance extends CGameSceneNode {
 
 declare class CGameSceneNode {
 	SetLocalScale(scale: number): void
-	
+
 	readonly m_pOwner: CEntityInstance
 	readonly m_pParent: CGameSceneNode
 	readonly m_pChild: CGameSceneNode
@@ -5245,7 +5245,7 @@ declare class C_BaseFire extends C_BaseEntity {
 
 declare class C_BaseEntity extends C_GameEntity {
 	m_sModel: string
-	
+
 	readonly m_CBodyComponent: CBodyComponent
 	readonly m_NetworkTransmitComponent: CNetworkTransmitComponent
 	readonly m_pDummyPhysicsComponent: CPhysicsComponent
@@ -5655,7 +5655,7 @@ declare class C_BaseAnimatingOverlay extends C_BaseAnimating { }
 
 declare class C_BaseAnimating extends C_BaseModelEntity {
 	SetSkin(skin_id: number): void
-	
+
 	readonly m_CHitboxComponent: CHitboxComponent
 	m_vecForce: IOBuffer_Vector3
 	m_nForceBone: number
@@ -5674,7 +5674,7 @@ declare class C_BaseAnimating extends C_BaseModelEntity {
 
 declare class C_BaseModelEntity extends C_BaseEntity {
 	OnColorChanged(): void
-	
+
 	readonly m_CRenderComponent: CRenderComponent
 	m_iViewerID: number
 	m_iTeamVisibilityBitmask: number
@@ -8463,7 +8463,7 @@ declare class C_DOTA_BaseNPC extends C_NextBotCombatCharacter {
 	readonly m_fIdealSpeed: number
 	readonly m_fAttackRange: number
 	readonly m_flMagicalResistanceValueReal: number
-	
+
 	m_bIsPhantom: boolean
 	m_iUnitType: number
 	m_bSelectionRingVisible: boolean
@@ -10904,7 +10904,7 @@ declare class C_LightGlow extends C_BaseModelEntity {
 	m_nOuterMaxDist: number
 	m_flGlowProxySize: number
 	m_flHDRColorScale: number
-	readonly m_Glow: C_LightGlowOverlay
+	// readonly m_Glow: C_LightGlowOverlay // actually it's this, but TS doesn't allow overriding types
 }
 
 declare class C_DOTA_Item_Recipe_Kaya extends C_DOTA_Item { }
