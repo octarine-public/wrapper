@@ -39,6 +39,7 @@ let AutoAccept_delay = Menu.AddSlider("Delay on AutoAccept", 3, 0, 28 /* ?? is r
 		"dota_688",
 		"dota_685",
 		"dota_vr",
+		"dota_ti10"
 	], 0),
 	tree_model = Menu.AddSwitcher("Tree Model", [
 		"Default",
