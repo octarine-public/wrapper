@@ -167,7 +167,7 @@ export default class Ability extends Entity {
 		return this.Cooldown - ((GameRules?.RawGameTime ?? 0) - this.BecameDormantTime)
 	}
 
-	public get Duration(): number {
+	public get MaxDuration(): number {
 		return this.AbilityData.GetDuration(this.Level)
 	}
 
