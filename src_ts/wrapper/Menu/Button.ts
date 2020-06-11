@@ -3,7 +3,6 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
-import { FontFlags_t } from "../Enums/FontFlags_t"
 
 export default class Button extends Base {
 	protected readonly button_offset = new Vector2(8, 3)
@@ -22,7 +21,7 @@ export default class Button extends Base {
 		return new Rectangle(base_pos, base_pos.Add(this.TotalSize).SubtractForThis(this.button_offset.MultiplyScalar(2)).SubtractForThis(this.border_size.MultiplyScalar(2)))
 	}
 	public Update() {
-		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize)
 		this.TotalSize_.x = this.name_size.x + 10 + this.border_size.x * 2
 	}
 	public Render(): void {
@@ -30,7 +29,7 @@ export default class Button extends Base {
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
 		let button_rect = this.ButtonRect
 		RendererSDK.FilledRect(button_rect.pos1, button_rect.pos2.Subtract(button_rect.pos1), this.button_color)
-		RendererSDK.Text(this.name, button_rect.pos1.Add(button_rect.pos2).DivideScalarForThis(2).SubtractForThis(this.name_size.DivideScalar(2)), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, button_rect.pos1.Add(button_rect.pos2).DivideScalarForThis(2).SubtractForThis(this.name_size.DivideScalar(2)), this.FontColor, this.FontName, this.FontSize)
 		if (!this.ButtonRect.Contains(this.MousePosition))
 			super.RenderTooltip()
 	}

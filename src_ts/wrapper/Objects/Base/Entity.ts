@@ -30,8 +30,6 @@ m_pEntity.m_flags
 */
 @WrapperClass("C_BaseEntity")
 export default class Entity {
-	public NativeEntity: Nullable<C_BaseEntity>
-
 	public IsValid = true
 	public Name_ = ""
 	@NetworkedBasicField("m_flCreateTime")
@@ -58,7 +56,6 @@ export default class Entity {
 	private readonly PersonalProps: Nullable<Map<string, EntityPropertyType>>
 
 	constructor(public readonly Index: number) {
-		this.NativeEntity = EntityManager.NativeByIndex(this.Index)
 		this.PersonalProps = EntityManager.GetEntityProperties(this.Index) as Map<string, EntityPropertyType>
 	}
 
@@ -125,7 +122,7 @@ export default class Entity {
 		return 0
 	}
 	public get CollisionRadius(): number {
-		return Math.sqrt(this.NativeEntity?.m_pCollision?.m_flRadius ?? 0)
+		return GetEntityCollisionRadius(this.Index) ?? 0
 	}
 	public get RingRadius(): number {
 		return 30 // TODO: actually it uses model unless it doesn't have such for C_BaseEntity#GetRingRadius

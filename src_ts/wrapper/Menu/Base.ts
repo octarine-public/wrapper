@@ -3,7 +3,6 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
-import { FontFlags_t } from "../Enums/FontFlags_t"
 import InputManager from "../Managers/InputManager"
 
 export interface IMenu {
@@ -50,7 +49,7 @@ export default class Base {
 	public Update(): void {
 		if (this.tooltip === undefined || this.tooltip.length === 0)
 			return
-		this.tooltip_size = RendererSDK.GetTextSize(this.tooltip, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		this.tooltip_size = RendererSDK.GetTextSize(this.tooltip, this.FontName, this.FontSize)
 	}
 	public Render(): void {
 		RendererSDK.FilledRect(this.Position, this.TotalSize, this.border_color)
@@ -92,13 +91,12 @@ export default class Base {
 			this.tooltip,
 			Position
 				.AddForThis(this.border_size)
-				.AddScalarX(SizeImage.x + Addscalar),
+				.AddScalarX(SizeImage.x + Addscalar)
+				.AddScalarY(this.tooltip_size.y),
 
 			Color.White,
 			this.FontName,
-			this.FontSize,
-			false,
-			FontFlags_t.ANTIALIAS
+			this.FontSize
 		)
 	}
 

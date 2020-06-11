@@ -39,11 +39,11 @@ export default class Hero extends Unit {
 	public TotalStrength = 0
 	public m_hReplicatingOtherHeroModel = 0x3FFF
 
-	public get ReplicatingOtherHeroModel_(): C_BaseEntity | number {
+	public get ReplicatingOtherHeroModel_(): Entity | number {
 		let id = this.m_hReplicatingOtherHeroModel
 		if (id === 0x3FFF)
 			return 0
-		return EntityManager.NativeByIndex(id) ?? id
+		return EntityManager.EntityByIndex(id) ?? id
 	}
 	public get HeroID(): number {
 		return this.UnitData.HeroID
@@ -53,7 +53,7 @@ export default class Hero extends Unit {
 	}
 	public get IsIllusion(): boolean {
 		let ReplicatingOtherHeroModel_ = this.ReplicatingOtherHeroModel_
-		return (ReplicatingOtherHeroModel_ instanceof C_BaseEntity) || (ReplicatingOtherHeroModel_ > 0)
+		return (ReplicatingOtherHeroModel_ instanceof Entity) || (ReplicatingOtherHeroModel_ > 0)
 	}
 
 	public get SpellAmplification(): number {

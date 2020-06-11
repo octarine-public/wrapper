@@ -8,12 +8,9 @@ EventsSDK.on("Draw", () => {
 	if (!stateMain.value || !GameRules?.IsInGame || LocalPlayer === undefined || LocalPlayer.IsSpectator)
 		return
 	EntityManager.GetEntitiesByClass(Hero).forEach(illus => {
-		let native_entity = illus.NativeEntity
-		if (!illus.IsIllusion || !illus.IsEnemy() || native_entity === undefined)
+		if (!illus.IsIllusion || !illus.IsEnemy())
 			return
 		MenuColor.Color.toIOBuffer() // set IOBuffer frmm color
-		native_entity.m_nRenderMode = RenderMode_t.kRenderTransColor
-		native_entity.m_clrRender = true // set from IOBuffer
-		native_entity.OnColorChanged()
+		SetEntityColor(illus.Index, RenderMode_t.kRenderTransColor)
 	})
 })

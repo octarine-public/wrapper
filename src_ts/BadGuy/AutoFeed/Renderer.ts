@@ -1,4 +1,4 @@
-import { Color, RendererSDK, Unit, FontFlags_t, Hero } from "wrapper/Imports"
+import { Color, RendererSDK, Unit, Hero } from "wrapper/Imports"
 import { DrawTextSize, SwitchUnit } from "./Menu"
 import { Units, filterUnits } from "./Listeners"
 
@@ -9,7 +9,7 @@ function DrawText(unit: Unit) {
 	if (position_unit === undefined)
 		return
 	RendererSDK.Text("Feeding" + (unit.HasBuffByName("modifier_teleporting") ? ": teleporting..." : ""),
-		position_unit, new Color(255, 255, 255), "Calibri", DrawTextSize.value, false, FontFlags_t.ANTIALIAS)
+		position_unit, new Color(255, 255, 255), "Calibri", DrawTextSize.value)
 }
 export function Renderer() {
 	Units.forEach(DrawText)

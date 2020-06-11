@@ -39,7 +39,7 @@ EventsSDK.on("Draw", () => {
 		Color.White,
 		"Calibri",
 		TextSize.value,
-		BoldText.value
+		BoldText.value ? 700 : 400
 	)
 	LoadMatchGroups().forEach((name_server, key) => {
 		let player_count = group_finder[key] ?? 0
@@ -55,7 +55,7 @@ EventsSDK.on("Draw", () => {
 			Color.White,
 			"Calibri",
 			TextSize.value,
-			BoldText.value
+			BoldText.value ? 700 : 400
 		)
 	})
 })

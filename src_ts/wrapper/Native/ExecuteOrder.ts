@@ -11,6 +11,7 @@ import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import EventsSDK from "../Managers/EventsSDK"
 import Tree from "../Objects/Base/Tree"
 import Color from "../Base/Color"
+import InputManager from "../Managers/InputManager"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -28,6 +29,7 @@ export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 ]
 
 export default class ExecuteOrder {
+	private static LatestUnitOrder_view = new DataView(LatestUnitOrder.buffer)
 	public static order_queue: ExecuteOrder[] = []
 	public static wait_next_usercmd = false
 	public static wait_near_cursor = false
@@ -41,7 +43,7 @@ export default class ExecuteOrder {
 		position?: Vector3 | Vector2,
 		ability?: Ability | number,
 		orderIssuer?: PlayerOrderIssuer_t,
-		unit?: Unit,
+		issuers?: Unit[],
 		queue?: boolean,
 		showEffects?: boolean,
 	}): ExecuteOrder {
@@ -51,24 +53,41 @@ export default class ExecuteOrder {
 			order.position,
 			order.ability,
 			order.orderIssuer,
-			order.unit,
+			order.issuers ?? [],
 			order.queue,
 			order.showEffects,
 		)
 	}
 
-	public static fromNative(order: CUnitOrder): ExecuteOrder {
-		let unit = (EntityManager.GetEntityByNative(order.unit) as Unit) ?? LocalPlayer?.Hero
-
+	public static fromNative(): ExecuteOrder {
+		const issuers_size = ExecuteOrder.LatestUnitOrder_view.getUint32(30, true)
+		const issuers: Unit[] = []
+		for (let i = 0; i < issuers_size; i++) {
+			let ent_id = ExecuteOrder.LatestUnitOrder_view.getUint32(34 + (i * 4), true)
+			let ent = EntityManager.EntityByIndex(ent_id) as Unit
+			if (ent !== undefined)
+				issuers.push(ent)
+		}
+		if (issuers.length === 0) {
+			let hero = LocalPlayer?.Hero
+			if (hero !== undefined)
+				issuers.push(hero)
+		}
+		const target = ExecuteOrder.LatestUnitOrder_view.getUint32(20, true),
+			ability = ExecuteOrder.LatestUnitOrder_view.getUint32(24, true)
 		return new ExecuteOrder(
-			order.order_type,
-			order.target !== 0 ? (EntityManager.GetEntityByNative(order.target) ?? order.target) : undefined,
-			Vector3.fromIOBuffer(order.position !== undefined),
-			(EntityManager.GetEntityByNative(order.ability) as Ability) ?? order.ability,
-			order.issuer,
-			unit,
-			order.queue,
-			order.show_effects,
+			ExecuteOrder.LatestUnitOrder_view.getUint32(0, true),
+			target !== 0 ? (EntityManager.EntityByIndex(target) ?? target) : undefined,
+			new Vector3(
+				ExecuteOrder.LatestUnitOrder_view.getFloat32(8, true),
+				ExecuteOrder.LatestUnitOrder_view.getFloat32(12, true),
+				ExecuteOrder.LatestUnitOrder_view.getFloat32(16, true)
+			),
+			ability !== 0 ? ((EntityManager.EntityByIndex(ability) as Ability) ?? ability) : undefined,
+			ExecuteOrder.LatestUnitOrder_view.getUint32(4, true),
+			issuers,
+			ExecuteOrder.LatestUnitOrder_view.getUint8(29) !== 0,
+			ExecuteOrder.LatestUnitOrder_view.getUint8(28) !== 0,
 		)
 	}
 
@@ -77,7 +96,7 @@ export default class ExecuteOrder {
 	private m_Position: Vector3
 	private m_Ability: Nullable<Ability | number>
 	private m_OrderIssuer: PlayerOrderIssuer_t
-	private m_Unit: Nullable<Unit>
+	private m_Issuers: Unit[]
 	private m_Queue: boolean
 	private m_ShowEffects: boolean
 
@@ -92,7 +111,7 @@ export default class ExecuteOrder {
 		position: Vector3 | Vector2 = new Vector3(),
 		ability: Nullable<Ability | number>,
 		issuer: PlayerOrderIssuer_t = PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
-		unit: Nullable<Unit>,
+		issuers: Unit[],
 		queue: boolean = false,
 		showEffects: boolean = false,
 	) {
@@ -101,7 +120,7 @@ export default class ExecuteOrder {
 		this.m_Position = position instanceof Vector2 ? position.toVector3() : position
 		this.m_Ability = ability
 		this.m_OrderIssuer = issuer
-		this.m_Unit = unit
+		this.m_Issuers = issuers
 		this.m_Queue = queue
 		this.m_ShowEffects = showEffects
 	}
@@ -121,8 +140,11 @@ export default class ExecuteOrder {
 	get OrderIssuer(): PlayerOrderIssuer_t {
 		return this.m_OrderIssuer
 	}
+	get Issuers(): Unit[] {
+		return this.m_Issuers.slice()
+	}
 	get Unit(): Nullable<Unit> {
-		return this.m_Unit
+		return this.m_Issuers[0]
 	}
 	get Queue(): boolean {
 		return this.m_Queue
@@ -139,15 +161,14 @@ export default class ExecuteOrder {
 			this.m_Position.toIOBuffer()
 
 		const target = this.m_Target,
-			ability = this.m_Ability,
-			unit = this.m_Unit
+			ability = this.m_Ability
 
 		return {
 			OrderType: this.m_OrderType,
 			Target: target instanceof Entity ? target instanceof Tree ? target.BinaryID : target.Index : target,
 			Ability: ability instanceof Ability ? ability.Index : ability,
 			OrderIssuer: this.m_OrderIssuer,
-			Unit: unit?.Index,
+			Issuers: this.m_Issuers.map(ent => ent.Index),
 			Queue: this.m_Queue,
 			ShowEffects: this.m_ShowEffects,
 		}
@@ -171,7 +192,7 @@ export default class ExecuteOrder {
 		Position: Vector3,
 		Ability: Nullable<Ability | number>,
 		OrderIssuer: PlayerOrderIssuer_t
-		Unit: Nullable<Unit>,
+		Issuers: Unit[],
 		Queue: boolean,
 		ShowEffects: boolean,
 	} {
@@ -181,7 +202,7 @@ export default class ExecuteOrder {
 			Position: this.m_Position,
 			Ability: this.m_Ability,
 			OrderIssuer: this.m_OrderIssuer,
-			Unit: this.m_Unit,
+			Issuers: this.m_Issuers,
 			Queue: this.m_Queue,
 			ShowEffects: this.m_ShowEffects,
 		}
@@ -195,11 +216,12 @@ let last_order_click = new Vector3(),
 	execute_current = false,
 	current_order: Nullable<ExecuteOrder>,
 	latest_cursor = new Vector2()
-Events.after("Update", (cmd_: CUserCmd) => {
+Events.on("Update", () => {
 	if (ExecuteOrder.disable_humanizer)
 		return
-	let cmd = new UserCmd(cmd_),
+	let cmd = new UserCmd(),
 		order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
+	InputManager.CursorOnWorld = cmd.VectorUnderCursor
 	if (execute_current) {
 		order!.Execute()
 		if (ExecuteOrder.debug_orders)
@@ -227,11 +249,7 @@ Events.after("Update", (cmd_: CUserCmd) => {
 			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
 			case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
-				if (order.Target instanceof C_BaseEntity) {
-					let ent = EntityManager.GetEntityByNative(order.Target)
-					if (ent !== undefined)
-						last_order_click.CopyFrom(ent.Position)
-				} else if (order.Target instanceof Entity)
+				if (order.Target instanceof Entity)
 					last_order_click.CopyFrom(order.Target.Position)
 				else if (order.Position !== undefined)
 					last_order_click.CopyFrom(order.Position)
@@ -278,6 +296,8 @@ Events.after("Update", (cmd_: CUserCmd) => {
 	}
 	latest_cursor.x = cmd.MouseX
 	latest_cursor.y = cmd.MouseY
+
+	cmd.WriteBack()
 })
 
 function DrawLine(startVec: Vector2, endVec: Vector2) {
@@ -304,8 +324,8 @@ Events.on("Draw", () => {
 })
 
 //EventsSDK.on("GameEnded", () => ExecuteOrder.order_queue = [])
-Events.on("PrepareUnitOrders", order => {
-	const ordersSDK = ExecuteOrder.fromNative(order)
+Events.on("PrepareUnitOrders", () => {
+	const ordersSDK = ExecuteOrder.fromNative()
 	if (ordersSDK === undefined)
 		return true
 

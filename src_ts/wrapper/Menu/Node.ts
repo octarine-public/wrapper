@@ -10,7 +10,6 @@ import Menu from "./Menu"
 import Slider from "./Slider"
 import Switcher from "./Switcher"
 import Toggle from "./Toggle"
-import { FontFlags_t } from "../Enums/FontFlags_t"
 import { PARTICLE_RENDER_NAME } from "../Managers/ParticleManager"
 import { IMenuColorPicker, IMenuParticlePicker } from "./ITypes"
 
@@ -23,7 +22,7 @@ export default class Node extends Base {
 	protected readonly node_selected_color = new Color(14, 14, 14, 249)
 	protected readonly SizeImageNode = new Vector2(24, 24)
 	protected readonly ArrowSize = 36
-	protected readonly node_arrow_size = RendererSDK.GetTextSize("»", this.FontName, this.ArrowSize, false, FontFlags_t.ANTIALIAS).AddScalarY(-6)
+	protected readonly node_arrow_size = RendererSDK.GetTextSize("»", this.FontName, this.ArrowSize).AddScalarY(-6)
 	protected readonly arrow_offset = this.text_offset.Clone().AddScalarX(15).AddScalarY(this.node_arrow_size.y).AddForThis(this.border_size)
 	protected readonly node_arrow_color = new Color(68, 68, 68)
 	protected readonly node_selected_arrow_color = new Color(0x40, 0x80, 0xff)
@@ -36,7 +35,7 @@ export default class Node extends Base {
 			this.pathIcon = pathIcon
 
 		this.TotalSize_.x =
-			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS).x
+			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize).x
 			+ 15
 			+ this.node_arrow_size.x
 			+ this.SizeImageNode.x
@@ -61,17 +60,16 @@ export default class Node extends Base {
 	public Render(): void {
 		super.Render()
 		this.is_hovered = this.Rect.Contains(this.MousePosition)
-		const SizeText = this.Position.Add(this.border_size).AddForThis(this.text_offset)
+		const TextPos = this.Position.Add(this.border_size).AddForThis(this.text_offset).AddScalarY(this.FontSize)
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.is_open ? this.node_selected_color : this.is_hovered ? this.node_hovered_color : this.background_color)
 
-		if (this.pathIcon !== undefined)
-			SizeText.AddScalarX(this.SizeImageNode.x)
-
-		if (this.pathIcon !== undefined)
+		if (this.pathIcon !== undefined) {
+			TextPos.AddScalarX(this.SizeImageNode.x)
 			RendererSDK.Image(this.pathIcon, this.Position.Add(this.border_size).AddForThis(this.text_offset).SubtractScalarX(5), -1, this.SizeImageNode)
+		}
 
-		RendererSDK.Text(this.name, SizeText, this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
-		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize, false, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, TextPos, this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize)
 		if (!this.is_open)
 			return
 

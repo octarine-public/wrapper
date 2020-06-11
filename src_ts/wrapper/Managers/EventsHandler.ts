@@ -1,7 +1,5 @@
 import EventsSDK from "./EventsSDK"
-import InputManager from "./InputManager"
 import Events from "./Events"
-import UserCmd from "../Native/UserCmd"
 import { ParseProtobufDesc, RecursiveProtobuf, CMsgVectorToVector3, ParseProtobufNamed, ServerHandleToIndex } from "../Utils/Protobuf"
 import EntityManager from "./EntityManager"
 import Unit from "../Objects/Base/Unit"
@@ -13,12 +11,6 @@ import GameState from "../Utils/GameState"
 import Manifest from "./Manifest"
 import Vector3 from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
-
-Events.on("Update", cmd => {
-	let cmd_ = new UserCmd(cmd)
-	InputManager.CursorOnWorld = cmd_.VectorUnderCursor
-	EventsSDK.emit("Update", false, cmd_)
-})
 
 enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CREATE = 0,

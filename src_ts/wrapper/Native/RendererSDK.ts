@@ -5,29 +5,87 @@ import QAngle from "../Base/QAngle"
 import { default as Input } from "../Managers/InputManager"
 import * as WASM from "./WASM"
 import { FontFlags_t } from "../Enums/FontFlags_t"
-import { StringToUTF16, ParseMapName, ArrayBuffersEqual } from "../Utils/Utils"
+import { StringToUTF8, ParseMapName } from "../Utils/Utils"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import GameState from "../Utils/GameState"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import Entity from "../Objects/Base/Entity"
 import Manifest from "../Managers/Manifest"
-import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import { DegreesToRadian } from "../Utils/Math"
 
 enum CommandID {
-	SET_COLOR = 0,
-	FILLED_CIRCLE,
-	OUTLINED_CIRCLE,
-	LINE,
-	FILLED_RECT,
-	OUTLINED_RECT,
-	TEXTURE_DATA,
+	// state related
+	SAVE_STATE = 0,
+	SAVE_LAYER_STATE,
+	RESTORE_STATE,
+	TRANSLATE,
+	SCALE,
+	SKEW,
+	ROTATE,
+	CLIP_RECT,
+	CLIP_ROUND_RECT,
+	CLIP_PATH,
+
+	// PAINT_*
+	PAINT_RESET,
+	PAINT_SET_COLOR,
+	PAINT_SET_FILTER_QUALITY,
+	PAINT_SET_STYLE,
+	PAINT_SET_STROKE_WIDTH,
+	PAINT_SET_STROKE_MITER,
+	PAINT_SET_STROKE_CAP,
+	PAINT_SET_STROKE_JOIN,
+	PAINT_SET_PATH_EFFECT,
+	PAINT_SET_SHADER,
+
+	// PATH_*
+	PATH_RESET,
+	PATH_SET_FILL_TYPE,
+	PATH_MOVE_TO,
+	PATH_LINE_TO,
+	PATH_ADD_RECT,
+	PATH_ADD_ROUND_RECT,
+	PATH_ADD_OVAL,
+	PATH_ADD_ARC,
+	PATH_QUAD_TO,
+	PATH_CONIC_TO,
+	PATH_CUBIC_TO,
+	PATH_CLOSE,
+	PATH_OFFSET,
+
+	// DRAW
 	IMAGE,
 	TEXT,
+	PATH,
+	LINE,
+	RECT,
+	ROUND_RECT,
+	OVAL,
+	ARC,
+	PAINT,
+}
+// @ts-ignore
+// TODO
+enum PathEffectType {
+	NONE = 0,
+	DISCRETE,
+	DASH,
+}
+// @ts-ignore
+// TODO
+enum ShaderType {
+	NONE = 0,
+	GRADIENT_LINEAR,
+	GRADIENT_RADIAL,
+	GRADIENT_SWEEP,
+}
+enum PaintType {
+	FILL = 0,
+	STROKE,
+	STROKE_AND_FILL
 }
 
-let used_temp_textures: number[] = []
 let RendererSDK = new (class CRendererSDK {
 	/**
 	 * Default Size of Text = Size 18
@@ -46,11 +104,11 @@ let RendererSDK = new (class CRendererSDK {
 
 	private commandCache = new Uint8Array()
 	private commandCacheSize = 0
-	private font_cache = new Map</* name */string, Map</* size */number, Map</* bold */boolean, Map</* flags */number, /* font_id */number>>>>()
+	private font_cache = new Map</* name */string, Map</* weight */number, Map</* width */number, Map</* italic */boolean, /* font_id */number>>>>()
 	private texture_cache = new Map</* path */string, Map</* round */number, number>>()
-	private temp_texture_ids: [number, Uint8Array, /* last time used */number][] = []
 	private tex2size = new Map</* texture_id */number, Vector2>()
 	private last_color = new Color(-1, -1, -1, -1)
+	private last_fill_type = PaintType.FILL
 
 	/**
 	 * Cached. Updating every 5 sec
@@ -102,7 +160,10 @@ let RendererSDK = new (class CRendererSDK {
 		position.toIOBuffer()
 		if (position instanceof Vector2)
 			IOBuffer[2] = this.GetPositionHeight(position)
-		return Vector2.fromIOBuffer(Renderer.WorldToScreen())
+		Renderer.WorldToScreen()
+		if (Number.isNaN(IOBuffer[0]) || Number.isNaN(IOBuffer[1]))
+			return undefined
+		return Vector2.fromIOBuffer()
 	}
 	/**
 	 * @returns screen position with x and y in range {0, 1}, or undefined
@@ -143,32 +204,18 @@ let RendererSDK = new (class CRendererSDK {
 			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
 		return WASM.ScreenToWorldFar(screen, window_size, camera_position, camera_distance, camera_angles)
 	}
-	public FilledCircle(vecPos: Vector2, radius: number, color = new Color(255, 255, 255)): void {
-		let vecSize = new Vector2(radius, radius).MultiplyScalarForThis(2)
-		this.TempImage(
-			new Uint8Array(vecSize.x * vecSize.y * 4).fill(255),
-			vecPos,
-			vecSize,
-			vecSize,
-			0,
-			color
-		)
+	public FilledCircle(vecPos: Vector2, vecSize: Vector2, color = new Color(255, 255, 255)): void {
+		this.SetColor(color)
+		this.Oval(vecPos, vecSize)
 	}
 	/**
 	 *
 	 */
-	public OutlinedCircle(vecPos: Vector2, radius: number, width = 1, color = new Color(255, 255, 255)): void {
-		let vecSize = new Vector2(radius, radius).MultiplyScalarForThis(2)
-		this.Arc(
-			0,
-			100,
-			color,
-			new Color(0, 0, 0, 0),
-			vecPos.Subtract(new Vector2(width, width)),
-			vecSize.Add(new Vector2(width * 2, width * 2)),
-			0,
-			width
-		)
+	public OutlinedCircle(vecPos: Vector2, vecSize: Vector2, color = new Color(255, 255, 255)): void {
+		this.SetColor(color)
+		this.SetFillType(PaintType.STROKE)
+		this.Oval(vecPos, vecSize)
+		this.SetFillType(PaintType.STROKE_AND_FILL)
 	}
 	/**
 	 * @param vecSize default Weight 5 x Height 5
@@ -193,14 +240,7 @@ let RendererSDK = new (class CRendererSDK {
 	 */
 	public FilledRect(vecPos: Vector2 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
 		this.SetColor(color)
-
-		let view = this.AllocateCommandSpace(4 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.FILLED_RECT)
-		view.setInt32(off += 1, vecPos.x, true)
-		view.setInt32(off += 4, vecPos.y, true)
-		view.setInt32(off += 4, vecPos.x + vecSize.x, true)
-		view.setInt32(off += 4, vecPos.y + vecSize.y, true)
+		this.Rect(vecPos, vecSize)
 	}
 	/**
 	 * @param vecSize default Weight 5 x Height 5
@@ -209,14 +249,9 @@ let RendererSDK = new (class CRendererSDK {
 	 */
 	public OutlinedRect(vecPos: Vector2 = new Vector2(), vecSize = this.DefaultShapeSize, color = new Color(255, 255, 255)): void {
 		this.SetColor(color)
-
-		let view = this.AllocateCommandSpace(4 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.OUTLINED_RECT)
-		view.setInt32(off += 1, vecPos.x, true)
-		view.setInt32(off += 4, vecPos.y, true)
-		view.setInt32(off += 4, vecPos.x + vecSize.x, true)
-		view.setInt32(off += 4, vecPos.y + vecSize.y, true)
+		this.SetFillType(PaintType.STROKE)
+		this.Rect(vecPos, vecSize)
+		this.SetFillType(PaintType.STROKE_AND_FILL)
 	}
 	/**
 	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
@@ -235,11 +270,11 @@ let RendererSDK = new (class CRendererSDK {
 		let view = this.AllocateCommandSpace(5 * 4)
 		let off = 0
 		view.setUint8(off, CommandID.IMAGE)
-		view.setInt32(off += 1, vecPos.x, true)
-		view.setInt32(off += 4, vecPos.y, true)
-		view.setInt32(off += 4, vecSize.x, true)
-		view.setInt32(off += 4, vecSize.y, true)
-		view.setInt32(off += 4, texture_id, true)
+		view.setFloat32(off += 1, vecPos.x, true)
+		view.setFloat32(off += 4, vecPos.y, true)
+		view.setFloat32(off += 4, vecSize.x, true)
+		view.setFloat32(off += 4, vecSize.y, true)
+		view.setUint32(off += 4, texture_id, true)
 	}
 	private DropPixel(pixels: Uint32Array, size: Vector2, x: number, y: number): void {
 		const pixel_pos = y * size.x + x
@@ -275,59 +310,6 @@ let RendererSDK = new (class CRendererSDK {
 			for (let x = found ? last_x : 0; x < x_end; x++)
 				this.DropPixel4(pixels, size, x + x_end, y + y_end)
 		}
-	}
-	private GetTempTextureID(rgba: Uint8Array, size: Vector2, round: number): number {
-		this.RoundRGBA(rgba, size, round)
-		// fast path if all temp textures are taken
-		if (this.temp_texture_ids.length === used_temp_textures.length) {
-			let id = Renderer.CreateTextureID()
-			this.SetTextureData(id, rgba, size)
-			used_temp_textures.push(id)
-			this.tex2size.set(id, size)
-			this.temp_texture_ids.push([id, rgba, hrtime()])
-			return id
-		}
-
-		// try to find exact same size
-		let found_same_size = this.temp_texture_ids.filter(([id]) => !used_temp_textures.includes(id) && this.tex2size.get(id)!.Equals(size))
-		if (found_same_size.length !== 0) {
-			let tex = ArrayExtensions.orderBy(
-				found_same_size,
-				([, rgba_]) => rgba_.reduce((prev, cur, id) => prev + (cur !== rgba[id] ? 1 : 0), 0)
-			)[0]
-			let id = tex[0]
-			if (!ArrayBuffersEqual(rgba.buffer, tex[1].buffer)) {
-				this.SetTextureData(id, rgba, size)
-				tex[1] = rgba
-			}
-			tex[2] = hrtime()
-			used_temp_textures.push(id)
-			return id
-		}
-
-		let id = Renderer.CreateTextureID()
-		this.SetTextureData(id, rgba, size)
-		used_temp_textures.push(id)
-		this.tex2size.set(id, size)
-		this.temp_texture_ids.push([id, rgba, hrtime()])
-		return id
-	}
-	/**
-	 * @param rgba raw image buffer
-	 * @param vecSize image buffer's size
-	 */
-	public TempImage(rgba: Uint8Array, vecPos: Vector2 | Vector3, texSize: Vector2, renderSize: Vector2, round = -1, color = new Color(255, 255, 255)): void {
-		this.SetColor(color)
-
-		let texture_id = this.GetTempTextureID(rgba, texSize, round)
-		let view = this.AllocateCommandSpace(5 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.IMAGE)
-		view.setInt32(off += 1, vecPos.x, true)
-		view.setInt32(off += 4, vecPos.y, true)
-		view.setInt32(off += 4, renderSize.x, true)
-		view.setInt32(off += 4, renderSize.y, true)
-		view.setInt32(off += 4, texture_id, true)
 	}
 	private SetRGBAPixel(rgba: Uint8Array, vecSize: Vector2, x: number, y: number, color: Color, alpha_mul = 1): void {
 		const pixel_pos = (y * vecSize.x + x) * 4
@@ -441,22 +423,29 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
 	 * @param flags default: FontFlags_t.OUTLINE
 	 */
-	public Text(text: string, vecPos: Vector2 | Vector3 = new Vector2(), color = new Color(255, 255, 255), font_name = "Calibri", font_size = this.DefaultTextSize, bold = false, flags = FontFlags_t.OUTLINE): void {
+	public Text(text: string, vecPos: Vector2 | Vector3 = new Vector2(), color = new Color(255, 255, 255), font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
 		this.SetColor(color)
 
-		let font_id = this.GetFont(font_name, font_size, bold, flags)
-		let text_buf = StringToUTF16(text)
-		let view = this.AllocateCommandSpace(4 * 4 + text_buf.byteLength)
+		let font_id = this.GetFont(font_name, weight, width, italic)
+		let text_buf = StringToUTF8(text)
+		let view = this.AllocateCommandSpace(7 * 4 + text_buf.byteLength)
 		let off = 0
 		view.setUint8(off, CommandID.TEXT)
-		view.setInt32(off += 1, vecPos.x, true)
-		view.setInt32(off += 4, vecPos.y, true)
-		view.setInt32(off += 4, font_id, true)
-		view.setInt32(off += 4, text.length, true)
+		view.setFloat32(off += 1, vecPos.x, true)
+		view.setFloat32(off += 4, vecPos.y, true)
+		view.setUint32(off += 4, font_id, true)
+		view.setFloat32(off += 4, font_size, true)
+		view.setFloat32(off += 4, scaleX, true)
+		view.setFloat32(off += 4, skewX, true)
+		view.setUint32(off += 4, text_buf.byteLength, true)
 		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(text_buf)
 	}
-	public GetTextSize(text: string, font_name = "Calibri", font_size = this.DefaultTextSize, bold = false, flags = FontFlags_t.OUTLINE): Vector2 {
-		return Vector2.fromIOBuffer(Renderer.GetTextSize(text, this.GetFont(font_name, font_size, bold, flags)))!
+	public GetTextSize(text: string, font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): Vector2 {
+		IOBuffer[0] = font_size
+		IOBuffer[1] = scaleX
+		IOBuffer[2] = skewX
+		Renderer.GetTextSize(text, this.GetFont(font_name, weight, width, italic))
+		return new Vector2(Math.ceil(IOBuffer[0]), Math.ceil(IOBuffer[1]))
 	}
 	/**
 	 * @param color default: Yellow
@@ -466,13 +455,13 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
 	 * @param flags default: FontFlags_t.ANTIALIAS
 	 */
-	public TextAroundMouse(text: string, vec?: Vector2 | Vector3 | false, color = Color.Yellow, font_name = "Calibri", font_size = 30, bold = false, flags = FontFlags_t.ANTIALIAS): void {
+	public TextAroundMouse(text: string, vec?: Vector2 | Vector3 | false, color = Color.Yellow, font_name = "Calibri", font_size = 30, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
 		let vecMouse = Input.CursorOnScreen.AddScalarX(30).AddScalarY(15)
 
 		if (vec !== undefined && vec !== false)
 			vecMouse = vecMouse.Add(vec as Vector2)
 
-		this.Text(text, vecMouse, color, font_name, font_size, bold, flags)
+		this.Text(text, vecMouse, color, font_name, font_size, weight, width, italic, flags, scaleX, skewX)
 	}
 	/**
 	 * Draws icon at minimap
@@ -513,16 +502,6 @@ let RendererSDK = new (class CRendererSDK {
 		this.commandCacheSize = 0
 		this.last_color = new Color(-1, -1, -1, -1)
 	}
-	public CleanupUnusedTempTextures() {
-		const cleanup_threshold_ms = 3 * 1000
-		let time = hrtime()
-		this.temp_texture_ids.slice(0).forEach(ar => {
-			if (time - ar[2] < cleanup_threshold_ms)
-				return
-			Renderer.FreeTextureID(ar[0])
-			ArrayExtensions.arrayRemove(this.temp_texture_ids, ar)
-		})
-	}
 	public GetAspectRatio() {
 		let res = this.WindowSize.x / this.WindowSize.y
 		if (res >= 1.25 && res <= 1.35)
@@ -543,72 +522,66 @@ let RendererSDK = new (class CRendererSDK {
 		vec.x = Math.floor(h / 0x300 * vec.x / magic)
 		return vec
 	}
-	private SetTextureData(texture_id: number, rgba: Uint8Array, size: Vector2) {
+	private Oval(vecPos: Vector2, vecSize: Vector2): void {
+		let view = this.AllocateCommandSpace(4 * 4)
+		let off = 0
+		view.setUint8(off, CommandID.OVAL)
+		view.setFloat32(off += 1, vecPos.x, true)
+		view.setFloat32(off += 4, vecPos.y, true)
+		view.setFloat32(off += 4, vecPos.x + vecSize.x, true)
+		view.setFloat32(off += 4, vecPos.y + vecSize.y, true)
+	}
+	private Rect(vecPos: Vector2, vecSize: Vector2): void {
+		let view = this.AllocateCommandSpace(4 * 4)
+		let off = 0
+		view.setUint8(off, CommandID.RECT)
+		view.setFloat32(off += 1, vecPos.x, true)
+		view.setFloat32(off += 4, vecPos.y, true)
+		view.setFloat32(off += 4, vecSize.x, true)
+		view.setFloat32(off += 4, vecSize.y, true)
+	}
+	private MakeTexture(rgba: Uint8Array, size: Vector2): number {
 		if (rgba.byteLength !== size.x * size.y * 4)
 			throw "Invalid RGBA buffer or size"
-		let view = this.AllocateCommandSpace(3 * 4 + rgba.byteLength)
-		let off = 0
-		view.setUint8(off, CommandID.TEXTURE_DATA)
-		view.setInt32(off += 1, texture_id, true)
-		view.setInt32(off += 4, size.x, true)
-		view.setInt32(off += 4, size.y, true)
-		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(rgba)
+		size.toIOBuffer()
+		let texture_id = Renderer.CreateTexture(rgba.buffer)
+		this.tex2size.set(texture_id, size)
+		return texture_id
 	}
+	/*private FreeTexture(texture_id: number): void {
+		Renderer.FreeTexture(texture_id)
+	}*/
 	private GetTexture(path: string, round: number): number {
 		if (!this.texture_cache.has(path))
 			this.texture_cache.set(path, new Map())
 		let texture_map = this.texture_cache.get(path)!
 		if (!texture_map.has(round)) {
-			let texture_id = Renderer.CreateTextureID()
 			let [parsed, size] = WASM.ParseImage(readFile(path))
-			this.tex2size.set(texture_id, size)
 			this.RoundRGBA(parsed, size, round)
-			this.SetTextureData(texture_id, parsed, size)
-			texture_map.set(round, texture_id)
+			texture_map.set(round, this.MakeTexture(parsed, size))
 		}
 		return texture_map.get(round)!
 	}
-	private GetFont(font_name: string, font_size: number, bold: boolean, flags: number): number {
-		const weight = bold ? 800 : 200
-
-		let font_name_map = this.font_cache.get(font_name)
-		if (font_name_map === undefined) {
-			font_name_map = new Map()
-			let size_map = new Map</* bold */boolean, Map</* flags */number, /* font_id */number>>()
-			let weight_map = new Map</* flags */number, /* font_id */number>()
-			let font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font_size, weight, flags)
-			weight_map.set(flags, font_id)
-			size_map.set(bold, weight_map)
-			font_name_map.set(font_size, size_map)
-			this.font_cache.set(font_name, font_name_map)
-			return font_id
-		}
-		let size_map = font_name_map.get(font_size)
-		if (size_map === undefined) {
-			size_map = new Map()
-			let weight_map = new Map</* flags */number, /* font_id */number>()
-			let font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font_size, weight, flags)
-			weight_map.set(flags, font_id)
-			size_map.set(bold, weight_map)
-			font_name_map.set(font_size, size_map)
-			return font_id
-		}
-		let weight_map = size_map.get(bold)
+	private GetFont(font_name: string, weight: number, width: number, italic: boolean): number {
+		let weight_map = this.font_cache.get(font_name)
 		if (weight_map === undefined) {
 			weight_map = new Map()
-			let font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font_size, weight, flags)
-			weight_map.set(flags, font_id)
-			size_map.set(bold, weight_map)
-			return font_id
+			this.font_cache.set(font_name, weight_map)
 		}
-		let font_id = weight_map.get(flags)
+		let width_map = weight_map.get(weight)
+		if (width_map === undefined) {
+			width_map = new Map()
+			weight_map.set(weight, width_map)
+		}
+		let italic_map = width_map.get(width)
+		if (italic_map === undefined) {
+			italic_map = new Map()
+			width_map.set(width, italic_map)
+		}
+		let font_id = italic_map.get(italic)
 		if (font_id === undefined) {
-			font_id = Renderer.CreateFontID()
-			Renderer.EditFont(font_id, font_name, font_size, weight, flags)
-			weight_map.set(flags, font_id)
+			font_id = Renderer.CreateFont(font_name, weight, width, italic)
+			italic_map.set(italic, font_id)
 		}
 		return font_id
 	}
@@ -631,11 +604,20 @@ let RendererSDK = new (class CRendererSDK {
 		this.last_color = color.Clone()
 		let view = this.AllocateCommandSpace(4)
 		let off = 0
-		view.setUint8(off, CommandID.SET_COLOR)
+		view.setUint8(off, CommandID.PAINT_SET_COLOR)
 		view.setUint8(off += 1, Math.min(color.r, 255))
 		view.setUint8(off += 1, Math.min(color.g, 255))
 		view.setUint8(off += 1, Math.min(color.b, 255))
 		view.setUint8(off += 1, Math.min(color.a, 255))
+	}
+	private SetFillType(fillType: PaintType): void {
+		if (this.last_fill_type === fillType)
+			return
+		this.last_fill_type = fillType
+		let view = this.AllocateCommandSpace(1)
+		let off = 0
+		view.setUint8(off, CommandID.PAINT_SET_STYLE)
+		view.setUint8(off += 1, fillType)
 	}
 })()
 
@@ -681,10 +663,9 @@ Events.on("PostRemoveSearchPath", path => {
 })
 
 Events.on("Draw", () => {
-	Vector2.fromIOBuffer(Renderer.WindowSize)!.CopyTo(RendererSDK.WindowSize_)
-	used_temp_textures = []
+	Renderer.GetWindowSize()
+	Vector2.fromIOBuffer()!.CopyTo(RendererSDK.WindowSize_)
 	EventsSDK.emit("Draw")
-	RendererSDK.CleanupUnusedTempTextures()
 })
 
 export default RendererSDK

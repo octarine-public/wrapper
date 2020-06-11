@@ -49,11 +49,37 @@ export function GetFieldHandlers(): Map<Constructor<Entity>, Map<string, FieldHa
 	return field_handlers
 }
 
-export default function GetConstructor(constructor: Constructor<any>, constructor_name_hint: string) {
-	if (constructors.has(constructor_name_hint))
+function FixClassName(constructor_name: string): Nullable<string> {
+	if (SchemaClassesInheritance.has(constructor_name))
+		return constructor_name
+
+	if (constructor_name[0] === "C" && constructor_name[1] !== "_") {
+		constructor_name = `C_${constructor_name.substring(1)}`
+		if (SchemaClassesInheritance.has(constructor_name))
+			return constructor_name
+	}
+	if (constructor_name[0] === "C" && constructor_name[1] === "_") {
+		constructor_name = `C${constructor_name.substring(2)}`
+		if (SchemaClassesInheritance.has(constructor_name))
+			return constructor_name
+	}
+
+	return undefined
+}
+
+export default function GetConstructorByName(class_name: string, constructor_name_hint?: string): Nullable<Constructor<Entity>> {
+	if (constructor_name_hint !== undefined && constructors.has(constructor_name_hint))
 		return constructors.get(constructor_name_hint)
 
-	while (constructor.name !== "Object" && !constructors.has(constructor.name))
-		constructor = Object.getPrototypeOf(constructor.prototype).constructor
-	return constructors.get(constructor.name)
+	let fixed_class_name = FixClassName(class_name)
+	if (fixed_class_name === undefined)
+		return undefined
+
+	if (fixed_class_name !== undefined && !constructors.has(fixed_class_name))
+		for (let class_name of SchemaClassesInheritance.get(fixed_class_name)!) {
+			let constructor = GetConstructorByName(class_name)
+			if (constructor !== undefined)
+				return constructor
+		}
+	return constructors.get(fixed_class_name)
 }

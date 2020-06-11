@@ -4,7 +4,6 @@ import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
-import { FontFlags_t } from "../Enums/FontFlags_t"
 import AbilityData from "../Objects/DataBook/AbilityData"
 
 // every icon: 32x32, 1x1 border
@@ -54,7 +53,7 @@ export default class ImageSelector extends Base {
 			if (!this.enabled_values.has(value))
 				this.enabled_values.set(value, false)
 		})
-		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize)
 		this.TotalSize_.x =
 			Math.max(
 				this.name_size.x,
@@ -77,7 +76,7 @@ export default class ImageSelector extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize)
 		let base_pos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
 			let value = this.values[i],
@@ -85,7 +84,9 @@ export default class ImageSelector extends Base {
 				size = this.image_size
 			let pos = new Vector2(i % 10, Math.floor(i / 10)).Multiply(this.image_size.AddScalar(this.image_border_size.x * 2 + 2)).Add(base_pos)
 
-			if (!path.startsWith("npc_dota_hero_")) {
+			if (path.startsWith("item_bottle_"))
+				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
+			else if (!path.startsWith("npc_dota_hero_")) {
 				try {
 					path = AbilityData.GetAbilityTexturePath(path)
 				} catch { }

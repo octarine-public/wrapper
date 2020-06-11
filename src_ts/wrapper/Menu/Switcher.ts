@@ -3,13 +3,12 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
-import { FontFlags_t } from "../Enums/FontFlags_t"
 
 export default class Switcher extends Base {
 	public values: string[]
 	public selected_id = 0
 	protected readonly ArrowSize = 24
-	protected readonly arrow_size = RendererSDK.GetTextSize("«", this.FontName, this.ArrowSize, false, FontFlags_t.ANTIALIAS)
+	protected readonly arrow_size = RendererSDK.GetTextSize("«", this.FontName, this.ArrowSize)
 	protected readonly arrow_rect_size = new Vector2().AddScalar(this.arrow_size.y)
 	protected readonly arrow_rect_offset = this.text_offset.Add(this.arrow_rect_size).AddForThis(this.border_size)
 	protected readonly arrow_offset = new Vector2(this.arrow_rect_size.x / 2 - this.arrow_size.x / 2, -1)
@@ -39,8 +38,8 @@ export default class Switcher extends Base {
 
 	public Update(): void {
 		let longest_value = this.values.reduce((prev, cur) => cur.length > prev.length ? cur : prev, "")
-		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
-		this.longest_value_size = RendererSDK.GetTextSize(longest_value, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize)
+		this.longest_value_size = RendererSDK.GetTextSize(longest_value, this.FontName, this.FontSize)
 		this.TotalSize_.x =
 			Math.max(this.name_size.x, this.longest_value_size.x)
 			+ ((this.longest_value_size.x - this.name_size.x) < this.arrow_rect_size.x * 2 ? this.arrow_rect_size.x * 2 : 0)
@@ -52,14 +51,14 @@ export default class Switcher extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
-		RendererSDK.Text(this.values[this.selected_id], this.Position.Add(this.text_offset).AddScalarY(this.name_size.y + 3), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.values[this.selected_id], this.Position.Add(this.text_offset).AddScalarY(this.name_size.y + 3), this.FontColor, this.FontName, this.FontSize)
 		let left_rect = this.LeftArrowRect,
 			right_rect = this.RightArrowRect
 		RendererSDK.FilledRect(left_rect.pos1, left_rect.pos2.Subtract(left_rect.pos1), this.arrow_background_color)
-		RendererSDK.Text("«", left_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize, false, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text("«", left_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize)
 		RendererSDK.FilledRect(right_rect.pos1, right_rect.pos2.Subtract(right_rect.pos1), this.arrow_background_color)
-		RendererSDK.Text("»", right_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize, false, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text("»", right_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize)
 		super.RenderTooltip()
 	}
 

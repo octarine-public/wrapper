@@ -4,158 +4,86 @@ import Entity from "../Objects/Base/Entity"
 import EntityManager from "../Managers/EntityManager"
 
 export default class UserCmd {
-	constructor(public readonly m_CUserCmd: CUserCmd) { }
+	private static LatestUserCmd_view = new DataView(LatestUserCmd.buffer)
+	public ComandNumber: number
+	public TickCount: number
+	public ForwardMove: number
+	public SideMove: number
+	public UpMove: number
+	public RandomSeed: number
+	public MouseX: number
+	public MouseY: number
+	public CameraX: number
+	public CameraY: number
+	public ClickBehaviors: number
+	public ScoreboardOpened: boolean
+	public ShopMask: number
+	public SpectatorStatsCategoryID: number
+	public SpectatorStatsSortMethod: number
+	public Buttons: bigint
+	public Impulse: number
+	public VectorUnderCursor: Vector3
+	public ViewAngles: QAngle
+	public WeaponSelect: Nullable<Entity>
+	public WeaponSubType: Nullable<Entity>
 
-	public get ComandNumber(): number {
-		return this.m_CUserCmd.command_number
-	}
-	public set ComandNumber(value: number) {
-		this.m_CUserCmd.command_number = value
-	}
-	public get TickCount(): number {
-		return this.m_CUserCmd.tick_count
-	}
-	public set TickCount(value: number) {
-		this.m_CUserCmd.tick_count = value
-	}
-	public get ForwardMove(): number {
-		return this.m_CUserCmd.forwardmove
-	}
-	public set ForwardMove(value: number) {
-		this.m_CUserCmd.forwardmove = value
-	}
-	public get SideMove(): number {
-		return this.m_CUserCmd.sidemove
-	}
-	public set SideMove(value: number) {
-		this.m_CUserCmd.sidemove = value
-	}
-	public get UpMove(): number {
-		return this.m_CUserCmd.upmove
-	}
-	public set UpMove(value: number) {
-		this.m_CUserCmd.upmove = value
-	}
-	public get RandomSeed(): number {
-		return this.m_CUserCmd.random_seed
-	}
-	public set RandomSeed(value: number) {
-		this.m_CUserCmd.random_seed = value
-	}
-	public get MouseX(): number {
-		return this.m_CUserCmd.mousex
-	}
-	public set MouseX(value: number) {
-		this.m_CUserCmd.mousex = value
-	}
-	public get MouseY(): number {
-		return this.m_CUserCmd.mousey
-	}
-	public set MouseY(value: number) {
-		this.m_CUserCmd.mousey = value
-	}
-	public get CameraX(): number {
-		return this.m_CUserCmd.camerax
-	}
-	public set CameraX(value: number) {
-		this.m_CUserCmd.camerax = value
-	}
-	public get CameraY(): number {
-		return this.m_CUserCmd.cameray
-	}
-	public set CameraY(value: number) {
-		this.m_CUserCmd.cameray = value
-	}
-	public get ClickBehaviors(): number {
-		return this.m_CUserCmd.click_behaviors
-	}
-	public set ClickBehaviors(value: number) {
-		this.m_CUserCmd.click_behaviors = value
-	}
-	public get ScoreboardOpened(): boolean { // dota_spectator_stats_panel
-		return this.m_CUserCmd.scoreboard_opened
-	}
-	public set ScoreboardOpened(value: boolean) {
-		this.m_CUserCmd.scoreboard_opened = value
-	}
-	public get ShopMask(): number {
-		return this.m_CUserCmd.shopmask
-	}
-	public set ShopMask(value: number) {
-		this.m_CUserCmd.shopmask = value
-	}
-	public get SpectatorStatsCategoryId(): number {
-		return this.m_CUserCmd.spectator_stats_category_id
-	}
-	public set SpectatorStatsCategoryId(value: number) {
-		this.m_CUserCmd.spectator_stats_category_id = value
-	}
-	public get SpectatorStatsSortMethod(): number {
-		return this.m_CUserCmd.spectator_stats_sort_method
-	}
-	public set SpectatorStatsSortMethod(value: number) {
-		this.m_CUserCmd.spectator_stats_sort_method = value
-	}
-	public get Buttons(): bigint {
-		return this.m_CUserCmd.buttons
-	}
-	public set Buttons(value: bigint) {
-		this.m_CUserCmd.buttons = value
-	}
-	public get Impulse(): number {
-		return this.m_CUserCmd.impulse
-	}
-	public set Impulse(value: number) {
-		this.m_CUserCmd.impulse = value
-	}
-	public get VectorUnderCursor(): Vector3 {
-		return Vector3.fromIOBuffer(this.m_CUserCmd.vec_under_cursor)!
-	}
-	public set VectorUnderCursor(value: Vector3) {
-		this.m_CUserCmd.vec_under_cursor = value.toIOBuffer()
-	}
-	public get ViewAngles(): QAngle {
-		return QAngle.fromIOBuffer(this.m_CUserCmd.viewangles)!
-	}
-	public set ViewAngles(value: QAngle) {
-		this.m_CUserCmd.viewangles = value.toIOBuffer()
-	}
-	public get WeaponSelect(): Nullable<Entity> {
-		return EntityManager.EntityByIndex(this.m_CUserCmd.weaponselect)
-	}
-	public set WeaponSelect(value: Nullable<Entity>) {
-		this.m_CUserCmd.weaponselect = value?.Index ?? -1
-	}
-	public get WeaponSubType(): Nullable<Entity> {
-		return EntityManager.EntityByIndex(this.m_CUserCmd.weaponsubtype)
-	}
-	public set WeaponSubType(value: Nullable<Entity>) {
-		this.m_CUserCmd.weaponsubtype = value?.Index ?? -1
+	constructor() {
+		this.ComandNumber = UserCmd.LatestUserCmd_view.getInt32(0, true)
+		this.TickCount = UserCmd.LatestUserCmd_view.getInt32(4, true)
+		this.ViewAngles = new QAngle(
+			UserCmd.LatestUserCmd_view.getFloat32(8, true),
+			UserCmd.LatestUserCmd_view.getFloat32(12, true),
+			UserCmd.LatestUserCmd_view.getFloat32(16, true),
+		)
+		this.ForwardMove = UserCmd.LatestUserCmd_view.getFloat32(20, true)
+		this.SideMove = UserCmd.LatestUserCmd_view.getFloat32(24, true)
+		this.UpMove = UserCmd.LatestUserCmd_view.getFloat32(28, true)
+		this.Buttons = UserCmd.LatestUserCmd_view.getBigUint64(32, true)
+		this.Impulse = UserCmd.LatestUserCmd_view.getInt32(40, true)
+		this.WeaponSelect = EntityManager.EntityByIndex(UserCmd.LatestUserCmd_view.getUint32(44, true))
+		this.WeaponSubType = EntityManager.EntityByIndex(UserCmd.LatestUserCmd_view.getUint32(48, true))
+		this.RandomSeed = UserCmd.LatestUserCmd_view.getInt32(52, true)
+		this.MouseX = UserCmd.LatestUserCmd_view.getFloat32(56, true)
+		this.MouseY = UserCmd.LatestUserCmd_view.getFloat32(60, true)
+		this.CameraX = UserCmd.LatestUserCmd_view.getInt16(64, true)
+		this.CameraY = UserCmd.LatestUserCmd_view.getInt16(66, true)
+		this.ClickBehaviors = UserCmd.LatestUserCmd_view.getUint8(68)
+		this.ScoreboardOpened = UserCmd.LatestUserCmd_view.getUint8(69) !== 0
+		this.ShopMask = UserCmd.LatestUserCmd_view.getUint8(70)
+		this.SpectatorStatsCategoryID = UserCmd.LatestUserCmd_view.getInt8(71)
+		this.SpectatorStatsSortMethod = UserCmd.LatestUserCmd_view.getInt8(72)
+		this.VectorUnderCursor = new Vector3(
+			UserCmd.LatestUserCmd_view.getFloat32(73, true),
+			UserCmd.LatestUserCmd_view.getFloat32(77, true),
+			UserCmd.LatestUserCmd_view.getFloat32(81, true),
+		)
 	}
 
-	public toJSON() {
-		return {
-			ComandNumber: this.ComandNumber,
-			TickCount: this.TickCount,
-			ForwardMove: this.ForwardMove,
-			SideMove: this.SideMove,
-			UpMove: this.UpMove,
-			RandomSeed: this.RandomSeed,
-			MouseX: this.MouseX,
-			MouseY: this.MouseY,
-			CameraX: this.CameraX,
-			CameraY: this.CameraY,
-			ClickBehaviors: this.ClickBehaviors,
-			ScoreboardOpened: this.ScoreboardOpened,
-			ShopMask: this.ShopMask,
-			SpectatorStatsCategoryId: this.SpectatorStatsCategoryId,
-			SpectatorStatsSortMethod: this.SpectatorStatsSortMethod,
-			Buttons: this.Buttons,
-			Impulse: this.Impulse,
-			VectorUnderCursor: this.VectorUnderCursor,
-			ViewAngles: this.ViewAngles,
-			WeaponSelect: this.WeaponSelect,
-			WeaponSubType: this.WeaponSubType,
-		}
+	public WriteBack(): void {
+		UserCmd.LatestUserCmd_view.setInt32(0, this.ComandNumber, true)
+		UserCmd.LatestUserCmd_view.setInt32(4, this.TickCount, true)
+		UserCmd.LatestUserCmd_view.setFloat32(8, this.ViewAngles.x, true)
+		UserCmd.LatestUserCmd_view.setFloat32(12, this.ViewAngles.y, true)
+		UserCmd.LatestUserCmd_view.setFloat32(16, this.ViewAngles.z, true)
+		UserCmd.LatestUserCmd_view.setFloat32(20, this.ForwardMove, true)
+		UserCmd.LatestUserCmd_view.setFloat32(24, this.SideMove, true)
+		UserCmd.LatestUserCmd_view.setFloat32(28, this.UpMove, true)
+		UserCmd.LatestUserCmd_view.setBigUint64(32, this.Buttons, true)
+		UserCmd.LatestUserCmd_view.setInt32(40, this.Impulse, true)
+		UserCmd.LatestUserCmd_view.setUint32(44, this.WeaponSelect?.Index ?? 0, true)
+		UserCmd.LatestUserCmd_view.setUint32(48, this.WeaponSubType?.Index ?? 0, true)
+		UserCmd.LatestUserCmd_view.setInt32(52, this.RandomSeed, true)
+		UserCmd.LatestUserCmd_view.setFloat32(56, this.MouseX, true)
+		UserCmd.LatestUserCmd_view.setFloat32(60, this.MouseY, true)
+		UserCmd.LatestUserCmd_view.setInt16(64, this.CameraX, true)
+		UserCmd.LatestUserCmd_view.setInt16(66, this.CameraY, true)
+		UserCmd.LatestUserCmd_view.setUint8(68, this.ClickBehaviors)
+		UserCmd.LatestUserCmd_view.setUint8(69, this.ScoreboardOpened ? 1 : 0)
+		UserCmd.LatestUserCmd_view.setUint8(70, this.ShopMask)
+		UserCmd.LatestUserCmd_view.setInt8(71, this.SpectatorStatsCategoryID)
+		UserCmd.LatestUserCmd_view.setInt8(72, this.SpectatorStatsSortMethod)
+		UserCmd.LatestUserCmd_view.setFloat32(73, this.VectorUnderCursor.x, true)
+		UserCmd.LatestUserCmd_view.setFloat32(77, this.VectorUnderCursor.y, true)
+		UserCmd.LatestUserCmd_view.setFloat32(81, this.VectorUnderCursor.z, true)
 	}
 }

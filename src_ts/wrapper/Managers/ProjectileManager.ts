@@ -44,8 +44,8 @@ function DestroyTrackingProjectile(proj: TrackingProjectile) {
 }
 
 EventsSDK.on("Tick", () => {
+	let cur_time = GameRules!.RawGameTime
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
-		let cur_time = GameRules!.RawGameTime
 		proj.Position.AddForThis(proj.Velocity.MultiplyScalar(cur_time - proj.LastUpdate).toVector3())
 		proj.LastUpdate = cur_time
 		proj.Position.z = RendererSDK.GetPositionHeight(proj.Position.toVector2())
@@ -58,7 +58,6 @@ EventsSDK.on("Tick", () => {
 					.CopyTo(proj.Position)
 			else
 				return
-		let cur_time = GameRules!.RawGameTime
 		proj.Position.Extend(proj.TargetLoc, proj.Speed * (cur_time - proj.LastUpdate)).CopyTo(proj.Position)
 		proj.LastUpdate = cur_time
 		if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30 + (proj.Target instanceof Unit ? proj.Target.HullRadius : 0))

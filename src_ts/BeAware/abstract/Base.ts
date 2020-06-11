@@ -1,4 +1,4 @@
-import { Color, Menu, RendererSDK, Vector2, FontFlags_t } from "wrapper/Imports"
+import { Color, Menu, RendererSDK, Vector2 } from "wrapper/Imports"
 
 export default class ManagerBase {
 	public get MaxMoveSpeed(): number {
@@ -33,8 +33,6 @@ export default class ManagerBase {
 			new Color(255, 255, 255, 255),
 			"Verdana",
 			Size.value,
-			false,
-			FontFlags_t.ANTIALIAS,
 		)
 	}
 }

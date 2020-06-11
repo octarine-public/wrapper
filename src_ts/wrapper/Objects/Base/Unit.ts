@@ -53,7 +53,6 @@ export default class Unit extends Entity {
 		return false
 	}
 
-	public NativeEntity: Nullable<C_DOTA_BaseNPC>
 	public UnitData = new UnitData("")
 
 	public readonly Inventory = new Inventory(this)
@@ -239,14 +238,14 @@ export default class Unit extends Entity {
 	}
 	// TODO: parse from KV + use buffs + items
 	public get AttackRange(): number {
-		return this.NativeEntity?.m_fAttackRange ?? 0
+		return GetUnitNumberPropertyByName(this.Index, "m_fAttackRange") ?? 0
 	}
 	public get AttacksPerSecond(): number {
-		return this.NativeEntity?.m_fAttacksPerSecond ?? 0
+		return GetUnitNumberPropertyByName(this.Index, "m_fAttacksPerSecond") ?? 0
 	}
 	// BaseArmor
 	public get BaseAttackTime(): number {
-		return this.NativeEntity?.m_flBaseAttackTime ?? 0
+		return GetUnitNumberPropertyByName(this.Index, "m_flBaseAttackTime") ?? 0
 	}
 	// BaseHealthRegeneration
 	// BaseManaRegeneration
@@ -266,13 +265,10 @@ export default class Unit extends Entity {
 	public get HasInventory(): boolean {
 		return this.UnitData.HasInventory
 	}
-	public get HasSharedAbilities(): boolean {
-		return this.NativeEntity?.m_bHasSharedAbilities ?? false
-	}
 	public get HealthBarOffset(): number {
 		let offset = this.HealthBarOffsetOverride
 		if (offset === -1)
-			offset = this.NativeEntity?.m_iHealthBarOffset ?? this.UnitData.HealthBarOffset
+			offset = GetUnitNumberPropertyByName(this.Index, "m_iHealthBarOffset") ?? this.UnitData.HealthBarOffset
 		// TODO: smoothing by Unit#Think
 		if (this.IsFlyingVisually)
 			offset += 150
@@ -304,10 +300,10 @@ export default class Unit extends Entity {
 	}
 	// TODO: parse KV, use buffs and items for calculation
 	public get AttackSpeed(): number {
-		return this.NativeEntity?.m_fAttackSpeed ?? 0
+		return GetUnitNumberPropertyByName(this.Index, "m_fAttackSpeed") ?? 0
 	}
 	public get IncreasedAttackSpeed(): number {
-		return this.NativeEntity?.m_fIncreasedAttackSpeed ?? 0
+		return GetUnitNumberPropertyByName(this.Index, "m_fIncreasedAttackSpeed") ?? 0
 	}
 	public get AttackSpeedBonus() {
 		let attackSpeed = this.AttackSpeed
@@ -319,7 +315,7 @@ export default class Unit extends Entity {
 	}
 	// TODO: use Buffs for that
 	public get InvisibleLevel(): number {
-		return this.NativeEntity?.m_flInvisibilityLevel ?? 0
+		return GetUnitNumberPropertyByName(this.Index, "m_flInvisibilityLevel") ?? 0
 	}
 	/**
 	 * IsControllable by LocalPlayer
@@ -328,8 +324,8 @@ export default class Unit extends Entity {
 		return LocalPlayer !== undefined && this.IsControllableByPlayer(LocalPlayer.PlayerID)
 	}
 	// TODO: parse KV, use buffs for this
-	get MoveCapabilities() {
-		return this.NativeEntity?.m_iMoveCapabilities ?? 0
+	get MoveCapabilities(): DOTAUnitMoveCapability_t {
+		return GetUnitNumberPropertyByName(this.Index, "m_iMoveCapabilities") ?? 0
 	}
 	public get IsMelee(): boolean {
 		return this.AttackCapabilities === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK
@@ -341,7 +337,7 @@ export default class Unit extends Entity {
 		return !this.IsWaitingToSpawn
 	}
 	public get MagicDamageResist(): number {
-		return this.NativeEntity?.m_flMagicalResistanceValueReal ?? this.BaseMagicDamageResist
+		return GetUnitNumberPropertyByName(this.Index, "m_flMagicalResistanceValueReal") ?? this.BaseMagicDamageResist
 	}
 	public get ManaPercent(): number {
 		return Math.floor(this.Mana / this.MaxMana * 100) || 0
@@ -354,22 +350,17 @@ export default class Unit extends Entity {
 	}
 	// TODO: parse KV, use buffs & items to calculate this
 	public get IdealSpeed(): number {
-		return this.NativeEntity?.m_fIdealSpeed ?? this.BaseMoveSpeed
-	}
-	public get ProjectileCollisionSize(): number {
-		return this.NativeEntity?.m_flProjectileCollisionSize ?? 0
+		return GetUnitNumberPropertyByName(this.Index, "m_fIdealSpeed") ?? this.BaseMoveSpeed
 	}
 	public get RingRadius(): number {
 		return this.UnitData.RingRadius
 	}
 	public get SecondsPerAttack(): number {
-		return 1 / (this.NativeEntity?.m_fAttacksPerSecond ?? 0)
+		return 1 / (this.AttacksPerSecond ?? 0)
 	}
 	public get UnitStateMask(): bigint {
-		if (this.NativeEntity === undefined)
-			return this.UnitStateNetworked
 		// TODO: use buffs to calculate this
-		return this.NativeEntity.m_nUnitState64 | this.NativeEntity.m_nUnitDebuffState
+		return GetEntityUnitState(this.Index) ?? this.UnitStateNetworked
 	}
 	public get UnitState(): modifierstate[] {
 		return MaskToArrayBigInt(this.UnitStateMask)

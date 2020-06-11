@@ -2,7 +2,6 @@ import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
-import { FontFlags_t } from "../Enums/FontFlags_t"
 
 export default class Header extends Base {
 	public readonly FontSize = 34
@@ -19,7 +18,7 @@ export default class Header extends Base {
 
 	constructor(parent: IMenu, name: string) {
 		super(parent, name)
-		this.text_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		this.text_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize)
 	}
 
 	public get ConfigValue() { return this.Position.toArray() }
@@ -43,7 +42,7 @@ export default class Header extends Base {
 				this.Position.y = window_size.y - total_entries_y
 		}
 		super.Render()
-		RendererSDK.Text(this.name, this.Position.Add(new Vector2(this.TotalSize.x / 2 - this.text_size.x / 2, 3)), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, this.Position.Add(new Vector2(this.TotalSize.x / 2 - this.text_size.x / 2, 6 + this.text_size.y)), this.FontColor, this.FontName, this.FontSize)
 		RendererSDK.FilledRect(this.Position.Clone().AddScalarY(this.background_size.y), new Vector2(this.TotalSize.x, this.underline_width), this.underline_color)
 	}
 

@@ -4,7 +4,7 @@ import Events from "./Events"
 
 import Entity from "../Objects/Base/Entity"
 
-import NativeToSDK, { GetSDKClasses, GetFieldHandlers, FieldHandler } from "../Objects/NativeToSDK"
+import GetConstructorByName, { GetSDKClasses, GetFieldHandlers, FieldHandler } from "../Objects/NativeToSDK"
 
 import EventsSDK from "./EventsSDK"
 import BinaryStream from "../Utils/BinaryStream"
@@ -19,7 +19,6 @@ import { ParseTRMP } from "../Utils/ParseTRMP"
 import Tree from "../Objects/Base/Tree"
 
 let AllEntities: Entity[] = []
-let NativeEntities = new Map<number, C_BaseEntity>()
 let AllEntitiesAsMap = new Map<number, Entity>()
 let ClassToEntities = new Map<Constructor<any>, Entity[]>()
 
@@ -63,28 +62,6 @@ class CEntityManager {
 		if (index === mask || index === 0)
 			return undefined
 		return AllEntitiesAsMap.get(index)
-	}
-	public IndexByNative(ent: C_BaseEntity): number {
-		for (let [index, ent_] of NativeEntities.entries())
-			if (ent === ent_)
-				return index
-		return -1
-	}
-	public NativeByIndex(handle: number, include_local = false): Nullable<C_BaseEntity> {
-		const mask = include_local ? 0x7FFF : 0x3FFF
-		if (handle === undefined || handle === 0)
-			return undefined
-		let index = handle & mask
-		if (index === mask || index === 0)
-			return undefined
-		return NativeEntities.get(index)
-	}
-	public GetEntityByNative(ent: C_BaseEntity | number | undefined): Nullable<Entity> {
-		if (ent === undefined)
-			return undefined
-		if (!(ent instanceof C_BaseEntity))
-			return this.EntityByIndex(ent)
-		return this.EntityByIndex(this.IndexByNative(ent))
 	}
 
 	public GetEntityByFilter(filter: (ent: Entity) => boolean): Nullable<Entity> {
@@ -155,49 +132,10 @@ class CEntityManager {
 const EntityManager = new CEntityManager()
 export default EntityManager
 
-Events.on("EntityCreated", (ent, id) => {
-	NativeEntities.set(id, ent)
-	if (AllEntitiesAsMap.has(id))
-		AllEntitiesAsMap.get(id)!.NativeEntity = ent
-})
-Events.on("EntityDestroyed", (ent, id) => {
-	NativeEntities.delete(id)
-	if (AllEntitiesAsMap.has(id))
-		AllEntitiesAsMap.get(id)!.NativeEntity = undefined
-	if ((id & 0x4000) !== 0)
-		DeleteEntity(id)
-})
-
-function BruteforceConstructor(constructor_name: string): Nullable<Constructor<any>> {
-	let global = globalThis as { [key: string]: any }
-	let result = global[constructor_name]
-	if (result !== undefined)
-		return result.prototype.constructor
-
-	if (constructor_name[0] === "C" && constructor_name[1] !== "_") {
-		constructor_name = `C_${constructor_name.substring(1)}`
-		result = global[constructor_name]
-		if (result !== undefined)
-			return result.prototype.constructor
-	}
-	if (constructor_name[0] === "C" && constructor_name[1] === "_") {
-		constructor_name = `C${constructor_name.substring(2)}`
-		result = global[constructor_name]
-		if (result !== undefined)
-			return result.prototype.constructor
-	}
-
-	return undefined
-}
-
 function ClassFromNative(id: number, constructor_name: string, ent_name: Nullable<string>): Entity {
-	let native_constructor = BruteforceConstructor(constructor_name)
-	if (native_constructor === undefined)
-		throw `Can't find native constructor for entity class ${constructor_name}, Entity#Name === ${ent_name}`
-
-	let constructor = NativeToSDK(native_constructor, ent_name!)
+	let constructor = GetConstructorByName(constructor_name, ent_name)
 	if (constructor === undefined)
-		throw `Can't find constructor for entity class ${native_constructor.name}, Entity#Name === ${ent_name}`
+		throw `Can't find constructor for entity class ${constructor_name}, Entity#Name === ${ent_name}`
 
 	return new constructor(id, ent_name)
 }

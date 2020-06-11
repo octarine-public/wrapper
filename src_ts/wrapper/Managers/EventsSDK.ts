@@ -1,5 +1,4 @@
 import { EventEmitter } from "./Events"
-import UserCmd from "../Native/UserCmd"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Vector3 from "../Base/Vector3"
 
@@ -39,7 +38,6 @@ interface EventsSDK extends EventEmitter {
 	 * Every ~33ms. Emitted after LocalPlayer has been created
 	 */
 	on(name: "Tick", callback: () => void): EventEmitter
-	on(name: "Update", callback: (cmd: UserCmd) => void): EventEmitter
 	on(name: "TeamVisibilityChanged", callback: (npc: Unit) => void): EventEmitter
 	on(name: "TrueSightedChanged", callback: (npc: Unit) => void): EventEmitter
 	on(name: "HasScepterChanged", callback: (npc: Unit) => void): EventEmitter

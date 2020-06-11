@@ -83,18 +83,13 @@ interface CMsgDOTAMatchmakingStatsResponse {
 declare interface Events extends EventEmitter {
 	on(name: "UIStateChanged", callback: (new_state: number) => void): EventEmitter
 	/**
-	 * Also, this event emitted about ALL entities that have already been created before reloading scripts
-	 */
-	on(name: "EntityCreated", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
-	on(name: "EntityDestroyed", callback: (ent: C_BaseEntity, id: number) => void): EventEmitter
-	/**
 	 * That's analog of https://docs.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms633573(v%3Dvs.85 (w/o hwnd)
 	 * message_type: https://www.autoitscript.com/autoit3/docs/appendix/WinMsgCodes.htm
 	 */
 	on(name: "WndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
-	on(name: "Update", callback: (cmd: CUserCmd) => void): EventEmitter
+	on(name: "Update", callback: () => void): EventEmitter
 	on(name: "Draw", callback: () => void): EventEmitter
-	on(name: "PrepareUnitOrders", callback: (order: CUnitOrder) => false | any): EventEmitter
+	on(name: "PrepareUnitOrders", callback: () => false | any): EventEmitter
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter

@@ -5,7 +5,6 @@ import { arrayRemove } from "../Utils/ArrayExtensions"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
-import { FontFlags_t } from "../Enums/FontFlags_t"
 import { InputEventSDK, VMouseKeys, VKeys } from "../Managers/InputManager"
 import GameState from "../Utils/GameState"
 
@@ -238,9 +237,9 @@ export default class KeyBind extends Base {
 		}
 		if (assign_key_str)
 			this.assigned_key_str = this.assigned_key >= KeyBind.KeyNames.length ? "Unknown" : KeyBind.KeyNames[Math.max(this.assigned_key, 0)]
-		RendererSDK.GetTextSize(this.assigned_key_str, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS).CopyTo(this.keybind_size)
+		RendererSDK.GetTextSize(this.assigned_key_str, this.FontName, this.FontSize).CopyTo(this.keybind_size)
 		this.TotalSize_.x =
-			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS).x
+			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize).x
 			+ 20
 			+ this.keybind_size.x
 			+ this.border_size.x * 2
@@ -251,10 +250,10 @@ export default class KeyBind extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize)
 		let keybind_rect = this.KeybindRect
 		RendererSDK.FilledRect(keybind_rect.pos1, keybind_rect.pos2.Subtract(keybind_rect.pos1), this.keybind_color)
-		RendererSDK.Text(this.assigned_key_str, keybind_rect.pos1.Add(this.keybind_text_offset), this.FontColor, this.FontName, this.FontSize, false, FontFlags_t.ANTIALIAS)
+		RendererSDK.Text(this.assigned_key_str, keybind_rect.pos1.Add(this.keybind_text_offset), this.FontColor, this.FontName, this.FontSize)
 		if (!this.KeybindRect.Contains(this.MousePosition))
 			super.RenderTooltip()
 	}
