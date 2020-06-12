@@ -22,7 +22,7 @@ export default class Node extends Base {
 	protected readonly node_selected_color = new Color(14, 14, 14, 249)
 	protected readonly SizeImageNode = new Vector2(24, 24)
 	protected readonly ArrowSize = 36
-	protected readonly node_arrow_size = RendererSDK.GetTextSize("»", this.FontName, this.ArrowSize).AddScalarY(-6)
+	protected readonly node_arrow_size = RendererSDK.GetTextSize("»", this.FontName, this.ArrowSize).SubtractScalarY(13)
 	protected readonly arrow_offset = this.text_offset.Clone().AddScalarX(15).AddScalarY(this.node_arrow_size.y).AddForThis(this.border_size)
 	protected readonly node_arrow_color = new Color(68, 68, 68)
 	protected readonly node_selected_arrow_color = new Color(0x40, 0x80, 0xff)

@@ -13,7 +13,7 @@ export default class Base {
 	public tooltip?: string = ""
 	public OnValueChangedCBs: ((caller: Base) => void)[] = []
 	public readonly Position = new Vector2()
-	public FontSize = 20
+	public FontSize = 18
 	public FontColor = new Color(255, 255, 255, 255)
 	public FontName = "Consolas"
 	public readonly TotalSize_ = new Vector2(750 / 5, 40)
@@ -22,7 +22,7 @@ export default class Base {
 	protected readonly border_size = new Vector2(1, 1)
 	protected readonly border_color = new Color(14, 14, 14, 254)
 	protected readonly background_color = new Color(19, 19, 19, 249)
-	protected readonly text_offset = new Vector2(8, 8)
+	protected readonly text_offset = new Vector2(7, 7)
 	protected hovered = false
 	protected readonly execute_on_add: boolean = true
 

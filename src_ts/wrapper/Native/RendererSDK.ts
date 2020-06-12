@@ -370,7 +370,7 @@ let RendererSDK = new (class CRendererSDK {
 		for (let x = 0; x < vecSize.x; x++)
 			for (let y = 0; y < vecSize.y; y++)
 				this.DrawConditionalColorPixel(rgba, vecSize, x, y, radialColor, baseAngle, maxAngle, backgroundColor)
-		this.TempImage(rgba, vecPos, vecSize, vecSize, round, color)
+		//this.TempImage(rgba, vecPos, vecSize, vecSize, round, color)
 	}
 	/**
 	 * @param round distance in pixels to distant from end of vecSize
@@ -415,7 +415,7 @@ let RendererSDK = new (class CRendererSDK {
 				)
 			}
 		}
-		this.TempImage(rgba, vecPos, vecSize, vecSize, -1, color)
+		//this.TempImage(rgba, vecPos, vecSize, vecSize, -1, color)
 	}
 	/**
 	 * @param font_size Size | default: 14

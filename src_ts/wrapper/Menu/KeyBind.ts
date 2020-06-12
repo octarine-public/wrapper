@@ -185,10 +185,10 @@ export default class KeyBind extends Base {
 	public assigned_key = 0
 	public assigned_key_str = "None"
 	public trigger_on_chat = false
-	protected readonly text_offset = new Vector2(8, 8)
-	protected readonly keybind_text_offset = new Vector2(5, 5)
+	protected readonly text_offset = new Vector2(8, 27)
+	protected readonly keybind_text_offset = new Vector2(5, 22)
 	protected readonly keybind_size = new Vector2(40, 20)
-	protected readonly keybind_offset = new Vector2(3, 8)
+	protected readonly keybind_offset = new Vector2(3, 24)
 	protected readonly keybind_color = new Color(14, 99, 152)
 	protected readonly execute_on_add = false
 
@@ -198,15 +198,24 @@ export default class KeyBind extends Base {
 		this.tooltip = tooltip
 		this.Update()
 	}
-
-	public get ConfigValue() { return this.assigned_key }
+	public get ConfigValue() {
+		return this.assigned_key
+	}
 	public set ConfigValue(value) {
 		this.assigned_key = value !== undefined ? value : this.assigned_key
 		this.Update()
 	}
 	private get KeybindRect() {
-		let base_pos = this.Position.Add(this.TotalSize).SubtractForThis(this.keybind_offset).SubtractForThis(this.keybind_size).SubtractForThis(this.border_size.MultiplyScalar(2)).SubtractForThis(this.keybind_text_offset.MultiplyScalar(2)).AddScalarY(this.keybind_text_offset.y)
-		return new Rectangle(base_pos, base_pos.Add(this.keybind_size).AddForThis(this.keybind_text_offset.MultiplyScalar(2)))
+		let base_pos = this.Position
+			.Add(this.TotalSize)
+			.SubtractForThis(this.keybind_offset)
+			.SubtractForThis(this.keybind_size)
+			.SubtractForThis(this.border_size.MultiplyScalar(2))
+			.SubtractForThis(this.keybind_text_offset.MultiplyScalar(2))
+			.AddScalarY(this.keybind_text_offset.y)
+
+		return new Rectangle(base_pos, base_pos.Add(this.keybind_size)
+			.AddForThis(this.keybind_text_offset.MultiplyScalar(2)))
 	}
 
 	public OnPressed(func: (caller: this) => void) {
@@ -237,7 +246,10 @@ export default class KeyBind extends Base {
 		}
 		if (assign_key_str)
 			this.assigned_key_str = this.assigned_key >= KeyBind.KeyNames.length ? "Unknown" : KeyBind.KeyNames[Math.max(this.assigned_key, 0)]
-		RendererSDK.GetTextSize(this.assigned_key_str, this.FontName, this.FontSize).CopyTo(this.keybind_size)
+		RendererSDK.GetTextSize(this.assigned_key_str, this.FontName, this.FontSize)
+			.CopyTo(this.keybind_size)
+			.SubtractScalarY(this.keybind_size.y * 2)
+
 		this.TotalSize_.x =
 			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize).x
 			+ 20

@@ -9,7 +9,7 @@ export default class Button extends Base {
 	protected readonly button_color = new Color(14, 99, 152)
 	protected readonly buttom_activated_color = new Color(36, 40, 50) // while not MouseLeftUp
 	protected readonly execute_on_add = false
-	protected name_size = new Vector2()
+	protected name_size = new Vector2(0, 0)
 
 	constructor(parent: IMenu, name: string, tooltip?: string) {
 		super(parent, name)
@@ -18,10 +18,14 @@ export default class Button extends Base {
 	}
 	private get ButtonRect() {
 		let base_pos = this.Position.Add(this.button_offset).AddForThis(this.border_size)
-		return new Rectangle(base_pos, base_pos.Add(this.TotalSize).SubtractForThis(this.button_offset.MultiplyScalar(2)).SubtractForThis(this.border_size.MultiplyScalar(2)))
+		return new Rectangle(base_pos, base_pos.Add(this.TotalSize)
+			.SubtractForThis(this.button_offset.MultiplyScalar(2))
+			.SubtractForThis(this.border_size.MultiplyScalar(2))
+		)
 	}
 	public Update() {
 		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize)
+			.SubtractScalarY(25)
 		this.TotalSize_.x = this.name_size.x + 10 + this.border_size.x * 2
 	}
 	public Render(): void {
