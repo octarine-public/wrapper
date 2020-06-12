@@ -142,7 +142,7 @@ let RendererSDK = new (class CRendererSDK {
 	private commandCache = new Uint8Array()
 	private commandCacheSize = 0
 	private font_cache = new Map</* name */string, Map</* weight */number, Map</* width */number, Map</* italic */boolean, /* font_id */number>>>>()
-	private texture_cache = new Map</* path */string, Map</* round */number, number>>()
+	private texture_cache = new Map</* path */string, number>()
 	private tex2size = new Map</* texture_id */number, Vector2>()
 	private last_color = new Color(-1, -1, -1, -1)
 	private last_fill_type = PaintType.FILL
@@ -295,11 +295,11 @@ let RendererSDK = new (class CRendererSDK {
 	/**
 	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
 	 */
-	public Image(path: string, vecPos: Vector2 | Vector3, round = -1, vecSize = new Vector2(-1, -1), color = new Color(255, 255, 255)): void {
+	public Image(path: string, vecPos: Vector2, round = -1, vecSize = new Vector2(-1, -1), color = new Color(255, 255, 255)): void {
 		this.SetColor(new Color(255, 255, 255, color.a))
 		this.SetColorFilter(new Color(color.r, color.g, color.b), BlendMode.Modulate)
 
-		let texture_id = this.GetTexture(path, round) // better put it BEFORE new command
+		let texture_id = this.GetTexture(path) // better put it BEFORE new command
 		if (vecSize.x <= 0 || vecSize.y <= 0) {
 			let size = this.tex2size.get(texture_id)!
 			if (vecSize.x <= 0)
@@ -307,6 +307,11 @@ let RendererSDK = new (class CRendererSDK {
 			if (vecSize.y <= 0)
 				vecSize.y = size.y
 		}
+		if (round >= 0) {
+			this.SaveState()
+			this.SetOvalClip(vecPos.AddScalar(round / 2), vecSize.SubtractScalar(round / 2))
+		}
+
 		let view = this.AllocateCommandSpace(5 * 4)
 		let off = 0
 		view.setUint8(off, CommandID.IMAGE)
@@ -316,42 +321,9 @@ let RendererSDK = new (class CRendererSDK {
 		view.setFloat32(off += 4, vecSize.y, true)
 		view.setUint32(off += 4, texture_id, true)
 
+		if (round >= 0)
+			this.RestoreState()
 		this.ClearColorFilter()
-	}
-	private DropPixel(pixels: Uint32Array, size: Vector2, x: number, y: number): void {
-		const pixel_pos = y * size.x + x
-		if (pixels.byteLength - pixel_pos < 1)
-			return
-		pixels[pixel_pos] = 0
-	}
-	private DropPixel4(pixels: Uint32Array, size: Vector2, x: number, y: number): void {
-		this.DropPixel(pixels, size, size.x - x - 1, size.y - y - 1)
-		this.DropPixel(pixels, size, size.x - x - 1, y)
-		this.DropPixel(pixels, size, x, size.y - y - 1)
-		this.DropPixel(pixels, size, x, y)
-	}
-	private RoundRGBA(rgba: Uint8Array, size: Vector2, round: number) {
-		if (round < 0)
-			return
-		const pixels = new Uint32Array(rgba.buffer)
-		const radius = size.x / 2 - round
-		const radius_sqr = (radius * radius) | 0
-		const x_end = Math.ceil(size.x / 2) | 0,
-			y_end = Math.ceil(size.y / 2) | 0
-		for (let y = 0; y < y_end; y++) {
-			const y_sqr = (y * y) | 0
-			let last_x = Math.floor(Math.sqrt(radius_sqr - y_sqr)),
-				found = false
-			while (last_x < x_end) {
-				if ((last_x * last_x) + y_sqr <= radius_sqr) {
-					found = true
-					break
-				}
-				last_x++
-			}
-			for (let x = found ? last_x : 0; x < x_end; x++)
-				this.DropPixel4(pixels, size, x + x_end, y + y_end)
-		}
 	}
 	// TODO: use paths for this
 	/*public Radial(
@@ -359,7 +331,7 @@ let RendererSDK = new (class CRendererSDK {
 		percent: number,
 		radialColor: Color,
 		backgroundColor: Color,
-		vecPos: Vector2 | Vector3,
+		vecPos: Vector2,
 		vecSize: Vector2,
 		round = -1,
 		color = new Color(255, 255, 255)
@@ -381,7 +353,7 @@ let RendererSDK = new (class CRendererSDK {
 		percent: number,
 		radialColor: Color,
 		backgroundColor: Color,
-		vecPos: Vector2 | Vector3,
+		vecPos: Vector2,
 		vecSize: Vector2,
 		round = 0,
 		width = 5,
@@ -424,7 +396,7 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
 	 * @param flags default: FontFlags_t.OUTLINE
 	 */
-	public Text(text: string, vecPos: Vector2 | Vector3 = new Vector2(), color = new Color(255, 255, 255), font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
+	public Text(text: string, vecPos = new Vector2(), color = new Color(255, 255, 255), font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
 		this.SetColor(color)
 
 		let font_id = this.GetFont(font_name, weight, width, italic)
@@ -456,11 +428,11 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
 	 * @param flags default: FontFlags_t.ANTIALIAS
 	 */
-	public TextAroundMouse(text: string, vec?: Vector2 | Vector3 | false, color = Color.Yellow, font_name = "Calibri", font_size = 30, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
+	public TextAroundMouse(text: string, vec?: Vector2 | false, color = Color.Yellow, font_name = "Calibri", font_size = 30, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
 		let vecMouse = Input.CursorOnScreen.AddScalarX(30).AddScalarY(15)
 
 		if (vec !== undefined && vec !== false)
-			vecMouse = vecMouse.Add(vec as Vector2)
+			vecMouse = vecMouse.Add(vec)
 
 		this.Text(text, vecMouse, color, font_name, font_size, weight, width, italic, flags, scaleX, skewX)
 	}
@@ -552,16 +524,13 @@ let RendererSDK = new (class CRendererSDK {
 	/*private FreeTexture(texture_id: number): void {
 		Renderer.FreeTexture(texture_id)
 	}*/
-	private GetTexture(path: string, round: number): number {
-		if (!this.texture_cache.has(path))
-			this.texture_cache.set(path, new Map())
-		let texture_map = this.texture_cache.get(path)!
-		if (!texture_map.has(round)) {
-			let [parsed, size] = WASM.ParseImage(readFile(path))
-			this.RoundRGBA(parsed, size, round)
-			texture_map.set(round, this.MakeTexture(parsed, size))
-		}
-		return texture_map.get(round)!
+	private GetTexture(path: string): number {
+		if (this.texture_cache.has(path))
+			return this.texture_cache.get(path)!
+		let [parsed, size] = WASM.ParseImage(readFile(path))
+		let texture_id = this.MakeTexture(parsed, size)
+		this.texture_cache.set(path, texture_id)
+		return texture_id
 	}
 	private GetFont(font_name: string, weight: number, width: number, italic: boolean): number {
 		let weight_map = this.font_cache.get(font_name)
@@ -620,7 +589,7 @@ let RendererSDK = new (class CRendererSDK {
 		view.setUint8(off, CommandID.PAINT_SET_STYLE)
 		view.setUint8(off += 1, fillType)
 	}
-	private SetColorFilter(color: Color, blendMode: BlendMode) {
+	private SetColorFilter(color: Color, blendMode: BlendMode): void {
 		if (this.last_color_filter_type === ColorFilterType.BLEND && this.last_color_filter_color.Equals(color))
 			return
 		this.last_color_filter_type = ColorFilterType.BLEND
@@ -634,7 +603,7 @@ let RendererSDK = new (class CRendererSDK {
 		view.setUint8(off += 1, Math.min(color.a, 255))
 		view.setUint8(off += 1, blendMode)
 	}
-	private ClearColorFilter() {
+	private ClearColorFilter(): void {
 		if (this.last_color_filter_type === ColorFilterType.NONE)
 			return
 		this.last_color_filter_type = ColorFilterType.NONE
@@ -642,6 +611,36 @@ let RendererSDK = new (class CRendererSDK {
 		let off = 0
 		view.setUint8(off, CommandID.PAINT_SET_COLOR_FILTER)
 		view.setUint8(off += 1, ColorFilterType.NONE)
+	}
+	private SetOvalClip(vecPos: Vector2, vecSize: Vector2): void {
+		{
+			let view = this.AllocateCommandSpace(0)
+			view.setUint8(0, CommandID.PATH_RESET)
+		}
+		{
+			let view = this.AllocateCommandSpace(4 * 4)
+			let off = 0
+			view.setUint8(off, CommandID.PATH_ADD_OVAL)
+			view.setFloat32(off += 1, vecPos.x, true)
+			view.setFloat32(off += 4, vecPos.y, true)
+			view.setFloat32(off += 4, vecPos.x + vecSize.x, true)
+			view.setFloat32(off += 4, vecPos.y + vecSize.y, true)
+		}
+		{
+			let view = this.AllocateCommandSpace(2)
+			let off = 0
+			view.setUint8(off, CommandID.CLIP_PATH)
+			view.setUint8(off += 1, 1) // do_antialias
+			view.setUint8(off += 1, 0) // diff_op
+		}
+	}
+	private SaveState(): void {
+		let view = this.AllocateCommandSpace(0)
+		view.setUint8(0, CommandID.SAVE_STATE)
+	}
+	private RestoreState(): void {
+		let view = this.AllocateCommandSpace(0)
+		view.setUint8(0, CommandID.RESTORE_STATE)
 	}
 })()
 
