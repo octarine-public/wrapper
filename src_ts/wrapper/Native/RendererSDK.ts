@@ -12,7 +12,6 @@ import GameState from "../Utils/GameState"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import Entity from "../Objects/Base/Entity"
 import Manifest from "../Managers/Manifest"
-import { DegreesToRadian } from "../Utils/Math"
 
 enum CommandID {
 	// state related
@@ -30,6 +29,7 @@ enum CommandID {
 	// PAINT_*
 	PAINT_RESET,
 	PAINT_SET_COLOR,
+	PAINT_SET_COLOR_FILTER,
 	PAINT_SET_FILTER_QUALITY,
 	PAINT_SET_STYLE,
 	PAINT_SET_STROKE_WIDTH,
@@ -64,6 +64,43 @@ enum CommandID {
 	OVAL,
 	ARC,
 	PAINT,
+}
+enum ColorFilterType {
+	NONE = 0,
+	BLEND,
+}
+enum BlendMode {
+	Clear, // replaces destination with zero: fully transparent
+	Src, // replaces destination
+	Dst, // preserves destination
+	SrcOver, // source over destination
+	DstOver, // destination over source
+	SrcIn, // source trimmed inside destination
+	DstIn, // destination trimmed by source
+	SrcOut, // source trimmed outside destination
+	DstOut, // destination trimmed outside source
+	SrcATop, // source inside destination blended with destination
+	DstATop, // destination inside source blended with source
+	Xor, // each of source and destination trimmed outside the other
+	Plus, // sum of colors
+	Modulate, // product of premultiplied colors; darkens destination
+	Screen, // multiply inverse of pixels, inverting result; brightens destination
+
+	Overlay, // multiply or screen, depending on destination
+	Darken, // darker of source and destination
+	Lighten, // lighter of source and destination
+	ColorDodge, // brighten destination to reflect source
+	ColorBurn, // darken destination to reflect source
+	HardLight, // multiply or screen, depending on source
+	SoftLight, // lighten or darken, depending on source
+	Difference, // subtract darker from lighter with higher contrast
+	Exclusion, // subtract darker from lighter with lower contrast
+	Multiply, // multiply source with destination, darkening image
+
+	Hue, // hue of source with saturation and luminosity of destination
+	Saturation, // saturation of source with hue and luminosity of destination
+	Color, // hue and saturation of source with luminosity of destination
+	Luminosity, // luminosity of source with hue and saturation of destination
 }
 // @ts-ignore
 // TODO
@@ -109,6 +146,8 @@ let RendererSDK = new (class CRendererSDK {
 	private tex2size = new Map</* texture_id */number, Vector2>()
 	private last_color = new Color(-1, -1, -1, -1)
 	private last_fill_type = PaintType.FILL
+	private last_color_filter_type = ColorFilterType.NONE
+	private last_color_filter_color = new Color(-1, -1, -1, -1)
 
 	/**
 	 * Cached. Updating every 5 sec
@@ -257,7 +296,8 @@ let RendererSDK = new (class CRendererSDK {
 	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
 	 */
 	public Image(path: string, vecPos: Vector2 | Vector3, round = -1, vecSize = new Vector2(-1, -1), color = new Color(255, 255, 255)): void {
-		this.SetColor(color)
+		this.SetColor(new Color(255, 255, 255, color.a))
+		this.SetColorFilter(new Color(color.r, color.g, color.b), BlendMode.Modulate)
 
 		let texture_id = this.GetTexture(path, round) // better put it BEFORE new command
 		if (vecSize.x <= 0 || vecSize.y <= 0) {
@@ -275,6 +315,8 @@ let RendererSDK = new (class CRendererSDK {
 		view.setFloat32(off += 4, vecSize.x, true)
 		view.setFloat32(off += 4, vecSize.y, true)
 		view.setUint32(off += 4, texture_id, true)
+
+		this.ClearColorFilter()
 	}
 	private DropPixel(pixels: Uint32Array, size: Vector2, x: number, y: number): void {
 		const pixel_pos = y * size.x + x
@@ -311,50 +353,8 @@ let RendererSDK = new (class CRendererSDK {
 				this.DropPixel4(pixels, size, x + x_end, y + y_end)
 		}
 	}
-	private SetRGBAPixel(rgba: Uint8Array, vecSize: Vector2, x: number, y: number, color: Color, alpha_mul = 1): void {
-		const pixel_pos = (y * vecSize.x + x) * 4
-		if (rgba.byteLength - pixel_pos < 4)
-			return
-		rgba[pixel_pos + 0] = color.r
-		rgba[pixel_pos + 1] = color.g
-		rgba[pixel_pos + 2] = color.b
-		rgba[pixel_pos + 3] = color.a * alpha_mul
-	}
-	private DrawConditionalColorPixel(
-		rgba: Uint8Array,
-		vecSize: Vector2,
-		x: number,
-		y: number,
-		color: Color,
-		baseAngle: number,
-		maxAngle: number,
-		color2: Color,
-		alpha_mul = 1
-	): void {
-		const x0 = Math.ceil(vecSize.x / 2),
-			y0 = Math.ceil(vecSize.y / 2)
-		const ray_ang = Math.atan2(x - x0, y - y0) - baseAngle + Math.PI
-		this.SetRGBAPixel(rgba, vecSize, x, y, ray_ang >= maxAngle ? color : color2, alpha_mul)
-	}
-	private DrawConditionalColorPixel4(
-		rgba: Uint8Array,
-		vecSize: Vector2,
-		x: number,
-		y: number,
-		color: Color,
-		baseAngle: number,
-		maxAngle: number,
-		color2: Color,
-		alpha_mul = 1
-	): void {
-		const x0 = Math.ceil(vecSize.x / 2),
-			y0 = Math.ceil(vecSize.y / 2)
-		this.DrawConditionalColorPixel(rgba, vecSize, x0 + x, y0 + y, color, baseAngle, maxAngle, color2, alpha_mul)
-		this.DrawConditionalColorPixel(rgba, vecSize, x0 + x, y0 - y, color, baseAngle, maxAngle, color2, alpha_mul)
-		this.DrawConditionalColorPixel(rgba, vecSize, x0 - x, y0 + y, color, baseAngle, maxAngle, color2, alpha_mul)
-		this.DrawConditionalColorPixel(rgba, vecSize, x0 - x, y0 - y, color, baseAngle, maxAngle, color2, alpha_mul)
-	}
-	public Radial(
+	// TODO: use paths for this
+	/*public Radial(
 		baseAngle: number,
 		percent: number,
 		radialColor: Color,
@@ -370,12 +370,13 @@ let RendererSDK = new (class CRendererSDK {
 		for (let x = 0; x < vecSize.x; x++)
 			for (let y = 0; y < vecSize.y; y++)
 				this.DrawConditionalColorPixel(rgba, vecSize, x, y, radialColor, baseAngle, maxAngle, backgroundColor)
-		//this.TempImage(rgba, vecPos, vecSize, vecSize, round, color)
-	}
+		this.TempImage(rgba, vecPos, vecSize, vecSize, round, color)
+	}*/
+	// TODO: use ARC and some other setup for this
 	/**
 	 * @param round distance in pixels to distant from end of vecSize
 	 */
-	public Arc(
+	/*public Arc(
 		baseAngle: number,
 		percent: number,
 		radialColor: Color,
@@ -415,8 +416,8 @@ let RendererSDK = new (class CRendererSDK {
 				)
 			}
 		}
-		//this.TempImage(rgba, vecPos, vecSize, vecSize, -1, color)
-	}
+		this.TempImage(rgba, vecPos, vecSize, vecSize, -1, color)
+	}*/
 	/**
 	 * @param font_size Size | default: 14
 	 * @param font_name default: "Calibri"
@@ -618,6 +619,29 @@ let RendererSDK = new (class CRendererSDK {
 		let off = 0
 		view.setUint8(off, CommandID.PAINT_SET_STYLE)
 		view.setUint8(off += 1, fillType)
+	}
+	private SetColorFilter(color: Color, blendMode: BlendMode) {
+		if (this.last_color_filter_type === ColorFilterType.BLEND && this.last_color_filter_color.Equals(color))
+			return
+		this.last_color_filter_type = ColorFilterType.BLEND
+		let view = this.AllocateCommandSpace(6)
+		let off = 0
+		view.setUint8(off, CommandID.PAINT_SET_COLOR_FILTER)
+		view.setUint8(off += 1, ColorFilterType.BLEND)
+		view.setUint8(off += 1, Math.min(color.r, 255))
+		view.setUint8(off += 1, Math.min(color.g, 255))
+		view.setUint8(off += 1, Math.min(color.b, 255))
+		view.setUint8(off += 1, Math.min(color.a, 255))
+		view.setUint8(off += 1, blendMode)
+	}
+	private ClearColorFilter() {
+		if (this.last_color_filter_type === ColorFilterType.NONE)
+			return
+		this.last_color_filter_type = ColorFilterType.NONE
+		let view = this.AllocateCommandSpace(1)
+		let off = 0
+		view.setUint8(off, CommandID.PAINT_SET_COLOR_FILTER)
+		view.setUint8(off += 1, ColorFilterType.NONE)
 	}
 })()
 

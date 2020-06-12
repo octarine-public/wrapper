@@ -9,7 +9,7 @@ export default class Switcher extends Base {
 	public selected_id = 0
 	protected readonly ArrowSize = 24
 	protected readonly arrow_size = RendererSDK.GetTextSize("«", this.FontName, this.ArrowSize)
-	protected readonly arrow_rect_size = new Vector2().AddScalar(this.arrow_size.y)
+	protected readonly arrow_rect_size = new Vector2(this.ArrowSize - 6, this.ArrowSize)
 	protected readonly arrow_rect_offset = this.text_offset.Add(this.arrow_rect_size).AddForThis(this.border_size)
 	protected readonly arrow_offset = new Vector2(this.arrow_rect_size.x / 2 - this.arrow_size.x / 2, -1)
 	protected readonly separator_size = 3
@@ -26,7 +26,7 @@ export default class Switcher extends Base {
 	}
 
 	public get RightArrowRect(): Rectangle {
-		let base_pos = this.Position.Add(this.TotalSize).SubtractScalarY(this.longest_value_size.y + 3).SubtractForThis(this.arrow_rect_offset)
+		let base_pos = this.Position.Add(this.TotalSize).SubtractScalarY(this.longest_value_size.y + 3).SubtractForThis(this.arrow_rect_offset).AddScalarY(this.ArrowSize / 2)
 		return new Rectangle(base_pos, base_pos.Add(this.arrow_rect_size))
 	}
 	public get LeftArrowRect(): Rectangle {
@@ -51,14 +51,14 @@ export default class Switcher extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize)
-		RendererSDK.Text(this.values[this.selected_id], this.Position.Add(this.text_offset).AddScalarY(this.name_size.y + 3), this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.name, this.Position.Add(this.text_offset).AddScalarY(this.FontSize), this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.values[this.selected_id], this.Position.Add(this.text_offset).AddScalarY(this.name_size.y + 3 + this.FontSize), this.FontColor, this.FontName, this.FontSize)
 		let left_rect = this.LeftArrowRect,
 			right_rect = this.RightArrowRect
 		RendererSDK.FilledRect(left_rect.pos1, left_rect.pos2.Subtract(left_rect.pos1), this.arrow_background_color)
-		RendererSDK.Text("«", left_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize)
+		RendererSDK.Text("«", left_rect.pos1.Add(this.arrow_offset).SubtractScalarX(1).AddScalarY(this.ArrowSize - 4), this.FontColor, this.FontName, this.ArrowSize)
 		RendererSDK.FilledRect(right_rect.pos1, right_rect.pos2.Subtract(right_rect.pos1), this.arrow_background_color)
-		RendererSDK.Text("»", right_rect.pos1.Add(this.arrow_offset), this.FontColor, this.FontName, this.ArrowSize)
+		RendererSDK.Text("»", right_rect.pos1.Add(this.arrow_offset).SubtractScalarX(1).AddScalarY(this.ArrowSize - 4), this.FontColor, this.FontName, this.ArrowSize)
 		super.RenderTooltip()
 	}
 
