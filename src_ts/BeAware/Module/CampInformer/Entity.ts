@@ -4,8 +4,10 @@ let allNeutrals: Creep[] = []
 export function Tick() {
 	if (!State.value)
 		return
-	allNeutrals = EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
-		.filter(x => !x.IsLaneCreep && x.Team === Team.Neutral && (OtimizeState.value && LocalPlayer!.Hero?.IsInRange(x, OtimizeSlider.value)))
+	const filter = EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
+		.filter(x => !x.IsLaneCreep && x.Team === Team.Neutral)
+	allNeutrals = !OtimizeState.value ? filter : filter.filter(x => OtimizeState.value
+		&& LocalPlayer!.Hero!.IsInRange(x, OtimizeSlider.value))
 }
 export function OnDraw() {
 	if (!State.value)

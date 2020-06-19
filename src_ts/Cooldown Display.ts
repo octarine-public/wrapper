@@ -115,9 +115,9 @@ function DrawAbilitySquare(hero: Hero, ability: Ability, x: number, y: number, i
 		RendererSDK.Text(
 			text_cooldown,
 			new Vector2(
-				real_x + inner_box_size / 2 -
-				text_cooldown.length * font_size * (1 - magic_number) / 2,
-				y,
+				(real_x + inner_box_size / 2 - text_cooldown.length * font_size * (1 - magic_number) / 2) -
+				(cooldown >= 100 ? 5 : 3),
+				(y + font_size + magic_number),
 			),
 			new Color(255, 255, 255),
 			"Tahoma",

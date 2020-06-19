@@ -50,7 +50,8 @@ EventsSDK.on("Draw", () => {
 				manabar_pos
 					.Clone()
 					.AddScalarX((manabar_size.x - RendererSDK.GetTextSize(text, "Calibri", embSize.value).x) / 2)
-					.SubtractScalarY(manabar_size.y / 2),
+					.AddScalarY(manabar_size.y + 6)
+					.SubtractScalarY((manabar_size.y)),
 				Color.White,
 				"Calibri",
 				embSize.value
@@ -64,6 +65,7 @@ EventsSDK.on("Draw", () => {
 				healthbar_pos
 					.Clone()
 					.AddScalarX((healthbar_size.x - RendererSDK.GetTextSize(text, "Calibri", ehbSize.value).x) / 2)
+					.AddScalarY(healthbar_size.y + 2)
 					.SubtractScalarY(healthbar_size.y * 1.75),
 				Color.White,
 				"Calibri",
