@@ -12,7 +12,7 @@ export default class Header extends Base {
 	public readonly TotalSize = this.TotalSize_.Clone()
 
 	protected dragging = false
-	protected readonly dragging_offset = new Vector2()
+	protected readonly dragging_offset = new Vector2(0, 0)
 	protected readonly underline_color = new Color(0x40, 0x80, 0xff)
 	protected readonly text_size: Vector2
 
@@ -21,7 +21,10 @@ export default class Header extends Base {
 		this.text_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize)
 	}
 
-	public get ConfigValue() { return this.Position.toArray() }
+	public get ConfigValue() {
+		return this.Position.toArray()
+	}
+
 	public set ConfigValue(value) {
 		if (value === undefined)
 			return

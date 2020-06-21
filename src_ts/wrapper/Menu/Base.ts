@@ -9,29 +9,48 @@ export interface IMenu {
 	entries: Base[]
 }
 
+export interface ILanguage {
+	Ru: string,
+	En: string,
+	Cn: string
+}
+
 export default class Base {
 	public tooltip?: string = ""
-	public OnValueChangedCBs: ((caller: Base) => void)[] = []
-	public readonly Position = new Vector2()
 	public FontSize = 18
-	public FontColor = new Color(255, 255, 255, 255)
 	public FontName = "Consolas"
+	public FontColor = new Color(255, 255, 255, 255)
+	public OnValueChangedCBs: ((caller: Base) => void)[] = []
+
+	public readonly Position = new Vector2(0, 0)
 	public readonly TotalSize_ = new Vector2(750 / 5, 40)
 	public readonly TotalSize = this.TotalSize_.Clone()
+
+	protected hovered = false
 	protected tooltip_size = new Vector2()
 	protected readonly border_size = new Vector2(1, 1)
 	protected readonly border_color = new Color(14, 14, 14, 254)
 	protected readonly background_color = new Color(19, 19, 19, 249)
 	protected readonly text_offset = new Vector2(7, 7)
-	protected hovered = false
+
 	protected readonly execute_on_add: boolean = true
 
-	constructor(public parent: IMenu, public name: string = "") { }
-	public get ConfigValue(): any { return undefined }
-	public set ConfigValue(value: any) { }
+	constructor(public parent: IMenu, public name: string = "") {
+		this.name = name
+	}
+
+	public get ConfigValue(): any {
+		return undefined
+	}
+
+	public set ConfigValue(value: any) {
+		return
+	}
+
 	protected get Rect() {
 		return new Rectangle(this.Position, this.Position.Add(this.TotalSize))
 	}
+
 	protected get NodeRect() {
 		return new Rectangle(this.Position.Add(this.border_size), this.Position.Add(this.TotalSize).Subtract(this.border_size.MultiplyScalar(2)))
 	}
@@ -46,20 +65,29 @@ export default class Base {
 			func(this)
 		return this
 	}
+
 	public Update(): void {
 		if (this.tooltip === undefined || this.tooltip.length === 0)
 			return
 		this.tooltip_size = RendererSDK.GetTextSize(this.tooltip, this.FontName, this.FontSize)
 	}
+
 	public Render(): void {
 		RendererSDK.FilledRect(this.Position, this.TotalSize, this.border_color)
 	}
+
 	public SetTooltip(tooltip: string) {
 		this.tooltip = tooltip
 		return this
 	}
-	public OnMouseLeftDown(): boolean { return true }
-	public OnMouseLeftUp(): boolean { return true }
+
+	public OnMouseLeftDown(): boolean {
+		return true
+	}
+
+	public OnMouseLeftUp(): boolean {
+		return true
+	}
 
 	public RenderTooltip(): void {
 		if (this.tooltip === undefined || this.tooltip.length === 0 || !this.Rect.Contains(this.MousePosition))

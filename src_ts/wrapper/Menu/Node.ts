@@ -127,10 +127,7 @@ export default class Node extends Base {
 		return this.AddEntry(new Toggle(this, name, default_value, tooltip))
 	}
 	public AddSlider(name: string, default_value = 0, min = 0, max = 100, tooltip?: string): Slider {
-		return this.AddEntry(new Slider(this, name, default_value, min, max, false, tooltip))
-	}
-	public AddSliderFloat(name: string, default_value = 0, min = 0, max = 100, tooltip?: string): Slider {
-		return this.AddEntry(new Slider(this, name, default_value, min, max, true, tooltip))
+		return this.AddEntry(new Slider(this, name, default_value, min, max, tooltip))
 	}
 	public AddNode(name: string, pathIcon?: string, tooltip?: string): Node {
 		let node = this.entries.find(entry => entry instanceof Node && entry.name === name) as Node

@@ -3,7 +3,7 @@ import { Ability, EventsSDK, GameRules, Hero, LocalPlayer, Menu, Unit, Flow_t, E
 // Menu
 const MenuEntry = Menu.AddEntry(["Utility", "AntiInitiation"])
 const MenuState = MenuEntry.AddToggle("State")
-const Additionaldelay = MenuEntry.AddSliderFloat("Additional delay", 0.03, 0.03)
+const Additionaldelay = MenuEntry.AddSlider("Additional delay", 0.03, 0.03)
 
 var Abils_ = [
 	[ // HexAbils

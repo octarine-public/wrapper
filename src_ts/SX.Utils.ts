@@ -5,7 +5,7 @@ declare global {
 const Menu = MenuSDK.AddEntry(["Debugger", "SX.Utils"])
 const State = Menu.AddToggle("State")
 const MenuTreeColor = Menu.AddNode("Enemy color")
-const range_display = Menu.AddSliderFloat("Range display", 0, 0, 10000)
+const range_display = Menu.AddSlider("Range display", 0, 0, 10000)
 const color_r = MenuTreeColor.AddSlider("R-Color", 1, 0, 100)
 const color_g = MenuTreeColor.AddSlider("G-Color", 0, 0, 100)
 const color_b = MenuTreeColor.AddSlider("B-Color", 0, 0, 100)

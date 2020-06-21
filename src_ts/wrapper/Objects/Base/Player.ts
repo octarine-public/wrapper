@@ -86,24 +86,10 @@ EventsSDK.on("EntityDestroyed", ent => {
 		SetGameInProgress(false)
 	}
 })
-
-let userid2team = new Map<number, number>()
-function TriggerPlayerTeamChanged(player: Player, team: number): void {
-	let old_team = player.Team
-	if (old_team !== team) {
-		player.Team = team
-		EventsSDK.emit("EntityTeamChanged", false, player)
-	}
-}
 EventsSDK.on("GameEvent", (name, obj) => {
-	if (name === "player_team")
-		userid2team.set(obj.userid, obj.team)
-	if (name === "player_connect_full") {
-		let ent = EntityManager.EntityByIndex(obj.index + 1)
-		if (ent instanceof Player) {
-			ent.PlayerID = obj.PlayerID
-			if (userid2team.has(obj.userid))
-				TriggerPlayerTeamChanged(ent, userid2team.get(obj.userid)!)
-		}
-	}
+	if (name !== "player_connect_full")
+		return
+	let ent = EntityManager.EntityByIndex(obj.index + 1)
+	if (ent instanceof Player)
+		ent.PlayerID = obj.PlayerID
 })

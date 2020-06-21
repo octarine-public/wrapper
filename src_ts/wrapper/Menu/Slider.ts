@@ -6,8 +6,7 @@ import Base, { IMenu } from "./Base"
 export default class Slider extends Base {
 	public min = -200
 	public max = 200
-	public value = 50
-	public float = false
+	public value = 0
 	public is_mouse_down = false
 	protected readonly text_offset = new Vector2(8, 8)
 	protected readonly slider_width = 4
@@ -15,12 +14,11 @@ export default class Slider extends Base {
 	protected readonly slider_filler_color = new Color(14, 99, 152)
 	protected readonly value_text_offset = new Vector2(15, 15)
 
-	constructor(parent: IMenu, name: string, default_value = 0, min = 0, max = 100, float: boolean = false, tooltip?: string) {
+	constructor(parent: IMenu, name: string, default_value = 0, min = 0, max = 100, tooltip?: string) {
 		super(parent, name)
 		this.value = default_value
 		this.min = min
 		this.max = max
-		this.float = float
 		this.tooltip = tooltip
 		this.TotalSize_.x =
 			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize).x
@@ -31,8 +29,13 @@ export default class Slider extends Base {
 		super.Update()
 	}
 
-	public get ConfigValue() { return this.value }
-	public set ConfigValue(value) { this.value = value !== undefined ? value : this.value }
+	public get ConfigValue() {
+		return this.value
+	}
+
+	public set ConfigValue(value) {
+		this.value = value !== undefined ? value : this.value
+	}
 
 	public Render(): void {
 		super.Render()
@@ -52,6 +55,7 @@ export default class Slider extends Base {
 		super.RenderTooltip()
 	}
 	public OnValueChanged(): void {
+
 		let off = Math.max(this.NodeRect.GetOffset(this.MousePosition).x, 0)
 		let old_value = this.value
 		this.value = Math.floor(Math.min(this.max, this.min + (off / (this.TotalSize.x - this.border_size.x * 2)) * (this.max - this.min)))
