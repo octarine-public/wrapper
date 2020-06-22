@@ -35,18 +35,9 @@ export default class Base {
 
 	protected readonly execute_on_add: boolean = true
 
-	constructor(public parent: IMenu, public name: string = "") {
-		this.name = name
-	}
-
-	public get ConfigValue(): any {
-		return undefined
-	}
-
-	public set ConfigValue(value: any) {
-		return
-	}
-
+	constructor(public parent: IMenu, public name: string = "") { }
+	public get ConfigValue(): any { return undefined }
+	public set ConfigValue(value: any) { }
 	protected get Rect() {
 		return new Rectangle(this.Position, this.Position.Add(this.TotalSize))
 	}
