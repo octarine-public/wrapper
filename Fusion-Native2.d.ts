@@ -131,11 +131,12 @@ declare interface Camera {
 
 declare function SendToConsole(command: string): void
 declare function readFile(path: string): ArrayBuffer
+declare function requestPlayerData(player_id: number): Promise<string>
 /**
  * @param path pass empty to read from confings/../settings.json
  */
-declare function readConfig(path: string): string
-declare function writeConfig(path: string, data: string): void
+declare function readConfig(path: string): Promise<ArrayBuffer>
+declare function writeConfig(path: string, data: ArrayBuffer): void
 declare function GetLevelName(): string
 declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer offset 0

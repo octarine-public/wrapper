@@ -86,6 +86,12 @@ export function Utf8ArrayToStr(array: Uint8Array): string {
 
 	return out
 }
+export function Utf16ArrayToStr(array: Uint16Array): string {
+	let s = ""
+	for (let i = 0; i < array.length; i++)
+		s += String.fromCharCode(array[i])
+	return s
+}
 
 export function Uint8ArrayToHex(array: Uint8Array): string {
 	return array.reduce((memo, i) => memo + ("0" + i.toString(16)).slice(-2), "")

@@ -4,6 +4,7 @@ import Header from "./Header"
 import Node from "./Node"
 import Events from "../Managers/Events"
 import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
+import { StringToUTF16, Utf16ArrayToStr } from "../Utils/Utils"
 
 let Menu = new (class MenuManager {
 	public entries: Node[] = []
@@ -14,8 +15,17 @@ let Menu = new (class MenuManager {
 	private active_element?: Base
 
 	constructor() {
-		this.ConfigValue = JSON.parse(readConfig("default.json") || "{}")
 		this.header.ConfigValue = this.config.Header
+	}
+	private async readConfigTask() {
+		try {
+			this.ConfigValue = JSON.parse(Utf16ArrayToStr(new Uint16Array(await readConfig("default.json"))))
+		} catch {
+			this.ConfigValue = {}
+		}
+	}
+	public async Finalize(): Promise<void> {
+		await this.readConfigTask()
 	}
 
 	public get Position() {
@@ -39,7 +49,7 @@ let Menu = new (class MenuManager {
 
 	public UpdateConfig() {
 		this.config.Header = this.header.ConfigValue
-		writeConfig("default.json", JSON.stringify(this.ConfigValue))
+		writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)))
 	}
 	public ForwardConfig() {
 		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.name])
@@ -110,6 +120,7 @@ let Menu = new (class MenuManager {
 		return node
 	}
 })()
+Menu.Finalize()
 
 Events.after("Draw", () => {
 	Menu.Render()

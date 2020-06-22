@@ -11,7 +11,7 @@ import BinaryStream from "../Utils/BinaryStream"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
-import { Utf8ArrayToStr, MapToObject, ParseMapName } from "../Utils/Utils"
+import { Utf8ArrayToStr, MapToObject, ParseMapName, StringToUTF16 } from "../Utils/Utils"
 import * as StringTables from "./StringTables"
 import Vector4 from "../Base/Vector4"
 import { GameRules } from "../Objects/Base/GameRules"
@@ -389,7 +389,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 						]
 					})
 				])
-				writeConfig("dump_CSVCMsg_FlattenedSerializer.d.ts", `\
+				writeConfig("dump_CSVCMsg_FlattenedSerializer.d.ts", StringToUTF16(`\
 import { Vector2, Vector3, QAngle, Vector4 } from "./src_ts/wrapper/Imports"
 
 type Color = number // 0xAABBGGRR?
@@ -402,7 +402,7 @@ ${list.map(([name, fields]) => `\
 declare class ${name} {
 	${(fields as [string, string][]).map(([type, f_name]) => `${f_name}: ${type}`).join("\n\t")}
 }`).join("\n\n")}
-`)
+`))
 			}
 			entities_symbols = [...(msg.get("symbols") as Map<number, string>).values()]
 			for (let [construct, map] of GetFieldHandlers()) {
