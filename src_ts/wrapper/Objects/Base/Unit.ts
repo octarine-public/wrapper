@@ -106,6 +106,10 @@ export default class Unit extends Entity {
 	public IsIllusion_ = false
 	@NetworkedBasicField("m_iAttackCapabilities")
 	public AttackCapabilities = 0
+	@NetworkedBasicField("m_iDamageMin")
+	public AttackDamageMin = 0
+	@NetworkedBasicField("m_iDamageMax")
+	public AttackDamageMax = 0
 	@NetworkedBasicField("m_bIsMoving")
 	public IsMoving = false
 	@NetworkedBasicField("m_bIsPhantom")
