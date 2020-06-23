@@ -23,6 +23,7 @@ import { RecursiveMap } from "../../Utils/ParseKV"
 import EventsSDK from "../../Managers/EventsSDK"
 import RendererSDK from "../../Native/RendererSDK"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import item_nether_shawl from "../Items/item_nether_shawl"
 
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
@@ -433,10 +434,14 @@ export default class Unit extends Entity {
 	public get SpellAmplification(): number {
 		let spellAmp = 0
 
-		this.Items.forEach(item => spellAmp += item.GetSpecialValue("spell_amp") / 100)
+		this.Items.forEach(item => {
+			if (item instanceof item_nether_shawl)
+				spellAmp += item.GetSpecialValue("bonus_spell_amp") / 100
 
+			spellAmp += item.GetSpecialValue("spell_amp") / 100
+		})
 		this.Spells.forEach(spell => {
-			if (spell !== undefined && spell.Level !== 0 && spell!.Name.startsWith("special_bonus_spell_amplify"))
+			if (spell !== undefined && spell.Level !== 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
 				spellAmp += spell!.GetSpecialValue("value") / 100
 		})
 
@@ -580,44 +585,48 @@ export default class Unit extends Entity {
 			let abil = buff.Ability
 			if (!(abil instanceof Ability))
 				return
-			if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL)
+			if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL) {
 				switch (buff.Name) {
 					case "modifier_ember_spirit_flame_guard":
 						dmg -= abil.GetSpecialValue("absorb_amount")
-						return
+						break
 					case "modifier_item_pipe_barrier":
 					case "modifier_item_hood_of_defiance_barrier":
-					case "modifier_item_infused_raindrop":
 						dmg -= abil.GetSpecialValue("barrier_block")
-						return
-					default:
+						break
+					case "modifier_item_infused_raindrop":
+						if (!abil.IsCooldownReady)
+							return
+						dmg -= abil.GetSpecialValue("magic_damage_block")
 						break
 				}
+			}
+
 			switch (abil.Name) {
 				case "abaddon_aphotic_shield":
 					dmg -= abil.GetSpecialValue("damage_absorb")
-					return
+					break
 				case "bloodseeker_bloodrage":
-					dmg *= abil.GetSpecialValue("damage_increase_pct") / 100
-					return
+					dmg *= 1 + (abil.GetSpecialValue("damage_increase_incoming_pct") / 100)
+					break
 				case "spectre_dispersion":
 					dmg *= 1 - (abil.GetSpecialValue("damage_reflection_pct") / 100)
-					return
+					break
 				case "ursa_enrage":
 				case "centaur_stampede":
 					dmg *= 1 - (abil.GetSpecialValue("damage_reduction") / 100)
-					return
+					break
 				case "kunkka_ghostship":
 					dmg *= 1 - (abil.GetSpecialValue("ghostship_absorb") / 100)
-					return
+					break
 				case "wisp_overcharge":
 					dmg *= 1 + (abil.GetSpecialValue("bonus_damage_pct") / 100)
-					return
+					break
 				case "medusa_mana_shield": {
 					let max_absorbed_dmg = this.Mana * abil.GetSpecialValue("damage_per_mana"),
 						possible_absorbed = dmg * abil.GetSpecialValue("absorption_tooltip") / 100
 					dmg -= Math.min(max_absorbed_dmg, possible_absorbed)
-					return
+					break
 				}
 				case "bristleback_bristleback": {
 					if (source !== undefined) {
@@ -627,10 +636,8 @@ export default class Unit extends Entity {
 						else if (rot_angle <= 1.20)
 							dmg *= 1 - abil.GetSpecialValue("side_damage_reduction") / 100
 					}
-					return
+					break
 				}
-				default:
-					return
 			}
 		})
 		return dmg

@@ -180,18 +180,21 @@ export default class Ability extends Entity {
 			castrange = this.BaseCastRange
 
 		switch (this.Name) {
+			// transfer to ability
 			case "skywrath_mage_concussive_shot": {
 				let unique = owner?.GetAbilityByName("special_bonus_unique_skywrath_4")
 				if (unique !== undefined && unique.Level !== 0)
 					return Number.MAX_SAFE_INTEGER
 				break
 			}
+			// transfer to ability
 			case "gyrocopter_call_down": {
 				let unique = owner?.GetAbilityByName("special_bonus_unique_gyrocopter_5")
 				if (unique !== undefined && unique.Level !== 0)
 					return Number.MAX_SAFE_INTEGER
 				break
 			}
+			// transfer to ability
 			case "lina_dragon_slave":
 				castrange += this.GetSpecialValue("dragon_slave_width_initial")
 				break
@@ -224,8 +227,8 @@ export default class Ability extends Entity {
 		return this.GetCastDelay(position) + ((time + this.ActivationDelay) * 1000)
 	}
 
-	public GetDamage(target: Unit): number {
-		return target.CalculateDamage((this.AbilityDamage || this.GetSpecialValue("damage")) * 1, this.DamageType, this.Owner)
+	public GetDamage(target: Unit, source?: Unit): number {
+		return target.CalculateDamage((this.AbilityDamage || this.GetSpecialValue("damage")) * 1, this.DamageType, source)
 	}
 
 	public UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
