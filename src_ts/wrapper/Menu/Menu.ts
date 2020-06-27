@@ -15,17 +15,10 @@ let Menu = new (class MenuManager {
 	private active_element?: Base
 
 	constructor() {
-		this.header.ConfigValue = this.config.Header
-	}
-	private async readConfigTask() {
-		try {
-			this.ConfigValue = JSON.parse(Utf16ArrayToStr(new Uint16Array(await readConfig("default.json"))))
-		} catch {
-			this.ConfigValue = {}
-		}
-	}
-	public async Finalize(): Promise<void> {
-		await this.readConfigTask()
+		readConfig("default.json")
+			.then(buf => this.ConfigValue = JSON.parse(Utf16ArrayToStr(new Uint16Array(buf))))
+			.catch(() => this.ConfigValue = {})
+			.finally(() => this.header.ConfigValue = this.config.Header)
 	}
 
 	public get Position() {
@@ -52,10 +45,11 @@ let Menu = new (class MenuManager {
 		writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)))
 	}
 	public ForwardConfig() {
-		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.name])
+		if (this.config !== undefined)
+			this.entries.forEach(entry => entry.ConfigValue = this.config[entry.name])
 	}
 	public Render(): void {
-		if (!this.is_open)
+		if (this.config === undefined || !this.is_open)
 			return
 		this.header.Render()
 		if (this.header.position_dirty) {
@@ -120,7 +114,6 @@ let Menu = new (class MenuManager {
 		return node
 	}
 })()
-Menu.Finalize()
 
 Events.after("Draw", () => {
 	Menu.Render()
