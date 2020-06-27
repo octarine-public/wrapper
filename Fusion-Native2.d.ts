@@ -174,7 +174,6 @@ declare function GetHeapStatistics(): {
 	number_of_detached_contexts: bigint
 	does_zap_garbage: bigint
 }
-declare function TakeHeapSnapshot(path: string): void
 declare function hrtime(): number
 declare function AddSearchPath(path: string): boolean
 declare function RemoveSearchPath(path: string): boolean

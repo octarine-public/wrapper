@@ -16,9 +16,6 @@ let exec = (self: Menu.Base) => GameState.ExecuteCommand(self.tooltip!)
 let debuggerMenu = Menu.AddEntry("Debugger")
 
 let sv_cheatsMenu = debuggerMenu.AddNode("Concommands")
-debuggerMenu.AddKeybind("Snapshot").OnRelease(() => {
-	TakeHeapSnapshot("dumps/manual_heap_" + Math.random().toString().substring(2, 8) + ".heapsnapshot")
-})
 let sv_cheats = sv_cheatsMenu.AddToggle("sv_cheats")
 	.SetTooltip("sv_cheats")
 	.OnValue(setConVar)
@@ -286,11 +283,3 @@ globalThis.reset_avg_mult = () => {
 	for (let [, ar] of avg_map_events.entries())
 		ar[1] = 1
 }
-
-let last_time = 0
-EventsSDK.on("Draw", () => {
-	if (hrtime() - last_time < 10000 || GetHeapStatistics().total_heap_size < 300n * 1024n * 1024n)
-		return
-	TakeHeapSnapshot("dumps/" + Math.random().toString().substring(2, 8) + ".heapsnapshot")
-	last_time = hrtime()
-})
