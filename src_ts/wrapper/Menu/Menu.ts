@@ -42,7 +42,7 @@ let Menu = new (class MenuManager {
 
 	public UpdateConfig() {
 		this.config.Header = this.header.ConfigValue
-		writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)))
+		writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)).buffer)
 	}
 	public ForwardConfig() {
 		if (this.config !== undefined)
