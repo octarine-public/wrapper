@@ -659,7 +659,7 @@ export default class Unit extends Entity {
 				break
 			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL: {
 				let armor = this.Armor
-				damage *= Math.max(Math.min((1 - (0.052 * armor) / (0.9 + 0.048 * armor)), 2), 0)
+				damage *= Math.max(Math.min((1 - (0.06 * armor) / (1 + 0.06 * armor)), 25 / 12), 0)
 				{
 					let phys_damage_type = source === undefined ? AttackDamageType.Basic : source.AttackDamageType,
 						phys_armor_type = this.ArmorType
