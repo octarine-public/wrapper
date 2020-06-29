@@ -137,10 +137,11 @@ export default class AbilityData {
 	}
 
 	public GetSpecialValue(name: string, level = 0): number {
-		level = Math.min(this.MaxLevel, level) - 1
+		if (level <= 0)
+			level = this.MaxLevel
 		if (level < 0)
 			return 0
-
+		level = (level - 1)
 		let ar = this.CacheSpecialValue(name)
 		if (ar === undefined)
 			return 0
@@ -154,10 +155,11 @@ export default class AbilityData {
 		return ar[1]
 	}
 	public GetSpecialValueWithTalent(owner: Unit, name: string, level: number): number {
-		level = Math.min(this.MaxLevel, level) - 1
+		if (level <= 0)
+			level = this.MaxLevel
 		if (level < 0)
 			return 0
-
+		level = (level - 1)
 		let ar = this.CacheSpecialValue(name)
 		if (ar === undefined)
 			return 0
@@ -187,50 +189,64 @@ export default class AbilityData {
 	}
 
 	public GetCastRange(level: number): number {
-		level = Math.min(this.MaxLevel, level) - 1
+		if (level <= 0)
+			level = this.MaxLevel
 		if (level < 0)
 			return 0
+		level = (level - 1)
 		return this.CastRangeCache[level]
 	}
 
 	public GetDuration(level: number): number {
-		level = Math.min(this.MaxLevel, level) - 1
+		if (level <= 0)
+			level = this.MaxLevel
 		if (level < 0)
 			return 0
+		level = (level - 1)
 		return this.Duration[level]
 	}
 
 	public GetChannelTime(level: number): number {
-		level = Math.min(this.MaxLevel, level) - 1
+		if (level <= 0)
+			level = this.MaxLevel
 		if (level < 0)
 			return 0
+		level = (level - 1)
 		return this.ChannelTimeCache[level]
 	}
 
 	public GetAbilityDamage(level: number): number {
-		level = Math.min(this.MaxLevel, level) - 1
+		if (level <= 0)
+			level = this.MaxLevel
 		if (level < 0)
 			return 0
+		level = (level - 1)
 		return this.AbilityDamageCache[level]
 	}
 
 	public GetCastPoint(level: number): number {
-		level = Math.min(this.MaxLevel, level) - 1
+		if (level <= 0)
+			level = this.MaxLevel
 		if (level < 0)
 			return 0
+		level = (level - 1)
 		return this.CastPointCache[level]
 	}
 
 	public GetMaxCharges(level: number): number {
-		level = Math.min(this.MaxLevel, level) - 1
+		if (level <= 0)
+			level = this.MaxLevel
 		if (level < 0)
 			return 0
+		level = (level - 1)
 		return this.ChargesCache[level]
 	}
 	public GetChargeRestoreTime(level: number): number {
-		level = Math.min(this.MaxLevel, level) - 1
+		if (level <= 0)
+			level = this.MaxLevel
 		if (level < 0)
 			return 0
+		level = (level - 1)
 		return this.ChargeRestoreTimeCache[level]
 	}
 

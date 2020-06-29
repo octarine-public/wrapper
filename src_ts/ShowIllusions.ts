@@ -10,7 +10,7 @@ EventsSDK.on("Draw", () => {
 	if (!stateMain.value || !GameRules?.IsInGame || LocalPlayer === undefined || LocalPlayer.IsSpectator)
 		return
 	EntityManager.GetEntitiesByClass(Hero).forEach(illus => {
-		if (!illus.IsIllusion || !illus.IsEnemy() || !illus.IsAlive)
+		if (!illus.IsIllusion || !illus.IsEnemy() || !illus.IsAlive || !illus.IsVisible)
 			return
 
 		if (!deleteIllusion.value)
