@@ -123,7 +123,7 @@ enum PaintType {
 	STROKE_AND_FILL
 }
 
-let RendererSDK = new (class CRendererSDK {
+class CRendererSDK {
 	/**
 	 * Default Size of Text = Size 18
 	 * @param font Size as X | default: 18
@@ -642,7 +642,8 @@ let RendererSDK = new (class CRendererSDK {
 		let view = this.AllocateCommandSpace(0)
 		view.setUint8(0, CommandID.RESTORE_STATE)
 	}
-})()
+}
+let RendererSDK = new CRendererSDK()
 
 let last_loaded_map_name = "<empty>"
 try {

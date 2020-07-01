@@ -6,7 +6,7 @@ import Events from "../Managers/Events"
 import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
 import { StringToUTF16, Utf16ArrayToStr } from "../Utils/Utils"
 
-let Menu = new (class MenuManager {
+class MenuManager {
 	public entries: Node[] = []
 	public config: any
 	public is_open = true
@@ -113,7 +113,8 @@ let Menu = new (class MenuManager {
 		this.PositionDirty = true
 		return node
 	}
-})()
+}
+let Menu = new MenuManager()
 
 Events.after("Draw", () => {
 	Menu.Render()
