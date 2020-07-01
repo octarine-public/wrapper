@@ -10,7 +10,7 @@ export default class BinaryStream {
 		this.pos += s
 		return this
 	}
-	public Next(): number {
+	public ReadUint8(): number {
 		return this.view.getUint8(this.pos++)
 	}
 	public ReadInt8(): number {
@@ -21,7 +21,7 @@ export default class BinaryStream {
 			shift = 0,
 			b: number
 		do {
-			b = this.Next()
+			b = this.ReadUint8()
 			val |= (b & 0x7F) << shift
 			shift += 7
 		} while ((b & 0x80) !== 0)
@@ -30,30 +30,12 @@ export default class BinaryStream {
 	public ReadVarUint(): bigint {
 		let val = 0n,
 			shift = 0n,
-			b: bigint
+			b: number
 		do {
-			b = BigInt(this.Next())
-			val |= (b & 0x7Fn) << shift
+			b = this.ReadUint8()
+			val |= BigInt(b & 0x7F) << shift
 			shift += 7n
-		} while ((b & 0x80n) !== 0n)
-		return val
-	}
-	public ReadNumber(n: number): number {
-		let val = 0
-		for (let i = 0; i < n; i++)
-			val |= this.Next() << (i * 8)
-		return val
-	}
-	public ReadBigInt(n: number): bigint {
-		const limit = BigInt(n) * 8n
-		let val = 0n,
-			shift = 0n,
-			b: bigint
-		do {
-			b = BigInt(this.Next())
-			val |= b << shift
-			shift += 8n
-		} while (shift !== limit)
+		} while ((b & 0x80) !== 0)
 		return val
 	}
 	public ReadUint16(littleEndian = true): number {
@@ -97,22 +79,52 @@ export default class BinaryStream {
 		return res
 	}
 	public ReadBoolean(): boolean {
-		return this.Next() !== 0
+		return this.ReadUint8() !== 0
 	}
 	public ReadSlice(size: number): ArrayBuffer {
 		let slice = this.view.buffer.slice(this.pos, this.pos + size)
 		this.RelativeSeek(size)
 		return slice
 	}
-	public ReadString(size: number): string {
-		return Utf8ArrayToStr(new Uint8Array(size))
+	public ReadUtf8String(size: number): string {
+		// inlined Utf8ArrayToStr that works with streaming
+		let out = ""
+
+		while (size--) {
+			let c = this.ReadUint8()
+			switch (c >> 4) {
+				case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+					// 0xxxxxxx
+					out += String.fromCharCode(c)
+					break
+				case 12: case 13: {
+					// 110x xxxx   10xx xxxx
+					const char2 = size > 0 ? this.ReadUint8() : 0
+					size = Math.max(size - 1, 0)
+					out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F))
+					break
+				}
+				case 14: {
+					// 1110 xxxx  10xx xxxx  10xx xxxx
+					const char2 = size > 0 ? this.ReadUint8() : 0,
+						char3 = size > 0 ? this.ReadUint8() : 0
+					size = Math.max(size - 2, 0)
+					out += String.fromCharCode(((c & 0x0F) << 12) |
+						((char2 & 0x3F) << 6) |
+						((char3 & 0x3F) << 0))
+					break
+				}
+			}
+		}
+
+		return out
 	}
 	public ReadNullTerminatedString(): string {
 		let str = ""
 		while (true) {
 			if (this.Empty())
 				return str
-			let b = this.Next()
+			let b = this.ReadUint8()
 			if (b === 0)
 				return str
 			str += String.fromCharCode(b)

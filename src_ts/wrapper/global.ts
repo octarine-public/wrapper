@@ -67,7 +67,13 @@ globalThis.WASM = _WASM
 globalThis.Manifest = _Manifest
 
 globalThis.Menu = _Menu
-globalThis.GetEntityClassByName = (name: string) => GetSDKClasses().find(c => (c as Constructor<any>).name === name)
+globalThis.GetEntityClassByName = (name: string) => {
+	let classes = GetSDKClasses()
+	for (let i = 0; i < classes.length; i++)
+		if (classes[i][1] === name)
+			return classes[i][0]
+	return undefined
+}
 
 // "Don't know how to serialize bigint" fix
 /*BigInt.prototype.toJSON = function () {

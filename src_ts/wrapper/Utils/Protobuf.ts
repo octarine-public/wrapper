@@ -160,7 +160,7 @@ function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): Map<number
 			case ProtoType.TYPE_FIXED64: // 64-bit: fixed64, sfixed64, double
 			case ProtoType.TYPE_SFIXED64:
 			case ProtoType.TYPE_DOUBLE:
-				value2 = stream.ReadBigInt(8)
+				value2 = stream.ReadUint64()
 				break
 			case ProtoType.TYPE_STRING: // Length-delimited: string, bytes, embedded messages
 			case ProtoType.TYPE_BYTES:
@@ -172,7 +172,7 @@ function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): Map<number
 			case ProtoType.TYPE_FIXED32: // 32-bit: fixed32, sfixed32, float32
 			case ProtoType.TYPE_SFIXED32:
 			case ProtoType.TYPE_FLOAT:
-				value2 = stream.ReadBigInt(4)
+				value2 = BigInt(stream.ReadUint32())
 				break
 		}
 		repeated_map.set(repeated_map.size, ParseField(field, value2))
@@ -214,7 +214,7 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 				value = stream.ReadVarUint()
 				break
 			case 1: // 64-bit: fixed64, sfixed64, double
-				value = stream.ReadBigInt(8)
+				value = stream.ReadUint64()
 				break
 			case 2: // Length-delimited: string, bytes, embedded messages, packed repeated fields
 				value = stream.ReadVarSlice()
@@ -223,7 +223,7 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 			case 4: // end group
 				throw "Groups are deprecated"
 			case 5: // 32-bit: fixed32, sfixed32, float32
-				value = stream.ReadBigInt(4)
+				value = BigInt(stream.ReadUint32())
 				break
 			default:
 				throw `Unknown wire type ${wire_type}`

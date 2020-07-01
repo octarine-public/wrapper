@@ -22,7 +22,7 @@ function _symtostr(stream: Stream, token: string): string {
 		escape_next_char = false,
 		start_pos = stream.pos
 	while (!stream.Empty()) {
-		let ch = stream.Next()
+		let ch = stream.ReadChar()
 		if (escape_next_char) {
 			escape_next_char = false
 			try {
@@ -47,7 +47,7 @@ function _symtostr(stream: Stream, token: string): string {
 function _unquotedtostr(stream: Stream): string {
 	let str = ""
 	while (!stream.Empty()) {
-		let ch = stream.Next()
+		let ch = stream.ReadChar()
 		if (WHITESPACE.includes(ch))
 			break
 		str += ch
@@ -63,7 +63,7 @@ function _parse(stream: Stream, map = new Map<string, any>()): RecursiveMap {
 		next_is_value = false
 
 	while (!stream.Empty()) {
-		var c = stream.Next()
+		var c = stream.ReadChar()
 
 		if (c === NODE_OPEN) {
 			next_is_value = false  // Make sure the next string is interpreted as a key.
@@ -78,7 +78,7 @@ function _parse(stream: Stream, map = new Map<string, any>()): RecursiveMap {
 		} else if (c === BR_OPEN)
 			lastbrk = _symtostr(stream, BR_CLOSE)
 		else if (c === COMMENT) {
-			if (stream.Next() === COMMENT)
+			if (stream.ReadChar() === COMMENT)
 				stream.SeekLine()
 			else
 				stream.RelativeSeek(-1) // cancel read
@@ -188,10 +188,10 @@ class KVParser {
 		this.binary_bytes_offset = 0
 		let stream = new BinaryStream(new DataView(buf))
 		stream.RelativeSeek(16) // format
-		let compression_method = stream.ReadNumber(4),
-			data_offset = stream.ReadNumber(4),
-			count_32bit = stream.ReadNumber(4)
-		this.count_64bit = stream.ReadNumber(4)
+		let compression_method = stream.ReadUint32(),
+			data_offset = stream.ReadUint32(),
+			count_32bit = stream.ReadUint32()
+		this.count_64bit = stream.ReadUint32()
 		let kv3_buf: ArrayBuffer
 		switch (compression_method) {
 			case 0:
@@ -219,7 +219,7 @@ class KVParser {
 		// bytes after the string table is kv types, minus 4 static bytes at the end
 		this.types = new Array<number>(stream.Remaining - 4)
 		for (var i = 0; i < this.types.length; i++)
-			this.types[i] = stream.Next()
+			this.types[i] = stream.ReadUint8()
 
 		stream.pos = kv_data_offset
 		return this.ParseBinaryKV(stream, true)
@@ -251,7 +251,7 @@ class KVParser {
 		if (this.types.length !== 0)
 			databyte = this.types[this.current_type_index++]
 		else
-			databyte = stream.Next()
+			databyte = stream.ReadUint8()
 
 		let flagInfo = KVFlag.None
 		if ((databyte & 0x80) === 0x80) {
@@ -260,7 +260,7 @@ class KVParser {
 			if (this.types.length !== 0)
 				flagInfo = this.types[this.current_type_index++]
 			else
-				flagInfo = stream.Next()
+				flagInfo = stream.ReadUint8()
 		}
 
 		return [databyte, flagInfo]
@@ -499,7 +499,7 @@ class ResourceIntrospectionManifest {
 				let prev2 = stream.pos
 				stream.pos += indirection_offset - 8 // offset from indirection_offset
 				for (let i = 0; i < indirection_size; i++)
-					field.Indirections.push(stream.Next())
+					field.Indirections.push(stream.ReadUint8())
 				stream.pos = prev2
 
 				field.TypeData = stream.ReadUint32()
@@ -509,7 +509,7 @@ class ResourceIntrospectionManifest {
 				disc_struct.FieldIntrospection.push(field)
 			}
 			stream.pos = prev
-			disc_struct.StructFlags = stream.Next()
+			disc_struct.StructFlags = stream.ReadUint8()
 			stream.RelativeSeek(3) // TODO: ????
 			this.ReferencedStructs.push(disc_struct)
 		}
@@ -629,7 +629,7 @@ class C_NTRO {
 				parent.set(name, stream.ReadInt8())
 				break
 			case DataType.Byte:
-				parent.set(name, stream.Next())
+				parent.set(name, stream.ReadUint8())
 				break
 			case DataType.Boolean:
 				parent.set(name, stream.ReadBoolean())

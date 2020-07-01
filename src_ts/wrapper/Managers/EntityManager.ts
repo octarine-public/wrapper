@@ -11,7 +11,7 @@ import BinaryStream from "../Utils/BinaryStream"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
-import { Utf8ArrayToStr, MapToObject, ParseMapName, StringToUTF16 } from "../Utils/Utils"
+import { MapToObject, ParseMapName, StringToUTF16 } from "../Utils/Utils"
 import * as StringTables from "./StringTables"
 import Vector4 from "../Base/Vector4"
 import { GameRules } from "../Objects/Base/GameRules"
@@ -165,7 +165,7 @@ function CreateEntity(id: number, class_name: string, entity_name: Nullable<stri
 	AllEntitiesAsMap.set(id, entity)
 	AllEntities.push(entity)
 
-	GetSDKClasses().forEach(class_ => {
+	GetSDKClasses().forEach(([class_]) => {
 		if (!(entity instanceof class_))
 			return
 
@@ -188,7 +188,7 @@ function DeleteEntity(id: number) {
 	EventsSDK.emit("EntityDestroyed", false, entity)
 	ent_props.delete(id)
 	VisibilityMask.set(id, false)
-	GetSDKClasses().forEach(class_ => {
+	GetSDKClasses().forEach(([class_]) => {
 		if (!(entity instanceof class_))
 			return
 
@@ -233,7 +233,7 @@ let convert_uint8 = new Uint8Array(convert_buf),
 	convert_int64 = new BigInt64Array(convert_buf),
 	convert_uint64 = new BigUint64Array(convert_buf)
 function ParseProperty(stream: BinaryStream): string | bigint | number | boolean | Vector2 | Vector3 | Vector4 {
-	let var_type: PropertyType = stream.ReadNumber(1)
+	let var_type: PropertyType = stream.ReadUint8()
 	switch (var_type) {
 		case PropertyType.INT8:
 			convert_uint64[0] = stream.ReadVarUint()
@@ -269,7 +269,7 @@ function ParseProperty(stream: BinaryStream): string | bigint | number | boolean
 		case PropertyType.QUATERNION:
 			return new Vector4(stream.ReadFloat32(), stream.ReadFloat32(), stream.ReadFloat32(), stream.ReadFloat32())
 		case PropertyType.STRING:
-			return Utf8ArrayToStr(new Uint8Array(stream.ReadSlice(stream.ReadVarUintAsNumber())))
+			return stream.ReadUtf8String(stream.ReadVarUintAsNumber())
 		default:
 			throw `Unknown PropertyType: ${var_type}`
 	}
@@ -277,30 +277,32 @@ function ParseProperty(stream: BinaryStream): string | bigint | number | boolean
 
 let entities_symbols: string[] = []
 function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], EntityPropertyType[], string] {
-	let ent_class = entities_symbols[stream.ReadNumber(2)]
+	let ent_class = entities_symbols[stream.ReadUint16()]
 	VisibilityMask.set(ent_id, true)
 	if (!ent_props.has(ent_id))
 		ent_props.set(ent_id, new Map())
 	let ent_node = ent_props.get(ent_id)!,
 		changed_paths: number[] = [],
 		chaged_paths_results: EntityPropertyType[] = []
-	for (let path_size = 0; (path_size = stream.ReadNumber(1)) !== 0;) {
-		let raw_path = new Uint16Array(stream.ReadSlice(2 * path_size)),
-			prop_node = ent_node
+	for (let path_size = 0; (path_size = stream.ReadUint8()) !== 0;) {
+		let prop_node = ent_node
 		for (let i = 0; i < path_size; i++) {
-			let id = raw_path[i]
+			let id = stream.ReadUint16()
 			let must_be_array = id & 1
 			id >>= 1
-			if (!Array.isArray(prop_node) && must_be_array)
+			if (must_be_array && !Array.isArray(prop_node))
 				throw "Expected array"
-			if (!(prop_node instanceof Map) && !must_be_array)
+			if (!must_be_array && !(prop_node instanceof Map))
 				throw "Expected Map"
 
 			if (must_be_array) {
 				let ar = prop_node as EntityPropertyType[]
 				if (i !== path_size - 1) {
-					if (!ar[id])
-						ar[id] = (raw_path[i + 1] & 1) ? [] : new Map()
+					if (ar[id] === undefined) {
+						let next_must_be_array = stream.ReadUint16() & 1
+						stream.RelativeSeek(-2) // uint16 = 2 bytes
+						ar[id] = next_must_be_array ? [] : new Map()
+					}
 					prop_node = ar[id]
 				} else
 					ar[id] = ParseProperty(stream)
@@ -308,8 +310,11 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], Ent
 				let map = prop_node as Map<string, EntityPropertyType>
 				let sym = entities_symbols[id]
 				if (i !== path_size - 1) {
-					if (!map.has(sym))
-						map.set(sym, (raw_path[i + 1] & 1) ? [] : new Map())
+					if (!map.has(sym)) {
+						let next_must_be_array = stream.ReadUint16() & 1
+						stream.RelativeSeek(-2) // uint16 = 2 bytes
+						map.set(sym, next_must_be_array ? [] : new Map())
+					}
 					prop_node = map.get(sym)!
 					chaged_paths_results.push(prop_node)
 				} else {
@@ -429,8 +434,8 @@ declare class ${name} {
 				queued_creation: [number, string][] = [],
 				queued_leave: number[] = []
 			while (!stream.Empty()) {
-				let ent_id = stream.ReadNumber(2)
-				let pvs: EntityPVS = stream.ReadNumber(1)
+				let ent_id = stream.ReadUint16()
+				let pvs: EntityPVS = stream.ReadUint8()
 				switch (pvs) {
 					case EntityPVS.DELETE:
 						VisibilityMask.set(ent_id, false)
@@ -501,7 +506,7 @@ function LoadTreeMap(buf: ArrayBuffer) {
 		AllEntitiesAsMap.set(id, entity)
 		AllEntities.push(entity)
 
-		GetSDKClasses().forEach(class_ => {
+		GetSDKClasses().forEach(([class_]) => {
 			if (!(entity instanceof class_))
 				return
 

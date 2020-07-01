@@ -4,10 +4,10 @@ import { EntityPropertyType } from "../Managers/EntityManager"
 export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => void
 let constructors = new Map<string, Constructor<Entity>>(),
 	field_handlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>(),
-	sdk_classes: Constructor<Entity>[] = []
+	sdk_classes: [Constructor<Entity>, string][] = []
 
 function RegisterClassInternal(constructor: Constructor<Entity>) {
-	sdk_classes.push(constructor)
+	sdk_classes.push([constructor, constructor.name])
 	let map = new Map<string, FieldHandler>()
 	let prototype = constructor.prototype
 	for (let [constructor_, map_] of field_handlers)
@@ -42,7 +42,7 @@ export function ReplaceFieldHandler<T extends Entity>(constructor: Constructor<T
 	field_handlers.get(constructor)!.set(field_name, handler as FieldHandler)
 }
 
-export function GetSDKClasses(): Constructor<Entity>[] {
+export function GetSDKClasses(): [Constructor<Entity>, string][] {
 	return sdk_classes
 }
 export function GetFieldHandlers(): Map<Constructor<Entity>, Map<string, FieldHandler>> {

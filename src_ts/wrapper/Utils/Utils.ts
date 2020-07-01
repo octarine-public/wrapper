@@ -217,7 +217,7 @@ export function ParseExternalReferences(buf: ArrayBuffer): string[] {
 	stream.pos += data_offset - 8 // offset from offset
 	for (let i = 0; i < size; i++) {
 		stream.RelativeSeek(8) // ResourceReferenceInfo.ID
-		let offset = stream.ReadNumber(8),
+		let offset = Number(stream.ReadUint64()),
 			prev = stream.pos
 		stream.pos += offset - 8
 		let str = stream.ReadNullTerminatedString()
