@@ -1,13 +1,12 @@
 import { Color, Creep, RendererSDK, Vector2, EntityManager, Team, LocalPlayer } from "wrapper/Imports"
-import { alpha, ComboBox, Size, State, OtimizeState, OtimizeSlider } from "./Menu"
+import { alpha, ComboBox, Size, State, OptimizeState, OptimizeSlider } from "./Menu"
 let allNeutrals: Creep[] = []
 export function Tick() {
 	if (!State.value)
 		return
 	const filter = EntityManager.GetEntitiesByClass(Creep, DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_ENEMY)
 		.filter(x => !x.IsLaneCreep && x.Team === Team.Neutral)
-	allNeutrals = !OtimizeState.value ? filter : filter.filter(x => OtimizeState.value
-		&& LocalPlayer!.Hero!.IsInRange(x, OtimizeSlider.value))
+	allNeutrals = !OptimizeState.value ? filter : filter.filter(x => LocalPlayer!.Hero?.IsInRange(x, OptimizeSlider.value))
 }
 export function OnDraw() {
 	if (!State.value)
