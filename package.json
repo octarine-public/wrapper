@@ -7,10 +7,8 @@
 		"typescript": "next"
 	},
 	"scripts": {
-		"watch": "npx tsc --watch",
-		"build": "npx tsc",
-		"check-types": "npx tsc --noEmit",
-		"check-types-watch": "npx tsc --noEmit --watch",
+		"check-types": "npx tsc",
+		"check-types-watch": "npx tsc --watch",
 		"check-circular": "npx madge --circular scripts/wrapper",
 		"lint": "npx tslint --fix 'src_ts/**/*.ts'"
 	},

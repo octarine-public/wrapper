@@ -1,19 +1,19 @@
 {
 	"compilerOptions": {
 		"target": "esnext",
-		"module": "esnext",
-		"baseUrl": "src",
-		// Don't emit; allow Babel to transform files.
-		"noEmit": false,
+		"module": "ESNext",
+		"moduleResolution": "Classic",
+		"rootDir": "../../../",
+		"baseUrl": "../../../",
+		"noEmit": true,
 		"noUnusedLocals": true,
 		"strict": true,
-		"experimentalDecorators": true,
-		"outDir": "scripts",
-		"removeComments": true
+		"alwaysStrict": true,
+		"experimentalDecorators": true
 	},
-	"include": [
-		"*.d.ts",
-		"src_ts/**/*.ts"
+	"exclude": [
+		"wrapper_autogen/**/*",
+		"node_modules/**/*"
 	],
 	"compileOnSave": true
 }
