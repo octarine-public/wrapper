@@ -1,5 +1,3 @@
-import { Utf8ArrayToStr } from "./Utils"
-
 export default class BinaryStream {
 	constructor(public readonly view: DataView, public pos = 0) { }
 	public get Remaining(): number {
@@ -145,7 +143,7 @@ export default class BinaryStream {
 		return this.ReadSlice(this.ReadVarUintAsNumber())
 	}
 	public ReadVarString(): string {
-		return Utf8ArrayToStr(new Uint8Array(this.ReadVarSlice()))
+		return this.ReadUtf8String(this.ReadVarUintAsNumber())
 	}
 	public Empty(): boolean {
 		return this.pos >= this.view.byteLength
