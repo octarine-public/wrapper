@@ -84,6 +84,9 @@ interface EventsSDK extends EventEmitter {
 		recipient_type: number,
 		level: number,
 		muteable: boolean,
+		predelay_start: number,
+		predelay_range: number,
+		flags: number
 	) => void): EventEmitter
 	on(name: "UnitSpeechMute", listener: (npc: Unit | number, delay: number) => void): EventEmitter
 	on(name: "UnitAddGesture", listener: (

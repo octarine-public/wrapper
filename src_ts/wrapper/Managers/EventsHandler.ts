@@ -107,7 +107,6 @@ message CSVCMsg_ServerInfo {
 	optional int32 server_count = 2;
 	optional bool is_dedicated = 3;
 	optional bool is_hltv = 4;
-	optional bool is_replay = 5;
 	optional int32 c_os = 6;
 	optional int32 max_clients = 10;
 	optional int32 max_classes = 11;
@@ -415,12 +414,19 @@ message CDOTASpeechMatchOnClient {
 }
 
 message CDOTAUserMsg_UnitEvent {
+	message Interval {
+		optional float start = 1;
+		optional float range = 2;
+	}
+
 	message Speech {
 		optional int32 concept = 1;
 		optional string response = 2;
 		optional int32 recipient_type = 3;
 		optional int32 level = 4;
 		optional bool muteable = 5 [default = false];
+		optional .CDOTAUserMsg_UnitEvent.Interval predelay = 6;
+		optional uint32 flags = 7;
 	}
 
 	message SpeechMute {
@@ -723,7 +729,8 @@ Events.on("ServerMessage", (msg_id, buf) => {
 				break
 			switch (msg.get("msg_type") as EDotaEntityMessages) {
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH: {
-					let submsg = msg.get("speech") as RecursiveProtobuf
+					let submsg = msg.get("speech") as RecursiveProtobuf,
+						predelay = submsg.get("predelay") as RecursiveProtobuf
 					EventsSDK.emit(
 						"UnitSpeech", false,
 						ent,
@@ -732,6 +739,9 @@ Events.on("ServerMessage", (msg_id, buf) => {
 						submsg.get("recipient_type") as number,
 						submsg.get("level") as number,
 						submsg.get("muteable") as boolean,
+						predelay.get("start") as number,
+						predelay.get("range") as number,
+						submsg.get("flags") as number,
 					)
 					break
 				}

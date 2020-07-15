@@ -1,4 +1,5 @@
 import { EMatchGroupServerStatus } from "../Enums/EMatchGroupServerStatus"
+import { SignonState_t } from "../Enums/SignonState_t"
 
 type Listener = (...args: any) => false | any
 export class EventEmitter {

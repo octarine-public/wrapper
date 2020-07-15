@@ -17,6 +17,7 @@ import Vector4 from "../Base/Vector4"
 import { GameRules } from "../Objects/Base/GameRules"
 import { ParseTRMP } from "../Utils/ParseTRMP"
 import Tree from "../Objects/Base/Tree"
+import { SignonState_t } from "../Enums/SignonState_t"
 
 let AllEntities: Entity[] = []
 let AllEntitiesAsMap = new Map<number, Entity>()
