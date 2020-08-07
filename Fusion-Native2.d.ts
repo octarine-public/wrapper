@@ -155,7 +155,6 @@ declare function GetAvgLatency(flow: number): number
 declare function GetUIState(): number
 declare function ChatWheelAbuse(str: string): void
 declare function StartFindingMatch(): void
-declare function StopFindingMatch(): void
 declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
 declare function ToggleFakeChat(state: boolean): void
