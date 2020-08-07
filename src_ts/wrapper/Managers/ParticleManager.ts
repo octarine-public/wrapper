@@ -2,6 +2,7 @@ import Vector3 from "../Base/Vector3"
 import Color from "../Base/Color"
 import Entity from "../Objects/Base/Entity"
 import Particle, { ControlPointParam, ControlPoint } from "../Base/Particle"
+import { tryFindFile } from "../Utils/Utils"
 
 const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
 const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`
@@ -61,7 +62,10 @@ class ParticlesSDK {
 	 * @deprecated Will be removed after changed all scripts
 	 */
 	public static Create(path: string, attach: ParticleAttachment_t, ent?: Entity): number {
-		return Particles.Create(path, attach, ent?.IsValid ? ent.Index : -1)
+		let real_path = tryFindFile(path, 1)
+		if (real_path === undefined)
+			real_path = "particles/error/error.vpcf"
+		return Particles.Create(real_path, attach, ent?.IsValid ? ent.Index : -1)
 	}
 	/**
 	 * @deprecated Will be removed after changed all scripts

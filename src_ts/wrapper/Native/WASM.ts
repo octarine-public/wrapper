@@ -2,6 +2,7 @@ import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { DegreesToRadian } from "../Utils/Math"
+import { readFile } from "../Utils/Utils"
 
 export class HeightMap {
 	constructor(
@@ -29,7 +30,15 @@ enum HeightMapParseError {
 	ALLOCATION_ERROR = 3,
 };
 
-var wasm = new WebAssembly.Instance(new WebAssembly.Module(readFile("wrapper.wasm")), {
+function GetWASMModule(): WebAssembly.Module {
+	const wasm_file = readFile("wrapper.wasm")
+	if (wasm_file === undefined)
+		throw "wrapper.wasm not found"
+
+	return new WebAssembly.Module(wasm_file)
+}
+
+const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	env: {
 		emscripten_notify_memory_growth
 	}
@@ -167,7 +176,7 @@ export function ScreenToWorld(
 	return new Vector3(WASMIOBuffer[0], WASMIOBuffer[1], WASMIOBuffer[2])
 }
 
-export function ParseImage(buf: ArrayBuffer): [Uint8Array, Vector2] {
+export function ParseImage(buf: Nullable<ArrayBuffer>): [Uint8Array, Vector2] {
 	if (buf === undefined)
 		return [new Uint8Array(new Array(4).fill(0xFF)), new Vector2(1, 1)]
 

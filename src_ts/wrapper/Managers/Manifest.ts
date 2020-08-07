@@ -1,6 +1,6 @@
 import Events from "./Events"
 import BinaryStream from "../Utils/BinaryStream"
-import { Utf8ArrayToStr, StringToUTF8, ParseExternalReferences } from "../Utils/Utils"
+import { Utf8ArrayToStr, StringToUTF8, ParseExternalReferences, readFile } from "../Utils/Utils"
 import { MurmurHash64, MurmurHash2 } from "../Native/WASM"
 import { parseKV } from "../Utils/ParseKV"
 

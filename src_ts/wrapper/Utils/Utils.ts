@@ -200,7 +200,7 @@ export function ArrayBuffersEqual(ab1: ArrayBuffer, ab2: ArrayBuffer): boolean {
 	return true
 }
 
-export function ParseExternalReferences(buf: ArrayBuffer): string[] {
+export function ParseExternalReferences(buf: Nullable<ArrayBuffer>): string[] {
 	if (buf === undefined)
 		return []
 	let RERL = ExtractResourceBlock(buf, "RERL")
@@ -230,7 +230,7 @@ export function ParseExternalReferences(buf: ArrayBuffer): string[] {
 	return list
 }
 
-export function ParseMapName(path: string): string | undefined {
+export function ParseMapName(path: string): Nullable<string> {
 	let res = /maps(\/|\\)(.+)\.vpk$/.exec(path)
 	if (res === null)
 		return undefined
@@ -239,4 +239,38 @@ export function ParseMapName(path: string): string | undefined {
 	if (map_name.startsWith("scenes") || map_name.startsWith("prefabs")) // that must not be loaded as main map, so we must ignore it
 		return undefined
 	return map_name
+}
+
+export function tryFindFile(path: string, callstack_depth = 0): Nullable<string> {
+	if (fexists(path))
+		return path
+
+	const caller_str = new Error().stack!.split("\n")[2 + callstack_depth]
+	const caller_exec = /^\s{4}at\s(?:.+\s\()?(.+):\d+:\d+(?:\))?$/.exec(caller_str)
+	if (caller_exec === null)
+		return undefined
+
+	const caller = caller_exec[1]
+	if (caller === "<anonymous>")
+		return undefined
+
+	const caller_ar = caller.split("/")
+	caller_ar.pop() // remove script filename
+	while (caller_ar.length !== 0) {
+		const current_path = `${caller_ar.join("/")}/scripts_files/${path}`
+		if (fexists(current_path))
+			return current_path
+		caller_ar.pop() // script file is probably lying in some folder, try traversing upwards
+	}
+
+	// no match either in dota files nor in scripts_files
+	return undefined
+}
+
+export function readFile(path: string): Nullable<ArrayBuffer> {
+	const real_path = tryFindFile(path, 1)
+	if (real_path === undefined)
+		return undefined
+
+	return fread(real_path)
 }

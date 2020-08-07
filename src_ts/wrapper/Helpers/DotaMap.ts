@@ -1,7 +1,7 @@
 // https://github.com/EnsageSharp/Ensage.SDK/blob/master/Helpers/Map.cs
 import Vector3 from "../Base/Vector3"
 import { WorldPolygon } from "../Geometry/WorldPolygon"
-import { Utf8ArrayToStr } from "../Utils/Utils"
+import { Utf8ArrayToStr, readFile } from "../Utils/Utils"
 import Creep from "../Objects/Base/Creep"
 import Unit from "../Objects/Base/Unit"
 import { MapArea } from "./MapArea"
@@ -9,7 +9,11 @@ import { Team } from "../Enums/Team"
 
 export class DotaMap {
 	private static Load(name: string): Vector3[] {
-		let ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(new Uint8Array(readFile(`Map/${name}.json`))))
+		const file = readFile(`Map/${name}.json`)
+		if (file === undefined)
+			return []
+
+		let ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(new Uint8Array(file)))
 		return ar.map(([x, y, z]) => new Vector3(x, y, z))
 	}
 	private static LoadPoly(name: string): WorldPolygon {

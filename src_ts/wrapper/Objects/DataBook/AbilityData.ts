@@ -1,4 +1,4 @@
-import { parseKVFile, parseEnumString } from "../../Utils/Utils"
+import { parseKVFile, parseEnumString, readFile } from "../../Utils/Utils"
 import { RecursiveMap } from "../../Utils/ParseKV"
 import Unit from "../Base/Unit"
 
@@ -342,7 +342,7 @@ export function ReloadGlobalAbilityStorage() {
 				}
 			}
 		}
-		if (!map.has("AbilityTexturePath") || readFile(map.get("AbilityTexturePath") as string) === undefined) {
+		if (!map.has("AbilityTexturePath") || !fexists(map.get("AbilityTexturePath") as string)) {
 			let tex_name = (map.get("AbilityTextureName") as string) ?? abil_name
 			let path = AbilityNameToPath(tex_name)
 			if (readFile(path) === undefined) {

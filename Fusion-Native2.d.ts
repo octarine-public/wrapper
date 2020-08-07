@@ -130,7 +130,8 @@ declare interface Camera {
 /// GLOBAL FUNCTIONS
 
 declare function SendToConsole(command: string): void
-declare function readFile(path: string): ArrayBuffer
+declare function fread(path: string): ArrayBuffer | undefined
+declare function fexists(path: string): boolean
 declare function requestPlayerData(player_id: number): Promise<string>
 /**
  * @param path pass empty to read from confings/../settings.json
