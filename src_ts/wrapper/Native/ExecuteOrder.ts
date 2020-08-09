@@ -269,8 +269,8 @@ Events.on("Update", () => {
 		mult = Math.sin(hrtime() - last_order_click_update)
 	if (last_order_click_update + 450 >= hrtime()) {
 		CursorWorldVec = last_order_click.Extend(CursorWorldVec, Math.min(last_order_click.Distance(CursorWorldVec), 200 * mult)).CopyTo(last_order_click)
-		cmd.CameraX = latest_camera_x
-		cmd.CameraY = latest_camera_y
+		cmd.CameraPosition.x = latest_camera_x
+		cmd.CameraPosition.y = latest_camera_y
 	}
 	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(CursorWorldVec.toVector2()))
 	if (order !== undefined && (!ExecuteOrder.wait_near_cursor || cmd.VectorUnderCursor.Distance(last_order_click) <= 100)) {
@@ -282,12 +282,12 @@ Events.on("Update", () => {
 		}
 		execute_current = ExecuteOrder.wait_next_usercmd
 	}
-	let camera_vec = new Vector3(cmd.CameraX, cmd.CameraY)
+	let camera_vec = cmd.CameraPosition.toVector3()
 	camera_vec = camera_vec.Clone().AddScalarY(1200 / 2).Distance2D(CursorWorldVec) > 1400
 		? CursorWorldVec.Clone().SubtractScalarY(1200 / 2)
 		: camera_vec = camera_vec.AddScalarY(1200 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= hrtime() ? mult : 1))).SubtractScalarY(1200 / 2)
-	latest_camera_x = cmd.CameraX = camera_vec.x
-	latest_camera_y = cmd.CameraY = camera_vec.y
+	latest_camera_x = cmd.CameraPosition.x = camera_vec.x
+	latest_camera_y = cmd.CameraPosition.y = camera_vec.y
 
 	let cur_pos = RendererSDK.WorldToScreenCustom(CursorWorldVec, camera_vec.toVector2())
 	if (cur_pos !== undefined) {

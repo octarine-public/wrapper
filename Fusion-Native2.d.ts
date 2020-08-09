@@ -24,21 +24,19 @@ struct CUserCmd {
 	float forwardmove; // 20
 	float sidemove; // 24
 	float upmove; // 28
-	uint64_t buttons; // 32
+	uint64_t buttons; // 32, 4 bit => up 5 bit => down 10 bit => left 11 bit => right
 	int impulse; // 40
 	CEntityIndex weaponselect; // 44
 	CEntityIndex weaponsubtype; // 48
-	int random_seed; // 52
-	float mousex; // 56
-	float mousey; // 60
-	short camerax; // 64
-	short cameray; // 66
-	uint8_t click_behaviors; // 68
-	bool scoreboard_opened; // 69
-	uint8_t shopmask; // 70
-	int8_t spectator_stats_category_id; // 71
-	int8_t spectator_stats_sort_method; // 72
-	Vector vec_under_cursor; // 73
+	float mousex; // 52
+	float mousey; // 56
+	int16_t cameraposition[2]; // 60
+	uint8_t clickbehavior; // 64
+	uint8_t statspanel; // 65, dota_spectator_stats_panel
+	uint8_t shoppanel; // 66
+	uint8_t stats_dropdown; // 67, spectator_stats_category_id
+	uint8_t stats_dropdown_sort; // 68, spectator_stats_sort_method
+	Vector3 crosshairtrace; // 69
 };
  */
 declare var LatestUserCmd: Uint8Array
