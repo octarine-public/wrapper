@@ -1,7 +1,7 @@
 export default class Color {
 	public static get Black() { return new Color(0, 0, 0) }
-	public static get Red() { return new Color(255) }
-	public static get Green() { return new Color(0, 255) }
+	public static get Red() { return new Color(255, 0, 0) }
+	public static get Green() { return new Color(0, 255, 0) }
 	public static get Blue() { return new Color(0, 0, 255) }
 	public static get RoyalBlue() { return new Color(78, 121, 248) }
 	public static get Yellow() { return new Color(255, 255) }

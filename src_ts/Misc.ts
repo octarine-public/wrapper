@@ -1,4 +1,4 @@
-import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, MouseWheel, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, Tree, GameState } from "./wrapper/Imports"
+import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, Tree, GameState } from "./wrapper/Imports"
 import { SetGameInProgress } from "./wrapper/Managers/EventsHandler"
 let Menu = MenuSDK.AddEntry("Misc")
 
@@ -106,7 +106,7 @@ function UpdateVisuals() {
 
 EventsSDK.on("Draw", UpdateVisuals)
 
-InputEventSDK.on("MouseWheel", wheel => {
+InputEventSDK.on("MouseWheel", up => {
 	if (!CamMouseState.value || !GameRules?.IsInGame
 		|| GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
@@ -116,7 +116,7 @@ InputEventSDK.on("MouseWheel", wheel => {
 
 	let camDist = CamDist.value
 
-	if (wheel === MouseWheel.DOWN)
+	if (!up)
 		camDist += CamStep.value
 	else
 		camDist -= CamStep.value
@@ -148,51 +148,17 @@ interface CSODOTALobby {
 	members: CDOTALobbyMember[]
 }
 
-interface CSODOTAParty {
-	raw_started_matchmaking_time: number
-}
-
 let timeCreate = -1
-// let cur_lobby: Nullable<CSODOTALobby>
-let last_party: Nullable<CSODOTAParty>,
-	restart_finding_match = false
 Events.on("SharedObjectChanged", (id, reason, obj) => {
 	// console.log(id, obj)
-	switch (id) {
-		case 2003: {
-			let party = obj as CSODOTAParty
-			if (
-				restart_finding_match
-				&& last_party?.raw_started_matchmaking_time !== undefined
-				&& party.raw_started_matchmaking_time === undefined
-			) {
-				StartFindingMatch()
-				restart_finding_match = false
-			}
-			last_party = reason !== 2 ? party : undefined
-			break
-		}
-		case 2004: {
-			let lobby = obj as CSODOTALobby
-			// cur_lobby = reason !== 2 ? lobby : undefined
+	if (id !== 2004)
+		return
 
-			if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1)
-				timeCreate = hrtime()
-			else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1)
-				timeCreate = -1
-			break
-		}
-		default:
-			break
-	}
-})
-
-Events.on("GCPingResponse", () => {
-	/*if (cur_lobby?.state === CSODOTALobby_State.SERVERASSIGN) {
-		StopFindingMatch()
-		restart_finding_match = true
-	}*/
-	return true
+	let lobby = obj as CSODOTALobby
+	if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1)
+		timeCreate = hrtime()
+	else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1)
+		timeCreate = -1
 })
 
 EventsSDK.on("Draw", () => {

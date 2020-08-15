@@ -176,6 +176,33 @@ export default class KeyBind extends Base {
 		"Right Ctrl", // VK_RCONTROL
 		"Left Menu key", // VK_LMENU
 		"Right Menu key", // VK_RMENU
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Unknown",
+		"Tilde",
 	]
 	public static readonly callbacks = new Map<number, KeyBind[]>()
 	public static changing_now?: KeyBind

@@ -84,7 +84,7 @@ Events.on("WndProc", (msg, wParam) => {
 			return InputEventSDK.emit("MouseKeyUp", true, mKey)
 
 		case InputMessage.WM_MOUSEWHEEL:
-			return InputEventSDK.emit("MouseWheel", true, FixInt16(HIWORD(wParam)) > 0 ? MouseWheel.UP : MouseWheel.DOWN)
+			return InputEventSDK.emit("MouseWheel", true, FixInt16(HIWORD(wParam)) > 0)
 
 		default:
 			break
@@ -524,7 +524,7 @@ export enum VKeys {
 	OEM_MINUS = 0xBD,
 	OEM_PERIOD = 0xBE,
 	OEM_2 = 0xBF,
-	OEM_3 = 0xC0,
+	TILDE = 0xC0,
 	// 0xC1-0xD7 - Reserved.
 	// 0xD8-0xDA - Unassigned.
 	OEM_4 = 0xDB,
@@ -567,11 +567,6 @@ export enum VXMouseKeys {
 	XBUTTON2 = 0x02,
 }
 
-export enum MouseWheel {
-	UP,
-	DOWN,
-}
-
 interface InputEventSDK extends EventEmitter {
 	/**
 	 * Emitted when any key on keyboard will be pressed
@@ -583,7 +578,7 @@ interface InputEventSDK extends EventEmitter {
 	 * @param callback returns keyMask. You can use HasMask from Utils
 	 */
 	on(name: "KeyUp", callback: (keyMask: VKeys) => boolean | any): EventEmitter
-	on(name: "MouseKeyDown", callback: (keyMask: VMouseKeys) => boolean | any): EventEmitter
-	on(name: "MouseKeyUp", callback: (keyMask: VMouseKeys) => boolean | any): EventEmitter
-	on(name: "MouseWheel", callback: (wheel: MouseWheel) => boolean | any): EventEmitter
+	on(name: "MouseKeyDown", callback: (key: VMouseKeys) => boolean | any): EventEmitter
+	on(name: "MouseKeyUp", callback: (key: VMouseKeys) => boolean | any): EventEmitter
+	on(name: "MouseWheel", callback: (up: boolean) => boolean | any): EventEmitter
 }

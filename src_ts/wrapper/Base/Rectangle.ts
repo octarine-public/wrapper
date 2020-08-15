@@ -6,6 +6,9 @@ export default class Rectangle {
 		this.pos2 = pos2
 	}
 
+	public get Size(): Vector2 {
+		return this.pos2.Subtract(this.pos1)
+	}
 	public Contains(pos: Vector2): boolean {
 		return this.pos1.x <= pos.x && this.pos1.y <= pos.y && this.pos2.x >= pos.x && this.pos2.y >= pos.y
 	}

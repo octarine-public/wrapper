@@ -57,7 +57,6 @@ export {
 	VKeys,
 	VMouseKeys,
 	VXMouseKeys,
-	MouseWheel,
 } from "./Managers/InputManager"
 export { default as RendererSDK } from "./Native/RendererSDK"
 export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
@@ -1258,6 +1257,8 @@ export { default as NavMeshPathfinding } from "./Prediction/NavMesh/NavMeshPathf
 export { default as Prediction } from "./Prediction/Prediction"
 export { default as Collision } from "./Prediction/Collision/Collision"
 export { CollisionObject } from "./Prediction/Collision/CollisionObject"
+
+export { default as UnitData } from "./Objects/DataBook/UnitData"
 
 import "./global"
 

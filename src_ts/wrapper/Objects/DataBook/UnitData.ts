@@ -17,7 +17,7 @@ export default class UnitData {
 			throw "Invalid storage type for hero name " + name
 		return storage.has("HeroID") ? parseInt(storage.get("HeroID") as string) : 0
 	}
-	public static GetHeroNameByID(id: number): string {
+	public static GetHeroNameByID(id: number | string): string {
 		let id_str = id.toString()
 		for (let [name, map] of UnitData.global_storage) {
 			if (!(map instanceof Map))
