@@ -76,12 +76,12 @@ let current_lobby_id: Nullable<bigint>
 let send_ping = false,
 	panel_shown = false,
 	toggled_panel_at_start = false
-Menu.AddEntry(["Visual", "StatsPanel"]).AddKeybind("Toggle", "Tilde").OnPressed(() => {
+Menu.AddEntry("StatsPanel").AddKeybind("Toggle", "Tilde").OnPressed(() => {
 	if (current_lobby_data !== undefined)
 		panel_shown = !panel_shown
 }).activates_in_menu = true
-const state = Menu.AddEntry(["Visual", "StatsPanel"]).AddToggle("State", true)
-const dodge_games_by_default = Menu.AddEntry(["Visual", "StatsPanel"]).AddToggle("Dodge Games By Default", false)
+const state = Menu.AddEntry("StatsPanel").AddToggle("State", true)
+const dodge_games_by_default = Menu.AddEntry("StatsPanel").AddToggle("Dodge Games By Default", false)
 let needs_accept = false
 let accept_deadline = 0
 let game_dodged = false
