@@ -129,16 +129,19 @@ export function ParticleDestroyed(id: number) {
 		return true
 	}))
 }
+const mine_image_size = new Vector2(64 / 2, 87 / 2)
+const mine_image_size_half = mine_image_size.DivideScalar(2)
 export function OnDraw() {
 	if (!State.value || allTechiesMines.length <= 0)
 		return
 	allTechiesMines.forEach(([allMines, pos, name]) => {
 		let wts = RendererSDK.WorldToScreen(pos)
 		if (wts !== undefined && name !== undefined) {
-			RendererSDK.Image(`other/npc_dota_${name}.png`, wts.SubtractScalarX(64 / 4).SubtractScalarY(87 / 4), -1, new Vector2(64 / 2, 87 / 2))
+			wts = wts.SubtractForThis(mine_image_size_half)
+			RendererSDK.Image(`other/npc_dota_${name}.png`, wts, -1, mine_image_size)
 			RendererSDK.Text(
 				"x" + allMines.length,
-				wts.AddScalarX(Size.value / 4),
+				wts.AddScalarY(mine_image_size.y),
 				DrawRGBA.Color,
 				"Arial",
 				Size.value,
