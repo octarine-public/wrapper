@@ -23,8 +23,12 @@ EventsSDK.on("Draw", () => {
 			let screen_pos = RendererSDK.WorldToScreen(e)
 			if (screen_pos === undefined)
 				return
-			RendererSDK.FilledRect(screen_pos.SubtractScalar(2).AddScalarX(-4), new Vector2(20, 23), new Color(255, 0, 0))
-			RendererSDK.Text(i.toString(), screen_pos, new Color(0, 255, 0))
+			const text = i.toString()
+			const text_size = RendererSDK.GetTextSize(text)
+			const box_bounds = text_size.Clone().AddScalar(4)
+			screen_pos.SubtractForThis(box_bounds.DivideScalar(2))
+			RendererSDK.FilledRect(screen_pos, box_bounds, Color.Red)
+			RendererSDK.Text(text, new Vector2(screen_pos.x + box_bounds.x / 2 - text_size.x / 2, screen_pos.y + box_bounds.y - box_bounds.y / 2 + text_size.y / 2), Color.Green)
 		})
 	}
 	let ar: number[] = []
@@ -52,8 +56,12 @@ EventsSDK.on("Draw", () => {
 		let screen_pos = RendererSDK.WorldToScreen(pos)
 		if (screen_pos === undefined)
 			return
-		RendererSDK.FilledRect(screen_pos.SubtractScalar(2).AddScalarX(-4), new Vector2(20, 23), new Color(0, 255, 0))
-		RendererSDK.Text(respawn_time.toFixed(1), screen_pos, new Color(255, 0, 0))
+		const text = respawn_time.toFixed(1)
+		const text_size = RendererSDK.GetTextSize(text)
+		const box_bounds = text_size.Clone().AddScalar(4)
+		screen_pos.SubtractForThis(box_bounds.DivideScalar(2))
+		RendererSDK.FilledRect(screen_pos, box_bounds, Color.Green)
+		RendererSDK.Text(text, new Vector2(screen_pos.x + box_bounds.x / 2 - text_size.x / 2, screen_pos.y + box_bounds.y - box_bounds.y / 2 + text_size.y / 2), Color.Red)
 	})
 })
 
