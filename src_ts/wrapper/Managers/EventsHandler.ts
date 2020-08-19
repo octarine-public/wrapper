@@ -852,7 +852,14 @@ Events.on("ServerMessage", (msg_id, buf) => {
 Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
 Events.on("CustomGameEvent", (name, obj) => EventsSDK.emit("CustomGameEvent", false, name, obj))
 
-Events.on("InputCaptured", is_captured => EventsSDK.emit("InputCaptured", false, is_captured))
+let input_capture_depth = 0
+Events.on("InputCaptured", is_captured => {
+	if (is_captured)
+		input_capture_depth++
+	else
+		input_capture_depth = Math.max(input_capture_depth - 1, 0)
+	EventsSDK.emit("InputCaptured", false, input_capture_depth !== 0)
+})
 
 EventsSDK.on("InputCaptured", is_captured => GameState.IsInputCaptured = is_captured)
 EventsSDK.on("ServerTick", tick => GameState.CurrentServerTick = tick)
