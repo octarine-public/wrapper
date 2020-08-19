@@ -38,7 +38,7 @@ export enum ProtoType {
 }
 
 export type ProtobufFieldType = string | number | bigint | boolean | RecursiveProtobuf | Uint8Array
-export type RecursiveProtobuf = Map<string, Map<number, ProtobufFieldType> | ProtobufFieldType>
+export type RecursiveProtobuf = Map<string, ProtobufFieldType[] | ProtobufFieldType>
 export enum ProtoFieldType {
 	OPTIONAL,
 	REPEATED,
@@ -61,10 +61,10 @@ function FillMessageDefaults(msg: RecursiveProtobuf, desc: ProtoDescription): Re
 	desc.forEach(field => {
 		if (msg.has(field.name))
 			return
-		if (field.type === ProtoType.TYPE_MESSAGE)
+		if (field.proto_type === ProtoFieldType.REPEATED || field.proto_type === ProtoFieldType.PACKED)
+			msg.set(field.name, [])
+		else if (field.type === ProtoType.TYPE_MESSAGE)
 			msg.set(field.name, FillMessageDefaults(new Map(), field.proto_desc!))
-		else if (field.proto_type === ProtoFieldType.REPEATED || field.proto_type === ProtoFieldType.PACKED)
-			msg.set(field.name, new Map())
 		else if (field.default_value !== undefined)
 			msg.set(field.name, field.default_value)
 	})
@@ -141,8 +141,8 @@ function ParseField(field: ProtoFieldDescription, value: ArrayBuffer | bigint): 
 	}
 }
 
-function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): Map<number, ProtobufFieldType> {
-	let repeated_map = new Map<number, ProtobufFieldType>(),
+function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): ProtobufFieldType[] {
+	let array: ProtobufFieldType[] = [],
 		stream = new BinaryStream(new DataView(buf))
 	let value2: ArrayBuffer | bigint
 	while (!stream.Empty()) {
@@ -175,9 +175,9 @@ function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): Map<number
 				value2 = BigInt(stream.ReadUint32())
 				break
 		}
-		repeated_map.set(repeated_map.size, ParseField(field, value2))
+		array.push(ParseField(field, value2))
 	}
-	return repeated_map
+	return array
 }
 
 function DecodeField(map: RecursiveProtobuf, field: ProtoFieldDescription, value: ArrayBuffer | bigint): void {
@@ -188,9 +188,9 @@ function DecodeField(map: RecursiveProtobuf, field: ProtoFieldDescription, value
 			break
 		case ProtoFieldType.REPEATED: {
 			if (!map.has(field.name))
-				map.set(field.name, new Map())
-			let repeated_map = map.get(field.name) as Map<number, ProtobufFieldType>
-			repeated_map.set(repeated_map.size, ParseField(field, value))
+				map.set(field.name, [])
+			let array = map.get(field.name) as ProtobufFieldType[]
+			array.push(ParseField(field, value))
 			break
 		}
 		case ProtoFieldType.PACKED:

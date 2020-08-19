@@ -410,7 +410,7 @@ declare class ${name} {
 }`).join("\n\n")}
 `))
 			}
-			entities_symbols = [...(msg.get("symbols") as Map<number, string>).values()]
+			entities_symbols = msg.get("symbols") as string[]
 			for (let [construct, map] of GetFieldHandlers()) {
 				let map2 = new Map<number, FieldHandler>()
 				for (let [field_name, field_handler] of map) {
