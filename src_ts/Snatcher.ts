@@ -152,6 +152,7 @@ function GetControllables() {
 		(npc instanceof Hero || npc instanceof SpiritBear)
 		&& !npc.IsIllusion
 		&& npc.IsControllable
+		&& !npc.HasBuffByName("modifier_spirit_breaker_charge_of_darkness")
 	)
 }
 
