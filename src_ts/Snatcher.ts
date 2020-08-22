@@ -140,8 +140,8 @@ EventsSDK.on("Draw", () => {
 
 EventsSDK.on("PrepareUnitOrders", order => {
 	let unit = order.Unit as Unit
-	let rune = picking_up.get(unit)
-	if (rune?.IsValid && rune.IsVisible)
+	let ent = picking_up.get(unit)
+	if (ent?.IsValid && ent.IsVisible)
 		return false
 	picking_up.delete(unit)
 	return true
@@ -174,10 +174,7 @@ function snatchRunes(controllables: Unit[]) {
 }
 
 function snatchRuneByUnit(npc: Unit, rune: Rune): boolean {
-	if ((picking_up.has(npc) && picking_up.get(npc) !== rune) || Sleep.Sleeping(rune.Index))
-		return false
-
-	if (!rune.IsVisible || npc.ModifiersBook.HasBuffByName("modifier_spirit_breaker_charge_of_darkness_target"))
+	if ((picking_up.has(npc) && picking_up.get(npc) !== rune) || Sleep.Sleeping(rune.Index) || !rune.IsVisible)
 		return false
 
 	if (!npc.IsStunned && !npc.IsWaitingToSpawn && npc.IsAlive) {
