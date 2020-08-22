@@ -20,7 +20,7 @@ export default class Player extends Entity {
 		position?: Vector3 | Vector2,
 		ability?: Ability | number,
 		orderIssuer?: PlayerOrderIssuer_t,
-		unit?: Unit,
+		issuers?: Unit[],
 		queue?: boolean,
 		showEffects?: boolean,
 	}): ExecuteOrder {
