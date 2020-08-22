@@ -28,7 +28,7 @@ enum ESelectedType {
 
 let particleManager = new ParticlesSDK(),
 	allRunesParticles = new Map<Rune, Particle[]>(),
-	picking_up = new Map<Unit, Rune>(),
+	picking_up = new Map<Unit, Rune | PhysicalItem>(),
 	selectedRuneType: ESelectedType = ESelectedType.ALL,
 	Sleep = new GameSleeper()
 const snatcherMenu = Menu.AddEntry(["Utility", "Snatcher"])
@@ -103,7 +103,7 @@ EventsSDK.on("GameEnded", () => {
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof Rune)
+	if ((ent instanceof Rune) || (ent instanceof PhysicalItem))
 		removedIDRune(ent)
 	if (ent instanceof Unit)
 		picking_up.delete(ent)
@@ -173,7 +173,7 @@ function snatchRunes(controllables: Unit[]) {
 }
 
 function snatchRuneByUnit(npc: Unit, rune: Rune): boolean {
-	if (rune !== undefined && picking_up.has(npc) && Sleep.Sleeping(rune.Index))
+	if ((picking_up.has(npc) && picking_up.get(npc) !== rune) || Sleep.Sleeping(rune.Index))
 		return false
 
 	if (!rune.IsVisible || npc.ModifiersBook.HasBuffByName("modifier_spirit_breaker_charge_of_darkness_target"))
@@ -185,7 +185,7 @@ function snatchRuneByUnit(npc: Unit, rune: Rune): boolean {
 		if (Distance <= pickupRange && !(npc.IsInvulnerable && Distance > 100)) {
 			picking_up.set(npc, rune)
 			npc.PickupRune(rune)
-			Sleep.Sleep(300, rune.Index)
+			Sleep.Sleep(150, rune.Index)
 			return false
 		}
 		if (drawParticleTake.value && !allRunesParticles.has(rune)) {
@@ -196,13 +196,14 @@ function snatchRuneByUnit(npc: Unit, rune: Rune): boolean {
 	return true
 }
 
-function removedIDRune(rune: Rune) {
-	for (let [unit, rune_] of picking_up.entries())
-		if (rune === rune_) {
+function removedIDRune(ent: Rune | PhysicalItem) {
+	for (let [unit, ent_] of picking_up.entries())
+		if (ent === ent_) {
 			picking_up.delete(unit)
 			break
 		}
-	destroyRuneParticles(rune)
+	if (ent instanceof Rune)
+		destroyRuneParticles(ent)
 }
 
 function createRuneParticle(ent: Rune, color: Color, radius: number) {
@@ -251,10 +252,19 @@ function snatchItems(controllables: Unit[]) {
 			can_take_backpack = m_hItem.Name === "item_cheese"
 
 		free_controllables.some((npc, index) => {
-			if (itemOwner === npc || !npc.IsAlive || !npc.IsInRange(item, pickupRange) || !(npc.Inventory.HasFreeSlotsInventory || (can_take_backpack && npc.Inventory.HasFreeSlotsBackpack)))
+			if (
+				itemOwner === npc
+				|| !npc.IsAlive
+				|| !npc.IsInRange(item, pickupRange)
+				|| !(npc.Inventory.HasFreeSlotsInventory || (can_take_backpack && npc.Inventory.HasFreeSlotsBackpack))
+				|| (picking_up.has(npc) && picking_up.get(npc) !== item)
+				|| Sleep.Sleeping(item)
+			)
 				return false
 
 			npc.PickupItem(item)
+			picking_up.set(npc, item)
+			Sleep.Sleep(150, item)
 			free_controllables.splice(index, 1)
 			return true
 		})
