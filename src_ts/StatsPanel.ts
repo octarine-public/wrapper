@@ -8,6 +8,7 @@ interface CDOTALobbyMember {
 	meta_xp: number
 	rank_change: number
 	rank_tier: number
+	team: number
 }
 
 interface CSODOTALobby {
@@ -73,6 +74,7 @@ let current_lobby: Nullable<CSODOTALobby>
 let current_lobby_data: Nullable<Nullable<PlayerData>[]>
 let current_names: string[] = []
 let current_lobby_id: Nullable<bigint>
+let current_lobby_members: CDOTALobbyMember[]
 let send_ping = false,
 	panel_shown = false,
 	toggled_panel_at_start = false
@@ -81,15 +83,9 @@ Menu.AddEntry("StatsPanel").AddKeybind("Toggle", "Tilde").OnPressed(() => {
 		panel_shown = !panel_shown
 }).activates_in_menu = true
 const state = Menu.AddEntry("StatsPanel").AddToggle("State", true)
-const dodge_games_by_default = Menu.AddEntry("StatsPanel").AddToggle("Dodge Games By Default", false)
 let needs_accept = false
 let accept_deadline = 0
 let game_dodged = false
-function DeclineGame(): void {
-	needs_accept = false
-	send_ping = false
-	game_dodged = true
-}
 function AcceptGame(): void {
 	SendGCPingResponse()
 	needs_accept = false
@@ -116,20 +112,24 @@ Events.on("SharedObjectChanged", (id, reason, obj) => {
 		current_lobby = undefined
 		current_lobby_data = undefined
 		current_lobby_id = undefined
+		current_lobby_members = []
 		send_ping = false
 		panel_shown = false
 		toggled_panel_at_start = false
 		current_names = []
 		needs_accept = false
 	}
-	if (reason !== 0 || lobby.members.length > 10)
+	if (reason !== 0)
+		return
+	current_lobby_members = lobby.members.filter(member => member.team === 0 || member.team === 1)
+	if (current_lobby_members.length > 10)
 		return
 	needs_accept = true
 	accept_deadline = hrtime() + 14000
 	current_lobby = obj as CSODOTALobby
 	const lobby_id = current_lobby_id = lobby.lobby_id
-	current_lobby_data = new Array(lobby.members.length)
-	lobby.members.forEach((member, i) => {
+	current_lobby_data = new Array(current_lobby_members.length)
+	current_lobby_members.forEach((member, i) => {
 		current_names.push(TransformName(member.name))
 		requestPlayerData(Number(member.id - 76561197960265728n)).then(json => {
 			if (current_lobby_id !== lobby_id)
@@ -215,25 +215,14 @@ const accept_button_size = accept_text_size.Clone().AddScalarX(8)
 const accept_button_color = Color.Green
 function GetGUIAcceptButton(base_data: GUIBaseData): Rectangle {
 	const pos = new Vector2(
-		base_data.content_rect.pos2.x - close_button_size.x - accept_button_size.x - 5 - decline_button_size.x - 5 - 250,
-		base_data.content_rect.pos1.y
-	)
-	accept_button_size.y = decline_button_size.y = (base_data.actual_content_rect.pos1.y - base_data.content_rect.pos1.y) - line_height - line_offset * 2
-	return new Rectangle(pos, pos.Add(accept_button_size))
-}
-const decline_text_size = RendererSDK.GetTextSize("DODGE")
-const decline_button_size = decline_text_size.Clone().AddScalarX(8)
-const decline_button_color = Color.Red
-function GetGUIDeclineButton(base_data: GUIBaseData): Rectangle {
-	const pos = new Vector2(
 		base_data.content_rect.pos2.x - close_button_size.x - accept_button_size.x - 5 - 250,
 		base_data.content_rect.pos1.y
 	)
-	accept_button_size.y = decline_button_size.y = (base_data.actual_content_rect.pos1.y - base_data.content_rect.pos1.y) - line_height - line_offset * 2
-	return new Rectangle(pos, pos.Add(decline_button_size))
+	accept_button_size.y = (base_data.actual_content_rect.pos1.y - base_data.content_rect.pos1.y) - line_height - line_offset * 2
+	return new Rectangle(pos, pos.Add(accept_button_size))
 }
 function GetGUIDeadlineTextPos(base_data: GUIBaseData): Vector2 {
-	return GetGUIDeclineButton(base_data).pos2.Clone().AddScalarX(6)
+	return GetGUIAcceptButton(base_data).pos2.Clone().AddScalarX(6)
 }
 function GetDescriptionText(base_data: GUIBaseData): [Vector2, number] {
 	const size = 18
@@ -526,12 +515,8 @@ EventsSDK.on("Draw", () => {
 	if (!state.value || !panel_shown || current_lobby_data === undefined || current_lobby_data.find(data => data !== undefined) === undefined)
 		return
 
-	if (send_ping && accept_deadline < hrtime()) {
-		if (dodge_games_by_default.value)
-			DeclineGame()
-		else
-			AcceptGame()
-	}
+	if (send_ping && accept_deadline < hrtime())
+		AcceptGame()
 	const cursor = Input.CursorOnScreen
 	const gui_base_data = GetGUIBaseData()
 	RendererSDK.FilledRect(gui_base_data.rect.pos1, gui_base_data.rect.Size, background_color)
@@ -554,16 +539,12 @@ EventsSDK.on("Draw", () => {
 	if (send_ping) {
 		const gui_accept_button = GetGUIAcceptButton(gui_base_data)
 		RendererSDK.FilledRect(gui_accept_button.pos1, gui_accept_button.Size, accept_button_color)
-		RendererSDK.Text("ACCEPT", new Vector2(gui_accept_button.pos1.x + accept_button_size.x / 2 - accept_text_size.x / 2, gui_accept_button.pos2.y - accept_button_size.y / 2 + decline_text_size.y / 2))
-
-		const gui_decline_button = GetGUIDeclineButton(gui_base_data)
-		RendererSDK.FilledRect(gui_decline_button.pos1, gui_decline_button.Size, decline_button_color)
-		RendererSDK.Text("DODGE", new Vector2(gui_decline_button.pos1.x + decline_button_size.x / 2 - decline_text_size.x / 2, gui_decline_button.pos2.y - decline_button_size.y / 2 + decline_text_size.y / 2))
+		RendererSDK.Text("ACCEPT", new Vector2(gui_accept_button.pos1.x + accept_button_size.x / 2 - accept_text_size.x / 2, gui_accept_button.pos2.y - accept_button_size.y / 2 + accept_text_size.y / 2))
 
 		const gui_deadline_text_pos = GetGUIDeadlineTextPos(gui_base_data)
 		const deadline_text = `${Math.round((accept_deadline - hrtime()) / 1000 * 10) / 10}s left`
 		const deadline_text_size = RendererSDK.GetTextSize(deadline_text)
-		RendererSDK.Text(deadline_text, gui_deadline_text_pos.AddScalarY(deadline_text_size.y / 2 - decline_button_size.y / 2))
+		RendererSDK.Text(deadline_text, gui_deadline_text_pos.AddScalarY(deadline_text_size.y / 2 - accept_button_size.y / 2))
 	}
 
 	RendererSDK.FilledRect(
@@ -574,7 +555,7 @@ EventsSDK.on("Draw", () => {
 
 	let latest_partyid = -1n
 	let current_party_id = 0
-	current_lobby!.members.forEach((member, i) => {
+	current_lobby_members.forEach((member, i) => {
 		if (i === 5) {
 			const rect = GetPlayerRect(gui_base_data, i)
 			RendererSDK.FilledRect(
@@ -796,10 +777,6 @@ InputEventSDK.on("MouseKeyDown", mask => {
 		if (send_ping) {
 			if (GetGUIAcceptButton(gui_base_data).Contains(cursor)) {
 				AcceptGame()
-				return false
-			}
-			if (GetGUIDeclineButton(gui_base_data).Contains(cursor)) {
-				DeclineGame()
 				return false
 			}
 		}
