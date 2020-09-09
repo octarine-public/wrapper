@@ -29,9 +29,20 @@ import * as BitsExtensions from "./Utils/BitsExtensions"
 import * as MapExtensions from "./Utils/MapExtensions"
 import * as MathSDK from "./Utils/Math"
 import * as Parse from "./Utils/ParseKV"
+import * as ArrayBufferUtils from "./Utils/ArrayBufferUtils"
 import * as Utils from "./Utils/Utils"
 export { default as GameState } from "./Utils/GameState"
-export { Utils, MathSDK, ArrayExtensions, BitsExtensions, MapExtensions, Parse }
+import { default as readFile } from "./Utils/readFile"
+export {
+	ArrayBufferUtils,
+	Utils,
+	MathSDK,
+	ArrayExtensions,
+	BitsExtensions,
+	MapExtensions,
+	Parse,
+	readFile
+}
 
 import * as Menu from "./Menu/Imports"
 export { Menu }
@@ -46,7 +57,7 @@ export {
 } from "./Managers/ParticleManager"
 
 export { default as Events, EventEmitter } from "./Managers/Events"
-export { default as CGameRules, GameRules } from "./Objects/Base/GameRules"
+export { default as CGameRules } from "./Objects/Base/GameRules"
 export { default as CGameManager, GameManager } from "./Objects/Base/GameManager"
 export { default as EntityManager } from "./Managers/EntityManager"
 export { default as EventsSDK } from "./Managers/EventsSDK"
@@ -61,7 +72,7 @@ export {
 export { default as RendererSDK } from "./Native/RendererSDK"
 export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
 
-export { default as Entity, LocalPlayer } from "./Objects/Base/Entity"
+export { default as Entity, LocalPlayer, GameRules } from "./Objects/Base/Entity"
 export { default as Unit } from "./Objects/Base/Unit"
 export { default as SpiritBear } from "./Objects/Base/SpiritBear"
 export { default as Hero } from "./Objects/Base/Hero"

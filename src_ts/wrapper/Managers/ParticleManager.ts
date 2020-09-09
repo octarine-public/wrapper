@@ -2,7 +2,7 @@ import Vector3 from "../Base/Vector3"
 import Color from "../Base/Color"
 import Entity from "../Objects/Base/Entity"
 import Particle, { ControlPointParam, ControlPoint } from "../Base/Particle"
-import { tryFindFile } from "../Utils/Utils"
+import { tryFindFile } from "../Utils/readFile"
 
 const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
 const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`

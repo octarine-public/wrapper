@@ -1,5 +1,5 @@
 import Stream from "./Stream"
-import { Utf8ArrayToStr, ArrayBuffersEqual } from "./Utils"
+import { Utf8ArrayToStr, ArrayBuffersEqual } from "./ArrayBufferUtils"
 import { ExtractResourceBlock, DecompressLZ4 } from "../Native/WASM"
 import BinaryStream from "./BinaryStream"
 

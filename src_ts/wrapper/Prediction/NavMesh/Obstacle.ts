@@ -3,7 +3,7 @@ import Entity from "../../Objects/Base/Entity"
 
 export default class Obstacle {
 	public static FromEntity(ent: Entity): Obstacle {
-		return new Obstacle(ent.Position.toVector2(), ent.CollisionRadius)
+		return new Obstacle(Vector2.FromVector3(ent.Position), ent.CollisionRadius)
 	}
 
 	constructor(

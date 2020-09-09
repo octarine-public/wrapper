@@ -1,5 +1,5 @@
 import Item from "../Base/Item"
-import { GameRules } from "../Base/GameRules"
+import { GameRules } from "../Base/Entity"
 import { WrapperClass } from "../../Decorators"
 
 @WrapperClass("item_bottle")

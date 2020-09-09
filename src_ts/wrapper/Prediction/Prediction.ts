@@ -17,7 +17,7 @@ export default class Prediction {
 		radius: number,
 		collision_size: number,
 		speed = this.Owner.IdealSpeed,
-		angle = this.Owner.Forward.toVector2(),
+		angle = Vector2.FromVector3(this.Owner.Forward),
 		delay = 0,
 		obstacles?: Entity[]
 	): Entity[] {
@@ -27,7 +27,7 @@ export default class Prediction {
 		obstacles.forEach(ent => obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent))
 		return new NavMeshPathfinding(
 			new MovingObstacle(
-				this.Owner.Position.toVector2(),
+				Vector2.FromVector3(this.Owner.Position),
 				collision_size,
 				angle.MultiplyScalarForThis(speed),
 				radius / speed
@@ -40,7 +40,7 @@ export default class Prediction {
 		radius: number,
 		collision_size: number,
 		speed = this.Owner.IdealSpeed,
-		angle = this.Owner.Forward.toVector2(),
+		angle = Vector2.FromVector3(this.Owner.Forward),
 		delay = 0,
 		obstacles?: Entity[]
 	): Nullable<[Entity, number]> {
@@ -50,7 +50,7 @@ export default class Prediction {
 		obstacles.forEach(ent => obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent))
 		let predict_res = new NavMeshPathfinding(
 			new MovingObstacle(
-				this.Owner.Position.toVector2(),
+				Vector2.FromVector3(this.Owner.Position),
 				collision_size,
 				angle.MultiplyScalarForThis(speed),
 				radius / speed
@@ -77,7 +77,7 @@ export default class Prediction {
 		obstacles.forEach(ent => ent2obs.set(ent, ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent)))
 		return new NavMeshPathfinding(
 			new MovingObstacle(
-				this.Owner.Position.toVector2(),
+				Vector2.FromVector3(this.Owner.Position),
 				collision_size,
 				new Vector2(speed, speed),
 				radius / speed

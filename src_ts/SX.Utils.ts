@@ -1,4 +1,4 @@
-import { EventsSDK, GameRules, GameState, Menu as MenuSDK, DOTA_GameState, LocalPlayer, Player, DOTAGameUIState_t, TickSleeper, Color, RendererSDK, Input } from "wrapper/Imports"
+import { EventsSDK, GameRules, GameState, Menu as MenuSDK, DOTA_GameState, LocalPlayer, DOTAGameUIState_t, TickSleeper, Color, RendererSDK, Input, ExecuteOrder } from "wrapper/Imports"
 declare global {
 	var clear: CallableFunction
 }
@@ -47,9 +47,9 @@ let consoleClear = () => console.clear()
 globalThis.clear = consoleClear
 
 BuybackBind.OnRelease(() => {
-	if (Player === undefined || LocalPlayer === undefined || LocalPlayer.Hero === undefined || LocalPlayer.Hero.IsAlive)
+	if (LocalPlayer === undefined || LocalPlayer.Hero === undefined || LocalPlayer.Hero.IsAlive)
 		return
-	Player.Buyback()
+	ExecuteOrder.Buyback()
 })
 
 let Sleep = new TickSleeper()

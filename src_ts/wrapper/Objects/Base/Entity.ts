@@ -2,14 +2,15 @@ import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { Team } from "../../Enums/Team"
-import { default as EntityManager, EntityPropertyType } from "../../Managers/EntityManager"
+import { default as EntityManager, EntityPropertyType, SetRawGameTime } from "../../Managers/EntityManager"
 import { DegreesToRadian } from "../../Utils/Math"
 import EventsSDK from "../../Managers/EventsSDK"
 import Player from "../../Objects/Base/Player"
 import * as StringTables from "../../Managers/StringTables"
 import Manifest from "../../Managers/Manifest"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
-import { GameRules } from "./GameRules"
+import CGameRules from "./GameRules"
+import Item from "./Item"
 
 export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
@@ -21,6 +22,18 @@ EventsSDK.on("EntityCreated", ent => {
 export function OnLocalPlayerDeleted() {
 	LocalPlayer = undefined
 }
+export let GameRules: Nullable<CGameRules>
+EventsSDK.on("EntityCreated", ent => {
+	if (ent.IsGameRules)
+		GameRules = ent as CGameRules
+})
+EventsSDK.on("EntityDestroyed", ent => {
+	if (!ent.IsGameRules)
+		return
+	GameRules = undefined
+	SetRawGameTime(0)
+})
+
 
 /*
 m_pEntity.m_flags
@@ -243,6 +256,13 @@ export default class Entity {
 
 	public Select(bAddToGroup: boolean = false): boolean {
 		return SelectUnit(this.Index, bAddToGroup)
+	}
+	public get IsGameRules(): boolean {
+		return false
+	}
+	public CannotUseItem(item: Item): boolean {
+		item // that's weird.
+		return false
 	}
 
 	public toString(): string {

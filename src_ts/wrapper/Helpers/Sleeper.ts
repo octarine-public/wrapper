@@ -1,4 +1,4 @@
-import { GameRules } from "../Objects/Base/GameRules"
+import { GameRules } from "../Objects/Base/Entity"
 
 class SleeperBase {
 	protected SleepDB = new Map<any, number>()

@@ -23,7 +23,7 @@ export default class Button extends Base {
 			.SubtractForThis(this.border_size.MultiplyScalar(2))
 		)
 	}
-	public Update() {
+	public Update(): void {
 		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize)
 			.SubtractScalarY(25)
 		this.TotalSize_.x = this.name_size.x + 10 + this.border_size.x * 2

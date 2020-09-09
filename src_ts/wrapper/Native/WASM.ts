@@ -2,7 +2,7 @@ import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { DegreesToRadian } from "../Utils/Math"
-import { readFile } from "../Utils/Utils"
+import readFile from "../Utils/readFile"
 
 export class HeightMap {
 	constructor(

@@ -4,7 +4,7 @@ import Header from "./Header"
 import Node from "./Node"
 import Events from "../Managers/Events"
 import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
-import { StringToUTF16, Utf16ArrayToStr } from "../Utils/Utils"
+import { StringToUTF16, Utf16ArrayToStr } from "../Utils/ArrayBufferUtils"
 
 class MenuManager {
 	public entries: Node[] = []

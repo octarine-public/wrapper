@@ -48,7 +48,7 @@ export default class ImageSelector extends Base {
 		})
 	}
 
-	public Update() {
+	public Update(): void {
 		this.values.forEach(value => {
 			if (!this.enabled_values.has(value))
 				this.enabled_values.set(value, false)

@@ -1,7 +1,6 @@
-import { GameRules } from "../../Objects/Base/GameRules"
 import Ability from "./Ability"
-import Player from "./Player"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import { GameRules } from "./Entity"
 
 @WrapperClass("C_DOTA_Item")
 export default class Item extends Ability {
@@ -103,7 +102,7 @@ export default class Item extends Ability {
 			return false
 
 		let root_owner = this.RootOwner
-		if (root_owner instanceof Player && this.Shareability === EShareAbility.ITEM_NOT_SHAREABLE && root_owner.PlayerID !== this.PurchaserID)
+		if (root_owner?.CannotUseItem(this))
 			return false
 
 		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled)
@@ -116,6 +115,9 @@ export default class Item extends Ability {
 			&& !this.Owner?.IsMuted
 			&& this.IsManaEnough(bonusMana)
 			&& this.IsCooldownReady
+	}
+	public get SpellAmplification(): number {
+		return this.GetSpecialValue("spell_amp") / 100
 	}
 }
 

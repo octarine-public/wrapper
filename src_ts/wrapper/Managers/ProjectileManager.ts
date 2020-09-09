@@ -1,4 +1,4 @@
-import Entity from "../Objects/Base/Entity"
+import Entity, { GameRules } from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import Unit from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
@@ -6,11 +6,11 @@ import Events from "./Events"
 import EventsSDK from "./EventsSDK"
 import Color from "../Base/Color"
 import RendererSDK from "../Native/RendererSDK"
-import { GameRules } from "../Objects/Base/GameRules"
 import { ParseProtobufDesc, ParseProtobufNamed, CMsgVectorToVector3, RecursiveProtobuf, CMsgVector2DToVector2, NumberToColor, ServerHandleToIndex } from "../Utils/Protobuf"
 import EntityManager from "./EntityManager"
 import GameState from "../Utils/GameState"
 import Manifest from "./Manifest"
+import Vector2 from "../Base/Vector2"
 
 let ProjectileManager = new (class CProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
@@ -48,7 +48,7 @@ EventsSDK.on("Tick", () => {
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
 		proj.Position.AddForThis(proj.Velocity.MultiplyScalar(cur_time - proj.LastUpdate).toVector3())
 		proj.LastUpdate = cur_time
-		proj.Position.z = RendererSDK.GetPositionHeight(proj.Position.toVector2())
+		proj.Position.z = RendererSDK.GetPositionHeight(Vector2.FromVector3(proj.Position))
 	})
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
 		if (!proj.Position.IsValid)

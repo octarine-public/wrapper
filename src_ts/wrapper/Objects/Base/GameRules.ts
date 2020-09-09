@@ -5,7 +5,7 @@ import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 import Entity, { LocalPlayer } from "../Base/Entity"
 import EventsSDK from "../../Managers/EventsSDK"
 import GameState from "../../Utils/GameState"
-import EntityManager, { EntityPropertyType } from "../../Managers/EntityManager"
+import EntityManager, { EntityPropertyType, SetRawGameTime } from "../../Managers/EntityManager"
 import Unit from "./Unit"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
@@ -76,11 +76,15 @@ export default class CGameRules extends Entity {
 		return this.IsNightstalkerNight || this.IsTemporaryNight
 			|| (this.GameState === DOTA_GameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS && (this.GameTime / 60) / 5 % 2 >= 1)
 	}
+	public get IsGameRules(): boolean {
+		return true
+	}
 }
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 	game.RawGameTime = new_val as number
+	SetRawGameTime(game.RawGameTime)
 	EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
 		if (!unit.IsVisible || !unit.IsAlive)
 			return
@@ -96,14 +100,4 @@ RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, new_val) => {
 })
 RegisterFieldHandler(CGameRules, "m_vecItemStockInfo", (game, new_val) => {
 	game.StockInfo = (new_val as Map<string, EntityPropertyType>[]).map(map => new StockInfo(map))
-})
-
-export let GameRules: Nullable<CGameRules>
-EventsSDK.on("EntityCreated", ent => {
-	if (ent instanceof CGameRules)
-		GameRules = ent
-})
-EventsSDK.on("EntityDestroyed", ent => {
-	if (ent instanceof CGameRules)
-		GameRules = undefined
 })

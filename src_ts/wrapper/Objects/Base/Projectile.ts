@@ -3,7 +3,7 @@ import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import EntityManager from "../../Managers/EntityManager"
 import Entity from "./Entity"
-import { GameRules } from "../Base/GameRules"
+import { GameRules } from "../Base/Entity"
 
 export class Projectile {
 	public IsValid = true

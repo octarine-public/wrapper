@@ -3,7 +3,7 @@ import Vector3 from "../../Base/Vector3"
 import { HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
 import Entity, { LocalPlayer } from "./Entity"
-import Player from "./Player"
+import ExecuteOrder from "../../Native/ExecuteOrder"
 import Inventory from "../DataBook/Inventory"
 import Ability from "./Ability"
 import Item from "./Item"
@@ -23,7 +23,6 @@ import { RecursiveMap } from "../../Utils/ParseKV"
 import EventsSDK from "../../Managers/EventsSDK"
 import RendererSDK from "../../Native/RendererSDK"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
-import item_nether_shawl from "../Items/item_nether_shawl"
 
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
@@ -166,6 +165,9 @@ export default class Unit extends Entity {
 	}
 	public get IsTempestDouble(): boolean {
 		return this.HasBuffByName("modifier_arc_warden_tempest_double")
+	}
+	public get CanBeMainHero(): boolean {
+		return !this.IsIllusion && !this.IsTempestDouble
 	}
 	public get IsRooted(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_ROOTED)
@@ -436,20 +438,13 @@ export default class Unit extends Entity {
 		return castrange
 	}
 	public get SpellAmplification(): number {
-		let spellAmp = 0
-
-		this.Items.forEach(item => {
-			if (item instanceof item_nether_shawl)
-				spellAmp += item.GetSpecialValue("bonus_spell_amp") / 100
-
-			spellAmp += item.GetSpecialValue("spell_amp") / 100
-		})
-		this.Spells.forEach(spell => {
-			if (spell !== undefined && spell.Level !== 0 && spell.Name.startsWith("special_bonus_spell_amplify"))
-				spellAmp += spell!.GetSpecialValue("value") / 100
-		})
-
-		return spellAmp
+		const itemsSpellAmp = this.Items.reduce((val, item) => val + item.SpellAmplification, 0)
+		const spellsSpellAmp = this.Spells.reduce((val, spell) => {
+			if (spell !== undefined)
+				val += spell.SpellAmplification
+			return val
+		}, 0)
+		return itemsSpellAmp + spellsSpellAmp
 	}
 	public get Name(): string {
 		return this.UnitName_ || super.Name
@@ -938,94 +933,94 @@ export default class Unit extends Entity {
 	/* ORDERS */
 
 	public MoveTo(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, issuers: [this], position, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, issuers: [this], position, queue, showEffects })
 	}
 	public MoveToTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, issuers: [this], target, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, issuers: [this], target, queue, showEffects })
 	}
 	public AttackMove(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE, issuers: [this], position, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE, issuers: [this], position, queue, showEffects })
 	}
 	public AttackTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET, issuers: [this], target, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET, issuers: [this], target, queue, showEffects })
 	}
 	public CastPosition(ability: Ability, position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION, issuers: [this], ability, position, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION, issuers: [this], ability, position, queue, showEffects })
 	}
 	public PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM, issuers: [this], ability: itemID, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM, issuers: [this], ability: itemID, queue, showEffects })
 	}
 	public CastTarget(ability: Ability, target: Entity | number, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET, issuers: [this], target, ability, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET, issuers: [this], target, ability, queue, showEffects })
 	}
 	public CastTargetTree(ability: Ability, tree: Tree | TreeTemp | number, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE, issuers: [this], target: tree, ability, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE, issuers: [this], target: tree, ability, queue, showEffects })
 	}
 	public CastNoTarget(ability: Ability, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET, issuers: [this], ability, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET, issuers: [this], ability, queue, showEffects })
 	}
 	public CastToggle(ability: Ability, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE, issuers: [this], ability, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE, issuers: [this], ability, queue, showEffects })
 	}
 	public HoldPosition(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION, issuers: [this], position, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION, issuers: [this], position, queue, showEffects })
 	}
 	public TrainAbility(ability: Ability) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY, issuers: [this], ability })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY, issuers: [this], ability })
 	}
 	public DropItemFountain(ability: Ability, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM_AT_FOUNTAIN, issuers: [this], ability, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM_AT_FOUNTAIN, issuers: [this], ability, queue, showEffects })
 	}
 	public DropItem(item: Item, position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM, issuers: [this], ability: item, position, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM, issuers: [this], ability: item, position, queue, showEffects })
 	}
 	public GiveItem(item: Item, target: Entity | number, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM, issuers: [this], target, ability: item, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM, issuers: [this], target, ability: item, queue, showEffects })
 	}
 	public PickupItem(physicalItem: PhysicalItem | number, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM, issuers: [this], target: physicalItem, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM, issuers: [this], target: physicalItem, queue, showEffects })
 	}
 	public PickupRune(rune: Rune | number, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE, issuers: [this], target: rune, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE, issuers: [this], target: rune, queue, showEffects })
 	}
 	public SellItem(item: Item) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM, issuers: [this], ability: item })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SELL_ITEM, issuers: [this], ability: item })
 	}
 	public DisassembleItem(item: Item, queue?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM, issuers: [this], ability: item, queue })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DISASSEMBLE_ITEM, issuers: [this], ability: item, queue })
 	}
 	public ItemSetCombineLock(item: Item, lock: boolean | number = true, queue?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, issuers: [this], ability: item, target: (lock as number) + 0, queue })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, issuers: [this], ability: item, target: (lock as number) + 0, queue })
 	}
 	public MoveItem(item: Item, slot: DOTAScriptInventorySlot_t) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM, issuers: [this], target: slot, ability: item })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM, issuers: [this], target: slot, ability: item })
 	}
 	public CastToggleAuto(item: Item, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO, issuers: [this], ability: item, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO, issuers: [this], ability: item, queue, showEffects })
 	}
 	public OrderStop(queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_STOP, issuers: [this], queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_STOP, issuers: [this], queue, showEffects })
 	}
 	public UnitTaunt(queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT, issuers: [this], queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT, issuers: [this], queue, showEffects })
 	}
 	public ItemFromStash(item: Item) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH, issuers: [this], ability: item })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH, issuers: [this], ability: item })
 	}
 	public CastRune(runeItem: Item | number, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RUNE, issuers: [this], target: runeItem, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RUNE, issuers: [this], target: runeItem, queue, showEffects })
 	}
 	public PingAbility(ability: Ability) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PING_ABILITY, issuers: [this], ability })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PING_ABILITY, issuers: [this], ability })
 	}
 	public MoveToDirection(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION, issuers: [this], position, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION, issuers: [this], position, queue, showEffects })
 	}
 	public Patrol(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PATROL, issuers: [this], position, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PATROL, issuers: [this], position, queue, showEffects })
 	}
 	public VectorTargetPosition(ability: Ability, Direction: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION, issuers: [this], ability, position: Direction, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION, issuers: [this], ability, position: Direction, queue, showEffects })
 	}
 	public CastVectorTargetPosition(ability: Ability, position: Vector3 | Vector2 | Unit, Direction: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): void {
 		if (position instanceof Unit)
@@ -1035,13 +1030,13 @@ export default class Unit extends Entity {
 		this.CastPosition(ability, position, queue, showEffects)
 	}
 	public ItemLock(item: Item, state: boolean = true) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, issuers: [this], ability: item, target: state === false ? 0 : undefined })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, issuers: [this], ability: item, target: state === false ? 0 : undefined })
 	}
 	public OrderContinue(item: Item, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE, issuers: [this], ability: item, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE, issuers: [this], ability: item, queue, showEffects })
 	}
 	public VectorTargetCanceled(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
-		return Player.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED, issuers: [this], position, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED, issuers: [this], position, queue, showEffects })
 	}
 }
 

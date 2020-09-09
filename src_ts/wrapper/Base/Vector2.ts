@@ -36,6 +36,9 @@ export default class Vector2 {
 	public static CopyFrom(vec: Vector2): Vector2 {
 		return new Vector2(vec.x, vec.y)
 	}
+	public static FromVector3(vec: Vector3): Vector2 {
+		return new Vector2(vec.x, vec.y)
+	}
 
 	/**
 	 * Create new Vector2 with x, y

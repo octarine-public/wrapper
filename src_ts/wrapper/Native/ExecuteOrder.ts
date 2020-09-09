@@ -29,6 +29,34 @@ export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 ]
 
 export default class ExecuteOrder {
+	public static PrepareOrder(order: {
+		orderType: dotaunitorder_t,
+		target?: Entity | number,
+		position?: Vector3 | Vector2,
+		ability?: Ability | number,
+		orderIssuer?: PlayerOrderIssuer_t,
+		issuers?: Unit[],
+		queue?: boolean,
+		showEffects?: boolean,
+	}): ExecuteOrder {
+		return ExecuteOrder.fromObject(order).ExecuteQueued()
+	}
+	public static Buyback(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_BUYBACK, queue, showEffects })
+	}
+	public static Glyph(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, queue, showEffects })
+	}
+	public static CastRiverPaint(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT, position, queue, showEffects })
+	}
+	public static PreGameAdgustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT, target: ItemID, queue, showEffects })
+	}
+	public static Scan(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects })
+	}
+
 	private static LatestUnitOrder_view = new DataView(LatestUnitOrder.buffer)
 	public static order_queue: ExecuteOrder[] = []
 	public static wait_next_usercmd = false
@@ -272,7 +300,7 @@ Events.on("Update", () => {
 		cmd.CameraPosition.x = latest_camera_x
 		cmd.CameraPosition.y = latest_camera_y
 	}
-	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(CursorWorldVec.toVector2()))
+	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(Vector2.FromVector3(CursorWorldVec)))
 	if (order !== undefined && (!ExecuteOrder.wait_near_cursor || cmd.VectorUnderCursor.Distance(last_order_click) <= 100)) {
 		if (!ExecuteOrder.wait_next_usercmd) {
 			order.Execute()
@@ -289,7 +317,7 @@ Events.on("Update", () => {
 	latest_camera_x = cmd.CameraPosition.x = camera_vec.x
 	latest_camera_y = cmd.CameraPosition.y = camera_vec.y
 
-	let cur_pos = RendererSDK.WorldToScreenCustom(CursorWorldVec, camera_vec.toVector2())
+	let cur_pos = RendererSDK.WorldToScreenCustom(CursorWorldVec, Vector2.FromVector3(camera_vec))
 	if (cur_pos !== undefined) {
 		cmd.MouseX = cur_pos.x
 		cmd.MouseY = cur_pos.y

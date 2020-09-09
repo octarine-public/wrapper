@@ -11,10 +11,11 @@ import BinaryStream from "../Utils/BinaryStream"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
-import { MapToObject, ParseMapName, StringToUTF16, readFile } from "../Utils/Utils"
+import { MapToObject, ParseMapName } from "../Utils/Utils"
+import { StringToUTF16 } from "../Utils/ArrayBufferUtils"
+import readFile from "../Utils/readFile"
 import * as StringTables from "./StringTables"
 import Vector4 from "../Base/Vector4"
-import { GameRules } from "../Objects/Base/GameRules"
 import { ParseTRMP } from "../Utils/ParseTRMP"
 import Tree from "../Objects/Base/Tree"
 import { SignonState_t } from "../Enums/SignonState_t"
@@ -133,6 +134,11 @@ class CEntityManager {
 const EntityManager = new CEntityManager()
 export default EntityManager
 
+let raw_game_time = 0
+export function SetRawGameTime(new_raw_game_time: number): void {
+	raw_game_time = new_raw_game_time
+}
+
 function ClassFromNative(id: number, constructor_name: string, ent_name: Nullable<string>): Entity {
 	let constructor = GetConstructorByName(constructor_name, ent_name)
 	if (constructor === undefined)
@@ -183,7 +189,7 @@ function DeleteEntity(id: number) {
 		return
 
 	entity.IsValid = false
-	entity.BecameDormantTime = GameRules?.RawGameTime ?? 0
+	entity.BecameDormantTime = raw_game_time
 	ArrayExtensions.arrayRemove(AllEntities, entity)
 
 	EventsSDK.emit("EntityDestroyed", false, entity)
@@ -370,7 +376,7 @@ function FixType(symbols: string[], field: any): string {
 function QueuedLeave(ent_id: number, queued_leave?: number[]): boolean {
 	let ent = EntityManager.EntityByIndex(ent_id)
 	if (ent !== undefined) {
-		ent.BecameDormantTime = GameRules?.RawGameTime ?? 0
+		ent.BecameDormantTime = raw_game_time
 		if (ent.ClassName === "CDOTA_BaseNPC") // crutch for thinkers that'll otherwise leak
 			return true
 	} else

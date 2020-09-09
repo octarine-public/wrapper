@@ -29,6 +29,9 @@ export default class Vector3 {
 	public static CopyFrom(vec: Vector3): Vector3 {
 		return new Vector3(vec.x, vec.y, vec.z)
 	}
+	public static FromVector2(vec: Vector2): Vector3 {
+		return new Vector3(vec.x, vec.y, 0)
+	}
 
 	/**
 	 * Create new Vector3 with x, y, z
@@ -803,10 +806,6 @@ export default class Vector3 {
 	}
 	public toJSON() {
 		return this.toArray()
-	}
-
-	public toVector2(): Vector2 {
-		return new Vector2(this.x, this.y)
 	}
 
 	public toIOBuffer(offset: number = 0): true {

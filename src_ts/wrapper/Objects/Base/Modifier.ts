@@ -1,7 +1,7 @@
 import Ability from "./Ability"
 import Entity from "./Entity"
 import Unit from "./Unit"
-import { GameRules } from "../Base/GameRules"
+import { GameRules } from "../Base/Entity"
 import { IModifier } from "../../Managers/ModifierManager"
 import * as StringTables from "../../Managers/StringTables"
 import Vector3 from "../../Base/Vector3"

@@ -1,8 +1,7 @@
 import Vector3 from "../../Base/Vector3"
 import { HasMask, MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import AbilityData from "../DataBook/AbilityData"
-import { GameRules } from "../Base/GameRules"
-import Entity from "./Entity"
+import Entity, { GameRules } from "./Entity"
 import Unit from "./Unit"
 import GameState from "../../Utils/GameState"
 import { AbilityLogicType } from "../../Enums/AbilityLogicType"
@@ -320,6 +319,11 @@ export default class Ability extends Entity {
 			&& this.IsCooldownReady
 			&& !this.Owner?.IsSilenced
 			&& this.IsManaEnough(bonusMana)
+	}
+	public get SpellAmplification(): number {
+		if (this.Name.startsWith("special_bonus_spell_amplify"))
+			return this.GetSpecialValue("value") / 100
+		return 0
 	}
 }
 

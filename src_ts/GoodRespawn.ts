@@ -117,8 +117,8 @@ EventsSDK.on("Tick", () => {
 				return false
 
 			const obs2ent = new Map<Obstacle, Entity>(),
-				start_pos = unit.Position.toVector2(),
-				target_obs = new Obstacle(pos.toVector2(), target.HullRadius)
+				start_pos = Vector2.FromVector3(unit.Position),
+				target_obs = new Obstacle(Vector2.FromVector3(pos), target.HullRadius)
 			EntityManager.GetEntitiesByClasses<Unit>([Creep, Hero]).forEach(ent => {
 				if (ent !== unit && ((ent.IsAlive && ent.IsInRange(unit, hook.CastRange * 2) && !ent.IsInvulnerable && ent.IsVisible && !ent.IsEnemy()) || ent === target))
 					obs2ent.set(
@@ -132,7 +132,7 @@ EventsSDK.on("Tick", () => {
 				new MovingObstacle(
 					start_pos/*.Add(unit.Forward.toVector2().MultiplyScalarForThis(hook.AOERadius * 1.5))*/,
 					hook.AOERadius,
-					unit.Position.GetDirectionTo(pos).toVector2().MultiplyScalarForThis(hook.Speed),
+					Vector2.FromVector3(unit.Position.GetDirectionTo(pos)).MultiplyScalarForThis(hook.Speed),
 					hook.CastRange / hook.Speed,
 				),
 				[...obs2ent.keys()],

@@ -8,7 +8,6 @@ import _EntityManager from "./Managers/EntityManager"
 import _Events from "./Managers/Events"
 
 import { PlayerResource } from "./Objects/Base/PlayerResource"
-import { GameRules } from "./Objects/Base/GameRules"
 import _GameState from "./Utils/GameState"
 
 import _RendererSDK from "./Native/RendererSDK"
@@ -17,7 +16,7 @@ import _ParticlesSDK from "./Managers/ParticleManager"
 
 import _Menu from "./Menu/Menu"
 import { GetSDKClasses } from "./Objects/NativeToSDK"
-import { LocalPlayer } from "./Objects/Base/Entity"
+import { LocalPlayer, GameRules } from "./Objects/Base/Entity"
 import * as _WASM from "./Native/WASM"
 import _Manifest from "./Managers/Manifest"
 

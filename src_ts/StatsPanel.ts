@@ -13,7 +13,7 @@ interface CDOTALobbyMember {
 
 interface CSODOTALobby {
 	lobby_id: bigint
-	members: CDOTALobbyMember[]
+	all_members: CDOTALobbyMember[]
 	game_mode: DOTA_GameMode
 	lobby_type: number
 }
@@ -121,7 +121,7 @@ Events.on("SharedObjectChanged", (id, reason, obj) => {
 	}
 	if (reason !== 0)
 		return
-	current_lobby_members = lobby.members.filter(member => member.team === 0 || member.team === 1)
+	current_lobby_members = lobby.all_members.filter(member => member.team === 0 || member.team === 1)
 	if (current_lobby_members.length > 10)
 		return
 	needs_accept = true

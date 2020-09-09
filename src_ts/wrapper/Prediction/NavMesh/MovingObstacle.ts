@@ -5,10 +5,10 @@ import Unit from "../../Objects/Base/Unit"
 export default class MovingObstacle extends Obstacle {
 	public static FromUnit(unit: Unit): MovingObstacle {
 		return new MovingObstacle(
-			unit.Position.toVector2(),
+			Vector2.FromVector3(unit.Position),
 			unit.HullRadius,
 			unit.IsMoving
-				? unit.Forward.toVector2().MultiplyScalarForThis(unit.IdealSpeed * 1.15)
+				? Vector2.FromVector3(unit.Forward).MultiplyScalarForThis(unit.IdealSpeed * 1.15)
 				: new Vector2()
 		)
 	}

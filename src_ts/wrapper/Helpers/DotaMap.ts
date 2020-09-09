@@ -1,7 +1,8 @@
 // https://github.com/EnsageSharp/Ensage.SDK/blob/master/Helpers/Map.cs
 import Vector3 from "../Base/Vector3"
 import { WorldPolygon } from "../Geometry/WorldPolygon"
-import { Utf8ArrayToStr, readFile } from "../Utils/Utils"
+import { Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
+import readFile from "../Utils/readFile"
 import Creep from "../Objects/Base/Creep"
 import Unit from "../Objects/Base/Unit"
 import { MapArea } from "./MapArea"

@@ -1,4 +1,4 @@
-import { Utf8ArrayToStr } from "../Utils/Utils"
+import { Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import EventsSDK from "./EventsSDK"
 
 let StringTables = new Map<string, Map<number, [string, ArrayBuffer]>>()
