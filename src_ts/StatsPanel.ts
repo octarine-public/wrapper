@@ -125,7 +125,7 @@ Events.on("SharedObjectChanged", (id, reason, obj) => {
 	if (current_lobby_members.length > 10)
 		return
 	needs_accept = true
-	accept_deadline = hrtime() + 14000
+	accept_deadline = hrtime() + 13000
 	current_lobby = obj as CSODOTALobby
 	const lobby_id = current_lobby_id = lobby.lobby_id
 	current_lobby_data = new Array(current_lobby_members.length)

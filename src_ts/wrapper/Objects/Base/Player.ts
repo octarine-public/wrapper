@@ -6,6 +6,9 @@ import { SetGameInProgress } from "../../Managers/EventsHandler"
 import EventsSDK from "../../Managers/EventsSDK"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 import Item from "./Item"
+import ExecuteOrder from "../../Native/ExecuteOrder"
+import Vector2 from "../../Base/Vector2"
+import Vector3 from "../../Base/Vector3"
 
 @WrapperClass("C_DOTAPlayer")
 export default class Player extends Entity {
@@ -36,6 +39,21 @@ export default class Player extends Entity {
 	}
 	public CannotUseItem(item: Item): boolean {
 		return item.Shareability === EShareAbility.ITEM_NOT_SHAREABLE && this.PlayerID !== item.PurchaserID
+	}
+	public Buyback(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return ExecuteOrder.Buyback(queue, showEffects)
+	}
+	public Glyph(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return ExecuteOrder.Glyph(queue, showEffects)
+	}
+	public CastRiverPaint(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return ExecuteOrder.CastRiverPaint(position, queue, showEffects)
+	}
+	public PreGameAdjustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return ExecuteOrder.PreGameAdjustItemAssigment(ItemID, queue, showEffects)
+	}
+	public Scan(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+		return ExecuteOrder.Scan(position, queue, showEffects)
 	}
 }
 
