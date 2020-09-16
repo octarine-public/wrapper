@@ -1,0 +1,3 @@
+[submodule "wasm_source/lodepng"]
+	path = wasm_source/lodepng
+	url = https://github.com/lvandeve/lodepng

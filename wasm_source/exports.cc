@@ -352,3 +352,7 @@ EXPORT_JS void* DecompressLZ4(void* data, size_t size) {
 	*(uint32_t*)&JSIOBuffer[0] = dst_len;
 	return dst;
 }
+
+int main() {
+	return 0;
+}

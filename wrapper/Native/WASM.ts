@@ -38,10 +38,26 @@ function GetWASMModule(): WebAssembly.Module {
 	return new WebAssembly.Module(wasm_file)
 }
 
+const WASI_ESUCCESS = 0
+const WASI_ENOSYS = 52
 const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	env: {
-		emscripten_notify_memory_growth
-	}
+		emscripten_notify_memory_growth,
+	},
+	wasi_snapshot_preview1: {
+		proc_exit: () => {
+			return WASI_ENOSYS
+		},
+		args_get: () => {
+			return WASI_ESUCCESS
+		},
+		args_sizes_get: (argc: number, argvBufSize: number) => {
+			const view = new DataView(wasm.memory.buffer)
+			view.setUint32(argc, 0)
+			view.setUint32(argvBufSize, 0)
+			return WASI_ESUCCESS
+		},
+	},
 }).exports as any as {
 	_start: () => void
 	GetIOBuffer: () => number
@@ -67,7 +83,7 @@ declare global {
 	var wasm_: typeof wasm
 }
 globalThis.wasm_ = wasm
-wasm._start()
+// wasm._start() // calls proc_exit => unreachable code
 
 export let WASMIOBuffer: Float32Array
 export let WASMIOBufferBU64: BigUint64Array
