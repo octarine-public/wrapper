@@ -1,4 +1,4 @@
-import { parseKV, RecursiveMap } from "./ParseKV"
+import { parseKV } from "./ParseKV"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import { ExtractResourceBlock } from "../Native/WASM"
 import BinaryStream from "./BinaryStream"

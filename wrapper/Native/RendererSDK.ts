@@ -544,7 +544,7 @@ class CRendererSDK {
 	private GetTexture(path: string): number {
 		if (this.texture_cache.has(path))
 			return this.texture_cache.get(path)!
-		let [parsed, size] = WASM.ParseImage(readFile(path))
+		let [parsed, size] = WASM.ParseImage(readFile(path, 2)) // 1 for ourselves, 1 for caller [Image]
 		let texture_id = this.MakeTexture(parsed, size)
 		this.texture_cache.set(path, texture_id)
 		return texture_id

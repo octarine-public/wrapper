@@ -56,6 +56,9 @@ export default class Node extends Base {
 			return
 		this.entries.forEach(entry => entry.ConfigValue = obj[entry.name])
 	}
+	public OnConfigLoaded() {
+		this.entries.forEach(entry => entry.OnConfigLoaded())
+	}
 
 	public Render(): void {
 		super.Render()

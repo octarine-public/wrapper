@@ -4,9 +4,10 @@ import Entity from "../Objects/Base/Entity"
 import Particle, { ControlPointParam, ControlPoint } from "../Base/Particle"
 import { tryFindFile } from "../Utils/readFile"
 
-const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
-const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`
-const ParticleTargetPath = () => `particles/target/range_finder_tower_aoe.vpcf`
+const git_path = "gitlab.com/FNT_Rework/wrapper/scripts_files"
+const ParticleRangePath = (name: string) => `${git_path}/particles/range_display/range_display_${name.toLowerCase()}.vpcf`
+const ParticleLinePath = (name: string) => `${git_path}/particles/range_line/${name.toLowerCase()}.vpcf`
+const ParticleTargetPath = () => `${git_path}/particles/target/range_finder_tower_aoe.vpcf`
 
 const RenderPath = (render: PARTICLE_RENDER) =>
 	(PARTICLE_RENDER[render] ?? PARTICLE_RENDER_NAME.NORMAL).toLowerCase()

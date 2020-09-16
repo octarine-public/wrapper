@@ -19,7 +19,6 @@ import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import UnitData from "../DataBook/UnitData"
 import EntityManager from "../../Managers/EntityManager"
-import { RecursiveMap } from "../../Utils/ParseKV"
 import EventsSDK from "../../Managers/EventsSDK"
 import RendererSDK from "../../Native/RendererSDK"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
@@ -71,6 +70,7 @@ export default class Unit extends Entity {
 	public NetworkActivity = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
 	public HPRegen = 0
+	public HPRegenCounter = 0
 	@NetworkedBasicField("m_flManaThinkRegen")
 	public ManaRegen = 0
 	@NetworkedBasicField("m_bIsAncient")

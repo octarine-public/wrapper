@@ -1,5 +1,5 @@
 import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, Tree, GameState } from "./wrapper/Imports"
-import { SetGameInProgress } from "./wrapper/Managers/EventsHandler"
+import { SetGameInProgress } from "wrapper/Managers/EventsHandler"
 let Menu = MenuSDK.AddEntry("Misc")
 
 let AutoAccept_delay = Menu.AddSlider("Delay on AutoAccept", 3, 0, 28 /* ?? is real maximum */),
@@ -41,26 +41,25 @@ let AutoAccept_delay = Menu.AddSlider("Delay on AutoAccept", 3, 0, 28 /* ?? is r
 		"dota_vr",
 		"dota_ti10"
 	], 0),
-	tree_model = Menu.AddSwitcher("Tree Model", [
-		"Default",
-		"Crystal",
-		"Pumpkins #1",
-		"Pumpkins #2",
-		"Pumpkin Buckets",
-		"Stumps",
-	], 0),
+	tree_models: [string, number][] = [
+		["", 1],
+		["models/props_structures/crystal003_refract.vmdl", 1],
+		["models/props_structures/pumpkin001.vmdl", 1.08],
+		["models/props_structures/pumpkin003.vmdl", 3],
+		["models/props_gameplay/pumpkin_bucket.vmdl", 1],
+		["maps/journey_assets/props/trees/journey_armandpine/journey_armandpine_02_stump.vmdl", 4.5],
+	],
 	tree2origmodel = new Map<Tree, [string, number]>(),
 	tree2modelid = new Map<Tree, number>()
 
-let tree_models: [string, number][] = [
-	["", 1],
-	["models/props_structures/crystal003_refract.vmdl", 1],
-	["models/props_structures/pumpkin001.vmdl", 1.08],
-	["models/props_structures/pumpkin003.vmdl", 3],
-	["models/props_gameplay/pumpkin_bucket.vmdl", 1],
-	["maps/journey_assets/props/trees/journey_armandpine/journey_armandpine_02_stump.vmdl", 4.5],
-]
-tree_model.OnValue(self => SetTreeModel(...tree_models[self.selected_id]))
+Menu.AddSwitcher("Tree Model", [
+	"Default",
+	"Crystal",
+	"Pumpkins #1",
+	"Pumpkins #2",
+	"Pumpkin Buckets",
+	"Stumps",
+], 0).OnValue(self => SetTreeModel(...tree_models[self.selected_id]))
 
 CamDist.OnValue(UpdateVisuals)
 

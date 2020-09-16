@@ -89,8 +89,15 @@ RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 		if (!unit.IsVisible || !unit.IsAlive)
 			return
 		let buff = unit.GetBuffByName("modifier_ice_blast")
-		if (buff === undefined || buff.RemainingTime === 0)
-			unit.HP = Math.min(Math.round(unit.HP + (unit.HPRegen / 30)), unit.MaxHP)
+		if (buff === undefined || buff.RemainingTime === 0) {
+			const regen_amount = (unit.HPRegen * 0.1) + unit.HPRegenCounter
+			unit.HPRegenCounter = regen_amount
+			const regen_amount_floor = Math.floor(regen_amount)
+			if (regen_amount_floor !== 0) {
+				unit.HP = Math.min(unit.HP + regen_amount_floor, unit.MaxHP)
+				unit.HPRegenCounter -= regen_amount_floor
+			}
+		}
 	})
 	if (LocalPlayer !== undefined)
 		EventsSDK.emit("Tick", false)

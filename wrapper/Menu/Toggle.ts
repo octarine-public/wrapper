@@ -27,7 +27,10 @@ export default class Toggle extends Base {
 	}
 
 	public get ConfigValue() { return this.value }
-	public set ConfigValue(value) { this.value = value !== undefined ? value : this.value }
+	public set ConfigValue(value) { this.value = value ?? this.value }
+	public OnConfigLoaded() {
+		this.OnValueChangedCBs.forEach(f => f(this))
+	}
 
 	private get ToggleRect() {
 		let base_pos = this.Position.Add(this.TotalSize).SubtractForThis(this.toggle_offset).SubtractForThis(this.border_size.MultiplyScalar(2))

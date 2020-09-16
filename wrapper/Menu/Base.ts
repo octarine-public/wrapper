@@ -20,7 +20,7 @@ export default class Base {
 	public FontSize = 18
 	public FontName = "Consolas"
 	public FontColor = new Color(255, 255, 255, 255)
-	public OnValueChangedCBs: ((caller: Base) => void)[] = []
+	public readonly OnValueChangedCBs: ((caller: Base) => void)[] = []
 
 	public readonly Position = new Vector2(0, 0)
 	public readonly TotalSize_ = new Vector2(750 / 5, 40)
@@ -38,6 +38,7 @@ export default class Base {
 	constructor(public parent: IMenu, public name: string = "") { }
 	public get ConfigValue(): any { return undefined }
 	public set ConfigValue(value: any) { }
+	public OnConfigLoaded() { }
 	protected get Rect() {
 		return new Rectangle(this.Position, this.Position.Add(this.TotalSize))
 	}

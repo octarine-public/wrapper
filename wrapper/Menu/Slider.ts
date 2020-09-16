@@ -36,6 +36,9 @@ export default class Slider extends Base {
 	public set ConfigValue(value) {
 		this.value = value !== undefined ? value : this.value
 	}
+	public OnConfigLoaded() {
+		this.OnValueChangedCBs.forEach(f => f(this))
+	}
 
 	public Render(): void {
 		super.Render()

@@ -45,8 +45,10 @@ class MenuManager {
 		writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)).buffer)
 	}
 	public ForwardConfig() {
-		if (this.config !== undefined)
+		if (this.config !== undefined) {
 			this.entries.forEach(entry => entry.ConfigValue = this.config[entry.name])
+			this.entries.forEach(entry => entry.OnConfigLoaded())
+		}
 	}
 	public Render(): void {
 		if (this.config === undefined || !this.is_open)

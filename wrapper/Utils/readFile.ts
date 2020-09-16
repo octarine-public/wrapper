@@ -24,8 +24,8 @@ export function tryFindFile(path: string, callstack_depth = 0): Nullable<string>
 	return undefined
 }
 
-export default function readFile(path: string): Nullable<ArrayBuffer> {
-	const real_path = tryFindFile(path, 1)
+export default function readFile(path: string, callstack_depth = 0): Nullable<ArrayBuffer> {
+	const real_path = tryFindFile(path, 1 + callstack_depth)
 	if (real_path === undefined)
 		return undefined
 

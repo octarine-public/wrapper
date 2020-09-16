@@ -11,9 +11,15 @@
 		"alwaysStrict": true,
 		"experimentalDecorators": true
 	},
+	"include": [
+		"./**/*.ts",
+		"../../../**/*.d.ts"
+	],
 	"exclude": [
 		"wrapper_autogen/**/*",
-		"node_modules/**/*"
+		"node_modules/**/*",
+		"scripts_files/**/*"
 	],
-	"compileOnSave": true
+	"compileOnSave": true,
+	"forceConsistentCasingInFileNames": true
 }

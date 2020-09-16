@@ -75,11 +75,20 @@ EventsSDK.on("EntityDestroyed", ent => {
 })
 
 const HPRegen = 20
+let HPRegenCounter = 0
 EventsSDK.on("Tick", () => {
 	if (Roshan.HP === 0)
 		return
-	Roshan.HP = Math.min(Math.round(Roshan.HP + (HPRegen / 30)), 6000 + (last_minute * 115))
-	let time = GameRules?.GameTime ?? 0
+
+	const regen_amount = (HPRegen * 0.1) + HPRegenCounter
+	HPRegenCounter = regen_amount
+	const regen_amount_floor = Math.floor(regen_amount)
+	if (regen_amount_floor !== 0) {
+		Roshan.HP = Math.min(Roshan.HP + regen_amount_floor, Roshan.MaxHP)
+		HPRegenCounter -= regen_amount_floor
+	}
+
+	let time = Math.max(GameRules?.GameTime ?? 0, 0)
 	let min = Math.floor(time / 60)
 	if (min === last_minute)
 		return

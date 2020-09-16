@@ -34,7 +34,12 @@ export default class Switcher extends Base {
 	}
 
 	public get ConfigValue() { return this.selected_id }
-	public set ConfigValue(value) { this.selected_id = Math.max(0, Math.min(this.values.length - 1, value !== undefined ? value : this.selected_id)) }
+	public set ConfigValue(value) {
+		this.selected_id = Math.max(Math.min(this.values.length - 1, value ?? this.selected_id), 0)
+	}
+	public OnConfigLoaded() {
+		this.OnValueChangedCBs.forEach(f => f(this))
+	}
 
 	public Update(): void {
 		let longest_value = this.values.reduce((prev, cur) => cur.length > prev.length ? cur : prev, "")

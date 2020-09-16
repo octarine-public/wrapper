@@ -7,6 +7,7 @@ export { default as Switcher } from "./Switcher"
 export { default as Toggle } from "./Toggle"
 export { default as Button } from "./Button"
 export { default as KeyBind } from "./KeyBind"
+export * from "./ITypes"
 
 import Node from "./Node"
 export { Node }

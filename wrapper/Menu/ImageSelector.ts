@@ -47,6 +47,9 @@ export default class ImageSelector extends Base {
 				this.enabled_values.set(value_, false)
 		})
 	}
+	public OnConfigLoaded() {
+		this.OnValueChangedCBs.forEach(f => f(this))
+	}
 
 	public Update(): void {
 		this.values.forEach(value => {
@@ -76,7 +79,7 @@ export default class ImageSelector extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.name, this.Position.Add(this.text_offset).AddScalarY(this.name_size.y), this.FontColor, this.FontName, this.FontSize)
 		let base_pos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
 			let value = this.values[i],

@@ -55,7 +55,6 @@ function _unquotedtostr(stream: Stream): string {
 	return str
 }
 
-export type RecursiveMap = Map<string, RecursiveMap | string | bigint | number | boolean>
 function _parse(stream: Stream, map = new Map<string, any>()): RecursiveMap {
 	var laststr = "",
 		lasttok = "",
