@@ -667,7 +667,7 @@ try {
 	let map_name = GetLevelNameShort()
 	if (map_name === "start")
 		map_name = "dota"
-	let buf = readFile(`maps/${map_name}.vhcg`)
+	let buf = fread(`maps/${map_name}.vhcg`)
 	if (buf !== undefined) {
 		RendererSDK.HeightMap = WASM.ParseVHCG(buf)
 		GameState.MapName = last_loaded_map_name = map_name
@@ -681,7 +681,7 @@ Events.on("PostAddSearchPath", path => {
 	if (map_name === undefined)
 		return
 
-	let buf = readFile(`maps/${map_name}.vhcg`)
+	let buf = fread(`maps/${map_name}.vhcg`)
 	if (buf === undefined)
 		return
 

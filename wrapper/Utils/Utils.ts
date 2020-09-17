@@ -128,7 +128,7 @@ export function ParseExternalReferences(buf: Nullable<ArrayBuffer>): string[] {
 		stream.pos += offset - 8
 		let str = stream.ReadNullTerminatedString()
 		if (str.endsWith("vrman"))
-			list = [...list, ...ParseExternalReferences(readFile(str + "_c"))]
+			list = [...list, ...ParseExternalReferences(fread(str + "_c"))]
 		else
 			list.push(str)
 		stream.pos = prev

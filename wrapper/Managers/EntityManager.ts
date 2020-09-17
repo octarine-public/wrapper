@@ -13,7 +13,6 @@ import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
 import { MapToObject, ParseMapName } from "../Utils/Utils"
 import { StringToUTF16 } from "../Utils/ArrayBufferUtils"
-import readFile from "../Utils/readFile"
 import * as StringTables from "./StringTables"
 import Vector4 from "../Base/Vector4"
 import { ParseTRMP } from "../Utils/ParseTRMP"
@@ -531,7 +530,7 @@ try {
 	let map_name = GetLevelNameShort()
 	if (map_name === "start")
 		map_name = "dota"
-	let buf = readFile(`maps/${map_name}.trm`)
+	let buf = fread(`maps/${map_name}.trm`)
 	if (buf !== undefined)
 		LoadTreeMap(buf)
 } catch (e) {
@@ -543,7 +542,7 @@ Events.on("PostAddSearchPath", path => {
 	if (map_name === undefined)
 		return
 
-	let buf = readFile(`maps/${map_name}.trm`)
+	let buf = fread(`maps/${map_name}.trm`)
 	if (buf === undefined)
 		return
 

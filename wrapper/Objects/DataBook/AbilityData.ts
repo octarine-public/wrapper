@@ -1,5 +1,4 @@
 import { parseKVFile, parseEnumString } from "../../Utils/Utils"
-import readFile from "../../Utils/readFile"
 import Unit from "../Base/Unit"
 
 function LoadAbilityFile(path: string): RecursiveMap {
@@ -332,10 +331,10 @@ export function ReloadGlobalAbilityStorage() {
 					{
 						let tex_name = map.get("AbilityTextureName")
 						let path = typeof tex_name === "string" ? AbilityNameToPath(tex_name, false) : ""
-						if (path && readFile(path) === undefined)
+						if (path && !fexists(path))
 							path = AbilityNameToPath(abil_name)
 						let path2 = AbilityNameToPath(base_name)
-						if (readFile(path2) !== undefined)
+						if (fexists(path2))
 							path = path2
 						map.set("AbilityTexturePath", path)
 					}
@@ -345,9 +344,9 @@ export function ReloadGlobalAbilityStorage() {
 		if (!map.has("AbilityTexturePath") || !fexists(map.get("AbilityTexturePath") as string)) {
 			let tex_name = (map.get("AbilityTextureName") as string) ?? abil_name
 			let path = AbilityNameToPath(tex_name)
-			if (readFile(path) === undefined) {
+			if (!fexists(path)) {
 				path = AbilityNameToPath(tex_name, true)
-				if (readFile(path) === undefined) {
+				if (!fexists(path)) {
 					if (tex_name.startsWith("frostivus"))
 						tex_name = tex_name.split("_").slice(1).join("_")
 					else if (tex_name.startsWith("special_"))

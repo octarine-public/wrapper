@@ -2,7 +2,6 @@ import Events from "./Events"
 import BinaryStream from "../Utils/BinaryStream"
 import { Utf8ArrayToStr, StringToUTF8 } from "../Utils/ArrayBufferUtils"
 import { ParseExternalReferences } from "../Utils/Utils"
-import readFile from "../Utils/readFile"
 import { MurmurHash64, MurmurHash2 } from "../Native/WASM"
 import { parseKV } from "../Utils/ParseKV"
 
@@ -47,7 +46,7 @@ const Manifest = new (class CManifest {
 		return this.Hash32ToString.get(hash)
 	}*/
 	public LoadSoundFile(path: string): void {
-		let buf = readFile(path)
+		let buf = fread(path)
 		if (buf === undefined) {
 			console.log(`Missing ${path}`)
 			return
@@ -86,7 +85,7 @@ function InitManifest() {
 	// Manifest.PathHash32To64.clear()
 	Manifest.SoundHashToString.clear()
 
-	let manifest = readFile("soundevents/soundevents_manifest.vrman_c")
+	let manifest = fread("soundevents/soundevents_manifest.vrman_c")
 	if (manifest === undefined) {
 		console.log("Sound manifest not found.")
 		return
@@ -140,7 +139,7 @@ Manifest.SaveStringToken("invalid_hitbox")
 Manifest.SaveStringToken("invalid_bone")
 Manifest.SaveStringToken("default")
 
-let buf = readFile("stringtokendatabase.txt")
+let buf = fread("stringtokendatabase.txt")
 if (buf !== undefined) {
 	let stream = new BinaryStream(new DataView(buf))
 	if (stream.Next() === 0x21 && stream.Next() === 0x0A) {
