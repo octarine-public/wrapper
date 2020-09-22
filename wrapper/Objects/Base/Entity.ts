@@ -130,6 +130,9 @@ export default class Entity {
 	public get RotationRad(): number {
 		return DegreesToRadian(this.Rotation)
 	}
+	public get IsNeutral(): boolean {
+		return this.Team === Team.Neutral
+	}
 
 	public get Speed(): number {
 		return 0

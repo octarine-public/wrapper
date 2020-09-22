@@ -1,5 +1,4 @@
 import Unit from "./Unit"
-import { Team } from "../../Enums/Team"
 import { WrapperClass } from "../../Decorators"
 
 @WrapperClass("C_DOTA_BaseNPC_Creep")
@@ -9,9 +8,6 @@ export default class Creep extends Unit {
 	}
 	get IsLaneCreep(): boolean {
 		return this.ClassName === "CDOTA_BaseNPC_Creep_Lane" || this.ClassName === "CDOTA_BaseNPC_Creep_Siege"
-	}
-	public get IsNeutral(): boolean {
-		return this.Team === Team.Neutral
 	}
 	public get IsDeniable(): boolean {
 		return super.IsDeniable || this.HPPercent <= 50
