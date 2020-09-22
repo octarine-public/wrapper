@@ -49,7 +49,7 @@ export default class Item extends Ability {
 	@NetworkedBasicField("m_iSecondaryCharges")
 	public SecondaryCharges = 0
 	@NetworkedBasicField("m_bIsNeutralDrop")
-	public IsNeutral = false
+	public IsNeutralDrop = false
 	@NetworkedBasicField("m_iCurrentCharges")
 	public CurrentCharges = 0
 
