@@ -11,12 +11,10 @@ import BinaryStream from "../Utils/BinaryStream"
 import { ParseProtobufNamed } from "../Utils/Protobuf"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
-import { MapToObject, ParseMapName } from "../Utils/Utils"
+import { MapToObject } from "../Utils/Utils"
 import { StringToUTF16 } from "../Utils/ArrayBufferUtils"
 import * as StringTables from "./StringTables"
 import Vector4 from "../Base/Vector4"
-import { ParseTRMP } from "../Utils/ParseTRMP"
-import Tree from "../Objects/Base/Tree"
 import { SignonState_t } from "../Enums/SignonState_t"
 
 let AllEntities: Entity[] = []
@@ -49,8 +47,7 @@ class bitset {
 export type EntityPropertyType = Map<string, EntityPropertyType> | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
 let ent_props = new Map<number, EntityPropertyType>(),
 	VisibilityMask = new bitset(0x3FFF),
-	TreeActiveMask = new bitset(0x3FFF),
-	cur_local_id = 0x4000
+	TreeActiveMask = new bitset(0x3FFF)
 class CEntityManager {
 	public get AllEntities(): Entity[] {
 		return AllEntities
@@ -165,24 +162,29 @@ function ApplyChanges(ent: Entity, changes: NetworkFieldsChangedType) {
 	})
 }
 
-function CreateEntity(id: number, class_name: string, entity_name: Nullable<string>): void {
-	let entity = ClassFromNative(id, class_name, entity_name)
-	entity.ClassName = class_name
-	AllEntitiesAsMap.set(id, entity)
-	AllEntities.push(entity)
+export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
+	AllEntitiesAsMap.set(id, ent)
+	AllEntities.push(ent)
 
 	GetSDKClasses().forEach(([class_]) => {
-		if (!(entity instanceof class_))
+		if (!(ent instanceof class_))
 			return
 
 		if (!ClassToEntities.has(class_))
 			ClassToEntities.set(class_, [])
-		ClassToEntities.get(class_)!.push(entity)
+		ClassToEntities.get(class_)!.push(ent)
 	})
-	EventsSDK.emit("EntityCreated", false, entity)
+
+	EventsSDK.emit("EntityCreated", false, ent)
 }
 
-function DeleteEntity(id: number) {
+function CreateEntity(id: number, class_name: string, entity_name: Nullable<string>): void {
+	let entity = ClassFromNative(id, class_name, entity_name)
+	entity.ClassName = class_name
+	CreateEntityInternal(entity, id)
+}
+
+export function DeleteEntity(id: number): void {
 	const entity = AllEntitiesAsMap.get(id)
 	if (entity === undefined)
 		return
@@ -282,13 +284,11 @@ function ParseProperty(stream: BinaryStream): string | bigint | number | boolean
 }
 
 let entities_symbols: string[] = []
-function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], EntityPropertyType[], string] {
+function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], EntityPropertyType[], string, EntityPropertyType] {
 	let ent_class = entities_symbols[stream.ReadUint16()]
 	VisibilityMask.set(ent_id, true)
-	if (!ent_props.has(ent_id))
-		ent_props.set(ent_id, new Map())
-	let ent_node = ent_props.get(ent_id)!,
-		changed_paths: number[] = [],
+	const ent_node = ent_props.get(ent_id) ?? new Map()
+	let changed_paths: number[] = [],
 		chaged_paths_results: EntityPropertyType[] = []
 	for (let path_size = 0; (path_size = stream.ReadUint8()) !== 0;) {
 		let prop_node = ent_node
@@ -332,7 +332,7 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], Ent
 			}
 		}
 	}
-	return [changed_paths, chaged_paths_results, ent_class]
+	return [changed_paths, chaged_paths_results, ent_class, ent_node]
 }
 
 function FixType(symbols: string[], field: any): string {
@@ -437,7 +437,7 @@ declare class ${name} {
 			let stream = new BinaryStream(new DataView(buf)),
 				changes: [number, NetworkFieldsChangedType][] = []
 			let queued_deletion: number[] = [],
-				queued_creation: [number, string][] = [],
+				queued_creation: [number, string, EntityPropertyType][] = [],
 				queued_leave: number[] = []
 			while (!stream.Empty()) {
 				let ent_id = stream.ReadUint16()
@@ -454,8 +454,8 @@ declare class ${name} {
 						break
 					}
 					case EntityPVS.CREATE: {
-						let [changed_paths, chaged_paths_results, ent_class] = ParseEntityUpdate(stream, ent_id)
-						queued_creation.push([ent_id, ent_class])
+						let [changed_paths, chaged_paths_results, ent_class, ent_node] = ParseEntityUpdate(stream, ent_id)
+						queued_creation.push([ent_id, ent_class, ent_node])
 						if (changed_paths.length !== 0)
 							changes.push([ent_id, [changed_paths, chaged_paths_results]])
 						break
@@ -469,7 +469,8 @@ declare class ${name} {
 				}
 			}
 			queued_deletion.forEach(ent_id => DeleteEntity(ent_id))
-			queued_creation.forEach(([ent_id, class_name]) => {
+			queued_creation.forEach(([ent_id, class_name, ent_node]) => {
+				ent_props.set(ent_id, ent_node)
 				let stringtables_id = EntityManager.GetEntityPropertyByPath(ent_id, ["m_pEntity", "m_nameStringableIndex"]) as number
 				CreateEntity(ent_id, class_name, StringTables.GetString("EntityNames", stringtables_id))
 			})
@@ -495,70 +496,5 @@ declare class ${name} {
 Events.on("SignonStateChanged", new_state => {
 	if (new_state !== SignonState_t.SIGNONSTATE_NONE)
 		return
-	AllEntitiesAsMap.forEach((ent, ent_id) => DeleteEntity(ent_id))
-	cur_local_id = 0x4000
-})
-
-function LoadTreeMap(buf: ArrayBuffer) {
-	while (cur_local_id > 0x4000)
-		DeleteEntity(--cur_local_id)
-	ParseTRMP(buf).forEach((pos, i) => {
-		let id = cur_local_id++
-		let entity = ClassFromNative(id, "C_DOTA_MapTree", "ent_dota_tree") as Tree
-		entity.Name_ = "ent_dota_tree"
-		entity.ClassName = "C_DOTA_MapTree"
-		entity.FakeTreePos.CopyFrom(pos)
-		entity.BinaryID = i
-		AllEntitiesAsMap.set(id, entity)
-		AllEntities.push(entity)
-
-		GetSDKClasses().forEach(([class_]) => {
-			if (!(entity instanceof class_))
-				return
-
-			if (!ClassToEntities.has(class_))
-				ClassToEntities.set(class_, [])
-			ClassToEntities.get(class_)!.push(entity)
-		})
-
-		EventsSDK.emit("EntityCreated", false, entity)
-	})
-}
-
-let last_loaded_map_name = "<empty>"
-try {
-	let map_name = GetLevelNameShort()
-	if (map_name === "start")
-		map_name = "dota"
-	let buf = fread(`maps/${map_name}.trm`)
-	if (buf !== undefined)
-		LoadTreeMap(buf)
-} catch (e) {
-	console.log("Error in TreeMap static init: " + e)
-}
-
-Events.on("PostAddSearchPath", path => {
-	let map_name = ParseMapName(path)
-	if (map_name === undefined)
-		return
-
-	let buf = fread(`maps/${map_name}.trm`)
-	if (buf === undefined)
-		return
-
-	try {
-		LoadTreeMap(buf)
-	} catch (e) {
-		console.log("Error in TreeMap dynamic init: " + e)
-	}
-})
-
-Events.on("PostRemoveSearchPath", path => {
-	let map_name = ParseMapName(path)
-	if (map_name === undefined || last_loaded_map_name !== map_name)
-		return
-
-	last_loaded_map_name = "<empty>"
-	while (cur_local_id > 0x4000)
-		DeleteEntity(--cur_local_id)
+	AllEntitiesAsMap.forEach((_ent, ent_id) => DeleteEntity(ent_id))
 })
