@@ -41,7 +41,7 @@ export class EventEmitter {
 		let listeners = this.events.get(name),
 			listeners_after = this.events_after.get(name)
 
-		let ret = listeners === undefined || !listeners.some(listener => {
+		let ret = !listeners?.some(listener => {
 			try {
 				return listener(...args) === false && cancellable
 			} catch (e) {
