@@ -26,8 +26,8 @@ export function Utf8ArrayToStr(array: Uint8Array): string {
 }
 export function Utf16ArrayToStr(array: Uint16Array): string {
 	let s = ""
-	for (let i = 0; i < array.length; i++)
-		s += String.fromCharCode(array[i])
+	for (const c of array)
+		s += String.fromCharCode(c)
 	return s
 }
 

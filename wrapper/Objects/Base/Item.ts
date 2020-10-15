@@ -78,6 +78,9 @@ export default class Item extends Ability {
 	public get ShouldDisplayCharges(): boolean {
 		return this.IsStackable || this.RequiresCharges || this.IsDisplayingCharges
 	}
+	public get SpellAmplification(): number {
+		return this.GetSpecialValue("spell_amp") / 100
+	}
 	public DisassembleItem(queue?: boolean) {
 		return this.Owner?.DisassembleItem(this, queue)
 	}
@@ -115,9 +118,6 @@ export default class Item extends Ability {
 			&& !this.Owner?.IsMuted
 			&& this.IsManaEnough(bonusMana)
 			&& this.IsCooldownReady
-	}
-	public get SpellAmplification(): number {
-		return this.GetSpecialValue("spell_amp") / 100
 	}
 }
 

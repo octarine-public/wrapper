@@ -327,95 +327,6 @@ class CRendererSDK {
 			this.RestoreState()
 		this.ClearColorFilter()
 	}
-	// TODO: use paths for this
-	/*public Radial(
-		baseAngle: number,
-		percent: number,
-		radialColor: Color,
-		backgroundColor: Color,
-		vecPos: Vector2,
-		vecSize: Vector2,
-		round = -1,
-		color = new Color(255, 255, 255)
-	): void {
-		baseAngle = DegreesToRadian(baseAngle)
-		const rgba = new Uint8Array(vecSize.x * vecSize.y * 4),
-			maxAngle = 2 * Math.PI * percent / 100 - baseAngle
-		for (let x = 0; x < vecSize.x; x++)
-			for (let y = 0; y < vecSize.y; y++)
-				this.DrawConditionalColorPixel(rgba, vecSize, x, y, radialColor, baseAngle, maxAngle, backgroundColor)
-		this.TempImage(rgba, vecPos, vecSize, vecSize, round, color)
-	}*/
-	// TODO: use ARC and some other setup for this
-	/**
-	 * @param round distance in pixels to distant from end of vecSize
-	 */
-	/*public Arc(
-		baseAngle: number,
-		percent: number,
-		radialColor: Color,
-		backgroundColor: Color,
-		vecPos: Vector2,
-		vecSize: Vector2,
-		round = 0,
-		width = 5,
-		color = new Color(255, 255, 255)
-	): void {
-		baseAngle = DegreesToRadian(baseAngle)
-		const rgba = new Uint8Array(vecSize.x * vecSize.y * 4),
-			maxAngle = 2 * Math.PI * percent / 100 - baseAngle
-		const outer = vecSize.x / 2 - round,
-			inner = (outer - width),
-			center = ((outer + inner) / 2)
-		const outer_sqr = Math.round(outer * outer) | 0,
-			inner_sqr = Math.round(inner * inner) | 0,
-			x_end = Math.ceil(vecSize.x / 2) | 0,
-			y_end = Math.ceil(vecSize.y / 2) | 0
-		for (let x = 0; x < x_end; x++) {
-			const x_sqr = x * x
-			for (let y = 0; y < y_end; y++) {
-				const dist_sqr = x_sqr + (y * y)
-				if (dist_sqr > outer_sqr || dist_sqr <= inner_sqr)
-					continue
-				this.DrawConditionalColorPixel4(
-					rgba,
-					vecSize,
-					x,
-					y,
-					radialColor,
-					baseAngle,
-					maxAngle,
-					backgroundColor,
-					Math.min(1, 1.2 - Math.abs((Math.sqrt(dist_sqr) - center) / width))
-				)
-			}
-		}
-		this.TempImage(rgba, vecPos, vecSize, vecSize, -1, color)
-	}*/
-	/**
-	 * @param font_size Size | default: 14
-	 * @param font_name default: "Calibri"
-	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
-	 * @param flags default: FontFlags_t.OUTLINE
-	 */
-	private Text_(text: string, vecPos: Vector2, color: Color, font_name: string, font_size: number, weight: number, width: number, italic: boolean, flags: FontFlags_t, scaleX: number, skewX: number): void {
-		this.SetColor(color)
-
-		let font_id = this.GetFont(font_name, weight, width, italic)
-		let text_buf = StringToUTF8(text)
-		let view = this.AllocateCommandSpace(7 * 4 + 2 + text_buf.byteLength)
-		let off = 0
-		view.setUint8(off, CommandID.TEXT)
-		view.setFloat32(off += 1, vecPos.x, true)
-		view.setFloat32(off += 4, vecPos.y, true)
-		view.setUint32(off += 4, font_id, true)
-		view.setFloat32(off += 4, font_size, true)
-		view.setFloat32(off += 4, scaleX, true)
-		view.setFloat32(off += 4, skewX, true)
-		view.setUint16(off += 4, flags, true)
-		view.setUint32(off += 2, text_buf.byteLength, true)
-		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(text_buf)
-	}
 	public Text(text: string, vecPos = new Vector2(), color = new Color(255, 255, 255), font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
 		const pos = vecPos.Clone()
 		text.split("\n").reverse().forEach(line => {
@@ -511,6 +422,95 @@ class CRendererSDK {
 			h = 960
 		vec.x = Math.floor(h / 0x300 * vec.x / magic)
 		return vec
+	}
+	// TODO: use paths for this
+	/*public Radial(
+		baseAngle: number,
+		percent: number,
+		radialColor: Color,
+		backgroundColor: Color,
+		vecPos: Vector2,
+		vecSize: Vector2,
+		round = -1,
+		color = new Color(255, 255, 255)
+	): void {
+		baseAngle = DegreesToRadian(baseAngle)
+		const rgba = new Uint8Array(vecSize.x * vecSize.y * 4),
+			maxAngle = 2 * Math.PI * percent / 100 - baseAngle
+		for (let x = 0; x < vecSize.x; x++)
+			for (let y = 0; y < vecSize.y; y++)
+				this.DrawConditionalColorPixel(rgba, vecSize, x, y, radialColor, baseAngle, maxAngle, backgroundColor)
+		this.TempImage(rgba, vecPos, vecSize, vecSize, round, color)
+	}*/
+	// TODO: use ARC and some other setup for this
+	/**
+	 * @param round distance in pixels to distant from end of vecSize
+	 */
+	/*public Arc(
+		baseAngle: number,
+		percent: number,
+		radialColor: Color,
+		backgroundColor: Color,
+		vecPos: Vector2,
+		vecSize: Vector2,
+		round = 0,
+		width = 5,
+		color = new Color(255, 255, 255)
+	): void {
+		baseAngle = DegreesToRadian(baseAngle)
+		const rgba = new Uint8Array(vecSize.x * vecSize.y * 4),
+			maxAngle = 2 * Math.PI * percent / 100 - baseAngle
+		const outer = vecSize.x / 2 - round,
+			inner = (outer - width),
+			center = ((outer + inner) / 2)
+		const outer_sqr = Math.round(outer * outer) | 0,
+			inner_sqr = Math.round(inner * inner) | 0,
+			x_end = Math.ceil(vecSize.x / 2) | 0,
+			y_end = Math.ceil(vecSize.y / 2) | 0
+		for (let x = 0; x < x_end; x++) {
+			const x_sqr = x * x
+			for (let y = 0; y < y_end; y++) {
+				const dist_sqr = x_sqr + (y * y)
+				if (dist_sqr > outer_sqr || dist_sqr <= inner_sqr)
+					continue
+				this.DrawConditionalColorPixel4(
+					rgba,
+					vecSize,
+					x,
+					y,
+					radialColor,
+					baseAngle,
+					maxAngle,
+					backgroundColor,
+					Math.min(1, 1.2 - Math.abs((Math.sqrt(dist_sqr) - center) / width))
+				)
+			}
+		}
+		this.TempImage(rgba, vecPos, vecSize, vecSize, -1, color)
+	}*/
+	/**
+	 * @param font_size Size | default: 14
+	 * @param font_name default: "Calibri"
+	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
+	 * @param flags default: FontFlags_t.OUTLINE
+	 */
+	private Text_(text: string, vecPos: Vector2, color: Color, font_name: string, font_size: number, weight: number, width: number, italic: boolean, flags: FontFlags_t, scaleX: number, skewX: number): void {
+		this.SetColor(color)
+
+		let font_id = this.GetFont(font_name, weight, width, italic)
+		let text_buf = StringToUTF8(text)
+		let view = this.AllocateCommandSpace(7 * 4 + 2 + text_buf.byteLength)
+		let off = 0
+		view.setUint8(off, CommandID.TEXT)
+		view.setFloat32(off += 1, vecPos.x, true)
+		view.setFloat32(off += 4, vecPos.y, true)
+		view.setUint32(off += 4, font_id, true)
+		view.setFloat32(off += 4, font_size, true)
+		view.setFloat32(off += 4, scaleX, true)
+		view.setFloat32(off += 4, skewX, true)
+		view.setUint16(off += 4, flags, true)
+		view.setUint32(off += 2, text_buf.byteLength, true)
+		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(text_buf)
 	}
 	private Oval(vecPos: Vector2, vecSize: Vector2): void {
 		let view = this.AllocateCommandSpace(4 * 4)

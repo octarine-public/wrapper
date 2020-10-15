@@ -10,7 +10,7 @@
 		"check-types": "npx tsc",
 		"check-types-watch": "npx tsc --watch",
 		"check-circular": "npx madge --circular scripts",
-		"lint": "npx tslint --fix 'src_ts/**/*.ts'"
+		"lint": "npx tslint --fix 'wrapper/**/*.ts'"
 	},
 	"contributors": [
 		"moofMonkey",

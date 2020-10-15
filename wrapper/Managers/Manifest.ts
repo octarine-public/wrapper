@@ -61,7 +61,7 @@ const Manifest = new (class CManifest {
 			return "<null>"
 		return this.SoundHashToString.get(hash >>> 0)
 	}
-})
+})()
 export default Manifest
 
 function BufferToPathString(buf: ArrayBuffer): string {

@@ -156,7 +156,6 @@ export default class Ability extends Entity {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 	}
 
-
 	/**
 	 * In real time cooldown (in fog)
 	 */
@@ -201,6 +200,11 @@ export default class Ability extends Entity {
 				break
 		}
 		return castrange + (owner?.CastRangeBonus ?? 0)
+	}
+	public get SpellAmplification(): number {
+		if (this.Name.startsWith("special_bonus_spell_amplify"))
+			return this.GetSpecialValue("value") / 100
+		return 0
 	}
 
 	/**
@@ -319,11 +323,6 @@ export default class Ability extends Entity {
 			&& this.IsCooldownReady
 			&& !this.Owner?.IsSilenced
 			&& this.IsManaEnough(bonusMana)
-	}
-	public get SpellAmplification(): number {
-		if (this.Name.startsWith("special_bonus_spell_amplify"))
-			return this.GetSpecialValue("value") / 100
-		return 0
 	}
 }
 

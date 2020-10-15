@@ -131,7 +131,7 @@ export default class BinaryStream {
 	// https://github.com/SteamDatabase/ValveResourceFormat/blob/cceba491d7bb60890a53236a90970b24d0a4aba9/ValveResourceFormat/Utils/StreamHelpers.cs#L43
 	public ReadOffsetString(): string {
 		let offset = this.ReadUint32()
-		if (offset == 0)
+		if (offset === 0)
 			return ""
 		let saved_pos = this.pos
 		this.pos += offset - 4 // offset from offset

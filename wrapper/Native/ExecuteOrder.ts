@@ -29,6 +29,12 @@ export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 ]
 
 export default class ExecuteOrder {
+	public static order_queue: ExecuteOrder[] = []
+	public static wait_next_usercmd = false
+	public static wait_near_cursor = false
+	public static debug_orders = false
+	public static debug_draw = false
+	public static disable_humanizer = false
 	public static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
@@ -56,14 +62,6 @@ export default class ExecuteOrder {
 	public static Scan(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects })
 	}
-
-	private static LatestUnitOrder_view = new DataView(LatestUnitOrder.buffer)
-	public static order_queue: ExecuteOrder[] = []
-	public static wait_next_usercmd = false
-	public static wait_near_cursor = false
-	public static debug_orders = false
-	public static debug_draw = false
-	public static disable_humanizer = false
 
 	public static fromObject(order: {
 		orderType: dotaunitorder_t,
@@ -118,6 +116,8 @@ export default class ExecuteOrder {
 			ExecuteOrder.LatestUnitOrder_view.getUint8(28) !== 0,
 		)
 	}
+
+	private static LatestUnitOrder_view = new DataView(LatestUnitOrder.buffer)
 
 	private m_OrderType: dotaunitorder_t
 	private m_Target: Nullable<Entity | number>

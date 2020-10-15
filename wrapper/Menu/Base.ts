@@ -38,7 +38,6 @@ export default class Base {
 	constructor(public parent: IMenu, public name: string = "") { }
 	public get ConfigValue(): any { return undefined }
 	public set ConfigValue(value: any) { }
-	public OnConfigLoaded() { }
 	protected get Rect() {
 		return new Rectangle(this.Position, this.Position.Add(this.TotalSize))
 	}
@@ -50,6 +49,7 @@ export default class Base {
 	protected get MousePosition(): Vector2 {
 		return InputManager.CursorOnScreen
 	}
+	public OnConfigLoaded() { }
 
 	public OnValue(func: (caller: this) => void): this {
 		this.OnValueChangedCBs.push(func as any)

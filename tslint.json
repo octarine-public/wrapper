@@ -17,7 +17,9 @@
 			"check-separator",
 			"check-branch",
 			"check-rest-spread",
-			"check-type"
+			"check-type",
+			"check-operator",
+			"check-decl"
 		],
 		"indent": [
 			true,

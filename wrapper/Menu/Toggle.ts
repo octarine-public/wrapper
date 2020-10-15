@@ -28,13 +28,13 @@ export default class Toggle extends Base {
 
 	public get ConfigValue() { return this.value }
 	public set ConfigValue(value) { this.value = value ?? this.value }
-	public OnConfigLoaded() {
-		this.OnValueChangedCBs.forEach(f => f(this))
-	}
 
 	private get ToggleRect() {
 		let base_pos = this.Position.Add(this.TotalSize).SubtractForThis(this.toggle_offset).SubtractForThis(this.border_size.MultiplyScalar(2))
 		return new Rectangle(base_pos, base_pos.Add(this.toggle_size))
+	}
+	public OnConfigLoaded() {
+		this.OnValueChangedCBs.forEach(f => f(this))
 	}
 
 	public OnActivate(func: (caller: this) => void) {

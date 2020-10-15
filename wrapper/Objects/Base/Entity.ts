@@ -34,7 +34,6 @@ EventsSDK.on("EntityDestroyed", ent => {
 	SetRawGameTime(0)
 })
 
-
 /*
 m_pEntity.m_flags
 
@@ -53,8 +52,6 @@ export default class Entity {
 	public HP = 0
 	@NetworkedBasicField("m_iMaxHealth")
 	public MaxHP = 0
-	@NetworkedBasicField("m_hOwnerEntity")
-	private Owner_ = 0
 	public ClassName = ""
 	public BecameDormantTime = 0
 	public ModelName = ""
@@ -64,6 +61,8 @@ export default class Entity {
 	public TotalAgility = 0
 	public TotalIntellect = 0
 	public TotalStrength = 0
+	@NetworkedBasicField("m_hOwnerEntity")
+	private Owner_ = 0
 	private rawCreateTime = 0
 
 	private readonly PersonalProps: Nullable<Map<string, EntityPropertyType>>
@@ -142,6 +141,9 @@ export default class Entity {
 	}
 	public get RingRadius(): number {
 		return 30 // TODO: actually it uses model unless it doesn't have such for C_BaseEntity#GetRingRadius
+	}
+	public get IsGameRules(): boolean {
+		return false
 	}
 
 	public GetPropertyByName(name: string): Nullable<EntityPropertyType> {
@@ -259,9 +261,6 @@ export default class Entity {
 
 	public Select(bAddToGroup: boolean = false): boolean {
 		return SelectUnit(this.Index, bAddToGroup)
-	}
-	public get IsGameRules(): boolean {
-		return false
 	}
 	public CannotUseItem(item: Item): boolean {
 		item // that's weird.
