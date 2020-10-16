@@ -29,7 +29,7 @@ export default class Ability extends Entity {
 	@NetworkedBasicField("m_iLevel")
 	public Level = 0
 	@NetworkedBasicField("m_fCooldown")
-	public Cooldown = 0
+	public Cooldown_ = 0
 	@NetworkedBasicField("m_flCooldownLength")
 	public CooldownLength_ = 0
 	public IsInAbilityPhase_ = false
@@ -112,7 +112,7 @@ export default class Ability extends Entity {
 		return this.CooldownLength_
 	}
 	public get IsCooldownReady(): boolean {
-		return this.Cooldown === 0
+		return this.Cooldown_ === 0
 	}
 	public get IsReady(): boolean {
 		const unit = this.Owner
@@ -159,10 +159,10 @@ export default class Ability extends Entity {
 	/**
 	 * In real time cooldown (in fog)
 	 */
-	get CooldownTimeRemaining(): number {
+	public get Cooldown(): number {
 		if (this.Owner === undefined || this.Owner.IsVisible)
-			return this.Cooldown
-		return this.Cooldown - ((GameRules?.RawGameTime ?? 0) - this.BecameDormantTime)
+			return this.Cooldown_
+		return this.Cooldown_ - ((GameRules?.RawGameTime ?? 0) - this.BecameDormantTime)
 	}
 
 	public get MaxDuration(): number {
@@ -327,7 +327,7 @@ export default class Ability extends Entity {
 }
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => abil.Cooldown = abil.CurrentCharges !== 0 ? 0 : Math.max(new_value as number, 0))
+RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => abil.Cooldown_ = abil.CurrentCharges !== 0 ? 0 : Math.max(new_value as number, 0))
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, new_value) => {
 	abil.IsInAbilityPhase_ = new_value as boolean
 	abil.IsInAbilityPhase_ChangeTime = GameRules?.RawGameTime ?? 0
