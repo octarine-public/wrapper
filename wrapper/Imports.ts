@@ -1278,16 +1278,7 @@ import "./global"
 
 /*
 	TODO:
-	- wrapper:
-		C_DOTA_DataNonSpectator -> DataNonSpectator
-		C_DOTA_UnitInventory 	-> Inventory
-
-	TODO Native:
-	- reverse:
-		Global:
-			UnSelectUnit
-
-		C_DOTA_BaseNPC | Unit
+		Unit
 			BaseArmor
 			BaseHealthRegeneration
 			BaseManaRegeneration
