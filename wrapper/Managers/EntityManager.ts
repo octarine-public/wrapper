@@ -283,6 +283,25 @@ function ParseProperty(stream: BinaryStream): string | bigint | number | boolean
 	}
 }
 
+function DumpStreamPosition(
+	ent_class: string,
+	stream: BinaryStream,
+	path_size_walked: number
+): string {
+	stream.RelativeSeek((path_size_walked + 1) * -2) // uint16 = 2 bytes
+	let ret = ent_class
+	for (let i = 0; i < path_size_walked + 1; i++) {
+		let id = stream.ReadUint16()
+		const must_be_array = id & 1
+		id >>= 1
+		if (!must_be_array)
+			ret += `.${entities_symbols[id]}`
+		else
+			ret += `[${id}]`
+	}
+	return ret
+}
+
 let entities_symbols: string[] = []
 function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], EntityPropertyType[], string, EntityPropertyType] {
 	let ent_class = entities_symbols[stream.ReadUint16()]
@@ -294,12 +313,12 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], Ent
 		let prop_node = ent_node
 		for (let i = 0; i < path_size; i++) {
 			let id = stream.ReadUint16()
-			let must_be_array = id & 1
+			const must_be_array = id & 1
 			id >>= 1
 			if (must_be_array && !Array.isArray(prop_node))
-				throw "Expected array"
+				throw `Expected array at ${DumpStreamPosition(ent_class, stream, i)}`
 			if (!must_be_array && !(prop_node instanceof Map))
-				throw "Expected Map"
+				throw `Expected map at ${DumpStreamPosition(ent_class, stream, i)}`
 
 			if (must_be_array) {
 				let ar = prop_node as EntityPropertyType[]
