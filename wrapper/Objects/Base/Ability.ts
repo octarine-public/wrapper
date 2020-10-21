@@ -28,8 +28,8 @@ export default class Ability extends Entity {
 	public OverrideCastPoint = 0
 	@NetworkedBasicField("m_iLevel")
 	public Level = 0
-	@NetworkedBasicField("m_fCooldown")
 	public Cooldown_ = 0
+	public Cooldown_ChangeTime = 0
 	@NetworkedBasicField("m_flCooldownLength")
 	public CooldownLength_ = 0
 	public IsInAbilityPhase_ = false
@@ -160,9 +160,7 @@ export default class Ability extends Entity {
 	 * In real time cooldown (in fog)
 	 */
 	public get Cooldown(): number {
-		if (this.Owner === undefined || this.Owner.IsVisible)
-			return this.Cooldown_
-		return this.Cooldown_ - ((GameRules?.RawGameTime ?? 0) - this.BecameDormantTime)
+		return Math.max(this.Cooldown_ - ((GameRules?.RawGameTime ?? 0) - this.Cooldown_ChangeTime), 0)
 	}
 
 	public get MaxDuration(): number {
@@ -331,4 +329,8 @@ RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, new_value) => {
 	abil.IsInAbilityPhase_ = new_value as boolean
 	abil.IsInAbilityPhase_ChangeTime = GameRules?.RawGameTime ?? 0
+})
+RegisterFieldHandler(Ability, "m_fCooldown", (abil, new_value) => {
+	abil.Cooldown_ = new_value as number
+	abil.Cooldown_ChangeTime = GameRules?.RawGameTime ?? 0
 })
