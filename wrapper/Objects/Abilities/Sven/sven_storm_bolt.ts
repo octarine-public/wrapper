@@ -9,4 +9,5 @@ export default class sven_storm_bolt extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("bolt_speed")
 	}
+	public ProjectileName = "particles/units/heroes/hero_sven/sven_spell_storm_bolt.vpcf"
 }

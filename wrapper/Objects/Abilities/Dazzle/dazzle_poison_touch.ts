@@ -14,4 +14,8 @@ export default class dazzle_poison_touch extends Ability {
 	public get Range(): number {
 		return this.GetSpecialValue("end_distance")
 	}
+
+	public get ProjectileName() {
+		return []
+	}
 }

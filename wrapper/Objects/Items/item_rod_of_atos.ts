@@ -6,4 +6,7 @@ export default class item_rod_of_atos extends Item {
 	public get Speed(): number {
 		return 1500
 	}
+	public get ProjectileName() {
+		return []
+	}
 }

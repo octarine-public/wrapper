@@ -9,4 +9,7 @@ export default class phantom_lancer_spirit_lance extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("lance_speed")
 	}
+	public get ProjectileName() {
+		return []
+	}
 }

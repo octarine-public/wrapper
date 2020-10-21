@@ -16,4 +16,11 @@ export default class queenofpain_shadow_strike extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("projectile_speed")
 	}
+	public get ProjectileName() {
+		return [
+			"particles/units/heroes/hero_queenofpain/queen_shadow_strike.vpcf",
+			"particles/econ/items/queen_of_pain/qop_ti8_immortal/queen_ti8_shadow_strike.vpcf",
+			"particles/econ/items/queen_of_pain/qop_ti8_immortal/queen_ti8_golden_shadow_strike.vpcf",
+		]
+	}
 }

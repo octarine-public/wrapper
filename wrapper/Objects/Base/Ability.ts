@@ -156,6 +156,10 @@ export default class Ability extends Entity {
 		return this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_PASSIVE)
 	}
 
+	public get ProjectileName(): string[] {
+		return []
+	}
+
 	/**
 	 * In real time cooldown (in fog)
 	 */

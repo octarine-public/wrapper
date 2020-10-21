@@ -6,4 +6,7 @@ export default class skeleton_king_hellfire_blast extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("blast_speed")
 	}
+	public get ProjectileName() {
+		return []
+	}
 }

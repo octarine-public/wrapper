@@ -7,4 +7,7 @@ export default class templar_assassin_meld extends Ability {
 	public get AbilityLogicType(): AbilityLogicType {
 		return AbilityLogicType.Invisibility
 	}
+	public get ProjectileName() {
+		return []
+	}
 }

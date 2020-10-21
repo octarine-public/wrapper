@@ -8,4 +8,5 @@ export default class bristleback_viscous_nasal_goo extends Ability {
 			? this.GetSpecialValue("radius_scepter")
 			: 0
 	}
+	public ProjectileName = "particles/units/heroes/hero_bristleback/bristleback_viscous_nasal_goo.vpcf"
 }

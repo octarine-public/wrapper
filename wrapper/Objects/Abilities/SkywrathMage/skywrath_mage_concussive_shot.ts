@@ -12,8 +12,10 @@ export default class skywrath_mage_concussive_shot extends Ability {
 		}
 		return this.GetSpecialValue("launch_radius")
 	}
-
 	public get Speed(): number {
 		return this.GetSpecialValue("speed")
+	}
+	public get ProjectileName() {
+		return []
 	}
 }
