@@ -7,6 +7,10 @@ export default class vengefulspirit_magic_missile extends Ability {
 		return this.GetSpecialValue("magic_missile_speed")
 	}
 	public get ProjectileName() {
-		return []
+		return [
+			"particles/units/heroes/hero_vengeful/vengeful_magic_missle.vpcf",
+			"particles/econ/items/vengeful/vs_ti8_immortal_shoulder/vs_ti8_immortal_magic_missle.vpcf",
+			"particles/econ/items/vengeful/vs_ti8_immortal_shoulder/vs_ti8_immortal_magic_missle_crimson.vpcf"
+		]
 	}
 }

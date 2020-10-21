@@ -7,6 +7,6 @@ export default class morphling_adaptive_strike_str extends Ability {
 		return this.GetSpecialValue("projectile_speed")
 	}
 	public get ProjectileName() {
-		return []
+		return ["particles/units/heroes/hero_morphling/morphling_adaptive_strike_str_proj.vpcf"]
 	}
 }

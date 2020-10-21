@@ -8,6 +8,9 @@ export default class templar_assassin_meld extends Ability {
 		return AbilityLogicType.Invisibility
 	}
 	public get ProjectileName() {
-		return []
+		return [
+			"particles/units/heroes/hero_templar_assassin/templar_assassin_meld_attack.vpcf",
+			"particles/econ/items/templar_assassin/templar_assassin_focal/templar_assassin_meld_focal_attack.vpcf"
+		]
 	}
 }

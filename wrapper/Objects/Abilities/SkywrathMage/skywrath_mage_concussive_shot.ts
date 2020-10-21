@@ -16,6 +16,6 @@ export default class skywrath_mage_concussive_shot extends Ability {
 		return this.GetSpecialValue("speed")
 	}
 	public get ProjectileName() {
-		return []
+		return ["particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf"]
 	}
 }

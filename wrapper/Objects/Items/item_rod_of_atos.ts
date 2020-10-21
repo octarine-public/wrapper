@@ -7,6 +7,6 @@ export default class item_rod_of_atos extends Item {
 		return 1500
 	}
 	public get ProjectileName() {
-		return []
+		return ["particles/items2_fx/rod_of_atos_attack.vpcf"]
 	}
 }

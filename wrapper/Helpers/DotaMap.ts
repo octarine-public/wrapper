@@ -4,9 +4,9 @@ import { WorldPolygon } from "../Geometry/WorldPolygon"
 import { Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import readFile from "../Utils/readFile"
 import Creep from "../Objects/Base/Creep"
-import Unit from "../Objects/Base/Unit"
 import { MapArea } from "./MapArea"
 import { Team } from "../Enums/Team"
+import Unit from "../Objects/Base/Unit"
 
 export class DotaMap {
 	private static Load(name: string): Vector3[] {
@@ -38,10 +38,9 @@ export class DotaMap {
 	public readonly DireTopRoute = DotaMap.Load("DireTopRoute")
 	public readonly DireMiddleRoute = DotaMap.Load("DireMiddleRoute")
 	public readonly DireBottomRoute = DotaMap.Load("DireBottomRoute")
-	constructor(public unit: Unit) { }
 
-	public get GetLane(): MapArea {
-		let pos = this.unit.Position
+	public GetLane(unit: Unit): MapArea {
+		let pos = unit.Position
 		if (this.Top.IsInside(pos))
 			return MapArea.Top
 		if (this.Middle.IsInside(pos))
@@ -66,7 +65,7 @@ export class DotaMap {
 			return MapArea.RadiantTopJungle
 		return MapArea.Unknown
 	}
-	public GetCreepRoute(unit: Creep, lane: MapArea = this.GetLane): Vector3[] {
+	public GetCreepRoute(unit: Creep, lane: MapArea): Vector3[] {
 		switch (unit.Team) {
 			case Team.Dire:
 				switch (lane) {

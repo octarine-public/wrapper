@@ -7,6 +7,6 @@ export default class alchemist_unstable_concoction_throw extends Ability {
 		return this.GetSpecialValue("midair_explosion_radius")
 	}
 	public get ProjectileName() {
-		return []
+		return ["particles/units/heroes/hero_alchemist/alchemist_unstable_concoction_projectile.vpcf"]
 	}
 }

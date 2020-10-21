@@ -10,6 +10,9 @@ export default class phantom_lancer_spirit_lance extends Ability {
 		return this.GetSpecialValue("lance_speed")
 	}
 	public get ProjectileName() {
-		return []
+		return [
+			"particles/units/heroes/hero_phantom_lancer/phantomlancer_spiritlance_projectile.vpcf",
+			"particles/econ/items/phantom_lancer/phantom_lancer_immortal_ti6/phantom_lancer_immortal_ti6_spiritlance.vpcf"
+		]
 	}
 }

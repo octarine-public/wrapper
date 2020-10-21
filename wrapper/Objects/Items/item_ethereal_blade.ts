@@ -29,4 +29,7 @@ export default class item_ethereal_blade extends Item {
 	public get DamageType(): DAMAGE_TYPES {
 		return DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL
 	}
+	public get ProjectileName() {
+		return ["particles/items_fx/ethereal_blade.vpcf"]
+	}
 }

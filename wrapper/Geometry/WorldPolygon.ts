@@ -36,7 +36,7 @@ export class WorldPolygon {
 	private AddPoint(point: Vector3) {
 		this.Points.push(point)
 	}
-	private PointInPolygon(point: Vector3): number {
+	public PointInPolygon(point: Vector3): number {
 		if (this.Points.length < 3)
 			return 0
 		let result = 0

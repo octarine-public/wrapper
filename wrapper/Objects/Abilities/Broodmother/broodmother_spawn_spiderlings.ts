@@ -7,6 +7,6 @@ export default class broodmother_spawn_spiderlings extends Ability {
 		return this.GetSpecialValue("projectile_speed")
 	}
 	public get ProjectileName() {
-		return []
+		return ["particles/units/heroes/hero_broodmother/broodmother_web_cast.vpcf"]
 	}
 }
