@@ -112,7 +112,7 @@ export default class Ability extends Entity {
 		return this.CooldownLength_
 	}
 	public get IsCooldownReady(): boolean {
-		return this.Cooldown_ === 0
+		return this.Cooldown === 0
 	}
 	public get IsReady(): boolean {
 		const unit = this.Owner
