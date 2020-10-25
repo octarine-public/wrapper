@@ -104,9 +104,10 @@ export default class BinaryStream {
 				}
 				case 14: {
 					// 1110 xxxx  10xx xxxx  10xx xxxx
-					const char2 = size > 0 ? this.ReadUint8() : 0,
-						char3 = size > 0 ? this.ReadUint8() : 0
-					size = Math.max(size - 2, 0)
+					const char2 = size > 0 ? this.ReadUint8() : 0
+					size = Math.max(size - 1, 0)
+					const char3 = size > 0 ? this.ReadUint8() : 0
+					size = Math.max(size - 1, 0)
 					out += String.fromCharCode(((c & 0x0F) << 12) |
 						((char2 & 0x3F) << 6) |
 						((char3 & 0x3F) << 0))
