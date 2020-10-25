@@ -96,7 +96,7 @@ class ParticlesSDK {
 		key: any,
 		path: string,
 		attachment: ParticleAttachment_t,
-		entity: Nullable<Entity>,
+		entity: Nullable<Entity> | Vector3,
 		...points: ControlPointParam[]
 	): Particle {
 		let particle = this.AllParticles.get(key)
@@ -110,7 +110,7 @@ class ParticlesSDK {
 			if (particle !== undefined)
 				particle.Destroy(true)
 
-			particle = new Particle(this, key, path, attachment, entity, ...points)
+			particle = new Particle(this, key, path, attachment, entity instanceof Entity ? entity : entity, ...points)
 
 			this.AllParticles.set(key, particle)
 		} else if (points !== undefined)
@@ -194,13 +194,13 @@ class ParticlesSDK {
 	public DrawLineToTarget(
 		key: any,
 		entity: Entity,
-		target: Entity,
+		target: Entity | Vector3,
 		color = Color.Red
 	) {
 		return this.AddOrUpdate(key,
 			ParticleTargetPath(),
 			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
-			target,
+			target instanceof Entity ? target : target,
 			[2, entity],
 			[6, color.Clone().SetR(Math.max(color.r, 1))],
 			[7, target]

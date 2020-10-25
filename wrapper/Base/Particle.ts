@@ -17,7 +17,7 @@ export default class Particle {
 		public readonly Key: any,
 		public readonly Path: string,
 		public readonly Attachment: ParticleAttachment_t,
-		public readonly Entity?: Entity,
+		public readonly Entity?: Entity | Vector3,
 		...controlPoints: ControlPointParam[]
 	) {
 		this.Create(...controlPoints)
@@ -105,7 +105,7 @@ export default class Particle {
 			this.Path,
 			this.Attachment,
 			this.Entity?.IsValid
-				? this.Entity.Index
+				? this.Entity instanceof Entity ? this.Entity.Index : this.Entity.Length
 				: -1
 		)
 		this.IsValid = true
