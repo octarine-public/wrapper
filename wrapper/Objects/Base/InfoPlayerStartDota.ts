@@ -5,6 +5,6 @@ import { WrapperClass } from "../../Decorators"
 @WrapperClass("C_InfoPlayerStartDota")
 export default class InfoPlayerStartDota extends Entity {
 	public get SpawnerTeam(): Team {
-		return this.ClassName === "CInfoPlayerStartBadGuys" ? Team.Dire : Team.Radiant
+		return this.Name_ === "Spawner_bad" ? Team.Dire : Team.Radiant
 	}
 }
