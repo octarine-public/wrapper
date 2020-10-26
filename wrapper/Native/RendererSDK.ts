@@ -330,7 +330,7 @@ class CRendererSDK {
 	public Text(text: string, vecPos = new Vector2(), color = new Color(255, 255, 255), font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
 		const pos = vecPos.Clone()
 		text.split("\n").reverse().forEach(line => {
-			this.Text_(line, pos, color, font_name, font_size, weight, width, italic, flags, scaleX, skewX)
+			this.Text_(line.replaceAll("\t", "    "), pos, color, font_name, font_size, weight, width, italic, flags, scaleX, skewX)
 			pos.SubtractScalarY(font_size)
 		})
 	}
