@@ -3,6 +3,7 @@ import Entity, { GameRules } from "../Base/Entity"
 import EventsSDK from "../../Managers/EventsSDK"
 import EntityManager from "../../Managers/EntityManager"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 
 @WrapperClass("C_DOTA_Unit_Roshan")
 export default class Roshan extends Unit {
@@ -92,8 +93,11 @@ EventsSDK.on("Tick", () => {
 	let min = Math.floor(time / 60)
 	if (min === last_minute)
 		return
-	Roshan.MaxHP = 6000 + (min * 115)
-	Roshan.HP *= Roshan.MaxHP / (6000 + (last_minute * 115))
+	let hp_changed = 115
+	if (GameRules?.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
+		hp_changed *= 2
+	Roshan.MaxHP = 6000 + (min * hp_changed)
+	Roshan.HP *= Roshan.MaxHP / (6000 + (last_minute * hp_changed))
 	last_minute = min
 })
 
