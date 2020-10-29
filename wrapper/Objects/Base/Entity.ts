@@ -278,25 +278,29 @@ function QuantitizedVecCoordToCoord(cell: number, inside: number): number {
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => {
+	const old_team = ent.Team
 	ent.Team = new_val as Team
-	EventsSDK.emit("EntityTeamChanged", false, ent)
+	if (old_team !== ent.Team)
+		EventsSDK.emit("EntityTeamChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
-	let old_state = ent.LifeState
+	const old_state = ent.LifeState
 	ent.LifeState = new_val as LifeState_t
 	if (old_state !== ent.LifeState)
 		EventsSDK.emit("LifeStateChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_hModel", (ent, new_val) => ent.ModelName = Manifest.GetPathByHash(new_val as bigint) ?? "")
 RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
-	let m_angRotation = new_val as QAngle
+	const m_angRotation = new_val as QAngle
 	EntityVisualRotations[ent.Index * 3 + 0] = m_angRotation.x
 	EntityVisualRotations[ent.Index * 3 + 1] = m_angRotation.y
 	EntityVisualRotations[ent.Index * 3 + 2] = m_angRotation.z
 })
 RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
+	const old_name = ent.Name
 	ent.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? ent.Name_
-	EventsSDK.emit("EntityNameChanged", false, ent)
+	if (old_name !== ent.Name)
+		EventsSDK.emit("EntityNameChanged", false, ent)
 })
 
 RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(

@@ -1042,8 +1042,11 @@ export default class Unit extends Entity {
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
+	const old_name = unit.Name
 	unit.UnitName_ = new_value >= 0 ? (UnitNameIndexToString(new_value as number) ?? "") : ""
 	unit.UnitData = new UnitData(unit.Name)
+	if (old_name !== unit.Name)
+		EventsSDK.emit("EntityNameChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => {
 	unit.IsVisibleForTeamMask = new_value as number
