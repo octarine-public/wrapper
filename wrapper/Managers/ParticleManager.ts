@@ -200,7 +200,7 @@ class ParticlesSDK {
 		return this.AddOrUpdate(key,
 			ParticleTargetPath(),
 			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
-			target instanceof Entity ? target : target,
+			target,
 			[2, entity],
 			[6, color.Clone().SetR(Math.max(color.r, 1))],
 			[7, target]
