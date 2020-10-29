@@ -128,15 +128,8 @@ let ignore_list = [
 	"big_thunder_lizard_wardrums_aura",
 ]
 
-function ParseClassNames(str) {
-	let regex = /declare class (\w+) extends/g,
-		class_list = [],
-		result
-	while (result = regex.exec(str))
-		class_list.push(result[1])
-	return class_list
-}
-const class_list = ParseClassNames(fs.readFileSync("../Fusion-Native2.d.ts").toString())
+const SchemaClassesInheritance = new Map(require("./SchemaClassesInheritance.json"))
+const class_list = [...SchemaClassesInheritance.keys()]
 let imports = ""
 
 function TryFindClass(prefix, name) {
