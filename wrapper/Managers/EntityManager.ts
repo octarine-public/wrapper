@@ -47,8 +47,8 @@ class bitset {
 
 export type EntityPropertyType = Map<string, EntityPropertyType> | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
 let ent_props = new Map<number, EntityPropertyType>(),
-	VisibilityMask = new bitset(0x3FFF),
-	TreeActiveMask = new bitset(0x3FFF)
+	VisibilityMask = new bitset(0x4000),
+	TreeActiveMask = new bitset(0x4000)
 class CEntityManager {
 	public get AllEntities(): Entity[] {
 		return AllEntities
