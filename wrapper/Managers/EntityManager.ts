@@ -389,11 +389,9 @@ function FixType(symbols: string[], field: any): string {
 
 function QueuedLeave(ent_id: number, queued_leave?: number[]): boolean {
 	let ent = EntityManager.EntityByIndex(ent_id)
-	if (ent !== undefined) {
-		ent.BecameDormantTime = raw_game_time
-		if (ent.ClassName === "CDOTA_BaseNPC") // crutch for thinkers that'll otherwise leak
-			return true
-	} else
+	if (ent !== undefined)
+		ent.BecameDormantTime = GameState.RawGameTime
+	else
 		queued_leave?.push(ent_id)
 	return false
 }
