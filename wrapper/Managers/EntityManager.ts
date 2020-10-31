@@ -16,6 +16,7 @@ import { StringToUTF16 } from "../Utils/ArrayBufferUtils"
 import * as StringTables from "./StringTables"
 import Vector4 from "../Base/Vector4"
 import { SignonState_t } from "../Enums/SignonState_t"
+import GameState from "../Utils/GameState"
 
 let AllEntities: Entity[] = []
 let AllEntitiesAsMap = new Map<number, Entity>()
@@ -130,11 +131,6 @@ class CEntityManager {
 const EntityManager = new CEntityManager()
 export default EntityManager
 
-let raw_game_time = 0
-export function SetRawGameTime(new_raw_game_time: number): void {
-	raw_game_time = new_raw_game_time
-}
-
 function ClassFromNative(id: number, constructor_name: string, ent_name: Nullable<string>): Entity {
 	let constructor = GetConstructorByName(constructor_name, ent_name)
 	if (constructor === undefined)
@@ -190,7 +186,7 @@ export function DeleteEntity(id: number): void {
 		return
 
 	entity.IsValid = false
-	entity.BecameDormantTime = raw_game_time
+	entity.BecameDormantTime = GameState.RawGameTime
 	ArrayExtensions.arrayRemove(AllEntities, entity)
 
 	EventsSDK.emit("EntityDestroyed", false, entity)
@@ -402,12 +398,11 @@ function QueuedLeave(ent_id: number, queued_leave?: number[]): boolean {
 	return false
 }
 
-const dump_d_ts = false
 Events.on("ServerMessage", (msg_id, buf) => {
 	switch (msg_id) {
 		case 41: {
 			let msg = ParseProtobufNamed(buf, "CSVCMsg_FlattenedSerializer")
-			if (dump_d_ts) {
+			if ((globalThis as any).dump_d_ts) {
 				let obj = MapToObject(msg)
 				let list = (Object.values(obj.serializers) as any[]).map(ser => [
 					obj.symbols[ser.serializer_name_sym] + (ser.serializer_version !== 0 ? ser.serializer_version : ""),
@@ -419,7 +414,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 						]
 					})
 				])
-				writeConfig("dump_CSVCMsg_FlattenedSerializer.d.ts", StringToUTF16(`\
+				console.log("dump_CSVCMsg_FlattenedSerializer.d.ts", StringToUTF16(`\
 import { Vector2, Vector3, QAngle, Vector4 } from "./src_ts/wrapper/Imports"
 
 type Color = number // 0xAABBGGRR?

@@ -2,7 +2,7 @@ import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { Team } from "../../Enums/Team"
-import { default as EntityManager, EntityPropertyType, SetRawGameTime } from "../../Managers/EntityManager"
+import { default as EntityManager, EntityPropertyType } from "../../Managers/EntityManager"
 import { DegreesToRadian } from "../../Utils/Math"
 import EventsSDK from "../../Managers/EventsSDK"
 import Player from "../../Objects/Base/Player"
@@ -11,6 +11,7 @@ import Manifest from "../../Managers/Manifest"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import CGameRules from "./GameRules"
 import Item from "./Item"
+import GameState from "../../Utils/GameState"
 
 export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
@@ -31,7 +32,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 	if (!ent.IsGameRules)
 		return
 	GameRules = undefined
-	SetRawGameTime(0)
+	GameState.RawGameTime = 0
 })
 
 /*
@@ -45,7 +46,8 @@ export default class Entity {
 	public IsValid = true
 	public Name_ = ""
 	@NetworkedBasicField("m_flCreateTime")
-	public CreateTime = 0
+	public CreateTime_ = 0
+	public FakeCreateTime_ = GameState.RawGameTime
 	public Team = Team.None
 	public LifeState = LifeState_t.LIFE_DEAD
 	@NetworkedBasicField("m_iHealth")
@@ -63,7 +65,6 @@ export default class Entity {
 	public TotalStrength = 0
 	@NetworkedBasicField("m_hOwnerEntity")
 	private Owner_ = 0
-	private rawCreateTime = 0
 
 	private readonly PersonalProps: Nullable<Map<string, EntityPropertyType>>
 
@@ -108,14 +109,10 @@ export default class Entity {
 			EntityVisualRotations[this.Index * 3 + 2],
 		)
 	}
-	public get RawCreateTime() {
-		if (this.CreateTime !== 0)
-			return this.CreateTime
-
-		if (this.rawCreateTime === 0)
-			this.rawCreateTime = (GameRules?.RawGameTime ?? 0)
-
-		return this.rawCreateTime
+	public get CreateTime() {
+		return this.CreateTime_ !== 0
+			? this.CreateTime_
+			: this.FakeCreateTime_
 	}
 	public get HPPercent(): number {
 		return Math.floor(this.HP / this.MaxHP * 100) || 0

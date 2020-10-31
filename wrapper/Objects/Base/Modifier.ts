@@ -1,7 +1,7 @@
 import Ability from "./Ability"
 import Entity from "./Entity"
 import Unit from "./Unit"
-import { GameRules } from "../Base/Entity"
+import GameState from "../../Utils/GameState"
 import { IModifier } from "../../Managers/ModifierManager"
 import * as StringTables from "../../Managers/StringTables"
 import Vector3 from "../../Base/Vector3"
@@ -89,7 +89,7 @@ export default class Modifier {
 		return this.m_pBuff.Duration
 	}
 	public get ElapsedTime(): number {
-		return Math.max((GameRules?.RawGameTime ?? 0) - this.CreationTime, 0)
+		return Math.max(GameState.RawGameTime - this.CreationTime, 0)
 	}
 	public get Parent(): Nullable<Unit> {
 		if (this.Parent_ === undefined) {
@@ -115,7 +115,7 @@ export default class Modifier {
 		return this.AuraOwner_
 	}
 	public get RemainingTime(): number {
-		return Math.max(this.DieTime - (GameRules?.RawGameTime ?? 0), 0)
+		return Math.max(this.DieTime - GameState.RawGameTime, 0)
 	}
 	public get StackCount(): number {
 		return this.m_pBuff.StackCount ?? 0

@@ -5,7 +5,7 @@ import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 import Entity, { LocalPlayer } from "../Base/Entity"
 import EventsSDK from "../../Managers/EventsSDK"
 import GameState from "../../Utils/GameState"
-import EntityManager, { EntityPropertyType, SetRawGameTime } from "../../Managers/EntityManager"
+import EntityManager, { EntityPropertyType } from "../../Managers/EntityManager"
 import Unit from "./Unit"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
@@ -83,8 +83,8 @@ export default class CGameRules extends Entity {
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
-	game.RawGameTime = new_val as number
-	SetRawGameTime(game.RawGameTime)
+	const was_zero = game.RawGameTime === 0
+	GameState.RawGameTime = game.RawGameTime = new_val as number
 	EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
 		if (!unit.IsVisible || !unit.IsAlive)
 			return
@@ -99,6 +99,8 @@ RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 			}
 		}
 	})
+	if (was_zero)
+		EntityManager.AllEntities.forEach(ent => ent.FakeCreateTime_ = game.RawGameTime)
 	if (LocalPlayer !== undefined)
 		EventsSDK.emit("Tick", false)
 })

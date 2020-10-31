@@ -1,4 +1,5 @@
 import { GameRules } from "../Objects/Base/Entity"
+import GameState from "../Utils/GameState"
 
 class SleeperBase {
 	protected SleepDB = new Map<any, number>()
@@ -45,9 +46,9 @@ export class Sleeper extends SleeperBase {
 export class GameSleeper extends SleeperBase {
 	public Sleep(ms: number, key: any, extend: boolean = false): number {
 		if (typeof ms !== "number")
-			return this.setTime(key, GameRules?.RawGameTime ?? 0)
+			return this.setTime(key, GameState.RawGameTime)
 
-		let time = GameRules?.RawGameTime ?? 0
+		let time = GameState.RawGameTime
 		if (extend && this.updateTime(key, time, ms / 1000))
 			return ms
 
@@ -55,8 +56,7 @@ export class GameSleeper extends SleeperBase {
 	}
 	public Sleeping(key: any): boolean {
 		let sleepID = this.SleepDB.get(key)
-		let time = GameRules?.RawGameTime ?? 0
-		return sleepID !== undefined && time < sleepID
+		return sleepID !== undefined && GameState.RawGameTime < sleepID
 	}
 
 	public FullReset(): GameSleeper {
