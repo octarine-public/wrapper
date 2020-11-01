@@ -387,15 +387,6 @@ function FixType(symbols: string[], field: any): string {
 	return type
 }
 
-function QueuedLeave(ent_id: number, queued_leave?: number[]): boolean {
-	let ent = EntityManager.EntityByIndex(ent_id)
-	if (ent !== undefined)
-		ent.BecameDormantTime = GameState.RawGameTime
-	else
-		queued_leave?.push(ent_id)
-	return false
-}
-
 Events.on("ServerMessage", (msg_id, buf) => {
 	switch (msg_id) {
 		case 41: {
@@ -446,56 +437,44 @@ declare class ${name} {
 			break
 		}
 		case 55: { // we have custom parsing for CSVCMsg_PacketEntities
-			let stream = new BinaryStream(new DataView(buf)),
-				changes: [number, NetworkFieldsChangedType][] = []
-			let queued_deletion: number[] = [],
-				queued_creation: [number, string, EntityPropertyType][] = [],
-				queued_leave: number[] = []
+			let stream = new BinaryStream(new DataView(buf))
 			while (!stream.Empty()) {
 				let ent_id = stream.ReadUint16()
 				let pvs: EntityPVS = stream.ReadUint8()
 				switch (pvs) {
 					case EntityPVS.DELETE:
-						VisibilityMask.set(ent_id, false)
-						queued_deletion.push(ent_id)
+						DeleteEntity(ent_id)
 						break
 					case EntityPVS.LEAVE: {
 						VisibilityMask.set(ent_id, false)
-						if (QueuedLeave(ent_id, queued_leave))
-							queued_deletion.push(ent_id)
+						let ent = EntityManager.EntityByIndex(ent_id)
+						if (ent !== undefined)
+							ent.BecameDormantTime = GameState.RawGameTime
 						break
 					}
 					case EntityPVS.CREATE: {
 						let [changed_paths, chaged_paths_results, ent_class, ent_node] = ParseEntityUpdate(stream, ent_id)
-						queued_creation.push([ent_id, ent_class, ent_node])
-						if (changed_paths.length !== 0)
-							changes.push([ent_id, [changed_paths, chaged_paths_results]])
+						ent_props.set(ent_id, ent_node)
+						let stringtables_id = EntityManager.GetEntityPropertyByPath(ent_id, ["m_pEntity", "m_nameStringableIndex"]) as number
+						CreateEntity(ent_id, ent_class, StringTables.GetString("EntityNames", stringtables_id))
+						if (changed_paths.length !== 0) {
+							let ent = EntityManager.EntityByIndex(ent_id)
+							if (ent !== undefined)
+								ApplyChanges(ent, [changed_paths, chaged_paths_results])
+						}
 						break
 					}
 					case EntityPVS.UPDATE: {
 						let [changed_paths, chaged_paths_results] = ParseEntityUpdate(stream, ent_id)
-						if (changed_paths.length !== 0)
-							changes.push([ent_id, [changed_paths, chaged_paths_results]])
+						if (changed_paths.length !== 0) {
+							let ent = EntityManager.EntityByIndex(ent_id)
+							if (ent !== undefined)
+								ApplyChanges(ent, [changed_paths, chaged_paths_results])
+						}
 						break
 					}
 				}
 			}
-			queued_deletion.forEach(ent_id => DeleteEntity(ent_id))
-			queued_creation.forEach(([ent_id, class_name, ent_node]) => {
-				ent_props.set(ent_id, ent_node)
-				let stringtables_id = EntityManager.GetEntityPropertyByPath(ent_id, ["m_pEntity", "m_nameStringableIndex"]) as number
-				CreateEntity(ent_id, class_name, StringTables.GetString("EntityNames", stringtables_id))
-			})
-			changes.forEach(([ent_id, changes_]) => {
-				let ent = EntityManager.EntityByIndex(ent_id)
-				if (ent === undefined)
-					return
-				ApplyChanges(ent, changes_)
-			})
-			queued_leave.forEach(ent_id => {
-				if (QueuedLeave(ent_id))
-					DeleteEntity(ent_id)
-			})
 			if (delayed_tick_call !== undefined) {
 				cached_m_fGameTime![2](...delayed_tick_call)
 				delayed_tick_call = undefined
