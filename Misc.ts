@@ -194,6 +194,8 @@ Events.on("AddSearchPath", path => {
 		if (map_name.values.some((name, i) => i !== 0 && path.endsWith(name + ".vpk")))
 			return false
 	}
+	if (path.endsWith("diretide_moreinfo_fog.vpk") || path.endsWith("diretide_frontpage.vpk"))
+		return false
 	return true
 })
 
