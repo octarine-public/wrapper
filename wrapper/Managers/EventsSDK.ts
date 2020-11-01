@@ -27,17 +27,29 @@ interface EventsSDK extends EventEmitter {
 	on(name: "GameEnded", callback: () => void): EventEmitter
 	/**
 	 * Emitted about ALL entities that have Valid flag. This callback is best suited for use.
-	 *
 	 * Also, this event emitted about ALL entities that have already been created (and valids) before reloading scripts
-	 *
-	 * Emitted ONLY after LocalPlayer created
 	 */
 	on(name: "EntityCreated", callback: (ent: Entity) => void): EventEmitter
+	/**
+	 * Emitted after all entity properties handlers were called, a.k.a. entity is fully set up
+	 */
+	on(name: "PostEntityCreated", callback: (ent: Entity) => void): EventEmitter
 	on(name: "EntityDestroyed", callback: (ent: Entity) => void): EventEmitter
 	/**
-	 * Every ~33ms. Emitted after LocalPlayer has been created
+	 * Emitted every time GameRules.RawGameTime changes, a.k.a. tick,
+	 * right before PostUpdate, but not required to.
 	 */
 	on(name: "Tick", callback: () => void): EventEmitter
+	/**
+	 * Emitted before every server entity update.
+	 * Gets called when game is paused, and might be called faster than actual server ticks.
+	 */
+	on(name: "PreUpdate", callback: () => void): EventEmitter
+	/**
+	 * Emitted after every server entity update.
+	 * Gets called when game is paused, and might be called faster than actual server ticks.
+	 */
+	on(name: "PostUpdate", callback: () => void): EventEmitter
 	on(name: "TeamVisibilityChanged", callback: (npc: Unit) => void): EventEmitter
 	on(name: "TrueSightedChanged", callback: (npc: Unit) => void): EventEmitter
 	on(name: "HasScepterChanged", callback: (npc: Unit) => void): EventEmitter

@@ -7,6 +7,7 @@ import { ParseTRMP } from "../../Utils/ParseTRMP"
 import Events from "../../Managers/Events"
 import { ParseMapName } from "../../Utils/Utils"
 import { SignonState_t } from "../../Enums/SignonState_t"
+import EventsSDK from "../../Managers/EventsSDK"
 
 @WrapperClass("C_DOTA_MapTree")
 export default class Tree extends Entity {
@@ -42,6 +43,7 @@ function LoadTreeMap(buf: ArrayBuffer) {
 		entity.FakeTreePos.CopyFrom(pos)
 		entity.BinaryID = i
 		CreateEntityInternal(entity)
+		EventsSDK.emit("PostEntityCreated", false, entity)
 	})
 }
 

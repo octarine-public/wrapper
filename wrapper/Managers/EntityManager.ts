@@ -437,6 +437,7 @@ declare class ${name} {
 			break
 		}
 		case 55: { // we have custom parsing for CSVCMsg_PacketEntities
+			EventsSDK.emit("PreUpdate", false)
 			let stream = new BinaryStream(new DataView(buf))
 			while (!stream.Empty()) {
 				let ent_id = stream.ReadUint16()
@@ -457,10 +458,11 @@ declare class ${name} {
 						ent_props.set(ent_id, ent_node)
 						let stringtables_id = EntityManager.GetEntityPropertyByPath(ent_id, ["m_pEntity", "m_nameStringableIndex"]) as number
 						CreateEntity(ent_id, ent_class, StringTables.GetString("EntityNames", stringtables_id))
-						if (changed_paths.length !== 0) {
-							let ent = EntityManager.EntityByIndex(ent_id)
-							if (ent !== undefined)
+						let ent = EntityManager.EntityByIndex(ent_id)
+						if (ent !== undefined) {
+							if (changed_paths.length !== 0)
 								ApplyChanges(ent, [changed_paths, chaged_paths_results])
+							EventsSDK.emit("PostEntityCreated", false, ent)
 						}
 						break
 					}
@@ -479,6 +481,7 @@ declare class ${name} {
 				cached_m_fGameTime![2](...delayed_tick_call)
 				delayed_tick_call = undefined
 			}
+			EventsSDK.emit("PostUpdate", false)
 			break
 		}
 	}
