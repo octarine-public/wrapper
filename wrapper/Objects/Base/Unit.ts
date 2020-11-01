@@ -137,7 +137,9 @@ export default class Unit extends Entity {
 	@NetworkedBasicField("m_bShouldDoFlyHeightVisual")
 	public ShouldDoFlyHeightVisual = true
 	public Spells_ = new Array<number>(MAX_SPELLS).fill(0)
+	public Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
 	public TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
+	public TotalItems = new Array<Nullable<Item>>(MAX_SPELLS).fill(undefined)
 	@NetworkedBasicField("m_iXPBounty")
 	public XPBounty = 0
 	@NetworkedBasicField("m_iXPBountyExtra")
@@ -377,12 +379,6 @@ export default class Unit extends Entity {
 	}
 	public get CanUseAbilitiesInInvisibility(): boolean {
 		return this.ModifiersBook.HasAnyBuffByNames(this.CanUseAbilitiesInInvis)
-	}
-	public get Spells(): Nullable<Ability>[] {
-		return this.Spells_.map(abil => {
-			let ent = EntityManager.EntityByIndex(abil)
-			return ent instanceof Ability ? ent : undefined
-		})
 	}
 	public get Items(): Item[] {
 		return this.Inventory.Items
@@ -1066,13 +1062,73 @@ RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => {
 RegisterFieldHandler(Unit, "m_nUnitState64", (unit, new_value) => unit.UnitStateNetworked = BigInt(new_value as bigint)) // TODO
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 	let ar = new_value as number[]
-	while (ar.length < unit.Spells_.length)
-		ar.push(0)
-	unit.Spells_ = new_value as number[]
+	for (let i = 0; i < ar.length; i++) {
+		unit.Spells_[i] = ar[i]
+		const ent = EntityManager.EntityByIndex(ar[i])
+		if (ent instanceof Ability)
+			unit.Spells[i] = ent
+	}
+	for (let i = ar.length; i < unit.Spells_.length; i++) {
+		unit.Spells_[i] = 0
+		unit.Spells[i] = undefined
+	}
 })
 RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
 	let ar = new_value as number[]
-	while (ar.length < unit.TotalItems_.length)
-		ar.push(0)
-	unit.TotalItems_ = new_value as number[]
+	for (let i = 0; i < ar.length; i++) {
+		unit.TotalItems_[i] = ar[i]
+		const ent = EntityManager.EntityByIndex(ar[i])
+		if (ent instanceof Item)
+			unit.TotalItems[i] = ent
+	}
+	for (let i = ar.length; i < unit.TotalItems_.length; i++) {
+		unit.TotalItems_[i] = 0
+		unit.TotalItems[i] = undefined
+	}
+})
+
+EventsSDK.on("PostEntityCreated", ent => {
+	const owner = ent.Owner
+	if (!(owner instanceof Unit))
+		return
+	if (ent instanceof Item) {
+		owner.TotalItems_.some((id, i) => {
+			if (id === ent.Index) {
+				owner.TotalItems[i] = ent
+				return true
+			}
+			return false
+		})
+	} else if (ent instanceof Ability) {
+		owner.Spells_.some((id, i) => {
+			if (id === ent.Index) {
+				owner.Spells[i] = ent
+				return true
+			}
+			return false
+		})
+	}
+})
+
+EventsSDK.on("EntityDestroyed", ent => {
+	const owner = ent.Owner
+	if (!(owner instanceof Unit))
+		return
+	if (ent instanceof Item) {
+		owner.TotalItems_.some((id, i) => {
+			if (id === ent.Index) {
+				owner.TotalItems[i] = undefined
+				return true
+			}
+			return false
+		})
+	} else if (ent instanceof Ability) {
+		owner.Spells_.some((id, i) => {
+			if (id === ent.Index) {
+				owner.Spells[i] = undefined
+				return true
+			}
+			return false
+		})
+	}
 })

@@ -10,12 +10,7 @@ export default class Inventory {
 	constructor(public readonly Owner: Unit) { }
 
 	get TotalItems(): Nullable<Item>[] {
-		return this.Owner.TotalItems_.map(id => {
-			let ent = EntityManager.EntityByIndex(id)
-			if (ent instanceof Item)
-				return ent
-			return undefined
-		})
+		return this.Owner.TotalItems
 	}
 	get TPScroll(): Nullable<Item> {
 		return this.GetItem(15)
