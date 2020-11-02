@@ -44,6 +44,13 @@ export class Sleeper extends SleeperBase {
  * Sleeper by Game.RawGameTime
  */
 export class GameSleeper extends SleeperBase {
+	public StartTime(key: any) {
+		let sleepID = this.SleepDB.get(key)
+		if (sleepID === undefined)
+			return 0
+		return sleepID
+	}
+
 	public Sleep(ms: number, key: any, extend: boolean = false): number {
 		if (typeof ms !== "number")
 			return this.setTime(key, GameState.RawGameTime)
@@ -54,9 +61,24 @@ export class GameSleeper extends SleeperBase {
 
 		return this.setTime(key, time + ms / 1000)
 	}
+
 	public Sleeping(key: any): boolean {
 		let sleepID = this.SleepDB.get(key)
 		return sleepID !== undefined && GameState.RawGameTime < sleepID
+	}
+
+	public RemainingSleepTime(key: any): number {
+		let sleepID = this.SleepDB.get(key)
+		if (sleepID === undefined)
+			return 0
+		return sleepID - GameState.RawGameTime
+	}
+
+	public ResetKey(key: any) {
+		let sleepID = this.SleepDB.get(key)
+		if (sleepID === undefined)
+			return
+		this.SleepDB.delete(key)
 	}
 
 	public FullReset(): GameSleeper {
