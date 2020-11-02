@@ -27,15 +27,58 @@ export class WorldPolygon {
 				RendererSDK.Line(pos1, pos2, color)
 		}
 	}
+	/**
+	 * 
+	 * @description Need test
+	 */
 	public IsInside(point: Vector3) {
 		return !this.IsOutside(point)
 	}
 	public IsOutside(point: Vector3) {
-		return this.PointInPolygon(point) !== 0
+		return this.PointInPolygon(point) !== 1
 	}
 	private AddPoint(point: Vector3) {
 		this.Points.push(point)
 	}
+	private PointInPolygon(point: Vector3) {
+		let result = 0
+		let cnt = this.Points.length
+		if (cnt < 3)
+			return 0
+
+		let ip = this.Points[0]
+		for (let i = 1; i <= cnt; i++) {
+			let ipNext = (i == cnt) ? this.Points[0] : this.Points[i]
+			if (ipNext.y === point.y && (ipNext.x === point.x || (ip.y === point.y && ipNext.x > point.x === ip.x < point.x)))
+				return -1
+
+			if (ip.y < point.y !== ipNext.y < point.y) {
+				if (ip.x >= point.x) {
+					if (ipNext.x > point.x) {
+						result = 1 - result
+					}
+					else {
+						let d = (ip.x - point.x) * (ipNext.y - point.y) - (ipNext.x - point.x) * (ip.y - point.y)
+						if (d === 0)
+							return -1
+						if (d > 0 === ipNext.y > ip.y)
+							result = 1 - result
+					}
+				}
+				else if (ipNext.x > point.x) {
+					let d2 = (ip.x - point.x) * (ipNext.y - point.y) - (ipNext.x - point.y) * (ip.y - point.y)
+					if (d2 === 0)
+						return -1
+					if (d2 > 0 === ipNext.y > ip.y)
+						result = 1 - result
+				}
+			}
+			ip = ipNext
+		}
+		return result
+	}
+
+	/*
 	public PointInPolygon(point: Vector3): number {
 		if (this.Points.length < 3)
 			return 0
@@ -66,4 +109,5 @@ export class WorldPolygon {
 		}
 		return result
 	}
+	*/
 }
