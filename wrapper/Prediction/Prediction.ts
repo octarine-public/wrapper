@@ -21,8 +21,10 @@ export default class Prediction {
 		delay = 0,
 		obstacles?: Entity[]
 	): Entity[] {
-		if (obstacles === undefined)
-			obstacles = EntityManager.GetEntitiesByClasses<Entity>([Creep, Hero]).filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
+		if (obstacles === undefined) {
+			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
+			obstacles = ents.filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
+		}
 		let obs2ent = new Map<Obstacle, Entity>()
 		obstacles.forEach(ent => obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent))
 		return new NavMeshPathfinding(
@@ -44,8 +46,10 @@ export default class Prediction {
 		delay = 0,
 		obstacles?: Entity[]
 	): Nullable<[Entity, number]> {
-		if (obstacles === undefined)
-			obstacles = EntityManager.GetEntitiesByClasses<Entity>([Creep, Hero]).filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
+		if (obstacles === undefined) {
+			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
+			obstacles = ents.filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
+		}
 		let obs2ent = new Map<Obstacle, Entity>()
 		obstacles.forEach(ent => obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent))
 		let predict_res = new NavMeshPathfinding(
@@ -71,8 +75,10 @@ export default class Prediction {
 		dynamic_delay_func = (ang: number) => 0,
 		obstacles?: Entity[]
 	): Nullable<[number, number]> {
-		if (obstacles === undefined)
-			obstacles = EntityManager.GetEntitiesByClasses<Entity>([Creep, Hero]).filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
+		if (obstacles === undefined) {
+			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
+			obstacles = ents.filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
+		}
 		let ent2obs = new Map<Entity, Obstacle>()
 		obstacles.forEach(ent => ent2obs.set(ent, ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent)))
 		return new NavMeshPathfinding(

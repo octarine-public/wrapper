@@ -83,15 +83,6 @@ class CEntityManager {
 				return []
 		}
 	}
-	/**
-	 * @deprecated USE IT ONLY IF YOU REALLY NEED IT \
-	 * GetEntitiesByClasses is 60 times slower than GetEntitiesByClass
-	 */
-	public GetEntitiesByClasses<T>(classes: Constructor<T>[], flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
-		let ar: T[] = []
-		classes.forEach(class_ => ar.push(...this.GetEntitiesByClass(class_, flags)))
-		return [...new Set(ar)]
-	}
 	public IsEntityVisible(ent_id: number): boolean {
 		return ((ent_id & 0x4000) !== 0) || VisibilityMask.get(ent_id)
 	}
