@@ -1063,10 +1063,9 @@ RegisterFieldHandler(Unit, "m_nUnitState64", (unit, new_value) => unit.UnitState
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 	let ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
-		unit.Spells_[i] = ar[i]
+		unit.Spells_[i] = ar[i] & 0x3FFF
 		const ent = EntityManager.EntityByIndex(ar[i])
-		if (ent instanceof Ability)
-			unit.Spells[i] = ent
+		unit.Spells[i] = ent instanceof Ability ? ent : undefined
 	}
 	for (let i = ar.length; i < unit.Spells_.length; i++) {
 		unit.Spells_[i] = 0
@@ -1076,10 +1075,9 @@ RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
 	let ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
-		unit.TotalItems_[i] = ar[i]
+		unit.TotalItems_[i] = ar[i] & 0x3FFF
 		const ent = EntityManager.EntityByIndex(ar[i])
-		if (ent instanceof Item)
-			unit.TotalItems[i] = ent
+		unit.TotalItems[i] = ent instanceof Item ? ent : undefined
 	}
 	for (let i = ar.length; i < unit.TotalItems_.length; i++) {
 		unit.TotalItems_[i] = 0

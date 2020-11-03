@@ -21,7 +21,7 @@ export class Projectile {
 	public get Source(): Nullable<Entity | number> {
 		if (this.SourceUnit instanceof Entity)
 			return this.SourceUnit
-		return EntityManager.EntityByIndex(this.SourceUnit as number) || this.SourceUnit
+		return EntityManager.EntityByIndex(this.SourceUnit as number) ?? this.SourceUnit
 	}
 	public get ParticlePath(): string { return this.path }
 	public get ParticleSystemHandle(): string { return this.ParticleSystemHandle }

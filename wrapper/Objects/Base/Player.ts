@@ -26,10 +26,10 @@ export default class Player extends Entity {
 		return this.Team === Team.Observer || this.Team === Team.Neutral || this.Team === Team.None || this.Team === Team.Undefined
 	}
 	public get Hero(): Nullable<Hero> {
-		let hero = EntityManager.EntityByIndex(this.Hero_)
+		const hero = EntityManager.EntityByIndex(this.Hero_)
 		if (hero instanceof Hero)
 			return hero
-		let ent = EntityManager.GetEntitiesByClass(Hero).find(hero =>
+		const ent = EntityManager.GetEntitiesByClass(Hero).find(hero =>
 			hero.PlayerID === this.PlayerID
 			&& hero.CanBeMainHero
 		)

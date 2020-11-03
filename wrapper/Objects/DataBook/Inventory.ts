@@ -1,4 +1,3 @@
-import EntityManager from "../../Managers/EntityManager"
 import Item from "../Base/Item"
 import Player from "../Base/Player"
 import Unit from "../Base/Unit"
@@ -59,11 +58,7 @@ export default class Inventory {
 	}
 
 	public GetItem(slot: DOTAScriptInventorySlot_t): Nullable<Item> {
-		let id = this.Owner.TotalItems_[slot]
-		let ent = EntityManager.EntityByIndex(id)
-		if (ent instanceof Item)
-			return ent
-		return undefined
+		return this.Owner.TotalItems[slot]
 	}
 	public GetItems(start: number, end: number): Item[] {
 		start = Math.min(start, MAX_ITEMS)

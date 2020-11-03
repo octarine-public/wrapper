@@ -288,7 +288,7 @@ declare global {
 
 globalThis.DebugBuffsParents = () => {
 	ActiveModifiers.forEach(mod => {
-		let parent = EntityManager.EntityByIndex(mod.m_pBuff.Parent)
+		const parent = EntityManager.EntityByIndex(mod.m_pBuff.Parent)
 		if (parent instanceof Unit)
 			return
 		console.log(parent?.ClassName, mod.m_pBuff.Parent, mod.Name, mod.ElapsedTime, mod.m_pBuff.EntryType)

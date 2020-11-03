@@ -266,6 +266,8 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 	const ent_node = ent_props.get(ent_id)!
 	for (let path_size = 0; (path_size = stream.ReadUint8()) !== 0;) {
 		let prop_node = ent_node
+		let last_named_prop_id = -1
+		let last_named_prop: Nullable<EntityPropertyType> = undefined
 		for (let i = 0; i < path_size; i++) {
 			let id = stream.ReadUint16()
 			const must_be_array = id & 1
@@ -287,30 +289,28 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 				} else
 					ar[id] = ParseProperty(stream)
 			} else {
+				last_named_prop_id = id
 				let map = prop_node as Map<string, EntityPropertyType>
 				let sym = entities_symbols[id]
-				let res: EntityPropertyType
 				if (i !== path_size - 1) {
 					if (!map.has(sym)) {
 						let next_must_be_array = stream.ReadUint16() & 1
 						stream.RelativeSeek(-2) // uint16 = 2 bytes
 						map.set(sym, next_must_be_array ? [] : new Map())
 					}
-					prop_node = map.get(sym)!
-					res = prop_node
+					prop_node = last_named_prop = map.get(sym)!
 				} else {
-					let prop = ParseProperty(stream)
+					let prop = last_named_prop = ParseProperty(stream)
 					map.set(sym, prop)
-					res = prop
 				}
-				if (ent !== undefined && ent_handlers !== undefined) {
-					if (cached_m_fGameTime === undefined || id !== cached_m_fGameTime[1] || ent.constructor !== cached_m_fGameTime[0]) {
-						let cb = ent_handlers.get(id)
-						if (cb !== undefined)
-							cb(ent, res)
-					} else
-						delayed_tick_call = [ent, res]
-				}
+			}
+			if (last_named_prop_id !== -1 && last_named_prop !== undefined && ent !== undefined && ent_handlers !== undefined) {
+				if (cached_m_fGameTime === undefined || last_named_prop_id !== cached_m_fGameTime[1] || ent.constructor !== cached_m_fGameTime[0]) {
+					let cb = ent_handlers.get(last_named_prop_id)
+					if (cb !== undefined)
+						cb(ent, last_named_prop)
+				} else
+					delayed_tick_call = [ent, last_named_prop]
 			}
 		}
 	}
@@ -415,7 +415,7 @@ declare class ${name} {
 						break
 					case EntityPVS.LEAVE: {
 						VisibilityMask.set(ent_id, false)
-						let ent = EntityManager.EntityByIndex(ent_id)
+						const ent = EntityManager.EntityByIndex(ent_id)
 						if (ent !== undefined)
 							ent.BecameDormantTime = GameState.RawGameTime
 						break
