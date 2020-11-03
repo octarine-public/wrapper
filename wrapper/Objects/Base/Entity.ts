@@ -146,28 +146,6 @@ export default class Entity {
 	public GetPropertyByName(name: string): Nullable<EntityPropertyType> {
 		return this.PersonalProps?.get(name)
 	}
-	public GetPropertyByPath(path: (string | number)[]): Nullable<EntityPropertyType> {
-		let node = this.PersonalProps as Nullable<EntityPropertyType>
-		if (node === undefined)
-			return undefined
-
-		if (
-			path.some(a => {
-				if (typeof a === "number") {
-					if (!Array.isArray(node))
-						return true
-					node = node[a]
-				} else {
-					if (!(node instanceof Map))
-						return true
-					node = node.get(a)
-				}
-				return false
-			})
-		)
-			return undefined
-		return node
-	}
 	public Distance(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.Position

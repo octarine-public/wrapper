@@ -289,39 +289,35 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 				} else
 					ar[id] = ParseProperty(stream)
 			} else {
-				let map = prop_node as Map<string, EntityPropertyType>
-				let sym = entities_symbols[id]
+				const map = prop_node as Map<string, EntityPropertyType>,
+					sym = entities_symbols[id]
 				let res: EntityPropertyType
 				if (i !== path_size - 1) {
 					if (!map.has(sym)) {
-						let next_must_be_array = stream.ReadUint16() & 1
+						const next_must_be_array = stream.ReadUint16() & 1
 						stream.RelativeSeek(-2) // uint16 = 2 bytes
 						map.set(sym, next_must_be_array ? [] : new Map())
 					}
 					prop_node = res = map.get(sym)!
 				} else {
-					let prop = res = ParseProperty(stream)
+					const prop = res = ParseProperty(stream)
 					map.set(sym, prop)
 				}
-				if (
-					ent !== undefined
-					&& ent_handlers !== undefined
-					&& !changed_paths.includes(id)
-					&& ent_handlers.has(id)
-				) {
-					changed_paths.push(id)
-					changed_paths_results.push(res)
+				if (ent !== undefined && ent_handlers !== undefined) {
+					const i = changed_paths.indexOf(id)
+					if (i === -1) {
+						if (ent_handlers.has(id)) {
+							changed_paths.push(id)
+							changed_paths_results.push(res)
+						} else if (cached_m_fGameTime !== undefined && id === cached_m_fGameTime[1])
+							delayed_tick_call = [ent, res]
+					} else
+						changed_paths_results[i] = res
 				}
 			}
 		}
 	}
-	changed_paths.forEach((id, i) => {
-		const res = changed_paths_results[i]
-		if (cached_m_fGameTime === undefined || id !== cached_m_fGameTime[1] || ent!.constructor !== cached_m_fGameTime[0])
-			ent_handlers!.get(id)!(ent!, res)
-		else
-			delayed_tick_call = [ent!, res]
-	})
+	changed_paths.forEach((id, i) => ent_handlers!.get(id)!(ent!, changed_paths_results[i]))
 	return ent
 }
 
