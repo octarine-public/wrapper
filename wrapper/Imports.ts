@@ -48,6 +48,8 @@ export {
 import * as Menu from "./Menu/Imports"
 export { Menu }
 
+export { DotaMap } from "./Helpers/DotaMap"
+export { MapArea } from "./Helpers/MapArea"
 export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
 
 export { default as Particle } from "./Base/Particle"
