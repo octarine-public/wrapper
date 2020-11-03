@@ -92,28 +92,6 @@ class CEntityManager {
 	public SetWorldTreeState(WorldTreeState: bigint[]): void {
 		TreeActiveMask.set_buf(new BigUint64Array(WorldTreeState).buffer)
 	}
-	public GetEntityPropertyByPath(ent_id: number, path: (string | number)[]): Nullable<EntityPropertyType> {
-		let node = ent_props.get(ent_id)
-		if (node === undefined)
-			return undefined
-
-		if (
-			path.some(a => {
-				if (typeof a === "number") {
-					if (!Array.isArray(node))
-						return true
-					node = node[a]
-				} else {
-					if (!(node instanceof Map))
-						return true
-					node = node.get(a)
-				}
-				return false
-			})
-		)
-			return undefined
-		return node
-	}
 	public GetEntityProperties(ent_id: number): Nullable<EntityPropertyType> {
 		return ent_props.get(ent_id)
 	}
@@ -133,22 +111,6 @@ function ClassFromNative(id: number, constructor_name: string, ent_name: Nullabl
 let cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>(),
 	cached_m_fGameTime: Nullable<[Constructor<Entity>, number, FieldHandler]>,
 	delayed_tick_call: Nullable<[Entity, EntityPropertyType]>
-export type NetworkFieldsChangedType = [number[], EntityPropertyType[]]
-function ApplyChanges(ent: Entity, changes: NetworkFieldsChangedType) {
-	const [changed_paths, changed_paths_values] = changes,
-		ent_handlers = cached_field_handlers.get(ent.constructor as Constructor<Entity>)
-	if (ent_handlers === undefined)
-		return
-	changed_paths.forEach((field_name, i) => {
-		if (cached_m_fGameTime === undefined || field_name !== cached_m_fGameTime[1] || ent.constructor !== cached_m_fGameTime[0]) {
-			let cb = ent_handlers?.get(field_name)
-			if (cb !== undefined)
-				cb(ent, changed_paths_values[i])
-		} else
-			delayed_tick_call = [ent, changed_paths_values[i]]
-	})
-}
-
 export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
 	AllEntitiesAsMap.set(id, ent)
 	AllEntities.push(ent)
@@ -165,8 +127,8 @@ export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
 	EventsSDK.emit("EntityCreated", false, ent)
 }
 
-function CreateEntity(id: number, class_name: string, entity_name: Nullable<string>): void {
-	let entity = ClassFromNative(id, class_name, entity_name)
+function CreateEntity(id: number, class_name: string, entity_name: Nullable<string>) {
+	const entity = ClassFromNative(id, class_name, entity_name)
 	entity.ClassName = class_name
 	CreateEntityInternal(entity, id)
 }
@@ -290,12 +252,18 @@ function DumpStreamPosition(
 }
 
 let entities_symbols: string[] = []
-function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], EntityPropertyType[], string, EntityPropertyType] {
-	let ent_class = entities_symbols[stream.ReadUint16()]
+function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = false): Nullable<Entity> {
+	const m_nameStringableIndex = is_create ? stream.ReadInt32() : -1
+	const ent_class = entities_symbols[stream.ReadUint16()]
 	VisibilityMask.set(ent_id, true)
-	const ent_node = ent_props.get(ent_id) ?? new Map()
-	let changed_paths: number[] = [],
-		chaged_paths_results: EntityPropertyType[] = []
+	if (!ent_props.has(ent_id)) {
+		ent_props.set(ent_id, new Map())
+		if (is_create)
+			CreateEntity(ent_id, ent_class, StringTables.GetString("EntityNames", m_nameStringableIndex))
+	}
+	const ent = EntityManager.EntityByIndex(ent_id)
+	const ent_handlers = ent !== undefined ? cached_field_handlers.get(ent.constructor as Constructor<Entity>) : undefined
+	const ent_node = ent_props.get(ent_id)!
 	for (let path_size = 0; (path_size = stream.ReadUint8()) !== 0;) {
 		let prop_node = ent_node
 		for (let i = 0; i < path_size; i++) {
@@ -321,6 +289,7 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], Ent
 			} else {
 				let map = prop_node as Map<string, EntityPropertyType>
 				let sym = entities_symbols[id]
+				let res: EntityPropertyType
 				if (i !== path_size - 1) {
 					if (!map.has(sym)) {
 						let next_must_be_array = stream.ReadUint16() & 1
@@ -328,17 +297,24 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number): [number[], Ent
 						map.set(sym, next_must_be_array ? [] : new Map())
 					}
 					prop_node = map.get(sym)!
-					chaged_paths_results.push(prop_node)
+					res = prop_node
 				} else {
 					let prop = ParseProperty(stream)
 					map.set(sym, prop)
-					chaged_paths_results.push(prop)
+					res = prop
 				}
-				changed_paths.push(id)
+				if (ent !== undefined && ent_handlers !== undefined) {
+					if (cached_m_fGameTime === undefined || id !== cached_m_fGameTime[1] || ent.constructor !== cached_m_fGameTime[0]) {
+						let cb = ent_handlers.get(id)
+						if (cb !== undefined)
+							cb(ent, res)
+					} else
+						delayed_tick_call = [ent, res]
+				}
 			}
 		}
 	}
-	return [changed_paths, chaged_paths_results, ent_class, ent_node]
+	return ent
 }
 
 function FixType(symbols: string[], field: any): string {
@@ -445,27 +421,14 @@ declare class ${name} {
 						break
 					}
 					case EntityPVS.CREATE: {
-						let [changed_paths, chaged_paths_results, ent_class, ent_node] = ParseEntityUpdate(stream, ent_id)
-						ent_props.set(ent_id, ent_node)
-						let stringtables_id = EntityManager.GetEntityPropertyByPath(ent_id, ["m_pEntity", "m_nameStringableIndex"]) as number
-						CreateEntity(ent_id, ent_class, StringTables.GetString("EntityNames", stringtables_id))
-						let ent = EntityManager.EntityByIndex(ent_id)
-						if (ent !== undefined) {
-							if (changed_paths.length !== 0)
-								ApplyChanges(ent, [changed_paths, chaged_paths_results])
+						const ent = ParseEntityUpdate(stream, ent_id, true)
+						if (ent !== undefined)
 							EventsSDK.emit("PostEntityCreated", false, ent)
-						}
 						break
 					}
-					case EntityPVS.UPDATE: {
-						let [changed_paths, chaged_paths_results] = ParseEntityUpdate(stream, ent_id)
-						if (changed_paths.length !== 0) {
-							let ent = EntityManager.EntityByIndex(ent_id)
-							if (ent !== undefined)
-								ApplyChanges(ent, [changed_paths, chaged_paths_results])
-						}
+					case EntityPVS.UPDATE:
+						ParseEntityUpdate(stream, ent_id)
 						break
-					}
 				}
 			}
 			if (delayed_tick_call !== undefined) {

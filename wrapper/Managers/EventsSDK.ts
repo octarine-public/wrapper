@@ -26,12 +26,13 @@ interface EventsSDK extends EventEmitter {
 	 */
 	on(name: "GameEnded", callback: () => void): EventEmitter
 	/**
-	 * Emitted about ALL entities that have Valid flag. This callback is best suited for use.
-	 * Also, this event emitted about ALL entities that have already been created (and valids) before reloading scripts
+	 * This event gets emitted before anything gets passed anywhere else, right after entity creation
+	 * This callback is best suited for caching entities by their class (instanceof)
 	 */
 	on(name: "EntityCreated", callback: (ent: Entity) => void): EventEmitter
 	/**
 	 * Emitted after all entity properties handlers were called, a.k.a. entity is fully set up
+	 * This callback is best suited for use.
 	 */
 	on(name: "PostEntityCreated", callback: (ent: Entity) => void): EventEmitter
 	on(name: "EntityDestroyed", callback: (ent: Entity) => void): EventEmitter

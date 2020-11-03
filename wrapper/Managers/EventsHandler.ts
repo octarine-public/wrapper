@@ -877,7 +877,7 @@ export function SetGameInProgress(new_val: boolean) {
 	}
 	gameInProgress = new_val
 }
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PostEntityCreated", ent => {
 	EventsSDK.emit("LifeStateChanged", false, ent)
 	if (ent instanceof Unit) {
 		EventsSDK.emit("TeamVisibilityChanged", false, ent)
