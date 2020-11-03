@@ -35,7 +35,7 @@ export class WorldPolygon {
 		return !this.IsOutside(point)
 	}
 	public IsOutside(point: Vector3) {
-		return this.PointInPolygon(point) !== 1
+		return this.PointInPolygon(point) === 0
 	}
 	private AddPoint(point: Vector3) {
 		this.Points.push(point)
