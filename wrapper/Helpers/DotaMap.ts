@@ -39,6 +39,12 @@ export class DotaMap {
 	public readonly DireMiddleRoute = DotaMap.Load("DireMiddleRoute")
 	public readonly DireBottomRoute = DotaMap.Load("DireBottomRoute")
 
+	// temporarily
+	public readonly DireTopDireTide = DotaMap.LoadPoly("DireTopDireTide")
+	public readonly DireBottomDireTide = DotaMap.LoadPoly("DireBottomDireTide")
+	public readonly RadiantTopDireTide = DotaMap.LoadPoly("RadiantTopDireTide")
+	public readonly RadiantBottomDireTide = DotaMap.LoadPoly("RadiantBottomDireTide")
+
 	public GetLane(unit: Unit): MapArea {
 		let pos = unit.Position
 		if (this.Top.IsInside(pos))
