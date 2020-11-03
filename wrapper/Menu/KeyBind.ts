@@ -332,9 +332,9 @@ function KeyHandler(key: VKeys, pressed: boolean): boolean {
 	IsPressing.set(key, pressed)
 
 	onExecute.forEach(keybind => {
-		if (!GameState.IsConnected && !keybind.activates_in_menu)
-			return
 		if (!Menu.trigger_on_chat && GameState.IsInputCaptured && !keybind.trigger_on_chat)
+			return
+		if (!GameState.IsConnected && !keybind.activates_in_menu && pressed) // pass un-press even in menu
 			return
 		keybind.is_pressed = pressed
 		keybind.OnValueChangedCBs.forEach(cb => cb(keybind))
