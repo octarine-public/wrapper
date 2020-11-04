@@ -44,7 +44,7 @@ class bitset {
 	}
 }
 
-export type EntityPropertyType = Map<string, EntityPropertyType> | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
+export type EntityPropertyType = EntityPropertiesNode | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
 let ent_props = new Map<number, EntityPropertyType>(),
 	VisibilityMask = new bitset(0x4000),
 	TreeActiveMask = new bitset(0x4000)
@@ -251,12 +251,28 @@ function DumpStreamPosition(
 }
 
 let entities_symbols: string[] = []
+export class EntityPropertiesNode {
+	public map = new Map<number, EntityPropertyType>()
+	public get(name: string): Nullable<EntityPropertyType> {
+		const id = entities_symbols.indexOf(name)
+		if (id === -1)
+			return undefined
+		return this.map.get(id)
+	}
+	public set(id: number, prop: EntityPropertyType): void {
+		this.map.set(id, prop)
+	}
+	public has(id: number): boolean {
+		return this.map.has(id)
+	}
+}
+
 function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = false): Nullable<Entity> {
 	const m_nameStringableIndex = is_create ? stream.ReadInt32() : -1
 	const ent_class = entities_symbols[stream.ReadUint16()]
 	VisibilityMask.set(ent_id, true)
 	if (!ent_props.has(ent_id)) {
-		ent_props.set(ent_id, new Map())
+		ent_props.set(ent_id, new EntityPropertiesNode())
 		if (is_create)
 			CreateEntity(ent_id, ent_class, StringTables.GetString("EntityNames", m_nameStringableIndex))
 	}
@@ -273,7 +289,7 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 			id >>= 1
 			if (must_be_array && !Array.isArray(prop_node))
 				throw `Expected array at ${DumpStreamPosition(ent_class, stream, i)}`
-			if (!must_be_array && !(prop_node instanceof Map))
+			if (!must_be_array && (typeof prop_node !== "object" || prop_node.constructor !== EntityPropertiesNode))
 				throw `Expected map at ${DumpStreamPosition(ent_class, stream, i)}`
 
 			if (must_be_array) {
@@ -282,25 +298,24 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 					if (ar[id] === undefined) {
 						let next_must_be_array = stream.ReadUint16() & 1
 						stream.RelativeSeek(-2) // uint16 = 2 bytes
-						ar[id] = next_must_be_array ? [] : new Map()
+						ar[id] = next_must_be_array ? [] : new EntityPropertiesNode()
 					}
 					prop_node = ar[id]
 				} else
 					ar[id] = ParseProperty(stream)
 			} else {
-				const map = prop_node as Map<string, EntityPropertyType>,
-					sym = entities_symbols[id]
+				const map = prop_node as EntityPropertiesNode
 				let res: EntityPropertyType
 				if (i !== path_size - 1) {
-					if (!map.has(sym)) {
+					if (!map.has(id)) {
 						const next_must_be_array = stream.ReadUint16() & 1
 						stream.RelativeSeek(-2) // uint16 = 2 bytes
-						map.set(sym, next_must_be_array ? [] : new Map())
+						map.set(id, next_must_be_array ? [] : new EntityPropertiesNode())
 					}
-					prop_node = res = map.get(sym)!
+					prop_node = res = map.map.get(id)!
 				} else {
 					const prop = res = ParseProperty(stream)
-					map.set(sym, prop)
+					map.set(id, prop)
 				}
 				if (ent !== undefined && ent_handlers !== undefined) {
 					const i = changed_paths.indexOf(id)

@@ -1,4 +1,4 @@
-import EntityManager, { EntityPropertyType } from "../../Managers/EntityManager"
+import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
 import Entity from "../Base/Entity"
 import Player from "../Base/Player"
 import EventsSDK from "../../Managers/EventsSDK"
@@ -27,10 +27,10 @@ export default class CPlayerResource extends Entity {
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerTeamData", (resource, new_val) => {
-	resource.PlayerTeamData = (new_val as Map<string, EntityPropertyType>[]).map(map => new PlayerTeamData(map))
+	resource.PlayerTeamData = (new_val as EntityPropertiesNode[]).map(map => new PlayerTeamData(map))
 })
 RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (resource, new_val) => {
-	resource.PlayerData = (new_val as Map<string, EntityPropertyType>[]).map(map => new PlayerData(map))
+	resource.PlayerData = (new_val as EntityPropertiesNode[]).map(map => new PlayerData(map))
 })
 
 export let PlayerResource: Nullable<CPlayerResource>

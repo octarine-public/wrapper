@@ -1,5 +1,5 @@
 import Entity from "./Entity"
-import EntityManager, { EntityPropertyType } from "../../Managers/EntityManager"
+import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
 import TreeModelReplacement from "../../Base/TreeModelReplacement"
 import DataTeamPlayer from "../../Base/DataTeamPlayer"
 import Vector2 from "../../Base/Vector2"
@@ -54,9 +54,9 @@ export default class TeamData extends Entity {
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, new_val) => {
-	data.DataTeam = (new_val as Map<string, EntityPropertyType>[]).map(map => new DataTeamPlayer(map))
+	data.DataTeam = (new_val as EntityPropertiesNode[]).map(map => new DataTeamPlayer(map))
 })
 RegisterFieldHandler(TeamData, "m_vecWorldTreeModelReplacements", (data, new_val) => {
-	data.WorldTreeModelReplacements = (new_val as Map<string, EntityPropertyType>[]).map(map => new TreeModelReplacement(map))
+	data.WorldTreeModelReplacements = (new_val as EntityPropertiesNode[]).map(map => new TreeModelReplacement(map))
 })
 RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, new_value) => EntityManager.SetWorldTreeState(new_value as bigint[]))

@@ -2,7 +2,7 @@ import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { Team } from "../../Enums/Team"
-import { default as EntityManager, EntityPropertyType } from "../../Managers/EntityManager"
+import { default as EntityManager, EntityPropertiesNode } from "../../Managers/EntityManager"
 import { DegreesToRadian } from "../../Utils/Math"
 import EventsSDK from "../../Managers/EventsSDK"
 import Player from "../../Objects/Base/Player"
@@ -65,12 +65,10 @@ export default class Entity {
 	public TotalStrength = 0
 	@NetworkedBasicField("m_hOwnerEntity")
 	private Owner_ = 0
+	@NetworkedBasicField("CBodyComponent")
+	public CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
 
-	private readonly PersonalProps: Nullable<Map<string, EntityPropertyType>>
-
-	constructor(public readonly Index: number) {
-		this.PersonalProps = EntityManager.GetEntityProperties(this.Index) as Map<string, EntityPropertyType>
-	}
+	constructor(public readonly Index: number) { }
 
 	public get IsVisible(): boolean {
 		return EntityManager.IsEntityVisible(this.Index)
@@ -143,9 +141,6 @@ export default class Entity {
 		return false
 	}
 
-	public GetPropertyByName(name: string): Nullable<EntityPropertyType> {
-		return this.PersonalProps?.get(name)
-	}
 	public Distance(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.Position
@@ -247,7 +242,7 @@ export default class Entity {
 	}
 }
 
-function QuantitizedVecCoordToCoord(cell: number, inside: number): number {
+function QuantitizedVecCoordToCoord(cell: Nullable<number>, inside: Nullable<number>): number {
 	return ((cell ?? 0) - 128) * 128 + (inside ?? 0)
 }
 
@@ -280,26 +275,26 @@ RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
 
 RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
 	new_val as number,
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_vecX") as number
+	ent.CBodyComponent_?.get("m_vecX") as Nullable<number>
 ))
 RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_cellX") as number,
+	ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
 	new_val as number
 ))
 RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
 	new_val as number,
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_vecY") as number
+	ent.CBodyComponent_?.get("m_vecY") as Nullable<number>
 ))
 RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_cellY") as number,
+	ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
 	new_val as number
 ))
 RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
 	new_val as number,
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_vecZ") as number
+	ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>
 ))
 RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
-	(ent.GetPropertyByName("CBodyComponent") as Map<string, EntityPropertyType>)?.get("m_cellZ") as number,
+	ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
 	new_val as number
 ))
 

@@ -5,7 +5,7 @@ import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 import Entity, { LocalPlayer } from "../Base/Entity"
 import EventsSDK from "../../Managers/EventsSDK"
 import GameState from "../../Utils/GameState"
-import EntityManager, { EntityPropertyType } from "../../Managers/EntityManager"
+import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
 import Unit from "./Unit"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
@@ -105,8 +105,8 @@ RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 		EventsSDK.emit("Tick", false)
 })
 RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, new_val) => {
-	game.NeutralSpawnBoxes = (new_val as Map<string, EntityPropertyType>[]).map(map => new NeutralSpawnBox(map))
+	game.NeutralSpawnBoxes = (new_val as EntityPropertiesNode[]).map(map => new NeutralSpawnBox(map))
 })
 RegisterFieldHandler(CGameRules, "m_vecItemStockInfo", (game, new_val) => {
-	game.StockInfo = (new_val as Map<string, EntityPropertyType>[]).map(map => new StockInfo(map))
+	game.StockInfo = (new_val as EntityPropertiesNode[]).map(map => new StockInfo(map))
 })

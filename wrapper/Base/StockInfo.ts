@@ -1,9 +1,9 @@
 import { Team } from "../Enums/Team"
-import { EntityPropertyType } from "../Managers/EntityManager"
+import { EntityPropertiesNode } from "../Managers/EntityManager"
 import AbilityData from "../Objects/DataBook/AbilityData"
 
 export default class StockInfo {
-	constructor(public readonly properties: Map<string, EntityPropertyType>) { }
+	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get AbilityData(): AbilityData {
 		return AbilityData.global_storage.get(this.AbilityName) ?? AbilityData.empty

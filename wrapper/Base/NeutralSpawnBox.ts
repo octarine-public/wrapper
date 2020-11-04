@@ -1,9 +1,9 @@
-import { EntityPropertyType } from "../Managers/EntityManager"
+import { EntityPropertiesNode } from "../Managers/EntityManager"
 import Vector3 from "./Vector3"
 import Vector2 from "./Vector2"
 
 export default class NeutralSpawnBox {
-	constructor(public readonly properties: Map<string, EntityPropertyType>) { }
+	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get MinBounds(): Vector3 {
 		return this.properties.get("m_vMinBounds") as Vector3

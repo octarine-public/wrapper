@@ -1,7 +1,7 @@
-import { EntityPropertyType } from "../Managers/EntityManager"
+import { EntityPropertiesNode } from "../Managers/EntityManager"
 
 export default class DataTeamPlayer {
-	constructor(public readonly properties: Map<string, EntityPropertyType>) { }
+	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get TotalEarnedGold(): number {
 		return this.properties.get("m_iTotalEarnedGold") as number

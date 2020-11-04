@@ -1,8 +1,8 @@
-import { EntityPropertyType } from "../Managers/EntityManager"
+import { EntityPropertiesNode } from "../Managers/EntityManager"
 import { Team } from "../Enums/Team"
 
 export default class PlayerData {
-	constructor(public readonly properties: Map<string, EntityPropertyType>) { }
+	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get IsValid(): boolean {
 		return this.properties.get("m_bIsValid") as boolean

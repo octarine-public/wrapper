@@ -1,7 +1,7 @@
-import { EntityPropertyType } from "../Managers/EntityManager"
+import { EntityPropertiesNode } from "../Managers/EntityManager"
 
 export default class TreeModelReplacement {
-	constructor(public readonly properties: Map<string, EntityPropertyType>) { }
+	constructor(public readonly properties: EntityPropertiesNode) { }
 
 	public get BinaryObjectID(): number {
 		return this.properties.get("m_nBinaryObjectID") as number
