@@ -533,7 +533,7 @@ message CMsgSosSetLibraryStackFields {
 `)
 
 Events.on("ServerMessage", (msg_id, buf_len) => {
-	const buf = ServerMessageBuffer.slice(0, buf_len)
+	const buf = ServerMessageBuffer.subarray(0, buf_len)
 	switch (msg_id) {
 		case 4: {
 			const msg = ParseProtobufNamed(buf, "CNETMsg_Tick")
@@ -571,7 +571,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE: {
 					let submsg = msg.get("create_particle") as RecursiveProtobuf
 					let particleSystemHandle = submsg.get("particle_name_index") as bigint
-					let ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number),
+					const ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number),
 						path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
 					if (path === undefined)
 						break
@@ -612,7 +612,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				// }
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENT: {
 					let submsg = msg.get("update_particle_ent") as RecursiveProtobuf
-					let ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number)
+					const ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number)
 					EventsSDK.emit(
 						"ParticleUpdatedEnt", false,
 						index,
@@ -702,8 +702,8 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				seed = (msg.get("seed") as number) ?? 0,
 				start_time = (msg.get("start_time") as number) ?? -1,
 				packed_params = msg.get("packed_params") as Nullable<Uint8Array>
-			let ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle)
-			let position = new Vector3()
+			const ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle),
+				position = new Vector3()
 			if (packed_params !== undefined) {
 				if (packed_params.byteLength >= 19) {
 					const stream = new BinaryStream(new DataView(packed_params.buffer))
@@ -727,7 +727,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		case 488: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_UnitEvent")
 			let handle = msg.get("entity_index") as number
-			let ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle)
+			const ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle)
 			if (ent instanceof Entity && !(ent instanceof Unit))
 				break
 			switch (msg.get("msg_type") as EDotaEntityMessages) {
@@ -811,7 +811,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		}
 		case 520: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_DotaBloodImpact")
-			let ent = EntityManager.EntityByIndex(msg.get("entity") as number)
+			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (ent === undefined)
 				break
 			EventsSDK.emit(
@@ -825,7 +825,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		}
 		case 521: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_UnitAnimation")
-			let ent = EntityManager.EntityByIndex(msg.get("entity") as number)
+			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
 			EventsSDK.emit(
@@ -841,7 +841,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		}
 		case 522: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_UnitAnimationEnd")
-			let ent = EntityManager.EntityByIndex(msg.get("entity") as number)
+			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
 			EventsSDK.emit("UnitAnimationEnd", false, ent, msg.get("snap") as boolean)

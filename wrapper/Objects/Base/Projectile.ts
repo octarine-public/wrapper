@@ -94,7 +94,7 @@ export class TrackingProjectile extends Projectile {
 		if (this.IsDodged)
 			return undefined
 		if (!(this.TargetEntity instanceof Entity)) {
-			let ent = EntityManager.EntityByIndex(this.TargetEntity as number)
+			const ent = EntityManager.EntityByIndex(this.TargetEntity as number)
 			if (ent !== undefined)
 				return this.TargetEntity = ent
 		}

@@ -128,8 +128,8 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 	switch (msg_id) {
 		case 471: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_CreateLinearProjectile")
-			let particle_system_handle = msg.get("particle_index") as bigint
-			let projectile = new LinearProjectile(
+			const particle_system_handle = msg.get("particle_index") as bigint
+			const projectile = new LinearProjectile(
 				msg.get("handle") as number,
 				EntityManager.EntityByIndex(msg.get("entindex") as number),
 				(particle_system_handle !== undefined ? Manifest.GetPathByHash(particle_system_handle) : undefined)!,
@@ -150,7 +150,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		}
 		case 472: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_DestroyLinearProjectile")
-			let projectile = ProjectileManager.AllLinearProjectilesMap.get(msg.get("handle") as number)
+			const projectile = ProjectileManager.AllLinearProjectilesMap.get(msg.get("handle") as number)
 			if (projectile === undefined)
 				return
 			EventsSDK.emit("LinearProjectileDestroyed", false, projectile)
@@ -160,12 +160,12 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		}
 		case 473: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_DodgeTrackingProjectiles")
-			let handle = msg.get("entindex") as number
-			let ent = EntityManager.EntityByIndex(handle)
+			const handle = msg.get("entindex") as number
+			const ent = EntityManager.EntityByIndex(handle)
 			EventsSDK.emit("TrackingProjectilesDodged", false, ent ?? ServerHandleToIndex(handle))
 			if (ent === undefined)
 				break
-			let attacks_only = msg.get("attacks_only") as boolean
+			const attacks_only = msg.get("attacks_only") as boolean
 			ProjectileManager.AllTrackingProjectiles.filter(proj =>
 				proj.IsDodgeable
 				&& proj.Target === ent
@@ -175,8 +175,8 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		}
 		case 518: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_Projectile")
-			let particle_system_handle = msg.get("particleSystemHandle") as bigint
-			let projectile = new TrackingProjectile(
+			const particle_system_handle = msg.get("particleSystemHandle") as bigint
+			const projectile = new TrackingProjectile(
 				msg.get("handle") as number,
 				EntityManager.EntityByIndex(msg.get("hSource") as number),
 				EntityManager.EntityByIndex(msg.get("hTarget") as number),
@@ -198,8 +198,8 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		}
 		case 519: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_ProjectileLoc")
-			let target = EntityManager.EntityByIndex(msg.get("hTarget") as number)
-			let handle = msg.get("handle") as number,
+			const target = EntityManager.EntityByIndex(msg.get("hTarget") as number)
+			const handle = msg.get("handle") as number,
 				launch_tick = msg.get("launch_tick") as number,
 				expire_time = msg.get("expireTime") as number,
 				move_speed = msg.get("moveSpeed") as number,
@@ -207,8 +207,8 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				is_attack = msg.get("isAttack") as boolean,
 				particle_system_handle = msg.get("particleSystemHandle") as bigint,
 				TargetLoc = CMsgVectorToVector3(msg.get("vTargetLoc") as RecursiveProtobuf)
-			let projectile = ProjectileManager.AllTrackingProjectilesMap.get(handle),
-				path = (particle_system_handle !== undefined ? Manifest.GetPathByHash(particle_system_handle) : undefined)!
+			const path = (particle_system_handle !== undefined ? Manifest.GetPathByHash(particle_system_handle) : undefined)!
+			let projectile = ProjectileManager.AllTrackingProjectilesMap.get(handle)
 
 			if (projectile === undefined) {
 				projectile = new TrackingProjectile(
@@ -248,7 +248,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		}
 		case 571: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_DestroyProjectile")
-			let projectile = ProjectileManager.AllTrackingProjectilesMap.get(msg.get("handle") as number)
+			const projectile = ProjectileManager.AllTrackingProjectilesMap.get(msg.get("handle") as number)
 			if (projectile !== undefined)
 				DestroyTrackingProjectile(projectile)
 			break

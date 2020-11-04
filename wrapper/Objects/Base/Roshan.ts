@@ -44,11 +44,11 @@ EventsSDK.on("GameEvent", (name, obj) => {
 		last_event_ent = -1
 
 	if (name === "entity_hurt") {
-		let ent = EntityManager.EntityByIndex(obj.entindex_killed) ?? obj.entindex_killed
+		const ent = EntityManager.EntityByIndex(obj.entindex_killed) ?? obj.entindex_killed
 		if (ent === Roshan.Instance)
 			Roshan.HP = Math.max(Math.round(Roshan.HP - obj.damage), 0)
 	} else if (name === "entity_killed") {
-		let ent = EntityManager.EntityByIndex(obj.entindex_killed) ?? obj.entindex_killed
+		const ent = EntityManager.EntityByIndex(obj.entindex_killed) ?? obj.entindex_killed
 		if (ent === Roshan.Instance) {
 			Roshan.HP = 0
 			Roshan.MaxHP = 0

@@ -71,7 +71,6 @@ export default class Unit extends Entity {
 	public NetworkActivity = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
 	public HPRegen = 0
-	public HPRegenCounter = 0
 	@NetworkedBasicField("m_flManaThinkRegen")
 	public ManaRegen = 0
 	@NetworkedBasicField("m_bIsAncient")
@@ -444,7 +443,7 @@ export default class Unit extends Entity {
 		return itemsSpellAmp + spellsSpellAmp
 	}
 	public get Name(): string {
-		return this.UnitName_ || super.Name
+		return this.UnitName_
 	}
 	public get HasFlyingVision(): boolean {
 		return this.HasMoveCapability(DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY) || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
@@ -511,7 +510,7 @@ export default class Unit extends Entity {
 		return this.ModifiersBook.GetBuffByName(name)
 	}
 	public HasBuffByName(name: string): boolean {
-		return this.ModifiersBook.GetBuffByName(name) !== undefined
+		return this.ModifiersBook.HasBuffByName(name)
 	}
 	/**
 	 * faster (Distance <= range)
@@ -1046,12 +1045,16 @@ import { RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/Nativ
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
 	const old_name = unit.Name
 	unit.UnitName_ = new_value >= 0 ? (UnitNameIndexToString(new_value as number) ?? "") : ""
+	if (unit.UnitName_ === "")
+		unit.UnitName_ = unit.Name_
 	if (old_name !== unit.Name)
 		UnitNameChanged(unit)
 })
 ReplaceFieldHandler(Unit, "m_nameStringableIndex", (unit, new_val) => {
 	const old_name = unit.Name
 	unit.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? unit.Name_
+	if (unit.UnitName_ === "")
+		unit.UnitName_ = unit.Name_
 	if (old_name !== unit.Name)
 		UnitNameChanged(unit)
 })

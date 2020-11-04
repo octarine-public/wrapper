@@ -8,6 +8,7 @@ import Item from "./Item"
 import ExecuteOrder from "../../Native/ExecuteOrder"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
+import EventsSDK from "../../Managers/EventsSDK"
 
 @WrapperClass("C_DOTAPlayer")
 export default class Player extends Entity {
@@ -19,25 +20,11 @@ export default class Player extends Entity {
 	public TotalEarnedGold = 0
 	@NetworkedBasicField("m_iTotalEarnedXP")
 	public TotalEarnedXP = 0
+	public Hero: Nullable<Hero> = undefined
 	public Hero_ = 0
 
 	public get IsSpectator(): boolean {
 		return this.Team === Team.Observer || this.Team === Team.Neutral || this.Team === Team.None || this.Team === Team.Undefined
-	}
-	public get Hero(): Nullable<Hero> {
-		const hero = EntityManager.EntityByIndex(this.Hero_)
-		if (hero instanceof Hero)
-			return hero
-		const ent = EntityManager.GetEntitiesByClass(Hero).find(hero =>
-			hero.PlayerID === this.PlayerID
-			&& hero.CanBeMainHero
-		)
-		if (ent !== undefined) {
-			this.Hero_ = ent.Index
-			if (this === LocalPlayer)
-				SetGameInProgress(true)
-		}
-		return ent
 	}
 	public CannotUseItem(item: Item): boolean {
 		return item.Shareability === EShareAbility.ITEM_NOT_SHAREABLE && this.PlayerID !== item.PurchaserID
@@ -58,3 +45,31 @@ export default class Player extends Entity {
 		return ExecuteOrder.Scan(position, queue, showEffects)
 	}
 }
+
+import { RegisterFieldHandler } from "../NativeToSDK"
+RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => {
+	player.Hero_ = (new_value as number) & 0x3FFF
+	const ent = EntityManager.EntityByIndex(player.Hero_)
+	player.Hero = ent instanceof Hero ? ent : undefined
+})
+
+EventsSDK.on("PostEntityCreated", ent => {
+	if (!(ent instanceof Hero) || !ent.CanBeMainHero)
+		return
+	EntityManager.GetEntitiesByClass(Player).forEach(player => {
+		if (ent.PlayerID !== player.PlayerID || ent.Index !== player.Hero_)
+			return
+		player.Hero = ent
+		if (player === LocalPlayer)
+			SetGameInProgress(true)
+	})
+})
+
+EventsSDK.on("EntityCreated", ent => {
+	if (!(ent instanceof Hero))
+		return
+	EntityManager.GetEntitiesByClass(Player).forEach(player => {
+		if (player.Hero === ent)
+			player.Hero = undefined
+	})
+})

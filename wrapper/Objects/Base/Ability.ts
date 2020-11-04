@@ -52,7 +52,7 @@ export default class Ability extends Entity {
 	}
 
 	public get Owner(): Nullable<Unit> {
-		return super.Owner as Nullable<Unit>
+		return this.OwnerEntity as Nullable<Unit>
 	}
 	public get AbilityBehavior(): DOTA_ABILITY_BEHAVIOR[] {
 		return MaskToArrayNumber(this.AbilityData.AbilityBehavior)

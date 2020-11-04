@@ -29,6 +29,7 @@ class bitset {
 	public reset() { this.ar = this.ar.fill(0) }
 
 	public get(pos: number): boolean {
+		// uint32 = 4 bytes, 1 byte = 8 bits
 		return (this.ar[(pos / (4 * 8)) | 0] & (1 << (pos % (4 * 8)))) !== 0
 	}
 	public set(pos: number, new_val: boolean): void {
@@ -46,7 +47,6 @@ class bitset {
 
 export type EntityPropertyType = EntityPropertiesNode | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
 let ent_props = new Map<number, EntityPropertyType>(),
-	VisibilityMask = new bitset(0x4000),
 	TreeActiveMask = new bitset(0x4000)
 class CEntityManager {
 	public get AllEntities(): Entity[] {
@@ -60,10 +60,6 @@ class CEntityManager {
 		if (index === mask || index === 0)
 			return undefined
 		return AllEntitiesAsMap.get(index)
-	}
-
-	public GetEntityByFilter(filter: (ent: Entity) => boolean): Nullable<Entity> {
-		return AllEntities.find(filter)
 	}
 
 	public GetEntitiesByClass<T>(class_: Constructor<T>, flags: DOTA_UNIT_TARGET_TEAM = DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_BOTH): T[] {
@@ -81,9 +77,6 @@ class CEntityManager {
 			default:
 				return []
 		}
-	}
-	public IsEntityVisible(ent_id: number): boolean {
-		return ((ent_id & 0x4000) !== 0) || VisibilityMask.get(ent_id)
 	}
 	public IsTreeActive(binary_id: number): boolean {
 		return TreeActiveMask.get(binary_id)
@@ -142,8 +135,8 @@ export function DeleteEntity(id: number): void {
 	ArrayExtensions.arrayRemove(AllEntities, entity)
 
 	EventsSDK.emit("EntityDestroyed", false, entity)
+	entity.IsVisible = false
 	ent_props.delete(id)
-	VisibilityMask.set(id, false)
 	GetSDKClasses().forEach(([class_]) => {
 		if (!(entity instanceof class_))
 			return
@@ -275,13 +268,14 @@ export class EntityPropertiesNode {
 function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = false): Nullable<Entity> {
 	const m_nameStringableIndex = is_create ? stream.ReadInt32() : -1
 	const ent_class = entities_symbols[stream.ReadUint16()]
-	VisibilityMask.set(ent_id, true)
 	if (!ent_props.has(ent_id)) {
 		ent_props.set(ent_id, new EntityPropertiesNode())
 		if (is_create)
 			CreateEntity(ent_id, ent_class, StringTables.GetString("EntityNames", m_nameStringableIndex))
 	}
-	const ent = EntityManager.EntityByIndex(ent_id)
+	const ent = AllEntitiesAsMap.get(ent_id)
+	if (ent !== undefined)
+		ent.IsVisible = true
 	const ent_handlers = ent !== undefined ? cached_field_handlers.get(ent.constructor as Constructor<Entity>) : undefined
 	const ent_node = ent_props.get(ent_id)!
 	const changed_paths: number[] = [],
@@ -438,10 +432,11 @@ declare class ${name} {
 						DeleteEntity(ent_id)
 						break
 					case EntityPVS.LEAVE: {
-						VisibilityMask.set(ent_id, false)
 						const ent = EntityManager.EntityByIndex(ent_id)
-						if (ent !== undefined)
+						if (ent !== undefined) {
 							ent.BecameDormantTime = GameState.RawGameTime
+							ent.IsVisible = false
+						}
 						break
 					}
 					case EntityPVS.CREATE: {

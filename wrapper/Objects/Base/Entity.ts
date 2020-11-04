@@ -63,21 +63,19 @@ export default class Entity {
 	public TotalAgility = 0
 	public TotalIntellect = 0
 	public TotalStrength = 0
-	@NetworkedBasicField("m_hOwnerEntity")
-	private Owner_ = 0
+	public Owner_ = 0
+	public OwnerEntity: Nullable<Entity> = undefined
 	@NetworkedBasicField("CBodyComponent")
 	public CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
+	public IsVisible = true
 
 	constructor(public readonly Index: number) { }
 
-	public get IsVisible(): boolean {
-		return EntityManager.IsEntityVisible(this.Index)
-	}
 	public get Name(): string {
 		return this.Name_
 	}
 	public get Owner(): Nullable<Entity> {
-		return EntityManager.EntityByIndex(this.Owner_)
+		return this.OwnerEntity
 	}
 	public get RootOwner(): Nullable<Entity> {
 		let owner = this.Owner
@@ -273,6 +271,27 @@ RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
 		EventsSDK.emit("EntityNameChanged", false, ent)
 })
 
+RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => {
+	ent.Owner_ = (new_val as number) & 0x3FFF
+	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
+})
+EventsSDK.on("EntityCreated", ent => {
+	if (ent.Index === 0)
+		return
+	EntityManager.AllEntities.forEach(iter => {
+		if (iter.Owner_ === ent.Index)
+			iter.OwnerEntity = ent
+	})
+})
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent.Index === 0)
+		return
+	EntityManager.AllEntities.forEach(iter => {
+		if (iter.Owner_ === ent.Index)
+			iter.OwnerEntity = undefined
+	})
+})
+
 RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
 	new_val as number,
 	ent.CBodyComponent_?.get("m_vecX") as Nullable<number>
@@ -301,7 +320,7 @@ RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => EntityVisualPositions[e
 EventsSDK.on("GameEvent", (name, obj) => {
 	if (name !== "entity_hurt")
 		return
-	let ent = EntityManager.EntityByIndex(obj.entindex_killed)
+	const ent = EntityManager.EntityByIndex(obj.entindex_killed)
 	if (ent === undefined || !ent.IsAlive)
 		return
 	ent.HP = Math.max(Math.round(ent.HP - obj.damage), 1)

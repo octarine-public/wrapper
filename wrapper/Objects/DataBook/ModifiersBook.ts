@@ -12,6 +12,9 @@ export default class ModifiersBook {
 	public GetBuffByName(name: string): Nullable<Modifier> {
 		return this.Buffs.find(buff => buff.Name === name)
 	}
+	public HasBuffByName(name: string): boolean {
+		return this.Buffs.some(buff => buff.Name === name)
+	}
 	public GetBuffByRegexp(regex: RegExp): Nullable<Modifier> {
 		return this.Buffs.find(buff => regex.test(buff.Name))
 	}
@@ -19,9 +22,6 @@ export default class ModifiersBook {
 		let buff: Nullable<Modifier>
 		names.some(name => (buff = this.GetBuffByName(name)) !== undefined)
 		return buff
-	}
-	public HasBuffByName(name: string): boolean {
-		return this.Buffs.some(buff => buff.Name === name)
 	}
 	public HasAnyBuffByNames(names: string[]): boolean {
 		return names.some(name => this.GetBuffByName(name) !== undefined)

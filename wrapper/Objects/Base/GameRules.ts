@@ -6,7 +6,6 @@ import Entity, { LocalPlayer } from "../Base/Entity"
 import EventsSDK from "../../Managers/EventsSDK"
 import GameState from "../../Utils/GameState"
 import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
-import Unit from "./Unit"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
 @WrapperClass("C_DOTAGamerulesProxy")
@@ -85,20 +84,6 @@ import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 	const was_zero = game.RawGameTime === 0
 	GameState.RawGameTime = game.RawGameTime = new_val as number
-	EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
-		if (!unit.IsVisible || !unit.IsAlive)
-			return
-		let buff = unit.GetBuffByName("modifier_ice_blast")
-		if (buff === undefined || buff.RemainingTime === 0) {
-			const regen_amount = (unit.HPRegen * 0.1) + unit.HPRegenCounter
-			unit.HPRegenCounter = regen_amount
-			const regen_amount_floor = Math.floor(regen_amount)
-			if (regen_amount_floor !== 0) {
-				unit.HP = Math.min(unit.HP + regen_amount_floor, unit.MaxHP)
-				unit.HPRegenCounter -= regen_amount_floor
-			}
-		}
-	})
 	if (was_zero)
 		EntityManager.AllEntities.forEach(ent => ent.FakeCreateTime_ = game.RawGameTime)
 	if (LocalPlayer !== undefined)
