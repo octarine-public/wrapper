@@ -252,12 +252,17 @@ function DumpStreamPosition(
 
 let entities_symbols: string[] = []
 export class EntityPropertiesNode {
+	private static entities_symbols_cached = new Map<string, number>()
 	public map = new Map<number, EntityPropertyType>()
 	public get(name: string): Nullable<EntityPropertyType> {
-		const id = entities_symbols.indexOf(name)
-		if (id === -1)
+		let cached_id = EntityPropertiesNode.entities_symbols_cached.get(name)
+		if (cached_id === undefined) {
+			cached_id = entities_symbols.indexOf(name)
+			EntityPropertiesNode.entities_symbols_cached.set(name, cached_id)
+		}
+		if (cached_id === -1)
 			return undefined
-		return this.map.get(id)
+		return this.map.get(cached_id)
 	}
 	public set(id: number, prop: EntityPropertyType): void {
 		this.map.set(id, prop)
