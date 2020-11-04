@@ -17,7 +17,7 @@ export default class UnitData {
 			throw `Unknown unit name: ${name}`
 		return data.HeroID
 	}
-	public static GetHeroNameByID(id: number | string): string {
+	public static GetHeroNameByID(id: number): string {
 		for (let [name, data] of UnitData.global_storage)
 			if (data.HeroID === id)
 				return name
