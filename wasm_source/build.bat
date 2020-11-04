@@ -2,6 +2,7 @@
 	-DLODEPNG_NO_COMPILE_ENCODER ^
 	-DLODEPNG_NO_COMPILE_DISK ^
 	-DLODEPNG_NO_COMPILE_ERROR_TEXT ^
+	-s TOTAL_MEMORY=8MB ^
 	-s ALLOW_MEMORY_GROWTH=1 ^
 	-o ../scripts_files/wrapper.wasm ^
 	lz4.cc ^
