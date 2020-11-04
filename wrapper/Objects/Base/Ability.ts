@@ -48,7 +48,7 @@ export default class Ability extends Entity {
 	constructor(Index: number, name: string) {
 		super(Index)
 		this.Name_ = name
-		this.AbilityData = new AbilityData(this.Name)
+		this.AbilityData = AbilityData.global_storage.get(this.Name) ?? AbilityData.empty
 	}
 
 	public get Owner(): Nullable<Unit> {

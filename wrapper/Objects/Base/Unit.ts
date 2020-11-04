@@ -22,6 +22,7 @@ import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import RendererSDK from "../../Native/RendererSDK"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import * as StringTables from "../../Managers/StringTables"
 
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
@@ -52,7 +53,7 @@ export default class Unit extends Entity {
 		return false
 	}
 
-	public UnitData = new UnitData("")
+	public UnitData = UnitData.empty
 
 	public readonly Inventory = new Inventory(this)
 	public readonly ModifiersBook = new ModifiersBook(this)
@@ -1036,13 +1037,23 @@ export default class Unit extends Entity {
 	}
 }
 
-import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+function UnitNameChanged(unit: Unit) {
+	unit.UnitData = UnitData.global_storage.get(unit.Name) ?? UnitData.empty
+	EventsSDK.emit("EntityNameChanged", false, unit)
+}
+
+import { RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
 	const old_name = unit.Name
 	unit.UnitName_ = new_value >= 0 ? (UnitNameIndexToString(new_value as number) ?? "") : ""
-	unit.UnitData = new UnitData(unit.Name)
 	if (old_name !== unit.Name)
-		EventsSDK.emit("EntityNameChanged", false, unit)
+		UnitNameChanged(unit)
+})
+ReplaceFieldHandler(Unit, "m_nameStringableIndex", (unit, new_val) => {
+	const old_name = unit.Name
+	unit.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? unit.Name_
+	if (old_name !== unit.Name)
+		UnitNameChanged(unit)
 })
 RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => {
 	unit.IsVisibleForTeamMask = new_value as number

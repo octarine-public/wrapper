@@ -4,30 +4,26 @@ import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
 
 function LoadUnitFile(path: string): RecursiveMap {
-	let kv = parseKVFile(path)
+	const kv = parseKVFile(path)
 	return (kv.get("DOTAUnits") as RecursiveMap) ?? (kv.get("DOTAHeroes") as RecursiveMap) ?? new Map()
 }
 
 export default class UnitData {
-	public static global_storage: RecursiveMap
+	public static global_storage: Map<string, UnitData>
+	public static empty = new UnitData("", new Map())
 	public static GetHeroID(name: string): number {
-		let storage = UnitData.global_storage.get(name)
-		if (!(storage instanceof Map))
-			throw "Invalid storage type for hero name " + name
-		return storage.has("HeroID") ? parseInt(storage.get("HeroID") as string) : 0
+		const data = UnitData.global_storage.get(name)
+		if (data === undefined)
+			throw `Unknown unit name: ${name}`
+		return data.HeroID
 	}
 	public static GetHeroNameByID(id: number | string): string {
-		let id_str = id.toString()
-		for (let [name, map] of UnitData.global_storage) {
-			if (!(map instanceof Map))
-				continue
-			if (id_str === (map.get("HeroID") as string))
+		for (let [name, data] of UnitData.global_storage)
+			if (data.HeroID === id)
 				return name
-		}
 		return ""
 	}
 
-	public readonly m_Storage: RecursiveMap
 	public readonly HeroID: number
 	public readonly ModelName: string
 	public readonly MovementTurnRate: number
@@ -42,11 +38,7 @@ export default class UnitData {
 	public readonly HasInventory: boolean
 	public readonly HealthBarOffset: number
 
-	constructor(name: string) {
-		{
-			let storage = UnitData.global_storage.get(name)
-			this.m_Storage = storage instanceof Map ? storage : new Map()
-		}
+	constructor(name: string, public readonly m_Storage: RecursiveMap) {
 		this.HeroID = this.m_Storage.has("HeroID")
 			? parseInt(this.m_Storage.get("HeroID") as string)
 			: 0
@@ -86,11 +78,28 @@ export default class UnitData {
 }
 
 export function ReloadGlobalUnitStorage() {
-	UnitData.global_storage = new Map([
+	UnitData.global_storage = new Map()
+	const tmp = new Map([
 		...LoadUnitFile("scripts/npc/npc_units.txt").entries(),
 		...LoadUnitFile("scripts/npc/npc_units_custom.txt").entries(),
 		...LoadUnitFile("scripts/npc/npc_heroes.txt").entries(),
 		...LoadUnitFile("scripts/npc/npc_heroes_custom.txt").entries(),
 	]) as RecursiveMap
+	tmp.forEach((map, unit_name) => {
+		if (!(map instanceof Map))
+			return
+		if (map.has("BaseClass")) {
+			let base_name = map.get("BaseClass")
+			if (typeof base_name === "string") {
+				let base_map = tmp.get(base_name)
+				if (base_map instanceof Map)
+					base_map.forEach((v, k) => {
+						if (!map.has(k))
+							map.set(k, v)
+					})
+			}
+		}
+		UnitData.global_storage.set(unit_name, new UnitData(unit_name, map))
+	})
 }
 ReloadGlobalUnitStorage()

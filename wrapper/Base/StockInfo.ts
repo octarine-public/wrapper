@@ -6,7 +6,7 @@ export default class StockInfo {
 	constructor(public readonly properties: Map<string, EntityPropertyType>) { }
 
 	public get AbilityData(): AbilityData {
-		return new AbilityData(this.AbilityName)
+		return AbilityData.global_storage.get(this.AbilityName) ?? AbilityData.empty
 	}
 	public get AbilityName(): string {
 		return AbilityData.GetAbilityNameByID(this.AbilityID)

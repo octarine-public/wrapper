@@ -7,18 +7,19 @@ function LoadAbilityFile(path: string): RecursiveMap {
 }
 
 export default class AbilityData {
-	public static global_storage: Map<string, RecursiveMap>
+	public static global_storage: Map<string, AbilityData>
+	public static empty = new AbilityData("", new Map())
 	public static GetAbilityID(name: string): number {
-		let storage = AbilityData.global_storage.get(name)
-		if (storage === undefined)
-			throw `Invalid storage type for ability name ${name}`
-		return storage.has("ID") ? parseInt(storage.get("ID") as string) : 0
+		let data = AbilityData.global_storage.get(name)
+		if (data === undefined)
+			throw `Unknown ability name: ${name}`
+		return data.ID
 	}
 	public static GetAbilityTexturePath(name: string): string {
-		let storage = AbilityData.global_storage.get(name)
-		if (!(storage instanceof Map))
-			throw `Invalid storage type for ability name ${name}`
-		return storage.get("AbilityTexturePath") as string
+		let data = AbilityData.global_storage.get(name)
+		if (data === undefined)
+			throw `Unknown ability name: ${name}`
+		return data.TexturePath
 	}
 	public static GetAbilityNameByID(id: number): string {
 		let id_str = id.toString()
@@ -31,7 +32,6 @@ export default class AbilityData {
 		return ""
 	}
 
-	public readonly m_Storage: RecursiveMap
 	public readonly AbilityBehavior: number // DOTA_ABILITY_BEHAVIOR bitmask
 	public readonly AbilityType: ABILITY_TYPES
 	public readonly MaxLevel: number
@@ -64,11 +64,7 @@ export default class AbilityData {
 	private readonly ChargesCache: number[]
 	private readonly ChargeRestoreTimeCache: number[]
 
-	constructor(name: string) {
-		{
-			let storage = AbilityData.global_storage.get(name)
-			this.m_Storage = storage instanceof Map ? storage : new Map()
-		}
+	constructor(name: string, public readonly m_Storage: RecursiveMap) {
 		this.AbilityBehavior = this.m_Storage.has("AbilityBehavior")
 			? parseEnumString(DOTA_ABILITY_BEHAVIOR, this.m_Storage.get("AbilityBehavior") as string)
 			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
@@ -310,7 +306,7 @@ function AbilityNameToPath(name: string, strip = false): string {
 
 export function ReloadGlobalAbilityStorage() {
 	AbilityData.global_storage = new Map()
-	let tmp = new Map([
+	const tmp = new Map([
 		...LoadAbilityFile("scripts/npc/npc_abilities.txt").entries(),
 		...LoadAbilityFile("scripts/npc/npc_abilities_custom.txt").entries(),
 		...LoadAbilityFile("scripts/npc/items.txt").entries(),
@@ -320,25 +316,14 @@ export function ReloadGlobalAbilityStorage() {
 		if (!(map instanceof Map))
 			return
 		if (map.has("BaseClass")) {
-			let base_name = map.get("BaseClass")
+			const base_name = map.get("BaseClass")
 			if (typeof base_name === "string") {
-				let base_map = tmp.get(base_name)
-				if (base_map instanceof Map) {
-					let map_ = map
-					map = base_map
-					map_.forEach((val, key) => (map as RecursiveMap).set(key, val))
-
-					{
-						let tex_name = map.get("AbilityTextureName")
-						let path = typeof tex_name === "string" ? AbilityNameToPath(tex_name, false) : ""
-						if (path && !fexists(path))
-							path = AbilityNameToPath(abil_name)
-						let path2 = AbilityNameToPath(base_name)
-						if (fexists(path2))
-							path = path2
-						map.set("AbilityTexturePath", path)
-					}
-				}
+				const base_map = tmp.get(base_name)
+				if (base_map instanceof Map)
+					base_map.forEach((v, k) => {
+						if (!map.has(k))
+							map.set(k, v)
+					})
 			}
 		}
 		if (!map.has("AbilityTexturePath") || !fexists(map.get("AbilityTexturePath") as string)) {
@@ -358,7 +343,7 @@ export function ReloadGlobalAbilityStorage() {
 			}
 			map.set("AbilityTexturePath", path)
 		}
-		AbilityData.global_storage.set(abil_name, map)
+		AbilityData.global_storage.set(abil_name, new AbilityData(abil_name, map))
 	})
 }
 ReloadGlobalAbilityStorage()
