@@ -5,7 +5,7 @@ import EntityManager from "./EntityManager"
 import Unit from "../Objects/Base/Unit"
 import { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
 import { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
-import Entity, { LocalPlayer } from "../Objects/Base/Entity"
+import Entity, { LocalPlayer, OnLocalPlayerDeleted } from "../Objects/Base/Entity"
 import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
 import Manifest from "./Manifest"
@@ -878,6 +878,12 @@ export function SetGameInProgress(new_val: boolean) {
 	}
 	gameInProgress = new_val
 }
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent === LocalPlayer) {
+		OnLocalPlayerDeleted()
+		SetGameInProgress(false)
+	}
+})
 EventsSDK.on("PostEntityCreated", ent => {
 	EventsSDK.emit("LifeStateChanged", false, ent)
 	if (ent instanceof Unit) {

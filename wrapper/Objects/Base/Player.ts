@@ -1,9 +1,8 @@
 import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
-import Entity, { LocalPlayer, OnLocalPlayerDeleted } from "./Entity"
+import Entity, { LocalPlayer } from "./Entity"
 import Hero from "./Hero"
 import { SetGameInProgress } from "../../Managers/EventsHandler"
-import EventsSDK from "../../Managers/EventsSDK"
 import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 import Item from "./Item"
 import ExecuteOrder from "../../Native/ExecuteOrder"
@@ -33,8 +32,11 @@ export default class Player extends Entity {
 			hero.PlayerID === this.PlayerID
 			&& hero.CanBeMainHero
 		)
-		if (ent !== undefined)
+		if (ent !== undefined) {
 			this.Hero_ = ent.Index
+			if (this === LocalPlayer)
+				SetGameInProgress(true)
+		}
 		return ent
 	}
 	public CannotUseItem(item: Item): boolean {
@@ -56,16 +58,3 @@ export default class Player extends Entity {
 		return ExecuteOrder.Scan(position, queue, showEffects)
 	}
 }
-
-import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => {
-	player.Hero_ = new_value as number
-	if (player === LocalPlayer && player.Hero !== undefined)
-		SetGameInProgress(true)
-})
-EventsSDK.on("EntityDestroyed", ent => {
-	if (ent === LocalPlayer) {
-		OnLocalPlayerDeleted()
-		SetGameInProgress(false)
-	}
-})
