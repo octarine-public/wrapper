@@ -101,6 +101,7 @@ function UpdateVisuals() {
 	ConVars.Set("fow_client_nofiltering", !fow_convars.value)
 	ConVars.Set("dota_use_particle_fow", !fow_convars.value)
 	ConVars.Set("dota_unit_orders_rate", 512)
+	ConVars.Set("fps_max", 0)
 }
 
 EventsSDK.on("Draw", UpdateVisuals)
