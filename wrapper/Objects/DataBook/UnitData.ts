@@ -38,41 +38,41 @@ export default class UnitData {
 	public readonly HasInventory: boolean
 	public readonly HealthBarOffset: number
 
-	constructor(name: string, public readonly m_Storage: RecursiveMap) {
-		this.HeroID = this.m_Storage.has("HeroID")
-			? parseInt(this.m_Storage.get("HeroID") as string)
+	constructor(name: string, m_Storage: RecursiveMap) {
+		this.HeroID = m_Storage.has("HeroID")
+			? parseInt(m_Storage.get("HeroID") as string)
 			: 0
-		this.ModelName = (this.m_Storage.get("Model") as string) ?? "models/dev/error.vmdl"
-		this.MovementTurnRate = this.m_Storage.has("MovementTurnRate")
-			? parseFloat(this.m_Storage.get("MovementTurnRate") as string)
+		this.ModelName = (m_Storage.get("Model") as string) ?? "models/dev/error.vmdl"
+		this.MovementTurnRate = m_Storage.has("MovementTurnRate")
+			? parseFloat(m_Storage.get("MovementTurnRate") as string)
 			: 0
-		this.AttackAnimationPoint = this.m_Storage.has("AttackAnimationPoint")
-			? parseFloat(this.m_Storage.get("AttackAnimationPoint") as string)
+		this.AttackAnimationPoint = m_Storage.has("AttackAnimationPoint")
+			? parseFloat(m_Storage.get("AttackAnimationPoint") as string)
 			: 0
-		this.ProjectileSpeed = this.m_Storage.has("ProjectileSpeed")
-			? parseInt(this.m_Storage.get("ProjectileSpeed") as string)
+		this.ProjectileSpeed = m_Storage.has("ProjectileSpeed")
+			? parseInt(m_Storage.get("ProjectileSpeed") as string)
 			: 0
-		this.AttackDamageType = this.m_Storage.has("CombatClassAttack")
-			? parseInt(this.m_Storage.get("CombatClassAttack") as string)
+		this.AttackDamageType = m_Storage.has("CombatClassAttack")
+			? parseInt(m_Storage.get("CombatClassAttack") as string)
 			: AttackDamageType.Basic
-		this.ArmorType = this.m_Storage.has("CombatClassDefend")
-			? parseInt(this.m_Storage.get("CombatClassDefend") as string)
+		this.ArmorType = m_Storage.has("CombatClassDefend")
+			? parseInt(m_Storage.get("CombatClassDefend") as string)
 			: ArmorType.Basic
-		this.BoundsHull = this.m_Storage.has("BoundsHullName")
-			? parseEnumString(DOTAHullSize, this.m_Storage.get("BoundsHullName") as string)
+		this.BoundsHull = m_Storage.has("BoundsHullName")
+			? parseEnumString(DOTAHullSize, m_Storage.get("BoundsHullName") as string)
 			: DOTAHullSize.DOTA_HULL_SIZE_HERO
-		this.RingRadius = this.m_Storage.has("RingRadius")
-			? parseInt(this.m_Storage.get("RingRadius") as string)
+		this.RingRadius = m_Storage.has("RingRadius")
+			? parseInt(m_Storage.get("RingRadius") as string)
 			: 70
-		this.MinimapIcon = (this.m_Storage.get("MinimapIcon") as string) ?? name
-		this.MinimapIconSize = this.m_Storage.has("MinimapIconSize")
-			? parseInt(this.m_Storage.get("MinimapIconSize") as string)
+		this.MinimapIcon = (m_Storage.get("MinimapIcon") as string) ?? name
+		this.MinimapIconSize = m_Storage.has("MinimapIconSize")
+			? parseInt(m_Storage.get("MinimapIconSize") as string)
 			: -1
-		this.HasInventory = this.m_Storage.has("HasInventory")
-			? parseInt(this.m_Storage.get("HasInventory") as string) !== 0
+		this.HasInventory = m_Storage.has("HasInventory")
+			? parseInt(m_Storage.get("HasInventory") as string) !== 0
 			: true
-		this.HealthBarOffset = this.m_Storage.has("HealthBarOffset")
-			? parseInt(this.m_Storage.get("HealthBarOffset") as string)
+		this.HealthBarOffset = m_Storage.has("HealthBarOffset")
+			? parseInt(m_Storage.get("HealthBarOffset") as string)
 			: 200
 	}
 }

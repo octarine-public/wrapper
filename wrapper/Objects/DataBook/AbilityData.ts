@@ -64,98 +64,95 @@ export default class AbilityData {
 	private readonly ChargesCache: number[]
 	private readonly ChargeRestoreTimeCache: number[]
 
-	constructor(name: string, public readonly m_Storage: RecursiveMap) {
-		this.AbilityBehavior = this.m_Storage.has("AbilityBehavior")
-			? parseEnumString(DOTA_ABILITY_BEHAVIOR, this.m_Storage.get("AbilityBehavior") as string)
+	constructor(name: string, m_Storage: RecursiveMap) {
+		this.AbilityBehavior = m_Storage.has("AbilityBehavior")
+			? parseEnumString(DOTA_ABILITY_BEHAVIOR, m_Storage.get("AbilityBehavior") as string)
 			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
-		this.AbilityType = this.m_Storage.has("AbilityType")
-			? (ABILITY_TYPES as any)[(this.m_Storage.get("AbilityType") as string).substring(5)]
+		this.AbilityType = m_Storage.has("AbilityType")
+			? (ABILITY_TYPES as any)[(m_Storage.get("AbilityType") as string).substring(5)]
 			: ABILITY_TYPES.ABILITY_TYPE_BASIC
-		this.MaxLevel = this.m_Storage.has("MaxLevel")
-			? parseInt(this.m_Storage.get("MaxLevel") as string)
+		this.MaxLevel = m_Storage.has("MaxLevel")
+			? parseInt(m_Storage.get("MaxLevel") as string)
 			: this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
 				? 3
 				: 4
-		this.TexturePath = this.m_Storage.get("AbilityTexturePath") as string
-		this.TargetFlags = this.m_Storage.has("AbilityUnitTargetFlags")
-			? parseEnumString(DOTA_UNIT_TARGET_FLAGS, this.m_Storage.get("AbilityUnitTargetFlags") as string)
+		this.TexturePath = m_Storage.get("AbilityTexturePath") as string
+		this.TargetFlags = m_Storage.has("AbilityUnitTargetFlags")
+			? parseEnumString(DOTA_UNIT_TARGET_FLAGS, m_Storage.get("AbilityUnitTargetFlags") as string)
 			: DOTA_UNIT_TARGET_FLAGS.DOTA_UNIT_TARGET_FLAG_NONE
-		this.TargetTeam = this.m_Storage.has("AbilityUnitTargetTeam")
-			? parseEnumString(DOTA_UNIT_TARGET_TEAM, this.m_Storage.get("AbilityUnitTargetTeam") as string)
+		this.TargetTeam = m_Storage.has("AbilityUnitTargetTeam")
+			? parseEnumString(DOTA_UNIT_TARGET_TEAM, m_Storage.get("AbilityUnitTargetTeam") as string)
 			: DOTA_UNIT_TARGET_TEAM.DOTA_UNIT_TARGET_TEAM_NONE
-		this.TargetType = this.m_Storage.has("AbilityUnitTargetType")
-			? parseEnumString(DOTA_UNIT_TARGET_TYPE, this.m_Storage.get("AbilityUnitTargetType") as string)
+		this.TargetType = m_Storage.has("AbilityUnitTargetType")
+			? parseEnumString(DOTA_UNIT_TARGET_TYPE, m_Storage.get("AbilityUnitTargetType") as string)
 			: DOTA_UNIT_TARGET_TYPE.DOTA_UNIT_TARGET_NONE
-		this.SharedCooldownName = (this.m_Storage.get("AbilitySharedCooldown") as string) ?? name
-		this.ModelName = (this.m_Storage.get("Model") as string) ?? ""
-		this.AlternateModelName = (this.m_Storage.get("ModelAlternate") as string) ?? ""
+		this.SharedCooldownName = (m_Storage.get("AbilitySharedCooldown") as string) ?? name
+		this.ModelName = (m_Storage.get("Model") as string) ?? ""
+		this.AlternateModelName = (m_Storage.get("ModelAlternate") as string) ?? ""
 		// this.ItemRecipeName = m_pAbilityData.m_pszItemRecipeName
 		this.IsItem = name.startsWith("item_")
-		this.IsGrantedByScepter = this.m_Storage.has("IsGrantedByScepter")
-			? parseInt(this.m_Storage.get("IsGrantedByScepter") as string) !== 0
+		this.IsGrantedByScepter = m_Storage.has("IsGrantedByScepter")
+			? parseInt(m_Storage.get("IsGrantedByScepter") as string) !== 0
 			: false
-		this.ID = this.m_Storage.has("ID")
-			? parseInt(this.m_Storage.get("ID") as string)
+		this.ID = m_Storage.has("ID")
+			? parseInt(m_Storage.get("ID") as string)
 			: 0
-		this.EffectName = (this.m_Storage.get("Effect") as string) ?? ""
-		this.Cost = this.m_Storage.has("ItemCost")
-			? parseInt(this.m_Storage.get("ItemCost") as string)
+		this.EffectName = (m_Storage.get("Effect") as string) ?? ""
+		this.Cost = m_Storage.has("ItemCost")
+			? parseInt(m_Storage.get("ItemCost") as string)
 			: 0
-		this.DamageType = this.m_Storage.has("AbilityUnitDamageType")
-			? parseEnumString(DAMAGE_TYPES, this.m_Storage.get("AbilityUnitDamageType") as string)
+		this.DamageType = m_Storage.has("AbilityUnitDamageType")
+			? parseEnumString(DAMAGE_TYPES, m_Storage.get("AbilityUnitDamageType") as string)
 			: DAMAGE_TYPES.DAMAGE_TYPE_NONE
 		// this.DispellableType = this.m_pAbilityData.m_iAbilityDispellableType
-		this.LevelsBetweenUpgrades = this.m_Storage.has("LevelsBetweenUpgrades")
-			? parseInt(this.m_Storage.get("LevelsBetweenUpgrades") as string)
+		this.LevelsBetweenUpgrades = m_Storage.has("LevelsBetweenUpgrades")
+			? parseInt(m_Storage.get("LevelsBetweenUpgrades") as string)
 			: -1
-		this.RequiredLevel = this.m_Storage.has("RequiredLevel")
-			? parseInt(this.m_Storage.get("RequiredLevel") as string)
+		this.RequiredLevel = m_Storage.has("RequiredLevel")
+			? parseInt(m_Storage.get("RequiredLevel") as string)
 			: this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
 				? 6
 				: 1
-		this.AbilityImmunityType = this.m_Storage.has("SpellImmunityType")
-			? parseEnumString(SPELL_IMMUNITY_TYPES, this.m_Storage.get("SpellImmunityType") as string)
+		this.AbilityImmunityType = m_Storage.has("SpellImmunityType")
+			? parseEnumString(SPELL_IMMUNITY_TYPES, m_Storage.get("SpellImmunityType") as string)
 			: SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_NONE
-		this.ItemDisplayCharges = this.m_Storage.has("ItemDisplayCharges")
-			? parseInt(this.m_Storage.get("ItemDisplayCharges") as string) !== 0
+		this.ItemDisplayCharges = m_Storage.has("ItemDisplayCharges")
+			? parseInt(m_Storage.get("ItemDisplayCharges") as string) !== 0
 			: false
-		this.ItemHideCharges = this.m_Storage.has("ItemHideCharges")
-			? parseInt(this.m_Storage.get("ItemHideCharges") as string) !== 0
+		this.ItemHideCharges = m_Storage.has("ItemHideCharges")
+			? parseInt(m_Storage.get("ItemHideCharges") as string) !== 0
 			: true
-		this.Duration = this.GetLevelArray("AbilityDuration")
-		this.CastRangeCache = this.GetLevelArray("AbilityCastRange")
-		this.ChannelTimeCache = this.GetLevelArray("AbilityChannelTime")
-		this.AbilityDamageCache = this.GetLevelArray("AbilityDamage")
-		this.CastPointCache = this.GetLevelArray("AbilityCastPoint")
-		this.ChargesCache = this.GetLevelArray("AbilityCharges")
-		this.ChargeRestoreTimeCache = this.GetLevelArray("AbilityChargeRestoreTime")
+		this.Duration = this.GetLevelArray(m_Storage.get("AbilityDuration") as Nullable<string>)
+		this.CastRangeCache = this.GetLevelArray(m_Storage.get("AbilityCastRange") as Nullable<string>)
+		this.ChannelTimeCache = this.GetLevelArray(m_Storage.get("AbilityChannelTime") as Nullable<string>)
+		this.AbilityDamageCache = this.GetLevelArray(m_Storage.get("AbilityDamage") as Nullable<string>)
+		this.CastPointCache = this.GetLevelArray(m_Storage.get("AbilityCastPoint") as Nullable<string>)
+		this.ChargesCache = this.GetLevelArray(m_Storage.get("AbilityCharges") as Nullable<string>)
+		this.ChargeRestoreTimeCache = this.GetLevelArray(m_Storage.get("AbilityChargeRestoreTime") as Nullable<string>)
+		this.CacheSpecialValues(m_Storage)
 	}
 
-	public GetSpecialValue(name: string, level = 0): number {
+	public GetSpecialValue(name: string, level = this.MaxLevel): number {
 		if (level <= 0)
-			level = this.MaxLevel
-		if (level < 0)
 			return 0
-		level = (level - 1)
-		let ar = this.CacheSpecialValue(name)
+		level = Math.min(level, this.MaxLevel) - 1
+		let ar = this.GetCachedSpecialValue(name)
 		if (ar === undefined)
 			return 0
 		return ar[0][level]
 	}
 
 	public GetLinkedSpecialBonus(name: string): Nullable<string> {
-		let ar = this.CacheSpecialValue(name)
+		let ar = this.GetCachedSpecialValue(name)
 		if (ar === undefined)
 			return undefined
 		return ar[1]
 	}
 	public GetSpecialValueWithTalent(owner: Unit, name: string, level: number): number {
 		if (level <= 0)
-			level = this.MaxLevel
-		if (level < 0)
 			return 0
-		level = (level - 1)
-		let ar = this.CacheSpecialValue(name)
+		level = Math.min(level, this.MaxLevel) - 1
+		let ar = this.GetCachedSpecialValue(name)
 		if (ar === undefined)
 			return 0
 		let base_val = ar[0][level]
@@ -245,35 +242,37 @@ export default class AbilityData {
 		return this.ChargeRestoreTimeCache[level]
 	}
 
-	private CacheSpecialValue(name: string): Nullable<[number[], Nullable<string>, EDOTASpecialBonusOperation]> {
+	private CacheSpecialValues(m_Storage: RecursiveMap) {
+		const AbilitySpecial = m_Storage.get("AbilitySpecial") as RecursiveMap
+		if (AbilitySpecial === undefined)
+			return
+		for (const special of AbilitySpecial.values()) {
+			if (!(special instanceof Map))
+				continue
+			for (const [name, str] of special) {
+				if (name === "var_type" || name === "LinkedSpecialBonus" || typeof str !== "string")
+					continue
+				let ar = str.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
+				this.ExtendLevelArray(ar)
+				let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
+				if (typeof LinkedSpecialBonus !== "string")
+					LinkedSpecialBonus = undefined
+				let LinkedSpecialBonusOperation_str = special.get("LinkedSpecialBonusOperation"),
+					LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+				if (typeof LinkedSpecialBonusOperation_str === "string")
+					LinkedSpecialBonusOperation = (EDOTASpecialBonusOperation as any)[LinkedSpecialBonusOperation_str] ?? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+				this.SpecialValueCache.set(name, [ar, LinkedSpecialBonus, LinkedSpecialBonusOperation] as [number[], Nullable<string>, EDOTASpecialBonusOperation])
+			}
+		}
+	}
+	private GetCachedSpecialValue(name: string) {
 		{
 			let ar = this.SpecialValueCache.get(name)
 			if (ar !== undefined)
 				return ar
 		}
-		let AbilitySpecial = this.m_Storage.get("AbilitySpecial") as RecursiveMap
-		if (AbilitySpecial === undefined)
-			return undefined
-		for (let special of AbilitySpecial.values()) {
-			if (!(special instanceof Map) || !special.has(name))
-				continue
-			let str = special.get(name) as string
-			let ar = str.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
-			this.ExtendLevelArray(ar)
-			let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
-			if (typeof LinkedSpecialBonus !== "string")
-				LinkedSpecialBonus = undefined
-			let LinkedSpecialBonusOperation_str = special.get("LinkedSpecialBonusOperation"),
-				LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-			if (typeof LinkedSpecialBonusOperation_str === "string")
-				LinkedSpecialBonusOperation = (EDOTASpecialBonusOperation as any)[LinkedSpecialBonusOperation_str] ?? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-			let ar2 = [ar, LinkedSpecialBonus, LinkedSpecialBonusOperation] as [number[], Nullable<string>, EDOTASpecialBonusOperation]
-			this.SpecialValueCache.set(name, ar2)
-			return ar2
-		}
-
 		// there's no such special - prevent further tries to find it since cache is static
-		let ar = [
+		const ar = [
 			new Array<number>(this.MaxLevel).fill(0),
 			undefined,
 			EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
@@ -289,8 +288,8 @@ export default class AbilityData {
 			ar.push(ar[ar.length - 1])
 		return ar
 	}
-	private GetLevelArray(name: string): number[] {
-		return this.ExtendLevelArray((this.m_Storage.get(name) as string | undefined)?.split(" ")?.map(parseFloat) ?? [])
+	private GetLevelArray(str: Nullable<string>): number[] {
+		return this.ExtendLevelArray(str?.split(" ")?.map(parseFloat) ?? [])
 	}
 }
 
