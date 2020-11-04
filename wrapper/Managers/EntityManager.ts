@@ -12,7 +12,6 @@ import { ParseProtobufNamed } from "../Utils/Protobuf"
 import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
 import { MapToObject } from "../Utils/Utils"
-import { StringToUTF16 } from "../Utils/ArrayBufferUtils"
 import * as StringTables from "./StringTables"
 import Vector4 from "../Base/Vector4"
 import { SignonState_t } from "../Enums/SignonState_t"
@@ -374,7 +373,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 						]
 					})
 				])
-				console.log("dump_CSVCMsg_FlattenedSerializer.d.ts", StringToUTF16(`\
+				console.log("dump_CSVCMsg_FlattenedSerializer.d.ts", `\
 import { Vector2, Vector3, QAngle, Vector4 } from "./src_ts/wrapper/Imports"
 
 type Color = number // 0xAABBGGRR?
@@ -387,7 +386,7 @@ ${list.map(([name, fields]) => `\
 declare class ${name} {
 	${(fields as [string, string][]).map(([type, f_name]) => `${f_name}: ${type}`).join("\n\t")}
 }`).join("\n\n")}
-`))
+`)
 			}
 			entities_symbols = msg.get("symbols") as string[]
 			for (let [construct, map] of GetFieldHandlers()) {
