@@ -2,6 +2,7 @@
 declare var IOBuffer: Float32Array // 64 floats in size
 declare var EntityVisualPositions: Float32Array
 declare var EntityVisualRotations: Float32Array
+declare var ServerMessageBuffer: Uint8Array
 /**
 struct CUnitOrder {
 	uint32_t order_type; // 0

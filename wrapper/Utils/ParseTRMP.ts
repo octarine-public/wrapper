@@ -4,7 +4,7 @@ import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 
 export function ParseTRMP(buf: ArrayBuffer): Vector3[] {
-	let stream = new BinaryStream(new DataView(buf))
+	const stream = new BinaryStream(new DataView(buf))
 	{
 		let magic = stream.ReadUint32(false)
 		if (magic !== 0x74726D70) { // trmp

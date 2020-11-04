@@ -123,10 +123,11 @@ message CDOTAUserMsg_TE_DestroyProjectile {
 	optional int32 handle = 1;
 }
 `)
-Events.on("ServerMessage", (msg_id, buf) => {
+Events.on("ServerMessage", (msg_id, buf_len) => {
+	const buf = ServerMessageBuffer.subarray(0, buf_len)
 	switch (msg_id) {
 		case 471: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_CreateLinearProjectile")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_CreateLinearProjectile")
 			let particle_system_handle = msg.get("particle_index") as bigint
 			let projectile = new LinearProjectile(
 				msg.get("handle") as number,
@@ -148,7 +149,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 472: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_DestroyLinearProjectile")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_DestroyLinearProjectile")
 			let projectile = ProjectileManager.AllLinearProjectilesMap.get(msg.get("handle") as number)
 			if (projectile === undefined)
 				return
@@ -158,7 +159,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 473: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_DodgeTrackingProjectiles")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_DodgeTrackingProjectiles")
 			let handle = msg.get("entindex") as number
 			let ent = EntityManager.EntityByIndex(handle)
 			EventsSDK.emit("TrackingProjectilesDodged", false, ent ?? ServerHandleToIndex(handle))
@@ -173,7 +174,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 518: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_Projectile")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_Projectile")
 			let particle_system_handle = msg.get("particleSystemHandle") as bigint
 			let projectile = new TrackingProjectile(
 				msg.get("handle") as number,
@@ -196,7 +197,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 519: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_ProjectileLoc")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_ProjectileLoc")
 			let target = EntityManager.EntityByIndex(msg.get("hTarget") as number)
 			let handle = msg.get("handle") as number,
 				launch_tick = msg.get("launch_tick") as number,
@@ -246,7 +247,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 571: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_DestroyProjectile")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_DestroyProjectile")
 			let projectile = ProjectileManager.AllTrackingProjectilesMap.get(msg.get("handle") as number)
 			if (projectile !== undefined)
 				DestroyTrackingProjectile(projectile)

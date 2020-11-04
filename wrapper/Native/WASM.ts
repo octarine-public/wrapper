@@ -301,12 +301,12 @@ export function MurmurHash64(buf: ArrayBuffer, seed = 0xEDABCDEF): bigint {
 	return WASMIOBufferBU64[0]
 }
 
-export function DecompressLZ4(buf: ArrayBuffer): Uint8Array {
+export function DecompressLZ4(buf: Uint8Array): Uint8Array {
 	if (buf === undefined)
 		return new Uint8Array()
 
 	let addr = wasm.my_malloc(buf.byteLength)
-	new Uint8Array(wasm.memory.buffer, addr).set(new Uint8Array(buf))
+	new Uint8Array(wasm.memory.buffer, addr).set(buf)
 
 	addr = wasm.DecompressLZ4(addr, buf.byteLength)
 	if (addr === 0)

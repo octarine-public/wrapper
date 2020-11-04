@@ -127,7 +127,7 @@ function ParseField(field: ProtoFieldDescription, value: ArrayBuffer | bigint): 
 		case ProtoType.TYPE_MESSAGE:
 			if (!(value instanceof ArrayBuffer))
 				throw "Invalid proto [9]"
-			return ParseProtobuf(value, field.proto_desc!)
+			return ParseProtobuf(new Uint8Array(value), field.proto_desc!)
 		case ProtoType.TYPE_STRING:
 			if (!(value instanceof ArrayBuffer))
 				throw "Invalid proto [10]"
@@ -165,7 +165,8 @@ function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): ProtobufFi
 			case ProtoType.TYPE_STRING: // Length-delimited: string, bytes, embedded messages
 			case ProtoType.TYPE_BYTES:
 			case ProtoType.TYPE_MESSAGE:
-				value2 = stream.ReadVarSlice()
+				// we do .slice().buffer to prevent referencing big buffer, and create out own copy of needed region
+				value2 = stream.ReadVarSlice().slice().buffer
 				break
 			case ProtoType.TYPE_GROUP: // group
 				throw "Groups are deprecated"
@@ -201,9 +202,9 @@ function DecodeField(map: RecursiveProtobuf, field: ProtoFieldDescription, value
 	}
 }
 
-export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescription): RecursiveProtobuf {
+export function ParseProtobuf(proto_buf: Uint8Array, proto_desc: ProtoDescription): RecursiveProtobuf {
 	let map: RecursiveProtobuf = new Map()
-	let stream = new BinaryStream(new DataView(proto_buf))
+	const stream = new BinaryStream(new DataView(proto_buf.buffer, proto_buf.byteOffset, proto_buf.byteLength))
 	while (!stream.Empty()) {
 		let tag = stream.ReadVarUintAsNumber()
 		let field_num = tag >> 3
@@ -217,7 +218,8 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 				value = stream.ReadUint64()
 				break
 			case 2: // Length-delimited: string, bytes, embedded messages, packed repeated fields
-				value = stream.ReadVarSlice()
+				// we do .slice().buffer to prevent referencing big ServerMessageBuffer, and create out own copy of needed region
+				value = stream.ReadVarSlice().slice().buffer
 				break
 			case 3: // start group
 			case 4: // end group
@@ -235,7 +237,7 @@ export function ParseProtobuf(proto_buf: ArrayBuffer, proto_desc: ProtoDescripti
 	}
 	return FillMessageDefaults(map, proto_desc)
 }
-export function ParseProtobufNamed(proto_buf: ArrayBuffer, name: string): RecursiveProtobuf {
+export function ParseProtobufNamed(proto_buf: Uint8Array, name: string): RecursiveProtobuf {
 	let ProtoCache_entry = ProtoCache.get(name)
 	if (ProtoCache_entry === undefined)
 		throw `Unknown type name ${name}`

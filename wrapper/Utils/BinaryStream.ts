@@ -37,50 +37,51 @@ export default class BinaryStream {
 		return val
 	}
 	public ReadUint16(littleEndian = true): number {
-		let res = this.view.getUint16(this.pos, littleEndian)
+		const res = this.view.getUint16(this.pos, littleEndian)
 		this.pos += 2
 		return res
 	}
 	public ReadInt16(littleEndian = true): number {
-		let res = this.view.getInt16(this.pos, littleEndian)
+		const res = this.view.getInt16(this.pos, littleEndian)
 		this.pos += 2
 		return res
 	}
 	public ReadUint32(littleEndian = true): number {
-		let res = this.view.getUint32(this.pos, littleEndian)
+		const res = this.view.getUint32(this.pos, littleEndian)
 		this.pos += 4
 		return res
 	}
 	public ReadInt32(littleEndian = true): number {
-		let res = this.view.getInt32(this.pos, littleEndian)
+		const res = this.view.getInt32(this.pos, littleEndian)
 		this.pos += 4
 		return res
 	}
 	public ReadUint64(littleEndian = true): bigint {
-		let res = this.view.getBigUint64(this.pos, littleEndian)
+		const res = this.view.getBigUint64(this.pos, littleEndian)
 		this.pos += 8
 		return res
 	}
 	public ReadInt64(littleEndian = true): bigint {
-		let res = this.view.getBigInt64(this.pos, littleEndian)
+		const res = this.view.getBigInt64(this.pos, littleEndian)
 		this.pos += 8
 		return res
 	}
 	public ReadFloat32(littleEndian = true): number {
-		let res = this.view.getFloat32(this.pos, littleEndian)
+		const res = this.view.getFloat32(this.pos, littleEndian)
 		this.pos += 4
 		return res
 	}
 	public ReadFloat64(littleEndian = true): number {
-		let res = this.view.getFloat64(this.pos, littleEndian)
+		const res = this.view.getFloat64(this.pos, littleEndian)
 		this.pos += 8
 		return res
 	}
 	public ReadBoolean(): boolean {
 		return this.ReadUint8() !== 0
 	}
-	public ReadSlice(size: number): ArrayBuffer {
-		let slice = this.view.buffer.slice(this.pos, this.pos + size)
+	// returns reference to original buffer instead of creating new one
+	public ReadSlice(size: number): Uint8Array {
+		const slice = new Uint8Array(this.view.buffer, this.view.byteOffset + this.pos, size)
 		this.RelativeSeek(size)
 		return slice
 	}
@@ -89,7 +90,7 @@ export default class BinaryStream {
 		let out = ""
 
 		while (size--) {
-			let c = this.ReadUint8()
+			const c = this.ReadUint8()
 			switch (c >> 4) {
 				case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
 					// 0xxxxxxx
@@ -123,7 +124,7 @@ export default class BinaryStream {
 		while (true) {
 			if (this.Empty())
 				return str
-			let b = this.ReadUint8()
+			const b = this.ReadUint8()
 			if (b === 0)
 				return str
 			str += String.fromCharCode(b)
@@ -131,16 +132,17 @@ export default class BinaryStream {
 	}
 	// https://github.com/SteamDatabase/ValveResourceFormat/blob/cceba491d7bb60890a53236a90970b24d0a4aba9/ValveResourceFormat/Utils/StreamHelpers.cs#L43
 	public ReadOffsetString(): string {
-		let offset = this.ReadUint32()
+		const offset = this.ReadUint32()
 		if (offset === 0)
 			return ""
-		let saved_pos = this.pos
+		const saved_pos = this.pos
 		this.pos += offset - 4 // offset from offset
-		let ret = this.ReadNullTerminatedString()
+		const ret = this.ReadNullTerminatedString()
 		this.pos = saved_pos
 		return ret
 	}
-	public ReadVarSlice(): ArrayBuffer {
+	// returns reference to original buffer instead of creating new one
+	public ReadVarSlice(): Uint8Array {
 		return this.ReadSlice(this.ReadVarUintAsNumber())
 	}
 	public ReadVarString(): string {

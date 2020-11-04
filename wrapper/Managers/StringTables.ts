@@ -12,8 +12,9 @@ EventsSDK.on("RemoveAllStringTables", () => StringTables.clear())
 EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (!StringTables.has(name))
 		StringTables.set(name, new Map())
-	let table = StringTables.get(name)!
-	update.forEach((val, key) => table.set(key, val))
+	const table = StringTables.get(name)!
+	// we do .slice().buffer to prevent referencing big ServerMessageBuffer, and create out own copy of needed region
+	update.forEach((val, key) => table.set(key, [val[0], val[1].slice().buffer]))
 })
 
 globalThis.DumpStringTables = () => {

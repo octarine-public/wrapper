@@ -100,7 +100,7 @@ declare interface Events extends EventEmitter {
 	on(name: "PostAddSearchPath", listener: (path: string) => void): EventEmitter
 	on(name: "RemoveSearchPath", listener: (path: string) => boolean): EventEmitter
 	on(name: "PostRemoveSearchPath", listener: (path: string) => void): EventEmitter
-	on(name: "ServerMessage", listener: (msg_id: number, buf: ArrayBuffer) => void): EventEmitter
+	on(name: "ServerMessage", listener: (msg_id: number, buf_len: number) => void): EventEmitter
 	on(name: "GCPingResponse", listener: () => boolean): EventEmitter
 	on(name: "MatchmakingStatsUpdated", listener: (data: CMsgDOTAMatchmakingStatsResponse) => void): EventEmitter
 	on(name: "ScriptsUpdated", listener: () => void): EventEmitter

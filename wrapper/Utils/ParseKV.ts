@@ -147,7 +147,7 @@ class KVParser {
 	private static readonly KV3_ENCODING_BINARY_UNCOMPRESSED = new Uint8Array([0x00, 0x05, 0x86, 0x1B, 0xD8, 0xF7, 0xC1, 0x40, 0xAD, 0x82, 0x75, 0xA4, 0x82, 0x67, 0xE7, 0x14]).buffer
 	private static readonly KV3_ENCODING_BINARY_BLOCK_LZ4 = new Uint8Array([0x8A, 0x34, 0x47, 0x68, 0xA1, 0x63, 0x5C, 0x4F, 0xA1, 0x97, 0x53, 0x80, 0x6F, 0xD9, 0xB1, 0x19]).buffer
 	/*private static BlockDecompress(buf: ArrayBuffer): ArrayBuffer {
-		let stream = new BinaryStream(new DataView(buf))
+		const  stream = new BinaryStream(new DataView(buf))
 		let flags = new Uint8Array(stream.ReadSlice(4))
 		if (HasBit(flags[3], 7))
 			return stream.ReadSlice(buf.byteLength - 4)
@@ -183,26 +183,26 @@ class KVParser {
 	private offset_64bit = -1
 	private count_64bit = 0
 	private binary_bytes_offset = -1
-	public ParseKV2(buf: ArrayBuffer): RecursiveMap {
+	public ParseKV2(buf: Uint8Array): RecursiveMap {
 		this.binary_bytes_offset = 0
-		let stream = new BinaryStream(new DataView(buf))
+		let stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 		stream.RelativeSeek(16) // format
 		let compression_method = stream.ReadUint32(),
 			data_offset = stream.ReadUint32(),
 			count_32bit = stream.ReadUint32()
 		this.count_64bit = stream.ReadUint32()
-		let kv3_buf: ArrayBuffer
+		let kv3_buf: Uint8Array
 		switch (compression_method) {
 			case 0:
 				kv3_buf = stream.ReadSlice(stream.ReadUint32())
 				break
 			case 1:
-				kv3_buf = DecompressLZ4(stream.ReadSlice(stream.Remaining)).buffer
+				kv3_buf = DecompressLZ4(stream.ReadSlice(stream.Remaining))
 				break
 			default:
 				throw `Unknown KV2 compression method: ${compression_method}`
 		}
-		stream = new BinaryStream(new DataView(kv3_buf))
+		stream = new BinaryStream(new DataView(kv3_buf.buffer, kv3_buf.byteOffset, kv3_buf.byteLength))
 		stream.pos = Math.ceil(data_offset / 4) * 4
 		let string_count = stream.ReadUint32()
 		let kv_data_offset = stream.pos
@@ -223,9 +223,10 @@ class KVParser {
 		stream.pos = kv_data_offset
 		return this.ParseBinaryKV(stream, true)
 	}
-	public ParseKV3(buf: ArrayBuffer): RecursiveMap {
-		let stream = new BinaryStream(new DataView(buf))
-		let encoding = stream.ReadSlice(16)
+	public ParseKV3(buf: Uint8Array): RecursiveMap {
+		let stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
+		// ReadSlice returns view to original buffer, but we need our own copy here, so we do .slice().buffer
+		const encoding = stream.ReadSlice(16).slice().buffer
 		stream.RelativeSeek(16) // format
 		if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_COMPRESSED)) {
 			console.log("BlockDecompress not supported now.")
@@ -233,9 +234,10 @@ class KVParser {
 			// stream = new BinaryStream(new DataView(KVParser.BlockDecompress(stream.ReadSlice(stream.Remaining))))
 		} else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_LZ4))
 			stream = new BinaryStream(new DataView(DecompressLZ4(stream.ReadSlice(stream.Remaining)).buffer))
-		else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_UNCOMPRESSED))
-			stream = new BinaryStream(new DataView(stream.ReadSlice(stream.Remaining)))
-		else
+		else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_UNCOMPRESSED)) {
+			const slice = stream.ReadSlice(stream.Remaining)
+			stream = new BinaryStream(new DataView(slice.buffer, slice.byteOffset, slice.byteLength))
+		} else
 			throw `Unrecognised KV3 Encoding: ${encoding.toString()}`
 
 		this.strings = new Array<string>(stream.ReadUint32())
@@ -727,9 +729,9 @@ function parseKVResource(buf: ArrayBuffer, DATA?: Nullable<[number, number]>, NT
 	if (DATA !== undefined && DATA[1] >= 4)
 		switch (new DataView(buf, DATA[0], 4).getUint32(0, true)) {
 			case 0x03564B56: // VKV\x03
-				return new KVParser().ParseKV3(new Uint8Array(buf).slice(DATA[0] + 4, DATA[0] + DATA[1]).buffer)
+				return new KVParser().ParseKV3(new Uint8Array(buf).subarray(DATA[0] + 4, DATA[0] + DATA[1]))
 			case 0x4B563301: // KV3\x01
-				return new KVParser().ParseKV2(new Uint8Array(buf).slice(DATA[0] + 4, DATA[0] + DATA[1]).buffer)
+				return new KVParser().ParseKV2(new Uint8Array(buf).subarray(DATA[0] + 4, DATA[0] + DATA[1]))
 		}
 	if (DATA !== undefined && NTRO !== undefined) {
 		let res = TryParseNTROResource(buf, DATA, NTRO)

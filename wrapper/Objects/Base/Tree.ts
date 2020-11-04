@@ -57,7 +57,7 @@ Events.on("ServerMessage", () => {
 		let map_name = GetLevelNameShort()
 		if (map_name === "start")
 			map_name = "dota"
-		let buf = fread(`maps/${map_name}.trm`)
+		const buf = fread(`maps/${map_name}.trm`)
 		if (buf !== undefined)
 			LoadTreeMap(buf)
 	} catch (e) {
@@ -70,7 +70,7 @@ Events.on("PostAddSearchPath", path => {
 	if (map_name === undefined)
 		return
 
-	let buf = fread(`maps/${map_name}.trm`)
+	const buf = fread(`maps/${map_name}.trm`)
 	if (buf === undefined)
 		return
 

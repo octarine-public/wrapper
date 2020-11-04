@@ -532,10 +532,11 @@ message CMsgSosSetLibraryStackFields {
 }
 `)
 
-Events.on("ServerMessage", (msg_id, buf) => {
+Events.on("ServerMessage", (msg_id, buf_len) => {
+	const buf = ServerMessageBuffer.slice(0, buf_len)
 	switch (msg_id) {
 		case 4: {
-			let msg = ParseProtobufNamed(buf, "CNETMsg_Tick")
+			const msg = ParseProtobufNamed(buf, "CNETMsg_Tick")
 			EventsSDK.emit(
 				"ServerTick", false,
 				msg.get("tick") as number,
@@ -552,7 +553,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			EventsSDK.emit('ServerInfo', false, ParseProtobufNamed(buf, "CSVCMsg_ServerInfo"))
 			break
 		case 45: { // we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
-			let stream = new BinaryStream(new DataView(buf))
+			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 			let table_name = stream.ReadVarString(),
 				update = new Map<number, [string, ArrayBuffer]>()
 			while (!stream.Empty())
@@ -564,7 +565,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			EventsSDK.emit("RemoveAllStringTables", false)
 			break
 		case 145: {
-			let msg = ParseProtobufNamed(buf, "CUserMsg_ParticleManager")
+			const msg = ParseProtobufNamed(buf, "CUserMsg_ParticleManager")
 			let index = msg.get("index") as number
 			switch (msg.get("type") as PARTICLE_MESSAGE) {
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE: {
@@ -690,7 +691,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 208: {
-			let msg = ParseProtobufNamed(buf, "CMsgSosStartSoundEvent")
+			const msg = ParseProtobufNamed(buf, "CMsgSosStartSoundEvent")
 			let hash = msg.get("soundevent_hash") as number
 			let sound_name = Manifest.LookupSoundNameByHash(hash)
 			if (sound_name === undefined) {
@@ -705,7 +706,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			let position = new Vector3()
 			if (packed_params !== undefined) {
 				if (packed_params.byteLength >= 19) {
-					let stream = new BinaryStream(new DataView(packed_params.buffer))
+					const stream = new BinaryStream(new DataView(packed_params.buffer))
 					stream.RelativeSeek(7)
 					position.x = stream.ReadFloat32()
 					position.y = stream.ReadFloat32()
@@ -724,7 +725,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 488: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_UnitEvent")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_UnitEvent")
 			let handle = msg.get("entity_index") as number
 			let ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle)
 			if (ent instanceof Entity && !(ent instanceof Unit))
@@ -792,7 +793,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 466: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_ChatEvent")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_ChatEvent")
 			EventsSDK.emit(
 				"ChatEvent", false,
 				msg.get("type") as DOTA_CHAT_MESSAGE,
@@ -809,7 +810,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 520: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_DotaBloodImpact")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_DotaBloodImpact")
 			let ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (ent === undefined)
 				break
@@ -823,7 +824,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 521: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_UnitAnimation")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_UnitAnimation")
 			let ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
@@ -839,7 +840,7 @@ Events.on("ServerMessage", (msg_id, buf) => {
 			break
 		}
 		case 522: {
-			let msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_UnitAnimationEnd")
+			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_UnitAnimationEnd")
 			let ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break

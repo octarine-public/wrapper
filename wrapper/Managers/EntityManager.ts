@@ -357,10 +357,11 @@ function FixType(symbols: string[], field: any): string {
 	return type
 }
 
-Events.on("ServerMessage", (msg_id, buf) => {
+Events.on("ServerMessage", (msg_id, buf_len) => {
+	const buf = ServerMessageBuffer.subarray(0, buf_len)
 	switch (msg_id) {
 		case 41: {
-			let msg = ParseProtobufNamed(buf, "CSVCMsg_FlattenedSerializer")
+			const msg = ParseProtobufNamed(buf, "CSVCMsg_FlattenedSerializer")
 			if ((globalThis as any).dump_d_ts) {
 				let obj = MapToObject(msg)
 				let list = (Object.values(obj.serializers) as any[]).map(ser => [
@@ -408,7 +409,7 @@ declare class ${name} {
 		}
 		case 55: { // we have custom parsing for CSVCMsg_PacketEntities
 			EventsSDK.emit("PreUpdate", false)
-			let stream = new BinaryStream(new DataView(buf))
+			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 			while (!stream.Empty()) {
 				let ent_id = stream.ReadUint16()
 				let pvs: EntityPVS = stream.ReadUint8()

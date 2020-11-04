@@ -64,8 +64,8 @@ const Manifest = new (class CManifest {
 })()
 export default Manifest
 
-function BufferToPathString(buf: ArrayBuffer): string {
-	return Utf8ArrayToStr(new Uint8Array(buf)).replace(/\\/g, "/").toLowerCase()
+function BufferToPathString(buf: Uint8Array): string {
+	return Utf8ArrayToStr(buf).replace(/\\/g, "/").toLowerCase()
 }
 
 function ParseStringFromStream(stream: BinaryStream, ar: string[]) {
@@ -96,10 +96,11 @@ function InitManifest() {
 	})
 }
 
-Events.on("ServerMessage", (msg_id, buf) => {
+Events.on("ServerMessage", (msg_id, buf_len) => {
+	const buf = ServerMessageBuffer.subarray(0, buf_len)
 	switch (msg_id) {
 		case 9: { // we have custom parsing for CNETMsg_SpawnGroup_Load & CNETMsg_SpawnGroup_ManifestUpdate
-			let stream = new BinaryStream(new DataView(buf))
+			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 			for (let i = 0, end = stream.ReadVarUintAsNumber(); i < end; i++)
 				ParseStringFromStream(stream, Manifest.Extensions)
 			for (let i = 0, end = stream.ReadVarUintAsNumber(); i < end; i++)
@@ -141,7 +142,7 @@ Manifest.SaveStringToken("default")
 
 let buf = fread("stringtokendatabase.txt")
 if (buf !== undefined) {
-	let stream = new BinaryStream(new DataView(buf))
+	const  stream = new BinaryStream(new DataView(buf))
 	if (stream.Next() === 0x21 && stream.Next() === 0x0A) {
 		while (!stream.Empty()) {
 			stream.RelativeSeek(6)
