@@ -156,7 +156,6 @@ export default class Unit extends Entity {
 		"modifier_necrolyte_sadist_active",
 	]
 	private CanUseAbilitiesInInvis: string[] = [
-		"modifier_broodmother_spin_web_invisible_applier",
 		"modifier_riki_permanent_invisibility",
 		"modifier_treant_natures_guise_invis",
 	]
