@@ -237,13 +237,13 @@ export default class ExecuteOrder {
 	}
 }
 
-let last_order_click = new Vector3(),
-	last_order_click_update = 0,
+const last_order_click = new Vector3(),
+	latest_cursor = new Vector2()
+let last_order_click_update = 0,
 	latest_camera_x = 0,
 	latest_camera_y = 0,
 	execute_current = false,
-	current_order: Nullable<ExecuteOrder>,
-	latest_cursor = new Vector2()
+	current_order: Nullable<ExecuteOrder>
 Events.on("Update", () => {
 	const cmd = new UserCmd()
 	InputManager.CursorOnWorld = cmd.VectorUnderCursor
@@ -294,9 +294,14 @@ Events.on("Update", () => {
 		}
 	}
 	let CursorWorldVec = cmd.VectorUnderCursor,
-		mult = Math.sin(hrtime() - last_order_click_update)
+		mult = Math.max(Math.abs(Math.sin(hrtime() - last_order_click_update)), 0.05)
 	if (last_order_click_update + 450 >= hrtime()) {
-		CursorWorldVec = last_order_click.Extend(CursorWorldVec, Math.min(last_order_click.Distance(CursorWorldVec), 200 * mult)).CopyTo(last_order_click)
+		const dist = last_order_click.Distance(CursorWorldVec)
+		if (dist > 50)
+			last_order_click.Extend(CursorWorldVec, Math.min(dist, 200 * mult)).CopyTo(last_order_click)
+		else
+			CursorWorldVec.CopyTo(last_order_click)
+		CursorWorldVec = last_order_click
 		cmd.CameraPosition.x = latest_camera_x
 		cmd.CameraPosition.y = latest_camera_y
 	}
@@ -313,7 +318,7 @@ Events.on("Update", () => {
 	let camera_vec = cmd.CameraPosition.toVector3()
 	camera_vec = camera_vec.Clone().AddScalarY(1200 / 2).Distance2D(CursorWorldVec) > 1400
 		? CursorWorldVec.Clone().SubtractScalarY(1200 / 2)
-		: camera_vec = camera_vec.AddScalarY(1200 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= hrtime() ? mult : 1))).SubtractScalarY(1200 / 2)
+		: camera_vec.AddScalarY(1200 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= hrtime() ? mult : 1))).SubtractScalarY(1200 / 2)
 	latest_camera_x = cmd.CameraPosition.x = camera_vec.x
 	latest_camera_y = cmd.CameraPosition.y = camera_vec.y
 
