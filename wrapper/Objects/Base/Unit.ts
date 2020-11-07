@@ -192,7 +192,7 @@ export default class Unit extends Entity {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_HEXED)
 	}
 	public get IsInvisible(): boolean {
-		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE) || this.InvisibleLevel > 0.5
+		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVISIBLE) || this.InvisibilityLevel > 0.5
 	}
 	public get IsInvulnerable(): boolean {
 		return this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_INVULNERABLE)
@@ -227,7 +227,8 @@ export default class Unit extends Entity {
 	}
 	/* ======== base ======== */
 	public get IsInFadeTime(): boolean {
-		return this.InvisibleLevel > 0
+		const level = this.InvisibilityLevel
+		return level > 0 && level <= 0.5
 	}
 	public get IsControllableByAnyPlayer(): boolean {
 		return this.IsControllableByPlayerMask !== 0n
@@ -321,9 +322,8 @@ export default class Unit extends Entity {
 	public get AttackPoint(): number {
 		return this.AttackAnimationPoint / (1 + ((this.AttackSpeedBonus - 100) / 100))
 	}
-	// TODO: use Buffs for that
-	public get InvisibleLevel(): number {
-		return GetUnitNumberPropertyByName(this.Index, "m_flInvisibilityLevel") ?? 0
+	public get InvisibilityLevel(): number {
+		return this.Buffs.reduce((prev, buff) => Math.max(prev, buff.InvisibilityLevel), 0)
 	}
 	/**
 	 * IsControllable by LocalPlayer

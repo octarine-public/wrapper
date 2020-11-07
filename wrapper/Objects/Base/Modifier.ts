@@ -76,11 +76,19 @@ export default class Modifier {
 		this.AuraOwner_ = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner)
 	}
 
+	public get InvisibilityLevel(): number {
+		const fade_time = this.m_pBuff.FadeTime
+		if (fade_time === undefined)
+			return 0
+		if (fade_time === 0)
+			return 1
+		return Math.min(this.ElapsedTime / (fade_time * 2), 1)
+	}
 	public get Attributes(): DOTAModifierAttribute_t {
 		return DOTAModifierAttribute_t.MODIFIER_ATTRIBUTE_NONE
 	}
 	public get CreationTime(): number {
-		return this.m_pBuff.CreationTime!
+		return this.m_pBuff.CreationTime
 	}
 	public get DieTime(): number {
 		return this.CreationTime + this.Duration

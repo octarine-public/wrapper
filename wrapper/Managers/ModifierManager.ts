@@ -34,8 +34,8 @@ export class IModifier {
 	public get StackCount(): Nullable<number> {
 		return this.GetProperty("stack_count")
 	}
-	public get CreationTime(): Nullable<number> {
-		return this.GetProperty("creation_time")
+	public get CreationTime(): number {
+		return this.GetProperty("creation_time") as number
 	}
 	public get Duration(): number {
 		return this.GetProperty("duration") as number
