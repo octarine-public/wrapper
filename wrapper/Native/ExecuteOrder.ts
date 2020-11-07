@@ -245,11 +245,11 @@ let last_order_click = new Vector3(),
 	current_order: Nullable<ExecuteOrder>,
 	latest_cursor = new Vector2()
 Events.on("Update", () => {
+	const cmd = new UserCmd()
+	InputManager.CursorOnWorld = cmd.VectorUnderCursor
 	if (ExecuteOrder.disable_humanizer)
 		return
-	let cmd = new UserCmd(),
-		order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
-	InputManager.CursorOnWorld = cmd.VectorUnderCursor
+	let order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
 	if (execute_current) {
 		order!.Execute()
 		if (ExecuteOrder.debug_orders)
