@@ -10,7 +10,7 @@ export default class Rectangle {
 		return this.pos2.Subtract(this.pos1)
 	}
 	public Contains(pos: Vector2): boolean {
-		return this.pos1.x <= pos.x && this.pos1.y <= pos.y && this.pos2.x >= pos.x && this.pos2.y >= pos.y
+		return this.pos1.x <= pos.x && this.pos1.y <= pos.y && this.pos2.x > pos.x && this.pos2.y > pos.y
 	}
 	public GetOffset(pos: Vector2): Vector2 {
 		return pos.Subtract(this.pos1)
