@@ -244,6 +244,17 @@ function DumpStreamPosition(
 }
 
 let entities_symbols: string[] = []
+type StringEntityPropertyType = Map<string, StringEntityPropertyType> | StringEntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
+function ConvertToStringedMap(prop: EntityPropertyType): StringEntityPropertyType {
+	if (Array.isArray(prop))
+		return prop.map(el => ConvertToStringedMap(el))
+	if (prop instanceof EntityPropertiesNode) {
+		const stringed_map = new Map<string, StringEntityPropertyType>()
+		prop.map.forEach((v, k) => stringed_map.set(entities_symbols[k], ConvertToStringedMap(v)))
+		return stringed_map
+	}
+	return prop
+}
 export class EntityPropertiesNode {
 	private static entities_symbols_cached = new Map<string, number>()
 	public map = new Map<number, EntityPropertyType>()
@@ -262,6 +273,10 @@ export class EntityPropertiesNode {
 	}
 	public has(id: number): boolean {
 		return this.map.has(id)
+	}
+	// Use for debug purposes only.
+	public ConvertToStringedMap(): Map<string, StringEntityPropertyType> {
+		return ConvertToStringedMap(this) as Map<string, StringEntityPropertyType>
 	}
 }
 
