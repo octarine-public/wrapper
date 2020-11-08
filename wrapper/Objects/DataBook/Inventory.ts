@@ -113,12 +113,13 @@ export default class Inventory {
 		return this.GetItemByName(name, includeBackpack) !== undefined
 	}
 	public CountItemByOtherPlayer(player: Nullable<Player> = LocalPlayer): number {
-		let counter = 0
-		this.TotalItems.forEach(item => {
-			if (item?.PurchaserID === player?.PlayerID)
+		if (player === undefined)
+			return 0
+		return this.TotalItems.reduce((counter, item) => {
+			if (item !== undefined && item.PurchaserID === player.PlayerID)
 				counter++
-		})
-		return counter
+			return counter
+		}, 0)
 	}
 	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Nullable<Item> {
 		if (this.Owner.IsValid) {
