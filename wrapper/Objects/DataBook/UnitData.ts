@@ -5,12 +5,27 @@ import { DOTAHullSize } from "../../Enums/DOTAHullSize"
 
 function LoadUnitFile(path: string): RecursiveMap {
 	const kv = parseKVFile(path)
-	return (kv.get("DOTAUnits") as RecursiveMap) ?? (kv.get("DOTAHeroes") as RecursiveMap) ?? new Map()
+	const ret = (kv.get("DOTAUnits") as RecursiveMap) ?? (kv.get("DOTAHeroes") as RecursiveMap) ?? new Map()
+	if (ret.has("Version")) {
+		const Version = ret.get("Version")
+		if (typeof Version === "string" || typeof Version === "number")
+			if (Version.toString() !== "1") // unknown version, skip it
+				return new Map()
+		ret.delete("Version")
+	}
+	return ret
 }
 
 export default class UnitData {
-	public static global_storage: Map<string, UnitData>
+	public static global_storage = new Map<string, UnitData>()
 	public static empty = new UnitData("", new Map())
+	public static unit_names_sorted: string[] = []
+	public static GetUnitNameByNameIndex(index: number): Nullable<string> {
+		// it should be much better for V8 to not try to make hits outside of array
+		if (index < 0 || UnitData.unit_names_sorted.length <= index)
+			return undefined
+		return UnitData.unit_names_sorted[index]
+	}
 	public static GetHeroID(name: string): number {
 		const data = UnitData.global_storage.get(name)
 		if (data === undefined)
@@ -77,29 +92,56 @@ export default class UnitData {
 	}
 }
 
-export function ReloadGlobalUnitStorage() {
-	UnitData.global_storage = new Map()
-	const tmp = new Map([
-		...LoadUnitFile("scripts/npc/npc_units.txt").entries(),
-		...LoadUnitFile("scripts/npc/npc_units_custom.txt").entries(),
-		...LoadUnitFile("scripts/npc/npc_heroes.txt").entries(),
-		...LoadUnitFile("scripts/npc/npc_heroes_custom.txt").entries(),
-	]) as RecursiveMap
-	tmp.forEach((map, unit_name) => {
-		if (!(map instanceof Map))
-			return
-		if (map.has("BaseClass")) {
-			let base_name = map.get("BaseClass")
-			if (typeof base_name === "string") {
-				let base_map = tmp.get(base_name)
-				if (base_map instanceof Map)
-					base_map.forEach((v, k) => {
-						if (!map.has(k))
-							map.set(k, v)
-					})
+function FixUnitInheritance(units_map: RecursiveMap, fixed_cache: RecursiveMap, map: RecursiveMap, unit_name: string): RecursiveMap {
+	if (fixed_cache.has(unit_name))
+		return fixed_cache.get(unit_name) as RecursiveMap
+	if (unit_name === "npc_dota_hero_base")
+		map.set("BaseClass", "npc_dota_units_base")
+	if (map.has("BaseClass")) {
+		const base_name = map.get("BaseClass")
+		if (typeof base_name === "string" && base_name !== unit_name) {
+			const base_map = units_map.get(base_name)
+			if (base_map instanceof Map) {
+				const fixed_base_map = FixUnitInheritance(units_map, fixed_cache, base_map, base_name)
+				fixed_base_map.forEach((v, k) => {
+					if (!map.has(k))
+						map.set(k, v)
+				})
 			}
 		}
-		UnitData.global_storage.set(unit_name, new UnitData(unit_name, map))
+	}
+	fixed_cache.set(unit_name, map)
+	UnitData.global_storage.set(unit_name, new UnitData(unit_name, map))
+	return map
+}
+
+export function ReloadGlobalUnitStorage() {
+	UnitData.global_storage.clear()
+	const parsed_heroes = new Map([
+		...LoadUnitFile("scripts/npc/npc_heroes.txt"),
+		...LoadUnitFile("scripts/npc/npc_heroes_staging.txt"),
+		...LoadUnitFile("scripts/npc/npc_heroes_custom.txt"),
+	])
+	{ // Ask Valve about this, not me. It's used for building unit names indexes
+		const elem = parsed_heroes.get("npc_dota_hero_base")
+		if (elem !== undefined) {
+			parsed_heroes.delete("npc_dota_hero_base")
+			parsed_heroes.set("npc_dota_hero_base", elem)
+			parsed_heroes.set("UnitSchemaFixedUp", 1)
+		}
+	}
+	const units_map = new Map([
+		...parsed_heroes.entries(),
+		...LoadUnitFile("scripts/npc/npc_units.txt"),
+		...LoadUnitFile("scripts/npc/npc_units_staging.txt"),
+		...LoadUnitFile("scripts/npc/npc_units_custom.txt"),
+	]) as RecursiveMap
+	const fixed_cache: RecursiveMap = new Map()
+	units_map.forEach((map, unit_name) => {
+		if (map instanceof Map)
+			FixUnitInheritance(units_map, fixed_cache, map, unit_name)
 	})
+
+	UnitData.unit_names_sorted = [...units_map.keys()]
 }
 ReloadGlobalUnitStorage()

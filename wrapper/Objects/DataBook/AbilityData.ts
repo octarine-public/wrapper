@@ -7,7 +7,7 @@ function LoadAbilityFile(path: string): RecursiveMap {
 }
 
 export default class AbilityData {
-	public static global_storage: Map<string, AbilityData>
+	public static global_storage = new Map<string, AbilityData>()
 	public static empty = new AbilityData("", new Map())
 	public static GetAbilityID(name: string): number {
 		let data = AbilityData.global_storage.get(name)
@@ -294,7 +294,7 @@ export default class AbilityData {
 }
 
 function AbilityNameToPath(name: string, strip = false): string {
-	let is_item = name.startsWith("item_")
+	const is_item = name.startsWith("item_")
 	let tex_name = is_item && strip ? name.substring(5) : name
 	if (tex_name.startsWith("frostivus"))
 		tex_name = tex_name.split("_").slice(1).join("_")
@@ -303,46 +303,58 @@ function AbilityNameToPath(name: string, strip = false): string {
 		: `panorama/images/spellicons/${tex_name}_png.vtex_c`
 }
 
+function FixAbilityInheritance(abils_map: RecursiveMap, fixed_cache: RecursiveMap, map: RecursiveMap, abil_name: string): RecursiveMap {
+	if (fixed_cache.has(abil_name))
+		return fixed_cache.get(abil_name) as RecursiveMap
+	if (abil_name !== "ability_base" && !map.has("BaseClass"))
+		map.set("BaseClass", "ability_base")
+	if (map.has("BaseClass")) {
+		const base_name = map.get("BaseClass")
+		if (typeof base_name === "string" && base_name !== abil_name) {
+			const base_map = abils_map.get(base_name)
+			if (base_map instanceof Map) {
+				const fixed_base_map = FixAbilityInheritance(abils_map, fixed_cache, base_map, base_name)
+				fixed_base_map.forEach((v, k) => {
+					if (!map.has(k))
+						map.set(k, v)
+				})
+			}
+		}
+	}
+	if (!map.has("AbilityTexturePath") || !fexists(map.get("AbilityTexturePath") as string)) {
+		let tex_name = (map.get("AbilityTextureName") as string) ?? abil_name
+		let path = AbilityNameToPath(tex_name)
+		if (!fexists(path)) {
+			path = AbilityNameToPath(tex_name, true)
+			if (!fexists(path)) {
+				if (tex_name.startsWith("frostivus"))
+					tex_name = tex_name.split("_").slice(1).join("_")
+				else if (tex_name.startsWith("special_"))
+					tex_name = "attribute_bonus"
+				else
+					tex_name = tex_name
+				path = AbilityNameToPath(tex_name)
+			}
+		}
+		map.set("AbilityTexturePath", path)
+	}
+	fixed_cache.set(abil_name, map)
+	AbilityData.global_storage.set(abil_name, new AbilityData(abil_name, map))
+	return map
+}
+
 export function ReloadGlobalAbilityStorage() {
-	AbilityData.global_storage = new Map()
-	const tmp = new Map([
+	AbilityData.global_storage.clear()
+	const abils_map = new Map([
 		...LoadAbilityFile("scripts/npc/npc_abilities.txt").entries(),
 		...LoadAbilityFile("scripts/npc/npc_abilities_custom.txt").entries(),
 		...LoadAbilityFile("scripts/npc/items.txt").entries(),
 		...LoadAbilityFile("scripts/npc/npc_items_custom.txt").entries(),
 	]) as RecursiveMap
-	tmp.forEach((map, abil_name) => {
-		if (!(map instanceof Map))
-			return
-		if (map.has("BaseClass")) {
-			const base_name = map.get("BaseClass")
-			if (typeof base_name === "string") {
-				const base_map = tmp.get(base_name)
-				if (base_map instanceof Map)
-					base_map.forEach((v, k) => {
-						if (!map.has(k))
-							map.set(k, v)
-					})
-			}
-		}
-		if (!map.has("AbilityTexturePath") || !fexists(map.get("AbilityTexturePath") as string)) {
-			let tex_name = (map.get("AbilityTextureName") as string) ?? abil_name
-			let path = AbilityNameToPath(tex_name)
-			if (!fexists(path)) {
-				path = AbilityNameToPath(tex_name, true)
-				if (!fexists(path)) {
-					if (tex_name.startsWith("frostivus"))
-						tex_name = tex_name.split("_").slice(1).join("_")
-					else if (tex_name.startsWith("special_"))
-						tex_name = "attribute_bonus"
-					else
-						tex_name = tex_name
-					path = AbilityNameToPath(tex_name)
-				}
-			}
-			map.set("AbilityTexturePath", path)
-		}
-		AbilityData.global_storage.set(abil_name, new AbilityData(abil_name, map))
+	const fixed_cache: RecursiveMap = new Map()
+	abils_map.forEach((map, abil_name) => {
+		if (map instanceof Map)
+			FixAbilityInheritance(abils_map, fixed_cache, map, abil_name)
 	})
 }
 ReloadGlobalAbilityStorage()

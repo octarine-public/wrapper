@@ -1043,7 +1043,7 @@ function UnitNameChanged(unit: Unit) {
 import { RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
 	const old_name = unit.Name
-	unit.UnitName_ = new_value >= 0 ? (UnitNameIndexToString(new_value as number) ?? "") : ""
+	unit.UnitName_ = new_value >= 0 ? (UnitData.GetUnitNameByNameIndex(new_value as number) ?? "") : ""
 	if (unit.UnitName_ === "")
 		unit.UnitName_ = unit.Name_
 	if (old_name !== unit.Name)
@@ -1062,8 +1062,16 @@ RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => {
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
 	EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_iTeamNum", (unit, new_val) => {
-	let old_visibility = unit.IsVisibleForEnemies
+ReplaceFieldHandler(Unit, "m_iTeamNum", (unit, new_val) => {
+	const old_visibility = unit.IsVisibleForEnemies
+
+	{ // we're overriding parent m_iTeamNum handler, so we should handle it here
+		const old_team = unit.Team
+		unit.Team = new_val as Team
+		if (old_team !== unit.Team)
+			EventsSDK.emit("EntityTeamChanged", false, unit)
+	}
+
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
 	if (unit.IsVisibleForEnemies !== old_visibility)
 		EventsSDK.emit("TeamVisibilityChanged", false, unit)
@@ -1074,7 +1082,7 @@ RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => {
 })
 RegisterFieldHandler(Unit, "m_nUnitState64", (unit, new_value) => unit.UnitStateNetworked = BigInt(new_value as bigint)) // TODO
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
-	let ar = new_value as number[]
+	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
 		unit.Spells_[i] = ar[i] & 0x3FFF
 		const ent = EntityManager.EntityByIndex(ar[i])
@@ -1086,7 +1094,7 @@ RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 	}
 })
 RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
-	let ar = new_value as number[]
+	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
 		unit.TotalItems_[i] = ar[i] & 0x3FFF
 		const ent = EntityManager.EntityByIndex(ar[i])
