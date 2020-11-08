@@ -864,6 +864,7 @@ export { default as seasonal_summon_dragon } from "./Objects/Abilities/Seasonal/
 export { default as seasonal_summon_cny_tree } from "./Objects/Abilities/Seasonal/seasonal_summon_cny_tree"
 export { default as seasonal_firecrackers } from "./Objects/Abilities/Seasonal/seasonal_firecrackers"
 export { default as high_five } from "./Objects/Abilities/Seasonal/high_five"
+export { default as hero_candy_bucket } from "./Objects/Abilities/Seasonal/hero_candy_bucket"
 export { default as seasonal_summon_ti9_balloon } from "./Objects/Abilities/Seasonal/seasonal_summon_ti9_balloon"
 export { default as seasonal_ti9_banner } from "./Objects/Abilities/Seasonal/seasonal_ti9_banner"
 export { default as seasonal_ti9_shovel } from "./Objects/Abilities/Seasonal/seasonal_ti9_shovel"
