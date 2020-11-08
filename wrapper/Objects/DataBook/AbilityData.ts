@@ -48,6 +48,7 @@ export default class AbilityData {
 	public readonly ID: number
 	public readonly EffectName: string
 	public readonly Cost: number
+	public readonly Purchasable: boolean
 	public readonly DamageType: DAMAGE_TYPES
 	// public readonly DispellableType: SPELL_DISPELLABLE_TYPES
 	public readonly LevelsBetweenUpgrades: number
@@ -56,6 +57,9 @@ export default class AbilityData {
 	public readonly ItemDisplayCharges: boolean
 	public readonly ItemHideCharges: boolean
 	public readonly Duration: number[]
+	public readonly SecretShop: boolean
+	public readonly ItemRequirements: string[][] = []
+	public readonly ItemResult: Nullable<string>
 	private readonly SpecialValueCache = new Map<string, [number[], Nullable<string>, EDOTASpecialBonusOperation]>()
 	private readonly CastRangeCache: number[]
 	private readonly ChannelTimeCache: number[]
@@ -101,6 +105,9 @@ export default class AbilityData {
 		this.Cost = m_Storage.has("ItemCost")
 			? parseInt(m_Storage.get("ItemCost") as string)
 			: 0
+		this.Purchasable = m_Storage.has("ItemPurchasable")
+			? parseInt(m_Storage.get("ItemPurchasable") as string) !== 0
+			: false
 		this.DamageType = m_Storage.has("AbilityUnitDamageType")
 			? parseEnumString(DAMAGE_TYPES, m_Storage.get("AbilityUnitDamageType") as string)
 			: DAMAGE_TYPES.DAMAGE_TYPE_NONE
@@ -129,6 +136,14 @@ export default class AbilityData {
 		this.CastPointCache = this.GetLevelArray(m_Storage.get("AbilityCastPoint") as Nullable<string>)
 		this.ChargesCache = this.GetLevelArray(m_Storage.get("AbilityCharges") as Nullable<string>)
 		this.ChargeRestoreTimeCache = this.GetLevelArray(m_Storage.get("AbilityChargeRestoreTime") as Nullable<string>)
+		this.SecretShop = m_Storage.has("SecretShop")
+			? parseInt(m_Storage.get("SecretShop") as string) !== 0
+			: false
+		if (m_Storage.has("ItemRequirements")) {
+			const map = m_Storage.get("ItemRequirements") as Map<string, string>
+			map.forEach(str => this.ItemRequirements.push(str.split(";")))
+		}
+		this.ItemResult = m_Storage.get("ItemResult") as Nullable<string>
 		this.CacheSpecialValues(m_Storage)
 	}
 
