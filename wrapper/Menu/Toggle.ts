@@ -13,12 +13,14 @@ export default class Toggle extends Base {
 	protected readonly toggle_color = new Color(36, 40, 50)
 	protected readonly toggle_activated_color = new Color(14, 99, 152)
 
-	constructor(parent: IMenu, name: string, default_value: boolean, tooltip?: string) {
-		super(parent, name)
+	constructor(parent: IMenu, name: string, default_value: boolean, tooltip = "") {
+		super(parent, name, tooltip)
 		this.value = default_value
-		this.tooltip = tooltip
-		this.TotalSize_.x =
-			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize).x
+	}
+
+	public Update() {
+		this.TotalSize.x =
+			RendererSDK.GetTextSize(this.Name, this.FontName, this.FontSize).x
 			+ 10
 			+ this.toggle_size.x
 			+ this.border_size.x * 2
@@ -52,7 +54,7 @@ export default class Toggle extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset).AddScalarY(this.FontSize), this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.Name, this.Position.Add(this.text_offset).AddScalarY(this.FontSize), this.FontColor, this.FontName, this.FontSize)
 		let toggle_rect = this.ToggleRect
 		RendererSDK.FilledRect(toggle_rect.pos1, this.toggle_size, this.toggle_color)
 		if (this.value)

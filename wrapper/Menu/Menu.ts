@@ -5,20 +5,25 @@ import Node from "./Node"
 import Events from "../Managers/Events"
 import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
 import { StringToUTF16, Utf16ArrayToStr } from "../Utils/ArrayBufferUtils"
+import Localization from "./Localization"
 
 class MenuManager {
 	public entries: Node[] = []
 	public config: any
 	public is_open = true
 	public trigger_on_chat = false
-	private readonly header = new Header(this, "Fusion")
+	public ForwardConfigASAP = false
+	private readonly header = new Header(this)
 	private active_element?: Base
 
 	constructor() {
 		readConfig("default.json")
 			.then(buf => this.ConfigValue = JSON.parse(Utf16ArrayToStr(new Uint16Array(buf))))
 			.catch(() => this.ConfigValue = {})
-			.finally(() => this.header.ConfigValue = this.config.Header)
+			.finally(() => {
+				this.header.ConfigValue = this.config.Header
+				Localization.SelectedUnitName = this.config.SelectedLocalization ?? Localization.SelectedUnitName
+			})
 	}
 
 	public get Position() {
@@ -32,7 +37,7 @@ class MenuManager {
 	}
 
 	public get ConfigValue() {
-		this.entries.forEach(entry => this.config[entry.name] = entry.ConfigValue)
+		this.entries.forEach(entry => this.config[entry.InternalName] = entry.ConfigValue)
 		return this.config
 	}
 	public set ConfigValue(obj) {
@@ -41,22 +46,35 @@ class MenuManager {
 	}
 
 	public UpdateConfig() {
+		if (this.config === undefined)
+			return
 		this.config.Header = this.header.ConfigValue
+		this.config.SelectedLocalization = Localization.SelectedUnitName
 		writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)).buffer)
 	}
-	public ForwardConfig() {
-		if (this.config !== undefined) {
-			this.entries.forEach(entry => entry.ConfigValue = this.config[entry.name])
-			this.entries.forEach(entry => entry.OnConfigLoaded())
-		}
+	private ForwardConfig() {
+		if (this.config === undefined)
+			return
+		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.InternalName])
+		this.entries.forEach(entry => entry.OnConfigLoaded())
+		this.ForwardConfigASAP = false
 	}
 	public Render(): void {
-		if (this.config === undefined || !this.is_open)
+		if (this.config === undefined)
 			return
-		this.header.Render()
+		if (this.ForwardConfigASAP)
+			this.ForwardConfig()
+		if (Localization.was_changed) {
+			this.entries.forEach(entry => entry.ApplyLocalization())
+			Localization.was_changed = false
+			this.PositionDirty = true
+			this.UpdateConfig()
+		}
+		if (!this.is_open)
+			return
 		if (this.header.position_dirty) {
-			let current_pos = this.Position.Clone().AddScalarY(this.header.TotalSize.y)
-			let max_width = this.entries.reduce((prev, node) => Math.max(prev, node.TotalSize_.x), this.header.TotalSize_.x)
+			const current_pos = this.Position.Clone().AddScalarY(this.header.OriginalSize.y)
+			const max_width = this.entries.reduce((prev, node) => Math.max(prev, node.TotalSize.x), this.header.OriginalSize.x)
 			this.header.TotalSize.x = max_width
 			this.entries.forEach(node => {
 				node.TotalSize.x = max_width
@@ -66,6 +84,7 @@ class MenuManager {
 			})
 			this.header.position_dirty = false
 		}
+		this.header.Render()
 		this.entries.forEach(node => node.Render())
 	}
 
@@ -92,26 +111,26 @@ class MenuManager {
 		this.active_element = undefined
 		return ret
 	}
-	public AddEntry(name: string | string[]): Node {
+	public AddEntry(name: string | string[], icon_path = ""): Node {
 		if (Array.isArray(name)) {
 			if (name.length === 0)
 				throw "Invalid name array passed to Menu.AddEntry"
 			else if (name.length === 1)
 				name = name[0]
 			else {
-				let node = this.AddEntry(name[0])
+				let node = this.AddEntry(name[0], icon_path)
 				for (let i = 1, end = name.length; i < end; i++)
 					node = node.AddNode(name[i])
 				return node
 			}
 		}
-		let node = this.entries.find(node => node.name === name)
+		let node = this.entries.find(node => node.InternalName === name)
 		if (node !== undefined)
 			return node
-		node = new Node(this, name)
+		node = new Node(this, name, icon_path)
 		node.parent = this
 		this.entries.push(node)
-		this.entries = this.entries.sort((a, b) => a.name.localeCompare(b.name))
+		this.entries = this.entries.sort((a, b) => a.Name.localeCompare(b.Name))
 		this.PositionDirty = true
 		return node
 	}

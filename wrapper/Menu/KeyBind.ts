@@ -219,11 +219,9 @@ export default class KeyBind extends Base {
 	protected readonly keybind_color = new Color(14, 99, 152)
 	protected readonly execute_on_add = false
 
-	constructor(parent: IMenu, name: string, default_key = "None", tooltip?: string) {
-		super(parent, name)
+	constructor(parent: IMenu, name: string, default_key = "None", tooltip = "") {
+		super(parent, name, tooltip)
 		this.assigned_key = KeyBind.KeyNames.indexOf(default_key)
-		this.tooltip = tooltip
-		this.Update()
 	}
 	public get ConfigValue() {
 		return this.assigned_key
@@ -277,8 +275,8 @@ export default class KeyBind extends Base {
 			.CopyTo(this.keybind_size)
 			.SubtractScalarY(this.keybind_size.y * 2)
 
-		this.TotalSize_.x =
-			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize).x
+		this.TotalSize.x =
+			RendererSDK.GetTextSize(this.Name, this.FontName, this.FontSize).x
 			+ 20
 			+ this.keybind_size.x
 			+ this.border_size.x * 2
@@ -289,7 +287,7 @@ export default class KeyBind extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.Name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize)
 		let keybind_rect = this.KeybindRect
 		RendererSDK.FilledRect(keybind_rect.pos1, keybind_rect.pos2.Subtract(keybind_rect.pos1), this.keybind_color)
 		RendererSDK.Text(this.assigned_key_str, keybind_rect.pos1.Add(this.keybind_text_offset), this.FontColor, this.FontName, this.FontSize)

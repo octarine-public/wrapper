@@ -3,9 +3,10 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
+import Localization from "./Localization"
 
 export default class Switcher extends Base {
-	public values: string[]
+	public ValuesNames: string[]
 	public selected_id = 0
 	protected readonly ArrowSize = 24
 	protected readonly arrow_size = RendererSDK.GetTextSize("«", this.FontName, this.ArrowSize)
@@ -18,11 +19,10 @@ export default class Switcher extends Base {
 	protected name_size = new Vector2()
 	protected longest_value_size = new Vector2()
 
-	constructor(parent: IMenu, name: string, values: string[], default_value = 0) {
-		super(parent, name + ":")
-		this.values = values
+	constructor(parent: IMenu, name: string, public InternalValuesNames: string[], default_value = 0, tooltip = "") {
+		super(parent, name + ":", tooltip)
+		this.ValuesNames = InternalValuesNames
 		this.selected_id = default_value
-		this.Update()
 	}
 
 	public get RightArrowRect(): Rectangle {
@@ -35,29 +35,33 @@ export default class Switcher extends Base {
 
 	public get ConfigValue() { return this.selected_id }
 	public set ConfigValue(value) {
-		this.selected_id = Math.max(Math.min(this.values.length - 1, value ?? this.selected_id), 0)
+		this.selected_id = Math.max(Math.min(this.InternalValuesNames.length - 1, value ?? this.selected_id), 0)
 	}
 	public OnConfigLoaded() {
 		this.OnValueChangedCBs.forEach(f => f(this))
 	}
+	public ApplyLocalization() {
+		this.ValuesNames = this.InternalValuesNames.map(name => Localization.Localize(name))
+		super.ApplyLocalization()
+	}
 
 	public Update(): void {
-		let longest_value = this.values.reduce((prev, cur) => cur.length > prev.length ? cur : prev, "")
-		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize)
+		const longest_value = this.ValuesNames.reduce((prev, cur) => cur.length > prev.length ? cur : prev, "")
+		this.name_size = RendererSDK.GetTextSize(this.Name, this.FontName, this.FontSize)
 		this.longest_value_size = RendererSDK.GetTextSize(longest_value, this.FontName, this.FontSize)
-		this.TotalSize_.x =
+		this.TotalSize.x =
 			Math.max(this.name_size.x, this.longest_value_size.x)
 			+ ((this.longest_value_size.x - this.name_size.x) < this.arrow_rect_size.x * 2 ? this.arrow_rect_size.x * 2 : 0)
 			+ 10 * 2
 			+ this.border_size.x * 2
-		this.TotalSize.y = this.TotalSize_.y = this.name_size.y + this.longest_value_size.y + 3 + this.border_size.y * 2 + this.text_offset.y * 2
+		this.TotalSize.y = this.TotalSize.y = this.name_size.y + this.longest_value_size.y + 3 + this.border_size.y * 2 + this.text_offset.y * 2
 	}
 
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset).AddScalarY(this.FontSize), this.FontColor, this.FontName, this.FontSize)
-		RendererSDK.Text(this.values[this.selected_id], this.Position.Add(this.text_offset).AddScalarY(this.name_size.y + 3 + this.FontSize), this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.Name, this.Position.Add(this.text_offset).AddScalarY(this.FontSize), this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.ValuesNames[this.selected_id], this.Position.Add(this.text_offset).AddScalarY(this.name_size.y + 3 + this.FontSize), this.FontColor, this.FontName, this.FontSize)
 		let left_rect = this.LeftArrowRect,
 			right_rect = this.RightArrowRect
 		RendererSDK.FilledRect(left_rect.pos1, left_rect.pos2.Subtract(left_rect.pos1), this.arrow_background_color)
@@ -74,12 +78,12 @@ export default class Switcher extends Base {
 		if (this.LeftArrowRect.Contains(this.MousePosition)) {
 			// backward
 			if (this.selected_id <= 0)
-				this.selected_id = this.values.length - 1
+				this.selected_id = this.InternalValuesNames.length - 1
 			else
 				this.selected_id--
 		} else if (this.RightArrowRect.Contains(this.MousePosition)) {
 			// forward
-			if (this.selected_id >= this.values.length - 1)
+			if (this.selected_id >= this.InternalValuesNames.length - 1)
 				this.selected_id = 0
 			else
 				this.selected_id++

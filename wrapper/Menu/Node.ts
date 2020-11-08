@@ -17,7 +17,6 @@ export default class Node extends Base {
 	public entries: Base[] = []
 	public is_open = false
 	public is_hovered = false
-	protected pathIcon?: Nullable<string>
 	protected readonly node_hovered_color = new Color(21, 24, 22)
 	protected readonly node_selected_color = new Color(14, 14, 14, 249)
 	protected readonly SizeImageNode = new Vector2(24, 24)
@@ -28,36 +27,39 @@ export default class Node extends Base {
 	protected readonly node_selected_arrow_color = new Color(0x40, 0x80, 0xff)
 	protected active_element?: Base
 
-	constructor(parent: IMenu, name: string, pathIcon?: string, tooltip?: string) {
-		super(parent, name)
-		this.tooltip = tooltip
-		if (pathIcon !== undefined)
-			this.pathIcon = pathIcon
-
-		this.TotalSize_.x =
-			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize).x
-			+ 15
-			+ this.node_arrow_size.x
-			+ this.SizeImageNode.x
-			+ this.border_size.x * 2
-			+ this.text_offset.x * 2
-			+ (this.pathIcon !== undefined ? this.SizeImageNode.x : 0)
+	constructor(parent: IMenu, name: string, protected readonly icon_path = "", tooltip = "") {
+		super(parent, name, tooltip)
 	}
 
 	public get ConfigValue() {
 		if (this.entries.length === 0)
 			return undefined
 		let obj = Object.create(null)
-		this.entries.forEach(entry => obj[entry.name] = entry.ConfigValue)
+		this.entries.forEach(entry => obj[entry.InternalName] = entry.ConfigValue)
 		return obj
 	}
 	public set ConfigValue(obj) {
 		if (obj === undefined)
 			return
-		this.entries.forEach(entry => entry.ConfigValue = obj[entry.name])
+		this.entries.forEach(entry => entry.ConfigValue = obj[entry.InternalName])
 	}
 	public OnConfigLoaded() {
 		this.entries.forEach(entry => entry.OnConfigLoaded())
+	}
+	public ApplyLocalization() {
+		this.entries.forEach(entry => entry.ApplyLocalization())
+		super.ApplyLocalization()
+	}
+	public Update() {
+		this.TotalSize.x =
+			RendererSDK.GetTextSize(this.Name, this.FontName, this.FontSize).x
+			+ 15
+			+ this.node_arrow_size.x
+			+ this.SizeImageNode.x
+			+ this.border_size.x * 2
+			+ this.text_offset.x * 2
+			+ (this.icon_path !== "" ? this.SizeImageNode.x : 0)
+		super.Update()
 	}
 
 	public Render(): void {
@@ -66,12 +68,12 @@ export default class Node extends Base {
 		const TextPos = this.Position.Add(this.border_size).AddForThis(this.text_offset).AddScalarY(this.FontSize)
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.is_open ? this.node_selected_color : this.is_hovered ? this.node_hovered_color : this.background_color)
 
-		if (this.pathIcon !== undefined) {
+		if (this.icon_path !== "") {
 			TextPos.AddScalarX(this.SizeImageNode.x)
-			RendererSDK.Image(this.pathIcon, this.Position.Add(this.border_size).AddForThis(this.text_offset).SubtractScalarX(5), -1, this.SizeImageNode)
+			RendererSDK.Image(this.icon_path, this.Position.Add(this.border_size).AddForThis(this.text_offset).SubtractScalarX(5), -1, this.SizeImageNode)
 		}
 
-		RendererSDK.Text(this.name, TextPos, this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.Name, TextPos, this.FontColor, this.FontName, this.FontSize)
 		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize)
 		if (!this.is_open)
 			return
@@ -109,9 +111,9 @@ export default class Node extends Base {
 		return ret
 	}
 	public UpdateEntriesPositions(): void {
-		let max_width = this.entries.reduce((prev, entry) => Math.max(prev, entry.TotalSize_.x), 0)
-		let current_pos = this.Position.Clone().AddScalarX(this.TotalSize.x + 4)
-		let total_y = this.entries.reduce((prev, cur) => prev + cur.TotalSize.y, 0)
+		const max_width = this.entries.reduce((prev, entry) => Math.max(prev, entry.TotalSize.x), 0),
+			current_pos = this.Position.Clone().AddScalarX(this.TotalSize.x + 4),
+			total_y = this.entries.reduce((prev, cur) => prev + cur.TotalSize.y, 0)
 		if (current_pos.y + total_y > RendererSDK.WindowSize.y)
 			current_pos.y = RendererSDK.WindowSize.y - total_y
 		this.entries.forEach(entry => {
@@ -122,32 +124,28 @@ export default class Node extends Base {
 				entry.UpdateEntriesPositions()
 		})
 	}
-	public SetIcon(pathIcon: string) { // TODO: after Node, add for all (slider, toogle, etc..)
-		this.pathIcon = pathIcon
-		return this
-	}
-	public AddToggle(name: string, default_value: boolean = false, tooltip?: string): Toggle {
+	public AddToggle(name: string, default_value: boolean = false, tooltip = ""): Toggle {
 		return this.AddEntry(new Toggle(this, name, default_value, tooltip))
 	}
-	public AddSlider(name: string, default_value = 0, min = 0, max = 100, tooltip?: string): Slider {
+	public AddSlider(name: string, default_value = 0, min = 0, max = 100, tooltip = ""): Slider {
 		return this.AddEntry(new Slider(this, name, default_value, min, max, tooltip))
 	}
-	public AddNode(name: string, pathIcon?: string, tooltip?: string): Node {
-		let node = this.entries.find(entry => entry instanceof Node && entry.name === name) as Node
+	public AddNode(name: string, icon_path = "", tooltip = ""): Node {
+		let node = this.entries.find(entry => entry instanceof Node && entry.InternalName === name) as Node
 		if (node !== undefined)
 			return node
-		return this.AddEntry(new Node(this, name, pathIcon, tooltip))
+		return this.AddEntry(new Node(this, name, icon_path, tooltip))
 	}
-	public AddSwitcher(name: string, values: string[], default_value = 0): Switcher {
-		return this.AddEntry(new Switcher(this, name, values, default_value))
+	public AddSwitcher(name: string, values: string[], default_value = 0, tooltip = ""): Switcher {
+		return this.AddEntry(new Switcher(this, name, values, default_value, tooltip))
 	}
-	public AddKeybind(name: string, default_key = "", tooltip?: string) {
+	public AddKeybind(name: string, default_key = "", tooltip = "") {
 		return this.AddEntry(new KeyBind(this, name, default_key, tooltip))
 	}
-	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip?: string) {
+	public AddImageSelector(name: string, values: string[], default_values = new Map<string, boolean>(), tooltip = "") {
 		return this.AddEntry(new ImageSelector(this, name, values, default_values, tooltip))
 	}
-	public AddButton(name: string, tooltip?: string): Button {
+	public AddButton(name: string, tooltip = ""): Button {
 		return this.AddEntry(new Button(this, name, tooltip))
 	}
 
@@ -211,7 +209,7 @@ export default class Node extends Base {
 			}
 		}
 	}
-	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip?: string): IMenuColorPicker {
+	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip = ""): IMenuColorPicker {
 		const Node = this.AddNode(name) as Node
 
 		const R = Node.AddSlider("Red", color.r, 0, 255)
@@ -278,12 +276,12 @@ export default class Node extends Base {
 	private AddEntry<T extends Base>(entry: T): T {
 		this.entries.push(entry)
 		this.SortEntries()
-		Menu.ForwardConfig()
+		Menu.ForwardConfigASAP = true
 		Menu.PositionDirty = true
 		return entry
 	}
 
 	private SortEntries(): void {
-		this.entries = this.entries.sort((a, b) => a instanceof Node && b instanceof Node ? a.name.localeCompare(b.name) : 0)
+		this.entries = this.entries.sort((a, b) => a instanceof Node && b instanceof Node ? a.Name.localeCompare(b.Name) : 0)
 	}
 }

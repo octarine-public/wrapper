@@ -8,8 +8,7 @@ import AbilityData from "../Objects/DataBook/AbilityData"
 
 // every icon: 32x32, 1x1 border
 export default class ImageSelector extends Base {
-	public values: string[]
-	public enabled_values = new Map<string, boolean>()
+	public enabled_values: Map<string, boolean>
 	protected readonly text_offset = new Vector2(8, 8)
 	protected readonly image_size = new Vector2(32, 32)
 	protected readonly image_border_size = new Vector2(2, 2)
@@ -18,12 +17,9 @@ export default class ImageSelector extends Base {
 	protected readonly image_activated_color = new Color(255, 255, 255)
 	protected name_size = new Vector2()
 
-	constructor(parent: IMenu, name: string, values: string[], default_values = new Map<string, boolean>(), tooltip?: string) {
-		super(parent, name)
-		this.values = values
+	constructor(parent: IMenu, name: string, public values: string[], default_values = new Map<string, boolean>(), tooltip = "") {
+		super(parent, name, tooltip)
 		this.enabled_values = default_values
-		this.tooltip = tooltip
-		this.Update()
 	}
 	public get IsZeroSelected(): boolean {
 		for (let value of this.enabled_values.values())
@@ -56,15 +52,15 @@ export default class ImageSelector extends Base {
 			if (!this.enabled_values.has(value))
 				this.enabled_values.set(value, false)
 		})
-		this.name_size = RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize)
-		this.TotalSize_.x =
+		this.name_size = RendererSDK.GetTextSize(this.Name, this.FontName, this.FontSize)
+		this.TotalSize.x =
 			Math.max(
 				this.name_size.x,
 				Math.min(this.values.length, 10) * (this.image_size.x + this.image_border_size.x * 2 + 2),
 			)
 			+ this.border_size.x * 2
 			+ this.text_offset.x * 2
-		this.TotalSize.y = this.TotalSize_.y = Math.ceil(this.values.length / 10) * (this.image_size.y + this.image_border_size.x * 2 + 2) + 40
+		this.TotalSize.y = this.TotalSize.y = Math.ceil(this.values.length / 10) * (this.image_size.y + this.image_border_size.x * 2 + 2) + 40
 		Menu.PositionDirty = true
 		super.Update()
 	}
@@ -79,7 +75,7 @@ export default class ImageSelector extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset).AddScalarY(this.name_size.y), this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.Name, this.Position.Add(this.text_offset).AddScalarY(this.name_size.y), this.FontColor, this.FontName, this.FontSize)
 		let base_pos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
 			let value = this.values[i],

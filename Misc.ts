@@ -186,13 +186,13 @@ Events.on("AddSearchPath", path => {
 		if (map_name.selected_id !== 0 && path.endsWith("dota.vpk")) {
 			guard = true
 			AddSearchPath(path)
-			let new_path = path.substring(0, path.length - 8) + map_name.values[map_name.selected_id] + ".vpk"
+			let new_path = path.substring(0, path.length - 8) + map_name.InternalValuesNames[map_name.selected_id] + ".vpk"
 			AddSearchPath(new_path)
 			clear_list.push(new_path)
 			guard = false
 			return false
 		}
-		if (map_name.values.some((name, i) => i !== 0 && path.endsWith(name + ".vpk")))
+		if (map_name.InternalValuesNames.some((name, i) => i !== 0 && path.endsWith(name + ".vpk")))
 			return false
 	}
 	if (path.endsWith("diretide_moreinfo_fog.vpk") || path.endsWith("diretide_frontpage.vpk"))

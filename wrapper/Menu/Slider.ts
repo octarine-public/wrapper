@@ -14,14 +14,16 @@ export default class Slider extends Base {
 	protected readonly slider_filler_color = new Color(14, 99, 152)
 	protected readonly value_text_offset = new Vector2(15, 15)
 
-	constructor(parent: IMenu, name: string, default_value = 0, min = 0, max = 100, tooltip?: string) {
-		super(parent, name)
+	constructor(parent: IMenu, name: string, default_value = 0, min = 0, max = 100, tooltip = "") {
+		super(parent, name, tooltip)
 		this.value = default_value
 		this.min = min
 		this.max = max
-		this.tooltip = tooltip
-		this.TotalSize_.x =
-			RendererSDK.GetTextSize(this.name, this.FontName, this.FontSize).x
+	}
+
+	public Update() {
+		this.TotalSize.x =
+			RendererSDK.GetTextSize(this.Name, this.FontName, this.FontSize).x
 			+ RendererSDK.GetTextSize(this.max.toFixed(1), this.FontName, this.FontSize).x
 			+ 10
 			+ this.border_size.x * 2
@@ -51,14 +53,13 @@ export default class Slider extends Base {
 		let slider_pos = node_position.Clone().AddScalarX((total.x - this.border_size.x * 2 - this.slider_width) / (this.max - this.min) * (this.value as number - this.min))
 		RendererSDK.FilledRect(node_position, slider_pos.Subtract(node_position).AddScalarY(node_height), this.slider_filler_color)
 		RendererSDK.FilledRect(slider_pos, new Vector2(this.slider_width, node_height), this.slider_color)
-		RendererSDK.Text(this.name, this.Position.Add(this.text_offset).AddScalarY(this.FontSize), this.FontColor, this.FontName, this.FontSize)
+		RendererSDK.Text(this.Name, this.Position.Add(this.text_offset).AddScalarY(this.FontSize), this.FontColor, this.FontName, this.FontSize)
 		let text = this.value.toString()
 		let text_pos = this.Position.Add(total).SubtractForThis(this.value_text_offset).SubtractScalarX(text.length * this.FontSize / 2)
 		RendererSDK.Text(text, text_pos, this.FontColor, this.FontName, this.FontSize)
 		super.RenderTooltip()
 	}
 	public OnValueChanged(): void {
-
 		let off = Math.max(this.NodeRect.GetOffset(this.MousePosition).x, 0)
 		let old_value = this.value
 		this.value = Math.floor(Math.min(this.max, this.min + (off / (this.TotalSize.x - this.border_size.x * 2)) * (this.max - this.min)))

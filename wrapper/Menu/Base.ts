@@ -4,6 +4,7 @@ import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import InputManager from "../Managers/InputManager"
+import Localization from "./Localization"
 
 export interface IMenu {
 	entries: Base[]
@@ -16,15 +17,15 @@ export interface ILanguage {
 }
 
 export default class Base {
-	public tooltip?: string = ""
+	public Name = ""
+	public Tooltip = ""
 	public FontSize = 18
 	public FontName = "Consolas"
 	public FontColor = new Color(255, 255, 255, 255)
 	public readonly OnValueChangedCBs: ((caller: Base) => void)[] = []
 
 	public readonly Position = new Vector2(0, 0)
-	public readonly TotalSize_ = new Vector2(750 / 5, 40)
-	public readonly TotalSize = this.TotalSize_.Clone()
+	public readonly TotalSize = new Vector2(750 / 5, 40)
 
 	protected hovered = false
 	protected tooltip_size = new Vector2()
@@ -35,9 +36,12 @@ export default class Base {
 
 	protected readonly execute_on_add: boolean = true
 
-	constructor(public parent: IMenu, public name: string = "") { }
+	constructor(public parent: IMenu, public readonly InternalName: string = "", public readonly InternalTooltipName: string) {
+		this.Name = this.InternalName
+		this.Tooltip = this.InternalTooltipName
+	}
 	public get ConfigValue(): any { return undefined }
-	public set ConfigValue(value: any) { }
+	public set ConfigValue(_value: any) { }
 	protected get Rect() {
 		return new Rectangle(this.Position, this.Position.Add(this.TotalSize))
 	}
@@ -50,6 +54,11 @@ export default class Base {
 		return InputManager.CursorOnScreen
 	}
 	public OnConfigLoaded() { }
+	public ApplyLocalization() {
+		this.Name = Localization.Localize(this.InternalName)
+		this.Tooltip = Localization.Localize(this.InternalTooltipName)
+		this.Update()
+	}
 
 	public OnValue(func: (caller: this) => void): this {
 		this.OnValueChangedCBs.push(func as any)
@@ -59,18 +68,13 @@ export default class Base {
 	}
 
 	public Update(): void {
-		if (this.tooltip === undefined || this.tooltip.length === 0)
+		if (this.Tooltip === "")
 			return
-		this.tooltip_size = RendererSDK.GetTextSize(this.tooltip, this.FontName, this.FontSize)
+		this.tooltip_size = RendererSDK.GetTextSize(this.Tooltip, this.FontName, this.FontSize)
 	}
 
 	public Render(): void {
 		RendererSDK.FilledRect(this.Position, this.TotalSize, this.border_color)
-	}
-
-	public SetTooltip(tooltip: string) {
-		this.tooltip = tooltip
-		return this
 	}
 
 	public OnMouseLeftDown(): boolean {
@@ -82,9 +86,8 @@ export default class Base {
 	}
 
 	public RenderTooltip(): void {
-		if (this.tooltip === undefined || this.tooltip.length === 0 || !this.Rect.Contains(this.MousePosition))
+		if (this.Tooltip === "" || !this.Rect.Contains(this.MousePosition))
 			return
-		this.Update()
 
 		const Addscalar = 5
 		const SizeImage = new Vector2(18, 18)
@@ -108,7 +111,7 @@ export default class Base {
 		)
 
 		RendererSDK.Text(
-			this.tooltip,
+			this.Tooltip,
 			Position
 				.AddForThis(this.border_size)
 				.AddScalarX(SizeImage.x + Addscalar)
