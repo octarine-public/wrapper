@@ -9,7 +9,7 @@ export default class StockInfo {
 		return AbilityData.global_storage.get(this.AbilityName) ?? AbilityData.empty
 	}
 	public get AbilityName(): string {
-		return AbilityData.GetAbilityNameByID(this.AbilityID)
+		return AbilityData.GetAbilityNameByID(this.AbilityID)!
 	}
 	public get AbilityID(): number {
 		return this.properties.get("nItemAbilityID") as number

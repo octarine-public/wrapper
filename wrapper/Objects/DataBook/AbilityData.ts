@@ -9,27 +9,20 @@ function LoadAbilityFile(path: string): RecursiveMap {
 export default class AbilityData {
 	public static global_storage = new Map<string, AbilityData>()
 	public static empty = new AbilityData("", new Map())
-	public static GetAbilityID(name: string): number {
-		let data = AbilityData.global_storage.get(name)
-		if (data === undefined)
-			throw `Unknown ability name: ${name}`
-		return data.ID
+	public static GetAbilityByName(name: string): Nullable<AbilityData> {
+		return AbilityData.global_storage.get(name)
 	}
-	public static GetAbilityTexturePath(name: string): string {
-		let data = AbilityData.global_storage.get(name)
-		if (data === undefined)
-			throw `Unknown ability name: ${name}`
-		return data.TexturePath
-	}
-	public static GetAbilityNameByID(id: number): string {
-		let id_str = id.toString()
-		for (let [name, map] of AbilityData.global_storage) {
-			if (!(map instanceof Map))
-				continue
-			if (id_str === (map.get("ID") as string))
+	public static GetAbilityNameByID(id: number): Nullable<string> {
+		for (const [name, data] of AbilityData.global_storage)
+			if (data.ID === id)
 				return name
-		}
-		return ""
+		return undefined
+	}
+	public static GetItemRecipeName(name: string): Nullable<string> {
+		for (const [name_, data] of AbilityData.global_storage)
+			if (data.ItemResult === name)
+				return name_
+		return undefined
 	}
 
 	public readonly AbilityBehavior: number // DOTA_ABILITY_BEHAVIOR bitmask

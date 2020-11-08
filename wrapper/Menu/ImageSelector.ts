@@ -87,7 +87,7 @@ export default class ImageSelector extends Base {
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
 			else if (!path.startsWith("npc_dota_hero_")) {
 				try {
-					path = AbilityData.GetAbilityTexturePath(path)
+					path = AbilityData.GetAbilityByName(path)!.TexturePath
 				} catch { }
 			} else
 				path = `panorama/images/heroes/${path}_png.vtex_c`
