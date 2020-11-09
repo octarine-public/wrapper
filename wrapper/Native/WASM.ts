@@ -90,7 +90,7 @@ export let WASMIOBuffer: Float32Array
 export let WASMIOBufferBU64: BigUint64Array
 export let WASMIOBufferU32: Uint32Array
 function emscripten_notify_memory_growth(_memoryIndex: number) {
-	let off = wasm.GetIOBuffer()
+	const off = wasm.GetIOBuffer()
 	WASMIOBuffer = new Float32Array(wasm.memory.buffer, off)
 	WASMIOBufferBU64 = new BigUint64Array(wasm.memory.buffer, off)
 	WASMIOBufferU32 = new Uint32Array(wasm.memory.buffer, off)
@@ -200,8 +200,8 @@ export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
 	addr = wasm.ParseImage(addr, buf.byteLength)
 	if (addr === 0)
 		throw "Image conversion failed"
-	let image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
-	let copy = new Uint8Array(image_size.x * image_size.y * 4)
+	const image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
+	const copy = new Uint8Array(image_size.x * image_size.y * 4)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
 	wasm.my_free(addr)
 
@@ -227,7 +227,7 @@ export function ExtractResourceBlock(buf: Uint8Array, type: string): Nullable<[n
 			throw `Unsopported block type: ${type}`
 	}
 
-	let addr = wasm.my_malloc(buf.byteLength)
+	const addr = wasm.my_malloc(buf.byteLength)
 	new Uint8Array(wasm.memory.buffer, addr).set(buf)
 	if (!func(addr, buf.byteLength))
 		return undefined
@@ -235,13 +235,13 @@ export function ExtractResourceBlock(buf: Uint8Array, type: string): Nullable<[n
 }
 
 export function ParseVHCG(buf: Uint8Array): Nullable<HeightMap> {
-	let addr = wasm.my_malloc(buf.byteLength)
+	const addr = wasm.my_malloc(buf.byteLength)
 	if (addr === 0)
 		throw "Memory allocation for VHCG raw data failed"
-	let memory = new Uint8Array(wasm.memory.buffer, addr)
+	const memory = new Uint8Array(wasm.memory.buffer, addr)
 	memory.set(buf)
 
-	let err = wasm.ParseVHCG(addr, buf.byteLength)
+	const err = wasm.ParseVHCG(addr, buf.byteLength)
 	if (err !== HeightMapParseError.NONE) {
 		if (err < 0)
 			throw `VHCG parse failed with READ_ERROR ${-err}`
@@ -270,7 +270,7 @@ export function GetSecondaryHeightForLocation(loc: Vector2): number {
 }
 
 export function MurmurHash2(buf: Uint8Array, seed = 0x31415926): number {
-	let buf_addr = wasm.my_malloc(buf.byteLength)
+	const buf_addr = wasm.my_malloc(buf.byteLength)
 	if (buf_addr === 0)
 		throw "Memory allocation for MurmurHash2 raw data failed"
 	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
@@ -279,7 +279,7 @@ export function MurmurHash2(buf: Uint8Array, seed = 0x31415926): number {
 }
 
 export function MurmurHash64(buf: Uint8Array, seed = 0xEDABCDEF): bigint {
-	let buf_addr = wasm.my_malloc(buf.byteLength)
+	const buf_addr = wasm.my_malloc(buf.byteLength)
 	if (buf_addr === 0)
 		throw "Memory allocation for MurmurHash64 raw data failed"
 	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
@@ -289,7 +289,7 @@ export function MurmurHash64(buf: Uint8Array, seed = 0xEDABCDEF): bigint {
 }
 
 export function CRC32(buf: Uint8Array): number {
-	let buf_addr = wasm.my_malloc(buf.byteLength)
+	const buf_addr = wasm.my_malloc(buf.byteLength)
 	if (buf_addr === 0)
 		throw "Memory allocation for MurmurHash2 raw data failed"
 	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
@@ -304,7 +304,7 @@ export function DecompressLZ4(buf: Uint8Array): Uint8Array {
 	addr = wasm.DecompressLZ4(addr, buf.byteLength)
 	if (addr === 0)
 		throw "LZ4 decompression failed"
-	let copy = new Uint8Array(WASMIOBufferU32[0])
+	const copy = new Uint8Array(WASMIOBufferU32[0])
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
 	wasm.my_free(addr)
 

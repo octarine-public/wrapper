@@ -84,7 +84,7 @@ export class TrackingProjectile extends Projectile {
 	public get IsAttack(): boolean { return this.isAttack }
 	public get ExpireTime(): number { return this.expireTime }
 	public get TargetLoc(): Vector3 {
-		let target = this.Target
+		const target = this.Target
 		if (target instanceof Entity)
 			return target.Position.CopyTo(this.TargetLoc_)
 		return this.TargetLoc_

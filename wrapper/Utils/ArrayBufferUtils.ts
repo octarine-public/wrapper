@@ -36,7 +36,7 @@ export function Uint8ArrayToHex(array: Uint8Array): string {
 }
 
 export function StringToUTF8(str: string): Uint8Array {
-	var utf8 = []
+	const utf8 = []
 	for (var i = 0; i < str.length; i++) {
 		var charcode = str.charCodeAt(i)
 		if (charcode < 0x80) utf8.push(charcode)
@@ -63,7 +63,7 @@ export function StringToUTF8(str: string): Uint8Array {
 }
 
 export function StringToUTF16(str: string): Uint8Array {
-	let buf = new Uint16Array(str.length)
+	const buf = new Uint16Array(str.length)
 	for (let i = str.length; i--;)
 		buf[i] = str.charCodeAt(i)
 	return new Uint8Array(buf.buffer)

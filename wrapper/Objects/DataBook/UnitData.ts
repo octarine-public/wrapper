@@ -33,7 +33,7 @@ export default class UnitData {
 		return data.HeroID
 	}
 	public static GetHeroNameByID(id: number): string {
-		for (let [name, data] of UnitData.global_storage)
+		for (const [name, data] of UnitData.global_storage)
 			if (data.HeroID === id)
 				return name
 		return ""

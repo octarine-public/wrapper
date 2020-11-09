@@ -104,7 +104,7 @@ export default class Item extends Ability {
 		if (!this.IsValid || this.IsMuted)
 			return false
 
-		let root_owner = this.RootOwner
+		const root_owner = this.RootOwner
 		if (root_owner?.CannotUseItem(this))
 			return false
 
@@ -122,4 +122,6 @@ export default class Item extends Ability {
 }
 
 import { ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
-ReplaceFieldHandler(Item, "m_nAbilityCurrentCharges", () => { }) // override ability handler
+ReplaceFieldHandler(Item, "m_nAbilityCurrentCharges", () => {
+	// override ability handler so that Item#CurrentCharges will have priority over Ability#CurrentCharges
+})

@@ -28,7 +28,7 @@ export class EventEmitter {
 	}
 
 	public removeListener(name: string, listener: Listener): EventEmitter {
-		let listeners = this.events.get(name)
+		const listeners = this.events.get(name)
 		if (listeners === undefined)
 			return this
 
@@ -39,10 +39,10 @@ export class EventEmitter {
 	}
 
 	public emit(name: string, cancellable: boolean = false, ...args: any[]): boolean {
-		let listeners = this.events.get(name),
+		const listeners = this.events.get(name),
 			listeners_after = this.events_after.get(name)
 
-		let ret = !listeners?.some(listener => {
+		const ret = !listeners?.some(listener => {
 			try {
 				return listener(...args) === false && cancellable
 			} catch (e) {

@@ -52,13 +52,6 @@ class MenuManager {
 		this.config.SelectedLocalization = Localization.SelectedUnitName
 		writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)).buffer)
 	}
-	private ForwardConfig() {
-		if (this.config === undefined)
-			return
-		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.InternalName])
-		this.entries.forEach(entry => entry.OnConfigLoaded())
-		this.ForwardConfigASAP = false
-	}
 	public Render(): void {
 		if (this.config === undefined)
 			return
@@ -96,7 +89,7 @@ class MenuManager {
 			return false
 		}
 		return !this.entries.some(node => {
-			let ret = node.OnMouseLeftDown()
+			const ret = node.OnMouseLeftDown()
 			if (!ret)
 				this.active_element = node
 			return !ret
@@ -105,7 +98,7 @@ class MenuManager {
 	public OnMouseLeftUp(): boolean {
 		if (!this.is_open || this.active_element === undefined)
 			return true
-		let ret = this.active_element.OnMouseLeftUp()
+		const ret = this.active_element.OnMouseLeftUp()
 		if (this.active_element === this.header)
 			this.UpdateConfig()
 		this.active_element = undefined
@@ -118,9 +111,9 @@ class MenuManager {
 			else if (name.length === 1)
 				name = name[0]
 			else {
-				let node = this.AddEntry(name[0], icon_path)
+				let node = this.AddEntry(name[0])
 				for (let i = 1, end = name.length; i < end; i++)
-					node = node.AddNode(name[i])
+					node = node.AddNode(name[i], i === end - 1 ? icon_path : "")
 				return node
 			}
 		}
@@ -134,8 +127,15 @@ class MenuManager {
 		this.PositionDirty = true
 		return node
 	}
+	private ForwardConfig() {
+		if (this.config === undefined)
+			return
+		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.InternalName])
+		this.entries.forEach(entry => entry.OnConfigLoaded())
+		this.ForwardConfigASAP = false
+	}
 }
-let Menu = new MenuManager()
+const Menu = new MenuManager()
 
 Events.after("Draw", () => {
 	Menu.Render()

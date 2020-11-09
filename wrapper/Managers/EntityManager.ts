@@ -17,9 +17,9 @@ import Vector4 from "../Base/Vector4"
 import { SignonState_t } from "../Enums/SignonState_t"
 import GameState from "../Utils/GameState"
 
-let AllEntities: Entity[] = []
-let AllEntitiesAsMap = new Map<number, Entity>()
-let ClassToEntities = new Map<Constructor<any>, Entity[]>()
+const AllEntities: Entity[] = []
+const AllEntitiesAsMap = new Map<number, Entity>()
+const ClassToEntities = new Map<Constructor<any>, Entity[]>()
 
 // that's MUCH more efficient than Map<number, boolean>
 class bitset {
@@ -33,8 +33,8 @@ class bitset {
 		return (this.ar[(pos / (4 * 8)) | 0] & (1 << (pos % (4 * 8)))) !== 0
 	}
 	public set(pos: number, new_val: boolean): void {
-		let ar_pos = (pos / (4 * 8)) | 0
-		let mask = 1 << (pos % (4 * 8))
+		const ar_pos = (pos / (4 * 8)) | 0
+		const mask = 1 << (pos % (4 * 8))
 		if (!new_val)
 			this.ar[ar_pos] &= ~mask
 		else
@@ -46,7 +46,7 @@ class bitset {
 }
 
 export type EntityPropertyType = EntityPropertiesNode | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
-let ent_props = new Map<number, EntityPropertyType>(),
+const ent_props = new Map<number, EntityPropertyType>(),
 	TreeActiveMask = new bitset(0x4000)
 class CEntityManager {
 	public get AllEntities(): Entity[] {
@@ -56,7 +56,7 @@ class CEntityManager {
 		const mask = include_local ? 0x7FFF : 0x3FFF
 		if (handle === undefined || handle === 0)
 			return undefined
-		let index = handle & mask
+		const index = handle & mask
 		if (index === mask || index === 0)
 			return undefined
 		return AllEntitiesAsMap.get(index)
@@ -93,15 +93,15 @@ const EntityManager = new CEntityManager()
 export default EntityManager
 
 function ClassFromNative(id: number, constructor_name: string, ent_name: Nullable<string>): Entity {
-	let constructor = GetConstructorByName(constructor_name, ent_name)
+	const constructor = GetConstructorByName(constructor_name, ent_name)
 	if (constructor === undefined)
 		throw `Can't find constructor for entity class ${constructor_name}, Entity#Name === ${ent_name}`
 
 	return new constructor(id, ent_name)
 }
 
-let cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>(),
-	cached_m_fGameTime: Nullable<[Constructor<Entity>, number, FieldHandler]>,
+const cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
+let cached_m_fGameTime: Nullable<[Constructor<Entity>, number, FieldHandler]>,
 	delayed_tick_call: Nullable<[Entity, EntityPropertyType]>
 export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
 	AllEntitiesAsMap.set(id, ent)
@@ -141,7 +141,7 @@ export function DeleteEntity(id: number): void {
 		if (!(entity instanceof class_))
 			return
 
-		let classToEnt = ClassToEntities.get(class_)
+		const classToEnt = ClassToEntities.get(class_)
 		if (classToEnt === undefined)
 			return
 
@@ -172,8 +172,8 @@ enum PropertyType {
 	QUATERNION
 }
 
-let convert_buf = new ArrayBuffer(8)
-let convert_uint8 = new Uint8Array(convert_buf),
+const convert_buf = new ArrayBuffer(8)
+const convert_uint8 = new Uint8Array(convert_buf),
 	convert_int8 = new Int8Array(convert_buf),
 	convert_uint16 = new Uint16Array(convert_buf),
 	convert_int16 = new Int16Array(convert_buf),
@@ -182,7 +182,7 @@ let convert_uint8 = new Uint8Array(convert_buf),
 	convert_int64 = new BigInt64Array(convert_buf),
 	convert_uint64 = new BigUint64Array(convert_buf)
 function ParseProperty(stream: BinaryStream): string | bigint | number | boolean | Vector2 | Vector3 | Vector4 {
-	let var_type: PropertyType = stream.ReadUint8()
+	const var_type: PropertyType = stream.ReadUint8()
 	switch (var_type) {
 		case PropertyType.INT8:
 			convert_uint64[0] = stream.ReadVarUint()
@@ -295,7 +295,11 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 	const ent_node = ent_props.get(ent_id)!
 	const changed_paths: number[] = [],
 		changed_paths_results: EntityPropertyType[] = []
-	for (let path_size = 0; (path_size = stream.ReadUint8()) !== 0;) {
+	while (true) {
+		const path_size = stream.ReadUint8()
+		if (path_size === 0)
+			break
+
 		let prop_node = ent_node
 		for (let i = 0; i < path_size; i++) {
 			let id = stream.ReadUint16()
@@ -307,10 +311,10 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 				throw `Expected map at ${DumpStreamPosition(ent_class, stream, i)}`
 
 			if (must_be_array) {
-				let ar = prop_node as EntityPropertyType[]
+				const ar = prop_node as EntityPropertyType[]
 				if (i !== path_size - 1) {
 					if (ar[id] === undefined) {
-						let next_must_be_array = stream.ReadUint16() & 1
+						const next_must_be_array = stream.ReadUint16() & 1
 						stream.RelativeSeek(-2) // uint16 = 2 bytes
 						ar[id] = next_must_be_array ? [] : new EntityPropertiesNode()
 					}
@@ -332,15 +336,15 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 					map.set(id, prop)
 				}
 				if (ent !== undefined && ent_handlers !== undefined) {
-					const i = changed_paths.indexOf(id)
-					if (i === -1) {
+					const changed_path_id = changed_paths.indexOf(id)
+					if (changed_path_id === -1) {
 						if (ent_handlers.has(id)) {
 							changed_paths.push(id)
 							changed_paths_results.push(res)
 						} else if (cached_m_fGameTime !== undefined && id === cached_m_fGameTime[1])
 							delayed_tick_call = [ent, res]
 					} else
-						changed_paths_results[i] = res
+						changed_paths_results[changed_path_id] = res
 				}
 			}
 		}
@@ -351,7 +355,7 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 
 function FixType(symbols: string[], field: any): string {
 	{
-		let field_serializer_name_sym = field.field_serializer_name_sym
+		const field_serializer_name_sym = field.field_serializer_name_sym
 		if (field_serializer_name_sym !== undefined)
 			return symbols[field_serializer_name_sym] + (field.field_serializer_version !== 0 ? field.field_serializer_version : "")
 	}
@@ -392,11 +396,11 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		case 41: {
 			const msg = ParseProtobufNamed(buf, "CSVCMsg_FlattenedSerializer")
 			if ((globalThis as any).dump_d_ts) {
-				let obj = MapToObject(msg)
-				let list = (Object.values(obj.serializers) as any[]).map(ser => [
+				const obj = MapToObject(msg)
+				const list = (Object.values(obj.serializers) as any[]).map(ser => [
 					obj.symbols[ser.serializer_name_sym] + (ser.serializer_version !== 0 ? ser.serializer_version : ""),
 					(Object.values(ser.fields_index) as any[]).map(field_id => {
-						let field = obj.fields[field_id]
+						const field = obj.fields[field_id]
 						return [
 							FixType(obj.symbols as string[], field),
 							obj.symbols[field.var_name_sym]
@@ -419,10 +423,10 @@ declare class ${name} {
 `)
 			}
 			entities_symbols = msg.get("symbols") as string[]
-			for (let [construct, map] of GetFieldHandlers()) {
-				let map2 = new Map<number, FieldHandler>()
-				for (let [field_name, field_handler] of map) {
-					let id = entities_symbols.indexOf(field_name)
+			for (const [construct, map] of GetFieldHandlers()) {
+				const map2 = new Map<number, FieldHandler>()
+				for (const [field_name, field_handler] of map) {
+					const id = entities_symbols.indexOf(field_name)
 					if (id === -1) {
 						console.log(`[WARNING] Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`)
 						continue
@@ -440,8 +444,8 @@ declare class ${name} {
 			EventsSDK.emit("PreUpdate", false)
 			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 			while (!stream.Empty()) {
-				let ent_id = stream.ReadUint16()
-				let pvs: EntityPVS = stream.ReadUint8()
+				const ent_id = stream.ReadUint16()
+				const pvs: EntityPVS = stream.ReadUint8()
 				switch (pvs) {
 					case EntityPVS.DELETE:
 						DeleteEntity(ent_id)

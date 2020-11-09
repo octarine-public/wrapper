@@ -6,7 +6,7 @@ import Entity, { LocalPlayer } from "../Base/Entity"
 import EventsSDK from "../../Managers/EventsSDK"
 import GameState from "../../Utils/GameState"
 import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import { WrapperClass, NetworkedBasicField, NetworkedBigIntField } from "../../Decorators"
 
 @WrapperClass("C_DOTAGamerulesProxy")
 export default class CGameRules extends Entity {
@@ -39,7 +39,7 @@ export default class CGameRules extends Entity {
 	public IsTemporaryNight = false
 	@NetworkedBasicField("m_nLoadedPlayers")
 	public LoadedPlayers = 0
-	@NetworkedBasicField("m_unMatchID64")
+	@NetworkedBigIntField("m_unMatchID64")
 	public MatchID = 0n
 	public NeutralSpawnBoxes: NeutralSpawnBox[] = []
 	public StockInfo: StockInfo[] = []
@@ -66,7 +66,7 @@ export default class CGameRules extends Entity {
 		return Math.max(this.ScanCooldownDireTime - this.RawGameTime, 0)
 	}
 	public get IsInGame(): boolean {
-		let gameState = this.GameState
+		const gameState = this.GameState
 
 		return gameState === DOTA_GameState.DOTA_GAMERULES_STATE_GAME_IN_PROGRESS
 			|| (gameState === DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME && GameState.IsConnected)

@@ -46,7 +46,7 @@ export default class Vector3 {
 	 * Is this vector valid? (every value must not be infinity/NaN)
 	 */
 	get IsValid(): boolean {
-		var x = this.x,
+		const x = this.x,
 			y = this.y,
 			z = this.z
 
@@ -101,7 +101,7 @@ export default class Vector3 {
 	 * Are all components of this vector are 0?
 	 */
 	public IsZero(tolerance: number = 0.01): boolean {
-		var x = this.x,
+		const x = this.x,
 			y = this.y,
 			z = this.z
 
@@ -268,8 +268,8 @@ export default class Vector3 {
 	/**
 	 * Normalize the vector
 	 */
-	public Normalize(scalar: number = 1): Vector3 {
-		var length = this.Length
+	public Normalize(scalar = 1): Vector3 {
+		const length = this.Length
 		return length !== 0 ? this.DivideScalarForThis(length * scalar) : this
 	}
 	/**
@@ -293,13 +293,10 @@ export default class Vector3 {
 	 * Scale the vector to length. ( Returns 0 vector if the length of this vector is 0 )
 	 */
 	public ScaleTo(scalar: number): Vector3 {
-		var length = this.Length
-
-		if (length === 0) {
-			this.x = 0
-			this.y = 0
-			this.z = 0
-		} else
+		const length = this.Length
+		if (length === 0)
+			this.toZero()
+		else
 			this.MultiplyScalarForThis(scalar / length)
 
 		return this
@@ -308,8 +305,7 @@ export default class Vector3 {
 	 * Divides both vector axis by the given scalar value
 	 */
 	public DivideTo(scalar: number): Vector3 {
-		var length = this.Length
-
+		const length = this.Length
 		if (length === 0)
 			this.toZero()
 		else
@@ -664,7 +660,7 @@ export default class Vector3 {
 	 * Rotates the Vector3 to a set angle.
 	 */
 	public Rotated(angle: number): Vector3 {
-		var cos = Math.cos(angle),
+		const cos = Math.cos(angle),
 			sin = Math.sin(angle)
 
 		return new Vector3(
@@ -765,7 +761,7 @@ export default class Vector3 {
 		let distance = Number.POSITIVE_INFINITY
 
 		vecs.forEach(vec => {
-			let tempDist = this.Distance(vec)
+			const tempDist = this.Distance(vec)
 			if (tempDist < distance) {
 				distance = tempDist
 				minVec = vec

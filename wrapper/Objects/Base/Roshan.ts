@@ -9,23 +9,17 @@ import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 export default class Roshan extends Unit {
 	public static HP = 0
 	public static MaxHP = 0
-	public static get Instance(): Nullable<Entity | number> {
-		if (this.Instance_ instanceof Entity) {
-			if (!(this.Instance_ instanceof Entity) || !this.Instance_.IsValid)
-				return this.Instance_ = undefined
-			return this.Instance_
-		}
-		return this.Instance_ = (EntityManager.EntityByIndex(this.Instance_ as number)
-			?? this.Instance_
-			?? EntityManager.AllEntities.find(ent => ent instanceof Roshan))
-	}
-	public static set Instance(ent: Nullable<Entity | number>) {
-		this.Instance_ = ent
-	}
-	private static Instance_: Nullable<Entity | number>
+	public static Instance: Nullable<Entity | number>
 
 	@NetworkedBasicField("m_bGoldenRoshan")
 	public GoldenRoshan = false
+}
+
+function GetHPChangedByMinute(minute: number): number {
+	let hp_changed = 115
+	if (GameRules?.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
+		hp_changed *= 2
+	return minute * hp_changed
 }
 
 let last_event_ent = -1,
@@ -37,7 +31,7 @@ EventsSDK.on("GameEvent", (name, obj) => {
 		Roshan.Instance = last_event_ent
 		if (GameRules !== undefined) {
 			last_minute = Math.max(0, Math.floor(GameRules.GameTime / 60))
-			Roshan.HP = 6000 + (last_minute * 115)
+			Roshan.HP = 6000 + GetHPChangedByMinute(last_minute)
 			Roshan.MaxHP = Roshan.HP
 		}
 	} else
@@ -61,9 +55,9 @@ EventsSDK.on("EntityCreated", ent => {
 	if (!(ent instanceof Roshan) || (Roshan.Instance instanceof Entity && Roshan.Instance !== ent))
 		return
 	Roshan.Instance = ent
-	let time = GameRules?.GameTime ?? 0
+	const time = GameRules?.GameTime ?? 0
 	last_minute = Math.max(0, Math.floor(time / 60))
-	Roshan.HP = 6000 + (last_minute * 115)
+	Roshan.HP = 6000 + GetHPChangedByMinute(last_minute)
 	Roshan.MaxHP = Roshan.HP
 })
 
@@ -89,15 +83,12 @@ EventsSDK.on("Tick", () => {
 		HPRegenCounter -= regen_amount_floor
 	}
 
-	let time = Math.max(GameRules?.GameTime ?? 0, 0)
-	let min = Math.floor(time / 60)
+	const time = Math.max(GameRules?.GameTime ?? 0, 0)
+	const min = Math.floor(time / 60)
 	if (min === last_minute)
 		return
-	let hp_changed = 115
-	if (GameRules?.GameMode === DOTA_GameMode.DOTA_GAMEMODE_TURBO)
-		hp_changed *= 2
-	Roshan.MaxHP = 6000 + (min * hp_changed)
-	Roshan.HP *= Roshan.MaxHP / (6000 + (last_minute * hp_changed))
+	Roshan.MaxHP = 6000 + GetHPChangedByMinute(min)
+	Roshan.HP *= Roshan.MaxHP / (6000 + GetHPChangedByMinute(last_minute))
 	last_minute = min
 })
 

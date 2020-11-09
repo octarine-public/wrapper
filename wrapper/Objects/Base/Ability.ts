@@ -106,7 +106,7 @@ export default class Ability extends Entity {
 		return this.IsInAbilityPhase_ && (GameRules === undefined || GameRules.RawGameTime - this.IsInAbilityPhase_ChangeTime <= this.CastPoint)
 	}
 	public get CooldownLength(): number {
-		let charge_restore_time = this.ChargeRestoreTime
+		const charge_restore_time = this.ChargeRestoreTime
 		if (charge_restore_time !== 0)
 			return charge_restore_time // workaround of bad m_flCooldownLength, TODO: use cooldown reductions
 		return this.CooldownLength_
@@ -176,32 +176,7 @@ export default class Ability extends Entity {
 	}
 
 	public get CastRange(): number {
-		let owner = this.Owner,
-			castrange = this.BaseCastRange
-
-		switch (this.Name) {
-			// transfer to ability
-			case "skywrath_mage_concussive_shot": {
-				let unique = owner?.GetAbilityByName("special_bonus_unique_skywrath_4")
-				if (unique !== undefined && unique.Level !== 0)
-					return Number.MAX_SAFE_INTEGER
-				break
-			}
-			// transfer to ability
-			case "gyrocopter_call_down": {
-				let unique = owner?.GetAbilityByName("special_bonus_unique_gyrocopter_5")
-				if (unique !== undefined && unique.Level !== 0)
-					return Number.MAX_SAFE_INTEGER
-				break
-			}
-			// transfer to ability
-			case "lina_dragon_slave":
-				castrange += this.GetSpecialValue("dragon_slave_width_initial")
-				break
-			default:
-				break
-		}
-		return castrange + (owner?.CastRangeBonus ?? 0)
+		return this.BaseCastRange + (this.Owner?.CastRangeBonus ?? 0)
 	}
 	public get SpellAmplification(): number {
 		if (this.Name.startsWith("special_bonus_spell_amplify"))
@@ -228,7 +203,7 @@ export default class Ability extends Entity {
 		if (this.Speed === Number.MAX_SAFE_INTEGER || this.Speed === 0)
 			return this.GetCastDelay(position) + (this.ActivationDelay * 1000)
 
-		let time = this.Owner.Distance2D(position) / this.Speed
+		const time = this.Owner.Distance2D(position) / this.Speed
 		return this.GetCastDelay(position) + ((time + this.ActivationDelay) * 1000)
 	}
 
@@ -249,13 +224,13 @@ export default class Ability extends Entity {
 	}
 
 	public GetSpecialValue(special_name: string, level = this.Level): number {
-		let owner = this.Owner
+		const owner = this.Owner
 		if (owner === undefined)
 			return this.AbilityData.GetSpecialValue(special_name, level)
 		return this.AbilityData.GetSpecialValueWithTalent(owner, special_name, level)
 	}
 	public IsManaEnough(bonusMana: number = 0): boolean {
-		let owner = this.Owner
+		const owner = this.Owner
 		if (owner === undefined)
 			return true
 		return (owner.Mana + bonusMana) >= this.ManaCost

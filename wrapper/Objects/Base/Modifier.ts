@@ -101,7 +101,7 @@ export default class Modifier {
 	}
 	public get Parent(): Nullable<Unit> {
 		if (this.Parent_ === undefined) {
-			let ent = EntityManager.EntityByIndex(this.m_pBuff.Parent)
+			const ent = EntityManager.EntityByIndex(this.m_pBuff.Parent)
 			if (ent !== undefined && ent instanceof Unit)
 				this.Parent_ = ent
 		}
@@ -134,7 +134,7 @@ export default class Modifier {
 		return this.Name_
 	}
 	public get vStart(): Vector3 {
-		let vec = this.m_pBuff.vStart
+		const vec = this.m_pBuff.vStart
 
 		if (vec === undefined)
 			return new Vector3().Invalidate()
@@ -142,7 +142,7 @@ export default class Modifier {
 		return new Vector3(vec.x, vec.y, vec.z)
 	}
 	public get vEnd(): Vector3 {
-		let vec = this.m_pBuff.vEnd
+		const vec = this.m_pBuff.vEnd
 
 		if (vec === undefined)
 			return new Vector3().Invalidate()

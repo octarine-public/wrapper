@@ -62,19 +62,19 @@ DamageIgnoreBuffs.map((ar, i) => { // optimization & beauty trick
 })
 
 export function parseKVFile(path: string): RecursiveMap {
-	let buf = readFile(path)
+	const buf = readFile(path)
 	return buf !== undefined ? parseKV(new Uint8Array(buf)) : new Map()
 }
 
 export function parseEnumString(enum_object: any /* { [key: string]: number } */, str: string): number {
-	let re = /(\w+)\s?(\||\&|\+|\-)?/g,
-		last_tok = "",
+	const regex = /(\w+)\s?(\||\&|\+|\-)?/g // it's in variable to preserve RegExp#exec steps
+	let last_tok = "",
 		res = 0
 	while (true) {
-		const regex_res = re.exec(str)
+		const regex_res = regex.exec(str)
 		if (regex_res === null)
 			return res
-		let parsed_name = (enum_object[regex_res[1]] as number | undefined) ?? 0
+		const parsed_name = (enum_object[regex_res[1]] as number | undefined) ?? 0
 		switch (last_tok) {
 			case "&":
 				res &= parsed_name
@@ -101,7 +101,7 @@ function FixArray(ar: any[]): any {
 }
 
 export function MapToObject(map: Map<any, any>): any {
-	let obj: any = {}
+	const obj: any = {}
 	map.forEach((v, k) => obj[k] = v instanceof Map ? MapToObject(v) : Array.isArray(v) ? FixArray(v) : v)
 	return obj
 }
@@ -137,11 +137,11 @@ export function ParseExternalReferences(buf: Uint8Array): string[] {
 }
 
 export function ParseMapName(path: string): Nullable<string> {
-	let res = /maps(\/|\\)(.+)\.vpk$/.exec(path)
+	const res = /maps(\/|\\)(.+)\.vpk$/.exec(path)
 	if (res === null)
 		return undefined
 
-	let map_name = res[2]
+	const map_name = res[2]
 	if (map_name.startsWith("scenes") || map_name.startsWith("prefabs")) // that must not be loaded as main map, so we must ignore it
 		return undefined
 	return map_name

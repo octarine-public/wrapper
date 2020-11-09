@@ -119,14 +119,14 @@ export class IModifier {
 		return this.m_Protobuf.get(name) as any as T
 	}
 	public GetVector(name: string): Nullable<Vector3> {
-		let vec = this.GetProperty<Map<string, number>>(name)
+		const vec = this.GetProperty<Map<string, number>>(name)
 		if (vec === undefined)
 			return undefined
 		return new Vector3(vec.get("x"), vec.get("y"), vec.get("z"))
 	}
 }
 
-let ActiveModifiersRaw = new Map<number, IModifier>(),
+const ActiveModifiersRaw = new Map<number, IModifier>(),
 	ActiveModifiers = new Map<number, Modifier>()
 
 function AddModifier(parent: Unit, mod: Modifier) {
@@ -138,13 +138,13 @@ function AddModifier(parent: Unit, mod: Modifier) {
 function EmitModifierCreated(mod: IModifier) {
 	if (mod.Index === undefined || mod.SerialNum === undefined || mod.Parent === undefined)
 		return
-	let mod_ = new Modifier(mod)
-	let time = GameRules?.RawGameTime ?? 0
+	const mod_ = new Modifier(mod)
+	const time = GameRules?.RawGameTime ?? 0
 	if (mod_.Duration !== -1 && mod_.DieTime < time)
 		return
 	ActiveModifiers.set(mod_.SerialNumber, mod_)
 	//console.log("Created " + mod_.SerialNumber)
-	let parent = mod_.Parent
+	const parent = mod_.Parent
 	if (parent !== undefined)
 		AddModifier(parent, mod_)
 	EventsSDK.emit("ModifierCreatedRaw", false, mod_)
@@ -160,7 +160,7 @@ EventsSDK.on("EntityCreated", ent => {
 })
 function EmitModifierRemoved(mod: Modifier) {
 	ActiveModifiers.delete(mod.SerialNumber)
-	let parent = mod.Parent
+	const parent = mod.Parent
 	if (parent !== undefined) {
 		ArrayExtensions.arrayRemove(parent.Buffs, mod)
 		changeFieldsByEvents(parent)
@@ -228,15 +228,15 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (name !== "ActiveModifiers")
 		return
 	update.forEach(([_, mod_serialized], index) => {
-		let mod = new IModifier(ParseProtobufNamed(mod_serialized, "CDOTAModifierBuffTableEntry"))
-		let replaced = ActiveModifiersRaw.get(index)
+		const mod = new IModifier(ParseProtobufNamed(mod_serialized, "CDOTAModifierBuffTableEntry"))
+		const replaced = ActiveModifiersRaw.get(index)
 		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {
-			let replaced_mod = ActiveModifiers.get(replaced.SerialNum)
+			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
 			if (replaced_mod !== undefined)
 				EmitModifierRemoved(replaced_mod)
 		}
 		ActiveModifiersRaw.set(index, mod)
-		let old_mod = ActiveModifiers.get(mod.SerialNum as number)
+		const old_mod = ActiveModifiers.get(mod.SerialNum as number)
 		if (mod.EntryType === DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE) {
 			if (old_mod === undefined)
 				EmitModifierCreated(mod)

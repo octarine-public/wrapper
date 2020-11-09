@@ -67,7 +67,7 @@ globalThis.Manifest = _Manifest
 
 globalThis.Menu = _Menu
 globalThis.GetEntityClassByName = (name: string) => {
-	let classes = GetSDKClasses()
+	const classes = GetSDKClasses()
 	for (const [class_, name_] of classes)
 		if (name_ === name)
 			return class_

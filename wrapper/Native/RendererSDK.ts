@@ -221,7 +221,7 @@ class CRendererSDK {
 	 * @param screen screen position
 	 */
 	public ScreenToWorld(screen: Vector2): Vector3 {
-		let vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
+		const vec = screen.Divide(this.WindowSize).MultiplyScalarForThis(2)
 		vec.x = vec.x - 1
 		vec.y = 1 - vec.y
 		return WASM.ScreenToWorld(vec, Vector3.fromIOBuffer(Camera.Position)!, Camera.Distance ?? 1200, QAngle.fromIOBuffer(Camera.Angles)!, this.WindowSize)
@@ -301,9 +301,9 @@ class CRendererSDK {
 		this.SetColor(new Color(255, 255, 255, color.a))
 		this.SetColorFilter(new Color(color.r, color.g, color.b), BlendMode.Modulate)
 
-		let texture_id = this.GetTexture(path) // better put it BEFORE new command
+		const texture_id = this.GetTexture(path) // better put it BEFORE new command
 		if (vecSize.x <= 0 || vecSize.y <= 0) {
-			let size = this.tex2size.get(texture_id)!
+			const size = this.tex2size.get(texture_id)!
 			if (vecSize.x <= 0)
 				vecSize.x = size.x
 			if (vecSize.y <= 0)
@@ -404,7 +404,7 @@ class CRendererSDK {
 		this.last_color = new Color(-1, -1, -1, -1)
 	}
 	public GetAspectRatio() {
-		let res = this.WindowSize.x / this.WindowSize.y
+		const res = this.WindowSize.x / this.WindowSize.y
 		if (res >= 1.25 && res <= 1.35)
 			return "4x3"
 		else if (res >= 1.7 && res <= 1.85)
@@ -497,8 +497,8 @@ class CRendererSDK {
 	private Text_(text: string, vecPos: Vector2, color: Color, font_name: string, font_size: number, weight: number, width: number, italic: boolean, flags: FontFlags_t, scaleX: number, skewX: number): void {
 		this.SetColor(color)
 
-		let font_id = this.GetFont(font_name, weight, width, italic)
-		let text_buf = StringToUTF8(text)
+		const font_id = this.GetFont(font_name, weight, width, italic)
+		const text_buf = StringToUTF8(text)
 		const view = this.AllocateCommandSpace(7 * 4 + 2 + text_buf.byteLength)
 		let off = 0
 		view.setUint8(off, CommandID.TEXT)
@@ -534,7 +534,7 @@ class CRendererSDK {
 		if (rgba.byteLength !== size.x * size.y * 4)
 			throw "Invalid RGBA buffer or size"
 		size.toIOBuffer()
-		let texture_id = Renderer.CreateTexture(rgba.buffer)
+		const texture_id = Renderer.CreateTexture(rgba.buffer)
 		this.tex2size.set(texture_id, size)
 		return texture_id
 	}
@@ -663,14 +663,14 @@ class CRendererSDK {
 		view.setUint8(0, CommandID.RESTORE_STATE)
 	}
 }
-let RendererSDK = new CRendererSDK()
+const RendererSDK = new CRendererSDK()
 
 let last_loaded_map_name = "<empty>"
 try {
 	let map_name = GetLevelNameShort()
 	if (map_name === "start")
 		map_name = "dota"
-	let buf = fread(`maps/${map_name}.vhcg`)
+	const buf = fread(`maps/${map_name}.vhcg`)
 	if (buf !== undefined) {
 		RendererSDK.HeightMap = WASM.ParseVHCG(new Uint8Array(buf))
 		GameState.MapName = last_loaded_map_name = map_name
@@ -680,11 +680,11 @@ try {
 }
 
 Events.on("PostAddSearchPath", path => {
-	let map_name = ParseMapName(path)
+	const map_name = ParseMapName(path)
 	if (map_name === undefined)
 		return
 
-	let buf = fread(`maps/${map_name}.vhcg`)
+	const buf = fread(`maps/${map_name}.vhcg`)
 	if (buf === undefined)
 		return
 
@@ -698,7 +698,7 @@ Events.on("PostAddSearchPath", path => {
 })
 
 Events.on("PostRemoveSearchPath", path => {
-	let map_name = ParseMapName(path)
+	const map_name = ParseMapName(path)
 	if (map_name === undefined || last_loaded_map_name !== map_name)
 		return
 

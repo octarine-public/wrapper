@@ -6,7 +6,7 @@ import { WrapperClass } from "../../Decorators"
 export default class npc_dota_hero_meepo extends Hero {
 	public get WhichMeepo(): number {
 		// move it when we_stand will be wrapped as Ability
-		let findWeStand = this.GetAbilityByClass(meepo_divided_we_stand)
+		const findWeStand = this.GetAbilityByClass(meepo_divided_we_stand)
 		if (findWeStand === undefined)
 			return 0
 

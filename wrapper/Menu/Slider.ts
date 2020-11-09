@@ -21,6 +21,14 @@ export default class Slider extends Base {
 		this.max = max
 	}
 
+	public get ConfigValue() {
+		return this.value
+	}
+
+	public set ConfigValue(value) {
+		this.value = value !== undefined ? value : this.value
+	}
+
 	public Update() {
 		this.TotalSize.x =
 			RendererSDK.GetTextSize(this.Name, this.FontName, this.FontSize).x
@@ -29,14 +37,6 @@ export default class Slider extends Base {
 			+ this.border_size.x * 2
 			+ this.text_offset.x * 2
 		super.Update()
-	}
-
-	public get ConfigValue() {
-		return this.value
-	}
-
-	public set ConfigValue(value) {
-		this.value = value !== undefined ? value : this.value
 	}
 	public OnConfigLoaded() {
 		this.OnValueChangedCBs.forEach(f => f(this))
@@ -47,21 +47,21 @@ export default class Slider extends Base {
 		if (this.is_mouse_down)
 			this.OnValueChanged()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		let node_position = this.NodeRect.pos1,
+		const node_position = this.NodeRect.pos1,
 			total = this.TotalSize
-		let node_height = total.y - this.border_size.y * 2
-		let slider_pos = node_position.Clone().AddScalarX((total.x - this.border_size.x * 2 - this.slider_width) / (this.max - this.min) * (this.value as number - this.min))
+		const node_height = total.y - this.border_size.y * 2
+		const slider_pos = node_position.Clone().AddScalarX((total.x - this.border_size.x * 2 - this.slider_width) / (this.max - this.min) * (this.value as number - this.min))
 		RendererSDK.FilledRect(node_position, slider_pos.Subtract(node_position).AddScalarY(node_height), this.slider_filler_color)
 		RendererSDK.FilledRect(slider_pos, new Vector2(this.slider_width, node_height), this.slider_color)
 		RendererSDK.Text(this.Name, this.Position.Add(this.text_offset).AddScalarY(this.FontSize), this.FontColor, this.FontName, this.FontSize)
-		let text = this.value.toString()
-		let text_pos = this.Position.Add(total).SubtractForThis(this.value_text_offset).SubtractScalarX(text.length * this.FontSize / 2)
+		const text = this.value.toString()
+		const text_pos = this.Position.Add(total).SubtractForThis(this.value_text_offset).SubtractScalarX(text.length * this.FontSize / 2)
 		RendererSDK.Text(text, text_pos, this.FontColor, this.FontName, this.FontSize)
 		super.RenderTooltip()
 	}
 	public OnValueChanged(): void {
-		let off = Math.max(this.NodeRect.GetOffset(this.MousePosition).x, 0)
-		let old_value = this.value
+		const off = Math.max(this.NodeRect.GetOffset(this.MousePosition).x, 0)
+		const old_value = this.value
 		this.value = Math.floor(Math.min(this.max, this.min + (off / (this.TotalSize.x - this.border_size.x * 2)) * (this.max - this.min)))
 		if (this.value !== old_value)
 			this.OnValueChangedCBs.forEach(f => f(this))

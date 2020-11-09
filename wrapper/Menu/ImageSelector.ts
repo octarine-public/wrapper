@@ -22,14 +22,14 @@ export default class ImageSelector extends Base {
 		this.enabled_values = default_values
 	}
 	public get IsZeroSelected(): boolean {
-		for (let value of this.enabled_values.values())
+		for (const value of this.enabled_values.values())
 			if (value)
 				return false
 		return true
 	}
 
 	public get IconsRect() {
-		let base_pos = this.Position.Add(this.text_offset).AddForThis(this.border_size).AddScalarY(this.name_size.y + 3)
+		const base_pos = this.Position.Add(this.text_offset).AddForThis(this.border_size).AddScalarY(this.name_size.y + 3)
 		return new Rectangle(base_pos, base_pos.Add(this.image_size.AddScalar(this.image_border_size.x * 2 + 2).Multiply(new Vector2(Math.min(this.values.length, 10), Math.ceil(this.values.length / 10)))).SubtractScalar(6))
 	}
 
@@ -76,22 +76,22 @@ export default class ImageSelector extends Base {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
 		RendererSDK.Text(this.Name, this.Position.Add(this.text_offset).AddScalarY(this.name_size.y), this.FontColor, this.FontName, this.FontSize)
-		let base_pos = this.IconsRect.pos1
+		const base_pos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
-			let value = this.values[i],
-				path = value,
-				size = this.image_size
-			let pos = new Vector2(i % 10, Math.floor(i / 10)).Multiply(this.image_size.AddScalar(this.image_border_size.x * 2 + 2)).Add(base_pos)
+			const value = this.values[i],
+				size = this.image_size,
+				pos = new Vector2(i % 10, Math.floor(i / 10)).Multiply(this.image_size.AddScalar(this.image_border_size.x * 2 + 2)).Add(base_pos)
+			let path = value
 
 			if (path.startsWith("item_bottle_"))
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
 			else if (!path.startsWith("npc_dota_hero_")) {
-				try {
-					path = AbilityData.GetAbilityByName(path)!.TexturePath
-				} catch { }
+				const abil = AbilityData.GetAbilityByName(path)
+				if (abil !== undefined)
+					path = abil.TexturePath
 			} else
 				path = `panorama/images/heroes/${path}_png.vtex_c`
-			let is_enabled = this.IsEnabled(value)
+			const is_enabled = this.IsEnabled(value)
 			if (is_enabled)
 				RendererSDK.FilledRect(pos.Subtract(this.image_border_size), size.Add(this.image_border_size.MultiplyScalar(2)), this.image_border_color)
 			RendererSDK.Image(path, pos, -1, size, is_enabled ? this.image_activated_color : this.image_color)
@@ -104,15 +104,15 @@ export default class ImageSelector extends Base {
 		return !this.IconsRect.Contains(this.MousePosition)
 	}
 	public OnMouseLeftUp(): boolean {
-		let rect = this.IconsRect
+		const rect = this.IconsRect
 		if (!rect.Contains(this.MousePosition))
 			return false
-		let off = rect.GetOffset(this.MousePosition)
+		const off = rect.GetOffset(this.MousePosition)
 		for (let i = 0; i < this.values.length; i++) {
-			let base_pos = new Vector2(i % 10, Math.floor(i / 10)).Multiply(this.image_size.AddScalar(this.image_border_size.x * 2 + 2))
+			const base_pos = new Vector2(i % 10, Math.floor(i / 10)).Multiply(this.image_size.AddScalar(this.image_border_size.x * 2 + 2))
 			if (!new Rectangle(base_pos, base_pos.Add(this.image_size)).Contains(off))
 				continue
-			let value = this.values[i]
+			const value = this.values[i]
 			this.enabled_values.set(value, !this.IsEnabled(value))
 			this.OnValueChangedCBs.forEach(f => f(this))
 			break

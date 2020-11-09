@@ -34,7 +34,7 @@ export default class Node extends Base {
 	public get ConfigValue() {
 		if (this.entries.length === 0)
 			return undefined
-		let obj = Object.create(null)
+		const obj = Object.create(null)
 		this.entries.forEach(entry => obj[entry.InternalName] = entry.ConfigValue)
 		return obj
 	}
@@ -105,7 +105,7 @@ export default class Node extends Base {
 		}
 		if (this.active_element === undefined)
 			return true
-		let ret = this.active_element.OnMouseLeftUp()
+		const ret = this.active_element.OnMouseLeftUp()
 		this.active_element = undefined
 		Menu.UpdateConfig()
 		return ret
@@ -131,7 +131,7 @@ export default class Node extends Base {
 		return this.AddEntry(new Slider(this, name, default_value, min, max, tooltip))
 	}
 	public AddNode(name: string, icon_path = "", tooltip = ""): Node {
-		let node = this.entries.find(entry => entry instanceof Node && entry.InternalName === name) as Node
+		const node = this.entries.find(entry => entry instanceof Node && entry.InternalName === name) as Node
 		if (node !== undefined)
 			return node
 		return this.AddEntry(new Node(this, name, icon_path, tooltip))
@@ -150,7 +150,7 @@ export default class Node extends Base {
 	}
 
 	public AddVector2(name: string, vector: Vector2, minVector?: Vector2 | number, maxVector?: Vector2 | number) {
-		const Node = this.AddNode(name)
+		const node = this.AddNode(name)
 
 		if (typeof minVector === "number")
 			minVector = new Vector2(minVector, minVector)
@@ -164,11 +164,11 @@ export default class Node extends Base {
 		if (!(maxVector instanceof Vector2))
 			maxVector = new Vector2(95, 95)
 
-		const X = Node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
-		const Y = Node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
+		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
+		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
 
 		return {
-			Node, X, Y,
+			node, X, Y,
 			get Vector() {
 				return new Vector2(X.value, Y.value)
 			},
@@ -179,7 +179,7 @@ export default class Node extends Base {
 		}
 	}
 	public AddVector3(name: string, vector: Vector3, minVector?: Vector3 | number, maxVector?: Vector3 | number) {
-		const Node = this.AddNode(name)
+		const node = this.AddNode(name)
 
 		if (typeof minVector === "number")
 			minVector = new Vector3(minVector, minVector, minVector)
@@ -193,12 +193,12 @@ export default class Node extends Base {
 		if (!(maxVector instanceof Vector3))
 			maxVector = new Vector3(95, 95)
 
-		const X = Node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
-		const Y = Node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
-		const Z = Node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z)
+		const X = node.AddSlider("Position: X", vector.x, minVector.x, maxVector.x)
+		const Y = node.AddSlider("Position: Y", vector.y, minVector.y, maxVector.y)
+		const Z = node.AddSlider("Position: Z", vector.z, minVector.z, maxVector.z)
 
 		return {
-			Node, X, Y, Z,
+			node, X, Y, Z,
 			get Vector() {
 				return new Vector3(X.value, Y.value, Z.value)
 			},
@@ -210,15 +210,16 @@ export default class Node extends Base {
 		}
 	}
 	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip = ""): IMenuColorPicker {
-		const Node = this.AddNode(name) as Node
+		const node = this.AddNode(name) as Node
 
-		const R = Node.AddSlider("Red", color.r, 0, 255)
-		const G = Node.AddSlider("Green", color.g, 0, 255)
-		const B = Node.AddSlider("Blue", color.b, 0, 255)
-		const A = Node.AddSlider("Alpha", color.a, 0, 255)
+		const R = node.AddSlider("Red", color.r, 0, 255)
+		const G = node.AddSlider("Green", color.g, 0, 255)
+		const B = node.AddSlider("Blue", color.b, 0, 255)
+		const A = node.AddSlider("Alpha", color.a, 0, 255)
 
 		return {
-			Node, R, G, B, A,
+			Node: node,
+			R, G, B, A,
 			get Color(): Color {
 				return new Color(R.value, G.value, B.value, A.value)
 			},
@@ -237,27 +238,27 @@ export default class Node extends Base {
 		render: PARTICLE_RENDER_NAME[],
 		addStateToTree?: boolean[]
 	): IMenuParticlePicker {
-		const Node = this.AddNode(name)
+		const node = this.AddNode(name)
 
 		let State: Nullable<Toggle>
 
 		if (addStateToTree !== undefined && addStateToTree[0]) {
-			State = Node.AddToggle("State", addStateToTree[1])
+			State = node.AddToggle("State", addStateToTree[1])
 		}
 
 		if (typeof color === "number")
 			color = new Color(color, color, color)
 
-		const R = Node.AddSlider("Color: R (red)", color.r, 0, 255)
-		const G = Node.AddSlider("Color: G (green)", color.g, 0, 255)
-		const B = Node.AddSlider("Color: B (blue)", color.b, 0, 255)
-		const A = Node.AddSlider("Opacity (alpha)", color.a, 1, 255)
+		const R = node.AddSlider("Color: R (red)", color.r, 0, 255)
+		const G = node.AddSlider("Color: G (green)", color.g, 0, 255)
+		const B = node.AddSlider("Color: B (blue)", color.b, 0, 255)
+		const A = node.AddSlider("Opacity (alpha)", color.a, 1, 255)
 
-		const Width = Node.AddSlider("Width", 15, 1, 150)
-		const Style = Node.AddSwitcher("Style", render)
+		const Width = node.AddSlider("Width", 15, 1, 150)
+		const Style = node.AddSwitcher("Style", render)
 
 		return {
-			Node,
+			Node: node,
 			State,
 			R, G, B, A,
 			Width, Style,

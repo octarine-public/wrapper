@@ -1,7 +1,7 @@
 import { Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import EventsSDK from "./EventsSDK"
 
-let StringTables = new Map<string, Map<number, [string, ArrayBuffer]>>()
+const StringTables = new Map<string, Map<number, [string, ArrayBuffer]>>()
 declare global {
 	var DumpStringTables: () => void
 	var StringTables_: typeof StringTables

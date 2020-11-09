@@ -80,7 +80,7 @@ export default class Entity {
 	public get RootOwner(): Nullable<Entity> {
 		let owner = this.Owner
 		while (true) {
-			let root_owner = owner?.Owner as Nullable<Entity>
+			const root_owner = owner?.Owner as Nullable<Entity>
 			if (root_owner === undefined)
 				break
 
@@ -182,13 +182,13 @@ export default class Entity {
 		return this.DistanceSqr2D(ent) < range ** 2
 	}
 	public Closest(ents: Entity[]): Entity {
-		let thisPos = this.Position
+		const thisPos = this.Position
 
 		let entity: Nullable<Entity>
 		let distance = Number.POSITIVE_INFINITY
 
 		ents.forEach(ent => {
-			let tempDist = ent.Distance(thisPos)
+			const tempDist = ent.Distance(thisPos)
 			if (tempDist < distance) {
 				distance = tempDist
 				entity = ent
@@ -202,15 +202,15 @@ export default class Entity {
 	 * unit.ClosestGroup(groups, group => Vector3.GetCenterType(creeps, creep => creep.InFront(200)))
 	 */
 	public ClosestGroup(groups: Entity[][], callback: (entity: Entity[]) => Vector3): [Entity[], Vector3] {
-		let thisPos = this.Position
+		const thisPos = this.Position
 
 		let entities: Entity[] = []
 		let vec = new Vector3()
 		let distance = Number.POSITIVE_INFINITY
 
 		groups.forEach(group => {
-			let tempVec = callback(group)
-			let tempDist = thisPos.Distance(tempVec)
+			const tempVec = callback(group)
+			const tempDist = thisPos.Distance(tempVec)
 
 			if (tempDist < distance) {
 				distance = tempDist
@@ -230,8 +230,7 @@ export default class Entity {
 	public Select(bAddToGroup: boolean = false): boolean {
 		return SelectUnit(this.Index, bAddToGroup)
 	}
-	public CannotUseItem(item: Item): boolean {
-		item // that's weird.
+	public CannotUseItem(_item: Item): boolean {
 		return false
 	}
 

@@ -13,7 +13,7 @@ export default class Particle {
 	private EffectIndex = -1
 
 	constructor(
-		public readonly parent: ParticlesSDK,
+		public readonly Parent: ParticlesSDK,
 		public readonly Key: any,
 		public readonly Path: string,
 		public readonly Attachment: ParticleAttachment_t,
@@ -71,7 +71,7 @@ export default class Particle {
 	public Restart() {
 		if (!this.IsValid)
 			return
-		let save = [...this.ControlPoints.entries()] // TODO: Is saving needed?
+		const save = [...this.ControlPoints.entries()] // TODO: Is saving needed?
 		this.Destroy().Create(...save)
 	}
 
@@ -81,7 +81,7 @@ export default class Particle {
 			this.EffectIndex = -1
 			this.IsValid = false
 			this.ControlPoints.clear()
-			this.parent.AllParticles.delete(this.Key)
+			this.Parent.AllParticles.delete(this.Key)
 		}
 		return this
 	}
@@ -110,7 +110,7 @@ export default class Particle {
 		)
 		this.IsValid = true
 		this.SetControlPoints(...controlPoints)
-		this.parent.AllParticles.set(this.Key, this)
+		this.Parent.AllParticles.set(this.Key, this)
 
 		return this
 	}

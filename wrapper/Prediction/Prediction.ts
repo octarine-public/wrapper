@@ -25,7 +25,7 @@ export default class Prediction {
 			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
 			obstacles = ents.filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
 		}
-		let obs2ent = new Map<Obstacle, Entity>()
+		const obs2ent = new Map<Obstacle, Entity>()
 		obstacles.forEach(ent => obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent))
 		return new NavMeshPathfinding(
 			new MovingObstacle(
@@ -50,9 +50,9 @@ export default class Prediction {
 			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
 			obstacles = ents.filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
 		}
-		let obs2ent = new Map<Obstacle, Entity>()
+		const obs2ent = new Map<Obstacle, Entity>()
 		obstacles.forEach(ent => obs2ent.set(ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent), ent))
-		let predict_res = new NavMeshPathfinding(
+		const predict_res = new NavMeshPathfinding(
 			new MovingObstacle(
 				Vector2.FromVector3(this.Owner.Position),
 				collision_size,
@@ -79,7 +79,7 @@ export default class Prediction {
 			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
 			obstacles = ents.filter(ent => ent !== this.Owner && ent.IsInRange(this.Owner, radius * 2) && ent.IsAlive && ent.IsVisible && (!(ent instanceof Unit) || !ent.IsInvulnerable))
 		}
-		let ent2obs = new Map<Entity, Obstacle>()
+		const ent2obs = new Map<Entity, Obstacle>()
 		obstacles.forEach(ent => ent2obs.set(ent, ent instanceof Unit ? MovingObstacle.FromUnit(ent) : Obstacle.FromEntity(ent)))
 		return new NavMeshPathfinding(
 			new MovingObstacle(

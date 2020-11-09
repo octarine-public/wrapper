@@ -2,7 +2,7 @@ import { parseKVFile, parseEnumString } from "../../Utils/Utils"
 import Unit from "../Base/Unit"
 
 function LoadAbilityFile(path: string): RecursiveMap {
-	let res = parseKVFile(path).get("DOTAAbilities")
+	const res = parseKVFile(path).get("DOTAAbilities")
 	return res instanceof Map ? res : new Map()
 }
 
@@ -144,14 +144,14 @@ export default class AbilityData {
 		if (level <= 0)
 			return 0
 		level = Math.min(level, this.MaxLevel) - 1
-		let ar = this.GetCachedSpecialValue(name)
+		const ar = this.GetCachedSpecialValue(name)
 		if (ar === undefined)
 			return 0
 		return ar[0][level]
 	}
 
 	public GetLinkedSpecialBonus(name: string): Nullable<string> {
-		let ar = this.GetCachedSpecialValue(name)
+		const ar = this.GetCachedSpecialValue(name)
 		if (ar === undefined)
 			return undefined
 		return ar[1]
@@ -160,14 +160,14 @@ export default class AbilityData {
 		if (level <= 0)
 			return 0
 		level = Math.min(level, this.MaxLevel) - 1
-		let ar = this.GetCachedSpecialValue(name)
+		const ar = this.GetCachedSpecialValue(name)
 		if (ar === undefined)
 			return 0
 		let base_val = ar[0][level]
 		if (ar[1] !== undefined) {
-			let talent = owner.GetAbilityByName(ar[1])
+			const talent = owner.GetAbilityByName(ar[1])
 			if (talent !== undefined && talent.Level !== 0) {
-				let talent_val = talent.GetSpecialValue("value")
+				const talent_val = talent.GetSpecialValue("value")
 				switch (ar[2]) {
 					default:
 					case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
@@ -257,16 +257,16 @@ export default class AbilityData {
 		for (const special of AbilitySpecial.values()) {
 			if (!(special instanceof Map))
 				continue
-			for (const [name, str] of special) {
-				if (name === "var_type" || name === "LinkedSpecialBonus" || typeof str !== "string")
+			for (const [name, value] of special) {
+				if (name === "var_type" || name === "LinkedSpecialBonus" || typeof value !== "string")
 					continue
-				let ar = str.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
+				const ar = value.split(" ").map(str => parseFloat(str.endsWith("f") ? str.substring(0, str.length - 1) : str))
 				this.ExtendLevelArray(ar)
 				let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
 				if (typeof LinkedSpecialBonus !== "string")
 					LinkedSpecialBonus = undefined
-				let LinkedSpecialBonusOperation_str = special.get("LinkedSpecialBonusOperation"),
-					LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
+				const LinkedSpecialBonusOperation_str = special.get("LinkedSpecialBonusOperation")
+				let LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 				if (typeof LinkedSpecialBonusOperation_str === "string")
 					LinkedSpecialBonusOperation = (EDOTASpecialBonusOperation as any)[LinkedSpecialBonusOperation_str] ?? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 				this.SpecialValueCache.set(name, [ar, LinkedSpecialBonus, LinkedSpecialBonusOperation] as [number[], Nullable<string>, EDOTASpecialBonusOperation])
@@ -274,19 +274,15 @@ export default class AbilityData {
 		}
 	}
 	private GetCachedSpecialValue(name: string) {
-		{
-			let ar = this.SpecialValueCache.get(name)
-			if (ar !== undefined)
-				return ar
-		}
-		// there's no such special - prevent further tries to find it since cache is static
-		const ar = [
+		const ar = this.SpecialValueCache.get(name)
+		if (ar !== undefined)
+			return ar
+
+		return [
 			new Array<number>(this.MaxLevel).fill(0),
 			undefined,
 			EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 		] as [number[], Nullable<string>, EDOTASpecialBonusOperation]
-		this.SpecialValueCache.set(name, ar)
-		return ar
 	}
 
 	private ExtendLevelArray(ar: number[]): number[] {
@@ -297,7 +293,7 @@ export default class AbilityData {
 		return ar
 	}
 	private GetLevelArray(str: Nullable<string>): number[] {
-		return this.ExtendLevelArray(str?.split(" ")?.map(parseFloat) ?? [])
+		return this.ExtendLevelArray(str?.split(" ")?.map(val => parseFloat(val)) ?? [])
 	}
 }
 

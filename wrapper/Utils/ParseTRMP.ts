@@ -29,7 +29,7 @@ export function ParseTRMP(buf: ArrayBuffer): Vector3[] {
 
 	const trees: Vector3[] = []
 	for (let i = 0; i < tree_count; i++) {
-		let x = stream.ReadInt32(),
+		const x = stream.ReadInt32(),
 			y = stream.ReadInt32()
 		stream.RelativeSeek(4) // lump ID
 		trees.push(new Vector3(x, y, RendererSDK.GetPositionHeight(new Vector2(x, y))))

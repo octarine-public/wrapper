@@ -22,13 +22,13 @@ export default class Vector2 {
 		return new Vector2(Math.cos(polar) * radial, Math.sin(polar) * radial)
 	}
 	public static GetCenterType<T>(array: T[], callback: (value: T) => Vector2): Vector2 {
-		let newVec = new Vector2()
+		const newVec = new Vector2()
 		array.forEach(vec => newVec.AddForThis(callback(vec)))
 		return newVec.DivideScalarForThis(array.length)
 
 	}
 	public static GetCenter(array: Vector2[]): Vector2 {
-		let newVec = new Vector2()
+		const newVec = new Vector2()
 		array.forEach(vec => newVec.AddForThis(vec))
 		return newVec.DivideScalarForThis(array.length)
 
@@ -53,7 +53,7 @@ export default class Vector2 {
 	 * Is this vector valid? (every value must not be infinity/NaN)
 	 */
 	get IsValid(): boolean {
-		var x = this.x,
+		const x = this.x,
 			y = this.y
 		return !Number.isNaN(x) && Number.isFinite(x)
 			&& !Number.isNaN(y) && Number.isFinite(y)
@@ -104,7 +104,7 @@ export default class Vector2 {
 	 * Are all components of this vector are 0?
 	 */
 	public IsZero(tolerance: number = 0.01): boolean {
-		var x = this.x,
+		const x = this.x,
 			y = this.y
 
 		return x > -tolerance && x < tolerance
@@ -266,12 +266,10 @@ export default class Vector2 {
 	/**
 	 * Normalize the vector
 	 */
-	public Normalize(scalar?: number): Vector2 {
-		var length = this.Length
-
+	public Normalize(scalar = 1): Vector2 {
+		const length = this.Length
 		if (length !== 0)
-			this.DivideScalarForThis(scalar !== undefined ? length * scalar : length)
-
+			this.DivideScalarForThis(length * scalar)
 		return this
 	}
 	/**
@@ -291,13 +289,10 @@ export default class Vector2 {
 	 * Scale the vector to length. ( Returns 0 vector if the length of this vector is 0 )
 	 */
 	public ScaleTo(scalar: number): Vector2 {
-		var length = this.Length
-
-		if (length === 0) {
-			this.x = 0
-			this.y = 0
-			this.y = 0
-		} else
+		const length = this.Length
+		if (length === 0)
+			this.toZero()
+		else
 			this.MultiplyScalar(scalar / length)
 
 		return this
@@ -306,8 +301,7 @@ export default class Vector2 {
 	 * Divides both vector axis by the given scalar value
 	 */
 	public DivideTo(scalar: number): Vector2 {
-		var length = this.Length
-
+		const length = this.Length
 		if (length === 0)
 			this.toZero()
 		else
@@ -576,22 +570,22 @@ export default class Vector2 {
 		return Math.sqrt(this.DistanceSqr(vec))
 	}
 	public ProjectOn(segmentStart: Vector2, segmentEnd: Vector2): ProjectionInfo {
-		let cx = this.x,
+		const cx = this.x,
 			cy = this.y,
 			ax = segmentStart.x,
 			ay = segmentStart.y,
 			bx = segmentEnd.x,
 			by = segmentEnd.y
 
-		let rL = ((cx - ax) * (bx - ax) + (cy - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)
-		let pointLine = new Vector2(ax + rL * (bx - ax), ay + rL * (by - ay))
-		let rS = Math.min(1, Math.max(0, rL))
-		let isOnSegment = rS === rL
-		let pointSegment = isOnSegment ? pointLine : new Vector2(ax + rS * (bx - ax), ay + rS * (by - ay))
+		const rL = ((cx - ax) * (bx - ax) + (cy - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)
+		const pointLine = new Vector2(ax + rL * (bx - ax), ay + rL * (by - ay))
+		const rS = Math.min(1, Math.max(0, rL))
+		const isOnSegment = rS === rL
+		const pointSegment = isOnSegment ? pointLine : new Vector2(ax + rS * (bx - ax), ay + rS * (by - ay))
 		return new ProjectionInfo(isOnSegment, pointSegment, pointLine)
 	}
 	public DistanceSegmentSqr(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
-		let objects = this.ProjectOn(segmentStart, segmentEnd)
+		const objects = this.ProjectOn(segmentStart, segmentEnd)
 		if (!objects.IsOnSegment && onlyIfOnSegment)
 			return Number.MAX_VALUE
 		return this.DistanceSqr(objects.SegmentPoint)
@@ -621,9 +615,8 @@ export default class Vector2 {
 	 * Rotates the Vector2 to a set angle.
 	 */
 	public Rotated(angle: number): Vector2 {
-		var cos = Math.cos(angle),
+		const cos = Math.cos(angle),
 			sin = Math.sin(angle)
-
 		return new Vector2(
 			(this.x * cos) - (this.y * sin),
 			(this.y * cos) + (this.x * sin),
@@ -720,7 +713,7 @@ export default class Vector2 {
 
 		vecs.forEach(vec => {
 
-			let tempDist = this.Distance(vec)
+			const tempDist = this.Distance(vec)
 			if (tempDist < distance) {
 				distance = tempDist
 				minVec = vec

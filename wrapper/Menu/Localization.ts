@@ -12,6 +12,9 @@ export default new (class Localization {
 		this.SelectedUnitName_ = name
 		this.was_changed = true
 	}
+	public get LocalizationUnitsNames(): string[] {
+		return [...this.LocalizationUnits.keys()]
+	}
 	public AddLocalizationUnit(unit_name: string, unit: Map<string, string>): void {
 		if (this.LocalizationUnits.has(unit_name)) {
 			const existing_unit = this.LocalizationUnits.get(unit_name)!
@@ -19,9 +22,6 @@ export default new (class Localization {
 		} else
 			this.LocalizationUnits.set(unit_name, unit)
 		this.was_changed = true
-	}
-	public get LocalizationUnitsNames(): string[] {
-		return [...this.LocalizationUnits.keys()]
 	}
 
 	public Localize(name: string): string {

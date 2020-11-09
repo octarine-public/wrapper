@@ -41,7 +41,9 @@ export default class Base {
 		this.Tooltip = this.InternalTooltipName
 	}
 	public get ConfigValue(): any { return undefined }
-	public set ConfigValue(_value: any) { }
+	public set ConfigValue(_value: any) {
+		// to be implemented in child classes
+	}
 	protected get Rect() {
 		return new Rectangle(this.Position, this.Position.Add(this.TotalSize))
 	}
@@ -53,7 +55,9 @@ export default class Base {
 	protected get MousePosition(): Vector2 {
 		return InputManager.CursorOnScreen
 	}
-	public OnConfigLoaded() { }
+	public OnConfigLoaded() {
+		// to be implemented in child classes
+	}
 	public ApplyLocalization() {
 		this.Name = Localization.Localize(this.InternalName)
 		this.Tooltip = Localization.Localize(this.InternalTooltipName)
@@ -94,7 +98,7 @@ export default class Base {
 		const Position = this.Position.Clone()
 			.AddScalarX(this.TotalSize.x + Addscalar)
 
-		let TotalSize = this.tooltip_size.Clone()
+		const TotalSize = this.tooltip_size.Clone()
 			.AddForThis(this.border_size)
 			.AddScalarX(SizeImage.x + (Addscalar * 2))
 			.AddScalarY(Addscalar)

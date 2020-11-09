@@ -231,7 +231,7 @@ export default class KeyBind extends Base {
 		this.Update()
 	}
 	private get KeybindRect() {
-		let base_pos = this.Position
+		const base_pos = this.Position
 			.Add(this.TotalSize)
 			.SubtractForThis(this.keybind_offset)
 			.SubtractForThis(this.keybind_size)
@@ -288,7 +288,7 @@ export default class KeyBind extends Base {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
 		RendererSDK.Text(this.Name, this.Position.Add(this.text_offset), this.FontColor, this.FontName, this.FontSize)
-		let keybind_rect = this.KeybindRect
+		const keybind_rect = this.KeybindRect
 		RendererSDK.FilledRect(keybind_rect.pos1, keybind_rect.pos2.Subtract(keybind_rect.pos1), this.keybind_color)
 		RendererSDK.Text(this.assigned_key_str, keybind_rect.pos1.Add(this.keybind_text_offset), this.FontColor, this.FontName, this.FontSize)
 		if (!this.KeybindRect.Contains(this.MousePosition))
@@ -300,7 +300,7 @@ export default class KeyBind extends Base {
 	}
 	public OnMouseLeftUp(): boolean {
 		if (this.KeybindRect.Contains(this.MousePosition) && KeyBind.changing_now !== this) {
-			let old = KeyBind.changing_now
+			const old = KeyBind.changing_now
 			KeyBind.changing_now = this
 			this.assigned_key_str = "???"
 			this.Update(false)
@@ -311,9 +311,9 @@ export default class KeyBind extends Base {
 	}
 }
 
-let IsPressing = new Map<VKeys, boolean>()
+const IsPressing = new Map<VKeys, boolean>()
 function KeyHandler(key: VKeys, pressed: boolean): boolean {
-	let changing_now = KeyBind.changing_now,
+	const changing_now = KeyBind.changing_now,
 		ret = true
 	if (changing_now !== undefined) {
 		changing_now.assigned_key = key !== 0x1B ? key : -1 // VK_ESCAPE === 0x1B
@@ -323,7 +323,7 @@ function KeyHandler(key: VKeys, pressed: boolean): boolean {
 		return ret
 	}
 
-	let onExecute = KeyBind.callbacks.get(key)
+	const onExecute = KeyBind.callbacks.get(key)
 	if (onExecute === undefined || IsPressing.get(key) === pressed)
 		return true
 

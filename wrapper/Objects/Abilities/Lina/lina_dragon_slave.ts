@@ -18,4 +18,8 @@ export default class lina_dragon_slave extends Ability {
 	public get Speed(): number {
 		return this.GetSpecialValue("dragon_slave_speed")
 	}
+
+	public get CastRange(): number {
+		return super.CastRange + this.AOERadius
+	}
 }

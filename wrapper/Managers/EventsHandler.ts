@@ -561,7 +561,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			break
 		case 45: { // we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
 			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
-			let table_name = stream.ReadVarString(),
+			const table_name = stream.ReadVarString(),
 				update = new Map<number, [string, ArrayBuffer]>()
 			while (!stream.Empty())
 				update.set(stream.ReadVarUintAsNumber(), [stream.ReadVarString(), stream.ReadVarSlice()])
@@ -573,11 +573,11 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			break
 		case 145: {
 			const msg = ParseProtobufNamed(buf, "CUserMsg_ParticleManager")
-			let index = msg.get("index") as number
+			const index = msg.get("index") as number
 			switch (msg.get("type") as PARTICLE_MESSAGE) {
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_CREATE: {
-					let submsg = msg.get("create_particle") as RecursiveProtobuf
-					let particleSystemHandle = submsg.get("particle_name_index") as bigint
+					const submsg = msg.get("create_particle") as RecursiveProtobuf
+					const particleSystemHandle = submsg.get("particle_name_index") as bigint
 					const ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number),
 						path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
 					if (path === undefined)
@@ -593,7 +593,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 					break
 				}
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE: {
-					let submsg = msg.get("update_particle") as RecursiveProtobuf
+					const submsg = msg.get("update_particle") as RecursiveProtobuf
 					EventsSDK.emit(
 						"ParticleUpdated", false,
 						index,
@@ -618,7 +618,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				// 	break
 				// }
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENT: {
-					let submsg = msg.get("update_particle_ent") as RecursiveProtobuf
+					const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
 					const ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number)
 					EventsSDK.emit(
 						"ParticleUpdatedEnt", false,
@@ -638,7 +638,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				// 	break
 				// }
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY: {
-					let submsg = msg.get("destroy_particle") as RecursiveProtobuf
+					const submsg = msg.get("destroy_particle") as RecursiveProtobuf
 					EventsSDK.emit(
 						"ParticleDestroyed", false,
 						index,
@@ -746,13 +746,13 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		}
 		case 488: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_UnitEvent")
-			let handle = msg.get("entity_index") as number
+			const handle = msg.get("entity_index") as number
 			const ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle)
 			if (ent instanceof Entity && !(ent instanceof Unit))
 				break
 			switch (msg.get("msg_type") as EDotaEntityMessages) {
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH: {
-					let submsg = msg.get("speech") as RecursiveProtobuf,
+					const submsg = msg.get("speech") as RecursiveProtobuf,
 						predelay = submsg.get("predelay") as RecursiveProtobuf
 					EventsSDK.emit(
 						"UnitSpeech", false,
@@ -769,7 +769,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 					break
 				}
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH_MUTE: {
-					let submsg = msg.get("speech_mute") as RecursiveProtobuf
+					const submsg = msg.get("speech_mute") as RecursiveProtobuf
 					EventsSDK.emit(
 						"UnitSpeechMute", false,
 						ent,
@@ -778,7 +778,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 					break
 				}
 				case EDotaEntityMessages.DOTA_UNIT_ADD_GESTURE: {
-					let submsg = msg.get("add_gesture") as RecursiveProtobuf
+					const submsg = msg.get("add_gesture") as RecursiveProtobuf
 					EventsSDK.emit(
 						"UnitAddGesture", false,
 						ent,
@@ -792,7 +792,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 					break
 				}
 				case EDotaEntityMessages.DOTA_UNIT_REMOVE_GESTURE: {
-					let submsg = msg.get("remove_gesture") as RecursiveProtobuf
+					const submsg = msg.get("remove_gesture") as RecursiveProtobuf
 					EventsSDK.emit(
 						"UnitRemoveGesture", false,
 						ent,
@@ -801,7 +801,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 					break
 				}
 				case EDotaEntityMessages.DOTA_UNIT_FADE_GESTURE: {
-					let submsg = msg.get("fade_gesture") as RecursiveProtobuf
+					const submsg = msg.get("fade_gesture") as RecursiveProtobuf
 					EventsSDK.emit(
 						"UnitFadeGesture", false,
 						ent,
@@ -912,20 +912,20 @@ EventsSDK.on("PostEntityCreated", ent => {
 })
 
 Events.on("SignonStateChanged", new_state => {
-	let old_val = GameState.IsConnected
+	const old_val = GameState.IsConnected
 
 	GameState.SignonState = new_state
-	let new_val = GameState.IsConnected
+	const new_val = GameState.IsConnected
 
 	if (!old_val && new_val)
 		ReloadGlobalAbilityStorage()
 })
 
 EventsSDK.on("ServerInfo", info => {
-	let old_val = GameState.IsConnected
+	const old_val = GameState.IsConnected
 
 	GameState.MapName = info.get("map_name")! as string
-	let new_val = GameState.IsConnected
+	const new_val = GameState.IsConnected
 
 	if (!old_val && new_val) {
 		ReloadGlobalUnitStorage()

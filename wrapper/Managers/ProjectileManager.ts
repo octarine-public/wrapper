@@ -12,7 +12,7 @@ import GameState from "../Utils/GameState"
 import Manifest from "./Manifest"
 import Vector2 from "../Base/Vector2"
 
-let ProjectileManager = new (class CProjectileManager {
+const ProjectileManager = new (class CProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []
 	public readonly AllTrackingProjectiles: TrackingProjectile[] = []
 
@@ -44,7 +44,7 @@ function DestroyTrackingProjectile(proj: TrackingProjectile) {
 }
 
 EventsSDK.on("Tick", () => {
-	let cur_time = GameRules!.RawGameTime
+	const cur_time = GameRules!.RawGameTime
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
 		proj.Position.AddForThis(proj.Velocity.MultiplyScalar(cur_time - proj.LastUpdate).toVector3())
 		proj.LastUpdate = cur_time

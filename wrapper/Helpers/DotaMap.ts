@@ -14,7 +14,7 @@ export class DotaMap {
 		if (file === undefined)
 			return []
 
-		let ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(new Uint8Array(file)))
+		const ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(new Uint8Array(file)))
 		return ar.map(([x, y, z]) => new Vector3(x, y, z))
 	}
 	private static LoadPoly(name: string): WorldPolygon {
@@ -46,7 +46,7 @@ export class DotaMap {
 	public readonly RadiantBottomDireTide = DotaMap.LoadPoly("RadiantBottomDireTide")
 
 	public GetLane(unit: Unit): MapArea {
-		let pos = unit.Position
+		const pos = unit.Position
 		if (this.Top.IsInside(pos))
 			return MapArea.Top
 		if (this.Middle.IsInside(pos))

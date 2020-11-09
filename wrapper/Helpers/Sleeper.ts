@@ -9,7 +9,7 @@ class SleeperBase {
 		return time
 	}
 	protected updateTime(key: any, timeNow: number, timeExtend: number): boolean {
-		let value = this.SleepDB.get(key)
+		const value = this.SleepDB.get(key)
 
 		if (value === undefined || value <= timeExtend)
 			return false
@@ -30,7 +30,7 @@ export class Sleeper extends SleeperBase {
 		return this.setTime(key, hrtime() + ms)
 	}
 	public Sleeping(key: any): boolean {
-		let sleepID = this.SleepDB.get(key)
+		const sleepID = this.SleepDB.get(key)
 		return sleepID !== undefined && hrtime() < sleepID
 	}
 
@@ -49,7 +49,7 @@ export class GameSleeper extends SleeperBase {
 		if (typeof ms !== "number")
 			return this.setTime(key, GameState.RawGameTime)
 
-		let time = GameState.RawGameTime
+		const time = GameState.RawGameTime
 		if (extend && this.updateTime(key, time, ms / 1000))
 			return ms
 
@@ -57,26 +57,26 @@ export class GameSleeper extends SleeperBase {
 	}
 
 	public Sleeping(key: any): boolean {
-		let sleepID = this.SleepDB.get(key)
+		const sleepID = this.SleepDB.get(key)
 		return sleepID !== undefined && GameState.RawGameTime < sleepID
 	}
 
 	public RemainingSleepTime(key: any): number {
-		let sleepID = this.SleepDB.get(key)
+		const sleepID = this.SleepDB.get(key)
 		if (sleepID === undefined)
 			return 0
 		return sleepID - GameState.RawGameTime
 	}
 
 	public StartTime(key: any) {
-		let sleepID = this.SleepDB.get(key)
+		const sleepID = this.SleepDB.get(key)
 		if (sleepID === undefined)
 			return 0
 		return sleepID
 	}
 
 	public ResetKey(key: any) {
-		let sleepID = this.SleepDB.get(key)
+		const sleepID = this.SleepDB.get(key)
 		if (sleepID === undefined)
 			return
 		this.SleepDB.delete(key)

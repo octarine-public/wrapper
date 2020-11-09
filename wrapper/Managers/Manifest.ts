@@ -19,7 +19,7 @@ const Manifest = new (class CManifest {
 			return "<null>"
 		// it's interpret as signed int64 in protobuf messages, so we need to wrap it into unsigned
 		hash = BigInt.asUintN(64, hash)
-		let path = this.Paths.get(hash)
+		const path = this.Paths.get(hash)
 		if (path === undefined) {
 			// console.log(`Unknown resource hash ${hash} passed to GetPathByHash ${new Error().stack}`)
 			return undefined
@@ -46,7 +46,7 @@ const Manifest = new (class CManifest {
 		return this.Hash32ToString.get(hash)
 	}*/
 	public LoadSoundFile(path: string): void {
-		let buf = fread(path)
+		const buf = fread(path)
 		if (buf === undefined) {
 			console.log(`Missing ${path}`)
 			return
@@ -69,7 +69,7 @@ function BufferToPathString(buf: Uint8Array): string {
 }
 
 function ParseStringFromStream(stream: BinaryStream, ar: string[]) {
-	let id = stream.ReadVarUintAsNumber(),
+	const id = stream.ReadVarUintAsNumber(),
 		size = stream.ReadVarUintAsNumber()
 	if (id === ar.length)
 		ar[id] = BufferToPathString(stream.ReadSlice(size))
@@ -106,7 +106,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			for (let i = 0, end = stream.ReadVarUintAsNumber(); i < end; i++)
 				ParseStringFromStream(stream, Manifest.Directories)
 			for (let i = 0, end = stream.ReadVarUintAsNumber(); i < end; i++) {
-				let path_id = stream.ReadVarUintAsNumber(),
+				const path_id = stream.ReadVarUintAsNumber(),
 					dir_id = stream.ReadVarUintAsNumber(),
 					ext_id = stream.ReadVarUintAsNumber(),
 					file_id = stream.ReadVarUintAsNumber(),
@@ -117,10 +117,10 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 					stream.RelativeSeek(file_size)
 				if (path_id !== Manifest.Paths.size)
 					continue
-				let path = `${Manifest.Directories[dir_id]}${Manifest.FileNames[file_id]}.${Manifest.Extensions[ext_id]}`
+				const path = `${Manifest.Directories[dir_id]}${Manifest.FileNames[file_id]}.${Manifest.Extensions[ext_id]}`
 				if (Manifest.Extensions[ext_id] === "vsndevts")
 					Manifest.LoadSoundFile(`${path}_c`)
-				let hash64 = MurmurHash64(StringToUTF8(path))
+				const hash64 = MurmurHash64(StringToUTF8(path))
 				Manifest.Paths.set(hash64, [dir_id, file_id, ext_id])
 				// Manifest.PathHash32To64.set(MurmurHash2(StringToUTF8(path.toLowerCase())), hash64)
 			}

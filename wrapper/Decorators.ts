@@ -9,3 +9,9 @@ export function NetworkedBasicField(networked_field_name: string) {
 	return (target: object, prop_name: string) =>
 		RegisterFieldHandler(target.constructor as Constructor<Entity>, networked_field_name, (ent, new_val) => (ent as any)[prop_name] = new_val)
 }
+
+// just because sometimes dota transfers BigInts like numbers
+export function NetworkedBigIntField(networked_field_name: string) {
+	return (target: object, prop_name: string) =>
+		RegisterFieldHandler(target.constructor as Constructor<Entity>, networked_field_name, (ent, new_val) => (ent as any)[prop_name] = BigInt(new_val))
+}

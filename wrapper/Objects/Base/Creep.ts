@@ -15,7 +15,7 @@ export default class Creep extends Unit {
 	public GetAdditionalAttackDamage(source: Unit): number {
 		let damage = 0
 		if (this.IsEnemy(source)) {
-			let quellingBlade = source.GetItemByName("item_quelling_blade")
+			const quellingBlade = source.GetItemByName("item_quelling_blade")
 			if (quellingBlade !== undefined)
 				damage += quellingBlade.GetSpecialValue(source.IsMelee ? "damage_bonus" : "damage_bonus_ranged")
 		}
@@ -24,7 +24,7 @@ export default class Creep extends Unit {
 	public GetAdditionalAttackDamageMultiplier(source: Unit): number {
 		let multiplier = 1
 		if (this.IsEnemy(source)) {
-			let battleFury = source.GetItemByName("item_bfury")
+			const battleFury = source.GetItemByName("item_bfury")
 			if (battleFury !== undefined)
 				multiplier *= battleFury.GetSpecialValue(source.IsMelee ? "quelling_bonus" : "quelling_bonus_ranged")
 		}

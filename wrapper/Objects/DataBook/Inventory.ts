@@ -64,10 +64,10 @@ export default class Inventory {
 		start = Math.min(start, MAX_ITEMS)
 		end = Math.min(end, MAX_ITEMS)
 
-		let items: Item[] = []
+		const items: Item[] = []
 		if (this.Owner.IsValid && start <= end)
 			for (let i = start; i <= end; i++) {
-				let item = this.GetItem(i)
+				const item = this.GetItem(i)
 				if (item !== undefined)
 					items.push(item)
 			}
@@ -78,7 +78,7 @@ export default class Inventory {
 		start = Math.min(start, MAX_ITEMS)
 		end = Math.min(end, MAX_ITEMS)
 
-		let items: DOTAScriptInventorySlot_t[] = []
+		const items: DOTAScriptInventorySlot_t[] = []
 		if (this.Owner.IsValid && start <= end)
 			for (let i = start; i <= end; i++)
 				if (this.GetItem(i) === undefined)
@@ -123,30 +123,30 @@ export default class Inventory {
 	}
 	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false): Nullable<Item> {
 		if (this.Owner.IsValid) {
-			let Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
+			const Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
 			return Items.find(item => name instanceof RegExp ? name.test(item.Name) : item.Name === name)
 		}
 		return undefined
 	}
 	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
 		if (this.Owner.IsValid) {
-			let Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
+			const Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
 			return Items.find(item => item instanceof class_) as Nullable<T>
 		}
 		return undefined
 	}
 	public GetItemsByNames(names: string[], includeBackpack: boolean = false): Item[] {
-		let items: Item[] = []
+		const items: Item[] = []
 		if (this.Owner.IsValid) {
-			let Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
+			const Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
 			return Items.filter(item => names.includes(item.Name))
 		}
 		return items
 	}
 	public GetItemsByClasses<T extends Item>(classes: Constructor<T>[], includeBackpack: boolean = false): T[] {
-		let items: T[] = []
+		const items: T[] = []
 		if (this.Owner.IsValid) {
-			let Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
+			const Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
 			return Items.filter(item => classes.some(class_ => item instanceof class_)) as T[]
 		}
 		return items

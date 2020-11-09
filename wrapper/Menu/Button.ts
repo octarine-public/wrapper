@@ -12,7 +12,7 @@ export default class Button extends Base {
 	protected name_size = new Vector2(0, 0)
 
 	private get ButtonRect() {
-		let base_pos = this.Position.Add(this.button_offset).AddForThis(this.border_size)
+		const base_pos = this.Position.Add(this.button_offset).AddForThis(this.border_size)
 		return new Rectangle(base_pos, base_pos.Add(this.TotalSize)
 			.SubtractForThis(this.button_offset.MultiplyScalar(2))
 			.SubtractForThis(this.border_size.MultiplyScalar(2))
@@ -26,7 +26,7 @@ export default class Button extends Base {
 	public Render(): void {
 		super.Render()
 		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		let button_rect = this.ButtonRect
+		const button_rect = this.ButtonRect
 		RendererSDK.FilledRect(button_rect.pos1, button_rect.pos2.Subtract(button_rect.pos1), this.button_color)
 		RendererSDK.Text(this.Name, button_rect.pos1.Add(button_rect.pos2).DivideScalarForThis(2).SubtractForThis(this.name_size.DivideScalar(2)), this.FontColor, this.FontName, this.FontSize)
 		if (!this.ButtonRect.Contains(this.MousePosition))

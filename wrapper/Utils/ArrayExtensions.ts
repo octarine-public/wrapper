@@ -12,12 +12,7 @@ export function CompareArrays<T>(a: T[], b: T[]): boolean {
  * @returns intersect values in Arrays
  */
 export function IntersectArrays<T>(a: T[], b: T[]): T[] {
-
-	let newArr: T[] = []
-
-	a.forEach(val1 => b.forEach(val2 => val1 === val2 && newArr.push(val1)))
-
-	return newArr
+	return a.filter(val1 => b.some(val2 => val1 === val2))
 }
 
 export function HasIntersectArrays<T>(a: T[], b: T[]): boolean {

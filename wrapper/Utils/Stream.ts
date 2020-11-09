@@ -16,7 +16,7 @@ export default class Stream {
 		return this.buf.charAt(this.pos++)
 	}
 	public ReadString(size: number): string {
-		let str = this.buf.substring(this.pos, this.pos + size)
+		const str = this.buf.substring(this.pos, this.pos + size)
 		this.RelativeSeek(size)
 		return str
 	}

@@ -40,7 +40,7 @@ export default class Hero extends Unit {
 	public m_hReplicatingOtherHeroModel = 0x3FFF
 
 	public get ReplicatingOtherHeroModel_(): Entity | number {
-		let id = this.m_hReplicatingOtherHeroModel
+		const id = this.m_hReplicatingOtherHeroModel
 		if (id === 0x3FFF)
 			return 0
 		return EntityManager.EntityByIndex(id) ?? id
@@ -52,7 +52,7 @@ export default class Hero extends Unit {
 		return EntityManager.EntityByIndex(this.m_hReplicatingOtherHeroModel)
 	}
 	public get IsIllusion(): boolean {
-		let ReplicatingOtherHeroModel_ = this.ReplicatingOtherHeroModel_
+		const ReplicatingOtherHeroModel_ = this.ReplicatingOtherHeroModel_
 		return (ReplicatingOtherHeroModel_ instanceof Entity) || (ReplicatingOtherHeroModel_ > 0)
 	}
 

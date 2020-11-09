@@ -254,7 +254,7 @@ class ParticlesSDK {
 	}
 
 	public CheckChangedRange(key: any, range: number) {
-		let particleRange = this.AllParticlesRange.get(key)
+		const particleRange = this.AllParticlesRange.get(key)
 
 		if (particleRange !== undefined && particleRange !== range) {
 			this.DestroyByKey(key)

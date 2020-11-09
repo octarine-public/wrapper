@@ -89,13 +89,13 @@ export default class ExecuteOrder {
 		const issuers_size = ExecuteOrder.LatestUnitOrder_view.getUint32(30, true)
 		const issuers: Unit[] = []
 		for (let i = 0; i < issuers_size; i++) {
-			let ent_id = ExecuteOrder.LatestUnitOrder_view.getUint32(34 + (i * 4), true)
-			let ent = EntityManager.EntityByIndex(ent_id) as Unit
+			const ent_id = ExecuteOrder.LatestUnitOrder_view.getUint32(34 + (i * 4), true)
+			const ent = EntityManager.EntityByIndex(ent_id) as Unit
 			if (ent !== undefined)
 				issuers.push(ent)
 		}
 		if (issuers.length === 0) {
-			let hero = LocalPlayer?.Hero
+			const hero = LocalPlayer?.Hero
 			if (hero !== undefined)
 				issuers.push(hero)
 		}
@@ -293,8 +293,8 @@ Events.on("Update", () => {
 				break
 		}
 	}
-	let CursorWorldVec = cmd.VectorUnderCursor,
-		mult = Math.max(Math.abs(Math.sin(hrtime() - last_order_click_update)), 0.05)
+	const mult = Math.max(Math.abs(Math.sin(hrtime() - last_order_click_update)), 0.05)
+	let CursorWorldVec = cmd.VectorUnderCursor
 	if (last_order_click_update + 450 >= hrtime()) {
 		const dist = last_order_click.Distance(CursorWorldVec)
 		if (dist > 50)
@@ -315,14 +315,27 @@ Events.on("Update", () => {
 		}
 		execute_current = ExecuteOrder.wait_next_usercmd
 	}
-	let camera_vec = cmd.CameraPosition.toVector3()
-	camera_vec = camera_vec.Clone().AddScalarY(1200 / 2).Distance2D(CursorWorldVec) > 1400
-		? CursorWorldVec.Clone().SubtractScalarY(1200 / 2)
-		: camera_vec.AddScalarY(1200 / 2).Extend(CursorWorldVec, Math.min(camera_vec.Distance(CursorWorldVec), 150 * (last_order_click_update + 450 >= hrtime() ? mult : 1))).SubtractScalarY(1200 / 2)
+	const default_camera_dist = 1200 // default camera distance
+	const max_cursor_dist = 1400 // maximum allowed distance between camera center and cursor
+	const camera_vec = cmd.CameraPosition.toVector3()
+	if (camera_vec.Clone().AddScalarY(default_camera_dist / 2).Distance2D(CursorWorldVec) <= max_cursor_dist) {
+		camera_vec
+			.AddScalarY(default_camera_dist / 2)
+			.Extend(
+				CursorWorldVec,
+				Math.min(
+					camera_vec.Distance(CursorWorldVec),
+					150 * (last_order_click_update + 450 >= hrtime() ? mult : 1)
+				)
+			)
+			.SubtractScalarY(default_camera_dist / 2)
+			.CopyTo(camera_vec)
+	} else
+		CursorWorldVec.Clone().SubtractScalarY(default_camera_dist / 2).CopyTo(camera_vec)
 	latest_camera_x = cmd.CameraPosition.x = camera_vec.x
 	latest_camera_y = cmd.CameraPosition.y = camera_vec.y
 
-	let cur_pos = RendererSDK.WorldToScreenCustom(CursorWorldVec, Vector2.FromVector3(camera_vec))
+	const cur_pos = RendererSDK.WorldToScreenCustom(CursorWorldVec, Vector2.FromVector3(camera_vec))
 	if (cur_pos !== undefined) {
 		cmd.MouseX = cur_pos.x
 		cmd.MouseY = cur_pos.y
@@ -335,7 +348,7 @@ Events.on("Update", () => {
 
 function DrawLine(startVec: Vector2, endVec: Vector2) {
 	const cam_pos = new Vector2(latest_camera_x, latest_camera_y)
-	let point1 = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(startVec, cam_pos, 1200)),
+	const point1 = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(startVec, cam_pos, 1200)),
 		point2 = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(endVec, cam_pos, 1200))
 	if (point1 === undefined || point2 === undefined)
 		return
@@ -351,7 +364,7 @@ Events.on("Draw", () => {
 	DrawLine(new Vector2(1, 1), new Vector2(1, 0))
 
 	const cam_pos = new Vector2(latest_camera_x, latest_camera_y)
-	let point = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(latest_cursor, cam_pos, 1200))
+	const point = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(latest_cursor, cam_pos, 1200))
 	if (point !== undefined)
 		RendererSDK.FilledRect(point.Subtract(new Vector2(5, 5)), new Vector2(10, 10), Color.Fuchsia)
 })

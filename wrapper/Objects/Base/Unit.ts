@@ -21,7 +21,7 @@ import UnitData from "../DataBook/UnitData"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import RendererSDK from "../../Native/RendererSDK"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import { WrapperClass, NetworkedBasicField, NetworkedBigIntField } from "../../Decorators"
 import * as StringTables from "../../Managers/StringTables"
 
 const MAX_SPELLS = 31
@@ -44,7 +44,7 @@ export default class Unit extends Entity {
 			| (1 << Team.Undefined)
 		)
 
-		let local_team = unit.Team,
+		const local_team = unit.Team,
 			flags = unit.IsVisibleForTeamMask & valid_teams
 
 		for (let i = 14; i--;)
@@ -66,7 +66,7 @@ export default class Unit extends Entity {
 	public IsVisibleForTeamMask = 0
 	@NetworkedBasicField("m_anglediff")
 	public RotationDifference = 0
-	@NetworkedBasicField("m_iIsControllableByPlayer64")
+	@NetworkedBigIntField("m_iIsControllableByPlayer64")
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
@@ -129,8 +129,7 @@ export default class Unit extends Entity {
 	public NightVision = 0
 	@NetworkedBasicField("m_flTauntCooldown")
 	public TauntCooldown = 0
-	@NetworkedBasicField("m_nTotalDamageTaken")
-	public TotalDamageTaken = 0n
+	@NetworkedBigIntField("m_nUnitState64")
 	public UnitStateNetworked = 0n
 	@NetworkedBasicField("m_nHealthBarOffsetOverride")
 	public HealthBarOffsetOverride = 0
@@ -265,7 +264,7 @@ export default class Unit extends Entity {
 	 * https://dota2.gamepedia.com/Armor
 	 */
 	public get DamageResist(): number {
-		let armor = this.Armor
+		const armor = this.Armor
 		return (0.052 * armor) / (0.9 + 0.048 * Math.abs(armor))
 	}
 	public get HasArcana(): boolean {
@@ -299,11 +298,11 @@ export default class Unit extends Entity {
 	 * @returns [Position: Vector2, Size: Vector2]
 	 */
 	public get ManaBarOnScreen(): Nullable<[Vector2, Vector2]> {
-		let wts = RendererSDK.WorldToScreen(this.Position.AddScalarZ(this.HealthBarOffset))
+		const wts = RendererSDK.WorldToScreen(this.Position.AddScalarZ(this.HealthBarOffset))
 		if (wts === undefined)
 			return undefined
 
-		let manabar_size = RendererSDK.GetProportionalScaledVector(manabar_size_noscale, false).SubtractScalarX(1)
+		const manabar_size = RendererSDK.GetProportionalScaledVector(manabar_size_noscale, false).SubtractScalarX(1)
 		wts.SubtractForThis(manabar_size.Divide(new Vector2(1.95, 0.42))).FloorForThis()
 		return [wts, manabar_size]
 	}
@@ -415,13 +414,13 @@ export default class Unit extends Entity {
 	public get CastRangeBonus(): number {
 		let castrange = 0
 
-		let lens = this.GetItemByName("item_aether_lens")
+		const lens = this.GetItemByName("item_aether_lens")
 		if (lens !== undefined)
 			castrange += lens.GetSpecialValue("cast_range_bonus")
 
-		let gadget_aura = this.GetBuffByName("modifier_item_spy_gadget_aura")
+		const gadget_aura = this.GetBuffByName("modifier_item_spy_gadget_aura")
 		if (gadget_aura !== undefined) {
-			let gadget = gadget_aura.Ability
+			const gadget = gadget_aura.Ability
 			if (gadget !== undefined)
 				castrange += gadget.GetSpecialValue("cast_range")
 		}
@@ -531,9 +530,9 @@ export default class Unit extends Entity {
 		if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_NONE)
 			return true
 
-		let ignore_buffs = DamageIgnoreBuffs[damage_type]
+		const ignore_buffs = DamageIgnoreBuffs[damage_type]
 		return ignore_buffs !== undefined && this.Buffs.some(buff => {
-			let name = buff.Name
+			const name = buff.Name
 			if (name === undefined)
 				return false
 			return ignore_buffs.includes(name)
@@ -542,7 +541,7 @@ export default class Unit extends Entity {
 
 	public GetRotationTime(vec: Vector3): number {
 		const turn_rad = Math.PI - 0.25
-		let ang = this.FindRotationAngle(vec)
+		const ang = this.FindRotationAngle(vec)
 		return ang <= turn_rad ? 30 * ang / this.MovementTurnRate : 0
 	}
 
@@ -564,7 +563,7 @@ export default class Unit extends Entity {
 		if (angle instanceof Vector3)
 			angle = this.FindRotationAngle(angle)
 
-		let name = this.Name
+		const name = this.Name
 		if (name === "npc_dota_hero_wisp" || name === "npc_dota_hero_pangolier" || name === "npc_dota_hero_clinkz")
 			return 0
 
@@ -576,7 +575,7 @@ export default class Unit extends Entity {
 
 	public AbsorbedDamage(dmg: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
 		this.Buffs.forEach(buff => {
-			let abil = buff.Ability
+			const abil = buff.Ability
 			if (!(abil instanceof Ability))
 				return
 			if (damage_type === DAMAGE_TYPES.DAMAGE_TYPE_MAGICAL) {
@@ -617,14 +616,14 @@ export default class Unit extends Entity {
 					dmg *= 1 + (abil.GetSpecialValue("bonus_damage_pct") / 100)
 					break
 				case "medusa_mana_shield": {
-					let max_absorbed_dmg = this.Mana * abil.GetSpecialValue("damage_per_mana"),
+					const max_absorbed_dmg = this.Mana * abil.GetSpecialValue("damage_per_mana"),
 						possible_absorbed = dmg * abil.GetSpecialValue("absorption_tooltip") / 100
 					dmg -= Math.min(max_absorbed_dmg, possible_absorbed)
 					break
 				}
 				case "bristleback_bristleback": {
 					if (source !== undefined) {
-						let rot_angle = source.FindRotationAngle(this)
+						const rot_angle = source.FindRotationAngle(this)
 						if (rot_angle <= 1.90)
 							dmg *= 1 - abil.GetSpecialValue("back_damage_reduction") / 100
 						else if (rot_angle <= 1.20)
@@ -648,10 +647,10 @@ export default class Unit extends Entity {
 				damage *= 1 - this.MagicDamageResist / 100
 				break
 			case DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL: {
-				let armor = this.Armor
+				const armor = this.Armor
 				damage *= Math.max(Math.min((1 - (0.06 * armor) / (1 + 0.06 * armor)), 25 / 12), 0)
 				{
-					let phys_damage_type = source === undefined ? AttackDamageType.Basic : source.AttackDamageType,
+					const phys_damage_type = source === undefined ? AttackDamageType.Basic : source.AttackDamageType,
 						phys_armor_type = this.ArmorType
 					if (phys_damage_type === AttackDamageType.Hero && phys_armor_type === ArmorType.Structure)
 						damage *= .5
@@ -683,7 +682,7 @@ export default class Unit extends Entity {
 			return 0
 		let mult = 1
 		{
-			let damage_type = source.AttackDamageType,
+			const damage_type = source.AttackDamageType,
 				armor_type = this.ArmorType
 			if (damage_type === AttackDamageType.Hero && armor_type === ArmorType.Structure)
 				mult *= .5
@@ -706,104 +705,104 @@ export default class Unit extends Entity {
 		damage = this.AbsorbedDamage(damage, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL)
 		if (damage <= 0)
 			return 0
-		let armor = this.Armor,
-			is_enemy = this.IsEnemy(source)
+		const is_enemy = this.IsEnemy(source)
+		let armor = this.Armor
 		if (is_enemy) {
 			{
 				if (!this.HasBuffByName("modifier_blight_stone_buff")) {
-					let item = source.GetItemByName("item_blight_stone")
+					const item = source.GetItemByName("item_blight_stone")
 					if (item !== undefined)
 						armor += item.GetSpecialValue("corruption_armor")
 				}
 			}
 			{
 				if (!this.HasBuffByName("modifier_desolator_buff")) {
-					let item = source.GetItemByName("item_desolator")
+					const item = source.GetItemByName("item_desolator")
 					if (item !== undefined)
 						armor += item.GetSpecialValue("corruption_armor")
 				}
 			}
 			{
-				let item = source.GetItemByName("item_quelling_blade")
+				const item = source.GetItemByName("item_quelling_blade")
 				if (item !== undefined)
 					damage += item.GetSpecialValue(source.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
 			}
 			{
-				let item = source.GetItemByName("item_bfury")
+				const item = source.GetItemByName("item_bfury")
 				if (item !== undefined)
 					damage += item.GetSpecialValue(source.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK) ? "damage_bonus_ranged" : "damage_bonus")
 			}
 			{
-				let abil = source.GetAbilityByName("clinkz_searing_arrows")
+				const abil = source.GetAbilityByName("clinkz_searing_arrows")
 				if (abil !== undefined && abil.IsAutoCastEnabled && abil.IsManaEnough())
 					damage += abil.GetSpecialValue("damage_bonus")
 			}
 			{
-				let abil = source.GetAbilityByName("antimage_mana_break")
+				const abil = source.GetAbilityByName("antimage_mana_break")
 				if (abil !== undefined && this.MaxMana > 0)
 					damage += Math.min(this.Mana, abil.GetSpecialValue("mana_per_hit")) * abil.GetSpecialValue("damage_per_burn")
 			}
 			{
-				let abil = source.GetAbilityByName("ursa_fury_swipes")
+				const abil = source.GetAbilityByName("ursa_fury_swipes")
 				if (abil !== undefined) {
-					let buff = this.GetBuffByName("modifier_ursa_fury_swipes_damage_increase")
+					const buff = this.GetBuffByName("modifier_ursa_fury_swipes_damage_increase")
 					damage += abil.GetSpecialValue("damage_per_stack") * (1 + (buff !== undefined ? buff.StackCount : 0))
 				}
 			}
 			{
-				let abil = source.GetAbilityByName("bounty_hunter_jinada")
+				const abil = source.GetAbilityByName("bounty_hunter_jinada")
 				if (abil !== undefined && abil.Cooldown === 0)
 					damage += abil.GetSpecialValue("bonus_damage")
 			}
 		}
 		{
-			let abil = source.GetAbilityByName("kunkka_tidebringer")
+			const abil = source.GetAbilityByName("kunkka_tidebringer")
 			if (abil !== undefined && abil.IsAutoCastEnabled && abil.Cooldown === 0)
 				damage += abil.GetSpecialValue("damage_bonus")
 		}
 		{
-			let buff = source.GetBuffByName("modifier_storm_spirit_overload_passive")
+			const buff = source.GetBuffByName("modifier_storm_spirit_overload_passive")
 			if (buff !== undefined) {
-				let abil = buff.Ability
+				const abil = buff.Ability
 				if (abil instanceof Ability)
 					damage += abil.AbilityDamage
 			}
 		}
 		{
-			let abil = source.GetAbilityByName("riki_permanent_invisibility")
+			const abil = source.GetAbilityByName("riki_permanent_invisibility")
 			if (abil !== undefined && (source.Forward.AngleBetweenFaces(this.Forward) * 180 / Math.PI) < abil.GetSpecialValue("backstab_angle"))
 				damage += abil.GetSpecialValue("damage_multiplier") * source.TotalAgility
 		}
 		damage *= 1 - (armor * 0.05) / (1 + Math.abs(armor) * 0.05)
 		if (is_enemy) {
 			{
-				let abil = source.GetAbilityByName("silencer_glaives_of_wisdom")
+				const abil = source.GetAbilityByName("silencer_glaives_of_wisdom")
 				if (abil !== undefined && abil.IsAutoCastEnabled && abil.IsManaEnough())
 					damage += abil.GetSpecialValue("intellect_damage_pct") * source.TotalIntellect / 100
 			}
 			{
-				let abil = source.GetAbilityByName("obsidian_destroyer_arcane_orb")
+				const abil = source.GetAbilityByName("obsidian_destroyer_arcane_orb")
 				if (abil !== undefined && abil.IsAutoCastEnabled && abil.IsManaEnough())
 					damage += abil.GetSpecialValue("mana_pool_damage_pct") * source.MaxMana / 100
 			}
 		}
 		{
-			let abil = source.GetAbilityByName("spectre_desolate")
+			const abil = source.GetAbilityByName("spectre_desolate")
 			if (abil !== undefined)
 				damage += abil.GetSpecialValue("bonus_damage")
 		}
 		{
-			let buff = source.GetBuffByName("modifier_bloodseeker_bloodrage")
+			const buff = source.GetBuffByName("modifier_bloodseeker_bloodrage")
 			if (buff !== undefined) {
-				let abil = buff.Ability
+				const abil = buff.Ability
 				if (abil instanceof Ability)
 					mult *= 1 + abil.GetSpecialValue("damage_increase_pct") / 100
 			}
 		}
 		{
-			let buff = this.GetBuffByName("modifier_bloodseeker_bloodrage")
+			const buff = this.GetBuffByName("modifier_bloodseeker_bloodrage")
 			if (buff !== undefined) {
-				let abil = buff.Ability
+				const abil = buff.Ability
 				if (abil instanceof Ability)
 					mult *= 1 + abil.GetSpecialValue("damage_increase_pct") / 100
 			}
@@ -812,6 +811,7 @@ export default class Unit extends Entity {
 		return Math.max(damage * mult, 0)
 	}
 
+	// TODO: rewrite this
 	public IsInside(vec: Vector3, radius: number): boolean {
 		const direction = this.Forward,
 			npc_pos = this.Position
@@ -822,8 +822,8 @@ export default class Unit extends Entity {
 	}
 
 	public GetAngle(vec: Vector3): number {
-		let npc_pos = this.Position,
-			angle = Math.abs(Math.atan2(npc_pos.y - vec.y, npc_pos.x - vec.x) - this.Forward.Angle)
+		const npc_pos = this.Position
+		let angle = Math.abs(Math.atan2(npc_pos.y - vec.y, npc_pos.x - vec.x) - this.Forward.Angle)
 		if (angle > Math.PI)
 			angle = Math.abs((Math.PI * 2) - angle)
 		return angle
@@ -845,9 +845,9 @@ export default class Unit extends Entity {
 	}
 
 	public AttackDamage(target: Unit, useMinDamage: boolean = true, damageAmplifier: number = 0): number {
+		const damageType = this.AttackDamageType,
+			armorType = target.ArmorType
 		let damage = (useMinDamage ? this.MinDamage : this.DamageAverage) + this.BonusDamage,
-			damageType = this.AttackDamageType,
-			armorType = target.ArmorType,
 			mult = 1
 
 		if (damageType === AttackDamageType.Hero && armorType === ArmorType.Structure)
@@ -1080,7 +1080,6 @@ RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => {
 	unit.NetworkActivity = new_value as number
 	EventsSDK.emit("NetworkActivityChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_nUnitState64", (unit, new_value) => unit.UnitStateNetworked = BigInt(new_value as bigint)) // TODO
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {

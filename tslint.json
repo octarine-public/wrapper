@@ -38,7 +38,7 @@
 		"no-console": false,
 		"no-bitwise": false,
 		"radix": false,
-		"prefer-const": false,
+		"prefer-const": true,
 		"variable-name": [
 			"check-format",
 			"allow-trailing-underscore",

@@ -10,7 +10,7 @@ export default new (class GameState {
 	public MapName = "<empty>"
 	/**
 	 * Equals GameRules?.RawGameTime ?? 0
-	 * 
+	 *
 	 * Purpose: that's much faster than GameRules?.RawGameTime ?? 0,
 	 * and removes indirect dependency on EntityManager
 	 */

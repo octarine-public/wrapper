@@ -23,7 +23,7 @@ function parseBinaryKV(stream: BinaryStream, level = 0): Map<string, BinaryKV> {
 	const map = new Map<string, BinaryKV>()
 	while (true) {
 		const type: VBKVTypes = stream.ReadUint8()
-		if (type == VBKVTypes.TYPE_END)
+		if (type === VBKVTypes.TYPE_END)
 			break
 		const name = stream.ReadNullTerminatedUtf8String()
 		switch (type) {
@@ -93,6 +93,24 @@ export function parseVBKV(buf: Uint8Array): Map<string, BinaryKV> {
 const serializer = new (class VBKVSerializer {
 	private buf = new Uint8Array()
 	private size = 0
+	public SerializeVBKV(map: Map<string, BinaryKV>): Uint8Array {
+		this.size = 0
+		{
+			const header = this.AllocateSpace(4 + 4)
+			header.setUint32(0, 0x56424b56, false) // VBKV
+			header.setUint32(4, 0, true) // CRC32
+		}
+		this.SerializeBinaryKV("", map)
+		{
+			const tail = this.AllocateSpace(1)
+			tail.setUint8(0, VBKVTypes.TYPE_END)
+		}
+		{
+			const computed_crc32 = WASM.CRC32(new Uint8Array(this.buf.buffer, 4 + 4, this.size - 4 - 4))
+			new DataView(this.buf.buffer, 0, 4 + 4).setUint32(4, computed_crc32, true) // CRC32
+		}
+		return this.buf.subarray(0, this.size)
+	}
 
 	private AllocateSpace(bytes: number): DataView {
 		const current_len = this.size
@@ -145,24 +163,6 @@ const serializer = new (class VBKVSerializer {
 			const tail = this.AllocateSpace(1)
 			tail.setUint8(0, VBKVTypes.TYPE_END)
 		}
-	}
-	public SerializeVBKV(map: Map<string, BinaryKV>): Uint8Array {
-		this.size = 0
-		{
-			const header = this.AllocateSpace(4 + 4)
-			header.setUint32(0, 0x56424b56, false) // VBKV
-			header.setUint32(4, 0, true) // CRC32
-		}
-		this.SerializeBinaryKV("", map)
-		{
-			const tail = this.AllocateSpace(1)
-			tail.setUint8(0, VBKVTypes.TYPE_END)
-		}
-		{
-			const computed_crc32 = WASM.CRC32(new Uint8Array(this.buf.buffer, 4 + 4, this.size - 4 - 4))
-			new DataView(this.buf.buffer, 0, 4 + 4).setUint32(4, computed_crc32, true) // CRC32
-		}
-		return this.buf.subarray(0, this.size)
 	}
 })()
 

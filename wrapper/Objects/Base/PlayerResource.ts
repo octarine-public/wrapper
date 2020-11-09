@@ -12,7 +12,7 @@ export default class CPlayerResource extends Entity {
 	public PlayerData: PlayerData[] = []
 
 	public get AllPlayers(): Nullable<Player>[] {
-		let ar: Nullable<Player>[] = []
+		const ar: Nullable<Player>[] = []
 		EntityManager.GetEntitiesByClass(Player).forEach(pl => ar[pl.PlayerID] = pl)
 		return ar
 	}

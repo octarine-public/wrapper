@@ -36,8 +36,8 @@ function LoadTreeMap(buf: ArrayBuffer) {
 	while (cur_local_id > 0x4000)
 		DeleteEntity(--cur_local_id)
 	ParseTRMP(buf).forEach((pos, i) => {
-		let id = cur_local_id++
-		let entity = new Tree(id)
+		const id = cur_local_id++
+		const entity = new Tree(id)
 		entity.Name_ = "ent_dota_tree"
 		entity.ClassName = "C_DOTA_MapTree"
 		entity.FakeTreePos.CopyFrom(pos)
@@ -66,7 +66,7 @@ Events.on("ServerMessage", () => {
 })
 
 Events.on("PostAddSearchPath", path => {
-	let map_name = ParseMapName(path)
+	const map_name = ParseMapName(path)
 	if (map_name === undefined)
 		return
 
@@ -83,7 +83,7 @@ Events.on("PostAddSearchPath", path => {
 })
 
 Events.on("PostRemoveSearchPath", path => {
-	let map_name = ParseMapName(path)
+	const map_name = ParseMapName(path)
 	if (map_name === undefined || last_loaded_map_name !== map_name)
 		return
 
