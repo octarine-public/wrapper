@@ -54,7 +54,7 @@ export type ProtoFieldDescription = {
 }
 export type ProtoDescription = Map<number, ProtoFieldDescription>
 
-let ProtoCache = new Map<string, [ProtoType, /* message */ProtoDescription | /* enum */Map<string, number>]>()
+const ProtoCache = new Map<string, [ProtoType, /* message */ProtoDescription | /* enum */Map<string, number>]>()
 export { ProtoCache }
 
 function FillMessageDefaults(msg: RecursiveProtobuf, desc: ProtoDescription): RecursiveProtobuf {
@@ -71,80 +71,81 @@ function FillMessageDefaults(msg: RecursiveProtobuf, desc: ProtoDescription): Re
 	return msg
 }
 
-let convert_buf = new ArrayBuffer(8)
-let convert_uint32 = new Uint32Array(convert_buf),
+const convert_buf = new ArrayBuffer(8)
+const convert_uint32 = new Uint32Array(convert_buf),
 	convert_int32 = new Int32Array(convert_buf),
 	convert_int64 = new BigInt64Array(convert_buf),
 	convert_uint64 = new BigUint64Array(convert_buf),
 	convert_float32 = new Float32Array(convert_buf),
 	convert_float64 = new Float64Array(convert_buf)
-function ParseField(field: ProtoFieldDescription, value: ArrayBuffer | bigint): ProtobufFieldType {
+function ParseField(field: ProtoFieldDescription, value: Uint8Array | bigint): ProtobufFieldType {
 	switch (field.type) {
 		case ProtoType.TYPE_BOOL:
-			if (value instanceof ArrayBuffer)
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [1]"
 			return value !== 0n
 		case ProtoType.TYPE_ENUM:
 		case ProtoType.TYPE_INT32:
 		case ProtoType.TYPE_SFIXED32:
-			if (value instanceof ArrayBuffer)
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [2]"
 			convert_uint64[0] = value
 			return convert_int32[0]
 		case ProtoType.TYPE_INT64:
 		case ProtoType.TYPE_SFIXED64:
-			if (value instanceof ArrayBuffer)
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [2]"
 			convert_uint64[0] = value
 			return convert_int64[0]
 		case ProtoType.TYPE_SINT32:
-			if (value instanceof ArrayBuffer || value > 0xFFFFFFFFn)
+			if (value instanceof Uint8Array || value > 0xFFFFFFFFn)
 				throw "Invalid proto [3]"
 			return Number((value >> 1n) ^ -(value & 1n))
 		case ProtoType.TYPE_SINT64:
-			if (value instanceof ArrayBuffer)
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [4]"
 			return (value >> 1n) ^ -(value & 1n)
 		case ProtoType.TYPE_FIXED32: case ProtoType.TYPE_UINT32:
-			if (value instanceof ArrayBuffer || value > 0xFFFFFFFFn)
+			if (value instanceof Uint8Array || value > 0xFFFFFFFFn)
 				throw "Invalid proto [5]"
 			convert_uint64[0] = value
 			return convert_uint32[0]
 		case ProtoType.TYPE_FIXED64: case ProtoType.TYPE_UINT64:
-			if (value instanceof ArrayBuffer)
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [6]"
 			return value
 		case ProtoType.TYPE_FLOAT:
-			if (value instanceof ArrayBuffer || value > 0xFFFFFFFFn)
+			if (value instanceof Uint8Array || value > 0xFFFFFFFFn)
 				throw "Invalid proto [7]"
 			convert_uint64[0] = value
 			return convert_float32[0]
 		case ProtoType.TYPE_DOUBLE:
-			if (value instanceof ArrayBuffer)
+			if (value instanceof Uint8Array)
 				throw "Invalid proto [8]"
 			convert_int64[0] = value
 			return convert_float64[0]
 		case ProtoType.TYPE_MESSAGE:
-			if (!(value instanceof ArrayBuffer))
+			if (!(value instanceof Uint8Array))
 				throw "Invalid proto [9]"
-			return ParseProtobuf(new Uint8Array(value), field.proto_desc!)
+			return ParseProtobuf(value, field.proto_desc!)
 		case ProtoType.TYPE_STRING:
-			if (!(value instanceof ArrayBuffer))
+			if (!(value instanceof Uint8Array))
 				throw "Invalid proto [10]"
-			return Utf8ArrayToStr(new Uint8Array(value))
+			return Utf8ArrayToStr(value)
 		case ProtoType.TYPE_BYTES:
-			if (!(value instanceof ArrayBuffer))
-				throw "Invalid proto [10]"
-			return new Uint8Array(value)
+			if (!(value instanceof Uint8Array))
+				throw "Invalid proto [11]"
+			// we do .slice() to prevent referencing big ServerMessageBuffer, and create out own copy of needed region
+			return value.slice()
 		case ProtoType.TYPE_GROUP: // group
 			throw "Groups are deprecated"
 	}
 }
 
-function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): ProtobufFieldType[] {
-	let array: ProtobufFieldType[] = [],
+function ParsePacked(buf: Uint8Array, field: ProtoFieldDescription): ProtobufFieldType[] {
+	const array: ProtobufFieldType[] = [],
 		stream = new BinaryStream(new DataView(buf))
-	let value2: ArrayBuffer | bigint
+	let value2: Uint8Array | bigint
 	while (!stream.Empty()) {
 		switch (field.type) {
 			case ProtoType.TYPE_INT32: // Varint: int32, int64, uint32, uint64, sint32, sint64, bool, enum
@@ -165,8 +166,7 @@ function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): ProtobufFi
 			case ProtoType.TYPE_STRING: // Length-delimited: string, bytes, embedded messages
 			case ProtoType.TYPE_BYTES:
 			case ProtoType.TYPE_MESSAGE:
-				// we do .slice().buffer to prevent referencing big buffer, and create out own copy of needed region
-				value2 = stream.ReadVarSlice().slice().buffer
+				value2 = stream.ReadVarSlice()
 				break
 			case ProtoType.TYPE_GROUP: // group
 				throw "Groups are deprecated"
@@ -181,7 +181,7 @@ function ParsePacked(buf: ArrayBuffer, field: ProtoFieldDescription): ProtobufFi
 	return array
 }
 
-function DecodeField(map: RecursiveProtobuf, field: ProtoFieldDescription, value: ArrayBuffer | bigint): void {
+function DecodeField(map: RecursiveProtobuf, field: ProtoFieldDescription, value: Uint8Array | bigint): void {
 	switch (field.proto_type) {
 		case ProtoFieldType.OPTIONAL:
 		case ProtoFieldType.REQUIRED:
@@ -190,12 +190,12 @@ function DecodeField(map: RecursiveProtobuf, field: ProtoFieldDescription, value
 		case ProtoFieldType.REPEATED: {
 			if (!map.has(field.name))
 				map.set(field.name, [])
-			let array = map.get(field.name) as ProtobufFieldType[]
+			const array = map.get(field.name) as ProtobufFieldType[]
 			array.push(ParseField(field, value))
 			break
 		}
 		case ProtoFieldType.PACKED:
-			if (!(value instanceof ArrayBuffer))
+			if (!(value instanceof Uint8Array))
 				throw `Invalid proto [packed] at field name ${field.name}`
 			map.set(field.name, ParsePacked(value, field))
 			break
@@ -203,13 +203,13 @@ function DecodeField(map: RecursiveProtobuf, field: ProtoFieldDescription, value
 }
 
 export function ParseProtobuf(proto_buf: Uint8Array, proto_desc: ProtoDescription): RecursiveProtobuf {
-	let map: RecursiveProtobuf = new Map()
+	const map: RecursiveProtobuf = new Map()
 	const stream = new BinaryStream(new DataView(proto_buf.buffer, proto_buf.byteOffset, proto_buf.byteLength))
 	while (!stream.Empty()) {
-		let tag = stream.ReadVarUintAsNumber()
-		let field_num = tag >> 3
-		let wire_type = tag & ((1 << 3) - 1)
-		let value: ArrayBuffer | bigint
+		const tag = stream.ReadVarUintAsNumber()
+		const field_num = tag >> 3,
+			wire_type = tag & ((1 << 3) - 1)
+		let value: Uint8Array | bigint
 		switch (wire_type) {
 			case 0: // Varint: int32, int64, uint32, uint64, sint32, sint64, bool, enum
 				value = stream.ReadVarUint()
@@ -218,8 +218,7 @@ export function ParseProtobuf(proto_buf: Uint8Array, proto_desc: ProtoDescriptio
 				value = stream.ReadUint64()
 				break
 			case 2: // Length-delimited: string, bytes, embedded messages, packed repeated fields
-				// we do .slice().buffer to prevent referencing big ServerMessageBuffer, and create out own copy of needed region
-				value = stream.ReadVarSlice().slice().buffer
+				value = stream.ReadVarSlice()
 				break
 			case 3: // start group
 			case 4: // end group
@@ -230,7 +229,7 @@ export function ParseProtobuf(proto_buf: Uint8Array, proto_desc: ProtoDescriptio
 			default:
 				throw `Unknown wire type ${wire_type}`
 		}
-		let field_desc = proto_desc.get(field_num)
+		const field_desc = proto_desc.get(field_num)
 		if (field_desc === undefined)
 			continue
 		DecodeField(map, field_desc, value)
@@ -238,7 +237,7 @@ export function ParseProtobuf(proto_buf: Uint8Array, proto_desc: ProtoDescriptio
 	return FillMessageDefaults(map, proto_desc)
 }
 export function ParseProtobufNamed(proto_buf: Uint8Array, name: string): RecursiveProtobuf {
-	let ProtoCache_entry = ProtoCache.get(name)
+	const ProtoCache_entry = ProtoCache.get(name)
 	if (ProtoCache_entry === undefined)
 		throw `Unknown type name ${name}`
 	if (ProtoCache_entry[0] === ProtoType.TYPE_ENUM)
@@ -247,7 +246,7 @@ export function ParseProtobufNamed(proto_buf: Uint8Array, name: string): Recursi
 }
 
 export function ParseProtobufDescLine(str: string): [/* field number */ number, ProtoFieldDescription] {
-	let exec = /^\s*(\w+)\s+([^\s]+)\s+([^\s]+)\s*=\s*(\d+)/.exec(str)
+	const exec = /^\s*(\w+)\s+([^\s]+)\s+([^\s]+)\s*=\s*(\d+)/.exec(str)
 	if (exec === null)
 		throw "Invalid protobuf description line: " + str
 
@@ -263,11 +262,11 @@ export function ParseProtobufDescLine(str: string): [/* field number */ number, 
 			proto_type = ProtoFieldType.REPEATED
 			break
 	}
-	let others = str.substring(exec[0].length)
-	let type_str = exec[2]
-	let type: ProtoType
-	let enum_mapping: Nullable<Map<string, number>>
-	let proto_desc: Nullable<ProtoDescription>
+	const others = str.substring(exec[0].length)
+	let type_str = exec[2],
+		type: ProtoType,
+		enum_mapping: Nullable<Map<string, number>>,
+		proto_desc: Nullable<ProtoDescription>
 	switch (type_str) {
 		case "uint32":
 			type = ProtoType.TYPE_UINT32
@@ -317,7 +316,7 @@ export function ParseProtobufDescLine(str: string): [/* field number */ number, 
 		default: {
 			if (type_str.startsWith("."))
 				type_str = type_str.substring(1)
-			let message_type = ProtoCache.get(type_str)
+			const message_type = ProtoCache.get(type_str)
 			if (message_type === undefined)
 				throw `Invalid protobuf description type: ${type_str}`
 			if (message_type[0] === ProtoType.TYPE_MESSAGE) {
@@ -332,11 +331,11 @@ export function ParseProtobufDescLine(str: string): [/* field number */ number, 
 	}
 	let default_value: Nullable<bigint | number | boolean>
 	if (proto_type === ProtoFieldType.REPEATED) {
-		let packed = /\s*\[packed\s*=\s*([^\s]+)\]/.exec(others)
+		const packed = /\s*\[packed\s*=\s*([^\s]+)\]/.exec(others)
 		if (packed !== null && packed[1] !== "false")
 			proto_type = ProtoFieldType.PACKED
 	} else {
-		let default_ = /\s*\[default\s*=\s*([^\s]+)\]/.exec(others)
+		const default_ = /\s*\[default\s*=\s*([^\s]+)\]/.exec(others)
 		if (default_ !== null) {
 			switch (type) {
 				case ProtoType.TYPE_INT32:
@@ -376,8 +375,8 @@ export function ParseProtobufDescLine(str: string): [/* field number */ number, 
 }
 
 export function ParseProtobufDesc(str: string): void {
-	let current_name: string[] = [],
-		current_map: Nullable<ProtoDescription | Map<string, number>>,
+	const current_name: string[] = []
+	let current_map: Nullable<ProtoDescription | Map<string, number>>,
 		current_is_enum = false
 	str.replace(/\r/g, "").split("\n").forEach((line, i) => {
 		line = line.trim()
@@ -387,14 +386,14 @@ export function ParseProtobufDesc(str: string): void {
 				throw `Unexpected field declaration at line ${i}`
 			if (current_is_enum)
 				throw `Unexpected field declaration at line ${i} (declaration inside enum ${current_name.join(".")})`
-			let [field_number, field_desc] = ParseProtobufDescLine(line)
-			let fixed_map = current_map as ProtoDescription
+			const [field_number, field_desc] = ParseProtobufDescLine(line),
+				fixed_map = current_map as ProtoDescription
 			fixed_map.set(field_number, field_desc)
 		} else if (line.startsWith("message ")) {
 			if (current_map !== undefined && current_is_enum)
 				throw `Unexpected message declaration at line ${i} (declaration inside enum)`
 
-			let match = /^message ([^\s]+) {$/.exec(line)
+			const match = /^message ([^\s]+) {$/.exec(line)
 			if (match === null)
 				throw `Invalid message declaration at line ${i}`
 
@@ -406,7 +405,7 @@ export function ParseProtobufDesc(str: string): void {
 			if (current_map !== undefined && current_is_enum)
 				throw `Unexpected enum declaration at line ${i} (declaration inside enum)`
 
-			let match = /^enum ([^\s]+) {$/.exec(line)
+			const match = /^enum ([^\s]+) {$/.exec(line)
 			if (match === null)
 				throw `Invalid enum declaration at line ${i}`
 
@@ -419,7 +418,7 @@ export function ParseProtobufDesc(str: string): void {
 				throw `Unexpected closing brace at line ${i}`
 			current_name.splice(current_name.length - 1) // removes last element in array
 			if (current_name.length !== 0) {
-				let found = ProtoCache.get(current_name.join("."))
+				const found = ProtoCache.get(current_name.join("."))
 				if (found !== undefined) {
 					current_is_enum = found[0] === ProtoType.TYPE_ENUM
 					current_map = found[1]
@@ -430,10 +429,10 @@ export function ParseProtobufDesc(str: string): void {
 		} else if (line.startsWith("option ") || line.startsWith("syntax "))
 			return
 		else if (current_map !== undefined && current_is_enum) {
-			let match = /^([^\s]+)\s*=\s*([^\s]+)/.exec(line)
+			const match = /^([^\s]+)\s*=\s*([^\s]+)/.exec(line)
 			if (match === null)
 				return
-			let fixed_map = current_map as Map<string, number>
+			const fixed_map = current_map as Map<string, number>
 			fixed_map.set(match[1], parseInt(match[2]))
 		}
 	})
