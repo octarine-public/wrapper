@@ -57,8 +57,8 @@ EventsSDK.on("EntityCreated", ent => {
 	Roshan.Instance = ent
 	const time = GameRules?.GameTime ?? 0
 	last_minute = Math.max(0, Math.floor(time / 60))
-	Roshan.HP = 6000 + GetHPChangedByMinute(last_minute)
-	Roshan.MaxHP = Roshan.HP
+	Roshan.HP = ent.HP
+	Roshan.MaxHP = ent.MaxHP
 })
 
 EventsSDK.on("EntityDestroyed", ent => {
