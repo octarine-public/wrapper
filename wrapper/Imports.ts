@@ -25,28 +25,18 @@ export { dotaunitorder_t } from "./Enums/dotaunitorder_t"
 export { EMatchGroupServerStatus } from "./Enums/EMatchGroupServerStatus"
 export { DOTAHullSize } from "./Enums/DOTAHullSize"
 
-import * as ArrayExtensions from "./Utils/ArrayExtensions"
-import * as BitsExtensions from "./Utils/BitsExtensions"
-import * as MapExtensions from "./Utils/MapExtensions"
-import * as MathSDK from "./Utils/Math"
-import * as Parse from "./Utils/ParseKV"
-import * as ArrayBufferUtils from "./Utils/ArrayBufferUtils"
-import * as Utils from "./Utils/Utils"
+export * as ArrayExtensions from "./Utils/ArrayExtensions"
+export * as BitsExtensions from "./Utils/BitsExtensions"
+export * as MapExtensions from "./Utils/MapExtensions"
+export * as MathSDK from "./Utils/Math"
+export * as Parse from "./Utils/ParseKV"
+export * as VBKV from "./Utils/VBKV"
+export * as ArrayBufferUtils from "./Utils/ArrayBufferUtils"
+export * as Utils from "./Utils/Utils"
 export { default as GameState } from "./Utils/GameState"
-import { default as readFile } from "./Utils/readFile"
-export {
-	ArrayBufferUtils,
-	Utils,
-	MathSDK,
-	ArrayExtensions,
-	BitsExtensions,
-	MapExtensions,
-	Parse,
-	readFile
-}
+export { default as readFile } from "./Utils/readFile"
 
-import * as Menu from "./Menu/Imports"
-export { Menu }
+export * as Menu from "./Menu/Imports"
 
 export { DotaMap } from "./Helpers/DotaMap"
 export { MapArea } from "./Helpers/MapArea"
@@ -1265,6 +1255,8 @@ export { default as RuneSpawnerBounty } from "./Objects/Base/RuneSpawnerBounty"
 export { default as RuneSpawnerPowerup } from "./Objects/Base/RuneSpawnerPowerup"
 
 export { LinearProjectile, TrackingProjectile } from "./Objects/Base/Projectile"
+export * as CustomGameEvents from "./Managers/CustomGameEvents"
+export * as CustomNetTables from "./Managers/CustomNetTables"
 export { default as ProjectileManager } from "./Managers/ProjectileManager"
 export { default as Manifest } from "./Managers/Manifest"
 

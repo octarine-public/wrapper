@@ -213,7 +213,7 @@ class KVParser {
 
 		this.strings = new Array<string>(string_count)
 		for (let i = 0; i < string_count; i++)
-			this.strings[i] = stream.ReadNullTerminatedString()
+			this.strings[i] = stream.ReadNullTerminatedUtf8String()
 
 		// bytes after the string table is kv types, minus 4 static bytes at the end
 		this.types = new Array<number>(stream.Remaining - 4)
@@ -242,7 +242,7 @@ class KVParser {
 
 		this.strings = new Array<string>(stream.ReadUint32())
 		for (let i = 0; i < this.strings.length; i++)
-			this.strings[i] = stream.ReadNullTerminatedString()
+			this.strings[i] = stream.ReadNullTerminatedUtf8String()
 
 		return this.ParseBinaryKV(stream, true)
 	}
@@ -705,12 +705,12 @@ function FixupSoundEventScript(map: RecursiveMap): RecursiveMap {
 	return fixed_map
 }
 
-function TryParseNTROResource(buf: ArrayBuffer, DATA: [number, number], NTRO: [number, number]): Nullable<RecursiveMap> {
+function TryParseNTROResource(buf: Uint8Array, DATA: [number, number], NTRO: [number, number]): Nullable<RecursiveMap> {
 	let manifest = new ResourceIntrospectionManifest().Parse(
-		new BinaryStream(new DataView(buf, NTRO[0], NTRO[1]))
+		new BinaryStream(new DataView(buf.buffer, buf.byteOffset + NTRO[0], NTRO[1]))
 	)
 	let map = new C_NTRO(manifest).Parse(
-		new BinaryStream(new DataView(buf, DATA[0], DATA[1]))
+		new BinaryStream(new DataView(buf.buffer, buf.byteOffset + DATA[0], DATA[1]))
 	)
 	if (map === undefined)
 		return undefined
@@ -725,23 +725,23 @@ function TryParseNTROResource(buf: ArrayBuffer, DATA: [number, number], NTRO: [n
 	return map
 }
 
-function parseKVResource(buf: ArrayBuffer, DATA?: Nullable<[number, number]>, NTRO?: Nullable<[number, number]>): RecursiveMap {
+function parseKVResource(buf: Uint8Array, DATA?: Nullable<[number, number]>, NTRO?: Nullable<[number, number]>): RecursiveMap {
 	if (DATA !== undefined && DATA[1] >= 4)
-		switch (new DataView(buf, DATA[0], 4).getUint32(0, true)) {
+		switch (new DataView(buf.buffer, buf.byteOffset + DATA[0], 4).getUint32(0, true)) {
 			case 0x03564B56: // VKV\x03
-				return new KVParser().ParseKV3(new Uint8Array(buf).subarray(DATA[0] + 4, DATA[0] + DATA[1]))
+				return new KVParser().ParseKV3(buf.subarray(DATA[0] + 4, DATA[0] + DATA[1]))
 			case 0x4B563301: // KV3\x01
-				return new KVParser().ParseKV2(new Uint8Array(buf).subarray(DATA[0] + 4, DATA[0] + DATA[1]))
+				return new KVParser().ParseKV2(buf.subarray(DATA[0] + 4, DATA[0] + DATA[1]))
 		}
 	if (DATA !== undefined && NTRO !== undefined) {
 		let res = TryParseNTROResource(buf, DATA, NTRO)
 		if (res !== undefined)
 			return res
 	}
-	return _parse(new Stream(Utf8ArrayToStr(new Uint8Array(buf))))
+	return _parse(new Stream(Utf8ArrayToStr(buf)))
 }
 
-export function parseKV(buf: ArrayBuffer): RecursiveMap {
+export function parseKV(buf: Uint8Array): RecursiveMap {
 	let DATA = ExtractResourceBlock(buf, "DATA"),
 		NTRO = ExtractResourceBlock(buf, "NTRO")
 	if (DATA !== undefined || NTRO !== undefined)

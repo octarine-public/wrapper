@@ -63,7 +63,7 @@ DamageIgnoreBuffs.map((ar, i) => { // optimization & beauty trick
 
 export function parseKVFile(path: string): RecursiveMap {
 	let buf = readFile(path)
-	return buf !== undefined ? parseKV(buf) : new Map()
+	return buf !== undefined ? parseKV(new Uint8Array(buf)) : new Map()
 }
 
 export function parseEnumString(enum_object: any /* { [key: string]: number } */, str: string): number {
@@ -106,30 +106,30 @@ export function MapToObject(map: Map<any, any>): any {
 	return obj
 }
 
-export function ParseExternalReferences(buf: Nullable<ArrayBuffer>): string[] {
-	if (buf === undefined)
-		return []
-	let RERL = ExtractResourceBlock(buf, "RERL")
+export function ParseExternalReferences(buf: Uint8Array): string[] {
+	const RERL = ExtractResourceBlock(buf, "RERL")
 	if (RERL === undefined)
 		return []
 
-	let list: string[] = [],
-		stream = new BinaryStream(new DataView(buf, RERL[0], RERL[1]))
-	let data_offset = stream.ReadUint32(),
+	const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset + RERL[0], RERL[1]))
+	const data_offset = stream.ReadUint32(),
 		size = stream.ReadUint32()
 	if (size === 0)
 		return []
 
 	stream.pos += data_offset - 8 // offset from offset
+	let list: string[] = []
 	for (let i = 0; i < size; i++) {
 		stream.RelativeSeek(8) // ResourceReferenceInfo.ID
-		let offset = Number(stream.ReadUint64()),
+		const offset = Number(stream.ReadUint64()),
 			prev = stream.pos
 		stream.pos += offset - 8
-		let str = stream.ReadNullTerminatedString()
-		if (str.endsWith("vrman"))
-			list = [...list, ...ParseExternalReferences(fread(str + "_c"))]
-		else
+		const str = stream.ReadNullTerminatedUtf8String()
+		if (str.endsWith("vrman")) {
+			const read = fread(str + "_c")
+			if (read !== undefined)
+				list = [...list, ...ParseExternalReferences(new Uint8Array(read))]
+		} else
 			list.push(str)
 		stream.pos = prev
 	}

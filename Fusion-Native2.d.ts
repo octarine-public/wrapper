@@ -45,7 +45,7 @@ declare var CursorPosition: Int32Array // 2 ints in size
 declare var SchemaClassesInheritance: Map<string, string[]>
 
 declare var ConVars: ConVars
-declare var GameEvents: GameEvents
+declare var CustomGameEvents: CustomGameEvents
 declare var Minimap: Minimap
 declare var Particles: Particles
 declare var Renderer: Renderer
@@ -57,10 +57,10 @@ declare interface ConVars {
 	Set(convar_name: string, value: number | boolean): void
 }
 
-declare interface GameEvents {
-	FireEventToClient(name: string, player_ent_id: number, obj: any): void
-	FireEventToAllClients(name: string, obj: any): void
-	FireEventToServer(name: string, obj: any): void
+declare interface CustomGameEvents {
+	FireEventToClient(name: string, player_ent_id: number, data: Uint8Array): void
+	FireEventToAllClients(name: string, data: Uint8Array): void
+	FireEventToServer(name: string, data: Uint8Array): void
 }
 
 declare interface Minimap {
@@ -117,7 +117,7 @@ declare interface Renderer {
 	 */
 	WorldToScreen(): void // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
 	GetTextSize(text: string, font_id: number): boolean // returns Vector2 to IOBuffer offset 0 on get
-	ExecuteCommandBuffer(buf: ArrayBuffer, buf_size: number): void
+	ExecuteCommandBuffer(buf: Uint8Array): void
 }
 
 declare interface Camera {

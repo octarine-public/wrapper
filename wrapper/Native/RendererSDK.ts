@@ -266,7 +266,7 @@ class CRendererSDK {
 	public Line(start: Vector2 = new Vector2(), end = start.Add(this.DefaultShapeSize), color = new Color(255, 255, 255)): void {
 		this.SetColor(color)
 
-		let view = this.AllocateCommandSpace(4 * 4)
+		const view = this.AllocateCommandSpace(4 * 4)
 		let off = 0
 		view.setUint8(off, CommandID.LINE)
 		view.setInt32(off += 1, start.x, true)
@@ -314,7 +314,7 @@ class CRendererSDK {
 			this.SetOvalClip(vecPos.AddScalar(round / 2), vecSize.SubtractScalar(round / 2))
 		}
 
-		let view = this.AllocateCommandSpace(5 * 4)
+		const view = this.AllocateCommandSpace(5 * 4)
 		let off = 0
 		view.setUint8(off, CommandID.IMAGE)
 		view.setFloat32(off += 1, vecPos.x, true)
@@ -397,7 +397,7 @@ class CRendererSDK {
 	public EmitDraw() {
 		if (this.commandCacheSize === 0)
 			return
-		Renderer.ExecuteCommandBuffer(this.commandCache.buffer, this.commandCacheSize)
+		Renderer.ExecuteCommandBuffer(this.commandCache.subarray(0, this.commandCacheSize))
 		if (this.commandCacheSize < this.commandCache.byteLength / 3)
 			this.commandCache = new Uint8Array(this.commandCache.byteLength / 3)
 		this.commandCacheSize = 0
@@ -499,7 +499,7 @@ class CRendererSDK {
 
 		let font_id = this.GetFont(font_name, weight, width, italic)
 		let text_buf = StringToUTF8(text)
-		let view = this.AllocateCommandSpace(7 * 4 + 2 + text_buf.byteLength)
+		const view = this.AllocateCommandSpace(7 * 4 + 2 + text_buf.byteLength)
 		let off = 0
 		view.setUint8(off, CommandID.TEXT)
 		view.setFloat32(off += 1, vecPos.x, true)
@@ -513,7 +513,7 @@ class CRendererSDK {
 		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(text_buf)
 	}
 	private Oval(vecPos: Vector2, vecSize: Vector2): void {
-		let view = this.AllocateCommandSpace(4 * 4)
+		const view = this.AllocateCommandSpace(4 * 4)
 		let off = 0
 		view.setUint8(off, CommandID.OVAL)
 		view.setFloat32(off += 1, vecPos.x, true)
@@ -522,7 +522,7 @@ class CRendererSDK {
 		view.setFloat32(off += 4, vecPos.y + vecSize.y, true)
 	}
 	private Rect(vecPos: Vector2, vecSize: Vector2): void {
-		let view = this.AllocateCommandSpace(4 * 4)
+		const view = this.AllocateCommandSpace(4 * 4)
 		let off = 0
 		view.setUint8(off, CommandID.RECT)
 		view.setFloat32(off += 1, vecPos.x, true)
@@ -544,8 +544,11 @@ class CRendererSDK {
 	private GetTexture(path: string): number {
 		if (this.texture_cache.has(path))
 			return this.texture_cache.get(path)!
-		let [parsed, size] = WASM.ParseImage(readFile(path, 2)) // 1 for ourselves, 1 for caller [Image]
-		let texture_id = this.MakeTexture(parsed, size)
+		const read = readFile(path, 2) // 1 for ourselves, 1 for caller [Image]
+		const [parsed, size] = read !== undefined
+			? WASM.ParseImage(new Uint8Array(read))
+			: [new Uint8Array(new Array(4).fill(0xFF)), new Vector2(1, 1)] // 1 white pixel
+		const texture_id = this.MakeTexture(parsed, size)
 		this.texture_cache.set(path, texture_id)
 		return texture_id
 	}
@@ -575,10 +578,10 @@ class CRendererSDK {
 
 	private AllocateCommandSpace(bytes: number): DataView {
 		bytes += 1 // msgid
-		let current_len = this.commandCacheSize
+		const current_len = this.commandCacheSize
 		if (current_len + bytes > this.commandCache.byteLength) {
 			const grow_factor = 2
-			let buf = new Uint8Array(Math.max(this.commandCache.byteLength * grow_factor, current_len + bytes))
+			const buf = new Uint8Array(Math.max(this.commandCache.byteLength * grow_factor, current_len + bytes))
 			buf.set(this.commandCache, 0)
 			this.commandCache = buf
 		}
@@ -589,7 +592,7 @@ class CRendererSDK {
 		if (this.last_color.Equals(color))
 			return
 		this.last_color = color.Clone()
-		let view = this.AllocateCommandSpace(4)
+		const view = this.AllocateCommandSpace(4)
 		let off = 0
 		view.setUint8(off, CommandID.PAINT_SET_COLOR)
 		view.setUint8(off += 1, Math.min(color.r, 255))
@@ -601,7 +604,7 @@ class CRendererSDK {
 		if (this.last_fill_type === fillType)
 			return
 		this.last_fill_type = fillType
-		let view = this.AllocateCommandSpace(1)
+		const view = this.AllocateCommandSpace(1)
 		let off = 0
 		view.setUint8(off, CommandID.PAINT_SET_STYLE)
 		view.setUint8(off += 1, fillType)
@@ -610,7 +613,7 @@ class CRendererSDK {
 		if (this.last_color_filter_type === ColorFilterType.BLEND && this.last_color_filter_color.Equals(color))
 			return
 		this.last_color_filter_type = ColorFilterType.BLEND
-		let view = this.AllocateCommandSpace(6)
+		const view = this.AllocateCommandSpace(6)
 		let off = 0
 		view.setUint8(off, CommandID.PAINT_SET_COLOR_FILTER)
 		view.setUint8(off += 1, ColorFilterType.BLEND)
@@ -624,18 +627,18 @@ class CRendererSDK {
 		if (this.last_color_filter_type === ColorFilterType.NONE)
 			return
 		this.last_color_filter_type = ColorFilterType.NONE
-		let view = this.AllocateCommandSpace(1)
+		const view = this.AllocateCommandSpace(1)
 		let off = 0
 		view.setUint8(off, CommandID.PAINT_SET_COLOR_FILTER)
 		view.setUint8(off += 1, ColorFilterType.NONE)
 	}
 	private SetOvalClip(vecPos: Vector2, vecSize: Vector2): void {
 		{
-			let view = this.AllocateCommandSpace(0)
+			const view = this.AllocateCommandSpace(0)
 			view.setUint8(0, CommandID.PATH_RESET)
 		}
 		{
-			let view = this.AllocateCommandSpace(4 * 4)
+			const view = this.AllocateCommandSpace(4 * 4)
 			let off = 0
 			view.setUint8(off, CommandID.PATH_ADD_OVAL)
 			view.setFloat32(off += 1, vecPos.x, true)
@@ -644,7 +647,7 @@ class CRendererSDK {
 			view.setFloat32(off += 4, vecPos.y + vecSize.y, true)
 		}
 		{
-			let view = this.AllocateCommandSpace(2)
+			const view = this.AllocateCommandSpace(2)
 			let off = 0
 			view.setUint8(off, CommandID.CLIP_PATH)
 			view.setUint8(off += 1, 1) // do_antialias
@@ -652,11 +655,11 @@ class CRendererSDK {
 		}
 	}
 	private SaveState(): void {
-		let view = this.AllocateCommandSpace(0)
+		const view = this.AllocateCommandSpace(0)
 		view.setUint8(0, CommandID.SAVE_STATE)
 	}
 	private RestoreState(): void {
-		let view = this.AllocateCommandSpace(0)
+		const view = this.AllocateCommandSpace(0)
 		view.setUint8(0, CommandID.RESTORE_STATE)
 	}
 }
@@ -669,7 +672,7 @@ try {
 		map_name = "dota"
 	let buf = fread(`maps/${map_name}.vhcg`)
 	if (buf !== undefined) {
-		RendererSDK.HeightMap = WASM.ParseVHCG(buf)
+		RendererSDK.HeightMap = WASM.ParseVHCG(new Uint8Array(buf))
 		GameState.MapName = last_loaded_map_name = map_name
 	}
 } catch (e) {
@@ -686,7 +689,7 @@ Events.on("PostAddSearchPath", path => {
 		return
 
 	try {
-		RendererSDK.HeightMap = WASM.ParseVHCG(buf)
+		RendererSDK.HeightMap = WASM.ParseVHCG(new Uint8Array(buf))
 		GameState.MapName = last_loaded_map_name = map_name
 	} catch (e) {
 		console.log("Error in RendererSDK.HeightMap dynamic init: " + e)

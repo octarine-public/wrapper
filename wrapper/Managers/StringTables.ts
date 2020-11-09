@@ -28,10 +28,10 @@ export function GetTable(table_name: string) {
 	return StringTables.get(table_name)
 }
 export function GetString(table_name: string, index: number): string {
-	let ar = GetTable(table_name)?.get(index)
+	const ar = GetTable(table_name)?.get(index)
 	return ar !== undefined ? ar[0] : ""
 }
 export function GetValue(table_name: string, index: number): string {
-	let ar = GetTable(table_name)?.get(index)
+	const ar = GetTable(table_name)?.get(index)
 	return ar !== undefined ? Utf8ArrayToStr(new Uint8Array(ar[1])) : ""
 }

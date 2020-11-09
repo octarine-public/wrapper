@@ -11,6 +11,8 @@ import GameState from "../Utils/GameState"
 import Manifest from "./Manifest"
 import Vector3 from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
+import { VBKV } from "../Imports"
+import { BinaryKV } from "../Utils/VBKV"
 
 enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CREATE = 0,
@@ -530,6 +532,11 @@ message CMsgSosSetLibraryStackFields {
 	optional fixed32 stack_hash = 1;
 	optional bytes packed_fields = 5;
 }
+
+message CUserMsg_CustomGameEvent {
+	optional string event_name = 1;
+	optional bytes data = 2;
+}
 `)
 
 Events.on("ServerMessage", (msg_id, buf_len) => {
@@ -690,15 +697,28 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			}
 			break
 		}
+		case 148: {
+			const msg = ParseProtobufNamed(buf, "CUserMsg_CustomGameEvent")
+			const event_name = (msg.get("event_name") as Nullable<string>) ?? ""
+			const data = (msg.get("data") as Nullable<Uint8Array>) ?? new Uint8Array()
+			let parsed_data: Map<string, BinaryKV>
+			try {
+				parsed_data = VBKV.parseVBKV(data)
+			} catch {
+				parsed_data = new Map()
+			}
+			EventsSDK.emit("CustomGameEvent", false, event_name, parsed_data)
+			break
+		}
 		case 208: {
 			const msg = ParseProtobufNamed(buf, "CMsgSosStartSoundEvent")
-			let hash = msg.get("soundevent_hash") as number
-			let sound_name = Manifest.LookupSoundNameByHash(hash)
+			const hash = msg.get("soundevent_hash") as number
+			const sound_name = Manifest.LookupSoundNameByHash(hash)
 			if (sound_name === undefined) {
 				// console.log(`Unknown soundname hash: ${hash}`)
 				break
 			}
-			let handle = (msg.get("source_entity_index") as number) ?? 0,
+			const handle = (msg.get("source_entity_index") as number) ?? 0,
 				seed = (msg.get("seed") as number) ?? 0,
 				start_time = (msg.get("start_time") as number) ?? -1,
 				packed_params = msg.get("packed_params") as Nullable<Uint8Array>
@@ -853,7 +873,6 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 })
 
 Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
-Events.on("CustomGameEvent", (name, obj) => EventsSDK.emit("CustomGameEvent", false, name, obj))
 
 let input_capture_depth = 0
 Events.on("InputCaptured", is_captured => {

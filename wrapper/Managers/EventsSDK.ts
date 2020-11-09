@@ -89,7 +89,6 @@ interface EventsSDK extends EventEmitter {
 		snap: boolean,
 	) => void): EventEmitter
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
-	on(name: "CustomGameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "UnitSpeech", listener: (
 		npc: Unit | number,
 		concept: number,

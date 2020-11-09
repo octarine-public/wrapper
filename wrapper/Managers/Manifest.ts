@@ -27,7 +27,7 @@ const Manifest = new (class CManifest {
 		return `${this.Directories[path[0]]}${this.FileNames[path[1]]}.${this.Extensions[path[2]]}`
 	}
 	/*public SaveStringToken(str: string): number {
-		let hash = MurmurHash2(StringToUTF8(str.toLowerCase()).buffer)
+		let hash = MurmurHash2(StringToUTF8(str.toLowerCase()))
 		if (!this.PathHash32To64.has(hash) && !this.Hash32ToString.has(hash))
 			this.Hash32ToString.set(hash, str)
 		return hash
@@ -51,7 +51,7 @@ const Manifest = new (class CManifest {
 			console.log(`Missing ${path}`)
 			return
 		}
-		parseKV(buf).forEach((_, name) => this.SoundHashToString.set(this.SoundNameToHash(name), name))
+		parseKV(new Uint8Array(buf)).forEach((_, name) => this.SoundHashToString.set(this.SoundNameToHash(name), name))
 	}
 	public SoundNameToHash(name: string): number {
 		return MurmurHash2(StringToUTF8(name.toLowerCase()), 0x53524332)
@@ -85,12 +85,12 @@ function InitManifest() {
 	// Manifest.PathHash32To64.clear()
 	Manifest.SoundHashToString.clear()
 
-	let manifest = fread("soundevents/soundevents_manifest.vrman_c")
+	const manifest = fread("soundevents/soundevents_manifest.vrman_c")
 	if (manifest === undefined) {
 		console.log("Sound manifest not found.")
 		return
 	}
-	ParseExternalReferences(manifest).forEach(path => {
+	ParseExternalReferences(new Uint8Array(manifest)).forEach(path => {
 		if (path.endsWith("vsndevts"))
 			Manifest.LoadSoundFile(path + "_c")
 	})
@@ -120,9 +120,9 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				let path = `${Manifest.Directories[dir_id]}${Manifest.FileNames[file_id]}.${Manifest.Extensions[ext_id]}`
 				if (Manifest.Extensions[ext_id] === "vsndevts")
 					Manifest.LoadSoundFile(`${path}_c`)
-				let hash64 = MurmurHash64(StringToUTF8(path).buffer)
+				let hash64 = MurmurHash64(StringToUTF8(path))
 				Manifest.Paths.set(hash64, [dir_id, file_id, ext_id])
-				// Manifest.PathHash32To64.set(MurmurHash2(StringToUTF8(path.toLowerCase()).buffer), hash64)
+				// Manifest.PathHash32To64.set(MurmurHash2(StringToUTF8(path.toLowerCase())), hash64)
 			}
 			break
 		}

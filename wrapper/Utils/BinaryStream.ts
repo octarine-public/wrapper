@@ -130,6 +130,28 @@ export default class BinaryStream {
 			str += String.fromCharCode(b)
 		}
 	}
+	public ReadNullTerminatedUtf8String(): string {
+		const orig_pos = this.pos
+		let size = 0
+		while (this.ReadUint8() !== 0)
+			size++
+		this.pos = orig_pos
+
+		const str = this.ReadUtf8String(size)
+		this.pos++ // skip remaining null byte
+		return str
+	}
+	public ReadNullTerminatedUtf16String(): string {
+		let str = ""
+		while (true) {
+			if (this.Empty())
+				return str
+			const b = this.ReadUint16()
+			if (b === 0)
+				return str
+			str += String.fromCharCode(b)
+		}
+	}
 	// https://github.com/SteamDatabase/ValveResourceFormat/blob/cceba491d7bb60890a53236a90970b24d0a4aba9/ValveResourceFormat/Utils/StreamHelpers.cs#L43
 	public ReadOffsetString(): string {
 		const offset = this.ReadUint32()
@@ -137,7 +159,7 @@ export default class BinaryStream {
 			return ""
 		const saved_pos = this.pos
 		this.pos += offset - 4 // offset from offset
-		const ret = this.ReadNullTerminatedString()
+		const ret = this.ReadNullTerminatedUtf8String()
 		this.pos = saved_pos
 		return ret
 	}

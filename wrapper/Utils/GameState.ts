@@ -8,9 +8,12 @@ export default new (class GameState {
 	public SignonState = SignonState_t.SIGNONSTATE_NONE
 	public UIState = GetUIState()
 	public MapName = "<empty>"
-	// Equals GameRules?.RawGameTime ?? 0
-	// Purpose: that's much faster than GameRules?.RawGameTime ?? 0,
-	// and removes indirect dependency on EntityManager
+	/**
+	 * Equals GameRules?.RawGameTime ?? 0
+	 * 
+	 * Purpose: that's much faster than GameRules?.RawGameTime ?? 0,
+	 * and removes indirect dependency on EntityManager
+	 */
 	public RawGameTime = 0
 
 	public get LevelName(): string {

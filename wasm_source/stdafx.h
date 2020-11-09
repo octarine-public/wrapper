@@ -42,3 +42,4 @@ BlockData* ExtractBlockFromResource(char* data, size_t size, const char* name);
 #include "Vector.h"
 #include "vhcg.h"
 #include "vmatrix.h"
+#include "crc32.h"

@@ -344,6 +344,12 @@ EXPORT_JS void MurmurHash64(void* key, int len, uint32_t seed) {
 	*(uint64_t*)JSIOBuffer = (((uint64_t)h1) << 32) | h2;
 }
 
+EXPORT_JS uint32_t CRC32(void* data, int len) {
+	auto ret = crc32((const char*)data, (size_t)len);
+	free(data);
+	return ret;
+}
+
 EXPORT_JS void* DecompressLZ4(void* data, size_t size) {
 	auto dst_len = *(uint32_t*)data;
 	auto dst = malloc(dst_len);
