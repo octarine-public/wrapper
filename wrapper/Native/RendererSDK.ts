@@ -327,6 +327,9 @@ class CRendererSDK {
 			this.RestoreState()
 		this.ClearColorFilter()
 	}
+	public GetImageSize(path: string): Vector2 {
+		return this.tex2size.get(this.GetTexture(path))!
+	}
 	public Text(text: string, vecPos = new Vector2(), color = new Color(255, 255, 255), font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
 		const pos = vecPos.Clone()
 		text.split("\n").reverse().forEach(line => {
