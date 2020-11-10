@@ -109,7 +109,12 @@ declare interface Renderer {
 	 * Pass size: Vector2 at IOBuffer offset 0
 	 * @returns texture_id
 	 */
-	CreateTexture(rgba: ArrayBuffer): number
+	CreateTexture(rgba: Uint8Array): number
+	/**
+	 * Returns size: Vector2 at IOBuffer offset 0
+	 * @returns texture_id
+	 */
+	CreateTextureSVG(svg: Uint8Array): number
 	FreeTexture(texture_id: number): void
 	/**
 	 * @param pos world position that needs to be turned to screen position

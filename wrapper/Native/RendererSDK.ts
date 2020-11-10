@@ -132,11 +132,11 @@ class CRendererSDK {
 	 */
 	public readonly DefaultTextSize = 18
 	/**
-	 * Default Size of Shape = Weight 5 x Height 5
-	 * @param vecSize Weight as X
+	 * Default Size of Shape = Width 32 x Height 32
+	 * @param vecSize Width as X
 	 * @param vecSize Height as Y
 	 */
-	public readonly DefaultShapeSize: Vector2 = new Vector2(5, 5)
+	public readonly DefaultShapeSize: Vector2 = new Vector2(32, 32)
 
 	public WindowSize_ = new Vector2()
 	public HeightMap: Nullable<WASM.HeightMap>
@@ -534,23 +534,36 @@ class CRendererSDK {
 		if (rgba.byteLength !== size.x * size.y * 4)
 			throw "Invalid RGBA buffer or size"
 		size.toIOBuffer()
-		const texture_id = Renderer.CreateTexture(rgba.buffer)
+		const texture_id = Renderer.CreateTexture(rgba)
 		this.tex2size.set(texture_id, size)
 		return texture_id
 	}
 	/*private FreeTexture(texture_id: number): void {
 		Renderer.FreeTexture(texture_id)
 	}*/
+	private MakeTextureSVG(buf: Uint8Array): number {
+		const texture_id = Renderer.CreateTextureSVG(buf)
+		this.tex2size.set(texture_id, Vector2.fromIOBuffer()!)
+		return texture_id
+	}
 	private GetTexture(path: string): number {
 		if (this.texture_cache.has(path))
 			return this.texture_cache.get(path)!
 		const read = readFile(path, 2) // 1 for ourselves, 1 for caller [Image]
-		const [parsed, size] = read !== undefined
-			? WASM.ParseImage(new Uint8Array(read))
-			: [new Uint8Array(new Array(4).fill(0xFF)), new Vector2(1, 1)] // 1 white pixel
-		const texture_id = this.MakeTexture(parsed, size)
-		this.texture_cache.set(path, texture_id)
-		return texture_id
+		if (read === undefined) {
+			const texture_id = this.MakeTexture( // 1 white pixel
+				new Uint8Array(new Array(4).fill(0xFF)),
+				new Vector2(1, 1)
+			)
+			this.texture_cache.set(path, texture_id)
+			return texture_id
+		} else {
+			const texture_id = path.endsWith(".svg")
+				? this.MakeTextureSVG(new Uint8Array(read))
+				: this.MakeTexture(...WASM.ParseImage(new Uint8Array(read)))
+			this.texture_cache.set(path, texture_id)
+			return texture_id
+		}
 	}
 	private GetFont(font_name: string, weight: number, width: number, italic: boolean): number {
 		let weight_map = this.font_cache.get(font_name)
