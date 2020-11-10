@@ -65,6 +65,7 @@ class MenuManager {
 		}
 		if (!this.is_open)
 			return
+		this.header.PreRender()
 		if (this.header.position_dirty) {
 			const current_pos = this.Position.Clone().AddScalarY(this.header.OriginalSize.y)
 			const max_width = this.entries.reduce((prev, node) => Math.max(prev, node.TotalSize.x), this.header.OriginalSize.x)
