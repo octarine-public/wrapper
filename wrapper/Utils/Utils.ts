@@ -3,6 +3,7 @@ import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import { ExtractResourceBlock } from "../Native/WASM"
 import BinaryStream from "./BinaryStream"
 import readFile from "./readFile"
+import { Utf16ArrayToStr, Utf8ArrayToStr } from "./ArrayBufferUtils"
 
 export const DamageIgnoreBuffs = [
 	[], // DAMAGE_TYPES.DAMAGE_TYPE_NONE = 0
@@ -145,4 +146,19 @@ export function ParseMapName(path: string): Nullable<string> {
 	if (map_name.startsWith("scenes") || map_name.startsWith("prefabs")) // that must not be loaded as main map, so we must ignore it
 		return undefined
 	return map_name
+}
+
+export function readJSON(path: string): any {
+	const buf = fread(path)
+	if (buf === undefined)
+		throw `Failed to read JSON file at path ${path}`
+	try {
+		return JSON.parse(Utf16ArrayToStr(new Uint16Array(buf)))
+	} catch {
+		try {
+			return JSON.parse(Utf8ArrayToStr(new Uint8Array(buf)))
+		} catch {
+			throw `invalid JSON at path ${path}`
+		}
+	}
 }
