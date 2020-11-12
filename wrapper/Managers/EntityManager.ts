@@ -136,6 +136,7 @@ export function DeleteEntity(id: number): void {
 
 	EventsSDK.emit("EntityDestroyed", false, entity)
 	entity.IsVisible = false
+	AllEntitiesAsMap.delete(id)
 	ent_props.delete(id)
 	GetSDKClasses().forEach(([class_]) => {
 		if (!(entity instanceof class_))
