@@ -68,6 +68,18 @@ export default class Vector3 {
 		return Math.sqrt(this.LengthSqr)
 	}
 	/**
+	 * Get the length of the vector squared. This operation is cheaper than Length().
+	 */
+	get LengthSqr2D(): number {
+		return this.x ** 2 + this.y ** 2
+	}
+	/**
+	 * Get the length 2D of the vector
+	 */
+	get Length2D(): number {
+		return Math.sqrt(this.LengthSqr2D)
+	}
+	/**
 	 * Angle of the Vector3
 	 */
 	get Angle(): number {
