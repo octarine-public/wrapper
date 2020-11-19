@@ -1,5 +1,5 @@
-import Item from "../Base/Item"
 import { WrapperClass } from "../../Decorators"
+import Item from "../Base/Item"
 
 @WrapperClass("item_abyssal_blade")
 export default class item_abyssal_blade extends Item {

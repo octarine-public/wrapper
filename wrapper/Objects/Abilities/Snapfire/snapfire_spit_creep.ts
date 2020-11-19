@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("snapfire_spit_creep")
 export default class snapfire_spit_creep extends Ability {

@@ -1,5 +1,5 @@
+import { BinaryKV, parseVBKV } from "../Utils/VBKV"
 import { GetTable } from "./StringTables"
-import { parseVBKV, BinaryKV } from "../Utils/VBKV"
 
 export function GetValue(table_name: string, key: string): Nullable<Map<string, BinaryKV>> {
 	const table = GetTable(`CustomNetTable_${table_name}`)

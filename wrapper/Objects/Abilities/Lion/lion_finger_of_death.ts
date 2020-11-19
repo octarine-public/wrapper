@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("lion_finger_of_death")
 export default class lion_finger_of_death extends Ability {

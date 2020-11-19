@@ -1,6 +1,6 @@
-import Ability from "../../Base/Ability"
-import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
 import { WrapperClass } from "../../../Decorators"
+import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("windrunner_windrun")
 export default class windrunner_windrun extends Ability {

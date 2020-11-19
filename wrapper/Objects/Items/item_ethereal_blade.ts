@@ -1,6 +1,6 @@
-import Item from "../Base/Item"
-import Hero from "../Base/Hero"
 import { WrapperClass } from "../../Decorators"
+import Hero from "../Base/Hero"
+import Item from "../Base/Item"
 
 @WrapperClass("item_ethereal_blade")
 export default class item_ethereal_blade extends Item {

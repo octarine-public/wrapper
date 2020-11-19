@@ -1,9 +1,9 @@
-import Events from "./Events"
+import { MurmurHash2, MurmurHash64 } from "../Native/WASM"
+import { StringToUTF8, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
-import { Utf8ArrayToStr, StringToUTF8 } from "../Utils/ArrayBufferUtils"
-import { ParseExternalReferences } from "../Utils/Utils"
-import { MurmurHash64, MurmurHash2 } from "../Native/WASM"
 import { parseKV } from "../Utils/ParseKV"
+import { ParseExternalReferences } from "../Utils/Utils"
+import Events from "./Events"
 
 const Manifest = new (class CManifest {
 	public readonly Directories: string[] = []

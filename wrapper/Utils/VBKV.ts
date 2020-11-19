@@ -1,7 +1,7 @@
-import BinaryStream from "./BinaryStream"
-import * as WASM from "../Native/WASM"
 import Color from "../Base/Color"
+import * as WASM from "../Native/WASM"
 import { StringToUTF8 } from "./ArrayBufferUtils"
+import BinaryStream from "./BinaryStream"
 
 const enum VBKVTypes {
 	TYPE_NONE = 0,

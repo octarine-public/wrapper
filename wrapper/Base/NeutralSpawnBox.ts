@@ -1,6 +1,6 @@
 import { EntityPropertiesNode } from "../Managers/EntityManager"
-import Vector3 from "./Vector3"
 import Vector2 from "./Vector2"
+import Vector3 from "./Vector3"
 
 export default class NeutralSpawnBox {
 	constructor(public readonly properties: EntityPropertiesNode) { }

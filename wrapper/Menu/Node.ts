@@ -1,17 +1,17 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
+import { PARTICLE_RENDER_NAME } from "../Managers/ParticleManager"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Button from "./Button"
 import ImageSelector from "./ImageSelector"
+import { IMenuColorPicker, IMenuParticlePicker } from "./ITypes"
 import KeyBind from "./KeyBind"
 import Menu from "./Menu"
 import Slider from "./Slider"
 import Switcher from "./Switcher"
 import Toggle from "./Toggle"
-import { PARTICLE_RENDER_NAME } from "../Managers/ParticleManager"
-import { IMenuColorPicker, IMenuParticlePicker } from "./ITypes"
 
 export default class Node extends Base {
 	public entries: Base[] = []
@@ -210,7 +210,7 @@ export default class Node extends Base {
 		}
 	}
 	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip = ""): IMenuColorPicker {
-		const node = this.AddNode(name) as Node
+		const node = this.AddNode(name)
 
 		const R = node.AddSlider("Red", color.r, 0, 255)
 		const G = node.AddSlider("Green", color.g, 0, 255)

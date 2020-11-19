@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("snapfire_mortimer_kisses")
 export default class snapfire_mortimer_kisses extends Ability {

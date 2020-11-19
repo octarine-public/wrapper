@@ -23,8 +23,7 @@
 		],
 		"indent": [
 			true,
-			"tabs",
-			1
+			"tabs"
 		],
 		"curly": false,
 		"arrow-parens": [
@@ -40,6 +39,7 @@
 		"radix": false,
 		"prefer-const": true,
 		"variable-name": [
+			true,
 			"check-format",
 			"allow-trailing-underscore",
 			"allow-pascal-case",
@@ -70,7 +70,9 @@
 		"no-implicit-dependencies": false,
 		"no-submodule-imports": false,
 		"eofline": true,
-		"no-consecutive-blank-lines": true
+		"no-consecutive-blank-lines": true,
+		"no-unnecessary-type-assertion": true,
+		"ordered-imports": true
 	},
 	"rulesDirectory": [],
 	"linterOptions": {

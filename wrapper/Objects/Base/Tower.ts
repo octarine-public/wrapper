@@ -1,7 +1,7 @@
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import EntityManager from "../../Managers/EntityManager"
 import Building from "./Building"
 import Unit from "./Unit"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
 @WrapperClass("C_DOTA_BaseNPC_Tower")
 export default class Tower extends Building {

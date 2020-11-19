@@ -1,6 +1,6 @@
-import Item from "../Base/Item"
-import GameState from "../../Utils/GameState"
 import { WrapperClass } from "../../Decorators"
+import GameState from "../../Utils/GameState"
+import Item from "../Base/Item"
 
 @WrapperClass("item_bottle")
 export default class item_bottle extends Item {

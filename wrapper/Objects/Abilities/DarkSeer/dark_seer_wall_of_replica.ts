@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("dark_seer_wall_of_replica")
 export default class dark_seer_wall_of_replica extends Ability {

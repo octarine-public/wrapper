@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("ogre_magi_unrefined_fireblast")
 export default class ogre_magi_unrefined_fireblast extends Ability {

@@ -1,5 +1,5 @@
-import Item from "../Base/Item"
 import { WrapperClass } from "../../Decorators"
+import Item from "../Base/Item"
 
 @WrapperClass("item_veil_of_discord")
 export default class item_veil_of_discord extends Item {

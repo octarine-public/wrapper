@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("crystal_maiden_freezing_field")
 export default class crystal_maiden_freezing_field extends Ability {

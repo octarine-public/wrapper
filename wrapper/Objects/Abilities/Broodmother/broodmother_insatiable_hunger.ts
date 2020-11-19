@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("broodmother_insatiable_hunger")
 export default class broodmother_insatiable_hunger extends Ability {

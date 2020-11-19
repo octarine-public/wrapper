@@ -2,9 +2,9 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import RendererSDK from "../Native/RendererSDK"
+import AbilityData from "../Objects/DataBook/AbilityData"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
-import AbilityData from "../Objects/DataBook/AbilityData"
 
 // every icon: 32x32, 1x1 border
 export default class ImageSelector extends Base {

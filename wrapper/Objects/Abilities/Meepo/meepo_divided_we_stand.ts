@@ -1,6 +1,6 @@
-import Ability from "../../Base/Ability"
+import { NetworkedBasicField, WrapperClass } from "../../../Decorators"
 import EntityManager from "../../../Managers/EntityManager"
-import { WrapperClass, NetworkedBasicField } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("meepo_divided_we_stand")
 export default class meepo_divided_we_stand extends Ability {

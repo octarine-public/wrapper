@@ -1,6 +1,6 @@
-import Ability from "../../Base/Ability"
-import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
 import { WrapperClass } from "../../../Decorators"
+import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("clinkz_wind_walk")
 export default class clinkz_wind_walk extends Ability {

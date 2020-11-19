@@ -1,12 +1,12 @@
-import Unit from "../Objects/Base/Unit"
+import Vector2 from "../Base/Vector2"
+import EntityManager from "../Managers/EntityManager"
+import Creep from "../Objects/Base/Creep"
 import Entity from "../Objects/Base/Entity"
+import Hero from "../Objects/Base/Hero"
+import Unit from "../Objects/Base/Unit"
+import MovingObstacle from "./NavMesh/MovingObstacle"
 import NavMeshPathfinding from "./NavMesh/NavMeshPathfinding"
 import Obstacle from "./NavMesh/Obstacle"
-import MovingObstacle from "./NavMesh/MovingObstacle"
-import Creep from "../Objects/Base/Creep"
-import Hero from "../Objects/Base/Hero"
-import EntityManager from "../Managers/EntityManager"
-import Vector2 from "../Base/Vector2"
 
 // import Unit from "../Objects/Base/Unit"
 

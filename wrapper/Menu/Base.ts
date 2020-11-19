@@ -1,9 +1,9 @@
 import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
+import InputManager from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
-import InputManager from "../Managers/InputManager"
 import Localization from "./Localization"
 
 export interface IMenu {

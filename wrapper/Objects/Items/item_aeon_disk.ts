@@ -1,5 +1,5 @@
-import Item from "../Base/Item"
 import { WrapperClass } from "../../Decorators"
+import Item from "../Base/Item"
 
 @WrapperClass("item_aeon_disk")
 export default class item_aeon_disk extends Item {

@@ -1,6 +1,6 @@
-import Ability from "../../Base/Ability"
-import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
 import { WrapperClass } from "../../../Decorators"
+import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("treant_natures_guise")
 export default class treant_natures_guise extends Ability {

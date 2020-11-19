@@ -1,19 +1,19 @@
 import Color from "../Base/Color"
+import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import QAngle from "../Base/QAngle"
-import { default as Input } from "../Managers/InputManager"
-import * as WASM from "./WASM"
+import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { FontFlags_t } from "../Enums/FontFlags_t"
-import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
-import { ParseMapName } from "../Utils/Utils"
-import readFile from "../Utils/readFile"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
-import GameState from "../Utils/GameState"
-import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
-import Entity from "../Objects/Base/Entity"
+import { default as Input } from "../Managers/InputManager"
 import Manifest from "../Managers/Manifest"
+import Entity from "../Objects/Base/Entity"
+import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
+import GameState from "../Utils/GameState"
+import readFile from "../Utils/readFile"
+import { ParseMapName } from "../Utils/Utils"
+import * as WASM from "./WASM"
 
 enum CommandID {
 	// state related
@@ -554,7 +554,7 @@ class CRendererSDK {
 			return this.texture_cache.get(path)!
 		const read = readFile(path, 2) // 1 for ourselves, 1 for caller [Image]
 		if (read === undefined) {
-			const texture_id = this.MakeTexture( // 1 white pixel
+			const texture_id = this.MakeTexture(// 1 white pixel
 				new Uint8Array(new Array(4).fill(0xFF)),
 				new Vector2(1, 1)
 			)

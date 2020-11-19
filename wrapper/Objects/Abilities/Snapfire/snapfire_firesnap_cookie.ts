@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("snapfire_firesnap_cookie")
 export default class snapfire_firesnap_cookie extends Ability {

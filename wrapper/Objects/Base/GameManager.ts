@@ -1,6 +1,6 @@
-import Entity from "./Entity"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import EventsSDK from "../../Managers/EventsSDK"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import Entity from "./Entity"
 
 @WrapperClass("C_DOTAGameManagerProxy")
 export default class CGameManager extends Entity {

@@ -1,9 +1,9 @@
-import Unit from "../Base/Unit"
-import Entity, { GameRules } from "../Base/Entity"
-import EventsSDK from "../../Managers/EventsSDK"
-import EntityManager from "../../Managers/EntityManager"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
+import EntityManager from "../../Managers/EntityManager"
+import EventsSDK from "../../Managers/EventsSDK"
+import Entity, { GameRules } from "../Base/Entity"
+import Unit from "../Base/Unit"
 
 @WrapperClass("C_DOTA_Unit_Roshan")
 export default class Roshan extends Unit {

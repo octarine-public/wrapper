@@ -1,5 +1,5 @@
-import { RegisterClass, RegisterFieldHandler } from "./Objects/NativeToSDK"
 import Entity from "./Objects/Base/Entity"
+import { RegisterClass, RegisterFieldHandler } from "./Objects/NativeToSDK"
 
 export function WrapperClass(networked_class_name: string) {
 	return (constructor: object) => RegisterClass(networked_class_name, constructor as Constructor<Entity>)

@@ -1,11 +1,11 @@
 import Vector3 from "../../Base/Vector3"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { AbilityLogicType } from "../../Enums/AbilityLogicType"
 import { HasMask, MaskToArrayNumber } from "../../Utils/BitsExtensions"
+import GameState from "../../Utils/GameState"
 import AbilityData from "../DataBook/AbilityData"
 import Entity, { GameRules } from "./Entity"
 import Unit from "./Unit"
-import GameState from "../../Utils/GameState"
-import { AbilityLogicType } from "../../Enums/AbilityLogicType"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
 @WrapperClass("C_DOTABaseAbility")
 export default class Ability extends Entity {

@@ -1,8 +1,8 @@
-import BinaryStream from "./BinaryStream"
-import { Utf8ArrayToStr } from "./ArrayBufferUtils"
-import Vector3 from "../Base/Vector3"
-import Vector2 from "../Base/Vector2"
 import Color from "../Base/Color"
+import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
+import { Utf8ArrayToStr } from "./ArrayBufferUtils"
+import BinaryStream from "./BinaryStream"
 
 export enum ProtoType {
 	// 0 is reserved for errors.

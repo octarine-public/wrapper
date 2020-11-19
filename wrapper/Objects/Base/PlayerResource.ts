@@ -1,10 +1,10 @@
-import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
-import Entity from "../Base/Entity"
-import Player from "../Base/Player"
-import EventsSDK from "../../Managers/EventsSDK"
 import PlayerData from "../../Base/PlayerData"
 import PlayerTeamData from "../../Base/PlayerTeamData"
 import { WrapperClass } from "../../Decorators"
+import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
+import EventsSDK from "../../Managers/EventsSDK"
+import Entity from "../Base/Entity"
+import Player from "../Base/Player"
 
 @WrapperClass("C_DOTA_PlayerResource")
 export default class CPlayerResource extends Entity {

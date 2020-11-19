@@ -1,9 +1,9 @@
 import { DamageAmplifyPerIntellectPrecent } from "../../Data/GameData"
 
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import EntityManager from "../../Managers/EntityManager"
-import Unit from "./Unit"
 import Entity from "./Entity"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import Unit from "./Unit"
 
 @WrapperClass("C_DOTA_BaseNPC_Hero")
 export default class Hero extends Unit {

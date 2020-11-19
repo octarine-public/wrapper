@@ -1,9 +1,9 @@
-import { parseKV } from "./ParseKV"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import { ExtractResourceBlock } from "../Native/WASM"
-import BinaryStream from "./BinaryStream"
-import readFile from "./readFile"
 import { Utf16ArrayToStr, Utf8ArrayToStr } from "./ArrayBufferUtils"
+import BinaryStream from "./BinaryStream"
+import { parseKV } from "./ParseKV"
+import readFile from "./readFile"
 
 export const DamageIgnoreBuffs = [
 	[], // DAMAGE_TYPES.DAMAGE_TYPE_NONE = 0

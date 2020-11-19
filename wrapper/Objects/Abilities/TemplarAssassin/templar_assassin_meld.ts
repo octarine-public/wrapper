@@ -1,6 +1,6 @@
-import Ability from "../../Base/Ability"
-import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
 import { WrapperClass } from "../../../Decorators"
+import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("templar_assassin_meld")
 export default class templar_assassin_meld extends Ability {

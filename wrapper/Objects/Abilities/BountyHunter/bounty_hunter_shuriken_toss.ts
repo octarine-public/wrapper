@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("bounty_hunter_shuriken_toss")
 export default class bounty_hunter_shuriken_toss extends Ability {

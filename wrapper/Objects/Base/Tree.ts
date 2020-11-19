@@ -1,13 +1,13 @@
-import Entity from "./Entity"
-import Vector3 from "../../Base/Vector3"
 import QAngle from "../../Base/QAngle"
-import EntityManager, { DeleteEntity, CreateEntityInternal } from "../../Managers/EntityManager"
+import Vector3 from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
-import { ParseTRMP } from "../../Utils/ParseTRMP"
-import Events from "../../Managers/Events"
-import { ParseMapName } from "../../Utils/Utils"
 import { SignonState_t } from "../../Enums/SignonState_t"
+import EntityManager, { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManager"
+import Events from "../../Managers/Events"
 import EventsSDK from "../../Managers/EventsSDK"
+import { ParseTRMP } from "../../Utils/ParseTRMP"
+import { ParseMapName } from "../../Utils/Utils"
+import Entity from "./Entity"
 
 @WrapperClass("C_DOTA_MapTree")
 export default class Tree extends Entity {

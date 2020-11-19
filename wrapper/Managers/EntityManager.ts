@@ -1,21 +1,17 @@
-import * as ArrayExtensions from "../Utils/ArrayExtensions"
-
-import Events from "./Events"
-
-import Entity from "../Objects/Base/Entity"
-
-import GetConstructorByName, { GetSDKClasses, GetFieldHandlers, FieldHandler } from "../Objects/NativeToSDK"
-
-import EventsSDK from "./EventsSDK"
-import BinaryStream from "../Utils/BinaryStream"
-import { ParseProtobufNamed } from "../Utils/Protobuf"
-import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
-import { MapToObject } from "../Utils/Utils"
-import * as StringTables from "./StringTables"
+import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
 import { SignonState_t } from "../Enums/SignonState_t"
+import Entity from "../Objects/Base/Entity"
+import GetConstructorByName, { FieldHandler, GetFieldHandlers, GetSDKClasses } from "../Objects/NativeToSDK"
+import * as ArrayExtensions from "../Utils/ArrayExtensions"
+import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
+import { ParseProtobufNamed } from "../Utils/Protobuf"
+import { MapToObject } from "../Utils/Utils"
+import Events from "./Events"
+import EventsSDK from "./EventsSDK"
+import * as StringTables from "./StringTables"
 
 const AllEntities: Entity[] = []
 const AllEntitiesAsMap = new Map<number, Entity>()
@@ -398,9 +394,9 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			const msg = ParseProtobufNamed(buf, "CSVCMsg_FlattenedSerializer")
 			if ((globalThis as any).dump_d_ts) {
 				const obj = MapToObject(msg)
-				const list = (Object.values(obj.serializers) as any[]).map(ser => [
+				const list = (Object.values(obj.serializers)).map((ser: any) => [
 					obj.symbols[ser.serializer_name_sym] + (ser.serializer_version !== 0 ? ser.serializer_version : ""),
-					(Object.values(ser.fields_index) as any[]).map(field_id => {
+					(Object.values(ser.fields_index)).map((field_id: any) => {
 						const field = obj.fields[field_id]
 						return [
 							FixType(obj.symbols as string[], field),

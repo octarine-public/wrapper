@@ -1,5 +1,5 @@
-import Item from "../Base/Item"
 import { WrapperClass } from "../../Decorators"
+import Item from "../Base/Item"
 
 @WrapperClass("item_ancient_janggo")
 export default class item_ancient_janggo extends Item {

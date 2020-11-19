@@ -1,16 +1,16 @@
+import Color from "../Base/Color"
+import Vector2 from "../Base/Vector2"
+import RendererSDK from "../Native/RendererSDK"
 import Entity, { GameRules } from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 import Unit from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
+import GameState from "../Utils/GameState"
+import { CMsgVector2DToVector2, CMsgVectorToVector3, NumberToColor, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf, ServerHandleToIndex } from "../Utils/Protobuf"
+import EntityManager from "./EntityManager"
 import Events from "./Events"
 import EventsSDK from "./EventsSDK"
-import Color from "../Base/Color"
-import RendererSDK from "../Native/RendererSDK"
-import { ParseProtobufDesc, ParseProtobufNamed, CMsgVectorToVector3, RecursiveProtobuf, CMsgVector2DToVector2, NumberToColor, ServerHandleToIndex } from "../Utils/Protobuf"
-import EntityManager from "./EntityManager"
-import GameState from "../Utils/GameState"
 import Manifest from "./Manifest"
-import Vector2 from "../Base/Vector2"
 
 const ProjectileManager = new (class CProjectileManager {
 	public readonly AllLinearProjectiles: LinearProjectile[] = []

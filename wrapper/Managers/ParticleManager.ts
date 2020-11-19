@@ -1,7 +1,7 @@
-import Vector3 from "../Base/Vector3"
 import Color from "../Base/Color"
+import Particle, { ControlPoint, ControlPointParam } from "../Base/Particle"
+import Vector3 from "../Base/Vector3"
 import Entity from "../Objects/Base/Entity"
-import Particle, { ControlPointParam, ControlPoint } from "../Base/Particle"
 import { tryFindFile } from "../Utils/readFile"
 
 const git_path = "gitlab.com/FNT_Rework/wrapper/scripts_files"

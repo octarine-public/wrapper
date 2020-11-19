@@ -1,6 +1,6 @@
-import Obstacle from "./Obstacle"
 import Vector2 from "../../Base/Vector2"
 import Unit from "../../Objects/Base/Unit"
+import Obstacle from "./Obstacle"
 
 export default class MovingObstacle extends Obstacle {
 	public static FromUnit(unit: Unit): MovingObstacle {

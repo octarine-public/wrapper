@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("obsidian_destroyer_astral_imprisonment")
 export default class obsidian_destroyer_astral_imprisonment extends Ability {

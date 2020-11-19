@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("dark_willow_bramble_maze")
 export default class dark_willow_bramble_maze extends Ability {

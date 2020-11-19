@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("grimstroke_dark_artistry")
 export default class grimstroke_dark_artistry extends Ability {

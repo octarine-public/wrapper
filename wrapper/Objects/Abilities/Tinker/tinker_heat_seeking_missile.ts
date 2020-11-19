@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("tinker_heat_seeking_missile")
 export default class tinker_heat_seeking_missile extends Ability {

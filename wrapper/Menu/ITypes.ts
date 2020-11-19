@@ -1,8 +1,8 @@
 import Color from "../Base/Color"
-import Toggle from "./Toggle"
+import Node from "./Node"
 import Slider from "./Slider"
 import Switcher from "./Switcher"
-import Node from "./Node"
+import Toggle from "./Toggle"
 
 export interface IMenuColorPicker {
 	Node: Node

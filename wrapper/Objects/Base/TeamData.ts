@@ -1,9 +1,9 @@
-import Entity from "./Entity"
-import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
-import TreeModelReplacement from "../../Base/TreeModelReplacement"
 import DataTeamPlayer from "../../Base/DataTeamPlayer"
+import TreeModelReplacement from "../../Base/TreeModelReplacement"
 import Vector2 from "../../Base/Vector2"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
+import Entity from "./Entity"
 
 @WrapperClass("C_DOTA_DataNonSpectator")
 export default class TeamData extends Entity {

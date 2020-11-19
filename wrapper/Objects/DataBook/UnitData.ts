@@ -1,7 +1,7 @@
-import { parseKVFile, parseEnumString } from "../../Utils/Utils"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
+import { parseEnumString, parseKVFile } from "../../Utils/Utils"
 
 function LoadUnitFile(path: string): RecursiveMap {
 	const kv = parseKVFile(path)

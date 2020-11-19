@@ -183,8 +183,8 @@ ability_list.forEach(abil => {
 	path += abil + ".ts"
 	let extends_class = is_item ? "Item" : "Ability"
 	let source = `\
-import ${extends_class} from "../${!is_item ? "../" : ""}Base/${extends_class}"
 import { WrapperClass } from "../../${!is_item ? "../" : ""}Decorators"
+import ${extends_class} from "../${!is_item ? "../" : ""}Base/${extends_class}"
 
 @WrapperClass("${abil}")
 export default class ${abil} extends ${extends_class} {

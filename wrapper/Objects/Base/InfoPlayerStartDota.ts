@@ -1,6 +1,6 @@
-import Entity from "./Entity"
-import { Team } from "../../Enums/Team"
 import { WrapperClass } from "../../Decorators"
+import { Team } from "../../Enums/Team"
+import Entity from "./Entity"
 
 @WrapperClass("C_InfoPlayerStartDota")
 export default class InfoPlayerStartDota extends Entity {

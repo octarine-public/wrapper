@@ -1,7 +1,7 @@
-import Stream from "./Stream"
-import { Utf8ArrayToStr, ArrayBuffersEqual } from "./ArrayBufferUtils"
-import { ExtractResourceBlock, DecompressLZ4 } from "../Native/WASM"
+import { DecompressLZ4, ExtractResourceBlock } from "../Native/WASM"
+import { ArrayBuffersEqual, Utf8ArrayToStr } from "./ArrayBufferUtils"
 import BinaryStream from "./BinaryStream"
+import Stream from "./Stream"
 
 const STRING = '"'
 const NODE_OPEN = '{'
@@ -87,22 +87,21 @@ function _parse(stream: Stream, map = new Map<string, any>()): RecursiveMap {
 		} else if (c === LF) {
 			// just skip it
 		} else if (c !== SPACE && c !== TAB && c !== "=") {
-			let string: string
-			if (c === STRING) {
-				string = _symtostr(stream, STRING)
-			} else {
+			let str: string
+			if (c !== STRING) {
 				stream.RelativeSeek(-1)
-				string = _unquotedtostr(stream)
-			}
+				str = _unquotedtostr(stream)
+			} else
+				str = _symtostr(stream, STRING)
 
 			if (lasttok === STRING && next_is_value) {
 				if (map.has(laststr) && lastbrk !== "")
 					lastbrk = ""  // Ignore this sentry if it's the second bracketed expression
 				else
-					map.set(laststr, string)
+					map.set(laststr, str)
 			}
-			c = STRING  // Force c == string so lasttok will be set properly.
-			laststr = string
+			c = STRING  // Force c == str so lasttok will be set properly.
+			laststr = str
 			next_is_value = !next_is_value
 		} else
 			c = lasttok

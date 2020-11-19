@@ -1,12 +1,12 @@
-import StockInfo from "./../../Base/StockInfo"
 import NeutralSpawnBox from "../../Base/NeutralSpawnBox"
-import { DOTA_GameState } from "../../Enums/DOTA_GameState"
+import { NetworkedBasicField, NetworkedBigIntField, WrapperClass } from "../../Decorators"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
-import Entity, { LocalPlayer } from "../Base/Entity"
+import { DOTA_GameState } from "../../Enums/DOTA_GameState"
+import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import GameState from "../../Utils/GameState"
-import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
-import { WrapperClass, NetworkedBasicField, NetworkedBigIntField } from "../../Decorators"
+import Entity, { LocalPlayer } from "../Base/Entity"
+import StockInfo from "./../../Base/StockInfo"
 
 @WrapperClass("C_DOTAGamerulesProxy")
 export default class CGameRules extends Entity {

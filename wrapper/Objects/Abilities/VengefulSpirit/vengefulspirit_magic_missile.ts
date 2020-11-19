@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("vengefulspirit_magic_missile")
 export default class vengefulspirit_magic_missile extends Ability {

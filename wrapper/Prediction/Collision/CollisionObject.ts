@@ -1,6 +1,6 @@
+import Vector2 from "../../Base/Vector2"
 import Entity from "../../Objects/Base/Entity"
 import Unit from "../../Objects/Base/Unit"
-import Vector2 from "../../Base/Vector2"
 
 export class CollisionObject {
 	constructor(

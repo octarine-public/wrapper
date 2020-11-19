@@ -1,5 +1,5 @@
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import Building from "./Building"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
 @WrapperClass("C_DOTA_BaseNPC_Shop")
 export default class Shop extends Building {

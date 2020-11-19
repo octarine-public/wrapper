@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("phantom_lancer_spirit_lance")
 export default class phantom_lancer_spirit_lance extends Ability {

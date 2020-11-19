@@ -1,8 +1,8 @@
 import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import Entity from "../Objects/Base/Entity"
 import EntityManager from "../Managers/EntityManager"
+import Entity from "../Objects/Base/Entity"
 
 export default class UserCmd {
 	private static LatestUserCmd_view = new DataView(LatestUserCmd.buffer)

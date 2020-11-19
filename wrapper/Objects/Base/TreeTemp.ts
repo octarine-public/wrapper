@@ -1,6 +1,6 @@
-import Entity from "./Entity"
 import Vector3 from "../../Base/Vector3"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import Entity from "./Entity"
 
 @WrapperClass("C_DOTA_TempTree")
 export default class TempTree extends Entity {

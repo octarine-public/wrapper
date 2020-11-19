@@ -1,7 +1,7 @@
-import BinaryStream from "./BinaryStream"
-import Vector3 from "../Base/Vector3"
 import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
 import RendererSDK from "../Native/RendererSDK"
+import BinaryStream from "./BinaryStream"
 
 export function ParseTRMP(buf: ArrayBuffer): Vector3[] {
 	const stream = new BinaryStream(new DataView(buf))

@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("nyx_assassin_spiked_carapace")
 export default class nyx_assassin_spiked_carapace extends Ability {

@@ -1,7 +1,7 @@
 import Color from "../Base/Color"
+import QAngle from "../Base/QAngle"
 import Vector3 from "../Base/Vector3"
 import RendererSDK from "../Native/RendererSDK"
-import QAngle from "../Base/QAngle"
 
 export class WorldPolygon {
 	public Points: Vector3[] = []

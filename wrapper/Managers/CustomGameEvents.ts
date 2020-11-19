@@ -1,5 +1,5 @@
-import { BinaryKV, serializeVBKV } from "../Utils/VBKV"
 import Player from "../Objects/Base/Player"
+import { BinaryKV, serializeVBKV } from "../Utils/VBKV"
 
 export function FireEventToClient(name: string, player: Player, data: Map<string, BinaryKV>): void {
 	CustomGameEvents.FireEventToClient(name, player.Index, serializeVBKV(data))

@@ -1,17 +1,17 @@
+import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
+import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import EntityManager from "../Managers/EntityManager"
+import Events from "../Managers/Events"
+import EventsSDK from "../Managers/EventsSDK"
+import InputManager from "../Managers/InputManager"
 import Ability from "../Objects/Base/Ability"
 import Entity, { LocalPlayer } from "../Objects/Base/Entity"
-import Unit from "../Objects/Base/Unit"
-import UserCmd from "./UserCmd"
-import RendererSDK from "./RendererSDK"
-import Events from "../Managers/Events"
-import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
-import EventsSDK from "../Managers/EventsSDK"
 import Tree from "../Objects/Base/Tree"
-import Color from "../Base/Color"
-import InputManager from "../Managers/InputManager"
+import Unit from "../Objects/Base/Unit"
+import RendererSDK from "./RendererSDK"
+import UserCmd from "./UserCmd"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -251,9 +251,9 @@ Events.on("Update", () => {
 		return
 	let order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
 	if (execute_current) {
-		order!.Execute()
+		order.Execute()
 		if (ExecuteOrder.debug_orders)
-			console.log("Executing order " + order!.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
+			console.log("Executing order " + order.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
 		ExecuteOrder.order_queue.splice(0, 1)
 		execute_current = false
 		order = ExecuteOrder.order_queue[0]

@@ -97,7 +97,7 @@ export class TickSleeper {
 	private get TickCount(): number {
 		if (!GameRules?.IsInGame)
 			return 0
-		return GameRules!.RawGameTime * 1000
+		return GameRules.RawGameTime * 1000
 	}
 	public Sleep(duration: number): void {
 		this.lastSleepTickCount = this.TickCount + duration

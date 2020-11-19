@@ -1,11 +1,11 @@
-import RendererSDK from "../Native/RendererSDK"
-import Base from "./Base"
-import Header from "./Header"
-import Node from "./Node"
 import Events from "../Managers/Events"
 import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
+import RendererSDK from "../Native/RendererSDK"
 import { StringToUTF16, Utf16ArrayToStr } from "../Utils/ArrayBufferUtils"
+import Base from "./Base"
+import Header from "./Header"
 import Localization from "./Localization"
+import Node from "./Node"
 
 class MenuManager {
 	public entries: Node[] = []
@@ -105,28 +105,28 @@ class MenuManager {
 		this.active_element = undefined
 		return ret
 	}
-	public AddEntry(name: string | string[], icon_path = ""): Node {
-		if (Array.isArray(name)) {
-			if (name.length === 0)
-				throw "Invalid name array passed to Menu.AddEntry"
-			else if (name.length === 1)
-				name = name[0]
-			else {
-				let node = this.AddEntry(name[0])
-				for (let i = 1, end = name.length; i < end; i++)
-					node = node.AddNode(name[i], i === end - 1 ? icon_path : "")
-				return node
-			}
-		}
-		let node = this.entries.find(node => node.InternalName === name)
+	public AddEntry(name: string, icon_path = ""): Node {
+		let node = this.entries.find(entry => entry.Name === name)
 		if (node !== undefined)
 			return node
 		node = new Node(this, name, icon_path)
 		node.parent = this
 		this.entries.push(node)
 		this.entries = this.entries.sort((a, b) => a.Name.localeCompare(b.Name))
-		this.PositionDirty = true
 		return node
+	}
+	public AddEntryDeep(names: string[], icon_paths: string[] = []): Node {
+		if (names.length === 0)
+			throw "Invalid names array passed to Menu.AddEntryDeep"
+		return names.reduce((prev, cur, i) => {
+			if (i === 0)
+				return prev
+			const icon_path_id = names.length - i - 1
+			const icon_path = icon_path_id < icon_paths.length
+				? icon_paths[icon_path_id]
+				: ""
+			return prev.AddNode(cur, icon_path)
+		}, this.AddEntry(names[0]))
 	}
 	private ForwardConfig() {
 		if (this.config === undefined)

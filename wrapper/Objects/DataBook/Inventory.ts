@@ -1,7 +1,7 @@
+import { LocalPlayer } from "../Base/Entity"
 import Item from "../Base/Item"
 import Player from "../Base/Player"
 import Unit from "../Base/Unit"
-import { LocalPlayer } from "../Base/Entity"
 
 const MAX_ITEMS = 16
 

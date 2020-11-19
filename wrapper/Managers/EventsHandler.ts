@@ -1,18 +1,17 @@
-import EventsSDK from "./EventsSDK"
-import Events from "./Events"
-import { ParseProtobufDesc, RecursiveProtobuf, CMsgVectorToVector3, ParseProtobufNamed, ServerHandleToIndex } from "../Utils/Protobuf"
-import EntityManager from "./EntityManager"
+import Vector3 from "../Base/Vector3"
+import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
+import Entity, { LocalPlayer, OnLocalPlayerDeleted } from "../Objects/Base/Entity"
 import Unit from "../Objects/Base/Unit"
 import { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
 import { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
-import Entity, { LocalPlayer, OnLocalPlayerDeleted } from "../Objects/Base/Entity"
 import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
+import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf, ServerHandleToIndex } from "../Utils/Protobuf"
+import * as VBKV from "../Utils/VBKV"
+import EntityManager from "./EntityManager"
+import Events from "./Events"
+import EventsSDK from "./EventsSDK"
 import Manifest from "./Manifest"
-import Vector3 from "../Base/Vector3"
-import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
-import { VBKV } from "../Imports"
-import { BinaryKV } from "../Utils/VBKV"
 
 enum PARTICLE_MESSAGE {
 	GAME_PARTICLE_MANAGER_EVENT_CREATE = 0,
@@ -701,7 +700,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			const msg = ParseProtobufNamed(buf, "CUserMsg_CustomGameEvent")
 			const event_name = (msg.get("event_name") as Nullable<string>) ?? ""
 			const data = (msg.get("data") as Nullable<Uint8Array>) ?? new Uint8Array()
-			let parsed_data: Map<string, BinaryKV>
+			let parsed_data: Map<string, VBKV.BinaryKV>
 			try {
 				parsed_data = VBKV.parseVBKV(data)
 			} catch {

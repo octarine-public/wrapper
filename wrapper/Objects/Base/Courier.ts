@@ -1,7 +1,7 @@
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import EntityManager from "../../Managers/EntityManager"
 import Hero from "./Hero"
 import Unit from "./Unit"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
 @WrapperClass("C_DOTA_Unit_Courier")
 export default class Courier extends Unit {

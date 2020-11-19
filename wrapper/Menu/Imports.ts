@@ -13,7 +13,10 @@ import Node from "./Node"
 export { Node }
 
 import MenuManager from "./Menu"
-function AddEntry(name: string | string[], icon_path = ""): Node {
+function AddEntry(name: string, icon_path = ""): Node {
 	return MenuManager.AddEntry(name, icon_path)
 }
-export { MenuManager, AddEntry }
+function AddEntryDeep(name: string[], icon_path: string[] = []): Node {
+	return MenuManager.AddEntryDeep(name, icon_path)
+}
+export { MenuManager, AddEntry, AddEntryDeep }

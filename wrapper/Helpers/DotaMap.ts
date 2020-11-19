@@ -1,12 +1,12 @@
 // https://github.com/EnsageSharp/Ensage.SDK/blob/master/Helpers/Map.cs
 import Vector3 from "../Base/Vector3"
+import { Team } from "../Enums/Team"
 import { WorldPolygon } from "../Geometry/WorldPolygon"
+import Creep from "../Objects/Base/Creep"
+import Unit from "../Objects/Base/Unit"
 import { Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import readFile from "../Utils/readFile"
-import Creep from "../Objects/Base/Creep"
 import { MapArea } from "./MapArea"
-import { Team } from "../Enums/Team"
-import Unit from "../Objects/Base/Unit"
 
 export class DotaMap {
 	private static Load(name: string): Vector3[] {

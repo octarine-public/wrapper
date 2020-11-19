@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("queenofpain_sonic_wave")
 export default class queenofpain_sonic_wave extends Ability {

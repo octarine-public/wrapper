@@ -1,12 +1,12 @@
 import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
-import { arrayRemove } from "../Utils/ArrayExtensions"
+import { InputEventSDK, VKeys, VMouseKeys } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
+import { arrayRemove } from "../Utils/ArrayExtensions"
+import GameState from "../Utils/GameState"
 import Base, { IMenu } from "./Base"
 import Menu from "./Menu"
-import { InputEventSDK, VMouseKeys, VKeys } from "../Managers/InputManager"
-import GameState from "../Utils/GameState"
 
 export default class KeyBind extends Base {
 	public static readonly KeyNames = [

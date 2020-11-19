@@ -1,14 +1,14 @@
-import { Team } from "../../Enums/Team"
-import EntityManager from "../../Managers/EntityManager"
-import Entity, { LocalPlayer } from "./Entity"
-import Hero from "./Hero"
-import { SetGameInProgress } from "../../Managers/EventsHandler"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
-import Item from "./Item"
-import ExecuteOrder from "../../Native/ExecuteOrder"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { Team } from "../../Enums/Team"
+import EntityManager from "../../Managers/EntityManager"
+import { SetGameInProgress } from "../../Managers/EventsHandler"
 import EventsSDK from "../../Managers/EventsSDK"
+import ExecuteOrder from "../../Native/ExecuteOrder"
+import Entity, { LocalPlayer } from "./Entity"
+import Hero from "./Hero"
+import Item from "./Item"
 
 @WrapperClass("C_DOTAPlayer")
 export default class Player extends Entity {

@@ -1,8 +1,8 @@
-import Entity from "../Objects/Base/Entity"
 import ParticlesSDK from "../Managers/ParticleManager"
+import Entity from "../Objects/Base/Entity"
+import Color from "./Color"
 import Vector2 from "./Vector2"
 import Vector3 from "./Vector3"
-import Color from "./Color"
 
 export type ControlPoint = boolean | number | Entity | Vector3 | Vector2 | Color | [number?, number?, number?]
 export type ControlPointParam = [number, ControlPoint]

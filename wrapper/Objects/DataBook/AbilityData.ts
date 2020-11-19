@@ -1,4 +1,4 @@
-import { parseKVFile, parseEnumString } from "../../Utils/Utils"
+import { parseEnumString, parseKVFile } from "../../Utils/Utils"
 import Unit from "../Base/Unit"
 
 function LoadAbilityFile(path: string): RecursiveMap {

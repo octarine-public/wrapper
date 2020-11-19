@@ -1,7 +1,7 @@
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import EntityManager from "../../Managers/EntityManager"
 import Entity from "./Entity"
 import Item from "./Item"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
 @WrapperClass("C_DOTA_Item_Physical")
 export default class PhysicalItem extends Entity {

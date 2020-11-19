@@ -1,5 +1,5 @@
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import Entity from "./Entity"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 
 @WrapperClass("C_DOTA_Item_Rune")
 export default class Rune extends Entity {

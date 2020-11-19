@@ -1,6 +1,6 @@
-import Ability from "../../Base/Ability"
-import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
 import { WrapperClass } from "../../../Decorators"
+import { AbilityLogicType } from "../../../Enums/AbilityLogicType"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("weaver_shukuchi")
 export default class weaver_shukuchi extends Ability {

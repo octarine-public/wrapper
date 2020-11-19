@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("drow_ranger_wave_of_silence")
 export default class drow_ranger_wave_of_silence extends Ability {

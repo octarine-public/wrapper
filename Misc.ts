@@ -1,8 +1,8 @@
-import { EventsSDK, GameRules, Input, InputEventSDK, Menu as MenuSDK, VKeys, Events, ExecuteOrder, DOTAGameUIState_t, Tree, GameState } from "./wrapper/Imports"
 import { SetGameInProgress } from "wrapper/Managers/EventsHandler"
-let Menu = MenuSDK.AddEntry("Misc")
+import { DOTAGameUIState_t, Events, EventsSDK, ExecuteOrder, GameRules, GameState, Input, InputEventSDK, Menu as MenuSDK, Tree, VKeys } from "./wrapper/Imports"
+const Menu = MenuSDK.AddEntry("Misc")
 
-let AutoAccept_delay = Menu.AddSlider("Delay on AutoAccept", 3, 0, 28 /* ?? is real maximum */),
+const AutoAccept_delay = Menu.AddSlider("Delay on AutoAccept", 3, 0, 28 /* ?? is real maximum */),
 	CameraTree = Menu.AddNode("Camera"),
 	CamDist = CameraTree.AddSlider("Camera Distance", 1300, 0, 10000),
 	CamMouseTree = CameraTree.AddNode("Mouse wheel"),
@@ -63,12 +63,12 @@ Menu.AddSwitcher("Tree Model", [
 
 CamDist.OnValue(UpdateVisuals)
 
-let keybind = Menu.AddKeybind("Menu (Open/Close)", "Insert").OnPressed(() => MenuSDK.MenuManager.is_open = !MenuSDK.MenuManager.is_open)
+const keybind = Menu.AddKeybind("Menu (Open/Close)", "Insert").OnPressed(() => MenuSDK.MenuManager.is_open = !MenuSDK.MenuManager.is_open)
 keybind.activates_in_menu = true
 keybind.trigger_on_chat = true
 Menu.AddToggle("Trigger keybinds in chat", false).OnValue(toggle => MenuSDK.MenuManager.trigger_on_chat = toggle.value)
 Menu.AddToggle("Team chat mute fix", false).OnValue(toggle => ToggleFakeChat(toggle.value))
-let humanizer = Menu.AddNode("Humanizer")
+const humanizer = Menu.AddNode("Humanizer")
 humanizer.AddToggle("Disable", false, "Disables all scripts' orders, ability to change camera distance")
 	.OnValue(toggle => ExecuteOrder.disable_humanizer = toggle.value)
 humanizer.AddToggle("wait_next_usercmd", false).OnValue(toggle => ExecuteOrder.wait_next_usercmd = toggle.value)
@@ -154,7 +154,7 @@ Events.on("SharedObjectChanged", (id, reason, obj) => {
 	if (id !== 2004)
 		return
 
-	let lobby = obj as CSODOTALobby
+	const lobby = obj as CSODOTALobby
 	if (lobby.state === CSODOTALobby_State.READYUP && timeCreate === -1)
 		timeCreate = hrtime()
 	else if (lobby.state !== CSODOTALobby_State.READYUP && timeCreate !== -1)
@@ -165,7 +165,7 @@ EventsSDK.on("Draw", () => {
 	if (timeCreate === -1)
 		return
 
-	let elepsedTime = (hrtime() - timeCreate) / 1000
+	const elepsedTime = (hrtime() - timeCreate) / 1000
 
 	if (elepsedTime > AutoAccept_delay.max) {
 		timeCreate = -1
@@ -186,7 +186,7 @@ Events.on("AddSearchPath", path => {
 		if (map_name.selected_id !== 0 && path.endsWith("dota.vpk")) {
 			guard = true
 			AddSearchPath(path)
-			let new_path = path.substring(0, path.length - 8) + map_name.InternalValuesNames[map_name.selected_id] + ".vpk"
+			const new_path = path.substring(0, path.length - 8) + map_name.InternalValuesNames[map_name.selected_id] + ".vpk"
 			AddSearchPath(new_path)
 			clear_list.push(new_path)
 			guard = false

@@ -1,6 +1,6 @@
-import { FixInt16 } from "../Utils/BitsExtensions"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
+import { FixInt16 } from "../Utils/BitsExtensions"
 import Events, { EventEmitter } from "./Events"
 
 const KeysDown = new Map<VKeys, boolean>()
@@ -8,8 +8,8 @@ const MouseDown = new Map<VMouseKeys, boolean>()
 
 export const InputEventSDK: InputEventSDK = new EventEmitter()
 
-const LOWORD = (_dw: bigint) => Number(_dw & 0xffffn)
-const HIWORD = (_dw: bigint) => Number((_dw >> 16n) & 0xffffn)
+const LOWORD = (dw: bigint) => Number(dw & 0xffffn)
+const HIWORD = (dw: bigint) => Number((dw >> 16n) & 0xffffn)
 
 const XMouseKey = (wParam: bigint) => HIWORD(wParam) === VXMouseKeys.XBUTTON1
 	? VMouseKeys.MK_XBUTTON1 : VMouseKeys.MK_XBUTTON2

@@ -1,17 +1,17 @@
 import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { Team } from "../../Enums/Team"
 import { default as EntityManager, EntityPropertiesNode } from "../../Managers/EntityManager"
-import { DegreesToRadian } from "../../Utils/Math"
 import EventsSDK from "../../Managers/EventsSDK"
-import Player from "../../Objects/Base/Player"
-import * as StringTables from "../../Managers/StringTables"
 import Manifest from "../../Managers/Manifest"
-import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import * as StringTables from "../../Managers/StringTables"
+import Player from "../../Objects/Base/Player"
+import GameState from "../../Utils/GameState"
+import { DegreesToRadian } from "../../Utils/Math"
 import CGameRules from "./GameRules"
 import Item from "./Item"
-import GameState from "../../Utils/GameState"
 
 export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
@@ -80,7 +80,7 @@ export default class Entity {
 	public get RootOwner(): Nullable<Entity> {
 		let owner = this.Owner
 		while (true) {
-			const root_owner = owner?.Owner as Nullable<Entity>
+			const root_owner = owner?.Owner
 			if (root_owner === undefined)
 				break
 

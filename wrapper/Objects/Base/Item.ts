@@ -1,5 +1,5 @@
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import Ability from "./Ability"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
 import { GameRules } from "./Entity"
 
 @WrapperClass("C_DOTA_Item")

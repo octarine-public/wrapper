@@ -1,11 +1,11 @@
+import Vector3 from "../../Base/Vector3"
+import EntityManager from "../../Managers/EntityManager"
+import { IModifier } from "../../Managers/ModifierManager"
+import * as StringTables from "../../Managers/StringTables"
+import GameState from "../../Utils/GameState"
 import Ability from "./Ability"
 import Entity from "./Entity"
 import Unit from "./Unit"
-import GameState from "../../Utils/GameState"
-import { IModifier } from "../../Managers/ModifierManager"
-import * as StringTables from "../../Managers/StringTables"
-import Vector3 from "../../Base/Vector3"
-import EntityManager from "../../Managers/EntityManager"
 
 // AllowIllusionDuplicate
 // CanParentBeAutoAttacked

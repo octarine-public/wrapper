@@ -10,15 +10,15 @@ import _Events from "./Managers/Events"
 import { PlayerResource } from "./Objects/Base/PlayerResource"
 import _GameState from "./Utils/GameState"
 
-import _RendererSDK from "./Native/RendererSDK"
 import _EventsSDK from "./Managers/EventsSDK"
 import _ParticlesSDK from "./Managers/ParticleManager"
+import _RendererSDK from "./Native/RendererSDK"
 
-import _Menu from "./Menu/Menu"
-import { GetSDKClasses } from "./Objects/NativeToSDK"
-import { LocalPlayer, GameRules } from "./Objects/Base/Entity"
-import * as _WASM from "./Native/WASM"
 import _Manifest from "./Managers/Manifest"
+import _Menu from "./Menu/Menu"
+import * as _WASM from "./Native/WASM"
+import { GameRules, LocalPlayer } from "./Objects/Base/Entity"
+import { GetSDKClasses } from "./Objects/NativeToSDK"
 
 globalThis.Color = _Color
 globalThis.QAngle = _QAngle

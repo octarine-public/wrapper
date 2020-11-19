@@ -1,5 +1,5 @@
-import Entity from "./Base/Entity"
 import { EntityPropertyType } from "../Managers/EntityManager"
+import Entity from "./Base/Entity"
 
 export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => void
 const constructors = new Map<string, Constructor<Entity>>(),

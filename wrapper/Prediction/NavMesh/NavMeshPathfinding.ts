@@ -1,7 +1,7 @@
-import Obstacle from "./Obstacle"
-import MovingObstacle from "./MovingObstacle"
 import Vector2 from "../../Base/Vector2"
 import * as MathSDK from "../../Utils/Math"
+import MovingObstacle from "./MovingObstacle"
+import Obstacle from "./Obstacle"
 
 export default class NavMeshPathfinding {
 	constructor(
@@ -16,11 +16,11 @@ export default class NavMeshPathfinding {
 			return hit_obstacles
 		for (let time = 0; time < this.PredictionSource.EndTime; time += 1 / 30) {
 			const src_pos = this.PredictionSource.PositionAtTime(time)
-			const result = (this.Obstacles.map(obs => [obs.PositionAtTime(this.Delay + time).Distance(src_pos) - obs.Radius, obs]) as [number, Obstacle][])
+			const result = (this.Obstacles.map(obs => [obs.PositionAtTime(this.Delay + time).Distance(src_pos) - obs.Radius, obs]))
 				.filter(obs => obs[0] < this.PredictionSource.Radius)
 				.map(obs => obs[1])
 
-			hit_obstacles.push(...result)
+			hit_obstacles.push(...result as Obstacle[])
 		}
 		return [...new Set(hit_obstacles)]
 	}
@@ -65,7 +65,7 @@ export default class NavMeshPathfinding {
 	}
 	protected RayTraceFirstHit(time: number): Nullable<Obstacle> {
 		const src_pos = this.PredictionSource.PositionAtTime(time)
-		const result = (this.Obstacles.map(obs => [obs.PositionAtTime(this.Delay + time).Distance(src_pos) - obs.Radius, obs]) as [number, Obstacle][]).sort(([dst1], [dst2]) => dst1 - dst2)
+		const result = (this.Obstacles.map(obs => [obs.PositionAtTime(this.Delay + time).Distance(src_pos) - obs.Radius, obs] as [number, Obstacle])).sort(([dst1], [dst2]) => dst1 - dst2)
 		if (result[0][0] < this.PredictionSource.Radius) {
 			//console.log(this.Delay, time, result[0][0], EntityManager.AllEntities.find(e => e.Position.toVector2().LengthSqr === result[0][1].PositionAtTime(0).LengthSqr)!.Name)
 			return result[0][1]

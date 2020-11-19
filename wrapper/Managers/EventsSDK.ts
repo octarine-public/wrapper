@@ -1,16 +1,16 @@
-import { EventEmitter } from "./Events"
-import ExecuteOrder from "../Native/ExecuteOrder"
 import Vector3 from "../Base/Vector3"
+import ExecuteOrder from "../Native/ExecuteOrder"
+import { EventEmitter } from "./Events"
 
 import Entity from "../Objects/Base/Entity"
-import Unit from "../Objects/Base/Unit"
 import Hero from "../Objects/Base/Hero"
+import Unit from "../Objects/Base/Unit"
 
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
 
+import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import Modifier from "../Objects/Base/Modifier"
 import { RecursiveProtobuf } from "../Utils/Protobuf"
-import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 
 interface EventsSDK extends EventEmitter {
 	/**

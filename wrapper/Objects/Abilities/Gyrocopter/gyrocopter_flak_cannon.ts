@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("gyrocopter_flak_cannon")
 export default class gyrocopter_flak_cannon extends Ability {

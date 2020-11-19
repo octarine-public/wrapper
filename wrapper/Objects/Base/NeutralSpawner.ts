@@ -1,9 +1,9 @@
-import Entity, { GameRules } from "./Entity"
-import { WrapperClass, NetworkedBasicField } from "../../Decorators"
-import { NeutralSpawnerType } from "../../Enums/NeutralSpawnerType"
 import NeutralSpawnBox from "../../Base/NeutralSpawnBox"
-import { Team } from "../../Enums/Team"
 import Vector2 from "../../Base/Vector2"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { NeutralSpawnerType } from "../../Enums/NeutralSpawnerType"
+import { Team } from "../../Enums/Team"
+import Entity, { GameRules } from "./Entity"
 
 @WrapperClass("C_DOTA_NeutralSpawner")
 export default class NeutralSpawner extends Entity {

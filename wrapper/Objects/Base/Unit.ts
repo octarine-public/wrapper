@@ -1,28 +1,28 @@
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
+import { NetworkedBasicField, NetworkedBigIntField, WrapperClass } from "../../Decorators"
+import { ArmorType } from "../../Enums/ArmorType"
+import { AttackDamageType } from "../../Enums/AttackDamageType"
+import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
+import { Team } from "../../Enums/Team"
+import EntityManager from "../../Managers/EntityManager"
+import EventsSDK from "../../Managers/EventsSDK"
+import * as StringTables from "../../Managers/StringTables"
+import ExecuteOrder from "../../Native/ExecuteOrder"
+import RendererSDK from "../../Native/RendererSDK"
 import { HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
-import Entity, { LocalPlayer } from "./Entity"
-import ExecuteOrder from "../../Native/ExecuteOrder"
 import Inventory from "../DataBook/Inventory"
-import Ability from "./Ability"
-import Item from "./Item"
 import ModifiersBook from "../DataBook/ModifiersBook"
+import UnitData from "../DataBook/UnitData"
+import Ability from "./Ability"
+import Entity, { LocalPlayer } from "./Entity"
+import Item from "./Item"
 import Modifier from "./Modifier"
-import { Team } from "../../Enums/Team"
 import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
 import Tree from "./Tree"
 import TreeTemp from "./TreeTemp"
-import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
-import { ArmorType } from "../../Enums/ArmorType"
-import { AttackDamageType } from "../../Enums/AttackDamageType"
-import UnitData from "../DataBook/UnitData"
-import EntityManager from "../../Managers/EntityManager"
-import EventsSDK from "../../Managers/EventsSDK"
-import RendererSDK from "../../Native/RendererSDK"
-import { WrapperClass, NetworkedBasicField, NetworkedBigIntField } from "../../Decorators"
-import * as StringTables from "../../Managers/StringTables"
 
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
@@ -426,8 +426,8 @@ export default class Unit extends Entity {
 		}
 
 		this.Spells.forEach(spell => {
-			if (spell !== undefined && spell.Level !== 0 && spell!.Name.startsWith("special_bonus_cast_range"))
-				castrange += spell!.GetSpecialValue("value")
+			if (spell !== undefined && spell.Level !== 0 && spell.Name.startsWith("special_bonus_cast_range"))
+				castrange += spell.GetSpecialValue("value")
 		})
 		return castrange
 	}

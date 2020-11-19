@@ -1,5 +1,5 @@
-import Ability from "../../Base/Ability"
 import { WrapperClass } from "../../../Decorators"
+import Ability from "../../Base/Ability"
 
 @WrapperClass("chaos_knight_chaos_bolt")
 export default class chaos_knight_chaos_bolt extends Ability {
