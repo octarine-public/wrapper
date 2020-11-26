@@ -14,7 +14,7 @@ export class DotaMap {
 		if (file === undefined)
 			return []
 
-		const ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(new Uint8Array(file)))
+		const ar: Array<[number, number, number]> = JSON.parse(Utf8ArrayToStr(new Uint8Array(file)))
 		return ar.map(([x, y, z]) => new Vector3(x, y, z))
 	}
 	private static LoadPoly(name: string): WorldPolygon {
@@ -45,22 +45,21 @@ export class DotaMap {
 	public readonly RadiantTopDireTide = DotaMap.LoadPoly("RadiantTopDireTide")
 	public readonly RadiantBottomDireTide = DotaMap.LoadPoly("RadiantBottomDireTide")
 
-	public GetLane(unit: Unit): MapArea {
-		const pos = unit.Position
+	public GetLane(pos: Vector3): MapArea {
 		if (this.Top.IsInside(pos))
 			return MapArea.Top
 		if (this.Middle.IsInside(pos))
 			return MapArea.Middle
 		if (this.Bottom.IsInside(pos))
 			return MapArea.Bottom
+		if (this.Roshan.IsInside(pos))
+			return MapArea.RoshanPit
 		if (this.River.IsInside(pos))
 			return MapArea.River
 		if (this.RadiantBase.IsInside(pos))
 			return MapArea.RadiantBase
 		if (this.DireBase.IsInside(pos))
 			return MapArea.DireBase
-		if (this.Roshan.IsInside(pos))
-			return MapArea.RoshanPit
 		if (this.DireBottomJungle.IsInside(pos))
 			return MapArea.DireBottomJungle
 		if (this.DireTopJungle.IsInside(pos))
@@ -81,8 +80,9 @@ export class DotaMap {
 						return this.DireMiddleRoute
 					case MapArea.Bottom:
 						return this.DireBottomRoute
+
+					default: return []
 				}
-				break
 			case Team.Radiant:
 				switch (lane) {
 					case MapArea.Top:
@@ -91,9 +91,10 @@ export class DotaMap {
 						return this.RadiantMiddleRoute
 					case MapArea.Bottom:
 						return this.RadiantBottomRoute
+
+					default: return []
 				}
-				break
+			default: return []
 		}
-		return []
 	}
 }
