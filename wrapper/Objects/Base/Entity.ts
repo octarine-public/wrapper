@@ -247,13 +247,13 @@ import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => {
 	const old_team = ent.Team
 	ent.Team = new_val as Team
-	if (old_team !== ent.Team)
+	if (old_team !== ent.Team && ent.IsValid)
 		EventsSDK.emit("EntityTeamChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
 	const old_state = ent.LifeState
 	ent.LifeState = new_val as LifeState_t
-	if (old_state !== ent.LifeState)
+	if (old_state !== ent.LifeState && ent.IsValid)
 		EventsSDK.emit("LifeStateChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_hModel", (ent, new_val) => ent.ModelName = Manifest.GetPathByHash(new_val as bigint) ?? "")
@@ -266,7 +266,7 @@ RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
 	const old_name = ent.Name
 	ent.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? ent.Name_
-	if (old_name !== ent.Name)
+	if (old_name !== ent.Name && ent.IsValid)
 		EventsSDK.emit("EntityNameChanged", false, ent)
 })
 

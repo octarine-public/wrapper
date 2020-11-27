@@ -43,7 +43,7 @@ function LoadTreeMap(buf: ArrayBuffer) {
 		entity.FakeTreePos.CopyFrom(pos)
 		entity.BinaryID = i
 		CreateEntityInternal(entity)
-		EventsSDK.emit("PostEntityCreated", false, entity)
+		EventsSDK.emit("EntityCreated", false, entity)
 	})
 }
 

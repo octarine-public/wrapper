@@ -3,7 +3,6 @@ import Vector3 from "../Base/Vector3"
 import { Team } from "../Enums/Team"
 import { WorldPolygon } from "../Geometry/WorldPolygon"
 import Creep from "../Objects/Base/Creep"
-import Unit from "../Objects/Base/Unit"
 import { Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import readFile from "../Utils/readFile"
 import { MapArea } from "./MapArea"
@@ -14,7 +13,7 @@ export class DotaMap {
 		if (file === undefined)
 			return []
 
-		const ar: Array<[number, number, number]> = JSON.parse(Utf8ArrayToStr(new Uint8Array(file)))
+		const ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(new Uint8Array(file)))
 		return ar.map(([x, y, z]) => new Vector3(x, y, z))
 	}
 	private static LoadPoly(name: string): WorldPolygon {

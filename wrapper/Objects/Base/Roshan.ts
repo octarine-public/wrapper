@@ -51,7 +51,7 @@ EventsSDK.on("GameEvent", (name, obj) => {
 	}
 })
 
-EventsSDK.on("PostEntityCreated", ent => {
+EventsSDK.on("EntityCreated", ent => {
 	if (!(ent instanceof Roshan) || (Roshan.Instance instanceof Entity && Roshan.Instance !== ent))
 		return
 	Roshan.Instance = ent

@@ -902,13 +902,6 @@ EventsSDK.on("EntityDestroyed", ent => {
 		SetGameInProgress(false)
 	}
 })
-EventsSDK.on("PostEntityCreated", ent => {
-	EventsSDK.emit("LifeStateChanged", false, ent)
-	if (ent instanceof Unit) {
-		EventsSDK.emit("TeamVisibilityChanged", false, ent)
-		EventsSDK.emit("NetworkActivityChanged", false, ent)
-	}
-})
 
 Events.on("SignonStateChanged", new_state => {
 	const old_val = GameState.IsConnected

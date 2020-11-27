@@ -1037,7 +1037,8 @@ export default class Unit extends Entity {
 
 function UnitNameChanged(unit: Unit) {
 	unit.UnitData = UnitData.global_storage.get(unit.Name) ?? UnitData.empty
-	EventsSDK.emit("EntityNameChanged", false, unit)
+	if (unit.IsValid)
+		EventsSDK.emit("EntityNameChanged", false, unit)
 }
 
 import { RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
@@ -1060,7 +1061,8 @@ ReplaceFieldHandler(Unit, "m_nameStringableIndex", (unit, new_val) => {
 RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => {
 	unit.IsVisibleForTeamMask = new_value as number
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
-	EventsSDK.emit("TeamVisibilityChanged", false, unit)
+	if (unit.IsValid)
+		EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
 ReplaceFieldHandler(Unit, "m_iTeamNum", (unit, new_val) => {
 	const old_visibility = unit.IsVisibleForEnemies
@@ -1068,17 +1070,18 @@ ReplaceFieldHandler(Unit, "m_iTeamNum", (unit, new_val) => {
 	{ // we're overriding parent m_iTeamNum handler, so we should handle it here
 		const old_team = unit.Team
 		unit.Team = new_val as Team
-		if (old_team !== unit.Team)
+		if (old_team !== unit.Team && unit.IsValid)
 			EventsSDK.emit("EntityTeamChanged", false, unit)
 	}
 
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
-	if (unit.IsVisibleForEnemies !== old_visibility)
+	if (unit.IsVisibleForEnemies !== old_visibility && unit.IsValid)
 		EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => {
 	unit.NetworkActivity = new_value as number
-	EventsSDK.emit("NetworkActivityChanged", false, unit)
+	if (unit.IsValid)
+		EventsSDK.emit("NetworkActivityChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 	const ar = new_value as number[]
@@ -1105,7 +1108,7 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
 	}
 })
 
-EventsSDK.on("PostEntityCreated", ent => {
+EventsSDK.on("EntityCreated", ent => {
 	const owner = ent.Owner
 	if (!(owner instanceof Unit))
 		return

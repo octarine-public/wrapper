@@ -53,7 +53,7 @@ RegisterFieldHandler(Player, "m_hAssignedHero", (player, new_value) => {
 	player.Hero = ent instanceof Hero ? ent : undefined
 })
 
-EventsSDK.on("PostEntityCreated", ent => {
+EventsSDK.on("EntityCreated", ent => {
 	if (!(ent instanceof Hero) || !ent.CanBeMainHero)
 		return
 	EntityManager.GetEntitiesByClass(Player).forEach(player => {

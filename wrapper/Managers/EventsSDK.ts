@@ -26,15 +26,10 @@ interface EventsSDK extends EventEmitter {
 	 */
 	on(name: "GameEnded", callback: () => void): EventEmitter
 	/**
-	 * This event gets emitted before anything gets passed anywhere else, right after entity creation
-	 * This callback is best suited for caching entities by their class (instanceof)
-	 */
-	on(name: "EntityCreated", callback: (ent: Entity) => void): EventEmitter
-	/**
 	 * Emitted after all entity properties handlers were called, a.k.a. entity is fully set up
 	 * This callback is best suited for use.
 	 */
-	on(name: "PostEntityCreated", callback: (ent: Entity) => void): EventEmitter
+	on(name: "EntityCreated", callback: (ent: Entity) => void): EventEmitter
 	on(name: "EntityDestroyed", callback: (ent: Entity) => void): EventEmitter
 	/**
 	 * Emitted every time GameRules.RawGameTime changes, a.k.a. tick,

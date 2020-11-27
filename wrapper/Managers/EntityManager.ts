@@ -111,8 +111,6 @@ export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
 			ClassToEntities.set(class_, [])
 		ClassToEntities.get(class_)!.push(ent)
 	})
-
-	EventsSDK.emit("EntityCreated", false, ent)
 }
 
 function CreateEntity(id: number, class_name: string, entity_name: Nullable<string>) {
@@ -280,14 +278,20 @@ export class EntityPropertiesNode {
 function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = false): Nullable<Entity> {
 	const m_nameStringableIndex = is_create ? stream.ReadInt32() : -1
 	const ent_class = entities_symbols[stream.ReadUint16()]
+	let ent_was_created = false
 	if (!ent_props.has(ent_id)) {
 		ent_props.set(ent_id, new EntityPropertiesNode())
-		if (is_create)
+		if (is_create) {
 			CreateEntity(ent_id, ent_class, StringTables.GetString("EntityNames", m_nameStringableIndex))
+			ent_was_created = true
+		}
 	}
 	const ent = AllEntitiesAsMap.get(ent_id)
-	if (ent !== undefined)
+	if (ent !== undefined) {
 		ent.IsVisible = true
+		if (ent_was_created)
+			ent.IsValid = false
+	}
 	const ent_handlers = ent !== undefined ? cached_field_handlers.get(ent.constructor as Constructor<Entity>) : undefined
 	const ent_node = ent_props.get(ent_id)!
 	const changed_paths: number[] = [],
@@ -347,6 +351,10 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 		}
 	}
 	changed_paths.forEach((id, i) => ent_handlers!.get(id)!(ent!, changed_paths_results[i]))
+	if (ent !== undefined && ent_was_created) {
+		ent.IsValid = true
+		EventsSDK.emit("EntityCreated", false, ent)
+	}
 	return ent
 }
 
@@ -455,12 +463,9 @@ declare class ${name} {
 						}
 						break
 					}
-					case EntityPVS.CREATE: {
-						const ent = ParseEntityUpdate(stream, ent_id, true)
-						if (ent !== undefined)
-							EventsSDK.emit("PostEntityCreated", false, ent)
+					case EntityPVS.CREATE:
+						ParseEntityUpdate(stream, ent_id, true)
 						break
-					}
 					case EntityPVS.UPDATE:
 						ParseEntityUpdate(stream, ent_id)
 						break
