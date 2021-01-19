@@ -13,20 +13,27 @@ export default class Color {
 	public static get LightGray() { return new Color(190, 190, 190) }
 	public static get White() { return new Color(255, 255, 255) }
 
-	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Color | undefined {
-		if (buffer !== true)
-			return undefined
+	public static fromIOBuffer(offset = 0): Color {
 		return new Color(IOBuffer[offset + 0], IOBuffer[offset + 1])
 	}
-	public static CopyFrom(color: Color): Color {
-		return new Color(color.r, color.g, color.b, color.a)
+	// reverse toUint32
+	public static fromUint32(num: number): Color {
+		const color = new Color()
+		color.r = num & 0xFF
+		num >>= 8
+		color.g = num & 0xFF
+		num >>= 8
+		color.b = num & 0xFF
+		num >>= 8
+		color.a = num & 0xFF
+		return color
 	}
 
 	/**
 	 * Create new Color with r, g, b, a
 	 *
 	 * @example
-	 * var color = new Color(1, 2, 3)
+	 * let color = new Color(1, 2, 3)
 	 */
 	constructor(public r: number = 0, public g: number = 0, public b: number = 0, public a: number = 255) { }
 
@@ -119,6 +126,17 @@ export default class Color {
 	 */
 	public toArray(): [number, number, number, number] {
 		return [this.r, this.g, this.b, this.a]
+	}
+	public toUint32(): number {
+		let num = 0
+		num |= Math.max(Math.min(this.a, 255), 0)
+		num <<= 8
+		num |= Math.max(Math.min(this.b, 255), 0)
+		num <<= 8
+		num |= Math.max(Math.min(this.g, 255), 0)
+		num <<= 8
+		num |= Math.max(Math.min(this.r, 255), 0)
+		return num
 	}
 	public toJSON() {
 		return this.toArray()

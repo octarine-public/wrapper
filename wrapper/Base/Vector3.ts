@@ -1,9 +1,7 @@
 import Vector2 from "./Vector2"
 
 export default class Vector3 {
-	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Nullable<Vector3> {
-		if (buffer !== true)
-			return undefined
+	public static fromIOBuffer(offset = 0): Vector3 {
 		return new Vector3(IOBuffer[offset + 0], IOBuffer[offset + 1], IOBuffer[offset + 2])
 	}
 	public static fromArray(array: [number?, number?, number?]): Vector3 {
@@ -37,8 +35,8 @@ export default class Vector3 {
 	 * Create new Vector3 with x, y, z
 	 *
 	 * @example
-	 * var vector = new Vector3(1, 2, 3)
-	 * vector.Normalize()
+	 * let vec = new Vector3(1, 2, 3)
+	 * vec.Normalize()
 	 */
 	constructor(public x: number = 0, public y: number = 0, public z: number = 0) { }
 
@@ -202,7 +200,7 @@ export default class Vector3 {
 		return new Vector3(
 			Math.round(this.x * pow) / pow,
 			Math.round(this.y * pow) / pow,
-			Math.round(this.z * pow) / pow
+			Math.round(this.z * pow) / pow,
 		)
 	}
 	public RoundForThis(count: number = 0): Vector3 {
@@ -211,6 +209,23 @@ export default class Vector3 {
 		this.x = Math.round(this.x * pow) / pow
 		this.y = Math.round(this.y * pow) / pow
 		this.z = Math.round(this.z * pow) / pow
+
+		return this
+	}
+	public Floor(count = 0): Vector3 {
+		const pow = Math.pow(10, count)
+		return new Vector3(
+			Math.floor(this.x * pow) / pow,
+			Math.floor(this.y * pow) / pow,
+			Math.floor(this.z * pow) / pow,
+		)
+	}
+	public FloorForThis(count = 0): Vector3 {
+		const pow = Math.pow(10, count)
+
+		this.x = Math.floor(this.x * pow) / pow
+		this.y = Math.floor(this.y * pow) / pow
+		this.z = Math.floor(this.y * pow) / pow
 
 		return this
 	}
@@ -677,7 +692,7 @@ export default class Vector3 {
 
 		return new Vector3(
 			(this.x * cos) - (this.y * sin),
-			(this.y * cos) + (this.x * sin), this.z
+			(this.y * cos) + (this.x * sin), this.z,
 		)
 	}
 	/**
@@ -729,15 +744,11 @@ export default class Vector3 {
 	 * @param vec The another vector
 	 */
 	public AngleBetweenVectors(vec: Vector3): number {
-		var theta = this.Polar - vec.Polar
-		if (theta < 0) {
+		let theta = this.Polar - vec.Polar
+		if (theta < 0)
 			theta = theta + 360
-		}
-
-		if (theta > 180) {
+		if (theta > 180)
 			theta = 360 - theta
-		}
-
 		return theta
 	}
 	/**
@@ -750,6 +761,9 @@ export default class Vector3 {
 	public GetDirectionTo(target: Vector3): Vector3 {
 		return target.Subtract(this).Normalize()
 	}
+	public GetDirection2DTo(target: Vector3): Vector3 {
+		return target.Subtract(this).SetZ(0).Normalize()
+	}
 	/**
 	 * Extends this vector in the direction of 2nd vector for given distance
 	 * @param vec 2nd vector
@@ -758,6 +772,9 @@ export default class Vector3 {
 	 */
 	public Extend(vec: Vector3, distance: number): Vector3 {
 		return this.GetDirectionTo(vec).MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).Normalize())
+	}
+	public Extend2D(vec: Vector3, distance: number): Vector3 {
+		return this.GetDirection2DTo(vec).MultiplyScalarForThis(distance).AddForThis(this) // this + (distance * (vec - this).SetZ(0).Normalize())
 	}
 	public Clone(): Vector3 {
 		return new Vector3(this.x, this.y, this.z)

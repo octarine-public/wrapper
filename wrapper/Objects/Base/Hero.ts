@@ -15,8 +15,6 @@ export default class Hero extends Unit {
 	public IsReincarnating = false
 	@NetworkedBasicField("m_iPlayerID")
 	public PlayerID = 0
-	@NetworkedBasicField("m_iPrimaryAttribute")
-	public PrimaryAtribute = Attributes.DOTA_ATTRIBUTE_INVALID
 	@NetworkedBasicField("m_iRecentDamage")
 	public RecentDamage = 0
 	@NetworkedBasicField("m_flRespawnTime")

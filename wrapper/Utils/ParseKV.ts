@@ -1,19 +1,20 @@
-import { DecompressLZ4, ExtractResourceBlock } from "../Native/WASM"
+import { DecompressLZ4 } from "../Native/WASM"
 import { ArrayBuffersEqual, Utf8ArrayToStr } from "./ArrayBufferUtils"
 import BinaryStream from "./BinaryStream"
+import { ParseResourceLayout } from "./ParseResource"
 import Stream from "./Stream"
 
 const STRING = '"'
-const NODE_OPEN = '{'
-const NODE_CLOSE = '}'
-const BR_OPEN = '['
-const BR_CLOSE = ']'
-const COMMENT = '/'
-const CR = '\r'
-const LF = '\n'
-const SPACE = ' '
-const TAB = '\t'
-const WHITESPACE = [SPACE, '\t', '\r', '\n', '=']
+const NODE_OPEN = "{"
+const NODE_CLOSE = "}"
+const BR_OPEN = "["
+const BR_CLOSE = "]"
+const COMMENT = "/"
+const CR = "\r"
+const LF = "\n"
+const SPACE = " "
+const TAB = "\t"
+const WHITESPACE = [SPACE, "\t", "\r", "\n", "="]
 
 function _symtostr(stream: Stream, token: string): string {
 	if (stream.buf.indexOf(token, stream.pos) === -1)
@@ -56,13 +57,13 @@ function _unquotedtostr(stream: Stream): string {
 }
 
 function _parse(stream: Stream, map = new Map<string, any>()): RecursiveMap {
-	var laststr = "",
+	let laststr = "",
 		lasttok = "",
 		lastbrk = "",
 		next_is_value = false
 
 	while (!stream.Empty()) {
-		var c = stream.ReadChar()
+		let c = stream.ReadChar()
 
 		if (c === NODE_OPEN) {
 			next_is_value = false  // Make sure the next string is interpreted as a key.
@@ -184,7 +185,7 @@ class KVParser {
 	private binary_bytes_offset = -1
 	public ParseKV2(buf: Uint8Array): RecursiveMap {
 		this.binary_bytes_offset = 0
-		let stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
+		let stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset + 4, buf.byteLength - 4))
 		stream.RelativeSeek(16) // format
 		const compression_method = stream.ReadUint32(),
 			data_offset = stream.ReadUint32(),
@@ -223,7 +224,7 @@ class KVParser {
 		return this.ParseBinaryKV(stream, true)
 	}
 	public ParseKV3(buf: Uint8Array): RecursiveMap {
-		let stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
+		let stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset + 4, buf.byteLength - 4))
 		// ReadSlice returns view to original buffer, but we need our own copy here, so we do .slice().buffer
 		const encoding = stream.ReadSlice(16).slice().buffer
 		stream.RelativeSeek(16) // format
@@ -537,11 +538,11 @@ class ResourceIntrospectionManifest {
 }
 
 class C_NTRO {
-	constructor(private ResourceIntrospectionManifest: ResourceIntrospectionManifest) { }
+	constructor(private resourceIntrospectionManifest: ResourceIntrospectionManifest) { }
 	public Parse(stream: BinaryStream): Nullable<RecursiveMap> {
-		if (this.ResourceIntrospectionManifest.ReferencedStructs.length === 0)
+		if (this.resourceIntrospectionManifest.ReferencedStructs.length === 0)
 			return undefined
-		return this.ReadStructure(stream, this.ResourceIntrospectionManifest.ReferencedStructs[0])
+		return this.ReadStructure(stream, this.resourceIntrospectionManifest.ReferencedStructs[0])
 	}
 	private ReadStructure(stream: BinaryStream, struct: ResourceDiskStruct, startingOffset = 0, map: RecursiveMap = new Map()): RecursiveMap {
 		struct.FieldIntrospection.forEach(field => {
@@ -554,7 +555,7 @@ class C_NTRO {
 
 		if (struct.BaseStructID !== 0) {
 			const prev = stream.pos
-			this.ReadStructure(stream, this.ResourceIntrospectionManifest.ReferencedStructs.find(struct_ => struct.BaseStructID === struct_.ID)!, startingOffset, map)
+			this.ReadStructure(stream, this.resourceIntrospectionManifest.ReferencedStructs.find(struct_ => struct.BaseStructID === struct_.ID)!, startingOffset, map)
 			stream.pos = prev
 		}
 
@@ -614,7 +615,7 @@ class C_NTRO {
 		const name = is_array ? parent.size.toString() : field.FieldName
 		switch (field.Type) {
 			case DataType.Struct:
-				parent.set(name, this.ReadStructure(stream, this.ResourceIntrospectionManifest.ReferencedStructs.find(x => field.TypeData === x.ID)!, stream.pos))
+				parent.set(name, this.ReadStructure(stream, this.resourceIntrospectionManifest.ReferencedStructs.find(x => field.TypeData === x.ID)!, stream.pos))
 				break
 			case DataType.Enum:
 				// TODO: Lookup in ReferencedEnums
@@ -699,12 +700,12 @@ function FixupSoundEventScript(map: RecursiveMap): RecursiveMap {
 	return fixed_map
 }
 
-function TryParseNTROResource(buf: Uint8Array, DATA: [number, number], NTRO: [number, number]): Nullable<RecursiveMap> {
+function TryParseNTROResource(buf: Uint8Array, DATA: Uint8Array, NTRO: Uint8Array): Nullable<RecursiveMap> {
 	const manifest = new ResourceIntrospectionManifest().Parse(
-		new BinaryStream(new DataView(buf.buffer, buf.byteOffset + NTRO[0], NTRO[1]))
+		new BinaryStream(new DataView(buf.buffer, buf.byteOffset + NTRO.byteOffset, NTRO.byteLength)),
 	)
 	const map = new C_NTRO(manifest).Parse(
-		new BinaryStream(new DataView(buf.buffer, buf.byteOffset + DATA[0], DATA[1]))
+		new BinaryStream(new DataView(buf.buffer, buf.byteOffset + DATA.byteOffset, DATA.byteLength)),
 	)
 	if (map === undefined)
 		return undefined
@@ -719,26 +720,25 @@ function TryParseNTROResource(buf: Uint8Array, DATA: [number, number], NTRO: [nu
 	return map
 }
 
-function parseKVResource(buf: Uint8Array, DATA?: Nullable<[number, number]>, NTRO?: Nullable<[number, number]>): RecursiveMap {
-	if (DATA !== undefined && DATA[1] >= 4)
-		switch (new DataView(buf.buffer, buf.byteOffset + DATA[0], 4).getUint32(0, true)) {
-			case 0x03564B56: // VKV\x03
-				return new KVParser().ParseKV3(buf.subarray(DATA[0] + 4, DATA[0] + DATA[1]))
-			case 0x4B563301: // KV3\x01
-				return new KVParser().ParseKV2(buf.subarray(DATA[0] + 4, DATA[0] + DATA[1]))
+export function parseKV(buf: Uint8Array, block: string | number = "DATA"): RecursiveMap {
+	const layout = ParseResourceLayout(buf)
+	if (layout !== undefined) {
+		const DATA = typeof block === "string" ? layout[0].get(block) : layout[1][block]
+		if (DATA !== undefined && DATA.byteLength >= 4)
+			switch (new Uint32Array(buf.buffer, buf.byteOffset + DATA.byteOffset, 4)[0]) {
+				case 0x03564B56: // VKV\x03
+					return new KVParser().ParseKV3(DATA)
+				case 0x4B563301: // KV3\x01
+					return new KVParser().ParseKV2(DATA)
+			}
+		const NTRO = layout[0].get("NTRO")
+		if (DATA !== undefined && NTRO !== undefined) {
+			const res = TryParseNTROResource(buf, DATA, NTRO)
+			if (res !== undefined)
+				return res
 		}
-	if (DATA !== undefined && NTRO !== undefined) {
-		const res = TryParseNTROResource(buf, DATA, NTRO)
-		if (res !== undefined)
-			return res
+		if (DATA !== undefined)
+			return _parse(new Stream(Utf8ArrayToStr(DATA)))
 	}
 	return _parse(new Stream(Utf8ArrayToStr(buf)))
-}
-
-export function parseKV(buf: Uint8Array): RecursiveMap {
-	const DATA = ExtractResourceBlock(buf, "DATA"),
-		NTRO = ExtractResourceBlock(buf, "NTRO")
-	if (DATA !== undefined || NTRO !== undefined)
-		return parseKVResource(buf, DATA, NTRO)
-	return parseKVResource(buf)
 }

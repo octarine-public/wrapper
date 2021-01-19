@@ -38,7 +38,7 @@ export class EventEmitter {
 		return this
 	}
 
-	public emit(name: string, cancellable: boolean = false, ...args: any[]): boolean {
+	public emit(name: string, cancellable = false, ...args: any[]): boolean {
 		const listeners = this.events.get(name),
 			listeners_after = this.events_after.get(name)
 
@@ -46,7 +46,7 @@ export class EventEmitter {
 			try {
 				return listener(...args) === false && cancellable
 			} catch (e) {
-				console.log(e.stack || new Error(e).stack)
+				console.error(e instanceof Error ? e : new Error(e))
 				return false
 			}
 		})
@@ -55,7 +55,7 @@ export class EventEmitter {
 				try {
 					listener(...args)
 				} catch (e) {
-					console.log(e.stack || new Error(e).stack)
+					console.error(e instanceof Error ? e : new Error(e))
 				}
 			})
 		return ret
@@ -97,6 +97,7 @@ declare interface Events extends EventEmitter {
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (id: number, reason: number, obj: any) => void): EventEmitter
 	on(name: "SignonStateChanged", listener: (new_state: SignonState_t) => void): EventEmitter
+	on(name: "NewConnection", listener: () => void): EventEmitter
 	on(name: "AddSearchPath", listener: (path: string) => boolean): EventEmitter
 	on(name: "PostAddSearchPath", listener: (path: string) => void): EventEmitter
 	on(name: "RemoveSearchPath", listener: (path: string) => boolean): EventEmitter

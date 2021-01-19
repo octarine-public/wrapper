@@ -1,9 +1,8 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
-import RendererSDK from "../Native/RendererSDK"
-import Entity, { GameRules } from "../Objects/Base/Entity"
+import { GetPositionHeight } from "../Native/WASM"
+import Entity from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
-import Unit from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
 import { CMsgVector2DToVector2, CMsgVectorToVector3, NumberToColor, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf, ServerHandleToIndex } from "../Utils/Protobuf"
@@ -44,23 +43,42 @@ function DestroyTrackingProjectile(proj: TrackingProjectile) {
 }
 
 EventsSDK.on("Tick", () => {
-	const cur_time = GameRules!.RawGameTime
+	const cur_time = GameState.RawGameTime
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
-		proj.Position.AddForThis(proj.Velocity.MultiplyScalar(cur_time - proj.LastUpdate).toVector3())
+		if (proj.LastUpdate === 0) {
+			proj.LastUpdate = cur_time
+			return
+		}
+		const dt = cur_time - proj.LastUpdate
+		proj.Position.AddForThis(proj.Velocity.MultiplyScalar(dt).toVector3())
 		proj.LastUpdate = cur_time
-		proj.Position.z = RendererSDK.GetPositionHeight(Vector2.FromVector3(proj.Position))
+		proj.Position.z = GetPositionHeight(Vector2.FromVector3(proj.Position))
 	})
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
+		if (proj.LastUpdate === 0) {
+			proj.LastUpdate = cur_time
+			const source = proj.Source
+			if (source instanceof Entity && proj.SourceAttachment !== "")
+				proj.Position.AddForThis(source.GetAttachmentOffset(proj.SourceAttachment))
+			return
+		}
+		const dt = cur_time - proj.LastUpdate
 		if (!proj.Position.IsValid)
 			if (proj.Target instanceof Entity && proj.Source instanceof Entity && !proj.IsDodged)
 				proj.Source.Position
-					.Extend(proj.TargetLoc, (GameState.CurrentServerTick - proj.LaunchTick) / 30 * proj.Speed)
+					.Extend(proj.TargetLoc, (GameState.CurrentServerTick - proj.LaunchTick) * dt * proj.Speed)
 					.CopyTo(proj.Position)
 			else
 				return
-		proj.Position.Extend(proj.TargetLoc, proj.Speed * (cur_time - proj.LastUpdate)).CopyTo(proj.Position)
+		const dist = proj.Position.Distance(proj.TargetLoc)
+		const velocity = proj.Position.GetDirectionTo(proj.TargetLoc).MultiplyScalarForThis(proj.Speed * dt)
+		proj.Position.AddForThis(velocity)
 		proj.LastUpdate = cur_time
-		if (proj.Position.Distance(proj.TargetLoc) < proj.Speed / 30 + (proj.Target instanceof Unit ? proj.Target.HullRadius : 0))
+		const collision_size = proj.Target instanceof Entity ? proj.Target.ProjectileCollisionSize : 0
+		if (collision_size !== 0) {
+			if (proj.Position.DistanceSqr(proj.TargetLoc) < collision_size ** 2)
+				DestroyTrackingProjectile(proj)
+		} else if (dist < velocity.Length)
 			DestroyTrackingProjectile(proj)
 	})
 })
@@ -123,6 +141,14 @@ message CDOTAUserMsg_TE_DestroyProjectile {
 	optional int32 handle = 1;
 }
 `)
+const projectile_attachments_names = [
+	"",
+	"attach_attack1",
+	"attach_attack2",
+	"attach_hitloc",
+	"attach_attack3",
+	"attach_attack4",
+]
 Events.on("ServerMessage", (msg_id, buf_len) => {
 	const buf = ServerMessageBuffer.subarray(0, buf_len)
 	switch (msg_id) {
@@ -176,12 +202,14 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		case 518: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_Projectile")
 			const particle_system_handle = msg.get("particleSystemHandle") as bigint
+			const hSource = msg.get("hSource") as number,
+				hTarget = msg.get("hTarget") as number
 			const projectile = new TrackingProjectile(
 				msg.get("handle") as number,
-				EntityManager.EntityByIndex(msg.get("hSource") as number),
-				EntityManager.EntityByIndex(msg.get("hTarget") as number),
+				EntityManager.EntityByIndex(hSource) ?? hSource,
+				EntityManager.EntityByIndex(hTarget) ?? hTarget,
 				msg.get("moveSpeed") as number,
-				msg.get("sourceAttachment") as number,
+				projectile_attachments_names[msg.get("sourceAttachment") as Nullable<number> ?? 0],
 				(particle_system_handle !== undefined ? Manifest.GetPathByHash(particle_system_handle) : undefined)!,
 				particle_system_handle ?? 0n,
 				msg.get("dodgeable") as boolean,
@@ -216,7 +244,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 					undefined,
 					target,
 					move_speed,
-					undefined,
+					"",
 					path,
 					particle_system_handle ?? 0n,
 					dodgeable,
@@ -225,7 +253,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 					undefined,
 					launch_tick,
 					TargetLoc,
-					Color.fromIOBuffer(true, 6)!
+					Color.fromIOBuffer(6),
 				)
 				projectile.Position.CopyFrom(CMsgVectorToVector3(msg.get("vSourceLoc") as RecursiveProtobuf))
 

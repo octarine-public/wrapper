@@ -1,7 +1,7 @@
 import Color from "../Base/Color"
-import QAngle from "../Base/QAngle"
 import Vector3 from "../Base/Vector3"
-import RendererSDK from "../Native/RendererSDK"
+import ParticlesSDK from "../Managers/ParticleManager"
+import Entity from "../Objects/Base/Entity"
 
 export class WorldPolygon {
 	public Points: Vector3[] = []
@@ -15,22 +15,27 @@ export class WorldPolygon {
 		else
 			this.AddPoint(polygon)
 	}
-	public Draw(color: Color, width = 1): void {
-		const cam_pos = Vector3.fromIOBuffer(Camera.Position)!,
-			cam_ang = QAngle.fromIOBuffer(Camera.Angles)!,
-			cam_dist = Camera.Distance ?? 1200
-		for (let i = 0, end = this.Points.length; i < end; i++) {
-			const j = i + 1 % end
-			const pos1 = RendererSDK.WorldToScreenCustom(this.Points[i], cam_pos, cam_dist, cam_ang),
-				pos2 = RendererSDK.WorldToScreenCustom(this.Points[j], cam_pos, cam_dist, cam_ang)
-			if (pos1 !== undefined && pos2 !== undefined)
-				RendererSDK.Line(pos1, pos2, color)
+
+	public Draw(key: string, ent: Entity, ParticleManager: ParticlesSDK, color: Color, width = 10, mode2D = 10): void {
+		for (let i = 0; i < this.Points.length; i++) {
+			const nextIndex = this.Points.length - 1 === i ? 0 : i + 1
+			const pos1 = new Vector3(this.Points[i].x, this.Points[i].y, this.Points[i].z)
+			const pos2 = new Vector3(this.Points[nextIndex].x, this.Points[nextIndex].y, this.Points[nextIndex].z)
+			if (pos1 === undefined || pos2 === undefined)
+				return
+			ParticleManager.DrawLine(`${key}_${i}`, ent, pos2, {
+				Position: pos1,
+				Color: color,
+				Width: width,
+				Mode2D: mode2D,
+			})
 		}
 	}
-	/**
-	 *
-	 * @description Need test
-	 */
+	public Destroy(key: string, ParticleManager: ParticlesSDK): void {
+		for (let i = 0; i < this.Points.length; i++)
+			ParticleManager.DestroyByKey(`${key}_${i}`)
+	}
+
 	public IsInside(point: Vector3) {
 		return !this.IsOutside(point)
 	}

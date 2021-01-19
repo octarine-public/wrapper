@@ -3,12 +3,12 @@ import Entity from "../../Objects/Base/Entity"
 
 export default class Obstacle {
 	public static FromEntity(ent: Entity): Obstacle {
-		return new Obstacle(Vector2.FromVector3(ent.Position), ent.CollisionRadius)
+		return new Obstacle(Vector2.FromVector3(ent.Position), Math.sqrt(ent.CollisionRadius))
 	}
 
 	constructor(
 		protected Position_: Vector2,
-		public readonly Radius: number
+		public readonly Radius: number,
 	) { }
 
 	public PositionAtTime(time: number): Vector2 {

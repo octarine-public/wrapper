@@ -1,12 +1,10 @@
 import QAngle from "../../Base/QAngle"
 import Vector3 from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
-import { SignonState_t } from "../../Enums/SignonState_t"
 import EntityManager, { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManager"
-import Events from "../../Managers/Events"
 import EventsSDK from "../../Managers/EventsSDK"
+import { GridNav } from "../../Utils/ParseGNV"
 import { ParseTRMP } from "../../Utils/ParseTRMP"
-import { ParseMapName } from "../../Utils/Utils"
 import Entity from "./Entity"
 
 @WrapperClass("C_DOTA_MapTree")
@@ -29,13 +27,25 @@ export default class Tree extends Entity {
 	public get RingRadius(): number {
 		return 100
 	}
+	public get CustomNativeID(): number {
+		return (this.BinaryID << 1) | 1
+	}
 }
 
 let cur_local_id = 0x4000
 function LoadTreeMap(buf: ArrayBuffer) {
-	while (cur_local_id > 0x4000)
-		DeleteEntity(--cur_local_id)
+	while (cur_local_id > 0x4000) {
+		const id = --cur_local_id
+		const ent = EntityManager.EntityByIndex(id, true) as Nullable<Tree>
+		if (ent === undefined)
+			continue
+		DeleteEntity(id)
+		GridNav?.UpdateTreeState(ent)
+	}
 	ParseTRMP(buf).forEach((pos, i) => {
+		// for some reason TRMP have duplicates, but earlier ones override them
+		if (EntityManager.GetEntitiesByClass(Tree).some(tree => tree.Position.Equals(pos)))
+			return
 		const id = cur_local_id++
 		const entity = new Tree(id)
 		entity.Name_ = "ent_dota_tree"
@@ -44,55 +54,16 @@ function LoadTreeMap(buf: ArrayBuffer) {
 		entity.BinaryID = i
 		CreateEntityInternal(entity)
 		EventsSDK.emit("EntityCreated", false, entity)
+		GridNav?.UpdateTreeState(entity)
 	})
 }
 
-let last_loaded_map_name = "<empty>"
-let initialized = false
-Events.on("ServerMessage", () => {
-	if (initialized)
-		return
-	initialized = true
+export function LoadTreeMapByName(map_name: string): void {
 	try {
-		let map_name = GetLevelNameShort()
-		if (map_name === "start")
-			map_name = "dota"
 		const buf = fread(`maps/${map_name}.trm`)
 		if (buf !== undefined)
 			LoadTreeMap(buf)
 	} catch (e) {
-		console.log("Error in TreeMap static init: " + e)
+		console.log("Error in TreeMap init: " + e)
 	}
-})
-
-Events.on("PostAddSearchPath", path => {
-	const map_name = ParseMapName(path)
-	if (map_name === undefined)
-		return
-
-	const buf = fread(`maps/${map_name}.trm`)
-	if (buf === undefined)
-		return
-
-	initialized = true
-	try {
-		LoadTreeMap(buf)
-	} catch (e) {
-		console.log("Error in TreeMap dynamic init: " + e)
-	}
-})
-
-Events.on("PostRemoveSearchPath", path => {
-	const map_name = ParseMapName(path)
-	if (map_name === undefined || last_loaded_map_name !== map_name)
-		return
-
-	last_loaded_map_name = "<empty>"
-	while (cur_local_id > 0x4000)
-		DeleteEntity(--cur_local_id)
-})
-
-Events.on("SignonStateChanged", new_state => {
-	if (new_state === SignonState_t.SIGNONSTATE_NONE)
-		cur_local_id = 0x4000
-})
+}

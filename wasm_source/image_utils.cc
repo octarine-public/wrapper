@@ -157,7 +157,7 @@ uint8_t ClampColor(int a) {
 /*
  * Parses PNG into RGBA
  */
-char* ParsePNG(char* data, size_t data_size, int& w, int& h) {
+char* ParsePNGInternal(char* data, size_t data_size, int& w, int& h) {
 	char* out = nullptr;
 	unsigned int res = 0;
 	if ((res = lodepng_decode32((unsigned char**)&out, (unsigned int*)&w, (unsigned int*)&h, (unsigned char*)data, data_size))) {
@@ -175,21 +175,8 @@ extern void ConvertFromDXT5(const uint8_t* src, uint8_t* dst, int width, int hei
  * Wrapper function for files (not direct vtex format)
  * Adds more crutches & bikes to this project
  */
-char* ParseVTex(char* data, size_t data_size, int& w, int& h) {
-	constexpr uint16_t KnownVTexVersion = 1;
-	auto invalid_vtex = "Invalid VTex file.\n";
-	auto block_data = ExtractBlockFromResource(data, data_size, "DATA");
-	if (block_data == nullptr) {
-		DEBUG_PRINT("%s", invalid_vtex);
-		return nullptr;
-	}
-	// TODO: add check that's real VTEX file (lookup https://github.com/SteamDatabase/ValveResourceFormat/blob/master/ValveResourceFormat/Resource/Resource.cs)
-	auto vtex_header = GetPointer<VTexHeader>(&block_data->offset, block_data->offset);
-	if (vtex_header->version != KnownVTexVersion) {
-		DEBUG_PRINT("%s", invalid_vtex);
-		return nullptr;
-	}
-	auto image_data = GetPointer<char>(vtex_header, block_data->size);
+char* ParseVTexInternal(char* data, size_t data_size, char* image_data, int& w, int& h) {
+	auto vtex_header = (VTexHeader*)data;
 	auto image_size = data_size - ((uint64_t)image_data - (uint64_t)data);
 	w = vtex_header->width;
 	h = vtex_header->height;
@@ -249,7 +236,7 @@ char* ParseVTex(char* data, size_t data_size, int& w, int& h) {
 		case VTexFormat::PNG_RGBA8888:
 		case VTexFormat::PNG_DXT5:
 			int temp_w, temp_h; // fix for incorrect image size
-			copy = ParsePNG(image_data, image_size, temp_w, temp_h);
+			copy = ParsePNGInternal(image_data, image_size, temp_w, temp_h);
 			break;
 		case VTexFormat::RGBA8888:
 			copy = malloc(out_image_size);

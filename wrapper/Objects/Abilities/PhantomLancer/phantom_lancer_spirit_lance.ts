@@ -12,7 +12,7 @@ export default class phantom_lancer_spirit_lance extends Ability {
 	public get ProjectileName() {
 		return [
 			"particles/units/heroes/hero_phantom_lancer/phantomlancer_spiritlance_projectile.vpcf",
-			"particles/econ/items/phantom_lancer/phantom_lancer_immortal_ti6/phantom_lancer_immortal_ti6_spiritlance.vpcf"
+			"particles/econ/items/phantom_lancer/phantom_lancer_immortal_ti6/phantom_lancer_immortal_ti6_spiritlance.vpcf",
 		]
 	}
 }

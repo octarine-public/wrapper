@@ -87,8 +87,11 @@ export default class Item extends Ability {
 	public MoveItem(slot: DOTAScriptInventorySlot_t) {
 		return this.Owner?.MoveItem(this, slot)
 	}
-	public ItemFromStash() {
-		return this.Owner?.ItemFromStash(this)
+	public DropAtFountain() {
+		return this.Owner?.DropItemAtFountain(this)
+	}
+	public EjectFromStash() {
+		return this.Owner?.EjectItemFromStash(this)
 	}
 	public SellItem() {
 		return this.Owner?.SellItem(this)

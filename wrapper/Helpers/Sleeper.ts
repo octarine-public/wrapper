@@ -1,90 +1,60 @@
-import { GameRules } from "../Objects/Base/Entity"
 import GameState from "../Utils/GameState"
-
-class SleeperBase {
-	protected SleepDB = new Map<any, number>()
-
-	protected setTime(key: any, time: number): number {
-		this.SleepDB.set(key, time)
-		return time
-	}
-	protected updateTime(key: any, timeNow: number, timeExtend: number): boolean {
-		const value = this.SleepDB.get(key)
-
-		if (value === undefined || value <= timeExtend)
-			return false
-
-		this.setTime(key, timeNow += timeExtend)
-		return true
-	}
-}
 
 /**
  * Sleeper by hrtime()
  */
-export class Sleeper extends SleeperBase {
-	public Sleep(ms: number, key: any, extend: boolean = false): number {
-		if (extend && this.updateTime(key, hrtime(), ms))
-			return ms
+export class Sleeper {
+	protected SleepDB = new Map<any, number>()
 
-		return this.setTime(key, hrtime() + ms)
+	protected get TickCount(): number {
+		return hrtime()
+	}
+	public Sleep(ms: number, key: any): number {
+		if (typeof ms !== "number")
+			ms = 0
+		return this.setTime(key, this.TickCount + ms)
+	}
+	public RemainingSleepTime(key: any): number {
+		const endTime = this.SleepDB.get(key)
+		if (endTime === undefined)
+			return 0
+		const ticks = this.TickCount
+		if (endTime < ticks) {
+			this.SleepDB.delete(key)
+			return 0
+		}
+		return endTime - ticks
+	}
+	public StartTime(key: any): number {
+		const endTime = this.SleepDB.get(key)
+		if (endTime === undefined)
+			return 0
+		return endTime
 	}
 	public Sleeping(key: any): boolean {
-		const sleepID = this.SleepDB.get(key)
-		return sleepID !== undefined && hrtime() < sleepID
+		const endTime = this.SleepDB.get(key)
+		return endTime !== undefined && this.TickCount < endTime
 	}
-
-	public FullReset(): Sleeper {
+	public FullReset(): this {
 		this.SleepDB.clear()
 		return this
+	}
+	public ResetKey(key: any): void {
+		this.SleepDB.delete(key)
+	}
+
+	protected setTime(key: any, time: number): number {
+		this.SleepDB.set(key, time)
+		return time
 	}
 }
 
 /**
  * Sleeper by Game.RawGameTime
  */
-export class GameSleeper extends SleeperBase {
-
-	public Sleep(ms: number, key: any, extend: boolean = false): number {
-		if (typeof ms !== "number")
-			return this.setTime(key, GameState.RawGameTime)
-
-		const time = GameState.RawGameTime
-		if (extend && this.updateTime(key, time, ms / 1000))
-			return ms
-
-		return this.setTime(key, time + ms / 1000)
-	}
-
-	public Sleeping(key: any): boolean {
-		const sleepID = this.SleepDB.get(key)
-		return sleepID !== undefined && GameState.RawGameTime < sleepID
-	}
-
-	public RemainingSleepTime(key: any): number {
-		const sleepID = this.SleepDB.get(key)
-		if (sleepID === undefined)
-			return 0
-		return sleepID - GameState.RawGameTime
-	}
-
-	public StartTime(key: any) {
-		const sleepID = this.SleepDB.get(key)
-		if (sleepID === undefined)
-			return 0
-		return sleepID
-	}
-
-	public ResetKey(key: any) {
-		const sleepID = this.SleepDB.get(key)
-		if (sleepID === undefined)
-			return
-		this.SleepDB.delete(key)
-	}
-
-	public FullReset(): GameSleeper {
-		this.SleepDB.clear()
-		return this
+export class GameSleeper extends Sleeper {
+	protected get TickCount(): number {
+		return GameState.RawGameTime * 1000
 	}
 }
 
@@ -94,15 +64,16 @@ export class TickSleeper {
 	public get Sleeping(): boolean {
 		return this.TickCount < this.lastSleepTickCount
 	}
+	public get RemainingSleepTime(): number {
+		return Math.max(this.lastSleepTickCount - this.TickCount, 0)
+	}
 	private get TickCount(): number {
-		if (!GameRules?.IsInGame)
-			return 0
-		return GameRules.RawGameTime * 1000
+		return GameState.RawGameTime * 1000
 	}
 	public Sleep(duration: number): void {
 		this.lastSleepTickCount = this.TickCount + duration
 	}
-	public ResetTimer() {
+	public ResetTimer(): void {
 		this.lastSleepTickCount = 0
 	}
 }

@@ -1,6 +1,6 @@
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import RendererSDK from "../Native/RendererSDK"
+import { GetPositionHeight } from "../Native/WASM"
 import BinaryStream from "./BinaryStream"
 
 export function ParseTRMP(buf: ArrayBuffer): Vector3[] {
@@ -32,7 +32,7 @@ export function ParseTRMP(buf: ArrayBuffer): Vector3[] {
 		const x = stream.ReadInt32(),
 			y = stream.ReadInt32()
 		stream.RelativeSeek(4) // lump ID
-		trees.push(new Vector3(x, y, RendererSDK.GetPositionHeight(new Vector2(x, y))))
+		trees.push(new Vector3(x, y, GetPositionHeight(new Vector2(x, y))))
 	}
 	return trees
 }

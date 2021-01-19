@@ -10,6 +10,5 @@
 	vhcg.cc ^
 	vmatrix.cc ^
 	image_utils.cc ^
-	resource_utils.cc ^
 	valve_s3tc.cc ^
 	lodepng/lodepng.cpp

@@ -3,10 +3,9 @@ import Vector3 from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
-import { SetGameInProgress } from "../../Managers/EventsHandler"
 import EventsSDK from "../../Managers/EventsSDK"
 import ExecuteOrder from "../../Native/ExecuteOrder"
-import Entity, { LocalPlayer } from "./Entity"
+import Entity from "./Entity"
 import Hero from "./Hero"
 import Item from "./Item"
 
@@ -57,15 +56,12 @@ EventsSDK.on("EntityCreated", ent => {
 	if (!(ent instanceof Hero) || !ent.CanBeMainHero)
 		return
 	EntityManager.GetEntitiesByClass(Player).forEach(player => {
-		if (ent.PlayerID !== player.PlayerID || ent.Index !== player.Hero_)
-			return
-		player.Hero = ent
-		if (player === LocalPlayer)
-			SetGameInProgress(true)
+		if (ent.Index === player.Hero_)
+			player.Hero = ent
 	})
 })
 
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("EntityDestroyed", ent => {
 	if (!(ent instanceof Hero))
 		return
 	EntityManager.GetEntitiesByClass(Player).forEach(player => {

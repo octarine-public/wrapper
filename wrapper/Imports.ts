@@ -17,6 +17,8 @@ export { DOTA_GameMode } from "./Enums/DOTA_GameMode"
 export { DOTA_GameState } from "./Enums/DOTA_GameState"
 export { Flow_t } from "./Enums/Flow_t"
 export { FontFlags_t } from "./Enums/FontFlags_t"
+export { GridNavCellFlags } from "./Enums/GridNavCellFlags"
+export { LaneSelectionFlags_t } from "./Enums/LaneSelectionFlags_t"
 export { NeutralSpawnerType } from "./Enums/NeutralSpawnerType"
 export { PingType_t } from "./Enums/PingType_t"
 export { SignonState_t } from "./Enums/SignonState_t"
@@ -29,6 +31,7 @@ export * as ArrayExtensions from "./Utils/ArrayExtensions"
 export * as BitsExtensions from "./Utils/BitsExtensions"
 export * as MapExtensions from "./Utils/MapExtensions"
 export * as MathSDK from "./Utils/Math"
+export { GridNav } from "./Utils/ParseGNV"
 export * as Parse from "./Utils/ParseKV"
 export * as VBKV from "./Utils/VBKV"
 export * as ArrayBufferUtils from "./Utils/ArrayBufferUtils"
@@ -46,7 +49,7 @@ export { default as Particle } from "./Base/Particle"
 export {
 	default as ParticlesSDK,
 	PARTICLE_RENDER_NAME,
-	PARTICLE_RENDER
+	PARTICLE_RENDER,
 } from "./Managers/ParticleManager"
 
 export { default as Events, EventEmitter } from "./Managers/Events"
@@ -55,6 +58,7 @@ export { default as StockInfo } from "./Base/StockInfo"
 export { default as CGameManager, GameManager } from "./Objects/Base/GameManager"
 export { default as EntityManager } from "./Managers/EntityManager"
 export { default as EventsSDK } from "./Managers/EventsSDK"
+export { NotificationsSDK, Notification } from "./Notifications/Imports"
 export {
 	default as Input,
 	InputEventSDK,
@@ -63,7 +67,18 @@ export {
 	VMouseKeys,
 	VXMouseKeys,
 } from "./Managers/InputManager"
-export { default as RendererSDK } from "./Native/RendererSDK"
+
+export { default as CTurboHeroPickRules, TurboHeroPickRules } from "./Objects/Base/TurboPickRules"
+export { default as CCustomHeroPickRules, CustomHeroPickRules } from "./Objects/Base/CustomPickRules"
+
+export {
+	default as RendererSDK,
+	GradientLinear,
+	GradientRadial,
+	GradientSweep,
+} from "./Native/RendererSDK"
+export { default as SoundSDK } from "./Native/SoundSDK"
+export { GetPositionHeight } from "./Native/WASM"
 export { default as ExecuteOrder, ORDERS_WITHOUT_SIDE_EFFECTS } from "./Native/ExecuteOrder"
 
 export { default as Entity, LocalPlayer, GameRules } from "./Objects/Base/Entity"
@@ -1352,7 +1367,7 @@ export {
 	TRUESIGHT_MODIFIERS,
 	SCEPTER_MODIFIERS,
 	BLOCKING_DAMAGE_MODIFIERS,
-	REFLECTING_DAMAGE_MODIFIERS
+	REFLECTING_DAMAGE_MODIFIERS,
 } from "./Objects/Base/Modifier"
 
 export { default as PhysicalItem } from "./Objects/Base/PhysicalItem"

@@ -3,7 +3,6 @@ import ExecuteOrder from "../Native/ExecuteOrder"
 import { EventEmitter } from "./Events"
 
 import Entity from "../Objects/Base/Entity"
-import Hero from "../Objects/Base/Hero"
 import Unit from "../Objects/Base/Unit"
 
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
@@ -14,44 +13,44 @@ import { RecursiveProtobuf } from "../Utils/Protobuf"
 
 interface EventsSDK extends EventEmitter {
 	/**
-	 * Emitted when local hero and local player are available
+	 * Emitted when local hero are available
 	 *
 	 * Also, emitted when scripts reloading
 	 */
-	on(name: "GameStarted", callback: (localHero: Hero) => void): EventEmitter
+	on(name: "GameStarted", callback: () => void): EventsSDK
 	/**
 	 * Emitted when game ended
 	 *
 	 * Also, emitted when scripts reloading
 	 */
-	on(name: "GameEnded", callback: () => void): EventEmitter
+	on(name: "GameEnded", callback: () => void): EventsSDK
 	/**
 	 * Emitted after all entity properties handlers were called, a.k.a. entity is fully set up
 	 * This callback is best suited for use.
 	 */
-	on(name: "EntityCreated", callback: (ent: Entity) => void): EventEmitter
-	on(name: "EntityDestroyed", callback: (ent: Entity) => void): EventEmitter
+	on(name: "EntityCreated", callback: (ent: Entity) => void): EventsSDK
+	on(name: "EntityDestroyed", callback: (ent: Entity) => void): EventsSDK
 	/**
 	 * Emitted every time GameRules.RawGameTime changes, a.k.a. tick,
 	 * right before PostUpdate, but not required to.
 	 */
-	on(name: "Tick", callback: () => void): EventEmitter
+	on(name: "Tick", callback: (dt: number) => void): EventsSDK
 	/**
 	 * Emitted before every server entity update.
 	 * Gets called when game is paused, and might be called faster than actual server ticks.
 	 */
-	on(name: "PreUpdate", callback: () => void): EventEmitter
+	on(name: "PreDataUpdate", callback: () => void): EventsSDK
 	/**
 	 * Emitted after every server entity update.
 	 * Gets called when game is paused, and might be called faster than actual server ticks.
 	 */
-	on(name: "PostUpdate", callback: () => void): EventEmitter
-	on(name: "TeamVisibilityChanged", callback: (npc: Unit) => void): EventEmitter
-	on(name: "TrueSightedChanged", callback: (npc: Unit) => void): EventEmitter
-	on(name: "HasScepterChanged", callback: (npc: Unit) => void): EventEmitter
-	on(name: "Draw", callback: () => void): EventEmitter
-	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity | number) => void): EventEmitter
-	on(name: "ParticleUpdated", callback: (id: number, controlPoint: number, position: Vector3) => void): EventEmitter
+	on(name: "PostDataUpdate", callback: () => void): EventsSDK
+	on(name: "TeamVisibilityChanged", callback: (npc: Unit) => void): EventsSDK
+	on(name: "TrueSightedChanged", callback: (npc: Unit) => void): EventsSDK
+	on(name: "HasScepterChanged", callback: (npc: Unit) => void): EventsSDK
+	on(name: "Draw", callback: () => void): EventsSDK
+	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity | number) => void): EventsSDK
+	on(name: "ParticleUpdated", callback: (id: number, controlPoint: number, position: Vector3) => void): EventsSDK
 	on(name: "ParticleUpdatedEnt", callback: (
 		id: number,
 		controlPoint: number,
@@ -60,17 +59,17 @@ interface EventsSDK extends EventEmitter {
 		attachment: number,
 		fallbackPosition: Vector3,
 		includeWearables: boolean,
-	) => void): EventEmitter
-	on(name: "ParticleDestroyed", listener: (id: number, destroy_immediately: boolean) => void): EventEmitter
-	on(name: "ParticleReleased", listener: (id: number) => void): EventEmitter
-	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventEmitter
-	on(name: "PrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventEmitter
-	on(name: "LinearProjectileCreated", callback: (proj: LinearProjectile) => void): EventEmitter
-	on(name: "LinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventEmitter
-	on(name: "TrackingProjectileCreated", callback: (proj: TrackingProjectile) => void): EventEmitter
-	on(name: "TrackingProjectileUpdated", callback: (proj: TrackingProjectile) => void): EventEmitter
-	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventEmitter
-	on(name: "TrackingProjectilesDodged", callback: (ent: Entity | number, attacks_only: boolean) => void): EventEmitter
+	) => void): EventsSDK
+	on(name: "ParticleDestroyed", listener: (id: number, destroy_immediately: boolean) => void): EventsSDK
+	on(name: "ParticleReleased", listener: (id: number) => void): EventsSDK
+	on(name: "BloodImpact", callback: (target: Entity | number, scale: number, xnormal: number, ynormal: number) => void): EventsSDK
+	on(name: "PrepareUnitOrders", callback: (order: ExecuteOrder) => false | any): EventsSDK
+	on(name: "LinearProjectileCreated", callback: (proj: LinearProjectile) => void): EventsSDK
+	on(name: "LinearProjectileDestroyed", callback: (proj: LinearProjectile) => void): EventsSDK
+	on(name: "TrackingProjectileCreated", callback: (proj: TrackingProjectile) => void): EventsSDK
+	on(name: "TrackingProjectileUpdated", callback: (proj: TrackingProjectile) => void): EventsSDK
+	on(name: "TrackingProjectileDestroyed", callback: (proj: TrackingProjectile) => void): EventsSDK
+	on(name: "TrackingProjectilesDodged", callback: (ent: Entity | number, attacks_only: boolean) => void): EventsSDK
 	on(name: "UnitAnimation", callback: (
 		npc: Unit,
 		sequenceVariant: number,
@@ -78,12 +77,12 @@ interface EventsSDK extends EventEmitter {
 		castpoint: number,
 		type: number,
 		activity: number,
-	) => void): EventEmitter
+	) => void): EventsSDK
 	on(name: "UnitAnimationEnd", callback: (
 		npc: Unit,
 		snap: boolean,
-	) => void): EventEmitter
-	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
+	) => void): EventsSDK
+	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventsSDK
 	on(name: "UnitSpeech", listener: (
 		npc: Unit | number,
 		concept: number,
@@ -93,9 +92,9 @@ interface EventsSDK extends EventEmitter {
 		muteable: boolean,
 		predelay_start: number,
 		predelay_range: number,
-		flags: number
-	) => void): EventEmitter
-	on(name: "UnitSpeechMute", listener: (npc: Unit | number, delay: number) => void): EventEmitter
+		flags: number,
+	) => void): EventsSDK
+	on(name: "UnitSpeechMute", listener: (npc: Unit | number, delay: number) => void): EventsSDK
 	on(name: "UnitAddGesture", listener: (
 		npc: Unit | number,
 		activity: number,
@@ -104,21 +103,21 @@ interface EventsSDK extends EventEmitter {
 		fade_out: number,
 		playback_rate: number,
 		sequence_variant: number,
-	) => void): EventEmitter
-	on(name: "UnitRemoveGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
-	on(name: "UnitFadeGesture", listener: (npc: Unit | number, activity: number) => void): EventEmitter
-	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
-	on(name: "LifeStateChanged", listener: (ent: Entity) => void): EventEmitter
-	on(name: "EntityNameChanged", listener: (ent: Entity) => void): EventEmitter
-	on(name: "EntityTeamChanged", listener: (ent: Entity) => void): EventEmitter
-	// on(name: "NetworkFieldChanged", listener: (args: NetworkFieldChanged) => void): EventEmitter
-	on(name: "NetworkActivityChanged", listener: (npc: Unit) => void): EventEmitter
-	on(name: "ModifierCreatedRaw", listener: (mod: Modifier) => void): EventEmitter
-	on(name: "ModifierChangedRaw", listener: (mod: Modifier) => void): EventEmitter
-	on(name: "ModifierRemovedRaw", listener: (mod: Modifier) => void): EventEmitter
-	on(name: "ModifierCreated", listener: (mod: Modifier) => void): EventEmitter
-	on(name: "ModifierChanged", listener: (mod: Modifier) => void): EventEmitter
-	on(name: "ModifierRemoved", listener: (mod: Modifier) => void): EventEmitter
+	) => void): EventsSDK
+	on(name: "UnitRemoveGesture", listener: (npc: Unit | number, activity: number) => void): EventsSDK
+	on(name: "UnitFadeGesture", listener: (npc: Unit | number, activity: number) => void): EventsSDK
+	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventsSDK
+	on(name: "LifeStateChanged", listener: (ent: Entity) => void): EventsSDK
+	on(name: "EntityNameChanged", listener: (ent: Entity) => void): EventsSDK
+	on(name: "EntityTeamChanged", listener: (ent: Entity) => void): EventsSDK
+	// on(name: "NetworkFieldChanged", listener: (args: NetworkFieldChanged) => void): EventsSDK
+	on(name: "NetworkActivityChanged", listener: (npc: Unit) => void): EventsSDK
+	on(name: "ModifierCreatedRaw", listener: (mod: Modifier) => void): EventsSDK
+	on(name: "ModifierChangedRaw", listener: (mod: Modifier) => void): EventsSDK
+	on(name: "ModifierRemovedRaw", listener: (mod: Modifier) => void): EventsSDK
+	on(name: "ModifierCreated", listener: (mod: Modifier) => void): EventsSDK
+	on(name: "ModifierChanged", listener: (mod: Modifier) => void): EventsSDK
+	on(name: "ModifierRemoved", listener: (mod: Modifier) => void): EventsSDK
 	on(name: "ServerTick", listener: (
 		tick: number,
 		host_frametime: number,
@@ -126,18 +125,18 @@ interface EventsSDK extends EventEmitter {
 		host_computationtime: number,
 		host_computationtime_std_deviation: number,
 		host_framestarttime_std_deviation: number,
-		host_loss: number
-	) => void): EventEmitter
-	on(name: "ServerInfo", listener: (map: RecursiveProtobuf) => void): EventEmitter
-	on(name: "RemoveAllStringTables", listener: () => void): EventEmitter
-	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, Uint8Array]>) => void): EventEmitter
+		host_loss: number,
+	) => void): EventsSDK
+	on(name: "ServerInfo", listener: (map: RecursiveProtobuf) => void): EventsSDK
+	on(name: "RemoveAllStringTables", listener: () => void): EventsSDK
+	on(name: "UpdateStringTable", listener: (name: string, update: Map<number, [string, Uint8Array]>) => void): EventsSDK
 	on(name: "StartSound", listener: (
 		name: string,
 		source_ent: Nullable<Entity | number>,
 		position: Vector3,
 		seed: number,
-		start_time: number
-	) => void): EventEmitter
+		start_time: number,
+	) => void): EventsSDK
 	on(name: "ChatEvent", listener: (
 		type: DOTA_CHAT_MESSAGE,
 		value: number,
@@ -148,8 +147,8 @@ interface EventsSDK extends EventEmitter {
 		playerid_5: number,
 		playerid_6: number,
 		value2: number,
-		value3: number
-	) => void): EventEmitter
+		value3: number,
+	) => void): EventsSDK
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()

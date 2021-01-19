@@ -1,9 +1,9 @@
 import Vector3 from "../Base/Vector3"
 import { DOTA_MODIFIER_ENTRY_TYPE } from "../Enums/DOTA_MODIFIER_ENTRY_TYPE"
-import { GameRules } from "../Objects/Base/Entity"
 import Modifier from "../Objects/Base/Modifier"
 import Unit from "../Objects/Base/Unit"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
+import GameState from "../Utils/GameState"
 import { ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf } from "../Utils/Protobuf"
 import EntityManager from "./EntityManager"
 import EventsSDK from "./EventsSDK"
@@ -11,7 +11,7 @@ import EventsSDK from "./EventsSDK"
 export class IModifier {
 	constructor(public readonly m_Protobuf: RecursiveProtobuf) {
 		if (!this.m_Protobuf.has("creation_time"))
-			this.m_Protobuf.set("creation_time", GameRules?.RawGameTime ?? 0)
+			this.m_Protobuf.set("creation_time", GameState.RawGameTime)
 	}
 	public get EntryType(): Nullable<DOTA_MODIFIER_ENTRY_TYPE> {
 		return this.GetProperty("entry_type")
@@ -91,7 +91,7 @@ export class IModifier {
 	public get Range(): Nullable<number> {
 		return this.GetProperty("range")
 	}
-	public get DDModifierIndex(): Nullable<number> {
+	public get DDModifierID(): Nullable<number> {
 		return this.GetProperty("dd_modifier_index")
 	}
 	public get DDAbilityID(): Nullable<number> {
@@ -139,7 +139,7 @@ function EmitModifierCreated(mod: IModifier) {
 	if (mod.Index === undefined || mod.SerialNum === undefined || mod.Parent === undefined)
 		return
 	const mod_ = new Modifier(mod)
-	const time = GameRules?.RawGameTime ?? 0
+	const time = GameState.RawGameTime
 	if (mod_.Duration !== -1 && mod_.DieTime < time)
 		return
 	ActiveModifiers.set(mod_.SerialNumber, mod_)
@@ -228,8 +228,14 @@ EventsSDK.on("UpdateStringTable", (name, update) => {
 	if (name !== "ActiveModifiers")
 		return
 	update.forEach(([_, mod_serialized], index) => {
-		const mod = new IModifier(ParseProtobufNamed(mod_serialized, "CDOTAModifierBuffTableEntry"))
 		const replaced = ActiveModifiersRaw.get(index)
+		if (mod_serialized.length === 0 && replaced?.SerialNum !== undefined) {
+			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
+			if (replaced_mod !== undefined)
+				EmitModifierRemoved(replaced_mod)
+			return
+		}
+		const mod = new IModifier(ParseProtobufNamed(mod_serialized, "CDOTAModifierBuffTableEntry"))
 		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {
 			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
 			if (replaced_mod !== undefined)

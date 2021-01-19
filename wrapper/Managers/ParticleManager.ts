@@ -2,30 +2,28 @@ import Color from "../Base/Color"
 import Particle, { ControlPoint, ControlPointParam } from "../Base/Particle"
 import Vector3 from "../Base/Vector3"
 import Entity from "../Objects/Base/Entity"
-import { tryFindFile } from "../Utils/readFile"
 
-const git_path = "gitlab.com/FNT_Rework/wrapper/scripts_files"
-const ParticleRangePath = (name: string) => `${git_path}/particles/range_display/range_display_${name.toLowerCase()}.vpcf`
-const ParticleLinePath = (name: string) => `${git_path}/particles/range_line/${name.toLowerCase()}.vpcf`
-const ParticleTargetPath = () => `${git_path}/particles/target/range_finder_tower_aoe.vpcf`
+const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
+const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`
+const ParticleTargetPath = () => `particles/target/range_finder_tower_aoe.vpcf`
 
 const RenderPath = (render: PARTICLE_RENDER) =>
 	(PARTICLE_RENDER[render] ?? PARTICLE_RENDER_NAME.NORMAL).toLowerCase()
 const RangeRenderPath = (render = PARTICLE_RENDER.NORMAL) =>
 	ParticleRangePath(RenderPath(render))
 const BoundingAreaRenderPath = (render = PARTICLE_RENDER.NORMAL) =>
-	ParticleLinePath("bounding_area_view_" + RenderPath(render))
+	ParticleLinePath(`bounding_area_view_${RenderPath(render)}`)
 
 export enum PARTICLE_RENDER_NAME {
 	NORMAL = "Normal",
 	ROPE = "Rope",
-	ANIMATION = "Animation"
+	ANIMATION = "Animation",
 }
 
 export enum PARTICLE_RENDER {
 	NORMAL = 0,
 	ROPE,
-	ANIMATION
+	ANIMATION,
 }
 
 export interface IDrawCircleOptions {
@@ -45,50 +43,20 @@ export interface IDrawLineOptions {
 	Position?: Entity | Vector3,
 	Color?: Color,
 	Width?: number,
-	Alpha?: number
+	Alpha?: number,
+	Mode2D?: number
 }
 
 export interface IDrawBoundingAreaOptions {
 	/**
 	 * from 0 to 1
 	 */
-	Render?: number,
+	RenderStyle?: PARTICLE_RENDER,
 	Color?: Color,
-	Width?: number,
-	Alpha?: number
+	Width?: number
 }
 
 class ParticlesSDK {
-	/**
-	 * @deprecated Will be removed after changed all scripts
-	 */
-	public static Create(path: string, attach: ParticleAttachment_t, ent?: Entity): number {
-		let real_path = tryFindFile(path, 1)
-		if (real_path === undefined)
-			real_path = "particles/error/error.vpcf"
-		return Particles.Create(real_path, attach, ent?.IsValid ? ent.Index : -1)
-	}
-	/**
-	 * @deprecated Will be removed after changed all scripts
-	 */
-	public static Destroy(particle_id: number, immediate: boolean = true): void {
-		Particles.Destroy(particle_id, immediate)
-	}
-	/**
-	 * @deprecated Will be removed after changed all scripts
-	 */
-	public static SetControlPoint(particle_id: number, control_point: number, vec: Vector3): void {
-		vec.toIOBuffer()
-		Particles.SetControlPoint(particle_id, control_point)
-	}
-	/**
-	 * @deprecated Will be removed after changed all scripts
-	 */
-	public static SetControlPointForward(particle_id: number, control_point: number, vec: Vector3): void {
-		vec.toIOBuffer()
-		Particles.SetControlPointForward(particle_id, control_point)
-	}
-
 	public readonly AllParticles = new Map<any, Particle>()
 	private readonly AllParticlesRange = new Map<Particle, number>()
 
@@ -123,11 +91,11 @@ class ParticlesSDK {
 		key: any,
 		entity: Entity,
 		range: number = 100,
-		options: IDrawCircleOptions = {}
+		options: IDrawCircleOptions = {},
 	) {
 		this.CheckChangedRange(key, range)
-
-		return this.AddOrUpdate(key,
+		return this.AddOrUpdate(
+			key,
 			RangeRenderPath(options.RenderStyle),
 			options.Attachment ?? ParticleAttachment_t.PATTACH_ABSORIGIN,
 			entity,
@@ -144,17 +112,17 @@ class ParticlesSDK {
 		entity: Entity,
 		range: number = 100,
 		position: Entity | Vector3 = entity,
-		color = Color.Aqua
+		color = Color.Aqua,
 	) {
 		this.CheckChangedRange(key, range)
-
-		return this.AddOrUpdate(key,
+		return this.AddOrUpdate(
+			key,
 			"particles/ui_mouseactions/drag_selected_ring.vpcf",
 			ParticleAttachment_t.PATTACH_ABSORIGIN,
 			entity,
 			[0, position],
 			[1, color],
-			[2, new Vector3(range * 1.1, 255)]
+			[2, new Vector3(range * 1.1, 255)],
 		)
 	}
 
@@ -162,32 +130,33 @@ class ParticlesSDK {
 		key: any,
 		entity: Entity,
 		endPosition: Entity | Vector3,
-		options: IDrawLineOptions = {}
+		options: IDrawLineOptions = {},
 	) {
-		return this.AddOrUpdate(key,
+		return this.AddOrUpdate(
+			key,
 			ParticleLinePath("line"),
 			options.Attachment ?? ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
 			entity,
-			[0, options.Position ?? entity],
-			[1, endPosition],
-			[2, options.Color ?? Color.Aqua],
-			[3, options.Width ?? 10],
-			[4, options.Alpha ?? 255]
+			[1, options.Position ?? entity],
+			[2, endPosition],
+			[3, new Vector3(options.Alpha ?? 255, options.Width ?? 10, options.Mode2D ?? 0)],
+			[4, options.Color ?? Color.Aqua],
 		)
 	}
 
 	public DrawRangeLine(
 		key: any,
 		entity: Entity,
-		endPosition: Entity | Vector3
+		endPosition: Entity | Vector3,
 	) {
-		return this.AddOrUpdate(key,
+		return this.AddOrUpdate(
+			key,
 			"particles/ui_mouseactions/range_finder_line.vpcf",
 			ParticleAttachment_t.PATTACH_ABSORIGIN,
 			entity,
 			[0, entity],
 			[1, entity],
-			[2, endPosition]
+			[2, endPosition],
 		)
 	}
 
@@ -195,15 +164,16 @@ class ParticlesSDK {
 		key: any,
 		entity: Entity,
 		target: Entity | Vector3,
-		color = Color.Red
+		color = Color.Red,
 	) {
-		return this.AddOrUpdate(key,
+		return this.AddOrUpdate(
+			key,
 			ParticleTargetPath(),
 			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
 			target,
 			[2, entity],
 			[6, color.Clone().SetR(Math.max(color.r, 1))],
-			[7, target]
+			[7, target],
 		)
 	}
 	/**
@@ -218,19 +188,20 @@ class ParticlesSDK {
 	public DrawBoundingArea(
 		key: any,
 		entity: Entity,
-		endPosition: Entity | Vector3,
-		startPos: Entity | Vector3 = entity,
-		options: IDrawBoundingAreaOptions = {}
+		startPos: Entity | Vector3,
+		endPosition: Entity | Vector3 = entity,
+		options: IDrawBoundingAreaOptions = {},
 	) {
-		return this.AddOrUpdate(key,
-			BoundingAreaRenderPath(options.Render),
+		return this.AddOrUpdate(
+			key,
+			BoundingAreaRenderPath(options.RenderStyle),
 			ParticleAttachment_t.PATTACH_ABSORIGIN,
 			entity,
 			[0, startPos],
 			[1, endPosition],
 			[2, options.Color ?? Color.Aqua],
 			[3, options.Width ?? 10],
-			[4, options.Alpha ?? 255]
+			[4, options.Color?.a ?? 0],
 		)
 	}
 

@@ -24,7 +24,9 @@ export class DotaMap {
 	public readonly Bottom = DotaMap.LoadPoly("Bottom")
 	public readonly DireBase = DotaMap.LoadPoly("DireBase")
 	public readonly RadiantBase = DotaMap.LoadPoly("RadiantBase")
-	public readonly River = DotaMap.LoadPoly("River")
+	public readonly RiverTop = DotaMap.LoadPoly("RiverTop")
+	public readonly RiverMiddle = DotaMap.LoadPoly("RiverMiddle")
+	public readonly RiverBottom = DotaMap.LoadPoly("RiverBottom")
 	public readonly Roshan = DotaMap.LoadPoly("Roshan")
 	public readonly DireBottomJungle = DotaMap.LoadPoly("DireBottomJungle")
 	public readonly DireTopJungle = DotaMap.LoadPoly("DireTopJungle")
@@ -45,14 +47,18 @@ export class DotaMap {
 			return MapArea.Middle
 		if (this.Bottom.IsInside(pos))
 			return MapArea.Bottom
-		if (this.Roshan.IsInside(pos))
-			return MapArea.RoshanPit
-		if (this.River.IsInside(pos))
-			return MapArea.River
 		if (this.RadiantBase.IsInside(pos))
 			return MapArea.RadiantBase
 		if (this.DireBase.IsInside(pos))
 			return MapArea.DireBase
+		if (this.Roshan.IsInside(pos))
+			return MapArea.RoshanPit
+		if (this.RiverTop.IsInside(pos))
+			return MapArea.RiverTop
+		if (this.RiverMiddle.IsInside(pos))
+			return MapArea.RiverMiddle
+		if (this.RiverBottom.IsInside(pos))
+			return MapArea.RiverBottom
 		if (this.DireBottomJungle.IsInside(pos))
 			return MapArea.DireBottomJungle
 		if (this.DireTopJungle.IsInside(pos))

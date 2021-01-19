@@ -49,6 +49,21 @@ export default class PlayerData {
 	public get IsPlusSubscriber(): boolean {
 		return this.properties.get("m_bIsPlusSubscriber") as boolean
 	}
+	public get WasMVPLastGame(): boolean {
+		return this.properties.get("m_bWasMVPLastGame") as boolean
+	}
+	public get AccoladeType(): number[] {
+		return this.properties.get("m_eAccoladeType") as number[]
+	}
+	public get AccoladeData(): bigint[] {
+		return this.properties.get("m_unAccoladeData") as bigint[]
+	}
+	public get RankTier(): number {
+		return this.properties.get("m_iRankTier") as number
+	}
+	public get Title(): number {
+		return this.properties.get("m_iTitle") as number
+	}
 
 	public toJSON() {
 		return {
@@ -67,6 +82,11 @@ export default class PlayerData {
 			CoachRating: this.CoachRating,
 			LiveSpectatorTeam: this.LiveSpectatorTeam,
 			IsPlusSubscriber: this.IsPlusSubscriber,
+			WasMVPLastGame: this.WasMVPLastGame,
+			AccoladeType: this.AccoladeType,
+			AccoladeData: this.AccoladeData,
+			RankTier: this.RankTier,
+			Title: this.Title,
 		}
 	}
 }

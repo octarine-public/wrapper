@@ -1,3 +1,4 @@
+import Color from "../../Base/Color"
 import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
@@ -16,13 +17,28 @@ import Item from "./Item"
 export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
 EventsSDK.on("ServerInfo", info => player_slot = (info.get("player_slot") as number) ?? NaN)
-EventsSDK.on("EntityCreated", ent => {
-	if (ent.Index === player_slot + 1 /* skip worldent at index 0 */)
-		LocalPlayer = ent as Player
-})
-export function OnLocalPlayerDeleted() {
-	LocalPlayer = undefined
+let gameInProgress = false
+export function SetGameInProgress(new_val: boolean) {
+	if (!gameInProgress && new_val)
+		EventsSDK.emit("GameStarted", false)
+	else if (gameInProgress && !new_val) {
+		EventsSDK.emit("GameEnded", false)
+		Particles.DeleteAll()
+	}
+	gameInProgress = new_val
 }
+EventsSDK.on("EntityCreated", ent => {
+	if (ent.Index === player_slot + 1) {
+		LocalPlayer = ent as Player
+		SetGameInProgress(true)
+	}
+})
+EventsSDK.on("EntityDestroyed", ent => {
+	if (ent === LocalPlayer) {
+		LocalPlayer = undefined
+		SetGameInProgress(false)
+	}
+})
 export let GameRules: Nullable<CGameRules>
 EventsSDK.on("EntityCreated", ent => {
 	if (ent.IsGameRules)
@@ -68,6 +84,10 @@ export default class Entity {
 	@NetworkedBasicField("CBodyComponent")
 	public CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
 	public IsVisible = true
+	public readonly NetworkedPosition = new Vector3()
+	public readonly NetworkedAngles = new QAngle()
+	public CustomGlowColor: Nullable<Color>
+	public CustomDrawColor: Nullable<[Color, RenderMode_t]>
 
 	constructor(public readonly Index: number) { }
 
@@ -92,11 +112,20 @@ export default class Entity {
 		return new Vector3(
 			EntityVisualPositions[this.Index * 3 + 0],
 			EntityVisualPositions[this.Index * 3 + 1],
-			EntityVisualPositions[this.Index * 3 + 2]
+			EntityVisualPositions[this.Index * 3 + 2],
 		)
 	}
+	public get NetworkedRotation(): number {
+		const ang = this.NetworkedAngles.y
+		if (ang >= 180)
+			return ang - 360
+		return ang
+	}
 	public get Rotation(): number {
-		return EntityVisualRotations[this.Index * 3 + 1]
+		const ang = EntityVisualRotations[this.Index * 3 + 1]
+		if (ang >= 180)
+			return ang - 360
+		return ang
 	}
 	public get Angles(): QAngle {
 		return new QAngle(
@@ -122,6 +151,9 @@ export default class Entity {
 	public get RotationRad(): number {
 		return DegreesToRadian(this.Rotation)
 	}
+	public get NetworkedRotationRad(): number {
+		return DegreesToRadian(this.NetworkedRotation)
+	}
 	public get IsNeutral(): boolean {
 		return this.Team === Team.Neutral
 	}
@@ -132,11 +164,17 @@ export default class Entity {
 	public get CollisionRadius(): number {
 		return GetEntityCollisionRadius(this.Index) ?? 0
 	}
+	public get ProjectileCollisionSize(): number {
+		return this.CollisionRadius
+	}
 	public get RingRadius(): number {
 		return 30 // TODO: actually it uses model unless it doesn't have such for C_BaseEntity#GetRingRadius
 	}
 	public get IsGameRules(): boolean {
 		return false
+	}
+	public get CustomNativeID(): number {
+		return this.Index << 1
 	}
 
 	public Distance(vec: Vector3 | Entity): number {
@@ -230,6 +268,16 @@ export default class Entity {
 	public Select(bAddToGroup: boolean = false): boolean {
 		return SelectUnit(this.Index, bAddToGroup)
 	}
+	public GetAttachment(attachment_name: string): Vector3 {
+		GetEntityAttachment(this.Index, attachment_name)
+		const vec = Vector3.fromIOBuffer()
+		if (vec.IsValid)
+			return vec
+		return this.Position
+	}
+	public GetAttachmentOffset(attachment_name: string): Vector3 {
+		return this.GetAttachment(attachment_name).SubtractForThis(this.Position)
+	}
 	public CannotUseItem(_item: Item): boolean {
 		return false
 	}
@@ -262,6 +310,7 @@ RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 	EntityVisualRotations[ent.Index * 3 + 0] = m_angRotation.x
 	EntityVisualRotations[ent.Index * 3 + 1] = m_angRotation.y
 	EntityVisualRotations[ent.Index * 3 + 2] = m_angRotation.z
+	ent.NetworkedAngles.CopyFrom(m_angRotation)
 })
 RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
 	const old_name = ent.Name
@@ -291,29 +340,29 @@ EventsSDK.on("EntityDestroyed", ent => {
 	})
 })
 
-RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => ent.NetworkedPosition.x = EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
 	new_val as number,
-	ent.CBodyComponent_?.get("m_vecX") as Nullable<number>
+	ent.CBodyComponent_?.get("m_vecX") as Nullable<number>,
 ))
-RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => ent.NetworkedPosition.x = EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
 	ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
-	new_val as number
-))
-RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
 	new_val as number,
-	ent.CBodyComponent_?.get("m_vecY") as Nullable<number>
 ))
-RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => ent.NetworkedPosition.y = EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
+	new_val as number,
+	ent.CBodyComponent_?.get("m_vecY") as Nullable<number>,
+))
+RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => ent.NetworkedPosition.y = EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
 	ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
-	new_val as number
-))
-RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
 	new_val as number,
-	ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>
 ))
-RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => ent.NetworkedPosition.z = EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
+	new_val as number,
+	ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>,
+))
+RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => ent.NetworkedPosition.z = EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
 	ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
-	new_val as number
+	new_val as number,
 ))
 
 EventsSDK.on("GameEvent", (name, obj) => {

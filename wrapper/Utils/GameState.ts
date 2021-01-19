@@ -2,7 +2,7 @@ import { Flow_t } from "../Enums/Flow_t"
 import { SignonState_t } from "../Enums/SignonState_t"
 
 export default new (class GameState {
-	public readonly Language = ConVars.GetString("cl_language")
+	public Language = "unknown"
 	public CurrentServerTick = -1
 	public IsInputCaptured = false
 	public SignonState = SignonState_t.SIGNONSTATE_NONE

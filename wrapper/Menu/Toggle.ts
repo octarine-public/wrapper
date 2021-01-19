@@ -5,13 +5,19 @@ import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 
 export default class Toggle extends Base {
+	private static readonly toggle_background_path = "menu/toggle_background.svg"
+	private static readonly toggle_path = "menu/toggle.svg"
+	private static readonly toggle_background_size = RendererSDK.GetImageSize(Toggle.toggle_background_path)
+	private static readonly toggle_size = RendererSDK.GetImageSize(Toggle.toggle_path)
+	private static readonly toggle_background_offset = new Vector2(12, 12)
+	private static readonly toggle_offset = new Vector2(3, 3)
+	private static readonly toggle_background_color_active = new Color(104, 4, 255)
+	private static readonly toggle_background_color_inactive = new Color(31, 30, 53)
+	private static readonly animation_time = 150
+	private static readonly text_toggle_gap = 10
+
 	public value = true
-	protected readonly text_offset = new Vector2(8, 8)
-	protected readonly toggle_size = new Vector2(20, 20)
-	protected readonly toggle_offset = this.toggle_size.Add(new Vector2(3, 8))
-	protected readonly toggle_activated_offset = new Vector2(2, 2)
-	protected readonly toggle_color = new Color(36, 40, 50)
-	protected readonly toggle_activated_color = new Color(14, 99, 152)
+	private animation_start_time = 0
 
 	constructor(parent: IMenu, name: string, default_value: boolean, tooltip = "") {
 		super(parent, name, tooltip)
@@ -22,18 +28,18 @@ export default class Toggle extends Base {
 	public set ConfigValue(value) { this.value = value ?? this.value }
 
 	private get ToggleRect() {
-		const base_pos = this.Position.Add(this.TotalSize).SubtractForThis(this.toggle_offset).SubtractForThis(this.border_size.MultiplyScalar(2))
-		return new Rectangle(base_pos, base_pos.Add(this.toggle_size))
+		const base_pos = this.Position.Add(this.TotalSize).SubtractForThis(Toggle.toggle_background_offset)
+		return new Rectangle(base_pos.Subtract(Toggle.toggle_background_size), base_pos)
 	}
 
 	public Update() {
-		this.TotalSize.x =
-			RendererSDK.GetTextSize(this.Name, this.FontName, this.FontSize).x
-			+ 10
-			+ this.toggle_size.x
-			+ this.border_size.x * 2
-			+ this.text_offset.x * 2
 		super.Update()
+		this.OriginalSize.x =
+			this.text_offset.x
+			+ this.name_size.x
+			+ Toggle.text_toggle_gap
+			+ Toggle.toggle_background_size.x
+			+ Toggle.toggle_background_offset.x
 	}
 	public OnConfigLoaded() {
 		this.OnValueChangedCBs.forEach(f => f(this))
@@ -53,21 +59,37 @@ export default class Toggle extends Base {
 	}
 	public Render(): void {
 		super.Render()
-		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.background_color)
-		RendererSDK.Text(this.Name, this.Position.Add(this.text_offset).AddScalarY(this.FontSize), this.FontColor, this.FontName, this.FontSize)
+		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
+		const animation_state = Math.min(1, (hrtime() - this.animation_start_time) / Toggle.animation_time)
+		const primary_color = this.value ? Toggle.toggle_background_color_active : Toggle.toggle_background_color_inactive,
+			secondary_color = this.value ? Toggle.toggle_background_color_inactive : Toggle.toggle_background_color_active
 		const toggle_rect = this.ToggleRect
-		RendererSDK.FilledRect(toggle_rect.pos1, this.toggle_size, this.toggle_color)
-		if (this.value)
-			RendererSDK.FilledRect(toggle_rect.pos1.Add(this.toggle_activated_offset), this.toggle_size.Subtract(this.toggle_activated_offset.MultiplyScalar(2)), this.toggle_activated_color)
-		if (!toggle_rect.Contains(this.MousePosition))
-			super.RenderTooltip()
+		RendererSDK.Image(
+			Toggle.toggle_background_path,
+			toggle_rect.pos1,
+			-1,
+			Toggle.toggle_background_size,
+			new Color(
+				(primary_color.r * animation_state) + (secondary_color.r * (1 - animation_state)),
+				(primary_color.g * animation_state) + (secondary_color.g * (1 - animation_state)),
+				(primary_color.b * animation_state) + (secondary_color.b * (1 - animation_state)),
+			),
+		)
+		const toggle_pos = this.value ? animation_state : 1 - animation_state
+		RendererSDK.Image(
+			Toggle.toggle_path,
+			toggle_rect.pos1
+				.Add(Toggle.toggle_offset)
+				.AddScalarX((toggle_rect.Size.x - Toggle.toggle_size.x - (Toggle.toggle_offset.x * 2)) * toggle_pos),
+		)
 	}
 
 	public OnMouseLeftDown(): boolean {
-		return !this.Rect.Contains(this.MousePosition)
+		return !this.IsHovered
 	}
 	public OnMouseLeftUp(): boolean {
 		this.value = !this.value
+		this.animation_start_time = hrtime()
 		this.OnValueChangedCBs.forEach(f => f(this))
 		return false
 	}

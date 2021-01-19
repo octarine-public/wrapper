@@ -1,8 +1,8 @@
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
-import { ExtractResourceBlock } from "../Native/WASM"
 import { Utf16ArrayToStr, Utf8ArrayToStr } from "./ArrayBufferUtils"
 import BinaryStream from "./BinaryStream"
 import { parseKV } from "./ParseKV"
+import { ParseResourceLayout } from "./ParseResource"
 import readFile from "./readFile"
 
 export const DamageIgnoreBuffs = [
@@ -108,11 +108,15 @@ export function MapToObject(map: Map<any, any>): any {
 }
 
 export function ParseExternalReferences(buf: Uint8Array): string[] {
-	const RERL = ExtractResourceBlock(buf, "RERL")
+	const layout = ParseResourceLayout(buf)
+	if (layout === undefined)
+		return []
+
+	const RERL = layout[0].get("RERL")
 	if (RERL === undefined)
 		return []
 
-	const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset + RERL[0], RERL[1]))
+	const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset + RERL.byteOffset, RERL.byteLength))
 	const data_offset = stream.ReadUint32(),
 		size = stream.ReadUint32()
 	if (size === 0)
@@ -161,4 +165,57 @@ export function readJSON(path: string): any {
 			throw `invalid JSON at path ${path}`
 		}
 	}
+}
+
+type CompareFunc<T> = (a: T, b: T) => number
+function partition<T>(items: T[], cmpFunc: CompareFunc<T>, left: number, right: number) {
+	const pivot = items[Math.floor((right + left) / 2)]
+	let i = left,
+		j = right
+	while (i <= j) {
+		while (cmpFunc(items[i], pivot) < 0)
+			i++
+		while (cmpFunc(items[j], pivot) > 0)
+			j--
+		if (i > j)
+			break
+
+		const temp = items[i]
+		items[i] = items[j]
+		items[j] = temp
+
+		i++
+		j--
+	}
+	return i
+}
+
+export function qsort<T>(items: T[], cmpFunc: CompareFunc<T>, left = 0, right = items.length - 1) {
+	if (items.length > 1) {
+		const index = partition(items, cmpFunc, left, right)
+		if (left < index - 1)
+			qsort(items, cmpFunc, left, index - 1)
+		if (index < right)
+			qsort(items, cmpFunc, index, right)
+	}
+	return items
+}
+
+function insertMapElement<K, V>(map: Map<K, V>, k: K, v: V): void {
+	if (map.has(k) && v instanceof Map) {
+		const prev_val = map.get(k)
+		if (prev_val instanceof Map) {
+			v.forEach((v2, k2) => insertMapElement(prev_val, k2, v2))
+		} else
+			map.set(k, v)
+	} else
+		map.set(k, v)
+}
+
+export function createMapFromMergedIterators<K, V>(...iters: IterableIterator<[K, V]>[]): Map<K, V> {
+	const map = new Map<K, V>()
+	for (const iter of iters)
+		for (const [k, v] of iter)
+			insertMapElement(map, k, v)
+	return map
 }

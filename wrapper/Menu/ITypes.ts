@@ -1,17 +1,8 @@
 import Color from "../Base/Color"
+import Dropdown from "./Dropdown"
 import Node from "./Node"
 import Slider from "./Slider"
-import Switcher from "./Switcher"
 import Toggle from "./Toggle"
-
-export interface IMenuColorPicker {
-	Node: Node
-	R: Slider
-	G: Slider
-	B: Slider
-	A: Slider
-	Color: Color
-}
 
 export interface IMenuParticlePicker {
 	Node: Node
@@ -21,6 +12,6 @@ export interface IMenuParticlePicker {
 	B: Slider
 	A: Slider
 	Width: Slider
-	Style: Switcher
+	Style: Dropdown
 	Color: Color
 }

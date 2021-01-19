@@ -5,30 +5,51 @@ import { PARTICLE_RENDER_NAME } from "../Managers/ParticleManager"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Button from "./Button"
+import ColorPicker from "./ColorPicker"
+import Dropdown from "./Dropdown"
 import ImageSelector from "./ImageSelector"
-import { IMenuColorPicker, IMenuParticlePicker } from "./ITypes"
+import { IMenuParticlePicker } from "./ITypes"
 import KeyBind from "./KeyBind"
-import Menu from "./Menu"
 import Slider from "./Slider"
-import Switcher from "./Switcher"
 import Toggle from "./Toggle"
 
 export default class Node extends Base {
-	public entries: Base[] = []
-	public is_open = false
-	public is_hovered = false
-	protected readonly node_hovered_color = new Color(21, 24, 22)
-	protected readonly node_selected_color = new Color(14, 14, 14, 249)
-	protected readonly SizeImageNode = new Vector2(24, 24)
-	protected readonly ArrowSize = 36
-	protected readonly node_arrow_size = RendererSDK.GetTextSize("»", this.FontName, this.ArrowSize).SubtractScalarY(13)
-	protected readonly arrow_offset = this.text_offset.Clone().AddScalarX(15).AddScalarY(this.node_arrow_size.y).AddForThis(this.border_size)
-	protected readonly node_arrow_color = new Color(68, 68, 68)
-	protected readonly node_selected_arrow_color = new Color(0x40, 0x80, 0xff)
-	protected active_element?: Base
+	private static readonly arrow_active_path = "menu/arrow_active.svg"
+	private static readonly arrow_inactive_path = "menu/arrow_inactive.svg"
+	private static readonly arrow_size = RendererSDK.GetImageSize(Node.arrow_inactive_path)
+	private static readonly arrow_offset = new Vector2(8, 8).AddForThis(Node.arrow_size)
+	private static readonly arrow_text_gap = 10
+	private static readonly icon_size = new Vector2(24, 24)
+	private static readonly icon_offset = new Vector2(12, 8)
+	private static readonly text_offset_with_icon = new Vector2(48, 14)
 
-	constructor(parent: IMenu, name: string, protected readonly icon_path = "", tooltip = "") {
+	public entries: Base[] = []
+	protected active_element?: Base
+	protected is_open_ = false
+	protected readonly disable_tooltips = true
+	protected readonly text_offset = new Vector2(15, 14)
+
+	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "") {
 		super(parent, name, tooltip)
+	}
+
+	public get is_open(): boolean {
+		return this.is_open_
+	}
+	public set is_open(val: boolean) {
+		if (this.is_open_ === val)
+			return
+		if (!val)
+			this.OnMouseLeftUp(true)
+		this.is_open_ = val
+		this.is_active = val
+	}
+	public get icon_path(): string {
+		return this.icon_path_
+	}
+	public set icon_path(val: string) {
+		this.icon_path_ = val
+		this.Update()
 	}
 
 	public get ConfigValue() {
@@ -43,6 +64,18 @@ export default class Node extends Base {
 			return
 		this.entries.forEach(entry => entry.ConfigValue = obj[entry.InternalName])
 	}
+	public get EntriesSizeX(): number {
+		return this.entries.reduce(
+			(prev, cur) => Math.max(prev, cur.IsVisible ? cur.OriginalSize.x : 0),
+			170,
+		)
+	}
+	public get EntriesSizeY(): number {
+		return this.entries.reduce(
+			(prev, cur) => prev + (cur.IsVisible ? cur.OriginalSize.y : 0),
+			0,
+		)
+	}
 	public OnConfigLoaded() {
 		this.entries.forEach(entry => entry.OnConfigLoaded())
 	}
@@ -51,93 +84,119 @@ export default class Node extends Base {
 		super.ApplyLocalization()
 	}
 	public Update() {
-		this.TotalSize.x =
-			RendererSDK.GetTextSize(this.Name, this.FontName, this.FontSize).x
-			+ 15
-			+ this.node_arrow_size.x
-			+ this.SizeImageNode.x
-			+ this.border_size.x * 2
-			+ this.text_offset.x * 2
-			+ (this.icon_path !== "" ? this.SizeImageNode.x : 0)
 		super.Update()
+		this.OriginalSize.x =
+			this.name_size.x
+			+ Node.arrow_offset.x
+			+ Node.arrow_text_gap
+		if (this.icon_path !== "")
+			this.OriginalSize.AddScalarX(Node.text_offset_with_icon.x)
+		else
+			this.OriginalSize.AddScalarX(this.text_offset.x)
 	}
 
 	public Render(): void {
-		super.Render()
-		this.is_hovered = this.Rect.Contains(this.MousePosition)
-		const TextPos = this.Position.Add(this.border_size).AddForThis(this.text_offset).AddScalarY(this.FontSize)
-		RendererSDK.FilledRect(this.Position.Add(this.border_size), this.TotalSize.Subtract(this.border_size.MultiplyScalar(2)), this.is_open ? this.node_selected_color : this.is_hovered ? this.node_hovered_color : this.background_color)
+		super.Render(this.parent instanceof Node) // only draw bars on non-root nodes
 
+		const TextPos = this.Position.Clone()
 		if (this.icon_path !== "") {
-			TextPos.AddScalarX(this.SizeImageNode.x)
-			RendererSDK.Image(this.icon_path, this.Position.Add(this.border_size).AddForThis(this.text_offset).SubtractScalarX(5), -1, this.SizeImageNode)
-		}
+			TextPos.AddForThis(Node.text_offset_with_icon)
+			RendererSDK.Image(this.icon_path, this.Position.Add(Node.icon_offset), -1, Node.icon_size)
+		} else
+			TextPos.AddForThis(this.text_offset)
 
-		RendererSDK.Text(this.Name, TextPos, this.FontColor, this.FontName, this.FontSize)
-		RendererSDK.Text("»", this.Position.Add(this.TotalSize).SubtractForThis(this.arrow_offset), this.is_open ? this.node_selected_arrow_color : this.node_arrow_color, this.FontName, this.ArrowSize)
+		this.RenderTextDefault(this.Name, TextPos)
+		const arrow_pos = this.Position.Add(this.TotalSize).SubtractForThis(Node.arrow_offset)
+		if (this.is_open)
+			RendererSDK.Image(Node.arrow_active_path, arrow_pos)
+		else
+			RendererSDK.Image(Node.arrow_inactive_path, arrow_pos)
 		if (!this.is_open)
 			return
 
-		this.entries.forEach(entry => entry.Render())
+		const position = this.Position.Clone().AddScalarX(this.TotalSize.x),
+			max_width = this.EntriesSizeX
+		position.y = Math.min(position.y, RendererSDK.WindowSize.y - this.EntriesSizeY)
+		this.entries.forEach(entry => {
+			if (!entry.IsVisible)
+				return
+			position.CopyTo(entry.Position)
+			entry.TotalSize.x = max_width
+			entry.TotalSize.y = entry.OriginalSize.y
+			entry.Render()
+			position.AddScalarY(entry.TotalSize.y)
+		})
+	}
+	public PostRender(): void {
+		if (this.is_open)
+			this.entries.forEach(entry => {
+				if (entry.IsVisible)
+					entry.PostRender()
+			})
+	}
+
+	public OnParentNotVisible(ignore_open = false): void {
+		if (ignore_open || this.is_open)
+			this.entries.forEach(entry => entry.OnParentNotVisible())
 	}
 
 	public OnMouseLeftDown(): boolean {
-		if (this.Rect.Contains(this.MousePosition))
+		if (this.IsHovered)
 			return false
 		if (!this.is_open)
 			return true
-		return this.active_element === undefined && !this.entries.some(entry => {
-			if (entry.OnMouseLeftDown())
-				return false
-			this.active_element = entry
-			return true
-		})
+		return this.active_element === undefined && !(
+			this.entries.some(entry => {
+				if (!entry.IsVisible || entry.OnPreMouseLeftDown())
+					return false
+				this.active_element = entry
+				return true
+			})
+			|| this.entries.some(entry => {
+				if (!entry.IsVisible || entry.OnMouseLeftDown())
+					return false
+				this.active_element = entry
+				return true
+			})
+		)
 	}
-	public OnMouseLeftUp(): boolean {
-		if (this.Rect.Contains(this.MousePosition)) {
+	public OnMouseLeftUp(ignore_myself = false): boolean {
+		if (!ignore_myself && this.IsHovered) {
 			this.is_open = !this.is_open
 			if (this.is_open)
 				this.parent.entries.forEach(entry => {
 					if (entry instanceof Node && entry !== this)
 						entry.is_open = false
 				})
+			else
+				this.OnParentNotVisible(true)
 			return false
 		}
 		if (this.active_element === undefined)
 			return true
 		const ret = this.active_element.OnMouseLeftUp()
 		this.active_element = undefined
-		Menu.UpdateConfig()
+		Base.SaveConfigASAP = true
 		return ret
-	}
-	public UpdateEntriesPositions(): void {
-		const max_width = this.entries.reduce((prev, entry) => Math.max(prev, entry.TotalSize.x), 0),
-			current_pos = this.Position.Clone().AddScalarX(this.TotalSize.x + 4),
-			total_y = this.entries.reduce((prev, cur) => prev + cur.TotalSize.y, 0)
-		if (current_pos.y + total_y > RendererSDK.WindowSize.y)
-			current_pos.y = RendererSDK.WindowSize.y - total_y
-		this.entries.forEach(entry => {
-			entry.TotalSize.x = max_width
-			current_pos.CopyTo(entry.Position)
-			current_pos.AddScalarY(entry.TotalSize.y)
-			if (entry instanceof Node)
-				entry.UpdateEntriesPositions()
-		})
 	}
 	public AddToggle(name: string, default_value: boolean = false, tooltip = ""): Toggle {
 		return this.AddEntry(new Toggle(this, name, default_value, tooltip))
 	}
-	public AddSlider(name: string, default_value = 0, min = 0, max = 100, tooltip = ""): Slider {
-		return this.AddEntry(new Slider(this, name, default_value, min, max, tooltip))
+	public AddSlider(name: string, default_value = 0, min = 0, max = 100, precision = 0, tooltip = ""): Slider {
+		return this.AddEntry(new Slider(this, name, default_value, min, max, precision, tooltip))
 	}
 	public AddNode(name: string, icon_path = "", tooltip = ""): Node {
 		const node = this.entries.find(entry => entry instanceof Node && entry.InternalName === name) as Node
-		if (node !== undefined)
+		if (node !== undefined) {
+			if (node.icon_path === "")
+				node.icon_path = icon_path
+			// TODO: should we do the same for tooltips?
 			return node
+		}
 		return this.AddEntry(new Node(this, name, icon_path, tooltip))
 	}
-	public AddSwitcher(name: string, values: string[], default_value = 0, tooltip = ""): Switcher {
-		return this.AddEntry(new Switcher(this, name, values, default_value, tooltip))
+	public AddDropdown(name: string, values: string[], default_value = 0, tooltip = ""): Dropdown {
+		return this.AddEntry(new Dropdown(this, name, values, default_value, tooltip))
 	}
 	public AddKeybind(name: string, default_key = "", tooltip = "") {
 		return this.AddEntry(new KeyBind(this, name, default_key, tooltip))
@@ -206,37 +265,18 @@ export default class Node extends Base {
 				X.value = x
 				Y.value = y
 				Z.value = z
-			}
+			},
 		}
 	}
-	public AddColorPicker(name: string, color: Color = new Color(0, 255, 0), tooltip = ""): IMenuColorPicker {
-		const node = this.AddNode(name)
-
-		const R = node.AddSlider("Red", color.r, 0, 255)
-		const G = node.AddSlider("Green", color.g, 0, 255)
-		const B = node.AddSlider("Blue", color.b, 0, 255)
-		const A = node.AddSlider("Alpha", color.a, 0, 255)
-
-		return {
-			Node: node,
-			R, G, B, A,
-			get Color(): Color {
-				return new Color(R.value, G.value, B.value, A.value)
-			},
-			set Color({ r, g, b, a }: Color) {
-				R.value = r
-				G.value = g
-				B.value = b
-				A.value = a
-			}
-		}
+	public AddColorPicker(name: string, default_color: Color = new Color(0, 255, 0), tooltip = ""): ColorPicker {
+		return this.AddEntry(new ColorPicker(this, name, default_color, tooltip))
 	}
 
 	public AddParticlePicker(
 		name: string,
 		color: Color | number = new Color(0, 255, 0),
 		render: PARTICLE_RENDER_NAME[],
-		addStateToTree?: boolean[]
+		addStateToTree?: boolean[],
 	): IMenuParticlePicker {
 		const node = this.AddNode(name)
 
@@ -255,7 +295,7 @@ export default class Node extends Base {
 		const A = node.AddSlider("Opacity (alpha)", color.a, 1, 255)
 
 		const Width = node.AddSlider("Width", 15, 1, 150)
-		const Style = node.AddSwitcher("Style", render)
+		const Style = node.AddDropdown("Style", render)
 
 		return {
 			Node: node,
@@ -270,15 +310,14 @@ export default class Node extends Base {
 				G.value = g
 				B.value = b
 				A.value = a
-			}
+			},
 		}
 	}
 
 	private AddEntry<T extends Base>(entry: T): T {
 		this.entries.push(entry)
 		this.SortEntries()
-		Menu.ForwardConfigASAP = true
-		Menu.PositionDirty = true
+		Base.ForwardConfigASAP = true
 		return entry
 	}
 

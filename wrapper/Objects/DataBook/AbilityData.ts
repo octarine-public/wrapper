@@ -1,4 +1,4 @@
-import { parseEnumString, parseKVFile } from "../../Utils/Utils"
+import { createMapFromMergedIterators, parseEnumString, parseKVFile } from "../../Utils/Utils"
 import Unit from "../Base/Unit"
 
 function LoadAbilityFile(path: string): RecursiveMap {
@@ -53,7 +53,7 @@ export default class AbilityData {
 	public readonly SecretShop: boolean
 	public readonly ItemRequirements: string[][] = []
 	public readonly ItemResult: Nullable<string>
-	private readonly SpecialValueCache = new Map<string, [number[], Nullable<string>, EDOTASpecialBonusOperation]>()
+	private readonly SpecialValueCache = new Map<string, [number[], Nullable<string>, string, EDOTASpecialBonusOperation]>()
 	private readonly CastRangeCache: number[]
 	private readonly ChannelTimeCache: number[]
 	private readonly AbilityDamageCache: number[]
@@ -150,12 +150,6 @@ export default class AbilityData {
 		return ar[0][level]
 	}
 
-	public GetLinkedSpecialBonus(name: string): Nullable<string> {
-		const ar = this.GetCachedSpecialValue(name)
-		if (ar === undefined)
-			return undefined
-		return ar[1]
-	}
 	public GetSpecialValueWithTalent(owner: Unit, name: string, level: number): number {
 		if (level <= 0)
 			return 0
@@ -167,8 +161,8 @@ export default class AbilityData {
 		if (ar[1] !== undefined) {
 			const talent = owner.GetAbilityByName(ar[1])
 			if (talent !== undefined && talent.Level !== 0) {
-				const talent_val = talent.GetSpecialValue("value")
-				switch (ar[2]) {
+				const talent_val = talent.GetSpecialValue(ar[2])
+				switch (ar[3]) {
 					default:
 					case EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD:
 						base_val += talent_val
@@ -269,7 +263,18 @@ export default class AbilityData {
 				let LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 				if (typeof LinkedSpecialBonusOperation_str === "string")
 					LinkedSpecialBonusOperation = (EDOTASpecialBonusOperation as any)[LinkedSpecialBonusOperation_str] ?? EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-				this.SpecialValueCache.set(name, [ar, LinkedSpecialBonus, LinkedSpecialBonusOperation] as [number[], Nullable<string>, EDOTASpecialBonusOperation])
+				let LinkedSpecialBonusField_str = special.get("LinkedSpecialBonusField")
+				if (typeof LinkedSpecialBonusField_str !== "string")
+					LinkedSpecialBonusField_str = "value"
+				this.SpecialValueCache.set(
+					name,
+					[
+						ar,
+						LinkedSpecialBonus,
+						LinkedSpecialBonusField_str,
+						LinkedSpecialBonusOperation,
+					] as [number[], Nullable<string>, string, EDOTASpecialBonusOperation],
+				)
 			}
 		}
 	}
@@ -281,8 +286,9 @@ export default class AbilityData {
 		return [
 			new Array<number>(this.MaxLevel).fill(0),
 			undefined,
-			EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
-		] as [number[], Nullable<string>, EDOTASpecialBonusOperation]
+			"value",
+			EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD,
+		] as [number[], Nullable<string>, string, EDOTASpecialBonusOperation]
 	}
 
 	private ExtendLevelArray(ar: number[]): number[] {
@@ -349,16 +355,15 @@ function FixAbilityInheritance(abils_map: RecursiveMap, fixed_cache: RecursiveMa
 
 export function ReloadGlobalAbilityStorage() {
 	AbilityData.global_storage.clear()
-	const abils_map = new Map([
-		...LoadAbilityFile("scripts/npc/npc_abilities.txt").entries(),
-		...LoadAbilityFile("scripts/npc/npc_abilities_custom.txt").entries(),
-		...LoadAbilityFile("scripts/npc/items.txt").entries(),
-		...LoadAbilityFile("scripts/npc/npc_items_custom.txt").entries(),
-	]) as RecursiveMap
+	const abils_map = createMapFromMergedIterators<string, RecursiveMapValue>(
+		LoadAbilityFile("scripts/npc/npc_abilities.txt").entries(),
+		LoadAbilityFile("scripts/npc/npc_abilities_custom.txt").entries(),
+		LoadAbilityFile("scripts/npc/items.txt").entries(),
+		LoadAbilityFile("scripts/npc/npc_items_custom.txt").entries(),
+	)
 	const fixed_cache: RecursiveMap = new Map()
 	abils_map.forEach((map, abil_name) => {
 		if (map instanceof Map)
 			FixAbilityInheritance(abils_map, fixed_cache, map, abil_name)
 	})
 }
-ReloadGlobalAbilityStorage()

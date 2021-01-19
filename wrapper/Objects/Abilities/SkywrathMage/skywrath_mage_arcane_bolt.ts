@@ -20,7 +20,7 @@ export default class skywrath_mage_arcane_bolt extends Ability {
 			"particles/units/heroes/hero_skywrath_mage/skywrath_mage_arcane_bolt.vpcf",
 			"particles/econ/items/skywrath_mage/skywrath_ti9_immortal_back/skywrath_mage_ti9_arcane_bolt.vpcf",
 			"particles/econ/items/skywrath_mage/skywrath_ti9_immortal_back/skywrath_mage_ti9_arcane_bolt_golden.vpcf",
-			"particles/econ/items/skywrath_mage/skywrath_ti9_immortal_back/skywrath_mage_ti9_arcane_bolt_crimson.vpcf"
+			"particles/econ/items/skywrath_mage/skywrath_ti9_immortal_back/skywrath_mage_ti9_arcane_bolt_crimson.vpcf",
 		]
 	}
 }

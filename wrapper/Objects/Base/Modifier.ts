@@ -3,6 +3,7 @@ import EntityManager from "../../Managers/EntityManager"
 import { IModifier } from "../../Managers/ModifierManager"
 import * as StringTables from "../../Managers/StringTables"
 import GameState from "../../Utils/GameState"
+import AbilityData from "../DataBook/AbilityData"
 import Ability from "./Ability"
 import Entity from "./Entity"
 import Unit from "./Unit"
@@ -57,13 +58,14 @@ export default class Modifier {
 
 	public readonly AbilityLevel: number
 	public readonly IsAura: boolean
+	public readonly Name: string
+	public readonly DDAbilityName: string
 
 	private Parent_: Nullable<Unit>
 	private Ability_: Nullable<Ability>
 
 	private Caster_: Nullable<Entity>
 	private AuraOwner_: Nullable<Entity>
-	private Name_ = ""
 
 	constructor(public m_pBuff: IModifier) {
 		this.Index = this.m_pBuff.Index as number
@@ -74,15 +76,46 @@ export default class Modifier {
 
 		this.Caster_ = EntityManager.EntityByIndex(this.m_pBuff.Caster)
 		this.AuraOwner_ = EntityManager.EntityByIndex(this.m_pBuff.AuraOwner)
+
+		const lua_name = this.m_pBuff.LuaName
+		this.Name = lua_name === undefined || lua_name === ""
+			? StringTables.GetString("ModifierNames", this.m_pBuff.ModifierClass as number)
+			: lua_name
+
+		const DDAbilityID = this.m_pBuff.DDAbilityID
+		const DDAbilityName = DDAbilityID !== undefined
+			? AbilityData.GetAbilityNameByID(DDAbilityID)
+			: undefined
+		this.DDAbilityName = DDAbilityName ?? "ability_base"
 	}
 
 	public get InvisibilityLevel(): number {
+		if (
+			this.Name === "modifier_monkey_king_bounce_leap"
+			|| this.Name === "modifier_monkey_king_arc_to_ground"
+		)
+			return 0
 		const fade_time = this.m_pBuff.FadeTime
 		if (fade_time === undefined)
 			return 0
 		if (fade_time === 0)
 			return 1
 		return Math.min(this.ElapsedTime / (fade_time * 2), 1)
+	}
+	public get DeltaZ(): number {
+		if (
+			(
+				this.Name === "modifier_monkey_king_bounce_leap"
+				|| this.Name === "modifier_monkey_king_arc_to_ground"
+			) && this.ElapsedTime < 10 // just in case buff bugs out
+		)
+			return this.m_pBuff.FadeTime ?? 0
+		if (this.Name === "modifier_rattletrap_jetpack")
+			return 260
+		return 0
+	}
+	public get ShouldDoFlyHeightVisual(): boolean {
+		return this.Name === "modifier_winter_wyvern_arctic_burn_flight"
 	}
 	public get Attributes(): DOTAModifierAttribute_t {
 		return DOTAModifierAttribute_t.MODIFIER_ATTRIBUTE_NONE
@@ -128,10 +161,8 @@ export default class Modifier {
 	public get StackCount(): number {
 		return this.m_pBuff.StackCount ?? 0
 	}
-	public get Name(): string {
-		if (!this.Name_)
-			this.Name_ = StringTables.GetString("ModifierNames", this.m_pBuff.ModifierClass as number)
-		return this.Name_
+	public get DDModifierID(): Nullable<number> {
+		return this.m_pBuff.DDModifierID
 	}
 	public get vStart(): Vector3 {
 		const vec = this.m_pBuff.vStart

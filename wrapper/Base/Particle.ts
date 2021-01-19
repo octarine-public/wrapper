@@ -1,5 +1,6 @@
 import ParticlesSDK from "../Managers/ParticleManager"
 import Entity from "../Objects/Base/Entity"
+import { tryFindFile } from "../Utils/readFile"
 import Color from "./Color"
 import Vector2 from "./Vector2"
 import Vector3 from "./Vector3"
@@ -93,7 +94,7 @@ export default class Particle {
 			Attachment: this.Attachment,
 			Entity: this.Entity,
 			ControlPoints: [...this.ControlPoints.entries()],
-			EffectIndex: this.EffectIndex
+			EffectIndex: this.EffectIndex,
 		}
 	}
 
@@ -101,12 +102,19 @@ export default class Particle {
 		if (this.IsValid)
 			return this
 
+		let path = this.Path
+		if (!path.endsWith("_c"))
+			path += "_c"
+		path = tryFindFile(path, 2) ?? path
+		path = path.substring(0, path.length - 2)
 		this.EffectIndex = Particles.Create(
-			this.Path,
+			path,
 			this.Attachment,
 			this.Entity?.IsValid
-				? this.Entity instanceof Entity ? this.Entity.Index : this.Entity.Length
-				: -1
+				? this.Entity instanceof Entity
+					? this.Entity.Index
+					: this.Entity.Length
+				: -1,
 		)
 		this.IsValid = true
 		this.SetControlPoints(...controlPoints)

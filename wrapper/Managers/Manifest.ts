@@ -126,13 +126,13 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			}
 			break
 		}
-		case 40: // reset Manifest on CSVCMsg_ServerInfo
-			InitManifest()
-			break
 		default:
 			break
 	}
 })
+
+// reset Manifest on new connection
+Events.on("NewConnection", InitManifest)
 
 /*
 Manifest.SaveStringToken("")

@@ -6,8 +6,8 @@ export default class Vector4 {
 	 * Create new Vector4 with x, y, z, w
 	 *
 	 * @example
-	 * var vector = new Vector4(1, 2, 3, 4)
-	 * vector.Normalize()
+	 * let vec = new Vector4(1, 2, 3, 4)
+	 * vec.Normalize()
 	 */
 	constructor(public x: number = 0, public y: number = 0, public z: number = 0, public w: number = 0) { }
 

@@ -7,7 +7,7 @@ export default class ogre_magi_ignite extends Ability {
 		return [
 			"particles/units/heroes/hero_ogre_magi/ogre_magi_ignite.vpcf",
 			"particles/econ/items/ogre_magi/ogre_magi_arcana/ogre_magi_arcana_ignite.vpcf",
-			"particles/econ/items/ogre_magi/ogre_magi_arcana/ogre_magi_arcana_ignite_secondstyle.vpcf"
+			"particles/econ/items/ogre_magi/ogre_magi_arcana/ogre_magi_arcana_ignite_secondstyle.vpcf",
 		]
 	}
 }

@@ -1,7 +1,7 @@
+import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
-import { SignonState_t } from "../Enums/SignonState_t"
 import Entity from "../Objects/Base/Entity"
 import GetConstructorByName, { FieldHandler, GetFieldHandlers, GetSDKClasses } from "../Objects/NativeToSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
@@ -144,13 +144,13 @@ export function DeleteEntity(id: number): void {
 	})
 }
 
-enum EntityPVS {
+const enum EntityPVS {
 	LEAVE,
 	DELETE,
 	CREATE,
 	UPDATE,
 }
-enum PropertyType {
+const enum PropertyType {
 	BOOL,
 	INT8,
 	INT16,
@@ -164,7 +164,7 @@ enum PropertyType {
 	STRING,
 	VECTOR2,
 	VECTOR3,
-	QUATERNION
+	QUATERNION,
 }
 
 const convert_buf = new ArrayBuffer(8)
@@ -222,7 +222,7 @@ function ParseProperty(stream: BinaryStream): string | bigint | number | boolean
 function DumpStreamPosition(
 	ent_class: string,
 	stream: BinaryStream,
-	path_size_walked: number
+	path_size_walked: number,
 ): string {
 	stream.RelativeSeek((path_size_walked + 1) * -2) // uint16 = 2 bytes
 	let ret = ent_class
@@ -402,15 +402,15 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			const msg = ParseProtobufNamed(buf, "CSVCMsg_FlattenedSerializer")
 			if ((globalThis as any).dump_d_ts) {
 				const obj = MapToObject(msg)
-				const list = (Object.values(obj.serializers)).map((ser: any) => [
+				const list = Object.values(obj.serializers).map((ser: any) => [
 					obj.symbols[ser.serializer_name_sym] + (ser.serializer_version !== 0 ? ser.serializer_version : ""),
-					(Object.values(ser.fields_index)).map((field_id: any) => {
+					Object.values(ser.fields_index).map((field_id: any) => {
 						const field = obj.fields[field_id]
 						return [
 							FixType(obj.symbols as string[], field),
-							obj.symbols[field.var_name_sym]
+							obj.symbols[field.var_name_sym],
 						]
-					})
+					}),
 				])
 				console.log("dump_CSVCMsg_FlattenedSerializer.d.ts", `\
 import { Vector2, Vector3, QAngle, Vector4 } from "./src_ts/wrapper/Imports"
@@ -446,7 +446,7 @@ declare class ${name} {
 			break
 		}
 		case 55: { // we have custom parsing for CSVCMsg_PacketEntities
-			EventsSDK.emit("PreUpdate", false)
+			EventsSDK.emit("PreDataUpdate", false)
 			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 			while (!stream.Empty()) {
 				const ent_id = stream.ReadUint16()
@@ -475,14 +475,97 @@ declare class ${name} {
 				cached_m_fGameTime![2](...delayed_tick_call)
 				delayed_tick_call = undefined
 			}
-			EventsSDK.emit("PostUpdate", false)
+			EventsSDK.emit("PostDataUpdate", false)
 			break
 		}
 	}
 })
 
-Events.on("SignonStateChanged", new_state => {
-	if (new_state !== SignonState_t.SIGNONSTATE_NONE)
-		return
-	AllEntitiesAsMap.forEach((_ent, ent_id) => DeleteEntity(ent_id))
+const last_glow_ents = new Set<Entity>()
+function CustomGlowEnts(IOBufferView: DataView): void {
+	const element_size = 8 // [u32, u32] = 8 bytes
+	const max_elements = Math.floor(IOBuffer.byteLength / element_size)
+	EntityManager.AllEntities.map(ent => {
+		const id = ent.CustomNativeID
+		if ((id & 1) === 0 && (id >> 1) >= 0x4000)
+			return undefined
+		const CustomGlowColor = ent.CustomGlowColor
+		if (CustomGlowColor === undefined) {
+			if (!last_glow_ents.has(ent))
+				return undefined
+			last_glow_ents.delete(ent)
+			return [id, 0]
+		} else
+			last_glow_ents.add(ent)
+		return [id, CustomGlowColor.toUint32()]
+	}).reduce((prev, cur) => {
+		if (cur !== undefined) {
+			let array_id = prev.length === 0 ? 0 : prev.length - 1
+			if ((prev[array_id]?.length ?? 0) >= max_elements)
+				array_id++
+			if (prev.length <= array_id)
+				prev.push([])
+			prev[array_id].push(cur as [number, number])
+		}
+		return prev
+	}, [] as [number, number][][]).forEach(ar => {
+		ar.forEach(([custom_id, color_u32], j) => {
+			const off = element_size * j
+			IOBufferView.setUint32(off + 0, custom_id, true)
+			IOBufferView.setUint32(off + 4, color_u32, true)
+		})
+		BatchSetEntityGlow(ar.length)
+	})
+}
+
+const last_colored_ents = new Set<Entity>()
+function CustomColorEnts(IOBufferView: DataView): void {
+	const element_size = 9 // [u32, u32, u8] = 9 bytes
+	const max_elements = Math.floor(IOBuffer.byteLength / element_size)
+	EntityManager.AllEntities.map(ent => {
+		const id = ent.CustomNativeID
+		if ((id & 1) === 0 && (id >> 1) >= 0x4000)
+			return undefined
+		const CustomDrawColor = ent.CustomDrawColor
+		if (CustomDrawColor === undefined) {
+			if (!last_colored_ents.has(ent))
+				return undefined
+			last_colored_ents.delete(ent)
+			return [id, Color.White.toUint32(), RenderMode_t.kRenderNormal]
+		} else
+			last_colored_ents.add(ent)
+		return [id, CustomDrawColor[0].toUint32(), CustomDrawColor[1]]
+	}).reduce((prev, cur) => {
+		if (cur !== undefined) {
+			let array_id = prev.length === 0 ? 0 : prev.length - 1
+			if ((prev[array_id]?.length ?? 0) >= max_elements)
+				array_id++
+			if (prev.length <= array_id)
+				prev.push([])
+			prev[array_id].push(cur as [number, number, number])
+		}
+		return prev
+	}, [] as [number, number, number][][]).forEach(ar => {
+		ar.forEach(([custom_id, color_u32, renderMode], j) => {
+			const off = element_size * j
+			IOBufferView.setUint32(off + 0, custom_id, true)
+			IOBufferView.setUint32(off + 4, color_u32, true)
+			IOBufferView.setUint8(off + 8, renderMode)
+		})
+		BatchSetEntityColor(ar.length)
+	})
+}
+
+Events.after("Draw", () => {
+	const IOBufferView = new DataView(IOBuffer.buffer)
+
+	CustomColorEnts(IOBufferView)
+	CustomGlowEnts(IOBufferView)
+})
+Events.on("NewConnection", () => {
+	for (const ent_id of AllEntitiesAsMap.keys())
+		DeleteEntity(ent_id)
+	last_glow_ents.clear()
+	last_colored_ents.clear()
+	TreeActiveMask.reset()
 })

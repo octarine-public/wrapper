@@ -2,9 +2,7 @@ import { ProjectionInfo } from "../Geometry/ProjectionInfo"
 import Vector3 from "./Vector3"
 
 export default class Vector2 {
-	public static fromIOBuffer(buffer: boolean = true, offset: number = 0): Nullable<Vector2> {
-		if (buffer !== true)
-			return undefined
+	public static fromIOBuffer(offset = 0): Vector2 {
 		return new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1])
 	}
 	public static fromArray(array: [number?, number?]): Vector2 {
@@ -44,8 +42,8 @@ export default class Vector2 {
 	 * Create new Vector2 with x, y
 	 *
 	 * @example
-	 * var vector = new Vector2(1, 2)
-	 * vector.Normalize()
+	 * let vec = new Vector2(1, 2)
+	 * vec.Normalize()
 	 */
 	constructor(public x: number = 0, public y: number = 0) { }
 
@@ -181,14 +179,14 @@ export default class Vector2 {
 			Math.abs(this.y),
 		)
 	}
-	public Round(count: number = 0): Vector2 {
+	public Round(count = 0): Vector2 {
 		const pow = Math.pow(10, count)
 		return new Vector2(
 			Math.round(this.x * pow) / pow,
-			Math.round(this.y * pow) / pow
+			Math.round(this.y * pow) / pow,
 		)
 	}
-	public RoundForThis(count: number = 0): Vector2 {
+	public RoundForThis(count = 0): Vector2 {
 		const pow = Math.pow(10, count)
 
 		this.x = Math.round(this.x * pow) / pow
@@ -200,7 +198,7 @@ export default class Vector2 {
 		const pow = Math.pow(10, count)
 		return new Vector2(
 			Math.floor(this.x * pow) / pow,
-			Math.floor(this.y * pow) / pow
+			Math.floor(this.y * pow) / pow,
 		)
 	}
 	public FloorForThis(count: number = 0): Vector2 {
@@ -570,19 +568,12 @@ export default class Vector2 {
 		return Math.sqrt(this.DistanceSqr(vec))
 	}
 	public ProjectOn(segmentStart: Vector2, segmentEnd: Vector2): ProjectionInfo {
-		const cx = this.x,
-			cy = this.y,
-			ax = segmentStart.x,
-			ay = segmentStart.y,
-			bx = segmentEnd.x,
-			by = segmentEnd.y
-
-		const rL = ((cx - ax) * (bx - ax) + (cy - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)
-		const pointLine = new Vector2(ax + rL * (bx - ax), ay + rL * (by - ay))
-		const rS = Math.min(1, Math.max(0, rL))
-		const isOnSegment = rS === rL
-		const pointSegment = isOnSegment ? pointLine : new Vector2(ax + rS * (bx - ax), ay + rS * (by - ay))
-		return new ProjectionInfo(isOnSegment, pointSegment, pointLine)
+		const segmentSize = segmentEnd.Subtract(segmentStart)
+		const rL = this.Subtract(segmentStart).Dot(segmentSize) / segmentSize.LengthSqr
+		const rS = Math.min(1, Math.max(0, rL)) // normalized to segment bounds
+		const pointLine = segmentStart.Add(segmentSize.MultiplyScalar(rL))
+		const pointSegment = segmentStart.Add(segmentSize.MultiplyScalar(rS))
+		return new ProjectionInfo(pointSegment, pointLine)
 	}
 	public DistanceSegmentSqr(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
 		const objects = this.ProjectOn(segmentStart, segmentEnd)
@@ -591,7 +582,10 @@ export default class Vector2 {
 		return this.DistanceSqr(objects.SegmentPoint)
 	}
 	public DistanceSegment(segmentStart: Vector2, segmentEnd: Vector2, onlyIfOnSegment = false): number {
-		return Math.sqrt(this.DistanceSegmentSqr(segmentStart, segmentEnd, onlyIfOnSegment))
+		const sqr = this.DistanceSegmentSqr(segmentStart, segmentEnd, onlyIfOnSegment)
+		if (sqr === Number.MAX_VALUE)
+			return Number.MAX_VALUE
+		return Math.sqrt(sqr)
 	}
 
 	/**
@@ -670,15 +664,11 @@ export default class Vector2 {
 	 * @param vec The another vector
 	 */
 	public AngleBetweenVectors(vec: Vector2): number {
-		var theta = this.Polar - vec.Polar
-		if (theta < 0) {
+		let theta = this.Polar - vec.Polar
+		if (theta < 0)
 			theta = theta + 360
-		}
-
-		if (theta > 180) {
+		if (theta > 180)
 			theta = 360 - theta
-		}
-
 		return theta
 	}
 	/**

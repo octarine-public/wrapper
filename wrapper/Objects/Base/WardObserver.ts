@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../Decorators"
-import Entity from "./Entity"
+import Unit from "./Unit"
 
 @WrapperClass("CDOTA_NPC_Observer_Ward")
-export default class WardObserver extends Entity {
+export default class WardObserver extends Unit {
 }

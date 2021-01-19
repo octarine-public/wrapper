@@ -1,3 +1,5 @@
+import { qsort } from "./Utils"
+
 /**
  * @returns equal arrays?
  */
@@ -20,16 +22,11 @@ export function HasIntersectArrays<T>(a: T[], b: T[]): boolean {
 }
 
 export function CountInArray<T>(array: T[], el: T): number {
-	let count = 0
-	array.forEach(val => val === el && count++)
-	return count
-}
-
-export function Swap<T>(array: T[], indexA: number, indexB: number): T[] {
-	const bEl = array[indexA]
-	array[indexA] = array[indexB]
-	array[indexB] = bEl
-	return array
+	return array.reduce((prev, val) => {
+		if (val === el)
+			prev++
+		return prev
+	}, 0)
 }
 
 /**
@@ -50,7 +47,7 @@ export function arrayRemove<T>(ar: T[], el: T, deleteEl: boolean = false): boole
  *
  * @param deleteEl uses operator 'delete' instead of 'splice'
  */
-export function arrayRemoveCallback<T>(ar: T[], cb: (value: T, index: number, obj: T[]) => boolean, deleteEl: boolean = false): boolean {
+export function arrayRemoveCallback<T>(ar: T[], cb: (value: T, index: number, obj: T[]) => boolean, deleteEl = false): boolean {
 	const id = ar.findIndex(cb)
 	if (id === -1)
 		return false
@@ -65,4 +62,8 @@ export function arrayRemoveCallback<T>(ar: T[], cb: (value: T, index: number, ob
 
 export function orderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return ar.sort((a, b) => (cb(a) as number) - (cb(b) as number))
+}
+
+export function qorderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
+	return qsort(ar, (a, b) => (cb(a) as number) - (cb(b) as number))
 }

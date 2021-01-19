@@ -12,6 +12,7 @@ import Tree from "../Objects/Base/Tree"
 import Unit from "../Objects/Base/Unit"
 import RendererSDK from "./RendererSDK"
 import UserCmd from "./UserCmd"
+import { GetPositionHeight } from "./WASM"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -107,7 +108,7 @@ export default class ExecuteOrder {
 			new Vector3(
 				ExecuteOrder.LatestUnitOrder_view.getFloat32(8, true),
 				ExecuteOrder.LatestUnitOrder_view.getFloat32(12, true),
-				ExecuteOrder.LatestUnitOrder_view.getFloat32(16, true)
+				ExecuteOrder.LatestUnitOrder_view.getFloat32(16, true),
 			),
 			ability !== 0 ? ((EntityManager.EntityByIndex(ability) as Ability) ?? ability) : undefined,
 			ExecuteOrder.LatestUnitOrder_view.getUint32(4, true),
@@ -169,7 +170,7 @@ export default class ExecuteOrder {
 		return this.m_OrderIssuer
 	}
 	get Issuers(): Unit[] {
-		return this.m_Issuers.slice()
+		return this.m_Issuers
 	}
 	get Unit(): Nullable<Unit> {
 		return this.m_Issuers[0]
@@ -249,11 +250,11 @@ Events.on("Update", () => {
 	InputManager.CursorOnWorld = cmd.VectorUnderCursor
 	if (ExecuteOrder.disable_humanizer)
 		return
-	let order: Nullable<ExecuteOrder> = ExecuteOrder.order_queue[0]
+	let order = ExecuteOrder.order_queue[0] as Nullable<ExecuteOrder>
 	if (execute_current) {
-		order.Execute()
+		order!.Execute()
 		if (ExecuteOrder.debug_orders)
-			console.log("Executing order " + order.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
+			console.log("Executing order " + order!.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
 		ExecuteOrder.order_queue.splice(0, 1)
 		execute_current = false
 		order = ExecuteOrder.order_queue[0]
@@ -286,6 +287,8 @@ Events.on("Update", () => {
 				last_order_click_update = hrtime()
 				break
 			default:
+				if (ExecuteOrder.debug_orders)
+					console.log("Executing order " + order.OrderType)
 				order.Execute()
 				ExecuteOrder.order_queue.splice(0, 1)
 				order = undefined
@@ -305,7 +308,7 @@ Events.on("Update", () => {
 		cmd.CameraPosition.x = latest_camera_x
 		cmd.CameraPosition.y = latest_camera_y
 	}
-	cmd.VectorUnderCursor = CursorWorldVec.SetZ(RendererSDK.GetPositionHeight(Vector2.FromVector3(CursorWorldVec)))
+	cmd.VectorUnderCursor = CursorWorldVec.SetZ(GetPositionHeight(Vector2.FromVector3(CursorWorldVec)))
 	if (order !== undefined && (!ExecuteOrder.wait_near_cursor || cmd.VectorUnderCursor.Distance(last_order_click) <= 100)) {
 		if (!ExecuteOrder.wait_next_usercmd) {
 			order.Execute()
@@ -325,8 +328,8 @@ Events.on("Update", () => {
 				CursorWorldVec,
 				Math.min(
 					camera_vec.Distance(CursorWorldVec),
-					150 * (last_order_click_update + 450 >= hrtime() ? mult : 1)
-				)
+					150 * (last_order_click_update + 450 >= hrtime() ? mult : 1),
+				),
 			)
 			.SubtractScalarY(default_camera_dist / 2)
 			.CopyTo(camera_vec)

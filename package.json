@@ -1,7 +1,7 @@
 {
-	"name": "fusion-native2-scripts",
+	"name": "octarine-wrapper",
 	"version": "1.0.0",
-	"description": "Fusion Native 2: Scripts",
+	"description": "Octarine: Wrapper",
 	"devDependencies": {
 		"tslint": "beta",
 		"typescript": "next"
@@ -24,6 +24,6 @@
 	"repository": {
 		"type": "git",
 		"directory": "/",
-		"url": "https://gitlab.com/FNT_Rework/fusion-native2.d.ts/"
+		"url": "https://gitlab.com/FNT_Rework/wrapper/"
 	}
 }

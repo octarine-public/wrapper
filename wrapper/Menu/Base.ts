@@ -1,6 +1,8 @@
 import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
+import { FontFlags_t } from "../Enums/FontFlags_t"
 import InputManager from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
@@ -8,6 +10,8 @@ import Localization from "./Localization"
 
 export interface IMenu {
 	entries: Base[]
+	EntriesSizeX: number
+	EntriesSizeY: number
 }
 
 export interface ILanguage {
@@ -17,44 +21,72 @@ export interface ILanguage {
 }
 
 export default class Base {
+	public static ForwardConfigASAP = false
+	public static SaveConfigASAP = false
+	public static trigger_on_chat = false
+	private static readonly background_inactive_path = "menu/background_inactive.svg"
+	private static readonly background_active_path = "menu/background_active.svg"
+	private static readonly bar_inactive_path = "menu/bar_inactive.svg"
+	private static readonly bar_active_path = "menu/bar_active.svg"
+	private static readonly bar_width = RendererSDK.GetImageSize(Base.bar_inactive_path).x
+	private static readonly tooltip_offset = 3
+	private static readonly tooltip_icon_size = new Vector2(24, 24)
+	private static readonly tooltip_icon_offset = new Vector2(7, 6)
+	private static readonly tooltip_icon_text_gap = 9
+	private static readonly tooltip_text_offset = new Vector2(8, 12)
+	private static readonly tooltip_text_bottom_gap = 8
+
+	public IsHidden = false
+	public IsHiddenBecauseOfSearch = false
 	public Name = ""
 	public Tooltip = ""
-	public FontSize = 18
-	public FontName = "Consolas"
-	public FontColor = new Color(255, 255, 255, 255)
+	public FontSize = 16
+	public FontName = "PT Sans"
+	public FontColor = Color.White
+	public FontWeight = 400
+	public FontWidth = 5
+	public FontFlags = FontFlags_t.NONE
+	public TooltipIcon = "menu/icons/info.svg"
+	public TooltipIconColor = new Color(104, 4, 255)
 	public readonly OnValueChangedCBs: ((caller: Base) => void)[] = []
 
-	public readonly Position = new Vector2(0, 0)
-	public readonly TotalSize = new Vector2(750 / 5, 40)
+	public readonly Position = new Vector2()
+	public readonly OriginalSize = RendererSDK.GetImageSize(Base.background_inactive_path).Clone()
+	public readonly TotalSize = this.OriginalSize.Clone()
 
-	protected hovered = false
-	protected tooltip_size = new Vector2()
-	protected readonly border_size = new Vector2(1, 1)
-	protected readonly border_color = new Color(14, 14, 14, 254)
-	protected readonly background_color = new Color(19, 19, 19, 249)
-	protected readonly text_offset = new Vector2(7, 7)
+	protected is_active = false
+	protected readonly TooltipSize = new Vector2()
+	protected readonly TooltipTextSize = new Vector3()
+	protected readonly text_offset = new Vector2(14, 14)
+	protected readonly name_size = new Vector3()
 
 	protected readonly execute_on_add: boolean = true
+	protected readonly disable_tooltips: boolean = false
 
 	constructor(public parent: IMenu, public readonly InternalName: string = "", public readonly InternalTooltipName: string) {
 		this.Name = this.InternalName
 		this.Tooltip = this.InternalTooltipName
 	}
-	public get ConfigValue(): any { return undefined }
+
+	public get ConfigValue(): any {
+		return undefined
+	}
 	public set ConfigValue(_value: any) {
 		// to be implemented in child classes
+	}
+	public get IsVisible(): boolean {
+		return !this.IsHidden && !this.IsHiddenBecauseOfSearch
 	}
 	protected get Rect() {
 		return new Rectangle(this.Position, this.Position.Add(this.TotalSize))
 	}
-
-	protected get NodeRect() {
-		return new Rectangle(this.Position.Add(this.border_size), this.Position.Add(this.TotalSize).Subtract(this.border_size.MultiplyScalar(2)))
-	}
-
 	protected get MousePosition(): Vector2 {
 		return InputManager.CursorOnScreen
 	}
+	protected get IsHovered(): boolean {
+		return this.Rect.Contains(this.MousePosition)
+	}
+
 	public OnConfigLoaded() {
 		// to be implemented in child classes
 	}
@@ -72,15 +104,48 @@ export default class Base {
 	}
 
 	public Update(): void {
+		this.GetTextSizeDefault(this.Name).CopyTo(this.name_size)
 		if (this.Tooltip === "")
 			return
-		this.tooltip_size = RendererSDK.GetTextSize(this.Tooltip, this.FontName, this.FontSize)
+		Vector2.FromVector3(this.GetTextSizeDefault(this.Tooltip).CopyTo(this.TooltipTextSize))
+			.CopyTo(this.TooltipSize)
+			.AddScalarX(
+				Base.tooltip_icon_offset.x
+				+ Base.tooltip_icon_size.x
+				+ Base.tooltip_icon_text_gap,
+			)
+			.AddForThis(Base.tooltip_text_offset)
+			.AddScalarY(Base.tooltip_text_bottom_gap)
+		this.TooltipSize.y = Math.max(this.TooltipSize.y, Base.tooltip_icon_size.y + Base.tooltip_icon_offset.y * 2)
 	}
 
-	public Render(): void {
-		RendererSDK.FilledRect(this.Position, this.TotalSize, this.border_color)
+	public Render(draw_bar = true): void {
+		if (this.is_active)
+			RendererSDK.Image(Base.background_active_path, this.Position, -1, this.TotalSize)
+		else
+			RendererSDK.Image(Base.background_inactive_path, this.Position, -1, this.TotalSize)
+		const is_hovered = this.IsHovered
+		if (draw_bar) {
+			const bar_size = new Vector2(Base.bar_width, this.TotalSize.y)
+			if (is_hovered || this.is_active)
+				RendererSDK.Image(Base.bar_active_path, this.Position, -1, bar_size)
+			else
+				RendererSDK.Image(Base.bar_inactive_path, this.Position, -1, bar_size)
+		}
+		if (!this.disable_tooltips && is_hovered)
+			this.RenderTooltip()
+	}
+	public PostRender(): void {
+		// to be implemented in child classes
 	}
 
+	public OnParentNotVisible(): void {
+		// to be implemented in child classes
+	}
+
+	public OnPreMouseLeftDown(): boolean {
+		return true
+	}
 	public OnMouseLeftDown(): boolean {
 		return true
 	}
@@ -89,48 +154,68 @@ export default class Base {
 		return true
 	}
 
-	public RenderTooltip(): void {
-		if (this.Tooltip === "" || !this.Rect.Contains(this.MousePosition))
-			return
-
-		const Addscalar = 5
-		const SizeImage = new Vector2(18, 18)
-		const Position = this.Position.Clone()
-			.AddScalarX(this.TotalSize.x + Addscalar)
-
-		const TotalSize = this.tooltip_size.Clone()
-			.AddForThis(this.border_size)
-			.AddScalarX(SizeImage.x + (Addscalar * 2))
-			.AddScalarY(Addscalar)
-
-		RendererSDK.FilledRect(Position, TotalSize, this.background_color)
-		RendererSDK.OutlinedRect(Position, TotalSize, this.border_color)
-
-		RendererSDK.Image(
-			"panorama/images/status_icons/information_psd.vtex_c",
-			Position.Clone().AddScalarX(2).AddScalarY(4),
-			-1,
-			SizeImage,
-			Color.RoyalBlue
-		)
-
-		RendererSDK.Text(
-			this.Tooltip,
-			Position
-				.AddForThis(this.border_size)
-				.AddScalarX(SizeImage.x + Addscalar)
-				.AddScalarY(this.tooltip_size.y),
-
-			Color.White,
-			this.FontName,
-			this.FontSize
-		)
-	}
-
 	/**
 	 * @returns true on success
 	 */
 	public DetachFromParent(): boolean {
 		return ArrayExtensions.arrayRemove(this.parent.entries, this)
+	}
+
+	protected GetTextSizeDefault(text: string): Vector3 {
+		return RendererSDK.GetTextSize(
+			text,
+			this.FontName,
+			this.FontSize,
+			this.FontWeight,
+			this.FontWidth,
+			false,
+			this.FontFlags,
+		)
+	}
+	protected RenderTextDefault(text: string, position: Vector2): void {
+		RendererSDK.Text(
+			text,
+			position,
+			Color.White,
+			this.FontName,
+			this.FontSize,
+			this.FontWeight,
+			this.FontWidth,
+			false,
+			this.FontFlags,
+		)
+	}
+
+	private RenderTooltip(): void {
+		if (this.Tooltip === "")
+			return
+
+		const Position = this.Position.Clone()
+			.AddScalarX(this.TotalSize.x + Base.tooltip_offset)
+			.AddScalarY((this.TotalSize.y - this.TooltipSize.y) / 2)
+
+		RendererSDK.Image(
+			Base.background_active_path,
+			Position,
+			-1,
+			this.TooltipSize,
+		)
+
+		RendererSDK.Image(
+			this.TooltipIcon,
+			Position.Add(Base.tooltip_icon_offset),
+			-1,
+			Base.tooltip_icon_size,
+			this.TooltipIconColor,
+		)
+
+		this.RenderTextDefault(
+			this.Tooltip,
+			Position
+				.Add(this.TooltipSize)
+				.SubtractForThis(Base.tooltip_text_offset)
+				.SubtractForThis(Vector2.FromVector3(this.TooltipTextSize))
+				.AddScalarY(this.TooltipTextSize.z),
+		)
 	}
 }

@@ -2,19 +2,18 @@ import Color from "../../Base/Color"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import EntityManager from "../../Managers/EntityManager"
-import GameState from "../../Utils/GameState"
 import Entity from "./Entity"
 
 export class Projectile {
 	public IsValid = true
-	public LastUpdate = GameState.RawGameTime
+	public LastUpdate = 0
 
 	constructor(
 		public readonly ID: number,
 		protected path: string,
 		protected particleSystemHandle: bigint,
 		protected SourceUnit: Nullable<Entity | number>,
-		public readonly colorgemcolor: Color,
+		public readonly ColorGemColor: Color,
 		protected speed: number,
 	) { }
 
@@ -62,13 +61,13 @@ export class TrackingProjectile extends Projectile {
 		source: Nullable<Entity | number>,
 		private TargetEntity: Nullable<Entity | number>,
 		speed: number,
-		public readonly sourceAttachment: number | undefined,
+		public readonly SourceAttachment: string,
 		path: string,
 		particleSystemHandle: bigint,
 		private dodgeable: boolean,
 		private isAttack: boolean,
 		private expireTime: number,
-		public readonly maximpacttime: number | undefined,
+		public readonly MaxImpactTime: number | undefined,
 		public LaunchTick: number,
 		private readonly TargetLoc_ = new Vector3(),
 		colorgemcolor: Color,
@@ -84,9 +83,12 @@ export class TrackingProjectile extends Projectile {
 	public get IsAttack(): boolean { return this.isAttack }
 	public get ExpireTime(): number { return this.expireTime }
 	public get TargetLoc(): Vector3 {
+		if (this.IsDodged)
+			return this.TargetLoc_
+
 		const target = this.Target
 		if (target instanceof Entity)
-			return target.Position.CopyTo(this.TargetLoc_)
+			return target.GetAttachment("attach_hitloc").CopyTo(this.TargetLoc_)
 		return this.TargetLoc_
 	}
 

@@ -20,7 +20,7 @@ export default class Inventory {
 	get Items(): Item[] {
 		return [
 			...this.GetItems(0, 5),
-			...[this.TPScroll!, this.NeutralItem!].filter(x => x !== undefined)
+			...[this.TPScroll!, this.NeutralItem!].filter(x => x !== undefined),
 		]
 	}
 	get Backpack(): Item[] {

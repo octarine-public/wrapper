@@ -41,9 +41,11 @@ export default class Ability extends Entity {
 	@NetworkedBasicField("m_bToggleState")
 	public IsToggled = false
 	@NetworkedBasicField("m_bHidden")
-	public IsHidden = false
+	public IsHidden_ = false
 	@NetworkedBasicField("m_nAbilityCurrentCharges")
 	public CurrentCharges = 0
+	@NetworkedBasicField("m_iDirtyButtons")
+	public DirtyButtons = 0
 
 	constructor(Index: number, name: string) {
 		super(Index)
@@ -164,7 +166,7 @@ export default class Ability extends Entity {
 	 * In real time cooldown (in fog)
 	 */
 	public get Cooldown(): number {
-		return Math.max(this.Cooldown_ - ((GameRules?.RawGameTime ?? 0) - this.Cooldown_ChangeTime), 0)
+		return Math.max(this.Cooldown_ - (GameState.RawGameTime - this.Cooldown_ChangeTime), 0)
 	}
 
 	public get MaxDuration(): number {
@@ -182,6 +184,9 @@ export default class Ability extends Entity {
 		if (this.Name.startsWith("special_bonus_spell_amplify"))
 			return this.GetSpecialValue("value") / 100
 		return 0
+	}
+	public get IsHidden(): boolean {
+		return this.IsHidden_
 	}
 
 	/**
@@ -304,12 +309,15 @@ export default class Ability extends Entity {
 }
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => abil.Cooldown_ = abil.CurrentCharges !== 0 ? 0 : Math.max(new_value as number, 0))
+RegisterFieldHandler(Ability, "m_fAbilityChargeRestoreTimeRemaining", (abil, new_value) => {
+	abil.Cooldown_ = abil.CurrentCharges !== 0 ? 0 : Math.max(new_value as number, 0)
+	abil.Cooldown_ChangeTime = GameState.RawGameTime
+})
 RegisterFieldHandler(Ability, "m_bInAbilityPhase", (abil, new_value) => {
 	abil.IsInAbilityPhase_ = new_value as boolean
-	abil.IsInAbilityPhase_ChangeTime = GameRules?.RawGameTime ?? 0
+	abil.IsInAbilityPhase_ChangeTime = GameState.RawGameTime
 })
 RegisterFieldHandler(Ability, "m_fCooldown", (abil, new_value) => {
 	abil.Cooldown_ = new_value as number
-	abil.Cooldown_ChangeTime = GameRules?.RawGameTime ?? 0
+	abil.Cooldown_ChangeTime = GameState.RawGameTime
 })

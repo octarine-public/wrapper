@@ -2,26 +2,28 @@ import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { DegreesToRadian } from "../Utils/Math"
+import { ParseResourceLayout } from "../Utils/ParseResource"
 import readFile from "../Utils/readFile"
 
-export class HeightMap {
+export class CHeightMap {
 	constructor(
-		private min_map_coords: Vector2,
-		private map_size: Vector2,
+		private readonly MinMapCoords_: Vector2,
+		private readonly MapSize_: Vector2,
 	) { }
 
 	public get MinMapCoords(): Vector2 {
-		return this.min_map_coords.Clone()
+		return this.MinMapCoords_.Clone()
 	}
 
 	public get MapSize(): Vector2 {
-		return this.map_size.Clone()
+		return this.MapSize_.Clone()
 	}
 
 	public get MaxMapCoords(): Vector2 {
-		return this.min_map_coords.Add(this.map_size)
+		return this.MinMapCoords_.Add(this.MapSize_)
 	}
 }
+export let HeightMap: Nullable<CHeightMap>
 
 enum HeightMapParseError {
 	NONE = 0,
@@ -70,15 +72,12 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	ScreenToWorldFar: () => void
 	my_malloc: (size: number) => number
 	my_free: (ptr: number) => void
-	ParseImage: (ptr: number, size: number) => number
-	ExtractResourceBlock_DATA: (ptr: number, size: number) => boolean
-	ExtractResourceBlock_REDI: (ptr: number, size: number) => boolean
-	ExtractResourceBlock_NTRO: (ptr: number, size: number) => boolean
-	ExtractResourceBlock_RERL: (ptr: number, size: number) => boolean
+	ParsePNG: (data: number, size: number) => number
+	ParseVTex: (data: number, size: number, image_data: number) => number
 	MurmurHash2: (ptr: number, size: number, seed: number) => number
 	MurmurHash64: (ptr: number, size: number, seed: number) => void
 	CRC32: (ptr: number, size: number) => number
-	DecompressLZ4: (ptr: number, size: number) => number
+	DecompressLZ4: (ptr: number, size: number) => number,
 }
 declare global {
 	var wasm_: typeof wasm
@@ -103,10 +102,12 @@ export function GetEyeVector(camera_angles: QAngle): Vector3 {
 }
 
 export function GetCameraPosition(camera_position: Vector2, camera_distance: number, camera_angles: QAngle): Vector3 {
+	const camera_pos = Camera.Position ? Vector3.fromIOBuffer() : new Vector3()
+	const camera_ang = Camera.Angles ? QAngle.fromIOBuffer() : new QAngle()
 	return camera_position.toVector3().SetZ(
-		Vector3.fromIOBuffer(Camera.Position)!.z
-		+ GetEyeVector(QAngle.fromIOBuffer(Camera.Angles)!).z * Camera.Distance
-		- GetEyeVector(camera_angles).z * camera_distance
+		camera_pos.z
+		+ GetEyeVector(camera_ang).z * Camera.Distance
+		- GetEyeVector(camera_angles).z * camera_distance,
 	)
 }
 
@@ -193,13 +194,13 @@ export function ScreenToWorld(
 	return new Vector3(WASMIOBuffer[0], WASMIOBuffer[1], WASMIOBuffer[2])
 }
 
-export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
+function ParsePNG(buf: Uint8Array): [Uint8Array, Vector2] {
 	let addr = wasm.my_malloc(buf.byteLength)
 	new Uint8Array(wasm.memory.buffer, addr).set(buf)
 
-	addr = wasm.ParseImage(addr, buf.byteLength)
+	addr = wasm.ParsePNG(addr, buf.byteLength)
 	if (addr === 0)
-		throw "Image conversion failed"
+		throw "PNG Image conversion failed: WASM failure"
 	const image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
 	const copy = new Uint8Array(image_size.x * image_size.y * 4)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
@@ -208,52 +209,68 @@ export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
 	return [copy, image_size]
 }
 
-export function ExtractResourceBlock(buf: Uint8Array, type: string): Nullable<[number, number]> {
-	let func: (ptr: number, size: number) => boolean
-	switch (type) {
-		case "DATA":
-			func = wasm.ExtractResourceBlock_DATA
-			break
-		case "REDI":
-			func = wasm.ExtractResourceBlock_REDI
-			break
-		case "NTRO":
-			func = wasm.ExtractResourceBlock_NTRO
-			break
-		case "RERL":
-			func = wasm.ExtractResourceBlock_RERL
-			break
-		default:
-			throw `Unsopported block type: ${type}`
-	}
+export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
+	if (buf.byteLength > 8 && new BigUint64Array(buf.buffer, buf.byteOffset, 8)[0] === 0x0A1A0A0D474E5089n)
+		return ParsePNG(buf)
 
-	const addr = wasm.my_malloc(buf.byteLength)
-	new Uint8Array(wasm.memory.buffer, addr).set(buf)
-	if (!func(addr, buf.byteLength))
-		return undefined
-	return [WASMIOBufferU32[0], WASMIOBufferU32[1]]
-}
+	const layout = ParseResourceLayout(buf)
+	if (layout === undefined)
+		throw "Image conversion failed"
 
-export function ParseVHCG(buf: Uint8Array): Nullable<HeightMap> {
-	const addr = wasm.my_malloc(buf.byteLength)
+	const data_block = layout[0].get("DATA")
+	if (data_block === undefined)
+		throw "Image conversion failed: missing DATA block"
+	if (data_block.byteLength < 40)
+		throw "Image conversion failed: too small file"
+	// TODO: add check that's real VTEX file (lookup https://github.com/SteamDatabase/ValveResourceFormat/blob/master/ValveResourceFormat/Resource/Resource.cs)
+	if (new Uint16Array(data_block.buffer, data_block.byteOffset, 2)[0] !== 1)
+		throw `Image conversion failed: unknown VTex version`
+
+	const data_size = buf.byteLength - data_block.byteOffset
+	let addr = wasm.my_malloc(data_size)
+	new Uint8Array(wasm.memory.buffer, addr).set(buf.subarray(data_block.byteOffset))
+
+	addr = wasm.ParseVTex(addr, buf.byteLength, addr + data_block.byteLength)
 	if (addr === 0)
-		throw "Memory allocation for VHCG raw data failed"
-	const memory = new Uint8Array(wasm.memory.buffer, addr)
-	memory.set(buf)
+		throw "Image conversion failed: WASM failure"
+	const image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
+	const copy = new Uint8Array(image_size.x * image_size.y * 4)
+	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
+	wasm.my_free(addr)
 
-	const err = wasm.ParseVHCG(addr, buf.byteLength)
-	if (err !== HeightMapParseError.NONE) {
-		if (err < 0)
-			throw `VHCG parse failed with READ_ERROR ${-err}`
-		throw `VHCG parse failed with ${HeightMapParseError[err]}`
-	}
-	return new HeightMap(
-		new Vector2(WASMIOBuffer[0], WASMIOBuffer[1]),
-		new Vector2(WASMIOBuffer[2], WASMIOBuffer[3])
-	)
+	return [copy, image_size]
 }
 
-export function GetHeightForLocation(loc: Vector2): number {
+export function ParseVHCG(buf: Uint8Array): void {
+	try {
+		const addr = wasm.my_malloc(buf.byteLength)
+		if (addr === 0)
+			throw "Memory allocation for VHCG raw data failed"
+		const memory = new Uint8Array(wasm.memory.buffer, addr)
+		memory.set(buf)
+
+		const err = wasm.ParseVHCG(addr, buf.byteLength)
+		if (err !== HeightMapParseError.NONE) {
+			if (err < 0)
+				throw `VHCG parse failed with READ_ERROR ${-err}`
+			throw `VHCG parse failed with ${HeightMapParseError[err]}`
+		}
+		HeightMap = new CHeightMap(
+			new Vector2(WASMIOBuffer[0], WASMIOBuffer[1]),
+			new Vector2(WASMIOBuffer[2], WASMIOBuffer[3]),
+		)
+	} catch (e) {
+		console.log("Error in HeightMap init: " + e)
+		HeightMap = undefined
+	}
+}
+export function ResetVHCG(): void {
+	HeightMap = undefined
+}
+
+export function GetPositionHeight(loc: Vector2): number {
+	if (HeightMap === undefined)
+		return 0
 	WASMIOBuffer[0] = loc.x
 	WASMIOBuffer[1] = loc.y
 
@@ -261,7 +278,7 @@ export function GetHeightForLocation(loc: Vector2): number {
 	return WASMIOBuffer[0]
 }
 
-export function GetSecondaryHeightForLocation(loc: Vector2): number {
+export function GetPositionSecondaryHeight(loc: Vector2): number {
 	WASMIOBuffer[0] = loc.x
 	WASMIOBuffer[1] = loc.y
 

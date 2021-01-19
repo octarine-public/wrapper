@@ -45,7 +45,7 @@ export default class UserCmd {
 		this.MouseY = UserCmd.LatestUserCmd_view.getFloat32(56, true)
 		this.CameraPosition = new Vector2(
 			UserCmd.LatestUserCmd_view.getInt16(60, true),
-			UserCmd.LatestUserCmd_view.getInt16(62, true)
+			UserCmd.LatestUserCmd_view.getInt16(62, true),
 		)
 		this.ClickBehaviors = UserCmd.LatestUserCmd_view.getUint8(64)
 		this.ScoreboardOpened = UserCmd.LatestUserCmd_view.getUint8(65) !== 0

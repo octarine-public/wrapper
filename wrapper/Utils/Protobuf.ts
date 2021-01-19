@@ -370,7 +370,7 @@ export function ParseProtobufDescLine(str: string): [/* field number */ number, 
 		type,
 		default_value,
 		proto_type,
-		proto_desc
+		proto_desc,
 	}]
 }
 

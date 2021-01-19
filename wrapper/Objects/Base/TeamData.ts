@@ -3,7 +3,9 @@ import TreeModelReplacement from "../../Base/TreeModelReplacement"
 import Vector2 from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
+import { GridNav } from "../../Utils/ParseGNV"
 import Entity from "./Entity"
+import Tree from "./Tree"
 
 @WrapperClass("C_DOTA_DataNonSpectator")
 export default class TeamData extends Entity {
@@ -59,4 +61,8 @@ RegisterFieldHandler(TeamData, "m_vecDataTeam", (data, new_val) => {
 RegisterFieldHandler(TeamData, "m_vecWorldTreeModelReplacements", (data, new_val) => {
 	data.WorldTreeModelReplacements = (new_val as EntityPropertiesNode[]).map(map => new TreeModelReplacement(map))
 })
-RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, new_value) => EntityManager.SetWorldTreeState(new_value as bigint[]))
+RegisterFieldHandler(TeamData, "m_bWorldTreeState", (_, new_value) => {
+	EntityManager.SetWorldTreeState(new_value as bigint[])
+	if (GridNav !== undefined)
+		EntityManager.GetEntitiesByClass(Tree).forEach(tree => GridNav!.UpdateTreeState(tree))
+})

@@ -198,8 +198,8 @@ EXPORT_JS void ScreenToWorldFar() {
 	cur_pos.CopyTo(JSIOBuffer);
 }
 
-char* ParseVTex(char* data, size_t data_size, int& w, int& h);
-char* ParsePNG(char* data, size_t data_size, int& w, int& h);
+char* ParseVTexInternal(char* data, size_t data_size, char* image_data, int& w, int& h);
+char* ParsePNGInternal(char* data, size_t data_size, int& w, int& h);
 
 EXPORT_JS void* my_malloc(size_t data_size) {
 	return malloc(data_size);
@@ -209,37 +209,23 @@ EXPORT_JS void my_free(void* ptr) {
 	return free(ptr);
 }
 
-EXPORT_JS char* ParseImage(char* data, size_t data_size) {
-	char* res = nullptr;
+EXPORT_JS char* ParsePNG(char* data, size_t data_size) {
 	int w, h;
-	// PNG magic: 89 50 4E 47 0D 0A 1A 0A
-	if (*(uint64_t*)data == 0x0A1A0A0D474E5089) {
-		// png for sure
-		res = ParsePNG(data, data_size, w, h);
-	} else {
-		// probably vtex?
-		res = ParseVTex(data, data_size, w, h);
-	}
+	auto res = ParsePNGInternal(data, data_size, w, h);
 	*(uint32_t*)&JSIOBuffer[0] = w;
 	*(uint32_t*)&JSIOBuffer[1] = h;
 	free(data);
 	return res;
 }
 
-#define ExtractResourceBlock(name) \
-EXPORT_JS bool ExtractResourceBlock_##name(char* data, size_t data_size) { \
-	auto block_data = ExtractBlockFromResource(data, data_size, #name); \
-	if (block_data == nullptr) \
-		return false; \
-	*(uint32_t*)&JSIOBuffer[0] = (size_t)GetPointer(&block_data->offset, block_data->offset) - (size_t)data; \
-	*(uint32_t*)&JSIOBuffer[1] = block_data->size; \
-	return true; \
+EXPORT_JS char* ParseVTex(char* data, size_t data_size, char* image_data) {
+	int w, h;
+	auto res = ParseVTexInternal(data, data_size, image_data, w, h);
+	*(uint32_t*)&JSIOBuffer[0] = w;
+	*(uint32_t*)&JSIOBuffer[1] = h;
+	free(data);
+	return res;
 }
-
-ExtractResourceBlock(DATA)
-ExtractResourceBlock(NTRO)
-ExtractResourceBlock(REDI)
-ExtractResourceBlock(RERL)
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/tier1/generichash.cpp#L313
 // someone please port it to JS >_<

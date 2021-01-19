@@ -1,6 +1,6 @@
 import Vector3 from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
-import Entity, { LocalPlayer, OnLocalPlayerDeleted } from "../Objects/Base/Entity"
+import Entity from "../Objects/Base/Entity"
 import Unit from "../Objects/Base/Unit"
 import { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
 import { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
@@ -556,7 +556,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			break
 		}
 		case 40:
-			EventsSDK.emit('ServerInfo', false, ParseProtobufNamed(buf, "CSVCMsg_ServerInfo"))
+			EventsSDK.emit("ServerInfo", false, ParseProtobufNamed(buf, "CSVCMsg_ServerInfo"))
 			break
 		case 45: { // we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
 			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
@@ -886,41 +886,11 @@ EventsSDK.on("InputCaptured", is_captured => GameState.IsInputCaptured = is_capt
 EventsSDK.on("ServerTick", tick => GameState.CurrentServerTick = tick)
 Events.on("UIStateChanged", new_state => GameState.UIState = new_state)
 
-export let gameInProgress = false
-export function SetGameInProgress(new_val: boolean) {
-	if (!gameInProgress && new_val)
-		EventsSDK.emit("GameStarted", false, LocalPlayer!.Hero)
-	else if (gameInProgress && !new_val) {
-		EventsSDK.emit("GameEnded", false)
-		Particles.DeleteAll()
-	}
-	gameInProgress = new_val
-}
-EventsSDK.on("EntityDestroyed", ent => {
-	if (ent === LocalPlayer) {
-		OnLocalPlayerDeleted()
-		SetGameInProgress(false)
-	}
+Events.on("NewConnection", () => {
+	ReloadGlobalUnitStorage()
+	ReloadGlobalAbilityStorage()
 })
 
-Events.on("SignonStateChanged", new_state => {
-	const old_val = GameState.IsConnected
+Events.on("SignonStateChanged", new_state => GameState.SignonState = new_state)
 
-	GameState.SignonState = new_state
-	const new_val = GameState.IsConnected
-
-	if (!old_val && new_val)
-		ReloadGlobalAbilityStorage()
-})
-
-EventsSDK.on("ServerInfo", info => {
-	const old_val = GameState.IsConnected
-
-	GameState.MapName = info.get("map_name")! as string
-	const new_val = GameState.IsConnected
-
-	if (!old_val && new_val) {
-		ReloadGlobalUnitStorage()
-		ReloadGlobalAbilityStorage()
-	}
-})
+EventsSDK.on("ServerInfo", info => GameState.MapName = info.get("map_name")! as string)

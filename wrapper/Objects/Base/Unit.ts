@@ -11,14 +11,17 @@ import * as StringTables from "../../Managers/StringTables"
 import ExecuteOrder from "../../Native/ExecuteOrder"
 import RendererSDK from "../../Native/RendererSDK"
 import { HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
+import GameState from "../../Utils/GameState"
 import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
 import Inventory from "../DataBook/Inventory"
 import ModifiersBook from "../DataBook/ModifiersBook"
 import UnitData from "../DataBook/UnitData"
 import Ability from "./Ability"
 import Entity, { LocalPlayer } from "./Entity"
+import GameRules from "./GameRules"
 import Item from "./Item"
 import Modifier from "./Modifier"
+import NeutralSpawner from "./NeutralSpawner"
 import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
 import Tree from "./Tree"
@@ -37,7 +40,8 @@ const manabar_size_noscale = new Vector2(parseInt(UnitManaBar.get("xpos") as str
 @WrapperClass("C_DOTA_BaseNPC")
 export default class Unit extends Entity {
 	public static IsVisibleForEnemies(unit: Unit): boolean {
-		const valid_teams = ~(// don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
+		// don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
+		const valid_teams = ~(
 			(1 << Team.None)
 			| (1 << Team.Observer)
 			| (1 << Team.Neutral)
@@ -133,8 +137,6 @@ export default class Unit extends Entity {
 	public UnitStateNetworked = 0n
 	@NetworkedBasicField("m_nHealthBarOffsetOverride")
 	public HealthBarOffsetOverride = 0
-	@NetworkedBasicField("m_bShouldDoFlyHeightVisual")
-	public ShouldDoFlyHeightVisual = true
 	public Spells_ = new Array<number>(MAX_SPELLS).fill(0)
 	public Spells = new Array<Nullable<Ability>>(MAX_SPELLS).fill(undefined)
 	public TotalItems_ = new Array<number>(MAX_ITEMS).fill(0)
@@ -147,6 +149,10 @@ export default class Unit extends Entity {
 	public GoldBountyMin = 0
 	@NetworkedBasicField("m_iGoldBountyMax")
 	public GoldBountyMax = 0
+	public LastActivity = 0
+	public LastActivityEndTime = 0
+	public readonly SpawnPosition = new Vector3()
+	public Spawner: Nullable<NeutralSpawner>
 
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
@@ -278,9 +284,19 @@ export default class Unit extends Entity {
 		if (offset === -1)
 			offset = GetUnitNumberPropertyByName(this.Index, "m_iHealthBarOffset") ?? this.UnitData.HealthBarOffset
 		// TODO: smoothing by Unit#Think
+		for (const buff of this.Buffs) {
+			const delta_z = buff.DeltaZ
+			if (delta_z !== 0)
+				return offset + delta_z
+		}
 		if (this.IsFlyingVisually)
 			offset += 150
+		if (this.HasBuffByName("modifier_monkey_king_bounce_perch"))
+			offset += 100
 		return offset
+	}
+	public get WorkshopName(): string {
+		return this.UnitData.WorkshopName
 	}
 	/**
 	 * @returns [Position: Vector2, Size: Vector2]
@@ -389,6 +405,12 @@ export default class Unit extends Entity {
 	public get HullRadius(): number {
 		return this.UnitData.BoundsHull
 	}
+	public get ProjectileCollisionSize(): number {
+		let ProjectileCollisionSize = this.UnitData.ProjectileCollisionSize
+		if (ProjectileCollisionSize === 0)
+			ProjectileCollisionSize = this.HullRadius
+		return ProjectileCollisionSize
+	}
 
 	public get MovementTurnRate(): number {
 		return this.UnitData.MovementTurnRate
@@ -398,6 +420,9 @@ export default class Unit extends Entity {
 	}
 	public get AttackProjectileSpeed(): number {
 		return this.UnitData.ProjectileSpeed
+	}
+	public get PrimaryAtribute(): Attributes {
+		return this.UnitData.AttributePrimary
 	}
 	public get IsRotating(): boolean {
 		return this.RotationDifference !== 0
@@ -447,7 +472,7 @@ export default class Unit extends Entity {
 		return this.HasMoveCapability(DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_FLY) || this.IsUnitStateFlagSet(modifierstate.MODIFIER_STATE_FLYING)
 	}
 	public get IsFlyingVisually(): boolean {
-		return this.ShouldDoFlyHeightVisual && this.HasFlyingVision
+		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
 	}
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
 		return this.InFront(movespeed * time)
@@ -485,11 +510,40 @@ export default class Unit extends Entity {
 	/**
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
-	public Distance2D(vec: Vector3 | Vector2 | Entity, fromCenterToCenter: boolean = false): number {
-		if (vec instanceof Vector3 || vec instanceof Vector2)
-			return super.Distance2D(vec)
-
-		return super.Distance2D(vec) - (fromCenterToCenter ? 0 : this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0))
+	public Distance(vec: Vector3 | Entity, fromCenterToCenter = false): number {
+		let dist = super.Distance(vec)
+		if (fromCenterToCenter && vec instanceof Entity)
+			dist -= this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0)
+		return dist
+	}
+	/**
+	 * @param fromCenterToCenter include HullRadiuses (for Units)
+	 */
+	public Distance2D(vec: Vector3 | Vector2 | Entity, fromCenterToCenter = false): number {
+		let dist = super.Distance2D(vec)
+		if (fromCenterToCenter && vec instanceof Entity)
+			dist -= this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0)
+		return dist
+	}
+	public GetActivityForAbility(abil: Nullable<Ability>): Nullable<GameActivity_t> {
+		if (abil === undefined)
+			return undefined
+		switch (this.Spells.indexOf(abil)) {
+			case 0:
+				return GameActivity_t.ACT_DOTA_CAST_ABILITY_1
+			case 1:
+				return GameActivity_t.ACT_DOTA_CAST_ABILITY_2
+			case 2:
+				return GameActivity_t.ACT_DOTA_CAST_ABILITY_3
+			case 3:
+				return GameActivity_t.ACT_DOTA_CAST_ABILITY_4
+			case 4:
+				return GameActivity_t.ACT_DOTA_CAST_ABILITY_5
+			case 5:
+				return GameActivity_t.ACT_DOTA_CAST_ABILITY_6
+			default:
+				return undefined
+		}
 	}
 	public GetAbilityByName(name: string | RegExp): Nullable<Ability> {
 		return this.Spells.find(abil =>
@@ -501,8 +555,14 @@ export default class Unit extends Entity {
 			),
 		)
 	}
+	public GetActivityForAbilityName(name: string | RegExp): Nullable<GameActivity_t> {
+		return this.GetActivityForAbility(this.GetAbilityByName(name))
+	}
 	public GetAbilityByClass<T extends Ability>(class_: Constructor<T>): Nullable<T> {
 		return this.Spells.find(abil => abil instanceof class_) as Nullable<T>
+	}
+	public GetActivityForAbilityClass<T extends Ability>(class_: Constructor<T>): Nullable<GameActivity_t> {
+		return this.GetActivityForAbility(this.GetAbilityByClass(class_))
 	}
 	public GetBuffByName(name: string) {
 		return this.ModifiersBook.GetBuffByName(name)
@@ -963,8 +1023,8 @@ export default class Unit extends Entity {
 	public TrainAbility(ability: Ability) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY, issuers: [this], ability })
 	}
-	public DropItemFountain(ability: Ability, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM_AT_FOUNTAIN, issuers: [this], ability, queue, showEffects })
+	public DropItemAtFountain(item: Item, queue?: boolean, showEffects?: boolean) {
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM_AT_FOUNTAIN, issuers: [this], ability: item, queue, showEffects })
 	}
 	public DropItem(item: Item, position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM, issuers: [this], ability: item, position, queue, showEffects })
@@ -999,7 +1059,7 @@ export default class Unit extends Entity {
 	public UnitTaunt(queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAUNT, issuers: [this], queue, showEffects })
 	}
-	public ItemFromStash(item: Item) {
+	public EjectItemFromStash(item: Item) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_EJECT_ITEM_FROM_STASH, issuers: [this], ability: item })
 	}
 	public CastRune(runeItem: Item | number, queue?: boolean, showEffects?: boolean) {
@@ -1109,6 +1169,22 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
 })
 
 EventsSDK.on("EntityCreated", ent => {
+	if (ent instanceof Unit) {
+		ent.SpawnPosition.CopyFrom(ent.Position)
+		if (ent.IsNeutral) {
+			const pos_2d = Vector2.FromVector3(ent.SpawnPosition)
+			ent.Spawner = EntityManager.GetEntitiesByClass(NeutralSpawner).find(spawner => spawner.SpawnBox?.Includes2D(pos_2d))
+		}
+	}
+	if (ent instanceof NeutralSpawner || ent instanceof GameRules) {
+		EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
+			if (!unit.IsNeutral || unit.Spawner !== undefined)
+				return
+			const pos_2d = Vector2.FromVector3(unit.SpawnPosition)
+			unit.Spawner = EntityManager.GetEntitiesByClass(NeutralSpawner).find(spawner => spawner.SpawnBox?.Includes2D(pos_2d))
+		})
+	}
+
 	const owner = ent.Owner
 	if (!(owner instanceof Unit))
 		return
@@ -1152,4 +1228,9 @@ EventsSDK.on("EntityDestroyed", ent => {
 			return false
 		})
 	}
+})
+
+EventsSDK.on("UnitAnimation", (unit, _sequence_variant, _playback_rate, castpoint, _type, activity) => {
+	unit.LastActivity = activity
+	unit.LastActivityEndTime = GameState.RawGameTime + castpoint
 })

@@ -65,7 +65,7 @@ export default class NavMeshPathfinding {
 	}
 	protected RayTraceFirstHit(time: number): Nullable<Obstacle> {
 		const src_pos = this.PredictionSource.PositionAtTime(time)
-		const result = (this.Obstacles.map(obs => [obs.PositionAtTime(this.Delay + time).Distance(src_pos) - obs.Radius, obs] as [number, Obstacle])).sort(([dst1], [dst2]) => dst1 - dst2)
+		const result = this.Obstacles.map(obs => [obs.PositionAtTime(this.Delay + time).Distance(src_pos) - obs.Radius, obs] as [number, Obstacle]).sort(([dst1], [dst2]) => dst1 - dst2)
 		if (result[0][0] < this.PredictionSource.Radius) {
 			//console.log(this.Delay, time, result[0][0], EntityManager.AllEntities.find(e => e.Position.toVector2().LengthSqr === result[0][1].PositionAtTime(0).LengthSqr)!.Name)
 			return result[0][1]

@@ -15,7 +15,7 @@ export default class dazzle_poison_touch extends Ability {
 	public get ProjectileName() {
 		return [
 			"particles/units/heroes/hero_dazzle/dazzle_poison_touch.vpcf",
-			"particles/econ/items/dazzle/dazzle_darkclaw/dazzle_darkclaw_poison_touch.vpcf"
+			"particles/econ/items/dazzle/dazzle_darkclaw/dazzle_darkclaw_poison_touch.vpcf",
 		]
 	}
 }

@@ -1,5 +1,4 @@
 import { WrapperClass } from "../../Decorators"
-import Hero from "../Base/Hero"
 import Item from "../Base/Item"
 
 @WrapperClass("item_ethereal_blade")
@@ -10,7 +9,7 @@ export default class item_ethereal_blade extends Item {
 	public get AbilityDamage(): number {
 		const owner = this.Owner
 		let damage = this.GetSpecialValue("blast_damage_base")
-		if (owner instanceof Hero) {
+		if (owner !== undefined) {
 			const multiplier = this.GetSpecialValue("blast_agility_multiplier")
 			switch (owner.PrimaryAtribute) {
 				case Attributes.DOTA_ATTRIBUTE_STRENGTH:

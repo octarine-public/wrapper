@@ -44,7 +44,8 @@
 			"allow-trailing-underscore",
 			"allow-pascal-case",
 			"allow-snake-case",
-			"ban-keywords"
+			"ban-keywords",
+			"allow-leading-underscore"
 		],
 		"member-access": true,
 		"no-string-throw": false,
@@ -72,7 +73,20 @@
 		"eofline": true,
 		"no-consecutive-blank-lines": true,
 		"no-unnecessary-type-assertion": true,
-		"ordered-imports": true
+		"ordered-imports": true,
+		"quotemark": [
+			true,
+			"double",
+			"avoid-escape"
+		],
+		"trailing-comma": [
+			true,
+			{
+				"multiline": "always",
+				"singleline": "never",
+				"esSpecCompliant": true
+			}
+		]
 	},
 	"rulesDirectory": [],
 	"linterOptions": {

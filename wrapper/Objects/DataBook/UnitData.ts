@@ -1,7 +1,7 @@
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
-import { parseEnumString, parseKVFile } from "../../Utils/Utils"
+import { createMapFromMergedIterators, parseEnumString, parseKVFile } from "../../Utils/Utils"
 
 function LoadUnitFile(path: string): RecursiveMap {
 	const kv = parseKVFile(path)
@@ -47,11 +47,14 @@ export default class UnitData {
 	public readonly AttackDamageType: AttackDamageType
 	public readonly ArmorType: ArmorType
 	public readonly BoundsHull: DOTAHullSize
+	public readonly ProjectileCollisionSize: number
 	public readonly RingRadius: number
 	public readonly MinimapIcon: string
 	public readonly MinimapIconSize: number
 	public readonly HasInventory: boolean
 	public readonly HealthBarOffset: number
+	public readonly WorkshopName: string
+	public readonly AttributePrimary: Attributes
 
 	constructor(name: string, m_Storage: RecursiveMap) {
 		this.HeroID = m_Storage.has("HeroID")
@@ -76,6 +79,9 @@ export default class UnitData {
 		this.BoundsHull = m_Storage.has("BoundsHullName")
 			? parseEnumString(DOTAHullSize, m_Storage.get("BoundsHullName") as string)
 			: DOTAHullSize.DOTA_HULL_SIZE_HERO
+		this.ProjectileCollisionSize = m_Storage.has("ProjectileCollisionSize")
+			? parseInt(m_Storage.get("ProjectileCollisionSize") as string)
+			: 70
 		this.RingRadius = m_Storage.has("RingRadius")
 			? parseInt(m_Storage.get("RingRadius") as string)
 			: 70
@@ -89,6 +95,12 @@ export default class UnitData {
 		this.HealthBarOffset = m_Storage.has("HealthBarOffset")
 			? parseInt(m_Storage.get("HealthBarOffset") as string)
 			: 200
+		this.WorkshopName = m_Storage.has("workshop_guide_name")
+			? (m_Storage.get("workshop_guide_name") as string)
+			: name.split("_").map(str => str ? [str[0].toUpperCase(), ...str.substring(1)] : "").join(" ")
+		this.AttributePrimary = m_Storage.has("AttributePrimary")
+			? parseEnumString(Attributes, m_Storage.get("AttributePrimary") as string)
+			: Attributes.DOTA_ATTRIBUTE_STRENGTH
 	}
 }
 
@@ -117,11 +129,11 @@ function FixUnitInheritance(units_map: RecursiveMap, fixed_cache: RecursiveMap, 
 
 export function ReloadGlobalUnitStorage() {
 	UnitData.global_storage.clear()
-	const parsed_heroes = new Map([
-		...LoadUnitFile("scripts/npc/npc_heroes.txt"),
-		...LoadUnitFile("scripts/npc/npc_heroes_staging.txt"),
-		...LoadUnitFile("scripts/npc/npc_heroes_custom.txt"),
-	])
+	const parsed_heroes = createMapFromMergedIterators<string, RecursiveMapValue>(
+		LoadUnitFile("scripts/npc/npc_heroes.txt").entries(),
+		LoadUnitFile("scripts/npc/npc_heroes_staging.txt").entries(),
+		LoadUnitFile("scripts/npc/npc_heroes_custom.txt").entries(),
+	)
 	{ // Ask Valve about this, not me. It's used for building unit names indexes
 		const elem = parsed_heroes.get("npc_dota_hero_base")
 		if (elem !== undefined) {
@@ -130,12 +142,12 @@ export function ReloadGlobalUnitStorage() {
 			parsed_heroes.set("UnitSchemaFixedUp", 1)
 		}
 	}
-	const units_map = new Map([
-		...parsed_heroes.entries(),
-		...LoadUnitFile("scripts/npc/npc_units.txt"),
-		...LoadUnitFile("scripts/npc/npc_units_staging.txt"),
-		...LoadUnitFile("scripts/npc/npc_units_custom.txt"),
-	]) as RecursiveMap
+	const units_map = createMapFromMergedIterators<string, RecursiveMapValue>(
+		parsed_heroes.entries(),
+		LoadUnitFile("scripts/npc/npc_units.txt").entries(),
+		LoadUnitFile("scripts/npc/npc_units_staging.txt").entries(),
+		LoadUnitFile("scripts/npc/npc_units_custom.txt").entries(),
+	)
 	const fixed_cache: RecursiveMap = new Map()
 	units_map.forEach((map, unit_name) => {
 		if (map instanceof Map)
@@ -144,4 +156,3 @@ export function ReloadGlobalUnitStorage() {
 
 	UnitData.unit_names_sorted = [...units_map.keys()]
 }
-ReloadGlobalUnitStorage()

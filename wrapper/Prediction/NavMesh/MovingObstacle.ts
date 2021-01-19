@@ -9,7 +9,7 @@ export default class MovingObstacle extends Obstacle {
 			unit.HullRadius,
 			unit.IsMoving
 				? Vector2.FromVector3(unit.Forward).MultiplyScalarForThis(unit.IdealSpeed * 1.15)
-				: new Vector2()
+				: new Vector2(),
 		)
 	}
 
@@ -17,7 +17,7 @@ export default class MovingObstacle extends Obstacle {
 		Position_: Vector2,
 		Radius: number,
 		public readonly Velocity: Vector2,
-		public readonly EndTime = Number.MAX_SAFE_INTEGER
+		public readonly EndTime = Number.MAX_SAFE_INTEGER,
 	) { super(Position_, Radius) }
 
 	public PositionAtTime(time: number): Vector2 {

@@ -2,19 +2,22 @@ import Events from "../Managers/Events"
 import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import { StringToUTF16, Utf16ArrayToStr } from "../Utils/ArrayBufferUtils"
+import GameState from "../Utils/GameState"
+import { readJSON } from "../Utils/Utils"
 import Base from "./Base"
 import Header from "./Header"
 import Localization from "./Localization"
 import Node from "./Node"
 
+const hardcoded_icons = new Map<string, string>(Object.entries(readJSON("hardcoded_icons.json")))
 class MenuManager {
 	public entries: Node[] = []
+	public Scale = 1
 	public config: any
-	public is_open = true
-	public trigger_on_chat = false
-	public ForwardConfigASAP = false
 	private readonly header = new Header(this)
 	private active_element?: Base
+	private is_open_ = true
+	private initialized_language = false
 
 	constructor() {
 		readConfig("default.json")
@@ -22,18 +25,27 @@ class MenuManager {
 			.catch(() => this.ConfigValue = {})
 			.finally(() => {
 				this.header.ConfigValue = this.config.Header
-				Localization.SelectedUnitName = this.config.SelectedLocalization ?? Localization.SelectedUnitName
+				if (this.config.SelectedLocalization !== undefined) {
+					Localization.SelectedUnitName = this.config.SelectedLocalization
+					this.initialized_language = true
+				}
 			})
 	}
 
 	public get Position() {
 		return this.header.Position.Clone()
 	}
-	public get PositionDirty(): boolean {
-		return this.header.position_dirty
+	public get is_open(): boolean {
+		return this.is_open_
 	}
-	public set PositionDirty(val: boolean) {
-		this.header.position_dirty = val
+	public set is_open(val: boolean) {
+		if (this.is_open_ === val)
+			return
+		if (!val) {
+			this.OnMouseLeftUp()
+			this.entries.forEach(entry => entry.OnParentNotVisible())
+		}
+		this.is_open_ = val
 	}
 
 	public get ConfigValue() {
@@ -45,41 +57,59 @@ class MenuManager {
 		this.ForwardConfig()
 	}
 
-	public UpdateConfig() {
-		if (this.config === undefined)
-			return
-		this.config.Header = this.header.ConfigValue
-		this.config.SelectedLocalization = Localization.SelectedUnitName
-		writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)).buffer)
+	public get EntriesSizeX(): number {
+		return this.entries.reduce(
+			(prev, cur) => Math.max(prev, cur.IsVisible ? cur.OriginalSize.x : 0),
+			this.header.OriginalSize.x,
+		)
+	}
+	public get EntriesSizeY(): number {
+		return this.entries.reduce(
+			(prev, cur) => prev + (cur.IsVisible ? cur.OriginalSize.y : 0),
+			this.header.OriginalSize.y,
+		)
 	}
 	public Render(): void {
 		if (this.config === undefined)
 			return
-		if (this.ForwardConfigASAP)
+		if (GameState.Language === "unknown")
+			GameState.Language = ConVars.GetString("cl_language")
+		if (!this.initialized_language) {
+			Localization.SelectedUnitName = GameState.Language
+			this.initialized_language = true
+		}
+		if (Base.ForwardConfigASAP)
 			this.ForwardConfig()
 		if (Localization.was_changed) {
 			this.entries.forEach(entry => entry.ApplyLocalization())
 			Localization.was_changed = false
-			this.PositionDirty = true
-			this.UpdateConfig()
+			Base.SaveConfigASAP = true
+		}
+		if (Base.SaveConfigASAP) {
+			this.config.Header = this.header.ConfigValue
+			this.config.SelectedLocalization = Localization.SelectedUnitName
+			writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)).buffer)
+			Base.SaveConfigASAP = false
 		}
 		if (!this.is_open)
 			return
-		this.header.PreRender()
-		if (this.header.position_dirty) {
-			const current_pos = this.Position.Clone().AddScalarY(this.header.OriginalSize.y)
-			const max_width = this.entries.reduce((prev, node) => Math.max(prev, node.TotalSize.x), this.header.OriginalSize.x)
-			this.header.TotalSize.x = max_width
-			this.entries.forEach(node => {
-				node.TotalSize.x = max_width
-				current_pos.CopyTo(node.Position)
-				node.UpdateEntriesPositions()
-				current_pos.AddScalarY(node.TotalSize.y)
-			})
-			this.header.position_dirty = false
-		}
+		const max_width = this.EntriesSizeX
+		this.header.TotalSize.x = max_width
 		this.header.Render()
-		this.entries.forEach(node => node.Render())
+		const position = this.header.Position.Clone().AddScalarY(this.header.TotalSize.y)
+		this.entries.forEach(node => {
+			if (!node.IsVisible)
+				return
+			position.CopyTo(node.Position)
+			node.TotalSize.x = max_width
+			node.TotalSize.y = node.OriginalSize.y
+			node.Render()
+			position.AddScalarY(node.TotalSize.y)
+		})
+		this.entries.forEach(node => {
+			if (node.IsVisible)
+				node.PostRender()
+		})
 	}
 
 	public OnMouseLeftDown(): boolean {
@@ -90,6 +120,8 @@ class MenuManager {
 			return false
 		}
 		return !this.entries.some(node => {
+			if (!node.IsVisible)
+				return false
 			const ret = node.OnMouseLeftDown()
 			if (!ret)
 				this.active_element = node
@@ -101,14 +133,19 @@ class MenuManager {
 			return true
 		const ret = this.active_element.OnMouseLeftUp()
 		if (this.active_element === this.header)
-			this.UpdateConfig()
+			Base.SaveConfigASAP = true
 		this.active_element = undefined
 		return ret
 	}
 	public AddEntry(name: string, icon_path = ""): Node {
-		let node = this.entries.find(entry => entry.Name === name)
-		if (node !== undefined)
+		let node = this.entries.find(entry => entry.InternalName === name)
+		if (node !== undefined) {
+			if (node.icon_path === "")
+				node.icon_path = icon_path
 			return node
+		}
+		if (hardcoded_icons.has(name))
+			icon_path = hardcoded_icons.get(name)!
 		node = new Node(this, name, icon_path)
 		node.parent = this
 		this.entries.push(node)
@@ -133,7 +170,7 @@ class MenuManager {
 			return
 		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.InternalName])
 		this.entries.forEach(entry => entry.OnConfigLoaded())
-		this.ForwardConfigASAP = false
+		Base.ForwardConfigASAP = false
 	}
 }
 const Menu = new MenuManager()

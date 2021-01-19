@@ -19,7 +19,7 @@ export default class Prediction {
 		speed = this.Owner.IdealSpeed,
 		angle = Vector2.FromVector3(this.Owner.Forward),
 		delay = 0,
-		obstacles?: Entity[]
+		obstacles?: Entity[],
 	): Entity[] {
 		if (obstacles === undefined) {
 			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
@@ -32,7 +32,7 @@ export default class Prediction {
 				Vector2.FromVector3(this.Owner.Position),
 				collision_size,
 				angle.MultiplyScalarForThis(speed),
-				radius / speed
+				radius / speed,
 			),
 			[...obs2ent.keys()],
 			delay,
@@ -44,7 +44,7 @@ export default class Prediction {
 		speed = this.Owner.IdealSpeed,
 		angle = Vector2.FromVector3(this.Owner.Forward),
 		delay = 0,
-		obstacles?: Entity[]
+		obstacles?: Entity[],
 	): Nullable<[Entity, number]> {
 		if (obstacles === undefined) {
 			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
@@ -57,7 +57,7 @@ export default class Prediction {
 				Vector2.FromVector3(this.Owner.Position),
 				collision_size,
 				angle.MultiplyScalarForThis(speed),
-				radius / speed
+				radius / speed,
 			),
 			[...obs2ent.keys()],
 			delay,
@@ -73,7 +73,7 @@ export default class Prediction {
 		speed = this.Owner.IdealSpeed,
 		delay = 0,
 		dynamic_delay_func = (ang: number) => 0,
-		obstacles?: Entity[]
+		obstacles?: Entity[],
 	): Nullable<[number, number]> {
 		if (obstacles === undefined) {
 			const ents = [...EntityManager.GetEntitiesByClass(Creep), ...EntityManager.GetEntitiesByClass(Hero)]
@@ -86,7 +86,7 @@ export default class Prediction {
 				Vector2.FromVector3(this.Owner.Position),
 				collision_size,
 				new Vector2(speed, speed),
-				radius / speed
+				radius / speed,
 			),
 			[...ent2obs.values()],
 			delay,
