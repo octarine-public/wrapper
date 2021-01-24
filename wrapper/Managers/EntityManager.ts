@@ -1,4 +1,3 @@
-import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
@@ -481,91 +480,8 @@ declare class ${name} {
 	}
 })
 
-const last_glow_ents = new Set<Entity>()
-function CustomGlowEnts(IOBufferView: DataView): void {
-	const element_size = 8 // [u32, u32] = 8 bytes
-	const max_elements = Math.floor(IOBuffer.byteLength / element_size)
-	EntityManager.AllEntities.map(ent => {
-		const id = ent.CustomNativeID
-		if ((id & 1) === 0 && (id >> 1) >= 0x4000)
-			return undefined
-		const CustomGlowColor = ent.CustomGlowColor
-		if (CustomGlowColor === undefined) {
-			if (!last_glow_ents.has(ent))
-				return undefined
-			last_glow_ents.delete(ent)
-			return [id, 0]
-		} else
-			last_glow_ents.add(ent)
-		return [id, CustomGlowColor.toUint32()]
-	}).reduce((prev, cur) => {
-		if (cur !== undefined) {
-			let array_id = prev.length === 0 ? 0 : prev.length - 1
-			if ((prev[array_id]?.length ?? 0) >= max_elements)
-				array_id++
-			if (prev.length <= array_id)
-				prev.push([])
-			prev[array_id].push(cur as [number, number])
-		}
-		return prev
-	}, [] as [number, number][][]).forEach(ar => {
-		ar.forEach(([custom_id, color_u32], j) => {
-			const off = element_size * j
-			IOBufferView.setUint32(off + 0, custom_id, true)
-			IOBufferView.setUint32(off + 4, color_u32, true)
-		})
-		BatchSetEntityGlow(ar.length)
-	})
-}
-
-const last_colored_ents = new Set<Entity>()
-function CustomColorEnts(IOBufferView: DataView): void {
-	const element_size = 9 // [u32, u32, u8] = 9 bytes
-	const max_elements = Math.floor(IOBuffer.byteLength / element_size)
-	EntityManager.AllEntities.map(ent => {
-		const id = ent.CustomNativeID
-		if ((id & 1) === 0 && (id >> 1) >= 0x4000)
-			return undefined
-		const CustomDrawColor = ent.CustomDrawColor
-		if (CustomDrawColor === undefined) {
-			if (!last_colored_ents.has(ent))
-				return undefined
-			last_colored_ents.delete(ent)
-			return [id, Color.White.toUint32(), RenderMode_t.kRenderNormal]
-		} else
-			last_colored_ents.add(ent)
-		return [id, CustomDrawColor[0].toUint32(), CustomDrawColor[1]]
-	}).reduce((prev, cur) => {
-		if (cur !== undefined) {
-			let array_id = prev.length === 0 ? 0 : prev.length - 1
-			if ((prev[array_id]?.length ?? 0) >= max_elements)
-				array_id++
-			if (prev.length <= array_id)
-				prev.push([])
-			prev[array_id].push(cur as [number, number, number])
-		}
-		return prev
-	}, [] as [number, number, number][][]).forEach(ar => {
-		ar.forEach(([custom_id, color_u32, renderMode], j) => {
-			const off = element_size * j
-			IOBufferView.setUint32(off + 0, custom_id, true)
-			IOBufferView.setUint32(off + 4, color_u32, true)
-			IOBufferView.setUint8(off + 8, renderMode)
-		})
-		BatchSetEntityColor(ar.length)
-	})
-}
-
-Events.after("Draw", () => {
-	const IOBufferView = new DataView(IOBuffer.buffer)
-
-	CustomColorEnts(IOBufferView)
-	CustomGlowEnts(IOBufferView)
-})
 Events.on("NewConnection", () => {
 	for (const ent_id of AllEntitiesAsMap.keys())
 		DeleteEntity(ent_id)
-	last_glow_ents.clear()
-	last_colored_ents.clear()
 	TreeActiveMask.reset()
 })

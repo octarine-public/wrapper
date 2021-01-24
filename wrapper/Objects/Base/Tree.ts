@@ -1,3 +1,4 @@
+import Color from "../../Base/Color"
 import QAngle from "../../Base/QAngle"
 import Vector3 from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
@@ -29,6 +30,12 @@ export default class Tree extends Entity {
 	}
 	public get CustomNativeID(): number {
 		return (this.BinaryID << 1) | 1
+	}
+	public set CustomGlowColor(_: Nullable<Color>) {
+		// N/A for non-networked entities
+	}
+	public set CustomDrawColor(_: Nullable<[Color, RenderMode_t]>) {
+		// N/A for non-networked entities
 	}
 }
 

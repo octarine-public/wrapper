@@ -86,11 +86,29 @@ export default class Entity {
 	public IsVisible = true
 	public readonly NetworkedPosition = new Vector3()
 	public readonly NetworkedAngles = new QAngle()
-	public CustomGlowColor: Nullable<Color>
-	public CustomDrawColor: Nullable<[Color, RenderMode_t]>
+	private CustomGlowColor_: Nullable<Color>
+	private CustomDrawColor_: Nullable<[Color, RenderMode_t]>
 
 	constructor(public readonly Index: number) { }
 
+	public get CustomGlowColor(): Nullable<Color> {
+		return this.CustomGlowColor_
+	}
+	public set CustomGlowColor(val: Nullable<Color>) {
+		if (this.CustomGlowColor_ === undefined && val === undefined)
+			return
+		this.CustomGlowColor_ = val
+		last_glow_ents.add(this)
+	}
+	public get CustomDrawColor(): Nullable<[Color, RenderMode_t]> {
+		return this.CustomDrawColor_
+	}
+	public set CustomDrawColor(val: Nullable<[Color, RenderMode_t]>) {
+		if (this.CustomDrawColor_ === undefined && val === undefined)
+			return
+		this.CustomDrawColor_ = val
+		last_colored_ents.add(this)
+	}
 	public get Name(): string {
 		return this.Name_
 	}
@@ -292,6 +310,7 @@ function QuantitizedVecCoordToCoord(cell: Nullable<number>, inside: Nullable<num
 }
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+import Events from "../../Managers/Events"
 RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => {
 	const old_team = ent.Team
 	ent.Team = new_val as Team
@@ -372,4 +391,85 @@ EventsSDK.on("GameEvent", (name, obj) => {
 	if (ent === undefined || !ent.IsAlive)
 		return
 	ent.HP = Math.max(Math.round(ent.HP - obj.damage), 1)
+})
+
+const last_glow_ents = new Set<Entity>()
+function CustomGlowEnts(IOBufferView: DataView): void {
+	const element_size = 8 // [u32, u32] = 8 bytes
+	const max_elements = Math.floor(IOBuffer.byteLength / element_size)
+	const groups: [number, number][][] = []
+	last_glow_ents.forEach(ent => {
+		if (!ent.IsValid) {
+			last_glow_ents.delete(ent)
+			return
+		}
+		const id = ent.CustomNativeID
+		const CustomGlowColor = ent.CustomGlowColor
+		let cur: [number, number]
+		if (CustomGlowColor === undefined) {
+			last_glow_ents.delete(ent)
+			cur = [id, 0]
+		} else
+			cur = [id, CustomGlowColor.toUint32()]
+		let array_id = groups.length === 0 ? 0 : groups.length - 1
+		if ((groups[array_id]?.length ?? 0) >= max_elements)
+			array_id++
+		if (groups.length <= array_id)
+			groups.push([])
+		groups[array_id].push(cur)
+	})
+	groups.forEach(ar => {
+		ar.forEach(([custom_id, color_u32], j) => {
+			const off = element_size * j
+			IOBufferView.setUint32(off + 0, custom_id, true)
+			IOBufferView.setUint32(off + 4, color_u32, true)
+		})
+		BatchSetEntityGlow(ar.length)
+	})
+}
+
+const last_colored_ents = new Set<Entity>()
+function CustomColorEnts(IOBufferView: DataView): void {
+	const element_size = 9 // [u32, u32, u8] = 9 bytes
+	const max_elements = Math.floor(IOBuffer.byteLength / element_size)
+	const groups: [Entity, number, number][][] = []
+	last_colored_ents.forEach(ent => {
+		if (!ent.IsValid) {
+			last_colored_ents.delete(ent)
+			return
+		}
+		const CustomDrawColor = ent.CustomDrawColor
+		let cur: [Entity, number, number]
+		if (CustomDrawColor === undefined) {
+			last_colored_ents.delete(ent)
+			cur = [ent, Color.White.toUint32(), RenderMode_t.kRenderNormal]
+		} else
+			cur = [ent, CustomDrawColor[0].toUint32(), CustomDrawColor[1]]
+		let array_id = groups.length === 0 ? 0 : groups.length - 1
+		if ((groups[array_id]?.length ?? 0) >= max_elements)
+			array_id++
+		if (groups.length <= array_id)
+			groups.push([])
+		groups[array_id].push(cur)
+	})
+	groups.forEach(ar => {
+		ar.forEach(([ent, color_u32, renderMode], j) => {
+			const off = element_size * j
+			IOBufferView.setUint32(off + 0, ent.CustomNativeID, true)
+			IOBufferView.setUint32(off + 4, color_u32, true)
+			IOBufferView.setUint8(off + 8, renderMode)
+		})
+		BatchSetEntityColor(ar.length)
+	})
+}
+
+Events.after("Draw", () => {
+	const IOBufferView = new DataView(IOBuffer.buffer)
+
+	CustomColorEnts(IOBufferView)
+	CustomGlowEnts(IOBufferView)
+})
+Events.on("NewConnection", () => {
+	last_glow_ents.clear()
+	last_colored_ents.clear()
 })
