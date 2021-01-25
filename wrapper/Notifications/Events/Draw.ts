@@ -7,7 +7,7 @@ import { MAX_SHOW_NOTIFICATION, Notifications, Queue } from "../data"
 import { NotificationsSDK } from "../Imports"
 import { GetPanel } from "../Util"
 
-EventsSDK.on("Draw", () => {
+EventsSDK.after("Draw", () => {
 	arrayRemove(Notifications, Notifications.filter(x => x.IsExpired)[0])
 	const num = Math.min(Queue.length, MAX_SHOW_NOTIFICATION - Notifications.length)
 	for (let index = 0; index < num; index++) {
