@@ -31,8 +31,10 @@ export default class Header extends Base {
 	}
 
 	public Render(): void {
+		if (this.Position.IsZero())
+			this.Position.CopyFrom(RendererSDK.WindowSize.DivideScalar(2))
 		if (this.dragging)
-			this.MousePosition.SubtractForThis(this.dragging_offset).Max(0).CopyTo(this.Position)
+			this.MousePosition.SubtractForThis(this.dragging_offset).Max(1).CopyTo(this.Position)
 		this.Position.x = Math.min(
 			this.Position.x,
 			RendererSDK.WindowSize.x - this.parent.EntriesSizeX,

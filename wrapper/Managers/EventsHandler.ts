@@ -892,5 +892,3 @@ Events.on("NewConnection", () => {
 })
 
 Events.on("SignonStateChanged", new_state => GameState.SignonState = new_state)
-
-EventsSDK.on("ServerInfo", info => GameState.MapName = info.get("map_name")! as string)

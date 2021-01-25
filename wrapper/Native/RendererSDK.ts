@@ -980,7 +980,6 @@ class CRendererSDK {
 }
 const RendererSDK = new CRendererSDK()
 
-let last_loaded_map_name = "<empty>"
 function StaticInit() {
 	let map_name = GetLevelNameShort()
 	if (map_name === "start")
@@ -989,14 +988,14 @@ function StaticInit() {
 		const buf = fread(`maps/${map_name}.vhcg`)
 		if (buf !== undefined) {
 			WASM.ParseVHCG(new Uint8Array(buf))
-			GameState.MapName = last_loaded_map_name = map_name
+			GameState.MapName = map_name
 		}
 	}
 	{
 		const buf = fread(`maps/${map_name}.gnv`)
 		if (buf !== undefined) {
 			ParseGNV(buf)
-			GameState.MapName = last_loaded_map_name = map_name
+			GameState.MapName = map_name
 		}
 	}
 	LoadTreeMapByName(map_name)
@@ -1009,36 +1008,38 @@ Events.on("NewConnection", () => {
 	}
 })
 
-Events.on("PostAddSearchPath", path => {
-	const map_name = ParseMapName(path)
-	if (map_name === undefined)
-		return
-
+function TryLoadMapFiles() {
+	const map_name = GameState.MapName
 	{
 		const buf = fread(`maps/${map_name}.vhcg`)
 		if (buf !== undefined) {
 			WASM.ParseVHCG(new Uint8Array(buf))
-			GameState.MapName = last_loaded_map_name = map_name
-		}
+		} else
+			WASM.ResetVHCG()
 	}
 	{
 		const buf = fread(`maps/${map_name}.gnv`)
-		if (buf !== undefined) {
+		if (buf !== undefined)
 			ParseGNV(buf)
-			GameState.MapName = last_loaded_map_name = map_name
-		}
+		else
+			ResetGNV()
 	}
 	LoadTreeMapByName(map_name)
+}
+
+EventsSDK.on("ServerInfo", info => {
+	let map_name = (info.get("map_name") as string) ?? "<empty>"
+	if (map_name === undefined)
+		return
+	if (map_name === "start")
+		map_name = "dota"
+	GameState.MapName = map_name
+	TryLoadMapFiles()
 })
 
-Events.on("PostRemoveSearchPath", path => {
-	const map_name = ParseMapName(path)
-	if (map_name === undefined || last_loaded_map_name !== map_name)
-		return
-
-	WASM.ResetVHCG()
-	ResetGNV()
-	last_loaded_map_name = "<empty>"
+Events.on("PostAddSearchPath", path => {
+	if (ParseMapName(path) === GameState.MapName)
+		TryLoadMapFiles()
 })
 
 Events.on("Draw", () => {
