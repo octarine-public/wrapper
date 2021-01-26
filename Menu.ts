@@ -47,3 +47,12 @@ ReloadScriptsBtn.OnValue(ReloadScripts)
 ReloadScriptsBind.OnPressed(ReloadScripts)
 
 HumanizerState.OnValue(toggle => ExecuteOrder.disable_humanizer = !toggle.value)
+
+Menu.Localization.AddLocalizationUnit("russian", new Map([
+	["Menu", "Меню"],
+	["Language", "Язык"],
+	["Bind (Open/Close)", "Бинд (Открыть/Закрыть)"],
+	["Humanizer", "Хуманайзер"],
+	["English", "Английский"],
+	["Russian", "Русский"],
+]))
