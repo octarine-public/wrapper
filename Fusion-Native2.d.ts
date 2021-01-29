@@ -373,6 +373,7 @@ declare function BatchSetEntityColor(count: number): void
  * @param count count of elements in IOBuffer
  */
 declare function BatchSetEntityGlow(count: number): void
+declare function GetPlayerMuteFlags(steamid64: bigint): number
 
 /// AUTOMATICALLY GENERATED
 
