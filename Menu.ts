@@ -21,7 +21,7 @@ const ReloadScriptsBtn = SettingsReloadTree.AddButton("Reload")
 
 const HumanizerState = SettingsTree.AddToggle(
 	"Humanizer",
-	true,
+	false, // add after new humanizer
 	"Enables all scripts' orders, ability to change camera distance",
 )
 
