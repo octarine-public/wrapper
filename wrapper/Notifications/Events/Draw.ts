@@ -2,6 +2,7 @@ import Color from "../../Base/Color"
 import Rectangle from "../../Base/Rectangle"
 import EventsSDK from "../../Managers/EventsSDK"
 import RendererSDK from "../../Native/RendererSDK"
+import UserCmd from "../../Native/UserCmd"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { MAX_SHOW_NOTIFICATION, Notifications, Queue } from "../data"
 import { NotificationsSDK } from "../Imports"
@@ -18,7 +19,9 @@ EventsSDK.after("Draw", () => {
 		Notifications.unshift(notification)
 	}
 
+	const cmd = new UserCmd()
 	const panel = new Rectangle()
+
 	GetPanel(panel)
 	const panel_height = panel.Size.y
 	if (NotificationsSDK.debug) {
@@ -29,7 +32,8 @@ EventsSDK.after("Draw", () => {
 		GetPanel(panel) // because we've just been modifying existing one
 	}
 	Notifications.forEach(notification => {
-		notification.Draw(panel)
+		if (cmd.ShopMask !== 13) // if shop is open
+			notification.Draw(panel)
 		notification.PlaySound()
 		panel.SubtractY(panel_height + 20)
 	})
