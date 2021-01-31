@@ -39,6 +39,12 @@ export default class CGameRules extends Entity {
 	@NetworkedBasicField("m_bIsNightstalkerNight")
 	public IsNightstalkerNight = false
 	@NetworkedBasicField("m_bIsTemporaryNight")
+	// public HeroPickState = DOTA_HeroPickState.DOTA_HEROPICK_STATE_NONE
+	// @NetworkedBasicField("m_nHeroPickState") // ?? return boolean
+	// public HeroMinimapIconScale = 0 // ?? return boolean
+	// @NetworkedBigIntField("m_flHeroMinimapIconScale")
+	// public CreepMinimapIconScale = 0 // return bigint
+	// @NetworkedBigIntField("m_flCreepMinimapIconScale")
 	public IsTemporaryNight = false
 	@NetworkedBasicField("m_nLoadedPlayers")
 	public LoadedPlayers = 0
