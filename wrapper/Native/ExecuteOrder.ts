@@ -212,6 +212,12 @@ export default class ExecuteOrder {
 	public ExecuteQueued(): ExecuteOrder {
 		if (!ExecuteOrder.disable_humanizer)
 			ExecuteOrder.order_queue.push(this)
+		else if (
+			// TODO: remove that whitelist once humanizer becomes stable
+			this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_PING_ABILITY
+			|| this.OrderType === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET
+		)
+			this.Execute()
 		return this
 	}
 
