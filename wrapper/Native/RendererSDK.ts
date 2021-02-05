@@ -556,8 +556,6 @@ class CRendererSDK {
 	}
 
 	public EmitDraw() {
-		if (this.commandCacheSize === 0)
-			return
 		Renderer.ExecuteCommandBuffer(this.commandCache.subarray(0, this.commandCacheSize))
 		if (this.commandCacheSize < this.commandCache.byteLength / 3)
 			this.commandCache = new Uint8Array(this.commandCache.byteLength / 3)
