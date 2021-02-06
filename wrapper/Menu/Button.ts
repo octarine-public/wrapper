@@ -46,7 +46,7 @@ export default class Button extends Base {
 		)
 	}
 	public OnMouseLeftDown(): boolean {
-		return !this.ButtonRect.Contains(this.MousePosition)
+		return !this.IsHovered
 	}
 	public OnMouseLeftUp(): boolean {
 		if (this.ButtonRect.Contains(this.MousePosition))
