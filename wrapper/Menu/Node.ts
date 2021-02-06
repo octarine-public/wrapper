@@ -281,36 +281,18 @@ export default class Node extends Base {
 		const node = this.AddNode(name)
 
 		let State: Nullable<Toggle>
-
-		if (addStateToTree !== undefined && addStateToTree[0]) {
+		if (addStateToTree !== undefined && addStateToTree[0])
 			State = node.AddToggle("State", addStateToTree[1])
-		}
 
 		if (typeof color === "number")
 			color = new Color(color, color, color)
 
-		const R = node.AddSlider("Color: R (red)", color.r, 0, 255)
-		const G = node.AddSlider("Color: G (green)", color.g, 0, 255)
-		const B = node.AddSlider("Color: B (blue)", color.b, 0, 255)
-		const A = node.AddSlider("Opacity (alpha)", color.a, 1, 255)
-
-		const Width = node.AddSlider("Width", 15, 1, 150)
-		const Style = node.AddDropdown("Style", render)
-
 		return {
 			Node: node,
 			State,
-			R, G, B, A,
-			Width, Style,
-			get Color(): Color {
-				return new Color(R.value, G.value, B.value, A.value)
-			},
-			set Color({ r, g, b, a }: Color) {
-				R.value = r
-				G.value = g
-				B.value = b
-				A.value = a
-			},
+			Color: node.AddColorPicker("Color", color),
+			Width: node.AddSlider("Width", 15, 1, 150),
+			Style: node.AddDropdown("Style", render),
 		}
 	}
 
