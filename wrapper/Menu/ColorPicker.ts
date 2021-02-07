@@ -265,6 +265,7 @@ export default class ColorPicker extends Base {
 	}
 	public OnMouseLeftUp(): boolean {
 		this.dragging_color = this.dragging_hue = this.dragging_alpha = false
+		this.OnValueChangedCBs.forEach(f => f(this))
 		return false
 	}
 	private GetColorPickerColorRect(colorpicker_rect: Rectangle): Rectangle {
