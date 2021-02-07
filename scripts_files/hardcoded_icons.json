@@ -3,5 +3,6 @@
 	"Settings": "menu/icons/settings.svg",
 	"Main": "menu/icons/home.svg",
 	"Utility": "menu/icons/tools.svg",
-	"Heroes": "menu/icons/juggernaut.svg"
+	"Heroes": "menu/icons/juggernaut.svg",
+	"Exploits": "menu/icons/exploits.svg"
 }
