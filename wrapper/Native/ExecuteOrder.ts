@@ -186,9 +186,6 @@ export default class ExecuteOrder {
 	 * pass Position: Vector3 at IOBuffer offset 0
 	 */
 	public toNative() {
-		if (!this.m_Position.IsZero())
-			this.m_Position.toIOBuffer()
-
 		const target = this.m_Target,
 			ability = this.m_Ability
 
@@ -206,6 +203,7 @@ export default class ExecuteOrder {
 	 * Execute order with this fields
 	 */
 	public Execute(): ExecuteOrder {
+		this.m_Position.toIOBuffer()
 		PrepareUnitOrders(this.toNative())
 		return this
 	}

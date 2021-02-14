@@ -9,14 +9,14 @@ import { MAX_SHOW_NOTIFICATION, Notifications, Queue } from "../data"
 import { NotificationsSDK } from "../Imports"
 import { GetPanel } from "../Util"
 
-let IsOpenShop = false
+let IsShopOpen = false
 Events.on("Update", () => {
 	const cmd = new UserCmd()
-	IsOpenShop = cmd.ShopMask === 13
+	IsShopOpen = cmd.ShopMask === 13
 })
 
 EventsSDK.on("GameEnded", () => {
-	IsOpenShop = false
+	IsShopOpen = false
 })
 
 EventsSDK.after("Draw", () => {
@@ -42,7 +42,7 @@ EventsSDK.after("Draw", () => {
 		GetPanel(panel) // because we've just been modifying existing one
 	}
 	Notifications.forEach(notification => {
-		if (!IsOpenShop) // if shop is open
+		if (!IsShopOpen)
 			notification.Draw(panel)
 		notification.PlaySound()
 		panel.SubtractY(panel_height + 20)
