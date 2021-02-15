@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../Decorators"
-import Item from "../Base/Item"
+import item_blink from "./item_blink"
 
 @WrapperClass("item_overwhelming_blink")
-export default class item_overwhelming_blink extends Item {
+export default class item_overwhelming_blink extends item_blink {
 }
