@@ -6,6 +6,7 @@ import EntityManager from "../Managers/EntityManager"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import InputManager from "../Managers/InputManager"
+import ParticlesSDK from "../Managers/ParticleManager"
 import Ability from "../Objects/Base/Ability"
 import Entity, { LocalPlayer } from "../Objects/Base/Entity"
 import Tree from "../Objects/Base/Tree"
@@ -31,7 +32,6 @@ export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 
 export default class ExecuteOrder {
 	public static order_queue: ExecuteOrder[] = []
-	public static wait_next_usercmd = false
 	public static wait_near_cursor = false
 	public static debug_orders = false
 	public static debug_draw = false
@@ -247,7 +247,6 @@ const last_order_click = new Vector3(),
 let last_order_click_update = 0,
 	latest_camera_x = 0,
 	latest_camera_y = 0,
-	execute_current = false,
 	current_order: Nullable<ExecuteOrder>
 Events.on("Update", () => {
 	const cmd = new UserCmd()
@@ -255,14 +254,6 @@ Events.on("Update", () => {
 	if (ExecuteOrder.disable_humanizer)
 		return
 	let order = ExecuteOrder.order_queue[0] as Nullable<ExecuteOrder>
-	if (execute_current) {
-		order!.Execute()
-		if (ExecuteOrder.debug_orders)
-			console.log("Executing order " + order!.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
-		ExecuteOrder.order_queue.splice(0, 1)
-		execute_current = false
-		order = ExecuteOrder.order_queue[0]
-	}
 	if (order !== undefined && order !== current_order) {
 		current_order = order
 		switch (order.OrderType) {
@@ -313,14 +304,11 @@ Events.on("Update", () => {
 		cmd.CameraPosition.y = latest_camera_y
 	}
 	cmd.VectorUnderCursor = CursorWorldVec.SetZ(GetPositionHeight(Vector2.FromVector3(CursorWorldVec)))
-	if (order !== undefined && (!ExecuteOrder.wait_near_cursor || cmd.VectorUnderCursor.Distance(last_order_click) <= 100)) {
-		if (!ExecuteOrder.wait_next_usercmd) {
-			order.Execute()
-			if (ExecuteOrder.debug_orders)
-				console.log("Executing order " + order.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
-			ExecuteOrder.order_queue.splice(0, 1)
-		}
-		execute_current = ExecuteOrder.wait_next_usercmd
+	if (order !== undefined && (!ExecuteOrder.wait_near_cursor || cmd.VectorUnderCursor.Distance(last_order_click) <= 200)) {
+		order.Execute()
+		if (ExecuteOrder.debug_orders)
+			console.log("Executing order " + order.OrderType + " after " + (hrtime() - last_order_click_update) + "ms")
+		ExecuteOrder.order_queue.splice(0, 1)
 	}
 	const default_camera_dist = 1200 // default camera distance
 	const max_cursor_dist = 1400 // maximum allowed distance between camera center and cursor
@@ -353,22 +341,27 @@ Events.on("Update", () => {
 	cmd.WriteBack()
 })
 
-function DrawLine(startVec: Vector2, endVec: Vector2) {
+const debugParticles = new ParticlesSDK()
+function DrawLine(id: number, startVec: Vector2, endVec: Vector2) {
 	const cam_pos = new Vector2(latest_camera_x, latest_camera_y)
-	const point1 = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(startVec, cam_pos, 1200)),
-		point2 = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(endVec, cam_pos, 1200))
-	if (point1 === undefined || point2 === undefined)
-		return
-	RendererSDK.Line(point1, point2, Color.Red)
+	const point1 = RendererSDK.ScreenToWorldFar(startVec, cam_pos, 1200),
+		point2 = RendererSDK.ScreenToWorldFar(endVec, cam_pos, 1200)
+	debugParticles.DrawLine(id, LocalPlayer!.Hero!, point1, {
+		Position: point2,
+		Width: 40,
+		Mode2D: 40,
+	})
 }
 
-Events.on("Draw", () => {
-	if (!ExecuteOrder.debug_draw || ExecuteOrder.disable_humanizer)
+EventsSDK.on("Draw", () => {
+	if (!ExecuteOrder.debug_draw || ExecuteOrder.disable_humanizer) {
+		debugParticles.DestroyAll()
 		return
-	DrawLine(new Vector2(0, 0), new Vector2(0, 1))
-	DrawLine(new Vector2(0, 0), new Vector2(1, 0))
-	DrawLine(new Vector2(1, 1), new Vector2(0, 1))
-	DrawLine(new Vector2(1, 1), new Vector2(1, 0))
+	}
+	DrawLine(1, new Vector2(0, 0), new Vector2(0, 1))
+	DrawLine(2, new Vector2(0, 0), new Vector2(1, 0))
+	DrawLine(3, new Vector2(1, 1), new Vector2(0, 1))
+	DrawLine(4, new Vector2(1, 1), new Vector2(1, 0))
 
 	const cam_pos = new Vector2(latest_camera_x, latest_camera_y)
 	const point = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(latest_cursor, cam_pos, 1200))
