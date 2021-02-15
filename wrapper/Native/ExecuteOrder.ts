@@ -33,6 +33,7 @@ export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 export default class ExecuteOrder {
 	public static order_queue: ExecuteOrder[] = []
 	public static wait_near_cursor = false
+	public static queue_user_orders = false
 	public static debug_orders = false
 	public static debug_draw = false
 	public static disable_humanizer = false
@@ -371,9 +372,16 @@ EventsSDK.on("Draw", () => {
 
 //EventsSDK.on("GameEnded", () => ExecuteOrder.order_queue = [])
 Events.on("PrepareUnitOrders", () => {
-	const ordersSDK = ExecuteOrder.fromNative()
-	if (ordersSDK === undefined)
+	const orders = ExecuteOrder.fromNative()
+	if (orders === undefined)
 		return true
 
-	return EventsSDK.emit("PrepareUnitOrders", true, ordersSDK)
+	const ret = EventsSDK.emit("PrepareUnitOrders", true, orders)
+	if (!ret)
+		return false
+	if (ExecuteOrder.queue_user_orders) {
+		orders.ExecuteQueued()
+		return false
+	}
+	return true
 })
