@@ -344,10 +344,13 @@ Events.on("Update", () => {
 
 const debugParticles = new ParticlesSDK()
 function DrawLine(id: number, startVec: Vector2, endVec: Vector2) {
+	const hero = LocalPlayer?.Hero
+	if (hero === undefined)
+		return
 	const cam_pos = new Vector2(latest_camera_x, latest_camera_y)
 	const point1 = RendererSDK.ScreenToWorldFar(startVec, cam_pos, 1200),
 		point2 = RendererSDK.ScreenToWorldFar(endVec, cam_pos, 1200)
-	debugParticles.DrawLine(id, LocalPlayer!.Hero!, point1, {
+	debugParticles.DrawLine(id, hero, point1, {
 		Position: point2,
 		Width: 40,
 		Mode2D: 40,
