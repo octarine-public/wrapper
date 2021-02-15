@@ -7,7 +7,6 @@ import { FontFlags_t } from "../Enums/FontFlags_t"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import { default as Input } from "../Managers/InputManager"
-import { LoadTreeMapByName } from "../Objects/Base/Tree"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
@@ -1002,7 +1001,6 @@ function StaticInit() {
 			GameState.MapName = map_name
 		}
 	}
-	LoadTreeMapByName(map_name)
 }
 let initialized = false
 Events.on("NewConnection", () => {
@@ -1028,7 +1026,6 @@ function TryLoadMapFiles() {
 		else
 			ResetGNV()
 	}
-	LoadTreeMapByName(map_name)
 }
 
 EventsSDK.on("ServerInfo", info => {

@@ -1,4 +1,4 @@
-import { ArrayExtensions } from "../../wrapper/Imports"
+import * as ArrayExtensions from "wrapper/Utils/ArrayExtensions"
 import Notification from "./AbstractNotification"
 import { Notifications, Queue } from "./data"
 

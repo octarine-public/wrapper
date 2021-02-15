@@ -3,7 +3,9 @@ import QAngle from "../../Base/QAngle"
 import Vector3 from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import EntityManager, { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManager"
+import Events from "../../Managers/Events"
 import EventsSDK from "../../Managers/EventsSDK"
+import GameState from "../../Utils/GameState"
 import { GridNav } from "../../Utils/ParseGNV"
 import { ParseTRMP } from "../../Utils/ParseTRMP"
 import Entity from "./Entity"
@@ -74,3 +76,15 @@ export function LoadTreeMapByName(map_name: string): void {
 		console.log("Error in TreeMap init: " + e)
 	}
 }
+
+let initialized = false
+Events.on("NewConnection", () => {
+	if (!initialized) {
+		let map_name = GetLevelNameShort()
+		if (map_name === "start")
+			map_name = "dota"
+		LoadTreeMapByName(map_name)
+		initialized = true
+	}
+})
+EventsSDK.after("ServerInfo", () => LoadTreeMapByName(GameState.MapName))
