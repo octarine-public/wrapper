@@ -485,31 +485,50 @@ class CRendererSDK {
 	public GetImageSize(path: string): Vector2 {
 		return this.tex2size.get(this.GetTexture(path))!
 	}
+	/**
+	 * @param font_size Size | default: 14
+	 * @param font_name default: "Calibri"
+	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
+	 * @param flags default: FontFlags_t.OUTLINE
+	 */
 	public Text(text: string, vecPos = new Vector2(), color: RenderColor = Color.White, font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
-		const pos = vecPos.Clone()
-		text.split("\n").forEach(line => {
-			this.Text_(line.replaceAll("\t", "    "), pos, color, font_name, font_size, weight, width, italic, flags, scaleX, skewX)
-			pos.AddScalarY(font_size)
-		})
+		if (text === "")
+			return
+		this.SetColor(color)
+
+		const font_id = this.GetFont(font_name, weight, width, italic)
+		const text_buf = StringToUTF8(text)
+		const view = this.AllocateCommandSpace(7 * 4 + 2 + text_buf.byteLength)
+		let off = 0
+		view.setUint8(off, CommandID.TEXT)
+		view.setFloat32(off += 1, vecPos.x, true)
+		view.setFloat32(off += 4, vecPos.y, true)
+		view.setUint32(off += 4, font_id, true)
+		view.setFloat32(off += 4, font_size, true)
+		view.setFloat32(off += 4, scaleX, true)
+		view.setFloat32(off += 4, skewX, true)
+		view.setUint16(off += 4, flags, true)
+		view.setUint32(off += 2, text_buf.byteLength, true)
+		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(text_buf)
+		this.RestorePaint()
 	}
 	/**
 	 * @returns text size defined as new Vector3(width, height, under_line)
 	 */
 	public GetTextSize(text: string, font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): Vector3 {
+		if (text === "")
+			return new Vector3()
+
 		const font = this.GetFont(font_name, weight, width, italic)
-		let max_x = 0,
-			y = 0,
-			under_line = 0
-		text.split("\n").forEach(line => {
-			IOBuffer[0] = font_size
-			IOBuffer[1] = scaleX
-			IOBuffer[2] = skewX
-			Renderer.GetTextSize(line, font)
-			max_x = Math.max(Math.ceil(IOBuffer[0]), max_x)
-			y += Math.ceil(IOBuffer[1])
-			under_line = IOBuffer[2]
-		})
-		return new Vector3(max_x, y, under_line)
+		IOBuffer[0] = font_size
+		IOBuffer[1] = scaleX
+		IOBuffer[2] = skewX
+		Renderer.GetTextSize(text, font)
+		return new Vector3(
+			IOBuffer[0],
+			IOBuffer[1],
+			IOBuffer[2],
+		).CeilForThis()
 	}
 	/**
 	 * @param color default: Yellow
@@ -649,31 +668,6 @@ class CRendererSDK {
 	}
 	public AllocateCommandSpace_(bytes: number): DataView {
 		return this.AllocateCommandSpace(bytes)
-	}
-	/**
-	 * @param font_size Size | default: 14
-	 * @param font_name default: "Calibri"
-	 * @param flags see FontFlags_t. You can use it like (FontFlags_t.OUTLINE | FontFlags_t.BOLD)
-	 * @param flags default: FontFlags_t.OUTLINE
-	 */
-	private Text_(text: string, vecPos: Vector2, color: RenderColor, font_name: string, font_size: number, weight: number, width: number, italic: boolean, flags: FontFlags_t, scaleX: number, skewX: number): void {
-		this.SetColor(color)
-
-		const font_id = this.GetFont(font_name, weight, width, italic)
-		const text_buf = StringToUTF8(text)
-		const view = this.AllocateCommandSpace(7 * 4 + 2 + text_buf.byteLength)
-		let off = 0
-		view.setUint8(off, CommandID.TEXT)
-		view.setFloat32(off += 1, vecPos.x, true)
-		view.setFloat32(off += 4, vecPos.y, true)
-		view.setUint32(off += 4, font_id, true)
-		view.setFloat32(off += 4, font_size, true)
-		view.setFloat32(off += 4, scaleX, true)
-		view.setFloat32(off += 4, skewX, true)
-		view.setUint16(off += 4, flags, true)
-		view.setUint32(off += 2, text_buf.byteLength, true)
-		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(text_buf)
-		this.RestorePaint()
 	}
 	private Oval(vecPos: Vector2, vecSize: Vector2): void {
 		const view = this.AllocateCommandSpace(4 * 4)

@@ -195,6 +195,23 @@ export default class Vector3 {
 			Math.abs(this.z),
 		)
 	}
+	public Ceil(count: number = 0): Vector3 {
+		const pow = Math.pow(10, count)
+		return new Vector3(
+			Math.ceil(this.x * pow) / pow,
+			Math.ceil(this.y * pow) / pow,
+			Math.ceil(this.z * pow) / pow,
+		)
+	}
+	public CeilForThis(count: number = 0): Vector3 {
+		const pow = Math.pow(10, count)
+
+		this.x = Math.ceil(this.x * pow) / pow
+		this.y = Math.ceil(this.y * pow) / pow
+		this.z = Math.ceil(this.z * pow) / pow
+
+		return this
+	}
 	public Round(count: number = 0): Vector3 {
 		const pow = Math.pow(10, count)
 		return new Vector3(
