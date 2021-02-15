@@ -8,6 +8,7 @@ import { default as EntityManager, EntityPropertiesNode } from "../../Managers/E
 import EventsSDK from "../../Managers/EventsSDK"
 import Manifest from "../../Managers/Manifest"
 import * as StringTables from "../../Managers/StringTables"
+import RendererSDK from "../../Native/RendererSDK"
 import Player from "../../Objects/Base/Player"
 import GameState from "../../Utils/GameState"
 import { DegreesToRadian } from "../../Utils/Math"
@@ -24,6 +25,7 @@ export function SetGameInProgress(new_val: boolean) {
 	else if (gameInProgress && !new_val) {
 		EventsSDK.emit("GameEnded", false)
 		Particles.DeleteAll()
+		RendererSDK.FreeTextureCache()
 	}
 	gameInProgress = new_val
 }

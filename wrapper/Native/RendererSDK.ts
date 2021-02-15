@@ -300,6 +300,7 @@ class CRendererSDK {
 	private commandCacheSize = 0
 	private font_cache = new Map</* name */string, Map</* weight */number, Map</* width */number, Map</* italic */boolean, /* font_id */number>>>>()
 	private texture_cache = new Map</* path */string, number>()
+	private clear_texture_cache = false
 	private tex2size = new Map</* texture_id */number, Vector2>()
 	private readonly last_color: Color = new Color(-1, -1, -1, -1)
 	private last_fill_type = PaintType.FILL
@@ -575,6 +576,13 @@ class CRendererSDK {
 		Minimap.DrawPing(end_time, -key)
 	}
 
+	public BeforeDraw() {
+		if (!this.clear_texture_cache)
+			return
+		this.texture_cache.forEach(id => this.FreeTexture(id))
+		this.texture_cache.clear()
+		this.clear_texture_cache = false
+	}
 	public EmitDraw() {
 		Renderer.ExecuteCommandBuffer(this.commandCache.subarray(0, this.commandCacheSize))
 		if (this.commandCacheSize < this.commandCache.byteLength / 3)
@@ -670,6 +678,9 @@ class CRendererSDK {
 	public AllocateCommandSpace_(bytes: number): DataView {
 		return this.AllocateCommandSpace(bytes)
 	}
+	public FreeTextureCache(): void {
+		this.clear_texture_cache = true
+	}
 	private Oval(vecPos: Vector2, vecSize: Vector2): void {
 		const view = this.AllocateCommandSpace(4 * 4)
 		let off = 0
@@ -696,9 +707,9 @@ class CRendererSDK {
 		this.tex2size.set(texture_id, size)
 		return texture_id
 	}
-	/*private FreeTexture(texture_id: number): void {
+	private FreeTexture(texture_id: number): void {
 		Renderer.FreeTexture(texture_id)
-	}*/
+	}
 	private MakeTextureSVG(buf: Uint8Array): number {
 		const texture_id = Renderer.CreateTextureSVG(buf)
 		this.tex2size.set(texture_id, Vector2.fromIOBuffer())
@@ -1038,6 +1049,7 @@ Events.on("PostAddSearchPath", path => {
 Events.on("Draw", () => {
 	Renderer.GetWindowSize()
 	Vector2.fromIOBuffer().CopyTo(RendererSDK.WindowSize)
+	RendererSDK.BeforeDraw()
 	EventsSDK.emit("Draw")
 })
 
