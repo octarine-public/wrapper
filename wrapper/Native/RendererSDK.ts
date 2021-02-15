@@ -8,7 +8,7 @@ import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import { default as Input } from "../Managers/InputManager"
 import { LoadTreeMapByName } from "../Objects/Base/Tree"
-import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
+import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
 import { ParseGNV, ResetGNV } from "../Utils/ParseGNV"
@@ -494,11 +494,12 @@ class CRendererSDK {
 	public Text(text: string, vecPos = new Vector2(), color: RenderColor = Color.White, font_name = "Calibri", font_size = this.DefaultTextSize, weight = 400, width = 5, italic = false, flags = FontFlags_t.OUTLINE, scaleX = 1, skewX = 0): void {
 		if (text === "")
 			return
-		this.SetColor(color)
 
+		this.SetColor(color)
 		const font_id = this.GetFont(font_name, weight, width, italic)
-		const text_buf = StringToUTF8(text)
-		const view = this.AllocateCommandSpace(7 * 4 + 2 + text_buf.byteLength)
+		const text_buf: number[] = []
+		StringToUTF8Cb(text, b => text_buf.push(b))
+		const view = this.AllocateCommandSpace(7 * 4 + 2 + text_buf.length)
 		let off = 0
 		view.setUint8(off, CommandID.TEXT)
 		view.setFloat32(off += 1, vecPos.x, true)
@@ -508,8 +509,8 @@ class CRendererSDK {
 		view.setFloat32(off += 4, scaleX, true)
 		view.setFloat32(off += 4, skewX, true)
 		view.setUint16(off += 4, flags, true)
-		view.setUint32(off += 2, text_buf.byteLength, true)
-		new Uint8Array(view.buffer, view.byteOffset + (off += 4)).set(text_buf)
+		view.setUint32(off += 2, text_buf.length, true)
+		this.commandCache.set(text_buf, view.byteOffset + (off += 4))
 		this.RestorePaint()
 	}
 	/**
