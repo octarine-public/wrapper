@@ -1,4 +1,5 @@
 import Color from "../Base/Color"
+import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
@@ -13,7 +14,7 @@ import Tree from "../Objects/Base/Tree"
 import Unit from "../Objects/Base/Unit"
 import RendererSDK from "./RendererSDK"
 import UserCmd from "./UserCmd"
-import { GetPositionHeight } from "./WASM"
+import * as WASM from "./WASM"
 
 export const ORDERS_WITHOUT_SIDE_EFFECTS = [
 	dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY,
@@ -304,7 +305,7 @@ Events.on("Update", () => {
 		cmd.CameraPosition.x = latest_camera_x
 		cmd.CameraPosition.y = latest_camera_y
 	}
-	cmd.VectorUnderCursor = CursorWorldVec.SetZ(GetPositionHeight(Vector2.FromVector3(CursorWorldVec)))
+	cmd.VectorUnderCursor = CursorWorldVec.SetZ(WASM.GetPositionHeight(Vector2.FromVector3(CursorWorldVec)))
 	if (order !== undefined && (!ExecuteOrder.wait_near_cursor || cmd.VectorUnderCursor.Distance(last_order_click) <= 200)) {
 		order.Execute()
 		if (ExecuteOrder.debug_orders)
@@ -343,15 +344,25 @@ Events.on("Update", () => {
 })
 
 const debugParticles = new ParticlesSDK()
-function DrawLine(id: number, startVec: Vector2, endVec: Vector2) {
+function DrawCameraBorderLine(cameraPos: Vector3, startVec: Vector2, endVec: Vector2) {
 	const hero = LocalPlayer?.Hero
 	if (hero === undefined)
 		return
 	const cam_pos = new Vector2(latest_camera_x, latest_camera_y)
 	const point1 = RendererSDK.ScreenToWorldFar(startVec, cam_pos, 1200),
 		point2 = RendererSDK.ScreenToWorldFar(endVec, cam_pos, 1200)
-	debugParticles.DrawLine(id, hero, point1, {
+	debugParticles.DrawLine(startVec.toString() + endVec.toString(), hero, point1, {
 		Position: point2,
+		Width: 40,
+		Mode2D: 40,
+	})
+	debugParticles.DrawLine(startVec.toString(), hero, point1, {
+		Position: cameraPos,
+		Width: 40,
+		Mode2D: 40,
+	})
+	debugParticles.DrawLine(endVec.toString(), hero, point2, {
+		Position: cameraPos,
 		Width: 40,
 		Mode2D: 40,
 	})
@@ -362,13 +373,17 @@ EventsSDK.on("Draw", () => {
 		debugParticles.DestroyAll()
 		return
 	}
-	DrawLine(1, new Vector2(0, 0), new Vector2(0, 1))
-	DrawLine(2, new Vector2(0, 0), new Vector2(1, 0))
-	DrawLine(3, new Vector2(1, 1), new Vector2(0, 1))
-	DrawLine(4, new Vector2(1, 1), new Vector2(1, 0))
+	const cameraPos = WASM.GetCameraPosition(
+		new Vector2(latest_camera_x, latest_camera_y),
+		1200,
+		new QAngle(60, 90, 0),
+	)
+	DrawCameraBorderLine(cameraPos, new Vector2(0, 0), new Vector2(0, 1))
+	DrawCameraBorderLine(cameraPos, new Vector2(0, 0), new Vector2(1, 0))
+	DrawCameraBorderLine(cameraPos, new Vector2(1, 1), new Vector2(0, 1))
+	DrawCameraBorderLine(cameraPos, new Vector2(1, 1), new Vector2(1, 0))
 
-	const cam_pos = new Vector2(latest_camera_x, latest_camera_y)
-	const point = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(latest_cursor, cam_pos, 1200))
+	const point = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(latest_cursor, cameraPos, 1200))
 	if (point !== undefined)
 		RendererSDK.FilledRect(point.Subtract(new Vector2(5, 5)), new Vector2(10, 10), Color.Fuchsia)
 })

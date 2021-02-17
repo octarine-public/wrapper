@@ -193,6 +193,7 @@ EXPORT_JS void ScreenToWorldFar() {
 	auto camera_distance = JSIOBuffer[10];
 
 	auto ray = GetRayDirection(screen, *(QAngle*)&camera_angles, window_size);
+	ray /= 2.f;
 	
 	auto cur_pos = camera_position;
 	const float max_ray_dist = camera_distance * camera_distance;
