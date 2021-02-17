@@ -336,13 +336,9 @@ class CRendererSDK {
 	 * @returns screen position, or undefined
 	 */
 	public WorldToScreen(position: Vector2 | Vector3): Nullable<Vector2> {
-		position.toIOBuffer()
 		if (position instanceof Vector2)
-			IOBuffer[2] = WASM.GetPositionHeight(position)
-		Renderer.WorldToScreen()
-		if (Number.isNaN(IOBuffer[0]) || Number.isNaN(IOBuffer[1]))
-			return undefined
-		return Vector2.fromIOBuffer()
+			position = position.toVector3().SetZ(WASM.GetPositionHeight(position))
+		return WASM.WorldToScreenNew(position, this.WindowSize)?.FloorForThis()
 	}
 	/**
 	 * @returns screen position with x and y in range {0, 1}, or undefined
@@ -352,7 +348,7 @@ class CRendererSDK {
 			position = position.toVector3().SetZ(WASM.GetPositionHeight(position))
 		if (camera_position instanceof Vector2)
 			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
-		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)
+		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)?.DivideForThis(window_size)
 	}
 	/**
 	 * Projects given screen vector onto camera matrix. Can be used to connect ScreenToWorldFar and camera position dots.
@@ -576,11 +572,17 @@ class CRendererSDK {
 	}
 
 	public BeforeDraw() {
-		if (!this.clear_texture_cache)
-			return
-		this.texture_cache.forEach(id => this.FreeTexture(id))
-		this.texture_cache.clear()
-		this.clear_texture_cache = false
+		WASM.CloneWorldToProjection()
+		{
+			const view = new DataView(IOBuffer.buffer)
+			this.WindowSize.x = view.getInt32(17 * 4, true)
+			this.WindowSize.y = view.getInt32(18 * 4, true)
+		}
+		if (this.clear_texture_cache) {
+			this.texture_cache.forEach(id => this.FreeTexture(id))
+			this.texture_cache.clear()
+			this.clear_texture_cache = false
+		}
 	}
 	public EmitDraw() {
 		Renderer.ExecuteCommandBuffer(this.commandCache.subarray(0, this.commandCacheSize))
@@ -1044,8 +1046,6 @@ Events.on("PostAddSearchPath", path => {
 })
 
 Events.on("Draw", () => {
-	Renderer.GetWindowSize()
-	Vector2.fromIOBuffer().CopyTo(RendererSDK.WindowSize)
 	RendererSDK.BeforeDraw()
 	EventsSDK.emit("Draw")
 })

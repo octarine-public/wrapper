@@ -47,8 +47,8 @@ void GetWorldToProjection(VMatrix& worldToProjection, Vector camera_pos, QAngle 
 	ComputeViewMatrices(&worldToView, &viewToProjection, &worldToProjection, camera_pos, camera_angles, window_size, camera_distance);
 }
 
-bool ScreenTransform(const Vector& point, Vector2D& screen, const VMatrix& worldToProjection) {
-	screen = {
+bool ScreenTransform(const Vector& point, int& x, int& y, int width, int height, const VMatrix& worldToProjection) {
+	Vector2D screen = {
 		worldToProjection[0][0] * point[0] + worldToProjection[0][1] * point[1] + worldToProjection[0][2] * point[2] + worldToProjection[0][3],
 		worldToProjection[1][0] * point[0] + worldToProjection[1][1] * point[1] + worldToProjection[1][2] * point[2] + worldToProjection[1][3]
 	};
@@ -57,9 +57,11 @@ bool ScreenTransform(const Vector& point, Vector2D& screen, const VMatrix& world
 
 	bool behind = w < 0.001f;
 	if (!behind) {
-		screen *= 1.f / w;
-		screen.x = 0.5f + screen.x / 2.f;
-		screen.y = 0.5f - screen.y / 2.f;
+		screen /= w * 2.f;
+		x = screen.x * width;
+		x += width / 2.f;
+		y = -screen.y * height;
+		y += height / 2.f;
 	}
 	return !behind/* && (screen.x >= 0.f && screen.x <= 1) && (screen.z >= 0.f && screen.z <= 1)*/;
 }
@@ -95,9 +97,10 @@ EXPORT_JS bool WorldToScreen() {
 	auto window_size = UnwrapVector2(10);
 	VMatrix worldToProjection;
 	GetWorldToProjection(worldToProjection, camera_pos, *(QAngle*)&camera_ang, window_size, camera_dist);
-	Vector2D screen_vec;
-	if (ScreenTransform(world_vec, screen_vec, worldToProjection)) {
-		screen_vec.CopyTo(JSIOBuffer);
+	int x, y;
+	if (ScreenTransform(world_vec, x, y, window_size.x, window_size.y, worldToProjection)) {
+		JSIOBuffer[0] = x;
+		JSIOBuffer[1] = y;
 		return true;
 	} else
 		return false;
@@ -343,6 +346,22 @@ EXPORT_JS void* DecompressLZ4(void* data, size_t size) {
 	free(data);
 	*(uint32_t*)&JSIOBuffer[0] = dst_len;
 	return dst;
+}
+
+VMatrix SavedWorldToProjection;
+EXPORT_JS void CloneWorldToProjection() {
+	memcpy(SavedWorldToProjection.m, JSIOBuffer, sizeof(SavedWorldToProjection.m));
+}
+EXPORT_JS bool WorldToScreenNew() {
+	auto world_vec = UnwrapVector3();
+	auto window_size = UnwrapVector2(3);
+	int x, y;
+	if (ScreenTransform(world_vec, x, y, window_size.x, window_size.y, SavedWorldToProjection)) {
+		JSIOBuffer[0] = x;
+		JSIOBuffer[1] = y;
+		return true;
+	} else
+		return false;
 }
 
 int main() {

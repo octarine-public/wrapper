@@ -246,7 +246,6 @@ declare interface Particles {
 
 // must be called only in onDraw!
 declare interface Renderer {
-	GetWindowSize(): void // returns Vector2 to IOBuffer offset 0 at get
 	CreateFont(name: string, weight: number, width: number, italic: boolean): number
 	CreateFontFromData(buf: ArrayBuffer): number
 	FreeFont(font_id: number): void
@@ -266,11 +265,6 @@ declare interface Renderer {
 	 */
 	CreateTextureSVG(svg: Uint8Array): number
 	FreeTexture(texture_id: number): void
-	/**
-	 * @param pos world position that needs to be turned to screen position
-	 * @returns screen position to IOBuffer if return value is true
-	 */
-	WorldToScreen(): void // pass pos: Vector3 at IOBuffer offset 0, returns Vector2 to IOBuffer at offset 0
 	GetTextSize(text: string, font_id: number): boolean // returns Vector2 to IOBuffer offset 0
 	ExecuteCommandBuffer(buf: Uint8Array): void
 }

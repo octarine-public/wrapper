@@ -61,23 +61,25 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 		},
 	},
 }).exports as any as {
-	_start: () => void
-	GetIOBuffer: () => number
-	memory: WebAssembly.Memory
-	ScreenToWorld: () => void
-	WorldToScreen: () => boolean
-	ParseVHCG: (ptr: number, size: number) => HeightMapParseError
-	GetHeightForLocation: () => void
-	GetSecondaryHeightForLocation: () => void
-	ScreenToWorldFar: () => void
-	my_malloc: (size: number) => number
-	my_free: (ptr: number) => void
-	ParsePNG: (data: number, size: number) => number
-	ParseVTex: (data: number, size: number, image_data: number) => number
-	MurmurHash2: (ptr: number, size: number, seed: number) => number
-	MurmurHash64: (ptr: number, size: number, seed: number) => void
-	CRC32: (ptr: number, size: number) => number
+	_start: () => void,
+	GetIOBuffer: () => number,
+	memory: WebAssembly.Memory,
+	ScreenToWorld: () => void,
+	WorldToScreen: () => boolean,
+	ParseVHCG: (ptr: number, size: number) => HeightMapParseError,
+	GetHeightForLocation: () => void,
+	GetSecondaryHeightForLocation: () => void,
+	ScreenToWorldFar: () => void,
+	my_malloc: (size: number) => number,
+	my_free: (ptr: number) => void,
+	ParsePNG: (data: number, size: number) => number,
+	ParseVTex: (data: number, size: number, image_data: number) => number,
+	MurmurHash2: (ptr: number, size: number, seed: number) => number,
+	MurmurHash64: (ptr: number, size: number, seed: number) => void,
+	CRC32: (ptr: number, size: number) => number,
 	DecompressLZ4: (ptr: number, size: number) => number,
+	CloneWorldToProjection: () => void,
+	WorldToScreenNew: () => boolean,
 }
 declare global {
 	var wasm_: typeof wasm
@@ -326,4 +328,25 @@ export function DecompressLZ4(buf: Uint8Array): Uint8Array {
 	wasm.my_free(addr)
 
 	return copy
+}
+
+export function CloneWorldToProjection(): void {
+	WASMIOBuffer.set(IOBuffer.slice(0, 16))
+	wasm.CloneWorldToProjection()
+}
+
+export function WorldToScreenNew(
+	position: Vector3,
+	window_size: Vector2,
+): Nullable<Vector2> {
+	WASMIOBuffer[0] = position.x
+	WASMIOBuffer[1] = position.y
+	WASMIOBuffer[2] = position.z
+
+	WASMIOBuffer[3] = window_size.x
+	WASMIOBuffer[4] = window_size.y
+
+	if (!wasm.WorldToScreenNew())
+		return undefined
+	return new Vector2(WASMIOBuffer[0], WASMIOBuffer[1])
 }
