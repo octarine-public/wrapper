@@ -220,8 +220,8 @@ export default class Ability extends Entity {
 		return target.CalculateDamage((this.AbilityDamage || this.GetSpecialValue("damage")) * 1, this.DamageType, source)
 	}
 
-	public UseAbility(target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
-		return this.Owner?.UseSmartAbility(this, target, checkToggled, queue, showEffects)
+	public UseAbility(target?: Vector3 | Entity, checkAutoCast: boolean = false, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
+		return this.Owner?.UseSmartAbility(this, target, checkAutoCast, checkToggled, queue, showEffects)
 	}
 
 	public UpgradeAbility() {

@@ -963,7 +963,11 @@ export default class Unit extends Entity {
 	}
 
 	/* ================================ ORDERS ================================ */
-	public UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
+	public UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkAutoCast: boolean = false, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
+		if (checkAutoCast && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AUTOCAST) && !ability.IsAutoCastEnabled) {
+			return this.CastToggleAuto(ability, queue, showEffects)
+		}
+
 		if (checkToggled && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && !ability.IsToggled) {
 			return this.CastToggle(ability, queue, showEffects)
 		}
@@ -1050,7 +1054,7 @@ export default class Unit extends Entity {
 	public MoveItem(item: Item, slot: DOTAScriptInventorySlot_t) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM, issuers: [this], target: slot, ability: item })
 	}
-	public CastToggleAuto(item: Item, queue?: boolean, showEffects?: boolean) {
+	public CastToggleAuto(item: Ability, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO, issuers: [this], ability: item, queue, showEffects })
 	}
 	public OrderStop(queue?: boolean, showEffects?: boolean) {
