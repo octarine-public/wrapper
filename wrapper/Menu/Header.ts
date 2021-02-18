@@ -35,14 +35,14 @@ export default class Header extends Base {
 			this.Position.CopyFrom(RendererSDK.WindowSize.DivideScalar(2))
 		if (this.dragging)
 			this.MousePosition.SubtractForThis(this.dragging_offset).Max(1).CopyTo(this.Position)
-		this.Position.x = Math.min(
+		this.Position.x = Math.max(Math.min(
 			this.Position.x,
 			RendererSDK.WindowSize.x - this.parent.EntriesSizeX,
-		)
-		this.Position.y = Math.min(
+		), 0)
+		this.Position.y = Math.max(Math.min(
 			this.Position.y,
 			RendererSDK.WindowSize.y - this.parent.EntriesSizeY,
-		)
+		), 0)
 		this.Position.RoundForThis()
 		RendererSDK.Image(Header.image_path, this.Position, -1, this.TotalSize)
 		RendererSDK.Image(Header.logo_path, this.Position.Clone().AddScalarX(14).AddScalarY(7))

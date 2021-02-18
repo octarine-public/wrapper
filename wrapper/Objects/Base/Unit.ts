@@ -964,17 +964,14 @@ export default class Unit extends Entity {
 
 	/* ================================ ORDERS ================================ */
 	public UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkAutoCast: boolean = false, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
-		if (checkAutoCast && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AUTOCAST) && !ability.IsAutoCastEnabled) {
+		if (checkAutoCast && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AUTOCAST) && !ability.IsAutoCastEnabled)
 			return this.CastToggleAuto(ability, queue, showEffects)
-		}
 
-		if (checkToggled && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && !ability.IsToggled) {
+		if (checkToggled && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && !ability.IsToggled)
 			return this.CastToggle(ability, queue, showEffects)
-		}
 
-		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET)) {
+		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NO_TARGET))
 			return this.CastNoTarget(ability, queue, showEffects)
-		}
 
 		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
 			if (target instanceof Entity) {
@@ -984,9 +981,8 @@ export default class Unit extends Entity {
 			return this.CastPosition(ability, target as Vector3, queue, showEffects)
 		}
 
-		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) {
+		if (ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET))
 			return this.CastTarget(ability, target as Entity, showEffects)
-		}
 	}
 
 	/* ORDERS */
