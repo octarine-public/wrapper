@@ -995,7 +995,7 @@ export default class Unit extends Entity {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, issuers: [this], position, queue, showEffects })
 	}
 	public MoveToTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
-		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, issuers: [this], target, queue, showEffects })
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET, issuers: [this], target, queue, showEffects })
 	}
 	public AttackMove(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE, issuers: [this], position, queue, showEffects })
