@@ -185,63 +185,56 @@ export default class AbilityData {
 	public GetCastRange(level: number): number {
 		if (level <= 0)
 			level = this.MaxLevel
-		if (level < 0)
+		if (level <= 0)
 			return 0
-		level = (level - 1)
-		return this.CastRangeCache[level]
+		return this.CastRangeCache[level - 1]
 	}
 
 	public GetDuration(level: number): number {
 		if (level <= 0)
 			level = this.MaxLevel
-		if (level < 0)
+		if (level <= 0)
 			return 0
-		level = (level - 1)
-		return this.Duration[level]
+		return this.Duration[level - 1]
 	}
 
 	public GetChannelTime(level: number): number {
 		if (level <= 0)
 			level = this.MaxLevel
-		if (level < 0)
+		if (level <= 0)
 			return 0
-		level = (level - 1)
-		return this.ChannelTimeCache[level]
+		return this.ChannelTimeCache[level - 1]
 	}
 
 	public GetAbilityDamage(level: number): number {
 		if (level <= 0)
 			level = this.MaxLevel
-		if (level < 0)
+		if (level <= 0)
 			return 0
-		level = (level - 1)
-		return this.AbilityDamageCache[level]
+		return this.AbilityDamageCache[level - 1]
 	}
 
 	public GetCastPoint(level: number): number {
 		if (level <= 0)
 			level = this.MaxLevel
-		if (level < 0)
+		if (level <= 0)
 			return 0
-		level = (level - 1)
-		return this.CastPointCache[level]
+		return this.CastPointCache[level - 1]
 	}
 
 	public GetMaxCharges(level: number): number {
 		if (level <= 0)
 			level = this.MaxLevel
-		if (level < 0)
+		if (level <= 0)
 			return 0
-		level = (level - 1)
-		return this.ChargesCache[level]
+		return this.ChargesCache[level - 1]
 	}
 	public GetChargeRestoreTime(level: number): number {
 		if (level <= 0)
 			level = this.MaxLevel
-		if (level < 0)
+		if (level <= 0)
 			return 0
-		level = (level - 1)
-		return this.ChargeRestoreTimeCache[level]
+		return this.ChargeRestoreTimeCache[level - 1]
 	}
 
 	private CacheSpecialValues(m_Storage: RecursiveMap) {
