@@ -184,6 +184,9 @@ export default class Ability extends Entity {
 	public get CastRange(): number {
 		return this.BaseCastRange + (this.Owner?.CastRangeBonus ?? 0)
 	}
+	public get SkillshotRange(): number {
+		return this.CastRange
+	}
 	public get SpellAmplification(): number {
 		if (this.Name.startsWith("special_bonus_spell_amplify"))
 			return this.GetSpecialValue("value") / 100
@@ -261,44 +264,15 @@ export default class Ability extends Entity {
 			return false
 
 		let range = 0
-		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) || this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)) {
-			if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) && !target)
-				return false
-			switch (this.Name) {
-				case "lion_impale":
-					range += this.CastRange + this.GetSpecialValue("width") + this.GetSpecialValue("length_buffer")
-					break
-				case "nyx_assassin_impale":
-					range += this.CastRange + this.GetSpecialValue("width")
-					break
-				case "queenofpain_scream_of_pain":
-					range += this.CastRange + this.GetSpecialValue("area_of_effect")
-					break
-				case "vengefulspirit_wave_of_terror":
-					range += this.CastRange + this.GetSpecialValue("wave_width")
-					break
-				case "venomancer_venomous_gale":
-					range += this.CastRange + this.GetSpecialValue("radius")
-					break
-				case "monkey_king_boundless_strike":
-					range += this.CastRange + this.GetSpecialValue("strike_radius")
-					break
-				case "magnataur_shockwave":
-					range += this.CastRange + this.GetSpecialValue("shock_width")
-					break
-				case "tusk_ice_shards":
-					range += this.CastRange + this.GetSpecialValue("shard_width")
-					break
-				default:
-					range += this.CastRange
-					break
-			}
-			range += this.Owner.HullRadius
-		} else {
+		if (
+			!this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)
+			&& !this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_POINT)
+		) {
 			range = this.CastRange
 			if (range === 0)
 				range = this.AOERadius
-		}
+		} else
+			range += this.SkillshotRange + this.Owner.HullRadius
 		if (range > 0)
 			range += target.HullRadius
 		return this.Owner.Distance2D(target) < range

@@ -13,4 +13,7 @@ export default class lion_impale extends Ability {
 			range += talent.GetSpecialValue("value")
 		return range
 	}
+	public get SkillshotRange(): number {
+		return this.CastRange + this.AOERadius + this.GetSpecialValue("length_buffer")
+	}
 }
