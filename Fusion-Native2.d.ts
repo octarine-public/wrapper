@@ -1,5 +1,6 @@
 /// GLOBAL OBJECTS
 declare var IOBuffer: Float32Array // 128 floats in size
+declare var IOBufferView: DataView // IOBuffer DataView
 declare var EntityVisualPositions: Float32Array
 declare var EntityVisualRotations: Float32Array
 declare var ServerMessageBuffer: Uint8Array
@@ -44,162 +45,12 @@ declare var LatestUserCmd: Uint8Array
 declare var CursorPosition: Int32Array // 2 ints in size
 declare var SchemaClassesInheritance: Map<string, string[]>
 
-declare var console: Console
 declare var ConVars: ConVars
 declare var CustomGameEvents: CustomGameEvents
 declare var Minimap: Minimap
 declare var Particles: Particles
 declare var Renderer: Renderer
 declare var Camera: Camera
-
-interface Console {
-	memory: any
-	assert(condition?: boolean, ...data: any[]): void
-	clear(): void
-	count(label?: string): void
-	countReset(label?: string): void
-	debug(...data: any[]): void
-	dir(item?: any, options?: any): void
-	dirxml(...data: any[]): void
-	error(...data: any[]): void
-	exception(message?: string, ...optionalParams: any[]): void
-	group(...data: any[]): void
-	groupCollapsed(...data: any[]): void
-	groupEnd(): void
-	info(...data: any[]): void
-	log(...data: any[]): void
-	table(tabularData?: any, properties?: string[]): void
-	time(label?: string): void
-	timeEnd(label?: string): void
-	timeLog(label?: string, ...data: any[]): void
-	timeStamp(label?: string): void
-	trace(...data: any[]): void
-	warn(...data: any[]): void
-}
-
-type BufferSource = ArrayBufferView | ArrayBuffer
-declare namespace WebAssembly {
-	interface CompileError {
-	}
-
-	var CompileError: {
-		prototype: CompileError
-		new(): CompileError
-	}
-
-	interface Global {
-		value: any
-		valueOf(): any
-	}
-
-	var Global: {
-		prototype: Global
-		new(descriptor: GlobalDescriptor, v?: any): Global
-	}
-
-	interface Instance {
-		readonly exports: Exports
-	}
-
-	var Instance: {
-		prototype: Instance
-		new(module: Module, importObject?: Imports): Instance
-	}
-
-	interface LinkError {
-	}
-
-	var LinkError: {
-		prototype: LinkError
-		new(): LinkError
-	}
-
-	interface Memory {
-		readonly buffer: ArrayBuffer
-		grow(delta: number): number
-	}
-
-	var Memory: {
-		prototype: Memory
-		new(descriptor: MemoryDescriptor): Memory
-	}
-
-	interface Module {
-	}
-
-	var Module: {
-		prototype: Module
-		new(bytes: BufferSource): Module
-		customSections(moduleObject: Module, sectionName: string): ArrayBuffer[]
-		exports(moduleObject: Module): ModuleExportDescriptor[]
-		imports(moduleObject: Module): ModuleImportDescriptor[]
-	}
-
-	interface RuntimeError {
-	}
-
-	var RuntimeError: {
-		prototype: RuntimeError
-		new(): RuntimeError
-	}
-
-	interface Table {
-		readonly length: number
-		get(index: number): Function | null
-		grow(delta: number): number
-		set(index: number, value: Function | null): void
-	}
-
-	var Table: {
-		prototype: Table
-		new(descriptor: TableDescriptor): Table
-	}
-
-	interface GlobalDescriptor {
-		mutable?: boolean
-		value: ValueType
-	}
-
-	interface MemoryDescriptor {
-		initial: number
-		maximum?: number
-	}
-
-	interface ModuleExportDescriptor {
-		kind: ImportExportKind
-		name: string
-	}
-
-	interface ModuleImportDescriptor {
-		kind: ImportExportKind
-		module: string
-		name: string
-	}
-
-	interface TableDescriptor {
-		element: TableKind
-		initial: number
-		maximum?: number
-	}
-
-	interface WebAssemblyInstantiatedSource {
-		instance: Instance
-		module: Module
-	}
-
-	type ImportExportKind = "function" | "global" | "memory" | "table"
-	type TableKind = "anyfunc"
-	type ValueType = "f32" | "f64" | "i32" | "i64"
-	type ExportValue = Function | Global | Memory | Table
-	type Exports = Record<string, ExportValue>
-	type ImportValue = ExportValue | number
-	type ModuleImports = Record<string, ImportValue>
-	type Imports = Record<string, ModuleImports>
-	function compile(bytes: BufferSource): Promise<Module>
-	function instantiate(bytes: BufferSource, importObject?: Imports): Promise<WebAssemblyInstantiatedSource>
-	function instantiate(moduleObject: Module, importObject?: Imports): Promise<Instance>
-	function validate(bytes: BufferSource): boolean
-}
 
 declare interface ConVars {
 	GetInt(convar_name: string): number
@@ -286,8 +137,6 @@ declare function requestPlayerData(player_id: number): Promise<string>
  */
 declare function readConfig(path: string): Promise<ArrayBuffer>
 declare function writeConfig(path: string, data: ArrayBuffer): void
-declare function GetLevelName(): string
-declare function GetLevelNameShort(): string
 declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer offset 0
 	OrderType: number,
 	Target?: number,
@@ -297,10 +146,8 @@ declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer 
 	Queue?: boolean,
 	ShowEffects?: boolean
 }): void
-declare function SelectUnit(ent: number, bAddToGroup: boolean): boolean
 declare function GetLatency(flow: number): number
 declare function GetAvgLatency(flow: number): number
-declare function GetUIState(): number
 declare function ChatWheelAbuse(str: string): void
 declare function StartFindingMatch(): void
 declare function SendGCPingResponse(): void
@@ -309,20 +156,6 @@ declare function ToggleFakeChat(state: boolean): void
 declare function ToggleOBSBypass(state: boolean): void
 declare function setFireEvent(func: (event_name: string, cancellable: boolean, ...args: any) => boolean): void
 declare function require(absolute_path: string): any
-declare function GetHeapStatistics(): {
-	total_heap_size: bigint
-	total_heap_size_executable: bigint
-	total_physical_size: bigint
-	total_available_size: bigint
-	used_heap_size: bigint
-	heap_size_limit: bigint
-	malloced_memory: bigint
-	external_memory: bigint
-	peak_malloced_memory: bigint
-	number_of_native_contexts: bigint
-	number_of_detached_contexts: bigint
-	does_zap_garbage: bigint
-}
 declare function hrtime(): number
 declare function AddSearchPath(path: string): boolean
 declare function RemoveSearchPath(path: string): boolean
@@ -349,12 +182,14 @@ declare function EnforceEntityVisibility(
 	team_num: number,
 	is_visible: boolean
 ): void
-declare function GetEntityCollisionRadius(entity_id: number): number | undefined
 /**
  * @returns Vector2 to IOBuffer offset 0
  */
 declare function GetEntityAttachment(entity_id: number, attachment_name: string): void
-declare function GetEntityUnitState(entity_id: number): bigint | undefined
+/**
+ * @returns biguint to IOBuffer offset 0, and return value is true if function succeeded
+ */
+declare function GetEntityUnitState(entity_id: number): boolean
 declare function GetUnitNumberPropertyByName(entity_id: number, name: string): number | undefined
 /**
  * treat IOBuffer as DataView for this function

@@ -6,7 +6,7 @@ export default new (class GameState {
 	public CurrentServerTick = -1
 	public IsInputCaptured = false
 	public SignonState = SignonState_t.SIGNONSTATE_NONE
-	public UIState = GetUIState()
+	public UIState = 3
 	public MapName = "<empty>"
 	/**
 	 * Equals GameRules?.RawGameTime ?? 0
@@ -16,12 +16,6 @@ export default new (class GameState {
 	 */
 	public RawGameTime = 0
 
-	public get LevelName(): string {
-		return GetLevelName()
-	}
-	public get LevelNameShort(): string {
-		return GetLevelNameShort()
-	}
 	public get Ping() {
 		return (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT)) * 1000
 	}

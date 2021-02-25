@@ -12,7 +12,6 @@ import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
 import { ParseGNV, ResetGNV } from "../Utils/ParseGNV"
 import readFile from "../Utils/readFile"
-import { ParseMapName } from "../Utils/Utils"
 import * as WASM from "./WASM"
 
 enum CommandID {
@@ -573,11 +572,8 @@ class CRendererSDK {
 
 	public BeforeDraw() {
 		WASM.CloneWorldToProjection()
-		{
-			const view = new DataView(IOBuffer.buffer)
-			this.WindowSize.x = view.getInt32(17 * 4, true)
-			this.WindowSize.y = view.getInt32(18 * 4, true)
-		}
+		this.WindowSize.x = IOBufferView.getInt32(17 * 4, true)
+		this.WindowSize.y = IOBufferView.getInt32(18 * 4, true)
 		if (this.clear_texture_cache) {
 			this.texture_cache.forEach(id => this.FreeTexture(id))
 			this.texture_cache.clear()
@@ -985,47 +981,24 @@ class CRendererSDK {
 }
 const RendererSDK = new CRendererSDK()
 
-function StaticInit() {
-	let map_name = GetLevelNameShort()
-	if (map_name === "start")
-		map_name = "dota"
-	{
-		const buf = fread(`maps/${map_name}.vhcg`)
-		if (buf !== undefined) {
-			WASM.ParseVHCG(new Uint8Array(buf))
-			GameState.MapName = map_name
-		}
-	}
-	{
-		const buf = fread(`maps/${map_name}.gnv`)
-		if (buf !== undefined) {
-			ParseGNV(buf)
-			GameState.MapName = map_name
-		}
-	}
-}
-let initialized = false
-Events.on("NewConnection", () => {
-	if (!initialized) {
-		StaticInit()
-		initialized = true
-	}
-})
-
-function TryLoadMapFiles() {
+let vhcg_succeeded = false,
+	gnv_succeeded = false
+function TryLoadMapFiles(): void {
 	const map_name = GameState.MapName
-	{
+	if (!vhcg_succeeded) {
 		const buf = fread(`maps/${map_name}.vhcg`)
 		if (buf !== undefined) {
+			vhcg_succeeded = true
 			WASM.ParseVHCG(new Uint8Array(buf))
 		} else
 			WASM.ResetVHCG()
 	}
-	{
+	if (!gnv_succeeded) {
 		const buf = fread(`maps/${map_name}.gnv`)
-		if (buf !== undefined)
+		if (buf !== undefined) {
+			gnv_succeeded = true
 			ParseGNV(buf)
-		else
+		} else
 			ResetGNV()
 	}
 }
@@ -1037,13 +1010,12 @@ EventsSDK.on("ServerInfo", info => {
 	if (map_name === "start")
 		map_name = "dota"
 	GameState.MapName = map_name
+	vhcg_succeeded = false
+	gnv_succeeded = false
 	TryLoadMapFiles()
 })
 
-Events.on("PostAddSearchPath", path => {
-	if (ParseMapName(path) === GameState.MapName)
-		TryLoadMapFiles()
-})
+Events.on("PostAddSearchPath", () => TryLoadMapFiles())
 
 Events.on("Draw", () => {
 	RendererSDK.BeforeDraw()

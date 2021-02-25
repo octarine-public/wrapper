@@ -184,7 +184,7 @@ export default class Entity {
 		return 0
 	}
 	public get CollisionRadius(): number {
-		return GetEntityCollisionRadius(this.Index) ?? 0
+		return 20 // TODO: native crutch broke, we need to completely rewrite that in TS
 	}
 	public get ProjectileCollisionSize(): number {
 		return this.CollisionRadius
@@ -287,9 +287,6 @@ export default class Entity {
 		return ent?.Team !== this.Team
 	}
 
-	public Select(bAddToGroup: boolean = false): boolean {
-		return SelectUnit(this.Index, bAddToGroup)
-	}
 	public GetAttachment(attachment_name: string): Vector3 {
 		GetEntityAttachment(this.Index, attachment_name)
 		const vec = Vector3.fromIOBuffer()
@@ -398,7 +395,7 @@ EventsSDK.on("GameEvent", (name, obj) => {
 })
 
 const last_glow_ents = new Set<Entity>()
-function CustomGlowEnts(IOBufferView: DataView): void {
+function CustomGlowEnts(): void {
 	const element_size = 8 // [u32, u32] = 8 bytes
 	const max_elements = Math.floor(IOBuffer.byteLength / element_size)
 	const groups: [number, number][][] = []
@@ -433,7 +430,7 @@ function CustomGlowEnts(IOBufferView: DataView): void {
 }
 
 const last_colored_ents = new Set<Entity>()
-function CustomColorEnts(IOBufferView: DataView): void {
+function CustomColorEnts(): void {
 	const element_size = 9 // [u32, u32, u8] = 9 bytes
 	const max_elements = Math.floor(IOBuffer.byteLength / element_size)
 	const groups: [Entity, number, number][][] = []
@@ -468,10 +465,8 @@ function CustomColorEnts(IOBufferView: DataView): void {
 }
 
 Events.after("Draw", () => {
-	const IOBufferView = new DataView(IOBuffer.buffer)
-
-	CustomColorEnts(IOBufferView)
-	CustomGlowEnts(IOBufferView)
+	CustomColorEnts()
+	CustomGlowEnts()
 })
 Events.on("NewConnection", () => {
 	last_glow_ents.clear()

@@ -68,24 +68,23 @@ function LoadTreeMap(buf: ArrayBuffer) {
 	})
 }
 
-export function LoadTreeMapByName(map_name: string): void {
+let trm_succeeded = false
+function TryLoadMapFiles(): void {
+	if (trm_succeeded)
+		return
 	try {
-		const buf = fread(`maps/${map_name}.trm`)
-		if (buf !== undefined)
+		const buf = fread(`maps/${GameState.MapName}.trm`)
+		if (buf !== undefined) {
+			trm_succeeded = true
 			LoadTreeMap(buf)
+		}
 	} catch (e) {
 		console.log("Error in TreeMap init: " + e)
 	}
 }
 
-let initialized = false
-Events.on("NewConnection", () => {
-	if (!initialized) {
-		let map_name = GetLevelNameShort()
-		if (map_name === "start")
-			map_name = "dota"
-		LoadTreeMapByName(map_name)
-		initialized = true
-	}
+EventsSDK.after("ServerInfo", () => {
+	trm_succeeded = false
+	TryLoadMapFiles()
 })
-EventsSDK.after("ServerInfo", () => LoadTreeMapByName(GameState.MapName))
+Events.on("PostAddSearchPath", () => TryLoadMapFiles())

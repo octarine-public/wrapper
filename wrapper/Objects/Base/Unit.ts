@@ -392,7 +392,9 @@ export default class Unit extends Entity {
 	}
 	public get UnitStateMask(): bigint {
 		// TODO: use buffs to calculate this
-		return GetEntityUnitState(this.Index) ?? this.UnitStateNetworked
+		if (!GetEntityUnitState(this.Index))
+			return this.UnitStateNetworked
+		return IOBufferView.getBigUint64(0, true)
 	}
 	public get UnitState(): modifierstate[] {
 		return MaskToArrayBigInt(this.UnitStateMask)
