@@ -1,4 +1,5 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { DOTACustomHeroPickRulesPhase_t } from "../../Enums/DOTACustomHeroPickRulesPhase_t"
 import EventsSDK from "../../Managers/EventsSDK"
 import Entity from "./Entity"
 

@@ -1,4 +1,5 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { DOTA_RUNES } from "../../Enums/DOTA_RUNES"
 import Entity from "./Entity"
 
 @WrapperClass("C_DOTA_Item_Rune")

@@ -1,4 +1,5 @@
 import { WrapperClass } from "../../../Decorators"
+import { DAMAGE_TYPES } from "../../../Enums/DAMAGE_TYPES"
 import Ability from "../../Base/Ability"
 
 @WrapperClass("lina_laguna_blade")

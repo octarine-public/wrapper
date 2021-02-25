@@ -1,4 +1,5 @@
 import { WrapperClass } from "../../../Decorators"
+import { SPELL_IMMUNITY_TYPES } from "../../../Enums/SPELL_IMMUNITY_TYPES"
 import Ability from "../../Base/Ability"
 
 @WrapperClass("skywrath_mage_arcane_bolt")

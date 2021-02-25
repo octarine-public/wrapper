@@ -1,3 +1,11 @@
+import { ABILITY_TYPES } from "../../Enums/ABILITY_TYPES"
+import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
+import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
+import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
+import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
+import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
+import { EDOTASpecialBonusOperation } from "../../Enums/EDOTASpecialBonusOperation"
+import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
 import { createMapFromMergedIterators, parseEnumString, parseKVFile } from "../../Utils/Utils"
 import Unit from "../Base/Unit"
 

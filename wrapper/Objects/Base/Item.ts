@@ -1,4 +1,7 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { DOTAScriptInventorySlot_t } from "../../Enums/DOTAScriptInventorySlot_t"
+import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
+import { EShareAbility } from "../../Enums/EShareAbility"
 import Ability from "./Ability"
 import { GameRules } from "./Entity"
 

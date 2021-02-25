@@ -1,6 +1,7 @@
 import Vector2 from "../../../Base/Vector2"
 import Vector3 from "../../../Base/Vector3"
 import { WrapperClass } from "../../../Decorators"
+import { ParticleAttachment_t } from "../../../Enums/ParticleAttachment_t"
 import EntityManager from "../../../Managers/EntityManager"
 import EventsSDK from "../../../Managers/EventsSDK"
 import ParticlesSDK from "../../../Managers/ParticleManager"

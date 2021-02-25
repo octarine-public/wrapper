@@ -1,4 +1,5 @@
 import { WrapperClass } from "../../Decorators"
+import { modifierstate } from "../../Enums/modifierstate"
 import Item from "../Base/Item"
 
 @WrapperClass("item_black_king_bar")

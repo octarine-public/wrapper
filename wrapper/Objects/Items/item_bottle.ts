@@ -1,4 +1,5 @@
 import { WrapperClass } from "../../Decorators"
+import { DOTA_RUNES } from "../../Enums/DOTA_RUNES"
 import GameState from "../../Utils/GameState"
 import Item from "../Base/Item"
 

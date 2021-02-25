@@ -1,6 +1,7 @@
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
+import { DOTA_UNIT_TARGET_TEAM } from "../Enums/DOTA_UNIT_TARGET_TEAM"
 import Entity from "../Objects/Base/Entity"
 import GetConstructorByName, { FieldHandler, GetFieldHandlers, GetSDKClasses } from "../Objects/NativeToSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"

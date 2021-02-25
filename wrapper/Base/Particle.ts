@@ -1,3 +1,4 @@
+import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
 import ParticlesSDK from "../Managers/ParticleManager"
 import Entity from "../Objects/Base/Entity"
 import { tryFindFile } from "../Utils/readFile"
@@ -18,6 +19,7 @@ export default class Particle {
 		public readonly Key: any,
 		public readonly Path: string,
 		public readonly Attachment: ParticleAttachment_t,
+		// tslint:disable-next-line: no-shadowed-variable
 		public readonly Entity?: Entity | Vector3,
 		...controlPoints: ControlPointParam[]
 	) {

@@ -1,4 +1,5 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { CourierState_t } from "../../Enums/CourierState_t"
 import EntityManager from "../../Managers/EntityManager"
 import Hero from "./Hero"
 import Unit from "./Unit"

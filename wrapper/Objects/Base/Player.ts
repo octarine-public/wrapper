@@ -1,6 +1,6 @@
-import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { EShareAbility } from "../../Enums/EShareAbility"
 import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
@@ -34,13 +34,13 @@ export default class Player extends Entity {
 	public Glyph(queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return ExecuteOrder.Glyph(queue, showEffects)
 	}
-	public CastRiverPaint(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	public CastRiverPaint(position: Vector3, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return ExecuteOrder.CastRiverPaint(position, queue, showEffects)
 	}
 	public PreGameAdjustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return ExecuteOrder.PreGameAdjustItemAssigment(ItemID, queue, showEffects)
 	}
-	public Scan(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	public Scan(position: Vector3, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return ExecuteOrder.Scan(position, queue, showEffects)
 	}
 }

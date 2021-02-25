@@ -1,4 +1,6 @@
 import { WrapperClass } from "../../Decorators"
+import { Attributes } from "../../Enums/Attributes"
+import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import Item from "../Base/Item"
 
 @WrapperClass("item_ethereal_blade")

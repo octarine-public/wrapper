@@ -1,5 +1,6 @@
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
+import { Attributes } from "../../Enums/Attributes"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
 import { createMapFromMergedIterators, parseEnumString, parseKVFile } from "../../Utils/Utils"
 

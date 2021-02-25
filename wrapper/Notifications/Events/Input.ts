@@ -1,5 +1,5 @@
-import { Input, InputEventSDK, VMouseKeys } from "wrapper/Imports"
 import Rectangle from "../../Base/Rectangle"
+import InputManager, { InputEventSDK, VMouseKeys } from "../../Managers/InputManager"
 import { Notifications } from "../data"
 import { GetPanel } from "../Util"
 
@@ -7,7 +7,7 @@ InputEventSDK.on("MouseKeyDown", key => {
 	if (key !== VMouseKeys.MK_LBUTTON)
 		return true
 
-	const MosePosition = Input.CursorOnScreen,
+	const MosePosition = InputManager.CursorOnScreen,
 		panel = new Rectangle()
 	GetPanel(panel)
 	const panel_height = panel.Size.y

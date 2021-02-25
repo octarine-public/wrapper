@@ -117,9 +117,6 @@ export default class Modifier {
 	public get ShouldDoFlyHeightVisual(): boolean {
 		return this.Name === "modifier_winter_wyvern_arctic_burn_flight"
 	}
-	public get Attributes(): DOTAModifierAttribute_t {
-		return DOTAModifierAttribute_t.MODIFIER_ATTRIBUTE_NONE
-	}
 	public get CreationTime(): number {
 		return this.m_pBuff.CreationTime
 	}

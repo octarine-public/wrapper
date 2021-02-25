@@ -1,3 +1,4 @@
+import { DAMAGE_TYPES } from "../Enums/DAMAGE_TYPES"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import { Utf16ArrayToStr, Utf8ArrayToStr } from "./ArrayBufferUtils"
 import BinaryStream from "./BinaryStream"

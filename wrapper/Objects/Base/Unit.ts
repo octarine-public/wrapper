@@ -3,7 +3,16 @@ import Vector3 from "../../Base/Vector3"
 import { NetworkedBasicField, NetworkedBigIntField, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
+import { Attributes } from "../../Enums/Attributes"
+import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
+import { DOTAScriptInventorySlot_t } from "../../Enums/DOTAScriptInventorySlot_t"
+import { DOTAUnitAttackCapability_t } from "../../Enums/DOTAUnitAttackCapability_t"
+import { DOTAUnitMoveCapability_t } from "../../Enums/DOTAUnitMoveCapability_t"
 import { dotaunitorder_t } from "../../Enums/dotaunitorder_t"
+import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
+import { DOTA_SHOP_TYPE } from "../../Enums/DOTA_SHOP_TYPE"
+import { GameActivity_t } from "../../Enums/GameActivity_t"
+import { modifierstate } from "../../Enums/modifierstate"
 import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
@@ -519,7 +528,7 @@ export default class Unit extends Entity {
 	/**
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
-	public Distance2D(vec: Vector3 | Vector2 | Entity, fromCenterToCenter = false): number {
+	public Distance2D(vec: Vector3 | Entity, fromCenterToCenter = false): number {
 		let dist = super.Distance2D(vec)
 		if (fromCenterToCenter && vec instanceof Entity)
 			dist -= this.HullRadius + (vec instanceof Unit ? vec.HullRadius : 0)
@@ -574,7 +583,7 @@ export default class Unit extends Entity {
 	 * faster (Distance <= range)
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
-	public IsInRange(ent: Vector3 | Vector2 | Entity, range: number, fromCenterToCenter: boolean = false): boolean {
+	public IsInRange(ent: Vector3 | Entity, range: number, fromCenterToCenter: boolean = false): boolean {
 		if (fromCenterToCenter === false) {
 
 			range += this.HullRadius
@@ -987,19 +996,19 @@ export default class Unit extends Entity {
 
 	/* ORDERS */
 
-	public MoveTo(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public MoveTo(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION, issuers: [this], position, queue, showEffects })
 	}
 	public MoveToTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET, issuers: [this], target, queue, showEffects })
 	}
-	public AttackMove(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public AttackMove(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE, issuers: [this], position, queue, showEffects })
 	}
 	public AttackTarget(target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET, issuers: [this], target, queue, showEffects })
 	}
-	public CastPosition(ability: Ability, position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public CastPosition(ability: Ability, position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION, issuers: [this], ability, position, queue, showEffects })
 	}
 	public PurchaseItem(itemID: number, queue?: boolean, showEffects?: boolean) {
@@ -1017,7 +1026,7 @@ export default class Unit extends Entity {
 	public CastToggle(ability: Ability, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE, issuers: [this], ability, queue, showEffects })
 	}
-	public HoldPosition(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public HoldPosition(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION, issuers: [this], position, queue, showEffects })
 	}
 	public TrainAbility(ability: Ability) {
@@ -1026,7 +1035,7 @@ export default class Unit extends Entity {
 	public DropItemAtFountain(item: Item, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM_AT_FOUNTAIN, issuers: [this], ability: item, queue, showEffects })
 	}
-	public DropItem(item: Item, position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public DropItem(item: Item, position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_DROP_ITEM, issuers: [this], ability: item, position, queue, showEffects })
 	}
 	public GiveItem(item: Item, target: Entity | number, queue?: boolean, showEffects?: boolean) {
@@ -1068,16 +1077,16 @@ export default class Unit extends Entity {
 	public PingAbility(ability: Ability) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PING_ABILITY, issuers: [this], ability })
 	}
-	public MoveToDirection(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public MoveToDirection(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION, issuers: [this], position, queue, showEffects })
 	}
-	public Patrol(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public Patrol(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PATROL, issuers: [this], position, queue, showEffects })
 	}
-	public VectorTargetPosition(ability: Ability, Direction: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public VectorTargetPosition(ability: Ability, Direction: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION, issuers: [this], ability, position: Direction, queue, showEffects })
 	}
-	public CastVectorTargetPosition(ability: Ability, position: Vector3 | Vector2 | Unit, Direction: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): void {
+	public CastVectorTargetPosition(ability: Ability, position: Vector3 | Unit, Direction: Vector3, queue?: boolean, showEffects?: boolean): void {
 		if (position instanceof Unit)
 			position = position.Position
 
@@ -1090,7 +1099,7 @@ export default class Unit extends Entity {
 	public OrderContinue(item: Item, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CONTINUE, issuers: [this], ability: item, queue, showEffects })
 	}
-	public VectorTargetCanceled(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean) {
+	public VectorTargetCanceled(position: Vector3, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_CANCELED, issuers: [this], position, queue, showEffects })
 	}
 }

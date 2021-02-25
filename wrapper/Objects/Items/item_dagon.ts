@@ -1,4 +1,5 @@
 import { WrapperClass } from "../../Decorators"
+import { DAMAGE_TYPES } from "../../Enums/DAMAGE_TYPES"
 import Item from "../Base/Item"
 
 @WrapperClass("item_dagon")

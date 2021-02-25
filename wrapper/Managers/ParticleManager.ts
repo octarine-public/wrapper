@@ -1,6 +1,7 @@
 import Color from "../Base/Color"
 import Particle, { ControlPoint, ControlPointParam } from "../Base/Particle"
 import Vector3 from "../Base/Vector3"
+import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
 import Entity from "../Objects/Base/Entity"
 
 const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`

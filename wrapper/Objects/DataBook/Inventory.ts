@@ -1,3 +1,4 @@
+import { DOTAScriptInventorySlot_t } from "../../Enums/DOTAScriptInventorySlot_t"
 import { LocalPlayer } from "../Base/Entity"
 import Item from "../Base/Item"
 import Player from "../Base/Player"

@@ -3,6 +3,7 @@ import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
+import { PlayerOrderIssuer_t } from "../Enums/PlayerOrderIssuer_t"
 import EntityManager from "../Managers/EntityManager"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
@@ -41,7 +42,7 @@ export default class ExecuteOrder {
 	public static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
-		position?: Vector3 | Vector2,
+		position?: Vector3,
 		ability?: Ability | number,
 		orderIssuer?: PlayerOrderIssuer_t,
 		issuers?: Unit[],
@@ -56,20 +57,20 @@ export default class ExecuteOrder {
 	public static Glyph(queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_GLYPH, queue, showEffects })
 	}
-	public static CastRiverPaint(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	public static CastRiverPaint(position: Vector3, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_RIVER_PAINT, position, queue, showEffects })
 	}
 	public static PreGameAdjustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_PREGAME_ADJUST_ITEM_ASSIGNMENT, target: ItemID, queue, showEffects })
 	}
-	public static Scan(position: Vector3 | Vector2, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	public static Scan(position: Vector3, queue?: boolean, showEffects?: boolean): ExecuteOrder {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_RADAR, position, queue, showEffects })
 	}
 
 	public static fromObject(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
-		position?: Vector3 | Vector2,
+		position?: Vector3,
 		ability?: Ability | number,
 		orderIssuer?: PlayerOrderIssuer_t,
 		issuers?: Unit[],
@@ -122,90 +123,45 @@ export default class ExecuteOrder {
 
 	private static LatestUnitOrder_view = new DataView(LatestUnitOrder.buffer)
 
-	private m_OrderType: dotaunitorder_t
-	private m_Target: Nullable<Entity | number>
-	private m_Position: Vector3
-	private m_Ability: Nullable<Ability | number>
-	private m_OrderIssuer: PlayerOrderIssuer_t
-	private m_Issuers: Unit[]
-	private m_Queue: boolean
-	private m_ShowEffects: boolean
-
 	/**
 	 * Orders by native CUnitOrder
 	 * @param position default: new Vector3(0,0,0)
 	 * @param issuer default: DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY
 	 */
 	constructor(
-		orderType: dotaunitorder_t,
-		target: Nullable<Entity | number>,
-		position: Vector3 | Vector2 = new Vector3(),
-		ability: Nullable<Ability | number>,
-		issuer: PlayerOrderIssuer_t = PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
-		issuers: Unit[],
-		queue: boolean = false,
-		showEffects: boolean = false,
-	) {
-		this.m_OrderType = orderType
-		this.m_Target = target
-		this.m_Position = position instanceof Vector2 ? position.toVector3() : position
-		this.m_Ability = ability
-		this.m_OrderIssuer = issuer
-		this.m_Issuers = issuers
-		this.m_Queue = queue
-		this.m_ShowEffects = showEffects
-	}
-
-	get OrderType(): dotaunitorder_t {
-		return this.m_OrderType
-	}
-	get Target(): Nullable<Entity | number> {
-		return this.m_Target
-	}
-	get Position(): Vector3 {
-		return this.m_Position
-	}
-	get Ability(): Nullable<Ability | number> {
-		return this.m_Ability
-	}
-	get OrderIssuer(): PlayerOrderIssuer_t {
-		return this.m_OrderIssuer
-	}
-	get Issuers(): Unit[] {
-		return this.m_Issuers
-	}
-	get Unit(): Nullable<Unit> {
-		return this.m_Issuers[0]
-	}
-	get Queue(): boolean {
-		return this.m_Queue
-	}
-	get ShowEffects(): boolean {
-		return this.m_ShowEffects
-	}
+		public readonly OrderType: dotaunitorder_t,
+		public readonly Target: Nullable<Entity | number>,
+		public readonly Position: Vector3 = new Vector3(),
+		// tslint:disable-next-line: no-shadowed-variable
+		public readonly Ability: Nullable<Ability | number>,
+		public readonly OrderIssuer: PlayerOrderIssuer_t = PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
+		public readonly Issuers: Unit[],
+		public readonly Queue: boolean = false,
+		public readonly ShowEffects: boolean = false,
+	) { }
 
 	/**
 	 * pass Position: Vector3 at IOBuffer offset 0
 	 */
 	public toNative() {
-		const target = this.m_Target,
-			ability = this.m_Ability
+		const target = this.Target,
+			ability = this.Ability
 
 		return {
-			OrderType: this.m_OrderType,
+			OrderType: this.OrderType,
 			Target: target instanceof Entity ? target instanceof Tree ? target.BinaryID : target.Index : target,
 			Ability: ability instanceof Ability ? ability.Index : ability,
-			OrderIssuer: this.m_OrderIssuer,
-			Issuers: this.m_Issuers.map(ent => ent.Index),
-			Queue: this.m_Queue,
-			ShowEffects: this.m_ShowEffects,
+			OrderIssuer: this.OrderIssuer,
+			Issuers: this.Issuers.map(ent => ent.Index),
+			Queue: this.Queue,
+			ShowEffects: this.ShowEffects,
 		}
 	}
 	/**
 	 * Execute order with this fields
 	 */
 	public Execute(): ExecuteOrder {
-		this.m_Position.toIOBuffer()
+		this.Position.toIOBuffer()
 		PrepareUnitOrders(this.toNative())
 		return this
 	}
@@ -232,14 +188,14 @@ export default class ExecuteOrder {
 		ShowEffects: boolean,
 	} {
 		return {
-			OrderType: this.m_OrderType,
-			Target: this.m_Target,
-			Position: this.m_Position,
-			Ability: this.m_Ability,
-			OrderIssuer: this.m_OrderIssuer,
-			Issuers: this.m_Issuers,
-			Queue: this.m_Queue,
-			ShowEffects: this.m_ShowEffects,
+			OrderType: this.OrderType,
+			Target: this.Target,
+			Position: this.Position,
+			Ability: this.Ability,
+			OrderIssuer: this.OrderIssuer,
+			Issuers: this.Issuers,
+			Queue: this.Queue,
+			ShowEffects: this.ShowEffects,
 		}
 	}
 }
