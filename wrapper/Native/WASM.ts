@@ -107,9 +107,11 @@ export function GetCameraPosition(camera_position: Vector2, camera_distance: num
 	const camera_pos = Camera.Position ? Vector3.fromIOBuffer() : new Vector3()
 	const camera_ang = Camera.Angles ? QAngle.fromIOBuffer() : new QAngle()
 	return camera_position.toVector3().SetZ(
-		camera_pos.z
-		+ GetEyeVector(camera_ang).z * Camera.Distance
-		- GetEyeVector(camera_angles).z * camera_distance,
+		GetEyeVector(camera_ang).z * Camera.Distance
+		+ Math.max(
+			camera_pos.z - GetEyeVector(camera_angles).z * camera_distance,
+			camera_distance + 500,
+		),
 	)
 }
 

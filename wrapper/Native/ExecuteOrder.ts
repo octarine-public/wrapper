@@ -94,8 +94,8 @@ export default class ExecuteOrder {
 		const issuers: Unit[] = []
 		for (let i = 0; i < issuers_size; i++) {
 			const ent_id = ExecuteOrder.LatestUnitOrder_view.getUint32(34 + (i * 4), true)
-			const ent = EntityManager.EntityByIndex(ent_id) as Unit
-			if (ent !== undefined)
+			const ent = EntityManager.EntityByIndex(ent_id)
+			if (ent instanceof Unit)
 				issuers.push(ent)
 		}
 		if (issuers.length === 0) {
@@ -104,9 +104,16 @@ export default class ExecuteOrder {
 				issuers.push(hero)
 		}
 		const target = ExecuteOrder.LatestUnitOrder_view.getUint32(20, true),
-			ability = ExecuteOrder.LatestUnitOrder_view.getUint32(24, true)
+			ability = ExecuteOrder.LatestUnitOrder_view.getUint32(24, true),
+			order_type = ExecuteOrder.LatestUnitOrder_view.getUint32(0, true) as dotaunitorder_t
+		let target_: Entity | number = target,
+			ability_: Entity | number = target
+		if (order_type !== dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM)
+			target_ = EntityManager.EntityByIndex(target_) ?? target_
+		if (order_type !== dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM)
+			ability_ = EntityManager.EntityByIndex(ability_) ?? ability_
 		return new ExecuteOrder(
-			ExecuteOrder.LatestUnitOrder_view.getUint32(0, true),
+			order_type,
 			target !== 0 ? (EntityManager.EntityByIndex(target) ?? target) : undefined,
 			new Vector3(
 				ExecuteOrder.LatestUnitOrder_view.getFloat32(8, true),

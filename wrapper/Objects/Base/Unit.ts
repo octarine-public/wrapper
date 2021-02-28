@@ -18,10 +18,9 @@ import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import * as StringTables from "../../Managers/StringTables"
 import ExecuteOrder from "../../Native/ExecuteOrder"
-import RendererSDK from "../../Native/RendererSDK"
 import { HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 import GameState from "../../Utils/GameState"
-import { DamageIgnoreBuffs, parseKVFile } from "../../Utils/Utils"
+import { DamageIgnoreBuffs } from "../../Utils/Utils"
 import Inventory from "../DataBook/Inventory"
 import ModifiersBook from "../DataBook/ModifiersBook"
 import UnitData from "../DataBook/UnitData"
@@ -38,13 +37,6 @@ import TreeTemp from "./TreeTemp"
 
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
-const UnitHealthBar_Hero = parseKVFile("resource/ui/unithealthbar_hero.res").get("Resource/UI/UnitHealthBar_Hero.res") as RecursiveMap
-
-/*const UnitHealthBar = UnitHealthBar_Hero.get("UnitHealthBar") as RecursiveMap
-const healthbar_size_noscale = new Vector2(parseInt(UnitHealthBar.get("xpos") as string) * 2.25, parseInt(UnitHealthBar.get("ypos") as string) * 1.5)*/
-
-const UnitManaBar = UnitHealthBar_Hero.get("UnitManaBar") as RecursiveMap
-const manabar_size_noscale = new Vector2(parseInt(UnitManaBar.get("xpos") as string) * 2.25, parseInt(UnitManaBar.get("ypos") as string))
 
 @WrapperClass("C_DOTA_BaseNPC")
 export default class Unit extends Entity {
@@ -322,7 +314,7 @@ export default class Unit extends Entity {
 	/**
 	 * @returns [Position: Vector2, Size: Vector2]
 	 */
-	public get ManaBarOnScreen(): Nullable<[Vector2, Vector2]> {
+	/*public get ManaBarOnScreen(): Nullable<[Vector2, Vector2]> {
 		const wts = RendererSDK.WorldToScreen(this.Position.AddScalarZ(this.HealthBarOffset))
 		if (wts === undefined)
 			return undefined
@@ -330,7 +322,7 @@ export default class Unit extends Entity {
 		const manabar_size = RendererSDK.GetProportionalScaledVector(manabar_size_noscale, false).SubtractScalarX(1)
 		wts.SubtractForThis(manabar_size.Divide(new Vector2(1.95, 0.42))).FloorForThis()
 		return [wts, manabar_size]
-	}
+	}*/
 	// TODO: parse KV, use buffs and items for calculation
 	public get AttackSpeed(): number {
 		return GetUnitNumberPropertyByName(this.Index, "m_fAttackSpeed") ?? 0

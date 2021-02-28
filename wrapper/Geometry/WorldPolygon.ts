@@ -19,12 +19,8 @@ export class WorldPolygon {
 	public Draw(key: string, ent: Entity, ParticleManager: ParticlesSDK, color: Color, width = 10, mode2D = 10): void {
 		for (let i = 0; i < this.Points.length; i++) {
 			const nextIndex = this.Points.length - 1 === i ? 0 : i + 1
-			const pos1 = new Vector3(this.Points[i].x, this.Points[i].y, this.Points[i].z)
-			const pos2 = new Vector3(this.Points[nextIndex].x, this.Points[nextIndex].y, this.Points[nextIndex].z)
-			if (pos1 === undefined || pos2 === undefined)
-				return
-			ParticleManager.DrawLine(`${key}_${i}`, ent, pos2, {
-				Position: pos1,
+			ParticleManager.DrawLine(`${key}_${i}`, ent, this.Points[nextIndex], {
+				Position: this.Points[i],
 				Color: color,
 				Width: width,
 				Mode2D: mode2D,

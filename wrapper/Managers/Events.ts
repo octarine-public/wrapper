@@ -6,10 +6,8 @@ type Listener = (...args: any) => false | any
 export class EventEmitter {
 	protected readonly events = new Map<string, Listener[]>()
 	protected readonly events_after = new Map<string, Listener[]>()
-	protected readonly listener2line = new Map<Listener, string>()
 
 	public on(name: string, listener: Listener): EventEmitter {
-		this.listener2line.set(listener, new Error().stack?.split("\n")[2] ?? "")
 		let listeners = this.events.get(name)
 		if (listeners === undefined)
 			this.events.set(name, listeners = [])
@@ -18,7 +16,6 @@ export class EventEmitter {
 		return this
 	}
 	public after(name: string, listener: Listener): EventEmitter {
-		this.listener2line.set(listener, new Error().stack?.split("\n")[2] ?? "")
 		let listeners = this.events_after.get(name)
 		if (listeners === undefined)
 			this.events_after.set(name, listeners = [])

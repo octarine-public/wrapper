@@ -600,15 +600,6 @@ class CRendererSDK {
 		else if (res >= 2.2 && res <= 2.4)
 			return "21x9"
 	}
-	public GetProportionalScaledVector(vec: Vector2, apply_screen_scaling = true, magic: number = 1, parent_size = this.WindowSize): Vector2 {
-		vec = vec.Clone()
-		let h = parent_size.y
-		vec.y = Math.floor(h / 0x300 * vec.y / magic)
-		if (apply_screen_scaling && parent_size.x === 1280 && h === 1024)
-			h = 960
-		vec.x = Math.floor(h / 0x300 * vec.x / magic)
-		return vec
-	}
 	public Radial(
 		startAngle: number,
 		percent: number,
@@ -1019,6 +1010,7 @@ Events.on("PostAddSearchPath", () => TryLoadMapFiles())
 
 Events.on("Draw", () => {
 	RendererSDK.BeforeDraw()
+	EventsSDK.emit("PreDraw")
 	EventsSDK.emit("Draw")
 })
 

@@ -21,6 +21,7 @@ export { DOTA_UNIT_TARGET_TEAM } from "./Enums/DOTA_UNIT_TARGET_TEAM"
 export { DOTA_UNIT_TARGET_TYPE } from "./Enums/DOTA_UNIT_TARGET_TYPE"
 export { DOTACustomHeroPickRulesPhase_t } from "./Enums/DOTACustomHeroPickRulesPhase_t"
 export { DOTAGameUIState_t } from "./Enums/DOTAGameUIState_t"
+export { DOTAHUDVisibility_t } from "./Enums/DOTAHUDVisibility_t"
 export { DAMAGE_TYPES } from "./Enums/DAMAGE_TYPES"
 export { DOTA_ABILITY_BEHAVIOR } from "./Enums/DOTA_ABILITY_BEHAVIOR"
 export { DOTA_CHAT_MESSAGE } from "./Enums/DOTA_CHAT_MESSAGE"
@@ -65,6 +66,8 @@ export { default as readFile } from "./Utils/readFile"
 
 export * as Menu from "./Menu/Imports"
 
+export { default as GUIInfo } from "./GUI/GUIInfo"
+
 export { DotaMap } from "./Helpers/DotaMap"
 export { MapArea } from "./Helpers/MapArea"
 export { Sleeper, GameSleeper, TickSleeper } from "./Helpers/Sleeper"
@@ -94,6 +97,7 @@ export {
 
 export { default as CTurboHeroPickRules, TurboHeroPickRules } from "./Objects/Base/TurboPickRules"
 export { default as CCustomHeroPickRules, CustomHeroPickRules } from "./Objects/Base/CustomPickRules"
+export { default as DOTAGameMode, GameMode } from "./Objects/Base/DOTAGameMode"
 
 export {
 	default as RendererSDK,
