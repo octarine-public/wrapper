@@ -446,6 +446,18 @@ export default class Unit extends Entity {
 		if (lens !== undefined)
 			castrange += lens.GetSpecialValue("cast_range_bonus")
 
+		const keen = this.GetItemByName("item_keen_optic")
+		if (keen !== undefined)
+			castrange += keen.GetSpecialValue("cast_range_bonus")
+
+		const seer = this.GetItemByName("item_seer_stone")
+		if (seer !== undefined)
+			castrange += seer.GetSpecialValue("cast_range_bonus")
+
+		const headband = this.GetItemByName("item_psychic_headband")
+		if (headband !== undefined)
+			castrange += headband.GetSpecialValue("cast_range")
+
 		const gadget_aura = this.GetBuffByName("modifier_item_spy_gadget_aura")
 		if (gadget_aura !== undefined) {
 			const gadget = gadget_aura.Ability
@@ -618,6 +630,10 @@ export default class Unit extends Entity {
 			if (this.HasBuffByName("modifier_batrider_sticky_napalm"))
 				turnRate *= 0.3
 		}
+
+		const legs = this.GetItemByName("item_spider_legs")
+		if (legs !== undefined)
+			turnRate /= (legs.GetSpecialValue("turn_rate") / 100)
 
 		return turnRate
 	}
