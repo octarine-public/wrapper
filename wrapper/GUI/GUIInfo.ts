@@ -10,7 +10,6 @@ import CShop from "./CShop"
 import CTopBar from "./CTopBar"
 
 const latest_screen_size = new Vector2()
-let latest_hud_flipped = false
 const GUIInfo = new (class CGUIInfo {
 	public debug_draw = false
 	public Minimap = undefined as any as CMinimap
@@ -18,10 +17,8 @@ const GUIInfo = new (class CGUIInfo {
 	public OpenShopMini = undefined as any as COpenShop
 	public OpenShopLarge = undefined as any as COpenShop
 	public TopBar = undefined as any as CTopBar
-	public PreGame_NoCoach = undefined as any as CPreGame
-	public PreGame_RadiantCoach = undefined as any as CPreGame
-	public PreGame_DireCoach = undefined as any as CPreGame
-	public PreGame_RadiantDireCoach = undefined as any as CPreGame
+	public PreGame = undefined as any as CPreGame
+	public HUDFlipped = false
 
 	// Looks like it's hardcoded
 	// Do not change it unless anything breaks.
@@ -29,13 +26,13 @@ const GUIInfo = new (class CGUIInfo {
 
 	public OnDraw(): void {
 		const screen_size = RendererSDK.WindowSize,
-			hud_flipped = false // ConVars.GetInt("dota_hud_flip") !== 0
+			hud_flipped = ConVars.GetInt("dota_hud_flip") !== 0
 		const anything_changed = (
-			latest_hud_flipped !== hud_flipped
+			this.HUDFlipped !== hud_flipped
 			|| !latest_screen_size.Equals(screen_size)
 		)
 		latest_screen_size.CopyFrom(screen_size)
-		latest_hud_flipped = hud_flipped
+		this.HUDFlipped = hud_flipped
 		if (anything_changed || this.TopBar.HasChanged())
 			this.TopBar = new CTopBar(screen_size)
 		if (anything_changed || this.Minimap.HasChanged())
@@ -46,14 +43,8 @@ const GUIInfo = new (class CGUIInfo {
 			this.OpenShopMini = new COpenShop(false, screen_size, hud_flipped)
 		if (anything_changed || this.OpenShopLarge.HasChanged())
 			this.OpenShopLarge = new COpenShop(true, screen_size, hud_flipped)
-		if (anything_changed || this.PreGame_NoCoach.HasChanged())
-			this.PreGame_NoCoach = new CPreGame(screen_size, false, false)
-		if (anything_changed || this.PreGame_RadiantCoach.HasChanged())
-			this.PreGame_RadiantCoach = new CPreGame(screen_size, true, false)
-		if (anything_changed || this.PreGame_DireCoach.HasChanged())
-			this.PreGame_DireCoach = new CPreGame(screen_size, false, true)
-		if (anything_changed || this.PreGame_RadiantDireCoach.HasChanged())
-			this.PreGame_RadiantDireCoach = new CPreGame(screen_size, true, true)
+		if (anything_changed || this.PreGame.HasChanged())
+			this.PreGame = new CPreGame(screen_size)
 		if (this.debug_draw)
 			this.DebugDraw()
 	}
@@ -64,7 +55,7 @@ const GUIInfo = new (class CGUIInfo {
 			this.Shop.DebugDraw()
 			this.OpenShopLarge.DebugDraw()
 		} else
-			this.PreGame_NoCoach.DebugDraw()
+			this.PreGame.DebugDraw()
 	}
 	public ScaleWidth(w: number, screen_size: Vector2): number {
 		let screen_height = screen_size.y

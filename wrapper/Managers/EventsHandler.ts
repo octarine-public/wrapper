@@ -1,9 +1,10 @@
 import Vector3 from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
+import { Localization } from "../Menu/Imports"
 import Entity from "../Objects/Base/Entity"
 import Unit from "../Objects/Base/Unit"
 import { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
-import { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
+import UnitData, { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
 import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
 import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf, ServerHandleToIndex } from "../Utils/Protobuf"
@@ -889,6 +890,9 @@ Events.on("UIStateChanged", new_state => GameState.UIState = new_state)
 Events.on("NewConnection", () => {
 	ReloadGlobalUnitStorage()
 	ReloadGlobalAbilityStorage()
+	const namesMapping = new Map<string, string>()
+	UnitData.global_storage.forEach((data, name) => namesMapping.set(name, data.WorkshopName))
+	Localization.LocalizationUnitsNames.forEach(unitName => Localization.AddLocalizationUnit(unitName, namesMapping))
 })
 
 Events.on("SignonStateChanged", new_state => GameState.SignonState = new_state)

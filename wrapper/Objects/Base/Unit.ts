@@ -591,9 +591,7 @@ export default class Unit extends Entity {
 	 */
 	public IsInRange(ent: Vector3 | Entity, range: number, fromCenterToCenter: boolean = false): boolean {
 		if (fromCenterToCenter === false) {
-
 			range += this.HullRadius
-
 			if (ent instanceof Unit)
 				range += ent.HullRadius
 		}

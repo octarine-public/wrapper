@@ -4,7 +4,6 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("skywrath_mage_arcane_bolt")
 export default class skywrath_mage_arcane_bolt extends Ability {
-
 	public get Speed(): number {
 		return this.GetSpecialValue("bolt_speed")
 	}
@@ -19,7 +18,7 @@ export default class skywrath_mage_arcane_bolt extends Ability {
 	public get AbilityImmunityType(): SPELL_IMMUNITY_TYPES {
 		const talent = this.Owner?.GetAbilityByName("special_bonus_unique_skywrath_6")
 		if (talent === undefined || talent.Level === 0)
-			return this.AbilityImmunityType
+			return super.AbilityImmunityType
 
 		return SPELL_IMMUNITY_TYPES.SPELL_IMMUNITY_ENEMIES_YES
 	}

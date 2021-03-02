@@ -303,6 +303,10 @@ Events.on("Update", () => {
 	latest_cursor.x = cmd.MouseX
 	latest_cursor.y = cmd.MouseY
 
+	cmd.ViewAngles.x = 60
+	cmd.ViewAngles.y = 90
+	cmd.ViewAngles.z = 0
+
 	cmd.WriteBack()
 })
 

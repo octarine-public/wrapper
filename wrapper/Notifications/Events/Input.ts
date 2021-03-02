@@ -10,7 +10,7 @@ InputEventSDK.on("MouseKeyDown", key => {
 	const MosePosition = InputManager.CursorOnScreen,
 		panel = new Rectangle()
 	GetPanel(panel)
-	const panel_height = panel.Size.y
+	const panel_height = panel.Height
 	return !Notifications.some(notification => {
 		if (panel.Contains(MosePosition) && notification.OnClick())
 			return true

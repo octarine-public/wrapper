@@ -9,4 +9,7 @@ export default class nevermore_shadowraze2 extends Ability {
 	public get BaseCastRange() {
 		return this.GetSpecialValue("shadowraze_range")
 	}
+	public get CastRange() {
+		return this.BaseCastRange
+	}
 }

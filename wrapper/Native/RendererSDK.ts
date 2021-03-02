@@ -589,8 +589,8 @@ class CRendererSDK {
 		this.last_fill_type = PaintType.FILL
 		this.last_width = 1
 	}
-	public GetAspectRatio() {
-		const res = this.WindowSize.x / this.WindowSize.y
+	public GetAspectRatio(window_size = this.WindowSize) {
+		const res = window_size.x / window_size.y
 		if (res >= 1.25 && res <= 1.35)
 			return "4x3"
 		else if (res >= 1.7 && res <= 1.85)
@@ -599,6 +599,7 @@ class CRendererSDK {
 			return "16x10"
 		else if (res >= 2.2 && res <= 2.4)
 			return "21x9"
+		return "unknown"
 	}
 	public Radial(
 		startAngle: number,

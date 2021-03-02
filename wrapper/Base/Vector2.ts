@@ -717,7 +717,6 @@ export default class Vector2 {
 		let distance = Number.POSITIVE_INFINITY
 
 		vecs.forEach(vec => {
-
 			const tempDist = this.Distance(vec)
 			if (tempDist < distance) {
 				distance = tempDist

@@ -76,6 +76,15 @@ export default class CTopBar {
 		this.TopBar.Width = GUIInfo.ScaleWidth(1240, screen_size)
 		this.TopBar.Height = GUIInfo.ScaleHeight(165, screen_size)
 		this.TopBar.x = Math.round((screen_size.x - this.TopBar.Width) / 2)
+
+		// These resolutions have incorrect centering - they assign more pixels to the right side
+		// instead of the left one.
+		// Leave as-is unless anything breaks.
+		if (
+			(screen_size.x === 1280 && (screen_size.y === 800 || screen_size.y === 720))
+			|| ((screen_size.x === 720 || screen_size.x === 640) && screen_size.y === 480)
+		)
+			this.TopBar.x -= 1
 	}
 	private CalculateTimeOfDay(screen_size: Vector2): void {
 		this.TimeOfDay.Width = GUIInfo.ScaleWidth(80, screen_size)

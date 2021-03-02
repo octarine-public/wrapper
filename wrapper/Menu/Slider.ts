@@ -24,7 +24,7 @@ export default class Slider extends Base {
 	}
 
 	public set ConfigValue(value) {
-		this.value = value !== undefined ? value : this.value
+		this.value = value !== undefined ? Math.min(Math.max(value, this.min), this.max) : this.value
 	}
 
 	private get SliderRect() {

@@ -96,9 +96,16 @@ export default class UnitData {
 		this.HealthBarOffset = m_Storage.has("HealthBarOffset")
 			? parseInt(m_Storage.get("HealthBarOffset") as string)
 			: 200
-		this.WorkshopName = m_Storage.has("workshop_guide_name")
-			? (m_Storage.get("workshop_guide_name") as string)
-			: name.split("_").map(str => str ? [str[0].toUpperCase(), ...str.substring(1)] : "").join(" ")
+		if (!m_Storage.has("workshop_guide_name")) {
+			if (name.startsWith("npc_"))
+				name = name.substring(4)
+			if (name.startsWith("dota_"))
+				name = name.substring(5)
+			if (name.startsWith("hero_"))
+				name = name.substring(5)
+			this.WorkshopName = name.split("_").map(str => str ? str[0].toUpperCase() + str.substring(1) : "").join(" ")
+		} else
+			this.WorkshopName = m_Storage.get("workshop_guide_name") as string
 		this.AttributePrimary = m_Storage.has("AttributePrimary")
 			? parseEnumString(Attributes, m_Storage.get("AttributePrimary") as string)
 			: Attributes.DOTA_ATTRIBUTE_STRENGTH
