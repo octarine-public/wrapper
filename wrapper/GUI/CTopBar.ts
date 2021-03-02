@@ -75,7 +75,7 @@ export default class CTopBar {
 	private CalculateTopBar(screen_size: Vector2): void {
 		this.TopBar.Width = GUIInfo.ScaleWidth(1240, screen_size)
 		this.TopBar.Height = GUIInfo.ScaleHeight(165, screen_size)
-		this.TopBar.x = Math.floor((screen_size.x - this.TopBar.Width) / 2)
+		this.TopBar.x = Math.round((screen_size.x - this.TopBar.Width) / 2)
 	}
 	private CalculateTimeOfDay(screen_size: Vector2): void {
 		this.TimeOfDay.Width = GUIInfo.ScaleWidth(80, screen_size)
@@ -117,7 +117,8 @@ export default class CTopBar {
 		this.DireSpectatorGoldDisplay.y = SpectatorGoldDisplayContainer.y
 	}
 	private CalculateTeamScoreAndPlayers(screen_size: Vector2): void {
-		const ContainerWidth = GUIInfo.ScaleWidth(540, screen_size),
+		const ContainerWidth = GUIInfo.ScaleWidth(620, screen_size),
+			TeamScoreAndPlayersWidth = GUIInfo.ScaleWidth(540, screen_size),
 			TeamScoreAndPlayersMargin1 = GUIInfo.ScaleWidth(10, screen_size),
 			TeamScoreAndPlayersMargin2 = GUIInfo.ScaleWidth(40, screen_size),
 			ScoreWidth = GUIInfo.ScaleWidth(58, screen_size),
@@ -133,10 +134,9 @@ export default class CTopBar {
 
 		{
 			const RadiantTeamScoreAndPlayers = new Rectangle()
-			const RadiantTeamContainerX = this.TopBar.x + Math.round(this.TopBar.Width / 2) - ContainerWidth
-			RadiantTeamScoreAndPlayers.x = RadiantTeamContainerX + TeamScoreAndPlayersMargin1
-			RadiantTeamScoreAndPlayers.Width = ContainerWidth - TeamScoreAndPlayersMargin1 - TeamScoreAndPlayersMargin2
+			RadiantTeamScoreAndPlayers.Width = TeamScoreAndPlayersWidth - TeamScoreAndPlayersMargin1 - TeamScoreAndPlayersMargin2
 			RadiantTeamScoreAndPlayers.Height = this.TopBar.Height
+			RadiantTeamScoreAndPlayers.x = this.TopBar.x + ContainerWidth - TeamScoreAndPlayersWidth + TeamScoreAndPlayersMargin1
 
 			this.RadiantTeamScore.Width = ScoreWidth
 			this.RadiantTeamScore.Height = ScoreHeight
@@ -168,10 +168,9 @@ export default class CTopBar {
 
 		{
 			const DireTeamScoreAndPlayers = new Rectangle()
-			const DireTeamContainerX = this.TopBar.x + Math.round(this.TopBar.Width / 2)
-			DireTeamScoreAndPlayers.x = DireTeamContainerX + TeamScoreAndPlayersMargin2
-			DireTeamScoreAndPlayers.Width = ContainerWidth - TeamScoreAndPlayersMargin2 - TeamScoreAndPlayersMargin1
+			DireTeamScoreAndPlayers.Width = TeamScoreAndPlayersWidth - TeamScoreAndPlayersMargin2 - TeamScoreAndPlayersMargin1
 			DireTeamScoreAndPlayers.Height = this.TopBar.Height
+			DireTeamScoreAndPlayers.x = this.TopBar.x + this.TopBar.Width - ContainerWidth + TeamScoreAndPlayersMargin2
 
 			this.DireTeamScore.Width = ScoreWidth
 			this.DireTeamScore.Height = ScoreHeight

@@ -3,6 +3,7 @@ import _Color from "./Base/Color"
 import _QAngle from "./Base/QAngle"
 import _Vector2 from "./Base/Vector2"
 import _Vector3 from "./Base/Vector3"
+import { default as _GUIInfo } from "./GUI/GUIInfo"
 import _EntityManager from "./Managers/EntityManager"
 import _Events from "./Managers/Events"
 import _EventsSDK from "./Managers/EventsSDK"
@@ -71,6 +72,7 @@ globalThis.ParticlesSDK = _ParticlesSDK
 globalThis.WASM = _WASM
 globalThis.Manifest = _Manifest
 globalThis.Input = _Input
+globalThis.GUIInfo = _GUIInfo
 
 globalThis.Menu = _Menu
 globalThis.GetEntityClassByName = (name: string) => {

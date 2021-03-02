@@ -46,7 +46,7 @@ export default class CTopBar {
 	private CalculateCenter(screen_size: Vector2): void {
 		this.Center.Width = GUIInfo.ScaleWidth(250, screen_size)
 		this.Center.Height = GUIInfo.ScaleHeight(88, screen_size)
-		this.Center.x = Math.floor((screen_size.x - this.Center.Width) / 2)
+		this.Center.x = Math.round((screen_size.x - this.Center.Width) / 2)
 	}
 	private CalculateCoachesAndPlayers(
 		screen_size: Vector2,
