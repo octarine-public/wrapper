@@ -633,7 +633,7 @@ export default class Unit extends Entity {
 
 		const legs = this.GetItemByName("item_spider_legs")
 		if (legs !== undefined)
-			turnRate /= (legs.GetSpecialValue("turn_rate") / 100)
+			turnRate *= (1 + (legs.GetSpecialValue("turn_rate") / 100))
 
 		return turnRate
 	}
