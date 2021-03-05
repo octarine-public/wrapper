@@ -3,7 +3,7 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("earthshaker_enchant_totem")
 export default class earthshaker_enchant_totem extends Ability {
-	public get AOERadius(): number {
-		return this.GetSpecialValue("aftershock_range")
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("aftershock_range", level)
 	}
 }

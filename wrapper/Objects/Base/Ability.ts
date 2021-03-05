@@ -81,9 +81,6 @@ export default class Ability extends Entity {
 	public get EndRadius(): number {
 		return this.GetSpecialValue("final_aoe")
 	}
-	public get AOERadius(): number {
-		return this.GetSpecialValue("radius")
-	}
 	public get ActivationDelay() {
 		return this.GetSpecialValue("delay")
 	}
@@ -185,11 +182,13 @@ export default class Ability extends Entity {
 	}
 
 	public get BaseCastRange(): number {
-		return this.AbilityData.GetCastRange(this.Level)
+		return this.GetBaseCastRangeForLevel(this.Level)
 	}
-
 	public get CastRange(): number {
-		return this.BaseCastRange + (this.Owner?.CastRangeBonus ?? 0)
+		return this.GetCastRangeForLevel(this.Level)
+	}
+	public get AOERadius(): number {
+		return this.GetAOERadiusForLevel(this.Level)
 	}
 	public get SkillshotRange(): number {
 		return this.CastRange
@@ -203,6 +202,15 @@ export default class Ability extends Entity {
 		return this.IsHidden_
 	}
 
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.AbilityData.GetCastRange(level)
+	}
+	public GetCastRangeForLevel(level: number): number {
+		return this.GetBaseCastRangeForLevel(level) + (this.Owner?.CastRangeBonus ?? 0)
+	}
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("radius", level)
+	}
 	/**
 	 * @param position Vector3
 	 * @param turnRate boolean

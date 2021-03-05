@@ -3,7 +3,7 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("earthshaker_aftershock")
 export default class earthshaker_aftershock extends Ability {
-	public get AOERadius(): number {
-		return this.GetSpecialValue("aftershock_range")
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("aftershock_range", level)
 	}
 }

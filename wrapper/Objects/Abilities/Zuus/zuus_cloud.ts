@@ -3,11 +3,10 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("zuus_cloud")
 export default class zuus_cloud extends Ability {
-	public get CastRange(): number {
+	public GetBaseCastRangeForLevel(_level: number): number {
 		return Number.MAX_SAFE_INTEGER
 	}
-
-	public get AOERadius(): number {
-		return this.GetSpecialValue("cloud_radius")
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("cloud_radius", level)
 	}
 }

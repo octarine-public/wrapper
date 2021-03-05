@@ -24,8 +24,8 @@ export default class monkey_king_tree_dance extends Ability {
 	public IsJumping = false
 	public IsJumpingToTree = true
 
-	public get CastRange(): number {
-		return this.GetSpecialValue("ground_jump_distance") + (this.Owner?.CastRangeBonus ?? 0)
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.GetSpecialValue("ground_jump_distance", level)
 	}
 }
 

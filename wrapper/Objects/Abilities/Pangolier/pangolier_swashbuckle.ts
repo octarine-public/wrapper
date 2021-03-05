@@ -3,13 +3,13 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("pangolier_swashbuckle")
 export default class pangolier_swashbuckle extends Ability {
-	public get AOERadius(): number {
-		return this.GetSpecialValue("start_radius")
-	}
 	public get Speed(): number {
 		return this.GetSpecialValue("dash_speed")
 	}
-	public get BaseCastRange(): number {
-		return this.GetSpecialValue("dash_range")
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.GetSpecialValue("dash_range", level)
+	}
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("start_radius", level)
 	}
 }

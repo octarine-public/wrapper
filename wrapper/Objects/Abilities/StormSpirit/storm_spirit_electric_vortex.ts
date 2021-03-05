@@ -3,15 +3,14 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("storm_spirit_electric_vortex")
 export default class storm_spirit_electric_vortex extends Ability {
-	public get CastRange(): number {
-		return this.Owner?.HasScepter
-			? Number.MAX_SAFE_INTEGER
-			: super.CastRange
+	public GetCastRangeForLevel(level: number): number {
+		if (this.Owner?.HasScepter)
+			return Number.MAX_SAFE_INTEGER
+		return super.GetCastRangeForLevel(level)
 	}
-
-	public get AOERadius(): number {
+	public GetAOERadiusForLevel(level: number): number {
 		return this.Owner?.HasScepter
-			? this.GetSpecialValue("radius_scepter")
+			? this.GetSpecialValue("radius_scepter", level)
 			: 0
 	}
 }

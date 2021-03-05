@@ -3,13 +3,13 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("nevermore_shadowraze2")
 export default class nevermore_shadowraze2 extends Ability {
-	public get AOERadius() {
-		return this.GetSpecialValue("shadowraze_radius")
+	public GetBaseCastRangeForLevel(level: number): number {
+		return this.GetSpecialValue("shadowraze_range", level)
 	}
-	public get BaseCastRange() {
-		return this.GetSpecialValue("shadowraze_range")
+	public GetCastRangeForLevel(level: number): number {
+		return this.GetBaseCastRangeForLevel(level)
 	}
-	public get CastRange() {
-		return this.BaseCastRange
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("shadowraze_radius", level)
 	}
 }

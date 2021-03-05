@@ -3,7 +3,7 @@ import Ability from "../../Base/Ability"
 
 @WrapperClass("invoker_emp")
 export default class invoker_emp extends Ability {
-	public get AOERadius(): number {
-		return this.GetSpecialValue("area_of_effect")
+	public GetAOERadiusForLevel(level: number): number {
+		return this.GetSpecialValue("area_of_effect", level)
 	}
 }
