@@ -31,7 +31,7 @@ export function SetGameInProgress(new_val: boolean) {
 	}
 	gameInProgress = new_val
 }
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent.Index === player_slot + 1) {
 		LocalPlayer = ent as Player
 		SetGameInProgress(true)
@@ -44,7 +44,7 @@ EventsSDK.on("EntityDestroyed", ent => {
 	}
 })
 export let GameRules: Nullable<CGameRules>
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent.IsGameRules)
 		GameRules = ent as CGameRules
 })
@@ -343,7 +343,7 @@ RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => {
 	ent.Owner_ = (new_val as number) & 0x3FFF
 	ent.OwnerEntity = EntityManager.EntityByIndex(ent.Owner_)
 })
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent.Index === 0)
 		return
 	EntityManager.AllEntities.forEach(iter => {

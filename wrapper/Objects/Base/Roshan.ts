@@ -54,7 +54,7 @@ EventsSDK.on("GameEvent", (name, obj) => {
 	}
 })
 
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent === GameRules && last_minute === -1)
 		last_minute = Math.floor(Math.max((GameRules.GameTime ?? 0), 0) / 60)
 	if (!(ent instanceof Roshan) || (Roshan.Instance instanceof Entity && Roshan.Instance !== ent))

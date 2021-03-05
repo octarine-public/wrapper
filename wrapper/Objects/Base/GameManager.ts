@@ -22,7 +22,7 @@ export default class CGameManager extends Entity {
 }
 
 export let GameManager: Nullable<CGameManager>
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof CGameManager)
 		GameManager = ent
 })

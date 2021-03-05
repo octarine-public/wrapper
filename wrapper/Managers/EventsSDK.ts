@@ -23,6 +23,13 @@ interface EventsSDK extends EventEmitter {
 	 */
 	on(name: "GameEnded", callback: () => void): EventsSDK
 	/**
+	 * Emitted before all EntityCreateds.
+	 * Same as EntityCreated, but have much less global guarantees
+	 * [such as Owner might not be initialized if it was emitted in the same entities packet,
+	 * white EntityCreated guarantees that it'll be initialized in that case]
+	 */
+	on(name: "PreEntityCreated", callback: (ent: Entity) => void): EventsSDK
+	/**
 	 * Emitted after all entity properties handlers were called, a.k.a. entity is fully set up
 	 * This callback is best suited for use.
 	 */

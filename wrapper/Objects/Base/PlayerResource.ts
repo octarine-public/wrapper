@@ -34,7 +34,7 @@ RegisterFieldHandler(CPlayerResource, "m_vecPlayerData", (resource, new_val) => 
 })
 
 export let PlayerResource: Nullable<CPlayerResource>
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof CPlayerResource)
 		PlayerResource = ent
 })

@@ -149,7 +149,7 @@ function EmitModifierCreated(mod: IModifier) {
 		AddModifier(parent, mod_)
 	EventsSDK.emit("ModifierCreatedRaw", false, mod_)
 }
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (!(ent instanceof Unit))
 		return
 	ActiveModifiers.forEach(mod => {

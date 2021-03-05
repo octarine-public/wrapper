@@ -275,7 +275,12 @@ export class EntityPropertiesNode {
 	}
 }
 
-function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = false): Nullable<Entity> {
+function ParseEntityUpdate(
+	stream: BinaryStream,
+	ent_id: number,
+	created_entities: Entity[],
+	is_create = false,
+): void {
 	const m_nameStringableIndex = is_create ? stream.ReadInt32() : -1
 	const ent_class = entities_symbols[stream.ReadUint16()]
 	let ent_was_created = false
@@ -353,9 +358,9 @@ function ParseEntityUpdate(stream: BinaryStream, ent_id: number, is_create = fal
 	changed_paths.forEach((id, i) => ent_handlers!.get(id)!(ent!, changed_paths_results[i]))
 	if (ent !== undefined && ent_was_created) {
 		ent.IsValid = true
-		EventsSDK.emit("EntityCreated", false, ent)
+		EventsSDK.emit("PreEntityCreated", false, ent)
+		created_entities.push(ent)
 	}
-	return ent
 }
 
 function FixType(symbols: string[], field: any): string {
@@ -448,6 +453,7 @@ declare class ${name} {
 		case 55: { // we have custom parsing for CSVCMsg_PacketEntities
 			EventsSDK.emit("PreDataUpdate", false)
 			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
+			const created_entities: Entity[] = []
 			while (!stream.Empty()) {
 				const ent_id = stream.ReadUint16()
 				const pvs: EntityPVS = stream.ReadUint8()
@@ -464,13 +470,14 @@ declare class ${name} {
 						break
 					}
 					case EntityPVS.CREATE:
-						ParseEntityUpdate(stream, ent_id, true)
+						ParseEntityUpdate(stream, ent_id, created_entities, true)
 						break
 					case EntityPVS.UPDATE:
-						ParseEntityUpdate(stream, ent_id)
+						ParseEntityUpdate(stream, ent_id, created_entities)
 						break
 				}
 			}
+			created_entities.forEach(ent => EventsSDK.emit("EntityCreated", false, ent))
 			if (delayed_tick_call !== undefined) {
 				cached_m_fGameTime![2](...delayed_tick_call)
 				delayed_tick_call = undefined

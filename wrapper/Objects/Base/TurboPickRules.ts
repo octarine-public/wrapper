@@ -10,7 +10,7 @@ export default class CTurboHeroPickRules extends Entity {
 }
 
 export let TurboHeroPickRules: Nullable<CTurboHeroPickRules>
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof CTurboHeroPickRules)
 		TurboHeroPickRules = ent
 })

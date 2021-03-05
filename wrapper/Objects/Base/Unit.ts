@@ -1185,7 +1185,7 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
 	}
 })
 
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof Unit) {
 		ent.SpawnPosition.CopyFrom(ent.Position)
 		if (ent.IsNeutral) {

@@ -14,7 +14,7 @@ export default class CCustomHeroPickRules extends Entity {
 }
 
 export let CustomHeroPickRules: Nullable<CCustomHeroPickRules>
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof CCustomHeroPickRules)
 		CustomHeroPickRules = ent
 })

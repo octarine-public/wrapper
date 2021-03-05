@@ -15,7 +15,7 @@ export default class DOTABaseGameMode extends Entity {
 }
 
 export let GameMode: Nullable<DOTABaseGameMode>
-EventsSDK.on("EntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", ent => {
 	if (ent instanceof DOTABaseGameMode)
 		GameMode = ent
 })
