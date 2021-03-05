@@ -24,6 +24,8 @@ export default class Node extends Base {
 	private static readonly text_offset_with_icon = new Vector2(48, 14)
 
 	public entries: Base[] = []
+	public save_unused_configs = false
+	protected config_storage = Object.create(null)
 	protected active_element?: Base
 	protected is_open_ = false
 	protected readonly disable_tooltips = true
@@ -53,15 +55,19 @@ export default class Node extends Base {
 	}
 
 	public get ConfigValue() {
-		if (this.entries.length === 0)
+		if (!this.save_unused_configs && this.entries.length === 0)
 			return undefined
-		const obj = Object.create(null)
+		const obj = this.save_unused_configs
+			? this.config_storage
+			: Object.create(null)
 		this.entries.forEach(entry => obj[entry.InternalName] = entry.ConfigValue)
 		return obj
 	}
 	public set ConfigValue(obj) {
 		if (obj === undefined)
 			return
+		if (this.save_unused_configs)
+			this.config_storage = obj
 		this.entries.forEach(entry => entry.ConfigValue = obj[entry.InternalName])
 	}
 	public get EntriesSizeX(): number {
