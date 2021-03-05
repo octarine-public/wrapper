@@ -192,56 +192,49 @@ export default class AbilityData {
 
 	public GetCastRange(level: number): number {
 		if (level <= 0)
-			level = this.MaxLevel
-		if (level <= 0)
 			return 0
+		level = Math.min(level, this.MaxLevel)
 		return this.CastRangeCache[level - 1]
 	}
 
 	public GetDuration(level: number): number {
 		if (level <= 0)
-			level = this.MaxLevel
-		if (level <= 0)
 			return 0
+		level = Math.min(level, this.MaxLevel)
 		return this.Duration[level - 1]
 	}
 
 	public GetChannelTime(level: number): number {
 		if (level <= 0)
-			level = this.MaxLevel
-		if (level <= 0)
 			return 0
+		level = Math.min(level, this.MaxLevel)
 		return this.ChannelTimeCache[level - 1]
 	}
 
 	public GetAbilityDamage(level: number): number {
 		if (level <= 0)
-			level = this.MaxLevel
-		if (level <= 0)
 			return 0
+		level = Math.min(level, this.MaxLevel)
 		return this.AbilityDamageCache[level - 1]
 	}
 
 	public GetCastPoint(level: number): number {
 		if (level <= 0)
-			level = this.MaxLevel
-		if (level <= 0)
 			return 0
+		level = Math.min(level, this.MaxLevel)
 		return this.CastPointCache[level - 1]
 	}
 
 	public GetMaxCharges(level: number): number {
 		if (level <= 0)
-			level = this.MaxLevel
-		if (level <= 0)
 			return 0
+		level = Math.min(level, this.MaxLevel)
 		return this.ChargesCache[level - 1]
 	}
 	public GetChargeRestoreTime(level: number): number {
 		if (level <= 0)
-			level = this.MaxLevel
-		if (level <= 0)
 			return 0
+		level = Math.min(level, this.MaxLevel)
 		return this.ChargeRestoreTimeCache[level - 1]
 	}
 

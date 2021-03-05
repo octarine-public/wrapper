@@ -206,6 +206,8 @@ export default class Ability extends Entity {
 		return this.AbilityData.GetCastRange(level)
 	}
 	public GetCastRangeForLevel(level: number): number {
+		if (level === 0)
+			return 0
 		return this.GetBaseCastRangeForLevel(level) + (this.Owner?.CastRangeBonus ?? 0)
 	}
 	public GetAOERadiusForLevel(level: number): number {
