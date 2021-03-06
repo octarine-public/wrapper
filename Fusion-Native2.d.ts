@@ -160,18 +160,6 @@ declare function hrtime(): number
 declare function AddSearchPath(path: string): boolean
 declare function RemoveSearchPath(path: string): boolean
 declare function SetTreeModel(model_name: string, scale: number): void
-declare function EmitChatEvent(
-	type: number, // DOTA_CHAT_MESSAGE
-	value: number,
-	playerid_1: number,
-	playerid_2: number,
-	playerid_3: number,
-	playerid_4: number,
-	playerid_5: number,
-	playerid_6: number,
-	value2: number,
-	value3: number
-): void
 declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offset 0
 	soundevent_hash: number,
 	source_entity_index: number,

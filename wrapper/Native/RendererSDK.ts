@@ -2,7 +2,6 @@ import Color from "../Base/Color"
 import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { FontFlags_t } from "../Enums/FontFlags_t"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
@@ -303,32 +302,6 @@ class CRendererSDK {
 	private readonly last_color: Color = new Color(-1, -1, -1, -1)
 	private last_fill_type = PaintType.FILL
 	private last_width = 1
-
-	public EmitChatEvent(
-		type = DOTA_CHAT_MESSAGE.CHAT_MESSAGE_INVALID,
-		value = 0,
-		playerid_1 = -1,
-		playerid_2 = -1,
-		playerid_3 = -1,
-		playerid_4 = -1,
-		playerid_5 = -1,
-		playerid_6 = -1,
-		value2 = 0,
-		value3 = 0,
-	): void {
-		EmitChatEvent(
-			type,
-			value,
-			playerid_1,
-			playerid_2,
-			playerid_3,
-			playerid_4,
-			playerid_5,
-			playerid_6,
-			value2,
-			value3,
-		)
-	}
 
 	/**
 	 * @param pos world position that needs to be turned to screen position
