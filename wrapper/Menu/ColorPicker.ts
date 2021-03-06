@@ -207,6 +207,8 @@ export default class ColorPicker extends Base {
 			const alpha = Math.min(Math.max((mouse_pos.x - colorpicker_hue_rect.pos1.x) / colorpicker_hue_rect.Width, 0), 1)
 			this.selected_color.SetA(Math.round(alpha * 255))
 		}
+		if (this.dragging_color || this.dragging_hue || this.dragging_alpha)
+			this.OnValueChangedCBs.forEach(f => f(this))
 	}
 	public OnParentNotVisible(): void {
 		if (ColorPicker.active_colorpicker === this)
@@ -265,7 +267,6 @@ export default class ColorPicker extends Base {
 	}
 	public OnMouseLeftUp(): boolean {
 		this.dragging_color = this.dragging_hue = this.dragging_alpha = false
-		this.OnValueChangedCBs.forEach(f => f(this))
 		return false
 	}
 	private GetColorPickerColorRect(colorpicker_rect: Rectangle): Rectangle {
