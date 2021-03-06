@@ -5,7 +5,7 @@ import { EShareAbility } from "../../Enums/EShareAbility"
 import Ability from "./Ability"
 import { GameRules } from "./Entity"
 
-@WrapperClass("C_DOTA_Item")
+@WrapperClass("CDOTA_Item")
 export default class Item extends Ability {
 	@NetworkedBasicField("m_flEnableTime")
 	public EnableTime = 0

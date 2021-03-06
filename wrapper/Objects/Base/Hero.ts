@@ -5,7 +5,7 @@ import EntityManager from "../../Managers/EntityManager"
 import Entity from "./Entity"
 import Unit from "./Unit"
 
-@WrapperClass("C_DOTA_BaseNPC_Hero")
+@WrapperClass("CDOTA_BaseNPC_Hero")
 export default class Hero extends Unit {
 	@NetworkedBasicField("m_iAbilityPoints")
 	public AbilityPoints = 0

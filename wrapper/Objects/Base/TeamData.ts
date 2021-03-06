@@ -7,7 +7,7 @@ import { GridNav } from "../../Utils/ParseGNV"
 import Entity from "./Entity"
 import Tree from "./Tree"
 
-@WrapperClass("C_DOTA_DataNonSpectator")
+@WrapperClass("CDOTA_DataNonSpectator")
 export default class TeamData extends Entity {
 	public DataTeam: DataTeamPlayer[] = []
 	public WorldTreeModelReplacements: TreeModelReplacement[] = []

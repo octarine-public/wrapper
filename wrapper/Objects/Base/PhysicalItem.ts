@@ -3,7 +3,7 @@ import EntityManager from "../../Managers/EntityManager"
 import Entity from "./Entity"
 import Item from "./Item"
 
-@WrapperClass("C_DOTA_Item_Physical")
+@WrapperClass("CDOTA_Item_Physical")
 export default class PhysicalItem extends Entity {
 	@NetworkedBasicField("m_hItem")
 	public Item_ = 0

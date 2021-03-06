@@ -2,7 +2,7 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTA_RUNES } from "../../Enums/DOTA_RUNES"
 import Entity from "./Entity"
 
-@WrapperClass("C_DOTA_Item_Rune")
+@WrapperClass("CDOTA_Item_Rune")
 export default class Rune extends Entity {
 	@NetworkedBasicField("m_iRuneType")
 	public Type = DOTA_RUNES.DOTA_RUNE_INVALID

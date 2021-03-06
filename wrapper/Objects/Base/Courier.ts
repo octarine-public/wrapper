@@ -4,7 +4,7 @@ import EntityManager from "../../Managers/EntityManager"
 import Hero from "./Hero"
 import Unit from "./Unit"
 
-@WrapperClass("C_DOTA_Unit_Courier")
+@WrapperClass("CDOTA_Unit_Courier")
 export default class Courier extends Unit {
 	@NetworkedBasicField("m_bFlyingCourier")
 	public IsFlying = false
@@ -15,7 +15,7 @@ export default class Courier extends Unit {
 	@NetworkedBasicField("m_hCourierStateEntity")
 	public StateHero_ = 0
 
-	get StateHero(): Nullable<Hero> {
+	public get StateHero(): Nullable<Hero> {
 		return EntityManager.EntityByIndex(this.StateHero_) as Nullable<Hero>
 	}
 }

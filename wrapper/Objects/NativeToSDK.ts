@@ -49,18 +49,18 @@ export function GetFieldHandlers(): Map<Constructor<Entity>, Map<string, FieldHa
 	return field_handlers
 }
 
-function FixClassName(constructor_name: string): Nullable<string> {
-	if (SchemaClassesInheritance.has(constructor_name))
+function FixClassNameForMap<T>(constructor_name: string, map: Map<string, T>): Nullable<string> {
+	if (map.has(constructor_name))
 		return constructor_name
 
 	if (constructor_name[0] === "C" && constructor_name[1] !== "_") {
 		constructor_name = `C_${constructor_name.substring(1)}`
-		if (SchemaClassesInheritance.has(constructor_name))
+		if (map.has(constructor_name))
 			return constructor_name
 	}
 	if (constructor_name[0] === "C" && constructor_name[1] === "_") {
 		constructor_name = `C${constructor_name.substring(2)}`
-		if (SchemaClassesInheritance.has(constructor_name))
+		if (map.has(constructor_name))
 			return constructor_name
 	}
 
@@ -71,16 +71,20 @@ export default function GetConstructorByName(class_name: string, constructor_nam
 	if (constructor_name_hint !== undefined && constructors.has(constructor_name_hint))
 		return constructors.get(constructor_name_hint)
 
-	const fixed_class_name = FixClassName(class_name)
+	const fixed_wrapper_name = FixClassNameForMap(class_name, constructors)
+	if (fixed_wrapper_name !== undefined)
+		return constructors.get(fixed_wrapper_name)
+
+	const fixed_class_name = FixClassNameForMap(class_name, SchemaClassesInheritance)
 	if (fixed_class_name === undefined)
-		return undefined
+		throw `Can't fix classname ${class_name}, so we can't walk it's inheritance, and class isn't declared in wrapper.`
 
 	// if neither fixed or original class name have got wrapped entities - try to walk up inherited classes
-	if (fixed_class_name !== undefined && !constructors.has(fixed_class_name))
-		for (const inherited_class_name of SchemaClassesInheritance.get(fixed_class_name)!) {
-			const constructor = GetConstructorByName(inherited_class_name)
-			if (constructor !== undefined)
-				return constructor
-		}
-	return constructors.get(fixed_class_name)
+	const inherited = SchemaClassesInheritance.get(fixed_class_name)!
+	for (const inherited_class_name of inherited) {
+		const constructor = GetConstructorByName(inherited_class_name)
+		if (constructor !== undefined)
+			return constructor
+	}
+	throw `Can't find wrapper declared inherited classes for classname ${class_name}, [${inherited}]`
 }

@@ -61,7 +61,7 @@ m_pEntity.m_flags
 1 << 2 is EF_IN_STAGING_LIST
 1 << 4 is EF_DELETE_IN_PROGRESS
 */
-@WrapperClass("C_BaseEntity")
+@WrapperClass("CBaseEntity")
 export default class Entity {
 	public IsValid = true
 	public Name_ = ""

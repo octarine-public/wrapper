@@ -3,7 +3,7 @@ import { DOTACustomHeroPickRulesPhase_t } from "../../Enums/DOTACustomHeroPickRu
 import EventsSDK from "../../Managers/EventsSDK"
 import Entity from "./Entity"
 
-@WrapperClass("C_DOTACustomGameHeroPickRules")
+@WrapperClass("CDOTACustomGameHeroPickRules")
 export default class CCustomHeroPickRules extends Entity {
 	@NetworkedBasicField("m_Phase")
 	public Phase: DOTACustomHeroPickRulesPhase_t = DOTACustomHeroPickRulesPhase_t.PHASE_Ban

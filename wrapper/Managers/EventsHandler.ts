@@ -3,11 +3,12 @@ import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { Localization } from "../Menu/Imports"
 import Entity from "../Objects/Base/Entity"
 import Unit from "../Objects/Base/Unit"
-import { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
+import AbilityData, { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
 import UnitData, { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
 import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
 import { CMsgVectorToVector3, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf, ServerHandleToIndex } from "../Utils/Protobuf"
+import { createMapFromMergedIterators, parseKVFile } from "../Utils/Utils"
 import * as VBKV from "../Utils/VBKV"
 import EntityManager from "./EntityManager"
 import Events from "./Events"
@@ -890,8 +891,23 @@ Events.on("UIStateChanged", new_state => GameState.UIState = new_state)
 Events.on("NewConnection", () => {
 	ReloadGlobalUnitStorage()
 	ReloadGlobalAbilityStorage()
+
+	// automatically localize units, abilities and items in menu
 	const namesMapping = new Map<string, string>()
-	UnitData.global_storage.forEach((data, name) => namesMapping.set(name, data.WorkshopName))
+	const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
+		parseKVFile("resource/localization/abilities_english.txt").entries(),
+		parseKVFile("resource/addon_english.txt").entries(),
+		parseKVFile("panorama/localization/addon_english.txt").entries(),
+	).get("lang") as RecursiveMap)?.get("Tokens") ?? new Map()) as Map<string, string>
+	UnitData.global_storage.forEach((data, name) => {
+		const lang_token = lang_tokens.get(name)
+		namesMapping.set(name, lang_token ?? data.WorkshopName)
+	})
+	AbilityData.global_storage.forEach((_, name) => {
+		const lang_token = lang_tokens.get(`DOTA_Tooltip_ability_${name}`)
+		if (lang_token !== undefined)
+			namesMapping.set(name, lang_token)
+	})
 	Localization.LocalizationUnitsNames.forEach(unitName => Localization.AddLocalizationUnit(unitName, namesMapping))
 })
 

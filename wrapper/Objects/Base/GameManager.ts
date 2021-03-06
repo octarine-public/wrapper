@@ -2,7 +2,7 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import EventsSDK from "../../Managers/EventsSDK"
 import Entity from "./Entity"
 
-@WrapperClass("C_DOTAGameManagerProxy")
+@WrapperClass("CDOTAGameManagerProxy")
 export default class CGameManager extends Entity {
 	@NetworkedBasicField("m_lobbyGameName")
 	public LobbyGameName = ""

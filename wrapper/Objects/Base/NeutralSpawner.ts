@@ -5,7 +5,7 @@ import { NeutralSpawnerType } from "../../Enums/NeutralSpawnerType"
 import { Team } from "../../Enums/Team"
 import Entity, { GameRules } from "./Entity"
 
-@WrapperClass("C_DOTA_NeutralSpawner")
+@WrapperClass("CDOTA_NeutralSpawner")
 export default class NeutralSpawner extends Entity {
 	@NetworkedBasicField("m_Type")
 	public Type = NeutralSpawnerType.Small

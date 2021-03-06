@@ -14,7 +14,7 @@ import AbilityData from "../DataBook/AbilityData"
 import Entity, { GameRules } from "./Entity"
 import Unit from "./Unit"
 
-@WrapperClass("C_DOTABaseAbility")
+@WrapperClass("CDOTABaseAbility")
 export default class Ability extends Entity {
 	public AbilityData: AbilityData
 	@NetworkedBasicField("m_bInIndefiniteCooldown")

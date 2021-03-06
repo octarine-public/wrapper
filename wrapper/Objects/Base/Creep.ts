@@ -1,7 +1,7 @@
 import { WrapperClass } from "../../Decorators"
 import Unit from "./Unit"
 
-@WrapperClass("C_DOTA_BaseNPC_Creep")
+@WrapperClass("CDOTA_BaseNPC_Creep")
 export default class Creep extends Unit {
 	get IsCreep(): boolean {
 		return true

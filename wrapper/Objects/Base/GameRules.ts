@@ -9,7 +9,7 @@ import GameState from "../../Utils/GameState"
 import Entity, { LocalPlayer } from "../Base/Entity"
 import StockInfo from "./../../Base/StockInfo"
 
-@WrapperClass("C_DOTAGamerulesProxy")
+@WrapperClass("CDOTAGamerulesProxy")
 export default class CGameRules extends Entity {
 	public RawGameTime = 0
 	@NetworkedBasicField("m_iPauseTeam")

@@ -11,7 +11,7 @@ import { GridNav } from "../../Utils/ParseGNV"
 import { ParseTRMP } from "../../Utils/ParseTRMP"
 import Entity from "./Entity"
 
-@WrapperClass("C_DOTA_MapTree")
+@WrapperClass("CDOTA_MapTree")
 export default class Tree extends Entity {
 	public readonly FakeTreePos = new Vector3()
 	public BinaryID = 0

@@ -1,7 +1,15 @@
 export function Utf8ArrayToStr(array: Uint8Array): string {
+	let start = 0
+	if (
+		array.byteLength >= 3
+		&& array[0] === 0xEF
+		&& array[1] === 0xBB
+		&& array[2] === 0xBF
+	)
+		start = 3
 	let out = ""
 
-	for (let i = 0, end = array.byteLength, c = array[i], char2, char3; i < end; c = array[++i])
+	for (let i = start, end = array.byteLength, c = array[i], char2, char3; i < end; c = array[++i])
 		switch (c >> 4) {
 			case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
 				// 0xxxxxxx

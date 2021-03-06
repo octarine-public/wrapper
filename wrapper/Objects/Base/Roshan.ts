@@ -6,7 +6,7 @@ import GameState from "../../Utils/GameState"
 import Entity, { GameRules } from "../Base/Entity"
 import Unit from "../Base/Unit"
 
-@WrapperClass("C_DOTA_Unit_Roshan")
+@WrapperClass("CDOTA_Unit_Roshan")
 export default class Roshan extends Unit {
 	public static HP = 0
 	public static MaxHP = 0

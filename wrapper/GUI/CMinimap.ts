@@ -1,6 +1,6 @@
 import Color from "../Base/Color"
+import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
-import { Rectangle } from "../Imports"
 import RendererSDK from "../Native/RendererSDK"
 import GUIInfo from "./GUIInfo"
 

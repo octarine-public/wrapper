@@ -1,6 +1,6 @@
 import { WrapperClass } from "../../Decorators"
-import Item from "../Base/Item"
+import item_magic_stick from "./item_magic_stick"
 
 @WrapperClass("item_magic_wand")
-export default class item_magic_wand extends Item {
+export default class item_magic_wand extends item_magic_stick {
 }

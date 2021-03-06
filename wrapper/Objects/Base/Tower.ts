@@ -3,7 +3,7 @@ import EntityManager from "../../Managers/EntityManager"
 import Building from "./Building"
 import Unit from "./Unit"
 
-@WrapperClass("C_DOTA_BaseNPC_Tower")
+@WrapperClass("CDOTA_BaseNPC_Tower")
 export default class Tower extends Building {
 	@NetworkedBasicField("m_hTowerAttackTarget")
 	public TowerAttackTarget_ = 0

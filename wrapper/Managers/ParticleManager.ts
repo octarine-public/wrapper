@@ -4,17 +4,6 @@ import Vector3 from "../Base/Vector3"
 import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
 import Entity from "../Objects/Base/Entity"
 
-const ParticleRangePath = (name: string) => `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
-const ParticleLinePath = (name: string) => `particles/range_line/${name.toLowerCase()}.vpcf`
-const ParticleTargetPath = () => `particles/target/range_finder_tower_aoe.vpcf`
-
-const RenderPath = (render: PARTICLE_RENDER) =>
-	(PARTICLE_RENDER[render] ?? PARTICLE_RENDER_NAME.NORMAL).toLowerCase()
-const RangeRenderPath = (render = PARTICLE_RENDER.NORMAL) =>
-	ParticleRangePath(RenderPath(render))
-const BoundingAreaRenderPath = (render = PARTICLE_RENDER.NORMAL) =>
-	ParticleLinePath(`bounding_area_view_${RenderPath(render)}`)
-
 export enum PARTICLE_RENDER_NAME {
 	NORMAL = "Normal",
 	ROPE = "Rope",
@@ -27,33 +16,43 @@ export enum PARTICLE_RENDER {
 	ANIMATION,
 }
 
+function ParticleRangePath(name: string): string {
+	return `particles/range_display/range_display_${name.toLowerCase()}.vpcf`
+}
+function ParticleLinePath(name: string): string {
+	return `particles/range_line/${name.toLowerCase()}.vpcf`
+}
+function RenderPath(render: PARTICLE_RENDER): string {
+	return (PARTICLE_RENDER[render] ?? PARTICLE_RENDER_NAME.NORMAL).toLowerCase()
+}
+function RangeRenderPath(render = PARTICLE_RENDER.NORMAL): string {
+	return ParticleRangePath(RenderPath(render))
+}
+function BoundingAreaRenderPath(render = PARTICLE_RENDER.NORMAL): string {
+	return ParticleLinePath(`bounding_area_view_${RenderPath(render)}`)
+}
+
 export interface IDrawCircleOptions {
-	Attachment?: ParticleAttachment_t,
-	/**
-	 * from 0 to 2
-	 */
-	RenderStyle?: PARTICLE_RENDER,
-	Position?: Entity | Vector3,
-	Color?: Color,
-	Width?: number,
+	Attachment?: ParticleAttachment_t
+	RenderStyle?: PARTICLE_RENDER
+	Position?: Entity | Vector3
+	Color?: Color
+	Width?: number
 	Alpha?: number
 }
 
 export interface IDrawLineOptions {
-	Attachment?: ParticleAttachment_t,
-	Position?: Entity | Vector3,
-	Color?: Color,
-	Width?: number,
-	Alpha?: number,
+	Attachment?: ParticleAttachment_t
+	Position?: Entity | Vector3
+	Color?: Color
+	Width?: number
+	Alpha?: number
 	Mode2D?: number
 }
 
 export interface IDrawBoundingAreaOptions {
-	/**
-	 * from 0 to 1
-	 */
-	RenderStyle?: PARTICLE_RENDER,
-	Color?: Color,
+	RenderStyle?: PARTICLE_RENDER
+	Color?: Color
 	Width?: number
 }
 
@@ -169,7 +168,7 @@ class ParticlesSDK {
 	) {
 		return this.AddOrUpdate(
 			key,
-			ParticleTargetPath(),
+			"particles/target/range_finder_tower_aoe.vpcf",
 			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
 			target,
 			[2, entity],

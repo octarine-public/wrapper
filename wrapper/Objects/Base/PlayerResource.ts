@@ -6,7 +6,7 @@ import EventsSDK from "../../Managers/EventsSDK"
 import Entity from "../Base/Entity"
 import Player from "../Base/Player"
 
-@WrapperClass("C_DOTA_PlayerResource")
+@WrapperClass("CDOTA_PlayerResource")
 export default class CPlayerResource extends Entity {
 	public PlayerTeamData: PlayerTeamData[] = []
 	public PlayerData: PlayerData[] = []

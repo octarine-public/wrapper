@@ -9,7 +9,7 @@ import Entity from "./Entity"
 import Hero from "./Hero"
 import Item from "./Item"
 
-@WrapperClass("C_DOTAPlayer")
+@WrapperClass("CDOTAPlayer")
 export default class Player extends Entity {
 	@NetworkedBasicField("m_iPlayerID")
 	public PlayerID: number = -1

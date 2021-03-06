@@ -38,7 +38,7 @@ import TreeTemp from "./TreeTemp"
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
 
-@WrapperClass("C_DOTA_BaseNPC")
+@WrapperClass("CDOTA_BaseNPC")
 export default class Unit extends Entity {
 	public static IsVisibleForEnemies(unit: Unit): boolean {
 		// don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
