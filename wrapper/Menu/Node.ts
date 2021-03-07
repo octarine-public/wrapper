@@ -25,6 +25,7 @@ export default class Node extends Base {
 
 	public entries: Base[] = []
 	public save_unused_configs = false
+	public sort_nodes = true
 	protected config_storage = Object.create(null)
 	protected active_element?: Base
 	protected is_open_ = false
@@ -316,6 +317,8 @@ export default class Node extends Base {
 	}
 
 	private SortEntries(): void {
+		if (!this.sort_nodes)
+			return
 		this.entries = this.entries.sort((a, b) => a instanceof Node && b instanceof Node ? a.Name.localeCompare(b.Name) : 0)
 	}
 }
