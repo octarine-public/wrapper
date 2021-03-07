@@ -283,8 +283,9 @@ export default class Entity {
 	/**
 	 * @param ent optional, defaults to LocalPlayer
 	 */
-	public IsEnemy(ent: Nullable<Entity> = LocalPlayer): boolean {
-		return ent?.Team !== this.Team
+	public IsEnemy(ent?: Entity): boolean {
+		const team = ent?.Team ?? GameState.LocalTeam
+		return this.Team !== team
 	}
 
 	public GetAttachment(attachment_name: string): Vector3 {

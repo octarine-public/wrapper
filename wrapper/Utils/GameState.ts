@@ -1,5 +1,6 @@
 import { Flow_t } from "../Enums/Flow_t"
 import { SignonState_t } from "../Enums/SignonState_t"
+import { Team } from "../Enums/Team"
 
 export default new (class GameState {
 	public Language = "unknown"
@@ -15,6 +16,7 @@ export default new (class GameState {
 	 * and removes indirect dependency on EntityManager
 	 */
 	public RawGameTime = 0
+	public LocalTeam = Team.Observer
 
 	public get Ping() {
 		return (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT)) * 1000

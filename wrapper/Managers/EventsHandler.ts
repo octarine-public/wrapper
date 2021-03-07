@@ -1,7 +1,9 @@
 import Vector3 from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
+import { Team } from "../Enums/Team"
 import { Localization } from "../Menu/Imports"
-import Entity from "../Objects/Base/Entity"
+import Entity, { LocalPlayer } from "../Objects/Base/Entity"
+import { PlayerResource } from "../Objects/Base/PlayerResource"
 import Unit from "../Objects/Base/Unit"
 import AbilityData, { ReloadGlobalAbilityStorage } from "../Objects/DataBook/AbilityData"
 import UnitData, { ReloadGlobalUnitStorage } from "../Objects/DataBook/UnitData"
@@ -912,3 +914,29 @@ Events.on("NewConnection", () => {
 })
 
 Events.on("SignonStateChanged", new_state => GameState.SignonState = new_state)
+
+EventsSDK.on("Tick", () => {
+	const player = LocalPlayer
+	if (player === undefined) {
+		GameState.LocalTeam = Team.Observer
+		return
+	}
+
+	let team = player.Team
+	if (team === Team.Observer) {
+		const playerid = player.PlayerID
+		if (playerid !== -1) {
+			const data = PlayerResource?.PlayerData[playerid]
+			if (data !== undefined) {
+				const coach_team = data.CoachTeam
+				if (coach_team === Team.None) {
+					team = data.LiveSpectatorTeam
+					if (team === 0xFFFFFFFF || team === Team.None)
+						team = Team.Observer
+				} else
+					team = coach_team
+			}
+		}
+	}
+	GameState.LocalTeam = team
+})
