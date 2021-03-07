@@ -48,6 +48,7 @@ export default class Base {
 	public FontFlags = FontFlags_t.NONE
 	public TooltipIcon = "menu/icons/info.svg"
 	public TooltipIconColor = new Color(104, 4, 255)
+	public IgnoreNextConfigLoad = false
 	public readonly OnValueChangedCBs: ((caller: Base) => void)[] = []
 
 	public readonly Position = new Vector2()
