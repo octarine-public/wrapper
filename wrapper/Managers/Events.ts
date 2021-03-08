@@ -1,5 +1,4 @@
 import { EMatchGroupServerStatus } from "../Enums/EMatchGroupServerStatus"
-import { SignonState_t } from "../Enums/SignonState_t"
 import { BinaryKV } from "../Utils/VBKV"
 
 type Listener = (...args: any) => false | any
@@ -93,7 +92,6 @@ declare interface Events extends EventEmitter {
 	on(name: "CustomGameEvent", listener: (event_name: string, data: Map<string, BinaryKV>) => void): EventEmitter
 	on(name: "InputCaptured", listener: (is_captured: boolean) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (id: number, reason: number, obj: any) => void): EventEmitter
-	on(name: "SignonStateChanged", listener: (new_state: SignonState_t) => void): EventEmitter
 	on(name: "NewConnection", listener: () => void): EventEmitter
 	on(name: "AddSearchPath", listener: (path: string) => boolean): EventEmitter
 	on(name: "PostAddSearchPath", listener: (path: string) => void): EventEmitter

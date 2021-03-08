@@ -288,16 +288,6 @@ export default class Entity {
 		return this.Team !== team
 	}
 
-	public GetAttachment(attachment_name: string): Vector3 {
-		GetEntityAttachment(this.Index, attachment_name)
-		const vec = Vector3.fromIOBuffer()
-		if (vec.IsValid)
-			return vec
-		return this.Position
-	}
-	public GetAttachmentOffset(attachment_name: string): Vector3 {
-		return this.GetAttachment(attachment_name).SubtractForThis(this.Position)
-	}
 	public CannotUseItem(_item: Item): boolean {
 		return false
 	}
@@ -397,71 +387,40 @@ EventsSDK.on("GameEvent", (name, obj) => {
 
 const last_glow_ents = new Set<Entity>()
 function CustomGlowEnts(): void {
-	const element_size = 8 // [u32, u32] = 8 bytes
-	const max_elements = Math.floor(IOBuffer.byteLength / element_size)
-	const groups: [number, number][][] = []
 	last_glow_ents.forEach(ent => {
 		if (!ent.IsValid) {
 			last_glow_ents.delete(ent)
 			return
 		}
-		const id = ent.CustomNativeID
+		const custom_id = ent.CustomNativeID
 		const CustomGlowColor = ent.CustomGlowColor
-		let cur: [number, number]
-		if (CustomGlowColor === undefined) {
+		let color_u32 = 0
+		if (CustomGlowColor !== undefined)
+			color_u32 = CustomGlowColor.toUint32()
+		else
 			last_glow_ents.delete(ent)
-			cur = [id, 0]
-		} else
-			cur = [id, CustomGlowColor.toUint32()]
-		let array_id = groups.length === 0 ? 0 : groups.length - 1
-		if ((groups[array_id]?.length ?? 0) >= max_elements)
-			array_id++
-		if (groups.length <= array_id)
-			groups.push([])
-		groups[array_id].push(cur)
-	})
-	groups.forEach(ar => {
-		ar.forEach(([custom_id, color_u32], j) => {
-			const off = element_size * j
-			IOBufferView.setUint32(off + 0, custom_id, true)
-			IOBufferView.setUint32(off + 4, color_u32, true)
-		})
-		BatchSetEntityGlow(ar.length)
+		SetEntityGlow(custom_id, color_u32)
 	})
 }
 
 const last_colored_ents = new Set<Entity>()
 function CustomColorEnts(): void {
-	const element_size = 9 // [u32, u32, u8] = 9 bytes
-	const max_elements = Math.floor(IOBuffer.byteLength / element_size)
-	const groups: [Entity, number, number][][] = []
 	last_colored_ents.forEach(ent => {
 		if (!ent.IsValid) {
 			last_colored_ents.delete(ent)
 			return
 		}
 		const CustomDrawColor = ent.CustomDrawColor
-		let cur: [Entity, number, number]
-		if (CustomDrawColor === undefined) {
+		let color_u32 = 0,
+			renderMode = RenderMode_t.kRenderNormal
+		if (CustomDrawColor !== undefined) {
+			color_u32 = CustomDrawColor[0].toUint32()
+			renderMode = CustomDrawColor[1]
+		} else {
+			color_u32 = Color.White.toUint32()
 			last_colored_ents.delete(ent)
-			cur = [ent, Color.White.toUint32(), RenderMode_t.kRenderNormal]
-		} else
-			cur = [ent, CustomDrawColor[0].toUint32(), CustomDrawColor[1]]
-		let array_id = groups.length === 0 ? 0 : groups.length - 1
-		if ((groups[array_id]?.length ?? 0) >= max_elements)
-			array_id++
-		if (groups.length <= array_id)
-			groups.push([])
-		groups[array_id].push(cur)
-	})
-	groups.forEach(ar => {
-		ar.forEach(([ent, color_u32, renderMode], j) => {
-			const off = element_size * j
-			IOBufferView.setUint32(off + 0, ent.CustomNativeID, true)
-			IOBufferView.setUint32(off + 4, color_u32, true)
-			IOBufferView.setUint8(off + 8, renderMode)
-		})
-		BatchSetEntityColor(ar.length)
+		}
+		SetEntityColor(ent.CustomNativeID, color_u32, renderMode)
 	})
 }
 

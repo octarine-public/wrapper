@@ -913,8 +913,6 @@ Events.on("NewConnection", () => {
 	Localization.LocalizationUnitsNames.forEach(unitName => Localization.AddLocalizationUnit(unitName, namesMapping))
 })
 
-Events.on("SignonStateChanged", new_state => GameState.SignonState = new_state)
-
 EventsSDK.on("Tick", () => {
 	const player = LocalPlayer
 	if (player === undefined) {

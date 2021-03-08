@@ -54,7 +54,6 @@ interface EventsSDK extends EventEmitter {
 	on(name: "TrueSightedChanged", callback: (npc: Unit) => void): EventsSDK
 	on(name: "HasScepterChanged", callback: (npc: Unit) => void): EventsSDK
 	on(name: "Draw", callback: () => void): EventsSDK
-	on(name: "PreDraw", callback: () => void): EventsSDK
 	on(name: "ParticleCreated", callback: (id: number, path: string, particleSystemHandle: bigint, attach: ParticleAttachment_t, target?: Entity | number) => void): EventsSDK
 	on(name: "ParticleUpdated", callback: (id: number, controlPoint: number, position: Vector3) => void): EventsSDK
 	on(name: "ParticleUpdatedEnt", callback: (

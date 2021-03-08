@@ -984,7 +984,6 @@ Events.on("PostAddSearchPath", () => TryLoadMapFiles())
 
 Events.on("Draw", () => {
 	RendererSDK.BeforeDraw()
-	EventsSDK.emit("PreDraw")
 	EventsSDK.emit("Draw")
 })
 

@@ -165,30 +165,18 @@ declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offs
 	source_entity_index: number,
 	seed: number
 ): void
-declare function EnforceEntityVisibility(
-	entity_id: number,
-	team_num: number,
-	is_visible: boolean
-): void
-/**
- * @returns Vector2 to IOBuffer offset 0
- */
-declare function GetEntityAttachment(entity_id: number, attachment_name: string): void
 /**
  * @returns biguint to IOBuffer offset 0, and return value is true if function succeeded
  */
 declare function GetEntityUnitState(entity_id: number): boolean
 declare function GetUnitNumberPropertyByName(entity_id: number, name: string): number | undefined
 /**
- * treat IOBuffer as DataView for this function
- * every element should consist of [u32, u32, u8] = [(entity_id << 1) or (binary_id << 1) | 1, color_u32, RenderMode_t]
- * @param count count of elements in IOBuffer
+ * @param custom_entity_id (entity_id << 1) or (binary_id << 1) | 1
+ * @param render_mode RenderMode_t
  */
-declare function BatchSetEntityColor(count: number): void
+declare function SetEntityColor(custom_entity_id: number, color_u32: number, render_mode: number): void
 /**
- * treat IOBuffer as DataView for this function
- * every element should consist of [u32, u32] = [(entity_id << 1) or (binary_id << 1) | 1, color_u32]
- * @param count count of elements in IOBuffer
+ * @param custom_entity_id (entity_id << 1) or (binary_id << 1) | 1
  */
-declare function BatchSetEntityGlow(count: number): void
+declare function SetEntityGlow(custom_entity_id: number, color_u32: number): void
 declare function GetPlayerMuteFlags(steamid64: bigint): number

@@ -88,7 +88,9 @@ export class TrackingProjectile extends Projectile {
 
 		const target = this.Target
 		if (target instanceof Entity)
-			return target.GetAttachment("attach_hitloc").CopyTo(this.TargetLoc_)
+			return target.Position
+		// if (target instanceof Entity)
+		// 	return target.GetAttachment("attach_hitloc").CopyTo(this.TargetLoc_)
 		return this.TargetLoc_
 	}
 

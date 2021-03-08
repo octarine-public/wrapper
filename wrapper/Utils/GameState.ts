@@ -1,13 +1,12 @@
+import { DOTAGameUIState_t } from "../Enums/DOTAGameUIState_t"
 import { Flow_t } from "../Enums/Flow_t"
-import { SignonState_t } from "../Enums/SignonState_t"
 import { Team } from "../Enums/Team"
 
 export default new (class GameState {
 	public Language = "unknown"
 	public CurrentServerTick = -1
 	public IsInputCaptured = false
-	public SignonState = SignonState_t.SIGNONSTATE_NONE
-	public UIState = 3
+	public UIState = DOTAGameUIState_t.DOTA_GAME_UI_STATE_DASHBOARD
 	public MapName = "<empty>"
 	/**
 	 * Equals GameRules?.RawGameTime ?? 0
@@ -25,7 +24,7 @@ export default new (class GameState {
 		return (GetAvgLatency(Flow_t.IN) + GetAvgLatency(Flow_t.OUT)) * 1000
 	}
 	public get IsConnected(): boolean {
-		return this.MapName !== "<empty>" && this.SignonState === SignonState_t.SIGNONSTATE_FULL
+		return this.MapName !== "<empty>"
 	}
 	public GetLatency(flow: Flow_t = Flow_t.IN) {
 		return GetLatency(flow)

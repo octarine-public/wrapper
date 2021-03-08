@@ -57,9 +57,9 @@ EventsSDK.on("Tick", () => {
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
 		if (proj.LastUpdate === 0) {
 			proj.LastUpdate = cur_time
-			const source = proj.Source
-			if (source instanceof Entity && proj.SourceAttachment !== "")
-				proj.Position.AddForThis(source.GetAttachmentOffset(proj.SourceAttachment))
+			// const source = proj.Source
+			// if (source instanceof Entity && proj.SourceAttachment !== "")
+			// 	proj.Position.AddForThis(source.GetAttachmentOffset(proj.SourceAttachment))
 			return
 		}
 		const dt = cur_time - proj.LastUpdate
