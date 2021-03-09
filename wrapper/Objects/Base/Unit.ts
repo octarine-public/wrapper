@@ -352,10 +352,10 @@ export default class Unit extends Entity {
 		return GetUnitNumberPropertyByName(this.Index, "m_iMoveCapabilities") ?? 0
 	}
 	public get IsMelee(): boolean {
-		return this.AttackCapabilities === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK
+		return this.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK)
 	}
 	public get IsRanged(): boolean {
-		return this.AttackCapabilities === DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK
+		return this.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_RANGED_ATTACK)
 	}
 	public get IsSpawned(): boolean {
 		return !this.IsWaitingToSpawn

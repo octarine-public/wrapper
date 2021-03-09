@@ -24,6 +24,8 @@ export default class CTopBar {
 	public readonly DirePlayersRespawnTimers: Rectangle[] = []
 	public readonly RadiantPlayersTPIndicators: Rectangle[] = []
 	public readonly DirePlayersTPIndicators: Rectangle[] = []
+	public readonly RadiantPlayersUltReadyIndicators: Rectangle[] = []
+	public readonly DirePlayersUltReadyIndicators: Rectangle[] = []
 	public readonly RadiantPlayersHeroImages: Rectangle[] = []
 	public readonly DirePlayersHeroImages: Rectangle[] = []
 	public readonly RadiantTeamImage = new Rectangle()
@@ -40,6 +42,7 @@ export default class CTopBar {
 		this.CalculateBuybacks(screen_size)
 		this.CalculateRespawnTimers(screen_size)
 		this.CalculateTPIndicators(screen_size)
+		this.CalculateUltReadyIndicators(screen_size)
 		this.CalculateHeroImages(screen_size)
 	}
 
@@ -67,6 +70,9 @@ export default class CTopBar {
 
 		this.RadiantPlayersHeroImages.forEach((rect, i) => RendererSDK.FilledRect(rect.pos1, rect.Size, new Color(50, 50 * i, 0, 128)))
 		this.DirePlayersHeroImages.forEach((rect, i) => RendererSDK.FilledRect(rect.pos1, rect.Size, new Color(50 * i, 0, 50, 128)))
+
+		this.RadiantPlayersUltReadyIndicators.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Green.SetA(128)))
+		this.DirePlayersUltReadyIndicators.forEach(rect => RendererSDK.FilledRect(rect.pos1, rect.Size, Color.Green.SetA(128)))
 	}
 	public HasChanged(): boolean {
 		return false
@@ -300,6 +306,17 @@ export default class CTopBar {
 			GUIInfo.ScaleWidth(6, screen_size),
 			this.RadiantPlayersTPIndicators,
 			this.DirePlayersTPIndicators,
+			true,
+		)
+	}
+	private CalculateUltReadyIndicators(screen_size: Vector2): void {
+		this.CalculateBasicRects(
+			GUIInfo.ScaleWidth(38, screen_size),
+			GUIInfo.ScaleHeight(20, screen_size),
+			GUIInfo.ScaleHeight(-28, screen_size),
+			GUIInfo.ScaleWidth(6, screen_size),
+			this.RadiantPlayersUltReadyIndicators,
+			this.DirePlayersUltReadyIndicators,
 			true,
 		)
 	}
