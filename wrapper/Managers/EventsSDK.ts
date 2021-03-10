@@ -37,7 +37,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "EntityDestroyed", callback: (ent: Entity) => void): EventsSDK
 	/**
 	 * Emitted every time GameRules.RawGameTime changes, a.k.a. tick,
-	 * right before PostUpdate, but not required to.
+	 * right after PostUpdate
 	 */
 	on(name: "Tick", callback: (dt: number) => void): EventsSDK
 	/**
@@ -45,6 +45,12 @@ interface EventsSDK extends EventEmitter {
 	 * Gets called when game is paused, and might be called faster than actual server ticks.
 	 */
 	on(name: "PreDataUpdate", callback: () => void): EventsSDK
+	/**
+	 * Emitted before all EntityCreateds, but after all PreEntityCreateds were emitted
+	 * and entity properties were changed
+	 * Gets called when game is paused, and might be called faster than actual server ticks.
+	 */
+	on(name: "MidDataUpdate", callback: () => void): EventsSDK
 	/**
 	 * Emitted after every server entity update.
 	 * Gets called when game is paused, and might be called faster than actual server ticks.

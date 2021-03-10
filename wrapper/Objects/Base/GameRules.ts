@@ -3,8 +3,7 @@ import { NetworkedBasicField, NetworkedBigIntField, WrapperClass } from "../../D
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 import { DOTA_GameState } from "../../Enums/DOTA_GameState"
 import { Team } from "../../Enums/Team"
-import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
-import EventsSDK from "../../Managers/EventsSDK"
+import EntityManager, { EntityPropertiesNode, SetLatestTickDelta } from "../../Managers/EntityManager"
 import GameState from "../../Utils/GameState"
 import Entity, { LocalPlayer } from "../Base/Entity"
 import StockInfo from "./../../Base/StockInfo"
@@ -96,7 +95,11 @@ RegisterFieldHandler(CGameRules, "m_fGameTime", (game, new_val) => {
 	if (prev_tick === 0)
 		EntityManager.AllEntities.forEach(ent => ent.FakeCreateTime_ = game.RawGameTime)
 	if (LocalPlayer !== undefined)
-		EventsSDK.emit("Tick", false, prev_tick !== 0 ? game.RawGameTime - prev_tick : (1 / 30))
+		SetLatestTickDelta(
+			prev_tick !== 0
+				? game.RawGameTime - prev_tick
+				: (1 / 30),
+		)
 })
 RegisterFieldHandler(CGameRules, "m_NeutralSpawnBoxes", (game, new_val) => {
 	game.NeutralSpawnBoxes = (new_val as EntityPropertiesNode[]).map(map => new NeutralSpawnBox(map))

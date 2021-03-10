@@ -913,7 +913,7 @@ Events.on("NewConnection", () => {
 	Localization.LocalizationUnitsNames.forEach(unitName => Localization.AddLocalizationUnit(unitName, namesMapping))
 })
 
-EventsSDK.on("Tick", () => {
+EventsSDK.on("MidDataUpdate", () => {
 	const player = LocalPlayer
 	if (player === undefined) {
 		GameState.LocalTeam = Team.Observer

@@ -97,8 +97,6 @@ function ClassFromNative(id: number, constructor_name: string, ent_name: Nullabl
 }
 
 const cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
-let cached_m_fGameTime: Nullable<[Constructor<Entity>, number, FieldHandler]>,
-	delayed_tick_call: Nullable<[Entity, EntityPropertyType]>
 export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
 	AllEntitiesAsMap.set(id, ent)
 	AllEntities.push(ent)
@@ -347,8 +345,7 @@ function ParseEntityUpdate(
 						if (ent_handlers.has(id)) {
 							changed_paths.push(id)
 							changed_paths_results.push(res)
-						} else if (cached_m_fGameTime !== undefined && id === cached_m_fGameTime[1])
-							delayed_tick_call = [ent, res]
+						}
 					} else
 						changed_paths_results[changed_path_id] = res
 				}
@@ -400,6 +397,11 @@ function FixType(symbols: string[], field: any): string {
 	return type
 }
 
+let LatestTickDelta = 0
+export function SetLatestTickDelta(delta: number): void {
+	LatestTickDelta = delta
+}
+
 Events.on("ServerMessage", (msg_id, buf_len) => {
 	const buf = ServerMessageBuffer.subarray(0, buf_len)
 	switch (msg_id) {
@@ -441,10 +443,7 @@ declare class ${name} {
 						console.log(`[WARNING] Index of "${field_name}" not found in CSVCMsg_FlattenedSerializer.`)
 						continue
 					}
-					if (field_name !== "m_fGameTime")
-						map2.set(id, field_handler)
-					else
-						cached_m_fGameTime = [construct, id, field_handler]
+					map2.set(id, field_handler)
 				}
 				cached_field_handlers.set(construct, map2)
 			}
@@ -452,6 +451,7 @@ declare class ${name} {
 		}
 		case 55: { // we have custom parsing for CSVCMsg_PacketEntities
 			EventsSDK.emit("PreDataUpdate", false)
+			LatestTickDelta = 0
 			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
 			const created_entities: Entity[] = []
 			while (!stream.Empty()) {
@@ -477,12 +477,11 @@ declare class ${name} {
 						break
 				}
 			}
+			EventsSDK.emit("MidDataUpdate", false)
 			created_entities.forEach(ent => EventsSDK.emit("EntityCreated", false, ent))
-			if (delayed_tick_call !== undefined) {
-				cached_m_fGameTime![2](...delayed_tick_call)
-				delayed_tick_call = undefined
-			}
 			EventsSDK.emit("PostDataUpdate", false)
+			if (LatestTickDelta !== 0)
+				EventsSDK.emit("Tick", false, LatestTickDelta)
 			break
 		}
 	}
