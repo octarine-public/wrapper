@@ -152,7 +152,6 @@ declare function ChatWheelAbuse(str: string): void
 declare function StartFindingMatch(): void
 declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
-declare function ToggleFakeChat(state: boolean): void
 declare function ToggleOBSBypass(state: boolean): void
 declare function setFireEvent(func: (event_name: string, cancellable: boolean, ...args: any) => boolean): void
 declare function require(absolute_path: string): any
