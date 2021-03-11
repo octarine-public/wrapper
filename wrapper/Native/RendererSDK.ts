@@ -516,33 +516,6 @@ class CRendererSDK {
 		this.Text(text, vecMouse, color, font_name, font_size, weight, width, italic, flags, scaleX, skewX)
 	}
 
-	/**
-	 * Draws icon at minimap
-	 * @param icon_name can be found at https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/game/dota/pak01_dir/scripts/mod_textures.txt
-	 * @param size you can get that value for heroes from ConVars.GetInt("dota_minimap_hero_size")
-	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
-	 * @param end_time Changing it to 1 will hide icon from minimap if you're not calling it repeatedly in Draw event.
-	 * @param end_time If it's <= 0 it'll be infinity for DotA.
-	 * @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
-	 */
-	public DrawMiniMapIcon(name: string, worldPos: Vector3, size = 800, color: Color = Color.White, end_time = 1) {
-		worldPos.toIOBuffer(0)
-		color.toIOBuffer(3)
-		Minimap.DrawIcon(name, size, end_time, 0x80000000)
-	}
-	/**
-	 * Draws ping at minimap
-	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
-	 * @param end_time Changing it to 1 will hide icon from minimap if you're not calling it repeatedly in Draw event.
-	 * @param end_time If it's <= 0 it'll be infinity for DotA.
-	 * @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
-	 */
-	public DrawMiniMapPing(worldPos: Vector3, color: Color = Color.White, end_time = 1, key = Math.round(Math.random() * 1000)) {
-		worldPos.toIOBuffer(0)
-		color.toIOBuffer(3)
-		Minimap.DrawPing(end_time, -key)
-	}
-
 	public BeforeDraw() {
 		WASM.CloneWorldToProjection()
 		this.WindowSize.x = IOBufferView.getInt32(17 * 4, true)

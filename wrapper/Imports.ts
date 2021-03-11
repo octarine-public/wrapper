@@ -86,6 +86,7 @@ export { default as CGameManager, GameManager } from "./Objects/Base/GameManager
 export { default as EntityManager } from "./Managers/EntityManager"
 export { default as EventsSDK } from "./Managers/EventsSDK"
 export { NotificationsSDK, Notification } from "./Notifications/Imports"
+export { default as MinimapSDK } from "./Managers/MinimapSDK"
 export {
 	default as Input,
 	InputEventSDK,

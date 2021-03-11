@@ -47,7 +47,6 @@ declare var SchemaClassesInheritance: Map<string, string[]>
 
 declare var ConVars: ConVars
 declare var CustomGameEvents: CustomGameEvents
-declare var Minimap: Minimap
 declare var Particles: Particles
 declare var Renderer: Renderer
 declare var Camera: Camera
@@ -62,29 +61,6 @@ declare interface CustomGameEvents {
 	FireEventToClient(name: string, player_ent_id: number, data: Uint8Array): void
 	FireEventToAllClients(name: string, data: Uint8Array): void
 	FireEventToServer(name: string, data: Uint8Array): void
-}
-
-declare interface Minimap {
-	SendPing(type?: number, direct_ping?: boolean, target?: number): void // pass location: Vector2 at IOBuffer offset 0
-	SendLine(x: number, y: number, initial: boolean): void
-	/**
-	 * Draws icon at minimap
-	 * @param icon_name can be found at https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/game/dota/pak01_dir/scripts/mod_textures.txt
-	 * @param size you can get that value for heroes from ConVars.GetInt("dota_minimap_hero_size")
-	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
-	 * @param end_time Changing it to 1 will hide icon from minimap if you're not calling it repeatedly in Draw event.
-	 * @param end_time If it's <= 0 it'll be infinity for DotA.
-	 * @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
-	 */
-	DrawIcon(icon_name: string, size: number, end_time: number, uid: number): void // pass pos: Vector3 at IOBuffer offset 0, color: Color at IOBuffer offset 3
-	/**
-	 * Draws ping at minimap
-	 * @param end_time Must be for ex. Game.RawGameTime + ConVars.GetInt("dota_minimap_ping_duration").
-	 * @param end_time Changing it to 1 will hide ping from minimap if you're not calling it repeatedly in Draw event.
-	 * @param end_time If it's <= 0 it'll be infinity for DotA.
-	 * @param uid you can use this value to edit existing uid's location/color, or specify 0x80000000 to make it unique
-	 */
-	DrawPing(end_time: number, uid: number): void // pass pos: Vector3 at IOBuffer offset 0, color: Color at IOBuffer offset 3
 }
 
 declare interface Particles {
@@ -156,8 +132,8 @@ declare function ToggleOBSBypass(state: boolean): void
 declare function setFireEvent(func: (event_name: string, cancellable: boolean, ...args: any) => boolean): void
 declare function require(absolute_path: string): any
 declare function hrtime(): number
-declare function AddSearchPath(path: string): boolean
-declare function RemoveSearchPath(path: string): boolean
+declare function AddSearchPath(path: string): void
+declare function RemoveSearchPath(path: string): void
 declare function SetTreeModel(model_name: string, scale: number): void
 declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offset 0
 	soundevent_hash: number,
@@ -179,3 +155,7 @@ declare function SetEntityColor(custom_entity_id: number, color_u32: number, ren
  */
 declare function SetEntityGlow(custom_entity_id: number, color_u32: number): void
 declare function GetPlayerMuteFlags(steamid64: bigint): number
+/**
+ * pass location: Vector2 at IOBuffer offset 0
+ */
+declare function SendMinimapPing(type?: number, direct_ping?: boolean, target?: number): void
