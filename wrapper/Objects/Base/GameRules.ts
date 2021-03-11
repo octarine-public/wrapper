@@ -1,7 +1,8 @@
 import NeutralSpawnBox from "../../Base/NeutralSpawnBox"
-import { NetworkedBasicField, NetworkedBigIntField, WrapperClass } from "../../Decorators"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 import { DOTA_GameState } from "../../Enums/DOTA_GameState"
+import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
 import EntityManager, { EntityPropertiesNode, SetLatestTickDelta } from "../../Managers/EntityManager"
 import GameState from "../../Utils/GameState"
@@ -41,13 +42,13 @@ export default class CGameRules extends Entity {
 	// public HeroPickState = DOTA_HeroPickState.DOTA_HEROPICK_STATE_NONE
 	// @NetworkedBasicField("m_nHeroPickState") // ?? return boolean
 	// public HeroMinimapIconScale = 0 // ?? return boolean
-	// @NetworkedBigIntField("m_flHeroMinimapIconScale")
+	// @NetworkedBasicField("m_flHeroMinimapIconScale")
 	// public CreepMinimapIconScale = 0 // return bigint
-	// @NetworkedBigIntField("m_flCreepMinimapIconScale")
+	// @NetworkedBasicField("m_flCreepMinimapIconScale")
 	public IsTemporaryNight = false
 	@NetworkedBasicField("m_nLoadedPlayers")
 	public LoadedPlayers = 0
-	@NetworkedBigIntField("m_unMatchID64")
+	@NetworkedBasicField("m_unMatchID64", EPropertyType.UINT64)
 	public MatchID = 0n
 	public NeutralSpawnBoxes: NeutralSpawnBox[] = []
 	public StockInfo: StockInfo[] = []

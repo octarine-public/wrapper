@@ -1,6 +1,6 @@
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
-import { NetworkedBasicField, NetworkedBigIntField, WrapperClass } from "../../Decorators"
+import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
@@ -13,6 +13,7 @@ import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_SHOP_TYPE } from "../../Enums/DOTA_SHOP_TYPE"
 import { GameActivity_t } from "../../Enums/GameActivity_t"
 import { modifierstate } from "../../Enums/modifierstate"
+import { EPropertyType } from "../../Enums/PropertyType"
 import { Team } from "../../Enums/Team"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
@@ -71,7 +72,7 @@ export default class Unit extends Entity {
 	public IsVisibleForTeamMask = 0
 	@NetworkedBasicField("m_anglediff")
 	public RotationDifference = 0
-	@NetworkedBigIntField("m_iIsControllableByPlayer64")
+	@NetworkedBasicField("m_iIsControllableByPlayer64", EPropertyType.UINT64)
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
@@ -134,7 +135,7 @@ export default class Unit extends Entity {
 	public NightVision = 0
 	@NetworkedBasicField("m_flTauntCooldown")
 	public TauntCooldown = 0
-	@NetworkedBigIntField("m_nUnitState64")
+	@NetworkedBasicField("m_nUnitState64", EPropertyType.UINT64)
 	public UnitStateNetworked = 0n
 	@NetworkedBasicField("m_nHealthBarOffsetOverride")
 	public HealthBarOffsetOverride = 0

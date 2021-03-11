@@ -2,6 +2,7 @@ import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
 import { DOTA_UNIT_TARGET_TEAM } from "../Enums/DOTA_UNIT_TARGET_TEAM"
+import { EPropertyType, PropertyType } from "../Enums/PropertyType"
 import Entity from "../Objects/Base/Entity"
 import GetConstructorByName, { FieldHandler, GetFieldHandlers, GetSDKClasses } from "../Objects/NativeToSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
@@ -148,22 +149,6 @@ const enum EntityPVS {
 	CREATE,
 	UPDATE,
 }
-const enum PropertyType {
-	BOOL,
-	INT8,
-	INT16,
-	INT32,
-	INT64,
-	UINT8,
-	UINT16,
-	UINT32,
-	UINT64,
-	FLOAT,
-	STRING,
-	VECTOR2,
-	VECTOR3,
-	QUATERNION,
-}
 
 const convert_buf = new ArrayBuffer(8)
 const convert_uint8 = new Uint8Array(convert_buf),
@@ -174,43 +159,43 @@ const convert_uint8 = new Uint8Array(convert_buf),
 	convert_int32 = new Int32Array(convert_buf),
 	convert_int64 = new BigInt64Array(convert_buf),
 	convert_uint64 = new BigUint64Array(convert_buf)
-function ParseProperty(stream: BinaryStream): string | bigint | number | boolean | Vector2 | Vector3 | Vector4 {
-	const var_type: PropertyType = stream.ReadUint8()
+function ParseProperty(stream: BinaryStream): PropertyType {
+	const var_type: EPropertyType = stream.ReadUint8()
 	switch (var_type) {
-		case PropertyType.INT8:
+		case EPropertyType.INT8:
 			convert_uint64[0] = stream.ReadVarUint()
 			return convert_int8[0]
-		case PropertyType.INT16:
+		case EPropertyType.INT16:
 			convert_uint64[0] = stream.ReadVarUint()
 			return convert_int16[0]
-		case PropertyType.INT32:
+		case EPropertyType.INT32:
 			convert_uint64[0] = stream.ReadVarUint()
 			return convert_int32[0]
-		case PropertyType.INT64:
+		case EPropertyType.INT64:
 			convert_uint64[0] = stream.ReadVarUint()
 			return convert_int64[0]
-		case PropertyType.UINT8:
+		case EPropertyType.UINT8:
 			convert_uint64[0] = stream.ReadVarUint()
 			return convert_uint8[0]
-		case PropertyType.UINT16:
+		case EPropertyType.UINT16:
 			convert_uint64[0] = stream.ReadVarUint()
 			return convert_uint16[0]
-		case PropertyType.UINT32:
+		case EPropertyType.UINT32:
 			convert_uint64[0] = stream.ReadVarUint()
 			return convert_uint32[0]
-		case PropertyType.UINT64:
+		case EPropertyType.UINT64:
 			return stream.ReadVarUint()
-		case PropertyType.BOOL:
+		case EPropertyType.BOOL:
 			return stream.ReadVarUintAsNumber() !== 0
-		case PropertyType.FLOAT:
+		case EPropertyType.FLOAT:
 			return stream.ReadFloat32()
-		case PropertyType.VECTOR2:
+		case EPropertyType.VECTOR2:
 			return new Vector2(stream.ReadFloat32(), stream.ReadFloat32())
-		case PropertyType.VECTOR3:
+		case EPropertyType.VECTOR3:
 			return new Vector3(stream.ReadFloat32(), stream.ReadFloat32(), stream.ReadFloat32())
-		case PropertyType.QUATERNION:
+		case EPropertyType.QUATERNION:
 			return new Vector4(stream.ReadFloat32(), stream.ReadFloat32(), stream.ReadFloat32(), stream.ReadFloat32())
-		case PropertyType.STRING:
+		case EPropertyType.STRING:
 			return stream.ReadUtf8String(stream.ReadVarUintAsNumber())
 		default:
 			throw `Unknown PropertyType: ${var_type}`

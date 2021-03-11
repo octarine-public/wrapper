@@ -49,7 +49,10 @@ class MenuManager {
 	}
 
 	public get ConfigValue() {
+		this.config = Object.create(null)
 		this.entries.forEach(entry => this.config[entry.InternalName] = entry.ConfigValue)
+		this.config.Header = this.header.ConfigValue
+		this.config.SelectedLocalization = Localization.SelectedUnitName
 		return this.config
 	}
 	public set ConfigValue(obj) {
@@ -86,8 +89,6 @@ class MenuManager {
 			Base.SaveConfigASAP = true
 		}
 		if (Base.SaveConfigASAP) {
-			this.config.Header = this.header.ConfigValue
-			this.config.SelectedLocalization = Localization.SelectedUnitName
 			writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)).buffer)
 			Base.SaveConfigASAP = false
 		}
