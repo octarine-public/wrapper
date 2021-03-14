@@ -2,7 +2,7 @@ import { MurmurHash2, MurmurHash64 } from "../Native/WASM"
 import { StringToUTF8, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
 import { parseKV } from "../Utils/ParseKV"
-import { ParseExternalReferences } from "../Utils/Utils"
+import { ParseExternalReferences, readJSON } from "../Utils/Utils"
 import Events from "./Events"
 
 const Manifest = new (class CManifest {
@@ -11,8 +11,8 @@ const Manifest = new (class CManifest {
 	public readonly FileNames: string[] = []
 	public readonly Paths = new Map<bigint, [number, number, number]>()
 	public readonly SoundHashToString = new Map<number, string>()
-	/*public readonly PathHash32To64 = new Map<number, bigint>()
-	public readonly Hash32ToString = new Map<number, string>()*/
+	public readonly PathHash32To64 = new Map<number, bigint>()
+	public readonly Hash32ToString = new Map<number, string>()
 
 	public GetPathByHash(hash: bigint): Nullable<string> {
 		if (hash === 0n)
@@ -26,8 +26,9 @@ const Manifest = new (class CManifest {
 		}
 		return `${this.Directories[path[0]]}${this.FileNames[path[1]]}.${this.Extensions[path[2]]}`
 	}
-	/*public SaveStringToken(str: string): number {
-		let hash = MurmurHash2(StringToUTF8(str.toLowerCase()))
+	public SaveStringToken(str: string): number {
+		str = str.toLowerCase()
+		const hash = MurmurHash2(StringToUTF8(str))
 		if (!this.PathHash32To64.has(hash) && !this.Hash32ToString.has(hash))
 			this.Hash32ToString.set(hash, str)
 		return hash
@@ -38,13 +39,13 @@ const Manifest = new (class CManifest {
 		// it's interpret as signed int32 in protobuf messages, so we need to wrap it into unsigned
 		hash = hash >>> 0
 
-		let hash64 = this.PathHash32To64.get(hash)
+		const hash64 = this.PathHash32To64.get(hash)
 		if (hash64 !== undefined) {
-			let path = this.Paths.get(hash64)!
+			const path = this.Paths.get(hash64)!
 			return `${this.Directories[path[0]]}${this.FileNames[path[1]]}.${this.Extensions[path[2]]}`
 		}
 		return this.Hash32ToString.get(hash)
-	}*/
+	}
 	public LoadSoundFile(path: string): void {
 		const buf = fread(path)
 		if (buf === undefined) {
@@ -76,26 +77,6 @@ function ParseStringFromStream(stream: BinaryStream, ar: string[]) {
 	else
 		stream.RelativeSeek(size)
 }
-
-function InitManifest() {
-	Manifest.Directories.splice(0)
-	Manifest.Extensions.splice(0)
-	Manifest.FileNames.splice(0)
-	Manifest.Paths.clear()
-	// Manifest.PathHash32To64.clear()
-	Manifest.SoundHashToString.clear()
-
-	const manifest = fread("soundevents/soundevents_manifest.vrman_c")
-	if (manifest === undefined) {
-		console.log("Sound manifest not found.")
-		return
-	}
-	ParseExternalReferences(new Uint8Array(manifest)).forEach(path => {
-		if (path.endsWith("vsndevts"))
-			Manifest.LoadSoundFile(path + "_c")
-	})
-}
-
 Events.on("ServerMessage", (msg_id, buf_len) => {
 	const buf = ServerMessageBuffer.subarray(0, buf_len)
 	switch (msg_id) {
@@ -132,25 +113,41 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 })
 
 // reset Manifest on new connection
-Events.on("NewConnection", InitManifest)
+Events.on("NewConnection", () => {
+	Manifest.Directories.splice(0)
+	Manifest.Extensions.splice(0)
+	Manifest.FileNames.splice(0)
+	Manifest.Paths.clear()
+	Manifest.PathHash32To64.clear()
+	Manifest.SoundHashToString.clear()
 
-/*
-Manifest.SaveStringToken("")
-Manifest.SaveStringToken("invalid_hitbox")
-Manifest.SaveStringToken("invalid_bone")
-Manifest.SaveStringToken("default")
+	const manifest = fread("soundevents/soundevents_manifest.vrman_c")
+	if (manifest === undefined) {
+		console.log("Sound manifest not found.")
+		return
+	}
+	ParseExternalReferences(new Uint8Array(manifest), true).forEach(path => {
+		if (path.endsWith("vsndevts_c"))
+			Manifest.LoadSoundFile(path)
+	})
+})
 
-let buf = fread("stringtokendatabase.txt")
-if (buf !== undefined) {
-	const  stream = new BinaryStream(new DataView(buf))
-	if (stream.Next() === 0x21 && stream.Next() === 0x0A) {
-		while (!stream.Empty()) {
-			stream.RelativeSeek(6)
-			let str = ""
-			for (let i = stream.Next(); i !== 0x0A; i = stream.Next())
-				str += String.fromCharCode(i)
-			Manifest.SaveStringToken(str)
+function InitStringTokens(): void {
+	// strings present in dota, but not present in stringtokendatabase for some reason
+	(readJSON("known_strings.json") as string[]).forEach(str => Manifest.SaveStringToken(str))
+
+	const buf = fread("stringtokendatabase.txt")
+	if (buf !== undefined) {
+		const stream = new BinaryStream(new DataView(buf))
+		if (stream.ReadUint8() === 0x21 && stream.ReadUint8() === 0x0A) {
+			while (!stream.Empty()) {
+				stream.RelativeSeek(6)
+				let str = ""
+				for (let i = stream.ReadUint8(); i !== 0x0A; i = stream.ReadUint8())
+					str += String.fromCharCode(i)
+				Manifest.SaveStringToken(str)
+			}
 		}
 	}
 }
-*/
+InitStringTokens()

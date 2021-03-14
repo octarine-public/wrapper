@@ -48,7 +48,6 @@ export default class Base {
 	public FontFlags = FontFlags_t.NONE
 	public TooltipIcon = "menu/icons/info.svg"
 	public TooltipIconColor = new Color(104, 4, 255)
-	public IgnoreNextConfigLoad = false
 	public readonly OnValueChangedCBs: ((caller: Base) => void)[] = []
 
 	public readonly Position = new Vector2()
@@ -56,6 +55,7 @@ export default class Base {
 	public readonly TotalSize = this.OriginalSize.Clone()
 
 	protected is_active = false
+	protected config_dirty = true
 	protected readonly TooltipSize = new Vector2()
 	protected readonly TooltipTextSize = new Vector3()
 	protected readonly text_offset = new Vector2(14, 14)
@@ -87,9 +87,17 @@ export default class Base {
 	protected get IsHovered(): boolean {
 		return this.Rect.Contains(this.MousePosition)
 	}
+	protected get ShouldIgnoreNewConfigValue(): boolean {
+		return !this.config_dirty
+	}
 
 	public OnConfigLoaded() {
-		// to be implemented in child classes
+		if (!this.config_dirty)
+			return
+		this.config_dirty = false
+		if (this.execute_on_add)
+			this.OnValueChangedCBs.forEach(f => f(this))
+		this.ApplyLocalization()
 	}
 	public ApplyLocalization() {
 		this.Name = Localization.Localize(this.InternalName)

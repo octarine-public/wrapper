@@ -31,7 +31,8 @@ export function ParseResourceLayout(buf: Uint8Array): Nullable<[Map<string, Uint
 		blocks: Uint8Array[] = []
 	for (let i = 0; i < block_count; i++) {
 		const type = stream.ReadUtf8String(4),
-			block = new Uint8Array(buf.buffer, stream.pos + stream.ReadUint32(), stream.ReadUint32())
+			start = stream.pos + stream.ReadUint32()
+		const block = buf.subarray(start, start + stream.ReadUint32())
 		map.set(type, block)
 		blocks.push(block)
 	}

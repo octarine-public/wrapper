@@ -9,6 +9,7 @@ import _Events from "./Managers/Events"
 import _EventsSDK from "./Managers/EventsSDK"
 import _Input from "./Managers/InputManager"
 import _Manifest from "./Managers/Manifest"
+import _MinimapSDK from "./Managers/MinimapSDK"
 import _ParticlesSDK from "./Managers/ParticleManager"
 import _Menu from "./Menu/Menu"
 import _RendererSDK from "./Native/RendererSDK"
@@ -17,6 +18,7 @@ import { GameRules as _GameRules, LocalPlayer as _LocalPlayer } from "./Objects/
 import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource"
 import { GetSDKClasses } from "./Objects/NativeToSDK"
 import _GameState from "./Utils/GameState"
+import { EntityDataLump as _EntityDataLump } from "./Utils/ParseEntityLump"
 import { GridNav as _GridNav } from "./Utils/ParseGNV"
 
 globalThis.Color = _Color
@@ -67,10 +69,18 @@ Object.defineProperty(globalThis, "GridNav", {
 	configurable: false,
 	enumerable: true,
 })
+Object.defineProperty(globalThis, "EntityDataLump", {
+	get: () => {
+		return _EntityDataLump
+	},
+	configurable: false,
+	enumerable: true,
+})
 globalThis.GetPositionHeight = _WASM.GetPositionHeight
 globalThis.ParticlesSDK = _ParticlesSDK
 globalThis.WASM = _WASM
 globalThis.Manifest = _Manifest
+globalThis.MinimapSDK = _MinimapSDK
 globalThis.Input = _Input
 globalThis.GUIInfo = _GUIInfo
 

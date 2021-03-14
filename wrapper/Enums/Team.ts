@@ -13,4 +13,5 @@ export enum Team {
 	Custom6,
 	Custom7,
 	Custom8,
+	Invalid = 0xFFFFFFFF,
 }

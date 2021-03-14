@@ -25,7 +25,11 @@ export default class Toggle extends Base {
 	}
 
 	public get ConfigValue() { return this.value }
-	public set ConfigValue(value) { this.value = value ?? this.value }
+	public set ConfigValue(value) {
+		if (this.ShouldIgnoreNewConfigValue)
+			return
+		this.value = value ?? this.value
+	}
 
 	private get ToggleRect() {
 		const base_pos = this.Position.Add(this.TotalSize).SubtractForThis(Toggle.toggle_background_offset)
@@ -40,9 +44,6 @@ export default class Toggle extends Base {
 			+ Toggle.text_toggle_gap
 			+ Toggle.toggle_background_size.x
 			+ Toggle.toggle_background_offset.x
-	}
-	public OnConfigLoaded() {
-		this.OnValueChangedCBs.forEach(f => f(this))
 	}
 
 	public OnActivate(func: (caller: this) => void) {

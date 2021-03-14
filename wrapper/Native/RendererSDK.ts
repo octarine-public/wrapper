@@ -9,8 +9,10 @@ import { default as Input } from "../Managers/InputManager"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
+import { ParseEntityLump, ResetEntityLump } from "../Utils/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Utils/ParseGNV"
 import readFile from "../Utils/readFile"
+import { ParseExternalReferences } from "../Utils/Utils"
 import * as WASM from "./WASM"
 
 enum CommandID {
@@ -420,7 +422,13 @@ class CRendererSDK {
 	/**
 	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
 	 */
-	public Image(path: string, vecPos: Vector2, round = -1, vecSize = new Vector2(-1, -1), color: RenderColor = Color.White): void {
+	public Image(
+		path: string,
+		vecPos: Vector2,
+		round = -1,
+		vecSize = new Vector2(-1, -1),
+		color: RenderColor = Color.White,
+	): void {
 		this.SetColor(Color.White)
 		this.SetColorFilter(color, BlendMode.Modulate)
 
@@ -449,6 +457,44 @@ class CRendererSDK {
 		if (round >= 0)
 			this.RestoreState()
 		this.RestorePaint()
+	}
+	/**
+	 * @param path must end with "_c" (without double-quotes), if that's vtex_c
+	 */
+	public ImagePart(
+		path: string,
+		vecPos: Vector2,
+		round = -1,
+		imagePos = new Vector2(),
+		imageSize = new Vector2(-1, -1),
+		vecSize = new Vector2(-1, -1),
+		color: RenderColor = Color.White,
+	): void {
+		const texture_id = this.GetTexture(path)
+		const tex_size = this.tex2size.get(texture_id)!
+		if (imageSize.x === -1)
+			imageSize.x = tex_size.x
+		if (imageSize.y === -1)
+			imageSize.y = tex_size.y
+		if (vecSize.x === -1)
+			vecSize.x = imageSize.x
+		if (vecSize.y === -1)
+			vecSize.y = imageSize.y
+		const size = tex_size.Multiply(vecSize).DivideForThis(imageSize),
+			imagePosNew = imagePos.Multiply(vecSize).DivideForThis(imageSize).SubtractForThis(vecPos).Negate()
+		this.SaveState()
+		if (round >= 0)
+			this.SetClipOval(vecPos.AddScalar(round / 2), vecSize.SubtractScalar(round / 2))
+		else
+			this.SetClipRect(vecPos, vecSize)
+		this.Image(
+			path,
+			imagePosNew,
+			-1,
+			size,
+			color,
+		)
+		this.RestoreState()
 	}
 	public GetImageSize(path: string): Vector2 {
 		return this.tex2size.get(this.GetTexture(path))!
@@ -615,6 +661,18 @@ class CRendererSDK {
 	}
 	public FreeTextureCache(): void {
 		this.clear_texture_cache = true
+	}
+	public SetClipOval_(vecPos: Vector2, vecSize: Vector2): void {
+		this.SetClipOval(vecPos, vecSize)
+	}
+	public SetClipRect_(vecPos: Vector2, vecSize: Vector2): void {
+		this.SetClipRect(vecPos, vecSize)
+	}
+	public SaveState_(): void {
+		this.SaveState()
+	}
+	public RestoreState_(): void {
+		this.RestoreState()
 	}
 	private Oval(vecPos: Vector2, vecSize: Vector2): void {
 		const view = this.AllocateCommandSpace(4 * 4)
@@ -809,7 +867,7 @@ class CRendererSDK {
 		}
 		this.PathReset()
 	}
-	/*private SetClipRect(vecPos: Vector2, vecSize: Vector2): void {
+	private SetClipRect(vecPos: Vector2, vecSize: Vector2): void {
 		{
 			const view = this.AllocateCommandSpace(4 * 4)
 			let off = 0
@@ -827,7 +885,7 @@ class CRendererSDK {
 			view.setUint8(off += 1, 0) // diff_op
 		}
 		this.PathReset()
-	}*/
+	}
 	private SaveState(): void {
 		const view = this.AllocateCommandSpace(0)
 		view.setUint8(0, CommandID.SAVE_STATE)
@@ -920,7 +978,8 @@ class CRendererSDK {
 const RendererSDK = new CRendererSDK()
 
 let vhcg_succeeded = false,
-	gnv_succeeded = false
+	gnv_succeeded = false,
+	entity_lump_succeeded = false
 function TryLoadMapFiles(): void {
 	const map_name = GameState.MapName
 	if (!vhcg_succeeded) {
@@ -939,6 +998,26 @@ function TryLoadMapFiles(): void {
 		} else
 			ResetGNV()
 	}
+	if (!entity_lump_succeeded) {
+		const map_buf = fread(`maps/${map_name}.vmap_c`)
+		if (map_buf !== undefined) {
+			const world_path = ParseExternalReferences(new Uint8Array(map_buf)).find(str => str.includes(".vwrld"))
+			if (world_path !== undefined) {
+				const world_buf = fread(world_path) ?? fread(`${world_path}_c`)
+				if (world_buf !== undefined) {
+					const ents_path = ParseExternalReferences(new Uint8Array(world_buf)).find(str => str.includes(".vents"))
+					if (ents_path !== undefined) {
+						const buf = fread(ents_path) ?? fread(`${ents_path}_c`)
+						if (buf !== undefined) {
+							entity_lump_succeeded = true
+							ParseEntityLump(buf)
+						} else
+							ResetEntityLump()
+					}
+				}
+			}
+		}
+	}
 }
 
 EventsSDK.on("ServerInfo", info => {
@@ -950,6 +1029,7 @@ EventsSDK.on("ServerInfo", info => {
 	GameState.MapName = map_name
 	vhcg_succeeded = false
 	gnv_succeeded = false
+	entity_lump_succeeded = false
 	TryLoadMapFiles()
 })
 

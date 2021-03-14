@@ -23,7 +23,6 @@ export default class Vector2 {
 		const newVec = new Vector2()
 		array.forEach(vec => newVec.AddForThis(callback(vec)))
 		return newVec.DivideScalarForThis(array.length)
-
 	}
 	public static GetCenter(array: Vector2[]): Vector2 {
 		const newVec = new Vector2()

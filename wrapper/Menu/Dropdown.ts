@@ -47,7 +47,10 @@ export default class Dropdown extends Base {
 
 	public get ConfigValue() { return this.selected_id }
 	public set ConfigValue(value) {
-		this.selected_id = Math.max(Math.min(this.InternalValuesNames.length - 1, value ?? this.selected_id), 0)
+		if (this.ShouldIgnoreNewConfigValue)
+			return
+		this.selected_id = value ?? this.selected_id
+		this.FixSelectedID()
 		this.currently_at_id = this.selected_id - Math.floor(Dropdown.dropdown_popup_elements_limit / 2) + 1
 	}
 	public get DropdownRect(): Rectangle {
@@ -64,9 +67,6 @@ export default class Dropdown extends Base {
 	}
 	public get PopupElementHeight(): number {
 		return this.longest_value_size.y + Dropdown.dropdown_popup_element_text_offset.y * 2
-	}
-	public OnConfigLoaded() {
-		this.OnValueChangedCBs.forEach(f => f(this))
 	}
 	public ApplyLocalization() {
 		this.ValuesNames = this.InternalValuesNames.map(name => Localization.Localize(name))
@@ -168,7 +168,7 @@ export default class Dropdown extends Base {
 
 	public Render(): void {
 		this.is_active = Dropdown.active_dropdown === this
-		this.selected_id = Math.max(Math.min(this.InternalValuesNames.length - 1, this.selected_id), 0)
+		this.FixSelectedID()
 		super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const dropdown_rect = this.DropdownRect
@@ -289,6 +289,9 @@ export default class Dropdown extends Base {
 				Dropdown.active_dropdown = undefined
 		}
 		return false
+	}
+	private FixSelectedID(): void {
+		this.selected_id = Math.max(Math.min(this.InternalValuesNames.length - 1, this.selected_id), 0)
 	}
 }
 

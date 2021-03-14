@@ -38,13 +38,13 @@ export default class PlayerData {
 		return this.properties.get("m_iPlayerSteamID") as bigint
 	}
 	public get CoachTeam(): Team {
-		return this.properties.get("m_eCoachTeam") as Team
+		return Number(this.properties.get("m_eCoachTeam")) as Team
 	}
 	public get CoachRating(): number {
 		return this.properties.get("m_unCoachRating") as number
 	}
 	public get LiveSpectatorTeam(): Team {
-		return this.properties.get("m_eLiveSpectatorTeam") as Team
+		return Number(this.properties.get("m_eLiveSpectatorTeam")) as Team
 	}
 	public get IsPlusSubscriber(): boolean {
 		return this.properties.get("m_bIsPlusSubscriber") as boolean

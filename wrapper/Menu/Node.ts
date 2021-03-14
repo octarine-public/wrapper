@@ -69,13 +69,7 @@ export default class Node extends Base {
 			return
 		if (this.save_unused_configs)
 			this.config_storage = obj
-		this.entries.forEach(entry => {
-			if (entry.IgnoreNextConfigLoad) {
-				entry.IgnoreNextConfigLoad = false
-				return
-			}
-			entry.ConfigValue = obj[entry.InternalName]
-		})
+		this.entries.forEach(entry => entry.ConfigValue = obj[entry.InternalName])
 	}
 	public get EntriesSizeX(): number {
 		return this.entries.reduce(

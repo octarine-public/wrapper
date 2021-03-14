@@ -77,7 +77,8 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	MurmurHash2: (ptr: number, size: number, seed: number) => number,
 	MurmurHash64: (ptr: number, size: number, seed: number) => void,
 	CRC32: (ptr: number, size: number) => number,
-	DecompressLZ4: (ptr: number, size: number) => number,
+	DecompressLZ4: (ptr: number, size: number, dst_len: number) => number,
+	DecompressLZ4Chained: (ptr: number, input_sizes_ptr: number, output_sizes_ptr: number, count: number) => number,
 	CloneWorldToProjection: () => void,
 	WorldToScreenNew: () => boolean,
 }
@@ -318,14 +319,39 @@ export function CRC32(buf: Uint8Array): number {
 	return wasm.CRC32(buf_addr, buf.byteLength) >>> 0
 }
 
-export function DecompressLZ4(buf: Uint8Array): Uint8Array {
+export function DecompressLZ4(buf: Uint8Array, dst_len: number): Uint8Array {
 	let addr = wasm.my_malloc(buf.byteLength)
 	new Uint8Array(wasm.memory.buffer, addr).set(buf)
 
-	addr = wasm.DecompressLZ4(addr, buf.byteLength)
+	addr = wasm.DecompressLZ4(addr, buf.byteLength, dst_len)
 	if (addr === 0)
 		throw "LZ4 decompression failed"
-	const copy = new Uint8Array(WASMIOBufferU32[0])
+	const copy = new Uint8Array(dst_len)
+	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
+	wasm.my_free(addr)
+
+	return copy
+}
+
+export function DecompressLZ4Chained(
+	buf: Uint8Array,
+	input_sizes: number[],
+	output_sizes: number[],
+): Uint8Array {
+	if (input_sizes.length !== output_sizes.length)
+		throw "Input and output count should match"
+	const count = input_sizes.length
+	let addr = wasm.my_malloc(buf.byteLength)
+	new Uint8Array(wasm.memory.buffer, addr).set(buf)
+	const inputs_addr = wasm.my_malloc(count * 4)
+	new Uint32Array(wasm.memory.buffer, inputs_addr).set(input_sizes)
+	const outputs_addr = wasm.my_malloc(count * 4)
+	new Uint32Array(wasm.memory.buffer, outputs_addr).set(output_sizes)
+
+	addr = wasm.DecompressLZ4Chained(addr, inputs_addr, outputs_addr, count)
+	if (addr === 0)
+		throw "LZ4 decompression failed"
+	const copy = new Uint8Array(output_sizes.reduce((prev, cur) => prev + cur, 0))
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
 	wasm.my_free(addr)
 

@@ -340,12 +340,31 @@ EXPORT_JS uint32_t CRC32(void* data, int len) {
 	return ret;
 }
 
-EXPORT_JS void* DecompressLZ4(void* data, size_t size) {
-	auto dst_len = *(uint32_t*)data;
+EXPORT_JS void* DecompressLZ4(void* data, size_t size, size_t dst_len) {
 	auto dst = malloc(dst_len);
-	LZ4_decompress_safe(GetPointer<char>(data, 4), (char*)dst, (int)(size - 4), (int)dst_len);
+	LZ4_decompress_safe((char*)data, (char*)dst, (int)size, (int)dst_len);
 	free(data);
-	*(uint32_t*)&JSIOBuffer[0] = dst_len;
+	return dst;
+}
+
+EXPORT_JS void* DecompressLZ4Chained(void* data, uint32_t* input_sizes, uint32_t* output_sizes, uint32_t count) {
+	size_t dst_len = 0;
+	for (uint32_t i = 0; i < count; i++)
+		dst_len += output_sizes[i];
+	auto dst = malloc(dst_len);
+	auto current_src = (char*)data;
+	auto current_dst = (char*)dst;
+    LZ4_streamDecode_t lz4StreamDecode{};
+	for (uint32_t i = 0; i < count; i++) {
+		auto input_size = input_sizes[i],
+			output_size = output_sizes[i];
+		LZ4_decompress_safe_continue(&lz4StreamDecode, current_src, current_dst, (int)input_size, (int)output_size);
+		current_src = GetPointer<char>(current_src, input_size);
+		current_dst = GetPointer<char>(current_dst, output_size);
+	}
+	free(data);
+	free(input_sizes);
+	free(output_sizes);
 	return dst;
 }
 

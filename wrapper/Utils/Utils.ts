@@ -108,7 +108,7 @@ export function MapToObject(map: Map<any, any>): any {
 	return obj
 }
 
-export function ParseExternalReferences(buf: Uint8Array): string[] {
+export function ParseExternalReferences(buf: Uint8Array, recursive = false): string[] {
 	const layout = ParseResourceLayout(buf)
 	if (layout === undefined)
 		return []
@@ -131,12 +131,27 @@ export function ParseExternalReferences(buf: Uint8Array): string[] {
 			prev = stream.pos
 		stream.pos += offset - 8
 		const str = stream.ReadNullTerminatedUtf8String()
-		if (str.endsWith("vrman")) {
-			const read = fread(str + "_c")
-			if (read !== undefined)
+		if (recursive) {
+			let fixed_path = str
+			let read = fread(fixed_path)
+			if (read === undefined) {
+				fixed_path += "_c"
+				read = fread(fixed_path)
+			}
+			if (read !== undefined) {
+				list.push(fixed_path)
 				list = [...list, ...ParseExternalReferences(new Uint8Array(read))]
-		} else
-			list.push(str)
+			}
+		} else {
+			let fixed_path = str
+			let exists = fexists(fixed_path)
+			if (!exists) {
+				fixed_path += "_c"
+				exists = fexists(fixed_path)
+			}
+			if (exists)
+				list.push(fixed_path)
+		}
 		stream.pos = prev
 	}
 	return list

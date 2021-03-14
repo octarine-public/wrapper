@@ -24,6 +24,8 @@ export default class Slider extends Base {
 	}
 
 	public set ConfigValue(value) {
+		if (this.ShouldIgnoreNewConfigValue)
+			return
 		this.value = value !== undefined ? Math.min(Math.max(value, this.min), this.max) : this.value
 	}
 
@@ -58,9 +60,6 @@ export default class Slider extends Base {
 			+ Slider.text_slider_vertical_gap
 			+ Slider.slider_background_offset.y
 			+ Slider.slider_background_height
-	}
-	public OnConfigLoaded() {
-		this.OnValueChangedCBs.forEach(f => f(this))
 	}
 
 	public Render(): void {

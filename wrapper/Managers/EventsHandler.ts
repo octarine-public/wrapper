@@ -927,9 +927,9 @@ EventsSDK.on("MidDataUpdate", () => {
 			const data = PlayerResource?.PlayerData[playerid]
 			if (data !== undefined) {
 				const coach_team = data.CoachTeam
-				if (coach_team === Team.None) {
+				if (coach_team === Team.Invalid || coach_team === Team.None) {
 					team = data.LiveSpectatorTeam
-					if (team === 0xFFFFFFFF || team === Team.None)
+					if (team === Team.Invalid || team === Team.None)
 						team = Team.Observer
 				} else
 					team = coach_team

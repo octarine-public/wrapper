@@ -86,7 +86,7 @@ export function ParseGNV(buf: ArrayBuffer): void {
 			stream.ReadSlice(width * height),
 		)
 	} catch (e) {
-		console.log("Error in GridNav init: " + e)
+		console.error("Error in GridNav init", e)
 		GridNav = undefined
 	}
 }

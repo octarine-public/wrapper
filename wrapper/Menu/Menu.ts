@@ -169,13 +169,7 @@ class MenuManager {
 	private ForwardConfig() {
 		if (this.config === undefined)
 			return
-		this.entries.forEach(entry => {
-			if (entry.IgnoreNextConfigLoad) {
-				entry.IgnoreNextConfigLoad = false
-				return
-			}
-			entry.ConfigValue = this.config[entry.InternalName]
-		})
+		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.InternalName])
 		this.entries.forEach(entry => entry.OnConfigLoaded())
 		Base.ForwardConfigASAP = false
 	}
