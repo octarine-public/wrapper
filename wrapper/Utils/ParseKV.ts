@@ -1,6 +1,7 @@
 import { DecompressLZ4, DecompressLZ4Chained } from "../Native/WASM"
 import { ArrayBuffersEqual, Utf8ArrayToStr } from "./ArrayBufferUtils"
 import BinaryStream from "./BinaryStream"
+import { HasBit } from "./BitsExtensions"
 import { ParseResourceLayout } from "./ParseResource"
 import Stream from "./Stream"
 
@@ -146,35 +147,39 @@ class KVParser {
 	private static readonly KV3_ENCODING_BINARY_BLOCK_COMPRESSED = new Uint8Array([0x46, 0x1A, 0x79, 0x95, 0xBC, 0x95, 0x6C, 0x4F, 0xA7, 0x0B, 0x05, 0xBC, 0xA1, 0xB7, 0xDF, 0xD2]).buffer
 	private static readonly KV3_ENCODING_BINARY_UNCOMPRESSED = new Uint8Array([0x00, 0x05, 0x86, 0x1B, 0xD8, 0xF7, 0xC1, 0x40, 0xAD, 0x82, 0x75, 0xA4, 0x82, 0x67, 0xE7, 0x14]).buffer
 	private static readonly KV3_ENCODING_BINARY_BLOCK_LZ4 = new Uint8Array([0x8A, 0x34, 0x47, 0x68, 0xA1, 0x63, 0x5C, 0x4F, 0xA1, 0x97, 0x53, 0x80, 0x6F, 0xD9, 0xB1, 0x19]).buffer
-	/*private static BlockDecompress(buf: ArrayBuffer): ArrayBuffer {
-		const  stream = new BinaryStream(new DataView(buf))
-		let flags = stream.ReadSlice(4)
+	private static BlockDecompress(stream: BinaryStream): Uint8Array {
+		const flags = stream.ReadSlice(4)
 		if (HasBit(flags[3], 7))
-			return stream.ReadSlice(buf.byteLength - 4)
-		let out = new Uint8Array((flags[2] << 16) + (flags[1] << 8) + flags[0]),
-			out_pos = 0
-		while (!stream.Empty() && out_pos < out.byteLength)
-			try {
-				let block_mask = stream.ReadUint16()
-				for (let i = 0; i < 16; i++)
-					if (HasBit(block_mask, i)) {
-						let encoded_offset_and_size = stream.ReadUint16()
-						let offset = ((encoded_offset_and_size & 0xFFF0) >> 4) + 1,
-							size = (encoded_offset_and_size & 0x000F) + 3
+			return stream.ReadSlice(stream.Remaining)
+		const out = new Uint8Array((flags[2] << 16) + (flags[1] << 8) + flags[0])
+		let out_pos = 0
+		while (!stream.Empty() && out_pos < out.byteLength) {
+			const block_mask = stream.ReadUint16()
+			for (let i = 0; i < 16; i++) {
+				if (HasBit(block_mask, i)) {
+					const offset_size = stream.ReadUint16()
+					const offset = ((offset_size & 0xFFF0) >> 4) + 1
+					let size = (offset_size & 0x000F) + 3
 
-						let lookup_size = Math.min(offset, size) // If the offset is larger or equal to the size, use the size instead.
-						let data = out.slice(out_pos - offset, lookup_size)
-						while (size > 0) {
-							let write_buf = lookup_size < size ? data : data.slice(0, size)
-							out.set(write_buf, out_pos)
-							out_pos += write_buf.byteLength
-							size -= lookup_size
-						}
-					} else
-						out[out_pos++] = stream.Next()
-			} catch { }
-		return out.buffer
-	}*/
+					// If the offset is larger or equal to the size, use the size instead.
+					const lookup_size = Math.min(offset, size)
+					const data = out.subarray(out_pos - offset, out_pos - offset + lookup_size)
+					while (size > 0) {
+						const write_buf = lookup_size <= size
+							? data
+							: data.subarray(0, size)
+						out.set(write_buf, out_pos)
+						out_pos += write_buf.byteLength
+						size -= lookup_size
+					}
+				} else
+					out[out_pos++] = stream.ReadUint8()
+				if (out_pos >= out.byteLength)
+					break
+			}
+		}
+		return out
+	}
 	// private static readonly KV3_FORMAT_GENERIC = new Uint8Array([0x7C, 0x16, 0x12, 0x74, 0xE9, 0x06, 0x98, 0x46, 0xAF, 0xF2, 0xE6, 0x3E, 0xB5, 0x90, 0x37, 0xE7]).buffer
 
 	private readonly types: number[] = []
@@ -301,9 +306,8 @@ class KVParser {
 		const encoding = stream.ReadSlice(16).slice().buffer
 		stream.RelativeSeek(16) // format
 		if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_COMPRESSED)) {
-			console.log("BlockDecompress not supported now.")
-			return new Map()
-			// stream = new BinaryStream(new DataView(KVParser.BlockDecompress(stream.ReadSlice(stream.Remaining))))
+			const slice = KVParser.BlockDecompress(stream)
+			stream = new BinaryStream(new DataView(slice.buffer, slice.byteOffset, slice.byteLength))
 		} else if (ArrayBuffersEqual(encoding, KVParser.KV3_ENCODING_BINARY_BLOCK_LZ4)) {
 			const dst_len = stream.ReadUint32(),
 				compressed = stream.ReadSlice(stream.Remaining)
