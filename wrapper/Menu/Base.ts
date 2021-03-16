@@ -22,7 +22,7 @@ export interface ILanguage {
 
 export default class Base {
 	public static ForwardConfigASAP = false
-	public static SaveConfigASAP = false
+	public static SaveConfigASAP = true
 	public static trigger_on_chat = false
 	private static readonly background_inactive_path = "menu/background_inactive.svg"
 	private static readonly background_active_path = "menu/background_active.svg"

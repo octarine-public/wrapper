@@ -50,7 +50,12 @@ class MenuManager {
 
 	public get ConfigValue() {
 		this.config = Object.create(null)
-		this.entries.forEach(entry => this.config[entry.InternalName] = entry.ConfigValue)
+		this.entries.forEach(entry => {
+			const name = entry.InternalName
+			if (name === "" || name.includes("."))
+				return
+			this.config[name] = entry.ConfigValue
+		})
 		this.config.Header = this.header.ConfigValue
 		this.config.SelectedLocalization = Localization.SelectedUnitName
 		return this.config

@@ -58,11 +58,19 @@ export default class Node extends Base {
 	public get ConfigValue() {
 		if (!this.save_unused_configs && this.entries.length === 0)
 			return undefined
-		const obj = this.save_unused_configs
-			? this.config_storage
-			: Object.create(null)
-		this.entries.forEach(entry => obj[entry.InternalName] = entry.ConfigValue)
-		return obj
+		if (!this.save_unused_configs)
+			this.config_storage = Object.create(null)
+		this.entries.forEach(entry => {
+			const name = entry.InternalName
+			if (name === "" || name.includes("."))
+				return
+			this.config_storage[name] = entry.ConfigValue
+		})
+		Object.getOwnPropertyNames(this.config_storage).forEach(name => {
+			if (name === "" || name.includes("."))
+				delete this.config_storage[name]
+		})
+		return this.config_storage
 	}
 	public set ConfigValue(obj) {
 		if (obj === undefined)
