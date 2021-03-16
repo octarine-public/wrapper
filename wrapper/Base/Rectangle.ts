@@ -43,6 +43,18 @@ export default class Rectangle {
 	public set Height(val: number) {
 		this.pos2.y = this.pos1.y + val
 	}
+	public get Left(): number {
+		return this.x
+	}
+	public get Right(): number {
+		return this.x + this.Width
+	}
+	public get Top(): number {
+		return this.y
+	}
+	public get Bottom(): number {
+		return this.y + this.Height
+	}
 	public get Center(): Vector2 {
 		return new Vector2(
 			this.pos1.x + (this.Width / 2),
