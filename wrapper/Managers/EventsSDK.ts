@@ -160,6 +160,7 @@ interface EventsSDK extends EventEmitter {
 		value2: number,
 		value3: number,
 	) => void): EventsSDK
+	on(name: "MapDataLoaded", listener: () => void): EventsSDK
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()

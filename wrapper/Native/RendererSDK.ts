@@ -987,6 +987,7 @@ function TryLoadMapFiles(): void {
 		if (buf !== undefined) {
 			vhcg_succeeded = true
 			WASM.ParseVHCG(new Uint8Array(buf))
+			EventsSDK.emit("MapDataLoaded", false)
 		} else
 			WASM.ResetVHCG()
 	}
@@ -995,6 +996,7 @@ function TryLoadMapFiles(): void {
 		if (buf !== undefined) {
 			gnv_succeeded = true
 			ParseGNV(buf)
+			EventsSDK.emit("MapDataLoaded", false)
 		} else
 			ResetGNV()
 	}
@@ -1011,6 +1013,7 @@ function TryLoadMapFiles(): void {
 						if (buf !== undefined) {
 							entity_lump_succeeded = true
 							ParseEntityLump(buf)
+							EventsSDK.emit("MapDataLoaded", false)
 						} else
 							ResetEntityLump()
 					}

@@ -133,9 +133,7 @@ class MinimapIconRenderer {
 }
 const minimap_icons_active = new Map<any, MinimapIconRenderer>()
 
-EventsSDK.on("Draw", () => {
-	if (GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
-		return
+EventsSDK.on("MapDataLoaded", () => {
 	const minimapBoundsData = EntityDataLump
 		.filter(data =>
 			data.get("classname") === "dota_minimap_boundary"
@@ -151,6 +149,11 @@ EventsSDK.on("Draw", () => {
 		Vector2.FromVector3(minimapBoundsData[1]),
 	)
 	minimapBoundsSize = minimapBounds.Size
+})
+
+EventsSDK.on("Draw", () => {
+	if (GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+		return
 	const minimap_rect = GUIInfo.Minimap.Minimap
 	minimap_pos = minimap_rect.pos1
 	minimap_size = minimap_rect.Size
