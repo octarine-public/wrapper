@@ -167,30 +167,30 @@ function ParseProperty(stream: BinaryStream): PropertyType {
 	const var_type: EPropertyType = stream.ReadUint8()
 	switch (var_type) {
 		case EPropertyType.INT8:
-			convert_uint64[0] = stream.ReadVarUint()
+			convert_uint64[0] = stream.ReadUint64()
 			return convert_int8[0]
 		case EPropertyType.INT16:
-			convert_uint64[0] = stream.ReadVarUint()
+			convert_uint64[0] = stream.ReadUint64()
 			return convert_int16[0]
 		case EPropertyType.INT32:
-			convert_uint64[0] = stream.ReadVarUint()
+			convert_uint64[0] = stream.ReadUint64()
 			return convert_int32[0]
 		case EPropertyType.INT64:
-			convert_uint64[0] = stream.ReadVarUint()
+			convert_uint64[0] = stream.ReadUint64()
 			return convert_int64[0]
 		case EPropertyType.UINT8:
-			convert_uint64[0] = stream.ReadVarUint()
+			convert_uint64[0] = stream.ReadUint64()
 			return convert_uint8[0]
 		case EPropertyType.UINT16:
-			convert_uint64[0] = stream.ReadVarUint()
+			convert_uint64[0] = stream.ReadUint64()
 			return convert_uint16[0]
 		case EPropertyType.UINT32:
-			convert_uint64[0] = stream.ReadVarUint()
+			convert_uint64[0] = stream.ReadUint64()
 			return convert_uint32[0]
 		case EPropertyType.UINT64:
-			return stream.ReadVarUint()
+			return stream.ReadUint64()
 		case EPropertyType.BOOL:
-			return stream.ReadVarUintAsNumber() !== 0
+			return stream.ReadBoolean()
 		case EPropertyType.FLOAT:
 			return stream.ReadFloat32()
 		case EPropertyType.VECTOR2:
@@ -206,6 +206,7 @@ function ParseProperty(stream: BinaryStream): PropertyType {
 	}
 }
 
+const DEBUG_PARSING = false
 function DumpStreamPosition(
 	ent_class: string,
 	stream: BinaryStream,
@@ -301,10 +302,12 @@ function ParseEntityUpdate(
 			let id = stream.ReadUint16()
 			const must_be_array = id & 1
 			id >>= 1
-			if (must_be_array && !Array.isArray(prop_node))
-				throw `Expected array at ${DumpStreamPosition(ent_class, stream, i)}`
-			if (!must_be_array && (typeof prop_node !== "object" || prop_node.constructor !== EntityPropertiesNode))
-				throw `Expected map at ${DumpStreamPosition(ent_class, stream, i)}`
+			if (DEBUG_PARSING) {
+				if (must_be_array && !Array.isArray(prop_node))
+					throw `Expected array at ${DumpStreamPosition(ent_class, stream, i)}`
+				if (!must_be_array && (typeof prop_node !== "object" || prop_node.constructor !== EntityPropertiesNode))
+					throw `Expected map at ${DumpStreamPosition(ent_class, stream, i)}`
+			}
 
 			if (must_be_array) {
 				const ar = prop_node as EntityPropertyType[]
