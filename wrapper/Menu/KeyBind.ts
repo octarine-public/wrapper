@@ -17,11 +17,11 @@ export default class KeyBind extends Base {
 	private static readonly keybind_text_offset = new Vector2(7, 7)
 	private static readonly text_keybind_gap = 15
 
-	public is_pressed = false
 	public activates_in_menu = false
 	public assigned_key = 0
 	public assigned_key_str = "None"
 	public trigger_on_chat = false
+	protected is_pressed_ = false
 	protected readonly keybind_size = RendererSDK.GetImageSize(KeyBind.keybind_inactive_path).Clone()
 	protected readonly keybind_text_size = new Vector2()
 	protected readonly execute_on_add = false
@@ -38,6 +38,13 @@ export default class KeyBind extends Base {
 			return
 		this.assigned_key = value !== undefined ? value : this.assigned_key
 		this.Update()
+	}
+	public get is_pressed(): boolean {
+		return this.is_pressed_
+	}
+	public set is_pressed(new_val: boolean) {
+		this.is_pressed_ = new_val
+		this.OnValueChangedCBs.forEach(cb => cb(this))
 	}
 	private get KeybindRect() {
 		const base_pos = this.Position
@@ -130,6 +137,7 @@ function KeyHandler(key: VKeys, pressed: boolean): boolean {
 	if (changing_now !== undefined) {
 		changing_now.assigned_key = key !== 0x1B ? key : -1 // VK_ESCAPE === 0x1B
 		changing_now.Update()
+		changing_now.is_pressed = false
 		Base.SaveConfigASAP = true
 		KeyBind.changing_now = undefined
 		return true
@@ -147,7 +155,6 @@ function KeyHandler(key: VKeys, pressed: boolean): boolean {
 		if (!GameState.IsConnected && !keybind.activates_in_menu && pressed) // pass un-press even in menu
 			return
 		keybind.is_pressed = pressed
-		keybind.OnValueChangedCBs.forEach(cb => cb(keybind))
 	})
 
 	return true
