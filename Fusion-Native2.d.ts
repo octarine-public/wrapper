@@ -117,7 +117,6 @@ declare function PrepareUnitOrders(obj: { // pass Position: Vector3 at IOBuffer 
 	OrderType: number,
 	Target?: number,
 	Ability?: number,
-	OrderIssuer?: number,
 	Issuers?: number[] | number,
 	Queue?: boolean,
 	ShowEffects?: boolean

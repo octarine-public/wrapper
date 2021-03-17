@@ -493,14 +493,14 @@ export default class Unit extends Entity {
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
 		return this.InFront(movespeed * time)
 	}
-	public GetItemByName(name: string | RegExp, includeBackpack: boolean = false) {
+	public GetItemByName(name: string | RegExp, includeBackpack = false) {
 		return this.Inventory.GetItemByName(name, includeBackpack)
 	}
-	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
+	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack = false): Nullable<T> {
 		return this.Inventory.GetItemByClass(class_, includeBackpack)
 	}
-	public HasItemInInventory(name: string | RegExp, includeBackpack: boolean = false): boolean {
-		return this.Inventory.GetItemByName(name, includeBackpack) !== undefined
+	public HasItemInInventory(name: string | RegExp, includeBackpack = false): boolean {
+		return this.GetItemByName(name, includeBackpack) !== undefined
 	}
 
 	/**
@@ -590,7 +590,7 @@ export default class Unit extends Entity {
 	 * faster (Distance <= range)
 	 * @param fromCenterToCenter include HullRadiuses (for Units)
 	 */
-	public IsInRange(ent: Vector3 | Entity, range: number, fromCenterToCenter: boolean = false): boolean {
+	public IsInRange(ent: Vector3 | Entity, range: number, fromCenterToCenter = false): boolean {
 		if (fromCenterToCenter === false) {
 			range += this.HullRadius
 			if (ent instanceof Unit)
@@ -619,7 +619,7 @@ export default class Unit extends Entity {
 		return ang <= turn_rad ? 30 * ang / this.MovementTurnRate : 0
 	}
 
-	public TurnRate(currentTurnRate: boolean = true): number {
+	public TurnRate(currentTurnRate = true): number {
 		let turnRate = this.MovementTurnRate || 0.5
 
 		if (currentTurnRate) {
@@ -922,7 +922,7 @@ export default class Unit extends Entity {
 		return sphereTarget !== undefined && sphereTarget.RemainingTime - time <= 0
 	}
 
-	public AttackDamage(target: Unit, useMinDamage: boolean = true, damageAmplifier: number = 0): number {
+	public AttackDamage(target: Unit, useMinDamage = true, damageAmplifier: number = 0): number {
 		const damageType = this.AttackDamageType,
 			armorType = target.ArmorType
 		let damage = (useMinDamage ? this.MinDamage : this.DamageAverage) + this.BonusDamage,
@@ -981,7 +981,7 @@ export default class Unit extends Entity {
 	}
 
 	/* ================================ ORDERS ================================ */
-	public UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkAutoCast: boolean = false, checkToggled: boolean = false, queue?: boolean, showEffects?: boolean) {
+	public UseSmartAbility(ability: Ability, target?: Vector3 | Entity, checkAutoCast = false, checkToggled = false, queue?: boolean, showEffects?: boolean) {
 		if (checkAutoCast && ability.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_AUTOCAST) && !ability.IsAutoCastEnabled)
 			return this.CastToggleAuto(ability, queue, showEffects)
 
@@ -1102,7 +1102,7 @@ export default class Unit extends Entity {
 		this.VectorTargetPosition(ability, Direction, queue, showEffects)
 		this.CastPosition(ability, position, queue, showEffects)
 	}
-	public ItemLock(item: Item, state: boolean = true) {
+	public ItemLock(item: Item, state = true) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, issuers: [this], ability: item, target: state === false ? 0 : undefined })
 	}
 	public OrderContinue(item: Item, queue?: boolean, showEffects?: boolean) {

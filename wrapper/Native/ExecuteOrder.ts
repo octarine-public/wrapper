@@ -3,7 +3,6 @@ import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
-import { PlayerOrderIssuer_t } from "../Enums/PlayerOrderIssuer_t"
 import EntityManager from "../Managers/EntityManager"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
@@ -44,7 +43,6 @@ export default class ExecuteOrder {
 		target?: Entity | number,
 		position?: Vector3,
 		ability?: Ability | number,
-		orderIssuer?: PlayerOrderIssuer_t,
 		issuers?: Unit[],
 		queue?: boolean,
 		showEffects?: boolean,
@@ -72,7 +70,6 @@ export default class ExecuteOrder {
 		target?: Entity | number,
 		position?: Vector3,
 		ability?: Ability | number,
-		orderIssuer?: PlayerOrderIssuer_t,
 		issuers?: Unit[],
 		queue?: boolean,
 		showEffects?: boolean,
@@ -82,7 +79,6 @@ export default class ExecuteOrder {
 			order.target,
 			order.position,
 			order.ability,
-			order.orderIssuer,
 			order.issuers ?? [],
 			order.queue,
 			order.showEffects,
@@ -90,10 +86,10 @@ export default class ExecuteOrder {
 	}
 
 	public static fromNative(): ExecuteOrder {
-		const issuers_size = ExecuteOrder.LatestUnitOrder_view.getUint32(30, true)
+		const issuers_size = ExecuteOrder.LatestUnitOrder_view.getUint32(26, true)
 		const issuers: Unit[] = []
 		for (let i = 0; i < issuers_size; i++) {
-			const ent_id = ExecuteOrder.LatestUnitOrder_view.getUint32(34 + (i * 4), true)
+			const ent_id = ExecuteOrder.LatestUnitOrder_view.getUint32(30 + (i * 4), true)
 			const ent = EntityManager.EntityByIndex(ent_id)
 			if (ent instanceof Unit)
 				issuers.push(ent)
@@ -103,8 +99,8 @@ export default class ExecuteOrder {
 			if (hero !== undefined)
 				issuers.push(hero)
 		}
-		const target = ExecuteOrder.LatestUnitOrder_view.getUint32(20, true),
-			ability = ExecuteOrder.LatestUnitOrder_view.getUint32(24, true),
+		const target = ExecuteOrder.LatestUnitOrder_view.getUint32(16, true),
+			ability = ExecuteOrder.LatestUnitOrder_view.getUint32(20, true),
 			order_type = ExecuteOrder.LatestUnitOrder_view.getUint32(0, true) as dotaunitorder_t
 		let target_: Entity | number = target,
 			ability_: Entity | number = target
@@ -116,15 +112,14 @@ export default class ExecuteOrder {
 			order_type,
 			target !== 0 ? (EntityManager.EntityByIndex(target) ?? target) : undefined,
 			new Vector3(
+				ExecuteOrder.LatestUnitOrder_view.getFloat32(4, true),
 				ExecuteOrder.LatestUnitOrder_view.getFloat32(8, true),
 				ExecuteOrder.LatestUnitOrder_view.getFloat32(12, true),
-				ExecuteOrder.LatestUnitOrder_view.getFloat32(16, true),
 			),
 			ability !== 0 ? ((EntityManager.EntityByIndex(ability) as Ability) ?? ability) : undefined,
-			ExecuteOrder.LatestUnitOrder_view.getUint32(4, true),
 			issuers,
-			ExecuteOrder.LatestUnitOrder_view.getUint8(29) !== 0,
-			ExecuteOrder.LatestUnitOrder_view.getUint8(28) !== 0,
+			ExecuteOrder.LatestUnitOrder_view.getUint8(25) !== 0,
+			ExecuteOrder.LatestUnitOrder_view.getUint8(24) !== 0,
 		)
 	}
 
@@ -141,7 +136,6 @@ export default class ExecuteOrder {
 		public readonly Position: Vector3 = new Vector3(),
 		// tslint:disable-next-line: no-shadowed-variable
 		public readonly Ability: Nullable<Ability | number>,
-		public readonly OrderIssuer: PlayerOrderIssuer_t = PlayerOrderIssuer_t.DOTA_ORDER_ISSUER_PASSED_UNIT_ONLY,
 		public readonly Issuers: Unit[],
 		public readonly Queue: boolean = false,
 		public readonly ShowEffects: boolean = false,
@@ -158,7 +152,6 @@ export default class ExecuteOrder {
 			OrderType: this.OrderType,
 			Target: target instanceof Entity ? target instanceof Tree ? target.BinaryID : target.Index : target,
 			Ability: ability instanceof Ability ? ability.Index : ability,
-			OrderIssuer: this.OrderIssuer,
 			Issuers: this.Issuers.map(ent => ent.Index),
 			Queue: this.Queue,
 			ShowEffects: this.ShowEffects,
@@ -189,7 +182,6 @@ export default class ExecuteOrder {
 		Target: Nullable<Entity | number>,
 		Position: Vector3,
 		Ability: Nullable<Ability | number>,
-		OrderIssuer: PlayerOrderIssuer_t
 		Issuers: Unit[],
 		Queue: boolean,
 		ShowEffects: boolean,
@@ -199,7 +191,6 @@ export default class ExecuteOrder {
 			Target: this.Target,
 			Position: this.Position,
 			Ability: this.Ability,
-			OrderIssuer: this.OrderIssuer,
 			Issuers: this.Issuers,
 			Queue: this.Queue,
 			ShowEffects: this.ShowEffects,

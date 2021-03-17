@@ -14,9 +14,11 @@ import Events from "./Events"
 import EventsSDK from "./EventsSDK"
 import * as StringTables from "./StringTables"
 
+export type EntityClassMap = Map<Constructor<any>, Entity[]>
+
 const AllEntities: Entity[] = []
 const AllEntitiesAsMap = new Map<number, Entity>()
-const ClassToEntities = new Map<Constructor<any>, Entity[]>()
+const ClassToEntities: EntityClassMap = new Map()
 
 // that's MUCH more efficient than Map<number, boolean>
 class bitset {
@@ -97,19 +99,21 @@ function ClassFromNative(id: number, constructor_name: string, ent_name: Nullabl
 	return new constructor(id, ent_name)
 }
 
-const cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
-export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
-	AllEntitiesAsMap.set(id, ent)
-	AllEntities.push(ent)
-
+export function AddEntityToClassMap(map: EntityClassMap, ent: Entity): void {
 	GetSDKClasses().forEach(([class_]) => {
 		if (!(ent instanceof class_))
 			return
 
-		if (!ClassToEntities.has(class_))
-			ClassToEntities.set(class_, [])
-		ClassToEntities.get(class_)!.push(ent)
+		if (!map.has(class_))
+			map.set(class_, [])
+		map.get(class_)!.push(ent)
 	})
+}
+
+export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
+	AllEntitiesAsMap.set(id, ent)
+	AllEntities.push(ent)
+	AddEntityToClassMap(ClassToEntities, ent)
 }
 
 function CreateEntity(id: number, class_name: string, entity_name: Nullable<string>) {
@@ -258,6 +262,7 @@ export class EntityPropertiesNode {
 	}
 }
 
+const cached_field_handlers = new Map<Constructor<Entity>, Map<number, FieldHandler>>()
 function ParseEntityUpdate(
 	stream: BinaryStream,
 	ent_id: number,
@@ -280,7 +285,9 @@ function ParseEntityUpdate(
 		if (ent_was_created)
 			ent.IsValid = false
 	}
-	const ent_handlers = ent !== undefined ? cached_field_handlers.get(ent.constructor as Constructor<Entity>) : undefined
+	const ent_handlers = ent !== undefined
+		? cached_field_handlers.get(ent.constructor as Constructor<Entity>)
+		: undefined
 	const ent_node = ent_props.get(ent_id)!
 	const changed_paths: number[] = [],
 		changed_paths_results: EntityPropertyType[] = []
