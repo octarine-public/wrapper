@@ -6,7 +6,7 @@ import { DOTAGameUIState_t } from "../Enums/DOTAGameUIState_t"
 import { PingType_t } from "../Enums/PingType_t"
 import GUIInfo from "../GUI/GUIInfo"
 import RendererSDK from "../Native/RendererSDK"
-import Entity from "../Objects/Base/Entity"
+import Entity, { GameRules } from "../Objects/Base/Entity"
 import GameState from "../Utils/GameState"
 import { EntityDataLump } from "../Utils/ParseEntityLump"
 import { parseKVFile } from "../Utils/Utils"
@@ -152,7 +152,7 @@ EventsSDK.on("MapDataLoaded", () => {
 })
 
 EventsSDK.on("Draw", () => {
-	if (GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
+	if (!GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	const minimap_rect = GUIInfo.Minimap.Minimap
 	minimap_pos = minimap_rect.pos1
