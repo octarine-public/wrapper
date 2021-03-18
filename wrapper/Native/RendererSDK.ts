@@ -674,6 +674,9 @@ class CRendererSDK {
 	public RestoreState_(): void {
 		this.RestoreState()
 	}
+	public Rotate_(ang: number): void {
+		this.Rotate(ang)
+	}
 	private Oval(vecPos: Vector2, vecSize: Vector2): void {
 		const view = this.AllocateCommandSpace(4 * 4)
 		let off = 0
@@ -946,6 +949,12 @@ class CRendererSDK {
 			view.setUint8(0, CommandID.PATH)
 		}
 		this.RestorePaint()
+	}
+	private Rotate(ang: number): void {
+		const view = this.AllocateCommandSpace(4)
+		let off = 0
+		view.setUint8(off, CommandID.ROTATE)
+		view.setFloat32(off += 1, ang, true)
 	}
 	private NormalizedAngle(ang: number): number {
 		ang = ang % (Math.PI * 2)
