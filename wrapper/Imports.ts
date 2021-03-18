@@ -1406,6 +1406,7 @@ export { default as Tree } from "./Objects/Base/Tree"
 export { default as TreeTemp } from "./Objects/Base/TreeTemp"
 
 export { default as Building } from "./Objects/Base/Building"
+export { default as HallOfFame } from "./Objects/Base/HallOfFame"
 export { default as Fort } from "./Objects/Base/Fort"
 export { default as Barrack } from "./Objects/Base/Barrack"
 export { default as Tower } from "./Objects/Base/Tower"
