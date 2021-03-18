@@ -85,8 +85,8 @@ export default class Rectangle {
 		return this
 	}
 	public Subtract(vec: Vector2): Rectangle {
-		this.pos1.Subtract(vec)
-		this.pos2.Subtract(vec)
+		this.pos1.SubtractForThis(vec)
+		this.pos2.SubtractForThis(vec)
 		return this
 	}
 	public SubtractX(num: number): Rectangle {
