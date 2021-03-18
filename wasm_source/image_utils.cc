@@ -175,7 +175,18 @@ extern void ConvertFromDXT5(const uint8_t* src, uint8_t* dst, int width, int hei
  * Wrapper function for files (not direct vtex format)
  * Adds more crutches & bikes to this project
  */
-char* ParseVTexInternal(char* data, size_t data_size, char* image_data, int& w, int& h) {
+char* ParseVTexInternal(
+	char* data,
+	size_t data_size,
+	char* image_data,
+	int& w,
+	int& h,
+	bool is_YCoCg,
+	bool normalize,
+	bool is_inverted,
+	bool hemi_oct,
+	bool hemi_oct_RB
+) {
 	auto vtex_header = (VTexHeader*)data;
 	auto image_size = data_size - ((uint64_t)image_data - (uint64_t)data);
 	w = vtex_header->width;
@@ -217,27 +228,14 @@ char* ParseVTexInternal(char* data, size_t data_size, char* image_data, int& w, 
 				vtex_header->width,
 				vtex_header->height
 			);
-			auto rgba = (uint8_t*)copy;
-			/*if (yCoCg) {*/
-			for (size_t i = out_image_size > 0 ? out_image_size - 4 : 0; i != 0; i -= 4) {
-				auto finalAlpha = rgba[i + 3];
-				auto s = (rgba[i + 2] >> 3) + 1,
-					co = (rgba[i] - 128) / s,
-					cg = (rgba[i + 1] - 128) / s;
-
-				rgba[i] = ClampColor(finalAlpha + co - cg);
-				rgba[i + 1] = ClampColor(finalAlpha + cg);
-				rgba[i + 2] = ClampColor(finalAlpha - co - cg);
-				rgba[i + 3] = 255;
-			}
-			/*}*/
 			break;
 		}
 		case VTexFormat::PNG_RGBA8888:
-		case VTexFormat::PNG_DXT5:
+		case VTexFormat::PNG_DXT5: {
 			int temp_w, temp_h; // fix for incorrect image size
 			copy = ParsePNGInternal(image_data, image_size, temp_w, temp_h);
 			break;
+		}
 		case VTexFormat::RGBA8888:
 			copy = malloc(out_image_size);
 			memcpy(copy, image_data, out_image_size);
@@ -248,9 +246,9 @@ char* ParseVTexInternal(char* data, size_t data_size, char* image_data, int& w, 
 			// we need to turn BGRA into RGBA, we can do this by just swapping R <=> B
 			auto rgba = (unsigned char*)copy;
 			for (size_t i = out_image_size > 0 ? out_image_size - 4 : 0; i != 0; i -= 4) {
-				auto r = rgba[i]; // cache blue, so that we'll be able to fast swap
+				auto b = rgba[i];
 				rgba[i] = rgba[i + 2];
-				rgba[i + 2] = r;
+				rgba[i + 2] = b;
 			}
 			break;
 		}
@@ -273,6 +271,55 @@ char* ParseVTexInternal(char* data, size_t data_size, char* image_data, int& w, 
 			return nullptr;
 	}
 
+	auto rgba = (uint8_t*)copy;
+	for (size_t i = out_image_size > 0 ? out_image_size - 4 : 0; i != 0; i -= 4) {
+		if (is_YCoCg) {
+			auto finalAlpha = rgba[i + 3];
+			auto s = (rgba[i + 2] >> 3) + 1,
+				co = (rgba[i] - 128) / s,
+				cg = (rgba[i + 1] - 128) / s;
+
+			rgba[i] = ClampColor(finalAlpha + co - cg);
+			rgba[i + 1] = ClampColor(finalAlpha + cg);
+			rgba[i + 2] = ClampColor(finalAlpha - co - cg);
+			rgba[i + 3] = 255;
+		}
+		if (normalize) {
+			if (hemi_oct) {
+				float nx = ((rgba[i + 3] + data[i + 1]) / 255.f) - 1.003922f;
+				float ny = (rgba[i + 3] - rgba[i + 1]) / 255.f;
+				float nz = 1.f - abs(nx) - abs(ny);
+
+				auto l = (float)(2. * sqrt((nx * nx) + (ny * ny) + (nz * nz)));
+				rgba[i + 3] = rgba[i];
+				rgba[i] = (uint8_t)(((nx / l) + 0.5f) * 255.f);
+				rgba[i + 1] = (uint8_t)(((ny / l) + 0.5f) * 255.f);
+				rgba[i + 2] = (uint8_t)(((nz / l) + 0.5f) * 255.f);
+			} else {
+				auto swizzleA = ((int)rgba[i + 3] * 2) - 255;
+				auto swizzleG = ((int)rgba[i + 1] * 2) - 255;
+				auto deriveB = (int)sqrt((255 * 255) - (swizzleA * swizzleA) - (swizzleG * swizzleG));
+
+				rgba[i] = ClampColor((swizzleA / 2) + 128);
+				rgba[i + 1] = ClampColor((swizzleG / 2) + 128);
+				rgba[i + 2] = ClampColor((deriveB / 2) + 128);
+				rgba[i + 3] = 255;
+			}
+		}
+		if (hemi_oct_RB) {
+			float nx = ((rgba[i + 0] + data[i + 1]) / 255.f) - 1.003922f;
+			float ny = (rgba[i + 0] - rgba[i + 1]) / 255.f;
+			float nz = 1.f - abs(nx) - abs(ny);
+
+			auto l = (float)(2. * sqrt((nx * nx) + (ny * ny) + (nz * nz)));
+			rgba[i + 3] = rgba[i + 2];
+			rgba[i] = (uint8_t)(((nx / l) + 0.5f) * 255.f);
+			rgba[i + 1] = (uint8_t)(((ny / l) + 0.5f) * 255.f);
+			rgba[i + 2] = (uint8_t)(((nz / l) + 0.5f) * 255.f);
+		}
+		if (is_inverted)
+			rgba[i + 1] = 255 - rgba[i + 1];
+	}
 	if (w != vtex_header->width || h != vtex_header->height) {
 		auto header_width = vtex_header->width;
 		auto copy2 = malloc((size_t)w * (size_t)h * 4ll);

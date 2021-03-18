@@ -202,8 +202,6 @@ EXPORT_JS void ScreenToWorldFar() {
 	cur_pos.CopyTo(JSIOBuffer);
 }
 
-char* ParseVTexInternal(char* data, size_t data_size, char* image_data, int& w, int& h);
-char* ParsePNGInternal(char* data, size_t data_size, int& w, int& h);
 
 EXPORT_JS void* my_malloc(size_t data_size) {
 	return malloc(data_size);
@@ -213,6 +211,7 @@ EXPORT_JS void my_free(void* ptr) {
 	return free(ptr);
 }
 
+char* ParsePNGInternal(char* data, size_t data_size, int& w, int& h);
 EXPORT_JS char* ParsePNG(char* data, size_t data_size) {
 	int w, h;
 	auto res = ParsePNGInternal(data, data_size, w, h);
@@ -222,9 +221,41 @@ EXPORT_JS char* ParsePNG(char* data, size_t data_size) {
 	return res;
 }
 
-EXPORT_JS char* ParseVTex(char* data, size_t data_size, char* image_data) {
+char* ParseVTexInternal(
+	char* data,
+	size_t data_size,
+	char* image_data,
+	int& w,
+	int& h,
+	bool is_YCoCg,
+	bool normalize,
+	bool is_inverted,
+	bool hemi_oct,
+	bool hemi_oct_RB
+);
+EXPORT_JS char* ParseVTex(
+	char* data,
+	size_t data_size,
+	char* image_data,
+	bool is_YCoCg,
+	bool normalize,
+	bool is_inverted,
+	bool hemi_oct,
+	bool hemi_oct_RB
+) {
 	int w, h;
-	auto res = ParseVTexInternal(data, data_size, image_data, w, h);
+	auto res = ParseVTexInternal(
+		data,
+		data_size,
+		image_data,
+		w,
+		h,
+		is_YCoCg,
+		normalize,
+		is_inverted,
+		hemi_oct,
+		hemi_oct_RB
+	);
 	*(uint32_t*)&JSIOBuffer[0] = w;
 	*(uint32_t*)&JSIOBuffer[1] = h;
 	free(data);

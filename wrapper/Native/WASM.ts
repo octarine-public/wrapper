@@ -2,6 +2,7 @@ import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { DegreesToRadian } from "../Utils/Math"
+import { ParseREDI } from "../Utils/ParseREDI"
 import { ParseResourceLayout } from "../Utils/ParseResource"
 import readFile from "../Utils/readFile"
 
@@ -73,7 +74,16 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	my_malloc: (size: number) => number,
 	my_free: (ptr: number) => void,
 	ParsePNG: (data: number, size: number) => number,
-	ParseVTex: (data: number, size: number, image_data: number) => number,
+	ParseVTex: (
+		data: number,
+		size: number,
+		image_data: number,
+		is_YCoCg: boolean,
+		normalize: boolean,
+		is_inverted: boolean,
+		hemi_oct: boolean,
+		hemi_oct_RB: boolean,
+	) => number,
 	MurmurHash2: (ptr: number, size: number, seed: number) => number,
 	MurmurHash64: (ptr: number, size: number, seed: number) => void,
 	CRC32: (ptr: number, size: number) => number,
@@ -230,12 +240,50 @@ export function ParseImage(buf: Uint8Array): [Uint8Array, Vector2] {
 	// TODO: add check that's real VTEX file (lookup https://github.com/SteamDatabase/ValveResourceFormat/blob/master/ValveResourceFormat/Resource/Resource.cs)
 	if (new Uint16Array(data_block.buffer, data_block.byteOffset, 2)[0] !== 1)
 		throw `Image conversion failed: unknown VTex version`
+	const redi_block = layout[0].get("REDI")
+	let is_YCoCg = false,
+		normalize = false,
+		is_inverted = false,
+		hemi_oct = false,
+		hemi_oct_RB = false
+	if (redi_block !== undefined) {
+		const REDI = ParseREDI(redi_block)
+		is_YCoCg = REDI.SpecialDependencies.some(dep => (
+			dep.compiler_identifier === "CompileTexture"
+			&& dep.str === "Texture Compiler Version Image YCoCg Conversion"
+		))
+		normalize = REDI.SpecialDependencies.some(dep => (
+			dep.compiler_identifier === "CompileTexture"
+			&& dep.str === "Texture Compiler Version Image NormalizeNormals"
+		))
+		is_inverted = REDI.SpecialDependencies.some(dep => (
+			dep.compiler_identifier === "CompileTexture"
+			&& dep.str === "Texture Compiler Version LegacySource1InvertNormals"
+		))
+		hemi_oct = REDI.SpecialDependencies.some(dep => (
+			dep.compiler_identifier === "CompileTexture"
+			&& dep.str === "Texture Compiler Version Mip HemiOctAnisoRoughness"
+		))
+		hemi_oct_RB = REDI.SpecialDependencies.some(dep => (
+			dep.compiler_identifier === "CompileTexture"
+			&& dep.str === "Texture Compiler Version Mip HemiOctIsoRoughness_RG_B"
+		))
+	}
 
 	const data_size = buf.byteLength - data_block.byteOffset
 	let addr = wasm.my_malloc(data_size)
 	new Uint8Array(wasm.memory.buffer, addr).set(buf.subarray(data_block.byteOffset))
 
-	addr = wasm.ParseVTex(addr, buf.byteLength, addr + data_block.byteLength)
+	addr = wasm.ParseVTex(
+		addr,
+		buf.byteLength,
+		addr + data_block.byteLength,
+		is_YCoCg,
+		normalize,
+		is_inverted,
+		hemi_oct,
+		hemi_oct_RB,
+	)
 	if (addr === 0)
 		throw "Image conversion failed: WASM failure"
 	const image_size = new Vector2(WASMIOBufferU32[0], WASMIOBufferU32[1])
