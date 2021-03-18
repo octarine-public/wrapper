@@ -169,6 +169,9 @@ EventsSDK.on("MapDataLoaded", () => {
 	)
 	minimapBoundsSize = minimapBounds.Size
 	ParseMinimapOverview()
+	const overview = MinimapSDK.CurrentMinimapOverview
+	if (overview !== undefined)
+		minimapBounds.Subtract(minimapBounds.pos1).Add(overview.pos)
 })
 
 EventsSDK.on("Draw", () => {
