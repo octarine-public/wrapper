@@ -122,6 +122,7 @@ export { default as CCameraBounds, CameraBounds } from "./Objects/Base/CameraBou
 export { default as Courier } from "./Objects/Base/Courier"
 export { default as Roshan } from "./Objects/Base/Roshan"
 export { default as Creep } from "./Objects/Base/Creep"
+export { default as Siege } from "./Objects/Base/Siege"
 
 export { default as antimage_mana_break } from "./Objects/Abilities/Antimage/antimage_mana_break"
 export { default as antimage_blink } from "./Objects/Abilities/Antimage/antimage_blink"
