@@ -711,7 +711,16 @@ class CRendererSDK {
 	private GetTexture(path: string): number {
 		if (this.texture_cache.has(path))
 			return this.texture_cache.get(path)!
-		const read = readFile(path, 2) // 1 for ourselves, 1 for caller [Image]
+		let read_path = path
+		if (path.endsWith(".vmat_c")) {
+			const read_vmat = readFile(path, 2) // 1 for ourselves, 1 for caller [Image]
+			if (read_vmat !== undefined) {
+				const vtex_ref = ParseExternalReferences(new Uint8Array(read_vmat))
+					.find(path_ => path_.endsWith(".vtex_c"))
+				read_path = vtex_ref ?? ""
+			}
+		}
+		const read = readFile(read_path, 2) // 1 for ourselves, 1 for caller [Image]
 		if (read === undefined) {
 			// 1 white pixel for any rendering API to be happy
 			const texture_id = this.MakeTexture(
@@ -721,7 +730,7 @@ class CRendererSDK {
 			this.texture_cache.set(path, texture_id)
 			return texture_id
 		} else {
-			const texture_id = path.endsWith(".svg")
+			const texture_id = read_path.endsWith(".svg")
 				? this.MakeTextureSVG(new Uint8Array(read))
 				: this.MakeTexture(...WASM.ParseImage(new Uint8Array(read)))
 			this.texture_cache.set(path, texture_id)
@@ -1003,13 +1012,13 @@ function TryLoadMapFiles(): void {
 	if (!entity_lump_succeeded) {
 		const map_buf = fread(`maps/${map_name}.vmap_c`)
 		if (map_buf !== undefined) {
-			const world_path = ParseExternalReferences(new Uint8Array(map_buf)).find(str => str.includes(".vwrld"))
+			const world_path = ParseExternalReferences(new Uint8Array(map_buf)).find(str => str.endsWith(".vwrld_c"))
 			if (world_path !== undefined) {
-				const world_buf = fread(world_path) ?? fread(`${world_path}_c`)
+				const world_buf = fread(world_path)
 				if (world_buf !== undefined) {
-					const ents_path = ParseExternalReferences(new Uint8Array(world_buf)).find(str => str.includes(".vents"))
+					const ents_path = ParseExternalReferences(new Uint8Array(world_buf)).find(str => str.includes(".vents_c"))
 					if (ents_path !== undefined) {
-						const buf = fread(ents_path) ?? fread(`${ents_path}_c`)
+						const buf = fread(ents_path)
 						if (buf !== undefined) {
 							entity_lump_succeeded = true
 							ParseEntityLump(buf)

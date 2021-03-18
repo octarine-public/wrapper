@@ -13,16 +13,6 @@ import { parseKVFile } from "../Utils/Utils"
 import Events from "./Events"
 import EventsSDK from "./EventsSDK"
 
-function FixMinimapPath(path: string): string {
-	switch (path) {
-		case "materials/vgui/hud/minimap_sheet.vmat":
-			return "materials/vgui/hud/minimap_sheet_psd_b65d6dd9.vtex_c"
-		case "materials/vgui/hud/minimap_hero_sheet.vmat":
-			return "materials/vgui/hud/minimap_hero_sheet_psd_3529892a.vtex_c"
-		default:
-			throw `Unrecognized minimap path: "${path}"`
-	}
-}
 class MinimapIcon {
 	constructor(
 		public readonly path: string,
@@ -59,7 +49,7 @@ Events.on("NewConnection", () => {
 			return
 		try {
 			minimap_icon_storage.set(k.slice(8), new MinimapIcon(
-				FixMinimapPath(v.get("file") as string),
+				`${v.get("file") as string}_c`,
 				new Vector2(
 					parseInt((v.get("x") as string) ?? "0"),
 					parseInt((v.get("y") as string) ?? "0"),

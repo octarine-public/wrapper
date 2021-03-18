@@ -130,28 +130,15 @@ export function ParseExternalReferences(buf: Uint8Array, recursive = false): str
 		const offset = Number(stream.ReadUint64()),
 			prev = stream.pos
 		stream.pos += offset - 8
-		const str = stream.ReadNullTerminatedUtf8String()
+		const str = `${stream.ReadNullTerminatedUtf8String()}_c`
 		if (recursive) {
-			let fixed_path = str
-			let read = fread(fixed_path)
-			if (read === undefined) {
-				fixed_path += "_c"
-				read = fread(fixed_path)
-			}
+			const read = fread(str)
 			if (read !== undefined) {
-				list.push(fixed_path)
+				list.push(str)
 				list = [...list, ...ParseExternalReferences(new Uint8Array(read))]
 			}
-		} else {
-			let fixed_path = str
-			let exists = fexists(fixed_path)
-			if (!exists) {
-				fixed_path += "_c"
-				exists = fexists(fixed_path)
-			}
-			if (exists)
-				list.push(fixed_path)
-		}
+		} else if (fexists(str))
+			list.push(str)
 		stream.pos = prev
 	}
 	return list

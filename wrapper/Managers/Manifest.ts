@@ -127,7 +127,7 @@ Events.on("NewConnection", () => {
 		return
 	}
 	ParseExternalReferences(new Uint8Array(manifest), true).forEach(path => {
-		if (path.endsWith("vsndevts_c"))
+		if (path.endsWith(".vsndevts_c"))
 			Manifest.LoadSoundFile(path)
 	})
 })

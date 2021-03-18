@@ -58,7 +58,7 @@ function ParseEntityLumpInternal(buf: Uint8Array): EntityDataMap[] {
 		if (m_childLumps instanceof Map) {
 			m_childLumps.forEach(childLump => {
 				if (typeof childLump === "string") {
-					const childLumpBuf = fread(childLump) ?? fread(`${childLump}_c`)
+					const childLumpBuf = fread(`${childLump}_c`)
 					if (childLumpBuf !== undefined)
 						ar.push(...ParseEntityLumpInternal(new Uint8Array(childLumpBuf)))
 				}
