@@ -123,6 +123,35 @@ class MinimapIconRenderer {
 }
 const minimap_icons_active = new Map<any, MinimapIconRenderer>()
 
+class MinimapOverview {
+	constructor(
+		public readonly material: string,
+		public readonly simple_material: string,
+		public readonly pos: Vector2,
+	) { }
+}
+function ParseMinimapOverview(): void {
+	const kv = [...parseKVFile(`resource/overviews/${GameState.MapName}.txt`).values()]
+		.find(val => val instanceof Map) as Nullable<RecursiveMap>
+	if (kv === undefined) {
+		MinimapSDK.CurrentMinimapOverview = undefined
+		return
+	}
+	const material = kv.get("material"),
+		simple_material = kv.get("simple_material"),
+		pos_x = kv.get("pos_x"),
+		pos_y = kv.get("pos_y")
+	const material_fixed = typeof material === "string" ? `${material}_c` : ""
+	MinimapSDK.CurrentMinimapOverview = new MinimapOverview(
+		material_fixed,
+		typeof simple_material === "string" ? `${simple_material}_c` : material_fixed,
+		new Vector2(
+			typeof pos_x === "string" ? parseFloat(pos_x) : 0,
+			typeof pos_y === "string" ? -parseFloat(pos_y) : 0,
+		),
+	)
+}
+
 EventsSDK.on("MapDataLoaded", () => {
 	const minimapBoundsData = EntityDataLump
 		.filter(data =>
@@ -139,6 +168,7 @@ EventsSDK.on("MapDataLoaded", () => {
 		Vector2.FromVector3(minimapBoundsData[1]),
 	)
 	minimapBoundsSize = minimapBounds.Size
+	ParseMinimapOverview()
 })
 
 EventsSDK.on("Draw", () => {
@@ -169,7 +199,8 @@ EventsSDK.on("Draw", () => {
 
 EventsSDK.on("GameEnded", () => minimap_icons_active.clear())
 
-export default new (class MinimapSDK {
+const MinimapSDK = new (class CMinimapSDK {
+	public CurrentMinimapOverview: Nullable<MinimapOverview>
 	/**
 	 * Draws icon at minimap
 	 * @param icon_name can be found at https://github.com/SteamDatabase/GameTracking-Dota2/blob/master/game/dota/pak01_dir/scripts/mod_textures.txt
@@ -233,3 +264,4 @@ export default new (class MinimapSDK {
 		SendMinimapPing(type, direct_ping, target?.Index ?? -1)
 	}
 })()
+export default MinimapSDK
