@@ -677,6 +677,9 @@ class CRendererSDK {
 	public Rotate_(ang: number): void {
 		this.Rotate(ang)
 	}
+	public Translate_(vecPos: Vector2): void {
+		this.Translate(vecPos)
+	}
 	private Oval(vecPos: Vector2, vecSize: Vector2): void {
 		const view = this.AllocateCommandSpace(4 * 4)
 		let off = 0
@@ -955,6 +958,13 @@ class CRendererSDK {
 		let off = 0
 		view.setUint8(off, CommandID.ROTATE)
 		view.setFloat32(off += 1, ang, true)
+	}
+	private Translate(vecPos: Vector2): void {
+		const view = this.AllocateCommandSpace(2 * 4)
+		let off = 0
+		view.setUint8(off, CommandID.TRANSLATE)
+		view.setFloat32(off += 1, vecPos.x, true)
+		view.setFloat32(off += 4, vecPos.y, true)
 	}
 	private NormalizedAngle(ang: number): number {
 		ang = ang % (Math.PI * 2)
