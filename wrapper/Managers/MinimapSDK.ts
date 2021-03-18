@@ -7,6 +7,7 @@ import { PingType_t } from "../Enums/PingType_t"
 import GUIInfo from "../GUI/GUIInfo"
 import RendererSDK from "../Native/RendererSDK"
 import Entity, { GameRules } from "../Objects/Base/Entity"
+import * as ArrayExtensions from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
 import { EntityDataLump } from "../Utils/ParseEntityLump"
 import { parseKVFile } from "../Utils/Utils"
@@ -82,7 +83,8 @@ class MinimapIconRenderer {
 		public end_time: number,
 		public min_size_animated: number,
 		public animation_cycle: number,
-		public readonly is_ping: boolean,
+		public priority: number,
+		private readonly is_ping: boolean,
 	) { }
 	public Draw(): void {
 		const additional_alpha = this.is_ping && this.end_time >= GameState.RawGameTime
@@ -183,14 +185,10 @@ EventsSDK.on("Draw", () => {
 	RendererSDK.SaveState_()
 	const minimap_block_rect = GUIInfo.Minimap.Minimap
 	RendererSDK.SetClipRect_(minimap_block_rect.pos1, minimap_block_rect.Size)
-	minimap_icons_active.forEach(icon => {
-		if (!icon.is_ping)
-			icon.Draw()
-	})
-	minimap_icons_active.forEach(icon => {
-		if (icon.is_ping)
-			icon.Draw()
-	})
+	ArrayExtensions.orderBy(
+		[...minimap_icons_active.values()],
+		icon => icon.priority,
+	).forEach(icon => icon.Draw())
 	const icons_keys_to_be_removed: any[] = []
 	minimap_icons_active.forEach((icon, key) => {
 		if (icon.end_time < GameState.RawGameTime)
@@ -221,6 +219,7 @@ const MinimapSDK = new (class CMinimapSDK {
 		uid: any = Math.random(),
 		min_size_animated = size,
 		animation_cycle = 0,
+		priority = 0,
 	) {
 		if (minimap_icons_active.has(uid)) {
 			const active_icon = minimap_icons_active.get(uid)!
@@ -241,6 +240,7 @@ const MinimapSDK = new (class CMinimapSDK {
 					end_time,
 					min_size_animated,
 					animation_cycle,
+					priority,
 					name === "ping",
 				))
 		}
@@ -256,7 +256,7 @@ const MinimapSDK = new (class CMinimapSDK {
 	 * @param uid you can use this value to edit existing uid's location/color/icon, or specify 0x80000000 to make it unique
 	 */
 	public DrawPing(worldPos: Vector3, color = Color.White, end_time = 0, uid: any = Math.random()) {
-		this.DrawIcon("ping", worldPos, 250, color, end_time, uid, 25, 800)
+		this.DrawIcon("ping", worldPos, 250, color, end_time, uid, 25, 800, Infinity)
 	}
 	public DeletePing(uid: any): void {
 		this.DeleteIcon(uid)
