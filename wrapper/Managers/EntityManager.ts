@@ -290,6 +290,8 @@ function ParseEntityUpdate(
 		? cached_field_handlers.get(ent.constructor as Constructor<Entity>)
 		: undefined
 	const ent_node = ent_props.get(ent_id)!
+	const changed_paths: number[] = [],
+		changed_paths_results: EntityPropertyType[] = []
 	while (true) {
 		const path_size = stream.ReadUint8()
 		if (path_size === 0)
@@ -333,13 +335,19 @@ function ParseEntityUpdate(
 					map.set(id, prop)
 				}
 				if (ent !== undefined && ent_handlers !== undefined) {
-					const handler = ent_handlers.get(id)
-					if (handler !== undefined)
-						handler(ent, res)
+					const changed_path_id = changed_paths.indexOf(id)
+					if (changed_path_id === -1) {
+						if (ent_handlers.has(id)) {
+							changed_paths.push(id)
+							changed_paths_results.push(res)
+						}
+					} else
+						changed_paths_results[changed_path_id] = res
 				}
 			}
 		}
 	}
+	changed_paths.forEach((id, i) => ent_handlers!.get(id)!(ent!, changed_paths_results[i]))
 	if (ent !== undefined && ent_was_created) {
 		ent.IsValid = true
 		EventsSDK.emit("PreEntityCreated", false, ent)
