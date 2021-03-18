@@ -19,6 +19,7 @@ export default class CMinimap {
 	}
 
 	public readonly Minimap = new Rectangle()
+	public readonly MinimapRenderBounds = new Rectangle()
 	public readonly Glyph = new Rectangle()
 	public readonly Scan = new Rectangle()
 
@@ -31,7 +32,7 @@ export default class CMinimap {
 		this.CalculateGlyphScan(screen_size, hud_flipped)
 	}
 
-	private get MinimapSize(): number {
+	private get MinimapBlockSize(): number {
 		switch (extra_large_minimap_setting) {
 			case 0: // Large (default)
 				return 244
@@ -39,6 +40,16 @@ export default class CMinimap {
 				return 280
 			default: // ExtraExtraLarge
 				return 420
+		}
+	}
+	private get MinimapSize(): number {
+		switch (extra_large_minimap_setting) {
+			case 0: // Large (default)
+				return 260
+			case 1: // ExtraLarge
+				return 296
+			default: // ExtraExtraLarge
+				return 444
 		}
 	}
 
@@ -51,18 +62,28 @@ export default class CMinimap {
 		return CMinimap.UpdateExtraLargeMinimapSetting()
 	}
 	private CalculateMinimapBlock(screen_size: Vector2, hud_flip: boolean): void {
-		const size = this.MinimapSize
-		this.Minimap.Width = GUIInfo.ScaleWidth(size, screen_size)
-		this.Minimap.Height = GUIInfo.ScaleHeight(size, screen_size)
+		const block_size = this.MinimapBlockSize
+		this.Minimap.Width = GUIInfo.ScaleWidth(block_size, screen_size)
+		this.Minimap.Height = GUIInfo.ScaleHeight(block_size, screen_size)
 		this.Minimap.x = hud_flip
 			? screen_size.x - this.Minimap.Width
 			: 0
 		this.Minimap.y = screen_size.y - this.Minimap.Height
+
+		const size = this.MinimapSize
+		this.MinimapRenderBounds.Width = GUIInfo.ScaleWidth(size, screen_size)
+		this.MinimapRenderBounds.Height = GUIInfo.ScaleHeight(size, screen_size)
+		this.MinimapRenderBounds.x = this.Minimap.x + Math.round(
+			(this.Minimap.Width - this.MinimapRenderBounds.Width) / 2,
+		)
+		this.MinimapRenderBounds.y = this.Minimap.y + Math.round(
+			(this.Minimap.Height - this.MinimapRenderBounds.Height) / 2,
+		)
 	}
 	private CalculateGlyphScan(screen_size: Vector2, hud_flip: boolean): void {
 		const GlyphScan = new Rectangle()
 		GlyphScan.Width = GUIInfo.ScaleWidth(74, screen_size)
-		GlyphScan.Height = GUIInfo.ScaleHeight(this.MinimapSize, screen_size)
+		GlyphScan.Height = GUIInfo.ScaleHeight(this.MinimapBlockSize, screen_size)
 		GlyphScan.y = screen_size.y - GlyphScan.Height
 		GlyphScan.x = hud_flip
 			? this.Minimap.x - GlyphScan.Width

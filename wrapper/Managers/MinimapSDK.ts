@@ -154,18 +154,12 @@ EventsSDK.on("MapDataLoaded", () => {
 EventsSDK.on("Draw", () => {
 	if (!GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
-	const minimap_rect = GUIInfo.Minimap.Minimap
+	const minimap_rect = GUIInfo.Minimap.MinimapRenderBounds
 	minimap_pos = minimap_rect.pos1
 	minimap_size = minimap_rect.Size
 	RendererSDK.SaveState_()
-	RendererSDK.SetClipRect_(minimap_pos, minimap_size)
-	const screen_size = RendererSDK.WindowSize
-	minimap_pos = minimap_pos.Clone()
-		.SubtractScalarX(GUIInfo.ScaleWidth(8, screen_size))
-		.SubtractScalarY(GUIInfo.ScaleHeight(8, screen_size))
-	minimap_size = minimap_size
-		.AddScalarX(GUIInfo.ScaleWidth(16, screen_size))
-		.AddScalarY(GUIInfo.ScaleHeight(16, screen_size))
+	const minimap_block_rect = GUIInfo.Minimap.Minimap
+	RendererSDK.SetClipRect_(minimap_block_rect.pos1, minimap_block_rect.Size)
 	minimap_icons_active.forEach(icon => {
 		if (!icon.is_ping)
 			icon.Draw()
