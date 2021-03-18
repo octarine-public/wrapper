@@ -72,4 +72,4 @@ const GUIInfo = new (class CGUIInfo {
 })()
 export default GUIInfo
 
-EventsSDK.on("Draw", () => GUIInfo.OnDraw())
+EventsSDK.on("PreDraw", () => GUIInfo.OnDraw())
