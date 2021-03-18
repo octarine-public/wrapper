@@ -23,7 +23,7 @@ export default class Player extends Entity {
 	public Hero_ = 0
 
 	public get IsSpectator(): boolean {
-		return this.Team === Team.Observer || this.Team === Team.Neutral || this.Team === Team.None || this.Team === Team.Undefined
+		return this.Team === Team.Observer || this.Team === Team.Neutral || this.Team === Team.None || this.Team === Team.Shop
 	}
 	public CannotUseItem(item: Item): boolean {
 		return item.Shareability === EShareAbility.ITEM_NOT_SHAREABLE && this.PlayerID !== item.PurchaserID

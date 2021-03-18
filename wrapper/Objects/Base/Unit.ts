@@ -42,12 +42,12 @@ const MAX_ITEMS = 16
 @WrapperClass("CDOTA_BaseNPC")
 export default class Unit extends Entity {
 	public static IsVisibleForEnemies(unit: Unit): boolean {
-		// don't check not existing team (0), spectators (1), neutrals (4) and noteam (5)
+		// don't check not existing team (0), spectators (1), neutrals (4) and shop (5)
 		const valid_teams = ~(
 			(1 << Team.None)
 			| (1 << Team.Observer)
 			| (1 << Team.Neutral)
-			| (1 << Team.Undefined)
+			| (1 << Team.Shop)
 		)
 
 		const local_team = unit.Team,

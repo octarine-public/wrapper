@@ -177,7 +177,7 @@ export default class Entity {
 		return DegreesToRadian(this.NetworkedRotation)
 	}
 	public get IsNeutral(): boolean {
-		return this.Team === Team.Neutral
+		return this.Team === Team.Neutral || this.Team === Team.Shop
 	}
 
 	public get Speed(): number {

@@ -4,7 +4,7 @@ export enum Team {
 	Radiant,
 	Dire,
 	Neutral,
-	Undefined,
+	Shop,
 	Custom1,
 	Custom2,
 	Custom3,
