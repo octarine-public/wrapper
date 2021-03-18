@@ -30,6 +30,8 @@ export default class CTopBar {
 	public readonly DirePlayersHeroImages: Rectangle[] = []
 	public readonly RadiantTeamImage = new Rectangle()
 	public readonly DireTeamImage = new Rectangle()
+	public readonly RadiantTeamBackground = new Rectangle()
+	public readonly DireTeamBackground = new Rectangle()
 
 	constructor(screen_size: Vector2) {
 		this.CalculateTopBar(screen_size)
@@ -133,6 +135,8 @@ export default class CTopBar {
 	}
 	private CalculateTeamScoreAndPlayers(screen_size: Vector2): void {
 		const ContainerWidth = GUIInfo.ScaleWidth(620, screen_size),
+			TeamBackgroundWidth = GUIInfo.ScaleWidth(410, screen_size),
+			TeamBackgroundHeight = GUIInfo.ScaleWidth(40, screen_size),
 			TeamScoreAndPlayersWidth = GUIInfo.ScaleWidth(540, screen_size),
 			TeamScoreAndPlayersMargin1 = GUIInfo.ScaleWidth(10, screen_size),
 			TeamScoreAndPlayersMargin2 = GUIInfo.ScaleWidth(40, screen_size),
@@ -147,6 +151,15 @@ export default class CTopBar {
 			TeamImageWidth = GUIInfo.ScaleWidth(66, screen_size),
 			TeamImageHeight = GUIInfo.ScaleHeight(40, screen_size)
 
+		{
+			this.RadiantTeamBackground.Width = TeamBackgroundWidth
+			this.RadiantTeamBackground.Height = TeamBackgroundHeight
+			this.RadiantTeamBackground.x = this.TopBar.x + ContainerWidth - TeamBackgroundWidth
+
+			this.DireTeamBackground.Width = TeamBackgroundWidth
+			this.DireTeamBackground.Height = TeamBackgroundHeight
+			this.DireTeamBackground.x = this.TopBar.x + this.TopBar.Width - ContainerWidth
+		}
 		{
 			const RadiantTeamScoreAndPlayers = new Rectangle()
 			RadiantTeamScoreAndPlayers.Width = TeamScoreAndPlayersWidth - TeamScoreAndPlayersMargin1 - TeamScoreAndPlayersMargin2
