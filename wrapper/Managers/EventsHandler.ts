@@ -729,7 +729,11 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				position = new Vector3()
 			if (packed_params !== undefined) {
 				if (packed_params.byteLength >= 19) {
-					const stream = new BinaryStream(new DataView(packed_params.buffer))
+					const stream = new BinaryStream(new DataView(
+						packed_params.buffer,
+						packed_params.byteOffset,
+						packed_params.byteLength,
+					))
 					stream.RelativeSeek(7)
 					position.x = stream.ReadFloat32()
 					position.y = stream.ReadFloat32()

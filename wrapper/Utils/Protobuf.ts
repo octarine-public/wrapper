@@ -135,8 +135,7 @@ function ParseField(field: ProtoFieldDescription, value: Uint8Array | bigint): P
 		case ProtoType.TYPE_BYTES:
 			if (!(value instanceof Uint8Array))
 				throw "Invalid proto [11]"
-			// we do .slice() to prevent referencing big ServerMessageBuffer, and create out own copy of needed region
-			return value.slice()
+			return value
 		case ProtoType.TYPE_GROUP: // group
 			throw "Groups are deprecated"
 	}
