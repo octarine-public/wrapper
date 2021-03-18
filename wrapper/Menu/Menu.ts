@@ -156,6 +156,7 @@ class MenuManager {
 		node.parent = this
 		this.entries.push(node)
 		this.entries = this.entries.sort((a, b) => a.Name.localeCompare(b.Name))
+		node.ApplyLocalization()
 		return node
 	}
 	public AddEntryDeep(names: string[], icon_paths: string[] = []): Node {

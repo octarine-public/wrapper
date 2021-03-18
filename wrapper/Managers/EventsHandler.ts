@@ -910,7 +910,10 @@ Events.on("NewConnection", () => {
 		namesMapping.set(name, lang_token ?? data.WorkshopName)
 	})
 	AbilityData.global_storage.forEach((_, name) => {
-		const lang_token = lang_tokens.get(`DOTA_Tooltip_ability_${name}`)
+		const lang_token = (
+			lang_tokens.get(`DOTA_Tooltip_ability_${name}`)
+			?? lang_tokens.get(`DOTA_Tooltip_Ability_${name}`)
+		)
 		if (lang_token !== undefined)
 			namesMapping.set(name, lang_token)
 	})

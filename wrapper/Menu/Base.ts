@@ -97,7 +97,6 @@ export default class Base {
 		this.config_dirty = false
 		if (this.execute_on_add)
 			this.OnValueChangedCBs.forEach(f => f(this))
-		this.ApplyLocalization()
 	}
 	public ApplyLocalization() {
 		this.Name = Localization.Localize(this.InternalName)

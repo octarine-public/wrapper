@@ -314,6 +314,7 @@ export default class Node extends Base {
 	private AddEntry<T extends Base>(entry: T): T {
 		this.entries.push(entry)
 		this.SortEntries()
+		entry.ApplyLocalization()
 		Base.ForwardConfigASAP = true
 		return entry
 	}
