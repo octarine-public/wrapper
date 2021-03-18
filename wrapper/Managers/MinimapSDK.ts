@@ -70,7 +70,7 @@ let minimapBounds = new Rectangle(),
 	minimapBoundsSize = new Vector2(),
 	minimap_pos = new Vector2(),
 	minimap_size = new Vector2(),
-	global_icon_scale = 1
+	hero_icon_scale = 1
 class MinimapIconRenderer {
 	public static GetSizeMultiplier(size: number): number {
 		return size / 600
@@ -85,6 +85,7 @@ class MinimapIconRenderer {
 		public animation_cycle: number,
 		public priority: number,
 		private readonly is_ping: boolean,
+		private readonly is_hero_icon: boolean,
 	) { }
 	public Draw(): void {
 		const additional_alpha = this.is_ping && this.end_time >= GameState.RawGameTime
@@ -106,7 +107,8 @@ class MinimapIconRenderer {
 			) : this.size
 		const minimap_icon_size = this.icon.size
 			.MultiplyScalar(MinimapIconRenderer.GetSizeMultiplier(size))
-			.MultiplyScalarForThis(global_icon_scale)
+		if (this.is_hero_icon)
+			minimap_icon_size.MultiplyScalarForThis(hero_icon_scale)
 		const screen_size = RendererSDK.WindowSize
 		minimap_icon_size.x = GUIInfo.ScaleWidth(minimap_icon_size.x, screen_size)
 		minimap_icon_size.y = GUIInfo.ScaleHeight(minimap_icon_size.y, screen_size)
@@ -164,7 +166,6 @@ EventsSDK.on("MapDataLoaded", () => {
 		.map(a => new Vector3(...a.split(" ").map(b => parseFloat(b))))
 	if (minimapBoundsData.length < 2)
 		return
-	global_icon_scale = MinimapIconRenderer.GetSizeMultiplier(ConVars.GetInt("dota_minimap_hero_size"))
 	minimapBounds = new Rectangle(
 		Vector2.FromVector3(minimapBoundsData[0]),
 		Vector2.FromVector3(minimapBoundsData[1]),
@@ -179,6 +180,7 @@ EventsSDK.on("MapDataLoaded", () => {
 EventsSDK.on("Draw", () => {
 	if (!GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
+	hero_icon_scale = MinimapIconRenderer.GetSizeMultiplier(ConVars.GetInt("dota_minimap_hero_size"))
 	const minimap_rect = GUIInfo.Minimap.MinimapRenderBounds
 	minimap_pos = minimap_rect.pos1
 	minimap_size = minimap_rect.Size
@@ -242,6 +244,7 @@ const MinimapSDK = new (class CMinimapSDK {
 					animation_cycle,
 					priority,
 					name === "ping",
+					name.startsWith("heroicon_"),
 				))
 		}
 	}
