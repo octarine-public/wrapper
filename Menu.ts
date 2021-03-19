@@ -1,4 +1,4 @@
-import { ExecuteOrder, Menu } from "wrapper/Imports"
+import { EventsSDK, ExecuteOrder, Menu } from "wrapper/Imports"
 import { SetGameInProgress } from "./wrapper/Objects/Base/Entity"
 
 declare global {
@@ -38,6 +38,22 @@ SettingsLanguage.OnValue(change => {
 		case 1:
 			Menu.Localization.SelectedUnitName = "russian"
 			break
+	}
+})
+EventsSDK.on("Draw", () => {
+	if (
+		Menu.Localization.SelectedUnitName === "english"
+		&& SettingsLanguage.selected_id !== 0
+	) {
+		SettingsLanguage.selected_id = 0
+		SettingsLanguage.Update()
+	}
+	if (
+		Menu.Localization.SelectedUnitName === "russian"
+		&& SettingsLanguage.selected_id !== 1
+	) {
+		SettingsLanguage.selected_id = 1
+		SettingsLanguage.Update()
 	}
 })
 
