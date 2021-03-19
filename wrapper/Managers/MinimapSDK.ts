@@ -112,7 +112,7 @@ class MinimapIconRenderer {
 		const screen_size = RendererSDK.WindowSize
 		minimap_icon_size.x = GUIInfo.ScaleWidth(minimap_icon_size.x, screen_size)
 		minimap_icon_size.y = GUIInfo.ScaleHeight(minimap_icon_size.y, screen_size)
-		minimap_icon_pos.SubtractForThis(minimap_icon_size.DivideScalar(2))
+		minimap_icon_pos.SubtractForThis(minimap_icon_size.DivideScalar(2).RoundForThis())
 		const color = additional_alpha !== 1
 			? this.color.Clone()
 			: this.color
