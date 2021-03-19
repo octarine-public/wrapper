@@ -54,7 +54,7 @@ declare var Camera: Camera
 declare interface ConVars {
 	GetInt(convar_name: string): number
 	GetString(convar_name: string): string
-	Set(convar_name: string, value: number | boolean): void
+	Set(convar_name: string, value: number | boolean | string): void
 }
 
 declare interface CustomGameEvents {
