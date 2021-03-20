@@ -47,12 +47,11 @@ function ReadTypedValue(stream: BinaryStream): EntityDataMapValue {
 	}
 }
 
-function ParseEntityLumpInternal(buf: Uint8Array): EntityDataMap[] {
+function ParseEntityLumpInternal(buf: Uint8Array): void {
 	const kv = parseKV(buf)
 	if (kv === undefined)
 		throw "Invalid ENTS file - no KV found"
 
-	const ar: EntityDataMap[] = []
 	if (kv.has("m_childLumps")) {
 		const m_childLumps = kv.get("m_childLumps")
 		if (m_childLumps instanceof Map) {
@@ -60,7 +59,7 @@ function ParseEntityLumpInternal(buf: Uint8Array): EntityDataMap[] {
 				if (typeof childLump === "string") {
 					const childLumpBuf = fread(`${childLump}_c`)
 					if (childLumpBuf !== undefined)
-						ar.push(...ParseEntityLumpInternal(new Uint8Array(childLumpBuf)))
+						ParseEntityLumpInternal(new Uint8Array(childLumpBuf))
 				}
 			})
 		}
@@ -105,23 +104,20 @@ function ParseEntityLumpInternal(buf: Uint8Array): EntityDataMap[] {
 							value = ReadTypedValue(stream)
 						map.set(key, value)
 					}
-					ar.push(map)
+					EntityDataLump.push(map)
 				}
 			})
 		}
 	}
-
-	return ar
 }
 
 export let EntityDataLump: EntityDataMap[] = []
 
 export function ParseEntityLump(buf: ArrayBuffer): void {
 	try {
-		EntityDataLump = ParseEntityLumpInternal(new Uint8Array(buf))
+		ParseEntityLumpInternal(new Uint8Array(buf))
 	} catch (e) {
 		console.error("Error in EntityLump init", e)
-		EntityDataLump = []
 	}
 }
 

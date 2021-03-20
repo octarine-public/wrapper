@@ -12,7 +12,7 @@ import { DegreesToRadian } from "../Utils/Math"
 import { ParseEntityLump, ResetEntityLump } from "../Utils/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Utils/ParseGNV"
 import readFile from "../Utils/readFile"
-import { ParseExternalReferences } from "../Utils/Utils"
+import { parseKVFile } from "../Utils/Utils"
 import * as WASM from "./WASM"
 
 enum CommandID {
@@ -719,11 +719,21 @@ class CRendererSDK {
 			return this.texture_cache.get(path)!
 		let read_path = path
 		if (path.endsWith(".vmat_c")) {
-			const read_vmat = readFile(path, 2) // 1 for ourselves, 1 for caller [Image]
-			if (read_vmat !== undefined) {
-				const vtex_ref = ParseExternalReferences(new Uint8Array(read_vmat))
-					.find(path_ => path_.endsWith(".vtex_c"))
-				read_path = vtex_ref ?? ""
+			const vmat_kv = parseKVFile(path)
+			const m_textureParams = vmat_kv.get("m_textureParams")
+			if (m_textureParams instanceof Map) {
+				m_textureParams.forEach(param => {
+					if (!(param instanceof Map))
+						return
+					if (param.get("m_name") === "g_tColor") {
+						const tex_path = param.get("m_pValue")
+						if (typeof tex_path === "string") {
+							read_path = tex_path
+							if (read_path.endsWith(".vtex"))
+								read_path += "_c"
+						}
+					}
+				})
 			}
 		}
 		const read = readFile(read_path, 2) // 1 for ourselves, 1 for caller [Image]
@@ -1029,25 +1039,20 @@ function TryLoadMapFiles(): void {
 			ResetGNV()
 	}
 	if (!entity_lump_succeeded) {
-		const map_buf = fread(`maps/${map_name}.vmap_c`)
-		if (map_buf !== undefined) {
-			const world_path = ParseExternalReferences(new Uint8Array(map_buf)).find(str => str.endsWith(".vwrld_c"))
-			if (world_path !== undefined) {
-				const world_buf = fread(world_path)
-				if (world_buf !== undefined) {
-					const ents_path = ParseExternalReferences(new Uint8Array(world_buf)).find(str => str.includes(".vents_c"))
-					if (ents_path !== undefined) {
-						const buf = fread(ents_path)
-						if (buf !== undefined) {
-							entity_lump_succeeded = true
-							ParseEntityLump(buf)
-							EventsSDK.emit("MapDataLoaded", false)
-						} else
-							ResetEntityLump()
-					}
-				}
-			}
-		}
+		ResetEntityLump()
+		const world_kv = parseKVFile(`maps/${map_name}/world.vwrld_c`)
+		const m_entityLumps = world_kv.get("m_entityLumps")
+		if (m_entityLumps instanceof Map)
+			m_entityLumps.forEach(path => {
+				if (typeof path !== "string")
+					return
+				const buf = fread(`${path}_c`)
+				if (buf === undefined)
+					return
+				entity_lump_succeeded = true
+				ParseEntityLump(buf)
+			})
+		EventsSDK.emit("MapDataLoaded", false)
 	}
 }
 
