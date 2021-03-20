@@ -33,8 +33,8 @@ import Modifier from "./Modifier"
 import NeutralSpawner from "./NeutralSpawner"
 import PhysicalItem from "./PhysicalItem"
 import Rune from "./Rune"
+import TempTree from "./TempTree"
 import Tree from "./Tree"
-import TreeTemp from "./TreeTemp"
 
 const MAX_SPELLS = 31
 const MAX_ITEMS = 16
@@ -1026,7 +1026,7 @@ export default class Unit extends Entity {
 	public CastTarget(ability: Ability, target: Entity | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET, issuers: [this], target, ability, queue, showEffects })
 	}
-	public CastTargetTree(ability: Ability, tree: Tree | TreeTemp | number, queue?: boolean, showEffects?: boolean) {
+	public CastTargetTree(ability: Ability, tree: Tree | TempTree | number, queue?: boolean, showEffects?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE, issuers: [this], target: tree, ability, queue, showEffects })
 	}
 	public CastNoTarget(ability: Ability, queue?: boolean, showEffects?: boolean) {

@@ -1404,7 +1404,7 @@ export {
 export { default as PhysicalItem } from "./Objects/Base/PhysicalItem"
 export { default as Rune } from "./Objects/Base/Rune"
 export { default as Tree } from "./Objects/Base/Tree"
-export { default as TreeTemp } from "./Objects/Base/TreeTemp"
+export { default as TempTree } from "./Objects/Base/TempTree"
 
 export { default as Building } from "./Objects/Base/Building"
 export { default as HallOfFame } from "./Objects/Base/HallOfFame"

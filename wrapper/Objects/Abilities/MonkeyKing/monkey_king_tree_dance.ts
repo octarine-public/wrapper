@@ -10,8 +10,8 @@ import * as ArrayExtensions from "../../../Utils/ArrayExtensions"
 import GameState from "../../../Utils/GameState"
 import Ability from "../../Base/Ability"
 import { LocalPlayer } from "../../Base/Entity"
+import TempTree from "../../Base/TempTree"
 import Tree from "../../Base/Tree"
-import TempTree from "../../Base/TreeTemp"
 import Unit from "../../Base/Unit"
 
 @WrapperClass("monkey_king_tree_dance")

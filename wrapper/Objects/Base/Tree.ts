@@ -23,9 +23,6 @@ export default class Tree extends Entity {
 	public get IsAlive() {
 		return EntityManager.IsTreeActive(this.BinaryID)
 	}
-	public get RingRadius(): number {
-		return 100
-	}
 	public get CustomNativeID(): number {
 		return (this.BinaryID << 1) | 1
 	}
@@ -38,7 +35,9 @@ export default class Tree extends Entity {
 }
 
 let cur_local_id = 0x4000
+export let TempTreeIDOffset = 0
 function LoadTreeMap(buf: ArrayBuffer) {
+	TempTreeIDOffset = 0
 	while (cur_local_id > 0x4000) {
 		const id = --cur_local_id
 		const ent = EntityManager.EntityByIndex(id, true) as Nullable<Tree>
@@ -48,6 +47,7 @@ function LoadTreeMap(buf: ArrayBuffer) {
 		GridNav?.UpdateTreeState(ent)
 	}
 	ParseTRMP(buf).forEach((pos, i) => {
+		TempTreeIDOffset++
 		// for some reason TRMP have duplicates, but earlier ones override them
 		if (EntityManager.GetEntitiesByClass(Tree).some(tree => tree.Position.Equals(pos)))
 			return

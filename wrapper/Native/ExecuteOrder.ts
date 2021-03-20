@@ -10,6 +10,7 @@ import InputManager from "../Managers/InputManager"
 import ParticlesSDK from "../Managers/ParticleManager"
 import Ability from "../Objects/Base/Ability"
 import Entity, { LocalPlayer } from "../Objects/Base/Entity"
+import TempTree from "../Objects/Base/TempTree"
 import Tree from "../Objects/Base/Tree"
 import Unit from "../Objects/Base/Unit"
 import RendererSDK from "./RendererSDK"
@@ -150,7 +151,11 @@ export default class ExecuteOrder {
 
 		return {
 			OrderType: this.OrderType,
-			Target: target instanceof Entity ? target instanceof Tree ? target.BinaryID : target.Index : target,
+			Target: target instanceof Entity
+				? target instanceof Tree || target instanceof TempTree
+					? target.BinaryID
+					: target.Index
+				: target,
 			Ability: ability instanceof Ability ? ability.Index : ability,
 			Issuers: this.Issuers.map(ent => ent.Index),
 			Queue: this.Queue,
