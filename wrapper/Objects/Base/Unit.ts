@@ -648,7 +648,7 @@ export default class Unit extends Entity {
 		if (angle <= 0.2)
 			return 0
 
-		return (0.03 / this.TurnRate()) * angle
+		return angle / (30 * this.TurnRate())
 	}
 
 	public AbsorbedDamage(dmg: number, damage_type: DAMAGE_TYPES, source?: Unit): number {
