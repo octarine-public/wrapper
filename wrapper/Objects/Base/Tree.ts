@@ -1,6 +1,5 @@
 import Color from "../../Base/Color"
 import QAngle from "../../Base/QAngle"
-import Vector3 from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import { RenderMode_t } from "../../Enums/RenderMode_t"
 import EntityManager, { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManager"
@@ -13,12 +12,8 @@ import Entity from "./Entity"
 
 @WrapperClass("CDOTA_MapTree")
 export default class Tree extends Entity {
-	public readonly FakeTreePos = new Vector3()
 	public BinaryID = 0
 
-	public get Position() {
-		return this.FakeTreePos.Clone()
-	}
 	public get Rotation(): number {
 		return 0
 	}
@@ -60,7 +55,7 @@ function LoadTreeMap(buf: ArrayBuffer) {
 		const entity = new Tree(id)
 		entity.Name_ = "ent_dota_tree"
 		entity.ClassName = "C_DOTA_MapTree"
-		entity.FakeTreePos.CopyFrom(pos)
+		entity.Position.CopyFrom(pos)
 		entity.BinaryID = i
 		CreateEntityInternal(entity)
 		EventsSDK.emit("PreEntityCreated", false, entity)

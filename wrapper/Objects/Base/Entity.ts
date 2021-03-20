@@ -89,6 +89,7 @@ export default class Entity {
 	public CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
 	public IsVisible = true
 	public readonly NetworkedPosition = new Vector3()
+	public readonly Position = new Vector3()
 	public readonly NetworkedAngles = new QAngle()
 	private CustomGlowColor_: Nullable<Color>
 	private CustomDrawColor_: Nullable<[Color, RenderMode_t]>
@@ -129,13 +130,6 @@ export default class Entity {
 			owner = root_owner
 		}
 		return owner
-	}
-	public get Position(): Vector3 {
-		return new Vector3(
-			EntityVisualPositions[this.Index * 3 + 0],
-			EntityVisualPositions[this.Index * 3 + 1],
-			EntityVisualPositions[this.Index * 3 + 2],
-		)
 	}
 	public get NetworkedRotation(): number {
 		const ang = this.NetworkedAngles.y
@@ -351,30 +345,41 @@ EventsSDK.on("EntityDestroyed", ent => {
 	})
 })
 
-RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => ent.NetworkedPosition.x = EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => ent.NetworkedPosition.x = ent.Position.x = EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
 	new_val as number,
 	ent.CBodyComponent_?.get("m_vecX") as Nullable<number>,
 ))
-RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => ent.NetworkedPosition.x = EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => ent.NetworkedPosition.x = ent.Position.x = EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
 	ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
 	new_val as number,
 ))
-RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => ent.NetworkedPosition.y = EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => ent.NetworkedPosition.y = ent.Position.y = EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
 	new_val as number,
 	ent.CBodyComponent_?.get("m_vecY") as Nullable<number>,
 ))
-RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => ent.NetworkedPosition.y = EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => ent.NetworkedPosition.y = ent.Position.y = EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
 	ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
 	new_val as number,
 ))
-RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => ent.NetworkedPosition.z = EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => ent.NetworkedPosition.z = ent.Position.z = EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
 	new_val as number,
 	ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>,
 ))
-RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => ent.NetworkedPosition.z = EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
+RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => ent.NetworkedPosition.z = ent.Position.z = EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
 	ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
 	new_val as number,
 ))
+
+EventsSDK.on("PreDraw", () => {
+	EntityManager.AllEntities.forEach(ent => {
+		if (ent.Index >= 0x4000)
+			return
+		const id = ent.Index * 3
+		ent.Position.x = EntityVisualPositions[id + 0]
+		ent.Position.y = EntityVisualPositions[id + 1]
+		ent.Position.z = EntityVisualPositions[id + 2]
+	})
+})
 
 EventsSDK.on("GameEvent", (name, obj) => {
 	if (name !== "entity_hurt")
