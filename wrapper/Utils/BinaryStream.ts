@@ -11,8 +11,14 @@ export default class BinaryStream {
 	public ReadUint8(): number {
 		return this.view.getUint8(this.pos++)
 	}
+	public WriteUint8(val: number): void {
+		this.view.setUint8(this.pos++, val)
+	}
 	public ReadInt8(): number {
 		return this.view.getInt8(this.pos++)
+	}
+	public WriteInt8(val: number): void {
+		this.view.setInt8(this.pos++, val)
 	}
 	public ReadVarUintAsNumber(): number {
 		let val = 0,
@@ -25,6 +31,13 @@ export default class BinaryStream {
 		} while ((b & 0x80) !== 0)
 		return val
 	}
+	public WriteVarUintAsNumber(val: number): void {
+		while (val >= 0x80) {
+			this.WriteUint8((val | 0x80) & 0xFF)
+			val >>= 7
+		}
+		this.WriteUint8(val)
+	}
 	public ReadVarUint(): bigint {
 		let val = 0n,
 			shift = 0n,
@@ -36,54 +49,100 @@ export default class BinaryStream {
 		} while ((b & 0x80) !== 0)
 		return val
 	}
+	public WriteVarUint(val: bigint): void {
+		while (val >= 0x80n) {
+			this.WriteUint8(Number((val | 0x80n) & 0xFFn))
+			val >>= 7n
+		}
+		this.WriteUint8(Number(val))
+	}
 	public ReadUint16(littleEndian = true): number {
 		const res = this.view.getUint16(this.pos, littleEndian)
 		this.pos += 2
 		return res
+	}
+	public WriteUint16(val: number, littleEndian = true): void {
+		this.view.setUint16(this.pos, val, littleEndian)
+		this.pos += 2
 	}
 	public ReadInt16(littleEndian = true): number {
 		const res = this.view.getInt16(this.pos, littleEndian)
 		this.pos += 2
 		return res
 	}
+	public WriteInt16(val: number, littleEndian = true): void {
+		this.view.setInt16(this.pos, val, littleEndian)
+		this.pos += 2
+	}
 	public ReadUint32(littleEndian = true): number {
 		const res = this.view.getUint32(this.pos, littleEndian)
 		this.pos += 4
 		return res
+	}
+	public WriteUint32(val: number, littleEndian = true): void {
+		this.view.setUint32(this.pos, val, littleEndian)
+		this.pos += 4
 	}
 	public ReadInt32(littleEndian = true): number {
 		const res = this.view.getInt32(this.pos, littleEndian)
 		this.pos += 4
 		return res
 	}
+	public WriteInt32(val: number, littleEndian = true): void {
+		this.view.setInt32(this.pos, val, littleEndian)
+		this.pos += 4
+	}
 	public ReadUint64(littleEndian = true): bigint {
 		const res = this.view.getBigUint64(this.pos, littleEndian)
 		this.pos += 8
 		return res
+	}
+	public WriteUint64(val: bigint, littleEndian = true): void {
+		this.view.setBigUint64(this.pos, val, littleEndian)
+		this.pos += 8
 	}
 	public ReadInt64(littleEndian = true): bigint {
 		const res = this.view.getBigInt64(this.pos, littleEndian)
 		this.pos += 8
 		return res
 	}
+	public WriteInt64(val: bigint, littleEndian = true): void {
+		this.view.setBigInt64(this.pos, val, littleEndian)
+		this.pos += 8
+	}
 	public ReadFloat32(littleEndian = true): number {
 		const res = this.view.getFloat32(this.pos, littleEndian)
 		this.pos += 4
 		return res
+	}
+	public WriteFloat32(val: number, littleEndian = true): void {
+		this.view.setFloat32(this.pos, val, littleEndian)
+		this.pos += 4
 	}
 	public ReadFloat64(littleEndian = true): number {
 		const res = this.view.getFloat64(this.pos, littleEndian)
 		this.pos += 8
 		return res
 	}
+	public WriteFloat64(val: number, littleEndian = true): void {
+		this.view.setFloat64(this.pos, val, littleEndian)
+		this.pos += 4
+	}
 	public ReadBoolean(): boolean {
 		return this.ReadUint8() !== 0
+	}
+	public WriteBoolean(val: number): void {
+		this.WriteUint8(val ? 1 : 0)
 	}
 	// returns reference to original buffer instead of creating new one
 	public ReadSlice(size: number): Uint8Array {
 		const slice = new Uint8Array(this.view.buffer, this.view.byteOffset + this.pos, size)
 		this.RelativeSeek(size)
 		return slice
+	}
+	// writes Uint8Array
+	public WriteSlice(slice: ArrayLike<number>): void {
+		this.ReadSlice(slice.length).set(slice)
 	}
 	public ReadUtf8String(size: number): string {
 		// inlined Utf8ArrayToStr that works with streaming
@@ -166,6 +225,11 @@ export default class BinaryStream {
 	// returns reference to original buffer instead of creating new one
 	public ReadVarSlice(): Uint8Array {
 		return this.ReadSlice(this.ReadVarUintAsNumber())
+	}
+	// writes varint encoded length + Uint8Array
+	public WriteVarSlice(slice: ArrayLike<number>): void {
+		this.WriteVarUintAsNumber(slice.length)
+		this.ReadSlice(slice.length).set(slice)
 	}
 	public ReadVarString(): string {
 		return this.ReadUtf8String(this.ReadVarUintAsNumber())

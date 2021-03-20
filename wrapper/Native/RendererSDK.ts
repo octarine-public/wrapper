@@ -7,6 +7,7 @@ import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import { default as Input } from "../Managers/InputManager"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
+import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
 import { ParseEntityLump, ResetEntityLump } from "../Utils/ParseEntityLump"
@@ -151,30 +152,27 @@ export class GradientLinear extends Gradient {
 		if (have_positions && this.positions!.length !== color_count)
 			throw "Positions should be either undefined or match color count"
 
-		const view = RendererSDK.AllocateCommandSpace_(
+		const commandStream = RendererSDK.AllocateCommandSpace_(
 			1 + (4 * 4) + 1 + 1 + 1 + (color_count * 4)
 			+ (have_positions ? color_count * 4 : 0),
 		)
-		let off = 0
-		view.setUint8(off, CommandID.PAINT_SET_SHADER)
-		view.setUint8(off += 1, ShaderType.GRADIENT_LINEAR)
-		view.setFloat32(off += 1, this.startPos.x, true)
-		view.setFloat32(off += 4, this.startPos.y, true)
-		view.setFloat32(off += 4, this.endPos.x, true)
-		view.setFloat32(off += 4, this.endPos.y, true)
-		view.setUint8(off += 4, this.premul ? 1 : 0)
-		view.setUint8(off += 1, color_count)
-		view.setUint8(off += 1, have_positions ? 1 : 0)
+		commandStream.WriteUint8(CommandID.PAINT_SET_SHADER)
+		commandStream.WriteUint8(ShaderType.GRADIENT_LINEAR)
+		commandStream.WriteFloat32(this.startPos.x)
+		commandStream.WriteFloat32(this.startPos.y)
+		commandStream.WriteFloat32(this.endPos.x)
+		commandStream.WriteFloat32(this.endPos.y)
+		commandStream.WriteUint8(this.premul ? 1 : 0)
+		commandStream.WriteUint8(color_count)
+		commandStream.WriteUint8(have_positions ? 1 : 0)
 		this.colors.forEach(color => {
-			view.setUint8(off += 1, color.r)
-			view.setUint8(off += 1, color.g)
-			view.setUint8(off += 1, color.b)
-			view.setUint8(off += 1, color.a)
+			commandStream.WriteUint8(color.r)
+			commandStream.WriteUint8(color.g)
+			commandStream.WriteUint8(color.b)
+			commandStream.WriteUint8(color.a)
 		})
-		off += 1
-		off -= 4
 		if (have_positions)
-			this.positions!.forEach(position => view.setFloat32(off += 4, position / 100, true))
+			this.positions!.forEach(position => commandStream.WriteFloat32(position / 100))
 	}
 }
 
@@ -198,29 +196,26 @@ export class GradientRadial extends Gradient {
 		if (have_positions && this.positions!.length !== color_count)
 			throw "Positions should be either undefined or match color count"
 
-		const view = RendererSDK.AllocateCommandSpace_(
+		const commandStream = RendererSDK.AllocateCommandSpace_(
 			1 + (3 * 4) + 1 + 1 + 1 + (color_count * 4)
 			+ (have_positions ? color_count * 4 : 0),
 		)
-		let off = 0
-		view.setUint8(off, CommandID.PAINT_SET_SHADER)
-		view.setUint8(off += 1, ShaderType.GRADIENT_RADIAL)
-		view.setFloat32(off += 1, this.centerPos.x, true)
-		view.setFloat32(off += 4, this.centerPos.y, true)
-		view.setFloat32(off += 4, this.radius, true)
-		view.setUint8(off += 4, this.premul ? 1 : 0)
-		view.setUint8(off += 1, color_count)
-		view.setUint8(off += 1, have_positions ? 1 : 0)
+		commandStream.WriteUint8(CommandID.PAINT_SET_SHADER)
+		commandStream.WriteUint8(ShaderType.GRADIENT_RADIAL)
+		commandStream.WriteFloat32(this.centerPos.x)
+		commandStream.WriteFloat32(this.centerPos.y)
+		commandStream.WriteFloat32(this.radius)
+		commandStream.WriteUint8(this.premul ? 1 : 0)
+		commandStream.WriteUint8(color_count)
+		commandStream.WriteUint8(have_positions ? 1 : 0)
 		this.colors.forEach(color => {
-			view.setUint8(off += 1, color.r)
-			view.setUint8(off += 1, color.g)
-			view.setUint8(off += 1, color.b)
-			view.setUint8(off += 1, color.a)
+			commandStream.WriteUint8(color.r)
+			commandStream.WriteUint8(color.g)
+			commandStream.WriteUint8(color.b)
+			commandStream.WriteUint8(color.a)
 		})
-		off += 1
-		off -= 4
 		if (have_positions)
-			this.positions!.forEach(position => view.setFloat32(off += 4, position / 100, true))
+			this.positions!.forEach(position => commandStream.WriteFloat32(position / 100))
 	}
 }
 
@@ -245,30 +240,27 @@ export class GradientSweep extends Gradient {
 		if (have_positions && this.positions!.length !== color_count)
 			throw "Positions should be either undefined or match color count"
 
-		const view = RendererSDK.AllocateCommandSpace_(
+		const commandStream = RendererSDK.AllocateCommandSpace_(
 			1 + (4 * 4) + 1 + 1 + 1 + (color_count * 4)
 			+ (have_positions ? color_count * 4 : 0),
 		)
-		let off = 0
-		view.setUint8(off, CommandID.PAINT_SET_SHADER)
-		view.setUint8(off += 1, ShaderType.GRADIENT_SWEEP)
-		view.setFloat32(off += 1, this.centerPos.x, true)
-		view.setFloat32(off += 4, this.centerPos.y, true)
-		view.setFloat32(off += 4, this.startAngle, true)
-		view.setFloat32(off += 4, this.endAngle, true)
-		view.setUint8(off += 4, this.premul ? 1 : 0)
-		view.setUint8(off += 1, color_count)
-		view.setUint8(off += 1, have_positions ? 1 : 0)
+		commandStream.WriteUint8(CommandID.PAINT_SET_SHADER)
+		commandStream.WriteUint8(ShaderType.GRADIENT_SWEEP)
+		commandStream.WriteFloat32(this.centerPos.x)
+		commandStream.WriteFloat32(this.centerPos.y)
+		commandStream.WriteFloat32(this.startAngle)
+		commandStream.WriteFloat32(this.endAngle)
+		commandStream.WriteUint8(this.premul ? 1 : 0)
+		commandStream.WriteUint8(color_count)
+		commandStream.WriteUint8(have_positions ? 1 : 0)
 		this.colors.forEach(color => {
-			view.setUint8(off += 1, color.r)
-			view.setUint8(off += 1, color.g)
-			view.setUint8(off += 1, color.b)
-			view.setUint8(off += 1, color.a)
+			commandStream.WriteUint8(color.r)
+			commandStream.WriteUint8(color.g)
+			commandStream.WriteUint8(color.b)
+			commandStream.WriteUint8(color.a)
 		})
-		off += 1
-		off -= 4
 		if (have_positions)
-			this.positions!.forEach(position => view.setFloat32(off += 4, position / 100, true))
+			this.positions!.forEach(position => commandStream.WriteFloat32(position / 100))
 	}
 }
 
@@ -296,6 +288,11 @@ class CRendererSDK {
 	]
 
 	private commandCache = new Uint8Array()
+	private commandStream = new BinaryStream(new DataView(
+		this.commandCache.buffer,
+		this.commandCache.byteOffset,
+		this.commandCache.byteLength,
+	))
 	private commandCacheSize = 0
 	private font_cache = new Map</* name */string, Map</* weight */number, Map</* width */number, Map</* italic */boolean, /* font_id */number>>>>()
 	private texture_cache = new Map</* path */string, number>()
@@ -312,7 +309,15 @@ class CRendererSDK {
 	public WorldToScreen(position: Vector2 | Vector3): Nullable<Vector2> {
 		if (position instanceof Vector2)
 			position = position.toVector3().SetZ(WASM.GetPositionHeight(position))
-		return WASM.WorldToScreenNew(position, this.WindowSize)?.FloorForThis()
+		const vec = WASM.WorldToScreenNew(position, this.WindowSize)?.FloorForThis()?.DivideForThis(this.WindowSize)
+		if (vec === undefined)
+			return undefined
+		// cut returned screen space to 1.5x screen size
+		if (vec.x < -0.25 || vec.x > 1.25)
+			return undefined
+		if (vec.y < -0.25 || vec.y > 1.25)
+			return undefined
+		return vec.MultiplyForThis(this.WindowSize)
 	}
 	/**
 	 * @returns screen position with x and y in range {0, 1}, or undefined
@@ -322,7 +327,15 @@ class CRendererSDK {
 			position = position.toVector3().SetZ(WASM.GetPositionHeight(position))
 		if (camera_position instanceof Vector2)
 			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
-		return WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)?.DivideForThis(window_size)
+		const vec = WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)?.DivideForThis(window_size)
+		if (vec === undefined)
+			return undefined
+		// cut returned screen space to 2x screen size
+		if (vec.x < -0.5 || vec.x > 1.5)
+			return undefined
+		if (vec.y < -0.5 || vec.y > 1.5)
+			return undefined
+		return vec
 	}
 	/**
 	 * Projects given screen vector onto camera matrix. Can be used to connect ScreenToWorldFar and camera position dots.
@@ -378,13 +391,12 @@ class CRendererSDK {
 	public Line(start: Vector2 = new Vector2(), end = start.Add(this.DefaultShapeSize), color: RenderColor = Color.White): void {
 		this.SetColor(color)
 
-		const view = this.AllocateCommandSpace(4 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.LINE)
-		view.setInt32(off += 1, start.x, true)
-		view.setInt32(off += 4, start.y, true)
-		view.setInt32(off += 4, end.x, true)
-		view.setInt32(off += 4, end.y, true)
+		this.AllocateCommandSpace(4 * 4)
+		this.commandStream.WriteUint8(CommandID.LINE)
+		this.commandStream.WriteInt32(start.x)
+		this.commandStream.WriteInt32(start.y)
+		this.commandStream.WriteInt32(end.x)
+		this.commandStream.WriteInt32(end.y)
 		this.RestorePaint()
 	}
 	/**
@@ -445,14 +457,13 @@ class CRendererSDK {
 			this.SetClipOval(vecPos.AddScalar(round / 2), vecSize.SubtractScalar(round / 2))
 		}
 
-		const view = this.AllocateCommandSpace(5 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.IMAGE)
-		view.setFloat32(off += 1, vecPos.x, true)
-		view.setFloat32(off += 4, vecPos.y, true)
-		view.setFloat32(off += 4, vecSize.x, true)
-		view.setFloat32(off += 4, vecSize.y, true)
-		view.setUint32(off += 4, texture_id, true)
+		this.AllocateCommandSpace(5 * 4)
+		this.commandStream.WriteUint8(CommandID.IMAGE)
+		this.commandStream.WriteFloat32(vecPos.x)
+		this.commandStream.WriteFloat32(vecPos.y)
+		this.commandStream.WriteFloat32(vecSize.x)
+		this.commandStream.WriteFloat32(vecSize.y)
+		this.commandStream.WriteUint32(texture_id)
 
 		if (round >= 0)
 			this.RestoreState()
@@ -511,20 +522,35 @@ class CRendererSDK {
 
 		this.SetColor(color)
 		const font_id = this.GetFont(font_name, weight, width, italic)
-		const text_buf: number[] = []
-		StringToUTF8Cb(text, b => text_buf.push(b))
-		const view = this.AllocateCommandSpace(7 * 4 + 2 + text_buf.length)
-		let off = 0
-		view.setUint8(off, CommandID.TEXT)
-		view.setFloat32(off += 1, vecPos.x, true)
-		view.setFloat32(off += 4, vecPos.y, true)
-		view.setUint32(off += 4, font_id, true)
-		view.setFloat32(off += 4, font_size, true)
-		view.setFloat32(off += 4, scaleX, true)
-		view.setFloat32(off += 4, skewX, true)
-		view.setUint16(off += 4, flags, true)
-		view.setUint32(off += 2, text_buf.length, true)
-		this.commandCache.set(text_buf, view.byteOffset + (off += 4))
+		this.AllocateCommandSpace(7 * 4 + 2)
+		this.commandStream.WriteUint8(CommandID.TEXT)
+		this.commandStream.WriteFloat32(vecPos.x)
+		this.commandStream.WriteFloat32(vecPos.y)
+		this.commandStream.WriteUint32(font_id)
+		this.commandStream.WriteFloat32(font_size)
+		this.commandStream.WriteFloat32(scaleX)
+		this.commandStream.WriteFloat32(skewX)
+		this.commandStream.WriteUint16(flags)
+		const length_pos = this.commandStream.pos
+		this.commandStream.WriteUint32(0)
+		{
+			// preserve 2 bytes per 1 char, we'll allocate more later if needed
+			const prealloc_length = text.length * 2
+			this.commandCacheSize += prealloc_length
+			this.ResizeCommandCache()
+			this.commandCacheSize -= prealloc_length
+		}
+		StringToUTF8Cb(text, b => {
+			this.commandCacheSize++
+			this.ResizeCommandCache()
+			this.commandStream.WriteUint8(b)
+		})
+		const end_pos = this.commandStream.pos,
+			bytes_len = end_pos - length_pos - 4
+		this.commandStream.RelativeSeek(length_pos - end_pos)
+		this.commandStream.WriteUint32(bytes_len)
+		this.commandStream.RelativeSeek(bytes_len)
+
 		this.RestorePaint()
 	}
 	/**
@@ -574,8 +600,11 @@ class CRendererSDK {
 	}
 	public EmitDraw() {
 		Renderer.ExecuteCommandBuffer(this.commandCache.subarray(0, this.commandCacheSize))
-		if (this.commandCacheSize < this.commandCache.byteLength / 3)
+		if (this.commandCacheSize < this.commandCache.byteLength / 3) {
 			this.commandCache = new Uint8Array(this.commandCache.byteLength / 3)
+			this.OnCommandCacheChanged()
+		}
+		this.commandStream.pos = 0
 		this.commandCacheSize = 0
 		this.last_color.SetColor(-1, -1, -1, -1)
 		this.last_fill_type = PaintType.FILL
@@ -643,21 +672,21 @@ class CRendererSDK {
 		this.SetWidth(width)
 		this.SetFillType(fill ? PaintType.STROKE_AND_FILL : PaintType.STROKE)
 
-		const view = this.AllocateCommandSpace(6 * 4 + 1)
-		let off = 0
-		view.setUint8(off, CommandID.ARC)
-		view.setFloat32(off += 1, vecPos.x, true)
-		view.setFloat32(off += 4, vecPos.y, true)
-		view.setFloat32(off += 4, vecPos.x + vecSize.x, true)
-		view.setFloat32(off += 4, vecPos.y + vecSize.y, true)
-		view.setFloat32(off += 4, baseAngle, true)
-		view.setFloat32(off += 4, 360 * percent * Math.sign(baseAngle), true)
-		view.setUint8(off += 4, fill ? 1 : 0)
+		this.AllocateCommandSpace(6 * 4 + 1)
+		this.commandStream.WriteUint8(CommandID.ARC)
+		this.commandStream.WriteFloat32(vecPos.x)
+		this.commandStream.WriteFloat32(vecPos.y)
+		this.commandStream.WriteFloat32(vecPos.x + vecSize.x)
+		this.commandStream.WriteFloat32(vecPos.y + vecSize.y)
+		this.commandStream.WriteFloat32(baseAngle)
+		this.commandStream.WriteFloat32(360 * percent * Math.sign(baseAngle))
+		this.commandStream.WriteUint8(fill ? 1 : 0)
 		this.SetFillType(PaintType.STROKE_AND_FILL)
 		this.RestorePaint()
 	}
-	public AllocateCommandSpace_(bytes: number): DataView {
-		return this.AllocateCommandSpace(bytes)
+	public AllocateCommandSpace_(bytes: number): BinaryStream {
+		this.AllocateCommandSpace(bytes)
+		return this.commandStream
 	}
 	public FreeTextureCache(): void {
 		this.clear_texture_cache = true
@@ -681,22 +710,20 @@ class CRendererSDK {
 		this.Translate(vecPos)
 	}
 	private Oval(vecPos: Vector2, vecSize: Vector2): void {
-		const view = this.AllocateCommandSpace(4 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.OVAL)
-		view.setFloat32(off += 1, vecPos.x, true)
-		view.setFloat32(off += 4, vecPos.y, true)
-		view.setFloat32(off += 4, vecPos.x + vecSize.x, true)
-		view.setFloat32(off += 4, vecPos.y + vecSize.y, true)
+		this.AllocateCommandSpace(4 * 4)
+		this.commandStream.WriteUint8(CommandID.OVAL)
+		this.commandStream.WriteFloat32(vecPos.x)
+		this.commandStream.WriteFloat32(vecPos.y)
+		this.commandStream.WriteFloat32(vecPos.x + vecSize.x)
+		this.commandStream.WriteFloat32(vecPos.y + vecSize.y)
 	}
 	private Rect(vecPos: Vector2, vecSize: Vector2): void {
-		const view = this.AllocateCommandSpace(4 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.RECT)
-		view.setFloat32(off += 1, vecPos.x, true)
-		view.setFloat32(off += 4, vecPos.y, true)
-		view.setFloat32(off += 4, vecSize.x, true)
-		view.setFloat32(off += 4, vecSize.y, true)
+		this.AllocateCommandSpace(4 * 4)
+		this.commandStream.WriteUint8(CommandID.RECT)
+		this.commandStream.WriteFloat32(vecPos.x)
+		this.commandStream.WriteFloat32(vecPos.y)
+		this.commandStream.WriteFloat32(vecSize.x)
+		this.commandStream.WriteFloat32(vecSize.y)
 	}
 	private MakeTexture(rgba: Uint8Array, size: Vector2): number {
 		if (rgba.byteLength !== size.x * size.y * 4)
@@ -777,17 +804,27 @@ class CRendererSDK {
 		return font_id
 	}
 
-	private AllocateCommandSpace(bytes: number): DataView {
+	private OnCommandCacheChanged() {
+		this.commandStream = new BinaryStream(new DataView(
+			this.commandCache.buffer,
+			this.commandCache.byteOffset,
+			this.commandCache.byteLength,
+		), this.commandStream.pos)
+	}
+	private ResizeCommandCache(): void {
+		const updated_len = this.commandCacheSize
+		if (updated_len <= this.commandCache.byteLength)
+			return
+		const grow_factor = 2
+		const buf = new Uint8Array(Math.max(this.commandCache.byteLength * grow_factor, updated_len))
+		buf.set(this.commandCache, 0)
+		this.commandCache = buf
+		this.OnCommandCacheChanged()
+	}
+	private AllocateCommandSpace(bytes: number): void {
 		bytes += 1 // msgid
-		const current_len = this.commandCacheSize
-		if (current_len + bytes > this.commandCache.byteLength) {
-			const grow_factor = 2
-			const buf = new Uint8Array(Math.max(this.commandCache.byteLength * grow_factor, current_len + bytes))
-			buf.set(this.commandCache, 0)
-			this.commandCache = buf
-		}
 		this.commandCacheSize += bytes
-		return new DataView(this.commandCache.buffer, current_len)
+		this.ResizeCommandCache()
 	}
 	private SetColor(color: RenderColor): void {
 		if (color instanceof Gradient) {
@@ -801,41 +838,35 @@ class CRendererSDK {
 		if (this.last_color.Equals(color))
 			return
 		this.last_color.CopyFrom(color)
-		const view = this.AllocateCommandSpace(4)
-		let off = 0
-		view.setUint8(off, CommandID.PAINT_SET_COLOR)
-		view.setUint8(off += 1, Math.min(color.r, 255))
-		view.setUint8(off += 1, Math.min(color.g, 255))
-		view.setUint8(off += 1, Math.min(color.b, 255))
-		view.setUint8(off += 1, Math.min(color.a, 255))
+		this.AllocateCommandSpace(4)
+		this.commandStream.WriteUint8(CommandID.PAINT_SET_COLOR)
+		this.commandStream.WriteUint8(Math.min(color.r, 255))
+		this.commandStream.WriteUint8(Math.min(color.g, 255))
+		this.commandStream.WriteUint8(Math.min(color.b, 255))
+		this.commandStream.WriteUint8(Math.min(color.a, 255))
 	}
 	private SetFillType(fillType: PaintType): void {
 		if (this.last_fill_type === fillType)
 			return
 		this.last_fill_type = fillType
-		const view = this.AllocateCommandSpace(1)
-		let off = 0
-		view.setUint8(off, CommandID.PAINT_SET_STYLE)
-		view.setUint8(off += 1, fillType)
+		this.AllocateCommandSpace(1)
+		this.commandStream.WriteUint8(CommandID.PAINT_SET_STYLE)
+		this.commandStream.WriteUint8(fillType)
 	}
 	private SetWidth(width: number): void {
 		if (this.last_width === width)
 			return
 		this.last_width = width
-		const view = this.AllocateCommandSpace(4)
-		let off = 0
-		view.setUint8(off, CommandID.PAINT_SET_STROKE_WIDTH)
-		view.setFloat32(off += 1, width, true)
+		this.AllocateCommandSpace(4)
+		this.commandStream.WriteUint8(CommandID.PAINT_SET_STROKE_WIDTH)
+		this.commandStream.WriteFloat32(width)
 	}
 	private SetMatrixColorFilter(mat: Matrix): void {
-		const view = this.AllocateCommandSpace(1 + 20 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.PAINT_SET_COLOR_FILTER)
-		view.setUint8(off += 1, ColorFilterType.MATRIX)
-		off += 1
-		off -= 4
+		this.AllocateCommandSpace(1 + 20 * 4)
+		this.commandStream.WriteUint8(CommandID.PAINT_SET_COLOR_FILTER)
+		this.commandStream.WriteUint8(ColorFilterType.MATRIX)
 		for (let i = 0; i < 20; i++)
-			view.setFloat32(off += 4, mat[i] ?? 0, true)
+			this.commandStream.WriteFloat32(mat[i] ?? 0)
 	}
 	private SetColorFilter(color: RenderColor, blendMode: BlendMode): void {
 		if (color instanceof Gradient) {
@@ -846,27 +877,24 @@ class CRendererSDK {
 			this.SetMatrixColorFilter(color)
 			return
 		}
-		const view = this.AllocateCommandSpace(6)
-		let off = 0
-		view.setUint8(off, CommandID.PAINT_SET_COLOR_FILTER)
-		view.setUint8(off += 1, ColorFilterType.BLEND)
-		view.setUint8(off += 1, Math.min(color.r, 255))
-		view.setUint8(off += 1, Math.min(color.g, 255))
-		view.setUint8(off += 1, Math.min(color.b, 255))
-		view.setUint8(off += 1, Math.min(color.a, 255))
-		view.setUint8(off += 1, blendMode)
+		this.AllocateCommandSpace(6)
+		this.commandStream.WriteUint8(CommandID.PAINT_SET_COLOR_FILTER)
+		this.commandStream.WriteUint8(ColorFilterType.BLEND)
+		this.commandStream.WriteUint8(Math.min(color.r, 255))
+		this.commandStream.WriteUint8(Math.min(color.g, 255))
+		this.commandStream.WriteUint8(Math.min(color.b, 255))
+		this.commandStream.WriteUint8(Math.min(color.a, 255))
+		this.commandStream.WriteUint8(blendMode)
 	}
 	private ClearColorFilter(): void {
-		const view = this.AllocateCommandSpace(1)
-		let off = 0
-		view.setUint8(off, CommandID.PAINT_SET_COLOR_FILTER)
-		view.setUint8(off += 1, ColorFilterType.NONE)
+		this.AllocateCommandSpace(1)
+		this.commandStream.WriteUint8(CommandID.PAINT_SET_COLOR_FILTER)
+		this.commandStream.WriteUint8(ColorFilterType.NONE)
 	}
 	private ClearShader(): void {
-		const view = this.AllocateCommandSpace(1)
-		let off = 0
-		view.setUint8(off, CommandID.PAINT_SET_SHADER)
-		view.setUint8(off += 1, ShaderType.NONE)
+		this.AllocateCommandSpace(1)
+		this.commandStream.WriteUint8(CommandID.PAINT_SET_SHADER)
+		this.commandStream.WriteUint8(ShaderType.NONE)
 	}
 	private RestorePaint(): void {
 		this.SetWidth(0)
@@ -875,106 +903,96 @@ class CRendererSDK {
 	}
 	private SetClipOval(vecPos: Vector2, vecSize: Vector2): void {
 		{
-			const view = this.AllocateCommandSpace(4 * 4)
-			let off = 0
-			view.setUint8(off, CommandID.PATH_ADD_OVAL)
-			view.setFloat32(off += 1, vecPos.x, true)
-			view.setFloat32(off += 4, vecPos.y, true)
-			view.setFloat32(off += 4, vecPos.x + vecSize.x, true)
-			view.setFloat32(off += 4, vecPos.y + vecSize.y, true)
+			this.AllocateCommandSpace(4 * 4)
+			this.commandStream.WriteUint8(CommandID.PATH_ADD_OVAL)
+			this.commandStream.WriteFloat32(vecPos.x)
+			this.commandStream.WriteFloat32(vecPos.y)
+			this.commandStream.WriteFloat32(vecPos.x + vecSize.x)
+			this.commandStream.WriteFloat32(vecPos.y + vecSize.y)
 		}
 		{
-			const view = this.AllocateCommandSpace(2)
-			let off = 0
-			view.setUint8(off, CommandID.CLIP_PATH)
-			view.setUint8(off += 1, 1) // do_antialias
-			view.setUint8(off += 1, 0) // diff_op
+			this.AllocateCommandSpace(2)
+			this.commandStream.WriteUint8(CommandID.CLIP_PATH)
+			this.commandStream.WriteUint8(1) // do_antialias
+			this.commandStream.WriteUint8(0) // diff_op
 		}
 		this.PathReset()
 	}
 	private SetClipRect(vecPos: Vector2, vecSize: Vector2): void {
 		{
-			const view = this.AllocateCommandSpace(4 * 4)
-			let off = 0
-			view.setUint8(off, CommandID.PATH_ADD_RECT)
-			view.setFloat32(off += 1, vecPos.x, true)
-			view.setFloat32(off += 4, vecPos.y, true)
-			view.setFloat32(off += 4, vecPos.x + vecSize.x, true)
-			view.setFloat32(off += 4, vecPos.y + vecSize.y, true)
+			this.AllocateCommandSpace(4 * 4)
+			this.commandStream.WriteUint8(CommandID.PATH_ADD_RECT)
+			this.commandStream.WriteFloat32(vecPos.x)
+			this.commandStream.WriteFloat32(vecPos.y)
+			this.commandStream.WriteFloat32(vecPos.x + vecSize.x)
+			this.commandStream.WriteFloat32(vecPos.y + vecSize.y)
 		}
 		{
-			const view = this.AllocateCommandSpace(2)
-			let off = 0
-			view.setUint8(off, CommandID.CLIP_PATH)
-			view.setUint8(off += 1, 1) // do_antialias
-			view.setUint8(off += 1, 0) // diff_op
+			this.AllocateCommandSpace(2)
+			this.commandStream.WriteUint8(CommandID.CLIP_PATH)
+			this.commandStream.WriteUint8(1) // do_antialias
+			this.commandStream.WriteUint8(0) // diff_op
 		}
 		this.PathReset()
 	}
 	private SaveState(): void {
-		const view = this.AllocateCommandSpace(0)
-		view.setUint8(0, CommandID.SAVE_STATE)
+		this.AllocateCommandSpace(0)
+		this.commandStream.WriteUint8(CommandID.SAVE_STATE)
 	}
 	private RestoreState(): void {
-		const view = this.AllocateCommandSpace(0)
-		view.setUint8(0, CommandID.RESTORE_STATE)
+		this.AllocateCommandSpace(0)
+		this.commandStream.WriteUint8(CommandID.RESTORE_STATE)
 	}
 	private PathReset(): void {
-		const view = this.AllocateCommandSpace(0)
-		view.setUint8(0, CommandID.PATH_RESET)
+		this.AllocateCommandSpace(0)
+		this.commandStream.WriteUint8(CommandID.PATH_RESET)
 	}
 	/*private PathClose(): void {
-		const view = this.AllocateCommandSpace(0)
+		this.AllocateCommandSpace(0)
 		view.setUint8(0, CommandID.PATH_CLOSE)
 	}*/
 	private PathMoveTo(vec: Vector2): void {
-		const view = this.AllocateCommandSpace(2 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.PATH_MOVE_TO)
-		view.setFloat32(off += 1, vec.x, true)
-		view.setFloat32(off += 4, vec.y, true)
+		this.AllocateCommandSpace(2 * 4)
+		this.commandStream.WriteUint8(CommandID.PATH_MOVE_TO)
+		this.commandStream.WriteFloat32(vec.x)
+		this.commandStream.WriteFloat32(vec.y)
 	}
 	private PathLineTo(vec: Vector2): void {
-		const view = this.AllocateCommandSpace(2 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.PATH_LINE_TO)
-		view.setFloat32(off += 1, vec.x, true)
-		view.setFloat32(off += 4, vec.y, true)
+		this.AllocateCommandSpace(2 * 4)
+		this.commandStream.WriteUint8(CommandID.PATH_LINE_TO)
+		this.commandStream.WriteFloat32(vec.x)
+		this.commandStream.WriteFloat32(vec.y)
 	}
 	/*private PathSetStyle(style: PathFillType): void {
-		const view = this.AllocateCommandSpace(1)
-		let off = 0
-		view.setUint8(off, CommandID.PATH_SET_FILL_TYPE)
-		view.setUint8(off += 1, style)
+		this.AllocateCommandSpace(1)
+		this.commandStream.WriteUint8(CommandID.PATH_SET_FILL_TYPE)
+		this.commandStream.WriteUint8(style)
 	}*/
 	private Path(vecPos: Vector2, width = 5, color: RenderColor = Color.White): void {
 		this.SetColor(color)
 		this.SetWidth(width)
 		{
-			const view = this.AllocateCommandSpace(2 * 4)
-			let off = 0
-			view.setUint8(off, CommandID.PATH_OFFSET)
-			view.setFloat32(off += 1, vecPos.x, true)
-			view.setFloat32(off += 4, vecPos.y, true)
+			this.AllocateCommandSpace(2 * 4)
+			this.commandStream.WriteUint8(CommandID.PATH_OFFSET)
+			this.commandStream.WriteFloat32(vecPos.x)
+			this.commandStream.WriteFloat32(vecPos.y)
 		}
 		{
-			const view = this.AllocateCommandSpace(0)
-			view.setUint8(0, CommandID.PATH)
+			this.AllocateCommandSpace(0)
+			this.commandStream.WriteUint8(CommandID.PATH)
 		}
 		this.RestorePaint()
 	}
 	private Rotate(ang: number): void {
-		const view = this.AllocateCommandSpace(4)
-		let off = 0
-		view.setUint8(off, CommandID.ROTATE)
-		view.setFloat32(off += 1, ang, true)
+		this.AllocateCommandSpace(4)
+		this.commandStream.WriteUint8(CommandID.ROTATE)
+		this.commandStream.WriteFloat32(ang)
 	}
 	private Translate(vecPos: Vector2): void {
-		const view = this.AllocateCommandSpace(2 * 4)
-		let off = 0
-		view.setUint8(off, CommandID.TRANSLATE)
-		view.setFloat32(off += 1, vecPos.x, true)
-		view.setFloat32(off += 4, vecPos.y, true)
+		this.AllocateCommandSpace(2 * 4)
+		this.commandStream.WriteUint8(CommandID.TRANSLATE)
+		this.commandStream.WriteFloat32(vecPos.x)
+		this.commandStream.WriteFloat32(vecPos.y)
 	}
 	private NormalizedAngle(ang: number): number {
 		ang = ang % (Math.PI * 2)
