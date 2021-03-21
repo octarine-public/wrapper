@@ -1,6 +1,5 @@
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTAScriptInventorySlot_t } from "../../Enums/DOTAScriptInventorySlot_t"
-import { DOTA_ABILITY_BEHAVIOR } from "../../Enums/DOTA_ABILITY_BEHAVIOR"
 import { EShareAbility } from "../../Enums/EShareAbility"
 import Ability from "./Ability"
 import { GameRules } from "./Entity"
@@ -112,9 +111,6 @@ export default class Item extends Ability {
 
 		const root_owner = this.RootOwner
 		if (root_owner?.CannotUseItem(this))
-			return false
-
-		if (this.HasBehavior(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_TOGGLE) && this.IsToggled)
 			return false
 
 		if (this.RequiresCharges && this.CurrentCharges < 1)
