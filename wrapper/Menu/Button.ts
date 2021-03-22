@@ -1,12 +1,21 @@
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
+import GUIInfo from "../GUI/GUIInfo"
+import EventsSDK from "../Managers/EventsSDK"
 import RendererSDK from "../Native/RendererSDK"
 import Base from "./Base"
 
 export default class Button extends Base {
+	public static OnWindowSizeChanged(): void {
+		Button.text_button_gap = GUIInfo.ScaleWidth(5)
+		Button.text_vertical_button_gap = GUIInfo.ScaleHeight(8)
+		Button.button_offset.x = GUIInfo.ScaleWidth(14)
+		Button.button_offset.y = GUIInfo.ScaleWidth(11)
+	}
+
 	private static readonly button_path = "menu/button.svg"
-	private static readonly text_button_gap = 5
-	private static readonly text_vertical_button_gap = 8
+	private static text_button_gap = 0
+	private static text_vertical_button_gap = 0
 	private static readonly button_offset = new Vector2(14, 11)
 
 	public readonly FontSize = 16
@@ -54,3 +63,5 @@ export default class Button extends Base {
 		return false
 	}
 }
+
+EventsSDK.on("WindowSizeChanged", () => Button.OnWindowSizeChanged())

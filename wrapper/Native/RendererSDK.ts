@@ -590,8 +590,12 @@ class CRendererSDK {
 
 	public BeforeDraw() {
 		WASM.CloneWorldToProjection()
+		const prev_width = this.WindowSize.x,
+			prev_height = this.WindowSize.y
 		this.WindowSize.x = IOBufferView.getInt32(17 * 4, true)
 		this.WindowSize.y = IOBufferView.getInt32(18 * 4, true)
+		if (this.WindowSize.x !== prev_width || this.WindowSize.y !== prev_height)
+			EventsSDK.emit("WindowSizeChanged", false)
 		if (this.clear_texture_cache) {
 			this.texture_cache.forEach(id => this.FreeTexture(id))
 			this.texture_cache.clear()

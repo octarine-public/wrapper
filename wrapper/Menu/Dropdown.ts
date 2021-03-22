@@ -2,7 +2,9 @@ import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
-import InputManager, { InputEventSDK } from "../Managers/InputManager"
+import GUIInfo from "../GUI/GUIInfo"
+import EventsSDK from "../Managers/EventsSDK"
+import { InputEventSDK } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 import Localization from "./Localization"
@@ -10,28 +12,50 @@ import Localization from "./Localization"
 export default class Dropdown extends Base {
 	public static active_dropdown: Nullable<Dropdown>
 	public static readonly dropdown_popup_elements_limit = 4
+	public static OnWindowSizeChanged(): void {
+		Dropdown.dropdown_offset.x = GUIInfo.ScaleWidth(14)
+		Dropdown.dropdown_offset.y = GUIInfo.ScaleWidth(11)
+		Dropdown.dropdown_border_size.x = GUIInfo.ScaleWidth(2)
+		Dropdown.dropdown_border_size.y = GUIInfo.ScaleWidth(2)
+		Dropdown.dropdown_arrow_size.x = GUIInfo.ScaleWidth(Dropdown.orig_dropdown_arrow_size.x)
+		Dropdown.dropdown_arrow_size.y = GUIInfo.ScaleHeight(Dropdown.orig_dropdown_arrow_size.y)
+		Dropdown.dropdown_text_offset.x = GUIInfo.ScaleWidth(9)
+		Dropdown.dropdown_text_offset.y = GUIInfo.ScaleHeight(8)
+		Dropdown.dropdown_popup_offset.x = 0
+		Dropdown.dropdown_popup_offset.y = GUIInfo.ScaleHeight(-2)
+		Dropdown.dropdown_popup_elements_offset.x = GUIInfo.ScaleWidth(2)
+		Dropdown.dropdown_popup_elements_offset.y = GUIInfo.ScaleHeight(2)
+		Dropdown.dropdown_popup_element_text_offset.x = GUIInfo.ScaleWidth(7)
+		Dropdown.dropdown_popup_element_text_offset.y = GUIInfo.ScaleHeight(7)
+		Dropdown.dropdown_popup_elements_scrollbar_offset.x = GUIInfo.ScaleWidth(2)
+		Dropdown.dropdown_popup_elements_scrollbar_offset.y = GUIInfo.ScaleHeight(2)
+		Dropdown.dropdown_popup_elements_scrollbar_width = GUIInfo.ScaleWidth(3)
+		Dropdown.name_dropdown_gap = GUIInfo.ScaleHeight(8)
+		Dropdown.dropdown_end_gap = GUIInfo.ScaleWidth(24)
+	}
 
 	private static readonly dropdown_path = "menu/dropdown.svg"
 	private static readonly dropdown_arrow_path = "menu/dropdown_arrow.svg"
 	private static readonly dropdown_popup_path = "menu/dropdown_popup.svg"
 	private static readonly scrollbar_path = "menu/scrollbar.svg"
-	private static readonly dropdown_offset = new Vector2(14, 11)
-	private static readonly dropdown_border_size = new Vector2(2, 2)
-	private static readonly dropdown_background_color = new Color(16, 16, 28)
-	private static readonly dropdown_arrow_active_color = new Color(104, 4, 255)
-	private static readonly dropdown_arrow_inactive_color = new Color(47, 45, 77)
-	private static readonly dropdown_arrow_size = RendererSDK.GetImageSize(Dropdown.dropdown_arrow_path)
-	private static readonly dropdown_text_offset = new Vector2(9, 8)
-	private static readonly dropdown_popup_offset = new Vector2(0, -2)
-	private static readonly dropdown_popup_elements_offset = new Vector2(2, 2)
-	private static readonly dropdown_popup_element_text_offset = new Vector2(7, 7)
-	private static readonly dropdown_popup_elements_scrollbar_offset = new Vector2(2, 2)
-	private static readonly dropdown_popup_elements_scrollbar_width = 3
 	private static readonly dropdown_popup_element_active_color = new Color(8, 7, 14)
 	private static readonly dropdown_popup_element_hovered_color = new Color(24, 23, 40)
 	private static readonly dropdown_popup_element_inactive_color = new Color(16, 16, 28)
-	private static readonly name_dropdown_gap = 8
-	private static readonly dropdown_end_gap = 24
+	private static readonly dropdown_background_color = new Color(16, 16, 28)
+	private static readonly dropdown_arrow_active_color = new Color(104, 4, 255)
+	private static readonly dropdown_arrow_inactive_color = new Color(47, 45, 77)
+	private static readonly dropdown_offset = new Vector2()
+	private static readonly dropdown_border_size = new Vector2()
+	private static readonly orig_dropdown_arrow_size = RendererSDK.GetImageSize(Dropdown.dropdown_arrow_path)
+	private static readonly dropdown_arrow_size = new Vector2()
+	private static readonly dropdown_text_offset = new Vector2()
+	private static readonly dropdown_popup_offset = new Vector2()
+	private static readonly dropdown_popup_elements_offset = new Vector2()
+	private static readonly dropdown_popup_element_text_offset = new Vector2()
+	private static readonly dropdown_popup_elements_scrollbar_offset = new Vector2()
+	private static dropdown_popup_elements_scrollbar_width = 0
+	private static name_dropdown_gap = 0
+	private static dropdown_end_gap = 0
 
 	public ValuesNames: string[]
 	public selected_id = 0
@@ -120,7 +144,7 @@ export default class Dropdown extends Base {
 			),
 		)
 		const popup_rect_size = popup_rect.Size
-		if (popup_rect.pos1.y + popup_rect_size.y > RendererSDK.WindowSize.y) {
+		if (popup_rect.pos1.y + popup_rect_size.y > this.WindowSize.y) {
 			const off = dropdown_rect.Size.y + popup_rect_size.y + Dropdown.dropdown_popup_offset.y * 2
 			popup_rect.pos1.SubtractScalarY(off)
 			popup_rect.pos2.SubtractScalarY(off)
@@ -290,6 +314,14 @@ export default class Dropdown extends Base {
 		}
 		return false
 	}
+	public OnMouseWheel(up: boolean): void {
+		if (!this.GetPopupRect(this.DropdownRect).Contains(this.MousePosition))
+			return
+		if (up)
+			this.currently_at_id--
+		else
+			this.currently_at_id++
+	}
 	private FixSelectedID(): void {
 		this.selected_id = Math.max(Math.min(this.InternalValuesNames.length - 1, this.selected_id), 0)
 	}
@@ -297,16 +329,7 @@ export default class Dropdown extends Base {
 
 InputEventSDK.on("MouseWheel", up => {
 	const active_dropdown = Dropdown.active_dropdown
-	if (active_dropdown === undefined || !active_dropdown.IsVisible)
-		return
-
-	const popup_rect = active_dropdown.GetPopupRect(active_dropdown.DropdownRect)
-	if (!popup_rect.Contains(InputManager.CursorOnScreen))
-		return
-
-	if (up)
-		active_dropdown.currently_at_id--
-	else
-		active_dropdown.currently_at_id++
-	return false
+	return !(active_dropdown?.IsVisible && active_dropdown.OnMouseWheel(up))
 })
+
+EventsSDK.on("WindowSizeChanged", () => Dropdown.OnWindowSizeChanged())

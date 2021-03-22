@@ -1,15 +1,26 @@
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
+import GUIInfo from "../GUI/GUIInfo"
+import EventsSDK from "../Managers/EventsSDK"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
 
 export default class Slider extends Base {
+	public static OnWindowSizeChanged(): void {
+		Slider.slider_background_height = GUIInfo.ScaleHeight(Slider.orig_slider_background_height)
+		Slider.slider_background_offset.x = GUIInfo.ScaleWidth(13)
+		Slider.slider_background_offset.y = GUIInfo.ScaleHeight(12)
+		Slider.text_value_gap = GUIInfo.ScaleWidth(20)
+		Slider.text_slider_vertical_gap = GUIInfo.ScaleHeight(10)
+	}
+
 	private static readonly slider_background_path = "menu/slider_background.svg"
 	private static readonly slider_fill_path = "menu/slider_fill.svg"
-	private static readonly slider_background_height = RendererSDK.GetImageSize(Slider.slider_background_path).y
-	private static readonly slider_background_offset = new Vector2(13, 12)
-	private static readonly text_value_gap = 20
-	private static readonly text_slider_vertical_gap = 10
+	private static readonly orig_slider_background_height = RendererSDK.GetImageSize(Slider.slider_background_path).y
+	private static slider_background_height = 0
+	private static readonly slider_background_offset = new Vector2()
+	private static text_value_gap = 0
+	private static text_slider_vertical_gap = 0
 
 	public value = 0
 	public is_dragging = false
@@ -110,3 +121,5 @@ export default class Slider extends Base {
 		return Math.round(num * pow) / pow
 	}
 }
+
+EventsSDK.on("WindowSizeChanged", () => Slider.OnWindowSizeChanged())

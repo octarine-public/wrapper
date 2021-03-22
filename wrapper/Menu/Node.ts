@@ -1,6 +1,8 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
+import GUIInfo from "../GUI/GUIInfo"
+import EventsSDK from "../Managers/EventsSDK"
 import { PARTICLE_RENDER_NAME } from "../Managers/ParticleManager"
 import RendererSDK from "../Native/RendererSDK"
 import Base, { IMenu } from "./Base"
@@ -14,14 +16,32 @@ import Slider from "./Slider"
 import Toggle from "./Toggle"
 
 export default class Node extends Base {
+	public static OnWindowSizeChanged(): void {
+		Node.arrow_size.x = GUIInfo.ScaleWidth(Node.orig_arrow_size.x)
+		Node.arrow_size.y = GUIInfo.ScaleHeight(Node.orig_arrow_size.y)
+		Node.arrow_offset.x = GUIInfo.ScaleWidth(8)
+		Node.arrow_offset.y = GUIInfo.ScaleHeight(8)
+		Node.arrow_text_gap = GUIInfo.ScaleWidth(10)
+		Node.icon_size.x = GUIInfo.ScaleWidth(24)
+		Node.icon_size.y = GUIInfo.ScaleHeight(24)
+		Node.icon_offset.x = GUIInfo.ScaleWidth(12)
+		Node.icon_offset.y = GUIInfo.ScaleHeight(8)
+		Node.text_offset_.x = GUIInfo.ScaleWidth(15)
+		Node.text_offset_.y = GUIInfo.ScaleHeight(14)
+		Node.text_offset_with_icon.x = GUIInfo.ScaleWidth(48)
+		Node.text_offset_with_icon.y = GUIInfo.ScaleHeight(14)
+	}
+
 	private static readonly arrow_active_path = "menu/arrow_active.svg"
 	private static readonly arrow_inactive_path = "menu/arrow_inactive.svg"
-	private static readonly arrow_size = RendererSDK.GetImageSize(Node.arrow_inactive_path)
-	private static readonly arrow_offset = new Vector2(8, 8).AddForThis(Node.arrow_size)
-	private static readonly arrow_text_gap = 10
-	private static readonly icon_size = new Vector2(24, 24)
-	private static readonly icon_offset = new Vector2(12, 8)
-	private static readonly text_offset_with_icon = new Vector2(48, 14)
+	private static readonly orig_arrow_size = RendererSDK.GetImageSize(Node.arrow_inactive_path)
+	private static readonly arrow_size = new Vector2()
+	private static readonly arrow_offset = new Vector2()
+	private static arrow_text_gap = 0
+	private static readonly icon_size = new Vector2()
+	private static readonly icon_offset = new Vector2()
+	private static readonly text_offset_ = new Vector2(15, 14)
+	private static readonly text_offset_with_icon = new Vector2()
 
 	public entries: Base[] = []
 	public save_unused_configs = false
@@ -30,7 +50,7 @@ export default class Node extends Base {
 	protected active_element?: Base
 	protected is_open_ = false
 	protected readonly disable_tooltips = true
-	protected readonly text_offset = new Vector2(15, 14)
+	protected readonly text_offset = Node.text_offset_
 
 	constructor(parent: IMenu, name: string, private icon_path_ = "", tooltip = "") {
 		super(parent, name, tooltip)
@@ -82,7 +102,7 @@ export default class Node extends Base {
 	public get EntriesSizeX(): number {
 		return this.entries.reduce(
 			(prev, cur) => Math.max(prev, cur.IsVisible ? cur.OriginalSize.x : 0),
-			170,
+			this.OriginalSize.x,
 		)
 	}
 	public get EntriesSizeY(): number {
@@ -98,16 +118,19 @@ export default class Node extends Base {
 		this.entries.forEach(entry => entry.ApplyLocalization())
 		super.ApplyLocalization()
 	}
-	public Update() {
+	public Update(recursive = false) {
 		super.Update()
 		this.OriginalSize.x =
 			this.name_size.x
+			+ Node.arrow_size.x
 			+ Node.arrow_offset.x
 			+ Node.arrow_text_gap
 		if (this.icon_path !== "")
 			this.OriginalSize.AddScalarX(Node.text_offset_with_icon.x)
 		else
 			this.OriginalSize.AddScalarX(this.text_offset.x)
+		if (recursive)
+			this.entries.forEach(entry => entry.Update(true))
 	}
 
 	public Render(): void {
@@ -121,17 +144,17 @@ export default class Node extends Base {
 			TextPos.AddForThis(this.text_offset)
 
 		this.RenderTextDefault(this.Name, TextPos)
-		const arrow_pos = this.Position.Add(this.TotalSize).SubtractForThis(Node.arrow_offset)
+		const arrow_pos = this.Position.Add(this.TotalSize).SubtractForThis(Node.arrow_offset).SubtractForThis(Node.arrow_size)
 		if (this.is_open)
-			RendererSDK.Image(Node.arrow_active_path, arrow_pos)
+			RendererSDK.Image(Node.arrow_active_path, arrow_pos, -1, Node.arrow_size)
 		else
-			RendererSDK.Image(Node.arrow_inactive_path, arrow_pos)
+			RendererSDK.Image(Node.arrow_inactive_path, arrow_pos, -1, Node.arrow_size)
 		if (!this.is_open)
 			return
 
 		const position = this.Position.Clone().AddScalarX(this.TotalSize.x),
 			max_width = this.EntriesSizeX
-		position.y = Math.min(position.y, RendererSDK.WindowSize.y - this.EntriesSizeY)
+		position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
 		this.entries.forEach(entry => {
 			if (!entry.IsVisible)
 				return
@@ -325,3 +348,5 @@ export default class Node extends Base {
 		this.entries = this.entries.sort((a, b) => a instanceof Node && b instanceof Node ? a.Name.localeCompare(b.Name) : 0)
 	}
 }
+
+EventsSDK.on("WindowSizeChanged", () => Node.OnWindowSizeChanged())

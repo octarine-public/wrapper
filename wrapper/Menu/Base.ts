@@ -3,6 +3,8 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { FontFlags_t } from "../Enums/FontFlags_t"
+import GUIInfo from "../GUI/GUIInfo"
+import EventsSDK from "../Managers/EventsSDK"
 import InputManager from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import * as ArrayExtensions from "../Utils/ArrayExtensions"
@@ -24,17 +26,37 @@ export default class Base {
 	public static ForwardConfigASAP = false
 	public static SaveConfigASAP = true
 	public static trigger_on_chat = false
+	public static OnWindowSizeChanged(): void {
+		Base.bar_width = GUIInfo.ScaleWidth(RendererSDK.GetImageSize(Base.bar_inactive_path).x)
+		Base.tooltip_offset = GUIInfo.ScaleWidth(3)
+		Base.tooltip_icon_size.x = GUIInfo.ScaleWidth(24)
+		Base.tooltip_icon_size.y = GUIInfo.ScaleHeight(24)
+		Base.tooltip_icon_offset.x = GUIInfo.ScaleWidth(7)
+		Base.tooltip_icon_offset.y = GUIInfo.ScaleHeight(6)
+		Base.tooltip_icon_text_gap = GUIInfo.ScaleWidth(9)
+		Base.tooltip_text_offset.x = GUIInfo.ScaleWidth(8)
+		Base.tooltip_text_offset.y = GUIInfo.ScaleHeight(12)
+		Base.tooltip_text_bottom_gap = GUIInfo.ScaleHeight(8)
+		Base.OriginalSize.x = GUIInfo.ScaleWidth(Base.ActualOriginalSize.x)
+		Base.OriginalSize.y = GUIInfo.ScaleHeight(Base.ActualOriginalSize.y)
+		Base.text_offset.x = GUIInfo.ScaleWidth(14)
+		Base.text_offset.y = GUIInfo.ScaleHeight(14)
+	}
+
 	private static readonly background_inactive_path = "menu/background_inactive.svg"
 	private static readonly background_active_path = "menu/background_active.svg"
 	private static readonly bar_inactive_path = "menu/bar_inactive.svg"
 	private static readonly bar_active_path = "menu/bar_active.svg"
-	private static readonly bar_width = RendererSDK.GetImageSize(Base.bar_inactive_path).x
-	private static readonly tooltip_offset = 3
-	private static readonly tooltip_icon_size = new Vector2(24, 24)
-	private static readonly tooltip_icon_offset = new Vector2(7, 6)
-	private static readonly tooltip_icon_text_gap = 9
-	private static readonly tooltip_text_offset = new Vector2(8, 12)
-	private static readonly tooltip_text_bottom_gap = 8
+	private static bar_width = 0
+	private static tooltip_offset = 0
+	private static readonly tooltip_icon_size = new Vector2()
+	private static readonly tooltip_icon_offset = new Vector2()
+	private static tooltip_icon_text_gap = 0
+	private static readonly tooltip_text_offset = new Vector2()
+	private static tooltip_text_bottom_gap = 0
+	private static readonly ActualOriginalSize = RendererSDK.GetImageSize(Base.background_inactive_path)
+	private static readonly OriginalSize = new Vector2()
+	private static readonly text_offset = new Vector2()
 
 	public IsHidden = false
 	public IsHiddenBecauseOfSearch = false
@@ -51,14 +73,14 @@ export default class Base {
 	public readonly OnValueChangedCBs: ((caller: Base) => void)[] = []
 
 	public readonly Position = new Vector2()
-	public readonly OriginalSize = RendererSDK.GetImageSize(Base.background_inactive_path).Clone()
+	public readonly OriginalSize = new Vector2()
 	public readonly TotalSize = this.OriginalSize.Clone()
 
 	protected is_active = false
 	protected config_dirty = true
 	protected readonly TooltipSize = new Vector2()
 	protected readonly TooltipTextSize = new Vector3()
-	protected readonly text_offset = new Vector2(14, 14)
+	protected readonly text_offset = Base.text_offset
 	protected readonly name_size = new Vector3()
 
 	protected readonly execute_on_add: boolean = true
@@ -83,6 +105,9 @@ export default class Base {
 	}
 	protected get MousePosition(): Vector2 {
 		return InputManager.CursorOnScreen
+	}
+	protected get WindowSize(): Vector2 {
+		return RendererSDK.WindowSize
 	}
 	protected get IsHovered(): boolean {
 		return this.Rect.Contains(this.MousePosition)
@@ -111,7 +136,8 @@ export default class Base {
 		return this
 	}
 
-	public Update(): void {
+	public Update(_recursive = false): void {
+		this.OriginalSize.CopyFrom(Base.OriginalSize)
 		this.GetTextSizeDefault(this.Name).CopyTo(this.name_size)
 		if (this.Tooltip === "")
 			return
@@ -124,7 +150,10 @@ export default class Base {
 			)
 			.AddForThis(Base.tooltip_text_offset)
 			.AddScalarY(Base.tooltip_text_bottom_gap)
-		this.TooltipSize.y = Math.max(this.TooltipSize.y, Base.tooltip_icon_size.y + Base.tooltip_icon_offset.y * 2)
+		this.TooltipSize.y = Math.max(
+			this.TooltipSize.y,
+			Base.tooltip_icon_size.y + Base.tooltip_icon_offset.y * 2,
+		)
 	}
 
 	public Render(draw_bar = true): void {
@@ -173,7 +202,7 @@ export default class Base {
 		return RendererSDK.GetTextSize(
 			text,
 			this.FontName,
-			this.FontSize,
+			GUIInfo.ScaleHeight(this.FontSize),
 			this.FontWeight,
 			this.FontWidth,
 			false,
@@ -186,7 +215,7 @@ export default class Base {
 			position,
 			Color.White,
 			this.FontName,
-			this.FontSize,
+			GUIInfo.ScaleHeight(this.FontSize),
 			this.FontWeight,
 			this.FontWidth,
 			false,
@@ -221,9 +250,17 @@ export default class Base {
 			this.Tooltip,
 			Position
 				.Add(this.TooltipSize)
-				.SubtractForThis(Base.tooltip_text_offset)
-				.SubtractForThis(Vector2.FromVector3(this.TooltipTextSize))
-				.AddScalarY(this.TooltipTextSize.z),
+				.SubtractScalarX(
+					Base.tooltip_text_offset.x
+					+ this.TooltipTextSize.x,
+				)
+				.SubtractScalarY(
+					Base.tooltip_text_offset.y
+					+ this.TooltipTextSize.y
+					- this.TooltipTextSize.z,
+				),
 		)
 	}
 }
+
+EventsSDK.on("WindowSizeChanged", () => Base.OnWindowSizeChanged())

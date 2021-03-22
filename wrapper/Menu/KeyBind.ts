@@ -1,5 +1,7 @@
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
+import GUIInfo from "../GUI/GUIInfo"
+import EventsSDK from "../Managers/EventsSDK"
 import { InputEventSDK, VKeys, VMouseKeys } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import { arrayRemove } from "../Utils/ArrayExtensions"
@@ -10,12 +12,19 @@ import KeyNames from "./KeyNames"
 export default class KeyBind extends Base {
 	public static readonly callbacks = new Map<number, KeyBind[]>()
 	public static changing_now?: KeyBind
+	public static OnWindowSizeChanged(): void {
+		KeyBind.keybind_offset.x = GUIInfo.ScaleWidth(12)
+		KeyBind.keybind_offset.y = GUIInfo.ScaleHeight(7)
+		KeyBind.keybind_text_offset.x = GUIInfo.ScaleWidth(7)
+		KeyBind.keybind_text_offset.y = GUIInfo.ScaleHeight(7)
+		KeyBind.text_keybind_gap = GUIInfo.ScaleWidth(15)
+	}
 
 	private static readonly keybind_active_path = "menu/keybind_active.svg"
 	private static readonly keybind_inactive_path = "menu/keybind_inactive.svg"
-	private static readonly keybind_offset = new Vector2(12, 7)
-	private static readonly keybind_text_offset = new Vector2(7, 7)
-	private static readonly text_keybind_gap = 15
+	private static readonly keybind_offset = new Vector2()
+	private static readonly keybind_text_offset = new Vector2()
+	private static text_keybind_gap = 15
 
 	public activates_in_menu = false
 	public assigned_key = 0
@@ -69,8 +78,8 @@ export default class KeyBind extends Base {
 		})
 	}
 
-	public Update(assign_key_str = true): void {
-		super.Update()
+	public Update(recursive = false, assign_key_str = true): void {
+		super.Update(recursive)
 		KeyBind.callbacks.forEach((keybinds, key) => {
 			if (arrayRemove(keybinds, this) && keybinds.length === 0)
 				KeyBind.callbacks.delete(key)
@@ -88,7 +97,7 @@ export default class KeyBind extends Base {
 		Vector2.FromVector3(this.GetTextSizeDefault(this.assigned_key_str)).CopyTo(this.keybind_text_size)
 		this.keybind_text_size
 			.Add(KeyBind.keybind_text_offset.MultiplyScalar(2))
-			.SetY(this.TotalSize.y - KeyBind.keybind_offset.y * 2)
+			.SetY(this.OriginalSize.y - KeyBind.keybind_offset.y * 2)
 			.CopyTo(this.keybind_size)
 
 		this.OriginalSize.x =
@@ -123,7 +132,7 @@ export default class KeyBind extends Base {
 			const old = KeyBind.changing_now
 			KeyBind.changing_now = this
 			this.assigned_key_str = "..."
-			this.Update(false)
+			this.Update(false, false)
 			if (old !== undefined)
 				old.Update()
 		}
@@ -175,3 +184,5 @@ InputEventSDK.on("KeyDown", key => KeyHandler(key, true))
 InputEventSDK.on("KeyUp", key => KeyHandler(key, false))
 InputEventSDK.on("MouseKeyDown", key => MouseKeyHandler(key, true))
 InputEventSDK.on("MouseKeyUp", key => MouseKeyHandler(key, false))
+
+EventsSDK.on("WindowSizeChanged", () => KeyBind.OnWindowSizeChanged())

@@ -1,4 +1,5 @@
 import Events from "../Managers/Events"
+import EventsSDK from "../Managers/EventsSDK"
 import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import { StringToUTF16, Utf16ArrayToStr } from "../Utils/ArrayBufferUtils"
@@ -12,7 +13,6 @@ import Node from "./Node"
 const hardcoded_icons = new Map<string, string>(Object.entries(readJSON("hardcoded_icons.json")))
 class MenuManager {
 	public entries: Node[] = []
-	public Scale = 1
 	public config: any
 	private readonly header = new Header(this)
 	private active_element?: Base
@@ -101,6 +101,7 @@ class MenuManager {
 			return
 		const max_width = this.EntriesSizeX
 		this.header.TotalSize.x = max_width
+		this.header.TotalSize.y = this.header.OriginalSize.y
 		this.header.Render()
 		const position = this.header.Position.Clone().AddScalarY(this.header.TotalSize.y)
 		this.entries.forEach(node => {
@@ -116,6 +117,9 @@ class MenuManager {
 			if (node.IsVisible)
 				node.PostRender()
 		})
+	}
+	public OnWindowSizeChanged(): void {
+		this.entries.forEach(entry => entry.Update(true))
 	}
 
 	public OnMouseLeftDown(): boolean {
@@ -186,6 +190,8 @@ Events.after("Draw", () => {
 	Menu.Render()
 	RendererSDK.EmitDraw()
 })
+
+EventsSDK.on("WindowSizeChanged", () => Menu.OnWindowSizeChanged())
 
 InputEventSDK.on("MouseKeyDown", key => {
 	if (key === VMouseKeys.MK_LBUTTON)

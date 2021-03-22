@@ -162,6 +162,7 @@ interface EventsSDK extends EventEmitter {
 		value3: number,
 	) => void): EventsSDK
 	on(name: "MapDataLoaded", listener: () => void): EventsSDK
+	on(name: "WindowSizeChanged", listener: () => void): EventsSDK
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()

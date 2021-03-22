@@ -57,7 +57,7 @@ const GUIInfo = new (class CGUIInfo {
 		} else
 			this.PreGame.DebugDraw()
 	}
-	public ScaleWidth(w: number, screen_size: Vector2): number {
+	public ScaleWidth(w: number, screen_size = RendererSDK.WindowSize): number {
 		let screen_height = screen_size.y
 		if (screen_size.x === 1280 && screen_height === 1024)
 			screen_height = 960
@@ -65,7 +65,7 @@ const GUIInfo = new (class CGUIInfo {
 			screen_height = 540
 		return Math.round(screen_height / this.proportional_base * w)
 	}
-	public ScaleHeight(h: number, screen_size: Vector2): number {
+	public ScaleHeight(h: number, screen_size = RendererSDK.WindowSize): number {
 		const screen_height = screen_size.y
 		return Math.round(screen_height / this.proportional_base * h)
 	}

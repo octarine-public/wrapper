@@ -1,18 +1,30 @@
 import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
+import GUIInfo from "../GUI/GUIInfo"
+import EventsSDK from "../Managers/EventsSDK"
 import RendererSDK from "../Native/RendererSDK"
 import AbilityData from "../Objects/DataBook/AbilityData"
 import Base, { IMenu } from "./Base"
 
 // every icon: 32x32, 1x1 border
 export default class ImageSelector extends Base {
-	private static readonly image_border_width = 2
+	public static OnWindowSizeChanged(): void {
+		ImageSelector.image_border_width = GUIInfo.ScaleWidth(2)
+		ImageSelector.image_gap = GUIInfo.ScaleWidth(2)
+		ImageSelector.base_image_height = GUIInfo.ScaleHeight(32)
+		ImageSelector.random_height_value = GUIInfo.ScaleHeight(40)
+	}
+
+	private static image_border_width = 0
+	private static image_gap = 0
+	private static base_image_height = 0
+	private static random_height_value = 0
 	private static readonly elements_per_row = 4
 	private static readonly image_activated_border_color = new Color(104, 4, 255)
 
 	public enabled_values: Map<string, boolean>
-	protected readonly image_size = new Vector2(32, 32)
+	protected readonly image_size = new Vector2()
 	protected rendered_paths: string[] = []
 
 	constructor(
@@ -38,10 +50,10 @@ export default class ImageSelector extends Base {
 			base_pos,
 			base_pos.Add(
 				this.image_size
-					.AddScalar(ImageSelector.image_border_width * 2 + 2)
+					.AddScalar(ImageSelector.image_border_width * 2 + ImageSelector.image_gap)
 					.MultiplyScalarX(Math.min(this.values.length, ImageSelector.elements_per_row))
 					.MultiplyScalarY(Math.ceil(this.values.length / ImageSelector.elements_per_row)),
-			).SubtractScalar(6),
+			).SubtractScalar((ImageSelector.elements_per_row - 1) * ImageSelector.image_gap),
 		)
 	}
 
@@ -62,6 +74,7 @@ export default class ImageSelector extends Base {
 			if (!this.enabled_values.has(value))
 				this.enabled_values.set(value, false)
 		})
+		this.image_size.x = this.image_size.y = ImageSelector.base_image_height
 		this.rendered_paths = this.values.map(path => {
 			if (path.startsWith("item_bottle_"))
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
@@ -72,20 +85,20 @@ export default class ImageSelector extends Base {
 			} else
 				path = `panorama/images/heroes/${path}_png.vtex_c`
 			const path_iamge_size = RendererSDK.GetImageSize(path)
-			this.image_size.x = Math.max(this.image_size.x, 32 * (path_iamge_size.x / path_iamge_size.y))
+			this.image_size.x = Math.max(this.image_size.x, ImageSelector.base_image_height * (path_iamge_size.x / path_iamge_size.y))
 			return path
 		})
 		this.OriginalSize.x =
 			Math.max(
 				this.name_size.x,
 				Math.min(this.values.length, ImageSelector.elements_per_row)
-				* (this.image_size.x + ImageSelector.image_border_width * 2 + 2),
+				* (this.image_size.x + ImageSelector.image_border_width * 2 + ImageSelector.image_gap),
 			)
 			+ this.text_offset.x * 2
 		this.OriginalSize.y = (
 			Math.ceil(this.values.length / ImageSelector.elements_per_row)
-			* (this.image_size.y + ImageSelector.image_border_width * 2 + 2)
-			+ 40
+			* (this.image_size.y + ImageSelector.image_border_width * 2 + ImageSelector.image_gap)
+			+ ImageSelector.random_height_value
 		)
 	}
 
@@ -105,7 +118,7 @@ export default class ImageSelector extends Base {
 				pos = new Vector2(
 					i % ImageSelector.elements_per_row,
 					Math.floor(i / ImageSelector.elements_per_row),
-				).Multiply(this.image_size.AddScalar(ImageSelector.image_border_width * 2 + 2)).Add(base_pos)
+				).Multiply(this.image_size.AddScalar(ImageSelector.image_border_width * 2 + ImageSelector.image_gap)).Add(base_pos)
 			RendererSDK.Image(this.rendered_paths[i], pos, -1, size)
 			if (this.IsEnabled(this.values[i]))
 				RendererSDK.OutlinedRect(
@@ -129,7 +142,7 @@ export default class ImageSelector extends Base {
 			const base_pos = new Vector2(
 				i % ImageSelector.elements_per_row,
 				Math.floor(i / ImageSelector.elements_per_row),
-			).Multiply(this.image_size.AddScalar(ImageSelector.image_border_width * 2 + 2))
+			).Multiply(this.image_size.AddScalar(ImageSelector.image_border_width * 2 + ImageSelector.image_gap))
 			if (!new Rectangle(base_pos, base_pos.Add(this.image_size)).Contains(off))
 				continue
 			const value = this.values[i]
@@ -140,3 +153,5 @@ export default class ImageSelector extends Base {
 		return false
 	}
 }
+
+EventsSDK.on("WindowSizeChanged", () => ImageSelector.OnWindowSizeChanged())

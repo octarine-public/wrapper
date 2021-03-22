@@ -1,38 +1,72 @@
 import Color from "../Base/Color"
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
+import GUIInfo from "../GUI/GUIInfo"
+import EventsSDK from "../Managers/EventsSDK"
 import RendererSDK from "../Native/RendererSDK"
 import { HSVToRGB, RGBToHSV } from "../Utils/Math"
 import Base, { IMenu } from "./Base"
 
 export default class ColorPicker extends Base {
 	public static active_colorpicker: Nullable<ColorPicker>
+	public static OnWindowSizeChanged(): void {
+		ColorPicker.selected_color_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_selected_color_size.x)
+		ColorPicker.selected_color_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_selected_color_size.y)
+		ColorPicker.color_offset.x = GUIInfo.ScaleWidth(12)
+		ColorPicker.color_offset.y = GUIInfo.ScaleHeight(12)
+		ColorPicker.text_color_gap = GUIInfo.ScaleWidth(10)
+		ColorPicker.colorpicker_background_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_colorpicker_background_size.x)
+		ColorPicker.colorpicker_background_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_colorpicker_background_size.y)
+		ColorPicker.text_colorpicker_gap = GUIInfo.ScaleHeight(4)
+		ColorPicker.colorpicker_color_offset.x = GUIInfo.ScaleWidth(4)
+		ColorPicker.colorpicker_color_offset.y = GUIInfo.ScaleHeight(4)
+		ColorPicker.colorpicker_color_size = ColorPicker.colorpicker_background_size.x - (ColorPicker.colorpicker_color_offset.x * 2)
+		ColorPicker.colorpicker_hue_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_colorpicker_hue_size.x)
+		ColorPicker.colorpicker_hue_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_colorpicker_hue_size.y)
+		ColorPicker.colorpicker_color_hue_gap = GUIInfo.ScaleHeight(6)
+		ColorPicker.colorpicker_alpha_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_colorpicker_alpha_size.x)
+		ColorPicker.colorpicker_alpha_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_colorpicker_alpha_size.y)
+		ColorPicker.colorpicker_color_alpha_gap = GUIInfo.ScaleHeight(6)
+		ColorPicker.colorpicker_picker_circle_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_colorpicker_picker_circle_size.x)
+		ColorPicker.colorpicker_picker_circle_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_colorpicker_picker_circle_size.y)
+		ColorPicker.colorpicker_picker_rect_size.x = GUIInfo.ScaleWidth(ColorPicker.orig_colorpicker_picker_rect_size.x)
+		ColorPicker.colorpicker_picker_rect_size.y = GUIInfo.ScaleHeight(ColorPicker.orig_colorpicker_picker_rect_size.y)
+		ColorPicker.colorpicker_text_y_offset = GUIInfo.ScaleHeight(10)
+		ColorPicker.colorpicker_text_x_size = GUIInfo.ScaleWidth(43)
+		ColorPicker.colorpicker_text_x_gap = GUIInfo.ScaleWidth(3)
+	}
 
 	private static readonly selected_color_path = "menu/colorpicker_selected_color.svg"
 	private static readonly selected_color_transparency_path = "menu/colorpicker_selected_color_transparency.svg"
-	private static readonly selected_color_size = RendererSDK.GetImageSize(ColorPicker.selected_color_path)
-	private static readonly color_offset = new Vector2(12, 12)
-	private static readonly text_color_gap = 10
+	private static readonly orig_selected_color_size = RendererSDK.GetImageSize(ColorPicker.selected_color_path)
+	private static readonly selected_color_size = new Vector2()
+	private static readonly color_offset = new Vector2()
+	private static text_color_gap = 0
 	private static readonly colorpicker_background_path = "menu/colorpicker_background.svg"
-	private static readonly colorpicker_background_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_background_path)
-	private static readonly text_colorpicker_gap = 4
-	private static readonly colorpicker_color_offset = new Vector2(4, 4)
-	private static readonly colorpicker_color_size = ColorPicker.colorpicker_background_size.x - (ColorPicker.colorpicker_color_offset.x * 2)
+	private static readonly orig_colorpicker_background_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_background_path)
+	private static readonly colorpicker_background_size = new Vector2()
+	private static text_colorpicker_gap = 4
+	private static readonly colorpicker_color_offset = new Vector2()
+	private static colorpicker_color_size = 0
 	private static readonly colorpicker_color_path = "menu/colorpicker_color.svg"
 	private static readonly colorpicker_overlay_path = "menu/colorpicker_overlay.svg"
 	private static readonly colorpicker_hue_path = "menu/colorpicker_hue.svg"
-	private static readonly colorpicker_hue_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_hue_path)
-	private static readonly colorpicker_color_hue_gap = 6
+	private static readonly orig_colorpicker_hue_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_hue_path)
+	private static readonly colorpicker_hue_size = new Vector2()
+	private static colorpicker_color_hue_gap = 0
 	private static readonly colorpicker_alpha_path = "menu/colorpicker_alpha.svg"
-	private static readonly colorpicker_alpha_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_alpha_path)
-	private static readonly colorpicker_color_alpha_gap = 6
+	private static readonly orig_colorpicker_alpha_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_alpha_path)
+	private static readonly colorpicker_alpha_size = new Vector2()
+	private static colorpicker_color_alpha_gap = 0
 	private static readonly colorpicker_picker_circle_path = "menu/colorpicker_picker_circle.svg"
-	private static readonly colorpicker_picker_circle_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_picker_circle_path)
+	private static readonly orig_colorpicker_picker_circle_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_picker_circle_path)
+	private static readonly colorpicker_picker_circle_size = new Vector2()
 	private static readonly colorpicker_picker_rect_path = "menu/colorpicker_picker_rect.svg"
-	private static readonly colorpicker_picker_rect_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_picker_rect_path)
-	private static readonly colorpicker_text_y_offset = 10
-	private static readonly colorpicker_text_x_size = 43
-	private static readonly colorpicker_text_x_gap = 3
+	private static readonly orig_colorpicker_picker_rect_size = RendererSDK.GetImageSize(ColorPicker.colorpicker_picker_rect_path)
+	private static readonly colorpicker_picker_rect_size = new Vector2()
+	private static colorpicker_text_y_offset = 0
+	private static colorpicker_text_x_size = 0
+	private static colorpicker_text_x_gap = 0
 
 	public readonly selected_color = new Color()
 	protected dragging_color = false
@@ -66,7 +100,7 @@ export default class ColorPicker extends Base {
 			base_pos,
 			base_pos.Add(ColorPicker.colorpicker_background_size),
 		)
-		if (colorpicker_rect.pos2.y > RendererSDK.WindowSize.y) {
+		if (colorpicker_rect.pos2.y > this.WindowSize.y) {
 			const move_y = this.name_size.y + ColorPicker.colorpicker_background_size.y + ColorPicker.text_colorpicker_gap * 2
 			colorpicker_rect.pos1.SubtractScalarY(move_y)
 			colorpicker_rect.pos2.SubtractScalarY(move_y)
@@ -119,7 +153,12 @@ export default class ColorPicker extends Base {
 			colorpicker_color_rect.Size,
 			hue_color,
 		)
-		RendererSDK.Image(ColorPicker.colorpicker_overlay_path, colorpicker_color_rect.pos1)
+		RendererSDK.Image(
+			ColorPicker.colorpicker_overlay_path,
+			colorpicker_color_rect.pos1,
+			-1,
+			colorpicker_color_rect.Size,
+		)
 
 		const colorpicker_circle_rect = this.GetColorPickerCircleRect(colorpicker_color_rect)
 		RendererSDK.FilledRect(
@@ -127,7 +166,12 @@ export default class ColorPicker extends Base {
 			colorpicker_circle_rect.Size.SubtractScalarForThis(8),
 			selected_color_no_alpha,
 		)
-		RendererSDK.Image(ColorPicker.colorpicker_picker_circle_path, colorpicker_circle_rect.pos1)
+		RendererSDK.Image(
+			ColorPicker.colorpicker_picker_circle_path,
+			colorpicker_circle_rect.pos1,
+			-1,
+			colorpicker_circle_rect.Size,
+		)
 
 		const colorpicker_hue_rect = this.GetColorPickerHueRect(colorpicker_color_rect)
 		RendererSDK.Image(ColorPicker.colorpicker_hue_path, colorpicker_hue_rect.pos1, -1, colorpicker_hue_rect.Size)
@@ -138,7 +182,12 @@ export default class ColorPicker extends Base {
 			colorpicker_hue_picker_rect.Size.SubtractScalarForThis(2),
 			hue_color,
 		)
-		RendererSDK.Image(ColorPicker.colorpicker_picker_rect_path, colorpicker_hue_picker_rect.pos1)
+		RendererSDK.Image(
+			ColorPicker.colorpicker_picker_rect_path,
+			colorpicker_hue_picker_rect.pos1,
+			-1,
+			colorpicker_hue_picker_rect.Size,
+		)
 
 		const colorpicker_alpha_rect = this.GetColorPickerAlphaRect(colorpicker_hue_rect)
 		RendererSDK.Image(
@@ -155,7 +204,12 @@ export default class ColorPicker extends Base {
 			colorpicker_alpha_picker_rect.Size.SubtractScalarForThis(2),
 			this.selected_color,
 		)
-		RendererSDK.Image(ColorPicker.colorpicker_picker_rect_path, colorpicker_alpha_picker_rect.pos1)
+		RendererSDK.Image(
+			ColorPicker.colorpicker_picker_rect_path,
+			colorpicker_alpha_picker_rect.pos1,
+			-1,
+			colorpicker_alpha_picker_rect.Size,
+		)
 
 		const text_base_pos = colorpicker_rect.pos1
 			.Clone()
@@ -328,3 +382,5 @@ export default class ColorPicker extends Base {
 		)
 	}
 }
+
+EventsSDK.on("WindowSizeChanged", () => ColorPicker.OnWindowSizeChanged())
