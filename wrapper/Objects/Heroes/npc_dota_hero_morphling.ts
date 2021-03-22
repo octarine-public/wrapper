@@ -6,7 +6,7 @@ import Hero from "../Base/Hero"
 @WrapperClass("CDOTA_Unit_Hero_Morphling")
 export default class npc_dota_hero_morphling extends Hero {
 	public IsGuaranteedReal = false
-	public get isIllusion(): boolean {
+	public get IsIllusion(): boolean {
 		return !this.IsGuaranteedReal && super.IsIllusion
 	}
 }
