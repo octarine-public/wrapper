@@ -2,9 +2,10 @@ import Rectangle from "../../Base/Rectangle"
 import InputManager, { InputEventSDK, VMouseKeys } from "../../Managers/InputManager"
 import { Notifications } from "../data"
 import { GetPanel } from "../Util"
+import { IsShopOpen } from "./Update"
 
 InputEventSDK.on("MouseKeyDown", key => {
-	if (key !== VMouseKeys.MK_LBUTTON)
+	if (IsShopOpen || key !== VMouseKeys.MK_LBUTTON)
 		return true
 
 	const MosePosition = InputManager.CursorOnScreen,

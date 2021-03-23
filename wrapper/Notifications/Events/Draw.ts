@@ -1,26 +1,17 @@
 import Color from "../../Base/Color"
 import Rectangle from "../../Base/Rectangle"
-import Events from "../../Managers/Events"
 import EventsSDK from "../../Managers/EventsSDK"
 import RendererSDK from "../../Native/RendererSDK"
-import UserCmd from "../../Native/UserCmd"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { MAX_SHOW_NOTIFICATION, Notifications, Queue } from "../data"
 import { NotificationsSDK } from "../Imports"
 import { GetPanel } from "../Util"
-
-let IsShopOpen = false
-Events.on("Update", () => {
-	const cmd = new UserCmd()
-	IsShopOpen = cmd.ShopMask === 13
-})
-
-EventsSDK.on("GameEnded", () => {
-	IsShopOpen = false
-})
+import { IsShopOpen } from "./Update"
 
 EventsSDK.after("Draw", () => {
 	arrayRemove(Notifications, Notifications.filter(x => x.IsExpired)[0])
+	if (IsShopOpen)
+		return
 	const num = Math.min(Queue.length, MAX_SHOW_NOTIFICATION - Notifications.length)
 	for (let index = 0; index < num; index++) {
 		const notification = Queue.shift()
@@ -42,8 +33,7 @@ EventsSDK.after("Draw", () => {
 		GetPanel(panel) // because we've just been modifying existing one
 	}
 	Notifications.forEach(notification => {
-		if (!IsShopOpen)
-			notification.Draw(panel)
+		notification.Draw(panel)
 		notification.PlaySound()
 		panel.SubtractY(panel_height + 20)
 	})
