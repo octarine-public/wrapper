@@ -50,6 +50,14 @@ export interface IDrawLineOptions {
 	Mode2D?: number
 }
 
+export interface IDrawLineTargetOptions {
+	Attachment?: ParticleAttachment_t
+	Start?: Entity | Vector3
+	End?: Entity | Vector3
+	Color?: Color
+	Alpha?: number // float
+}
+
 export interface IDrawBoundingAreaOptions {
 	RenderStyle?: PARTICLE_RENDER
 	Color?: Color
@@ -163,19 +171,36 @@ class ParticlesSDK {
 	public DrawLineToTarget(
 		key: any,
 		entity: Entity,
-		target: Entity | Vector3,
+		target: Entity,
 		color = Color.Red,
+		options: IDrawLineTargetOptions = {},
 	) {
+		const start_opt = options.Start
+		const ctrl2 = start_opt instanceof Vector3
+			? start_opt
+			: start_opt instanceof Vector3
+				? start_opt
+				: start_opt?.Position ?? entity.Position
+
+		const end_opt = options.End
+		const ctrl7 = end_opt instanceof Vector3
+			? end_opt
+			: end_opt instanceof Vector3
+				? end_opt
+				: end_opt?.Position ?? target.Position
+
 		return this.AddOrUpdate(
 			key,
 			"particles/target/range_finder_tower_aoe.vpcf",
-			ParticleAttachment_t.PATTACH_ABSORIGIN_FOLLOW,
-			target,
-			[2, entity],
-			[6, color.Clone().SetR(Math.max(color.r, 1))],
-			[7, target],
+			ParticleAttachment_t.PATTACH_ABSORIGIN,
+			entity,
+			[2, ctrl2],
+			[5, color],
+			[6, new Vector3(options.Alpha ?? 1, 0, 0)],
+			[7, ctrl7],
 		)
 	}
+
 	/**
 	 *
 	 * ControlPoints:
