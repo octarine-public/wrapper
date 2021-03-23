@@ -339,6 +339,12 @@ export default class Unit extends Entity {
 	public get AttackPoint(): number {
 		return this.AttackAnimationPoint / (1 + ((this.AttackSpeedBonus - 100) / 100))
 	}
+	public get AttackRate(): number {
+		return this.BaseAttackTime / (1 + ((this.AttackSpeedBonus - 100) / 100))
+	}
+	public get AttackBackswing() {
+		return this.AttackRate - this.AttackPoint
+	}
 	public get InvisibilityLevel(): number {
 		return this.Buffs.reduce((prev, buff) => Math.max(prev, buff.InvisibilityLevel), 0)
 	}
@@ -490,6 +496,7 @@ export default class Unit extends Entity {
 	public get IsFlyingVisually(): boolean {
 		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
 	}
+
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
 		return this.InFront(movespeed * time)
 	}
