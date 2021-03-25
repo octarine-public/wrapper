@@ -879,6 +879,42 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 	}
 })
 
+ParseProtobufDesc(`
+enum EMatchGroupServerStatus {
+	k_EMatchGroupServerStatus_OK = 0;
+	k_EMatchGroupServerStatus_LimitedAvailability = 1;
+	k_EMatchGroupServerStatus_Offline = 2;
+}
+message CMsgMatchmakingMatchGroupInfo {
+	optional uint32 players_searching = 1;
+	optional sint32 auto_region_select_ping_penalty = 2;
+	optional sint32 auto_region_select_ping_penalty_custom = 4;
+	optional .EMatchGroupServerStatus status = 3 [default = k_EMatchGroupServerStatus_OK];
+}
+message CMsgDOTAMatchmakingStatsResponse {
+	optional uint32 matchgroups_version = 1;
+	repeated uint32 legacy_searching_players_by_group_source2 = 7;
+	repeated .CMsgMatchmakingMatchGroupInfo match_groups = 8;
+}
+message CSOEconGameAccountClient {
+	optional uint32 additional_backpack_slots = 1 [default = 0];
+	optional bool trial_account = 2 [default = false];
+	optional bool eligible_for_online_play = 3 [default = true];
+	optional bool need_to_choose_most_helpful_friend = 4;
+	optional bool in_coaches_list = 5;
+	optional fixed32 trade_ban_expiration = 6;
+	optional fixed32 duel_ban_expiration = 7;
+	optional bool made_first_purchase = 9 [default = false];
+}
+`)
+Events.on("MatchmakingStatsUpdated", data => {
+	EventsSDK.emit(
+		"MatchmakingStatsUpdated",
+		false,
+		ParseProtobufNamed(new Uint8Array(data), "CMsgDOTAMatchmakingStatsResponse"),
+	)
+})
+
 Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
 
 let input_capture_depth = 0

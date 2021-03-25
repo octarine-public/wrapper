@@ -1,6 +1,7 @@
 import Vector3 from "../Base/Vector3"
 import { DOTA_CHAT_MESSAGE } from "../Enums/DOTA_CHAT_MESSAGE"
 import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
+import { SOType } from "../Enums/SOType"
 import ExecuteOrder from "../Native/ExecuteOrder"
 import Entity from "../Objects/Base/Entity"
 import Modifier from "../Objects/Base/Modifier"
@@ -163,6 +164,8 @@ interface EventsSDK extends EventEmitter {
 	) => void): EventsSDK
 	on(name: "MapDataLoaded", listener: () => void): EventsSDK
 	on(name: "WindowSizeChanged", listener: () => void): EventsSDK
+	on(name: "MatchmakingStatsUpdated", listener: (msg: RecursiveMap) => void): EventEmitter
+	on(name: "SharedObjectChanged", listener: (id: number, reason: SOType, msg: RecursiveMap) => void): EventEmitter
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()
