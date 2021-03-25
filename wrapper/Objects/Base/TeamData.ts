@@ -3,7 +3,7 @@ import TreeModelReplacement from "../../Base/TreeModelReplacement"
 import Vector2 from "../../Base/Vector2"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
-import { GridNav } from "../../Utils/ParseGNV"
+import { GridNav } from "../../Resources/ParseGNV"
 import Entity from "./Entity"
 import Tree from "./Tree"
 

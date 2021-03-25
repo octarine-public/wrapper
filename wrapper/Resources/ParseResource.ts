@@ -1,4 +1,4 @@
-import BinaryStream from "./BinaryStream"
+import BinaryStream from "../Utils/BinaryStream"
 
 // https://github.com/SteamDatabase/ValveResourceFormat/blob/cdc150c810e124d6dfc4ec8911852a0278210835/ValveResourceFormat/Resource/Resource.cs#L161
 export function ParseResourceLayout(buf: Uint8Array): Nullable<[Map<string, Uint8Array>, Uint8Array[]]> {

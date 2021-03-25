@@ -69,7 +69,7 @@ export class TrackingProjectile extends Projectile {
 		private expireTime: number,
 		public readonly MaxImpactTime: number | undefined,
 		public LaunchTick: number,
-		private readonly TargetLoc_ = new Vector3(),
+		public readonly TargetLoc = new Vector3(),
 		colorgemcolor: Color,
 	) {
 		super(projID, path, particleSystemHandle, source, colorgemcolor, speed)
@@ -82,17 +82,6 @@ export class TrackingProjectile extends Projectile {
 	public get IsDodgeable(): boolean { return this.dodgeable }
 	public get IsAttack(): boolean { return this.isAttack }
 	public get ExpireTime(): number { return this.expireTime }
-	public get TargetLoc(): Vector3 {
-		if (this.IsDodged)
-			return this.TargetLoc_
-
-		const target = this.Target
-		if (target instanceof Entity)
-			return target.Position
-		// if (target instanceof Entity)
-		// 	return target.GetAttachment("attach_hitloc").CopyTo(this.TargetLoc_)
-		return this.TargetLoc_
-	}
 
 	public get Target(): Nullable<Entity | number> {
 		if (this.IsDodged)
@@ -115,5 +104,22 @@ export class TrackingProjectile extends Projectile {
 		this.expireTime = expireTime
 		this.LaunchTick = launchTick
 		targetLoc.CopyTo(this.TargetLoc)
+	}
+	public UpdateTargetLoc(): void {
+		if (this.IsDodged)
+			return
+
+		const target = this.Target
+		if (target instanceof Entity) {
+			const attachment = target.GetAttachment("attach_hitloc")
+			const attachment_off = attachment?.GetPosition(
+				target.AnimationTime,
+				target.RotationRad,
+			)
+			const attachment_pos = attachment_off !== undefined
+				? target.Position.Add(attachment_off)
+				: target.Position
+			this.TargetLoc.CopyFrom(attachment_pos)
+		}
 	}
 }

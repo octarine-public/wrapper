@@ -2,7 +2,8 @@ import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
-import { createMapFromMergedIterators, parseEnumString, parseKVFile } from "../../Utils/Utils"
+import { parseKVFile } from "../../Resources/ParseKV"
+import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 
 function LoadUnitFile(path: string): RecursiveMap {
 	const kv = parseKVFile(path)

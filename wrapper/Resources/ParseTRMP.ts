@@ -1,7 +1,7 @@
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { GetPositionHeight } from "../Native/WASM"
-import BinaryStream from "./BinaryStream"
+import BinaryStream from "../Utils/BinaryStream"
 
 export function ParseTRMP(buf: ArrayBuffer): Vector3[] {
 	const stream = new BinaryStream(new DataView(buf))

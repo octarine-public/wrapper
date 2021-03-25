@@ -1,9 +1,9 @@
 import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
+import { ParseREDI } from "../Resources/ParseREDI"
+import { ParseResourceLayout } from "../Resources/ParseResource"
 import { DegreesToRadian } from "../Utils/Math"
-import { ParseREDI } from "../Utils/ParseREDI"
-import { ParseResourceLayout } from "../Utils/ParseResource"
 import readFile from "../Utils/readFile"
 
 export class CHeightMap {

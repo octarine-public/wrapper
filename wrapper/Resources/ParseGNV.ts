@@ -2,7 +2,7 @@ import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
 import { GridNavCellFlags } from "../Enums/GridNavCellFlags"
 import Tree from "../Objects/Base/Tree"
-import BinaryStream from "./BinaryStream"
+import BinaryStream from "../Utils/BinaryStream"
 
 class CGridNav {
 	public readonly Max: Vector2

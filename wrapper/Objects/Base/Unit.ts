@@ -19,6 +19,7 @@ import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import * as StringTables from "../../Managers/StringTables"
 import ExecuteOrder from "../../Native/ExecuteOrder"
+import { ComputedAttachment } from "../../Resources/ComputeAttachments"
 import { HasBitBigInt, MaskToArrayBigInt } from "../../Utils/BitsExtensions"
 import GameState from "../../Utils/GameState"
 import { DamageIgnoreBuffs } from "../../Utils/Utils"
@@ -74,7 +75,8 @@ export default class Unit extends Entity {
 	public RotationDifference = 0
 	@NetworkedBasicField("m_iIsControllableByPlayer64", EPropertyType.UINT64)
 	public IsControllableByPlayerMask = 0n
-	public NetworkActivity = 0
+	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
+	public NetworkActivityStartTime = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
 	public HPRegen = 0
 	@NetworkedBasicField("m_flManaThinkRegen")
@@ -486,6 +488,9 @@ export default class Unit extends Entity {
 			return val
 		}, 0)
 		return itemsSpellAmp + spellsSpellAmp
+	}
+	public get AnimationTime(): number {
+		return GameState.RawGameTime - this.NetworkActivityStartTime
 	}
 	public get Name(): string {
 		return this.UnitName_
@@ -960,6 +965,12 @@ export default class Unit extends Entity {
 
 		return damage * mult
 	}
+	public GetAttachment(
+		name: string,
+		activity = this.NetworkActivity,
+	): Nullable<ComputedAttachment> {
+		return super.GetAttachment(name, activity)
+	}
 	public GetAdditionalAttackDamage(source: Unit): number {
 		return 0
 	}
@@ -1165,6 +1176,7 @@ ReplaceFieldHandler(Unit, "m_iTeamNum", (unit, new_val) => {
 })
 RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => {
 	unit.NetworkActivity = new_value as number
+	unit.NetworkActivityStartTime = GameState.RawGameTime
 	if (unit.IsValid)
 		EventsSDK.emit("NetworkActivityChanged", false, unit)
 })

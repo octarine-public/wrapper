@@ -6,14 +6,14 @@ import { FontFlags_t } from "../Enums/FontFlags_t"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import { default as Input } from "../Managers/InputManager"
+import { ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
+import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
+import { parseKVFile } from "../Resources/ParseKV"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
 import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
-import { ParseEntityLump, ResetEntityLump } from "../Utils/ParseEntityLump"
-import { ParseGNV, ResetGNV } from "../Utils/ParseGNV"
 import readFile from "../Utils/readFile"
-import { parseKVFile } from "../Utils/Utils"
 import * as WASM from "./WASM"
 
 enum CommandID {
@@ -752,7 +752,7 @@ class CRendererSDK {
 		if (path.endsWith(".vmat_c")) {
 			const vmat_kv = parseKVFile(path)
 			const m_textureParams = vmat_kv.get("m_textureParams")
-			if (m_textureParams instanceof Map) {
+			if (Array.isArray(m_textureParams)) {
 				m_textureParams.forEach(param => {
 					if (!(param instanceof Map))
 						return
@@ -1064,7 +1064,7 @@ function TryLoadMapFiles(): void {
 		ResetEntityLump()
 		const world_kv = parseKVFile(`maps/${map_name}/world.vwrld_c`)
 		const m_entityLumps = world_kv.get("m_entityLumps")
-		if (m_entityLumps instanceof Map)
+		if (Array.isArray(m_entityLumps))
 			m_entityLumps.forEach(path => {
 				if (typeof path !== "string")
 					return

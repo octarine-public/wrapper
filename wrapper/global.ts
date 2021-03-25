@@ -17,9 +17,9 @@ import * as _WASM from "./Native/WASM"
 import { GameRules as _GameRules, LocalPlayer as _LocalPlayer } from "./Objects/Base/Entity"
 import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource"
 import { GetSDKClasses } from "./Objects/NativeToSDK"
+import { EntityDataLump as _EntityDataLump } from "./Resources/ParseEntityLump"
+import { GridNav as _GridNav } from "./Resources/ParseGNV"
 import _GameState from "./Utils/GameState"
-import { EntityDataLump as _EntityDataLump } from "./Utils/ParseEntityLump"
-import { GridNav as _GridNav } from "./Utils/ParseGNV"
 
 globalThis.Color = _Color
 globalThis.QAngle = _QAngle

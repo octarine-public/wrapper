@@ -3,6 +3,7 @@ import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
+import { GameActivity_t } from "../../Enums/GameActivity_t"
 import { LifeState_t } from "../../Enums/LifeState_t"
 import { RenderMode_t } from "../../Enums/RenderMode_t"
 import { Team } from "../../Enums/Team"
@@ -12,6 +13,7 @@ import Manifest from "../../Managers/Manifest"
 import * as StringTables from "../../Managers/StringTables"
 import RendererSDK from "../../Native/RendererSDK"
 import Player from "../../Objects/Base/Player"
+import { ComputedAttachment, ComputedAttachments } from "../../Resources/ComputeAttachments"
 import GameState from "../../Utils/GameState"
 import { DegreesToRadian } from "../../Utils/Math"
 import CGameRules from "./GameRules"
@@ -21,6 +23,7 @@ export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
 EventsSDK.on("ServerInfo", info => player_slot = (info.get("player_slot") as number) ?? NaN)
 let gameInProgress = false
+const AttachmentsCache = new Map<string, ComputedAttachments>()
 export function SetGameInProgress(new_val: boolean) {
 	if (!gameInProgress && new_val)
 		EventsSDK.emit("GameStarted", false)
@@ -91,6 +94,7 @@ export default class Entity {
 	public readonly NetworkedPosition = new Vector3()
 	public readonly Position = new Vector3()
 	public readonly NetworkedAngles = new QAngle()
+	private Attachments: Nullable<ComputedAttachments>
 	private CustomGlowColor_: Nullable<Color>
 	private CustomDrawColor_: Nullable<[Color, RenderMode_t]>
 
@@ -192,6 +196,9 @@ export default class Entity {
 	public get CustomNativeID(): number {
 		return this.Index << 1
 	}
+	public get AnimationTime(): number {
+		return 0
+	}
 
 	public Distance(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
@@ -282,6 +289,20 @@ export default class Entity {
 		return this.Team !== team
 	}
 
+	public OnModelUpdated(): void {
+		// if (!AttachmentsCache.has(this.ModelName)) {
+		// 	this.Attachments = ComputeAttachments(this.ModelName)
+		// 	AttachmentsCache.set(this.ModelName, this.Attachments)
+		// } else
+		// 	this.Attachments = AttachmentsCache.get(this.ModelName)
+	}
+	public GetAttachment(
+		name: string,
+		activity = GameActivity_t.ACT_DOTA_IDLE,
+	): Nullable<ComputedAttachment> {
+		return this.Attachments?.get(activity)?.find(attach => attach.Name === name)
+	}
+
 	public CannotUseItem(_item: Item): boolean {
 		return false
 	}
@@ -309,7 +330,11 @@ RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
 	if (old_state !== ent.LifeState && ent.IsValid)
 		EventsSDK.emit("LifeStateChanged", false, ent)
 })
-RegisterFieldHandler(Entity, "m_hModel", (ent, new_val) => ent.ModelName = Manifest.GetPathByHash(new_val as bigint) ?? "")
+RegisterFieldHandler(Entity, "m_hModel", (ent, new_val) => {
+	ent.ModelName = Manifest.GetPathByHash(new_val as bigint) ?? ""
+	ent.OnModelUpdated()
+})
+EventsSDK.on("GameEnded", () => AttachmentsCache.clear())
 RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 	const m_angRotation = new_val as QAngle
 	EntityVisualRotations[ent.Index * 3 + 0] = m_angRotation.x

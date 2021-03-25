@@ -1,4 +1,4 @@
-import BinaryStream from "./BinaryStream"
+import BinaryStream from "../Utils/BinaryStream"
 
 class AdditionalRelatedFile {
 	public readonly relative_filename: string

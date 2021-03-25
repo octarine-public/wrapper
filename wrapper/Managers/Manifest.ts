@@ -1,7 +1,7 @@
 import { MurmurHash2, MurmurHash64 } from "../Native/WASM"
+import { parseKV } from "../Resources/ParseKV"
 import { StringToUTF8, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
-import { parseKV } from "../Utils/ParseKV"
 import { ParseExternalReferences, readJSON } from "../Utils/Utils"
 import Events from "./Events"
 

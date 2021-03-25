@@ -1,8 +1,10 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
+import { GameActivity_t } from "../Enums/GameActivity_t"
 import { GetPositionHeight } from "../Native/WASM"
 import Entity from "../Objects/Base/Entity"
 import { LinearProjectile, TrackingProjectile } from "../Objects/Base/Projectile"
+import Unit from "../Objects/Base/Unit"
 import { arrayRemove } from "../Utils/ArrayExtensions"
 import GameState from "../Utils/GameState"
 import { CMsgVector2DToVector2, CMsgVectorToVector3, NumberToColor, ParseProtobufDesc, ParseProtobufNamed, RecursiveProtobuf, ServerHandleToIndex } from "../Utils/Protobuf"
@@ -42,6 +44,7 @@ function DestroyTrackingProjectile(proj: TrackingProjectile) {
 	proj.IsValid = false
 }
 
+EventsSDK.on("PostDataUpdate", () => ProjectileManager.AllTrackingProjectiles.forEach(proj => proj.UpdateTargetLoc()))
 EventsSDK.on("Tick", () => {
 	const cur_time = GameState.RawGameTime
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
@@ -57,9 +60,18 @@ EventsSDK.on("Tick", () => {
 	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
 		if (proj.LastUpdate === 0) {
 			proj.LastUpdate = cur_time
-			// const source = proj.Source
-			// if (source instanceof Entity && proj.SourceAttachment !== "")
-			// 	proj.Position.AddForThis(source.GetAttachmentOffset(proj.SourceAttachment))
+			const source = proj.Source
+			if (source instanceof Entity && proj.SourceAttachment !== "") {
+				const attachment = source.GetAttachment(
+					proj.SourceAttachment,
+					source instanceof Unit ? source.NetworkActivity : GameActivity_t.ACT_DOTA_IDLE,
+				) ?? source.GetAttachment(proj.SourceAttachment)
+				if (attachment !== undefined)
+					proj.Position.AddForThis(attachment.GetPosition(
+						source.AnimationTime,
+						source.RotationRad,
+					))
+			}
 			return
 		}
 		const dt = cur_time - proj.LastUpdate

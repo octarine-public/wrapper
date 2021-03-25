@@ -1,9 +1,11 @@
 import { DecompressLZ4, DecompressLZ4Chained } from "../Native/WASM"
-import { ArrayBuffersEqual, Utf8ArrayToStr } from "./ArrayBufferUtils"
-import BinaryStream from "./BinaryStream"
-import { HasBit } from "./BitsExtensions"
+import { ArrayBuffersEqual, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
+import BinaryStream from "../Utils/BinaryStream"
+import { HasBit } from "../Utils/BitsExtensions"
+import readFile from "../Utils/readFile"
+import Stream from "../Utils/Stream"
+import { ParseExternalReferences } from "../Utils/Utils"
 import { ParseResourceLayout } from "./ParseResource"
-import Stream from "./Stream"
 
 const STRING = '"'
 const NODE_OPEN = "{"
@@ -137,12 +139,6 @@ enum KVType {
 	DOUBLE_ONE = 18,
 }
 
-enum KVFlag {
-	None,
-	Resource,
-	DeferredResource,
-}
-
 class KVParser {
 	private static readonly KV3_ENCODING_BINARY_BLOCK_COMPRESSED = new Uint8Array([0x46, 0x1A, 0x79, 0x95, 0xBC, 0x95, 0x6C, 0x4F, 0xA7, 0x0B, 0x05, 0xBC, 0xA1, 0xB7, 0xDF, 0xD2]).buffer
 	private static readonly KV3_ENCODING_BINARY_UNCOMPRESSED = new Uint8Array([0x00, 0x05, 0x86, 0x1B, 0xD8, 0xF7, 0xC1, 0x40, 0xAD, 0x82, 0x75, 0xA4, 0x82, 0x67, 0xE7, 0x14]).buffer
@@ -229,7 +225,7 @@ class KVParser {
 			this.types.push(stream.ReadUint8())
 
 		stream.pos = kv_data_offset
-		return this.ParseBinaryKV3(stream, true)
+		return this.ParseBinaryKV3(stream)
 	}
 	public ReadVersion3(stream: BinaryStream): RecursiveMap {
 		this.binary_bytes_offset = 0
@@ -299,7 +295,7 @@ class KVParser {
 		}
 
 		stream.pos = kv_data_offset
-		return this.ParseBinaryKV3(stream, true)
+		return this.ParseBinaryKV3(stream)
 	}
 	public ParseVKV3(stream: BinaryStream): RecursiveMap {
 		// ReadSlice returns view to original buffer, but we need our own copy here, so we do .slice().buffer
@@ -321,104 +317,94 @@ class KVParser {
 		for (let i = 0, end = stream.ReadUint32(); i < end; i++)
 			this.strings.push(stream.ReadNullTerminatedUtf8String())
 
-		return this.ParseBinaryKV3(stream, true)
+		return this.ParseBinaryKV3(stream)
 	}
 
-	private ReadType(stream: BinaryStream): [KVType, KVFlag] {
+	private ReadType(stream: BinaryStream): KVType {
 		let databyte = this.types.length !== 0
 			? this.types[this.current_type_index++]
 			: stream.ReadUint8()
 
-		let flagInfo = KVFlag.None
 		if ((databyte & 0x80) === 0x80) {
 			databyte &= 0x7F // Remove the flag bit
-
-			flagInfo = this.types.length !== 0
-				? this.types[this.current_type_index++]
-				: stream.ReadUint8()
+			if (this.types.length !== 0)
+				this.current_type_index++
+			else
+				stream.ReadUint8()
 		}
 
-		return [databyte, flagInfo]
+		return databyte
 	}
-	private ReadBinaryValue(stream: BinaryStream, parent: RecursiveMap, name: string, datatype: KVType, flagInfo: KVFlag): void {
+	private ReadBinaryValue(stream: BinaryStream, datatype = this.ReadType(stream)): RecursiveMapValue {
 		let current_pos = stream.pos
 		switch (datatype) {
 			case KVType.NULL:
-				parent.set(name, "")
-				break
-			case KVType.BOOLEAN:
+				return ""
+			case KVType.BOOLEAN: {
 				if (this.binary_bytes_offset > -1)
 					stream.pos = this.binary_bytes_offset++
-				parent.set(name, stream.ReadBoolean())
+				const val = stream.ReadBoolean()
 				if (this.binary_bytes_offset > -1)
 					stream.pos = current_pos
-				break
+				return val
+			}
 			case KVType.BOOLEAN_TRUE:
-				parent.set(name, true)
-				break
+				return true
 			case KVType.BOOLEAN_FALSE:
-				parent.set(name, false)
-				break
+				return false
 			case KVType.INT64_ONE:
-				parent.set(name, 1n)
-				break
+				return 1n
 			case KVType.INT64_ZERO:
-				parent.set(name, 0n)
-				break
+				return 0n
 			case KVType.DOUBLE_ONE:
-				parent.set(name, 1)
-				break
+				return 1
 			case KVType.DOUBLE_ZERO:
-				parent.set(name, 0)
-				break
-			case KVType.INT64:
+				return 0
+			case KVType.INT64: {
 				if (this.offset_64bit > -1)
 					stream.pos = this.offset_64bit
-				parent.set(name, stream.ReadInt64())
+				const val = stream.ReadInt64()
 				if (this.offset_64bit > -1) {
 					this.offset_64bit += 8
 					stream.pos = current_pos
 				}
-				break
-			case KVType.UINT64:
+				return val
+			}
+			case KVType.UINT64: {
 				if (this.offset_64bit > -1)
 					stream.pos = this.offset_64bit
-				parent.set(name, stream.ReadUint64())
+				const val = stream.ReadUint64()
 				if (this.offset_64bit > -1) {
 					this.offset_64bit += 8
 					stream.pos = current_pos
 				}
-				break
+				return val
+			}
 			case KVType.INT32:
-				parent.set(name, stream.ReadInt32())
-				break
+				return stream.ReadInt32()
 			case KVType.UINT32:
-				parent.set(name, stream.ReadUint32())
-				break
-			case KVType.DOUBLE:
+				return stream.ReadUint32()
+			case KVType.DOUBLE: {
 				if (this.offset_64bit > -1)
 					stream.pos = this.offset_64bit
-				parent.set(name, stream.ReadFloat64())
+				const val = stream.ReadFloat64()
 				if (this.offset_64bit > -1) {
 					this.offset_64bit += 8
 					stream.pos = current_pos
 				}
-				break
+				return val
+			}
 			case KVType.STRING: {
 				const id = stream.ReadInt32()
-				parent.set(name, id !== -1 ? this.strings[id] : "")
-				break
+				return id !== -1
+					? this.strings[id]
+					: ""
 			}
 			case KVType.BINARY_BLOB: {
-				if (this.uncompressed_blocks_stream !== undefined) {
-					parent.set(
-						name,
-						this.uncompressed_blocks_stream.ReadSlice(
-							this.uncompressed_blocks_lengths[this.current_compressed_block++],
-						),
+				if (this.uncompressed_blocks_stream !== undefined)
+					return this.uncompressed_blocks_stream.ReadSlice(
+						this.uncompressed_blocks_lengths[this.current_compressed_block++],
 					)
-					break
-				}
 
 				const length = stream.ReadInt32()
 				current_pos += 4
@@ -426,53 +412,49 @@ class KVParser {
 					stream.pos = this.binary_bytes_offset
 					this.binary_bytes_offset += length
 				}
-				parent.set(name, stream.ReadSlice(length))
+				const val = stream.ReadSlice(length)
 				if (this.binary_bytes_offset > -1)
 					stream.pos = current_pos
-				break
+				return val
 			}
 			case KVType.ARRAY: {
 				const length = stream.ReadUint32()
-				const child: RecursiveMap = new Map()
+				const ar: RecursiveMapValue[] = []
 				for (let i = 0; i < length; i++)
-					this.ParseBinaryKV3(stream, true, child)
-				parent.set(name, child)
-				break
+					ar.push(this.ReadBinaryValue(stream))
+				return ar
 			}
 			case KVType.ARRAY_TYPED: {
 				const length = stream.ReadUint32()
-				const [subType, subFlagInfo] = this.ReadType(stream)
-				const child: RecursiveMap = new Map()
+				const subType = this.ReadType(stream)
+				const ar: RecursiveMapValue[] = []
 				for (let i = 0; i < length; i++)
-					this.ReadBinaryValue(stream, child, i.toString(), subType, subFlagInfo)
-				parent.set(name, child)
-				break
+					ar.push(this.ReadBinaryValue(stream, subType))
+				return ar
 			}
 			case KVType.OBJECT: {
 				const length = stream.ReadUint32()
 				const child: RecursiveMap = new Map()
 				for (let i = 0; i < length; i++)
-					this.ParseBinaryKV3(stream, false, child)
-				parent.set(name, child)
-				break
+					this.ParseBinaryKV3(stream, child)
+				return child
 			}
+			default:
+				throw `Unknown KVType: ${datatype}`
 		}
 	}
-	private ParseBinaryKV3(stream: BinaryStream, in_array = false, parent?: RecursiveMap): RecursiveMap {
+	private ParseBinaryKV3(stream: BinaryStream, parent?: RecursiveMap): RecursiveMap {
 		if (parent === undefined) {
-			parent = new Map()
-			this.ReadBinaryValue(stream, parent, "", ...this.ReadType(stream))
-			return (parent.get("") as RecursiveMap) ?? new Map()
+			const val = this.ReadBinaryValue(stream)
+			if (val instanceof Map)
+				return val
+			return new Map()
 		}
 
-		let name: string
-		if (!in_array) {
-			const string_id = stream.ReadInt32()
-			name = string_id !== -1 ? this.strings[string_id] : ""
-		} else
-			name = parent.size.toString()
-
-		this.ReadBinaryValue(stream, parent, name, ...this.ReadType(stream))
+		parent.set(
+			this.ReadBinaryValue(stream, KVType.STRING) as string,
+			this.ReadBinaryValue(stream),
+		)
 		return parent
 	}
 }
@@ -626,15 +608,28 @@ class ResourceIntrospectionManifest {
 
 class C_NTRO {
 	constructor(private resourceIntrospectionManifest: ResourceIntrospectionManifest) { }
-	public Parse(stream: BinaryStream): Nullable<RecursiveMap> {
+	public Parse(
+		stream: BinaryStream,
+		external_refs: Map<bigint, string>,
+	): Nullable<RecursiveMap> {
 		if (this.resourceIntrospectionManifest.ReferencedStructs.length === 0)
 			return undefined
-		return this.ReadStructure(stream, this.resourceIntrospectionManifest.ReferencedStructs[0])
+		return this.ReadStructure(
+			stream,
+			this.resourceIntrospectionManifest.ReferencedStructs[0],
+			external_refs,
+		)
 	}
-	private ReadStructure(stream: BinaryStream, struct: ResourceDiskStruct, startingOffset = 0, map: RecursiveMap = new Map()): RecursiveMap {
+	private ReadStructure(
+		stream: BinaryStream,
+		struct: ResourceDiskStruct,
+		external_refs: Map<bigint, string>,
+		startingOffset = 0,
+		map: RecursiveMap = new Map(),
+	): RecursiveMap {
 		struct.FieldIntrospection.forEach(field => {
 			stream.pos = startingOffset + field.OnDiskOffset
-			this.ReadFieldIntrospection(stream, map, field)
+			this.ReadFieldIntrospection(stream, map, field, external_refs)
 		})
 
 		// Some structs are padded, so all the field sizes do not add up to the size on disk
@@ -642,13 +637,24 @@ class C_NTRO {
 
 		if (struct.BaseStructID !== 0) {
 			const prev = stream.pos
-			this.ReadStructure(stream, this.resourceIntrospectionManifest.ReferencedStructs.find(struct_ => struct.BaseStructID === struct_.ID)!, startingOffset, map)
+			this.ReadStructure(
+				stream,
+				this.resourceIntrospectionManifest.ReferencedStructs.find(struct_ => struct.BaseStructID === struct_.ID)!,
+				external_refs,
+				startingOffset,
+				map,
+			)
 			stream.pos = prev
 		}
 
 		return map
 	}
-	private ReadFieldIntrospection(stream: BinaryStream, parent: RecursiveMap, field: ResourceDiskStruct_Field): void {
+	private ReadFieldIntrospection(
+		stream: BinaryStream,
+		parent: RecursiveMap,
+		field: ResourceDiskStruct_Field,
+		external_refs: Map<bigint, string>,
+	): void {
 		let count = Math.max(field.Count, 1)
 
 		let prev = 0
@@ -683,11 +689,11 @@ class C_NTRO {
 		if (field.Count > 0 || field.Indirections.length !== 0) {
 			const ar: RecursiveMap = new Map()
 			for (let i = 0; i < count; i++)
-				this.ReadField(stream, ar, field, true)
+				this.ReadField(stream, ar, field, external_refs, true)
 			parent.set(field.FieldName, ar)
 		} else
 			for (let i = 0; i < count; i++)
-				this.ReadField(stream, parent, field)
+				this.ReadField(stream, parent, field, external_refs)
 
 		if (prev !== 0)
 			stream.pos = prev
@@ -698,11 +704,22 @@ class C_NTRO {
 			map.set(i.toString(), stream.ReadFloat32())
 		return map
 	}
-	private ReadField(stream: BinaryStream, parent: RecursiveMap, field: ResourceDiskStruct_Field, is_array = false): void {
+	private ReadField(
+		stream: BinaryStream,
+		parent: RecursiveMap,
+		field: ResourceDiskStruct_Field,
+		external_refs: Map<bigint, string>,
+		is_array = false,
+	): void {
 		const name = is_array ? parent.size.toString() : field.FieldName
 		switch (field.Type) {
 			case DataType.Struct:
-				parent.set(name, this.ReadStructure(stream, this.resourceIntrospectionManifest.ReferencedStructs.find(x => field.TypeData === x.ID)!, stream.pos))
+				parent.set(name, this.ReadStructure(
+					stream,
+					this.resourceIntrospectionManifest.ReferencedStructs.find(x => field.TypeData === x.ID)!,
+					external_refs,
+					stream.pos,
+				))
 				break
 			case DataType.Enum:
 				// TODO: Lookup in ReferencedEnums
@@ -739,9 +756,7 @@ class C_NTRO {
 				parent.set(name, stream.ReadUint64())
 				break
 			case DataType.ExternalReference:
-				// TODO: https://github.com/SteamDatabase/ValveResourceFormat/blob/8de399ac9b1201b06d596adce7ee9f39432a8b72/ValveResourceFormat/Resource/ResourceTypes/NTRO.cs#L193
-				stream.RelativeSeek(8)
-				parent.set(name, "")
+				parent.set(name, external_refs.get(stream.ReadUint64()) ?? "")
 				break
 			case DataType.Vector:
 				parent.set(name, this.ReadFloatArray(stream, 3))
@@ -787,12 +802,17 @@ function FixupSoundEventScript(map: RecursiveMap): RecursiveMap {
 	return fixed_map
 }
 
-function TryParseNTROResource(DATA: Uint8Array, NTRO: Uint8Array): Nullable<RecursiveMap> {
+function TryParseNTROResource(
+	DATA: Uint8Array,
+	NTRO: Uint8Array,
+	external_refs: Map<bigint, string>,
+): Nullable<RecursiveMap> {
 	const manifest = new ResourceIntrospectionManifest().Parse(
 		new BinaryStream(new DataView(NTRO.buffer, NTRO.byteOffset, NTRO.byteLength)),
 	)
 	const map = new C_NTRO(manifest).Parse(
 		new BinaryStream(new DataView(DATA.buffer, DATA.byteOffset, DATA.byteLength)),
+		external_refs,
 	)
 	if (map === undefined)
 		return undefined
@@ -807,24 +827,36 @@ function TryParseNTROResource(DATA: Uint8Array, NTRO: Uint8Array): Nullable<Recu
 	return map
 }
 
+export function parseKVBlock(buf: Nullable<Uint8Array>): Nullable<RecursiveMap> {
+	if (buf !== undefined && buf.byteLength >= 4) {
+		const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
+		switch (stream.ReadUint32()) {
+			case 0x03564B56: // VKV\x03
+				return new KVParser().ParseVKV3(stream)
+			case 0x4B563302: // KV3\x02
+				return new KVParser().ReadVersion3(stream)
+			case 0x4B563301: // KV3\x01
+				return new KVParser().ReadVersion2(stream)
+		}
+	}
+	return undefined
+}
+
 export function parseKV(buf: Uint8Array, block: string | number = "DATA"): RecursiveMap {
 	const layout = ParseResourceLayout(buf)
 	if (layout !== undefined) {
 		const DATA = typeof block === "string" ? layout[0].get(block) : layout[1][block]
-		if (DATA !== undefined && DATA.byteLength >= 4) {
-			const stream = new BinaryStream(new DataView(DATA.buffer, DATA.byteOffset, DATA.byteLength))
-			switch (stream.ReadUint32()) {
-				case 0x03564B56: // VKV\x03
-					return new KVParser().ParseVKV3(stream)
-				case 0x4B563302: // KV3\x02
-					return new KVParser().ReadVersion3(stream)
-				case 0x4B563301: // KV3\x01
-					return new KVParser().ReadVersion2(stream)
-			}
-		}
+		const parsed_DATA = parseKVBlock(DATA)
+		if (parsed_DATA !== undefined)
+			return parsed_DATA
+
 		const NTRO = layout[0].get("NTRO")
 		if (DATA !== undefined && NTRO !== undefined) {
-			const res = TryParseNTROResource(DATA, NTRO)
+			const res = TryParseNTROResource(
+				DATA,
+				NTRO,
+				ParseExternalReferences(buf),
+			)
 			if (res !== undefined)
 				return res
 		}
@@ -832,4 +864,9 @@ export function parseKV(buf: Uint8Array, block: string | number = "DATA"): Recur
 			return _parse(new Stream(Utf8ArrayToStr(DATA)))
 	}
 	return _parse(new Stream(Utf8ArrayToStr(buf)))
+}
+
+export function parseKVFile(path: string): RecursiveMap {
+	const buf = readFile(path)
+	return buf !== undefined ? parseKV(new Uint8Array(buf)) : new Map()
 }

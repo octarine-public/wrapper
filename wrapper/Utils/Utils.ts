@@ -1,9 +1,8 @@
 import { DAMAGE_TYPES } from "../Enums/DAMAGE_TYPES"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
+import { ParseResourceLayout } from "../Resources/ParseResource"
 import { Utf16ArrayToStr, Utf8ArrayToStr } from "./ArrayBufferUtils"
 import BinaryStream from "./BinaryStream"
-import { parseKV } from "./ParseKV"
-import { ParseResourceLayout } from "./ParseResource"
 import readFile from "./readFile"
 
 export const DamageIgnoreBuffs = [
@@ -63,11 +62,6 @@ DamageIgnoreBuffs.map((ar, i) => { // optimization & beauty trick
 	return ar.concat(DamageIgnoreBuffs[DAMAGE_TYPES.DAMAGE_TYPE_ALL])
 })
 
-export function parseKVFile(path: string): RecursiveMap {
-	const buf = readFile(path)
-	return buf !== undefined ? parseKV(new Uint8Array(buf)) : new Map()
-}
-
 export function parseEnumString(enum_object: any /* { [key: string]: number } */, str: string): number {
 	const regex = /(\w+)\s?(\||\&|\+|\-)?/g // it's in variable to preserve RegExp#exec steps
 	let last_tok = "",
@@ -108,25 +102,25 @@ export function MapToObject(map: Map<any, any>): any {
 	return obj
 }
 
-export function ParseExternalReferences(buf: Uint8Array, recursive = false): string[] {
+export function ParseExternalReferences(buf: Uint8Array, recursive = false): Map<bigint, string> {
+	const map = new Map<bigint, string>()
 	const layout = ParseResourceLayout(buf)
 	if (layout === undefined)
-		return []
+		return map
 
 	const RERL = layout[0].get("RERL")
 	if (RERL === undefined)
-		return []
+		return map
 
 	const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset + RERL.byteOffset, RERL.byteLength))
 	const data_offset = stream.ReadUint32(),
 		size = stream.ReadUint32()
 	if (size === 0)
-		return []
+		return map
 
 	stream.pos += data_offset - 8 // offset from offset
-	let list: string[] = []
 	for (let i = 0; i < size; i++) {
-		stream.RelativeSeek(8) // ResourceReferenceInfo.ID
+		const id = stream.ReadUint64()
 		const offset = Number(stream.ReadUint64()),
 			prev = stream.pos
 		stream.pos += offset - 8
@@ -134,14 +128,15 @@ export function ParseExternalReferences(buf: Uint8Array, recursive = false): str
 		if (recursive) {
 			const read = fread(str)
 			if (read !== undefined) {
-				list.push(str)
-				list = [...list, ...ParseExternalReferences(new Uint8Array(read))]
+				map.set(id, str)
+				ParseExternalReferences(new Uint8Array(read))
+					.forEach((val, key) => map.set(key, val))
 			}
 		} else if (fexists(str))
-			list.push(str)
+			map.set(id, str)
 		stream.pos = prev
 	}
-	return list
+	return map
 }
 
 export function ParseMapName(path: string): Nullable<string> {

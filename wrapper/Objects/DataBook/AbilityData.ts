@@ -6,7 +6,8 @@ import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EDOTASpecialBonusOperation } from "../../Enums/EDOTASpecialBonusOperation"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
-import { createMapFromMergedIterators, parseEnumString, parseKVFile } from "../../Utils/Utils"
+import { parseKVFile } from "../../Resources/ParseKV"
+import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 import Unit from "../Base/Unit"
 
 function LoadAbilityFile(path: string): RecursiveMap {

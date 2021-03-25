@@ -5,9 +5,9 @@ import { RenderMode_t } from "../../Enums/RenderMode_t"
 import EntityManager, { CreateEntityInternal, DeleteEntity } from "../../Managers/EntityManager"
 import Events from "../../Managers/Events"
 import EventsSDK from "../../Managers/EventsSDK"
+import { GridNav } from "../../Resources/ParseGNV"
+import { ParseTRMP } from "../../Resources/ParseTRMP"
 import GameState from "../../Utils/GameState"
-import { GridNav } from "../../Utils/ParseGNV"
-import { ParseTRMP } from "../../Utils/ParseTRMP"
 import Entity from "./Entity"
 
 @WrapperClass("CDOTA_MapTree")

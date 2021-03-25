@@ -2,8 +2,8 @@ import Color from "../Base/Color"
 import QAngle from "../Base/QAngle"
 import Vector3 from "../Base/Vector3"
 import Manifest from "../Managers/Manifest"
-import { StringToUTF8 } from "./ArrayBufferUtils"
-import BinaryStream from "./BinaryStream"
+import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
+import BinaryStream from "../Utils/BinaryStream"
 import { parseKV } from "./ParseKV"
 
 const enum EntsTypes {
@@ -49,37 +49,34 @@ function ReadTypedValue(stream: BinaryStream): EntityDataMapValue {
 
 function ParseEntityLumpInternal(buf: Uint8Array): void {
 	const kv = parseKV(buf)
-	if (kv === undefined)
-		throw "Invalid ENTS file - no KV found"
 
 	if (kv.has("m_childLumps")) {
 		const m_childLumps = kv.get("m_childLumps")
-		if (m_childLumps instanceof Map) {
+		if (Array.isArray(m_childLumps)) {
 			m_childLumps.forEach(childLump => {
-				if (typeof childLump === "string") {
-					const childLumpBuf = fread(`${childLump}_c`)
-					if (childLumpBuf !== undefined)
-						ParseEntityLumpInternal(new Uint8Array(childLumpBuf))
-				}
+				if (typeof childLump !== "string")
+					return
+				const childLumpBuf = fread(`${childLump}_c`)
+				if (childLumpBuf !== undefined)
+					ParseEntityLumpInternal(new Uint8Array(childLumpBuf))
 			})
 		}
 	}
 	if (kv.has("m_entityKeyValues")) {
 		const m_entityKeyValues = kv.get("m_entityKeyValues")
-		if (m_entityKeyValues instanceof Map) {
+		if (Array.isArray(m_entityKeyValues)) {
 			m_entityKeyValues.forEach(entityKV => {
 				if (!(entityKV instanceof Map))
 					return
 				// TODO: m_connections?
-				const kvData = entityKV.get("m_keyValuesData")
-				if (typeof kvData === "string" || kvData instanceof Uint8Array) {
-					const kvDataBuf = typeof kvData === "string"
-						? StringToUTF8(kvData)
-						: kvData
+				let kvData = entityKV.get("m_keyValuesData")
+				if (typeof kvData === "string")
+					kvData = StringToUTF8(kvData)
+				if (kvData instanceof Uint8Array) {
 					const stream = new BinaryStream(new DataView(
-						kvDataBuf.buffer,
-						kvDataBuf.byteOffset,
-						kvDataBuf.byteLength,
+						kvData.buffer,
+						kvData.byteOffset,
+						kvData.byteLength,
 					))
 					{
 						const version = stream.ReadUint32()
