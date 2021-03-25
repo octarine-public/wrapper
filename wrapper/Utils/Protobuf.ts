@@ -143,7 +143,11 @@ function ParseField(field: ProtoFieldDescription, value: Uint8Array | bigint): P
 
 function ParsePacked(buf: Uint8Array, field: ProtoFieldDescription): ProtobufFieldType[] {
 	const array: ProtobufFieldType[] = [],
-		stream = new BinaryStream(new DataView(buf))
+		stream = new BinaryStream(new DataView(
+			buf.buffer,
+			buf.byteOffset,
+			buf.byteLength,
+		))
 	let value2: Uint8Array | bigint
 	while (!stream.Empty()) {
 		switch (field.type) {
