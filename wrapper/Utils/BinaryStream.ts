@@ -145,35 +145,27 @@ export default class BinaryStream {
 		this.ReadSlice(slice.length).set(slice)
 	}
 	public ReadUtf8String(size: number): string {
-		// inlined Utf8ArrayToStr that works with streaming
 		let out = ""
 
 		while (size--) {
-			const c = this.ReadUint8()
-			switch (c >> 4) {
-				case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-					// 0xxxxxxx
-					out += String.fromCharCode(c)
-					break
-				case 12: case 13: {
-					// 110x xxxx   10xx xxxx
-					const char2 = size > 0 ? this.ReadUint8() : 0
-					size = Math.max(size - 1, 0)
-					out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F))
-					break
-				}
-				case 14: {
-					// 1110 xxxx  10xx xxxx  10xx xxxx
-					const char2 = size > 0 ? this.ReadUint8() : 0
-					size = Math.max(size - 1, 0)
-					const char3 = size > 0 ? this.ReadUint8() : 0
-					size = Math.max(size - 1, 0)
-					out += String.fromCharCode(((c & 0x0F) << 12) |
-						((char2 & 0x3F) << 6) |
-						((char3 & 0x3F) << 0))
-					break
-				}
-			}
+			const nPart = this.ReadUint8()
+			const start = this.pos
+			out += String.fromCharCode(
+				nPart > 251 && nPart < 254 && size >= 5 ? /* six bytes */
+					/* (nPart - 252 << 30) may be not so safe in ECMAScript! So...: */
+					(nPart - 252) * 1073741824 + (this.ReadUint8() - 128 << 24) + (this.ReadUint8() - 128 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
+					: nPart > 247 && nPart < 252 && size >= 4 ? /* five bytes */
+						(nPart - 248 << 24) + (this.ReadUint8() - 128 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
+						: nPart > 239 && nPart < 248 && size >= 3 ? /* four bytes */
+							(nPart - 240 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
+							: nPart > 223 && nPart < 240 && size >= 2 ? /* three bytes */
+								(nPart - 224 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
+								: nPart > 191 && nPart < 224 && size >= 1 ? /* two bytes */
+									(nPart - 192 << 6) + this.ReadUint8() - 128
+									: /* nPart < 127 ? */ /* one byte */
+									nPart,
+			)
+			size -= this.pos - start
 		}
 
 		return out

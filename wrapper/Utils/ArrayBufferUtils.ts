@@ -1,3 +1,5 @@
+import BinaryStream from "./BinaryStream"
+
 export function Utf8ArrayToStr(array: Uint8Array): string {
 	let start = 0
 	if (
@@ -7,30 +9,12 @@ export function Utf8ArrayToStr(array: Uint8Array): string {
 		&& array[2] === 0xBF
 	)
 		start = 3
-	let out = ""
-
-	for (let i = start, end = array.byteLength, c = array[i], char2, char3; i < end; c = array[++i])
-		switch (c >> 4) {
-			case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-				// 0xxxxxxx
-				out += String.fromCharCode(c)
-				break
-			case 12: case 13:
-				// 110x xxxx   10xx xxxx
-				char2 = array[i++]
-				out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F))
-				break
-			case 14:
-				// 1110 xxxx  10xx xxxx  10xx xxxx
-				char2 = array[i++]
-				char3 = array[i++]
-				out += String.fromCharCode(((c & 0x0F) << 12) |
-					((char2 & 0x3F) << 6) |
-					((char3 & 0x3F) << 0))
-				break
-		}
-
-	return out
+	const stream = new BinaryStream(new DataView(
+		array.buffer,
+		array.byteOffset,
+		array.byteLength,
+	), start)
+	return stream.ReadUtf8String(stream.Remaining)
 }
 export function Utf16ArrayToStr(array: Uint16Array): string {
 	let s = ""
