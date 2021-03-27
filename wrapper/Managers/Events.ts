@@ -5,8 +5,10 @@ type Listener = (...args: any) => false | any
 export class EventEmitter {
 	protected readonly events = new Map<string, Listener[]>()
 	protected readonly events_after = new Map<string, Listener[]>()
+	protected readonly listener2line = new Map<Listener, string>()
 
 	public on(name: string, listener: Listener): EventEmitter {
+		this.listener2line.set(listener, new Error().stack?.split("\n")[2] ?? "")
 		let listeners = this.events.get(name)
 		if (listeners === undefined)
 			this.events.set(name, listeners = [])
@@ -15,6 +17,7 @@ export class EventEmitter {
 		return this
 	}
 	public after(name: string, listener: Listener): EventEmitter {
+		this.listener2line.set(listener, new Error().stack?.split("\n")[2] ?? "")
 		let listeners = this.events_after.get(name)
 		if (listeners === undefined)
 			this.events_after.set(name, listeners = [])
@@ -29,8 +32,10 @@ export class EventEmitter {
 			return this
 
 		const idx = listeners.indexOf(listener)
-		if (idx > -1)
+		if (idx !== -1) {
 			listeners.splice(idx, 1)
+			this.listener2line.delete(listener)
+		}
 		return this
 	}
 
@@ -42,7 +47,7 @@ export class EventEmitter {
 			try {
 				return listener(...args) === false && cancellable
 			} catch (e) {
-				console.error(e instanceof Error ? e : new Error(e))
+				console.error(e instanceof Error ? e : new Error(e), this.listener2line.get(listener))
 				return false
 			}
 		})
@@ -51,7 +56,7 @@ export class EventEmitter {
 				try {
 					listener(...args)
 				} catch (e) {
-					console.error(e instanceof Error ? e : new Error(e))
+					console.error(e instanceof Error ? e : new Error(e), this.listener2line.get(listener))
 				}
 			})
 		return ret

@@ -3,6 +3,16 @@ import BinaryStream from "./BinaryStream"
 export function Utf8ArrayToStr(array: Uint8Array): string {
 	let start = 0
 	if (
+		array.byteLength >= 2
+		&& array[0] === 0xFF
+		&& array[1] === 0xFE
+	)
+		return Utf16ArrayToStr(new Uint16Array(
+			array.buffer,
+			array.byteOffset + 2,
+			array.byteLength - 2,
+		))
+	if (
 		array.byteLength >= 3
 		&& array[0] === 0xEF
 		&& array[1] === 0xBB
