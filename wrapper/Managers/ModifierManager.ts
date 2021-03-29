@@ -129,16 +129,17 @@ export class IModifier {
 const ActiveModifiersRaw = new Map<number, IModifier>(),
 	ActiveModifiers = new Map<number, Modifier>()
 
-function AddModifier(parent: Unit, mod: Modifier) {
+async function AddModifier(parent: Unit, mod: Modifier) {
 	parent.Buffs.push(mod)
-	changeFieldsByEvents(parent)
-	EventsSDK.emit("ModifierCreated", false, mod)
+	await changeFieldsByEvents(parent)
+	await EventsSDK.emit("ModifierCreated", false, mod)
 }
 
-function EmitModifierCreated(mod: IModifier) {
+async function EmitModifierCreated(mod: IModifier) {
 	if (mod.Index === undefined || mod.SerialNum === undefined || mod.Parent === undefined)
 		return
 	const mod_ = new Modifier(mod)
+	await mod_.AsyncCreate()
 	const time = GameState.RawGameTime
 	if (mod_.Duration !== -1 && mod_.DieTime < time)
 		return
@@ -146,40 +147,36 @@ function EmitModifierCreated(mod: IModifier) {
 	//console.log("Created " + mod_.SerialNumber)
 	const parent = mod_.Parent
 	if (parent !== undefined)
-		AddModifier(parent, mod_)
-	EventsSDK.emit("ModifierCreatedRaw", false, mod_)
+		await AddModifier(parent, mod_)
+	await EventsSDK.emit("ModifierCreatedRaw", false, mod_)
 }
-EventsSDK.on("PreEntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", async ent => {
 	if (!(ent instanceof Unit))
 		return
-	ActiveModifiers.forEach(mod => {
-		if (mod.Parent !== ent)
-			return
-		AddModifier(ent, mod)
-	})
+	for (const mod of ActiveModifiers.values())
+		if (mod.Parent === ent)
+			await AddModifier(ent, mod)
 })
-function EmitModifierRemoved(mod: Modifier) {
+async function EmitModifierRemoved(mod: Modifier) {
 	ActiveModifiers.delete(mod.SerialNumber)
 	const parent = mod.Parent
 	if (parent !== undefined) {
 		ArrayExtensions.arrayRemove(parent.Buffs, mod)
-		changeFieldsByEvents(parent)
-		EventsSDK.emit("ModifierRemoved", false, mod)
+		await changeFieldsByEvents(parent)
+		await EventsSDK.emit("ModifierRemoved", false, mod)
 	}
-	EventsSDK.emit("ModifierRemovedRaw", false, mod)
+	await EventsSDK.emit("ModifierRemovedRaw", false, mod)
 }
-EventsSDK.on("EntityDestroyed", ent => {
-	ActiveModifiers.forEach(mod => {
-		if (mod.Parent !== ent)
-			return
-		EmitModifierRemoved(mod)
-	})
+EventsSDK.on("EntityDestroyed", async ent => {
+	for (const mod of ActiveModifiers.values())
+		if (mod.Parent === ent)
+			await EmitModifierRemoved(mod)
 })
-function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
+async function EmitModifierChanged(old_mod: Modifier, mod: IModifier) {
 	old_mod.m_pBuff = mod
 	if (old_mod.Parent !== undefined)
-		EventsSDK.emit("ModifierChanged", false, old_mod)
-	EventsSDK.emit("ModifierChangedRaw", false, old_mod)
+		await EventsSDK.emit("ModifierChanged", false, old_mod)
+	await EventsSDK.emit("ModifierChangedRaw", false, old_mod)
 }
 ParseProtobufDesc(`
 enum DOTA_MODIFIER_ENTRY_TYPE {
@@ -224,46 +221,41 @@ message CDOTAModifierBuffTableEntry {
 	optional int32 aura_owner = 34;
 }
 `)
-EventsSDK.on("UpdateStringTable", (name, update) => {
+EventsSDK.on("UpdateStringTable", async (name, update) => {
 	if (name !== "ActiveModifiers")
 		return
-	update.forEach(([_, mod_serialized], index) => {
+	for (const [index, [, mod_serialized]] of update) {
 		const replaced = ActiveModifiersRaw.get(index)
 		if (mod_serialized.length === 0 && replaced?.SerialNum !== undefined) {
 			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
 			if (replaced_mod !== undefined)
-				EmitModifierRemoved(replaced_mod)
+				await EmitModifierRemoved(replaced_mod)
 			return
 		}
 		const mod = new IModifier(ParseProtobufNamed(mod_serialized, "CDOTAModifierBuffTableEntry"))
 		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {
 			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
 			if (replaced_mod !== undefined)
-				EmitModifierRemoved(replaced_mod)
+				await EmitModifierRemoved(replaced_mod)
 		}
 		ActiveModifiersRaw.set(index, mod)
 		const old_mod = ActiveModifiers.get(mod.SerialNum as number)
 		if (mod.EntryType === DOTA_MODIFIER_ENTRY_TYPE.DOTA_MODIFIER_ENTRY_TYPE_ACTIVE) {
 			if (old_mod === undefined)
-				EmitModifierCreated(mod)
+				await EmitModifierCreated(mod)
 			else
-				EmitModifierChanged(old_mod, mod)
+				await EmitModifierChanged(old_mod, mod)
 		} else if (old_mod !== undefined)
-			EmitModifierRemoved(old_mod)
-	})
+			await EmitModifierRemoved(old_mod)
+	}
 })
-EventsSDK.on("RemoveAllStringTables", () => {
-	ActiveModifiers.forEach(mod => EmitModifierRemoved(mod))
+EventsSDK.on("RemoveAllStringTables", async () => {
+	for (const mod of ActiveModifiers.values())
+		await EmitModifierRemoved(mod)
 	ActiveModifiers.clear()
 })
-/*EventsSDK.on("Tick", () => {
-	ActiveModifiers.forEach(mod => {
-		if (mod.Duration !== 0 && mod.DieTime < Game.RawGameTime) // TODO: should it be <=?
-			EmitModifierRemoved(mod)
-	})
-})*/
 
-function changeFieldsByEvents(unit: Unit) {
+async function changeFieldsByEvents(unit: Unit) {
 	const buffs = unit.ModifiersBook.Buffs
 
 	{ // IsTrueSightedForEnemies
@@ -272,7 +264,7 @@ function changeFieldsByEvents(unit: Unit) {
 
 		if (isTrueSighted !== lastIsTrueSighted) {
 			unit.IsTrueSightedForEnemies = isTrueSighted
-			EventsSDK.emit("TrueSightedChanged", false, unit)
+			await EventsSDK.emit("TrueSightedChanged", false, unit)
 		}
 	}
 
@@ -282,7 +274,7 @@ function changeFieldsByEvents(unit: Unit) {
 
 		if (hasScepter !== lastHasScepter) {
 			unit.HasScepterModifier = hasScepter
-			EventsSDK.emit("HasScepterChanged", false, unit)
+			await EventsSDK.emit("HasScepterChanged", false, unit)
 		}
 	}
 }

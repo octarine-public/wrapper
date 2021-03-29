@@ -116,22 +116,25 @@ export class CAnimation {
 		this.LoadEvents(animationDesc)
 
 		this.FrameCount = this.LoadFrameData(animationDesc)
-		const dataChannelArray = DecodeKey.get("m_dataChannelArray")
-		if (!(dataChannelArray instanceof Map))
+		const dataChannelMap = DecodeKey.get("m_dataChannelArray")
+		if (!(dataChannelMap instanceof Map || Array.isArray(dataChannelMap)))
 			throw "decodeKey without dataChannelArray"
+		const dataChannelArray = dataChannelMap instanceof Map
+			? [...dataChannelMap.values()]
+			: dataChannelMap
 		segmentArray.forEach(segment => {
 			const localChannel = GetMapNumberProperty(segment, "m_nLocalChannel")
-			const dataChannel = dataChannelArray.get(localChannel.toString())
+			const dataChannel = dataChannelArray[localChannel]
 			if (!(dataChannel instanceof Map))
 				return
 			const boneNamesMap = dataChannel.get("m_szElementNameArray")
-			if (!(boneNamesMap instanceof Map))
+			if (!(boneNamesMap instanceof Map || Array.isArray(boneNamesMap)))
 				return
 			const elementIndexArrayMap = dataChannel.get("m_nElementIndexArray")
-			if (!(elementIndexArrayMap instanceof Map))
+			if (!(elementIndexArrayMap instanceof Map || Array.isArray(elementIndexArrayMap)))
 				return
 			let container = segment.get("m_container")
-			if (container instanceof Map)
+			if (container instanceof Map || Array.isArray(container))
 				container = new Uint8Array(MapToNumberArray(container))
 			if (!(container instanceof Uint8Array))
 				return
@@ -170,39 +173,38 @@ export class CAnimation {
 	}
 	private LoadActivities(animationDesc: RecursiveMap): void {
 		const activityArray = animationDesc.get("m_activityArray")
-		if (activityArray instanceof Map)
-			activityArray.forEach(activity => {
+		if (activityArray instanceof Map || Array.isArray(activityArray))
+			activityArray.forEach((activity: RecursiveMapValue) => {
 				if (activity instanceof Map)
 					this.Activities.push(new CAnimationActivity(activity))
 			})
 	}
 	private LoadEvents(animationDesc: RecursiveMap): void {
 		const eventArray = animationDesc.get("m_eventArray")
-		if (eventArray instanceof Map)
-			eventArray.forEach(event => {
+		if (eventArray instanceof Map || Array.isArray(eventArray))
+			eventArray.forEach((event: RecursiveMapValue) => {
 				if (event instanceof Map)
 					this.Events.push(new CAnimationEvent(event))
 			})
 	}
 	private LoadFrameData(animationDesc: RecursiveMap): number {
 		let data = animationDesc.get("m_pData")
+		if (data instanceof Map)
+			data = data.get("0") ?? data
+		else if (Array.isArray(data))
+			data = data[0]
 		if (!(data instanceof Map))
 			return 0
-		if (data.has("0")) {
-			data = data.get("0")
-			if (!(data instanceof Map))
-				return 0
-		}
 		const frameBlockArray = data.get("m_frameblockArray")
-		if (!(frameBlockArray instanceof Map))
+		if (!(frameBlockArray instanceof Map || Array.isArray(frameBlockArray)))
 			return 0
-		frameBlockArray.forEach(frameBlock => {
+		frameBlockArray.forEach((frameBlock: RecursiveMapValue) => {
 			if (!(frameBlock instanceof Map))
 				return
 			const startFrame = GetMapNumberProperty(frameBlock, "m_nStartFrame")
 			const endFrame = GetMapNumberProperty(frameBlock, "m_nEndFrame")
 			const segmentIndexArray = frameBlock.get("m_segmentIndexArray")
-			if (!(segmentIndexArray instanceof Map))
+			if (!(segmentIndexArray instanceof Map || Array.isArray(segmentIndexArray)))
 				return
 			this.FrameBlockArray.push([
 				startFrame,
@@ -329,7 +331,7 @@ export class CAnimation {
 		const y = (bytes[3] & 64) === 0 ? c * (i2 - 16384) : c * i2
 		const z = (bytes[5] & 64) === 0 ? c * (i3 - 16384) : c * i3
 
-		var w = Math.sqrt(1 - (x * x) - (y * y) - (z * z))
+		let w = Math.sqrt(1 - (x * x) - (y * y) - (z * z))
 
 		// Apply sign 3
 		if (s3 === 128)
@@ -343,9 +345,9 @@ export class CAnimation {
 	}
 }
 
-function MakeDecoderArray(map: RecursiveMap): AnimDecoderType[] {
+function MakeDecoderArray(map: RecursiveMap | RecursiveMapValue[]): AnimDecoderType[] {
 	const ar: AnimDecoderType[] = []
-	map.forEach(decoder => {
+	map.forEach((decoder: RecursiveMapValue) => {
 		if (!(decoder instanceof Map))
 			return
 		const name = GetMapStringProperty(decoder, "m_szName")
@@ -360,19 +362,19 @@ export function ParseAnimationsFromData(
 ): CAnimation[] {
 	const ar: CAnimation[] = []
 	const decoderArrayMap = animationData.get("m_decoderArray")
-	const decoderArray = decoderArrayMap instanceof Map
+	const decoderArray = decoderArrayMap instanceof Map || Array.isArray(decoderArrayMap)
 		? MakeDecoderArray(decoderArrayMap)
 		: []
 	const animArrayMap = animationData.get("m_animArray")
 	const segmentArrayMap = animationData.get("m_segmentArray")
 	const segmentArray: RecursiveMap[] = []
-	if (segmentArrayMap instanceof Map)
-		segmentArrayMap.forEach(segment => {
+	if (segmentArrayMap instanceof Map || Array.isArray(segmentArrayMap))
+		segmentArrayMap.forEach((segment: RecursiveMapValue) => {
 			if (segment instanceof Map)
 				segmentArray.push(segment)
 		})
-	if (animArrayMap instanceof Map)
-		animArrayMap.forEach(animationDesc => {
+	if (animArrayMap instanceof Map || Array.isArray(animArrayMap))
+		animArrayMap.forEach((animationDesc: RecursiveMapValue) => {
 			if (animationDesc instanceof Map)
 				ar.push(new CAnimation(
 					animationDesc,
@@ -404,12 +406,12 @@ export function ParseAnimationGroup(buf: Uint8Array): CAnimation[] {
 	const ar: CAnimation[] = []
 	const kv = parseKV(buf)
 	const animArrayMap = kv.get("m_localHAnimArray")
-	if (!(animArrayMap instanceof Map))
+	if (!(animArrayMap instanceof Map || Array.isArray(animArrayMap)))
 		throw "Animation group without animArray"
 	const decodeKey = kv.get("m_decodeKey")
 	if (!(decodeKey instanceof Map))
 		throw "Animation group without decodeKey"
-	animArrayMap.forEach(path => {
+	animArrayMap.forEach((path: RecursiveMapValue) => {
 		if (typeof path !== "string")
 			return
 		if (!path.endsWith("_c"))

@@ -34,7 +34,7 @@ class Input {
 	}
 }
 
-Events.on("WndProc", (msg, wParam) => {
+Events.on("WndProc", async (msg, wParam) => {
 	let mKey: VMouseKeys = 0
 	switch (msg) {
 		case InputMessage.WM_LBUTTONUP:

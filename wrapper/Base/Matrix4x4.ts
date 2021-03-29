@@ -3,7 +3,7 @@ import Vector4 from "./Vector4"
 
 export default class Matrix4x4 {
 	public static get Identity(): Matrix4x4 {
-		return new Matrix4x4().SetIdentity()
+		return this.Identity_.Clone()
 	}
 	public static CreateFromVector4(vec: Vector4): Matrix4x4 {
 		const sqx = vec.x * vec.x
@@ -34,33 +34,19 @@ export default class Matrix4x4 {
 		mat.SetRowValue(3, 2, vec.z)
 		return mat
 	}
+	private static Identity_ = new Matrix4x4([
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	])
 
-	private readonly values = new Float32Array(16)
-	constructor(values: number[] = []) {
-		for (let i = 0; i < 16; i++)
-			this.values[i] = values[i] ?? 0
+	public readonly values = new Float32Array(16)
+	constructor(values: ArrayLike<number> = []) {
+		this.values.set(values)
 	}
 	public SetIdentity(): Matrix4x4 {
-		this.SetRowValue(0, 0, 1)
-		this.SetRowValue(0, 1, 0)
-		this.SetRowValue(0, 2, 0)
-		this.SetRowValue(0, 3, 0)
-
-		this.SetRowValue(1, 0, 0)
-		this.SetRowValue(1, 1, 1)
-		this.SetRowValue(1, 2, 0)
-		this.SetRowValue(1, 3, 0)
-
-		this.SetRowValue(2, 0, 0)
-		this.SetRowValue(2, 1, 0)
-		this.SetRowValue(2, 2, 1)
-		this.SetRowValue(2, 3, 0)
-
-		this.SetRowValue(3, 0, 0)
-		this.SetRowValue(3, 1, 0)
-		this.SetRowValue(3, 2, 0)
-		this.SetRowValue(3, 3, 1)
-
+		this.values.set(Matrix4x4.Identity_.values)
 		return this
 	}
 	public at(pos: number): number {
@@ -204,6 +190,6 @@ export default class Matrix4x4 {
 		}
 	}
 	public Clone(): Matrix4x4 {
-		return new Matrix4x4([...this.values])
+		return new Matrix4x4(this.values)
 	}
 }

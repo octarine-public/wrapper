@@ -4,7 +4,9 @@ import Vector3 from "../Base/Vector3"
 import Manifest from "../Managers/Manifest"
 import { StringToUTF8 } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
+import { HasBit } from "../Utils/BitsExtensions"
 import { parseKV } from "./ParseKV"
+import { GetMapNumberProperty, GetMapStringProperty } from "./ParseUtils"
 
 const enum EntsTypes {
 	FLOAT = 1,
@@ -58,7 +60,7 @@ function ParseEntityLumpInternal(buf: Uint8Array): void {
 					return
 				const childLumpBuf = fread(`${childLump}_c`)
 				if (childLumpBuf !== undefined)
-					ParseEntityLumpInternal(new Uint8Array(childLumpBuf))
+					ParseEntityLumpInternal(childLumpBuf)
 			})
 		}
 	}
@@ -93,7 +95,6 @@ function ParseEntityLumpInternal(buf: Uint8Array): void {
 						if (key === undefined)
 							key = hash.toString()
 						map.set(key, value)
-
 					}
 					for (let i = 0; i < string_keys; i++) {
 						stream.RelativeSeek(4) // hash
@@ -101,6 +102,11 @@ function ParseEntityLumpInternal(buf: Uint8Array): void {
 							value = ReadTypedValue(stream)
 						map.set(key, value)
 					}
+					if (
+						map.get("classname") === "info_world_layer"
+						&& HasBit(GetMapNumberProperty(map as RecursiveMap, "spawnflags"), 0)
+					)
+						DefaultWorldLayers.push(GetMapStringProperty(map as RecursiveMap, "layername"))
 					EntityDataLump.push(map)
 				}
 			})
@@ -109,10 +115,11 @@ function ParseEntityLumpInternal(buf: Uint8Array): void {
 }
 
 export let EntityDataLump: EntityDataMap[] = []
+export let DefaultWorldLayers: string[] = ["world_layer_base"]
 
-export function ParseEntityLump(buf: ArrayBuffer): void {
+export function ParseEntityLump(buf: Uint8Array): void {
 	try {
-		ParseEntityLumpInternal(new Uint8Array(buf))
+		ParseEntityLumpInternal(buf)
 	} catch (e) {
 		console.error("Error in EntityLump init", e)
 	}
@@ -120,4 +127,5 @@ export function ParseEntityLump(buf: ArrayBuffer): void {
 
 export function ResetEntityLump(): void {
 	EntityDataLump = []
+	DefaultWorldLayers = ["world_layer_base"]
 }

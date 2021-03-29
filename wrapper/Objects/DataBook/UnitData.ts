@@ -2,6 +2,7 @@ import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
 import { Attributes } from "../../Enums/Attributes"
 import { DOTAHullSize } from "../../Enums/DOTAHullSize"
+import Workers from "../../Native/Workers"
 import { parseKVFile } from "../../Resources/ParseKV"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 
@@ -19,23 +20,24 @@ function LoadUnitFile(path: string): RecursiveMap {
 }
 
 export default class UnitData {
-	public static global_storage = new Map<string, UnitData>()
+	public static global_storage: Promise<Map<string, UnitData>> = Promise.resolve(new Map())
 	public static empty = new UnitData("", new Map())
-	public static unit_names_sorted: string[] = []
-	public static GetUnitNameByNameIndex(index: number): Nullable<string> {
+	public static unit_names_sorted: Promise<string[]> = Promise.resolve([])
+	public static async GetUnitNameByNameIndex(index: number): Promise<Nullable<string>> {
+		const unit_names_sorted = await UnitData.unit_names_sorted
 		// it should be much better for V8 to not try to make hits outside of array
-		if (index < 0 || UnitData.unit_names_sorted.length <= index)
+		if (index < 0 || unit_names_sorted.length <= index)
 			return undefined
-		return UnitData.unit_names_sorted[index]
+		return unit_names_sorted[index]
 	}
-	public static GetHeroID(name: string): number {
-		const data = UnitData.global_storage.get(name)
+	public static async GetHeroID(name: string): Promise<number> {
+		const data = (await UnitData.global_storage).get(name)
 		if (data === undefined)
 			throw `Unknown unit name: ${name}`
 		return data.HeroID
 	}
-	public static GetHeroNameByID(id: number): string {
-		for (const [name, data] of UnitData.global_storage)
+	public static async GetHeroNameByID(id: number): Promise<string> {
+		for (const [name, data] of await UnitData.global_storage)
 			if (data.HeroID === id)
 				return name
 		return ""
@@ -113,7 +115,13 @@ export default class UnitData {
 	}
 }
 
-function FixUnitInheritance(units_map: RecursiveMap, fixed_cache: RecursiveMap, map: RecursiveMap, unit_name: string): RecursiveMap {
+function FixUnitInheritance(
+	target_map: Map<string, UnitData>,
+	units_map: RecursiveMap,
+	fixed_cache: RecursiveMap,
+	map: RecursiveMap,
+	unit_name: string,
+): RecursiveMap {
 	if (fixed_cache.has(unit_name))
 		return fixed_cache.get(unit_name) as RecursiveMap
 	if (unit_name === "npc_dota_hero_base")
@@ -123,7 +131,7 @@ function FixUnitInheritance(units_map: RecursiveMap, fixed_cache: RecursiveMap, 
 		if (typeof base_name === "string" && base_name !== unit_name) {
 			const base_map = units_map.get(base_name)
 			if (base_map instanceof Map) {
-				const fixed_base_map = FixUnitInheritance(units_map, fixed_cache, base_map, base_name)
+				const fixed_base_map = FixUnitInheritance(target_map, units_map, fixed_cache, base_map, base_name)
 				fixed_base_map.forEach((v, k) => {
 					if (!map.has(k))
 						map.set(k, v)
@@ -132,12 +140,40 @@ function FixUnitInheritance(units_map: RecursiveMap, fixed_cache: RecursiveMap, 
 		}
 	}
 	fixed_cache.set(unit_name, map)
-	UnitData.global_storage.set(unit_name, new UnitData(unit_name, map))
+	target_map.set(unit_name, new UnitData(unit_name, map))
 	return map
 }
 
-export function ReloadGlobalUnitStorage() {
-	UnitData.global_storage.clear()
+export async function ReloadGlobalUnitStorage() {
+	await UnitData.unit_names_sorted
+	await UnitData.global_storage
+	UnitData.global_storage = new Promise(resolve_global_storage => {
+		UnitData.unit_names_sorted = new Promise(resolve_unit_names_sorted => {
+			const target_map = new Map<string, UnitData>()
+			Workers.CallRPCEndPoint("LoadGlobalUnitStorage", undefined)
+				.then(data => {
+					if (!Array.isArray(data))
+						return
+					const [global_storage_ipc, unit_names_sorted] = data
+					if (!(global_storage_ipc instanceof Map && Array.isArray(unit_names_sorted)))
+						return
+					resolve_unit_names_sorted(unit_names_sorted as string[])
+					const empty_map = new Map()
+					global_storage_ipc.forEach((val, key) => target_map.set(
+						key as string,
+						Object.assign(new UnitData(key as string, empty_map), val),
+					))
+					resolve_global_storage(target_map)
+				}).catch(() => {
+					resolve_unit_names_sorted([])
+					resolve_global_storage(target_map)
+				})
+		})
+	})
+}
+
+Workers.RegisterRPCEndPoint("LoadGlobalUnitStorage", async () => {
+	const target_map = new Map()
 	const parsed_heroes = createMapFromMergedIterators<string, RecursiveMapValue>(
 		LoadUnitFile("scripts/npc/npc_heroes.txt").entries(),
 		LoadUnitFile("scripts/npc/npc_heroes_staging.txt").entries(),
@@ -160,8 +196,9 @@ export function ReloadGlobalUnitStorage() {
 	const fixed_cache: RecursiveMap = new Map()
 	units_map.forEach((map, unit_name) => {
 		if (map instanceof Map)
-			FixUnitInheritance(units_map, fixed_cache, map, unit_name)
+			FixUnitInheritance(target_map, units_map, fixed_cache, map, unit_name)
 	})
-
-	UnitData.unit_names_sorted = [...units_map.keys()]
-}
+	const ret = new Map<string, WorkerIPCType>()
+	target_map.forEach((v, k) => ret.set(k, { ...v }))
+	return [ret, [...units_map.keys()]]
+})

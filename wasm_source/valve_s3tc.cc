@@ -320,13 +320,9 @@ static inline void DecodeAlpha3BitLinear( CDestPixel *pImPos, DXTAlphaBlock3BitL
 }
 
 void ConvertFromDXT1( const uint8_t *src, RGBA8888_t *dst, int width, int height ) {
-	Assert( sizeof( BGRA8888_t ) == 4 );
-	Assert( sizeof( RGBA8888_t ) == 4 );
-	Assert( sizeof( RGB888_t ) == 3 );
-	Assert( sizeof( BGR888_t ) == 3 );
-	Assert( sizeof( BGR565_t ) == 2 );
-	Assert( sizeof( BGRA5551_t ) == 2 );
-	Assert( sizeof( BGRA4444_t ) == 2 );
+	static_assert( sizeof( BGRA8888_t ) == 4 );
+	static_assert( sizeof( RGBA8888_t ) == 4 );
+	static_assert( sizeof( BGR565_t ) == 2 );
 
 	int realWidth = 0;
 	int realHeight = 0;

@@ -1,8 +1,10 @@
 // @ts-nocheck
+import _AABB from "./Base/AABB"
 import _Color from "./Base/Color"
 import _QAngle from "./Base/QAngle"
 import _Vector2 from "./Base/Vector2"
 import _Vector3 from "./Base/Vector3"
+import _Vector4 from "./Base/Vector4"
 import { default as _GUIInfo } from "./GUI/GUIInfo"
 import _EntityManager from "./Managers/EntityManager"
 import _Events from "./Managers/Events"
@@ -14,6 +16,7 @@ import _ParticlesSDK from "./Managers/ParticleManager"
 import _Menu from "./Menu/Menu"
 import _RendererSDK from "./Native/RendererSDK"
 import * as _WASM from "./Native/WASM"
+import _Workers from "./Native/Workers"
 import { GameRules as _GameRules, LocalPlayer as _LocalPlayer } from "./Objects/Base/Entity"
 import { PlayerResource as _PlayerResource } from "./Objects/Base/PlayerResource"
 import { GetSDKClasses } from "./Objects/NativeToSDK"
@@ -26,6 +29,8 @@ globalThis.QAngle = _QAngle
 globalThis.Vector2 = _Vector2
 globalThis.Vector2 = _Vector2
 globalThis.Vector3 = _Vector3
+globalThis.Vector4 = _Vector4
+globalThis.AABB = _AABB
 
 Object.defineProperty(globalThis, "LocalPlayer", {
 	get: () => {
@@ -79,6 +84,7 @@ Object.defineProperty(globalThis, "EntityDataLump", {
 globalThis.GetPositionHeight = _WASM.GetPositionHeight
 globalThis.ParticlesSDK = _ParticlesSDK
 globalThis.WASM = _WASM
+globalThis.Workers = _Workers
 globalThis.Manifest = _Manifest
 globalThis.MinimapSDK = _MinimapSDK
 globalThis.Input = _Input

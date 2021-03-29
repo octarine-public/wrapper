@@ -1,30 +1,19 @@
 import BinaryStream from "./BinaryStream"
 
 export function Utf8ArrayToStr(array: Uint8Array): string {
-	let start = 0
-	if (
-		array.byteLength >= 2
-		&& array[0] === 0xFF
-		&& array[1] === 0xFE
-	)
-		return Utf16ArrayToStr(new Uint16Array(
+	const stream = new BinaryStream(
+		new DataView(
 			array.buffer,
-			array.byteOffset + 2,
-			array.byteLength - 2,
-		))
-	if (
-		array.byteLength >= 3
-		&& array[0] === 0xEF
-		&& array[1] === 0xBB
-		&& array[2] === 0xBF
+			array.byteOffset,
+			array.byteLength,
+		),
+		0,
+		true,
 	)
-		start = 3
-	const stream = new BinaryStream(new DataView(
-		array.buffer,
-		array.byteOffset,
-		array.byteLength,
-	), start)
-	return stream.ReadUtf8String(stream.Remaining)
+	let s = ""
+	while (!stream.Empty())
+		s += stream.ReadChar()
+	return s
 }
 export function Utf16ArrayToStr(array: Uint16Array): string {
 	let s = ""

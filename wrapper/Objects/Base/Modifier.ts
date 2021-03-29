@@ -59,7 +59,7 @@ export default class Modifier {
 	public readonly AbilityLevel: number
 	public readonly IsAura: boolean
 	public readonly Name: string
-	public readonly DDAbilityName: string
+	public DDAbilityName = "" // should be initialized in AsyncCreate
 
 	private Parent_: Nullable<Unit>
 	private Ability_: Nullable<Ability>
@@ -81,12 +81,6 @@ export default class Modifier {
 		this.Name = lua_name === undefined || lua_name === ""
 			? StringTables.GetString("ModifierNames", this.m_pBuff.ModifierClass as number)
 			: lua_name
-
-		const DDAbilityID = this.m_pBuff.DDAbilityID
-		const DDAbilityName = DDAbilityID !== undefined
-			? AbilityData.GetAbilityNameByID(DDAbilityID)
-			: undefined
-		this.DDAbilityName = DDAbilityName ?? "ability_base"
 	}
 
 	public get InvisibilityLevel(): number {
@@ -110,12 +104,22 @@ export default class Modifier {
 			) && this.ElapsedTime < 10 // just in case buff bugs out
 		)
 			return this.m_pBuff.FadeTime ?? 0
-		if (this.Name === "modifier_rattletrap_jetpack")
-			return 260
-		return 0
+		switch (this.Name) {
+			case "modifier_rattletrap_jetpack":
+				return 260
+			case "modifier_monkey_king_bounce_perch":
+				return 100
+			default:
+				return 0
+		}
 	}
 	public get ShouldDoFlyHeightVisual(): boolean {
-		return this.Name === "modifier_winter_wyvern_arctic_burn_flight"
+		return (
+			this.Name === "modifier_winter_wyvern_arctic_burn_flight"
+			|| this.Name === "modifier_courier_flying"
+			|| this.Name === "modifier_night_stalker_darkness"
+			|| this.Name === "modifier_monkey_king_bounce_perch"
+		)
 	}
 	public get CreationTime(): number {
 		return this.m_pBuff.CreationTime
@@ -178,6 +182,13 @@ export default class Modifier {
 		return new Vector3(vec.x, vec.y, vec.z)
 	}
 
+	public async AsyncCreate(): Promise<void> {
+		const DDAbilityID = this.m_pBuff.DDAbilityID
+		const DDAbilityName = DDAbilityID !== undefined
+			? await AbilityData.GetAbilityNameByID(DDAbilityID)
+			: undefined
+		this.DDAbilityName = DDAbilityName ?? "ability_base"
+	}
 	public toString(): string {
 		return this.Name
 	}

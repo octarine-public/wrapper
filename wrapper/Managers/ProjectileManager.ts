@@ -1,5 +1,6 @@
 import Color from "../Base/Color"
 import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
 import { GameActivity_t } from "../Enums/GameActivity_t"
 import { GetPositionHeight } from "../Native/WASM"
 import Entity from "../Objects/Base/Entity"
@@ -30,22 +31,22 @@ EventsSDK.on("GameEnded", () => {
 	ProjectileManager.AllTrackingProjectilesMap.clear()
 })
 
-function TrackingProjectileCreated(projectile: TrackingProjectile) {
+async function TrackingProjectileCreated(projectile: TrackingProjectile) {
 	projectile.Position.Extend(projectile.TargetLoc, (GameState.CurrentServerTick - projectile.LaunchTick) / 30 * projectile.Speed).CopyTo(projectile.Position)
-	EventsSDK.emit("TrackingProjectileCreated", false, projectile)
+	await EventsSDK.emit("TrackingProjectileCreated", false, projectile)
 	ProjectileManager.AllTrackingProjectiles.push(projectile)
 	ProjectileManager.AllTrackingProjectilesMap.set(projectile.ID, projectile)
 }
 
-function DestroyTrackingProjectile(proj: TrackingProjectile) {
-	EventsSDK.emit("TrackingProjectileDestroyed", false, proj)
+async function DestroyTrackingProjectile(proj: TrackingProjectile) {
+	await EventsSDK.emit("TrackingProjectileDestroyed", false, proj)
 	arrayRemove(ProjectileManager.AllTrackingProjectiles, proj)
 	ProjectileManager.AllTrackingProjectilesMap.delete(proj.ID)
 	proj.IsValid = false
 }
 
 EventsSDK.on("PostDataUpdate", () => ProjectileManager.AllTrackingProjectiles.forEach(proj => proj.UpdateTargetLoc()))
-EventsSDK.on("Tick", () => {
+EventsSDK.on("Tick", async () => {
 	const cur_time = GameState.RawGameTime
 	ProjectileManager.AllLinearProjectiles.forEach(proj => {
 		if (proj.LastUpdate === 0) {
@@ -53,11 +54,11 @@ EventsSDK.on("Tick", () => {
 			return
 		}
 		const dt = cur_time - proj.LastUpdate
-		proj.Position.AddForThis(proj.Velocity.MultiplyScalar(dt).toVector3())
+		proj.Position.AddForThis(Vector3.FromVector2(proj.Velocity.MultiplyScalar(dt)))
 		proj.LastUpdate = cur_time
 		proj.Position.z = GetPositionHeight(Vector2.FromVector3(proj.Position))
 	})
-	ProjectileManager.AllTrackingProjectiles.forEach(proj => {
+	for (const proj of ProjectileManager.AllTrackingProjectiles) {
 		if (proj.LastUpdate === 0) {
 			proj.LastUpdate = cur_time
 			const source = proj.Source
@@ -72,7 +73,7 @@ EventsSDK.on("Tick", () => {
 						source.RotationRad,
 					))
 			}
-			return
+			continue
 		}
 		const dt = cur_time - proj.LastUpdate
 		if (!proj.Position.IsValid)
@@ -81,7 +82,7 @@ EventsSDK.on("Tick", () => {
 					.Extend(proj.TargetLoc, (GameState.CurrentServerTick - proj.LaunchTick) * dt * proj.Speed)
 					.CopyTo(proj.Position)
 			else
-				return
+				continue
 		const dist = proj.Position.Distance(proj.TargetLoc)
 		const velocity = proj.Position.GetDirectionTo(proj.TargetLoc).MultiplyScalarForThis(proj.Speed * dt)
 		proj.Position.AddForThis(velocity)
@@ -89,10 +90,10 @@ EventsSDK.on("Tick", () => {
 		const collision_size = proj.Target instanceof Entity ? proj.Target.ProjectileCollisionSize : 0
 		if (collision_size !== 0) {
 			if (proj.Position.DistanceSqr(proj.TargetLoc) < collision_size ** 2)
-				DestroyTrackingProjectile(proj)
+				await DestroyTrackingProjectile(proj)
 		} else if (dist < velocity.Length)
-			DestroyTrackingProjectile(proj)
-	})
+			await DestroyTrackingProjectile(proj)
+	}
 })
 
 ParseProtobufDesc(`
@@ -161,8 +162,8 @@ const projectile_attachments_names = [
 	"attach_attack3",
 	"attach_attack4",
 ]
-Events.on("ServerMessage", (msg_id, buf_len) => {
-	const buf = ServerMessageBuffer.subarray(0, buf_len)
+Events.on("ServerMessage", async (msg_id, buf_) => {
+	const buf = new Uint8Array(buf_)
 	switch (msg_id) {
 		case 471: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_CreateLinearProjectile")
@@ -181,7 +182,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				CMsgVector2DToVector2(msg.get("acceleration") as RecursiveProtobuf),
 				NumberToColor(msg.get("colorgemcolor") as number),
 			)
-			EventsSDK.emit("LinearProjectileCreated", false, projectile)
+			await EventsSDK.emit("LinearProjectileCreated", false, projectile)
 			ProjectileManager.AllLinearProjectiles.push(projectile)
 			ProjectileManager.AllLinearProjectilesMap.set(projectile.ID, projectile)
 			break
@@ -191,7 +192,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			const projectile = ProjectileManager.AllLinearProjectilesMap.get(msg.get("handle") as number)
 			if (projectile === undefined)
 				return
-			EventsSDK.emit("LinearProjectileDestroyed", false, projectile)
+			await EventsSDK.emit("LinearProjectileDestroyed", false, projectile)
 			arrayRemove(ProjectileManager.AllLinearProjectiles, projectile)
 			ProjectileManager.AllLinearProjectilesMap.delete(projectile.ID)
 			break
@@ -200,7 +201,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_DodgeTrackingProjectiles")
 			const handle = msg.get("entindex") as number
 			const ent = EntityManager.EntityByIndex(handle)
-			EventsSDK.emit("TrackingProjectilesDodged", false, ent ?? ServerHandleToIndex(handle))
+			await EventsSDK.emit("TrackingProjectilesDodged", false, ent ?? ServerHandleToIndex(handle))
 			if (ent === undefined)
 				break
 			const attacks_only = msg.get("attacks_only") as boolean
@@ -233,7 +234,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				NumberToColor(msg.get("colorgemcolor") as number),
 			)
 
-			TrackingProjectileCreated(projectile)
+			await TrackingProjectileCreated(projectile)
 			break
 		}
 		case 519: {
@@ -269,7 +270,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				)
 				projectile.Position.CopyFrom(CMsgVectorToVector3(msg.get("vSourceLoc") as RecursiveProtobuf))
 
-				TrackingProjectileCreated(projectile)
+				await TrackingProjectileCreated(projectile)
 			}
 
 			projectile.Update(
@@ -283,14 +284,14 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				launch_tick,
 				TargetLoc,
 			)
-			EventsSDK.emit("TrackingProjectileUpdated", false, projectile)
+			await EventsSDK.emit("TrackingProjectileUpdated", false, projectile)
 			break
 		}
 		case 571: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_TE_DestroyProjectile")
 			const projectile = ProjectileManager.AllTrackingProjectilesMap.get(msg.get("handle") as number)
 			if (projectile !== undefined)
-				DestroyTrackingProjectile(projectile)
+				await DestroyTrackingProjectile(projectile)
 			break
 		}
 	}

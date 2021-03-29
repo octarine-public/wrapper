@@ -133,8 +133,8 @@ export default class Node extends Base {
 			this.entries.forEach(entry => entry.Update(true))
 	}
 
-	public Render(): void {
-		super.Render(this.parent instanceof Node) // only draw bars on non-root nodes
+	public async Render(): Promise<void> {
+		await super.Render(this.parent instanceof Node) // only draw bars on non-root nodes
 
 		const TextPos = this.Position.Clone()
 		if (this.icon_path !== "") {
@@ -155,22 +155,20 @@ export default class Node extends Base {
 		const position = this.Position.Clone().AddScalarX(this.TotalSize.x),
 			max_width = this.EntriesSizeX
 		position.y = Math.min(position.y, this.WindowSize.y - this.EntriesSizeY)
-		this.entries.forEach(entry => {
-			if (!entry.IsVisible)
-				return
-			position.CopyTo(entry.Position)
-			entry.TotalSize.x = max_width
-			entry.TotalSize.y = entry.OriginalSize.y
-			entry.Render()
-			position.AddScalarY(entry.TotalSize.y)
-		})
+		for (const entry of this.entries)
+			if (entry.IsVisible) {
+				position.CopyTo(entry.Position)
+				entry.TotalSize.x = max_width
+				entry.TotalSize.y = entry.OriginalSize.y
+				await entry.Render()
+				position.AddScalarY(entry.TotalSize.y)
+			}
 	}
-	public PostRender(): void {
+	public async PostRender(): Promise<void> {
 		if (this.is_open)
-			this.entries.forEach(entry => {
+			for (const entry of this.entries)
 				if (entry.IsVisible)
-					entry.PostRender()
-			})
+					await entry.PostRender()
 	}
 
 	public OnParentNotVisible(ignore_open = false): void {
@@ -178,27 +176,24 @@ export default class Node extends Base {
 			this.entries.forEach(entry => entry.OnParentNotVisible())
 	}
 
-	public OnMouseLeftDown(): boolean {
-		if (this.IsHovered)
+	public async OnMouseLeftDown(): Promise<boolean> {
+		if (this.active_element !== undefined || this.IsHovered)
 			return false
 		if (!this.is_open)
 			return true
-		return this.active_element === undefined && !(
-			this.entries.some(entry => {
-				if (!entry.IsVisible || entry.OnPreMouseLeftDown())
-					return false
+		for (const entry of this.entries)
+			if (entry.IsVisible && !await entry.OnPreMouseLeftDown()) {
 				this.active_element = entry
-				return true
-			})
-			|| this.entries.some(entry => {
-				if (!entry.IsVisible || entry.OnMouseLeftDown())
-					return false
+				return false
+			}
+		for (const entry of this.entries)
+			if (entry.IsVisible && !await entry.OnMouseLeftDown()) {
 				this.active_element = entry
-				return true
-			})
-		)
+				return false
+			}
+		return true
 	}
-	public OnMouseLeftUp(ignore_myself = false): boolean {
+	public async OnMouseLeftUp(ignore_myself = false): Promise<boolean> {
 		if (!ignore_myself && this.IsHovered) {
 			this.is_open = !this.is_open
 			if (this.is_open)

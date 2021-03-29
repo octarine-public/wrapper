@@ -1,7 +1,7 @@
 import { EntityPropertyType } from "../Managers/EntityManager"
 import Entity from "./Base/Entity"
 
-export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => void
+export type FieldHandler = (entity: Entity, new_value: EntityPropertyType) => any
 const constructors = new Map<string, Constructor<Entity>>(),
 	field_handlers = new Map<Constructor<Entity>, Map<string, FieldHandler>>(),
 	sdk_classes: [Constructor<Entity>, string][] = []
@@ -29,7 +29,11 @@ function GenerateChainedFieldHandler(old: FieldHandler, new_: FieldHandler) {
 		new_(ent, new_val)
 	}
 }
-export function RegisterFieldHandler<T extends Entity>(constructor: Constructor<T>, field_name: string, handler: (entity: T, new_value: EntityPropertyType) => void) {
+export function RegisterFieldHandler<T extends Entity>(
+	constructor: Constructor<T>,
+	field_name: string,
+	handler: (entity: T, new_value: EntityPropertyType) => any,
+) {
 	if (!field_handlers.has(constructor))
 		RegisterClassInternal(constructor)
 	const map = field_handlers.get(constructor)!
@@ -38,7 +42,11 @@ export function RegisterFieldHandler<T extends Entity>(constructor: Constructor<
 		handler_ = GenerateChainedFieldHandler(map.get(field_name)!, handler_)
 	map.set(field_name, handler_)
 }
-export function ReplaceFieldHandler<T extends Entity>(constructor: Constructor<T>, field_name: string, handler: (entity: T, new_value: EntityPropertyType) => void) {
+export function ReplaceFieldHandler<T extends Entity>(
+	constructor: Constructor<T>,
+	field_name: string,
+	handler: (entity: T, new_value: EntityPropertyType) => any,
+) {
 	field_handlers.get(constructor)!.set(field_name, handler as FieldHandler)
 }
 

@@ -1,21 +1,14 @@
 import PlayerData from "../../Base/PlayerData"
 import PlayerTeamData from "../../Base/PlayerTeamData"
 import { WrapperClass } from "../../Decorators"
-import EntityManager, { EntityPropertiesNode } from "../../Managers/EntityManager"
+import { EntityPropertiesNode } from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
 import Entity from "../Base/Entity"
-import Player from "../Base/Player"
 
 @WrapperClass("CDOTA_PlayerResource")
 export default class CPlayerResource extends Entity {
 	public PlayerTeamData: PlayerTeamData[] = []
 	public PlayerData: PlayerData[] = []
-
-	public get AllPlayers(): Nullable<Player>[] {
-		const ar: Nullable<Player>[] = []
-		EntityManager.GetEntitiesByClass(Player).forEach(pl => ar[pl.PlayerID] = pl)
-		return ar
-	}
 
 	public GetPlayerTeamDataByPlayerID(playerID: number): Nullable<PlayerTeamData> {
 		return this.PlayerTeamData[playerID]

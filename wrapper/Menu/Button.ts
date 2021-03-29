@@ -41,8 +41,8 @@ export default class Button extends Base {
 			.AddScalarY(Button.text_vertical_button_gap * 2)
 			.CopyTo(this.OriginalSize)
 	}
-	public Render(): void {
-		super.Render()
+	public async Render(): Promise<void> {
+		await super.Render()
 
 		const button_rect = this.ButtonRect
 		RendererSDK.Image(Button.button_path, button_rect.pos1, -1, button_rect.pos2.Subtract(button_rect.pos1))
@@ -54,12 +54,12 @@ export default class Button extends Base {
 			),
 		)
 	}
-	public OnMouseLeftDown(): boolean {
+	public async OnMouseLeftDown(): Promise<boolean> {
 		return !this.IsHovered
 	}
-	public OnMouseLeftUp(): boolean {
+	public async OnMouseLeftUp(): Promise<boolean> {
 		if (this.ButtonRect.Contains(this.MousePosition))
-			this.OnValueChangedCBs.forEach(f => f(this))
+			await this.TriggerOnValueChangedCBs()
 		return false
 	}
 }

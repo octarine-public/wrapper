@@ -3,8 +3,12 @@ import Vector3 from "../Base/Vector3"
 import { GetPositionHeight } from "../Native/WASM"
 import BinaryStream from "../Utils/BinaryStream"
 
-export function ParseTRMP(buf: ArrayBuffer): Vector3[] {
-	const stream = new BinaryStream(new DataView(buf))
+export function ParseTRMP(buf: Uint8Array): Vector3[] {
+	const stream = new BinaryStream(new DataView(
+		buf.buffer,
+		buf.byteOffset,
+		buf.byteLength,
+	))
 	{
 		const magic = stream.ReadUint32(false)
 		if (magic !== 0x74726D70) { // trmp

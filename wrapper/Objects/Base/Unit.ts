@@ -287,17 +287,7 @@ export default class Unit extends Entity {
 		let offset = this.HealthBarOffsetOverride
 		if (offset === -1)
 			offset = GetUnitNumberPropertyByName(this.Index, "m_iHealthBarOffset") ?? this.UnitData.HealthBarOffset
-		// TODO: smoothing by Unit#Think
-		for (const buff of this.Buffs) {
-			const delta_z = buff.DeltaZ
-			if (delta_z !== 0)
-				return offset + delta_z
-		}
-		if (this.IsFlyingVisually)
-			offset += 150
-		if (this.HasBuffByName("modifier_monkey_king_bounce_perch"))
-			offset += 100
-		return offset
+		return this.DeltaZ + offset
 	}
 	public get WorkshopName(): string {
 		return this.UnitData.WorkshopName
@@ -384,9 +374,6 @@ export default class Unit extends Entity {
 	// TODO: parse KV, use buffs & items to calculate this
 	public get IdealSpeed(): number {
 		return GetUnitNumberPropertyByName(this.Index, "m_fIdealSpeed") ?? this.BaseMoveSpeed
-	}
-	public get RingRadius(): number {
-		return this.UnitData.RingRadius
 	}
 	public get SecondsPerAttack(): number {
 		return 1 / (this.AttacksPerSecond ?? 0)
@@ -500,6 +487,12 @@ export default class Unit extends Entity {
 	}
 	public get IsFlyingVisually(): boolean {
 		return this.Buffs.some(buff => buff.ShouldDoFlyHeightVisual)
+	}
+	public get IsGloballyTargetable(): boolean {
+		return false
+	}
+	public get ShouldUnifyOrders(): boolean {
+		return true
 	}
 
 	public VelocityWaypoint(time: number, movespeed: number = this.IsMoving ? this.IdealSpeed : 0): Vector3 {
@@ -1131,54 +1124,54 @@ export default class Unit extends Entity {
 	}
 }
 
-function UnitNameChanged(unit: Unit) {
-	unit.UnitData = UnitData.global_storage.get(unit.Name) ?? UnitData.empty
+async function UnitNameChanged(unit: Unit) {
+	unit.UnitData = (await UnitData.global_storage).get(unit.Name) ?? UnitData.empty
 	if (unit.IsValid)
-		EventsSDK.emit("EntityNameChanged", false, unit)
+		await EventsSDK.emit("EntityNameChanged", false, unit)
 }
 
 import { RegisterFieldHandler, ReplaceFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterFieldHandler(Unit, "m_iUnitNameIndex", (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_iUnitNameIndex", async (unit, new_value) => {
 	const old_name = unit.Name
-	unit.UnitName_ = new_value >= 0 ? (UnitData.GetUnitNameByNameIndex(new_value as number) ?? "") : ""
+	unit.UnitName_ = new_value >= 0 ? (await UnitData.GetUnitNameByNameIndex(new_value as number) ?? "") : ""
 	if (unit.UnitName_ === "")
 		unit.UnitName_ = unit.Name_
 	if (old_name !== unit.Name)
-		UnitNameChanged(unit)
+		await UnitNameChanged(unit)
 })
-ReplaceFieldHandler(Unit, "m_nameStringableIndex", (unit, new_val) => {
+ReplaceFieldHandler(Unit, "m_nameStringableIndex", async (unit, new_val) => {
 	const old_name = unit.Name
 	unit.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? unit.Name_
 	if (unit.UnitName_ === "")
 		unit.UnitName_ = unit.Name_
 	if (old_name !== unit.Name)
-		UnitNameChanged(unit)
+		await UnitNameChanged(unit)
 })
-RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", async (unit, new_value) => {
 	unit.IsVisibleForTeamMask = new_value as number
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
 	if (unit.IsValid)
-		EventsSDK.emit("TeamVisibilityChanged", false, unit)
+		await EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
-ReplaceFieldHandler(Unit, "m_iTeamNum", (unit, new_val) => {
+ReplaceFieldHandler(Unit, "m_iTeamNum", async (unit, new_val) => {
 	const old_visibility = unit.IsVisibleForEnemies
 
 	{ // we're overriding parent m_iTeamNum handler, so we should handle it here
 		const old_team = unit.Team
 		unit.Team = new_val as Team
 		if (old_team !== unit.Team && unit.IsValid)
-			EventsSDK.emit("EntityTeamChanged", false, unit)
+			await EventsSDK.emit("EntityTeamChanged", false, unit)
 	}
 
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
 	if (unit.IsVisibleForEnemies !== old_visibility && unit.IsValid)
-		EventsSDK.emit("TeamVisibilityChanged", false, unit)
+		await EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_NetworkActivity", (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_NetworkActivity", async (unit, new_value) => {
 	unit.NetworkActivity = new_value as number
 	unit.NetworkActivityStartTime = GameState.RawGameTime
 	if (unit.IsValid)
-		EventsSDK.emit("NetworkActivityChanged", false, unit)
+		await EventsSDK.emit("NetworkActivityChanged", false, unit)
 })
 RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 	const ar = new_value as number[]
@@ -1271,3 +1264,20 @@ EventsSDK.on("UnitAnimation", (unit, _sequence_variant, _playback_rate, castpoin
 	unit.LastActivity = activity
 	unit.LastActivityEndTime = GameState.RawGameTime + castpoint
 })
+
+function OnModifierUpdated(mod: Modifier): void {
+	const parent = mod.Parent
+	if (parent === undefined)
+		return
+	// TODO: interpolate in Unit#Think?
+	let offset = 0
+	for (const buff of parent.Buffs)
+		offset += buff.DeltaZ
+	if (parent.IsFlyingVisually)
+		offset += 150
+	parent.DeltaZ = parent.BoundingBox.DeltaZ = offset
+}
+
+EventsSDK.on("ModifierCreated", OnModifierUpdated)
+EventsSDK.on("ModifierChanged", OnModifierUpdated)
+EventsSDK.on("ModifierRemoved", OnModifierUpdated)

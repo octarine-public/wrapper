@@ -1,9 +1,7 @@
 import { DecompressLZ4, DecompressLZ4Chained } from "../Native/WASM"
-import { ArrayBuffersEqual, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
+import { ArrayBuffersEqual } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
 import { HasBit } from "../Utils/BitsExtensions"
-import readFile from "../Utils/readFile"
-import Stream from "../Utils/Stream"
 import { ParseExternalReferences } from "../Utils/Utils"
 import { ParseResourceLayout } from "./ParseResource"
 
@@ -19,9 +17,7 @@ const SPACE = " "
 const TAB = "\t"
 const WHITESPACE = [SPACE, "\t", "\r", "\n", "="]
 
-function _symtostr(stream: Stream, token: string): string {
-	if (stream.buf.indexOf(token, stream.pos) === -1)
-		return ""
+function _symtostr(stream: BinaryStream, token: string): string {
 	const start_pos = stream.pos
 	let str = "",
 		escape_next_char = false
@@ -48,7 +44,7 @@ function _symtostr(stream: Stream, token: string): string {
 	return ""
 }
 
-function _unquotedtostr(stream: Stream): string {
+function _unquotedtostr(stream: BinaryStream): string {
 	let str = ""
 	while (!stream.Empty()) {
 		const ch = stream.ReadChar()
@@ -59,13 +55,21 @@ function _unquotedtostr(stream: Stream): string {
 	return str
 }
 
-function _parse(stream: Stream, map = new Map<string, any>()): RecursiveMap {
+function _parse(buf: Uint8Array | BinaryStream, map = new Map<string, any>()): RecursiveMap {
+	const stream = buf instanceof Uint8Array
+		? new BinaryStream(new DataView(
+			buf.buffer,
+			buf.byteOffset,
+			buf.byteLength,
+		))
+		: buf
 	let laststr = "",
 		lasttok = "",
 		lastbrk = "",
 		next_is_value = false
 
 	while (!stream.Empty()) {
+		const start_pos = stream.pos
 		let c = stream.ReadChar()
 
 		if (c === NODE_OPEN) {
@@ -81,10 +85,11 @@ function _parse(stream: Stream, map = new Map<string, any>()): RecursiveMap {
 		} else if (c === BR_OPEN)
 			lastbrk = _symtostr(stream, BR_CLOSE)
 		else if (c === COMMENT) {
+			const start_pos2 = stream.pos
 			if (stream.ReadChar() === COMMENT)
 				stream.SeekLine()
 			else
-				stream.RelativeSeek(-1) // cancel read
+				stream.pos = start_pos2
 		} else if (c === CR) {
 			stream.SeekLine()
 			c = LF
@@ -93,7 +98,7 @@ function _parse(stream: Stream, map = new Map<string, any>()): RecursiveMap {
 		} else if (c !== SPACE && c !== TAB && c !== "=") {
 			let str: string
 			if (c !== STRING) {
-				stream.RelativeSeek(-1)
+				stream.pos = start_pos
 				str = _unquotedtostr(stream)
 			} else
 				str = _symtostr(stream, STRING)
@@ -404,7 +409,7 @@ class KVParser {
 				if (this.uncompressed_blocks_stream !== undefined)
 					return this.uncompressed_blocks_stream.ReadSlice(
 						this.uncompressed_blocks_lengths[this.current_compressed_block++],
-					)
+					).slice()
 
 				const length = stream.ReadInt32()
 				current_pos += 4
@@ -412,7 +417,7 @@ class KVParser {
 					stream.pos = this.binary_bytes_offset
 					this.binary_bytes_offset += length
 				}
-				const val = stream.ReadSlice(length)
+				const val = stream.ReadSlice(length).slice()
 				if (this.binary_bytes_offset > -1)
 					stream.pos = current_pos
 				return val
@@ -687,13 +692,13 @@ class C_NTRO {
 		}
 
 		if (field.Count > 0 || field.Indirections.length !== 0) {
-			const ar: RecursiveMap = new Map()
+			const ar: RecursiveMapValue[] = []
 			for (let i = 0; i < count; i++)
-				this.ReadField(stream, ar, field, external_refs, true)
+				ar[i] = this.ReadField(stream, field, external_refs)
 			parent.set(field.FieldName, ar)
 		} else
 			for (let i = 0; i < count; i++)
-				this.ReadField(stream, parent, field, external_refs)
+				parent.set(field.FieldName, this.ReadField(stream, field, external_refs))
 
 		if (prev !== 0)
 			stream.pos = prev
@@ -706,80 +711,59 @@ class C_NTRO {
 	}
 	private ReadField(
 		stream: BinaryStream,
-		parent: RecursiveMap,
 		field: ResourceDiskStruct_Field,
 		external_refs: Map<bigint, string>,
-		is_array = false,
-	): void {
-		const name = is_array ? parent.size.toString() : field.FieldName
+	): RecursiveMapValue {
 		switch (field.Type) {
 			case DataType.Struct:
-				parent.set(name, this.ReadStructure(
+				return this.ReadStructure(
 					stream,
 					this.resourceIntrospectionManifest.ReferencedStructs.find(x => field.TypeData === x.ID)!,
 					external_refs,
 					stream.pos,
-				))
-				break
+				)
 			case DataType.Enum:
 				// TODO: Lookup in ReferencedEnums
-				parent.set(name, stream.ReadUint32())
-				break
+				return stream.ReadUint32()
 			case DataType.SByte:
-				parent.set(name, stream.ReadInt8())
-				break
+				return stream.ReadInt8()
 			case DataType.Byte:
-				parent.set(name, stream.ReadUint8())
-				break
+				return stream.ReadUint8()
 			case DataType.Boolean:
-				parent.set(name, stream.ReadBoolean())
-				break
+				return stream.ReadBoolean()
 			case DataType.Int16:
-				parent.set(name, stream.ReadInt16())
-				break
+				return stream.ReadInt16()
 			case DataType.UInt16:
-				parent.set(name, stream.ReadUint16())
-				break
+				return stream.ReadUint16()
 			case DataType.Int32:
-				parent.set(name, stream.ReadInt32())
-				break
+				return stream.ReadInt32()
 			case DataType.UInt32:
-				parent.set(name, stream.ReadUint32())
-				break
+				return stream.ReadUint32()
 			case DataType.Float:
-				parent.set(name, stream.ReadFloat32())
-				break
+				return stream.ReadFloat32()
 			case DataType.Int64:
-				parent.set(name, stream.ReadInt64())
-				break
+				return stream.ReadInt64()
 			case DataType.UInt64:
-				parent.set(name, stream.ReadUint64())
-				break
+				return stream.ReadUint64()
 			case DataType.ExternalReference:
-				parent.set(name, external_refs.get(stream.ReadUint64()) ?? "")
-				break
+				return external_refs.get(stream.ReadUint64()) ?? ""
 			case DataType.Vector:
-				parent.set(name, this.ReadFloatArray(stream, 3))
-				break
+				return this.ReadFloatArray(stream, 3)
 			case DataType.Quaternion:
 			case DataType.Color:
 			case DataType.Fltx4:
 			case DataType.Vector4D:
 			case DataType.Vector4D_44:
-				parent.set(name, this.ReadFloatArray(stream, 4))
-				break
+				return this.ReadFloatArray(stream, 4)
 			case DataType.String4:
 			case DataType.String:
-				parent.set(name, stream.ReadOffsetString())
-				break
+				return stream.ReadOffsetString()
 			case DataType.CTransform:
 			case DataType.Matrix2x4:
-				parent.set(name, this.ReadFloatArray(stream, 8))
-				break
+				return this.ReadFloatArray(stream, 8)
 			case DataType.Matrix3x4:
 			case DataType.Matrix3x4a:
-				parent.set(name, this.ReadFloatArray(stream, 12))
-				break
+				return this.ReadFloatArray(stream, 12)
 			default:
 				throw `Unknown data type at field ${field.FieldName}: ${field.Type}`
 		}
@@ -861,12 +845,12 @@ export function parseKV(buf: Uint8Array, block: string | number = "DATA"): Recur
 				return res
 		}
 		if (DATA !== undefined)
-			return _parse(new Stream(Utf8ArrayToStr(DATA)))
+			return _parse(DATA)
 	}
-	return _parse(new Stream(Utf8ArrayToStr(buf)))
+	return _parse(buf)
 }
 
 export function parseKVFile(path: string): RecursiveMap {
-	const buf = readFile(path)
-	return buf !== undefined ? parseKV(new Uint8Array(buf)) : new Map()
+	const buf = fread(path)
+	return buf !== undefined ? parseKV(buf) : new Map()
 }

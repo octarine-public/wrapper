@@ -1,10 +1,4 @@
-import { WorldPolygon } from "../Geometry/WorldPolygon"
-import ParticlesSDK from "../Managers/ParticleManager"
-import { GetPositionHeight } from "../Native/WASM"
-import Entity from "../Objects/Base/Entity"
-import Color from "./Color"
 import Vector2 from "./Vector2"
-import Vector3 from "./Vector3"
 
 export default class Rectangle {
 	constructor(public pos1 = new Vector2(), public pos2 = new Vector2()) {
@@ -44,33 +38,33 @@ export default class Rectangle {
 		this.pos2.y = this.pos1.y + val
 	}
 	public get Left(): number {
-		return this.x
+		return this.pos1.x
+	}
+	public set Left(val: number) {
+		this.pos1.x = val
 	}
 	public get Right(): number {
-		return this.x + this.Width
+		return this.pos2.x
+	}
+	public set Right(val: number) {
+		this.pos2.x = val
 	}
 	public get Top(): number {
 		return this.y
 	}
+	public set Top(val: number) {
+		this.pos1.y = val
+	}
 	public get Bottom(): number {
-		return this.y + this.Height
+		return this.pos2.y
+	}
+	public set Bottom(val: number) {
+		this.pos2.y = val
 	}
 	public get Center(): Vector2 {
 		return new Vector2(
 			this.pos1.x + (this.Width / 2),
 			this.pos1.y + (this.Height / 2),
-		)
-	}
-	public get Polygon(): WorldPolygon {
-		const pos1 = this.pos1,
-			pos2 = new Vector2(this.pos1.x, this.pos2.y),
-			pos3 = this.pos2,
-			pos4 = new Vector2(this.pos2.x, this.pos1.y)
-		return new WorldPolygon(
-			Vector3.FromVector2(pos1).SetZ(GetPositionHeight(pos1)),
-			Vector3.FromVector2(pos2).SetZ(GetPositionHeight(pos2)),
-			Vector3.FromVector2(pos3).SetZ(GetPositionHeight(pos3)),
-			Vector3.FromVector2(pos4).SetZ(GetPositionHeight(pos4)),
 		)
 	}
 	public Contains(pos: Vector2): boolean {
@@ -104,11 +98,5 @@ export default class Rectangle {
 			this.pos1.Clone(),
 			this.pos2.Clone(),
 		)
-	}
-	public Draw(key: string, ent: Entity, ParticleManager: ParticlesSDK, color: Color, width = 10, mode2D = 10): void {
-		this.Polygon.Draw(key, ent, ParticleManager, color, width, mode2D)
-	}
-	public Destroy(key: string, ParticleManager: ParticlesSDK): void {
-		this.Polygon.Destroy(key, ParticleManager)
 	}
 }

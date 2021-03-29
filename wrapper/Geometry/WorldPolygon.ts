@@ -1,6 +1,7 @@
 import Color from "../Base/Color"
 import Vector3 from "../Base/Vector3"
 import ParticlesSDK from "../Managers/ParticleManager"
+import RendererSDK from "../Native/RendererSDK"
 import Entity from "../Objects/Base/Entity"
 
 export class WorldPolygon {
@@ -9,6 +10,10 @@ export class WorldPolygon {
 	constructor(...points: Vector3[]) {
 		this.Points = points
 	}
+	public get Center(): Vector3 {
+		return this.Points.reduce((a, b) => a.AddForThis(b), new Vector3())
+			.DivideScalarForThis(this.Points.length)
+	}
 	public Add(polygon: WorldPolygon | Vector3): void {
 		if (polygon instanceof WorldPolygon)
 			polygon.Points.forEach(point => this.AddPoint(point))
@@ -16,15 +21,29 @@ export class WorldPolygon {
 			this.AddPoint(polygon)
 	}
 
-	public Draw(key: string, ent: Entity, ParticleManager: ParticlesSDK, color: Color, width = 10, mode2D = 10): void {
+	public Draw(
+		key: string,
+		ent: Entity,
+		ParticleManager: ParticlesSDK,
+		color: Color,
+		width = 10,
+		mode2D = 10,
+		use_particles = true,
+	): void {
 		for (let i = 0; i < this.Points.length; i++) {
 			const nextIndex = this.Points.length - 1 === i ? 0 : i + 1
-			ParticleManager.DrawLine(`${key}_${i}`, ent, this.Points[nextIndex], {
-				Position: this.Points[i],
-				Color: color,
-				Width: width,
-				Mode2D: mode2D,
-			})
+			if (!use_particles) {
+				const point1 = RendererSDK.WorldToScreen(this.Points[i], false),
+					point2 = RendererSDK.WorldToScreen(this.Points[nextIndex], false)
+				if (point1 !== undefined && point2 !== undefined)
+					RendererSDK.Line(point1, point2, color, width / 8)
+			} else
+				ParticleManager.DrawLine(`${key}_${i}`, ent, this.Points[nextIndex], {
+					Position: this.Points[i],
+					Color: color,
+					Width: width,
+					Mode2D: mode2D,
+				})
 		}
 	}
 	public Destroy(key: string, ParticleManager: ParticlesSDK): void {

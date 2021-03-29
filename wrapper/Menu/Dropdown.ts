@@ -190,10 +190,10 @@ export default class Dropdown extends Base {
 		return this.currently_at_id + Math.floor(popup_elements_rect.GetOffset(mouse_pos).y / this.PopupElementHeight)
 	}
 
-	public Render(): void {
+	public async Render(): Promise<void> {
 		this.is_active = Dropdown.active_dropdown === this
 		this.FixSelectedID()
-		super.Render()
+		await super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const dropdown_rect = this.DropdownRect
 		RendererSDK.Image(Dropdown.dropdown_path, dropdown_rect.pos1, -1, dropdown_rect.Size)
@@ -223,7 +223,7 @@ export default class Dropdown extends Base {
 			)
 		}
 	}
-	public PostRender(): void {
+	public async PostRender(): Promise<void> {
 		if (!this.is_active)
 			return
 		const popup_rect = this.GetPopupRect(this.DropdownRect)
@@ -284,16 +284,16 @@ export default class Dropdown extends Base {
 		this.is_active = false
 	}
 
-	public OnPreMouseLeftDown(): boolean {
+	public async OnPreMouseLeftDown(): Promise<boolean> {
 		return !(
 			this.is_active
 			&& this.GetPopupRect(this.DropdownRect).Contains(this.MousePosition)
 		)
 	}
-	public OnMouseLeftDown(): boolean {
+	public async OnMouseLeftDown(): Promise<boolean> {
 		return !this.IsHovered
 	}
-	public OnMouseLeftUp(): boolean {
+	public async OnMouseLeftUp(): Promise<boolean> {
 		const dropdown_rect = this.DropdownRect,
 			mouse_pos = this.MousePosition
 		if (this.is_active) {
@@ -302,7 +302,7 @@ export default class Dropdown extends Base {
 				this.selected_id = this.GetHoveredID(popup_elements_rect)
 				this.is_active = false
 				Dropdown.active_dropdown = undefined
-				this.OnValueChangedCBs.forEach(f => f(this))
+				await this.TriggerOnValueChangedCBs()
 			}
 		}
 		if (dropdown_rect.Contains(mouse_pos)) {

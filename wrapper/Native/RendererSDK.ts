@@ -1,20 +1,27 @@
 import Color from "../Base/Color"
+import Matrix4x4 from "../Base/Matrix4x4"
 import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { FontFlags_t } from "../Enums/FontFlags_t"
+import EntityManager from "../Managers/EntityManager"
 import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import { default as Input } from "../Managers/InputManager"
-import { ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
+import { DefaultWorldLayers, ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
 import { parseKVFile } from "../Resources/ParseKV"
+import { CMeshDrawCall, ParseMesh } from "../Resources/ParseMesh"
+import { ParseModel } from "../Resources/ParseModel"
+import { GetMapNumberProperty, GetMapStringProperty, MapToMatrix4x4, MapToNumberArray, MapToStringArray } from "../Resources/ParseUtils"
 import { StringToUTF8Cb } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
+import { HasBit } from "../Utils/BitsExtensions"
 import GameState from "../Utils/GameState"
 import { DegreesToRadian } from "../Utils/Math"
 import readFile from "../Utils/readFile"
 import * as WASM from "./WASM"
+import Workers from "./Workers"
 
 enum CommandID {
 	// state related
@@ -306,12 +313,16 @@ class CRendererSDK {
 	 * @param pos world position that needs to be turned to screen position
 	 * @returns screen position, or undefined
 	 */
-	public WorldToScreen(position: Vector2 | Vector3): Nullable<Vector2> {
+	public WorldToScreen(
+		position: Vector2 | Vector3,
+		cull = true,
+	): Nullable<Vector2> {
 		if (position instanceof Vector2)
-			position = position.toVector3().SetZ(WASM.GetPositionHeight(position))
-		const vec = WASM.WorldToScreenNew(position, this.WindowSize)?.FloorForThis()?.DivideForThis(this.WindowSize)
-		if (vec === undefined)
-			return undefined
+			position = Vector3.FromVector2(position).SetZ(WASM.GetPositionHeight(position))
+		const vec = WASM.WorldToScreenNew(position, this.WindowSize)?.FloorForThis()
+		if (!cull || vec === undefined)
+			return vec
+		vec.DivideForThis(this.WindowSize)
 		// cut returned screen space to 1.5x screen size
 		if (vec.x < -0.25 || vec.x > 1.25)
 			return undefined
@@ -322,9 +333,15 @@ class CRendererSDK {
 	/**
 	 * @returns screen position with x and y in range {0, 1}, or undefined
 	 */
-	public WorldToScreenCustom(position: Vector2 | Vector3, camera_position: Vector2 | Vector3, camera_distance = 1200, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Nullable<Vector2> {
+	public WorldToScreenCustom(
+		position: Vector2 | Vector3,
+		camera_position: Vector2 | Vector3,
+		camera_distance = 1200,
+		camera_angles = new QAngle(60, 90, 0),
+		window_size = this.WindowSize,
+	): Nullable<Vector2> {
 		if (position instanceof Vector2)
-			position = position.toVector3().SetZ(WASM.GetPositionHeight(position))
+			position = Vector3.FromVector2(position).SetZ(WASM.GetPositionHeight(position))
 		if (camera_position instanceof Vector2)
 			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
 		const vec = WASM.WorldToScreen(position, camera_position, camera_distance, camera_angles, window_size)?.DivideForThis(window_size)
@@ -361,12 +378,17 @@ class CRendererSDK {
 	/**
 	 * @param screen screen position with x and y in range {0, 1}
 	 */
-	public ScreenToWorldFar(screen: Vector2, camera_position: Vector2 | Vector3, camera_distance = 1200, camera_angles = new QAngle(60, 90, 0), window_size = this.WindowSize): Vector3 {
-		if (WASM.HeightMap === undefined)
-			return new Vector3().Invalidate()
+	public ScreenToWorldFar(
+		screens: Vector2[],
+		camera_position: Vector2 | Vector3,
+		camera_distance = 1200,
+		camera_angles = new QAngle(60, 90, 0),
+		window_size = this.WindowSize,
+		fov = -1,
+	): Vector3[] {
 		if (camera_position instanceof Vector2)
 			camera_position = WASM.GetCameraPosition(camera_position, camera_distance, camera_angles)
-		return WASM.ScreenToWorldFar(screen, window_size, camera_position, camera_distance, camera_angles)
+		return WASM.ScreenToWorldFar(screens, window_size, camera_position, camera_distance, camera_angles, fov)
 	}
 	public FilledCircle(vecPos: Vector2, vecSize: Vector2, color: RenderColor = Color.White): void {
 		this.SetColor(color)
@@ -388,15 +410,21 @@ class CRendererSDK {
 	 * @param vecSize Width as X from Vector2
 	 * @param vecSize Height as Y from Vector2
 	 */
-	public Line(start: Vector2 = new Vector2(), end = start.Add(this.DefaultShapeSize), color: RenderColor = Color.White): void {
+	public Line(
+		start: Vector2 = new Vector2(),
+		end = start.Add(this.DefaultShapeSize),
+		color: RenderColor = Color.White,
+		width = 5,
+	): void {
 		this.SetColor(color)
+		this.SetWidth(width)
 
 		this.AllocateCommandSpace(4 * 4)
 		this.commandStream.WriteUint8(CommandID.LINE)
-		this.commandStream.WriteInt32(start.x)
-		this.commandStream.WriteInt32(start.y)
-		this.commandStream.WriteInt32(end.x)
-		this.commandStream.WriteInt32(end.y)
+		this.commandStream.WriteFloat32(start.x)
+		this.commandStream.WriteFloat32(start.y)
+		this.commandStream.WriteFloat32(end.x)
+		this.commandStream.WriteFloat32(end.y)
 		this.RestorePaint()
 	}
 	/**
@@ -588,14 +616,14 @@ class CRendererSDK {
 		this.Text(text, vecMouse, color, font_name, font_size, weight, width, italic, flags, scaleX, skewX)
 	}
 
-	public BeforeDraw() {
-		WASM.CloneWorldToProjection()
+	public async BeforeDraw() {
+		WASM.CloneWorldToProjection(IOBuffer.slice(0, 16))
 		const prev_width = this.WindowSize.x,
 			prev_height = this.WindowSize.y
 		this.WindowSize.x = IOBufferView.getInt32(17 * 4, true)
 		this.WindowSize.y = IOBufferView.getInt32(18 * 4, true)
 		if (this.WindowSize.x !== prev_width || this.WindowSize.y !== prev_height)
-			EventsSDK.emit("WindowSizeChanged", false)
+			await EventsSDK.emit("WindowSizeChanged", false)
 		if (this.clear_texture_cache) {
 			this.texture_cache.forEach(id => this.FreeTexture(id))
 			this.texture_cache.clear()
@@ -752,8 +780,8 @@ class CRendererSDK {
 		if (path.endsWith(".vmat_c")) {
 			const vmat_kv = parseKVFile(path)
 			const m_textureParams = vmat_kv.get("m_textureParams")
-			if (Array.isArray(m_textureParams)) {
-				m_textureParams.forEach(param => {
+			if (m_textureParams instanceof Map || Array.isArray(m_textureParams)) {
+				m_textureParams.forEach((param: RecursiveMapValue) => {
 					if (!(param instanceof Map))
 						return
 					if (param.get("m_name") === "g_tColor") {
@@ -778,8 +806,8 @@ class CRendererSDK {
 			return texture_id
 		} else {
 			const texture_id = read_path.endsWith(".svg")
-				? this.MakeTextureSVG(new Uint8Array(read))
-				: this.MakeTexture(...WASM.ParseImage(new Uint8Array(read)))
+				? this.MakeTextureSVG(read)
+				: this.MakeTexture(...WASM.ParseImage(read))
 			this.texture_cache.set(path, texture_id)
 			return texture_id
 		}
@@ -1039,15 +1067,85 @@ const RendererSDK = new CRendererSDK()
 
 let vhcg_succeeded = false,
 	gnv_succeeded = false,
-	entity_lump_succeeded = false
-function TryLoadMapFiles(): void {
+	entity_lump_succeeded = false,
+	current_world_promise: Nullable<Promise<WorkerIPCType>>
+function TryLoadWorld(world_kv: RecursiveMap): void {
+	const worldNodes = world_kv.get("m_worldNodes")
+	if (!(worldNodes instanceof Map || Array.isArray(worldNodes)))
+		return
+	const meshes: [string, number[]][] = [],
+		models: [string, number[]][] = []
+	worldNodes.forEach((node: RecursiveMapValue) => {
+		if (!(node instanceof Map))
+			return
+		const path = GetMapStringProperty(node, "m_worldNodePrefix")
+		const node_kv = parseKVFile(`${path}.vwnod_c`)
+
+		const layerNames: string[] = []
+		const layerNamesMap = node_kv.get("m_layerNames")
+		if (layerNamesMap instanceof Map || Array.isArray(layerNamesMap))
+			layerNames.push(...MapToStringArray(layerNamesMap))
+
+		const sceneObjectLayers: string[] = []
+		const sceneObjectLayerIndicesMap = node_kv.get("m_sceneObjectLayerIndices")
+		if (sceneObjectLayerIndicesMap instanceof Map || Array.isArray(sceneObjectLayerIndicesMap))
+			sceneObjectLayers.push(
+				...MapToNumberArray(sceneObjectLayerIndicesMap)
+					.map(index => layerNames[index]),
+			)
+
+		const sceneObjects = node_kv.get("m_sceneObjects")
+		if (!(sceneObjects instanceof Map || Array.isArray(sceneObjects)))
+			return
+		let i = 0
+		sceneObjects.forEach((sceneObject: RecursiveMapValue) => {
+			if (!(sceneObject instanceof Map))
+				return
+			const layerName = sceneObjectLayers[i++] ?? "world_layer_base"
+			if (!DefaultWorldLayers.includes(layerName))
+				return
+			const transformMap = sceneObject.get("m_vTransform")
+			const transform = transformMap instanceof Map || Array.isArray(transformMap)
+				? MapToMatrix4x4(transformMap)
+				: Matrix4x4.Identity
+			const model_path = GetMapStringProperty(sceneObject, "m_renderableModel"),
+				mesh_path = GetMapStringProperty(sceneObject, "m_renderable"),
+				objectTypeFlags = GetMapNumberProperty(sceneObject, "m_nObjectTypeFlags")
+			if (HasBit(objectTypeFlags, 3)) // visual only, doesn't affect height calculations/etc
+				return
+			if (model_path !== "")
+				models.push([model_path, [...transform.values]])
+			if (mesh_path !== "")
+				meshes.push([mesh_path, [...transform.values]])
+		})
+	})
+	const world_promise = current_world_promise = Workers.CallRPCEndPoint(
+		"LoadAndOptimizeWorld",
+		[models, meshes],
+	)
+	world_promise.then(data => {
+		if (world_promise !== current_world_promise || !Array.isArray(data))
+			return
+		const [VB, IB, BVH1, BVH2] = data
+		if (!(
+			VB instanceof Uint8Array
+			&& IB instanceof Uint8Array
+			&& BVH1 instanceof Uint8Array
+			&& BVH2 instanceof Uint8Array
+		))
+			return
+		WASM.LoadWorldModel(VB, 3 * 4, IB, 4, Matrix4x4.Identity.values)
+		WASM.FinishWorldCached([BVH1, BVH2])
+	}).catch(console.error)
+}
+async function TryLoadMapFiles(): Promise<void> {
 	const map_name = GameState.MapName
 	if (!vhcg_succeeded) {
 		const buf = fread(`maps/${map_name}.vhcg`)
 		if (buf !== undefined) {
 			vhcg_succeeded = true
-			WASM.ParseVHCG(new Uint8Array(buf))
-			EventsSDK.emit("MapDataLoaded", false)
+			WASM.ParseVHCG(buf)
+			await EventsSDK.emit("MapDataLoaded", false)
 		} else
 			WASM.ResetVHCG()
 	}
@@ -1056,16 +1154,17 @@ function TryLoadMapFiles(): void {
 		if (buf !== undefined) {
 			gnv_succeeded = true
 			ParseGNV(buf)
-			EventsSDK.emit("MapDataLoaded", false)
+			await EventsSDK.emit("MapDataLoaded", false)
 		} else
 			ResetGNV()
 	}
 	if (!entity_lump_succeeded) {
 		ResetEntityLump()
+		WASM.ResetWorld()
 		const world_kv = parseKVFile(`maps/${map_name}/world.vwrld_c`)
 		const m_entityLumps = world_kv.get("m_entityLumps")
-		if (Array.isArray(m_entityLumps))
-			m_entityLumps.forEach(path => {
+		if (m_entityLumps instanceof Map || Array.isArray(m_entityLumps))
+			m_entityLumps.forEach((path: RecursiveMapValue) => {
 				if (typeof path !== "string")
 					return
 				const buf = fread(`${path}_c`)
@@ -1074,11 +1173,15 @@ function TryLoadMapFiles(): void {
 				entity_lump_succeeded = true
 				ParseEntityLump(buf)
 			})
-		EventsSDK.emit("MapDataLoaded", false)
+		if (entity_lump_succeeded) {
+			if (IS_MAIN_WORKER)
+				TryLoadWorld(world_kv)
+			await EventsSDK.emit("MapDataLoaded", false)
+		}
 	}
 }
 
-EventsSDK.on("ServerInfo", info => {
+EventsSDK.on("ServerInfo", async info => {
 	let map_name = (info.get("map_name") as string) ?? "<empty>"
 	if (map_name === undefined)
 		return
@@ -1088,15 +1191,77 @@ EventsSDK.on("ServerInfo", info => {
 	vhcg_succeeded = false
 	gnv_succeeded = false
 	entity_lump_succeeded = false
-	TryLoadMapFiles()
+	await TryLoadMapFiles()
 })
 
-Events.on("PostAddSearchPath", () => TryLoadMapFiles())
+Events.on("PostAddSearchPath", async () => TryLoadMapFiles())
 
-Events.on("Draw", () => {
-	RendererSDK.BeforeDraw()
-	EventsSDK.emit("PreDraw")
-	EventsSDK.emit("Draw")
+Events.on("Draw", async visual_data => {
+	await RendererSDK.BeforeDraw()
+	const stream = new BinaryStream(new DataView(visual_data))
+	while (!stream.Empty()) {
+		const entity_id = stream.ReadUint32()
+		const ent = EntityManager.EntityByIndex(entity_id)
+		if (ent === undefined) {
+			stream.RelativeSeek(2 * 3 * 4)
+			continue
+		}
+		ent.Position.x = stream.ReadFloat32()
+		ent.Position.y = stream.ReadFloat32()
+		ent.Position.z = stream.ReadFloat32()
+		ent.Angles.x = stream.ReadFloat32()
+		ent.Angles.y = stream.ReadFloat32()
+		ent.Angles.z = stream.ReadFloat32()
+	}
+	await EventsSDK.emit("PreDraw")
+	await EventsSDK.emit("Draw")
 })
 
 export default RendererSDK
+
+Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
+	if (!Array.isArray(data) || !Array.isArray(data[0]) || !Array.isArray(data[1]))
+		throw "Data should be [models, meshes]"
+	const models = data[0] as [string, number[]][],
+		meshes = data[1] as [string, number[]][],
+		draw_calls_cache = new Map<string, CMeshDrawCall[]>()
+	WASM.ResetWorld()
+	const draw_calls: [CMeshDrawCall, number[]][] = []
+	models.forEach(([model_path, transform]) => {
+		if (draw_calls_cache.has(model_path)) {
+			draw_calls_cache.get(model_path)!
+				.forEach(drawCall => draw_calls.push([drawCall, transform]))
+			return
+		}
+		const buf = fread(`${model_path}_c`)
+		if (buf === undefined)
+			return
+		const model = ParseModel(buf)
+		const mesh = model.RefMeshes[0] ?? model.EmbeddedMeshes[0]
+		const mesh_draw_calls = mesh?.DrawCalls ?? []
+		mesh_draw_calls.forEach(drawCall => draw_calls.push([drawCall, transform]))
+		draw_calls_cache.set(model_path, mesh_draw_calls)
+	})
+	meshes.forEach(([mesh_path, transform]) => {
+		if (draw_calls_cache.has(mesh_path)) {
+			draw_calls_cache.get(mesh_path)!
+				.forEach(drawCall => draw_calls.push([drawCall, transform]))
+			return
+		}
+		const buf = fread(`${mesh_path}_c`)
+		const mesh_draw_calls = buf !== undefined
+			? ParseMesh(buf).DrawCalls
+			: []
+		mesh_draw_calls.forEach(drawCall => draw_calls.push([drawCall, transform]))
+		draw_calls_cache.set(mesh_path, mesh_draw_calls)
+	})
+	draw_calls.forEach(([drawCall, transform]) => WASM.LoadWorldModel(
+		drawCall.VertexBuffer.Data,
+		drawCall.VertexBuffer.ElementSize,
+		drawCall.IndexBuffer.Data,
+		drawCall.IndexBuffer.ElementSize,
+		transform,
+	))
+	WASM.FinishWorld()
+	return WASM.ExtractWorld()
+})

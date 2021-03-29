@@ -33,12 +33,20 @@ enum HeightMapParseError {
 	ALLOCATION_ERROR = 3,
 };
 
-function GetWASMModule(): WebAssembly.Module {
-	const wasm_file = readFile("wrapper.wasm")
+function TryLoadWASMModule(name: string): WebAssembly.Module {
+	const wasm_file = readFile(name)
 	if (wasm_file === undefined)
-		throw "wrapper.wasm not found"
+		throw `${name} not found`
 
 	return new WebAssembly.Module(wasm_file)
+}
+
+function GetWASMModule(): WebAssembly.Module {
+	try {
+		return TryLoadWASMModule("wrapper_simd.wasm")
+	} catch {
+		return TryLoadWASMModule("wrapper.wasm")
+	}
 }
 
 const WASI_ESUCCESS = 0
@@ -60,6 +68,15 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 			view.setUint32(argvBufSize, 0)
 			return WASI_ESUCCESS
 		},
+		fd_write: () => {
+			throw new Error("fd_write is unimplemented")
+		},
+		fd_seek: () => {
+			throw new Error("fd_seek is unimplemented")
+		},
+		fd_close: () => {
+			throw new Error("fd_close is unimplemented")
+		},
 	},
 }).exports as any as {
 	_start: () => void,
@@ -69,7 +86,7 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	WorldToScreen: () => boolean,
 	ParseVHCG: (ptr: number, size: number) => HeightMapParseError,
 	GetHeightForLocation: () => void,
-	GetSecondaryHeightForLocation: () => void,
+	GetLocationAverageHeight: () => void,
 	ScreenToWorldFar: () => void,
 	my_malloc: (size: number) => number,
 	my_free: (ptr: number) => void,
@@ -91,6 +108,19 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	DecompressLZ4Chained: (ptr: number, input_sizes_ptr: number, output_sizes_ptr: number, count: number) => number,
 	CloneWorldToProjection: () => void,
 	WorldToScreenNew: () => boolean,
+	DecompressVertexBuffer: (ptr: number, size: number, elem_count: number, elem_size: number) => number,
+	DecompressIndexBuffer: (ptr: number, size: number, elem_count: number, elem_size: number) => number,
+	ResetWorld: () => void,
+	LoadWorldModel: (
+		vertex_ptr: number, vertex_size: number, vertex_elem_size: number,
+		index_ptr: number, index_size: number, index_elem_size: number,
+	) => void,
+	FinishWorld: () => void,
+	FinishWorldCached: (
+		nodes_ptr: number, nodes_size: number,
+		indices_ptr: number, indices_size: number,
+	) => void,
+	ExtractWorld: () => void,
 }
 declare global {
 	var wasm_: typeof wasm
@@ -114,43 +144,70 @@ export function GetEyeVector(camera_angles: QAngle): Vector3 {
 	return new Vector3(0, Math.cos(DegreesToRadian(camera_angles.x) - Math.cos(DegreesToRadian(camera_angles.y))), -Math.sin(DegreesToRadian(camera_angles.x)))
 }
 
-export function GetCameraPosition(camera_position: Vector2, camera_distance: number, camera_angles: QAngle): Vector3 {
-	const camera_pos = Camera.Position ? Vector3.fromIOBuffer() : new Vector3()
-	const camera_ang = Camera.Angles ? QAngle.fromIOBuffer() : new QAngle()
-	return camera_position.toVector3().SetZ(
-		GetEyeVector(camera_ang).z * Camera.Distance
-		+ Math.max(
-			camera_pos.z - GetEyeVector(camera_angles).z * camera_distance,
-			camera_distance + 500,
-		),
+let camera_offset = 0,
+	camera_offset_updated = 0
+export function GetCameraPosition(
+	camera_position: Vector2,
+	camera_distance: number,
+	camera_angles: QAngle,
+): Vector3 {
+	const dist = 96 * 1.5,
+		count = 8,
+		t = hrtime()
+	if (camera_offset_updated + 100 < t) {
+		camera_offset = GetLocationAverageHeight(
+			camera_position
+				.Clone()
+				.SubtractScalarX(count * dist / 2)
+				.SubtractScalarY(count * dist / 2),
+			count,
+			dist,
+		)
+		camera_offset_updated = t
+	}
+	return Vector3.FromVector2(camera_position).SetZ(
+		camera_offset
+		- GetEyeVector(camera_angles).z * camera_distance
+		+ 50,
 	)
 }
 
 export function ScreenToWorldFar(
-	screen: Vector2,
+	screens: Vector2[],
 	window_size: Vector2,
 	camera_position: QAngle,
 	camera_distance: number,
 	camera_angles: QAngle,
-): Vector3 {
-	WASMIOBuffer[0] = screen.x
-	WASMIOBuffer[1] = screen.y
+	fov: number,
+): Vector3[] {
+	WASMIOBuffer[0] = window_size.x
+	WASMIOBuffer[1] = window_size.y
 
-	WASMIOBuffer[2] = window_size.x
-	WASMIOBuffer[3] = window_size.y
+	WASMIOBuffer[2] = camera_position.x
+	WASMIOBuffer[3] = camera_position.y
+	WASMIOBuffer[4] = camera_position.z
 
-	WASMIOBuffer[4] = camera_position.x
-	WASMIOBuffer[5] = camera_position.y
-	WASMIOBuffer[6] = camera_position.z
+	WASMIOBuffer[5] = camera_angles.x
+	WASMIOBuffer[6] = camera_angles.y
+	WASMIOBuffer[7] = camera_angles.z
 
-	WASMIOBuffer[7] = camera_angles.x
-	WASMIOBuffer[8] = camera_angles.y
-	WASMIOBuffer[9] = camera_angles.z
+	WASMIOBuffer[8] = camera_distance
 
-	WASMIOBuffer[10] = camera_distance
+	WASMIOBuffer[9] = fov
+
+	WASMIOBuffer[10] = screens.length
+
+	screens.forEach((screen, i) => {
+		WASMIOBuffer[11 + i * 2 + 0] = screen.x
+		WASMIOBuffer[11 + i * 2 + 1] = screen.y
+	})
 
 	wasm.ScreenToWorldFar()
-	return new Vector3(WASMIOBuffer[0], WASMIOBuffer[1], WASMIOBuffer[2])
+	return screens.map((_, i) => new Vector3(
+		WASMIOBuffer[i * 3 + 0],
+		WASMIOBuffer[i * 3 + 1],
+		WASMIOBuffer[i * 3 + 2],
+	))
 }
 
 export function WorldToScreen(
@@ -322,8 +379,6 @@ export function ResetVHCG(): void {
 }
 
 export function GetPositionHeight(loc: Vector2): number {
-	if (HeightMap === undefined)
-		return 0
 	WASMIOBuffer[0] = loc.x
 	WASMIOBuffer[1] = loc.y
 
@@ -331,11 +386,17 @@ export function GetPositionHeight(loc: Vector2): number {
 	return WASMIOBuffer[0]
 }
 
-export function GetPositionSecondaryHeight(loc: Vector2): number {
-	WASMIOBuffer[0] = loc.x
-	WASMIOBuffer[1] = loc.y
+export function GetLocationAverageHeight(
+	position: Vector2,
+	count: number,
+	distance: number,
+): number {
+	WASMIOBuffer[0] = position.x
+	WASMIOBuffer[1] = position.y
+	WASMIOBuffer[2] = count
+	WASMIOBuffer[3] = distance
 
-	wasm.GetSecondaryHeightForLocation()
+	wasm.GetLocationAverageHeight()
 	return WASMIOBuffer[0]
 }
 
@@ -406,8 +467,8 @@ export function DecompressLZ4Chained(
 	return copy
 }
 
-export function CloneWorldToProjection(): void {
-	WASMIOBuffer.set(IOBuffer.slice(0, 16))
+export function CloneWorldToProjection(mat: ArrayLike<number>): void {
+	WASMIOBuffer.set(mat)
 	wasm.CloneWorldToProjection()
 }
 
@@ -425,4 +486,99 @@ export function WorldToScreenNew(
 	if (!wasm.WorldToScreenNew())
 		return undefined
 	return new Vector2(WASMIOBuffer[0], WASMIOBuffer[1])
+}
+
+export function DecompressVertexBuffer(
+	buf: Uint8Array,
+	elem_count: number,
+	elem_size: number,
+): Uint8Array {
+	const buf_addr = wasm.my_malloc(buf.byteLength)
+	if (buf_addr === 0)
+		throw "Memory allocation for DecompressVertexBuffer raw data failed"
+	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
+
+	const addr = wasm.DecompressVertexBuffer(buf_addr, buf.byteLength, elem_count, elem_size)
+	const copy = new Uint8Array(elem_count * elem_size)
+	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
+	wasm.my_free(addr)
+
+	return copy
+}
+
+export function DecompressIndexBuffer(
+	buf: Uint8Array,
+	elem_count: number,
+	elem_size: number,
+): Uint8Array {
+	const buf_addr = wasm.my_malloc(buf.byteLength)
+	if (buf_addr === 0)
+		throw "Memory allocation for DecompressIndexBuffer raw data failed"
+	new Uint8Array(wasm.memory.buffer, buf_addr, buf.byteLength).set(buf)
+
+	const addr = wasm.DecompressIndexBuffer(buf_addr, buf.byteLength, elem_count, elem_size)
+	const copy = new Uint8Array(elem_count * elem_size)
+	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
+	wasm.my_free(addr)
+
+	return copy
+}
+
+export function ResetWorld(): void {
+	wasm.ResetWorld()
+}
+
+export function LoadWorldModel(
+	vertexBuffer: Uint8Array,
+	vertexSize: number,
+	indexBuffer: Uint8Array,
+	indexSize: number,
+	transform: ArrayLike<number>,
+): void {
+	const vertex_addr = wasm.my_malloc(vertexBuffer.byteLength)
+	if (vertex_addr === 0)
+		throw "Memory allocation for LoadWorldModel vertexBuffer raw data failed"
+	new Uint8Array(wasm.memory.buffer, vertex_addr, vertexBuffer.byteLength).set(vertexBuffer)
+
+	const index_addr = wasm.my_malloc(indexBuffer.byteLength)
+	if (index_addr === 0)
+		throw "Memory allocation for LoadWorldModel indexBuffer raw data failed"
+	new Uint8Array(wasm.memory.buffer, index_addr, indexBuffer.byteLength).set(indexBuffer)
+
+	WASMIOBuffer.set(transform)
+	wasm.LoadWorldModel(
+		vertex_addr, vertexBuffer.byteLength, vertexSize,
+		index_addr, indexBuffer.byteLength, indexSize,
+	)
+}
+
+export function FinishWorld(): void {
+	wasm.FinishWorld()
+}
+
+export function FinishWorldCached(cached_bvh: [Uint8Array, Uint8Array]): void {
+	const cached_bvh1_addr = wasm.my_malloc(cached_bvh[0].byteLength)
+	if (cached_bvh1_addr === 0)
+		throw "Memory allocation for FinishWorldCached cached_bvh[0] raw data failed"
+	new Uint8Array(wasm.memory.buffer, cached_bvh1_addr, cached_bvh[0].byteLength).set(cached_bvh[0])
+
+	const cached_bvh2_addr = wasm.my_malloc(cached_bvh[1].byteLength)
+	if (cached_bvh2_addr === 0)
+		throw "Memory allocation for FinishWorldCached cached_bvh[1] raw data failed"
+	new Uint8Array(wasm.memory.buffer, cached_bvh2_addr, cached_bvh[1].byteLength).set(cached_bvh[1])
+
+	wasm.FinishWorldCached(
+		cached_bvh1_addr, cached_bvh[0].byteLength,
+		cached_bvh2_addr, cached_bvh[1].byteLength,
+	)
+}
+
+export function ExtractWorld(): [Uint8Array, Uint8Array, Uint8Array, Uint8Array] {
+	wasm.ExtractWorld()
+	return [
+		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[0], WASMIOBufferU32[1]),
+		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[2], WASMIOBufferU32[3]),
+		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[4], WASMIOBufferU32[5]),
+		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[6], WASMIOBufferU32[7]),
+	]
 }

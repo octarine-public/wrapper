@@ -52,7 +52,7 @@ const Manifest = new (class CManifest {
 			console.log(`Missing ${path}`)
 			return
 		}
-		parseKV(new Uint8Array(buf)).forEach((_, name) => this.SoundHashToString.set(this.SoundNameToHash(name), name))
+		parseKV(buf).forEach((_, name) => this.SoundHashToString.set(this.SoundNameToHash(name), name))
 	}
 	public SoundNameToHash(name: string): number {
 		return MurmurHash2(StringToUTF8(name.toLowerCase()), 0x53524332)
@@ -77,8 +77,8 @@ function ParseStringFromStream(stream: BinaryStream, ar: string[]) {
 	else
 		stream.RelativeSeek(size)
 }
-Events.on("ServerMessage", (msg_id, buf_len) => {
-	const buf = ServerMessageBuffer.subarray(0, buf_len)
+Events.on("ServerMessage", (msg_id, buf_) => {
+	const buf = new Uint8Array(buf_)
 	switch (msg_id) {
 		case 9: { // we have custom parsing for CNETMsg_SpawnGroup_Load & CNETMsg_SpawnGroup_ManifestUpdate
 			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
@@ -126,7 +126,7 @@ Events.on("NewConnection", () => {
 		console.log("Sound manifest not found.")
 		return
 	}
-	ParseExternalReferences(new Uint8Array(manifest), true).forEach(path => {
+	ParseExternalReferences(manifest, true).forEach(path => {
 		if (path.endsWith(".vsndevts_c"))
 			Manifest.LoadSoundFile(path)
 	})
@@ -138,7 +138,11 @@ function InitStringTokens(): void {
 
 	const buf = fread("stringtokendatabase.txt")
 	if (buf !== undefined) {
-		const stream = new BinaryStream(new DataView(buf))
+		const stream = new BinaryStream(new DataView(
+			buf.buffer,
+			buf.byteOffset,
+			buf.byteLength,
+		))
 		if (stream.ReadUint8() === 0x21 && stream.ReadUint8() === 0x0A) {
 			while (!stream.Empty()) {
 				stream.RelativeSeek(6)

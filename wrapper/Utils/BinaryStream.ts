@@ -1,5 +1,32 @@
 export default class BinaryStream {
-	constructor(public readonly view: DataView, public pos = 0) { }
+	public is_utf16 = false
+	constructor(
+		public readonly view: DataView,
+		public pos = 0,
+		detect_encoding = false,
+	) {
+		if (!detect_encoding)
+			return
+		if (this.Remaining >= 2) {
+			const ch1 = this.ReadUint8(),
+				ch2 = this.ReadUint8()
+			if (ch1 === 0xFF && ch2 === 0xFE) {
+				this.is_utf16 = true
+				return
+			}
+			this.RelativeSeek(-2)
+		}
+		if (this.Remaining >= 3) {
+			const ch1 = this.ReadUint8(),
+				ch2 = this.ReadUint8(),
+				ch3 = this.ReadUint8()
+			if (ch1 === 0xFF && ch2 === 0xBB && ch3 === 0xBF) {
+				this.is_utf16 = false
+				return
+			}
+			this.RelativeSeek(-3)
+		}
+	}
 	public get Remaining(): number {
 		return Math.max(this.view.byteLength - this.pos, 0)
 	}
@@ -144,30 +171,45 @@ export default class BinaryStream {
 	public WriteSlice(slice: ArrayLike<number>): void {
 		this.ReadSlice(slice.length).set(slice)
 	}
+	public ReadUtf8Char(size = this.Remaining): string {
+		const nPart = this.ReadUint8()
+		size--
+		return String.fromCharCode(
+			nPart > 251 && nPart < 254 && size >= 5 ? /* six bytes */
+				/* (nPart - 252 << 30) may be not so safe in ECMAScript! So...: */
+				(nPart - 252) * 1073741824 + (this.ReadUint8() - 128 << 24) + (this.ReadUint8() - 128 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
+				: nPart > 247 && nPart < 252 && size >= 4 ? /* five bytes */
+					(nPart - 248 << 24) + (this.ReadUint8() - 128 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
+					: nPart > 239 && nPart < 248 && size >= 3 ? /* four bytes */
+						(nPart - 240 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
+						: nPart > 223 && nPart < 240 && size >= 2 ? /* three bytes */
+							(nPart - 224 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
+							: nPart > 191 && nPart < 224 && size >= 1 ? /* two bytes */
+								(nPart - 192 << 6) + this.ReadUint8() - 128
+								: /* nPart < 127 ? */ /* one byte */
+								nPart,
+		)
+	}
+	public ReadUtf16Char(littleEndian = true): string {
+		return String.fromCharCode(this.ReadUint16(littleEndian))
+	}
+	public ReadChar(): string {
+		return this.is_utf16
+			? this.ReadUtf16Char()
+			: this.ReadUtf8Char()
+	}
+	public SeekLine(): void {
+		while (!this.Empty())
+			if (this.ReadChar() === "\n")
+				break
+	}
 	public ReadUtf8String(size: number): string {
 		let out = ""
-
-		while (size--) {
-			const nPart = this.ReadUint8()
+		while (size > 0) {
 			const start = this.pos
-			out += String.fromCharCode(
-				nPart > 251 && nPart < 254 && size >= 5 ? /* six bytes */
-					/* (nPart - 252 << 30) may be not so safe in ECMAScript! So...: */
-					(nPart - 252) * 1073741824 + (this.ReadUint8() - 128 << 24) + (this.ReadUint8() - 128 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-					: nPart > 247 && nPart < 252 && size >= 4 ? /* five bytes */
-						(nPart - 248 << 24) + (this.ReadUint8() - 128 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-						: nPart > 239 && nPart < 248 && size >= 3 ? /* four bytes */
-							(nPart - 240 << 18) + (this.ReadUint8() - 128 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-							: nPart > 223 && nPart < 240 && size >= 2 ? /* three bytes */
-								(nPart - 224 << 12) + (this.ReadUint8() - 128 << 6) + this.ReadUint8() - 128
-								: nPart > 191 && nPart < 224 && size >= 1 ? /* two bytes */
-									(nPart - 192 << 6) + this.ReadUint8() - 128
-									: /* nPart < 127 ? */ /* one byte */
-									nPart,
-			)
+			out += this.ReadUtf8Char(size)
 			size -= this.pos - start
 		}
-
 		return out
 	}
 	public ReadNullTerminatedString(): string {

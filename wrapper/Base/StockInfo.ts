@@ -5,12 +5,6 @@ import AbilityData from "../Objects/DataBook/AbilityData"
 export default class StockInfo {
 	constructor(public readonly properties: EntityPropertiesNode) { }
 
-	public get AbilityData(): AbilityData {
-		return AbilityData.global_storage.get(this.AbilityName) ?? AbilityData.empty
-	}
-	public get AbilityName(): string {
-		return AbilityData.GetAbilityNameByID(this.AbilityID)!
-	}
 	public get AbilityID(): number {
 		return this.properties.get("nItemAbilityID") as number
 	}
@@ -41,9 +35,14 @@ export default class StockInfo {
 	public get BonusDelayedStockCount(): number {
 		return this.properties.get("iBonusDelayedStockCount") as number
 	}
+	public async GetAbilityData(): Promise<AbilityData> {
+		return await AbilityData.GetAbilityByName(await this.GetAbilityName()) ?? AbilityData.empty
+	}
+	public async GetAbilityName(): Promise<string> {
+		return (await AbilityData.GetAbilityNameByID(this.AbilityID))!
+	}
 	public toJSON(): any {
 		return {
-			AbilityName: this.AbilityName,
 			AbilityID: this.AbilityID,
 			InitStockDuration: this.InitStockDuration,
 			StockDuration: this.StockDuration,

@@ -19,19 +19,6 @@ class MenuManager {
 	private is_open_ = true
 	private initialized_language = false
 
-	constructor() {
-		readConfig("default.json")
-			.then(buf => this.ConfigValue = JSON.parse(Utf16ArrayToStr(new Uint16Array(buf))))
-			.catch(() => this.ConfigValue = {})
-			.finally(() => {
-				this.header.ConfigValue = this.config.Header
-				if (this.config.SelectedLocalization !== undefined) {
-					Localization.SelectedUnitName = this.config.SelectedLocalization
-					this.initialized_language = true
-				}
-			})
-	}
-
 	public get Position() {
 		return this.header.Position.Clone()
 	}
@@ -77,7 +64,22 @@ class MenuManager {
 			this.header.OriginalSize.y,
 		)
 	}
-	public Render(): void {
+	public async LoadConfig() {
+		try {
+			this.ConfigValue = JSON.parse(Utf16ArrayToStr(new Uint16Array(
+				await readConfig("default.json"),
+			)))
+		} catch {
+			this.ConfigValue = {}
+		} finally {
+			this.header.ConfigValue = this.config.Header
+			if (this.config.SelectedLocalization !== undefined) {
+				Localization.SelectedUnitName = this.config.SelectedLocalization
+				this.initialized_language = true
+			}
+		}
+	}
+	public async Render(): Promise<void> {
 		if (this.config === undefined)
 			return
 		if (GameState.Language === "unknown")
@@ -102,46 +104,42 @@ class MenuManager {
 		const max_width = this.EntriesSizeX
 		this.header.TotalSize.x = max_width
 		this.header.TotalSize.y = this.header.OriginalSize.y
-		this.header.Render()
+		await this.header.Render()
 		const position = this.header.Position.Clone().AddScalarY(this.header.TotalSize.y)
-		this.entries.forEach(node => {
-			if (!node.IsVisible)
-				return
-			position.CopyTo(node.Position)
-			node.TotalSize.x = max_width
-			node.TotalSize.y = node.OriginalSize.y
-			node.Render()
-			position.AddScalarY(node.TotalSize.y)
-		})
-		this.entries.forEach(node => {
+		for (const node of this.entries)
+			if (node.IsVisible) {
+				position.CopyTo(node.Position)
+				node.TotalSize.x = max_width
+				node.TotalSize.y = node.OriginalSize.y
+				await node.Render()
+				position.AddScalarY(node.TotalSize.y)
+			}
+		for (const node of this.entries)
 			if (node.IsVisible)
-				node.PostRender()
-		})
+				await node.PostRender()
 	}
 	public OnWindowSizeChanged(): void {
 		this.entries.forEach(entry => entry.Update(true))
 	}
 
-	public OnMouseLeftDown(): boolean {
+	public async OnMouseLeftDown(): Promise<boolean> {
 		if (!this.is_open)
 			return true
-		if (!this.header.OnMouseLeftDown()) {
+		if (!await this.header.OnMouseLeftDown()) {
 			this.active_element = this.header
 			return false
 		}
-		return !this.entries.some(node => {
-			if (!node.IsVisible)
-				return false
-			const ret = node.OnMouseLeftDown()
-			if (!ret)
+		for (const node of this.entries)
+			if (node.IsVisible && !await node.OnMouseLeftDown()) {
 				this.active_element = node
-			return !ret
-		})
+				return false
+			}
+		return true
 	}
-	public OnMouseLeftUp(): boolean {
+	public async OnMouseLeftUp(): Promise<boolean> {
 		if (!this.is_open || this.active_element === undefined)
 			return true
-		const ret = this.active_element.OnMouseLeftUp()
+		const ret = await this.active_element.OnMouseLeftUp()
 		if (this.active_element === this.header)
 			Base.SaveConfigASAP = true
 		this.active_element = undefined
@@ -185,20 +183,21 @@ class MenuManager {
 	}
 }
 const Menu = new MenuManager()
+await Menu.LoadConfig()
 
-Events.after("Draw", () => {
-	Menu.Render()
+Events.after("Draw", async () => {
+	await Menu.Render()
 	RendererSDK.EmitDraw()
 })
 
 EventsSDK.on("WindowSizeChanged", () => Menu.OnWindowSizeChanged())
 
-InputEventSDK.on("MouseKeyDown", key => {
+InputEventSDK.on("MouseKeyDown", async key => {
 	if (key === VMouseKeys.MK_LBUTTON)
 		return Menu.OnMouseLeftDown()
 	return true
 })
-InputEventSDK.on("MouseKeyUp", key => {
+InputEventSDK.on("MouseKeyUp", async key => {
 	if (key === VMouseKeys.MK_LBUTTON)
 		return Menu.OnMouseLeftUp()
 	return true

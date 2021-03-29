@@ -2,11 +2,14 @@
 
 #include <math.h>
 #include <stdint.h>
+#include <string_view>
+#include <vector>
+#include <optional>
 #include <stdlib.h> // for malloc
+#include <assert.h> // for assert
 #include <emscripten.h> // for EMSCRIPTEN_KEEPALIVE
 
 #define EXPORT_JS /* avoid C++ mangling */ extern "C" /* export and don't inline */ EMSCRIPTEN_KEEPALIVE
-#define assert(...) do {} while(false)
 #ifdef _MSC_VER
 #define FORCEINLINE __forceinline
 #else
@@ -29,6 +32,7 @@ template<typename T = void, typename X = T> FORCEINLINE T* GetPointer(X* base, i
 }
 
 #define VECTOR_NO_SLOW_OPERATIONS
+#include "meshoptimizer/src/meshoptimizer.h"
 #include "lz4.h"
 #include "Vector.h"
 #include "vhcg.h"

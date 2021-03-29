@@ -12,12 +12,18 @@ export default class TempTree extends Entity {
 	constructor(index: number) {
 		super(index)
 		this.BinaryID = TempTreeIDOffset + index
+		this.ModelName = "models/props_tree/tree_oak_00.vmdl"
+		this.OnModelUpdated()
 	}
 
-	public get RingRadius(): number {
-		return 64
-	}
 	public get IsAlive() {
 		return true
+	}
+	public get RingRadius(): number {
+		return 128
+	}
+	public OnModelUpdated(): void {
+		super.OnModelUpdated()
+		this.BoundingBox.MaxOffset.z = this.BoundingBox.MinOffset.z + 300
 	}
 }

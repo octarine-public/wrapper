@@ -53,7 +53,7 @@ export default class KeyBind extends Base {
 	}
 	public set is_pressed(new_val: boolean) {
 		this.is_pressed_ = new_val
-		this.OnValueChangedCBs.forEach(cb => cb(this))
+		this.TriggerOnValueChangedCBs()
 	}
 	private get KeybindRect() {
 		const base_pos = this.Position
@@ -65,16 +65,16 @@ export default class KeyBind extends Base {
 		)
 	}
 
-	public OnPressed(func: (caller: this) => void) {
-		return this.OnValue(caller => {
+	public OnPressed(func: (caller: this) => any) {
+		return this.OnValue(async caller => {
 			if (caller.is_pressed)
-				func(caller)
+				await func(caller)
 		})
 	}
-	public OnRelease(func: (caller: this) => void) {
-		return this.OnValue(caller => {
+	public OnRelease(func: (caller: this) => any) {
+		return this.OnValue(async caller => {
 			if (!caller.is_pressed)
-				func(caller)
+				await func(caller)
 		})
 	}
 
@@ -107,8 +107,8 @@ export default class KeyBind extends Base {
 			+ KeyBind.keybind_offset.x
 			+ this.keybind_size.x
 	}
-	public Render(): void {
-		super.Render()
+	public async Render(): Promise<void> {
+		await super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const keybind_rect = this.KeybindRect
 		if (KeyBind.changing_now === this)
@@ -124,10 +124,10 @@ export default class KeyBind extends Base {
 		)
 	}
 
-	public OnMouseLeftDown(): boolean {
+	public async OnMouseLeftDown(): Promise<boolean> {
 		return !this.IsHovered
 	}
-	public OnMouseLeftUp(): boolean {
+	public async OnMouseLeftUp(): Promise<boolean> {
 		if (this.KeybindRect.Contains(this.MousePosition) && KeyBind.changing_now !== this) {
 			const old = KeyBind.changing_now
 			KeyBind.changing_now = this

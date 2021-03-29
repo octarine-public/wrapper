@@ -823,8 +823,18 @@ message CSODOTALobbyInvite {
 	optional fixed64 custom_game_crc = 7;
 	optional fixed32 custom_game_timestamp = 8;
 }
+message CSOEconGameAccountClient {
+	optional uint32 additional_backpack_slots = 1 [default = 0];
+	optional bool trial_account = 2 [default = false];
+	optional bool eligible_for_online_play = 3 [default = true];
+	optional bool need_to_choose_most_helpful_friend = 4;
+	optional bool in_coaches_list = 5;
+	optional fixed32 trade_ban_expiration = 6;
+	optional fixed32 duel_ban_expiration = 7;
+	optional bool made_first_purchase = 9 [default = false];
+}
 `)
-Events.on("SharedObjectChanged", (id, reason, data) => {
+Events.on("SharedObjectChanged", async (id, reason, data) => {
 	let name: string
 	switch (id) {
 		// case SOType.EconItem:
@@ -875,7 +885,7 @@ Events.on("SharedObjectChanged", (id, reason, data) => {
 		default:
 			return
 	}
-	EventsSDK.emit(
+	await EventsSDK.emit(
 		"SharedObjectChanged",
 		false,
 		id,

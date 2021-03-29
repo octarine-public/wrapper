@@ -62,20 +62,20 @@ export default class Toggle extends Base {
 			+ Toggle.toggle_background_offset.x
 	}
 
-	public OnActivate(func: (caller: this) => void) {
-		return this.OnValue(caller => {
+	public OnActivate(func: (caller: this) => any) {
+		return this.OnValue(async caller => {
 			if (caller.value)
-				func(caller)
+				await func(caller)
 		})
 	}
-	public OnDeactivate(func: (caller: this) => void) {
-		return this.OnValue(caller => {
+	public OnDeactivate(func: (caller: this) => any) {
+		return this.OnValue(async caller => {
 			if (!caller.value)
-				func(caller)
+				await func(caller)
 		})
 	}
-	public Render(): void {
-		super.Render()
+	public async Render(): Promise<void> {
+		await super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const animation_state = Math.min(1, (hrtime() - this.animation_start_time) / Toggle.animation_time)
 		const primary_color = this.value ? Toggle.toggle_background_color_active : Toggle.toggle_background_color_inactive,
@@ -102,13 +102,13 @@ export default class Toggle extends Base {
 		)
 	}
 
-	public OnMouseLeftDown(): boolean {
+	public async OnMouseLeftDown(): Promise<boolean> {
 		return !this.IsHovered
 	}
-	public OnMouseLeftUp(): boolean {
+	public async OnMouseLeftUp(): Promise<boolean> {
 		this.value = !this.value
 		this.animation_start_time = hrtime()
-		this.OnValueChangedCBs.forEach(f => f(this))
+		await this.TriggerOnValueChangedCBs()
 		return false
 	}
 }

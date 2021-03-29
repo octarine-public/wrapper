@@ -9,7 +9,7 @@ import EventsSDK from "../Managers/EventsSDK"
 import InputManager from "../Managers/InputManager"
 import ParticlesSDK from "../Managers/ParticleManager"
 import Ability from "../Objects/Base/Ability"
-import Entity, { LocalPlayer } from "../Objects/Base/Entity"
+import Entity, { GameRules, LocalPlayer } from "../Objects/Base/Entity"
 import TempTree from "../Objects/Base/TempTree"
 import Tree from "../Objects/Base/Tree"
 import Unit from "../Objects/Base/Unit"
@@ -39,6 +39,8 @@ export default class ExecuteOrder {
 	public static debug_orders = false
 	public static debug_draw = false
 	public static disable_humanizer = false
+	public static hold_orders = 0
+	public static hold_orders_target: Nullable<Vector3 | Entity>
 	public static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
@@ -273,7 +275,7 @@ Events.on("Update", () => {
 	}
 	const default_camera_dist = 1200 // default camera distance
 	const max_cursor_dist = 1400 // maximum allowed distance between camera center and cursor
-	const camera_vec = cmd.CameraPosition.toVector3()
+	const camera_vec = Vector3.FromVector2(cmd.CameraPosition)
 	if (camera_vec.Clone().AddScalarY(default_camera_dist / 2).Distance2D(CursorWorldVec) <= max_cursor_dist) {
 		camera_vec
 			.AddScalarY(default_camera_dist / 2)
@@ -312,8 +314,7 @@ function DrawCameraBorderLine(cameraPos: Vector3, startVec: Vector2, endVec: Vec
 	if (hero === undefined)
 		return
 	const cam_pos = new Vector2(latest_camera_x, latest_camera_y)
-	const point1 = RendererSDK.ScreenToWorldFar(startVec, cam_pos, 1200),
-		point2 = RendererSDK.ScreenToWorldFar(endVec, cam_pos, 1200)
+	const [point1, point2] = RendererSDK.ScreenToWorldFar([startVec, endVec], cam_pos, 1200)
 	debugParticles.DrawLine(startVec.toString() + endVec.toString(), hero, point1, {
 		Position: point2,
 		Width: 40,
@@ -346,18 +347,20 @@ EventsSDK.on("Draw", () => {
 	DrawCameraBorderLine(cameraPos, new Vector2(1, 1), new Vector2(0, 1))
 	DrawCameraBorderLine(cameraPos, new Vector2(1, 1), new Vector2(1, 0))
 
-	const point = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar(latest_cursor, cameraPos, 1200))
+	const point = RendererSDK.WorldToScreen(RendererSDK.ScreenToWorldFar([latest_cursor], cameraPos, 1200)[0])
 	if (point !== undefined)
 		RendererSDK.FilledRect(point.Subtract(new Vector2(5, 5)), new Vector2(10, 10), Color.Fuchsia)
 })
 
 //EventsSDK.on("GameEnded", () => ExecuteOrder.order_queue = [])
-Events.on("PrepareUnitOrders", () => {
+Events.on("PrepareUnitOrders", async () => {
+	if (GameRules?.IsPaused)
+		return true
 	const orders = ExecuteOrder.fromNative()
 	if (orders === undefined)
 		return true
 
-	const ret = EventsSDK.emit("PrepareUnitOrders", true, orders)
+	const ret = await EventsSDK.emit("PrepareUnitOrders", true, orders)
 	if (!ret)
 		return false
 	if (ExecuteOrder.queue_user_orders) {

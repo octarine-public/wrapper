@@ -1,3 +1,4 @@
+import AABB from "../../Base/AABB"
 import Color from "../../Base/Color"
 import QAngle from "../../Base/QAngle"
 import Vector2 from "../../Base/Vector2"
@@ -23,27 +24,27 @@ export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
 EventsSDK.on("ServerInfo", info => player_slot = (info.get("player_slot") as number) ?? NaN)
 let gameInProgress = false
-const AttachmentsCache = new Map<string, ComputedAttachments>()
-export function SetGameInProgress(new_val: boolean) {
+const ModelDataCache = new Map<string, [ComputedAttachments, Vector3, Vector3]>()
+export async function SetGameInProgress(new_val: boolean) {
 	if (!gameInProgress && new_val)
-		EventsSDK.emit("GameStarted", false)
+		await EventsSDK.emit("GameStarted", false)
 	else if (gameInProgress && !new_val) {
-		EventsSDK.emit("GameEnded", false)
+		await EventsSDK.emit("GameEnded", false)
 		Particles.DeleteAll()
 		RendererSDK.FreeTextureCache()
 	}
 	gameInProgress = new_val
 }
-EventsSDK.on("PreEntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", async ent => {
 	if (ent.Index === player_slot + 1) {
 		LocalPlayer = ent as Player
-		SetGameInProgress(true)
+		await SetGameInProgress(true)
 	}
 })
-EventsSDK.on("EntityDestroyed", ent => {
+EventsSDK.on("EntityDestroyed", async ent => {
 	if (ent === LocalPlayer) {
 		LocalPlayer = undefined
-		SetGameInProgress(false)
+		await SetGameInProgress(false)
 	}
 })
 export let GameRules: Nullable<CGameRules>
@@ -91,12 +92,16 @@ export default class Entity {
 	@NetworkedBasicField("CBodyComponent")
 	public CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
 	public IsVisible = true
+	public DeltaZ = 0
 	public readonly NetworkedPosition = new Vector3()
 	public readonly Position = new Vector3()
 	public readonly NetworkedAngles = new QAngle()
-	private Attachments: Nullable<ComputedAttachments>
+	public readonly Angles = new QAngle()
+	public readonly BoundingBox = new AABB(this.Position)
+	// private Attachments: Nullable<ComputedAttachments>
 	private CustomGlowColor_: Nullable<Color>
 	private CustomDrawColor_: Nullable<[Color, RenderMode_t]>
+	private RingRadius_ = 30
 
 	constructor(public readonly Index: number) { }
 
@@ -142,17 +147,10 @@ export default class Entity {
 		return ang
 	}
 	public get Rotation(): number {
-		const ang = EntityVisualRotations[this.Index * 3 + 1]
+		const ang = this.Angles.y
 		if (ang >= 180)
 			return ang - 360
 		return ang
-	}
-	public get Angles(): QAngle {
-		return new QAngle(
-			EntityVisualRotations[this.Index * 3 + 0],
-			EntityVisualRotations[this.Index * 3 + 1],
-			EntityVisualRotations[this.Index * 3 + 2],
-		)
 	}
 	public get CreateTime() {
 		return this.CreateTime_ !== 0
@@ -188,7 +186,7 @@ export default class Entity {
 		return this.CollisionRadius
 	}
 	public get RingRadius(): number {
-		return 30 // TODO: actually it uses model unless it doesn't have such for C_BaseEntity#GetRingRadius
+		return this.RingRadius_
 	}
 	public get IsGameRules(): boolean {
 		return false
@@ -200,6 +198,9 @@ export default class Entity {
 		return 0
 	}
 
+	public async AsyncCreate(): Promise<void> {
+		// TBD in child classes
+	}
 	public Distance(vec: Vector3 | Entity): number {
 		if (vec instanceof Entity)
 			vec = vec.Position
@@ -290,17 +291,38 @@ export default class Entity {
 	}
 
 	public OnModelUpdated(): void {
-		// if (!AttachmentsCache.has(this.ModelName)) {
-		// 	this.Attachments = ComputeAttachments(this.ModelName)
-		// 	AttachmentsCache.set(this.ModelName, this.Attachments)
-		// } else
-		// 	this.Attachments = AttachmentsCache.get(this.ModelName)
+		try {
+			// if (!ModelDataCache.has(this.ModelName)) {
+			// 	const ar = ComputeAttachmentsAndBounds(this.ModelName)
+			// 	// this.Attachments = ar[0]
+			// 	this.BoundingBox.MinOffset.CopyFrom(ar[1])
+			// 	this.BoundingBox.MaxOffset.CopyFrom(ar[2])
+			// 	ModelDataCache.set(this.ModelName, ar)
+			// } else {
+			// 	const ar = ModelDataCache.get(this.ModelName)!
+			// 	// this.Attachments = ar[0]
+			// 	this.BoundingBox.MinOffset.CopyFrom(ar[1])
+			// 	this.BoundingBox.MaxOffset.CopyFrom(ar[2])
+			// }
+			const min = this.BoundingBox.MinOffset,
+				max = this.BoundingBox.MaxOffset
+			// const min_xy = Math.min(min.x, min.y, max.x, max.y),
+			// 	max_xy = Math.max(min.x, min.y, max.x, max.y)
+			// this.RingRadius_ = Math.max(Math.abs(min_xy), Math.abs(max_xy))
+			min.x = -this.RingRadius
+			min.y = -this.RingRadius
+			max.x = this.RingRadius
+			max.y = this.RingRadius
+		} catch (e) {
+			console.error(e)
+		}
 	}
 	public GetAttachment(
 		name: string,
 		activity = GameActivity_t.ACT_DOTA_IDLE,
 	): Nullable<ComputedAttachment> {
-		return this.Attachments?.get(activity)?.find(attach => attach.Name === name)
+		// return this.Attachments?.get(activity)?.find(attach => attach.Name === name)
+		return undefined
 	}
 
 	public CannotUseItem(_item: Item): boolean {
@@ -318,35 +340,33 @@ function QuantitizedVecCoordToCoord(cell: Nullable<number>, inside: Nullable<num
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 import Events from "../../Managers/Events"
-RegisterFieldHandler(Entity, "m_iTeamNum", (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_iTeamNum", async (ent, new_val) => {
 	const old_team = ent.Team
 	ent.Team = new_val as Team
 	if (old_team !== ent.Team && ent.IsValid)
-		EventsSDK.emit("EntityTeamChanged", false, ent)
+		await EventsSDK.emit("EntityTeamChanged", false, ent)
 })
-RegisterFieldHandler(Entity, "m_lifeState", (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_lifeState", async (ent, new_val) => {
 	const old_state = ent.LifeState
 	ent.LifeState = new_val as LifeState_t
 	if (old_state !== ent.LifeState && ent.IsValid)
-		EventsSDK.emit("LifeStateChanged", false, ent)
+		await EventsSDK.emit("LifeStateChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_hModel", (ent, new_val) => {
 	ent.ModelName = Manifest.GetPathByHash(new_val as bigint) ?? ""
 	ent.OnModelUpdated()
 })
-EventsSDK.on("GameEnded", () => AttachmentsCache.clear())
+EventsSDK.on("GameEnded", () => ModelDataCache.clear())
 RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 	const m_angRotation = new_val as QAngle
-	EntityVisualRotations[ent.Index * 3 + 0] = m_angRotation.x
-	EntityVisualRotations[ent.Index * 3 + 1] = m_angRotation.y
-	EntityVisualRotations[ent.Index * 3 + 2] = m_angRotation.z
 	ent.NetworkedAngles.CopyFrom(m_angRotation)
+	ent.Angles.CopyFrom(m_angRotation)
 })
-RegisterFieldHandler(Entity, "m_nameStringableIndex", (ent, new_val) => {
+RegisterFieldHandler(Entity, "m_nameStringableIndex", async (ent, new_val) => {
 	const old_name = ent.Name
 	ent.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? ent.Name_
 	if (old_name !== ent.Name && ent.IsValid)
-		EventsSDK.emit("EntityNameChanged", false, ent)
+		await EventsSDK.emit("EntityNameChanged", false, ent)
 })
 
 RegisterFieldHandler(Entity, "m_hOwnerEntity", (ent, new_val) => {
@@ -370,40 +390,41 @@ EventsSDK.on("EntityDestroyed", ent => {
 	})
 })
 
-RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => ent.NetworkedPosition.x = ent.Position.x = EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
-	new_val as number,
-	ent.CBodyComponent_?.get("m_vecX") as Nullable<number>,
-))
-RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => ent.NetworkedPosition.x = ent.Position.x = EntityVisualPositions[ent.Index * 3 + 0] = QuantitizedVecCoordToCoord(
-	ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
-	new_val as number,
-))
-RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => ent.NetworkedPosition.y = ent.Position.y = EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
-	new_val as number,
-	ent.CBodyComponent_?.get("m_vecY") as Nullable<number>,
-))
-RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => ent.NetworkedPosition.y = ent.Position.y = EntityVisualPositions[ent.Index * 3 + 1] = QuantitizedVecCoordToCoord(
-	ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
-	new_val as number,
-))
-RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => ent.NetworkedPosition.z = ent.Position.z = EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
-	new_val as number,
-	ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>,
-))
-RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => ent.NetworkedPosition.z = ent.Position.z = EntityVisualPositions[ent.Index * 3 + 2] = QuantitizedVecCoordToCoord(
-	ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
-	new_val as number,
-))
-
-EventsSDK.on("PreDraw", () => {
-	EntityManager.AllEntities.forEach(ent => {
-		if (ent.Index >= 0x4000)
-			return
-		const id = ent.Index * 3
-		ent.Position.x = EntityVisualPositions[id + 0]
-		ent.Position.y = EntityVisualPositions[id + 1]
-		ent.Position.z = EntityVisualPositions[id + 2]
-	})
+RegisterFieldHandler(Entity, "m_cellX", (ent, new_val) => {
+	ent.NetworkedPosition.x = ent.Position.x = QuantitizedVecCoordToCoord(
+		new_val as number,
+		ent.CBodyComponent_?.get("m_vecX") as Nullable<number>,
+	)
+})
+RegisterFieldHandler(Entity, "m_vecX", (ent, new_val) => {
+	ent.NetworkedPosition.x = ent.Position.x = QuantitizedVecCoordToCoord(
+		ent.CBodyComponent_?.get("m_cellX") as Nullable<number>,
+		new_val as number,
+	)
+})
+RegisterFieldHandler(Entity, "m_cellY", (ent, new_val) => {
+	ent.NetworkedPosition.y = ent.Position.y = QuantitizedVecCoordToCoord(
+		new_val as number,
+		ent.CBodyComponent_?.get("m_vecY") as Nullable<number>,
+	)
+})
+RegisterFieldHandler(Entity, "m_vecY", (ent, new_val) => {
+	ent.NetworkedPosition.y = ent.Position.y = QuantitizedVecCoordToCoord(
+		ent.CBodyComponent_?.get("m_cellY") as Nullable<number>,
+		new_val as number,
+	)
+})
+RegisterFieldHandler(Entity, "m_cellZ", (ent, new_val) => {
+	ent.NetworkedPosition.z = ent.Position.z = QuantitizedVecCoordToCoord(
+		new_val as number,
+		ent.CBodyComponent_?.get("m_vecZ") as Nullable<number>,
+	)
+})
+RegisterFieldHandler(Entity, "m_vecZ", (ent, new_val) => {
+	ent.NetworkedPosition.z = ent.Position.z = QuantitizedVecCoordToCoord(
+		ent.CBodyComponent_?.get("m_cellZ") as Nullable<number>,
+		new_val as number,
+	)
 })
 
 EventsSDK.on("GameEvent", (name, obj) => {

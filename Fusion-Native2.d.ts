@@ -1,9 +1,25 @@
+/// GLOBAL TYPES
+type WorkerIPCType = (
+	{ [key: string]: WorkerIPCType }
+	| Map<WorkerIPCType, WorkerIPCType>
+	| WorkerIPCType[]
+	| Uint8Array // won't maintain byteOffset after transfer
+	| ArrayBuffer
+	| string
+	| bigint
+	| number
+	| boolean
+	| undefined
+)
+interface WorkerOptions {
+	forward_events?: boolean // forward events [except several user-driven ones and /ServerMessages] to worker
+	forward_server_messages?: boolean // forward ServerMessage events, only works with forward_events
+	display_name?: string // display name in CDT
+}
+
 /// GLOBAL OBJECTS
 declare var IOBuffer: Float32Array // 128 floats in size
 declare var IOBufferView: DataView // IOBuffer DataView
-declare var EntityVisualPositions: Float32Array
-declare var EntityVisualRotations: Float32Array
-declare var ServerMessageBuffer: Uint8Array
 /**
 struct CUnitOrder {
 	uint32_t order_type; // 0
@@ -50,6 +66,7 @@ declare var CustomGameEvents: CustomGameEvents
 declare var Particles: Particles
 declare var Renderer: Renderer
 declare var Camera: Camera
+declare const IS_MAIN_WORKER: boolean
 
 declare interface ConVars {
 	GetInt(convar_name: string): number
@@ -98,6 +115,7 @@ declare interface Renderer {
 
 declare interface Camera {
 	Distance: number
+	FoV: number
 	Angles: boolean // returns QAngle to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 	Position: boolean // returns Vector3 to IOBuffer offset 0 on get, sets from IOBuffer offset 0 on set
 }
@@ -105,7 +123,7 @@ declare interface Camera {
 /// GLOBAL FUNCTIONS
 
 declare function SendToConsole(command: string): void
-declare function fread(path: string): ArrayBuffer | undefined
+declare function fread(path: string): Uint8Array | undefined
 declare function fexists(path: string): boolean
 declare function requestPlayerData(player_id: number): Promise<string>
 /**
@@ -128,7 +146,9 @@ declare function StartFindingMatch(): void
 declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
 declare function ToggleOBSBypass(state: boolean): void
-declare function setFireEvent(func: (event_name: string, cancellable: boolean, ...args: any) => boolean): void
+declare function setFireEvent(
+	func: (event_name: string, cancellable: boolean, ...args: any) => Promise<boolean>,
+): void
 declare function require(absolute_path: string): any
 declare function hrtime(): number
 declare function AddSearchPath(path: string): void
@@ -158,3 +178,13 @@ declare function GetPlayerMuteFlags(steamid64: bigint): number
  * pass location: Vector2 at IOBuffer offset 0
  */
 declare function SendMinimapPing(type?: number, direct_ping?: boolean, target?: number): void
+declare function SpawnWorker(options: WorkerOptions): bigint
+/**
+ * @throws on wrong/self worker_uid
+ */
+declare function DespawnWorker(worker_uid: bigint): void
+/**
+ * @param worker_uid could be 0 for parent or already spawned worker_uid returned from SpawnWorker
+ * @throws on wrong/self worker_uid
+ */
+declare function SendIPCMessage(worker_uid: bigint, name: string, msg: WorkerIPCType): void

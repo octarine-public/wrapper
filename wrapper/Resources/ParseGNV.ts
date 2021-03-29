@@ -63,9 +63,13 @@ class CGridNav {
 }
 export let GridNav: Nullable<CGridNav>
 
-export function ParseGNV(buf: ArrayBuffer): void {
+export function ParseGNV(buf: Uint8Array): void {
 	try {
-		const stream = new BinaryStream(new DataView(buf))
+		const stream = new BinaryStream(new DataView(
+			buf.buffer,
+			buf.byteOffset,
+			buf.byteLength,
+		))
 		{
 			const magic = stream.ReadUint32()
 			if (magic !== 0xFADEBEAD) // gnv magic
@@ -83,7 +87,7 @@ export function ParseGNV(buf: ArrayBuffer): void {
 			new Vector2(offsetX, offsetY),
 			new Vector2(width, height),
 			new Vector2(minX, minY),
-			stream.ReadSlice(width * height),
+			stream.ReadSlice(width * height).slice(),
 		)
 	} catch (e) {
 		console.error("Error in GridNav init", e)

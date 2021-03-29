@@ -11,6 +11,9 @@ export default class Vector2 {
 	public static FromAngle(angle: number): Vector2 {
 		return new Vector2(Math.cos(angle), Math.sin(angle))
 	}
+	public static FromString(str: string): Vector2 {
+		return new Vector2(...str.split(" ").map(el => parseFloat(el)))
+	}
 	/**
 	 * From polar coordinates
 	 * @param radial
@@ -738,10 +741,10 @@ export default class Vector2 {
 	}
 
 	/**
-	 * @return Vector2(x,y)
+	 * @return x y
 	 */
 	public toString(): string {
-		return `Vector2(${this.x},${this.y})`
+		return `${this.x} ${this.y}`
 	}
 	/**
 	 * @return [x, y, z]
@@ -751,10 +754,6 @@ export default class Vector2 {
 	}
 	public toJSON() {
 		return this.toArray()
-	}
-
-	public toVector3(): Vector3 {
-		return new Vector3(this.x, this.y, 0)
 	}
 
 	public toIOBuffer(offset: number = 0): true {

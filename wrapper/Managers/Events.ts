@@ -1,7 +1,7 @@
 import { SOType } from "../Enums/SOType"
 import { BinaryKV } from "../Utils/VBKV"
 
-type Listener = (...args: any) => false | any
+type Listener = (...args: any) => Promise<false | any> | false | any
 export class EventEmitter {
 	protected readonly events = new Map<string, Listener[]>()
 	protected readonly events_after = new Map<string, Listener[]>()
@@ -39,27 +39,26 @@ export class EventEmitter {
 		return this
 	}
 
-	public emit(name: string, cancellable = false, ...args: any[]): boolean {
+	public async emit(name: string, cancellable = false, ...args: any[]): Promise<boolean> {
 		const listeners = this.events.get(name),
 			listeners_after = this.events_after.get(name)
 
-		const ret = !listeners?.some(listener => {
-			try {
-				return listener(...args) === false && cancellable
-			} catch (e) {
-				console.error(e instanceof Error ? e : new Error(e), this.listener2line.get(listener))
-				return false
-			}
-		})
-		if (listeners_after !== undefined && ret)
-			listeners_after.forEach(listener => {
+		if (listeners !== undefined)
+			for (const listener of listeners)
 				try {
-					listener(...args)
+					if ((await listener(...args) === false) && cancellable)
+						return false
 				} catch (e) {
 					console.error(e instanceof Error ? e : new Error(e), this.listener2line.get(listener))
 				}
-			})
-		return ret
+		if (listeners_after !== undefined)
+			for (const listener of listeners_after)
+				try {
+					await listener(...args)
+				} catch (e) {
+					console.error(e instanceof Error ? e : new Error(e), this.listener2line.get(listener))
+				}
+		return true
 	}
 
 	public once(name: string, listener: Listener): EventEmitter {
@@ -79,7 +78,7 @@ declare interface Events extends EventEmitter {
 	 */
 	on(name: "WndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
 	on(name: "Update", callback: () => void): EventEmitter
-	on(name: "Draw", callback: () => void): EventEmitter
+	on(name: "Draw", callback: (visual_data: ArrayBuffer) => void): EventEmitter
 	on(name: "PrepareUnitOrders", callback: () => false | any): EventEmitter
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter
 	on(name: "CustomGameEvent", listener: (event_name: string, data: Map<string, BinaryKV>) => void): EventEmitter
@@ -90,12 +89,15 @@ declare interface Events extends EventEmitter {
 	on(name: "PostAddSearchPath", listener: (path: string) => void): EventEmitter
 	on(name: "RemoveSearchPath", listener: (path: string) => boolean): EventEmitter
 	on(name: "PostRemoveSearchPath", listener: (path: string) => void): EventEmitter
-	on(name: "ServerMessage", listener: (msg_id: number, buf_len: number) => void): EventEmitter
+	on(name: "ServerMessage", listener: (msg_id: number, buf: ArrayBuffer) => void): EventEmitter
 	on(name: "GCPingResponse", listener: () => boolean): EventEmitter
 	on(name: "MatchmakingStatsUpdated", listener: (msg: ArrayBuffer) => void): EventEmitter
 	on(name: "ScriptsUpdated", listener: () => void): EventEmitter
+	on(name: "IPCMessage", func: (source_worker_uid: bigint, name: string, msg: WorkerIPCType) => void): EventEmitter
+	on(name: "WorkerSpawned", func: (worker_uid: bigint) => void): EventEmitter
+	on(name: "WorkerDespawned", func: (worker_uid: bigint) => void): EventEmitter
 }
 
 const Events: Events = new EventEmitter()
 export default Events
-setFireEvent((name, cancellable, ...args) => Events.emit(name, cancellable, ...args))
+setFireEvent(async (name, cancellable, ...args) => Events.emit(name, cancellable, ...args))

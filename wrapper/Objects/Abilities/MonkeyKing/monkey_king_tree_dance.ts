@@ -77,7 +77,7 @@ EventsSDK.on("ParticleDestroyed", id => {
 })
 
 function CreateParticleForTree(tree: Tree | TempTree) {
-	const particle_pos = tree.Position.AddScalarZ(250)
+	const particle_pos = tree.Position.Clone().AddScalarZ(250)
 	particlesSDK.AddOrUpdate(
 		particle_pos,
 		"particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf",

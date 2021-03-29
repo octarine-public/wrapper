@@ -11,9 +11,12 @@ export default class Roshan extends Unit {
 	public static HP = 0
 	public static MaxHP = 0
 	public static Instance: Nullable<Entity | number>
-
 	@NetworkedBasicField("m_bGoldenRoshan")
 	public GoldenRoshan = false
+
+	public get RingRadius(): number {
+		return 128
+	}
 }
 
 function GetHPChangedByMinute(minute: number): number {

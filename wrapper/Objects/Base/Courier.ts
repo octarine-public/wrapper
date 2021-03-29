@@ -18,4 +18,7 @@ export default class Courier extends Unit {
 	public get StateHero(): Nullable<Hero> {
 		return EntityManager.EntityByIndex(this.StateHero_) as Nullable<Hero>
 	}
+	public get ShouldUnifyOrders(): boolean {
+		return false
+	}
 }

@@ -3,4 +3,7 @@ import Building from "./Building"
 
 @WrapperClass("CDOTA_BaseNPC_Fort")
 export default class Fort extends Building {
+	public get RingRadius(): number {
+		return 300
+	}
 }

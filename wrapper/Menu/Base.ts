@@ -70,7 +70,7 @@ export default class Base {
 	public FontFlags = FontFlags_t.NONE
 	public TooltipIcon = "menu/icons/info.svg"
 	public TooltipIconColor = new Color(104, 4, 255)
-	public readonly OnValueChangedCBs: ((caller: Base) => void)[] = []
+	public readonly OnValueChangedCBs: ((caller: Base) => any)[] = []
 
 	public readonly Position = new Vector2()
 	public readonly OriginalSize = new Vector2()
@@ -121,7 +121,7 @@ export default class Base {
 			return
 		this.config_dirty = false
 		if (this.execute_on_add)
-			this.OnValueChangedCBs.forEach(f => f(this))
+			this.TriggerOnValueChangedCBs()
 	}
 	public ApplyLocalization() {
 		this.Name = Localization.Localize(this.InternalName)
@@ -129,10 +129,10 @@ export default class Base {
 		this.Update()
 	}
 
-	public OnValue(func: (caller: this) => void): this {
+	public async OnValue(func: (caller: this) => any): Promise<this> {
 		this.OnValueChangedCBs.push(func as any)
 		if (this.execute_on_add)
-			func(this)
+			await func(this)
 		return this
 	}
 
@@ -156,7 +156,7 @@ export default class Base {
 		)
 	}
 
-	public Render(draw_bar = true): void {
+	public async Render(draw_bar = true): Promise<void> {
 		if (this.is_active)
 			RendererSDK.Image(Base.background_active_path, this.Position, -1, this.TotalSize)
 		else
@@ -172,7 +172,7 @@ export default class Base {
 		if (!this.disable_tooltips && is_hovered)
 			this.RenderTooltip()
 	}
-	public PostRender(): void {
+	public async PostRender(): Promise<void> {
 		// to be implemented in child classes
 	}
 
@@ -180,14 +180,14 @@ export default class Base {
 		// to be implemented in child classes
 	}
 
-	public OnPreMouseLeftDown(): boolean {
+	public async OnPreMouseLeftDown(): Promise<boolean> {
 		return true
 	}
-	public OnMouseLeftDown(): boolean {
+	public async OnMouseLeftDown(): Promise<boolean> {
 		return true
 	}
 
-	public OnMouseLeftUp(): boolean {
+	public async OnMouseLeftUp(): Promise<boolean> {
 		return true
 	}
 
@@ -221,6 +221,10 @@ export default class Base {
 			false,
 			this.FontFlags,
 		)
+	}
+	protected async TriggerOnValueChangedCBs(): Promise<void> {
+		for (const cb of this.OnValueChangedCBs)
+			await cb(this)
 	}
 
 	private RenderTooltip(): void {

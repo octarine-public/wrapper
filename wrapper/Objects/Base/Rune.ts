@@ -12,8 +12,4 @@ export default class Rune extends Entity {
 	public MapLocationTeam = 0
 	@NetworkedBasicField("m_szLocation")
 	public Location = ""
-
-	public get RingRadius(): number {
-		return 40
-	}
 }

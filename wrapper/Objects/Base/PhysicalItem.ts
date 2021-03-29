@@ -12,7 +12,7 @@ export default class PhysicalItem extends Entity {
 		return EntityManager.EntityByIndex(this.Item_) as Nullable<Item>
 	}
 	public get RingRadius(): number {
-		return 40
+		return 64
 	}
 
 	public toString(): string {

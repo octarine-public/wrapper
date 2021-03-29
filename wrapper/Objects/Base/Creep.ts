@@ -3,14 +3,17 @@ import Unit from "./Unit"
 
 @WrapperClass("CDOTA_BaseNPC_Creep")
 export default class Creep extends Unit {
-	get IsCreep(): boolean {
+	public get IsCreep(): boolean {
 		return true
 	}
-	get IsLaneCreep(): boolean {
+	public get IsLaneCreep(): boolean {
 		return this.ClassName === "CDOTA_BaseNPC_Creep_Lane" || this.ClassName === "CDOTA_BaseNPC_Creep_Siege"
 	}
 	public get IsDeniable(): boolean {
 		return super.IsDeniable || this.HPPercent <= 50
+	}
+	public get RingRadius(): number {
+		return 64
 	}
 	public GetAdditionalAttackDamage(source: Unit): number {
 		let damage = 0

@@ -5,4 +5,8 @@ import Building from "./Building"
 export default class Outpost extends Building {
 	@NetworkedBasicField("m_szOutpostName")
 	public OutpostName = ""
+
+	public get RingRadius(): number {
+		return 150
+	}
 }

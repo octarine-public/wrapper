@@ -6,6 +6,7 @@ import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { EDOTASpecialBonusOperation } from "../../Enums/EDOTASpecialBonusOperation"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
+import Workers from "../../Native/Workers"
 import { parseKVFile } from "../../Resources/ParseKV"
 import { createMapFromMergedIterators, parseEnumString } from "../../Utils/Utils"
 import Unit from "../Base/Unit"
@@ -16,19 +17,19 @@ function LoadAbilityFile(path: string): RecursiveMap {
 }
 
 export default class AbilityData {
-	public static global_storage = new Map<string, AbilityData>()
+	public static global_storage: Promise<Map<string, AbilityData>> = Promise.resolve(new Map())
 	public static empty = new AbilityData("", new Map())
-	public static GetAbilityByName(name: string): Nullable<AbilityData> {
-		return AbilityData.global_storage.get(name)
+	public static async GetAbilityByName(name: string): Promise<Nullable<AbilityData>> {
+		return (await AbilityData.global_storage).get(name)
 	}
-	public static GetAbilityNameByID(id: number): Nullable<string> {
-		for (const [name, data] of AbilityData.global_storage)
+	public static async GetAbilityNameByID(id: number): Promise<Nullable<string>> {
+		for (const [name, data] of await AbilityData.global_storage)
 			if (data.ID === id)
 				return name
 		return undefined
 	}
-	public static GetItemRecipeName(name: string): Nullable<string> {
-		for (const [name_, data] of AbilityData.global_storage)
+	public static async GetItemRecipeName(name: string): Promise<Nullable<string>> {
+		for (const [name_, data] of await AbilityData.global_storage)
 			if (data.ItemResult === name)
 				return name_
 		return undefined
@@ -62,7 +63,7 @@ export default class AbilityData {
 	public readonly SecretShop: boolean
 	public readonly ItemRequirements: string[][] = []
 	public readonly ItemResult: Nullable<string>
-	private readonly SpecialValueCache = new Map<string, [number[], Nullable<string>, string, EDOTASpecialBonusOperation]>()
+	private readonly SpecialValueCache = new Map<string, [number[], string, string, EDOTASpecialBonusOperation]>()
 	private readonly CastRangeCache: number[]
 	private readonly ChannelTimeCache: number[]
 	private readonly AbilityDamageCache: number[]
@@ -167,7 +168,7 @@ export default class AbilityData {
 		if (ar === undefined)
 			return 0
 		let base_val = ar[0][level]
-		if (ar[1] !== undefined) {
+		if (ar[1] !== "") {
 			const talent = owner.GetAbilityByName(ar[1])
 			if (talent !== undefined && talent.Level !== 0) {
 				const talent_val = talent.GetSpecialValue(ar[2])
@@ -253,7 +254,7 @@ export default class AbilityData {
 				this.ExtendLevelArray(ar)
 				let LinkedSpecialBonus = special.get("LinkedSpecialBonus")
 				if (typeof LinkedSpecialBonus !== "string")
-					LinkedSpecialBonus = undefined
+					LinkedSpecialBonus = ""
 				const LinkedSpecialBonusOperation_str = special.get("LinkedSpecialBonusOperation")
 				let LinkedSpecialBonusOperation = EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD
 				if (typeof LinkedSpecialBonusOperation_str === "string")
@@ -268,7 +269,7 @@ export default class AbilityData {
 						LinkedSpecialBonus,
 						LinkedSpecialBonusField_str,
 						LinkedSpecialBonusOperation,
-					] as [number[], Nullable<string>, string, EDOTASpecialBonusOperation],
+					] as [number[], string, string, EDOTASpecialBonusOperation],
 				)
 			}
 		}
@@ -280,10 +281,10 @@ export default class AbilityData {
 
 		return [
 			new Array<number>(this.MaxLevel).fill(0),
-			undefined,
+			"",
 			"value",
 			EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD,
-		] as [number[], Nullable<string>, string, EDOTASpecialBonusOperation]
+		] as [number[], string, string, EDOTASpecialBonusOperation]
 	}
 
 	private ExtendLevelArray(ar: number[]): number[] {
@@ -308,7 +309,13 @@ function AbilityNameToPath(name: string, strip = false): string {
 		: `panorama/images/spellicons/${tex_name}_png.vtex_c`
 }
 
-function FixAbilityInheritance(abils_map: RecursiveMap, fixed_cache: RecursiveMap, map: RecursiveMap, abil_name: string): RecursiveMap {
+function FixAbilityInheritance(
+	target_map: Map<string, AbilityData>,
+	abils_map: RecursiveMap,
+	fixed_cache: RecursiveMap,
+	map: RecursiveMap,
+	abil_name: string,
+): RecursiveMap {
 	if (fixed_cache.has(abil_name))
 		return fixed_cache.get(abil_name) as RecursiveMap
 	if (abil_name !== "ability_base" && !map.has("BaseClass"))
@@ -318,7 +325,7 @@ function FixAbilityInheritance(abils_map: RecursiveMap, fixed_cache: RecursiveMa
 		if (typeof base_name === "string" && base_name !== abil_name) {
 			const base_map = abils_map.get(base_name)
 			if (base_map instanceof Map) {
-				const fixed_base_map = FixAbilityInheritance(abils_map, fixed_cache, base_map, base_name)
+				const fixed_base_map = FixAbilityInheritance(target_map, abils_map, fixed_cache, base_map, base_name)
 				fixed_base_map.forEach((v, k) => {
 					if (!map.has(k))
 						map.set(k, v)
@@ -326,7 +333,7 @@ function FixAbilityInheritance(abils_map: RecursiveMap, fixed_cache: RecursiveMa
 			}
 		}
 	}
-	if (!map.has("AbilityTexturePath") || !fexists(map.get("AbilityTexturePath") as string)) {
+	{
 		let tex_name = (map.get("AbilityTextureName") as string) ?? abil_name
 		let path = AbilityNameToPath(tex_name)
 		if (!fexists(path)) {
@@ -344,12 +351,30 @@ function FixAbilityInheritance(abils_map: RecursiveMap, fixed_cache: RecursiveMa
 		map.set("AbilityTexturePath", path)
 	}
 	fixed_cache.set(abil_name, map)
-	AbilityData.global_storage.set(abil_name, new AbilityData(abil_name, map))
+	target_map.set(abil_name, new AbilityData(abil_name, map))
 	return map
 }
 
-export function ReloadGlobalAbilityStorage() {
-	AbilityData.global_storage.clear()
+export async function ReloadGlobalAbilityStorage() {
+	await AbilityData.global_storage
+	AbilityData.global_storage = new Promise(resolve => {
+		const target_map = new Map<string, AbilityData>()
+		Workers.CallRPCEndPoint("LoadGlobalAbilityStorage", undefined)
+			.then(global_storage_ipc => {
+				if (!(global_storage_ipc instanceof Map))
+					return
+				const empty_map = new Map()
+				global_storage_ipc.forEach((val, key) => target_map.set(
+					key as string,
+					Object.assign(new AbilityData(key as string, empty_map), val),
+				))
+				resolve(target_map)
+			}).catch(() => resolve(target_map))
+	})
+}
+
+Workers.RegisterRPCEndPoint("LoadGlobalAbilityStorage", () => {
+	const target_map = new Map<string, AbilityData>()
 	const abils_map = createMapFromMergedIterators<string, RecursiveMapValue>(
 		LoadAbilityFile("scripts/npc/npc_abilities.txt").entries(),
 		LoadAbilityFile("scripts/npc/npc_abilities_custom.txt").entries(),
@@ -359,6 +384,9 @@ export function ReloadGlobalAbilityStorage() {
 	const fixed_cache: RecursiveMap = new Map()
 	abils_map.forEach((map, abil_name) => {
 		if (map instanceof Map)
-			FixAbilityInheritance(abils_map, fixed_cache, map, abil_name)
+			FixAbilityInheritance(target_map, abils_map, fixed_cache, map, abil_name)
 	})
-}
+	const ret = new Map<string, WorkerIPCType>()
+	target_map.forEach((v, k) => ret.set(k, { ...v }))
+	return ret
+})

@@ -118,9 +118,9 @@ export default class ColorPicker extends Base {
 			+ ColorPicker.color_offset.x
 	}
 
-	public Render(): void {
+	public async Render(): Promise<void> {
 		this.is_active = ColorPicker.active_colorpicker === this
-		super.Render()
+		await super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const selected_color_rect = this.SelectedColorRect
 		RendererSDK.Image(
@@ -137,7 +137,7 @@ export default class ColorPicker extends Base {
 			this.selected_color,
 		)
 	}
-	public PostRender(): void {
+	public async PostRender(): Promise<void> {
 		if (!this.is_active)
 			return
 		const colorpicker_rect = this.ColorPickerRect,
@@ -262,14 +262,14 @@ export default class ColorPicker extends Base {
 			this.selected_color.SetA(Math.round(alpha * 255))
 		}
 		if (this.dragging_color || this.dragging_hue || this.dragging_alpha)
-			this.OnValueChangedCBs.forEach(f => f(this))
+			await this.TriggerOnValueChangedCBs()
 	}
 	public OnParentNotVisible(): void {
 		if (ColorPicker.active_colorpicker === this)
 			ColorPicker.active_colorpicker = undefined
 		this.is_active = false
 	}
-	public OnPreMouseLeftDown(): boolean {
+	public async OnPreMouseLeftDown(): Promise<boolean> {
 		const colorpicker_rect = this.ColorPickerRect,
 			mouse_pos = this.MousePosition
 		if (!(this.is_active && colorpicker_rect.Contains(mouse_pos)))
@@ -307,7 +307,7 @@ export default class ColorPicker extends Base {
 		}
 		return false
 	}
-	public OnMouseLeftDown(): boolean {
+	public async OnMouseLeftDown(): Promise<boolean> {
 		if (!this.IsHovered)
 			return true
 		if (ColorPicker.active_colorpicker !== this) {
@@ -319,7 +319,7 @@ export default class ColorPicker extends Base {
 		}
 		return false
 	}
-	public OnMouseLeftUp(): boolean {
+	public async OnMouseLeftUp(): Promise<boolean> {
 		this.dragging_color = this.dragging_hue = this.dragging_alpha = false
 		return false
 	}

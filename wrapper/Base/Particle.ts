@@ -35,7 +35,7 @@ export default class Particle {
 		else if (param instanceof Entity)
 			param = param.Position
 		else if (param instanceof Vector2)
-			param = param.toVector3()
+			param = Vector3.FromVector2(param)
 		else if (param instanceof Color)
 			param = new Vector3(param.r, param.g, param.b)
 		else if (typeof param === "number")

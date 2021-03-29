@@ -125,17 +125,20 @@ public:
 		return *this;
 	}
 
-	FORCEINLINE Vector operator+(const Vector& v) {
+	FORCEINLINE Vector operator+(const Vector& v) const {
 		return Vector(x + v.x, y + v.y, z + v.z);
 	}
-	FORCEINLINE Vector operator-(const Vector& v) {
+	FORCEINLINE Vector operator-(const Vector& v) const {
 		return Vector(x - v.x, y - v.y, z - v.z);
 	}
-	FORCEINLINE Vector operator*(const Vector& v) {
+	FORCEINLINE Vector operator*(const Vector& v) const {
 		return Vector(x * v.x, y * v.y, z * v.z);
 	}
-	FORCEINLINE Vector operator*(const vec_t fl) {
+	FORCEINLINE Vector operator*(const vec_t fl) const {
 		return Vector(x * fl, y * fl, z * fl);
+	}
+	FORCEINLINE Vector operator/(const vec_t fl) const {
+		return Vector(x / fl, y / fl, z / fl);
 	}
 
 	// negate the vector components
@@ -261,6 +264,13 @@ public:
 		return Vector(-x, -y, -z);
 	}
 };
+
+FORCEINLINE Vector operator*(float lhs, const Vector& rhs) {
+	return rhs * lhs;
+}
+FORCEINLINE Vector operator/(float lhs, const Vector& rhs) {
+	return rhs / lhs;
+}
 
 class QAngle {
 public:
@@ -446,13 +456,13 @@ public:
 		y += fl;
 		return *this;
 	}
-	FORCEINLINE Vector2D operator*(const vec_t fl) {
+	FORCEINLINE Vector2D operator*(const vec_t fl) const {
 		return Vector2D(x * fl, y * fl);
 	}
-	FORCEINLINE Vector2D operator/(const vec_t fl) {
+	FORCEINLINE Vector2D operator/(const vec_t fl) const {
 		return Vector2D(x / fl, y / fl);
 	}
-	FORCEINLINE Vector2D operator+(const Vector2D& v) {
+	FORCEINLINE Vector2D operator+(const Vector2D& v) const {
 		return Vector2D(x + v.x, y + v.y);
 	}
 
@@ -502,9 +512,19 @@ public:
 	FORCEINLINE Vector2D Min(float num) {
 		return Vector2D(fmin(this->x, num), fmin(this->x, num));
 	}
+	FORCEINLINE Vector2D Max(float num) {
+		return Vector2D(fmax(this->x, num), fmax(this->x, num));
+	}
 
 	// Base address...
 	FORCEINLINE vec_t* Base() { return (vec_t*)this; }
 
 	FORCEINLINE Vector TransformToVector() { return Vector(x, y, 0); }
 };
+
+FORCEINLINE Vector2D operator*(float lhs, const Vector2D& rhs) {
+	return rhs * lhs;
+}
+FORCEINLINE Vector2D operator/(float lhs, const Vector2D& rhs) {
+	return rhs / lhs;
+}

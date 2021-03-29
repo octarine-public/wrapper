@@ -60,4 +60,6 @@ export default class Hero extends Unit {
 }
 
 import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
-RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, new_val) => ent.m_hReplicatingOtherHeroModel = (new_val as number) & 0x3FFF)
+RegisterFieldHandler(Hero, "m_hReplicatingOtherHeroModel", (ent, new_val) => {
+	ent.m_hReplicatingOtherHeroModel = (new_val as number) & 0x3FFF
+})

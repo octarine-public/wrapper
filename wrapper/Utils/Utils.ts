@@ -112,7 +112,11 @@ export function ParseExternalReferences(buf: Uint8Array, recursive = false): Map
 	if (RERL === undefined)
 		return map
 
-	const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset + RERL.byteOffset, RERL.byteLength))
+	const stream = new BinaryStream(new DataView(
+		RERL.buffer,
+		RERL.byteOffset,
+		RERL.byteLength,
+	))
 	const data_offset = stream.ReadUint32(),
 		size = stream.ReadUint32()
 	if (size === 0)
@@ -125,16 +129,17 @@ export function ParseExternalReferences(buf: Uint8Array, recursive = false): Map
 			prev = stream.pos
 		stream.pos += offset - 8
 		const str = `${stream.ReadNullTerminatedUtf8String()}_c`
-		if (recursive) {
-			const read = fread(str)
-			if (read !== undefined) {
-				map.set(id, str)
-				ParseExternalReferences(new Uint8Array(read))
-					.forEach((val, key) => map.set(key, val))
-			}
-		} else if (fexists(str))
+		if (fexists(str))
 			map.set(id, str)
 		stream.pos = prev
+	}
+	if (recursive) {
+		[...map.values()].forEach(path => {
+			const read = fread(path)
+			if (read !== undefined)
+				ParseExternalReferences(read)
+					.forEach((val, key) => map.set(key, val))
+		})
 	}
 	return map
 }
@@ -155,10 +160,10 @@ export function readJSON(path: string): any {
 	if (buf === undefined)
 		throw `Failed to read JSON file at path ${path}`
 	try {
-		return JSON.parse(Utf16ArrayToStr(new Uint16Array(buf)))
+		return JSON.parse(Utf16ArrayToStr(new Uint16Array(buf.buffer, buf.byteOffset, buf.byteLength / 2)))
 	} catch {
 		try {
-			return JSON.parse(Utf8ArrayToStr(new Uint8Array(buf)))
+			return JSON.parse(Utf8ArrayToStr(buf))
 		} catch {
 			throw `invalid JSON at path ${path}`
 		}

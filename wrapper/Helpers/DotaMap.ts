@@ -13,7 +13,7 @@ export class DotaMap {
 		if (file === undefined)
 			return []
 
-		const ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(new Uint8Array(file)))
+		const ar: [number, number, number][] = JSON.parse(Utf8ArrayToStr(file))
 		return ar.map(([x, y, z]) => new Vector3(x, y, z))
 	}
 	private static LoadPoly(name: string): WorldPolygon {

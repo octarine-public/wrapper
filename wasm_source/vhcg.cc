@@ -93,25 +93,16 @@ float HeightMap::GetHeightForLocation(Vector2D loc) {
 		return cell.m_flDefaultFirstHeight;
 	
 	auto fraction_vec = basic_coords - basic_coords.Floor();
-	int32_t fraction_vec_mul_x, fraction_vec_mul_y;
-	{
-		auto fraction_vec_mul = fraction_vec.Min(0.99999988) * (this->m_iHeightMapCellAccuracy - 1);
-		fraction_vec_mul_x = (int32_t)floorf(fraction_vec_mul.x);
-		fraction_vec_mul_y = (int32_t)floorf(fraction_vec_mul.y);
-	}
+	float v16 = this->m_iHeightMapCellAccuracy - 1.f;
+	auto fraction_vec_mul = fraction_vec.Max(0.f).Min(0.999f) * v16;
+	auto fraction_vec_mul_x = (int)fraction_vec_mul.x;
+	auto fraction_vec_mul_y = (int)fraction_vec_mul.y;
 	auto cell_base = &this->m_pHeightMap[cell.m_iHeightMapID];
 	float a = cell_base[this->m_iHeightMapCellAccuracy * fraction_vec_mul_y + fraction_vec_mul_x];
 	float b = cell_base[this->m_iHeightMapCellAccuracy * fraction_vec_mul_y + (fraction_vec_mul_x + 1)];
 	float c = cell_base[this->m_iHeightMapCellAccuracy * (fraction_vec_mul_y + 1) + fraction_vec_mul_x];
 	float d = cell_base[this->m_iHeightMapCellAccuracy * (fraction_vec_mul_y + 1) + (fraction_vec_mul_x + 1)];
-	float something = (fraction_vec.x - (fraction_vec_mul_x / (this->m_iHeightMapCellAccuracy - 1))) * (this->m_iHeightMapCellAccuracy - 1);
-	float something2 = ((b - a) * something) + a;
-	return ((d - c) * something + c - something2) * ((fraction_vec.y - (fraction_vec_mul_y / (this->m_iHeightMapCellAccuracy - 1))) * (this->m_iHeightMapCellAccuracy - 1)) + something2;
-}
-
-float HeightMap::GetSecondaryHeightForLocation(Vector2D loc) {
-	auto cell_ptr = this->GetCellByBasicCoords((loc - this->GetMinMapCoords()) / this->m_flHeightMapAccuracy);
-	if (cell_ptr == nullptr)
-		return 0.f;
-	return cell_ptr->m_flSecondaryHeight;
+	float v24 = fraction_vec.x * v16 - fraction_vec_mul_x;
+	float v25 = ((b - a) * v24) + a;
+	return (((d - c) * v24) + c - v25) * (fraction_vec.y * v16 - fraction_vec_mul_y) + v25;
 }

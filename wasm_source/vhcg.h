@@ -17,6 +17,10 @@ enum HeightMapParseError {
 class HeightMap {
 public:
 	FORCEINLINE HeightMap() {}
+	FORCEINLINE ~HeightMap() {
+		delete this->m_pCells;
+		delete this->m_pHeightMap;
+	}
 	int Parse(uint8_t* data, uint32_t size);
 	FORCEINLINE Vector2D GetMinMapCoords() {
 		return this->m_vecMinMapCoords;
@@ -28,14 +32,6 @@ public:
 		return this->GetMinMapCoords() + this->GetMapSize();
 	}
 	float GetHeightForLocation(Vector2D loc);
-	float GetSecondaryHeightForLocation(Vector2D loc);
-
-	FORCEINLINE ~HeightMap() {
-		if (this->m_pCells != nullptr)
-			free(this->m_pCells);
-		if (this->m_pHeightMap != nullptr)
-			free(this->m_pHeightMap);
-	}
 
 private:
 	FORCEINLINE HeightMapCell* GetCellByBasicCoords(Vector2D basic_coords) {

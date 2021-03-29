@@ -10,6 +10,9 @@ export default class Vector3 {
 	public static FromAngle(angle: number): Vector3 {
 		return new Vector3(Math.cos(angle), Math.sin(angle))
 	}
+	public static FromString(str: string): Vector3 {
+		return new Vector3(...str.split(" ").map(el => parseFloat(el)))
+	}
 	/**
 	 * From polar coordinates
 	 * @param radial
@@ -110,7 +113,7 @@ export default class Vector3 {
 	/**
 	 * Are all components of this vector are 0?
 	 */
-	public IsZero(tolerance: number = 0.01): boolean {
+	public IsZero(tolerance = 0.01): boolean {
 		const x = this.x,
 			y = this.y,
 			z = this.z
@@ -835,10 +838,10 @@ export default class Vector3 {
 	}
 
 	/**
-	 * @return Vector3(x,y,z)
+	 * @return x y z
 	 */
 	public toString(): string {
-		return `Vector3(${this.x},${this.y},${this.z})`
+		return `${this.x} ${this.y} ${this.z}`
 	}
 	/**
 	 * @return [x, y, z]

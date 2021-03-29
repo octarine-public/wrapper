@@ -6,6 +6,7 @@ import { DOTAGameUIState_t } from "../Enums/DOTAGameUIState_t"
 import { PingType_t } from "../Enums/PingType_t"
 import GUIInfo from "../GUI/GUIInfo"
 import RendererSDK from "../Native/RendererSDK"
+import { GetPositionHeight } from "../Native/WASM"
 import Entity, { GameRules } from "../Objects/Base/Entity"
 import { EntityDataLump } from "../Resources/ParseEntityLump"
 import { parseKVFile } from "../Resources/ParseKV"
@@ -66,11 +67,7 @@ Events.on("NewConnection", () => {
 	})
 })
 
-let minimapBounds = new Rectangle(),
-	minimapBoundsSize = new Vector2(),
-	minimap_pos = new Vector2(),
-	minimap_size = new Vector2(),
-	hero_icon_scale = 1
+let hero_icon_scale = 1
 class MinimapIconRenderer {
 	public static GetSizeMultiplier(size: number): number {
 		return size / 600
@@ -91,14 +88,6 @@ class MinimapIconRenderer {
 		const additional_alpha = this.is_ping && this.end_time >= GameState.RawGameTime
 			? Math.min((this.end_time - GameState.RawGameTime) / 3, 1)
 			: 1
-		const minimap_icon_pos = minimap_pos.Add(
-			minimapBounds.GetOffset(Vector2.FromVector3(this.worldPos))
-				.DivideForThis(minimapBoundsSize)
-				.MultiplyScalarY(-1)
-				.AddScalarY(1)
-				.MultiplyForThis(minimap_size)
-				.RoundForThis(),
-		)
 		const size = this.animation_cycle !== 0
 			? (
 				this.min_size_animated
@@ -112,7 +101,8 @@ class MinimapIconRenderer {
 		const screen_size = RendererSDK.WindowSize
 		minimap_icon_size.x = GUIInfo.ScaleWidth(minimap_icon_size.x, screen_size)
 		minimap_icon_size.y = GUIInfo.ScaleHeight(minimap_icon_size.y, screen_size)
-		minimap_icon_pos.SubtractForThis(minimap_icon_size.DivideScalar(2).RoundForThis())
+		const minimap_icon_pos = MinimapSDK.WorldToMinimap(this.worldPos)
+			.SubtractForThis(minimap_icon_size.DivideScalar(2).RoundForThis())
 		const color = additional_alpha !== 1
 			? this.color.Clone()
 			: this.color
@@ -162,28 +152,25 @@ EventsSDK.on("MapDataLoaded", () => {
 			data.get("classname") === "dota_minimap_boundary"
 			&& typeof data.get("origin") === "string",
 		)
-		.map(a => a.get("origin") as string)
-		.map(a => new Vector3(...a.split(" ").map(b => parseFloat(b))))
+		.map(data => Vector3.FromString(data.get("origin") as string))
 	if (minimapBoundsData.length < 2)
 		return
-	minimapBounds = new Rectangle(
-		Vector2.FromVector3(minimapBoundsData[0]),
-		Vector2.FromVector3(minimapBoundsData[1]),
-	)
-	minimapBoundsSize = minimapBounds.Size
+	MinimapSDK.MinimapBounds.Left = minimapBoundsData[0].x
+	MinimapSDK.MinimapBounds.Top = minimapBoundsData[0].y
+	MinimapSDK.MinimapBounds.Right = minimapBoundsData[1].x
+	MinimapSDK.MinimapBounds.Bottom = minimapBoundsData[1].y
 	ParseMinimapOverview()
 	const overview = MinimapSDK.CurrentMinimapOverview
 	if (overview !== undefined)
-		minimapBounds.Subtract(minimapBounds.pos1).Add(overview.pos)
+		MinimapSDK.MinimapBounds
+			.Subtract(Vector2.FromVector3(minimapBoundsData[0]))
+			.Add(overview.pos)
 })
 
 EventsSDK.on("Draw", () => {
 	if (!GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	hero_icon_scale = MinimapIconRenderer.GetSizeMultiplier(ConVars.GetInt("dota_minimap_hero_size"))
-	const minimap_rect = GUIInfo.Minimap.MinimapRenderBounds
-	minimap_pos = minimap_rect.pos1
-	minimap_size = minimap_rect.Size
 	RendererSDK.SaveState_()
 	const minimap_block_rect = GUIInfo.Minimap.Minimap
 	RendererSDK.SetClipRect_(minimap_block_rect.pos1, minimap_block_rect.Size)
@@ -203,6 +190,7 @@ EventsSDK.on("Draw", () => {
 EventsSDK.on("GameEnded", () => minimap_icons_active.clear())
 
 const MinimapSDK = new (class CMinimapSDK {
+	public readonly MinimapBounds = new Rectangle()
 	public CurrentMinimapOverview: Nullable<MinimapOverview>
 	/**
 	 * Draws icon at minimap
@@ -268,6 +256,27 @@ const MinimapSDK = new (class CMinimapSDK {
 	public SendPing(location: Vector2, type = PingType_t.NORMAL, direct_ping = false, target?: Entity) {
 		location.toIOBuffer()
 		SendMinimapPing(type, direct_ping, target?.Index ?? -1)
+	}
+	public WorldToMinimap(pos: Vector3): Vector2 {
+		const minimap_rect = GUIInfo.Minimap.MinimapRenderBounds
+		return this.MinimapBounds.GetOffset(Vector2.FromVector3(pos))
+			.DivideForThis(this.MinimapBounds.Size)
+			.MultiplyScalarY(-1)
+			.AddScalarY(1)
+			.MultiplyForThis(minimap_rect.Size)
+			.AddForThis(minimap_rect.pos1)
+			.RoundForThis()
+	}
+	public MinimapToWorld(pos: Vector2): Vector3 {
+		const minimap_rect = GUIInfo.Minimap.MinimapRenderBounds
+		const ret_2d = minimap_rect.GetOffset(pos)
+			.DivideForThis(minimap_rect.Size)
+			.SubtractScalarY(1)
+			.MultiplyScalarY(-1)
+			.MultiplyForThis(this.MinimapBounds.Size)
+			.AddForThis(this.MinimapBounds.pos1)
+			.RoundForThis()
+		return Vector3.FromVector2(ret_2d).SetZ(GetPositionHeight(ret_2d))
 	}
 })()
 export default MinimapSDK

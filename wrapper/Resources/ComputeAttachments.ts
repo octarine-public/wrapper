@@ -22,7 +22,7 @@ export class ComputedAttachment {
 	}
 	public GetMatrix(frameNum: number): Matrix4x4 {
 		const start = frameNum * 4 * 16
-		return new Matrix4x4([...this.MatrixesCompressed.subarray(start, start + 4 * 16)])
+		return new Matrix4x4(this.MatrixesCompressed.subarray(start, start + 4 * 16))
 	}
 	public GetPosition(real_time: number, angle: number): Vector3 {
 		const anim_time = real_time % (this.FrameCount / this.FPS)
@@ -79,22 +79,22 @@ function ComputeAttachmentPosition(
 	attachment.SetMatrix(frameNum, bone_mat)
 }
 
-export function ComputeAttachments(model_name: string): ComputedAttachments {
+export function ComputeAttachmentsAndBounds(model_name: string): [ComputedAttachments, Vector3, Vector3] {
 	const map: ComputedAttachments = new Map()
 	if (model_name.length === 0)
-		return map
+		return [map, new Vector3(), new Vector3()]
 	if (!model_name.endsWith("_c"))
 		model_name += "_c"
 	const buf = fread(model_name)
 	if (buf === undefined)
-		return map
-	const model = ParseModel(new Uint8Array(buf))
+		return [map, new Vector3(), new Vector3()]
+	const model = ParseModel(buf)
 	const mesh = model.RefMeshes[0] ?? model.EmbeddedMeshes[0]
 	if (mesh === undefined)
-		return map
+		return [map, new Vector3(), new Vector3()]
 	const skeleton = model.Skeletons[0]
 	if (skeleton === undefined)
-		return map
+		return [map, model.MinBounds, model.MaxBounds]
 	model.Animations.forEach(anim => {
 		if (anim.Activities.length === 0)
 			return
@@ -133,5 +133,5 @@ export function ComputeAttachments(model_name: string): ComputedAttachments {
 		})
 		map.set(GameActivity_t.ACT_DOTA_IDLE, empty_attachments)
 	}
-	return map
+	return [map, model.MinBounds, model.MaxBounds]
 }

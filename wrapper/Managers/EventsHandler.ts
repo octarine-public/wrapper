@@ -61,31 +61,6 @@ message CNETMsg_Tick {
 	optional uint32 host_loss = 7;
 }
 
-message ProtoFlattenedSerializerField_t {
-	optional int32 var_type_sym = 1;
-	optional int32 var_name_sym = 2;
-	optional int32 bit_count = 3;
-	optional float low_value = 4;
-	optional float high_value = 5;
-	optional int32 encode_flags = 6;
-	optional int32 field_serializer_name_sym = 7;
-	optional int32 field_serializer_version = 8;
-	optional int32 send_node_sym = 9;
-	optional int32 var_encoder_sym = 10;
-}
-
-message ProtoFlattenedSerializer_t {
-	optional int32 serializer_name_sym = 1;
-	optional int32 serializer_version = 2;
-	repeated int32 fields_index = 3;
-}
-
-message CSVCMsg_FlattenedSerializer {
-	repeated .ProtoFlattenedSerializer_t serializers = 1;
-	repeated string symbols = 2;
-	repeated .ProtoFlattenedSerializerField_t fields = 3;
-}
-
 message CSVCMsg_GameSessionConfiguration {
 	optional bool is_multiplayer = 1;
 	optional bool is_loadsavegame = 2;
@@ -543,12 +518,12 @@ message CUserMsg_CustomGameEvent {
 }
 `)
 
-Events.on("ServerMessage", (msg_id, buf_len) => {
-	const buf = ServerMessageBuffer.subarray(0, buf_len)
+Events.on("ServerMessage", async (msg_id, buf_) => {
+	const buf = new Uint8Array(buf_)
 	switch (msg_id) {
 		case 4: {
 			const msg = ParseProtobufNamed(buf, "CNETMsg_Tick")
-			EventsSDK.emit(
+			await EventsSDK.emit(
 				"ServerTick", false,
 				msg.get("tick") as number,
 				msg.get("host_frametime") as number,
@@ -561,7 +536,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			break
 		}
 		case 40:
-			EventsSDK.emit("ServerInfo", false, ParseProtobufNamed(buf, "CSVCMsg_ServerInfo"))
+			await EventsSDK.emit("ServerInfo", false, ParseProtobufNamed(buf, "CSVCMsg_ServerInfo"))
 			break
 		case 45: { // we have custom parsing for CSVCMsg_CreateStringTable & CSVCMsg_UpdateStringTable
 			const stream = new BinaryStream(new DataView(buf.buffer, buf.byteOffset, buf.byteLength))
@@ -569,11 +544,11 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				update = new Map<number, [string, ArrayBuffer]>()
 			while (!stream.Empty())
 				update.set(stream.ReadVarUintAsNumber(), [stream.ReadVarString(), stream.ReadVarSlice()])
-			EventsSDK.emit("UpdateStringTable", false, table_name, update)
+			await EventsSDK.emit("UpdateStringTable", false, table_name, update)
 			break
 		}
 		case 51:
-			EventsSDK.emit("RemoveAllStringTables", false)
+			await EventsSDK.emit("RemoveAllStringTables", false)
 			break
 		case 145: {
 			const msg = ParseProtobufNamed(buf, "CUserMsg_ParticleManager")
@@ -586,7 +561,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 						path = Manifest.GetPathByHash(particleSystemHandle ?? 0n)
 					if (path === undefined)
 						break
-					EventsSDK.emit(
+					await EventsSDK.emit(
 						"ParticleCreated", false,
 						index,
 						path,
@@ -598,7 +573,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				}
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE: {
 					const submsg = msg.get("update_particle") as RecursiveProtobuf
-					EventsSDK.emit(
+					await EventsSDK.emit(
 						"ParticleUpdated", false,
 						index,
 						submsg.get("control_point") as number,
@@ -624,7 +599,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_UPDATE_ENT: {
 					const submsg = msg.get("update_particle_ent") as RecursiveProtobuf
 					const ent = EntityManager.EntityByIndex(submsg.get("entity_handle") as number)
-					EventsSDK.emit(
+					await EventsSDK.emit(
 						"ParticleUpdatedEnt", false,
 						index,
 						submsg.get("control_point") as number,
@@ -643,7 +618,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				// }
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_DESTROY: {
 					const submsg = msg.get("destroy_particle") as RecursiveProtobuf
-					EventsSDK.emit(
+					await EventsSDK.emit(
 						"ParticleDestroyed", false,
 						index,
 						submsg.get("destroy_immediately") as boolean,
@@ -656,7 +631,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				// 	break
 				// }
 				case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_RELEASE:
-					EventsSDK.emit("ParticleReleased", false, index)
+					await EventsSDK.emit("ParticleReleased", false, index)
 					break
 				// case PARTICLE_MESSAGE.GAME_PARTICLE_MANAGER_EVENT_SHOULD_DRAW: {
 				// 	let submsg = msg.get("update_particle_should_draw") as RecursiveProtobuf
@@ -711,7 +686,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			} catch {
 				parsed_data = new Map()
 			}
-			EventsSDK.emit("CustomGameEvent", false, event_name, parsed_data)
+			await EventsSDK.emit("CustomGameEvent", false, event_name, parsed_data)
 			break
 		}
 		case 208: {
@@ -742,7 +717,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				} else
 					console.log(`Something's clearly wrong with CMsgSosStartSoundEvent. ${sound_name} ${packed_params?.byteLength}`)
 			}
-			EventsSDK.emit(
+			await EventsSDK.emit(
 				"StartSound", false,
 				sound_name,
 				ent,
@@ -762,7 +737,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH: {
 					const submsg = msg.get("speech") as RecursiveProtobuf,
 						predelay = submsg.get("predelay") as RecursiveProtobuf
-					EventsSDK.emit(
+					await EventsSDK.emit(
 						"UnitSpeech", false,
 						ent,
 						submsg.get("concept") as number,
@@ -778,7 +753,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				}
 				case EDotaEntityMessages.DOTA_UNIT_SPEECH_MUTE: {
 					const submsg = msg.get("speech_mute") as RecursiveProtobuf
-					EventsSDK.emit(
+					await EventsSDK.emit(
 						"UnitSpeechMute", false,
 						ent,
 						submsg.get("delay") as number,
@@ -787,7 +762,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				}
 				case EDotaEntityMessages.DOTA_UNIT_ADD_GESTURE: {
 					const submsg = msg.get("add_gesture") as RecursiveProtobuf
-					EventsSDK.emit(
+					await EventsSDK.emit(
 						"UnitAddGesture", false,
 						ent,
 						submsg.get("activity") as number,
@@ -801,7 +776,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				}
 				case EDotaEntityMessages.DOTA_UNIT_REMOVE_GESTURE: {
 					const submsg = msg.get("remove_gesture") as RecursiveProtobuf
-					EventsSDK.emit(
+					await EventsSDK.emit(
 						"UnitRemoveGesture", false,
 						ent,
 						submsg.get("activity") as number,
@@ -810,7 +785,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 				}
 				case EDotaEntityMessages.DOTA_UNIT_FADE_GESTURE: {
 					const submsg = msg.get("fade_gesture") as RecursiveProtobuf
-					EventsSDK.emit(
+					await EventsSDK.emit(
 						"UnitFadeGesture", false,
 						ent,
 						submsg.get("activity") as number,
@@ -822,7 +797,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 		}
 		case 466: {
 			const msg = ParseProtobufNamed(buf, "CDOTAUserMsg_ChatEvent")
-			EventsSDK.emit(
+			await EventsSDK.emit(
 				"ChatEvent", false,
 				msg.get("type") as DOTA_CHAT_MESSAGE,
 				msg.get("value") as number,
@@ -842,7 +817,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (ent === undefined)
 				break
-			EventsSDK.emit(
+			await EventsSDK.emit(
 				"BloodImpact", false,
 				ent,
 				msg.get("scale") as number,
@@ -856,7 +831,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
-			EventsSDK.emit(
+			await EventsSDK.emit(
 				"UnitAnimation", false,
 				ent,
 				msg.get("sequenceVariant") as number,
@@ -872,7 +847,7 @@ Events.on("ServerMessage", (msg_id, buf_len) => {
 			const ent = EntityManager.EntityByIndex(msg.get("entity") as number)
 			if (!(ent instanceof Unit))
 				break
-			EventsSDK.emit("UnitAnimationEnd", false, ent, msg.get("snap") as boolean)
+			await EventsSDK.emit("UnitAnimationEnd", false, ent, msg.get("snap") as boolean)
 			break
 		}
 		default:
@@ -897,64 +872,57 @@ message CMsgDOTAMatchmakingStatsResponse {
 	repeated uint32 legacy_searching_players_by_group_source2 = 7;
 	repeated .CMsgMatchmakingMatchGroupInfo match_groups = 8;
 }
-message CSOEconGameAccountClient {
-	optional uint32 additional_backpack_slots = 1 [default = 0];
-	optional bool trial_account = 2 [default = false];
-	optional bool eligible_for_online_play = 3 [default = true];
-	optional bool need_to_choose_most_helpful_friend = 4;
-	optional bool in_coaches_list = 5;
-	optional fixed32 trade_ban_expiration = 6;
-	optional fixed32 duel_ban_expiration = 7;
-	optional bool made_first_purchase = 9 [default = false];
-}
 `)
-Events.on("MatchmakingStatsUpdated", data => {
-	EventsSDK.emit(
+Events.on("MatchmakingStatsUpdated", async data => {
+	await EventsSDK.emit(
 		"MatchmakingStatsUpdated",
 		false,
 		ParseProtobufNamed(new Uint8Array(data), "CMsgDOTAMatchmakingStatsResponse"),
 	)
 })
 
-Events.on("GameEvent", (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
+Events.on("GameEvent", async (name, obj) => EventsSDK.emit("GameEvent", false, name, obj))
 
 let input_capture_depth = 0
-Events.on("InputCaptured", is_captured => {
+Events.on("InputCaptured", async is_captured => {
 	if (is_captured)
 		input_capture_depth++
 	else
 		input_capture_depth = Math.max(input_capture_depth - 1, 0)
-	EventsSDK.emit("InputCaptured", false, input_capture_depth !== 0)
+	await EventsSDK.emit("InputCaptured", false, input_capture_depth !== 0)
 })
 
 EventsSDK.on("InputCaptured", is_captured => GameState.IsInputCaptured = is_captured)
 EventsSDK.on("ServerTick", tick => GameState.CurrentServerTick = tick)
 Events.on("UIStateChanged", new_state => GameState.UIState = new_state)
 
-Events.on("NewConnection", () => {
-	ReloadGlobalUnitStorage()
-	ReloadGlobalAbilityStorage()
-
-	// automatically localize units, abilities and items in menu
-	const namesMapping = new Map<string, string>()
-	const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
-		parseKVFile("resource/localization/abilities_english.txt").entries(),
-		parseKVFile("resource/addon_english.txt").entries(),
-		parseKVFile("panorama/localization/addon_english.txt").entries(),
-	).get("lang") as RecursiveMap)?.get("Tokens") ?? new Map()) as Map<string, string>
-	UnitData.global_storage.forEach((data, name) => {
-		const lang_token = lang_tokens.get(name)
-		namesMapping.set(name, lang_token ?? data.WorkshopName)
+Events.on("NewConnection", async () => {
+	await ReloadGlobalUnitStorage()
+	await ReloadGlobalAbilityStorage()
+	UnitData.global_storage.then(unit_data_global_storage => {
+		AbilityData.global_storage.then(ability_data_global_storage => {
+			// automatically localize units, abilities and items in menu
+			const namesMapping = new Map<string, string>()
+			const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
+				parseKVFile("resource/localization/abilities_english.txt").entries(),
+				parseKVFile("resource/addon_english.txt").entries(),
+				parseKVFile("panorama/localization/addon_english.txt").entries(),
+			).get("lang") as RecursiveMap)?.get("Tokens") ?? new Map()) as Map<string, string>
+			unit_data_global_storage.forEach((data, name) => {
+				const lang_token = lang_tokens.get(name)
+				namesMapping.set(name, lang_token ?? data.WorkshopName)
+			})
+			ability_data_global_storage.forEach((_, name) => {
+				const lang_token = (
+					lang_tokens.get(`DOTA_Tooltip_ability_${name}`)
+					?? lang_tokens.get(`DOTA_Tooltip_Ability_${name}`)
+				)
+				if (lang_token !== undefined)
+					namesMapping.set(name, lang_token)
+			})
+			Localization.LocalizationUnitsNames.forEach(unitName => Localization.AddLocalizationUnit(unitName, namesMapping))
+		})
 	})
-	AbilityData.global_storage.forEach((_, name) => {
-		const lang_token = (
-			lang_tokens.get(`DOTA_Tooltip_ability_${name}`)
-			?? lang_tokens.get(`DOTA_Tooltip_Ability_${name}`)
-		)
-		if (lang_token !== undefined)
-			namesMapping.set(name, lang_token)
-	})
-	Localization.LocalizationUnitsNames.forEach(unitName => Localization.AddLocalizationUnit(unitName, namesMapping))
 })
 
 EventsSDK.on("MidDataUpdate", () => {

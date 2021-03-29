@@ -68,26 +68,27 @@ export default class ImageSelector extends Base {
 		})
 	}
 
-	public Update(): void {
-		super.Update()
+	public async Update(): Promise<void> {
+		await super.Update()
 		this.values.forEach(value => {
 			if (!this.enabled_values.has(value))
 				this.enabled_values.set(value, false)
 		})
 		this.image_size.x = this.image_size.y = ImageSelector.base_image_height
-		this.rendered_paths = this.values.map(path => {
+		this.rendered_paths = []
+		for (let path of this.values) {
 			if (path.startsWith("item_bottle_"))
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
 			else if (!path.startsWith("npc_dota_hero_")) {
-				const abil = AbilityData.GetAbilityByName(path)
+				const abil = await AbilityData.GetAbilityByName(path)
 				if (abil !== undefined)
 					path = abil.TexturePath
 			} else
 				path = `panorama/images/heroes/${path}_png.vtex_c`
 			const path_iamge_size = RendererSDK.GetImageSize(path)
 			this.image_size.x = Math.max(this.image_size.x, ImageSelector.base_image_height * (path_iamge_size.x / path_iamge_size.y))
-			return path
-		})
+			this.rendered_paths.push(path)
+		}
 		this.OriginalSize.x =
 			Math.max(
 				this.name_size.x,
@@ -109,8 +110,8 @@ export default class ImageSelector extends Base {
 		return this.IsEnabled(this.values[id])
 	}
 
-	public Render(): void {
-		super.Render()
+	public async Render(): Promise<void> {
+		await super.Render()
 		this.RenderTextDefault(this.Name, this.Position.Add(this.text_offset))
 		const base_pos = this.IconsRect.pos1
 		for (let i = 0; i < this.values.length; i++) {
@@ -130,10 +131,10 @@ export default class ImageSelector extends Base {
 		}
 	}
 
-	public OnMouseLeftDown(): boolean {
+	public async OnMouseLeftDown(): Promise<boolean> {
 		return !this.IconsRect.Contains(this.MousePosition)
 	}
-	public OnMouseLeftUp(): boolean {
+	public async OnMouseLeftUp(): Promise<boolean> {
 		const rect = this.IconsRect
 		if (!rect.Contains(this.MousePosition))
 			return false
@@ -147,7 +148,7 @@ export default class ImageSelector extends Base {
 				continue
 			const value = this.values[i]
 			this.enabled_values.set(value, !this.IsEnabled(value))
-			this.OnValueChangedCBs.forEach(f => f(this))
+			await this.TriggerOnValueChangedCBs()
 			break
 		}
 		return false

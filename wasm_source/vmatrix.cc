@@ -1311,7 +1311,7 @@ void MatrixBuildPerspectiveZRange( VMatrix& dst, double flZNear, double flZFar )
 
 void MatrixBuildPerspectiveX( VMatrix& dst, double flFovX, double flAspect, double flZNear, double flZFar )
 {
-	float flWidthScale = 1.0f / tanf(DEG2RADf((float)flFovX) / 2);
+	float flWidthScale = 1.f / tanf(DEG2RADf((float)flFovX) / 2.f);
 	float flHeightScale = (float)(flAspect * flWidthScale);
 	dst.Init(   flWidthScale,				0.0f,							0.0f,										0.0f,
 				0.0f,						flHeightScale,					0.0f,										0.0f,

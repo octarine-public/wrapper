@@ -1,14 +1,2 @@
-@em++ -std=c++17 -O3 ^
-	-DLODEPNG_NO_COMPILE_ENCODER ^
-	-DLODEPNG_NO_COMPILE_DISK ^
-	-DLODEPNG_NO_COMPILE_ERROR_TEXT ^
-	-s TOTAL_MEMORY=8MB ^
-	-s ALLOW_MEMORY_GROWTH=1 ^
-	-o ../scripts_files/wrapper.wasm ^
-	lz4.cc ^
-	exports.cc ^
-	vhcg.cc ^
-	vmatrix.cc ^
-	image_utils.cc ^
-	valve_s3tc.cc ^
-	lodepng/lodepng.cpp
+@start build_nosimd.bat
+@start build_simd.bat

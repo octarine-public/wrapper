@@ -1,4 +1,4 @@
-import { EventsSDK, ExecuteOrder, Menu } from "wrapper/Imports"
+import { EventsSDK, Menu } from "wrapper/Imports"
 import { SetGameInProgress } from "./wrapper/Objects/Base/Entity"
 
 declare global {
@@ -19,14 +19,8 @@ const SettingsReloadTree = SettingsTree.AddNode("Reload Scripts")
 const ReloadScriptsBind = SettingsReloadTree.AddKeybind("Key Bind")
 const ReloadScriptsBtn = SettingsReloadTree.AddButton("Reload")
 
-const HumanizerState = SettingsTree.AddToggle(
-	"Humanizer",
-	false, // add after new humanizer
-	"Enables all scripts' orders, ability to change camera distance",
-)
-
-const ReloadScripts = () => {
-	SetGameInProgress(false)
+async function ReloadScripts() {
+	await SetGameInProgress(false)
 	reload()
 }
 
@@ -57,12 +51,12 @@ EventsSDK.on("Draw", () => {
 	}
 })
 
-MainMenuKeyBind.OnPressed(() => Menu.MenuManager.is_open = !Menu.MenuManager.is_open)
+MainMenuKeyBind.OnPressed(() => {
+	Menu.MenuManager.is_open = !Menu.MenuManager.is_open
+})
 
 ReloadScriptsBtn.OnValue(ReloadScripts)
 ReloadScriptsBind.OnPressed(ReloadScripts)
-
-HumanizerState.OnValue(toggle => ExecuteOrder.disable_humanizer = !toggle.value)
 
 Menu.Localization.AddLocalizationUnit("russian", new Map([
 	["Menu", "Меню"],

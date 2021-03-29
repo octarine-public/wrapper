@@ -7,4 +7,8 @@ export default class Building extends Unit {
 	public HeroStatueOwnerPlayerID = -1
 	@NetworkedBasicField("m_bHeroStatue")
 	public IsHeroStatue = false
+
+	public get RingRadius(): number {
+		return 64
+	}
 }
