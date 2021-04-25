@@ -67,3 +67,11 @@ export function orderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 export function qorderBy<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
 	return qsort(ar, (a, b) => (cb(a) as number) - (cb(b) as number))
 }
+
+export function orderByRevert<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
+	return ar.sort((a, b) => (cb(b) as number) - (cb(a) as number))
+}
+
+export function qorderByRevert<T>(ar: T[], cb: (obj: T) => number | boolean): T[] {
+	return qsort(ar, (a, b) => (cb(b) as number) - (cb(a) as number))
+}

@@ -200,7 +200,6 @@ export default class Ability extends Entity {
 	public get IsHidden(): boolean {
 		return this.IsHidden_
 	}
-
 	public async AsyncCreate(): Promise<void> {
 		this.AbilityData = (await AbilityData.global_storage).get(this.Name) ?? AbilityData.empty
 	}

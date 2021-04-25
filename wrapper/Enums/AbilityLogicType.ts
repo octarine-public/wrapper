@@ -4,4 +4,5 @@ export enum AbilityLogicType {
 	Invisibility = 2,
 	Invulnerability = 4,
 	Reflect = 5,
+	Immobility = 6,
 }
