@@ -254,6 +254,9 @@ export default class Unit extends Entity {
 	public get ArmorType(): ArmorType {
 		return this.UnitData.ArmorType
 	}
+	public get BaseAttackRange(): number {
+		return this.UnitData.BaseAttackRange
+	}
 	// TODO: parse from KV + use buffs + items
 	public get AttackRange(): number {
 		return GetUnitNumberPropertyByName(this.Index, "m_fAttackRange") ?? 0

@@ -46,6 +46,7 @@ export default class UnitData {
 	public readonly HeroID: number
 	public readonly ModelName: string
 	public readonly MovementTurnRate: number
+	public readonly BaseAttackRange: number
 	public readonly AttackAnimationPoint: number
 	public readonly ProjectileSpeed: number
 	public readonly AttackDamageType: AttackDamageType
@@ -70,6 +71,9 @@ export default class UnitData {
 			: 0
 		this.AttackAnimationPoint = m_Storage.has("AttackAnimationPoint")
 			? parseFloat(m_Storage.get("AttackAnimationPoint") as string)
+			: 0
+		this.BaseAttackRange = m_Storage.has("AttackRange")
+			? parseInt(m_Storage.get("AttackRange") as string)
 			: 0
 		this.ProjectileSpeed = m_Storage.has("ProjectileSpeed")
 			? parseInt(m_Storage.get("ProjectileSpeed") as string)
