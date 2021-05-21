@@ -26,6 +26,8 @@ class MinimapIcon {
 		pos: Vector2,
 		size = new Vector2(-1, -1),
 		color = Color.White,
+		minimap_block_rect_pos1: Vector2,
+		minimap_block_rect_size: Vector2,
 	): void {
 		RendererSDK.ImagePart(
 			this.path,
@@ -35,6 +37,9 @@ class MinimapIcon {
 			this.size,
 			size,
 			color,
+			0,
+			minimap_block_rect_pos1,
+			minimap_block_rect_size,
 		)
 	}
 }
@@ -84,7 +89,7 @@ class MinimapIconRenderer {
 		private readonly is_ping: boolean,
 		private readonly is_hero_icon: boolean,
 	) { }
-	public Draw(): void {
+	public Draw(minimap_block_rect_pos1: Vector2, minimap_block_rect_size: Vector2): void {
 		const additional_alpha = this.is_ping && this.end_time >= GameState.RawGameTime
 			? Math.min((this.end_time - GameState.RawGameTime) / 3, 1)
 			: 1
@@ -112,6 +117,8 @@ class MinimapIconRenderer {
 			minimap_icon_pos,
 			minimap_icon_size,
 			color,
+			minimap_block_rect_pos1,
+			minimap_block_rect_size,
 		)
 	}
 }
@@ -171,20 +178,19 @@ EventsSDK.on("Draw", () => {
 	if (!GameRules?.IsInGame || GameState.UIState !== DOTAGameUIState_t.DOTA_GAME_UI_DOTA_INGAME)
 		return
 	hero_icon_scale = MinimapIconRenderer.GetSizeMultiplier(ConVars.GetInt("dota_minimap_hero_size"))
-	RendererSDK.SaveState_()
 	const minimap_block_rect = GUIInfo.Minimap.Minimap
-	RendererSDK.SetClipRect_(minimap_block_rect.pos1, minimap_block_rect.Size)
+	const minimap_block_rect_pos1 = minimap_block_rect.pos1,
+		minimap_block_rect_size = minimap_block_rect.Size
 	ArrayExtensions.orderBy(
 		[...minimap_icons_active.values()],
 		icon => icon.priority,
-	).forEach(icon => icon.Draw())
+	).forEach(icon => icon.Draw(minimap_block_rect_pos1, minimap_block_rect_size))
 	const icons_keys_to_be_removed: any[] = []
 	minimap_icons_active.forEach((icon, key) => {
 		if (icon.end_time < GameState.RawGameTime)
 			icons_keys_to_be_removed.push(key)
 	})
 	icons_keys_to_be_removed.forEach(key => minimap_icons_active.delete(key))
-	RendererSDK.RestoreState_()
 })
 
 EventsSDK.on("GameEnded", () => minimap_icons_active.clear())

@@ -150,6 +150,7 @@ export default class Base {
 			)
 			.AddForThis(Base.tooltip_text_offset)
 			.AddScalarY(Base.tooltip_text_bottom_gap)
+			.AddScalarY(this.TooltipTextSize.z)
 		this.TooltipSize.y = Math.max(
 			this.TooltipSize.y,
 			Base.tooltip_icon_size.y + Base.tooltip_icon_offset.y * 2,
@@ -234,6 +235,7 @@ export default class Base {
 		const Position = this.Position.Clone()
 			.AddScalarX(this.TotalSize.x + Base.tooltip_offset)
 			.AddScalarY((this.TotalSize.y - this.TooltipSize.y) / 2)
+			.FloorForThis()
 
 		RendererSDK.Image(
 			Base.background_active_path,
@@ -244,7 +246,10 @@ export default class Base {
 
 		RendererSDK.Image(
 			this.TooltipIcon,
-			Position.Add(Base.tooltip_icon_offset),
+			Position
+				.Clone()
+				.AddScalarX(Base.tooltip_icon_offset.x)
+				.AddScalarY((this.TooltipSize.y - Base.tooltip_icon_size.y) / 2),
 			-1,
 			Base.tooltip_icon_size,
 			this.TooltipIconColor,
@@ -260,8 +265,7 @@ export default class Base {
 				)
 				.SubtractScalarY(
 					Base.tooltip_text_offset.y
-					+ this.TooltipTextSize.y
-					- this.TooltipTextSize.z,
+					+ this.TooltipTextSize.y,
 				),
 		)
 	}

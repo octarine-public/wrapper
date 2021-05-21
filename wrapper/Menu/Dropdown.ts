@@ -100,7 +100,11 @@ export default class Dropdown extends Base {
 	public Update(): void {
 		super.Update()
 		this.ValuesSizes = this.ValuesNames.map(value => this.GetTextSizeDefault(value))
-		Vector2.FromVector3(this.ValuesSizes.reduce((prev, cur) => cur.Max(prev), new Vector3())).CopyTo(this.longest_value_size)
+		this.ValuesSizes.reduce((prev, cur) => {
+			prev.x = Math.max(prev.x, cur.x)
+			prev.y = Math.max(prev.y, cur.y + cur.z)
+			return prev
+		}, new Vector2()).CopyTo(this.longest_value_size)
 		this.OriginalSize.x = Math.max(
 			this.name_size.x + this.text_offset.x * 2,
 			this.longest_value_size.x
@@ -219,7 +223,7 @@ export default class Dropdown extends Base {
 				dropdown_rect.pos1
 					.Clone()
 					.AddScalarX(Dropdown.dropdown_text_offset.x)
-					.AddScalarY((dropdown_rect.Size.y - value_size.y + value_size.z) / 2),
+					.AddScalarY((dropdown_rect.Size.y - (value_size.y + value_size.z)) / 2),
 			)
 		}
 	}
