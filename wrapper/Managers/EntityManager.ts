@@ -492,7 +492,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 					}),
 				])
 				console.log("dump_CSVCMsg_FlattenedSerializer.d.ts", `\
-import { Vector2, Vector3, QAngle, Vector4 } from "./src_ts/wrapper/Imports"
+import { Vector2, Vector3, QAngle, Vector4 } from "wrapper/Imports"
 
 type Color = number // 0xAABBGGRR?
 type HSequence = number

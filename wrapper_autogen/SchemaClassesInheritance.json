@@ -12,6 +12,12 @@
 		]
 	],
 	[
+		"C_DOTA_Item_Recipe_HelmOfTheOverlord",
+		[
+			"C_DOTA_Item"
+		]
+	],
+	[
 		"C_DOTA_Item_Headdress",
 		[
 			"C_DOTA_Item"
@@ -66,6 +72,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Gold_lvl20_r",
+		[
+			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
+		]
+	],
+	[
 		"C_EnvDeferredLight",
 		[
 			"C_ModelPointEntity",
@@ -88,6 +100,12 @@
 		"C_DOTA_Item_NullTalisman",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Disruptor_9",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -169,6 +187,10 @@
 		]
 	],
 	[
+		"CDOTA_PlayerChallengeInfo",
+		[]
+	],
+	[
 		"C_DOTAPlayer",
 		[
 			"C_BasePlayer"
@@ -235,6 +257,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Status_Resistance_10",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Agility_14",
 		[
 			"C_DOTABaseAbility"
@@ -251,6 +279,10 @@
 		[
 			"CBodyComponentSkeletonInstance"
 		]
+	],
+	[
+		"sky3dparams_t",
+		[]
 	],
 	[
 		"CDOTA_Item_Recipe_Octarine_Core",
@@ -286,12 +318,6 @@
 		"C_DOTA_Ability_Special_Bonus_HP_475",
 		[
 			"C_DOTABaseAbility"
-		]
-	],
-	[
-		"C_DOTA_Ability_Special_Bonus_Gold_750_l",
-		[
-			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
 		]
 	],
 	[
@@ -362,6 +388,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Attack_Speed_80",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_HP_900",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -553,6 +585,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Morphling_9",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_5",
 		[
 			"C_DOTABaseAbility"
@@ -586,6 +624,12 @@
 		"C_DOTA_Item_CraniumBasher",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"CDOTA_Ability_Special_Bonus_Unique_Dawnbreaker_Converge_Slow",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -812,6 +856,10 @@
 		]
 	],
 	[
+		"C_DOTAGameManager",
+		[]
+	],
+	[
 		"C_DOTA_Unit_Brewmaster_PrimalVoid",
 		[
 			"C_DOTA_BaseNPC_Creep"
@@ -1017,6 +1065,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_10",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Riki_9",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -1560,6 +1614,10 @@
 		[]
 	],
 	[
+		"CBaseAnimatingEasingFloat_t",
+		[]
+	],
+	[
 		"C_DOTA_Item_Veil_Of_Discord",
 		[
 			"C_DOTA_Item"
@@ -1788,6 +1846,14 @@
 		]
 	],
 	[
+		"CountdownTimer",
+		[]
+	],
+	[
+		"CGameSceneNodeHandle",
+		[]
+	],
+	[
 		"C_DOTA_Unit_Hero_NightStalker",
 		[
 			"C_DOTA_BaseNPC_Hero"
@@ -1837,6 +1903,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Treant_10",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Warlock_7",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -1986,10 +2058,22 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Movement_Speed_Percentage_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_GlobalLight",
 		[
 			"C_BaseEntity",
 			"CGlobalLightBase"
+		]
+	],
+	[
+		"CSkeletonInstance",
+		[
+			"CGameSceneNode"
 		]
 	],
 	[
@@ -2347,6 +2431,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Movement_Speed_Percentage_16",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_BaseNPC_HoldoutTower_HeavySlow",
 		[
 			"C_DOTA_BaseNPC_HoldoutTower"
@@ -2413,6 +2503,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Puck_7",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Zeus_4",
 		[
 			"C_DOTABaseAbility"
@@ -2444,6 +2540,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Spell_Amplify_11",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Movement_Speed_Percentage_14",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -2496,6 +2598,16 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Earthshaker_4",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"DOTA_AssassinMinigameNetworkState",
+		[]
 	],
 	[
 		"C_DOTA_Unit_Hero_KeeperOfTheLight",
@@ -2648,6 +2760,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Jakiro_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Phantom_Assassin_4",
 		[
 			"C_DOTABaseAbility"
@@ -2655,6 +2773,12 @@
 	],
 	[
 		"C_DOTA_Ability_Courier_Burst",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Sven_4",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -2685,12 +2809,6 @@
 	],
 	[
 		"CDOTA_Ability_MudGolem_HurlBoulder",
-		[
-			"C_DOTABaseAbility"
-		]
-	],
-	[
-		"C_DOTA_Ability_Special_Bonus_Unique_Sven_4",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -2886,6 +3004,20 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Spell_Amplify_18",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"CDOTA_AbilityDraftAbilityState",
+		[]
+	],
+	[
+		"CEffectData",
+		[]
+	],
+	[
 		"C_DOTA_Unit_Hero_MonkeyKing",
 		[
 			"C_DOTA_BaseNPC_Hero"
@@ -3052,6 +3184,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"C_PlayerLocalData",
+		[]
 	],
 	[
 		"C_DOTA_NPC_Treant_EyesInTheForest",
@@ -3361,6 +3497,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Sven",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CDOTA_Ability_Special_Bonus_Unique_Morokai_JungleHeal_SecondBeam",
 		[
 			"C_DOTABaseAbility"
@@ -3380,12 +3522,6 @@
 	],
 	[
 		"C_DOTA_Ability_Greevil_Miniboss_White_Purification",
-		[
-			"C_DOTABaseAbility"
-		]
-	],
-	[
-		"C_DOTA_Ability_Special_Bonus_Unique_Sven",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -3457,6 +3593,18 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_14",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Chen_10",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Clinkz_1",
 		[
 			"C_DOTABaseAbility"
@@ -3476,6 +3624,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Invoker_6",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Mana_Reduction_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -3853,6 +4007,12 @@
 		]
 	],
 	[
+		"CDOTA_Ability_Special_Bonus_Unique_Dawnbreaker_Celestial_Hammer_Cast_Range",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CDOTA_Ability_AghsFort_Luna_Eclipse",
 		[
 			"C_DOTABaseAbility"
@@ -3931,6 +4091,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Night_Stalker_6",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Night_Stalker_2",
 		[
 			"C_DOTABaseAbility"
@@ -3971,6 +4137,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"CProjectedTextureBase",
+		[]
 	],
 	[
 		"C_DOTA_Unit_Hero_Earthshaker",
@@ -4016,6 +4186,12 @@
 	],
 	[
 		"CDOTA_Ability_Aghsfort_Special_Weaver_Shukuchi_Greater_Invisibility",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Doom_9",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -4069,6 +4245,12 @@
 		]
 	],
 	[
+		"CAttributeContainer",
+		[
+			"CAttributeManager"
+		]
+	],
+	[
 		"C_DOTA_Item_Spirit_Vessel",
 		[
 			"C_DOTA_Item"
@@ -4112,6 +4294,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Dazzle_3",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Warlock_10",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -4363,6 +4551,10 @@
 		]
 	],
 	[
+		"CDOTA_ItemStockInfo",
+		[]
+	],
+	[
 		"C_DOTA_Unit_Hero_Tusk",
 		[
 			"C_DOTA_BaseNPC_Hero"
@@ -4502,6 +4694,10 @@
 		]
 	],
 	[
+		"C_CSequenceTransitioner2",
+		[]
+	],
+	[
 		"CDOTA_Item_Recipe_Essence_Ring",
 		[
 			"C_DOTA_Item"
@@ -4556,6 +4752,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Movement_Speed_Percentage_10",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Mana_Reduction_11",
 		[
 			"C_DOTABaseAbility"
@@ -4574,6 +4776,12 @@
 		]
 	],
 	[
+		"CDOTA_Ability_Special_Bonus_Unique_Dawnbreaker_Solar_Guardian_Radius",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Oracle",
 		[
 			"C_DOTABaseAbility"
@@ -4586,6 +4794,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Sven_6",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CDOTA_Ability_AghsFort_VoidSpiritBoss_Dissimilate",
 		[
 			"C_DOTABaseAbility"
@@ -4593,12 +4807,6 @@
 	],
 	[
 		"CDOTA_Ability_AghsFort_ExplosiveBarrel",
-		[
-			"C_DOTABaseAbility"
-		]
-	],
-	[
-		"C_DOTA_Ability_Special_Bonus_Unique_Sven_6",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -4666,6 +4874,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Medusa_3",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Spell_Lifesteal_50",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -4915,6 +5129,10 @@
 		]
 	],
 	[
+		"C_fogplayerparams_t",
+		[]
+	],
+	[
 		"C_DOTA_Unit_Hero_Omniknight",
 		[
 			"C_DOTA_BaseNPC_Hero"
@@ -4991,6 +5209,10 @@
 		[
 			"C_BaseEntity"
 		]
+	],
+	[
+		"C_EnvWindShared",
+		[]
 	],
 	[
 		"C_DOTA_Item_RuneSpawner_Bounty",
@@ -5169,6 +5391,18 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Earthshaker_3",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Vengeful_Spirit_9",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Nyx_6",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -5499,6 +5733,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Gold_lvl25_l",
+		[
+			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
+		]
+	],
+	[
 		"CDOTA_Item_Recipe_Trusty_Shovel",
 		[
 			"C_DOTA_Item"
@@ -5731,6 +5971,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Troll_Warlord_Rampage",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Windrunner_Windrun",
 		[
 			"C_DOTABaseAbility"
@@ -5765,6 +6011,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"CDOTACustomShopItemInfo",
+		[]
 	],
 	[
 		"C_DOTA_Unit_Hero_Life_Stealer",
@@ -5809,6 +6059,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Warlock_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_2",
 		[
 			"C_DOTABaseAbility"
@@ -5837,6 +6093,16 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Gold_lvl10_l",
+		[
+			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
+		]
+	],
+	[
+		"C_DOTASpectatorGraphManager",
+		[]
 	],
 	[
 		"C_DOTA_Item_Recipe_Grandmasters_Glaive",
@@ -6103,6 +6369,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Lina_5",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Zuus_ThundergodsVengeance",
 		[
 			"C_DOTA_Ability_Zuus_ThundergodsWrath"
@@ -6154,6 +6426,12 @@
 		"C_DOTA_Item_Slippers",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"CDOTA_Ability_Dawnbreaker_Celestial_Hammer",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -6217,9 +6495,9 @@
 		]
 	],
 	[
-		"C_DOTA_Ability_Special_Bonus_Gold_500_r",
+		"C_DOTA_Ability_Special_Bonus_Movement_Speed_Percentage_5",
 		[
-			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -6265,6 +6543,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_9",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_WitchDoctor_Maledict",
 		[
 			"C_DOTABaseAbility"
@@ -6299,6 +6583,20 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Gold_lvl25_r",
+		[
+			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
+		]
+	],
+	[
+		"InGamePredictionData_t",
+		[]
+	],
+	[
+		"CBasePlayerWeaponVData",
+		[]
 	],
 	[
 		"C_DOTA_MapTree",
@@ -6388,6 +6686,12 @@
 		"C_DOTA_Ability_Special_Bonus_Attack_Speed_175",
 		[
 			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"CTimeline",
+		[
+			"IntervalTimer"
 		]
 	],
 	[
@@ -6553,6 +6857,10 @@
 		]
 	],
 	[
+		"CAttributeManager",
+		[]
+	],
+	[
 		"CAnimGraphNetworkedVariables",
 		[]
 	],
@@ -6560,6 +6868,12 @@
 		"C_PlayerCosmeticPropClientside",
 		[
 			"C_DynamicPropClientside"
+		]
+	],
+	[
+		"C_TriggerBuoyancy",
+		[
+			"C_BaseTrigger"
 		]
 	],
 	[
@@ -6578,6 +6892,12 @@
 		"C_DOTA_Item_Black_King_Bar",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"C_DOTA_Ability_Hoodwink_HuntersQuiver",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -7158,6 +7478,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Tinker_6",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Sniper_4",
 		[
 			"C_DOTABaseAbility"
@@ -7302,6 +7628,12 @@
 		]
 	],
 	[
+		"CDOTA_BaseNPC_Spring2021_DefusalBomb",
+		[
+			"C_DOTA_BaseNPC_Additive"
+		]
+	],
+	[
 		"CDOTA_BaseNPC_Seasonal_TI9_Balloon",
 		[
 			"C_DOTA_BaseNPC_Additive"
@@ -7329,6 +7661,12 @@
 		"C_DOTA_Item_Recipe_BootsOfTravel",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"CDOTA_Ability_Special_Bonus_Unique_Dawnbreaker_Fire_Wreath_Magic_Immunity",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -7488,6 +7826,10 @@
 		]
 	],
 	[
+		"CDeferredLightBase",
+		[]
+	],
+	[
 		"C_DOTA_BinaryObject",
 		[
 			"C_BaseAnimating"
@@ -7549,6 +7891,12 @@
 	],
 	[
 		"C_DOTA_Ability_Greevil_Miniboss_Green_LivingArmor",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_9",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -7630,6 +7978,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Dazzle_5",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Warlock_2",
 		[
 			"C_DOTABaseAbility"
@@ -7637,6 +7991,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_7",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Morphling_10",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -7744,6 +8104,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Ogre_Magi_5",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Tusk_6",
 		[
 			"C_DOTABaseAbility"
@@ -7757,6 +8123,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_1",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Queen_Of_Pain_6",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -7787,6 +8159,12 @@
 	],
 	[
 		"C_DOTA_Ability_Disruptor_KineticField",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Lich_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -7936,6 +8314,22 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Lycan_7",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Movement_Speed_Percentage_6",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"ClientQuickBuyItemState",
+		[]
+	],
+	[
 		"C_DOTA_Unit_Hero_Batrider",
 		[
 			"C_DOTA_BaseNPC_Hero"
@@ -7993,6 +8387,12 @@
 		"C_TonemapController2",
 		[
 			"C_BaseEntity"
+		]
+	],
+	[
+		"CDOTA_Ability_Special_Bonus_Unique_Dawnbreaker_Luminosity_Crit",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -8211,6 +8611,12 @@
 		]
 	],
 	[
+		"C_DOTA_Item_Spring2021_DefusalBomb",
+		[
+			"C_DOTA_Item"
+		]
+	],
+	[
 		"C_DOTA_Ability_BlackDragon_SplashAttack",
 		[
 			"C_DOTABaseAbility"
@@ -8224,6 +8630,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Bloodseeker_2",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Ursa_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -8245,6 +8657,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"TransitioningLayer_t",
+		[]
 	],
 	[
 		"CNetworkedIKProceduralTargetContext",
@@ -8432,6 +8848,10 @@
 		]
 	],
 	[
+		"CAnimationLayer",
+		[]
+	],
+	[
 		"CDOTA_Item_Ex_Machina",
 		[
 			"C_DOTA_Item"
@@ -8493,6 +8913,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Drow_Ranger_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CDOTA_Ability_Juggernaut_Swift_Slash",
 		[
 			"C_DOTABaseAbility"
@@ -8524,6 +8950,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Bristleback_3",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Brewmaster_7",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -8607,6 +9039,12 @@
 		]
 	],
 	[
+		"C_DOTAGamerules",
+		[
+			"C_MultiplayRules"
+		]
+	],
+	[
 		"CDOTA_Item_Recipe_Quicksilver_Amulet",
 		[
 			"C_DOTA_Item"
@@ -8628,6 +9066,12 @@
 		"C_DOTA_Item_Tango",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Hoodwink_Bushwhack_Damage",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -8661,6 +9105,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Warlock_9",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Windranger_9",
 		[
 			"C_DOTABaseAbility"
@@ -8689,6 +9139,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"PlayerResourceBroadcasterData_t",
+		[]
 	],
 	[
 		"C_DevtestHierarchy",
@@ -9099,6 +9553,10 @@
 		]
 	],
 	[
+		"FowBlocker_t",
+		[]
+	],
+	[
 		"CAmbientCreatures",
 		[
 			"C_DOTAWorldParticleSystem"
@@ -9186,6 +9644,12 @@
 		"C_DOTA_Ability_Special_Bonus_Attack_Damage_45",
 		[
 			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTANewPlayerPoolGameMode",
+		[
+			"C_DOTABaseGameMode"
 		]
 	],
 	[
@@ -9345,6 +9809,18 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Dawnbreaker_Fire_Wreath",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"CDOTA_Ability_Hoodwink_Decoy",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_ChaosKnight_Phantasm",
 		[
 			"C_DOTABaseAbility"
@@ -9405,6 +9881,10 @@
 		]
 	],
 	[
+		"CModelState",
+		[]
+	],
+	[
 		"CDOTA_Unit_Hero_AncientApparition",
 		[
 			"C_DOTA_BaseNPC_Hero"
@@ -9442,6 +9922,12 @@
 	],
 	[
 		"C_DOTA_Ability_DoomBringer_Empty1",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Batrider_7",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -9655,6 +10141,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Gold_lvl15_r",
+		[
+			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
+		]
+	],
+	[
 		"C_DOTA_Unit_Hero_Shadow_Demon",
 		[
 			"C_DOTA_BaseNPC_Hero"
@@ -9733,6 +10225,10 @@
 		]
 	],
 	[
+		"CAttributeList",
+		[]
+	],
+	[
 		"C_BaseAnimatingOverlay",
 		[
 			"C_BaseAnimating"
@@ -9772,6 +10268,12 @@
 		"C_DOTA_Item_Bracer",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"CDOTA_Ability_Special_Bonus_Unique_Grimstroke_8",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -9986,6 +10488,10 @@
 		]
 	],
 	[
+		"CDOTACustomShopInfo",
+		[]
+	],
+	[
 		"C_DOTA_Unit_Broodmother_Spiderling",
 		[
 			"C_DOTA_BaseNPC_Creep_Talking"
@@ -9998,13 +10504,13 @@
 		]
 	],
 	[
-		"CDOTA_Ability_AbyssalUnderlord_DarkRift",
+		"C_DOTA_Ability_Special_Bonus_Unique_Disruptor_4",
 		[
 			"C_DOTABaseAbility"
 		]
 	],
 	[
-		"C_DOTA_Ability_Special_Bonus_Unique_Disruptor_4",
+		"C_DOTA_Ability_Special_Bonus_Unique_Rubick_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -10202,6 +10708,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Wraith_King_11",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Winter_Wyvern_7",
 		[
 			"C_DOTABaseAbility"
@@ -10310,6 +10822,12 @@
 		]
 	],
 	[
+		"C_EconItemView",
+		[
+			"IEconItemInterface"
+		]
+	],
+	[
 		"C_EnvWindClientside",
 		[
 			"C_BaseEntity"
@@ -10334,6 +10852,18 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_13",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_12",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Keeper_of_the_Light_11",
 		[
 			"C_DOTABaseAbility"
@@ -10347,6 +10877,12 @@
 	],
 	[
 		"C_DOTA_Ability_Obsidian_Destroyer_ArcaneOrb",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_7",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -10748,6 +11284,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Gold_lvl20_l",
+		[
+			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
+		]
+	],
+	[
 		"C_DOTA_Item_Desolator_2",
 		[
 			"C_DOTA_Item"
@@ -10823,6 +11365,12 @@
 		"C_DOTA_Ability_Special_Bonus_HP_Regen_12",
 		[
 			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"CBasePlayerVData",
+		[
+			"CEntitySubclassVDataBase"
 		]
 	],
 	[
@@ -10926,6 +11474,14 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"C_EnvWindShared::WindVariationEvent_t",
+		[]
+	],
+	[
+		"CBaseAnimatingEasings_t",
+		[]
 	],
 	[
 		"CDOTA_Item_The_Leveller",
@@ -11136,12 +11692,6 @@
 		"C_DOTA_Ability_Special_Bonus_Armor_6",
 		[
 			"C_DOTABaseAbility"
-		]
-	],
-	[
-		"C_DOTA_Ability_Special_Bonus_Gold_500_l",
-		[
-			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
 		]
 	],
 	[
@@ -11361,6 +11911,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Treant_12",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_2",
 		[
 			"C_DOTABaseAbility"
@@ -11482,6 +12038,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Agility_9",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CHitboxComponent",
 		[
 			"CEntityComponent"
@@ -11513,6 +12075,12 @@
 	],
 	[
 		"C_DOTA_Ability_Spectre_Reality",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Puck_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -11656,6 +12224,10 @@
 		]
 	],
 	[
+		"TonemapParameters_t",
+		[]
+	],
+	[
 		"C_DOTA_Item_Vladmir",
 		[
 			"C_DOTA_Item"
@@ -11687,6 +12259,12 @@
 	],
 	[
 		"CDOTA_Ability_Aghsfort_Special_Viper_Nethertoxin_Persist",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Visage_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -11731,6 +12309,12 @@
 		"CDOTA_Item_BootsOfTravel_2",
 		[
 			"C_DOTA_Item_BootsOfTravel"
+		]
+	],
+	[
+		"CDOTA_Ability_Special_Bonus_Unique_Dawnbreaker_Fire_Wreath_Ministun",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -11842,6 +12426,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Treant_13",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Mirana_2",
 		[
 			"C_DOTABaseAbility"
@@ -11878,6 +12468,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Dawnbreaker_Luminosity",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CDOTA_Ability_Snapfire_LilShredder",
 		[
 			"C_DOTABaseAbility"
@@ -11885,6 +12481,12 @@
 	],
 	[
 		"CDOTA_Ability_Mars_GodsRebuke",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Slark_Depth_Shroud",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -12011,7 +12613,19 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Spectre_4",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Status_Resistance_25",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -12137,6 +12751,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Lifestealer_7",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Evasion_20",
 		[
 			"C_DOTABaseAbility"
@@ -12144,6 +12764,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Respawn_Reduction_35",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Status_Resistance_20",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -12264,6 +12890,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Broodmother_5",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Spell_Amplify_6",
 		[
 			"C_DOTABaseAbility"
@@ -12313,12 +12945,6 @@
 		]
 	],
 	[
-		"C_DOTA_Ability_Special_Bonus_Gold_150_l",
-		[
-			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
-		]
-	],
-	[
 		"C_DOTA_Unit_Earth_Spirit_Stone",
 		[
 			"C_DOTA_BaseNPC"
@@ -12340,6 +12966,12 @@
 		"C_DOTA_Item_Recipe_Soul_Ring",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"C_DOTA_Ability_AbyssalUnderlord_DarkRift",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -12385,6 +13017,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Lone_Druid_10",
 		[
 			"C_DOTABaseAbility"
@@ -12419,6 +13057,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"C_EconItemAttribute",
+		[]
 	],
 	[
 		"C_DOTA_Unit_Hero_EmberSpirit",
@@ -12755,6 +13397,10 @@
 		[]
 	],
 	[
+		"IntervalTimer",
+		[]
+	],
+	[
 		"C_DOTA_Item_Gungir",
 		[
 			"C_DOTA_Item"
@@ -12791,13 +13437,13 @@
 		]
 	],
 	[
-		"CDOTA_Ability_Aghsfort_Special_Mars_Bulwark_Return",
+		"C_DOTA_Ability_Special_Bonus_Unique_Sven_5",
 		[
 			"C_DOTABaseAbility"
 		]
 	],
 	[
-		"C_DOTA_Ability_Special_Bonus_Unique_Sven_5",
+		"CDOTA_Ability_Aghsfort_Special_Mars_Bulwark_Return",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -12929,6 +13575,10 @@
 		]
 	],
 	[
+		"CDOTASubChallengeInfo",
+		[]
+	],
+	[
 		"CDOTA_Unit_Hero_Void_Spirit",
 		[
 			"C_DOTA_BaseNPC_Hero"
@@ -13011,6 +13661,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"CAttributeManager::cached_attribute_float_t",
+		[]
 	],
 	[
 		"C_DOTA_Item_Gloves_Of_Travel",
@@ -13104,6 +13758,14 @@
 		]
 	],
 	[
+		"C_DOTA_CombatLogQueryProgress",
+		[]
+	],
+	[
+		"VPhysicsCollisionAttribute_t",
+		[]
+	],
+	[
 		"C_DOTA_Unit_Hero_Lina",
 		[
 			"C_DOTA_BaseNPC_Hero"
@@ -13152,7 +13814,19 @@
 		]
 	],
 	[
+		"CDOTA_Ability_Special_Bonus_Unique_Dawnbreaker_Fire_wreath_Charges",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CDOTA_Ability_Viper_Nethertoxin",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"CDOTA_Ability_Special_Bonus_Unique_Phantom_Assassin_9",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -13191,6 +13865,12 @@
 		"C_DOTA_Item",
 		[
 			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"CDOTA_BaseNPC_Spring2021_MeteorCrashSite",
+		[
+			"C_DOTA_BaseNPC_Additive"
 		]
 	],
 	[
@@ -13470,6 +14150,18 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Oracle_9",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Underlord_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_KeeperOfTheLight_ManaLeak",
 		[
 			"C_DOTABaseAbility"
@@ -13506,7 +14198,19 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Phoenix_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_20_Bash_2",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Lifesteal_18",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -13534,6 +14238,10 @@
 		[
 			"C_BaseEntity"
 		]
+	],
+	[
+		"audioparams_t",
+		[]
 	],
 	[
 		"C_DOTA_NPC_WitchDoctor_Ward",
@@ -13645,6 +14353,12 @@
 	],
 	[
 		"CDOTA_Ability_Aghsfort_Special_Disruptor_Glimpse_Hit_On_Arrival",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -13856,7 +14570,7 @@
 	[
 		"C_Precipitation",
 		[
-			"C_BaseModelEntity"
+			"C_BaseTrigger"
 		]
 	],
 	[
@@ -13959,6 +14673,12 @@
 		"C_DOTA_Ability_Special_Bonus_MP_400",
 		[
 			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"CPrecipitationVData",
+		[
+			"CEntitySubclassVDataBase"
 		]
 	],
 	[
@@ -14190,6 +14910,10 @@
 		]
 	],
 	[
+		"CHeroStatueLiked",
+		[]
+	],
+	[
 		"C_DOTA_Item_OrchidMalevolence",
 		[
 			"C_DOTA_Item"
@@ -14266,6 +14990,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"CHeroesPerPlayer",
+		[]
 	],
 	[
 		"C_SceneEntity::QueuedEvents_t",
@@ -14386,6 +15114,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_HP_1000",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Item_Recipe_Pipe",
 		[
 			"C_DOTA_Item"
@@ -14458,6 +15192,12 @@
 		]
 	],
 	[
+		"CDOTA_Ability_Special_Bonus_Unique_Dawnbreaker_Luminosity_Attack_Count",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Bristleback_Hairball",
 		[
 			"C_DOTABaseAbility"
@@ -14489,6 +15229,12 @@
 	],
 	[
 		"C_DOTA_Ability_Throw_Snowball",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Shadow_Demon_9",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -14536,6 +15282,12 @@
 		]
 	],
 	[
+		"CDOTA_Ability_Special_Bonus_Unique_Dawnbreaker_Celestial_Hammer_Damage",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_2",
 		[
 			"C_DOTABaseAbility"
@@ -14572,6 +15324,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Riki_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_2",
 		[
 			"C_DOTABaseAbility"
@@ -14582,6 +15340,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"C_SpeechBubbleInfo",
+		[]
 	],
 	[
 		"CInfoDynamicShadowHint",
@@ -14611,6 +15373,12 @@
 		"C_DOTA_Ability_Animation_LeftClawSwipe",
 		[
 			"C_DOTA_Ability_Animation_Attack"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Lion_11",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -14722,6 +15490,10 @@
 		]
 	],
 	[
+		"CGlowProperty",
+		[]
+	],
+	[
 		"C_DOTA_Unit_Undying_Zombie",
 		[
 			"C_DOTA_BaseNPC_Creep"
@@ -14771,6 +15543,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Agility_16",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Attributes",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -14884,6 +15662,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Templar_Assassin_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Huskar_6",
 		[
 			"C_DOTABaseAbility"
@@ -14923,12 +15707,6 @@
 		"C_DOTA_Item_Javelin",
 		[
 			"C_DOTA_Item"
-		]
-	],
-	[
-		"CDOTA_Ability_Abaddon_AphoticShield",
-		[
-			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -15046,6 +15824,12 @@
 		]
 	],
 	[
+		"C_BaseAnimatingOverlayController",
+		[
+			"C_BaseAnimatingController"
+		]
+	],
+	[
 		"C_DOTA_Item_Penta_Edged_Sword",
 		[
 			"C_DOTA_Item"
@@ -15089,6 +15873,12 @@
 	],
 	[
 		"CDOTA_Ability_Frostivus2018_Centaur_Return",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Venomancer_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -15148,6 +15938,12 @@
 		]
 	],
 	[
+		"C_DOTA_Item_Aghanims_Shard_Roshan",
+		[
+			"C_DOTA_Item"
+		]
+	],
+	[
 		"CDOTA_Item_Recipe_Minotaur_Horn",
 		[
 			"C_DOTA_Item"
@@ -15160,7 +15956,19 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Hoodwink_HeavyQuiver",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Brewmaster_DrunkenHaze",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Beastmaster_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -15203,6 +16011,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Doom_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Nyx_5",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -15485,6 +16299,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Undying_7",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_DoomBringer_Devour",
 		[
 			"C_DOTABaseAbility"
@@ -15735,6 +16555,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Abaddon_AphoticShield",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Broodmother_SpinWeb",
 		[
 			"C_DOTABaseAbility"
@@ -15862,6 +16688,12 @@
 	],
 	[
 		"C_DOTA_Ability_GiantWolf_CriticalStrike",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Monkey_King_10",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -16053,6 +16885,12 @@
 		]
 	],
 	[
+		"CDOTA_Unit_Hero_Dawnbreaker",
+		[
+			"C_DOTA_BaseNPC_Hero"
+		]
+	],
+	[
 		"CDOTA_Item_Essence_Ring",
 		[
 			"C_DOTA_Item"
@@ -16132,6 +16970,20 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Kunkka_7",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"CCollisionProperty",
+		[]
+	],
+	[
+		"CNetworkedSequenceOperation",
+		[]
+	],
+	[
 		"C_DOTA_Item_Philosophers_Stone",
 		[
 			"C_DOTA_Item"
@@ -16176,6 +17028,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_4",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Kunkka_6",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -16307,12 +17165,6 @@
 		]
 	],
 	[
-		"C_DOTA_Ability_Special_Bonus_Gold_250_l",
-		[
-			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
-		]
-	],
-	[
 		"C_DOTA_Unit_Brewmaster_PrimalStorm",
 		[
 			"C_DOTA_BaseNPC_Creep"
@@ -16332,6 +17184,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_DarkWillow_2",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Outworld_Devourer_5",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -16403,6 +17261,10 @@
 		]
 	],
 	[
+		"PlayerResourcePlayerData_t",
+		[]
+	],
+	[
 		"C_DOTA_BaseNPC_Promo",
 		[
 			"C_DOTA_BaseNPC_Building"
@@ -16452,6 +17314,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Luna_6",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -16511,7 +17379,19 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Lion_10",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Jungle_Spirit_Attack_Damage",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Antimage_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -16535,6 +17415,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Status_Resistance_15",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Cleave_150",
 		[
 			"C_DOTABaseAbility"
@@ -16544,6 +17430,12 @@
 		"C_DOTA_Ability_Special_Bonus_HP_650",
 		[
 			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Gold_lvl15_l",
+		[
+			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
 		]
 	],
 	[
@@ -16617,6 +17509,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"fogparams_t",
+		[]
 	],
 	[
 		"C_DOTA_Unit_Hero_Tidehunter",
@@ -16763,10 +17659,8 @@
 		]
 	],
 	[
-		"C_DOTA_Ability_Special_Bonus_Gold_750_r",
-		[
-			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
-		]
+		"TempViewerInfo_t",
+		[]
 	],
 	[
 		"C_DOTA_Unit_Hero_Beastmaster_Beasts",
@@ -16808,6 +17702,12 @@
 		"C_DOTA_Item_SobiMask",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"C_DOTA_Ability_Hoodwink_HuntersBoomerang",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -16856,6 +17756,12 @@
 		"C_DOTA_Item_Spell_Prism",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Underlord_9",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -16937,6 +17843,10 @@
 		]
 	],
 	[
+		"CNetworkedIKContext",
+		[]
+	],
+	[
 		"CInfoTarget",
 		[
 			"C_PointEntity"
@@ -16985,6 +17895,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Sven_3",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CDOTA_Ability_Seasonal_Summon_Penguin",
 		[
 			"C_DOTABaseAbility"
@@ -16992,12 +17908,6 @@
 	],
 	[
 		"CDOTA_Ability_GraniteGolem_HPAura",
-		[
-			"C_DOTABaseAbility"
-		]
-	],
-	[
-		"C_DOTA_Ability_Special_Bonus_Unique_Sven_3",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -17024,6 +17934,18 @@
 		"C_DOTA_Item_Diffusal_Blade_Level2",
 		[
 			"C_DOTA_Item_Diffusal_Blade"
+		]
+	],
+	[
+		"C_DOTA_Item_UltimateScepter_Roshan",
+		[
+			"C_DOTA_Item"
+		]
+	],
+	[
+		"C_DOTA_Ability_Hoodwink_Caltrops",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -17189,6 +18111,12 @@
 		]
 	],
 	[
+		"CDOTA_Ability_Special_Bonus_Unique_Dawnbreaker_Solar_Guardian_Cooldown",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Roshan_Slam",
 		[
 			"C_DOTABaseAbility"
@@ -17267,6 +18195,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Tiny_7",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Aghsfort_Weaver_TheSwarm",
 		[
 			"C_DOTABaseAbility"
@@ -17282,12 +18216,6 @@
 		"C_DOTA_Ability_Special_Bonus_Intelligence_20",
 		[
 			"C_DOTABaseAbility"
-		]
-	],
-	[
-		"C_DOTA_Ability_Special_Bonus_Gold_250_r",
-		[
-			"C_DOTA_Ability_Special_Bonus_Gold_Ability_Draft"
 		]
 	],
 	[
@@ -17363,6 +18291,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Storm_Spirit_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Ancient_Apparition_5",
 		[
 			"C_DOTABaseAbility"
@@ -17412,6 +18346,12 @@
 	],
 	[
 		"CDOTA_Ability_Aghsfort_Special_Mars_Spear_ImpaleExplosion",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"CDOTA_Ability_Spring2021_DefusalBomb_Defuse",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -17573,10 +18513,20 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Bane_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Silencer_7",
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"C_EnvWindShared::WindAveEvent_t",
+		[]
 	],
 	[
 		"C_DOTA_GuildBannerProp",
@@ -17693,6 +18643,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_CrystalMaiden_FreezingFieldStop",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Necrophos_5",
 		[
 			"C_DOTABaseAbility"
@@ -17754,6 +18710,12 @@
 	],
 	[
 		"C_DOTA_Ability_Undying_FleshGolem",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Lion_9",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -17976,6 +18938,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Bane_9",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Bristleback_2",
 		[
 			"C_DOTABaseAbility"
@@ -17986,6 +18954,10 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"CEntityIdentity",
+		[]
 	],
 	[
 		"C_PhysicsProp",
@@ -18066,7 +19038,19 @@
 		]
 	],
 	[
+		"C_DOTA_Item_HelmOfTheOverlord",
+		[
+			"C_DOTA_Item_HelmOfTheDominator"
+		]
+	],
+	[
 		"C_DOTA_Ability_TrollWarlord_WhirlingAxes_Ranged",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Dark_Seer_13",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -18222,6 +19206,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Dawnbreaker_Solar_Guardian",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CDOTA_Ability_Grimstroke_InkCreature",
 		[
 			"C_DOTABaseAbility"
@@ -18241,6 +19231,12 @@
 	],
 	[
 		"C_DOTA_Ability_Ursa_Earthshock",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Sven_7",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -18355,6 +19351,12 @@
 	],
 	[
 		"C_DOTA_Ability_Phoenix_IcarusDiveStop",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Sven_8",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -18523,6 +19525,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_All_Stats_8",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Movement_Speed_Percentage_12",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -19031,6 +20039,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Lina_6",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CDOTA_Item_AghsFort_RefresherOrb_Shard",
 		[
 			"C_DOTA_Item"
@@ -19049,10 +20063,20 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Viper_6",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Ember_Spirit_1",
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"PingConfirmationState_t",
+		[]
 	],
 	[
 		"C_DOTA_BaseNPC_Additive",
@@ -19103,6 +20127,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Attack_Base_Damage_40",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Strength_11",
 		[
 			"C_DOTABaseAbility"
@@ -19133,6 +20163,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_DarkWillow_7",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Terrorblade_Sunder",
 		[
 			"C_DOTABaseAbility"
@@ -19158,6 +20194,12 @@
 	],
 	[
 		"C_DOTA_Ability_Obsidian_Destroyer_Equilibrium",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Chen_11",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -19277,6 +20319,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Sven_2",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"CDOTA_Ability_Jungle_Spirit_Reductions",
 		[
 			"C_DOTABaseAbility"
@@ -19307,7 +20355,7 @@
 		]
 	],
 	[
-		"C_DOTA_Ability_Special_Bonus_Unique_Sven_2",
+		"C_DOTA_Ability_Special_Bonus_Unique_Naga_Siren_6",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -19487,6 +20535,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Dragon_Knight_7",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Cast_Range_325",
 		[
 			"C_DOTABaseAbility"
@@ -19598,6 +20652,12 @@
 		"C_DOTA_Item_Recipe_MonkeyKingBar",
 		[
 			"C_DOTA_Item"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Disruptor_8",
+		[
+			"C_DOTABaseAbility"
 		]
 	],
 	[
@@ -19733,6 +20793,12 @@
 		]
 	],
 	[
+		"C_BaseAnimatingController",
+		[
+			"CSkeletonAnimationController"
+		]
+	],
+	[
 		"C_DOTA_Unit_Hero_Razor",
 		[
 			"C_DOTA_BaseNPC_Hero"
@@ -19776,6 +20842,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Treant_7",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Shadow_Shaman_7",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -19829,6 +20901,12 @@
 		]
 	],
 	[
+		"C_DOTA_Ability_Dawnbreaker_Converge",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Underlord_5",
 		[
 			"C_DOTABaseAbility"
@@ -19857,6 +20935,16 @@
 		[
 			"C_DOTABaseAbility"
 		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Crystal_Maiden_6",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"CGameSceneNode",
+		[]
 	],
 	[
 		"C_DOTA_Item_Holy_Locket",
@@ -19920,6 +21008,12 @@
 	],
 	[
 		"C_DOTA_Ability_Special_Bonus_Unique_Sand_King",
+		[
+			"C_DOTABaseAbility"
+		]
+	],
+	[
+		"C_DOTA_Ability_Special_Bonus_Unique_Weaver_6",
 		[
 			"C_DOTABaseAbility"
 		]
@@ -20267,6 +21361,10 @@
 		]
 	],
 	[
+		"PlayerResourcePlayerEventData_t",
+		[]
+	],
+	[
 		"CDOTA_Unit_AghsFort_Creature_DragonKnight",
 		[
 			"C_DOTA_BaseNPC_Creature"
@@ -20537,6 +21635,10 @@
 		]
 	],
 	[
+		"PhysicsRagdollPose_t",
+		[]
+	],
+	[
 		"C_OP_LerpToOtherAttribute",
 		[
 			"CParticleFunctionOperator"
@@ -20559,10 +21661,6 @@
 		[]
 	],
 	[
-		"CDOTA_PlayerChallengeInfo",
-		[]
-	],
-	[
 		"CUnaryUpdateNode",
 		[
 			"CAnimUpdateNodeBase"
@@ -20570,10 +21668,6 @@
 	],
 	[
 		"CBaseAchievement",
-		[]
-	],
-	[
-		"sky3dparams_t",
 		[]
 	],
 	[
@@ -20683,6 +21777,12 @@
 		]
 	],
 	[
+		"CSequenceBlend2DItem",
+		[
+			"CBlend2DItemBase"
+		]
+	],
+	[
 		"C_OP_MovementLoopInsideSphere",
 		[
 			"CParticleFunctionOperator"
@@ -20737,23 +21837,15 @@
 		[]
 	],
 	[
-		"C_DOTAGameManager",
-		[]
-	],
-	[
 		"CMotionClipGroup",
 		[]
 	],
 	[
-		"CEconItemAttribute",
+		"LookAtOpFixedSettings_t",
 		[]
 	],
 	[
 		"CFingerBone",
-		[]
-	],
-	[
-		"LookAtOpFixedSettings_t",
 		[]
 	],
 	[
@@ -20837,6 +21929,12 @@
 		[]
 	],
 	[
+		"CCycleControlClipAnimNode",
+		[
+			"CAnimNodeBase"
+		]
+	],
+	[
 		"EventServerPollNetworking_t",
 		[
 			"EventSimulate_t"
@@ -20869,6 +21967,10 @@
 		[
 			"CParticleFunctionPreEmission"
 		]
+	],
+	[
+		"HSequence",
+		[]
 	],
 	[
 		"CControlValueConditionUpdater",
@@ -20917,10 +22019,6 @@
 		]
 	],
 	[
-		"CBaseAnimatingEasingFloat_t",
-		[]
-	],
-	[
 		"C_OP_Orient2DRelToCP",
 		[
 			"CParticleFunctionOperator"
@@ -20955,10 +22053,6 @@
 		]
 	],
 	[
-		"CDOTAGameManager",
-		[]
-	],
-	[
 		"TextureGroup_t",
 		[]
 	],
@@ -20984,14 +22078,6 @@
 	],
 	[
 		"CAnimTagManager",
-		[]
-	],
-	[
-		"CGameSceneNodeHandle",
-		[]
-	],
-	[
-		"CountdownTimer",
 		[]
 	],
 	[
@@ -21039,10 +22125,8 @@
 		]
 	],
 	[
-		"CSkeletonInstance",
-		[
-			"CGameSceneNode"
-		]
+		"CAnimNodePath",
+		[]
 	],
 	[
 		"C_INIT_CreateFromParentParticles",
@@ -21085,14 +22169,14 @@
 		[]
 	],
 	[
-		"SkeletonBoneBounds_t",
-		[]
-	],
-	[
 		"CBoneMaskAnimNode",
 		[
 			"CAnimNodeBase"
 		]
+	],
+	[
+		"SkeletonBoneBounds_t",
+		[]
 	],
 	[
 		"CConstantForceController",
@@ -21139,6 +22223,10 @@
 		]
 	],
 	[
+		"CAnimBoneDifference",
+		[]
+	],
+	[
 		"CFootDefinition",
 		[]
 	],
@@ -21147,18 +22235,14 @@
 		[]
 	],
 	[
-		"CVPhysXSurfacePropertiesList",
-		[]
-	],
-	[
-		"CAnimBoneDifference",
-		[]
-	],
-	[
 		"CMotionMatchingUpdateNode",
 		[
 			"CLeafUpdateNode"
 		]
+	],
+	[
+		"CVPhysXSurfacePropertiesList",
+		[]
 	],
 	[
 		"C_OP_NoiseEmitter",
@@ -21171,10 +22255,6 @@
 		[
 			"CParticleFunctionConstraint"
 		]
-	],
-	[
-		"CEnvWindShared::WindAveEvent_t",
-		[]
 	],
 	[
 		"C_OP_BasicMovement",
@@ -21195,15 +22275,7 @@
 		[]
 	],
 	[
-		"DOTA_AssassinMinigameNetworkState",
-		[]
-	],
-	[
 		"thinkfunc_t",
-		[]
-	],
-	[
-		"FileWeaponInfo_t",
 		[]
 	],
 	[
@@ -21216,6 +22288,12 @@
 		"C_OP_RenderProjected",
 		[
 			"CParticleFunctionRenderer"
+		]
+	],
+	[
+		"CCycleControlClipUpdateNode",
+		[
+			"CLeafUpdateNode"
 		]
 	],
 	[
@@ -21237,6 +22315,12 @@
 		]
 	],
 	[
+		"RnMeshDesc_t",
+		[
+			"RnShapeDesc_t"
+		]
+	],
+	[
 		"CModelConfigElement",
 		[]
 	],
@@ -21245,21 +22329,15 @@
 		[]
 	],
 	[
-		"RnMeshDesc_t",
+		"CJumpHelperUpdateNode",
 		[
-			"RnShapeDesc_t"
+			"CSequenceUpdateNode"
 		]
 	],
 	[
 		"CModelConfigElement_Command",
 		[
 			"CModelConfigElement"
-		]
-	],
-	[
-		"CJumpHelperUpdateNode",
-		[
-			"CSequenceUpdateNode"
 		]
 	],
 	[
@@ -21279,14 +22357,6 @@
 		]
 	],
 	[
-		"CModelConfig",
-		[]
-	],
-	[
-		"CFlexRule",
-		[]
-	],
-	[
 		"CCachedPose",
 		[]
 	],
@@ -21295,11 +22365,15 @@
 		[]
 	],
 	[
+		"CModelConfig",
+		[]
+	],
+	[
 		"CAnimInputDamping",
 		[]
 	],
 	[
-		"fogplayerparams_t",
+		"CFlexRule",
 		[]
 	],
 	[
@@ -21313,10 +22387,6 @@
 		[
 			"CParticleFunctionPreEmission"
 		]
-	],
-	[
-		"CBlend2DItem",
-		[]
 	],
 	[
 		"C_INIT_RandomAlpha",
@@ -21335,14 +22405,6 @@
 		[
 			"CMotionMetricEvaluator"
 		]
-	],
-	[
-		"CEffectData",
-		[]
-	],
-	[
-		"CDOTA_AbilityDraftAbilityState",
-		[]
 	],
 	[
 		"CModelConfigElement_RandomColor",
@@ -21377,10 +22439,6 @@
 		[]
 	],
 	[
-		"C_PlayerLocalData",
-		[]
-	],
-	[
 		"JiggleData",
 		[]
 	],
@@ -21388,6 +22446,12 @@
 		"RnSphereDesc_t",
 		[
 			"RnShapeDesc_t"
+		]
+	],
+	[
+		"CFootLockAnimNode",
+		[
+			"CAnimNodeBase"
 		]
 	],
 	[
@@ -21403,12 +22467,6 @@
 	[
 		"PhysSoftbodyDesc_t",
 		[]
-	],
-	[
-		"CFootLockAnimNode",
-		[
-			"CAnimNodeBase"
-		]
 	],
 	[
 		"C_DOTA_Modifier_Lua",
@@ -21497,6 +22555,10 @@
 		]
 	],
 	[
+		"vmix_dynamics_band_t",
+		[]
+	],
+	[
 		"CPathAnimMotorBase",
 		[
 			"CAnimMotorBase"
@@ -21509,6 +22571,12 @@
 	[
 		"C_GameRules",
 		[]
+	],
+	[
+		"RelationshipOverride_t",
+		[
+			"Relationship_t"
+		]
 	],
 	[
 		"CParticleVecInput",
@@ -21617,14 +22685,14 @@
 		]
 	],
 	[
-		"CAnimSkeleton",
-		[]
-	],
-	[
 		"CCycleControlAnimNode",
 		[
 			"CAnimNodeBase"
 		]
+	],
+	[
+		"CAnimSkeleton",
+		[]
 	],
 	[
 		"CAnimationGraphVisualizerAxis",
@@ -21653,10 +22721,6 @@
 		[]
 	],
 	[
-		"CProjectedTextureBase",
-		[]
-	],
-	[
 		"C_OP_LerpScalar",
 		[
 			"CParticleFunctionOperator"
@@ -21671,6 +22735,12 @@
 	[
 		"FeSimdNodeBase_t",
 		[]
+	],
+	[
+		"CFootAdjustmentAnimNode",
+		[
+			"CAnimNodeBase"
+		]
 	],
 	[
 		"CSeqAutoLayer",
@@ -21711,12 +22781,6 @@
 		[]
 	],
 	[
-		"CAttributeContainer",
-		[
-			"CAttributeManager"
-		]
-	],
-	[
 		"Extent",
 		[]
 	],
@@ -21727,6 +22791,12 @@
 	[
 		"sControlGroupElem",
 		[]
+	],
+	[
+		"C_OP_DistanceBetweenVecs",
+		[
+			"CParticleFunctionOperator"
+		]
 	],
 	[
 		"CSeqPoseSetting",
@@ -21760,10 +22830,6 @@
 	],
 	[
 		"ItemRecipe_t",
-		[]
-	],
-	[
-		"CDOTA_ItemStockInfo",
 		[]
 	],
 	[
@@ -21825,10 +22891,6 @@
 		[]
 	],
 	[
-		"C_CSequenceTransitioner2",
-		[]
-	],
-	[
 		"C_OP_ConstrainDistance",
 		[
 			"CParticleFunctionConstraint"
@@ -21836,10 +22898,6 @@
 	],
 	[
 		"BlendItem_t",
-		[]
-	],
-	[
-		"ChangeAccessorFieldPathIndex_t",
 		[]
 	],
 	[
@@ -21875,6 +22933,10 @@
 		[]
 	],
 	[
+		"ChangeAccessorFieldPathIndex_t",
+		[]
+	],
+	[
 		"CNetworkTransmitComponent",
 		[]
 	],
@@ -21894,6 +22956,10 @@
 	],
 	[
 		"CAnimUpdateNodeRef",
+		[]
+	],
+	[
+		"itemid_t",
 		[]
 	],
 	[
@@ -21971,10 +23037,6 @@
 		[]
 	],
 	[
-		"C_fogplayerparams_t",
-		[]
-	],
-	[
 		"CreatureStateData_t",
 		[]
 	],
@@ -22033,6 +23095,10 @@
 		[
 			"CParticleFunctionOperator"
 		]
+	],
+	[
+		"vmix_dynamics_compressor_desc_t",
+		[]
 	],
 	[
 		"FeWorldCollisionParams_t",
@@ -22097,7 +23163,7 @@
 		]
 	],
 	[
-		"SheetFrameImage_t",
+		"ModelConfigHandle_t",
 		[]
 	],
 	[
@@ -22141,10 +23207,6 @@
 		]
 	],
 	[
-		"Sheet_t",
-		[]
-	],
-	[
 		"C_OP_OscillateVector",
 		[
 			"CParticleFunctionOperator"
@@ -22182,10 +23244,6 @@
 		]
 	],
 	[
-		"CDOTACustomShopItemInfo",
-		[]
-	],
-	[
 		"C_OP_RenderScreenShake",
 		[
 			"CParticleFunctionRenderer"
@@ -22200,10 +23258,6 @@
 		[
 			"CUnaryUpdateNode"
 		]
-	],
-	[
-		"C_DOTASpectatorGraphManager",
-		[]
 	],
 	[
 		"magnetted_objects_t",
@@ -22234,12 +23288,6 @@
 		]
 	],
 	[
-		"CParentConstraint",
-		[
-			"CBaseConstraint"
-		]
-	],
-	[
 		"CPathStatusCondition",
 		[
 			"CAnimStateConditionBase"
@@ -22250,14 +23298,16 @@
 		[]
 	],
 	[
+		"CParentConstraint",
+		[
+			"CBaseConstraint"
+		]
+	],
+	[
 		"CNavVolumeAll",
 		[
 			"CNavVolumeVector"
 		]
-	],
-	[
-		"CSpeechBubbleInfo",
-		[]
 	],
 	[
 		"C_OP_ModelCull",
@@ -22272,14 +23322,14 @@
 		]
 	],
 	[
-		"CAttachment",
-		[]
-	],
-	[
 		"CSlowDownOnSlopesUpdateNode",
 		[
 			"CUnaryUpdateNode"
 		]
+	],
+	[
+		"CAttachment",
+		[]
 	],
 	[
 		"CEmptyEntityInstance",
@@ -22334,12 +23384,6 @@
 		[]
 	],
 	[
-		"CAimConstraint",
-		[
-			"CBaseConstraint"
-		]
-	],
-	[
 		"CAnimGraphNetworkSettings",
 		[
 			"CAnimGraphSettingsGroup"
@@ -22352,11 +23396,13 @@
 		]
 	],
 	[
-		"InfoForResourceTypeTestResource_t",
-		[]
+		"CAimConstraint",
+		[
+			"CBaseConstraint"
+		]
 	],
 	[
-		"InGamePredictionData_t",
+		"InfoForResourceTypeTestResource_t",
 		[]
 	],
 	[
@@ -22373,12 +23419,6 @@
 		"C_OP_AttractToControlPoint",
 		[
 			"CParticleFunctionForce"
-		]
-	],
-	[
-		"CTimeline",
-		[
-			"IntervalTimer"
 		]
 	],
 	[
@@ -22418,12 +23458,6 @@
 		[]
 	],
 	[
-		"NextBotGroundLocomotion",
-		[
-			"CLocomotionBase"
-		]
-	],
-	[
 		"CPlayerInfo",
 		[
 			"IBotController",
@@ -22435,21 +23469,17 @@
 		[]
 	],
 	[
+		"RnSoftbodyCapsule_t",
+		[]
+	],
+	[
 		"CModelConfigElement_RandomPick",
 		[
 			"CModelConfigElement"
 		]
 	],
 	[
-		"RnSoftbodyCapsule_t",
-		[]
-	],
-	[
 		"IEconItemInterface",
-		[]
-	],
-	[
-		"CAttributeManager",
 		[]
 	],
 	[
@@ -22503,14 +23533,12 @@
 		[]
 	],
 	[
-		"InfoForResourceTypeCWorldNode",
+		"InfoForResourceTypeIAnimGraphModelBinding",
 		[]
 	],
 	[
-		"CBaseAnimatingOverlayController",
-		[
-			"CBaseAnimatingController"
-		]
+		"InfoForResourceTypeCWorldNode",
+		[]
 	],
 	[
 		"C_INIT_RandomScalar",
@@ -22537,6 +23565,14 @@
 		[
 			"CParticleFunction"
 		]
+	],
+	[
+		"CSoundEventMetaData",
+		[]
+	],
+	[
+		"vmix_dynamics_3band_desc_t",
+		[]
 	],
 	[
 		"CMorphConstraint",
@@ -22569,12 +23605,6 @@
 	[
 		"CAnimGraphModelBinding",
 		[]
-	],
-	[
-		"CDOTAGamerules",
-		[
-			"CMultiplayRules"
-		]
 	],
 	[
 		"C_OP_RenderPostProcessing",
@@ -22631,10 +23661,6 @@
 		[]
 	],
 	[
-		"C_CEnvWindShared::WindVariationEvent_t",
-		[]
-	],
-	[
 		"C_OP_RepeatedTriggerChildGroup",
 		[
 			"CParticleFunctionPreEmission"
@@ -22663,10 +23689,6 @@
 		[
 			"CParticleFunctionRenderer"
 		]
-	],
-	[
-		"CDeferredLightBase",
-		[]
 	],
 	[
 		"C_OP_SetControlPointToHMD",
@@ -22791,14 +23813,6 @@
 		[]
 	],
 	[
-		"CDOTA_TeamCommander",
-		[]
-	],
-	[
-		"ClientQuickBuyItemState",
-		[]
-	],
-	[
 		"C_OP_LerpEndCapVector",
 		[
 			"CParticleFunctionOperator"
@@ -22889,10 +23903,6 @@
 		[]
 	],
 	[
-		"TransitioningLayer_t",
-		[]
-	],
-	[
 		"C_OP_RemapDistanceToLineSegmentBase",
 		[
 			"CParticleFunctionOperator"
@@ -22951,10 +23961,6 @@
 		[]
 	],
 	[
-		"CAnimationLayer",
-		[]
-	],
-	[
 		"C_OP_RenderTrails",
 		[
 			"CBaseTrailRenderer"
@@ -22997,10 +24003,6 @@
 		]
 	],
 	[
-		"CFlexOp",
-		[]
-	],
-	[
 		"FeFitWeight_t",
 		[]
 	],
@@ -23017,13 +24019,7 @@
 		]
 	],
 	[
-		"C_DOTAGamerules",
-		[
-			"C_MultiplayRules"
-		]
-	],
-	[
-		"CEnvWindShared",
+		"CFlexOp",
 		[]
 	],
 	[
@@ -23043,8 +24039,10 @@
 		]
 	],
 	[
-		"PlayerResourceBroadcasterData_t",
-		[]
+		"C_OP_CollideWithParentParticles",
+		[
+			"CParticleFunctionConstraint"
+		]
 	],
 	[
 		"C_INIT_SequenceFromCP",
@@ -23089,8 +24087,10 @@
 		]
 	],
 	[
-		"CPhysSurfacePropertiesPhysics",
-		[]
+		"C_OP_RenderMaterialProxy",
+		[
+			"CParticleFunctionRenderer"
+		]
 	],
 	[
 		"CBonePositionMetricEvaluator",
@@ -23099,7 +24099,15 @@
 		]
 	],
 	[
+		"CPhysSurfacePropertiesPhysics",
+		[]
+	],
+	[
 		"FourQuaternions",
+		[]
+	],
+	[
+		"AmmoIndex_t",
 		[]
 	],
 	[
@@ -23129,14 +24137,6 @@
 		[]
 	],
 	[
-		"SequenceFloatParam_t",
-		[]
-	],
-	[
-		"SheetSequence_t",
-		[]
-	],
-	[
 		"CHeadLookParams",
 		[]
 	],
@@ -23152,10 +24152,6 @@
 	],
 	[
 		"CFlashlightEffect",
-		[]
-	],
-	[
-		"FowBlocker_t",
 		[]
 	],
 	[
@@ -23262,10 +24258,6 @@
 		[]
 	],
 	[
-		"CModelState",
-		[]
-	],
-	[
 		"CTakeDamageInfo",
 		[]
 	],
@@ -23300,14 +24292,14 @@
 		]
 	],
 	[
+		"FeSpringIntegrator_t",
+		[]
+	],
+	[
 		"CModelConfigElement_UserPick",
 		[
 			"CModelConfigElement"
 		]
-	],
-	[
-		"FeSpringIntegrator_t",
-		[]
 	],
 	[
 		"RenderSkeletonBone_t",
@@ -23336,14 +24328,14 @@
 		[]
 	],
 	[
+		"FeCollisionPlane_t",
+		[]
+	],
+	[
 		"CFootCycle",
 		[
 			"CCycleBase"
 		]
-	],
-	[
-		"FeCollisionPlane_t",
-		[]
 	],
 	[
 		"CAnimUpdateSharedData",
@@ -23351,10 +24343,6 @@
 	],
 	[
 		"CEntityComponentHelper",
-		[]
-	],
-	[
-		"CAttributeList",
 		[]
 	],
 	[
@@ -23436,10 +24424,6 @@
 		]
 	],
 	[
-		"CDOTACustomShopInfo",
-		[]
-	],
-	[
 		"CJiggleBones",
 		[]
 	],
@@ -23456,6 +24440,12 @@
 	[
 		"InfoForResourceTypeIVectorGraphic",
 		[]
+	],
+	[
+		"C_OP_LightningSnapshotGenerator",
+		[
+			"CParticleFunctionPreEmission"
+		]
 	],
 	[
 		"CRagdollAnimTag",
@@ -23530,16 +24520,6 @@
 		]
 	],
 	[
-		"C_EconItemView",
-		[
-			"IEconItemInterface"
-		]
-	],
-	[
-		"CVrSkeletalInputSettings",
-		[]
-	],
-	[
 		"FollowAttachmentSettings_t",
 		[]
 	],
@@ -23552,6 +24532,10 @@
 		[
 			"CAnimUpdateNodeBase"
 		]
+	],
+	[
+		"CVrSkeletalInputSettings",
+		[]
 	],
 	[
 		"CSeqCmdLayer",
@@ -23626,10 +24610,6 @@
 		[]
 	],
 	[
-		"CPlayerLocalData",
-		[]
-	],
-	[
 		"C_OP_SetVec",
 		[
 			"CParticleFunctionOperator"
@@ -23644,6 +24624,12 @@
 	[
 		"FeRigidColliderIndices_t",
 		[]
+	],
+	[
+		"CForceFacingCondition",
+		[
+			"CAnimStateConditionBase"
+		]
 	],
 	[
 		"CSeqAutoLayerFlag",
@@ -23666,6 +24652,10 @@
 		]
 	],
 	[
+		"style_index_t",
+		[]
+	],
+	[
 		"C_OP_RemapNamedModelMeshGroupOnceTimed",
 		[
 			"C_OP_RemapNamedModelElementOnceTimed"
@@ -23682,24 +24672,18 @@
 		[]
 	],
 	[
+		"FeSimdTri_t",
+		[]
+	],
+	[
 		"COrientConstraint",
 		[
 			"CBaseConstraint"
 		]
 	],
 	[
-		"FeSimdTri_t",
-		[]
-	],
-	[
 		"InfoForResourceTypeCChoreoSceneFileData",
 		[]
-	],
-	[
-		"CBasePlayerVData",
-		[
-			"CEntitySubclassVDataBase"
-		]
 	],
 	[
 		"C_OP_SetAttributeToScalarExpression",
@@ -23723,10 +24707,6 @@
 	],
 	[
 		"CConnectionProxyItem",
-		[]
-	],
-	[
-		"CBaseAnimatingEasings_t",
 		[]
 	],
 	[
@@ -23764,7 +24744,7 @@
 	[
 		"CBlend2DUpdateNode",
 		[
-			"CLeafUpdateNode"
+			"CAnimUpdateNodeBase"
 		]
 	],
 	[
@@ -23776,14 +24756,14 @@
 		[]
 	],
 	[
+		"AnimationSnapshotBase_t",
+		[]
+	],
+	[
 		"CTiltTwistConstraint",
 		[
 			"CBaseConstraint"
 		]
-	],
-	[
-		"AnimationSnapshotBase_t",
-		[]
 	],
 	[
 		"MaterialParamTexture_t",
@@ -23800,6 +24780,16 @@
 		[]
 	],
 	[
+		"CRangeFloat",
+		[]
+	],
+	[
+		"CParamConditionUpdater",
+		[
+			"IConditionUpdater"
+		]
+	],
+	[
 		"CModelConfigElement_SetBodygroup",
 		[
 			"CModelConfigElement"
@@ -23809,12 +24799,6 @@
 		"CModelConfigElement_AttachedModel",
 		[
 			"CModelConfigElement"
-		]
-	],
-	[
-		"CParamConditionUpdater",
-		[
-			"IConditionUpdater"
 		]
 	],
 	[
@@ -23856,6 +24840,10 @@
 		[
 			"CParticleFunctionOperator"
 		]
+	],
+	[
+		"MoodAnimation_t",
+		[]
 	],
 	[
 		"IClientAlphaProperty",
@@ -23910,10 +24898,6 @@
 		[
 			"CAnimNodeBase"
 		]
-	],
-	[
-		"TonemapParameters_t",
-		[]
 	],
 	[
 		"C_OP_SetParentControlPointsToChildCP",
@@ -24034,11 +25018,11 @@
 		[]
 	],
 	[
-		"CPhysSurfacePropertiesAudio",
+		"CStateUpdateData",
 		[]
 	],
 	[
-		"CStateUpdateData",
+		"CPhysSurfacePropertiesAudio",
 		[]
 	],
 	[
@@ -24047,10 +25031,6 @@
 			"CDOTA_Modifier_Lua",
 			"CVerticalMotionController"
 		]
-	],
-	[
-		"CFootTrajectory",
-		[]
 	],
 	[
 		"CTurnHelperAnimNode",
@@ -24063,6 +25043,14 @@
 		[
 			"CAnimationGraphVisualizerPrimitiveBase"
 		]
+	],
+	[
+		"CFootTrajectory",
+		[]
+	],
+	[
+		"CRangeInt",
+		[]
 	],
 	[
 		"C_OP_SetCPtoVector",
@@ -24107,12 +25095,14 @@
 		[]
 	],
 	[
-		"C_EconItemAttribute",
+		"FeQuad_t",
 		[]
 	],
 	[
-		"FeQuad_t",
-		[]
+		"CForceFacingConditionUpdater",
+		[
+			"IConditionUpdater"
+		]
 	],
 	[
 		"CAnimGraphGeneralSettings",
@@ -24181,10 +25171,6 @@
 		[]
 	],
 	[
-		"IntervalTimer",
-		[]
-	],
-	[
 		"C_OP_RenderTonemapController",
 		[
 			"CParticleFunctionRenderer"
@@ -24243,6 +25229,10 @@
 		]
 	],
 	[
+		"CMoodVData",
+		[]
+	],
+	[
 		"EventClientFrameSimulate_t",
 		[]
 	],
@@ -24255,21 +25245,19 @@
 		[]
 	],
 	[
-		"CDOTASubChallengeInfo",
-		[]
-	],
-	[
 		"C_INIT_MoveBetweenPoints",
 		[
 			"CParticleFunctionInitializer"
 		]
 	],
 	[
-		"ClipInfo",
-		[]
+		"C_OP_CollideWithSelf",
+		[
+			"CParticleFunctionConstraint"
+		]
 	],
 	[
-		"CAttributeManager::cached_attribute_float_t",
+		"ClipInfo",
 		[]
 	],
 	[
@@ -24301,15 +25289,7 @@
 		[]
 	],
 	[
-		"C_DOTA_CombatLogQueryProgress",
-		[]
-	],
-	[
 		"CSimpleSimTimer",
-		[]
-	],
-	[
-		"VPhysicsCollisionAttribute_t",
 		[]
 	],
 	[
@@ -24335,14 +25315,14 @@
 		]
 	],
 	[
-		"CMaterialDrawDescriptor",
-		[]
-	],
-	[
 		"CSingleFrameAnimNode",
 		[
 			"CAnimNodeBase"
 		]
+	],
+	[
+		"CMaterialDrawDescriptor",
+		[]
 	],
 	[
 		"CParticleAnimTag",
@@ -24411,6 +25391,12 @@
 		]
 	],
 	[
+		"C_OP_RtEnvCull",
+		[
+			"CParticleFunctionOperator"
+		]
+	],
+	[
 		"CMotionMetricEvaluator",
 		[]
 	],
@@ -24437,14 +25423,14 @@
 		[]
 	],
 	[
-		"CFootMotion",
-		[]
-	],
-	[
 		"CSubGraphAnimNode",
 		[
 			"CContainerAnimNodeBase"
 		]
+	],
+	[
+		"CFootMotion",
+		[]
 	],
 	[
 		"ClipIndex",
@@ -24464,10 +25450,6 @@
 	],
 	[
 		"RnHalfEdge_t",
-		[]
-	],
-	[
-		"audioparams_t",
 		[]
 	],
 	[
@@ -24601,11 +25583,11 @@
 		]
 	],
 	[
-		"CCycleBase",
+		"VertexPositionColor_t",
 		[]
 	],
 	[
-		"VertexPositionColor_t",
+		"CCycleBase",
 		[]
 	],
 	[
@@ -24647,10 +25629,6 @@
 		[]
 	],
 	[
-		"CDOTA_Bot",
-		[]
-	],
-	[
 		"C_OP_EndCapDecay",
 		[
 			"CParticleFunctionOperator"
@@ -24661,12 +25639,6 @@
 		[]
 	],
 	[
-		"CBoneConstraintPoseSpaceMorph",
-		[
-			"CBoneConstraintBase"
-		]
-	],
-	[
 		"CSeqMultiFetchFlag",
 		[]
 	],
@@ -24675,8 +25647,10 @@
 		[]
 	],
 	[
-		"InfoForResourceTypeIAnimationGraph",
-		[]
+		"CBoneConstraintPoseSpaceMorph",
+		[
+			"CBoneConstraintBase"
+		]
 	],
 	[
 		"C_INIT_RemapCPtoScalar",
@@ -24717,10 +25691,6 @@
 		[]
 	],
 	[
-		"CHeroStatueLiked",
-		[]
-	],
-	[
 		"CSeqSeqDescFlag",
 		[]
 	],
@@ -24737,10 +25707,6 @@
 		[
 			"CSimpleSimTimer"
 		]
-	],
-	[
-		"CHeroesPerPlayer",
-		[]
 	],
 	[
 		"C_INIT_RemapParticleCountToNamedModelBodyPartScalar",
@@ -24857,10 +25823,6 @@
 		[]
 	],
 	[
-		"C_SpeechBubbleInfo",
-		[]
-	],
-	[
 		"CDOTA_CreepKillInfo",
 		[]
 	],
@@ -24879,14 +25841,6 @@
 		[]
 	],
 	[
-		"CEnvWindShared::WindVariationEvent_t",
-		[]
-	],
-	[
-		"CSequenceTransitioner2",
-		[]
-	],
-	[
 		"ExtraVertexStreamOverride_t",
 		[
 			"BaseSceneObjectOverride_t"
@@ -24894,10 +25848,6 @@
 	],
 	[
 		"EntityIOConnectionData_t",
-		[]
-	],
-	[
-		"CFingerChain",
 		[]
 	],
 	[
@@ -24913,15 +25863,15 @@
 		]
 	],
 	[
+		"CFingerChain",
+		[]
+	],
+	[
 		"C_HorizontalMotionController",
 		[]
 	],
 	[
 		"CNetworkViewOffsetVector",
-		[]
-	],
-	[
-		"CGlowProperty",
 		[]
 	],
 	[
@@ -24985,10 +25935,6 @@
 		[]
 	],
 	[
-		"CDOTASpectatorGraphManager",
-		[]
-	],
-	[
 		"C_INIT_VelocityRadialRandom",
 		[
 			"CParticleFunctionInitializer"
@@ -25005,11 +25951,11 @@
 		[]
 	],
 	[
-		"CMorphData",
+		"FeCtrlOsOffset_t",
 		[]
 	],
 	[
-		"FeCtrlOsOffset_t",
+		"CMorphData",
 		[]
 	],
 	[
@@ -25023,16 +25969,6 @@
 		]
 	],
 	[
-		"C_BaseAnimatingOverlayController",
-		[
-			"C_BaseAnimatingController"
-		]
-	],
-	[
-		"ModelBoneFlexDriver_t",
-		[]
-	],
-	[
 		"FeSimdSpringIntegrator_t",
 		[]
 	],
@@ -25041,6 +25977,10 @@
 		[
 			"CAnimNodeBase"
 		]
+	],
+	[
+		"ModelBoneFlexDriver_t",
+		[]
 	],
 	[
 		"CAnimMotorBase",
@@ -25054,6 +25994,10 @@
 	],
 	[
 		"EventAppShutdown_t",
+		[]
+	],
+	[
+		"ResourceId_t",
 		[]
 	],
 	[
@@ -25149,11 +26093,11 @@
 		]
 	],
 	[
-		"VPhysXCollisionAttributes_t",
+		"AnimationDecodeDebugDumpElement_t",
 		[]
 	],
 	[
-		"AnimationDecodeDebugDumpElement_t",
+		"VPhysXCollisionAttributes_t",
 		[]
 	],
 	[
@@ -25189,10 +26133,6 @@
 		[
 			"CProxyAnimNodeBase"
 		]
-	],
-	[
-		"SheetSequenceFrame_t",
-		[]
 	],
 	[
 		"InfoForResourceTypeIParticleSystemDefinition",
@@ -25237,16 +26177,24 @@
 		]
 	],
 	[
+		"CCycleCondition",
+		[
+			"CAnimStateConditionBase"
+		]
+	],
+	[
+		"MoodAnimationLayer_t",
+		[]
+	],
+	[
 		"CBoneConstraintPoseSpaceBone",
 		[
 			"CBaseConstraint"
 		]
 	],
 	[
-		"CCycleCondition",
-		[
-			"CAnimStateConditionBase"
-		]
+		"CAnimClipDataManager",
+		[]
 	],
 	[
 		"EventSimulate_t",
@@ -25271,17 +26219,21 @@
 		]
 	],
 	[
+		"CAnimClipData",
+		[]
+	],
+	[
 		"C_OP_FadeAndKill",
 		[
 			"CParticleFunctionOperator"
 		]
 	],
 	[
-		"CSceneObjectData",
+		"FeTreeChildren_t",
 		[]
 	],
 	[
-		"FeTreeChildren_t",
+		"CSceneObjectData",
 		[]
 	],
 	[
@@ -25315,10 +26267,6 @@
 		]
 	],
 	[
-		"CFootTrajectories",
-		[]
-	],
-	[
 		"AnimNodeID",
 		[]
 	],
@@ -25327,6 +26275,10 @@
 		[
 			"CAnimTagBase"
 		]
+	],
+	[
+		"CFootTrajectories",
+		[]
 	],
 	[
 		"CAnimSequenceParams",
@@ -25355,14 +26307,6 @@
 		[
 			"CMotionMetricEvaluator"
 		]
-	],
-	[
-		"CCollisionProperty",
-		[]
-	],
-	[
-		"CNetworkedSequenceOperation",
-		[]
 	],
 	[
 		"CCopyRecipientFilter",
@@ -25447,14 +26391,14 @@
 		[]
 	],
 	[
-		"PlayerResourcePlayerData_t",
-		[]
-	],
-	[
 		"CJiggleBoneUpdateNode",
 		[
 			"CUnaryUpdateNode"
 		]
+	],
+	[
+		"CBlend2DItemBase",
+		[]
 	],
 	[
 		"C_OP_RenderRopes",
@@ -25537,14 +26481,6 @@
 		[]
 	],
 	[
-		"C_CEnvWindShared::WindAveEvent_t",
-		[]
-	],
-	[
-		"fogparams_t",
-		[]
-	],
-	[
 		"CBaseRendererSource2",
 		[
 			"CParticleFunctionRenderer"
@@ -25569,6 +26505,10 @@
 		]
 	],
 	[
+		"item_definition_index_t",
+		[]
+	],
+	[
 		"CRR_Response",
 		[]
 	],
@@ -25591,16 +26531,6 @@
 	[
 		"CResponseQueue",
 		[]
-	],
-	[
-		"TempViewerInfo_t",
-		[]
-	],
-	[
-		"CBaseAnimatingController",
-		[
-			"CSkeletonAnimationController"
-		]
 	],
 	[
 		"C_OP_QuantizeFloat",
@@ -25635,15 +26565,17 @@
 		[]
 	],
 	[
+		"CFootAdjustmentUpdateNode",
+		[
+			"CUnaryUpdateNode"
+		]
+	],
+	[
 		"CAnimMorphDifference",
 		[]
 	],
 	[
 		"ItemDropData_t",
-		[]
-	],
-	[
-		"CNetworkedIKContext",
 		[]
 	],
 	[
@@ -25663,6 +26595,12 @@
 	[
 		"InfoForResourceTypeCEntityLump",
 		[]
+	],
+	[
+		"C_OP_DirectionBetweenVecsToVec",
+		[
+			"CParticleFunctionOperator"
+		]
 	],
 	[
 		"C_OP_CPVelocityForce",
@@ -25707,10 +26645,6 @@
 		]
 	],
 	[
-		"CConstraintSlave",
-		[]
-	],
-	[
 		"HitReactFixedSettings_t",
 		[]
 	],
@@ -25729,14 +26663,14 @@
 		[]
 	],
 	[
+		"CConstraintSlave",
+		[]
+	],
+	[
 		"CMoveSpeedCondition",
 		[
 			"CAnimStateConditionBase"
 		]
-	],
-	[
-		"C_CEnvWindShared",
-		[]
 	],
 	[
 		"CCommentarySystem",
@@ -25750,6 +26684,10 @@
 	],
 	[
 		"CSeqBoneMaskList",
+		[]
+	],
+	[
+		"PermModelDataAnimatedMaterialAttribute_t",
 		[]
 	],
 	[
@@ -26041,10 +26979,6 @@
 		]
 	],
 	[
-		"CEntityIdentity",
-		[]
-	],
-	[
 		"AABB_t",
 		[]
 	],
@@ -26061,14 +26995,14 @@
 		[]
 	],
 	[
+		"CAnimDesc_Flag",
+		[]
+	],
+	[
 		"CTwistConstraint",
 		[
 			"CBaseConstraint"
 		]
-	],
-	[
-		"CAnimDesc_Flag",
-		[]
 	],
 	[
 		"DOTASpecialAbility_t",
@@ -26115,11 +27049,11 @@
 		[]
 	],
 	[
-		"CHitBoxSetList",
+		"CAnimParameterBase",
 		[]
 	],
 	[
-		"CAnimParameterBase",
+		"CHitBoxSetList",
 		[]
 	],
 	[
@@ -26219,6 +27153,12 @@
 		]
 	],
 	[
+		"CNodeBlend2DItem",
+		[
+			"CBlend2DItemBase"
+		]
+	],
+	[
 		"IKTargetSettings_t",
 		[]
 	],
@@ -26239,10 +27179,6 @@
 		[]
 	],
 	[
-		"VPhysXConstraintParams_t",
-		[]
-	],
-	[
 		"CSequenceAnimNode",
 		[
 			"CAnimNodeBase"
@@ -26253,10 +27189,12 @@
 		[]
 	],
 	[
-		"CEconItemView",
-		[
-			"IEconItemInterface"
-		]
+		"VPhysXConstraintParams_t",
+		[]
+	],
+	[
+		"AmmoTypeInfo_t",
+		[]
 	],
 	[
 		"C_OP_RemapCPtoVelocity",
@@ -26351,6 +27289,12 @@
 		]
 	],
 	[
+		"C_OP_RemapExternalWindToCP",
+		[
+			"CParticleFunctionPreEmission"
+		]
+	],
+	[
 		"FourVectors2D",
 		[]
 	],
@@ -26369,7 +27313,7 @@
 		]
 	],
 	[
-		"CDOTA_CombatLogQueryProgress",
+		"CFootstepTableHandle",
 		[]
 	],
 	[
@@ -26397,10 +27341,6 @@
 		]
 	],
 	[
-		"PingConfirmationState_t",
-		[]
-	],
-	[
 		"C_OP_PercentageBetweenCPs",
 		[
 			"CParticleFunctionOperator"
@@ -26411,11 +27351,11 @@
 		[]
 	],
 	[
-		"CRenderBufferBinding",
+		"AnimTagID",
 		[]
 	],
 	[
-		"AnimTagID",
+		"CRenderBufferBinding",
 		[]
 	],
 	[
@@ -26461,10 +27401,6 @@
 		]
 	],
 	[
-		"CFlexController",
-		[]
-	],
-	[
 		"FingerSource_t",
 		[]
 	],
@@ -26473,6 +27409,10 @@
 		[
 			"CUnaryUpdateNode"
 		]
+	],
+	[
+		"CFlexController",
+		[]
 	],
 	[
 		"CExampleSchemaVData_PolymorphicBase",
@@ -26571,14 +27511,14 @@
 		[]
 	],
 	[
-		"CFingerSource",
-		[]
-	],
-	[
 		"CProxyAnimNodeBase",
 		[
 			"CAnimNodeBase"
 		]
+	],
+	[
+		"CFingerSource",
+		[]
 	],
 	[
 		"EntComponentInfo_t",
@@ -26603,14 +27543,14 @@
 		[]
 	],
 	[
-		"CRenderSkeleton",
-		[]
-	],
-	[
 		"CAudioAnimTag",
 		[
 			"CAnimTagBase"
 		]
+	],
+	[
+		"CRenderSkeleton",
+		[]
 	],
 	[
 		"DOTACavernCrawlMapResult_t",
@@ -26624,12 +27564,6 @@
 		"CTurnHelperUpdateNode",
 		[
 			"CUnaryUpdateNode"
-		]
-	],
-	[
-		"C_BaseAnimatingController",
-		[
-			"CSkeletonAnimationController"
 		]
 	],
 	[
@@ -26673,10 +27607,6 @@
 		[]
 	],
 	[
-		"CGameSceneNode",
-		[]
-	],
-	[
 		"C_OP_RemapCPOrientationToRotations",
 		[
 			"CParticleFunctionOperator"
@@ -26699,6 +27629,12 @@
 		[]
 	],
 	[
+		"C_OP_ControlPointToRadialScreenSpace",
+		[
+			"CParticleFunctionPreEmission"
+		]
+	],
+	[
 		"InfoForResourceTypeCVDataResource",
 		[]
 	],
@@ -26707,6 +27643,10 @@
 		[
 			"CNavVolumeCalculatedVector"
 		]
+	],
+	[
+		"AttachmentHandle_t",
+		[]
 	],
 	[
 		"C_OP_RemapDotProductToScalar",
@@ -26757,10 +27697,6 @@
 		[
 			"CParticleFunctionOperator"
 		]
-	],
-	[
-		"PlayerResourcePlayerEventData_t",
-		[]
 	],
 	[
 		"CBoneConstraintPoseSpaceMorph::Input_t",
@@ -26844,10 +27780,6 @@
 	],
 	[
 		"CObstructionObject",
-		[]
-	],
-	[
-		"PhysicsRagdollPose_t",
 		[]
 	],
 	[
