@@ -61,6 +61,7 @@ ReloadScriptsBind.OnPressed(ReloadScripts)
 Menu.Localization.AddLocalizationUnit("russian", new Map([
 	["Menu", "Меню"],
 	["Language", "Язык"],
+	["Settings", "Настройки"],
 	["Bind (Open/Close)", "Бинд (Открыть/Закрыть)"],
 	["Humanizer", "Хуманайзер"],
 	["English", "Английский"],
