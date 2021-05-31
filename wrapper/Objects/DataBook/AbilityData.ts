@@ -315,6 +315,8 @@ function AbilityNameToPath(name: string, strip = false): string {
 	let tex_name = is_item && strip ? name.substring(5) : name
 	if (tex_name.startsWith("frostivus"))
 		tex_name = tex_name.split("_").slice(1).join("_")
+	if (is_item && name.startsWith("item_recipe_"))
+		tex_name = "recipe"
 	return is_item
 		? `panorama/images/items/${tex_name}_png.vtex_c`
 		: `panorama/images/spellicons/${tex_name}_png.vtex_c`
