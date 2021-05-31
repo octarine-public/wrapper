@@ -19,10 +19,14 @@ export default class Inventory {
 		return this.GetItem(16)
 	}
 	get Items(): Item[] {
-		return [
-			...this.GetItems(0, 5),
-			...[this.TPScroll!, this.NeutralItem!].filter(x => x !== undefined),
-		]
+		const ar = this.GetItems(0, 5),
+			tp = this.TPScroll,
+			neutral = this.NeutralItem
+		if (tp !== undefined)
+			ar.push(tp)
+		if (neutral !== undefined)
+			ar.push(neutral)
+		return ar
 	}
 	get Backpack(): Item[] {
 		return this.GetItems(6, 8)
@@ -128,13 +132,6 @@ export default class Inventory {
 			return Items.find(item => name instanceof RegExp ? name.test(item.Name) : item.Name === name)
 		}
 		return undefined
-	}
-	public HasItemInInventoryIndex(Index: number, includeBackpack: boolean = false): boolean {
-		if (this.Owner.IsValid) {
-			const Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
-			return Items.some(item => item.Index === Index)
-		}
-		return false
 	}
 	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
 		if (this.Owner.IsValid) {
