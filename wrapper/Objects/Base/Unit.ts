@@ -73,7 +73,6 @@ export default class Unit extends Entity {
 	public IsVisibleForTeamMask = 0
 	@NetworkedBasicField("m_anglediff")
 	public RotationDifference = 0
-	@NetworkedBasicField("m_iIsControllableByPlayer64", EPropertyType.UINT64)
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
 	public NetworkActivityStartTime = 0
@@ -1155,6 +1154,11 @@ RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", async (unit, new_value) =
 	unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
 	if (unit.IsValid)
 		await EventsSDK.emit("TeamVisibilityChanged", false, unit)
+})
+RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", async (unit, new_value) => {
+	unit.IsControllableByPlayerMask = new_value as bigint
+	if (unit.IsValid)
+		await EventsSDK.emit("ControllableByPlayerMaskChanged", false, unit)
 })
 ReplaceFieldHandler(Unit, "m_iTeamNum", async (unit, new_val) => {
 	const old_visibility = unit.IsVisibleForEnemies

@@ -58,6 +58,7 @@ interface EventsSDK extends EventEmitter {
 	 */
 	on(name: "PostDataUpdate", callback: () => void): EventsSDK
 	on(name: "TeamVisibilityChanged", callback: (npc: Unit) => void): EventsSDK
+	on(name: "ControllableByPlayerMaskChanged", callback: (npc: Unit) => void): EventsSDK
 	on(name: "TrueSightedChanged", callback: (npc: Unit) => void): EventsSDK
 	on(name: "HasScepterChanged", callback: (npc: Unit) => void): EventsSDK
 	on(name: "PreDraw", callback: () => void): EventsSDK
