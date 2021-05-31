@@ -129,6 +129,13 @@ export default class Inventory {
 		}
 		return undefined
 	}
+	public HasItemInInventoryIndex(Index: number, includeBackpack: boolean = false): boolean {
+		if (this.Owner.IsValid) {
+			const Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items
+			return Items.some(item => item.Index === Index)
+		}
+		return false
+	}
 	public GetItemByClass<T extends Item>(class_: Constructor<T>, includeBackpack: boolean = false): Nullable<T> {
 		if (this.Owner.IsValid) {
 			const Items = includeBackpack ? [...this.Items, ...this.Backpack] : this.Items

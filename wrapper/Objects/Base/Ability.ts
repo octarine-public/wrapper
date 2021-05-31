@@ -175,11 +175,12 @@ export default class Ability extends Entity {
 	public get Cooldown(): number {
 		return Math.max(this.Cooldown_ - (GameState.RawGameTime - this.Cooldown_ChangeTime), 0)
 	}
-
 	public get MaxDuration(): number {
-		return this.AbilityData.GetDuration(this.Level)
+		return this.AbilityData.GetMaxDurationForLevel(this.Level)
 	}
-
+	public get MaxCooldown(): number {
+		return this.AbilityData.GetMaxCooldownForLevel(this.Level)
+	}
 	public get BaseCastRange(): number {
 		return this.GetBaseCastRangeForLevel(this.Level)
 	}

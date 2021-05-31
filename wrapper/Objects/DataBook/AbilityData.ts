@@ -59,7 +59,8 @@ export default class AbilityData {
 	public readonly AbilityImmunityType: SPELL_IMMUNITY_TYPES
 	public readonly ItemDisplayCharges: boolean
 	public readonly ItemHideCharges: boolean
-	public readonly Duration: number[]
+	public readonly MaxCooldown: number[]
+	public readonly MaxDuration: number[]
 	public readonly SecretShop: boolean
 	public readonly ItemRequirements: string[][] = []
 	public readonly ItemResult: Nullable<string>
@@ -132,13 +133,16 @@ export default class AbilityData {
 		this.ItemHideCharges = m_Storage.has("ItemHideCharges")
 			? parseInt(m_Storage.get("ItemHideCharges") as string) !== 0
 			: true
-		this.Duration = this.GetLevelArray(m_Storage.get("AbilityDuration") as Nullable<string>)
+
 		this.CastRangeCache = this.GetLevelArray(m_Storage.get("AbilityCastRange") as Nullable<string>)
 		this.ChannelTimeCache = this.GetLevelArray(m_Storage.get("AbilityChannelTime") as Nullable<string>)
 		this.AbilityDamageCache = this.GetLevelArray(m_Storage.get("AbilityDamage") as Nullable<string>)
 		this.CastPointCache = this.GetLevelArray(m_Storage.get("AbilityCastPoint") as Nullable<string>)
 		this.ChargesCache = this.GetLevelArray(m_Storage.get("AbilityCharges") as Nullable<string>)
 		this.ChargeRestoreTimeCache = this.GetLevelArray(m_Storage.get("AbilityChargeRestoreTime") as Nullable<string>)
+		this.MaxCooldown = this.GetLevelArray(m_Storage.get("AbilityCooldown") as Nullable<string>)
+		this.MaxDuration = this.GetLevelArray(m_Storage.get("AbilityDuration") as Nullable<string>)
+
 		this.SecretShop = m_Storage.has("SecretShop")
 			? parseInt(m_Storage.get("SecretShop") as string) !== 0
 			: false
@@ -199,11 +203,18 @@ export default class AbilityData {
 		return this.CastRangeCache[level - 1]
 	}
 
-	public GetDuration(level: number): number {
+	public GetMaxDurationForLevel(level: number): number {
 		if (level <= 0)
 			return 0
 		level = Math.min(level, this.MaxLevel)
-		return this.Duration[level - 1]
+		return this.MaxDuration[level - 1]
+	}
+
+	public GetMaxCooldownForLevel(level: number): number {
+		if (level <= 0)
+			return 0
+		level = Math.min(level, this.MaxLevel)
+		return this.MaxCooldown[level - 1]
 	}
 
 	public GetChannelTime(level: number): number {
