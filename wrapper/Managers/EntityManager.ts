@@ -116,11 +116,16 @@ export function CreateEntityInternal(ent: Entity, id = ent.Index): void {
 	AddEntityToClassMap(ClassToEntities, ent)
 }
 
-async function CreateEntity(id: number, class_name: string, entity_name: Nullable<string>) {
+async function CreateEntity(
+	id: number,
+	class_name: string,
+	entity_name: Nullable<string>,
+): Promise<Entity> {
 	const entity = ClassFromNative(id, class_name, entity_name)
 	await entity.AsyncCreate()
 	entity.ClassName = class_name
 	CreateEntityInternal(entity, id)
+	return entity
 }
 
 export async function DeleteEntity(id: number): Promise<void> {
@@ -274,14 +279,18 @@ async function ParseEntityUpdate(
 	const m_nameStringableIndex = is_create ? stream.ReadInt32() : -1
 	const ent_class = entities_symbols[stream.ReadUint16()]
 	let ent_was_created = false
-	if (!ent_props.has(ent_id)) {
+	let ent = AllEntitiesAsMap.get(ent_id)
+	if (ent === undefined) {
 		ent_props.set(ent_id, new EntityPropertiesNode())
 		if (is_create) {
-			await CreateEntity(ent_id, ent_class, StringTables.GetString("EntityNames", m_nameStringableIndex))
+			ent = await CreateEntity(
+				ent_id,
+				ent_class,
+				StringTables.GetString("EntityNames", m_nameStringableIndex),
+			)
 			ent_was_created = true
 		}
 	}
-	const ent = AllEntitiesAsMap.get(ent_id)
 	if (ent !== undefined) {
 		ent.IsVisible = true
 		if (ent_was_created)
