@@ -2,7 +2,7 @@ import Events from "../Managers/Events"
 import EventsSDK from "../Managers/EventsSDK"
 import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
-import { StringToUTF16, Utf16ArrayToStr } from "../Utils/ArrayBufferUtils"
+import { StringToUTF8, Utf16ArrayToStr, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
 import GameState from "../Utils/GameState"
 import { readJSON } from "../Utils/Utils"
 import Base from "./Base"
@@ -66,9 +66,12 @@ class MenuManager {
 	}
 	public async LoadConfig() {
 		try {
-			this.ConfigValue = JSON.parse(Utf16ArrayToStr(new Uint16Array(
-				await readConfig("default.json"),
-			)))
+			const config = await readConfig("default.json")
+			try {
+				this.ConfigValue = JSON.parse(Utf8ArrayToStr(new Uint8Array(config)))
+			} catch {
+				this.ConfigValue = JSON.parse(Utf16ArrayToStr(new Uint16Array(config)))
+			}
 		} catch {
 			this.ConfigValue = {}
 		} finally {
@@ -88,15 +91,14 @@ class MenuManager {
 			Localization.SelectedUnitName = GameState.Language
 			this.initialized_language = true
 		}
-		if (Base.ForwardConfigASAP)
-			this.ForwardConfig()
+		this.ForwardConfig()
 		if (Localization.was_changed) {
 			this.entries.forEach(entry => entry.ApplyLocalization())
 			Localization.was_changed = false
 			Base.SaveConfigASAP = true
 		}
 		if (Base.SaveConfigASAP) {
-			writeConfig("default.json", StringToUTF16(JSON.stringify(this.ConfigValue)).buffer)
+			writeConfig("default.json", StringToUTF8(JSON.stringify(this.ConfigValue)).buffer)
 			Base.SaveConfigASAP = false
 		}
 		if (!this.is_open)
@@ -175,11 +177,11 @@ class MenuManager {
 		}, this.AddEntry(names[0]))
 	}
 	private ForwardConfig() {
-		if (this.config === undefined)
-			return
-		this.entries.forEach(entry => entry.ConfigValue = this.config[entry.InternalName])
-		this.entries.forEach(entry => entry.OnConfigLoaded())
-		Base.ForwardConfigASAP = false
+		while (Base.ForwardConfigASAP && this.config !== undefined) {
+			Base.ForwardConfigASAP = false
+			this.entries.forEach(entry => entry.ConfigValue = this.config[entry.InternalName])
+			this.entries.forEach(entry => entry.OnConfigLoaded())
+		}
 	}
 }
 const Menu = new MenuManager()
