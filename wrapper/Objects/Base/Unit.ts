@@ -908,7 +908,7 @@ export default class Unit extends Entity {
 
 	public GetAngle(vec: Vector3): number {
 		const npc_pos = this.Position
-		let angle = Math.abs(Math.atan2(npc_pos.y - vec.y, npc_pos.x - vec.x) - this.Forward.Angle)
+		let angle = Math.abs(Math.atan2(npc_pos.y - vec.y, npc_pos.x - vec.x) - this.RotationRad)
 		if (angle > Math.PI)
 			angle = Math.abs((Math.PI * 2) - angle)
 		return angle
