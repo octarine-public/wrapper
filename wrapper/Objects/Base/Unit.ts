@@ -440,23 +440,6 @@ export default class Unit extends Entity {
 	}
 	public get CastRangeBonus(): number {
 		let castrange = 0
-
-		const lens = this.GetItemByName("item_aether_lens")
-		if (lens !== undefined)
-			castrange += lens.GetSpecialValue("cast_range_bonus")
-
-		const keen = this.GetItemByName("item_keen_optic")
-		if (keen !== undefined)
-			castrange += keen.GetSpecialValue("cast_range_bonus")
-
-		const seer = this.GetItemByName("item_seer_stone")
-		if (seer !== undefined)
-			castrange += seer.GetSpecialValue("cast_range_bonus")
-
-		const headband = this.GetItemByName("item_psychic_headband")
-		if (headband !== undefined)
-			castrange += headband.GetSpecialValue("cast_range")
-
 		const gadget_aura = this.GetBuffByName("modifier_item_spy_gadget_aura")
 		if (gadget_aura !== undefined) {
 			const gadget = gadget_aura.Ability
@@ -465,8 +448,12 @@ export default class Unit extends Entity {
 		}
 
 		this.Spells.forEach(spell => {
-			if (spell !== undefined && spell.Level !== 0 && spell.Name.startsWith("special_bonus_cast_range"))
-				castrange += spell.GetSpecialValue("value")
+			if (spell !== undefined)
+				castrange += spell.BonusCastRange
+		})
+		this.Items.forEach(item => {
+			if (item !== undefined)
+				castrange += item.BonusCastRange
 		})
 		return castrange
 	}
