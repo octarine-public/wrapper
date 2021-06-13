@@ -2,14 +2,17 @@ import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { DOTA_GameMode } from "../../Enums/DOTA_GameMode"
 import EntityManager from "../../Managers/EntityManager"
 import EventsSDK from "../../Managers/EventsSDK"
-import GameState from "../../Utils/GameState"
 import Entity, { GameRules } from "../Base/Entity"
 import Unit from "../Base/Unit"
 
 @WrapperClass("CDOTA_Unit_Roshan")
 export default class Roshan extends Unit {
 	public static HP = 0
+	public static HPRegenCounter = 0
 	public static MaxHP = 0
+	public static get HPRegen() {
+		return 20
+	}
 	public static Instance: Nullable<Entity | number>
 	@NetworkedBasicField("m_bGoldenRoshan")
 	public GoldenRoshan = false
@@ -27,8 +30,7 @@ function GetHPChangedByMinute(minute: number): number {
 }
 
 let last_event_ent = -1,
-	last_minute = 0,
-	last_tick = 0
+	last_minute = 0
 EventsSDK.on("GameEvent", (name, obj) => {
 	if (name === "npc_spawned")
 		last_event_ent = obj.entindex
@@ -52,7 +54,6 @@ EventsSDK.on("GameEvent", (name, obj) => {
 			Roshan.HP = 0
 			Roshan.MaxHP = 0
 			Roshan.Instance = undefined
-			last_tick = 0
 		}
 	}
 })
@@ -78,19 +79,14 @@ EventsSDK.on("EntityDestroyed", ent => {
 	Roshan.MaxHP = 0
 })
 
-const HPRegen = 20
-let HPRegenCounter = 0
-EventsSDK.on("Tick", () => {
-	if (Roshan.HP === 0 || GameState.RawGameTime < last_tick + 0.095)
+EventsSDK.on("Tick", dt => {
+	if (Roshan.HP === 0)
 		return
 
-	HPRegenCounter += HPRegen * Math.min(GameState.RawGameTime - last_tick, 0.1)
-	last_tick = GameState.RawGameTime
-	const regen_amount_floor = Math.floor(HPRegenCounter)
-	if (regen_amount_floor !== 0) {
-		Roshan.HP = Math.min(Roshan.HP + regen_amount_floor, Roshan.MaxHP)
-		HPRegenCounter -= regen_amount_floor
-	}
+	Roshan.HPRegenCounter += Roshan.HPRegen * Math.min(dt, 0.1)
+	const regen_amount_floor = Math.floor(Roshan.HPRegenCounter)
+	Roshan.HP = Math.min(Roshan.HP + regen_amount_floor, Roshan.MaxHP)
+	Roshan.HPRegenCounter -= regen_amount_floor
 
 	const min = Math.floor(Math.max(GameRules!.GameTime, 0) / 60)
 	if (min === last_minute)
@@ -105,6 +101,5 @@ EventsSDK.on("GameEnded", () => {
 	Roshan.HP = 0
 	last_minute = 0
 	Roshan.MaxHP = 0
-	HPRegenCounter = 0
-	last_tick = 0
+	Roshan.HPRegenCounter = 0
 })

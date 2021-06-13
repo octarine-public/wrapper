@@ -76,6 +76,7 @@ export default class Unit extends Entity {
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
 	public NetworkActivityStartTime = 0
+	public HPRegenCounter = 0
 	@NetworkedBasicField("m_flHealthThinkRegen")
 	public HPRegen = 0
 	@NetworkedBasicField("m_flManaThinkRegen")
@@ -1274,7 +1275,6 @@ function OnModifierUpdated(mod: Modifier): void {
 	const parent = mod.Parent
 	if (parent === undefined)
 		return
-	// TODO: interpolate in Unit#Think?
 	let offset = 0
 	for (const buff of parent.Buffs)
 		offset += buff.DeltaZ
@@ -1295,4 +1295,17 @@ EventsSDK.on("ParticleCreated", (_id, path, _particleSystemHandle, _attach, targ
 		&& !target.IsIllusion
 	)
 		target.Level++
+})
+
+EventsSDK.on("Tick", dt => {
+	EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
+		unit.HPRegenCounter += unit.HPRegen * Math.min(dt, 0.1)
+		const regen_amount_floor = Math.floor(unit.HPRegenCounter)
+		unit.HPRegenCounter -= regen_amount_floor
+		if (!unit.IsVisible) {
+			unit.HP = Math.max(Math.min(unit.MaxHP, unit.HP + regen_amount_floor), 0)
+			unit.Mana = Math.max(Math.min(unit.MaxMana, unit.Mana + unit.ManaRegen * Math.min(dt, 0.1)), 0)
+		}
+		// TODO: interpolate DeltaZ from OnModifierUpdated
+	})
 })
