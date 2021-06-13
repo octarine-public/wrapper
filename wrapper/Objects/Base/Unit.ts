@@ -1286,3 +1286,13 @@ function OnModifierUpdated(mod: Modifier): void {
 EventsSDK.on("ModifierCreated", OnModifierUpdated)
 EventsSDK.on("ModifierChanged", OnModifierUpdated)
 EventsSDK.on("ModifierRemoved", OnModifierUpdated)
+
+EventsSDK.on("ParticleCreated", (_id, path, _particleSystemHandle, _attach, target) => {
+	if (
+		path === "particles/generic_hero_status/hero_levelup.vpcf"
+		&& target instanceof Unit
+		&& !target.IsVisible
+		&& !target.IsIllusion
+	)
+		target.Level++
+})
