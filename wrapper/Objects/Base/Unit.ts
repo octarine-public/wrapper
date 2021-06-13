@@ -1180,7 +1180,7 @@ RegisterFieldHandler(Unit, "m_NetworkActivity", async (unit, new_value) => {
 	if (unit.IsValid)
 		await EventsSDK.emit("NetworkActivityChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_hAbilities", async (unit, new_value) => {
 	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
 		unit.Spells_[i] = ar[i] & 0x3FFF
@@ -1191,8 +1191,9 @@ RegisterFieldHandler(Unit, "m_hAbilities", (unit, new_value) => {
 		unit.Spells_[i] = 0
 		unit.Spells[i] = undefined
 	}
+	await EventsSDK.emit("UnitAbilitiesChanged", false, unit)
 })
-RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
+RegisterFieldHandler(Unit, "m_hItems", async (unit, new_value) => {
 	const ar = new_value as number[]
 	for (let i = 0; i < ar.length; i++) {
 		unit.TotalItems_[i] = ar[i] & 0x3FFF
@@ -1203,9 +1204,10 @@ RegisterFieldHandler(Unit, "m_hItems", (unit, new_value) => {
 		unit.TotalItems_[i] = 0
 		unit.TotalItems[i] = undefined
 	}
+	await EventsSDK.emit("UnitItemsChanged", false, unit)
 })
 
-EventsSDK.on("PreEntityCreated", ent => {
+EventsSDK.on("PreEntityCreated", async ent => {
 	if (ent instanceof Unit) {
 		ent.SpawnPosition.CopyFrom(ent.Position)
 		if (ent.IsNeutral) {
@@ -1226,44 +1228,40 @@ EventsSDK.on("PreEntityCreated", ent => {
 	if (!(owner instanceof Unit))
 		return
 	if (ent instanceof Item) {
-		owner.TotalItems_.some((id, i) => {
-			if (id === ent.Index) {
+		for (let i = 0, end = owner.TotalItems_.length; i < end; i++)
+			if (owner.TotalItems_[i] === ent.Index) {
 				owner.TotalItems[i] = ent
-				return true
+				await EventsSDK.emit("UnitItemsChanged", false, owner)
+				break
 			}
-			return false
-		})
 	} else if (ent instanceof Ability) {
-		owner.Spells_.some((id, i) => {
-			if (id === ent.Index) {
+		for (let i = 0, end = owner.Spells_.length; i < end; i++)
+			if (owner.Spells_[i] === ent.Index) {
 				owner.Spells[i] = ent
-				return true
+				await EventsSDK.emit("UnitAbilitiesChanged", false, owner)
+				break
 			}
-			return false
-		})
 	}
 })
 
-EventsSDK.on("EntityDestroyed", ent => {
+EventsSDK.on("EntityDestroyed", async ent => {
 	const owner = ent.Owner
 	if (!(owner instanceof Unit))
 		return
 	if (ent instanceof Item) {
-		owner.TotalItems_.some((id, i) => {
-			if (id === ent.Index) {
+		for (let i = 0, end = owner.TotalItems_.length; i < end; i++)
+			if (owner.TotalItems_[i] === ent.Index) {
 				owner.TotalItems[i] = undefined
-				return true
+				await EventsSDK.emit("UnitItemsChanged", false, owner)
+				break
 			}
-			return false
-		})
 	} else if (ent instanceof Ability) {
-		owner.Spells_.some((id, i) => {
-			if (id === ent.Index) {
+		for (let i = 0, end = owner.Spells_.length; i < end; i++)
+			if (owner.Spells_[i] === ent.Index) {
 				owner.Spells[i] = undefined
-				return true
+				await EventsSDK.emit("UnitAbilitiesChanged", false, owner)
+				break
 			}
-			return false
-		})
 	}
 })
 

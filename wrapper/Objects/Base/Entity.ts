@@ -343,13 +343,13 @@ import Events from "../../Managers/Events"
 RegisterFieldHandler(Entity, "m_iTeamNum", async (ent, new_val) => {
 	const old_team = ent.Team
 	ent.Team = new_val as Team
-	if (old_team !== ent.Team && ent.IsValid)
+	if (ent.IsValid && old_team !== ent.Team)
 		await EventsSDK.emit("EntityTeamChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_lifeState", async (ent, new_val) => {
 	const old_state = ent.LifeState
 	ent.LifeState = new_val as LifeState_t
-	if (old_state !== ent.LifeState && ent.IsValid)
+	if (ent.IsValid && old_state !== ent.LifeState)
 		await EventsSDK.emit("LifeStateChanged", false, ent)
 })
 RegisterFieldHandler(Entity, "m_hModel", (ent, new_val) => {
@@ -365,7 +365,7 @@ RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 RegisterFieldHandler(Entity, "m_nameStringableIndex", async (ent, new_val) => {
 	const old_name = ent.Name
 	ent.Name_ = StringTables.GetString("EntityNames", new_val as number) ?? ent.Name_
-	if (old_name !== ent.Name && ent.IsValid)
+	if (ent.IsValid && old_name !== ent.Name)
 		await EventsSDK.emit("EntityNameChanged", false, ent)
 })
 
