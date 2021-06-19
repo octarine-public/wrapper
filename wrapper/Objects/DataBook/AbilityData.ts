@@ -71,19 +71,22 @@ export default class AbilityData {
 	private readonly CastPointCache: number[]
 	private readonly ChargesCache: number[]
 	private readonly ChargeRestoreTimeCache: number[]
+	private MaxTalentLevel: number
 
 	constructor(name: string, m_Storage: RecursiveMap) {
-		this.AbilityBehavior = m_Storage.has("AbilityBehavior")
-			? parseEnumString(DOTA_ABILITY_BEHAVIOR, m_Storage.get("AbilityBehavior") as string)
-			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
 		this.AbilityType = m_Storage.has("AbilityType")
 			? (ABILITY_TYPES as any)[(m_Storage.get("AbilityType") as string).substring(5)]
 			: ABILITY_TYPES.ABILITY_TYPE_BASIC
-		this.MaxLevel = m_Storage.has("MaxLevel")
+		this.MaxLevel = this.MaxTalentLevel = m_Storage.has("MaxLevel")
 			? parseInt(m_Storage.get("MaxLevel") as string)
 			: this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
 				? 3
 				: 4
+		this.CacheSpecialValues(m_Storage)
+
+		this.AbilityBehavior = m_Storage.has("AbilityBehavior")
+			? parseEnumString(DOTA_ABILITY_BEHAVIOR, m_Storage.get("AbilityBehavior") as string)
+			: DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_NONE
 		this.TexturePath = m_Storage.get("AbilityTexturePath") as string
 		this.TargetFlags = m_Storage.has("AbilityUnitTargetFlags")
 			? parseEnumString(DOTA_UNIT_TARGET_FLAGS, m_Storage.get("AbilityUnitTargetFlags") as string)
@@ -151,13 +154,12 @@ export default class AbilityData {
 			map.forEach(str => this.ItemRequirements.push(str.split(";")))
 		}
 		this.ItemResult = m_Storage.get("ItemResult") as Nullable<string>
-		this.CacheSpecialValues(m_Storage)
 	}
 
-	public GetSpecialValue(name: string, level = this.MaxLevel): number {
+	public GetSpecialValue(name: string, level = this.MaxTalentLevel): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxLevel) - 1
+		level = Math.min(level, this.MaxTalentLevel) - 1
 		const ar = this.GetCachedSpecialValue(name)
 		if (ar === undefined)
 			return 0
@@ -167,7 +169,7 @@ export default class AbilityData {
 	public GetSpecialValueWithTalent(owner: Unit, name: string, level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxLevel) - 1
+		level = Math.min(level, this.MaxTalentLevel) - 1
 		const ar = this.GetCachedSpecialValue(name)
 		if (ar === undefined)
 			return 0
@@ -199,55 +201,55 @@ export default class AbilityData {
 	public GetCastRange(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxLevel)
+		level = Math.min(level, this.MaxTalentLevel)
 		return this.CastRangeCache[level - 1]
 	}
 
 	public GetMaxDurationForLevel(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxLevel)
+		level = Math.min(level, this.MaxTalentLevel)
 		return this.MaxDuration[level - 1]
 	}
 
 	public GetMaxCooldownForLevel(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxLevel)
+		level = Math.min(level, this.MaxTalentLevel)
 		return this.MaxCooldown[level - 1]
 	}
 
 	public GetChannelTime(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxLevel)
+		level = Math.min(level, this.MaxTalentLevel)
 		return this.ChannelTimeCache[level - 1]
 	}
 
 	public GetAbilityDamage(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxLevel)
+		level = Math.min(level, this.MaxTalentLevel)
 		return this.AbilityDamageCache[level - 1]
 	}
 
 	public GetCastPoint(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxLevel)
+		level = Math.min(level, this.MaxTalentLevel)
 		return this.CastPointCache[level - 1]
 	}
 
 	public GetMaxCharges(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxLevel)
+		level = Math.min(level, this.MaxTalentLevel)
 		return this.ChargesCache[level - 1]
 	}
 	public GetChargeRestoreTime(level: number): number {
 		if (level <= 0)
 			return 0
-		level = Math.min(level, this.MaxLevel)
+		level = Math.min(level, this.MaxTalentLevel)
 		return this.ChargeRestoreTimeCache[level - 1]
 	}
 
@@ -255,6 +257,11 @@ export default class AbilityData {
 		const AbilitySpecial = m_Storage.get("AbilitySpecial") as RecursiveMap
 		if (AbilitySpecial === undefined)
 			return
+		for (const special of AbilitySpecial.values())
+			if (special instanceof Map && special.has("levelkey")) {
+				this.MaxTalentLevel = Math.max(this.MaxLevel, 7)
+				break
+			}
 		for (const special of AbilitySpecial.values()) {
 			if (!(special instanceof Map))
 				continue
@@ -291,7 +298,7 @@ export default class AbilityData {
 			return ar
 
 		return [
-			new Array<number>(this.MaxLevel).fill(0),
+			new Array<number>(this.MaxTalentLevel).fill(0),
 			"",
 			"value",
 			EDOTASpecialBonusOperation.SPECIAL_BONUS_ADD,
@@ -301,7 +308,7 @@ export default class AbilityData {
 	private ExtendLevelArray(ar: number[]): number[] {
 		if (ar.length === 0)
 			ar.push(0)
-		while (ar.length < this.MaxLevel)
+		while (ar.length < this.MaxTalentLevel)
 			ar.push(ar[ar.length - 1])
 		return ar
 	}
