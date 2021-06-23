@@ -20,7 +20,7 @@ export default class ImageSelector extends Base {
 	private static image_gap = 0
 	private static base_image_height = 0
 	private static random_height_value = 0
-	private static readonly elements_per_row = 4
+	private static readonly elements_per_row = 5
 	private static readonly image_activated_border_color = new Color(104, 4, 255)
 
 	public enabled_values: Map<string, boolean>
