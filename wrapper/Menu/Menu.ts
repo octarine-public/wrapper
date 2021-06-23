@@ -86,7 +86,7 @@ class MenuManager {
 		if (this.config === undefined)
 			return
 		if (GameState.Language === "unknown")
-			GameState.Language = ConVars.GetString("cl_language")
+			GameState.Language = Localization.PreferredUnitName
 		if (!this.initialized_language) {
 			Localization.SelectedUnitName = GameState.Language
 			this.initialized_language = true

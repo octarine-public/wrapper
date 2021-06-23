@@ -1,4 +1,4 @@
-import { EventsSDK, Menu } from "wrapper/Imports"
+import { Events, EventsSDK, Menu } from "wrapper/Imports"
 import { SetGameInProgress } from "./wrapper/Objects/Base/Entity"
 
 declare global {
@@ -8,11 +8,26 @@ declare global {
 const SettingsTree = Menu.AddEntry("Settings")
 
 /** Node Menu  */
-const MainMenuTree = SettingsTree.AddNode("Menu")
-const SettingsLanguage = MainMenuTree.AddDropdown("Language", ["English", "Russian"])
-const MainMenuKeyBind = MainMenuTree.AddKeybind("Bind (Open/Close)", "Insert")
+const MainMenuKeyBind = SettingsTree.AddKeybind("Menu Bind", "Insert")
 MainMenuKeyBind.activates_in_menu = true
 MainMenuKeyBind.trigger_on_chat = true
+
+const SettingsLanguage = SettingsTree.AddDropdown("Language", ["English", "Russian"])
+SettingsLanguage.OnValue(change => {
+	switch (change.selected_id) {
+		case 0:
+			Menu.Localization.SelectedUnitName = "english"
+			break
+		case 1:
+			Menu.Localization.SelectedUnitName = "russian"
+			break
+	}
+})
+
+const TelemetryToggle = SettingsTree.AddToggle("Opt-in telemetry", true)
+TelemetryToggle.OnValue(toggle => ToggleTelemetryState(toggle.value))
+TelemetryToggle.IsHidden = true
+EventsSDK.on("Draw", () => TelemetryToggle.IsHidden = !(globalThis as any).TELEMETRY_TOGGLE_ENABLED)
 
 /** Node Reload Scripts */
 const SettingsReloadTree = SettingsTree.AddNode("Reload Scripts")
@@ -24,30 +39,18 @@ async function ReloadScripts() {
 	reload()
 }
 
-SettingsLanguage.OnValue(change => {
-	switch (change.selected_id) {
+Events.on("SetLanguage", language => {
+	switch (language) {
+		default:
 		case 0:
-			Menu.Localization.SelectedUnitName = "english"
+			Menu.Localization.PreferredUnitName = "english"
 			break
 		case 1:
-			Menu.Localization.SelectedUnitName = "russian"
+			Menu.Localization.PreferredUnitName = "russian"
 			break
-	}
-})
-EventsSDK.on("Draw", () => {
-	if (
-		Menu.Localization.SelectedUnitName === "english"
-		&& SettingsLanguage.selected_id !== 0
-	) {
-		SettingsLanguage.selected_id = 0
-		SettingsLanguage.Update()
-	}
-	if (
-		Menu.Localization.SelectedUnitName === "russian"
-		&& SettingsLanguage.selected_id !== 1
-	) {
-		SettingsLanguage.selected_id = 1
-		SettingsLanguage.Update()
+		case 2:
+			Menu.Localization.PreferredUnitName = "schinese"
+			break
 	}
 })
 
@@ -62,7 +65,7 @@ Menu.Localization.AddLocalizationUnit("russian", new Map([
 	["Menu", "Меню"],
 	["Language", "Язык"],
 	["Settings", "Настройки"],
-	["Bind (Open/Close)", "Бинд (Открыть/Закрыть)"],
+	["Menu Bind", "Бинд Меню"],
 	["Humanizer", "Хуманайзер"],
 	["English", "Английский"],
 	["Russian", "Русский"],

@@ -146,6 +146,7 @@ declare function StartFindingMatch(): void
 declare function SendGCPingResponse(): void
 declare function AcceptMatch(): void
 declare function ToggleOBSBypass(state: boolean): void
+declare function ToggleTelemetryState(state: boolean): void
 declare function setFireEvent(
 	func: (event_name: string, cancellable: boolean, ...args: any) => Promise<boolean>,
 ): void

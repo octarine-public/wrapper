@@ -96,6 +96,7 @@ declare interface Events extends EventEmitter {
 	on(name: "IPCMessage", func: (source_worker_uid: bigint, name: string, msg: WorkerIPCType) => void): EventEmitter
 	on(name: "WorkerSpawned", func: (worker_uid: bigint) => void): EventEmitter
 	on(name: "WorkerDespawned", func: (worker_uid: bigint) => void): EventEmitter
+	on(name: "SetLanguage", func: (language: number) => void): EventEmitter
 }
 
 const Events: Events = new EventEmitter()
