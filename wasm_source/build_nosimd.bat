@@ -6,6 +6,7 @@
 	-s TOTAL_MEMORY=8MB ^
 	-s ALLOW_MEMORY_GROWTH=1 ^
 	-o ../scripts_files/wrapper.wasm ^
+	-I ./zstd/lib/ ^
 	lz4.cc ^
 	exports.cc ^
 	vhcg.cc ^

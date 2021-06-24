@@ -33,7 +33,6 @@ template<typename T = void, typename X = T> FORCEINLINE T* GetPointer(X* base, i
 
 #define VECTOR_NO_SLOW_OPERATIONS
 #include "meshoptimizer/src/meshoptimizer.h"
-#include "lz4.h"
 #include "Vector.h"
 #include "vhcg.h"
 #include "vmatrix.h"

@@ -703,19 +703,16 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				packed_params = msg.get("packed_params") as Nullable<Uint8Array>
 			const ent: Entity | number | undefined = EntityManager.EntityByIndex(handle) ?? ServerHandleToIndex(handle),
 				position = new Vector3()
-			if (packed_params !== undefined) {
-				if (packed_params.byteLength >= 19) {
-					const stream = new BinaryStream(new DataView(
-						packed_params.buffer,
-						packed_params.byteOffset,
-						packed_params.byteLength,
-					))
-					stream.RelativeSeek(7)
-					position.x = stream.ReadFloat32()
-					position.y = stream.ReadFloat32()
-					position.z = stream.ReadFloat32()
-				} else
-					console.log(`Something's clearly wrong with CMsgSosStartSoundEvent. ${sound_name} ${packed_params?.byteLength}`)
+			if (packed_params !== undefined && packed_params.byteLength >= 19) {
+				const stream = new BinaryStream(new DataView(
+					packed_params.buffer,
+					packed_params.byteOffset,
+					packed_params.byteLength,
+				))
+				stream.RelativeSeek(7)
+				position.x = stream.ReadFloat32()
+				position.y = stream.ReadFloat32()
+				position.z = stream.ReadFloat32()
 			}
 			await EventsSDK.emit(
 				"StartSound", false,

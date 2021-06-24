@@ -7,6 +7,7 @@
 	-s ALLOW_MEMORY_GROWTH=1 ^
 	-msimd128 ^
 	-o ../scripts_files/wrapper_simd.wasm ^
+	-I ./zstd/lib/ ^
 	lz4.cc ^
 	exports.cc ^
 	vhcg.cc ^

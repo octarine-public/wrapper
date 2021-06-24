@@ -374,10 +374,13 @@ function FixType(symbols: string[], field: any): string {
 	}
 	let type = symbols[field.var_type_sym]
 	// types
+	type = type.replace(/\<\s/g, "<")
+	type = type.replace(/\s\>/g, ">")
 	type = type.replace(/CNetworkedQuantizedFloat/g, "float")
-	type = type.replace(/CUtlVector\< (.*) \>/g, "$1[]")
-	type = type.replace(/CHandle\< (.*) \>/g, "CEntityIndex<$1>")
-	type = type.replace(/CStrongHandle\< (.*) \>/g, "CStrongHandle<$1>")
+	type = type.replace(/CUtlVector\<(.*)\>/g, "$1[]")
+	type = type.replace(/CNetworkUtlVectorBase\<(.*)\>/g, "$1[]")
+	type = type.replace(/CHandle\<(.*)\>/g, "CEntityIndex<$1>")
+	type = type.replace(/CStrongHandle\<(.*)\>/g, "CStrongHandle<$1>")
 	type = type.replace(/Vector2D/g, "Vector2")
 	type = type.replace(/Vector4D|Quaternion/g, "Vector4")
 	type = type.replace(/Vector$/g, "Vector3")

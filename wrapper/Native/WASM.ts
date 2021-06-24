@@ -105,6 +105,7 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	MurmurHash64: (ptr: number, size: number, seed: number) => void,
 	CRC32: (ptr: number, size: number) => number,
 	DecompressLZ4: (ptr: number, size: number, dst_len: number) => number,
+	DecompressZstd: (ptr: number, size: number) => number,
 	DecompressLZ4Chained: (ptr: number, input_sizes_ptr: number, output_sizes_ptr: number, count: number) => number,
 	CloneWorldToProjection: () => void,
 	WorldToScreenNew: () => boolean,
@@ -438,6 +439,22 @@ export function DecompressLZ4(buf: Uint8Array, dst_len: number): Uint8Array {
 	const copy = new Uint8Array(dst_len)
 	copy.set(new Uint8Array(wasm.memory.buffer, addr, copy.byteLength))
 	wasm.my_free(addr)
+
+	return copy
+}
+
+export function DecompressZstd(buf: Uint8Array): Uint8Array {
+	const addr = wasm.my_malloc(buf.byteLength)
+	new Uint8Array(wasm.memory.buffer, addr).set(buf)
+
+	const decompressed_addr = wasm.DecompressZstd(addr, buf.byteLength)
+	const size = new Uint32Array(wasm.memory.buffer, addr)[0]
+	wasm.my_free(addr)
+	if (decompressed_addr === 0)
+		throw "Zstd decompression failed"
+	const copy = new Uint8Array(size)
+	copy.set(new Uint8Array(wasm.memory.buffer, decompressed_addr, copy.byteLength))
+	wasm.my_free(decompressed_addr)
 
 	return copy
 }

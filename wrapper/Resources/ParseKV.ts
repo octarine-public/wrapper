@@ -1,4 +1,4 @@
-import { DecompressLZ4, DecompressLZ4Chained } from "../Native/WASM"
+import { DecompressLZ4, DecompressLZ4Chained, DecompressZstd } from "../Native/WASM"
 import { ArrayBuffersEqual } from "../Utils/ArrayBufferUtils"
 import BinaryStream from "../Utils/BinaryStream"
 import { HasBit } from "../Utils/BitsExtensions"
@@ -236,7 +236,8 @@ class KVParser {
 		this.binary_bytes_offset = 0
 		stream.RelativeSeek(16) // format
 		const compression_method = stream.ReadUint32(),
-			something = stream.ReadUint32(),
+			compression_dictionary_id = stream.ReadUint16(),
+			compression_frame_size = stream.ReadUint16(),
 			data_offset = stream.ReadUint32(),
 			count_32bit = stream.ReadUint32()
 		this.count_64bit = stream.ReadUint32()
@@ -248,17 +249,28 @@ class KVParser {
 		let kv3_buf: Uint8Array
 		switch (compression_method) {
 			case 0:
-				if (something !== 0)
-					throw "Unexpected magic for compression_method 0"
+				if (compression_dictionary_id !== 0)
+					throw "Unexpected compression_dictionary_id for compression_method 0"
+				if (compression_frame_size !== 0)
+					throw "Unexpected compression_dictionary_id for compression_method 0"
 				kv3_buf = stream.ReadSlice(compressed_size)
 				break
 			case 1:
-				if (something !== 0x40000000)
-					throw "Unexpected magic for compression_method 1"
+				if (compression_dictionary_id !== 0)
+					throw "Unexpected compression_dictionary_id for compression_method 1"
+				if (compression_frame_size !== 16 * 1024)
+					throw "Unexpected compression_dictionary_id for compression_method 1"
 				kv3_buf = DecompressLZ4(stream.ReadSlice(compressed_size), uncompressed_size)
 				break
+			case 2:
+				if (compression_dictionary_id !== 0)
+					throw "Unexpected compression_dictionary_id for compression_method 2"
+				if (compression_frame_size !== 0)
+					throw "Unexpected compression_dictionary_id for compression_method 2"
+				kv3_buf = DecompressZstd(stream.ReadSlice(compressed_size))
+				break
 			default:
-				throw `Unknown KV2 compression method: ${compression_method}`
+				throw `Unknown KV3 compression method: ${compression_method}`
 		}
 		const orig_stream = stream
 		stream = new BinaryStream(new DataView(kv3_buf.buffer, kv3_buf.byteOffset, kv3_buf.byteLength))

@@ -1,6 +1,8 @@
 // https://github.com/MattRickS/NukeScript/blob/master/ParticleRenderer/ParticleRenderer_SINGLEPIXEL_V01_01.cpp#L35
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays
 #include "stdafx.h"
+#include <zstd.h>
+#include "lz4.h"
 
 void ComputeViewMatrix(VMatrix* pViewMatrix, const Vector& origin, const QAngle& angles) {
 	static VMatrix baseRotation;
@@ -436,6 +438,22 @@ EXPORT_JS void* DecompressLZ4(void* data, size_t size, size_t dst_len) {
 	LZ4_decompress_safe((char*)data, (char*)dst, (int)size, (int)dst_len);
 	free(data);
 	return dst;
+}
+
+EXPORT_JS void* DecompressZstd(void* data, size_t size) {
+	/*if (size < 4)
+		return nullptr;
+	auto dst_len = ZSTD_getFrameContentSize(data, size);
+	if (dst_len == ZSTD_CONTENTSIZE_ERROR || dst_len == ZSTD_CONTENTSIZE_ERROR)
+		return nullptr;
+	auto dst = malloc(dst_len);
+	if (ZSTD_decompress(dst, dst_len, data, size) != dst_len) {
+		free(dst);
+		return nullptr;
+	}
+	*(uint32_t*)data = dst_len;
+	return dst;*/
+	return nullptr;
 }
 
 EXPORT_JS void* DecompressLZ4Chained(void* data, uint32_t* input_sizes, uint32_t* output_sizes, uint32_t count) {

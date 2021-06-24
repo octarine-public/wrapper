@@ -60,11 +60,11 @@ declare class PhysicsRagdollPose_t {
 }
 
 declare class CPhysicsComponent {
-
+	
 }
 
 declare class CRenderComponent {
-
+	
 }
 
 declare class CAdditionalWearable {
@@ -2724,6 +2724,7 @@ declare class CDOTA_Ability_AghsFort_EchoSlamPotion {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -4049,6 +4050,7 @@ declare class CDOTA_Ability_AghsFort_Ravage_Potion {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -4270,6 +4272,7 @@ declare class CDOTA_Ability_AghsFort_ShadowWaveEffectPotion {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -5210,6 +5213,144 @@ declare class CDOTA_Ability_Aghsfort_Tusk_Tag_Team {
 }
 
 declare class CDOTA_Ability_Aghsfort_Tusk_WalrusPunch {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Ability_Aghsfort_TuskBoss_Snowball {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Ability_Aghsfort_TuskBoss_Tag_Team {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Ability_Aghsfort_TuskBoss_WalrusPunch {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -25516,6 +25657,98 @@ declare class CDOTA_Ability_PineCone_ShieldBash {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Ability_Plus_GuildBanner {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Ability_Plus_HighFive {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Ability_Puck_DreamCoil {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
@@ -30438,6 +30671,52 @@ declare class CDOTA_Ability_Spring2021_DefusalBomb_Defuse {
 	m_nAbilityCurrentCharges: number
 	m_bUpgradeRecommended: boolean
 	m_hTarget: CEntityIndex<CDOTA_BaseNPC>
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Ability_Spring2021_TowerDeathRing {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
 	CPhysicsComponent: CPhysicsComponent
 	m_nMinCPULevel: number
 	m_nMaxCPULevel: number
@@ -41718,6 +41997,149 @@ declare class CDOTA_BaseNPC_Shop {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_BaseNPC_Spring2021_AbilityBuilding {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iCurrentLevel: number
+	m_nTotalDamageTaken: bigint
+	m_iAttackCapabilities: number
+	m_iSpecialAbility: number
+	m_iTaggedAsVisibleByTeam: number
+	m_anglediff: number
+	m_NetworkActivity: number
+	m_NetworkSequenceIndex: number
+	m_hAbilities: CEntityIndex<CBaseEntity>[]
+	m_iHealth: number
+	m_lifeState: number
+	m_fFlags: number
+	CBodyComponent: CBodyComponentBaseAnimatingOverlay2
+	m_pEntity: CEntityIdentity
+	m_iMaxHealth: number
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_bClientSideRagdoll: boolean
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_nRenderMode: RenderMode_t
+	m_nRenderFX: RenderFx_t
+	m_clrRender: Color
+	m_RenderAttributeIDs: CUtlStringToken[]
+	m_RenderAttributeValues: Vector4[]
+	m_LightGroup: CUtlStringToken
+	m_bRenderToCubemaps: boolean
+	m_nInteractsAs: bigint
+	m_nInteractsWith: bigint
+	m_nInteractsExclude: bigint
+	m_nEntityId: number
+	m_nHierarchyId: number
+	m_nCollisionGroup: number
+	m_nCollisionFunctionMask: number
+	m_usSolidFlags: number
+	m_nSolidType: SolidType_t
+	m_triggerBloat: number
+	m_nSurroundType: SurroundingBoundsType_t
+	m_CollisionGroup: number
+	m_bHitboxEnabled: boolean
+	m_vCapsuleCenter1: Vector3
+	m_vCapsuleCenter2: Vector3
+	m_flCapsuleRadius: number
+	m_iGlowType: number
+	m_nGlowRange: number
+	m_nGlowRangeMin: number
+	m_glowColorOverride: Color
+	m_bFlashing: boolean
+	m_flGlowTime: number
+	m_flGlowStartTime: number
+	m_flGlowBackfaceMult: number
+	m_fadeMinDist: number
+	m_fadeMaxDist: number
+	m_flFadeScale: number
+	m_flShadowStrength: number
+	m_nAddDecal: number
+	m_vDecalPosition: Vector3
+	m_vDecalForwardAxis: Vector3
+	m_flDecalHealBloodRate: number
+	m_flDecalHealHeightRate: number
+	m_ConfigEntitiesToPropagateMaterialDecalsTo: CEntityIndex<CBaseModelEntity>[]
+	m_pRagdollPose: PhysicsRagdollPose_t
+	m_bShouldAnimateDuringGameplayPause: boolean
+	m_bAnimGraphUpdateEnabled: boolean
+	m_GraphParameterName: string
+	m_flGoal: number
+	m_hMyWearables: CEntityIndex<CEconWearable>[]
+	m_flFieldOfView: number
+	m_nLod: number
+	m_bSelectionRingVisible: boolean
+	m_flMana: number
+	m_flMaxMana: number
+	m_flManaThinkRegen: number
+	m_flHealthThinkRegen: number
+	m_nHealthBarOffsetOverride: number
+	m_bIsPhantom: boolean
+	m_bIsAncient: boolean
+	m_bIsNeutralUnitType: boolean
+	m_bIsSummoned: boolean
+	m_bCanBeDominated: boolean
+	m_bCanRespawn: boolean
+	m_bHasUpgradeableAbilities: boolean
+	m_iBKBChargesUsed: number
+	m_iBotDebugData: number
+	m_bIsMoving: boolean
+	m_bCanUseWards: boolean
+	m_bCanUseAllItems: boolean
+	m_flManaRegen: number
+	m_flHealthRegen: number
+	m_iMoveSpeed: number
+	m_flTauntCooldown: number
+	m_fRevealRadius: number
+	m_iDayTimeVisionRange: number
+	m_iNightTimeVisionRange: number
+	m_flPhysicalArmorValue: number
+	m_flMagicalResistanceValue: number
+	m_iXPBounty: number
+	m_iXPBountyExtra: number
+	m_iGoldBountyMin: number
+	m_iGoldBountyMax: number
+	m_nPlayerOwnerID: number
+	m_nUnitState64: bigint
+	m_nUnitModelVariant: number
+	m_iIsControllableByPlayer64: bigint
+	m_hModifierParent: CEntityIndex<CBaseEntity>
+	m_iUnitNameIndex: number
+	m_iDamageMin: number
+	m_iDamageMax: number
+	m_iDamageBonus: number
+	m_bIsWaitingToSpawn: boolean
+	m_nUnitLabelIndex: number
+	m_szUnitLabel: string
+	m_hItems: CEntityIndex<CBaseEntity>[]
+	m_iParity: number
+	m_hInventoryParent: CEntityIndex<CBaseEntity>
+	m_bStashEnabled: boolean
+	m_hTransientCastItem: CEntityIndex<CBaseEntity>
+	m_iCurShop: DOTA_SHOP_TYPE
+	m_szCurShopEntName: string
+	m_bStolenScepter: boolean
+	m_bShouldDoFlyHeightVisual: boolean
+	m_flStartSequenceCycle: number
+	m_CustomHealthLabel: string
+	m_CustomHealthLabelColor: Color
+	CPhysicsComponent: CPhysicsComponent
+	CRenderComponent: CRenderComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_BaseNPC_Spring2021_DefusalBomb {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iCurrentLevel: number
@@ -43337,6 +43759,8 @@ declare class DataTeamPlayer_t {
 	m_iSuggestedPregameItems: number[]
 	m_iSuggestedItemSequences: number[]
 	m_iSuggestedWeightedItems: WeightedSuggestion_t
+	m_iSuggestedTopNItems: WeightedSuggestion_t
+	m_iSuggestedNeutralItems: WeightedSuggestion_t
 	m_iSuggestedHeroes: number[]
 	m_flSuggestedHeroesWeights: number[]
 	m_iDamageByTypeReceivedPreReduction: number[]
@@ -43448,6 +43872,11 @@ declare class CDOTA_DataRadiant {
 	m_PingConfirmationStates: PingConfirmationState_t
 }
 
+declare class DOTAThreatLevelInfo_t {
+	m_flKillability: number
+	m_nEntIndex: number
+}
+
 declare class CDOTA_DataSpectator {
 	m_iTeamNum: number
 	m_vecDataTeam: DataTeamPlayer_t
@@ -43474,6 +43903,7 @@ declare class CDOTA_DataSpectator {
 	m_hBountyRune_4: CEntityIndex<CBaseEntity>
 	m_iNetWorth: number[]
 	m_fRadiantWinProbability: number
+	m_ThreatLevelInfos: DOTAThreatLevelInfo_t
 }
 
 declare class CDOTA_DeathProphet_Exorcism_Spirit {
@@ -43765,6 +44195,7 @@ declare class CDOTA_Item {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -43847,6 +44278,7 @@ declare class CDOTA_Item_Aether_Lens {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -43929,6 +44361,7 @@ declare class CDOTA_Item_Aghanims_Shard {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44011,6 +44444,7 @@ declare class CDOTA_Item_Aghanims_Shard_Roshan {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44093,6 +44527,7 @@ declare class CDOTA_Item_Ancient_Janggo {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44175,6 +44610,7 @@ declare class CDOTA_Item_Ancient_Perseverance {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44257,6 +44693,7 @@ declare class CDOTA_Item_Apex {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44339,6 +44776,7 @@ declare class CDOTA_Item_Arcane_Blink {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44421,6 +44859,7 @@ declare class CDOTA_Item_Arcane_Boots {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44503,6 +44942,7 @@ declare class CDOTA_Item_Arcane_Ring {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44585,6 +45025,7 @@ declare class CDOTA_Item_Armlet {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44667,6 +45108,7 @@ declare class CDOTA_Item_Ballista {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44749,6 +45191,7 @@ declare class CDOTA_Item_Battlefury {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44831,6 +45274,7 @@ declare class CDOTA_Item_BlinkDagger {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44913,6 +45357,7 @@ declare class CDOTA_Item_Bloodstone {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -44995,6 +45440,7 @@ declare class CDOTA_Item_Book_Of_Shadows {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45077,6 +45523,7 @@ declare class CDOTA_Item_BootsOfTravel {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45159,6 +45606,7 @@ declare class CDOTA_Item_BootsOfTravel_2 {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45241,6 +45689,7 @@ declare class CDOTA_Item_Broom_Handle {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45323,6 +45772,7 @@ declare class CDOTA_Item_Buckler {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45405,6 +45855,7 @@ declare class CDOTA_Item_Bullwhip {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45487,6 +45938,7 @@ declare class CDOTA_Item_Ceremonial_Robe {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45569,6 +46021,7 @@ declare class CDOTA_Item_Chipped_Vest {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45651,6 +46104,7 @@ declare class CDOTA_Item_Cloak_Of_Flames {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45733,6 +46187,7 @@ declare class CDOTA_Item_Clumsy_Net {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45815,6 +46270,7 @@ declare class CDOTA_Item_Crimson_Guard {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45897,6 +46353,7 @@ declare class CDOTA_Item_Cyclone {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -45979,6 +46436,7 @@ declare class CDOTA_Item_DataDriven {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46138,6 +46596,7 @@ declare class CDOTA_Item_Demonicon {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46220,6 +46679,7 @@ declare class CDOTA_Item_Diffusal_Blade {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46302,6 +46762,7 @@ declare class CDOTA_Item_Diffusal_Blade_Level2 {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46384,6 +46845,7 @@ declare class CDOTA_Item_Dimensional_Doorway {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46466,6 +46928,7 @@ declare class CDOTA_Item_Dragon_Scale {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46548,6 +47011,7 @@ declare class CDOTA_Item_Elixer {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46630,6 +47094,7 @@ declare class CDOTA_Item_Elven_Tunic {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46712,6 +47177,7 @@ declare class CDOTA_Item_EmptyBottle {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46795,6 +47261,7 @@ declare class CDOTA_Item_Enchanted_Quiver {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46877,6 +47344,7 @@ declare class CDOTA_Item_Essence_Ring {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -46959,6 +47427,7 @@ declare class CDOTA_Item_Ethereal_Blade {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47041,6 +47510,7 @@ declare class CDOTA_Item_Ex_Machina {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47123,6 +47593,7 @@ declare class CDOTA_Item_Faded_Broach {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47205,6 +47676,7 @@ declare class CDOTA_Item_Falcon_Blade {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47287,6 +47759,7 @@ declare class CDOTA_Item_Fallen_Sky {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47369,6 +47842,7 @@ declare class CDOTA_Item_Fluffy_Hat {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47451,6 +47925,7 @@ declare class CDOTA_Item_Force_Boots {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47533,6 +48008,7 @@ declare class CDOTA_Item_ForceStaff {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47615,6 +48091,7 @@ declare class CDOTA_Item_GemOfTrueSight {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47697,6 +48174,7 @@ declare class CDOTA_Item_Giants_Ring {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47779,6 +48257,7 @@ declare class CDOTA_Item_Gladiator_Helm {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47861,6 +48340,7 @@ declare class CDOTA_Item_GlimmerCape {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -47943,6 +48423,7 @@ declare class CDOTA_Item_Gloves_Of_Travel {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48025,6 +48506,7 @@ declare class CDOTA_Item_Grandmasters_Glaive {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48108,6 +48590,7 @@ declare class CDOTA_Item_Guardian_Greaves {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48190,6 +48673,7 @@ declare class CDOTA_Item_Gungir {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48272,6 +48756,7 @@ declare class CDOTA_Item_Havoc_Hammer {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48354,6 +48839,7 @@ declare class CDOTA_Item_HelmOfTheDominator {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48436,6 +48922,7 @@ declare class CDOTA_Item_HelmOfTheDominator_2 {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48518,6 +49005,7 @@ declare class CDOTA_Item_HelmOfTheOverlord {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48600,6 +49088,7 @@ declare class CDOTA_Item_Holy_Locket {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48682,6 +49171,7 @@ declare class CDOTA_Item_Horizon {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48764,6 +49254,7 @@ declare class CDOTA_Item_Hurricane_Pike {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48846,6 +49337,7 @@ declare class CDOTA_Item_Illusionsts_Cape {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -48928,6 +49420,7 @@ declare class CDOTA_Item_Iron_Talon {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49010,6 +49503,7 @@ declare class CDOTA_Item_Keen_Optic {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49092,6 +49586,7 @@ declare class CDOTA_Item_Lua {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49174,6 +49669,7 @@ declare class CDOTA_Item_Mage_Slayer {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49256,6 +49752,7 @@ declare class CDOTA_Item_MantaStyle {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49338,6 +49835,7 @@ declare class CDOTA_Item_Medallion_Of_Courage {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49420,6 +49918,7 @@ declare class CDOTA_Item_Mekansm {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49502,6 +50001,7 @@ declare class CDOTA_Item_MeteorHammer {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49584,6 +50084,7 @@ declare class CDOTA_Item_Mind_Breaker {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49666,6 +50167,7 @@ declare class CDOTA_Item_Minotaur_Horn {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49748,6 +50250,7 @@ declare class CDOTA_Item_Moonshard {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49830,6 +50333,7 @@ declare class CDOTA_Item_Mysterious_Hat {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49912,6 +50416,7 @@ declare class CDOTA_Item_Necronomicon {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -49994,6 +50499,7 @@ declare class CDOTA_Item_Necronomicon_Level2 {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50076,6 +50582,7 @@ declare class CDOTA_Item_Necronomicon_Level3 {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50158,6 +50665,7 @@ declare class CDOTA_Item_Nether_Shawl {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50240,6 +50748,7 @@ declare class CDOTA_Item_Nian_Flag_Trap {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50322,6 +50831,7 @@ declare class CDOTA_Item_Ninja_Gear {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50404,6 +50914,7 @@ declare class CDOTA_Item_Nullifier {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50486,6 +50997,7 @@ declare class CDOTA_Item_Oakheart {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50568,6 +51080,7 @@ declare class CDOTA_Item_ObserverWard {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50650,6 +51163,7 @@ declare class CDOTA_Item_Ocean_Heart {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50732,6 +51246,7 @@ declare class CDOTA_Item_Orb_Of_Corrosion {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50814,6 +51329,7 @@ declare class CDOTA_Item_Orb_Of_Destruction {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50896,6 +51412,7 @@ declare class CDOTA_Item_Overflowing_Elixir {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -50978,6 +51495,7 @@ declare class CDOTA_Item_Overwhelming_Blink {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51060,6 +51578,7 @@ declare class CDOTA_Item_Paladin_Sword {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51142,6 +51661,7 @@ declare class CDOTA_Item_Panic_Button {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51304,6 +51824,7 @@ declare class CDOTA_Item_Pipe {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51386,6 +51907,7 @@ declare class CDOTA_Item_Pirate_Hat {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51468,6 +51990,7 @@ declare class CDOTA_Item_PocketRoshan {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51550,6 +52073,7 @@ declare class CDOTA_Item_PocketTower {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51632,6 +52156,7 @@ declare class CDOTA_Item_Possessed_Mask {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51714,6 +52239,7 @@ declare class CDOTA_Item_PowerTreads {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51797,6 +52323,7 @@ declare class CDOTA_Item_Psychic_Headband {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51879,6 +52406,7 @@ declare class CDOTA_Item_QuellingBlade {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -51961,6 +52489,7 @@ declare class CDOTA_Item_Quicksilver_Amulet {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -52043,6 +52572,7 @@ declare class CDOTA_Item_Radiance {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -52125,6 +52655,7 @@ declare class CDOTA_Item_Recipe_Guardian_Greaves {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -52207,6 +52738,7 @@ declare class CDOTA_Item_Recipe_Veil_Of_Discord {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -52289,6 +52821,7 @@ declare class CDOTA_Item_Ring_Of_Basilius {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -52371,6 +52904,7 @@ declare class CDOTA_Item_RingOfAquila {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -52453,6 +52987,7 @@ declare class CDOTA_Item_Royal_jelly {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -52856,6 +53391,7 @@ declare class CDOTA_Item_Seer_Stone {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -52938,6 +53474,7 @@ declare class CDOTA_Item_SentryWard {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53020,6 +53557,7 @@ declare class CDOTA_Item_Shivas_Guard {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53102,6 +53640,7 @@ declare class CDOTA_Item_Smoke_Of_Deceit {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53184,6 +53723,7 @@ declare class CDOTA_Item_Solar_Crest {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53266,6 +53806,7 @@ declare class CDOTA_Item_Sorcerers_Staff {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53348,6 +53889,7 @@ declare class CDOTA_Item_Spirit_Vessel {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53430,6 +53972,7 @@ declare class CDOTA_Item_SpookyTeleportScroll {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53512,6 +54055,7 @@ declare class CDOTA_Item_Spring2021_DefusalBomb {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53594,6 +54138,7 @@ declare class CDOTA_Item_Spy_Gadget {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53676,6 +54221,7 @@ declare class CDOTA_Item_Stormcrafter {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53758,6 +54304,7 @@ declare class CDOTA_Item_Swift_Blink {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53840,6 +54387,7 @@ declare class CDOTA_Item_Tango {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -53922,6 +54470,7 @@ declare class CDOTA_Item_Tango_Single {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54004,6 +54553,7 @@ declare class CDOTA_Item_TeleportScroll {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54086,6 +54636,7 @@ declare class CDOTA_Item_The_Leveller {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54168,6 +54719,7 @@ declare class CDOTA_Item_Third_eye {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54250,6 +54802,7 @@ declare class CDOTA_Item_Tombstone {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54332,6 +54885,7 @@ declare class CDOTA_Item_Tome_Of_Knowledge {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54414,6 +54968,7 @@ declare class CDOTA_Item_TranquilBoots {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54496,6 +55051,7 @@ declare class CDOTA_Item_TranquilBoots2 {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54578,6 +55134,7 @@ declare class CDOTA_Item_Trickster_Cloak {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54660,6 +55217,7 @@ declare class CDOTA_Item_Trident {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54742,6 +55300,7 @@ declare class CDOTA_Item_Trusty_Shovel {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54824,6 +55383,7 @@ declare class CDOTA_Item_UltimateScepter {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54906,6 +55466,7 @@ declare class CDOTA_Item_UltimateScepter_2 {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -54988,6 +55549,7 @@ declare class CDOTA_Item_UltimateScepter_Roshan {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55070,6 +55632,7 @@ declare class CDOTA_Item_Urn_Of_Shadows {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55152,6 +55715,7 @@ declare class CDOTA_Item_Vambrace {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55235,6 +55799,7 @@ declare class CDOTA_Item_Veil_Of_Discord {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55317,6 +55882,7 @@ declare class CDOTA_Item_Vengeances_Shadow {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55399,6 +55965,7 @@ declare class CDOTA_Item_Venom_Gland {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55481,6 +56048,7 @@ declare class CDOTA_Item_Vladmir {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55563,6 +56131,7 @@ declare class CDOTA_Item_Ward_Dispenser {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55645,6 +56214,7 @@ declare class CDOTA_Item_Warhammer {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55727,6 +56297,7 @@ declare class CDOTA_Item_Wind_Waker {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55809,6 +56380,7 @@ declare class CDOTA_Item_Witch_Blade {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55891,6 +56463,7 @@ declare class CDOTA_Item_Wizard_Glass {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -55973,6 +56546,7 @@ declare class CDOTA_Item_Woodland_Striders {
 	m_bAlertable: boolean
 	m_bCastOnPickup: boolean
 	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
 	m_bCanBeUsedOutOfInventory: boolean
 	m_bItemEnabled: boolean
 	m_bDisplayOwnership: boolean
@@ -57521,6 +58095,7 @@ declare class PlayerResourcePlayerEventData_t {
 }
 
 declare class PlayerResourcePlayerTeamData_t {
+	m_ThreatLevelInfos: DOTAThreatLevelInfo_t
 	m_nSelectedHeroID: number
 	m_iKills: number
 	m_iAssists: number
@@ -76216,6 +76791,7 @@ declare class CDOTA_Unit_Hero_Spectre {
 	m_flSpawnedAt: number
 	m_unArcanaKillStreak: number
 	m_nVictimPlayerID: number
+	m_bArcanaKillstreakRecordBroken: boolean
 	CPhysicsComponent: CPhysicsComponent
 	CRenderComponent: CRenderComponent
 	m_nMinCPULevel: number
@@ -82207,7 +82783,7 @@ declare class CDOTABaseAbility {
 }
 
 declare class CDOTABaseCustomHeroPickRules {
-
+	
 }
 
 declare class CDOTACustomShopItemInfo {
@@ -82233,6 +82809,7 @@ declare class CDOTABaseGameMode {
 	m_bUseCustomBuybackCost: boolean
 	m_bUseCustomBuybackCooldown: boolean
 	m_bBuybackEnabled: boolean
+	m_bUseTurboCouriers: boolean
 	m_flCameraDistanceOverride: number
 	m_nCameraSmoothCountOverride: number
 	m_hOverrideSelectionEntity: CEntityIndex<CDOTA_BaseNPC>
@@ -82256,6 +82833,7 @@ declare class CDOTABaseGameMode {
 	m_flMinimumAttackSpeed: number
 	m_flMaximumAttackSpeed: number
 	m_bIsDaynightCycleDisabled: boolean
+	m_flDaynightCycleAdvanceRate: number
 	m_bAreWeatherEffectsDisabled: boolean
 	m_bDisableHudFlip: boolean
 	m_bEnableFriendlyBuildingMoveTo: boolean
@@ -82292,6 +82870,7 @@ declare class CDOTABaseGameMode {
 	m_bEnableSendToStash: boolean
 	m_bForceRightClickAttackDisabled: boolean
 	m_vecCustomShopInfo: CDOTACustomShopInfo
+	m_bCanSellAnywhere: boolean
 	m_flCameraNearZ: number
 	m_flCameraFarZ: number
 	m_nCustomRadiantScore: number
@@ -82620,6 +83199,7 @@ declare class CDOTAMutationGameMode {
 	m_bUseCustomBuybackCost: boolean
 	m_bUseCustomBuybackCooldown: boolean
 	m_bBuybackEnabled: boolean
+	m_bUseTurboCouriers: boolean
 	m_flCameraDistanceOverride: number
 	m_nCameraSmoothCountOverride: number
 	m_hOverrideSelectionEntity: CEntityIndex<CDOTA_BaseNPC>
@@ -82643,6 +83223,7 @@ declare class CDOTAMutationGameMode {
 	m_flMinimumAttackSpeed: number
 	m_flMaximumAttackSpeed: number
 	m_bIsDaynightCycleDisabled: boolean
+	m_flDaynightCycleAdvanceRate: number
 	m_bAreWeatherEffectsDisabled: boolean
 	m_bDisableHudFlip: boolean
 	m_bEnableFriendlyBuildingMoveTo: boolean
@@ -82679,6 +83260,7 @@ declare class CDOTAMutationGameMode {
 	m_bEnableSendToStash: boolean
 	m_bForceRightClickAttackDisabled: boolean
 	m_vecCustomShopInfo: CDOTACustomShopInfo
+	m_bCanSellAnywhere: boolean
 	m_flCameraNearZ: number
 	m_flCameraFarZ: number
 	m_nCustomRadiantScore: number
@@ -82699,6 +83281,7 @@ declare class CDOTANewPlayerPoolGameMode {
 	m_bUseCustomBuybackCost: boolean
 	m_bUseCustomBuybackCooldown: boolean
 	m_bBuybackEnabled: boolean
+	m_bUseTurboCouriers: boolean
 	m_flCameraDistanceOverride: number
 	m_nCameraSmoothCountOverride: number
 	m_hOverrideSelectionEntity: CEntityIndex<CDOTA_BaseNPC>
@@ -82722,6 +83305,7 @@ declare class CDOTANewPlayerPoolGameMode {
 	m_flMinimumAttackSpeed: number
 	m_flMaximumAttackSpeed: number
 	m_bIsDaynightCycleDisabled: boolean
+	m_flDaynightCycleAdvanceRate: number
 	m_bAreWeatherEffectsDisabled: boolean
 	m_bDisableHudFlip: boolean
 	m_bEnableFriendlyBuildingMoveTo: boolean
@@ -82758,6 +83342,7 @@ declare class CDOTANewPlayerPoolGameMode {
 	m_bEnableSendToStash: boolean
 	m_bForceRightClickAttackDisabled: boolean
 	m_vecCustomShopInfo: CDOTACustomShopInfo
+	m_bCanSellAnywhere: boolean
 	m_flCameraNearZ: number
 	m_flCameraFarZ: number
 	m_nCustomRadiantScore: number
@@ -83122,6 +83707,100 @@ declare class CDOTAPropCustomTexture {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTAPropPlusPlayerGuildBanner {
+	m_flAnimTime: number
+	m_flSimulationTime: number
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	CBodyComponent: CBodyComponentBaseAnimating
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_bClientSideRagdoll: boolean
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_nRenderMode: RenderMode_t
+	m_nRenderFX: RenderFx_t
+	m_clrRender: Color
+	m_RenderAttributeIDs: CUtlStringToken[]
+	m_RenderAttributeValues: Vector4[]
+	m_LightGroup: CUtlStringToken
+	m_bRenderToCubemaps: boolean
+	m_nInteractsAs: bigint
+	m_nInteractsWith: bigint
+	m_nInteractsExclude: bigint
+	m_nEntityId: number
+	m_nHierarchyId: number
+	m_nCollisionGroup: number
+	m_nCollisionFunctionMask: number
+	m_vecMins: Vector3
+	m_vecMaxs: Vector3
+	m_usSolidFlags: number
+	m_nSolidType: SolidType_t
+	m_triggerBloat: number
+	m_nSurroundType: SurroundingBoundsType_t
+	m_CollisionGroup: number
+	m_bHitboxEnabled: boolean
+	m_vecSpecifiedSurroundingMins: Vector3
+	m_vecSpecifiedSurroundingMaxs: Vector3
+	m_vCapsuleCenter1: Vector3
+	m_vCapsuleCenter2: Vector3
+	m_flCapsuleRadius: number
+	m_iGlowType: number
+	m_nGlowRange: number
+	m_nGlowRangeMin: number
+	m_glowColorOverride: Color
+	m_bFlashing: boolean
+	m_flGlowTime: number
+	m_flGlowStartTime: number
+	m_flGlowBackfaceMult: number
+	m_fadeMinDist: number
+	m_fadeMaxDist: number
+	m_flFadeScale: number
+	m_flShadowStrength: number
+	m_nAddDecal: number
+	m_vDecalPosition: Vector3
+	m_vDecalForwardAxis: Vector3
+	m_flDecalHealBloodRate: number
+	m_flDecalHealHeightRate: number
+	m_ConfigEntitiesToPropagateMaterialDecalsTo: CEntityIndex<CBaseModelEntity>[]
+	m_pRagdollPose: PhysicsRagdollPose_t
+	m_vecForce: Vector3
+	m_nForceBone: number
+	m_bShouldAnimateDuringGameplayPause: boolean
+	m_bAnimGraphUpdateEnabled: boolean
+	m_GraphParameterName: string
+	m_flGoal: number
+	m_noGhostCollision: boolean
+	m_flClothScale: number
+	m_bUseHitboxesForRenderBox: boolean
+	m_bUseAnimGraph: boolean
+	m_bRespawnClientEntity: boolean
+	m_bPlaySpawnAnimation: boolean
+	m_unGuildTier: number
+	m_unPrimaryColor: number
+	m_unSecondaryColor: number
+	m_unPattern: number
+	m_unLogo: bigint
+	m_unGuildId: number
+	m_unGuildFlags: number
+	m_bUsePanelCache: boolean
+	m_nPlayerID: number
+	CPhysicsComponent: CPhysicsComponent
+	CRenderComponent: CRenderComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTAPropTI10PlayerGuildBanner {
 	m_flAnimTime: number
 	m_flSimulationTime: number
@@ -83344,6 +84023,7 @@ declare class CDOTATurboGameMode {
 	m_bUseCustomBuybackCost: boolean
 	m_bUseCustomBuybackCooldown: boolean
 	m_bBuybackEnabled: boolean
+	m_bUseTurboCouriers: boolean
 	m_flCameraDistanceOverride: number
 	m_nCameraSmoothCountOverride: number
 	m_hOverrideSelectionEntity: CEntityIndex<CDOTA_BaseNPC>
@@ -83367,6 +84047,7 @@ declare class CDOTATurboGameMode {
 	m_flMinimumAttackSpeed: number
 	m_flMaximumAttackSpeed: number
 	m_bIsDaynightCycleDisabled: boolean
+	m_flDaynightCycleAdvanceRate: number
 	m_bAreWeatherEffectsDisabled: boolean
 	m_bDisableHudFlip: boolean
 	m_bEnableFriendlyBuildingMoveTo: boolean
@@ -83403,6 +84084,7 @@ declare class CDOTATurboGameMode {
 	m_bEnableSendToStash: boolean
 	m_bForceRightClickAttackDisabled: boolean
 	m_vecCustomShopInfo: CDOTACustomShopInfo
+	m_bCanSellAnywhere: boolean
 	m_flCameraNearZ: number
 	m_flCameraFarZ: number
 	m_nCustomRadiantScore: number
@@ -84038,6 +84720,7 @@ declare class CEnvCubemap {
 	m_bDefaultEnvMap: boolean
 	m_bRenderDepthMap: boolean
 	m_bAlwaysCheckDepth: boolean
+	m_bCopyDiffuseFromDefaultCubemap: boolean
 	m_bEnabled: boolean
 	CPhysicsComponent: CPhysicsComponent
 	m_nMinCPULevel: number
@@ -84083,6 +84766,7 @@ declare class CEnvCubemapBox {
 	m_bDefaultEnvMap: boolean
 	m_bRenderDepthMap: boolean
 	m_bAlwaysCheckDepth: boolean
+	m_bCopyDiffuseFromDefaultCubemap: boolean
 	m_bEnabled: boolean
 	CPhysicsComponent: CPhysicsComponent
 	m_nMinCPULevel: number
@@ -85008,7 +85692,7 @@ declare class CFuncRotating {
 }
 
 declare class CGameRulesProxy {
-
+	
 }
 
 declare class CGenericFlexCycler {
@@ -85812,6 +86496,57 @@ declare class CIngameEvent_NewBloom2019 {
 	m_nMaxGPULevel: number
 }
 
+declare class CIngameEvent_Spring2021 {
+	m_flAnimTime: number
+	m_flSimulationTime: number
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	CBodyComponent: CBodyComponentPoint
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_CompendiumChallengeEventID: number[]
+	m_CompendiumChallengeSequenceID: number[]
+	m_CompendiumChallengeCoinReward: number[]
+	m_CompendiumChallengeCoinSplash: number[]
+	m_CompendiumChallengePointReward: number[]
+	m_CompendiumChallengeCompleted: boolean[]
+	m_CompendiumChallengeFailed: boolean[]
+	m_CompendiumChallengeProgress: number[]
+	m_QueryIDForProgress: number[]
+	m_SubChallenges: CDOTASubChallengeInfo
+	m_CompendiumCoinWager: number[]
+	m_CompendiumTokenWagerItemID: itemid_t[]
+	m_CompendiumWagerTokenBonusPct: number[]
+	m_CompendiumCoinWagerResults: number[]
+	m_CompendiumRankWagers: number[]
+	m_flWagerTimer: number
+	m_flWagerEndTime: number
+	m_CompendiumChallengeInfo: CDOTA_PlayerChallengeInfo
+	m_PlayerQueryIDs: CDOTA_CombatLogQueryProgress
+	m_ProgressForQueryID: number[]
+	m_GoalForQueryID: number[]
+	m_PlayerQuestRankPreviouslyCompleted: number[]
+	m_PlayerQuestRankCompleted: number[]
+	m_PlayerBountyTarget: number[]
+	m_PlayerBountyTimestamp: number[]
+	m_PlayerBountyCount: number[]
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CIngameEvent_TI2020 {
 	m_flAnimTime: number
 	m_flSimulationTime: number
@@ -86192,6 +86927,9 @@ declare class CLightComponent {
 	m_flOrthoLightHeight: number
 	m_nStyle: number
 	m_Pattern: string
+	m_nCascadeRenderStaticObjects: number
+	m_flShadowCascadeCrossFade: number
+	m_flShadowCascadeDistanceFade: number
 	m_flShadowCascadeDistance0: number
 	m_flShadowCascadeDistance1: number
 	m_flShadowCascadeDistance2: number
@@ -86200,12 +86938,12 @@ declare class CLightComponent {
 	m_nShadowCascadeResolution1: number
 	m_nShadowCascadeResolution2: number
 	m_nShadowCascadeResolution3: number
-	m_nBakedShadowIndex: number
 	m_nBakeLightIndex: number
 	m_flBakeLightIndexScale: number
 	m_bUsesIndexedBakedLighting: boolean
-	m_bRenderToCubemaps: boolean
 	m_nPriority: number
+	m_nBakedShadowIndex: number
+	m_bRenderToCubemaps: boolean
 	m_LightGroups: string
 	m_nDirectLight: number
 	m_nIndirectLight: number
@@ -86227,7 +86965,6 @@ declare class CLightComponent {
 	m_flNearClipPlane: number
 	m_SkyColor: Color
 	m_flSkyIntensity: number
-	m_bLowerHemisphereIsBlack: boolean
 	m_SkyAmbientBounce: Color
 	m_bMixedShadows: boolean
 	m_flLightStyleStartTime: number
@@ -88190,6 +88927,7 @@ declare class CSoundOpvarSetAABBEntity {
 	m_iszOperatorName: string
 	m_iszOpvarName: string
 	m_iOpvarIndex: number
+	m_bUseAutoCompare: boolean
 	CPhysicsComponent: CPhysicsComponent
 	m_nMinCPULevel: number
 	m_nMaxCPULevel: number
@@ -88219,6 +88957,67 @@ declare class CSoundOpvarSetOBBEntity {
 	m_iszOperatorName: string
 	m_iszOpvarName: string
 	m_iOpvarIndex: number
+	m_bUseAutoCompare: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CSoundOpvarSetOBBWindEntity {
+	m_flAnimTime: number
+	m_flSimulationTime: number
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	CBodyComponent: CBodyComponentPoint
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_iszStackName: string
+	m_iszOperatorName: string
+	m_iszOpvarName: string
+	m_iOpvarIndex: number
+	m_bUseAutoCompare: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CSoundOpvarSetPointBase {
+	m_flAnimTime: number
+	m_flSimulationTime: number
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	CBodyComponent: CBodyComponentPoint
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_iszStackName: string
+	m_iszOperatorName: string
+	m_iszOpvarName: string
+	m_iOpvarIndex: number
+	m_bUseAutoCompare: boolean
 	CPhysicsComponent: CPhysicsComponent
 	m_nMinCPULevel: number
 	m_nMaxCPULevel: number
@@ -88248,6 +89047,7 @@ declare class CSoundOpvarSetPointEntity {
 	m_iszOperatorName: string
 	m_iszOpvarName: string
 	m_iOpvarIndex: number
+	m_bUseAutoCompare: boolean
 	CPhysicsComponent: CPhysicsComponent
 	m_nMinCPULevel: number
 	m_nMaxCPULevel: number
@@ -88623,8 +89423,8 @@ declare class CTonemapController2 {
 	m_flTonemapPercentTarget: number
 	m_flTonemapPercentBrightPixels: number
 	m_flTonemapMinAvgLum: number
-	m_flRate: number
-	m_flAccelerateExposureDown: number
+	m_flExposureAdaptationSpeedUp: number
+	m_flExposureAdaptationSpeedDown: number
 	CPhysicsComponent: CPhysicsComponent
 	m_nMinCPULevel: number
 	m_nMaxCPULevel: number
