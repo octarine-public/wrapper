@@ -1,5 +1,6 @@
 import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
+import { ArmorPerAgility } from "../../Data/GameData"
 import { NetworkedBasicField, WrapperClass } from "../../Decorators"
 import { ArmorType } from "../../Enums/ArmorType"
 import { AttackDamageType } from "../../Enums/AttackDamageType"
@@ -84,7 +85,7 @@ export default class Unit extends Entity {
 	@NetworkedBasicField("m_bIsAncient")
 	public IsAncient = false
 	@NetworkedBasicField("m_flPhysicalArmorValue")
-	public Armor = 0
+	public BaseArmor = 0
 	@NetworkedBasicField("m_iCurShop")
 	public CurrentShop = DOTA_SHOP_TYPE.DOTA_SHOP_NONE
 	@NetworkedBasicField("m_iMoveSpeed")
@@ -364,6 +365,12 @@ export default class Unit extends Entity {
 	}
 	public get MagicDamageResist(): number {
 		return GetUnitNumberPropertyByName(this.Index, "m_flMagicalResistanceValueReal") ?? this.BaseMagicDamageResist
+	}
+	public get BonusArmor(): number {
+		return GetUnitNumberPropertyByName(this.Index, "m_flBonusPhysicalArmor") ?? 0
+	}
+	public get Armor(): number {
+		return this.BaseArmor + this.BonusArmor + (this.TotalAgility * ArmorPerAgility)
 	}
 	public get ManaPercent(): number {
 		return Math.floor(this.Mana / this.MaxMana * 100) || 0
