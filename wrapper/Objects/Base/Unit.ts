@@ -279,7 +279,7 @@ export default class Unit extends Entity {
 	 */
 	public get DamageResist(): number {
 		const armor = this.Armor
-		return (0.052 * armor) / (0.9 + 0.048 * Math.abs(armor))
+		return (0.06 * armor) / (1 + 0.06 * Math.abs(armor))
 	}
 	public get HasArcana(): boolean {
 		return this.ArcanaLevel > 0
