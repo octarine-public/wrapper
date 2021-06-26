@@ -744,8 +744,6 @@ export default class Unit extends Entity {
 						damage *= 1.5
 					else if (phys_damage_type === AttackDamageType.Pierce && phys_armor_type === ArmorType.Structure)
 						damage *= .35
-					else if (phys_damage_type === AttackDamageType.Siege && phys_armor_type === ArmorType.Hero)
-						damage *= .85
 					else if (phys_damage_type === AttackDamageType.Siege && phys_armor_type === ArmorType.Structure)
 						damage *= 2.5
 				}
