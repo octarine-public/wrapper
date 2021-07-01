@@ -164,7 +164,6 @@ declare function EmitStartSoundEvent( // pass location: Vector2 at IOBuffer offs
  * @returns biguint to IOBuffer offset 0, and return value is true if function succeeded
  */
 declare function GetEntityUnitState(entity_id: number): boolean
-declare function GetUnitNumberPropertyByName(entity_id: number, name: string): number | undefined
 /**
  * @param custom_entity_id (entity_id << 1) or (binary_id << 1) | 1
  * @param render_mode RenderMode_t

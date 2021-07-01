@@ -158,6 +158,16 @@ export default class Unit extends Entity {
 	public LastActivityEndTime = 0
 	public readonly SpawnPosition = new Vector3()
 	public Spawner: Nullable<NeutralSpawner>
+	public AttackRange = 0
+	public AttackSpeed = 0
+	public IncreasedAttackSpeed = 0
+	public AttacksPerSecond = 0
+	public BaseAttackTime = 0
+	public MoveCapabilities = DOTAUnitMoveCapability_t.DOTA_UNIT_CAP_MOVE_NONE
+	public BonusArmor = 0
+	private IdealSpeed_: Nullable<number>
+	private HealthBarOffset_: Nullable<number>
+	private MagicDamageResist_: Nullable<number>
 
 	private EtherealModifiers: string[] = [
 		"modifier_ghost_state",
@@ -258,17 +268,7 @@ export default class Unit extends Entity {
 	public get BaseAttackRange(): number {
 		return this.UnitData.BaseAttackRange
 	}
-	// TODO: parse from KV + use buffs + items
-	public get AttackRange(): number {
-		return GetUnitNumberPropertyByName(this.Index, "m_fAttackRange") ?? 0
-	}
-	public get AttacksPerSecond(): number {
-		return GetUnitNumberPropertyByName(this.Index, "m_fAttacksPerSecond") ?? 0
-	}
 	// BaseArmor
-	public get BaseAttackTime(): number {
-		return GetUnitNumberPropertyByName(this.Index, "m_flBaseAttackTime") ?? 0
-	}
 	// BaseHealthRegeneration
 	// BaseManaRegeneration
 	public get DamageAverage(): number {
@@ -290,7 +290,7 @@ export default class Unit extends Entity {
 	public get HealthBarOffset(): number {
 		let offset = this.HealthBarOffsetOverride
 		if (offset === -1)
-			offset = GetUnitNumberPropertyByName(this.Index, "m_iHealthBarOffset") ?? this.UnitData.HealthBarOffset
+			offset = this.HealthBarOffset_ ?? this.UnitData.HealthBarOffset
 		return this.DeltaZ + offset
 	}
 	public get WorkshopName(): string {
@@ -320,13 +320,6 @@ export default class Unit extends Entity {
 		wts.SubtractForThis(manabar_size.Divide(new Vector2(1.95, 0.42))).FloorForThis()
 		return [wts, manabar_size]
 	}*/
-	// TODO: parse KV, use buffs and items for calculation
-	public get AttackSpeed(): number {
-		return GetUnitNumberPropertyByName(this.Index, "m_fAttackSpeed") ?? 0
-	}
-	public get IncreasedAttackSpeed(): number {
-		return GetUnitNumberPropertyByName(this.Index, "m_fIncreasedAttackSpeed") ?? 0
-	}
 	public get AttackSpeedBonus() {
 		let attackSpeed = this.AttackSpeed
 		attackSpeed += this.GetBuffByName("modifier_ursa_overpower")?.Ability?.GetSpecialValue("attack_speed_bonus_pct") ?? 0
@@ -350,10 +343,6 @@ export default class Unit extends Entity {
 	public get IsControllable(): boolean {
 		return LocalPlayer !== undefined && this.IsControllableByPlayer(LocalPlayer.PlayerID)
 	}
-	// TODO: parse KV, use buffs for this
-	get MoveCapabilities(): DOTAUnitMoveCapability_t {
-		return GetUnitNumberPropertyByName(this.Index, "m_iMoveCapabilities") ?? 0
-	}
 	public get IsMelee(): boolean {
 		return this.HasAttackCapability(DOTAUnitAttackCapability_t.DOTA_UNIT_CAP_MELEE_ATTACK)
 	}
@@ -364,10 +353,7 @@ export default class Unit extends Entity {
 		return !this.IsWaitingToSpawn
 	}
 	public get MagicDamageResist(): number {
-		return GetUnitNumberPropertyByName(this.Index, "m_flMagicalResistanceValueReal") ?? this.BaseMagicDamageResist
-	}
-	public get BonusArmor(): number {
-		return GetUnitNumberPropertyByName(this.Index, "m_flBonusPhysicalArmor") ?? 0
+		return this.MagicDamageResist_ ?? this.BaseMagicDamageResist
 	}
 	public get Armor(): number {
 		return this.BaseArmor + this.BonusArmor + (this.TotalAgility * ArmorPerAgility)
@@ -381,9 +367,8 @@ export default class Unit extends Entity {
 	public get MinimapIconSize(): number {
 		return this.UnitData.MinimapIconSize
 	}
-	// TODO: parse KV, use buffs & items to calculate this
 	public get IdealSpeed(): number {
-		return GetUnitNumberPropertyByName(this.Index, "m_fIdealSpeed") ?? this.BaseMoveSpeed
+		return this.IdealSpeed_ ?? this.BaseMoveSpeed
 	}
 	public get SecondsPerAttack(): number {
 		return 1 / (this.AttacksPerSecond ?? 0)
@@ -523,6 +508,31 @@ export default class Unit extends Entity {
 	}
 	public IsControllableByPlayer(playerID: number): boolean {
 		return HasBitBigInt(this.IsControllableByPlayerMask, BigInt(playerID))
+	}
+	// TODO: parse from KV + use buffs + items
+	public ForwardNativeProperties(
+		m_fAttackRange: number,
+		m_fAttackSpeed: number,
+		m_fIncreasedAttackSpeed: number,
+		m_fAttacksPerSecond: number,
+		m_fIdealSpeed: number,
+		m_flBaseAttackTime: number,
+		m_iHealthBarOffset: number,
+		m_iMoveCapabilities: number,
+		m_flMagicalResistanceValueReal: number,
+		m_flBonusPhysicalArmor: number,
+	) {
+		this.AttackRange = m_fAttackRange
+		this.AttackSpeed = m_fAttackSpeed
+		this.IncreasedAttackSpeed = m_fIncreasedAttackSpeed
+		this.AttacksPerSecond = m_fAttacksPerSecond
+		this.BaseAttackTime = m_flBaseAttackTime
+		this.IdealSpeed_ = m_fIdealSpeed
+		this.AttackRange = m_fAttackRange
+		this.HealthBarOffset_ = m_iHealthBarOffset
+		this.MoveCapabilities = m_iMoveCapabilities
+		this.MagicDamageResist_ = m_flMagicalResistanceValueReal
+		this.BonusArmor = m_flBonusPhysicalArmor
 	}
 
 	/**

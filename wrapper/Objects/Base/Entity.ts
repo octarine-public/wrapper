@@ -324,6 +324,20 @@ export default class Entity {
 		// return this.Attachments?.get(activity)?.find(attach => attach.Name === name)
 		return undefined
 	}
+	public ForwardNativeProperties(
+		m_fAttackRange: number,
+		m_fAttackSpeed: number,
+		m_fIncreasedAttackSpeed: number,
+		m_fAttacksPerSecond: number,
+		m_fIdealSpeed: number,
+		m_flBaseAttackTime: number,
+		m_iHealthBarOffset: number,
+		m_iMoveCapabilities: number,
+		m_flMagicalResistanceValueReal: number,
+		m_flBonusPhysicalArmor: number,
+	) {
+		// To be implemented in child classes
+	}
 
 	public CannotUseItem(_item: Item): boolean {
 		return false
