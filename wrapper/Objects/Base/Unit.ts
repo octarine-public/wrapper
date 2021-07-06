@@ -52,11 +52,12 @@ export default class Unit extends Entity {
 			| (1 << Team.Shop)
 		)
 
-		const local_team = unit.Team,
+		const local_team = GameState.LocalTeam,
+			ent_team = unit.Team,
 			flags = unit.IsVisibleForTeamMask & valid_teams
 
 		for (let i = 14; i--;)
-			if (i !== local_team && ((flags >> i) & 1))
+			if (i !== local_team && i !== ent_team && ((flags >> i) & 1))
 				return true
 		return false
 	}
