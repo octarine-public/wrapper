@@ -3,7 +3,6 @@ import EventsSDK from "../Managers/EventsSDK"
 import { InputEventSDK, VMouseKeys } from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import { StringToUTF8, Utf16ArrayToStr, Utf8ArrayToStr } from "../Utils/ArrayBufferUtils"
-import GameState from "../Utils/GameState"
 import { readJSON } from "../Utils/Utils"
 import Base from "./Base"
 import Header from "./Header"
@@ -85,10 +84,8 @@ class MenuManager {
 	public async Render(): Promise<void> {
 		if (this.config === undefined)
 			return
-		if (GameState.Language === "unknown")
-			GameState.Language = Localization.PreferredUnitName
 		if (!this.initialized_language) {
-			Localization.SelectedUnitName = GameState.Language
+			Localization.SelectedUnitName = Localization.PreferredUnitName
 			this.initialized_language = true
 		}
 		this.ForwardConfig()

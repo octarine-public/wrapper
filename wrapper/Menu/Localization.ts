@@ -1,9 +1,7 @@
-import GameState from "../Utils/GameState"
-
 export default new (class Localization {
 	public was_changed = true
 	public PreferredUnitName = "english"
-	private SelectedUnitName_ = GameState.Language
+	private SelectedUnitName_ = "english"
 	private readonly LocalizationUnits = new Map<string, Map<string, string>>()
 
 	public get SelectedUnitName(): string {
