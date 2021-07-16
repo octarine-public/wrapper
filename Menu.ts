@@ -24,11 +24,6 @@ SettingsLanguage.OnValue(change => {
 	}
 })
 
-const TelemetryToggle = SettingsTree.AddToggle("Opt-in telemetry", true)
-TelemetryToggle.OnValue(toggle => ToggleTelemetryState(toggle.value))
-TelemetryToggle.IsHidden = true
-EventsSDK.on("Draw", () => TelemetryToggle.IsHidden = !(globalThis as any).TELEMETRY_TOGGLE_ENABLED)
-
 /** Node Reload Scripts */
 const SettingsReloadTree = SettingsTree.AddNode("Reload Scripts")
 const ReloadScriptsBind = SettingsReloadTree.AddKeybind("Key Bind")
