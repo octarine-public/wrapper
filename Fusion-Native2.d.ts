@@ -187,3 +187,4 @@ declare function DespawnWorker(worker_uid: bigint): void
  * @throws on wrong/self worker_uid
  */
 declare function SendIPCMessage(worker_uid: bigint, name: string, msg: WorkerIPCType): void
+declare function WriteUserCmd(): void

@@ -1,16 +1,16 @@
 import Color from "../../Base/Color"
 import Rectangle from "../../Base/Rectangle"
 import EventsSDK from "../../Managers/EventsSDK"
+import InputManager from "../../Managers/InputManager"
 import RendererSDK from "../../Native/RendererSDK"
 import { arrayRemove } from "../../Utils/ArrayExtensions"
 import { MAX_SHOW_NOTIFICATION, Notifications, Queue } from "../data"
 import { NotificationsSDK } from "../Imports"
 import { GetPanel } from "../Util"
-import { IsShopOpen } from "./Update"
 
 EventsSDK.after("Draw", () => {
 	arrayRemove(Notifications, Notifications.filter(x => x.IsExpired)[0])
-	if (IsShopOpen)
+	if (InputManager.IsShopOpen)
 		return
 	const num = Math.min(Queue.length, MAX_SHOW_NOTIFICATION - Notifications.length)
 	for (let index = 0; index < num; index++) {

@@ -205,6 +205,9 @@ export default class ExecuteOrder {
 	}
 }
 
+globalThis.WriteUserCmd = globalThis.WriteUserCmd ?? (() => {
+	// polyfill for old core
+})
 const last_order_click = new Vector3(),
 	latest_cursor = new Vector2()
 let last_order_click_update = 0,
@@ -214,6 +217,7 @@ let last_order_click_update = 0,
 Events.on("Update", () => {
 	const cmd = new UserCmd()
 	InputManager.CursorOnWorld = cmd.VectorUnderCursor
+	InputManager.IsShopOpen = cmd.ShopMask === 13
 	if (ExecuteOrder.disable_humanizer)
 		return
 	let order = ExecuteOrder.order_queue[0] as Nullable<ExecuteOrder>
@@ -306,6 +310,7 @@ Events.on("Update", () => {
 	cmd.ViewAngles.z = 0
 
 	cmd.WriteBack()
+	WriteUserCmd()
 })
 
 const debugParticles = new ParticlesSDK()
@@ -352,7 +357,10 @@ EventsSDK.on("Draw", () => {
 		RendererSDK.FilledRect(point.Subtract(new Vector2(5, 5)), new Vector2(10, 10), Color.Fuchsia)
 })
 
-//EventsSDK.on("GameEnded", () => ExecuteOrder.order_queue = [])
+EventsSDK.on("GameEnded", () => {
+	ExecuteOrder.order_queue = []
+	InputManager.IsShopOpen = false
+})
 Events.on("PrepareUnitOrders", async () => {
 	if (GameRules?.IsPaused)
 		return true

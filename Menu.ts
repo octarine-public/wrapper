@@ -1,4 +1,4 @@
-import { Events, EventsSDK, Menu } from "wrapper/Imports"
+import { Events, Menu } from "wrapper/Imports"
 import { SetGameInProgress } from "./wrapper/Objects/Base/Entity"
 
 declare global {
