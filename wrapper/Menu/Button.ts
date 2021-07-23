@@ -7,7 +7,7 @@ import Base from "./Base"
 
 export default class Button extends Base {
 	public static OnWindowSizeChanged(): void {
-		Button.text_button_gap = GUIInfo.ScaleWidth(5)
+		Button.text_button_gap = GUIInfo.ScaleWidth(8)
 		Button.text_vertical_button_gap = GUIInfo.ScaleHeight(8)
 		Button.button_offset.x = GUIInfo.ScaleWidth(14)
 		Button.button_offset.y = GUIInfo.ScaleWidth(11)
