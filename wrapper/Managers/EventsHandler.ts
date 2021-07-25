@@ -477,6 +477,7 @@ message CDOTAUserMsg_TE_UnitAnimation {
 	optional float castpoint = 4;
 	optional int32 type = 5;
 	optional int32 activity = 6;
+	optional float lag_compensation_time = 7;
 }
 
 message CDOTAUserMsg_TE_UnitAnimationEnd {
@@ -836,6 +837,7 @@ Events.on("ServerMessage", async (msg_id, buf_) => {
 				msg.get("castpoint") as number,
 				msg.get("type") as number,
 				msg.get("activity") as number,
+				msg.get("lag_compensation_time") as number,
 			)
 			break
 		}

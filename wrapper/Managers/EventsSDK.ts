@@ -91,6 +91,7 @@ interface EventsSDK extends EventEmitter {
 		castpoint: number,
 		type: number,
 		activity: number,
+		lag_compensation_time: number,
 	) => void): EventsSDK
 	on(name: "UnitAnimationEnd", callback: (
 		npc: Unit,
