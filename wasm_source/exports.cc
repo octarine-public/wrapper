@@ -178,12 +178,12 @@ EXPORT_JS int ParseVHCG(uint8_t* data, size_t data_size) {
 }
 
 extern bool RayTraceInitialized();
-extern std::optional<Vector> TryRayTrace(Vector camera_position, Vector ray_direction);
-float GetHeightForLocation(Vector2D loc) {
+extern std::optional<Vector> TryRayTrace(Vector camera_position, Vector ray_direction, uint32_t flags);
+float GetHeightForLocation(Vector2D loc, uint32_t flags) {
 	if (RayTraceInitialized()) {
 		Vector camera_position{ loc.x, loc.y, 10000 };
 		Vector ray_direction{ 0.f, 0.f, -1.f };
-		auto res = TryRayTrace(camera_position, ray_direction);
+		auto res = TryRayTrace(camera_position, ray_direction, flags);
 		return res ? res->z : -16384.f;
 	}
 	return height_map_initialized
@@ -191,28 +191,53 @@ float GetHeightForLocation(Vector2D loc) {
 		: -16384.f;
 }
 EXPORT_JS void GetHeightForLocation() {
-	JSIOBuffer[0] = GetHeightForLocation(UnwrapVector2());
+	auto flags = *(uint32_t*)&JSIOBuffer[2];
+	JSIOBuffer[0] = GetHeightForLocation(UnwrapVector2(), flags);
 }
 
 EXPORT_JS void GetLocationAverageHeight() {
 	auto pos = UnwrapVector2();
-	auto count = (int)JSIOBuffer[2];
-	auto dist = JSIOBuffer[3];
+	auto flags = *(uint32_t*)&JSIOBuffer[2];
+	auto count = (int)JSIOBuffer[3];
+	auto dist = JSIOBuffer[4];
 
 	float height_sum = 0.f;
 	int height_count = 0;
-	for (int x = 0; x < count; x++) {
-		for (int y = 0; y < count; y++) {
-			auto height = GetHeightForLocation(pos);
-			if (height > -1000) {
+	for (int x = -count; x <= count; x++) {
+		for (int y = -count; y <= count; y++) {
+			auto height = GetHeightForLocation({
+				pos.x + x * dist,
+				pos.y + y * dist,
+			}, flags);
+			if (height > -1000.f) {
 				height_sum += height;
 				height_count++;
 			}
-			pos.y += dist;
 		}
-		pos.x += dist;
 	}
-	JSIOBuffer[0] = height_sum / height_count;
+	JSIOBuffer[0] = height_count != 0
+		? height_sum / height_count
+		: -16384.f;
+}
+
+EXPORT_JS void GetCursorRay() {
+	auto window_size = UnwrapVector2();
+	auto camera_position = UnwrapVector3(2);
+	auto camera_angles = UnwrapVector3(5);
+	auto camera_distance = JSIOBuffer[8];
+	auto fov = JSIOBuffer[9];
+	auto screen = UnwrapVector2(10);
+	
+	Vector vForward, vRight, vUp;
+	CameraAngleVectors(*(QAngle*)&camera_angles, &vForward, &vRight, &vUp);
+	FixWindowSize(window_size);
+	if (fov <= 0.f)
+		fov = GetFOVForWindowSize(window_size);
+	auto far_size = GetFarSize(window_size, fov);
+	screen.x = screen.x * 2.f - 1.f;
+	screen.y = 1.f - screen.y * 2.f;
+	auto res = vForward + vRight * (far_size.x * screen.x) + vUp * (far_size.y * screen.y);
+	memcpy(JSIOBuffer, &res, sizeof(res));
 }
 
 EXPORT_JS void ScreenToWorldFar() {
@@ -221,7 +246,8 @@ EXPORT_JS void ScreenToWorldFar() {
 	auto camera_angles = UnwrapVector3(5);
 	auto camera_distance = JSIOBuffer[8];
 	auto fov = JSIOBuffer[9];
-	auto screens_count = (int)JSIOBuffer[10];
+	auto flags = *(uint32_t*)&JSIOBuffer[10];
+	auto screens_count = *(uint32_t*)&JSIOBuffer[11];
 	if (screens_count == 0)
 		return;
 	
@@ -235,7 +261,7 @@ EXPORT_JS void ScreenToWorldFar() {
 	auto screens_results = new Vector[screens_count];
 	bool initialized = RayTraceInitialized();
 	for (int i = 0; i < screens_count; i++) {
-		auto screen = UnwrapVector2(11 + i * 2);
+		auto screen = UnwrapVector2(12 + i * 2);
 		screen.x = screen.x * 2.f - 1.f;
 		screen.y = 1.f - screen.y * 2.f;
 		Vector ray = vForward + vRight * (far_size.x * screen.x) + vUp * (far_size.y * screen.y);
@@ -254,7 +280,7 @@ EXPORT_JS void ScreenToWorldFar() {
 			} else
 				cur_pos.Invalidate();
 		} else {
-			auto pos = TryRayTrace(camera_position, ray);
+			auto pos = TryRayTrace(camera_position, ray, flags);
 			if (pos)
 				cur_pos = *pos;
 			else
@@ -440,20 +466,25 @@ EXPORT_JS void* DecompressLZ4(void* data, size_t size, size_t dst_len) {
 	return dst;
 }
 
+extern "C" {
+	unsigned long long ZSTD_decompressBound(const void* src, size_t srcSize);
+}
 EXPORT_JS void* DecompressZstd(void* data, size_t size) {
-	/*if (size < 4)
+	if (size < 12)
 		return nullptr;
-	auto dst_len = ZSTD_getFrameContentSize(data, size);
-	if (dst_len == ZSTD_CONTENTSIZE_ERROR || dst_len == ZSTD_CONTENTSIZE_ERROR)
-		return nullptr;
-	auto dst = malloc(dst_len);
-	if (ZSTD_decompress(dst, dst_len, data, size) != dst_len) {
-		free(dst);
+	auto dst_len = ZSTD_decompressBound(data, size);
+	if (dst_len == ZSTD_CONTENTSIZE_ERROR) {
+		*(uint32_t*)data = 0;
+		*GetPointer<uint32_t>(data, 4) = dst_len;
+		*GetPointer<uint32_t>(data, 8) = 0;
 		return nullptr;
 	}
-	*(uint32_t*)data = dst_len;
-	return dst;*/
-	return nullptr;
+	auto dst = malloc(dst_len);
+	auto res = ZSTD_decompress(dst, dst_len, data, size);
+	*(uint32_t*)data = res;
+	*GetPointer<uint32_t>(data, 4) = 0;
+	*GetPointer<uint32_t>(data, 8) = 0;
+	return dst;
 }
 
 EXPORT_JS void* DecompressLZ4Chained(void* data, uint32_t* input_sizes, uint32_t* output_sizes, uint32_t count) {
@@ -526,16 +557,16 @@ EXPORT_JS void ResetWorld() {
 }
 
 extern void LoadWorldModelInternal(
-	std::string_view vertex_data, size_t vertex_size,
+	std::string_view vertex_data,
 	std::string_view index_data, size_t index_size,
 	VMatrix transform
 );
 EXPORT_JS void LoadWorldModel(
-	void* vertex_ptr, size_t vertex_size, size_t vertex_elem_size,
+	void* vertex_ptr, size_t vertex_size,
 	void* index_ptr, size_t index_size, size_t index_elem_size
 ) {
 	LoadWorldModelInternal(
-		{ (const char*)vertex_ptr, vertex_size }, vertex_elem_size,
+		{ (const char*)vertex_ptr, vertex_size },
 		{ (const char*)index_ptr, index_size }, index_elem_size,
 		*(VMatrix*)JSIOBuffer
 	);

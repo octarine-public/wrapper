@@ -39,10 +39,10 @@ EventsSDK.on("Tick", () => {
 				const time_moved = buff.ElapsedTime - (1 / 30)
 
 				owner.Position.Subtract(Vector3.FromVector2(velocity.MultiplyScalar(time_moved * 30))).CopyTo(abil.StartPosition)
-				abil.StartPosition.z = GetPositionHeight(Vector2.FromVector3(abil.StartPosition))
+				abil.StartPosition.z = GetPositionHeight(abil.StartPosition)
 
 				owner.Position.Add(Vector3.FromVector2(velocity.MultiplyScalar((buff_end_time - time_moved) * 30 + 1))).CopyTo(abil.TargetPosition)
-				abil.TargetPosition.z = GetPositionHeight(Vector2.FromVector3(abil.TargetPosition))
+				abil.TargetPosition.z = GetPositionHeight(abil.TargetPosition)
 			}
 			abil.LastKnownOwnerPosition_.Invalidate()
 		} else {

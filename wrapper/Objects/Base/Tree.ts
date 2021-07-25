@@ -1,6 +1,5 @@
 import Color from "../../Base/Color"
 import QAngle from "../../Base/QAngle"
-import Vector2 from "../../Base/Vector2"
 import Vector3 from "../../Base/Vector3"
 import { WrapperClass } from "../../Decorators"
 import { RenderMode_t } from "../../Enums/RenderMode_t"
@@ -63,13 +62,12 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 		await entity.AsyncCreate()
 		entity.Name_ = "ent_dota_tree"
 		entity.ClassName = "C_DOTA_MapTree"
-		pos.SetZ(GetPositionHeight(Vector2.FromVector3(pos)))
+		pos.SetZ(GetPositionHeight(pos))
 		entity.Position.CopyFrom(pos)
 		entity.NetworkedPosition.CopyFrom(pos)
 		entity.BoundingBox.Base.CopyFrom(pos)
 		entity.BinaryID = TempTreeIDOffset - 1
 		entity.Team = Team.Neutral
-		entity.OnModelUpdated()
 		CreateEntityInternal(entity)
 		await EventsSDK.emit("PreEntityCreated", false, entity)
 		GridNav?.UpdateTreeState(entity)
@@ -99,6 +97,7 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 		entity.Angles.CopyFrom(ang)
 		entity.NetworkedAngles.CopyFrom(ang)
 		entity.ModelName = model
+		entity.OnModelUpdated()
 	})
 }
 

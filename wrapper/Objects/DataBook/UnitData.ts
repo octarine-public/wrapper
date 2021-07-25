@@ -168,7 +168,7 @@ export async function ReloadGlobalUnitStorage() {
 						Object.assign(new UnitData(key as string, empty_map), val),
 					))
 					resolve_global_storage(target_map)
-				}).catch(() => {
+				}, () => {
 					resolve_unit_names_sorted([])
 					resolve_global_storage(target_map)
 				})

@@ -1,6 +1,7 @@
 import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
+import { MaterialFlags } from "../Resources/ParseMaterial"
 import { ParseREDI } from "../Resources/ParseREDI"
 import { ParseResourceLayout } from "../Resources/ParseResource"
 import { DegreesToRadian } from "../Utils/Math"
@@ -87,6 +88,7 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	ParseVHCG: (ptr: number, size: number) => HeightMapParseError,
 	GetHeightForLocation: () => void,
 	GetLocationAverageHeight: () => void,
+	GetCursorRay: () => void,
 	ScreenToWorldFar: () => void,
 	my_malloc: (size: number) => number,
 	my_free: (ptr: number) => void,
@@ -113,7 +115,7 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 	DecompressIndexBuffer: (ptr: number, size: number, elem_count: number, elem_size: number) => number,
 	ResetWorld: () => void,
 	LoadWorldModel: (
-		vertex_ptr: number, vertex_size: number, vertex_elem_size: number,
+		vertex_ptr: number, vertex_size: number,
 		index_ptr: number, index_size: number, index_elem_size: number,
 	) => void,
 	FinishWorld: () => void,
@@ -154,13 +156,14 @@ export function GetCameraPosition(
 ): Vector3 {
 	const dist = 96 * 1.5,
 		count = 8,
-		t = hrtime()
+		t = hrtime(),
+		eye_vector = GetEyeVector(camera_angles)
 	if (camera_offset_updated + 100 < t) {
 		camera_offset = GetLocationAverageHeight(
 			camera_position
 				.Clone()
-				.SubtractScalarX(count * dist / 2)
-				.SubtractScalarY(count * dist / 2),
+				.AddScalarX(eye_vector.x * camera_distance)
+				.AddScalarY(eye_vector.y * camera_distance),
 			count,
 			dist,
 		)
@@ -168,18 +171,53 @@ export function GetCameraPosition(
 	}
 	return Vector3.FromVector2(camera_position).SetZ(
 		camera_offset
-		- GetEyeVector(camera_angles).z * camera_distance
+		- eye_vector.z * camera_distance
 		+ 50,
+	)
+}
+
+export function GetCursorRay(
+	screen: Vector2,
+	window_size: Vector2,
+	camera_position: Vector3,
+	camera_distance: number,
+	camera_angles: QAngle,
+	fov: number,
+): Vector3 {
+	WASMIOBuffer[0] = window_size.x
+	WASMIOBuffer[1] = window_size.y
+
+	WASMIOBuffer[2] = camera_position.x
+	WASMIOBuffer[3] = camera_position.y
+	WASMIOBuffer[4] = camera_position.z
+
+	WASMIOBuffer[5] = camera_angles.x
+	WASMIOBuffer[6] = camera_angles.y
+	WASMIOBuffer[7] = camera_angles.z
+
+	WASMIOBuffer[8] = camera_distance
+
+	WASMIOBuffer[9] = fov
+
+	WASMIOBuffer[10] = screen.x
+	WASMIOBuffer[11] = screen.y
+
+	wasm.GetCursorRay()
+	return new Vector3(
+		WASMIOBuffer[0],
+		WASMIOBuffer[1],
+		WASMIOBuffer[2],
 	)
 }
 
 export function ScreenToWorldFar(
 	screens: Vector2[],
 	window_size: Vector2,
-	camera_position: QAngle,
+	camera_position: Vector3,
 	camera_distance: number,
 	camera_angles: QAngle,
 	fov: number,
+	flags = MaterialFlags.Nonsolid | MaterialFlags.Water,
 ): Vector3[] {
 	WASMIOBuffer[0] = window_size.x
 	WASMIOBuffer[1] = window_size.y
@@ -196,11 +234,12 @@ export function ScreenToWorldFar(
 
 	WASMIOBuffer[9] = fov
 
-	WASMIOBuffer[10] = screens.length
+	WASMIOBufferU32[10] = flags
+	WASMIOBufferU32[11] = screens.length
 
 	screens.forEach((screen, i) => {
-		WASMIOBuffer[11 + i * 2 + 0] = screen.x
-		WASMIOBuffer[11 + i * 2 + 1] = screen.y
+		WASMIOBuffer[12 + i * 2 + 0] = screen.x
+		WASMIOBuffer[12 + i * 2 + 1] = screen.y
 	})
 
 	wasm.ScreenToWorldFar()
@@ -379,9 +418,13 @@ export function ResetVHCG(): void {
 	HeightMap = undefined
 }
 
-export function GetPositionHeight(loc: Vector2): number {
+export function GetPositionHeight(
+	loc: Vector2 | Vector3,
+	flags = MaterialFlags.Nonsolid | MaterialFlags.Water,
+): number {
 	WASMIOBuffer[0] = loc.x
 	WASMIOBuffer[1] = loc.y
+	WASMIOBufferU32[2] = flags
 
 	wasm.GetHeightForLocation()
 	return WASMIOBuffer[0]
@@ -391,11 +434,13 @@ export function GetLocationAverageHeight(
 	position: Vector2,
 	count: number,
 	distance: number,
+	flags = MaterialFlags.Nonsolid | MaterialFlags.Water,
 ): number {
 	WASMIOBuffer[0] = position.x
 	WASMIOBuffer[1] = position.y
-	WASMIOBuffer[2] = count
-	WASMIOBuffer[3] = distance
+	WASMIOBufferU32[2] = flags
+	WASMIOBuffer[3] = count
+	WASMIOBuffer[4] = distance
 
 	wasm.GetLocationAverageHeight()
 	return WASMIOBuffer[0]
@@ -444,14 +489,18 @@ export function DecompressLZ4(buf: Uint8Array, dst_len: number): Uint8Array {
 }
 
 export function DecompressZstd(buf: Uint8Array): Uint8Array {
+	if (buf.byteLength < 12)
+		throw `Zstd decompression failed: buf.byteLength < 12`
 	const addr = wasm.my_malloc(buf.byteLength)
 	new Uint8Array(wasm.memory.buffer, addr).set(buf)
 
 	const decompressed_addr = wasm.DecompressZstd(addr, buf.byteLength)
-	const size = new Uint32Array(wasm.memory.buffer, addr)[0]
+	const size = new Uint32Array(wasm.memory.buffer, addr)[0],
+		error = new Uint32Array(wasm.memory.buffer, addr)[1],
+		additional_data = new Uint32Array(wasm.memory.buffer, addr)[2]
 	wasm.my_free(addr)
-	if (decompressed_addr === 0)
-		throw "Zstd decompression failed"
+	if (error !== 0 || decompressed_addr === 0)
+		throw `Zstd decompression failed: ${size} ${error} ${additional_data}`
 	const copy = new Uint8Array(size)
 	copy.set(new Uint8Array(wasm.memory.buffer, decompressed_addr, copy.byteLength))
 	wasm.my_free(decompressed_addr)
@@ -551,11 +600,27 @@ export function LoadWorldModel(
 	indexBuffer: Uint8Array,
 	indexSize: number,
 	transform: ArrayLike<number>,
+	flags: number,
 ): void {
-	const vertex_addr = wasm.my_malloc(vertexBuffer.byteLength)
+	if (vertexSize < 3 * 4)
+		return
+	const vertexCount = vertexBuffer.byteLength / vertexSize
+	const vertex_addr = wasm.my_malloc(vertexCount * 4 * 4)
 	if (vertex_addr === 0)
 		throw "Memory allocation for LoadWorldModel vertexBuffer raw data failed"
-	new Uint8Array(wasm.memory.buffer, vertex_addr, vertexBuffer.byteLength).set(vertexBuffer)
+	if (flags !== -1 || vertexSize !== 4 * 4) {
+		const wasmView = new DataView(wasm.memory.buffer, vertex_addr, vertexCount * 4 * 4),
+			origView = new DataView(vertexBuffer.buffer, vertexBuffer.byteOffset, vertexBuffer.byteLength)
+		for (let i = 0; i < vertexCount; i++) {
+			const wasmPos = i * 4 * 4,
+				origPos = i * vertexSize
+			wasmView.setFloat32(wasmPos + 0, origView.getFloat32(origPos + 0, true), true)
+			wasmView.setFloat32(wasmPos + 4, origView.getFloat32(origPos + 4, true), true)
+			wasmView.setFloat32(wasmPos + 8, origView.getFloat32(origPos + 8, true), true)
+			wasmView.setUint32(wasmPos + 12, flags, true)
+		}
+	} else
+		new Uint8Array(wasm.memory.buffer, vertex_addr, vertexBuffer.byteLength).set(vertexBuffer)
 
 	const index_addr = wasm.my_malloc(indexBuffer.byteLength)
 	if (index_addr === 0)
@@ -564,7 +629,7 @@ export function LoadWorldModel(
 
 	WASMIOBuffer.set(transform)
 	wasm.LoadWorldModel(
-		vertex_addr, vertexBuffer.byteLength, vertexSize,
+		vertex_addr, vertexCount * 4 * 4,
 		index_addr, indexBuffer.byteLength, indexSize,
 	)
 }

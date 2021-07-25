@@ -1,4 +1,3 @@
-import Vector2 from "../../../Base/Vector2"
 import Vector3 from "../../../Base/Vector3"
 import { WrapperClass } from "../../../Decorators"
 import { ParticleAttachment_t } from "../../../Enums/ParticleAttachment_t"
@@ -123,7 +122,7 @@ EventsSDK.on("Tick", dt => {
 				const velocity = current_pos.GetDirection2DTo(target_pos).MultiplyScalarForThis(leap_speed * dt)
 				current_pos.AddForThis(velocity)
 				if (velocity.Length + owner.HullRadius + /* valve(tm) magic */5 >= distance_left) {
-					current_pos.z = GetPositionHeight(Vector2.FromVector3(current_pos))
+					current_pos.z = GetPositionHeight(current_pos)
 					predicted_ar[2] = GameState.RawGameTime
 					if (finished_jumping) {
 						CreateParticleForTree(tree)
@@ -134,7 +133,7 @@ EventsSDK.on("Tick", dt => {
 			if (predicted_ar[2] === 0) { // update vertical motion
 				const mul = 1 - (target_pos.Distance2D(current_pos) / target_pos.Distance2D(start_pos))
 				current_pos.z = start_pos.z + ((target_pos.z - start_pos.z) * mul) + Math.sin(mul * Math.PI) * Math.min(200, target_pos.Distance2D(start_pos) / 3)
-				const ground_height = GetPositionHeight(Vector2.FromVector3(current_pos))
+				const ground_height = GetPositionHeight(current_pos)
 				if (current_pos.z < ground_height)
 					current_pos.z = ground_height
 			}

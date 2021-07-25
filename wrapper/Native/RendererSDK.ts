@@ -1068,7 +1068,8 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 			const model_path = GetMapStringProperty(sceneObject, "m_renderableModel"),
 				mesh_path = GetMapStringProperty(sceneObject, "m_renderable"),
 				objectTypeFlags = GetMapNumberProperty(sceneObject, "m_nObjectTypeFlags")
-			if (HasBit(objectTypeFlags, 3)) // visual only, doesn't affect height calculations/etc
+			// visual only, doesn't affect height calculations/etc
+			if (HasBit(objectTypeFlags, 7))
 				return
 			if (model_path !== "")
 				models.push([model_path, [...transform.values]])
@@ -1096,9 +1097,9 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 			&& BVH2 instanceof Uint8Array
 		))
 			return
-		WASM.LoadWorldModel(VB, 3 * 4, IB, 4, Matrix4x4.Identity.values)
+		WASM.LoadWorldModel(VB, 4 * 4, IB, 4, Matrix4x4.Identity.values, -1)
 		WASM.FinishWorldCached([BVH1, BVH2])
-	}).catch(console.error)
+	}, console.error)
 }
 async function TryLoadMapFiles(): Promise<void> {
 	const map_name = GameState.MapName
@@ -1223,6 +1224,7 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 		drawCall.IndexBuffer.Data,
 		drawCall.IndexBuffer.ElementSize,
 		transform,
+		drawCall.Flags,
 	))
 	{ // big plate underneath the world to make any valid tracing actually end
 		const VB = new Uint8Array(new Float32Array([
@@ -1244,5 +1246,7 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 		)
 	}
 	WASM.FinishWorld()
-	return WASM.ExtractWorld()
+	const res = WASM.ExtractWorld()
+	WASM.ResetWorld()
+	return res
 })

@@ -1,5 +1,4 @@
 import Color from "../Base/Color"
-import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
 import { GameActivity_t } from "../Enums/GameActivity_t"
 import { GetPositionHeight } from "../Native/WASM"
@@ -56,7 +55,7 @@ EventsSDK.on("Tick", async () => {
 		const dt = cur_time - proj.LastUpdate
 		proj.Position.AddForThis(Vector3.FromVector2(proj.Velocity.MultiplyScalar(dt)))
 		proj.LastUpdate = cur_time
-		proj.Position.z = GetPositionHeight(Vector2.FromVector3(proj.Position))
+		proj.Position.z = GetPositionHeight(proj.Position)
 	})
 	for (const proj of ProjectileManager.AllTrackingProjectiles) {
 		if (proj.LastUpdate === 0) {

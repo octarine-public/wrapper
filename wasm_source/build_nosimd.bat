@@ -30,4 +30,15 @@
 	meshoptimizer/src/vertexcodec.cpp ^
 	meshoptimizer/src/vertexfilter.cpp ^
 	meshoptimizer/src/vfetchanalyzer.cpp ^
-	meshoptimizer/src/vfetchoptimizer.cpp
+	meshoptimizer/src/vfetchoptimizer.cpp ^
+	zstd/lib/common/entropy_common.c ^
+	zstd/lib/common/error_private.c ^
+	zstd/lib/common/fse_decompress.c ^
+	zstd/lib/common/pool.c ^
+	zstd/lib/common/threading.c ^
+	zstd/lib/common/xxhash.c ^
+	zstd/lib/common/zstd_common.c ^
+	zstd/lib/decompress/huf_decompress.c ^
+	zstd/lib/decompress/zstd_ddict.c ^
+	zstd/lib/decompress/zstd_decompress.c ^
+	zstd/lib/decompress/zstd_decompress_block.c

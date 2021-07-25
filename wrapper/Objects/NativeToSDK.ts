@@ -85,7 +85,7 @@ export default function GetConstructorByName(class_name: string, constructor_nam
 
 	const fixed_class_name = FixClassNameForMap(class_name, SchemaClassesInheritance)
 	if (fixed_class_name === undefined)
-		throw `Can't fix classname ${class_name}, so we can't walk it's inheritance, and class isn't declared in wrapper.`
+		throw `Can't fix classname ${class_name}, so we can't walk its' inheritance, and class isn't declared in wrapper.`
 
 	// if neither fixed or original class name have got wrapped entities - try to walk up inherited classes
 	const inherited = SchemaClassesInheritance.get(fixed_class_name)!

@@ -5,6 +5,7 @@
 #include <string_view>
 #include <vector>
 #include <optional>
+#include <array>
 #include <stdlib.h> // for malloc
 #include <assert.h> // for assert
 #include <emscripten.h> // for EMSCRIPTEN_KEEPALIVE
