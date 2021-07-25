@@ -206,6 +206,9 @@ export default class Ability extends Entity {
 			return this.GetSpecialValue("value")
 		return 0
 	}
+	public get IsCastRangeFake(): boolean {
+		return false
+	}
 	public async AsyncCreate(): Promise<void> {
 		this.AbilityData = (await AbilityData.global_storage).get(this.Name) ?? AbilityData.empty
 	}
