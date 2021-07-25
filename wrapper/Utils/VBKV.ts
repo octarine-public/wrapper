@@ -136,7 +136,7 @@ const serializer = new (class VBKVSerializer {
 		this.WriteNullTerminatedString(name)
 		if (typeof kv === "string") {
 			type.setUint8(0, VBKVTypes.TYPE_STRING)
-			this.WriteNullTerminatedString(name)
+			this.WriteNullTerminatedString(kv)
 		} else if (typeof kv === "number") {
 			const view = this.AllocateSpace(4)
 			if (kv === kv >> 0) {
