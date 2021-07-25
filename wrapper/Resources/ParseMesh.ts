@@ -1,6 +1,7 @@
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
 import { parseKVBlock } from "./ParseKV"
+import { ParseMaterial } from "./ParseMaterial"
 import { ParseResourceLayout } from "./ParseResource"
 import { GetMapNumberProperty, GetMapStringProperty, MapToBooleanArray, MapToNumberArray, MapToStringArray, MapToVector3, MapToVector3Array, MapToVector4Array } from "./ParseUtils"
 import { ParseVBIB, ParseVBIBFromKV, VBIB, VBIBBufferData } from "./ParseVBIB"
@@ -65,6 +66,7 @@ export class CMeshDrawCall {
 	constructor(
 		public readonly VertexBuffer: VBIBBufferData,
 		public readonly IndexBuffer: VBIBBufferData,
+		public readonly Flags: number,
 	) { }
 }
 
@@ -157,6 +159,15 @@ export class CMesh {
 					GetMapNumberProperty(drawCall, "m_nIndexCount"),
 					Math.floor((indexBuffer.Data.byteLength - indexBufferOffset) / indexBuffer.ElementSize),
 				)
+				let materialPath = GetMapStringProperty(drawCall, "m_material")
+				if (materialPath === "")
+					materialPath = GetMapStringProperty(drawCall, "m_pMaterial")
+				if (!materialPath.endsWith("_c"))
+					materialPath += "_c"
+				const materialBuf = fread(materialPath)
+				const material = materialBuf !== undefined
+					? ParseMaterial(materialBuf)
+					: undefined
 				this.DrawCalls.push(new CMeshDrawCall(
 					new VBIBBufferData(
 						vertexCount,
@@ -176,6 +187,7 @@ export class CMesh {
 							indexBufferOffset + (indexCount * indexBuffer.ElementSize),
 						),
 					),
+					material?.Flags ?? 0,
 				))
 			})
 		})

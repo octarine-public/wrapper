@@ -11,6 +11,7 @@ import { default as Input } from "../Managers/InputManager"
 import { DefaultWorldLayers, ParseEntityLump, ResetEntityLump } from "../Resources/ParseEntityLump"
 import { ParseGNV, ResetGNV } from "../Resources/ParseGNV"
 import { parseKVFile } from "../Resources/ParseKV"
+import { ParseMaterial } from "../Resources/ParseMaterial"
 import { CMeshDrawCall, ParseMesh } from "../Resources/ParseMesh"
 import { ParseModel } from "../Resources/ParseModel"
 import { GetMapNumberProperty, GetMapStringProperty, MapToMatrix4x4, MapToNumberArray, MapToStringArray } from "../Resources/ParseUtils"
@@ -793,21 +794,15 @@ class CRendererSDK {
 			return this.texture_cache.get(path)!
 		let read_path = path
 		if (path.endsWith(".vmat_c")) {
-			const vmat_kv = parseKVFile(path)
-			const m_textureParams = vmat_kv.get("m_textureParams")
-			if (m_textureParams instanceof Map || Array.isArray(m_textureParams)) {
-				m_textureParams.forEach((param: RecursiveMapValue) => {
-					if (!(param instanceof Map))
-						return
-					if (param.get("m_name") === "g_tColor") {
-						const tex_path = param.get("m_pValue")
-						if (typeof tex_path === "string") {
-							read_path = tex_path
-							if (read_path.endsWith(".vtex"))
-								read_path += "_c"
-						}
-					}
-				})
+			const buf = fread(path)
+			if (buf !== undefined) {
+				const vmat = ParseMaterial(buf)
+				const g_tColor = vmat.TextureParams.get("g_tColor")
+				if (g_tColor !== undefined) {
+					read_path = g_tColor
+					if (read_path.endsWith(".vtex"))
+						read_path += "_c"
+				}
 			}
 		}
 		const read = readFile(read_path, 2) // 1 for ourselves, 1 for caller [Image]
