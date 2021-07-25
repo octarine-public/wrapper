@@ -13,7 +13,7 @@ export default class Creep extends Unit {
 		return super.IsDeniable || this.HPPercent <= 50
 	}
 	public get RingRadius(): number {
-		return 64
+		return 60
 	}
 	public GetAdditionalAttackDamage(source: Unit): number {
 		let damage = 0

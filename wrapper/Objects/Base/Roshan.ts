@@ -10,15 +10,15 @@ export default class Roshan extends Unit {
 	public static HP = 0
 	public static HPRegenCounter = 0
 	public static MaxHP = 0
+	public static Instance: Nullable<Entity | number>
 	public static get HPRegen() {
 		return 20
 	}
-	public static Instance: Nullable<Entity | number>
 	@NetworkedBasicField("m_bGoldenRoshan")
 	public GoldenRoshan = false
 
 	public get RingRadius(): number {
-		return 128
+		return 80
 	}
 }
 
