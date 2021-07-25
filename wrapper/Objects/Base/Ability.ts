@@ -8,6 +8,7 @@ import { DOTA_UNIT_TARGET_FLAGS } from "../../Enums/DOTA_UNIT_TARGET_FLAGS"
 import { DOTA_UNIT_TARGET_TEAM } from "../../Enums/DOTA_UNIT_TARGET_TEAM"
 import { DOTA_UNIT_TARGET_TYPE } from "../../Enums/DOTA_UNIT_TARGET_TYPE"
 import { SPELL_IMMUNITY_TYPES } from "../../Enums/SPELL_IMMUNITY_TYPES"
+import ExecuteOrder from "../../Native/ExecuteOrder"
 import { HasMask, MaskToArrayNumber } from "../../Utils/BitsExtensions"
 import GameState from "../../Utils/GameState"
 import AbilityData from "../DataBook/AbilityData"
@@ -310,6 +311,9 @@ export default class Ability extends Entity {
 			&& this.IsCooldownReady
 			&& !this.Owner?.IsSilenced
 			&& this.IsManaEnough(bonusMana)
+	}
+	public IsDoubleTap(order: ExecuteOrder): boolean {
+		return false
 	}
 }
 
