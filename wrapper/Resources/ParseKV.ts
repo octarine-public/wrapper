@@ -241,7 +241,8 @@ class KVParser {
 			data_offset = stream.ReadUint32(),
 			count_32bit = stream.ReadUint32()
 		this.count_64bit = stream.ReadUint32()
-		stream.RelativeSeek(8)
+		const string_and_types_buffer_size = stream.ReadUint32()
+		stream.RelativeSeek(4)
 		const uncompressed_size = stream.ReadUint32(),
 			compressed_size = stream.ReadUint32(),
 			block_count = stream.ReadUint32()
@@ -282,33 +283,58 @@ class KVParser {
 		this.offset_64bit = stream.pos
 		stream.pos += this.count_64bit * 8
 
+		const string_array_pos = stream.pos
 		for (let i = 0; i < string_count; i++)
 			this.strings.push(stream.ReadNullTerminatedUtf8String())
 
 		// 0xFFEEDD00 trailer + size of lz4 compressed block sizes (short) + size of lz4 decompressed block sizes (int)
-		for (let i = 0, end = stream.Remaining - 4 - (block_count * (2 + 4)); i < end; i++)
+		for (let i = 0, end = string_and_types_buffer_size - (stream.pos - string_array_pos); i < end; i++)
 			this.types.push(stream.ReadUint8())
 
 		for (let i = 0; i < block_count; i++)
 			this.uncompressed_blocks_lengths.push(stream.ReadUint32())
 
 		if (stream.ReadUint32() !== 0xFFEEDD00)
-			throw "Invalid trailer"
+			throw `Invalid trailer`
 
-		if (block_count !== 0) {
-			const compressed_block_lengths: number[] = []
-			for (let i = 0; i < block_count; i++)
-				compressed_block_lengths.push(stream.ReadUint16())
-			const uncompressed_blocks = DecompressLZ4Chained(new Uint8Array(
-				orig_stream.view.buffer,
-				orig_stream.view.byteOffset + orig_stream.pos,
-				orig_stream.view.byteLength - orig_stream.pos,
-			), compressed_block_lengths, this.uncompressed_blocks_lengths)
-			this.uncompressed_blocks_stream = new BinaryStream(new DataView(
-				uncompressed_blocks.buffer,
-				uncompressed_blocks.byteOffset,
-				uncompressed_blocks.byteLength,
-			))
+		switch (compression_method) {
+			case 0: {
+				const remaining = orig_stream.Remaining
+				const needed = this.uncompressed_blocks_lengths.reduce((prev, cur) => prev + cur, 0)
+				if (remaining < needed)
+					throw "Failed uncompressed reading: remaining < needed"
+				this.uncompressed_blocks_stream = new BinaryStream(new DataView(
+					orig_stream.view.buffer,
+					orig_stream.view.byteOffset + orig_stream.pos,
+					needed,
+				))
+				break
+			}
+			case 1: {
+				const compressed_block_lengths: number[] = []
+				for (let i = 0; i < block_count; i++)
+					compressed_block_lengths.push(stream.ReadUint16())
+				const uncompressed_blocks = DecompressLZ4Chained(new Uint8Array(
+					orig_stream.view.buffer,
+					orig_stream.view.byteOffset + orig_stream.pos,
+					orig_stream.view.byteLength - orig_stream.pos,
+				), compressed_block_lengths, this.uncompressed_blocks_lengths)
+				this.uncompressed_blocks_stream = new BinaryStream(new DataView(
+					uncompressed_blocks.buffer,
+					uncompressed_blocks.byteOffset,
+					uncompressed_blocks.byteLength,
+				))
+				break
+			}
+			case 2:
+				this.uncompressed_blocks_stream = new BinaryStream(new DataView(
+					stream.view.buffer,
+					stream.view.byteOffset + stream.pos,
+					stream.view.byteLength - stream.pos,
+				))
+				break
+			default:
+				throw `Unknown KV3 compression method: ${compression_method}`
 		}
 
 		stream.pos = kv_data_offset
