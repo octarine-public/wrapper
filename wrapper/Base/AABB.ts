@@ -50,4 +50,16 @@ export default class AABB {
 	public Distance(vec: Vector3): number {
 		return this.Points.reduce((a, b) => Math.min(a, b.Distance(vec)), Infinity)
 	}
+	public SetFromMinMax(min: Vector3, max: Vector3): this {
+		this.Base.toZero()
+		this.MinOffset.toZero()
+		this.MaxOffset.toZero()
+		this.DeltaZ = 0
+
+		this.Base.AddForThis(min).AddForThis(max).DivideScalarForThis(2)
+		this.MinOffset.AddForThis(min).SubtractForThis(this.Base)
+		this.MaxOffset.AddForThis(max).SubtractForThis(this.Base)
+
+		return this
+	}
 }
