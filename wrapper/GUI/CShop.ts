@@ -93,7 +93,7 @@ export default class CShop {
 	private CalculateStash(screen_size: Vector2, hud_flip: boolean): void {
 		const StashContainer = new Rectangle()
 		StashContainer.Width = GUIInfo.ScaleWidth(750, screen_size)
-		StashContainer.Height = GUIInfo.ScaleHeight(166, screen_size)
+		StashContainer.Height = GUIInfo.ScaleHeight(176, screen_size)
 
 		StashContainer.y = (
 			screen_size.y
