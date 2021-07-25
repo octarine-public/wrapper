@@ -2,13 +2,14 @@ import Matrix4x4 from "../Base/Matrix4x4"
 import Vector3 from "../Base/Vector3"
 import Vector4 from "../Base/Vector4"
 import { GameActivity_t } from "../Enums/GameActivity_t"
+import Workers from "../Native/Workers"
 import { CAnimationFrame } from "./ParseAnimation"
 import { CMeshAttachment } from "./ParseMesh"
 import { ParseModel } from "./ParseModel"
 import { CSkeleton } from "./Skeleton"
 
 export class ComputedAttachment {
-	private readonly MatrixesCompressed: Float32Array
+	public readonly MatrixesCompressed: Float32Array
 	constructor(
 		public readonly Name: string,
 		public readonly FPS: number,
@@ -134,4 +135,60 @@ export function ComputeAttachmentsAndBounds(model_name: string): [ComputedAttach
 		map.set(GameActivity_t.ACT_DOTA_IDLE, empty_attachments)
 	}
 	return [map, model.MinBounds, model.MaxBounds]
+}
+
+Workers.RegisterRPCEndPoint("ComputeAttachmentsAndBounds", data => {
+	if (typeof data !== "string")
+		throw "Data should be a string"
+	const res = ComputeAttachmentsAndBounds(data)
+	const serialized_map = new Map<GameActivity_t, [ArrayBuffer, string, number, number][]>()
+	res[0].forEach((v, k) => serialized_map.set(
+		k,
+		v.map(el => [el.MatrixesCompressed.buffer, el.Name, el.FPS, el.FrameCount]) as [ArrayBuffer, string, number, number][],
+	))
+	return [serialized_map, res[1].toArray(), res[2].toArray()]
+})
+
+export async function ComputeAttachmentsAndBoundsAsync(
+	model_name: string,
+): Promise<[ComputedAttachments, Vector3, Vector3]> {
+	const data = await Workers.CallRPCEndPoint(
+		"ComputeAttachmentsAndBounds",
+		model_name,
+	)
+	if (!Array.isArray(data))
+		throw "!Array.isArray(data)"
+	const serialized_map = data[0],
+		MinBounds = data[1],
+		MaxBounds = data[2]
+	if (!(serialized_map instanceof Map))
+		throw "!(serialized_map instanceof Map)"
+	if (!Array.isArray(MinBounds))
+		throw "!Array.isArray(MinBounds)"
+	if (!Array.isArray(MaxBounds))
+		throw "!Array.isArray(MaxBounds)"
+	const map = new Map<GameActivity_t, ComputedAttachment[]>()
+	serialized_map.forEach((v, k) => {
+		if (typeof k !== "number")
+			throw "typeof k !== \"number\""
+		if (!Array.isArray(v))
+			throw "!Array.isArray(v)"
+		const ar = v as [ArrayBuffer, string, number, number][]
+		const deserialized_ar: ComputedAttachment[] = []
+		ar.forEach(([buf, name, fps, frame_count]) => {
+			const attachment = new ComputedAttachment(
+				name,
+				fps,
+				frame_count,
+			)
+			attachment.MatrixesCompressed.set(new Float32Array(buf))
+			deserialized_ar.push(attachment)
+		})
+		map.set(k, deserialized_ar)
+	})
+	return [
+		map,
+		Vector3.fromArray(MinBounds as number[]),
+		Vector3.fromArray(MaxBounds as number[]),
+	]
 }
