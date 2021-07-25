@@ -1079,6 +1079,11 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 	const world_promise = current_world_promise = Workers.CallRPCEndPoint(
 		"LoadAndOptimizeWorld",
 		[models, meshes],
+		false,
+		{
+			forward_events: false,
+			forward_server_messages: false,
+		},
 	)
 	world_promise.then(data => {
 		if (world_promise !== current_world_promise || !Array.isArray(data))
