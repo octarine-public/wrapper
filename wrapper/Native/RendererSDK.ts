@@ -1224,6 +1224,25 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 		drawCall.IndexBuffer.ElementSize,
 		transform,
 	))
+	{ // big plate underneath the world to make any valid tracing actually end
+		const VB = new Uint8Array(new Float32Array([
+			-10000000, -10000000, -16384,
+			10000000, -10000000, -16384,
+			-10000000, 10000000, -16384,
+			10000000, 10000000, -16384,
+		]).buffer)
+		const IB = new Uint8Array([
+			0, 1, 2, 1, 2, 3,
+		])
+		WASM.LoadWorldModel(
+			VB,
+			3 * 4,
+			IB,
+			1,
+			Matrix4x4.Identity.values,
+			0,
+		)
+	}
 	WASM.FinishWorld()
 	return WASM.ExtractWorld()
 })
