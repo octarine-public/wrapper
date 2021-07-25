@@ -14,7 +14,7 @@ import Manifest from "../../Managers/Manifest"
 import * as StringTables from "../../Managers/StringTables"
 import RendererSDK from "../../Native/RendererSDK"
 import Player from "../../Objects/Base/Player"
-import { ComputedAttachment, ComputedAttachments } from "../../Resources/ComputeAttachments"
+import { ComputeAttachmentsAndBoundsAsync, ComputedAttachment, ComputedAttachments } from "../../Resources/ComputeAttachments"
 import GameState from "../../Utils/GameState"
 import { DegreesToRadian } from "../../Utils/Math"
 import CGameRules from "./GameRules"
@@ -24,7 +24,7 @@ export var LocalPlayer: Nullable<Player>
 let player_slot = NaN
 EventsSDK.on("ServerInfo", info => player_slot = (info.get("player_slot") as number) ?? NaN)
 let gameInProgress = false
-const ModelDataCache = new Map<string, [ComputedAttachments, Vector3, Vector3]>()
+const ModelDataCache = new Map<string, Promise<[ComputedAttachments, Vector3, Vector3]>>()
 export async function SetGameInProgress(new_val: boolean) {
 	if (!gameInProgress && new_val)
 		await EventsSDK.emit("GameStarted", false)
@@ -98,7 +98,7 @@ export default class Entity {
 	public readonly NetworkedAngles = new QAngle()
 	public readonly Angles = new QAngle()
 	public readonly BoundingBox = new AABB(this.Position)
-	// private Attachments: Nullable<ComputedAttachments>
+	public Attachments: Nullable<ComputedAttachments>
 	private CustomGlowColor_: Nullable<Color>
 	private CustomDrawColor_: Nullable<[Color, RenderMode_t]>
 	private RingRadius_ = 30
@@ -291,31 +291,34 @@ export default class Entity {
 	}
 
 	public OnModelUpdated(): void {
-		try {
-			// if (!ModelDataCache.has(this.ModelName)) {
-			// 	const ar = ComputeAttachmentsAndBounds(this.ModelName)
-			// 	// this.Attachments = ar[0]
-			// 	this.BoundingBox.MinOffset.CopyFrom(ar[1])
-			// 	this.BoundingBox.MaxOffset.CopyFrom(ar[2])
-			// 	ModelDataCache.set(this.ModelName, ar)
-			// } else {
-			// 	const ar = ModelDataCache.get(this.ModelName)!
-			// 	// this.Attachments = ar[0]
-			// 	this.BoundingBox.MinOffset.CopyFrom(ar[1])
-			// 	this.BoundingBox.MaxOffset.CopyFrom(ar[2])
-			// }
-			const min = this.BoundingBox.MinOffset,
-				max = this.BoundingBox.MaxOffset
-			// const min_xy = Math.min(min.x, min.y, max.x, max.y),
-			// 	max_xy = Math.max(min.x, min.y, max.x, max.y)
-			// this.RingRadius_ = Math.max(Math.abs(min_xy), Math.abs(max_xy))
+		const initial_radius = this.RingRadius !== 0
+			? this.RingRadius
+			: 50
+		const min = this.BoundingBox.MinOffset,
+			max = this.BoundingBox.MaxOffset
+		min.x = -initial_radius
+		min.y = -initial_radius
+		min.z = 0
+		max.x = initial_radius
+		max.y = initial_radius
+		max.z = initial_radius
+		let promise = ModelDataCache.get(this.ModelName)
+		if (promise === undefined) {
+			promise = ComputeAttachmentsAndBoundsAsync(this.ModelName)
+			ModelDataCache.set(this.ModelName, promise)
+		}
+		promise.then(ar => {
+			this.Attachments = ar[0]
+			this.BoundingBox.MinOffset.CopyFrom(ar[1])
+			this.BoundingBox.MaxOffset.CopyFrom(ar[2])
+			const min_xy = Math.min(min.x, min.y, max.x, max.y),
+				max_xy = Math.max(min.x, min.y, max.x, max.y)
+			this.RingRadius_ = Math.max(Math.abs(min_xy), Math.abs(max_xy))
 			min.x = -this.RingRadius
 			min.y = -this.RingRadius
 			max.x = this.RingRadius
 			max.y = this.RingRadius
-		} catch (e) {
-			console.error(e)
-		}
+		}, console.error)
 	}
 	public GetAttachment(
 		name: string,
