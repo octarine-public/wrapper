@@ -1,6 +1,9 @@
 export default class Vector4 {
-	public static FromString(str: string): Vector4 {
+	public static fromString(str: string): Vector4 {
 		return new Vector4(...str.split(" ").map(el => parseFloat(el)))
+	}
+	public static fromArray(array: number[]): Vector4 {
+		return new Vector4(array[0] ?? 0, array[1] ?? 0, array[2] ?? 0, array[3] ?? 0)
 	}
 	/**
 	 * Create new Vector4 with x, y, z, w

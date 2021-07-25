@@ -5,7 +5,7 @@ export default class Vector2 {
 	public static fromIOBuffer(offset = 0): Vector2 {
 		return new Vector2(IOBuffer[offset + 0], IOBuffer[offset + 1])
 	}
-	public static fromArray(array: [number?, number?]): Vector2 {
+	public static fromArray(array: number[]): Vector2 {
 		return new Vector2(array[0] ?? 0, array[1] ?? 0)
 	}
 	public static FromAngle(angle: number): Vector2 {

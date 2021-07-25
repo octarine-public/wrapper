@@ -6,7 +6,7 @@ import Color from "./Color"
 import Vector2 from "./Vector2"
 import Vector3 from "./Vector3"
 
-export type ControlPoint = boolean | number | Entity | Vector3 | Vector2 | Color | [number?, number?, number?]
+export type ControlPoint = boolean | number | Entity | Vector3 | Vector2 | Color | number[]
 export type ControlPointParam = [number, ControlPoint]
 
 export default class Particle {

@@ -23,13 +23,11 @@ export function MapToStringArray(map: RecursiveMap | RecursiveMapValue[]): strin
 }
 
 export function MapToVector3(map: RecursiveMap | RecursiveMapValue[]): Vector3 {
-	const ar = MapToNumberArray(map)
-	return new Vector3(ar[0] ?? 0, ar[1] ?? 0, ar[2] ?? 0)
+	return Vector3.fromArray(MapToNumberArray(map))
 }
 
 export function MapToVector4(map: RecursiveMap | RecursiveMapValue[]): Vector4 {
-	const ar = MapToNumberArray(map)
-	return new Vector4(ar[0] ?? 0, ar[1] ?? 0, ar[2] ?? 0, ar[3] ?? 0)
+	return Vector4.fromArray(MapToNumberArray(map))
 }
 
 export function MapToMatrix4x4(map: RecursiveMap | RecursiveMapValue[]): Matrix4x4 {

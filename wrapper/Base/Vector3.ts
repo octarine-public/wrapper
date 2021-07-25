@@ -4,7 +4,7 @@ export default class Vector3 {
 	public static fromIOBuffer(offset = 0): Vector3 {
 		return new Vector3(IOBuffer[offset + 0], IOBuffer[offset + 1], IOBuffer[offset + 2])
 	}
-	public static fromArray(array: [number?, number?, number?]): Vector3 {
+	public static fromArray(array: number[]): Vector3 {
 		return new Vector3(array[0] ?? 0, array[1] ?? 0, array[2] ?? 0)
 	}
 	public static FromAngle(angle: number): Vector3 {
@@ -170,22 +170,22 @@ export default class Vector3 {
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
 	 * @param The another vector
 	 */
-	public Min(vec: Vector3): Vector3 {
+	public Min(vec: Vector3 | number): Vector3 {
 		return new Vector3(
-			Math.min(this.x, vec.x),
-			Math.min(this.y, vec.y),
-			Math.min(this.z, vec.z),
+			Math.min(this.x, vec instanceof Vector3 ? vec.x : vec),
+			Math.min(this.y, vec instanceof Vector3 ? vec.y : vec),
+			Math.min(this.z, vec instanceof Vector3 ? vec.z : vec),
 		)
 	}
 	/**
 	 * Returns a vector whose elements are the minimum of each of the pairs of elements in the two source vectors
 	 * @param The another vector
 	 */
-	public Max(vec: Vector3): Vector3 {
+	public Max(vec: Vector3 | number): Vector3 {
 		return new Vector3(
-			Math.max(this.x, vec.x),
-			Math.max(this.y, vec.y),
-			Math.max(this.z, vec.z),
+			Math.max(this.x, vec instanceof Vector3 ? vec.x : vec),
+			Math.max(this.y, vec instanceof Vector3 ? vec.y : vec),
+			Math.max(this.z, vec instanceof Vector3 ? vec.z : vec),
 		)
 	}
 	/**
