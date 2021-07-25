@@ -28,19 +28,19 @@ export default class Player extends Entity {
 	public CannotUseItem(item: Item): boolean {
 		return item.Shareability === EShareAbility.ITEM_NOT_SHAREABLE && this.PlayerID !== item.PurchaserID
 	}
-	public Buyback(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	public Buyback(queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.Buyback(queue, showEffects)
 	}
-	public Glyph(queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	public Glyph(queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.Glyph(queue, showEffects)
 	}
-	public CastRiverPaint(position: Vector3, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	public CastRiverPaint(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.CastRiverPaint(position, queue, showEffects)
 	}
-	public PreGameAdjustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	public PreGameAdjustItemAssigment(ItemID: number, queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.PreGameAdjustItemAssigment(ItemID, queue, showEffects)
 	}
-	public Scan(position: Vector3, queue?: boolean, showEffects?: boolean): ExecuteOrder {
+	public Scan(position: Vector3, queue?: boolean, showEffects?: boolean): void {
 		return ExecuteOrder.Scan(position, queue, showEffects)
 	}
 }

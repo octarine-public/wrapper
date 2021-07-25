@@ -11,8 +11,7 @@ export default class UserCmd {
 	public ForwardMove: number
 	public SideMove: number
 	public UpMove: number
-	public MouseX: number
-	public MouseY: number
+	public MousePosition: Vector2
 	public CameraPosition: Vector2
 	public ClickBehaviors: number
 	public ScoreboardOpened: boolean
@@ -41,8 +40,10 @@ export default class UserCmd {
 		this.Impulse = UserCmd.LatestUserCmd_view.getInt32(40, true)
 		this.WeaponSelect = EntityManager.EntityByIndex(UserCmd.LatestUserCmd_view.getUint32(44, true))
 		this.WeaponSubType = EntityManager.EntityByIndex(UserCmd.LatestUserCmd_view.getUint32(48, true))
-		this.MouseX = UserCmd.LatestUserCmd_view.getFloat32(52, true)
-		this.MouseY = UserCmd.LatestUserCmd_view.getFloat32(56, true)
+		this.MousePosition = new Vector2(
+			UserCmd.LatestUserCmd_view.getFloat32(52, true),
+			UserCmd.LatestUserCmd_view.getFloat32(56, true),
+		)
 		this.CameraPosition = new Vector2(
 			UserCmd.LatestUserCmd_view.getInt16(60, true),
 			UserCmd.LatestUserCmd_view.getInt16(62, true),
@@ -72,8 +73,8 @@ export default class UserCmd {
 		UserCmd.LatestUserCmd_view.setInt32(40, this.Impulse, true)
 		UserCmd.LatestUserCmd_view.setUint32(44, this.WeaponSelect?.Index ?? 0, true)
 		UserCmd.LatestUserCmd_view.setUint32(48, this.WeaponSubType?.Index ?? 0, true)
-		UserCmd.LatestUserCmd_view.setFloat32(52, this.MouseX, true)
-		UserCmd.LatestUserCmd_view.setFloat32(56, this.MouseY, true)
+		UserCmd.LatestUserCmd_view.setFloat32(52, this.MousePosition.x, true)
+		UserCmd.LatestUserCmd_view.setFloat32(56, this.MousePosition.y, true)
 		UserCmd.LatestUserCmd_view.setInt16(60, this.CameraPosition.x, true)
 		UserCmd.LatestUserCmd_view.setInt16(62, this.CameraPosition.y, true)
 		UserCmd.LatestUserCmd_view.setUint8(64, this.ClickBehaviors)
@@ -84,5 +85,10 @@ export default class UserCmd {
 		UserCmd.LatestUserCmd_view.setFloat32(69, this.VectorUnderCursor.x, true)
 		UserCmd.LatestUserCmd_view.setFloat32(73, this.VectorUnderCursor.y, true)
 		UserCmd.LatestUserCmd_view.setFloat32(77, this.VectorUnderCursor.z, true)
+	}
+
+	public Clone(): UserCmd {
+		this.WriteBack()
+		return new UserCmd()
 	}
 }
