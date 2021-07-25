@@ -222,3 +222,18 @@ export function createMapFromMergedIterators<K, V>(...iters: IterableIterator<[K
 			insertMapElement(map, k, v)
 	return map
 }
+
+export async function MakeSTRATZRequestWrapper(req: string): Promise<any> {
+	const res = await MakeSTRATZRequest(req)
+	const stream = new BinaryStream(new DataView(res))
+	const status = stream.ReadUint32()
+	const str = Utf8ArrayToStr(stream.ReadSlice(stream.Remaining))
+	if (status !== 200)
+		throw `Got status code ${status}, ${str}`
+	const json = JSON.parse(str)
+	if (json.errors !== undefined)
+		throw `Got errors: ${json.errors}`
+	if (json.data === undefined)
+		throw `Got nothing: ${json}`
+	return json.data
+}

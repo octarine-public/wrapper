@@ -188,3 +188,4 @@ declare function DespawnWorker(worker_uid: bigint): void
  */
 declare function SendIPCMessage(worker_uid: bigint, name: string, msg: WorkerIPCType): void
 declare function WriteUserCmd(): void
+declare function MakeSTRATZRequest(req: string): Promise<ArrayBuffer>
