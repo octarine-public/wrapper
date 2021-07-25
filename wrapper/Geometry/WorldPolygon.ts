@@ -51,16 +51,16 @@ export class WorldPolygon {
 			ParticleManager.DestroyByKey(`${key}_${i}`)
 	}
 
-	public IsInside(point: Vector3) {
+	public IsInside(point: Vector3): boolean {
 		return !this.IsOutside(point)
 	}
-	public IsOutside(point: Vector3) {
+	public IsOutside(point: Vector3): boolean {
 		return this.PointInPolygon(point) === 0
 	}
-	private AddPoint(point: Vector3) {
+	private AddPoint(point: Vector3): void {
 		this.Points.push(point)
 	}
-	private PointInPolygon(point: Vector3) {
+	private PointInPolygon(point: Vector3): number {
 		let result = 0
 		const cnt = this.Points.length
 		if (cnt < 3)
@@ -95,37 +95,4 @@ export class WorldPolygon {
 		}
 		return result
 	}
-
-	/*
-	public PointInPolygon(point: Vector3): number {
-		if (this.Points.length < 3)
-			return 0
-		let result = 0
-		for (let i = 0, end = this.Points.length; i < end; i++) {
-			let point1 = this.Points[i],
-				point2 = this.Points[i + 1 % end]
-			if (point2.y === point.y && (point2.x === point.x || (point1.y === point.y && (point2.x > point.x) === (point1.x < point.x))))
-				return -1
-			if ((point1.y < point.y) === (point2.y < point.y))
-				continue
-			if (point1.x >= point.x) {
-				if (point2.x <= point.x) {
-					let d = (point1.x - point.x) * (point2.y - point.y) - (point2.x - point.x) * (point1.y - point.y)
-					if (d === 0)
-						return -1
-					if ((d > 0) === (point2.y > point1.y))
-						result = 1 - result
-				} else
-					result = 1 - result
-			} else if (point2.x > point.x) {
-				let d = (point1.x - point.x) * (point2.y - point.y) - (point2.x - point.x) * (point1.y - point.y)
-				if (d === 0)
-					return -1
-				if ((d > 0) === (point2.y > point1.y))
-					result = 1 - result
-			}
-		}
-		return result
-	}
-	*/
 }
