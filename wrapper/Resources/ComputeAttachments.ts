@@ -89,7 +89,7 @@ export function ComputeAttachmentsAndBounds(model_name: string): [ComputedAttach
 	if (buf === undefined)
 		return [map, new Vector3(), new Vector3()]
 	const model = ParseModel(buf)
-	const mesh = model.RefMeshes[0] ?? model.EmbeddedMeshes[0]
+	const mesh = model.Meshes[0]
 	if (mesh === undefined)
 		return [map, new Vector3(), new Vector3()]
 	const skeleton = model.Skeletons[0]

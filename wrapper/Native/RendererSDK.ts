@@ -1199,7 +1199,7 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 		if (buf === undefined)
 			return
 		const model = ParseModel(buf)
-		const mesh = model.RefMeshes[0] ?? model.EmbeddedMeshes[0]
+		const mesh = model.Meshes[0]
 		const mesh_draw_calls = mesh?.DrawCalls ?? []
 		mesh_draw_calls.forEach(drawCall => draw_calls.push([drawCall, transform]))
 		draw_calls_cache.set(model_path, mesh_draw_calls)

@@ -7,8 +7,7 @@ import { GetMapNumberProperty, GetMapStringProperty, MapToNumberArray, MapToStri
 import { CSkeleton } from "./Skeleton"
 
 export class CModel {
-	public readonly RefMeshes: CMesh[] = []
-	public readonly EmbeddedMeshes: CMesh[] = []
+	public readonly Meshes: CMesh[] = []
 	public readonly Animations: CAnimation[] = []
 	public readonly MeshGroups: string[] = []
 	public readonly MeshGroupsMasks: number[] = []
@@ -38,7 +37,7 @@ export class CModel {
 		this.LoadEmbeddedMeshes(CTRL, layout[1])
 		// this.LoadEmbeddedAnimation(CTRL, layout[1])
 
-		const first_mesh = this.RefMeshes[0] ?? this.EmbeddedMeshes[0]
+		const first_mesh = this.Meshes[0]
 		if (first_mesh !== undefined) {
 			this.MinBounds.CopyFrom(first_mesh.MinBounds)
 			this.MaxBounds.CopyFrom(first_mesh.MaxBounds)
@@ -124,7 +123,7 @@ export class CModel {
 					mesh_path += "_c"
 				const buf = fread(mesh_path)
 				if (buf !== undefined)
-					this.RefMeshes.push(ParseMesh(buf))
+					this.Meshes.push(ParseMesh(buf))
 			})
 	}
 	private LoadEmbeddedMeshes(kv: RecursiveMap, blocks: Uint8Array[]): void {
@@ -136,7 +135,7 @@ export class CModel {
 				return
 			const data_block = GetMapNumberProperty(embedded_mesh, "data_block"),
 				vbib_block = GetMapNumberProperty(embedded_mesh, "vbib_block")
-			this.EmbeddedMeshes.push(ParseEmbeddedMesh(blocks[data_block], blocks[vbib_block]))
+			this.Meshes.push(ParseEmbeddedMesh(blocks[data_block], blocks[vbib_block]))
 		})
 	}
 	// private LoadRefAnimations(kv: RecursiveMap): void {
