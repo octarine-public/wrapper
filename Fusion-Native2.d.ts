@@ -3,6 +3,7 @@ type WorkerIPCType = (
 	{ [key: string]: WorkerIPCType }
 	| Map<WorkerIPCType, WorkerIPCType>
 	| WorkerIPCType[]
+	| SharedArrayBuffer
 	| Uint8Array // won't maintain byteOffset after transfer
 	| ArrayBuffer
 	| string

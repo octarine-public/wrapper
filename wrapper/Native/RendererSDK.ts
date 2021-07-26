@@ -1089,6 +1089,7 @@ function TryLoadWorld(world_kv: RecursiveMap): void {
 	world_promise.then(data => {
 		if (world_promise !== current_world_promise || !Array.isArray(data))
 			return
+		current_world_promise = undefined
 		const [VB, IB, BVH1, BVH2] = data
 		if (!(
 			VB instanceof Uint8Array
