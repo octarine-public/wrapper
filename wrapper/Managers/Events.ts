@@ -77,7 +77,7 @@ declare interface Events extends EventEmitter {
 	 * message_type: https://www.autoitscript.com/autoit3/docs/appendix/WinMsgCodes.htm
 	 */
 	on(name: "WndProc", callback: (message_type: number, wParam: bigint, lParam: bigint) => false | any): EventEmitter
-	on(name: "Update", callback: () => void): EventEmitter
+	on(name: "RequestUserCmd", callback: () => void): EventEmitter
 	on(name: "Draw", callback: (visual_data: ArrayBuffer) => void): EventEmitter
 	on(name: "PrepareUnitOrders", callback: () => false | any): EventEmitter
 	on(name: "GameEvent", listener: (event_name: string, obj: any) => void): EventEmitter

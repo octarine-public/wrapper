@@ -7,6 +7,7 @@ import Vector3 from "../Base/Vector3"
 import { DOTAGameUIState_t } from "../Enums/DOTAGameUIState_t"
 import { dotaunitorder_t } from "../Enums/dotaunitorder_t"
 import { DOTA_GameState } from "../Enums/DOTA_GameState"
+import { DOTA_SHOP_TYPE } from "../Enums/DOTA_SHOP_TYPE"
 import { WorldPolygon } from "../Geometry/WorldPolygon"
 import GUIInfo from "../GUI/GUIInfo"
 import EntityManager from "../Managers/EntityManager"
@@ -18,6 +19,7 @@ import ParticlesSDK from "../Managers/ParticleManager"
 import Ability from "../Objects/Base/Ability"
 import { CameraBounds } from "../Objects/Base/CameraBounds"
 import Entity, { GameRules, LocalPlayer } from "../Objects/Base/Entity"
+import Shop from "../Objects/Base/Shop"
 import TempTree from "../Objects/Base/TempTree"
 import Tree from "../Objects/Base/Tree"
 import Unit from "../Objects/Base/Unit"
@@ -70,6 +72,7 @@ export default class ExecuteOrder {
 	public static cursor_speed_min_accel = 1.5 //?
 	public static cursor_speed_max_accel = 4 // ?
 	public static prefire_orders = true
+	public static received_usercmd_request = false
 	public static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
@@ -626,7 +629,7 @@ function EntityHitBoxIntersects(
 function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | Vector2 {
 	const yellow_zone_reached = yellow_zone_out_at < current_time - yellow_zone_max_duration,
 		green_zone_reached = green_zone_out_at < current_time - green_zone_max_duration
-	const current_pos = latest_usercmd!.MousePosition
+	const current_pos = latest_usercmd.MousePosition
 	if (last_order_target instanceof Entity) {
 		if (EntityHitBoxIntersects(last_order_target, camera_vec, current_pos))
 			return current_pos
@@ -773,16 +776,16 @@ const camera_move_linger_duration = 100,
 	yellow_zone_max_duration = 700,
 	green_zone_max_duration = yellow_zone_max_duration * 2,
 	camera_direction = new Vector2(),
+	debug_cursor = new Vector3(),
 	usercmd_cache: UserCmd[] = []
 let last_order_finish = 0,
 	latest_camera_x = 0,
 	latest_camera_y = 0,
-	debug_cursor = new Vector3(),
 	camera_move_end = 0,
 	were_moving_camera = false,
 	latest_update = 0,
 	usercmd_cache_last_wrote = 0,
-	latest_usercmd: Nullable<UserCmd>,
+	latest_usercmd = new UserCmd(),
 	last_camera_move_seed = 0,
 	yellow_zone_out_at = 0,
 	green_zone_out_at = 0
@@ -811,7 +814,7 @@ function MoveCameraByScreen(target_pos: Vector3, current_time: number): Vector2 
 				.Add(latest_camera_green_zone_poly_world.Points[3])
 				.DivideScalarForThis(2),
 		)
-	const ret = latest_usercmd!.MousePosition.Clone()
+	const ret = latest_usercmd.MousePosition.Clone()
 	const min_corner_dist = Math.min(
 		dist_right_bot,
 		dist_left_bot,
@@ -883,7 +886,7 @@ function MoveCamera(
 				.SubtractScalarY(eye_vector.y * default_camera_dist)
 			camera_vec.x = lookatpos.x
 			camera_vec.y = lookatpos.y
-			return [latest_usercmd!.MousePosition, false]
+			return [latest_usercmd.MousePosition, false]
 		}
 	}
 	if (latest_camera_poly.Center.Distance(target_pos) > ExecuteOrder.camera_minimap_spaces * default_camera_dist)
@@ -892,15 +895,16 @@ function MoveCamera(
 }
 
 function ProcessUserCmd(): void {
-	if (latest_usercmd === undefined)
-		return
-	InputManager.IsShopOpen = latest_usercmd.ShopMask === 13
 	const current_time = hrtime()
 	const dt = Math.min(current_time - latest_update, 100) / 1000
 	latest_update = current_time
 	if (RendererSDK.WindowSize.IsZero())
 		return
+	latest_usercmd.SpectatorStatsCategoryID = 0
+	latest_usercmd.SpectatorStatsSortMethod = 0
 	latest_usercmd.MousePosition.CopyFrom(InputManager.CursorOnScreen.DivideForThis(RendererSDK.WindowSize))
+	InputManager.IsShopOpen = IsShopOpen()
+	InputManager.IsScoreboardOpen = ConVars.GetInt("dota_spectator_stats_panel") === 1
 	InputManager.CursorOnWorld = RendererSDK.ScreenToWorldFar(
 		[latest_usercmd.MousePosition],
 		Camera.Position ? Vector3.fromIOBuffer() : new Vector3(),
@@ -911,8 +915,39 @@ function ProcessUserCmd(): void {
 	)[0]
 	if (ExecuteOrder.disable_humanizer)
 		return
-	latest_usercmd.ForwardMove = latest_usercmd.SideMove = latest_usercmd.UpMove = 0
+	latest_usercmd.ScoreboardOpened = InputManager.IsScoreboardOpen
+	const local_hero = LocalPlayer?.Hero
+	if (InputManager.IsShopOpen && local_hero !== undefined)
+		switch ((EntityManager.AllEntities.find(ent => (
+			ent.IsShop
+			&& ent.Distance(local_hero) < 720
+		)) as Shop)?.ShopType) {
+			case DOTA_SHOP_TYPE.DOTA_SHOP_SECRET:
+				latest_usercmd.ShopMask = 12
+				break
+			default:
+				latest_usercmd.ShopMask = 13
+				break
+		}
+	else
+		latest_usercmd.ShopMask = 15
 	let order = ProcessOrderQueue(current_time)
+	if (order !== undefined)
+		switch (order[0].OrderType) {
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
+				latest_usercmd.ClickBehaviors = 2
+				break
+			case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
+				latest_usercmd.ClickBehaviors = 8
+				break
+			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
+				latest_usercmd.ClickBehaviors = 11
+				break
+			default:
+				latest_usercmd.ClickBehaviors = 0
+				break
+		}
 	latest_usercmd.CameraPosition.x = latest_camera_x
 	latest_usercmd.CameraPosition.y = latest_camera_y
 	latest_usercmd.MousePosition.CopyFrom(latest_cursor)
@@ -1055,18 +1090,18 @@ function ProcessUserCmd(): void {
 		.MultiplyForThis(RendererSDK.WindowSize)
 		.RoundForThis()
 		.DivideForThis(RendererSDK.WindowSize)
-	latest_usercmd.VectorUnderCursor = debug_cursor = RendererSDK.ScreenToWorldFar(
+	latest_usercmd.VectorUnderCursor.CopyFrom(debug_cursor.CopyFrom(RendererSDK.ScreenToWorldFar(
 		[latest_cursor],
 		camera_vec,
 		default_camera_dist,
-	)[0]
+	)[0]))
 	const units_nearby = orderBy(
 		EntityManager.GetEntitiesByClass(Unit).filter(ent => (
 			ent.IsVisible
 			&& ent.IsSpawned
-			&& EntityHitBoxIntersects(ent, camera_vec, latest_usercmd!.MousePosition)
+			&& EntityHitBoxIntersects(ent, camera_vec, latest_usercmd.MousePosition)
 		)),
-		ent => ent.Distance(latest_usercmd!.VectorUnderCursor),
+		ent => ent.Distance(latest_usercmd.VectorUnderCursor),
 	)
 	latest_usercmd.WeaponSelect = (
 		(order !== undefined || ExecuteOrder.hold_orders > 0)
@@ -1074,32 +1109,26 @@ function ProcessUserCmd(): void {
 		&& units_nearby.includes(last_order_target)
 	) ? last_order_target : units_nearby[0]
 
-	latest_usercmd.ViewAngles.x = 60
-	latest_usercmd.ViewAngles.y = 90
-	latest_usercmd.ViewAngles.z = 0
-
 	if (usercmd_cache_last_wrote < current_time - usercmd_cache_delay) {
 		usercmd_cache.push(latest_usercmd.Clone())
 		usercmd_cache_last_wrote = current_time
 	}
 }
 EventsSDK.on("Draw", ProcessUserCmd)
-Events.on("Update", () => {
-	const new_usercmd = new UserCmd()
-	if (latest_usercmd !== undefined) {
-		ProcessUserCmd()
-		usercmd_cache.forEach(usercmd => {
-			usercmd.WriteBack()
-			WriteUserCmd()
-		})
-		if (usercmd_cache.length === 0) {
-			latest_usercmd.WriteBack()
-			WriteUserCmd()
-		}
-		usercmd_cache.splice(0)
-	} else
+Events.on("RequestUserCmd", () => {
+	ExecuteOrder.received_usercmd_request = true
+	ProcessUserCmd()
+	if (ExecuteOrder.disable_humanizer)
+		return
+	usercmd_cache.forEach(usercmd => {
+		usercmd.WriteBack()
 		WriteUserCmd()
-	latest_usercmd = new_usercmd
+	})
+	if (usercmd_cache.length === 0) {
+		latest_usercmd.WriteBack()
+		WriteUserCmd()
+	}
+	usercmd_cache.splice(0)
 	usercmd_cache_last_wrote = 0
 })
 
@@ -1179,7 +1208,7 @@ function ClearHumanizerState() {
 	current_order = undefined
 	debug_cursor.toZero()
 	latest_update = 0
-	latest_usercmd = undefined
+	latest_usercmd = new UserCmd()
 	camera_move_end = 0
 	camera_direction.toZero()
 	InputManager.IsShopOpen = false

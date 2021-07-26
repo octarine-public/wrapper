@@ -16,6 +16,7 @@ const XMouseKey = (wParam: bigint) => HIWORD(wParam) === VXMouseKeys.XBUTTON1
 
 class Input {
 	public IsShopOpen = false
+	public IsScoreboardOpen = false
 	private CursorOnWorld_ = new Vector3()
 
 	get CursorOnWorld(): Vector3 {

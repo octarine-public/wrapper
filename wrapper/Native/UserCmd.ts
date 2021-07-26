@@ -6,33 +6,31 @@ import Entity from "../Objects/Base/Entity"
 
 export default class UserCmd {
 	private static LatestUserCmd_view = new DataView(LatestUserCmd.buffer)
-	public ComandNumber: number
-	public TickCount: number
-	public ForwardMove: number
-	public SideMove: number
-	public UpMove: number
-	public MousePosition: Vector2
-	public CameraPosition: Vector2
-	public ClickBehaviors: number
-	public ScoreboardOpened: boolean
-	public ShopMask: number
-	public SpectatorStatsCategoryID: number
-	public SpectatorStatsSortMethod: number
-	public Buttons: bigint
-	public Impulse: number
-	public VectorUnderCursor: Vector3
-	public ViewAngles: QAngle
+	public ComandNumber = 0
+	public TickCount = 0
+	public ForwardMove = 0
+	public SideMove = 0
+	public UpMove = 0
+	public readonly MousePosition = new Vector2()
+	public readonly CameraPosition = new Vector2()
+	public ClickBehaviors = 0
+	public ScoreboardOpened = false
+	public ShopMask = 0
+	public SpectatorStatsCategoryID = 0
+	public SpectatorStatsSortMethod = 0
+	public Buttons = 0n
+	public Impulse = 0
+	public readonly VectorUnderCursor = new Vector3()
+	public readonly ViewAngles = new QAngle(60, 90, 0)
 	public WeaponSelect: Nullable<Entity>
 	public WeaponSubType: Nullable<Entity>
 
-	constructor() {
+	public Read(): this {
 		this.ComandNumber = UserCmd.LatestUserCmd_view.getInt32(0, true)
 		this.TickCount = UserCmd.LatestUserCmd_view.getInt32(4, true)
-		this.ViewAngles = new QAngle(
-			UserCmd.LatestUserCmd_view.getFloat32(8, true),
-			UserCmd.LatestUserCmd_view.getFloat32(12, true),
-			UserCmd.LatestUserCmd_view.getFloat32(16, true),
-		)
+		this.ViewAngles.x = UserCmd.LatestUserCmd_view.getFloat32(8, true)
+		this.ViewAngles.y = UserCmd.LatestUserCmd_view.getFloat32(12, true)
+		this.ViewAngles.z = UserCmd.LatestUserCmd_view.getFloat32(16, true)
 		this.ForwardMove = UserCmd.LatestUserCmd_view.getFloat32(20, true)
 		this.SideMove = UserCmd.LatestUserCmd_view.getFloat32(24, true)
 		this.UpMove = UserCmd.LatestUserCmd_view.getFloat32(28, true)
@@ -40,24 +38,19 @@ export default class UserCmd {
 		this.Impulse = UserCmd.LatestUserCmd_view.getInt32(40, true)
 		this.WeaponSelect = EntityManager.EntityByIndex(UserCmd.LatestUserCmd_view.getUint32(44, true))
 		this.WeaponSubType = EntityManager.EntityByIndex(UserCmd.LatestUserCmd_view.getUint32(48, true))
-		this.MousePosition = new Vector2(
-			UserCmd.LatestUserCmd_view.getFloat32(52, true),
-			UserCmd.LatestUserCmd_view.getFloat32(56, true),
-		)
-		this.CameraPosition = new Vector2(
-			UserCmd.LatestUserCmd_view.getInt16(60, true),
-			UserCmd.LatestUserCmd_view.getInt16(62, true),
-		)
+		this.MousePosition.x = UserCmd.LatestUserCmd_view.getFloat32(52, true)
+		this.MousePosition.y = UserCmd.LatestUserCmd_view.getFloat32(56, true)
+		this.CameraPosition.x = UserCmd.LatestUserCmd_view.getInt16(60, true)
+		this.CameraPosition.y = UserCmd.LatestUserCmd_view.getInt16(62, true)
 		this.ClickBehaviors = UserCmd.LatestUserCmd_view.getUint8(64)
 		this.ScoreboardOpened = UserCmd.LatestUserCmd_view.getUint8(65) !== 0
 		this.ShopMask = UserCmd.LatestUserCmd_view.getUint8(66)
 		this.SpectatorStatsCategoryID = UserCmd.LatestUserCmd_view.getInt8(67)
 		this.SpectatorStatsSortMethod = UserCmd.LatestUserCmd_view.getInt8(68)
-		this.VectorUnderCursor = new Vector3(
-			UserCmd.LatestUserCmd_view.getFloat32(69, true),
-			UserCmd.LatestUserCmd_view.getFloat32(73, true),
-			UserCmd.LatestUserCmd_view.getFloat32(77, true),
-		)
+		this.VectorUnderCursor.x = UserCmd.LatestUserCmd_view.getFloat32(69, true)
+		this.VectorUnderCursor.y = UserCmd.LatestUserCmd_view.getFloat32(73, true)
+		this.VectorUnderCursor.z = UserCmd.LatestUserCmd_view.getFloat32(77, true)
+		return this
 	}
 
 	public WriteBack(): void {
@@ -89,6 +82,6 @@ export default class UserCmd {
 
 	public Clone(): UserCmd {
 		this.WriteBack()
-		return new UserCmd()
+		return new UserCmd().Read()
 	}
 }
