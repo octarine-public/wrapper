@@ -16,8 +16,8 @@ export default new (class Workers {
 	private queued_tasks: [string, WorkerIPCType, PromiseResolver][] = []
 	constructor() {
 		if (IS_MAIN_WORKER) {
-			// 3 general purpose workers
-			for (let i = 0; i < 3; i++)
+			// 2 general purpose workers
+			for (let i = 0; i < 2; i++)
 				this.AddWorkerWithOpts({
 					forward_events: false,
 					forward_server_messages: false,
