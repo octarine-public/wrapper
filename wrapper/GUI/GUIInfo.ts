@@ -1,12 +1,14 @@
 import Vector2 from "../Base/Vector2"
 import { DOTA_GameState } from "../Enums/DOTA_GameState"
 import EventsSDK from "../Managers/EventsSDK"
+import InputManager from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
 import { GameRules } from "../Objects/Base/Entity"
 import CLowerHUD from "./CLowerHUD"
 import CMinimap from "./CMinimap"
 import COpenShop from "./COpenShop"
 import CPreGame from "./CPreGame"
+import CScoreboard from "./CScoreboard"
 import CShop from "./CShop"
 import CTopBar from "./CTopBar"
 
@@ -20,6 +22,7 @@ const GUIInfo = new (class CGUIInfo {
 	public TopBar = undefined as any as CTopBar
 	public PreGame = undefined as any as CPreGame
 	public LowerHUD = [] as CLowerHUD[]
+	public Scoreboard = undefined as any as CScoreboard
 	public HUDFlipped = false
 
 	// Looks like it's hardcoded
@@ -49,6 +52,8 @@ const GUIInfo = new (class CGUIInfo {
 			this.PreGame = new CPreGame(screen_size)
 		if (everything_changed || this.PreGame === undefined || this.PreGame.HasChanged())
 			this.PreGame = new CPreGame(screen_size)
+		if (everything_changed || this.Scoreboard === undefined || this.Scoreboard.HasChanged())
+			this.Scoreboard = new CScoreboard(screen_size)
 		if (everything_changed || this.LowerHUD.length === 0) {
 			this.LowerHUD.splice(0)
 			for (let i = 0; i < 24; i++)
@@ -62,8 +67,11 @@ const GUIInfo = new (class CGUIInfo {
 			this.TopBar.DebugDraw()
 			this.Minimap.DebugDraw()
 			this.Shop.DebugDraw()
-			this.OpenShopLarge.DebugDraw()
+			if (InputManager.IsShopOpen)
+				this.OpenShopLarge.DebugDraw()
 			this.LowerHUD[4].DebugDraw()
+			if (InputManager.IsScoreboardOpen)
+				this.Scoreboard.DebugDraw()
 		} else
 			this.PreGame.DebugDraw()
 	}
