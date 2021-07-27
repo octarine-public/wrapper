@@ -64,6 +64,8 @@ class MenuManager {
 		)
 	}
 	public async LoadConfig() {
+		if (!IS_MAIN_WORKER)
+			return // workers shouldn't propagate configs
 		try {
 			const config = await readConfig("default.json")
 			try {

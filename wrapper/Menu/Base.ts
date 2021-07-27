@@ -130,6 +130,8 @@ export default class Base {
 	}
 
 	public async OnValue(func: (caller: this) => any): Promise<this> {
+		if (!IS_MAIN_WORKER)
+			return this // workers shouldn't propagate configs
 		this.OnValueChangedCBs.push(func as any)
 		if (this.execute_on_add)
 			await func(this)
