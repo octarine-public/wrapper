@@ -3,6 +3,7 @@ import { DOTA_GameState } from "../Enums/DOTA_GameState"
 import EventsSDK from "../Managers/EventsSDK"
 import RendererSDK from "../Native/RendererSDK"
 import { GameRules } from "../Objects/Base/Entity"
+import CLowerHUD from "./CLowerHUD"
 import CMinimap from "./CMinimap"
 import COpenShop from "./COpenShop"
 import CPreGame from "./CPreGame"
@@ -18,6 +19,7 @@ const GUIInfo = new (class CGUIInfo {
 	public OpenShopLarge = undefined as any as COpenShop
 	public TopBar = undefined as any as CTopBar
 	public PreGame = undefined as any as CPreGame
+	public LowerHUD = [] as CLowerHUD[]
 	public HUDFlipped = false
 
 	// Looks like it's hardcoded
@@ -27,24 +29,31 @@ const GUIInfo = new (class CGUIInfo {
 	public OnDraw(): void {
 		const screen_size = RendererSDK.WindowSize,
 			hud_flipped = ConVars.GetInt("dota_hud_flip") !== 0
-		const anything_changed = (
+		const everything_changed = (
 			this.HUDFlipped !== hud_flipped
 			|| !latest_screen_size.Equals(screen_size)
 		)
 		latest_screen_size.CopyFrom(screen_size)
 		this.HUDFlipped = hud_flipped
-		if (anything_changed || this.TopBar === undefined || this.TopBar.HasChanged())
+		if (everything_changed || this.TopBar === undefined || this.TopBar.HasChanged())
 			this.TopBar = new CTopBar(screen_size)
-		if (anything_changed || this.Minimap === undefined || this.Minimap.HasChanged())
+		if (everything_changed || this.Minimap === undefined || this.Minimap.HasChanged())
 			this.Minimap = new CMinimap(screen_size, hud_flipped)
-		if (anything_changed || this.Shop === undefined || this.Shop.HasChanged())
+		if (everything_changed || this.Shop === undefined || this.Shop.HasChanged())
 			this.Shop = new CShop(screen_size, hud_flipped)
-		if (anything_changed || this.OpenShopMini === undefined || this.OpenShopMini.HasChanged())
+		if (everything_changed || this.OpenShopMini === undefined || this.OpenShopMini.HasChanged())
 			this.OpenShopMini = new COpenShop(false, screen_size, hud_flipped)
-		if (anything_changed || this.OpenShopLarge === undefined || this.OpenShopLarge.HasChanged())
+		if (everything_changed || this.OpenShopLarge === undefined || this.OpenShopLarge.HasChanged())
 			this.OpenShopLarge = new COpenShop(true, screen_size, hud_flipped)
-		if (anything_changed || this.PreGame === undefined || this.PreGame.HasChanged())
+		if (everything_changed || this.PreGame === undefined || this.PreGame.HasChanged())
 			this.PreGame = new CPreGame(screen_size)
+		if (everything_changed || this.PreGame === undefined || this.PreGame.HasChanged())
+			this.PreGame = new CPreGame(screen_size)
+		if (everything_changed || this.LowerHUD.length === 0) {
+			this.LowerHUD.splice(0)
+			for (let i = 0; i < 24; i++)
+				this.LowerHUD.push(new CLowerHUD(screen_size, i))
+		}
 		if (this.debug_draw)
 			this.DebugDraw()
 	}
@@ -54,6 +63,7 @@ const GUIInfo = new (class CGUIInfo {
 			this.Minimap.DebugDraw()
 			this.Shop.DebugDraw()
 			this.OpenShopLarge.DebugDraw()
+			this.LowerHUD[4].DebugDraw()
 		} else
 			this.PreGame.DebugDraw()
 	}
