@@ -676,6 +676,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 			return current_pos
 		return min.AddForThis(max.SubtractForThis(min).MultiplyScalarForThis(Math.random()))
 	} else {
+		latest_usercmd.ScoreboardOpened = InputManager.IsScoreboardOpen
 		const cursor_pos = InputManager.CursorOnScreen,
 			game_state = GameRules?.GameState ?? DOTA_GameState.DOTA_GAMERULES_STATE_INIT
 		if (
@@ -686,6 +687,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 			|| GUIInfo.Shop.Quickbuy_2Rows.Contains(cursor_pos)
 			|| GUIInfo.Shop.ClearQuickBuy_2Rows.Contains(cursor_pos)
 			|| GUIInfo.Shop.CourierGold.Contains(cursor_pos)
+			|| (InputManager.IsScoreboardOpen && GUIInfo.Scoreboard.Background.Contains(current_pos))
 			|| (InputManager.IsShopOpen && (
 				GUIInfo.OpenShopLarge.Header.Contains(cursor_pos)
 				|| GUIInfo.OpenShopLarge.ItemCombines.Contains(cursor_pos)
@@ -916,7 +918,6 @@ function ProcessUserCmd(): void {
 	)[0]
 	if (ExecuteOrder.disable_humanizer)
 		return
-	latest_usercmd.ScoreboardOpened = InputManager.IsScoreboardOpen
 	const local_hero = LocalPlayer?.Hero
 	if (InputManager.IsShopOpen && local_hero !== undefined)
 		switch ((EntityManager.AllEntities.find(ent => (
