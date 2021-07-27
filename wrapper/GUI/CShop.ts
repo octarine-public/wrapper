@@ -14,6 +14,7 @@ export default class CShop {
 	public readonly ClearQuickBuy_1Row = new Rectangle()
 	public readonly ClearQuickBuy_2Rows = new Rectangle()
 	public readonly Stash = new Rectangle()
+	public readonly StashSlots: Rectangle[] = []
 	public readonly StashGrabAll = new Rectangle()
 
 	constructor(screen_size: Vector2, hud_flipped: boolean) {
@@ -32,6 +33,12 @@ export default class CShop {
 
 		RendererSDK.FilledRect(this.Stash.pos1, this.Stash.Size, Color.Gray.SetA(128))
 		RendererSDK.FilledRect(this.StashGrabAll.pos1, this.StashGrabAll.Size, Color.Red.SetA(128))
+
+		this.StashSlots.forEach(rect => RendererSDK.FilledRect(
+			rect.pos1,
+			rect.Size,
+			Color.Fuchsia.SetA(128),
+		))
 	}
 	public HasChanged(): boolean {
 		return false
@@ -121,5 +128,25 @@ export default class CShop {
 		this.StashGrabAll.x = hud_flip
 			? StashContainer.x + StashGrabAllMargin
 			: StashContainer.x - StashGrabAllMargin - this.StashGrabAll.Width
+
+		const StashSlots = 6
+		const ItemWidth = GUIInfo.ScaleWidth(38, screen_size),
+			ItemHeight = GUIInfo.ScaleHeight(28, screen_size),
+			ItemMarginTop = GUIInfo.ScaleHeight(2, screen_size),
+			ItemMarginRight = GUIInfo.ScaleWidth(3, screen_size)
+		const StashRow = new Rectangle()
+		StashRow.Width = (ItemWidth + ItemMarginRight) * StashSlots
+		StashRow.Height = ItemHeight
+		StashRow.x = this.Stash.pos2.x - StashRow.Width - GUIInfo.ScaleWidth(7, screen_size)
+		StashRow.y = this.Stash.y + GUIInfo.ScaleHeight(31, screen_size) + ItemMarginTop
+		for (let i = 0; i < StashSlots; i++) {
+			const ItemRect = new Rectangle()
+			ItemRect.x = StashRow.x
+			ItemRect.y = StashRow.y
+			ItemRect.Width = ItemWidth
+			ItemRect.Height = ItemHeight
+			StashRow.x += ItemWidth + ItemMarginRight
+			this.StashSlots.push(ItemRect)
+		}
 	}
 }
