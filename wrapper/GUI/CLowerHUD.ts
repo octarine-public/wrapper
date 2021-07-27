@@ -22,7 +22,7 @@ export default class CLowerHUD {
 	public readonly RightFlare = new Rectangle()
 	public readonly HealthManaContainer = new Rectangle()
 
-	constructor(screen_size: Vector2, abilities_count: number) {
+	constructor(screen_size: Vector2, abilities_count: number, base_abilities_count: number) {
 		this.LeftFlare.Width = GUIInfo.ScaleWidth(52, screen_size)
 		this.LeftFlare.Height = GUIInfo.ScaleHeight(138, screen_size)
 		this.LeftFlare.x = 0
@@ -61,14 +61,23 @@ export default class CLowerHUD {
 		this.AghsStatusContainer.y = this.AbilitiesContainer.pos2.y - this.AghsStatusContainer.Height - GUIInfo.ScaleHeight(24, screen_size)
 		let AghsStatusContainerStart = this.TalentTree.pos2.x + TalentTreeMargin
 		const AbilitiesContainerMargin = GUIInfo.ScaleWidth(2, screen_size)
+		const extended_abilities = base_abilities_count >= 5
+		const AbilitySize = extended_abilities ? 58 : 65,
+			AbilityMarginBottom1 = extended_abilities ? 24 : 25,
+			AbilityMarginBottom2 = extended_abilities ? 8 : 0
 		for (let i = 0; i < abilities_count; i++) {
 			const AbilityRect = new Rectangle()
-			AbilityRect.Width = GUIInfo.ScaleWidth(abilities_count >= 5 ? 58 : 65, screen_size)
-			AbilityRect.Height = GUIInfo.ScaleHeight(65, screen_size)
+			AbilityRect.Width = GUIInfo.ScaleWidth(AbilitySize, screen_size)
+			AbilityRect.Height = GUIInfo.ScaleHeight(AbilitySize, screen_size)
 			AbilityRect.x = i === 0
 				? this.TalentTree.pos2.x + TalentTreeMargin - AbilitiesContainerMargin
 				: this.AbilitiesRects[i - 1].pos2.x
-			AbilityRect.y = this.AbilitiesContainer.pos2.y - AbilityRect.Height - GUIInfo.ScaleHeight(25, screen_size)
+			AbilityRect.y = (
+				this.AbilitiesContainer.pos2.y
+				- AbilityRect.Height
+				- GUIInfo.ScaleHeight(AbilityMarginBottom1, screen_size)
+				- GUIInfo.ScaleHeight(AbilityMarginBottom2, screen_size)
+			)
 			this.AbilitiesRects.push(AbilityRect)
 			AghsStatusContainerStart = AbilityRect.pos2.x - AbilitiesContainerMargin
 		}

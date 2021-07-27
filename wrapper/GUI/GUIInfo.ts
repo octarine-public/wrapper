@@ -1,9 +1,12 @@
 import Vector2 from "../Base/Vector2"
+import { ABILITY_TYPES } from "../Enums/ABILITY_TYPES"
+import { DOTA_ABILITY_BEHAVIOR } from "../Enums/DOTA_ABILITY_BEHAVIOR"
 import { DOTA_GameState } from "../Enums/DOTA_GameState"
 import EventsSDK from "../Managers/EventsSDK"
 import InputManager from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
-import { GameRules } from "../Objects/Base/Entity"
+import { GameRules, LocalPlayer } from "../Objects/Base/Entity"
+import Unit from "../Objects/Base/Unit"
 import CLowerHUD from "./CLowerHUD"
 import CMinimap from "./CMinimap"
 import COpenShop from "./COpenShop"
@@ -21,7 +24,7 @@ const GUIInfo = new (class CGUIInfo {
 	public OpenShopLarge = undefined as any as COpenShop
 	public TopBar = undefined as any as CTopBar
 	public PreGame = undefined as any as CPreGame
-	public LowerHUD = [] as CLowerHUD[]
+	public LowerHUD = [] as CLowerHUD[][]
 	public Scoreboard = undefined as any as CScoreboard
 	public HUDFlipped = false
 
@@ -56,11 +59,34 @@ const GUIInfo = new (class CGUIInfo {
 			this.Scoreboard = new CScoreboard(screen_size)
 		if (everything_changed || this.LowerHUD.length === 0) {
 			this.LowerHUD.splice(0)
-			for (let i = 0; i < 24; i++)
-				this.LowerHUD.push(new CLowerHUD(screen_size, i))
+			for (let i = 0; i < 24; i++) {
+				const ar: CLowerHUD[] = []
+				for (let j = 0; j < 24; j++)
+					ar.push(new CLowerHUD(screen_size, i, j))
+				this.LowerHUD.push(ar)
+			}
 		}
 		if (this.debug_draw)
 			this.DebugDraw()
+	}
+	public GetLowerHUDForUnit(unit: Nullable<Unit>): Nullable<CLowerHUD> {
+		const abils = unit?.Spells?.filter(abil => (
+			abil !== undefined
+			&& abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES
+			&& abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_HIDDEN
+			&& abil.Name !== "plus_high_five"
+			&& abil.Name !== "plus_guild_banner"
+			&& !abil.IsHidden
+		))
+		const abils_count = abils !== undefined
+			? abils.length
+			: 4
+		const base_abils_count = abils !== undefined
+			? abils.filter(abil => (
+				!abil!.AbilityBehavior.includes(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_HIDDEN)
+			)).length
+			: 4
+		return this.LowerHUD[abils_count][base_abils_count]
 	}
 	public DebugDraw(): void {
 		if (GameRules?.GameState !== DOTA_GameState.DOTA_GAMERULES_STATE_HERO_SELECTION) {
@@ -69,7 +95,7 @@ const GUIInfo = new (class CGUIInfo {
 			this.Shop.DebugDraw()
 			if (InputManager.IsShopOpen)
 				this.OpenShopLarge.DebugDraw()
-			this.LowerHUD[4].DebugDraw()
+			this.GetLowerHUDForUnit(LocalPlayer?.Hero)?.DebugDraw()
 			if (InputManager.IsScoreboardOpen)
 				this.Scoreboard.DebugDraw()
 		} else
