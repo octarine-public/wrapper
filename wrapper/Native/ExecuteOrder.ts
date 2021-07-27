@@ -646,13 +646,14 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		const center = hitbox.Center,
 			min = hitbox.Points.reduce((prev, cur) => prev.Min(cur), new Vector2()).SubtractForThis(center),
 			max = hitbox.Points.reduce((prev, cur) => prev.Max(cur), new Vector2()).SubtractForThis(center)
-		while (true) {
+		for (let i = 0; i < 1000; i++) {
 			const generated = center
 				.Add(min.MultiplyScalar(Math.random() / 2))
 				.AddForThis(max.MultiplyScalar(Math.random() / 2))
 			if (EntityHitBoxIntersects(last_order_target, camera_vec, generated))
 				return generated
 		}
+		return center
 	} else if (last_order_target instanceof Vector3) {
 		const w2s = RendererSDK.WorldToScreenCustom(last_order_target, camera_vec)
 		if (
