@@ -630,6 +630,39 @@ function EntityHitBoxIntersects(
 	return CheckLineBox(ent.BoundingBox, camera_vec, target) !== undefined
 }
 
+function IsCursorOnUI(cursor_pos: Vector2): boolean {
+	const selected_ent = InputManager.SelectedUnit
+	if ((
+		(InputManager.IsShopOpen && (
+			GUIInfo.OpenShopLarge.Header.Contains(cursor_pos)
+			|| GUIInfo.OpenShopLarge.ItemCombines.Contains(cursor_pos)
+			|| GUIInfo.OpenShopLarge.Items.Contains(cursor_pos)
+			|| GUIInfo.OpenShopLarge.PinnedItems.Contains(cursor_pos)
+		))
+		|| (
+			(
+				InputManager.IsShopOpen
+				|| (selected_ent?.Inventory?.Stash?.length ?? 0) !== 0
+			) && (
+				GUIInfo.Shop.Stash.Contains(cursor_pos)
+				|| GUIInfo.Shop.StashGrabAll.Contains(cursor_pos)
+			)
+		)
+	))
+		return true
+	const hud = GUIInfo.GetLowerHUDForUnit(selected_ent)
+	if (
+		hud !== undefined
+		&& (
+			hud.InventoryContainer.Contains(cursor_pos)
+			|| hud.NeutralAndTPContainer.Contains(cursor_pos)
+			|| hud.XP.Contains(cursor_pos)
+		)
+	)
+		return true
+	return false
+}
+
 function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | Vector2 {
 	const yellow_zone_reached = yellow_zone_out_at < current_time - yellow_zone_max_duration,
 		green_zone_reached = green_zone_out_at < current_time - green_zone_max_duration
@@ -644,6 +677,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 				(yellow_zone_reached || green_zone_reached)
 				&& latest_camera_green_zone_poly_screen.IsOutside(point)
 			)
+			|| IsCursorOnUI(point.Multiply(RendererSDK.WindowSize))
 		)))
 			return last_order_target.Position
 		// TODO: try to find best spot between other entities' hitboxes, i.e. between creeps
@@ -671,6 +705,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 				(yellow_zone_reached || green_zone_reached)
 				&& latest_camera_green_zone_poly_screen.IsOutside(w2s)
 			)
+			|| IsCursorOnUI(w2s.Multiply(RendererSDK.WindowSize))
 		)
 			return last_order_target
 		// allow 0.5% error (i.e. 19x10 for 1920x1080)
@@ -682,8 +717,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 	} else {
 		latest_usercmd.ScoreboardOpened = InputManager.IsScoreboardOpen
 		const cursor_pos = InputManager.CursorOnScreen,
-			game_state = GameRules?.GameState ?? DOTA_GameState.DOTA_GAMERULES_STATE_INIT,
-			selected_ent = InputManager.SelectedUnit
+			game_state = GameRules?.GameState ?? DOTA_GameState.DOTA_GAMERULES_STATE_INIT
 		if (
 			game_state < DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME
 			|| game_state === DOTA_GameState.DOTA_GAMERULES_STATE_POST_GAME
@@ -693,31 +727,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 			|| GUIInfo.Shop.ClearQuickBuy_2Rows.Contains(cursor_pos)
 			|| GUIInfo.Shop.CourierGold.Contains(cursor_pos)
 			|| (InputManager.IsScoreboardOpen && GUIInfo.Scoreboard.Background.Contains(current_pos))
-			|| (InputManager.IsShopOpen && (
-				GUIInfo.OpenShopLarge.Header.Contains(cursor_pos)
-				|| GUIInfo.OpenShopLarge.ItemCombines.Contains(cursor_pos)
-				|| GUIInfo.OpenShopLarge.Items.Contains(cursor_pos)
-				|| GUIInfo.OpenShopLarge.PinnedItems.Contains(cursor_pos)
-			))
-			|| (
-				(
-					InputManager.IsShopOpen
-					|| (selected_ent?.Inventory?.Stash?.length ?? 0) !== 0
-				) && (
-					GUIInfo.Shop.Stash.Contains(cursor_pos)
-					|| GUIInfo.Shop.StashGrabAll.Contains(cursor_pos)
-				)
-			)
-		)
-			return cursor_pos.Divide(RendererSDK.WindowSize)
-		const hud = GUIInfo.GetLowerHUDForUnit(selected_ent)
-		if (
-			hud !== undefined
-			&& (
-				hud.InventoryContainer.Contains(cursor_pos)
-				|| hud.NeutralAndTPContainer.Contains(cursor_pos)
-				|| hud.XP.Contains(cursor_pos)
-			)
+			|| IsCursorOnUI(cursor_pos)
 		)
 			return cursor_pos.Divide(RendererSDK.WindowSize)
 		const pos = InputManager.CursorOnWorld
@@ -1247,7 +1257,6 @@ function ClearHumanizerState() {
 	latest_usercmd = new UserCmd()
 	camera_move_end = 0
 	camera_direction.toZero()
-	InputManager.IsShopOpen = false
 	usercmd_cache.splice(0)
 	usercmd_cache_last_wrote = 0
 	yellow_zone_out_at = 0
