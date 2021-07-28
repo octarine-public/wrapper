@@ -638,6 +638,7 @@ function IsCursorOnUI(cursor_pos: Vector2): boolean {
 			|| GUIInfo.OpenShopLarge.ItemCombines.Contains(cursor_pos)
 			|| GUIInfo.OpenShopLarge.Items.Contains(cursor_pos)
 			|| GUIInfo.OpenShopLarge.PinnedItems.Contains(cursor_pos)
+			|| GUIInfo.OpenShopLarge.GuideFlyout.Contains(cursor_pos)
 		))
 		|| (
 			(

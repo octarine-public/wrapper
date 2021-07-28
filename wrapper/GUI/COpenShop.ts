@@ -19,6 +19,7 @@ export default class CShop {
 	public readonly Items = new Rectangle()
 	public readonly PinnedItems = new Rectangle()
 	public readonly ItemCombines = new Rectangle()
+	public readonly GuideFlyout = new Rectangle()
 
 	constructor(large: boolean, screen_size: Vector2, hud_flipped: boolean) {
 		this.CalculateMainPanel(large, screen_size, hud_flipped)
@@ -29,6 +30,7 @@ export default class CShop {
 		RendererSDK.FilledRect(this.Items.pos1, this.Items.Size, Color.Green.SetA(128))
 		RendererSDK.FilledRect(this.PinnedItems.pos1, this.PinnedItems.Size, Color.Yellow.SetA(128))
 		RendererSDK.FilledRect(this.ItemCombines.pos1, this.ItemCombines.Size, Color.Blue.SetA(128))
+		RendererSDK.FilledRect(this.GuideFlyout.pos1, this.GuideFlyout.Size, Color.BlackGray.SetA(128))
 	}
 	public HasChanged(): boolean {
 		return false
@@ -52,6 +54,15 @@ export default class CShop {
 
 		MainPanel.x = hud_flip ? 0 : screen_size.x - MainPanel.Width
 		MainPanel.y = screen_size.y - ShopBottomMargin - MainPanel.Height
+
+		if (large) {
+			this.GuideFlyout.Width = GUIInfo.ScaleWidth(210, screen_size)
+			this.GuideFlyout.Height = GUIInfo.ScaleHeight(814, screen_size)
+			this.GuideFlyout.x = hud_flip
+				? MainPanel.pos2.x
+				: MainPanel.x - this.GuideFlyout.Width
+			this.GuideFlyout.y = MainPanel.y
+		}
 
 		this.Header.Width = MainPanel.Width
 		this.Header.Height = HeaderHeight

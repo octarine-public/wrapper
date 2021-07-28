@@ -53,8 +53,6 @@ const GUIInfo = new (class CGUIInfo {
 			this.OpenShopLarge = new COpenShop(true, screen_size, hud_flipped)
 		if (everything_changed || this.PreGame === undefined || this.PreGame.HasChanged())
 			this.PreGame = new CPreGame(screen_size)
-		if (everything_changed || this.PreGame === undefined || this.PreGame.HasChanged())
-			this.PreGame = new CPreGame(screen_size)
 		if (everything_changed || this.Scoreboard === undefined || this.Scoreboard.HasChanged())
 			this.Scoreboard = new CScoreboard(screen_size)
 		if (everything_changed || this.LowerHUD.length === 0) {
