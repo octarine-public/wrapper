@@ -64,7 +64,7 @@ const GUIInfo = new (class CGUIInfo {
 				for (let j = 0; j < 24; j++) {
 					const ar2: CLowerHUD[] = []
 					for (let k = 0; k < 24; k++)
-						ar2.push(new CLowerHUD(screen_size, i !== 0, j, k))
+						ar2.push(new CLowerHUD(screen_size, i !== 0, j, k, hud_flipped))
 					ar.push(ar2)
 				}
 				this.LowerHUD.push(ar)

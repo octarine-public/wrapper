@@ -27,6 +27,7 @@ export default class CLowerHUD {
 		is_hero: boolean,
 		abilities_count: number,
 		base_abilities_count: number,
+		hud_flip: boolean,
 	) {
 		this.LeftFlare.Width = GUIInfo.ScaleWidth(52, screen_size)
 		this.LeftFlare.Height = GUIInfo.ScaleHeight(138, screen_size)
@@ -193,7 +194,7 @@ export default class CLowerHUD {
 		)
 		this.HealthManaContainer.y = screen_size.y - GUIInfo.ScaleHeight(8, screen_size) - this.HealthManaContainer.Height
 
-		this.CenterEverything(screen_size, max_x)
+		this.CenterEverything(screen_size, max_x, hud_flip)
 	}
 
 	public DebugDraw(): void {
@@ -226,8 +227,10 @@ export default class CLowerHUD {
 		RendererSDK.FilledRect(this.HealthManaContainer.pos1, this.HealthManaContainer.Size, Color.Aqua.SetA(128))
 	}
 
-	private CenterEverything(screen_size: Vector2, max_x: number): void {
-		const base_x = Math.floor((screen_size.x - max_x) / 2)
+	private CenterEverything(screen_size: Vector2, max_x: number, hud_flip: boolean): void {
+		let base_x = Math.floor((screen_size.x - max_x) / 2)
+		if (hud_flip)
+			base_x++
 		this.LeftFlare.x += base_x
 		this.Portrait.x += base_x
 		this.XP.x += base_x
