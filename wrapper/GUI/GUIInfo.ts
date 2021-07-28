@@ -24,7 +24,7 @@ const GUIInfo = new (class CGUIInfo {
 	public OpenShopLarge = undefined as any as COpenShop
 	public TopBar = undefined as any as CTopBar
 	public PreGame = undefined as any as CPreGame
-	public LowerHUD = [] as CLowerHUD[][]
+	public LowerHUD = [] as CLowerHUD[][][]
 	public Scoreboard = undefined as any as CScoreboard
 	public HUDFlipped = false
 
@@ -59,10 +59,14 @@ const GUIInfo = new (class CGUIInfo {
 			this.Scoreboard = new CScoreboard(screen_size)
 		if (everything_changed || this.LowerHUD.length === 0) {
 			this.LowerHUD.splice(0)
-			for (let i = 0; i < 24; i++) {
-				const ar: CLowerHUD[] = []
-				for (let j = 0; j < 24; j++)
-					ar.push(new CLowerHUD(screen_size, i, j))
+			for (let i = 0; i < 2; i++) {
+				const ar: CLowerHUD[][] = []
+				for (let j = 0; j < 24; j++) {
+					const ar2: CLowerHUD[] = []
+					for (let k = 0; k < 24; k++)
+						ar2.push(new CLowerHUD(screen_size, i !== 0, j, k))
+					ar.push(ar2)
+				}
 				this.LowerHUD.push(ar)
 			}
 		}
@@ -86,7 +90,7 @@ const GUIInfo = new (class CGUIInfo {
 				!abil!.AbilityBehavior.includes(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_HIDDEN)
 			)).length
 			: 4
-		return this.LowerHUD[abils_count][base_abils_count]
+		return this.LowerHUD[unit?.IsHero ? 1 : 0][abils_count][base_abils_count]
 	}
 	public DebugDraw(): void {
 		if (GameRules?.GameState !== DOTA_GameState.DOTA_GAMERULES_STATE_HERO_SELECTION) {

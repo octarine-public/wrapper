@@ -22,7 +22,12 @@ export default class CLowerHUD {
 	public readonly RightFlare = new Rectangle()
 	public readonly HealthManaContainer = new Rectangle()
 
-	constructor(screen_size: Vector2, abilities_count: number, base_abilities_count: number) {
+	constructor(
+		screen_size: Vector2,
+		is_hero: boolean,
+		abilities_count: number,
+		base_abilities_count: number,
+	) {
 		this.LeftFlare.Width = GUIInfo.ScaleWidth(52, screen_size)
 		this.LeftFlare.Height = GUIInfo.ScaleHeight(138, screen_size)
 		this.LeftFlare.x = 0
@@ -49,14 +54,20 @@ export default class CLowerHUD {
 		this.AbilitiesContainer.x = GUIInfo.ScaleWidth(219, screen_size)
 		this.AbilitiesContainer.y = screen_size.y - this.AbilitiesContainer.Height - GUIInfo.ScaleHeight(50, screen_size)
 
-		this.TalentTree.Width = GUIInfo.ScaleWidth(62, screen_size)
-		this.TalentTree.Height = GUIInfo.ScaleHeight(62, screen_size)
+		if (is_hero) {
+			this.TalentTree.Width = GUIInfo.ScaleWidth(62, screen_size)
+			this.TalentTree.Height = GUIInfo.ScaleHeight(62, screen_size)
+		}
 		this.TalentTree.x = this.AbilitiesContainer.x
 		this.TalentTree.y = this.AbilitiesContainer.pos2.y - this.TalentTree.Height - GUIInfo.ScaleHeight(26, screen_size)
-		const TalentTreeMargin = GUIInfo.ScaleWidth(4, screen_size)
+		const TalentTreeMargin = is_hero
+			? GUIInfo.ScaleWidth(4, screen_size)
+			: 0
 
-		this.AghsStatusContainer.Width = GUIInfo.ScaleWidth(62, screen_size) - GUIInfo.ScaleWidth(4, screen_size)
-		this.AghsStatusContainer.Height = GUIInfo.ScaleHeight(62, screen_size)
+		if (is_hero) {
+			this.AghsStatusContainer.Width = GUIInfo.ScaleWidth(62, screen_size) - GUIInfo.ScaleWidth(4, screen_size)
+			this.AghsStatusContainer.Height = GUIInfo.ScaleHeight(62, screen_size)
+		}
 		this.AghsStatusContainer.x = GUIInfo.ScaleHeight(-6, screen_size)
 		this.AghsStatusContainer.y = this.AbilitiesContainer.pos2.y - this.AghsStatusContainer.Height - GUIInfo.ScaleHeight(24, screen_size)
 		let AghsStatusContainerStart = this.TalentTree.pos2.x + TalentTreeMargin

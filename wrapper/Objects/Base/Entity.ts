@@ -194,6 +194,9 @@ export default class Entity {
 	public get IsShop(): boolean {
 		return false
 	}
+	public get IsHero(): boolean {
+		return false
+	}
 	public get CustomNativeID(): number {
 		return this.Index << 1
 	}

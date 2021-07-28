@@ -37,6 +37,9 @@ export default class Hero extends Unit {
 	public TotalStrength = 0
 	public m_hReplicatingOtherHeroModel = 0x3FFF
 
+	public get IsHero(): boolean {
+		return true
+	}
 	public get ReplicatingOtherHeroModel_(): Entity | number {
 		const id = this.m_hReplicatingOtherHeroModel
 		if (id === 0x3FFF)
@@ -53,7 +56,6 @@ export default class Hero extends Unit {
 		const ReplicatingOtherHeroModel_ = this.ReplicatingOtherHeroModel_
 		return (ReplicatingOtherHeroModel_ instanceof Entity) || (ReplicatingOtherHeroModel_ > 0)
 	}
-
 	public get SpellAmplification(): number {
 		return super.SpellAmplification + (this.TotalIntellect * DamageAmplifyPerIntellectPrecent / 100)
 	}
