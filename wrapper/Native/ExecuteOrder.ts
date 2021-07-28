@@ -129,30 +129,11 @@ export default class ExecuteOrder {
 			if (ent instanceof Unit)
 				issuers.push(ent)
 		}
-		const order_type = ExecuteOrder.LatestUnitOrder_view.getUint32(0, true) as dotaunitorder_t
-		let multiunit_order = false
-		switch (order_type) {
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY:
-				break
-			default:
-				multiunit_order = true
-				issuers = [...new Set([...issuers, ...InputManager.SelectedEntities])]
-				break
-		}
+		issuers = [...new Set([...issuers, ...InputManager.SelectedEntities])]
 
-		if (issuers.length === 0) {
-			const hero = LocalPlayer?.Hero
-			if (hero !== undefined)
-				issuers = [hero]
-		}
 		const target = ExecuteOrder.LatestUnitOrder_view.getUint32(16, true),
-			ability = ExecuteOrder.LatestUnitOrder_view.getUint32(20, true)
+			ability = ExecuteOrder.LatestUnitOrder_view.getUint32(20, true),
+			order_type = ExecuteOrder.LatestUnitOrder_view.getUint32(0, true) as dotaunitorder_t
 		let target_: Entity | number = target,
 			ability_: Ability | number = ability
 		if (order_type === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE)
@@ -164,14 +145,26 @@ export default class ExecuteOrder {
 			target_ = EntityManager.EntityByIndex(target_) ?? target_
 		if (order_type !== dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM)
 			ability_ = (EntityManager.EntityByIndex(ability_) as Ability) ?? ability_
-		if (multiunit_order && ctrl_down && ConVars.GetInt("dota_player_multipler_orders") !== 0)
-			issuers = [...new Set([...issuers, ...EntityManager.GetEntitiesByClass(Unit).filter(ent => (
-				ent.IsControllable
-				&& ent.RootOwner === LocalPlayer
-				&& ent.IsAlive
-				&& !ent.IsEnemy()
-				&& ent.ShouldUnifyOrders
-			))])]
+		switch (order_type) {
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY:
+				break
+			default:
+				if (ctrl_down && ConVars.GetInt("dota_player_multipler_orders") !== 0)
+					issuers = [...new Set([...issuers, ...EntityManager.GetEntitiesByClass(Unit).filter(ent => (
+						ent.IsControllable
+						&& ent.RootOwner === LocalPlayer
+						&& ent.IsAlive
+						&& !ent.IsEnemy()
+						&& ent.ShouldUnifyOrders
+					))])]
+				break
+		}
 		return new ExecuteOrder(
 			order_type,
 			target_,

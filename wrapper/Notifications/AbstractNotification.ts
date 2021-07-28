@@ -5,7 +5,6 @@ export default abstract class Notification {
 	public readonly UniqueKey: any
 
 	private TimeToShow = 4 * 1000 // 4 seconds by default
-	private soundVolume = 0
 
 	private IsPlaying = false
 	private stopDisplayTime = 0
@@ -29,13 +28,6 @@ export default abstract class Notification {
 		return hrtime() > this.stopDisplayTime
 	}
 
-	protected get SndVolume() {
-		return this.soundVolume
-	}
-
-	protected set SndVolume(value) {
-		this.soundVolume = value
-	}
 	/**
 	 * @returns number min 0, max 255
 	 * @example Color.White.SetA(this.Opacity)
