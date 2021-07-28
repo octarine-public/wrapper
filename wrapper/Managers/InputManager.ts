@@ -1,5 +1,6 @@
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
+import Unit from "../Objects/Base/Unit"
 import { FixInt16 } from "../Utils/BitsExtensions"
 import Events, { EventEmitter } from "./Events"
 
@@ -17,6 +18,9 @@ const XMouseKey = (wParam: bigint) => HIWORD(wParam) === VXMouseKeys.XBUTTON1
 class Input {
 	public IsShopOpen = false
 	public IsScoreboardOpen = false
+	public readonly SelectedEntities: Unit[] = []
+	public QueryUnit: Nullable<Unit>
+	public SelectedUnit: Nullable<Unit>
 	private CursorOnWorld_ = new Vector3()
 
 	get CursorOnWorld(): Vector3 {

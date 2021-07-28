@@ -191,3 +191,5 @@ declare function SendIPCMessage(worker_uid: bigint, name: string, msg: WorkerIPC
 declare function WriteUserCmd(): void
 declare function MakeSTRATZRequest(req: string): Promise<ArrayBuffer>
 declare function IsShopOpen(): boolean
+declare function GetQueryUnit(): number
+declare function GetSelectedEntities(): number

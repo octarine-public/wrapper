@@ -129,14 +129,30 @@ export default class ExecuteOrder {
 			if (ent instanceof Unit)
 				issuers.push(ent)
 		}
+		const order_type = ExecuteOrder.LatestUnitOrder_view.getUint32(0, true) as dotaunitorder_t
+		let multiunit_order = false
+		switch (order_type) {
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY:
+				break
+			default:
+				multiunit_order = true
+				issuers = [...new Set([...issuers, ...InputManager.SelectedEntities])]
+				break
+		}
+
 		if (issuers.length === 0) {
 			const hero = LocalPlayer?.Hero
 			if (hero !== undefined)
 				issuers = [hero]
 		}
 		const target = ExecuteOrder.LatestUnitOrder_view.getUint32(16, true),
-			ability = ExecuteOrder.LatestUnitOrder_view.getUint32(20, true),
-			order_type = ExecuteOrder.LatestUnitOrder_view.getUint32(0, true) as dotaunitorder_t
+			ability = ExecuteOrder.LatestUnitOrder_view.getUint32(20, true)
 		let target_: Entity | number = target,
 			ability_: Ability | number = ability
 		if (order_type === dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE)
@@ -148,26 +164,14 @@ export default class ExecuteOrder {
 			target_ = EntityManager.EntityByIndex(target_) ?? target_
 		if (order_type !== dotaunitorder_t.DOTA_UNIT_ORDER_PURCHASE_ITEM)
 			ability_ = (EntityManager.EntityByIndex(ability_) as Ability) ?? ability_
-		if (ctrl_down && ConVars.GetInt("dota_player_multipler_orders") !== 0)
-			switch (order_type) {
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_TRAIN_ABILITY:
-					break
-				default:
-					issuers = [...new Set([...issuers, ...EntityManager.GetEntitiesByClass(Unit).filter(ent => (
-						ent.IsControllable
-						&& ent.RootOwner === LocalPlayer
-						&& ent.IsAlive
-						&& !ent.IsEnemy()
-						&& ent.ShouldUnifyOrders
-					))])]
-					break
-			}
+		if (multiunit_order && ctrl_down && ConVars.GetInt("dota_player_multipler_orders") !== 0)
+			issuers = [...new Set([...issuers, ...EntityManager.GetEntitiesByClass(Unit).filter(ent => (
+				ent.IsControllable
+				&& ent.RootOwner === LocalPlayer
+				&& ent.IsAlive
+				&& !ent.IsEnemy()
+				&& ent.ShouldUnifyOrders
+			))])]
 		return new ExecuteOrder(
 			order_type,
 			target_,
@@ -678,7 +682,8 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 	} else {
 		latest_usercmd.ScoreboardOpened = InputManager.IsScoreboardOpen
 		const cursor_pos = InputManager.CursorOnScreen,
-			game_state = GameRules?.GameState ?? DOTA_GameState.DOTA_GAMERULES_STATE_INIT
+			game_state = GameRules?.GameState ?? DOTA_GameState.DOTA_GAMERULES_STATE_INIT,
+			selected_ent = InputManager.SelectedUnit
 		if (
 			game_state < DOTA_GameState.DOTA_GAMERULES_STATE_PRE_GAME
 			|| game_state === DOTA_GameState.DOTA_GAMERULES_STATE_POST_GAME
@@ -697,11 +702,21 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 			|| (
 				(
 					InputManager.IsShopOpen
-					|| (LocalPlayer?.Hero?.Inventory?.Stash?.length ?? 0) !== 0
+					|| (selected_ent?.Inventory?.Stash?.length ?? 0) !== 0
 				) && (
 					GUIInfo.Shop.Stash.Contains(cursor_pos)
 					|| GUIInfo.Shop.StashGrabAll.Contains(cursor_pos)
 				)
+			)
+		)
+			return cursor_pos.Divide(RendererSDK.WindowSize)
+		const hud = GUIInfo.GetLowerHUDForUnit(selected_ent)
+		if (
+			hud !== undefined
+			&& (
+				hud.InventoryContainer.Contains(cursor_pos)
+				|| hud.NeutralAndTPContainer.Contains(cursor_pos)
+				|| hud.XP.Contains(cursor_pos)
 			)
 		)
 			return cursor_pos.Divide(RendererSDK.WindowSize)
@@ -897,6 +912,9 @@ function MoveCamera(
 	return [MoveCameraByScreen(target_pos, current_time), false]
 }
 
+// polyfills for old core
+globalThis.GetSelectedEntities = globalThis.GetSelectedEntities ?? (() => 0)
+globalThis.GetQueryUnit = globalThis.GetQueryUnit ?? (() => 0)
 function ProcessUserCmd(): void {
 	const current_time = hrtime()
 	const dt = Math.min(current_time - latest_update, 100) / 1000
@@ -908,6 +926,22 @@ function ProcessUserCmd(): void {
 	latest_usercmd.MousePosition.CopyFrom(InputManager.CursorOnScreen.DivideForThis(RendererSDK.WindowSize))
 	InputManager.IsShopOpen = IsShopOpen()
 	InputManager.IsScoreboardOpen = ConVars.GetInt("dota_spectator_stats_panel") === 1
+	const num_selected = GetSelectedEntities()
+	InputManager.SelectedEntities.splice(0)
+	for (let i = 0; i < num_selected; i++) {
+		const ent = EntityManager.EntityByIndex(IOBufferView.getUint32(i * 4, true))
+		if (ent !== undefined)
+			InputManager.SelectedEntities.push(ent as Unit)
+	}
+	if (InputManager.SelectedEntities.length === 0) {
+		const ent = LocalPlayer?.Hero
+		if (ent !== undefined)
+			InputManager.SelectedEntities.push(ent)
+	}
+	InputManager.QueryUnit = EntityManager.EntityByIndex(GetQueryUnit()) as Nullable<Unit>
+	InputManager.SelectedUnit = ConVars.GetInt("dota_hud_new_query_panel") === 0
+		? InputManager.QueryUnit ?? InputManager.SelectedEntities[0]
+		: InputManager.SelectedEntities[0] ?? InputManager.QueryUnit
 	InputManager.CursorOnWorld = RendererSDK.ScreenToWorldFar(
 		[latest_usercmd.MousePosition],
 		Camera.Position ? Vector3.fromIOBuffer() : new Vector3(),
@@ -1218,6 +1252,9 @@ function ClearHumanizerState() {
 	usercmd_cache_last_wrote = 0
 	yellow_zone_out_at = 0
 	green_zone_out_at = 0
+	InputManager.IsShopOpen = false
+	InputManager.IsScoreboardOpen = false
+	InputManager.SelectedEntities.splice(0)
 }
 
 Events.on("NewConnection", ClearHumanizerState)

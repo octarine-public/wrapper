@@ -5,7 +5,7 @@ import { DOTA_GameState } from "../Enums/DOTA_GameState"
 import EventsSDK from "../Managers/EventsSDK"
 import InputManager from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
-import { GameRules, LocalPlayer } from "../Objects/Base/Entity"
+import { GameRules } from "../Objects/Base/Entity"
 import Unit from "../Objects/Base/Unit"
 import CLowerHUD from "./CLowerHUD"
 import CMinimap from "./CMinimap"
@@ -69,7 +69,7 @@ const GUIInfo = new (class CGUIInfo {
 		if (this.debug_draw)
 			this.DebugDraw()
 	}
-	public GetLowerHUDForUnit(unit: Nullable<Unit>): Nullable<CLowerHUD> {
+	public GetLowerHUDForUnit(unit: Nullable<Unit> = InputManager.SelectedUnit): Nullable<CLowerHUD> {
 		const abils = unit?.Spells?.filter(abil => (
 			abil !== undefined
 			&& abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES
@@ -95,7 +95,7 @@ const GUIInfo = new (class CGUIInfo {
 			this.Shop.DebugDraw()
 			if (InputManager.IsShopOpen)
 				this.OpenShopLarge.DebugDraw()
-			this.GetLowerHUDForUnit(LocalPlayer?.Hero)?.DebugDraw()
+			this.GetLowerHUDForUnit()?.DebugDraw()
 			if (InputManager.IsScoreboardOpen)
 				this.Scoreboard.DebugDraw()
 		} else
