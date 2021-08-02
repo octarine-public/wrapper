@@ -103,7 +103,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 					Manifest.LoadSoundFile(`${path}_c`)
 				const hash64 = MurmurHash64(StringToUTF8(path))
 				Manifest.Paths.set(hash64, [dir_id, file_id, ext_id])
-				// Manifest.PathHash32To64.set(MurmurHash2(StringToUTF8(path.toLowerCase())), hash64)
+				Manifest.PathHash32To64.set(MurmurHash2(StringToUTF8(path.toLowerCase())), hash64)
 			}
 			break
 		}
