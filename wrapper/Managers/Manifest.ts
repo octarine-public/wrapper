@@ -137,21 +137,21 @@ function InitStringTokens(): void {
 	(readJSON("known_strings.json") as string[]).forEach(str => Manifest.SaveStringToken(str))
 
 	const buf = fread("stringtokendatabase.txt")
-	if (buf !== undefined) {
-		const stream = new BinaryStream(new DataView(
-			buf.buffer,
-			buf.byteOffset,
-			buf.byteLength,
-		))
-		if (stream.ReadUint8() === 0x21 && stream.ReadUint8() === 0x0A) {
-			while (!stream.Empty()) {
-				stream.RelativeSeek(6)
-				let str = ""
-				for (let i = stream.ReadUint8(); i !== 0x0A; i = stream.ReadUint8())
-					str += String.fromCharCode(i)
-				Manifest.SaveStringToken(str)
-			}
-		}
+	if (buf === undefined)
+		return
+	const stream = new BinaryStream(new DataView(
+		buf.buffer,
+		buf.byteOffset,
+		buf.byteLength,
+	))
+	if (stream.ReadUint8() !== 0x21 || stream.ReadUint8() !== 0x0A)
+		return
+	while (!stream.Empty()) {
+		stream.RelativeSeek(6)
+		let str = ""
+		for (let i = stream.ReadUint8(); i !== 0x0A; i = stream.ReadUint8())
+			str += String.fromCharCode(i)
+		Manifest.SaveStringToken(str)
 	}
 }
 InitStringTokens()
