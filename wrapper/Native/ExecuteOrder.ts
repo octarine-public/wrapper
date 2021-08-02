@@ -73,6 +73,7 @@ export default class ExecuteOrder {
 	public static cursor_speed_max_accel = 4 // ?
 	public static prefire_orders = true
 	public static received_usercmd_request = false
+	public static is_standalone = false
 	public static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
@@ -673,6 +674,11 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 			return current_pos
 		return min.AddForThis(max.SubtractForThis(min).MultiplyScalarForThis(Math.random()))
 	} else {
+		if (ExecuteOrder.is_standalone) {
+			if (latest_usercmd.MousePosition.IsZero())
+				return new Vector2(0.5 + Math.random() / 2 - 0.25, 0.5 + Math.random() / 2 - 0.25)
+			return latest_usercmd.MousePosition
+		}
 		latest_usercmd.ScoreboardOpened = InputManager.IsScoreboardOpen
 		const local_hero = LocalPlayer?.Hero
 		if (InputManager.IsShopOpen && local_hero !== undefined)
