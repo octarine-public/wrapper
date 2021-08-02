@@ -3,8 +3,10 @@ type WorkerIPCType = (
 	{ [key: string]: WorkerIPCType }
 	| Map<WorkerIPCType, WorkerIPCType>
 	| WorkerIPCType[]
+	| WebAssembly.Module
+	| WebAssembly.Memory
 	| SharedArrayBuffer
-	| Uint8Array // won't maintain byteOffset after transfer
+	| Uint8Array
 	| ArrayBuffer
 	| string
 	| bigint
