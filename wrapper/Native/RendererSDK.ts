@@ -1247,7 +1247,5 @@ Workers.RegisterRPCEndPoint("LoadAndOptimizeWorld", data => {
 		)
 	}
 	WASM.FinishWorld()
-	const res = WASM.ExtractWorld()
-	WASM.ResetWorld()
-	return res
+	return WASM.ExtractWorld()
 })
