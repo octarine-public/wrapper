@@ -112,30 +112,7 @@ Events.on("ServerMessage", (msg_id, buf_) => {
 	}
 })
 
-// reset Manifest on new connection
-Events.on("NewConnection", () => {
-	Manifest.Directories.splice(0)
-	Manifest.Extensions.splice(0)
-	Manifest.FileNames.splice(0)
-	Manifest.Paths.clear()
-	Manifest.PathHash32To64.clear()
-	Manifest.SoundHashToString.clear()
-
-	const manifest = fread("soundevents/soundevents_manifest.vrman_c")
-	if (manifest === undefined) {
-		console.log("Sound manifest not found.")
-		return
-	}
-	ParseExternalReferences(manifest, true).forEach(path => {
-		if (path.endsWith(".vsndevts_c"))
-			Manifest.LoadSoundFile(path)
-	})
-})
-
-function InitStringTokens(): void {
-	// strings present in dota, but not present in stringtokendatabase for some reason
-	(readJSON("known_strings.json") as string[]).forEach(str => Manifest.SaveStringToken(str))
-
+function ReadStringTokenDatabase(): void {
 	const buf = fread("stringtokendatabase.txt")
 	if (buf === undefined)
 		return
@@ -154,4 +131,32 @@ function InitStringTokens(): void {
 		Manifest.SaveStringToken(str)
 	}
 }
-InitStringTokens()
+
+function ReadSoundManifest(): void {
+	const manifest = fread("soundevents/soundevents_manifest.vrman_c")
+	if (manifest === undefined) {
+		console.log("Sound manifest not found.")
+		return
+	}
+	ParseExternalReferences(manifest, true).forEach(path => {
+		if (path.endsWith(".vsndevts_c"))
+			Manifest.LoadSoundFile(path)
+	})
+}
+
+// reset Manifest on new connection
+Events.on("NewConnection", () => {
+	Manifest.Directories.splice(0)
+	Manifest.Extensions.splice(0)
+	Manifest.FileNames.splice(0)
+	Manifest.Paths.clear()
+	Manifest.PathHash32To64.clear()
+	Manifest.SoundHashToString.clear()
+
+	// strings present in dota, but not present in stringtokendatabase for some reason
+	const known_strings = readJSON("known_strings.json") as string[]
+	known_strings.forEach(str => Manifest.SaveStringToken(str))
+
+	ReadStringTokenDatabase()
+	ReadSoundManifest()
+})
