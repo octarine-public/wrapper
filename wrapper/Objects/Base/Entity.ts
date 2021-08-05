@@ -67,6 +67,7 @@ m_pEntity.m_flags
 */
 @WrapperClass("CBaseEntity")
 export default class Entity {
+	public static LoadModels = true
 	public IsValid = true
 	public Name_ = ""
 	@NetworkedBasicField("m_flCreateTime")
@@ -308,6 +309,8 @@ export default class Entity {
 		max.x = initial_radius
 		max.y = initial_radius
 		max.z = initial_radius
+		if (!Entity.LoadModels)
+			return
 		let promise = ModelDataCache.get(this.ModelName)
 		if (promise === undefined) {
 			promise = ComputeAttachmentsAndBoundsAsync(this.ModelName)
