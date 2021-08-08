@@ -1,7 +1,7 @@
 export default new (class Localization {
 	public was_changed = true
-	public PreferredUnitName = "english"
-	private SelectedUnitName_ = "english"
+	public PreferredUnitName = ""
+	private SelectedUnitName_ = ""
 	private readonly LocalizationUnits = new Map<string, Map<string, string>>()
 
 	public get SelectedUnitName(): string {

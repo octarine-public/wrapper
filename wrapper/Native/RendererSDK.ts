@@ -1170,15 +1170,17 @@ Events.on("Draw", async visual_data => {
 			stream.RelativeSeek(2 * 3 * 4)
 			continue
 		}
-		ent.Position.x = stream.ReadFloat32()
-		ent.Position.y = stream.ReadFloat32()
-		ent.Position.z = stream.ReadFloat32()
-		ent.Angles.x = stream.ReadFloat32()
-		ent.Angles.y = stream.ReadFloat32()
-		ent.Angles.z = stream.ReadFloat32()
+		ent.VisualPosition.x = stream.ReadFloat32()
+		ent.VisualPosition.y = stream.ReadFloat32()
+		ent.VisualPosition.z = stream.ReadFloat32()
+		ent.VisualAngles.x = stream.ReadFloat32()
+		ent.VisualAngles.y = stream.ReadFloat32()
+		ent.VisualAngles.z = stream.ReadFloat32()
 	}
+	GameState.IsInDraw = true
 	await EventsSDK.emit("PreDraw")
 	await EventsSDK.emit("Draw")
+	GameState.IsInDraw = false
 })
 
 export default RendererSDK

@@ -74,6 +74,7 @@ export default class ExecuteOrder {
 	public static prefire_orders = true
 	public static received_usercmd_request = false
 	public static is_standalone = false
+	public static unsafe_mode = false
 	public static PrepareOrder(order: {
 		orderType: dotaunitorder_t,
 		target?: Entity | number,
@@ -222,13 +223,46 @@ export default class ExecuteOrder {
 	/**
 	 * Execute order with this fields
 	 */
-	public Execute(): ExecuteOrder {
+	public Execute(): void {
 		this.Position.toIOBuffer()
 		PrepareUnitOrders(this.toNative())
-		return this
 	}
 	public ExecuteQueued(): void {
+		if (ExecuteOrder.unsafe_mode) {
+			this.Execute()
+			return
+		}
 		if (!ExecuteOrder.disable_humanizer) {
+			let set_z = false
+			switch (this.OrderType) {
+				case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
+					set_z = true
+					break
+				case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
+				case dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM:
+					if (!(this.Target instanceof Entity))
+						set_z = true
+					break
+				default:
+					break
+			}
+			if (set_z) {
+				this.Position.SetZ(WASM.GetPositionHeight(this.Position))
+				const height_map = WASM.HeightMap
+				if (this.Position.z < -1024 || (height_map !== undefined && !height_map.Contains(this.Position)))
+					return
+			}
 			if (!this.Queue) {
 				if (!WillInterruptOrderQueue(this)) {
 					this.Execute()
@@ -454,7 +488,7 @@ function WillInterruptOrderQueue(order: ExecuteOrder): boolean {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TOGGLE_AUTO:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_NO_TARGET: {
 			const abil = order.Ability
-			return abil instanceof Ability && abil.CastPoint > 0
+			return abil instanceof Ability && (abil.CastPoint > 0 || abil.MaxChannelTime > 0)
 		}
 		default:
 			return false
@@ -513,7 +547,7 @@ function CanOrderBeSkipped(order: ExecuteOrder): boolean {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
 			return EntityManager.GetEntitiesByClass(Unit).some(ent => (
 				ent.IsGloballyTargetable
-				&& order.Position.Distance(ent.Position) < 100
+				&& order.Position.Distance2D(ent.Position) < 200
 			))
 		case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
 			return order.Target instanceof Entity && order.Target === order.Issuers[0]
@@ -911,7 +945,7 @@ function MoveCamera(
 		)), ent => ent.Distance(target_pos))[0]
 		if (nearest !== undefined && nearest.Distance(target_pos) < 1000) {
 			const eye_vector = WASM.GetEyeVector(default_camera_angles)
-			const lookatpos = nearest.Position
+			const lookatpos = nearest.Position.Clone()
 				.SubtractScalarX(eye_vector.x * default_camera_dist)
 				.SubtractScalarY(eye_vector.y * default_camera_dist)
 			camera_vec.x = lookatpos.x
@@ -1200,32 +1234,6 @@ Events.on("PrepareUnitOrders", async () => {
 	if (!ret)
 		return false
 	if (!ExecuteOrder.disable_humanizer) {
-		let set_z = false
-		switch (order.OrderType) {
-			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
-				set_z = true
-				break
-			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
-			case dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM:
-				if (!(order.Target instanceof Entity))
-					set_z = true
-				break
-			default:
-				break
-		}
-		if (set_z)
-			order.Position.SetZ(WASM.GetPositionHeight(order.Position))
 		order.ExecuteQueued()
 		if (latest_usercmd !== undefined)
 			ProcessUserCmd()

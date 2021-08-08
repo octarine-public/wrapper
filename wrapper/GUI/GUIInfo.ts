@@ -5,6 +5,7 @@ import { DOTA_GameState } from "../Enums/DOTA_GameState"
 import EventsSDK from "../Managers/EventsSDK"
 import InputManager from "../Managers/InputManager"
 import RendererSDK from "../Native/RendererSDK"
+import Ability from "../Objects/Base/Ability"
 import { GameRules } from "../Objects/Base/Entity"
 import Unit from "../Objects/Base/Unit"
 import CLowerHUD from "./CLowerHUD"
@@ -71,21 +72,24 @@ const GUIInfo = new (class CGUIInfo {
 		if (this.debug_draw)
 			this.DebugDraw()
 	}
-	public GetLowerHUDForUnit(unit: Nullable<Unit> = InputManager.SelectedUnit): Nullable<CLowerHUD> {
-		const abils = unit?.Spells?.filter(abil => (
+	public GetVisibleAbilitiesForUnit(unit: Unit): Ability[] {
+		return unit.Spells.filter(abil => (
 			abil !== undefined
 			&& abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_ATTRIBUTES
 			&& abil.AbilityType !== ABILITY_TYPES.ABILITY_TYPE_HIDDEN
 			&& abil.Name !== "plus_high_five"
 			&& abil.Name !== "plus_guild_banner"
 			&& !abil.IsHidden
-		))
+		)) as Ability[]
+	}
+	public GetLowerHUDForUnit(unit: Nullable<Unit> = InputManager.SelectedUnit): Nullable<CLowerHUD> {
+		const abils = unit !== undefined ? this.GetVisibleAbilitiesForUnit(unit) : undefined
 		const abils_count = abils !== undefined
 			? abils.length
 			: 4
 		const base_abils_count = abils !== undefined
 			? abils.filter(abil => (
-				!abil!.AbilityBehavior.includes(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_HIDDEN)
+				!abil.AbilityBehavior.includes(DOTA_ABILITY_BEHAVIOR.DOTA_ABILITY_BEHAVIOR_HIDDEN)
 			)).length
 			: 4
 		return this.LowerHUD[unit?.IsHero ? 1 : 0][abils_count][base_abils_count]

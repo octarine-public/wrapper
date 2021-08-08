@@ -13,6 +13,7 @@ const hardcoded_icons = new Map<string, string>(Object.entries(readJSON("hardcod
 class MenuManager {
 	public entries: Node[] = []
 	public config: any
+	public empty_config = false
 	private readonly header = new Header(this)
 	private active_element?: Base
 	private is_open_ = true
@@ -74,10 +75,11 @@ class MenuManager {
 				this.ConfigValue = JSON.parse(Utf16ArrayToStr(new Uint16Array(config)))
 			}
 		} catch {
+			this.empty_config = true
 			this.ConfigValue = {}
 		} finally {
 			this.header.ConfigValue = this.config.Header
-			if (this.config.SelectedLocalization !== undefined) {
+			if (this.config.SelectedLocalization !== undefined && this.config.SelectedLocalization !== "") {
 				Localization.SelectedUnitName = this.config.SelectedLocalization
 				this.initialized_language = true
 			}
@@ -86,7 +88,7 @@ class MenuManager {
 	public async Render(): Promise<void> {
 		if (this.config === undefined)
 			return
-		if (!this.initialized_language) {
+		if (!this.initialized_language && Localization.PreferredUnitName !== "") {
 			Localization.SelectedUnitName = Localization.PreferredUnitName
 			this.initialized_language = true
 		}

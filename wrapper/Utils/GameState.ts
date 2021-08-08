@@ -7,6 +7,7 @@ export default new (class GameState {
 	public IsInputCaptured = false
 	public UIState = DOTAGameUIState_t.DOTA_GAME_UI_STATE_DASHBOARD
 	public MapName = "<empty>"
+	public IsInDraw = false
 	/**
 	 * Equals GameRules?.RawGameTime ?? 0
 	 *

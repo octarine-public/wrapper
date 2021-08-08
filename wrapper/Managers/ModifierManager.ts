@@ -144,7 +144,6 @@ async function EmitModifierCreated(mod: IModifier) {
 	if (mod_.Duration !== -1 && mod_.DieTime < time)
 		return
 	ActiveModifiers.set(mod_.SerialNumber, mod_)
-	//console.log("Created " + mod_.SerialNumber)
 	const parent = mod_.Parent
 	if (parent !== undefined)
 		await AddModifier(parent, mod_)
@@ -230,7 +229,7 @@ EventsSDK.on("UpdateStringTable", async (name, update) => {
 			const replaced_mod = ActiveModifiers.get(replaced.SerialNum)
 			if (replaced_mod !== undefined)
 				await EmitModifierRemoved(replaced_mod)
-			return
+			continue
 		}
 		const mod = new IModifier(ParseProtobufNamed(mod_serialized, "CDOTAModifierBuffTableEntry"))
 		if (replaced?.SerialNum !== undefined && replaced.SerialNum !== mod.SerialNum) {

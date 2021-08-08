@@ -24,6 +24,15 @@ export class CHeightMap {
 	public get MaxMapCoords(): Vector2 {
 		return this.MinMapCoords_.Add(this.MapSize_)
 	}
+
+	public Contains(pos: Vector2 | Vector3): boolean {
+		return (
+			pos.x >= this.MinMapCoords_.x
+			&& pos.x <= this.MinMapCoords_.x + this.MapSize_.x
+			&& pos.y >= this.MinMapCoords_.y
+			&& pos.y <= this.MinMapCoords_.y + this.MapSize_.y
+		)
+	}
 }
 export let HeightMap: Nullable<CHeightMap>
 
