@@ -467,7 +467,6 @@ function CanBeIgnored(order: ExecuteOrder): boolean {
 		case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_HOLD_POSITION:
-		case dotaunitorder_t.DOTA_UNIT_ORDER_STOP:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
 		case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
