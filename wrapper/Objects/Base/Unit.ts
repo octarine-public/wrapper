@@ -93,10 +93,6 @@ export default class Unit extends Entity {
 	public BaseMoveSpeed = 0
 	@NetworkedBasicField("m_iBKBChargesUsed")
 	public BKBChargesUsed = 0
-	@NetworkedBasicField("m_iDamageMin")
-	public MinDamage = 0
-	@NetworkedBasicField("m_iDamageMax")
-	public MaxDamage = 0
 	@NetworkedBasicField("m_iDamageBonus")
 	public BonusDamage = 0
 	@NetworkedBasicField("m_iDayTimeVisionRange")
@@ -272,8 +268,8 @@ export default class Unit extends Entity {
 	// BaseArmor
 	// BaseHealthRegeneration
 	// BaseManaRegeneration
-	public get DamageAverage(): number {
-		return (this.MinDamage + this.MaxDamage) / 2
+	public get AttackDamageAverage(): number {
+		return (this.AttackDamageMin + this.AttackDamageMax) / 2
 	}
 	/**
 	 * https://dota2.gamepedia.com/Armor
@@ -790,7 +786,7 @@ export default class Unit extends Entity {
 			else if (damage_type === AttackDamageType.Siege && armor_type === ArmorType.Structure)
 				mult *= 2.5
 		}
-		let damage = source.MinDamage + source.BonusDamage
+		let damage = source.AttackDamageMin + source.BonusDamage
 		damage = this.AbsorbedDamage(damage, DAMAGE_TYPES.DAMAGE_TYPE_PHYSICAL)
 		if (damage <= 0)
 			return 0
@@ -936,7 +932,7 @@ export default class Unit extends Entity {
 	public AttackDamage(target: Unit, useMinDamage = true, damageAmplifier: number = 0): number {
 		const damageType = this.AttackDamageType,
 			armorType = target.ArmorType
-		let damage = (useMinDamage ? this.MinDamage : this.DamageAverage) + this.BonusDamage,
+		let damage = (useMinDamage ? this.AttackDamageMin : this.AttackDamageAverage) + this.BonusDamage,
 			mult = 1
 
 		if (damageType === AttackDamageType.Hero && armorType === ArmorType.Structure)
