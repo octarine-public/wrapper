@@ -232,60 +232,60 @@ export default class ExecuteOrder {
 			this.Execute()
 			return
 		}
-		if (!ExecuteOrder.disable_humanizer) {
-			let set_z = false
-			switch (this.OrderType) {
-				case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
+		if (ExecuteOrder.disable_humanizer)
+			return
+		let set_z = false
+		switch (this.OrderType) {
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_MOVE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_POSITION:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_DIRECTION:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_POSITION:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_PATROL:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_RADAR:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_VECTOR_TARGET_POSITION:
+				set_z = true
+				break
+			case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
+			case dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM:
+				if (!(this.Target instanceof Entity))
 					set_z = true
-					break
-				case dotaunitorder_t.DOTA_UNIT_ORDER_ATTACK_TARGET:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_CAST_TARGET_TREE:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_TO_TARGET:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_ITEM:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_PICKUP_RUNE:
-				case dotaunitorder_t.DOTA_UNIT_ORDER_GIVE_ITEM:
-					if (!(this.Target instanceof Entity))
-						set_z = true
-					break
-				default:
-					break
-			}
-			if (set_z) {
-				this.Position.SetZ(WASM.GetPositionHeight(this.Position))
-				const height_map = WASM.HeightMap
-				if (this.Position.z < -1024 || (height_map !== undefined && !height_map.Contains(this.Position)))
-					return
-			}
-			if (!this.Queue) {
-				if (!WillInterruptOrderQueue(this)) {
-					this.Execute()
-					return
-				} else
-					while (arrayRemoveCallback(
-						ExecuteOrder.order_queue,
-						(order, i) => (
-							i !== 0
-							&& (
-								order[0].Issuers.every(unit => this.Issuers.includes(unit))
-								|| (
-									order[0].Issuers.length === 1
-									&& this.Issuers.includes(order[0].Issuers[0])
-								)
-							)
-							&& CanBeIgnored(order[0])
-						),
-					))
-						continue
-			}
-			ExecuteOrder.order_queue.push([this, hrtime()])
+				break
+			default:
+				break
 		}
+		if (set_z) {
+			this.Position.SetZ(WASM.GetPositionHeight(this.Position))
+			const height_map = WASM.HeightMap
+			if (this.Position.z < -1024 || (height_map !== undefined && !height_map.Contains(this.Position)))
+				return
+		}
+		if (!this.Queue) {
+			if (!WillInterruptOrderQueue(this)) {
+				this.Execute()
+				return
+			} else
+				while (arrayRemoveCallback(
+					ExecuteOrder.order_queue,
+					(order, i) => (
+						i !== 0
+						&& (
+							order[0].Issuers.every(unit => this.Issuers.includes(unit))
+							|| (
+								order[0].Issuers.length === 1
+								&& this.Issuers.includes(order[0].Issuers[0])
+							)
+						)
+						&& CanBeIgnored(order[0])
+					),
+				))
+					continue
+		}
+		ExecuteOrder.order_queue.push([this, hrtime()])
 	}
 
 	public toJSON(): {
@@ -404,8 +404,8 @@ function UpdateCameraBounds(camera_vec_2d: Vector2) {
 	let camera_limit_y_min = Math.min(
 		GUIInfo.TopBar.RadiantPlayersHeroImages[0].Bottom * 2 / screen_size.y,
 		0.1,
-	),
-		camera_limit_y_max = minimap.Top / screen_size.y,
+	)
+	let camera_limit_y_max = minimap.Top / screen_size.y,
 		camera_limit_x_min = Math.min(camera_limit_x1, camera_limit_x2),
 		camera_limit_x_max = Math.max(camera_limit_x1, camera_limit_x2)
 	latest_camera_red_zone_poly_screen.Points = [
@@ -1093,6 +1093,7 @@ function ProcessUserCmd(): void {
 			.SubtractScalarY(eye_vector.y * default_camera_dist)
 		camera_vec.x = lookatpos.x
 		camera_vec.y = lookatpos.y
+		order_suits = true
 	}
 	let moving_camera = false
 	{ // move camera via screen bounds
@@ -1172,7 +1173,7 @@ function ProcessUserCmd(): void {
 		ExecuteOrder.order_queue.splice(0, 1)
 		order = ProcessOrderQueue(current_time)
 	}
-	if (last_order_finish < current_time - order_linger_duration)
+	if (order === undefined && last_order_finish < current_time - order_linger_duration)
 		last_order_target = undefined
 	latest_camera_x = latest_usercmd.CameraPosition.x = camera_vec.x
 	latest_camera_y = latest_usercmd.CameraPosition.y = camera_vec.y
