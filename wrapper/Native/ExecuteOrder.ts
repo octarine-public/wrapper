@@ -838,6 +838,7 @@ const camera_move_linger_duration = 100,
 	camera_move_seed_expiry = 300,
 	usercmd_cache_delay = 10,
 	yellow_zone_max_duration = 700,
+	camera_limit_max_duration = 300,
 	green_zone_max_duration = yellow_zone_max_duration * 2,
 	camera_direction = new Vector2(),
 	debug_cursor = new Vector3(),
@@ -852,7 +853,8 @@ let last_order_finish = 0,
 	latest_usercmd = new UserCmd(),
 	last_camera_move_seed = 0,
 	yellow_zone_out_at = 0,
-	green_zone_out_at = 0
+	green_zone_out_at = 0,
+	camera_limited_at = 0
 function MoveCameraByScreen(target_pos: Vector3, current_time: number): Vector2 {
 	const dist_right_bot = target_pos.DistanceSqr2D(latest_camera_green_zone_poly_world.Points[0]),
 		dist_left_bot = target_pos.DistanceSqr2D(latest_camera_green_zone_poly_world.Points[1]),
@@ -1114,12 +1116,12 @@ function ProcessUserCmd(): void {
 		|| latest_camera_green_zone_poly_screen.IsInside(latest_usercmd.MousePosition)
 	)
 		green_zone_out_at = current_time
-	// let camera_limited = false
+	let camera_limited = false
 	{
 		const bounds_ent = CameraBounds
 		if (bounds_ent !== undefined) {
-			// const old_x = camera_vec.x,
-			// 	old_y = camera_vec.y
+			const old_x = camera_vec.x,
+				old_y = camera_vec.y
 			camera_vec.x = Math.min(
 				Math.max(camera_vec.x, bounds_ent.BoundsMin.x),
 				bounds_ent.BoundsMax.x,
@@ -1128,25 +1130,33 @@ function ProcessUserCmd(): void {
 				Math.max(camera_vec.y, bounds_ent.BoundsMin.y),
 				bounds_ent.BoundsMax.y,
 			)
-			// camera_limited = camera_vec.x !== old_x || camera_vec.y !== old_y
-		}
+			camera_limited = camera_vec.x !== old_x || camera_vec.y !== old_y
+			if (camera_limited) {
+				if (camera_limited_at === 0)
+					camera_limited_at = current_time
+			} else
+				camera_limited_at = 0
+		} else
+			camera_limited_at = 0
 		UpdateCameraBounds(camera_vec)
 		target_pos = ComputeTargetPos(camera_vec, current_time)
 	}
+	let execute_order = camera_limited_at !== 0 && (current_time - camera_limited_at) > camera_limit_max_duration
 	if (target_pos instanceof Vector2) {
 		order_suits = order_suits || (
 			latest_usercmd.MousePosition.Equals(target_pos)
 			&& latest_camera_red_zone_poly_screen.IsInside(target_pos)
 		)
-		if (!moving_camera && order_suits && order !== undefined) {
-			if (!ExecuteOrder.prefire_orders)
-				order[0].Execute()
-			if (ExecuteOrder.debug_orders)
-				console.log(`Finished order ${order[0].OrderType} after ${current_time - order[1]}ms at ${GameState.RawGameTime}`)
-			last_order_finish = current_time
-			ExecuteOrder.order_queue.splice(0, 1)
-			order = ProcessOrderQueue(current_time)
-		}
+		execute_order = execute_order || (!moving_camera && order_suits)
+	}
+	if (execute_order && order !== undefined) {
+		if (!ExecuteOrder.prefire_orders)
+			order[0].Execute()
+		if (ExecuteOrder.debug_orders)
+			console.log(`Finished order ${order[0].OrderType} after ${current_time - order[1]}ms at ${GameState.RawGameTime}`)
+		last_order_finish = current_time
+		ExecuteOrder.order_queue.splice(0, 1)
+		order = ProcessOrderQueue(current_time)
 	}
 	if (last_order_finish < current_time - order_linger_duration)
 		last_order_target = undefined
@@ -1257,6 +1267,7 @@ function ClearHumanizerState() {
 	usercmd_cache_last_wrote = 0
 	yellow_zone_out_at = 0
 	green_zone_out_at = 0
+	camera_limited_at = 0
 	InputManager.IsShopOpen = false
 	InputManager.IsScoreboardOpen = false
 	InputManager.SelectedEntities.splice(0)
