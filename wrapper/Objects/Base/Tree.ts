@@ -94,7 +94,7 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 		if (entity === undefined)
 			return
 		const ang = QAngle.FromString(angles_str)
-		entity.Angles.CopyFrom(ang)
+		entity.VisualAngles.CopyFrom(ang)
 		entity.NetworkedAngles.CopyFrom(ang)
 		entity.ModelName = model
 		entity.OnModelUpdated()
