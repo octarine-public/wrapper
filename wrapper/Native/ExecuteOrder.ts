@@ -662,7 +662,10 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		green_zone_reached = green_zone_out_at < current_time - green_zone_max_duration
 	const current_pos = latest_usercmd.MousePosition
 	if (last_order_target instanceof Entity) {
-		if (EntityHitBoxIntersects(last_order_target, camera_vec, current_pos))
+		if (
+			EntityHitBoxIntersects(last_order_target, camera_vec, current_pos)
+			&& !latest_camera_red_zone_poly_screen.IsOutside(current_pos)
+		)
 			return current_pos
 		const hitbox = GetEntityHitBox(last_order_target, camera_vec)
 		if (hitbox === undefined || hitbox.Points.some(point => (
@@ -681,9 +684,14 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 			const generated = center
 				.Add(min.MultiplyScalar(Math.random() / 2))
 				.AddForThis(max.MultiplyScalar(Math.random() / 2))
-			if (EntityHitBoxIntersects(last_order_target, camera_vec, generated))
+			if (
+				EntityHitBoxIntersects(last_order_target, camera_vec, generated)
+				&& !latest_camera_red_zone_poly_screen.IsOutside(generated)
+			)
 				return generated
 		}
+		if (latest_camera_red_zone_poly_screen.IsOutside(center))
+			return last_order_target.Position
 		return center
 	} else if (last_order_target instanceof Vector3) {
 		const w2s = RendererSDK.WorldToScreenCustom(last_order_target, camera_vec)
@@ -703,9 +711,15 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		// allow 0.5% error (i.e. 19x10 for 1920x1080)
 		const min = w2s.SubtractScalar(0.005).Max(0).Min(1),
 			max = w2s.AddScalar(0.005).Max(0).Min(1)
-		if (new Rectangle(min, max).Contains(current_pos))
+		if (new Rectangle(min, max).Contains(current_pos)) {
+			if (latest_camera_red_zone_poly_screen.IsOutside(current_pos))
+				return last_order_target
 			return current_pos
-		return min.AddForThis(max.SubtractForThis(min).MultiplyScalarForThis(Math.random()))
+		}
+		const ret = min.AddForThis(max.SubtractForThis(min).MultiplyScalarForThis(Math.random()))
+		if (latest_camera_red_zone_poly_screen.IsOutside(ret))
+			return last_order_target
+		return ret
 	} else {
 		if (ExecuteOrder.is_standalone) {
 			if (latest_usercmd.MousePosition.IsZero())
