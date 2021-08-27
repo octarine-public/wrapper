@@ -198,7 +198,9 @@ export default class ExecuteOrder {
 		public readonly Issuers: Unit[],
 		public readonly Queue: boolean = false,
 		public readonly ShowEffects: boolean = false,
-	) { }
+	) {
+		this.Position = this.Position.Clone()
+	}
 
 	/**
 	 * pass Position: Vector3 at IOBuffer offset 0
