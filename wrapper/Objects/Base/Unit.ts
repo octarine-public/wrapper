@@ -73,8 +73,6 @@ export default class Unit extends Entity {
 	public HasScepterModifier = false
 	public UnitName_ = ""
 	public IsVisibleForTeamMask = 0
-	@NetworkedBasicField("m_anglediff")
-	public RotationDifference = 0
 	public IsControllableByPlayerMask = 0n
 	public NetworkActivity = GameActivity_t.ACT_DOTA_IDLE
 	public NetworkActivityStartTime = 0
@@ -1205,6 +1203,11 @@ RegisterFieldHandler(Unit, "m_hItems", async (unit, new_value) => {
 		unit.TotalItems[i] = undefined
 	}
 	await EventsSDK.emit("UnitItemsChanged", false, unit)
+})
+RegisterFieldHandler(Unit, "m_anglediff", (unit, new_value) => {
+	unit.NetworkedAngles.SubtractScalarY(unit.RotationDifference)
+	unit.RotationDifference = new_value as number
+	unit.NetworkedAngles.AddScalarY(unit.RotationDifference)
 })
 
 EventsSDK.on("PreEntityCreated", async ent => {

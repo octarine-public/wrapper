@@ -94,6 +94,7 @@ export default class Entity {
 	public CBodyComponent_: Nullable<EntityPropertiesNode> = undefined
 	public IsVisible = true
 	public DeltaZ = 0
+	public RotationDifference = 0
 	public readonly VisualPosition = new Vector3()
 	public readonly NetworkedPosition = new Vector3()
 	public readonly VisualAngles = new QAngle()
@@ -396,6 +397,7 @@ EventsSDK.on("GameEnded", () => ModelDataCache.clear())
 RegisterFieldHandler(Entity, "m_angRotation", (ent, new_val) => {
 	const m_angRotation = new_val as QAngle
 	ent.NetworkedAngles.CopyFrom(m_angRotation)
+	ent.NetworkedAngles.AddScalarY(ent.RotationDifference)
 	ent.VisualAngles.CopyFrom(m_angRotation)
 })
 RegisterFieldHandler(Entity, "m_nameStringableIndex", async (ent, new_val) => {
