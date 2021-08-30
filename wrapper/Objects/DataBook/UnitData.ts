@@ -19,6 +19,43 @@ function LoadUnitFile(path: string): RecursiveMap {
 	return ret
 }
 
+enum DOTA_COMBAT_CLASS_ATTACK {
+	DOTA_COMBAT_CLASS_ATTACK_BASIC,
+	DOTA_COMBAT_CLASS_ATTACK_HERO,
+	DOTA_COMBAT_CLASS_ATTACK_PIERCE,
+	DOTA_COMBAT_CLASS_ATTACK_SIEGE,
+}
+enum DOTA_COMBAT_CLASS_DEFEND {
+	DOTA_COMBAT_CLASS_DEFEND_BASIC,
+	DOTA_COMBAT_CLASS_DEFEND_HERO,
+	DOTA_COMBAT_CLASS_DEFEND_STRUCTURE,
+}
+
+function FixCombatClassAttack(type: DOTA_COMBAT_CLASS_ATTACK): AttackDamageType {
+	switch (type) {
+		default:
+		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_BASIC:
+			return AttackDamageType.Basic
+		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_HERO:
+			return AttackDamageType.Hero
+		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_PIERCE:
+			return AttackDamageType.Pierce
+		case DOTA_COMBAT_CLASS_ATTACK.DOTA_COMBAT_CLASS_ATTACK_SIEGE:
+			return AttackDamageType.Siege
+	}
+}
+function FixCombatClassDefend(type: DOTA_COMBAT_CLASS_DEFEND): ArmorType {
+	switch (type) {
+		default:
+		case DOTA_COMBAT_CLASS_DEFEND.DOTA_COMBAT_CLASS_DEFEND_BASIC:
+			return ArmorType.Basic
+		case DOTA_COMBAT_CLASS_DEFEND.DOTA_COMBAT_CLASS_DEFEND_HERO:
+			return ArmorType.Hero
+		case DOTA_COMBAT_CLASS_DEFEND.DOTA_COMBAT_CLASS_DEFEND_STRUCTURE:
+			return ArmorType.Structure
+	}
+}
+
 export default class UnitData {
 	public static global_storage: Promise<Map<string, UnitData>> = Promise.resolve(new Map())
 	public static empty = new UnitData("", new Map())
@@ -79,10 +116,10 @@ export default class UnitData {
 			? parseInt(m_Storage.get("ProjectileSpeed") as string)
 			: 0
 		this.AttackDamageType = m_Storage.has("CombatClassAttack")
-			? parseInt(m_Storage.get("CombatClassAttack") as string)
+			? FixCombatClassAttack(parseEnumString(DOTA_COMBAT_CLASS_ATTACK, m_Storage.get("CombatClassAttack") as string))
 			: AttackDamageType.Basic
 		this.ArmorType = m_Storage.has("CombatClassDefend")
-			? parseInt(m_Storage.get("CombatClassDefend") as string)
+			? FixCombatClassDefend(parseEnumString(DOTA_COMBAT_CLASS_DEFEND, m_Storage.get("CombatClassDefend") as string))
 			: ArmorType.Basic
 		this.BoundsHull = m_Storage.has("BoundsHullName")
 			? parseEnumString(DOTAHullSize, m_Storage.get("BoundsHullName") as string)
