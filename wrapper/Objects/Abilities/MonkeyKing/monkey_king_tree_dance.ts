@@ -1,14 +1,12 @@
 import Vector3 from "../../../Base/Vector3"
 import { WrapperClass } from "../../../Decorators"
-import { ParticleAttachment_t } from "../../../Enums/ParticleAttachment_t"
 import EntityManager from "../../../Managers/EntityManager"
 import EventsSDK from "../../../Managers/EventsSDK"
-import ParticlesSDK from "../../../Managers/ParticleManager"
 import { GetPositionHeight } from "../../../Native/WASM"
 import * as ArrayExtensions from "../../../Utils/ArrayExtensions"
 import GameState from "../../../Utils/GameState"
+import { DegreesToRadian } from "../../../Utils/Math"
 import Ability from "../../Base/Ability"
-import { LocalPlayer } from "../../Base/Entity"
 import TempTree from "../../Base/TempTree"
 import Tree from "../../Base/Tree"
 import Unit from "../../Base/Unit"
@@ -39,7 +37,6 @@ EventsSDK.on("ParticleCreated", (id, path) => {
 	if (path === "particles/units/heroes/hero_monkey_king/monkey_king_jump_trail.vpcf")
 		trails.set(id, undefined)
 })
-const particlesSDK = new ParticlesSDK()
 EventsSDK.on("ParticleUpdatedEnt", (id, cp, ent, _attach, _attachment, pos) => {
 	if (cp !== 1 || !trails.has(id))
 		return
@@ -63,7 +60,6 @@ EventsSDK.on("ParticleUpdatedEnt", (id, cp, ent, _attach, _attachment, pos) => {
 		...FilterValidTrees(EntityManager.GetEntitiesByClass(Tree), pos, cast_range),
 		...FilterValidTrees(EntityManager.GetEntitiesByClass(TempTree), pos, cast_range),
 	]
-	particlesSDK.DestroyAll()
 })
 
 EventsSDK.on("ParticleDestroyed", id => {
@@ -75,24 +71,13 @@ EventsSDK.on("ParticleDestroyed", id => {
 	trails.delete(id)
 })
 
-function CreateParticleForTree(tree: Tree | TempTree) {
-	const particle_pos = tree.Position.Clone().AddScalarZ(250)
-	particlesSDK.AddOrUpdate(
-		particle_pos,
-		"particles/units/heroes/hero_skywrath_mage/skywrath_mage_concussive_shot.vpcf",
-		ParticleAttachment_t.PATTACH_CUSTOMORIGIN,
-		LocalPlayer!.Hero!,
-		[0, particle_pos],
-		[1, particle_pos],
-		[2, new Vector3(3000)],
-	)
-}
-
 EventsSDK.on("Tick", dt => {
 	EntityManager.GetEntitiesByClass(monkey_king_tree_dance).forEach(abil => {
 		const owner = abil.Owner
-		if (owner === undefined)
+		if (owner === undefined || !owner.IsAlive) {
+			abil.TargetTree = undefined
 			return
+		}
 
 		if (
 			abil.TargetTree !== undefined
@@ -124,10 +109,8 @@ EventsSDK.on("Tick", dt => {
 				if (velocity.Length + owner.HullRadius + /* valve(tm) magic */5 >= distance_left) {
 					current_pos.z = GetPositionHeight(current_pos)
 					predicted_ar[2] = GameState.RawGameTime
-					if (finished_jumping) {
-						CreateParticleForTree(tree)
+					if (finished_jumping)
 						finished_jumping_trees.push(tree)
-					}
 				}
 			}
 			if (predicted_ar[2] === 0) { // update vertical motion
@@ -147,7 +130,7 @@ EventsSDK.on("Tick", dt => {
 		// further code relies on owner visibility, so we should skip it if owner isn't visible
 		if (!owner.IsVisible)
 			return
-		const hero_angle = owner.NetworkedRotationRad
+		const hero_angle = owner.NetworkedRotationRad - DegreesToRadian(owner.RotationDifference)
 		const best_predicted_pos = ArrayExtensions.orderBy(
 			abil.PredictedPositionsPerTree.filter(ar =>
 				ar[2] === 0
@@ -157,10 +140,7 @@ EventsSDK.on("Tick", dt => {
 			),
 			ar => owner.NetworkedPosition.Distance(ar[0]),
 		)[0]
-		if (best_predicted_pos !== undefined) {
-			const tree = best_predicted_pos[1]
-			CreateParticleForTree(tree)
-			abil.TargetTree = tree
-		}
+		if (best_predicted_pos !== undefined)
+			abil.TargetTree = best_predicted_pos[1]
 	})
 })
