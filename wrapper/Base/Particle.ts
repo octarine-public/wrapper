@@ -1,6 +1,7 @@
 import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
 import ParticlesSDK from "../Managers/ParticleManager"
 import Entity from "../Objects/Base/Entity"
+import GameState from "../Utils/GameState"
 import { tryFindFile } from "../Utils/readFile"
 import Color from "./Color"
 import Vector2 from "./Vector2"
@@ -11,6 +12,7 @@ export type ControlPointParam = [number, ControlPoint]
 
 export default class Particle {
 	public IsValid = false
+	public IsHidden = false
 	public readonly ControlPoints = new Map<number, Vector3>()
 	private EffectIndex = -1
 
@@ -27,7 +29,7 @@ export default class Particle {
 	}
 
 	public SetControlPoint(id: number, param: ControlPoint): void {
-		if (!this.IsValid)
+		if (!this.IsValid && !this.IsHidden)
 			return
 
 		if (Array.isArray(param))
@@ -66,15 +68,15 @@ export default class Particle {
 	 * )
 	 */
 	public SetControlPoints(...controlPoints: ControlPointParam[]): void {
-		if (!this.IsValid)
+		if (!this.IsValid && !this.IsHidden)
 			return
 		controlPoints.forEach(([id, param]) => this.SetControlPoint(id, param))
 	}
 
 	public Restart() {
-		if (!this.IsValid)
+		if (!this.IsValid && !this.IsHidden)
 			return
-		const save = [...this.ControlPoints.entries()] // TODO: Is saving needed?
+		const save = [...this.ControlPoints.entries()]
 		this.Destroy().Create(...save)
 	}
 
@@ -83,6 +85,9 @@ export default class Particle {
 			Particles.Destroy(this.EffectIndex, immediate)
 			this.EffectIndex = -1
 			this.IsValid = false
+		} else
+			this.IsHidden = false
+		if (!this.IsHidden) {
 			this.ControlPoints.clear()
 			this.Parent.AllParticles.delete(this.Key)
 		}
@@ -109,17 +114,20 @@ export default class Particle {
 			path += "_c"
 		path = tryFindFile(path, 2) ?? path
 		path = path.substring(0, path.length - 2)
-		this.EffectIndex = Particles.Create(
-			path,
-			this.Attachment,
-			this.Entity?.IsValid
-				? this.Entity instanceof Entity
-					? this.Entity.Index
-					: this.Entity.Length
-				: -1,
-		)
-		this.IsValid = true
-		this.SetControlPoints(...controlPoints)
+		if (!GameState.OBSBypassEnabled) {
+			this.EffectIndex = Particles.Create(
+				path,
+				this.Attachment,
+				this.Entity?.IsValid
+					? this.Entity instanceof Entity
+						? this.Entity.Index
+						: this.Entity.Length
+					: -1,
+			)
+			this.IsValid = true
+			this.SetControlPoints(...controlPoints)
+		} else
+			this.IsHidden = true
 		this.Parent.AllParticles.set(this.Key, this)
 
 		return this

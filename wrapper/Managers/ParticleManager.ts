@@ -3,6 +3,8 @@ import Particle, { ControlPoint, ControlPointParam } from "../Base/Particle"
 import Vector3 from "../Base/Vector3"
 import { ParticleAttachment_t } from "../Enums/ParticleAttachment_t"
 import Entity from "../Objects/Base/Entity"
+import GameState from "../Utils/GameState"
+import EventsSDK from "./EventsSDK"
 
 export enum PARTICLE_RENDER_NAME {
 	NORMAL = "Normal",
@@ -65,8 +67,13 @@ export interface IDrawBoundingAreaOptions {
 }
 
 class ParticlesSDK {
+	public static readonly Instances: ParticlesSDK[] = []
 	public readonly AllParticles = new Map<any, Particle>()
 	private readonly AllParticlesRange = new Map<Particle, number>()
+
+	constructor() {
+		ParticlesSDK.Instances.push(this)
+	}
 
 	public AddOrUpdate(
 		key: any,
@@ -260,9 +267,23 @@ class ParticlesSDK {
 
 		if (particleRange === undefined)
 			this.AllParticlesRange.set(key, range)
-
-		return
 	}
 }
+
+let prev_obs_bypass_state = false
+EventsSDK.on("Draw", () => {
+	if (prev_obs_bypass_state === GameState.OBSBypassEnabled)
+		return
+	prev_obs_bypass_state = GameState.OBSBypassEnabled
+	ParticlesSDK.Instances.forEach(instance => [...instance.AllParticles.values()].forEach(par => {
+		if (GameState.OBSBypassEnabled) {
+			par.IsHidden = true
+			par.Destroy()
+		} else {
+			par.Restart()
+			par.IsHidden = false
+		}
+	}))
+})
 
 export default ParticlesSDK

@@ -395,9 +395,9 @@ export default class Unit extends Entity {
 		return this.UnitData.BoundsHull
 	}
 	public get ProjectileCollisionSize(): number {
-		let ProjectileCollisionSize = this.UnitData.ProjectileCollisionSize
+		let ProjectileCollisionSize = this.HullRadius
 		if (ProjectileCollisionSize === 0)
-			ProjectileCollisionSize = this.HullRadius
+			ProjectileCollisionSize = this.UnitData.ProjectileCollisionSize
 		return ProjectileCollisionSize
 	}
 

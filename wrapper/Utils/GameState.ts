@@ -16,6 +16,7 @@ export default new (class GameState {
 	 */
 	public RawGameTime = 0
 	public LocalTeam = Team.Observer
+	private OBSBypassEnabled_ = false
 
 	public get Ping() {
 		return (GetLatency(Flow_t.IN) + GetLatency(Flow_t.OUT)) * 1000
@@ -25,6 +26,13 @@ export default new (class GameState {
 	}
 	public get IsConnected(): boolean {
 		return this.MapName !== "<empty>"
+	}
+	public get OBSBypassEnabled(): boolean {
+		return this.OBSBypassEnabled_
+	}
+	public set OBSBypassEnabled(val: boolean) {
+		ToggleOBSBypass(val)
+		this.OBSBypassEnabled_ = val
 	}
 	public GetLatency(flow: Flow_t = Flow_t.IN) {
 		return GetLatency(flow)
