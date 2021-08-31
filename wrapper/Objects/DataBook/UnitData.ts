@@ -167,6 +167,8 @@ function FixUnitInheritance(
 		return fixed_cache.get(unit_name) as RecursiveMap
 	if (unit_name === "npc_dota_hero_base")
 		map.set("BaseClass", "npc_dota_units_base")
+	else if (unit_name.startsWith("npc_dota_hero_") && !map.has("BaseClass"))
+		map.set("BaseClass", "npc_dota_hero_base")
 	if (map.has("BaseClass")) {
 		const base_name = map.get("BaseClass")
 		if (typeof base_name === "string" && base_name !== unit_name) {
