@@ -783,21 +783,24 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 		)
 			return cursor_pos.Divide(RendererSDK.WindowSize)
 		const pos = InputManager.CursorOnWorld
-		const w2s = RendererSDK.WorldToScreenCustom(pos, camera_vec)
-		if (
-			w2s === undefined
-			|| w2s.x < 0
-			|| w2s.y < 0
-			|| w2s.x > 1
-			|| w2s.y > 1
-			|| latest_camera_red_zone_poly_screen.IsOutside(w2s)
-			|| (
-				(yellow_zone_reached || green_zone_reached)
-				&& latest_camera_green_zone_poly_screen.IsOutside(w2s)
+		if (pos.IsValid && pos.z > -1000) {
+			const w2s = RendererSDK.WorldToScreenCustom(pos, camera_vec)
+			if (
+				w2s === undefined
+				|| w2s.x < 0
+				|| w2s.y < 0
+				|| w2s.x > 1
+				|| w2s.y > 1
+				|| latest_camera_red_zone_poly_screen.IsOutside(w2s)
+				|| (
+					(yellow_zone_reached || green_zone_reached)
+					&& latest_camera_green_zone_poly_screen.IsOutside(w2s)
+				)
 			)
-		)
-			return pos.Clone()
-		return w2s
+				return pos.Clone()
+			return w2s
+		} else
+			return cursor_pos.Divide(RendererSDK.WindowSize)
 	}
 }
 
