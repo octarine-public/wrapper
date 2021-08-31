@@ -924,12 +924,10 @@ Events.on("NewConnection", async () => {
 	})
 })
 
-EventsSDK.on("MidDataUpdate", () => {
+function GetLocalTeam(): Team {
 	const player = LocalPlayer
-	if (player === undefined) {
-		GameState.LocalTeam = Team.Observer
-		return
-	}
+	if (player === undefined)
+		return Team.Observer
 
 	let team = player.Team
 	if (team === Team.Observer) {
@@ -947,5 +945,13 @@ EventsSDK.on("MidDataUpdate", () => {
 			}
 		}
 	}
+	return team
+}
+
+EventsSDK.on("MidDataUpdate", () => {
+	const team = GetLocalTeam()
+	if (GameState.LocalTeam === team)
+		return
 	GameState.LocalTeam = team
+	EventsSDK.emit("LocalTeamChanged", false)
 })

@@ -1153,6 +1153,11 @@ RegisterFieldHandler(Unit, "m_iTaggedAsVisibleByTeam", async (unit, new_value) =
 	if (unit.IsValid)
 		await EventsSDK.emit("TeamVisibilityChanged", false, unit)
 })
+EventsSDK.on("LocalTeamChanged", () => {
+	EntityManager.GetEntitiesByClass(Unit).forEach(unit => {
+		unit.IsVisibleForEnemies = Unit.IsVisibleForEnemies(unit)
+	})
+})
 RegisterFieldHandler(Unit, "m_iIsControllableByPlayer64", async (unit, new_value) => {
 	unit.IsControllableByPlayerMask = new_value as bigint
 	if (unit.IsValid)

@@ -170,6 +170,7 @@ interface EventsSDK extends EventEmitter {
 	on(name: "WindowSizeChanged", listener: () => void): EventsSDK
 	on(name: "MatchmakingStatsUpdated", listener: (msg: RecursiveMap) => void): EventEmitter
 	on(name: "SharedObjectChanged", listener: (id: number, reason: SOType, msg: RecursiveMap) => void): EventEmitter
+	on(name: "LocalTeamChanged", listener: () => void): EventsSDK
 }
 
 const EventsSDK: EventsSDK = new EventEmitter()
