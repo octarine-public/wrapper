@@ -1,11 +1,11 @@
-export const masksBigInt: bigint[] = new Array(64),
-	masksNumber: number[] = new Array(64)
+export const masksBigInt: bigint[] = [],
+	masksNumber: number[] = []
 
-for (let i = 64; i--;)
-	masksBigInt[i] = 1n << BigInt(i)
+for (let i = 0; i < 64; i++)
+	masksBigInt.push(1n << BigInt(i))
 
-for (let i = 64; i--;)
-	masksNumber[i] = 1 << i
+for (let i = 0; i < 32; i++)
+	masksNumber.push(1 << i)
 
 export function MaskToArrayBigInt(num: bigint): number[] {
 	return masksBigInt.map(mask => Number(num & mask)).filter(masked => masked !== 0)
