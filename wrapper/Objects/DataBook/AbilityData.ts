@@ -77,11 +77,15 @@ export default class AbilityData {
 		this.AbilityType = m_Storage.has("AbilityType")
 			? (ABILITY_TYPES as any)[(m_Storage.get("AbilityType") as string).substring(5)]
 			: ABILITY_TYPES.ABILITY_TYPE_BASIC
-		this.MaxLevel = this.MaxTalentLevel = m_Storage.has("MaxLevel")
-			? parseInt(m_Storage.get("MaxLevel") as string)
-			: this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
+		if (m_Storage.has("MaxLevel"))
+			this.MaxLevel = parseInt(m_Storage.get("MaxLevel") as string)
+		else if (m_Storage.has("MaxUpgradeLevel"))
+			this.MaxLevel = parseInt(m_Storage.get("MaxUpgradeLevel") as string)
+		else
+			this.MaxLevel = this.AbilityType === ABILITY_TYPES.ABILITY_TYPE_ULTIMATE
 				? 3
 				: 4
+		this.MaxTalentLevel = this.MaxLevel
 		this.CacheSpecialValues(m_Storage)
 
 		this.AbilityBehavior = m_Storage.has("AbilityBehavior")
