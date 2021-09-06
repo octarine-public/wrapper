@@ -87,10 +87,10 @@ export default class KeyBind extends Base {
 		if (this.assigned_key > 0) {
 			let ar = KeyBind.callbacks.get(this.assigned_key)
 			if (ar === undefined) {
-				KeyBind.callbacks.set(this.assigned_key, [])
-				ar = KeyBind.callbacks.get(this.assigned_key)
+				ar = []
+				KeyBind.callbacks.set(this.assigned_key, ar)
 			}
-			ar!.push(this)
+			ar.push(this)
 		}
 		if (assign_key_str)
 			this.assigned_key_str = this.assigned_key >= KeyNames.length ? "Unknown" : KeyNames[Math.max(this.assigned_key, 0)]
@@ -152,20 +152,22 @@ function KeyHandler(key: VKeys, pressed: boolean): boolean {
 		return true
 	}
 
-	const onExecute = KeyBind.callbacks.get(key)
-	if (onExecute === undefined || IsPressing.get(key) === pressed)
+	if (IsPressing.get(key) === pressed)
 		return true
-
 	IsPressing.set(key, pressed)
 
-	onExecute.forEach(keybind => {
+	const onExecute = KeyBind.callbacks.get(key)
+	if (onExecute === undefined)
+		return true
+
+	const uniqueOnExecute = [...new Set(onExecute)]
+	uniqueOnExecute.forEach(keybind => {
 		if (!Base.trigger_on_chat && GameState.IsInputCaptured && !keybind.trigger_on_chat)
 			return
 		if (!GameState.IsConnected && !keybind.activates_in_menu && pressed) // pass un-press even in menu
 			return
 		keybind.is_pressed = pressed
 	})
-
 	return true
 }
 
