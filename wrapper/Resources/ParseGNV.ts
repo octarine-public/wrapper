@@ -1,5 +1,6 @@
 import Rectangle from "../Base/Rectangle"
 import Vector2 from "../Base/Vector2"
+import Vector3 from "../Base/Vector3"
 import { GridNavCellFlags } from "../Enums/GridNavCellFlags"
 import Tree from "../Objects/Base/Tree"
 import BinaryStream from "../Utils/BinaryStream"
@@ -16,14 +17,17 @@ class CGridNav {
 		this.Max = this.Min.Add(this.Size).SubtractScalarForThis(1)
 	}
 
-	public GetCellFlagsForPos(pos: Vector2): number {
+	public GetCellFlagsForPos(pos: Vector3 | Vector2): number {
 		return this.CellFlags[this.GetCellIndexForPos(pos)] ?? 0
 	}
 	public GetCellFlagsForGridPos(gridPosX: number, gridPosY: number): number {
 		return this.CellFlags[this.GetCellIndexForGridPos(gridPosX, gridPosY)] ?? 0
 	}
-	public GetGridPosForPos(pos: Vector2): Vector2 {
-		return pos.Subtract(this.Offset).DivideScalarForThis(this.EdgeSize).RoundForThis()
+	public GetGridPosForPos(pos: Vector3 | Vector2): Vector2 {
+		pos = pos instanceof Vector3
+			? Vector2.FromVector3(pos).SubtractForThis(this.Offset)
+			: pos.Subtract(this.Offset)
+		return pos.DivideScalarForThis(this.EdgeSize).RoundForThis()
 	}
 	public GetRectForGridPos(gridPosX: number, gridPosY: number): Rectangle {
 		const pos1 = new Vector2(gridPosX | 0, gridPosY | 0).RoundForThis().MultiplyScalarForThis(this.EdgeSize)
@@ -34,7 +38,7 @@ class CGridNav {
 	}
 
 	public UpdateTreeState(tree: Tree): void {
-		const gridPos = this.GetGridPosForPos(Vector2.FromVector3(tree.Position))
+		const gridPos = this.GetGridPosForPos(tree.Position)
 		const is_alive = tree.IsValid && tree.IsAlive
 		// basically tree takes 128x128, on default gridnav of 64x64 it takes 2x2 cells,
 		// and tree is located in right bottom one
@@ -44,7 +48,7 @@ class CGridNav {
 		this.SetCellFlag(gridPos.x - 1, gridPos.y - 1, GridNavCellFlags.Tree, is_alive)
 	}
 
-	private GetCellIndexForPos(pos: Vector2): number {
+	private GetCellIndexForPos(pos: Vector3 | Vector2): number {
 		const gridPos = this.GetGridPosForPos(pos)
 		return (this.Size.x * (gridPos.y - this.Min.y) + (gridPos.x - this.Min.x)) | 0
 	}
