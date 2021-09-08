@@ -1430,6 +1430,7 @@ export {
 export { default as PhysicalItem } from "./Objects/Base/PhysicalItem"
 export { default as Rune } from "./Objects/Base/Rune"
 export { default as Tree } from "./Objects/Base/Tree"
+export { default as CreepPathCorner } from "./Objects/Base/CreepPathCorner"
 export { default as TempTree } from "./Objects/Base/TempTree"
 export { default as TechiesMines } from "./Objects/Base/TechiesMines"
 

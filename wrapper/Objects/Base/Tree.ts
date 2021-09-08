@@ -40,16 +40,16 @@ export default class Tree extends Entity {
 }
 
 export let TempTreeIDOffset = 0
-let cur_local_id = 0x4000
+export let cur_local_id = 0x4000
 async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 	TempTreeIDOffset = 0
 	while (cur_local_id > 0x4000) {
 		const id = --cur_local_id
-		const ent = EntityManager.EntityByIndex(id, true) as Nullable<Tree>
-		if (ent === undefined)
-			continue
-		await DeleteEntity(id)
-		GridNav?.UpdateTreeState(ent)
+		const ent = EntityManager.EntityByIndex(id, true)
+		if (ent instanceof Tree) {
+			await DeleteEntity(id)
+			GridNav?.UpdateTreeState(ent)
+		}
 	}
 	const trees: Tree[] = []
 	for (const pos of ParseTRMP(buf)) {
@@ -57,15 +57,16 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 		// for some reason there are trees duplicates, but earlier ones override them
 		if (trees.some(tree => tree.Position.Equals(pos)))
 			continue
-		const id = cur_local_id++
+		let id = cur_local_id++
+		while (EntityManager.EntityByIndex(id, true) !== undefined)
+			id++
 		const entity = new Tree(id)
 		await entity.AsyncCreate()
 		entity.Name_ = "ent_dota_tree"
 		entity.ClassName = "C_DOTA_MapTree"
 		pos.SetZ(GetPositionHeight(pos))
-		entity.Position.CopyFrom(pos)
+		entity.VisualPosition.CopyFrom(pos)
 		entity.NetworkedPosition.CopyFrom(pos)
-		entity.BoundingBox.Base.CopyFrom(pos)
 		entity.BinaryID = TempTreeIDOffset - 1
 		entity.Team = Team.Neutral
 		CreateEntityInternal(entity)
@@ -74,7 +75,7 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 		await EventsSDK.emit("EntityCreated", false, entity)
 		trees.push(entity)
 	}
-	EntityDataLump.forEach(data => {
+	for (const data of EntityDataLump) {
 		if (data.get("classname") !== "ent_dota_tree")
 			return
 		const origin_str = data.get("origin"),
@@ -98,7 +99,7 @@ async function LoadTreeMap(buf: Uint8Array): Promise<void> {
 		entity.NetworkedAngles.CopyFrom(ang)
 		entity.ModelName = model
 		entity.OnModelUpdated()
-	})
+	}
 }
 
 let trm_succeeded = false
@@ -120,4 +121,4 @@ EventsSDK.after("ServerInfo", async () => {
 	trm_succeeded = false
 	await TryLoadMapFiles()
 })
-Events.on("PostAddSearchPath", async () => TryLoadMapFiles())
+Events.on("PostAddSearchPath", TryLoadMapFiles)
