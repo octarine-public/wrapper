@@ -70,6 +70,7 @@ export default class Base {
 	public FontFlags = FontFlags_t.NONE
 	public TooltipIcon = "menu/icons/info.svg"
 	public TooltipIconColor = new Color(104, 4, 255)
+	public Priority = 0
 	public readonly OnValueChangedCBs: ((caller: Base) => any)[] = []
 
 	public readonly Position = new Vector2()

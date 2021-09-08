@@ -9,7 +9,8 @@ import Header from "./Header"
 import Localization from "./Localization"
 import Node from "./Node"
 
-const hardcoded_icons = new Map<string, string>(Object.entries(readJSON("hardcoded_icons.json")))
+const hardcoded_icons = new Map<string, string>(Object.entries(readJSON("hardcoded_icons.json"))),
+	hardcoded_priorities = new Map<string, number>(Object.entries(readJSON("hardcoded_priorities.json")))
 class MenuManager {
 	public entries: Node[] = []
 	public config: any
@@ -158,9 +159,12 @@ class MenuManager {
 		if (hardcoded_icons.has(name))
 			icon_path = hardcoded_icons.get(name)!
 		node = new Node(this, name, icon_path)
+		if (hardcoded_priorities.has(name))
+			node.Priority = hardcoded_priorities.get(name)!
 		node.parent = this
 		this.entries.push(node)
 		this.entries = this.entries.sort((a, b) => a.Name.localeCompare(b.Name))
+		this.entries = this.entries.sort((a, b) => a.Priority - b.Priority)
 		node.ApplyLocalization()
 		return node
 	}

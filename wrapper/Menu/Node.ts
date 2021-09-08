@@ -341,6 +341,7 @@ export default class Node extends Base {
 		if (!this.sort_nodes)
 			return
 		this.entries = this.entries.sort((a, b) => a instanceof Node && b instanceof Node ? a.Name.localeCompare(b.Name) : 0)
+		this.entries = this.entries.sort((a, b) => a.Priority - b.Priority)
 	}
 }
 
