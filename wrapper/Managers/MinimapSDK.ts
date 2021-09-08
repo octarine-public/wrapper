@@ -225,22 +225,23 @@ const MinimapSDK = new (class CMinimapSDK {
 			active_icon.end_time = end_time
 			active_icon.min_size_animated = min_size_animated
 			active_icon.animation_cycle = animation_cycle
-		} else {
-			const icon = minimap_icon_storage.get(name)
-			if (icon !== undefined)
-				minimap_icons_active.set(uid, new MinimapIconRenderer(
-					icon,
-					worldPos,
-					size,
-					color,
-					end_time,
-					min_size_animated,
-					animation_cycle,
-					priority,
-					name === "ping",
-					name.startsWith("heroicon_"),
-				))
-		}
+		} else
+			minimap_icons_active.set(uid, new MinimapIconRenderer(
+				minimap_icon_storage.get(name) ?? new MinimapIcon(
+					name,
+					new Vector2(),
+					RendererSDK.GetImageSize(name),
+				),
+				worldPos,
+				size,
+				color,
+				end_time,
+				min_size_animated,
+				animation_cycle,
+				priority,
+				name === "ping",
+				name.startsWith("heroicon_"),
+			))
 	}
 	public DeleteIcon(uid: any): void {
 		minimap_icons_active.delete(uid)
