@@ -857,7 +857,6 @@ const camera_move_linger_duration = 100,
 	camera_move_seed_expiry = 300,
 	usercmd_cache_delay = 10,
 	yellow_zone_max_duration = 700,
-	camera_limit_max_duration = 300,
 	green_zone_max_duration = yellow_zone_max_duration * 2,
 	camera_direction = new Vector2(),
 	debug_cursor = new Vector3(),
@@ -872,8 +871,7 @@ let last_order_finish = 0,
 	latest_usercmd = new UserCmd(),
 	last_camera_move_seed = 0,
 	yellow_zone_out_at = 0,
-	green_zone_out_at = 0,
-	camera_limited_at = 0
+	green_zone_out_at = 0
 function MoveCameraByScreen(target_pos: Vector3, current_time: number): Vector2 {
 	const dist_right_bot = target_pos.DistanceSqr2D(latest_camera_green_zone_poly_world.Points[0]),
 		dist_left_bot = target_pos.DistanceSqr2D(latest_camera_green_zone_poly_world.Points[1]),
@@ -1100,22 +1098,28 @@ function ProcessUserCmd(): void {
 		camera_vec.y = lookatpos.y
 		order_suits = true
 	}
-	let moving_camera = false
+	let moving_camera = false,
+		moved_x = false,
+		moved_y = false
 	{ // move camera via screen bounds
 		const threshold = 0.008 * RendererSDK.WindowSize.y / RendererSDK.WindowSize.x
 		const extend_dist = ExecuteOrder.camera_speed * dt
 		if (latest_usercmd.MousePosition.x <= threshold) {
 			camera_vec.x -= extend_dist
+			moved_x = true
 			moving_camera = true
 		} else if (latest_usercmd.MousePosition.x >= 1 - threshold) {
 			camera_vec.x += extend_dist
+			moved_x = true
 			moving_camera = true
 		}
 		if (latest_usercmd.MousePosition.y <= threshold) {
 			camera_vec.y += extend_dist
+			moved_y = true
 			moving_camera = true
 		} else if (latest_usercmd.MousePosition.y >= 1 - threshold) {
 			camera_vec.y -= extend_dist
+			moved_y = true
 			moving_camera = true
 		}
 		if (!moving_camera && were_moving_camera)
@@ -1123,6 +1127,10 @@ function ProcessUserCmd(): void {
 		if (camera_move_end > current_time - camera_move_linger_duration) {
 			camera_vec.x += extend_dist * (camera_direction.x - 0.5)
 			camera_vec.y -= extend_dist * (camera_direction.y - 0.5)
+			if (camera_direction.x !== 0.5)
+				moved_x = true
+			if (camera_direction.y !== 0.5)
+				moved_y = true
 		}
 		were_moving_camera = moving_camera
 	}
@@ -1136,7 +1144,8 @@ function ProcessUserCmd(): void {
 		|| latest_camera_green_zone_poly_screen.IsInside(latest_usercmd.MousePosition)
 	)
 		green_zone_out_at = current_time
-	let camera_limited = false
+	let camera_limited_x = false,
+		camera_limited_y = false
 	{
 		const bounds_ent = CameraBounds
 		if (bounds_ent !== undefined) {
@@ -1150,18 +1159,13 @@ function ProcessUserCmd(): void {
 				Math.max(camera_vec.y, bounds_ent.BoundsMin.y),
 				bounds_ent.BoundsMax.y,
 			)
-			camera_limited = camera_vec.x !== old_x || camera_vec.y !== old_y
-			if (camera_limited) {
-				if (camera_limited_at === 0)
-					camera_limited_at = current_time
-			} else
-				camera_limited_at = 0
-		} else
-			camera_limited_at = 0
+			camera_limited_x = camera_vec.x !== old_x
+			camera_limited_y = camera_vec.y !== old_y
+		}
 		UpdateCameraBounds(camera_vec)
 		target_pos = ComputeTargetPos(camera_vec, current_time)
 	}
-	let execute_order = camera_limited_at !== 0 && (current_time - camera_limited_at) > camera_limit_max_duration
+	let execute_order = (camera_limited_x === moved_x) && (camera_limited_y === moved_y)
 	if (target_pos instanceof Vector2) {
 		order_suits = order_suits || (
 			latest_usercmd.MousePosition.Equals(target_pos)
@@ -1287,7 +1291,6 @@ function ClearHumanizerState() {
 	usercmd_cache_last_wrote = 0
 	yellow_zone_out_at = 0
 	green_zone_out_at = 0
-	camera_limited_at = 0
 	InputManager.IsShopOpen = false
 	InputManager.IsScoreboardOpen = false
 	InputManager.SelectedEntities.splice(0)
