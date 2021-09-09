@@ -45,7 +45,7 @@ export default new (class Workers {
 					"RPCCallResponse",
 					[true, res],
 				)
-			} catch (e) {
+			} catch (e: any) {
 				const err = e instanceof Error ? e : new Error(e)
 				SendIPCMessage(
 					source_worker_uid,
@@ -124,7 +124,7 @@ export default new (class Workers {
 			}
 			try {
 				resolve(await endpoint(data))
-			} catch (e) {
+			} catch (e: any) {
 				const err = e instanceof Error ? e : new Error(e)
 				reject([err.message, err.stack ?? ""])
 			}

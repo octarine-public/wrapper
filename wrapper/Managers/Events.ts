@@ -48,14 +48,14 @@ export class EventEmitter {
 				try {
 					if ((await listener(...args) === false) && cancellable)
 						return false
-				} catch (e) {
+				} catch (e: any) {
 					console.error(e instanceof Error ? e : new Error(e), this.listener2line.get(listener))
 				}
 		if (listeners_after !== undefined)
 			for (const listener of listeners_after)
 				try {
 					await listener(...args)
-				} catch (e) {
+				} catch (e: any) {
 					console.error(e instanceof Error ? e : new Error(e), this.listener2line.get(listener))
 				}
 		return true
