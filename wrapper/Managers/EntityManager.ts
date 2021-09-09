@@ -88,9 +88,11 @@ const EntityManager = new CEntityManager()
 export default EntityManager
 
 function ClassFromNative(id: number, constructor_name: string, ent_name: Nullable<string>): Entity {
-	const constructor = GetConstructorByName(constructor_name, ent_name)
-	if (constructor === undefined)
-		throw `Can't find constructor for entity class ${constructor_name}, Entity#Name === ${ent_name}`
+	let constructor = GetConstructorByName(constructor_name, ent_name)
+	if (constructor === undefined) {
+		console.error(`Can't find constructor for entity class ${constructor_name}, Entity#Name === ${ent_name}`)
+		constructor = Entity
+	}
 
 	return new constructor(id, ent_name)
 }

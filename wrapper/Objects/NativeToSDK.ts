@@ -84,8 +84,10 @@ export default function GetConstructorByName(class_name: string, constructor_nam
 		return constructors.get(fixed_wrapper_name)
 
 	const fixed_class_name = FixClassNameForMap(class_name, SchemaClassesInheritance)
-	if (fixed_class_name === undefined)
-		throw `Can't fix classname ${class_name}, so we can't walk its' inheritance, and class isn't declared in wrapper.`
+	if (fixed_class_name === undefined) {
+		console.error(`Can't fix classname ${class_name}, so we can't walk its' inheritance, and class isn't declared in wrapper.`)
+		return undefined
+	}
 
 	// if neither fixed or original class name have got wrapped entities - try to walk up inherited classes
 	const inherited = SchemaClassesInheritance.get(fixed_class_name)!
@@ -94,5 +96,6 @@ export default function GetConstructorByName(class_name: string, constructor_nam
 		if (constructor !== undefined)
 			return constructor
 	}
-	throw `Can't find wrapper declared inherited classes for classname ${class_name}, [${inherited}]`
+	console.error(`Can't find wrapper declared inherited classes for classname ${class_name}, [${inherited}]`)
+	return undefined
 }
