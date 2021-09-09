@@ -1694,6 +1694,52 @@ declare class CDOTA_Ability_Abaddon_DeathCoil {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Ability_AbyssalUnderlord_Dark_Portal {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Ability_AbyssalUnderlord_DarkRift {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
@@ -1787,6 +1833,52 @@ declare class CDOTA_Ability_AbyssalUnderlord_Firestorm {
 }
 
 declare class CDOTA_Ability_AbyssalUnderlord_PitOfMalice {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Ability_AbyssalUnderlord_Portal_Warp {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -9359,6 +9451,52 @@ declare class CDOTA_Ability_Broodmother_SpinWeb {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Ability_Broodmother_StickySnare {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Ability_Capture {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
@@ -9959,6 +10097,52 @@ declare class CDOTA_Ability_Clinkz_Burning_Army {
 }
 
 declare class CDOTA_Ability_Clinkz_DeathPact {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Ability_Clinkz_PiercingArrow {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -23035,6 +23219,52 @@ declare class CDOTA_Ability_Necrolyte_Sadist {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Ability_Nevermore_Necromastery {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Ability_Nevermore_Requiem {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
@@ -30539,6 +30769,52 @@ declare class CDOTA_Ability_SpiritBreaker_Bulldoze {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Ability_SpiritBreaker_ChargeOfDarkness {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Ability_SpiritBreaker_EmpoweringHaste {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
@@ -32014,6 +32290,52 @@ declare class CDOTA_Ability_Tinker_Defensive_Matrix {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Ability_Tinker_Keen_Teleport {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Ability_Tinker_Laser {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
@@ -32337,6 +32659,98 @@ declare class CDOTA_Ability_Tiny_Tree_Grab {
 }
 
 declare class CDOTA_Ability_Treant_EyesInTheForest {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Ability_Treant_LifeBomb {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Ability_Treant_LifeBomb_Explode {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -34637,6 +35051,52 @@ declare class CDOTA_Ability_Windrunner_FocusFire {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Ability_Windrunner_GaleForce {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Ability_Windrunner_Powershot {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
@@ -35683,6 +36143,7 @@ declare class CDOTA_BaseNPC {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -35826,6 +36287,7 @@ declare class CDOTA_BaseNPC_Additive {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -35998,6 +36460,7 @@ declare class CDOTA_BaseNPC_AghsFort_Watch_Tower {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -36160,6 +36623,7 @@ declare class CDOTA_BaseNPC_Barracks {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -36317,6 +36781,7 @@ declare class CDOTA_BaseNPC_Building {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -36474,6 +36939,7 @@ declare class CDOTA_BaseNPC_Clinkz_Skeleton_Army {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -36617,6 +37083,7 @@ declare class CDOTA_BaseNPC_Creature {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -36763,6 +37230,7 @@ declare class CDOTA_BaseNPC_Creep {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -36891,6 +37359,7 @@ declare class CDOTA_BaseNPC_Creep_Lane {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -37028,6 +37497,7 @@ declare class CDOTA_BaseNPC_Creep_Neutral {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -37156,6 +37626,7 @@ declare class CDOTA_BaseNPC_Creep_Siege {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -37293,6 +37764,7 @@ declare class CDOTA_BaseNPC_Creep_Talking {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -37437,6 +37909,7 @@ declare class CDOTA_BaseNPC_Effigy_BattleCup {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -37594,6 +38067,7 @@ declare class CDOTA_BaseNPC_Effigy_Statue {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -37751,6 +38225,7 @@ declare class CDOTA_BaseNPC_Filler {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -37908,6 +38383,7 @@ declare class CDOTA_BaseNPC_Fort {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -38065,6 +38541,7 @@ declare class CDOTA_BaseNPC_Frostivus2018_Clinkz_Skeleton_Army {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -38208,6 +38685,7 @@ declare class CDOTA_BaseNPC_Frostivus2018_Snowman {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -38351,6 +38829,7 @@ declare class CDOTA_BaseNPC_HallofFame {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -38508,6 +38987,7 @@ declare class CDOTA_BaseNPC_Healer {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -38666,6 +39146,7 @@ declare class CDOTA_BaseNPC_Hero {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -38826,6 +39307,7 @@ declare class CDOTA_BaseNPC_HoldoutTower {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -38984,6 +39466,7 @@ declare class CDOTA_BaseNPC_HoldoutTower_HeavySlow {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -39142,6 +39625,7 @@ declare class CDOTA_BaseNPC_HoldoutTower_LightFast {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -39300,6 +39784,7 @@ declare class CDOTA_BaseNPC_HoldoutTower_ReduceSpeed {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -39458,6 +39943,7 @@ declare class CDOTA_BaseNPC_Invoker_Forged_Spirit {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -39602,6 +40088,7 @@ declare class CDOTA_BaseNPC_JungleVarmint {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -39745,6 +40232,7 @@ declare class CDOTA_BaseNPC_NeutralItemStash {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -39902,6 +40390,7 @@ declare class CDOTA_BaseNPC_Phantom_Assassin_GroundDagger {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -40045,6 +40534,7 @@ declare class CDOTA_BaseNPC_Promo {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -40202,6 +40692,7 @@ declare class CDOTA_BaseNPC_RotatableBuilding {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -40345,6 +40836,7 @@ declare class CDOTA_BaseNPC_SDKTower {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -40503,6 +40995,7 @@ declare class CDOTA_BaseNPC_Seasonal_CNY_Balloon {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -40646,6 +41139,7 @@ declare class CDOTA_BaseNPC_Seasonal_Dragon {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -40789,6 +41283,7 @@ declare class CDOTA_BaseNPC_Seasonal_Penguin {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -40932,6 +41427,7 @@ declare class CDOTA_BaseNPC_Seasonal_Snowman {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -41075,6 +41571,7 @@ declare class CDOTA_BaseNPC_Seasonal_TI10_DiscoBall {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -41218,6 +41715,7 @@ declare class CDOTA_BaseNPC_Seasonal_TI10_SoccerBall {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -41361,6 +41859,7 @@ declare class CDOTA_BaseNPC_Seasonal_TI9_Balloon {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -41504,6 +42003,7 @@ declare class CDOTA_BaseNPC_Seasonal_TI9_Drums {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -41647,6 +42147,7 @@ declare class CDOTA_BaseNPC_Seasonal_TI9_Monkey {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -41790,6 +42291,7 @@ declare class CDOTA_BaseNPC_ShadowShaman_SerpentWard {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -41933,6 +42435,7 @@ declare class CDOTA_BaseNPC_Shop {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -42091,6 +42594,7 @@ declare class CDOTA_BaseNPC_Spring2021_AbilityBuilding {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -42234,6 +42738,7 @@ declare class CDOTA_BaseNPC_Spring2021_DefusalBomb {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -42377,6 +42882,7 @@ declare class CDOTA_BaseNPC_Spring2021_MeteorCrashSite {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -42520,6 +43026,7 @@ declare class CDOTA_BaseNPC_Tower {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -42678,6 +43185,7 @@ declare class CDOTA_BaseNPC_Trap_Ward {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -42824,6 +43332,7 @@ declare class CDOTA_BaseNPC_Tusk_Sigil {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -42967,6 +43476,7 @@ declare class CDOTA_BaseNPC_Venomancer_PlagueWard {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -43110,6 +43620,7 @@ declare class CDOTA_BaseNPC_Warlock_Golem {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -43254,6 +43765,7 @@ declare class CDOTA_BaseNPC_Watch_Tower {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -43492,6 +44004,7 @@ declare class CDOTA_Creature_Jungle_Spirit {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -43638,6 +44151,7 @@ declare class CDOTA_DarkWillow_Creature {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -47945,7 +48459,173 @@ declare class CDOTA_Item_Force_Boots {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Item_Force_Field {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: number
+	m_bPurchasedWhileDead: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Item_ForceStaff {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: number
+	m_bPurchasedWhileDead: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Item_Fortitude_Ring {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -49772,6 +50452,89 @@ declare class CDOTA_Item_MantaStyle {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Item_Mechanical_Arm {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: number
+	m_bPurchasedWhileDead: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Item_Medallion_Of_Courage {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
@@ -51515,6 +52278,89 @@ declare class CDOTA_Item_Overwhelming_Blink {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Item_Paintball {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: number
+	m_bPurchasedWhileDead: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Item_Paladin_Sword {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
@@ -52011,6 +52857,89 @@ declare class CDOTA_Item_PocketRoshan {
 }
 
 declare class CDOTA_Item_PocketTower {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: number
+	m_bPurchasedWhileDead: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Item_PogoStick {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
 	m_bInAbilityPhase: boolean
@@ -55071,6 +56000,89 @@ declare class CDOTA_Item_TranquilBoots2 {
 	m_nMaxGPULevel: number
 }
 
+declare class CDOTA_Item_Tree_Processor {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iLevel: number
+	m_bInAbilityPhase: boolean
+	m_fCooldown: number
+	m_iManaCost: number
+	m_bAutoCastState: boolean
+	m_fAbilityChargeRestoreTimeRemaining: number
+	m_bPermanent: boolean
+	m_bStackable: boolean
+	m_iStackableMax: number
+	m_iSharability: number
+	m_iInitialCharges: number
+	m_flEnableTime: number
+	m_flPurchaseTime: number
+	m_iCurrentCharges: number
+	CBodyComponent: CBodyComponentPoint2
+	m_pEntity: CEntityIdentity
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_bRefCountsModifiers: boolean
+	m_bHidden: boolean
+	m_bActivated: boolean
+	m_nAbilityBarType: AbilityBarType_t
+	m_iDirtyButtons: number
+	m_bToggleState: boolean
+	m_flCooldownLength: number
+	m_flChannelStartTime: number
+	m_flCastStartTime: number
+	m_bInIndefiniteCooldown: boolean
+	m_bFrozenCooldown: boolean
+	m_flOverrideCastPoint: number
+	m_bStolen: boolean
+	m_bReplicated: boolean
+	m_bStealable: boolean
+	m_nAbilityCurrentCharges: number
+	m_bUpgradeRecommended: boolean
+	m_bCombinable: boolean
+	m_bRecipe: boolean
+	m_bDroppable: boolean
+	m_bPurchasable: boolean
+	m_bSellable: boolean
+	m_bInitiallySellable: boolean
+	m_bForceUnsellable: boolean
+	m_bRequiresCharges: boolean
+	m_bKillable: boolean
+	m_bGloballyCombinable: boolean
+	m_bDisassemblable: boolean
+	m_bIsNeutralDrop: boolean
+	m_nNeutralDropTeam: number
+	m_bAlertable: boolean
+	m_bCastOnPickup: boolean
+	m_bOnlyPlayerHeroPickup: boolean
+	m_bCreepHeroPickup: boolean
+	m_bCanBeUsedOutOfInventory: boolean
+	m_bItemEnabled: boolean
+	m_bDisplayOwnership: boolean
+	m_bShowOnMinimap: boolean
+	m_flMinimapIconSize: number
+	m_vecPreGameTransferPlayerIDs: number[]
+	m_flAssembledTime: number
+	m_iValuelessCharges: number
+	m_iSecondaryCharges: number
+	m_bCombineLocked: boolean
+	m_iPlayerOwnerID: number
+	m_bPurchasedWhileDead: boolean
+	CPhysicsComponent: CPhysicsComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
 declare class CDOTA_Item_Trickster_Cloak {
 	m_hOwnerEntity: CEntityIndex<CBaseEntity>
 	m_iLevel: number
@@ -56732,6 +57744,7 @@ declare class CDOTA_NPC_Aghsfort_WitchDoctor_Ward {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -56775,6 +57788,150 @@ declare class CDOTA_NPC_Aghsfort_WitchDoctor_Ward {
 	m_CustomHealthLabelColor: Color
 	m_nTargetType: number
 	m_nTargetFlags: number
+	CPhysicsComponent: CPhysicsComponent
+	CRenderComponent: CRenderComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_NPC_BroodmotherStickyWeb {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iCurrentLevel: number
+	m_nTotalDamageTaken: bigint
+	m_iAttackCapabilities: number
+	m_iSpecialAbility: number
+	m_iTaggedAsVisibleByTeam: number
+	m_anglediff: number
+	m_NetworkActivity: number
+	m_NetworkSequenceIndex: number
+	m_hAbilities: CEntityIndex<CBaseEntity>[]
+	m_iHealth: number
+	m_lifeState: number
+	m_fFlags: number
+	CBodyComponent: CBodyComponentBaseAnimatingOverlay2
+	m_pEntity: CEntityIdentity
+	m_iMaxHealth: number
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_bClientSideRagdoll: boolean
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_nRenderMode: RenderMode_t
+	m_nRenderFX: RenderFx_t
+	m_clrRender: Color
+	m_RenderAttributeIDs: CUtlStringToken[]
+	m_RenderAttributeValues: Vector4[]
+	m_LightGroup: CUtlStringToken
+	m_bRenderToCubemaps: boolean
+	m_nInteractsAs: bigint
+	m_nInteractsWith: bigint
+	m_nInteractsExclude: bigint
+	m_nEntityId: number
+	m_nHierarchyId: number
+	m_nCollisionGroup: number
+	m_nCollisionFunctionMask: number
+	m_usSolidFlags: number
+	m_nSolidType: SolidType_t
+	m_triggerBloat: number
+	m_nSurroundType: SurroundingBoundsType_t
+	m_CollisionGroup: number
+	m_bHitboxEnabled: boolean
+	m_vCapsuleCenter1: Vector3
+	m_vCapsuleCenter2: Vector3
+	m_flCapsuleRadius: number
+	m_iGlowType: number
+	m_nGlowRange: number
+	m_nGlowRangeMin: number
+	m_glowColorOverride: Color
+	m_bFlashing: boolean
+	m_flGlowTime: number
+	m_flGlowStartTime: number
+	m_flGlowBackfaceMult: number
+	m_fadeMinDist: number
+	m_fadeMaxDist: number
+	m_flFadeScale: number
+	m_flShadowStrength: number
+	m_nAddDecal: number
+	m_vDecalPosition: Vector3
+	m_vDecalForwardAxis: Vector3
+	m_flDecalHealBloodRate: number
+	m_flDecalHealHeightRate: number
+	m_ConfigEntitiesToPropagateMaterialDecalsTo: CEntityIndex<CBaseModelEntity>[]
+	m_pRagdollPose: PhysicsRagdollPose_t
+	m_bShouldAnimateDuringGameplayPause: boolean
+	m_bAnimGraphUpdateEnabled: boolean
+	m_GraphParameterName: string
+	m_flGoal: number
+	m_hMyWearables: CEntityIndex<CEconWearable>[]
+	m_flFieldOfView: number
+	m_nLod: number
+	m_bSelectionRingVisible: boolean
+	m_flMana: number
+	m_flMaxMana: number
+	m_flManaThinkRegen: number
+	m_flHealthThinkRegen: number
+	m_nHealthBarOffsetOverride: number
+	m_bIsPhantom: boolean
+	m_bIsAncient: boolean
+	m_bIsNeutralUnitType: boolean
+	m_bIsSummoned: boolean
+	m_bCanBeDominated: boolean
+	m_bCanRespawn: boolean
+	m_bHasUpgradeableAbilities: boolean
+	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
+	m_iBotDebugData: number
+	m_bIsMoving: boolean
+	m_bCanUseWards: boolean
+	m_bCanUseAllItems: boolean
+	m_flManaRegen: number
+	m_flHealthRegen: number
+	m_iMoveSpeed: number
+	m_flTauntCooldown: number
+	m_fRevealRadius: number
+	m_iDayTimeVisionRange: number
+	m_iNightTimeVisionRange: number
+	m_flPhysicalArmorValue: number
+	m_flMagicalResistanceValue: number
+	m_iXPBounty: number
+	m_iXPBountyExtra: number
+	m_iGoldBountyMin: number
+	m_iGoldBountyMax: number
+	m_nPlayerOwnerID: number
+	m_nUnitState64: bigint
+	m_nUnitModelVariant: number
+	m_iIsControllableByPlayer64: bigint
+	m_hModifierParent: CEntityIndex<CBaseEntity>
+	m_iUnitNameIndex: number
+	m_iDamageMin: number
+	m_iDamageMax: number
+	m_iDamageBonus: number
+	m_bIsWaitingToSpawn: boolean
+	m_nUnitLabelIndex: number
+	m_szUnitLabel: string
+	m_hItems: CEntityIndex<CBaseEntity>[]
+	m_iParity: number
+	m_hInventoryParent: CEntityIndex<CBaseEntity>
+	m_bStashEnabled: boolean
+	m_hTransientCastItem: CEntityIndex<CBaseEntity>
+	m_iCurShop: DOTA_SHOP_TYPE
+	m_szCurShopEntName: string
+	m_bStolenScepter: boolean
+	m_bShouldDoFlyHeightVisual: boolean
+	m_flStartSequenceCycle: number
+	m_CustomHealthLabel: string
+	m_CustomHealthLabelColor: Color
 	CPhysicsComponent: CPhysicsComponent
 	CRenderComponent: CRenderComponent
 	m_nMinCPULevel: number
@@ -56877,6 +58034,7 @@ declare class CDOTA_NPC_DataDriven {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -57020,6 +58178,7 @@ declare class CDOTA_NPC_Lich_Ice_Spire {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -57163,6 +58322,7 @@ declare class CDOTA_NPC_Observer_Ward {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -57306,6 +58466,7 @@ declare class CDOTA_NPC_Observer_Ward_TrueSight {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -57449,6 +58610,7 @@ declare class CDOTA_NPC_Techies_Minefield_Sign {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -57592,6 +58754,7 @@ declare class CDOTA_NPC_TechiesMines {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -57735,6 +58898,7 @@ declare class CDOTA_NPC_Treant_EyesInTheForest {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -57878,6 +59042,7 @@ declare class CDOTA_NPC_WitchDoctor_Ward {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -58023,6 +59188,7 @@ declare class CDOTA_PhantomAssassin_Gravestone {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -58537,6 +59703,7 @@ declare class CDOTA_Unit_AghsFort_Creature_DragonKnight {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -58683,6 +59850,7 @@ declare class CDOTA_Unit_AghsFort_EarthSpiritBoss_Stone {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -58826,6 +59994,7 @@ declare class CDOTA_Unit_AghsFort_SpectralTusk_Tombstone {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -58969,6 +60138,7 @@ declare class CDOTA_Unit_Announcer {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -59112,6 +60282,7 @@ declare class CDOTA_Unit_Announcer_Killing_Spree {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -59255,6 +60426,7 @@ declare class CDOTA_Unit_Brewmaster_PrimalEarth {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -59399,6 +60571,7 @@ declare class CDOTA_Unit_Brewmaster_PrimalFire {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -59543,6 +60716,7 @@ declare class CDOTA_Unit_Brewmaster_PrimalStorm {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -59687,6 +60861,7 @@ declare class CDOTA_Unit_Brewmaster_PrimalVoid {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -59831,6 +61006,7 @@ declare class CDOTA_Unit_Broodmother_Spiderling {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -59975,6 +61151,7 @@ declare class CDOTA_Unit_Broodmother_Web {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -60118,6 +61295,7 @@ declare class CDOTA_Unit_Courier {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -60266,6 +61444,7 @@ declare class CDOTA_Unit_CustomGameAnnouncer {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -60409,6 +61588,7 @@ declare class CDOTA_Unit_Diretide_Portal {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -60566,6 +61746,7 @@ declare class CDOTA_Unit_Earth_Spirit_Stone {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -60709,6 +61890,7 @@ declare class CDOTA_Unit_Elder_Titan_AncestralSpirit {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -60852,6 +62034,7 @@ declare class CDOTA_Unit_Fountain {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -61009,6 +62192,7 @@ declare class CDOTA_Unit_Grimstroke_InkCreature {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -61153,6 +62337,7 @@ declare class CDOTA_Unit_Hero_Abaddon {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -61314,6 +62499,7 @@ declare class CDOTA_Unit_Hero_AbyssalUnderlord {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -61475,6 +62661,7 @@ declare class CDOTA_Unit_Hero_Alchemist {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -61636,6 +62823,7 @@ declare class CDOTA_Unit_Hero_AncientApparition {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -61797,6 +62985,7 @@ declare class CDOTA_Unit_Hero_AntiMage {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -61958,6 +63147,7 @@ declare class CDOTA_Unit_Hero_ArcWarden {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -62119,6 +63309,7 @@ declare class CDOTA_Unit_Hero_Axe {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -62280,6 +63471,7 @@ declare class CDOTA_Unit_Hero_Bane {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -62441,6 +63633,7 @@ declare class CDOTA_Unit_Hero_Batrider {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -62602,6 +63795,7 @@ declare class CDOTA_Unit_Hero_Beastmaster {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -62762,6 +63956,7 @@ declare class CDOTA_Unit_Hero_Beastmaster_Beasts {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -62906,6 +64101,7 @@ declare class CDOTA_Unit_Hero_Beastmaster_Boar {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -63050,6 +64246,7 @@ declare class CDOTA_Unit_Hero_Beastmaster_Hawk {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -63195,6 +64392,7 @@ declare class CDOTA_Unit_Hero_Bloodseeker {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -63356,6 +64554,7 @@ declare class CDOTA_Unit_Hero_BountyHunter {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -63517,6 +64716,7 @@ declare class CDOTA_Unit_Hero_Brewmaster {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -63678,6 +64878,7 @@ declare class CDOTA_Unit_Hero_Bristleback {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -63839,6 +65040,7 @@ declare class CDOTA_Unit_Hero_Broodmother {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -64000,6 +65202,7 @@ declare class CDOTA_Unit_Hero_Centaur {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -64161,6 +65364,7 @@ declare class CDOTA_Unit_Hero_ChaosKnight {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -64322,6 +65526,7 @@ declare class CDOTA_Unit_Hero_Chen {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -64483,6 +65688,7 @@ declare class CDOTA_Unit_Hero_Clinkz {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -64644,6 +65850,7 @@ declare class CDOTA_Unit_Hero_CrystalMaiden {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -64805,6 +66012,7 @@ declare class CDOTA_Unit_Hero_DarkSeer {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -64966,6 +66174,7 @@ declare class CDOTA_Unit_Hero_DarkWillow {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -65127,6 +66336,7 @@ declare class CDOTA_Unit_Hero_Dawnbreaker {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -65289,6 +66499,7 @@ declare class CDOTA_Unit_Hero_Dazzle {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -65450,6 +66661,7 @@ declare class CDOTA_Unit_Hero_DeathProphet {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -65611,6 +66823,7 @@ declare class CDOTA_Unit_Hero_Disruptor {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -65772,6 +66985,7 @@ declare class CDOTA_Unit_Hero_DoomBringer {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -65933,6 +67147,7 @@ declare class CDOTA_Unit_Hero_DragonKnight {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -66094,6 +67309,7 @@ declare class CDOTA_Unit_Hero_DrowRanger {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -66255,6 +67471,7 @@ declare class CDOTA_Unit_Hero_Earthshaker {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -66416,6 +67633,7 @@ declare class CDOTA_Unit_Hero_EarthSpirit {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -66577,6 +67795,7 @@ declare class CDOTA_Unit_Hero_Elder_Titan {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -66738,6 +67957,7 @@ declare class CDOTA_Unit_Hero_EmberSpirit {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -66899,6 +68119,7 @@ declare class CDOTA_Unit_Hero_Enchantress {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -67060,6 +68281,7 @@ declare class CDOTA_Unit_Hero_Enigma {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -67221,6 +68443,7 @@ declare class CDOTA_Unit_Hero_FacelessVoid {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -67382,6 +68605,7 @@ declare class CDOTA_Unit_Hero_Furion {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -67543,6 +68767,7 @@ declare class CDOTA_Unit_Hero_Grimstroke {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -67704,6 +68929,7 @@ declare class CDOTA_Unit_Hero_Gyrocopter {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -67865,6 +69091,7 @@ declare class CDOTA_Unit_Hero_Hoodwink {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -68026,6 +69253,7 @@ declare class CDOTA_Unit_Hero_Huskar {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -68187,6 +69415,7 @@ declare class CDOTA_Unit_Hero_Invoker {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -68348,6 +69577,7 @@ declare class CDOTA_Unit_Hero_Jakiro {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -68509,6 +69739,7 @@ declare class CDOTA_Unit_Hero_Juggernaut {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -68670,6 +69901,7 @@ declare class CDOTA_Unit_Hero_KeeperOfTheLight {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -68831,6 +70063,7 @@ declare class CDOTA_Unit_Hero_Kunkka {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -68992,6 +70225,7 @@ declare class CDOTA_Unit_Hero_Legion_Commander {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -69153,6 +70387,7 @@ declare class CDOTA_Unit_Hero_Leshrac {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -69314,6 +70549,7 @@ declare class CDOTA_Unit_Hero_Lich {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -69475,6 +70711,7 @@ declare class CDOTA_Unit_Hero_Life_Stealer {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -69636,6 +70873,7 @@ declare class CDOTA_Unit_Hero_Lina {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -69797,6 +71035,7 @@ declare class CDOTA_Unit_Hero_Lion {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -69958,6 +71197,7 @@ declare class CDOTA_Unit_Hero_LoneDruid {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -70119,6 +71359,7 @@ declare class CDOTA_Unit_Hero_Luna {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -70280,6 +71521,7 @@ declare class CDOTA_Unit_Hero_Lycan {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -70441,6 +71683,7 @@ declare class CDOTA_Unit_Hero_Magnataur {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -70602,6 +71845,7 @@ declare class CDOTA_Unit_Hero_Mars {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -70763,6 +72007,7 @@ declare class CDOTA_Unit_Hero_Medusa {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -70924,6 +72169,7 @@ declare class CDOTA_Unit_Hero_Meepo {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -71087,6 +72333,7 @@ declare class CDOTA_Unit_Hero_Mirana {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -71248,6 +72495,7 @@ declare class CDOTA_Unit_Hero_MonkeyKing {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -71411,6 +72659,7 @@ declare class CDOTA_Unit_Hero_Morphling {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -71572,6 +72821,7 @@ declare class CDOTA_Unit_Hero_Naga_Siren {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -71733,6 +72983,7 @@ declare class CDOTA_Unit_Hero_Necrolyte {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -71894,6 +73145,7 @@ declare class CDOTA_Unit_Hero_Nevermore {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -72055,6 +73307,7 @@ declare class CDOTA_Unit_Hero_NightStalker {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -72216,6 +73469,7 @@ declare class CDOTA_Unit_Hero_Nyx_Assassin {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -72377,6 +73631,7 @@ declare class CDOTA_Unit_Hero_Obsidian_Destroyer {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -72538,6 +73793,7 @@ declare class CDOTA_Unit_Hero_Ogre_Magi {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -72699,6 +73955,7 @@ declare class CDOTA_Unit_Hero_Omniknight {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -72860,6 +74117,7 @@ declare class CDOTA_Unit_Hero_Oracle {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -73021,6 +74279,7 @@ declare class CDOTA_Unit_Hero_Pangolier {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -73182,6 +74441,7 @@ declare class CDOTA_Unit_Hero_PhantomAssassin {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -73344,6 +74604,7 @@ declare class CDOTA_Unit_Hero_PhantomLancer {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -73505,6 +74766,7 @@ declare class CDOTA_Unit_Hero_Phoenix {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -73666,6 +74928,7 @@ declare class CDOTA_Unit_Hero_Puck {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -73827,6 +75090,7 @@ declare class CDOTA_Unit_Hero_Pudge {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -73988,6 +75252,7 @@ declare class CDOTA_Unit_Hero_Pugna {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -74149,6 +75414,7 @@ declare class CDOTA_Unit_Hero_QueenOfPain {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -74310,6 +75576,7 @@ declare class CDOTA_Unit_Hero_Rattletrap {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -74472,6 +75739,7 @@ declare class CDOTA_Unit_Hero_Razor {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -74633,6 +75901,7 @@ declare class CDOTA_Unit_Hero_Riki {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -74794,6 +76063,7 @@ declare class CDOTA_Unit_Hero_Rubick {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -74958,6 +76228,7 @@ declare class CDOTA_Unit_Hero_SandKing {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -75119,6 +76390,7 @@ declare class CDOTA_Unit_Hero_Shadow_Demon {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -75280,6 +76552,7 @@ declare class CDOTA_Unit_Hero_ShadowShaman {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -75441,6 +76714,7 @@ declare class CDOTA_Unit_Hero_Shredder {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -75602,6 +76876,7 @@ declare class CDOTA_Unit_Hero_Silencer {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -75763,6 +77038,7 @@ declare class CDOTA_Unit_Hero_SkeletonKing {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -75926,6 +77202,7 @@ declare class CDOTA_Unit_Hero_Skywrath_Mage {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -76087,6 +77364,7 @@ declare class CDOTA_Unit_Hero_Slardar {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -76248,6 +77526,7 @@ declare class CDOTA_Unit_Hero_Slark {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -76409,6 +77688,7 @@ declare class CDOTA_Unit_Hero_Snapfire {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -76570,6 +77850,7 @@ declare class CDOTA_Unit_Hero_Sniper {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -76731,6 +78012,7 @@ declare class CDOTA_Unit_Hero_Spectre {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -76789,7 +78071,8 @@ declare class CDOTA_Unit_Hero_Spectre {
 	m_bReincarnating: boolean
 	m_bCustomKillEffect: boolean
 	m_flSpawnedAt: number
-	m_unArcanaKillStreak: number
+	m_unCurrentArcanaKillStreak: number
+	m_unBestArcanaKillStreak: number
 	m_nVictimPlayerID: number
 	m_bArcanaKillstreakRecordBroken: boolean
 	CPhysicsComponent: CPhysicsComponent
@@ -76895,6 +78178,7 @@ declare class CDOTA_Unit_Hero_SpiritBreaker {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -77056,6 +78340,7 @@ declare class CDOTA_Unit_Hero_StormSpirit {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -77217,6 +78502,7 @@ declare class CDOTA_Unit_Hero_Sven {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -77378,6 +78664,7 @@ declare class CDOTA_Unit_Hero_Techies {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -77539,6 +78826,7 @@ declare class CDOTA_Unit_Hero_TemplarAssassin {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -77700,6 +78988,7 @@ declare class CDOTA_Unit_Hero_Terrorblade {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -77862,6 +79151,7 @@ declare class CDOTA_Unit_Hero_Tidehunter {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -78023,6 +79313,7 @@ declare class CDOTA_Unit_Hero_Tinker {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -78184,6 +79475,7 @@ declare class CDOTA_Unit_Hero_Tiny {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -78347,6 +79639,7 @@ declare class CDOTA_Unit_Hero_Treant {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -78508,6 +79801,7 @@ declare class CDOTA_Unit_Hero_TrollWarlord {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -78669,6 +79963,7 @@ declare class CDOTA_Unit_Hero_Tusk {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -78830,6 +80125,7 @@ declare class CDOTA_Unit_Hero_Undying {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -78991,6 +80287,7 @@ declare class CDOTA_Unit_Hero_Ursa {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -79152,6 +80449,7 @@ declare class CDOTA_Unit_Hero_VengefulSpirit {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -79313,6 +80611,7 @@ declare class CDOTA_Unit_Hero_Venomancer {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -79474,6 +80773,7 @@ declare class CDOTA_Unit_Hero_Viper {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -79635,6 +80935,7 @@ declare class CDOTA_Unit_Hero_Visage {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -79796,6 +81097,7 @@ declare class CDOTA_Unit_Hero_Void_Spirit {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -79957,6 +81259,7 @@ declare class CDOTA_Unit_Hero_Warlock {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -80118,6 +81421,7 @@ declare class CDOTA_Unit_Hero_Weaver {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -80280,6 +81584,7 @@ declare class CDOTA_Unit_Hero_Windrunner {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -80441,6 +81746,7 @@ declare class CDOTA_Unit_Hero_Winter_Wyvern {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -80602,6 +81908,7 @@ declare class CDOTA_Unit_Hero_Wisp {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -80763,6 +82070,7 @@ declare class CDOTA_Unit_Hero_WitchDoctor {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -80924,6 +82232,7 @@ declare class CDOTA_Unit_Hero_Zuus {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -81084,6 +82393,7 @@ declare class CDOTA_Unit_IngisFatuus {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -81227,6 +82537,7 @@ declare class CDOTA_Unit_LoopingSound {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -81372,6 +82683,7 @@ declare class CDOTA_Unit_Nian {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -81518,6 +82830,7 @@ declare class CDOTA_Unit_Roshan {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -81662,6 +82975,7 @@ declare class CDOTA_Unit_SpectralTusk_Tombstone {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -81805,6 +83119,7 @@ declare class CDOTA_Unit_SpiritBear {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -81949,6 +83264,7 @@ declare class CDOTA_Unit_TargetDummy {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -82011,6 +83327,150 @@ declare class CDOTA_Unit_TargetDummy {
 	m_flLastHit: number
 	m_flStartDamageTime: number
 	m_flLastDamageTime: number
+	CPhysicsComponent: CPhysicsComponent
+	CRenderComponent: CRenderComponent
+	m_nMinCPULevel: number
+	m_nMaxCPULevel: number
+	m_nMinGPULevel: number
+	m_nMaxGPULevel: number
+}
+
+declare class CDOTA_Unit_Underlord_Portal {
+	m_hOwnerEntity: CEntityIndex<CBaseEntity>
+	m_iCurrentLevel: number
+	m_nTotalDamageTaken: bigint
+	m_iAttackCapabilities: number
+	m_iSpecialAbility: number
+	m_iTaggedAsVisibleByTeam: number
+	m_anglediff: number
+	m_NetworkActivity: number
+	m_NetworkSequenceIndex: number
+	m_hAbilities: CEntityIndex<CBaseEntity>[]
+	m_iHealth: number
+	m_lifeState: number
+	m_fFlags: number
+	CBodyComponent: CBodyComponentBaseAnimatingOverlay2
+	m_pEntity: CEntityIdentity
+	m_iMaxHealth: number
+	m_takedamage: DamageOptions_t
+	m_MoveCollide: MoveCollide_t
+	m_MoveType: MoveType_t
+	m_nSubclassID: CUtlStringToken
+	m_flCreateTime: number
+	m_bClientSideRagdoll: boolean
+	m_ubInterpolationFrame: number
+	m_iTeamNum: number
+	m_hEffectEntity: CEntityIndex<CBaseEntity>
+	m_fEffects: number
+	m_flElasticity: number
+	m_bSimulatedEveryTick: boolean
+	m_bAnimatedEveryTick: boolean
+	m_flNavIgnoreUntilTime: number
+	m_nRenderMode: RenderMode_t
+	m_nRenderFX: RenderFx_t
+	m_clrRender: Color
+	m_RenderAttributeIDs: CUtlStringToken[]
+	m_RenderAttributeValues: Vector4[]
+	m_LightGroup: CUtlStringToken
+	m_bRenderToCubemaps: boolean
+	m_nInteractsAs: bigint
+	m_nInteractsWith: bigint
+	m_nInteractsExclude: bigint
+	m_nEntityId: number
+	m_nHierarchyId: number
+	m_nCollisionGroup: number
+	m_nCollisionFunctionMask: number
+	m_usSolidFlags: number
+	m_nSolidType: SolidType_t
+	m_triggerBloat: number
+	m_nSurroundType: SurroundingBoundsType_t
+	m_CollisionGroup: number
+	m_bHitboxEnabled: boolean
+	m_vCapsuleCenter1: Vector3
+	m_vCapsuleCenter2: Vector3
+	m_flCapsuleRadius: number
+	m_iGlowType: number
+	m_nGlowRange: number
+	m_nGlowRangeMin: number
+	m_glowColorOverride: Color
+	m_bFlashing: boolean
+	m_flGlowTime: number
+	m_flGlowStartTime: number
+	m_flGlowBackfaceMult: number
+	m_fadeMinDist: number
+	m_fadeMaxDist: number
+	m_flFadeScale: number
+	m_flShadowStrength: number
+	m_nAddDecal: number
+	m_vDecalPosition: Vector3
+	m_vDecalForwardAxis: Vector3
+	m_flDecalHealBloodRate: number
+	m_flDecalHealHeightRate: number
+	m_ConfigEntitiesToPropagateMaterialDecalsTo: CEntityIndex<CBaseModelEntity>[]
+	m_pRagdollPose: PhysicsRagdollPose_t
+	m_bShouldAnimateDuringGameplayPause: boolean
+	m_bAnimGraphUpdateEnabled: boolean
+	m_GraphParameterName: string
+	m_flGoal: number
+	m_hMyWearables: CEntityIndex<CEconWearable>[]
+	m_flFieldOfView: number
+	m_nLod: number
+	m_bSelectionRingVisible: boolean
+	m_flMana: number
+	m_flMaxMana: number
+	m_flManaThinkRegen: number
+	m_flHealthThinkRegen: number
+	m_nHealthBarOffsetOverride: number
+	m_bIsPhantom: boolean
+	m_bIsAncient: boolean
+	m_bIsNeutralUnitType: boolean
+	m_bIsSummoned: boolean
+	m_bCanBeDominated: boolean
+	m_bCanRespawn: boolean
+	m_bHasUpgradeableAbilities: boolean
+	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
+	m_iBotDebugData: number
+	m_bIsMoving: boolean
+	m_bCanUseWards: boolean
+	m_bCanUseAllItems: boolean
+	m_flManaRegen: number
+	m_flHealthRegen: number
+	m_iMoveSpeed: number
+	m_flTauntCooldown: number
+	m_fRevealRadius: number
+	m_iDayTimeVisionRange: number
+	m_iNightTimeVisionRange: number
+	m_flPhysicalArmorValue: number
+	m_flMagicalResistanceValue: number
+	m_iXPBounty: number
+	m_iXPBountyExtra: number
+	m_iGoldBountyMin: number
+	m_iGoldBountyMax: number
+	m_nPlayerOwnerID: number
+	m_nUnitState64: bigint
+	m_nUnitModelVariant: number
+	m_iIsControllableByPlayer64: bigint
+	m_hModifierParent: CEntityIndex<CBaseEntity>
+	m_iUnitNameIndex: number
+	m_iDamageMin: number
+	m_iDamageMax: number
+	m_iDamageBonus: number
+	m_bIsWaitingToSpawn: boolean
+	m_nUnitLabelIndex: number
+	m_szUnitLabel: string
+	m_hItems: CEntityIndex<CBaseEntity>[]
+	m_iParity: number
+	m_hInventoryParent: CEntityIndex<CBaseEntity>
+	m_bStashEnabled: boolean
+	m_hTransientCastItem: CEntityIndex<CBaseEntity>
+	m_iCurShop: DOTA_SHOP_TYPE
+	m_szCurShopEntName: string
+	m_bStolenScepter: boolean
+	m_bShouldDoFlyHeightVisual: boolean
+	m_flStartSequenceCycle: number
+	m_CustomHealthLabel: string
+	m_CustomHealthLabelColor: Color
 	CPhysicsComponent: CPhysicsComponent
 	CRenderComponent: CRenderComponent
 	m_nMinCPULevel: number
@@ -82113,6 +83573,7 @@ declare class CDOTA_Unit_Undying_Tombstone {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -82256,6 +83717,7 @@ declare class CDOTA_Unit_Undying_Zombie {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -82400,6 +83862,7 @@ declare class CDOTA_Unit_VisageFamiliar {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -82544,6 +84007,7 @@ declare class CDOTA_Unit_ZeusCloud {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
@@ -82687,6 +84151,7 @@ declare class CDOTA_Wisp_Spirit {
 	m_bCanRespawn: boolean
 	m_bHasUpgradeableAbilities: boolean
 	m_iBKBChargesUsed: number
+	m_iAeonChargesUsed: number
 	m_iBotDebugData: number
 	m_bIsMoving: boolean
 	m_bCanUseWards: boolean
