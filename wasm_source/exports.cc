@@ -86,11 +86,11 @@ void WorldTransform(const Vector2D& screen, Vector& point, const VMatrix& projec
 	point *= 1.f / w;
 }
 
-float JSIOBuffer[64];
-FORCEINLINE Vector2D UnwrapVector2(int offset = 0) {
+float JSIOBuffer[129];
+FORCEINLINE Vector2D& UnwrapVector2(int offset = 0) {
 	return *(Vector2D*)&JSIOBuffer[offset];
 }
-FORCEINLINE Vector UnwrapVector3(int offset = 0) {
+FORCEINLINE Vector& UnwrapVector3(int offset = 0) {
 	return *(Vector*)&JSIOBuffer[offset];
 }
 
@@ -247,9 +247,7 @@ EXPORT_JS void ScreenToWorldFar() {
 	auto camera_distance = JSIOBuffer[8];
 	auto fov = JSIOBuffer[9];
 	auto flags = *(uint32_t*)&JSIOBuffer[10];
-	auto screens_count = *(uint32_t*)&JSIOBuffer[11];
-	if (screens_count == 0)
-		return;
+	auto screens_count = (uint16_t)JSIOBuffer[11];
 	
 	Vector vForward, vRight, vUp;
 	CameraAngleVectors(*(QAngle*)&camera_angles, &vForward, &vRight, &vUp);
@@ -605,6 +603,70 @@ EXPORT_JS void ExtractWorld() {
 	*(uint32_t*)&JSIOBuffer[5] = (uint32_t)bvh1.size();
 	*(uint32_t*)&JSIOBuffer[6] = (uint32_t)bvh2.data();
 	*(uint32_t*)&JSIOBuffer[7] = (uint32_t)bvh2.size();
+}
+
+FORCEINLINE bool IsIntersectionInBox(
+	float fDst1,
+	float fDst2,
+	const Vector& P1,
+	const Vector& P2,
+	const Vector& B1,
+	const Vector& B2,
+	int Axis
+) {
+	if ((fDst1 * fDst2) >= 0 || fDst1 == fDst2)
+		return false;
+	auto Hit = P1 + (P2 - P1) * (-fDst1 / (fDst2 - fDst1));
+	return (
+		(Axis == 1 && Hit.z > B1.z && Hit.z < B2.z && Hit.y > B1.y && Hit.y < B2.y)
+		|| (Axis == 2 && Hit.z > B1.z && Hit.z < B2.z && Hit.x > B1.x && Hit.x < B2.x)
+		|| (Axis == 3 && Hit.x > B1.x && Hit.x < B2.x && Hit.y > B1.y && Hit.y < B2.y)
+	);
+}
+
+bool CheckLineBox(
+	const Vector& B1,
+	const Vector& B2,
+	const Vector& L1,
+	const Vector& L2
+) {
+	if (
+		(L2.x < B1.x && L1.x < B1.x)
+		|| (L2.x > B2.x && L1.x > B2.x)
+		|| (L2.y < B1.y && L1.y < B1.y)
+		|| (L2.y > B2.y && L1.y > B2.y)
+		|| (L2.z < B1.z && L1.z < B1.z)
+		|| (L2.z > B2.z && L1.z > B2.z)
+	)
+		return false;
+	if (
+		L1.x > B1.x && L1.x < B2.x
+		&& L1.y > B1.y && L1.y < B2.y
+		&& L1.z > B1.z && L1.z < B2.z
+	)
+		return true;
+	return (
+		IsIntersectionInBox(L1.x - B1.x, L2.x - B1.x, L1, L2, B1, B2, 1)
+		|| IsIntersectionInBox(L1.y - B1.y, L2.y - B1.y, L1, L2, B1, B2, 2)
+		|| IsIntersectionInBox(L1.z - B1.z, L2.z - B1.z, L1, L2, B1, B2, 3)
+		|| IsIntersectionInBox(L1.x - B2.x, L2.x - B2.x, L1, L2, B1, B2, 1)
+		|| IsIntersectionInBox(L1.y - B2.y, L2.y - B2.y, L1, L2, B1, B2, 2)
+		|| IsIntersectionInBox(L1.z - B2.z, L2.z - B2.z, L1, L2, B1, B2, 3)
+	);
+}
+
+EXPORT_JS void BatchCheckLineBox() {
+	auto start_pos = UnwrapVector3();
+	auto end_pos = UnwrapVector3(3);
+	auto count = (uint16_t)JSIOBuffer[6];
+	auto res = new bool[count];
+	for (int i = 0; i < count; i++) {
+		auto& min = UnwrapVector3(7 + i * 3 * 2 + 0);
+		auto& max = UnwrapVector3(7 + i * 3 * 2 + 3);
+		res[i] = CheckLineBox(min, max, start_pos, end_pos);
+	}
+	memcpy(JSIOBuffer, res, count * sizeof(*res));
+	delete[] res;
 }
 
 int main() {

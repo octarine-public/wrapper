@@ -1,3 +1,4 @@
+import AABB from "../Base/AABB"
 import QAngle from "../Base/QAngle"
 import Vector2 from "../Base/Vector2"
 import Vector3 from "../Base/Vector3"
@@ -133,6 +134,7 @@ const wasm = new WebAssembly.Instance(GetWASMModule(), {
 		indices_ptr: number, indices_size: number,
 	) => void,
 	ExtractWorld: () => void,
+	BatchCheckLineBox: () => void,
 }
 declare global {
 	var wasm_: typeof wasm
@@ -143,11 +145,13 @@ globalThis.wasm_ = wasm
 export let WASMIOBuffer: Float32Array
 export let WASMIOBufferBU64: BigUint64Array
 export let WASMIOBufferU32: Uint32Array
+export let WASMIOBufferView: DataView
 function emscripten_notify_memory_growth(_memoryIndex: number) {
 	const off = wasm.GetIOBuffer()
 	WASMIOBuffer = new Float32Array(wasm.memory.buffer, off)
 	WASMIOBufferBU64 = new BigUint64Array(wasm.memory.buffer, off)
 	WASMIOBufferU32 = new Uint32Array(wasm.memory.buffer, off)
+	WASMIOBufferView = new DataView(wasm.memory.buffer, off)
 }
 emscripten_notify_memory_growth(0)
 
@@ -219,6 +223,8 @@ export function GetCursorRay(
 	)
 }
 
+const IOBufferSize = 128,
+	max_screens = (IOBufferSize - 12) / 2
 export function ScreenToWorldFar(
 	screens: Vector2[],
 	window_size: Vector2,
@@ -228,6 +234,21 @@ export function ScreenToWorldFar(
 	fov: number,
 	flags = MaterialFlags.Nonsolid | MaterialFlags.Water,
 ): Vector3[] {
+	if (screens.length > max_screens) {
+		let res: Vector3[] = []
+		for (let i = 0; i < screens.length; i += max_screens) {
+			res = [...res, ...ScreenToWorldFar(
+				screens.slice(i, i + max_screens),
+				window_size,
+				camera_position,
+				camera_distance,
+				camera_angles,
+				fov,
+				flags,
+			)]
+		}
+		return res
+	}
 	WASMIOBuffer[0] = window_size.x
 	WASMIOBuffer[1] = window_size.y
 
@@ -244,7 +265,7 @@ export function ScreenToWorldFar(
 	WASMIOBuffer[9] = fov
 
 	WASMIOBufferU32[10] = flags
-	WASMIOBufferU32[11] = screens.length
+	WASMIOBuffer[11] = screens.length
 
 	screens.forEach((screen, i) => {
 		WASMIOBuffer[12 + i * 2 + 0] = screen.x
@@ -672,4 +693,44 @@ export function ExtractWorld(): [Uint8Array, Uint8Array, Uint8Array, Uint8Array]
 		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[4], WASMIOBufferU32[5]),
 		new Uint8Array(wasm.memory.buffer, WASMIOBufferU32[6], WASMIOBufferU32[7]),
 	]
+}
+
+const max_hitboxes = (IOBufferSize - 7) / (3 * 2)
+export function BatchCheckLineBox(
+	start_pos: Vector3,
+	end_pos: Vector3,
+	hitboxes: AABB[],
+): boolean[] {
+	if (hitboxes.length > max_hitboxes) {
+		let res: boolean[] = []
+		for (let i = 0; i < hitboxes.length; i += max_hitboxes) {
+			res = [...res, ...BatchCheckLineBox(
+				start_pos,
+				end_pos,
+				hitboxes.slice(i, i + max_hitboxes),
+			)]
+		}
+		return res
+	}
+	WASMIOBuffer[0] = start_pos.x
+	WASMIOBuffer[1] = start_pos.y
+	WASMIOBuffer[2] = start_pos.z
+
+	WASMIOBuffer[3] = end_pos.x
+	WASMIOBuffer[4] = end_pos.y
+	WASMIOBuffer[5] = end_pos.z
+
+	WASMIOBuffer[6] = hitboxes.length
+
+	hitboxes.forEach((hitbox, i) => {
+		WASMIOBuffer[7 + i * 3 * 2 + 0] = hitbox.Base.x + hitbox.MinOffset.x
+		WASMIOBuffer[7 + i * 3 * 2 + 1] = hitbox.Base.y + hitbox.MinOffset.y
+		WASMIOBuffer[7 + i * 3 * 2 + 2] = hitbox.Base.z + hitbox.MinOffset.z + hitbox.DeltaZ
+		WASMIOBuffer[7 + i * 3 * 2 + 3] = hitbox.Base.x + hitbox.MaxOffset.x
+		WASMIOBuffer[7 + i * 3 * 2 + 4] = hitbox.Base.y + hitbox.MaxOffset.y
+		WASMIOBuffer[7 + i * 3 * 2 + 5] = hitbox.Base.z + hitbox.MaxOffset.z + hitbox.DeltaZ
+	})
+
+	wasm.BatchCheckLineBox()
+	return hitboxes.map((_, i) => WASMIOBufferView.getUint8(i) !== 0)
 }

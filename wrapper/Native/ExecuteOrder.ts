@@ -1,4 +1,3 @@
-import AABB from "../Base/AABB"
 import Color from "../Base/Color"
 import QAngle from "../Base/QAngle"
 import Rectangle from "../Base/Rectangle"
@@ -584,70 +583,18 @@ function GetEntityHitBox(ent: Entity, camera_vec: Vector2): Nullable<Polygon2D> 
 	return new Polygon2D(...w2s as Vector2[])
 }
 
-function GetIntersection(fDst1: number, fDst2: number, P1: Vector3, P2: Vector3): Nullable<Vector3> {
-	if ((fDst1 * fDst2) >= 0 || fDst1 === fDst2)
-		return undefined
-	return P1.Add(P2.Subtract(P1).MultiplyScalarForThis(-fDst1 / (fDst2 - fDst1)))
-}
-
-function InBox(Hit: Vector3, B1: Vector3, B2: Vector3, Axis: number): boolean {
-	return (
-		(Axis === 1 && Hit.z > B1.z && Hit.z < B2.z && Hit.y > B1.y && Hit.y < B2.y)
-		|| (Axis === 2 && Hit.z > B1.z && Hit.z < B2.z && Hit.x > B1.x && Hit.x < B2.x)
-		|| (Axis === 3 && Hit.x > B1.x && Hit.x < B2.x && Hit.y > B1.y && Hit.y < B2.y)
-	)
-}
-
-function CheckLineBox(hitbox: AABB, L1: Vector3, L2: Vector3): Nullable<Vector3> {
-	const B1 = hitbox.Min,
-		B2 = hitbox.Max
-	if (
-		(L2.x < B1.x && L1.x < B1.x)
-		|| (L2.x > B2.x && L1.x > B2.x)
-		|| (L2.y < B1.y && L1.y < B1.y)
-		|| (L2.y > B2.y && L1.y > B2.y)
-		|| (L2.z < B1.z && L1.z < B1.z)
-		|| (L2.z > B2.z && L1.z > B2.z)
-	)
-		return undefined
-	if (
-		L1.x > B1.x && L1.x < B2.x
-		&& L1.y > B1.y && L1.y < B2.y
-		&& L1.z > B1.z && L1.z < B2.z
-	)
-		return L1
-	let Hit = GetIntersection(L1.x - B1.x, L2.x - B1.x, L1, L2)
-	if (Hit !== undefined && InBox(Hit, B1, B2, 1))
-		return Hit
-	Hit = GetIntersection(L1.y - B1.y, L2.y - B1.y, L1, L2)
-	if (Hit !== undefined && InBox(Hit, B1, B2, 2))
-		return Hit
-	Hit = GetIntersection(L1.z - B1.z, L2.z - B1.z, L1, L2)
-	if (Hit !== undefined && InBox(Hit, B1, B2, 3))
-		return Hit
-	Hit = GetIntersection(L1.x - B2.x, L2.x - B2.x, L1, L2)
-	if (Hit !== undefined && InBox(Hit, B1, B2, 1))
-		return Hit
-	Hit = GetIntersection(L1.y - B2.y, L2.y - B2.y, L1, L2)
-	if (Hit !== undefined && InBox(Hit, B1, B2, 2))
-		return Hit
-	Hit = GetIntersection(L1.z - B2.z, L2.z - B2.z, L1, L2)
-	if (Hit !== undefined && InBox(Hit, B1, B2, 3))
-		return Hit
-	return undefined
-}
-
-function EntityHitBoxIntersects(
-	ent: Entity,
-	camera_vec_2d: Vector2,
+function EntityHitBoxesIntersect(
+	ents: Entity[],
+	camera_vec: Vector3 | Vector2,
 	cursor_vec: Vector2,
 	max_dist = 1e6,
-): boolean {
-	const camera_vec = WASM.GetCameraPosition(
-		camera_vec_2d,
-		default_camera_dist,
-		default_camera_angles,
-	)
+): boolean[] {
+	if (camera_vec instanceof Vector2)
+		camera_vec = WASM.GetCameraPosition(
+			camera_vec,
+			default_camera_dist,
+			default_camera_angles,
+		)
 	const target = camera_vec.Add(WASM.GetCursorRay(
 		cursor_vec,
 		RendererSDK.WindowSize,
@@ -656,7 +603,7 @@ function EntityHitBoxIntersects(
 		default_camera_angles,
 		-1,
 	).MultiplyScalarForThis(max_dist))
-	return CheckLineBox(ent.BoundingBox, camera_vec, target) !== undefined
+	return WASM.BatchCheckLineBox(camera_vec, target, ents.map(ent => ent.BoundingBox))
 }
 
 function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | Vector2 {
@@ -665,7 +612,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 	const current_pos = latest_usercmd.MousePosition
 	if (last_order_target instanceof Entity) {
 		if (
-			EntityHitBoxIntersects(last_order_target, camera_vec, current_pos)
+			EntityHitBoxesIntersect([last_order_target], camera_vec, current_pos)[0]
 			&& !latest_camera_red_zone_poly_screen.IsOutside(current_pos)
 		)
 			return current_pos
@@ -687,7 +634,7 @@ function ComputeTargetPos(camera_vec: Vector2, current_time: number): Vector3 | 
 				.Add(min.MultiplyScalar(Math.random() / 2))
 				.AddForThis(max.MultiplyScalar(Math.random() / 2))
 			if (
-				EntityHitBoxIntersects(last_order_target, camera_vec, generated)
+				EntityHitBoxesIntersect([last_order_target], camera_vec, generated)[0]
 				&& !latest_camera_red_zone_poly_screen.IsOutside(generated)
 			)
 				return generated
@@ -1197,19 +1144,17 @@ function ProcessUserCmd(): void {
 		camera_vec,
 		default_camera_dist,
 	)[0]))
-	const units_nearby = orderBy(
-		EntityManager.GetEntitiesByClass(Unit).filter(ent => (
-			ent.IsVisible
-			&& ent.IsSpawned
-			&& EntityHitBoxIntersects(ent, camera_vec, latest_usercmd.MousePosition)
-		)),
-		ent => ent.Distance(latest_usercmd.VectorUnderCursor),
-	)
+	const units = EntityManager.GetEntitiesByClass(Unit).filter(ent => ent.IsVisible && ent.IsSpawned)
+	const intersected_units_mask = EntityHitBoxesIntersect(units, camera_vec, latest_usercmd.MousePosition)
+	const intersected_units = units.filter((_, i) => intersected_units_mask[i])
 	latest_usercmd.WeaponSelect = (
 		(order !== undefined || ExecuteOrder.hold_orders > 0)
 		&& last_order_target instanceof Unit
-		&& units_nearby.includes(last_order_target)
-	) ? last_order_target : units_nearby[0]
+		&& intersected_units.includes(last_order_target)
+	) ? last_order_target : orderBy(
+		intersected_units,
+		ent => ent.Distance(latest_usercmd.VectorUnderCursor),
+	)[0]
 
 	if (usercmd_cache_last_wrote < current_time - usercmd_cache_delay) {
 		usercmd_cache.push(latest_usercmd.Clone())
