@@ -95,6 +95,8 @@ export default class Entity {
 	public IsVisible = true
 	public DeltaZ = 0
 	public RotationDifference = 0
+	public FieldHandlers_: Nullable<Map<number, FieldHandler>>
+	public Properties_ = new EntityPropertiesNode()
 	public readonly VisualPosition = new Vector3()
 	public readonly NetworkedPosition = new Vector3()
 	public readonly VisualAngles = new QAngle()
@@ -375,7 +377,7 @@ function QuantitizedVecCoordToCoord(cell: Nullable<number>, inside: Nullable<num
 	return ((cell ?? 0) - 128) * 128 + (inside ?? 0)
 }
 
-import { RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
+import { FieldHandler, RegisterFieldHandler } from "wrapper/Objects/NativeToSDK"
 import Events from "../../Managers/Events"
 RegisterFieldHandler(Entity, "m_iTeamNum", async (ent, new_val) => {
 	const old_team = ent.Team

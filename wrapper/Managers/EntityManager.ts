@@ -45,8 +45,7 @@ class bitset {
 }
 
 export type EntityPropertyType = EntityPropertiesNode | EntityPropertyType[] | string | Vector4 | Vector3 | Vector2 | bigint | number | boolean
-const ent_props = new Map<number, EntityPropertyType>(),
-	TreeActiveMask = new bitset(0x4000)
+const TreeActiveMask = new bitset(0x4000)
 class CEntityManager {
 	public get AllEntities(): Entity[] {
 		return AllEntities
@@ -82,9 +81,6 @@ class CEntityManager {
 	}
 	public SetWorldTreeState(WorldTreeState: bigint[]): void {
 		TreeActiveMask.set_buf(new BigUint64Array(WorldTreeState).buffer)
-	}
-	public GetEntityProperties(ent_id: number): Nullable<EntityPropertyType> {
-		return ent_props.get(ent_id)
 	}
 }
 
@@ -122,6 +118,7 @@ async function CreateEntity(
 	entity_name: Nullable<string>,
 ): Promise<Entity> {
 	const entity = ClassFromNative(id, class_name, entity_name)
+	entity.FieldHandlers_ = cached_field_handlers.get(entity.constructor as Constructor<Entity>)
 	await entity.AsyncCreate()
 	entity.ClassName = class_name
 	CreateEntityInternal(entity, id)
@@ -140,7 +137,6 @@ export async function DeleteEntity(id: number): Promise<void> {
 	await EventsSDK.emit("EntityDestroyed", false, entity)
 	entity.IsVisible = false
 	AllEntitiesAsMap.delete(id)
-	ent_props.delete(id)
 	GetSDKClasses().forEach(([class_]) => {
 		if (!(entity instanceof class_))
 			return
@@ -280,34 +276,29 @@ async function ParseEntityUpdate(
 	const ent_class = entities_symbols[stream.ReadUint16()]
 	let ent_was_created = false
 	let ent = AllEntitiesAsMap.get(ent_id)
-	if (ent === undefined) {
-		ent_props.set(ent_id, new EntityPropertiesNode())
-		if (is_create) {
-			ent = await CreateEntity(
-				ent_id,
-				ent_class,
-				StringTables.GetString("EntityNames", m_nameStringableIndex),
-			)
-			ent_was_created = true
-		}
+	if (ent === undefined && is_create) {
+		ent = await CreateEntity(
+			ent_id,
+			ent_class,
+			StringTables.GetString("EntityNames", m_nameStringableIndex),
+		)
+		ent_was_created = true
 	}
 	if (ent !== undefined) {
 		ent.IsVisible = true
 		if (ent_was_created)
 			ent.IsValid = false
 	}
-	const ent_handlers = ent !== undefined
-		? cached_field_handlers.get(ent.constructor as Constructor<Entity>)
-		: undefined
-	const ent_node = ent_props.get(ent_id)!
-	const changed_paths: number[] = [],
+	const ent_handlers = ent?.FieldHandlers_,
+		ent_node = ent?.Properties_ ?? new EntityPropertiesNode(),
+		changed_paths: number[] = [],
 		changed_paths_results: EntityPropertyType[] = []
 	while (true) {
 		const path_size = stream.ReadUint8()
 		if (path_size === 0)
 			break
 
-		let prop_node = ent_node
+		let prop_node: EntityPropertyType = ent_node
 		for (let i = 0; i < path_size; i++) {
 			let id = stream.ReadUint16()
 			const must_be_array = id & 1
