@@ -7,6 +7,7 @@ export { default as Color } from "./Base/Color"
 export { default as PlayerData } from "./Base/PlayerData"
 export { default as PlayerTeamData } from "./Base/PlayerTeamData"
 export { default as Matrix4x4 } from "./Base/Matrix4x4"
+export { default as NeutralSpawnBox } from "./Base/NeutralSpawnBox"
 export { default as AABB } from "./Base/AABB"
 export { WorldPolygon } from "./Geometry/WorldPolygon"
 
