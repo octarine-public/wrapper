@@ -1,4 +1,5 @@
 import { EntityPropertiesNode } from "../Managers/EntityManager"
+import { GetPositionHeight } from "../Native/WASM"
 import Vector2 from "./Vector2"
 import Vector3 from "./Vector3"
 
@@ -10,6 +11,11 @@ export default class NeutralSpawnBox {
 	}
 	public get MaxBounds(): Vector3 {
 		return this.properties.get("m_vMaxBounds") as Vector3
+	}
+	public get Center(): Vector3 {
+		const vec = this.MinBounds.Add(this.MaxBounds).DivideScalarForThis(2)
+		vec.SetZ(GetPositionHeight(vec))
+		return vec
 	}
 	public get SpawnBoxOrigin(): Vector3 {
 		return this.properties.get("vSpawnBoxOrigin") as Vector3
