@@ -147,6 +147,8 @@ message CDOTAUserMsg_TE_ProjectileLoc {
 	optional fixed32 colorgemcolor = 11;
 	optional int32 launch_tick = 12;
 	optional int32 handle = 13;
+	optional int32 hSource = 14;
+	optional int32 sourceAttachment = 15;
 }
 
 message CDOTAUserMsg_TE_DestroyProjectile {
