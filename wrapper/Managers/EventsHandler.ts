@@ -905,6 +905,7 @@ Events.on("NewConnection", async () => {
 			const namesMapping = new Map<string, string>()
 			const lang_tokens = ((createMapFromMergedIterators<string, RecursiveMapValue>(
 				parseKVFile("resource/localization/abilities_english.txt").entries(),
+				parseKVFile("resource/localization/dota_english.txt").entries(),
 				parseKVFile("resource/addon_english.txt").entries(),
 				parseKVFile("panorama/localization/addon_english.txt").entries(),
 			).get("lang") as RecursiveMap)?.get("Tokens") ?? new Map()) as Map<string, string>
@@ -920,6 +921,9 @@ Events.on("NewConnection", async () => {
 				if (lang_token !== undefined)
 					namesMapping.set(name, lang_token)
 			})
+			for (const [k, v] of lang_tokens)
+				if (k.startsWith("dota_matchgroup_"))
+					namesMapping.set(k, v)
 			Localization.LocalizationUnitsNames.forEach(unitName => Localization.AddLocalizationUnit(unitName, namesMapping))
 		})
 	})
