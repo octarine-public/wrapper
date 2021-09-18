@@ -1076,6 +1076,9 @@ export default class Unit extends Entity {
 	public ItemSetCombineLock(item: Item, lock: boolean | number = true, queue?: boolean) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_SET_ITEM_COMBINE_LOCK, issuers: [this], ability: item, target: (lock as number) + 0, queue })
 	}
+	public TakeItemFromNeutralStash(item: Item) {
+		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_TAKE_ITEM_FROM_NEUTRAL_ITEM_STASH, issuers: [this], ability: item })
+	}
 	public MoveItem(item: Item, slot: DOTAScriptInventorySlot_t) {
 		return ExecuteOrder.PrepareOrder({ orderType: dotaunitorder_t.DOTA_UNIT_ORDER_MOVE_ITEM, issuers: [this], target: slot, ability: item })
 	}

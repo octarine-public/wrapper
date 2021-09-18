@@ -66,6 +66,7 @@ export default class AbilityData {
 	public readonly ItemResult: Nullable<string>
 	private readonly SpecialValueCache = new Map<string, [number[], string, string, EDOTASpecialBonusOperation]>()
 	private readonly CastRangeCache: number[]
+	private readonly GetManaCostCache: number[]
 	private readonly ChannelTimeCache: number[]
 	private readonly AbilityDamageCache: number[]
 	private readonly CastPointCache: number[]
@@ -141,6 +142,7 @@ export default class AbilityData {
 			? parseInt(m_Storage.get("ItemHideCharges") as string) !== 0
 			: true
 
+		this.GetManaCostCache = this.GetLevelArray(m_Storage.get("AbilityManaCost") as Nullable<string>)
 		this.CastRangeCache = this.GetLevelArray(m_Storage.get("AbilityCastRange") as Nullable<string>)
 		this.ChannelTimeCache = this.GetLevelArray(m_Storage.get("AbilityChannelTime") as Nullable<string>)
 		this.AbilityDamageCache = this.GetLevelArray(m_Storage.get("AbilityDamage") as Nullable<string>)
@@ -207,6 +209,13 @@ export default class AbilityData {
 			return 0
 		level = Math.min(level, this.MaxTalentLevel)
 		return this.CastRangeCache[level - 1]
+	}
+
+	public GetManaCost(level: number): number {
+		if (level <= 0)
+			return 0
+		level = Math.min(level, this.MaxTalentLevel)
+		return this.GetManaCostCache[level - 1]
 	}
 
 	public GetMaxDurationForLevel(level: number): number {

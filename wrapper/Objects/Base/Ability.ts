@@ -216,6 +216,11 @@ export default class Ability extends Entity {
 	public GetBaseCastRangeForLevel(level: number): number {
 		return this.AbilityData.GetCastRange(level)
 	}
+	public GetBaseManaCostForLevel(level: number) {
+		if (level === 0)
+			return 0
+		return this.AbilityData.GetManaCost(level)
+	}
 	public GetCastRangeForLevel(level: number): number {
 		if (level === 0)
 			return 0
