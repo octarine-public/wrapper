@@ -77,7 +77,9 @@ export default class ImageSelector extends Base {
 		this.image_size.x = this.image_size.y = ImageSelector.base_image_height
 		this.rendered_paths = []
 		for (let path of this.values) {
-			if (path.startsWith("item_bottle_"))
+			if (path.startsWith("rune_"))
+				path = `panorama/images/spellicons/${path}_png.vtex_c`
+			else if (path.startsWith("item_bottle_"))
 				path = `panorama/images/items/${path.substring(5)}_png.vtex_c`
 			else if (!path.startsWith("npc_dota_hero_")) {
 				const abil = await AbilityData.GetAbilityByName(path)
